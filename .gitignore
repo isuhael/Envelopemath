@@ -3,3 +3,4 @@ engine/out/
 .DS_Store
 *.wav
 playbook/dist/
+__pycache__/
