@@ -167,6 +167,22 @@ export function lint(spec) {
       }
     }
   }
+  // phone legibility: handwriting under 56px (typewriter under 40px) is unreadable on a phone
+  const MIN = { hand: 56, marker: 56, sans: 44, type: 40 }
+  const small = (op, size, kind, what) => {
+    if (size < MIN[kind || 'hand']) warn.push(`op #${op._i} ${what} is ${Math.round(size)}px; min ${MIN[kind || 'hand']}px (${kind || 'hand'}) to read on a phone`)
+  }
+  for (const op of spec._ops) {
+    if (op.decor) continue // small print on purpose (e.g. a source line); opt out per op
+    if (op.type === 'write') small(op, op.size, op.font, `write "${op.text.slice(0, 30)}"`)
+    if (op.type === 'lines') op._sched.forEach((L, i) => small(op, L.size, op.font, `lines[${i}] "${L.text.slice(0, 30)}"`))
+    if (op.type === 'ladder') small(op, op.size * 0.8, 'hand', 'ladder labels')
+    if (op.type === 'sticky') small(op, op.size, 'hand', 'sticky text')
+    if (op.type === 'counter') small(op, op.size, op.font, 'counter')
+    if (op.type === 'receipt') small(op, op.size, 'type', 'receipt rows')
+    if (op.type === 'envelope') op.card.forEach((l, i) => small(op, (typeof l === 'object' && l.size) || op.cardSize, (typeof l === 'object' && l.font) || 'hand', `envelope card line ${i}`))
+    if (op.type === 'bars') small(op, Math.min(...op.items.map(i => i.labelSize || 50)), 'hand', 'bar labels')
+  }
   // frame 0 is the thumbnail: something readable must already be there
   if (!spec._ops.some(o => READABLE_AT_ZERO.has(o.type) && o.t <= 0.05 && (o.type !== 'hook' && o.type !== 'quote' ? o.t < -0.3 : o.instant))) {
     warn.push('frame 0 has no readable text: put the hook on screen at t: 0 (it renders finished, so the first frame doubles as the thumbnail)')

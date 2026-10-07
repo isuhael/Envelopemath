@@ -37,7 +37,8 @@ Units are always 1080×1920, with (0,0) top-left. The platform UI covers some ar
 `check` warns about text that leaves the safe area, boxes that overlap while both are on screen
 (a stamp may land on a paper prop; `allowOverlap: true` silences an intended overlap), content in
 the caption band during captions, captions over 2 lines or faster than 4 words/s, a frame 0 with no
-readable hook, and runs over 60 s (75 s with `"lane": "long"`).
+readable hook, text too small for a phone (handwriting < 56px, typewriter < 40px; `decor: true`
+exempts deliberate small print), and runs over 60 s (75 s with `"lane": "long"`).
 
 ## Spec
 
