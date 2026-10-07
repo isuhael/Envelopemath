@@ -1,0 +1,49 @@
+{
+  "id": "05b-becker-rig-3000-paycheck",
+  "look": "becker-rig",
+  "format": "split-sheet",
+  "fps": 30,
+  "duration": 27.0,
+  "header": "How much fun money does 50/30/20\nleave on a **$3,000** paycheck?",
+  "footer": "ASSUMES $3,000 take-home (after tax), paid monthly · 30-day month",
+  "captions": true,
+  "vo": [
+    { "t": 0.0,  "d": 4.4, "text": "$3,000. Saw it into ten: $300 each." },
+    { "t": 4.6,  "d": 2.5, "text": "Needs get five: $1,500." },
+    { "t": 7.3,  "d": 2.5, "text": "Wants get three: $900." },
+    { "t": 10.0, "d": 2.5, "text": "Savings get two: $600." },
+    { "t": 12.7, "d": 3.2, "text": "Five, three, two. Ten pieces, $3,000." },
+    { "t": 16.1, "d": 3.6, "text": "So fun money beats savings by $300." },
+    { "t": 19.9, "d": 4.8, "text": "$900 a month is $30 a day of wants." }
+  ],
+  "verdict": { "t": 16.1, "text": "Wants get **$900**: $300 more than savings" },
+  "data": {
+    "total": { "label": "Take-home paycheck", "display": "$3,000", "value": 3000 },
+    "parts": [
+      { "t": 5.4,  "label": "Needs", "pct": "50%", "amount": "$1,500", "note": "5 × $300 · rent, food, bills", "tone": "neutral", "share": 0.5 },
+      { "t": 8.1,  "label": "Wants", "pct": "30%", "amount": "$900", "note": "3 × $300 · fun money", "tone": "goal", "share": 0.3 },
+      { "t": 10.8, "label": "Savings", "pct": "20%", "amount": "$600", "note": "2 × $300 · saving, extra debt", "tone": "good", "share": 0.2 }
+    ],
+    "check": "$1,500 + $900 + $600 = $3,000",
+    "checkT": 12.7,
+    "hold": 2.3
+  },
+  "lookOpts": {
+    "stage": "white",
+    "inputProp": "block",
+    "tenth": { "t": 2.4, "formula": "$3,000 ÷ 10", "display": "$300", "count": 10 },
+    "actions": [
+      { "t": 1.0, "verb": "saw", "tool": "÷ 10", "becomes": "10 blocks of $300" },
+      { "part": 0, "verb": "stack", "tool": "5 × $300", "becomes": "the NEEDS envelope fills" },
+      { "part": 1, "verb": "stack", "tool": "3 × $300", "becomes": "the WANTS envelope fills" },
+      { "part": 2, "verb": "stack", "tool": "2 × $300", "becomes": "the SAVINGS envelope fills" }
+    ],
+    "envelopes": ["NEEDS", "WANTS", "SAVINGS"],
+    "gag": { "t": 21.9, "text": "$900 ÷ 30 = $30 a day" }
+  },
+  "sfx": [
+    { "t": 1.0, "kind": "whoosh", "dur": 0.4 },
+    { "t": 2.4, "kind": "hit" },
+    { "t": 16.1, "kind": "ding" }
+  ]
+}

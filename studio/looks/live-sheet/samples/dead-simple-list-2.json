@@ -1,0 +1,50 @@
+{
+  "id": "dead-simple-list-2",
+  "sample": true,
+  "look": "live-sheet",
+  "format": "dead-simple-list",
+  "fps": 30,
+  "header": "6 dead simple numbers\nif you're paid **every 2 weeks**",
+  "footer": "ASSUMES 26 paydays a year, 40-hr weeks",
+  "captions": true,
+  "vo": [
+    { "t": 0.0, "d": 1.8, "text": "Paid every two weeks? Times 26." },
+    { "t": 2.0, "d": 2.4, "text": "**$65,000** a year. Not 24 paydays." },
+    { "t": 4.6, "d": 1.8, "text": "A normal month: two checks." },
+    { "t": 6.6, "d": 2.2, "text": "**$5,000**. Ten months look like that." },
+    { "t": 9.0, "d": 1.8, "text": "But 26 minus 24…" },
+    { "t": 11.0, "d": 2.2, "text": "**2 months** a year bring 3 checks." },
+    { "t": 13.4, "d": 1.8, "text": "Your average month?" },
+    { "t": 15.4, "d": 2.0, "text": "About $5,417. Budget on $5,000." },
+    { "t": 17.6, "d": 1.8, "text": "Per hour, at 40 hours a week:" },
+    { "t": 19.6, "d": 1.8, "text": "**$31.25** an hour." },
+    { "t": 21.8, "d": 1.8, "text": "Now bank both bonus checks." },
+    { "t": 23.8, "d": 2.2, "text": "Five years: **$25,000**." },
+    { "t": 26.4, "d": 2.0, "text": "Check: 13 months of $5,000." },
+    { "t": 28.8, "d": 3.0, "text": "Budget on five grand. Bank the extra two." }
+  ],
+  "verdict": { "t": 28.8, "text": "Budget on **$5,000**. Bank the **2 extra checks**." },
+  "data": {
+    "input": { "label": "Your paycheck", "value": "$2,500", "note": "every 2 weeks, before tax" },
+    "typeDur": 0.7,
+    "items": [
+      { "t": 0.0, "label": "Your real yearly pay", "formula": "$2,500 × 26", "result": "$65,000", "tone": "good",
+        "note": "not × 24 = $60,000", "resultT": 1.9 },
+      { "t": 4.6, "label": "A normal month (2 paychecks)", "formula": "$2,500 × 2", "result": "$5,000", "tone": "neutral",
+        "note": "10 months a year look like this", "resultT": 6.5 },
+      { "t": 9.0, "label": "Months with 3 paychecks", "formula": "26 − 2 × 12", "result": "2 a year", "tone": "good",
+        "note": "2 'bonus' paychecks", "resultT": 10.9 },
+      { "t": 13.4, "label": "Your real monthly average", "formula": "$65,000 ÷ 12", "result": "≈ $5,417", "tone": "neutral",
+        "note": "budget on $5,000 instead", "resultT": 15.3 },
+      { "t": 17.6, "label": "Your hourly rate at 40-hour weeks", "formula": "$65,000 ÷ 2,080", "result": "$31.25/hr", "tone": "neutral",
+        "note": "2,080 hrs = 40 × 52", "resultT": 19.5 },
+      { "t": 21.8, "label": "Both bonus checks, banked for 5 years", "formula": "$5,000 × 5", "result": "$25,000", "tone": "goal",
+        "note": "no interest counted", "resultT": 23.7 }
+    ],
+    "check": "$5,000 × 13 = $65,000",
+    "checkT": 26.4,
+    "hold": 3.0
+  },
+  "lookOpts": { "labels": "always" },
+  "notes": "Stress variant: 6 rows, long labels, a text result and a decimal result, labels visible from frame 1, a check line. Maths: 2,500 × 26 = 65,000 (× 24 would be 60,000). 2,500 × 2 = 5,000 for a 2-paycheck month. 26 − 2 × 12 = 2 months with a 3rd paycheck. 65,000 ÷ 12 = 5,416.67 → ≈ $5,417. 65,000 ÷ 2,080 = 31.25 exactly. 2 bonus checks = 2 × 2,500 = 5,000 a year; × 5 years = 25,000. Check: 12 normal months × 5,000 + 5,000 = 13 × 5,000 = 65,000."
+}

@@ -1,0 +1,44 @@
+{
+  "id": "02a-live-sheet-3-a-day-by-age",
+  "look": "live-sheet",
+  "format": "find-your-row",
+  "fps": 30,
+  "duration": 12.5,
+  "header": "What **$3 a day**\ncosts you by age",
+  "footer": "Invested monthly at 7% a year until 65 · no tax, fees or inflation",
+  "captions": true,
+  "vo": [
+    { "t": 0.0, "d": 3.6, "text": "What **$3 a day** costs you, by age." },
+    { "t": 4.0, "d": 3.5, "text": "Start at 25: **≈ $240,000**." },
+    { "t": 7.7, "d": 2.5, "text": "Start at 35? **Less than half.**" }
+  ],
+  "verdict": { "t": 8.9, "text": "Wait 10 years: **less than half**." },
+  "data": {
+    "columns": [
+      { "label": "Your age" },
+      { "label": "You'd spend\nby 65" },
+      { "label": "It costs you\nby 65", "emph": true }
+    ],
+    "rows": [
+      ["18", "$51,465", "≈ $400,000"],
+      ["20", "$49,275", "≈ $346,000"],
+      ["25", "$43,800", "≈ $240,000"],
+      ["30", "$38,325", "≈ $164,000"],
+      ["35", "$32,850", "≈ $111,000"],
+      ["40", "$27,375", "≈ $74,000"],
+      ["45", "$21,900", "≈ $48,000"],
+      ["50", "$16,425", "≈ $29,000"],
+      ["55", "$10,950", "≈ $16,000"],
+      ["60", "$5,475", "≈ $6,500"]
+    ],
+    "formula": "= $3 × 365 ÷ 12 = $91.25 a month, at 7%",
+    "rowsT": 0.0,
+    "rowEvery": 0.5,
+    "pick": [
+      { "t": 4.0, "row": 2, "label": "≈ 5.5× what you'd spend" },
+      { "t": 7.7, "row": 4, "label": "10 years later" }
+    ],
+    "hold": 4.8
+  },
+  "sfx": [ { "t": 8.9, "kind": "ding" } ]
+}

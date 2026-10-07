@@ -1,0 +1,44 @@
+{
+  "id": "09b-becker-rig-1000-times-1-07",
+  "look": "becker-rig",
+  "format": "growth-ladder",
+  "fps": 30,
+  "duration": 34.5,
+  "header": "Leave **$1,000** alone at 7% a year.\nWhat's it worth in 30 years?",
+  "footer": "ASSUMES 7% a year, added once a year · not a forecast",
+  "captions": true,
+  "vo": [
+    { "t": 0.0, "d": 4.4, "text": "$1,000 at 7%: plus $70 a year." },
+    { "t": 4.6, "d": 4.4, "text": "30 years of that is $3,100. Right?" },
+    { "t": 9.2, "d": 4.0, "text": "Year 2 adds about $75, not $70." },
+    { "t": 13.4, "d": 4.8, "text": "Year 10: about $1,967. Almost doubled." },
+    { "t": 18.4, "d": 5.2, "text": "Year 20: about $3,870. Already past the guess." },
+    { "t": 23.8, "d": 3.6, "text": "Year 30: about $7,612." },
+    { "t": 27.6, "d": 4.8, "text": "Not $3,100. About 2.5 times that." }
+  ],
+  "verdict": { "t": 27.6, "text": "**≈ $7,612**, not $3,100.\nEach year's 7% earns 7% too." },
+  "data": {
+    "input": { "amount": "$1,000", "per": "once", "rate": "7% a year" },
+    "columns": ["Year", "You put in", "Worth"],
+    "rows": [
+      ["1", "$1,000", "$1,070"],
+      ["2", "$1,000", "≈ $1,145"],
+      ["5", "$1,000", "≈ $1,403"],
+      ["10", "$1,000", "≈ $1,967"],
+      ["15", "$1,000", "≈ $2,759"],
+      ["20", "$1,000", "≈ $3,870"],
+      ["25", "$1,000", "≈ $5,427"],
+      ["30", "$1,000", "≈ $7,612"]
+    ],
+    "rowT": [2.4, 9.2, 12.2, 13.4, 16.8, 18.4, 21.8, 23.8],
+    "highlightLast": true,
+    "hold": 10.7
+  },
+  "lookOpts": {
+    "gate": "×1.07",
+    "guess": { "t": 6.6, "value": 3100, "display": "$3,100?", "label": "+$70 a year" }
+  },
+  "sfx": [
+    { "t": 6.6, "kind": "boing", "gain": 0.5 }
+  ]
+}

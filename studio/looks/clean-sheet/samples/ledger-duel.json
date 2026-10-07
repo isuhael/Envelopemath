@@ -1,0 +1,133 @@
+{
+  "id": "sample-clean-sheet-ledger-duel",
+  "sample": true,
+  "look": "clean-sheet",
+  "format": "ledger-duel",
+  "fps": 30,
+  "header": "2 people invest **$10,000**\nin January 2000",
+  "footer": "S&P 500 with dividends, no fees · savings at a steady 4% · year-end values",
+  "captions": true,
+  "vo": [
+    {
+      "t": 0.0,
+      "d": 3.0,
+      "text": "Two people invest $10,000 in 2000. Stocks versus a safe 4%."
+    },
+    {
+      "t": 3.1,
+      "d": 2.1,
+      "text": "By 2002, Alex is down to $6,200."
+    },
+    {
+      "t": 5.3,
+      "d": 2.4,
+      "text": "He climbs back… then 2008 hits."
+    },
+    {
+      "t": 7.8,
+      "d": 2.3,
+      "text": "Sam leads for 14 straight years."
+    },
+    {
+      "t": 10.2,
+      "d": 1.4,
+      "text": "Then it flips."
+    },
+    {
+      "t": 11.7,
+      "d": 2.9,
+      "text": "2024: about $63,900 versus $26,700."
+    }
+  ],
+  "verdict": {
+    "t": 14.8,
+    "text": "Behind for 14 years.\nThen **≈ 2.4×** ahead."
+  },
+  "data": {
+    "people": [
+      {
+        "name": "Alex",
+        "plan": "S&P 500 fund"
+      },
+      {
+        "name": "Sam",
+        "plan": "Savings at 4%"
+      }
+    ],
+    "stake": "$10,000 each · nothing added after",
+    "rows": [
+      {
+        "t": 0.0,
+        "label": "Jan 2000",
+        "values": [
+          "$10,000",
+          "$10,000"
+        ]
+      },
+      {
+        "t": 3.4,
+        "label": "2002",
+        "values": [
+          "≈ $6,200",
+          "≈ $11,200"
+        ]
+      },
+      {
+        "t": 5.5,
+        "label": "2007",
+        "values": [
+          "≈ $11,400",
+          "≈ $13,700"
+        ]
+      },
+      {
+        "t": 6.7,
+        "label": "2008",
+        "values": [
+          "≈ $7,200",
+          "≈ $14,200"
+        ],
+        "event": "crash −37%",
+        "tone": "bad"
+      },
+      {
+        "t": 8.2,
+        "label": "2013",
+        "values": [
+          "≈ $16,400",
+          "≈ $17,300"
+        ]
+      },
+      {
+        "t": 10.3,
+        "label": "2014",
+        "values": [
+          "≈ $18,600",
+          "≈ $18,000"
+        ],
+        "event": "Alex pulls ahead",
+        "tone": "good"
+      },
+      {
+        "t": 11.4,
+        "label": "2019",
+        "values": [
+          "≈ $32,400",
+          "≈ $21,900"
+        ]
+      },
+      {
+        "t": 12.1,
+        "label": "2024",
+        "values": [
+          "≈ $63,900",
+          "≈ $26,700"
+        ],
+        "tone": "goal"
+      }
+    ],
+    "winner": 0,
+    "hold": 2.0
+  },
+  "notes": "Maths: $10,000 on 1 Jan 2000, compounded by the S&P 500's published calendar-year total returns (dividends reinvested): 2000 −9.10%, 2001 −11.89%, 2002 −22.10%, 2003 +28.68%, 2004 +10.88%, 2005 +4.91%, 2006 +15.79%, 2007 +5.49%, 2008 −37.00%, 2009 +26.46%, 2010 +15.06%, 2011 +2.11%, 2012 +16.00%, 2013 +32.39%, 2014 +13.69%, 2015 +1.38%, 2016 +11.96%, 2017 +21.83%, 2018 −4.38%, 2019 +31.49%, 2020 +18.40%, 2021 +28.71%, 2022 −18.11%, 2023 +26.29%, 2024 +25.02%. Year-end values: 2002 $6,239; 2007 $11,407; 2008 $7,187 (= $11,407 × 0.63, the −37% row); 2013 $16,398; 2014 $18,643; 2019 $32,413; 2024 $63,865. Savings: $10,000 × 1.04^n at year end n = years since Jan 2000: 2002 $11,249; 2007 $13,686; 2008 $14,233; 2013 $17,317; 2014 $18,009; 2019 $21,911; 2024 $26,658. All shown to the nearest $100 with ≈. Savings is ahead at every year end 2000-2013 (14 years); stocks lead from 2014 ($18,643 vs $18,009). 2024: $63,865 ÷ $26,658 = 2.396 ≈ 2.4×. A steady 4% savings rate is a stated assumption, not history."
+}

@@ -1,0 +1,30 @@
+{
+  "id": "sample-clean-sheet-dead-simple-list-biweekly",
+  "sample": true,
+  "look": "clean-sheet",
+  "format": "dead-simple-list",
+  "fps": 30,
+  "header": "3 dead simple numbers\nif you're paid **every 2 weeks**",
+  "footer": "Assumes 40 hrs a week, 52 weeks a year, before tax",
+  "captions": true,
+  "vo": [
+    { "t": 0.0, "d": 2.4, "text": "Paid every two weeks? Take your paycheck, times twenty-six." },
+    { "t": 2.6, "d": 2.0, "text": "**$65,000** a year. Not sixty." },
+    { "t": 5.0, "d": 2.6, "text": "Divide by twelve: about **$5,417** a month." },
+    { "t": 7.8, "d": 1.4, "text": "Not five thousand." },
+    { "t": 9.6, "d": 2.8, "text": "Divide by 2,080 hours: **$31.25** an hour." },
+    { "t": 12.8, "d": 2.6, "text": "A year has 26 paydays, not 24." },
+    { "t": 15.6, "d": 2.6, "text": "That's **$5,000** a year you didn't count." }
+  ],
+  "verdict": { "t": 15.6, "text": "26 paydays, not 24: **$5,000** a year you didn't count." },
+  "data": {
+    "input": { "label": "Paycheck", "value": "$2,500", "note": "every 2 weeks" },
+    "typeDur": 0.6,
+    "items": [
+      { "t": 0.5, "label": "Your real yearly pay", "formula": "$2,500 × 26", "result": "$65,000 a year", "tone": "good", "note": "not __$60,000__", "resultT": 1.5 },
+      { "t": 5.2, "label": "Your real monthly pay", "formula": "$65,000 ÷ 12", "result": "≈ $5,417 a month", "tone": "good", "note": "not __$5,000__", "resultT": 6.3 },
+      { "t": 9.8, "label": "Your real hourly pay", "formula": "$65,000 ÷ 2,080", "result": "$31.25 an hour", "tone": "goal", "resultT": 11.0 }
+    ],
+    "hold": 2.5
+  }
+}

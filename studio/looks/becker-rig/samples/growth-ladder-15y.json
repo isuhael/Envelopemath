@@ -1,0 +1,44 @@
+{
+  "id": "becker-rig-growth-ladder-15y",
+  "sample": true,
+  "look": "becker-rig",
+  "format": "growth-ladder",
+  "fps": 30,
+  "header": "You invest **$200 a month** at 7%.\nHere's every year to 15.",
+  "footer": "Assumes 7% a year, compounded monthly, before fees and taxes",
+  "captions": true,
+  "vo": [
+    { "t": 0.0, "d": 1.3, "text": "Two hundred a month, at seven percent." },
+    { "t": 1.5, "d": 2.4, "text": "Year one: twenty-four hundred in, twenty-four seventy-nine." },
+    { "t": 4.6, "d": 2.2, "text": "By year five, over fourteen thousand." },
+    { "t": 9.6, "d": 2.2, "text": "Year ten: thirty-four thousand six hundred." },
+    { "t": 12.2, "d": 2.6, "text": "Watch the **green** catch up with what you put in." },
+    { "t": 15.5, "d": 1.6, "text": "Year fifteen: **$63,392.**" }
+  ],
+  "verdict": { "t": 17.4, "text": "**$27,392** of that\nyou never put in." },
+  "data": {
+    "input": { "amount": "$200", "per": "a month", "rate": "7% a year" },
+    "columns": ["Year", "Total put in", "What it's worth"],
+    "rows": [
+      ["1", "$2,400", "$2,479"],
+      ["2", "$4,800", "$5,136"],
+      ["3", "$7,200", "$7,986"],
+      ["4", "$9,600", "$11,042"],
+      ["5", "$12,000", "$14,319"],
+      ["6", "$14,400", "$17,832"],
+      ["7", "$16,800", "$21,600"],
+      ["8", "$19,200", "$25,640"],
+      ["9", "$21,600", "$29,972"],
+      ["10", "$24,000", "$34,617"],
+      ["11", "$26,400", "$39,598"],
+      ["12", "$28,800", "$44,939"],
+      ["13", "$31,200", "$50,666"],
+      ["14", "$33,600", "$56,807"],
+      ["15", "$36,000", "$63,392"]
+    ],
+    "rowsT": 1.4,
+    "rowEvery": 0.95,
+    "highlightLast": true,
+    "hold": 3.0
+  }
+}

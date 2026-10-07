@@ -1,0 +1,45 @@
+{
+  "id": "sample-scoreboard-find-your-row",
+  "sample": true,
+  "look": "scoreboard",
+  "format": "find-your-row",
+  "fps": 30,
+  "header": "**$1 million** by 65:\nwhat to save a month",
+  "footer": "Invested monthly at 7% a year · no tax, fees or inflation",
+  "captions": false,
+  "vo": [
+    { "t": 0.0, "d": 1.8, "text": "A million by sixty-five. Find your age." },
+    { "t": 4.2, "d": 2.6, "text": "Start at twenty-five: about twelve fifty a day." },
+    { "t": 7.2, "d": 2.6, "text": "Wait till forty-five? Five times as much." },
+    { "t": 10.0, "d": 2.4, "text": "Every ten years you wait, it more than doubles." }
+  ],
+  "verdict": { "t": 10.0, "text": "Every 10 years you wait,\nit **more than doubles**" },
+  "data": {
+    "columns": [
+      { "label": "Start\nat age" },
+      { "label": "You put in\n(total)" },
+      { "label": "Save\na month", "emph": true }
+    ],
+    "rows": [
+      ["20", "≈ $142,000", "≈ $265"],
+      ["25", "≈ $183,000", "≈ $380"],
+      ["30", "≈ $233,000", "≈ $555"],
+      ["35", "≈ $295,000", "≈ $820"],
+      ["40", "≈ $370,000", "≈ $1,235"],
+      ["45", "≈ $461,000", "≈ $1,920"],
+      ["50", "≈ $568,000", "≈ $3,155"],
+      ["55", "≈ $693,000", "≈ $5,780"],
+      ["60", "≈ $838,000", "≈ $13,970"]
+    ],
+    "formula": "= $1M ÷ what $1 a month grows to by 65",
+    "rowsT": 0.0,
+    "rowEvery": 0.3,
+    "pick": [
+      { "t": 4.2, "row": 1, "label": "Start at 25: **≈ $12.50 a day**" },
+      { "t": 7.2, "row": 5, "label": "Wait till 45: **≈ 5× as much**" }
+    ],
+    "hold": 4.0
+  },
+  "lookOpts": { "prompt": "Find **your age**" },
+  "notes": "Maths: monthly saving = $1,000,000 ÷ ((1 + i)^n − 1) / i with i = 7% ÷ 12 and n = (65 − age) × 12 months, paid at month end. What $1 a month grows to by 65: 20 → 3,792.6; 25 → 2,624.8; 30 → 1,801.1; 35 → 1,220.0; 40 → 810.1; 45 → 520.9; 50 → 317.0; 55 → 173.1; 60 → 71.6. Monthly: $263.67, $380.98, $555.23, $819.69, $1,234.46, $1,919.66, $3,154.95, $5,777.51, $13,967.87 (shown to the nearest $5). Put in = monthly × n: $142,383, $182,870, $233,197, $295,089, $370,338, $460,717, $567,891, $693,302, $838,072 (nearest $1,000). Picks: $380.98 × 12 ÷ 365 = $12.53 a day; $1,919.66 ÷ $380.98 = 5.04×. Verdict: each 10-year wait multiplies the monthly by 2.11 (20→30), 2.15, 2.22, 2.34, 2.55, 3.01, 4.43 (50→60): always more than double."
+}

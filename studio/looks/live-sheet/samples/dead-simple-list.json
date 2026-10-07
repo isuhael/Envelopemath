@@ -1,0 +1,38 @@
+{
+  "id": "dead-simple-list",
+  "sample": true,
+  "look": "live-sheet",
+  "format": "dead-simple-list",
+  "fps": 30,
+  "header": "4 dead simple numbers\nbefore you buy a **car**",
+  "footer": "ASSUMES a 4-year loan at 7% APR",
+  "captions": true,
+  "vo": [
+    { "t": 0.0, "d": 2.0, "text": "Make sixty grand? Times 0.35." },
+    { "t": 2.2, "d": 2.7, "text": "**$21,000**. That's the most car you can afford." },
+    { "t": 5.2, "d": 1.5, "text": "Put 20% down:" },
+    { "t": 6.8, "d": 2.6, "text": "**$4,200**. You borrow the rest." },
+    { "t": 10.2, "d": 1.7, "text": "Four years at 7%:" },
+    { "t": 12.0, "d": 2.6, "text": "about **$403** a month." },
+    { "t": 15.8, "d": 1.7, "text": "Your all-in car budget:" },
+    { "t": 17.6, "d": 3.2, "text": "a tenth of your monthly pay. **$500**." },
+    { "t": 21.6, "d": 3.4, "text": "The loan leaves about $97 for gas and insurance." }
+  ],
+  "verdict": { "t": 21.6, "text": "That leaves **≈ $97/mo** for gas + insurance" },
+  "data": {
+    "input": { "label": "Your pay", "value": "$60,000", "note": "a year, before tax" },
+    "typeDur": 0.6,
+    "items": [
+      { "t": 0.0, "label": "Max car price", "formula": "$60,000 × 0.35", "result": "$21,000", "tone": "good",
+        "note": "35% of a year's pay", "resultT": 2.2 },
+      { "t": 5.2, "label": "Cash down", "formula": "$21,000 × 0.20", "result": "$4,200", "tone": "neutral",
+        "note": "so you borrow **$16,800**", "resultT": 6.8 },
+      { "t": 10.2, "label": "Loan payment", "formula": "$16,800 × 0.024", "result": "≈ $403/mo", "tone": "neutral",
+        "note": "48 months at 7% APR", "resultT": 12.0 },
+      { "t": 15.8, "label": "All-in car budget", "formula": "$60,000 ÷ 12 × 0.10", "result": "$500/mo", "tone": "goal",
+        "note": "loan + gas + insurance", "resultT": 17.6 }
+    ],
+    "hold": 3.0
+  },
+  "notes": "Rules of thumb (35% of gross pay on the car; 20/4/10: 20% down, 4-year loan, total car costs ≤ 10% of gross monthly pay). 60,000 × 0.35 = 21,000. 21,000 × 0.20 = 4,200; 21,000 − 4,200 = 16,800 borrowed. Payment factor at 7% APR over 48 months = r / (1 − (1 + r)^−48) with r = 0.07/12 → 0.023946 ≈ 0.024; 16,800 × 0.024 = 403.20 → ≈ $403 (exact amortised payment $402.30). 60,000 ÷ 12 × 0.10 = 500. 500 − 403 = 97 → ≈ $97 (exact 97.70)."
+}

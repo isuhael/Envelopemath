@@ -1,0 +1,110 @@
+{
+  "id": "what-difference",
+  "sample": true,
+  "look": "live-sheet",
+  "format": "what-difference",
+  "fps": 30,
+  "header": "What difference does paying\n**weekly** make on a car loan?",
+  "footer": "ASSUMES interest charged daily, no fees",
+  "captions": true,
+  "vo": [
+    {
+      "t": 0.0,
+      "d": 2.1,
+      "text": "One **$30,000** loan, three ways."
+    },
+    {
+      "t": 2.2,
+      "d": 1.9,
+      "text": "Monthly: **$5,219** in interest."
+    },
+    {
+      "t": 4.2,
+      "d": 2.0,
+      "text": "Biweekly: half, every two weeks."
+    },
+    {
+      "t": 6.3,
+      "d": 1.7,
+      "text": "That's **$547** less."
+    },
+    {
+      "t": 8.2,
+      "d": 2.2,
+      "text": "Weekly? **$22** more."
+    },
+    {
+      "t": 10.6,
+      "d": 2.6,
+      "text": "Both are really **13 payments**."
+    }
+  ],
+  "verdict": {
+    "t": 13.4,
+    "text": "Go **biweekly**. Weekly adds just ≈ $22."
+  },
+  "data": {
+    "stake": {
+      "label": "Car loan",
+      "value": "$30,000",
+      "terms": "6.5% APR · 60 months"
+    },
+    "metrics": [
+      {
+        "key": "payoff",
+        "label": "Paid off in"
+      },
+      {
+        "key": "interest",
+        "label": "Interest"
+      }
+    ],
+    "options": [
+      {
+        "t": 0,
+        "name": "Monthly",
+        "detail": "$587 a month",
+        "values": {
+          "payoff": "60 months",
+          "interest": "$5,219"
+        }
+      },
+      {
+        "t": 4.6,
+        "name": "Biweekly",
+        "detail": "$293.50 every 2 wks",
+        "values": {
+          "payoff": "55 months",
+          "interest": "$4,671"
+        },
+        "delta": "−$547",
+        "tone": "good"
+      },
+      {
+        "t": 8.6,
+        "name": "Weekly",
+        "detail": "$146.75 a week",
+        "values": {
+          "payoff": "55 months",
+          "interest": "$4,650"
+        },
+        "delta": "−$569",
+        "tone": "good"
+      }
+    ],
+    "winner": 1,
+    "hold": 3.0
+  },
+  "lookOpts": {
+    "formulas": [
+      "= $587 × 12 = $7,044 a year",
+      "= $293.50 × 26 = $7,631 a year",
+      "= $146.75 × 52 = $7,631 a year"
+    ],
+    "lever": {
+      "t": 10.6,
+      "text": "$7,631 ÷ $587 = 13 payments"
+    }
+  },
+  "notes": "Simple interest accrued daily at 6.5%/365 on the balance; each payment covers accrued interest first, the rest pays principal. Monthly $587 (the 60-month payment on $30,000 at 6.5% is $586.98): 60 payments, interest $5,218.90 → $5,219. Biweekly $293.50 every 14 days: 119 payments, day 1,666 = 54.8 months (paid off in month 55), interest $4,671.47 → $4,671; saves 5,218.90 − 4,671.47 = $547.43 → −$547. Weekly $146.75 every 7 days: 237 payments, day 1,659 = 54.5 months (month 55), interest $4,649.86 → $4,650; saves $569.04 → −$569. Weekly vs biweekly: 4,671.47 − 4,649.86 = $21.61 → ≈ $22. Working: $587 × 12 = $7,044; $293.50 × 26 = $7,631; $146.75 × 52 = $7,631; $7,631 ÷ $587 = 13 exactly (one extra monthly payment a year). Biweekly gets 547.43 / 569.04 = 96% of weekly's saving with half as many payments, hence winner = biweekly."
+}

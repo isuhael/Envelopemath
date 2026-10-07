@@ -1,0 +1,49 @@
+{
+  "id": "sample-clean-sheet-find-your-row-2",
+  "sample": true,
+  "look": "clean-sheet",
+  "format": "find-your-row",
+  "fps": 30,
+  "header": "What your card balance\ncosts you __every year__",
+  "footer": "Assumes 24% APR and you only pay the interest; work at $20/hr, before tax",
+  "captions": false,
+  "vo": [
+    { "t": 0.0, "d": 2.6, "text": "Find your card balance." },
+    { "t": 4.2, "d": 2.9, "text": "Five grand? **$1,200** a year. Sixty hours of work." },
+    { "t": 7.4, "d": 2.6, "text": "Ten grand: three full work weeks." },
+    { "t": 10.3, "d": 2.6, "text": "Every $1,000 you owe costs about **$20 a month**." }
+  ],
+  "data": {
+    "columns": [
+      { "label": "Card balance" },
+      { "label": "Interest\na month" },
+      { "label": "Interest\na year", "emph": true, "tone": "bad" },
+      { "label": "Work hours\n÷ $20/hr" }
+    ],
+    "rows": [
+      ["$500", "≈ $10", "$120", "6 hrs"],
+      ["$1,000", "≈ $20", "$240", "12 hrs"],
+      ["$1,500", "≈ $30", "$360", "18 hrs"],
+      ["$2,000", "≈ $40", "$480", "24 hrs"],
+      ["$2,500", "≈ $50", "$600", "30 hrs"],
+      ["$3,000", "≈ $60", "$720", "36 hrs"],
+      ["$4,000", "≈ $80", "$960", "48 hrs"],
+      ["$5,000", "≈ $100", "$1,200", "60 hrs"],
+      ["$6,000", "≈ $120", "$1,440", "72 hrs"],
+      ["$7,500", "≈ $150", "$1,800", "90 hrs"],
+      ["$10,000", "≈ $200", "$2,400", "120 hrs"],
+      ["$12,500", "≈ $250", "$3,000", "150 hrs"],
+      ["$15,000", "≈ $300", "$3,600", "180 hrs"],
+      ["$20,000", "≈ $400", "$4,800", "240 hrs"]
+    ],
+    "formula": "= balance × 24% a year ≈ 2% a month",
+    "rowsT": 0.0,
+    "rowEvery": 0.25,
+    "pick": [
+      { "t": 4.2, "row": 7, "label": "≈ 1.5 full work weeks, every year" },
+      { "t": 7.4, "row": 10, "label": "3 full work weeks, every year" }
+    ],
+    "hold": 3.0
+  },
+  "notes": "Stress variant: 14 rows, 4 columns, long two-line labels, silent (no captions, no verdict: the benchmark's winning set-up, so the table may use the caption band), two picks, coral (bad) emphasised column. Maths: interest accrues daily at 24%/365 on a balance kept constant by paying only the interest, so a year costs exactly 24% ($5,000 → $1,200; $10,000 → $2,400); one billing cycle costs 24% × days/365 ≈ 2% (30 days: $98.63 on $5,000, 31 days: $101.92), hence the ≈ on the monthly column. Hours = yearly interest ÷ $20 ($1,200 ÷ 20 = 60 hrs = 1.5 × 40-hr weeks; $2,400 ÷ 20 = 120 hrs = 3 weeks). $1,000 × 2% = $20 a month."
+}

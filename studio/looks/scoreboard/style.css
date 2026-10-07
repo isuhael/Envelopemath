@@ -1,0 +1,120 @@
+/* Scoreboard look: shared classes used by lib.js. Formats add their own CSS through an exported `css` string. */
+
+/* Anton, re-declared from the same vendored files with tightened vertical metrics: Anton's own ascent/descent make
+   every text box 1.5em tall, so stacked Anton lines read as overlapping to the linter and line-height is hard to
+   control. With these overrides the content box hugs the caps (caps sit at 0.02-0.89em of a 1em line box). */
+@font-face {
+  font-family: 'Anton'; font-style: normal; font-weight: 400; font-display: block;
+  src: url(../../fonts/Anton-400-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+  ascent-override: 92%; descent-override: 14%; line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Anton'; font-style: normal; font-weight: 400; font-display: block;
+  src: url(../../fonts/Anton-400-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  ascent-override: 92%; descent-override: 14%; line-gap-override: 0%;
+}
+
+#stage { background: #000; color: #fff; font-family: 'Inter', 'Inter Full', sans-serif; }
+#stage > * { position: absolute; }
+
+/* Anton has no ≈ / →: render them in Inter Full ExtraBold, nudged to Anton's optical centre */
+.ax { font-family: 'Inter Full', sans-serif; font-weight: 800; font-size: 0.86em; position: relative; top: -0.12em; }
+.nb { white-space: nowrap; }
+
+/* ---------- frame ---------- */
+.sb-bg, .sb-bg > div { position: absolute; left: 0; width: 1080px; }
+.sb-bg { top: 0; height: 1920px; }
+.sb-bar { background: #000; }
+.sb-stage {
+  background-color: #0E1116;
+  background-image: linear-gradient(to right, #171C24 0 2px, transparent 2px), linear-gradient(to bottom, #171C24 0 2px, transparent 2px);
+  background-size: 60px 60px;
+  box-shadow: inset 0 2px 0 #1E2530, inset 0 -2px 0 #1E2530;
+}
+.sb-stage.nogrid { background-image: none; }
+
+.sb-brand { position: absolute; display: flex; align-items: center; gap: 18px; height: 46px; }
+.sb-brand-word { font: 700 22px/1 'Inter', 'Inter Full', sans-serif; letter-spacing: 0.2em; color: #9AA4B2; }
+
+/* ---------- header (the hook) ---------- */
+.sb-header { position: absolute; display: flex; flex-direction: column; justify-content: flex-end; }
+.sb-header-text {
+  font: 400 72px/1.04 'Anton', 'Inter Full', sans-serif; text-transform: uppercase; letter-spacing: 0.01em;
+  text-align: center; white-space: nowrap; color: #FFFFFF;
+}
+.sb-header-text.asis { text-transform: none; }
+.sb-header-text em, .sb-l2 em, .sb-verdict-text em, .sb-l1 em, .sb-tip em { font-style: normal; color: #2BFF88; }
+#stage u.mark2 { text-decoration: none; color: #FF4D5E; }
+
+/* ---------- footer (assumption line) ---------- */
+.sb-footer { position: absolute; font: 600 40px/1.2 'Inter', 'Inter Full', sans-serif; color: #9AA4B2; text-align: center; white-space: nowrap; }
+.sb-footer em { font-style: normal; color: #FFFFFF; }
+
+/* ---------- hero row + odometer ---------- */
+.sb-hero { position: absolute; transform-origin: 50% 55%; }
+/* the glow filter sits on a fixed-size box: its region never changes with the number's width (stale-filter safe) */
+.sb-hero-glow { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.sb-hero-icon { position: absolute; }
+.sb-odo { display: inline-flex; align-items: flex-start; height: 1em; font-family: 'Anton', 'Inter Full', sans-serif; font-weight: 400; line-height: 1; white-space: nowrap; }
+.sb-odo-col { display: inline-block; position: relative; width: 0.5em; height: 1em; overflow: hidden; text-align: center; }
+.sb-odo-strip { display: block; white-space: pre; line-height: 1em; }
+.sb-odo-sep, .sb-odo-fix { display: inline-block; height: 1em; line-height: 1; white-space: pre; }
+.sb-odo-sep { width: 0.22em; text-align: center; }
+.sb-odo .sp { display: inline-block; width: 0.13em; }
+.sb-glow { filter: drop-shadow(0 0 var(--glow, 16px) rgba(43, 255, 136, var(--glowA, 0.38))); }
+
+/* ---------- label stack (bottom bar) ---------- */
+.sb-labels { position: absolute; }
+.sb-label { position: absolute; left: 0; top: 0; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 6px; transform-origin: 50% 40%; }
+.sb-l1 { font: 400 62px/1.0 'Anton', 'Inter Full', sans-serif; white-space: nowrap; text-align: center; letter-spacing: 0.01em; }
+.sb-l1 .op { color: #9AA4B2; }
+.sb-l2 { width: 100%; font: 400 96px/1.0 'Anton', 'Inter Full', sans-serif; text-transform: uppercase; text-align: center; letter-spacing: 0.01em; text-wrap: balance; }
+
+/* ---------- captions ---------- */
+.sb-caps { position: absolute; display: flex; align-items: center; justify-content: center; }
+.sb-cap { width: 100%; text-align: center; font: 800 50px/1.14 'Inter Tight', 'Inter Full', sans-serif; letter-spacing: -0.01em; color: #FFFFFF; text-wrap: balance; }
+.sb-cap .w[data-on="0"] { color: #8A94A3; }
+.sb-cap .w.em[data-on="1"] { color: #2BFF88; }
+.sb-cap .w.m2[data-on="1"] { color: #FF4D5E; }
+
+/* ---------- verdict ---------- */
+.sb-verdict { position: absolute; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 20px; }
+.sb-verdict.boxed { background: #000; border-top: 2px solid #1E2530; }
+.sb-verdict-rule { width: 140px; height: 8px; border-radius: 4px; background: #2BFF88; transform-origin: 50% 50%; box-shadow: 0 0 18px rgba(43, 255, 136, 0.5); }
+.sb-verdict-text { width: 100%; font: 400 92px/1.02 'Anton', 'Inter Full', sans-serif; text-transform: uppercase; text-align: center; color: #FFFFFF; transform-origin: 50% 50%; text-wrap: balance; }
+
+/* ---------- unit stack + stage flash ---------- */
+.sb-stack { position: absolute; }
+.sb-flash { position: absolute; left: 0; width: 1080px; pointer-events: none; opacity: 0; background: radial-gradient(ellipse at 50% 100%, rgba(43, 255, 136, 0.55), rgba(43, 255, 136, 0.08) 60%, transparent 80%); }
+
+/* ---------- ladder pips ---------- */
+.sb-pips { position: absolute; }
+.sb-pips i { position: absolute; left: 0; display: block; height: 9px; border-radius: 5px; background: #232B36; transform-origin: 0 50%; }
+.sb-pips i.done { background: rgba(43, 255, 136, 0.42); }
+.sb-pips i.on { background: #2BFF88; box-shadow: 0 0 14px rgba(43, 255, 136, 0.8); }
+
+/* ---------- scoreboard panel ---------- */
+.sb-panel {
+  position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  background: #07090C; border-radius: 18px; --lit: 0;
+  border: 3px solid color-mix(in srgb, var(--tone) calc(var(--lit) * 100%), #232B36);
+  box-shadow: 0 0 calc(var(--lit) * 36px) color-mix(in srgb, var(--tone) 45%, transparent);
+}
+.sb-panel-label { font: 700 40px/1.1 'Inter', 'Inter Full', sans-serif; text-transform: uppercase; letter-spacing: 0.04em; color: #9AA4B2; white-space: nowrap; }
+.sb-panel-value { font-family: 'Anton', 'Inter Full', sans-serif; line-height: 1; white-space: nowrap; }
+.sb-panel-sub { font: 600 40px/1.15 'Inter', 'Inter Full', sans-serif; color: #FFFFFF; white-space: nowrap; }
+
+/* ---------- race chart ---------- */
+.sb-race { position: absolute; }
+.sb-race-svg { position: absolute; left: 0; top: 0; overflow: visible; }
+.sb-axis { position: absolute; font: 600 30px/1 'Inter', 'Inter Full', sans-serif; color: #6B7584; white-space: nowrap; }
+.sb-axis-y { left: -6px; }
+.sb-axis-x { transform: translateX(-50%); }
+.sb-tip { position: absolute; display: flex; gap: 14px; align-items: baseline; font: 400 48px/1.1 'Anton', 'Inter Full', sans-serif; text-transform: uppercase; white-space: nowrap; text-shadow: 0 2px 12px #0E1116, 0 0 4px #0E1116; }
+.sb-race-flag { position: absolute; top: -50px; font: 700 40px/1.1 'Inter', 'Inter Full', sans-serif; text-transform: uppercase; white-space: nowrap; }
+.sb-race-year { position: absolute; left: 0; top: 0; font: 400 120px/1 'Anton', 'Inter Full', sans-serif; color: rgba(255, 255, 255, 0.92); }
+
+/* ---------- stub ---------- */
+.sb-todo { position: absolute; left: 140px; width: 800px; text-align: center; font: 400 96px/1.1 'Anton', 'Inter Full', sans-serif; color: #6B7584; }

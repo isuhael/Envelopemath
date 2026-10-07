@@ -1,0 +1,44 @@
+/* becker-rig: shared styles. Tokens live in theme.js; the values below mirror them (keep in sync). */
+#stage {
+  background-color: #F7F8FA;
+  background-image: radial-gradient(120% 60% at 50% 100%, #DFE3E9 0%, #F7F8FA 55%);
+  color: #111418;
+  font-family: 'Inter Tight', 'Inter Full', sans-serif;
+}
+#stage em { font-style: normal; color: #0A9254; }
+#stage u.mark2 { text-decoration: none; color: #E5484D; }
+
+/* ---------- world (camera-moved) ---------- */
+.br-world { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; transform-origin: 0 0; }
+.br-viewport { position: absolute; left: 0; width: 1080px; overflow: hidden; }
+.br-svg { position: absolute; left: 0; top: 0; overflow: visible; }
+.br-html { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+.br-flash { position: absolute; left: -200px; top: -200px; width: 1480px; height: 2320px; background: #fff; opacity: 0; pointer-events: none; }
+.br-num { position: absolute; left: 0; top: 0; white-space: nowrap; transform-origin: 0 0; line-height: 1; will-change: transform; }
+
+/* ---------- chrome ---------- */
+.br-brand { position: absolute; left: 70px; top: 120px; display: flex; gap: 14px; align-items: center;
+  font: 800 30px/1 'Inter Tight', 'Inter Full', sans-serif; letter-spacing: .5px; color: #5B6470; }
+.br-brand b { width: 46px; height: 46px; border-radius: 50%; background: #12B76A; color: #fff; display: grid; place-items: center;
+  font: 800 32px/1 'Inter Full', sans-serif; padding-bottom: 3px; }
+.br-header { position: absolute; left: 60px; top: 248px; width: 960px;
+  font: 900 84px/1.02 'Inter Tight', 'Inter Full', sans-serif; letter-spacing: -0.025em; color: #111418; }
+.br-footer { position: absolute; left: 62px; top: 452px; width: 878px;
+  font: 700 40px/1.25 'JetBrains Mono', 'Inter Full', monospace; letter-spacing: -0.02em; color: #5B6470; }
+.br-footer em { color: #0A9254; }
+.br-caps { position: absolute; left: 70px; width: 860px; height: 160px; display: flex; align-items: center; justify-content: center; }
+.br-cap { width: 860px; text-align: center; font: 800 54px/1.12 'Inter Tight', 'Inter Full', sans-serif; letter-spacing: -0.015em; color: #3A414B; }
+.br-cap .w { display: inline-block; }
+.br-cap .w.em { color: #0A9254; }
+.br-cap .w.mark2 { color: #E5484D; }
+.br-verdict { position: absolute; left: 70px; width: 860px; text-align: center;
+  font: 900 64px/1.08 'Inter Tight', 'Inter Full', sans-serif; letter-spacing: -0.025em; color: #111418; transform-origin: 50% 50%; }
+.br-vsw { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+
+/* ---------- props ---------- */
+.br-coin-t { font-family: 'JetBrains Mono', 'Inter Full', monospace; font-weight: 800; fill: #111418; }
+.br-coin-s { font-family: 'Inter Tight', 'Inter Full', sans-serif; font-weight: 800; fill: #111418; letter-spacing: .02em; }
+.br-gate-t { font-family: 'JetBrains Mono', 'Inter Full', monospace; font-weight: 800; fill: #12B76A; }
+.br-todo { font: 900 64px/1 'Inter Tight', 'Inter Full', sans-serif; color: #111418; padding: 26px 34px; border: 8px solid #111418; border-radius: 18px; background: #fff; }
+
+#br-probe { position: absolute; left: -9999px; top: -9999px; white-space: nowrap; visibility: hidden; }

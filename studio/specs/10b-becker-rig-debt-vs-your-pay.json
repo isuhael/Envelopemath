@@ -1,0 +1,65 @@
+{
+  "id": "10b-becker-rig-debt-vs-your-pay",
+  "look": "becker-rig",
+  "format": "cost-counter",
+  "fps": 30,
+  "duration": 37.5,
+  "header": "Which is bigger: a year of\nyour pay, or **1 second**\nof new US debt?",
+  "footer": "FY2026: debt +$2.46T ÷ 31,536,000 s\nPay: BLS median $1,251 a week × 52",
+  "captions": true,
+  "vo": [
+    { "t": 0.0,  "d": 2.4, "text": "A year's pay? **Under 1 second.**" },
+    { "t": 2.5,  "d": 2.4, "text": "That's new US debt, live." },
+    { "t": 5.0,  "d": 2.8, "text": "A median new house: ≈ 5 seconds." },
+    { "t": 8.0,  "d": 2.4, "text": "**≈ $78,000** a second." },
+    { "t": 12.8, "d": 2.4, "text": "$1 million: ≈ 13 seconds." },
+    { "t": 15.5, "d": 2.4, "text": "Now 40 years of median pay." },
+    { "t": 18.1, "d": 4.7, "text": "40 × $65,052 ≈ **$2.6 million**." },
+    { "t": 23.0, "d": 2.0, "text": "That's a whole working life." },
+    { "t": 25.3, "d": 5.1, "text": "The debt grew $2.46 trillion in fiscal 2026." },
+    { "t": 33.4, "d": 2.4, "text": "A working life: **≈ 33 seconds.**" }
+  ],
+  "verdict": { "t": 33.4, "text": "40 years of pay:\n**≈ 33 seconds** of new debt." },
+  "data": {
+    "label": "New US debt since you hit play",
+    "perSecond": 78006.09,
+    "rateDisplay": "≈ $78,000 every second",
+    "counterT": [0.0, 33.4],
+    "startValue": 0,
+    "prefix": "$",
+    "dp": 0,
+    "milestones": [
+      { "value": 65052, "label": "A year of median pay: $65,052" },
+      { "value": 393700, "label": "A median new house: $393,700" },
+      { "value": 1000000, "label": "$1 million" },
+      { "value": 2602080, "label": "40 years of median pay: $2,602,080" }
+    ],
+    "final": "≈ $2,605,403",
+    "hold": 4.1
+  },
+  "lookOpts": {
+    "stage": "white",
+    "surface": "debt-clock",
+    "surfaceLabel": "New US debt since you hit play",
+    "opener": { "t": 0.0, "pose": "lift", "prop": "block", "text": "$65,052", "sub": "1 year of median pay" },
+    "actions": [
+      { "milestone": 0, "verb": "swallow", "becomes": "the counter slurps the pay block out of his hands; he stares at his empty hands" },
+      { "milestone": 1, "verb": "push", "becomes": "he shoves a house into the counter's slot; it goes down in one gulp" },
+      { "milestone": 2, "verb": "shocked", "becomes": "the counter turns orange and its last digits blur" },
+      { "milestone": 3, "verb": "flattened", "becomes": "white-hot, it cracks and bursts; the 40-year block drops on him" }
+    ],
+    "carry": { "t": 15.5, "text": "40 years × $65,052", "sub": "≈ $2.6 million" },
+    "heat": [
+      { "t": 0.0, "state": "cool" },
+      { "t": 12.8, "state": "orange" },
+      { "t": 25.3, "state": "white" },
+      { "t": 33.4, "state": "burst" }
+    ],
+    "gag": { "t": 33.4, "text": "≈ 33 seconds" }
+  },
+  "sfx": [
+    { "t": 12.8, "kind": "buzz", "gain": 0.35 },
+    { "t": 30.4, "kind": "riser", "dur": 3.0 },
+    { "t": 33.4, "kind": "hit" }
+  ]
+}

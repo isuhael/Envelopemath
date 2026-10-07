@@ -1,0 +1,212 @@
+{
+  "id": "06a-scoreboard-first-iphone-apple",
+  "look": "scoreboard",
+  "format": "pov-race",
+  "fps": 30,
+  "duration": 26.5,
+  "header": "POV: YOU INVESTED IN APPLE\nINSTEAD OF PAYING **$499**\nFOR THE FIRST IPHONE",
+  "footer": "Bought at the 6/29/2007 close · dividends reinvested · valued 12/31/2025",
+  "captions": true,
+  "vo": [
+    {
+      "t": 0.0,
+      "d": 1.7,
+      "text": "First iPhone, 2007: $499."
+    },
+    {
+      "t": 1.8,
+      "d": 1.95,
+      "text": "You buy Apple stock instead."
+    },
+    {
+      "t": 3.8,
+      "d": 2.0,
+      "text": "2008 drops it below $499."
+    },
+    {
+      "t": 6.0,
+      "d": 3.2,
+      "text": "You never add a cent. You just hold."
+    },
+    {
+      "t": 9.6,
+      "d": 3.2,
+      "text": "The phone gets old. The shares keep compounding."
+    },
+    {
+      "t": 14.6,
+      "d": 1.8,
+      "text": "2020: it passes $10,000."
+    },
+    {
+      "t": 17.2,
+      "d": 2.0,
+      "text": "2022 knocks off a quarter."
+    },
+    {
+      "t": 19.6,
+      "d": 2.0,
+      "text": "End of 2025: about $37,000."
+    },
+    {
+      "t": 21.9,
+      "d": 3.2,
+      "text": "About 74 times. One doubling every 3 years."
+    }
+  ],
+  "verdict": {
+    "t": 21.9,
+    "text": "**≈ 74×** your $499.\nOne doubling every **≈ 3 years**."
+  },
+  "data": {
+    "spend": {
+      "label": "Spent on the iPhone",
+      "points": [
+        [
+          2007.49,
+          499.0
+        ],
+        [
+          2025.99,
+          499.0
+        ]
+      ],
+      "final": "$499 spent",
+      "item": "phone"
+    },
+    "own": {
+      "label": "Same $499 in Apple stock",
+      "points": [
+        [
+          2007.49,
+          499.0
+        ],
+        [
+          2007.99,
+          807.13
+        ],
+        [
+          2008.99,
+          347.46
+        ],
+        [
+          2009.99,
+          859.85
+        ],
+        [
+          2010.99,
+          1315.47
+        ],
+        [
+          2011.99,
+          1650.75
+        ],
+        [
+          2012.99,
+          2189.6
+        ],
+        [
+          2013.99,
+          2365.48
+        ],
+        [
+          2014.99,
+          3326.67
+        ],
+        [
+          2015.99,
+          3227.14
+        ],
+        [
+          2016.99,
+          3629.34
+        ],
+        [
+          2017.99,
+          5388.11
+        ],
+        [
+          2018.99,
+          5097.71
+        ],
+        [
+          2019.99,
+          9633.7
+        ],
+        [
+          2020.99,
+          17563.16
+        ],
+        [
+          2021.99,
+          23647.96
+        ],
+        [
+          2022.99,
+          17403.65
+        ],
+        [
+          2023.99,
+          25933.0
+        ],
+        [
+          2024.99,
+          33896.55
+        ],
+        [
+          2025.99,
+          36964.17
+        ]
+      ],
+      "final": "≈ $37,000"
+    },
+    "purchases": [
+      {
+        "x": 2007.49,
+        "label": "iPhone 4GB",
+        "price": "$499"
+      }
+    ],
+    "x": {
+      "from": 2007,
+      "to": 2025.99,
+      "tickEvery": 3
+    },
+    "y": {
+      "prefix": "$",
+      "dp": 0
+    },
+    "raceT": [
+      2.4,
+      21.4
+    ],
+    "hold": 5.1
+  },
+  "lookOpts": {
+    "stage": "race",
+    "footerSteps": [
+      {
+        "t": 21.4,
+        "text": "$499 × 74.1 ≈ $37,000"
+      }
+    ]
+  },
+  "sfx": [
+    {
+      "t": 2.89,
+      "kind": "pop"
+    },
+    {
+      "t": 4.39,
+      "kind": "thud"
+    },
+    {
+      "t": 15.44,
+      "kind": "ding"
+    },
+    {
+      "t": 21.4,
+      "kind": "cash"
+    }
+  ]
+}

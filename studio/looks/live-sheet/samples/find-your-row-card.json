@@ -1,0 +1,83 @@
+{
+  "id": "find-your-row-card",
+  "sample": true,
+  "look": "live-sheet",
+  "format": "find-your-row",
+  "fps": 30,
+  "header": "**$5,000** on a card at __22% APR__:\nhow long to pay it off?",
+  "footer": "ASSUMES no new charges, interest monthly",
+  "captions": false,
+  "vo": [
+    {
+      "t": 0.0,
+      "d": 1.8,
+      "text": "Find what you can pay."
+    }
+  ],
+  "verdict": {
+    "t": 4.6,
+    "text": "**$25 more** a month saves __over $4,500__"
+  },
+  "data": {
+    "columns": [
+      {
+        "label": "Pay a month"
+      },
+      {
+        "label": "Debt-free in"
+      },
+      {
+        "label": "Interest paid",
+        "emph": true,
+        "tone": "bad"
+      }
+    ],
+    "rows": [
+      [
+        "$100",
+        "11 yrs 5 mo",
+        "≈ $8,680"
+      ],
+      [
+        "$125",
+        "6 yrs 1 mo",
+        "≈ $4,090"
+      ],
+      [
+        "$150",
+        "4 yrs 4 mo",
+        "≈ $2,800"
+      ],
+      [
+        "$200",
+        "2 yrs 10 mo",
+        "≈ $1,750"
+      ],
+      [
+        "$250",
+        "2 yrs 2 mo",
+        "≈ $1,290"
+      ],
+      [
+        "$300",
+        "1 yr 9 mo",
+        "≈ $1,020"
+      ],
+      [
+        "$400",
+        "1 yr 3 mo",
+        "≈ $730"
+      ],
+      [
+        "$500",
+        "12 months",
+        "≈ $570"
+      ]
+    ],
+    "formula": "= balance × 1.0183 − payment",
+    "rowsT": 0.3,
+    "rowEvery": 0.35,
+    "hold": 4.0
+  },
+  "notes": "Balance $5,000, 22% APR compounded monthly (1.8333% a month), interest added then the payment, no new charges. Months / total interest: $100 → 137 mo, $8,678; $125 → 73 mo, $4,095; $150 → 52, $2,798; $200 → 34, $1,750; $250 → 26, $1,286; $300 → 21, $1,022; $400 → 15, $732; $500 → 12, $574. Interest rounded to the nearest $10. $100 → $125 saves $4,583.52 (over $4,500)."
+}

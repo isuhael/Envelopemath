@@ -1,0 +1,157 @@
+/* Live Sheet: a designed spreadsheet on near-black, one yellow accent. Tokens live in theme.js; the values
+   here mirror them (keep both in step). Nothing animates in CSS: every state is set by seek(t). */
+#stage {
+  background: #0D0E11;
+  color: #FFFFFF;
+  font-family: 'Inter', 'Inter Full', sans-serif;
+  font-feature-settings: 'tnum' 1, 'cv11' 1;
+}
+#stage em { font-style: normal; }
+#stage u.mark2 { text-decoration: none; }
+.ls-layer { position: absolute; inset: 0; }
+
+/* ---------- brand mark (decoration zone) ---------- */
+.ls-brand {
+  position: absolute; left: 60px; top: 150px; height: 40px;
+  display: flex; align-items: center; gap: 16px;
+  font: 600 32px 'Inter', 'Inter Full', sans-serif; color: #98A2B3; letter-spacing: -0.005em;
+}
+.ls-brand svg { display: block; flex: none; }
+
+/* ---------- the yellow question card (header band) ---------- */
+.ls-banner {
+  position: absolute; left: 60px; top: 240px; width: 900px; height: 176px;
+  background: #FFD60A; border-radius: 26px;
+  display: flex; align-items: center; justify-content: center;
+}
+.ls-btext {
+  font: 900 64px/1.08 'Inter', 'Inter Full', sans-serif; color: #0D0E11;
+  text-align: center; white-space: nowrap; letter-spacing: -0.018em; text-wrap: balance;
+}
+.ls-btext em {
+  background: #0D0E11; color: #FFD60A; border-radius: 0.16em; padding: 0 0.13em;
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+.ls-btext u.mark2 { color: #B42318; }
+
+/* ---------- assumption line ---------- */
+.ls-footer {
+  position: absolute; font: 600 40px/1.25 'Inter', 'Inter Full', sans-serif; color: #98A2B3;
+  white-space: nowrap; letter-spacing: -0.005em; text-wrap: balance;
+}
+.ls-footer em { color: #FFFFFF; font-weight: 700; }
+.ls-footer u.mark2 { color: #FF6B5B; }
+
+/* ---------- captions ---------- */
+.ls-cap { position: absolute; display: flex; align-items: center; justify-content: center; }
+.ls-capline {
+  font: 800 68px/1.05 'Inter', 'Inter Full', sans-serif; color: #FFFFFF; text-transform: uppercase;
+  white-space: nowrap; text-align: center; letter-spacing: -0.012em; transform-origin: 50% 60%;
+}
+.ls-capline em { color: #FFD60A; }
+.ls-capline u.mark2 { color: #FF6B5B; }
+
+/* ---------- the ≈ chip (formula bar, verdict) ---------- */
+.ls-chip {
+  position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+  width: 66px; height: 56px; border-radius: 14px; background: #FFD60A; color: #0D0E11;
+  display: flex; align-items: center; justify-content: center;
+  font: 900 44px/1 'Inter Full', 'Inter', sans-serif;
+}
+
+/* ---------- formula bar ---------- */
+.ls-fbar { position: absolute; background: #F4F5F7; border-bottom: 2px solid #E4E7EC; }
+.ls-fbar.standalone { border-radius: 26px; border-bottom: 0; }
+.ls-fline {
+  position: absolute; left: 102px; top: 50%; transform: translateY(-50%);
+  font: 700 42px/1.2 'JetBrains Mono', 'Inter Full', monospace; color: #344054;
+  white-space: nowrap; letter-spacing: -0.01em;
+}
+.ls-fline em { background: #FFD60A; color: #101828; border-radius: 6px; padding: 0 0.12em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.ls-fline u.mark2 { color: #D92D20; }
+.ls-caret { display: inline-block; width: 4px; height: 1.02em; margin-left: 4px; background: #2E90FA; vertical-align: -0.17em; border-radius: 1px; }
+
+/* ---------- sheet card ---------- */
+.ls-card { position: absolute; background: #FFFFFF; border-radius: 26px; overflow: hidden; }
+.ls-letters {
+  position: absolute; left: 0; right: 0; background: #F2F4F7; border-bottom: 2px solid #E4E7EC;
+  font: 600 30px/1 'Inter', 'Inter Full', sans-serif; color: #7B8496;
+}
+.ls-letters b { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; justify-content: center; font-weight: 600; border-left: 2px solid #E4E7EC; background: #F2F4F7; }
+.ls-corner { position: absolute; left: 0; top: 0; bottom: 0; }
+.ls-heads { position: absolute; left: 0; right: 0; border-bottom: 3px solid #D0D5DD; }
+.ls-rn {
+  position: absolute; left: 0; top: 0; display: flex; align-items: center; justify-content: center;
+  background: #F2F4F7; color: #7B8496; border-right: 2px solid #E4E7EC;
+  font: 600 30px/1 'Inter', 'Inter Full', sans-serif;
+}
+.ls-hcell {
+  position: absolute; top: 0; padding: 0 22px; display: flex; flex-direction: column; justify-content: center;
+  border-left: 2px solid #E4E7EC; background: #F2F4F7;
+}
+.ls-hcell:nth-child(2) { border-left: 0; }
+.ls-hcell.input { background: #D1FADF; }
+.ls-hcell.output { background: #FFE4C2; }
+.ls-hl { font: 800 42px/1.1 'Inter', 'Inter Full', sans-serif; color: #101828; white-space: nowrap; letter-spacing: -0.012em; text-wrap: balance; }
+.ls-hsub { font: 600 40px/1.1 'Inter', 'Inter Full', sans-serif; color: #667085; white-space: nowrap; letter-spacing: -0.01em; text-wrap: balance; }
+.ls-hl em, .ls-hsub em { color: #101828; background: #FFD60A; border-radius: 6px; padding: 0 0.1em; }
+
+.ls-body { position: absolute; left: 0; right: 0; overflow: hidden; }
+.ls-row { position: absolute; left: 0; right: 0; background: #FFFFFF; border-bottom: 2px solid #E4E7EC; }
+.ls-cell {
+  position: absolute; top: 0; display: flex; align-items: center; padding: 0 22px;
+  border-left: 2px solid #E4E7EC; font-weight: 800; color: #101828; white-space: nowrap; letter-spacing: -0.01em;
+  font-family: 'Inter', 'Inter Full', sans-serif; line-height: 1;
+}
+.ls-row .ls-rn + .ls-cell { border-left: 0; }
+.ls-cell.right { justify-content: flex-end; }
+.ls-cell.left { justify-content: flex-start; }
+.ls-cell.mid { font-weight: 700; color: #344054; }
+.ls-cell.output { color: #058A4F; }
+.ls-v { display: inline-block; transform-origin: 100% 55%; }
+.ls-cell.left .ls-v { transform-origin: 0 55%; }
+.ls-v em { color: inherit; background: #FFD60A; border-radius: 6px; padding: 0 0.08em; }
+
+/* selection: range outline + fill handle */
+.ls-sel { position: absolute; border: 4px solid #2E90FA; background: rgba(46, 144, 250, 0.07); opacity: 0; z-index: 5; border-radius: 3px; }
+.ls-handle { position: absolute; right: -9px; bottom: -9px; width: 16px; height: 16px; background: #2E90FA; border: 3px solid #FFFFFF; border-radius: 2px; }
+.ls-over { position: absolute; inset: 0; z-index: 4; }
+
+/* tooltip strip (picks) */
+.ls-tip { position: absolute; background: #101828; border-radius: 16px; opacity: 0; }
+.ls-slot { position: absolute; left: 0; top: 0; height: 0; opacity: 0; border-bottom: 2px solid #E4E7EC; }
+.ls-tipclip { position: absolute; inset: 0; overflow: hidden; border-radius: 16px; display: flex; align-items: center; padding: 0 26px; }
+.ls-tiptxt { font: 800 42px/1.2 'Inter', 'Inter Full', sans-serif; color: #FFFFFF; white-space: nowrap; letter-spacing: -0.01em; }
+.ls-tiptxt em { color: #FFD60A; }
+.ls-tiptxt u.mark2 { color: #FF6B5B; }
+.ls-notch { position: absolute; top: -9px; width: 22px; height: 22px; background: #101828; transform: rotate(45deg); border-radius: 3px; }
+
+/* ---------- verdict card ---------- */
+.ls-verdict {
+  position: absolute; background: #FFFFFF; border-radius: 22px; padding: 16px 26px 16px 104px;
+  min-height: 96px; display: flex; align-items: center; transform-origin: 50% 50%; opacity: 0;
+}
+.ls-vchip { left: 20px; width: 64px; height: 64px; }
+.ls-vtext { font: 800 56px/1.14 'Inter', 'Inter Full', sans-serif; color: #101828; letter-spacing: -0.015em; text-wrap: balance; }
+.ls-vtext em {
+  background-image: linear-gradient(#FFD60A, #FFD60A); background-repeat: no-repeat; background-size: var(--hl, 100%) 100%;
+  border-radius: 8px; padding: 0 0.1em; -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+.ls-vtext u.mark2 { color: #D92D20; }
+
+/* ---------- chart ---------- */
+.ls-chart { position: absolute; }
+.ls-chart.sheet { background: #FFFFFF; border-radius: 26px; }
+.ls-chartsvg { position: absolute; left: 0; top: 0; overflow: visible; }
+.ls-axis { position: absolute; font: 600 32px/1 'Inter', 'Inter Full', sans-serif; color: #7B8496; white-space: nowrap; }
+.ls-axis.y { left: 0; text-align: right; transform: translateY(-50%); }
+.ls-axis.x { transform: translateX(-50%); }
+.ls-chart.dark .ls-axis { color: #7A8394; }
+
+/* ---------- big single cell ---------- */
+.ls-bigcell { padding: 0 36px; }
+.ls-bigv { display: inline-block; font: 900 150px/1 'Inter', 'Inter Full', sans-serif; letter-spacing: -0.02em; color: #101828; transform-origin: 100% 55%; }
+
+/* ---------- placeholder ---------- */
+.ls-stub { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; font: 800 64px/1.2 'Inter', 'Inter Full', sans-serif; color: #101828; }
+.ls-stub small { font: 600 40px 'Inter', 'Inter Full', sans-serif; color: #667085; }

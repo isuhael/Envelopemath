@@ -1,0 +1,32 @@
+{
+  "id": "sample-clean-sheet-split-sheet",
+  "sample": true,
+  "look": "clean-sheet",
+  "format": "split-sheet",
+  "fps": 30,
+  "header": "Split a $4,000 paycheck\n**50/30/20** in your head",
+  "footer": "Assumes $4,000 a month take-home pay, after tax",
+  "captions": true,
+  "vo": [
+    { "t": 0.0, "d": 1.4, "text": "Ten percent is **$400**." },
+    { "t": 1.5, "d": 1.9, "text": "Needs get five: **$2,000**." },
+    { "t": 3.7, "d": 1.6, "text": "Rent, food, bills." },
+    { "t": 5.6, "d": 2.0, "text": "Wants get three: **$1,200**." },
+    { "t": 7.8, "d": 1.5, "text": "That's your fun money." },
+    { "t": 9.6, "d": 2.0, "text": "Savings get two: **$800**." },
+    { "t": 12.0, "d": 3.0, "text": "Check: two thousand, twelve hundred, eight hundred. Four grand." },
+    { "t": 15.4, "d": 2.8, "text": "Any paycheck: find ten percent, then five, three, two." }
+  ],
+  "verdict": { "t": 15.4, "text": "Any paycheck: find 10%,\nthen **× 5, × 3, × 2**." },
+  "data": {
+    "total": { "label": "Take-home pay", "display": "$4,000", "value": 4000, "note": "10% = $400" },
+    "parts": [
+      { "t": 2.6, "label": "Needs", "pct": "50%", "amount": "$2,000", "note": "rent, food, bills", "formula": "5 × $400", "tone": "neutral", "share": 0.5 },
+      { "t": 6.6, "label": "Wants", "pct": "30%", "amount": "$1,200", "note": "eating out, trips, fun", "formula": "3 × $400", "tone": "neutral", "share": 0.3 },
+      { "t": 10.6, "label": "Savings", "pct": "20%", "amount": "$800", "note": "invest it, pay off debt", "formula": "2 × $400", "tone": "good", "share": 0.2 }
+    ],
+    "check": "$2,000 + $1,200 + $800 = $4,000",
+    "checkT": 12.2,
+    "hold": 2.5
+  }
+}

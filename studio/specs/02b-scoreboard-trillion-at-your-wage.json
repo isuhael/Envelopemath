@@ -1,0 +1,46 @@
+{
+  "id": "02b-scoreboard-trillion-at-your-wage",
+  "look": "scoreboard",
+  "format": "find-your-row",
+  "fps": 30,
+  "duration": 14.0,
+  "header": "$1 TRILLION\nAT YOUR **HOURLY WAGE**",
+  "footer": "2,080 hrs a year (40 × 52) · every cent kept · no raises or interest",
+  "captions": true,
+  "vo": [
+    { "t": 0.0, "d": 3.6, "text": "Federal minimum wage: **≈ 66.3 million years**." },
+    { "t": 3.8, "d": 2.9, "text": "You'd start when the dinosaurs died out." },
+    { "t": 7.0, "d": 4.8, "text": "Even **$1,000 an hour**? Longer than our species has existed." }
+  ],
+  "verdict": { "t": 9.3, "text": "Even **$1,000/hr**: longer than our species has existed." },
+  "data": {
+    "columns": [
+      { "label": "Your wage" },
+      { "label": "Years to earn\n$1 trillion", "emph": true }
+    ],
+    "rows": [
+      ["$7.25/hr", "≈ 66.3 million"],
+      ["$10/hr", "≈ 48.1 million"],
+      ["$15/hr", "≈ 32.1 million"],
+      ["$20/hr", "≈ 24.0 million"],
+      ["$25/hr", "≈ 19.2 million"],
+      ["$30/hr", "≈ 16.0 million"],
+      ["$40/hr", "≈ 12.0 million"],
+      ["$50/hr", "≈ 9.6 million"],
+      ["$75/hr", "≈ 6.4 million"],
+      ["$100/hr", "≈ 4.8 million"],
+      ["$250/hr", "≈ 1.9 million"],
+      ["$500/hr", "≈ 962,000"],
+      ["$1,000/hr", "≈ 481,000"]
+    ],
+    "formula": "= $1,000,000,000,000 ÷ (wage × 2,080)",
+    "rowsT": 0.0,
+    "rowEvery": 0.35,
+    "pick": [
+      { "t": 3.8, "row": 0, "label": "≈ when the dinosaurs died out" },
+      { "t": 7.0, "row": 12, "label": "Our species: ≈ 300,000 years" }
+    ],
+    "hold": 7.0
+  },
+  "sfx": [ { "t": 9.3, "kind": "ding" } ]
+}

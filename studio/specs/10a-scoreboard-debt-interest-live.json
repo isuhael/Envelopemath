@@ -1,0 +1,53 @@
+{
+  "id": "10a-scoreboard-debt-interest-live",
+  "look": "scoreboard",
+  "format": "cost-counter",
+  "fps": 30,
+  "duration": 36.5,
+  "header": "US debt interest,\nsince you hit **play**",
+  "footer": "FY2025 net interest $970B ÷ 31,536,000 s",
+  "captions": true,
+  "vo": [
+    { "t": 0.0,  "d": 2.0, "text": "US debt interest. Live." },
+    { "t": 2.1,  "d": 2.8, "text": "There goes a year of median pay." },
+    { "t": 5.1,  "d": 3.1, "text": "**≈ $30,800** a second." },
+    { "t": 8.3,  "d": 4.3, "text": "Divide your pay by 30,800. That's your seconds." },
+    { "t": 12.8, "d": 2.0, "text": "A median new house. Gone." },
+    { "t": 15.2, "d": 3.5, "text": "That's **≈ $111 million** an hour." },
+    { "t": 21.1, "d": 2.0, "text": "10 years of median pay." },
+    { "t": 23.4, "d": 3.9, "text": "None of it pays the debt down. It's just interest." },
+    { "t": 27.6, "d": 4.7, "text": "At fiscal 2025's rate: $970 billion a year." },
+    { "t": 32.5, "d": 2.8, "text": "**$1 million.** In ≈ 33 seconds." }
+  ],
+  "verdict": { "t": 32.5, "text": "**$1 million** in ≈ 33 seconds.\nJust the interest." },
+  "data": {
+    "label": "Net interest on the US debt, since you hit play",
+    "perSecond": 30758.5,
+    "rateDisplay": "≈ $30,800 every second",
+    "counterT": [0.0, 32.6],
+    "startValue": 0,
+    "prefix": "$",
+    "dp": 0,
+    "milestones": [
+      { "value": 65052, "label": "A year of median pay: $65,052" },
+      { "value": 393700, "label": "A median new house: $393,700" },
+      { "value": 650520, "label": "10 years of median pay: $650,520" },
+      { "value": 1000000, "label": "$1 million" }
+    ],
+    "final": "≈ $1,002,727",
+    "hold": 3.9
+  },
+  "lookOpts": {
+    "intro": { "l1": "≈ $30,800", "l2": "every second" },
+    "labels": [
+      { "l1": "$1,251 × 52 = $65,052", "l2": "A year of median pay" },
+      { "l1": "$393,700", "l2": "A median new house" },
+      { "l1": "$65,052 × 10 = $650,520", "l2": "10 years of median pay" },
+      { "l1": "$1,000,000", "l2": "$1 million" }
+    ],
+    "rateSteps": [ { "t": 15.2, "l1": "≈ $30,800 × 3,600 s", "l2": "≈ $111 million an hour" } ],
+    "pips": true,
+    "heroIcon": false
+  },
+  "sfx": [ { "t": 32.5, "kind": "cash" } ]
+}

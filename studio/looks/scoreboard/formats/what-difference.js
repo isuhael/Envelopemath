@@ -1,0 +1,557 @@
+// Scoreboard: what-difference — "What difference does X make?" (P5).
+//
+// One fixed debt (or pot of money) handled 2-4 ways, played as a scoreboard:
+//   - the stage holds a leaderboard: one row per option, all named from frame 1 with "?" in the score slots, so the
+//     viewer can guess before the maths arrives (the research's "summary grid at 0.0 s, then walked")
+//   - each option is a hard cut: the label stack slams in (line 1: the payment in green, line 2: the option's name),
+//     the row lights and a pointer jumps to it
+//   - the row's time bar then races left to right at one shared speed and scale (a shorter bar is a sooner payoff),
+//     the payoff rides the bar's end on a rolling odometer, and the hero odometer in the top bar rolls the money
+//     metric (interest) up from zero on the same clock. All three stop together: bump, glow flare, a ding, and the
+//     money value is posted into the row
+//   - the option's delta then slams into the label stack ("≈ $487 LESS") in the option's tone
+//   - at verdict.t the winning row flashes neon (its bar turns solid green), the others dim, and the hero cuts to
+//     the winner's value
+// Frame 1 (first option at t ≥ 0.5 s): the stake in the hero ("$28,000"), its terms + label in the label stack,
+// every option named on the board. First option before 0.5 s: frame 1 is already 0.45 s into the first race.
+//
+// Layout: with captions on, the stage runs to y 1140 (1160 for 4+ options) so the board gets taller rows; the label
+// stack and the verdict share the slot left above the caption band (the verdict is drawn here, not by the chrome).
+// Rows are two lines (name + money on top, time bar below) when there is room (≥ 90 px a row); otherwise one line
+// (name, payoff, money) over a full-row time fill. A metric that can't be a bar (dates, words) is posted, not rolled.
+//
+// data (FORMATS.md §3): { stake: { label, value, terms }, metrics: [{ key, label }], options: [{ t, name, detail,
+//   values: { [key]: display }, delta?, tone?, resultT?, deltaT? }], winner, hold }
+//   resultT (optional) pins when an option's race lands; deltaT (optional) when its delta slams in.
+// lookOpts (all optional):
+//   counter      metric key the hero rolls (default "interest", else the first money metric); "stake" keeps the
+//                stake in the hero throughout (every row cell then rolls with its bar)
+//   bar          metric key that drives the bars (default: the first metric whose displays are all durations,
+//                "60 months" / "≈ 18.3 years" / "26 weeks", compared in months; else the first numeric metric)
+//   intro        true / false forces the stake intro on or off (default: on when the first option starts ≥ 0.5 s)
+//   race         seconds the longest bar takes (default 2.4); every bar moves at that one speed
+//   footerSteps  [{ t, text }]: the footer rewrites to a one-line working at each t (spec.footer before the first);
+//                keep each under ≈ 45 characters: the footer is one 960 px line with a 34 px floor
+//   stageBottom  y where the stage ends with captions on (default 1140, or 1160 for 4+ options)
+import { css as style, setHTML, attr, h, s, prog, ease, clamp, lerp, fitText } from '../../../runtime/core.js'
+import { C, SIZE, M, W, layoutFor } from '../theme.js'
+import {
+  rich, richUI, esc, ax, inkWidth, heroRow, labelStack, stageFlash, flashAt, parseDisplay, displayValue, odometer,
+  bump, slam, durationOf, beatTimes, toneColor, verdict,
+} from '../lib.js'
+
+export const css = `
+.wd-head { position: absolute; font: 700 40px/1.1 'Inter', 'Inter Full', sans-serif; text-transform: uppercase; letter-spacing: 0.04em; color: #9AA4B2; white-space: nowrap; }
+.wd-swatch { position: absolute; height: 20px; width: 46px; border-radius: 4px; background: #2A313C; box-shadow: inset -5px 0 0 #9AA4B2; }
+.wd-row { position: absolute; border-radius: 14px; background: #07090C; --lit: 0; --tone: #FFFFFF;
+  border: 3px solid color-mix(in srgb, var(--tone) calc(var(--lit) * 100%), #232B36);
+  box-shadow: 0 0 calc(var(--lit) * 34px) color-mix(in srgb, var(--tone) 50%, transparent); transform-origin: 50% 50%; }
+.wd-track { position: absolute; left: 0; right: 0; bottom: 0; overflow: hidden; border-radius: 0 0 11px 11px; background: #10151C; }
+.wd-row.one .wd-track { top: 0; border-radius: 11px; background: transparent; }
+.wd-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; }
+.wd-edge { position: absolute; top: 0; bottom: 0; width: 6px; margin-left: -6px; }
+.wd-name { position: absolute; display: flex; align-items: center; font-family: 'Anton', 'Inter Full', sans-serif; font-weight: 400; line-height: 1; text-transform: uppercase; letter-spacing: 0.01em; white-space: nowrap; }
+.wd-name.two { white-space: normal; text-wrap: balance; }
+.wd-cell { position: absolute; display: flex; align-items: center; justify-content: flex-end; text-transform: uppercase; transform-origin: 100% 55%; }
+.wd-blab { position: absolute; top: 0; height: 100%; display: flex; align-items: center; text-transform: uppercase; }
+.wd-cell .ax, .wd-blab .ax { font-size: 1em; top: -0.07em; }
+.wd-txt { font-family: 'Anton', 'Inter Full', sans-serif; line-height: 1; white-space: nowrap; }
+.wd-q { font-family: 'Anton', 'Inter Full', sans-serif; line-height: 1; color: #6B7584; }
+.wd-ptr { position: absolute; }
+.wd-tag { position: absolute; top: 0; display: flex; align-items: center; justify-content: flex-end; text-align: right; font: 700 42px/1.08 'Inter', 'Inter Full', sans-serif; text-transform: uppercase; letter-spacing: 0.04em; color: #9AA4B2; white-space: nowrap; }
+.wd-foot { position: absolute; font: 600 40px/1.2 'Inter', 'Inter Full', sans-serif; color: #9AA4B2; text-align: center; white-space: nowrap; }
+.wd-foot em { font-style: normal; color: #FFFFFF; }
+`
+
+const RACE = 2.4          // seconds the longest bar takes to run (all bars share one speed)
+const CUT_TO_RACE = 0.35  // a cut lands (label slam, row lights) before its bar starts
+const DELTA_AFTER = 0.55  // a delta slams this long after its race lands
+const DEEP = { red: '#4A1119', green: '#0B3D24', white: '#2A313C' }
+
+// a duration display ("60 months", "≈ 18.3 years", "26 weeks") in months; NaN if it is not a duration
+function monthsOf(disp) {
+  const p = parseDisplay(disp == null ? '' : String(disp))
+  if (!isFinite(p.value)) return NaN
+  const u = p.suffix.toLowerCase()
+  const f = /\byears?\b|\byrs?\b/.test(u) ? 12 : /\bmonths?\b|\bmos?\b/.test(u) ? 1 : /\bweeks?\b|\bwks?\b/.test(u) ? 12 / 52 : /\bdays?\b/.test(u) ? 12 / 365 : NaN
+  return p.value * p.scale * f
+}
+const isMoney = disp => /\$/.test(String(disp || ''))
+// a calendar date ("Oct 2031", "6/1/28", "2031") is not a quantity: it never rolls and never drives a bar
+const MONTH_RE = /\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?(?=[\s\d'’,]|$)/i
+const dateLike = disp => { const x = String(disp || ''); return MONTH_RE.test(x) || /\d+\/\d+/.test(x) || (/\b(19|20)\d{2}\b/.test(x) && !/\$/.test(x) && !isFinite(monthsOf(x))) }
+// cumulative interest on an amortising loan is front-loaded: the hero rolls on this concave curve
+const accrue = p => 1 - Math.pow(1 - clamp(p), 1.7)
+const rgba = (hex, a) => { const x = parseInt(hex.slice(1), 16); return `rgba(${x >> 16}, ${(x >> 8) & 255}, ${x & 255}, ${a})` }
+
+export default function whatDifference(spec, ctx) {
+  const d = spec.data || {}
+  const lo = spec.lookOpts || {}
+  const opts = (d.options || []).filter(o => o && o.name != null)
+  if (!opts.length) throw new Error('what-difference: data.options is empty')
+  const n = opts.length
+  const L0 = layoutFor(spec)
+  // captions on: the board takes a taller stage; the label stack and the verdict share what is left above the
+  // caption band, so the verdict never covers the board
+  const L = L0.captionsOn ? layoutFor(spec, { stageBottom: lo.stageBottom ?? (n >= 4 ? 1160 : 1140) }) : L0
+  const stage = ctx.stage
+  const stake = { label: '', value: '', terms: '', ...(d.stake || {}) }
+  const metrics = d.metrics && d.metrics.length ? d.metrics : Object.keys(opts[0].values || {}).map(k => ({ key: k, label: k }))
+  const val = (o, k) => (o.values && o.values[k] != null ? String(o.values[k]) : '')
+  const winner = d.winner != null && d.winner >= 0 && d.winner < n ? d.winner : -1
+
+  // ---------- roles: which metric drives the bars, which one the hero rolls ----------
+  const barKey = (lo.bar && metrics.some(m => m.key === lo.bar) ? lo.bar : null)
+    || (metrics.find(m => opts.every(o => isFinite(monthsOf(val(o, m.key))))) || {}).key
+    || (metrics.find(m => opts.every(o => isFinite(displayValue(val(o, m.key))) && !dateLike(val(o, m.key)))) || {}).key
+    || null
+  const barLen = o => { if (!barKey) return 0; const m = monthsOf(val(o, barKey)); return isFinite(m) ? m : displayValue(val(o, barKey)) || 0 }
+  const maxLen = Math.max(1e-9, ...opts.map(barLen))
+  let heroKey = null
+  if (lo.counter !== 'stake') {
+    heroKey = (lo.counter && metrics.some(m => m.key === lo.counter) ? lo.counter : null)
+      || (metrics.some(m => m.key === 'interest' && m.key !== barKey) ? 'interest' : null)
+      || (metrics.find(m => m.key !== barKey && opts.some(o => isMoney(val(o, m.key)))) || {}).key
+      || null
+  }
+  const heroMetric = metrics.find(m => m.key === heroKey) || null
+  const barMetric = metrics.find(m => m.key === barKey) || null
+  const sideMetrics = metrics.filter(m => m.key !== barKey)        // shown as columns at the row's right
+
+  // ---------- timing ----------
+  const times = beatTimes(opts, { first: 1.6, every: 5.4 })
+  const intro = lo.intro === true || (lo.intro !== false && times[0] >= 0.5)
+  const raceMax = lo.race || RACE
+  const beats = opts.map((o, i) => {
+    const first = i === 0 && !intro
+    const cut = first ? Math.min(times[0], 0) : times[i]
+    const start = first ? cut - 0.45 : cut + CUT_TO_RACE        // no intro: frame 1 is already 0.45 s into the race
+    let dur = barKey ? clamp(raceMax * (barLen(o) / maxLen), 0.7, raceMax) : Math.min(raceMax, 1.4)
+    const next = i + 1 < n ? times[i + 1] : Infinity
+    dur = Math.min(dur, Math.max(0.5, next - start - 1.0))
+    let land = start + dur
+    if (o.resultT != null && o.resultT > start + 0.2) { land = +o.resultT; dur = land - start }
+    const deltaT = o.delta ? (o.deltaT != null ? +o.deltaT : land + DELTA_AFTER) : null
+    return { cut, start, dur, land, deltaT }
+  })
+  const lastBeat = Math.max(...beats.map(b => Math.max(b.land, b.deltaT || 0)))
+  const vT = spec.verdict && spec.verdict.text && spec.verdict.t != null ? Math.max(0, +spec.verdict.t) : null
+  const winT = winner >= 0 ? (vT != null ? vT : lastBeat + 0.9) : null
+
+  // ---------- tones ----------
+  const toneOf = o => o.tone || 'neutral'
+  const moneyCol = o => (toneOf(o) === 'bad' ? C.red : C.green)
+  const barKind = o => { const tn = toneOf(o); return tn === 'bad' ? 'red' : tn === 'good' || tn === 'goal' ? 'green' : 'white' }
+  const bright = { red: C.red, green: C.green, white: C.white }
+  const cellCol = (o, disp) => (isMoney(disp) ? moneyCol(o) : C.white)
+
+  // ---------- stage geometry ----------
+  const box = { x: L.inner.x, y: L.stage.y + 12, w: L.inner.w, h: L.stage.h - 24 }
+  const headH = 44, headGap = 6
+  const gap = n >= 4 ? 10 : 12
+  const rowsY = box.y + headH + headGap
+  const fitH = Math.floor((box.y + box.h - rowsY - gap * (n - 1)) / n)
+  const rowH = Math.min(n <= 2 ? 156 : 136, fitH)
+  const two = !!barKey && rowH >= 90                                // two-line rows (name + money / time bar)
+  const rowsH = rowH * n + gap * (n - 1)
+  const rowsTop = rowsY + Math.max(0, Math.floor((box.y + box.h - rowsY - rowsH) / 2))
+  const rowY = i => rowsTop + i * (rowH + gap)
+  const PAD = 22, COLGAP = 30, BORDER = 3
+  const innerW = box.w - 2 * BORDER, innerH = rowH - 2 * BORDER
+  const barH = two ? clamp(Math.round(innerH * 0.45), 42, 62) : innerH
+  const topH = two ? innerH - barH : innerH
+  let fs = two ? clamp(Math.round(topH * 0.8), 40, 64) : clamp(Math.round(rowH * 0.5), 40, 64)   // row text (Anton)
+  const barFs = two ? clamp(Math.round(barH * 0.86), 42, 54) : fs
+  const TOPPAD = two ? 4 : 0
+
+  // ---------- board: rows ----------
+  const rows = opts.map((o, i) => {
+    const el = h('div', { class: 'wd-row' + (two ? '' : ' one'), style: { left: box.x + 'px', top: rowY(i) + 'px', width: box.w + 'px', height: rowH + 'px' } })
+    const track = h('div', { class: 'wd-track', 'data-deco': '', style: { height: two ? barH + 'px' : 'auto' } })
+    const kind = barKind(o)
+    const fill = h('div', { class: 'wd-fill', style: { background: DEEP[kind] } })
+    const edge = h('div', { class: 'wd-edge', style: { backgroundImage: `linear-gradient(${bright[kind]}, ${bright[kind]})` } })
+    track.append(fill, edge)
+    const name = h('div', { class: 'wd-name', html: rich(o.name), style: { left: PAD + 'px', top: TOPPAD + 'px', height: topH - TOPPAD + 'px' } })
+    el.append(track, name)
+    // money / side columns (right of the top line, or of the single line)
+    const cells = sideMetrics.map(m => {
+      const disp = val(o, m.key)
+      const cell = h('div', { class: 'wd-cell', style: { top: TOPPAD + 'px', height: topH - TOPPAD + 'px' } })
+      const q = h('span', { class: 'wd-q' }, '?')
+      const odo = odometer(cell, { size: fs, color: cellCol(o, disp), maxInt: 8, maxDp: 2 })
+      cell.prepend(q)
+      el.append(cell)
+      const tpl = parseDisplay(disp)
+      const ok = disp !== '' && isFinite(tpl.value)
+      // a display without digits ("Never") is shown as plain Anton text
+      const txt = !ok && disp ? h('span', { class: 'wd-txt', html: ax(esc(disp)), style: { color: cellCol(o, disp) } }) : null
+      if (txt) cell.append(txt)
+      return { m, disp, tpl, cell, q, odo, txt, ok, roll: ok && !dateLike(disp), posted: m.key === heroKey, from: 1.35 }
+    })
+    // the bar metric: rides the bar's end (two-line) or sits in its own column (one-line)
+    let blab = null
+    if (barMetric) {
+      const disp = val(o, barKey)
+      const wrap = h('div', { class: two ? 'wd-blab' : 'wd-cell', style: two ? {} : { top: TOPPAD + 'px', height: topH - TOPPAD + 'px' } })
+      const q = h('span', { class: 'wd-q' }, '?')
+      const odo = odometer(wrap, { size: barFs, color: C.white, maxInt: 8, maxDp: 2 })
+      wrap.prepend(q)
+      ;(two ? track.parentNode : el).append(wrap)
+      const tpl = parseDisplay(disp)
+      blab = { m: barMetric, disp, tpl, cell: wrap, q, odo, ok: disp !== '' && isFinite(tpl.value), from: 1.35 }
+      if (two) { track.after(wrap); style(wrap, { top: (topH) + 'px', height: barH + 'px' }) }
+    }
+    stage.append(el)
+    return { o, i, el, track, fill, edge, name, cells, blab, kind }
+  })
+
+  // ---------- column widths: from the widest landed display; names get what is left ----------
+  const lineCols = two ? sideMetrics : [...(barMetric ? [barMetric] : []), ...sideMetrics]
+  const cellsOf = r => (two ? r.cells : [...(r.blab ? [r.blab] : []), ...r.cells])
+  let colW = [], nameW = 0
+  const measure = () => {
+    for (const r of rows) for (const c of cellsOf(r)) {
+      style(c.odo.el, { fontSize: fs + 'px' }); style(c.q, { fontSize: fs + 'px' })
+      if (c.txt) style(c.txt, { fontSize: fs + 'px' })
+      if (c.ok) c.odo.show(c.disp)
+    }
+    const wOf = c => (c.ok ? c.odo.el.offsetWidth : c.txt ? c.txt.offsetWidth : 0)
+    colW = lineCols.map((m, k) => Math.ceil(Math.max(fs * 0.5, ...rows.map(r => wOf(cellsOf(r)[k])))))
+    nameW = innerW - 2 * PAD - colW.reduce((a, b) => a + b, 0) - COLGAP * lineCols.length
+  }
+  measure()
+  while (nameW < 260 && fs > 40) { fs -= 2; measure() }
+  const nameFs = two ? clamp(Math.round(fs * 0.92), 40, 60) : clamp(Math.round(fs * 0.88), 40, 56)
+  rows.forEach(r => {
+    style(r.name, { fontSize: nameFs + 'px', width: nameW + 'px' })
+    let px = fitText(r.name, nameW, { minPx: 40 })
+    if (r.name.scrollWidth > nameW + 0.5) {
+      // too long for one line at 40 px: two balanced lines if the row has the height, else (cramped one-line
+      // rows only) down to the 34 px floor
+      const h2 = topH - TOPPAD - 2
+      if (h2 >= 2 * 34) {
+        r.name.classList.add('two')
+        style(r.name, { fontSize: nameFs + 'px', height: 'auto' })       // measure the wrapped text, not the box
+        px = fitText(r.name, nameW, { maxH: h2, minPx: 34 })
+        style(r.name, { height: topH - TOPPAD + 'px' })
+      } else px = fitText(r.name, nameW, { minPx: 34 })
+    }
+    r.nameFs = px
+  })
+  const colRight = []
+  let xr = innerW - PAD
+  for (let k = lineCols.length - 1; k >= 0; k--) { colRight[k] = xr; xr -= colW[k] + COLGAP }
+  rows.forEach(r => cellsOf(r).forEach((c, k) => style(c.cell, { right: (innerW - colRight[k]) + 'px', width: colW[k] + 'px' })))
+  // a posted value slams in from up to 1.35×, scaled about its right edge: cap it so it never grows into the name
+  // (or the column to its left)
+  rows.forEach(r => {
+    const nameRight = PAD + Math.min(nameW, inkWidth(r.name))
+    cellsOf(r).forEach((c, k) => {
+      const ink = c.ok ? c.odo.el.offsetWidth : c.txt ? c.txt.offsetWidth : 0
+      if (!ink) return
+      const leftWall = k > 0 ? colRight[k - 1] : nameRight
+      c.from = clamp(1 + (colRight[k] - ink - leftWall - 8) / ink, 1.04, 1.35)
+    })
+  })
+  if (two) rows.forEach(r => { if (r.blab) { style(r.blab.odo.el, { fontSize: barFs + 'px' }); style(r.blab.q, { fontSize: barFs + 'px' }) } })
+
+  // ---------- column heads ----------
+  // two-line rows: the bar metric's head sits at the left (over the names / bars), the money heads over their
+  // columns at the right. One-line rows: every head right-aligned over its column; a head that would collide with
+  // its right-hand neighbour shrinks into its own column.
+  const heads = []
+  const headEl = (m, css0) => { const el = h('div', { class: 'wd-head', html: richUI(m.label || m.key), style: { top: box.y + 'px', ...css0 } }); stage.append(el); heads.push(el); return el }
+  const X0 = box.x + BORDER
+  if (two && barMetric) {
+    // the bar metric's head is a legend: a swatch of a bar, then the label ("▬ PAID OFF IN")
+    const sw = h('div', { class: 'wd-swatch', 'data-deco': '', style: { left: X0 + PAD + 'px', top: box.y + 14 + 'px' } })
+    stage.append(sw)
+    headEl(barMetric, { left: X0 + PAD + 60 + 'px' })
+  }
+  const colHeads = lineCols.map(m => headEl(m, {}))
+  const leftLimit = two && barMetric ? X0 + PAD + 60 + heads[0].scrollWidth + 28 : X0 + PAD
+  // right-to-left: each head right-aligned over its column, pushed left of its right-hand neighbour (24 px apart);
+  // if the leftmost one then runs into the legend / names edge, every column head shrinks together (34 px floor)
+  const placeHeads = px => {
+    let nextLeft = Infinity
+    const pos = []
+    for (let k = colHeads.length - 1; k >= 0; k--) {
+      style(colHeads[k], { fontSize: px + 'px', width: 'auto' })
+      const w = Math.ceil(colHeads[k].scrollWidth) + 1
+      const right = Math.min(X0 + colRight[k], nextLeft - 24)
+      pos[k] = { left: right - w, w }
+      nextLeft = right - w
+    }
+    return { pos, fits: nextLeft >= leftLimit }
+  }
+  let headPx = 40, hp = placeHeads(headPx)
+  while (!hp.fits && headPx > 34) hp = placeHeads(--headPx)
+  hp.pos.forEach((q, k) => style(colHeads[k], { left: q.left + 'px', width: q.w + 'px', textAlign: 'right' }))
+
+  // ---------- pointer (decoration): a chevron in the left margin that jumps to the active row ----------
+  const ptr = s('svg', { class: 'wd-ptr', 'data-deco': '', width: 34, height: 44, viewBox: '0 0 34 44', style: { left: box.x - 50 + 'px' } },
+    s('path', { d: 'M4 4L30 22L4 40Z', fill: C.white }))
+  stage.append(ptr)
+  const ptrPath = ptr.firstChild
+
+  // ---------- hero: the stake on the intro, then the money metric of the active option ----------
+  const tagEl = h('div', { class: 'wd-tag' })
+  let tagW = 0, tagTwo = false
+  if (heroMetric) {
+    setHTML(tagEl, richUI(heroMetric.label))
+    stage.append(tagEl)
+    const w1 = Math.ceil(tagEl.offsetWidth) + 2
+    tagTwo = w1 > 260                           // a long metric label wraps to two balanced lines
+    tagW = Math.min(260, w1)
+    tagEl.remove()
+  }
+  const TAGGAP = 26
+  const hero = heroRow(stage, L, { size: SIZE.hero, maxInt: 9, maxDp: 2 })
+  const heroBox = L.hero
+  {
+    // measure every display the hero will land on at full size (the metric values carry the tag beside them, the
+    // stake doesn't) and shrink the odometer until the widest group fits the 960 px row at the biggest landing
+    // bump (×1.1, plus a little air)
+    const room = heroBox.w / 1.12
+    let f = 1
+    const shows = [...(heroKey ? opts.map(o => ({ disp: val(o, heroKey), sp: tagW ? tagW + TAGGAP : 0 })) : []), { disp: stake.value, sp: 0 }]
+    for (const { disp, sp } of shows) {
+      if (!disp || !isFinite(parseDisplay(disp).value)) continue
+      hero.show(disp)
+      const ow = hero.odo.el.offsetWidth
+      if (ow + sp > room) f = Math.min(f, (room - sp) / ow)
+    }
+    if (f < 1) style(hero.odo.el, { fontSize: Math.floor(SIZE.hero * Math.max(0.4, f)) + 'px' })
+  }
+  hero.el.append(tagEl)
+  if (heroMetric) {
+    style(tagEl, { height: heroBox.h + 'px', width: tagW + 'px', whiteSpace: tagTwo ? 'normal' : 'nowrap', textWrap: 'balance' })
+    fitText(tagEl, tagW, { maxH: heroBox.h - 8, minPx: 42 })
+  }
+  const glowFor = col => `drop-shadow(0 0 var(--glow, 16px) ${rgba(col, 'var(--glowA, 0.38)')})`
+
+  // ---------- label stack: [intro], then per option [payment / NAME] and [payment / DELTA] ----------
+  const items = [], idx = []
+  if (intro) items.push({ l1: ax(esc(stake.terms || '')), l2: rich(stake.label || '') })
+  opts.forEach(o => {
+    const at = { name: items.length }
+    items.push({ l1: o.detail ? rich(o.detail) : '', l2: rich(o.name) })
+    if (o.delta) { at.delta = items.length; items.push({ l1: o.detail ? rich(o.detail) : '', l2: rich(o.delta), l2Color: toneOf(o) === 'neutral' ? C.white : toneColor(toneOf(o)) }) }
+    idx.push(at)
+  })
+  const labels = labelStack(stage, L, items)
+  const flash = stageFlash(stage, L)
+  // the verdict replaces the label stack in its own slot (the chrome's slot would cover the taller board)
+  const vSlot = L.verdict.boxed ? { y: L.label.y, h: L.label.h, w: L.label.w, boxed: false } : L.verdict
+  const verd = verdict(stage, spec, { ...L, verdict: vSlot })
+  if (verd) {
+    ctx.cue(verd.t + 0.06, 'reveal', { gain: 0.7 })
+    // lib's verdict() fits its text while the box is display:none (it measures 0 and never shrinks): fit it again
+    // here with the box measurable, so a two-line verdict stays inside its slot
+    const vbox = [...stage.querySelectorAll('.sb-verdict')].pop()
+    const vtxt = vbox && vbox.querySelector('.sb-verdict-text')
+    if (vtxt) {
+      vbox.style.display = 'flex'
+      vbox.style.gap = '12px'
+      fitText(vtxt, vSlot.w, { maxH: vSlot.h - 8 - 12 - 6, minPx: SIZE.verdictMin })
+      vbox.style.display = ''
+    }
+  }
+
+  // ---------- footer steps (lookOpts.footerSteps): the footer rewrites to each beat's working ----------
+  let foot = null
+  if (Array.isArray(lo.footerSteps) && lo.footerSteps.length) {
+    const fw = L.footer.w
+    const mk = text => {
+      const el = h('div', { class: 'wd-foot', html: richUI(text), style: { top: L.footer.y + 'px', left: (W - fw) / 2 + 'px', width: fw + 'px' } })
+      stage.append(el)
+      fitText(el, fw, { maxH: L.footer.h + 4, minPx: 34 })
+      style(el, { display: 'none' })
+      return el
+    }
+    foot = {
+      base: spec.footer ? mk(spec.footer) : null,
+      steps: lo.footerSteps.filter(x => x && x.text).map(x => ({ t: +x.t || 0, el: mk(x.text) })).sort((a, b) => a.t - b.t),
+    }
+  }
+
+  // ---------- sound: thud on each cut, a roll while the bar races, ding on landing, pop for the delta ----------
+  beats.forEach(b => {
+    if (b.cut > 0.05) ctx.cue(b.cut, 'thud', { gain: 0.65 })
+    const r0 = Math.max(0, b.start)
+    if (b.land - r0 > 0.25) ctx.cue(r0, 'roll', { dur: Math.max(0.3, b.land - r0 - 0.05), gain: 0.6 })
+    ctx.cue(b.land, 'ding', { gain: 0.5 })
+    if (b.deltaT != null) ctx.cue(b.deltaT, 'pop', { gain: 0.45 })
+  })
+  if (winT != null) ctx.cue(winT + 0.3, 'cash', { gain: 0.55 })
+
+  const duration = durationOf(spec, lastBeat, d.hold ?? M.hold)
+  const activeAt = t => { let k = -1; for (let j = 0; j < n; j++) if (t >= beats[j].cut) k = j; return k }
+
+  return {
+    duration,
+    layout: L,
+    footer: foot ? false : undefined,
+    verdict: false,
+    seek(t) {
+      const k = activeAt(t)
+      const won = winT != null && t >= winT
+      const wp = won ? prog(t, winT, 0.5) : 0
+
+      // ---- rows ----
+      rows.forEach((r, i) => {
+        const b = beats[i]
+        const started = t >= b.cut
+        const isWin = won && i === winner
+        const p = clamp((t - b.start) / Math.max(0.05, b.dur))
+        const running = t >= b.start
+        // fill: honest length on one shared scale; races linearly (a clock) and stops dead at the payoff
+        const fullW = barKey ? (barLen(r.o) / maxLen) * innerW : 0
+        const fw = running ? fullW * p : 0
+        const racing = running && t < b.land
+        const edgeA = racing ? 1 : running ? 0.55 + 0.45 * flashAt(t, b.land, 0.5) : 0
+        if (isWin) {
+          style(r.fill, { width: fw.toFixed(1) + 'px', background: two ? C.green : DEEP.green, boxShadow: two ? `0 0 ${(18 * wp).toFixed(1)}px ${rgba(C.green, 0.7)}` : 'none' })
+          style(r.edge, { left: fw.toFixed(1) + 'px', opacity: '1', backgroundImage: `linear-gradient(${C.green}, ${C.green})`, boxShadow: `0 0 22px ${rgba(C.green, 0.9)}` })
+        } else {
+          style(r.fill, { width: fw.toFixed(1) + 'px', background: DEEP[r.kind], boxShadow: 'none' })
+          style(r.edge, { left: fw.toFixed(1) + 'px', opacity: (fw > 1 ? edgeA : 0).toFixed(3), backgroundImage: `linear-gradient(${bright[r.kind]}, ${bright[r.kind]})`,
+            boxShadow: `0 0 ${racing ? 22 : 10}px ${rgba(bright[r.kind], 0.8)}` })
+        }
+
+        // row light: white while active (a flare on landing); the winner glows green from winT, the rest dim
+        let lit = 0, tone = C.white
+        if (i === k && !won) lit = clamp(prog(t, b.cut, 0.12)) * (0.7 + 0.3 * flashAt(t, b.land, 0.6))
+        if (isWin) { tone = C.green; lit = Math.min(1, wp * 2) + 0.6 * flashAt(t, winT, 0.9) }
+        // (no undershoot below 1: the row's 40 px text never dips under the type floor)
+        const rs = Math.max(1, bump(t, b.cut, { amp: 0.03, dur: 0.3 })) * (isWin ? Math.max(1, bump(t, winT, { amp: 0.045, dur: 0.45 })) : 1)
+        style(r.el, { '--lit': clamp(lit, 0, 1.6).toFixed(3), '--tone': tone, transform: `scale(${rs.toFixed(4)})`,
+          opacity: won && i !== winner ? (1 - 0.5 * wp).toFixed(3) : '1' })
+        style(r.name, { color: started || won ? C.white : C.grey })
+
+        // side cells: the hero's metric (and anything that can't roll: dates, words) is posted with a slam when the
+        // race lands; the others roll with the bar
+        for (const c of r.cells) {
+          if (!c.ok && !c.txt) { style(c.q, { display: 'none' }); style(c.odo.el, { display: 'none' }); continue }
+          let show = false, v = null, sc = 1
+          if (c.posted || !c.roll) {
+            show = t >= b.land
+            // the slam lands with an undershoot; keep it off rows whose text would dip under the 40 px floor
+            if (show) { sc = slam(t, b.land, { from: c.from }).s; if (fs * 0.94 < 40) sc = Math.max(1, sc) }
+          } else if (running) {
+            show = true
+            if (t < b.land) v = p * c.tpl.value * c.tpl.scale
+          }
+          style(c.q, { display: show ? 'none' : 'inline' })
+          style(c.odo.el, { display: show && c.ok ? 'inline-flex' : 'none' })
+          if (c.txt) style(c.txt, { display: show ? 'inline' : 'none' })
+          if (show && c.ok) { if (v != null) c.odo.set(v, c.tpl); else c.odo.show(c.disp) }
+          style(c.cell, { transform: sc !== 1 ? `scale(${sc.toFixed(4)})` : 'none' })
+        }
+        // the bar metric: rolls with the bar; rides inside the bar's end when it fits, else just past it
+        if (r.blab) {
+          const c = r.blab
+          if (!c.ok) { style(c.cell, { display: 'none' }) }
+          else {
+            const show = running
+            if (show) { if (t < b.land) c.odo.set(p * c.tpl.value * c.tpl.scale, c.tpl); else c.odo.show(c.disp) }
+            style(c.q, { display: show || two ? 'none' : 'inline' })
+            style(c.odo.el, { display: show ? 'inline-flex' : 'none' })
+            if (two) {
+              style(c.cell, { display: show ? 'flex' : 'none' })
+              const lw = show ? c.odo.el.offsetWidth : 0
+              const inside = fw - 16 - lw >= 16
+              const x = inside ? fw - 16 - lw : fw + 14
+              style(c.cell, { left: x.toFixed(1) + 'px' })
+              style(c.odo.el, { color: isWin && inside ? C.panel : C.white })
+            } else {
+              style(c.cell, { display: 'flex' })
+            }
+          }
+        }
+      })
+
+      // ---- pointer ----
+      if (k < 0 && !won) style(ptr, { display: 'none' })
+      else {
+        const target = won ? winner : k
+        const from = won ? (k >= 0 ? k : target) : Math.max(0, k - 1)
+        const mv = won ? prog(t, winT, 0.22) : k > 0 ? prog(t, beats[k].cut, 0.2) : 1
+        const y = lerp(rowY(from), rowY(target), ease.out(mv)) + rowH / 2 - 22
+        const pulse = won ? bump(t, winT, { amp: 0.3, dur: 0.4 }) : bump(t, beats[k].cut, { amp: 0.3, dur: 0.4 })
+        style(ptr, { display: 'block', top: y.toFixed(1) + 'px', transform: `scale(${pulse.toFixed(3)})` })
+        attr(ptrPath, 'fill', won ? C.green : C.white)
+      }
+
+      // ---- hero ----
+      let hDisp = null, hTpl = null, hv = 0, hCol = C.green, tagOn = false
+      if (!heroKey) hDisp = stake.value
+      else if (won) { hDisp = val(opts[winner], heroKey); hCol = moneyCol(opts[winner]); tagOn = true }
+      else if (k < 0) hDisp = stake.value
+      else {
+        const o = opts[k], b = beats[k]
+        const disp = val(o, heroKey), tpl = parseDisplay(disp)
+        tagOn = true; hCol = moneyCol(o)
+        if (t >= b.land || !isFinite(tpl.value)) hDisp = disp
+        else if (t < b.start) {
+          // cut → race start: the hero holds the previous option's exact score (or the stake)
+          if (k > 0) { hDisp = val(opts[k - 1], heroKey); hCol = moneyCol(opts[k - 1]) } else { hDisp = stake.value; tagOn = false; hCol = C.green }
+        } else { hTpl = tpl; hv = accrue(prog(t, b.start, b.dur)) * tpl.value * tpl.scale }
+      }
+      if (hTpl) hero.set(hv, hTpl)
+      else if (hDisp && isFinite(parseDisplay(hDisp).value)) hero.show(hDisp)
+      else hero.show(stake.value || '0')
+      style(hero.odo.el, { color: hCol })
+      style(hero.glow, { filter: glowFor(hCol) })
+      // the metric tag beside the number; the group stays centred on x 540
+      const space = tagOn && tagW ? tagW + TAGGAP : 0
+      style(tagEl, { display: space ? 'flex' : 'none' })
+      style(hero.glow, { paddingLeft: space + 'px' })
+      if (space) style(tagEl, { left: (heroBox.w / 2 - (hero.odo.el.offsetWidth + space) / 2).toFixed(1) + 'px' })
+
+      // landing bumps + glow flares; a small dip on each cut
+      let sc = 1, glow = 0
+      for (const b of beats) {
+        if (b.cut > 0.05) sc *= 1 - 0.03 * Math.sin(Math.PI * prog(t, b.cut, 0.28))
+        sc *= bump(t, b.land, { amp: 0.08, dur: M.bump })
+        if (t >= b.land) glow = Math.max(glow, 0.6 * (1 - ease.out(prog(t, b.land, 0.6))))
+      }
+      if (winT != null) {
+        sc *= bump(t, winT, { amp: 0.1, dur: 0.45 })
+        if (t >= winT) glow = Math.max(glow, 1 - ease.out(prog(t, winT, 1.1)))
+      }
+      style(hero.el, { transform: `scale(${sc.toFixed(4)})` })
+      style(hero.glow, { '--glow': (16 + 30 * glow).toFixed(1) + 'px', '--glowA': (0.38 + 0.45 * glow).toFixed(3) })
+
+      // ---- stage bloom: a small one on each landing, a big one for the winner ----
+      let fl = 0
+      for (const b of beats) fl = Math.max(fl, 0.16 * flashAt(t, b.land, 0.45))
+      if (winT != null) fl = Math.max(fl, 0.5 * flashAt(t, winT, 0.9))
+      flash.set(fl)
+
+      // ---- label stack ----
+      if (k < 0) labels.seek(t, intro ? 0 : idx[0].name, 0)
+      else {
+        const at = idx[k], b = beats[k]
+        if (at.delta != null && b.deltaT != null && t >= b.deltaT) labels.seek(t, at.delta, b.deltaT)
+        else labels.seek(t, at.name, k === 0 && !intro ? 0 : b.cut)
+      }
+
+      // ---- verdict: the label stack yields, the closing line slams in ----
+      if (verd) {
+        verd.seek(t)
+        const y = verd.yieldAt(t)
+        style(labels.el, { opacity: String(1 - y), transform: `translateY(${(14 * y).toFixed(1)}px)`, visibility: y >= 1 ? 'hidden' : 'visible' })
+      }
+
+      // ---- footer steps ----
+      if (foot) {
+        let cur = foot.base
+        for (const st of foot.steps) if (t >= st.t) cur = st.el
+        if (foot.base) style(foot.base, { display: cur === foot.base ? 'block' : 'none' })
+        for (const st of foot.steps) style(st.el, { display: cur === st.el ? 'block' : 'none' })
+      }
+    },
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "id": "sample-clean-sheet-what-difference-2",
+  "sample": true,
+  "look": "clean-sheet",
+  "format": "what-difference",
+  "fps": 30,
+  "header": "What difference does a little\n**extra** make on a mortgage?",
+  "footer": "Assumes 6.5% fixed; extra goes to principal",
+  "captions": true,
+  "vo": [
+    { "t": 0.0, "d": 2.8, "text": "A **$300,000** mortgage at 6.5%. What does a little extra do?" },
+    { "t": 3.0, "d": 3.6, "text": "Regular payments: thirty years, about **$383K** in interest." },
+    { "t": 7.2, "d": 3.8, "text": "One extra payment a year: about 24 years. **$84K** less." },
+    { "t": 12.2, "d": 3.8, "text": "An extra $300 a month: about 21 years. **$135K** less." },
+    { "t": 17.2, "d": 4.0, "text": "An extra $500 a month: seventeen and a half years. **$180K** less." },
+    { "t": 22.0, "d": 3.2, "text": "Same house. Twelve and a half years sooner." }
+  ],
+  "verdict": { "t": 22.0, "text": "**+$500 a month** saves ≈ $180K and 12.5 years." },
+  "data": {
+    "stake": { "label": "Mortgage", "value": "$300,000", "terms": "6.5% · 30 years" },
+    "metrics": [ { "key": "payoff", "label": "Paid off in" }, { "key": "interest", "label": "Total interest" } ],
+    "typeDur": 1.0,
+    "options": [
+      { "t": 2.8, "name": "Regular payment only", "detail": "$1,896 × 12 = $22,752",
+        "values": { "payoff": "30 years", "interest": "≈ $383K" }, "resultT": 4.0, "valueEvery": 0.8 },
+      { "t": 7.2, "name": "1 extra payment a year", "detail": "$1,896 × 13 = $24,648",
+        "values": { "payoff": "≈ 24.3 years", "interest": "≈ $299K" }, "delta": "≈ −$84K", "tone": "good",
+        "resultT": 8.6, "valueEvery": 0.6, "deltaT": 9.8 },
+      { "t": 12.2, "name": "Extra $300 a month", "detail": "$2,196 × 12 = $26,352",
+        "values": { "payoff": "≈ 20.8 years", "interest": "≈ $248K" }, "delta": "≈ −$135K", "tone": "good",
+        "resultT": 13.6, "valueEvery": 0.6, "deltaT": 14.8 },
+      { "t": 17.2, "name": "Extra $500 a month", "detail": "$2,396 × 12 = $28,752",
+        "values": { "payoff": "17.5 years", "interest": "≈ $203K" }, "delta": "≈ −$180K", "tone": "good",
+        "resultT": 18.6, "valueEvery": 0.6, "deltaT": 19.8 }
+    ],
+    "winner": 3,
+    "hold": 3.0
+  }
+}

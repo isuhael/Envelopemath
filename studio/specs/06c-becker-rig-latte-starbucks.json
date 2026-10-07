@@ -1,0 +1,221 @@
+{
+  "id": "06c-becker-rig-latte-starbucks",
+  "look": "becker-rig",
+  "format": "pov-race",
+  "fps": 30,
+  "duration": 28.0,
+  "header": "POV: Since 2014 you invested\nin Starbucks instead of paying\n**$4/day** for lattes",
+  "footer": "$4 ≈ a grande latte · each year at its avg price · dividends reinvested",
+  "captions": true,
+  "vo": [
+    {
+      "t": 0.0,
+      "d": 2.0,
+      "text": "$4 lattes, daily, since 2014."
+    },
+    {
+      "t": 2.05,
+      "d": 1.95,
+      "text": "You buy Starbucks stock instead."
+    },
+    {
+      "t": 4.05,
+      "d": 2.8,
+      "text": "That's $1,460 a year into the stock."
+    },
+    {
+      "t": 7.2,
+      "d": 3.6,
+      "text": "The stock climbs faster than the cups pile up."
+    },
+    {
+      "t": 12.2,
+      "d": 2.4,
+      "text": "By 2021, you've doubled your money."
+    },
+    {
+      "t": 14.8,
+      "d": 2.4,
+      "text": "Then it stalls. You keep buying."
+    },
+    {
+      "t": 18.1,
+      "d": 2.4,
+      "text": "End of 2025: $17,532 of lattes."
+    },
+    {
+      "t": 20.6,
+      "d": 2.0,
+      "text": "Or about $24,900 in stock."
+    },
+    {
+      "t": 22.8,
+      "d": 3.9,
+      "text": "About 1.4 times your latte money. Not rich. Not zero."
+    }
+  ],
+  "verdict": {
+    "t": 22.8,
+    "text": "**≈ 1.4×** your latte money.\nNot rich. Not **$0**."
+  },
+  "data": {
+    "spend": {
+      "label": "Spent on lattes",
+      "points": [
+        [
+          2014.0,
+          4.0
+        ],
+        [
+          2014.99,
+          1460.0
+        ],
+        [
+          2015.99,
+          2920.0
+        ],
+        [
+          2016.99,
+          4384.0
+        ],
+        [
+          2017.99,
+          5844.0
+        ],
+        [
+          2018.99,
+          7304.0
+        ],
+        [
+          2019.99,
+          8764.0
+        ],
+        [
+          2020.99,
+          10228.0
+        ],
+        [
+          2021.99,
+          11688.0
+        ],
+        [
+          2022.99,
+          13148.0
+        ],
+        [
+          2023.99,
+          14608.0
+        ],
+        [
+          2024.99,
+          16072.0
+        ],
+        [
+          2025.99,
+          17532.0
+        ]
+      ],
+      "final": "$17,532 spent",
+      "item": "cup"
+    },
+    "own": {
+      "label": "Same $4/day in Starbucks stock",
+      "points": [
+        [
+          2014.0,
+          4.0
+        ],
+        [
+          2014.99,
+          1585.83
+        ],
+        [
+          2015.99,
+          3996.62
+        ],
+        [
+          2016.99,
+          5198.84
+        ],
+        [
+          2017.99,
+          6954.83
+        ],
+        [
+          2018.99,
+          9633.4
+        ],
+        [
+          2019.99,
+          14987.7
+        ],
+        [
+          2020.99,
+          20521.04
+        ],
+        [
+          2021.99,
+          24343.41
+        ],
+        [
+          2022.99,
+          22807.68
+        ],
+        [
+          2023.99,
+          23942.32
+        ],
+        [
+          2024.99,
+          24864.51
+        ],
+        [
+          2025.99,
+          24928.31
+        ]
+      ],
+      "final": "≈ $24,900"
+    },
+    "purchases": [
+      {
+        "x": 2014.0,
+        "label": "Day 1",
+        "price": "$4"
+      }
+    ],
+    "x": {
+      "from": 2014,
+      "to": 2025.99,
+      "tickEvery": 4
+    },
+    "y": {
+      "prefix": "$",
+      "dp": 0
+    },
+    "raceT": [
+      2.4,
+      20.4
+    ],
+    "hold": 7.6
+  },
+  "lookOpts": {
+    "prop": "cup",
+    "ownProp": "coin",
+    "jarLabel": "SBUX",
+    "gag": "The figure drinks a latte and tosses the cup onto a growing pile; the same coin drops into a jar that rides the green line. After the peak the jar stops rising while the cup pile keeps growing; on the verdict the figure shrugs at the jar."
+  },
+  "sfx": [
+    {
+      "t": 2.4,
+      "kind": "pop"
+    },
+    {
+      "t": 14.39,
+      "kind": "ding"
+    },
+    {
+      "t": 20.4,
+      "kind": "cash"
+    }
+  ]
+}

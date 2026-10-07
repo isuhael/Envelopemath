@@ -1,0 +1,115 @@
+{
+  "id": "becker-rig-dead-simple-list-2",
+  "sample": true,
+  "look": "becker-rig",
+  "format": "dead-simple-list",
+  "fps": 30,
+  "header": "6 DEAD SIMPLE NUMBERS\nFOR YOUR **FIRST PAYCHECK**",
+  "footer": "ASSUMES 26 paydays a year, before tax",
+  "captions": true,
+  "vo": [
+    {
+      "t": 0.0,
+      "d": 2.2,
+      "text": "Two grand every two weeks? Times 26."
+    },
+    {
+      "t": 2.3,
+      "d": 2.2,
+      "text": "That's **$52,000** a year, not 48."
+    },
+    {
+      "t": 4.8,
+      "d": 2.6,
+      "text": "Tax takes about 15%: __$300__ a check."
+    },
+    {
+      "t": 9.6,
+      "d": 2.8,
+      "text": "Rent? A year's pay over 40: **$1,300**, tops."
+    },
+    {
+      "t": 14.4,
+      "d": 2.6,
+      "text": "Save 10% of every check: **$200**."
+    },
+    {
+      "t": 19.2,
+      "d": 2.8,
+      "text": "And twice a year, a month has three paydays."
+    },
+    {
+      "t": 24.0,
+      "d": 2.2,
+      "text": "Two hundred, times 26..."
+    },
+    {
+      "t": 26.4,
+      "d": 1.8,
+      "text": "**$5,200** saved in year one."
+    }
+  ],
+  "verdict": {
+    "t": 28.4,
+    "text": "**$5,200** saved.\nWithout a raise."
+  },
+  "data": {
+    "input": {
+      "label": "Paycheck",
+      "value": "$2,000",
+      "note": "every 2 weeks"
+    },
+    "typeDur": 0.6,
+    "items": [
+      {
+        "t": 0.0,
+        "label": "Your real yearly pay",
+        "formula": "$2,000 × 26",
+        "result": "$52,000",
+        "tone": "good",
+        "resultT": 2.2
+      },
+      {
+        "t": 4.8,
+        "label": "Gone to tax, every single check",
+        "formula": "$2,000 × 0.15",
+        "result": "≈ $300",
+        "tone": "bad",
+        "resultT": 6.4
+      },
+      {
+        "t": 9.6,
+        "label": "The most to pay in rent",
+        "formula": "$52,000 ÷ 40",
+        "result": "$1,300 a month",
+        "tone": "neutral",
+        "resultT": 11.2
+      },
+      {
+        "t": 14.4,
+        "label": "Into savings, from every paycheck",
+        "formula": "$2,000 × 0.10",
+        "result": "$200",
+        "tone": "good",
+        "resultT": 16.0
+      },
+      {
+        "t": 19.2,
+        "label": "Your bonus paychecks every year",
+        "formula": "26 − 24",
+        "result": "2 a year",
+        "tone": "good",
+        "resultT": 21.0
+      },
+      {
+        "t": 24.0,
+        "label": "Saved by the end of year one",
+        "formula": "$200 × 26",
+        "result": "$5,200",
+        "tone": "goal",
+        "resultT": 26.4
+      }
+    ],
+    "hold": 3.0
+  }
+}

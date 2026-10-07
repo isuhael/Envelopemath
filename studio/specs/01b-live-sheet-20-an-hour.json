@@ -1,0 +1,39 @@
+{
+  "id": "01b-live-sheet-20-an-hour",
+  "look": "live-sheet",
+  "format": "dead-simple-list",
+  "fps": 30,
+  "duration": 29.0,
+  "header": "4 DEAD SIMPLE NUMBERS\nIF YOU MAKE **$20/HR**",
+  "footer": "ASSUMES 40 hrs × 52 wks · × 0.85 ≈ left after 2026 federal tax + FICA, single, before state tax",
+  "captions": true,
+  "vo": [
+    { "t": 0.0,  "d": 5.1, "text": "Take your hourly pay, times 2,080: $41,600 a year." },
+    { "t": 5.3,  "d": 2.4, "text": "A week: 40 hours, $800." },
+    { "t": 7.9,  "d": 3.2, "text": "So a month is 4 weeks, $3,200?" },
+    { "t": 11.3, "d": 2.4, "text": "No. A year divided by 12." },
+    { "t": 13.9, "d": 2.0, "text": "About $3,467 a month." },
+    { "t": 16.1, "d": 3.9, "text": "Now tax. You keep about 85 cents of each dollar." },
+    { "t": 20.2, "d": 3.5, "text": "That's about $2,950 a month in your account." },
+    { "t": 23.9, "d": 3.1, "text": "Less than the $3,200 you'd have guessed." }
+  ],
+  "verdict": { "t": 23.9, "text": "**≈ $2,950** a month lands. Not __$3,200__" },
+  "data": {
+    "input": { "label": "Your pay", "value": "$20/hr", "note": "40 hrs a week" },
+    "typeDur": 0.6,
+    "items": [
+      { "t": 0.0, "label": "A year", "formula": "$20 × 2,080 hrs", "result": "$41,600",
+        "tone": "good", "note": "2,080 hrs = 40 × 52", "resultT": 2.7 },
+      { "t": 5.3, "label": "A week", "formula": "$20 × 40 hrs", "result": "$800",
+        "tone": "neutral", "resultT": 6.8 },
+      { "t": 11.7, "label": "A month", "formula": "$41,600 ÷ 12", "result": "≈ $3,467",
+        "tone": "good", "note": "not $800 × 4 = $3,200", "resultT": 14.3 },
+      { "t": 18.0, "label": "A month, kept", "formula": "$3,467 × 0.85", "result": "≈ $2,950",
+        "tone": "goal", "note": "after federal tax + FICA", "resultT": 21.0 }
+    ]
+  },
+  "lookOpts": {
+    "wrongGuess": { "item": 2, "t": 7.9, "formula": "$800 × 4", "result": "$3,200", "strike": true }
+  },
+  "sfx": [ { "t": 23.9, "kind": "ding" } ]
+}

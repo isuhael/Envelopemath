@@ -1,0 +1,105 @@
+{
+  "id": "sample-scoreboard-what-difference",
+  "sample": true,
+  "look": "scoreboard",
+  "format": "what-difference",
+  "fps": 30,
+  "header": "What difference does\n**rounding up** make on a car loan?",
+  "footer": "Assumes every extra dollar goes to principal",
+  "captions": true,
+  "vo": [
+    {
+      "t": 0.0,
+      "d": 1.7,
+      "text": "A $28,000 car loan. Does rounding up help?"
+    },
+    {
+      "t": 1.8,
+      "d": 3.2,
+      "text": "Pay the bill: 60 months, about **$5,266** in interest."
+    },
+    {
+      "t": 5.4,
+      "d": 2.4,
+      "text": "Round up to $600. Just $45.57 more."
+    },
+    {
+      "t": 8.0,
+      "d": 2.3,
+      "text": "55 months. About **$487** less."
+    },
+    {
+      "t": 10.6,
+      "d": 1.8,
+      "text": "Round up to $700?"
+    },
+    {
+      "t": 12.6,
+      "d": 3.2,
+      "text": "46 months: **14 months** sooner, about **$1,288** less."
+    },
+    {
+      "t": 16.2,
+      "d": 2.2,
+      "text": "Same loan. Round it up."
+    }
+  ],
+  "verdict": {
+    "t": 16.2,
+    "text": "Round up to $700:\n**14 months** sooner"
+  },
+  "data": {
+    "stake": {
+      "label": "Car loan",
+      "value": "$28,000",
+      "terms": "7% APR · 60 months"
+    },
+    "metrics": [
+      {
+        "key": "payoff",
+        "label": "Paid off in"
+      },
+      {
+        "key": "interest",
+        "label": "Interest"
+      }
+    ],
+    "options": [
+      {
+        "t": 1.8,
+        "name": "Pay the bill",
+        "detail": "$554.43 a month",
+        "values": {
+          "payoff": "60 months",
+          "interest": "≈ $5,266"
+        },
+        "tone": "bad"
+      },
+      {
+        "t": 5.4,
+        "name": "Round up to $600",
+        "detail": "+$45.57 a month",
+        "values": {
+          "payoff": "55 months",
+          "interest": "≈ $4,779"
+        },
+        "delta": "≈ $487 less",
+        "tone": "good"
+      },
+      {
+        "t": 10.6,
+        "name": "Round up to $700",
+        "detail": "+$145.57 a month",
+        "values": {
+          "payoff": "46 months",
+          "interest": "≈ $3,978"
+        },
+        "delta": "≈ $1,288 less",
+        "tone": "goal"
+      }
+    ],
+    "winner": 2,
+    "hold": 3.0
+  },
+  "notes": "Maths: $28,000 at 7% APR (0.5833% a month) over 60 months: payment = 28,000 × r ÷ (1 − (1 + r)^−60) = $554.43; interest = $554.43 × 60 − $28,000 = $5,265.80 ≈ $5,266. Paying a flat $600 (+$45.57) clears it in 55 payments with $4,779.48 interest (≈ $487 less); a flat $700 (+$145.57) in 46 payments with $3,977.73 interest (≈ $1,288 less, 60 − 46 = 14 months sooner). Monthly amortisation simulated payment by payment, the last payment partial. Hook: P5 (research/v2/04-formats.md rank 3: 'Look what a difference rounding makes!', 1.9M)."
+}

@@ -1,0 +1,319 @@
+{
+  "id": "04b-becker-rig-savings-vs-sp500",
+  "look": "becker-rig",
+  "format": "chart-race",
+  "fps": 30,
+  "duration": 42.0,
+  "header": "2 people put **$1,000** away in 2010\nA safe savings account vs the S&P 500",
+  "footer": "Savings: FDIC avg rate (0.04%–0.47%) · S&P 500 with dividends · 2010–2025",
+  "captions": true,
+  "vo": [
+    {
+      "t": 0.0,
+      "d": 2.7,
+      "text": "$1,000 each. 2010."
+    },
+    {
+      "t": 2.8,
+      "d": 4.3,
+      "text": "The safe savings account, or the S&P 500?"
+    },
+    {
+      "t": 8.5,
+      "d": 3.9,
+      "text": "2014: the S&P has doubled it."
+    },
+    {
+      "t": 12.5,
+      "d": 2.4,
+      "text": "Savings has earned ≈ $6."
+    },
+    {
+      "t": 20.5,
+      "d": 3.1,
+      "text": "2022: stocks drop ≈ 18%."
+    },
+    {
+      "t": 25.0,
+      "d": 4.3,
+      "text": "2025: stocks ≈ $8,280."
+    },
+    {
+      "t": 29.4,
+      "d": 2.4,
+      "text": "Savings: ≈ $1,024."
+    },
+    {
+      "t": 31.9,
+      "d": 2.4,
+      "text": "But prices rose ≈ 50%."
+    },
+    {
+      "t": 34.4,
+      "d": 5.8,
+      "text": "That ≈ $1,024 now buys what ≈ $682 did."
+    }
+  ],
+  "verdict": {
+    "t": 34.4,
+    "text": "The \"safe\" choice lost **≈ 32%**\nof its buying power."
+  },
+  "data": {
+    "stake": "$1,000 each · Jan 2010",
+    "series": [
+      {
+        "name": "S&P 500",
+        "points": [
+          [
+            2010.0,
+            1000.0
+          ],
+          [
+            2010.99,
+            1150.6
+          ],
+          [
+            2011.99,
+            1174.88
+          ],
+          [
+            2012.99,
+            1362.86
+          ],
+          [
+            2013.99,
+            1804.29
+          ],
+          [
+            2014.99,
+            2051.29
+          ],
+          [
+            2015.99,
+            2079.6
+          ],
+          [
+            2016.99,
+            2328.32
+          ],
+          [
+            2017.99,
+            2836.6
+          ],
+          [
+            2018.99,
+            2712.35
+          ],
+          [
+            2019.99,
+            3566.47
+          ],
+          [
+            2020.99,
+            4222.7
+          ],
+          [
+            2021.99,
+            5435.04
+          ],
+          [
+            2022.99,
+            4450.76
+          ],
+          [
+            2023.99,
+            5620.86
+          ],
+          [
+            2024.99,
+            7027.2
+          ],
+          [
+            2025.99,
+            8283.66
+          ]
+        ],
+        "final": "≈ $8,280"
+      },
+      {
+        "name": "Savings account",
+        "points": [
+          [
+            2010.0,
+            1000.0
+          ],
+          [
+            2010.99,
+            1002.1
+          ],
+          [
+            2011.99,
+            1003.7
+          ],
+          [
+            2012.99,
+            1004.81
+          ],
+          [
+            2013.99,
+            1005.66
+          ],
+          [
+            2014.99,
+            1006.26
+          ],
+          [
+            2015.99,
+            1006.87
+          ],
+          [
+            2016.99,
+            1007.47
+          ],
+          [
+            2017.99,
+            1008.08
+          ],
+          [
+            2018.99,
+            1008.68
+          ],
+          [
+            2019.99,
+            1009.44
+          ],
+          [
+            2020.99,
+            1010.35
+          ],
+          [
+            2021.99,
+            1010.75
+          ],
+          [
+            2022.99,
+            1011.36
+          ],
+          [
+            2023.99,
+            1014.7
+          ],
+          [
+            2024.99,
+            1019.46
+          ],
+          [
+            2025.99,
+            1023.64
+          ]
+        ],
+        "final": "≈ $1,024"
+      }
+    ],
+    "x": {
+      "from": 2010,
+      "to": 2025.99,
+      "tickEvery": 5
+    },
+    "y": {
+      "prefix": "$",
+      "dp": 0,
+      "compact": false,
+      "log": false
+    },
+    "raceT": [
+      1.0,
+      25.0
+    ],
+    "events": [
+      {
+        "x": 2020.2,
+        "label": "COVID"
+      },
+      {
+        "x": 2022.5,
+        "label": "2022 bear market"
+      }
+    ],
+    "hold": 17.0
+  },
+  "lookOpts": {
+    "stage": "light",
+    "figures": [
+      {
+        "series": 0,
+        "color": "hero"
+      },
+      {
+        "series": 1,
+        "color": "neutral"
+      }
+    ],
+    "beats": [
+      {
+        "t": 8.5,
+        "act": "cheer",
+        "series": 0,
+        "label": "doubled"
+      },
+      {
+        "t": 12.5,
+        "act": "shrug",
+        "series": 1,
+        "label": "≈ +$6"
+      },
+      {
+        "t": 20.5,
+        "act": "impact",
+        "series": 0,
+        "label": "≈ −18%"
+      },
+      {
+        "t": 25.0,
+        "act": "grow",
+        "series": 0
+      },
+      {
+        "t": 31.9,
+        "act": "flood",
+        "to": 1500.6,
+        "label": "prices ≈ +50%"
+      },
+      {
+        "t": 34.4,
+        "act": "peek",
+        "series": 1,
+        "label": "≈ $1,501 now = $1,000 in 2010"
+      }
+    ],
+    "gag": "Each figure climbs its own line. The S&P figure scrambles up a steep, jagged slope (stumbles in 2018, gets knocked down in 2022, climbs again); the savings figure strolls a ledge so flat he sits down halfway and checks his watch. At the end a 'prices' tide rises from $1,000 to its level, past the savings ledge to his chin; he peeks over it at the verdict."
+  },
+  "sfx": [
+    {
+      "t": 8.5,
+      "kind": "pop"
+    },
+    {
+      "t": 12.5,
+      "kind": "boing"
+    },
+    {
+      "t": 20.5,
+      "kind": "hit"
+    },
+    {
+      "t": 25.0,
+      "kind": "roll",
+      "dur": 1.0
+    },
+    {
+      "t": 31.9,
+      "kind": "whoosh",
+      "dur": 0.6
+    },
+    {
+      "t": 34.4,
+      "kind": "buzz"
+    }
+  ]
+}

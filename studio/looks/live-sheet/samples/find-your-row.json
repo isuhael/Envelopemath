@@ -1,0 +1,42 @@
+{
+  "id": "find-your-row",
+  "sample": true,
+  "look": "live-sheet",
+  "format": "find-your-row",
+  "fps": 30,
+  "header": "What does **$200 a month**\nbecome by age 65?",
+  "footer": "ASSUMES 8% a year, before tax and inflation",
+  "captions": false,
+  "vo": [
+    { "t": 0.0, "d": 1.6, "text": "Find your age." }
+  ],
+  "verdict": { "t": 8.2, "text": "Wait 9 years → **half or less**" },
+  "data": {
+    "columns": [ { "label": "Start at" }, { "label": "You put in" }, { "label": "Worth at 65", "emph": true } ],
+    "rows": [
+      ["18", "$112,800", "≈ $1,126,000"],
+      ["21", "$105,600", "≈ $888,000"],
+      ["24", "$98,400", "≈ $698,000"],
+      ["27", "$91,200", "≈ $548,000"],
+      ["30", "$84,000", "≈ $429,000"],
+      ["33", "$76,800", "≈ $334,000"],
+      ["36", "$69,600", "≈ $259,000"],
+      ["39", "$62,400", "≈ $199,000"],
+      ["42", "$55,200", "≈ $151,000"],
+      ["45", "$48,000", "≈ $114,000"],
+      ["48", "$40,800", "≈ $84,000"],
+      ["51", "$33,600", "≈ $60,000"],
+      ["54", "$26,400", "≈ $41,000"],
+      ["57", "$19,200", "≈ $26,000"]
+    ],
+    "formula": "= $200 × 12 × (65 − age) at 8%",
+    "rowsT": 0,
+    "rowEvery": 0.3,
+    "pick": [
+      { "t": 4.6, "row": 0, "label": "**≈ 10×** what you put in" },
+      { "t": 6.4, "row": 4, "label": "**≈ $700,000** less than at 18" }
+    ],
+    "hold": 5.0
+  },
+  "notes": "Maths: monthly deposits of $200 at the end of each month, 8% effective a year (monthly rate 1.08^(1/12) − 1), from the start age to 65. Worth = 200 × ((1+r)^n − 1) / r, n = 12 × (65 − age), rounded to the nearest $1,000. 18 → $1,126,262 (≈ 9.98× the $112,800 put in); 30 → $428,514; 18 − 30 gap $697,748 ≈ $700,000. Every 9-year wait gives 31-49% of the earlier figure across the table (half or less)."
+}

@@ -1,0 +1,143 @@
+/* Clean Sheet: a typeset worked page on a dark desk. Classes used by lib.js (prefix cs-).
+   Formats add their own CSS through an exported `css` string (prefix it with the format's short name). */
+
+#stage {
+  background: #17181B;
+  color: #15171C;
+  font-family: 'Inter', 'Inter Full', sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* ---- page ---- */
+.cs-desk { position: absolute; inset: 0; background: #17181B; }
+.cs-card {
+  position: absolute; left: 36px; top: 96px; width: 1008px; height: 1728px; border-radius: 28px;
+  background: #FAF8F3; overflow: hidden;
+  box-shadow: 0 40px 90px rgba(0, 0, 0, .5), 0 1px 0 rgba(255, 255, 255, .06);
+}
+.cs-dots {
+  position: absolute; inset: 0;
+  background-image: radial-gradient(circle at 20px 20px, #D5DCE4 0, #D5DCE4 2.3px, transparent 2.9px);
+  background-size: 40px 40px;
+  background-position: 0 0;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, transparent var(--dots-from, 420px), #000 var(--dots-full, 540px), #000 calc(100% - 260px), transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, transparent var(--dots-from, 420px), #000 var(--dots-full, 540px), #000 calc(100% - 260px), transparent 100%);
+}
+.cs-brand {
+  position: absolute; left: 84px; top: 148px; height: 44px;
+  display: flex; align-items: center; gap: 18px;
+  font: 600 30px/1 'Inter', 'Inter Full', sans-serif; letter-spacing: .03em; color: #6B7280;
+}
+.cs-brand svg { display: block; }
+
+/* ---- header + footer ---- */
+.cs-header {
+  position: absolute; left: 84px; top: 252px; width: 912px;
+  font: 400 84px/1.08 'Archivo Black', 'Inter Full', sans-serif; letter-spacing: -.012em; color: #15171C;
+  text-wrap: balance;
+}
+.cs-header em, .cs-header u.mark2,
+.cs-verdict em, .cs-verdict u.mark2 {
+  font-style: normal; text-decoration: none;
+  background-image: linear-gradient(var(--hl, #FFE066), var(--hl, #FFE066));
+  background-repeat: no-repeat; background-position: 0 0; background-size: var(--hw, 100%) 100%;
+  padding: 0 .13em; margin: 0 -.03em; border-radius: .12em;
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+.cs-header u.mark2 { --hl: #FFB3A7; }
+.cs-footer {
+  position: absolute; left: 84px; width: 912px;
+  font: 500 40px/1.25 'Inter', 'Inter Full', sans-serif; color: #6B7280;
+  text-wrap: balance;
+}
+.cs-footer em { font-style: normal; color: #15171C; font-weight: 600; }
+.cs-footer u.mark2 { text-decoration: none; color: #B42318; }
+
+/* ---- "≈": the brand's honesty sign, always in the accent ---- */
+.cs-approx { font-family: 'Inter Full', sans-serif; font-weight: 800; color: #2F6FEB; }
+.cs-hl .cs-approx, .cs-verdict em .cs-approx { color: #1D4FC4; }
+
+/* ---- work layer (formats draw here) ---- */
+.cs-work { position: absolute; inset: 0; z-index: 2; }
+.cs-work > * { position: absolute; }
+
+/* highlighter box */
+.cs-hl {
+  position: relative; display: inline-flex; align-items: center; white-space: nowrap;
+  font-family: 'Archivo Black', 'Inter Full', sans-serif; line-height: 1; color: #15171C;
+  letter-spacing: -.01em;
+}
+.cs-hl-bg { position: absolute; inset: 0; border-radius: 10px; background: #A7F3C1; }
+.cs-hl-txt { position: relative; display: block; transform-origin: 0 55%; padding-top: .06em; }
+.cs-hl em, .cs-hl u.mark2 { font-style: normal; text-decoration: none; }
+
+/* typed line + caret */
+.cs-type { white-space: pre; line-height: 1.2; letter-spacing: -.01em; }
+.cs-caret {
+  display: inline-block; width: .1em; min-width: 4px; height: 1.02em; margin-left: .06em;
+  background: #2F6FEB; border-radius: 2px; vertical-align: -.17em;
+}
+
+/* step circle */
+.cs-step {
+  position: absolute; width: 72px; height: 72px; border-radius: 50%;
+  border: 4px solid #2F6FEB; display: flex; align-items: center; justify-content: center;
+}
+.cs-step-fill { position: absolute; inset: -4px; border-radius: 50%; background: #2F6FEB; opacity: 0; }
+.cs-step-n {
+  position: relative; font: 400 44px/1 'Archivo Black', 'Inter Full', sans-serif; color: #2F6FEB;
+  padding-top: 2px;
+}
+
+/* pointer */
+.cs-pointer-wrap { position: absolute; left: 0; top: 0; width: 56px; height: 56px; transform-origin: 4px 28px; z-index: 5; filter: drop-shadow(0 6px 10px rgba(21, 23, 28, .22)); }
+.cs-pointer { display: block; }
+
+/* table (booktabs) */
+.cs-table { position: absolute; }
+.cs-rule-heavy, .cs-rule-thin { position: absolute; left: 0; right: 0; height: 3px; background: #15171C; border-radius: 2px; }
+.cs-rule-thin { height: 2px; background: #15171C; }
+.cs-thead { position: absolute; left: 0; right: 0; top: 0; font: 700 40px/1.15 'Inter', 'Inter Full', sans-serif; color: #6B7280; }
+.cs-th { position: absolute; bottom: 14px; }
+.cs-th.emph { color: #15171C; }
+.cs-th em { font-style: normal; color: #15171C; }
+.cs-tr { position: absolute; left: 0; right: 0; }
+.cs-tr-band { position: absolute; left: -12px; right: -12px; top: 6px; bottom: 6px; border-radius: 10px; opacity: 0; }
+.cs-tr-line { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: #E3DFD4; }
+.cs-td { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; }
+.cs-td .cs-hl { color: #15171C; }
+.cs-td:not(.emph) .cs-hl { color: #2A2D35; }
+
+/* sheet row: label ...... amount */
+.cs-sr { position: absolute; display: flex; align-items: center; gap: 22px; }
+.cs-sr-labcol { display: flex; flex-direction: column; gap: 4px; flex: none; }
+.cs-sr-label { font: 700 46px/1.12 'Inter', 'Inter Full', sans-serif; color: #15171C; white-space: nowrap; }
+.cs-sr-note { font: 500 40px/1.15 'Inter', 'Inter Full', sans-serif; color: #6B7280; white-space: nowrap; }
+.cs-sr-pct { font: 600 44px/1 'IBM Plex Mono', 'Inter Full', monospace; color: #6B7280; flex: none; text-align: right; }
+.cs-sr-leader {
+  flex: 1 1 auto; min-width: 40px; height: 6px; align-self: center;
+  background-image: radial-gradient(circle at 3px 3px, #9AA1AC 0, #9AA1AC 2.4px, transparent 2.9px);
+  background-size: 16px 6px; background-repeat: repeat-x;
+}
+.cs-sr .cs-hl { flex: none; }
+
+/* icons */
+.cs-icon { display: block; overflow: visible; }
+
+/* ---- caption band ---- */
+.cs-caprule { position: absolute; left: 84px; width: 856px; top: 1304px; height: 2px; background: #E3DFD4; z-index: 3; }
+.cs-captions { position: absolute; left: 84px; top: 1324px; width: 856px; height: 152px; z-index: 3; }
+.cs-cap { position: absolute; left: 0; top: 0; width: 856px; font: 700 48px/1.22 'Inter', 'Inter Full', sans-serif; color: #15171C; letter-spacing: -.005em; }
+.cs-cap { text-wrap: balance; }
+.cs-cap .w { display: inline-block; color: #6B7280; }
+.cs-cap .w.said { color: #15171C; }
+.cs-cap .w.em.said { color: #2F6FEB; }
+.cs-cap .w.mark2.said { color: #B42318; }
+.cs-verdict {
+  position: absolute; left: 84px; top: 1324px; width: 856px; z-index: 4;
+  font: 400 56px/1.14 'Archivo Black', 'Inter Full', sans-serif; color: #15171C; letter-spacing: -.01em;
+  --hl: #A5D8FF; --hw: 0%;
+  text-wrap: balance;
+}
+.cs-verdict u.mark2 { --hl: #FFB3A7; }

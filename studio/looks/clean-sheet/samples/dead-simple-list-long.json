@@ -1,0 +1,33 @@
+{
+  "id": "sample-clean-sheet-dead-simple-list-long",
+  "sample": true,
+  "look": "clean-sheet",
+  "format": "dead-simple-list",
+  "fps": 30,
+  "header": "6 dead simple numbers\nfor a **$60,000** salary",
+  "footer": "×0.7 ≈ what's left after tax (rough) · 2,000 work hours a year",
+  "captions": true,
+  "vo": [
+    { "t": 0.0, "d": 2.6, "text": "Sixty grand a year? Six numbers. Screenshot this." },
+    { "t": 2.8, "d": 2.0, "text": "Times 0.7: about **$42,000** you keep." },
+    { "t": 5.2, "d": 2.6, "text": "Divide by twelve: **$3,500** a month." },
+    { "t": 9.4, "d": 2.8, "text": "Divide by 2,000 hours: **$30** an hour." },
+    { "t": 13.6, "d": 2.9, "text": "Rent? Salary over forty: **$1,500** a month, tops." },
+    { "t": 17.8, "d": 2.8, "text": "A car? Times 0.35: **$21,000**, max." },
+    { "t": 22.0, "d": 2.8, "text": "And three months of take-home: **$10,500** saved." },
+    { "t": 25.6, "d": 2.8, "text": "Six numbers. One salary." }
+  ],
+  "verdict": { "t": 26.0, "text": "On $60K: rent under **$1,500**, car under **$21,000**." },
+  "data": {
+    "typeDur": 0.7,
+    "items": [
+      { "t": 0.6, "label": "What you actually take home", "formula": "$60,000 × 0.7", "result": "≈ $42,000 a year", "tone": "good", "resultT": 2.9 },
+      { "t": 5.0, "label": "Take-home every month", "formula": "$42,000 ÷ 12", "result": "$3,500 a month", "tone": "good", "resultT": 6.2 },
+      { "t": 9.4, "label": "Your hourly pay", "formula": "$60,000 ÷ 2,000 hrs", "result": "$30 an hour", "tone": "good", "resultT": 10.7 },
+      { "t": 13.6, "label": "Most you should pay in rent", "formula": "$60,000 ÷ 40", "result": "$1,500 a month", "tone": "neutral", "note": "rent max", "resultT": 15.0 },
+      { "t": 17.8, "label": "Most you should spend on a car", "formula": "$60,000 × 0.35", "result": "$21,000", "tone": "neutral", "note": "car max", "resultT": 19.2 },
+      { "t": 22.0, "label": "A 3-month safety net", "formula": "$3,500 × 3", "result": "$10,500 saved", "tone": "good", "resultT": 23.3 }
+    ],
+    "hold": 2.5
+  }
+}

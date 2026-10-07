@@ -1,0 +1,261 @@
+{
+  "id": "pov-race",
+  "sample": true,
+  "look": "live-sheet",
+  "format": "pov-race",
+  "fps": 30,
+  "header": "POV: You invested in Amazon\ninstead of paying **$79** for Prime",
+  "footer": "ASSUMES each year's fee buys AMZN in Jan",
+  "captions": true,
+  "vo": [
+    {
+      "t": 0.0,
+      "d": 2.0,
+      "text": "**$79** a year for Prime in 2010."
+    },
+    {
+      "t": 2.2,
+      "d": 2.6,
+      "text": "Every year, you buy Amazon stock instead."
+    },
+    {
+      "t": 5.2,
+      "d": 2.4,
+      "text": "By 2013 you've more than **doubled** it."
+    },
+    {
+      "t": 8.0,
+      "d": 2.4,
+      "text": "2015: Prime goes up to **$99**."
+    },
+    {
+      "t": 12.8,
+      "d": 2.0,
+      "text": "2019: **$119**. You keep buying."
+    },
+    {
+      "t": 15.2,
+      "d": 2.2,
+      "text": "2020: over **$9,000**."
+    },
+    {
+      "t": 17.6,
+      "d": 2.4,
+      "text": "2022 cuts it __in half__."
+    },
+    {
+      "t": 20.2,
+      "d": 1.1,
+      "text": "__$1,545__ of Prime."
+    },
+    {
+      "t": 21.3,
+      "d": 1.2,
+      "text": "**≈ $13,260** in stock."
+    }
+  ],
+  "verdict": {
+    "t": 22.6,
+    "text": "**≈ 8.6×** what Prime\ncost you"
+  },
+  "data": {
+    "spend": {
+      "label": "Paid for Prime",
+      "points": [
+        [
+          2010.0,
+          79
+        ],
+        [
+          2010.99,
+          79
+        ],
+        [
+          2011.99,
+          158
+        ],
+        [
+          2012.99,
+          237
+        ],
+        [
+          2013.99,
+          316
+        ],
+        [
+          2014.99,
+          395
+        ],
+        [
+          2015.99,
+          494
+        ],
+        [
+          2016.99,
+          593
+        ],
+        [
+          2017.99,
+          692
+        ],
+        [
+          2018.99,
+          791
+        ],
+        [
+          2019.99,
+          910
+        ],
+        [
+          2020.99,
+          1029
+        ],
+        [
+          2021.99,
+          1148
+        ],
+        [
+          2022.99,
+          1267
+        ],
+        [
+          2023.99,
+          1406
+        ],
+        [
+          2024.99,
+          1545
+        ]
+      ],
+      "final": "$1,545 spent",
+      "item": "bag"
+    },
+    "own": {
+      "label": "Same money in Amazon stock",
+      "points": [
+        [
+          2010.0,
+          79.0
+        ],
+        [
+          2010.99,
+          105.71
+        ],
+        [
+          2011.99,
+          177.63
+        ],
+        [
+          2012.99,
+          371.93
+        ],
+        [
+          2013.99,
+          716.81
+        ],
+        [
+          2014.99,
+          619.32
+        ],
+        [
+          2015.99,
+          1564.38
+        ],
+        [
+          2016.99,
+          1845.44
+        ],
+        [
+          2017.99,
+          3032.48
+        ],
+        [
+          2018.99,
+          4021.82
+        ],
+        [
+          2019.99,
+          5094.35
+        ],
+        [
+          2020.99,
+          9188.85
+        ],
+        [
+          2021.99,
+          9529.08
+        ],
+        [
+          2022.99,
+          4861.16
+        ],
+        [
+          2023.99,
+          9044.34
+        ],
+        [
+          2024.99,
+          13260.06
+        ]
+      ],
+      "final": "≈ $13,260"
+    },
+    "purchases": [
+      {
+        "x": 2010.0,
+        "label": "Prime",
+        "price": "$79"
+      },
+      {
+        "x": 2015.0,
+        "label": "Prime",
+        "price": "$99"
+      },
+      {
+        "x": 2019.0,
+        "label": "Prime",
+        "price": "$119"
+      },
+      {
+        "x": 2023.0,
+        "label": "Prime",
+        "price": "$139"
+      }
+    ],
+    "x": {
+      "from": 2010,
+      "to": 2024.99,
+      "tickEvery": 3
+    },
+    "y": {
+      "prefix": "$",
+      "dp": 0
+    },
+    "raceT": [
+      2.0,
+      20.0
+    ],
+    "hold": 4.0
+  },
+  "lookOpts": {
+    "formulaBar": [
+      {
+        "t": 0.0,
+        "text": "= $79 ÷ $6.73 ≈ 11.7 shares"
+      },
+      {
+        "t": 8.0,
+        "text": "= $99 ÷ $15.52 ≈ 6.4 shares"
+      },
+      {
+        "t": 17.6,
+        "text": "= $166.72 → $84.00 ≈ −50%"
+      },
+      {
+        "t": 20.3,
+        "text": "= 60.4 × $219.39 ≈ $13,260"
+      }
+    ]
+  },
+  "notes": "Amazon Prime was $79 a year until 2014, $99 from 2015 (the March 2014 rise reaches a January renewal in 2015), $119 from 2019 and $139 from 2023 (the 2018 and 2022 rises came after January renewals). Each January's fee buys AMZN at the prior year-end close (split-adjusted for the 20:1 split of June 2022): 2009 $6.726, 2010 $9.000, 2011 $8.655, 2012 $12.544, 2013 $19.940, 2014 $15.518, 2015 $33.795, 2016 $37.494, 2017 $58.474, 2018 $75.099, 2019 $92.392, 2020 $162.847, 2021 $166.717, 2022 $84.00, 2023 $151.94, 2024 $219.39. Shares bought: 79/6.726 = 11.745 (2010) … 139/151.94 = 0.915 (2024); total 60.44 shares. Year-end value = shares held × that year's close: 2010 $105.71, 2013 $716.81 (2.27× the $316 paid), 2014 $619.32, 2020 $9,188.85, 2021 $9,529.08, 2022 $4,861.16 (−49%), 2024 60.44 × $219.39 = $13,260.06. Paid: 5 × 79 + 4 × 99 + 4 × 119 + 2 × 139 = $1,545. Multiple 13,260.06 / 1,545 = 8.58 ≈ 8.6×. 2022 stock move 84.00 / 166.717 − 1 = −49.6% ≈ −50%. Amazon pays no dividend, so price-only is the total return."
+}

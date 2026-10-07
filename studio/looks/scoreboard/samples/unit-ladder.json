@@ -1,0 +1,32 @@
+{
+  "id": "sample-scoreboard-unit-ladder",
+  "sample": true,
+  "look": "scoreboard",
+  "format": "unit-ladder",
+  "fps": 30,
+  "header": "Cost in units of\n**$5 lattes**",
+  "footer": "1 latte ≈ $5 · US prices, 2026",
+  "captions": true,
+  "vo": [
+    { "t": 0.0, "d": 1.4, "text": "Everything, in five-dollar lattes." },
+    { "t": 1.5, "d": 2.6, "text": "A month of Netflix? About three and a half." },
+    { "t": 4.6, "d": 2.4, "text": "AirPods? Fifty lattes." },
+    { "t": 8.0, "d": 2.6, "text": "A new iPhone? A hundred and sixty." },
+    { "t": 11.4, "d": 3.0, "text": "A year of rent? Four thousand and eighty." },
+    { "t": 15.0, "d": 3.4, "text": "The average new car? **Ten thousand lattes.**" },
+    { "t": 19.2, "d": 2.4, "text": "That's one a day for twenty-seven years." }
+  ],
+  "verdict": { "t": 19.2, "text": "One latte a day\nfor **≈ 27 years**" },
+  "data": {
+    "unit": { "name": "Latte", "price": "$5", "icon": "cup" },
+    "rungs": [
+      { "t": 1.4, "item": "A month of Netflix", "cost": "$17.99", "units": 3.6, "unitsDisplay": "≈ 3.6" },
+      { "t": 4.6, "item": "AirPods Pro 3", "cost": "$249", "units": 49.8, "unitsDisplay": "≈ 50" },
+      { "t": 8.0, "item": "An iPhone 17", "cost": "$799", "units": 159.8, "unitsDisplay": "≈ 160" },
+      { "t": 11.4, "item": "A year of rent at $1,700/mo", "cost": "$20,400", "units": 4080, "unitsDisplay": "4,080" },
+      { "t": 15.0, "item": "The average new car", "cost": "≈ $50,000", "units": 10000, "unitsDisplay": "≈ 10,000" }
+    ],
+    "hold": 3.0
+  },
+  "notes": "Maths: $17.99 ÷ $5 = 3.598; $249 ÷ $5 = 49.8; $799 ÷ $5 = 159.8; $20,400 = $1,700 × 12, ÷ $5 = 4,080; $50,000 ÷ $5 = 10,000; 10,000 lattes at one a day = 10,000 days = 27.4 years. Prices: Netflix Standard $17.99/mo (US, 2025-26), AirPods Pro 3 $249 and iPhone 17 $799 (US launch prices, Sept 2025), average new-car transaction price ≈ $50,000 (KBB, late 2025)."
+}

@@ -1,0 +1,142 @@
+{
+  "id": "sample-clean-sheet-ledger-duel-2",
+  "sample": true,
+  "look": "clean-sheet",
+  "format": "ledger-duel",
+  "fps": 30,
+  "header": "2 people owe **$5,000**\non a credit card",
+  "footer": "24% APR charged monthly · no new spending",
+  "captions": false,
+  "vo": [
+    {
+      "t": 0.0,
+      "d": 2.4,
+      "text": "Same $5,000 card balance. Two ways to pay."
+    },
+    {
+      "t": 3.0,
+      "d": 2.6,
+      "text": "A year in, Cara has paid $1,200 and still owes $5,000."
+    },
+    {
+      "t": 6.4,
+      "d": 2.0,
+      "text": "Bea is debt-free in 26 months."
+    }
+  ],
+  "verdict": {
+    "t": 9.0,
+    "text": "Cara paid __$6,000__.\nShe still owes __$5,000__."
+  },
+  "data": {
+    "people": [
+      {
+        "name": "Cara",
+        "plan": "$100 a month"
+      },
+      {
+        "name": "Bea",
+        "plan": "$250 a month"
+      }
+    ],
+    "stake": "$5,000 balance each at 24% APR",
+    "rows": [
+      {
+        "t": 0.0,
+        "label": "Start",
+        "values": [
+          "$5,000",
+          "$5,000"
+        ]
+      },
+      {
+        "t": 1.0,
+        "label": "Month 3",
+        "values": [
+          "$5,000",
+          "≈ $4,541"
+        ]
+      },
+      {
+        "label": "Month 6",
+        "values": [
+          "$5,000",
+          "≈ $4,054"
+        ]
+      },
+      {
+        "label": "Month 9",
+        "values": [
+          "$5,000",
+          "≈ $3,537"
+        ]
+      },
+      {
+        "label": "Year 1",
+        "values": [
+          "$5,000",
+          "≈ $2,988"
+        ],
+        "event": "Cara has paid $1,200 so far",
+        "tone": "bad"
+      },
+      {
+        "label": "Month 15",
+        "values": [
+          "$5,000",
+          "≈ $2,406"
+        ]
+      },
+      {
+        "label": "Month 18",
+        "values": [
+          "$5,000",
+          "≈ $1,788"
+        ]
+      },
+      {
+        "label": "Month 21",
+        "values": [
+          "$5,000",
+          "≈ $1,133"
+        ]
+      },
+      {
+        "label": "Year 2",
+        "values": [
+          "$5,000",
+          "≈ $437"
+        ]
+      },
+      {
+        "label": "Month 26",
+        "values": [
+          "$5,000",
+          "$0"
+        ],
+        "event": "Bea is debt-free",
+        "tone": "good"
+      },
+      {
+        "label": "Year 3",
+        "values": [
+          "$5,000",
+          "$0"
+        ]
+      },
+      {
+        "label": "Year 5",
+        "values": [
+          "$5,000",
+          "$0"
+        ],
+        "tone": "goal"
+      }
+    ],
+    "rowsT": 1.0,
+    "rowEvery": 0.7,
+    "winner": 1,
+    "hold": 2.5
+  },
+  "notes": "Stress variant: 12 rows, a two-line header, events on 2 of 12 rows, silent (captions off). Maths: 24% APR = 2% a month, interest added monthly, then the payment. Cara: $5,000 × 1.02 − $100 = $5,000 every month, so the balance never moves; paid $100 × 12 = $1,200 by year 1, $100 × 60 = $6,000 by year 5. Bea: balance after n payments = $12,500 − $7,500 × 1.02^n: month 3 $4,540.94; 6 $4,053.78; 9 $3,536.81; 12 $2,988.19; 15 $2,405.99; 18 $1,788.15; 21 $1,132.50; 24 $436.72; 25 $195.45; month 26's payment of $199.36 clears it. Total paid by Bea = 25 × $250 + $199.36 = $6,449.36 (≈ $6,449). Values shown to the nearest dollar with ≈."
+}

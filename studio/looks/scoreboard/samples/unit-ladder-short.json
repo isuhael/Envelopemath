@@ -1,0 +1,29 @@
+{
+  "id": "sample-scoreboard-unit-ladder-short",
+  "sample": true,
+  "look": "scoreboard",
+  "format": "unit-ladder",
+  "fps": 30,
+  "header": "What it costs in\n**hours of work** at $20/hr",
+  "footer": "1 hour of work = $20, before tax",
+  "captions": false,
+  "vo": [
+    { "t": 0.0, "d": 2.8, "text": "Dinner for two? Four hours of work." },
+    { "t": 3.0, "d": 3.2, "text": "A new iPhone? Forty hours. A full week." },
+    { "t": 6.4, "d": 3.4, "text": "A year of rent? Over a thousand hours." },
+    { "t": 10.0, "d": 3.8, "text": "The average new car? Twenty-five hundred." },
+    { "t": 14.2, "d": 2.4, "text": "Fourteen months of full-time work." }
+  ],
+  "verdict": { "t": 14.2, "text": "**≈ 14 months**\nof full-time work" },
+  "data": {
+    "unit": { "name": "Hour of work", "price": "$20", "icon": "hour" },
+    "rungs": [
+      { "t": 0.0, "item": "Dinner for two at a sit-down restaurant", "cost": "$80", "units": 4, "unitsDisplay": "4" },
+      { "t": 3.0, "item": "An iPhone 17", "cost": "$799", "units": 39.95, "unitsDisplay": "≈ 40" },
+      { "t": 6.4, "item": "A year of rent at $1,700/mo", "cost": "$20,400", "units": 1020, "unitsDisplay": "1,020" },
+      { "t": 10.0, "item": "The average new car", "cost": "≈ $50,000", "units": 2500, "unitsDisplay": "≈ 2,500" }
+    ],
+    "hold": 3.5
+  },
+  "notes": "Maths: $80 ÷ $20 = 4; $799 ÷ $20 = 39.95; $20,400 ÷ $20 = 1,020; $50,000 ÷ $20 = 2,500 hours; full-time = 40 h × 52 = 2,080 h a year, so 2,500 h = 1.2 years ≈ 14.4 months. Captions off: the label stack drops into the caption band (HD Guy layout)."
+}

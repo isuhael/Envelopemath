@@ -1,0 +1,62 @@
+{
+  "id": "09a-live-sheet-100-a-month-doubles",
+  "look": "live-sheet",
+  "format": "growth-ladder",
+  "fps": 30,
+  "duration": 29.5,
+  "header": "**$100 a month** at 8%.\nWhich year does it double?",
+  "footer": "ASSUMES 8% a year, compounded monthly · $100 in at each month-end · not a forecast",
+  "captions": true,
+  "vo": [
+    { "t": 0.0, "d": 3.2, "text": "$100 a month at 8%." },
+    { "t": 3.4, "d": 3.2, "text": "The Rule of 72 says 9 years." },
+    { "t": 6.8, "d": 2.1, "text": "Year 9? Not even close." },
+    { "t": 9.1, "d": 1.7, "text": "Year 15: still short." },
+    { "t": 11.0, "d": 4.8, "text": "Year 16: $19,200 in. Worth more than double." },
+    { "t": 16.0, "d": 4.8, "text": "Why 16, not 9? Every new $100 starts from zero." },
+    { "t": 21.0, "d": 3.6, "text": "Year 30: over 4 times what you put in." },
+    { "t": 24.8, "d": 2.5, "text": "Any monthly amount: still year 16." }
+  ],
+  "verdict": { "t": 24.8, "text": "Doubled in **year 16**, not 9.\nSame year for any monthly amount." },
+  "data": {
+    "input": { "amount": "$100", "per": "a month", "rate": "8% a year" },
+    "columns": ["Year", "You put in", "Worth"],
+    "rows": [
+      ["1", "$1,200", "≈ $1,245"],
+      ["5", "$6,000", "≈ $7,348"],
+      ["9", "$10,800", "≈ $15,743"],
+      ["12", "$14,400", "≈ $24,051"],
+      ["15", "$18,000", "≈ $34,604"],
+      ["16", "$19,200", "≈ $38,721"],
+      ["20", "$24,000", "≈ $58,902"],
+      ["30", "$36,000", "≈ $149,036"]
+    ],
+    "rowT": [0.0, 4.6, 6.8, 8.0, 9.1, 11.0, 17.2, 21.0],
+    "highlightLast": true,
+    "hold": 8.5
+  },
+  "lookOpts": {
+    "inputsAtStart": true,
+    "formulaBar": [
+      { "t": 0.0, "text": "= $100 × 12 months = $1,200 in" },
+      { "t": 3.4, "text": "Rule of 72: 72 ÷ 8 = 9 years?" },
+      { "t": 6.8, "text": "≈ $15,743 < 2 × $10,800" },
+      { "t": 9.1, "text": "≈ $34,604 < 2 × $18,000" },
+      { "t": 11.0, "text": "≈ $38,721 > 2 × $19,200" },
+      { "t": 17.6, "text": "1st $100 ≈ $356 · last $100 = $100" },
+      { "t": 21.0, "text": "≈ $149,036 ÷ $36,000 ≈ 4.1×" },
+      { "t": 24.8, "text": "$50 or $500 a month: still year 16" }
+    ],
+    "marks": [
+      { "t": 6.8, "row": 2, "tone": "bad", "label": "not double" },
+      { "t": 9.1, "row": 4, "tone": "bad", "label": "not yet" },
+      { "t": 11.0, "row": 5, "tone": "good", "label": "doubled" }
+    ]
+  },
+  "sfx": [
+    { "t": 6.8, "kind": "buzz", "gain": 0.35 },
+    { "t": 9.1, "kind": "buzz", "gain": 0.35 },
+    { "t": 11.0, "kind": "pop" },
+    { "t": 21.0, "kind": "roll", "dur": 0.8 }
+  ]
+}

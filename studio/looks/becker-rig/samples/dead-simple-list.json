@@ -1,0 +1,35 @@
+{
+  "id": "becker-rig-dead-simple-list",
+  "sample": true,
+  "look": "becker-rig",
+  "format": "dead-simple-list",
+  "fps": 30,
+  "header": "4 DEAD SIMPLE NUMBERS\nIF YOU MAKE **$100,000**",
+  "footer": "ASSUMES ≈ 25% tax (single, rough) · 2,000 work hrs a year",
+  "captions": true,
+  "vo": [
+    { "t": 0.0, "d": 2.2, "text": "A hundred grand a year? Times 0.25." },
+    { "t": 2.4, "d": 2.2, "text": "About __$25,000__ goes to tax." },
+    { "t": 5.0, "d": 2.6, "text": "Take it off: you keep **$75,000**." },
+    { "t": 9.6, "d": 2.6, "text": "Divide by twelve: **$6,250** a month." },
+    { "t": 14.2, "d": 2.2, "text": "Now divide by 2,000 work hours." },
+    { "t": 16.6, "d": 1.8, "text": "**$37.50** an hour." },
+    { "t": 18.6, "d": 1.8, "text": "Not the fifty you'd think." }
+  ],
+  "verdict": { "t": 20.6, "text": "You make $50 an hour.\nYou keep **$37.50**." },
+  "data": {
+    "input": { "label": "Salary", "value": "$100,000", "note": "a year" },
+    "typeDur": 0.7,
+    "items": [
+      { "t": 0.0, "label": "Gone to tax, roughly", "formula": "$100,000 × 0.25", "result": "≈ $25,000",
+        "tone": "bad", "note": "every year", "resultT": 2.4 },
+      { "t": 5.0, "label": "What you keep", "formula": "$100,000 − $25,000", "result": "$75,000",
+        "tone": "good", "note": "a year", "resultT": 6.6 },
+      { "t": 9.6, "label": "A month", "formula": "$75,000 ÷ 12", "result": "$6,250",
+        "tone": "good", "note": "take-home", "resultT": 11.0 },
+      { "t": 14.2, "label": "Your real hourly pay", "formula": "$75,000 ÷ 2,000", "result": "$37.50 an hour",
+        "tone": "goal", "note": "not $50", "resultT": 16.6 }
+    ],
+    "hold": 3.0
+  }
+}

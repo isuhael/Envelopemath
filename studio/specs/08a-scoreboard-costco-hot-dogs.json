@@ -1,0 +1,36 @@
+{
+  "id": "08a-scoreboard-costco-hot-dogs",
+  "look": "scoreboard",
+  "format": "unit-ladder",
+  "fps": 30,
+  "duration": 30.0,
+  "header": "COST IN UNITS OF\n**COSTCO HOT DOGS**",
+  "footer": "Hot dog + soda = $1.50, same since 1985",
+  "captions": true,
+  "vo": [
+    { "t": 0.0,  "d": 2.8, "text": "Your Costco membership? **≈ 43 hot dogs**." },
+    { "t": 3.0,  "d": 3.9, "text": "That hot dog: still **$1.50**, since 1985." },
+    { "t": 7.1,  "d": 3.5, "text": "An iPhone 18 Pro? **≈ 799**." },
+    { "t": 10.9, "d": 3.1, "text": "An average new car now? **≈ 33,000**." },
+    { "t": 14.0, "d": 3.9, "text": "A new house in 1985? **56,200**." },
+    { "t": 18.2, "d": 4.7, "text": "And a new house in 2026? **≈ 262,000**." },
+    { "t": 23.2, "d": 4.3, "text": "Same hot dog. **≈ 4.7×** the hot dogs." }
+  ],
+  "verdict": { "t": 23.2, "text": "Same hot dog.\nThe house: **≈ 4.7×** the hot dogs." },
+  "data": {
+    "unit": { "name": "Costco hot dog", "price": "$1.50", "icon": "hotdog" },
+    "rungs": [
+      { "t": 0.0,  "item": "Your Costco membership",     "cost": "$65",      "units": 43,     "unitsDisplay": "≈ 43" },
+      { "t": 7.1,  "item": "An iPhone 18 Pro",           "cost": "$1,199",   "units": 799,    "unitsDisplay": "≈ 799" },
+      { "t": 10.9, "item": "An average new car",         "cost": "$50,089",  "units": 33393,  "unitsDisplay": "≈ 33,393" },
+      { "t": 14.0, "item": "A median new house in 1985", "cost": "$84,300",  "units": 56200,  "unitsDisplay": "56,200" },
+      { "t": 18.2, "item": "A median new house in 2026", "cost": "$393,700", "units": 262467, "unitsDisplay": "≈ 262,467" }
+    ],
+    "hold": 8.98
+  },
+  "lookOpts": {
+    "climaxFill": 1,
+    "bigUnit": { "from": 10000, "per": 1000, "legend": "1 block = 1,000 hot dogs" }
+  },
+  "sfx": [ { "t": 23.2, "kind": "ding" } ]
+}

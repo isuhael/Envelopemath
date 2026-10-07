@@ -1,0 +1,92 @@
+{
+  "id": "what-difference-2",
+  "sample": true,
+  "look": "live-sheet",
+  "format": "what-difference",
+  "fps": 30,
+  "header": "What difference does **$50 more**\na month make on a credit card?",
+  "footer": "ASSUMES 22% APR, no new spending",
+  "captions": false,
+  "verdict": {
+    "t": 11.4,
+    "text": "**$50 more** a month saves **$5,880**"
+  },
+  "data": {
+    "stake": {
+      "label": "Credit card balance",
+      "value": "$5,000",
+      "terms": "22% APR · no new charges"
+    },
+    "metrics": [
+      {
+        "key": "time",
+        "label": "Debt-free in"
+      },
+      {
+        "key": "interest",
+        "label": "Interest paid"
+      },
+      {
+        "key": "total",
+        "label": "Total you pay back"
+      }
+    ],
+    "options": [
+      {
+        "t": 0,
+        "name": "$100/mo",
+        "detail": "the habit",
+        "values": {
+          "time": "11 yrs 5 mo",
+          "interest": "$8,678",
+          "total": "$13,678"
+        }
+      },
+      {
+        "name": "$150/mo",
+        "detail": "$50 more",
+        "values": {
+          "time": "4 yrs 4 mo",
+          "interest": "$2,798",
+          "total": "$7,798"
+        },
+        "delta": "−$5,880",
+        "tone": "good"
+      },
+      {
+        "name": "$250/mo",
+        "detail": "$150 more",
+        "values": {
+          "time": "2 yrs 2 mo",
+          "interest": "$1,286",
+          "total": "$6,286"
+        },
+        "delta": "−$7,392",
+        "tone": "good"
+      },
+      {
+        "name": "$500/mo",
+        "detail": "$400 more",
+        "values": {
+          "time": "1 year",
+          "interest": "$574",
+          "total": "$5,574"
+        },
+        "delta": "−$8,104",
+        "tone": "good"
+      }
+    ],
+    "winner": 1,
+    "hold": 3.0
+  },
+  "lookOpts": {
+    "deltaLabel": "Interest vs paying $100",
+    "formulas": [
+      "= $100 − $92 interest = $8 off",
+      "= $150 − $92 interest = $58 off",
+      "= $250 − $92 interest = $158 off",
+      "= $500 − $92 interest = $408 off"
+    ]
+  },
+  "notes": "Stress variant: 4 options, 3 metrics plus the delta row, long labels, values that wrap, silent, default option pacing (t omitted after the first), verdict retyped in the formula bar. Maths: $5,000 at 22% APR, interest 22%/12 = 1.8333% a month on the balance, fixed payment, no new charges. First month's interest = $5,000 × 1.8333% = $91.67 → '$92' in the working (the principal paid in month 1 is payment − $91.67: $8.33, $58.33, $158.33, $408.33 → '$8', '$58', '$158', '$408'). $100/mo: 137 payments = 11 yrs 5 mo, interest $8,678.06, total $13,678.06. $150/mo: 52 payments = 4 yrs 4 mo, interest $2,798.05, total $7,798.05, saves 8,678.06 − 2,798.05 = $5,880.01 → −$5,880. $250/mo: 26 payments = 2 yrs 2 mo, interest $1,285.72 → $1,286, total $6,285.72 → $6,286, saves $7,392.34 → −$7,392. $500/mo: 12 payments = 1 year, interest $574.44 → $574, total $5,574.44 → $5,574, saves $8,103.62 → −$8,104. Winner = $150: the first $50 a month saves $5,880 of the $8,104 the full $400 extra saves."
+}

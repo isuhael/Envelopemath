@@ -1,0 +1,590 @@
+// split-sheet — one round sum, every percentage in dollars (P9), on the Clean Sheet.
+//
+// The whole sheet is on the page at frame 1 (Yannick's finished sheet): the total on its yellow highlighter at the
+// top ("Take-home pay ······ $4,000"), a split bar under it (one empty segment per part, sized by `share`), then
+// one line per part: label (a grey note under it), its percentage in grey mono, a dotted leader, and an empty
+// dashed slot where its dollars will land. A pointer walks down the right edge of the sheet, never over a number.
+// Each part: the pointer lands on the row, its percentage turns accent and the leader traces in accent from the %
+// toward the slot (percentage → dollars); the optional working (part.formula, "5 × $400") types in grey mono and
+// ends in "=" right before the slot, then the highlighter swipes in and the amount pops. The working STAYS, so the
+// finished page is a worked sheet ("50% ··· 5 × $400 = $2,000"). The bar segment fills in the part's tone. The
+// previous amount rests, so the newest is the only loud number. Then the sum rule and the accent check line: every
+// amount comes back to full (a goal part stays the only loud one), the total lights up again, the pointer leaves,
+// the finished sheet holds, and (lookOpts.loop, default on) the last 0.7 s clears back to frame 1.
+//
+// Layout engine (measured with the real fonts at mount). Labels share one column so the % column and the leaders
+// line up; a label too long for it wraps to 2 lines (balanced) and sits centred on its amount. Per type scale
+// (largest first) it tries: formulas on the line (they stay) / in the slot (typed in the empty slot, erased by the
+// highlighter: "formula, then result, in the same slot", H55/H84) / none, each with notes + bar, notes, bar, bare,
+// each with normal then tight (dense) spacing. The first that fits the work area with type above the floors wins.
+// lookOpts.debug logs every candidate and why it failed.
+//
+// Spec extensions (all optional): total.note (grey line under the total, e.g. "10% = $400"); part.formula (the
+// mental shortcut); data.check / checkT (contract; "check: " is prefixed when the line has room for it); data.hold.
+// A part without a tone is neutral (sand). lookOpts: loop (true), pointer (true), bar (auto; false hides it, true
+// insists on it), notes (auto; false hides them), formulas (auto | 'line' | 'slot' | false), debug,
+// wrongGuess { part, t, formula, result, strike = true, strikeT, until }: a wrong answer whose working types under
+// row `part` (or on the line under the sheet, where the check lands later, when there is no room) and whose result
+// lands on coral at `t`, struck through at strikeT, gone by `until` (default: as the next part starts).
+import { h, css as style, prog, ease, clamp, lerp } from '../../../runtime/core.js'
+import { C, SIZE, GRID, MOTION, md, hlBox, typeLine, pointer, pathAt, fade, show, blink, landing, durationOf, typeTime, toneColor } from '../lib.js'
+
+export const css = `
+.ss > * { position: absolute; }
+.ss-label { white-space: nowrap; font: 700 46px/1.12 'Inter', 'Inter Full', sans-serif; color: #15171C; letter-spacing: -.01em; }
+.ss-label.wrap { white-space: normal; text-wrap: balance; }
+.ss-label em { font-style: normal; color: #2F6FEB; }
+.ss-label u.mark2 { text-decoration: none; color: #B42318; }
+.ss-note { white-space: nowrap; font: 500 40px/1.15 'Inter', 'Inter Full', sans-serif; color: #6B7280; }
+.ss-note em { font-style: normal; color: #15171C; font-weight: 600; }
+.ss-note u.mark2 { text-decoration: none; color: #B42318; }
+.ss-pct { white-space: nowrap; font: 600 44px/1 'IBM Plex Mono', 'Inter Full', monospace; color: #6B7280; text-align: right; letter-spacing: -.02em; }
+.ss-leader, .ss-trace { height: 6px; background-repeat: repeat-x; background-size: 16px 6px; }
+.ss-leader { background-image: radial-gradient(circle at 3px 3px, #9AA1AC 0, #9AA1AC 2.4px, transparent 2.9px); }
+.ss-trace { background-image: radial-gradient(circle at 3px 3px, #2F6FEB 0, #2F6FEB 2.8px, transparent 3.3px); }
+.ss-slot { box-sizing: border-box; border: 3px dashed #C9D1DB; border-radius: 10px; }
+.ss-rule { height: 3px; background: #15171C; border-radius: 2px; }
+.ss-rule.thin { height: 2px; }
+.ss-hair { height: 2px; background: #E3DFD4; border-radius: 1px; }
+.ss-seg, .ss-seg-empty { position: absolute; box-sizing: border-box; border-radius: 7px; }
+.ss-seg-empty { border: 2px dashed #C9D1DB; }
+.ss-seg { border: 2px solid rgba(21, 23, 28, .16); }
+.ss-strike { height: 5px; background: #B42318; border-radius: 3px; transform-origin: 0 50%; pointer-events: none; }
+.ss-check, .ss-guess-f, .ss-f { white-space: pre; }
+.ss-check.wrap { white-space: pre-wrap; }
+`
+
+const SCALES = [1, 0.96, 0.92, 0.88, 0.84] // type clamps at the floors below (labels 40, amounts 50, total 56)
+const FLOOR = { label: 40, amount: 50, total: 56 }
+const LEAD = 0.3   // the row activates (pointer lands, % turns accent, leader traces) this long before typing / landing
+const F_GAP = 16   // gap either side of a formula on the line
+
+const hex = c => [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16))
+const mix = (a, b, p) => { const A = hex(a), B = hex(b); return `rgb(${A.map((v, i) => Math.round(lerp(v, B[i], clamp(p)))).join(',')})` }
+const n3 = v => (Math.round(v * 1000) / 1000).toString()
+const W = el => el.getBoundingClientRect().width
+const H = el => el.getBoundingClientRect().height
+/** right edge of the text actually set in el (a balanced wrap is narrower than its box) */
+function inkRight(el) {
+  const r = document.createRange()
+  r.selectNodeContents(el)
+  return Math.max(...[...r.getClientRects()].map(b => b.right), el.getBoundingClientRect().left)
+}
+
+export default function splitSheet(spec, ctx) {
+  const P = ctx.page
+  const d = spec.data || {}
+  const LO = spec.lookOpts || {}
+  const loop = LO.loop !== false
+  const total = d.total || {}
+  const parts = (d.parts || []).slice(0, 8)
+  const n = parts.length
+  const goalIdx = parts.findIndex(p => p.tone === 'goal')
+  const wgSpec = LO.wrongGuess || d.wrongGuess || null
+  const checkRaw = String(d.check != null ? d.check : LO.check != null ? LO.check : '').replace(/^check:\s*/i, '')
+
+  // ---------------------------------------------------------------- DOM (built once)
+  const root = h('div', { class: 'ss' })
+  style(root, { left: '0px', top: '0px', width: GRID.W + 'px', height: GRID.H + 'px' })
+  P.layer.append(root)
+  const x0 = GRID.left, xR = P.right, width = xR - x0
+
+  const tot = {
+    label: h('div', { class: 'ss-label', html: md(total.label || 'Total') }),
+    note: total.note ? h('div', { class: 'ss-note', html: md(total.note) }) : null,
+    leader: h('div', { class: 'ss-leader', 'data-deco': '' }),
+    box: hlBox({ html: md(total.display || ''), tone: 'input', px: 72 }),
+  }
+  for (const e of [tot.label, tot.note, tot.leader, tot.box.el]) if (e) root.append(e)
+  style(tot.box.el, { position: 'absolute' })
+
+  // split bar (decoration): one segment per part, sized by share
+  const shares = parts.map(p => +p.share)
+  const hasShares = n > 0 && shares.every(v => isFinite(v) && v > 0)
+  const shareSum = hasShares ? shares.reduce((a, b) => a + b, 0) : 1
+  const barRoot = h('div', { 'data-deco': '' })
+  const segs = parts.map((p, i) => {
+    const empty = h('div', { class: 'ss-seg-empty', 'data-deco': '' })
+    const fill = h('div', { class: 'ss-seg', 'data-deco': '' })
+    style(fill, { background: toneColor(p.tone || 'neutral') })
+    barRoot.append(empty, fill)
+    return { empty, fill, share: hasShares ? shares[i] / Math.max(1, shareSum) : 0 }
+  })
+  const hairs = parts.slice(1).map(() => h('div', { class: 'ss-hair', 'data-deco': '' })) // between rows, dense mode
+  const ruleTop = h('div', { class: 'ss-rule', 'data-deco': '' })
+  const ruleSum = h('div', { class: 'ss-rule thin', 'data-deco': '' })
+  root.append(barRoot, ruleTop, ruleSum, ...hairs)
+
+  const R = parts.map((p, i) => {
+    const goal = p.tone === 'goal'
+    const r = {
+      p, i, goal,
+      label: h('div', { class: 'ss-label', html: md(p.label || '') }),
+      note: p.note ? h('div', { class: 'ss-note', html: md(p.note) }) : null,
+      pct: p.pct ? h('div', { class: 'ss-pct', html: md(p.pct) }) : null,
+      leader: h('div', { class: 'ss-leader', 'data-deco': '' }),
+      trace: h('div', { class: 'ss-trace', 'data-deco': '' }),
+      slot: h('div', { class: 'ss-slot', 'data-deco': '' }),
+      box: hlBox({ html: md(p.amount || ''), tone: p.tone || 'neutral', px: goal ? 66 : 60 }),
+      // the working: on the line (stays, ends in "=") or in the slot (erased by the highlighter)
+      fLine: p.formula ? typeLine({ text: p.formula, suffix: ' =', px: 42, cls: 'ss-f' }) : null,
+      fSlot: p.formula ? typeLine({ text: p.formula, px: 42, cls: 'ss-f' }) : null,
+    }
+    if (r.fSlot) r.fSlot.el.setAttribute('data-overlap-ok', '') // erased by the highlighter's leading edge
+    for (const e of [r.label, r.note, r.pct, r.leader, r.trace, r.slot, r.box.el, r.fLine && r.fLine.el, r.fSlot && r.fSlot.el]) if (e) root.append(e)
+    style(r.box.el, { position: 'absolute' })
+    return r
+  })
+
+  // check line: with the 'check: ' prefix, or without it for a sum too long to carry it (chosen at layout)
+  const checks = checkRaw ? ['check: ' + checkRaw, checkRaw].map(txt => {
+    const k = typeLine({ text: txt, px: SIZE.check, color: C.accent, weight: 500, cls: 'ss-check' })
+    root.append(k.el)
+    return k
+  }) : []
+  let check = null
+
+  const hasGuess = !!(wgSpec && wgSpec.formula && wgSpec.result)
+  const guessPart = hasGuess && Number.isInteger(wgSpec.part) && wgSpec.part >= 0 && wgSpec.part < n ? wgSpec.part : 0
+  let guess = null
+  if (hasGuess) {
+    const f = typeLine({ text: wgSpec.formula, suffix: ' =', px: 42, cls: 'ss-guess-f' })
+    const box = hlBox({ html: md(wgSpec.result), tone: 'bad', px: 48 })
+    const strike = h('div', { class: 'ss-strike', 'data-deco': '' })
+    root.append(f.el, box.el, strike)
+    style(box.el, { position: 'absolute' })
+    guess = { f, box, strike }
+  }
+
+  const pt = LO.pointer !== false && n ? pointer({ dir: 'left', size: 56 }) : null
+  if (pt) root.append(pt.el)
+
+  // ---------------------------------------------------------------- layout engine
+  const avail = P.bottom - P.top
+  const hasNotes = R.some(r => r.note) && LO.notes !== false
+  const hasFormulas = R.some(r => r.fLine)
+  const barOK = hasShares && LO.bar !== false
+  const debug = !!LO.debug
+
+  // tight = the dense variant for long sheets: smaller gaps, boxes that hug their figures, a smaller total
+  function metrics(sc, tight) {
+    const g = tight ? 0.4 : 1
+    return {
+      lpx: Math.max(FLOOR.label, Math.round(SIZE.label * sc)), apx: Math.max(FLOOR.amount, Math.round(60 * sc)),
+      gpx: Math.max(FLOOR.amount + 4, Math.round(66 * sc)), tpx: Math.max(FLOOR.total, Math.round((tight ? 64 : 72) * sc)),
+      boxK: tight ? 1.2 : 1.3, wrapLH: tight ? 1.02 : 1.1, gpxGuess: tight ? 44 : 48,
+      ppx: Math.max(40, Math.round(44 * sc)), fpx: Math.max(40, Math.round(42 * sc)), npx: SIZE.note,
+      G: Math.round(20 * sc), lead: 40,
+      rowGap: Math.round((tight ? 12 : 22) * sc), g1: Math.round(24 * sc * g), g2: Math.round(30 * sc * g),
+      barH: Math.round(20 * sc), ruleGap: Math.round(22 * sc * g), checkGap: Math.round(16 * sc * g),
+      noteGap: tight ? 0 : 2,
+    }
+  }
+  const okFloors = m => m.lpx >= FLOOR.label && m.apx >= FLOOR.amount && m.tpx >= FLOOR.total
+
+  // place everything for one candidate c = { sc, tight, formulas: 'line' | 'slot' | false, notes, bar, guessUnder }
+  function place(c, extra = 0) {
+    const m = metrics(c.sc, c.tight)
+    const why = []
+    const lineH = Math.round(m.lpx * 1.12)
+    const wrapH = Math.round(m.lpx * m.wrapLH)
+    const noteH = Math.round(m.npx * 1.15)
+    for (const e of [tot.note, ...R.map(r => r.note)]) if (e) style(e, { lineHeight: noteH + 'px' })
+    // ---- horizontal: measure every run at this size
+    for (const r of R) {
+      r.apx = r.goal ? m.gpx : m.apx
+      r.boxH = Math.round(r.apx * m.boxK)
+      r.box.setPx(r.apx, r.boxH)
+      r.boxW = Math.ceil(r.box.width())
+      r.padF = Math.round(14 * Math.sqrt(r.apx / SIZE.result))
+      r.f = r.fLine ? (c.formulas === 'line' ? r.fLine : c.formulas === 'slot' ? r.fSlot : null) : null
+      if (r.fLine) { show(r.fLine.el, r.f === r.fLine); show(r.fSlot.el, r.f === r.fSlot) }
+      r.fW = 0
+      if (r.f) { r.f.setPx(m.fpx); r.fW = Math.ceil(r.f.measure()) + 8 } // + caret
+      r.slotW = c.formulas === 'slot' && r.f ? Math.max(r.boxW, r.fW + 2 * r.padF) : r.boxW
+      r.fRes = c.formulas === 'line' && r.f ? F_GAP + r.fW + F_GAP : m.G // what sits between the leader and the slot
+      if (r.pct) style(r.pct, { fontSize: m.ppx + 'px' })
+      r.pctW = r.pct ? Math.ceil(W(r.pct)) : 0
+      r.label.classList.remove('wrap')
+      style(r.label, { fontSize: m.lpx + 'px', width: '', lineHeight: lineH + 'px' })
+      r.labNat = Math.ceil(W(r.label))
+      if (r.note) { show(r.note, c.notes); if (c.notes) { style(r.note, { fontSize: m.npx + 'px' }); r.noteW = Math.ceil(W(r.note)) } }
+    }
+    const PW = Math.max(0, ...R.map(r => r.pctW))
+    const pctBlock = PW ? m.G + PW : 0
+    let cap = Infinity
+    for (const r of R) cap = Math.min(cap, width - pctBlock - m.G - m.lead - r.fRes - r.slotW)
+    const LW = Math.floor(Math.min(Math.max(...R.map(r => r.labNat)), cap))
+    if (LW < 150) why.push('label column ' + LW)
+    for (const r of R) {
+      r.lines = 1
+      r.labH = lineH
+      if (r.labNat > LW + 0.5) {
+        r.label.classList.add('wrap')
+        style(r.label, { width: LW + 'px', lineHeight: wrapH + 'px' })
+        r.lines = Math.round(H(r.label) / wrapH)
+        r.labH = r.lines * wrapH
+        if (r.lines > 2) why.push('label 3+ lines: ' + r.p.label)
+        if (r.label.scrollWidth > LW + 1) why.push('label word too wide: ' + r.p.label)
+      }
+    }
+    // total row
+    const tBoxH = Math.round(m.tpx * m.boxK)
+    tot.box.setPx(m.tpx, tBoxH)
+    const tBoxW = Math.ceil(tot.box.width())
+    tot.label.classList.remove('wrap')
+    style(tot.label, { fontSize: m.lpx + 'px', width: '', lineHeight: lineH + 'px' })
+    const tNat = Math.ceil(W(tot.label))
+    const tAvail = width - m.G - m.lead - m.G - tBoxW
+    let tLines = 1, tLW = tNat, tLabH = lineH
+    if (tNat > tAvail) {
+      tLW = Math.floor(tAvail)
+      tot.label.classList.add('wrap')
+      style(tot.label, { width: tLW + 'px', lineHeight: wrapH + 'px' })
+      tLines = Math.round(H(tot.label) / wrapH)
+      tLabH = tLines * wrapH
+      if (tLines > 2 || tot.label.scrollWidth > tLW + 1) why.push('total label too long')
+    }
+    const tNoteOn = !!tot.note && (c.notes || !!c.formulas)
+    if (tot.note) { show(tot.note, tNoteOn); style(tot.note, { fontSize: m.npx + 'px' }) }
+    const tNoteW = tNoteOn ? Math.ceil(W(tot.note)) : 0
+
+    // ---- vertical
+    let y = P.top
+    {
+      const mainH = Math.max(tBoxH, tLabH)
+      const yc = y + mainH / 2
+      const lt = Math.round(yc - tLabH / 2)
+      style(tot.label, { left: x0 + 'px', top: lt + 'px' })
+      const boxLeft = xR - tBoxW
+      style(tot.box.el, { left: boxLeft + 'px', top: Math.round(yc - tBoxH / 2) + 'px' })
+      const ll = Math.ceil(inkRight(tot.label)) + m.G
+      style(tot.leader, { left: ll + 'px', top: Math.round(yc - 1) + 'px', width: Math.max(0, boxLeft - m.G - ll) + 'px' })
+      let bottom = y + mainH
+      if (tNoteOn) {
+        let nt = Math.round(lt + tLabH + m.noteGap)
+        if (x0 + tNoteW > boxLeft - m.G) nt = Math.max(nt, Math.round(yc + tBoxH / 2) + 2)
+        style(tot.note, { left: x0 + 'px', top: nt + 'px' })
+        bottom = Math.max(bottom, nt + noteH)
+      }
+      tot.yc = yc
+      y = Math.round(bottom) + m.g1 + Math.round(extra * 0.6)
+    }
+    show(barRoot, c.bar)
+    show(ruleTop, !c.bar)
+    if (c.bar) {
+      let acc = 0
+      for (const sg of segs) {
+        const a = x0 + acc * width, b = x0 + (acc + sg.share) * width
+        acc += sg.share
+        const w = Math.max(6, Math.round(b - a) - (acc < 0.999 ? 6 : 0))
+        for (const e of [sg.empty, sg.fill]) style(e, { left: Math.round(a) + 'px', top: y + 'px', width: w + 'px', height: m.barH + 'px' })
+      }
+      y += m.barH + m.g2 + Math.round(extra * 0.6)
+    } else {
+      style(ruleTop, { left: x0 + 'px', top: y + 'px', width: width + 'px' })
+      y += 3 + m.g2 + Math.round(extra * 0.4)
+    }
+    const pctRight = x0 + LW + pctBlock
+    const guessH = guess ? Math.round(m.gpxGuess * m.boxK) : 0
+    const guessUnder = guess && c.guessUnder
+    R.forEach((r, i) => {
+      const mainH = Math.max(r.boxH, r.labH)
+      r.yc = y + mainH / 2
+      const bt = Math.round(r.yc - r.boxH / 2)
+      const lt = Math.round(r.yc - r.labH / 2)
+      style(r.label, { left: x0 + 'px', top: lt + 'px' })
+      if (r.pct) style(r.pct, { left: Math.round(pctRight - r.pctW) + 'px', top: Math.round(r.yc - m.ppx / 2 + 1) + 'px' })
+      r.slotLeft = xR - r.slotW
+      r.boxLeft = xR - r.boxW
+      style(r.slot, { left: r.slotLeft + 'px', top: bt + 'px', width: r.slotW + 'px', height: r.boxH + 'px' })
+      style(r.box.el, { left: r.boxLeft + 'px', top: bt + 'px' })
+      // leader: full length (to the slot) on frame 1; a formula on the line retracts it to make room
+      // leader: frame 1 runs to the empty slot; finally it runs to the amount (or to the working on the line)
+      r.ll = (PW ? pctRight : x0 + LW) + m.G
+      r.lead1 = Math.max(0, r.slotLeft - m.G - r.ll)
+      r.leadEnd = Math.max(0, (c.formulas === 'line' && r.f ? r.slotLeft - r.fRes : r.boxLeft - m.G) - r.ll)
+      r.leadW = Math.max(r.lead1, r.leadEnd)
+      if (Math.min(r.lead1, r.leadEnd) < m.lead - 0.5) why.push('leader ' + Math.round(Math.min(r.lead1, r.leadEnd)))
+      style(r.leader, { left: r.ll + 'px', top: Math.round(r.yc - 1) + 'px', width: r.leadW + 'px' })
+      style(r.trace, { left: r.ll + 'px', top: Math.round(r.yc - 1) + 'px', width: Math.min(r.lead1, r.leadEnd) + 'px' })
+      if (r.f) {
+        r.fLeft = c.formulas === 'line' ? r.slotLeft - F_GAP - r.fW : r.slotLeft + r.padF
+        style(r.f.el, { left: r.fLeft + 'px', top: Math.round(r.yc - (m.fpx * 1.2) / 2) + 'px' })
+      }
+      let bottom = y + mainH
+      if (r.note && c.notes) {
+        let nt = Math.round(lt + r.labH + m.noteGap)
+        if (x0 + r.noteW > r.ll - 4) nt = Math.max(nt, bt + r.boxH + 2) // a long note goes under the box
+        if (x0 + r.noteW > xR) why.push('note too wide: ' + r.p.note)
+        style(r.note, { left: x0 + 'px', top: nt + 'px' })
+        bottom = Math.max(bottom, nt + noteH)
+      }
+      bottom = Math.round(bottom)
+      if (guessUnder && i === guessPart) {
+        r.guessTop = bottom + Math.round(8 * c.sc)
+        bottom = r.guessTop + guessH
+      }
+      y = bottom + (i < n - 1 ? m.rowGap + extra : 0)
+      if (i < n - 1) {
+        show(hairs[i], c.tight)
+        style(hairs[i], { left: x0 + 'px', width: width + 'px', top: Math.round((bottom + y) / 2 - 1) + 'px' })
+      }
+    })
+    // sum rule + check line (the wrong guess uses this line when it has no room under its row)
+    show(ruleSum, checks.length > 0)
+    let lineTop = null
+    if (checks.length || (guess && !guessUnder)) {
+      y += m.ruleGap + Math.round(extra * 0.5)
+      style(ruleSum, { left: x0 + 'px', top: y + 'px', width: width + 'px' })
+      y += 2 + m.checkGap
+      lineTop = y
+      let lh = 0
+      if (checks.length) {
+        for (const k of checks) { show(k.el, true); k.el.classList.remove('wrap'); style(k.el, { width: '' }) }
+        check = checks.find(k => k.measure() <= width) || checks[1]
+        for (const k of checks) show(k.el, k === check)
+        const wrap = check.measure() > width
+        check.el.classList.toggle('wrap', wrap)
+        style(check.el, { left: x0 + 'px', top: y + 'px', width: wrap ? width + 'px' : '' })
+        const keepTxt = check.span.textContent
+        check.span.textContent = check.full
+        lh = H(check.el)
+        check.span.textContent = keepTxt
+      }
+      if (guess && !guessUnder) lh = Math.max(lh, guessH)
+      y += Math.round(lh)
+    }
+    if (guess) {
+      const top = guessUnder ? R[guessPart].guessTop : lineTop
+      guess.box.setPx(m.gpxGuess, guessH)
+      guess.f.setPx(Math.max(40, m.fpx))
+      const fH = Math.round(Math.max(40, m.fpx) * 1.2)
+      const fw = Math.ceil(guess.f.measure())
+      style(guess.f.el, { left: x0 + 'px', top: Math.round(top + (guessH - fH) / 2) + 'px' })
+      const bl = x0 + fw + 16
+      style(guess.box.el, { left: bl + 'px', top: top + 'px' })
+      const bw = Math.ceil(guess.box.width())
+      if (bl + bw > xR) why.push('wrong guess too wide')
+      style(guess.strike, { left: x0 - 8 + 'px', top: Math.round(top + guessH / 2 - 2) + 'px', width: bw + fw + 32 + 'px' })
+    }
+    const height = y - P.top
+    if (height > avail) why.push(`height ${Math.round(height)} > ${avail}`)
+    return { fits: !why.length, height, why }
+  }
+
+  // candidates, cheapest first. Cost: smaller type (4 per 4%), the working in the slot (5) or gone (10), no notes
+  // (6), no bar (2), dense spacing (3), the wrong guess off its row (4). The first that fits wins.
+  const fModes = !hasFormulas ? [false] : LO.formulas === false ? [false] : LO.formulas === 'line' ? ['line'] : LO.formulas === 'slot' ? ['slot'] : ['line', 'slot', false]
+  const cands = []
+  for (const sc of SCALES) {
+    if (!okFloors(metrics(sc, false))) continue
+    for (const formulas of fModes) for (const notes of hasNotes ? [true, false] : [false]) for (const bar of barOK ? [true, false] : [false]) {
+      if (!bar && barOK && LO.bar === true) continue
+      for (const tight of [false, true]) for (const guessUnder of guess ? [true, false] : [false]) {
+        const cost = Math.round((1 - sc) * 100) + (hasFormulas ? { line: 0, slot: 5, false: 10 }[formulas] : 0) +
+          (hasNotes && !notes ? 6 : 0) + (barOK && !bar ? 2 : 0) + (tight ? 3 : 0) + (guess && !guessUnder ? 4 : 0)
+        cands.push({ c: { sc, formulas, notes, bar, tight, guessUnder }, cost, k: cands.length })
+      }
+    }
+  }
+  cands.sort((a, b) => a.cost - b.cost || a.k - b.k)
+  let chosen = null
+  for (const { c, cost } of cands) {
+    const r = place(c)
+    if (debug) console.log('split-sheet', cost, JSON.stringify(c), r.fits ? 'FITS' : r.why.join('; '))
+    if (r.fits) { chosen = { c, height: r.height }; break }
+  }
+  if (!chosen) {
+    // last resort: the smallest bare tight layout (the linter reports whatever still does not fit)
+    const c = { formulas: false, notes: false, bar: false, sc: SCALES[SCALES.length - 1], tight: true, guessUnder: false }
+    chosen = { c, height: place(c).height }
+  }
+  // breathe: spend spare height on the row gaps (top-aligned like a real sheet), capped so the rows stay one sheet
+  const LC = chosen.c
+  const spare = avail - chosen.height
+  const extra = n > 1 ? Math.max(0, Math.min(LC.tight ? 14 : 26, Math.floor((spare * 0.5) / (n - 1 + 1.6)))) : 0
+  place(LC, extra)
+  root.dataset.layout = [LC.notes ? 'notes' : 'bare', LC.bar && 'bar', LC.formulas && 'formulas-' + LC.formulas, LC.tight && 'tight', LC.guessUnder && 'guess-under'].filter(Boolean).join(' ')
+  root.dataset.scale = String(LC.sc)
+
+  // ---------------------------------------------------------------- timing
+  // part.t = the moment its amount lands (highlighter starts). Its working types just before (a formula in the
+  // slot gets a longer read, since the highlighter erases it), and the row activates LEAD before that.
+  const T = []
+  R.forEach((r, i) => {
+    const prev = T[i - 1]
+    const t = r.p.t != null ? +r.p.t : prev ? prev.t + 3.0 : 1.6
+    let typeD = r.f ? clamp(typeTime(r.f.full), 0.35, 0.85) : 0
+    let typeStart = t - (LC.formulas === 'slot' ? 0.65 : 0.3) - typeD
+    let arr = (r.f ? typeStart : t) - LEAD
+    if (prev) arr = Math.max(arr, prev.t + 0.5)
+    if (r.f) {
+      typeStart = Math.max(typeStart, arr + 0.15)
+      typeD = Math.max(0.15, Math.min(typeD, t - 0.12 - typeStart))
+    }
+    if (i === 0 && arr <= 1.5) arr = -1 // the first row is the active row on frame 1 (the pointer is on it)
+    T.push({ t, typeD, typeStart, arr })
+  })
+  const last = T[n - 1] || { t: 1 }
+  const checkT = d.checkT != null ? +d.checkT : LO.checkT != null ? +LO.checkT : last.t + 1.4
+  const checkD = check ? typeTime(check.full) : 0
+
+  let G = null
+  if (guess) {
+    const typeD = clamp(typeTime(guess.f.full), 0.35, 0.9)
+    const resT = wgSpec.t != null ? +wgSpec.t : (T[0] ? T[0].t + 2.0 : 2.5)
+    const gt = Math.max(T[0] ? T[0].t + 0.35 : 0, resT - 0.25 - typeD)
+    const strike = wgSpec.strike !== false
+    const strikeT = strike ? (wgSpec.strikeT != null ? +wgSpec.strikeT : resT + 1.2) : null
+    const settled = strike ? strikeT + 0.25 : resT
+    const nextPart = T.find(x => x.t > settled + 0.3)
+    let until = wgSpec.until != null ? +wgSpec.until : nextPart ? Math.max(settled + 0.6, (nextPart.arr > 0 ? nextPart.arr : nextPart.t) - 0.1) : settled + 1.6
+    if (check) until = Math.min(until, checkT - 0.4)
+    G = { t: gt, typeD, resT, strike, strikeT, until }
+  }
+
+  const lastBeat = Math.max(last.t + 0.6, check ? checkT + checkD : 0, G ? G.until + 0.3 : 0)
+  const clearLen = MOTION.clear + 0.2
+  const D = spec.duration || durationOf(spec, lastBeat, { hold: d.hold != null ? +d.hold : MOTION.hold, tail: loop ? clearLen : 0 })
+  const clearT0 = loop ? D - clearLen : Infinity
+  const cleared = loop ? D - 0.2 : Infinity
+  if (loop) P.clear = { t0: clearT0, dur: MOTION.clear }
+  const restoreT = check ? checkT + 0.1 : last.t + 0.9 // the cheat-sheet moment: every amount back to full
+  const pOut = check ? checkT - 0.1 : last.t + 1.2     // the walk is over: the pointer leaves
+
+  // pointer: tip just right of the slots (x 940 + 14) on each row's centre line. It starts on the first row when
+  // that row is active from frame 1, else on the total.
+  const ptX = xR + 14
+  const stops = []
+  if (pt) {
+    if (T[0].arr < 0) stops.push({ t: 0, x: ptX, y: R[0].yc })
+    else stops.push({ t: 0, x: ptX, y: tot.yc }, { t: T[0].arr + 0.25, x: ptX, y: R[0].yc })
+    for (let i = 1; i < n; i++) stops.push({ t: T[i].arr + 0.25, x: ptX, y: R[i].yc })
+  }
+  const ptStart = stops.length ? stops[0] : null
+
+  // ---------------------------------------------------------------- sound (one cue per real event)
+  T.forEach((x, i) => {
+    if (R[i].f) ctx.cue(x.typeStart, 'type', { dur: x.typeD, gain: 0.45 })
+    ctx.cue(x.t + MOTION.popDelay, R[i].goal ? 'ding' : 'pop', { gain: R[i].goal ? 0.6 : 0.5 })
+  })
+  if (G) {
+    ctx.cue(G.t, 'type', { dur: G.typeD, gain: 0.4 })
+    ctx.cue(G.resT + MOTION.popDelay, 'pop', { gain: 0.4 })
+    if (G.strike) ctx.cue(G.strikeT, 'swipe', { gain: 0.35 })
+  }
+  if (check) ctx.cue(checkT, 'type', { dur: checkD, gain: 0.4 })
+  if (loop) ctx.cue(clearT0, 'swipe', { gain: 0.3 })
+
+  // ---------------------------------------------------------------- seek
+  return {
+    duration: D,
+    seek(t) {
+      const clearP = loop ? ease.inOut(prog(t, clearT0, MOTION.clear)) : 0
+      const keep = 1 - clearP
+      // the loop clear in two halves: the working fades first, then the leaders run back out to the slots
+      const clearA = loop ? prog(t, clearT0, MOTION.clear / 2) : 0
+      const clearB = loop ? ease.inOut(prog(t, clearT0 + MOTION.clear / 2, MOTION.clear / 2)) : 0
+      const reset = t >= cleared // fully back to the frame-1 state
+      const restore = goalIdx < 0 ? prog(t, restoreT, 0.45) : 0
+      const sumP = check ? prog(t, restoreT, 0.45) : 0
+
+      // total: loud on frame 1 (the anchor), rests once the first amount lands, loud again at the check
+      const totRest = n ? prog(t, T[0].t + 0.1, MOTION.restIn) * (1 - sumP) : 0
+      tot.box.seek(1, 1, totRest * keep)
+
+      R.forEach((r, i) => {
+        const x = T[i]
+        // active: pointer on this row, % in accent, leader traced toward the slot
+        const on = x.arr < 0 ? 1 : prog(t, x.arr, 0.25)
+        const off = i + 1 < n ? prog(t, T[i + 1].arr, 0.25) : prog(t, pOut, 0.3)
+        let act = on * (1 - off) * keep
+        if (i === 0 && x.arr < 0) act = Math.max(act, clearP)
+        if (r.pct) style(r.pct, { color: mix(C.grey, C.accent, act) })
+        const tr = x.arr < 0 ? 1 : ease.out(prog(t, x.arr, 0.35))
+        style(r.trace, { opacity: n3(act), clipPath: tr >= 1 || act <= 0 ? 'none' : `inset(0 ${((1 - tr) * 100).toFixed(1)}% 0 0)` })
+        // a formula on the line: the leader retracts as the row activates, the working types and stays
+        const L = landing(t, x.t)
+        let lp = 0 // 0 = the frame-1 leader, 1 = the finished one
+        let ret = 0
+        if (r.f && LC.formulas === 'line') {
+          const frame1 = i === 0 && x.arr < 0 ? 1 : 0 // the frame-1 state (and the loop's end state)
+          ret = lp = reset ? frame1 : lerp(x.arr < 0 ? 1 : ease.out(prog(t, x.arr, 0.2)), frame1, clearB)
+        } else if (!reset) lp = L.wipe * (1 - clearB)
+        const cut = Math.round(r.leadW - lerp(r.lead1, r.leadEnd, lp))
+        style(r.leader, { clipPath: cut > 0 ? `inset(0 ${cut}px 0 0)` : 'none' })
+        if (r.f && LC.formulas === 'line') {
+          const tp = reset ? 0 : prog(t, x.typeStart, x.typeD)
+          const typing = t >= x.typeStart && t < x.typeStart + x.typeD + 0.12 && t < clearT0
+          const waiting = act > 0.5 && t < x.typeStart && ret > 0.9
+          r.f.seek(tp, typing || (waiting && blink(t)) || (reset && i === 0 && x.arr < 0 && blink(t)))
+          fade(r.f.el, reset ? 1 : 1 - clearA)
+        } else if (r.f) {
+          // a formula in the slot: types in the empty slot, then the highlighter's leading edge erases it
+          const tp = reset ? 0 : prog(t, x.typeStart, x.typeD)
+          const typing = t >= x.typeStart && t < x.typeStart + x.typeD + 0.12 && t < clearT0
+          const waiting = act > 0.5 && t < x.typeStart
+          r.f.seek(tp, typing || (waiting && blink(t)) || (reset && i === 0 && x.arr < 0 && blink(t)))
+          let fo = 1
+          if (!reset && L.wipe > 0) {
+            const front = r.slotLeft + L.wipe * r.slotW - r.fLeft
+            style(r.f.el, { clipPath: L.wipe < 1 ? `inset(0 0 0 ${Math.max(0, Math.round(front))}px)` : 'none' })
+            fo = L.wipe >= 1 ? 0 : 1 - Math.min(1, L.wipe * 1.3)
+          } else style(r.f.el, { clipPath: 'none' })
+          fade(r.f.el, fo)
+        }
+        // the amount lands on its highlighter, then rests when the next row takes focus
+        let rest = 0
+        if (!r.goal) {
+          if (i + 1 < n) rest = prog(t, T[i + 1].arr + 0.05, MOTION.restIn)
+          if (goalIdx >= 0) rest = Math.max(rest, prog(t, restoreT, MOTION.restIn))
+          rest *= 1 - restore
+        }
+        r.box.seek(L.wipe * keep, L.text * keep, rest)
+        fade(r.slot, Math.max(1 - L.wipe, reset ? 1 : clearP))
+        // its bar segment fills in the same tone
+        const sg = segs[i]
+        if (LC.bar && sg) {
+          const w = ease.out(prog(t, x.t, 0.32)) * keep
+          style(sg.fill, { opacity: w > 0 ? '1' : '0', clipPath: w >= 1 ? 'none' : `inset(0 ${((1 - w) * 100).toFixed(1)}% 0 0 round 7px)` })
+          fade(sg.empty, 1 - w)
+        }
+      })
+
+      // wrong guess: types, lands on coral, is struck through, dims, then leaves before the next part
+      if (guess && G) {
+        // every property is set on every frame (shown or not), so the state is a pure function of t
+        const on = !reset && t >= G.t && t < G.until + 0.3
+        for (const e of [guess.f.el, guess.box.el, guess.strike]) show(e, on)
+        const typing = on && t < G.t + G.typeD + 0.12
+        guess.f.seek(on ? prog(t, G.t, G.typeD) : 0, typing || (on && t < G.resT && blink(t)))
+        const L = landing(t, G.resT)
+        guess.box.seek(on ? L.wipe : 0, on ? L.text : 0, 0)
+        const st = G.strike && on ? ease.out(prog(t, G.strikeT, 0.25)) : 0
+        style(guess.strike, { transform: st >= 1 ? 'none' : `scaleX(${n3(st)})` })
+        const gone = 1 - prog(t, G.until, 0.3)
+        const o = (1 - (G.strike ? 0.45 * prog(t, G.strikeT + 0.25, 0.2) : 0)) * gone * keep
+        for (const e of [guess.f.el, guess.box.el]) fade(e, o)
+        fade(guess.strike, st > 0 ? gone * keep : 0)
+      }
+
+      // check line (accent mono): types under the sum rule
+      if (check) {
+        check.seek(reset ? 0 : prog(t, checkT, checkD), t >= checkT && t < checkT + checkD + 0.15 && t < clearT0)
+        fade(check.el, keep)
+      }
+
+      // pointer: walks the rows, taps as each amount lands, leaves when the walk is over, returns with the reset
+      if (pt && ptStart) {
+        if (reset || clearP > 0) pt.seek({ x: ptStart.x, y: ptStart.y, o: reset ? 1 : clearP })
+        else {
+          const at = pathAt(stops, t)
+          let press = 0
+          for (const x of T) press = Math.max(press, 1 - Math.abs(t - (x.t + 0.08)) / 0.14)
+          pt.seek({ x: at.x, y: at.y, o: 1 - prog(t, pOut, 0.3), press: clamp(press) })
+        }
+      }
+    },
+  }
+}

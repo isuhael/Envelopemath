@@ -1,0 +1,42 @@
+{
+  "id": "08b-becker-rig-hours-at-15",
+  "look": "becker-rig",
+  "format": "unit-ladder",
+  "fps": 30,
+  "duration": 30.0,
+  "header": "Cost in hours of work\nat **$15 an hour**",
+  "footer": "≈ $13.10 kept: 2026 federal tax + FICA, single, no state tax",
+  "captions": true,
+  "vo": [
+    { "t": 0.0,  "d": 4.7, "text": "$15 an hour? After tax, you keep **≈ $13.10**." },
+    { "t": 5.0,  "d": 5.1, "text": "A month of rent? **≈ 117 hours**. That's ≈ 3 weeks." },
+    { "t": 10.4, "d": 5.1, "text": "A year of rent? **≈ 1,400 hours**: ≈ 8 months." },
+    { "t": 15.8, "d": 3.9, "text": "An average new car? **≈ 3,800 hours**." },
+    { "t": 20.0, "d": 3.2, "text": "A median new house? **≈ 30,000 hours**." },
+    { "t": 23.5, "d": 4.7, "text": "That's **≈ 14 years** of full-time work. Every cent you keep." }
+  ],
+  "verdict": { "t": 23.5, "text": "**≈ 14 years** of full-time work.\nEvery cent you keep." },
+  "data": {
+    "unit": { "name": "Hour of work at $15 (≈ $13.10 kept)", "price": "≈ $13.10", "icon": "hour" },
+    "rungs": [
+      { "t": 5.0,  "item": "A month of rent",    "cost": "$1,531",   "units": 117,   "unitsDisplay": "≈ 117" },
+      { "t": 10.4, "item": "A year of rent",     "cost": "$18,372",  "units": 1402,  "unitsDisplay": "≈ 1,402" },
+      { "t": 15.8, "item": "An average new car", "cost": "$50,089",  "units": 3823,  "unitsDisplay": "≈ 3,823" },
+      { "t": 20.0, "item": "A median new house", "cost": "$393,700", "units": 30052, "unitsDisplay": "≈ 30,052" }
+    ],
+    "hold": 7.6
+  },
+  "lookOpts": {
+    "stage": "white",
+    "inputProp": "block",
+    "opener": { "t": 0.0, "verb": "snip", "tool": "TAX", "from": "$15", "cut": "≈ $1.90", "becomes": "≈ $13.10 = 1 hour block" },
+    "actions": [
+      { "item": 0, "verb": "stack", "tool": "÷ $13.10", "becomes": "a stack of 117 hour blocks under a rent tag" },
+      { "item": 1, "verb": "pull back", "tool": "× 12", "becomes": "12 stacks side by side" },
+      { "item": 2, "verb": "fill", "tool": "÷ $13.10", "becomes": "a car outline packed with hour blocks" },
+      { "item": 3, "verb": "topple", "tool": "÷ $13.10", "becomes": "a house-sized pile that flattens the figure" }
+    ],
+    "gag": { "t": 23.5, "text": "≈ 14 YEARS" }
+  },
+  "sfx": [ { "t": 3.1, "kind": "pop" }, { "t": 23.5, "kind": "thud" } ]
+}

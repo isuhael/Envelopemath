@@ -1,0 +1,146 @@
+{
+  "id": "07c-clean-sheet-savings-rate",
+  "look": "clean-sheet",
+  "format": "ledger-duel",
+  "fps": 30,
+  "duration": 25.0,
+  "header": "2 people save **$10,000**:\nbig bank vs high-yield",
+  "footer": "ASSUMES both rates hold 5 years · 0.01% = Chase Savings APY, Sep 2026",
+  "captions": true,
+  "vo": [
+    {
+      "t": 0.0,
+      "d": 3.5,
+      "text": "Two people save $10,000 for 5 years."
+    },
+    {
+      "t": 3.6,
+      "d": 2.7,
+      "text": "Month 1. Big bank: about 8 cents."
+    },
+    {
+      "t": 6.5,
+      "d": 2.4,
+      "text": "High-yield: about $33."
+    },
+    {
+      "t": 9.1,
+      "d": 3.5,
+      "text": "After a year: $1 versus $400."
+    },
+    {
+      "t": 12.8,
+      "d": 5.4,
+      "text": "By year 5, Leo is up about $2,167."
+    },
+    {
+      "t": 18.4,
+      "d": 2.4,
+      "text": "Mia is up about $5."
+    },
+    {
+      "t": 21.0,
+      "d": 2.4,
+      "text": "Same $10,000. Different account."
+    }
+  ],
+  "verdict": {
+    "t": 21.0,
+    "text": "Interest after 5 years:\n**≈ $2,167** vs __≈ $5__"
+  },
+  "data": {
+    "people": [
+      {
+        "name": "Mia",
+        "plan": "Big-bank savings · 0.01% APY"
+      },
+      {
+        "name": "Leo",
+        "plan": "High-yield savings · 4.00% APY"
+      }
+    ],
+    "stake": "$10,000 each · nothing added",
+    "rows": [
+      {
+        "t": 0.0,
+        "label": "Day 1",
+        "values": [
+          "$10,000",
+          "$10,000"
+        ]
+      },
+      {
+        "t": 3.6,
+        "label": "Month 1",
+        "values": [
+          "≈ $10,000.08",
+          "≈ $10,032.74"
+        ]
+      },
+      {
+        "t": 9.9,
+        "label": "Year 1",
+        "values": [
+          "$10,001",
+          "$10,400"
+        ]
+      },
+      {
+        "t": 10.8,
+        "label": "Year 2",
+        "values": [
+          "≈ $10,002",
+          "$10,816"
+        ]
+      },
+      {
+        "t": 11.6,
+        "label": "Year 3",
+        "values": [
+          "≈ $10,003",
+          "≈ $11,249"
+        ]
+      },
+      {
+        "t": 12.4,
+        "label": "Year 4",
+        "values": [
+          "≈ $10,004",
+          "≈ $11,699"
+        ]
+      },
+      {
+        "t": 13.5,
+        "label": "Year 5",
+        "values": [
+          "≈ $10,005",
+          "≈ $12,167"
+        ],
+        "tone": "goal"
+      }
+    ],
+    "winner": 1,
+    "hold": 1.6
+  },
+  "lookOpts": {
+    "badge": "$10,000 → 5 YEARS?",
+    "formulas": [
+      "$10,000 × 1.0001 a year",
+      "$10,000 × 1.04 a year"
+    ]
+  },
+  "sfx": [
+    {
+      "t": 3.6,
+      "kind": "tick"
+    },
+    {
+      "t": 9.9,
+      "kind": "pop"
+    },
+    {
+      "t": 13.5,
+      "kind": "ding"
+    }
+  ]
+}

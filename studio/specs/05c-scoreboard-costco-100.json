@@ -1,0 +1,52 @@
+{
+  "id": "05c-scoreboard-costco-100",
+  "look": "scoreboard",
+  "format": "split-sheet",
+  "fps": 30,
+  "duration": 26.0,
+  "header": "HOW MUCH OF YOUR **$100**\nDOES COSTCO ACTUALLY KEEP?",
+  "footer": "Costco FY2026 · company-wide · before tax",
+  "captions": true,
+  "vo": [
+    { "t": 0.0,  "d": 2.5, "text": "Spend $100 at Costco." },
+    { "t": 2.6,  "d": 2.8, "text": "$88.91 pays for the stuff itself." },
+    { "t": 5.6,  "d": 3.6, "text": "$9.15 pays the staff and runs the warehouses." },
+    { "t": 9.4,  "d": 2.1, "text": "That leaves Costco $1.94." },
+    { "t": 11.7, "d": 2.8, "text": "Less than 2% of your cart." },
+    { "t": 14.7, "d": 5.2, "text": "Now add membership fees: $1.99 for every $100 shoppers spend." },
+    { "t": 20.1, "d": 3.6, "text": "Your card brings in more than your cart leaves." }
+  ],
+  "verdict": { "t": 20.1, "text": "Costco keeps **≈ $1.94** of your $100" },
+  "data": {
+    "total": { "label": "Your Costco run", "display": "$100.00", "value": 100 },
+    "parts": [
+      { "t": 2.6,  "label": "The stuff itself", "pct": "88.91%", "amount": "≈ $88.91", "note": "what Costco paid + shipping it in", "tone": "neutral", "share": 0.8891 },
+      { "t": 5.6,  "label": "Staff & warehouses", "pct": "9.15%", "amount": "≈ $9.15", "note": "wages, buildings, running costs", "tone": "neutral", "share": 0.0915 },
+      { "t": 10.2, "label": "Left for Costco", "pct": "1.94%", "amount": "≈ $1.94", "note": "before tax", "tone": "goal", "share": 0.0194 }
+    ],
+    "hold": 2.3
+  },
+  "lookOpts": {
+    "hero": "remaining",
+    "remaining": [
+      { "t": 2.6, "display": "≈ $11.09" },
+      { "t": 5.6, "display": "≈ $1.94" }
+    ],
+    "footerSteps": [
+      { "t": 2.6,  "text": "$264,279M ÷ $297,247M × $100 ≈ $88.91" },
+      { "t": 5.6,  "text": "$27,190M ÷ $297,247M × $100 ≈ $9.15" },
+      { "t": 10.2, "text": "$100 − $88.91 − $9.15 = $1.94" },
+      { "t": 15.9, "text": "$5,907M ÷ $297,247M × $100 ≈ $1.99" },
+      { "t": 20.1, "text": "fees $5,907M > what the cart leaves, $5,778M" }
+    ],
+    "bonus": { "t": 15.9, "label": "Membership fees, per $100 of sales", "amount": "≈ $1.99", "tone": "good" },
+    "icon": "bag"
+  },
+  "sfx": [
+    { "t": 2.6, "kind": "roll", "dur": 0.6 },
+    { "t": 5.6, "kind": "roll", "dur": 0.6 },
+    { "t": 10.2, "kind": "thud" },
+    { "t": 15.9, "kind": "cash" },
+    { "t": 20.1, "kind": "ding" }
+  ]
+}

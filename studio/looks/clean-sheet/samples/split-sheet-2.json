@@ -1,0 +1,36 @@
+{
+  "id": "sample-clean-sheet-split-sheet-2",
+  "sample": true,
+  "look": "clean-sheet",
+  "format": "split-sheet",
+  "fps": 30,
+  "header": "The 6-jar budget\non a **$3,500** paycheck",
+  "footer": "Assumes $3,500 a month take-home pay, after tax",
+  "captions": true,
+  "vo": [
+    { "t": 0.0, "d": 2.2, "text": "Six jars. Ten percent of $3,500 is **$350**." },
+    { "t": 2.4, "d": 2.4, "text": "Necessities: five and a half of those, **$1,925**." },
+    { "t": 5.2, "d": 2.6, "text": "Financial freedom: **$350** you never spend." },
+    { "t": 8.0, "d": 2.2, "text": "Big buys later: **$350**." },
+    { "t": 10.4, "d": 2.2, "text": "Learning something: **$350**." },
+    { "t": 12.7, "d": 2.2, "text": "Play money: **$350**, guilt-free." },
+    { "t": 15.0, "d": 2.2, "text": "Give: half a jar, **$175**." },
+    { "t": 17.4, "d": 3.2, "text": "Check: $1,925, four jars of $350, and $175. $3,500." },
+    { "t": 21.0, "d": 2.8, "text": "That never-spend jar is $4,200 a year." }
+  ],
+  "verdict": { "t": 21.0, "text": "**$350** a month you never spend:\n**$4,200** a year." },
+  "data": {
+    "total": { "label": "Take-home pay", "display": "$3,500", "value": 3500, "note": "10% = $350" },
+    "parts": [
+      { "t": 3.6, "label": "Necessities", "pct": "55%", "amount": "$1,925", "note": "rent, groceries, bills, insurance", "formula": "5.5 × $350", "tone": "neutral", "share": 0.55 },
+      { "t": 6.4, "label": "Financial freedom (never spend it)", "pct": "10%", "amount": "$350", "note": "investments that pay you", "tone": "goal", "share": 0.10 },
+      { "t": 8.9, "label": "Long-term savings for big buys", "pct": "10%", "amount": "$350", "note": "a car, a trip, a laptop", "tone": "neutral", "share": 0.10 },
+      { "t": 11.2, "label": "Education", "pct": "10%", "amount": "$350", "note": "courses, books, skills", "tone": "neutral", "share": 0.10 },
+      { "t": 13.5, "label": "Play", "pct": "10%", "amount": "$350", "note": "spend it all, guilt-free", "tone": "neutral", "share": 0.10 },
+      { "t": 15.9, "label": "Give", "pct": "5%", "amount": "$175", "note": "gifts, charity", "formula": "$350 ÷ 2", "tone": "neutral", "share": 0.05 }
+    ],
+    "check": "$1,925 + 4 × $350 + $175 = $3,500",
+    "checkT": 17.6,
+    "hold": 2.5
+  }
+}

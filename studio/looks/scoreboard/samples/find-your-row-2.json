@@ -1,0 +1,51 @@
+{
+  "id": "sample-scoreboard-find-your-row-2",
+  "sample": true,
+  "look": "scoreboard",
+  "format": "find-your-row",
+  "fps": 30,
+  "header": "A **$400,000** mortgage:\nwhat your rate really costs",
+  "footer": "30-year fixed, $400,000 borrowed · principal + interest only",
+  "captions": false,
+  "vo": [
+    { "t": 0.0, "d": 2.8, "text": "A four hundred thousand dollar mortgage. Find your rate." },
+    { "t": 3.0, "d": 2.2, "text": "Each half point costs tens of thousands more." },
+    { "t": 5.4, "d": 3.2, "text": "From five and a half percent, you pay more interest than you borrowed." },
+    { "t": 8.8, "d": 2.6, "text": "At nine and a half? About **four times** the interest at three." },
+    { "t": 11.6, "d": 2.6, "text": "The bank earns more than you borrowed." }
+  ],
+  "verdict": { "t": 11.6, "text": "From **5.5%** on, the bank earns __more than you borrowed__." },
+  "data": {
+    "columns": [
+      { "label": "Your rate\n(30-yr fixed)" },
+      { "label": "Monthly\npayment" },
+      { "label": "Total interest\nover 30 years", "emph": true, "tone": "bad" },
+      { "label": "You pay back\nin total" }
+    ],
+    "rows": [
+      ["3.0%", "≈ $1,686", "≈ $207,000", "≈ $607,000"],
+      ["3.5%", "≈ $1,796", "≈ $247,000", "≈ $647,000"],
+      ["4.0%", "≈ $1,910", "≈ $287,000", "≈ $687,000"],
+      ["4.5%", "≈ $2,027", "≈ $330,000", "≈ $730,000"],
+      ["5.0%", "≈ $2,147", "≈ $373,000", "≈ $773,000"],
+      ["5.5%", "≈ $2,271", "≈ $418,000", "≈ $818,000"],
+      ["6.0%", "≈ $2,398", "≈ $463,000", "≈ $863,000"],
+      ["6.5%", "≈ $2,528", "≈ $510,000", "≈ $910,000"],
+      ["7.0%", "≈ $2,661", "≈ $558,000", "≈ $958,000"],
+      ["7.5%", "≈ $2,797", "≈ $607,000", "≈ $1,007,000"],
+      ["8.0%", "≈ $2,935", "≈ $657,000", "≈ $1,057,000"],
+      ["8.5%", "≈ $3,076", "≈ $707,000", "≈ $1,107,000"],
+      ["9.0%", "≈ $3,218", "≈ $759,000", "≈ $1,159,000"],
+      ["9.5%", "≈ $3,363", "≈ $811,000", "≈ $1,211,000"]
+    ],
+    "formula": "interest = monthly × 360 − $400,000",
+    "rowsT": 0.6,
+    "rowEvery": 0.25,
+    "pick": [
+      { "t": 5.4, "row": 5, "label": "From 5.5%: __more interest than the loan__" },
+      { "t": 8.8, "row": 13, "label": "9.5%: **≈ 4×** the interest at 3%" }
+    ],
+    "hold": 3.0
+  },
+  "notes": "Stress variant: 14 rows, 4 columns, two-line column labels, a two-line footer, captions on, a red (tone bad) emphasised column, a pick on the last row, a long verdict (lands in the header band). Maths: 30-year fixed, n = 360, r = rate ÷ 12; monthly = $400,000 × r ÷ (1 − (1 + r)^−360). 3.0% → $1,686.42; 3.5% → $1,796.18; 4.0% → $1,909.66; 4.5% → $2,026.74; 5.0% → $2,147.29; 5.5% → $2,271.16; 6.0% → $2,398.20; 6.5% → $2,528.27; 7.0% → $2,661.21; 7.5% → $2,796.86; 8.0% → $2,935.06; 8.5% → $3,075.65; 9.0% → $3,218.49; 9.5% → $3,363.42. Total = monthly × 360 ($607,110 … $1,210,830); interest = total − $400,000 ($207,110; $246,624; $287,478; $329,627; $373,023; $417,616; $463,353; $510,178; $558,036; $606,869; $656,621; $707,235; $758,657; $810,830), shown to the nearest $1,000. Interest first exceeds the $400,000 borrowed at 5.5% ($417,616; 5.0% gives $373,023). 9.5% vs 3%: $810,830 ÷ $207,110 = 3.9×. Each half point adds $39,514 to $52,173 of interest."
+}

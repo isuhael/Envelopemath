@@ -1,0 +1,37 @@
+{
+  "id": "sample-clean-sheet-what-difference",
+  "sample": true,
+  "look": "clean-sheet",
+  "format": "what-difference",
+  "fps": 30,
+  "header": "What difference does paying\n**every 2 weeks** make?",
+  "footer": "Assumes the extra goes straight to principal",
+  "captions": true,
+  "vo": [
+    { "t": 0.0, "d": 2.7, "text": "A **$30,000** car loan. Does paying every two weeks help?" },
+    { "t": 3.0, "d": 3.2, "text": "Monthly: sixty months, about **$5,220** in interest." },
+    { "t": 6.6, "d": 2.0, "text": "Every two weeks: 26 half payments." },
+    { "t": 8.8, "d": 2.4, "text": "About 54 months. **$540** less." },
+    { "t": 11.4, "d": 2.6, "text": "That's $600 more a year: one extra payment." },
+    { "t": 14.4, "d": 3.4, "text": "Or just add $100 a month: 50 months, **$900** less." },
+    { "t": 18.6, "d": 3.0, "text": "It's the extra cash that works, not the calendar." }
+  ],
+  "verdict": { "t": 18.6, "text": "Extra cash beats the calendar: **+$100 a month wins**." },
+  "data": {
+    "stake": { "label": "Car loan", "value": "$30,000", "terms": "6.5% · 60 months" },
+    "metrics": [ { "key": "payoff", "label": "Paid off in" }, { "key": "interest", "label": "Interest" } ],
+    "typeDur": 0.9,
+    "options": [
+      { "t": 2.9, "name": "Monthly", "detail": "$587 × 12 = $7,044",
+        "values": { "payoff": "60 months", "interest": "≈ $5,220" }, "resultT": 3.9, "valueEvery": 0.8 },
+      { "t": 6.8, "name": "Every 2 weeks", "detail": "$294 × 26 = $7,644",
+        "values": { "payoff": "≈ 54 months", "interest": "≈ $4,680" }, "delta": "≈ −$540", "tone": "good",
+        "resultT": 8.9, "valueEvery": 0.6, "deltaT": 10.2 },
+      { "t": 14.6, "name": "Monthly + $100", "detail": "$687 × 12 = $8,244",
+        "values": { "payoff": "50 months", "interest": "≈ $4,320" }, "delta": "≈ −$900", "tone": "good",
+        "resultT": 15.8, "valueEvery": 0.6, "deltaT": 17.2 }
+    ],
+    "winner": 2,
+    "hold": 3.0
+  }
+}
