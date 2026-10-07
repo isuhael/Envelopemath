@@ -91,6 +91,58 @@ export const curve = {
   sfx: op => [{ at: op.t, kind: 'scribble', dur: 0.4, n: 4 }, { at: op.t + 0.4, kind: 'scribble', dur: op.dur, n: 20 }],
 }
 
+/**
+ * stack: a pile of banded cash bricks growing to `h` px, with a dimension line + label and an
+ * optional reference figure for scale (ref: {char: '🧍', h: px, label: 'you'}).
+ */
+export const stack = {
+  duration: op => op.dur + 0.4,
+  prepare(op) {
+    op.w ??= 240
+    op.units ??= 10
+    op.dur ??= 1.6
+    op.x ??= 600
+  },
+  draw(g, op, lt) {
+    const k = ease.out(prog(lt, 0, op.dur))
+    const bh = op.h / op.units
+    const shown = op.units * k
+    strokePartial(g, wobble([[op.x - op.w - 220, op.y], [op.x + op.w / 2 + 160, op.y + 2]], 31, 2, 12), ease.out(prog(lt, 0, 0.3)), { color: 'ink', width: 5 })
+    for (let i = 0; i < Math.ceil(shown); i++) {
+      const f = Math.min(1, shown - i)
+      const top = op.y - (i + 1) * bh
+      g.save()
+      g.globalAlpha *= f
+      g.fillStyle = i % 2 ? '#86b07f' : '#7aa673'
+      g.fillRect(op.x - op.w / 2, top + (1 - f) * -30, op.w, bh - 2)
+      g.fillStyle = '#e9e0c4'
+      g.fillRect(op.x - 18, top + (1 - f) * -30, 36, bh - 2)
+      g.strokeStyle = 'rgba(40,70,40,0.6)'; g.lineWidth = 2
+      g.strokeRect(op.x - op.w / 2, top + (1 - f) * -30, op.w, bh - 2)
+      g.restore()
+    }
+    if (op.ref) {
+      g.save()
+      g.globalAlpha *= ease.out(prog(lt, 0.2, 0.3))
+      g.font = `${op.ref.h}px "Noto Color Emoji"`
+      g.textAlign = 'center'; g.textBaseline = 'bottom'
+      g.fillText(op.ref.char, op.x - op.w / 2 - 120, op.y + op.ref.h * 0.06)
+      g.restore()
+      if (op.ref.label) handText(g, op.ref.label, op.x - op.w / 2 - 120, op.y + 60, { size: 44, color: 'pencil', align: 'center' })
+    }
+    if (k >= 1) {
+      const dx = op.x + op.w / 2 + 40, top = op.y - op.h
+      const lk = ease.out(prog(lt, op.dur, 0.35))
+      strokePartial(g, [[dx, op.y], [dx, top]], lk, { color: 'red', width: 5 })
+      strokePartial(g, [[dx - 14, top], [dx + 14, top]], lk, { color: 'red', width: 5 })
+      strokePartial(g, [[dx - 14, op.y], [dx + 14, op.y]], lk, { color: 'red', width: 5 })
+      if (op.heightLabel) handText(g, op.heightLabel, dx - 10, top - 26, { size: 60, color: 'red', align: 'right' }, (lt - op.dur) * 30)
+      if (op.label) handText(g, op.label, op.x, op.y + 70, { size: 54, color: 'ink', align: 'center' })
+    }
+  },
+  sfx: op => [{ at: op.t, kind: 'ticks', dur: op.dur }, { at: op.t + op.dur, kind: 'scribble', dur: 0.4, n: 6 }],
+}
+
 /** grid: rows x cols of hand-drawn dots (or emoji); `filled` of them fill in over `dur`. */
 export const grid = {
   duration: op => 0.3 + op.dur,

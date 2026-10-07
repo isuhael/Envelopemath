@@ -82,6 +82,7 @@ Wrap a word in `*asterisks*` in a hook to make it red.
 | `emoji` | colour emoji popping in | `char`, `x`, `y`, `size` 160, `bob`, `rot` |
 | `bars` | hatched hand-drawn bars growing | `items` [{label, value, color, display}], `x` (centre), `y` (baseline), `w` 820, `h` 600, `format` {prefix, compact, decimals}, `stagger` 0.45 |
 | `curve` | axes + a curve drawn by pen | `x`,`y` (origin, bottom-left), `w` 820, `h` 620, `values` [...] or `fn` {type: compound (principal, rate, years, contrib) or linear (principal, contrib, years)}, `compare` {fn or values}, `marks` [{i, text}], `format`, `xLabel`, `yLabel`, `endLabel` |
+| `stack` | a pile of cash bricks growing to a height, with a red dimension line, a height label and an optional reference figure for scale | `x` (centre) 600, `y` (ground), `h` (px), `w` 240, `units` 10, `heightLabel`, `label`, `ref` {char "🧍", h px, label "you"}, `dur` 1.6 |
 | `grid` | rows×cols dots (or emoji) filling in | `rows`, `cols`, `filled`, `x` (centre), `y` (first row), `cell` 70, `emoji`, `label`, `color` |
 | `choices` | A/B/C index cards; answer circled at `revealAt` | `options` [...], `answer` (index), `revealAt` (absolute s), `y` 760, `w` 800, `size` 70 |
 | `pick` | **"Which envelope?"**: 2–4 sealed envelopes labelled A–D; at `revealAt` the answer gets a stamp and the rest dim | `options` [string or {label, sub}], `answer`, `revealAt`, `stamp` FIRST CLASS, `y` 720, `cols` 2, `ew` 380, `eh` 270, `size` 64 |

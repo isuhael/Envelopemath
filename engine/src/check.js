@@ -62,6 +62,11 @@ export function boxes(op) {
       return [B(op.x - op.w / 2, op.y - op.h - 80, op.x + op.w / 2, op.y + 90, 'bars')]
     case 'curve':
       return [B(op.x, op.y - op.h - 80, op.x + op.w + 30, op.y + 70, 'curve')]
+    case 'stack': {
+      const left = op.ref ? op.x - op.w / 2 - 120 - op.ref.h * 0.5 : op.x - op.w / 2
+      const lw = op.heightLabel ? textW(op.heightLabel, 'hand', 60) : 0
+      return [B(Math.min(left, op.x + op.w / 2 + 30 - lw), op.y - op.h - 90, op.x + op.w / 2 + 60, op.y + (op.label || op.ref?.label ? 90 : 10), 'stack')]
+    }
     case 'grid':
       return [B(op.x - (op.cols * op.cell) / 2, op.y - op.cell / 2, op.x + (op.cols * op.cell) / 2, op.y + op.rows * op.cell + (op.label ? 60 : 0), 'grid')]
     case 'receipt':

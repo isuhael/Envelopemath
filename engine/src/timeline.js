@@ -6,10 +6,10 @@ import { ease, clamp, lerp } from './util.js'
 import { hook, write, lines, counter, ladder, drawCaption } from './ops/text.js'
 import { annotate, highlight, stamp, postmark, postage, sticky } from './ops/marks.js'
 import { envelope, receipt, stuff, emoji } from './ops/props.js'
-import { bars, curve, grid } from './ops/charts.js'
+import { bars, curve, grid, stack } from './ops/charts.js'
 import { choices, pick, timer, outro } from './ops/quiz.js'
 
-export const OPS = { hook, write, lines, counter, ladder, annotate, highlight, stamp, postmark, postage, sticky, envelope, receipt, stuff, emoji, bars, curve, grid, choices, pick, timer, outro }
+export const OPS = { hook, write, lines, counter, ladder, annotate, highlight, stamp, postmark, postage, sticky, envelope, receipt, stuff, emoji, bars, curve, grid, stack, choices, pick, timer, outro }
 const CONTROL = new Set(['clear', 'flip'])
 
 /**

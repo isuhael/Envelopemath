@@ -26,11 +26,12 @@ export function registerFonts() {
 }
 
 // Font stacks fall back to DejaVu for glyphs the handwriting faces lack (≈, ✓, →, ₹ ...).
+// Colour emoji (flags, ☕, 🏠) render inline in any text.
 export const FONTS = {
-  hand: 'Caveat, Kalam, "DejaVu Sans"',
-  type: '"Special Elite", "DejaVu Sans Mono"',
-  marker: '"Permanent Marker", Kalam, "DejaVu Sans"',
-  sans: 'Inter, "DejaVu Sans"',
+  hand: 'Caveat, Kalam, "Noto Color Emoji", "DejaVu Sans"',
+  type: '"Special Elite", "Noto Color Emoji", "DejaVu Sans Mono"',
+  marker: '"Permanent Marker", Kalam, "Noto Color Emoji", "DejaVu Sans"',
+  sans: 'Inter, "Noto Color Emoji", "DejaVu Sans"',
 }
 
 export const font = (kind, size, weight = 700) => `${kind === 'sans' ? weight : 700} ${size}px ${FONTS[kind] || FONTS.hand}`

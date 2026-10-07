@@ -2,25 +2,32 @@
 import { font, ink } from './theme.js'
 import { rng, hash, clamp } from './util.js'
 
-// Measure the x offset of every character boundary so kerning survives char-by-char drawing.
-function layout(g, text) {
+const segmenter = new Intl.Segmenter('en', { granularity: 'grapheme' })
+
+// Split into user-perceived characters so emoji and flags are never cut in half.
+export const glyphs = text => Array.from(segmenter.segment(text), s => s.segment)
+
+// Measure the x offset of every glyph boundary so kerning survives glyph-by-glyph drawing.
+function layout(g, chars) {
   const xs = [0]
-  for (let i = 1; i <= text.length; i++) xs.push(g.measureText(text.slice(0, i)).width)
+  let acc = ''
+  for (const ch of chars) { acc += ch; xs.push(g.measureText(acc).width) }
   return xs
 }
 
 /**
- * Draw `text` revealed up to `chars` (float: 3.5 = three chars + half of the fourth).
+ * Draw `text` revealed up to `chars` glyphs (float: 3.5 = three glyphs + half of the fourth).
  * Returns the pen position (end of the revealed ink) and full width.
  */
-export function handText(g, text, x, y, o = {}, chars = Infinity) {
+export function handText(g, str, x, y, o = {}, chars = Infinity) {
   const size = o.size || 80
   g.font = font(o.font || 'hand', size)
   g.textBaseline = 'alphabetic'
+  const text = glyphs(str)
   const xs = layout(g, text)
   const width = xs[xs.length - 1]
   const x0 = o.align === 'center' ? x - width / 2 : o.align === 'right' ? x - width : x
-  const r = rng(hash(text) ^ (o.seed || 0))
+  const r = rng(hash(str) ^ (o.seed || 0))
   const jitter = o.jitter ?? (o.font === 'type' ? 0.4 : 1)
   const n = Math.min(text.length, chars)
   g.fillStyle = ink(o.color)
