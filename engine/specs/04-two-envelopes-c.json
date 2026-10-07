@@ -160,7 +160,7 @@
    "size": 120,
    "align": "center",
    "cps": 20,
-   "pen": "low"
+   "pen": "small-low"
   },
   {
    "type": "annotate",
@@ -415,7 +415,7 @@
    "color": "red",
    "ease": "linear",
    "dur": 1.5,
-   "endLabel": "B: +$80 a wk",
+   "endLabel": false,
    "crossover": {
     "label": "wk {x}",
     "decimals": 1,
@@ -436,16 +436,26 @@
      "i": 104,
      "label": "2 yrs"
     }
+   ],
+   "marks": [
+    {
+     "i": 20,
+     "text": "B: +$80 a wk",
+     "dx": 22,
+     "dy": 62,
+     "size": 58,
+     "align": "left"
+    }
    ]
   },
   {
    "type": "stamp",
    "t": 8.75,
    "text": "FIRST CLASS",
-   "x": 700,
-   "y": 1095,
-   "size": 56,
-   "rot": -8,
+   "x": 770,
+   "y": 1065,
+   "size": 44,
+   "rot": -4,
    "shake": 8
   },
   {
@@ -483,7 +493,7 @@
    "size": 76,
    "align": "center",
    "cps": 26,
-   "pen": "low"
+   "pen": "small-low"
   },
   {
    "type": "write",
@@ -496,7 +506,7 @@
    "color": "red",
    "align": "center",
    "cps": 14,
-   "pen": "low"
+   "pen": "small-low"
   },
   {
    "type": "annotate",

@@ -33,7 +33,7 @@ def texts(s):
                 out += [opt['label'], opt.get('sub', '')]
         elif o['type'] == 'curve':
             out += [m['text'] for m in o.get('marks', []) + o.get('compare', {}).get('marks', [])]
-            out += [str(o.get('endLabel', '')), str(o.get('compare', {}).get('endLabel', ''))]
+            out += [str(v) for v in (o.get('endLabel'), o.get('compare', {}).get('endLabel')) if v]
             out += [str(t['label']) for t in o.get('ticks', [])]
         elif o['type'] == 'sticky':
             out.append(o['text'])
@@ -73,7 +73,7 @@ def crossover_label(cv):
 
 
 def on_screen(s, *needles):
-    blob = ' | '.join(texts(s))
+    blob = ' | '.join(' '.join(t.split()) for t in texts(s))  # a double space (04A "lasts  forever") is layout only
     for n in needles:
         assert n in blob, f'{s["id"]}: expected "{n}" on screen'
 
@@ -121,7 +121,9 @@ assert cv['max'] == yearly * 30 == 1_560_000
 x, label, t_cross = crossover_label(cv)
 assert abs(x - years) < 1e-9 and label == 'yr 19.2'
 print(f'  chart   engine crossover at index {x:.4f} (= {weeks:,.0f}/52 years) -> label "{label}"; drawn at t = {t_cross:.2f} s')
-assert 'B: +$52K a yr' == cv['endLabel'] and yearly == 52_000
+# B's label rides the red line from year 6 (final review: the end label only held ~0.5 s before the flip)
+assert cv['marks'] == [{'i': 6, 'text': 'B: +$52K a yr', 'dx': 20, 'dy': 60, 'size': 64, 'align': 'left'}]
+assert cv['endLabel'] is False and cv['values'][1] - cv['values'][0] == yearly == 52_000
 
 # the twist: 5.2% means 0.1% a week, which pays $1,000 every week and leaves the $1M untouched
 j = rate / 52
@@ -197,6 +199,23 @@ assert [t['label'] for t in cb['ticks']] == ['25', '35', '45', '55', '65'] and [
 mk = {m['text']: m['i'] for m in cb['marks'] + cb['compare']['marks']}
 assert mk == {'35: $34.6K': 10, 'A ≈$525K': 40, 'B ≈$488K': 40}
 print('  chart   B never leads A at any of the 41 points -> no engine crossover; marks at age 35 (i=10) and 65 (i=40)')
+# the age counter (final review) ticks in step with the pen: the engine's ease-in-out maps time to the
+# curve index, and every counter step must land when the pen reaches that age (step times rounded to 0.01 s)
+def ease_inout(k):
+    return 4 * k ** 3 if k < 0.5 else 1 - (-2 * k + 2) ** 3 / 2
+def pen_reaches(age):  # seconds after the curve starts, by bisection on the engine's easing
+    lo, hi = 0.0, 1.0
+    for _ in range(100):
+        mid = (lo + hi) / 2
+        lo, hi = (mid, hi) if ease_inout(mid) * 40 < age - 25 else (lo, mid)
+    return 0.4 + cb['dur'] * lo
+ctr = next(o for o in B['ops'] if o['type'] == 'counter')
+assert ctr['t'] == cb['t'] and ctr['prefix'] == 'age ' and ctr['steps'][0] == [0, 25] and ctr['steps'][-1][1] == 65
+for st, age in ctr['steps'][1:]:
+    assert abs(st - pen_reaches(age)) <= 0.0051, f'age counter {age} at +{st}s; the pen gets there at +{pen_reaches(age):.3f}s'
+assert [a for _, a in ctr['steps']] == sorted({a for _, a in ctr['steps']})
+print(f'  chart   age counter: {len(ctr["steps"])} steps 25 -> 65, each within 0.005 s of the pen reaching that age; "age 35" at '
+      f'{ctr["t"] + dict((a, s) for s, a in ctr["steps"])[35]:.2f} s with the "35: $34.6K" dot')
 twist = next(o for o in B['ops'] if o['type'] == 'pick' and o.get('revealAt'))
 assert twist['answer'] == 1 and twist['stamp'] == 'FIRST CLASS'  # at 6%, B (the second envelope) wins
 
@@ -266,6 +285,8 @@ assert cc['values'] == [weekly * w for w in range(105)] and cc['compare']['value
 assert cc['max'] == weekly * 104 == 8320
 x, label, t_cross = crossover_label(cc)
 assert x == cross and label == 'wk 62.5'
+assert cc['marks'] == [{'i': 20, 'text': 'B: +$80 a wk', 'dx': 22, 'dy': 62, 'size': 58, 'align': 'left'}]
+assert cc['endLabel'] is False and cc['values'][20] == 20 * weekly
 print(f'  chart   engine crossover at week {x} -> label "{label}"; drawn at t = {t_cross:.2f} s')
 for yrs in (1, 2, 3, 5):
     print(f'  pin     after {yrs} yr: raise ${weekly * 52 * yrs:,} vs bonus $5,000')

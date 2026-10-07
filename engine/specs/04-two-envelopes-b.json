@@ -224,7 +224,7 @@
    "color": "red",
    "align": "center",
    "cps": 18,
-   "pen": "low"
+   "pen": "small-low"
   },
   {
    "type": "flip",
@@ -384,6 +384,104 @@
    ]
   },
   {
+   "type": "counter",
+   "t": 13.9,
+   "steps": [
+    [
+     0,
+     25
+    ],
+    [
+     2.06,
+     26
+    ],
+    [
+     2.49,
+     27
+    ],
+    [
+     2.79,
+     28
+    ],
+    [
+     3.03,
+     29
+    ],
+    [
+     3.23,
+     30
+    ],
+    [
+     3.41,
+     31
+    ],
+    [
+     3.57,
+     32
+    ],
+    [
+     3.72,
+     33
+    ],
+    [
+     3.85,
+     34
+    ],
+    [
+     3.97,
+     35
+    ],
+    [
+     4.49,
+     40
+    ],
+    [
+     4.9,
+     45
+    ],
+    [
+     5.31,
+     50
+    ],
+    [
+     5.83,
+     55
+    ],
+    [
+     6.57,
+     60
+    ],
+    [
+     6.77,
+     61
+    ],
+    [
+     7.01,
+     62
+    ],
+    [
+     7.31,
+     63
+    ],
+    [
+     7.74,
+     64
+    ],
+    [
+     9.4,
+     65
+    ]
+   ],
+   "stepDur": 0.12,
+   "prefix": "age ",
+   "x": 190,
+   "y": 745,
+   "size": 100,
+   "align": "left",
+   "color": "ink",
+   "allowOverlap": true
+  },
+  {
    "type": "flip",
    "t": 24.5,
    "dur": 0.4
@@ -447,7 +545,7 @@
    "color": "red",
    "align": "center",
    "cps": 20,
-   "pen": "low"
+   "pen": "small-low"
   },
   {
    "type": "flip",
@@ -521,7 +619,7 @@
    "size": 120,
    "align": "center",
    "cps": 10,
-   "pen": "low"
+   "pen": "small-low"
   },
   {
    "type": "annotate",
@@ -569,7 +667,7 @@
    "size": 76,
    "align": "center",
    "cps": 18,
-   "pen": "low"
+   "pen": "small-low"
   },
   {
    "type": "write",
@@ -582,7 +680,7 @@
    "color": "red",
    "align": "center",
    "cps": 14,
-   "pen": "low"
+   "pen": "small-low"
   },
   {
    "type": "hook",

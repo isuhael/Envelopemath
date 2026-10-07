@@ -191,18 +191,18 @@
   {
    "type": "write",
    "id": "yrs",
-   "t": 7.55,
+   "t": 7.5,
    "text": "≈ 19.2 yrs",
    "x": 500,
    "y": 1135,
    "size": 120,
    "align": "center",
-   "cps": 14,
-   "pen": "low"
+   "cps": 18,
+   "pen": "small-low"
   },
   {
    "type": "annotate",
-   "t": 8.35,
+   "t": 8.1,
    "kind": "circle",
    "target": {
     "op": "yrs",
@@ -305,7 +305,7 @@
    "color": "red",
    "ease": "linear",
    "dur": 2.6,
-   "endLabel": "B: +$52K a yr",
+   "endLabel": false,
    "crossover": {
     "label": "yr {x}",
     "decimals": 1,
@@ -330,16 +330,26 @@
      "i": 30,
      "label": "30 yrs"
     }
+   ],
+   "marks": [
+    {
+     "i": 6,
+     "text": "B: +$52K a yr",
+     "dx": 20,
+     "dy": 60,
+     "size": 64,
+     "align": "left"
+    }
    ]
   },
   {
    "type": "stamp",
    "t": 11.75,
    "text": "FIRST CLASS",
-   "x": 700,
-   "y": 1100,
-   "size": 56,
-   "rot": -8,
+   "x": 770,
+   "y": 1030,
+   "size": 44,
+   "rot": -3,
    "shake": 8
   },
   {
@@ -386,9 +396,9 @@
    "text": "$52,000 ÷ $1,000,000 =",
    "x": 70,
    "y": 1150,
-   "size": 76,
+   "size": 72,
    "cps": 18,
-   "pen": "low"
+   "pen": "small-low"
   },
   {
    "type": "timer",
@@ -403,12 +413,12 @@
    "id": "ans",
    "t": 20.9,
    "text": "5.2%",
-   "x": 738,
+   "x": 730,
    "y": 1150,
    "size": 104,
    "color": "red",
    "cps": 10,
-   "pen": "low"
+   "pen": "small-low"
   },
   {
    "type": "annotate",
@@ -429,7 +439,7 @@
    "color": "red",
    "align": "center",
    "cps": 22,
-   "pen": "low"
+   "pen": "small-low"
   },
   {
    "type": "stamp",
@@ -475,20 +485,20 @@
    "size": 72,
    "align": "center",
    "cps": 20,
-   "pen": "low"
+   "pen": "small-low"
   },
   {
    "type": "write",
    "id": "fin",
    "t": 28.7,
-   "text": "earn 5.2%? it lasts *forever*",
+   "text": "earn 5.2%? it lasts  *forever*",
    "em": true,
    "x": 500,
    "y": 1272,
    "size": 84,
    "align": "center",
    "cps": 20,
-   "pen": "low"
+   "pen": "small-low"
   },
   {
    "type": "annotate",
@@ -497,7 +507,7 @@
    "target": {
     "op": "fin",
     "match": "forever",
-    "pad": 6
+    "pad": 2
    }
   },
   {

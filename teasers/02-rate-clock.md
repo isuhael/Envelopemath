@@ -791,3 +791,75 @@ No on-screen value changed: every figure that appears in a video held. The scrip
 **Render and review.** `node src/cli.js render` → `engine/out/02-rate-clock-a.mp4` (24.5 s), `-b.mp4` (19.8 s), `-c.mp4` (17.0 s), all 1080×1920 at 30 fps. Frames extracted with ffmpeg and inspected at 0.0 s, payoff 1, the reveal and duration − 0.2 s (A 0.0/9.9/22.9/24.3; B 0.0/7.2/13.2/18.6/19.6; C 0.0/6.8/14.0/15.5/16.8), plus contact sheets and heart-pulse frames (13.80/14.23/14.66 s: peak, trough, peak = 70 bpm). Audio (`volumedetect`): A mean −26.9 dB / max −2.8 dB; B −26.4 / −3.2; C −26.8 / −2.2. Before `sfxGain` and the header stagger, A peaked at 0.0 dB.
 
 **Engine request (engine/src not edited).** `emoji.pulse` beats at half the requested rate: `max(0, sin(π·t·bpm/60))^8` has one positive lobe every 120/bpm s, so `bpm: 70` gives 35 beats a minute. 02C passes `bpm: 140` to get a true 70 bpm (the script documents this). If the engine is fixed to `|sin|` or `sin(2π…)`, change 02C back to `bpm: 70`.
+
+---
+
+### Final review
+
+Independent final reviewer, 2026-10-07. I assumed the producer missed things. Files touched: this md, `teasers/02-rate-clock-mathcheck.py`, `engine/specs/02-rate-clock-{a,b,c}.json` and the approach-2 block of `teasers/teasers.json`. Re-rendered: `engine/out/02-rate-clock-{a,b,c}.mp4`, `engine/out/sheets/02-rate-clock-{a,b,c}.png` and `engine/out/stills/02-rate-clock-{a,b,c}-*.png` (A 0.0/9.8/18.4/24.1, B 0.0/8.4/14.85/19.35, C 0.0/6.8/12.75/16.55; old stills deleted). `engine/src` was not edited.
+
+**How it was checked**
+- Contact sheets (`sheet --n 12`), safe-zone stills (`still --safe`) at frame 0, payoff 1 and the stamp, full-scale crops of every red circle, and four frames from each MP4 (0.0 s, ~40%, ~75%, the last frame before the loop crossfade, plus one frame inside the crossfade). All were viewed at about phone size (540 px wide).
+- `node src/cli.js check`: zero warnings on all three before and after the fixes. The linter doesn't bounds-check `annotate` marks, so I computed each circle's drawn extent from the engine's own anchor and ellipse code. All now end at x ≤ 932, clear of the right rail (940).
+- `python3 teasers/02-rate-clock-mathcheck.py` re-run. The md copy of the script and its output are identical to the file and a fresh run.
+- Audio (`volumedetect`): A mean −27.0 dB, max −2.8 dB; B −26.4 / −3.2; C −26.8 / −2.6.
+- Facts spot-checked with WebSearch on 2026-10-07. All match the md, and no on-screen value changed:
+  - SpaceX listed on 12 Jun 2026 and Musk became the first trillionaire, about $1.1T on the Bloomberg index (Bloomberg Government, https://news.bgov.com/capital-markets/elon-musk-becomes-worlds-first-trillionaire-after-spacex-ipo ; Washington Examiner, URL above).
+  - Apple FY2025 net sales $416.16B and net income $112.01B, FY ended 27 Sep 2025 (Form 10-K, URL above).
+  - BLS Q2 2026 median weekly earnings of full-time wage and salary workers $1,251, 120.9M workers (https://www.bls.gov/news.release/archives/wkyeng_07212026.htm).
+  - The heart beats "about 100,000 times per day" (Cleveland Clinic, https://health.clevelandclinic.org/facts-about-the-heart).
+  - Apple has still not announced its Q4 FY2026 date, so FY2025 stays the latest full year (The Mac Observer, URL above).
+
+**Found and fixed (all three)**
+- **Every red circle cut through the last letter of the answer it marks** ("2,282 yr|s", "4.9 se|c", "$11,574/|s", "3.3 mi|n", "$10|K"). The engine sizes a targeted ellipse from the glyph advances, and Caveat's ink overhangs to the right. The specs had also lowered the ellipse `pad` to 10–14, below the engine default of 18, to keep right-aligned circles out of the rail. Fixes:
+  - **A and B (right-aligned columns):** the column and its footnote moved 15 px left (A x 890, B x 900) and the pad rose to 24.
+  - **B's hero "≈ 3.3 min":** pad 38.
+  - **C's division lines:** the full 844 px second line couldn't move left at 82 px, so both lines are now 78 px (B's size), at x 900, with `lineHeight` 112 so the circle clears the underline above. Pad 20.
+  - **C's hero:** now `=  $10K  a beat` (wider spaces) with the circle anchored on "$10K " so it centres on the ink; pad 18.
+  - Every answer now sits wholly inside its circle (checked in full-scale crops).
+- **The divisor footnotes were hard to read**, though the md sells "show the divisor" as the approach's key upgrade.
+  - **02A:** "(8,766 = 365¼ days × 24 hrs)" started at 9.5 s and was cleared at 11.05 s for the timer, so it was fully written for only 0.6 s (7 words). It now writes at 7.05–7.67 s, between line 1 and line 2, and stays to 11.05 s (about 3.4 s readable).
+  - **02B and 02C:** the footnotes were up long enough, but line 2's full-size `pen: "low"` (it drops about 200 px) lay across them for the whole time line 2 was written. Fully readable time was about 0.6 s (B 6.9–7.5 s, C 8.4–9.0 s). This would also have hit A's moved footnote.
+  - **Fix:** the division `lines` use `pen: "small-low"` (it drops about 120 px), and the footnotes sit lower (A y 1180, B 1185, C 1225, all above the caption band). Verified frame by frame mid-line: the pen no longer covers the footnote.
+- **The math check could not catch spec drift.** It printed screen values as prose. It now ends with a **screen check** that reads the three specs and asserts:
+  - every drawn number, as rounded from the computed values (the trillion, both division lines and footnotes, $888B / $931B, ≈ 256 BC in the rung and the stamp, B's postage, sticky, lines and ≈ 3.3 min, C's three lines);
+  - the Year 1 tick x, B's counter target and duration, C's countdown, the 2 × 70 bpm heart and the four running-total steps timed on the beat;
+  - that the captions' spoken text (`say`, else `text`) joins to each spec's `vo`.
+  A negative test (one rung changed to $932B) fails it, as it should.
+- **The MP4s.** 02A's MP4 (08:39) was older than its spec (08:41). All three are re-rendered from the final specs, and each is now newer than its spec.
+
+**Found and fixed (per teaser)**
+- **02A:** caption 2 ran at 3.57 words/s against this md's stated ≤3.5. It now ends at 4.95 s (3.39 words/s; caption 3 still starts at 5.0 s). The beat sheet now lists the footnote's new timing.
+- **02C:** the spec's `vo` said "24 hours" while the caption's `say` reads "twenty-four hours". Both the `vo` and the md's Full voice-over now say "twenty-four". The beat sheet now says line 1 is 78 px.
+- **`teasers.json` (02A):** the sources still cited the superseded Forbes 400 $908B (WECT, 19 Sep) and Channel 4. They now match this md's Sources table (AP/Gazette, Nairametrics, Washington Examiner, Quartz, Billionaires.Africa, Forbes real-time via Derecha Diario, Caesar ×3). 02B's Q3 FY2026 link now uses the md's apple.com URL instead of the /au/ mirror.
+
+**Checked and left as is**
+- **Frame 0** of all three is the thumbnail and carries numbers on the tape: A has $50,000 and $1 TRILLION; B has $65K; C has $1 BILLION, 24 HOURS and the 24:00:00 countdown. All hooks are `t: 0`, no op has a negative `t`, and there is no `envelope`/`openAt`. The postmark is the series op in the flap (175, 258, r 100, persist). All three have `loop: true`.
+  - A's lower half is empty for the first 0.6 s while the trillion inks in. I kept this as the write-in motion of the first second rather than pre-drawing it with a negative `t`.
+- **Numbers agree** across screen, captions, VO, md and pinned comments:
+  - **A:** 2,281.54 → 2,282 yrs; $887.9B → $888B; $931.48B → $931B; ≈ 9 Mar 256 BC.
+  - **B:** $13,196/s → $13.2K/s; 4.93 s → 4.9; 3.29 min → 3.3.
+  - **C:** $41,666,667 → $41.7M/hr ("almost 42 million"); $11,574.07 → $11,574 ("over eleven and a half grand"); $10,000 a beat.
+- **Pacing:** every caption is ≤2 lines and ≤3.46 words/s counting hyphenated numbers as separate words. B's 4.4 s of ticking has no caption by design.
+- **Pulse:** the `emoji.pulse` half-rate behaviour is unchanged in this engine build (the Polish pass's engine request still stands). C's `bpm: 140` still gives a true 70 bpm, and the screen check asserts it.
+- **Known minor limits:**
+  - B's spoken first line ("Apple makes your salary in how many seconds?") leaves out the "$65K" that is on the tape and in the title. Adding it would push caption 1 to 4+ words/s.
+  - C's "(86,400 = seconds in a day)" appears 0.5 s before line 2 writes the 86,400. It reads as the setup for "Per second?".
+  - The smaller pen on the division screens is a deliberate trade so the divisor footnote stays visible.
+  - In A, the ASSUME sticky is still writing while line 1 is written (5.05–~8 s), as before.
+- No advice language, no borrowed footage, no logos (Apple is a name and a public number; the visuals are a stopwatch and a briefcase).
+- **Before posting:**
+  - **02B:** if Apple reports FY2026 (expected late October) or BLS publishes Q3 2026 (scheduled 28 Oct), swap the postage, sticky and counter values. Then re-run the script; its screen check will flag any value left behind.
+  - **02A:** re-check Musk's net worth on the day for the pinned comment.
+
+**Hook scores (1–10, against `research/02-top-10-approaches.md` §2: a mega-number ÷ a human rate → a time you can feel, a famous subject or dare in frame 1, a payoff by about 40%, a stamped payoff in the last 2 s, a loop)**
+
+| | Score | Why |
+|---|---|---|
+| 02A | **8.5** | It is hook formula #3 nearly word for word ("Earn $[X] an hour since [historic moment] and you STILL don't have…") and the corrected version of sog_geovanie's 1,005.7x dare. It has a live search ("trillionaire again", Oct 5–6) and two numbers on the frame-0 tape. Payoff 1 (2,282 yrs) is circled at 39% and the new number (256 BC) is stamped at 92%. It loses points because the thumbnail's lower half is empty until the trillion inks in, because it's the longest of the three (24.5 s vs the 14–17 s loops that carry the evidence), and for the Musk repeat risk with 01A (the slate note covers it). |
+| 02B | **8** | Tilbury's company clock (22.96M) with the viewer's own number and a "?? SECONDS" guess gap on the tape. The real-time $0 → $65,052 count is a strong retention device. It sits below A because the company clock was Tilbury's weakest breakout of the three (4.24x), because the spoken line drops "$65K", and because the Rate Clock is unproven on Reels and TikTok. |
+| 02C | **8** | The strongest raw evidence class (Tilbury's spend-down at 40.9M; Dr Bandana 98x; World of Niya 157x) plus a novel human unit and a live 24:00:00 countdown in frame 0. Payoff 1 lands at 38% and the stamp at 89%. It loses points for the longest frame-0 read (four tape strips, about nine words) and for a round $10K answer that some viewers will guess before the reveal. |
+
+**Verdicts:** 02A **fixed**, 02B **fixed**, 02C **fixed**. All three are ready to post after these fixes. Zero lint warnings, the math and screen checks pass, and the MP4s are re-rendered.
+
+*Superseded by this review:* the Polish pass's "right edge of every working line sits at … ≤ 915 (circled lines)" (now 890/900), "Lines at 82 px" for 02C (now 78 px) and `pen: "low"` on the division lines (now `"small-low"`), and the QA note's 02A footnote timing.
