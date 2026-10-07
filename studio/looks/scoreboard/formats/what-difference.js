@@ -10,15 +10,20 @@
 //     metric (interest) up from zero on the same clock. All three stop together: bump, glow flare, a ding, and the
 //     money value is posted into the row
 //   - the option's delta then slams into the label stack ("≈ $487 LESS") in the option's tone
-//   - at verdict.t the winning row flashes neon (its bar turns solid green), the others dim, and the hero cuts to
-//     the winner's value
+//   - at verdict.t the winning row flashes neon (its bar turns solid green), the others dim, and the hero rolls to
+//     the winner's money delta ("≈ $1,288 LESS", tagged with the hero metric's label): the payoff is the last number
+//     to land in the top bar. A winner without a money delta rolls to its own value that the verdict quotes, if any,
+//     else keeps its own value
 // Frame 1 (first option at t ≥ 0.5 s): the stake in the hero ("$28,000"), its terms + label in the label stack,
 // every option named on the board. First option before 0.5 s: frame 1 is already 0.45 s into the first race.
 //
-// Layout: with captions on, the stage runs to y 1140 (1160 for 4+ options) so the board gets taller rows; the label
-// stack and the verdict share the slot left above the caption band (the verdict is drawn here, not by the chrome).
-// Rows are two lines (name + money on top, time bar below) when there is room (≥ 90 px a row); otherwise one line
-// (name, payoff, money) over a full-row time fill. A metric that can't be a bar (dates, words) is posted, not rolled.
+// Layout: the kit grid (captions on: stage ≈ 595-1130; the label stack and then the verdict take the slot above the
+// caption band). Rows are two lines (name + money on top, time bar below) when there is room (≥ 90 px a row);
+// otherwise one line (name, payoff, money) over a full-row time fill. The bar metric needs no column head on two-line
+// rows (its value rides the bar's end: "60 MONTHS"); every other metric gets its own column, right-aligned and
+// measured, with its head over it (a head may reach left over the next column's slack). At most two value columns
+// (the hero's metric first): a third value metric is left off the board. A metric that can't be a bar (dates, words)
+// is posted, not rolled. Names stay >= 44 px on one line, else two balanced lines (>= 40 px).
 //
 // data (FORMATS.md §3): { stake: { label, value, terms }, metrics: [{ key, label }], options: [{ t, name, detail,
 //   values: { [key]: display }, delta?, tone?, resultT?, deltaT? }], winner, hold }
@@ -30,19 +35,19 @@
 //                "60 months" / "≈ 18.3 years" / "26 weeks", compared in months; else the first numeric metric)
 //   intro        true / false forces the stake intro on or off (default: on when the first option starts ≥ 0.5 s)
 //   race         seconds the longest bar takes (default 2.4); every bar moves at that one speed
-//   footerSteps  [{ t, text }]: the footer rewrites to a one-line working at each t (spec.footer before the first);
-//                keep each under ≈ 45 characters: the footer is one 960 px line with a 34 px floor
-//   stageBottom  y where the stage ends with captions on (default 1140, or 1160 for 4+ options)
+//   footerSteps  [{ t, text }]: kit-wide (the chrome draws it): the footer rewrites to a working line at each t;
+//                a line too long for 960 px at 40 px breaks at its " · " into two lines
+//   stageBottom  y where the stage ends (default: the kit grid)
+// The verdict and the footer are the chrome's (the kit's one verdict slot, at the foot of the frame).
 import { css as style, setHTML, attr, h, s, prog, ease, clamp, lerp, fitText } from '../../../runtime/core.js'
 import { C, SIZE, M, W, layoutFor } from '../theme.js'
 import {
-  rich, richUI, esc, ax, inkWidth, heroRow, labelStack, stageFlash, flashAt, parseDisplay, displayValue, odometer,
-  bump, slam, durationOf, beatTimes, toneColor, verdict,
+  rich, richUI, esc, ax, bare, inkWidth, heroRow, labelStack, stageFlash, flashAt, parseDisplay, displayValue, odometer,
+  bump, slam, durationOf, beatTimes, toneColor,
 } from '../lib.js'
 
 export const css = `
 .wd-head { position: absolute; font: 700 40px/1.1 'Inter', 'Inter Full', sans-serif; text-transform: uppercase; letter-spacing: 0.04em; color: #9AA4B2; white-space: nowrap; }
-.wd-swatch { position: absolute; height: 20px; width: 46px; border-radius: 4px; background: #2A313C; box-shadow: inset -5px 0 0 #9AA4B2; }
 .wd-row { position: absolute; border-radius: 14px; background: #07090C; --lit: 0; --tone: #FFFFFF;
   border: 3px solid color-mix(in srgb, var(--tone) calc(var(--lit) * 100%), #232B36);
   box-shadow: 0 0 calc(var(--lit) * 34px) color-mix(in srgb, var(--tone) 50%, transparent); transform-origin: 50% 50%; }
@@ -55,12 +60,11 @@ export const css = `
 .wd-cell { position: absolute; display: flex; align-items: center; justify-content: flex-end; text-transform: uppercase; transform-origin: 100% 55%; }
 .wd-blab { position: absolute; top: 0; height: 100%; display: flex; align-items: center; text-transform: uppercase; }
 .wd-cell .ax, .wd-blab .ax { font-size: 1em; top: -0.07em; }
+.wd-name > span, .wd-tag > span { display: block; }   /* one flex child: the spaces around a hyphenated word survive */
 .wd-txt { font-family: 'Anton', 'Inter Full', sans-serif; line-height: 1; white-space: nowrap; }
 .wd-q { font-family: 'Anton', 'Inter Full', sans-serif; line-height: 1; color: #6B7584; }
 .wd-ptr { position: absolute; }
 .wd-tag { position: absolute; top: 0; display: flex; align-items: center; justify-content: flex-end; text-align: right; font: 700 42px/1.08 'Inter', 'Inter Full', sans-serif; text-transform: uppercase; letter-spacing: 0.04em; color: #9AA4B2; white-space: nowrap; }
-.wd-foot { position: absolute; font: 600 40px/1.2 'Inter', 'Inter Full', sans-serif; color: #9AA4B2; text-align: center; white-space: nowrap; }
-.wd-foot em { font-style: normal; color: #FFFFFF; }
 `
 
 const RACE = 2.4          // seconds the longest bar takes to run (all bars share one speed)
@@ -90,10 +94,7 @@ export default function whatDifference(spec, ctx) {
   const opts = (d.options || []).filter(o => o && o.name != null)
   if (!opts.length) throw new Error('what-difference: data.options is empty')
   const n = opts.length
-  const L0 = layoutFor(spec)
-  // captions on: the board takes a taller stage; the label stack and the verdict share what is left above the
-  // caption band, so the verdict never covers the board
-  const L = L0.captionsOn ? layoutFor(spec, { stageBottom: lo.stageBottom ?? (n >= 4 ? 1160 : 1140) }) : L0
+  const L = layoutFor(spec, lo.stageBottom ? { stageBottom: +lo.stageBottom } : {})
   const stage = ctx.stage
   const stake = { label: '', value: '', terms: '', ...(d.stake || {}) }
   const metrics = d.metrics && d.metrics.length ? d.metrics : Object.keys(opts[0].values || {}).map(k => ({ key: k, label: k }))
@@ -116,7 +117,12 @@ export default function whatDifference(spec, ctx) {
   }
   const heroMetric = metrics.find(m => m.key === heroKey) || null
   const barMetric = metrics.find(m => m.key === barKey) || null
-  const sideMetrics = metrics.filter(m => m.key !== barKey)        // shown as columns at the row's right
+  // value columns at the row's right: at most two, the hero's metric first in priority, kept in spec order
+  let sideMetrics = metrics.filter(m => m.key !== barKey)
+  if (sideMetrics.length > 2) {
+    const keep = new Set([heroKey, ...sideMetrics.map(m => m.key)].filter(Boolean).slice(0, 2))
+    sideMetrics = sideMetrics.filter(m => keep.has(m.key))
+  }
 
   // ---------- timing ----------
   const times = beatTimes(opts, { first: 1.6, every: 5.4 })
@@ -172,7 +178,9 @@ export default function whatDifference(spec, ctx) {
     const fill = h('div', { class: 'wd-fill', style: { background: DEEP[kind] } })
     const edge = h('div', { class: 'wd-edge', style: { backgroundImage: `linear-gradient(${bright[kind]}, ${bright[kind]})` } })
     track.append(fill, edge)
-    const name = h('div', { class: 'wd-name', html: rich(o.name), style: { left: PAD + 'px', top: TOPPAD + 'px', height: topH - TOPPAD + 'px' } })
+    // the name sits in ONE inner span: as direct flex children, a hyphenated word's nowrap span and the text after
+    // it would become separate flex items and the space between them would collapse ("30-YEARAT 6%")
+    const name = h('div', { class: 'wd-name', html: `<span>${rich(o.name)}</span>`, style: { left: PAD + 'px', top: TOPPAD + 'px', height: topH - TOPPAD + 'px' } })
     el.append(track, name)
     // money / side columns (right of the top line, or of the single line)
     const cells = sideMetrics.map(m => {
@@ -222,20 +230,28 @@ export default function whatDifference(spec, ctx) {
   }
   measure()
   while (nameW < 260 && fs > 40) { fs -= 2; measure() }
-  const nameFs = two ? clamp(Math.round(fs * 0.92), 40, 60) : clamp(Math.round(fs * 0.88), 40, 56)
+  const nameFs = two ? clamp(Math.round(fs * 0.92), 44, 60) : clamp(Math.round(fs * 0.88), 44, 56)
+  // one name size for the board: the smallest one-line fit (>= 44 px) among the names that fit on one line; a name
+  // that doesn't goes onto two balanced lines at that size or smaller
+  let boardFs = nameFs
   rows.forEach(r => {
     style(r.name, { fontSize: nameFs + 'px', width: nameW + 'px' })
-    let px = fitText(r.name, nameW, { minPx: 40 })
+    const px = fitText(r.name, nameW, { minPx: 44, step: 1 })
+    if (r.name.scrollWidth <= nameW + 0.5) boardFs = Math.min(boardFs, px)
+  })
+  rows.forEach(r => {
+    style(r.name, { fontSize: boardFs + 'px', width: nameW + 'px' })
+    let px = fitText(r.name, nameW, { minPx: 44, step: 1 })
     if (r.name.scrollWidth > nameW + 0.5) {
-      // too long for one line at 40 px: two balanced lines if the row has the height, else (cramped one-line
-      // rows only) down to the 34 px floor
+      // too long for one line at 44 px: two balanced lines if the row has the height (>= 40 px), else (cramped
+      // one-line rows only) one line down to the 40 px floor
       const h2 = topH - TOPPAD - 2
-      if (h2 >= 2 * 34) {
+      if (h2 >= 2 * 40) {
         r.name.classList.add('two')
-        style(r.name, { fontSize: nameFs + 'px', height: 'auto' })       // measure the wrapped text, not the box
-        px = fitText(r.name, nameW, { maxH: h2, minPx: 34 })
+        style(r.name, { fontSize: boardFs + 'px', height: 'auto' })      // measure the wrapped text, not the box
+        px = fitText(r.name, nameW, { maxH: h2, minPx: 40, step: 1 })
         style(r.name, { height: topH - TOPPAD + 'px' })
-      } else px = fitText(r.name, nameW, { minPx: 34 })
+      } else px = fitText(r.name, nameW, { minPx: 40, step: 1 })
     }
     r.nameFs = px
   })
@@ -257,22 +273,15 @@ export default function whatDifference(spec, ctx) {
   if (two) rows.forEach(r => { if (r.blab) { style(r.blab.odo.el, { fontSize: barFs + 'px' }); style(r.blab.q, { fontSize: barFs + 'px' }) } })
 
   // ---------- column heads ----------
-  // two-line rows: the bar metric's head sits at the left (over the names / bars), the money heads over their
-  // columns at the right. One-line rows: every head right-aligned over its column; a head that would collide with
-  // its right-hand neighbour shrinks into its own column.
-  const heads = []
-  const headEl = (m, css0) => { const el = h('div', { class: 'wd-head', html: richUI(m.label || m.key), style: { top: box.y + 'px', ...css0 } }); stage.append(el); heads.push(el); return el }
+  // Every value column has its head right-aligned over it. The bar metric has none on two-line rows: its value
+  // rides the bar's end ("60 MONTHS"), so a "PAID OFF IN" head over the names would label the wrong thing.
+  const headEl = m => { const el = h('div', { class: 'wd-head', html: richUI(m.label || m.key), style: { top: rowsTop - headH - headGap + 'px' } }); stage.append(el); return el }
   const X0 = box.x + BORDER
-  if (two && barMetric) {
-    // the bar metric's head is a legend: a swatch of a bar, then the label ("▬ PAID OFF IN")
-    const sw = h('div', { class: 'wd-swatch', 'data-deco': '', style: { left: X0 + PAD + 'px', top: box.y + 14 + 'px' } })
-    stage.append(sw)
-    headEl(barMetric, { left: X0 + PAD + 60 + 'px' })
-  }
-  const colHeads = lineCols.map(m => headEl(m, {}))
-  const leftLimit = two && barMetric ? X0 + PAD + 60 + heads[0].scrollWidth + 28 : X0 + PAD
-  // right-to-left: each head right-aligned over its column, pushed left of its right-hand neighbour (24 px apart);
-  // if the leftmost one then runs into the legend / names edge, every column head shrinks together (34 px floor)
+  const colHeads = lineCols.map(m => headEl(m))
+  const leftLimit = X0 + PAD
+  // right-to-left: each head right-aligned over its column, pushed left of its right-hand neighbour (24 px apart,
+  // so a long head reaches over the next column's slack); if the leftmost one then runs past the names' edge,
+  // every head shrinks together (36 px at worst)
   const placeHeads = px => {
     let nextLeft = Infinity
     const pos = []
@@ -286,7 +295,7 @@ export default function whatDifference(spec, ctx) {
     return { pos, fits: nextLeft >= leftLimit }
   }
   let headPx = 40, hp = placeHeads(headPx)
-  while (!hp.fits && headPx > 34) hp = placeHeads(--headPx)
+  while (!hp.fits && headPx > 36) hp = placeHeads(--headPx)
   hp.pos.forEach((q, k) => style(colHeads[k], { left: q.left + 'px', width: q.w + 'px', textAlign: 'right' }))
 
   // ---------- pointer (decoration): a chevron in the left margin that jumps to the active row ----------
@@ -296,38 +305,55 @@ export default function whatDifference(spec, ctx) {
   const ptrPath = ptr.firstChild
 
   // ---------- hero: the stake on the intro, then the money metric of the active option ----------
-  const tagEl = h('div', { class: 'wd-tag' })
-  let tagW = 0, tagTwo = false
-  if (heroMetric) {
-    setHTML(tagEl, richUI(heroMetric.label))
-    stage.append(tagEl)
-    const w1 = Math.ceil(tagEl.offsetWidth) + 2
-    tagTwo = w1 > 260                           // a long metric label wraps to two balanced lines
-    tagW = Math.min(260, w1)
-    tagEl.remove()
+  // the metric tag beside the number (Inter caps; a long label wraps to two balanced lines); one inner span, so a
+  // label with markup stays one flex child
+  const mkTag = label => {
+    const el = h('div', { class: 'wd-tag', html: `<span>${richUI(label)}</span>` })
+    stage.append(el)
+    const w1 = Math.ceil(el.offsetWidth) + 2
+    el.remove()
+    return { el, two: w1 > 260, w: Math.min(260, w1) }
   }
+  const tag0 = heroMetric ? mkTag(heroMetric.label) : null
+  const tagEl = tag0 ? tag0.el : h('div', { class: 'wd-tag' })
+  const tagW = tag0 ? tag0.w : 0
   const TAGGAP = 26
-  const hero = heroRow(stage, L, { size: SIZE.hero, maxInt: 9, maxDp: 2 })
+  const hero = heroRow(stage, L, { maxInt: 9, maxDp: 2 })
   const heroBox = L.hero
+  // the payoff the hero rolls to when the winner lands (see the header): a winner value the verdict quotes, else the
+  // winner's money delta, else nothing (the hero keeps the winner's own value)
+  let endKey = null, endDisp = null, endTag = null
+  if (winner >= 0) {
+    const wo = opts[winner]
+    const vtext = bare(spec.verdict && spec.verdict.text ? spec.verdict.text : '')
+    const quoted = metrics.find(m => { const dv = val(wo, m.key); return dv && isFinite(parseDisplay(dv).value) && vtext.includes(dv) })
+    if (wo.delta && isMoney(wo.delta) && heroMetric && isMoney(val(wo, heroKey)) && isFinite(parseDisplay(wo.delta).value)) { endDisp = String(wo.delta); endTag = heroMetric.label }
+    else if (quoted) { endKey = quoted.key; endDisp = val(wo, quoted.key); endTag = quoted.label }
+  }
+  const END_ROLL = 1.0
+  const tagEnd = endTag && heroMetric && endTag !== heroMetric.label ? mkTag(endTag) : tag0
+  const endTpl = endDisp ? parseDisplay(endDisp) : null
   {
     // measure every display the hero will land on at full size (the metric values carry the tag beside them, the
     // stake doesn't) and shrink the odometer until the widest group fits the 960 px row at the biggest landing
     // bump (×1.1, plus a little air)
     const room = heroBox.w / 1.12
     let f = 1
-    const shows = [...(heroKey ? opts.map(o => ({ disp: val(o, heroKey), sp: tagW ? tagW + TAGGAP : 0 })) : []), { disp: stake.value, sp: 0 }]
+    const shows = [...(heroKey ? opts.map(o => ({ disp: val(o, heroKey), sp: tagW ? tagW + TAGGAP : 0 })) : []), { disp: stake.value, sp: 0 },
+      ...(endDisp ? [{ disp: endDisp, sp: tagEnd ? tagEnd.w + TAGGAP : 0 }] : [])]
     for (const { disp, sp } of shows) {
       if (!disp || !isFinite(parseDisplay(disp).value)) continue
       hero.show(disp)
       const ow = hero.odo.el.offsetWidth
       if (ow + sp > room) f = Math.min(f, (room - sp) / ow)
     }
-    if (f < 1) style(hero.odo.el, { fontSize: Math.floor(SIZE.hero * Math.max(0.4, f)) + 'px' })
+    if (f < 1) style(hero.odo.el, { fontSize: Math.floor(heroBox.size * Math.max(0.4, f)) + 'px' })
   }
-  hero.el.append(tagEl)
-  if (heroMetric) {
-    style(tagEl, { height: heroBox.h + 'px', width: tagW + 'px', whiteSpace: tagTwo ? 'normal' : 'nowrap', textWrap: 'balance' })
-    fitText(tagEl, tagW, { maxH: heroBox.h - 8, minPx: 42 })
+  for (const tg of new Set([tag0, tagEnd].filter(Boolean))) {
+    hero.el.append(tg.el)
+    style(tg.el, { height: heroBox.h + 'px', width: tg.w + 'px', whiteSpace: tg.two ? 'normal' : 'nowrap', textWrap: 'balance' })
+    fitText(tg.el, tg.w, { maxH: heroBox.h - 8, minPx: 42 })   // 42: the hero's 3% dip keeps it >= 40
+    style(tg.el, { display: 'none' })
   }
   const glowFor = col => `drop-shadow(0 0 var(--glow, 16px) ${rgba(col, 'var(--glowA, 0.38)')})`
 
@@ -342,39 +368,6 @@ export default function whatDifference(spec, ctx) {
   })
   const labels = labelStack(stage, L, items)
   const flash = stageFlash(stage, L)
-  // the verdict replaces the label stack in its own slot (the chrome's slot would cover the taller board)
-  const vSlot = L.verdict.boxed ? { y: L.label.y, h: L.label.h, w: L.label.w, boxed: false } : L.verdict
-  const verd = verdict(stage, spec, { ...L, verdict: vSlot })
-  if (verd) {
-    ctx.cue(verd.t + 0.06, 'reveal', { gain: 0.7 })
-    // lib's verdict() fits its text while the box is display:none (it measures 0 and never shrinks): fit it again
-    // here with the box measurable, so a two-line verdict stays inside its slot
-    const vbox = [...stage.querySelectorAll('.sb-verdict')].pop()
-    const vtxt = vbox && vbox.querySelector('.sb-verdict-text')
-    if (vtxt) {
-      vbox.style.display = 'flex'
-      vbox.style.gap = '12px'
-      fitText(vtxt, vSlot.w, { maxH: vSlot.h - 8 - 12 - 6, minPx: SIZE.verdictMin })
-      vbox.style.display = ''
-    }
-  }
-
-  // ---------- footer steps (lookOpts.footerSteps): the footer rewrites to each beat's working ----------
-  let foot = null
-  if (Array.isArray(lo.footerSteps) && lo.footerSteps.length) {
-    const fw = L.footer.w
-    const mk = text => {
-      const el = h('div', { class: 'wd-foot', html: richUI(text), style: { top: L.footer.y + 'px', left: (W - fw) / 2 + 'px', width: fw + 'px' } })
-      stage.append(el)
-      fitText(el, fw, { maxH: L.footer.h + 4, minPx: 34 })
-      style(el, { display: 'none' })
-      return el
-    }
-    foot = {
-      base: spec.footer ? mk(spec.footer) : null,
-      steps: lo.footerSteps.filter(x => x && x.text).map(x => ({ t: +x.t || 0, el: mk(x.text) })).sort((a, b) => a.t - b.t),
-    }
-  }
 
   // ---------- sound: thud on each cut, a roll while the bar races, ding on landing, pop for the delta ----------
   beats.forEach(b => {
@@ -385,6 +378,7 @@ export default function whatDifference(spec, ctx) {
     if (b.deltaT != null) ctx.cue(b.deltaT, 'pop', { gain: 0.45 })
   })
   if (winT != null) ctx.cue(winT + 0.3, 'cash', { gain: 0.55 })
+  if (winT != null && endDisp) ctx.cue(winT + 0.04, 'roll', { dur: END_ROLL - 0.1, gain: 0.45 })
 
   const duration = durationOf(spec, lastBeat, d.hold ?? M.hold)
   const activeAt = t => { let k = -1; for (let j = 0; j < n; j++) if (t >= beats[j].cut) k = j; return k }
@@ -392,8 +386,6 @@ export default function whatDifference(spec, ctx) {
   return {
     duration,
     layout: L,
-    footer: foot ? false : undefined,
-    verdict: false,
     seek(t) {
       const k = activeAt(t)
       const won = winT != null && t >= winT
@@ -485,8 +477,15 @@ export default function whatDifference(spec, ctx) {
       }
 
       // ---- hero ----
-      let hDisp = null, hTpl = null, hv = 0, hCol = C.green, tagOn = false
-      if (!heroKey) hDisp = stake.value
+      let hDisp = null, hTpl = null, hv = 0, hCol = C.green, tagOn = false, ghost = false
+      const ending = won && !!endDisp
+      if (ending) {
+        // the payoff: rolls up from zero to the winner's delta (or the value the verdict quotes) and lands on it
+        const p = prog(t, winT + 0.04, END_ROLL)
+        tagOn = true; hCol = toneOf(opts[winner]) === 'bad' ? C.red : C.green
+        if (p >= 1) hDisp = endDisp
+        else { hTpl = endTpl; hv = ease.out(p) * endTpl.value * endTpl.scale; ghost = true }
+      } else if (!heroKey) hDisp = stake.value
       else if (won) { hDisp = val(opts[winner], heroKey); hCol = moneyCol(opts[winner]); tagOn = true }
       else if (k < 0) hDisp = stake.value
       else {
@@ -499,16 +498,17 @@ export default function whatDifference(spec, ctx) {
           if (k > 0) { hDisp = val(opts[k - 1], heroKey); hCol = moneyCol(opts[k - 1]) } else { hDisp = stake.value; tagOn = false; hCol = C.green }
         } else { hTpl = tpl; hv = accrue(prog(t, b.start, b.dur)) * tpl.value * tpl.scale }
       }
-      if (hTpl) hero.set(hv, hTpl)
+      if (hTpl) hero.set(hv, hTpl, ghost)
       else if (hDisp && isFinite(parseDisplay(hDisp).value)) hero.show(hDisp)
       else hero.show(stake.value || '0')
       style(hero.odo.el, { color: hCol })
       style(hero.glow, { filter: glowFor(hCol) })
       // the metric tag beside the number; the group stays centred on x 540
-      const space = tagOn && tagW ? tagW + TAGGAP : 0
-      style(tagEl, { display: space ? 'flex' : 'none' })
+      const tg = tagOn ? (ending ? tagEnd : tag0) : null
+      const space = tg ? tg.w + TAGGAP : 0
+      for (const x of new Set([tag0, tagEnd].filter(Boolean))) style(x.el, { display: x === tg ? 'flex' : 'none' })
       style(hero.glow, { paddingLeft: space + 'px' })
-      if (space) style(tagEl, { left: (heroBox.w / 2 - (hero.odo.el.offsetWidth + space) / 2).toFixed(1) + 'px' })
+      if (tg) style(tg.el, { left: (heroBox.w / 2 - (hero.odo.el.offsetWidth + space) / 2).toFixed(1) + 'px' })
 
       // landing bumps + glow flares; a small dip on each cut
       let sc = 1, glow = 0
@@ -518,8 +518,10 @@ export default function whatDifference(spec, ctx) {
         if (t >= b.land) glow = Math.max(glow, 0.6 * (1 - ease.out(prog(t, b.land, 0.6))))
       }
       if (winT != null) {
-        sc *= bump(t, winT, { amp: 0.1, dur: 0.45 })
-        if (t >= winT) glow = Math.max(glow, 1 - ease.out(prog(t, winT, 1.1)))
+        const hit = endDisp ? winT + 0.04 + END_ROLL : winT
+        if (endDisp) sc *= 1 - 0.03 * Math.sin(Math.PI * prog(t, winT, 0.28))
+        sc *= bump(t, hit, { amp: 0.1, dur: 0.45 })
+        if (t >= hit) glow = Math.max(glow, 1 - ease.out(prog(t, hit, 1.1)))
       }
       style(hero.el, { transform: `scale(${sc.toFixed(4)})` })
       style(hero.glow, { '--glow': (16 + 30 * glow).toFixed(1) + 'px', '--glowA': (0.38 + 0.45 * glow).toFixed(3) })
@@ -537,21 +539,7 @@ export default function whatDifference(spec, ctx) {
         if (at.delta != null && b.deltaT != null && t >= b.deltaT) labels.seek(t, at.delta, b.deltaT)
         else labels.seek(t, at.name, k === 0 && !intro ? 0 : b.cut)
       }
-
-      // ---- verdict: the label stack yields, the closing line slams in ----
-      if (verd) {
-        verd.seek(t)
-        const y = verd.yieldAt(t)
-        style(labels.el, { opacity: String(1 - y), transform: `translateY(${(14 * y).toFixed(1)}px)`, visibility: y >= 1 ? 'hidden' : 'visible' })
-      }
-
-      // ---- footer steps ----
-      if (foot) {
-        let cur = foot.base
-        for (const st of foot.steps) if (t >= st.t) cur = st.el
-        if (foot.base) style(foot.base, { display: cur === foot.base ? 'block' : 'none' })
-        for (const st of foot.steps) style(st.el, { display: cur === st.el ? 'block' : 'none' })
-      }
+      // (the verdict, the label stack's yield and the footer steps are the chrome's)
     },
   }
 }

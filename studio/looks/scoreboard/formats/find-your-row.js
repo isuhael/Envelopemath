@@ -8,14 +8,19 @@
 //            emphasised column lands in neon green with a small bump. A soft tick per row; a thud when complete.
 //   Pick:    the picked row lights (border, glow and tint in the emphasised column's colour; its bar lifts), the
 //            other rows dim for a beat and then recover (the table stays findable), a pointer glides to it on the
-//            left margin, and the pick label slams into the bottom strip.
-// Layout: no hero row (layoutFor({ hero: false })); the stage starts under the footer (moved down when a long
-//   footer wraps at its " · " into two lines) and ends under the last row; the row pitch (40-80 px) is what is
-//   left between the column labels and the strip. Cells are Anton with every digit in a 0.5em slot (tabular).
+//            left margin, and the pick label slams into the bottom strip (fitted: one line down to 52 px, else two
+//            balanced lines).
+// Layout: no hero row (layoutFor({ hero: false })); the stage starts under the footer (the kit footer: a long
+//   assumption line breaks at its " · " into two lines and the grid makes room) and ends under the last row; the row
+//   pitch (40-80 px) is what is left between the column labels and the strip. Cells are Anton with every digit in a
+//   0.5em slot (tabular). Column heads are Inter caps at 40 px, on one line or two (as written, or balanced at a word
+//   break); a head may reach left over the previous column's slack; only a board that can't pack them shrinks them.
 //   Strip:   the bottom bar carries the formula (the one-line working) under the pick label when the table leaves
-//            room; otherwise they share one slot (formula first, then each pick label as a hard cut).
-//   Verdict: slams into the strip when it fits there at >= 58 px, otherwise into the header band (the hook hands
-//            over to the answer), so the verdict never covers rows of the table.
+//            room; otherwise they share one slot (formula first, then each pick label as a hard cut, then the formula
+//            again once the pick has held for HOLD s). A two-line pick label also gives the formula's row up while it
+//            holds.
+//   Verdict: the kit's one verdict slot at the foot of the frame (the chrome's): in the strip, or on a black band
+//            rising over the foot of the board when the strip is short. The header keeps the hook.
 // Dense boards (row pitch under 54 px) drop the slot outlines and bar borders and run as black/slate zebra stripes,
 // so 40 px type never crowds a line. Each row's bar wipes in left to right as its values slide in.
 //
@@ -24,17 +29,14 @@
 //   prompt:    ''                              a task line ("Find **your age**") in the pick slot until the first pick
 //                                              (stacked strip only)
 //   strip:     'auto' | 'stack' | 'swap'       formula + pick label stacked or sharing one slot (auto: by room)
-//   verdictAt: 'auto' | 'strip' | 'header'     where the verdict lands (auto: strip if it fits there at >= 58 px)
 //   dim:       0.5                             opacity of the other rows while a pick lands (1 = no dimming)
 //   dimRest:   0.85                            what they recover to 1.6 s later
 //   pointer:   true                            the green pointer on the left margin
 import { h, s, css as style, setHTML, attr, prog, ease, clamp, lerp, fitText } from '../../../runtime/core.js'
-import { C, SIZE, M, W, layoutFor } from '../theme.js'
-import { rich, richUI, esc, ax, bare, keepHyphens, header as drawHeader, slam, wobble, durationOf, inkWidth, slamFromFor, toneColor } from '../lib.js'
+import { C, M, W, layoutFor } from '../theme.js'
+import { rich, richUI, esc, bare, keepHyphens, tabHTML as tabLib, slam, wobble, durationOf, inkWidth, slamFromFor, toneColor } from '../lib.js'
 
 export const css = `
-.fy-foot { position: absolute; font: 600 40px/1.15 'Inter', 'Inter Full', sans-serif; color: ${C.grey}; text-align: center; white-space: nowrap; }
-.fy-foot em { font-style: normal; color: ${C.white}; }
 .fy-table { position: absolute; left: 0; top: 0; width: ${W}px; }
 .fy-hl { position: absolute; font: 700 40px/42px 'Inter Tight', 'Inter Full', sans-serif; text-transform: uppercase; letter-spacing: 0.03em; color: ${C.grey}; white-space: nowrap; }
 .fy-hl.r { text-align: right; }
@@ -54,8 +56,6 @@ export const css = `
 .fy-flash { position: absolute; left: 0; top: 0; width: 100%; height: 100%; border-radius: 10px; background: #FFFFFF; opacity: 0; }
 .fy-skel { position: absolute; border-radius: 99px; background: #151A22; }
 .fy-cell { position: absolute; font-family: 'Anton', 'Inter Full', sans-serif; font-weight: 400; line-height: 1; white-space: nowrap; text-transform: uppercase; letter-spacing: 0.01em; }
-.fy-cell .ax { font-size: max(0.86em, 40px); }
-.fy-d { display: inline-block; width: 0.5em; text-align: center; }
 .fy-key { color: ${C.grey}; }
 .fy-key.on { color: ${C.white}; }
 .fy-val { color: ${C.grey}; }
@@ -63,50 +63,22 @@ export const css = `
 .fy-ptr { position: absolute; left: 0; top: 0; filter: drop-shadow(0 0 10px color-mix(in srgb, var(--emph, ${C.green}) 70%, transparent)); }
 .fy-strip { position: absolute; }
 .fy-line { position: absolute; left: 0; width: 100%; display: flex; justify-content: center; align-items: center; transform-origin: 50% 50%; }
-.fy-pick { font: 400 58px/1 'Anton', 'Inter Full', sans-serif; text-transform: uppercase; letter-spacing: 0.01em; color: ${C.white}; white-space: nowrap; }
+.fy-pick { font: 400 58px/1 'Anton', 'Inter Full', sans-serif; text-transform: uppercase; letter-spacing: 0.01em; color: ${C.white}; white-space: nowrap; text-align: center; }
+.fy-pick.two { white-space: normal; text-wrap: balance; line-height: 1.04; }
 .fy-pick em { font-style: normal; color: ${C.green}; }
 .fy-pick u.mark2 { text-decoration: none; color: ${C.red}; }
 .fy-formula { font: 600 40px/1.2 'Inter', 'Inter Full', sans-serif; color: ${C.white}; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .fy-formula .op { color: ${C.grey}; }
-.fy-verdict { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; }
-.fy-verdict-rule { width: 140px; height: 8px; border-radius: 4px; background: ${C.green}; transform-origin: 50% 50%; box-shadow: 0 0 18px rgba(43, 255, 136, 0.5); }
-.fy-verdict-text { width: 100%; font: 400 92px/1.02 'Anton', 'Inter Full', sans-serif; text-transform: uppercase; text-align: center; color: ${C.white}; transform-origin: 50% 50%; text-wrap: balance; }
-.fy-verdict-text em { font-style: normal; color: ${C.green}; }
-.fy-verdict-text u.mark2 { text-decoration: none; color: ${C.red}; }
 `
 
-// ---------- local helpers (candidates for lib.js; see the result notes) ----------
+// ---------- local helpers ----------
 
-/** × in Anton is small and sits low: render it like ≈ (Inter Full ExtraBold, lifted) */
-const axTimes = html => String(html).replace(/×/g, '<span class="ax">×</span>')
-
-/**
- * a display string as Anton HTML with every digit in a 0.5em slot (tabular, like the odometer).
- * dense: the ≈/× glyph spans carry data-overlap-ok, because Inter Full's font box (1.21 em) is taller than a dense
- * row's pitch and reaches into the neighbouring row's box; the glyph ink itself never touches it.
- */
-const tabHTML = (str, dense = false) => {
-  const html = axTimes(ax(esc(str).replace(/\d/g, '<span class="fy-d">$&</span>')))
-  return dense ? html.replace(/<span class="ax">/g, '<span class="ax" data-overlap-ok>') : html
-}
+/** a display string as Anton HTML, every digit in a 0.5em slot (lib tabHTML); dense: glyph spans may overlap rows */
+const tabHTML = (str, dense = false) => tabLib(str, { ok: dense })
 
 /** a formula line: operators dimmed, the rest as written (markup stripped: the formula is plain working) */
 const OPS = /([=÷×−+≈→()])/
 const formulaHTML = str => bare(str).split(OPS).map(p => (p.length === 1 && OPS.test(p) ? `<span class="op">${esc(p)}</span>` : esc(p))).join('')
-
-/** a long assumption line breaks at the " · " separator nearest its middle (never mid-phrase) */
-function splitAtDot(str) {
-  const parts = String(str).split(' · ')
-  if (parts.length < 2) return null
-  const total = bare(str).length
-  let best = null
-  for (let i = 1; i < parts.length; i++) {
-    const a = parts.slice(0, i).join(' · '), b = parts.slice(i).join(' · ')
-    const score = Math.abs(bare(a).length - total / 2)
-    if (!best || score < best.score) best = { score, text: a + '\n' + b }
-  }
-  return best.text
-}
 
 const sum = a => a.reduce((x, y) => x + y, 0)
 
@@ -114,13 +86,14 @@ const T_ROW = 0.28      // a row's values sliding in
 const T_LIT = 0.22      // a pick lighting its row
 const FOCUS = 1.6       // seconds the other rows stay dimmed after a pick, before they recover
 const SLIDE = 44        // px the values travel (from the left, so nothing ever crosses the right rail)
+const HOLD = 2.5        // s a pick label holds before the formula comes back (swap strip, or a two-line pick)
 
 export default function findYourRow(spec, ctx) {
   const d = spec.data || {}
   const lo = spec.lookOpts || {}
   const stage = ctx.stage
   const L0 = layoutFor(spec, { hero: false })
-  const limit = L0.captionsOn ? 1308 : 1472
+  const limit = L0.limit
 
   // ---------- data ----------
   const colsIn = Array.isArray(d.columns) ? d.columns : []
@@ -143,25 +116,9 @@ export default function findYourRow(spec, ctx) {
     picks.push({ row: Math.floor(p.row), label: p.label || '', t: p.t != null ? +p.t : prev + 3.0 })
   }
   picks.sort((a, b) => a.t - b.t)
-  const vd = spec.verdict && spec.verdict.text ? { t: Math.max(0, +spec.verdict.t || 0), text: spec.verdict.text } : null
 
-  // ---------- header + footer (own footer: a long assumption line wraps at a " · " into two lines) ----------
-  const head = drawHeader(stage, spec, L0)
-  let footBottom = L0.footer.y - 8
-  if (spec.footer) {
-    const el = h('div', { class: 'fy-foot', html: richUI(spec.footer), style: { top: L0.footer.y + 'px', left: '60px', width: '960px' } })
-    stage.append(el)
-    if (el.scrollWidth > 960) fitText(el, 960, { minPx: 38 })
-    if (el.scrollWidth > 960) {
-      const two = splitAtDot(spec.footer)
-      el.style.fontSize = '40px'
-      if (two) setHTML(el, richUI(two))
-      else { el.style.whiteSpace = 'normal'; el.style.textWrap = 'balance' }
-      fitText(el, 960, { maxH: 2 * 46 + 2, minPx: 34 })
-    }
-    footBottom = L0.footer.y + el.offsetHeight
-  }
-  const stageTop = Math.max(L0.stage.y, Math.round(footBottom + 10))
+  // the header and the footer are the chrome's (a long footer breaks at its " · " and the grid makes room)
+  const stageTop = L0.stage.y
 
   // ---------- table: measure (labels at 40 px, cells at 100 px; widths scale linearly) ----------
   const TX0 = 144, TX1 = 936, TW = TX1 - TX0      // text box (x 144-936), inside the bars (x 120-960)
@@ -169,15 +126,33 @@ export default function findYourRow(spec, ctx) {
   const table = h('div', { class: 'fy-table' })
   stage.append(table)
   const labels = cols.map((c, j) => {
-    const el = h('div', { class: 'fy-hl' + (j ? ' r' : '') + (j === emph ? ' emph' : ''), html: keepHyphens(richUI(c.label)) })
+    const el = h('div', { class: 'fy-hl' + (j ? ' r' : '') + (j === emph ? ' emph' : '') })
     table.append(el)
     return el
   })
-  const labelW40 = labels.map(el => el.offsetWidth)                 // widest spec line, at 40 px
-  const wordProbe = h('div', { class: 'fy-hl', style: { left: '0px', top: '0px' } })
-  table.append(wordProbe)
-  const wordW40 = cols.map(c => Math.max(1, ...bare(c.label).split(/\s+/).filter(Boolean).map(w => { wordProbe.textContent = w; return wordProbe.offsetWidth })))
-  wordProbe.remove()
+  // each head's forms at 40 px: as written (its \n lines), and two balanced lines at the word break that makes it
+  // narrowest (markup kept when both halves stay balanced)
+  const probeL = h('div', { class: 'fy-hl', style: { left: '0px', top: '0px', fontSize: '40px' } })
+  table.append(probeL)
+  const lineW = str => { probeL.innerHTML = keepHyphens(richUI(str)); return probeL.offsetWidth }
+  const balanced = str => (str.match(/\*\*/g) || []).length % 2 === 0 && (str.match(/__/g) || []).length % 2 === 0
+  const forms = cols.map(c => {
+    const raw = String(c.label || '')
+    const asIs = raw.split('\n')
+    const out = [{ lines: asIs, w: Math.max(1, ...asIs.map(lineW)) }]
+    const words = raw.replace(/\n/g, ' ').split(/ +/).filter(Boolean)
+    let best = null
+    for (let k = 1; k < words.length; k++) {
+      let a = words.slice(0, k).join(' '), b = words.slice(k).join(' ')
+      if (!balanced(a)) { a = bare(a); b = bare(b) }
+      const w = Math.max(lineW(a), lineW(b))
+      if (!best || w < best.w) best = { lines: [a, b], w }
+    }
+    if (best && (asIs.length > 2 || best.w < out[0].w - 1)) out.push(best)
+    return out
+  })
+  const wordW40 = cols.map(c => Math.max(1, ...bare(c.label).split(/\s+/).filter(Boolean).map(w => lineW(w))))
+  probeL.remove()
   const probe = h('div', { class: 'fy-cell', style: { fontSize: '100px', left: '0px', top: '0px' } })
   table.append(probe)
   const measure = str => { setHTML(probe, tabHTML(str)); return Math.max(probe.scrollWidth, inkWidth(probe)) }
@@ -185,48 +160,68 @@ export default function findYourRow(spec, ctx) {
   const colW100 = cols.map((_, j) => Math.max(1, ...cellW100.map(r => r[j])))
   probe.remove()
 
-  // ---------- plan: the cell size follows the row pitch, the pitch follows the label row's height, and the label
-  // row's height follows how much room the cells leave the labels. Two passes settle it. ----------
+  // ---------- plan: the cell size follows the row pitch, the pitch follows the head row's height, and the head
+  // row's height follows how many lines the heads need beside the cells. Two passes settle it. ----------
   const prompt = lo.prompt ? String(lo.prompt) : ''
   const tableTop = stageTop + 10
   const formulaH0 = d.formula ? 48 : 0
   const pickH0 = picks.length || prompt ? 58 : 0
   const stackH = formulaH0 + (formulaH0 && pickH0 ? 12 : 0) + pickH0
-  const MIN_GAP = 28
+  const MIN_GAP = 28, LGAP = 24
 
-  // horizontal: cells keep their size unless the cells alone do not fit; labels try one line-set at 40 → 36 px,
-  // and otherwise wrap inside their column slots (the free width is shared by how much each label needs)
-  const hplan = (Fc, maxFl = 40) => {
-    Fc = Math.max(36, Math.min(Fc, Math.floor(((TW - (nC - 1) * MIN_GAP) / sum(colW100)) * 100)))
+  // horizontal: columns pack from the left. A column's right edge sits where both its cells (28 px after the
+  // previous column's cells) and its head (24 px after the previous head) fit, so a long head reaches left over the
+  // previous column's slack; the slack left at the end is shared out between the columns.
+  const pack = (Fc, Fl, pick) => {
     const cw = colW100.map(w => (w * Fc) / 100)
-    for (let Fl = maxFl; Fl >= 36; Fl -= 2) {
-      const ew = cw.map((c, j) => Math.max(c, (labelW40[j] * Fl) / 40))
-      const gap = (TW - sum(ew)) / (nC - 1)
-      if (gap >= MIN_GAP) return { Fc, Fl, ew, gap, wrap: false }
+    const lw = pick.map((k, j) => (forms[j][k].w * Fl) / 40)
+    let cellEnd = TX0 + cw[0], labEnd = TX0 + lw[0]
+    const R = [Math.max(cellEnd, labEnd)]
+    for (let j = 1; j < nC; j++) {
+      const r = Math.max(cellEnd + MIN_GAP + cw[j], labEnd + LGAP + lw[j])
+      R.push(r); cellEnd = r; labEnd = r
     }
-    // wrap: every slot holds at least its label's longest word, then the spare width goes to the labels that
-    // are furthest from fitting on their own lines
-    let Fl = maxFl, ew
-    for (; Fl >= 34; Fl -= 2) {
-      ew = cw.map((c, j) => Math.max(c, (wordW40[j] * Fl) / 40))
-      if (sum(ew) + (nC - 1) * MIN_GAP <= TW) break
+    return { R, slack: TX1 - R[nC - 1] }
+  }
+  const hplan = (Fc0, Fl) => {
+    let Fc = Math.max(36, Math.min(Fc0, Math.floor(((TW - (nC - 1) * MIN_GAP) / sum(colW100)) * 100)))
+    const pick = forms.map(f => (f[0].lines.length > 2 && f[1] ? 1 : 0))
+    let pk = pack(Fc, Fl, pick)
+    // too wide: the head that gains most goes onto two lines, one at a time (a head is never more than 2 lines)
+    while (pk.slack < 0) {
+      let jb = -1, gain = 0
+      forms.forEach((f, j) => { if (pick[j] === 0 && f[1] && f[0].w - f[1].w > gain) { gain = f[0].w - f[1].w; jb = j } })
+      if (jb < 0) break
+      pick[jb] = 1
+      pk = pack(Fc, Fl, pick)
     }
-    Fl = Math.max(34, Fl)
+    // still too wide: the cells give up a few px (never under 40)
+    for (let k = 0; k < 2 && pk.slack < 0 && Fc > 40; k++) { Fc = Math.max(40, Fc - 2); pk = pack(Fc, Fl, pick) }
+    return { Fc, Fl, pick, ...pk, wrap: false }
+  }
+  // the fallback for heads too long for two lines each: every head wraps inside its own column's slot (any number of
+  // lines, balanced); each slot holds at least its head's longest word and the spare width goes where it is needed
+  const fullW40 = forms.map(f => f[0].w)
+  const hwrap = (Fc0, Fl) => {
+    const Fc = Math.max(40, Math.min(Fc0, Math.floor(((TW - (nC - 1) * MIN_GAP) / sum(colW100)) * 100)))
+    const cw = colW100.map(w => (w * Fc) / 100)
+    let ew = cw.map((c, j) => Math.max(c, (wordW40[j] * Fl) / 40))
     const free = Math.max(0, TW - sum(ew) - (nC - 1) * MIN_GAP)
-    const need = labelW40.map((w, j) => Math.max(0, (w * Fl) / 40 - ew[j]))
+    const need = fullW40.map((w, j) => Math.max(0, (w * Fl) / 40 - ew[j]))
     ew = ew.map((e, j) => e + (free * need[j]) / Math.max(1, sum(need)))
-    return { Fc, Fl, ew, gap: (TW - sum(ew)) / (nC - 1), wrap: true }
+    const R = ew.map((_, j) => TX0 + sum(ew.slice(0, j + 1)) + (j * (TW - sum(ew))) / Math.max(1, nC - 1))
+    return { Fc, Fl, ew, R, slack: TW - sum(ew) - (nC - 1) * MIN_GAP, wrap: true, pick: forms.map(() => 0) }
   }
   const applyLabels = hp => {
     labels.forEach((el, j) => {
       el.style.fontSize = hp.Fl + 'px'
       el.style.lineHeight = Math.round(hp.Fl * 1.05) + 'px'
-      el.style.whiteSpace = hp.wrap ? 'normal' : 'nowrap'
-      el.style.width = hp.wrap ? Math.floor(hp.ew[j]) + 'px' : 'auto'
-      el.style.textWrap = hp.wrap ? 'balance' : 'nowrap'
-      if (hp.wrap && el.scrollWidth > hp.ew[j] + 0.5) {
-        fitText(el, hp.ew[j], { minPx: 34 })
-        el.style.lineHeight = Math.round(parseFloat(el.style.fontSize) * 1.05) + 'px'   // whole px: no sub-34 rounding
+      if (hp.wrap) {
+        setHTML(el, keepHyphens(richUI(String(cols[j].label || '').replace(/\n/g, ' '))))
+        Object.assign(el.style, { whiteSpace: 'normal', textWrap: 'balance', width: Math.floor(hp.ew[j]) + 'px' })
+      } else {
+        setHTML(el, forms[j][hp.pick[j]].lines.map(l => keepHyphens(richUI(l))).join('<br>'))
+        Object.assign(el.style, { whiteSpace: 'nowrap', textWrap: 'nowrap', width: 'auto' })
       }
     })
     return Math.round(Math.max(...labels.map(el => el.offsetHeight)) + 16)   // + the emph underline
@@ -243,27 +238,25 @@ export default function findYourRow(spec, ctx) {
     return { rowsTop, mode, stripNeed, P, dense, gapR, barH: P - gapR }
   }
   const fcFor = vp => clamp(Math.round(vp.barH * 0.86), 40, 64)
-  // labels as large as possible (40 px) unless the taller label row would squeeze the rows under 44 px
+  // heads at 40 px on at most two lines when they pack beside the cells; else wrapped in their slots at 40 px; only
+  // then smaller (38 → 34), as long as the head row leaves the rows a pitch of 44 px
   let hp, headH, vp
-  for (const maxFl of [40, 38, 36, 34]) {
-    hp = hplan(40, maxFl)
+  const tries = [[hplan, 40], [hwrap, 40], [hplan, 38], [hplan, 36], [hwrap, 38], [hwrap, 36], [hplan, 34], [hwrap, 34]]
+  for (const [plan, Fl] of tries) {
+    hp = plan(64, Fl)
     headH = applyLabels(hp)
     vp = vplan(headH)
-    const hp2 = hplan(fcFor(vp), maxFl)
-    if (hp2.Fc !== hp.Fc || hp2.wrap !== hp.wrap || hp2.Fl !== hp.Fl) { hp = hp2; headH = applyLabels(hp); vp = vplan(headH) }
-    if (vp.P >= 44 || !hp.wrap) break
+    const hp2 = plan(fcFor(vp), Fl)
+    if (hp2.Fc !== hp.Fc || hp2.pick.join() !== hp.pick.join()) { hp = hp2; headH = applyLabels(hp); vp = vplan(headH) }
+    if (hp.slack >= 0 && vp.P >= 44) break
   }
-  const { Fc, ew, gap } = hp
+  const { Fc } = hp
   const { rowsTop, mode, P, dense, gapR, barH } = vp
-  const right = ew.map((_, j) => TX0 + sum(ew.slice(0, j + 1)) + j * gap)
+  const right = hp.wrap ? hp.R.slice() : hp.R.map((r, j) => (j ? r + (Math.max(0, hp.slack) * j) / (nC - 1) : r))
   right[nC - 1] = TX1
 
   const sb = Math.round(rowsTop + N * P + 10)
   const L = layoutFor(spec, { hero: false, stageBottom: sb })
-  if (stageTop !== L.stage.y) {
-    L.stage = { ...L.stage, y: stageTop, h: L.stage.h + L.stage.y - stageTop }
-    L.topBar = { ...L.topBar, y1: stageTop }
-  }
   // a board too dense for the strip's full size: the strip lines shrink to what is left (pick >= 44 px, formula
   // >= 34 px); past that the spec is over budget and the linter reports the collision with the caption band
   const stripFull = mode === 'stack' ? stackH : Math.max(formulaH0, pickH0)
@@ -321,7 +314,7 @@ export default function findYourRow(spec, ctx) {
   const ptrX = BX0 - 14 - ptrW
 
   // ---------- bottom strip: (prompt →) pick labels over the formula ----------
-  const strip = h('div', { class: 'fy-strip', style: { left: (W - 800) / 2 + 'px', top: L.label.y + 'px', width: '800px', height: L.label.h + 'px' } })
+  const strip = h('div', { class: 'fy-strip', 'data-yield': '', style: { left: (W - 800) / 2 + 'px', top: L.label.y + 'px', width: '800px', height: L.label.h + 'px' } })
   stage.append(strip)
   const blockH = mode === 'stack' ? formulaH + (formulaH && pickH ? Math.round(12 * squeeze) : 0) + pickH : Math.max(formulaH, pickH)
   const blockTop = Math.max(0, Math.round((L.label.h - blockH) / 2))
@@ -329,49 +322,42 @@ export default function findYourRow(spec, ctx) {
   const pickTop = mode === 'stack' ? blockTop : blockTop + (blockH - pickH) / 2
   let formula = null
   if (d.formula) {
-    const inner = h('div', { class: 'fy-formula', html: formulaHTML(d.formula), style: { fontSize: Math.round(formulaH / 1.2) + 'px' } })
+    const inner = h('div', { class: 'fy-formula', html: formulaHTML(d.formula), style: { fontSize: (formulaH >= 44 ? 40 : Math.round(formulaH / 1.2)) + 'px' } })
     formula = h('div', { class: 'fy-line', style: { top: formulaTop + 'px', height: formulaH + 'px' } }, inner)
     strip.append(formula)
-    fitText(inner, 800, { minPx: 34 })
+    // the working stays at 40 px: wider than the strip's 800 px, it may use x 60-940 (left of the rail), centred there
+    const fs = parseFloat(inner.style.fontSize)
+    if (fs >= 40 && inner.scrollWidth > 800.5) style(formula, { left: '-80px', width: '880px' })
+    fitText(inner, inner.scrollWidth > 800.5 ? 880 : 800, { minPx: 34 })
   }
+  // a pick label: one line, fitted to the strip's 800 px down to 52 px; longer: two balanced lines (>= 40 px) centred on
+  // the strip, and the formula gives its row up while it holds
   const pickLine = text => {
-    const inner = h('div', { class: 'fy-pick', html: axTimes(rich(text)), style: { fontSize: pickH + 'px' } })
+    const inner = h('div', { class: 'fy-pick', html: rich(text), style: { fontSize: pickH + 'px' } })
     const line = h('div', { class: 'fy-line', style: { top: pickTop + 'px', height: pickH + 'px' } }, inner)
     strip.append(line)
-    fitText(inner, 800, { minPx: Math.min(44, pickH) })
+    fitText(inner, 800, { minPx: Math.min(52, pickH), step: 1 })
+    line.__two = false
+    if (inner.scrollWidth > 800.5) {
+      inner.classList.add('two')
+      style(inner, { width: '800px', fontSize: pickH + 'px' })
+      fitText(inner, 800, { maxH: Math.max(pickH, L.label.h - 6), minPx: 42, step: 1 })   // 42: the slam's undershoot stays >= 40
+      const hh = inner.offsetHeight
+      style(line, { top: Math.max(0, Math.round((L.label.h - hh) / 2)) + 'px', height: hh + 'px' })
+      line.__two = true
+    }
     line.__from = slamFromFor(inkWidth(inner), 792)
     style(line, { display: 'none' })
     return line
   }
   const pickEls = picks.map(p => pickLine(p.label))
   const promptEl = prompt && mode === 'stack' ? pickLine(prompt) : null
-
-  // ---------- verdict: in the strip when it fits at a primary size, else in the header band ----------
-  // (built here, not with lib's verdict(): that one fits its text while hidden, so it never shrinks)
-  let verd = null
-  if (vd) {
-    const box = h('div', { class: 'fy-verdict' })
-    const rule = h('div', { class: 'fy-verdict-rule', 'data-deco': '' })
-    const txt = h('div', { class: 'fy-verdict-text', html: axTimes(rich(vd.text)) })
-    box.append(rule, txt)
-    stage.append(box)
-    const place = slot => {
-      style(box, { display: 'flex', top: slot.y + 'px', left: (W - slot.w) / 2 + 'px', width: slot.w + 'px', height: slot.h + 'px' })
-      txt.style.fontSize = SIZE.verdict + 'px'
-      return fitText(txt, slot.w, { maxH: slot.h - 26, minPx: SIZE.verdictMin })
-    }
-    const inStrip = { y: L.label.y, h: L.label.h, w: 800 }
-    const inHeader = { y: L.header.y, h: L.header.h, w: L.header.w }
-    let at = lo.verdictAt === 'strip' || lo.verdictAt === 'header' ? lo.verdictAt : 'auto'
-    if (at !== 'header') {
-      const px = place(inStrip)
-      if (at === 'auto') at = L.label.h >= 110 && px >= 58 ? 'strip' : 'header'
-    }
-    if (at === 'header') place(inHeader)
-    const from = slamFromFor(inkWidth(txt), (at === 'header' ? inHeader.w : inStrip.w) - 8, 1.12)
-    style(box, { display: 'none' })
-    verd = { at, box, rule, txt, from }
-  }
+  // until when pick j's label shows: the next pick; in a shared slot (swap) or as two lines, HOLD s at most, then the
+  // formula comes back (the row stays lit and the pointer stays on it)
+  const pickEnd = picks.map((p, j) => {
+    const next = j + 1 < picks.length ? picks[j + 1].t : Infinity
+    return formula && (mode === 'swap' || pickEls[j].__two) ? Math.min(next, p.t + HOLD) : next
+  })
 
   // ---------- sound: a soft tick per row, a thud when the board is complete, swipe + ding per pick ----------
   rowT.forEach(t => {
@@ -384,7 +370,6 @@ export default function findYourRow(spec, ctx) {
     ctx.cue(p.t - 0.04, 'swipe', { gain: 0.42 })
     ctx.cue(p.t + 0.16, 'ding', { gain: 0.42 })
   })
-  if (verd) ctx.cue(vd.t + 0.06, 'reveal', { gain: 0.7 })
 
   const lastBeat = Math.max(fillEnd + T_ROW, ...picks.map(p => p.t + T_LIT))
   const duration = durationOf(spec, lastBeat, d.hold ?? 4.0)
@@ -403,9 +388,6 @@ export default function findYourRow(spec, ctx) {
   return {
     duration,
     layout: L,
-    header: false,
-    footer: false,
-    verdict: false,
     seek(t) {
       // active pick, how lit each row is, how dim the others are
       let k = -1
@@ -460,29 +442,17 @@ export default function findYourRow(spec, ctx) {
         }
       }
 
-      // strip: prompt until the first pick, then each pick label slams in; the formula stays (stack) or gives way (swap)
-      if (formula) style(formula, { display: mode === 'swap' && k >= 0 ? 'none' : 'flex' })
+      // strip: prompt until the first pick, then each pick label slams in; the formula stays (stack, one-line pick) or
+      // gives way while a pick label holds (swap, or a two-line pick) and comes back after it
+      const showing = k >= 0 && t < pickEnd[k] ? k : -1
+      if (formula) style(formula, { display: showing >= 0 && (mode === 'swap' || pickEls[showing].__two) ? 'none' : 'flex' })
       if (promptEl) style(promptEl, { display: k < 0 ? 'flex' : 'none', opacity: '1', transform: 'none' })
       pickEls.forEach((line, j) => {
-        if (j !== k) { style(line, { display: 'none' }); return }
+        if (j !== showing) { style(line, { display: 'none' }); return }
         const sl = slam(t, picks[j].t, { from: line.__from })
         style(line, { display: 'flex', opacity: String(sl.o), transform: `scale(${sl.s.toFixed(4)})` })
       })
-
-      // verdict: replaces the strip (or the header): the table always stays whole
-      if (verd) {
-        const v0 = vd.t <= 0.001                       // a verdict at 0 s is already landed on frame 1
-        const y = v0 ? 1 : t < vd.t - 0.04 ? 0 : prog(t, vd.t - 0.04, 0.14)
-        const yieldEl = verd.at === 'header' ? head.el : strip
-        style(yieldEl, { opacity: String(1 - y), transform: `translateY(${(14 * y).toFixed(1)}px)`, visibility: y >= 1 ? 'hidden' : 'visible' })
-        if (t < vd.t) style(verd.box, { display: 'none' })
-        else {
-          const sl = slam(t, v0 ? 0 : vd.t + 0.06, { from: verd.from })
-          style(verd.box, { display: 'flex' })
-          style(verd.txt, { opacity: String(sl.o), transform: `scale(${sl.s.toFixed(4)})` })
-          style(verd.rule, { transform: `scaleX(${v0 ? '1' : ease.out(prog(t, vd.t + 0.1, 0.35)).toFixed(4)})` })
-        }
-      }
+      // (the verdict and the strip's yield are the chrome's: the kit's one verdict slot)
     },
   }
 }

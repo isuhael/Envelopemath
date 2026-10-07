@@ -1,0 +1,29 @@
+{
+  "id": "sample-clean-sheet-split-sheet-3",
+  "sample": true,
+  "look": "clean-sheet",
+  "format": "split-sheet",
+  "fps": 30,
+  "header": "Split **$5,000**\nthe 60/25/15 way",
+  "footer": "Assumes $5,000 a month take-home pay",
+  "captions": true,
+  "vo": [
+    { "t": 0.0, "d": 1.8, "text": "Five grand. Ten percent is **$500**." },
+    { "t": 2.0, "d": 2.2, "text": "Live on sixty: **$3,000**." },
+    { "t": 4.6, "d": 2.2, "text": "Invest twenty-five: **$1,250**." },
+    { "t": 7.1, "d": 2.0, "text": "Enjoy fifteen: **$750**." },
+    { "t": 9.4, "d": 2.4, "text": "Check: three thousand, twelve fifty, seven fifty. Five grand." }
+  ],
+  "verdict": { "t": 12.2, "text": "**$1,250** a month invested,\nevery month." },
+  "data": {
+    "total": { "label": "Take-home pay", "display": "$5,000", "value": 5000, "note": "10% = $500" },
+    "parts": [
+      { "t": 2.9, "label": "Live", "pct": "60%", "amount": "$3,000", "formula": "6 × $500", "share": 0.6 },
+      { "t": 5.6, "label": "Invest", "pct": "25%", "amount": "$1,250", "formula": "2.5 × $500", "tone": "goal", "share": 0.25 },
+      { "t": 8.0, "label": "Enjoy", "pct": "15%", "amount": "$750", "formula": "1.5 × $500", "share": 0.15 }
+    ],
+    "check": "$3,000 + $1,250 + $750 = $5,000",
+    "checkT": 9.6,
+    "hold": 2.2
+  }
+}

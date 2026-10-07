@@ -3,21 +3,25 @@
 // The same stake goes into 2 (max 3) named rivals on the same date; one continuous race, no cuts:
 //   - the stage is a neon line race: glowing lines and tips, a live counter at every tip ("GOLD $58,204", fixed
 //     digit slots so nothing jitters), an auto-rescaling y axis (dim, in the left margin), a dashed stake line
-//     ("below the line = losing money"), and the year as a big rolling scoreboard clock in the plot's corner
+//     ("below the line = losing money"), and the year as a big rolling scoreboard clock in the plot's top-left
+//     corner (the same spot as pov-race: money races climb to the top-right). It is decoration and faint, and it dims
+//     further while a line or a tip label passes through it
 //   - tip labels ride beside their tips and never sit on a tip or another label: their spot is planned at mount,
 //     frame by frame (right of the tip = the empty future first, then above/below/left, scored on line ink under
 //     the label, tip order and attribution), glides on a spring when it changes, and sits on a soft stage-colour
 //     plate so a line that must pass behind a label is knocked out. Long names stack name over value.
 //   - the hero odometer in the top bar is the score: the leader's live value in the leader's colour, with the
-//     leader's name beside it. A lead change is a hard cut (tag + colour), a bump and a swipe
+//     leader's name beside it (Inter caps, at most two balanced lines at >= 42 px; the number shrinks so name and
+//     number fit the row at the finish's 1.13 bump). A lead change is a hard cut (tag + colour), a bump and a swipe
 //   - event flags: a red dashed rule wipes down the plot (a 20% band with `until`) and the flag label slams into
 //     the strip above the plot (captions on). Captions off (ChartOrbit's voice-free grammar): the flag text is a
-//     hard cut in the bottom-bar label stack instead (HD Guy: the label stack is the caption)
+//     hard cut in the bottom-bar label stack instead (HD Guy: the label stack is the caption), held FLAG_HOLD s (or
+//     until the next flag), then the stack cuts back to the matchup (stake / NAME VS NAME)
 //   - the finish: the lines stop at raceT[1]; the counters roll their last digits (running format) and, SETTLE s
 //     later, land exactly on each series' `final` display string: hero bump, glow flare, floor bloom, the winner's
-//     tip flares (a riser leads in, then hit + cash); the label stack reads FINAL
-//   - the verdict slams into the bottom bar (with captions on: into the caption band once the VO has ended; if VO
-//     runs past verdict.t it sits on a black band over the foot of the chart instead)
+//     tip flares (a riser leads in, then hit + cash)
+//   - the verdict is the chrome's: the kit's one verdict slot at the foot of the frame (with captions on, a black
+//     band rises over the foot of the chart to carry it)
 // Frame 1: the header (POV + stake), the stake in the hero, the footer, both tips at the stake with their counters,
 // the clock at the start year. raceT[0] < 0 opens mid-race (already moving at 0.0 s, the hero on the leader).
 //
@@ -29,15 +33,15 @@
 //   series.basis   a "money in" reference line: grey, dashed, never the leader
 // lookOpts (all optional):
 //   stakeLine    number: the dashed stake line's value; false: none (default: the common start value, if any)
-//   footerSteps  [{ t, text }]: the footer rewrites to a one-line working at each t (spec.footer before the first)
+//   footerSteps  [{ t, text }]: kit-wide (the chrome draws it): the footer rewrites to a working line at each t
 //   flags        'chart' (labels above the plot) | 'labels' (label stack); default: chart with captions, else labels
-//   yearSize     px of the corner clock (default 176); yearPrefix for a non-calendar x (default "YEAR ")
+//   yearSize     px of the corner clock (default 160); yearPrefix for a non-calendar x (default "YEAR ")
 //   stageBottom  y where the stage ends (default 1300 with captions, 1240 without)
-import { h, s, css as style, setText, attr, prog, ease, clamp, lerp, fitText, fmtNum } from '../../../runtime/core.js'
+import { h, s, css as style, setText, setHTML, attr, prog, ease, clamp, lerp, fitText, fmtNum } from '../../../runtime/core.js'
 import { C, SIZE, M, layoutFor } from '../theme.js'
 import {
-  rich, richUI, esc, heroRow, labelStack, stageFlash, flashAt, parseDisplay, displayValue, odometer, bump, slam,
-  durationOf, toneColor, verdict, valueAt,
+  rich, richUI, esc, bare, heroRow, labelStack, stageFlash, flashAt, parseDisplay, displayValue, odometer, bump, slam,
+  durationOf, toneColor, valueAt,
 } from '../lib.js'
 
 export const css = `
@@ -56,16 +60,15 @@ export const css = `
 .cr-flag { position: absolute; font: 700 42px/1.1 'Inter', 'Inter Full', sans-serif; text-transform: uppercase; letter-spacing: 0.03em; white-space: nowrap; transform-origin: 50% 100%; }
 .cr-stake { position: absolute; font: 600 30px/1 'Inter', 'Inter Full', sans-serif; color: #9AA4B2; white-space: nowrap; }
 .cr-tag { position: absolute; top: 0; display: flex; align-items: center; justify-content: flex-end; text-align: right; font: 700 42px/1.08 'Inter', 'Inter Full', sans-serif; text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; }
-.cr-foot { position: absolute; font: 600 40px/1.2 'Inter', 'Inter Full', sans-serif; color: #9AA4B2; text-align: center; white-space: nowrap; }
-.cr-foot em { font-style: normal; color: #FFFFFF; }
+.cr-tag > span { display: block; }   /* one flex child: spaces around markup survive */
 .cr-vs { color: #9AA4B2; }
-.cr-vband { position: absolute; left: 0; width: 1080px; background: #000; box-shadow: inset 0 2px 0 #1E2530; }
 `
 
 const SETTLE = 0.45    // s: once the lines stop, tips and hero roll their last digits, then land on `final`
 const TAGGAP = 26      // px between the hero tag and the number
 const LEAD = 1.004     // a challenger must lead by 0.4% to take the hero (no flicker on near-ties)
 const K = 1.2          // the y axis keeps the running max at 1/K of the plot height
+const FLAG_HOLD = 2.5  // s an event flag holds the label stack (captions off) before the matchup comes back
 
 const rgba = (hex, a) => {
   if (!/^#[0-9a-f]{6}$/i.test(hex)) hex = C.white
@@ -216,19 +219,22 @@ export default function chartRace(spec, ctx) {
   const root = h('div', { class: 'cr-root', style: { left: P.x + 'px', top: P.y + 'px', width: P.w + 'px', height: P.h + 'px' } })
   stage.append(root)
 
-  // the clock: a big rolling year in the plot's bottom-right corner, behind the lines (decoration: the x axis and
-  // the VO carry the year too). Bottom-right is where a race's lines go last.
-  const YS = +lo.yearSize || 176
+  // the clock: a big rolling year in the plot's top-left corner, behind the lines (decoration: the x axis and the VO
+  // carry the year too). Money races climb to the top-right, so that corner stays clear; it dims while a line or a
+  // tip label passes through it.
+  const YS = +lo.yearSize || 160
   const yearBox = h('div', { class: 'cr-year', 'data-deco': '' })
   root.append(yearBox)
   const yearOdo = odometer(yearBox, { size: YS, color: 'rgba(255, 255, 255, 0.15)', maxInt: calendar ? 4 : 3, maxDp: 0 })
   const yearTpl = { prefix: calendar ? '' : (lo.yearPrefix ?? 'YEAR '), suffix: '', dp: 0, group: false, scale: 1, value: 0 }
-  style(yearBox, { right: '4px', bottom: Math.round(-0.11 * YS + 6) + 'px' })
+  style(yearBox, { left: '12px', top: Math.round(-0.02 * YS) + 'px' })
   const rollF = clamp(0.24 / Math.max(1e-6, secPerYear), 0.04, 0.4)    // the year digits roll in ~0.24 s
+  // the year rolls into y + 1 over the last rollF of year y, and never past the clock's last year (x.to = 2025 holds
+  // "2025"; x.to = 2025.99 holds "2025" too)
+  const yearEnd = Math.floor(X.to + 1e-6)
   const yearV = x => {
     const y = Math.floor(x + 1e-6)
-    if (y <= Math.floor(X.from + 1e-6)) return y
-    return y - 1 + clamp((x - y) / rollF)
+    return Math.max(Math.floor(X.from + 1e-6), Math.min(yearEnd, y + clamp((x - (y + 1 - rollF)) / rollF)))
   }
 
   const svg = s('svg', { class: 'cr-svg', width: P.w, height: P.h, viewBox: `0 0 ${P.w} ${P.h}`, 'data-deco': '' })
@@ -340,16 +346,28 @@ export default function chartRace(spec, ctx) {
   }
 
   // ---------- hero: the stake on frame 1, then the leader's live value with the leader's name ----------
-  const hero = heroRow(stage, L, { size: SIZE.hero, maxDp: 2 })
+  const hero = heroRow(stage, L, { maxDp: 2 })
+  const HS = L.hero.size
+  // the leader's name beside the number: one line, or two balanced lines at the word break that makes it narrowest
+  // (never more: a three-line tag overflows its box); 42 px, so the hero's 3% dip keeps it >= 40
   const tags = new Map()
   for (const sr of racers) {
-    const el = h('div', { class: 'cr-tag', html: richUI(nameOf(sr)), style: { color: sr.color } })
+    const name = nameOf(sr)
+    const el = h('div', { class: 'cr-tag', html: `<span>${richUI(name)}</span>`, style: { color: sr.color } })
     stage.append(el)
-    const w1 = Math.ceil(el.offsetWidth) + 2
-    const two = w1 > 300
-    const tw = Math.min(300, w1)
+    const wOf = html => { setHTML(el, `<span>${html}</span>`); return Math.ceil(el.offsetWidth) + 2 }
+    let tw = wOf(richUI(name)), html = richUI(name)
+    if (tw > 300) {
+      const words = bare(name).split(/\s+/).filter(Boolean)
+      for (let k = 1; k < words.length; k++) {
+        const a = esc(words.slice(0, k).join(' ')), b = esc(words.slice(k).join(' '))
+        const w = Math.max(wOf(a), wOf(b))
+        if (w < tw) { tw = w; html = a + '<br>' + b }
+      }
+    }
+    setHTML(el, `<span>${html}</span>`)
     hero.el.append(el)
-    style(el, { height: L.hero.h + 'px', width: tw + 'px', whiteSpace: two ? 'normal' : 'nowrap', textWrap: 'balance', display: 'flex' })
+    style(el, { height: L.hero.h + 'px', width: tw + 'px', display: 'flex' })
     fitText(el, tw, { maxH: L.hero.h - 8, minPx: 42 })
     style(el, { display: 'none' })
     tags.set(sr, { el, w: tw })
@@ -366,10 +384,10 @@ export default function chartRace(spec, ctx) {
       fit(() => hero.set(snapT(mx, tplAt(mx)), tplAt(mx)), sp)
       if (sr.finalTpl) fit(() => hero.show(sr.final), sp)
     }
-    if (f < 1) style(hero.odo.el, { fontSize: Math.floor(SIZE.hero * Math.max(0.45, f)) + 'px' })
+    if (f < 1) style(hero.odo.el, { fontSize: Math.floor(HS * Math.max(0.45, f)) + 'px' })
   }
 
-  // ---------- label stack (captions off): the matchup, then each event as a hard cut, then FINAL ----------
+  // ---------- label stack (captions off): the matchup at rest; each event a hard cut held FLAG_HOLD s ----------
   let labels = null
   const chapters = []
   if (stackMode) {
@@ -377,83 +395,33 @@ export default function chartRace(spec, ctx) {
     const vs = racers.map(sr => `<span style="color:${sr.color}">${rich(nameOf(sr))}</span>`).join(' <span class="cr-vs">VS</span> ')
     const items = [{ l1, l2: vs }]
     chapters.push({ t: 0, idx: 0 })
-    for (const e of events) {
-      if (!e.label) continue
+    const flagged = events.filter(e => e.label)
+    flagged.forEach((e, k) => {
       chapters.push({ t: e.t, idx: items.length })
       items.push({ l1, l2: rich(e.label), l2Color: e.tone === 'neutral' ? C.white : e.col })
-    }
-    chapters.push({ t: TF, idx: items.length })
-    items.push({ l1, l2: 'FINAL' })
-    labels = labelStack(stage, L, items)
-  }
-
-  // ---------- verdict: the bottom bar's closing line ----------
-  let verd = null, vBand = null, vBandY = 0
-  if (spec.verdict && spec.verdict.text) {
-    const vt = Math.max(0, +spec.verdict.t || 0)
-    const vo = spec.vo || []
-    const voLate = capsOn && vo.some((v, i) => {
-      const end = v.d != null ? v.t + v.d : vo[i + 1] ? vo[i + 1].t : Infinity
-      return end + 0.15 > vt + 0.06          // the last caption is gone before the verdict text shows
+      const next = k + 1 < flagged.length ? flagged[k + 1].t : Infinity
+      if (e.t + FLAG_HOLD < next) chapters.push({ t: e.t + FLAG_HOLD, idx: 0 })   // back to the matchup
     })
-    let slot
-    if (!capsOn) slot = { ...L.verdict, boxed: false }
-    else if (!voLate) slot = { y: 1304, h: 172, w: 800, boxed: false }        // the caption band is free by then
-    else {
-      // VO still running: a black band rises over the foot of the chart and carries the verdict
-      slot = { y: L.stage.y + L.stage.h - 200, h: 196, w: 800, boxed: false }
-      vBandY = slot.y - 8
-      vBand = h('div', { class: 'cr-vband', 'data-deco': '', style: { top: vBandY + 'px', height: L.stage.y + L.stage.h - vBandY + 'px', display: 'none' } })
-      stage.append(vBand)
-    }
-    verd = verdict(stage, spec, { ...L, verdict: slot })
-    if (verd) {
-      // lib's verdict() fits its text while hidden (it measures 0): fit again here with the box measurable
-      const vbox = [...stage.querySelectorAll('.sb-verdict')].pop()
-      const vtxt = vbox && vbox.querySelector('.sb-verdict-text')
-      if (vtxt) {
-        vbox.style.display = 'flex'
-        vbox.style.gap = '12px'
-        fitText(vtxt, slot.w, { maxH: slot.h - 8 - 12 - 6, minPx: SIZE.verdictMin })
-        vbox.style.display = ''
-      }
-    }
-  }
-
-  // ---------- footer steps (lookOpts.footerSteps): the working line rewrites at each beat ----------
-  let foot = null
-  if (Array.isArray(lo.footerSteps) && lo.footerSteps.length) {
-    const fw = L.footer.w
-    const mk = text => {
-      const el = h('div', { class: 'cr-foot', html: richUI(text), style: { top: L.footer.y + 'px', left: (1080 - fw) / 2 + 'px', width: fw + 'px' } })
-      stage.append(el)
-      fitText(el, fw, { maxH: L.footer.h + 4, minPx: 34 })
-      style(el, { display: 'none' })
-      return el
-    }
-    foot = {
-      base: spec.footer ? mk(spec.footer) : null,
-      steps: lo.footerSteps.filter(x => x && x.text).map(x => ({ t: +x.t || 0, el: mk(x.text) })).sort((a, b) => a.t - b.t),
-    }
+    labels = labelStack(stage, L, items)
   }
 
   // ---------- sound: whoosh at the start, a tick per flag (thud per label cut), swipe on a pass, riser → hit ----------
   const cue = (t, kind, o) => { if (t >= 0) ctx.cue(t, kind, o) }
   if (R0 > 0.05) cue(R0, 'whoosh', { dur: 0.6, gain: 0.5 })
+  else cue(0, 'whoosh', { dur: 0.45, gain: 0.3 })            // opening mid-race: a soft whoosh under frame 1
   for (const e of events) cue(e.t, stackMode && e.label ? 'thud' : 'tick', { gain: stackMode && e.label ? 0.65 : 0.55 })
-  for (const sg of changes) cue(sg.t, 'swipe', { gain: 0.45 })
+  for (const sg of changes) cue(sg.t, 'swipe', { gain: 0.5 })   // a lead change: the hero cuts to the new leader
   const riseDur = Math.min(2.4, (R1 - R0) * 0.2)
   if (riseDur > 0.6) cue(TF - riseDur, 'riser', { dur: riseDur, gain: 0.4 })
   cue(TF, 'hit', { gain: 0.85 })
   cue(TF + 0.06, 'cash', { gain: 0.5 })
-  if (verd) cue(verd.t + 0.06, 'reveal', { gain: 0.7 })
 
   const duration = durationOf(spec, TF, d.hold ?? M.hold)
   const yearRect = { x: 0, y: 0, w: 0, h: 0 }
   {
     yearOdo.set(Math.floor(X.to + 1e-6), yearTpl)
-    yearRect.w = yearBox.offsetWidth; yearRect.h = YS * 0.9
-    yearRect.x = P.w - 4 - yearRect.w; yearRect.y = P.h - 6 - YS * 0.86
+    yearRect.w = yearBox.offsetWidth; yearRect.h = YS * 0.88
+    yearRect.x = 12; yearRect.y = 0
   }
   const hit = (a, b) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y
 
@@ -640,8 +608,6 @@ export default function chartRace(spec, ctx) {
   return {
     duration,
     layout: L,
-    footer: foot ? false : undefined,
-    verdict: false,
     seek(t) {
       const x = xAt(t)
       const ymax = Y.log ? logMax : yMaxAt(t)
@@ -693,7 +659,9 @@ export default function chartRace(spec, ctx) {
         const vx = vAt(o.sr, x)
         const tx = pxOf(x), ty = py(vx)
         let dd = ''
-        pts.forEach((p, k) => { dd += (k ? 'L' : 'M') + pxOf(p[0]).toFixed(1) + ' ' + py(p[1]).toFixed(1) })
+        const poly = []
+        pts.forEach((p, k) => { const X1 = pxOf(p[0]), Y1 = py(p[1]); poly.push(X1, Y1); dd += (k ? 'L' : 'M') + X1.toFixed(1) + ' ' + Y1.toFixed(1) })
+        poly.push(tx, ty)
         dd += (pts.length ? 'L' : 'M') + tx.toFixed(1) + ' ' + ty.toFixed(1)
         attr(o.path, 'd', started ? dd : 'M0 0')
         attr(o.glow, 'd', started ? dd : 'M0 0')
@@ -704,7 +672,7 @@ export default function chartRace(spec, ctx) {
         const c = counter(o.sr, t, x)
         showOn(o.odo, c)
         style(o.lab, { display: started ? 'flex' : 'none' })
-        return { o, tx, ty, started, c }
+        return { o, tx, ty, started, c, poly: started ? poly : [] }
       })
 
       // ---- tip labels: the precomputed, smoothed offset from the tip (see place()), clamped, pushed apart ----
@@ -733,6 +701,20 @@ export default function chartRace(spec, ctx) {
       for (const tk of xTicks) {
         const r = { x: pxOf(tk.xv) - tk.w / 2 - 6, y: P.h + 8, w: tk.w + 12, h: 38 }
         style(tk.lab, { visibility: rects.some(q => hit(q, r)) ? 'hidden' : 'visible' })
+      }
+      // the clock dims while a line or a tip label runs through it (a pure function of this frame's geometry)
+      {
+        const yr = yearRect
+        let ink = 0
+        for (const tp of tips) {
+          const a = tp.poly
+          for (let i = 2; i < a.length; i += 2) ink += clipLen(a[i - 2], a[i - 1], a[i], a[i + 1], yr.x, yr.y, yr.x + yr.w, yr.y + yr.h)
+        }
+        for (const q of rects) {
+          const ox = Math.min(q.x + q.w, yr.x + yr.w) - Math.max(q.x, yr.x), oy = Math.min(q.y + q.h, yr.y + yr.h) - Math.max(q.y, yr.y)
+          if (ox > 0 && oy > 0) ink += (ox * oy) / 40
+        }
+        style(yearBox, { opacity: (1 - 0.6 * clamp(ink / 160)).toFixed(3) })
       }
 
       // ---- stake line: its label gives way to tip labels and the clock ----
@@ -781,25 +763,7 @@ export default function chartRace(spec, ctx) {
         labels.seek(t, ch.idx, ch.t)
       }
 
-      // ---- verdict ----
-      if (verd) {
-        verd.seek(t)
-        const y = verd.yieldAt(t)
-        if (labels) style(labels.el, { opacity: String(1 - y), transform: `translateY(${(14 * y).toFixed(1)}px)`, visibility: y >= 1 ? 'hidden' : 'visible' })
-        if (vBand) {
-          const p = ease.out(prog(t, verd.t - 0.12, 0.24))
-          const top0 = L.stage.y + L.stage.h
-          style(vBand, { display: t >= verd.t - 0.12 ? 'block' : 'none', top: lerp(top0, vBandY, p).toFixed(1) + 'px', height: (top0 - lerp(top0, vBandY, p)).toFixed(1) + 'px' })
-        }
-      }
-
-      // ---- footer steps ----
-      if (foot) {
-        let cur = foot.base
-        for (const st of foot.steps) if (t >= st.t) cur = st.el
-        if (foot.base) style(foot.base, { display: cur === foot.base ? 'block' : 'none' })
-        for (const st of foot.steps) style(st.el, { display: cur === st.el ? 'block' : 'none' })
-      }
+      // (the verdict, the label stack's yield and the footer steps are the chrome's)
     },
   }
 }

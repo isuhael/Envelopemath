@@ -1,0 +1,47 @@
+{
+  "id": "becker-rig-cost-counter-2",
+  "sample": true,
+  "look": "becker-rig",
+  "format": "cost-counter",
+  "fps": 30,
+  "header": "New US debt, from the ding.\nWhen does it pass **a whole**\n**working life of pay**?",
+  "footer": "New debt ≈ $2.46T ÷ (364 × 86,400 s)\nPay: BLS median $1,251 a week × 52",
+  "captions": true,
+  "vo": [
+    { "t": 0.0, "d": 1.4, "text": "Wait for the ding." },
+    { "t": 2.2, "d": 2.0, "text": "A new car. A year of pay." },
+    { "t": 4.4, "d": 1.9, "text": "**≈ $78,000** a second." },
+    { "t": 6.5, "d": 2.4, "text": "A median new house: ≈ 5 seconds." },
+    { "t": 9.8, "d": 2.2, "text": "10 years of median pay." },
+    { "t": 14.3, "d": 2.4, "text": "$1 million: ≈ 13 seconds." },
+    { "t": 17.0, "d": 4.6, "text": "The debt grew ≈ $2.46 trillion in 364 days." },
+    { "t": 22.0, "d": 3.6, "text": "Split into seconds, that's this counter." },
+    { "t": 27.1, "d": 2.2, "text": "$2 million: ≈ 26 seconds." },
+    { "t": 30.0, "d": 4.0, "text": "Now a whole working life of median pay." },
+    { "t": 34.8, "d": 1.4, "text": "**Passed.**" }
+  ],
+  "verdict": { "t": 36.4, "text": "40 years of median pay:\n**≈ 33 seconds** of new US debt." },
+  "data": {
+    "label": "New US debt since the ding, at the average rate of the last 364 days",
+    "perSecond": 78201.35,
+    "rateDisplay": "≈ $78,000 every second",
+    "counterT": [1.5, 36.0],
+    "startValue": 0,
+    "prefix": "$",
+    "dp": 0,
+    "milestones": [
+      { "value": 50089, "label": "An average new car: $50,089" },
+      { "value": 65052, "label": "A year of median full-time pay: $65,052" },
+      { "value": 393700, "label": "A median new house: $393,700" },
+      { "value": 650520, "label": "10 years of median full-time pay: $650,520" },
+      { "value": 1000000, "label": "$1 million" },
+      { "value": 2000000, "label": "$2 million" },
+      { "value": 2602080, "label": "A whole working life, 40 years of median full-time pay: $2,602,080" }
+    ],
+    "final": "≈ $2,697,947",
+    "hold": 3.0
+  },
+  "lookOpts": { "finale": "shrug" },
+  "sfx": [ { "t": 1.5, "kind": "ding", "gain": 0.7 } ],
+  "notes": "Stress variant: 7 milestones (two passes 0.19 s apart), long labels that wrap, a 2-line counter label, a 3-line hook, an armed start (the counter starts at 1.5 s on a ding), and a 20 s gap between passes. Rate: Debt to the Penny $40,096,954,633,566.68 (2026-09-29) − $37,637,553,494,935.61 (2025-09-30) = $2,459,401,138,631.07 in 364 days ÷ 31,449,600 s = $78,201.349 a second (perSecond 78,201.35; shown ≈ $78,000). Counter 1.5-36.0 s (34.5 s): 78,201.349 × 34.5 = 2,697,946.53 → ≈ $2,697,947. Passes at 1.5 + value ÷ rate: car $50,089 (KBB Aug 2026) 2.141 s; a year of median pay $1,251 × 52 = $65,052 (BLS Q2 2026) 2.332 s; median new house $393,700 (Census Aug 2026) 6.534 s (5.034 s of counting ≈ 5); 10 years of pay $650,520 9.819 s; $1,000,000 14.288 s (12.788 s ≈ 13); $2,000,000 27.075 s (25.575 s ≈ 26); 40 years of pay $2,602,080 34.774 s (33.274 s ≈ 33). Inputs as verified in teasers/v2/10-cost-counter.md and teasers/v2/08-unit-ladder.md."
+}

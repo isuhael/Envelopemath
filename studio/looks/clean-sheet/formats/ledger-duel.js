@@ -7,7 +7,7 @@
 // Frame 1 is the empty ledger: names, plans and every year label (in grey) are on the page, so the viewer sees the
 // bet and the time span before anything fills (rows with t <= 0, usually the starting stake, are already filled).
 // Each row then lands in both columns at once: its year turns ink, a sand cursor band swipes across it and both
-// values type in place (right-aligned, so nothing shifts while they type). The cursor moves down with every row.
+// values type in place (right-aligned, so nothing shifts while they type; every "≈" in a column on one vertical line). The cursor moves down with every row.
 // An event row (a crash, a recovery) swipes its tone instead (crash = coral) and opens a note line under its year
 // (the empty rows below ease down to make room, so the frame-1 grid is even and gives nothing away); that tint stays
 // (rested) as a record. The goal row is the ledger's total line: a rule above it and larger figures. At the winner
@@ -19,16 +19,20 @@
 //   1. figures 60-48 px: drop lookOpts.formulas (a footnote), then the stake caption if the header already shows
 //      its money;
 //   2. figures 46-40 px, events still under their rows;
-//   3. events move to one shared line under the table ([year on its tone] event, the latest one shown);
-//   4. tighter rows at 40 px (pitch down to 1.08 em: line boxes touch, glyphs do not; rows marked data-overlap-ok).
-// Past that the content is over budget (about 10 rows with two events, 12 rows with one-line plans) and the linter
-// reports it. Year labels are nudged onto the figures' baseline; plans split at " · " when they need two lines.
+//   3. events move to a legend under the table, one line per event ([year on its tone] event, up to 3), so every
+//      tint on the finished sheet is explained; tighter rows at 40 px (pitch down to 1.08 em: line boxes touch,
+//      glyphs do not; rows marked data-overlap-ok);
+//   4. one shared legend line (the latest event; an event row's tint fades back as its line is replaced, so no
+//      colour is ever left unexplained);
+//   5. over budget, in this order: the stake caption goes, then the event legend (event rows then behave as plain
+//      rows: no tint), then the plans clamp to one line, then the plans go.
+// Year labels are nudged onto the figures' baseline; plans split at " · " when they need two lines.
 //
 // lookOpts: loop (true) · stake ('auto' | 'show' | 'hide') · labels ('ahead' | 'with-row') ·
 //           formulas ([colA, colB]: grey mono footnote "Name: formula") · winnerT (seconds) · badge (ignored:
 //           the Clean Sheet dropped the badge because it repeats the title)
 import { h, css as style, prog, ease, clamp, lerp, plain } from '../../../runtime/core.js'
-import { C, GRID, MOTION, md, hlBox, toneColor, fadeUp, fade, landing, durationOf, fitMarkup } from '../lib.js'
+import { C, GRID, MOTION, md, hlBox, toneColor, fadeUp, fade, landing, durationOf, fitMarkup, alignApprox } from '../lib.js'
 
 export const css = `
 .ld > * { position: absolute; }
@@ -76,6 +80,8 @@ const PAD = 14           // column inner padding: text sits PAD inside its colum
 const REF = 40           // reference size for measuring
 const PLAN_PX = 40
 const EV_PX = 40
+const EVL_PX = 40        // stacked legend: key chip size
+const EVL_PITCH = 56     // stacked legend: line pitch (chip box 52)
 const LINE = { plan: 1.15, ev: 1.2, stake: 1.2 }
 const n3 = v => (Math.round(v * 1000) / 1000).toString()
 const padOf = px => 12 * Math.sqrt(px / 66) // hlBox horizontal padding (padX 12)
@@ -215,6 +221,11 @@ export default function ledgerDuel(spec, ctx) {
   // ---------------------------------------------------------------- measuring (real fonts, reference size)
   const range = document.createRange()
   const textW = el => { range.selectNodeContents(el); return range.getBoundingClientRect().width }
+  // each money column: every "≈" in one vertical line (a slot left of the widest figure; plain values leave it empty)
+  for (const j of [0, 1]) {
+    const html = alignApprox(R.map(row => row.cells[j].hl), rows.map(r => r.values[j]), REF)
+    R.forEach((row, i) => { row.cells[j].full = html[i] })
+  }
   for (const row of R) for (const c of row.cells) { c.hl.setPx(REF); c.tw = c.hl.txt.getBoundingClientRect().width - 2 * padOf(REF) }
   const valW = [0, 1].map(j => Math.max(0, ...R.filter((_, i) => i !== finalIdx).map(row => row.cells[j].tw)))
   const finW = [0, 1].map(j => (finalIdx >= 0 ? R[finalIdx].cells[j].tw : 0))
@@ -230,6 +241,7 @@ export default function ledgerDuel(spec, ctx) {
   const fW = fEls.map(el => textW(el))
   const evlTxtW = evLines.map(e => textW(e.txt))
   const evlW = evLines.map((e, k) => { e.key.setPx(44); return e.key.width() + 18 + evlTxtW[k] })
+  const evsW = evLines.map((e, k) => { e.key.setPx(EVL_PX); const w = e.key.width() + 16 + evlTxtW[k]; e.key.setPx(44); return w })
 
   // ---------------------------------------------------------------- layout engine
   const tableW = P.right - GRID.left // 856: x 84 -> 940
@@ -331,10 +343,17 @@ export default function ledgerDuel(spec, ctx) {
     fixed += evExtra.reduce((a, b) => a + b, 0)
     let evlH = 0, evlTwo = false
     if (lv.evLine && !lv.evInline && evLines.length) {
-      evlTwo = Math.max(...evlW) > tableW
-      if (evlTwo && Math.max(...evLines.map((e, k) => evlW[k] - evlTxtW[k])) > tableW * 0.4) return null
-      evlH = evlTwo ? 2 * 48 : Math.round(44 * 1.3)
-      fixed += 18 + evlH
+      if (lv.evStack) {
+        // one legend line per event (up to 3), each on one line
+        if (evLines.length > 3 || Math.max(...evsW) > tableW) return null
+        evlH = (evLines.length - 1) * EVL_PITCH + Math.round(EVL_PX * 1.3)
+        fixed += 16 + evlH
+      } else {
+        evlTwo = Math.max(...evlW) > tableW
+        if (evlTwo && Math.max(...evLines.map((e, k) => evlW[k] - evlTxtW[k])) > tableW * 0.4) return null
+        evlH = evlTwo ? 2 * 48 : Math.round(44 * 1.3)
+        fixed += 18 + evlH
+      }
     }
     let fH = 0
     if (lv.formulas && fEls.length) {
@@ -355,39 +374,41 @@ export default function ledgerDuel(spec, ctx) {
       evLH, evExtra, stakeH, stakeTwo, evlH, evlTwo, fH, pitch, goalPitch, lab2, labLines, labHTML, lv }
   }
 
-  const lv = (stake, formulas, evInline, gap = 10, planLines = 3, plans = true, evLine = true) => ({ stake, formulas, evInline, gap, planLines, plans, evLine })
+  // ev: 'inline' (a note line under its row) | 'stack' (one legend line per event) | 'line' (one shared legend line,
+  // the latest event) | 'none' (no legend: event rows behave as plain rows, so no tint is left unexplained)
+  const lv = (stake, formulas, ev, gap = 10, planLines = 3, plans = true) =>
+    ({ stake, formulas, ev, evInline: ev === 'inline', evLine: ev === 'stack' || ev === 'line', evStack: ev === 'stack', gap, planLines, plans })
   const stakeOn = !!stakeEl && stakeMode !== 'hide'
   const withF = fEls.length > 0
   const sizes = (a, b) => { const out = []; for (let px = a; px >= b; px -= 2) out.push(px); return out }
   const plan = []
   const add = (levels, pxs) => { for (const l of levels) for (const px of pxs) plan.push([px, l]) }
   const evs = !!evRows.length
+  const stakes = stakeOn && stakeDroppable ? [stakeOn, false] : [stakeOn]
   // 1. comfortable figures (>= 48 px), dropping the optional extras one by one
-  add([lv(stakeOn, withF, true), lv(stakeOn, false, true)], sizes(60, 48))
-  if (stakeOn && stakeDroppable) add([lv(false, false, true)], sizes(60, 48))
+  add([lv(stakeOn, withF, 'inline'), lv(stakeOn, false, 'inline')], sizes(60, 48))
+  if (stakeOn && stakeDroppable) add([lv(false, false, 'inline')], sizes(60, 48))
   // 2. denser figures (>= 40 px), events still under their rows; then plans on two lines at most
-  for (const pl of [3, 2]) {
-    add([lv(stakeOn, false, true, 10, pl)], sizes(46, 40))
-    if (stakeOn && stakeDroppable) add([lv(false, false, true, 10, pl)], sizes(46, 40))
+  for (const pl of [3, 2]) for (const st of stakes) add([lv(st, false, 'inline', 10, pl)], sizes(46, 40))
+  // 3. events move to the legend under the table: one line each, then one shared line; rows tighten before either
+  if (evs) for (const ev of ['stack', 'line']) for (const pl of [3, 2]) for (const st of stakes) {
+    add([lv(st, false, ev, 10, pl)], sizes(46, 40))
+    add([lv(st, false, ev, 2, pl), lv(st, false, ev, -5, pl)], [40])
   }
-  // 3. events move to one shared line under the table; then tighter rows (the glyphs still clear each other)
-  if (evs) for (const pl of [3, 2]) {
-    add([lv(stakeOn, false, false, 10, pl)], sizes(46, 40))
-    if (stakeOn && stakeDroppable) add([lv(false, false, false, 10, pl)], sizes(46, 40))
-  }
-  add([lv(stakeOn, false, !evs, 2, 2)], [40])
-  if (stakeOn && stakeDroppable) add([lv(false, false, !evs, 2, 2)], [40])
-  add([lv(stakeOn, false, !evs, -5, 2)], [40])
-  if (stakeOn && stakeDroppable) add([lv(false, false, !evs, -5, 2)], [40])
-  // 4. over the content budget: the plans go, then the event line (the rows keep their tone), then the stake
-  add([lv(stakeOn && !stakeDroppable, false, false, -5, 2, false)], [40])
-  if (evs) add([lv(stakeOn && !stakeDroppable, false, false, -5, 2, false, false)], [40])
-  add([lv(false, false, false, -6, 2, false, false)], [40])
+  if (!evs) for (const st of stakes) add([lv(st, false, 'inline', 2, 2), lv(st, false, 'inline', -5, 2)], [40])
+  // 4. over the content budget, keeping plans > event legend > stake caption: the stake goes, then the legend, then
+  //    the plans clamp to one line, then they go (the legend comes back if that leaves room for it)
+  const st0 = stakeOn && !stakeDroppable
+  if (evs) for (const pl of [3, 2, 1]) add([lv(st0, false, 'none', -5, pl)], [40])
+  else add([lv(st0, false, 'inline', -5, 1)], [40])
+  if (evs) add([lv(st0, false, 'line', -5, 2, false), lv(st0, false, 'none', -5, 2, false)], [40])
+  else add([lv(st0, false, 'inline', -5, 2, false)], [40])
+  add([lv(false, false, evs ? 'none' : 'inline', -6, 2, false)], [40])
   let L = null
   for (const [px, l] of plan) { L = tryLayout(px, l); if (L) break }
   if (!L) {
     // still over: the smallest layout, rows packed at what is left (the linter reports any overflow)
-    for (const g of [-8, -10, -12]) { L = tryLayout(40, lv(false, false, false, g, 2, false, false)); if (L) break }
+    for (const g of [-8, -10, -12]) { L = tryLayout(40, lv(false, false, evs ? 'none' : 'inline', g, 2, false)); if (L) break }
     if (!L) {
       const labelColW = Math.min(Math.ceil(labW) + 2 * PAD, Math.round(tableW * 0.3))
       const colW = (tableW - labelColW) / 2
@@ -396,7 +417,7 @@ export default function ledgerDuel(spec, ctx) {
       L = { cellPx: 40, labelPx: 40, namePx: 40, finalPx: 40, labelColW, colW, inner: colW - 2 * PAD, plans: TH.map(() => ({ lines: 0, html: '' })), planLines: 0, nameH: 44,
         planLH: 46, hh, boxH: Math.min(52, pitch - 4), finBoxH: Math.min(52, pitch - 4), evLH: 48, evExtra: R.map(() => 0),
         stakeH: 0, stakeTwo: false, evlH: 0, fH: 0, pitch, goalPitch: pitch, lab2: R.map(() => 0), labLines: R.map(() => 1), labHTML: R.map(() => null),
-        lv: lv(false, false, false, -12, 2, false, false) }
+        lv: lv(false, false, evs ? 'none' : 'inline', -12, 2, false) }
     }
     L.fallback = true
   }
@@ -498,9 +519,18 @@ export default function ledgerDuel(spec, ctx) {
   const tableH = ry + 6
   style(tableEl, { left: GRID.left + 'px', top: top + 'px', width: tableW + 'px', height: tableH + 'px' })
   y = top + tableH
-  const evLineOn = evLines.length > 0 && !L.lv.evInline && L.lv.evLine !== false
+  const evLineOn = evLines.length > 0 && !L.lv.evInline && L.lv.evLine
+  const evStack = evLineOn && L.lv.evStack
   if (evLines.length) {
-    if (evLineOn) {
+    if (evStack) {
+      // one legend line per event, each kept on the finished sheet
+      evLines.forEach((e, k) => {
+        e.key.setPx(EVL_PX)
+        const lh = Math.round(EVL_PX * 1.3)
+        style(e.el, { left: Math.round(GRID.left + PAD - padOf(EVL_PX)) + 'px', top: Math.round(y + 16 + k * EVL_PITCH) + 'px', height: lh + 'px', gap: '16px' })
+      })
+      y += 16 + L.evlH
+    } else if (evLineOn) {
       evLines.forEach((e, k) => {
         style(e.el, { left: Math.round(GRID.left + PAD - padOf(44)) + 'px', top: Math.round(y + 18) + 'px', height: L.evlH + 'px' })
         if (L.evlTwo) style(e.txt, { whiteSpace: 'normal', textWrap: 'balance', width: Math.floor(tableW - (evlW[k] - evlTxtW[k]) - 4) + 'px' })
@@ -508,6 +538,13 @@ export default function ledgerDuel(spec, ctx) {
       y += 18 + L.evlH
     } else for (const e of evLines) style(e.el, { display: 'none' })
   }
+  // when does an event row's legend leave the sheet (shared line: when the next event replaces it; none: at once)
+  const evGone = R.map(row => {
+    if (!row.ev || L.lv.evInline || evStack) return Infinity
+    if (!evLineOn) return -Infinity
+    const k = evLines.findIndex(e => e.x === row)
+    return evLines[k + 1] ? T[R.indexOf(evLines[k + 1].x)] : Infinity
+  })
   if (fEls.length) {
     if (L.lv.formulas) {
       fEls.forEach((el, k) => style(el, { left: GRID.left + PAD + 'px', top: Math.round(y + 18 + k * 48) + 'px' }))
@@ -517,7 +554,7 @@ export default function ledgerDuel(spec, ctx) {
   style(mask, { left: GRID.left - 22 + 'px', width: tableW + 44 + 'px', top: top - 14 + 'px', height: Math.round(y - top + 26) + 'px' })
   Object.assign(root.dataset, {
     cell: String(L.cellPx), pitch: String(L.pitch), stake: String(!!L.lv.stake), formulas: String(!!L.lv.formulas),
-    events: L.lv.evInline ? 'inline' : evLineOn ? 'line' : 'none', plans: String(L.lv.plans), fallback: String(!!L.fallback),
+    events: L.lv.evInline ? 'inline' : evStack ? 'stack' : evLineOn ? 'line' : 'none', plans: L.lv.plans ? String(L.planLines) : 'false', fallback: String(!!L.fallback),
   })
 
   // ---------------------------------------------------------------- sound: one cue per real beat
@@ -581,9 +618,11 @@ export default function ledgerDuel(spec, ctx) {
         const next = NEXT[i]
         const wipe = isPre ? 1 : ease.out(prog(t, land, MOTION.wipe))
         let color, op
-        if (r.tone && r.tone !== 'goal') {
+        const gone = evGone[i]
+        if (r.tone && r.tone !== 'goal' && gone > -Infinity) {
+          // a tone row keeps a rested tint while its legend explains it (a replaced shared line takes the tint along)
           color = toneColor(r.tone)
-          op = wipe > 0 ? lerp(1, MOTION.rest, prog(t, next + 0.05, MOTION.restIn)) : 0
+          op = wipe > 0 ? lerp(1, MOTION.rest, prog(t, next + 0.05, MOTION.restIn)) * (1 - prog(t, gone, 0.3)) : 0
         } else {
           color = SAND
           let off = prog(t, next, 0.25)
@@ -597,12 +636,12 @@ export default function ledgerDuel(spec, ctx) {
         })
         if (row.ev && L.lv.evInline) fadeUp(row.ev, (isPre ? 1 : prog(t, land + 0.24, MOTION.fade)) * rowKeep * (row.open >= 0.9 ? 1 : 0), 8)
       })
-      // shared event line (fallback layout): the latest event, replaced by the next one
+      // the legend: one line per event (kept), or one shared line (the latest event, replaced by the next one)
       if (evLineOn) {
         evLines.forEach((e, k) => {
           const i = R.indexOf(e.x)
           const land = T[i]
-          const nextEv = evLines[k + 1] ? T[R.indexOf(evLines[k + 1].x)] : Infinity
+          const nextEv = !evStack && evLines[k + 1] ? T[R.indexOf(evLines[k + 1].x)] : Infinity
           const on = pre[i] ? 1 : prog(t, land + 0.12, MOTION.fade)
           const off = prog(t, nextEv, 0.18)
           fadeUp(e.el, on * (1 - off) * keep, 8)

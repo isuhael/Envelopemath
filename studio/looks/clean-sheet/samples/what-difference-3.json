@@ -1,0 +1,36 @@
+{
+  "id": "sample-clean-sheet-what-difference-3",
+  "sample": true,
+  "look": "clean-sheet",
+  "format": "what-difference",
+  "fps": 30,
+  "header": "What difference does paying\n**extra** make on a car loan?",
+  "footer": "Assumes 6.5% APR, extra goes to principal",
+  "captions": true,
+  "vo": [
+    { "t": 0.0, "d": 3.2, "text": "A **$30,000** car loan, paid monthly: sixty months, about $5,220 in interest." },
+    { "t": 3.6, "d": 3.0, "text": "Every two weeks: about 54 months. **$540** less." },
+    { "t": 7.6, "d": 3.0, "text": "An extra $100 a month: 50 months. **$900** less." },
+    { "t": 11.6, "d": 3.2, "text": "An extra $200: 43 months, **$1,520** less." },
+    { "t": 15.4, "d": 2.2, "text": "Check the total." }
+  ],
+  "verdict": { "t": 18.0, "text": "**+$200 a month** saves ≈ $1,520." },
+  "data": {
+    "stake": { "label": "Car loan", "value": "$30,000", "terms": "6.5% · 60 months" },
+    "metrics": [ { "key": "payoff", "label": "Paid off" }, { "key": "interest", "label": "Interest" }, { "key": "total", "label": "Total paid" } ],
+    "options": [
+      { "t": -2.0, "resultT": -1.6, "valueEvery": 0.3, "name": "Monthly", "detail": "$587 × 60",
+        "values": { "payoff": "60 mo", "interest": "≈ $5,220", "total": "≈ $35,220" } },
+      { "t": 3.6, "name": "Biweekly", "detail": "$294 × 26",
+        "values": { "payoff": "≈ 54 mo", "interest": "≈ $4,680", "total": "≈ $34,680" }, "delta": "≈ −$540", "tone": "good" },
+      { "t": 7.6, "name": "+$100 a month", "detail": "$687 × 50",
+        "values": { "payoff": "50 mo", "interest": "≈ $4,320", "total": "≈ $34,320" }, "delta": "≈ −$900", "tone": "good" },
+      { "t": 11.6, "name": "+$200 a month", "detail": "$787 × 43",
+        "values": { "payoff": "43 mo", "interest": "≈ $3,700", "total": "≈ $33,700" }, "delta": "≈ −$1,520", "tone": "good" }
+    ],
+    "winner": 3,
+    "check": "$30,000 + $3,700 = $33,700",
+    "checkT": 15.6,
+    "hold": 2.5
+  }
+}

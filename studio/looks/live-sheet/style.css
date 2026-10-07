@@ -4,8 +4,15 @@
   background: #0D0E11;
   color: #FFFFFF;
   font-family: 'Inter', 'Inter Full', sans-serif;
-  font-feature-settings: 'tnum' 1, 'cv11' 1;
+  font-feature-settings: 'cv11' 1;
+  font-variant-numeric: normal; /* base.css turns tabular figures on for the whole stage; here only numbers get them */
 }
+/* Tabular figures only where numbers line up or move (cells, counters, the formula bar, axes). Word cells opt out
+   (.words): Inter's tnum also spaces out hyphens ("full - time"). */
+.ls-cell, .ls-fline, .ls-bigv, .ls-axis, .ls-num { font-variant-numeric: tabular-nums; }
+#stage .ls-cell.words { font-variant-numeric: normal; }
+/* a hyphenated word never breaks at its hyphen ("Debt-" / "free in") */
+.ls-nb { white-space: nowrap; }
 #stage em { font-style: normal; }
 #stage u.mark2 { text-decoration: none; }
 .ls-layer { position: absolute; inset: 0; }
@@ -25,19 +32,21 @@
   display: flex; align-items: center; justify-content: center;
 }
 .ls-btext {
-  font: 900 64px/1.08 'Inter', 'Inter Full', sans-serif; color: #0D0E11;
-  text-align: center; white-space: nowrap; letter-spacing: -0.018em; text-wrap: balance;
+  font: 900 64px/1.16 'Inter', 'Inter Full', sans-serif; color: #0D0E11;
+  text-align: center; white-space: nowrap; letter-spacing: -0.018em; text-wrap-style: balance;
 }
 .ls-btext em {
-  background: #0D0E11; color: #FFD60A; border-radius: 0.16em; padding: 0 0.13em;
-  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+  /* an inline-block pill sized to the glyph band (line-height 1), so it never touches the descenders of the line
+     above it; it moves to the next line as one piece */
+  display: inline-block; line-height: 1; padding: 0.02em 0.13em 0.07em; vertical-align: baseline;
+  background: #0D0E11; color: #FFD60A; border-radius: 0.16em;
 }
 .ls-btext u.mark2 { color: #B42318; }
 
 /* ---------- assumption line ---------- */
 .ls-footer {
   position: absolute; font: 600 40px/1.25 'Inter', 'Inter Full', sans-serif; color: #98A2B3;
-  white-space: nowrap; letter-spacing: -0.005em; text-wrap: balance;
+  white-space: nowrap; letter-spacing: -0.005em; text-wrap-style: balance;
 }
 .ls-footer em { color: #FFFFFF; font-weight: 700; }
 .ls-footer u.mark2 { color: #FF6B5B; }
@@ -92,8 +101,8 @@
 .ls-hcell:nth-child(2) { border-left: 0; }
 .ls-hcell.input { background: #D1FADF; }
 .ls-hcell.output { background: #FFE4C2; }
-.ls-hl { font: 800 42px/1.1 'Inter', 'Inter Full', sans-serif; color: #101828; white-space: nowrap; letter-spacing: -0.012em; text-wrap: balance; }
-.ls-hsub { font: 600 40px/1.1 'Inter', 'Inter Full', sans-serif; color: #667085; white-space: nowrap; letter-spacing: -0.01em; text-wrap: balance; }
+.ls-hl { font: 800 42px/1.1 'Inter', 'Inter Full', sans-serif; color: #101828; white-space: nowrap; letter-spacing: -0.012em; text-wrap-style: balance; }
+.ls-hsub { font: 600 40px/1.1 'Inter', 'Inter Full', sans-serif; color: #667085; white-space: nowrap; letter-spacing: -0.01em; text-wrap-style: balance; }
 .ls-hl em, .ls-hsub em { color: #101828; background: #FFD60A; border-radius: 6px; padding: 0 0.1em; }
 
 .ls-body { position: absolute; left: 0; right: 0; overflow: hidden; }
@@ -113,18 +122,22 @@
 .ls-v em { color: inherit; background: #FFD60A; border-radius: 6px; padding: 0 0.08em; }
 
 /* selection: range outline + fill handle */
-.ls-sel { position: absolute; border: 4px solid #2E90FA; background: rgba(46, 144, 250, 0.07); opacity: 0; z-index: 5; border-radius: 3px; }
+.ls-sel { position: absolute; border: 4px solid #2E90FA; background: transparent; opacity: 0; z-index: 5; border-radius: 3px; }
 .ls-handle { position: absolute; right: -9px; bottom: -9px; width: 16px; height: 16px; background: #2E90FA; border: 3px solid #FFFFFF; border-radius: 2px; }
 .ls-over { position: absolute; inset: 0; z-index: 4; }
 
-/* tooltip strip (picks) */
-.ls-tip { position: absolute; background: #101828; border-radius: 16px; opacity: 0; }
+/* tooltip strip (picks): the pill wipes out of its notch (width), its text sits still inside the clip */
+.ls-tip { position: absolute; background: #101828; border-radius: 16px; opacity: 0; overflow: hidden; }
 .ls-slot { position: absolute; left: 0; top: 0; height: 0; opacity: 0; border-bottom: 2px solid #E4E7EC; }
-.ls-tipclip { position: absolute; inset: 0; overflow: hidden; border-radius: 16px; display: flex; align-items: center; padding: 0 26px; }
-.ls-tiptxt { font: 800 42px/1.2 'Inter', 'Inter Full', sans-serif; color: #FFFFFF; white-space: nowrap; letter-spacing: -0.01em; }
+.ls-tipin { position: absolute; top: 0; display: flex; align-items: center; padding: 0 26px; box-sizing: border-box; }
+.ls-tiptxt { font: 800 42px/1.12 'Inter', 'Inter Full', sans-serif; color: #FFFFFF; white-space: nowrap; letter-spacing: -0.01em; }
 .ls-tiptxt em { color: #FFD60A; }
 .ls-tiptxt u.mark2 { color: #FF6B5B; }
-.ls-notch { position: absolute; top: -9px; width: 22px; height: 22px; background: #101828; transform: rotate(45deg); border-radius: 3px; }
+.ls-notch { position: absolute; width: 22px; height: 22px; background: #101828; transform: rotate(45deg); border-radius: 3px; opacity: 0; }
+/* the un-numbered sheet under the last row: room for a tooltip slot, and air above the rounded corner */
+.ls-tail { position: absolute; left: 0; right: 0; }
+/* a value's trailing words ("55 months") at the 40 px floor, so the number carries the size */
+.ls-u { font-size: 40px; font-weight: 700; letter-spacing: -0.005em; }
 
 /* ---------- verdict card ---------- */
 .ls-verdict {
@@ -132,9 +145,10 @@
   min-height: 96px; display: flex; align-items: center; transform-origin: 50% 50%; opacity: 0;
 }
 .ls-vchip { left: 20px; width: 64px; height: 64px; }
-.ls-vtext { font: 800 56px/1.14 'Inter', 'Inter Full', sans-serif; color: #101828; letter-spacing: -0.015em; text-wrap: balance; }
+.ls-vtext { font: 800 56px/1.14 'Inter', 'Inter Full', sans-serif; color: #101828; letter-spacing: -0.015em; text-wrap-style: balance; }
 .ls-vtext em {
-  background-image: linear-gradient(#FFD60A, #FFD60A); background-repeat: no-repeat; background-size: var(--hl, 100%) 100%;
+  /* the marker covers the glyph band, not the whole line box, so two marked lines never merge */
+  background-image: linear-gradient(#FFD60A, #FFD60A); background-repeat: no-repeat; background-size: var(--hl, 100%) 1.02em; background-position: 0 55%;
   border-radius: 8px; padding: 0 0.1em; -webkit-box-decoration-break: clone; box-decoration-break: clone;
 }
 .ls-vtext u.mark2 { color: #D92D20; }

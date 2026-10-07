@@ -12,14 +12,17 @@
 //             and the hero count up together on one curve while the row's meter grows (grey = put in, green =
 //             growth; every meter shares one scale, so the finished board draws the compounding curve), and they
 //             land exactly on the row's display string: bump, glow flare, ding. The previous row settles (no glow,
-//             no tip): one focal number at a time.
+//             no tip): one focal number at a time. A count starts from what was put in by that row (or the last
+//             landing, if higher), never below it, and its "≈" stays an unlit ghost until it lands: a running count
+//             never claims the money is worth less than what went in.
 //   Last row  (data.highlightLast, default true) a taller slot; its count rolls >= 2.4 s over a riser and lands big
 //             and neon: hit + cash, a stage bloom, the slot stays lit green.
-//   Verdict   replaces the hook in the header band (the question gets its answer where it was asked), so the
-//             finished board stays whole for the screenshot hold. The chrome does not draw it.
+//   Verdict   the chrome's: the kit's one verdict slot at the foot of the frame, on the black band that rises over
+//             the foot of the board. Just before it, the rows scroll up under the column labels (the oldest drop
+//             off), so the big last row stays in view above the band. The header keeps the hook.
 // Frame 1: row 1 at t < 0.5 s → row 1 is on the board and the hero is 0.45 s into its count (FinCalC: row 1 on
-//   screen at 0.0 s). Otherwise the hero is already counting up from $0 toward row 1 and lands just after row 1
-//   unmasks (HD Guy: the counter is running at 0.0 s).
+//   screen at 0.0 s). Otherwise the hero is already counting up toward row 1 (from what row 1 puts in) and lands just
+//   after row 1 unmasks (HD Guy: the counter is running at 0.0 s).
 // Layout: the stage runs to y 1300 (captions on) or 1460 (captions off: the board is the caption); no label stack,
 //   the board is the label. The board is centred in the stage; the row pitch is what the stage leaves (capped at
 //   96 px); the last row takes 1.55 pitches (1.3 on dense boards). Cells are Anton with every digit in a 0.5em slot,
@@ -40,7 +43,8 @@
 //   Rows without times start at rowsT (default 1.0) and come every rowEvery s (default 2.4).
 // lookOpts (all optional):
 //   goal:   { value, display, label }   a finish line: every meter's scale becomes the goal, the strip names it
-//                                       ("MILLIONAIRE $1,000,000"), and both light up when a row lands past it
+//                                       ("MILLIONAIRE $1,000,000"), and both light up when a row lands past it (the
+//                                       worth column then ends 18 px short of it, so the line never touches a digit)
 //   icon:   'coin' | ...                a unit icon beside the hero counter (the kit's icon set)
 //   input:  true | false                the input strip ("$100 A MONTH · 8% A YEAR"); default: only when the header
 //                                       does not already contain data.input.amount and the board has room
@@ -48,8 +52,8 @@
 import { h, css as style, setHTML, attr, prog, ease, clamp, lerp, fitText } from '../../../runtime/core.js'
 import { C, SIZE, M, W, layoutFor } from '../theme.js'
 import {
-  esc, ax, bare, header as drawHeader, heroRow, odometer, stageFlash, flashAt, parseDisplay, displayValue,
-  formatLike, slam, bump, durationOf, verdict as drawVerdict, ladderPips,
+  esc, ax, bare, tabHTML as tabLib, heroRow, odometer, stageFlash, flashAt, parseDisplay, displayValue,
+  formatLike, slam, bump, durationOf, ladderPips,
 } from '../lib.js'
 
 const PANEL = '#07090C'
@@ -72,9 +76,7 @@ export const css = `
 .gl-notch { position: absolute; width: 3px; margin-left: -1.5px; border-radius: 2px; background: #3A4452; }
 .gl-skel { position: absolute; border-radius: 99px; background: #131820; }
 .gl-cell { position: absolute; top: 0; font-family: 'Anton', 'Inter Full', sans-serif; font-weight: 400; line-height: 1; white-space: nowrap; letter-spacing: 0.01em; text-transform: uppercase; }
-.gl-cell .ax { font-size: max(0.86em, 41px); }
-.gl-d { display: inline-block; width: 0.5em; text-align: center; }
-.gl-sp { display: inline-block; width: 0.16em; }
+.gl-cell .ax, .gl-cell .axo { font-size: max(0.86em, min(1em, 42px)); }   /* the slam/bump undershoot keeps it >= 40 px */
 .gl-k { color: ${C.white}; transform-origin: 0 55%; }
 .gl-p { color: ${PUT_TEXT}; transform-origin: 100% 55%; }
 .gl-g { color: ${C.green}; transform-origin: 100% 55%; }
@@ -99,14 +101,11 @@ export const css = `
 
 // ---------- local helpers ----------
 
-/** × in Anton is small and sits low: render it like ≈ (Inter Full ExtraBold, lifted) */
-const axTimes = html => String(html).replace(/×/g, '<span class="ax">×</span>')
-
-/** a display string as Anton HTML with every digit in a 0.5em slot (tabular: columns line up, counts never jitter).
- *  ok: the ≈ glyph spans carry data-overlap-ok (Inter Full's 1.21em font box reaches into a dense neighbour row) */
-const tabHTML = (str, ok = false) => {
-  const html = axTimes(ax(esc(str).replace(/\d/g, '<span class="gl-d">$&</span>'))).replace(/(<span class="ax">≈<\/span>) /g, '$1<span class="gl-sp"></span>')
-  return ok ? html.replace(/<span class="ax">/g, '<span class="ax" data-overlap-ok>') : html
+/** a display string as Anton HTML with every digit in a 0.5em slot (lib tabHTML; tight "≈ "). ok: the glyph spans
+ *  carry data-overlap-ok (Inter Full's 1.21em font box reaches into a dense neighbour row). ghost: an unlit "≈" */
+const tabHTML = (str, ok = false, ghost = false) => {
+  const html = tabLib(str, { tight: true, ok })
+  return ghost ? html.replace(/<span class="ax"( data-overlap-ok)?>≈<\/span>/, '<span class="ax sb-ghost" data-deco$1>≈</span>') : html
 }
 
 const sum = a => a.reduce((x, y) => x + y, 0)
@@ -130,6 +129,7 @@ const AFTER = 0.6                    // intro: the first count lands this long a
 const WIPE = 0.26                    // a new row's meter wipes in to where the last count stopped
 const PMIN = 50                      // the densest row pitch (42 px cells); more rows than fit scroll through
 const SHIFT = 0.2                    // a scrolling board moves up one row on a cut
+const MAKE_ROOM = 0.3                // s before the verdict: the rows scroll up out of the verdict band's way
 
 export default function growthLadder(spec, ctx) {
   const d = spec.data || {}
@@ -176,8 +176,12 @@ export default function growthLadder(spec, ctx) {
 
   // ---------- counts: one per row; the hero and the row's Worth cell share it ----------
   const rollFor = (from, to) => (from > 0 ? clamp(0.75 + 0.45 * Math.log2(Math.max(1, to / from)), M.rollMin, M.rollMax) : 1.3)
+  // a count starts from what was put in by its row (or the last landing, if that is higher), so a running value is
+  // never below the money that went in
   const steps = rows.map((_, i) => {
-    const from = i ? worthV[i - 1] : 0, to = worthV[i], last = i === N - 1
+    const prev = i ? worthV[i - 1] : 0, put = isFinite(putV[i]) ? putV[i] : -Infinity
+    const from = numeric[i] ? Math.min(worthV[i], Math.max(prev, put)) : prev
+    const to = worthV[i], last = i === N - 1
     let cut, start, roll, curve = ease.out
     if (i === 0 && intro) { cut = cutT[0]; start = -LEAD; roll = cutT[0] + AFTER + LEAD; curve = quadOut }
     else if (i === 0) { cut = Math.min(cutT[0], 0); start = cut - LEAD; roll = rollFor(from, to) }
@@ -196,18 +200,17 @@ export default function growthLadder(spec, ctx) {
     return { k, p, v: p >= 1 ? st.to : lerp(st.from, st.to, st.curve(p)) }
   }
 
-  // ---------- header (drawn here so the verdict can take its place) ----------
-  const head = drawHeader(stage, spec, L)
 
   // ---------- hero size: the widest worth display, measured on a probe odometer ----------
   const icon = lo.icon || null
-  const iconSpace = icon ? SIZE.heroIcon + 12 : 0
+  const HS = L.hero.size, HI = L.hero.icon
+  const iconSpace = icon ? HI + 12 : 0
   const odoProbe = odometer(stage, { size: 100 })
   let odoW100 = 1
   for (const r of rows) { odoProbe.show(r[WC]); odoW100 = Math.max(odoW100, odoProbe.el.getBoundingClientRect().width) }
   odoProbe.el.remove()
-  const heroSize = Math.floor(Math.min(SIZE.hero, ((920 - iconSpace) / odoW100) * 100))
-  const heroIconSize = Math.round(SIZE.heroIcon * Math.min(1, heroSize / SIZE.hero + 0.1))
+  const heroSize = Math.floor(Math.min(HS, ((920 - iconSpace) / odoW100) * 100))
+  const heroIconSize = Math.round(HI * Math.min(1, heroSize / HS + 0.1))
   // landing bumps scale the whole hero group about x 540: cap them so it never leaves x 62-1018
   const safeAmp = Math.max(0.03, 956 / ((odoW100 * heroSize) / 100 + (icon ? heroIconSize + 12 : 0)) - 1)
   const flash = stageFlash(stage, L)
@@ -222,6 +225,8 @@ export default function growthLadder(spec, ctx) {
   probe.remove()
   const colW100 = Array.from({ length: nC }, (_, j) => Math.max(1, ...cellW100.map(r => r[j])))
   const legend = j => meters && PC >= 0 && (j === PC || j === WC)
+  // the worth column's right edge: 18 px short of a goal's finish line, so the line never runs through a digit
+  const TXW = goal && meters ? TX1 - 18 : TX1
   const labels = cols.map((c, j) => {
     const el = h('div', { class: 'gl-hl' + (j ? ' r' : '') + (j === WC ? ' w' : ''), html: esc(bare(c)) })
     table.append(el)
@@ -252,7 +257,7 @@ export default function growthLadder(spec, ctx) {
       const r = Math.max(cellEnd + MIN_GAP + cw[j], labEnd + LGAP + lw[j])
       R.push(r); cellEnd = r; labEnd = r
     }
-    return { R, slack: TX1 - R[WC] }
+    return { R, slack: TXW - R[WC] }
   }
   // labels: one line at 40 px when they pack beside the smallest cells; else two lines split at the word break
   // that makes them narrowest; then smaller (34 px at worst)
@@ -304,7 +309,7 @@ export default function growthLadder(spec, ctx) {
     // the slack goes after the put-in column: all of it before the worth (3 columns), split evenly (4 columns)
     const R = pk.R.slice()
     for (let j = 2; j < WC; j++) R[j] += (Math.max(0, pk.slack) * (j - 1)) / (WC - 1)
-    R[WC] = TX1
+    R[WC] = TXW
     return R
   }
   const bigFor = (Fr, R) => {
@@ -312,9 +317,9 @@ export default function growthLadder(spec, ctx) {
     // the big worth lands with a 12% bump (origin right) and the key and put-in slam 12% toward each other:
     // their room is measured at those peak sizes
     const keyEnd = fk => TX0 + (lastW[0] * fk * 1.12) / 100
-    const roomW = fk => TX1 - (nC >= 3 ? R[WC - 1] : keyEnd(fk)) - MIN_GAP
+    const roomW = fk => TXW - (nC >= 3 ? R[WC - 1] : keyEnd(fk)) - MIN_GAP
     let Fb = Math.floor(Math.min(bigArea / 0.88, (roomW(Fr) / (lastW[WC] * 1.12)) * 100, 112))
-    const roomK = ((nC >= 3 ? R[1] - (lastW[1] * Fr * 1.12) / 100 : TX1 - (lastW[WC] * Fb * 1.12) / 100) - MIN_GAP - TX0) / 1.12
+    const roomK = ((nC >= 3 ? R[1] - (lastW[1] * Fr * 1.12) / 100 : TXW - (lastW[WC] * Fb * 1.12) / 100) - MIN_GAP - TX0) / 1.12
     const Fk = Math.floor(Math.max(Fr, Math.min(Fb, bigArea / 0.88, (roomK / lastW[0]) * 100, 96)))
     if (nC < 3) Fb = Math.floor(Math.min(Fb, (roomW(Fk) / (lastW[WC] * 1.12)) * 100))
     return { Fb, Fk }
@@ -404,7 +409,7 @@ export default function growthLadder(spec, ctx) {
     const skel = r.map((_, j) => {
       const fs = j === WC ? F : j === 0 ? FK : Fr
       const w = Math.max(fs * 0.9, ((cellW100[i][j] * fs) / 100) * 0.82)
-      const x = j === 0 ? TX0 - SX - 2 : (j === WC ? TX1 : right[j]) - SX - 2 - w
+      const x = j === 0 ? TX0 - SX - 2 : (j === WC ? TXW : right[j]) - SX - 2 - w
       const hh = Math.max(10, Math.round(fs * 0.3))
       const el = h('div', { class: 'gl-skel', style: { left: x + 'px', width: w + 'px', top: midY - y - 2 - hh / 2 + 'px', height: hh + 'px' } })
       slot.append(el)
@@ -415,7 +420,7 @@ export default function growthLadder(spec, ctx) {
       const cls = j === 0 ? 'gl-k' : j === WC ? 'gl-w' : j === PC ? 'gl-p' : 'gl-g'
       const el = h('div', { class: 'gl-cell ' + cls, html: tabHTML(txt, okAx), style: { fontSize: fs + 'px', top: Math.round(midY - y - 0.455 * fs) + 'px' } })
       if (j === 0) style(el, { left: TX0 + 'px' })
-      else style(el, { right: W - (j === WC ? TX1 : right[j]) + 'px' })
+      else style(el, { right: W - (j === WC ? TXW : right[j]) + 'px' })
       row.append(el)
       return el
     })
@@ -429,9 +434,13 @@ export default function growthLadder(spec, ctx) {
   // ---------- hero ----------
   const hero = heroRow(stage, L, { icon, size: heroSize, iconSize: heroIconSize })
 
-  // ---------- verdict: in the header band, replacing the hook ----------
-  const verd = drawVerdict(stage, spec, { verdict: { y: L.header.y, h: L.header.h, w: L.header.w, boxed: false } })
-  if (verd) ctx.cue(verd.t + 0.06, 'reveal', { gain: 0.7 })
+  // ---------- verdict (the chrome's, in the kit's slot at the foot of the frame): the rows make room first ----------
+  // just before verdict.t the rows scroll up under the column labels (the oldest fade out), so the board's foot, with
+  // the big last row, ends above the black band the verdict rises on
+  const vT = spec.verdict && spec.verdict.text ? Math.max(0, +spec.verdict.t || 0) : null
+  const boardBottom = yRows + WIN * P + (big ? bigK * P : 0) - gapR
+  const room = vT != null && L.verdict.boxed ? Math.max(0, boardBottom - (L.verdict.y - 18)) : 0
+  const makeRoom = t => (room > 0 ? room * ease.inOut(prog(t, vT - MAKE_ROOM - 0.05, MAKE_ROOM)) : 0)
 
   // ---------- sound: a thud per cut, a roll per count, a ding per landing; the last: riser, hit, cash ----------
   steps.forEach((st, i) => {
@@ -457,8 +466,6 @@ export default function growthLadder(spec, ctx) {
   return {
     duration,
     layout: L,
-    header: false,
-    verdict: false,
     seek(t) {
       const c = countAt(t)
       let a = -1                                           // the active row: the latest cut at or before t
@@ -473,12 +480,20 @@ export default function growthLadder(spec, ctx) {
         const shown = st.cut <= 0 || t >= st.cut
         const landed = t >= st.land
         const active = i === a
+        const mr = makeRoom(t)                              // px the rows have scrolled up for the verdict
         if (scroll && !o.isBig) {
-          const pos = i - off                               // slot index on the board right now
+          const pos = i - off - mr / P                      // slot index on the board right now
           const op = pos < 0 ? clamp(1 + 4 * pos) : 1
           const on = op > 0 && (pos < WIN - 1e-6 || (shown && pos <= WIN + 1e-6))
-          style(o.row, { display: on ? 'block' : 'none', opacity: op.toFixed(3), transform: off > 0 ? `translateY(${Math.round(-off * P)}px)` : 'none' })
+          const dy = off * P + mr
+          style(o.row, { display: on ? 'block' : 'none', opacity: op.toFixed(3), transform: dy > 0 ? `translateY(${Math.round(-dy)}px)` : 'none' })
           if (!on) return
+        } else {
+          // rows scrolled up under the column labels fade out there (the oldest first)
+          const pos = (rowY[i] - mr - yRows) / P
+          const op = pos < 0 ? clamp(1 + 4 * pos) : 1
+          style(o.row, { display: op > 0 ? 'block' : 'none', opacity: op.toFixed(3), transform: mr > 0 ? `translateY(${Math.round(-mr)}px)` : 'none' })
+          if (op <= 0) return
         }
         const v = landed ? st.to : c.k === i ? c.v : st.from     // the row's count
         // slot light: white while counting, green once landed; a done row goes dark (one focal number)
@@ -497,7 +512,8 @@ export default function growthLadder(spec, ctx) {
         o.cells.forEach((el, j) => {
           if (!shown || (j === WC && !counting)) { style(el, { display: 'none' }); return }
           if (j === WC) {
-            setHTML(el, tabHTML(landed || !numeric[i] ? rows[i][WC] : formatLike(v, tpls[i]), okAx))
+            const done = landed || !numeric[i]
+            setHTML(el, tabHTML(done ? rows[i][WC] : formatLike(v, tpls[i]), okAx, !done))
             const sc = landed ? bump(t, st.land, { amp: bumpAmp(o.F, o.isBig ? 0.12 : 0.1), dur: o.isBig ? 0.5 : M.bump }) : 1
             const glow = !landed ? (active ? 0.25 : 0) : o.isBig ? 0.75 + 0.25 * flashAt(t, st.land, 1.0) : active ? 0.3 + 0.7 * flashAt(t, st.land, 0.7) : 0
             style(el, { display: 'block', opacity: String(k.o), transform: sc === 1 ? 'none' : `scale(${sc.toFixed(4)})`, '--glow': glow.toFixed(3) })
@@ -527,9 +543,9 @@ export default function growthLadder(spec, ctx) {
       }
 
       // hero: holds the last landing until a count starts, then rolls with it, landing exactly on the display
-      if (c.k < 0) hero.set(0, tpls[0])
+      if (c.k < 0) hero.set(steps[0].from, tpls[0], true)
       else if (c.p >= 1 || !numeric[c.k]) hero.set(worthV[c.k], lastTpl(c.k))
-      else hero.set(c.v, tpls[c.k])
+      else hero.set(c.v, tpls[c.k], true)                // running: the "≈" is an unlit ghost until it lands
 
       // anticipation dip on each cut, a bump + glow flare on each landing (bigger for the last), a floor bloom
       let sc = 1, glow = 0, fl = 0
@@ -545,11 +561,7 @@ export default function growthLadder(spec, ctx) {
       flash.set(fl)
 
       // verdict: the answer takes the hook's place
-      if (verd) {
-        verd.seek(t)
-        const y = verd.yieldAt(t)
-        style(head.el, { opacity: String(1 - y), transform: `translateY(${(-14 * y).toFixed(1)}px)`, visibility: y >= 1 ? 'hidden' : 'visible' })
-      }
+      // (the verdict is the chrome's)
     },
   }
 }

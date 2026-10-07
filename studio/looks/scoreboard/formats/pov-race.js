@@ -6,18 +6,22 @@
 //     The stock number turns coral while it is under water (worth less than the money spent).
 //   - the stage is the race: the spend line (white: money that is gone) against the own line (neon green: the same
 //     money in the company's stock). The gap between them is filled green where owning is ahead, coral where it is
-//     behind. Auto-rescaling y axis (dim, left margin), x ticks, a big faint year clock in the plot's top-left corner.
+//     behind. Auto-rescaling y axis (dim, left margin), x ticks, a big faint year clock in the plot's top-left corner
+//     (the same spot as chart-race), which dims further while a line or a tag passes through it. When the spend line
+//     starts tiny (under 5% of where it ends: one $7.99 bill), the axis opens at 2× what frame 1 shows and rescales up
+//     from there, so frame 1's dots sit mid-plot instead of on the floor of an empty grid.
 //   - purchases tick on the spend line: the item's icon drops onto the line as the race reaches it (gravity, squash)
 //     with a price tag ("$8.99  MAY 2014") that holds until the next purchase; the icons stay on the line as markers
 //     and the SPENT number bumps and flushes coral. Captions off: the tag is a hard cut in the label stack instead
-//     (HD Guy grammar: the label stack is the caption).
+//     (HD Guy grammar: the label stack is the caption). Between purchases (and with none) the stack rests on the
+//     matchup: the spend label (coral) over the own label (green).
 //   - the finish (raceT[1]): over the last 0.4 s both counters converge on their final values, then land exactly on
 //     the display strings: the winning side bumps and flares, the stage blooms (a riser leads in, hit + cash; a loss
 //     lands on a thud).
-//   - verdict: captions on → it replaces the hook in the header band (the question at the top becomes the answer and
-//     the whole race stays in view); captions off → the kit's verdict slot, replacing the label stack.
-//   - footer: the assumption line (and lookOpts.footerSteps, the working line that rewrites at each beat). One too long
-//     for a line at 36 px wraps into two balanced lines at 40 px and the stage moves down to make room.
+//   - verdict: the chrome's: the kit's one verdict slot at the foot of the frame (captions on: a black band rises
+//     over the foot of the chart and carries it; its rule is coral when owning lost). The header keeps the hook.
+//   - footer: the chrome's (the assumption line, and lookOpts.footerSteps, the working line that rewrites at each
+//     beat; a line too long for 960 px at 40 px breaks at its " · " into two lines and the grid makes room).
 // Frame 1: the header (POV + the one price), both counters at the starting stake, the axis waiting at the start year,
 // both tips parked at the first point, the footer; a purchase at the clock's start is already standing on the line
 // with its tag (the receipt). raceT[0] < 0 opens mid-race. Every spot a tag can take is scored at mount, so seek(t)
@@ -27,17 +31,16 @@
 //   purchases: [{ x, label, price }], x: { from, to, tickEvery }, y: { prefix, dp, compact?, log? }, raceT, hold }
 // lookOpts (all optional):
 //   spendTag / ownTag   scoreboard labels (default: spend.label, and "in … stock" taken from own.label)
-//   footerSteps         [{ t, text }]: the footer rewrites to a one-line working at each t (spec.footer before)
+//   footerSteps         [{ t, text }]: kit-wide: the footer rewrites to a working line at each t (spec.footer before)
 //   tags                false: no price tags on the chart (icons only)
 //   gapFill             false: no green/coral fill between the lines
 //   yearClock           false: no big year in the plot corner
-//   verdictSlot         captions on: 'header' (default) | 'bottom' (a black band rises over the foot of the chart)
 //   stageBottom         y where the stage ends (default 1300 with captions, 1236 without)
 import { h, s, css as style, setText, attr, prog, ease, clamp, lerp, fitText, fmtNum } from '../../../runtime/core.js'
 import { C, SIZE, M, layoutFor } from '../theme.js'
 import {
-  rich, richUI, esc, ax, header as buildHeader, labelStack, stageFlash, flashAt, parseDisplay, odometer, bump, slam,
-  wobble, durationOf, valueAt, iconSVG, iconName, inkWidth, slamFromFor,
+  rich, richUI, esc, ax, labelStack, stageFlash, flashAt, parseDisplay, odometer, bump, slam,
+  wobble, durationOf, valueAt, iconSVG, iconName, slamFromFor,
 } from '../lib.js'
 
 export const css = `
@@ -56,19 +59,10 @@ export const css = `
 .pr-board { position: absolute; left: 0; width: 1080px; }
 .pr-half { position: absolute; top: 0; width: 480px; height: 100%; transform-origin: 50% 62%; }
 .pr-tagline { position: absolute; left: 0; top: 0; width: 480px; display: flex; align-items: center; justify-content: center; gap: 12px; }
+.pr-vs { color: #9AA4B2; }
 .pr-tagtext { display: block; font: 700 42px/1 'Inter', 'Inter Full', sans-serif; text-transform: uppercase; letter-spacing: 0.03em; white-space: nowrap; }
 .pr-num { position: absolute; left: 0; width: 480px; display: flex; justify-content: center; align-items: flex-start; transform-origin: 50% 55%; }
 .pr-div { position: absolute; left: 539px; width: 2px; background: #232B36; }
-.pr-foot { position: absolute; font: 600 40px/1.2 'Inter', 'Inter Full', sans-serif; color: #9AA4B2; text-align: center; white-space: nowrap; }
-.pr-foot em { font-style: normal; color: #FFFFFF; }
-.pr-foot.wrap { white-space: normal; text-wrap: balance; line-height: 1.14; }
-.pr-vbox { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 18px; }
-.pr-vband { position: absolute; left: 0; width: 1080px; background: #000; box-shadow: inset 0 2px 0 #1E2530; }
-.pr-vrule { width: 140px; height: 8px; border-radius: 4px; background: #2BFF88; box-shadow: 0 0 18px rgba(43, 255, 136, 0.5); transform-origin: 50% 50%; }
-.pr-vtext { font: 400 84px/1.04 'Anton', 'Inter Full', sans-serif; text-transform: uppercase; text-align: center; letter-spacing: 0.01em;
-  white-space: nowrap; color: #FFFFFF; transform-origin: 50% 70%; }
-.pr-vtext em { font-style: normal; color: #2BFF88; }
-.pr-x { font-family: 'Inter Full', sans-serif; font-weight: 800; font-size: 0.78em; position: relative; top: -0.06em; }
 `
 
 const SPEND_COL = C.iconBody    // the spend line / number: white (money that is gone)
@@ -98,8 +92,6 @@ function axisText(v, prefix) {
 // ink box of each unit icon inside its 100 x 100 design box: [top, bottom] (so an icon stands ON the line)
 const ICON_BOX = { cup: [7, 95], hotdog: [30, 81], burger: [12, 88], pizza: [3, 95], phone: [5, 95], car: [29, 85], house: [10, 92],
   coin: [6, 94], bill: [22, 78], gas: [12, 95], ticket: [25, 75], bag: [12, 95], egg: [6, 95], hour: [6, 94], token: [6, 94] }
-// Anton's × is a tiny glyph: draw it in Inter Full ExtraBold (as the kit does for ≈ and →)
-const xg = html => String(html).replace(/×/g, '<span class="pr-x">×</span>')
 // length of segment (x0,y0)-(x1,y1) inside rect R = [x0, y0, x1, y1] (Liang-Barsky)
 function clipLen(x0, y0, x1, y1, R) {
   if (Math.max(x0, x1) < R[0] || Math.min(x0, x1) > R[2] || Math.max(y0, y1) < R[1] || Math.min(y0, y1) > R[3]) return 0
@@ -165,33 +157,8 @@ export default function povRace(spec, ctx) {
   const capsOn = L0.captionsOn
   const L = layoutFor(spec, { stageBottom: lo.stageBottom ?? (capsOn ? 1300 : 1236) })
 
-  // ---------- footer (the assumption line) + footer steps (lookOpts.footerSteps: the working line rewrites) ----------
-  // drawn here, not by the chrome: an assumption line too long for one line at 36 px wraps into two balanced lines at 40 px
-  // and the stage moves down to make room (the assumptions are never cut or shrunk below the floor)
-  const footW = L.footer.w
-  const mkFoot = text => {
-    const el = h('div', { class: 'pr-foot', html: richUI(text), style: { top: L.footer.y + 'px', left: (1080 - footW) / 2 + 'px', width: footW + 'px' } })
-    stage.append(el)
-    fitText(el, footW, { maxH: L.footer.h + 4, minPx: 36 })
-    if (el.scrollWidth > footW + 0.5) {
-      el.classList.add('wrap')
-      style(el, { fontSize: '40px', left: '90px', width: '900px' })
-      fitText(el, 900, { maxH: 40 * 1.14 * 2 + 4, minPx: 34 })
-    }
-    el.__fh = el.classList.contains('wrap') ? el.offsetHeight : 0
-    style(el, { display: 'none' })
-    return el
-  }
-  const foot = {
-    base: spec.footer ? mkFoot(spec.footer) : null,
-    steps: (Array.isArray(lo.footerSteps) ? lo.footerSteps : []).filter(x => x && x.text).map(x => ({ t: +x.t || 0, el: mkFoot(x.text) })).sort((a, b) => a.t - b.t),
-  }
-  const footExtra = Math.max(0, ...[foot.base, ...foot.steps.map(x => x.el)].filter(Boolean).map(el => el.__fh ? Math.ceil(L.footer.y + el.__fh + 10 - L.stage.y) : 0))
-  if (footExtra > 0) {
-    L.stage = { ...L.stage, y: L.stage.y + footExtra, h: L.stage.h - footExtra }
-    L.topBar = { ...L.topBar, y1: L.stage.y }
-    L.inner = { ...L.inner, y: L.inner.y + footExtra, h: L.inner.h - footExtra }
-  }
+  // the footer (and lookOpts.footerSteps) is the chrome's; layoutFor already made room for a two-line one
+  const footSteps = (Array.isArray(lo.footerSteps) ? lo.footerSteps : []).filter(x => x && x.text).map(x => ({ t: +x.t || 0 }))
   const P = { x: 160, w: 740 }                    // plot x 160-900: tip halos and icons clear the rail
   P.y = L.stage.y + 44
   P.h = L.stage.y + L.stage.h - 58 - P.y          // x tick labels below it
@@ -210,7 +177,7 @@ export default function povRace(spec, ctx) {
     const next = i + 1 < purchases.length ? purchases[i + 1].t : Infinity
     p.end = Math.min(next, hold); p.cut = next <= hold
   })
-  const stackMode = !capsOn && L.label.h >= 150 && purchases.some(p => p.price || p.label)
+  const stackMode = !capsOn && L.label.h >= 150
   const chartTags = lo.tags !== false && !stackMode
 
   // ---------- crossings (own vs spend), exact on the union of breakpoints ----------
@@ -248,7 +215,9 @@ export default function povRace(spec, ctx) {
   }
   // a true auto-rescale (ChartOrbit): the axis follows the running max, so a 1,000× race still shows its early years;
   // it never zooms in past the stake or the first ~12% of the race
-  const yFloor = Math.max(startMax * 1.6, runMax(X.from + span * 0.12) * 1.25, 1e-6)
+  // a spend line that starts tiny (under 5% of its end) opens the axis at 2× what frame 1 shows instead (no empty grid)
+  const tinyStart = SP.first < 0.05 * Math.max(SP.endV, SP.last)
+  const yFloor = tinyStart ? Math.max(runMax(xAt(0)) * 2, startMax * 1.6, 1e-6) : Math.max(startMax * 1.6, runMax(X.from + span * 0.12) * 1.25, 1e-6)
   const yMaxAt = t => {
     if (Y.max != null) return +Y.max
     let acc = 0
@@ -288,19 +257,21 @@ export default function povRace(spec, ctx) {
   stage.append(root)
 
   // big faint year clock, plot top-left (decoration: the x axis and the VO carry the year)
-  let yearOdo = null
-  const YS = 150
+  let yearOdo = null, yearBox = null
+  const YS = 160
   const yearTpl = { prefix: calendar ? '' : 'YEAR ', suffix: '', dp: 0, group: false, scale: 1, value: 0 }
   if (lo.yearClock !== false) {
-    const yb = h('div', { class: 'pr-year', 'data-deco': '', style: { top: Math.round(-0.02 * YS) + 'px' } })
-    root.append(yb)
-    yearOdo = odometer(yb, { size: YS, color: 'rgba(255, 255, 255, 0.12)', maxInt: calendar ? 4 : 3, maxDp: 0 })
+    yearBox = h('div', { class: 'pr-year', 'data-deco': '', style: { top: Math.round(-0.02 * YS) + 'px' } })
+    root.append(yearBox)
+    yearOdo = odometer(yearBox, { size: YS, color: 'rgba(255, 255, 255, 0.14)', maxInt: calendar ? 4 : 3, maxDp: 0 })
   }
   const rollF = clamp(0.24 / Math.max(1e-6, secPerYear), 0.04, 0.4)    // the year digits roll in ~0.24 s
+  // the year rolls into y + 1 over the last rollF of year y, and never past the clock's last year (x.to = 2025 holds
+  // "2025"; x.to = 2025.99 holds "2025" too)
+  const yearEnd = Math.floor(X.to + 1e-6)
   const yearV = x => {
     const y = Math.floor(x + 1e-6)
-    if (y <= Math.floor(X.from + 1e-6)) return y
-    return y - 1 + clamp((x - y) / rollF)
+    return Math.max(Math.floor(X.from + 1e-6), Math.min(yearEnd, y + clamp((x - (y + 1 - rollF)) / rollF)))
   }
 
   const svg = s('svg', { class: 'pr-svg', width: P.w, height: P.h, viewBox: `0 0 ${P.w} ${P.h}`, 'data-deco': '' })
@@ -382,8 +353,8 @@ export default function povRace(spec, ctx) {
     p.end = Math.min(p.end, TF - 0.05)                     // the finish is the one focal moment
     if (chartTags && (p.price || p.label) && p.end - Math.max(p.t, 0) > 0.35) {
       p.tag = h('div', { class: 'pr-tag' },
-        p.price ? h('span', { class: 'pr-tag-price', html: xg(ax(esc(p.price))) }) : null,
-        p.label ? h('span', { class: 'pr-tag-label', html: xg(richUI(p.label)) }) : null)
+        p.price ? h('span', { class: 'pr-tag-price', html: ax(esc(p.price)) }) : null,
+        p.label ? h('span', { class: 'pr-tag-label', html: richUI(p.label) }) : null)
       tagLayer.append(p.tag)
       // fit: the tag may span the plot plus the y-axis margin (x 70-930)
       const lab = p.tag.querySelector('.pr-tag-label')
@@ -501,43 +472,24 @@ export default function povRace(spec, ctx) {
     for (const hf of [H_SP, H_OW]) { style(hf.odo.el, { fontSize: S + 'px' }); style(hf.num, { top: 52 - 48 + 'px', height: S + 96 + 'px', paddingTop: '48px', boxSizing: 'border-box' }) }
   }
 
-  // ---------- header + verdict ----------
-  // captions on: the verdict replaces the hook in the header band (the question at the top becomes the answer and the
-  // whole race stays in view); captions off: the kit's slot in the bottom bar, replacing the label stack.
-  // Built here, not by the chrome, so it is fitted while measurable (lib's verdict() fits a hidden box).
   const vt = spec.verdict && spec.verdict.text ? Math.max(0, +spec.verdict.t || 0) : null
-  const vMode = vt == null ? null : capsOn ? (lo.verdictSlot === 'bottom' ? 'over' : 'header') : 'bottom'
-  const hdr = buildHeader(stage, spec, L)
-  let V = null
-  if (vMode) {
-    const head = vMode === 'header'
-    const slot = head ? { x: L.header.x, y: L.header.y, w: L.header.w, h: L.header.h }
-      : vMode === 'over' ? { x: 140, y: L.stage.y + L.stage.h - 204, w: 800, h: 196 }
-      : { x: 140, y: L.verdict.y, w: L.verdict.w, h: L.verdict.h }
-    // 'over': a full-width black band rises over the foot of the chart and carries the verdict
-    const band = vMode === 'over' ? h('div', { class: 'pr-vband', 'data-deco': '', style: { top: slot.y - 10 + 'px', height: L.stage.y + L.stage.h - slot.y + 10 + 'px', display: 'none' } }) : null
-    if (band) stage.append(band)
-    const box = h('div', { class: head ? 'pr-vbox' : 'sb-verdict',
-      style: { left: slot.x + 'px', top: slot.y + 'px', width: slot.w + 'px', height: slot.h + 'px' } })
-    const rule = h('div', { class: head ? 'pr-vrule' : 'sb-verdict-rule', 'data-deco': '' })
-    if (!ownWins) style(rule, { background: C.red, boxShadow: `0 0 18px ${rgba(C.red, 0.5)}` })
-    const text = h('div', { class: head ? 'pr-vtext' : 'sb-verdict-text', html: xg(rich(spec.verdict.text)) })
-    box.append(rule, text)
-    stage.append(box)
-    style(box, { display: 'flex' })
-    fitText(text, slot.w, { maxH: slot.h - 8 - (head ? 18 : 20) - 4, minPx: head ? SIZE.headerMin : SIZE.verdictMin })
-    const from = slamFromFor(inkWidth(text), slot.w - 8, 1.12)
-    style(box, { display: 'none' })
-    V = { head, box, rule, text, from, band, bandY: slot.y - 10 }
-  }
 
-  // ---------- label stack (captions off): each purchase is a hard cut ----------
+  // ---------- label stack (captions off): the matchup at rest; each purchase is a hard cut held to its tag's end ----------
   let labels = null
   const chapters = []
   if (stackMode) {
-    const items = purchases.map(p => ({ l1: p.price ? ax(esc(p.price)) : '', l1Color: C.red, l2: rich(p.label) }))
+    const rest = { l1: `<span style="color:${C.red}; text-transform: uppercase">${rich(lo.spendTag || SP.label || 'Spent')}</span> <span class="pr-vs">VS</span>`, l2: rich(OW.label || lo.ownTag || 'Invested'), l2Color: OWN_COL }
+    const items = [rest, ...purchases.map(p => ({ l1: p.price ? ax(esc(p.price)) : '', l1Color: C.red, l2: rich(p.label) }))]
     labels = labelStack(stage, L, items)
-    purchases.forEach((p, i) => chapters.push({ t: i === 0 ? Math.min(p.t, 0) : p.t, idx: i }))
+    chapters.push({ t: -1e9, idx: 0 })                  // a purchase standing at frame 1 (the receipt) wins over it
+    purchases.forEach((p, i) => {
+      if (!(p.price || p.label)) return
+      chapters.push({ t: i === 0 ? Math.min(p.t, 0) : p.t, idx: i + 1 })
+      const next = purchases.slice(i + 1).find(q => q.price || q.label)
+      const end = Math.max(p.t, 0) + TAGHOLD
+      if (!next || end < next.t) chapters.push({ t: end, idx: 0 })        // back to the matchup
+    })
+    chapters.sort((a, b) => a.t - b.t)
   }
 
   // ---------- sound: whoosh at the start, a pop per purchase, swipe on a pass, riser → hit + cash ----------
@@ -555,8 +507,7 @@ export default function povRace(spec, ctx) {
   if (riseDur > 0.6) cue(TF - riseDur, 'riser', { dur: riseDur, gain: 0.4 })
   cue(TF, ownWins ? 'hit' : 'thud', { gain: ownWins ? 0.85 : 0.7 })
   if (ownWins) cue(TF + 0.06, 'cash', { gain: 0.55 })
-  for (const st of foot.steps) if (st.t > 0.05 && Math.abs(st.t - TF) > 0.3 && !(vt != null && Math.abs(st.t - vt) < 0.3)) cue(st.t, 'tick', { gain: 0.35 })
-  if (V) cue(vt + 0.06, 'reveal', { gain: 0.7 })
+  for (const st of footSteps) if (st.t > 0.05 && Math.abs(st.t - TF) > 0.3 && !(vt != null && Math.abs(st.t - vt) < 0.3)) cue(st.t, 'tick', { gain: 0.35 })
 
   const duration = durationOf(spec, TF, d.hold ?? M.hold)
 
@@ -590,9 +541,7 @@ export default function povRace(spec, ctx) {
   return {
     duration,
     layout: L,
-    header: false,
-    footer: false,
-    verdict: false,
+    verdictTone: ownWins ? 'good' : 'bad',
     seek(t) {
       const x = xAt(t)
       const ymax = Y.log ? logMax : yMaxAt(t)
@@ -667,6 +616,29 @@ export default function povRace(spec, ctx) {
         })
         tagRects.push([r.left - 8, r.top - 8, r.left + p.tw + 8, r.top + p.th + 8])
       }
+      // the year clock dims while a line or a tag runs through it (a pure function of this frame's geometry)
+      if (yearBox) {
+        const yr = [12, 0, 12 + yearBox.offsetWidth, YS * 0.88]
+        let ink = 0
+        for (const ln of lines) {
+          const sr = ln.sr
+          if (x < sr.x0) continue
+          let px0 = null, py0 = null
+          for (const q of sr.points) {
+            if (q[0] > x + 1e-9) break
+            const X1 = pxOf(q[0]), Y1 = py(q[1])
+            if (px0 != null) ink += clipLen(px0, py0, X1, Y1, yr)
+            px0 = X1; py0 = Y1
+          }
+          if (px0 != null) ink += clipLen(px0, py0, pxOf(x), py(vAt(sr, x)), yr)
+        }
+        for (const R of tagRects) {
+          const ox = Math.min(R[2], yr[2]) - Math.max(R[0], yr[0]), oy = Math.min(R[3], yr[3]) - Math.max(R[1], yr[1])
+          if (ox > 0 && oy > 0) ink += (ox * oy) / 40
+        }
+        style(yearBox, { opacity: (1 - 0.6 * clamp(ink / 160)).toFixed(3) })
+      }
+
       // axis labels step aside under a tag
       if (!Y.log) grid.forEach(g => {
         if (g.lab.style.display === 'none') return
@@ -714,33 +686,7 @@ export default function povRace(spec, ctx) {
         labels.seek(t, ch.idx, ch.t)
       }
 
-      // ---- verdict (a hard cut: the hook or the label stack gives way as it lands) ----
-      if (V) {
-        const on = t >= vt
-        if (V.head) style(hdr.el, { display: on ? 'none' : 'flex' })
-        if (V.band) {
-          const q = ease.out(prog(t, vt - 0.12, 0.24)), bot = L.stage.y + L.stage.h, top = lerp(bot, V.bandY, q)
-          style(V.band, { display: t >= vt - 0.12 ? 'block' : 'none', top: top.toFixed(1) + 'px', height: (bot - top).toFixed(1) + 'px' })
-        }
-        style(V.box, { display: on ? 'flex' : 'none' })
-        if (on) {
-          const k = slam(t, vt + 0.04, { from: V.from })
-          style(V.text, { opacity: String(k.o), transform: `scale(${k.s.toFixed(4)})` })
-          style(V.rule, { transform: `scaleX(${ease.out(prog(t, vt + 0.08, 0.35)).toFixed(4)})` })
-        }
-        if (labels && !V.head) {
-          const y = prog(t, vt - 0.04, 0.14)
-          style(labels.el, { opacity: String(1 - y), transform: `translateY(${(14 * y).toFixed(1)}px)`, visibility: y >= 1 ? 'hidden' : 'visible' })
-        }
-      }
-
-      // ---- footer + footer steps ----
-      {
-        let cur = foot.base
-        for (const st of foot.steps) if (t >= st.t) cur = st.el
-        if (foot.base) style(foot.base, { display: cur === foot.base ? 'block' : 'none' })
-        for (const st of foot.steps) style(st.el, { display: cur === st.el ? 'block' : 'none' })
-      }
+      // (the verdict, the label stack's yield and the footer are the chrome's)
     },
   }
 }

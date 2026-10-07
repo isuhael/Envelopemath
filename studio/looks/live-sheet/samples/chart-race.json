@@ -93,7 +93,10 @@
         "t": 36.0,
         "text": "≈ 11.5% vs ≈ 10.7% a year"
       }
-    ]
+    ],
+    "colors": {
+      "Gold": "#B54708"
+    }
   },
   "data": {
     "stake": "$10,000 each · Jan 2005",

@@ -58,13 +58,15 @@ export default function unitLadder(spec, ctx) {
   const widest = [...targets.map(x => x.disp), '1'].reduce((a, b) => (b.length > a.length ? b : a), '')
   const estEm = widest.replace(/[^\d]/g, '').length * 0.5 + (widest.match(/,/g) || []).length * 0.22 + widest.replace(/[\d,.\s]/g, '').length * 0.5 + 0.3
   const showIcon = lo.heroIcon !== false
-  const heroSize = Math.round(Math.min(SIZE.hero, (920 - (showIcon ? SIZE.heroIcon + 12 : 0)) / estEm))
+  const HS = L.hero.size, HI = L.hero.icon
+  const heroSize = Math.round(Math.min(HS, (920 - (showIcon ? HI + 12 : 0)) / estEm))
+  // the pile may use x 60-940 (no readable text in it): the climax wall reaches the left margin
   const stack = unitStack(stage, {
-    box: { x: L.inner.x, y: L.stage.y + 6, w: L.inner.w, h: L.stage.h - 10 },
+    box: { x: 120, y: L.stage.y + 6, w: 820, h: L.stage.h - 10 },
     icon: unit.icon, maxCell: 150, minCell: 5, seed: 23,
   }).plan(steps)
   const flash = stageFlash(stage, L)
-  const hero = heroRow(stage, L, { icon: showIcon ? unit.icon : null, size: heroSize, iconSize: Math.round(SIZE.heroIcon * Math.min(1, heroSize / SIZE.hero + 0.1)) })
+  const hero = heroRow(stage, L, { icon: showIcon ? unit.icon : null, size: heroSize, iconSize: Math.round(HI * Math.min(1, heroSize / HS + 0.1)) })
 
   const price = ax(esc(unit.price))
   const items = []

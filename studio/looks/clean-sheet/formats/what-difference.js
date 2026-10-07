@@ -15,18 +15,22 @@
 // shapes:
 //   split   name line (+ delta) / working line / results line                                working stays
 //   mixed   per option: the working on the name line when it fits there, else on its own line     working stays
-//   swap    name line (+ delta) / results line; the working types on the results line (its slots step aside)
-//           and the first highlighter erases it. Only when nothing that keeps the working fits (4 options,
-//           long working lines).
-// Candidates, best first: the working kept (split, then mixed) with the check line; the working kept without the
-// check; swap with, then without, the check. Within each: every metric on one results line (scales 1 -> 0.78,
-// normal then tight gaps), then the last metric(s) stacked on their own line under it with an inline grey label
-// ("Total paid ······ [$35,220]"). stake.terms is dropped when the footer already states it (lookOpts.terms).
+//   swap    name line (+ delta) / results line; the working stays on the name line where it fits there, and only
+//           where it does not it types on the results line (its slots step aside) and the first highlighter
+//           erases it. The last resort.
+// Each shape also has a compact tier: names and working set solid at 40 px, slimmer boxes, results 54 -> 44 px
+// (under 50 only with every metric on one line), small gaps (about 150 px per option).
+// Candidates by cost, cheapest first: smaller type (1 per %, <= 22), tight gaps (23), each metric stacked on its own
+// labelled line (46: "Total paid ······ [$35,220]"), no check line (100), the compact tier (200+), swap (400). So the
+// working outranks the check, the check outranks the compact tier. Nothing fits: the candidate that misses by the
+// least (never a fixed shape), with a console warning; a mount-time assert warns when anything readable ends below
+// the work area. stake.terms is dropped when the footer already states it (lookOpts.terms).
+// An option whose beats all land by t <= 0 is pre-filled: part of frame 1, kept through the loop clear.
 //
 // Spec extensions (all optional): option.resultT (first metric lands, default t + typing + 0.35), option.valueEvery
 // (gap between metrics, 0.5 s), option.deltaT, option.note / option.noteT (an accent line typed under the option's
 // results); data.typeDur; data.winnerT (default verdict.t + 0.28); data.check / data.checkT or lookOpts.check
-// (a string or { t, text }: an accent "check:" line under the sheet, two lines when long); metrics[j].tone (that
+// (a string or { t, text }: an accent "check:" line under the sheet, hung under its sum when long); metrics[j].tone (that
 // column's highlighter; default the green result, a "bad" option uses coral).
 // lookOpts: loop (true) · layout ('split' | 'mixed' | 'swap'; 'inline' = 'mixed') · pointer (true) · slots (true) ·
 // terms ('auto' | 'show' | 'hide') · debug (logs every layout candidate and why it failed) · badge (ignored).
@@ -52,6 +56,9 @@ export const css = `
 const SCALES = [1, 0.96, 0.93, 0.9, 0.87, 0.84, 0.81, 0.78]
 const MIN_SCALE = { split: 0.78, mixed: 0.78, swap: 0.78 }
 const FLOOR = { name: 40, detail: 40, result: 50, delta: 46 }
+// compact tier (the last resort before the working is erased): 40 px names and working set solid, slimmer boxes, the
+// results at these sizes (under 50 px only with every metric on one line, like a table's cells)
+const COMPACT = [54, 50, 46, 44]
 const DELTA = 0.86 // delta box size relative to the results
 const COL_GAP = 28 // between result columns (never under 24)
 const RAISE = 14   // tight layouts start this much closer to the footer
@@ -183,24 +190,36 @@ export default function whatDifference(spec, ctx) {
   const W = el => el.getBoundingClientRect().width
   const padOf = px => 14 * Math.sqrt(px / SIZE.result)
 
-  function metricsAt(sc, tight = false) {
+  function metricsAt(sc, tight = false, cr = 0) {
+    if (cr) {
+      // compact: every line set solid at the floors, boxes that hug their figures, small gaps (~150 px per block)
+      return {
+        // (line boxes tight, but the glyph boxes of the name and the mono working never overlap: Inter's content area
+        // is 1.21 em, Plex Mono's 1.3 em)
+        name: FLOOR.name, nameLH: 1.1, detail: FLOOR.detail, detLH: 1.12,
+        result: cr, boxK: 1.16, delta: Math.max(40, Math.round(cr * 0.84)),
+        circle: 56, stake: 52, stakeK: 1.25, headH: 46, stakePx: 42, checkGap: 16,
+        gDetail: 1, gRes: 4, gap: 10, gNote: 4, gStake: 12, gHead: 6, gStack: 6,
+      }
+    }
     const result = Math.max(FLOOR.result, Math.round(SIZE.result * sc))
     const g = tight ? 0.6 : 1 // tight: the last resort before overflowing, gaps shrink before type does
     return {
-      name: Math.max(FLOOR.name, Math.round(SIZE.label * sc)),
-      detail: Math.max(FLOOR.detail, Math.round(48 * sc)),
-      result, delta: Math.max(FLOOR.delta, Math.round(result * DELTA)),
+      name: Math.max(FLOOR.name, Math.round(SIZE.label * sc)), nameLH: 1.15,
+      detail: Math.max(FLOOR.detail, Math.round(48 * sc)), detLH: 1.2,
+      result, boxK: 1.3, delta: Math.max(FLOOR.delta, Math.round(result * DELTA)),
       circle: Math.round(SIZE.circle * Math.max(0.86, sc)),
-      stake: Math.round(58 * Math.max(0.9, sc)),
+      stake: Math.round(58 * Math.max(0.9, sc)), stakeK: 1.3, headH: 52,
+      stakePx: Math.max(40, Math.round(46 * Math.max(0.9, sc))), checkGap: Math.round(26 * sc),
       gDetail: Math.round(4 * sc), gRes: Math.round(12 * sc * (tight ? 0.7 : 1)), gap: Math.round(30 * sc * g), gNote: Math.round(8 * sc),
       gStake: Math.round(30 * sc * g), gHead: Math.round(14 * sc * g), gStack: Math.round(10 * sc * g),
     }
   }
 
-  // place everything for one candidate c = { mode, sc, slot ('head' | 'tail'), tight, k1 (metrics on the first
-  // results line), check }; returns { fits, fitsW, height, why }
+  // place everything for one candidate c = { mode, sc, cr (compact result px), slot ('head' | 'tail'), tight, k1
+  // (metrics on the first results line), check }; returns { fits, fitsW, height, why }
   function place(c, extra = 0) {
-    const m = metricsAt(c.sc, c.tight)
+    const m = metricsAt(c.sc, c.tight, c.cr)
     let fitsW = true
     const why = []
     const fail = k => { fitsW = false; why.push(k) }
@@ -208,9 +227,9 @@ export default function whatDifference(spec, ctx) {
     let y = top0
     // stake row
     if (stake) {
-      const sh = Math.round(m.stake * 1.3)
-      if (stake.box) stake.box.setPx(m.stake)
-      if (stake.label) style(stake.label, { fontSize: Math.max(40, Math.round(46 * Math.max(0.9, sc(c)))) + 'px' })
+      const sh = Math.round(m.stake * m.stakeK)
+      if (stake.box) stake.box.setPx(m.stake, sh)
+      if (stake.label) style(stake.label, { fontSize: m.stakePx + 'px' })
       style(stake.el, { left: GRID.left + 'px', top: y + 'px', height: sh + 'px' })
       const rowW = W(stake.el)
       if (GRID.left + rowW > right) fail('stake')
@@ -229,13 +248,13 @@ export default function whatDifference(spec, ctx) {
     }
     // columns: every box measured at this size; a column is as wide as its widest box
     const pad = padOf(m.result)
-    const boxH = Math.round(m.result * 1.3)
-    const dH = Math.round(m.delta * 1.3)
+    const boxH = Math.round(m.result * m.boxK)
+    const dH = Math.round(m.delta * m.boxK)
     const colW = metrics.map(() => 0)
     let deltaW = 0
     for (const r of R) {
-      r.vals.forEach((v, j) => { if (v) { v.box.setPx(m.result); v.w = Math.ceil(W(v.box.el)); colW[j] = Math.max(colW[j], v.w) } })
-      if (r.delta) { r.delta.setPx(m.delta); r.deltaW = Math.ceil(W(r.delta.el)); deltaW = Math.max(deltaW, r.deltaW) }
+      r.vals.forEach((v, j) => { if (v) { v.box.setPx(m.result, boxH); v.w = Math.ceil(W(v.box.el)); colW[j] = Math.max(colW[j], v.w) } })
+      if (r.delta) { r.delta.setPx(m.delta, dH); r.deltaW = Math.ceil(W(r.delta.el)); deltaW = Math.max(deltaW, r.deltaW) }
     }
     const k1 = Math.min(c.k1, M)
     const L = [], Rt = []
@@ -270,13 +289,13 @@ export default function whatDifference(spec, ctx) {
         const lim = j < k1 - 1 ? hx[j + 1].hl - 24 : right
         if (x.hl + x.hw > lim) fail('head' + j)
       })
-      style(headRule, { left: GRID.left + 'px', top: (y + 50) + 'px', width: (right - GRID.left) + 'px', display: '' })
-      y += 52 + m.gHead + Math.round(extra * 0.5)
+      style(headRule, { left: GRID.left + 'px', top: (y + m.headH - 2) + 'px', width: (right - GRID.left) + 'px', display: '' })
+      y += m.headH + m.gHead + Math.round(extra * 0.5)
     } else style(headRule, { display: 'none' })
     // option blocks
     R.forEach((r, i) => {
-      style(r.name, { fontSize: m.name + 'px', width: '', height: '', whiteSpace: '', textWrap: '' })
-      let nameH = Math.round(m.name * 1.15)
+      style(r.name, { fontSize: m.name + 'px', lineHeight: m.nameLH, width: '', height: '', whiteSpace: '', textWrap: '' })
+      let nameH = Math.round(m.name * m.nameLH)
       let nameW = W(r.name)
       // a long name that would run into its delta wraps onto two balanced lines beside it
       if (r.delta && c.slot === 'head' && c.mode !== 'mixed' && textX + nameW + 28 > right - r.deltaW) {
@@ -287,14 +306,15 @@ export default function whatDifference(spec, ctx) {
         nameH *= lines
         nameW = nw
       }
-      if (r.detail) r.detail.setPx(m.detail)
+      if (r.detail) { r.detail.setPx(m.detail); style(r.detail.el, { lineHeight: m.detLH }) }
       const detW = r.detail ? Math.ceil(r.detail.measure()) : 0
-      const detH = Math.round(m.detail * 1.2)
+      const detH = Math.round(m.detail * m.detLH)
       const deltaOnHead = r.delta && c.slot === 'head'
-      // where the working goes: its own line (split), on the name line (mixed, when it fits), the results line (swap)
+      // where the working goes: its own line (split), on the name line (mixed, when it fits), the results line (swap,
+      // only where it does not fit on the name line: there it stays, so a swap sheet keeps every working it can)
       const inlineW = textX + nameW + Math.round(30 * c.sc) + detW
       const inlineFits = r.detail && inlineW + (deltaOnHead ? 28 + r.deltaW : 0) <= right
-      r.place = !r.detail ? 'none' : c.mode === 'swap' ? 'swap' : c.mode === 'mixed' && inlineFits ? 'inline' : 'split'
+      r.place = !r.detail ? 'none' : (c.mode === 'mixed' || c.mode === 'swap') && inlineFits ? 'inline' : c.mode === 'swap' ? 'swap' : 'split'
       const split = r.place === 'split'
       // split: the delta centres on the name + working block when the working clears it, else it sits on the name
       // line and the working starts under the delta's box
@@ -375,7 +395,7 @@ export default function whatDifference(spec, ctx) {
       style(check.el, { display: c.check ? '' : 'none' })
       if (c.check) {
         check.setPx(SIZE.check)
-        y += Math.round(26 * c.sc) + Math.min(extra, 14)
+        y += m.checkGap + Math.min(extra, 14)
         style(check.el, { left: textX + 'px', top: y + 'px' })
         if (textX + check.measure() > right + 1) fail('check')
         y += Math.round(SIZE.check * 1.2) * check.lines
@@ -387,36 +407,41 @@ export default function whatDifference(spec, ctx) {
     if (debug) console.log(`[wd] ${JSON.stringify(c)} ${why.join(',') || 'FITS'}`)
     return { fits: fitsW && height <= room, fitsW, height, room, why }
   }
-  const sc = c => c.sc
 
   const slots = hasDelta ? ['head', 'tail'] : ['head']
-  let best = null // fallback: the width-valid candidate that overflows least
   const forced = LO.layout ? (LO.layout === 'inline' ? 'mixed' : LO.layout) : null
-  const keepModes = forced ? (forced === 'swap' ? [] : [forced]) : ['split', 'mixed']
-  const swapModes = forced ? (forced === 'swap' ? ['swap'] : []) : ['swap']
+  const modes = forced ? [forced] : ['split', 'mixed', 'swap']
   const checks = check ? [true, false] : [false]
-  // the working outranks the check line; one results line outranks stacking; bigger type, then tighter gaps
-  const groups = []
-  for (const ck of checks) groups.push({ modes: keepModes, ck })
-  for (const ck of checks) groups.push({ modes: swapModes, ck })
-  let chosen = null
-  search: for (const g of groups) {
-    if (!g.modes.length) continue
-    for (let k1 = M; k1 >= 1; k1--) for (const tight of [false, true]) for (const s0 of SCALES) for (const mode of g.modes) {
+  // Candidates by cost, cheapest first. Smaller type (1 per %, at most 22), tight gaps (23), each metric stacked on
+  // its own labelled line (46), no check line (100), the compact tier (200 + 1 per px under 54), the working erased
+  // where it does not fit on the name line (swap, 400). So: the working outranks the check, the check outranks the
+  // compact tier, and one results line at a smaller size beats a stack of two.
+  const cands = []
+  for (const ck of checks) for (const mode of modes) for (let k1 = M; k1 >= 1; k1--) for (const slot of slots) {
+    const base = (check && !ck ? 100 : 0) + (mode === 'swap' ? 400 : mode === 'mixed' ? 0.2 : 0) + (M - k1) * 46 + (slot === 'tail' ? 0.1 : 0)
+    for (const tight of [false, true]) for (const s0 of SCALES) {
       if (s0 < MIN_SCALE[mode] - 1e-9) continue
-      for (const slot of slots) {
-        const c = { mode, sc: s0, slot, tight, k1, check: g.ck }
-        const r = place(c)
-        if (r.fits) { chosen = { c, height: r.height }; break search }
-        if (r.fitsW && (!best || r.height < best.height)) best = { c, height: r.height }
-      }
+      cands.push({ c: { mode, sc: s0, slot, tight, k1, check: ck }, cost: base + Math.round((1 - s0) * 100) + (tight ? 23 : 0) })
+    }
+    for (const cr of COMPACT) {
+      if (cr < FLOOR.result && k1 < M) continue
+      cands.push({ c: { mode, sc: cr / SIZE.result, cr, slot, tight: true, k1, check: ck }, cost: base + 200 + (54 - cr) })
     }
   }
-  // nothing fits: the least-overflowing width-valid layout (the linter reports the overflow), else the smallest swap
-  if (!chosen && best) chosen = best
+  cands.forEach((x, k) => { x.k = k })
+  cands.sort((a, b) => a.cost - b.cost || a.k - b.k)
+  let chosen = null, best = null
+  for (const { c } of cands) {
+    const r = place(c)
+    if (r.fits) { chosen = { c, height: r.height }; break }
+    // the fallback: width-valid first, then the least overflow
+    const over = Math.max(0, r.height - r.room) + (r.fitsW ? 0 : 10000)
+    if (!best || over < best.over) best = { c, height: r.height, over, why: r.why }
+  }
+  // nothing fits: the candidate that misses by the least (never a fixed shape); the linter reports the overflow
   if (!chosen) {
-    const c = { mode: 'swap', sc: MIN_SCALE.swap, slot: 'head', tight: true, k1: 1, check: false }
-    chosen = { c, height: place(c).height }
+    chosen = best
+    console.warn('what-difference: no layout fits; using', JSON.stringify(best.c), '(' + best.why.join(', ') + ')')
   }
   // breathe: spend spare height on the gaps (top-aligned like a real sheet), capped so blocks stay grouped
   const gaps = Math.max(1, R.length - 1 + (stake ? 1 : 0) + (showHeads ? 0.5 : 0))
@@ -424,10 +449,20 @@ export default function whatDifference(spec, ctx) {
   const extra = Math.max(0, Math.min(chosen.c.mode === 'split' ? 24 : 36, Math.floor((spare * 0.6) / gaps)))
   place(chosen.c, extra)
   const LC = chosen.c
-  const swap = LC.mode === 'swap'
   const checkOn = !!check && LC.check
-  Object.assign(root.dataset, { mode: LC.mode, scale: String(LC.sc), slot: LC.slot, k1: String(LC.k1), check: String(checkOn), terms: String(termsOn) })
+  Object.assign(root.dataset, { mode: LC.mode, scale: String(Math.round(LC.sc * 1000) / 1000), slot: LC.slot, k1: String(LC.k1), check: String(checkOn), terms: String(termsOn) })
   if (LC.tight) root.dataset.tight = ''
+  if (LC.cr) root.dataset.compact = String(LC.cr)
+  // assert: nothing readable ends below the work area (it would run into the captions)
+  {
+    let low = 0, what = ''
+    for (const e of root.querySelectorAll('.wd-name, .wd-head, .wd-mlabel, .cs-type, .cs-hl')) {
+      if (e.style.display === 'none' || !e.textContent.trim()) continue
+      const b = e.getBoundingClientRect().bottom
+      if (b > low) { low = b; what = e.textContent.slice(0, 30) }
+    }
+    if (low > P.bottom + 1) console.warn(`what-difference: "${what}" ends at y ${Math.round(low)}, below the work area (${P.bottom})`)
+  }
 
   // pointer: lands just right of the winner's delta (or of its last result), never over a number, inside the card
   let ptStop = null
@@ -464,13 +499,26 @@ export default function whatDifference(spec, ctx) {
   if (loop) ctx.cue(clearT0, 'swipe', { gain: 0.3 })
 
   // ---------------------------------------------------------------- seek
+  // A beat at t <= 0 is part of frame 1 (an option pre-filled as the hook): it is kept through the loop clear, so the
+  // last frame equals frame 1. At the reset everything is evaluated at t = 0 (the frame-1 state).
+  const pre = T.map(x => x.end <= 0)
   return {
     duration: D,
     seek(t) {
       const clearP = loop ? ease.inOut(prog(t, clearT0, MOTION.clear)) : 0
       const keep = 1 - clearP
+      const reset = t >= cleared
+      const tt = reset ? 0 : t // the time each element is evaluated at (the reset shows the frame-1 state)
+      const keepAt = ev => (ev <= 0 ? 1 : keep) // a beat already on frame 1 survives the clear
       const wP = isFinite(wT) ? prog(t, wT, MOTION.restIn) : 0 // winner moment: everyone else rests
-      const restore = winner < 0 ? prog(t, lastEnd + 0.9, 0.45) : 0 // no winner: the whole comparison comes back to full
+      const restAt = (x, i, tq) => {
+        const isWin = i === winner
+        const wq = isFinite(wT) ? prog(tq, wT, MOTION.restIn) : 0
+        const rq = winner < 0 ? prog(tq, lastEnd + 0.9, 0.45) : 0
+        let rest = isFinite(x.next) ? prog(tq, x.next + 0.05, MOTION.restIn) * (1 - rq) : 0
+        if (winner >= 0) rest = isWin ? rest * (1 - wq) : Math.max(rest, wq)
+        return rest
+      }
       R.forEach((r, i) => {
         const x = T[i]
         const isWin = i === winner
@@ -484,45 +532,49 @@ export default function whatDifference(spec, ctx) {
         r.circle.seek(fill)
         // working line: the caret waits (blinking) from activation, runs while typing
         const v0i = r.vals.findIndex(Boolean)
-        const L0 = v0i >= 0 ? landing(t, x.valT[v0i]) : { wipe: 0 }
+        const L0 = v0i >= 0 ? landing(tt, x.valT[v0i]) : { wipe: 0 }
+        const swapped = r.place === 'swap'
         if (r.detail) {
-          const tp = t >= cleared ? 0 : prog(t, x.t0, x.typeD)
+          const tp = prog(tt, x.t0, x.typeD)
           const waiting = t >= Math.max(0, x.act) && t < x.t0
           const typing = t >= x.t0 && t < x.t0 + x.typeD + 0.12
-          const idleFirst = i === 0 && x.act < 0 && (t < x.t0 || t >= cleared)
+          const idleFirst = i === 0 && x.act < 0 && x.t0 > 0 && (t < x.t0 || reset)
           r.detail.seek(tp, (typing && t < clearT0) || ((waiting || idleFirst) && blink(t)))
-          let fo = t >= cleared || t < clearT0 ? 1 : keep
-          if (swap && t < cleared && v0i >= 0) {
+          let fo = reset || t < clearT0 ? 1 : keepAt(x.t0)
+          if (swapped && v0i >= 0) {
             // the first highlighter's leading edge erases the working as it lays the result down
             const v0 = r.vals[v0i]
             const front = v0.left + L0.wipe * v0.w - textX
             style(r.detail.el, { clipPath: L0.wipe > 0 && L0.wipe < 1 ? `inset(0 0 0 ${Math.max(0, Math.round(front))}px)` : 'none' })
-            fo *= L0.wipe >= 1 ? 0.35 * (1 - prog(t, x.valT[v0i] + MOTION.wipe, 0.12)) : 1 - 0.65 * L0.wipe
+            fo *= L0.wipe >= 1 ? 0.35 * (1 - prog(tt, x.valT[v0i] + MOTION.wipe, 0.12)) : 1 - 0.65 * L0.wipe
           } else style(r.detail.el, { clipPath: 'none' })
           fade(r.detail.el, fo)
         }
         // results land in their columns, rest when the next option takes focus; at the winner beat every other box
-        // rests (coral and deltas too) and the winner's re-wipe blue
-        let rest = isFinite(x.next) ? prog(t, x.next + 0.05, MOTION.restIn) * (1 - restore) : 0
-        if (winner >= 0) rest = isWin ? rest * (1 - wP) : Math.max(rest, wP)
-        // empty slots: on the sheet from frame 1; in swap mode they step aside while the working types on their line
-        const slotOff = swap && r.detail ? (x.act < 0 ? 1 : prog(t, x.act, 0.2) * (1 - clearP)) : 0
+        // rests (coral and deltas too) and the winner's re-wipe blue. A pre-filled option eases back to its frame-1
+        // rest during the clear.
+        let rest = restAt(x, i, t)
+        if (pre[i]) rest = lerp(rest, restAt(x, i, 0), reset ? 1 : clearP)
+        // empty slots: on the sheet from frame 1; where the working types on the results line they step aside
+        const slotOff = swapped ? (x.act < 0 ? 1 : prog(t, x.act, 0.2) * (1 - clearP)) : 0
         r.vals.forEach((v, j) => {
-          const L = v ? landing(t, x.valT[j]) : { wipe: 0, text: 0 }
+          const L = v ? landing(tt, x.valT[j]) : { wipe: 0, text: 0 }
+          const kv = v ? keepAt(x.valT[j]) : keep
           if (v) {
-            v.box.seek(L.wipe * keep, L.text * keep, rest)
-            v.box.seekRetone(isWin ? ease.out(prog(t, wT + j * 0.1, MOTION.wipe)) * keep : 0, 0)
+            v.box.seek(L.wipe * kv, L.text * kv, rest, kv * kv) // the figure fades out with its box at the clear
+            v.box.seekRetone(isWin ? ease.out(prog(tt, wT + j * 0.1, MOTION.wipe)) * kv : 0, 0)
           }
           // (a stacked metric's label is part of the empty sheet, like the heads: static from frame 1)
-          fade(r.slots[j], useSlots ? Math.min(1 - L.wipe * keep, j < LC.k1 ? 1 - slotOff : 1) : 0)
+          fade(r.slots[j], useSlots ? Math.min(1 - L.wipe * kv, j < LC.k1 ? 1 - slotOff : 1) : 0)
         })
         if (r.delta) {
-          const L = landing(t, x.deltaT)
-          r.delta.seek(L.wipe * keep, L.text * keep, isWin ? rest : Math.max(rest, wP))
+          const L = landing(tt, x.deltaT)
+          const kd = keepAt(x.deltaT)
+          r.delta.seek(L.wipe * kd, L.text * kd, isWin ? rest : Math.max(rest, pre[i] ? lerp(wP, 0, reset ? 1 : clearP) : wP), kd * kd)
         }
         if (r.note) {
-          r.note.seek(t >= cleared ? 0 : prog(t, x.noteT, x.noteD), t >= x.noteT && t < x.noteT + x.noteD + 0.15 && t < clearT0)
-          fade(r.note.el, t >= cleared ? 1 : keep)
+          r.note.seek(prog(tt, x.noteT, x.noteD), t >= x.noteT && t < x.noteT + x.noteD + 0.15 && t < clearT0)
+          fade(r.note.el, reset ? 1 : keepAt(x.noteT))
         }
       })
       if (checkOn) {

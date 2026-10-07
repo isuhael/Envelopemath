@@ -14,6 +14,8 @@
 //   swap    one row per step: the result replaces its formula (last resort: 6+ steps under a long header)
 // and takes the first that fits the work area with type above the floors. Notes sit beside the result, or after
 // the formula ("$65,000 ÷ 12 =  not $5,000") when the result is too wide. lookOpts.layout forces a mode.
+// A step that lands by t <= 0 is pre-filled: part of frame 1, it survives the loop clear (last frame = frame 1). At
+// the clear every other box retracts and its figure fades with it (never a bare figure without its box).
 import { h, css as style, prog, ease, plain } from '../../../runtime/core.js'
 import { C, SIZE, GRID, MOTION, md, hlBox, typeLine, stepCircle, fadeUp, fade, show, blink, landing, durationOf, typeTime, readCheck, breakLine } from '../lib.js'
 
@@ -254,52 +256,62 @@ export default function deadSimpleList(spec, ctx) {
   if (loop) ctx.cue(clearT0, 'swipe', { gain: 0.3 })
 
   // ---------------------------------------------------------------- seek
+  // A step that lands at t <= 0 is part of frame 1 (pre-filled): it survives the loop clear, so the last frame is
+  // frame 1. At the reset every element is evaluated at t = 0 (the frame-1 state).
+  const pre = T.map(x => x.res + MOTION.popDelay + MOTION.pop <= 0)
   return {
     duration: D,
     seek(t) {
       const clearP = loop ? ease.inOut(prog(t, clearT0, MOTION.clear)) : 0
       const keep = 1 - clearP
+      const reset = t >= cleared
+      const tt = reset ? 0 : t
+      const keepAt = ev => (ev <= 0 ? 1 : keep)
       const restore = goalIdx < 0 ? prog(t, fin, 0.45) : 0 // no goal: the whole cheat sheet comes back to full
+      const fillAt = (x, i, tq) => {
+        const on = x.act < 0 ? 1 : prog(tq, x.act, 0.32)
+        const off = isFinite(x.next) ? prog(tq, x.next, 0.25) : 0
+        return on * (1 - off)
+      }
+      const restAt = (r, x, tq) => (!r.goal && isFinite(x.next) ? prog(tq, x.next + 0.05, MOTION.restIn) * (1 - (goalIdx < 0 ? prog(tq, fin, 0.45) : 0)) : 0)
       R.forEach((r, i) => {
         const x = T[i]
-        // circle: filled while this is the current step (the first step re-fills as the loop resets)
-        const on = x.act < 0 ? 1 : prog(t, x.act, 0.32)
-        const off = isFinite(x.next) ? prog(t, x.next, 0.25) : 0
-        let fill = on * (1 - off) * keep
-        if (i === 0 && x.act < 0) fill = Math.max(fill, clearP)
-        r.circle.seek(fill)
+        // circle: filled while this is the current step; at the clear it returns to its frame-1 state (step 1 re-fills)
+        r.circle.seek(reset ? fillAt(x, i, 0) : fillAt(x, i, t) * keep + fillAt(x, i, 0) * clearP)
         // label: a heading arrives with its circle; an aside label arrives with the result
         if (r.labelPlace !== 'none') {
           let p
-          if (r.labelPlace === 'row') p = x.act < 0 ? 1 : prog(t, x.act + 0.06, MOTION.fade + 0.05) * keep
-          else p = prog(t, x.res + 0.3, MOTION.fade) * keep
+          if (r.labelPlace === 'row') p = x.act < 0 ? 1 : prog(tt, x.act + 0.06, MOTION.fade + 0.05) * keepAt(x.act)
+          else p = prog(tt, x.res + 0.3, MOTION.fade) * keepAt(x.res + 0.3)
           fadeUp(r.label, p)
         }
         // formula: caret waits (blinking) from activation, runs while typing; in swap mode it leaves as the result lands
-        const tp = t >= cleared ? 0 : prog(t, x.t0, x.typeD)
+        const tp = prog(tt, x.t0, x.typeD)
         const waiting = t >= Math.max(0, x.act) && t < x.t0
         const typing = t >= x.t0 && t < x.t0 + x.typeD + 0.12
-        const idleFirst = i === 0 && (t < x.t0 || t >= cleared)
+        const idleFirst = i === 0 && x.t0 > 0 && (t < x.t0 || reset)
         r.formula.seek(tp, (typing && t < clearT0) || ((waiting || idleFirst) && blink(t)))
-        let fo = t >= cleared ? 1 : t < clearT0 ? 1 : keep
-        const L = landing(t, x.res)
-        if (swap && t < cleared) {
+        let fo = reset || t < clearT0 ? 1 : keepAt(x.t0)
+        const L = landing(tt, x.res)
+        if (swap) {
           // the highlighter's leading edge erases the formula as it lays the result down
           const front = r.boxLeft + L.wipe * r.boxW - textX
           style(r.formula.el, { clipPath: L.wipe > 0 && L.wipe < 1 ? `inset(0 0 0 ${Math.max(0, Math.round(front))}px)` : 'none' })
-          fo *= L.wipe >= 1 ? 0.35 * (1 - prog(t, x.res + MOTION.wipe, 0.12)) : 1 - 0.65 * L.wipe
-          if (L.wipe >= 1 && t >= x.res + MOTION.wipe + 0.12) fo = 0
+          fo *= L.wipe >= 1 ? 0.35 * (1 - prog(tt, x.res + MOTION.wipe, 0.12)) : 1 - 0.65 * L.wipe
+          if (L.wipe >= 1 && tt >= x.res + MOTION.wipe + 0.12) fo = 0
         } else style(r.formula.el, { clipPath: 'none' })
         fade(r.formula.el, fo)
-        // result lands on its highlighter, then rests when the next step takes focus
-        let rest = 0
-        if (!r.goal && isFinite(x.next)) rest = prog(t, x.next + 0.05, MOTION.restIn) * (1 - restore)
-        r.box.seek(L.wipe * keep, L.text * keep, rest)
-        if (r.note) fadeUp(r.note, prog(t, x.res + 0.38, MOTION.fade) * keep)
+        // result lands on its highlighter, then rests when the next step takes focus. At the clear the box retracts
+        // and its figure fades with it (ink keep²), so a bare figure never sits on the page without its box.
+        let rest = restAt(r, x, t)
+        if (pre[i]) rest = reset ? restAt(r, x, 0) : rest * keep + restAt(r, x, 0) * clearP
+        const kr = keepAt(x.res)
+        r.box.seek(L.wipe * kr, L.text * kr, rest, kr * kr)
+        if (r.note) fadeUp(r.note, prog(tt, x.res + 0.38, MOTION.fade) * keepAt(x.res + 0.38))
       })
       if (check) {
-        check.seek(prog(t, checkT, checkD), t >= checkT && t < checkT + checkD + 0.15)
-        fade(check.el, keep)
+        check.seek(prog(tt, checkT, checkD), t >= checkT && t < checkT + checkD + 0.15 && t < clearT0)
+        fade(check.el, reset ? 1 : keepAt(checkT))
       }
     },
   }

@@ -7,22 +7,25 @@
 // Each part: the pointer lands on the row, its percentage turns accent and the leader traces in accent from the %
 // toward the slot (percentage → dollars); the optional working (part.formula, "5 × $400") types in grey mono and
 // ends in "=" right before the slot, then the highlighter swipes in and the amount pops. The working STAYS, so the
-// finished page is a worked sheet ("50% ··· 5 × $400 = $2,000"). The bar segment fills in the part's tone. The
-// previous amount rests, so the newest is the only loud number. Then the sum rule and the accent check line: every
+// finished page is a worked sheet ("50% ··· 5 × $400 = $2,000"). The bar segment fills in the colour its amount
+// lands on (green, the goal blue, a bad part coral) and rests with it. The previous amount rests, so the newest is
+// the only loud number. Then the sum rule and the accent check line: every
 // amount comes back to full (a goal part stays the only loud one), the total lights up again, the pointer leaves,
 // the finished sheet holds, and (lookOpts.loop, default on) the last 0.7 s clears back to frame 1.
 //
 // Layout engine (measured with the real fonts at mount). Labels share one column so the % column and the leaders
-// line up; a label too long for it wraps to 2 lines (balanced) and sits centred on its amount. Per type scale
-// (largest first) it tries: formulas on the line (they stay) / in the slot (typed in the empty slot, erased by the
-// highlighter: "formula, then result, in the same slot", H55/H84) / none, each with notes + bar, notes, bar, bare,
-// each with normal then tight (dense) spacing. The first that fits the work area with type above the floors wins.
+// line up (short labels keep their natural width; a label too long for the column wraps to 2 balanced lines).
+// Candidates by cost, cheapest first: type size (1.16 / 1.08 only break ties on short sheets; then 4 per 4%), no
+// notes (6), no bar (2), dense spacing (3), the wrong guess off its row (4), the working hung under its amount
+// (20: "= 5.5 × $350" right-aligned under the box), no check line (30), the working typed in the slot and erased by
+// the highlighter (60) or gone (80). Nothing fits: the candidate that misses by the least (never a fixed shape).
 // lookOpts.debug logs every candidate and why it failed.
 //
 // Spec extensions (all optional): total.note (grey line under the total, e.g. "10% = $400"); part.formula (the
-// mental shortcut); data.check / checkT (contract; "check: " is prefixed when the line has room for it); data.hold.
-// A part without a tone is neutral (sand). lookOpts: loop (true), pointer (true), bar (auto; false hides it, true
-// insists on it), notes (auto; false hides them), formulas (auto | 'line' | 'slot' | false), debug,
+// mental shortcut); data.check / checkT (contract; always "check: …", hung under the sum when it breaks); data.hold.
+// A part without a tone is neutral (its amount lands on green). lookOpts: loop (true), pointer (true), bar (auto;
+// false hides it, true insists on it), notes (auto; false hides them), formulas (auto | 'line' | 'under' | 'slot' |
+// false), debug,
 // wrongGuess { part, t, formula, result, strike = true, strikeT, until }: a wrong answer whose working types under
 // row `part` (or on the line under the sheet, where the check lands later, when there is no room) and whose result
 // lands on coral at `t`, struck through at strikeT, gone by `until` (default: as the next part starts). t <= 0 puts
@@ -58,9 +61,10 @@ export const css = `
 .ss-check.wrap { white-space: pre-wrap; }
 `
 
-const SCALES = [1, 0.96, 0.92, 0.88, 0.84] // type clamps at the floors below (labels 40, amounts 50, total 56)
+// type clamps at the floors below (labels 40, amounts 50, total 56); a short sheet (3 parts, short labels) may set its
+// type a little larger rather than leave the lower page empty (a scale above 1 only breaks ties, never buys a feature)
+const SCALES = [1.16, 1.08, 1, 0.96, 0.92, 0.88, 0.84]
 const FLOOR = { label: 40, amount: 50, total: 56 }
-const INK_TINTS = ['#C9CDD3', '#9EA4AE', '#DDE0E4', '#B3B8C0'] // ink at ~22 / 40 / 14 / 31% on the page
 const RAISE = 14   // tight (dense) sheets start this much closer to the footer
 const LEAD = 0.3   // the row activates (pointer lands, % turns accent, leader traces) this long before typing / landing
 const F_GAP = 16   // gap either side of a formula on the line
@@ -87,7 +91,7 @@ export default function splitSheet(spec, ctx) {
   const n = parts.length
   const goalIdx = parts.findIndex(p => p.tone === 'goal')
   const wgSpec = LO.wrongGuess || d.wrongGuess || null
-  const chk = readCheck(d, LO, { prefix: false }) // a string or { t, text }, in data or lookOpts
+  const chk = readCheck(d, LO) // a string or { t, text }, in data or lookOpts; always "check: …" (one look kit-wide)
   const checkRaw = chk ? chk.text : ''
 
   // ---------------------------------------------------------------- DOM (built once)
@@ -110,14 +114,12 @@ export default function splitSheet(spec, ctx) {
   const hasShares = n > 0 && shares.every(v => isFinite(v) && v > 0)
   const shareSum = hasShares ? shares.reduce((a, b) => a + b, 0) : 1
   const barRoot = h('div', { 'data-deco': '' })
-  // each segment its own tint: a toned part (good / goal / bad) in its tone, neutral parts in alternating ink tints,
-  // so neighbouring buckets never read as one
-  let nk = 0
+  // each segment fills in the colour its amount lands on (green for neutral and good, blue for the goal, coral for a
+  // bad part) and rests with it, so the bar and the amounts speak one colour grammar; the gaps keep neighbours apart
   const segs = parts.map((p, i) => {
     const empty = h('div', { class: 'ss-seg-empty', 'data-deco': '' })
     const fill = h('div', { class: 'ss-seg', 'data-deco': '' })
-    const toned = p.tone && p.tone !== 'neutral'
-    style(fill, { background: toned ? toneColor(p.tone) : INK_TINTS[nk++ % INK_TINTS.length] })
+    style(fill, { background: toneColor(!p.tone || p.tone === 'neutral' ? 'good' : p.tone) })
     barRoot.append(empty, fill)
     return { empty, fill, share: hasShares ? shares[i] / Math.max(1, shareSum) : 0 }
   })
@@ -144,21 +146,21 @@ export default function splitSheet(spec, ctx) {
       // the working: on the line (stays, ends in "=") or in the slot (erased by the highlighter)
       fLine: p.formula ? typeLine({ text: p.formula, suffix: ' =', px: 42, cls: 'ss-f' }) : null,
       fSlot: p.formula ? typeLine({ text: p.formula, px: 42, cls: 'ss-f' }) : null,
+      // dense sheets: the working hangs off the amount on the line under it, right-aligned ("$1,925 / = 5.5 × $350")
+      fUnder: p.formula ? typeLine({ text: '= ' + p.formula, px: 42, cls: 'ss-f' }) : null,
     }
     if (masked) { r.pv = r.pct.querySelector('.ss-pv'); r.pq = r.pct.querySelector('.ss-pq') }
     if (r.fSlot) r.fSlot.el.setAttribute('data-overlap-ok', '') // erased by the highlighter's leading edge
-    for (const e of [r.label, r.note, r.pct, r.leader, r.trace, r.slot, r.box.el, r.fLine && r.fLine.el, r.fSlot && r.fSlot.el]) if (e) root.append(e)
+    for (const e of [r.label, r.note, r.pct, r.leader, r.trace, r.slot, r.box.el, r.fLine && r.fLine.el, r.fSlot && r.fSlot.el, r.fUnder && r.fUnder.el]) if (e) root.append(e)
     style(r.box.el, { position: 'absolute' })
     return r
   })
 
-  // check line, measured against the column (x 84 -> 940): with the 'check: ' prefix on one line, else without it,
-  // else two lines broken before "=" or an operator (" + ")
+  // check line, measured against the column (x 84 -> 940): "check: " + the sum on one line, else two (or three) lines
+  // broken before "=" or an operator (" + ")
   const checks = []
   if (checkRaw) {
-    const full = width => [breakLine(root, 'check: ' + checkRaw, width), breakLine(root, checkRaw, width)]
-    const [a, b] = full(xR - x0)
-    const pick = a.lines === 1 ? a : b.lines === 1 ? b : a
+    const pick = breakLine(root, checkRaw, xR - x0)
     const k = typeLine({ text: pick.text, px: SIZE.check, color: C.accent, weight: 500, cls: 'ss-check' })
     k.lines = pick.lines
     root.append(k.el)
@@ -194,7 +196,7 @@ export default function splitSheet(spec, ctx) {
     return {
       lpx: Math.max(FLOOR.label, Math.round(SIZE.label * sc)), apx: Math.max(FLOOR.amount, Math.round(60 * sc)),
       gpx: Math.max(FLOOR.amount + 4, Math.round(66 * sc)), tpx: Math.max(FLOOR.total, Math.round((tight ? 64 : 72) * sc)),
-      boxK: tight ? 1.2 : 1.3, wrapLH: tight ? 1.02 : 1.1, gpxGuess: tight ? 42 : 48,
+      boxK: tight ? 1.2 : 1.3, wrapLH: tight ? 1.08 : 1.12, gpxGuess: tight ? 42 : 48,
       raise: tight ? RAISE : 0, // a dense sheet starts a little closer to the footer
       ppx: Math.max(40, Math.round(44 * sc)), fpx: Math.max(40, Math.round(42 * sc)), npx: SIZE.note,
       G: Math.round(20 * sc), lead: 40,
@@ -220,8 +222,8 @@ export default function splitSheet(spec, ctx) {
       r.box.setPx(r.apx, r.boxH)
       r.boxW = Math.ceil(r.box.width())
       r.padF = Math.round(14 * Math.sqrt(r.apx / SIZE.result))
-      r.f = r.fLine ? (c.formulas === 'line' || c.formulas === 'under' ? r.fLine : c.formulas === 'slot' ? r.fSlot : null) : null
-      if (r.fLine) { show(r.fLine.el, r.f === r.fLine); show(r.fSlot.el, r.f === r.fSlot) }
+      r.f = r.fLine ? ({ line: r.fLine, under: r.fUnder, slot: r.fSlot }[c.formulas] || null) : null
+      if (r.fLine) for (const v of [r.fLine, r.fSlot, r.fUnder]) show(v.el, r.f === v)
       r.fW = 0
       if (r.f) { r.f.setPx(m.fpx); r.fW = Math.ceil(r.f.measure()) + 8 } // + caret
       r.slotW = c.formulas === 'slot' && r.f ? Math.max(r.boxW, r.fW + 2 * r.padF) : r.boxW
@@ -237,8 +239,10 @@ export default function splitSheet(spec, ctx) {
     const pctBlock = PW ? m.G + PW : 0
     let cap = Infinity
     for (const r of R) cap = Math.min(cap, width - pctBlock - m.G - m.lead - r.fRes - r.slotW)
-    const LW = Math.floor(Math.min(Math.max(...R.map(r => r.labNat)), cap))
-    if (LW < 150) why.push('label column ' + LW)
+    const labMax = Math.max(...R.map(r => r.labNat))
+    const LW = Math.floor(Math.min(labMax, cap))
+    // short labels (Live / Invest / Enjoy) are fine at their natural width; fail only when the column is squeezed
+    if (cap < Math.min(150, labMax)) why.push('label column ' + Math.floor(cap))
     for (const r of R) {
       r.lines = 1
       r.labH = lineH
@@ -338,14 +342,17 @@ export default function splitSheet(spec, ctx) {
       let under = Math.round(lt + r.labH + m.noteGap) // the next free line under the label
       if (r.f) {
         if (c.formulas === 'under') {
-          // the working under its label (grey mono, it stays): "Necessities / 5.5 × $350 ="
+          // the working hangs off the amount: "= 5.5 × $350" right-aligned under the box, ending at the rail, so the
+          // finished row reads "Necessities 55% ···· $1,925 / = 5.5 × $350" (it stays). The note (left) shares that
+          // line when they clear each other.
           const fH = Math.round(m.fpx * 1.2)
-          if (x0 + r.fW > xR - r.boxW - m.G) under = Math.max(under, bt + r.boxH + 2) // too long: under the box
-          r.fLeft = x0
-          style(r.f.el, { left: x0 + 'px', top: under + 'px' })
-          if (x0 + r.fW > xR) why.push('formula too wide: ' + r.p.formula)
-          under += fH
-          bottom = Math.max(bottom, under)
+          const textW = r.fW - 8 // without the caret
+          r.fLeft = Math.round(xR - textW)
+          r.fTop = bt + r.boxH + 2
+          style(r.f.el, { left: r.fLeft + 'px', top: r.fTop + 'px' })
+          if (r.fLeft < x0) why.push('formula too wide: ' + r.p.formula)
+          r.fBottom = r.fTop + fH
+          bottom = Math.max(bottom, r.fBottom)
         } else {
           r.fLeft = c.formulas === 'line' ? r.slotLeft - F_GAP - r.fW : r.slotLeft + r.padF
           style(r.f.el, { left: r.fLeft + 'px', top: Math.round(r.yc - (m.fpx * 1.2) / 2) + 'px' })
@@ -354,6 +361,8 @@ export default function splitSheet(spec, ctx) {
       if (r.note && c.notes) {
         let nt = under
         if (x0 + r.noteW > r.ll - 4) nt = Math.max(nt, bt + r.boxH + 2) // a long note goes under the box
+        // the hanging working (right) and the note (left) share a line only when they clear each other
+        if (r.f && c.formulas === 'under' && nt + noteH > r.fTop && x0 + r.noteW > r.fLeft - 24) nt = Math.max(nt, r.fBottom)
         if (x0 + r.noteW > xR) why.push('note too wide: ' + r.p.note)
         style(r.note, { left: x0 + 'px', top: nt + 'px' })
         bottom = Math.max(bottom, nt + noteH)
@@ -404,13 +413,16 @@ export default function splitSheet(spec, ctx) {
       style(guess.strike, { left: x0 - 8 + 'px', top: Math.round(top + guessH / 2 - 2) + 'px', width: bw + fw + 32 + 'px' })
     }
     const height = y - top0
-    if (height > avail + m.raise) why.push(`height ${Math.round(height)} > ${avail + m.raise} (rows end ${Math.round(rowsEnd)}, total ${Math.round(totEnd)})`)
-    return { fits: !why.length, height, raise: m.raise, why }
+    const over = Math.max(0, height - (avail + m.raise))
+    if (over > 0) why.push(`height ${Math.round(height)} > ${avail + m.raise} (rows end ${Math.round(rowsEnd)}, total ${Math.round(totEnd)})`)
+    // how bad a failing candidate is: overflow in px, plus a penalty per other failure (squeezed or too wide)
+    return { fits: !why.length, height, raise: m.raise, why, bad: over + 400 * (why.length - (over > 0 ? 1 : 0)) }
   }
 
   // candidates, cheapest first. Cost: smaller type (4 per 4%), no notes (6), no bar (2), dense spacing (3), the wrong
-  // guess off its row (4), the working under its label (20), no check line (30), the working typed in the slot and
-  // erased (45) or gone (60). The working outranks type size, notes and the check. The first that fits wins.
+  // guess off its row (4), the working hung under its amount (20), no check line (30), the working typed in the slot
+  // and erased (60) or gone (80). The working outranks type size, notes and the check (under + no check = 50 still
+  // beats an erased working). The first that fits wins.
   const fModes = !hasFormulas ? [false] : LO.formulas === false ? [false] : ['line', 'under', 'slot'].includes(LO.formulas) ? [LO.formulas] : ['line', 'under', 'slot', false]
   const cands = []
   for (const sc of SCALES) {
@@ -419,7 +431,7 @@ export default function splitSheet(spec, ctx) {
       if (!bar && barOK && LO.bar === true) continue
       for (const tight of [false, true]) for (const guessUnder of guess ? [true, false] : [false]) for (const ck of checks.length ? [true, false] : [true]) {
         // the working outranks the notes: notes go before the working leaves its line (slot) or the sheet (false)
-        const cost = Math.round((1 - sc) * 100) + (hasFormulas ? { line: 0, under: 20, slot: 45, false: 60 }[formulas] : 0) +
+        const cost = (sc > 1 ? -(sc - 1) * 10 : Math.round((1 - sc) * 100)) + (hasFormulas ? { line: 0, under: 20, slot: 60, false: 80 }[formulas] : 0) +
           (hasNotes && !notes ? 6 : 0) + (barOK && !bar ? 2 : 0) + (tight ? 3 : 0) + (guess && !guessUnder ? 4 : 0) +
           (ck ? 0 : 30) // the check line goes before the working leaves the sheet
         cands.push({ c: { sc, formulas, notes, bar, tight, guessUnder, check: ck }, cost, k: cands.length })
@@ -427,21 +439,23 @@ export default function splitSheet(spec, ctx) {
     }
   }
   cands.sort((a, b) => a.cost - b.cost || a.k - b.k)
-  let chosen = null
+  let chosen = null, best = null
   for (const { c, cost } of cands) {
     const r = place(c)
     if (debug) console.log('split-sheet', cost, JSON.stringify(c), r.fits ? 'FITS' : r.why.join('; '))
     if (r.fits) { chosen = { c, height: r.height, raise: r.raise }; break }
+    if (!best || r.bad < best.bad - 0.5 || (Math.abs(r.bad - best.bad) <= 0.5 && cost < best.cost)) best = { c, cost, bad: r.bad, height: r.height, raise: r.raise, why: r.why }
   }
   if (!chosen) {
-    // last resort: the smallest bare tight layout (the linter reports whatever still does not fit)
-    const c = { formulas: false, notes: false, bar: false, sc: SCALES[SCALES.length - 1], tight: true, guessUnder: false, check: false }
-    chosen = { c, height: place(c).height, raise: RAISE }
+    // nothing fits: the failing candidate that misses by the least (then the cheapest), so the check and the bar
+    // survive whenever they can; the linter reports whatever still does not fit
+    chosen = best
+    console.warn('split-sheet: no layout fits; using', JSON.stringify(best.c), '(' + best.why.join('; ') + ')')
   }
   // breathe: spend spare height on the row gaps (top-aligned like a real sheet), capped so the rows stay one sheet
   const LC = chosen.c
   const spare = avail + chosen.raise - chosen.height
-  const extra = n > 1 ? Math.max(0, Math.min(LC.tight ? 14 : 26, Math.floor((spare * 0.5) / (n - 1 + 1.6)))) : 0
+  const extra = n > 1 ? Math.max(0, Math.min(LC.tight ? 14 : n <= 4 ? 44 : 26, Math.floor((spare * 0.5) / (n - 1 + 1.6)))) : 0
   place(LC, extra)
   root.dataset.layout = [LC.notes ? 'notes' : 'bare', LC.bar && 'bar', LC.formulas && 'formulas-' + LC.formulas, LC.tight && 'tight', LC.guessUnder && 'guess-under', checks.length && !LC.check && 'no-check'].filter(Boolean).join(' ')
   root.dataset.scale = String(LC.sc)
@@ -590,13 +604,14 @@ export default function splitSheet(spec, ctx) {
           if (goalIdx >= 0) rest = Math.max(rest, prog(t, restoreT, MOTION.restIn))
           rest *= 1 - restore
         }
-        r.box.seek(L.wipe * keep, L.text * keep, rest)
+        r.box.seek(L.wipe * keep, L.text * keep, rest, keep * keep) // the figure fades out with its box at the clear
         fade(r.slot, Math.max(1 - L.wipe, reset ? 1 : clearP))
         // its bar segment fills in the same tone
         const sg = segs[i]
         if (LC.bar && sg) {
           const w = ease.out(prog(t, x.t, 0.32)) * keep
-          style(sg.fill, { opacity: w > 0 ? '1' : '0', clipPath: w >= 1 ? 'none' : `inset(0 ${((1 - w) * 100).toFixed(1)}% 0 0 round 7px)` })
+          // the segment rests with its amount, so the loud segment is always the loud amount
+          style(sg.fill, { opacity: w > 0 ? n3(lerp(1, MOTION.rest, rest)) : '0', clipPath: w >= 1 ? 'none' : `inset(0 ${((1 - w) * 100).toFixed(1)}% 0 0 round 7px)` })
           fade(sg.empty, 1 - w)
         }
       })

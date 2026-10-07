@@ -18,7 +18,7 @@ export const C = {
   outputHead: '#FFE4C2',    // peach: output column header
   midHead: '#F2F4F7',       // any other column header
   active: '#2E90FA',        // active-cell / selection outline
-  activeTint: 'rgba(46,144,250,0.07)',
+  activeTint: 'transparent', // the selection has no tint: a blue wash would turn the yellow answer khaki
   rowHi: '#FFF3A3',         // highlighted row (the worked example, the pick, the winner)
   ink: '#101828',           // cell text
   slate: '#344054',         // middle-column text
@@ -37,8 +37,10 @@ export const C = {
   badDark: '#FF6B5B',       // bad on the surround (coral)
   panel: '#16181D',         // raised dark panel
   panelLine: '#2A2E37',
-  // chart series (on the white chart card); tone overrides these
-  series: ['#1570EF', '#101828', '#7A5AF8', '#E04F16'],
+  // chart series (on the white chart card): blue, ink, orange, purple, so three rivals never share a hue family
+  // (series[].color / lookOpts.colors / a tone override these; yellow is reserved for the accent)
+  series: ['#1570EF', '#101828', '#E04F16', '#7A5AF8'],
+  amber: '#B54708',         // a dark amber for gold-like series (a yellow line would read as the accent)
 }
 
 /** tone → colour. surface: 'sheet' (white card) or 'dark' (the surround). */

@@ -1,20 +1,24 @@
 // live-sheet · find-your-row (P7): one row per kind of viewer, denser than one pass can read.
 //
 // Frame 1: the question card, the formula bar mid-typing, every row's key (column A) already in place so each
-// viewer can find their row, output cells empty (rows with t <= 0 are pre-filled: a money answer at 0.0 s).
+// viewer can find their row, output cells empty except the first row (lookOpts.prefill rows, and any row with
+// t <= 0, are pre-filled: a money answer at 0.0 s).
 // Then the fill handle drags down the output columns and each row's values drop in with a highlight flash;
 // the biggest result counts up if it lands after frame 1. A pick collapses the selection onto one result,
-// lights the row and opens a tooltip strip under it (the rows below make room). The verdict either rewrites
-// the formula bar or lands as a card in the caption band, while the result column flashes top to bottom.
+// lights the row and opens a tooltip strip under it (the rows below make room; the pill wipes out of its notch, a
+// long label fits down to 40 px, then takes two lines). The verdict lands as a card in the caption band (the
+// card stops above it unless rows would fall under 50 px; then it is retyped into the formula bar, Inter 800),
+// while the result column flashes top to bottom.
 // The last 0.5 s clears back to the frame-1 state so the short loops.
 //
 // lookOpts: loop (true) · countUp (true) · letters ('auto' | true | false) · verdict ('auto' | 'band' | 'formula')
 //           · emphTone ('good'; a 'goal' column is ink with the yellow on its biggest cell) · formulaAt0 (0.7)
+//           · prefill (1: rows already filled at frame 1, whatever rowsT says)
 import {
   h, setStyle, clamp, prog, ease, C, G, M, S,
-  sheet, tipStrip, mk, mkLen, typedMk, typedCount, typeDur, wordCut, caretOn, countText, displayValue,
+  sheet, tipStrip, fitTips, tipWindow, mk, mkLen, typedMk, typedCount, typeDur, wordCut, caretOn, countText, displayValue,
   popScale, flashAlpha, lerpRect, durationOf, hasCaptions, opt, layer, footerHeight, fitFormula, textW, font,
-  toneColor, toneFill, rgba,
+  toneColor, toneFill, rgba, hasUnits,
 } from '../lib.js'
 
 export const css = ''
@@ -32,6 +36,9 @@ export default function findYourRow(spec, ctx) {
   // ---------- timing ----------
   const rowsT = d.rowsT ?? 0.4, every = d.rowEvery ?? 0.25
   const rowT = rows.map((_, i) => (d.rowT && d.rowT[i] != null ? d.rowT[i] : rowsT + i * every))
+  // frame 1 always has a money answer: the first row(s) are already filled (the look's "row 2 is filled" rule)
+  const prefill = Math.max(0, Math.floor(+opt(spec, 'prefill', 1) || 0))
+  for (let i = 0; i < Math.min(prefill, N); i++) rowT[i] = Math.min(rowT[i], 0)
   const picks = (d.pick || []).filter(p => p && p.row >= 0 && p.row < N).slice().sort((a, b) => a.t - b.t)
   const verdict = spec.verdict && spec.verdict.text ? spec.verdict : null
   const loopOn = opt(spec, 'loop', true)
@@ -46,29 +53,27 @@ export default function findYourRow(spec, ctx) {
     if (countIdx >= 0 && rowT[countIdx] <= 0) countIdx = -1
   }
   const landEnd = i => rowT[i] + (i === countIdx ? M.count : M.drop) + 0.08 * (nC - 1)
-  const beats = [...rows.map((_, i) => landEnd(i)), ...picks.map(p => p.t + M.pick)]
-  const duration = durationOf(spec, { beats, hold: d.hold ?? 4 })
-  const D = spec.duration || duration
-  const loopT0 = loopOn ? D - M.loopOut : Infinity
 
   // ---------- layout ----------
   const formula = d.formula || ''
   const fH = footerHeight(spec.footer)
-  // pick tooltips: one font size that fits every label; the sheet keeps a slot of empty rows for the strip
+  // pick tooltips: one font size that fits every label (one line down to 40 px, else two lines); the sheet keeps
+  // a slot of tail under the rows for the strip to open into
   const tipW = G.width - G.gutter - 24
-  let tipPx = S.tip
-  while (picks.length && tipPx > 40 && Math.max(...picks.map(p => textW(mk(p.label || ''), font(800, tipPx)))) > tipW - 58) tipPx -= 2
-  const slotH = picks.length ? Math.round(tipPx * 1.2 + 26) : 0
+  const tipFit = fitTips(picks.map(p => p.label || ''), tipW)
+  const tipPx = tipFit.px
+  const slotH = picks.length ? tipFit.slotH : 0
   const labelLines = Math.max(1, ...columns.map(c => String(c.label || '').split('\n').length))
   const estRowH = bottom => {
-    const fb = fitFormula([formula, verdict ? verdict.text : ''], G.width).ht
-    return (bottom - G.cardTop - fb - G.lettersH - (labelLines > 1 ? 116 : 76) - slotH) / N
+    const fb = fitFormula([formula], G.width).ht
+    return (bottom - G.cardTop - fb - (labelLines > 1 ? 116 : 76) - slotH) / N
   }
   const bandBottom = G.workBottom - (fH ? fH + G.gap : 0)
   const fullBottom = G.safeBottom - 4 - (fH ? fH + G.gap : 0)
+  // the verdict is a card in the caption band whenever the rows keep 50 px with the band reserved
   let vMode = opt(spec, 'verdict', 'auto')
   if (!verdict) vMode = 'none'
-  else if (vMode === 'auto') vMode = caps || estRowH(bandBottom) >= 62 ? 'band' : 'formula'
+  else if (vMode === 'auto') vMode = caps || estRowH(bandBottom) >= 50 ? 'band' : 'formula'
   const bandUsed = caps || vMode === 'band'
 
   const L = layer(ctx, 'fyr')
@@ -76,10 +81,12 @@ export default function findYourRow(spec, ctx) {
     columns: columns.map((c, j) => ({
       label: c.label, kind: j === 0 ? 'input' : j === emphCol ? 'output' : 'mid',
       tone: j === emphCol ? (c.tone || opt(spec, 'emphTone', 'good')) : c.tone,
+      units: rows.some(r => hasUnits(r[j] ?? '')), // "11 yrs 5 mo": the numbers keep the size, the words drop to 40 px
     })),
-    values: rows, rows: N, reserve: slotH,
-    bottom: bandUsed ? bandBottom : fullBottom,
-    formula: { strings: [formula, vMode === 'formula' ? verdict.text : ''] },
+    // the slot is planned for but not drawn: the card grows a row's height while a tooltip is open
+    values: rows, rows: N, reserve: slotH, grow: true, tail: 18,
+    bottom: bandUsed ? bandBottom : fullBottom, minRowH: bandUsed ? 50 : 48,
+    formula: { strings: [formula], verdict: vMode === 'formula' ? verdict.text : null },
     letters: opt(spec, 'letters', 'auto'),
   })
   const emphTone = columns[emphCol]?.tone || opt(spec, 'emphTone', 'good')
@@ -92,11 +99,21 @@ export default function findYourRow(spec, ctx) {
     rows.forEach((r, i) => { const v = displayValue(r[emphCol]); if (v > best) { best = v; goalIdx = i } })
   }
 
-  // pick tooltips: right-anchored under the result cell
-  const tips = picks.map(() => tipStrip(sh, { px: tipPx }))
-  const tipBox = picks.map(p => {
+  // the verdict, when it is retyped into the formula bar (Inter 800, maybe two lines)
+  const vText = vMode === 'formula' ? sh.fbar.vfit.text : ''
+  const vLen = mkLen(vText)
+  const vType0 = verdict ? verdict.t + 0.32 : Infinity
+  const vCps = 26
+  const beats = [...rows.map((_, i) => landEnd(i)), ...picks.map(p => p.t + M.pick)]
+  const duration = durationOf(spec, { beats, hold: d.hold ?? 4, verdictEnd: vMode === 'formula' ? vType0 + vLen / vCps : null, loop: loopOn })
+  const D = spec.duration || duration
+  const loopT0 = loopOn ? D - M.loopOut : Infinity
+
+  // pick tooltips: right-anchored under the result cell, never past x 948 (their text stays left of the rail)
+  const tips = picks.map((p, i) => tipStrip(sh, { px: tipPx, html: tipFit.html[i], wrap: tipFit.wrap }))
+  const tipBox = picks.map((p, i) => {
     const cell = sh.cellRect(p.row, emphCol)
-    const wpx = Math.min(sh.w - sh.gutter - 24, textW(mk(p.label || ''), font(800, tipPx)) + 58)
+    const wpx = tipFit.w[i]
     const x1 = Math.min(sh.x + sh.w - 12, Math.max(cell.x1 - 10, sh.x + sh.gutter + 12 + wpx))
     const x0 = Math.max(sh.x + sh.gutter + 12, x1 - wpx)
     return { x0, x1, notchX: clamp((cell.x0 + cell.x1) / 2, x0 + 34, x1 - 34) }
@@ -107,12 +124,9 @@ export default function findYourRow(spec, ctx) {
     const openAt = p.t + (i > 0 ? 0.24 : 0.06)
     const next = picks[i + 1] ? picks[i + 1].t : verdict ? verdict.t : loopT0
     const hiEnd = picks[i + 1] ? picks[i + 1].t : loopT0
-    return { openAt, closeAt: Math.min(next, loopT0), hiEnd }
+    return { openAt, closeAt: Math.min(next, loopT0), hiEnd, win: tipWindow(openAt, Math.min(next, loopT0)) }
   })
-  const openOf = (i, t) => {
-    const w = pickWin[i]
-    return ease.inOut(prog(t, w.openAt, 0.3)) * (1 - ease.inOut(prog(t, w.closeAt + 0.06, 0.24)))
-  }
+  const openOf = (i, t) => pickWin[i].win.open(t)
   const shiftAt = (r, t) => {
     let dy = 0
     picks.forEach((p, i) => { if (r > p.row) dy += slotH * openOf(i, t) })
@@ -134,10 +148,6 @@ export default function findYourRow(spec, ctx) {
   // ---------- formula bar ----------
   const cut = wordCut(formula, opt(spec, 'formulaAt0', 0.7))
   const fLen = mkLen(formula)
-  const vText = vMode === 'formula' ? verdict.text : ''
-  const vLen = mkLen(vText)
-  const vType0 = verdict ? verdict.t + 0.32 : Infinity
-  const vCps = 26
   function formulaState(t) {
     if (t >= loopT0) {
       // erase whatever is showing, then retype the frame-1 prefix
@@ -180,7 +190,9 @@ export default function findYourRow(spec, ctx) {
     duration,
     chrome: {
       footer: { top: sh.bottom + G.gap },
+      footerShift: t => shiftAt(N, t),
       captions: caps,
+      captionHolds: countIdx >= 0 ? [{ text: rows[countIdx][emphCol], t: rowT[countIdx] + 0.08 * (emphCol - 1) + M.count }] : [],
       verdict: vMode === 'band' ? 'band' : 'self',
       loop: loopOn ? { t0: loopT0, dur: 0.3 } : null,
     },
@@ -188,13 +200,14 @@ export default function findYourRow(spec, ctx) {
       // formula bar
       const fs = formulaState(t)
       sh.fbar.set(fs.html, { caret: fs.caret })
-      // the verdict takes the bar over: ink, heavier, and the ≈ chip pops as it lands
-      setStyle(sh.fbar.txt, fs.verdict ? { color: C.ink, fontWeight: '800' } : { color: C.fbarText, fontWeight: '700' })
+      // the verdict takes the bar over: Inter 800 in ink, and the ≈ chip pops as it lands
+      sh.fbar.verdictStyle(!!fs.verdict, prog(t, verdict ? verdict.t + 0.1 : Infinity, 0.2))
       const chipP = verdict && vMode === 'formula' ? prog(t, vType0 - 0.1, 0.34) : 0
       setStyle(sh.fbar.chip, { transform: `translateY(-50%) scale(${chipP > 0 && chipP < 1 ? popScale(chipP, 1.3).toFixed(4) : 1})` })
 
       // rows: shift (picks), highlight, cells
-      for (let r = 0; r < N + sh.spare; r++) sh.rowShift(r, shiftAt(r, t))
+      for (let r = 0; r < N; r++) sh.rowShift(r, shiftAt(r, t))
+      sh.setGrow(shiftAt(N, t))
       for (let r = 0; r < N; r++) {
         let hi = 0, wipe = 0
         picks.forEach((p, i) => {
@@ -227,19 +240,11 @@ export default function findYourRow(spec, ctx) {
           })
         }
       }
-      // spare rows sink out of view when a strip pushes them
-      for (let r = N; r < N + sh.spare; r++) setStyle(sh.numEls[r], { opacity: String(clamp(1 - shiftAt(r, t) / (sh.rowH * 0.5))) })
 
-      // tooltips
+      // tooltips: the slot opens, then the pill wipes out of its notch with its label already in place
       picks.forEach((p, i) => {
-        const o = openOf(i, t)
-        const w = pickWin[i]
-        // the pill pops out of its notch (overshoot), its text arrives once it is full size, and it all
-        // shrinks back into the notch before the slot closes
-        const inP = prog(t, w.openAt + 0.04, 0.34), outP = prog(t, w.closeAt - 0.04, 0.18)
-        const k = outP > 0 ? 1 - ease.in(outP) : inP < 1 ? Math.max(0, ease.back(inP, 2)) : 1
-        const alpha = prog(t, w.openAt + 0.3, 0.1) * (1 - prog(t, w.closeAt - 0.1, 0.06))
-        tips[i].set({ ...tipBox[i], y: sh.rowTop(p.row, shiftAt(p.row, t)) + sh.rowH, ht: slotH, open: o, scale: inP <= 0 ? 0 : k, html: mk(p.label || ''), textAlpha: alpha })
+        const w = pickWin[i].win
+        tips[i].set({ ...tipBox[i], y: sh.rowTop(p.row, shiftAt(p.row, t)) + sh.rowH, ht: slotH, open: w.open(t), reveal: w.reveal(t) })
       })
 
       // selection

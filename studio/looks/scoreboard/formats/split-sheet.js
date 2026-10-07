@@ -15,7 +15,11 @@
 //      a goal part lands with a hit, a cash register and a floor bloom
 // The check (data.check at checkT): the label stack shows the sum line (two lines when it is long, broken before
 // "=") over the total's label, the gaps close so the coloured slices re-join into one bar, and the total bumps (cash).
-// The verdict replaces the label stack; the goal row (tone "goal") lights again and the pointer returns to it.
+// The verdict (the chrome's: the kit's one verdict slot) replaces the label stack; the goal row (tone "goal") lights
+// again and the pointer returns to it.
+// The hero ends on the payoff: with deductions (any part with tone "bad") and a goal part, it counts the total down
+// to the goal's amount as the goal row lands ("$10,000" → "$6,535": what you keep); and at verdict.t it rolls to the
+// money figure the verdict leads with ("**$15,000** a year invested"), so the biggest number lands last up top.
 // First part before 0.5 s: no intro, frame 1 is already 0.3 s into the first part's roll.
 //
 // Layout (measured, not guessed): the rows are built first and their label / pct / amount widths measured; the
@@ -28,13 +32,15 @@
 // data (FORMATS.md §5): { total: { label, display, value }, parts: [{ t, label, pct, amount, note, tone, share }],
 //   check, checkT, hold }   share drives the bar (else pct, else amount ÷ total.value)
 // lookOpts (all optional):
-//   hero         "total" (default: the total holds in the top bar) | "remaining": the hero counts down what is left,
-//                rolling to each `remaining[].display` (synced with the part whose t matches), and the row amounts
-//                slam in when their slice lands instead of rolling (one focal number at a time)
+//   hero         "total" | "remaining": the hero counts down what is left, rolling to each `remaining[].display`
+//                (synced with the part whose t matches; that row's amount slams in instead of rolling: one focal
+//                number at a time). Default: "remaining" when there are deductions (tone "bad") and a goal part,
+//                with the goal's amount as the one landing; else "total" (the total holds)
 //   remaining    [{ t, display }]: the hero's landings in "remaining" mode
+//   heroFinal    { t, display } | false: the hero's last roll (default: at verdict.t, to the verdict's first
+//                emphasised money figure, when it differs from what the hero shows)
 //   icon         a unit icon beside the hero number (theme icon names; e.g. "bag")
-//   footerSteps  [{ t, text }]: the footer rewrites to a one-line working at each t (spec.footer before the first);
-//                keep each under ≈ 45 characters
+//   footerSteps  [{ t, text }]: kit-wide (the chrome draws it): the footer rewrites to a working line at each t
 //   bonus        { t, label, amount, tone = "good" }: an extra row under the sheet (dashed: it is not part of the
 //                total) that slams in at t; its amount rolls; the label stack shows it. Until then the sheet sits
 //                centred without it, and moves up to make room as it lands
@@ -43,11 +49,15 @@
 //   stageBottom  y where the stage ends (overrides the solver; the label stack keeps what is left)
 //   maskPct      [part index, ...]: those percentages read "?" until their part's cut (the goal row's % would
 //                otherwise answer the header at frame 1); without it the whole sheet shows, as the contract asks
+// Dense sheets (6-7 parts with captions on) are budgeted: the solver steps through roomy → tight → compact spacing
+// (40 px labels, wrapped onto two balanced lines where needed), then a one-line label stack (the working only); notes
+// go to the label stack (or off the sheet) before a label goes under 40 px. If the verdict then needs the band over
+// the sheet's foot, the rows it covers are hidden while it is up.
 import { h, css as style, prog, ease, clamp, lerp, fitText } from '../../../runtime/core.js'
 import { C, SIZE, M, W, layoutFor } from '../theme.js'
 import {
-  rich, richUI, esc, ax, inkWidth, slamFromFor, heroRow, odometer, stageFlash, flashAt, parseDisplay, displayValue,
-  bump, slam, rise, durationOf, beatTimes, toneColor,
+  rich, richUI, esc, ax, bare, inkWidth, slamFromFor, heroRow, odometer, stageFlash, flashAt, parseDisplay, displayValue,
+  bump, slam, durationOf, beatTimes, toneColor,
 } from '../lib.js'
 
 export const css = `
@@ -67,18 +77,14 @@ export const css = `
 .ss-lab .sb-label { height: 100%; justify-content: center; }
 .ss-lab .sb-l1.wrap { width: 100%; white-space: normal; text-wrap: balance; line-height: 1.06; }
 .ss-l3 { max-width: 100%; font: 600 42px/1.15 'Inter', 'Inter Full', sans-serif; color: #9AA4B2; text-align: center; white-space: nowrap; }
-.ss-foot { position: absolute; font: 600 40px/1.2 'Inter', 'Inter Full', sans-serif; color: #9AA4B2; text-align: center; white-space: nowrap; }
-.ss-foot em { font-style: normal; color: #FFFFFF; }
 `
 
 const CUT = 0.18          // a cut lands (pointer, row light, label slam, gap) before the roll starts
 const GAP = 8             // px a split opens between two slices
 const RX = 140, RW = 800  // bar, rows and tracks share x 140-940 (below y 820 text must end by 940)
-const TOP = 680           // stage top (layoutFor with the hero row)
 const REF = 50            // px size the row texts are measured at (widths scale linearly)
 const TRACK = 8           // px height of a row's slice track (6 in the compact geometry)
 const NOTE_H = 50         // a note line under a row label (40 px Inter + its 6 px gap)
-const LABEL_ONE = 70      // the shortest label slot: one line (the working), for the densest sheets
 
 // slice colours per tone: neighbours of the same tone alternate shades so every split stays visible
 const SHADES = { neutral: ['#E9EDF2', '#AEB8C6', '#7D8796'], bad: [C.red, '#C2384A'], good: [C.green, '#1FC46A'] }
@@ -139,9 +145,14 @@ export default function splitSheet(spec, ctx) {
   // ---------- timing ----------
   const times = beatTimes(parts, { first: 1.4, every: 3.0 })
   const intro = lo.intro === true || (lo.intro !== false && times[0] >= 0.5)
-  const remList = lo.hero === 'remaining' && Array.isArray(lo.remaining) ? lo.remaining.filter(r => r && r.display != null) : []
+  // the hero counts down what is left: lookOpts.remaining, or (by default, when parts are deductions) one landing on
+  // the goal part's amount, synced with the goal row
+  const goalIdx0 = parts.reduce((g, p, i) => (tone(p) === 'goal' ? i : g), -1)
+  const deductions = parts.some(p => tone(p) === 'bad')
+  let remList = lo.hero !== 'total' && Array.isArray(lo.remaining) ? lo.remaining.filter(r => r && r.display != null) : []
+  if (!remList.length && lo.hero !== 'total' && (lo.hero === 'remaining' || deductions) && goalIdx0 >= 0 && isFinite(displayValue(parts[goalIdx0].amount)))
+    remList = [{ t: times[goalIdx0], display: String(parts[goalIdx0].amount) }]
   const heroMode = remList.length ? 'remaining' : 'total'
-  const rowsRoll = heroMode === 'total'        // remaining mode: the hero rolls, the row amounts slam in
   const beats = parts.map((p, i) => {
     const first = i === 0 && !intro
     const cut = first ? Math.min(times[0], 0) : times[i]
@@ -166,12 +177,33 @@ export default function splitSheet(spec, ctx) {
     const o = { t: +r.t || 0, display: String(r.display), tpl, val: tpl.value * tpl.scale }
     let best = -1, bd = 0.35
     times.forEach((tt, i) => { const dd = Math.abs(tt - o.t); if (dd < bd) { bd = dd; best = i } })
+    o.part = best
     if (best >= 0) { o.start = beats[best].start; o.roll = beats[best].roll } else { o.start = o.t + CUT; o.roll = 0.9 }
     o.land = o.start + o.roll
     return o
   }).sort((a, b) => a.start - b.start)
-  const goalIdx = parts.reduce((g, p, i) => (tone(p) === 'goal' ? i : g), -1)
+  const goalIdx = goalIdx0
   const vT = spec.verdict && spec.verdict.text ? Math.max(0, +spec.verdict.t || 0) : null
+  // a row whose part the hero rolls with slams its amount in on landing (one focal number at a time); the rest roll
+  const rowRolls = i => !rem.some(r => r.part === i)
+  // the hero's last roll: lookOpts.heroFinal, or at verdict.t to the verdict's first emphasised money figure
+  let heroFinal = null
+  if (lo.heroFinal !== false) {
+    let hf = lo.heroFinal && lo.heroFinal.display != null ? { t: lo.heroFinal.t != null ? +lo.heroFinal.t : vT, display: String(lo.heroFinal.display) } : null
+    if (!hf && vT != null) {
+      const vt = String(spec.verdict.text)
+      const ems = [...vt.matchAll(/\*\*(.+?)\*\*/g)].map(m => m[1])
+      const money = str => { const m = /≈?\s?\$\s?\d[\d,]*(?:\.\d+)?(?:\s?[KMBT](?![a-z]))?/.exec(str); return m ? m[0] : null }
+      const pick = ems.map(money).find(Boolean) || money(bare(vt))
+      if (pick) hf = { t: vT, display: pick }
+    }
+    const lastShown = rem.length ? rem[rem.length - 1].display : total.display
+    if (hf && hf.t != null && isFinite(displayValue(hf.display)) && displayValue(hf.display) !== displayValue(lastShown)) {
+      const tpl = parseDisplay(hf.display)
+      heroFinal = { t: hf.t, display: hf.display, tpl, val: tpl.value * tpl.scale, start: hf.t + 0.04, roll: 1.1 }
+      heroFinal.land = heroFinal.start + heroFinal.roll
+    }
+  }
 
   // ---------- rows: built first and measured; the solver below sizes and places them ----------
   const counters = {}
@@ -211,8 +243,11 @@ export default function splitSheet(spec, ctx) {
   const rowsN = rows.length
 
   // ---------- layout solver: one label size for the sheet; rows take the height their text needs ----------
-  const limit = capsOn ? 1308 : 1472
+  const limit = L0.limit, TOP = L0.stage.y
   const span = limit - TOP                       // stage + 16 + label slot
+  // label slot heights: two lines (working + part), three (+ the note), what a squeezed stack can still use, one line
+  const T = L0.type
+  const LABEL_TWO = T.l1 + 6 + T.l2, LABEL_THREE = LABEL_TWO + 32, labelMin = capsOn ? 112 : 150, LABEL_ONE = T.l1 + 8
   // sheet spacing: roomy by default; tight (a slimmer bar, smaller gaps) when a dense sheet needs the room; compact
   // (thin tracks, minimal padding) as the last resort, e.g. 7 rows with captions on
   const spacing = mode => {
@@ -251,7 +286,6 @@ export default function splitSheet(spec, ctx) {
   }
   const hasNotes = parts.some(p => p.note)
   const notesOpt = lo.notes === false ? 'off' : lo.notes || 'auto'
-  const labelMin = capsOn ? 128 : 150
   const fits = (gm, want) => gm.ok && span - 16 - gm.sheetH >= want
   // the label size S in [hi, lo] for this pass: among the sizes that fit and are within 4 px of the largest that
   // fits, the one that wraps the fewest labels onto two lines (then the largest)
@@ -265,13 +299,13 @@ export default function splitSheet(spec, ctx) {
   let gm = null, notesOnSheet = false
   if (hasNotes && (notesOpt === 'auto' || notesOpt === 'sheet')) {
     // notes under the labels: the label stack then needs two lines only (working + part)
-    gm = search(58, 44, true, 'roomy', notesOpt === 'sheet' ? labelMin : 164)
+    gm = search(58, 44, true, 'roomy', notesOpt === 'sheet' ? labelMin : LABEL_TWO)
     notesOnSheet = !!gm
   }
-  const labelWant = hasNotes && notesOpt !== 'off' ? 196 : 164   // three lines (working, part, note) or two
+  const labelWant = hasNotes && notesOpt !== 'off' ? LABEL_THREE : LABEL_TWO   // three lines (working, part, note) or two
   gm = gm || search(58, 44, false, 'roomy', labelWant)
   // dense: tight spacing, keeping two label lines (working + part), then whatever the label stack can still have
-  gm = gm || search(56, 40, false, 'tight', Math.min(labelWant, 164)) || search(56, 40, false, 'tight', labelMin)
+  gm = gm || search(56, 40, false, 'tight', Math.min(labelWant, LABEL_TWO)) || search(56, 40, false, 'tight', labelMin)
   // last resort (6-7 rows with captions on): compact rows; the label stack may shrink to its one working line
   gm = gm || search(48, 40, false, 'compact', labelMin) || search(48, 40, false, 'compact', LABEL_ONE)
   if (!gm) gm = geom(40, false, 'compact')                        // overflow: the linter will say where
@@ -325,12 +359,13 @@ export default function splitSheet(spec, ctx) {
   stage.insertBefore(flash.el, rows[0].el)                      // the floor bloom sits under the row text
 
   // ---------- hero: the total (or what is left) ----------
-  const heroDisplays = [total.display, ...rem.map(r => r.display)].filter(Boolean)
+  const heroDisplays = [total.display, ...rem.map(r => r.display), ...(heroFinal ? [heroFinal.display] : [])].filter(Boolean)
   const widest = heroDisplays.reduce((a, b) => (b.length > a.length ? b : a), '')
   const estEm = widest.replace(/[^\d]/g, '').length * 0.5 + (widest.match(/[,.]/g) || []).length * 0.22 + widest.replace(/[\d,.\s]/g, '').length * 0.5 + 0.3
   const icon = lo.icon || null
-  const heroSize = Math.round(Math.min(SIZE.hero, (920 - (icon ? SIZE.heroIcon + 12 : 0)) / Math.max(1, estEm)))
-  const hero = heroRow(stage, L, { icon, size: heroSize, iconSize: Math.round(SIZE.heroIcon * Math.min(1, heroSize / SIZE.hero + 0.1)) })
+  const HS = L.hero.size, HI = L.hero.icon
+  const heroSize = Math.round(Math.min(HS, (920 - (icon ? HI + 12 : 0)) / Math.max(1, estEm)))
+  const hero = heroRow(stage, L, { icon, size: heroSize, iconSize: Math.round(HI * Math.min(1, heroSize / HS + 0.1)) })
   const totalTpl = parseDisplay(total.display)
 
   // ---------- label stack (bottom bar): working · part · note ----------
@@ -349,7 +384,7 @@ export default function splitSheet(spec, ctx) {
   })
   if (d.check) { idx.check = items.length; items.push({ l1: workHTML(d.check), l1Lines: workLines(d.check), l2: total.label ? richG(total.label) : '', l2Optional: true, prefer: 'l1' }) }
   if (bonus) { idx.bonus = items.length; items.push({ l1: workHTML(bonus.amount), l2: richG(bonus.label || ''), prefer: 'l1' }) }
-  const labels = labelBox(stage, slot, items)
+  const labels = labelBox(stage, slot, items, T)
 
   // the label timeline: intro, each part, the check, the bonus (in time order)
   const labelEvents = []
@@ -367,26 +402,6 @@ export default function splitSheet(spec, ctx) {
   focusEvents.sort((a, b) => a.t - b.t)
   const focusAt = t => { let f = { t: 0, row: -1 }; for (const e of focusEvents) if (t >= e.t) f = e; return f }
 
-  // ---------- verdict (drawn here, fitted while measurable, in the label slot) ----------
-  const verd = verdictBox(stage, spec, slot, L)
-
-  // ---------- footer steps ----------
-  let foot = null
-  if (Array.isArray(lo.footerSteps) && lo.footerSteps.length) {
-    const fw = L.footer.w
-    const mk = text => {
-      const el = h('div', { class: 'ss-foot', html: richUIG(text), style: { top: L.footer.y + 'px', left: (W - fw) / 2 + 'px', width: fw + 'px' } })
-      stage.append(el)
-      fitText(el, fw, { maxH: L.footer.h + 4, minPx: 34 })
-      style(el, { display: 'none' })
-      return el
-    }
-    foot = {
-      base: spec.footer ? mk(spec.footer) : null,
-      steps: lo.footerSteps.filter(x => x && x.text).map(x => ({ t: +x.t || 0, el: mk(x.text) })).sort((a, b) => a.t - b.t),
-    }
-  }
-
   // ---------- sound (a spec cue of the same kind within 0.2 s replaces the kit's) ----------
   const cue = (t, kind, opts) => {
     if (t == null || !isFinite(t) || t < 0) return
@@ -397,15 +412,16 @@ export default function splitSheet(spec, ctx) {
     const goal = tone(parts[i]) === 'goal'
     if (b.cut > 0.05) cue(b.cut, 'thud', { gain: 0.6 })
     const r0 = Math.max(0, b.start)
-    if (b.land - r0 > 0.25) cue(r0, 'roll', { dur: Math.max(0.3, b.land - r0 - 0.05), gain: rowsRoll ? 0.6 : 0.5 })
+    if (b.land - r0 > 0.25) cue(r0, 'roll', { dur: Math.max(0.3, b.land - r0 - 0.05), gain: rowRolls(i) ? 0.6 : 0.5 })
     if (goal) { cue(b.land, 'hit', { gain: 0.8 }); cue(b.land + 0.06, 'cash', { gain: 0.55 }) }
     else cue(b.land, 'ding', { gain: 0.5 })
   })
   if (checkT != null) { cue(checkT, 'thud', { gain: 0.55 }); cue(checkT + 0.36, 'cash', { gain: 0.5 }) }
   if (bonus) { cue(bonus.t, 'thud', { gain: 0.6 }); cue(bonus.start, 'roll', { dur: bonus.roll - 0.05, gain: 0.5 }); cue(bonus.land, 'ding', { gain: 0.5 }) }
-  if (verd) cue(verd.t + 0.06, 'reveal', { gain: 0.7 })
+  if (heroFinal) { cue(heroFinal.start, 'roll', { dur: heroFinal.roll - 0.05, gain: 0.5 }); cue(heroFinal.land, 'ding', { gain: 0.5 }) }
 
-  const lastBeat = Math.max(lastLand, checkT != null ? checkT + 0.8 : 0, bonus ? bonus.land : 0, ...(foot ? foot.steps.map(s => s.t) : [0]))
+  const footT = Array.isArray(lo.footerSteps) ? lo.footerSteps.map(x => +(x && x.t) || 0) : []
+  const lastBeat = Math.max(lastLand, checkT != null ? checkT + 0.8 : 0, bonus ? bonus.land : 0, heroFinal ? heroFinal.land : 0, ...footT)
   const duration = durationOf(spec, lastBeat, d.hold ?? M.hold)
 
   // ---------- drawing ----------
@@ -556,8 +572,8 @@ export default function splitSheet(spec, ctx) {
     const cy = r.y + 3 + r.band / 2, cx = 110, s = 17 * k.s
     g.save()
     g.globalAlpha = k.o
-    g.fillStyle = '#FFFFFF'
-    g.shadowColor = 'rgba(255, 255, 255, 0.45)'
+    g.fillStyle = r.color                               // the pointer takes the row's tone (as in the kit's other boards)
+    g.shadowColor = rgba(r.color, 0.45)
     g.shadowBlur = 10
     g.beginPath()
     g.moveTo(cx - s * 0.75, cy - s)
@@ -572,8 +588,6 @@ export default function splitSheet(spec, ctx) {
   return {
     duration,
     layout: L,
-    footer: foot ? false : undefined,
-    verdict: false,
     seek(t) {
       const focus = focusAt(t)
       const dy = shiftAt(t)
@@ -601,7 +615,7 @@ export default function splitSheet(spec, ctx) {
         }
         const b = isBonus ? bonus : beats[i]
         if (r.pv) { const hid = t < b.cut; style(r.pv, { visibility: hid ? 'hidden' : 'visible' }); style(r.pq, { visibility: hid ? 'visible' : 'hidden' }) }
-        const roll = (isBonus || rowsRoll) && !!r.odo
+        const roll = (isBonus || rowRolls(i)) && !!r.odo
         let sc = 1
         if (roll ? t < b.start : t < b.land) {
           style(r.q, { display: 'inline-block' })
@@ -625,7 +639,16 @@ export default function splitSheet(spec, ctx) {
 
       // hero: the total, or what is left (rolls on the same curve as the slice it follows)
       let heroScale = 1, glow = 0
-      if (heroMode === 'remaining') {
+      if (heroFinal && t >= heroFinal.start) {
+        // the payoff: the verdict's money figure rolls in last (from what the hero showed) and lands exactly on it
+        const prevDisp = rem.length ? rem[rem.length - 1].display : total.display, pv = displayValue(prevDisp)
+        const p = prog(t, heroFinal.start, heroFinal.roll)
+        if (p >= 1) hero.show(heroFinal.display)
+        else hero.set(lerp(pv, heroFinal.val, ease.out(p)), heroFinal.tpl, true)
+        heroScale *= 1 - 0.03 * Math.sin(Math.PI * prog(t, heroFinal.t, 0.28))
+        heroScale *= bump(t, heroFinal.land, { amp: 0.1, dur: 0.45 })
+        if (t >= heroFinal.land) glow = Math.max(glow, 1 - ease.out(prog(t, heroFinal.land, 1.1)))
+      } else if (heroMode === 'remaining') {
         let k = -1
         for (let j = 0; j < rem.length; j++) if (t >= rem[j].start) k = j
         if (k < 0) hero.show(total.display)
@@ -634,7 +657,7 @@ export default function splitSheet(spec, ctx) {
           const p = prog(t, r.start, r.roll)
           if (p >= 1) hero.show(r.display)
           else if (p <= 0) hero.show(prev.display)
-          else hero.set(lerp(prev.val, r.val, ease.out(p)), r.tpl)
+          else hero.set(lerp(prev.val, r.val, ease.out(p)), r.tpl, true)
         }
         for (const r of rem) { heroScale *= bump(t, r.land, { amp: 0.07, dur: M.bump }); if (t >= r.land) glow = Math.max(glow, 0.6 * (1 - ease.out(prog(t, r.land, 0.6)))) }
         if (goalIdx >= 0) { const L1 = beats[goalIdx].land; heroScale *= bump(t, L1, { amp: 0.06, dur: M.bump }); if (t >= L1) glow = Math.max(glow, 0.8 * (1 - ease.out(prog(t, L1, 0.9)))) }
@@ -643,7 +666,8 @@ export default function splitSheet(spec, ctx) {
         // the total gives up a slice on each cut: a small dip (the kit's anticipation move), no roll
         for (const b of beats) if (b.cut > 0.05) heroScale *= 1 - 0.02 * Math.sin(Math.PI * prog(t, b.cut, 0.28))
       }
-      if (checkT != null) { const L1 = checkT + 0.36; heroScale *= bump(t, L1, { amp: 0.1, dur: 0.45 }); if (t >= L1) glow = Math.max(glow, 1 - ease.out(prog(t, L1, 1.0))) }
+      // the check sums back to the total: the hero bumps only when it is the total
+      if (checkT != null && heroMode === 'total' && !(heroFinal && t >= heroFinal.start)) { const L1 = checkT + 0.36; heroScale *= bump(t, L1, { amp: 0.1, dur: 0.45 }); if (t >= L1) glow = Math.max(glow, 1 - ease.out(prog(t, L1, 1.0))) }
       style(hero.el, { transform: `scale(${heroScale.toFixed(4)})` })
       style(hero.glow, { '--glow': (16 + 30 * glow).toFixed(1) + 'px', '--glowA': (0.38 + 0.45 * glow).toFixed(3) })
 
@@ -659,21 +683,7 @@ export default function splitSheet(spec, ctx) {
       for (const e of labelEvents) if (t >= e.t) ev = e
       labels.seek(t, ev ? ev.i : -1, ev ? ev.t : 0)
 
-      // footer steps: a hard cut to each line of working
-      if (foot) {
-        let cur = foot.base
-        for (const st of foot.steps) if (t >= st.t) cur = st.el
-        for (const el of [foot.base, ...foot.steps.map(s => s.el)]) if (el) style(el, { display: el === cur ? 'block' : 'none' })
-        const st = foot.steps.find(s => s.el === cur)
-        if (cur && st) { const r = rise(t, st.t, { dur: 0.16, dist: 12 }); style(cur, { opacity: String(r.o), transform: `translateY(${r.y.toFixed(1)}px)` }) }
-      }
-
-      // verdict: replaces the label stack
-      if (verd) {
-        verd.seek(t)
-        const y = verd.yieldAt(t)
-        style(labels.el, { opacity: String(1 - y), transform: `translateY(${(14 * y).toFixed(1)}px)`, visibility: y >= 1 ? 'hidden' : 'visible' })
-      }
+      // (the footer steps, the verdict and the label stack's yield are the chrome's)
     },
   }
 }
@@ -684,34 +694,36 @@ export default function splitSheet(spec, ctx) {
  * l1Color?, l2Color?, prefer: 'l1' | 'l3' }. A line 1 too wide at 44 px switches to `l1Lines` (two lines, ≥ 40 px).
  * When the slot is short, the line not preferred goes first, then the other (an optional line 2 goes before both).
  */
-function labelBox(parent, slot, items) {
+function labelBox(parent, slot, items, T) {
   const el = h('div', { class: 'sb-labels ss-lab', 'data-yield': '', style: { top: slot.y + 'px', left: (W - slot.w) / 2 + 'px', width: slot.w + 'px', height: slot.h + 'px' } })
   parent.append(el)
-  const GAP = 6, L2MIN = 58
+  const GAP = 6, L2MIN = Math.min(58, T.l2Min + 4)
   const groups = items.map(it => {
     const grp = h('div', { class: 'sb-label' })
     el.append(grp)
     const line = (cls, html, color) => { const e = h('div', { class: cls, html }); if (color) e.style.color = color; grp.append(e); return e }
     let l1 = it.l1 ? line('sb-l1', it.l1, it.l1Color || C.green) : null
     let l2 = line('sb-l2', it.l2 || '', it.l2Color || C.white)
+    if (l1) l1.style.fontSize = T.l1 + 'px'
+    l2.style.fontSize = T.l2 + 'px'
     let l3 = it.l3 ? line('ss-l3', it.l3) : null
-    if (l1 && slot.h < SIZE.label1 + GAP + L2MIN) {
+    if (l1 && slot.h < T.l1 + GAP + L2MIN) {
       // a one-line slot (the densest sheets): the working only; the lit row already names the part
       l2.remove(); l2 = null
       if (l3) { l3.remove(); l3 = null }
     }
     if (l1) {
-      fitText(l1, slot.w, { maxH: slot.h, minPx: 44 })
+      fitText(l1, slot.w, { maxH: slot.h, minPx: Math.min(44, T.l1) })
       if (l1.scrollWidth > slot.w + 0.5) {
         // too long for one line: two lines (broken before "=" when given), the largest size that fits
         if (it.l1Lines) l1.innerHTML = it.l1Lines
         l1.classList.add('wrap')
-        let px = SIZE.label1
+        let px = T.l1
         const tooBig = () => l1.scrollWidth > slot.w + 0.5 || l1.scrollHeight > Math.min(px * 2.25, slot.h)
         for (style(l1, { fontSize: px + 'px' }); px > 40 && tooBig(); px -= 2) style(l1, { fontSize: px - 2 + 'px' })
         if (tooBig() && it.l1Lines) {   // a side of the "=" is still too wide: balance-wrap the whole line instead
           l1.innerHTML = it.l1
-          px = SIZE.label1
+          px = T.l1
           for (style(l1, { fontSize: px + 'px' }); px > 40 && tooBig(); px -= 2) style(l1, { fontSize: px - 2 + 'px' })
         }
       }
@@ -722,7 +734,7 @@ function labelBox(parent, slot, items) {
     if (l2 && it.l2Optional && (!it.l2 || room() < L2MIN)) { l2.remove(); l2 = null }
     if (l2) {
       // fit line 2 to what is left; if it still can't fit (a long name at the 44 px floor), drop a line and refit
-      const fitL2 = () => { l2.style.fontSize = ''; fitText(l2, slot.w, { maxH: Math.max(1, room()), minPx: 44 }) }
+      const fitL2 = () => { l2.style.fontSize = T.l2 + 'px'; fitText(l2, slot.w, { maxH: Math.max(1, room()), minPx: 44 }) }
       fitL2()
       for (const k of it.prefer === 'l3' ? ['l1', 'l3'] : ['l3', 'l1']) {
         if (room() >= L2MIN && l2.scrollHeight <= room() + 0.5) break
@@ -746,40 +758,6 @@ function labelBox(parent, slot, items) {
         const k = slam(t, t0, { from: gr.__from })
         style(gr, { display: 'flex', opacity: String(k.o), transform: `scale(${k.s.toFixed(4)})` })
       })
-    },
-  }
-}
-
-/**
- * The closing line in the label slot (the kit's verdict look: a green rule over Anton caps), fitted while the box is
- * measurable so a two-line verdict always stays inside the slot, with a slam scale that keeps it inside x 140-940.
- */
-function verdictBox(parent, spec, slot, L) {
-  const v = spec.verdict
-  if (!v || !v.text) return null
-  const boxed = slot.h < 150
-  if (boxed) slot = { y: L.verdict.y, h: L.verdict.h, w: L.verdict.w }
-  const box = h('div', { class: 'sb-verdict' + (boxed ? ' boxed' : ''), style: { top: slot.y + 'px', left: (W - slot.w) / 2 + 'px', width: slot.w + 'px', height: slot.h + 'px' } })
-  const rule = h('div', { class: 'sb-verdict-rule', 'data-deco': '' })
-  const txt = h('div', { class: 'sb-verdict-text', html: richG(v.text) })
-  box.append(rule, txt)
-  parent.append(box)
-  const gap = slot.h < 180 ? 12 : 20
-  style(box, { display: 'flex', gap: gap + 'px' })
-  fitText(txt, slot.w, { maxH: slot.h - 8 - gap - 6, minPx: SIZE.verdictMin })
-  const cy = txt.offsetTop + txt.offsetHeight / 2                    // the slam stays inside the slot (+ 8 px)
-  const from = Math.min(slamFromFor(inkWidth(txt), slot.w - 8, 1.12), Math.max(1, Math.min(slot.h + 8 - cy, cy + 8) / Math.max(1, txt.offsetHeight / 2)))
-  style(box, { display: 'none' })
-  const t0 = Math.max(0, +v.t || 0)
-  return {
-    t: t0,
-    yieldAt: t => prog(t, t0 - 0.04, 0.14),
-    seek(t) {
-      if (t < t0) { style(box, { display: 'none' }); return }
-      const k = slam(t, t0 + 0.06, { from })
-      style(box, { display: 'flex' })
-      style(txt, { opacity: String(k.o), transform: `scale(${k.s.toFixed(4)})` })
-      style(rule, { transform: `scaleX(${ease.out(prog(t, t0 + 0.1, 0.35)).toFixed(4)})` })
     },
   }
 }

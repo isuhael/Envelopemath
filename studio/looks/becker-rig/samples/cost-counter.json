@@ -1,0 +1,41 @@
+{
+  "id": "becker-rig-cost-counter",
+  "sample": true,
+  "look": "becker-rig",
+  "format": "cost-counter",
+  "fps": 30,
+  "header": "How fast does **US debt interest**\npile up?",
+  "footer": "FY25 interest: $970B ÷ 31,536,000 s\nPay: BLS median $1,251 a week × 52",
+  "captions": true,
+  "vo": [
+    { "t": 0.0, "d": 1.5, "text": "Start the clock." },
+    { "t": 1.7, "d": 2.0, "text": "There goes a new car." },
+    { "t": 4.0, "d": 2.6, "text": "**≈ $30,800** every second." },
+    { "t": 7.0, "d": 4.2, "text": "$970 billion a year, split into seconds." },
+    { "t": 12.8, "d": 2.2, "text": "A median new house. **Gone.**" },
+    { "t": 15.4, "d": 3.4, "text": "That's **≈ $111 million** an hour." },
+    { "t": 21.2, "d": 2.4, "text": "10 years of median pay." },
+    { "t": 24.0, "d": 3.8, "text": "And none of it pays the debt down." },
+    { "t": 28.4, "d": 3.0, "text": "Here comes the big one." },
+    { "t": 32.5, "d": 0.9, "text": "**$1 million.**" }
+  ],
+  "verdict": { "t": 33.4, "text": "**$1 million** of interest\nin **≈ 33 seconds**." },
+  "data": {
+    "label": "US debt interest, since you hit play",
+    "perSecond": 30758.5,
+    "rateDisplay": "≈ $30,800 every second",
+    "counterT": [0.0, 32.9],
+    "startValue": 0,
+    "prefix": "$",
+    "dp": 0,
+    "milestones": [
+      { "value": 50089, "label": "An average new car: $50,089" },
+      { "value": 393700, "label": "A median new house: $393,700" },
+      { "value": 650520, "label": "10 years of median pay: $650,520" },
+      { "value": 1000000, "label": "$1 million" }
+    ],
+    "final": "≈ $1,011,955",
+    "hold": 3.2
+  },
+  "notes": "Rate: FY2025 net interest $970,000,000,000 ÷ 31,536,000 s (365 days) = $30,758.498 a second (perSecond 30,758.50; shown ≈ $30,800). Per hour: 30,758.498 × 3,600 = $110,730,594 ≈ $111 million. Counter 0-32.9 s: 30,758.498 × 32.9 = 1,011,954.59 → ≈ $1,011,955. Passes (value ÷ rate): average new car $50,089 (KBB average new-vehicle transaction price, Aug 2026, Cox Automotive 2026-09-10) at 1.628 s; median new house $393,700 (Census/HUD New Residential Sales, Aug 2026) at 12.800 s; 10 years of median pay $1,251 × 52 × 10 = $650,520 (BLS usual weekly earnings, Q2 2026, USDL-26-1257) at 21.149 s; $1,000,000 at 32.511 s (≈ 33 seconds). Inputs as verified in teasers/v2/10-cost-counter.md (net interest, pay, house) and teasers/v2/08-unit-ladder.md (KBB). Interest is the cost of carrying the debt; none of it repays principal."
+}

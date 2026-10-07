@@ -1,0 +1,27 @@
+{
+  "id": "sample-clean-sheet-dead-simple-list-pre",
+  "sample": true,
+  "look": "clean-sheet",
+  "format": "dead-simple-list",
+  "fps": 30,
+  "header": "3 dead simple numbers\nfor a **$45,000** salary",
+  "footer": "Assumes 2,080 work hours a year, before tax",
+  "captions": true,
+  "vo": [
+    { "t": 0.0, "d": 2.6, "text": "Forty-five grand? That's about **$21.63** an hour." },
+    { "t": 3.0, "d": 2.6, "text": "Divide by twelve: **$3,750** a month." },
+    { "t": 7.0, "d": 2.6, "text": "By fifty-two: about **$865** a week." },
+    { "t": 9.8, "d": 1.6, "text": "Check it." }
+  ],
+  "verdict": { "t": 11.4, "text": "On $45K: **≈ $865** a week." },
+  "data": {
+    "items": [
+      { "t": -1.0, "resultT": -0.5, "label": "Hourly", "formula": "$45,000 ÷ 2,080", "result": "≈ $21.63 an hour" },
+      { "t": 3.0, "label": "Monthly", "formula": "$45,000 ÷ 12", "result": "$3,750 a month" },
+      { "t": 7.0, "label": "Weekly", "formula": "$45,000 ÷ 52", "result": "≈ $865 a week", "tone": "goal" }
+    ],
+    "check": "$865 × 52 ≈ $45,000",
+    "checkT": 9.8,
+    "hold": 2.0
+  }
+}

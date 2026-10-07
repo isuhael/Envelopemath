@@ -9,9 +9,10 @@
 //   chart         the embedded spreadsheet chart: gridlines, axis labels (decoration), a dashed "money in" line,
 //                 the lines drawn progressively with a live y rescale, and dashed event lines whose flag pills
 //                 sit on the x axis (notch up), so they never need headroom over the lines
-// The value axis is on the right, trading-terminal style: each rival's live value cell rides that axis at its
-// tip's height (a dotted price line joins tip and cell) and ticks as the line moves. The cells keep the rivals'
-// ranking, debounced (a near-tie never flickers) and stamped at the real crossing: when two lines cross for good,
+// The value axis labels sit on the left (as in pov-race); on the right, each rival's live value cell (its short name
+// in its colour over the value) rides at its tip's height (a dotted price line joins tip and cell) and ticks as the
+// line moves. The cells keep the rivals' ranking, debounced (a near-tie never flickers) and stamped at the real
+// crossing: when two lines cross for good,
 // their cells slide past each other, and if the lead changed the yellow cross-fades and the blue selection
 // springs across in the same beat. The race ends dead on the spec's final display strings: each cell snaps from
 // its running value to its `final` string. The verdict lands in the caption band (or is retyped into the
@@ -22,7 +23,12 @@
 // Frame 1: the question card, the formula bar mid-typing, the start year, every rival named, and one value cell per
 // rival already showing the stake (R1).
 //
-// lookOpts: loop (true) · verdict ('auto' | 'band' | 'formula'; auto = the band with captions, else the formula bar)
+// Colours: series[].color, else lookOpts.colors (a list by series, or { name: colour }), else a tone, else the
+// palette C.series (blue, ink, orange, purple). Yellow is the accent: a gold series wants an amber such as C.amber.
+// Running values follow the final's format: compact finals ("≈ $40.7K") run at 3 significant digits ("$9.80K").
+//
+// lookOpts: loop (true) · verdict ('auto' | 'band' | 'formula'; auto = the band unless the chart would fall under
+//           420 px, then the formula bar) · colors · tipNames ([short names]; default: the name before " · ")
 //           · letters ('auto' | true | false) · formulaAt0 (0.7) · stakeLine (true: the dashed "money in" line)
 //           · formulaSteps ([{ t, text }]: the formula bar over time; default "= <stake>" from 0)
 //           · ledger ({ columns, rows: [[label, v1, v2…]], rowT: [..] }: a sheet row under the header showing the
@@ -33,13 +39,12 @@ import {
   h, s, setStyle, setText, attr, clamp, lerp, prog, ease, fmtNum, plain, C, F, S, G, M,
   formulaBar, fitFormula, lineChart, mk, mkLen, typedMk, typedCount, typeDur, wordCut, caretOn, snapIn, liftOut,
   popScale, flashAlpha, rgba, lerpRect, durationOf, hasCaptions, opt, layer, footerHeight, textW, font, toneColor,
-  graphemes,
+  graphemes, twoLines,
 } from '../lib.js'
 
 export const css = `
 .cr-card { position: absolute; background: #FFFFFF; border-radius: 26px 26px 0 0; overflow: hidden; }
 .cr-chart.ls-chart.sheet { border-radius: 0 0 26px 26px; }
-.cr-chart .ls-axis.y { left: var(--yl); width: auto !important; text-align: left; }
 .cr-heads { position: absolute; left: 0; right: 0; border-bottom: 3px solid #D0D5DD; }
 .cr-hcell { position: absolute; top: 0; padding: 0 22px; display: flex; flex-direction: column; justify-content: center; border-left: 2px solid #E4E7EC; background: #FFE4C2; }
 .cr-hcell.input { background: #D1FADF; border-left: 0; }
@@ -57,8 +62,9 @@ export const css = `
 .cr-lcell.key .ls-v { transform-origin: 0 55%; }
 .cr-over { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
 .cr-wires { position: absolute; left: 0; top: 0; overflow: visible; }
-.cr-tip { position: absolute; display: flex; align-items: center; justify-content: flex-end; padding: 0 16px 0 14px; background: #FFFFFF; border: 2px solid #D0D5DD; border-left: 10px solid var(--c); border-radius: 9px; box-sizing: border-box; white-space: nowrap; }
-.cr-tipv { display: inline-block; font: 800 46px/1 'Inter', 'Inter Full', sans-serif; color: #101828; letter-spacing: -0.015em; transform-origin: 100% 55%; }
+.cr-tip { position: absolute; display: flex; flex-direction: column; align-items: stretch; justify-content: center; padding: 0 16px 0 14px; background: #FFFFFF; border: 2px solid #D0D5DD; border-left: 10px solid var(--c); border-radius: 9px; box-sizing: border-box; white-space: nowrap; }
+.cr-tipn { display: block; font: 800 40px/1 'Inter', 'Inter Full', sans-serif; letter-spacing: -0.012em; margin-bottom: 6px; }
+.cr-tipv { display: block; align-self: flex-end; font: 800 46px/1 'Inter', 'Inter Full', sans-serif; color: #101828; letter-spacing: -0.015em; transform-origin: 100% 55%; font-variant-numeric: tabular-nums; }
 .cr-sel { position: absolute; border: 4px solid #2E90FA; border-radius: 12px; opacity: 0; box-sizing: border-box; }
 .cr-sel > i { position: absolute; right: -10px; bottom: -10px; width: 16px; height: 16px; background: #2E90FA; border: 3px solid #FFFFFF; border-radius: 2px; }
 .cr-flag { position: absolute; height: 58px; padding: 0 20px; background: #101828; border-radius: 12px; display: flex; align-items: center; opacity: 0; transform-origin: 50% 0; box-sizing: border-box; }
@@ -69,7 +75,9 @@ export const css = `
 .cr-money { position: absolute; font: 600 30px/1 'Inter', 'Inter Full', sans-serif; color: #7B8496; white-space: nowrap; text-align: right; }
 `
 
-const TIP = { px: 46, ht: 64, gap: 8, padL: 14 + 10, padR: 16 } // padL includes the 10 px colour edge
+const esc = str => String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+// a value cell: the rival's short name (40 px, in its colour) over its live value (46 px); padL includes the 10 px edge
+const TIP = { px: 46, ht: 104, gap: 8, padL: 14 + 10, padR: 16 }
 const LANE_GAP = 18 // plot's right edge → value cells
 const FLAG = { ht: 58, top: 0 } // event flag pill: height, and offset under the x axis (flush: its text centres on the year labels)
 const SWAP = 0.3 // value cells slide past each other over this long when the ranking changes
@@ -137,54 +145,6 @@ function cutAt(str, f) {
   return n
 }
 
-/**
- * Break a formula-bar string onto two lines at its best seam. Seam kinds in order of preference: the author's
- * line break, " · " (dropped), " vs ", " = ", " → " (each starts line 2), ", " (ends line 1), then any space.
- * Among the seams of the first kind where both lines fit `avail`, the most balanced wins. A seam never splits
- * **x** / __x__ markup and never leaves "≈" without its number. Returns "line 1\nline 2", or null.
- */
-function twoLines(raw, wOf, avail) {
-  const nb = str => str.replace(/≈ /g, '≈ ').trim()
-  const balanced = str => (str.split('**').length - 1) % 2 === 0 && (str.split('__').length - 1) % 2 === 0
-  const str = String(raw)
-  const kinds = []
-  const nl = str.indexOf('\n')
-  if (nl > 0) kinds.push([[str.slice(0, nl), str.slice(nl + 1).replace(/\s*\n\s*/g, ' ')]])
-  const flat = nb(str.replace(/\s*\n\s*/g, ' '))
-  for (const [sep, keep] of [[' · ', ''], [' vs ', 'b'], [' = ', 'b'], [' → ', 'b'], [', ', 'a'], [' ', '']]) {
-    const opts = []
-    for (let i = flat.indexOf(sep); i > 0; i = flat.indexOf(sep, i + 1)) {
-      opts.push([flat.slice(0, i) + (keep === 'a' ? sep.trim() : ''), (keep === 'b' ? sep.trim() + ' ' : '') + flat.slice(i + sep.length)])
-    }
-    if (opts.length) kinds.push(opts)
-  }
-  for (const opts of kinds) {
-    let best = null, bw = Infinity
-    for (const [a0, b0] of opts) {
-      const a = nb(a0), b = nb(b0)
-      if (!a || !b || !balanced(a) || /≈$/.test(a)) continue
-      const w = Math.max(wOf(a), wOf(b))
-      if (w <= avail && w < bw) { best = a + '\n' + b; bw = w }
-    }
-    if (best) return best
-  }
-  return null
-}
-
-/**
- * The assumption line's real height at the chrome's width. lib's footerHeight() models 1 or 2 lines; a long
- * footer can wrap to 3, so this measures the same element the chrome will build.
- */
-function footerH(parent, text, w = G.railX - G.left) {
-  if (!text) return 0
-  const el = h('div', { class: 'ls-footer', html: mk(text), style: { left: '0px', top: '0px', width: w + 'px', fontSize: S.footer + 'px', visibility: 'hidden' } })
-  parent.append(el)
-  if (textW(mk(text), font(600, S.footer)) > w) setStyle(el, { whiteSpace: 'normal' })
-  const ht = el.offsetHeight
-  el.remove()
-  return Math.max(ht, footerHeight(text, w))
-}
-
 export default function chartRace(spec, ctx) {
   const d = spec.data || {}
   const series = (d.series || []).filter(sr => sr && Array.isArray(sr.points) && sr.points.length).slice(0, 3)
@@ -202,23 +162,30 @@ export default function chartRace(spec, ctx) {
   const ledRows = ledger && Array.isArray(ledger.rows) ? ledger.rows : []
   const ledT = ledRows.map((_, i) => (ledger.rowT && ledger.rowT[i] != null ? ledger.rowT[i] : r0 + ((i + 1) / ledRows.length) * (r1 - r0)))
   const finals = series.map(sr => (sr.final != null ? String(sr.final) : fmtNum(sr.points[sr.points.length - 1][1], numOpts)))
-  const colors = series.map((sr, i) => sr.color || (sr.tone ? toneColor(sr.tone) : C.series[i % C.series.length]))
+  // colour: series[].color, lookOpts.colors (a list, or { name: colour }), a tone, else the palette
+  const colOpt = opt(spec, 'colors', null)
+  const colorOf = (sr, i) => sr.color || (Array.isArray(colOpt) ? colOpt[i] : colOpt && typeof colOpt === 'object' ? colOpt[sr.name] ?? colOpt[String(sr.name || '').split(/\s+·\s+/)[0]] : null)
+    || (sr.tone ? toneColor(sr.tone) : C.series[i % C.series.length])
+  const colors = series.map(colorOf)
+  // running values follow the final's format: a compact final ("≈ $40.7K") runs compact at 3 significant digits, a
+  // full final ("≈ $300,000") runs in full, so the payoff never changes format
+  const compactOf = str => /\d\s*[KMBT]\b/.test(String(str))
+  const runCompact = finals.length ? finals.every(compactOf) : !!yo.compact
+  const runFmt = v => {
+    if (!runCompact) return fmtNum(v, { ...numOpts, compact: false })
+    const a = Math.abs(v), u = a >= 1e12 ? 1e12 : a >= 1e9 ? 1e9 : a >= 1e6 ? 1e6 : a >= 1e3 ? 1e3 : 1
+    const m = a / u
+    return fmtNum(v, { ...numOpts, compact: true, dp: u === 1 ? numOpts.dp : m < 10 ? 2 : m < 100 ? 1 : 0 })
+  }
   const yearOf = x => Math.floor(x + 1e-9)
 
   // ---------- time ↔ x ----------
   const xOfT = t => lerp(x0, x1, prog(t, r0, r1 - r0))
   const tOfX = x => r0 + ((x - x0) / (x1 - x0 || 1)) * (r1 - r0)
 
-  // ---------- verdict placement, formula bar strings ----------
-  // 'auto': the band when captions run; otherwise the formula bar
+  // ---------- formula bar strings (the verdict is placed once the chart's height is known) ----------
   let vMode = opt(spec, 'verdict', 'auto')
   if (!verdict) vMode = 'none'
-  else if (vMode === 'auto') {
-    // a silent race keeps the band free for the chart: the verdict is retyped into the bar if it fits two lines
-    const avail = G.width - 102 - 22
-    vMode = !caps && textW(mk(plain(verdict.text)), font(700, S.formulaMin, "'JetBrains Mono', monospace")) <= avail * 1.8 ? 'formula' : 'band'
-  }
-  const bandUsed = caps || vMode === 'band'
   const stake = d.stake ? String(d.stake) : ''
   const defaultFormula = d.formula || (stake ? (/^[=≈]/.test(stake) ? stake : '= ' + stake) : '')
   // each step is measured as one line (author line breaks become spaces, "≈" stays with its number)
@@ -226,22 +193,12 @@ export default function chartRace(spec, ctx) {
   const steps = (opt(spec, 'formulaSteps', null) || [{ t: 0, text: defaultFormula }])
     .filter(x => x && x.text).map(x => ({ t: x.t ?? 0, raw: String(x.text), text: flow(x.text) })).sort((a, b) => a.t - b.t)
   if (!steps.length) steps.push({ t: 0, raw: ' ', text: ' ' })
-  if (vMode === 'formula') steps.push({ t: verdict.t, raw: String(verdict.text), text: flow(verdict.text), verdict: true })
-
-  // ---------- timing + duration ----------
   const stepCps = 30
-  const D0 = durationOf(spec, {
-    beats: [r1 + 0.6, ...steps.slice(1).map(x => x.t + 0.2 + typeDur(x.text, { cps: stepCps }) + 0.3), ...ledT.map(x => x + 0.4)],
-    hold: d.hold ?? 4,
-  })
-  const D = spec.duration || D0
-  const loopT0 = loopOn ? D - M.loopOut : Infinity
 
   // ---------- layout ----------
   const L = layer(ctx, 'cr')
-  const fH = footerH(L, spec.footer)
+  const fH = footerHeight(spec.footer)
   const cardTop = G.cardTop, X = G.left, W = G.width
-  const bottom = (bandUsed ? G.workBottom : G.safeBottom - 4) - (fH ? fH + G.gap : 0)
   const fFit = fitFormula(steps.map(x => x.text), W)
   const fbarH = fFit.ht
   const gutter = G.gutter
@@ -276,7 +233,7 @@ export default function chartRace(spec, ctx) {
   // ---------- DOM: the sheet card (the header row is built first, then measured) ----------
   const card = h('div', { class: 'cr-card', style: { left: X + 'px', top: cardTop + 'px', width: W + 'px' } })
   L.append(card)
-  const fbar = formulaBar(card, { x: 0, y: 0, w: W, ht: fbarH, px: fFit.px, lines: fFit.lines })
+  const fbar = formulaBar(card, { x: 0, y: 0, w: W, ht: fbarH, px: fFit.px, lines: fFit.lines, verdict: verdict ? verdict.text : null })
   const fline = fbar.txt.parentElement
   const headNum = h('div', { class: 'ls-rn', 'data-deco': '', text: '1', style: { width: gutter + 'px' } })
   const heads = h('div', { class: 'cr-heads' }, headNum)
@@ -305,6 +262,22 @@ export default function chartRace(spec, ctx) {
 
   const ledH = ledger ? 76 : 0
   let lettersH = opt(spec, 'letters', 'auto') === false ? 0 : G.lettersH
+  // the verdict is a card in the caption band unless the chart would fall under 420 px; then it is retyped into the
+  // formula bar (Inter 800) and the chart runs down to y 1476
+  const bottomFor = band => (band ? G.workBottom : G.safeBottom - 4) - (fH ? fH + G.gap : 0)
+  if (vMode === 'auto') vMode = caps || bottomFor(true) - cardTop - fbarH - headH - ledH >= 420 ? 'band' : 'formula'
+  const bandUsed = caps || vMode === 'band'
+  const bottom = bottomFor(bandUsed)
+  if (vMode === 'formula') steps.push({ t: verdict.t, raw: String(verdict.text), text: fbar.vfit.text, verdict: true })
+
+  // ---------- timing + duration ----------
+  const vStep = steps.find(x => x.verdict)
+  const D0 = durationOf(spec, {
+    beats: [r1 + 0.6, ...steps.slice(1).filter(x => !x.verdict).map(x => x.t + 0.2 + typeDur(x.text, { cps: stepCps }) + 0.3), ...ledT.map(x => x + 0.4)],
+    hold: d.hold ?? 4, loop: loopOn, verdictEnd: vStep ? vStep.t + 0.2 + typeDur(vStep.text, { cps: stepCps }) : null,
+  })
+  const D = spec.duration || D0
+  const loopT0 = loopOn ? D - M.loopOut : Infinity
   const chartHFor = lh => bottom - cardTop - fbarH - lh - headH - ledH
   if (opt(spec, 'letters', 'auto') === 'auto' && chartHFor(lettersH) < 560) lettersH = 0
   const chartH = chartHFor(lettersH)
@@ -339,19 +312,34 @@ export default function chartRace(spec, ctx) {
   }
 
   // ---------- the embedded chart ----------
-  // the value axis is on the right: its lane is as wide as the widest string a value cell will show
+  // the value cells' lane on the right is as wide as the widest string a cell will show: its rival's short name
+  // (in the rival's colour, so the cell says whose value it is without relying on a sliver of colour) over the value
   const tipFont = font(800, TIP.px)
-  const candidates = series.flatMap((sr, i) => [finals[i], ...sr.points.map(p => fmtNum(p[1], numOpts))])
-  const tipTextW = Math.ceil(Math.max(...candidates.map(c => textW(mk(c), tipFont, { letterSpacing: '-0.015em' }))))
+  const tipNames = series.map((sr, i) => String((opt(spec, 'tipNames', null) || [])[i] ?? sr.short ?? String(sr.name || '').split(/\s+·\s+|\s+\(|\s+[—–]\s+/)[0]))
+  const candidates = series.flatMap((sr, i) => [finals[i], ...sr.points.map(p => runFmt(p[1]))])
+  const tipTextW = Math.ceil(Math.max(...candidates.map(c => textW(mk(c), tipFont, { letterSpacing: '-0.015em' })), ...tipNames.map(n => textW(mk(n), font(800, 40), { letterSpacing: '-0.012em' }))))
   const tipW = tipTextW + TIP.padL + TIP.padR + 6
   const tagX = G.textRight - tipW // value cells: x tagX … 938 (inside the button rail)
   const plotRight = tagX - LANE_GAP
   const startV = Math.max(...series.map(sr => sr.points[0][1]))
-  // the x-axis band holds the year labels, and the event flags when there are events (FLAG.ht + margins)
-  const pad = { l: 54, r: X + W - plotRight, t: 22, b: events.length ? FLAG.top + FLAG.ht + 12 : 60 }
+  // the x-axis band holds the year labels, and the event flags when there are events (FLAG.ht + margins); the value
+  // axis labels sit on the left, in a gutter as wide as the widest label they can show
+  const allVals = series.flatMap(sr => sr.points.map(p => p[1]))
+  const axisW = Math.max(...[Math.max(...allVals) * 1.25, Math.max(...allVals) / 3, Math.min(...allVals)].map(v => textW(esc(axisFmt(v, yo.prefix, yo.suffix)), font(600, 32))))
+  const pad = { l: Math.max(70, Math.ceil(axisW) + 34), r: X + W - plotRight, t: 22, b: events.length ? FLAG.top + FLAG.ht + 12 : 60 }
   // x ticks: the author's step, else whole years (about 5 labels); decimals only for a fractional step
-  const xEvery = d.x?.tickEvery || Math.max(1, [1, 2, 5, 10, 20, 25, 50].find(st => (x1 - x0) / st <= 5.5) || 50)
-  const xDp = Number.isInteger(xEvery) ? 0 : Math.min(2, (String(xEvery).split('.')[1] || '').length)
+  // (thinned when the plot is too narrow for them: neighbouring labels keep a 24 px gap, and at least two show)
+  const plotW0 = W - pad.l - pad.r
+  let xEvery = d.x?.tickEvery || Math.max(1, [1, 2, 5, 10, 20, 25, 50].find(st => (x1 - x0) / st <= 5.5) || 50)
+  const dpOf = st => (Number.isInteger(st) ? 0 : Math.min(2, (String(st).split('.')[1] || '').length))
+  const tickVals = st => { const v = []; for (let x = Math.ceil(x0 / st - 1e-9) * st; x <= x1 + 1e-9; x += st) v.push(x); return v }
+  const roomy = st => {
+    const vals = tickVals(st)
+    const labW = Math.max(0, ...vals.map(v => textW(dpOf(st) ? v.toFixed(dpOf(st)) : String(Math.round(v)), font(600, 32))))
+    return (plotW0 * st) / (x1 - x0 || 1) >= labW + 24
+  }
+  for (const st of [1, 2, 4, 5, 10, 20, 25, 50, 100]) if (st > xEvery && !roomy(xEvery) && tickVals(st).length >= 2) xEvery = st
+  const xDp = dpOf(xEvery)
   // headroom over the running max (the flags live on the x axis, so the lines get the rest of the plot)
   const topFrac = 0.138
   const chart = lineChart(L, {
@@ -362,10 +350,8 @@ export default function chartRace(spec, ctx) {
     events: events.map(ev => ({ x: ev.x })),
   })
   chart.el.classList.add('cr-chart')
-  setStyle(chart.el, { '--yl': (tagX - X + TIP.padL - 8) + 'px' })
   const plot = chart.plot
   const valueAt = (i, x) => chart.valueAt(i, x)
-  const yLabEls = [...chart.el.querySelectorAll('.ls-axis.y')] // value-axis labels: hidden where a value cell sits
 
   // the "money in" line at the stake (when every rival starts from the same amount)
   const sameStart = series.every(sr => Math.abs(sr.points[0][1] - series[0].points[0][1]) < 1e-9)
@@ -387,11 +373,12 @@ export default function chartRace(spec, ctx) {
     return p
   })
   const tips = series.map((sr, i) => {
+    const n = h('span', { class: 'cr-tipn', html: mk(tipNames[i]), style: { color: colors[i] } })
     const v = h('span', { class: 'cr-tipv' })
-    const el = h('div', { class: 'cr-tip', style: { left: tagX + 'px', width: tipW + 'px', height: TIP.ht + 'px' } }, v)
+    const el = h('div', { class: 'cr-tip', style: { left: tagX + 'px', width: tipW + 'px', height: TIP.ht + 'px' } }, n, v)
     setStyle(el, { '--c': colors[i] })
     over.append(el)
-    return { el, v }
+    return { el, n, v }
   })
   const sel = h('div', { class: 'cr-sel' }, h('i'))
   over.append(sel)
@@ -553,8 +540,8 @@ export default function chartRace(spec, ctx) {
       const fs = formulaState(t)
       fbar.set(fs.html, { caret: fs.caret })
       // a two-line string keeps both lines' height from its first keystroke (no jump when it reaches line 2)
-      setStyle(fline, { minHeight: fs.src.includes('\n') ? '2.4em' : '0px' })
-      setStyle(fbar.txt, fs.verdict ? { color: C.ink, fontWeight: '800' } : { color: C.fbarText, fontWeight: '700' })
+      setStyle(fline, { minHeight: fs.src.includes('\n') && !fs.verdict ? '2.4em' : '0px' })
+      fbar.verdictStyle(!!fs.verdict, vMode === 'formula' ? prog(t, verdict.t, 0.2) : 0)
       const chipP = vMode === 'formula' && !looping ? prog(t, verdict.t + 0.1, 0.34) : 0
       setStyle(fbar.chip, { transform: `translateY(-50%) scale(${chipP > 0 && chipP < 1 ? popScale(chipP, 1.3).toFixed(4) : 1})` })
 
@@ -578,7 +565,7 @@ export default function chartRace(spec, ctx) {
         setStyle(led.cells[0].el, { color: k < 0 ? C.mute : C.ink })
         for (let j = 1; j < led.cells.length; j++) {
           const c = led.cells[j]
-          if (k < 0) { setText(c.v, ''); setStyle(c.v, { opacity: '0', transform: 'none' }); setStyle(c.el, { backgroundColor: 'transparent' }); continue }
+          if (k < 0) { setText(c.v, ''); setStyle(c.v, { opacity: '0', transform: 'none', color: C.ink }); setStyle(c.el, { backgroundColor: 'transparent' }); continue }
           const t0 = ledT[k] + 0.08 * (j - 1)
           const val = String(row[j] ?? '')
           setText(c.v, val)
@@ -639,7 +626,7 @@ export default function chartRace(spec, ctx) {
         setStyle(tp.el, { top: r.y0 + 'px', left: r.x0 + 'px' })
         // cells passing each other overlap on purpose, for SWAP s
         mark(tp.el, 'data-overlap-ok', sliding)
-        setText(tp.v, fin ? finals[i] : fmtNum(p.v, numOpts))
+        setText(tp.v, fin ? finals[i] : runFmt(p.v))
         setStyle(tp.v, snapIn(fin ? prog(t, r1, M.drop) : 1))
         // yellow for the leader (cross-faded on a change); a pale flash as a final lands
         let a = i === leader ? swapP : i === prevLeader ? 1 - swapP : 0
@@ -648,6 +635,8 @@ export default function chartRace(spec, ctx) {
         const under = flash > 0.001 ? mix(C.rowHi, C.sheet, flash) : C.sheet
         const bg = a >= 0.999 ? C.accent : a > 0.001 ? mix(C.accent, flash > 0.001 ? C.rowHi : C.sheet, a) : under
         setStyle(tp.el, { backgroundColor: bg, zIndex: String(i === leader ? 4 : nudge[i] ? 3 : 2) })
+        // on the leader's yellow the name is ink (a coloured name would lose contrast); the edge keeps the colour
+        setStyle(tp.n, { color: a > 0.5 ? C.ink : colors[i] })
         // the dotted price line from the tip to its cell (with an elbow when the cell had to move)
         const cy = r.y0 + TIP.ht / 2, xa = p.x + 16, xb = r.x0 - 2
         if (xb - xa < 4 && Math.abs(cy - p.y) < 3) { attr(wireEls[i], 'd', ''); return }
@@ -657,12 +646,6 @@ export default function chartRace(spec, ctx) {
           : `M${xa.toFixed(1)} ${p.y.toFixed(1)} L${xm.toFixed(1)} ${p.y.toFixed(1)} L${xb} ${cy.toFixed(1)}`)
       })
 
-      // value-axis labels never peek out from behind a value cell or the selection
-      for (const el of yLabEls) {
-        if (el.style.opacity === '0') continue
-        const yc = parseFloat(el.style.top) + chart.box.y
-        if (rects.some(r => yc + 18 > r.y0 - 10 && yc - 18 < r.y1 + 10)) setStyle(el, { opacity: '0' })
-      }
 
       // selection: around every value cell until a leader emerges, then on the leader (springs across on a change)
       const group = { x0: tagX, y0: Math.min(...rects.map(r => r.y0)), x1: tagX + tipW, y1: Math.max(...rects.map(r => r.y1)) }

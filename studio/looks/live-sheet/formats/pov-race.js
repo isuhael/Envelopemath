@@ -26,7 +26,11 @@
 // retyped into the formula bar (ink, heavier, the ≈ chip pops). The last 0.5 s rewind the chart and clear back
 // to frame 1, so the short loops.
 //
-// lookOpts: loop (true) · formulaBar ([{ t, text }]) · formulaAt0 (0.7) · verdict ('band' | 'formula')
+// spend.item (an icon name in FORMATS) is not drawn in this look: the Spent column's red key line and the price
+// tags carry the purchase.
+//
+// lookOpts: loop (true) · formulaBar ([{ t, text }]) · formulaAt0 (0.7) · verdict ('band' | 'formula'; a verdict
+//           typed into the bar is set in Inter 800 and does not size the bar)
 //           · startLabel ('Start' when the start shares its year with the first year-end, else the year)
 //           · yearLabel ('Year') · frozen ('auto' | bool) · history ('auto' | 0-4) · letters ('auto' | bool)
 //           · gap (true: tint the gap between the lines)
@@ -34,7 +38,7 @@ import {
   h, s, setStyle, setText, setHTML, attr, clamp, lerp, prog, ease, C, G, M, S,
   formulaBar, fitFormula, lineChart, mk, mkLen, typedMk, typedCount, typeDur, wordCut, caretOn,
   snapIn, liftOut, popScale, flashAlpha, lerpRect, rgba, durationOf, hasCaptions, opt, layer, footerHeight,
-  textW, font, fmtNum, plain, displayValue,
+  textW, font, fmtNum, plain, displayValue, fitBarVerdict, HANDLE_PAD,
 } from '../lib.js'
 
 export const css = `
@@ -164,7 +168,7 @@ export default function povRace(spec, ctx) {
     fe.push({ t: r1 + 0.5, text: `= ${spFinal} → ${owFinal}` })
   }
   fe = fe.map(e => (typeof e === 'string' ? { t: 0, text: e } : { t: +e.t || 0, text: String(e.text || '') }))
-  if (vMode === 'formula') fe.push({ t: verdict.t, text: verdict.text, verdict: true })
+  if (vMode === 'formula') fe.push({ t: verdict.t, text: fitBarVerdict(verdict.text, G.width).text, verdict: true })
   fe = fe.filter(e => e.text).map(e => ({ ...e, text: glueOps(e.text) })).sort((a, b) => a.t - b.t || !!a.verdict - !!b.verdict)
   if (!fe.length) fe.push({ t: 0, text: glueOps(`= ${spStart} → ?`) })
 
@@ -181,7 +185,8 @@ export default function povRace(spec, ctx) {
     return { ...e, erase, start, len, from, cps: e.verdict ? Math.max(26, cps) : cps, end: start + Math.max(0, len - from) / cps }
   })
   const beats = [r1 + 0.6, ...fx.map(e => e.end)]
-  const duration = durationOf(spec, { beats, hold: d.hold ?? 4 })
+  const vfx = fx.find(e => e.verdict)
+  const duration = durationOf(spec, { beats: beats.filter((b, i) => !fx[i - 1] || !fx[i - 1].verdict), hold: d.hold ?? 4, loop: loopOn, verdictEnd: vfx ? vfx.end : null })
   const D = spec.duration || duration
   const loopT0 = loopOn ? D - M.loopOut : Infinity
 
@@ -199,7 +204,7 @@ export default function povRace(spec, ctx) {
   const needFor = () => [
     Math.max(yearW(yPx), textW(mk(String(opt(spec, 'yearLabel', 'Year'))), font(800, S.label))) + 2 * padX + 6,
     Math.max(mainW(spStrs, vPx), sufW([spFinal])) + 2 * padX + 6,
-    Math.max(mainW(owStrs, vPx), sufW([owFinal])) + 2 * padX + 6,
+    Math.max(mainW(owStrs, vPx), sufW([owFinal])) + 2 * padX + 6 + HANDLE_PAD, // the Owned column keeps the fill handle's clearance
   ]
   let need = needFor()
   for (let k = 0; k < 8 && need.reduce((a, b) => a + b, 0) > avail; k++) {
@@ -255,13 +260,13 @@ export default function povRace(spec, ctx) {
   const bandUsed = caps || vMode === 'band'
   const cardBottom = (bandUsed ? G.workBottom : G.safeBottom - 4) - (fH ? fH + G.gap : 0)
   const cardH = cardBottom - G.cardTop
-  const fFit = fitFormula(fe.map(e => e.text), Wd)
+  const fFit = fitFormula(fe.filter(e => !e.verdict).map(e => e.text), Wd)
   const fbarH = fFit.ht
 
   const L = layer(ctx, 'pov')
   const card = h('div', { class: 'ls-card pov-card', style: { left: G.left + 'px', top: G.cardTop + 'px', width: Wd + 'px', height: cardH + 'px' } })
   L.append(card)
-  const fbar = formulaBar(card, { x: 0, y: 0, w: Wd, ht: fbarH, px: fFit.px, lines: fFit.lines })
+  const fbar = formulaBar(card, { x: 0, y: 0, w: Wd, ht: fbarH, px: fFit.px, lines: fFit.lines, verdict: vMode === 'formula' ? verdict.text : null })
 
   // label row (built first so its height is known; placed once the rest of the layout is decided)
   const kinds = ['input', 'mid', 'output']
@@ -333,12 +338,12 @@ export default function povRace(spec, ctx) {
   function mkRow(ht, cls = '', { yearRoll = false } = {}) {
     const num = h('div', { class: 'ls-rn', 'data-deco': '', style: { width: gutter + 'px', height: ht + 'px' } })
     const cells = colX.map((x, j) => {
-      const v = h('span', { class: 'ls-v' })
+      const v = h('span', { class: 'ls-v', style: { color: C.ink } })
       const old = j === 0 && yearRoll ? h('span', { class: 'ls-v pov-old' }) : null
       const el = h('div', {
         class: `ls-cell ${kinds[j]} ${j === 0 ? 'left' : 'right'}${j === 0 && yearRoll ? ' pov-yc' : ''}`,
         ...(j === 0 && yearRoll ? { 'data-roll': '' } : {}),
-        style: { left: x + 'px', width: colW[j] + 'px', height: ht + 'px' },
+        style: { left: x + 'px', width: colW[j] + 'px', height: ht + 'px', ...(j === 2 ? { paddingRight: padX + HANDLE_PAD + 'px' } : {}) },
       }, old, v)
       return { el, v, old }
     })
@@ -537,7 +542,7 @@ export default function povRace(spec, ctx) {
       // formula bar (a verdict typed into it is ink, heavier, and the ≈ chip pops)
       const fs = fbarState(t)
       fbar.set(fs.html, { caret: fs.caret })
-      setStyle(fbar.txt, fs.verdict ? { color: C.ink, fontWeight: '800' } : { color: C.fbarText, fontWeight: '700' })
+      fbar.verdictStyle(!!fs.verdict, vf ? prog(t, vf.t, 0.2) : 0)
       const chipP = vf ? prog(t, vf.start - 0.1, 0.34) : 0
       setStyle(fbar.chip, { transform: `translateY(-50%) scale(${chipP > 0 && chipP < 1 && !inLoop ? popScale(chipP, 1.3).toFixed(4) : 1})` })
 
@@ -564,7 +569,7 @@ export default function povRace(spec, ctx) {
         setStyle(lv.cells[0].old, { opacity: '1', transform: `translateY(${Math.round(-roll * liveH)}px)` })
         setStyle(lv.cells[0].v, { opacity: '1', transform: `translateY(${Math.round((1 - roll) * liveH)}px)` })
       } else {
-        setStyle(lv.cells[0].old, { opacity: '0', transform: 'none' })
+        setText(lv.cells[0].old, ''); setStyle(lv.cells[0].old, { opacity: '0', transform: 'none' })
         const st = inLoop ? (outQ < 1 ? liftOut(outQ) || { opacity: '1', transform: 'none' } : snapIn(inQ)) : { opacity: '1', transform: 'none' }
         setStyle(lv.cells[0].v, inLoop && idx === idx0 && !frozen ? { opacity: '1', transform: 'none' } : st)
       }
@@ -600,7 +605,12 @@ export default function povRace(spec, ctx) {
           let j = -1
           for (let q = p; q < entries.length; q += H + 1) if (q < sc - 1e-6) j = q
           const top = (j - off) * histH
-          if (j < 0 || top <= -histH || fadeH <= 0) { setStyle(r.row, { opacity: '0', top: H * histH + 'px' }); return }
+          if (j < 0 || top <= -histH || fadeH <= 0) {
+            // parked: empty and in one place, so a hidden row never depends on the frame before
+            setStyle(r.row, { opacity: '0', top: H * histH + 'px' }); setText(r.num, '')
+            for (const c of r.cells) { setText(c.v, ''); setStyle(c.v, { color: C.ink }); setStyle(c.el, { backgroundColor: 'transparent' }) }
+            return
+          }
           const k = entries[j].k
           setStyle(r.row, { opacity: String(fadeH), top: Math.round(top) + 'px' })
           setText(r.num, String(2 + k))
@@ -620,7 +630,7 @@ export default function povRace(spec, ctx) {
       if (!inLoop && t >= springT) { rect = lerpRect(selRange, selOwn, ease.back(prog(t, springT, M.pick), 1.6)); handle = false }
       if (inLoop) { rect = lerpRect(t >= springT ? selOwn : selRange, selRange, ease.inOut(prog(t, loopT0, 0.34))); handle = true }
       setStyle(sel, { opacity: '1', left: rect.x0.toFixed(2) + 'px', top: rect.y0.toFixed(2) + 'px', width: (rect.x1 - rect.x0).toFixed(2) + 'px', height: (rect.y1 - rect.y0).toFixed(2) + 'px' })
-      setStyle(sel.firstChild, { opacity: handle ? '1' : '0', right: '3px', bottom: '3px' })
+      setStyle(sel.firstChild, { opacity: handle ? '1' : '0', right: '3px', bottom: '-9px' }) // straddles the bottom gridline
       const onOwn = !inLoop && t >= springT + M.pick * 0.5
       const nums = [headNum, fz && fz.num, ...hist.map(r => r.num)].filter(Boolean)
       for (const el of nums) setStyle(el, { backgroundColor: C.head, color: C.headText })
@@ -634,7 +644,7 @@ export default function povRace(spec, ctx) {
       purchases.forEach((p, i) => {
         const on = xNow >= p.x - 1e-6
         attr(marks[i], 'opacity', on ? 1 : 0)
-        if (on) { attr(marks[i], 'cx', chart.X(p.x).toFixed(1)); attr(marks[i], 'cy', svgY(chart.Y(valAt(sp, p.x)))) }
+        attr(marks[i], 'cx', on ? chart.X(p.x).toFixed(1) : '0'); attr(marks[i], 'cy', on ? svgY(chart.Y(valAt(sp, p.x))) : '0')
       })
       let ti = -1, tagA = 0
       if (!inLoop) {
@@ -644,7 +654,7 @@ export default function povRace(spec, ctx) {
         // the loop ends on frame 1, start tag included
         ti = startTag; tagA = prog(t, loopT0 + 0.3, 0.14)
       }
-      if (tagA <= 0.001) setStyle(tag, { opacity: '0' })
+      if (tagA <= 0.001) { setStyle(tag, { opacity: '0', left: '0px', top: '0px', transformOrigin: '0px 0px', transform: 'none' }); setStyle(tagNotch, { left: '0px', top: '0px' }); setHTML(tagTxt, '') }
       else {
         const p = purchases[ti]
         const mx = chart.X(p.x), my = chart.Y(valAt(sp, p.x))

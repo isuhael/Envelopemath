@@ -6,9 +6,9 @@
 //   - seek(t) is a pure function of t (no state carried between calls except value-keyed caches)
 //   - numbers shown as text come from spec display strings; running counters interpolate and land on them exactly
 import { h, s, css, setText, setHTML, attr, markup, fitText, captionAt, prog, ease, clamp, lerp, rng, fmtNum } from '../../runtime/core.js'
-import { C, F, SIZE, M, TONE, W, H, CX, layoutFor } from './theme.js'
+import { C, F, SIZE, M, TONE, W, H, CX, FOOT, layoutFor, footerPlan, measureText } from './theme.js'
 
-export { layoutFor }
+export { layoutFor, footerPlan, measureText }
 
 // =====================================================================================================
 // text
@@ -17,8 +17,12 @@ export { layoutFor }
 /** escape a plain string for innerHTML */
 export const esc = (str = '') => String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
-/** Anton has no ≈ or → glyph; wrap them so they render in Inter Full ExtraBold (matches Anton's weight). */
-export const ax = html => String(html).replace(/[≈→]/g, '<span class="ax">$&</span>')
+/**
+ * Anton has no ≈ or → glyph, and its × ÷ + − are tiny (about 30% of the cap height), so a one-line working read as
+ * "$10,000 · 65.35%" on a phone. Wrap them so they render in Inter Full ExtraBold, lifted to Anton's optical centre:
+ * ≈ → as .ax, the operators as .axo. Both never drop under 40 px (or the parent's size, if that is smaller).
+ */
+export const ax = html => String(html).replace(/[≈→]/g, '<span class="ax">$&</span>').replace(/[×÷+−]/g, '<span class="axo">$&</span>')
 
 /** keep hyphenated words on one line ("SIT-DOWN" never breaks at the hyphen) */
 export const keepHyphens = html => String(html).replace(/(^|[\s>])([^\s<>]+-[^\s<>]+)/g, '$1<span class="nb">$2</span>')
@@ -28,6 +32,17 @@ export const rich = str => keepHyphens(ax(markup(str)))
 
 /** spec markup → HTML for an Inter context (no glyph patch needed) */
 export const richUI = str => markup(str)
+
+/**
+ * a display string as Anton HTML with every digit in a 0.5em slot (tabular, like the odometer: columns line up and
+ * static numbers in a table never jitter against a counter). tight: a narrow space after "≈". ok: the glyph spans
+ * carry data-overlap-ok (Inter Full's 1.21em font box can reach into a dense neighbour row; its ink never does).
+ */
+export function tabHTML(str, { tight = false, ok = false } = {}) {
+  let html = ax(esc(str).replace(/\d/g, '<span class="sb-d">$&</span>'))
+  if (tight) html = html.replace(/(<span class="ax">≈<\/span>) /g, '$1<span class="sb-sp"></span>')
+  return ok ? html.replace(/<span class="(ax|axo)">/g, '<span class="$1" data-overlap-ok>') : html
+}
 
 /** rendered width of an element's text (not its box): for slam scales that must stay inside the safe zone */
 export function inkWidth(el) {
@@ -138,12 +153,15 @@ const fixHTML = str => ax(esc(str).replace(/ /g, '\u0001')).replace(/\u0001/g, '
 
 /**
  * odometer(parent, { size, color, maxInt = 10, maxDp = 2, cls })
- *   .set(v, tpl)     show numeric v with template tpl (from parseDisplay); columns roll mechanically
+ *   .set(v, tpl, ghost)  show numeric v with template tpl (from parseDisplay); columns roll mechanically. ghost:
+ *                    a "≈" in the prefix is an unlit ghost (a running count is not yet the rounded answer)
  *   .show(display)   land exactly on a display string
  *   .el              the root (inline-flex). Columns carry data-roll (clipped on purpose).
  * At an integer position every column shows exactly one digit, so a landed value reads exactly as the display.
  */
 export function odometer(parent, { size = SIZE.hero, color = C.green, maxInt = 10, maxDp = 2, cls = '' } = {}) {
+  // ghost: a "≈" in the prefix shows as an unlit ghost (decoration) while the count is still running
+  const ghostHTML = html => html.replace('<span class="ax">≈</span>', '<span class="ax sb-ghost" data-deco>≈</span>')
   const root = h('div', { class: 'sb-odo ' + cls, style: { fontSize: size + 'px', color } })
   const pre = h('span', { class: 'sb-odo-fix' })
   const suf = h('span', { class: 'sb-odo-fix' })
@@ -161,12 +179,12 @@ export function odometer(parent, { size = SIZE.hero, color = C.green, maxInt = 1
   root.append(suf)
   if (parent) parent.append(root)
 
-  function set(v, tpl) {
+  function set(v, tpl, ghost = false) {
     const dp = Math.min(tpl.dp, maxDp)
     const x = Math.max(0, (v || 0) / tpl.scale)
     const V = x * Math.pow(10, dp)
     const n = Math.min(maxInt, Math.max(1, String(Math.floor(x + 1e-9)).length))
-    setHTML(pre, fixHTML(tpl.prefix))
+    setHTML(pre, ghost ? ghostHTML(fixHTML(tpl.prefix)) : fixHTML(tpl.prefix))
     setHTML(suf, fixHTML(tpl.suffix))
     css(dot, { display: dp > 0 ? 'inline-block' : 'none' })
     for (const [k, sp] of seps) css(sp, { display: tpl.group && n > k ? 'inline-block' : 'none' })
@@ -576,36 +594,74 @@ export function brandMark(parent, L) {
 
 /**
  * header(parent, spec, L, { text, upper = true }) → { el, inner }
- * Anton, uppercase, centred, bottom-aligned in the header band (so it sits on the hero counter), fitted to it.
- * Lines break only where the spec has \n.
+ * Anton, uppercase, centred, bottom-aligned in the header band (so it sits on the hero counter), fitted to it
+ * (72 px with captions off, 64 px in the compact captions-on bar; 46 px at worst). Lines break only where the spec
+ * has \n. The header band holds the hook for the whole video: the verdict never lands here.
  */
 export function header(parent, spec, L, { text = spec.header || '', upper = true } = {}) {
   const box = h('div', { class: 'sb-header', style: { left: L.header.x + 'px', top: L.header.y + 'px', width: L.header.w + 'px', height: L.header.h + 'px' } })
-  const inner = h('div', { class: 'sb-header-text' + (upper ? '' : ' asis'), html: rich(text) })
+  const inner = h('div', { class: 'sb-header-text' + (upper ? '' : ' asis'), html: rich(text), style: { fontSize: (L.header.px || SIZE.header) + 'px' } })
   box.append(inner)
   parent.append(box)
   fitText(inner, L.header.w, { maxH: L.header.h, minPx: SIZE.headerMin })
   return { el: box, inner }
 }
 
-/** footer(parent, spec, L, { text }) — the assumption line, last row of the top bar, visible from t = 0 */
+/** a footer text as HTML on its planned lines (footerPlan: one line at 40 px, or two broken at a " · ") */
+export function footerHTML(text) {
+  const plan = footerPlan(text)
+  return { html: plan.lines.map(richUI).join('<br>'), px: plan.px, lines: plan.lines.length }
+}
+
+/**
+ * footer(parent, spec, L, { text }) — the assumption line, last row of the top bar, visible from t = 0. One line at
+ * 40 px, or two lines at 40 px broken at the " · " nearest the middle (layoutFor reserves the second row: L.footer.rows).
+ */
 export function footer(parent, spec, L, { text = spec.footer } = {}) {
   if (!text) return null
-  const el = h('div', { class: 'sb-footer', html: richUI(text), style: { top: L.footer.y + 'px', left: (W - L.footer.w) / 2 + 'px', width: L.footer.w + 'px' } })
+  const f = footerHTML(text)
+  const el = h('div', { class: 'sb-footer', html: f.html, style: { top: L.footer.y + 'px', left: (W - L.footer.w) / 2 + 'px', width: L.footer.w + 'px', fontSize: f.px + 'px', lineHeight: FOOT.lh + 'px' } })
   parent.append(el)
-  fitText(el, L.footer.w, { maxH: L.footer.h + 4, minPx: 34 })
+  if (el.scrollWidth > L.footer.w + 0.5) fitText(el, L.footer.w, { minPx: 34, step: 1 })
   return el
 }
 
 /**
- * heroRow(parent, L, { icon, size, color, iconSize, gap = 12, maxInt, maxDp }) → { el, odo, icon, set(v, tpl), show(display) }
+ * footerSteps(parent, spec, L) → { seek(t), els } | null
+ * spec.footer plus lookOpts.footerSteps ([{ t, text }]: the footer rewrites to a one-line working at each t, a hard
+ * cut with a 12 px rise). Kit-wide: the chrome draws it unless the format returns footer: false.
+ */
+export function footerSteps(parent, spec, L) {
+  const steps = (spec.lookOpts && Array.isArray(spec.lookOpts.footerSteps) ? spec.lookOpts.footerSteps : [])
+    .filter(x => x && x.text).map(x => ({ t: +x.t || 0, text: String(x.text) })).sort((a, b) => a.t - b.t)
+  const base = spec.footer ? footer(parent, spec, L) : null
+  if (!steps.length) return base ? { els: [base], seek() {} } : null
+  for (const st of steps) { st.el = footer(parent, spec, L, { text: st.text }); css(st.el, { display: 'none' }) }
+  const all = [base, ...steps.map(x => x.el)].filter(Boolean)
+  return {
+    els: all,
+    steps,
+    seek(t) {
+      let cur = base, at = null
+      for (const st of steps) if (t >= st.t) { cur = st.el; at = st }
+      for (const el of all) css(el, { display: el === cur ? 'block' : 'none' })
+      if (cur && at) { const r = rise(t, at.t, { dur: 0.16, dist: 12 }); css(cur, { opacity: String(r.o), transform: `translateY(${r.y.toFixed(1)}px)` }) }
+    },
+  }
+}
+
+/**
+ * heroRow(parent, L, { icon, size, color, iconSize, gap = 12, maxInt, maxDp }) → { el, odo, icon, set(v, tpl, ghost), show(display) }
  * The top-bar scoreboard number: an optional unit icon + an odometer with a neon glow, centred as a group on x 540
- * in L.hero. Use hero.set / hero.show (not odo.set) so the icon tracks the number's width.
+ * in L.hero (size / iconSize default to L.hero.size / L.hero.icon: 168 / 116, or 140 / 100 with captions on).
+ * Use hero.set / hero.show (not odo.set) so the icon tracks the number's width.
  * Scale `el` for bumps; set --glow (px) and --glowA (0..1) on `glow` for flares.
  * The glow filter lives on a fixed 960 x 168 box, so its raster region never goes stale when digits are added.
  */
-export function heroRow(parent, L, { icon = null, size = SIZE.hero, color = C.green, iconSize = SIZE.heroIcon, gap = 12, maxInt = 10, maxDp = 2 } = {}) {
-  const hero = L.hero || { y: 444, h: 168, w: 960 }
+export function heroRow(parent, L, { icon = null, size, color = C.green, iconSize, gap = 12, maxInt = 10, maxDp = 2 } = {}) {
+  const hero = L.hero || { y: 444, h: 168, w: 960, size: SIZE.hero, icon: SIZE.heroIcon }
+  size = size ?? hero.size ?? SIZE.hero
+  iconSize = iconSize ?? hero.icon ?? SIZE.heroIcon
   const el = h('div', { class: 'sb-hero', style: { top: hero.y + 'px', height: hero.h + 'px', left: (W - hero.w) / 2 + 'px', width: hero.w + 'px' } })
   const space = icon ? iconSize + gap : 0
   const glow = h('div', { class: 'sb-hero-glow sb-glow', style: { paddingLeft: space + 'px' } })
@@ -619,7 +675,7 @@ export function heroRow(parent, L, { icon = null, size = SIZE.hero, color = C.gr
   }
   return {
     el, odo, glow, icon: ic,
-    set(v, tpl) { odo.set(v, tpl); place() },
+    set(v, tpl, ghost) { odo.set(v, tpl, ghost); place() },
     show(display) { odo.show(display); place() },
   }
 }
@@ -627,22 +683,23 @@ export function heroRow(parent, L, { icon = null, size = SIZE.hero, color = C.gr
 /**
  * labelStack(parent, L, items, { yieldToVerdict = true }) → { el, groups, seek(t, index, t0) }
  * The bottom-bar label stack (HD Guy grammar): line 1 = Anton green (price / rate / working),
- * line 2 = Anton uppercase white (the rung). One group per item, all built at mount; seek shows only the
+ * line 2 = Anton uppercase white (the rung). Sizes from L.type (62 / 96 px, or 54 / 72 px with captions on). One group per item, all built at mount; seek shows only the
  * active one with a hard cut + slam-in at t0. items: [{ l1: html, l2: html, l1Color?, l2Color? }]
  * (pass HTML: use rich() on spec strings). The container carries data-yield, so the verdict replaces it.
  */
 export function labelStack(parent, L, items, { yieldToVerdict = true } = {}) {
+  const T = L.type || { l1: SIZE.label1, l2: SIZE.label2, l2Min: SIZE.label2Min }
   const el = h('div', { class: 'sb-labels', style: { top: L.label.y + 'px', left: (W - L.label.w) / 2 + 'px', width: L.label.w + 'px', height: L.label.h + 'px' } })
   if (yieldToVerdict) el.setAttribute('data-yield', '')
   parent.append(el)
   const groups = items.map(it => {
-    const l1 = h('div', { class: 'sb-l1', html: it.l1 || '', style: { color: it.l1Color || C.green } })
-    const l2 = h('div', { class: 'sb-l2', html: it.l2 || '', style: { color: it.l2Color || C.white } })
+    const l1 = h('div', { class: 'sb-l1', html: it.l1 || '', style: { color: it.l1Color || C.green, fontSize: T.l1 + 'px' } })
+    const l2 = h('div', { class: 'sb-l2', html: it.l2 || '', style: { color: it.l2Color || C.white, fontSize: T.l2 + 'px' } })
     const grp = h('div', { class: 'sb-label' }, l1, l2)
     el.append(grp)
-    fitText(l1, L.label.w, { minPx: 44 })
+    fitText(l1, L.label.w, { minPx: Math.min(44, T.l1) })
     const l1h = it.l1 ? l1.offsetHeight + 6 : 0
-    fitText(l2, L.label.w, { maxH: L.label.h - l1h, minPx: SIZE.label2Min })
+    fitText(l2, L.label.w, { maxH: L.label.h - l1h, minPx: T.l2Min })
     grp.__from = slamFromFor(Math.max(inkWidth(l1), inkWidth(l2)), L.label.w - 8)
     css(grp, { display: 'none' })
     return grp
@@ -742,30 +799,65 @@ export function captions(parent, spec, L) {
 }
 
 /**
- * verdict(parent, spec, L) → { seek(t), yieldAt(t) } | null
- * The closing line (spec.verdict = { t, text }). It replaces the label stack: slams into L.verdict at t with a
- * green rule wiping in above it; every [data-yield] element fades out as it lands (yieldAt gives 0..1).
+ * verdict(parent, spec, L, { slot = L.verdict, tone = 'good' }) → { t, seek(t), yieldAt(t), box, txt } | null
+ * The closing line (spec.verdict = { t, text }). One kit rule: it lands in the bottom slot L.verdict (the label slot
+ * above the caption band; the bottom bar with captions off), never in the header band, which keeps the hook. When
+ * the stage reaches into that slot (slot.boxed), a black band rises over the stage foot just before t and carries it.
+ * A hard cut: every [data-yield] element (the label stack) drops 14 px and is gone by t (yieldAt), then the text
+ * slams in at t with a green rule wiping in above it. The text is fitted while the box is measurable, and the slam
+ * scale keeps it inside the slot (x and y). Readable text the band covers (a board's last rows, a chart's foot) is
+ * hidden while it is covered (data-under), so nothing reads through or collides with the verdict.
  */
-export function verdict(parent, spec, L) {
+export function verdict(parent, spec, L, { slot = L.verdict, tone = 'good' } = {}) {
   const v = spec.verdict
   if (!v || !v.text) return null
-  const box = h('div', { class: 'sb-verdict' + (L.verdict.boxed ? ' boxed' : ''), style: { top: L.verdict.y + 'px', left: (W - L.verdict.w) / 2 + 'px', width: L.verdict.w + 'px', height: L.verdict.h + 'px' } })
+  const t0 = Math.max(0, +v.t || 0)
+  const sb = L.stage.y + L.stage.h
+  const band = slot.boxed && sb > slot.y - 10 ? h('div', { class: 'sb-vband', 'data-deco': '', style: { top: slot.y - 10 + 'px', height: sb - slot.y + 10 + 'px', display: 'none' } }) : null
+  if (band) parent.append(band)
+  const box = h('div', { class: 'sb-verdict', style: { top: slot.y + 'px', left: (W - slot.w) / 2 + 'px', width: slot.w + 'px', height: slot.h + 'px' } })
   const rule = h('div', { class: 'sb-verdict-rule', 'data-deco': '' })
+  if (tone === 'bad') css(rule, { background: C.red, boxShadow: '0 0 18px rgba(255, 77, 94, 0.5)' })
   const txt = h('div', { class: 'sb-verdict-text', html: rich(v.text) })
   box.append(rule, txt)
   parent.append(box)
-  fitText(txt, L.verdict.w, { maxH: L.verdict.h - 26, minPx: SIZE.verdictMin })
-  const from = slamFromFor(inkWidth(txt), L.verdict.w - 8, 1.12)
-  const t0 = Math.max(0, v.t)
+  const gap = slot.h < 180 ? 12 : 20
+  css(box, { display: 'flex', gap: gap + 'px' })
+  fitText(txt, slot.w, { maxH: slot.h - 8 - gap - 6, minPx: SIZE.verdictMin })
+  const cy = txt.offsetTop + txt.offsetHeight / 2
+  const from = Math.min(slamFromFor(inkWidth(txt), slot.w - 8, 1.12), Math.max(1, Math.min(slot.h + 8 - cy, cy + 8) / Math.max(1, txt.offsetHeight / 2)))
+  css(box, { display: 'none' })
+  // what the band can cover: every element with its own text (a rolling digit column counts as one), outside the
+  // verdict, the captions and decoration
+  let under = null
+  const coverable = () => [...parent.querySelectorAll('*')].filter(el => {
+    if (el === box || el === band || box.contains(el) || el.closest('.sb-caps, [data-deco]')) return false
+    if (el.hasAttribute('data-roll')) return true
+    if (el.closest('[data-roll]')) return false
+    return [...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())
+  })
   return {
-    t: t0,
-    yieldAt: t => prog(t, t0 - 0.04, 0.14),
+    t: t0, box, txt, band,
+    yieldAt: t => (t0 <= 0.001 ? 1 : prog(t, t0 - 0.067, 0.067)),
     seek(t) {
+      if (band) {
+        const q = t0 <= 0.001 ? 1 : ease.out(prog(t, t0 - 0.2, 0.2)), top = lerp(sb, slot.y - 10, q)
+        css(band, { display: q > 0 ? 'block' : 'none', top: top.toFixed(1) + 'px', height: (sb - top).toFixed(1) + 'px' })
+        if (q > 0 || under) {
+          if (!under) under = coverable()
+          const ref = parent.getBoundingClientRect()
+          for (const el of under) {
+            let hide = false
+            if (q > 0) { const r = el.getBoundingClientRect(); hide = r.height > 0 && r.bottom - ref.top > top + 2 && r.top - ref.top < sb }
+            attr(el, 'data-under', hide ? '1' : '0')
+          }
+        }
+      }
       if (t < t0) { css(box, { display: 'none' }); return }
-      const k = slam(t, t0 + 0.06, { from })
+      const k = slam(t, t0, { from })
       css(box, { display: 'flex' })
       css(txt, { opacity: String(k.o), transform: `scale(${k.s.toFixed(4)})` })
-      css(rule, { transform: `scaleX(${ease.out(prog(t, t0 + 0.1, 0.35)).toFixed(4)})` })
+      css(rule, { transform: `scaleX(${(t0 <= 0.001 ? 1 : ease.out(prog(t, t0 + 0.04, 0.35))).toFixed(4)})` })
     },
   }
 }
@@ -781,7 +873,8 @@ export function verdict(parent, spec, L) {
  */
 export function scorePanel(parent, { x, y, w, h: hh, label = '', display = '', tone = 'good', size = SIZE.panelValue, sub = '', yieldToVerdict = false } = {}) {
   const col = toneColor(tone)
-  const el = h('div', { class: 'sb-panel', style: { left: x + 'px', top: y + 'px', width: w + 'px', height: hh + 'px', '--tone': col } })
+  const el = h('div', { class: 'sb-panel', style: { left: x + 'px', top: y + 'px', width: w + 'px', height: hh + 'px' } })
+  css(el, { '--tone': col })   // custom properties go through css(): core's h() drops '--' keys (Object.assign on style)
   if (yieldToVerdict) el.setAttribute('data-yield', '')
   const labelEl = h('div', { class: 'sb-panel-label', html: richUI(label) })
   const valueEl = h('div', { class: 'sb-panel-value', html: ax(esc(display)), style: { fontSize: size + 'px', color: col } })
@@ -1045,8 +1138,10 @@ export function beatTimes(items = [], { first = 1.0, every = 3.2, key = 't' } = 
  *   body.layout      the layout it used (default layoutFor(spec))
  *   body.scaffold    { grid: false } to hide the stage grid
  *   body.header      false: the format draws its own header
- *   body.footer      false: the format draws spec.footer itself
+ *   body.footer      false: the format draws spec.footer (and lookOpts.footerSteps) itself
  *   body.verdict     false: the format draws spec.verdict itself
+ *   body.verdictSlot a slot { y, h, w, boxed } for the verdict (default L.verdict: the kit's one verdict spot)
+ *   body.verdictTone 'bad': the verdict's rule is coral (a loss), not green
  *   body.verdictCue  sfx kind for the verdict landing (default 'reveal'; null for none)
  */
 export function chrome(spec, ctx, body = {}) {
@@ -1055,14 +1150,15 @@ export function chrome(spec, ctx, body = {}) {
   stage.prepend(scaffold(L, body.scaffold))
   brandMark(stage, L)
   if (body.header !== false) header(stage, spec, L)
-  if (body.footer !== false) footer(stage, spec, L)
+  const foot = body.footer !== false ? footerSteps(stage, spec, L) : null
   const caps = captions(stage, spec, L)
-  const verd = body.verdict === false ? null : verdict(stage, spec, L)
-  if (verd && body.verdictCue !== null) ctx.cue(verd.t + 0.06, body.verdictCue || 'reveal', { gain: 0.7 })
+  const verd = body.verdict === false ? null : verdict(stage, spec, L, { slot: body.verdictSlot || L.verdict, tone: body.verdictTone })
+  if (verd && body.verdictCue !== null) ctx.cue(verd.t, body.verdictCue || 'reveal', { gain: 0.7 })
   const yields = [...stage.querySelectorAll('[data-yield]')]
   return {
     seek(t) {
       caps.seek(t)
+      if (foot) foot.seek(t)
       if (verd) {
         verd.seek(t)
         const y = verd.yieldAt(t)

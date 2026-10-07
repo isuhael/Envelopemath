@@ -4,12 +4,15 @@
 // ("[icon] 1 Big Mac = [$6.22]"). Each rung is a worked step:
 //   1. its circle fills and the item arrives with its cost already written ("Private college, 1 year / $45,000")
 //   2. the operation types after the cost in grey mono ("$45,000 ÷ $6.22 =")
-//   3. the highlighter swipes in below and the count runs up on it (a counter that lands exactly on unitsDisplay)
+//   3. the highlighter swipes in below and the count runs up on it (a counter that lands exactly on unitsDisplay,
+//      by the time the voice-over says it: within 60% of an overlapping VO line, or just before its digits)
 //      while a compact grid of tiny monoline unit icons fills in step with it. While they fit, one icon is one
 //      unit (a fractional unit is a clipped icon); past that the grid becomes a dense pile that fades out to the
 //      right (more than fits) and the number carries the count.
 //   4. when the next rung opens, the finished rung files itself into a compact sheet row in place:
-//      "label ·········· [≈ 667]" (the working leaves, the result glides up into the right-hand column and rests),
+//      "label $cost ······ [≈ 667]" (the operation leaves, the cost stays after the label in grey mono, the result
+//      glides up into the right-hand column and rests). Where the cost has no room, a ragged wrap or (cw, when the
+//      page has the height) one more label line makes it; only then does a row go without it (logged with debug).
 //      and the next rung opens directly under it. The ladder builds down the page; the newest rung is the only
 //      loud number, and the filed results line up in one right-aligned column, cheap → huge.
 // The last rung (the biggest) stays open on the larger final size. An optional check line types under it.
@@ -35,7 +38,7 @@
 //           final icon field) · slots (true: waiting circles) · check / checkT (same as data.check / data.checkT;
 //           a string or { t, text }) · countSpeed (1; > 1 = slower counters) · debug
 import { h, css as style, prog, ease, clamp, lerp, plain } from '../../../runtime/core.js'
-import { C, SIZE, GRID, MOTION, md, hlBox, typeLine, stepCircle, fadeUp, fade, show, blink, durationOf, typeTime, unitIcon, iconDefs, iconUse, ICON_NAMES, readCheck } from '../lib.js'
+import { C, SIZE, GRID, MOTION, md, hlBox, typeLine, stepCircle, fadeUp, fade, show, blink, durationOf, typeTime, unitIcon, iconDefs, iconUse, ICON_NAMES, readCheck, breakLine } from '../lib.js'
 
 export const css = `
 .ul > *, .ul-sheet > *, .ul-rung > * { position: absolute; }
@@ -58,6 +61,7 @@ export const css = `
 .ul-grid.ul-pile { -webkit-mask-image: linear-gradient(to right, #000 62%, transparent 100%); mask-image: linear-gradient(to right, #000 62%, transparent 100%); }
 .ul-field > svg { position: absolute; left: 0; top: 0; transform-origin: 50% 50%; }
 .ul-check { white-space: pre; line-height: 1.2; }
+.ul-cost { white-space: nowrap; font: 600 40px/1 'IBM Plex Mono', 'Inter Full', monospace; color: #6B7280; letter-spacing: -.01em; }
 `
 
 const SCALES = [1, 0.96, 0.92, 0.88, 0.85, 0.82]
@@ -70,6 +74,7 @@ const CLEAR_B = 0.26     // ...then rung 1 comes back in its frame-1 state
 const EDGE = 40          // scroll mode: rows fade out over the last 40 px above the work area
 const PEND_GAP = 12      // waiting circles: gap under the open rung
 const FIELD_OP = 0.62    // the final icon field's opacity (a lighter pile, so the number stays the focus)
+const COST_GAP = 18      // a filed row: gap between its label and its cost
 
 const n3 = v => (Math.round(v * 1000) / 1000).toString()
 
@@ -78,7 +83,7 @@ function parseCount(disp) {
   const m = /^([\s\S]*?)(\d[\d,]*(?:\.\d+)?)([\s\S]*)$/.exec(String(disp))
   if (!m) return null
   const num = m[2]
-  return { pre: m[1], post: m[3], value: parseFloat(num.replace(/,/g, '')), dp: (num.split('.')[1] || '').length, group: num.includes(',') }
+  return { pre: m[1], post: m[3], raw: num, value: parseFloat(num.replace(/,/g, '')), dp: (num.split('.')[1] || '').length, group: num.includes(',') }
 }
 function fmtCount(c, v) {
   let s = Math.max(0, v).toFixed(c.dp)
@@ -125,9 +130,38 @@ export default function unitLadder(spec, ctx) {
     const typeD = Math.max(0.12, Math.min(typeDur, res - t0 - 0.08))
     const act = i === 0 ? -1 : t0 - MOTION.activate
     const units = Math.max(0, +r.units || 0)
-    const cnt0 = res + MOTION.popDelay
-    const cntD = clamp(0.45 + 0.26 * Math.log10(units + 1), 0.45, 1.7) * (LO.countSpeed > 0 ? +LO.countSpeed : 1)
-    T.push({ t0, res, typeD, act, cnt0, cntD, land: cnt0 + cntD, units })
+    let cnt0 = res + MOTION.popDelay
+    let cntD = clamp(0.45 + 0.26 * Math.log10(units + 1), 0.45, 1.7) * (LO.countSpeed > 0 ? +LO.countSpeed : 1)
+    // a rung whose highlighter starts by frame 1 is pre-filled: on frame 1 (the thumbnail) it already shows its final
+    // count and full icon grid (no counter, no roll, never an empty box), and the loop brings it back that way
+    const pre = res <= 0
+    if (pre) {
+      res = Math.min(res, -(MOTION.wipe + 0.05))
+      cnt0 = Math.min(res + MOTION.popDelay, -(MOTION.pop + 0.05))
+      cntD = 0
+    }
+    const typeD2 = pre ? Math.max(0.12, Math.min(typeD, res - t0 - 0.08)) : typeD
+    T.push({ t0, res, typeD: typeD2, act, cnt0, cntD, land: cnt0 + cntD, units, pre })
+  })
+  // the count lands by the time the voice says it: when a VO line overlaps the count, it lands by 60% of that line
+  // (or just before the figure's own word, when the line spells it in digits)
+  const voLines = (spec.vo || []).map((v, k, all) => {
+    const text = plain(String(v.text || ''))
+    const dd = v.d != null ? +v.d : all[k + 1] ? +all[k + 1].t - +v.t : Math.max(1.2, text.split(/\s+/).length * 0.36)
+    return { t: +v.t, d: dd, text }
+  })
+  T.forEach((x, i) => {
+    if (x.pre || !voLines.length) return
+    const cnt = parseCount(rungs[i].unitsDisplay != null ? rungs[i].unitsDisplay : rungs[i].units)
+    let by = null
+    for (const v of voLines) {
+      if (v.t > x.land || v.t + v.d < x.cnt0) continue
+      let at = v.t + 0.6 * v.d
+      const k = cnt ? v.text.indexOf(cnt.raw) : -1
+      if (k >= 0) at = Math.min(at, v.t + (k / Math.max(1, v.text.length)) * v.d * 0.88 - 0.1)
+      by = by == null ? at : Math.min(by, at)
+    }
+    if (by != null && by < x.land) { x.cntD = Math.max(0.35, by - x.cnt0); x.land = x.cnt0 + x.cntD }
   })
   // a finished rung files into its row just before the next rung opens
   T.forEach((x, i) => {
@@ -176,37 +210,25 @@ export default function unitLadder(spec, ctx) {
     style(box.el, { position: 'absolute', transformOrigin: '0 0' })
     const leader = h('div', { class: 'ul-leader', 'data-deco': '' })
     const grid = h('div', { class: 'ul-grid', 'data-deco': '' })
+    // the filed row keeps its cost, so every rung can still be checked on the finished sheet: "An iPhone 17 $799 ··· ≈ 40"
+    const costEl = cost && !last ? h('div', { class: 'ul-cost', html: md(cost) }) : null
     wrap.append(label, formula.el, leader, box.el, grid)
+    if (costEl) wrap.append(costEl)
     sheet.append(wrap)
     return {
-      i, last, wrap, circle, label, formula, box, leader, grid, disp, finalHTML: md(disp), count: parseCount(disp),
+      i, last, wrap, circle, label, formula, box, leader, grid, costEl, disp, finalHTML: md(disp), count: parseCount(disp),
       costLen: [...cost].length, fullLen: [...formula.full].length, icons: [],
     }
   })
 
   for (const r of R) sheet.append(r.circle.el) // the circles live on the sheet: they wait, empty, before their rung
 
-  // check line: broken once at mount (never reflows while typing), preferably just before its result sign
+  // check line: broken once at mount (never reflows while typing), before its result sign, the continuation hung
+  // under the sum like every check on the kit
   let check = null
   if (checkText) {
-    const mk = txt => typeLine({ text: txt, px: SIZE.check, color: C.accent, weight: 500, cls: 'ul-check' })
-    const width = txt => { const x = mk(txt); sheet.append(x.el); const w = x.measure(); x.el.remove(); return w }
-    const avail = right - textX
-    let text = checkText
-    if (width(checkText) > avail) {
-      const sp = [...checkText.matchAll(/ /g)].map(m => m.index)
-      const fitsAt = at => width(checkText.slice(0, at)) <= avail && width(checkText.slice(at + 1)) <= avail
-      let at = sp.filter(a => /^[≈=]/.test(checkText.slice(a + 1))).reverse().find(fitsAt)
-      if (at == null) {
-        let best = Infinity
-        for (const a of sp) {
-          const d1 = Math.abs(width(checkText.slice(0, a)) - width(checkText.slice(a + 1)))
-          if (fitsAt(a) && d1 < best) { best = d1; at = a }
-        }
-      }
-      if (at != null) text = checkText.slice(0, at) + '\n' + checkText.slice(at + 1)
-    }
-    check = mk(text)
+    const br = breakLine(sheet, checkText, right - textX, { maxLines: 2 })
+    check = typeLine({ text: br.text, px: SIZE.check, color: C.accent, weight: 500, cls: 'ul-check' })
     sheet.append(check.el)
   }
 
@@ -249,7 +271,7 @@ export default function unitLadder(spec, ctx) {
   let cPitch = 0
   /** place everything for one candidate c = { sc, u (unit row), tight, ck (check line) } and an extra gap */
   function place(c, extra = 0) {
-    const { sc, u: withUnit, tight, ck } = c
+    const { sc, u: withUnit, tight, ck, cw } = c
     const m = metrics(sc, tight)
     why = []
     const no = reason => { why.push(reason); return false }
@@ -289,12 +311,39 @@ export default function unitLadder(spec, ctx) {
       style(r.box.el, { minWidth: boxW + 'px' })
       const k = m.cond / px
       const cW = boxW * k, cH = boxH * k
-      // label column: what the filed row leaves beside its result and a leader (the last rung never files)
+      // label column: what the filed row leaves beside its result and a leader (the last rung never files). The cost
+      // takes room at the end of the label's last line: the column narrows for it when that costs no extra line.
       const labW = r.last ? right - textX : Math.floor(right - textX - cW - LEAD_MIN - 2 * LEAD_GAP)
-      style(r.label, { left: textX + 'px', top: y + 'px', width: Math.max(120, labW) + 'px', fontSize: m.label + 'px' })
+      style(r.label, { left: textX + 'px', top: y + 'px', width: Math.max(120, labW) + 'px', fontSize: m.label + 'px', textWrap: '' })
       const lineH = m.label * 1.12
+      let lines = lineRects(r.label)
+      if (r.costEl) style(r.costEl, { display: '' }) // (measured visible: an earlier candidate may have hidden it)
+      const costW = r.costEl ? Math.ceil(r.costEl.getBoundingClientRect().width) : 0
+      if (costW && !r.last) {
+        // where the cost fits after the label's last line (and a leader after it)
+        const room = ls => ls[ls.length - 1].right + COST_GAP + costW + LEAD_GAP + LEAD_MIN + LEAD_GAP <= right - cW + 0.5
+        const n0 = lines.length
+        style(r.label, { width: Math.max(120, labW - costW - COST_GAP) + 'px' })
+        const l2 = lineRects(r.label)
+        if (l2.length === n0 && Math.max(...l2.map(l => l.right)) <= textX + labW - costW - COST_GAP + 1) lines = l2
+        else { style(r.label, { width: Math.max(120, labW) + 'px' }); lines = lineRects(r.label) }
+        if (lines.length && !room(lines)) {
+          // still no room: a ragged (greedy) wrap leaves the last line as short as it can be. Free when it adds no
+          // line; with cw (cost wrap) the label may take one more line for it.
+          const cwOn = cw === true || (Array.isArray(cw) && cw.includes(i))
+          let got = null
+          for (let w = labW; w >= 220; w -= 24) {
+            style(r.label, { width: w + 'px', textWrap: 'wrap' })
+            const l3 = lineRects(r.label)
+            if (l3.length > (cwOn ? Math.min(3, n0 + 1) : n0)) break
+            if (l3.length > n0 && n0 >= 3) break
+            if (room(l3)) { got = l3; break }
+          }
+          if (got) lines = got
+          else { style(r.label, { width: Math.max(120, labW) + 'px', textWrap: '' }); lines = lineRects(r.label) }
+        }
+      }
       const lh = r.label.getBoundingClientRect().height
-      const lines = lineRects(r.label)
       if (lines.length > 3 || labW < 220) fits = no(`label${i}`)
       const lastLine = lines[lines.length - 1] || { right: textX }
       const lastMid = y + lh - lineH / 2
@@ -320,7 +369,21 @@ export default function unitLadder(spec, ctx) {
       // the filed state: right-aligned at the rail, centred on the label's last line
       const cx = right - cW, cy = lastMid - cH / 2
       r.geo = { dx: cx - bx, dy: cy - by, k }
-      const lx0 = Math.round(lastLine.right + LEAD_GAP), lx1 = Math.round(cx - LEAD_GAP)
+      // the cost after the label's last line, when it leaves room for a leader; else the row goes without it
+      let costRight = lastLine.right
+      r.costOn = false
+      if (r.costEl) {
+        const cl = Math.round(lastLine.right + COST_GAP)
+        r.costOn = cl + costW + LEAD_GAP + LEAD_MIN + LEAD_GAP <= cx
+        style(r.costEl, { display: r.costOn ? '' : 'none', left: cl + 'px', top: Math.round(lastMid - 20) + 'px' })
+        if (r.costOn) costRight = cl + costW
+        else log(`  rung${i}: no room for the cost on its filed row`)
+        // after a wrapped label's last line the cost sits inside the label's bounding box (the linter measures a text
+        // run as one box); it is placed clear of every line, so that overlap is intended
+        if (lines.length > 1) r.costEl.setAttribute('data-overlap-ok', '')
+        else r.costEl.removeAttribute('data-overlap-ok')
+      }
+      const lx0 = Math.round(costRight + LEAD_GAP), lx1 = Math.round(cx - LEAD_GAP)
       r.leaderOn = lx1 - lx0 >= 24
       style(r.leader, { left: lx0 + 'px', top: Math.round(lastMid - 3) + 'px', width: Math.max(0, lx1 - lx0) + 'px' })
       // icon grid area: right of the open result box
@@ -364,14 +427,41 @@ export default function unitLadder(spec, ctx) {
     ? [...SCALES.filter(sc => sc >= 0.88).map(sc => [sc, true]), ...SCALES.map(sc => [sc, false])]
     : SCALES.map(sc => [sc, unitChoices[0]])
   const cands = []
-  for (const ck of check ? [true, false] : [false]) for (const tight of [false, true]) for (const [sc, u] of base) cands.push({ sc, u, tight, ck })
+  // (cw: a label may wrap once more so its filed row keeps its cost: the working outranks type size and the check)
+  const hasCost = R.some(r => r.costEl)
+  for (const cw of hasCost ? [true, false] : [false]) for (const ck of check ? [true, false] : [false]) for (const tight of [false, true]) for (const [sc, u] of base) cands.push({ sc, u, tight, ck, cw })
   let chosen = null
   for (const c of cands) {
     const r = place(c)
     log(`try ${JSON.stringify(c)} fits=${r.fits} height=${Math.round(r.height)} avail=${P.bottom - P.top} why=${why.join(',')}`)
-    if (r.fits) { chosen = { c, height: r.height }; break }
+    if (r.fits) { chosen = { c, c0: c, height: r.height }; break }
   }
   let scroll = null
+  if (chosen && !chosen.c.cw && hasCost) {
+    // the costs could not all wrap into place: let each row that lost its cost wrap for it while the page still fits,
+    // at the chosen size or a smaller one (same check choice) when that keeps more costs (the working outranks size)
+    const greedy = c0 => {
+      let set = [], res = null
+      for (let i = 0; i < N - 1; i++) {
+        if (!R[i].costEl) continue
+        place({ ...c0, cw: set })
+        if (R[i].costOn) continue
+        const r = place({ ...c0, cw: [...set, i] })
+        if (r.fits && R[i].costOn) { set = [...set, i]; res = r }
+      }
+      const r = place({ ...c0, cw: set })
+      return { c: { ...c0, cw: set }, height: r.height, fits: r.fits, on: R.filter(x => x.costOn).length }
+    }
+    let best = greedy(chosen.c)
+    for (const c of cands.slice(cands.findIndex(x => x === chosen.c0))) {
+      if (c.cw || c.ck !== chosen.c.ck) continue
+      if (!place(c).fits) continue
+      const g = greedy(c)
+      if (g.fits && g.on > best.on) best = g
+    }
+    chosen = { c: best.c, height: best.height }
+    log(`cost wraps: ${JSON.stringify(best.c)} costs on ${best.on}`)
+  }
   if (chosen) {
     // breathe: spare height opens the gaps (top-aligned like a real sheet), capped so the ladder stays one block
     const gaps = Math.max(1, N - 1 + (chosen.c.u ? 1 : 0))
@@ -380,7 +470,7 @@ export default function unitLadder(spec, ctx) {
   } else {
     // overflow fallback: the smallest legal type, no check, and the sheet scrolls so the open rung fits. Each scroll
     // step lands on a row boundary, so the first visible row sits right at the top of the work area (no gap).
-    const c = { sc: SCALES[SCALES.length - 1], u: unitChoices[unitChoices.length - 1], tight: true, ck: false }
+    const c = { sc: SCALES[SCALES.length - 1], u: unitChoices[unitChoices.length - 1], tight: true, ck: false, cw: false }
     const r = place(c)
     chosen = { c, height: r.height }
     const y0 = R[0].y
@@ -513,6 +603,7 @@ export default function unitLadder(spec, ctx) {
 
   // ---------------------------------------------------------------- sound
   T.forEach((x, i) => {
+    if (x.pre) return // already on the sheet at frame 1
     ctx.cue(x.t0, 'type', { dur: x.typeD, gain: 0.45 })
     if (x.cntD >= 0.35) ctx.cue(x.cnt0, 'roll', { dur: x.cntD, gain: 0.3 })
     ctx.cue(x.land, R[i].last ? 'ding' : 'pop', { gain: R[i].last ? 0.6 : 0.5 })
@@ -559,6 +650,11 @@ export default function unitLadder(spec, ctx) {
     // the leader draws in behind the filed result
     const lp = filed ? prog(tt, x.col + x.colD * 0.45, x.colD * 0.7) : 0
     style(r.leader, { display: r.leaderOn && lp > 0 ? '' : 'none', clipPath: lp >= 1 ? 'none' : `inset(0 ${n3((1 - lp) * 100)}% 0 0)` })
+    // the cost settles beside the label as the working leaves (it fades in once the formula has gone)
+    if (r.costEl && r.costOn) {
+      const co = filed ? prog(tt, x.col + x.colD * 0.3, x.colD * 0.5) : 0
+      style(r.costEl, { display: co > 0 ? '' : 'none', opacity: n3(co) })
+    }
     // icon grid fills with the counter, leaves as the row files
     if (r.plan) {
       const go = 1 - out
@@ -618,8 +714,9 @@ export default function unitLadder(spec, ctx) {
         const uo = n3(edge(U.y, S) * (scroll && cleared ? alpha : 1))
         style(U.el, { opacity: uo }); style(U.iconWrap, { opacity: uo })
       }
-      // (after the clear, the frame-1 state returns: rung 1 open and the other circles waiting)
-      R.forEach((r, i) => seekRung(r, T[i], tt, t, (cleared && i > 0 ? 0 : alpha) * edge(r.y, S)))
+      // (after the clear, the frame-1 state returns: rung 1 open, a pre-filled rung with its count, the other circles
+      // waiting; a rung that is not open at t 0 stays hidden on its own)
+      R.forEach((r, i) => seekRung(r, T[i], tt, t, alpha * edge(r.y, S)))
       R.forEach((r, i) => seekCircle(r, i, tt, alpha, S))
       if (check) {
         const on = checkOn && !cleared && tt >= checkT

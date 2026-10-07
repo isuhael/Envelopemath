@@ -24,17 +24,17 @@ export function md(str = '') {
 /**
  * The optional "check:" line, read the same way in every format. Accepts a string or { t, text } in data.check or
  * lookOpts.check; its time comes from data.checkT, then lookOpts.checkT, then check.t, else null (the format's
- * default). "check: " is prefixed when missing (prefix: false keeps the text as written). null when there is none.
+ * default). One rule kit-wide: the line always reads "check: …" (prefixed when missing; breakLine hangs a long one
+ * under its sum). null when there is none.
  */
-export function readCheck(d = {}, LO = {}, { prefix = true } = {}) {
+export function readCheck(d = {}, LO = {}) {
   const c = d && d.check != null && d.check !== '' ? d.check : LO && LO.check != null ? LO.check : null
   if (c == null || c === false) return null
   const obj = typeof c === 'object'
   let text = obj ? (c.text != null ? String(c.text) : '') : String(c)
   text = text.trim()
   if (!text) return null
-  if (prefix && !/^check\b/i.test(text)) text = 'check: ' + text
-  if (!prefix) text = text.replace(/^check:\s*/i, '')
+  if (!/^check\b/i.test(text)) text = 'check: ' + text
   const tRaw = d && d.checkT != null ? d.checkT : LO && LO.checkT != null ? LO.checkT : obj && c.t != null ? c.t : null
   const t = tRaw == null ? null : +tRaw
   return { text, t: t != null && isFinite(t) ? t : null }
@@ -153,7 +153,8 @@ export function hlBox({ html = '', tone, color, px: size = SIZE.result, family =
     },
     setHTML(v) { setHTML(txt, v) },
     width() { return el.getBoundingClientRect().width },
-    seek(wipe = 1, text = 1, rest = 0) {
+    /** ink 0..1 multiplies the text's opacity (the loop clear fades the figure out with its box: pass keep²) */
+    seek(wipe = 1, text = 1, rest = 0, ink = 1) {
       const w = clamp(wipe)
       css(bg, {
         clipPath: w >= 1 ? 'none' : `inset(0 ${n3((1 - w) * 100)}% 0 0 round ${radius}px)`,
@@ -161,7 +162,7 @@ export function hlBox({ html = '', tone, color, px: size = SIZE.result, family =
       })
       const p = clamp(text)
       const sc = p >= 1 || from >= 1 ? 1 : lerp(from, 1, ease.back(p, 2.2))
-      css(txt, { opacity: n3(clamp(p * 4)), transform: sc === 1 ? 'none' : `scale(${n3(sc)})` })
+      css(txt, { opacity: n3(clamp(p * 4) * clamp(ink)), transform: sc === 1 ? 'none' : `scale(${n3(sc)})` })
     },
     /** wipe the second tone over the box, left to right (0..1), resting with `rest` like the box itself */
     seekRetone(wipe = 0, rest = 0) {
@@ -206,40 +207,50 @@ export function typeLine({ text = '', suffix = '', px: size = SIZE.formula, colo
 
 /**
  * Break a typed line (a check, a formula) so it fits maxW at its size: one line if it fits, else two lines (three
- * for a very long sum) broken before "=" / "≈" or an operator where possible, else at the most balanced space.
+ * for a very long sum) broken before "=" / "≈" (strongly preferred: the line reads as an equation) or an operator,
+ * else at the most balanced space. A "check: " line hangs its continuation lines under the sum (mono, so the indent
+ * is exact): "check: $2,000 + $1,200 + $800" / "       = $4,000".
  * Measured once at mount with a probe in `parent` (it must be in the stage, so the fonts and letter-spacing match).
  * Returns { text (with "\n"), lines, width }.
  */
-export function breakLine(parent, text, maxW, { px: size = SIZE.check, family = F.mono, weight = 500, maxLines = 3 } = {}) {
+export function breakLine(parent, text, maxW, { px: size = SIZE.check, family = F.mono, weight = 500, maxLines = 3, hang } = {}) {
   const probe = typeLine({ text: '', px: size, family, weight })
   parent.append(probe.el)
   const memo = new Map()
   const wOf = s0 => { if (!memo.has(s0)) { setText(probe.span, s0); memo.set(s0, probe.span.getBoundingClientRect().width + 8) } return memo.get(s0) }
   const full = String(text)
   const words = full.split(' ')
+  const lead = /^check:\s*/i.exec(full)
+  let indent = hang != null ? String(hang) : lead && family === F.mono ? ' '.repeat(lead[0].length) : ''
   const join = (a, b) => words.slice(a, b).join(' ')
-  // a break before word i: preferred before "=" / "≈", then before an operator, else anywhere
-  const pref = i => (/^[=≈]/.test(words[i]) ? 0.9 : /^[+−×÷]/.test(words[i]) ? 0.95 : 1)
+  const cont = (a, b) => indent + join(a, b)
+  // a break before word i: before "=" / "≈" by far the best, then before an operator, else anywhere
+  const pref = i => (/^[=≈]/.test(words[i]) ? 0.62 : /^[+−×÷]/.test(words[i]) ? 0.95 : 1)
   let out = { text: full, lines: 1, width: wOf(full) }
-  if (out.width > maxW && words.length > 1) {
+  const search = () => {
     let best = null
     const n = words.length
     for (let a = 1; a < n; a++) {
-      const l1 = wOf(join(0, a)), l2 = wOf(join(a, n))
+      const l1 = wOf(join(0, a)), l2 = wOf(cont(a, n))
       if (l1 <= maxW && l2 <= maxW) {
         const sc = Math.max(l1, l2) * pref(a)
         if (!best || best.lines > 2 || sc < best.sc) best = { cuts: [a], lines: 2, sc, width: Math.max(l1, l2) }
       }
       if (maxLines >= 3 && (!best || best.lines === 3)) for (let b = a + 1; b < n; b++) {
-        const w3 = [wOf(join(0, a)), wOf(join(a, b)), wOf(join(b, n))]
+        const w3 = [wOf(join(0, a)), wOf(cont(a, b)), wOf(cont(b, n))]
         if (Math.max(...w3) > maxW) continue
         const sc = Math.max(...w3) * pref(a) * pref(b)
         if (!best || (best.lines === 3 && sc < best.sc)) best = { cuts: [a, b], lines: 3, sc, width: Math.max(...w3) }
       }
     }
+    return best
+  }
+  if (out.width > maxW && words.length > 1) {
+    let best = search()
+    if (!best && indent) { indent = ''; best = search() } // too tight to hang: continuation lines start flush
     if (best) {
-      const cuts = [0, ...best.cuts, n]
-      out = { text: cuts.slice(0, -1).map((c, k) => join(c, cuts[k + 1])).join('\n'), lines: best.lines, width: best.width }
+      const cuts = [0, ...best.cuts, words.length]
+      out = { text: cuts.slice(0, -1).map((c, k) => (k ? cont(c, cuts[k + 1]) : join(c, cuts[k + 1]))).join('\n'), lines: best.lines, width: best.width }
     }
   }
   probe.el.remove()
@@ -427,6 +438,38 @@ export function alignSheetRows(rows) {
   return lw
 }
 
+/**
+ * A right-aligned number column where some values carry "≈ ": every "≈" sits in one vertical line (a fixed slot left
+ * of the widest figure) and plain values leave the slot empty. boxes: the column's hlBoxes (any size; measured at
+ * refPx), values: their display strings. Sets each box's HTML and returns it (keep it for later setHTML calls). The
+ * figure is never re-formatted: only the "≈ " prefix moves into its slot.
+ */
+export function alignApprox(boxes, values, refPx = 40) {
+  const parts = values.map(v => {
+    const m = /^≈[\s\u00a0]*(.+)$/.exec(String(v == null ? '' : v).trim())
+    return m ? { ax: true, num: m[1] } : { ax: false, num: String(v == null ? '' : v) }
+  })
+  if (!parts.some(p => p.ax)) return values.map(v => md(String(v == null ? '' : v)))
+  const range = document.createRange()
+  const ws = boxes.map((b, i) => {
+    b.setPx(refPx)
+    b.setHTML(md(parts[i].num))
+    range.selectNodeContents(b.txt)
+    return range.getBoundingClientRect().width
+  })
+  // the slot is as wide as the widest "≈" figure within ~1.25 em of the narrowest: an outlier (a figure with cents
+  // among whole dollars) keeps its natural "≈" rather than push every other one far from its number
+  const axW = ws.filter((_, i) => parts[i].ax)
+  const lim = Math.min(...axW) + 1.25 * refPx
+  const W = Math.max(...axW.filter(w => w <= lim + 0.5))
+  const em = (W / refPx + 0.01).toFixed(3)
+  return parts.map((p, i) => {
+    const html = p.ax && ws[i] <= W + 0.5 ? `<span class="cs-approx">≈</span>\u00a0<span class="cs-axn" style="min-width:${em}em">${md(p.num)}</span>` : md(String(values[i] == null ? '' : values[i]))
+    boxes[i].setHTML(html)
+    return html
+  })
+}
+
 // ------------------------------------------------------------------ line fitting (header, verdict, footer, labels)
 
 /** words of one explicit line, each with its emphasis ('' | 'em' | 'mark2') and whether a space precedes it */
@@ -478,13 +521,24 @@ export function fitMarkup(el, str, { maxW, maxH = Infinity, maxPx, minPx, lh = 1
   el.innerHTML = ''
   el.append(probe)
   const memo = new Map()
+  // a line break at " · " is the separator itself: the dot leaves (never a stray "·" at a line's end or start)
+  const lineToks = (toks, a, b) => {
+    let x = a, y = b
+    if (y - x > 1 && toks[y - 1].text === '·') y--
+    if (y - x > 1 && toks[x].text === '·' && x > 0) x++
+    const out = toks.slice(x, y)
+    if (out.length && x > 0) out[0] = { ...out[0], space: false }
+    return out
+  }
   const widthOf = (si, a, b) => {
     const k = si + ':' + a + ':' + b
-    if (!memo.has(k)) { probe.innerHTML = lineHTML(segs[si].slice(a, b)); memo.set(k, probe.getBoundingClientRect().width) }
+    if (!memo.has(k)) { probe.innerHTML = lineHTML(lineToks(segs[si], a, b)); memo.set(k, probe.getBoundingClientRect().width) }
     return memo.get(k)
   }
   // per segment: candidate splits into 1..maxSplit lines -> { k, w (widest line at REFPX), cuts, bp (break cost, px) }
-  const FUNC = /^(a|an|the|of|to|in|on|at|for|and|or|by|with|your|my|is|if)$/i
+  // a line that ends in an article or a preposition reads as an orphan ("… THE / PAY …"): far worse than an extra line
+  const ORPHAN = /^(a|an|the|of|to|in|on|for|at|by|with|from|into)$/i
+  const FUNC = /^(and|or|your|my|is|if|our|their|its)$/i
   const opts = segs.map((toks, si) => {
     const n = toks.length
     const breaks = [] // a line may start at token i
@@ -494,7 +548,9 @@ export function fitMarkup(el, str, { maxW, maxH = Infinity, maxPx, minPx, lh = 1
     const bpAt = i => {
       let c = 0
       if (toks[i - 1].cls && toks[i - 1].cls === toks[i].cls) c += 8
-      if (FUNC.test(toks[i - 1].text)) c += 6
+      if (ORPHAN.test(toks[i - 1].text)) c += 3 * Math.max(8, linePenalty) + 6
+      else if (FUNC.test(toks[i - 1].text)) c += 6
+      else if (/^[\d.,]+$/.test(toks[i - 1].text)) c += 8 // a bare number keeps its unit ("2 / WEEKS")
       if (/[?!.:;]$/.test(toks[i - 1].text)) c -= 4
       else if (/[·,]$/.test(toks[i - 1].text) || toks[i - 1].text === '·') c -= 2
       return c
@@ -550,7 +606,9 @@ export function fitMarkup(el, str, { maxW, maxH = Infinity, maxPx, minPx, lh = 1
   ch.pick.forEach((o, si) => {
     const toks = segs[si]
     const cuts = [0, ...o.cuts, toks.length]
-    for (let c = 0; c + 1 < cuts.length; c++) lines.push(lineHTML(toks.slice(cuts[c], cuts[c + 1])))
+    for (let c = 0; c + 1 < cuts.length; c++) lines.push(lineHTML(lineToks(toks, cuts[c], cuts[c + 1])))
+    // the text is too long to set without an orphan: say so, so the spec author can shorten it
+    for (const cut of o.cuts) if (ORPHAN.test(toks[cut - 1].text)) console.warn(`fitMarkup: "${plain(String(str)).replace(/\n/g, ' / ')}" ends a line on "${toks[cut - 1].text}": too long to set cleanly, shorten it`)
   })
   el.innerHTML = lines.join('<br>')
   let size = Math.max(minPx, Math.min(maxPx, ch.px))

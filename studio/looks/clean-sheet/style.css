@@ -73,6 +73,7 @@
 .cs-hl-re { opacity: 0; }
 .cs-hl-txt { position: relative; display: block; transform-origin: 0 55%; padding-top: .06em; }
 .cs-hl em, .cs-hl u.mark2 { font-style: normal; text-decoration: none; }
+.cs-axn { display: inline-block; text-align: right; } /* alignApprox: a figure right-aligned in its column's slot */
 
 /* typed line + caret */
 .cs-type { white-space: pre; line-height: 1.2; letter-spacing: -.01em; }

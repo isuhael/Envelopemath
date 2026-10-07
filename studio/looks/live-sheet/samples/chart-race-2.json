@@ -196,5 +196,10 @@
     ],
     "hold": 4.0
   },
-  "notes": "Stress variant: 3 rivals, long names (split onto sub-labels), compact counters (dp 1), log axis, silent (no captions), verdict retyped into the formula bar, a 3-line footer. $10,000 each at the Dec 31, 2015 close; V(y) = V(y-1) × (1 + r(y)); returns as sourced in teasers/v2/checks/04-chart-race.py (S&P 500 total return; MSCI Europe net, US$; gold year-end change, 2025 = 4,319.37 / 2,624.60 − 1 = +64.57%). Finals: USA $39,832.91 → ≈ $39.8K; Europe $22,660.82 → ≈ $22.7K; gold $40,657.44 → ≈ $40.7K. The USA leads at every year-end 2016-2024; gold passes it during 2025 (USA $33,791.07 → $39,832.91, gold $24,704.88 → $40,657.44), hence 'Gold passed the USA in 2025'."
+  "notes": "Stress variant: 3 rivals, long names (split onto sub-labels), compact counters (dp 1), log axis, silent (no captions), verdict card in the caption band, a 3-line footer, gold mapped to amber (lookOpts.colors). $10,000 each at the Dec 31, 2015 close; V(y) = V(y-1) × (1 + r(y)); returns as sourced in teasers/v2/checks/04-chart-race.py (S&P 500 total return; MSCI Europe net, US$; gold year-end change, 2025 = 4,319.37 / 2,624.60 − 1 = +64.57%). Finals: USA $39,832.91 → ≈ $39.8K; Europe $22,660.82 → ≈ $22.7K; gold $40,657.44 → ≈ $40.7K. The USA leads at every year-end 2016-2024; gold passes it during 2025 (USA $33,791.07 → $39,832.91, gold $24,704.88 → $40,657.44), hence 'Gold passed the USA in 2025'.",
+  "lookOpts": {
+    "colors": {
+      "Gold": "#B54708"
+    }
+  }
 }

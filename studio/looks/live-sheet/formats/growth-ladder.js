@@ -14,28 +14,29 @@
 //                 put-in column from frame 1 as well.
 //   last row      a taller summary row: its worth counts up and lands exactly on its display string, the row
 //                 wipes yellow (highlightLast) and the selection springs onto the final cell.
-// On a 3-column ladder every worth cell carries a pale two-tone data bar behind its number, all on one scale
-// (grey = what you put in, green = the growth): the bars step down the column like the curve, and the green
-// overtakes the grey where the money doubles. A bar gives way to its row's highlight.
+// Optional (lookOpts.bars: true): every worth cell carries a pale two-tone data bar behind its number, all on one
+// scale (grey = what you put in, green = the growth). Off by default: the numbers carry the ladder.
 // Rows land on rowT: the selection is a range whose fill handle drags down as each row lands; values snap in
 // (116% → 100%) with a yellow flash and a tick, left to right 0.08 s apart. A mark (lookOpts.marks
 // [{ t, row, tone, label }]) tints its row (yellow for good/goal, rose for bad), opens a slot under it and pops a
-// dark tooltip out of its notch; when the sheet has no room for that slot, the label is typed into the formula
-// bar instead. A good mark leaves its year cell yellow once it closes, so the milestone stays findable. The
-// verdict is a card in the caption band or is retyped into the formula bar while the worth column flashes top to
-// bottom. The last 0.5 s clear back to frame 1 so the short loops.
+// dark tooltip wipes out of its notch (the card grows by the slot while it is open); when the sheet has no room
+// for that slot, the label is typed into the formula bar instead. A good mark leaves its year cell yellow once it
+// closes, so the milestone stays findable. The verdict is a card in the caption band (the sheet stops above it
+// unless rows would fall under 50 px) or is retyped into the formula bar (Inter 800) while the worth column flashes
+// top to bottom. A caption that names the counted total waits for the count to land. The last 0.5 s clear back to
+// frame 1 so the short loops.
 // Layout is automatic: the A B C row goes first when rows get under 64 px, then the summary row's extra height;
 // dense silent cards may go down to 48 px rows (text stays at 40 px).
 //
 // lookOpts: loop (true) · countUp (true) · letters ('auto' | true | false) · verdict ('auto' | 'band' | 'formula')
 //           · emphTone ('good') · formulaAt0 (0.7) · formulaBar ([{ t, text }]) · marks ([{ t, row, tone, label }])
-//           · unmask ('values' | 'rows') · inputsAtStart (false) · bars ('auto': 3-column ladders) · subLabels (false)
+//           · unmask ('values' | 'rows') · inputsAtStart (false) · bars (false; true or 'auto': 3-column ladders) · subLabels (false)
 //           · markStyle ('auto' | 'tip' | 'bar')
 import {
   h, setStyle, clamp, prog, ease, C, G, M, S,
-  sheet, tipStrip, mk, mkLen, typedMk, typedCount, wordCut, caretOn, countText, displayValue,
+  sheet, tipStrip, fitTips, tipWindow, mk, mkLen, typedMk, typedCount, wordCut, caretOn, countText, displayValue,
   popScale, flashAlpha, lerpRect, rgba, durationOf, hasCaptions, opt, layer, footerHeight, fitFormula, textW, font,
-  toneColor, toneFill, cellSizes, isNumeric,
+  toneColor, toneFill, cellSizes, isNumeric, hasUnits, fitBarVerdict,
 } from '../lib.js'
 
 export const css = `
@@ -113,9 +114,9 @@ export default function growthLadder(spec, ctx) {
   // ---------- layout ----------
   const fH = footerHeight(spec.footer)
   const tipW = G.width - G.gutter - 24
-  let tipPx = S.tip
-  while (marks.length && tipPx > 40 && Math.max(...marks.map(m => textW(mk(m.label), font(800, tipPx)))) > tipW - 58) tipPx -= 2
-  const slotFull = marks.length ? Math.round(tipPx * 1.2 + 26) : 0
+  const tipFit = fitTips(marks.map(m => m.label), tipW)
+  const tipPx = tipFit.px
+  const slotFull = marks.length ? tipFit.slotH : 0
   const labelLines = Math.max(1, ...cols0.map(c => String(c.label || '').split('\n').length))
   const labelGuess = labelLines > 1 ? 116 : 76
   const bandBottom = G.workBottom - (fH ? fH + G.gap : 0)
@@ -124,7 +125,8 @@ export default function growthLadder(spec, ctx) {
   const estRow = (bottom, letters, frac, fbH, slot) => (bottom - G.cardTop - fbH - (letters ? G.lettersH : 0) - labelGuess - slot) / (N + frac)
   let vMode = opt(spec, 'verdict', 'auto')
   if (!verdict) vMode = 'none'
-  else if (vMode === 'auto') vMode = caps || estRow(bandBottom, false, hiLast ? 0.3 : 0, fbOf(fe.map(e => e.text)), 0) >= 60 ? 'band' : 'formula'
+  // the verdict is a card in the caption band whenever rows keep 50 px with the band reserved
+  else if (vMode === 'auto') vMode = caps || estRow(bandBottom, false, hiLast ? 0.3 : 0, fbOf(fe.map(e => e.text)), 0) >= 50 ? 'band' : 'formula'
   const bandUsed = caps || vMode === 'band'
   const bottom = bandUsed ? bandBottom : fullBottom
   const minRowH = bandUsed ? 52 : 48 // a dense silent card may go tighter (text stays 40 px)
@@ -132,14 +134,16 @@ export default function growthLadder(spec, ctx) {
   // formula bar (the row still lights up)
   const markOpt = opt(spec, 'markStyle', 'auto')
   const markAt = m => Math.max(m.t, pre[m.row] ? 0 : landEnd(m.row)) + 0.08
-  const fStrs = [...fe.map(e => e.text), vMode === 'formula' ? verdict.text : '']
+  const fStrs = fe.map(e => e.text)
   const markMode = !marks.length ? 'none' : markOpt === 'bar' || markOpt === 'tip' ? markOpt
     : estRow(bottom, false, 0, fbOf(fStrs), slotFull) >= 56 ? 'tip' : 'bar'
   if (markMode === 'bar') marks.forEach(m => fe.push({ t: markAt(m), text: m.label, mark: true }))
-  if (vMode === 'formula') fe.push({ t: verdict.t, text: verdict.text, verdict: true })
-  fe = fe.map(e => ({ ...e, text: glueOps(e.text) })).sort((a, b) => a.t - b.t || !!a.verdict - !!b.verdict)
+  fe = fe.map(e => ({ ...e, text: glueOps(e.text) }))
+  // a verdict typed into the bar has its own fit (Inter 800) and never sizes the bar
+  if (vMode === 'formula') fe.push({ t: verdict.t, text: fitBarVerdict(verdict.text, G.width).text, verdict: true })
+  fe.sort((a, b) => a.t - b.t || !!a.verdict - !!b.verdict)
   const slotH = markMode === 'tip' ? slotFull : 0
-  const fbH = fitFormula(fe.map(e => e.text), G.width).ht
+  const fbH = fitFormula(fe.filter(e => !e.verdict).map(e => e.text), G.width).ht
   // the A B C row is decoration: it goes first when rows get cramped; then the summary row gives back its extra
   const lOpt = opt(spec, 'letters', 'auto')
   let frac = hiLast ? 0.5 : 0
@@ -161,10 +165,11 @@ export default function growthLadder(spec, ctx) {
   const sh = sheet(L, {
     columns: cols0.map((c, j) => ({
       label: c.label, kind: j === 0 ? 'input' : j === outC ? 'output' : 'mid',
-      tone: j === outC ? emphTone : c.tone, align: align[j],
+      tone: j === outC ? emphTone : c.tone, align: align[j], units: rows.some(r => hasUnits(r[j])),
     })),
-    values: [...rows, ...sizeRow], rows: N, reserve: slotH, spare: frac, minRowH,
-    bottom, formula: { strings: fe.map(e => e.text) }, letters,
+    // the mark slot is planned for but not drawn: the card grows while a tooltip is open
+    values: [...rows, ...sizeRow], rows: N, reserve: slotH, grow: true, spare: frac, minRowH, tail: frac ? 0 : 16,
+    bottom, formula: { strings: fe.filter(e => !e.verdict).map(e => e.text), verdict: vMode === 'formula' ? verdict.text : null }, letters,
   })
   // a one-word label that still cannot fit its column (a dense 4-column card): trade the label cell's padding
   // for the word, rather than letting it clip
@@ -203,7 +208,7 @@ export default function growthLadder(spec, ctx) {
 
   // ---------- data bars: put-in (grey) + growth (green), one scale for the whole column ----------
   // 'auto': only on the classic 3-column ladder (with a growth column of its own, the bars would repeat it)
-  const barOpt = opt(spec, 'bars', 'auto')
+  const barOpt = opt(spec, 'bars', false)
   const barOn = (barOpt === true || (barOpt === 'auto' && nC === 3)) && putC >= 0 && rows.every(r => isFinite(displayValue(r[outC])) && isFinite(displayValue(r[putC])))
   const vMax = barOn ? Math.max(...rows.map(r => displayValue(r[outC]))) : 0
   const bars = barOn && vMax > 0 ? rows.map((r, i) => {
@@ -233,7 +238,8 @@ export default function growthLadder(spec, ctx) {
   }
 
   // ---------- durations ----------
-  const D0 = durationOf(spec, { beats: [...rows.map((_, i) => landEnd(i)), ...marks.map(m => m.t + 1.2), ...fe.map(e => e.t + 1.5)], hold: d.hold ?? 3 })
+  const vfe = fe.find(e => e.verdict)
+  const D0 = durationOf(spec, { beats: [...rows.map((_, i) => landEnd(i)), ...marks.map(m => m.t + 1.2), ...fe.filter(e => !e.verdict).map(e => e.t + 1.5)], hold: d.hold ?? 3, loop: loopOn, verdictEnd: vfe ? vfe.t + 0.16 + mkLen(vfe.text) / 26 : null })
   const D = spec.duration || D0
   const loopT0 = loopOn ? D - M.loopOut : Infinity
 
@@ -247,25 +253,22 @@ export default function growthLadder(spec, ctx) {
     const closeAt = Math.min(next, lastIn, verdict ? verdict.t : Infinity, loopT0)
     return { openAt, closeAt, wipeAt: Math.max(m.t, land - 0.1) }
   })
-  const openOf = (i, t) => {
-    const w = markWin[i]
-    if (w.closeAt <= w.openAt) return 0
-    return ease.inOut(prog(t, w.openAt, 0.3)) * (1 - ease.inOut(prog(t, w.closeAt + 0.06, 0.24)))
-  }
+  const wins = markWin.map(w => tipWindow(w.openAt, w.closeAt))
+  const openOf = (i, t) => wins[i].open(t)
   const shiftAt = (r, t) => {
     let dy = 0
     if (slotH) marks.forEach((m, i) => { if (r > m.row) dy += slotH * openOf(i, t) })
     return dy
   }
-  const tips = markMode === 'tip' ? marks.map(() => tipStrip(sh, { px: tipPx })) : []
-  const tipBox = marks.map(m => {
+  const tipHTML = marks.map((m, i) => `<span style="color:${tipTone[m.tone] || C.text}">${tipFit.html[i]}</span>`)
+  const tips = markMode === 'tip' ? marks.map((m, i) => tipStrip(sh, { px: tipPx, html: tipHTML[i], wrap: tipFit.wrap })) : []
+  const tipBox = marks.map((m, i) => {
     const x0c = colX0(outC), x1c = colX1(outC)
-    const wpx = Math.min(sh.w - sh.gutter - 24, textW(mk(m.label), font(800, tipPx)) + 58)
+    const wpx = tipFit.w[i]
     const x1 = Math.min(sh.x + sh.w - 12, Math.max(x1c - 10, sh.x + sh.gutter + 12 + wpx))
     const x0 = Math.max(sh.x + sh.gutter + 12, x1 - wpx)
     return { x0, x1, notchX: clamp((x0c + x1c) / 2, x0 + 34, x1 - 34) }
   })
-  const tipHTML = marks.map(m => `<span style="color:${tipTone[m.tone] || C.text}">${mk(m.label)}</span>`)
 
   // ---------- selection keyframes ----------
   const landStep = (t, i) => (pre[i] ? 1 : ease.out(prog(t, rowT[i] - 0.07, 0.16)))
@@ -339,7 +342,9 @@ export default function growthLadder(spec, ctx) {
     duration: D0,
     chrome: {
       footer: { top: sh.bottom + G.gap },
+      footerShift: t => shiftAt(N, t),
       captions: caps,
+      captionHolds: countOn ? [{ text: rows[last][outC], t: outT0(last) + M.count }] : [],
       verdict: vMode === 'band' ? 'band' : 'self',
       loop: loopOn ? { t0: loopT0, dur: 0.3 } : null,
     },
@@ -347,12 +352,13 @@ export default function growthLadder(spec, ctx) {
       // formula bar: the verdict takes it over in ink, heavier, as the ≈ chip pops
       const fs = formulaState(t)
       sh.fbar.set(fs.html, { caret: fs.caret })
-      setStyle(sh.fbar.txt, fs.verdict ? { color: C.ink, fontWeight: '800' } : { color: C.fbarText, fontWeight: '700' })
+      sh.fbar.verdictStyle(!!fs.verdict, vf ? prog(t, vf.t, 0.2) : 0)
       const chipP = vf ? prog(t, vf.start - 0.1, 0.34) : 0
       setStyle(sh.fbar.chip, { transform: `translateY(-50%) scale(${chipP > 0 && chipP < 1 && t < loopT0 ? popScale(chipP, 1.3).toFixed(4) : 1})` })
 
       // rows: shift (mark slots), the summary row's extra height pushes the spare rows down
       for (let r = 0; r < nRows; r++) sh.rowShift(r, shiftAt(r, t) + (r > last ? extra : 0))
+      sh.setGrow(shiftAt(N, t))
       const lastHi = hiAt(t)
       for (let r = 0; r < N; r++) {
         // row fill: the summary row's yellow, or an open mark's tint (wiping in from the left)
@@ -405,17 +411,10 @@ export default function growthLadder(spec, ctx) {
           if (isOut) setBar(r, p > 0 ? q : 0, Math.min(clamp(p * 4), 1 - out) * (1 - a * wipe))
         }
       }
-      // spare rows (the slot room, the summary row's room) fade their numbers when pushed
-      for (let r = N; r < nRows; r++) setStyle(sh.numEls[r], { opacity: String(clamp(1 - shiftAt(r, t) / (rowH * 0.5))) })
 
       // mark tooltips
       if (markMode === 'tip') marks.forEach((m, i) => {
-        const o = openOf(i, t)
-        const w = markWin[i]
-        const inP = prog(t, w.openAt + 0.04, 0.34), outP = prog(t, w.closeAt - 0.04, 0.18)
-        const k = outP > 0 ? 1 - ease.in(outP) : inP < 1 ? Math.max(0, ease.back(inP, 2)) : 1
-        const alpha = prog(t, w.openAt + 0.3, 0.1) * (1 - prog(t, w.closeAt - 0.1, 0.06))
-        tips[i].set({ ...tipBox[i], y: yAt(m.row + 1) + shiftAt(m.row, t), ht: slotH, open: o, scale: inP <= 0 ? 0 : k, html: tipHTML[i], textAlpha: alpha })
+        tips[i].set({ ...tipBox[i], y: yAt(m.row + 1) + shiftAt(m.row, t), ht: slotH, open: wins[i].open(t), reveal: wins[i].reveal(t) })
       })
 
       // selection

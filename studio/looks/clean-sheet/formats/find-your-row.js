@@ -11,21 +11,25 @@
 // one (its own full-tint box), the band behind the earlier ones stays pale, so one bright cell runs down an even
 // column. A pick swipes the yellow highlighter across its row (the emphasised cell turns full where the two
 // highlighters cross) and writes its label on the legend line under the table: [row key on yellow] label (fitted:
-// 46 -> 40 px, two balanced lines, and without the key chip only when the label still does not fit). The rough
+// 46 -> 40 px, two balanced lines, and without the key chip only when the label still does not fit). Several
+// picks each keep their own legend line when the page has room (stack); on one shared line an earlier pick's band
+// leaves with its label, so no tint is ever unexplained. In right-aligned columns every "≈" sits in one vertical
+// line (lib alignApprox). The rough
 // formula is a grey mono footnote under the table. With no picks the whole column comes back to full at the end
 // (the cheat-sheet frame). The finished table holds, then (lookOpts.loop, default on) the values clear back to
 // the frame-1 state so the short loops.
 //
 // Layout engine (measured with the real fonts at mount): the table fills the work area at the largest row pitch
 // that fits. It tries, in order: formula and legend each on its own line; formula sub-labels dropped from the
-// head (the footnote carries them); one shared line (the formula, which the pick label replaces from the first
+// head (only those the footnote or the footer already carries: "÷ 2,080"; any other is the column's only working
+// and stays, the head taking a third line); one shared line (the formula, which the pick label replaces from the first
 // pick); a dense 40 px pitch; and only then drops content (the formula first). Head labels, cells, the footnote
 // and the legend never go below 40 px (labels wrap to two lines instead; the footnote takes two lines).
 //
 // lookOpts: loop (true) · legend (true; false hides pick labels) · formula (true; false hides the footnote).
 // columns[j].tone sets the emphasised column's highlighter (good green by default, bad coral, goal blue, neutral sand).
-import { h, css as style, prog, ease, clamp, lerp } from '../../../runtime/core.js'
-import { F, SIZE, GRID, MOTION, md, hlBox, toneColor, fadeUp, fade, landing, durationOf, fitMarkup } from '../lib.js'
+import { h, css as style, prog, ease, clamp, lerp, plain } from '../../../runtime/core.js'
+import { F, SIZE, GRID, MOTION, md, hlBox, toneColor, fadeUp, fade, landing, durationOf, fitMarkup, alignApprox } from '../lib.js'
 
 export const css = `
 .fyr > * { position: absolute; }
@@ -124,16 +128,20 @@ export default function findYourRow(spec, ctx) {
   const ruleMid = h('div', { class: 'cs-rule-thin', 'data-deco': '' })
   const ruleBot = h('div', { class: 'cs-rule-heavy', 'data-deco': '' })
   const head = h('div', { class: 'cs-thead' })
+  // a formula sub-label ("÷ 2,080") may leave the head only when the footnote or the footer already carries it
+  const squash = s0 => plain(String(s0 || '')).toLowerCase().replace(/\s+/g, '')
+  const said = squash(formulaText) + '|' + squash(spec.footer)
   const TH = columns.map((c, j) => {
     const lines = String(c.label || '').split('\n')
     const l2 = lines.slice(1).join(' ').trim()
     const sub = l2 ? (OP.test(l2) ? 'formula' : NUM.test(l2) ? 'figure' : 'cont') : null
+    const subDrop = sub === 'formula' && said.includes(squash(l2))
     const l1 = (lines[0] || '').trim()
     const a = h('span', { class: 'fyr-th1', html: md(l1) })
     const b = sub ? h('span', { class: 'fyr-th2' + (sub === 'cont' ? ' cont' : ''), html: md(l2) }) : null
     const el = h('div', { class: 'cs-th' + (j === E ? ' emph' : '') }, a, b)
     head.append(el)
-    return { el, a, b, sub, l1, words: l1.split(/\s+/).filter(Boolean), html1: md(l1), wrapHTML: null, wrapW: Infinity }
+    return { el, a, b, sub, subDrop, l1, words: l1.split(/\s+/).filter(Boolean), html1: md(l1), wrapHTML: null, wrapW: Infinity }
   })
   // the emphasised column's band: one even highlighter that grows down as its rows land (decoration)
   const colBand = h('div', { class: 'fyr-colband', 'data-deco': '' })
@@ -180,6 +188,12 @@ export default function findYourRow(spec, ctx) {
   const padOf = px => 12 * Math.sqrt(px / SIZE.result) // hlBox's horizontal padding at px
   const range = document.createRange()
   const textW = el => { range.selectNodeContents(el); return range.getBoundingClientRect().width } // ink width, not box
+  // right-aligned columns with some "≈ " values: every "≈" in one vertical line (a slot left of the widest figure)
+  for (let j = 0; j < NC; j++) {
+    if (align(j) !== 'right') continue
+    const html = alignApprox(R.map(r => r.cells[j].hl), rows.map(r => (r[j] != null ? r[j] : '')), REF)
+    R.forEach((r, i) => { r.cells[j].full = html[i] })
+  }
   for (const row of R) for (const c of row.cells) { c.hl.setPx(REF); c.tw = c.hl.txt.getBoundingClientRect().width - 2 * padOf(REF) }
   const cellTW = [...Array(NC).keys()].map(j => Math.max(0, ...R.map(r => r.cells[j].tw)))
   for (const th of TH) { style(th.a, { fontSize: REF + 'px' }); if (th.b) style(th.b, { fontSize: REF + 'px' }) }
@@ -197,9 +211,10 @@ export default function findYourRow(spec, ctx) {
   }
   const formulaW = formula ? (style(formula, { fontSize: REF + 'px' }), textW(formula)) : 0
   const legendW = legends.map(g => { g.key.setPx(REF); style(g.txt, { fontSize: REF + 'px' }); return { key: g.key.width(), txt: textW(g.txt) } })
-  const hasFormulaSubs = TH.some(th => th.sub === 'formula')
+  const hasFormulaSubs = TH.some(th => th.subDrop)
   const hasLegend = legends.length > 0
-  const subOn = (th, headMode) => !!th.b && (th.sub !== 'formula' || headMode === 'full')
+  // (a formula sub-label the footnote does not carry is the column's only working: it stays, the head takes a line)
+  const subOn = (th, headMode) => !!th.b && (!th.subDrop || headMode === 'full')
 
   // column widths for (cellPx, head px, sub px, headMode): { cols, wrap } or null when they cannot fit the 856 px
   // measure. Labels wrap (widest saving first) only when the columns would not fit on one line each.
@@ -269,7 +284,9 @@ export default function findYourRow(spec, ctx) {
   // ---------------------------------------------------------------- layout engine
   const avail = P.bottom - P.top
   const maxPitch = 92
-  function tryLayout(minPitch, mode, fv, raise, hp) {
+  // stack: every pick label keeps its own line under the table (so every pick band stays explained); otherwise one
+  // line shows the latest label, and an earlier pick's band leaves with its label
+  function tryLayout(minPitch, mode, fv, raise, hp, stack = false) {
     const headMode = mode === 'compact' ? 'compact' : 'full'
     const showFormula = !!fv
     const showLegend = hasLegend && mode !== 'formula' && mode !== 'none'
@@ -280,6 +297,7 @@ export default function findYourRow(spec, ctx) {
       if (showFormula) under += GAP_T + fv.h
       if (showLegend) under += (showFormula ? GAP_L : GAP_T) + lg.h
     }
+    if (showLegend && stack) under += (legends.length - 1) * (GAP_L + lg.h)
     const sp = Math.min(HEAD.sub, hp)
     // the fewest label wraps the columns need (at the smallest cells) set the head height, hence the pitch
     const least = colsFor(CELL.min, hp, sp, headMode)
@@ -292,7 +310,7 @@ export default function findYourRow(spec, ctx) {
     let c = null
     while (cellPx > CELL.min && !((c = colsFor(cellPx, hp, sp, headMode)) && c.wrap.size <= least.wrap.size)) cellPx -= 2
     if (cellPx <= CELL.min) { cellPx = CELL.min; c = least }
-    return { mode, fv, raise, headMode, showFormula, showLegend, lg, hp, sp, hh, pitch, cellPx, cols: c.cols, wrap: c.wrap }
+    return { mode, fv, raise, headMode, showFormula, showLegend, lg, hp, sp, hh, pitch, cellPx, cols: c.cols, wrap: c.wrap, stack: showLegend && stack }
   }
   // preference: keep everything at a comfortable pitch; then share the line under the table; then go dense;
   // only then drop content (the formula first, when the head's sub-labels already carry it). Within a group the
@@ -313,10 +331,10 @@ export default function findYourRow(spec, ctx) {
   else if (hasLegend) add(['legend'], [...comfy, ...dense])
   add(['none'], [...comfy, ...dense])
   let L = null
-  for (const [mode, mp, raise, hp] of plan) {
+  const stacks = legends.length > 1 ? [true, false] : [false]
+  search: for (const [mode, mp, raise, hp] of plan) {
     const fvs = mode === 'legend' || mode === 'none' ? [null] : FV
-    for (const fv of fvs) { L = tryLayout(mp, mode, fv, raise, hp); if (L) break }
-    if (L) break
+    for (const stack of stacks) for (const fv of fvs) { L = tryLayout(mp, mode, fv, raise, hp, stack); if (L) break search }
   }
   if (!L) {
     // last resort (more columns or longer labels than the measure holds): columns sized by their cells, labels
@@ -330,7 +348,7 @@ export default function findYourRow(spec, ctx) {
     TH.forEach((th, j) => {
       style(th.el, { width: cols[j].w - 2 * PAD + 'px', whiteSpace: 'normal', fontSize: hp + 'px' })
       style(th.a, { fontSize: hp + 'px', textWrap: 'balance' })
-      if (th.b) style(th.b, { fontSize: sp + 'px', display: th.sub === 'formula' ? 'none' : '' })
+      if (th.b) style(th.b, { fontSize: sp + 'px', display: th.subDrop ? 'none' : '' })
       tall = Math.max(tall, th.el.getBoundingClientRect().height)
     })
     const hh = Math.round(12 + tall + 14)
@@ -398,14 +416,17 @@ export default function findYourRow(spec, ctx) {
       const room = tableW - PAD - (L.lg.keyOn ? (legendW[k].key * L.lg.px) / REF + 18 : 0)
       // explicit, balanced lines (one or two) at the fitted size, so nothing reflows or runs past x 940
       fitMarkup(g.txt, g.p.label, { maxW: room, maxPx: L.lg.px, minPx: L.lg.px, lh: 1.1, maxLines: L.lg.lines, maxSplit: L.lg.lines, linePenalty: 0 })
-      style(g.el, { left: Math.round(textLeft - (L.lg.keyOn ? padOf(L.lg.px) : 0)) + 'px', top: Math.round(ly) + 'px', height: L.lg.h + 'px' })
+      const lt = ly + (L.stack ? k * (L.lg.h + GAP_L) : 0)
+      style(g.el, { left: Math.round(textLeft - (L.lg.keyOn ? padOf(L.lg.px) : 0)) + 'px', top: Math.round(lt) + 'px', height: L.lg.h + 'px' })
     }
   } else for (const g of legends) style(g.el, { display: 'none' })
   let figBottom = top + tableH
   if (L.showFormula) figBottom = Math.max(figBottom, top + tableH + GAP_T + L.fv.h)
-  if (L.showLegend) figBottom = Math.max(figBottom, legends[0].el.offsetTop + L.lg.h)
+  if (L.showLegend) figBottom = Math.max(figBottom, legends[legends.length - 1].el.offsetTop + L.lg.h)
+  // when does a pick's band leave (its label replaced on a one-label line); Infinity = it stays (stacked, unlabelled)
+  for (const p of picks) p.gone = L.showLegend && !L.stack && p.label && labelled.includes(p) ? p.lnext : Infinity
   style(mask, { left: GRID.left - 18 + 'px', width: tableW + 36 + 'px', top: top - 16 + 'px', height: Math.round(figBottom - top + 26) + 'px' })
-  Object.assign(root.dataset, { mode: L.mode, pitch: String(pitch), cell: String(cellPx), head: L.headMode, wrap: [...L.wrap].join(',') })
+  Object.assign(root.dataset, { mode: L.mode, pitch: String(pitch), cell: String(cellPx), head: L.headMode, wrap: [...L.wrap].join(','), stack: String(!!L.stack) })
 
   // ---------------------------------------------------------------- sound
   // each row's values pop in with a soft tick (a quick fill reads as one ripple)
@@ -432,16 +453,17 @@ export default function findYourRow(spec, ctx) {
       const fin = finale(t)
       R.forEach((row, i) => {
         // picks on this row: the band swipes in, and settles to a tint when a later pick takes over
-        let band = 0, bandRest = 0, focus = 0
+        let band = 0, bandRest = 0, focus = 0, gone = 0
         for (const p of picks) {
           if (p.row !== i || t < p.t) continue
           band = Math.max(band, ease.out(prog(t, p.t, 0.3)))
           bandRest = prog(t, p.next, 0.3)
+          gone = prog(t, p.gone, 0.3) // its label left the one-label line: the band goes with it (never unexplained)
           focus = Math.max(focus, prog(t, p.t + 0.12, 0.25) * (1 - bandRest))
         }
         style(row.band, {
           background: toneColor(pickTone),
-          opacity: n3(band > 0 ? lerp(1, MOTION.rest, bandRest) * keep : 0),
+          opacity: n3(band > 0 ? lerp(1, MOTION.rest, bandRest) * (1 - gone) * keep : 0),
           clipPath: band >= 1 ? 'none' : `inset(0 ${n3((1 - band) * 100)}% 0 0 round 10px)`,
         })
         const k = pre[i] ? 1 : keep // values that landed before frame 1 belong to the frame-1 state
@@ -483,7 +505,7 @@ export default function findYourRow(spec, ctx) {
       if (L.showLegend) for (const g of legends) {
         const p = g.p
         const t0 = p.t + 0.2
-        const out = isFinite(p.lnext) ? prog(t, p.lnext - 0.02, 0.16) : 0
+        const out = !L.stack && isFinite(p.lnext) ? prog(t, p.lnext - 0.02, 0.16) : 0
         const Lk = landing(t, t0)
         g.key.seek(Lk.wipe, Lk.text, 0) // (hlBox never pops text under the 40 px floor)
         fadeUp(g.txt, prog(t, t0 + 0.12, MOTION.fade + 0.06))

@@ -30,8 +30,11 @@ export function parseMarkup(str = '') {
   if (last < str.length) out.push({ text: str.slice(last), k: 0 })
   return out
 }
+// a hyphenated word ("full-time", "Debt-free") is kept on one line: never broken at its hyphen
+const nbHyphens = html => html.replace(/[\p{L}\p{N}$%]+(?:-[\p{L}\p{N}$%]+)+/gu, m => `<span class="ls-nb">${m}</span>`)
 function segHTML(text, k) {
-  const body = esc(text).replace(/\n/g, '<br>')
+  // "≈ $230,000" never breaks after its "≈" (or "×", "÷"): the operator is glued to its number
+  const body = nbHyphens(esc(text)).replace(/([≈×÷]) (?=[\d$−-])/g, '$1\u00A0').replace(/\n/g, '<br>')
   // the inner <span> matters: the linter reads the colour behind a text node from its parent's ancestors,
   // so emphasis that paints its own background must wrap the text one level deeper.
   if (k === 1) return `<em><span>${body}</span></em>`
@@ -94,6 +97,24 @@ export const font = (weight, px, fam = F.ui) => `${weight} ${px}px ${fam}`
 
 /** does a display string read as a number (right-align it)? */
 export const isNumeric = v => /\d/.test(String(v)) && !/[A-Za-z]{2,}/.test(String(v))
+/**
+ * A value cell's HTML: in a value with digits, every word that starts after a space ("months", "yrs") is set at the
+ * 40 px floor (.ls-u) so the number carries the size ("55" big, "months" small). The text itself is unchanged.
+ * brAt: index of a space to break the line at (two-line values), or null.
+ */
+export function unitHTML(str, brAt = null) {
+  const hasDigit = /\d/.test(str)
+  let out = '', i = 0
+  for (const tok of String(str).split(/(\s+)/)) {
+    if (!tok) continue
+    if (/^\s+$/.test(tok)) out += i === brAt ? '<br>' : esc(tok)
+    else out += hasDigit && /^[A-Za-z]/.test(tok) ? `<span class="ls-u">${esc(tok)}</span>` : esc(tok)
+    i += tok.length
+  }
+  return out
+}
+/** does a value carry words after its number ("55 months", "11 yrs 5 mo")? */
+export const hasUnits = str => /\d/.test(String(str)) && /\s[A-Za-z]/.test(String(str))
 
 // =====================================================================================================
 // numbers that move: count-ups that land exactly on the spec's display string
@@ -170,11 +191,16 @@ export function voEnd(spec, i) {
  * The format's duration: last beat + hold, but never before the last vo line ends (+0.4 s)
  * or 2.5 s after the verdict lands. spec.duration (if set) wins in defineKit.
  */
-export function durationOf(spec, { beats = [], hold = M.hold, min = 5, max = 90 } = {}) {
+export function durationOf(spec, { beats = [], hold = M.hold, min = 5, max = 90, verdictEnd = null, loop = true } = {}) {
   const b = beats.filter(Number.isFinite)
   let d = (b.length ? Math.max(...b) : 0) + hold
   for (let i = 0; i < (spec.vo || []).length; i++) d = Math.max(d, voEnd(spec, i) + 0.4)
-  if (spec.verdict && Number.isFinite(spec.verdict.t)) d = Math.max(d, spec.verdict.t + 2.5)
+  if (spec.verdict && Number.isFinite(spec.verdict.t)) {
+    // the verdict stays readable 2.5 s once it is complete (a card lands in ~0.4 s; a bar verdict when its typing
+    // ends), before the loop clear starts
+    const done = Math.max(spec.verdict.t + 0.4, Number.isFinite(verdictEnd) ? verdictEnd : 0)
+    d = Math.max(d, done + 2.5 + (loop ? M.loopOut : 0))
+  }
   return Math.min(max, Math.max(min, Math.round(d * 30) / 30))
 }
 /** lookOpts value with a default */
@@ -219,18 +245,27 @@ export function banner(parent, header = '') {
   return { el, txt, px, seek() {} }
 }
 
-/** height (px) the footer will take at width w (0 if no text) */
+/** the assumption line's element (wraps, balanced, only when one line will not fit) */
+function footerEl(text, x, w) {
+  const el = h('div', { class: 'ls-footer', html: mk(text), style: { left: x + 'px', width: w + 'px', fontSize: S.footer + 'px' } })
+  if (textW(mk(text), font(600, S.footer)) > w) css(el, { whiteSpace: 'normal' })
+  return el
+}
+/** height (px) the footer will take at width w (0 if no text): measured, so a 3-line footer is 3 lines */
 export function footerHeight(text, w = G.railX - G.left) {
   if (!text) return 0
-  const one = textW(mk(text), font(600, S.footer)) <= w
-  return one ? Math.round(S.footer * 1.25) : Math.round(S.footer * 1.25 * 2)
+  const el = footerEl(text, -6000, w)
+  css(el, { visibility: 'hidden', top: '0px' })
+  ;(document.getElementById('stage') || document.body).append(el)
+  const ht = el.offsetHeight
+  el.remove()
+  return ht
 }
 /** the assumption line. pos: { x, w, top } or { x, w, bottom } (stage px). Visible from t = 0. */
 export function footer(parent, text, pos = {}) {
   const x = pos.x ?? G.left, w = pos.w ?? (G.railX - G.left)
-  const el = h('div', { class: 'ls-footer', html: mk(text), style: { left: x + 'px', width: w + 'px', fontSize: S.footer + 'px' } })
+  const el = footerEl(text, x, w)
   parent.append(el)
-  if (textW(mk(text), font(600, S.footer)) > w) css(el, { whiteSpace: 'normal' })
   const ht = el.offsetHeight
   const top = pos.top != null ? pos.top : (pos.bottom ?? G.workBottom) - ht
   css(el, { top: top + 'px' })
@@ -256,40 +291,67 @@ export function markupWords(str) {
   return words
 }
 
+// words a caption chunk should not end on (the phrase continues), and the units a number keeps with it
+const FUNC_WORDS = new Set(('a an the of to that\'s thats you you\'re your in on for and or is at by with from it it\'s its '
+  + 'my our their this that if as than but be are was what how per every each into just so we i do does can than then '
+  + 'not no will would has have had').split(' '))
+const UNIT_WORDS = new Set(('a an per every each day days week weeks month months year years yr yrs mo hour hours hr hrs '
+  + 'minute minutes second seconds sec percent % times k thousand million billion trillion dollars bucks cents shares '
+  + 'paychecks checks payments people more less').split(' '))
+const wordText = w => (w && w.parts ? w.parts.map(p => p.text).join('') : String(w))
+/** a word that ends a sentence or clause: "$21,000." "weeks?" "2008:" (a decimal like "2.5" is not) */
+const endsHard = str => /[A-Za-z0-9)%"'’][.?!:;]["'’)\]]*$/.test(str) && !/^(?:[A-Z]\.){1,3}$/.test(str)
+const endsSoft = str => /[,—–]["'’)]*$/.test(str)
+
 /**
- * Split words into the fewest chunks (≤ maxWords each, each ≤ maxW wide), as evenly as possible:
- * "Find your hourly wage." → [Find your] [hourly wage.], not [Find your hourly] [wage.].
+ * Split caption words into chunks (≤ maxWords each, each ≤ maxW wide) that read as phrases. Lowest total cost:
+ * every chunk costs 1 (fewer is better); a break after a full stop, "?", "!" or ":" is free and one is forced there
+ * (a chunk never runs on past a sentence end); a break after a comma is cheap; any other break costs more, and a
+ * lot more after a function word ("the", "your", "that's") or between a number and its unit ("$5" | "a day").
+ * A one-word chunk and an underfilled chunk cost a little.
  */
 export function chunkWords(words, widthOf, maxW, maxWords = 4) {
   const n = words.length
   if (!n) return []
+  const txt = words.map(wordText)
+  const bare = txt.map(x => x.toLowerCase().replace(/^[^\p{L}\p{N}$%≈×÷−+=]+|[^\p{L}\p{N}%]+$/gu, ''))
   const memo = new Map()
   const wd = (i, j) => { const k = i + ',' + j; if (!memo.has(k)) memo.set(k, widthOf(words.slice(i, j))); return memo.get(k) }
-  for (let k = Math.ceil(n / maxWords); k <= n; k++) {
-    // best[i][c] = smallest possible widest chunk covering words[i..] in c chunks
-    const best = Array.from({ length: n + 1 }, () => new Array(k + 1).fill(Infinity)), cut = Array.from({ length: n + 1 }, () => new Array(k + 1).fill(-1))
-    best[n][0] = 0
-    for (let c = 1; c <= k; c++) for (let i = n - 1; i >= 0; i--) for (let j = i + 1; j <= Math.min(n, i + maxWords); j++) {
+  const breakCost = i => { // a break after word i (more words follow)
+    if (endsHard(txt[i])) return 0
+    if (endsSoft(txt[i]) || /^[—–]$/.test(txt[i + 1] || '')) return 0.25
+    let c = 0.7
+    if (FUNC_WORDS.has(bare[i])) c += 2
+    if (/\d/.test(txt[i]) && UNIT_WORDS.has(bare[i + 1])) c += 1.5
+    if (/^[×÷=≈+−→-]$/.test(txt[i])) c += 2 // never end a chunk on an operator
+    return c
+  }
+  const best = new Array(n + 1).fill(Infinity), cut = new Array(n + 1).fill(n)
+  best[n] = 0
+  for (let i = n - 1; i >= 0; i--) {
+    for (let j = i + 1; j <= Math.min(n, i + maxWords); j++) {
+      if (j - 2 >= i && endsHard(txt[j - 2])) break // a sentence end inside the chunk
       const w = wd(i, j)
       if (w > maxW && j - i > 1) break
-      const v = Math.max(w, best[j][c - 1])
-      if (v < best[i][c]) { best[i][c] = v; cut[i][c] = j }
+      const fill = Math.min(1, w / maxW)
+      const c = 1 + (j < n ? breakCost(j - 1) : 0) + (j - i === 1 && n > 1 ? 0.35 : 0) + 0.3 * (1 - fill) * (1 - fill)
+      if (c + best[j] < best[i] - 1e-9) { best[i] = c + best[j]; cut[i] = j }
     }
-    if (best[0][k] <= maxW || k === n) {
-      const out = []
-      for (let i = 0, c = k; i < n; c--) { const j = cut[i][c] > 0 ? cut[i][c] : n; out.push(words.slice(i, j)); i = j }
-      return out
-    }
+    if (!Number.isFinite(best[i])) { best[i] = 1 + best[i + 1]; cut[i] = i + 1 } // a word wider than maxW alone
   }
-  return [words]
+  const out = []
+  for (let i = 0; i < n; i = cut[i]) out.push(words.slice(i, cut[i]))
+  return out
 }
 
 /**
- * Captions for spec.vo in the caption band: each line is cut into 1-4 word chunks that fit one line,
- * timed by length across the line, each chunk pops in. **x** = yellow keyword, __x__ = coral.
- * seek(t, { hidden }) → true when a caption is showing.
+ * Captions for spec.vo in the caption band: each line is cut into 1-4 word chunks that read as phrases and fit one
+ * line (chunkWords), timed by length across the line; each chunk pops in. A full stop at a chunk's end is dropped
+ * (a "?" or "!" stays). **x** = yellow keyword, __x__ = coral.
+ * holds [{ text, t }]: a chunk that contains `text` (e.g. the number a cell is counting up to) waits until t, so the
+ * caption never gives the count away. seek(t, { hidden }) → true when a caption is showing.
  */
-export function captions(parent, spec, { top = G.bandTop, bottom = G.bandBottom, x = G.left, w = G.railX - G.left } = {}) {
+export function captions(parent, spec, { top = G.bandTop, bottom = G.bandBottom, x = G.left, w = G.railX - G.left } = {}, holds = []) {
   const box = h('div', { class: 'ls-cap', style: { left: x + 'px', top: top + 'px', width: w + 'px', height: bottom - top + 'px' } })
   const line = h('div', { class: 'ls-capline' })
   box.append(line)
@@ -301,15 +363,15 @@ export function captions(parent, spec, { top = G.bandTop, bottom = G.bandBottom,
   ;(spec.vo || []).forEach((v, i) => {
     const end = voEnd(spec, i)
     const words = markupWords(v.text)
-    // short-form captions drop a trailing full stop (a "?" or "!" stays)
-    const last = words[words.length - 1]
-    if (last && /[A-Za-z)]\.$/.test(last.parts.map(x => x.text).join(''))) {
-      const pt = last.parts[last.parts.length - 1]
-      pt.text = pt.text.slice(0, -1)
-      if (!pt.text) last.parts.pop()
-      last.len--
-    }
     const groups = chunkWords(words, ws => textW(wordsHTML(ws), capFont(S.caption), { transform: 'uppercase' }), maxW, 4)
+    // short-form captions drop a chunk's closing full stop (a "?" or "!" stays)
+    for (const g of groups) {
+      const last = g[g.length - 1]
+      const pt = last && last.parts[last.parts.length - 1]
+      if (pt && /[A-Za-z0-9)%]\.$/.test(wordText(last)) && !/^(?:[A-Z]\.){1,3}$/.test(wordText(last))) {
+        g[g.length - 1] = { ...last, parts: [...last.parts.slice(0, -1), { ...pt, text: pt.text.slice(0, -1) }].filter(x => x.text), len: last.len - 1 }
+      }
+    }
     const weights = groups.map(g => g.reduce((a, x) => a + x.len + 1, 3))
     const tot = weights.reduce((a, b) => a + b, 0)
     let acc = v.t
@@ -318,18 +380,35 @@ export function captions(parent, spec, { top = G.bandTop, bottom = G.bandBottom,
       const html = wordsHTML(g)
       const wpx = textW(html, capFont(S.caption), { transform: 'uppercase' })
       const px = wpx > maxW ? Math.max(S.captionMin, Math.floor((S.caption * maxW) / wpx)) : S.caption
-      chunks.push({ t0: acc, t1: gi === groups.length - 1 ? end + 0.15 : acc + d, html, px })
+      chunks.push({ t0: acc, t1: gi === groups.length - 1 ? end + 0.15 : acc + d, html, px, plain: g.map(wordText).join(' ').toUpperCase() })
       acc += d
     })
   })
+  // a chunk that names a number still counting waits for the count to land (the chunk before it holds on)
+  for (const hd of holds || []) {
+    const key = plain(String(hd.text || '')).toUpperCase()
+    if (!key || !Number.isFinite(hd.t)) continue
+    chunks.forEach((c, k) => {
+      if (!c.plain.includes(key) || c.t0 >= hd.t) return
+      const t0 = Math.min(hd.t, c.t1 - 0.6)
+      if (t0 <= c.t0) return
+      const prev = chunks[k - 1]
+      if (prev && Math.abs(prev.t1 - c.t0) < 1e-6) prev.t1 = t0
+      c.t0 = t0
+    })
+  }
   return {
     el: box, chunks,
     seek(t, { hidden = false } = {}) {
       const c = hidden ? null : chunks.find(x => t >= x.t0 && t < x.t1)
-      if (!c) { css(box, { opacity: '0' }); return false }
+      if (!c) {
+        // parked: empty and untransformed, so a hidden caption never depends on the frame before
+        css(box, { opacity: '0' }); setHTML(line, ''); css(line, { fontSize: S.caption + 'px', transform: 'none' })
+        return false
+      }
       setHTML(line, c.html)
       const p = c.t0 <= 0 ? 1 : prog(t, c.t0, 0.18)
-      css(line, { fontSize: c.px + 'px', transform: `scale(${popScale(p, 0.92).toFixed(4)})` })
+      css(line, { fontSize: c.px + 'px', transform: p >= 1 ? 'none' : `scale(${popScale(p, 0.92).toFixed(4)})` })
       css(box, { opacity: '1' })
       return true
     },
@@ -348,12 +427,23 @@ export function verdictCard(parent, verdict, { top = G.bandTop, bottom = G.bandB
   const maxW = w - 104 - 26, maxH = bottom - top - 28
   css(txt, { width: maxW + 'px', fontSize: S.verdict + 'px' })
   fitText(txt, maxW, { maxH, minPx: S.verdictMin })
+  // the card hugs its (balanced) lines and centres on the column, rather than leaving half of it empty
+  const rg = document.createRange()
+  rg.selectNodeContents(txt)
+  const lines = [...rg.getClientRects()]
+  const tx0 = txt.getBoundingClientRect().left
+  const used = lines.length ? Math.ceil(Math.max(...lines.map(r => r.right - tx0))) + 2 : maxW
+  if (used < maxW - 24) {
+    const cw = used + 104 + 26
+    css(txt, { width: used + 'px' })
+    css(el, { width: cw + 'px', left: Math.round(x + (w - cw) / 2) + 'px' })
+  }
   const ht = el.offsetHeight
   css(el, { top: Math.round(top + (bottom - top - ht) / 2) + 'px' })
   return {
     el,
     seek(t, { out = 0 } = {}) {
-      if (t < verdict.t || out >= 1) { css(el, { opacity: '0', transform: 'scale(0.94)' }); return false }
+      if (t < verdict.t || out >= 1) { css(el, { opacity: '0', transform: 'scale(0.94)' }); css(txt, { '--hl': '0.0%' }); return false }
       const p = prog(t, verdict.t, 0.34)
       css(el, { opacity: String(clamp(p * 3) * (1 - out)), transform: `scale(${popScale(p, 0.92).toFixed(4)})` })
       css(txt, { '--hl': (ease.inOut(prog(t, verdict.t + 0.14, 0.32)) * 100).toFixed(1) + '%' })
@@ -370,6 +460,8 @@ export function verdictCard(parent, verdict, { top = G.bandTop, bottom = G.bandB
  *   verdict:  'band' (verdict card in the caption band) | 'self' (format draws it)   default 'band'
  *   verdictBox: { top, bottom } to move the verdict card
  *   captionHidden(t): extra condition hiding captions
+ *   captionHolds: [{ text, t }] a caption chunk naming `text` (a count-up's display string) waits until t
+ *   footerShift(t): px the assumption line moves down this frame (a card growing while a tooltip slot is open)
  *   loop: { t0, dur } the loop-out window (the verdict card fades away in it)
  */
 export function chrome(spec, ctx, body) {
@@ -377,13 +469,15 @@ export function chrome(spec, ctx, body) {
   const top = layer(ctx, 'ls-chrome')
   brandMark(top)
   banner(top, spec.header || '')
-  if (spec.footer && hint.footer !== false) footer(top, spec.footer, hint.footer || {})
-  const caps = hint.captions !== false && hasCaptions(spec) ? captions(top, spec, hint.captionBox || {}) : null
+  const foot = spec.footer && hint.footer !== false ? footer(top, spec.footer, hint.footer || {}) : null
+  const caps = hint.captions !== false && hasCaptions(spec) ? captions(top, spec, hint.captionBox || {}, hint.captionHolds || []) : null
   const v = spec.verdict && spec.verdict.text && hint.verdict !== 'self' ? verdictCard(top, spec.verdict, hint.verdictBox || {}) : null
   if (v) ctx.cue(spec.verdict.t, 'ding')
   const loop = hint.loop
   return {
     seek(t) {
+      // a card that grows (a slot opening) pushes the assumption line down with it
+      if (foot && hint.footerShift) { const dy = Math.round(hint.footerShift(t) || 0); css(foot.el, { transform: dy ? `translateY(${dy}px)` : 'none' }) }
       const out = loop ? ease.inOut(prog(t, loop.t0, loop.dur)) : 0
       const vOn = v ? v.seek(t, { out }) : false
       if (caps) caps.seek(t, { hidden: vOn || (hint.captionHidden ? hint.captionHidden(t) : false) })
@@ -395,12 +489,67 @@ export function chrome(spec, ctx, body) {
 // the formula bar (≈ chip + typed working)
 // =====================================================================================================
 /**
+ * Break a string onto two lines at its best seam. Seam kinds in order of preference: the author's line break,
+ * " · " (dropped), ": " (ends line 1), " vs ", " = ", " → " (each starts line 2), ", " (ends line 1), then any space.
+ * Among the seams of the first kind where both lines fit `avail`, the most balanced wins. A seam never splits
+ * **x** / __x__ markup and never leaves "≈" (or another operator) without its number. Returns "line 1\nline 2", or null.
+ */
+export function twoLines(raw, wOf, avail) {
+  const nb = str => str.trim()
+  const balanced = str => (str.split('**').length - 1) % 2 === 0 && (str.split('__').length - 1) % 2 === 0
+  const str = String(raw)
+  const kinds = []
+  const nl = str.indexOf('\n')
+  if (nl > 0) kinds.push([[str.slice(0, nl), str.slice(nl + 1).replace(/\s*\n\s*/g, ' ')]])
+  const flat = nb(str.replace(/\s*\n\s*/g, ' '))
+  for (const [sep, keep] of [[' · ', ''], [': ', 'a'], [' vs ', 'b'], [' = ', 'b'], [' → ', 'b'], [', ', 'a'], [' ', '']]) {
+    const opts = []
+    for (let i = flat.indexOf(sep); i > 0; i = flat.indexOf(sep, i + 1)) {
+      opts.push([flat.slice(0, i) + (keep === 'a' ? sep.trim() : ''), (keep === 'b' ? sep.trim() + ' ' : '') + flat.slice(i + sep.length)])
+    }
+    if (opts.length) kinds.push(opts)
+  }
+  for (const opts of kinds) {
+    let best = null, bw = Infinity
+    for (const [a0, b0] of opts) {
+      const a = nb(a0), b = nb(b0)
+      if (!a || !b || !balanced(a) || /(^|\s)[≈=×÷+−→-]$/.test(a)) continue
+      const w = Math.max(wOf(a), wOf(b))
+      if (w <= avail && w < bw) { best = a + '\n' + b; bw = w }
+    }
+    if (best) return best
+  }
+  return null
+}
+
+/**
+ * How a verdict typed into the formula bar is set: Inter 800 (not the working's mono), one line from 52 px down to
+ * 40 px; else two lines broken at a seam (48 → 40 px), and the bar grows to hold them from the verdict on.
+ * Returns { text (with "\n" at the seam), px, lines, ht (bar height while it shows) }.
+ */
+export function fitBarVerdict(text, w = G.width) {
+  const avail = w - 102 - 22 - 8
+  const one = String(text || '').replace(/\s*\n\s*/g, ' ')
+  const f = px => font(800, px)
+  const wOf = (str, px) => textW(mk(str), f(px), { letterSpacing: '-0.012em' })
+  for (let px = 52; px >= 40; px -= 2) if (wOf(one, px) <= avail) return { text: one, px, lines: 1, ht: G.fbarH }
+  for (let px = 48; px >= 40; px -= 2) {
+    const two = twoLines(text, x => wOf(x, px), avail)
+    if (two) return { text: two, px, lines: 2, ht: Math.max(G.fbarH, Math.ceil(2 * px * 1.08 + 20)) }
+  }
+  return { text: one, px: 40, lines: 2, ht: Math.ceil(2 * 40 * 1.08 + 20), wrap: true }
+}
+
+/**
  * Formula bar. sheet() and bigCell() build one as their card's top strip; standalone, pass
  * { x, y, w, ht, standalone: true } (px relative to `parent`) and it draws its own rounded card.
  * Size it with fitFormula(strings, w) → { px, lines, ht } so every string it will show fits.
  * set(html, { caret }) shows a state; type(t, t0, str, { cps, from }) types a markup string at time t.
+ * verdict: the verdict text when it is retyped into this bar; `vfit` (fitBarVerdict) then says how to type it
+ * (type vfit.text), and verdictStyle(on, grow) switches the bar between the working (mono 700, slate) and the
+ * verdict (Inter 800, ink, vfit.px; grow 0..1 opens a two-line verdict's extra height over the rows below).
  */
-export function formulaBar(parent, { x = 0, y = 0, w = G.width, ht = G.fbarH, standalone = false, px = S.formula, lines = 1 } = {}) {
+export function formulaBar(parent, { x = 0, y = 0, w = G.width, ht = G.fbarH, standalone = false, px = S.formula, lines = 1, verdict = null } = {}) {
   const chip = h('div', { class: 'ls-chip', 'data-deco': '', text: '≈' })
   const txt = h('span', { class: 'ls-ftxt' })
   const caret = h('i', { class: 'ls-caret' })
@@ -410,8 +559,10 @@ export function formulaBar(parent, { x = 0, y = 0, w = G.width, ht = G.fbarH, st
   const textW0 = w - 102 - 22
   css(line, { fontSize: px + 'px', width: textW0 + 'px', whiteSpace: lines > 1 ? 'normal' : 'nowrap' })
   css(chip, { height: Math.min(66, ht - 20) + 'px' })
+  const vfit = verdict ? fitBarVerdict(verdict, w) : null
+  const working = { fontFamily: F.mono, fontWeight: '700', fontSize: px + 'px', lineHeight: '1.2', letterSpacing: '-0.01em', color: C.fbarText, whiteSpace: lines > 1 ? 'normal' : 'nowrap' }
   return {
-    el, chip, txt, caret, px,
+    el, chip, txt, caret, line, px, vfit,
     set(html, { caret: on = false } = {}) {
       setHTML(txt, html)
       css(caret, { opacity: on ? '1' : '0' })
@@ -422,6 +573,16 @@ export function formulaBar(parent, { x = 0, y = 0, w = G.width, ht = G.fbarH, st
       const typing = t >= t0 && n < mkLen(str)
       this.set(typedMk(str, n), { caret: showCaret && caretOn(t, typing) })
       return n
+    },
+    /** the working (mono) or the verdict (Inter 800, ink); grow opens a two-line verdict's height */
+    verdictStyle(on, grow = 1) {
+      const vs = on && vfit
+      css(line, vs ? { fontFamily: F.ui, fontWeight: '800', fontSize: vfit.px + 'px', lineHeight: '1.08', letterSpacing: '-0.012em', color: C.ink, whiteSpace: vfit.wrap ? 'normal' : 'nowrap' } : working)
+      css(txt, { color: '', fontWeight: '' })
+      const g = vs && vfit.ht > ht ? clamp(grow) : 0
+      const hNow = Math.round(ht + (vfit ? vfit.ht - ht : 0) * g)
+      css(el, { height: hNow + 'px', zIndex: g > 0 ? '8' : 'auto', boxShadow: g > 0 ? '0 3px 0 #D0D5DD' : 'none' })
+      css(chip, { height: Math.min(66, hNow - 20) + 'px' })
     },
   }
 }
@@ -437,20 +598,44 @@ export function fitFormula(strings, w = G.width) {
 // the sheet
 // =====================================================================================================
 const LETTERS = 'ABCDEFGHIJ'
+/** extra right padding in the card's last column: right-aligned values end at x 920, clear of the fill handle */
+export const HANDLE_PAD = 18
+const sum = a => a.reduce((x, y) => x + y, 0)
+/** the narrowest a label line can be over at most k lines (word breaks only; a hyphenated word stays whole) */
+function narrowest(str, f, k, letterSpacing) {
+  const words = plain(str).split(/\s+/).filter(Boolean)
+  if (!words.length) return 0
+  const memo = new Map()
+  const W = (a, b) => { const key = a + ',' + b; if (!memo.has(key)) memo.set(key, textW(esc(words.slice(a, b).join(' ')), f, { letterSpacing })); return memo.get(key) }
+  const n = words.length
+  let best = W(0, n)
+  if (k >= 2) for (let i = 1; i < n; i++) best = Math.min(best, Math.max(W(0, i), W(i, n)))
+  if (k >= 3) for (let i = 1; i < n; i++) for (let j = i + 1; j < n; j++) best = Math.min(best, Math.max(W(0, i), W(i, j), W(j, n)))
+  return best
+}
 /**
  * A designed spreadsheet card on the surround.
  * opts:
  *   x, y, w                 card position (stage px), default 60 / 444 / 900
- *   columns: [{ label, kind: 'input'|'mid'|'output', tone, align }]   label may hold '\n': line 2+ is the grey sub-label
+ *   columns: [{ label, kind: 'input'|'mid'|'output', tone, align, w, minW, px, units, group }]
+ *                           label may hold '\n': line 2+ is the grey sub-label (each further '\n' a line of it). w: a fixed width; minW: a floor;
+ *                           px: this column's cell type size; units: words after a number set at 40 px (unitHTML);
+ *                           group: columns with the same key get the same width (a duel's people)
  *   values: rows × cols display strings (used to size the columns; nothing is shown until you set it)
  *   rows                    number of data rows (default values.length)
- *   reserve                 px of empty sheet under the data (room for a tooltip strip); drawn as spare rows
- *   spare                   extra empty rows under the data (sheet texture)
+ *   reserve                 px of empty sheet under the data (room for a tooltip slot), drawn as the un-numbered tail
+ *   spare                   extra room under the data, in rows (fractional allowed), also drawn as the tail
+ *   tail                    px of tail to add anyway (air between the last row and the rounded corner)
  *   rowH | bottom           row height, or the card's bottom edge (then rowH = what fits, in [minRowH, maxRowH])
  *   minRowH, maxRowH        default 52 / 102
- *   formula: false | { strings: [...] }   the formula bar and the strings it will show (sized to fit)
+ *   formula: false | { strings: [...], verdict }   the formula bar, the strings it will show (sized to fit), and the
+ *                           verdict when it is retyped there (fitBarVerdict; it does not size the bar)
  *   letters                 column-letter row: true (default) | false | 'auto' (dropped when rows get under 58 px)
  *   startRow                number on the first data row (default 2: row 1 is the label row)
+ * Column widths: every column gets at least its widest value and its label balanced over two lines at 40 px; when
+ * that does not fit, every cell size shrinks together (never under 40 px) before any one column gives way; the
+ * spare width goes first to labels that want one line, then in proportion to the values. The card's last column
+ * keeps HANDLE_PAD more right padding (values end at x 920, clear of the fill handle).
  * Returns the API documented in README.md (cell(), setCell(), select(), hiRow(), rowShift(), …).
  */
 export function sheet(parent, o) {
@@ -459,6 +644,8 @@ export function sheet(parent, o) {
   const values = o.values || []
   const nR = o.rows ?? values.length
   const reserve = o.reserve ?? 0 // px of empty sheet under the data (room for a tooltip strip)
+  const spareRows = o.spare ?? 0
+  const tailPx = o.tail ?? 0
   const X = o.x ?? G.left, Y = o.y ?? G.cardTop, W = o.w ?? G.width
   const gutter = o.gutter ?? G.gutter
   const fFit = o.formula === false ? null : fitFormula((o.formula && o.formula.strings) || [], W)
@@ -466,40 +653,84 @@ export function sheet(parent, o) {
   let lettersH = o.letters === false ? 0 : G.lettersH
   const kindOf = j => cols[j].kind || (j === 0 ? 'input' : cols[j].emph ? 'output' : 'mid')
   const alignOf = j => cols[j].align || (values.length && values.every(r => r[j] == null || r[j] === '' || isNumeric(r[j])) ? 'right' : 'left')
+  // cell padding: 22 px, or 12 px when a dense card cannot fit its values and label words otherwise
+  let pad = G.padX
+  const padR = j => pad + (j === nC - 1 && alignOf(j) === 'right' ? HANDLE_PAD : 0)
 
   // ---- type sizes and column widths -------------------------------------------------------------
   const labelParts = cols.map(c => String(c.label || '').split('\n'))
+  const labStrs = j => labelParts[j].filter((x, i) => i === 0 || x) // the label, then each sub-label line
   const avail = W - gutter
   const fsFor = rowH => cellSizes(rowH)
-  const cellPx = (j, fs) => (kindOf(j) === 'input' ? fs.input : kindOf(j) === 'output' ? fs.result : fs.mid)
+  const cellPx = (j, fs) => cols[j].px ?? (kindOf(j) === 'input' ? fs.input : kindOf(j) === 'output' ? fs.result : fs.mid)
   const cellWeight = j => (kindOf(j) === 'mid' ? 700 : 800)
-  const needFor = fs => cols.map((c, j) => Math.max(40, ...values.map(r => (r[j] ? textW(esc(r[j]), font(cellWeight(j), cellPx(j, fs)), { letterSpacing: '-0.01em' }) : 0))) + 2 * G.padX + 4)
-  const labelNeed = cols.map((c, j) => Math.max(...labelParts[j].map((l, i) => textW(mk(l), font(i ? 600 : 800, i ? S.sub : S.label)))) + 2 * G.padX)
+  const cellHTML = (j, v) => (cols[j].units && hasUnits(v) ? unitHTML(v) : esc(v))
+  const valW = fs => cols.map((c, j) => Math.max(40, ...values.map(r => (r[j] ? textW(cellHTML(j, String(r[j])), font(cellWeight(j), cellPx(j, fs)), { letterSpacing: '-0.01em' }) : 0))))
+  const needFor = fs => valW(fs).map((w, j) => w + pad + padR(j) + 4)
+  // a label wants one line at full size; it can go down to two (then three) balanced lines at 40 px, and never
+  // below its longest word at 40 px (a word is never clipped)
+  const lab1 = cols.map((c, j) => Math.max(...labStrs(j).map((l, i) => textW(mk(l), font(i ? 600 : 800, i ? S.sub : S.label)))))
+  // (a sub-label the author already broke into lines keeps each line one line shorter: 1 at the two-line floor)
+  const labKw = k => cols.map((c, j) => { const L = labStrs(j); return Math.max(...L.map((l, i) => narrowest(l, font(i ? 600 : 800, i ? S.sub : S.labelMin), i && L.length > 2 ? k - 1 : k, i ? '-0.01em' : '-0.012em'))) })
+  const lab2w = labKw(2), lab3w = labKw(3)
+  const wordsOnly = cols.map((c, j) => Math.max(...labStrs(j).map((l, i) => Math.max(0, ...plain(l).split(/\s+/).filter(Boolean).map(wd => textW(esc(wd), font(i ? 600 : 800, i ? S.sub : S.labelMin), { letterSpacing: '-0.012em' }))))))
+  // columns sharing a `group` key (a duel's people) get one width: the widest floor of the group, then equal shares
+  const grouped = arr => arr.map((x, j) => (cols[j].group == null ? x : Math.max(...arr.filter((_, k) => cols[k].group === cols[j].group))))
+  const floorOf = (need, labw) => grouped(cols.map((c, j) => c.w ?? Math.max(need[j], labw[j] + 2 * pad + 8, c.minW ?? 0)))
 
   // row height first guess (label row assumed 1 or 2 lines), refined after the label row is laid out
   const labelLines0 = Math.max(...labelParts.map(p => p.length))
   const labelH0 = labelLines0 > 1 ? 104 : 76
   const minRowH = o.minRowH ?? 52, maxRowH = o.maxRowH ?? 102
-  const rowHFor = labelH => (o.rowH ? o.rowH : Math.floor(clamp(((o.bottom ?? G.workBottom) - Y - fbarH - lettersH - labelH - reserve) / (nR + (o.spare ?? 0)), minRowH, maxRowH)))
+  const rowHFor = labelH => (o.rowH ? o.rowH : Math.floor(clamp(((o.bottom ?? G.workBottom) - Y - fbarH - lettersH - labelH - reserve - tailPx) / (nR + spareRows), minRowH, maxRowH)))
   let rowH = rowHFor(labelH0)
   // 'auto' letters: the A B C row is decoration, so it goes first when rows get cramped
   if (o.letters === 'auto' && rowH < 58) { lettersH = 0; rowH = rowHFor(labelH0) }
-  let fs = fsFor(rowH)
-  let need = needFor(fs)
-  for (let k = 0; k < 6 && need.reduce((a, b) => a + b, 0) > avail; k++) {
-    const f = avail / need.reduce((a, b) => a + b, 0)
-    fs = { input: Math.max(S.cellMin, Math.floor(fs.input * f)), mid: Math.max(S.cellMin, Math.floor(fs.mid * f)), result: Math.max(S.cellMin, Math.floor(fs.result * f)) }
+  const fs0 = fsFor(rowH)
+  let fs = fs0, need, widths = null
+  for (const p of [G.padX, 12]) {
+    pad = p
+    fs = fs0
     need = needFor(fs)
+    let floor = floorOf(need, lab2w)
+    // too wide: every cell size shrinks together (never under 40 px) before any one column gives way
+    for (let k = 0; k < 12 && sum(floor) > avail + 0.5; k++) {
+      if (fs.input <= S.cellMin && fs.mid <= S.cellMin && fs.result <= S.cellMin) break
+      const f = Math.max(0.85, Math.min(0.98, avail / sum(floor)))
+      fs = { input: Math.max(S.cellMin, Math.floor(fs.input * f)), mid: Math.max(S.cellMin, Math.floor(fs.mid * f)), result: Math.max(S.cellMin, Math.floor(fs.result * f)) }
+      need = needFor(fs)
+      floor = floorOf(need, lab2w)
+    }
+    if (sum(floor) > avail + 0.5) floor = floorOf(need, lab3w) // labels may take three lines
+    if (sum(floor) > avail + 0.5) {
+      // values first: every column keeps its widest value and its label's longest word; the labels share what is
+      // left (they wrap further)
+      const base = cols.map((c, j) => c.w ?? Math.max(need[j], wordsOnly[j] + 2 * pad + 4, c.minW ?? 0))
+      if (sum(base) > avail + 0.5) { if (p !== 12) continue; widths = base.map(x => (x * avail) / sum(base)); break } // last resort: all give
+      const left = avail - sum(base)
+      const ex = cols.map((c, j) => (c.w != null ? 0 : Math.max(0, floor[j] - base[j])))
+      widths = base.map((b, j) => b + (sum(ex) ? (left * ex[j]) / sum(ex) : 0))
+      break
+    }
+    let left = avail - sum(floor)
+    // as many labels as possible go back to one line: the cheapest first, each gets all it needs or nothing
+    const want = cols.map((c, j) => (c.w != null ? 0 : Math.max(0, lab1[j] + 2 * pad + 2 - floor[j])))
+    widths = floor.slice()
+    for (const j of want.map((x, j) => j).filter(j => want[j] > 0).sort((a, b) => want[a] - want[b])) {
+      if (want[j] > left) break
+      widths[j] += want[j]; left -= want[j]
+    }
+    const flex = grouped(cols.map((c, j) => (c.w != null ? 0 : need[j])))
+    const Fx = sum(flex)
+    widths = widths.map((x, j) => x + (Fx ? (left * flex[j]) / Fx : 0))
+    break
   }
-  const widths = (() => {
-    const sum = need.reduce((a, b) => a + b, 0)
-    let left = Math.max(0, avail - sum)
-    const extra = need.map((n, j) => Math.max(0, labelNeed[j] - n))
-    const E = extra.reduce((a, b) => a + b, 0)
-    if (E >= left) return need.map((n, j) => n + (E ? (extra[j] * left) / E : 0))
-    left -= E
-    return need.map((n, j) => n + extra[j] + (left * n) / sum)
-  })()
+  // a group shares its total equally
+  for (const gk of new Set(cols.map(c => c.group).filter(g => g != null))) {
+    const js = cols.map((c, j) => j).filter(j => cols[j].group === gk)
+    const avg = sum(js.map(j => widths[j])) / js.length
+    js.forEach(j => { widths[j] = avg })
+  }
   // integer columns that add up exactly
   const colX = [gutter]
   for (let j = 0; j < nC; j++) colX.push(j === nC - 1 ? W : Math.round(colX[j] + widths[j]))
@@ -508,7 +739,7 @@ export function sheet(parent, o) {
   // ---- DOM ------------------------------------------------------------------------------------------
   const card = h('div', { class: 'ls-card', style: { left: X + 'px', top: Y + 'px', width: W + 'px' } })
   parent.append(card)
-  const fbar = fFit ? formulaBar(card, { x: 0, y: 0, w: W, ht: fbarH, px: fFit.px, lines: fFit.lines }) : null
+  const fbar = fFit ? formulaBar(card, { x: 0, y: 0, w: W, ht: fbarH, px: fFit.px, lines: fFit.lines, verdict: (o.formula && o.formula.verdict) || null }) : null
 
   let letterEls = []
   if (lettersH) {
@@ -524,17 +755,17 @@ export function sheet(parent, o) {
   heads.append(headNum)
   const labelEls = cols.map((c, j) => {
     const parts = labelParts[j]
-    const el = h('div', { class: `ls-hcell ${kindOf(j)}`, style: { left: colX[j] + 'px', width: colW[j] + 'px' } },
+    const el = h('div', { class: `ls-hcell ${kindOf(j)}`, style: { left: colX[j] + 'px', width: colW[j] + 'px', ...(pad !== G.padX ? { padding: `0 ${pad}px` } : {}) } },
       h('div', { class: 'ls-hl', html: mk(parts[0]) }),
-      parts.length > 1 ? h('div', { class: 'ls-hsub', html: mk(parts.slice(1).join(' ')) }) : null)
+      parts.length > 1 ? h('div', { class: 'ls-hsub', html: parts.slice(1).map(mk).join('<br>') }) : null)
     heads.append(el)
     return el
   })
   card.append(heads)
-  // fit labels: shrink to labelMin, then wrap
+  // fit labels: shrink to 40 px, then wrap (balanced)
   let labelH = 0
   for (const [j, el] of labelEls.entries()) {
-    const inner = colW[j] - 2 * G.padX
+    const inner = colW[j] - 2 * pad
     for (const part of el.children) {
       if (part.scrollWidth > inner + 0.5) fitText(part, inner, { minPx: part.classList.contains('ls-hsub') ? S.sub : S.labelMin })
       if (part.scrollWidth > inner + 0.5) css(part, { whiteSpace: 'normal' })
@@ -554,22 +785,24 @@ export function sheet(parent, o) {
   }
 
   const bodyY = headY + labelH
-  const spare = Math.ceil(reserve / rowH) + (o.spare ?? 0)
-  const bodyH = nR * rowH + reserve + (o.spare ?? 0) * rowH
+  // grow: the reserve is not drawn at frame 1; the card grows into it while a slot is open (setGrow)
+  const tailH = Math.round((o.grow ? 0 : reserve) + spareRows * rowH + tailPx)
+  const bodyH = nR * rowH + tailH
   const body = h('div', { class: 'ls-body', style: { top: bodyY + 'px', height: bodyH + 'px' } })
   card.append(body)
   css(card, { height: bodyY + bodyH + 'px' })
+  // the tail: un-numbered sheet (the gutter strip, no gridlines) that a tooltip slot opens into
+  const tailEl = tailH > 0 || o.grow ? h('div', { class: 'ls-tail', style: { top: nR * rowH + 'px', height: tailH + 'px', backgroundImage: `linear-gradient(90deg, ${C.head} ${gutter - 2}px, ${C.grid} ${gutter - 2}px, ${C.grid} ${gutter}px, ${C.sheet} ${gutter}px)` } }) : null
+  if (tailEl) body.append(tailEl)
 
   const rowEls = [], numEls = [], cells = []
-  for (let r = 0; r < nR + spare; r++) {
-    const isSpare = r >= nR
-    const partial = (r + 1) * rowH > bodyH + 0.5 // a spare row cut by the card edge keeps its gridlines, not its number
-    const num = h('div', { class: 'ls-rn', 'data-deco': '', ...(isSpare ? { 'data-roll': '' } : {}), text: partial ? '' : String((o.startRow ?? 2) + r), style: { width: gutter + 'px', height: rowH + 'px' } })
-    const row = h('div', { class: 'ls-row' + (isSpare ? ' spare' : ''), style: { top: r * rowH + 'px', height: rowH + 'px' } }, num)
+  for (let r = 0; r < nR; r++) {
+    const num = h('div', { class: 'ls-rn', 'data-deco': '', text: String((o.startRow ?? 2) + r), style: { width: gutter + 'px', height: rowH + 'px' } })
+    const row = h('div', { class: 'ls-row', style: { top: r * rowH + 'px', height: rowH + 'px' } }, num)
     const rc = []
     for (let j = 0; j < nC; j++) {
       const v = h('span', { class: 'ls-v' })
-      const cell = h('div', { class: `ls-cell ${kindOf(j)} ${alignOf(j)}`, style: { left: colX[j] + 'px', width: colW[j] + 'px', height: rowH + 'px', fontSize: cellPx(j, fs) + 'px' } }, v)
+      const cell = h('div', { class: `ls-cell ${kindOf(j)} ${alignOf(j)}`, style: { left: colX[j] + 'px', width: colW[j] + 'px', height: rowH + 'px', fontSize: cellPx(j, fs) + 'px', ...(pad !== G.padX || padR(j) !== pad ? { padding: `0 ${padR(j)}px 0 ${pad}px` } : {}) } }, v)
       if (cols[j].tone) css(v, { color: toneColor(cols[j].tone) })
       row.append(cell)
       rc.push({ el: cell, v })
@@ -584,8 +817,17 @@ export function sheet(parent, o) {
 
   const stageY = Y + bodyY // stage y of the first data row's top
   const api = {
-    el: card, body, over, x: X, y: Y, w: W, h: bodyY + bodyH, bottom: Y + bodyY + bodyH,
-    rowH, fs, nR, spare, cols: colX.slice(0, nC).map((cx, j) => ({ x: X + cx, w: colW[j], kind: kindOf(j), align: alignOf(j) })),
+    el: card, body, over, sel, x: X, y: Y, w: W, h: bodyY + bodyH, bottom: Y + bodyY + bodyH,
+    /** the card's lowest edge once fully grown (bottom + reserve when grow is on) */
+    maxBottom: Y + bodyY + bodyH + (o.grow ? Math.round(reserve) : 0),
+    /** grow mode: the card is px taller this frame (a slot is open); returns px (move what sits under the card) */
+    setGrow(px) {
+      const g = Math.max(0, Math.round(px))
+      css(card, { height: bodyY + bodyH + g + 'px' }); css(body, { height: bodyH + g + 'px' })
+      if (tailEl) css(tailEl, { height: tailH + g + 'px' })
+      return g
+    },
+    rowH, fs, nR, spare: 0, tail: tailH, cols: colX.slice(0, nC).map((cx, j) => ({ x: X + cx, w: colW[j], kind: kindOf(j), align: alignOf(j), pad, padR: padR(j) })),
     gutter, bodyTop: stageY, headTop: Y + headY, labelH,
     fbar, labelEls, letterEls, rowEls, numEls, cells,
     cell: (r, c) => cells[r][c],
@@ -606,8 +848,13 @@ export function sheet(parent, o) {
      */
     setCell(r, c, { text, html, p = 1, out = 0, flash = 0, color, fill, scale = 1, enter = 'snap' } = {}) {
       const { el, v } = cells[r][c]
-      if (html != null) setHTML(v, html)
-      else setText(v, text == null ? '' : String(text))
+      const str = text == null ? '' : String(text)
+      // one content path per call; the other setter's cache is cleared so switching paths never goes stale
+      if (html != null) { v.__t = undefined; setHTML(v, html) }
+      else if (cols[c].units) { v.__t = undefined; setHTML(v, cellHTML(c, str)) }
+      else { v.__h = undefined; setText(v, str) }
+      // tabular figures for numbers only (Inter's tnum also spaces out a word's hyphens)
+      el.classList.toggle('words', html == null && !!str && !isNumeric(str))
       let st = enter === 'drop' ? dropIn(p) : snapIn(p)
       const lo = liftOut(out)
       if (lo) st = { opacity: String(Math.min(+st.opacity, +lo.opacity)), transform: lo.transform }
@@ -619,21 +866,28 @@ export function sheet(parent, o) {
     /** vertical shift of a row (px), for inserted strips */
     rowShift(r, dy) { const v = Math.round(dy); css(rowEls[r], { transform: v ? `translateY(${v}px)` : 'none' }) },
     /** highlight a whole row (alpha 0..1); wipe 0..1 sweeps the highlight in from the left */
-    hiRow(r, a, wipe = 1) {
+    hiRow(r, a, wipe = 1, color = C.rowHi) {
       if (a <= 0.001 || wipe <= 0.001) { css(rowEls[r], { backgroundColor: C.sheet, backgroundImage: 'none' }); return }
-      if (wipe >= 1) { css(rowEls[r], { backgroundColor: rgba(C.rowHi, a), backgroundImage: 'none' }); return }
+      if (wipe >= 1) { css(rowEls[r], { backgroundColor: rgba(color, a), backgroundImage: 'none' }); return }
       const x = (wipe * 100).toFixed(2)
-      css(rowEls[r], { backgroundColor: C.sheet, backgroundImage: `linear-gradient(90deg, ${rgba(C.rowHi, a)} ${x}%, ${C.sheet} ${x}%)` })
+      css(rowEls[r], { backgroundColor: C.sheet, backgroundImage: `linear-gradient(90deg, ${rgba(color, a)} ${x}%, ${C.sheet} ${x}%)` })
     },
     /** the selection outline: rect in stage px, or null to hide. handle: show the fill handle */
     select(rect, { handle = true, alpha = 1 } = {}) {
       if (!rect || alpha <= 0.001) { css(sel, { opacity: '0' }); return }
+      // whole pixels: the outline's anti-aliased corners rasterise the same however the frame was reached
+      // (a spring that overshoots past a small target never turns the box inside out: at least 8 px each way)
+      const x0 = Math.round(rect.x0 - X), y0 = Math.round(rect.y0 - stageY)
       css(sel, {
-        opacity: String(alpha), left: (rect.x0 - X).toFixed(2) + 'px', top: (rect.y0 - stageY).toFixed(2) + 'px',
-        width: (rect.x1 - rect.x0).toFixed(2) + 'px', height: (rect.y1 - rect.y0).toFixed(2) + 'px',
+        opacity: String(alpha), left: x0 + 'px', top: y0 + 'px',
+        width: Math.max(8, Math.round(rect.x1 - X) - x0) + 'px', height: Math.max(8, Math.round(rect.y1 - stageY) - y0) + 'px',
       })
+      // the fill handle sits on the outline's bottom-right corner, straddling the bottom gridline (below the
+      // values' baseline, so it never reads as a full stop); at the card's right edge it tucks inside horizontally,
+      // and at the body's bottom edge vertically
       const edge = rect.x1 > X + W - 10
-      css(sel.firstChild, { opacity: handle ? '1' : '0', right: edge ? '3px' : '-9px', bottom: edge ? '3px' : '-9px' })
+      const floor = rect.y1 > stageY + parseFloat(body.style.height) - 10
+      css(sel.firstChild, { opacity: handle ? '1' : '0', right: edge ? '3px' : '-9px', bottom: floor ? '3px' : '-9px' })
     },
     /** tint the row numbers r0..r1 and column letters c0..c1 of the selection (null = none) */
     headSel(r0, r1, c0, c1) {
@@ -645,44 +899,75 @@ export function sheet(parent, o) {
 }
 
 /**
- * Tooltip strip: a dark pill with yellow text and a notch pointing up at a cell. Lives in a sheet's overlay
- * layer (or any parent). set({ x0, x1, y, ht, open, notchX, html, textAlpha }) in stage px; open 0..1 grows it.
+ * One type size for a set of tooltip labels (raw markup strings): one line from S.tip down to 40 px; else two
+ * lines broken at the best seam (twoLines), at the largest size where every label fits. maxW: the widest a pill may
+ * be (stage px). Returns { px, lines, slotH, labels: [markup with "\n"], html: [...], w: [pill width per label] }.
  */
-export function tipStrip(sh, { px = S.tip } = {}) {
-  const txt = h('div', { class: 'ls-tiptxt', style: { fontSize: px + 'px' } })
+export function fitTips(labels, maxW) {
+  const PAD = 2 * 26 + 6
+  const inner = maxW - PAD
+  const wOf = (str, px) => textW(mk(str), font(800, px), { letterSpacing: '-0.01em' })
+  const strs = labels.map(x => String(x || ''))
+  const out = (px, lines, ls, wrap = false) => ({
+    px, lines, wrap, labels: ls, html: ls.map(mk),
+    slotH: lines > 1 ? Math.round(2 * px * 1.12 + 30) : Math.round(px * 1.12 + 30),
+    w: ls.map(x => Math.min(maxW, Math.ceil(Math.max(...x.split('\n').map(l => wOf(l, px)))) + PAD)),
+  })
+  if (!strs.length) return out(S.tip, 1, [])
+  for (let px = S.tip; px >= S.cellMin; px -= 2) if (strs.every(x => wOf(x, px) <= inner)) return out(px, 1, strs)
+  for (let px = S.tip; px >= S.cellMin; px -= 2) {
+    const two = strs.map(x => (wOf(x, px) <= inner ? x : twoLines(x, y => wOf(y, px), inner)))
+    if (two.every(Boolean)) return out(px, 2, two)
+  }
+  return { ...out(S.cellMin, 2, strs, true), w: strs.map(() => maxW) } // wraps wherever it must, never past the pill
+}
+
+/** a tooltip's choreography: the slot opens (rows below make room), then the pill wipes out of its notch; reversed to close */
+export function tipWindow(openAt, closeAt) {
+  const ok = closeAt - openAt > 0.45
+  return {
+    ok, openAt, closeAt,
+    open: t => (ok ? ease.inOut(prog(t, openAt, 0.3)) * (1 - ease.inOut(prog(t, closeAt + 0.06, 0.24))) : 0),
+    reveal: t => (ok ? ease.out(prog(t, openAt + 0.26, 0.24)) * (1 - ease.inOut(prog(t, closeAt - 0.22, 0.22))) : 0),
+  }
+}
+
+/**
+ * Tooltip strip: a dark pill with a notch pointing up at a cell, in a sheet's overlay layer, with a slot (an
+ * un-numbered sheet row) that opens under the row. The label is written once (html), at full size and full
+ * opacity: the pill reveals it by wiping out of its notch (its width grows both ways), so it never flashes empty.
+ * set({ x0, x1, y, ht, open, reveal, notchX }) in stage px: open 0..1 opens the slot (shift the rows below by
+ * ht × open yourself), reveal 0..1 wipes the pill. Hidden, everything parks at one fixed state.
+ */
+export function tipStrip(sh, { px = S.tip, html = '', wrap = false } = {}) {
+  const txt = h('div', { class: 'ls-tiptxt', html, style: { fontSize: px + 'px', ...(wrap ? { whiteSpace: 'normal', textWrapStyle: 'balance' } : {}) } })
+  const inner = h('div', { class: 'ls-tipin' }, txt)
+  const el = h('div', { class: 'ls-tip', 'data-roll': '' }, inner)
   const notch = h('i', { class: 'ls-notch' })
-  const el = h('div', { class: 'ls-tip' }, notch, h('div', { class: 'ls-tipclip' }, txt))
   // the slot the strip opens: an un-numbered sheet row (gutter kept, no cell lines)
   const slot = h('div', { class: 'ls-slot', style: { width: sh.w + 'px', backgroundImage: `linear-gradient(90deg, ${C.head} ${sh.gutter - 2}px, ${C.grid} ${sh.gutter - 2}px, ${C.grid} ${sh.gutter}px, ${C.sheet} ${sh.gutter}px)` } })
-  sh.over.append(slot, el)
+  sh.over.append(slot, notch, el)
   const ox = sh.x, oy = sh.bodyTop
+  const PARK = { opacity: '0', left: '0px', top: '0px', width: '0px', height: '0px' }
   return {
-    el, txt,
-    fit(htmls, width) {
-      // one font size that fits every label on one line
-      let p = px
-      while (p > 36 && Math.max(...htmls.map(x => textW(x, font(800, p)))) > width - 56) p -= 2
-      css(txt, { fontSize: p + 'px' })
-      return p
-    },
-    /**
-     * open: how far the slot has opened (rows below make room); scale: the pill's pop (it grows out of its
-     * notch; default = open). Keep textAlpha at 0 until the pill is at full size.
-     */
-    set({ x0, x1, y, ht, open = 1, scale, notchX, html, textAlpha = 1 }) {
+    el, txt, notch, slot,
+    set({ x0, x1, y, ht, open = 1, reveal = 1, notchX, html: hh }) {
+      if (hh != null) setHTML(txt, hh)
       const pad = 8
-      // the pill never outgrows the open slot (it would cover the row below)
-      const k = Math.min(scale == null ? open : scale, Math.max(0, (ht * open - pad) / (ht - 2 * pad)))
-      if (open <= 0.001 || k <= 0.001) { css(el, { opacity: '0' }); css(slot, { opacity: open > 0.001 ? '1' : '0', top: (y - oy).toFixed(1) + 'px', height: Math.max(0, ht * open).toFixed(1) + 'px' }); return }
-      if (html != null) setHTML(txt, html)
-      css(slot, { opacity: '1', top: (y - oy).toFixed(1) + 'px', height: Math.max(0, ht * open).toFixed(1) + 'px' })
-      css(el, {
-        opacity: String(clamp(k * 3)), left: (x0 - ox).toFixed(1) + 'px', top: (y - oy + pad).toFixed(1) + 'px',
-        width: (x1 - x0).toFixed(1) + 'px', height: Math.max(0, ht - 2 * pad).toFixed(1) + 'px',
-        transformOrigin: `${(notchX - x0).toFixed(1)}px -10px`, transform: Math.abs(k - 1) < 1e-4 ? 'none' : `scale(${Math.max(0, k).toFixed(4)})`,
-      })
-      css(notch, { left: (notchX - x0 - 11).toFixed(1) + 'px' })
-      css(txt, { opacity: String(clamp(textAlpha)) })
+      const so = open > 0.001
+      css(slot, so ? { opacity: '1', top: (y - oy).toFixed(1) + 'px', height: Math.max(0, ht * open).toFixed(1) + 'px' } : { opacity: '0', top: '0px', height: '0px' })
+      const fullH = Math.round(ht - 2 * pad)
+      const room = ht * open - 2 * pad // the pill never outgrows the open slot
+      const r = clamp(reveal)
+      if (!so || r <= 0.001 || room < 8) {
+        css(el, PARK); css(inner, { left: '0px', width: '0px', height: '0px' }); css(notch, { opacity: '0', left: '0px', top: '0px' })
+        return
+      }
+      const nx = clamp(notchX, x0 + 30, x1 - 30)
+      const l = Math.round(Math.max(x0, nx - 20 - (nx - 20 - x0) * r)), rr = Math.round(Math.min(x1, nx + 20 + (x1 - nx - 20) * r))
+      css(el, { opacity: '1', left: l - ox + 'px', top: Math.round(y - oy + pad) + 'px', width: rr - l + 'px', height: Math.round(Math.min(fullH, room)) + 'px' })
+      css(inner, { left: Math.round(x0) - l + 'px', width: Math.round(x1 - x0) + 'px', height: fullH + 'px' })
+      css(notch, { opacity: '1', left: Math.round(nx - 11 - ox) + 'px', top: Math.round(y - oy + pad - 9) + 'px' })
     },
   }
 }
@@ -786,7 +1071,8 @@ export function lineChart(parent, o) {
       const tk = ticks()
       yLines.forEach((l, k) => {
         const v = tk[k]
-        if (v == null || v === yMin) { attr(l, 'opacity', 0); css(yLabels[k], { opacity: '0' }); return }
+        // an unused grid line parks at one fixed state (a hidden frame never depends on the frame before)
+        if (v == null || v === yMin) { attr(l, 'opacity', 0); for (const a of ['x1', 'x2', 'y1', 'y2']) attr(l, a, 0); setText(yLabels[k], ''); css(yLabels[k], { opacity: '0', top: '0px', width: '0px' }); return }
         const yy = ly(Y(v)).toFixed(1)
         attr(l, 'opacity', 1); attr(l, 'x1', lx(plot.x)); attr(l, 'x2', lx(plot.x + plot.w)); attr(l, 'y1', yy); attr(l, 'y2', yy)
         setText(yLabels[k], yFmt(v))

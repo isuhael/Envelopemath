@@ -28,6 +28,13 @@
 // Rows only stretch to 150 px to fill space (taller when 2-line labels plus a working line need it); the card
 // ends there and the assumption line follows it.
 //
+// No spec field is ever dropped: when a tier shows neither tooltips nor note lines, each note is typed into the
+// formula bar right after its result lands (the working continues: "= $2,500 × 26 = $65,000 · not $60,000", or
+// the note alone when that will not fit one line). A row whose label fits one line keeps its working as a grey
+// 40 px suffix on that line ("Your real yearly pay  = $2,500 × 26") once the formula bar moves on. Short lists
+// (up to 4 items) may set a long label on three lines. The verdict is a card in the caption band whenever the list
+// fits above it; otherwise it is retyped into the formula bar (Inter 800).
+//
 // lookOpts: loop (true) · labels ('reveal' | 'always') · countUp (true) · verdict ('auto' | 'band' | 'formula')
 //           · formulaAt0 (0.7) · sub ('formula' | 'note' | 'none') · notes ('auto' | 'tip' | 'sub' | 'off')
 //           · columns (['What', 'Answer'], header labels when there is no input) · startRow (1)
@@ -35,9 +42,9 @@
 //           · check / checkT (same as data.check / data.checkT)
 import {
   h, setStyle, setText, setHTML, clamp, prog, ease, plain, C, G, M, S,
-  formulaBar, fitFormula, tipStrip, mk, mkLen, typedMk, wordCut, caretOn, countText, parseDisplay,
+  formulaBar, fitFormula, tipStrip, fitTips, tipWindow, mk, mkLen, typedMk, wordCut, caretOn, countText, parseDisplay,
   snapIn, dropIn, liftOut, popScale, flashAlpha, lerpRect, rgba, durationOf, hasCaptions, opt, layer,
-  textW, font, toneColor, toneFill,
+  textW, font, toneColor, toneFill, footerHeight, HANDLE_PAD, fitBarVerdict, F,
 } from '../lib.js'
 
 export const css = `
@@ -54,7 +61,9 @@ export const css = `
 .dsl .ls-v { position: relative; }
 .dsl-strike { position: absolute; left: -6px; right: -4px; top: 50%; height: 7px; margin-top: -3px; background: #D92D20; border-radius: 4px; transform-origin: 0 50%; transform: scaleX(0); opacity: 0; pointer-events: none; }
 .dsl-refs { position: absolute; inset: 0; z-index: 6; pointer-events: none; }
-.dsl-ref { position: absolute; border: 3px dashed #2E90FA; background: rgba(46, 144, 250, 0.07); border-radius: 4px; opacity: 0; }
+.dsl-ref { position: absolute; border: 3px dashed #2E90FA; background: transparent; border-radius: 4px; opacity: 0; }
+.dsl-suf { display: inline-block; font: 600 40px/1 'Inter', 'Inter Full', sans-serif; color: #667085; letter-spacing: -0.01em; white-space: nowrap; }
+.dsl-suf em { color: #101828; }
 .dsl-tail { position: absolute; left: 0; right: 0; }
 .dsl-ok { color: #058A4F; font-weight: 800; }
 `
@@ -158,7 +167,10 @@ export default function deadSimpleList(spec, ctx) {
   items.forEach((it, r) => base.push({ kind: 'item', row: r, t: T[r].t0, str: it.formula ? (isEq(it.formula) ? it.formula : '= ' + it.formula) : '', dur: T[r].typeD, res: T[r].res }))
   wrongs.forEach(w => base.push({ kind: 'wrong', row: w.item, t: w.t0, str: isEq(w.formula) ? w.formula : '= ' + w.formula, dur: w.typeD, res: w.res }))
   if (check) base.push({ kind: 'check', t: checkT, str: check, cps: 26 })
-  const fitFor = withVerdict => fitFormula([...base.map(e => e.str + (e.kind === 'check' && checkHTML ? ' ✓' : '')), withVerdict ? verdict.text : ''], G.width)
+  // (the verdict has its own fit, fitBarVerdict: it never shrinks the working's type); note strings typed into
+  // the bar (when no tier shows them on the sheet) join the list once they are known
+  let noteStrs = []
+  const fitFor = () => fitFormula([...base.map(e => e.str + (e.kind === 'check' && checkHTML ? ' ✓' : '')), ...noteStrs], G.width)
 
   // ---------------------------------------------------------------- layout planning
   const L = layer(ctx, 'dsl')
@@ -194,11 +206,11 @@ export default function deadSimpleList(spec, ctx) {
   const notesMode = opt(spec, 'notes', 'auto')
   const subForced = opt(spec, 'sub', null)
 
-  // tooltip size: one size that fits every note
+  // tooltip size: one size that fits every note (one line down to 40 px, else two)
   const tipW = W - gut - 24
-  let tipPx = S.tip
-  while (anyNote && tipPx > 40 && Math.max(...items.filter(it => it.note).map(it => tw(mk(it.note), font(800, tipPx)))) > tipW - 58) tipPx -= 2
-  const slotH = Math.round(tipPx * 1.2 + 26)
+  const tipFit = fitTips(items.map(it => it.note || ''), tipW)
+  const tipPx = tipFit.px
+  const slotH = tipFit.slotH
 
   function plan(cfg, bottom, fFit, force = false) {
     const { sub, tips, letters, lab, res, density = 0 } = cfg
@@ -210,7 +222,7 @@ export default function deadSimpleList(spec, ctx) {
     if (!force && inA < 260) return null
     const labLines = items.map(it => (it.label ? linesOf(mk(it.label), 'dsl-lab', lab, inA, lh) : 1))
     const maxLines = Math.max(1, ...labLines)
-    if (!force && maxLines > 2) return null
+    if (!force && maxLines > (N <= 4 ? 3 : 2)) return null // a short list may set a long label on three lines
     const subW = str => tw(mk(str), font(600, 40), '-0.01em')
     if (!force && sub === 'formula' && items.some(it => it.formula && subW(it.formula) > inA)) return null
     if (!force && sub === 'note' && items.some(it => it.note && subW(it.note) > inA)) return null
@@ -261,42 +273,73 @@ export default function deadSimpleList(spec, ctx) {
   }
   const forced = (bottom, fFit) => ({ ...plan({ sub: subForced === 'formula' ? 'formula' : 'none', tips: false, letters: false, lab: 40, res: 52, density: 2 }, bottom, fFit, true), tier: 99, size: 99 })
 
-  // the assumption line's real height (it can wrap to 3 lines; footerHeight() assumes at most 2)
-  const fH = spec.footer ? linesOf(mk(spec.footer), 'ls-footer', S.footer, G.railX - G.left, 1.25) * Math.round(S.footer * 1.25) : 0
+  const fH = footerHeight(spec.footer) // measured: a long footer can take 3 lines
   const bandBottom = G.workBottom - (fH ? fH + G.gap : 0)
   const fullBottom = G.safeBottom - 4 - (fH ? fH + G.gap : 0)
   let vMode = opt(spec, 'verdict', 'auto')
   if (!verdict) vMode = 'none'
-  else if (vMode === 'auto') {
-    if (caps) vMode = 'band'
-    else {
-      const a = choose(bandBottom, fitFor(false)), b = choose(fullBottom, fitFor(true))
-      vMode = a && (!b || (a.tier === b.tier && a.size <= b.size + 1)) ? 'band' : 'formula'
-    }
-  }
+  // the verdict is a card in the caption band whenever the list fits above it (any tier); else the formula bar
+  else if (vMode === 'auto') vMode = caps || choose(bandBottom, fitFor()) ? 'band' : 'formula'
   let capsOn = caps
-  let fFit = fitFor(vMode === 'formula')
-  let P = choose(caps || vMode === 'band' ? bandBottom : fullBottom, fFit)
-  if (!P && (caps || vMode === 'band')) {
-    // last resort: the sheet takes the caption band (captions off, verdict retyped in the formula bar) rather
-    // than ever running under the captions. Shorten labels or set "captions": false to choose this yourself.
-    const f2 = fitFor(!!verdict)
-    const P2 = choose(fullBottom, f2)
-    if (P2) { P = P2; fFit = f2; capsOn = false; if (verdict) vMode = 'formula' }
+  let fFit = fitFor()
+  let P
+  const layout = () => {
+    P = choose(caps || vMode === 'band' ? bandBottom : fullBottom, fFit)
+    if (!P && (caps || vMode === 'band')) {
+      // last resort: the sheet takes the caption band (captions off, verdict retyped in the formula bar) rather
+      // than ever running under the captions. Shorten labels or set "captions": false to choose this yourself.
+      const P2 = choose(fullBottom, fFit)
+      if (P2) { P = P2; capsOn = false; if (verdict) vMode = 'formula' }
+    }
+    if (!P) P = forced(capsOn || vMode === 'band' ? bandBottom : fullBottom, fFit)
   }
-  if (!P) P = forced(capsOn || vMode === 'band' ? bandBottom : fullBottom, fFit)
+  layout()
+
+  // ---------------------------------------------------------------- notes the sheet does not show: the formula bar
+  // A note goes to a tooltip (tips tiers, when it has time to show) or the grey line (the 'note' tier); any other
+  // note is typed into the formula bar right after its result lands, continuing the working when that fits one
+  // line ("= $2,500 × 26 = $65,000 · not $60,000"), else on its own.
+  const itemStr = r => (items[r].formula ? (isEq(items[r].formula) ? items[r].formula : '= ' + items[r].formula) : '')
+  const noteT = r => T[r].res + (r === countIdx ? M.count + 0.12 : 0.3)
+  const fAvail = () => G.width - 102 - 22 - 6
+  const fitsBar = str => textW(mk(str), font(700, fFit.px, F.mono)) <= fAvail()
+  const tipWin = r => {
+    const openAt = T[r].res + (r === countIdx ? M.count + 0.36 : 0.28)
+    const leave = Math.min(...base.filter(e => e.t - 0.22 > T[r].res + 0.05).map(e => e.t - 0.22), verdict ? verdict.t : Infinity)
+    return { openAt, closeAt: leave - 0.28 }
+  }
+  const tipNote = r => P.tips && !!items[r].note && !T[r].pre && tipWin(r).closeAt - tipWin(r).openAt >= 0.8
+  const noteShown = r => !items[r].note || tipNote(r) || (P.hasSub && P.sub === 'note')
+  let barNotes = []
+  const planNotes = () => {
+    barNotes = items.map((it, r) => {
+      if (noteShown(r)) return null
+      const ext = itemStr(r) && !T[r].pre ? `${itemStr(r)} = ${it.result} · ${it.note}` : ''
+      if (ext && fitsBar(ext)) return { kind: 'note', row: r, t: noteT(r), str: ext, from: mkLen(itemStr(r)), erase: noteT(r), cps: 26 }
+      return { kind: 'note', row: r, t: Math.max(0, noteT(r)), str: String(it.note), from: T[r].pre && r === 0 ? mkLen(String(it.note)) : 0, cps: 26 }
+    }).filter(Boolean)
+  }
+  planNotes()
+  if (barNotes.some(n => !fitsBar(n.str))) {
+    // a note too long for the bar's one line: the bar takes two lines and the layout is planned again
+    noteStrs = barNotes.map(n => n.str)
+    fFit = fitFor()
+    layout()
+    planNotes()
+  }
   meas.remove()
   const rowH = P.rowH
 
   // ---------------------------------------------------------------- events (formula bar, selection)
   const vType0 = verdict ? verdict.t + 0.32 : Infinity
-  const evs = base.slice()
-  if (vMode === 'formula') evs.push({ kind: 'verdict', t: vType0, erase: verdict.t, str: verdict.text, cps: 26 })
-  evs.sort((a, b) => a.t - b.t)
+  const vfit = vMode === 'formula' ? fitBarVerdict(verdict.text, G.width) : null
+  const evs = [...base, ...barNotes]
+  if (vMode === 'formula') evs.push({ kind: 'verdict', t: vType0, erase: verdict.t, str: vfit.text, cps: 26 })
+  evs.sort((a, b) => a.t - b.t || (a.kind === 'note') - (b.kind === 'note'))
   const E = evs.map((e, k) => {
     const len = mkLen(e.str)
     const cps = e.cps ?? Math.max(8, len / Math.max(0.15, e.dur || typeDur))
-    return { ...e, len, cps, dur: len / cps, from: 0, eraseAt: k === 0 ? -Infinity : e.erase ?? e.t - 0.22 }
+    return { ...e, len, cps, dur: len / cps, from: e.from ?? 0, eraseAt: k === 0 ? -Infinity : e.erase ?? e.t - 0.22 }
   })
   const first = E[0]
   const firstRow = first && first.row != null ? first.row : 0
@@ -313,8 +356,9 @@ export default function deadSimpleList(spec, ctx) {
   })
 
   // ---------------------------------------------------------------- duration
-  const beats = [lastLand, ...E.map(typeEnd)]
-  const duration = durationOf(spec, { beats, hold: d.hold ?? 3 })
+  const vEv = E.find(e => e.kind === 'verdict')
+  const beats = [lastLand, ...E.filter(e => e.kind !== 'verdict').map(typeEnd)]
+  const duration = durationOf(spec, { beats, hold: d.hold ?? 3, loop: loopOn, verdictEnd: vEv ? typeEnd(vEv) : null })
   const D = spec.duration || duration
   const loopT0 = loopOn ? D - M.loopOut : Infinity
 
@@ -323,7 +367,7 @@ export default function deadSimpleList(spec, ctx) {
   const colW = [P.wA, W - gut - P.wA]
   const card = h('div', { class: 'ls-card', style: { left: X + 'px', top: Y + 'px', width: W + 'px' } })
   L.append(card)
-  const fbar = formulaBar(card, { x: 0, y: 0, w: W, ht: fFit.ht, px: fFit.px, lines: fFit.lines })
+  const fbar = formulaBar(card, { x: 0, y: 0, w: W, ht: fFit.ht, px: fFit.px, lines: fFit.lines, verdict: vMode === 'formula' ? verdict.text : null })
 
   const lettersH = P.letters ? G.lettersH : 0
   let letterEls = []
@@ -352,29 +396,40 @@ export default function deadSimpleList(spec, ctx) {
   card.append(heads)
 
   const bodyY = headY + headH
-  const reserve = P.tips ? Math.max(slotH, TAIL) : TAIL
-  const bodyH = N * rowH + reserve
+  // the tooltip slot is planned for (P.bottom) but not drawn: the card grows while a tooltip is open
+  const bodyH = N * rowH + TAIL
   const body = h('div', { class: 'ls-body', style: { top: bodyY + 'px', height: bodyH + 'px' } })
   card.append(body)
   setStyle(card, { height: bodyY + bodyH + 'px' })
   const bodyTop = Y + bodyY
-  // the room a tooltip opens into: un-numbered sheet under the last row
-  if (reserve) body.append(h('div', { class: 'dsl-tail', style: { top: N * rowH + 'px', height: reserve + 'px', backgroundImage: `linear-gradient(90deg, ${C.head} ${gut - 2}px, ${C.grid} ${gut - 2}px, ${C.grid} ${gut}px, ${C.sheet} ${gut}px)` } }))
+  // un-numbered sheet under the last row (and the room a tooltip opens into)
+  const tailEl = h('div', { class: 'dsl-tail', style: { top: N * rowH + 'px', height: TAIL + 'px', backgroundImage: `linear-gradient(90deg, ${C.head} ${gut - 2}px, ${C.grid} ${gut - 2}px, ${C.grid} ${gut}px, ${C.sheet} ${gut}px)` } })
+  body.append(tailEl)
+  const setGrow = px => { const g = Math.round(px); setStyle(card, { height: bodyY + bodyH + g + 'px' }); setStyle(body, { height: bodyH + g + 'px' }); setStyle(tailEl, { height: TAIL + g + 'px' }) }
 
-  const rowEls = [], numEls = [], labEls = [], subEls = [], res = []
+  const rowEls = [], numEls = [], labEls = [], subEls = [], sufEls = [], res = []
   items.forEach((it, r) => {
     const num = h('div', { class: 'ls-rn', 'data-deco': '', text: String(startRow + r), style: { width: gut + 'px', height: rowH + 'px' } })
+    // the working stays on the sheet once the formula bar moves on (when no tier shows it): as a grey line under a
+    // label that leaves the row room for one, else as a grey suffix on a one-line label
+    const fs0 = itemStr(r)
+    const workFree = fs0 && !(P.hasSub && P.sub === 'formula')
+    const lineOK = workFree && !P.hasSub && P.labLines[r] * P.lab * P.lh + DENS[P.density].subH <= rowH - 2 * DENS[P.density].padY && tw(mk(fs0), font(600, 40), '-0.01em') <= P.inA
+    const sufOK = workFree && !lineOK && P.labLines[r] === 1 &&
+      tw(mk(it.label || ''), font(800, P.lab), '-0.014em') + tw(mk(fs0), font(600, 40), '-0.01em') + 40 <= P.inA
+    const suf = sufOK ? h('span', { class: 'dsl-suf', html: mk(fs0) }) : lineOK ? h('div', { class: 'dsl-sub', html: mk(fs0) }) : null
     const lab = h('div', { class: 'dsl-lab', html: mk(it.label || ''), style: { fontSize: P.lab + 'px', lineHeight: String(P.lh), width: P.inA + 'px' } })
+    if (sufOK) lab.append(' ', suf)
     const subText = P.sub === 'formula' ? it.formula : P.sub === 'note' ? it.note : ''
     const sub = P.hasSub ? h('div', { class: 'dsl-sub', html: subText ? mk(subText) : '' }) : null
-    const cellA = h('div', { class: 'ls-cell input left dsl-a', style: { left: colX[0] + 'px', width: colW[0] + 'px', height: rowH + 'px' } }, lab, sub)
+    const cellA = h('div', { class: 'ls-cell input left dsl-a words', style: { left: colX[0] + 'px', width: colW[0] + 'px', height: rowH + 'px' } }, lab, sub, lineOK ? suf : null)
     const rt = h('span', { class: 'dsl-rt' })
     const strike = h('i', { class: 'dsl-strike' })
     const v = h('span', { class: 'ls-v' }, rt, strike)
-    const cellB = h('div', { class: 'ls-cell output right', style: { left: colX[1] + 'px', width: colW[1] + 'px', height: rowH + 'px', fontSize: P.res + 'px' } }, v)
+    const cellB = h('div', { class: 'ls-cell output right', style: { left: colX[1] + 'px', width: colW[1] + 'px', height: rowH + 'px', fontSize: P.res + 'px', paddingRight: PAD + HANDLE_PAD + 'px' } }, v)
     const row = h('div', { class: 'ls-row', style: { top: r * rowH + 'px', height: rowH + 'px' } }, num, cellA, cellB)
     body.append(row)
-    rowEls.push(row); numEls.push(num); labEls.push(lab); subEls.push(sub)
+    rowEls.push(row); numEls.push(num); labEls.push(lab); subEls.push(sub); sufEls.push(suf)
     res.push({ el: cellB, v, rt, strike })
   })
   const sel = h('div', { class: 'ls-sel' }, h('i', { class: 'ls-handle' }))
@@ -391,21 +446,22 @@ export default function deadSimpleList(spec, ctx) {
   // ---------------------------------------------------------------- tooltips (notes)
   const shApi = { over, w: W, gutter: gut, x: X, bodyTop }
   const tips = []
-  if (P.tips) items.forEach((it, r) => {
-    if (!it.note || T[r].pre) return
+  items.forEach((it, r) => {
+    if (!tipNote(r)) return
     const openAt = T[r].res + (r === countIdx ? M.count + 0.36 : 0.28) // after a count-up, clear of its landing pop
     const leave = Math.min(...E.filter(e => e.eraseAt > T[r].res + 0.05).map(e => e.eraseAt), verdict ? verdict.t : Infinity, loopT0)
     const closeAt = leave - 0.28
-    if (closeAt - openAt < 0.8) return
     const cell = cellRect(r, 1)
-    const wpx = Math.min(W - gut - 24, tw(mk(it.note), font(800, tipPx)) + 58)
+    const wpx = tipFit.w[r]
     const x1 = Math.min(X + W - 12, Math.max(cell.x1 - 10, X + gut + 12 + wpx))
     const x0 = Math.max(X + gut + 12, x1 - wpx)
-    const strip = tipStrip(shApi, { px: tipPx })
-    setHTML(strip.txt, mk(it.note)) // written once, so a hidden pill's DOM never depends on what was shown before
-    tips.push({ r, html: mk(it.note), openAt, closeAt, strip, box: { x0, x1, notchX: clamp((cell.x0 + cell.x1) / 2, x0 + 34, x1 - 34) } })
+    // the label is written once, so a hidden pill's DOM never depends on what was shown before
+    const strip = tipStrip(shApi, { px: tipPx, html: tipFit.html[r], wrap: tipFit.wrap })
+    tips.push({ r, openAt, closeAt, strip, win: tipWindow(openAt, closeAt), box: { x0, x1, notchX: clamp((cell.x0 + cell.x1) / 2, x0 + 34, x1 - 34) } })
   })
-  const openOf = (tp, t) => ease.inOut(prog(t, tp.openAt, 0.3)) * (1 - ease.inOut(prog(t, tp.closeAt + 0.06, 0.24)))
+  const openOf = (tp, t) => tp.win.open(t)
+  // a row's working suffix rises in when the formula bar moves on (or 0.5 s after the result when nothing follows)
+  const sufT = items.map((_, r) => { const nx = E.find(e => e.eraseAt > T[r].res && e.row !== r); return nx ? nx.eraseAt + 0.1 : T[r].res + 0.5 })
   const shiftAt = (r, t) => { let dy = 0; for (const tp of tips) if (r > tp.r) dy += slotH * openOf(tp, t); return dy }
 
   // ---------------------------------------------------------------- reference outlines
@@ -413,7 +469,7 @@ export default function deadSimpleList(spec, ctx) {
   const inTok = input ? numToken(input.value) : null
   const refs = []
   E.forEach((e, k) => {
-    if (e.kind === 'verdict' || !e.str) return
+    if (e.kind === 'verdict' || e.kind === 'note' || !e.str) return
     const targets = new Map()
     if (inTok) { const end = tokenEnd(e.str, inTok); if (end > 0) targets.set('in', end) }
     items.forEach((it, r) => {
@@ -503,6 +559,8 @@ export default function deadSimpleList(spec, ctx) {
     duration,
     chrome: {
       footer: { top: Y + bodyY + bodyH + G.gap },
+      footerShift: t => shiftAt(N, t),
+      captionHolds: countIdx >= 0 ? [{ text: items[countIdx].result, t: T[countIdx].res + M.count }] : [],
       captions: capsOn,
       verdict: vMode === 'band' ? 'band' : 'self',
       loop: loopOn ? { t0: loopT0, dur: 0.3 } : null,
@@ -511,7 +569,7 @@ export default function deadSimpleList(spec, ctx) {
       // formula bar: the verdict takes it over in ink, heavier, as the ≈ chip pops
       const fs = barState(t)
       fbar.set(fs.html, { caret: fs.caret })
-      setStyle(fbar.txt, fs.verdict ? { color: C.ink, fontWeight: '800' } : { color: C.fbarText, fontWeight: '700' })
+      fbar.verdictStyle(!!fs.verdict, vEv ? prog(t, verdict.t, 0.2) : 0)
       const chipP = vMode === 'formula' ? prog(t, vType0 - 0.1, 0.34) : 0
       setStyle(fbar.chip, { transform: `translateY(-50%) scale(${chipP > 0 && chipP < 1 ? popScale(chipP, 1.3).toFixed(4) : 1})` })
 
@@ -527,6 +585,8 @@ export default function deadSimpleList(spec, ctx) {
         setStyle(labEls[r], keepLab ? { opacity: '1', transform: 'none' } : withOut(dropIn(prog(t, rowStart[r], 0.24), 14), out))
         // the working line rises in under the label as the result lands (from below: it never crosses the label)
         if (subEls[r]) setStyle(subEls[r], withOut(riseIn(tm.pre ? 1 : prog(t, tm.res + 0.12, 0.26), 10), out))
+        // the working suffix arrives once the formula bar moves on from this row (it keeps the maths visible)
+        if (sufEls[r]) setStyle(sufEls[r], withOut(riseIn(tm.pre ? 1 : prog(t, sufT[r], 0.26), 8), out))
         // goal row: yellow wipes in once its answer is in
         const goalT = tm.res + (r === countIdx ? M.count : 0.1)
         if (r === goalIdx) hiRow(r, 1 - (loopOn ? ease.out(prog(t, loopT0, 0.2)) : 0), tm.pre ? 1 : ease.inOut(prog(t, goalT, 0.3)))
@@ -565,16 +625,9 @@ export default function deadSimpleList(spec, ctx) {
         setStyle(c.strike, { opacity: strike > 0 ? '1' : '0', transform: `scaleX(${strike.toFixed(3)})` })
       }
 
-      // note tooltips: the slot opens, the pill pops out of its notch, its text arrives once it is full size
-      for (const tp of tips) {
-        const o = openOf(tp, t)
-        const inP = prog(t, tp.openAt + 0.04, 0.34), outP = prog(t, tp.closeAt - 0.04, 0.18)
-        const k = outP > 0 ? 1 - ease.in(outP) : inP < 1 ? Math.max(0, ease.back(inP, 2)) : 1
-        const alpha = prog(t, tp.openAt + 0.3, 0.1) * (1 - prog(t, tp.closeAt - 0.1, 0.06))
-        tp.strip.set({ ...tp.box, y: rowTop(tp.r, shiftAt(tp.r, t)) + rowH, ht: slotH, open: o, scale: inP <= 0 ? 0 : k, html: tp.html, textAlpha: alpha })
-        // a hidden pill parks at one canonical state, so a frame never depends on which frame came before
-        if (o <= 0.001 || (inP <= 0 && outP <= 0)) { setStyle(tp.strip.el, PARK); setStyle(tp.strip.txt, { opacity: '0' }); setStyle(tp.strip.el.firstChild, { left: '0px' }) }
-      }
+      // note tooltips: the slot opens (the card grows), then the pill wipes out of its notch with its text in place
+      setGrow(shiftAt(N, t))
+      for (const tp of tips) tp.strip.set({ ...tp.box, y: rowTop(tp.r, shiftAt(tp.r, t)) + rowH, ht: slotH, open: tp.win.open(t), reveal: tp.win.reveal(t) })
 
       // reference outlines
       for (const rf of refs) {
@@ -596,7 +649,8 @@ export default function deadSimpleList(spec, ctx) {
         opacity: '1', left: (rc.x0 - X).toFixed(2) + 'px', top: (rc.y0 - bodyTop).toFixed(2) + 'px',
         width: (rc.x1 - rc.x0).toFixed(2) + 'px', height: (rc.y1 - rc.y0).toFixed(2) + 'px',
       })
-      setStyle(sel.firstChild, { right: '3px', bottom: '3px' })
+      // the fill handle straddles the bottom gridline (below the value's baseline, never read as a full stop)
+      setStyle(sel.firstChild, { right: '3px', bottom: rc.y1 > bodyTop + N * rowH + shiftAt(N, t) - 2 ? '3px' : '-9px' })
       const [r0, r1, c0, c1] = K[k].head
       numEls.forEach((el, r) => { const on = r >= r0 && r <= r1; setStyle(el, { backgroundColor: on ? C.headSel : C.head, color: on ? C.headSelText : C.headText }) })
       letterEls.forEach((el, j) => { const on = j >= c0 && j <= c1; setStyle(el, { backgroundColor: on ? C.headSel : C.head, color: on ? C.headSelText : C.headText }) })

@@ -3,11 +3,11 @@
 // One continuous stretch, 0 cuts on the stage. A dollar counter ticks at a fixed real rate; milestones pop as
 // they pass.
 //   Top bar   the hook, the hero counter and the footer (the rate's working, spec.footer). The hero is a debt-clock
-//             board: every digit slot the final value will need is on the board from frame 1 as an unlit LED (a
-//             ghost "0"), and slots light up green as the count reaches them. The counter is linear in real time
-//             (crisp digital ticks when it moves more than one unit a frame; a mechanical roll on the last digit
-//             when it is slower). A "≈" in `final` is an unlit ghost while the count runs and lights when the clock
-//             stops on `final` exactly (bump, glow flare, cash).
+//             counter: only the digits the count has reached are on the board (HD Guy's "$0.30", no leading zeros),
+//             and the "$" hugs the leading digit, so the number grows a digit at a time and stays centred. The
+//             counter is linear in real time (crisp digital ticks when it moves more than one unit a frame; a
+//             mechanical roll on the last digit when it is slower). A "≈" in `final` is an unlit ghost while the
+//             count runs and lights when the clock stops on `final` exactly (bump, glow flare, cash).
 //   Stage     the next milestone as a big unit icon, a ghost that fills from the bottom with the real thing as the
 //             count climbs (fill = count ÷ milestone value, so it tops out exactly as the counter passes it; a neon
 //             level line rides the fill inside the icon's silhouette). When it passes: the icon pops (bump, glow,
@@ -15,18 +15,21 @@
 //             on the milestone ladder (the left margin: one small icon per milestone, lit when passed, the next one
 //             glowing, the rest unlit), while the next milestone's ghost drops in (already part full: every dollar
 //             so far counts toward it). The last milestone stays big and lit in the centre (riser, hit + cash).
-//   Bottom    the label stack. Its resting state is the rate ("≈ $30,800" / "EVERY SECOND", split from
-//             data.rateDisplay); a milestone flashes in for `flash` s (or until the next beat), then the rate comes
-//             back. lookOpts.rateSteps add rate beats ("≈ $111 MILLION AN HOUR").
-// A two-line spec.footer gets a two-line footer row: the hero row gives up 18 px and the stage starts at y 700.
-// Frame 1: the header, the hero (the start value, or already running when counterT[0] < 0), the footer, the rate
-//   in the label stack and the first milestone's empty ghost (the open loop), the ladder counting what's ahead.
+//   Bottom    the label stack. Its resting state is the rate and what is counted: line 1 data.rateDisplay ("≈ $30,800
+//             every second", the words grey), line 2 data.label ("NEW US DEBT SINCE THE COUNTER STARTED"); without a
+//             label, the rate split ("≈ $30,800" / "EVERY SECOND"). A milestone flashes in for `flash` s (or until the
+//             next beat), then the resting state comes back. lookOpts.rateSteps add rate beats ("≈ $111 MILLION AN
+//             HOUR").
+// A long or two-line spec.footer gets a two-line footer row (the kit grid makes room).
+// Frame 1: the header, the hero (the start value, or already running when counterT[0] < 0: the look's real-time
+//   grammar, so samples start it at -0.4 s), the footer, the resting label stack and the first milestone's empty
+//   ghost (the open loop), the ladder counting what's ahead.
 //
 // data (FORMATS.md §10): { label, perSecond, rateDisplay, counterT: [t0, t1], startValue = 0, prefix = '$', dp = 0,
 //   milestones: [{ value, label, icon?, display?, name? }], final, hold }
 //   A milestone label "Name: $amount" splits into the label stack's two lines (l2 = name, l1 = amount); without a
 //   colon the whole label is line 2. milestone.icon picks its icon (else a keyword guess: house, car, pay → bill …).
-// lookOpts (all optional; this list is the reference until the kit README gets a cost-counter section):
+// lookOpts (all optional; README.md has the same list):
 //   intro:     { l1, l2 }                    the label stack's resting state (default: rateDisplay split)
 //   labels:    [{ l1, l2 }]                  per milestone, overrides the split label (e.g. "$1,251 × 52 = $65,052")
 //   rateSteps: [{ t, l1, l2, d? }]           extra rate beats in the label stack (held d s, default 4 s / next beat)
@@ -42,8 +45,7 @@
 //                                            from frame 1, `fill` slams in at t in the tone colour (buzz when bad)
 //   stream:    14 | false                    dots a second in the money stream (false: off)
 //   icon:      'coin'                        the stage icon when there are no milestones (it fills toward `final`)
-// The verdict is drawn here (body.verdict = false), fitted while visible: lib verdict() fits its text while the box
-// is still display:none, so a long verdict never shrinks there.
+// The verdict is the chrome's (the kit's one verdict slot at the foot of the frame).
 import { h, s, css as style, attr, prog, ease, clamp, lerp, rng, fitText } from '../../../runtime/core.js'
 import { C, SIZE, M, W, layoutFor } from '../theme.js'
 import {
@@ -51,7 +53,7 @@ import {
   ICONS, iconName, iconSVG, toneColor,
 } from '../lib.js'
 
-const GHOST_A = 0.085                       // an unlit LED slot: the counter's colour at this alpha (not text to read)
+const GHOST_A = 0.1                         // the unlit "≈": the counter's colour at this alpha (not text to read)
 const GHOST_ICON = 0.2                      // opacity of an unfilled milestone icon
 
 export const css = `
@@ -110,25 +112,12 @@ function flag(el, name, on) {
   if (on) el.setAttribute(name, ''); else el.removeAttribute(name)
 }
 
-/** layoutFor, plus room for a two-line footer: the hero row gives up 18 px, the footer takes two lines, the stage starts at 700 */
-function layoutCC(spec) {
-  const L = layoutFor(spec)
-  if (!L.hero || String(spec.footer || '').split('\n').length < 2) return L
-  const top = 700, sb = L.stage.y + L.stage.h
-  L.hero = { ...L.hero, y: 442, h: 150 }
-  L.footer = { ...L.footer, y: 594, h: 96 }
-  L.topBar = { y0: 0, y1: top }
-  L.stage = { x: 0, y: top, w: W, h: sb - top }
-  L.inner = { x: 140, y: top + 20, w: 800, h: L.stage.h - 36 }
-  return L
-}
-
 let uid = 0
 
 export default function costCounter(spec, ctx) {
   const d = spec.data || {}
   const lo = spec.lookOpts || {}
-  const L = layoutCC(spec)
+  const L = layoutFor(spec)
   const stage = ctx.stage
   const id = 'cc' + ++uid
 
@@ -325,10 +314,11 @@ export default function costCounter(spec, ctx) {
   const color = lo.tone ? toneColor(lo.tone) : C.green
   const rgb = [1, 3, 5].map(i => parseInt(color.slice(i, i + 2), 16)).join(', ')
   style(hero, { '--rgb': rgb })
-  const odo = h('div', { class: 'sb-odo cc-odo', style: { fontSize: SIZE.hero + 'px', color } })
+  const HS = L.hero.size, HI = L.hero.icon
+  const odo = h('div', { class: 'sb-odo cc-odo', style: { fontSize: HS + 'px', color } })
   glow.append(odo)
   hero.append(glow)
-  const heroIcon = typeof lo.heroIcon === 'string' ? iconSVG(lo.heroIcon, SIZE.heroIcon, { cls: 'sb-hero-icon' }) : null
+  const heroIcon = typeof lo.heroIcon === 'string' ? iconSVG(lo.heroIcon, HI, { cls: 'sb-hero-icon' }) : null
   // ≈ (ghost while running, lit on landing), the run prefix, digit slots with group commas, decimals, suffix
   const axEl = approx && inPlace ? h('span', { class: 'cc-ax', html: fixHTML('≈ ') }) : null
   if (axEl) odo.append(axEl)
@@ -352,9 +342,9 @@ export default function costCounter(spec, ctx) {
   if (heroIcon) hero.append(heroIcon)
   stage.append(hero)
   // fit: the whole board (all slots) inside 920 px, next to the icon if any
-  const iconW = heroIcon ? SIZE.heroIcon + 14 : 0
+  const iconW = heroIcon ? HI + 14 : 0
   const w168 = odo.offsetWidth || 1
-  const heroSize = Math.round(Math.min(SIZE.hero, (SIZE.hero * (920 - iconW)) / w168))
+  const heroSize = Math.round(Math.min(HS, (HS * (920 - iconW)) / w168))
   style(odo, { fontSize: heroSize + 'px' })
   if (finalEl) {
     style(finalEl, { fontSize: heroSize + 'px', display: 'flex', width: 'auto' })
@@ -365,19 +355,27 @@ export default function costCounter(spec, ctx) {
   if (heroIcon) {
     const ow = odo.offsetWidth
     style(glow, { paddingLeft: iconW + 'px', boxSizing: 'border-box' })
-    style(heroIcon, { left: (heroBox.w / 2 - (ow + iconW) / 2).toFixed(1) + 'px', top: (heroBox.h - SIZE.heroIcon) / 2 + 'px' })
+    style(heroIcon, { left: (heroBox.w / 2 - (ow + iconW) / 2).toFixed(1) + 'px', top: (heroBox.h - HI) / 2 + 'px' })
   }
 
   // ---------- label stack: the rate at rest, milestone flashes, rate steps ----------
   const rd = String(d.rateDisplay || '')
   const rtpl = parseDisplay(rd)
   let intro
+  let introL1 = null
   if (lo.intro && (lo.intro.l1 != null || lo.intro.l2 != null)) intro = { l1: lo.intro.l1 || '', l2: lo.intro.l2 || '' }
-  else if (isFinite(rtpl.value) && rtpl.suffix.trim()) {
+  else if (d.label) {
+    // the rate on line 1 (its words grey), what is being counted on line 2
+    intro = { l1: rd, l2: d.label }
+    if (isFinite(rtpl.value) && rtpl.suffix.trim()) {
+      const cut = rd.length - rtpl.suffix.length
+      introL1 = `${ax(esc(rd.slice(0, cut).trim()))}<span class="op"> ${ax(esc(rd.slice(cut).trim()))}</span>`
+    }
+  } else if (isFinite(rtpl.value) && rtpl.suffix.trim()) {
     const cut = rd.length - rtpl.suffix.length
     intro = { l1: rd.slice(0, cut).trim(), l2: rd.slice(cut).trim() }
-  } else intro = { l1: rd, l2: d.label || '' }
-  const items = [{ l1: ax(esc(intro.l1)), l2: rich(intro.l2) }]
+  } else intro = { l1: rd, l2: '' }
+  const items = [{ l1: introL1 || ax(esc(intro.l1)), l2: rich(intro.l2) }]
   const beats = []
   if (!silent) ms.forEach((m, i) => {
     if (!m.reached || m.passed0) return
@@ -393,19 +391,8 @@ export default function costCounter(spec, ctx) {
   beats.forEach((b, k) => { b.end = Math.min(b.t + b.hold, k + 1 < beats.length ? beats[k + 1].t : Infinity) })
   const labels = labelStack(stage, L, items)
 
-  // ---------- verdict: drawn here, not by the chrome, so it is fitted while visible (see the header note) ----------
-  const vd = spec.verdict && spec.verdict.text ? (() => {
-    const v = spec.verdict
-    const vbox = h('div', { class: 'sb-verdict' + (L.verdict.boxed ? ' boxed' : ''), style: { top: L.verdict.y + 'px', left: (W - L.verdict.w) / 2 + 'px', width: L.verdict.w + 'px', height: L.verdict.h + 'px', display: 'flex' } })
-    const rule = h('div', { class: 'sb-verdict-rule', 'data-deco': '' })
-    const txt = h('div', { class: 'sb-verdict-text', html: rich(v.text) })
-    vbox.append(rule, txt)
-    stage.append(vbox)
-    fitText(txt, L.verdict.w, { maxH: L.verdict.h - 30, minPx: SIZE.verdictMin })
-    const from = slamFromFor(inkWidth(txt), L.verdict.w - 8, 1.12)
-    style(vbox, { display: 'none' })
-    return { t0: Math.max(0, +v.t || 0), vbox, rule, txt, from }
-  })() : null
+  const vd = spec.verdict && spec.verdict.text ? { t0: Math.max(0, +spec.verdict.t || 0) } : null
+  if (T0 >= 0 && T0 < 0.05) console.warn(`cost-counter: counterT[0] = ${T0}: frame 1 shows the start value standing still (start it at -0.4 s to open already running)`)
 
   // ---------- sound ----------
   const own = (spec.sfx || [])
@@ -439,7 +426,7 @@ export default function costCounter(spec, ctx) {
   const bigLand = !nearPass(landT) && landT > 0.05
   if (bigLand) cue(landT, 'cash', { gain: 0.6 })
   const loud = [...passes.filter(m => m.last).map(m => m.tp), ...(bigLand ? [landT] : [])]
-  if (vd && !loud.some(x => Math.abs(x - vd.t0) < 0.6)) cue(vd.t0 + 0.06, 'reveal', { gain: 0.7 })
+  if (vd && !loud.some(x => Math.abs(x - vd.t0) < 0.6)) cue(vd.t0, 'reveal', { gain: 0.7 })
   if (sl && sl.t > 0.05) cue(sl.t + 0.18, (lo.slot.tone || 'bad') === 'bad' ? 'buzz' : 'ding', { gain: 0.5 })
 
   const lastBeat = Math.max(T1, ...passes.map(m => m.tp), ...beats.filter(b => b.kind === 'step').map(b => b.t + 1.5))
@@ -462,18 +449,23 @@ export default function costCounter(spec, ctx) {
         const lower = V - Math.floor(V / unit + 1e-9) * unit
         pos = q + (lower > unit - 1 ? ease.inOut(lower - (unit - 1)) : 0)
       }
+      // only the digits the count has reached are on the board: the "$" hugs the leading digit
       const on = c.k < 0 || c.k < n
-      attr(c.col, 'class', 'sb-odo-col' + (on ? '' : ' off'))
-      flag(c.col, 'data-deco', !on)
-      style(c.strip, { transform: `translateY(${-Math.round((on ? pos : 0) * 1000) / 1000}em)` })
+      style(c.col, { display: on ? 'inline-block' : 'none' })
+      if (on) style(c.strip, { transform: `translateY(${-Math.round(pos * 1000) / 1000}em)` })
     }
-    for (const sp of seps) attr(sp.el, 'class', 'sb-odo-sep' + (sp.k < n ? '' : ' off'))
+    for (const sp of seps) style(sp.el, { display: sp.k < n ? 'inline-block' : 'none' })
+    if (heroIcon) {
+      // the group (icon + number) stays centred as the number grows a digit
+      const ow = odo.offsetWidth
+      style(heroIcon, { left: (heroBox.w / 2 - (ow + iconW) / 2).toFixed(1) + 'px' })
+    }
   }
 
   return {
     duration,
     layout: L,
-    verdict: false,
+    verdictCue: null,                                   // cued above (skipped next to a louder beat)
     seek(t) {
       const v = valueAt(t)
       const landed = finalOk && t >= T1
@@ -593,18 +585,7 @@ export default function costCounter(spec, ctx) {
       // money stream
       drawStream(t)
 
-      // verdict: slams into the label stack's slot; the label stack fades and drops out of its way
-      if (vd) {
-        if (t < vd.t0) style(vd.vbox, { display: 'none' })
-        else {
-          const k = slam(t, vd.t0 + 0.06, { from: vd.from })
-          style(vd.vbox, { display: 'flex' })
-          style(vd.txt, { opacity: String(k.o), transform: `scale(${k.s.toFixed(4)})` })
-          style(vd.rule, { transform: `scaleX(${ease.out(prog(t, vd.t0 + 0.1, 0.35)).toFixed(4)})` })
-        }
-        const y = prog(t, vd.t0 - 0.04, 0.14)
-        style(labels.el, { opacity: String(1 - y), transform: `translateY(${(14 * y).toFixed(1)}px)`, visibility: y >= 1 ? 'hidden' : 'visible' })
-      }
+      // (the verdict and the label stack's yield are the chrome's)
     },
   }
 }

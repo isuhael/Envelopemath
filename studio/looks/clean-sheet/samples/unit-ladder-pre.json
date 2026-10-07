@@ -1,0 +1,28 @@
+{
+  "id": "sample-clean-sheet-unit-ladder-pre",
+  "sample": true,
+  "look": "clean-sheet",
+  "format": "unit-ladder",
+  "fps": 30,
+  "header": "What things cost\nin **Big Macs**",
+  "footer": "Big Mac: $5.69, US average, 2026",
+  "captions": true,
+  "vo": [
+    { "t": 0.0, "d": 2.6, "text": "A movie ticket? About **two Big Macs**." },
+    { "t": 3.0, "d": 3.2, "text": "A month of rent? About **299**." },
+    { "t": 7.0, "d": 3.2, "text": "A new car? About **8,787**." },
+    { "t": 10.5, "d": 1.4, "text": "Check it." }
+  ],
+  "verdict": { "t": 12.2, "text": "A new car: **≈ 8,787** Big Macs." },
+  "data": {
+    "unit": { "name": "Big Mac", "price": "$5.69", "icon": "burger" },
+    "rungs": [
+      { "t": -1, "item": "A movie ticket", "cost": "$11.75", "units": 2.07, "unitsDisplay": "≈ 2" },
+      { "t": 3.0, "item": "A month of rent", "cost": "$1,700", "units": 298.8, "unitsDisplay": "≈ 299" },
+      { "t": 7.0, "item": "A new car", "cost": "≈ $50,000", "units": 8787, "unitsDisplay": "≈ 8,787", "tone": "goal" }
+    ],
+    "check": "$50,000 ÷ $5.69 ≈ 8,787",
+    "checkT": 10.5,
+    "hold": 2.0
+  }
+}

@@ -31,7 +31,7 @@
 //   plate: false              no gold plate on the last count (a rung with tone "goal" always gets one)
 import {
   h, s, style, attr, setText, setHTML, prog, clamp, lerp, rng,
-  C, F, L, S, E, RIG, poseTrack, fk, pinLimb, blendJ, Figure, makeWorld, makeFx, camera, NumObj,
+  C, F, L, S, E, RIG, poseTrack, fk, secondary, pinLimb, blendJ, Figure, makeWorld, makeFx, camera, NumObj,
   chromeParts, durationOf, num, rollTo, measure, arc, squashAt, fall, popIn, wobble, coin, icon,
 } from '../lib.js'
 
@@ -69,7 +69,7 @@ const FLAT = {
 // poses used only here (the shared library has the rest)
 const P_PRESENT = { lean: -3, tilt: 4, aF: [116, 30], aB: [-14, 16], lF: [10, -4], lB: [-12, -2] }
 const P_TOSSW = { lean: 10, tilt: 12, aF: [30, 96], aB: [-24, 20], lF: [18, -26], lB: [-16, -22] }
-const P_TOSS = { lean: -10, tilt: -20, aF: [170, 4], aB: [-34, 20], lF: [12, -4], lB: [-12, -2], lift: 8 }
+const P_TOSS = { lean: -8, tilt: -18, aF: [138, 8], aB: [-34, 20], lF: [12, -4], lB: [-12, -2], lift: 8 }
 const P_FLINCH = { lean: -16, tilt: -16, aF: [64, 104], aB: [44, 112], lF: [18, -16], lB: [-20, -14] }
 const P_WIND = { lean: -18, tilt: -4, aF: [-58, 118], aB: [58, 64], lF: [30, -36], lB: [-30, -22] }
 const P_PUNCH = { lean: 24, tilt: -6, aF: [92, 4], aB: [-46, 36], lF: [36, -42], lB: [-30, -6] }
@@ -284,8 +284,8 @@ export default function unitLadder(spec, ctx) {
     r.frac = r.units - r.whole
     r.hasPart = r.frac > 0.04 && r.whole < 1000
     // the price coin: heavier rung by rung (it ends up towering over him)
-    r.rw = lerp(80, maxR, Math.pow(r.e, 0.85))
-    r.mode = 2 * r.rw >= shoulderH + 30 ? 'punch' : 'chop'
+    r.rw = lerp(70, maxR, Math.pow(r.e, 0.85))
+    r.mode = 2 * r.rw >= shoulderH - 20 ? 'punch' : 'chop'   // a small coin gets a karate chop from above
     r.landT = k => {                                           // unit k lands when the count passes k + 1
       if (k >= r.whole) return r.land
       const gg = Math.sqrt((k + 1) / Math.max(1e-9, r.units))
@@ -320,25 +320,35 @@ export default function unitLadder(spec, ctx) {
   const tr = poseTrack(keys)
 
   // coins stand in front of him, placed so the punch (or the chop) lands on the rim
+  const Jat = t => fk(secondary(tr.at(t), t, { prev: tr.at(t - 0.07) }), { x: XF, scale: FIGK })
   for (const r of R) {
-    const J = fk(tr.at(r.punch), { x: XF, scale: FIGK })
+    const J = Jat(r.punch)
+    // how far right his body reaches while he hits (head, front knee and foot, hips): the coin stays clear of it
+    let body = -Infinity
+    for (let k = -2; k <= 6; k++) {
+      const Jk = Jat(r.punch + 0.02 * k)
+      body = Math.max(body, Jk.head[0] + (r.mode === 'chop' ? 0 : Jk.R), Jk.kF[0], Jk.fF[0], Jk.hip[0])
+    }
+    body += 10
     r.cy = FLOOR - r.rw
     if (r.mode === 'punch') {
-      const yc = J.sh[1] + 6, xc = J.sh[0] + 0.9 * reach
-      const dx = Math.sqrt(Math.max(0, r.rw * r.rw - (r.cy - yc) * (r.cy - yc)))
-      r.cx = Math.max(xc + dx, XF + 40 + r.rw)
-      r.contact = [r.cx - dx, yc]
+      // the rim point nearest his shoulder sits at 0.88 of his reach: a clean side punch, clear of his legs
+      const Lc = 0.88 * reach + r.rw
+      const uy = clamp((r.cy - J.sh[1]) / Lc, -0.9, 0.9), ux = Math.sqrt(1 - uy * uy)
+      r.cx = Math.max(J.sh[0] + Lc * ux, body + r.rw)
+      const dx = r.cx - J.sh[0], dy = r.cy - J.sh[1], dl = Math.hypot(dx, dy)
+      r.contact = [r.cx - (r.rw * dx) / dl, r.cy - (r.rw * dy) / dl]
     } else {
       const ox = -0.3 * r.rw, oy = -0.954 * r.rw
       const ys = r.cy + oy - J.sh[1]
-      r.cx = Math.max(J.sh[0] - ox + Math.sqrt(Math.max(0, (0.86 * reach) ** 2 - ys * ys)), XF + 34 + r.rw)
+      r.cx = Math.max(J.sh[0] - ox + Math.sqrt(Math.max(0, (0.86 * reach) ** 2 - ys * ys)), body + r.rw)
       r.contact = [r.cx + ox, r.cy + oy - 3]
     }
     if (!showFig) r.contact = null
     // the price is the coin: its label repeats the HUD's working line, so it is decoration (it shrinks with the
     // camera); dropped when it would be too small to read even up close
     const fitPx = Math.min(r.rw * 0.62, (1.5 * r.rw) / Math.max(1, [...r.cost].length * 0.6))
-    r.label$ = fitPx >= 30 ? r.cost : ''
+    r.label$ = fitPx >= 24 ? r.cost : ''
     r.coin = coin(g.mid, { r: r.rw, text: r.label$ })
     r.coin.g.setAttribute('data-deco', '')
     r.dropH = FLOOR - VPtop + 40 + r.rw * 2

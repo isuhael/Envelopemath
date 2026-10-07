@@ -13,9 +13,17 @@
 // The verdict goes to the caption band (card) or is retyped in the formula bar. The last 0.5 s rewind
 // the counter and clear the rows back to frame 1, so the short loops.
 //
+// Frame 1 is never "$0": the counter starts lookOpts.preroll seconds in (default 1 s, at most a fifth of the run),
+// so the thumbnail already shows a second's worth (≈ the rate), and it still lands exactly on data.final at
+// counterT[1]; the formula bar's live seconds read the same clock ("≈ $30,800 × 1.0 s" at frame 1), so the working
+// always matches the cell. With no milestones the counter cell takes the room the table would have used.
+// The verdict is a card in the caption band whenever the counter keeps 150 px with the band reserved; else it is
+// retyped into the formula bar (Inter 800; the bar keeps its frame-1 height until the verdict).
+//
 // lookOpts (all optional):
-//   loop (true) · reveal (false: rows appear only as they are passed) · bars (true: progress line under the next
-//   milestone) · tone ('neutral': counter colour, good | bad | neutral) · verdict ('auto' | 'band' | 'formula')
+//   loop (true) · preroll (1: seconds already counted at frame 1) · reveal (false: rows appear only as they are
+//   passed) · bars (true: progress line under the next milestone) · tone ('neutral': counter colour, good | bad |
+//   neutral) · verdict ('auto' | 'band' | 'formula')
 //   · letters ('auto' | true | false) · formulaAt0 (0.7) · roll (true: soft ticking meter sound)
 //   · formulaSteps [{ t, text }]: working typed into the formula bar at t (replaces the live formula from t)
 //   · columns [key, amount, output]: table header labels (default Milestone / Amount / Passed at | Passed)
@@ -28,7 +36,7 @@ import {
   h, setStyle, setText, clamp, prog, ease, C, G, M, S,
   formulaBar, fitFormula, mk, mkLen, typedMk, typedCount, typeDur, wordCut, caretOn,
   countText, parseDisplay, snapIn, liftOut, popScale, flashAlpha, lerpRect, rgba, fitText,
-  durationOf, hasCaptions, opt, layer, font, toneColor, isNumeric, fmtNum,
+  durationOf, hasCaptions, opt, layer, font, toneColor, isNumeric, fmtNum, footerHeight, HANDLE_PAD,
 } from '../lib.js'
 
 export const css = `
@@ -42,7 +50,7 @@ export const css = `
 }
 .cc .cc-bar { position: absolute; bottom: -2px; height: 6px; width: 0; opacity: 0; background: #FFD60A; border-radius: 0 3px 3px 0; z-index: 2; }
 .cc .ls-cell.center { justify-content: center; }
-.cc .ls-cell.input .ls-v { font-feature-settings: 'cv11' 1; } /* labels are words: proportional hyphens and digits */
+.cc .ls-cell.input { font-variant-numeric: normal; } /* labels are words: proportional hyphens and digits */
 .cc .cc-wrap .ls-v { white-space: normal; line-height: 1.04; text-wrap: balance; }
 .cc .ls-row.cc-spare { border-bottom: 0; }
 `
@@ -99,6 +107,12 @@ export default function costCounter(spec, ctx) {
   // cell always reads at least the milestone's value on the frame it is passed
   const rate = fin && fin.n > start ? (fin.n - start) / run : Math.max(1e-9, d.perSecond || 1)
   const runP = t => prog(t, t0, run)
+  // the counter's own clock: it starts `preroll` seconds in (frame 1 already shows a second's worth) and reaches
+  // `run` at counterT[1], so it lands exactly on the final display string; the bar's seconds read this clock too
+  const preroll = clamp(+opt(spec, 'preroll', 1) || 0, 0, run * 0.2)
+  const clockAt = t => preroll + (run - preroll) * runP(t)
+  const cP = t => clockAt(t) / run
+  const tOfClock = vs => t0 + ((vs - preroll) * run) / Math.max(1e-9, run - preroll)
   // the running text without the ≈ (the ≈ chip joins the value when it lands)
   const bodyOf = (str, p, from) => (p >= 1 ? str : countText(str, p, { from })).replace(/^\s*≈\s*/, '')
   const tone = opt(spec, 'tone', 'neutral')
@@ -109,7 +123,7 @@ export default function costCounter(spec, ctx) {
   const ms = (d.milestones || []).map((m, i) => {
     const r = loRows[i] || {}
     const sp = splitLabel(m.label)
-    const tp = Number.isFinite(m.t) ? m.t : t0 + ((m.value ?? 0) - start) / rate
+    const tp = Number.isFinite(m.t) ? m.t : tOfClock(((m.value ?? 0) - start) / rate)
     return { type: 'm', label: r.label ?? sp.label, amount: r.amount ?? sp.amount, at: r.at ?? '', tp, value: m.value }
   }).sort((a, b) => a.tp - b.tp)
   for (const m of ms) { m.pre = m.tp <= Math.max(0, t0) + 1e-6; m.passes = !m.pre && m.tp <= t1 + 1e-6 }
@@ -137,13 +151,16 @@ export default function costCounter(spec, ctx) {
   const weightOf = (r, k) => (k === 'amount' && r.type !== 'k' ? 700 : 800)
   const avail = G.width - G.gutter
   const PADX = 16, CPAD = 2 * PADX + 4
+  // right padding: the last column keeps the sheet's 22 px, so its values end at x 938 like every other format's
+  // (the kept row's selection is a single cell: it shows no fill handle, so it needs no clearance)
+  const padRt = j => PADX + (j === keys.length - 1 ? G.padX - PADX : 0)
   const labelMaxW = px => Math.max(0, ...rows.map(r => (r.label ? tw(mk(r.label), 800, px, { tnum: false }) : 0)))
   function colWidths(fs) {
     const w = keys.map((k, j) => {
       if (k === 'label') return 0
       const v = Math.max(0, ...rows.map(r => (textOf(r, k) ? tw(esc(textOf(r, k)), weightOf(r, k), fs.num) : 0)))
       const hd = tw(mk(heads[j]), 800, S.labelMin, { ls: '-0.012em' })
-      return Math.ceil(Math.max(v + CPAD, hd + 2 * PADX + 2, 96))
+      return Math.ceil(Math.max(v + CPAD + padRt(j) - PADX, hd + 2 * PADX + 2, 96))
     })
     w[0] = avail - w.reduce((a, b) => a + b, 0)
     return w
@@ -170,7 +187,7 @@ export default function costCounter(spec, ctx) {
   const verdict = spec.verdict && spec.verdict.text ? spec.verdict : null
   const caps = hasCaptions(spec)
   const head = rateHead(d.rateDisplay)
-  const secsAt = t => clamp(t - t0, 0, run).toFixed(1)
+  const secsAt = t => clockAt(t).toFixed(1)
   const liveStr = t => `${/^\s*≈/.test(head) ? '' : '= '}${head || 'rate'} × ${secsAt(t)} s`
   const steps = (Array.isArray(lo.formulaSteps) ? lo.formulaSteps : []).filter(x => x && x.text)
     .map(x => ({ t: Math.max(0, Number(x.t) || 0), text: String(x.text) })).sort((a, b) => a.t - b.t)
@@ -182,7 +199,7 @@ export default function costCounter(spec, ctx) {
 
   // ---------- layout ----------
   const W = G.width, X = G.left, Y = G.cardTop, gut = G.gutter
-  const fH = footerH(spec.footer)
+  const fH = footerHeight(spec.footer)
   const lettersOpt = opt(spec, 'letters', 'auto')
   // an empty strip under the rows keeps the selection off the card's rounded corner (only needed when the
   // kept row's selected cell is in the last column)
@@ -194,7 +211,8 @@ export default function costCounter(spec, ctx) {
   // row 1: the counter's label (peach, merged) with the rate as its sub-label; measured before planning
   // (inline white-space: the class's text-wrap: balance would switch wrapping back on)
   const bigHl = h('div', { class: 'ls-hl', html: mk(d.label || ''), style: { whiteSpace: 'nowrap' } })
-  const bigSub = d.rateDisplay ? h('div', { class: 'ls-hsub', html: mk(d.rateDisplay), style: { whiteSpace: 'nowrap' } }) : null
+  // the rate is the hook's number: ink at 44 px under the label (not the usual grey 40 px sub-label)
+  const bigSub = d.rateDisplay ? h('div', { class: 'ls-hsub', html: mk(d.rateDisplay), style: { whiteSpace: 'nowrap', color: C.ink, fontSize: '44px', fontWeight: '700' } }) : null
   const bigHcell = h('div', { class: 'ls-hcell output', style: { left: gut + 'px', width: W - gut + 'px' } }, bigHl, bigSub)
   const bigRn1 = h('div', { class: 'ls-rn', 'data-deco': '', text: '1', style: { width: gut + 'px' } })
   const bigHead = h('div', { class: 'ls-heads cc-bighead' }, bigRn1, bigHcell)
@@ -209,7 +227,7 @@ export default function costCounter(spec, ctx) {
   const bigLabelH1 = Math.max(76, Math.ceil(bigHl.scrollHeight + 24))
 
   // row 3: the table's header (mint key, grey amount, peach output)
-  const tHeadEls = keys.map((k, j) => h('div', { class: `ls-hcell ${kinds[j]}`, style: { left: colX[j] + 'px', width: colW[j] + 'px', padding: `0 ${PADX}px` } },
+  const tHeadEls = keys.map((k, j) => h('div', { class: `ls-hcell ${kinds[j]}`, style: { left: colX[j] + 'px', width: colW[j] + 'px', padding: `0 ${j === keys.length - 1 ? G.padX : PADX}px 0 ${PADX}px` } },
     h('div', { class: 'ls-hl', html: mk(heads[j]), style: { whiteSpace: 'nowrap' } })))
   const tRn = h('div', { class: 'ls-rn', 'data-deco': '', text: '3', style: { width: gut + 'px' } })
   const tHead = h('div', { class: 'ls-heads' }, tRn, ...tHeadEls)
@@ -226,8 +244,8 @@ export default function costCounter(spec, ctx) {
   if (!nR) { tHead.remove(); headH = 0 } // no milestones: just the counter
 
   // vertical plan: the counter gets the room first (up to 230 px), then rows, then the decorative A B C row
-  const fitBase = fitFormula(fStrings, W)
-  const fitWithV = verdict ? fitFormula([...fStrings, verdict.text], W) : fitBase
+  const fitBase = fitFormula(fStrings, W) // (a verdict typed into the bar has its own fit: it never sizes the bar)
+  const vMaxH = nR ? 230 : 320 // with no milestones the counter takes the table's room
   function plan(bottom, fit, withSub = !!bigSub) {
     const labelH = withSub ? bigLabelH : bigLabelH1
     const rest = bottom - Y - fit.ht - labelH - headH - reserve
@@ -238,11 +256,11 @@ export default function costCounter(spec, ctx) {
     for (let r = rowTarget; r >= rowMin; r -= 2) tries.push({ letters: l0, rowH: r, vMin: 190 })
     for (let v = 184; v >= 100; v -= 4) tries.push({ letters: l0, rowH: rowMin, vMin: v })
     const pick = tries.find(x => rest - x.letters - nR * x.rowH >= x.vMin) || tries[tries.length - 1]
-    const valueH = Math.min(230, rest - pick.letters - nR * pick.rowH)
+    const valueH = Math.min(vMaxH, rest - pick.letters - nR * pick.rowH)
     let rowH = pick.rowH
     // spare room once the counter is full size: let the rows breathe a little
     const spare = rest - pick.letters - nR * rowH - valueH
-    if (valueH >= 230 && spare > 0 && nR) rowH = Math.min(rowMax, rowH + Math.floor(spare / nR))
+    if (valueH >= vMaxH && spare > 0 && nR) rowH = Math.min(rowMax, rowH + Math.floor(spare / nR))
     const out = { fit, letters: pick.letters, valueH: Math.max(96, valueH), rowH, labelH, sub: withSub }
     // a counter squeezed under ~176 px loses the rate sub-label first (the formula bar carries the rate)
     if (withSub && valueH < 176) { const alt = plan(bottom, fit, false); if (alt.valueH > out.valueH) return alt }
@@ -252,16 +270,17 @@ export default function costCounter(spec, ctx) {
   const fullBottom = G.safeBottom - 4 - (fH ? fH + G.gap : 0)
   let vMode = opt(spec, 'verdict', 'auto')
   if (!verdict) vMode = 'none'
-  else if (vMode === 'auto') vMode = caps || plan(bandBottom, fitBase).valueH >= 170 ? 'band' : 'formula'
-  if (vMode === 'formula') fItems.push({ t: verdict.t, text: verdict.text, verdict: true })
+  // the verdict is a card in the caption band whenever the counter keeps 150 px with the band reserved
+  else if (vMode === 'auto') vMode = caps || plan(bandBottom, fitBase).valueH >= 150 ? 'band' : 'formula'
   const bandUsed = caps || vMode === 'band'
-  const P = plan(bandUsed ? bandBottom : fullBottom, vMode === 'formula' ? fitWithV : fitBase)
+  const P = plan(bandUsed ? bandBottom : fullBottom, fitBase)
   const { valueH, rowH } = P
   const fbarH = P.fit.ht, lettersH = P.letters, labelH = P.labelH
   if (bigSub && !P.sub) bigSub.remove()
 
   // ---------- build: formula bar, letters, the big cell, the rows ----------
-  const fbar = formulaBar(card, { x: 0, y: 0, w: W, ht: fbarH, px: P.fit.px, lines: P.fit.lines })
+  const fbar = formulaBar(card, { x: 0, y: 0, w: W, ht: fbarH, px: P.fit.px, lines: P.fit.lines, verdict: vMode === 'formula' ? verdict.text : null })
+  if (vMode === 'formula') fItems.push({ t: verdict.t, text: fbar.vfit.text, verdict: true })
   let y = fbarH
   const letterEls = []
   if (lettersH) {
@@ -286,8 +305,9 @@ export default function costCounter(spec, ctx) {
   y += valueH
   // one font size so the widest value (the final, with its ≈ chip) fits the cell and its height
   const maxW = W - gut - 72
-  let px = S.big
-  const chipDims = p => ({ w: Math.round(p * 0.6), h: Math.round(p * 0.62), fs: Math.round(p * 0.46), gap: Math.round(p * 0.1), r: Math.round(p * 0.12) })
+  let px = nR ? S.big : 190 // a counter alone may be set larger (width allowing)
+  // (the chip's ≈ never goes under 40 px: it is read as part of the answer)
+  const chipDims = p => ({ w: Math.max(52, Math.round(p * 0.6)), h: Math.max(54, Math.round(p * 0.62)), fs: Math.max(40, Math.round(p * 0.46)), gap: Math.round(p * 0.1), r: Math.round(p * 0.12) })
   const finalBody = bodyOf(finalStr, 1, start)
   const widthAt = p => tw(esc(finalBody), 900, p, { ls: '-0.02em' }) + (approx ? chipDims(p).w + chipDims(p).gap : 0)
   while (px > 64 && (widthAt(px) > maxW || px > valueH - 40)) px -= 2
@@ -307,7 +327,7 @@ export default function costCounter(spec, ctx) {
     const rc = keys.map((k, j) => {
       const v = h('span', { class: 'ls-v' })
       const align = k === 'label' ? 'left' : k === 'out' && !hasAt ? 'center' : 'right'
-      const el = h('div', { class: `ls-cell ${kinds[j]} ${align}`, style: { left: colX[j] + 'px', width: colW[j] + 'px', height: rowH + 'px', padding: `0 ${PADX}px`, fontSize: (k === 'label' ? fs.label : fs.num) + 'px', fontWeight: String(weightOf(r, k)) } }, v)
+      const el = h('div', { class: `ls-cell ${kinds[j]} ${align}${k === 'label' ? ' words' : ''}`, style: { left: colX[j] + 'px', width: colW[j] + 'px', height: rowH + 'px', padding: `0 ${padRt(j)}px 0 ${PADX}px`, fontSize: (k === 'label' ? fs.label : fs.num) + 'px', fontWeight: String(weightOf(r, k)) } }, v)
       const color = k === 'label' ? C.ink : k === 'amount' ? (r.type === 'k' ? K.color : C.slate) : C.ink
       setStyle(v, { color })
       if (k === 'label' && wrap) { el.classList.add('cc-wrap'); setStyle(v, { maxWidth: colW[j] - 2 * PADX + 'px' }) }
@@ -327,7 +347,10 @@ export default function costCounter(spec, ctx) {
   }
   const cardH = y + nR * rowH + reserve
   setStyle(card, { height: cardH + 'px' })
-  const cardBottom = Y + cardH
+  // a lone counter (no milestone table) sits centred in the working area rather than over a void
+  const lift = nR ? 0 : Math.max(0, Math.round(((bandUsed ? bandBottom : G.workBottom - (fH ? fH + G.gap : 0)) - Y - cardH) / 2))
+  if (lift) setStyle(card, { top: Y + lift + 'px' })
+  const cardBottom = Y + lift + cardH
   const sel = h('div', { class: 'ls-sel' }, h('i', { class: 'ls-handle' }))
   card.append(sel)
   if (meterEl) { meterEl.remove(); meterEl = null }
@@ -335,7 +358,8 @@ export default function costCounter(spec, ctx) {
   // ---------- timing ----------
   const verdictT = verdict ? verdict.t : Infinity
   const beats = [t1, ...(K ? [K.t + 0.6] : []), ...ms.filter(m => m.passes).map(m => m.tp + 0.6)]
-  const duration = durationOf(spec, { beats, hold: d.hold ?? 3 })
+  const vItem = fItems.find(it => it.verdict)
+  const duration = durationOf(spec, { beats, hold: d.hold ?? 3, loop: opt(spec, 'loop', true), verdictEnd: vItem ? vItem.t + 0.2 + mkLen(vItem.text) / 26 : null })
   const D = spec.duration || duration
   const loopOn = opt(spec, 'loop', true)
   const loopT0 = loopOn ? D - M.loopOut : Infinity
@@ -423,12 +447,12 @@ export default function costCounter(spec, ctx) {
       // formula bar (the verdict, when it lives here, is ink and heavier; the ≈ chip pops as it lands)
       const fsx = formulaState(t)
       fbar.set(fsx.html, { caret: fsx.caret })
-      setStyle(fbar.txt, fsx.verdict ? { color: C.ink, fontWeight: '800' } : { color: C.fbarText, fontWeight: '700' })
+      fbar.verdictStyle(!!fsx.verdict, vItem ? prog(t, vItem.t, 0.2) : 0)
       const chipP = vMode === 'formula' ? prog(t, verdictT + ERASE - 0.1, 0.34) : 0
       setStyle(fbar.chip, { transform: `translateY(-50%) scale(${chipP > 0 && chipP < 1 && t < loopT0 ? popScale(chipP, 1.3).toFixed(4) : 1})` })
 
       // the giant cell: live value, ≈ chip on landing, flash + pulse on every milestone
-      const p = runP(t) * (1 - rw)
+      const p = rw > 0 ? cP(Math.min(t, loopT0)) + (cP(0) - cP(Math.min(t, loopT0))) * rw : cP(t) // the loop rewinds to frame 1
       setText(num, bodyOf(finalStr, p, start))
       if (chip) {
         const cp = prog(t, t1, 0.3)
@@ -470,7 +494,8 @@ export default function costCounter(spec, ctx) {
           const showsAtStart = r.type === 'm' && !reveal && k !== 'out'
           if (r.type === 'k') {
             pp = K.t <= 0 ? 1 : prog(t, K.t + 0.08 * j, M.drop)
-            if (k === 'amount') { const kp = runP(t) * (1 - rw); text = kp >= 1 ? K.final : bodyOf(K.final, kp, K.from) }
+            // the kept counter runs on the same clock as the big one (frame 1 already shows its preroll)
+            if (k === 'amount') { const kp = rw > 0 ? cP(Math.min(t, loopT0)) + (cP(0) - cP(Math.min(t, loopT0))) * rw : cP(t); text = kp >= 1 ? K.final : bodyOf(K.final, kp, K.from) }
             if (k === 'out') text = ''
             o = K.t <= 0 ? 0 : out
           } else if (showsAtStart) {
@@ -503,9 +528,9 @@ export default function costCounter(spec, ctx) {
       let k = 0
       for (let i = 1; i < SK.length; i++) if (t >= SK[i].t) k = i
       const rc = rectAt(k, t)
-      const under = onBigNow => (onBigNow ? flash : K ? 1 - ease.out(prog(t, loopT0, 0.2)) : 0)
-      setStyle(sel, { backgroundColor: rgba(C.active, 0.07 * (1 - clamp(under(SK[k].on === 'big')))), opacity: '1', left: Math.round(rc.x0) + 'px', top: Math.round(rc.y0) + 'px', width: Math.round(rc.x1) - Math.round(rc.x0) + 'px', height: Math.round(rc.y1) - Math.round(rc.y0) + 'px' })
-      setStyle(sel.firstChild, { right: '3px', bottom: '3px' })
+      setStyle(sel, { backgroundColor: 'transparent', opacity: '1', left: Math.round(rc.x0) + 'px', top: Math.round(rc.y0) + 'px', width: Math.round(rc.x1) - Math.round(rc.x0) + 'px', height: Math.round(rc.y1) - Math.round(rc.y0) + 'px' })
+      // the fill handle shows on the live counter cell only (far below its baseline); a single kept cell has none
+      setStyle(sel.firstChild, { right: '3px', bottom: '3px', opacity: SK[k].on === 'big' && rc.y1 - rc.y0 > 140 ? '1' : '0' })
       const onBig = SK[k].on === 'big'
       tint(bigRn, onBig)
       letterEls.forEach((el, j) => tint(el, onBig || j === (cA >= 0 ? cA : cO)))
