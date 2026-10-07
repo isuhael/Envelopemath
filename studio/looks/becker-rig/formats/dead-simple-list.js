@@ -8,14 +8,17 @@
 // result glyph with the impact kit (hit lines, chips, shake, sound), and the hit knocks the result home into its
 // socket, where it lands with a thud and its note follows. Then he stomps the trapdoor in his ledge and drops to
 // the next slot. A goal answer lands on a gold plate with the big impact (white flash, camera punch, cash), he
-// pumps a fist and points back at it.
+// gives a "yes!" fist pump (low, so it fits under the ledge above; with a hop when there is room) and points
+// back at it.
 //
 // Layout (measured with the real fonts at mount; the first that fits wins):
 //   rows   two-line rows: label line + value line. The block types at the right, next to the figure; the result
 //          slides (kick) or pops (chop, slam) home under its label. Notes sit after the result, after the label,
 //          or as a 2-line margin note, whichever fits left of the figure's lane.
 //   lines  long lists (5-6 items): one-line rows, a label column (wraps to 2 lines, note underneath when there is
-//          room) and a right-aligned value column. The block types over the value column; the result snaps in place.
+//          room) and a right-aligned value column. The block types over the value column; the result snaps in place,
+//          ending a little short of the block's struck end so the hit's burst and chips stay off it. The layout is
+//          fitted for the figure's reach and refitted once for the size he actually gets.
 // If nothing fits, the input line is dropped (the hook should carry the number) and the layouts are tried again.
 //
 // The figure lives in a lane at the right (x ≈ 840-930) under the ledge above: every hop and raised hand is
@@ -41,6 +44,8 @@ const BP = { x: 20, y: 8, b: 6 }                     // glyph block padding + bo
 const HL = 1.06                                      // the goal result is a little bigger, on a gold plate
 const PLATE = [18, 8]
 const LEDGE_X0 = 60
+const VAL_GAP = 22                                   // lines layout: the value column ends this far short of the block's
+                                                     // struck end, which keeps the hit's burst and chips off the answer
 
 export const css = `
 .ds-tabbg { position: absolute; left: 0; top: 0; box-sizing: border-box; border-radius: 14px; }
@@ -68,11 +73,17 @@ const P = {
   chop0: { lean: -8, tilt: -4, aF: [132, 58], aB: [-34, 30], lF: [16, -12], lB: [-14, -8] },        // hand cocked by the ear
   chop: { lean: 30, tilt: 10, aF: [78, 6], aB: [70, 10], lF: [30, -44], lB: [-26, -12] },
   slam0: { lean: -16, tilt: -8, aF: [-128, 36], aB: [-116, 46], lF: [44, -84], lB: [-18, -56] },     // back-swing, crouched
-  slam: { lean: 36, tilt: 14, aF: [70, 4], aB: [62, 8], lF: [46, -86], lB: [-6, -64] },
+  // the contact pose stays fairly tall: the fists come DOWN onto the block, so the arms never cross the head
+  // (the front arm's knockout outline is drawn over the head and would cut it)
+  slam: { lean: 26, tilt: 8, aF: [52, 4], aB: [44, 8], lF: [30, -46], lB: [-8, -34] },
   fall: { lean: -4, tilt: -16, aF: [152, 26], aB: [-150, -24], lF: [22, -46], lB: [-18, -34] },
   land: { lean: 16, tilt: 8, aF: [34, 30], aB: [-34, 24], lF: [46, -86], lB: [28, -80] },
   proud: { lean: -4, tilt: -6, aF: [26, 118], aB: [-26, -118], lF: [12, -4], lB: [-12, -2] },     // hands on hips
   pump: { lean: -6, tilt: -12, aF: [84, 104], aB: [-26, 34], lF: [14, -6], lB: [-14, -4] },       // fist pump
+  // "yes!": the low fist pump that fits under the ledge above (fist cocked at chin height, yanked down to the
+  // waist with a knee lift)
+  yes0: { lean: -6, tilt: -10, aF: [96, 70], aB: [-20, 22], lF: [12, -6], lB: [-12, -4] },
+  yes: { lean: 8, tilt: 16, aF: [-16, 112], aB: [-34, 28], lF: [66, -104], lB: [-4, -8] },
 }
 const VERB = { smash: 'chop', chop: 'chop', carve: 'chop', hammer: 'chop', kick: 'kick', punch: 'kick', push: 'kick',
   stack: 'kick', drag: 'kick', slam: 'slam', crush: 'slam' }
@@ -194,9 +205,11 @@ export default function deadSimpleList(spec, ctx) {
     return { mode: 'rows', v, l, m, Lh, Vh, rowH, pitch, notes }
   }
 
-  function tryLines(v, allowDrop) {
+  // kFit: the figure scale the layout is fitted for. His kick reach sets the block's struck end (vR); a bigger
+  // figure reaches further left, so the build caps the figure at the scale the layout was fitted for.
+  function tryLines(v, allowDrop, kFit = 0.45) {
     const l = 40, lh = 48
-    const vR = footTip(0.45) + 2
+    const vR = footTip(kFit) + 2, cR = vR - VAL_GAP
     let m = Math.min(48, Math.max(40, Math.round(v * 0.76)))     // formulas never below the 40 px must-read floor
     while (m > 40 && items.some((_, i) => blockW(i, m) > vR - X0 - 240)) m -= 2
     if (items.some((_, i) => blockW(i, m) > vR - X0)) return null
@@ -205,24 +218,29 @@ export default function deadSimpleList(spec, ctx) {
     const probe = h('div', { class: 'ds-label wrap', style: { fontSize: l + 'px', lineHeight: lh + 'px', visibility: 'hidden' } })
     ctx.stage.append(probe)
     const nLines = (i, w) => { if (!items[i].label) return 0; probe.style.width = w + 'px'; probe.innerHTML = markup(items[i].label); return Math.round(probe.offsetHeight / lh) }
+    const resCol = items.map((_, i) => Math.floor(cR - resW(i, v) - 30 - X0))   // room left of the answer
     const colW = items.map((_, i) => {
-      const rc = Math.floor(vR - resW(i, v) - 30 - X0), bc = Math.floor(vR - blockW(i, m) - 22 - X0)
+      const rc = resCol[i], bc = Math.floor(vR - blockW(i, m) - 22 - X0)
       return bc >= 220 && bc < rc && nLines(i, bc) <= 2 ? bc : rc
     })
     const lines = items.map((_, i) => nLines(i, colW[i]))
     probe.remove()
     if (colW.some(w => w < 200)) return null
     if (lines.some(n => n > 2)) return null
-    let notes = null, last = null
+    // one note size for every row; with allowDrop, the size that drops the fewest notes (the larger on a tie)
+    let notes = null, best = null
+    const drops = o => o.filter(x => x.kind === 'drop').length
     for (const n of [40, 38, 36]) {
-      last = items.map((it, i) => {
+      const cur = items.map((it, i) => {
         if (!it.note) return { kind: 'none' }
-        if (lines[i] <= 1 && wN(it.note, n) <= colW[i]) return { kind: 'under', n }
+        // the note shows once the answer has landed (the block is gone by then): only the answer limits it
+        if (lines[i] <= 1 && wN(it.note, n) <= resCol[i]) return { kind: 'under', n }
         return { kind: 'drop', n }
       })
-      if (last.every(o => o.kind !== 'drop')) { notes = last; break }
+      if (!drops(cur)) { notes = cur; break }
+      if (!best || drops(cur) < drops(best)) best = cur
     }
-    if (!notes) { if (!allowDrop) return null; notes = last }
+    if (!notes) { if (!allowDrop) return null; notes = best }
     const goal = items.some(isGoal)
     const Vh = Math.max(Math.round(1.21 * v), blockH(m) + 2, goal ? plateH(v) - 8 : 0)
     const textH = Math.max(...items.map((it, i) => (lines[i] + (notes[i].kind === 'under' ? 1 : 0)) * lh))
@@ -230,7 +248,15 @@ export default function deadSimpleList(spec, ctx) {
     const pMax = N > 1 ? (YB - Y0 - rowH) / (N - 1) : Infinity
     if (pMax < rowH + 6 || pMax < 104) return null
     const pitch = N > 1 ? Math.min(pMax, rowH + 60) : rowH
-    return { mode: 'lines', v, l, lh, m, Vh, rowH, pitch, notes, lines, colW }
+    return { mode: 'lines', v, l, lh, m, Vh, rowH, pitch, notes, lines, colW, vR, kFit }
+  }
+  // the figure's natural size for a layout: it follows the ledge pitch, and his head stays under the ledge above
+  const kOf = x => lo.figureScale ?? clamp(Math.min((x.pitch - 18) / 262, (x.rowH + 22) / 262), 0.38, 0.74)
+  // fit the lines layout, then refit it for the figure size it actually gets (when that is bigger)
+  function fitLines(v, allowDrop) {
+    const x = tryLines(v, allowDrop)
+    if (!x || kOf(x) <= x.kFit + 0.005) return x
+    return tryLines(v, allowDrop, kOf(x)) || x
   }
 
   function pickLayout() {
@@ -238,7 +264,7 @@ export default function deadSimpleList(spec, ctx) {
       for (const slack of [36, 12]) for (let v = 84; v >= 56; v -= 4) { const x = tryRows(v, slack); if (x) return x }
     }
     // keep every note if that works at a decent value size; otherwise drop the notes that have no room
-    if (lo.layout !== 'rows') for (const [drop, vMin] of [[false, 56], [true, 48]]) for (let v = 68; v >= vMin; v -= 4) { const x = tryLines(v, drop); if (x) return x }
+    if (lo.layout !== 'rows') for (const [drop, vMin] of [[false, 56], [true, 48]]) for (let v = 68; v >= vMin; v -= 4) { const x = fitLines(v, drop); if (x) return x }
     for (let v = 60; v >= 52; v -= 4) { const x = tryRows(v, 0); if (x) return x }
     return null
   }
@@ -253,13 +279,15 @@ export default function deadSimpleList(spec, ctx) {
   const rows = lay.mode === 'rows'
   const { v, l, m, Vh, rowH, pitch } = lay
 
-  // ---- the figure's size follows the ledge pitch; his head stays under the ledge above (and under the footer)
-  const k = lo.figureScale ?? clamp(Math.min((pitch - 18) / 262, (rowH + 22) / 262), 0.38, 0.74)
+  // ---- the figure's size follows the ledge pitch; his head stays under the ledge above (and under the footer).
+  // In the lines layout his reach must not pass the struck end the layout was fitted for.
+  let k = kOf(lay)
+  if (!rows) while (k > 0.3 && footTip(k) + 2 < lay.vR - 0.5) k -= 0.01
   const hitX = Math.round(footTip(k) + 2)
   const Sy = i => YB - (N - 1 - i) * pitch                        // ledge (shelf) y of row i
   const yV = i => Sy(i) - 8 - Vh / 2                               // value line centre
   const yL = i => yV(i) - Vh / 2 - 6 - lay.Lh / 2                   // label line centre (rows)
-  const vR = rows ? null : hitX                                     // value column right edge (lines)
+  const vR = rows ? null : Math.round(lay.vR) - VAL_GAP            // value column right edge (lines)
   const yRowC = i => Sy(i) - 6 - (rowH - 12) / 2                    // row centre (lines)
   const yTab = i => (rows ? yL(i) : yRowC(i))
   const BH = blockH(m)
@@ -424,13 +452,18 @@ export default function deadSimpleList(spec, ctx) {
     }
     if (i < N - 1 && MV[i].tm - (res + 0.6) > 0.9) K(res + 0.62, P.proud, 0.3, 'spring')
   }
-  // finale: a fist pump with a little hop, then he points back at the answer
+  // finale: a "yes!" fist pump (fist cocked, yanked down to the waist, knee up; it fits under the ledge above),
+  // with a little hop when the ledge leaves room, then he points back at the answer
   const last = R[N - 1]
   const tCel = last.arrive + 0.3
-  K(tCel, P.pump, 0.18, 'spring')
-  hops.push({ t0: tCel, dur: 0.34, h: Math.min(26, hopCap(N - 1)) })
-  K(tCel + 1.0, 'point', 0.3, 'spring')
-  const tEnd = tCel + 1.0
+  K(tCel, P.yes0, 0.16, 'out')
+  K(tCel + 0.24, P.yes, 0.08, 'out')
+  const celHop = Math.min(30, hopCap(N - 1))
+  if (celHop >= 10) hops.push({ t0: tCel + 0.22, dur: 0.3, h: celHop })
+  K(tCel + 0.72, 'stand', 0.22, 'spring')
+  K(tCel + 1.05, 'point', 0.3, 'spring')
+  const tEnd = tCel + 1.05
+  const tCelStep = celHop >= 10 ? tCel + 0.52 : tCel + 0.8
   const tr = poseTrack(keys)
   const fig = new Figure(g.fig, { scale: k })
 
@@ -453,12 +486,12 @@ export default function deadSimpleList(spec, ctx) {
     ctx.cue(Math.max(0, T0.ts), 'type', { dur: T0.typeD, gain: 0.45 })
     if (r.goal) fxk.impact(T0.res, { x: r.bx + r.bw / 2, y: yV(i), rx: r.bw / 2 + 10, ry: BH / 2 + 8, r: 34, lines: 14, shake: 12, flash: 0.45, punch: 0.03, cue: 'hit', gain: 0.95 })
     else if (r.style === 'kick') fxk.impact(T0.res, { x: hitX, y: yV(i), rx: 16, ry: BH / 2 - 6, r: 34, lines: 9, shake: 5 + Math.min(4, i), cue: 'hit', gain: 0.5 })
-    else fxk.impact(T0.res, { x: hitX - 30, y: yV(i) - BH / 2, rx: 30, ry: 12, r: 32, lines: 9, shake: 5 + Math.min(4, i), cue: 'hit', gain: 0.5 })
+    else fxk.impact(T0.res, { x: hitX - (rows ? 30 : 12), y: yV(i) - BH / 2, rx: 30, ry: 12, r: 32, lines: 9, shake: 5 + Math.min(4, i), cue: 'hit', gain: 0.5 })
     if (r.dur > 0) ctx.cue(r.arrive, 'thud', { gain: 0.4 })
     if (r.goal) ctx.cue(r.arrive + 0.02, 'cash', { gain: 0.6 })
   })
   MV.forEach(mv => { ctx.cue(mv.tm, 'tick', { gain: 0.3 }); ctx.cue(mv.tl, 'step', { gain: 0.5 }) })
-  ctx.cue(tCel + 0.34, 'step', { gain: 0.4 })
+  ctx.cue(tCelStep, 'step', { gain: 0.4 })
 
   // ---- carving chips: a few bits of the block fly off at each hit (decoration)
   const chips = []
@@ -468,10 +501,18 @@ export default function deadSimpleList(spec, ctx) {
     for (let c = 0; c < n; c++) {
       const el = s('rect', { width: 10 + rnd() * 8, height: 7 + rnd() * 6, rx: 2, fill: c % 3 ? C.ink : C.white, stroke: C.ink, 'stroke-width': 2.5, opacity: 0 })
       g.front.append(el)
+      const spin = (rnd() - 0.5) * 900
+      if (!rows && !r.goal) {
+        // lines layout: the answer appears right where the block was struck, so the chips spray up and away
+        // from it (to the right, round his feet) instead of across it
+        const p0 = [hitX - 6 - rnd() * 14, yV(i) - BH / 2 + rnd() * 10]
+        chips.push({ el, t0: TI[i].res, p0, v: [40 + rnd() * 220, -(220 + rnd() * 200)], floor: Sy(i), spin })
+        continue
+      }
       const side = r.style === 'kick' ? -1 : (c % 2 ? 1 : -1)
       const p0 = r.style === 'kick' ? [hitX - 10, yV(i) + (rnd() - 0.5) * BH * 0.6] : [r.bx + r.bw * (0.35 + 0.5 * rnd()), yV(i) - BH / 2]
       const up = r.style === 'kick' ? 260 + rnd() * 300 : 240 + rnd() * 300
-      chips.push({ el, t0: TI[i].res, p0, v: [side * (200 + rnd() * 360), -up], floor: Sy(i), spin: (rnd() - 0.5) * 900 })
+      chips.push({ el, t0: TI[i].res, p0, v: [side * (200 + rnd() * 360), -up], floor: Sy(i), spin })
     }
   })
 
@@ -590,7 +631,7 @@ export default function deadSimpleList(spec, ctx) {
       const J2 = { ...J }
       if (r.style === 'kick') pinLimb(J2, 'fF', [hitX + J.sw * 0.6, yV(i)], 1)
       else {
-        const hx = r.style === 'slam' ? Math.max(r.bx + 30, hitX - 50) : hitX - 26
+        const hx = r.style === 'slam' ? Math.max(r.bx + 30, hitX - 50) : hitX - (rows ? 26 : 18)
         pinLimb(J2, 'hF', [hx, yV(i) - BH / 2 - J.sw * 0.6], 1)
         pinLimb(J2, 'hB', [hx + 16, yV(i) - BH / 2 - J.sw * 0.6], 1)
       }

@@ -3,63 +3,58 @@
   "look": "clean-sheet",
   "format": "ledger-duel",
   "fps": 30,
-  "duration": 25.0,
-  "header": "2 people save **$10,000**:\nbig bank vs high-yield",
-  "footer": "ASSUMES both rates hold 5 years · 0.01% = Chase Savings APY, Sep 2026",
+  "duration": 22.1,
+  "header": "2 people save **$10,000**\nBig bank vs high-yield\nInterest after 5 years?",
+  "footer": "ASSUMES both rates hold 5 years · 0.01% = Chase Savings APY, Oct 2026",
   "captions": true,
   "vo": [
     {
       "t": 0.0,
       "d": 3.5,
-      "text": "Two people save $10,000 for 5 years."
+      "text": "One month at a big bank: about 8 cents."
     },
     {
       "t": 3.6,
-      "d": 2.7,
-      "text": "Month 1. Big bank: about 8 cents."
-    },
-    {
-      "t": 6.5,
       "d": 2.4,
       "text": "High-yield: about $33."
     },
     {
-      "t": 9.1,
+      "t": 6.2,
       "d": 3.5,
       "text": "After a year: $1 versus $400."
     },
     {
-      "t": 12.8,
+      "t": 9.9,
       "d": 5.4,
       "text": "By year 5, Leo is up about $2,167."
     },
     {
-      "t": 18.4,
+      "t": 15.5,
       "d": 2.4,
       "text": "Mia is up about $5."
     },
     {
-      "t": 21.0,
+      "t": 18.1,
       "d": 2.4,
       "text": "Same $10,000. Different account."
     }
   ],
   "verdict": {
-    "t": 21.0,
-    "text": "Interest after 5 years:\n**≈ $2,167** vs __≈ $5__"
+    "t": 18.1,
+    "text": "Interest after 5 years:\n__≈ $5__ vs **≈ $2,167**"
   },
   "data": {
     "people": [
       {
         "name": "Mia",
-        "plan": "Big-bank savings · 0.01% APY"
+        "plan": "Big bank · 0.01% APY · × 1.0001 a year"
       },
       {
         "name": "Leo",
-        "plan": "High-yield savings · 4.00% APY"
+        "plan": "High-yield · 4.00% APY · × 1.04 a year"
       }
     ],
-    "stake": "$10,000 each · nothing added",
+    "stake": "$10,000 each · 5 years · nothing added",
     "rows": [
       {
         "t": 0.0,
@@ -70,7 +65,7 @@
         ]
       },
       {
-        "t": 3.6,
+        "t": 1.0,
         "label": "Month 1",
         "values": [
           "≈ $10,000.08",
@@ -78,7 +73,7 @@
         ]
       },
       {
-        "t": 9.9,
+        "t": 7.0,
         "label": "Year 1",
         "values": [
           "$10,001",
@@ -86,7 +81,7 @@
         ]
       },
       {
-        "t": 10.8,
+        "t": 7.9,
         "label": "Year 2",
         "values": [
           "≈ $10,002",
@@ -94,7 +89,7 @@
         ]
       },
       {
-        "t": 11.6,
+        "t": 8.8,
         "label": "Year 3",
         "values": [
           "≈ $10,003",
@@ -102,7 +97,7 @@
         ]
       },
       {
-        "t": 12.4,
+        "t": 9.7,
         "label": "Year 4",
         "values": [
           "≈ $10,004",
@@ -110,7 +105,7 @@
         ]
       },
       {
-        "t": 13.5,
+        "t": 10.7,
         "label": "Year 5",
         "values": [
           "≈ $10,005",
@@ -122,24 +117,17 @@
     "winner": 1,
     "hold": 1.6
   },
-  "lookOpts": {
-    "badge": "$10,000 → 5 YEARS?",
-    "formulas": [
-      "$10,000 × 1.0001 a year",
-      "$10,000 × 1.04 a year"
-    ]
-  },
   "sfx": [
     {
-      "t": 3.6,
+      "t": 1.0,
       "kind": "tick"
     },
     {
-      "t": 9.9,
+      "t": 7.0,
       "kind": "pop"
     },
     {
-      "t": 13.5,
+      "t": 10.7,
       "kind": "ding"
     }
   ]

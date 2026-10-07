@@ -1,0 +1,37 @@
+{
+  "id": "cost-counter-2",
+  "sample": true,
+  "look": "live-sheet",
+  "format": "cost-counter",
+  "fps": 30,
+  "header": "What the US pays in **interest**\nwhile you watch this",
+  "footer": "FY2025 net interest $970B ÷ 31,536,000 s",
+  "captions": false,
+  "vo": [
+    { "t": 0.0, "d": 2.6, "text": "US debt interest, from the moment you hit play." },
+    { "t": 3.2, "d": 2.4, "text": "A year of median pay. Gone." },
+    { "t": 13.8, "d": 2.4, "text": "A median new house." },
+    { "t": 22.2, "d": 3.0, "text": "Ten years of median pay in about 21 seconds." }
+  ],
+  "verdict": { "t": 22.6, "text": "**10 years** of median pay: ≈ 21 seconds" },
+  "data": {
+    "label": "US debt interest since you hit play",
+    "perSecond": 30758.5,
+    "rateDisplay": "≈ $30,800 every second",
+    "counterT": [1.0, 23.0],
+    "startValue": 0,
+    "prefix": "$",
+    "dp": 0,
+    "milestones": [
+      { "value": 1251, "label": "One week of median full-time pay: $1,251" },
+      { "value": 65052, "label": "One year of median full-time pay: $65,052" },
+      { "value": 393700, "label": "A median-priced new house in the US: $393,700" },
+      { "value": 500000, "label": "Half a million dollars" },
+      { "value": 650520, "label": "Ten years of median full-time pay: $650,520" }
+    ],
+    "final": "≈ $676,687",
+    "hold": 3.0
+  },
+  "lookOpts": { "reveal": true, "tone": "bad" },
+  "notes": "Stress variant: contract fields only (labels split at ': ' into label + amount, a label with no amount, ✓ outputs), rows revealed as they are passed, long 2-line labels, the counter starting at 1.0 s, a red (cost) counter, no captions, verdict auto (lands in the formula bar). Maths: FY2025 net interest $970B (the 10a teaser's sourced figure) ÷ 31,536,000 s = $30,758.50 a second (≈ $30,800). Counter 1.0-23.0 s: 30,758.5 × 22 = $676,687 (≈). Pass times = 1.0 + value ÷ 30,758.5: $1,251 (BLS median weekly pay) → 1.04 s; $65,052 (× 52) → 3.11 s; $393,700 (Census median new house) → 13.80 s; $500,000 → 17.26 s; $650,520 (10 × $65,052) → 22.15 s, i.e. ten years of median pay every ≈ 21 seconds (650,520 ÷ 30,758.5 = 21.15 s)."
+}

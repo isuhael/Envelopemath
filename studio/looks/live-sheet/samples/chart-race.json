@@ -10,8 +10,13 @@
   "vo": [
     {
       "t": 0.0,
-      "d": 3.0,
-      "text": "$10,000 in 2005. Gold or **stocks**?"
+      "d": 1.9,
+      "text": "$10,000 in 2005"
+    },
+    {
+      "t": 2.0,
+      "d": 1.2,
+      "text": "Gold or **stocks**?"
     },
     {
       "t": 3.3,
@@ -21,7 +26,7 @@
     {
       "t": 6.6,
       "d": 2.6,
-      "text": "2008: stocks crash **37%**."
+      "text": "2008: stocks crash **37%**"
     },
     {
       "t": 9.6,
@@ -31,7 +36,7 @@
     {
       "t": 14.4,
       "d": 2.6,
-      "text": "2013: gold drops **28%**."
+      "text": "2013: gold drops **28%**"
     },
     {
       "t": 18.6,
@@ -51,32 +56,44 @@
     {
       "t": 28.8,
       "d": 2.4,
-      "text": "2022: stocks drop ≈ 18%."
+      "text": "2022: stocks drop ≈ 18%"
     },
     {
       "t": 33.2,
       "d": 2.4,
-      "text": "2025: gold jumps **≈ 65%**."
+      "text": "2025: gold jumps **≈ 65%**"
     },
     {
       "t": 35.9,
       "d": 2.6,
-      "text": "Final: gold ≈ $98,500."
+      "text": "Final: gold ≈ $98,500"
     },
     {
       "t": 38.6,
       "d": 2.2,
-      "text": "Stocks ≈ $84,600."
+      "text": "Stocks ≈ $84,600"
     },
     {
       "t": 41.0,
       "d": 2.6,
-      "text": "Gold ≈ ×9.8. Stocks ≈ ×8.5."
+      "text": "Gold ≈ ×9.8, stocks ≈ ×8.5"
     }
   ],
   "verdict": {
     "t": 41.0,
     "text": "Gold won it in the **final year**:\n≈ ×9.8 vs ≈ ×8.5"
+  },
+  "lookOpts": {
+    "formulaSteps": [
+      {
+        "t": 0.0,
+        "text": "= $10,000 each · Jan 2005"
+      },
+      {
+        "t": 36.0,
+        "text": "≈ 11.5% vs ≈ 10.7% a year"
+      }
+    ]
   },
   "data": {
     "stake": "$10,000 each · Jan 2005",
@@ -305,5 +322,5 @@
     ],
     "hold": 4.0
   },
-  "notes": "$10,000 each at the Dec 31, 2004 close; V(y) = V(y-1) × (1 + r(y)); a point at y + 0.99 is the Dec 31 close of year y. S&P 500 total return and gold year-end % change as sourced in teasers/v2/checks/04-chart-race.py (gold 2025 = 4,319.37 / 2,624.60 − 1 = +64.57%). Finals: gold $98,453.67 → ≈ $98,500 (×9.845 → ≈ ×9.8); S&P 500 $84,569.81 → ≈ $84,600 (×8.457 → ≈ ×8.5). Gold leads at every year-end 2005-2018 and 2020 (by $161: $43,271.78 vs $43,110.56, 'neck and neck'); the S&P 500 leads 2019 and 2021-2024; gold retakes the lead mid-2025 (lines cross at x ≈ 2025.45, t ≈ 34.1 s). 2008 S&P 500 −37.00%; 2013 gold −28.0%; 2022 S&P 500 −18.11% (≈ 18%); 2025 gold +64.57% (≈ 65%). Race x 2005.0 → 2025.99 over t 1.0 → 35.0 s (≈ 1.62 s a year); each VO line naming a year starts while that year is being drawn."
+  "notes": "$10,000 each at the Dec 31, 2004 close; V(y) = V(y-1) × (1 + r(y)); a point at y + 0.99 is the Dec 31 close of year y. S&P 500 total return and gold year-end % change as sourced in teasers/v2/checks/04-chart-race.py (gold 2025 = 4,319.37 / 2,624.60 − 1 = +64.57%). Finals: gold $98,453.67 → ≈ $98,500 (×9.845 → ≈ ×9.8); S&P 500 $84,569.81 → ≈ $84,600 (×8.457 → ≈ ×8.5). Gold leads at every year-end 2005-2018 and 2020 (by $161: $43,271.78 vs $43,110.56, 'neck and neck'); the S&P 500 leads 2019 and 2021-2024; gold retakes the lead mid-2025 (lines cross at x ≈ 2025.45, t ≈ 34.1 s). 2008 S&P 500 −37.00%; 2013 gold −28.0%; 2022 S&P 500 −18.11% (≈ 18%); 2025 gold +64.57% (≈ 65%). Race x 2005.0 → 2025.99 over t 1.0 → 35.0 s (≈ 1.62 s a year); each VO line naming a year starts while that year is being drawn. Formula bar at 36.0 s (after the finals land at 35.0 s): the yearly rate each line compounded at over the 21 years Dec 31, 2004 → Dec 31, 2025: gold 9.845367^(1/21) − 1 = 11.51% → ≈ 11.5%; S&P 500 8.456981^(1/21) − 1 = 10.70% → ≈ 10.7% (order = gold vs stocks, as in the header). Captions avoid a trailing full stop after a number (the kit only drops one after a letter)."
 }

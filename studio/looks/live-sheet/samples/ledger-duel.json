@@ -1,0 +1,44 @@
+{
+  "id": "ledger-duel",
+  "sample": true,
+  "look": "live-sheet",
+  "format": "ledger-duel",
+  "fps": 30,
+  "header": "2 people invest **$10,000** in 2000\nWho has more by 2025?",
+  "footer": "Year-end · S&P 500 with dividends, no fees",
+  "captions": false,
+  "vo": [
+    { "t": 0.0, "d": 2.4, "text": "Two people invest $10,000 in 2000." },
+    { "t": 2.6, "d": 1.7, "text": "2008 takes 37%." },
+    { "t": 5.3, "d": 2.2, "text": "Alex only pulls ahead in 2014." },
+    { "t": 10.8, "d": 3.2, "text": "Behind for 14 years, then 2.7 times Sam's money." }
+  ],
+  "verdict": { "t": 10.8, "text": "Behind for 14 years,\nthen **≈ 2.7× Sam's money**" },
+  "data": {
+    "people": [
+      { "name": "Alex", "plan": "S&P 500 fund" },
+      { "name": "Sam", "plan": "Savings at 4%" }
+    ],
+    "stake": "= $10,000 each in Jan 2000",
+    "rows": [
+      { "t": 0.0, "label": "Start", "values": ["$10,000", "$10,000"] },
+      { "t": 1.0, "label": "2002", "values": ["≈ $6,200", "≈ $11,200"] },
+      { "t": 1.8, "label": "2007", "values": ["≈ $11,400", "≈ $13,700"] },
+      { "t": 2.6, "label": "2008", "values": ["≈ $7,200", "≈ $14,200"], "event": "crash −37%", "tone": "bad" },
+      { "t": 4.4, "label": "2013", "values": ["≈ $16,400", "≈ $17,300"] },
+      { "t": 5.3, "label": "2014", "values": ["≈ $18,600", "≈ $18,000"], "event": "Alex finally pulls ahead", "tone": "good" },
+      { "t": 6.9, "label": "2019", "values": ["≈ $32,400", "≈ $21,900"] },
+      { "t": 7.8, "label": "2025", "values": ["≈ $75,300", "≈ $27,700"], "tone": "goal" }
+    ],
+    "winner": 0,
+    "hold": 3.0
+  },
+  "lookOpts": {
+    "keyLabel": "Year",
+    "summary": { "label": "Grew", "values": ["≈ ×7.5", "≈ ×2.8"], "t": 9.8 },
+    "formulaBar": [
+      { "t": 8.7, "text": "= $75,300 ÷ $10,000 ≈ ×7.5" }
+    ]
+  },
+  "notes": "Alex: $10,000 in an S&P 500 index fund on 1 Jan 2000, dividends reinvested, no fees or tax, compounded with the index's calendar-year total returns: 2000 −9.10%, 2001 −11.89%, 2002 −22.10%, 2003 +28.68%, 2004 +10.88%, 2005 +4.91%, 2006 +15.79%, 2007 +5.49%, 2008 −37.00%, 2009 +26.46%, 2010 +15.06%, 2011 +2.11%, 2012 +16.00%, 2013 +32.39%, 2014 +13.69%, 2015 +1.38%, 2016 +11.96%, 2017 +21.83%, 2018 −4.38%, 2019 +31.49%, 2020 +18.40%, 2021 +28.71%, 2022 −18.11%, 2023 +26.29%, 2024 +25.02%, 2025 +17.88%. Year-end values: 2002 $6,239; 2007 $11,407; 2008 $7,187; 2013 $16,398; 2014 $18,643; 2019 $32,413; 2025 $75,285 (rounded to the nearest $100 on screen). Cross-check: the same series from Jan 2007 gives $69,619, matching spec 07b's ≈ $69,600. Sam: $10,000 × 1.04^n (a hypothetical fixed 4% a year, stated as his plan): 2002 (n=3) $11,249; 2007 (n=8) $13,686; 2008 $14,233; 2013 $17,317; 2014 $18,009; 2019 $21,911; 2025 (n=26) $27,725. Alex trails at every year-end 2000-2013 (14 year-ends) and leads from 2014 ($18,643 vs $18,009). Multiples: 75,285 / 10,000 = 7.53 (≈ ×7.5); 27,725 / 10,000 = 2.77 (≈ ×2.8). Final ratio 75,285 / 27,725 = 2.72 (≈ 2.7×). 2008 crash: −37.00% total return."
+}

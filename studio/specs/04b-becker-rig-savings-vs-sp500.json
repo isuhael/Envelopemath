@@ -3,30 +3,25 @@
   "look": "becker-rig",
   "format": "chart-race",
   "fps": 30,
-  "duration": 42.0,
-  "header": "2 people put **$1,000** away in 2010\nA safe savings account vs the S&P 500",
-  "footer": "Savings: FDIC avg rate (0.04%–0.47%) · S&P 500 with dividends · 2010–2025",
+  "duration": 44.5,
+  "header": "POV: In 2010 you put **$1,000** in\n\"safe\" savings VS the S&P 500",
+  "footer": "Savings: FDIC avg rate, under 0.5% · S&P 500 with dividends · 2010–2025",
   "captions": true,
   "vo": [
     {
       "t": 0.0,
-      "d": 2.7,
-      "text": "$1,000 each. 2010."
+      "d": 4.7,
+      "text": "One of these never had a down year. Guess which one lost."
     },
     {
-      "t": 2.8,
-      "d": 4.3,
-      "text": "The safe savings account, or the S&P 500?"
-    },
-    {
-      "t": 8.5,
+      "t": 8.2,
       "d": 3.9,
       "text": "2014: the S&P has doubled it."
     },
     {
-      "t": 12.5,
+      "t": 12.2,
       "d": 2.4,
-      "text": "Savings has earned ≈ $6."
+      "text": "Savings? Under $10 of interest."
     },
     {
       "t": 20.5,
@@ -41,7 +36,7 @@
     {
       "t": 29.4,
       "d": 2.4,
-      "text": "Savings: ≈ $1,024."
+      "text": "Savings: ≈ $1,020."
     },
     {
       "t": 31.9,
@@ -50,12 +45,12 @@
     },
     {
       "t": 34.4,
-      "d": 5.8,
-      "text": "That ≈ $1,024 now buys what ≈ $682 did."
+      "d": 7.0,
+      "text": "That ≈ $1,020 buys what ≈ $680 did in 2010."
     }
   ],
   "verdict": {
-    "t": 34.4,
+    "t": 41.5,
     "text": "The \"safe\" choice lost **≈ 32%**\nof its buying power."
   },
   "data": {
@@ -188,26 +183,26 @@
           ],
           [
             2021.99,
-            1010.75
+            1010.95
           ],
           [
             2022.99,
-            1011.36
+            1011.56
           ],
           [
             2023.99,
-            1014.7
+            1014.9
           ],
           [
             2024.99,
-            1019.46
+            1019.67
           ],
           [
             2025.99,
-            1023.64
+            1023.85
           ]
         ],
-        "final": "≈ $1,024"
+        "final": "≈ $1,020"
       }
     ],
     "x": {
@@ -235,7 +230,7 @@
         "label": "2022 bear market"
       }
     ],
-    "hold": 17.0
+    "hold": 19.5
   },
   "lookOpts": {
     "stage": "light",
@@ -251,16 +246,16 @@
     ],
     "beats": [
       {
-        "t": 8.5,
+        "t": 8.2,
         "act": "cheer",
         "series": 0,
         "label": "doubled"
       },
       {
-        "t": 12.5,
+        "t": 12.2,
         "act": "shrug",
         "series": 1,
-        "label": "≈ +$6"
+        "label": "under +$10"
       },
       {
         "t": 20.5,
@@ -283,18 +278,18 @@
         "t": 34.4,
         "act": "peek",
         "series": 1,
-        "label": "≈ $1,501 now = $1,000 in 2010"
+        "label": "≈ $1,501 in 2025 = $1,000 in 2010"
       }
     ],
-    "gag": "Each figure climbs its own line. The S&P figure scrambles up a steep, jagged slope (stumbles in 2018, gets knocked down in 2022, climbs again); the savings figure strolls a ledge so flat he sits down halfway and checks his watch. At the end a 'prices' tide rises from $1,000 to its level, past the savings ledge to his chin; he peeks over it at the verdict."
+    "gag": "Each figure climbs its own line. The S&P figure scrambles up a steep, jagged slope (stumbles in 2018, gets knocked down in 2022, climbs again); the savings figure strolls a ledge so flat he sits down halfway and checks his watch: his line never dips once. At the end a 'prices' tide rises from $1,000 to its level, past the savings ledge to his chin; he peeks over it, and the verdict lands once the last line is read."
   },
   "sfx": [
     {
-      "t": 8.5,
+      "t": 8.2,
       "kind": "pop"
     },
     {
-      "t": 12.5,
+      "t": 12.2,
       "kind": "boing"
     },
     {
@@ -314,6 +309,10 @@
     {
       "t": 34.4,
       "kind": "buzz"
+    },
+    {
+      "t": 41.5,
+      "kind": "thud"
     }
   ]
 }

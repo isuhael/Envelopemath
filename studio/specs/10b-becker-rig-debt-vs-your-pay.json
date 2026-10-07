@@ -3,28 +3,28 @@
   "look": "becker-rig",
   "format": "cost-counter",
   "fps": 30,
-  "duration": 37.5,
-  "header": "Which is bigger: a year of\nyour pay, or **1 second**\nof new US debt?",
-  "footer": "FY2026: debt +$2.46T ÷ 31,536,000 s\nPay: BLS median $1,251 a week × 52",
+  "duration": 39.0,
+  "header": "Your year's pay vs\n**1 second** of new US debt.\nWhich is bigger?",
+  "footer": "New debt ≈ $2.46T ÷ (364 × 86,400 s)\nPay: BLS median $1,251 a week × 52",
   "captions": true,
   "vo": [
-    { "t": 0.0,  "d": 2.4, "text": "A year's pay? **Under 1 second.**" },
-    { "t": 2.5,  "d": 2.4, "text": "That's new US debt, live." },
-    { "t": 5.0,  "d": 2.8, "text": "A median new house: ≈ 5 seconds." },
-    { "t": 8.0,  "d": 2.4, "text": "**≈ $78,000** a second." },
-    { "t": 12.8, "d": 2.4, "text": "$1 million: ≈ 13 seconds." },
-    { "t": 15.5, "d": 2.4, "text": "Now 40 years of median pay." },
-    { "t": 18.1, "d": 4.7, "text": "40 × $65,052 ≈ **$2.6 million**." },
-    { "t": 23.0, "d": 2.0, "text": "That's a whole working life." },
-    { "t": 25.3, "d": 5.1, "text": "The debt grew $2.46 trillion in fiscal 2026." },
-    { "t": 33.4, "d": 2.4, "text": "A working life: **≈ 33 seconds.**" }
+    { "t": 0.0,  "d": 2.4, "text": "Your year, or 1 second? Pick." },
+    { "t": 3.3,  "d": 1.6, "text": "Median pay **loses.**" },
+    { "t": 5.0,  "d": 2.4, "text": "**≈ $78,000** a second." },
+    { "t": 7.4,  "d": 2.8, "text": "A median new house: ≈ 5 seconds." },
+    { "t": 15.2, "d": 2.4, "text": "$1 million: ≈ 13 seconds." },
+    { "t": 17.9, "d": 2.4, "text": "Now 40 years of median pay." },
+    { "t": 20.5, "d": 4.7, "text": "40 × $65,052 ≈ **$2.6 million**." },
+    { "t": 25.4, "d": 2.0, "text": "That's a whole working life." },
+    { "t": 27.7, "d": 5.8, "text": "The debt grew ≈ $2.46 trillion in 364 days." },
+    { "t": 35.7, "d": 2.4, "text": "A working life: **≈ 33 seconds.**" }
   ],
-  "verdict": { "t": 33.4, "text": "40 years of pay:\n**≈ 33 seconds** of new debt." },
+  "verdict": { "t": 35.7, "text": "A working life, 40 years of median pay:\n**≈ 33 seconds** of new US debt." },
   "data": {
-    "label": "New US debt since you hit play",
-    "perSecond": 78006.09,
+    "label": "New US debt, from the ding",
+    "perSecond": 78201.35,
     "rateDisplay": "≈ $78,000 every second",
-    "counterT": [0.0, 33.4],
+    "counterT": [2.4, 35.7],
     "startValue": 0,
     "prefix": "$",
     "dp": 0,
@@ -34,32 +34,39 @@
       { "value": 1000000, "label": "$1 million" },
       { "value": 2602080, "label": "40 years of median pay: $2,602,080" }
     ],
-    "final": "≈ $2,605,403",
-    "hold": 4.1
+    "final": "≈ $2,604,105",
+    "hold": 3.3
   },
   "lookOpts": {
     "stage": "white",
     "surface": "debt-clock",
-    "surfaceLabel": "New US debt since you hit play",
+    "surfaceLabel": "New US debt, from the ding",
     "opener": { "t": 0.0, "pose": "lift", "prop": "block", "text": "$65,052", "sub": "1 year of median pay" },
+    "queue": [
+      { "prop": "house", "text": "$393,700", "sub": "A median new house" },
+      { "prop": "block", "text": "40 years × $65,052", "sub": "≈ $2.6 million" }
+    ],
+    "armed": { "tag": "1 second", "go": 2.4 },
+    "stamp": { "t": 3.4, "text": "1 second ≈ $78,000" },
     "actions": [
       { "milestone": 0, "verb": "swallow", "becomes": "the counter slurps the pay block out of his hands; he stares at his empty hands" },
-      { "milestone": 1, "verb": "push", "becomes": "he shoves a house into the counter's slot; it goes down in one gulp" },
+      { "milestone": 1, "verb": "push", "becomes": "he shoves the house from the queue into the counter's slot; it goes down in one gulp" },
       { "milestone": 2, "verb": "shocked", "becomes": "the counter turns orange and its last digits blur" },
       { "milestone": 3, "verb": "flattened", "becomes": "white-hot, it cracks and bursts; the 40-year block drops on him" }
     ],
-    "carry": { "t": 15.5, "text": "40 years × $65,052", "sub": "≈ $2.6 million" },
+    "carry": { "t": 17.9, "text": "40 years × $65,052", "sub": "≈ $2.6 million" },
     "heat": [
       { "t": 0.0, "state": "cool" },
-      { "t": 12.8, "state": "orange" },
-      { "t": 25.3, "state": "white" },
-      { "t": 33.4, "state": "burst" }
+      { "t": 15.2, "state": "orange" },
+      { "t": 27.7, "state": "white" },
+      { "t": 35.7, "state": "burst" }
     ],
-    "gag": { "t": 33.4, "text": "≈ 33 seconds" }
+    "gag": { "t": 35.7, "text": "≈ 33 seconds" }
   },
   "sfx": [
-    { "t": 12.8, "kind": "buzz", "gain": 0.35 },
-    { "t": 30.4, "kind": "riser", "dur": 3.0 },
-    { "t": 33.4, "kind": "hit" }
+    { "t": 2.4, "kind": "ding" },
+    { "t": 15.2, "kind": "buzz", "gain": 0.35 },
+    { "t": 33.5, "kind": "riser", "dur": 2.2 },
+    { "t": 35.7, "kind": "hit" }
   ]
 }

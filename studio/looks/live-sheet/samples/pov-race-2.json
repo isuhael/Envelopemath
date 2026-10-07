@@ -1,0 +1,44 @@
+{
+  "id": "pov-race-2",
+  "sample": true,
+  "look": "live-sheet",
+  "format": "pov-race",
+  "fps": 30,
+  "header": "POV: You invested in GoPro\ninstead of paying **$400** for a GoPro",
+  "footer": "ASSUMES $400 buys GPRO at its June 2014 IPO-day close",
+  "captions": false,
+  "verdict": { "t": 16.8, "text": "**≈ −97%**: $400 became ≈ $14" },
+  "data": {
+    "spend": {
+      "label": "Paid for one GoPro camera",
+      "points": [[2014.49, 400], [2024.99, 400]],
+      "final": "$400 spent",
+      "item": "bag"
+    },
+    "own": {
+      "label": "Same $400 in GoPro stock\non IPO day",
+      "points": [
+        [2014.49, 400.0], [2014.99, 806.89], [2015.99, 229.87], [2016.99, 111.17], [2017.99, 96.62],
+        [2018.99, 54.12], [2019.99, 55.39], [2020.99, 105.68], [2021.99, 131.59], [2022.99, 63.56],
+        [2023.99, 44.29], [2024.99, 13.91]
+      ],
+      "final": "≈ $14"
+    },
+    "purchases": [ { "x": 2014.49, "label": "GoPro", "price": "$400" } ],
+    "x": { "from": 2014, "to": 2024.99, "tickEvery": 2 },
+    "y": { "prefix": "$", "dp": 0 },
+    "raceT": [1.6, 15.0],
+    "hold": 3.5
+  },
+  "lookOpts": {
+    "verdict": "formula",
+    "formulaBar": [
+      { "t": 0.0, "text": "= $400 ÷ $31.34 ≈ 12.76 shares" },
+      { "t": 2.3, "text": "= 12.76 × $63.22 ≈ $807" },
+      { "t": 4.4, "text": "= $63.22 → $18.01 ≈ −72%" },
+      { "t": 11.2, "text": "= 12.76 × $10.31 ≈ $132" },
+      { "t": 15.0, "text": "= 12.76 × $1.09 ≈ $14" }
+    ]
+  },
+  "notes": "Stress variant: silent and looped (the benchmark's own form: 60 s, music only, looped on 4 of 5 posts), a loss for the whole race after year 1 (the Owned column turns red under water and the gap tints red), long labels with a grey sub-label, a formula-bar verdict, and the band left free so the frozen start row and the scrolling history rows show. Hook: @investment_timeline's biggest post (H43, 5.1M, 22.6x). GoPro IPO: priced $24 on 25 Jun 2014, first-day close $31.34 on 26 Jun 2014. Year-end closes: 2014 $63.22 (recalled; one press summary rounds it to about $65; it only moves the 2014 row), 2015 $18.01, 2016 $8.71, 2017 $7.57, 2018 $4.24, 2019 $4.34, 2020 $8.28, 2021 $10.31, 2022 $4.98, 2023 $3.47, 2024 $1.09. GoPro pays no dividend, so price-only is the total return. Shares: 400 / 31.34 = 12.763. Year-end value = 12.763 × close: 2014 $806.89 (2.02× the IPO close), 2015 $229.87, 2016 $111.17, 2017 $96.62, 2018 $54.12, 2019 $55.39, 2020 $105.68, 2021 $131.59, 2022 $63.56, 2023 $44.29, 2024 $13.91 ≈ $14. 2015 move: 18.01 / 63.22 − 1 = −71.5% ≈ −72%. Total: 13.91 / 400 − 1 = −96.5% ≈ −97%. Formula-bar shortcuts use 12.76 shares: 12.76 × 63.22 = 806.69 ≈ $807; 12.76 × 10.31 = 131.56 ≈ $132; 12.76 × 1.09 = 13.91 ≈ $14. The $400 is the header's round camera price (a HERO3+ Black listed at $399.99 in mid-2014); the spend line is one purchase, flat."
+}

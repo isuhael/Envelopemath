@@ -4,17 +4,22 @@
 //   - the stage is a neon line race: glowing lines and tips, a live counter at every tip ("GOLD $58,204", fixed
 //     digit slots so nothing jitters), an auto-rescaling y axis (dim, in the left margin), a dashed stake line
 //     ("below the line = losing money"), and the year as a big rolling scoreboard clock in the plot's corner
+//   - tip labels ride beside their tips and never sit on a tip or another label: their spot is planned at mount,
+//     frame by frame (right of the tip = the empty future first, then above/below/left, scored on line ink under
+//     the label, tip order and attribution), glides on a spring when it changes, and sits on a soft stage-colour
+//     plate so a line that must pass behind a label is knocked out. Long names stack name over value.
 //   - the hero odometer in the top bar is the score: the leader's live value in the leader's colour, with the
 //     leader's name beside it. A lead change is a hard cut (tag + colour), a bump and a swipe
 //   - event flags: a red dashed rule wipes down the plot (a 20% band with `until`) and the flag label slams into
 //     the strip above the plot (captions on). Captions off (ChartOrbit's voice-free grammar): the flag text is a
 //     hard cut in the bottom-bar label stack instead (HD Guy: the label stack is the caption)
-//   - the finish: tips and hero settle onto each series' `final` display string exactly (a short roll), the hero
-//     bumps with a glow flare and a floor bloom (riser, then hit + cash), the label stack reads FINAL
+//   - the finish: the lines stop at raceT[1]; the counters roll their last digits (running format) and, SETTLE s
+//     later, land exactly on each series' `final` display string: hero bump, glow flare, floor bloom, the winner's
+//     tip flares (a riser leads in, then hit + cash); the label stack reads FINAL
 //   - the verdict slams into the bottom bar (with captions on: into the caption band once the VO has ended; if VO
 //     runs past verdict.t it sits on a black band over the foot of the chart instead)
 // Frame 1: the header (POV + stake), the stake in the hero, the footer, both tips at the stake with their counters,
-// the clock at the start year. raceT[0] < 0 opens mid-race (already moving at 0.0 s).
+// the clock at the start year. raceT[0] < 0 opens mid-race (already moving at 0.0 s, the hero on the leader).
 //
 // data (FORMATS.md §4): { stake, series: [{ name, points: [[x, v]...], final, label?, color?, basis? }],
 //   x: { from, to, tickEvery }, y: { prefix, dp, compact, log, min?, max? }, raceT: [t0, t1],
@@ -43,11 +48,12 @@ export const css = `
 .cr-year { position: absolute; }
 .cr-tip { position: absolute; left: 0; top: 0; display: flex; align-items: flex-start; gap: 14px;
   font: 400 48px/1 'Anton', 'Inter Full', sans-serif; text-transform: uppercase; letter-spacing: 0.01em; white-space: nowrap;
-  transform-origin: 100% 60%; text-shadow: 0 2px 12px #0E1116, 0 0 6px #0E1116, 0 0 2px #0E1116; }
+  transform-origin: 100% 60%; text-shadow: 0 2px 12px #0E1116, 0 0 6px #0E1116, 0 0 2px #0E1116;
+  background: rgba(14, 17, 22, 0.82); box-shadow: 0 0 12px 8px rgba(14, 17, 22, 0.82); border-radius: 12px; }
 .cr-tip.two { flex-direction: column; align-items: flex-end; gap: 6px; }
-.cr-tip.two .cr-name { font-size: 40px; }
+.cr-tip.two .cr-name { font-size: 42px; }
 .cr-name { display: block; line-height: 1; }
-.cr-flag { position: absolute; font: 700 40px/1.1 'Inter', 'Inter Full', sans-serif; text-transform: uppercase; letter-spacing: 0.03em; white-space: nowrap; transform-origin: 50% 100%; }
+.cr-flag { position: absolute; font: 700 42px/1.1 'Inter', 'Inter Full', sans-serif; text-transform: uppercase; letter-spacing: 0.03em; white-space: nowrap; transform-origin: 50% 100%; }
 .cr-stake { position: absolute; font: 600 30px/1 'Inter', 'Inter Full', sans-serif; color: #9AA4B2; white-space: nowrap; }
 .cr-tag { position: absolute; top: 0; display: flex; align-items: center; justify-content: flex-end; text-align: right; font: 700 42px/1.08 'Inter', 'Inter Full', sans-serif; text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; }
 .cr-foot { position: absolute; font: 600 40px/1.2 'Inter', 'Inter Full', sans-serif; color: #9AA4B2; text-align: center; white-space: nowrap; }
@@ -56,7 +62,7 @@ export const css = `
 .cr-vband { position: absolute; left: 0; width: 1080px; background: #000; box-shadow: inset 0 2px 0 #1E2530; }
 `
 
-const SETTLE = 0.5     // s: tips and hero roll from the last point onto the final display string
+const SETTLE = 0.45    // s: once the lines stop, tips and hero roll their last digits, then land on `final`
 const TAGGAP = 26      // px between the hero tag and the number
 const LEAD = 1.004     // a challenger must lead by 0.4% to take the hero (no flicker on near-ties)
 const K = 1.2          // the y axis keeps the running max at 1/K of the plot height
@@ -118,6 +124,7 @@ export default function chartRace(spec, ctx) {
   Y.dp = Math.max(0, Math.min(2, +Y.dp || 0))
   const rt = Array.isArray(d.raceT) && d.raceT.length === 2 && +d.raceT[1] > +d.raceT[0] ? d.raceT.map(Number) : [0.6, 0.6 + clamp(span * 1.6, 8, 48)]
   const [R0, R1] = rt
+  const TF = R1 + SETTLE                // the finish: counters land on the final display strings
   const xAt = t => lerp(X.from, X.to, prog(t, R0, R1 - R0))
   const tAtX = x => R0 + ((x - X.from) / span) * (R1 - R0)
   const secPerYear = (R1 - R0) / span
@@ -262,7 +269,7 @@ export default function chartRace(spec, ctx) {
     const xv = +(k * X.tickEvery).toFixed(6)
     const lab = h('div', { class: 'cr-axis cr-axis-x', 'data-deco': '', style: { left: pxOf(xv).toFixed(1) + 'px', top: P.h + 12 + 'px' } }, String(Math.round(xv * 100) / 100))
     root.append(lab)
-    xTicks.push({ xv, lab })
+    xTicks.push({ xv, lab, w: lab.offsetWidth })
   }
 
   // stake line: dashed, with the stake display (from data.stake) at its right end (decoration)
@@ -281,7 +288,7 @@ export default function chartRace(spec, ctx) {
     gRule.append(rule)
     let lab = null
     if (flagStrip && e.label) {
-      lab = h('div', { class: 'cr-flag', html: esc(e.label), style: { color: e.col, top: L.stage.y + 14 + 'px' } })
+      lab = h('div', { class: 'cr-flag', html: richUI(e.label), style: { color: e.col, top: L.stage.y + 14 + 'px' } })
       stage.append(lab)
     }
     return { e, band, rule, lab, retire: Infinity }
@@ -328,7 +335,8 @@ export default function chartRace(spec, ctx) {
       show()
       wmax = Math.max(wmax, o.lab.offsetWidth)
     }
-    if (wmax > P.w * 0.6) o.lab.classList.add('two')
+    o.two = wmax > P.w * 0.6
+    if (o.two) o.lab.classList.add('two')
   }
 
   // ---------- hero: the stake on frame 1, then the leader's live value with the leader's name ----------
@@ -338,8 +346,8 @@ export default function chartRace(spec, ctx) {
     const el = h('div', { class: 'cr-tag', html: richUI(nameOf(sr)), style: { color: sr.color } })
     stage.append(el)
     const w1 = Math.ceil(el.offsetWidth) + 2
-    const two = w1 > 260
-    const tw = Math.min(260, w1)
+    const two = w1 > 300
+    const tw = Math.min(300, w1)
     hero.el.append(el)
     style(el, { height: L.hero.h + 'px', width: tw + 'px', whiteSpace: two ? 'normal' : 'nowrap', textWrap: 'balance', display: 'flex' })
     fitText(el, tw, { maxH: L.hero.h - 8, minPx: 42 })
@@ -374,7 +382,7 @@ export default function chartRace(spec, ctx) {
       chapters.push({ t: e.t, idx: items.length })
       items.push({ l1, l2: rich(e.label), l2Color: e.tone === 'neutral' ? C.white : e.col })
     }
-    chapters.push({ t: R1, idx: items.length })
+    chapters.push({ t: TF, idx: items.length })
     items.push({ l1, l2: 'FINAL' })
     labels = labelStack(stage, L, items)
   }
@@ -386,7 +394,7 @@ export default function chartRace(spec, ctx) {
     const vo = spec.vo || []
     const voLate = capsOn && vo.some((v, i) => {
       const end = v.d != null ? v.t + v.d : vo[i + 1] ? vo[i + 1].t : Infinity
-      return end + 0.15 > vt
+      return end + 0.15 > vt + 0.06          // the last caption is gone before the verdict text shows
     })
     let slot
     if (!capsOn) slot = { ...L.verdict, boxed: false }
@@ -435,12 +443,12 @@ export default function chartRace(spec, ctx) {
   for (const e of events) cue(e.t, stackMode && e.label ? 'thud' : 'tick', { gain: stackMode && e.label ? 0.65 : 0.55 })
   for (const sg of changes) cue(sg.t, 'swipe', { gain: 0.45 })
   const riseDur = Math.min(2.4, (R1 - R0) * 0.2)
-  if (riseDur > 0.6) cue(R1 - riseDur, 'riser', { dur: riseDur, gain: 0.4 })
-  cue(R1, 'hit', { gain: 0.85 })
-  cue(R1 + 0.06, 'cash', { gain: 0.5 })
+  if (riseDur > 0.6) cue(TF - riseDur, 'riser', { dur: riseDur, gain: 0.4 })
+  cue(TF, 'hit', { gain: 0.85 })
+  cue(TF + 0.06, 'cash', { gain: 0.5 })
   if (verd) cue(verd.t + 0.06, 'reveal', { gain: 0.7 })
 
-  const duration = durationOf(spec, R1 + SETTLE, d.hold ?? M.hold)
+  const duration = durationOf(spec, TF, d.hold ?? M.hold)
   const yearRect = { x: 0, y: 0, w: 0, h: 0 }
   {
     yearOdo.set(Math.floor(X.to + 1e-6), yearTpl)
@@ -449,17 +457,185 @@ export default function chartRace(spec, ctx) {
   }
   const hit = (a, b) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y
 
-  // a counter's value at t: live (snapped to its display precision) until the finish, then a short roll onto final
+  // a counter's value at t: live (snapped to its display precision) while the race runs; once the lines stop, the
+  // last digits roll onto the final value (still in the running format: no "≈" before an unrounded figure) and land
+  // exactly on the `final` display string at TF
   function counter(sr, t, x) {
+    let v = vAt(sr, x)
     if (t >= R1 && sr.finalTpl) {
-      const p = prog(t, R1, SETTLE)
-      if (p >= 1) return { disp: sr.final }
-      return { v: lerp(lastV(sr), sr.finalTpl.value * sr.finalTpl.scale, ease.out(p)), tpl: sr.finalTpl }
+      if (t >= TF) return { disp: sr.final }
+      v = lerp(lastV(sr), sr.finalTpl.value * sr.finalTpl.scale, ease.out(prog(t, R1, SETTLE)))
     }
-    const v = vAt(sr, x), tpl = tplAt(v)
+    const tpl = tplAt(v)
     return { v: snapT(v, tpl), tpl }
   }
   const showOn = (odo, c) => (c.disp ? odo.show(c.disp) : odo.set(c.v, c.tpl))
+
+  // ---------- tip-label placement ----------
+  // A tip label must never sit on a line, on a tip or on another label, and it must not flicker. Where it goes is
+  // decided once, here, frame by frame in time order (so it can have hysteresis and glide): each label tries five
+  // spots around its tip (right of the tip, which is the empty future and ChartOrbit's spot; right above/below;
+  // left above/below), every combination is scored (line ink under the label, tips covered, labels touching, a small
+  // preference, a cost for switching spot), and the chosen offset from the tip is smoothed by a critically damped
+  // spring. seek() only reads this table (interpolated between frames), so it stays a pure function of t.
+  const sizeCache = new Map()
+  const YB = P.h + 50                    // labels may drop into the x-tick strip (the ticks step aside)
+  function sizeOf(o, c) {
+    const tpl = c.disp ? parseDisplay(c.disp) : c.tpl
+    const v = c.disp ? tpl.value * tpl.scale : c.v
+    const key = [o.sr.i, tpl.prefix, tpl.suffix, tpl.dp, tpl.group ? 1 : 0, digitsOf(Math.max(0, v) / tpl.scale)].join('|')
+    let sz = sizeCache.get(key)
+    if (!sz) {
+      showOn(o.odo, c)
+      style(o.lab, { display: 'flex' })
+      sz = { w: o.lab.offsetWidth, h: o.lab.offsetHeight }
+      sizeCache.set(key, sz)
+    }
+    return sz
+  }
+  // length of segment (x0,y0)-(x1,y1) inside the rect [rx0, rx1] x [ry0, ry1] (Liang-Barsky)
+  function clipLen(x0, y0, x1, y1, rx0, ry0, rx1, ry1) {
+    if (Math.max(x0, x1) < rx0 || Math.min(x0, x1) > rx1 || Math.max(y0, y1) < ry0 || Math.min(y0, y1) > ry1) return 0
+    const dx = x1 - x0, dy = y1 - y0
+    let a = 0, b = 1
+    const pq = [[-dx, x0 - rx0], [dx, rx1 - x0], [-dy, y0 - ry0], [dy, ry1 - y0]]
+    for (const [p, q] of pq) {
+      if (p === 0) { if (q < 0) return 0; continue }
+      const u = q / p
+      if (p < 0) { if (u > b) return 0; if (u > a) a = u } else { if (u < a) return 0; if (u < b) b = u }
+    }
+    return (b - a) * Math.hypot(dx, dy)
+  }
+  const PL = (() => {
+    const fps = spec.fps || 30
+    const t0 = Math.min(0, R0), t1 = TF + 0.25
+    const n = Math.max(2, Math.ceil((t1 - t0) * fps) + 1)
+    const xl = 0, xr = Math.min(P.w + 40, 940 - P.x)          // labels may reach x 940 (the rail), never the axis
+    const GX = 24, GY = 12, PAD = 7
+    // spots: [anchor, vertical, stand-off d px, preference]. anchor R = right of the tip (clamped at the rail),
+    // L = left of it, C = over it (mostly to its left); vertical 0 = centred on the tip, -1 above, +1 below
+    const SPOTS = [['R', 0, 0, 0], ['L', 0, 0, 34]]
+    for (const d of [0, 60, 120]) for (const v of [-1, 1]) {
+      SPOTS.push(['R', v, d, 8 + (v > 0 ? 4 : 0)])
+      SPOTS.push(['L', v, d, 22 + (v > 0 ? 6 : 0)])
+    }
+    for (const d of [34, 94]) for (const v of [-1, 1]) SPOTS.push(['C', v, d, 18 + (v > 0 ? 6 : 0)])
+    const KEEP = 6
+    const off = S.map(() => new Float32Array(n * 2))
+    const prevK = S.map(() => -1)
+    const cur = S.map(() => null)
+    const w0 = 2 * Math.PI * 2.1                                // spring: settles in ~0.3 s
+    const sub = 3, dt = 1 / fps / sub
+    for (let f = 0; f < n; f++) {
+      const t = t0 + f / fps
+      const x = xAt(t)
+      const py = pyFor(Y.log ? logMax : yMaxAt(t))
+      const lines = S.map(o => {
+        const a = []
+        for (const p of o.sr.points) { if (p[0] > x + 1e-9) break; a.push(pxOf(p[0]), py(p[1])) }
+        if (a.length) a.push(pxOf(x), py(vAt(o.sr, x)))
+        return a
+      })
+      const tipXY = lines.map(a => (a.length ? [a[a.length - 2], a[a.length - 1]] : null))
+      const sy = stakeV != null ? py(stakeV) : null
+      const rules = events.filter(e => t >= e.t).map(e => pxOf(e.x))
+      const act = []
+      S.forEach((o, k) => {
+        if (!tipXY[k]) { cur[k] = null; prevK[k] = -1; return }
+        const [tx, ty] = tipXY[k]
+        const { w, h } = sizeOf(o, counter(o.sr, t, x))
+        const ax = { R: Math.min(tx + GX, xr - w), L: Math.max(xl, tx - GX - w), C: clamp(tx - w * 0.72, xl, xr - w) }
+        const cands = SPOTS.map(([an, v, d, pref], j) => {
+          const rx = ax[an]
+          const ry = clamp(v === 0 ? ty - h / 2 : v < 0 ? ty - GY - d - h : ty + GY + d, 0, YB - h)
+          const x0 = rx - PAD, x1 = rx + w + PAD, y0 = ry - PAD, y1 = ry + h + PAD
+          let c = pref + 0.4 * d + (prevK[k] >= 0 && prevK[k] !== j ? 26 : 0)
+          lines.forEach((a, m) => {
+            const wt = S[m].sr.basis ? 0.5 : 1
+            for (let i = 2; i < a.length; i += 2) c += wt * clipLen(a[i - 2], a[i - 1], a[i], a[i + 1], x0, y0, x1, y1)
+          })
+          for (const tp of tipXY) if (tp && tp[0] > x0 - 16 && tp[0] < x1 + 16 && tp[1] > y0 - 16 && tp[1] < y1 + 16) c += 5000
+          // attribution: a label sits nearer its own tip than any rival's
+          const dist = (px2, py2) => Math.hypot(Math.max(rx - px2, 0, px2 - rx - w), Math.max(ry - py2, 0, py2 - ry - h))
+          const own = dist(tx, ty)
+          tipXY.forEach((tp, m) => {
+            if (!tp || m === k || Math.hypot(tp[0] - tx, tp[1] - ty) < 8) return
+            const other = dist(tp[0], tp[1])
+            if (other < own + 12) c += 160 + 3 * (own + 12 - other)
+          })
+          if (sy != null) c += 0.04 * clipLen(0, sy, P.w, sy, x0, y0, x1, y1)
+          for (const rx2 of rules) c += 0.1 * clipLen(rx2, 0, rx2, P.h, x0, y0, x1, y1)
+          return { j, x: rx, y: ry, w, h, c }
+        }).sort((a, b) => a.c - b.c || a.j - b.j).slice(0, KEEP)
+        act.push({ k, tx, ty, cands })
+      })
+      // best combination (at most 5^3 = 125): labels must not touch
+      let best = null, bestC = Infinity
+      const pick = new Array(act.length)
+      const walk = (i, acc) => {
+        if (acc >= bestC) return
+        if (i === act.length) { bestC = acc; best = pick.slice(); return }
+        for (const cd of act[i].cands) {
+          let c = acc + cd.c
+          for (let m = 0; m < i; m++) {
+            const q = pick[m]
+            const ox = Math.min(cd.x + cd.w, q.x + q.w) - Math.max(cd.x, q.x) + 6
+            const oy = Math.min(cd.y + cd.h, q.y + q.h) - Math.max(cd.y, q.y) + 6
+            if (ox > 0 && oy > 0) c += 3000 + (ox * oy) / 10
+            // labels sharing a column keep their tips' order (the higher tip has the higher label)
+            const dty = act[i].ty - act[m].ty
+            if (ox > -40 && Math.abs(dty) > 4 && (cd.y - q.y) * dty < 0) c += 300
+          }
+          pick[i] = cd
+          walk(i + 1, c)
+        }
+      }
+      walk(0, 0)
+      act.forEach((a, i) => {
+        const cd = best[i]
+        prevK[a.k] = cd.j
+        const gx = cd.x - a.tx, gy = cd.y - a.ty
+        let s = cur[a.k]
+        if (!s) s = cur[a.k] = { x: gx, y: gy, vx: 0, vy: 0 }
+        else for (let u = 0; u < sub; u++) {
+          s.vx += (w0 * w0 * (gx - s.x) - 2 * w0 * s.vx) * dt; s.x += s.vx * dt
+          s.vy += (w0 * w0 * (gy - s.y) - 2 * w0 * s.vy) * dt; s.y += s.vy * dt
+        }
+        // mid-glide, a label never slides across a tip: it hops to the side its spot is on
+        const lx = clamp(a.tx + s.x, xl, xr - cd.w)
+        for (const tp of tipXY) {
+          if (!tp) continue
+          const ly = clamp(a.ty + s.y, 0, YB - cd.h)
+          if (tp[0] > lx - 18 && tp[0] < lx + cd.w + 18 && tp[1] > ly - 18 && tp[1] < ly + cd.h + 18) {
+            const up = tp[1] - 19 - cd.h, down = tp[1] + 19
+            const okUp = up >= 0, okDown = down <= YB - cd.h
+            const wantUp = cd.y + cd.h / 2 < tp[1]
+            s.y = ((wantUp && okUp) || !okDown ? up : down) - a.ty
+            s.vy = 0
+          }
+        }
+        off[a.k][f * 2] = s.x; off[a.k][f * 2 + 1] = s.y
+      })
+    }
+    return { fps, t0, n, off, xl, xr }
+  })()
+  // labels caught mid-glide may touch: push them apart vertically, inside the plot
+  function separate(items) {
+    items.sort((a, b) => a.y - b.y || a.tp.o.sr.i - b.tp.o.sr.i)
+    for (let pass = 0; pass < 4; pass++) {
+      let moved = false
+      for (let i = 0; i < items.length; i++) for (let j = i + 1; j < items.length; j++) {
+        const a = items[i], b = items[j]
+        if (!(a.x < b.x + b.w + 4 && b.x < a.x + a.w + 4 && a.y < b.y + b.h + 4 && b.y < a.y + a.h + 4)) continue
+        const need = a.y + a.h + 4 - b.y
+        const up = Math.min(need / 2, a.y)
+        a.y -= up; b.y += need - up
+        if (b.y + b.h > YB) { const o = b.y + b.h - YB; b.y -= o; a.y = Math.max(0, a.y - o) }
+        moved = true
+      }
+      if (!moved) break
+    }
+  }
 
   return {
     duration,
@@ -521,36 +697,43 @@ export default function chartRace(spec, ctx) {
         dd += (pts.length ? 'L' : 'M') + tx.toFixed(1) + ' ' + ty.toFixed(1)
         attr(o.path, 'd', started ? dd : 'M0 0')
         attr(o.glow, 'd', started ? dd : 'M0 0')
-        const win = done && o.sr === winner ? flashAt(t, R1, 0.9) : 0
+        const win = o.sr === winner ? flashAt(t, TF, 0.9) : 0
         for (const c of [o.halo, o.dot, o.core]) { attr(c, 'cx', tx.toFixed(1)); attr(c, 'cy', ty.toFixed(1)); attr(c, 'visibility', started ? 'visible' : 'hidden') }
-        attr(o.halo, 'r', (26 + 40 * win).toFixed(1))
-        attr(o.halo, 'opacity', (0.28 + 0.45 * win).toFixed(3))
-        showOn(o.odo, counter(o.sr, t, x))
+        attr(o.halo, 'r', (26 + 48 * win).toFixed(1))
+        attr(o.halo, 'opacity', (0.28 + 0.18 * win).toFixed(3))
+        const c = counter(o.sr, t, x)
+        showOn(o.odo, c)
         style(o.lab, { display: started ? 'flex' : 'none' })
-        return { o, tx, ty, started }
+        return { o, tx, ty, started, c }
       })
 
-      // ---- tip labels: left of the tip, just above it; stacked upward when they meet; never leave the plot ----
-      const items = tips.filter(tp => tp.started).map(tp => ({ tp, w: tp.o.lab.offsetWidth, h: tp.o.lab.offsetHeight }))
-      items.sort((a, b) => a.tp.ty - b.tp.ty || a.tp.o.sr.i - b.tp.o.sr.i)
-      const top = items.map(it => it.tp.ty - 14 - it.h)
-      for (let k = items.length - 2; k >= 0; k--) top[k] = Math.min(top[k], top[k + 1] - items[k].h - 4)
-      if (items.length && top[0] < 0) {
-        top[0] = 0
-        for (let k = 1; k < items.length; k++) top[k] = Math.max(top[k], top[k - 1] + items[k - 1].h + 4)
-      }
-      const last = items.length - 1
-      if (last >= 0 && top[last] + items[last].h > P.h) {
-        top[last] = P.h - items[last].h
-        for (let k = last - 1; k >= 0; k--) top[k] = Math.min(top[k], top[k + 1] - items[k].h - 4)
-      }
-      const rects = []
-      const lb = bump(t, R1, { amp: 0.08, dur: 0.4 })
-      items.forEach((it, k) => {
-        const left = clamp(it.tp.tx - 22 - it.w, 0, P.w - it.w)
-        style(it.tp.o.lab, { left: left.toFixed(1) + 'px', top: top[k].toFixed(1) + 'px', transform: lb !== 1 ? `scale(${lb.toFixed(4)})` : 'none' })
-        rects.push({ x: left, y: top[k], w: it.w, h: it.h })
+      // ---- tip labels: the precomputed, smoothed offset from the tip (see place()), clamped, pushed apart ----
+      const fr = clamp((t - PL.t0) * PL.fps, 0, PL.n - 1)
+      const f0 = Math.floor(fr), f1 = Math.min(PL.n - 1, f0 + 1), fa = fr - f0
+      const items = []
+      tips.forEach((tp, k) => {
+        if (!tp.started) return
+        const tab = PL.off[k]
+        const dx = lerp(tab[f0 * 2], tab[f1 * 2], fa), dy = lerp(tab[f0 * 2 + 1], tab[f1 * 2 + 1], fa)
+        const sz = sizeOf(tp.o, tp.c)
+        items.push({ tp, w: sz.w, h: sz.h, x: clamp(tp.tx + dx, PL.xl, PL.xr - sz.w), y: clamp(tp.ty + dy, 0, YB - sz.h) })
       })
+      separate(items)
+      const rects = []
+      const lb = bump(t, TF, { amp: 0.08, dur: 0.4 })
+      for (const it of items) {
+        const right = it.x + it.w / 2 > it.tp.tx            // scale away from the tip, never over it
+        style(it.tp.o.lab, {
+          left: it.x.toFixed(1) + 'px', top: it.y.toFixed(1) + 'px',
+          transformOrigin: right ? '0% 60%' : '100% 60%', ...(it.tp.o.two ? { alignItems: right ? 'flex-start' : 'flex-end' } : {}),
+          transform: lb !== 1 ? `scale(${lb.toFixed(4)})` : 'none',
+        })
+        rects.push({ x: it.x, y: it.y, w: it.w, h: it.h })
+      }
+      for (const tk of xTicks) {
+        const r = { x: pxOf(tk.xv) - tk.w / 2 - 6, y: P.h + 8, w: tk.w + 12, h: 38 }
+        style(tk.lab, { visibility: rects.some(q => hit(q, r)) ? 'hidden' : 'visible' })
+      }
 
       // ---- stake line: its label gives way to tip labels and the clock ----
       if (stakeLine) {
@@ -567,7 +750,7 @@ export default function chartRace(spec, ctx) {
       // ---- hero: stake → leader (hard cut on a pass) → the winner's final ----
       let hsr = null, c
       if (done) { hsr = winner; c = counter(winner, t, x) }
-      else if (stakeMode && t < R0) c = stakeTok ? { disp: stakeTok } : { v: starts[0], tpl: tplAt(starts[0]) }
+      else if (stakeMode && t <= R0) c = stakeTok ? { disp: stakeTok } : { v: starts[0], tpl: tplAt(starts[0]) }
       else { hsr = leaderAt(t); c = counter(hsr, t, x) }
       showOn(hero, c)
       const hcol = hsr ? hsr.color : C.green
@@ -584,9 +767,9 @@ export default function chartRace(spec, ctx) {
         if (t >= sg.t) glow = Math.max(glow, 0.5 * (1 - ease.out(prog(t, sg.t, 0.5))))
         fl = Math.max(fl, 0.14 * flashAt(t, sg.t, 0.45))
       }
-      sc *= bump(t, R1, { amp: 0.13, dur: 0.5 })
-      if (done) glow = Math.max(glow, 1 - ease.out(prog(t, R1, 1.1)))
-      fl = Math.max(fl, 0.5 * flashAt(t, R1, 0.9))
+      sc *= bump(t, TF, { amp: 0.13, dur: 0.5 })
+      if (t >= TF) glow = Math.max(glow, 1 - ease.out(prog(t, TF, 1.1)))
+      fl = Math.max(fl, 0.5 * flashAt(t, TF, 0.9))
       style(hero.el, { transform: `scale(${sc.toFixed(4)})` })
       style(hero.glow, { '--glow': (16 + 30 * glow).toFixed(1) + 'px', '--glowA': (0.38 + 0.45 * glow).toFixed(3) })
       flash.set(fl)

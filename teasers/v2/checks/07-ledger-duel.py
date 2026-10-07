@@ -9,7 +9,9 @@
    - rounded results carry "≈" on screen and "about" in the VO; exact ones carry neither,
    - every string in the spec that contains a digit is covered by a check,
    - VO timing fits ~2.6 spoken words per second, lines don't overlap, each mentioned beat
-     lands within 0.9 s of the moment its VO line says it, durations sit in the 12-30 s lane.
+     lands within 0.9 s of the moment its VO line says it, durations sit in the 12-30 s lane,
+   - the first payoff row lands by 3.0 s (R10), each formula-bar line stays up long enough to
+     type and read, and a formula that multiplies shown factors reproduces the shown result.
 3. Prints a table and exits 1 on any mismatch.
 
 Run:  python3 teasers/v2/checks/07-ledger-duel.py
@@ -25,6 +27,9 @@ SPECS = os.path.join(ROOT, "studio", "specs")
 WPS = 2.6           # VO read speed, spoken words per second
 LANE = (12.0, 30.0)  # duration lane for this format (task brief)
 BEAT_TOL = 0.9       # a mentioned beat must land within this many seconds of its word
+R10_MAX = 3.0        # first payoff row lands within about 3 s (hook bank R10)
+BAR_CPS = 24         # Live Sheet formula bar types ~24 characters a second (03-look-directions)
+BAR_READ = 1.5       # seconds a typed formula-bar line must then stay readable
 
 # ============================================================== inputs
 
@@ -47,13 +52,15 @@ SP_TR = {2007: 5.49, 2008: -37.00, 2009: 26.46, 2010: 15.06, 2011: 2.11, 2012: 1
 DAMODARAN = {2007: 5.48, 2008: -36.55, 2009: 25.94, 2010: 14.82, 2022: -18.04, 2023: 26.06,
              2024: 24.88}
 B_STAKE = 10_000
+B_BUY_YEAR = 2007       # both buy at the 2007 year-end close (Dec 31, 2007), "right before 2008"
 B_SELL_YEAR = 2008      # Sam sells at the 2008 year-end close
 B_CASH_RATE = 0.0       # Sam's cash earns 0% (footer)
-B_ROWS = ["Jan 2007", 2007, 2008, 2009, 2012, 2016, 2019, 2021, 2022, 2025]
+B_ROWS = ["Dec 2007", 2008, 2009, 2012, 2016, 2019, 2021, 2022, 2025]
 
-# 07c: Chase Savings standard APY 0.01% (Chase consumer deposit rate sheet, rates in effect
-# Sep 11, 2026; Bankrate and NerdWallet Chase-savings pages). 4.00% = a round high-yield APY,
-# below the top advertised rates found (Bankrate Oct 2026 up to 4.27%; Yahoo Finance Oct 2,
+# 07c: Chase Savings standard APY 0.01% (Chase consumer deposit rate sheets, rates in effect
+# Oct 2, 2026 [rdwi1.pdf] and Sep 11, 2026 [rdny1.pdf]; Bankrate and NerdWallet Chase-savings
+# pages). 4.00% = a round high-yield APY, below every top rate found (The College Investor
+# Sep 28, 2026: 4.01-4.15% named offers; Bankrate Oct 2026 "up to 4.21%"; Yahoo Finance Oct 2,
 # 2026 up to 4.25%; Fortune Sep 24, 2026 up to 4.50%). Assumed to hold for 5 years.
 C_STAKE = 10_000
 C_APY_BIG = 0.0001
@@ -120,6 +127,22 @@ A_FINAL, B_FINAL = ava(END_AGE), ben(END_AGE)
 A_GAP = A_FINAL - B_FINAL
 A_GROW30 = (1 + r) ** ((END_AGE - A_STOP) * 12)
 A_FULL40 = fv_annuity((END_AGE - A_START) * 12)          # pinned comment: if Ava never stopped
+A_AVA35_SHOWN = rnd(ava(A_STOP), 1)                        # formula bar: Ava's balance at 35, to the dollar
+A_GROW_SHOWN = rnd(A_GROW30, 0.01)                         # formula bar: growth factor, 2 dp
+
+def duel_at(rate):
+    """(Ava, Ben) at 65 for a nominal annual rate, monthly compounding (sensitivity)."""
+    q = rate / 12
+    fv = lambda n: A_DEPOSIT * ((1 + q) ** n - 1) / q
+    return fv(120) * (1 + q) ** 360, fv(360)
+
+lo, hi = 0.04, 0.07                                        # break-even rate by bisection
+for _ in range(100):
+    mid = (lo + hi) / 2
+    a_, b_ = duel_at(mid)
+    lo, hi = (lo, mid) if a_ > b_ else (mid, hi)
+A_BREAKEVEN = (lo + hi) / 2
+A6_AVA, A6_BEN = duel_at(0.06)
 
 # ---- 07b
 def sp_path(returns, stake=B_STAKE):
@@ -129,7 +152,11 @@ def sp_path(returns, stake=B_STAKE):
         out[y] = v
     return out
 
-HOLD = sp_path(SP_TR)
+def after_buy(returns):
+    return {y: v for y, v in returns.items() if y > B_BUY_YEAR}
+
+HOLD = sp_path(after_buy(SP_TR))          # year-end values from the 2007 close
+HOLD[B_BUY_YEAR] = float(B_STAKE)
 SAM = {y: (HOLD[y] if y <= B_SELL_YEAR else HOLD[B_SELL_YEAR] * (1 + B_CASH_RATE) ** (y - B_SELL_YEAR))
        for y in HOLD}
 first_back = next(y for y in sorted(HOLD) if y > B_SELL_YEAR and HOLD[y] >= B_STAKE)
@@ -137,7 +164,7 @@ B_RATIO = HOLD[2025] / SAM[2025]
 B_SINCE_SELL = HOLD[2025] / HOLD[B_SELL_YEAR]
 B_SAM_5PCT = SAM[B_SELL_YEAR] * 1.05 ** (2025 - B_SELL_YEAR)   # pinned-comment bound
 mixed = dict(SP_TR); mixed.update(DAMODARAN)
-DAMO = sp_path(mixed)                                           # sensitivity only (write-up)
+DAMO = sp_path(after_buy(mixed))                                # sensitivity only (write-up)
 
 # ---- 07c
 def bal(apy, years):
@@ -168,7 +195,7 @@ first_payoff = {}  # id -> latest allowed t of the first non-start payoff row
 # ---- 07a
 ida = "07a-live-sheet-start-at-25"
 ea = {
-    "header": T("2", money(A_DEPOSIT), str(END_AGE)),
+    "header": T("2", money(A_DEPOSIT), str(A_STOP - A_START), str(END_AGE - B_START), str(END_AGE)),
     "footer": T(pct(A_RATE * 100)),
     "data.stake": T(money(A_DEPOSIT), pct(A_RATE * 100)),
     "data.people[0].plan": T(str(A_START), str(A_STOP), money(A_IN)),
@@ -177,7 +204,7 @@ ea = {
     "lookOpts.formulaBar[0].text": T(money(A_DEPOSIT), pct(A_RATE * 100)),
     "lookOpts.formulaBar[1].text": T(money(A_DEPOSIT), str((A_STOP - A_START) * 12), money(A_IN)),
     "lookOpts.formulaBar[2].text": T(money(A_DEPOSIT), str((END_AGE - B_START) * 12), money(B_IN)),
-    "lookOpts.formulaBar[3].text": T(money_k(ava(A_STOP)), str(A_STOP), num(A_GROW30, 1), str(END_AGE)),
+    "lookOpts.formulaBar[3].text": T(money(ava(A_STOP)), num(A_GROW30, 2), money_k(A_FINAL), str(END_AGE)),
 }
 for i, age in enumerate(A_ROWS):
     ea[f"data.rows[{i}].label"] = E(f"Age {age}")
@@ -186,7 +213,7 @@ for i, age in enumerate(A_ROWS):
 ea["data.rows[1].event"] = E("Ava stops · Ben starts")
 expect[ida] = ea
 vo_expect[ida] = [
-    [(money(A_DEPOSIT), False)],
+    [(str(A_STOP - A_START), False), (str(END_AGE - B_START), False)],
     [(str(A_START), False), (str(A_STOP), False)],
     [(str(B_START), False)],
     [(num(B_IN / A_IN), False)],
@@ -194,26 +221,27 @@ vo_expect[ida] = [
     [(bare(money_k(B_FINAL)), True)],
     [],
 ]
-beats[ida] = [("Age 30", 1, "invests"), ("Age 35", 1, "stops"), ("Age 65", 4, "65")]
-first_payoff[ida] = 3.5
+# "Age 30" lands at 2.4 s as the first payoff (R10) while line 0 sets up the contest; it is not a spoken beat
+beats[ida] = [("Age 35", 1, "stops"), ("Age 65", 4, "65")]
+first_payoff[ida] = R10_MAX
 
 # ---- 07b
 idb = "07b-becker-rig-panic-sell-2008"
 eb = {
-    "header": T("2", money(B_STAKE), "2007"),
+    "header": T("2", money(B_STAKE), str(B_SELL_YEAR)),
     "footer": T("500", pct(B_CASH_RATE * 100)),
-    "data.stake": T(money(B_STAKE), "500", "2007"),
+    "data.stake": T(money(B_STAKE), "500", "31", str(B_BUY_YEAR)),
     "data.people[1].plan": T(str(B_SELL_YEAR)),
-    "data.rows[2].event": E("crash " + pct(SP_TR[2008], 0, signed=True)),
-    "data.rows[4].event": E("back above " + money(B_STAKE)),
-    "data.rows[8].event": E("dip " + pct(SP_TR[2022], 0, signed=True)),
+    "data.rows[1].event": E("crash " + pct(SP_TR[2008], 0, signed=True)),
+    "data.rows[3].event": E("back above " + money(B_STAKE)),
+    "data.rows[7].event": E("dip " + pct(SP_TR[2022], 0, signed=True)),
     "lookOpts.beats[0].label": E(pct(SP_TR[2008], 0, signed=True)),
     "lookOpts.beats[1].label": E(pct(B_CASH_RATE * 100)),
     "lookOpts.beats[2].label": E(pct(SP_TR[2022], 0, signed=True)),
 }
 for i, y in enumerate(B_ROWS):
-    if y == "Jan 2007":
-        eb[f"data.rows[{i}].label"] = E("Jan 2007")
+    if y == "Dec 2007":
+        eb[f"data.rows[{i}].label"] = E("Dec 2007")
         eb[f"data.rows[{i}].values[0]"] = E(money(B_STAKE))
         eb[f"data.rows[{i}].values[1]"] = E(money(B_STAKE))
     else:
@@ -222,30 +250,28 @@ for i, y in enumerate(B_ROWS):
         eb[f"data.rows[{i}].values[1]"] = E(money(SAM[y], 100))
 expect[idb] = eb
 vo_expect[idb] = [
-    [(money(B_STAKE), False), ("2007", False)],
     [(str(B_SELL_YEAR), False), (pct(-SP_TR[2008]), False)],
+    [(money(HOLD[B_SELL_YEAR], 100), False)],
     [],
     [(str(first_back), False), (money(B_STAKE), False)],
     [("2022", False)],
     [("2025", False), (bare(money(HOLD[2025], 100)), True)],
-    [(bare(money(SAM[2025], 100)), True)],
+    [(bare(money(SAM[2025], 100)), not is_exact(SAM[2025], rnd(SAM[2025], 100)))],
 ]
-beats[idb] = [("2007", 0, "2007"), ("2008", 1, "takes"), (str(first_back), 3, str(first_back)),
+beats[idb] = [("2008", 0, "takes"), (str(first_back), 3, str(first_back)),
               ("2022", 4, "dips"), ("2025", 5, "2025")]
-first_payoff[idb] = 3.5
+first_payoff[idb] = R10_MAX
 
 # ---- 07c
 idc = "07c-clean-sheet-savings-rate"
 ec = {
-    "header": T("2", money(C_STAKE)),
+    "header": T("2", money(C_STAKE), str(C_YEARS)),
     "footer": T(str(C_YEARS), pct(C_APY_BIG * 100, 2), "2026"),
-    "data.stake": T(money(C_STAKE)),
-    "data.people[0].plan": T(pct(C_APY_BIG * 100, 2)),
-    "data.people[1].plan": T(pct(C_APY_HY * 100, 2)),
-    "verdict.text": T(str(C_YEARS), money(C_INT_HY), money(C_INT_BIG)),
-    "lookOpts.badge": T(money(C_STAKE), str(C_YEARS)),
-    "lookOpts.formulas[0]": T(money(C_STAKE), f"{1 + C_APY_BIG:.4f}"),
-    "lookOpts.formulas[1]": T(money(C_STAKE), f"{1 + C_APY_HY:.2f}"),
+    "data.stake": T(money(C_STAKE), str(C_YEARS)),
+    "data.people[0].plan": T(pct(C_APY_BIG * 100, 2), f"{1 + C_APY_BIG:.4f}"),
+    "data.people[1].plan": T(pct(C_APY_HY * 100, 2), f"{1 + C_APY_HY:.2f}"),
+    # column order: Mia (big bank) left, Leo (high-yield) right
+    "verdict.text": T(str(C_YEARS), money(C_INT_BIG), money(C_INT_HY)),
 }
 c_rows = [("Day 1", C_STAKE, C_STAKE, 1), ("Month 1", C_M1_BIG, C_M1_HY, 0.01)]
 for y in range(1, C_YEARS + 1):
@@ -257,16 +283,15 @@ for i, (lab, vb, vh, step) in enumerate(c_rows):
 expect[idc] = ec
 cents_m1 = (C_M1_BIG - C_STAKE) * 100
 vo_expect[idc] = [
-    [(money(C_STAKE), False), (str(C_YEARS), False)],
-    [("1", False), (bare(num(cents_m1)), True)],
+    [(bare(num(cents_m1)), True)],
     [(bare(money(C_M1_HY - C_STAKE)), True)],
     [(money(bal(C_APY_BIG, 1) - C_STAKE), False), (money(bal(C_APY_HY, 1) - C_STAKE), False)],
     [(str(C_YEARS), False), (bare(money(C_INT_HY)), True)],
     [(bare(money(C_INT_BIG)), True)],
     [(money(C_STAKE), False)],
 ]
-beats[idc] = [("Month 1", 1, "Month"), ("Year 1", 3, "year"), ("Year 5", 4, "5")]
-first_payoff[idc] = 3.6
+beats[idc] = [("Month 1", 0, "month"), ("Year 1", 2, "year"), ("Year 5", 3, "5")]
+first_payoff[idc] = R10_MAX
 
 # ============================================================== text helpers
 
@@ -274,7 +299,7 @@ NUM_CORE = r"(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?"
 TOKEN_RE = re.compile(r"(≈ )?([−-]?\$?" + NUM_CORE + r"%?)")
 
 def strip_markup(s):
-    return s.replace("**", "").replace("__", "")
+    return s.replace("**", "").replace("__", "").replace("\u00a0", " ")
 
 def tokens(s):
     return [(m.group(1) or "") + m.group(2) for m in TOKEN_RE.finditer(strip_markup(s))]
@@ -366,6 +391,8 @@ def check_spec(sid):
     record(sid, "header has a number at t=0", spec["header"], "digit", bool(re.search(r"\d", spec["header"])))
     words = len(strip_markup(spec["header"]).replace("\n", " ").split())
     record(sid, "header ≤ 15 words (R8)", words, "≤ 15", words <= 15)
+    nlines = spec["header"].count("\n") + 1
+    record(sid, "header ≤ 4 lines (R8)", nlines, "≤ 4", nlines <= 4)
     d = spec["data"]
     record(sid, "people", len(d["people"]), 2, len(d["people"]) == 2)
     record(sid, "rows 6-12", len(d["rows"]), "6-12", 6 <= len(d["rows"]) <= 12)
@@ -441,6 +468,14 @@ def check_spec(sid):
     for cue in spec.get("sfx", []):
         anchors = ts + [spec["verdict"]["t"]] + [b["t"] for b in spec.get("lookOpts", {}).get("beats", [])]
         record(sid, f"sfx {cue['kind']} on a beat", cue["t"], "a row/verdict/beat t", any(abs(cue["t"] - a) < 1e-9 for a in anchors))
+    bar = spec.get("lookOpts", {}).get("formulaBar", [])
+    for i, k in enumerate(bar):
+        until = bar[i + 1]["t"] if i + 1 < len(bar) else dur - 0.5        # the loop clears the last 0.5 s
+        n = len(strip_markup(k["text"]))
+        shown = 0.7 * n if k["t"] <= 0 else 0.0                        # frame 1 arrives ~70% typed
+        need = (n - shown) / BAR_CPS + BAR_READ
+        record(sid, f"formulaBar[{i}] on screen ≥ type + read", round(until - k["t"], 2), f"≥ {need:.2f}",
+               until - k["t"] >= need)
     for b in spec.get("lookOpts", {}).get("beats", []):
         anchors = ts + [line["t"] + k * 0.1 for line in vo for k in range(int(line["d"] * 10) + 1)]
         record(sid, f"rig beat {b['act']} inside a row or VO line", b["t"], "anchored", any(abs(b["t"] - a) < 0.051 for a in anchors))
@@ -450,22 +485,31 @@ def claim(sid, what, shown, want, ok):
     record(sid, "claim: " + what, shown, want, ok)
 
 claim(ida, "Ben puts in 3× Ava", B_IN / A_IN, 3, B_IN == 3 * A_IN)
+claim(ida, "header: Ava 10 yrs, Ben 30 yrs", (A_STOP - A_START, END_AGE - B_START), (10, 30),
+      (A_STOP - A_START, END_AGE - B_START) == (10, 30))
 claim(ida, "Ava never behind at any row", min(ava(a) - ben(a) for a in A_ROWS) > 0, True,
       all(ava(a) > ben(a) for a in A_ROWS))
 claim(ida, "gap from display finals", money_k(A_FINAL), "≈ $281,000 − ≈ $244,000 = ≈ $37,000",
       rnd(A_FINAL, 1000) - rnd(B_FINAL, 1000) == rnd(A_GAP, 1000))
+claim(ida, "formula bar: shown $34,617 × 8.12 → shown final", round(A_AVA35_SHOWN * A_GROW_SHOWN, 2),
+      money_k(A_FINAL), money_k(A_AVA35_SHOWN * A_GROW_SHOWN) == money_k(A_FINAL))
 claim(ida, "pinned: Ava never stops", money_k(A_FULL40), "≈ $525,000", money_k(A_FULL40) == "≈ $525,000")
-claim(ida, "pinned: growth factor 30 yrs", num(A_GROW30, 1), "≈ 8.1", num(A_GROW30, 1) == "≈ 8.1")
-claim(idb, "2008 drop on 2007 value", pct((HOLD[2008] / HOLD[2007] - 1) * 100, 0, signed=True), "−37%",
+claim(ida, "caption: break-even rate", f"{A_BREAKEVEN * 100:.3f}%", "≈ 6.1%", pct(A_BREAKEVEN * 100, 1) == "≈ 6.1%")
+claim(ida, "caption: at 6% Ben edges ahead", f"{money_k(A6_AVA)} vs {money_k(A6_BEN)}", "≈ $197,000 vs ≈ $201,000",
+      A6_BEN > A6_AVA and (money_k(A6_AVA), money_k(A6_BEN)) == ("≈ $197,000", "≈ $201,000"))
+claim(idb, "2008 drop on the 2007 close", pct((HOLD[2008] / HOLD[2007] - 1) * 100, 0, signed=True), "−37%",
       pct((HOLD[2008] / HOLD[2007] - 1) * 100, 0, signed=True) == "−37%")
+claim(idb, "both at $6,300 exactly after 2008", HOLD[2008], 6300.0, abs(HOLD[2008] - 6300) < 1e-6)
 claim(idb, "first year-end back above $10,000", first_back, 2012, first_back == 2012 and HOLD[2011] < B_STAKE)
 claim(idb, "caption: Alex ÷ Sam", num(B_RATIO, 1), "≈ 10.5", num(B_RATIO, 1) == "≈ 10.5")
 claim(idb, "caption: growth after the sale", num(B_SINCE_SELL, 1), "≈ 10.5", num(B_SINCE_SELL, 1) == "≈ 10.5")
-claim(idb, "caption: Alex's multiple on $10,000", num(HOLD[2025] / B_STAKE, 1), "≈ 7.0", num(HOLD[2025] / B_STAKE, 1) == "≈ 7.0")
-claim(idb, "pinned: Sam at 5% a year", money(B_SAM_5PCT, 100), "≈ $15,200", money(B_SAM_5PCT, 100) == "≈ $15,200")
+claim(idb, "caption: Alex's multiple on $10,000", num(HOLD[2025] / B_STAKE, 1), "≈ 6.6", num(HOLD[2025] / B_STAKE, 1) == "≈ 6.6")
+claim(idb, "pinned: Sam at 5% a year 2009-2025", money(B_SAM_5PCT, 100), "≈ $14,400", money(B_SAM_5PCT, 100) == "≈ $14,400")
 claim(idb, "pinned: 5% case < 1/4 of Alex", round(B_SAM_5PCT / HOLD[2025], 3), "< 0.25", B_SAM_5PCT < HOLD[2025] / 4)
-B_FEE10 = sp_path({y: v - 0.10 for y, v in SP_TR.items()})[2025]          # write-up: 0.10%/yr fee drag (approx.)
-claim(idb, "write-up: 0.10% a year fee drag", money(B_FEE10, 100), "≈ $68,400", money(B_FEE10, 100) == "≈ $68,400")
+B_FEE10 = sp_path({y: v - 0.10 for y, v in after_buy(SP_TR).items()})[2025]   # write-up: 0.10%/yr fee drag (approx.)
+claim(idb, "write-up: 0.10% a year fee drag", money(B_FEE10, 100), "≈ $64,900", money(B_FEE10, 100) == "≈ $64,900")
+claim(idb, "write-up: Damodaran swap", f"{money(DAMO[2025], 100)} / {money(DAMO[2008], 100)}", "≈ $65,900 / ≈ $6,300",
+      (money(DAMO[2025], 100), money(DAMO[2008], 100)) == ("≈ $65,900", "≈ $6,300"))
 claim(idc, "1 yr interest, big bank", money(C_STAKE * C_APY_BIG), "$1", money(C_STAKE * C_APY_BIG) == "$1")
 claim(idc, "HY interest ÷ big-bank interest", num(C_INT_HY / C_INT_BIG), "≈ 433", num(C_INT_HY / C_INT_BIG) == "≈ 433")
 claim(idc, "pinned: FDIC avg 0.37% → per year", money(C_STAKE * FDIC_NATIONAL_SAVINGS), "$37", money(C_STAKE * FDIC_NATIONAL_SAVINGS) == "$37")
@@ -475,7 +519,7 @@ for sid in (ida, idb, idc):
     check_spec(sid)
 
 # ---- sensitivity (information only, not asserted): Damodaran's figures where available
-print("\nSensitivity (07b, info only): S&P DJI vs Damodaran-substituted years 2007-10, 2022-24")
+print("\nSensitivity (07b, info only): S&P DJI vs Damodaran-substituted years 2008-10, 2022-24")
 for y in (2008, 2012, 2025):
     print(f"  {y}: S&P DJI {money(HOLD[y], 100):>12}   with Damodaran years {money(DAMO[y], 100):>12}")
 print(f"  Sam (sold end-2008): {money(SAM[2025], 100)} vs {money(DAMO[2008], 100)}")

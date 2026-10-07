@@ -142,7 +142,7 @@ def millions(v):
 A_LABELS_NODIGIT = True   # labels/notes in 05a carry no digits (checked by the walker)
 EXPECT = {
     "05a": {
-        "header": f"What You're Paying For\nWhen You Spend **{money(A_ORDER)}**\nat Chipotle:",
+        "header": f"What You're Really Paying For\nWhen You Spend **{money(A_ORDER)}**\nat Chipotle:",
         "footer": f"ASSUMES {money(A_ORDER)} splits like Chipotle's FY2025 revenue (10-K) · an average, not your order",
         "verdict.text": f"Chipotle keeps **{approx(money(A_AMT[6], 2))}** of your {money(A_ORDER)}.\nNot __{money(A_WRONG, 2)}__.",
         "data.total.display": money(A_ORDER, 2),
@@ -153,10 +153,11 @@ EXPECT = {
         "lookOpts.wrongGuess.result": f"{money(A_WRONG, 2)} profit?",
     },
     "05b": {
-        "header": f"How much fun money does 50/30/20\nleave on a **{money(B_PAY)}** paycheck?",
-        "footer": f"ASSUMES {money(B_PAY)} take-home (after tax), paid monthly · {B_DAYS}-day month",
-        "verdict.text": f"Wants get **{money(B_AMT[1])}**: {money(B_GAP)} more than savings",
+        "header": f"Could you live on 50/30/20\nwith **{money(B_PAY)}** a month take-home?",
+        "footer": f"ASSUMES {money(B_PAY)} a month take-home (after tax) · {B_DAYS}-day month",
+        "verdict.text": f"Needs get **{money(B_AMT[0])}**: rent, food, every bill.",
         "data.total.display": money(B_PAY),
+        "data.total.note": f"{100 // B_PIECES}% = {money(B_TENTH)}",
         **{f"data.parts[{i}].pct": pct(B_RULE[i], 0) for i in range(3)},
         **{f"data.parts[{i}].amount": money(B_AMT[i]) for i in range(3)},
         "data.parts[0].note": f"{B_COUNT[0]} × {money(B_TENTH)} · rent, food, bills",
@@ -173,15 +174,16 @@ EXPECT = {
     "05c": {
         "header": f"HOW MUCH OF YOUR **{money(C_CART)}**\nDOES COSTCO ACTUALLY KEEP?",
         "footer": "Costco FY2026 · company-wide · before tax",
-        "verdict.text": f"Costco keeps **{approx(money(C_AMT[2], 2))}** of your {money(C_CART)}",
+        "verdict.text": f"Your cart leaves Costco **{approx(money(C_AMT[2], 2))}**.\nYour card brings in **{approx(money(C_FEES, 2))}**.",
         "data.total.display": money(C_CART, 2),
+        "data.check": f"{money(C_AMT[0], 2)} + {money(C_AMT[1], 2)} + {money(C_AMT[2], 2)} = {money(r2(sum(C_AMT)), 2)}",
         **{f"data.parts[{i}].pct": C_PCT[i] for i in range(3)},
         **{f"data.parts[{i}].amount": approx(money(C_AMT[i], 2)) for i in range(3)},
         "lookOpts.remaining[0].display": approx(money(C_REMAIN1, 2)),
         "lookOpts.remaining[1].display": approx(money(C_REMAIN2, 2)),
         "lookOpts.footerSteps[0].text": f"{millions(C_MERCH)} ÷ {millions(C_SALES)} × {money(C_CART)} ≈ {money(C_AMT[0], 2)}",
         "lookOpts.footerSteps[1].text": f"{millions(C_SGA)} ÷ {millions(C_SALES)} × {money(C_CART)} ≈ {money(C_AMT[1], 2)}",
-        "lookOpts.footerSteps[2].text": f"{money(C_CART)} − {money(C_AMT[0], 2)} − {money(C_AMT[1], 2)} = {money(C_AMT[2], 2)}",
+        "lookOpts.footerSteps[2].text": f"{money(C_CART)} − {money(C_AMT[0], 2)} − {money(C_AMT[1], 2)} = {money(C_AMT[2], 2)} before tax",
         "lookOpts.footerSteps[3].text": f"{millions(C_MEMBER)} ÷ {millions(C_SALES)} × {money(C_CART)} ≈ {money(C_FEES, 2)}",
         "lookOpts.footerSteps[4].text": f"fees {millions(C_MEMBER)} > what the cart leaves, {millions(C_LEFT_M)}",
         "lookOpts.bonus.label": f"Membership fees, per {money(C_CART)} of sales",
@@ -192,44 +194,56 @@ EXPECT = {
 # numbers spoken in each VO line, in order ("N cents" -> N/100 dollars; number words count too)
 VO_NUMBERS = {
     "05a": [
-        [A_AMT[0]], [A_WRONG], [A_AMT[1]], [A_AMT[2]], [A_AMT[3]], [A_AMT[4]], [A_AMT[5]], [A_AMT[6]],
+        [A_AMT[0], A_ORDER, A_WRONG], [A_AMT[1]], [A_AMT[2]], [A_AMT[3]], [A_AMT[4]], [A_AMT[5]], [A_AMT[6]],
         [A_ORDER, A_COSTS], [A_WRONG, A_AMT[6]],
     ],
     "05b": [
         [B_PAY, B_PIECES, B_TENTH], [B_COUNT[0], B_AMT[0]], [B_COUNT[1], B_AMT[1]], [B_COUNT[2], B_AMT[2]],
-        [*B_COUNT, B_PIECES, sum(B_AMT)], [B_GAP], [B_AMT[1], B_PER_DAY],
+        [*B_COUNT, B_PIECES, sum(B_AMT)], [B_AMT[1], B_PER_DAY], [B_AMT[0]],
     ],
     "05c": [
-        [C_CART], [C_AMT[0]], [C_AMT[1]], [C_AMT[2]], [2], [C_FEES, C_CART], [],
+        [C_AMT[0], C_CART], [C_AMT[1]], [C_AMT[2]], [2], [C_FEES, C_CART], [],
     ],
+}
+
+# captions are on, so the VO text is on screen: a spoken number carries "≈" exactly when it is a rounded result.
+# Rounded: every per-row amount in 05a and 05c and the membership-fee figure. Exact: the inputs ($10, $100, 2%),
+# the wrong guess $10 − $2.96 = $7.04 and the costs $8.71 (both exact on the shown numbers), and all of 05b.
+VO_ROUNDED = {
+    "05a": set(A_AMT),
+    "05b": set(),
+    "05c": set(C_AMT) | {C_FEES},
 }
 
 # where each beat should sit: (vo line, token) -> t lands EARLY..LATE around that spoken token;
 # (vo line, None) -> t on the line start
 ANCHORS = {
     "05a": {
-        "data.parts[0].t": (0, "$2.96"), "data.parts[1].t": (2, "$2.51"), "data.parts[2].t": (3, "52"),
-        "data.parts[3].t": (4, "$1.47"), "data.parts[4].t": (5, "91"), "data.parts[5].t": (6, "34"),
-        "data.parts[6].t": (7, "$1.29"), "data.checkT": (8, None), "verdict.t": (9, None),
-        "lookOpts.wrongGuess.t": (1, "$7.04"), "lookOpts.wrongGuess.strikeT": (2, None),
-        "sfx[0].t": (1, "$7.04"), "sfx[1].t": (8, None), "sfx[2].t": (9, None),
+        "data.parts[0].t": (0, "$2.96"), "data.parts[1].t": (1, "$2.51"), "data.parts[2].t": (2, "52"),
+        "data.parts[3].t": (3, "$1.47"), "data.parts[4].t": (4, "91"), "data.parts[5].t": (5, "34"),
+        "data.parts[6].t": (6, "$1.29"), "data.checkT": (7, None), "verdict.t": (8, None),
+        # the wrong guess is on the sheet at frame 1 (R5: the hook); vo[0] voices it, inside its first line
+        "lookOpts.wrongGuess.t": "frame1", "lookOpts.wrongGuess.strikeT": (1, None),
+        "sfx[0].t": (1, None), "sfx[1].t": (7, None),
     },
     "05b": {
         "lookOpts.tenth.t": (0, "$300"), "lookOpts.actions[0].t": (0, "Saw"),
         "data.parts[0].t": (1, "$1,500"), "data.parts[1].t": (2, "$900"), "data.parts[2].t": (3, "$600"),
-        "data.checkT": (4, None), "verdict.t": (5, None), "lookOpts.gag.t": (6, "$30"),
-        "sfx[0].t": (0, "Saw"), "sfx[1].t": (0, "$300"), "sfx[2].t": (5, None),
+        "data.checkT": (4, None), "lookOpts.gag.t": (5, "$30"), "verdict.t": (6, None),
+        "sfx[0].t": (0, "Saw"), "sfx[1].t": (0, "$300"),
     },
     "05c": {
-        "data.parts[0].t": (1, "$88.91"), "data.parts[1].t": (2, "$9.15"), "data.parts[2].t": (3, "$1.94"),
-        "lookOpts.remaining[0].t": (1, "$88.91"), "lookOpts.remaining[1].t": (2, "$9.15"),
-        "lookOpts.footerSteps[0].t": (1, "$88.91"), "lookOpts.footerSteps[1].t": (2, "$9.15"),
-        "lookOpts.footerSteps[2].t": (3, "$1.94"), "lookOpts.footerSteps[3].t": (5, "$1.99"),
-        "lookOpts.footerSteps[4].t": (6, None), "lookOpts.bonus.t": (5, "$1.99"), "verdict.t": (6, None),
-        "sfx[0].t": (1, "$88.91"), "sfx[1].t": (2, "$9.15"), "sfx[2].t": (3, "$1.94"),
-        "sfx[3].t": (5, "$1.99"), "sfx[4].t": (6, None),
+        "data.parts[0].t": (0, "$88.91"), "data.parts[1].t": (1, "$9.15"), "data.parts[2].t": (2, "$1.94"),
+        "lookOpts.remaining[0].t": (0, "$88.91"), "lookOpts.remaining[1].t": (2, "$1.94"),
+        "lookOpts.footerSteps[0].t": (0, "$88.91"), "lookOpts.footerSteps[1].t": (1, "$9.15"),
+        "lookOpts.footerSteps[2].t": (2, "$1.94"), "data.checkT": (3, None), "lookOpts.footerSteps[3].t": (4, "$1.99"),
+        "lookOpts.footerSteps[4].t": (5, None), "lookOpts.bonus.t": (4, "$1.99"), "verdict.t": (5, None),
+        "sfx[0].t": (4, "$1.99"),
     },
 }
+
+# lookOpts.maskPct: the goal row's % reads "?" until its beat (else it answers the header at frame 1)
+MASK = {"05a": [6], "05b": None, "05c": [2]}
 
 # the first payoff (a computed dollar figure on screen): path of the beat that carries it
 FIRST_PAYOFF = {"05a": "data.parts[0].t", "05b": "lookOpts.tenth.t", "05c": "data.parts[0].t"}
@@ -243,16 +257,19 @@ NUM_WORDS = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "se
 NUM_TOKEN = re.compile(r"(\$?)(\d[\d,]*)(?:\.(\d+))?(%)?")
 
 
-def vo_numbers(text):
-    """Numbers spoken in a VO line, in order: digits ('N cents' -> N/100) and number words."""
+def vo_numbers(text, with_approx=False):
+    """Numbers spoken in a VO line, in order: digits ('N cents' -> N/100) and number words.
+    with_approx=True returns (value, preceded by "≈ ") pairs."""
     out = []
     pattern = r"(\$?\d[\d,]*(?:\.\d+)?)%?(\s+cents)?|\b(" + "|".join(NUM_WORDS) + r")\b"
     for m in re.finditer(pattern, text, flags=re.IGNORECASE):
         if m.group(3):
-            out.append(float(NUM_WORDS[m.group(3).lower()]))
+            v = float(NUM_WORDS[m.group(3).lower()])
         else:
             v = float(m.group(1).lstrip("$").replace(",", ""))
-            out.append(v / 100 if m.group(2) else v)
+            v = v / 100 if m.group(2) else v
+        ap = text[:m.start()].endswith("≈ ")
+        out.append((v, ap) if with_approx else v)
     return out
 
 
@@ -396,6 +413,10 @@ def check_spec(key, spec):
         got = vo_numbers(line["text"])
         ok = len(got) == len(want) and all(abs(g - w) < 1e-9 for g, w in zip(got, want))
         record(key, f"vo[{i}] numbers", got, [float(w) for w in want], ok)
+        # captions show the VO: "≈" on every rounded result and on no exact figure
+        for v, ap in vo_numbers(line["text"], with_approx=True):
+            rounded = any(abs(v - r) < 1e-9 for r in VO_ROUNDED[key])
+            record(key, f"vo[{i}] '≈' on {v:g} iff rounded", ap, rounded, ap == rounded)
 
     # 6. VO pacing, overlaps, duration
     for i, line in enumerate(vo):
@@ -414,8 +435,12 @@ def check_spec(key, spec):
     record(key, "≥ 2 s hold on the finished sheet", round(dur - last_end, 2), "≥ 2.0", dur - last_end >= 2.0 - 1e-9)
 
     # 7. beat timing: every beat at the moment the VO says it
-    for path, (line, tok) in ANCHORS[key].items():
+    for path, anchor in ANCHORS[key].items():
         beat = get(spec, path)
+        if anchor == "frame1":
+            record(key, f"{path} on the sheet at frame 1", beat, "≤ 0 (kit: typed + landed at t = 0)", beat <= 0)
+            continue
+        line, tok = anchor
         est = anchor_time(vo, line, tok)
         if est is None:
             record(key, f"{path} at VO mention", beat, f"VO line {line} never says {tok!r}", False)
@@ -427,12 +452,37 @@ def check_spec(key, spec):
     timed = [p for p, _ in walk(spec) if re.search(r"(^|\.)(t|checkT|strikeT)$", p) and not p.startswith("vo[")]
     for p in timed:
         record(key, f"{p} anchored", p, "in ANCHORS", p in ANCHORS[key])
+    # masked goal %: only goal rows, and the header's answer is not printed at frame 1 otherwise
+    mask = spec.get("lookOpts", {}).get("maskPct")
+    eq(key, "lookOpts.maskPct", mask, MASK[key])
+    for j in mask or []:
+        record(key, f"maskPct[{j}] is the goal row", parts[j].get("tone"), "goal", parts[j].get("tone") == "goal")
+    wg = spec.get("lookOpts", {}).get("wrongGuess")
+    if wg:
+        res = float(re.search(r"[\d.]+", wg["result"]).group())
+        said = vo_numbers(vo[0]["text"])
+        record(key, "wrong guess voiced in vo[0] (it is on screen from frame 1)", said, f"contains {res}",
+               any(abs(x - res) < 1e-9 for x in said))
     fp = get(spec, FIRST_PAYOFF[key])
     record(key, "R10 first payoff ≤ 3 s", fp, "≤ 3.0", fp <= 3.0)
     for s in spec.get("sfx", []):
         record(key, f"sfx {s['kind']} inside duration", s["t"], f"< {dur}", 0 <= s["t"] < dur)
     record(key, "verdict after the last part", spec["verdict"]["t"], f"≥ {parts[-1]['t']}",
            spec["verdict"]["t"] >= parts[-1]["t"])
+
+    # labels that carry a fact (notes can be hidden by a kit's layout solver, so the label must be right alone)
+    if key == "05a":
+        lab = parts[5]["label"].lower()
+        record(key, "row 6 label says the tax is net of interest (3.4% is not the provision, 4.0%)", parts[5]["label"],
+               "mentions tax and interest", "tax" in lab and "interest" in lab)
+        record(key, "VO for row 6 says it is net of interest", vo[5]["text"], "mentions interest", "interest" in vo[5]["text"].lower())
+    if key == "05c":
+        txt = spec["verdict"]["text"].lower()
+        record(key, "verdict does not say Costco 'keeps' ≈ $1.94 (it keeps ≈ $3.93 before tax incl. fees)",
+               spec["verdict"]["text"], "no 'keep'", "keep" not in txt)
+        steps = " ".join(x["text"] for x in spec["lookOpts"]["footerSteps"] if x["t"] <= parts[2]["t"] + 1e-9)
+        record(key, "'before tax' is on screen when ≈ $1.94 lands (header says 'keep')", "before tax" in steps, True,
+               "before tax" in steps)
 
 
 # ------------------------------------------------------------ facts and claims
@@ -445,6 +495,7 @@ def facts():
     eq("05a", "reported restaurant-level margin 25.4%",
        pct((A_REV - A_FOOD - A_LABOR - A_OCC - A_OTHER) / A_REV, 1), "25.4%")
     eq("05a", "reported tax 4.0% · interest 0.6%", [pct(A_TAX / A_REV, 1), pct(A_INTEREST / A_REV, 1)], ["4.0%", "0.6%"])
+    eq("05a", "tax alone per $10 would be ≈ $0.40 (so row 6 must say 'minus interest')", money(r2(A_TAX / A_REV * 10), 2), "$0.40")
     eq("05a", "reported effective tax rate 23.6%", pct(A_TAX / (A_OPINC + A_INTEREST), 1), "23.6%")
     eq("05a", "net income ≈ $1.54B (release)", round(A_NI / 1e6, 2), 1.54)
     record("05a", "HQ row (G&A+D&A+pre-opening+impairment) ≥ D&A", A_HQ, f"≥ {A_DA}", A_HQ >= A_DA)
@@ -463,6 +514,9 @@ def facts():
     eq("05b", "amounts add to the paycheck", sum(B_AMT), B_PAY)
     eq("05b", "every amount exact (no rounding)", [s * B_PAY for s in B_RULE], [float(a) for a in B_AMT])
     eq("05b", "wants − savings", B_GAP, 300)
+    eq("05b", "needs = half the take-home (VO 'rent, food and bills must fit in $1,500')", B_AMT[0], B_PAY // 2)
+    eq("05b", "wants per day vs the gap per day (md: $900 = $30 a day; the $300 gap = $10 a day)",
+       (B_AMT[1] // B_DAYS, B_GAP // B_DAYS), (30, 10))
     eq("05b", "$900 ÷ 30 exact", B_AMT[1] % B_DAYS, 0)
     for pay, want in ((2_400, [1_200, 720, 480]), (4_000, [2_000, 1_200, 800])):   # pinned comment
         eq("05b", f"pinned: ${pay:,} → tenths × 5/3/2", [pay // B_PIECES * n for n in B_COUNT], want)
@@ -484,6 +538,8 @@ def facts():
     lo, hi = 269_850 - 239_886 - 24_966, 269_950 - 239_886 - 24_966
     record("05c", "FY2025 too: fees $5,323M > cart's leftover", f"{lo:,}..{hi:,}", "< 5,323", hi < 5_323)
     eq("05c", "net income per $100 of sales (pinned comment)", money(r2(C_NI / C_SALES * 100), 2), "$3.10")
+    eq("05c", "operating income per $100 of sales, cart + fees (why the verdict avoids 'keeps')",
+       money(r2(C_OPINC / C_SALES * 100), 2), "$3.93")
     # footer working uses the exact millions; the rounded inputs still give the same cents
     for v, a in ((C_MERCH, C_AMT[0]), (C_SGA, C_AMT[1]), (C_MEMBER, C_FEES)):
         eq("05c", f"{millions(v)} in $B (2 dp) gives the same cents", r2(round(v / 1000, 2) / round(C_SALES / 1000, 2) * 100), a)

@@ -44,6 +44,7 @@
   background-repeat: no-repeat; background-position: 0 0; background-size: var(--hw, 100%) 100%;
   padding: 0 .13em; margin: 0 -.03em; border-radius: .12em;
   -webkit-box-decoration-break: clone; box-decoration-break: clone;
+  white-space: nowrap; /* a highlight never spans two lines (fitMarkup sets explicit lines) */
 }
 .cs-header u.mark2 { --hl: #FFB3A7; }
 .cs-footer {
@@ -69,6 +70,7 @@
   letter-spacing: -.01em;
 }
 .cs-hl-bg { position: absolute; inset: 0; border-radius: 10px; background: #A7F3C1; }
+.cs-hl-re { opacity: 0; }
 .cs-hl-txt { position: relative; display: block; transform-origin: 0 55%; padding-top: .06em; }
 .cs-hl em, .cs-hl u.mark2 { font-style: normal; text-decoration: none; }
 
@@ -131,6 +133,7 @@
 .cs-cap { position: absolute; left: 0; top: 0; width: 856px; font: 700 48px/1.22 'Inter', 'Inter Full', sans-serif; color: #15171C; letter-spacing: -.005em; }
 .cs-cap { text-wrap: balance; }
 .cs-cap .w { display: inline-block; color: #6B7280; }
+.cs-cap-nb { display: inline-block; white-space: nowrap; }
 .cs-cap .w.said { color: #15171C; }
 .cs-cap .w.em.said { color: #2F6FEB; }
 .cs-cap .w.mark2.said { color: #B42318; }

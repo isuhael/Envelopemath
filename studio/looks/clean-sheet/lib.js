@@ -10,9 +10,34 @@ export { C, TONE, F, SIZE, GRID, MOTION }
 
 // ------------------------------------------------------------------ text + tone
 
-/** Spec markup -> HTML for this look: **x** = highlighter (<em>), __x__ = cost highlighter, "≈" in the accent. */
+/** "≈ 12" -> "≈<nbsp>12": the honesty sign never ends a line without its number */
+export const bindApprox = (str = '') => String(str).replace(/≈[ \t]+/g, '≈ ')
+
+/**
+ * Spec markup -> HTML for this look: **x** = highlighter (<em>), __x__ = cost highlighter, "≈" in the accent,
+ * bound to the figure after it with a no-break space.
+ */
 export function md(str = '') {
-  return markup(str).replace(/≈/g, '<span class="cs-approx">≈</span>')
+  return markup(bindApprox(str)).replace(/≈/g, '<span class="cs-approx">≈</span>')
+}
+
+/**
+ * The optional "check:" line, read the same way in every format. Accepts a string or { t, text } in data.check or
+ * lookOpts.check; its time comes from data.checkT, then lookOpts.checkT, then check.t, else null (the format's
+ * default). "check: " is prefixed when missing (prefix: false keeps the text as written). null when there is none.
+ */
+export function readCheck(d = {}, LO = {}, { prefix = true } = {}) {
+  const c = d && d.check != null && d.check !== '' ? d.check : LO && LO.check != null ? LO.check : null
+  if (c == null || c === false) return null
+  const obj = typeof c === 'object'
+  let text = obj ? (c.text != null ? String(c.text) : '') : String(c)
+  text = text.trim()
+  if (!text) return null
+  if (prefix && !/^check\b/i.test(text)) text = 'check: ' + text
+  if (!prefix) text = text.replace(/^check:\s*/i, '')
+  const tRaw = d && d.checkT != null ? d.checkT : LO && LO.checkT != null ? LO.checkT : obj && c.t != null ? c.t : null
+  const t = tRaw == null ? null : +tRaw
+  return { text, t: t != null && isFinite(t) ? t : null }
 }
 
 /** tone -> highlighter colour (good green, bad coral, goal blue, neutral sand, input yellow; default green) */
@@ -106,17 +131,25 @@ export function pathAt(stops, t, glide = MOTION.glide) {
  *   hb.seek(wipe, text, rest)               // wipe 0..1 (eased), text 0..1 (linear; eased inside), rest 0..1
  * rest fades the box to MOTION.rest opacity: a finished result that is no longer the focal number.
  */
-export function hlBox({ html = '', tone, color, px: size = SIZE.result, family = F.display, weight = 400, padX = 14, radius = 10, height, cls = '' } = {}) {
+export function hlBox({ html = '', tone, color, px: size = SIZE.result, family = F.display, weight = 400, padX = 14, radius = 10, height, cls = '', popFrom = MOTION.popFrom, retone = null } = {}) {
   const bg = h('div', { class: 'cs-hl-bg' })
+  // optional second tone that wipes over the first (a result re-marked as the winner / the goal)
+  const re = retone ? h('div', { class: 'cs-hl-bg cs-hl-re' }) : null
   const txt = h('span', { class: 'cs-hl-txt', html })
-  const el = h('div', { class: ('cs-hl ' + cls).trim() }, bg, txt)
+  const el = h('div', { class: ('cs-hl ' + cls).trim() }, bg, re, txt)
+  let from = popFrom
   const api = {
-    el, bg, txt,
+    el, bg, re, txt,
     setTone(t2, c2) { css(bg, { background: c2 || toneColor(t2) }) },
+    /** the second layer's tone (hlBox({ retone }) creates it) */
+    setRetone(t2, c2) { if (re) css(re, { background: c2 || toneColor(t2) }) },
     setPx(p2, h2) {
       css(el, { fontSize: px(p2), height: px(h2 || Math.round(p2 * 1.3)), fontFamily: family, fontWeight: String(weight) })
       css(txt, { padding: `0 ${px(padX * (p2 / SIZE.result) ** 0.5)}` })
       css(bg, { borderRadius: px(radius) })
+      if (re) css(re, { borderRadius: px(radius) })
+      // the pop never shrinks text under the 40 px floor (small boxes land at a larger start scale, or none)
+      from = Math.min(1, Math.max(popFrom, SIZE.floor / p2))
     },
     setHTML(v) { setHTML(txt, v) },
     width() { return el.getBoundingClientRect().width },
@@ -127,11 +160,21 @@ export function hlBox({ html = '', tone, color, px: size = SIZE.result, family =
         opacity: n3(w <= 0 ? 0 : lerp(1, MOTION.rest, clamp(rest))),
       })
       const p = clamp(text)
-      const sc = p >= 1 ? 1 : lerp(MOTION.popFrom, 1, ease.back(p, 2.2))
+      const sc = p >= 1 || from >= 1 ? 1 : lerp(from, 1, ease.back(p, 2.2))
       css(txt, { opacity: n3(clamp(p * 4)), transform: sc === 1 ? 'none' : `scale(${n3(sc)})` })
+    },
+    /** wipe the second tone over the box, left to right (0..1), resting with `rest` like the box itself */
+    seekRetone(wipe = 0, rest = 0) {
+      if (!re) return
+      const w = clamp(wipe)
+      css(re, {
+        clipPath: w >= 1 ? 'none' : `inset(0 ${n3((1 - w) * 100)}% 0 0 round ${radius}px)`,
+        opacity: n3(w <= 0 ? 0 : lerp(1, MOTION.rest, clamp(rest))),
+      })
     },
   }
   api.setTone(tone, color)
+  if (re) { api.setRetone(retone); api.seekRetone(0) }
   api.setPx(size, height)
   api.seek(1, 1, 0)
   return api
@@ -159,6 +202,48 @@ export function typeLine({ text = '', suffix = '', px: size = SIZE.formula, colo
       css(caret, { opacity: caretOn ? '1' : '0' })
     },
   }
+}
+
+/**
+ * Break a typed line (a check, a formula) so it fits maxW at its size: one line if it fits, else two lines (three
+ * for a very long sum) broken before "=" / "≈" or an operator where possible, else at the most balanced space.
+ * Measured once at mount with a probe in `parent` (it must be in the stage, so the fonts and letter-spacing match).
+ * Returns { text (with "\n"), lines, width }.
+ */
+export function breakLine(parent, text, maxW, { px: size = SIZE.check, family = F.mono, weight = 500, maxLines = 3 } = {}) {
+  const probe = typeLine({ text: '', px: size, family, weight })
+  parent.append(probe.el)
+  const memo = new Map()
+  const wOf = s0 => { if (!memo.has(s0)) { setText(probe.span, s0); memo.set(s0, probe.span.getBoundingClientRect().width + 8) } return memo.get(s0) }
+  const full = String(text)
+  const words = full.split(' ')
+  const join = (a, b) => words.slice(a, b).join(' ')
+  // a break before word i: preferred before "=" / "≈", then before an operator, else anywhere
+  const pref = i => (/^[=≈]/.test(words[i]) ? 0.9 : /^[+−×÷]/.test(words[i]) ? 0.95 : 1)
+  let out = { text: full, lines: 1, width: wOf(full) }
+  if (out.width > maxW && words.length > 1) {
+    let best = null
+    const n = words.length
+    for (let a = 1; a < n; a++) {
+      const l1 = wOf(join(0, a)), l2 = wOf(join(a, n))
+      if (l1 <= maxW && l2 <= maxW) {
+        const sc = Math.max(l1, l2) * pref(a)
+        if (!best || best.lines > 2 || sc < best.sc) best = { cuts: [a], lines: 2, sc, width: Math.max(l1, l2) }
+      }
+      if (maxLines >= 3 && (!best || best.lines === 3)) for (let b = a + 1; b < n; b++) {
+        const w3 = [wOf(join(0, a)), wOf(join(a, b)), wOf(join(b, n))]
+        if (Math.max(...w3) > maxW) continue
+        const sc = Math.max(...w3) * pref(a) * pref(b)
+        if (!best || (best.lines === 3 && sc < best.sc)) best = { cuts: [a, b], lines: 3, sc, width: Math.max(...w3) }
+      }
+    }
+    if (best) {
+      const cuts = [0, ...best.cuts, n]
+      out = { text: cuts.slice(0, -1).map((c, k) => join(c, cuts[k + 1])).join('\n'), lines: best.lines, width: best.width }
+    }
+  }
+  probe.el.remove()
+  return out
 }
 
 /** seconds to type a string at MOTION.typeCps (clamped 0.35-2.2 s) */
@@ -342,6 +427,141 @@ export function alignSheetRows(rows) {
   return lw
 }
 
+// ------------------------------------------------------------------ line fitting (header, verdict, footer, labels)
+
+/** words of one explicit line, each with its emphasis ('' | 'em' | 'mark2') and whether a space precedes it */
+function tokensOf(line) {
+  const toks = []
+  let space = false
+  for (const seg of segmentsOf(bindApprox(line))) {
+    for (const part of seg.text.split(/( +)/)) {
+      if (!part) continue
+      if (/^ +$/.test(part)) { space = true; continue }
+      toks.push({ text: part, cls: seg.cls, space: space && toks.length > 0 })
+      space = false
+    }
+  }
+  return toks
+}
+const escHTML = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/≈/g, '<span class="cs-approx">≈</span>')
+const TAG = { em: ['<em>', '</em>'], mark2: ['<u class="mark2">', '</u>'], '': ['', ''] }
+/** one set line: consecutive words of one emphasis share one <em> (a highlight never spans two lines) */
+function lineHTML(toks) {
+  let out = '', open = null
+  toks.forEach((tk, i) => {
+    if (tk.cls !== open) {
+      if (open != null) out += TAG[open][1]
+      if (tk.space && i) out += ' '
+      out += TAG[tk.cls][0]
+      open = tk.cls
+    } else if (tk.space && i) out += ' '
+    out += escHTML(tk.text)
+  })
+  if (open != null) out += TAG[open][1]
+  return out
+}
+
+/**
+ * Set spec markup into `el` as explicit, unbreakable lines, as large as fits:
+ *   every "\n" segment on one line first; a segment splits (at its most balanced word break, never between "≈"
+ *   and its figure, preferably not inside a highlight) only when that buys at least `linePenalty` px of type.
+ * opts: { maxW, maxH, maxPx, minPx, lh (line-height factor of el), maxSplit = 3 (lines per segment),
+ *         linePenalty = 8, maxLines = Infinity }
+ * Returns { px, lines, fits }. If nothing fits at minPx, the text is set at minPx and wraps naturally (fits: false; the
+ * linter reports it).
+ */
+export function fitMarkup(el, str, { maxW, maxH = Infinity, maxPx, minPx, lh = 1.2, maxSplit = 3, linePenalty = 8, maxLines = Infinity } = {}) {
+  const segs = String(str || '').split('\n').map(tokensOf)
+  const REFPX = 100
+  css(el, { whiteSpace: 'nowrap', fontSize: REFPX + 'px', textWrap: 'nowrap' })
+  const probe = h('span', { style: { display: 'inline-block', whiteSpace: 'nowrap' } })
+  el.innerHTML = ''
+  el.append(probe)
+  const memo = new Map()
+  const widthOf = (si, a, b) => {
+    const k = si + ':' + a + ':' + b
+    if (!memo.has(k)) { probe.innerHTML = lineHTML(segs[si].slice(a, b)); memo.set(k, probe.getBoundingClientRect().width) }
+    return memo.get(k)
+  }
+  // per segment: candidate splits into 1..maxSplit lines -> { k, w (widest line at REFPX), cuts, bp (break cost, px) }
+  const FUNC = /^(a|an|the|of|to|in|on|at|for|and|or|by|with|your|my|is|if)$/i
+  const opts = segs.map((toks, si) => {
+    const n = toks.length
+    const breaks = [] // a line may start at token i
+    for (let i = 1; i < n; i++) if (toks[i].space) breaks.push(i)
+    // what a break before token i costs, in px of type: inside a highlight or after a little word is worse; after
+    // a pause (?, :, ·, comma) is better
+    const bpAt = i => {
+      let c = 0
+      if (toks[i - 1].cls && toks[i - 1].cls === toks[i].cls) c += 8
+      if (FUNC.test(toks[i - 1].text)) c += 6
+      if (/[?!.:;]$/.test(toks[i - 1].text)) c -= 4
+      else if (/[·,]$/.test(toks[i - 1].text) || toks[i - 1].text === '·') c -= 2
+      return c
+    }
+    const keep = (list, m) => {
+      const byW = list.slice().sort((x, y) => x.w - y.w).slice(0, m)
+      const byB = list.slice().sort((x, y) => x.bp - y.bp || x.w - y.w).slice(0, 2)
+      return [...new Set([...byW, ...byB])]
+    }
+    // a split costs its breaks plus its raggedness (a lopsided split never wins on a nice break alone)
+    const split = (cuts, ws) => {
+      const r = Math.min(...ws) / Math.max(...ws)
+      const bps = cuts.map(bpAt)
+      const bp = bps.reduce((a, c) => a + (c < 0 && r < 0.6 ? 0 : c), 0) + Math.round(10 * (1 - r))
+      return { k: ws.length, w: Math.max(...ws), cuts, bp }
+    }
+    const out = [{ k: 1, w: n ? widthOf(si, 0, n) : 0, cuts: [], bp: 0 }]
+    if (maxSplit >= 2 && breaks.length) {
+      out.push(...keep(breaks.map(b => split([b], [widthOf(si, 0, b), widthOf(si, b, n)])), 4))
+    }
+    if (maxSplit >= 3 && breaks.length >= 2) {
+      const l3 = []
+      for (let x = 0; x < breaks.length; x++) for (let y = x + 1; y < breaks.length; y++) {
+        const b1 = breaks[x], b2 = breaks[y]
+        l3.push(split([b1, b2], [widthOf(si, 0, b1), widthOf(si, b1, b2), widthOf(si, b2, n)]))
+      }
+      out.push(...keep(l3, 3))
+    }
+    return out
+  })
+  probe.remove()
+  // every combination of per-segment splits; the largest type wins, each extra line costs linePenalty px
+  const n0 = segs.length
+  let best = null, biggest = null
+  const walk = (i, pick) => {
+    if (i === n0) {
+      const L = pick.reduce((a, o) => a + o.k, 0)
+      if (L > maxLines) return
+      const wmax = Math.max(1, ...pick.map(o => o.w))
+      const px = Math.floor(Math.min(maxPx, (REFPX * maxW) / wmax, maxH / (L * lh)))
+      // (a nicer break never buys type under the 40 px must-read floor)
+      const under = px < SIZE.floor ? 20 + (SIZE.floor - px) * 4 : 0
+      const cand = { pick: pick.slice(), px, L, score: px - linePenalty * (L - n0) - pick.reduce((a, o) => a + o.bp, 0) - under }
+      if (!biggest || px > biggest.px) biggest = cand
+      if (px >= minPx && (!best || cand.score > best.score + 1e-9 || (Math.abs(cand.score - best.score) < 1e-9 && L < best.L))) best = cand
+      return
+    }
+    for (const o of opts[i]) { pick.push(o); walk(i + 1, pick); pick.pop() }
+  }
+  walk(0, [])
+  const ch = best || biggest
+  const lines = []
+  ch.pick.forEach((o, si) => {
+    const toks = segs[si]
+    const cuts = [0, ...o.cuts, toks.length]
+    for (let c = 0; c + 1 < cuts.length; c++) lines.push(lineHTML(toks.slice(cuts[c], cuts[c + 1])))
+  })
+  el.innerHTML = lines.join('<br>')
+  let size = Math.max(minPx, Math.min(maxPx, ch.px))
+  css(el, { fontSize: size + 'px' })
+  // rounding and kerning: settle on the exact width
+  while (size > minPx && el.scrollWidth > maxW + 0.5) { size -= 1; css(el, { fontSize: size + 'px' }) }
+  const fits = el.scrollWidth <= maxW + 0.5 && lines.length * size * lh <= maxH + 0.5
+  if (el.scrollWidth > maxW + 0.5) css(el, { whiteSpace: 'normal', textWrap: 'balance' }) // last resort
+  return { px: size, lines: lines.length, fits }
+}
+
 // ------------------------------------------------------------------ unit icons (flat monoline, 48 x 48)
 
 // Each icon: ink outline (stroke 2.6, round joins) over flat palette fills. Names follow FORMATS.md.
@@ -493,14 +713,15 @@ export function mountPage(spec, ctx) {
   const verdict = hasVerdict ? h('div', { class: 'cs-verdict', html: md(spec.verdict.text) }) : null
   stage.append(desk, card, brand, header, ...(footer ? [footer] : []), layer, rule, capBox, ...(verdict ? [verdict] : []))
 
-  // header: fit to the band (2 lines of 84 px at most)
-  css(header, { fontSize: SIZE.title + 'px' })
-  fitText(header, GRID.headerW, { maxH: GRID.headerBottom - GRID.headerTop, minPx: SIZE.titleMin })
+  // header: every explicit line on one line, as large as the band allows (84 -> 56 px); a line splits (balanced,
+  // never orphaning a highlight or a "≈") only when that buys real size
+  fitMarkup(header, spec.header || '', { maxW: GRID.headerW, maxH: GRID.headerBottom - GRID.headerTop, maxPx: SIZE.title, minPx: SIZE.titleMin, lh: 1.08 })
   const hb = header.getBoundingClientRect().bottom
   let top = hb + 52
   if (footer) {
-    css(footer, { top: Math.round(hb + 14) + 'px', fontSize: SIZE.footer + 'px' })
-    fitText(footer, GRID.headerW, { maxH: Math.round(SIZE.footer * 1.25 * 2) + 2, minPx: SIZE.footerMin })
+    css(footer, { top: Math.round(hb + 14) + 'px' })
+    // the assumption line: 40 px (36 at least), balanced over 2 lines at most
+    fitMarkup(footer, spec.footer, { maxW: GRID.headerW, maxH: Math.round(SIZE.footer * 1.25 * 2) + 2, maxPx: SIZE.footer, minPx: SIZE.footerMin, lh: 1.25, maxLines: 2, maxSplit: 2, linePenalty: 2 })
     top = footer.getBoundingClientRect().bottom + GRID.workGap
   }
   top = Math.round(top)
@@ -517,8 +738,8 @@ export function mountPage(spec, ctx) {
     css(l.el, { display: 'none' })
   }
   if (verdict) {
-    css(verdict, { fontSize: SIZE.verdict + 'px' })
-    fitText(verdict, GRID.capW, { maxH: GRID.capBottom - GRID.capTop, minPx: 42 })
+    // the closing line: 56 px, 2 lines (3 only when a long line would otherwise drop under 42 px)
+    fitMarkup(verdict, spec.verdict.text, { maxW: GRID.capW, maxH: GRID.capBottom - GRID.capTop, maxPx: SIZE.verdict, minPx: 42, lh: 1.14, linePenalty: 6 })
   }
 
   const page = {
@@ -548,11 +769,14 @@ function buildCaption(v) {
   const el = h('div', { class: 'cs-cap' })
   const words = []
   let chars = 0
-  for (const seg of segmentsOf(String(v.text || ''))) {
-    const parts = seg.text.split(/(\s+)/)
+  let glue = null // "≈ " waits here for its figure: both go in one unbreakable group
+  // "≈ 12" stays together (a no-break space), so the sign never ends a line without its figure
+  for (const seg of segmentsOf(bindApprox(String(v.text || '')))) {
+    const parts = seg.text.split(/([ \t\n]+)/)
     for (const p of parts) {
       if (!p) continue
-      if (/^\s+$/.test(p)) {
+      if (/^[ \t\n]+$/.test(p)) {
+        glue = null
         if (p.includes('\n')) el.append(h('br'))
         else el.append(document.createTextNode(' '))
         continue
@@ -562,7 +786,10 @@ function buildCaption(v) {
       const w = h('span', { class: cls, html })
       words.push({ el: w, cls, at: chars, len: p.length })
       chars += p.length + 1
-      el.append(w)
+      if (glue) glue.append(w)
+      else if (/\u00a0$/.test(p)) { glue = h('span', { class: 'cs-cap-nb' }, w); el.append(glue) }
+      else el.append(w)
+      if (glue && !/\u00a0$/.test(p)) glue = null
     }
   }
   return { el, words, chars: Math.max(1, chars), v }

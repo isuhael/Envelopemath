@@ -4,12 +4,12 @@
   "format": "growth-ladder",
   "fps": 30,
   "duration": 29.5,
-  "header": "**$100 a month** at 8%.\nWhich year does it double?",
+  "header": "**$100 a month** at 8%.\nDoubled by year 9?",
   "footer": "ASSUMES 8% a year, compounded monthly · $100 in at each month-end · not a forecast",
   "captions": true,
   "vo": [
     { "t": 0.0, "d": 3.2, "text": "$100 a month at 8%." },
-    { "t": 3.4, "d": 3.2, "text": "The Rule of 72 says 9 years." },
+    { "t": 3.4, "d": 3.2, "text": "Rule of 72: doubled by year 9." },
     { "t": 6.8, "d": 2.1, "text": "Year 9? Not even close." },
     { "t": 9.1, "d": 1.7, "text": "Year 15: still short." },
     { "t": 11.0, "d": 4.8, "text": "Year 16: $19,200 in. Worth more than double." },
@@ -31,21 +31,23 @@
       ["20", "$24,000", "≈ $58,902"],
       ["30", "$36,000", "≈ $149,036"]
     ],
-    "rowT": [0.0, 4.6, 6.8, 8.0, 9.1, 11.0, 17.2, 21.0],
+    "rowT": [0.0, 4.6, 6.8, 8.0, 9.1, 11.0, 19.8, 21.0],
     "highlightLast": true,
     "hold": 8.5
   },
   "lookOpts": {
     "inputsAtStart": true,
     "formulaBar": [
-      { "t": 0.0, "text": "= $100 × 12 months = $1,200 in" },
+      { "t": 0.0, "text": "Year 9: 2 × $10,800 = $21,600?" },
       { "t": 3.4, "text": "Rule of 72: 72 ÷ 8 = 9 years?" },
-      { "t": 6.8, "text": "≈ $15,743 < 2 × $10,800" },
+      { "t": 6.8, "text": "≈ $15,743 < $21,600" },
       { "t": 9.1, "text": "≈ $34,604 < 2 × $18,000" },
       { "t": 11.0, "text": "≈ $38,721 > 2 × $19,200" },
-      { "t": 17.6, "text": "1st $100 ≈ $356 · last $100 = $100" },
+      { "t": 16.0, "text": "Rule of 72 = one lump sum" },
+      { "t": 17.6, "text": "Yr 16: 1st $100 ≈ $356" },
+      { "t": 19.6, "text": "Newest $100: still $100" },
       { "t": 21.0, "text": "≈ $149,036 ÷ $36,000 ≈ 4.1×" },
-      { "t": 24.8, "text": "$50 or $500 a month: still year 16" }
+      { "t": 24.8, "text": "$50 or $500/mo: still year 16" }
     ],
     "marks": [
       { "t": 6.8, "row": 2, "tone": "bad", "label": "not double" },

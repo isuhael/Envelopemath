@@ -3,49 +3,49 @@
   "look": "scoreboard",
   "format": "what-difference",
   "fps": 30,
-  "duration": 34.3,
-  "header": "HOW MUCH DIFFERENCE DOES\nAN EXTRA **$100** A MONTH MAKE\nON A 30-YEAR MORTGAGE?",
-  "footer": "7.3% fixed (Freddie Mac, Oct 1) · extra → principal",
+  "duration": 29.8,
+  "header": "HOW MUCH DIFFERENCE DOES\nJUST **$100** EXTRA A MONTH MAKE\nON A 30-YEAR MORTGAGE?",
+  "footer": "$400,000 at 7.3% (≈ Freddie Mac 7.28%, Oct 1)",
   "captions": true,
   "vo": [
     {
       "t": 0.0,
-      "d": 4.8,
-      "text": "$400,000 at 7.3% over 30 years."
+      "d": 4.4,
+      "text": "Interest alone: about $587,200."
     },
     {
-      "t": 5.0,
-      "d": 5.9,
-      "text": "Interest: about $587,200. More than the loan itself."
+      "t": 4.6,
+      "d": 1.6,
+      "text": "More than the loan."
     },
     {
-      "t": 11.1,
-      "d": 2.5,
-      "text": "Add $100 a month."
+      "t": 6.4,
+      "d": 2.8,
+      "text": "Add just $100 a month."
     },
     {
-      "t": 13.8,
+      "t": 9.4,
       "d": 4.8,
       "text": "40 months sooner. About $78,600 less interest."
     },
     {
-      "t": 18.8,
-      "d": 2.5,
+      "t": 14.4,
+      "d": 2.4,
       "text": "Add $500 a month."
     },
     {
-      "t": 21.5,
+      "t": 17.0,
       "d": 4.8,
       "text": "About 11 years sooner. About $245,000 less."
     },
     {
-      "t": 26.5,
+      "t": 22.0,
       "d": 5.6,
       "text": "Each dollar of that $100 saves about $2.46."
     }
   ],
   "verdict": {
-    "t": 26.5,
+    "t": 22.0,
     "text": "+$100 a month: **≈ $78,600** less"
   },
   "data": {
@@ -67,6 +67,7 @@
     "options": [
       {
         "t": 0.0,
+        "resultT": 0.0,
         "name": "Just the payment",
         "detail": "$2,742.29 a month",
         "values": {
@@ -76,7 +77,7 @@
         "tone": "bad"
       },
       {
-        "t": 11.1,
+        "t": 6.4,
         "name": "+$100 a month",
         "detail": "$2,842.29 a month",
         "values": {
@@ -87,7 +88,7 @@
         "tone": "goal"
       },
       {
-        "t": 18.8,
+        "t": 14.4,
         "name": "+$500 a month",
         "detail": "$3,242.29 a month",
         "values": {
@@ -103,39 +104,24 @@
   },
   "lookOpts": {
     "counter": "interest",
+    "intro": false,
     "footerSteps": [
       {
-        "t": 0.0,
+        "t": 4.6,
         "text": "$2,742.29 × 360 − $400,000 ≈ $587,200"
       },
       {
-        "t": 11.1,
+        "t": 6.4,
         "text": "$2,742.29 + $100 = $2,842.29 a month"
       },
       {
-        "t": 18.8,
+        "t": 14.4,
         "text": "$2,742.29 + $500 = $3,242.29 a month"
       },
       {
-        "t": 26.5,
-        "text": "$100 × 319 = $31,900 extra → ≈ $78,600 less interest: ≈ $2.46 each"
+        "t": 22.0,
+        "text": "≈ $78,600 ÷ ($100 × 319) ≈ $2.46"
       }
     ]
-  },
-  "sfx": [
-    {
-      "t": 11.1,
-      "kind": "roll",
-      "dur": 0.8
-    },
-    {
-      "t": 18.8,
-      "kind": "roll",
-      "dur": 0.8
-    },
-    {
-      "t": 26.5,
-      "kind": "cash"
-    }
-  ]
+  }
 }

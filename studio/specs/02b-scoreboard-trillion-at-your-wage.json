@@ -4,19 +4,19 @@
   "format": "find-your-row",
   "fps": 30,
   "duration": 14.0,
-  "header": "$1 TRILLION\nAT YOUR **HOURLY WAGE**",
-  "footer": "2,080 hrs a year (40 × 52) · every cent kept · no raises or interest",
+  "header": "ELON'S **$1 TRILLION** PAY PLAN\nAT YOUR HOURLY WAGE",
+  "footer": "Plan's max, if every target is hit · 2,080 hrs a year · every cent kept",
   "captions": true,
   "vo": [
-    { "t": 0.0, "d": 3.6, "text": "Federal minimum wage: **≈ 66.3 million years**." },
-    { "t": 3.8, "d": 2.9, "text": "You'd start when the dinosaurs died out." },
-    { "t": 7.0, "d": 4.8, "text": "Even **$1,000 an hour**? Longer than our species has existed." }
+    { "t": 0.0, "d": 4.0, "text": "Minimum wage? Start **≈ 66.3 million years** ago." },
+    { "t": 4.2, "d": 2.8, "text": "You'd have clocked in with the dinosaurs." },
+    { "t": 7.2, "d": 4.8, "text": "Even **$1,000 an hour**? Longer than our species has existed." }
   ],
-  "verdict": { "t": 9.3, "text": "Even **$1,000/hr**: longer than our species has existed." },
+  "verdict": { "t": 9.5, "text": "Even **$1,000/hr**: longer than our species has existed." },
   "data": {
     "columns": [
       { "label": "Your wage" },
-      { "label": "Years to earn\n$1 trillion", "emph": true }
+      { "label": "Start this many\nyears ago", "emph": true }
     ],
     "rows": [
       ["$7.25/hr", "≈ 66.3 million"],
@@ -37,10 +37,10 @@
     "rowsT": 0.0,
     "rowEvery": 0.35,
     "pick": [
-      { "t": 3.8, "row": 0, "label": "≈ when the dinosaurs died out" },
-      { "t": 7.0, "row": 12, "label": "Our species: ≈ 300,000 years" }
+      { "t": 4.2, "row": 0, "label": "≈ when the dinosaurs died out" },
+      { "t": 7.2, "row": 12, "label": "Our species: ≈ 300,000 years" }
     ],
-    "hold": 7.0
+    "hold": 6.8
   },
-  "sfx": [ { "t": 9.3, "kind": "ding" } ]
+  "sfx": [ { "t": 9.5, "kind": "ding" } ]
 }

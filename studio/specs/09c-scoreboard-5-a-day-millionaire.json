@@ -3,43 +3,43 @@
   "look": "scoreboard",
   "format": "growth-ladder",
   "fps": 30,
-  "duration": 37.5,
-  "header": "**$5 A DAY**, INVESTED.\nDOES IT MAKE YOU A MILLIONAIRE?",
+  "duration": 35.2,
+  "header": "**$5 A DAY**, INVESTED.\nA MILLIONAIRE IN 40 YEARS?",
   "footer": "$5 × 365 ÷ 12 ≈ $152/mo · 7% a year · not a forecast",
   "captions": true,
   "vo": [
-    { "t": 0.0, "d": 5.2, "text": "$5 a day, invested. Year 1: about $1,900." },
-    { "t": 5.4, "d": 3.6, "text": "Year 10: about $26,300." },
-    { "t": 9.2, "d": 3.6, "text": "Year 20: about $79,200." },
-    { "t": 13.0, "d": 4.4, "text": "Year 30: about $185,500." },
-    { "t": 17.6, "d": 5.5, "text": "Year 40: about $399,200. Not even halfway." },
-    { "t": 23.3, "d": 4.4, "text": "Year 50: about $828,600." },
-    { "t": 27.9, "d": 2.8, "text": "Year 53: over $1,000,000." },
-    { "t": 30.9, "d": 4.4, "text": "Yes, in year 53. You put in under a tenth." }
+    { "t": 0.0, "d": 3.2, "text": "$5 a day for 40 years. Millionaire?" },
+    { "t": 3.4, "d": 2.8, "text": "Year 10: about $26,000." },
+    { "t": 6.4, "d": 3.6, "text": "Year 20: about $77,200." },
+    { "t": 10.2, "d": 4.4, "text": "Year 30: about $177,900." },
+    { "t": 14.8, "d": 4.4, "text": "Year 40: about $375,900." },
+    { "t": 19.4, "d": 1.2, "text": "Not even halfway." },
+    { "t": 20.8, "d": 4.4, "text": "Year 50: about $765,400." },
+    { "t": 25.4, "d": 2.8, "text": "Year 54: over $1,000,000." },
+    { "t": 28.4, "d": 4.8, "text": "Not in 40. In 54. You put in under a tenth." }
   ],
-  "verdict": { "t": 30.9, "text": "A millionaire?\n**Yes, in year 53.**" },
+  "verdict": { "t": 28.4, "text": "Not in 40.\n**In 54 years.**" },
   "data": {
     "input": { "amount": "$5", "per": "a day", "rate": "7% a year" },
     "columns": ["Year", "You put in", "Worth"],
     "rows": [
       ["1", "$1,825", "≈ $1,900"],
-      ["10", "$18,250", "≈ $26,300"],
-      ["20", "$36,500", "≈ $79,200"],
-      ["30", "$54,750", "≈ $185,500"],
-      ["40", "$73,000", "≈ $399,200"],
-      ["50", "$91,250", "≈ $828,600"],
-      ["53", "$96,725", "≈ $1,027,600"]
+      ["10", "$18,250", "≈ $26,000"],
+      ["20", "$36,500", "≈ $77,200"],
+      ["30", "$54,750", "≈ $177,900"],
+      ["40", "$73,000", "≈ $375,900"],
+      ["50", "$91,250", "≈ $765,400"],
+      ["54", "$98,550", "≈ $1,011,700"]
     ],
-    "rowT": [2.0, 5.4, 9.2, 13.0, 17.6, 23.3, 27.9],
+    "rowT": [2.0, 3.4, 6.4, 10.2, 14.8, 20.8, 25.4],
     "highlightLast": true,
-    "hold": 9.6
+    "hold": 9.8
   },
   "lookOpts": {
     "goal": { "value": 1000000, "display": "$1,000,000", "label": "MILLIONAIRE" },
     "icon": "coin"
   },
   "sfx": [
-    { "t": 17.6, "kind": "buzz", "gain": 0.35 },
-    { "t": 27.9, "kind": "cash" }
+    { "t": 19.4, "kind": "buzz", "gain": 0.35 }
   ]
 }

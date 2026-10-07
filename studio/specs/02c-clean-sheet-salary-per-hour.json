@@ -3,46 +3,44 @@
   "look": "clean-sheet",
   "format": "find-your-row",
   "fps": 30,
-  "duration": 14.0,
-  "header": "What your salary\nreally pays **per hour**",
-  "footer": "2,080 hrs a year (40 × 52) · before tax · median: BLS, Q2 2026",
+  "duration": 13.0,
+  "header": "What you **actually** make\nper hour, by salary",
+  "footer": "Single · 2026 federal tax + FICA · no state tax",
   "captions": true,
   "vo": [
-    { "t": 0.0, "d": 2.9, "text": "Your salary, per hour and per minute." },
-    { "t": 3.2, "d": 3.9, "text": "Typical full-timer, **$65,000**: $31.25 an hour." },
-    { "t": 7.3, "d": 2.1, "text": "**≈ $0.52** a minute." },
-    { "t": 9.6, "d": 2.5, "text": "Shortcut: **halve it, drop the 000s.**" }
+    { "t": 0.0, "d": 4.0, "text": "**$65,000**? $31.25 an hour." },
+    { "t": 4.2, "d": 2.9, "text": "After tax, you keep **≈ $26**." },
+    { "t": 7.4, "d": 3.9, "text": "Six figures? **≈ $10** an hour never reaches you." }
   ],
-  "verdict": { "t": 9.6, "text": "Shortcut: **halve it, drop the 000s.**" },
+  "verdict": { "t": 8.2, "text": "$100,000: **≈ $10** of every hour never reaches you." },
   "data": {
     "columns": [
       { "label": "Salary" },
-      { "label": "Per hour\n÷ 2,080", "emph": true },
-      { "label": "Per minute\n÷ 60" }
+      { "label": "Per hour\n÷ 2,080" },
+      { "label": "You keep\nper hour", "emph": true }
     ],
     "rows": [
-      ["$30,000", "≈ $14.42", "≈ $0.24"],
-      ["$35,000", "≈ $16.83", "≈ $0.28"],
-      ["$40,000", "≈ $19.23", "≈ $0.32"],
-      ["$45,000", "≈ $21.63", "≈ $0.36"],
-      ["$50,000", "≈ $24.04", "≈ $0.40"],
-      ["$55,000", "≈ $26.44", "≈ $0.44"],
-      ["$60,000", "≈ $28.85", "≈ $0.48"],
-      ["$65,000", "$31.25", "≈ $0.52"],
-      ["$70,000", "≈ $33.65", "≈ $0.56"],
-      ["$80,000", "≈ $38.46", "≈ $0.64"],
-      ["$90,000", "≈ $43.27", "≈ $0.72"],
-      ["$100,000", "≈ $48.08", "≈ $0.80"],
-      ["$150,000", "≈ $72.12", "≈ $1.20"],
-      ["$200,000", "≈ $96.15", "≈ $1.60"]
+      ["$200,000", "≈ $96.15", "≈ $71.60"],
+      ["$150,000", "≈ $72.12", "≈ $54.71"],
+      ["$100,000", "≈ $48.08", "≈ $38.07"],
+      ["$90,000", "≈ $43.27", "≈ $34.69"],
+      ["$80,000", "≈ $38.46", "≈ $31.30"],
+      ["$70,000", "≈ $33.65", "≈ $27.92"],
+      ["$65,000", "$31.25", "≈ $26.16"],
+      ["$60,000", "≈ $28.85", "≈ $24.23"],
+      ["$50,000", "≈ $24.04", "≈ $20.36"],
+      ["$40,000", "≈ $19.23", "$16.50"],
+      ["$35,000", "≈ $16.83", "≈ $14.57"],
+      ["$30,000", "≈ $14.42", "≈ $12.64"]
     ],
-    "formula": "= salary ÷ 2,080, then ÷ 60",
+    "formula": "= (salary − tax − FICA) ÷ 2,080",
     "rowsT": 0.0,
-    "rowEvery": 0.3,
+    "rowEvery": 0.2,
     "pick": [
-      { "t": 3.2, "row": 7, "label": "≈ US median full-time pay" }
+      { "t": 4.2, "row": 6, "label": "≈ US median full-time pay" },
+      { "t": 7.4, "row": 2, "label": "≈ $10 an hour goes to tax" }
     ],
-    "hold": 10.1
+    "hold": 5.6
   },
-  "sfx": [ { "t": 9.6, "kind": "ding" } ]
+  "sfx": [ { "t": 8.2, "kind": "ding" } ]
 }

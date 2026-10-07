@@ -1,0 +1,54 @@
+{
+  "id": "growth-ladder",
+  "sample": true,
+  "look": "live-sheet",
+  "format": "growth-ladder",
+  "fps": 30,
+  "header": "**$250 a month** at 7%.\nWhen does it pass $100,000?",
+  "footer": "ASSUMES 7% a year, compounded monthly",
+  "captions": true,
+  "vo": [
+    { "t": 0.0, "d": 1.4, "text": "$250 a month." },
+    { "t": 1.5, "d": 1.3, "text": "Invested at 7%." },
+    { "t": 3.0, "d": 2.6, "text": "When does it pass **$100,000**?" },
+    { "t": 5.8, "d": 2.6, "text": "Year 15: not yet." },
+    { "t": 8.6, "d": 1.8, "text": "Year 17: so close." },
+    { "t": 10.6, "d": 2.8, "text": "Year 18: **past it**." },
+    { "t": 13.6, "d": 3.0, "text": "You put in $54,000" },
+    { "t": 16.8, "d": 1.6, "text": "Now keep going." },
+    { "t": 18.6, "d": 3.0, "text": "Year 30: **≈ $304,993**" },
+    { "t": 22.0, "d": 2.8, "text": "Year 18, on $54,000 of your own money." }
+  ],
+  "verdict": { "t": 22.0, "text": "Past $100,000 in **year 18**,\non $54,000 put in." },
+  "data": {
+    "input": { "amount": "$250", "per": "a month", "rate": "7% a year" },
+    "columns": ["Year", "You put in", "Worth"],
+    "rows": [
+      ["1", "$3,000", "≈ $3,098"],
+      ["5", "$15,000", "≈ $17,898"],
+      ["10", "$30,000", "≈ $43,271"],
+      ["15", "$45,000", "≈ $79,241"],
+      ["17", "$51,000", "≈ $97,532"],
+      ["18", "$54,000", "≈ $107,680"],
+      ["25", "$75,000", "≈ $202,518"],
+      ["30", "$90,000", "≈ $304,993"]
+    ],
+    "rowT": [0.0, 3.2, 4.6, 6.0, 8.6, 10.6, 17.0, 18.6],
+    "highlightLast": true,
+    "hold": 3.0
+  },
+  "lookOpts": {
+    "formulaBar": [
+      { "t": 0.0, "text": "= $250 × 12 × years, at 7%" },
+      { "t": 8.6, "text": "≈ $97,532 < $100,000" },
+      { "t": 10.6, "text": "≈ $107,680 > $100,000" },
+      { "t": 13.6, "text": "≈ $107,680 − $54,000 ≈ $53,680" },
+      { "t": 18.6, "text": "≈ $304,993 ÷ $90,000 ≈ 3.4×" }
+    ],
+    "marks": [
+      { "t": 8.6, "row": 4, "tone": "bad", "label": "**≈ $2,468** short" },
+      { "t": 10.6, "row": 5, "tone": "good", "label": "**past $100,000**" }
+    ]
+  },
+  "notes": "Maths: $250 deposited at each month-end, 7% a year compounded monthly (r = 0.07/12). Worth after y years W = 250 × ((1 + r)^(12y) − 1) / r, rounded to the dollar (≈); put in = $250 × 12 × y (exact). Year 1: 3,098.15; 5: 17,898.23; 10: 43,271.20; 15: 79,240.57 (< $80,000); 16: 88,067.03; 17: 97,531.55 (100,000 − 97,531.55 = 2,468.45 short); 18: 107,680.26 (first year ≥ $100,000; put in $54,000; growth 53,680.26); 25: 202,517.92; 30: 304,992.75 (÷ 90,000 = 3.389 ≈ 3.4×). Formula-bar comparisons checked: 97,532 < 100,000; 107,680 > 100,000; 107,680 − 54,000 = 53,680."
+}

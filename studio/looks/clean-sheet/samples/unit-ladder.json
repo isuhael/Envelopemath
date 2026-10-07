@@ -1,0 +1,34 @@
+{
+  "id": "sample-clean-sheet-unit-ladder",
+  "sample": true,
+  "look": "clean-sheet",
+  "format": "unit-ladder",
+  "fps": 30,
+  "header": "What things cost\nin **hours of work**",
+  "footer": "At $20 an hour, before tax · US prices, 2026",
+  "captions": true,
+  "vo": [
+    { "t": 0.0,  "d": 2.3, "text": "Twenty bucks an hour. A month of Netflix?" },
+    { "t": 2.4,  "d": 1.9, "text": "About **54 minutes** of work." },
+    { "t": 4.6,  "d": 3.6, "text": "AirPods Pro? **About 12 hours.** A day and a half." },
+    { "t": 8.8,  "d": 3.8, "text": "An iPhone 17? **40 hours.** Your whole work week." },
+    { "t": 13.0, "d": 3.8, "text": "A year of rent at $1,700 a month? **1,020 hours.**" },
+    { "t": 17.2, "d": 3.4, "text": "An average new car? **About 2,500 hours.**" },
+    { "t": 21.2, "d": 3.2, "text": "That's **1.2 years** of full-time work." }
+  ],
+  "verdict": { "t": 21.2, "text": "A new car: **≈ 1.2 years**\nof full-time work." },
+  "data": {
+    "unit": { "name": "hour of work", "price": "$20", "icon": "hour" },
+    "rungs": [
+      { "t": 0.5,  "item": "A month of Netflix",          "cost": "$17.99",    "units": 0.8995, "unitsDisplay": "≈ 0.9" },
+      { "t": 4.6,  "item": "AirPods Pro 3",               "cost": "$249",      "units": 12.45,  "unitsDisplay": "≈ 12" },
+      { "t": 8.8,  "item": "An iPhone 17",                "cost": "$799",      "units": 39.95,  "unitsDisplay": "≈ 40" },
+      { "t": 13.0, "item": "A year of rent at $1,700/mo", "cost": "$20,400",   "units": 1020,   "unitsDisplay": "1,020" },
+      { "t": 17.2, "item": "An average new car",          "cost": "≈ $50,000", "units": 2500,   "unitsDisplay": "≈ 2,500", "tone": "goal" }
+    ],
+    "check": "2,500 ÷ (40 × 52) ≈ 1.2 years",
+    "checkT": 21.2,
+    "hold": 2.5
+  },
+  "notes": "Maths at $20/hr before tax: $17.99 ÷ $20 = 0.8995 h (≈ 54 min); $249 ÷ $20 = 12.45 h; $799 ÷ $20 = 39.95 h; $1,700 × 12 = $20,400, ÷ $20 = 1,020 h; $50,000 ÷ $20 = 2,500 h; a full-time year = 40 h × 52 weeks = 2,080 h, 2,500 ÷ 2,080 = 1.20 years. Prices: Netflix Standard $17.99/mo (US, 2025-26), AirPods Pro 3 $249 and iPhone 17 $799 (US launch prices, Sept 2025), average new-car transaction price ≈ $50,000 (Kelley Blue Book, late 2025)."
+}

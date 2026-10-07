@@ -1,0 +1,37 @@
+{
+  "id": "sample-scoreboard-growth-ladder-2",
+  "sample": true,
+  "look": "scoreboard",
+  "format": "growth-ladder",
+  "fps": 30,
+  "header": "**$300 a month** from age 22.\nWhen are you a millionaire?",
+  "footer": "7% a year, compounded monthly · not a forecast",
+  "captions": false,
+  "verdict": {"t": 19.0, "text": "A millionaire\n**at 66**"},
+  "data": {
+    "input": {"amount": "$300", "per": "a month", "rate": "7% a year"},
+    "columns": ["Your age", "You put in (total)", "Worth at 7%"],
+    "rows": [
+      ["23", "$3,600", "≈ $3,718"],
+      ["27", "$18,000", "≈ $21,478"],
+      ["32", "$36,000", "≈ $51,925"],
+      ["37", "$54,000", "≈ $95,089"],
+      ["42", "$72,000", "≈ $156,278"],
+      ["47", "$90,000", "≈ $243,022"],
+      ["52", "$108,000", "≈ $365,991"],
+      ["57", "$126,000", "≈ $540,316"],
+      ["62", "$144,000", "≈ $787,444"],
+      ["65", "$154,800", "≈ $982,839"],
+      ["66", "$158,400", "≈ $1,057,606"]
+    ],
+    "rowsT": 0.8,
+    "rowEvery": 1.5,
+    "highlightLast": true,
+    "hold": 3.0
+  },
+  "lookOpts": {
+    "goal": {"value": 1000000, "display": "$1,000,000", "label": "Millionaire"},
+    "icon": "coin"
+  },
+  "notes": "Stress variant: silent (captions off), 11 rows, long column labels, default pacing (rowsT/rowEvery, no per-row times; row 1 at 0.8 s so frame 1 shows the hero already counting), a goal finish line and a hero icon. Maths: $300 at each month-end from age 22, 7%/12 a month, compounded monthly. Worth after n months = 300 × ((1 + 0.07/12)^n − 1) ÷ (0.07/12), n = 12 × (age − 22). Age 23: $3,717.78; 27: $21,477.87; 32: $51,925.44; 37: $95,088.69; 42: $156,278.00; 47: $243,021.51; 52: $365,991.30; 57: $540,316.38; 62: $787,444.02; 65: $982,838.91; 66: $1,057,606.19. Put in = $300 × n. It first passes $1,000,000 in month 519 (age 65.25), so age 66 is the first birthday as a millionaire. Not a forecast; no fees or taxes."
+}

@@ -1,0 +1,56 @@
+{
+  "id": "sample-scoreboard-chart-race",
+  "sample": true,
+  "look": "scoreboard",
+  "format": "chart-race",
+  "fps": 30,
+  "header": "POV: In 2008 you put **$10,000** in\nthe S&P 500 VS gold",
+  "footer": "S&P 500 with dividends · gold year-end price",
+  "captions": true,
+  "vo": [
+    {"t": 0.0, "d": 2.8, "text": "Year one: stocks lose __37%__."},
+    {"t": 3.1, "d": 1.6, "text": "Gold keeps climbing."},
+    {"t": 7.2, "d": 2.4, "text": "2012: gold has **doubled** it."},
+    {"t": 9.3, "d": 1.9, "text": "Then gold drops __28%__."},
+    {"t": 11.2, "d": 1.8, "text": "Stocks pass. **For good?**"},
+    {"t": 18.4, "d": 1.6, "text": "Can gold catch up?"},
+    {"t": 26.3, "d": 2.7, "text": "2022: stocks drop __18%__."},
+    {"t": 31.8, "d": 3.1, "text": "2025: gold jumps **65%**."},
+    {"t": 35.1, "d": 1.9, "text": "Stocks: **≈ $66,000**."},
+    {"t": 37.2, "d": 2.7, "text": "Gold: ≈ $51,800."}
+  ],
+  "verdict": {"t": 40.2, "text": "Gold led for 6 years.\nStocks won by **≈ $14,200**."},
+  "lookOpts": {
+    "footerSteps": [
+      {"t": 35.1, "text": "$10,000 × 6.60 ≈ $66,000"},
+      {"t": 37.2, "text": "$10,000 × 5.18 ≈ $51,800"},
+      {"t": 40.2, "text": "≈ 2.7 doublings vs ≈ 2.4"}
+    ]
+  },
+  "data": {
+    "stake": "$10,000 each · Jan 2008",
+    "series": [
+      {
+        "name": "S&P 500",
+        "points": [[2008.0, 10000.0], [2008.99, 6300.0], [2009.99, 7966.98], [2010.99, 9166.81], [2011.99, 9360.23], [2012.99, 10857.86], [2013.99, 14374.72], [2014.99, 16342.62], [2015.99, 16568.15], [2016.99, 18549.7], [2017.99, 22599.1], [2018.99, 21609.26], [2019.99, 28414.02], [2020.99, 33642.2], [2021.99, 43300.88], [2022.99, 35459.09], [2023.99, 44781.28], [2024.99, 55985.56], [2025.99, 65995.78]],
+        "final": "≈ $66,000"
+      },
+      {
+        "name": "Gold",
+        "points": [[2008.0, 10000.0], [2008.99, 10560.0], [2009.99, 13157.76], [2010.99, 17052.46], [2011.99, 18774.76], [2012.99, 20107.76], [2013.99, 14477.59], [2014.99, 14216.99], [2015.99, 12738.43], [2016.99, 13808.45], [2017.99, 15631.17], [2018.99, 15381.07], [2019.99, 18195.81], [2020.99, 22762.95], [2021.99, 21943.49], [2022.99, 21855.71], [2023.99, 24740.67], [2024.99, 31470.13], [2025.99, 51791.18]],
+        "final": "≈ $51,800"
+      }
+    ],
+    "x": {"from": 2008, "to": 2025.99, "tickEvery": 4},
+    "y": {"prefix": "$", "dp": 0, "compact": false, "log": false},
+    "raceT": [-0.4, 33.6],
+    "events": [
+      {"x": 2008.0, "until": 2008.99, "label": "2008 crash"},
+      {"x": 2013.0, "until": 2013.99, "label": "Gold −28%"},
+      {"x": 2022.0, "until": 2022.99, "label": "Stocks −18%"},
+      {"x": 2025.0, "label": "Gold +65%", "tone": "good"}
+    ],
+    "hold": 3.0
+  },
+  "notes": "$10,000 each at the Dec 31, 2007 close; V(y) = V(y-1) × (1 + r(y)); a point at y + 0.99 is the Dec 31 close of year y. Returns as sourced in teasers/v2/checks/04-chart-race.py (S&P 500 total return; gold year-end % change, 2025 = 4,319.37 / 2,624.60 − 1 = +64.57%). Finals: S&P 500 $65,995.78 → ≈ $66,000 (×6.5996 → ≈ ×6.60, log2 = 2.722 → ≈ 2.7 doublings); gold $51,791.18 → ≈ $51,800 (×5.1791 → ≈ ×5.18, log2 = 2.373 → ≈ 2.4); gap $14,204.60 → ≈ $14,200. 2008: S&P 500 −37.00% ($6,300.00), gold +5.6%. Gold end-2012 $20,107.76 (×2.01: doubled). Gold 2013 −28.0%. The lines meet at end-2013 ($14,374.72 vs $14,477.59) and cross at x ≈ 2014.04 (t ≈ 11.0 s): gold led ≈ 6 years; the S&P 500 leads at every year-end 2014-2025. 2022 S&P 500 −18.11% (≈ 18%); 2025 gold +64.57% (≈ 65%) closes the gap from $24,515 to $14,205. Race x 2008.0 → 2025.99 over t −0.4 → 33.6 s (≈ 1.89 s a year): frame 1 is already 0.2 years into the 2008 crash."
+}

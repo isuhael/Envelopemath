@@ -3,49 +3,49 @@
   "look": "live-sheet",
   "format": "ledger-duel",
   "fps": 30,
-  "duration": 27.5,
-  "header": "2 people invest **$200 a month**\nWho has more at 65?",
+  "duration": 27.7,
+  "header": "2 people invest **$200 a month**\n10 years vs 30 years. Who wins at 65?",
   "footer": "ASSUMES 7% a year, compounded monthly · not a forecast",
   "captions": true,
   "vo": [
     {
       "t": 0.0,
-      "d": 3.1,
-      "text": "Two people invest $200 a month."
+      "d": 3.5,
+      "text": "Ava invests for 10 years. Ben invests for 30."
     },
     {
-      "t": 3.3,
+      "t": 3.6,
       "d": 3.9,
-      "text": "Ava invests from 25 to 35, then stops."
+      "text": "Ava starts at 25 and stops at 35."
     },
     {
-      "t": 7.4,
+      "t": 7.6,
       "d": 3.1,
       "text": "Ben starts at 35 and never stops."
     },
     {
-      "t": 10.7,
+      "t": 10.9,
       "d": 2.7,
       "text": "Ben puts in 3 times as much."
     },
     {
-      "t": 13.6,
+      "t": 13.8,
       "d": 4.7,
       "text": "At 65, Ava has about $281,000."
     },
     {
-      "t": 18.5,
+      "t": 18.7,
       "d": 3.5,
       "text": "Ben has about $244,000."
     },
     {
-      "t": 22.2,
+      "t": 22.4,
       "d": 3.5,
       "text": "A third of the money, and Ava still wins."
     }
   ],
   "verdict": {
-    "t": 22.2,
+    "t": 22.4,
     "text": "**Ava** wins by ≈ $37,000\nwith a third of the money"
   },
   "data": {
@@ -62,7 +62,7 @@
     "stake": "$200 a month each · 7% a year",
     "rows": [
       {
-        "t": 3.4,
+        "t": 2.4,
         "label": "Age 30",
         "values": [
           "≈ $14,000",
@@ -70,7 +70,7 @@
         ]
       },
       {
-        "t": 6.8,
+        "t": 6.0,
         "label": "Age 35",
         "values": [
           "≈ $35,000",
@@ -80,7 +80,7 @@
         "tone": "neutral"
       },
       {
-        "t": 8.4,
+        "t": 8.6,
         "label": "Age 40",
         "values": [
           "≈ $49,000",
@@ -88,7 +88,7 @@
         ]
       },
       {
-        "t": 9.4,
+        "t": 9.6,
         "label": "Age 45",
         "values": [
           "≈ $70,000",
@@ -96,7 +96,7 @@
         ]
       },
       {
-        "t": 10.9,
+        "t": 11.1,
         "label": "Age 50",
         "values": [
           "≈ $99,000",
@@ -104,7 +104,7 @@
         ]
       },
       {
-        "t": 11.8,
+        "t": 12.0,
         "label": "Age 55",
         "values": [
           "≈ $140,000",
@@ -112,7 +112,7 @@
         ]
       },
       {
-        "t": 12.7,
+        "t": 12.9,
         "label": "Age 60",
         "values": [
           "≈ $198,000",
@@ -120,7 +120,7 @@
         ]
       },
       {
-        "t": 14.0,
+        "t": 14.2,
         "label": "Age 65",
         "values": [
           "≈ $281,000",
@@ -137,34 +137,34 @@
     "formulaBar": [
       {
         "t": 0.0,
-        "text": "= $200 every month, growing 7% a year"
+        "text": "= $200 a month at 7% a year"
       },
       {
-        "t": 6.8,
-        "text": "Ava: $200 × 120 months = $24,000 in"
+        "t": 3.6,
+        "text": "Ava: $200 × 120 months = $24,000"
       },
       {
-        "t": 7.4,
-        "text": "Ben: $200 × 360 months = $72,000 in"
+        "t": 7.6,
+        "text": "Ben: $200 × 360 months = $72,000"
       },
       {
-        "t": 14.0,
-        "text": "Ava's ≈ $35,000 at 35, untouched: × ≈ 8.1 by 65"
+        "t": 14.2,
+        "text": "Ava's ≈\u00a0$34,617, untouched: ×\u00a0≈\u00a08.12 ≈\u00a0$281,000 at 65"
       }
     ]
   },
   "sfx": [
     {
-      "t": 6.8,
+      "t": 6.0,
       "kind": "pop"
     },
     {
-      "t": 14.0,
+      "t": 14.2,
       "kind": "roll",
       "dur": 0.8
     },
     {
-      "t": 22.2,
+      "t": 22.4,
       "kind": "ding"
     }
   ]

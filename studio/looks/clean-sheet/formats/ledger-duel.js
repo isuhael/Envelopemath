@@ -27,8 +27,8 @@
 // lookOpts: loop (true) · stake ('auto' | 'show' | 'hide') · labels ('ahead' | 'with-row') ·
 //           formulas ([colA, colB]: grey mono footnote "Name: formula") · winnerT (seconds) · badge (ignored:
 //           the Clean Sheet dropped the badge because it repeats the title)
-import { h, css as style, prog, ease, clamp, lerp, plain, graphemes } from '../../../runtime/core.js'
-import { C, GRID, MOTION, md, hlBox, toneColor, fadeUp, fade, landing, durationOf } from '../lib.js'
+import { h, css as style, prog, ease, clamp, lerp, plain } from '../../../runtime/core.js'
+import { C, GRID, MOTION, md, hlBox, toneColor, fadeUp, fade, landing, durationOf, fitMarkup } from '../lib.js'
 
 export const css = `
 .ld > * { position: absolute; }
@@ -60,7 +60,6 @@ export const css = `
 .ld-td { display: flex; align-items: center; justify-content: flex-end; }
 .ld-td .cs-hl { color: #15171C; }
 .ld-td .cs-hl-txt { padding-top: .04em; }
-.ld-ghost, .ld-ghost * { color: transparent !important; }
 .ld-ev { left: 0; font-family: 'Inter', 'Inter Full', sans-serif; font-weight: 700; color: #15171C; line-height: 1.2;
   letter-spacing: -.005em; white-space: nowrap; }
 .ld-ev.two { white-space: normal; text-wrap: balance; }
@@ -172,7 +171,7 @@ export default function ledgerDuel(spec, ctx) {
     const plan = p.plan ? h('div', { class: 'ld-plan', html: md(p.plan) }) : null
     const el = h('div', { class: 'ld-th' }, nameRow, plan)
     tableEl.append(el)
-    return { el, name, nameRow, plan, one: md(p.plan), split: segs.length > 1 ? segs.map(md).join('<br>') : null, lines: 1 }
+    return { el, name, nameRow, plan, src: p.plan, plainSegs: segs, split: segs.length > 1, lines: 1 }
   })
 
   const R = rows.map((r, i) => {
@@ -185,7 +184,7 @@ export default function ledgerDuel(spec, ctx) {
       hb.seek(0, 1, 0)
       const wrap = h('div', { class: 'ld-td' }, hb.el)
       el.append(wrap)
-      return { el: wrap, hl: hb, full: md(v), g: graphemes(plain(v)), memo: [], tw: 0 }
+      return { el: wrap, hl: hb, full: md(v), tw: 0 }
     })
     const ev = r.event ? h('div', { class: 'ld-ev' + (r.tone === 'bad' ? ' bad' : ''), html: md(r.event) }) : null
     if (ev) el.append(ev)
@@ -220,7 +219,8 @@ export default function ledgerDuel(spec, ctx) {
   const valW = [0, 1].map(j => Math.max(0, ...R.filter((_, i) => i !== finalIdx).map(row => row.cells[j].tw)))
   const finW = [0, 1].map(j => (finalIdx >= 0 ? R[finalIdx].cells[j].tw : 0))
   for (const row of R) style(row.lab, { fontSize: REF + 'px' })
-  const labW = Math.max(0, ...R.map(row => textW(row.lab)))
+  const labWs = R.map(row => textW(row.lab))
+  const labW = Math.max(0, ...labWs)
   for (const th of TH) style(th.name, { fontSize: REF + 'px' })
   const nameW = TH.map(th => textW(th.name))
   for (const row of R) if (row.ev) style(row.ev, { fontSize: EV_PX + 'px' })
@@ -235,48 +235,86 @@ export default function ledgerDuel(spec, ctx) {
   const tableW = P.right - GRID.left // 856: x 84 -> 940
   const avail = P.bottom - P.top
   const hasPlans = TH.some(th => th.plan)
+  const labLH = 1.08
 
-  // plan lines at a given inner width (one line, or split at " · ", then natural wrapping)
-  function planFit(th, inner) {
-    if (!th.plan) return { lines: 0, html: '' }
-    style(th.plan, { width: Math.floor(inner) + 'px', fontSize: PLAN_PX + 'px' })
-    const lh = PLAN_PX * LINE.plan
-    th.plan.innerHTML = th.one
-    let lines = Math.round(th.plan.getBoundingClientRect().height / lh)
-    let html = th.one
-    if (lines > 1 && th.split) {
-      th.plan.innerHTML = th.split
-      const l2 = Math.round(th.plan.getBoundingClientRect().height / lh)
-      if (l2 <= lines) { lines = l2; html = th.split }
+  // a plan set as explicit balanced lines (40 px) in the column's inner width: { lines, html, fitsW }
+  const planMemo = new Map()
+  function planFit(th, inner, maxLines) {
+    if (!th.plan) return { lines: 0, html: '', fitsW: true }
+    const key = TH.indexOf(th) + ':' + Math.floor(inner) + ':' + maxLines
+    if (planMemo.has(key)) return planMemo.get(key)
+    style(th.plan, { width: '', fontSize: PLAN_PX + 'px' })
+    const fit = (src, split) => {
+      const r = fitMarkup(th.plan, src, { maxW: Math.floor(inner), maxPx: PLAN_PX, minPx: PLAN_PX, lh: LINE.plan, maxLines, maxSplit: split, linePenalty: 0 })
+      return { lines: r.lines, html: th.plan.innerHTML, fitsW: r.fits && r.lines <= maxLines }
     }
-    const fitsW = th.plan.scrollWidth <= Math.ceil(inner) + 1
-    return { lines, html, fitsW }
+    // one line; else whole " · " pieces grouped onto the fewest lines; else balanced word breaks
+    let out = fit(th.src, 1)
+    if (!out.fitsW && th.split) {
+      const segs = th.plainSegs, n = segs.length
+      const parts = []
+      const walk = (i, acc) => { if (i === n) { parts.push(acc.slice()); return } for (let j = i + 1; j <= n && acc.length < maxLines; j++) { acc.push(segs.slice(i, j).join(' · ')); walk(j, acc); acc.pop() } }
+      walk(0, [])
+      parts.sort((a, b) => a.length - b.length)
+      for (const g of parts) { const o = fit(g.join('\n'), 1); if (o.fitsW) { out = o; break } }
+    }
+    if (!out.fitsW) out = fit(th.src, maxLines)
+    planMemo.set(key, out)
+    return out
+  }
+  // a year label that needs two lines (balanced) in a narrowed label column: its lines and html
+  const labMemo = new Map()
+  function labelFit(row, px, w) {
+    const key = R.indexOf(row) + ':' + px + ':' + Math.floor(w)
+    if (labMemo.has(key)) return labMemo.get(key)
+    const span = row.lab.firstChild
+    style(row.lab, { fontSize: px + 'px' })
+    const r = fitMarkup(span, row.r.label, { maxW: Math.floor(w), maxPx: px, minPx: px, lh: labLH, maxLines: 2, maxSplit: 2, linePenalty: 0 })
+    const out = { lines: r.lines, html: span.innerHTML, fitsW: r.fits && r.lines <= 2 }
+    span.innerHTML = md(row.r.label); style(span, { whiteSpace: '', fontSize: '' })
+    labMemo.set(key, out)
+    return out
   }
 
   // one candidate layout for (figure size, content level); null when it does not fit
   function tryLayout(cellPx, lv) {
     const labelPx = clamp(Math.round(cellPx * 0.9), 40, 48)
-    const namePx = clamp(Math.round(cellPx * 1.06), 44, 60)
-    const labelColW = Math.ceil((labW * labelPx) / REF) + 2 * PAD
-    const colW = (tableW - labelColW) / 2
-    const inner = colW - 2 * PAD
-    for (let j = 0; j < 2; j++) {
-      if ((valW[j] * cellPx) / REF > inner) return null
-      if ((nameW[j] * namePx) / REF > inner) return null
-    }
     // the total line: up to 64 px, never smaller than the other rows
     let finalPx = finalIdx >= 0 ? Math.max(cellPx, Math.min(64, cellPx + (lv.gap < 0 ? 6 : 10))) : cellPx
-    while (finalPx > cellPx && (Math.max(...finW) * finalPx) / REF > inner) finalPx -= 2
-    if (finalIdx >= 0 && (Math.max(...finW) * finalPx) / REF > inner) return null
-    // head: name, then the plan (one line, or split at " · ", up to 3 lines)
+    // value columns: as wide as their widest figure (≈ included) and their name at 40 px; equal, for symmetry
+    const needIn = fp => Math.max(...[0, 1].map(j => Math.max((valW[j] * cellPx) / REF, (finW[j] * fp) / REF, (nameW[j] * 40) / REF)))
+    while (finalPx > cellPx && needIn(finalPx) + 2 * PAD > (tableW - 120) / 2) finalPx -= 2
+    const colMin = Math.ceil(needIn(finalPx)) + 2 * PAD
+    // the year column: its natural width, or what the value columns leave (labels then wrap to two lines)
+    const labNat = Math.ceil((labW * labelPx) / REF) + 2 * PAD
+    let labelColW = labNat
+    const labLines = R.map(() => 1), labHTML = R.map(() => null)
+    if (labNat + 2 * colMin > tableW) {
+      labelColW = tableW - 2 * colMin
+      if (labelColW < 2 * PAD + 60) return null
+      for (const [i, row] of R.entries()) {
+        if ((labWs[i] * labelPx) / REF <= labelColW - 2 * PAD) continue
+        const f = labelFit(row, labelPx, labelColW - 2 * PAD)
+        if (!f.fitsW) return null
+        labLines[i] = f.lines; labHTML[i] = f.html
+      }
+    }
+    const colW = (tableW - labelColW) / 2
+    const inner = colW - 2 * PAD
+    // names: as large as fits (60 -> 40 px)
+    let namePx = clamp(Math.round(cellPx * 1.06), 44, 60)
+    while (namePx > 40 && Math.max(...nameW) * namePx / REF > inner) namePx -= 2
+    if ((Math.max(...nameW) * namePx) / REF > inner + 0.5) return null
+    // head: name, then the plan (balanced lines, up to lv.planLines; dropped only at the plans: false levels)
     let planLines = 0
-    const plans = TH.map(th => planFit(th, inner))
-    for (const pf of plans) { if (pf.fitsW === false || pf.lines > 3) return null; planLines = Math.max(planLines, pf.lines) }
+    const plans = TH.map(th => (lv.plans ? planFit(th, inner, lv.planLines) : { lines: 0, html: '', fitsW: true }))
+    for (const pf of plans) { if (!pf.fitsW) { if (LO.debug) console.log('ld plan', cellPx, JSON.stringify(lv), Math.round(inner), JSON.stringify(pf)); return null } planLines = Math.max(planLines, pf.lines) }
     const nameH = Math.round(namePx * 1.1)
     const planLH = Math.round(PLAN_PX * LINE.plan)
-    const hh = 10 + nameH + (hasPlans ? 2 + planLines * planLH : 0) + 12
+    const hh = 10 + nameH + (planLines ? 2 + planLines * planLH : 0) + 12
     // vertical budget. A plain row needs its figures' line plus a little air (no box is drawn on it); the total
-    // line needs room for the blue box; an event writes one line (two if long) under its row.
+    // line needs room for the blue box; an event writes one line (two if long) under its row; a two-line year
+    // label makes its row taller.
     const lineH = Math.round(cellPx * 1.2)
     const minPitch = lineH + lv.gap
     const finBoxH = Math.round(finalPx * 1.3)
@@ -292,7 +330,7 @@ export default function ledgerDuel(spec, ctx) {
     const evExtra = R.map((row, i) => (row.ev && lv.evInline ? evLH * (evW[i] > tableW - PAD ? 2 : 1) + 2 : 0))
     fixed += evExtra.reduce((a, b) => a + b, 0)
     let evlH = 0, evlTwo = false
-    if (!lv.evInline && evLines.length) {
+    if (lv.evLine && !lv.evInline && evLines.length) {
       evlTwo = Math.max(...evlW) > tableW
       if (evlTwo && Math.max(...evLines.map((e, k) => evlW[k] - evlTxtW[k])) > tableW * 0.4) return null
       evlH = evlTwo ? 2 * 48 : Math.round(44 * 1.3)
@@ -306,57 +344,59 @@ export default function ledgerDuel(spec, ctx) {
     }
     const rest = avail - fixed
     if (N <= 0) return null
-    let pitch
-    if (finalIdx >= 0 && N > 1) {
-      pitch = Math.floor((rest - goalNeed) / (N - 1))
-      if (pitch >= goalNeed) pitch = Math.floor(rest / N)
-    } else pitch = Math.floor((rest - (finalIdx >= 0 ? goalNeed : 0)) / Math.max(1, N - (finalIdx >= 0 ? 1 : 0)))
-    if (pitch < minPitch) return null
-    if (finalIdx >= 0 && N === 1 && rest < goalNeed) return null
-    pitch = Math.min(pitch, lineH + 34, 96)
+    const lab2 = labLines.map(n => (n > 1 ? Math.round(2 * labelPx * labLH) + 6 : 0))
+    const rowsH = p => R.reduce((a, _, i) => a + Math.max(i === finalIdx ? Math.max(p, goalNeed) : p, lab2[i]), 0)
+    let pitch = Math.min(lineH + 34, 96)
+    while (pitch >= minPitch && rowsH(pitch) > rest) pitch--
+    if (pitch < Math.max(minPitch, 34)) return null
     const goalPitch = finalIdx >= 0 ? Math.max(pitch, goalNeed) : pitch
     const boxH = Math.min(Math.round(cellPx * 1.3), pitch - 4)
     return { cellPx, labelPx, namePx, finalPx, labelColW, colW, inner, plans, planLines, nameH, planLH, hh, boxH, finBoxH,
-      evLH, evExtra, stakeH, stakeTwo, evlH, evlTwo, fH, pitch, goalPitch, lv }
+      evLH, evExtra, stakeH, stakeTwo, evlH, evlTwo, fH, pitch, goalPitch, lab2, labLines, labHTML, lv }
   }
 
-  const lv = (stake, formulas, evInline, gap = 10) => ({ stake, formulas, evInline, gap })
+  const lv = (stake, formulas, evInline, gap = 10, planLines = 3, plans = true, evLine = true) => ({ stake, formulas, evInline, gap, planLines, plans, evLine })
   const stakeOn = !!stakeEl && stakeMode !== 'hide'
   const withF = fEls.length > 0
   const sizes = (a, b) => { const out = []; for (let px = a; px >= b; px -= 2) out.push(px); return out }
   const plan = []
   const add = (levels, pxs) => { for (const l of levels) for (const px of pxs) plan.push([px, l]) }
+  const evs = !!evRows.length
   // 1. comfortable figures (>= 48 px), dropping the optional extras one by one
   add([lv(stakeOn, withF, true), lv(stakeOn, false, true)], sizes(60, 48))
   if (stakeOn && stakeDroppable) add([lv(false, false, true)], sizes(60, 48))
-  // 2. denser figures (>= 40 px), events still under their rows
-  add([lv(stakeOn, false, true)], sizes(46, 40))
-  if (stakeOn && stakeDroppable) add([lv(false, false, true)], sizes(46, 40))
-  // 3. events move to one shared line under the table; then tighter rows (the glyphs still clear each other)
-  if (evRows.length) {
-    add([lv(stakeOn, false, false)], sizes(46, 40))
-    if (stakeOn && stakeDroppable) add([lv(false, false, false)], sizes(46, 40))
+  // 2. denser figures (>= 40 px), events still under their rows; then plans on two lines at most
+  for (const pl of [3, 2]) {
+    add([lv(stakeOn, false, true, 10, pl)], sizes(46, 40))
+    if (stakeOn && stakeDroppable) add([lv(false, false, true, 10, pl)], sizes(46, 40))
   }
-  add([lv(stakeOn, false, !evRows.length, 2)], [40])
-  if (stakeOn && stakeDroppable) add([lv(false, false, !evRows.length, 2)], [40])
-  add([lv(stakeOn, false, !evRows.length, -5)], [40])
-  if (stakeOn && stakeDroppable) add([lv(false, false, !evRows.length, -5)], [40])
+  // 3. events move to one shared line under the table; then tighter rows (the glyphs still clear each other)
+  if (evs) for (const pl of [3, 2]) {
+    add([lv(stakeOn, false, false, 10, pl)], sizes(46, 40))
+    if (stakeOn && stakeDroppable) add([lv(false, false, false, 10, pl)], sizes(46, 40))
+  }
+  add([lv(stakeOn, false, !evs, 2, 2)], [40])
+  if (stakeOn && stakeDroppable) add([lv(false, false, !evs, 2, 2)], [40])
+  add([lv(stakeOn, false, !evs, -5, 2)], [40])
+  if (stakeOn && stakeDroppable) add([lv(false, false, !evs, -5, 2)], [40])
+  // 4. over the content budget: the plans go, then the event line (the rows keep their tone), then the stake
+  add([lv(stakeOn && !stakeDroppable, false, false, -5, 2, false)], [40])
+  if (evs) add([lv(stakeOn && !stakeDroppable, false, false, -5, 2, false, false)], [40])
+  add([lv(false, false, false, -6, 2, false, false)], [40])
   let L = null
   for (const [px, l] of plan) { L = tryLayout(px, l); if (L) break }
   if (!L) {
-    // over the content budget (see README): the smallest layout, rows packed to fit; the linter reports the rest
-    L = tryLayout(40, lv(false, false, false, -100))
+    // still over: the smallest layout, rows packed at what is left (the linter reports any overflow)
+    for (const g of [-8, -10, -12]) { L = tryLayout(40, lv(false, false, false, g, 2, false, false)); if (L) break }
     if (!L) {
-      const labelColW = Math.ceil(labW) + 2 * PAD
+      const labelColW = Math.min(Math.ceil(labW) + 2 * PAD, Math.round(tableW * 0.3))
       const colW = (tableW - labelColW) / 2
-      const plans = TH.map(th => planFit(th, colW - 2 * PAD))
-      const planLines = Math.max(0, ...plans.map(p => p.lines))
-      const hh = 10 + 48 + (hasPlans ? 2 + planLines * 46 : 0) + 12
-      const evlH = evLines.length ? 57 : 0
-      const pitch = Math.max(40, Math.floor((avail - hh - 8 - (evlH ? evlH + 18 : 0)) / Math.max(1, N)))
-      L = { cellPx: 40, labelPx: 40, namePx: 44, finalPx: 40, labelColW, colW, inner: colW - 2 * PAD, plans, planLines, nameH: 48,
+      const hh = 10 + 48 + 12
+      const pitch = Math.max(34, Math.floor((avail - hh - 8) / Math.max(1, N)))
+      L = { cellPx: 40, labelPx: 40, namePx: 40, finalPx: 40, labelColW, colW, inner: colW - 2 * PAD, plans: TH.map(() => ({ lines: 0, html: '' })), planLines: 0, nameH: 44,
         planLH: 46, hh, boxH: Math.min(52, pitch - 4), finBoxH: Math.min(52, pitch - 4), evLH: 48, evExtra: R.map(() => 0),
-        stakeH: 0, stakeTwo: false, evlH, fH: 0, pitch, goalPitch: pitch, lv: lv(false, false, false) }
+        stakeH: 0, stakeTwo: false, evlH: 0, fH: 0, pitch, goalPitch: pitch, lab2: R.map(() => 0), labLines: R.map(() => 1), labHTML: R.map(() => null),
+        lv: lv(false, false, false, -12, 2, false, false) }
     }
     L.fallback = true
   }
@@ -384,8 +424,10 @@ export default function ledgerDuel(spec, ctx) {
     style(th.nameRow, { height: L.nameH + 'px', lineHeight: L.nameH + 'px' })
     style(th.name, { fontSize: L.namePx + 'px' })
     if (th.plan) {
-      th.plan.innerHTML = L.plans[j].html
-      style(th.plan, { marginTop: '2px', width: Math.floor(col.w - 2 * PAD) + 'px', fontSize: PLAN_PX + 'px', lineHeight: L.planLH + 'px' })
+      if (L.plans[j].lines) {
+        th.plan.innerHTML = L.plans[j].html
+        style(th.plan, { display: '', marginTop: '2px', width: Math.floor(col.w - 2 * PAD) + 'px', fontSize: PLAN_PX + 'px', lineHeight: L.planLH + 'px', whiteSpace: 'nowrap' })
+      } else style(th.plan, { display: 'none' })
     }
   })
   style(ruleMid, { top: L.hh - 2 + 'px' })
@@ -396,7 +438,7 @@ export default function ledgerDuel(spec, ctx) {
   const tight = L.pitch < Math.round(L.cellPx * 1.2)
   R.forEach((row, i) => {
     const isFinal = i === finalIdx
-    const main = isFinal ? L.goalPitch : L.pitch
+    const main = Math.max(isFinal ? L.goalPitch : L.pitch, L.lab2[i])
     const extra = L.evExtra[i] || 0
     row.main = main
     row.extra = extra
@@ -406,7 +448,13 @@ export default function ledgerDuel(spec, ctx) {
     const px = isFinal ? L.finalPx : L.cellPx
     const boxH = isFinal ? L.finBoxH : L.boxH
     const pad = padOf(px)
-    style(row.lab, { left: PAD + 'px', top: '0px', height: main + 'px', fontSize: (isFinal ? Math.max(L.labelPx, Math.min(48, L.labelPx + 2)) : L.labelPx) + 'px' })
+    const lpx = isFinal ? Math.max(L.labelPx, Math.min(48, L.labelPx + 2)) : L.labelPx
+    if (L.labHTML[i]) {
+      row.lab.firstChild.innerHTML = L.labHTML[i]
+      style(row.lab, { width: L.labelColW - 2 * PAD + 'px' })
+      style(row.lab.firstChild, { whiteSpace: 'nowrap', lineHeight: String(labLH) })
+    }
+    style(row.lab, { left: PAD + 'px', top: '0px', height: main + 'px', fontSize: (L.labHTML[i] ? L.labelPx : lpx) + 'px' })
     row.cells.forEach((c, j) => {
       const col = cols[j + 1]
       c.hl.setPx(px, boxH)
@@ -435,13 +483,13 @@ export default function ledgerDuel(spec, ctx) {
   }
   const nudge = {}
   for (const kind of ['row', 'final']) {
-    const i = kind === 'final' ? finalIdx : R.findIndex((_, k) => k !== finalIdx)
+    const i = kind === 'final' ? finalIdx : R.findIndex((_, k) => k !== finalIdx && !L.labHTML[k])
     if (i < 0) continue
     const row = R[i]
     style(row.lab, { top: '0px' })
     nudge[kind] = Math.round(baseline(row.cells[1].hl.txt) - baseline(row.lab.firstChild))
   }
-  R.forEach((row, i) => style(row.lab, { top: (nudge[i === finalIdx ? 'final' : 'row'] || 0) + 'px' }))
+  R.forEach((row, i) => style(row.lab, { top: (L.labHTML[i] ? 0 : nudge[i === finalIdx ? 'final' : 'row'] || 0) + 'px' }))
   const extraAll = R.reduce((a, row) => a + row.extra, 0)
   const mainEnd = ry
   ry += extraAll
@@ -450,8 +498,9 @@ export default function ledgerDuel(spec, ctx) {
   const tableH = ry + 6
   style(tableEl, { left: GRID.left + 'px', top: top + 'px', width: tableW + 'px', height: tableH + 'px' })
   y = top + tableH
+  const evLineOn = evLines.length > 0 && !L.lv.evInline && L.lv.evLine !== false
   if (evLines.length) {
-    if (!L.lv.evInline) {
+    if (evLineOn) {
       evLines.forEach((e, k) => {
         style(e.el, { left: Math.round(GRID.left + PAD - padOf(44)) + 'px', top: Math.round(y + 18) + 'px', height: L.evlH + 'px' })
         if (L.evlTwo) style(e.txt, { whiteSpace: 'normal', textWrap: 'balance', width: Math.floor(tableW - (evlW[k] - evlTxtW[k]) - 4) + 'px' })
@@ -468,16 +517,16 @@ export default function ledgerDuel(spec, ctx) {
   style(mask, { left: GRID.left - 22 + 'px', width: tableW + 44 + 'px', top: top - 14 + 'px', height: Math.round(y - top + 26) + 'px' })
   Object.assign(root.dataset, {
     cell: String(L.cellPx), pitch: String(L.pitch), stake: String(!!L.lv.stake), formulas: String(!!L.lv.formulas),
-    events: L.lv.evInline ? 'inline' : 'line', fallback: String(!!L.fallback),
+    events: L.lv.evInline ? 'inline' : evLineOn ? 'line' : 'none', plans: String(L.lv.plans), fallback: String(!!L.fallback),
   })
 
   // ---------------------------------------------------------------- sound: one cue per real beat
-  // each row types (one short burst); an event row adds its accent (crash = thud), the total line a pop; the winner
+  // each row ticks as its values pop in; an event row adds its accent (crash = thud), the total line a pop; the winner
   // a ding unless the verdict's reveal lands with it. An accent the spec already cues at that beat is not doubled.
   const specCue = x => (spec.sfx || []).some(c => Math.abs(+c.t - x) < 0.15)
   R.forEach((row, i) => {
     if (pre[i]) return
-    ctx.cue(T[i], 'type', { dur: typeD[i], gain: 0.3 })
+    ctx.cue(T[i], 'tick', { gain: 0.32 }) // the row's values pop in
     const at = T[i] + 0.05
     if (specCue(at)) return
     if (row.ev && row.r.tone === 'bad') ctx.cue(at, 'thud', { gain: 0.55 })
@@ -490,14 +539,6 @@ export default function ledgerDuel(spec, ctx) {
   if (loop) ctx.cue(clearT0, 'swipe', { gain: 0.25 })
 
   // ---------------------------------------------------------------- seek helpers
-  // typed in place: the first k graphemes in ink, the rest laid out but transparent (right-aligned figures never shift)
-  const typedHTML = (c, k) => {
-    if (k >= c.g.length) return c.full
-    if (k <= 0) return '<span class="ld-ghost">' + c.full + '</span>'
-    if (c.memo[k] == null) c.memo[k] = md(c.g.slice(0, k).join('')) + '<span class="ld-ghost">' + md(c.g.slice(k).join('')) + '</span>'
-    return c.memo[k]
-  }
-  const shownAt = (c, p) => (p <= 0 ? 0 : Math.min(c.g.length, Math.ceil(p * c.g.length - 1e-6)))
   const SAND = toneColor('neutral')
   const accBefore = i => { let a = 0; for (let k = 0; k < i; k++) a += Math.round(R[k].extra * (R[k].open || 0)); return a }
 
@@ -528,12 +569,12 @@ export default function ledgerDuel(spec, ctx) {
         const lp = isPre ? 1 : t >= land ? prog(t, land, 0.18) * keep : 0
         style(row.lab, { color: labelColor(lp) })
         if (!labelsAhead && !isPre) fade(row.lab, t >= land ? Math.min(1, prog(t, land, 0.12) * 1.0) * keep : 0)
-        // values type in place, both columns at once (the right one a beat later)
+        // each whole value pops into place, both columns at once (the right one a beat later): a half-typed figure
+        // is never on screen
         row.cells.forEach((c, j) => {
-          const p = isPre ? 1 : cleared ? 0 : prog(t, land + j * 0.06, typeD[i])
-          c.hl.setHTML(typedHTML(c, shownAt(c, p)))
+          const p = isPre ? 1 : cleared ? 0 : prog(t, land + j * 0.06, Math.max(MOTION.pop, typeD[i]))
           const isWin = i === finalIdx && j === W0
-          c.hl.seek(isWin ? winP.wipe * keep : 0, 1, 0)
+          c.hl.seek(isWin ? winP.wipe * keep : 0, p, 0)
           fade(c.el, isPre ? 1 : t < land ? 1 : rowKeep)
         })
         // band: tone rows swipe their tone and keep a rested tint; plain rows get the moving sand cursor
@@ -557,7 +598,7 @@ export default function ledgerDuel(spec, ctx) {
         if (row.ev && L.lv.evInline) fadeUp(row.ev, (isPre ? 1 : prog(t, land + 0.24, MOTION.fade)) * rowKeep * (row.open >= 0.9 ? 1 : 0), 8)
       })
       // shared event line (fallback layout): the latest event, replaced by the next one
-      if (!L.lv.evInline) {
+      if (evLineOn) {
         evLines.forEach((e, k) => {
           const i = R.indexOf(e.x)
           const land = T[i]

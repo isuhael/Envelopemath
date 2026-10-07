@@ -268,8 +268,15 @@ Suggested component use per format:
 - **find-your-row**: `layoutFor(spec, { hero: false, stageBottom: 1300 })` gives a tall stage for the table. `slam` each row in, use `C.green` for the emphasised column, and give the pick pointer `bump` on landing.
 - **what-difference**: put the stake in the hero and a `scorePanel` per option (`lit()` the winner at `verdict.t`). Each option is a hard cut.
 - **chart-race / pov-race**: `raceChart` on `L.inner` with 50 px headroom, plus a hero odometer on the leader's value. For pov-race, a small `unitStack` of `phone` icons can count the purchases.
-- **split-sheet**: put the total in the hero. Each part gets a row with a green bar track and amounts slammed in.
-- **growth-ladder**: put the last column's value in the hero as it rolls. Rows unmask one by one (`ladderPips` for progress), and the last row is the biggest number.
+- **split-sheet**: put the total in the hero. Each part gets a row with a green bar track and amounts slammed in. Optional `lookOpts.maskPct: [i, …]` shows those rows' percentages as "?" until their part's cut (the goal row's % would otherwise answer the header at frame 1); the full lookOpts list is in the header comment of `formats/split-sheet.js`.
+- **growth-ladder** (built, `formats/growth-ladder.js`; the header comment there has the full choreography): put the last column's value in the hero as it rolls. Rows unmask one by one, and the last row is the biggest number. Its lookOpts (all optional):
+
+  | lookOpts | Default | Effect |
+  |---|---|---|
+  | `goal` | none | `{ value, display, label }`: a finish line. Every meter's scale becomes `value`, a strip above the column labels names it ("MILLIONAIRE $1,000,000"), each meter gets a halfway notch, and strip and meters light up when a row lands past it |
+  | `icon` | none | A unit icon (`coin`, … from the kit's icon set) beside the hero counter |
+  | `input` | auto | `true`/`false` forces the input strip ("$100 A MONTH · 8% A YEAR"); by default it shows only when the header does not already contain `data.input.amount` and the board has room |
+  | `meters` | `true` | The two-tone meters (grey = put in, green = growth) |
 - **cost-counter**: put the real-time counter in the hero (linear, it's a counter). Milestones slam into the label stack, and a `unitStack` can fill as each milestone passes.
 
 ---

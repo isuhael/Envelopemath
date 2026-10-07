@@ -5,23 +5,27 @@
 // the working columns in a lighter Inter Tight, the emphasised column on the green highlighter.
 //
 // Frame 1 already shows the head and EVERY row key, so the viewer can find their row at once (Gage's 1.15M table
-// opens the same way); the value cells are empty (rows with t <= 0 are pre-filled). The values then type into
-// the rows top to bottom: each cell types in place, grapheme by grapheme, and the emphasised cell's highlighter
-// swipes under it. The newest emphasised value is the loud one; earlier ones rest to a pale tint, so one bright
-// cell runs down the column. A pick swipes the yellow highlighter across its row (the emphasised cell turns full
-// green where the two highlighters cross) and writes its label on the legend line under the table:
-// [row key on yellow] label. The rough formula is a grey mono footnote under the table. With no picks the whole
-// column comes back to full at the end (the cheat-sheet frame). The finished table holds, then
-// (lookOpts.loop, default on) the values clear back to the frame-1 state so the short loops.
+// opens the same way); the value cells are empty (rows with t <= 0 are pre-filled). The values then land in the
+// rows top to bottom, each whole value popping into place (never a half-typed figure), a beat apart per column.
+// The emphasised column fills one highlighter band that grows down as its rows land: the newest cell is the loud
+// one (its own full-tint box), the band behind the earlier ones stays pale, so one bright cell runs down an even
+// column. A pick swipes the yellow highlighter across its row (the emphasised cell turns full where the two
+// highlighters cross) and writes its label on the legend line under the table: [row key on yellow] label (fitted:
+// 46 -> 40 px, two balanced lines, and without the key chip only when the label still does not fit). The rough
+// formula is a grey mono footnote under the table. With no picks the whole column comes back to full at the end
+// (the cheat-sheet frame). The finished table holds, then (lookOpts.loop, default on) the values clear back to
+// the frame-1 state so the short loops.
 //
 // Layout engine (measured with the real fonts at mount): the table fills the work area at the largest row pitch
 // that fits. It tries, in order: formula and legend each on its own line; formula sub-labels dropped from the
 // head (the footnote carries them); one shared line (the formula, which the pick label replaces from the first
-// pick); a dense 40 px pitch; and only then drops content (the formula first). Cells never go below 40 px.
+// pick); a dense 40 px pitch; and only then drops content (the formula first). Head labels, cells, the footnote
+// and the legend never go below 40 px (labels wrap to two lines instead; the footnote takes two lines).
 //
-// lookOpts: loop (true) · legend (true; false hides pick labels) · formula (true; false hides the footnote)
-import { h, css as style, prog, ease, clamp, lerp, plain, graphemes } from '../../../runtime/core.js'
-import { F, SIZE, GRID, MOTION, md, hlBox, toneColor, fadeUp, fade, landing, durationOf } from '../lib.js'
+// lookOpts: loop (true) · legend (true; false hides pick labels) · formula (true; false hides the footnote).
+// columns[j].tone sets the emphasised column's highlighter (good green by default, bad coral, goal blue, neutral sand).
+import { h, css as style, prog, ease, clamp, lerp } from '../../../runtime/core.js'
+import { F, SIZE, GRID, MOTION, md, hlBox, toneColor, fadeUp, fade, landing, durationOf, fitMarkup } from '../lib.js'
 
 export const css = `
 .fyr > * { position: absolute; }
@@ -39,19 +43,19 @@ export const css = `
 .fyr .cs-td .cs-hl { color: #15171C; }
 .fyr .cs-td.plain .cs-hl { color: #3B404C; }
 .fyr .cs-td .cs-hl-txt { padding-top: .04em; }
-.fyr-ghost, .fyr-ghost * { color: transparent !important; }
+.fyr-colband { position: absolute; border-radius: 10px; opacity: 0; }
 .fyr-formula { white-space: nowrap; font-family: 'IBM Plex Mono', 'Inter Full', monospace; font-weight: 500;
   color: #6B7280; line-height: 1.2; letter-spacing: -.015em; }
 .fyr-formula.two { white-space: normal; text-wrap: balance; }
 .fyr-legend { display: flex; align-items: center; gap: 18px; white-space: nowrap; }
 .fyr-legend-txt { font-family: 'Inter', 'Inter Full', sans-serif; font-weight: 700; color: #15171C; line-height: 1.1;
-  letter-spacing: -.005em; }
+  letter-spacing: -.005em; white-space: nowrap; }
 .fyr-legend-txt em { font-style: normal; color: #1D4FC4; }
 .fyr-legend-txt u.mark2 { text-decoration: none; color: #B42318; }
 `
 
 const PAD = 12                // cell inset from the column edge: columns sit >= 24 px apart
-const HEAD = { px: 40, sub: 40, min: 34 }
+const HEAD = { px: 40, sub: 40, min: 40 }
 const CELL = { max: 56, min: 40 }
 // head sub-labels: "÷ 2,080" is pure working (grey mono; may be dropped when the footnote formula carries it),
 // "$1 trillion" / "30% of gross" is a figure (grey mono, always kept), anything else continues the label (caps)
@@ -131,7 +135,10 @@ export default function findYourRow(spec, ctx) {
     head.append(el)
     return { el, a, b, sub, l1, words: l1.split(/\s+/).filter(Boolean), html1: md(l1), wrapHTML: null, wrapW: Infinity }
   })
-  tableEl.append(ruleTop, head, ruleMid)
+  // the emphasised column's band: one even highlighter that grows down as its rows land (decoration)
+  const colBand = h('div', { class: 'fyr-colband', 'data-deco': '' })
+  style(colBand, { background: toneColor(emphTone) })
+  tableEl.append(ruleTop, colBand, head, ruleMid)
 
   const R = rows.map((r, i) => {
     const el = h('div', { class: 'cs-tr' })
@@ -147,7 +154,7 @@ export default function findYourRow(spec, ctx) {
       const wrap = h('div', { class: 'cs-td ' + kind }, hb.el)
       style(wrap, { justifyContent: align(j) === 'right' ? 'flex-end' : 'flex-start' })
       el.append(wrap)
-      cells.push({ el: wrap, hl: hb, kind, full: md(v), g: graphemes(plain(v)), memo: [], tw: 0, pad: 0 })
+      cells.push({ el: wrap, hl: hb, kind, full: md(v), tw: 0, pad: 0 })
     }
     if (i < N - 1) el.append(line)
     tableEl.append(el)
@@ -227,26 +234,36 @@ export default function findYourRow(spec, ctx) {
     const colH = TH.map((th, j) => (wrap.has(j) ? 2 : 1) * hp * 1.1 + (subOn(th, headMode) ? (th.sub === 'cont' ? hp * 1.1 : sp * 1.15 + 2) : 0))
     return Math.round(12 + Math.max(hp * 1.1, ...colH) + 14)
   }
-  // formula variants, best first: one line at 40 px; one line shrunk to >= 37; two balanced lines; one line >= 34
+  // formula variants: one line at 40 px, else two balanced lines at 40 px (it is read, so never smaller)
   const FV = []
   if (formula) {
     const fitW = tableW - PAD
     if (formulaW <= fitW) FV.push({ px: 40, lines: 1, h: 48 })
-    else {
-      const shrink = Math.floor((REF * fitW) / formulaW)
-      if (shrink >= 37) FV.push({ px: shrink, lines: 1, h: Math.round(shrink * 1.2) })
-      FV.push({ px: 40, lines: 2, h: 96 })
-      if (shrink >= HEAD.min && shrink < 37) FV.push({ px: shrink, lines: 1, h: Math.round(shrink * 1.2) })
-    }
+    else FV.push({ px: 40, lines: 2, h: 96 })
   }
-  // legend size: maxPx, fitted down to 40; the key box is dropped if the label alone needs the room
+  // legend: one line at maxPx -> 40 px with its key chip; then two balanced lines beside the chip; then without
+  // the chip (one line, then two). Every label ends by x 940.
+  const legendMemo = new Map()
   function legendFit(maxPx) {
+    if (legendMemo.has(maxPx)) return legendMemo.get(maxPx)
     const fitW = tableW - PAD
-    const wAt = (q, k) => Math.max(0, ...legendW.map(w => (k ? (w.key * q) / REF + 18 : 0) + (w.txt * q) / REF))
-    let px = maxPx, keyOn = true
-    while (px > 40 && wAt(px, true) > fitW) px -= 2
-    if (wAt(px, true) > fitW) { keyOn = false; px = maxPx; while (px > 40 && wAt(px, false) > fitW) px -= 2 }
-    return { px, keyOn, h: Math.round(px * 1.3) }
+    const room = (k, q, keyOn) => fitW - (keyOn ? (legendW[k].key * q) / REF + 18 : 0)
+    const oneLine = (q, keyOn) => legendW.every((w, k) => (w.txt * q) / REF <= room(k, q, keyOn))
+    const twoLines = (q, keyOn) => legends.every((g, k) => {
+      const r = fitMarkup(g.txt, g.p.label, { maxW: room(k, q, keyOn), maxPx: q, minPx: q, lh: 1.1, maxLines: 2, maxSplit: 2, linePenalty: 0 })
+      const ok = r.fits && r.lines <= 2
+      g.txt.innerHTML = md(g.p.label); style(g.txt, { whiteSpace: 'nowrap', fontSize: REF + 'px' })
+      return ok
+    })
+    let out = null
+    for (const [keyOn, lines] of [[true, 1], [true, 2], [false, 1], [false, 2]]) {
+      for (let q = maxPx; q >= 40 && !out; q -= 2) if (lines === 1 ? oneLine(q, keyOn) : twoLines(q, keyOn)) out = { px: q, keyOn, lines }
+      if (out) break
+    }
+    if (!out) out = { px: 40, keyOn: false, lines: 2, over: true }
+    out.h = Math.max(out.keyOn ? Math.round(out.px * 1.3) : 0, Math.round(out.px * 1.1 * out.lines))
+    legendMemo.set(maxPx, out)
+    return out
   }
 
   // ---------------------------------------------------------------- layout engine
@@ -284,7 +301,7 @@ export default function findYourRow(spec, ctx) {
   const dense = [[40, 12]]
   const plan = []
   const add = (modes, steps) => {
-    for (const hp of [HEAD.px, 38, 36]) for (const mode of modes) for (const [mp, raise] of steps) plan.push([mode, mp, raise, hp])
+    for (const hp of [HEAD.px]) for (const mode of modes) for (const [mp, raise] of steps) plan.push([mode, mp, raise, hp])
   }
   if (FV.length && hasLegend) {
     add(hasFormulaSubs ? ['both', 'compact'] : ['both'], comfy)
@@ -303,8 +320,8 @@ export default function findYourRow(spec, ctx) {
   }
   if (!L) {
     // last resort (more columns or longer labels than the measure holds): columns sized by their cells, labels
-    // wrapping freely inside them at 36 px, pure-working sub-labels dropped. The linter reports the rest.
-    const hp = 36, sp = 36
+    // wrapping freely inside them at 40 px, pure-working sub-labels dropped. The linter reports the rest.
+    const hp = HEAD.min, sp = HEAD.min
     const need = [...Array(NC).keys()].map(j => (cellTW[j] * CELL.min) / REF + 2 * padOf(CELL.min) - 2 * (PAD - 4) + 2 * PAD)
     const extra = (tableW - need.reduce((a, b) => a + b, 0)) / NC
     let x = 0
@@ -345,14 +362,27 @@ export default function findYourRow(spec, ctx) {
   R.forEach((row, i) => {
     style(row.el, { top: hh + i * pitch + 'px', height: pitch + 'px', '--inset': inset + 'px' })
     if (tight) row.el.setAttribute('data-overlap-ok', '')
+    // a tight grid: the hairline drops 2 px so the figures' descenders ($, comma) clear it
+    const hair = row.el.querySelector('.cs-tr-line')
+    if (hair) style(hair, { bottom: pitch < 48 ? '-2px' : '0px' })
     row.cells.forEach((c, j) => {
       const col = L.cols[j]
       c.hl.setPx(cellPx, boxH)
+      c.hl.setHTML(c.full)
       c.pad = padOf(cellPx)
       // the text inside the box lines up with the column label (x + PAD)
       style(c.el, { left: Math.round(col.x + PAD - c.pad) + 'px', width: Math.round(col.w - 2 * PAD + 2 * c.pad) + 'px' })
     })
   })
+  // the emphasised column's band: as wide as its widest value box, on the column's alignment edge, between the
+  // first and last rows (inset like the row bands)
+  const bandIn = Math.max(2, inset)
+  {
+    const col = L.cols[E]
+    const wl = Math.round(col.x + PAD - padOf(cellPx)), ww = Math.round(col.w - 2 * PAD + 2 * padOf(cellPx))
+    const bw = Math.ceil(Math.max(0, ...R.map(row => row.cells[E].hl.width())))
+    style(colBand, { left: (align(E) === 'right' ? wl + ww - bw : wl) + 'px', width: bw + 'px', top: hh + bandIn + 'px', height: '0px' })
+  }
   const textLeft = GRID.left + PAD // the key column's text edge: lines under the table hang from it
   let y = top + tableH
   if (L.showFormula) {
@@ -362,10 +392,12 @@ export default function findYourRow(spec, ctx) {
   } else if (formula) style(formula, { display: 'none' })
   if (L.showLegend) {
     const ly = L.mode === 'shared' ? y + GAP_T : y + (L.showFormula ? GAP_L : GAP_T)
-    for (const g of legends) {
+    for (const [k, g] of legends.entries()) {
       g.key.setPx(L.lg.px)
       style(g.key.el, { display: L.lg.keyOn ? '' : 'none' })
-      style(g.txt, { fontSize: L.lg.px + 'px' })
+      const room = tableW - PAD - (L.lg.keyOn ? (legendW[k].key * L.lg.px) / REF + 18 : 0)
+      // explicit, balanced lines (one or two) at the fitted size, so nothing reflows or runs past x 940
+      fitMarkup(g.txt, g.p.label, { maxW: room, maxPx: L.lg.px, minPx: L.lg.px, lh: 1.1, maxLines: L.lg.lines, maxSplit: L.lg.lines, linePenalty: 0 })
       style(g.el, { left: Math.round(textLeft - (L.lg.keyOn ? padOf(L.lg.px) : 0)) + 'px', top: Math.round(ly) + 'px', height: L.lg.h + 'px' })
     }
   } else for (const g of legends) style(g.el, { display: 'none' })
@@ -376,12 +408,11 @@ export default function findYourRow(spec, ctx) {
   Object.assign(root.dataset, { mode: L.mode, pitch: String(pitch), cell: String(cellPx), head: L.headMode, wrap: [...L.wrap].join(',') })
 
   // ---------------------------------------------------------------- sound
-  // a quick fill reads as one stretch of typing; rows that land far apart get a soft tick each
+  // each row's values pop in with a soft tick (a quick fill reads as one ripple)
   const live = rowT.filter(x => x > 0.001).sort((a, b) => a - b)
   if (live.length) {
     const maxGap = Math.max(0, ...live.slice(1).map((x, k) => x - live[k]))
-    if (maxGap <= 0.6) ctx.cue(live[0], 'type', { dur: Math.max(0.2, lastLand - live[0]), gain: 0.38 })
-    else for (const x of live) ctx.cue(x, 'tick', { gain: 0.45 })
+    for (const x of live) ctx.cue(x, 'tick', { gain: maxGap <= 0.6 ? 0.28 : 0.42 })
   }
   for (const p of picks) ctx.cue(p.t, 'swipe', { gain: 0.35 })
   if (L.showLegend) for (const g of legends) ctx.cue(g.p.t + 0.2 + MOTION.popDelay, 'pop', { gain: 0.45 })
@@ -389,14 +420,7 @@ export default function findYourRow(spec, ctx) {
   if (loop) ctx.cue(clearT0, 'swipe', { gain: 0.25 })
 
   // ---------------------------------------------------------------- seek helpers
-  // typed-in-place: the first k graphemes in ink, the rest laid out but transparent, so the final alignment
-  // (right-aligned numbers) never shifts while a cell types
-  const typedHTML = (c, k) => {
-    if (k >= c.g.length) return c.full
-    if (c.memo[k] == null) c.memo[k] = md(c.g.slice(0, k).join('')) + '<span class="fyr-ghost">' + md(c.g.slice(k).join('')) + '</span>'
-    return c.memo[k]
-  }
-  const graphemesAt = (c, p) => (p <= 0 ? 0 : Math.min(c.g.length, Math.ceil(p * c.g.length - 1e-6)))
+  const half = MOTION.clear / 2
   const finale = t => (picks.length ? 0 : prog(t, lastLand + 0.6, 0.45)) // no picks: the column comes back to full
   const firstLegendT = legends.length ? legends[0].p.t : Infinity
 
@@ -424,23 +448,35 @@ export default function findYourRow(spec, ctx) {
         row.cells.forEach((c, j) => {
           if (c.kind === 'key') return
           const t0 = landAt(i, j)
-          const p = pre[i] ? 1 : prog(t, t0 + (c.kind === 'emph' ? 0.03 : 0), typeD)
-          const n = graphemesAt(c, p)
-          c.hl.setHTML(typedHTML(c, n))
-          style(c.el, { opacity: n3(n > 0 ? k : 0) })
-          if (c.kind !== 'emph') return
-          // the highlighter swipes under the typing; the newest value is the loud one, earlier ones rest
+          // each whole value pops into place (a half-typed figure is never on screen)
+          const p = pre[i] ? 1 : c.kind === 'emph' ? landing(t, t0).text : prog(t, t0, MOTION.pop)
+          style(c.el, { opacity: n3(p > 0 ? k : 0) })
+          if (c.kind !== 'emph') { c.hl.seek(0, p, 0); return }
+          // its own box swipes in at full tint; once the next row lands it steps back to the column band's pale tint
           const wipe = pre[i] ? 1 : ease.out(prog(t, t0, MOTION.wipe))
           let rest = i < N - 1 ? prog(t, landAt(i + 1, j) + 0.1, MOTION.restIn) : picks.length ? prog(t, lastLand + 0.5, MOTION.restIn) : 0
           rest *= (1 - fin) * (1 - focus)
           if (pre[i]) rest *= keep // the loop returns a pre-filled row to its frame-1 look (full)
-          c.hl.seek(wipe, 1, rest)
+          c.hl.seek(wipe, p, 0)
+          style(c.hl.bg, { opacity: n3(wipe > 0 ? 1 - rest : 0) })
         })
       })
+      // the column band grows down with the landed rows (pale; full again for the no-pick finale), and runs back up
+      // to the frame-1 state with the loop clear
+      let hAll = 0, hPre = 0
+      for (let i = 0; i < N; i++) {
+        const w = pre[i] ? 1 : ease.out(prog(t, landAt(i, E), MOTION.wipe))
+        if (w > 0) hAll = Math.max(hAll, i * pitch + w * pitch)
+        if (pre[i]) hPre = Math.max(hPre, (i + 1) * pitch)
+      }
+      const bh = Math.max(0, Math.round(lerp(hAll, hPre, clearP)) - 2 * bandIn)
+      style(colBand, { height: bh + 'px', opacity: n3(bh > 0 ? lerp(MOTION.rest, 1, fin) : 0) })
       // formula footnote: static from frame 1; on a shared line the pick label takes its place, and it comes back
       // with the loop reset
+      // (shared line: one after the other, never both: the formula leaves before the first label lands, and with
+      // the loop clear the label leaves in the first half, the formula returns in the second)
       if (formula && L.showFormula) {
-        const o = L.mode === 'shared' ? Math.max(1 - prog(t, firstLegendT - 0.05, 0.18), clearP) : 1
+        const o = L.mode === 'shared' ? Math.max(1 - prog(t, firstLegendT - 0.05, 0.18), prog(t, clearT0 + half, half)) : 1
         fade(formula, o)
       }
       // legend: the current pick's label (its row key swipes in on yellow, then the words)
@@ -449,10 +485,9 @@ export default function findYourRow(spec, ctx) {
         const t0 = p.t + 0.2
         const out = isFinite(p.lnext) ? prog(t, p.lnext - 0.02, 0.16) : 0
         const Lk = landing(t, t0)
-        // the pop starts at 0.92 scale: below 44 px it would dip under the 40 px floor, so it lands without shrinking
-        g.key.seek(Lk.wipe, L.lg.px >= 44 || Lk.text <= 0 ? Lk.text : 0.35 + 0.65 * Lk.text, 0)
+        g.key.seek(Lk.wipe, Lk.text, 0) // (hlBox never pops text under the 40 px floor)
         fadeUp(g.txt, prog(t, t0 + 0.12, MOTION.fade + 0.06))
-        fade(g.el, t >= t0 ? (1 - out) * keep : 0)
+        fade(g.el, t >= t0 ? (1 - out) * (L.mode === 'shared' ? 1 - prog(t, clearT0, half) : keep) : 0)
       }
     },
   }

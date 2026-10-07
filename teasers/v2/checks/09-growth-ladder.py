@@ -3,7 +3,7 @@
 
 1. Recomputes every on-screen number from its inputs (section "inputs" below).
 2. Loads the three spec JSONs and asserts that
-   - every computed display string (ladder cells, input block, gate, goal) equals the spec exactly,
+   - every computed display string (ladder cells, input block, goal) equals the spec exactly,
    - every number inside every other string (header, footer, verdict, lookOpts text, VO lines) equals
      the computed, formatted value, in order,
    - rounded results carry "≈" on screen; in the VO a rounded number is preceded by "about" and a
@@ -46,17 +46,22 @@ B_P, B_RATE = 1000, 0.07
 B_YEARS = [1, 2, 5, 10, 15, 20, 25, 30]
 B_HORIZON = 30
 
-# 09c: $5 a day = $5 × 365 ÷ 12 a month, deposited at month-end, 7% a year compounded monthly.
+# 09c: $5 a day = $5 × 365 ÷ 12 a month, deposited at month-end, at an EFFECTIVE 7% a year: the monthly rate is
+# (1.07)^(1/12) − 1 ≈ 0.5654%, so every dollar grows exactly × 1.07 per year and the footer's "7% a year" matches
+# every row (review round: the earlier 7%/12 a month was ≈ 7.23% a year effective, not the 7% on screen).
 C_DAY, C_DAYS, C_RATE = 5, 365, 0.07
 C_M = C_DAY * C_DAYS / 12
-C_YEARS = [1, 10, 20, 30, 40, 50, 53]
+C_YEARS = [1, 10, 20, 30, 40, 50, 54]
+C_HORIZON = 40                     # the header's "IN 40 YEARS?"
 C_GOAL = 1_000_000
 
 # Write-up only (captions / pinned comments): S&P 500 long-run averages, with dividends reinvested.
-# Official Data Foundation (officialdata.org), "S&P 500 since 1928": 10.09% a year nominal, 6.81% real.
-# A Wealth of Common Sense (Ben Carlson, Jan 2025) from Damodaran/NYU Stern, 1928-2024: 9.94% nominal, 6.8% real.
+# Official Data Foundation (officialdata.org), "S&P 500 since 1928": 10.09% a year nominal, 6.81% real (a live
+#   figure computed through the current year; read 2026-10-07).
+# A Wealth of Common Sense (Ben Carlson, Jan 2025) from Damodaran/NYU Stern, 1928-2024: 9.94% nominal (search-
+#   confirmed). Its real figure could not be confirmed (page blocked by the proxy), so it is not used here.
 SP_NOMINAL = (10.09, 9.94)
-SP_REAL = (6.81, 6.8)
+SP_REAL = (6.81,)
 
 # ============================================================== formatting
 
@@ -113,6 +118,7 @@ def a_cross(m, rate=A_RATE):
 A_CROSS = a_cross(A_M)
 A_R72 = 72 / (A_RATE * 100)
 A_FIRST_DEPOSIT = A_M * (1 + A_RATE / 12) ** (12 * A_CROSS - 1)   # the month-1 deposit at year 16
+A_LAST_DEPOSIT = A_M * (1 + A_RATE / 12) ** 0                       # the newest (month-end) deposit: no growth yet
 A_LUMP_DOUBLE = math.log(2) / (12 * math.log(1 + A_RATE / 12))    # write-up: lump sum, monthly comp.
 
 # ---- 09b
@@ -126,12 +132,31 @@ B_FIRST_PAST_GUESS = first_year(lambda y: B_V[y] >= B_GUESS)
 B_DOUBLE_YEAR = first_year(lambda y: B_V[y] >= 2 * B_P)
 
 # ---- 09c
+def fv_eff(m, rate, months):
+    """Future value of m deposited at each month-end for `months` months, at an effective `rate` a year
+    (monthly rate (1 + rate)^(1/12) − 1)."""
+    r = (1 + rate) ** (1 / 12) - 1
+    return m * ((1 + r) ** months - 1) / r
+
+C_LAST = C_YEARS[-1]
 C_IN = {y: C_DAY * C_DAYS * y for y in C_YEARS}
-C_W = {y: fv_monthly(C_M, C_RATE, 12 * y) for y in C_YEARS}
-C_MILLION_YEAR = first_year(lambda y: fv_monthly(C_M, C_RATE, 12 * y) >= C_GOAL)
-C_SHARE = C_IN[53] / C_W[53]
-C_MILLION_YEAR_10 = first_year(lambda y: fv_monthly(C_M, 0.10, 12 * y) >= C_GOAL)   # pinned comment
-C_MILLION_MONTH_10 = first_year(lambda k: fv_monthly(C_M, 0.10, k) >= C_GOAL, stop=1200)  # month count
+C_W = {y: fv_eff(C_M, C_RATE, 12 * y) for y in C_YEARS}
+C_MILLION_YEAR = first_year(lambda y: fv_eff(C_M, C_RATE, 12 * y) >= C_GOAL)
+C_MILLION_MONTH = first_year(lambda k: fv_eff(C_M, C_RATE, k) >= C_GOAL, stop=1200)
+C_SHARE = C_IN[C_LAST] / C_W[C_LAST]
+C_W40_10 = fv_eff(C_M, 0.10, 480)                                                     # pinned comment
+C_MILLION_YEAR_10 = first_year(lambda y: fv_eff(C_M, 0.10, 12 * y) >= C_GOAL)         # pinned comment
+# the other convention, for the caption / pinned comment ("7%/12 a month" ≈ 7.23% a year effective)
+C_NOM_W40 = fv_monthly(C_M, C_RATE, 480)
+C_NOM_MILLION_YEAR = first_year(lambda y: fv_monthly(C_M, C_RATE, 12 * y) >= C_GOAL)
+C_NOM_EFF = (1 + C_RATE / 12) ** 12 - 1
+def c_rate_for_goal(years):
+    lo, hi = 0.0001, 0.5
+    for _ in range(200):
+        mid = (lo + hi) / 2
+        lo, hi = (mid, hi) if fv_eff(C_M, mid, 12 * years) < C_GOAL else (lo, mid)
+    return hi
+C_RATE_FOR_40 = c_rate_for_goal(C_HORIZON)                                            # write-up: ≈ 10.6%
 
 def c_money(x):          # 09c precision: nearest $100 (Scoreboard counters, "≈ $185,500" style)
     return money(x, 100)
@@ -149,20 +174,24 @@ expect, vo_expect, beats, extra_t = {}, {}, {}, {}
 
 # ---- 09a
 ida = "09a-live-sheet-100-a-month-doubles"
+A_GUESS = int(A_R72)                       # the hook's wrong answer: "Doubled by year 9?"
 ea = {
-    "header": T(money(A_M), pct(A_RATE * 100)),
+    "header": T(money(A_M), pct(A_RATE * 100), str(A_GUESS)),
     "footer": T(pct(A_RATE * 100), money(A_M)),
     "verdict.text": T(str(A_CROSS), num(A_R72)),
     "data.input.amount": E(money(A_M)),
     "data.input.rate": E(pct(A_RATE * 100) + " a year"),
-    "lookOpts.formulaBar[0].text": T(money(A_M), "12", money(A_M * 12)),
+    # frame 1: the target that "doubled by year 9" would need, against row 9's visible put-in cell
+    "lookOpts.formulaBar[0].text": T(str(A_GUESS), "2", money(A_IN[A_GUESS]), money(2 * A_IN[A_GUESS])),
     "lookOpts.formulaBar[1].text": T("72", "72", num(A_RATE * 100), num(A_R72)),
-    "lookOpts.formulaBar[2].text": T(money(A_W[9]), "2", money(A_IN[9])),
+    "lookOpts.formulaBar[2].text": T(money(A_W[9]), money(2 * A_IN[9])),
     "lookOpts.formulaBar[3].text": T(money(A_W[15]), "2", money(A_IN[15])),
     "lookOpts.formulaBar[4].text": T(money(A_W[16]), "2", money(A_IN[16])),
-    "lookOpts.formulaBar[5].text": T("1", money(A_M), money(A_FIRST_DEPOSIT), money(A_M), money(A_M)),
-    "lookOpts.formulaBar[6].text": T(money(A_W[30]), money(A_IN[30]), num(A_RATIO[30], 1)),
-    "lookOpts.formulaBar[7].text": T(money(A_ALT_AMOUNTS[0]), money(A_ALT_AMOUNTS[1]), str(a_cross(A_ALT_AMOUNTS[0]))),
+    "lookOpts.formulaBar[5].text": T("72"),
+    "lookOpts.formulaBar[6].text": T(str(A_CROSS), "1", money(A_M), money(A_FIRST_DEPOSIT)),
+    "lookOpts.formulaBar[7].text": T(money(A_M), money(A_LAST_DEPOSIT)),   # month-end deposit: no growth yet
+    "lookOpts.formulaBar[8].text": T(money(A_W[30]), money(A_IN[30]), num(A_RATIO[30], 1)),
+    "lookOpts.formulaBar[9].text": T(money(A_ALT_AMOUNTS[0]), money(A_ALT_AMOUNTS[1]), str(a_cross(A_ALT_AMOUNTS[0]))),
 }
 for i, y in enumerate(A_YEARS):
     ea[f"data.rows[{i}][0]"] = E(str(y))
@@ -172,7 +201,7 @@ expect[ida] = ea
 # VO: (token, mode) with mode exact | about | over
 vo_expect[ida] = [
     [(money(A_M), "exact"), (pct(A_RATE * 100), "exact")],
-    [("72", "exact"), (num(A_R72), "exact")],
+    [("72", "exact"), (str(A_GUESS), "exact")],
     [("9", "exact")],
     [("15", "exact")],
     [(str(A_CROSS), "exact"), (money(A_IN[16]), "exact")],
@@ -182,19 +211,20 @@ vo_expect[ida] = [
 ]
 beats[ida] = [("9", 2, "Year 9"), ("15", 3, "Year 15"), ("16", 4, "Year 16"), ("30", 6, "Year 30")]
 # lookOpts times that must sit on a beat (row t or VO word)
-extra_t[ida] = [("formulaBar", 3.4, 1, "Rule"), ("formulaBar", 17.6, 5, "Every"), ("formulaBar", 24.8, 7, "Any")]
+extra_t[ida] = [("formulaBar", 3.4, 1, "Rule"), ("formulaBar", 16.0, 5, "Why"), ("formulaBar", 17.6, 5, "Every"),
+                ("formulaBar", 19.6, 5, "starts"), ("formulaBar", 24.8, 7, "Any")]
 
 # ---- 09b
 idb = "09b-becker-rig-1000-times-1-07"
+B_SCALE = 5000                     # footer: "got $5,000? × 5" (R3: swap in your own lump)
 eb = {
-    "header": T(money(B_P), pct(B_RATE * 100), str(B_HORIZON)),
-    "footer": T(pct(B_RATE * 100)),
+    # frame 1 carries the wrong answer: "$1,000 + 30 × $70 = $3,100?" (hook bank 4.6B's move)
+    "header": T(money(B_P), pct(B_RATE * 100), str(B_HORIZON), money(B_P), str(B_HORIZON), money(B_P * B_RATE),
+                money(B_GUESS)),
+    "footer": T(pct(B_RATE * 100), money(B_SCALE), num(B_SCALE / B_P)),
     "verdict.text": T(money(B_V[B_HORIZON]), money(B_GUESS), pct(B_RATE * 100), pct(B_RATE * 100)),
     "data.input.amount": E(money(B_P)),
     "data.input.rate": E(pct(B_RATE * 100) + " a year"),
-    "lookOpts.gate": E(f"×{B_GATE:.2f}"),
-    "lookOpts.guess.display": E(money(B_GUESS) + "?"),
-    "lookOpts.guess.label": E(f"+{money(B_P * B_RATE)} a year"),
 }
 for i, y in enumerate(B_YEARS):
     eb[f"data.rows[{i}][0]"] = E(str(y))
@@ -202,23 +232,23 @@ for i, y in enumerate(B_YEARS):
     eb[f"data.rows[{i}][2]"] = E(money(B_V[y]))
 expect[idb] = eb
 vo_expect[idb] = [
-    [(money(B_P), "exact"), (pct(B_RATE * 100), "exact"), (money(B_P * B_RATE), "exact")],
+    [("1", "exact"), (money(B_V[1] - B_P), "exact")],
     [(str(B_HORIZON), "exact"), (money(B_GUESS), "exact")],
     [("2", "exact"), (bare(money(B_Y2_ADD)), "about"), (money(B_P * B_RATE), "exact")],
     [("10", "exact"), (bare(money(B_V[10])), "about")],
-    [("20", "exact"), (bare(money(B_V[20])), "about")],
+    [("20", "exact"), (bare(money(B_V[20])), "about"), (money(B_GUESS), "exact")],
     [("30", "exact"), (bare(money(B_V[30])), "about")],
     [(money(B_GUESS), "exact"), (bare(num(B_TIMES_GUESS, 1)), "about")],
 ]
-beats[idb] = [("1", 0, "plus"), ("2", 1 + 1, "Year 2"), ("10", 3, "Year 10"), ("20", 4, "Year 20"), ("30", 5, "Year 30")]
-extra_t[idb] = [("guess", 6.6, 1, "$3,100")]
+beats[idb] = [("1", 0, "$70"), ("2", 2, "Year 2"), ("10", 3, "Year 10"), ("20", 4, "Year 20"), ("30", 5, "Year 30")]
+extra_t[idb] = []
 
 # ---- 09c
 idc = "09c-scoreboard-5-a-day-millionaire"
 ec = {
-    "header": T(money(C_DAY)),
+    "header": T(money(C_DAY), str(C_HORIZON)),
     "footer": T(money(C_DAY), str(C_DAYS), "12", money(C_M), pct(C_RATE * 100)),
-    "verdict.text": T(str(C_MILLION_YEAR)),
+    "verdict.text": T(str(C_HORIZON), str(C_MILLION_YEAR)),
     "data.input.amount": E(money(C_DAY)),
     "data.input.rate": E(pct(C_RATE * 100) + " a year"),
     "lookOpts.goal.display": E(money(C_GOAL)),
@@ -229,22 +259,22 @@ for i, y in enumerate(C_YEARS):
     ec[f"data.rows[{i}][2]"] = E(c_money(C_W[y]))
 expect[idc] = ec
 vo_expect[idc] = [
-    [(money(C_DAY), "exact"), ("1", "exact"), (bare(c_money(C_W[1])), "about")],
+    [(money(C_DAY), "exact"), (str(C_HORIZON), "exact")],
     [("10", "exact"), (bare(c_money(C_W[10])), "about")],
     [("20", "exact"), (bare(c_money(C_W[20])), "about")],
     [("30", "exact"), (bare(c_money(C_W[30])), "about")],
     [("40", "exact"), (bare(c_money(C_W[40])), "about")],
+    [],                                                    # "Not even halfway."
     [("50", "exact"), (bare(c_money(C_W[50])), "about")],
     [(str(C_MILLION_YEAR), "exact"), (money(C_GOAL), "over")],
-    [(str(C_MILLION_YEAR), "exact")],
+    [(str(C_HORIZON), "exact"), (str(C_MILLION_YEAR), "exact")],
 ]
-beats[idc] = [("1", 0, "Year 1"), ("10", 1, "Year 10"), ("20", 2, "Year 20"), ("30", 3, "Year 30"),
-              ("40", 4, "Year 40"), ("50", 5, "Year 50"), ("53", 6, "Year 53")]
+beats[idc] = [("10", 1, "Year 10"), ("20", 2, "Year 20"), ("30", 3, "Year 30"),
+              ("40", 4, "Year 40"), ("50", 6, "Year 50"), (str(C_LAST), 7, f"Year {C_LAST}")]
 extra_t[idc] = []
 
 # numeric (non-string) values that must match the maths
 numeric_expect = {
-    idb: {"lookOpts.guess.value": B_GUESS},
     idc: {"lookOpts.goal.value": C_GOAL},
 }
 
@@ -452,8 +482,13 @@ def check_spec(sid):
 def claim(sid, what, shown, want, ok):
     record(sid, "claim: " + what, shown, want, ok)
 
-claim(ida, "Rule of 72 at 8% = 9", A_R72, 9, A_R72 == 9)
-claim(ida, "year 9 'not even close' (< 1.5×)", round(A_RATIO[9], 4), "< 1.5", A_RATIO[9] < 1.5)
+def load(sid):
+    with open(os.path.join(SPECS, sid + ".json"), encoding="utf-8") as f:
+        return json.load(f)
+
+claim(ida, "Rule of 72 at 8% = 9 (the hook's guess)", A_R72, 9, A_R72 == 9 == A_GUESS)
+claim(ida, "frame-1 target: 2 × year-9 put-in", money(2 * A_IN[9]), "$21,600", money(2 * A_IN[9]) == "$21,600")
+claim(ida, "year 9 'not even close' (< 1.5×, < $21,600)", round(A_RATIO[9], 4), "< 1.5", A_RATIO[9] < 1.5)
 claim(ida, "year 15 'still short' (< 2×)", round(A_RATIO[15], 4), "< 2", A_RATIO[15] < 2)
 claim(ida, "year 16 'more than double' (> 2×)", round(A_RATIO[16], 4), "> 2", A_RATIO[16] > 2)
 claim(ida, "first doubling year = 16", A_CROSS, 16, A_CROSS == 16)
@@ -461,38 +496,73 @@ claim(ida, "'still year 16' for $50 / $500 / $1,000", [a_cross(m) for m in (50, 
       all(a_cross(m) == A_CROSS for m in (50, 500, 1000)))
 claim(ida, "year 30 'over 4 times'", round(A_RATIO[30], 4), "4 < x < 5", 4 < A_RATIO[30] < 5)
 claim(ida, "1st $100 at year 16 (191 months)", money(A_FIRST_DEPOSIT), "≈ $356", money(A_FIRST_DEPOSIT) == "≈ $356")
-claim(ida, "lump sum at 8% doubles in ≈ 8.7 yrs (write-up)", num(A_LUMP_DOUBLE, 1), "≈ 8.7", num(A_LUMP_DOUBLE, 1) == "≈ 8.7")
+claim(ida, "lump sum at 8% doubles in ≈ 8.7 yrs ('Rule of 72 = one lump sum')", num(A_LUMP_DOUBLE, 1), "≈ 8.7",
+      num(A_LUMP_DOUBLE, 1) == "≈ 8.7" and abs(A_LUMP_DOUBLE - A_R72) < 0.5)
+_sa = load(ida)
+_bar16 = next(x for x in _sa["lookOpts"]["formulaBar"] if "$356" in x["text"])
+_newest = max((t, r[0]) for t, r in zip(_sa["data"]["rowT"], _sa["data"]["rows"]) if t <= _bar16["t"] + 1.6)[1]
+claim(ida, "'1st $100 ≈ $356' line names its year and row 16 is the newest row while it shows",
+      f"{_bar16['text'][:6]} / newest row {_newest}", "Yr 16 / 16",
+      _bar16["text"].startswith(f"Yr {A_CROSS}:") and _newest == str(A_CROSS))
+_long = [x["text"] for x in _sa["lookOpts"]["formulaBar"] if len(x["text"]) > 32]
+claim(ida, "formula-bar lines fit one line (≤ 32 chars at 40 px mono)", _long or "all ≤ 32", "all ≤ 32", not _long)
+claim(ida, "footer states the compounding convention", "compounded monthly" in _sa["footer"], True,
+      "compounded monthly" in _sa["footer"])
 
+claim(idb, "year 1 adds $70 = $1,000 × 7%", money(B_V[1] - B_P), "$70", money(B_V[1] - B_P) == "$70")
 claim(idb, "year 1 = $1,000 + $70", money(B_V[1]), "$1,070", money(B_V[1]) == "$1,070")
 claim(idb, "simple guess = $1,000 + 30 × $70", money(B_GUESS), "$3,100", money(B_GUESS) == "$3,100")
+_sb = load(idb)
+claim(idb, "header prints the guess only as a question ('$3,100?')", strip_markup(_sb["header"]).split()[-1], "$3,100?",
+      strip_markup(_sb["header"]).rstrip().endswith(money(B_GUESS) + "?"))
 claim(idb, "year 2 adds $74.90", money(B_Y2_ADD, 0.01), "$74.90", money(B_Y2_ADD, 0.01) == "$74.90")
 claim(idb, "year 10 'almost doubled' (1.9-2×)", round(B_V[10] / B_P, 4), "1.9 ≤ x < 2", 1.9 <= B_V[10] / B_P < 2)
 claim(idb, "doubles in year 11 (write-up)", B_DOUBLE_YEAR, 11, B_DOUBLE_YEAR == 11)
-claim(idb, "year 20 'already past the guess'", money(B_V[20]), "> $3,100 (first year past: 17)",
+claim(idb, "year 20 'already past $3,100'", money(B_V[20]), "> $3,100 (first year past: 17)",
       B_V[20] > B_GUESS and B_FIRST_PAST_GUESS == 17)
-claim(idb, "≈ 2.5× the guess", num(B_TIMES_GUESS, 1), "≈ 2.5", num(B_TIMES_GUESS, 1) == "≈ 2.5")
+claim(idb, "≈ 2.5 times the guess", num(B_TIMES_GUESS, 1), "≈ 2.5", num(B_TIMES_GUESS, 1) == "≈ 2.5")
+claim(idb, "footer '$5,000? × 5' scales every row", f"{money(B_SCALE)} ÷ {money(B_P)} = {B_SCALE / B_P:g}", "× 5",
+      B_SCALE / B_P == 5)
 claim(idb, "Rule of 72: 72 ÷ 7 ≈ 10.3 (write-up)", num(72 / 7, 1), "≈ 10.3", num(72 / 7, 1) == "≈ 10.3")
 
 claim(idc, "$5 × 365 ÷ 12", money(C_M), "≈ $152", money(C_M) == "≈ $152")
+claim(idc, "'7% a year' is the effective annual rate of every row", round(((1 + C_RATE) ** (1 / 12)) ** 12 - 1, 12),
+      0.07, abs(((1 + C_RATE) ** (1 / 12)) ** 12 - 1 - C_RATE) < 1e-12)
+claim(idc, "'Not in 40': year 40 < $1,000,000", c_money(C_W[C_HORIZON]), "< $1,000,000", C_W[C_HORIZON] < C_GOAL)
 claim(idc, "year 40 'not even halfway' (< $500,000)", c_money(C_W[40]), "< $500,000", C_W[40] < C_GOAL / 2)
-claim(idc, "first year-end ≥ $1,000,000 = 53", C_MILLION_YEAR, 53,
-      C_MILLION_YEAR == 53 and fv_monthly(C_M, C_RATE, 12 * 52) < C_GOAL)
-claim(idc, "'over $1,000,000' at year 53", c_money(C_W[53]), "> $1,000,000", C_W[53] > C_GOAL)
+claim(idc, "first year-end ≥ $1,000,000 = 54 (year 53 short; crossing in month 646)",
+      f"{C_MILLION_YEAR} / {c_money(fv_eff(C_M, C_RATE, 12 * 53))} / m{C_MILLION_MONTH}", "54 / < $1M / m646",
+      C_MILLION_YEAR == 54 == C_LAST and fv_eff(C_M, C_RATE, 12 * 53) < C_GOAL and C_MILLION_MONTH == 646)
+claim(idc, "'over $1,000,000' at year 54", c_money(C_W[C_LAST]), "> $1,000,000", C_W[C_LAST] > C_GOAL)
 claim(idc, "put in 'under a tenth'", num(C_SHARE * 100, 1) + "%", "< 10%", C_SHARE < 0.1)
 
 # ---- numbers quoted in the write-up's captions and pinned comments
-claim(ida, "pinned: doubling year at 7%", a_cross(100, 0.07), 19, a_cross(100, 0.07) == 19)
-claim(ida, "pinned: doubling year at 10%", a_cross(100, 0.10), 13, a_cross(100, 0.10) == 13)
+claim(ida, "pinned: doubling year at 7% (compounded monthly)", a_cross(100, 0.07), 19, a_cross(100, 0.07) == 19)
+claim(ida, "pinned: doubling year at 10% (compounded monthly)", a_cross(100, 0.10), 13, a_cross(100, 0.10) == 13)
 claim(idb, "caption: year 30 adds ≈ $498", money(B_V[30] - B_V[29]), "≈ $498", money(B_V[30] - B_V[29]) == "≈ $498")
+claim(idb, "caption: ≈ $7,612 is 'about 2.5 times as much' as $3,100", round(B_TIMES_GUESS, 3), "2.4-2.6",
+      2.4 <= B_TIMES_GUESS < 2.6)
 claim(idb, "pinned: year 40 compound", money(B_V[40]), "≈ $14,974", money(B_V[40]) == "≈ $14,974")
 claim(idb, "pinned: year 40 simple", money(B_SIMPLE(40)), "$3,800", money(B_SIMPLE(40)) == "$3,800")
-claim(idc, "pinned: $1M year at 10%", C_MILLION_YEAR_10, 41, C_MILLION_YEAR_10 == 41)
-claim(idc, "pinned: at 10%, year 40 still short", c_money(fv_monthly(C_M, 0.10, 480)), "< $1,000,000",
-      fv_monthly(C_M, 0.10, 480) < C_GOAL)
-claim(idc, "caption: put in at year 53", money(C_IN[53]), "$96,725", money(C_IN[53]) == "$96,725")
-claim(idc, "caption: growth at year 53", c_money(C_W[53] - C_IN[53]), "≈ $930,900", c_money(C_W[53] - C_IN[53]) == "≈ $930,900")
+claim(idc, "pinned: at 10% a year, year 40 ≈ $844,100 (still short)", c_money(C_W40_10), "≈ $844,100",
+      c_money(C_W40_10) == "≈ $844,100" and C_W40_10 < C_GOAL)
+claim(idc, "pinned: $1M year at 10% a year", C_MILLION_YEAR_10, 42, C_MILLION_YEAR_10 == 42)
+claim(idc, "pinned: at 10% ÷ 12 a month, year 40 ≈ $961,800 (still short)", c_money(fv_monthly(C_M, 0.10, 480)),
+      "≈ $961,800", c_money(fv_monthly(C_M, 0.10, 480)) == "≈ $961,800" and fv_monthly(C_M, 0.10, 480) < C_GOAL)
+claim(idc, "write-up: rate needed for $1M in 40 years ≈ 10.6%", pct(C_RATE_FOR_40 * 100, 1), "10.6%",
+      pct(C_RATE_FOR_40 * 100, 1) == "10.6%")
+claim(idc, "caption: 7%/12 a month ≈ 7.2% a year effective", pct(C_NOM_EFF * 100, 1), "7.2%", pct(C_NOM_EFF * 100, 1) == "7.2%")
+claim(idc, "caption: at 7%/12 a month, year 40 ≈ $399,200 and the $1M year is 53",
+      f"{c_money(C_NOM_W40)} / {C_NOM_MILLION_YEAR}", "≈ $399,200 / 53",
+      c_money(C_NOM_W40) == "≈ $399,200" and C_NOM_MILLION_YEAR == 53)
+claim(idc, "write-up: yearly compounding, $1,825 at each year-end → $1M in year 55",
+      first_year(lambda y: C_DAY * C_DAYS * ((1 + C_RATE) ** y - 1) / C_RATE >= C_GOAL), 55,
+      first_year(lambda y: C_DAY * C_DAYS * ((1 + C_RATE) ** y - 1) / C_RATE >= C_GOAL) == 55)
+claim(idc, "caption: put in at year 54", money(C_IN[C_LAST]), "$98,550", money(C_IN[C_LAST]) == "$98,550")
+claim(idc, "caption: growth at year 54", c_money(C_W[C_LAST] - C_IN[C_LAST]), "≈ $913,100",
+      c_money(C_W[C_LAST] - C_IN[C_LAST]) == "≈ $913,100")
 claim(ida, "caption: S&P ≈ 10% nominal (both sources)", SP_NOMINAL, "round to 10", all(round(x) == 10 for x in SP_NOMINAL))
-claim(ida, "caption: S&P ≈ 7% real (both sources)", SP_REAL, "round to 7", all(round(x) == 7 for x in SP_REAL))
+claim(ida, "caption: S&P ≈ 7% real (officialdata)", SP_REAL, "round to 7", all(round(x) == 7 for x in SP_REAL))
 
 for sid in (ida, idb, idc):
     check_spec(sid)
@@ -501,7 +571,7 @@ for sid in (ida, idb, idc):
 print("Growth ladders (computed):")
 print(f"  09a $100/mo at 8%:  " + "  ".join(f"Y{y} {money(A_IN[y])}→{money(A_W[y])} ({A_RATIO[y]:.3f}×)" for y in A_YEARS))
 print(f"  09b $1,000 × 1.07:  " + "  ".join(f"Y{y} {money(B_V[y])}" for y in B_YEARS) + f"  (simple guess {money(B_GUESS)})")
-print(f"  09c $5/day at 7%:   " + "  ".join(f"Y{y} {money(C_IN[y])}→{c_money(C_W[y])}" for y in C_YEARS))
+print(f"  09c $5/day at 7% a year (effective):   " + "  ".join(f"Y{y} {money(C_IN[y])}→{c_money(C_W[y])}" for y in C_YEARS))
 w = [3, 44, 46, 46, 4]
 print()
 print(" | ".join(h.ljust(x) for h, x in zip(("id", "field", "in spec / shown", "computed / rule", "ok"), w)))

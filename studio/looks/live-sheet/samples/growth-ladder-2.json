@@ -1,0 +1,145 @@
+{
+  "id": "growth-ladder-2",
+  "sample": true,
+  "look": "live-sheet",
+  "format": "growth-ladder",
+  "fps": 30,
+  "header": "**$200 a month** at 10%:\nwhat is it worth, year by year?",
+  "footer": "ASSUMES 10% a year, compounded monthly",
+  "captions": false,
+  "vo": [
+    {
+      "t": 0.0,
+      "d": 3.0,
+      "text": "$200 a month at 10%, year by year."
+    }
+  ],
+  "verdict": {
+    "t": 19.4,
+    "text": "Growth wins from **year 13**"
+  },
+  "data": {
+    "input": {
+      "amount": "$200",
+      "per": "a month",
+      "rate": "10% a year"
+    },
+    "columns": [
+      "Year",
+      "You put in",
+      {
+        "label": "Growth\ninterest earned",
+        "tone": "good"
+      },
+      "Worth"
+    ],
+    "rows": [
+      [
+        "1",
+        "$2,400",
+        "≈ $113",
+        "≈ $2,513"
+      ],
+      [
+        "2",
+        "$4,800",
+        "≈ $489",
+        "≈ $5,289"
+      ],
+      [
+        "3",
+        "$7,200",
+        "≈ $1,156",
+        "≈ $8,356"
+      ],
+      [
+        "4",
+        "$9,600",
+        "≈ $2,144",
+        "≈ $11,744"
+      ],
+      [
+        "5",
+        "$12,000",
+        "≈ $3,487",
+        "≈ $15,487"
+      ],
+      [
+        "6",
+        "$14,400",
+        "≈ $5,222",
+        "≈ $19,622"
+      ],
+      [
+        "7",
+        "$16,800",
+        "≈ $7,390",
+        "≈ $24,190"
+      ],
+      [
+        "8",
+        "$19,200",
+        "≈ $10,036",
+        "≈ $29,236"
+      ],
+      [
+        "9",
+        "$21,600",
+        "≈ $13,211",
+        "≈ $34,811"
+      ],
+      [
+        "10",
+        "$24,000",
+        "≈ $16,969",
+        "≈ $40,969"
+      ],
+      [
+        "11",
+        "$26,400",
+        "≈ $21,372",
+        "≈ $47,772"
+      ],
+      [
+        "12",
+        "$28,800",
+        "≈ $26,488",
+        "≈ $55,288"
+      ],
+      [
+        "13",
+        "$31,200",
+        "≈ $32,390",
+        "≈ $63,590"
+      ],
+      [
+        "14",
+        "$33,600",
+        "≈ $39,162",
+        "≈ $72,762"
+      ],
+      [
+        "15",
+        "$36,000",
+        "≈ $46,894",
+        "≈ $82,894"
+      ]
+    ],
+    "rowsT": 0,
+    "rowEvery": 1.2,
+    "highlightLast": true,
+    "hold": 3.5
+  },
+  "lookOpts": {
+    "unmask": "rows",
+    "marks": [
+      {
+        "t": 14.4,
+        "row": 12,
+        "tone": "good",
+        "label": "Year 13: growth **>** put in"
+      }
+    ]
+  },
+  "notes": "Stress variant: FinCalC's literal 1-15 year card. 15 rows, 4 columns (a green growth column with a 2-line label), silent, whole rows unmask (frame 1 shows year 1 filled and 14 empty numbered rows), one mark that falls back to the formula bar (no room for a tooltip slot), and a formula-bar verdict. Maths: $200 at each month-end, 10% a year compounded monthly (r = 0.10/12). Worth W = 200 × ((1 + r)^(12y) − 1) / r rounded to the dollar; put in = $2,400 × y (exact); growth = W − put in rounded (put in is whole dollars, so round(W) − put in = round(W − put in)). Year 1: 2,513.11; 5: 15,487.41; 10: 40,969.00; 12: 55,287.58 (growth 26,487.58 < 28,800 put in); 13: 63,590.02 (growth 32,390.02 > 31,200: the first year growth beats what was put in); 15: 82,894.07 (growth 46,894.07)."
+}

@@ -3,45 +3,32 @@
   "look": "becker-rig",
   "format": "dead-simple-list",
   "fps": 30,
-  "duration": 31.0,
-  "header": "4 DEAD SIMPLE NUMBERS\nIF YOU MAKE **$60,000** A YEAR",
-  "footer": "ASSUMES 40 hrs × 52 wks · commute ≈ 27 min each way (US avg)",
+  "duration": 26.5,
+  "header": "4 DEAD SIMPLE NUMBERS\nWHAT A 3% RAISE ON **$60,000**\nACTUALLY PAYS YOU",
+  "footer": "ASSUMES a 3% raise (example) · pay\u00a0before\u00a0tax",
   "captions": true,
   "vo": [
-    { "t": 0.0,  "d": 4.3, "text": "Your salary, divided by 2,080: about $28.85 an hour." },
-    { "t": 4.5,  "d": 3.1, "text": "Times 8 hours: about $231 a day." },
-    { "t": 7.8,  "d": 3.9, "text": "Divide the hour by 60: about 48 cents a minute." },
-    { "t": 11.9, "d": 3.5, "text": "Now add the commute: about 27 minutes each way." },
-    { "t": 15.6, "d": 4.3, "text": "Your day just went from 8 hours to 8.9." },
-    { "t": 20.1, "d": 2.8, "text": "Same $231. Real hour: about $26." },
-    { "t": 23.1, "d": 1.3, "text": "Not $28.85." },
-    { "t": 25.0, "d": 3.6, "text": "And these 30 seconds, at work? About 24 cents." }
+    { "t": 0.0,  "d": 3.9, "text": "Take your salary, times 3%: a $1,800 raise." },
+    { "t": 4.2,  "d": 1.6, "text": "Now watch it shrink." },
+    { "t": 6.6,  "d": 2.8, "text": "A month: divide by 12. $150." },
+    { "t": 10.2, "d": 2.8, "text": "A week: divide by 52. About $35." },
+    { "t": 14.2, "d": 3.2, "text": "A day: divide by 365. About $5." },
+    { "t": 18.4, "d": 4.3, "text": "$1,800 sounded big. It's about $5 a day, before tax." }
   ],
-  "verdict": { "t": 23.1, "text": "Count the commute: **≈ $26** an hour, not __$28.85__" },
+  "verdict": { "t": 18.4, "text": "A 3% raise on $60,000 ≈\u00a0**$5\u00a0a\u00a0day**, before tax" },
   "data": {
     "input": { "label": "Salary", "value": "$60,000", "note": "a year" },
     "typeDur": 0.7,
     "items": [
-      { "t": 0.0, "label": "An hour", "formula": "$60,000 ÷ 2,080", "result": "≈ $28.85",
-        "tone": "good", "note": "2,080 work hrs a year", "resultT": 2.7 },
-      { "t": 4.5, "label": "A day", "formula": "$28.85 × 8", "result": "≈ $231",
-        "tone": "good", "note": "8-hr day", "resultT": 6.0 },
-      { "t": 7.8, "label": "A minute", "formula": "$28.85 ÷ 60", "result": "≈ $0.48",
-        "tone": "neutral", "resultT": 10.1 },
-      { "t": 11.9, "label": "Your real hour", "formula": "$231 ÷ 8.9 hrs", "result": "≈ $26",
-        "tone": "goal", "note": "8 hrs + 54 min commute", "resultT": 22.4 }
+      { "t": 0.0, "label": "Your raise, a year", "formula": "$60,000 × 3%", "result": "$1,800",
+        "tone": "good", "resultT": 2.7 },
+      { "t": 6.6, "label": "A month", "formula": "$1,800 ÷ 12", "result": "$150",
+        "tone": "good", "resultT": 8.5 },
+      { "t": 10.2, "label": "A week", "formula": "$1,800 ÷ 52", "result": "≈ $35",
+        "tone": "neutral", "note": "exact $34.62", "resultT": 12.5 },
+      { "t": 14.2, "label": "A day", "formula": "$1,800 ÷ 365", "result": "≈ $5",
+        "tone": "goal", "note": "exact $4.93", "resultT": 16.9 }
     ]
   },
-  "lookOpts": {
-    "stage": "white",
-    "inputProp": "block",
-    "actions": [
-      { "item": 0, "verb": "smash", "tool": "÷ 2,080", "becomes": "one coin from a pile of 2,080" },
-      { "item": 1, "verb": "stack", "tool": "× 8", "becomes": "a stack of 8 coins" },
-      { "item": 2, "verb": "chop", "tool": "÷ 60", "becomes": "a crumb" },
-      { "item": 3, "verb": "drag", "tool": "+ 54 min", "becomes": "the day stretches, the hour coin shrinks" }
-    ],
-    "gag": { "t": 25.0, "text": "30 sec ≈ 24¢" }
-  },
-  "sfx": [ { "t": 23.1, "kind": "ding" } ]
+  "lookOpts": { "hits": ["kick", "chop", "kick", "slam"] }
 }

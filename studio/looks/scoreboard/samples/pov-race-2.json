@@ -1,0 +1,63 @@
+{
+  "id": "sample-scoreboard-pov-race-2",
+  "sample": true,
+  "look": "scoreboard",
+  "format": "pov-race",
+  "fps": 30,
+  "header": "POV: You invested in Starbucks\ninstead of paying **$4 a day**\nfor a grande latte",
+  "footer": "$4 ≈ a grande latte · each year's lattes buy SBUX at its avg price · dividends reinvested",
+  "captions": false,
+  "vo": [
+    { "t": 0.0, "d": 1.9, "text": "$4 lattes, daily, since 2014." },
+    { "t": 2.0, "d": 1.9, "text": "You buy Starbucks stock instead." },
+    { "t": 4.0, "d": 2.4, "text": "That's $1,460 a year into the stock." },
+    { "t": 6.6, "d": 3.4, "text": "The stock climbs faster than the cups pile up." },
+    { "t": 10.4, "d": 2.2, "text": "By 2021, you've doubled your money." },
+    { "t": 13.0, "d": 2.2, "text": "Then it stalls. You keep buying." },
+    { "t": 15.6, "d": 2.2, "text": "End of 2025: $17,532 of lattes." },
+    { "t": 18.0, "d": 1.7, "text": "Or about $24,900 in stock." },
+    { "t": 19.8, "d": 3.8, "text": "About 1.4 times your latte money. Not rich. Not zero." }
+  ],
+  "verdict": { "t": 19.8, "text": "**≈ 1.4×** your latte money.\nNot rich. Not **$0**." },
+  "lookOpts": {
+    "spendTag": "Spent on lattes",
+    "ownTag": "In Starbucks stock",
+    "footerSteps": [
+      { "t": 15.6, "text": "$4 × 4,383 days = $17,532" },
+      { "t": 18.0, "text": "≈ 296 shares × $84.21 ≈ $24,900" },
+      { "t": 19.8, "text": "≈ $24,928 ÷ $17,532 ≈ 1.4×" }
+    ]
+  },
+  "data": {
+    "spend": {
+      "label": "Spent on lattes",
+      "points": [[2014.0, 4.0], [2014.99, 1460], [2015.99, 2920], [2016.99, 4384], [2017.99, 5844], [2018.99, 7304], [2019.99, 8764], [2020.99, 10228], [2021.99, 11688], [2022.99, 13148], [2023.99, 14608], [2024.99, 16072], [2025.99, 17532]],
+      "final": "$17,532 spent",
+      "item": "cup"
+    },
+    "own": {
+      "label": "Same $4/day in Starbucks stock",
+      "points": [[2014.0, 4.0], [2014.99, 1585.83], [2015.99, 3996.62], [2016.99, 5198.84], [2017.99, 6954.83], [2018.99, 9633.4], [2019.99, 14987.7], [2020.99, 20521.04], [2021.99, 24343.41], [2022.99, 22807.68], [2023.99, 23942.32], [2024.99, 24864.51], [2025.99, 24928.31]],
+      "final": "≈ $24,900"
+    },
+    "purchases": [
+      { "x": 2014.0, "label": "Year 1: 365 grande lattes", "price": "$1,460" },
+      { "x": 2015.0, "label": "Year 2: another 365 lattes", "price": "$1,460" },
+      { "x": 2016.0, "label": "2016 is a leap year: 366 lattes", "price": "$1,464" },
+      { "x": 2017.0, "label": "Year 4: 365 lattes", "price": "$1,460" },
+      { "x": 2018.0, "label": "Year 5: 365 lattes", "price": "$1,460" },
+      { "x": 2019.0, "label": "Year 6: 365 lattes", "price": "$1,460" },
+      { "x": 2020.0, "label": "2020 is a leap year: 366 lattes", "price": "$1,464" },
+      { "x": 2021.0, "label": "Year 8: 365 lattes", "price": "$1,460" },
+      { "x": 2022.0, "label": "Year 9: 365 lattes", "price": "$1,460" },
+      { "x": 2023.0, "label": "Year 10: 365 lattes", "price": "$1,460" },
+      { "x": 2024.0, "label": "2024 is a leap year: 366 lattes", "price": "$1,464" },
+      { "x": 2025.0, "label": "Year 12: 365 lattes, and still no shares sold", "price": "$1,460" }
+    ],
+    "x": { "from": 2014, "to": 2025.99, "tickEvery": 4 },
+    "y": { "prefix": "$", "dp": 0 },
+    "raceT": [-0.4, 17.6],
+    "hold": 3.0
+  },
+  "notes": "Stress variant: captions off (the label stack carries each purchase as a hard cut), 12 purchase ticks with long labels, the race already moving at 0.0 s, a footer long enough to wrap, a scoreboard tag too long for its half. Same inputs as teasers/v2/checks/06-pov-race.py (06c), recomputed: $4 every day 1/1/2014-12/31/2025 (a round stake inside FinanceBuzz's grande-latte bracket, $3.65 in 2014 and $4.45 in 2024); each year's $4 × days buys SBUX at that year's average close, adjusted for splits and dividends (dividends reinvested, Macrotrends); value = shares held × year-end close; a point at y + 0.99 is the Dec 31 close of year y. A year is $4 × 365 = $1,460, or $4 × 366 = $1,464 in 2016, 2020 and 2024. Spent: $4 × 4,383 days = $17,532. Shares 296.03 × $84.21 (12/31/2025 close) = $24,928.31 → ≈ $24,900 (3 s.f.); footer 296 × 84.21 = 24,926 ≈ $24,900. Multiple 24,928.31 ÷ 17,532 = 1.42 → ≈ 1.4×. 2021: $24,343.41 vs $11,688 spent = 2.08× (doubled). 2022-2025: $5,844 more in, the stake up only $585 (stalls). Race clock: x 2014.0 → 2025.99 over t −0.4 → 17.6 s (1.50 s a year): frame 1 is already 0.27 years in, year-start ticks land at t 1.10, 2.60, … 16.11. No fees or taxes."
+}

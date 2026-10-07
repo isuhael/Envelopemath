@@ -3,54 +3,59 @@
   "look": "live-sheet",
   "format": "what-difference",
   "fps": 30,
-  "duration": 33.4,
-  "header": "What difference do monthly,\nbiweekly and weekly payments\nmake on a **$44,000** car loan?",
-  "footer": "ASSUMES 7% APR, 72 months, interest charged daily, each payment applied the day it's paid",
+  "duration": 37.2,
+  "header": "What difference do weekly and\nbiweekly payments really make\non a **$44,000** car loan?",
+  "footer": "ASSUMES daily interest, posted when paid",
   "captions": true,
   "vo": [
     {
       "t": 0.0,
+      "d": 3.6,
+      "text": "About a year off this loan. Guess which one."
+    },
+    {
+      "t": 3.8,
       "d": 4.0,
       "text": "Monthly: 72 months, about $10,000 in interest."
     },
     {
-      "t": 4.2,
+      "t": 8.0,
       "d": 4.8,
       "text": "Biweekly: about 65 months, about $1,100 less."
     },
     {
-      "t": 9.2,
+      "t": 13.0,
       "d": 4.8,
       "text": "Weekly: about 65 months too. Only about $35 better."
     },
     {
-      "t": 14.2,
+      "t": 18.0,
       "d": 4.4,
       "text": "Both add up to 13 monthly payments a year, not 12."
     },
     {
-      "t": 18.8,
+      "t": 22.6,
       "d": 4.0,
       "text": "Now round each weekly payment up to $200."
     },
     {
-      "t": 23.0,
+      "t": 26.8,
       "d": 4.0,
       "text": "About 60 months. About $1,800 less."
     },
     {
-      "t": 27.2,
+      "t": 31.0,
       "d": 4.0,
       "text": "About $12 more a week. About a year sooner."
     }
   ],
   "verdict": {
-    "t": 27.2,
+    "t": 31.0,
     "text": "Round up to **$200** a week:\n**≈ 1 year** sooner, **≈ $1,800** less"
   },
   "data": {
     "stake": {
-      "label": "Avg new-car loan",
+      "label": "New-car loan",
       "value": "$44,000",
       "terms": "7% APR · 72 months"
     },
@@ -76,36 +81,33 @@
         "tone": "bad"
       },
       {
-        "t": 4.2,
+        "t": 8.0,
         "name": "Biweekly",
-        "detail": "$375.08 every 2 weeks",
+        "detail": "$375.08 every 2 wks",
         "values": {
           "payoff": "≈ 65 months",
           "interest": "≈ $8,900"
         },
-        "delta": "≈ $1,100 less",
         "tone": "good"
       },
       {
-        "t": 9.2,
+        "t": 13.0,
         "name": "Weekly",
-        "detail": "$187.54 every week",
+        "detail": "$187.54 a week",
         "values": {
           "payoff": "≈ 65 months",
           "interest": "≈ $8,900"
         },
-        "delta": "≈ $1,100 less",
         "tone": "neutral"
       },
       {
-        "t": 19.2,
-        "name": "Weekly, rounded up",
-        "detail": "$200 every week",
+        "t": 23.0,
+        "name": "Rounded up",
+        "detail": "$200 a week",
         "values": {
           "payoff": "≈ 60 months",
           "interest": "≈ $8,200"
         },
-        "delta": "≈ $1,800 less",
         "tone": "goal"
       }
     ],
@@ -113,50 +115,15 @@
     "hold": 2.2
   },
   "lookOpts": {
-    "formulaBar": [
-      {
-        "t": 0.0,
-        "text": "= $750.16 × 72 − $44,000 ≈ $10,000 interest"
-      },
-      {
-        "t": 4.2,
-        "text": "= $375.08 × 26 = $9,752.08 a year"
-      },
-      {
-        "t": 9.2,
-        "text": "= $187.54 × 52 = $9,752.08 a year"
-      },
-      {
-        "t": 14.2,
-        "text": "= 13 × $750.16: 13 payments, not 12"
-      },
-      {
-        "t": 19.2,
-        "text": "= $200 × 52 = $10,400 a year: ≈ $648 more"
-      },
-      {
-        "t": 27.2,
-        "text": "= $200 − $187.54 = $12.46 more a week"
-      }
-    ]
-  },
-  "sfx": [
-    {
-      "t": 4.2,
-      "kind": "pop"
-    },
-    {
-      "t": 9.2,
-      "kind": "pop"
-    },
-    {
-      "t": 19.2,
-      "kind": "roll",
-      "dur": 0.8
-    },
-    {
-      "t": 27.2,
-      "kind": "ding"
+    "formulas": [
+      "= $750.16 × 72 − $44,000 ≈ $10,000",
+      "= $375.08 × 26 = $9,752.08 a year",
+      "= $187.54 × 52 = $9,752.08 a year",
+      "= $187.54 + $12.46 = $200 a week"
+    ],
+    "lever": {
+      "t": 18.0,
+      "text": "= 13 × $750.16 = $9,752.08: 13 payments, not 12"
     }
-  ]
+  }
 }

@@ -1,0 +1,41 @@
+{
+  "id": "sample-scoreboard-chart-race-2",
+  "sample": true,
+  "look": "scoreboard",
+  "format": "chart-race",
+  "fps": 30,
+  "header": "POV: **$10,000** each in 2010:\nstocks, gold or the bank?",
+  "footer": "S&P 500 with dividends · FDIC avg savings rate",
+  "captions": false,
+  "verdict": {"t": 26.0, "text": "The bank paid **≈ $236**\nin 16 years."},
+  "data": {
+    "stake": "$10,000 each · Jan 2010",
+    "series": [
+      {
+        "name": "S&P 500 index fund",
+        "points": [[2010.0, 10000.0], [2010.99, 11506.0], [2011.99, 11748.78], [2012.99, 13628.58], [2013.99, 18042.88], [2014.99, 20512.95], [2015.99, 20796.03], [2016.99, 23283.23], [2017.99, 28365.96], [2018.99, 27123.53], [2019.99, 35664.73], [2020.99, 42227.04], [2021.99, 54350.43], [2022.99, 44507.56], [2023.99, 56208.6], [2024.99, 70272.0], [2025.99, 82836.63]],
+        "final": "≈ $82.8K"
+      },
+      {
+        "name": "Gold",
+        "points": [[2010.0, 10000.0], [2010.99, 12960.0], [2011.99, 14268.96], [2012.99, 15282.06], [2013.99, 11003.08], [2014.99, 10805.02], [2015.99, 9681.3], [2016.99, 10494.53], [2017.99, 11879.81], [2018.99, 11689.73], [2019.99, 13828.95], [2020.99, 17300.02], [2021.99, 16677.22], [2022.99, 16610.51], [2023.99, 18803.1], [2024.99, 23917.54], [2025.99, 39361.7]],
+        "final": "≈ $39.4K"
+      },
+      {
+        "name": "Savings account",
+        "points": [[2010.0, 10000.0], [2010.99, 10021.0], [2011.99, 10037.03], [2012.99, 10048.07], [2013.99, 10056.62], [2014.99, 10062.65], [2015.99, 10068.69], [2016.99, 10074.73], [2017.99, 10080.77], [2018.99, 10086.82], [2019.99, 10094.39], [2020.99, 10103.47], [2021.99, 10107.51], [2022.99, 10113.58], [2023.99, 10146.95], [2024.99, 10194.64], [2025.99, 10236.44]],
+        "final": "≈ $10.2K"
+      }
+    ],
+    "x": {"from": 2010, "to": 2025.99, "tickEvery": 5},
+    "y": {"prefix": "$", "dp": 1, "compact": true, "log": false},
+    "raceT": [0.6, 24.6],
+    "events": [
+      {"x": 2013.0, "until": 2013.99, "label": "Gold −28%"},
+      {"x": 2022.0, "until": 2022.99, "label": "Stocks −18%"},
+      {"x": 2025.0, "label": "Gold +65%", "tone": "good"}
+    ],
+    "hold": 3.0
+  },
+  "notes": "Stress variant: 3 rivals, long names (the tip labels stack name over value), compact counters (dp 1), silent (captions off: flags cut into the label stack), frame 1 at the start (raceT[0] > 0). $10,000 each at the Dec 31, 2009 close; V(y) = V(y-1) × (1 + r(y)). Returns as sourced in teasers/v2/checks/04-chart-race.py (S&P 500 total return; gold year-end change, 2025 = +64.57%; FDIC national average savings rate, January of each year, odd years 2011-2019 interpolated as there). Finals: S&P 500 $82,836.63 → ≈ $82.8K; gold $39,361.70 → ≈ $39.4K; savings $10,236.44 → ≈ $10.2K (interest $236.44 → ≈ $236 in 16 years). Gold leads 2010-2012; the S&P 500 passes it during 2013 (x ≈ 2013.18)."
+}

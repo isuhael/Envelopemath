@@ -1,0 +1,32 @@
+{
+  "id": "becker-rig-unit-ladder",
+  "sample": true,
+  "look": "becker-rig",
+  "format": "unit-ladder",
+  "fps": 30,
+  "header": "What things cost in\n**Costco hot dogs**",
+  "footer": "Hot dog + soda = $1.50 · 2026 prices",
+  "captions": true,
+  "vo": [
+    { "t": 0.0,  "d": 1.3, "text": "One Costco hot dog: **$1.50.**" },
+    { "t": 1.5,  "d": 2.3, "text": "A month of Netflix? **≈ 12 hot dogs.**" },
+    { "t": 5.5,  "d": 2.3, "text": "A new iPhone? **≈ 533.**" },
+    { "t": 9.5,  "d": 2.4, "text": "A year of rent? **13,600.**" },
+    { "t": 13.5, "d": 2.4, "text": "An average new car? **≈ 33,333.**" },
+    { "t": 17.7, "d": 3.0, "text": "A typical house? **≈ 266,667 hot dogs.**" },
+    { "t": 21.2, "d": 2.4, "text": "That's a hot dog a day for **730 years.**" }
+  ],
+  "verdict": { "t": 21.2, "text": "A hot dog a day\nfor **≈ 730 years.**" },
+  "data": {
+    "unit": { "name": "Costco hot dog", "price": "$1.50", "icon": "hotdog" },
+    "rungs": [
+      { "t": 1.4,  "item": "A month of Netflix",         "cost": "$17.99",    "units": 11.99,  "unitsDisplay": "≈ 12" },
+      { "t": 5.4,  "item": "An iPhone 17",               "cost": "$799",      "units": 532.67, "unitsDisplay": "≈ 533" },
+      { "t": 9.4,  "item": "A year of rent at $1,700/mo", "cost": "$20,400",   "units": 13600,  "unitsDisplay": "13,600" },
+      { "t": 13.4, "item": "An average new car",         "cost": "≈ $50,000", "units": 33333,  "unitsDisplay": "≈ 33,333" },
+      { "t": 17.6, "item": "A typical US house",         "cost": "≈ $400,000", "units": 266667, "unitsDisplay": "≈ 266,667" }
+    ],
+    "hold": 3.0
+  },
+  "notes": "Unit: Costco hot dog + soda combo, $1.50 (unchanged since 1985). Maths: $17.99 ÷ $1.50 = 11.99 (Netflix Standard, US, 2025-26); $799 ÷ $1.50 = 532.67 (iPhone 17 US launch price, Sept 2025); $1,700 × 12 = $20,400, ÷ $1.50 = 13,600; $50,000 ÷ $1.50 = 33,333.3 (average new-car transaction price ≈ $50,000, KBB 2025); $400,000 ÷ $1.50 = 266,666.7 (a typical US home, median existing-home price ≈ $400-420K in 2025). Verdict: 266,667 ÷ 365 = 730.6 years of one hot dog a day (≈ 730)."
+}

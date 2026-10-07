@@ -3,16 +3,16 @@
   "look": "live-sheet",
   "format": "find-your-row",
   "fps": 30,
-  "duration": 12.5,
+  "duration": 13.0,
   "header": "What **$3 a day**\ncosts you by age",
-  "footer": "Invested monthly at 7% a year until 65 · no tax, fees or inflation",
+  "footer": "At 7% a year until 65 · no tax, fees, inflation",
   "captions": true,
   "vo": [
-    { "t": 0.0, "d": 3.6, "text": "What **$3 a day** costs you, by age." },
-    { "t": 4.0, "d": 3.5, "text": "Start at 25: **≈ $240,000**." },
-    { "t": 7.7, "d": 2.5, "text": "Start at 35? **Less than half.**" }
+    { "t": 0.0, "d": 4.3, "text": "$3 a day at 18: **≈ $400,000**." },
+    { "t": 4.5, "d": 3.3, "text": "At 25: **≈ $240,000**." },
+    { "t": 8.0, "d": 3.5, "text": "10 years younger? It costs you **more than double**." }
   ],
-  "verdict": { "t": 8.9, "text": "Wait 10 years: **less than half**." },
+  "verdict": { "t": 10.3, "text": "10 years younger: it costs **more than double**." },
   "data": {
     "columns": [
       { "label": "Your age" },
@@ -31,14 +31,14 @@
       ["55", "$10,950", "≈ $16,000"],
       ["60", "$5,475", "≈ $6,500"]
     ],
-    "formula": "= $3 × 365 ÷ 12 = $91.25 a month, at 7%",
+    "formula": "= $3 × 365 ÷ 12 = $91.25 a month",
     "rowsT": 0.0,
     "rowEvery": 0.5,
     "pick": [
-      { "t": 4.0, "row": 2, "label": "≈ 5.5× what you'd spend" },
-      { "t": 7.7, "row": 4, "label": "10 years later" }
+      { "t": 4.5, "row": 2, "label": "≈ 5.5× what you'd spend" },
+      { "t": 8.0, "row": 4, "label": "At 25: ≈ 2.2× this" }
     ],
-    "hold": 4.8
+    "hold": 5.0
   },
-  "sfx": [ { "t": 8.9, "kind": "ding" } ]
+  "sfx": [ { "t": 10.3, "kind": "ding" } ]
 }

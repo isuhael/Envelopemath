@@ -17,12 +17,18 @@
    - shown deltas equal the difference of the shown totals (no rounding drift),
    - the contract shape of FORMATS.md section 3 (stake, metrics, 2-4 options, winner, hold),
    - hook rules that can be tested mechanically: a number in the header at t = 0 (R1),
-     exactly one dollar figure in the header (R2), header <= 15 words (R8), first values on
-     screen by 3 s (R10),
-   - timing: VO read at ~2.6 spoken words per second, lines don't overlap, each option lands
-     within 0.9 s of the word that names it, every lookOpts step and sfx cue sits on a beat,
-     duration in the 20-40 s lane, hold = duration - last VO end, verdict.t = last VO line t.
+     exactly one dollar figure in the header (R2), header <= 15 words (R8), the baseline
+     option's results already on screen at frame 1 (R1/R10),
+   - timing: VO read at ~2.6 spoken words per second, lines don't overlap, each later option
+     lands within 0.9 s of the word that names it (its landing = option.resultT when the kit
+     reads one, else option.t), every lookOpts step (lever, footerSteps, checkT) sits on a beat,
+     no spec-level sfx (each kit cues its own landings), duration in the 20-40 s lane,
+     hold = duration - last VO end, verdict.t = last VO line t.
 3. Prints a table and exits 1 on any mismatch.
+
+Revision 2 (2026-10-07, after the verifier and hook-judge reviews): specs rebuilt against the
+shipped kit APIs (live-sheet lookOpts.formulas/lever, clean-sheet option.resultT, scoreboard
+option.resultT + footerSteps), new hooks and VO, Experian figures dropped (not verifiable).
 
 Run:  python3 teasers/v2/checks/03-what-difference.py
 """
@@ -44,12 +50,16 @@ FIRST_VALUES_BY = 3.0  # R10: the first option's values are on screen by this ti
 # Searches run 2026-10-07; publisher pages are listed in teasers/v2/03-what-difference.md.
 
 # 03a. Edmunds Q3 2026 (Oct 2026): avg amount financed, new vehicles $44,664; avg APR 7.0%;
-#      avg term "past 70 months". Experian State of the Automotive Finance Market Q2 2026:
-#      avg new-vehicle loan $43,610 at 6.35%. $44,000 sits between the two; 7% = Edmunds;
-#      72 months = the standard term just above both averages (Experian Q1 2026: ~69.5).
+#      avg term "past 70 months"; 25.5% of new loans at 84 months or more. Edmunds Q2 2026
+#      (AP): $44,156 at 7.0%. $44,000 = a round loan just under both quarterly averages (it is
+#      NOT their rounding: $44,664 rounds to $45,000), so the screen says "New-car loan" and
+#      the caption says "≈ the average". 7% = Edmunds; 72 months = the standard term just
+#      above the "past 70 months" average. (Revision 2 dropped the Experian Q2 2026 figures:
+#      the verifier could not confirm them and a fresh search returned different numbers.)
 EDMUNDS_Q3_AMOUNT, EDMUNDS_Q3_APR = 44_664, 0.070
-EXPERIAN_Q2_AMOUNT, EXPERIAN_Q2_APR = 43_610, 0.0635
+EDMUNDS_Q2_AMOUNT = 44_156
 CAR_P, CAR_APR, CAR_N = 44_000, 0.07, 72
+CAR_WHATIF_APRS = (0.06, 0.08)   # unsourced what-if rates for the sensitivity line (write-up)
 CAR_ROUND_UP = 200          # the weekly payment rounded up to the next round number
 
 # 03b. Federal Reserve G.19, Q2 2026: commercial-bank rate on credit card plans, accounts
@@ -158,10 +168,10 @@ CAR_ROUND_EXTRA_WK = CAR_ROUND_UP - CAR_WK
 CAR_ROUND_EXTRA_YR = CAR_YEAR_ROUND - CAR_YEAR_WK
 CAR_ROUND_SOONER_YRS = (CAR["monthly"]["months"] - CAR["rounded"]["months"]) / 12
 
-def car_case(apr):                          # sensitivity (write-up)
-    pm = car_payment(CAR_P, apr, CAR_N)
-    out = {"monthly": car_run(CAR_P, apr, pm, DAYS_MONTH), "biweekly": car_run(CAR_P, apr, c2(pm / 2), 14),
-           "weekly": car_run(CAR_P, apr, c2(pm / 4), 7), "rounded": car_run(CAR_P, apr, CAR_ROUND_UP, 7)}
+def car_case(apr, P=CAR_P):                 # sensitivity (write-up)
+    pm = car_payment(P, apr, CAR_N)
+    out = {"monthly": car_run(P, apr, pm, DAYS_MONTH), "biweekly": car_run(P, apr, c2(pm / 2), 14),
+           "weekly": car_run(P, apr, c2(pm / 4), 7), "rounded": car_run(P, apr, CAR_ROUND_UP, 7)}
     return pm, out
 
 # ---- 03b: credit card, interest billed monthly at APR/12 (rounded to the cent), no new
@@ -257,31 +267,29 @@ ida = "03a-live-sheet-car-loan-weekly"
 car_keys = ["monthly", "biweekly", "weekly", "rounded"]
 ea = {
     "header": T(money(CAR_P)),
-    "footer": T(pct(CAR_APR), str(CAR_N)),
+    "footer": T(),                                     # "ASSUMES daily interest, posted when paid"
     "data.stake.value": E(money(CAR_P)),
     "data.stake.terms": E(f"{pct(CAR_APR)} APR · {CAR_N} months"),
-    "data.options[1].detail": E(f"{money(CAR_BIWK, 0.01)} every 2 weeks"),
     "data.options[0].detail": E(f"{money(CAR_PMT, 0.01)} a month"),
-    "data.options[2].detail": E(f"{money(CAR_WK, 0.01)} every week"),
-    "data.options[3].detail": E(f"{money(CAR_ROUND_UP)} every week"),
-    "data.options[3].name": T(),
+    "data.options[1].detail": E(f"{money(CAR_BIWK, 0.01)} every 2 wks"),
+    "data.options[2].detail": E(f"{money(CAR_WK, 0.01)} a week"),
+    "data.options[3].detail": E(f"{money(CAR_ROUND_UP)} a week"),
     "verdict.text": T(money(CAR_ROUND_UP), num(CAR_ROUND_SOONER_YRS), money(CAR_SAVE["rounded"], 100)),
-    "lookOpts.formulaBar[0].text": T(money(CAR_PMT, 0.01), str(CAR_N), money(CAR_P), money(CAR_SIMPLE_INT, 100)),
-    "lookOpts.formulaBar[1].text": T(money(CAR_BIWK, 0.01), "26", money(CAR_YEAR_BIWK, 0.01)),
-    "lookOpts.formulaBar[2].text": T(money(CAR_WK, 0.01), "52", money(CAR_YEAR_WK, 0.01)),
-    "lookOpts.formulaBar[3].text": T("13", money(CAR_PMT, 0.01), "13", "12"),
-    "lookOpts.formulaBar[4].text": T(money(CAR_ROUND_UP), "52", money(CAR_YEAR_ROUND), money(CAR_ROUND_EXTRA_YR)),
-    "lookOpts.formulaBar[5].text": T(money(CAR_ROUND_UP), money(CAR_WK, 0.01), money(CAR_ROUND_EXTRA_WK, 0.01)),
+    # live-sheet: one working per option (formulas[0] belongs to the pre-filled baseline column, which the
+    # kit never re-types), plus the lever line retyped into the bar at lever.t
+    "lookOpts.formulas[0]": T(money(CAR_PMT, 0.01), str(CAR_N), money(CAR_P), money(CAR_SIMPLE_INT, 100)),
+    "lookOpts.formulas[1]": T(money(CAR_BIWK, 0.01), "26", money(CAR_YEAR_BIWK, 0.01)),
+    "lookOpts.formulas[2]": T(money(CAR_WK, 0.01), "52", money(CAR_YEAR_WK, 0.01)),
+    "lookOpts.formulas[3]": T(money(CAR_WK, 0.01), money(CAR_ROUND_EXTRA_WK, 0.01), money(CAR_ROUND_UP)),
+    "lookOpts.lever.text": T("13", money(CAR_PMT, 0.01), money(CAR_YEAR_MONTHLY, 0.01), "13", "12"),
 }
 for i, k in enumerate(car_keys):
     run = CAR[k]
     ea[f"data.options[{i}].values.payoff"] = E(months_disp(run["months"]))
     ea[f"data.options[{i}].values.interest"] = E(money(run["interest"], 100))
-    if i:
-        ea[f"data.options[{i}].delta"] = E(money(CAR_SAVE[k], 100) + " less")
-ea["data.options[1].name"] = T()
 expect[ida] = ea
 vo_expect[ida] = [
+    [],                                                  # "About a year off this loan. Guess which one."
     [(str(CAR["monthly"]["n"]), False), (bare(money(CAR["monthly"]["interest"], 100)), True)],
     [(bare(num(CAR["biweekly"]["months"])), True), (bare(money(CAR_SAVE["biweekly"], 100)), True)],
     [(bare(num(CAR["weekly"]["months"])), True), (bare(money(CAR_WK_VS_BIWK)), True)],
@@ -290,59 +298,57 @@ vo_expect[ida] = [
     [(bare(num(CAR["rounded"]["months"])), True), (bare(money(CAR_SAVE["rounded"], 100)), True)],
     [(bare(money(CAR_ROUND_EXTRA_WK)), True)],
 ]
-beats[ida] = [(0, 0, "Monthly"), (1, 1, "Biweekly"), (2, 2, "Weekly"), (3, 4, "round")]
+# (option, VO line, word): option 0 is the pre-filled baseline (on screen before any word names it)
+beats[ida] = [(1, 2, "Biweekly"), (2, 3, "Weekly"), (3, 5, "round")]
+# VO lines that say "about a year" (no digit, so the token checks can't see them): they rest on the
+# CAR_ROUND_SOONER_YRS claim below
+year_lines = {ida: [0, 7]}
 
 # ---- 03b
 idb = "03b-clean-sheet-card-minimum"
 eb = {
-    "header": T(money(CARD_FLATS[0])),
+    "header": T(money(CARD_B)),
     "footer": T(pct(CARD_APR), pct(MIN_PCT), money(MIN_FLOOR)),
     "data.stake.value": E(money(CARD_B)),
     "data.stake.terms": E(f"{pct(CARD_APR)} APR · no new charges"),
-    "data.options[0].detail": E(f"starts at {money(CARD_FIRST_MIN)}, then shrinks"),
+    "data.options[0].detail": E(f"starts at {money(CARD_FIRST_MIN, 0.01)}, then shrinks"),
     "data.options[1].name": E(f"A flat {money(150)}"),
     "data.options[2].name": E(f"A flat {money(250)}"),
-    "data.options[1].detail": E(f"{money(150)} every month"),
-    "data.options[2].detail": E(f"{money(250)} every month"),
     "data.options[0].values.payoff": E(years_disp(CARD["min"]["years"])),
     "data.options[0].values.interest": E(money(CARD["min"]["interest"], 100)),
     "verdict.text": T(money(CARD_150_OVER_MIN), num(CARD_SOONER[150])),
-    "lookOpts.badge": T(money(CARD_B), money(0)),
-    "lookOpts.formulas[0]": T(pct(MIN_PCT), money(MIN_FLOOR)),
-    "lookOpts.formulas[1]": T(money(150), money(0)),
-    "lookOpts.formulas[2]": T(money(250), money(0)),
-    "lookOpts.check.text": T(money(150), money(CARD_FIRST_MIN, 0.01), money(CARD_150_OVER_MIN, 0.01), "1"),
 }
 for i, k in ((1, 150), (2, 250)):
+    # each flat payment's working: how far above the FIRST minimum it is (the lever, sized honestly)
+    eb[f"data.options[{i}].detail"] = E(f"{money(k)} − {money(CARD_FIRST_MIN, 0.01)} = {money(k - CARD_FIRST_MIN, 0.01)} more")
     eb[f"data.options[{i}].values.payoff"] = E(years_disp(CARD[k]["years"]))
     eb[f"data.options[{i}].values.interest"] = E(money(CARD[k]["interest"], 100))
     eb[f"data.options[{i}].delta"] = E(f"{num(CARD_SOONER[k])} years sooner")
 expect[idb] = eb
 vo_expect[idb] = [
-    [(money(CARD_B), False), (pct(CARD_APR), False)],
-    [(bare(money(CARD_FIRST_MIN)), True)],
-    [(bare(num(CARD["min"]["years"])), True), (bare(money(CARD["min"]["interest"], 100)), True)],
-    [(money(CARD_B), False)],
-    [(money(150), False), (bare(money(CARD_150_OVER_MIN)), True)],
+    [(money(CARD_B), False), (bare(num(CARD["min"]["years"])), True)],
+    [(bare(money(CARD["min"]["interest"], 100)), True)],
+    [(money(150), False)],
+    [(bare(money(CARD_150_OVER_MIN)), True)],
     [(bare(num(CARD[150]["years"], 1)), True), (bare(money(CARD[150]["interest"], 100)), True)],
     [(money(250), False), (bare(num(CARD[250]["years"], 1)), True)],
     [],
 ]
-beats[idb] = [(0, 0, "minimum"), (1, 4, "flat"), (2, 6, "flat")]
+beats[idb] = [(1, 2, "flat"), (2, 5, "flat")]
 
 # ---- 03c
 idc = "03c-scoreboard-mortgage-extra-100"
 ec = {
     "header": T(money(100), "30"),
-    "footer": T(pct(MORT_APR, 1), "1"),
+    "footer": T(money(MORT_P), pct(MORT_APR, 1), pct(FREDDIE_OCT1_2026, 2), "1"),
     "data.stake.value": E(money(MORT_P)),
     "data.stake.terms": E(f"{pct(MORT_APR, 1)} fixed · {MORT_N // 12} years"),
     "verdict.text": T(money(100), money(MORT_SAVE[100], 100)),
     "lookOpts.footerSteps[0].text": T(money(MORT_PMT, 0.01), str(MORT_N), money(MORT_P), money(MORT_SIMPLE_INT, 100)),
     "lookOpts.footerSteps[1].text": T(money(MORT_PMT, 0.01), money(100), money(MORT_PMT + 100, 0.01)),
     "lookOpts.footerSteps[2].text": T(money(MORT_PMT, 0.01), money(500), money(MORT_PMT + 500, 0.01)),
-    "lookOpts.footerSteps[3].text": T(money(100), str(MORT_FULL_EXTRAS), money(MORT[100]["extra_in"], 100),
-                                       money(MORT_SAVE[100], 100), money(MORT_PER_DOLLAR, 0.01)),
+    "lookOpts.footerSteps[3].text": T(money(MORT_SAVE[100], 100), money(100), str(MORT_FULL_EXTRAS),
+                                       money(MORT_PER_DOLLAR, 0.01)),
 }
 for i, x in enumerate(MORT_EXTRAS):
     run = MORT[x]
@@ -354,15 +360,17 @@ for i, x in enumerate(MORT_EXTRAS):
         ec[f"data.options[{i}].delta"] = E(money(MORT_SAVE[x], 100) + " less")
 expect[idc] = ec
 vo_expect[idc] = [
-    [(money(MORT_P), False), (pct(MORT_APR, 1), False), (str(MORT_N // 12), False)],
-    [(bare(money(MORT[0]["interest"], 100)), True)],
+    [(bare(money(MORT[0]["interest"], 100)), True)],   # "Interest alone: about $587,200."
+    [],                                                 # "More than the loan." (claim below)
     [(money(100), False)],
     [(str(MORT_SOONER_MO[100]), False), (bare(money(MORT_SAVE[100], 100)), True)],
     [(money(500), False)],
     [(bare(num(MORT_SOONER_YRS[500])), True), (bare(money(MORT_SAVE[500], 100)), True)],
     [(money(100), False), (bare(money(MORT_PER_DOLLAR, 0.01)), True)],
 ]
-beats[idc] = [(0, 0, "400,000"), (1, 2, "Add"), (2, 4, "Add")]
+beats[idc] = [(1, 2, "Add"), (2, 4, "Add")]
+year_lines[idb] = []
+year_lines[idc] = []
 
 # ============================================================== text helpers
 
@@ -482,7 +490,19 @@ def check_spec(sid):
     record(sid, "winner index", d["winner"], f"0-{len(opts) - 1}", 0 <= d["winner"] < len(opts))
     ts = [o["t"] for o in opts]
     record(sid, "options t ascending", ts, "ascending", all(a < b for a, b in zip(ts, ts[1:])) and ts[-1] < dur)
-    record(sid, "R10 first values on screen", ts[0], f"≤ {FIRST_VALUES_BY}", ts[0] <= FIRST_VALUES_BY)
+    # when each option's results are on screen. live-sheet: option.t IS the landing (t <= 0 = pre-filled).
+    # clean-sheet / scoreboard: option.resultT pins the landing (clean-sheet: t is when the working starts
+    # typing; scoreboard: t is the hard cut that names the option).
+    land = [o.get("resultT", o["t"]) if look in ("clean-sheet", "scoreboard") else o["t"] for o in opts]
+    if look in ("clean-sheet", "scoreboard"):
+        record(sid, "every option pins its landing (resultT)", ["resultT" in o for o in opts], "all",
+               look == "scoreboard" and "resultT" in opts[0] or all("resultT" in o for o in opts))
+    record(sid, "R10 first values on screen", land[0], f"≤ {FIRST_VALUES_BY}", land[0] <= FIRST_VALUES_BY)
+    # frame 1 = the baseline already worked out (R1 full answer, R10 shock first). clean-sheet: both metrics
+    # (0.5 s apart) and the 0.38 s highlighter must have settled before t = 0
+    settle = land[0] + (0.5 * (len(keys) - 1) + 0.38 if look == "clean-sheet" else 0)
+    record(sid, "R1 baseline results on screen at frame 1", round(settle, 2), "≤ 0", settle <= 0)
+    record(sid, "no spec-level sfx (each kit cues its own landings)", len(spec.get("sfx", [])), 0, not spec.get("sfx"))
 
     # --- display strings and numeric tokens
     covered = set()
@@ -543,17 +563,31 @@ def check_spec(sid):
     record(sid, "verdict.t = last VO line t", spec["verdict"]["t"], vo[-1]["t"], spec["verdict"]["t"] == vo[-1]["t"])
     for oi, li, kw in beats[sid]:
         est = word_time(vo[li], kw)
-        record(sid, f"option {oi} '{opts[oi]['name']}' vs VO word '{kw}'", opts[oi]["t"], f"{est:.2f} ± {BEAT_TOL}",
-               abs(opts[oi]["t"] - est) <= BEAT_TOL)
+        # clean-sheet: the results land at resultT; live-sheet: t is the landing; scoreboard: t is the cut
+        at = land[oi] if look == "clean-sheet" else opts[oi]["t"]
+        record(sid, f"option {oi} '{opts[oi]['name']}' vs VO word '{kw}'", at, f"{est:.2f} ± {BEAT_TOL}",
+               abs(at - est) <= BEAT_TOL)
+        if look == "clean-sheet":
+            record(sid, f"option {oi} working types first (t < resultT)", (opts[oi]["t"], land[oi]), "t + 0.15 ≤ resultT",
+                   opts[oi]["t"] + 0.15 <= land[oi])
+    for li in year_lines[sid]:
+        record(sid, f"vo[{li}] says 'about a year'", vo[li]["text"], "contains 'about a year'", "about a year" in vo[li]["text"].lower())
     anchors = ts + [spec["verdict"]["t"]] + [line["t"] for line in vo]
     lo = spec.get("lookOpts", {})
     for key in ("formulaBar", "footerSteps"):
         for k, stp in enumerate(lo.get(key, [])):
             record(sid, f"lookOpts.{key}[{k}] on a beat", stp["t"], "an option/VO/verdict t",
                    any(abs(stp["t"] - a) < 1e-9 for a in anchors))
-    if "check" in lo:
-        record(sid, "lookOpts.check on a beat", lo["check"]["t"], "an option/VO/verdict t",
-               any(abs(lo["check"]["t"] - a) < 1e-9 for a in anchors))
+            record(sid, f"lookOpts.{key}[{k}] after t = 0 (spec.footer visible at frame 1)", stp["t"], "> 0", stp["t"] > 0)
+            record(sid, f"lookOpts.{key}[{k}] ≤ 45 chars (kit footer limit)", len(stp["text"]), "≤ 45", len(stp["text"]) <= 45)
+    if isinstance(lo.get("lever"), dict):
+        record(sid, "lookOpts.lever on a beat", lo["lever"]["t"], "an option/VO/verdict t",
+               any(abs(lo["lever"]["t"] - a) < 1e-9 for a in anchors))
+    if "checkT" in lo:
+        record(sid, "lookOpts.checkT on a beat", lo["checkT"], "an option/VO/verdict t",
+               any(abs(lo["checkT"] - a) < 1e-9 for a in anchors))
+    if look == "live-sheet" and "formulas" in lo:
+        record(sid, "lookOpts.formulas: one per option", len(lo["formulas"]), len(opts), len(lo["formulas"]) == len(opts))
     for cue in spec.get("sfx", []):
         record(sid, f"sfx {cue['kind']} on a beat", cue["t"], "an option/VO/verdict t", any(abs(cue["t"] - a) < 1e-9 for a in anchors))
     return spec
@@ -569,13 +603,19 @@ claim(ida, "biweekly year = weekly year = 13 monthly payments",
 claim(ida, "weekly beats biweekly by < $50", money(CAR_WK_VS_BIWK, 0.01), "< $50", 0 < CAR_WK_VS_BIWK < 50)
 claim(ida, "rounding up ≈ 1 year sooner", num(CAR_ROUND_SOONER_YRS, 2), "≈ 1", num(CAR_ROUND_SOONER_YRS) == "≈ 1")
 claim(ida, "rounding = ≈ $54 more a month", money(CAR_ROUND_EXTRA_YR / 12), "≈ $54", money(CAR_ROUND_EXTRA_YR / 12) == "≈ $54")
-claim(ida, "loan sits between the two sourced averages", CAR_P, f"{EXPERIAN_Q2_AMOUNT}-{EDMUNDS_Q3_AMOUNT}",
-      EXPERIAN_Q2_AMOUNT <= CAR_P <= EDMUNDS_Q3_AMOUNT)
+claim(ida, "$44,000: a round loan just under both Edmunds 2026 averages, within 1.5%", CAR_P,
+      f"≤ {EDMUNDS_Q2_AMOUNT:,} and ≤ {EDMUNDS_Q3_AMOUNT:,}, ≥ 98.5% of {EDMUNDS_Q3_AMOUNT:,}",
+      CAR_P <= min(EDMUNDS_Q2_AMOUNT, EDMUNDS_Q3_AMOUNT) and CAR_P >= 0.985 * EDMUNDS_Q3_AMOUNT)
+claim(ida, "screen never calls $44,000 'the average' (it is not its rounding)", money(EDMUNDS_Q3_AMOUNT, 1000),
+      f"≠ {money(CAR_P)}", money(EDMUNDS_Q3_AMOUNT, 1000).replace("≈ ", "") != money(CAR_P))
 claim(ida, "APR = Edmunds Q3 2026 average", pct(CAR_APR), pct(EDMUNDS_Q3_APR), CAR_APR == EDMUNDS_Q3_APR)
-p635, s635 = car_case(EXPERIAN_Q2_APR)
-claim(ida, "verdict holds at Experian's 6.35%: rounding still ≈ 1 yr sooner",
-      num((s635["monthly"]["months"] - s635["rounded"]["months"]) / 12), "≈ 1",
-      num((s635["monthly"]["months"] - s635["rounded"]["months"]) / 12) == "≈ 1")
+car_whatif = {apr: car_case(apr) for apr in CAR_WHATIF_APRS}
+car_exact = car_case(CAR_APR, EDMUNDS_Q3_AMOUNT)
+for lab, (pm_, s_) in [(pct(a, 0), v) for a, v in car_whatif.items()] + [("$44,664", car_exact)]:
+    gap = (s_["monthly"]["months"] - s_["rounded"]["months"]) / 12
+    wk = s_["biweekly"]["interest"] - s_["weekly"]["interest"]
+    claim(ida, f"verdict holds at {lab}: rounding ≈ 1 yr sooner, weekly beats biweekly by < $50",
+          (num(gap, 2), money(wk, 0.01)), "≈ 1 (0.75-1.25) / < $50", 0.75 <= gap <= 1.25 and 0 < wk < 50)
 claim(idb, "minimum interest is more than the $5,000 owed", money(CARD["min"]["interest"], 100), "> $5,000",
       CARD["min"]["interest"] > CARD_B)
 claim(idb, "first minimum = 1% of new balance + interest", money(CARD_FIRST_MIN, 0.01),
@@ -598,6 +638,11 @@ claim(idc, "VO: interest is more than the loan", money(MORT[0]["interest"], 100)
 claim(idc, "+$100: 40 months sooner", MORT_SOONER_MO[100], 40, MORT_SOONER_MO[100] == 40)
 claim(idc, "+$100: full extra in every month but the last", money(MORT[100]["extra_in"], 0.01),
       f"$100 × {MORT[100]['n'] - 1}", abs(MORT[100]["extra_in"] - 100 * (MORT[100]["n"] - 1)) < 0.005)
+claim(idc, "footer step: shown ≈ $78,600 ÷ ($100 × 319) rounds like the exact ratio",
+      (money(rnd(MORT_SAVE[100], 100) / (100 * MORT_FULL_EXTRAS), 0.01), money(MORT_PER_DOLLAR, 0.01)), "same ≈ $2.46",
+      money(rnd(MORT_SAVE[100], 100) / (100 * MORT_FULL_EXTRAS), 0.01) == money(MORT_PER_DOLLAR, 0.01))
+claim(idc, "+$100 for 319 full months = $31,900 put in", money(MORT[100]["extra_in"], 0.01), money(100 * MORT_FULL_EXTRAS),
+      abs(MORT[100]["extra_in"] - 100 * MORT_FULL_EXTRAS) < 0.005)
 claim(idc, "rate between Freddie Mac and MBA (both round to 7.3%)", pct(MORT_APR, 1),
       f"{pct(FREDDIE_OCT1_2026, 2)} / {pct(MBA_SEP25_2026, 2)}",
       pct(FREDDIE_OCT1_2026, 1) == pct(MBA_SEP25_2026, 1) == pct(MORT_APR, 1))
@@ -623,8 +668,10 @@ print(f"  03a car: payment {money(CAR_PMT, 0.01)} / {money(CAR_BIWK, 0.01)} / {m
 for k in car_keys:
     r_ = CAR[k]
     print(f"     {k:9} n={r_['n']:4d}  months={r_['months']:6.2f}  interest={money(r_['interest'], 0.01):>11}  saves {money(CAR_SAVE[k], 0.01)}")
-print(f"     sensitivity 6.35% (Experian): payment {money(p635, 0.01)}; " +
-      "; ".join(f"{k} {s635[k]['months']:.1f} mo {money(s635[k]['interest'], 100)}" for k in car_keys))
+for lab, (pm_, s_) in [(f"{pct(a)} (what-if)", v) for a, v in car_whatif.items()] + [("$44,664 at 7% (Edmunds exact)", car_exact)]:
+    print(f"     sensitivity {lab}: payment {money(pm_, 0.01)}; " +
+          "; ".join(f"{k} {s_[k]['months']:.2f} mo {money(s_[k]['interest'], 100)}" for k in car_keys) +
+          f"; weekly beats biweekly by {money(s_['biweekly']['interest'] - s_['weekly']['interest'], 0.01)}")
 print(f"  03b card: first minimum {money(CARD_FIRST_MIN, 0.01)}")
 for k in ("min",) + CARD_FLATS:
     r_ = CARD[k]

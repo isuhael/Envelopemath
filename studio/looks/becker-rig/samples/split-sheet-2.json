@@ -1,0 +1,35 @@
+{
+  "id": "becker-rig-split-sheet-2",
+  "sample": true,
+  "look": "becker-rig",
+  "format": "split-sheet",
+  "fps": 30,
+  "header": "Where a **$5,000** paycheck goes\nin a 6-bucket budget",
+  "footer": "ASSUMES $5,000 a month after tax · one example budget, not a rule",
+  "captions": true,
+  "vo": [
+    { "t": 0.0, "d": 1.8, "text": "Five grand. Six buckets." },
+    { "t": 2.0, "d": 1.5, "text": "Housing: **$1,500.**" },
+    { "t": 3.6, "d": 1.5, "text": "Groceries and eating out: $600." },
+    { "t": 5.2, "d": 1.5, "text": "Car and gas: $500." },
+    { "t": 6.8, "d": 1.5, "text": "Debt: __$400.__" },
+    { "t": 8.4, "d": 1.5, "text": "Fun money: **$750.**" },
+    { "t": 10.0, "d": 1.8, "text": "And a quarter you keep: **$1,250.**" },
+    { "t": 12.0, "d": 2.4, "text": "Six buckets, $5,000. Nothing left over." }
+  ],
+  "verdict": { "t": 14.6, "text": "Keep **$1,250** a month:\n$15,000 a year." },
+  "data": {
+    "total": { "label": "Monthly take-home", "display": "$5,000", "value": 5000 },
+    "parts": [
+      { "t": 2.4, "label": "Housing", "pct": "30%", "amount": "$1,500", "note": "rent or mortgage, utilities", "tone": "neutral", "share": 0.30 },
+      { "t": 4.0, "label": "Groceries & eating out", "pct": "12%", "amount": "$600", "tone": "neutral", "share": 0.12 },
+      { "t": 5.6, "label": "Car, gas & transit", "pct": "10%", "amount": "$500", "tone": "neutral", "share": 0.10 },
+      { "t": 7.2, "label": "Debt payments", "pct": "8%", "amount": "$400", "note": "cards and loans", "tone": "bad", "share": 0.08 },
+      { "t": 8.8, "label": "Fun money", "pct": "15%", "amount": "$750", "note": "$750 ÷ 30 = $25 a day", "tone": "neutral", "share": 0.15 },
+      { "t": 10.4, "label": "Savings & investing", "pct": "25%", "amount": "$1,250", "note": "a quarter: $5,000 ÷ 4", "tone": "goal", "share": 0.25 }
+    ],
+    "check": "$1,500 + $600 + $500 + $400 + $750 + $1,250 = $5,000",
+    "checkT": 12.0,
+    "hold": 3.0
+  }
+}

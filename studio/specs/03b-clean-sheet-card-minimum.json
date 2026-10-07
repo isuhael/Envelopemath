@@ -3,54 +3,49 @@
   "look": "clean-sheet",
   "format": "what-difference",
   "fps": 30,
-  "duration": 38.0,
-  "header": "What difference does paying\n**$150** instead of the minimum\nmake on a credit card?",
+  "duration": 30.2,
+  "header": "Minimum vs a flat payment\non a **$5,000** credit card:\nwhat difference does it make?",
   "footer": "ASSUMES 22% APR, no new charges · minimum = 1% of balance + interest, $40 floor",
   "captions": true,
   "vo": [
     {
       "t": 0.0,
-      "d": 4.4,
-      "text": "Pay the minimum on $5,000 at 22%."
+      "d": 4.0,
+      "text": "Only the minimum on $5,000? About 15 years."
     },
     {
-      "t": 4.6,
-      "d": 4.4,
-      "text": "It starts at about $143 and shrinks."
+      "t": 4.2,
+      "d": 4.8,
+      "text": "About $7,300 in interest. More than you owed."
     },
     {
       "t": 9.2,
-      "d": 4.4,
-      "text": "About 15 years. About $7,300 in interest."
+      "d": 2.8,
+      "text": "Now a flat $150."
     },
     {
-      "t": 13.8,
-      "d": 3.2,
-      "text": "More than the $5,000 you owed."
+      "t": 12.2,
+      "d": 2.4,
+      "text": "About $7 more, at first."
     },
     {
-      "t": 17.2,
-      "d": 5.2,
-      "text": "Now a flat $150. About $7 more, at first."
-    },
-    {
-      "t": 22.6,
+      "t": 14.8,
       "d": 5.2,
       "text": "About 4.3 years. About $2,800 in interest."
     },
     {
-      "t": 28.0,
+      "t": 20.2,
       "d": 4.4,
       "text": "A flat $250: about 2.2 years."
     },
     {
-      "t": 32.6,
+      "t": 24.8,
       "d": 3.2,
       "text": "The minimum shrinks. Your payment doesn't have to."
     }
   ],
   "verdict": {
-    "t": 32.6,
+    "t": 24.8,
     "text": "Just **≈ $7** more than the first minimum:\n**≈ 11 years** sooner"
   },
   "data": {
@@ -71,9 +66,10 @@
     ],
     "options": [
       {
-        "t": 0.8,
+        "t": -3.0,
+        "resultT": -2.4,
         "name": "The minimum",
-        "detail": "starts at ≈ $143, then shrinks",
+        "detail": "starts at $142.59, then shrinks",
         "values": {
           "payoff": "≈ 15.1 years",
           "interest": "≈ $7,300"
@@ -81,9 +77,10 @@
         "tone": "bad"
       },
       {
-        "t": 18.0,
+        "t": 9.2,
+        "resultT": 10.2,
         "name": "A flat $150",
-        "detail": "$150 every month",
+        "detail": "$150 − $142.59 = $7.41 more",
         "values": {
           "payoff": "≈ 4.3 years",
           "interest": "≈ $2,800"
@@ -92,9 +89,10 @@
         "tone": "goal"
       },
       {
-        "t": 28.4,
+        "t": 20.2,
+        "resultT": 20.8,
         "name": "A flat $250",
-        "detail": "$250 every month",
+        "detail": "$250 − $142.59 = $107.41 more",
         "values": {
           "payoff": "≈ 2.2 years",
           "interest": "≈ $1,300"
@@ -105,35 +103,5 @@
     ],
     "winner": 1,
     "hold": 2.2
-  },
-  "lookOpts": {
-    "badge": "$5,000 → $0?",
-    "formulas": [
-      "1% of balance + interest, $40 floor",
-      "$150 every month until $0",
-      "$250 every month until $0"
-    ],
-    "check": {
-      "t": 17.2,
-      "text": "$150 − $142.59 = $7.41 more in month 1"
-    }
-  },
-  "sfx": [
-    {
-      "t": 0.8,
-      "kind": "pop"
-    },
-    {
-      "t": 18.0,
-      "kind": "pop"
-    },
-    {
-      "t": 28.4,
-      "kind": "pop"
-    },
-    {
-      "t": 32.6,
-      "kind": "ding"
-    }
-  ]
+  }
 }

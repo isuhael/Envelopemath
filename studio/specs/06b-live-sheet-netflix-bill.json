@@ -4,63 +4,58 @@
   "format": "pov-race",
   "fps": 30,
   "duration": 30.5,
-  "header": "POV: Since 2012 you put\nyour **$7.99** Netflix bill\ninto Netflix stock",
+  "header": "POV: You invested in Netflix\ninstead of paying Netflix,\never since it was **$7.99**",
   "footer": "Standard plan list price · each year at its avg price · split-adjusted",
   "captions": true,
   "vo": [
     {
       "t": 0.0,
-      "d": 2.0,
-      "text": "Netflix, 2012: $7.99 a month."
+      "d": 2.5,
+      "text": "Netflix was $7.99 in 2012."
     },
     {
-      "t": 2.1,
-      "d": 2.8,
-      "text": "Every bill, you buy Netflix stock instead."
+      "t": 2.6,
+      "d": 3.1,
+      "text": "Every bill since, you buy Netflix stock instead."
     },
     {
-      "t": 4.95,
-      "d": 1.7,
-      "text": "2013: the stock quadruples."
-    },
-    {
-      "t": 6.8,
+      "t": 6.0,
       "d": 2.8,
       "text": "Price hike? Your investment goes up too."
     },
     {
-      "t": 9.8,
+      "t": 9.2,
       "d": 3.6,
       "text": "Each year's bills buy at that year's average price."
     },
     {
-      "t": 13.8,
-      "d": 3.2,
-      "text": "2020: the bill's $13.99. Your stake: over $9,000."
+      "t": 13.4,
+      "d": 2.6,
+      "text": "2020: your stake tops $9,000."
     },
     {
-      "t": 17.2,
-      "d": 1.4,
+      "t": 16.9,
+      "d": 1.6,
       "text": "2022: it halves."
     },
     {
-      "t": 18.8,
+      "t": 18.7,
       "d": 2.4,
       "text": "You keep paying. It comes back."
     },
     {
-      "t": 21.4,
-      "d": 3.1,
+      "t": 21.2,
+      "d": 4.7,
       "text": "About $2,037 in bills. About $17,700 in stock."
     },
     {
-      "t": 24.6,
-      "d": 4.7,
-      "text": "About 8.7 times what Netflix charged you. Almost half from 2012's $95.88."
+      "t": 26.0,
+      "d": 3.3,
+      "text": "About 8.7 times what Netflix charged you."
     }
   ],
   "verdict": {
-    "t": 24.6,
+    "t": 26.0,
     "text": "**≈ 8.7×** what Netflix\ncharged you"
   },
   "data": {
@@ -140,59 +135,59 @@
         ],
         [
           2012.99,
-          107.16
+          106.98
         ],
         [
           2013.99,
-          566.68
+          568.35
         ],
         [
           2014.99,
-          613.9
+          615.52
         ],
         [
           2015.99,
-          1577.17
+          1580.93
         ],
         [
           2016.99,
-          1852.26
+          1856.33
         ],
         [
           2017.99,
-          3015.29
+          3021.61
         ],
         [
           2018.99,
-          4314.7
+          4323.51
         ],
         [
           2019.99,
-          5369.05
+          5379.69
         ],
         [
           2020.99,
-          9163.36
+          9181.15
         ],
         [
           2021.99,
-          10390.18
+          10409.99
         ],
         [
           2022.99,
-          5279.03
+          5288.73
         ],
         [
           2023.99,
-          8947.99
+          8964.01
         ],
         [
           2024.99,
-          16626.56
+          16655.88
         ],
         [
           2025.99,
-          17674.75
+          17705.59
         ]
       ],
       "final": "≈ $17,700"
@@ -205,37 +200,37 @@
       },
       {
         "x": 2014.33,
-        "label": "May 2014",
+        "label": "Hike 1 · May 2014",
         "price": "$8.99"
       },
       {
         "x": 2015.75,
-        "label": "Oct 2015",
+        "label": "Hike 2 · Oct 2015",
         "price": "$9.99"
       },
       {
         "x": 2017.75,
-        "label": "Oct 2017",
+        "label": "Hike 3 · Oct 2017",
         "price": "$10.99"
       },
       {
         "x": 2019.0,
-        "label": "Jan 2019",
+        "label": "Hike 4 · Jan 2019",
         "price": "$12.99"
       },
       {
         "x": 2020.75,
-        "label": "Oct 2020",
+        "label": "Hike 5 · Oct 2020",
         "price": "$13.99"
       },
       {
         "x": 2022.0,
-        "label": "Jan 2022",
+        "label": "Hike 6 · Jan 2022",
         "price": "$15.49"
       },
       {
         "x": 2025.0,
-        "label": "Jan 2025",
+        "label": "Hike 7 · Jan 2025",
         "price": "$17.99"
       }
     ],
@@ -249,7 +244,7 @@
       "dp": 0
     },
     "raceT": [
-      2.0,
+      0.3,
       23.0
     ],
     "hold": 7.5
@@ -261,58 +256,58 @@
         "text": "= $7.99 × 12 = $95.88"
       },
       {
-        "t": 2.1,
-        "text": "≈ $95.88 ÷ $1.19 ≈ 80.6 shares"
+        "t": 2.6,
+        "text": "≈ $95.88 ÷ $1.19 ≈ 81 shares"
       },
       {
-        "t": 6.8,
+        "t": 6.0,
         "text": "= 9 × $8.99 + 3 × $9.99 = $110.88"
       },
       {
-        "t": 9.8,
+        "t": 9.2,
         "text": "≈ each year's bills ÷ that year's avg price"
       },
       {
-        "t": 21.4,
-        "text": "≈ 188.5 shares × $93.76 ≈ $17,700"
+        "t": 21.2,
+        "text": "≈ 188.8 shares × $93.76 ≈ $17,700"
       },
       {
-        "t": 24.6,
-        "text": "≈ $17,675 ÷ $2,037.32 ≈ 8.7×"
+        "t": 26.0,
+        "text": "≈ $17,700 ÷ $2,037.32 ≈ 8.7×"
       }
     ]
   },
   "sfx": [
     {
-      "t": 5.5,
+      "t": 4.08,
       "kind": "tick"
     },
     {
-      "t": 7.63,
+      "t": 6.38,
       "kind": "tick"
     },
     {
-      "t": 10.63,
+      "t": 9.63,
       "kind": "tick"
     },
     {
-      "t": 12.51,
+      "t": 11.66,
       "kind": "tick"
     },
     {
-      "t": 15.13,
+      "t": 14.5,
       "kind": "tick"
     },
     {
-      "t": 17.01,
+      "t": 16.53,
       "kind": "tick"
     },
     {
-      "t": 18.5,
+      "t": 18.13,
       "kind": "thud"
     },
     {
-      "t": 21.51,
+      "t": 21.39,
       "kind": "tick"
     },
     {

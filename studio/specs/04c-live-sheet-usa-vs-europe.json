@@ -3,23 +3,18 @@
   "look": "live-sheet",
   "format": "chart-race",
   "fps": 30,
-  "duration": 36.5,
+  "duration": 38.0,
   "header": "POV: In 2016 you invested **$10,000** in\nUSA vs EUROPE",
   "footer": "USA = S&P 500, Europe = MSCI Europe (net) · total return in US$ · Jan 2016 → Dec 2025 · no fees or tax",
   "captions": true,
   "vo": [
     {
       "t": 0.0,
-      "d": 2.7,
-      "text": "$10,000 in 2016."
+      "d": 6.6,
+      "text": "2025: Europe beat the USA ≈ 2 to 1. Who won the decade?"
     },
     {
-      "t": 2.8,
-      "d": 2.0,
-      "text": "USA or Europe?"
-    },
-    {
-      "t": 7.0,
+      "t": 6.8,
       "d": 3.1,
       "text": "2018: Europe drops ≈ 15%."
     },
@@ -30,13 +25,13 @@
     },
     {
       "t": 15.4,
-      "d": 2.7,
-      "text": "Europe? ≈ $13,900."
+      "d": 2.4,
+      "text": "Europe? Still under $17,000."
     },
     {
-      "t": 19.1,
+      "t": 19.2,
       "d": 5.4,
-      "text": "2025: Europe jumps ≈ 35%. Twice the USA's year."
+      "text": "2025: Europe jumps ≈ 35%. USA, ≈ 18%."
     },
     {
       "t": 24.6,
@@ -50,12 +45,12 @@
     },
     {
       "t": 31.4,
-      "d": 3.1,
-      "text": "The USA doubled twice. Europe, once."
+      "d": 3.5,
+      "text": "The USA ≈ doubled twice. Europe, once."
     }
   ],
   "verdict": {
-    "t": 31.4,
+    "t": 35.0,
     "text": "Europe won **2025**.\nThe USA won the **decade**."
   },
   "data": {
@@ -191,7 +186,7 @@
         "label": "2022 bear market"
       }
     ],
-    "hold": 15.5
+    "hold": 17.0
   },
   "lookOpts": {
     "formulaSteps": [
@@ -304,7 +299,7 @@
       "dur": 1.0
     },
     {
-      "t": 31.4,
+      "t": 35.0,
       "kind": "ding"
     }
   ]

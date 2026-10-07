@@ -1,0 +1,31 @@
+{
+  "id": "sample-scoreboard-split-sheet",
+  "sample": true,
+  "look": "scoreboard",
+  "format": "split-sheet",
+  "fps": 30,
+  "header": "The 60/25/15 rule\non a **$5,000** paycheck",
+  "footer": "Assumes monthly take-home pay, after tax",
+  "captions": true,
+  "vo": [
+    { "t": 0.0, "d": 1.5, "text": "Five grand hits your account." },
+    { "t": 1.6, "d": 2.8, "text": "Sixty percent to live on: $3,000." },
+    { "t": 4.7, "d": 3.0, "text": "Twenty-five percent, invested first: **$1,250.**" },
+    { "t": 8.0, "d": 2.6, "text": "Fifteen percent to enjoy: $750." },
+    { "t": 10.9, "d": 2.7, "text": "Three grand, twelve fifty, seven fifty. Five thousand." },
+    { "t": 13.9, "d": 3.0, "text": "That's **$15,000** a year invested, on autopilot." }
+  ],
+  "verdict": { "t": 13.9, "text": "**$15,000** a year invested\nbefore you spend a cent" },
+  "data": {
+    "total": { "label": "Take-home pay", "display": "$5,000", "value": 5000 },
+    "parts": [
+      { "t": 1.6, "label": "Live", "pct": "60%", "amount": "$3,000", "note": "rent, food, bills: 6 × $500", "tone": "neutral", "share": 0.6 },
+      { "t": 4.7, "label": "Invest", "pct": "25%", "amount": "$1,250", "note": "a quarter: $5,000 ÷ 4", "tone": "goal", "share": 0.25 },
+      { "t": 8.0, "label": "Enjoy", "pct": "15%", "amount": "$750", "note": "10% + 5%: $500 + $250", "tone": "neutral", "share": 0.15 }
+    ],
+    "check": "$3,000 + $1,250 + $750 = $5,000",
+    "checkT": 10.9,
+    "hold": 2.5
+  },
+  "notes": "Maths: $5,000 × 60% = $3,000 (6 × $500, since 10% = $500); × 25% = $1,250 (a quarter, $5,000 ÷ 4); × 15% = $750 ($500 + $250); $3,000 + $1,250 + $750 = $5,000. Verdict: $1,250 × 12 = $15,000 a year. Rule: the 60/25/15 'paycheck rule' (live / invest / enjoy) from the benchmark's top split sheet (Yannick, 739K)."
+}

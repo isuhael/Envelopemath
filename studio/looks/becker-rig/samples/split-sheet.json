@@ -1,0 +1,29 @@
+{
+  "id": "becker-rig-split-sheet",
+  "sample": true,
+  "look": "becker-rig",
+  "format": "split-sheet",
+  "fps": 30,
+  "header": "The 70/20/10 rule\non a **$3,500** paycheck",
+  "footer": "ASSUMES $3,500 a month, after tax",
+  "captions": true,
+  "vo": [
+    { "t": 0.0, "d": 2.4, "text": "$3,500 a month. Ten percent is $350." },
+    { "t": 2.6, "d": 2.6, "text": "Seven of those to live on: **$2,450.**" },
+    { "t": 5.6, "d": 2.7, "text": "Two of them you save: **$700.**" },
+    { "t": 8.6, "d": 2.8, "text": "One for debt or giving: **$350.**" },
+    { "t": 11.6, "d": 2.8, "text": "$2,450, $700 and $350. Every dollar." }
+  ],
+  "verdict": { "t": 14.8, "text": "Save **$700** a month.\nThat's $8,400 a year." },
+  "data": {
+    "total": { "label": "Take-home pay", "display": "$3,500", "value": 3500 },
+    "parts": [
+      { "t": 3.2, "label": "Live on", "pct": "70%", "amount": "$2,450", "note": "7 × $350 · rent, food, bills, fun", "tone": "neutral", "share": 0.7 },
+      { "t": 6.4, "label": "Save", "pct": "20%", "amount": "$700", "note": "2 × $350 · invest it", "tone": "goal", "share": 0.2 },
+      { "t": 9.4, "label": "Debt or give", "pct": "10%", "amount": "$350", "note": "10% = move the decimal", "tone": "good", "share": 0.1 }
+    ],
+    "check": "$2,450 + $700 + $350 = $3,500",
+    "checkT": 11.6,
+    "hold": 3.0
+  }
+}

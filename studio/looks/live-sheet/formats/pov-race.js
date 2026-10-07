@@ -1,31 +1,40 @@
 // live-sheet · pov-race (P6): "POV: you invested in X instead of paying $Y for X's product."
 //
 // One sheet card, top to bottom:
-//   formula bar   the working, typed in turn (lookOpts.formulaBar [{ t, text }]; default "= <first price> → ?",
-//                 then "= <spend final> → <own final>" once the race ends)
-//   A B C         column letters (decoration, only when the chart keeps its room)
-//   row 1         labels: Year (mint) · spend.label (grey, coral key) · own.label (peach, green key)
-//   row 2         the start, frozen under a freeze-pane line (when there is room)
-//   history       the last landed years, scrolling up under the frozen row (when there is room)
-//   live row      the year being raced: Spent (red) and Owned (green; red while it is under water) count with
-//                 the chart. Each year-end lands with a flash and a tick and the year rolls on to the next one.
-//   chart         a spreadsheet chart under the ledger: the spend line against the owned line, the gap between
-//                 them tinted, a y axis that rescales as the money grows, purchase markers with a price tag
-// Frame 1: the question card, the formula bar mid-typing, the start row filled (a money number at 0.0 s) and the
-// empty chart waiting. At raceT[1] the live row lands on the spec's final display strings (a word after the
-// number, "spent", drops to a 40 px second line), the row wipes yellow and the selection springs onto Owned.
-// The verdict is a card in the caption band (or retyped into the formula bar). The last 0.5 s rewinds the chart
-// and clears back to frame 1, so the short loops.
+//   formula bar   the working, typed in turn (lookOpts.formulaBar [{ t, text }]; default "= <start> → ?", then
+//                 "= <spend final> → <own final>" once the race ends). Operators stay glued to the token after
+//                 them, so a line (or the frame-1 cut) never ends on a dangling "≈" or "×".
+//   A B C         column letters (decoration: only when the chart still keeps 420 px)
+//   row 1         labels: Year (mint) · spend.label (grey, red key line) · own.label (peach, green key line);
+//                 "\n" in a label starts the grey sub-label
+//   row 2         the start, frozen under a freeze-pane line (when the chart keeps 360 px)
+//   history       up to 3 landed years (when the chart keeps 380 px; the silent layouts get them). The live row
+//                 fills down through these slots as the first years land (the fill handle drags down), then
+//                 each new year scrolls the rows above up under the frozen pane. Unfilled slots are empty,
+//                 numbered sheet rows, so frame 1 reads as a real sheet.
+//   live row      the year being raced: Spent (red) and Owned (green; red while under water) count with the
+//                 chart. Each year-end lands with a tick and a yellow flash (on the history row that received
+//                 it, or on the live row when there is no history) and the year rolls on.
+//   chart         the spend line against the owned line, the gap between them tinted green or red, a y axis that
+//                 rescales with the running maximum, purchase rings, and a dark price tag that pops when the race
+//                 passes a purchase. Tags hang over the side the race has not drawn yet, and are gone before
+//                 the final values land.
+// Frame 1: the question card, the formula bar mid-typing, the start row filled (a money number at 0.0 s), the
+// empty row being raced, and the chart waiting with the stake's tag. At raceT[1] the live row lands on the spec's
+// final display strings (a word after the number, "spent", drops to a smaller second line when it will not fit),
+// the row wipes yellow and the selection springs onto Owned. The verdict is a card in the caption band or is
+// retyped into the formula bar (ink, heavier, the ≈ chip pops). The last 0.5 s rewind the chart and clear back
+// to frame 1, so the short loops.
 //
 // lookOpts: loop (true) · formulaBar ([{ t, text }]) · formulaAt0 (0.7) · verdict ('band' | 'formula')
 //           · startLabel ('Start' when the start shares its year with the first year-end, else the year)
-//           · yearLabel ('Year') · frozen ('auto' | true | false) · history ('auto' | 0-4) · letters ('auto' | bool)
+//           · yearLabel ('Year') · frozen ('auto' | bool) · history ('auto' | 0-4) · letters ('auto' | bool)
 //           · gap (true: tint the gap between the lines)
 import {
   h, s, setStyle, setText, setHTML, attr, clamp, lerp, prog, ease, C, G, M, S,
   formulaBar, fitFormula, lineChart, mk, mkLen, typedMk, typedCount, typeDur, wordCut, caretOn,
   snapIn, liftOut, popScale, flashAlpha, lerpRect, rgba, durationOf, hasCaptions, opt, layer, footerHeight,
-  textW, font, fmtNum, plain,
+  textW, font, fmtNum, plain, displayValue,
 } from '../lib.js'
 
 export const css = `
@@ -35,8 +44,8 @@ export const css = `
 .pov-card .ls-cell.left .ls-v { text-align: left; }
 .pov-sep { position: absolute; left: 0; right: 0; height: 3px; background: #D0D5DD; z-index: 2; }
 .ls-row.pov-frozen { border-bottom: 4px solid #C4CAD4; z-index: 2; }
-.pov-hist { position: absolute; left: 0; right: 0; overflow: hidden; }
-.ls-row.pov-live { z-index: 1; }
+.pov-hist { position: absolute; left: 0; right: 0; overflow: hidden; z-index: 1; }
+.ls-row.pov-live { z-index: 2; }
 .ls-cell.pov-yc { display: grid; align-items: center; justify-items: start; overflow: hidden; }
 .pov-yc > span { grid-area: 1 / 1; }
 .ls-cell.right.pov-yc { justify-items: end; }
@@ -57,6 +66,12 @@ export const css = `
 const esc = str => String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 const LETTERS = 'ABC'
+/**
+ * Glue every operator to the token after it (a no-break space), so the working never ends a line, or the
+ * frame-1 cut, on a dangling "≈" / "×" / "=": "… × $93.76 / ≈ $17,700", not "… × $93.76 ≈ / $17,700".
+ * The visible text is unchanged.
+ */
+const glueOps = str => String(str).replace(/(^|\s)([=≈×÷→+−-])[ ]/g, '$1$2 ')
 
 /** linear interpolation through [[x, v]…] (held flat outside the points) */
 function valAt(pts, x) {
@@ -126,14 +141,16 @@ export default function povRace(spec, ctx) {
   const T = X.map((x, k) => (k === 0 ? -Infinity : k === N - 1 ? r1 : tOfX(x)))
   const spV = X.map(x => valAt(sp, x)), owV = X.map(x => valAt(ow, x))
   const year = x => Math.floor(x + 1e-6)
-  const labels = X.map(x => String(year(x)))
-  for (let k = 2; k < N; k++) if (labels[k] === labels[k - 1]) labels[k] = `${MON[Math.min(11, Math.floor((X[k] % 1) * 12))]} ${year(X[k])}`
+  // a year with one row reads "2016"; a year with several rows labels each with its month ("Apr 2016")
+  const perYear = new Map()
+  for (let k = 1; k < N; k++) perYear.set(year(X[k]), (perYear.get(year(X[k])) || 0) + 1)
+  const labels = X.map((x, k) => (k > 0 && perYear.get(year(x)) > 1 ? `${MON[Math.min(11, Math.floor((x - year(x)) * 12 + 1e-6))]} ${year(x)}` : String(year(x))))
   labels[0] = String(opt(spec, 'startLabel', N > 1 && year(X[1]) === year(X[0]) ? 'Start' : labels[0]))
 
   // the start row shows the purchase's own price string when the race starts on a purchase
   const purchases = (d.purchases || []).filter(p => p && isFinite(p.x) && p.x >= xs - 0.02 && p.x <= xe + 0.02).sort((a, b) => a.x - b.x)
   const p0 = purchases.find(p => Math.abs(p.x - xs) <= 0.02)
-  const spStart = p0 && p0.price && Math.abs(spV[0] - valAt(sp, p0.x)) < 0.005 ? p0.price : fmtV(spV[0])
+  const spStart = p0 && p0.price && Math.abs(displayValue(p0.price) - spV[0]) < 0.005 ? p0.price : fmtV(spV[0])
   const owStart = p0 && p0.price && Math.abs(owV[0] - spV[0]) < 0.005 ? spStart : fmtV(owV[0])
   const spFinal = SP.final || fmtV(spV[N - 1]), owFinal = OW.final || fmtV(owV[N - 1])
   const histText = (k, which) => (k === 0 ? (which ? owStart : spStart) : fmtV(which ? owV[k] : spV[k]))
@@ -143,11 +160,13 @@ export default function povRace(spec, ctx) {
   // ---------- formula bar entries ----------
   let fe = opt(spec, 'formulaBar', null)
   if (!Array.isArray(fe) || !fe.length) {
-    fe = [{ t: 0, text: d.formula || (p0 && p0.price ? `= ${p0.price} → ?` : `= ${SP.label || 'spent'} → ?`) }]
+    fe = [{ t: 0, text: d.formula || `= ${spStart} → ?` }]
     fe.push({ t: r1 + 0.5, text: `= ${spFinal} → ${owFinal}` })
   }
-  fe = fe.map(e => (typeof e === 'string' ? { t: 0, text: e } : { t: +e.t || 0, text: String(e.text || '') })).sort((a, b) => a.t - b.t)
+  fe = fe.map(e => (typeof e === 'string' ? { t: 0, text: e } : { t: +e.t || 0, text: String(e.text || '') }))
   if (vMode === 'formula') fe.push({ t: verdict.t, text: verdict.text, verdict: true })
+  fe = fe.filter(e => e.text).map(e => ({ ...e, text: glueOps(e.text) })).sort((a, b) => a.t - b.t || !!a.verdict - !!b.verdict)
+  if (!fe.length) fe.push({ t: 0, text: glueOps(`= ${spStart} → ?`) })
 
   // ---------- duration ----------
   const cut = fe[0].t <= 0 ? wordCut(fe[0].text, opt(spec, 'formulaAt0', 0.7)) : 0
@@ -274,19 +293,21 @@ export default function povRace(spec, ctx) {
   })
   labelH = Math.max(76, Math.ceil(labelH + 24))
 
-  // what fits: the chart keeps its room first, then the frozen start row, the column letters, history rows
-  const chartMin = 360, chartIdeal = 420
+  // what fits: the chart keeps its room first, then the frozen start row, history rows (content: the last
+  // landed years) and, last, the column letters (decoration)
+  const chartMin = 360, chartHist = 380, chartIdeal = 420
   let rest = cardH - fbarH - labelH - liveH
   const fOpt = opt(spec, 'frozen', 'auto')
   const frozen = fOpt === true || (fOpt === 'auto' && rest - histH >= chartMin)
   if (frozen) rest -= histH
   const lOpt = opt(spec, 'letters', 'auto')
-  const letters = lOpt === true || (lOpt === 'auto' && rest - G.lettersH >= chartIdeal)
-  if (letters) rest -= G.lettersH
   const hOpt = opt(spec, 'history', 'auto')
   let H = 0
-  const hMax = hOpt === 'auto' ? 4 : clamp(+hOpt || 0, 0, 4)
-  while (H < hMax && N - 2 > H && (hOpt !== 'auto' ? rest - histH >= 200 : rest - histH >= chartIdeal + 60)) { H++; rest -= histH }
+  const hMax = hOpt === 'auto' ? 3 : clamp(+hOpt || 0, 0, 4)
+  const lettersFirst = lOpt === true ? G.lettersH : 0
+  while (H < hMax && N - 2 > H && rest - lettersFirst - histH >= (hOpt !== 'auto' ? 200 : chartHist)) { H++; rest -= histH }
+  const letters = lOpt === true || (lOpt === 'auto' && rest - G.lettersH >= chartIdeal)
+  if (letters) rest -= G.lettersH
   const chartH = rest
 
   const lettersH = letters ? G.lettersH : 0
@@ -338,9 +359,18 @@ export default function povRace(spec, ctx) {
     setText(fz.cells[2].v, owStart); setStyle(fz.cells[2].v, { color: ownColor(owV[0], spV[0]) })
     card.append(fz.row)
   }
-  // history: the landed years, emerging from behind the live row and scrolling up out of view
+  // history: the landed years. The live row fills down through these H slots as the first years land (the
+  // fill handle drags down), then each new year scrolls the rows above it up under the frozen pane. Until a slot
+  // is filled, it shows as an empty, numbered sheet row under the live row.
   const hist = []
   let histBox = null
+  const future = []
+  for (let m = 1; m <= H; m++) {
+    const r = mkRow(histH, 'pov-future')
+    setStyle(r.row, { top: chartY - m * histH + 'px' })
+    card.append(r.row)
+    future.push(r)
+  }
   if (H > 0) {
     histBox = h('div', { class: 'pov-hist', 'data-roll': '', style: { top: histY + 'px', height: H * histH + 'px' } })
     for (let p = 0; p <= H; p++) {
@@ -400,6 +430,13 @@ export default function povRace(spec, ctx) {
   const tagW = tagHTML.map(x => textW(x, font(600, 40), ls) + 40)
   const tagT = purchases.map(p => (p.x <= xs + 0.02 ? 0 : tOfX(p.x)))
   const startTag = tagT.lastIndexOf(0)
+  // a tag shows for ~1.7 s, but is gone before the final values land (one focal number at a time)
+  // (the frame-1 tag names the stake, and leaves as the race starts drawing into it)
+  const tagOut = i => {
+    if (tagT[i] <= 0) return r0 + 0.3
+    const t0 = Math.max(tagT[i], r0)
+    return Math.max(t0 + 0.8, Math.min(t0 + 1.7, r1 - 0.3))
+  }
   const xAll = [...new Set([...sp, ...ow].map(p => p[0]))].sort((a, b) => a - b)
   const runMax = x => {
     let m = Math.max(valAt(sp, x), valAt(ow, x))
@@ -474,8 +511,7 @@ export default function povRace(spec, ctx) {
   if (loopOn) ctx.cue(loopT0, 'swipe', { gain: 0.5 })
 
   // ---------- frame ----------
-  const selRange = { x0: colX[1], x1: Wd, y0: liveY, y1: liveY + liveH }
-  const selOwn = { x0: colX[2], x1: Wd, y0: liveY, y1: liveY + liveH }
+  const landedN = t => entries.reduce((a, e) => a + (t >= e.t ? 1 : 0), 0)
   function liveValues(t, idx) {
     // → [spend text, own text, own colour, entrance p, two-line?]
     if (idx === 0) return [spStart, owStart, ownColor(owV[0], spV[0]), 1]
@@ -508,13 +544,21 @@ export default function povRace(spec, ctx) {
       // live row: the year rolls on at each landing, the values count with the race
       const idx = liveIdxAt(tt)
       const tc = changeT(idx)
-      const roll = inLoop ? 1 : ease.out(prog(t, tc + 0.06, 0.28))
+      // the year rolls on in place; while the live row is still filling down it just moves (one motion per beat)
+      const roll = inLoop || landedN(tt) <= H ? 1 : ease.out(prog(t, tc + 0.06, 0.28))
       const outQ = inLoop ? prog(t, loopT0, 0.2) : 0
       const inQ = inLoop ? prog(t, loopT0 + 0.24, M.drop) : 1
       const idx0 = frozen ? 1 : 0 // the frame-1 live row
       const yearNow = inLoop && outQ >= 1 ? labels[idx0] : labels[idx]
+      const numNow = 2 + (inLoop && outQ >= 1 ? idx0 : idx)
       setText(lv.cells[0].v, yearNow)
-      setText(lv.num, String(2 + (inLoop && outQ >= 1 ? idx0 : idx)))
+      setText(lv.num, String(numNow))
+      // where the live row sits: it fills down through the H history slots, and climbs back for the loop
+      const fPlay = Math.min(H, scrollAt(tt))
+      const liveTop = Math.round(histY + (inLoop ? lerp(fPlay, 0, back) : fPlay) * histH)
+      setStyle(lv.row, { top: liveTop + 'px' })
+      const nFill = inLoop && outQ >= 1 ? 0 : Math.min(H, landedN(tt))
+      future.forEach((r, i) => setText(r.num, String(numNow + H - i - nFill)))
       if (!inLoop && roll < 1 && idx > 0) {
         setText(lv.cells[0].old, labels[idx - 1])
         setStyle(lv.cells[0].old, { opacity: '1', transform: `translateY(${Math.round(-roll * liveH)}px)` })
@@ -527,7 +571,8 @@ export default function povRace(spec, ctx) {
       let [tS, tO, cO, pV, fin] = liveValues(tt, idx)
       if (inLoop && outQ >= 1) [tS, tO, cO, pV, fin] = [...liveValues(-1, idx0).slice(0, 3), frozen ? 0 : inQ, false]
       const flashT = (() => { let f = -Infinity; for (let k = 1; k < N; k++) if (tt >= T[k]) f = T[k]; return f })()
-      const fl = inLoop ? 0 : flashAlpha(t, flashT, 0.34) * (idx === N - 1 && t >= r1 ? 1 : 0.85)
+      // with history rows the landed row flashes instead; the final landing always flashes here
+      const fl = inLoop || (H > 0 && t < r1) ? 0 : flashAlpha(t, flashT, 0.34) * (idx === N - 1 && t >= r1 ? 1 : 0.85)
       ;[[1, tS, C.bad, fin && twoSp], [2, tO, cO, fin && twoOw]].forEach(([j, txt, col, two]) => {
         const c = lv.cells[j]
         setHTML(c.v, fin ? valueHTML(txt) : esc(txt))
@@ -545,25 +590,32 @@ export default function povRace(spec, ctx) {
       else if (wipe >= 1) setStyle(lv.row, { backgroundColor: rgba(C.rowHi, hiA), backgroundImage: 'none' })
       else { const w = (wipe * 100).toFixed(2); setStyle(lv.row, { backgroundColor: C.sheet, backgroundImage: `linear-gradient(90deg, ${rgba(C.rowHi, hiA)} ${w}%, ${C.sheet} ${w}%)` }) }
 
-      // history rows
+      // history rows: entry j sits in slot j while the live row fills down (sc ≤ H), then everything scrolls up
+      // under the frozen pane by one row per landing (the newest year emerging from behind the live row)
       if (H > 0) {
         const sc = scrollAt(tt)
         const fadeH = inLoop ? clamp(1 - prog(t, loopT0, 0.24)) : 1
+        const off = Math.max(0, sc - H)
         hist.forEach((r, p) => {
           let j = -1
           for (let q = p; q < entries.length; q += H + 1) if (q < sc - 1e-6) j = q
-          const off = sc - j
-          if (j < 0 || off >= H + 1 || fadeH <= 0) { setStyle(r.row, { opacity: '0', top: H * histH + 'px' }); return }
+          const top = (j - off) * histH
+          if (j < 0 || top <= -histH || fadeH <= 0) { setStyle(r.row, { opacity: '0', top: H * histH + 'px' }); return }
           const k = entries[j].k
-          setStyle(r.row, { opacity: String(fadeH), top: Math.round(H * histH - off * histH) + 'px' })
+          setStyle(r.row, { opacity: String(fadeH), top: Math.round(top) + 'px' })
           setText(r.num, String(2 + k))
           setText(r.cells[0].v, labels[k])
           setText(r.cells[1].v, histText(k, 0)); setStyle(r.cells[1].v, { color: C.bad })
           setText(r.cells[2].v, histText(k, 1)); setStyle(r.cells[2].v, { color: ownColor(owV[k], spV[k]) })
+          // the row that just landed flashes (its values arrived there)
+          const hf = inLoop ? 0 : flashAlpha(t, entries[j].t, 0.4)
+          for (const c of [r.cells[1], r.cells[2]]) setStyle(c.el, { backgroundColor: hf > 0.001 ? rgba(C.rowHi, hf) : 'transparent' })
         })
       }
 
       // selection: the live row's B:C range with its fill handle, then (once the race lands) the Owned cell
+      const selRange = { x0: colX[1], x1: Wd, y0: liveTop, y1: liveTop + liveH }
+      const selOwn = { x0: colX[2], x1: Wd, y0: liveTop, y1: liveTop + liveH }
       let rect = selRange, handle = true
       if (!inLoop && t >= springT) { rect = lerpRect(selRange, selOwn, ease.back(prog(t, springT, M.pick), 1.6)); handle = false }
       if (inLoop) { rect = lerpRect(t >= springT ? selOwn : selRange, selRange, ease.inOut(prog(t, loopT0, 0.34))); handle = true }
@@ -587,7 +639,7 @@ export default function povRace(spec, ctx) {
       let ti = -1, tagA = 0
       if (!inLoop) {
         purchases.forEach((p, i) => { if (t >= tagT[i]) ti = i })
-        if (ti >= 0) tagA = (tagT[ti] <= 0 ? 1 : prog(t, tagT[ti], 0.18)) * (1 - prog(t, Math.max(tagT[ti], r0) + 1.7, 0.25))
+        if (ti >= 0) tagA = (tagT[ti] <= 0 ? 1 : prog(t, tagT[ti], 0.18)) * (1 - prog(t, tagOut(ti), 0.25))
       } else if (startTag >= 0) {
         // the loop ends on frame 1, start tag included
         ti = startTag; tagA = prog(t, loopT0 + 0.3, 0.14)
@@ -599,11 +651,13 @@ export default function povRace(spec, ctx) {
         const plotL = chart.plot.x, plotR = Math.min(chart.plot.x + chart.plot.w, G.railX - G.left - 6)
         const plotT = chart.plot.y, plotB = chart.plot.y + chart.plot.h
         const w = tagW[ti], th = 60, gap = 20
-        // above the marker by default; beside it (notch on the near edge) when the marker sits at a plot edge
-        let mode = 'above', x0 = mx - w / 2, y0 = my - gap - th
-        if (x0 < plotL + 4) { mode = 'right'; x0 = mx + gap }
+        // above the marker and hanging to its right, over the part of the chart the race has not drawn yet (so
+        // the lines already drawn stay in view); beside it (notch on the near edge) when the marker sits at a
+        // plot edge
+        let mode = 'above', x0 = mx - 34, y0 = my - gap - th
+        if (mx - 24 < plotL) { mode = 'right'; x0 = mx + gap }
         else if (mx + 24 > plotR) { mode = 'left'; x0 = mx - gap - w }
-        else x0 = Math.min(x0, plotR - w)
+        else x0 = clamp(x0, plotL, plotR - w)
         if (mode !== 'above') y0 = clamp(my - th / 2, plotT, plotB - th)
         else if (y0 < plotT) { mode = 'below'; y0 = my + gap }
         const nx = mode === 'right' ? -9 : mode === 'left' ? w - 11 : clamp(mx - x0 - 10, 14, w - 34)

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Math + timing check for format 1, "dead-simple-list" (teasers 01a, 01b, 01c).
+"""Math + timing check for format 1, "dead-simple-list" (teasers 01a, 01b, 01c). Round-2 revision.
 
 1. Recomputes every on-screen number from its inputs (constants below, sources in
    teasers/v2/01-dead-simple-list.md).
@@ -7,11 +7,18 @@
    digit equals the computed, formatted value (a digit-bearing string the script does
    not know about is an error too), and that every number spoken in the vo text equals
    the computed value, line by line.
-3. Checks the timing contract: VO read at ~2.6 words/s, no overlapping lines, each
+3. Re-evaluates every formula exactly as it is typed on screen and checks that the
+   displayed result is that value rounded to the shown precision ($1, or 1¢ when cents
+   are shown): one rounding rule for the whole series, so anyone who redoes a visible
+   formula gets the visible answer.
+4. Checks the timing contract: VO read at ~2.6 words/s, no overlapping lines, each
    beat's t / resultT at the moment the VO says it, header + a number at t = 0,
-   first payoff by 3 s, duration inside the 26-44 s lane.
-4. Sensitivity checks: the x0.85 rule vs the exact 2026 federal + FICA calculation,
-   the commute result across 25-29 minutes, and the 26/27-payday calendar claims.
+   first payoff by 3 s, results every ≤ 7.5 s, duration inside the 26-44 s lane, the
+   verdict on the last VO line (the chrome swaps captions for the verdict card, so a
+   line after it would have no on-screen text).
+5. Contract checks: only lookOpts keys the target look kit actually reads.
+6. Sensitivity checks: the x0.85 rule vs the exact 2026 federal + FICA calculation,
+   the 26/27-payday calendar claims, the raise maths and the marginal-rate pinned comment.
 
 Prints a table and exits non-zero on any mismatch.
 Run:  python3 teasers/v2/checks/01-dead-simple-list.py
@@ -32,6 +39,16 @@ FILES = {
 WPS = 2.6            # guide VO read rate, words per second
 ANCHOR_TOL = 0.5     # s: a beat may sit this far from the estimated spoken moment
 LANE = (26.0, 44.0)  # benchmark duration lane for worked lists
+MAX_GAP = 7.5        # s between consecutive payoffs (results, then the verdict); format pace is 4-7 s
+
+# lookOpts keys each kit's dead-simple-list module (or its chrome) actually reads
+KIT_LOOKOPTS = {
+    "clean-sheet": {"loop", "input", "layout", "check", "checkT"},
+    "live-sheet": {"loop", "labels", "countUp", "verdict", "formulaAt0", "sub", "notes", "columns",
+                   "startRow", "wrongGuess", "check", "checkT"},
+    "becker-rig": {"hits", "actions", "figureScale", "input", "layout"},
+}
+BECKER_HITS = {"kick", "chop", "slam"}
 
 rows = []            # (teaser, check, spec value, expected, ok)
 errors = 0
@@ -53,6 +70,9 @@ def close(teaser, check, got, want, tol=1e-9):
 
 
 # ---------------------------------------------------------------- formatting
+NBSP = "\u00a0"         # keeps a highlight or a rule on one rendered line (the kits never break at it)
+
+
 def money(x, dp=0):
     return f"${x:,.{dp}f}"
 
@@ -65,21 +85,24 @@ def num(n):
     return f"{n:,}"
 
 
-def round_to(x, step):
-    return round(x / step) * step
-
-
 def ordinal(n):
     n = int(n)
     suf = "th" if 10 <= n % 100 <= 20 else {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
     return f"{n}{suf}"
 
 
+def rnd(x, dp=0):
+    """Round half up (display rounding), not Python's banker's rounding."""
+    q = 10 ** dp
+    return int(x * q + 0.5 + 1e-9) / q if dp else int(x + 0.5 + 1e-9)
+
+
 # ------------------------------------------------- series constants (all three)
 HRS_WEEK = 40
 WEEKS = 52
-HRS_YEAR = HRS_WEEK * WEEKS          # 2,080: one constant for the whole series
+HRS_YEAR = HRS_WEEK * WEEKS          # 2,080: one hours constant for the whole series
 MONTHS = 12
+DAYS = 365
 assert HRS_YEAR == 2080
 
 # ------------------------------------------------- 01a inputs and maths
@@ -92,21 +115,22 @@ A_WRONG = A_PAY * A_SEMI                         # $60,000
 A_MONTH = A_PAY * 2                              # $5,000, a 2-check month
 A_EXTRA = A_PAYDAYS - A_SEMI                     # 2 extra checks
 A_NORMAL_MONTHS = MONTHS - A_EXTRA               # 10 months with 2 paydays
-A_LEFT = A_YEAR - A_MONTH * MONTHS               # $5,000 left after 12 normal months
+A_TWELVE = A_MONTH * MONTHS                      # 12 normal months = $60,000 (= the × 24 figure)
+A_LEFT = A_YEAR - A_WRONG                        # $5,000 the budget forgets
 A_MONTHS_OF_PAY = A_YEAR // A_MONTH              # 13
-assert A_YEAR % A_MONTH == 0 and A_LEFT == A_MONTH == A_PAY * A_EXTRA
+assert A_TWELVE == A_WRONG and A_YEAR % A_MONTH == 0 and A_LEFT == A_MONTH == A_PAY * A_EXTRA
 A_27 = A_PAY * (A_PAYDAYS + 1)                   # $67,500 in a 27-payday year (pinned comment)
 
 # ------------------------------------------------- 01b inputs and maths
 B_WAGE = 20
 B_YEAR = B_WAGE * HRS_YEAR                       # $41,600
-B_WEEK = B_WAGE * HRS_WEEK                       # $800
-B_WRONG_MONTH = B_WEEK * 4                       # $3,200, the "4 weeks" guess
 B_MONTH = B_YEAR / MONTHS                        # 3,466.67
-B_MONTH_D = round(B_MONTH)                       # shown as ≈ $3,467
+B_MONTH_D = rnd(B_MONTH)                         # shown as ≈ $3,467
 B_KEEP = 0.85                                    # rough keep rule shown on screen
 B_KEPT_RULE = B_MONTH_D * B_KEEP                 # 2,946.95 (what the formula on screen gives)
-B_KEPT_D = round_to(B_KEPT_RULE, 50)             # shown as ≈ $2,950
+B_KEPT_D = rnd(B_KEPT_RULE)                      # shown as ≈ $2,947 ($1 rounding, like every result)
+B_HOUR_KEPT = B_WAGE * B_KEEP                    # $17 of every $20 hour (VO)
+assert abs(B_HOUR_KEPT - 17) < 1e-9
 
 # exact 2026 federal income tax + FICA, single filer (IRS Rev. Proc. 2025-32; SSA 2026 fact sheet)
 TAX_YEAR = 2026
@@ -126,166 +150,153 @@ def fed_tax(gross):
     return tax
 
 
+def fica(gross):
+    return min(gross, SS_WAGE_BASE) * SS_RATE + gross * MED_RATE
+
+
+def bracket_rate(gross):
+    taxable = max(0, gross - STD_DED)
+    low = 0
+    for top, rate in BRACKETS:
+        if taxable <= top:
+            return rate, low, top
+        low = top
+    raise ValueError(gross)
+
+
 B_FED = fed_tax(B_YEAR)                                           # 2,812.00
-B_FICA = min(B_YEAR, SS_WAGE_BASE) * SS_RATE + B_YEAR * MED_RATE  # 3,182.40
+B_FICA = fica(B_YEAR)                                             # 3,182.40
 B_NET = B_YEAR - B_FED - B_FICA                                   # 35,605.60
 B_KEEP_EXACT = B_NET / B_YEAR                                     # 0.8559
 B_KEPT_EXACT = B_NET / MONTHS                                     # 2,967.13
 
 # ------------------------------------------------- 01c inputs and maths
 C_SALARY = 60_000
-C_HOUR = C_SALARY / HRS_YEAR                     # 28.846
-C_HOUR_D = round(C_HOUR, 2)                      # ≈ $28.85
-C_DAY = C_HOUR_D * 8                             # formula on screen: $28.85 × 8 = 230.80
-C_DAY_D = round(C_DAY)                           # ≈ $231
-C_MIN = C_HOUR_D / 60                            # formula on screen: $28.85 ÷ 60
-C_MIN_D = round(C_MIN, 2)                        # ≈ $0.48
-C_COMMUTE = 27                                   # min each way, ≈ US average (Census ACS)
-C_COMMUTE_DAY = 2 * C_COMMUTE                    # 54 min there and back
-C_DAY_HRS = 8 + C_COMMUTE_DAY / 60               # 8.9 h
-C_REAL = C_DAY_D / C_DAY_HRS                     # formula on screen: $231 ÷ 8.9 = 25.96
-C_REAL_D = round(C_REAL)                         # ≈ $26
-C_GAG_SEC = 30
-C_GAG = C_MIN_D * C_GAG_SEC / 60                 # 30 s of work = $0.24
-C_GAG_CENTS = round(C_GAG * 100)                 # 24¢
+C_PCT = 3                                        # the example raise, in percent
+C_RAISE = C_SALARY * C_PCT // 100                # $1,800 a year
+C_MONTH = C_RAISE / MONTHS                       # 150
+C_WEEK = C_RAISE / WEEKS                         # 34.615
+C_DAY = C_RAISE / DAYS                           # 4.9315
+C_MONTH_D, C_WEEK_D, C_DAY_D = rnd(C_MONTH), rnd(C_WEEK), rnd(C_DAY)
+assert C_MONTH == C_MONTH_D                      # exact, so no "≈"
+# pinned comment: a raise is taxed at the marginal rate (12% federal bracket + 7.65% FICA, single, 2026)
+C_MARGINAL = bracket_rate(C_SALARY)[0] + SS_RATE + MED_RATE        # 0.1965
+C_DAY_KEPT = C_RAISE * (1 - C_MARGINAL) / DAYS                     # 3.96
 
 # ---------------------------------------------------------- expected strings
 EXPECT = {
     "01a": {
-        "header": f"3 DEAD SIMPLE NUMBERS\nIF YOU'RE PAID **EVERY 2 WEEKS**",
+        "header": "3 DEAD SIMPLE NUMBERS\nPAID **EVERY 2 WEEKS**? THE PAY YOUR BUDGET FORGETS",
         "footer": f"ASSUMES {A_PAYDAYS} paydays a year (some years have {A_PAYDAYS + 1}) · pay before tax",
-        "verdict.text": f"Every 2 weeks = **{A_MONTHS_OF_PAY} months** of pay a year",
+        "verdict.text": f"Every 2 weeks = **{A_MONTHS_OF_PAY}{NBSP}months** of pay a year",
         "data.input.value": money(A_PAY),
         "data.input.note": "every 2 weeks",
         "data.items[0].formula": f"{money(A_PAY)} × {A_PAYDAYS}",
         "data.items[0].result": money(A_YEAR),
-        "data.items[0].note": f"not × {A_SEMI} = {money(A_WRONG)}",
+        "data.items[0].note": f"not × {A_SEMI}",
         "data.items[1].label": "A normal month (2 checks)",
         "data.items[1].formula": f"{money(A_PAY)} × 2",
         "data.items[1].result": money(A_MONTH),
         "data.items[1].note": f"{A_NORMAL_MONTHS} months a year",
-        "data.items[2].label": f"Your {A_EXTRA} 'bonus' checks",
-        "data.items[2].formula": f"{money(A_YEAR)} − {money(A_MONTH)} × {MONTHS}",
+        "data.items[2].formula": f"{money(A_YEAR)} − {money(A_WRONG)}",
         "data.items[2].result": money(A_LEFT),
-        "data.items[2].note": f"a {ordinal(A_MONTHS_OF_PAY)} month of pay",
-        "lookOpts.wrongGuess.formula": f"{money(A_PAY)} × {A_SEMI}",
-        "lookOpts.wrongGuess.result": money(A_WRONG),
+        "data.items[2].label": f"The {A_EXTRA} checks your budget forgets",
     },
     "01b": {
-        "header": f"4 DEAD SIMPLE NUMBERS\nIF YOU MAKE **{money(B_WAGE)}/HR**",
-        "footer": (f"ASSUMES {HRS_WEEK} hrs × {WEEKS} wks · × {B_KEEP:.2f} ≈ left after {TAX_YEAR} "
+        "header": f"3 DEAD SIMPLE NUMBERS\nWHAT **{money(B_WAGE)}/HR** ACTUALLY LANDS",
+        "footer": (f"ASSUMES {HRS_WEEK} hrs × {WEEKS} wks · ×{NBSP}{B_KEEP:.2f} ≈ left after {TAX_YEAR} "
                    f"federal tax + FICA, single, before state tax"),
-        "verdict.text": f"**≈ {money(B_KEPT_D)}** a month lands. Not __{money(B_WRONG_MONTH)}__",
+        "verdict.text": f"**≈ {money(B_KEPT_D)}** a month lands of the __{money(B_MONTH_D)}__ you earn",
         "data.input.value": f"{money(B_WAGE)}/hr",
         "data.input.note": f"{HRS_WEEK} hrs a week",
         "data.items[0].formula": f"{money(B_WAGE)} × {num(HRS_YEAR)} hrs",
         "data.items[0].result": money(B_YEAR),
         "data.items[0].note": f"{num(HRS_YEAR)} hrs = {HRS_WEEK} × {WEEKS}",
-        "data.items[1].formula": f"{money(B_WAGE)} × {HRS_WEEK} hrs",
-        "data.items[1].result": money(B_WEEK),
-        "data.items[2].formula": f"{money(B_YEAR)} ÷ {MONTHS}",
-        "data.items[2].result": approx(money(B_MONTH_D)),
-        "data.items[2].note": f"not {money(B_WEEK)} × 4 = {money(B_WRONG_MONTH)}",
-        "data.items[3].formula": f"{money(B_MONTH_D)} × {B_KEEP:.2f}",
-        "data.items[3].result": approx(money(B_KEPT_D)),
-        "lookOpts.wrongGuess.formula": f"{money(B_WEEK)} × 4",
-        "lookOpts.wrongGuess.result": money(B_WRONG_MONTH),
+        "data.items[1].formula": f"{money(B_YEAR)} ÷ {MONTHS}",
+        "data.items[1].result": approx(money(B_MONTH_D)),
+        "data.items[2].formula": f"{money(B_MONTH_D)} × {B_KEEP:.2f}",
+        "data.items[2].result": approx(money(B_KEPT_D)),
     },
     "01c": {
-        "header": f"4 DEAD SIMPLE NUMBERS\nIF YOU MAKE **{money(C_SALARY)}** A YEAR",
-        "footer": f"ASSUMES {HRS_WEEK} hrs × {WEEKS} wks · commute ≈ {C_COMMUTE} min each way (US avg)",
-        "verdict.text": f"Count the commute: **≈ {money(C_REAL_D)}** an hour, not __{money(C_HOUR_D, 2)}__",
+        "header": f"4 DEAD SIMPLE NUMBERS\nWHAT A {C_PCT}% RAISE ON **{money(C_SALARY)}**\nACTUALLY PAYS YOU",
+        "footer": f"ASSUMES a {C_PCT}% raise (example) · pay{NBSP}before{NBSP}tax",
+        "verdict.text": f"A {C_PCT}% raise on {money(C_SALARY)} ≈{NBSP}**{money(C_DAY_D)}{NBSP}a{NBSP}day**, before tax",
         "data.input.value": money(C_SALARY),
-        "data.items[0].formula": f"{money(C_SALARY)} ÷ {num(HRS_YEAR)}",
-        "data.items[0].result": approx(money(C_HOUR_D, 2)),
-        "data.items[0].note": f"{num(HRS_YEAR)} work hrs a year",
-        "data.items[1].formula": f"{money(C_HOUR_D, 2)} × 8",
-        "data.items[1].result": approx(money(C_DAY_D)),
-        "data.items[1].note": "8-hr day",
-        "data.items[2].formula": f"{money(C_HOUR_D, 2)} ÷ 60",
-        "data.items[2].result": approx(money(C_MIN_D, 2)),
-        "data.items[3].formula": f"{money(C_DAY_D)} ÷ {C_DAY_HRS:g} hrs",
-        "data.items[3].result": approx(money(C_REAL_D)),
-        "data.items[3].note": f"8 hrs + {C_COMMUTE_DAY} min commute",
-        "lookOpts.actions[0].tool": f"÷ {num(HRS_YEAR)}",
-        "lookOpts.actions[0].becomes": f"one coin from a pile of {num(HRS_YEAR)}",
-        "lookOpts.actions[1].tool": "× 8",
-        "lookOpts.actions[1].becomes": "a stack of 8 coins",
-        "lookOpts.actions[2].tool": "÷ 60",
-        "lookOpts.actions[3].tool": f"+ {C_COMMUTE_DAY} min",
-        "lookOpts.gag.text": f"{C_GAG_SEC} sec ≈ {C_GAG_CENTS}¢",
+        "data.items[0].formula": f"{money(C_SALARY)} × {C_PCT}%",
+        "data.items[0].result": money(C_RAISE),
+        "data.items[1].formula": f"{money(C_RAISE)} ÷ {MONTHS}",
+        "data.items[1].result": money(C_MONTH_D),
+        "data.items[2].formula": f"{money(C_RAISE)} ÷ {WEEKS}",
+        "data.items[2].result": approx(money(C_WEEK_D)),
+        "data.items[2].note": f"exact {money(C_WEEK, 2)}",
+        "data.items[3].formula": f"{money(C_RAISE)} ÷ {DAYS}",
+        "data.items[3].result": approx(money(C_DAY_D)),
+        "data.items[3].note": f"exact {money(C_DAY, 2)}",
     },
 }
 
 # results that must carry "≈" (rounded, or resting on a rough constant) vs exact ones
 APPROX_RESULTS = {
     "01a": [False, False, False],
-    "01b": [False, False, True, True],
-    "01c": [True, True, True, True],
+    "01b": [False, True, True],
+    "01c": [False, False, True, True],
 }
 
-# numbers spoken in each VO line, in order (cents are expressed in dollars)
+# numbers spoken in each VO line, in order (cents are expressed in dollars; "3%" is 3)
 VO_NUMBERS = {
     "01a": [
-        [A_PAYDAYS, A_YEAR],
+        [A_PAYDAYS, A_PAY, A_YEAR],
         [A_SEMI, A_WRONG],
-        [2, A_PAYDAYS],
         [2, A_MONTH],
-        [A_NORMAL_MONTHS],
-        [MONTHS],
-        [A_LEFT],
+        [MONTHS, A_TWELVE],
+        [A_YEAR, A_LEFT],
         [A_EXTRA, A_EXTRA, 3],
         [A_MONTHS_OF_PAY],
     ],
     "01b": [
         [HRS_YEAR, B_YEAR],
-        [HRS_WEEK, B_WEEK],
-        [4, B_WRONG_MONTH],
-        [MONTHS],
-        [B_MONTH_D],
+        [MONTHS, B_MONTH_D],
         [B_KEEP],
         [B_KEPT_D],
-        [B_WRONG_MONTH],
+        [B_WAGE, B_HOUR_KEPT],
+        [B_MONTH_D, B_KEPT_D],
     ],
     "01c": [
-        [HRS_YEAR, C_HOUR_D],
-        [8, C_DAY_D],
-        [60, C_MIN_D],
-        [C_COMMUTE],
-        [8, C_DAY_HRS],
-        [C_DAY_D, C_REAL_D],
-        [C_HOUR_D],
-        [C_GAG_SEC, C_GAG_CENTS / 100],
+        [C_PCT, C_RAISE],
+        [],
+        [MONTHS, C_MONTH_D],
+        [WEEKS, C_WEEK_D],
+        [DAYS, C_DAY_D],
+        [C_RAISE, C_DAY_D],
     ],
 }
 
 # where each beat should sit: (vo line index, token or None for the line start)
 ANCHORS = {
     "01a": {"items": [((0, None), (0, money(A_YEAR))),
-                      ((3, None), (3, money(A_MONTH))),
-                      ((5, None), (6, money(A_LEFT)))],
-            "verdict": (8, None)},
-    "01b": {"items": [((0, None), (0, money(B_YEAR))),
-                      ((1, None), (1, money(B_WEEK))),
-                      ((3, "A"), (4, money(B_MONTH_D))),
-                      ((5, f"{round(B_KEEP * 100)}"), (6, money(B_KEPT_D)))],
-            "verdict": (7, None)},
-    "01c": {"items": [((0, None), (0, money(C_HOUR_D, 2))),
-                      ((1, None), (1, money(C_DAY_D))),
-                      ((2, None), (2, f"{round(C_MIN_D * 100)}")),
-                      ((3, None), (5, money(C_REAL_D)))],
+                      ((2, None), (2, money(A_MONTH))),
+                      ((3, None), (4, money(A_LEFT)))],
             "verdict": (6, None)},
+    "01b": {"items": [((0, None), (0, money(B_YEAR))),
+                      ((1, "divided"), (1, money(B_MONTH_D))),
+                      ((2, f"{round(B_KEEP * 100)}"), (3, money(B_KEPT_D)))],
+            "verdict": (5, None)},
+    "01c": {"items": [((0, None), (0, money(C_RAISE))),
+                      ((2, None), (2, money(C_MONTH_D))),
+                      ((3, None), (3, money(C_WEEK_D))),
+                      ((4, None), (4, money(C_DAY_D)))],
+            "verdict": (5, None)},
 }
 
 # ------------------------------------------------------------ VO helpers
-NUM_TOKEN = re.compile(r"(\$?)(\d[\d,]*)(?:\.(\d+))?(st|nd|rd|th)?")
+NUM_TOKEN = re.compile(r"(\$?)(\d[\d,]*)(?:\.(\d+))?(st|nd|rd|th)?(%)?")
 
 
 def vo_numbers(text):
     """Numbers spoken in a VO line; 'N cents' becomes N/100 dollars."""
     out = []
     for m in re.finditer(r"(\$?\d[\d,]*(?:\.\d+)?)(?:st|nd|rd|th)?(\s+cents)?", text):
-        v = float(m.group(1).lstrip("$").replace(",", ""))
+        v = float(m.group(1).lstrip("$").rstrip(",").replace(",", ""))
         out.append(v / 100 if m.group(2) else v)
     return out
 
@@ -294,7 +305,7 @@ def words_int(n):
     if n < 100:
         return 1                      # "twenty-six"
     if n < 10_000:
-        return 2                      # "eight hundred", "two thirty-one", "twenty eighty", "thirty-two hundred"
+        return 2                      # "eight hundred", "three sixty-five", "twenty eighty", "thirty-four sixty-seven"
     if n < 1_000_000:
         k, r = divmod(n, 1000)
         return words_int(k) + 1 + (0 if r == 0 else words_int(r))   # "forty-one thousand six hundred"
@@ -308,10 +319,12 @@ def token_words(tok):
     m = NUM_TOKEN.fullmatch(core)
     if not m:
         return 1
-    dollar, ip, dec, ordn = m.groups()
+    dollar, ip, dec, ordn, pct = m.groups()
     n = int(ip.replace(",", ""))
     if ordn:
         return 1                                   # "thirteenth"
+    if pct:
+        return words_int(n) + (1 + len(dec) if dec else 0) + 1   # "three percent"
     if dec is None:
         return words_int(n)
     if dollar:
@@ -335,6 +348,29 @@ def anchor_time(vo, line, token):
     return None  # token not spoken in that line: reported as a failure by the caller
 
 
+# ------------------------------------------------------------ formula evaluator
+SAFE = re.compile(r"^[\d\s.+\-*/()]+$")
+
+
+def eval_formula(formula):
+    """Evaluate a formula exactly as typed on screen: '$3,467 × 0.85', '$20 × 2,080 hrs', '$60,000 × 3%'."""
+    s = formula.replace("×", "*").replace("÷", "/").replace("−", "-").replace("$", "")
+    s = re.sub(r"(\d[\d,]*(?:\.\d+)?)%", lambda m: f"({m.group(1)}/100)", s)
+    s = re.sub(r"(?<=\d),(?=\d{3})", "", s)
+    s = re.sub(r"[A-Za-z]+", "", s)
+    if not SAFE.match(s):
+        raise ValueError(f"unsafe formula {formula!r} -> {s!r}")
+    return eval(s, {"__builtins__": {}}, {})  # noqa: S307 (sanitised to digits and operators above)
+
+
+def display_value(result):
+    """'≈ $2,947' -> (2947.0, 0 dp); '≈ $0.48' -> (0.48, 2 dp)."""
+    m = re.search(r"\$(\d[\d,]*)(?:\.(\d+))?", result)
+    whole = m.group(1).replace(",", "")
+    dp = len(m.group(2)) if m.group(2) else 0
+    return float(whole + ("." + m.group(2) if dp else "")), dp
+
+
 # ------------------------------------------------------------ spec walking
 def walk(node, path=""):
     if isinstance(node, dict):
@@ -347,7 +383,7 @@ def walk(node, path=""):
         yield path, node
 
 
-SKIP_PATHS = re.compile(r"^(id|look|format|vo\[\d+\]\.text|sfx\[\d+\]\.kind|.*\.tone|.*\.verb|lookOpts\.stage|lookOpts\.inputProp)$")
+SKIP_PATHS = re.compile(r"^(id|look|format|vo\[\d+\]\.text|sfx\[\d+\]\.kind|.*\.tone|.*\.verb|lookOpts\.hits\[\d+\]|lookOpts\.labels)$")
 
 
 def check_spec(key, spec):
@@ -373,6 +409,8 @@ def check_spec(key, spec):
     record(key, "3-6 items", len(items), "3..6", 3 <= len(items) <= 6)
     words = len(spec["header"].replace("**", "").replace("__", "").split())
     record(key, "R8 header ≤ 15 words", words, "≤ 15", words <= 15)
+    lines = spec["header"].count("\n") + 1
+    record(key, "R8 header ≤ 4 lines (kit fits 3)", lines, "≤ 3", lines <= 3)
     dollars_in_header = len(re.findall(r"\$\d", spec["header"]))
     record(key, "R2 ≤ 1 $ figure in header", dollars_in_header, "≤ 1", dollars_in_header <= 1)
     has_num_t0 = bool(re.search(r"\$\d", d["input"]["value"])) or dollars_in_header == 1
@@ -381,10 +419,18 @@ def check_spec(key, spec):
     eq(key, "format", spec["format"], "dead-simple-list")
     eq(key, "id = file stem", spec["id"], FILES[key].stem)
 
-    # 2. "≈" on every rounded / rough result, never on exact ones
+    # 2. "≈" on every rounded / rough result, never on exact ones; the visible formula gives the visible result
     for i, it in enumerate(items):
         want = APPROX_RESULTS[key][i]
         record(key, f"items[{i}] ≈ marker", it["result"][:1] == "≈", want, (it["result"][:1] == "≈") == want)
+        val = eval_formula(it["formula"])
+        shown, dp = display_value(it["result"])
+        record(key, f"items[{i}] '{it['formula']}' = {val:,.4f} → shown", it["result"],
+               f"{money(rnd(val, dp), dp)} (round to {'1¢' if dp else '$1'})", abs(rnd(val, dp) - shown) < 1e-9)
+        exact = abs(val - round(val, dp)) < 1e-9
+        rough_rule = "0.85" in it["formula"]
+        record(key, f"items[{i}] ≈ iff rounded or rough rule", it["result"][:1] == "≈", (not exact) or rough_rule,
+               (it["result"][:1] == "≈") == ((not exact) or rough_rule))
 
     # 3. VO numbers, line by line
     vo = spec["vo"]
@@ -407,7 +453,7 @@ def check_spec(key, spec):
     record(key, "duration in 26-44 s lane", dur, LANE, LANE[0] <= dur <= LANE[1])
     record(key, "≥ 1.5 s hold after last VO", round(dur - last_end, 2), "≥ 1.5", dur - last_end >= 1.5)
 
-    # 5. beat timing: matches the VO, types before it resolves, first payoff ≤ 3 s
+    # 5. beat timing: matches the VO, types before it resolves, first payoff ≤ 3 s, steady pace
     type_dur = d.get("typeDur", 0.6)
     for i, it in enumerate(items):
         (tl, ttok), (rl, rtok) = ANCHORS[key]["items"][i]
@@ -424,15 +470,30 @@ def check_spec(key, spec):
             record(key, f"items[{i}] resolves before items[{i + 1}]", it["resultT"], f"< {items[i + 1]['t']}",
                    it["resultT"] < items[i + 1]["t"])
     record(key, "R10 first payoff ≤ 3 s", items[0]["resultT"], "≤ 3.0", items[0]["resultT"] <= 3.0)
+    payoffs = [it["resultT"] for it in items] + [spec["verdict"]["t"]]
+    gaps = [round(b - a, 2) for a, b in zip(payoffs, payoffs[1:])]
+    record(key, f"payoff gaps ≤ {MAX_GAP} s", gaps, f"all ≤ {MAX_GAP}", max(gaps) <= MAX_GAP)
     vl, vtok = ANCHORS[key]["verdict"]
     vt = anchor_time(vo, vl, vtok)
     record(key, "verdict.t at VO mention", spec["verdict"]["t"], f"{vt:.2f}±{ANCHOR_TOL}",
            abs(spec["verdict"]["t"] - vt) <= ANCHOR_TOL)
     record(key, "verdict after last result", spec["verdict"]["t"], f"≥ {items[-1]['resultT']}",
            spec["verdict"]["t"] >= items[-1]["resultT"])
+    later = [i for i, line in enumerate(vo) if line["t"] > spec["verdict"]["t"] + 1e-9]
+    record(key, "no VO line after the verdict card (it hides captions)", later, "[]", not later)
     for s in spec.get("sfx", []):
         record(key, f"sfx {s['kind']} inside duration", s["t"], f"< {dur}", 0 <= s["t"] < dur)
-    wg = spec.get("lookOpts", {}).get("wrongGuess")
+
+    # 6. contract: only lookOpts the kit reads
+    lo = spec.get("lookOpts", {})
+    unknown = sorted(set(lo) - KIT_LOOKOPTS[spec["look"]])
+    record(key, f"lookOpts keys read by the {spec['look']} kit", sorted(lo), "no unknown keys", not unknown)
+    if spec["look"] == "becker-rig":
+        hits = lo.get("hits", [])
+        record(key, "becker hits valid, goal slams", hits, f"{sorted(BECKER_HITS)}, slam on goal",
+               all(h in BECKER_HITS for h in hits) and all(
+                   (items[i]["tone"] == "goal") == (h == "slam") for i, h in enumerate(hits)))
+    wg = lo.get("wrongGuess")
     if wg:
         record(key, "wrongGuess.t on the VO line that voices it", wg["t"],
                "a vo t", any(abs(wg["t"] - line["t"]) < 1e-9 for line in vo))
@@ -460,25 +521,36 @@ def sensitivity():
     record("01a", "27-payday years ≈ 1 in 11 (pinned comment)", f"1 in {1 / share:.1f}", "1 in 10-12",
            10 <= 1 / share <= 12)
     eq("01a", "27-payday year pay (pinned comment)", money(A_27), "$67,500")
+    eq("01a", "13 months = year ÷ a normal month", A_YEAR / A_MONTH, 13.0)
 
-    # 01b: x0.85 is within 1 point of the exact keep rate, and both round to the same $50
+    # 01b: x0.85 is within 1 point of the exact keep rate; the shown monthly figure is within 1% of the exact one
     close("01b", "2026 federal tax on $41,600 (single)", round(B_FED, 2), 2812.00, 0.005)
     close("01b", "FICA on $41,600", round(B_FICA, 2), 3182.40, 0.005)
     record("01b", "exact keep rate vs x0.85", f"{B_KEEP_EXACT:.4f}", "0.85 ± 0.01", abs(B_KEEP_EXACT - B_KEEP) <= 0.01)
-    eq("01b", "exact monthly take-home → nearest $50", money(round_to(B_KEPT_EXACT, 50)), money(B_KEPT_D))
-    eq("01b", "x0.85 on unrounded month → nearest $50", money(round_to(B_MONTH * B_KEEP, 50)), money(B_KEPT_D))
-    record("01b", "'about 85 cents of each dollar' vs exact keep", f"{B_KEEP_EXACT * 100:.1f}¢", "85¢ ± 1¢",
+    rel = abs(B_KEPT_EXACT - B_KEPT_D) / B_KEPT_EXACT
+    record("01b", "≈ $2,947 vs exact 2026 take-home", f"{money(B_KEPT_EXACT, 2)} ({rel:.2%} off)", "within 1%", rel <= 0.01)
+    eq("01b", "x0.85 on the unrounded month → $1", money(rnd(B_MONTH * B_KEEP)), money(B_KEPT_D))
+    record("01b", "'about 85 cents a dollar' vs exact keep", f"{B_KEEP_EXACT * 100:.1f}¢", "85¢ ± 1¢",
            abs(B_KEEP_EXACT * 100 - B_KEEP * 100) <= 1.0)
+    eq("01b", "'about $17' of a $20 hour, exact keep → $", rnd(B_WAGE * B_KEEP_EXACT), 17)
+    eq("01b", "exact monthly take-home (write-up/pin)", money(rnd(B_KEPT_EXACT)), "$2,967")
 
-    # 01c: on-screen chain agrees with the exact values; commute result robust to 25-29 min
-    eq("01c", "exact hour → 2 dp", round(C_SALARY / HRS_YEAR, 2), C_HOUR_D)
-    eq("01c", "exact day ($60,000 ÷ 260) → $", round(C_SALARY / (WEEKS * 5)), C_DAY_D)
-    eq("01c", "exact minute → 2 dp", round(C_SALARY / HRS_YEAR / 60, 2), C_MIN_D)
-    eq("01c", "exact real hour → $", round(C_SALARY / (WEEKS * 5) / C_DAY_HRS), C_REAL_D)
-    robust = {c: round(C_SALARY / (WEEKS * 5) / (8 + 2 * c / 60)) for c in (25, 26, 27, 27.6, 28, 29)}
-    record("01c", "≈ $26 for any 25-29 min commute", robust, "all 26", set(robust.values()) == {C_REAL_D})
-    eq("01c", "30 s of work, exact → ¢", round(C_SALARY / HRS_YEAR / 3600 * C_GAG_SEC * 100), C_GAG_CENTS)
-    close("01c", "commute hours a year (write-up)", C_COMMUTE_DAY * 5 * WEEKS / 60, 234.0)
+    # 01c: the raise maths; the day figure survives a leap year; marginal-rate pinned comment
+    eq("01c", "raise = 3% of $60,000", C_RAISE, 1800)
+    eq("01c", "≈ $5 a day in a 366-day year too", rnd(C_RAISE / 366), C_DAY_D)
+    eq("01c", "week × 52 = year (exact)", round(C_WEEK * WEEKS, 6), float(C_RAISE))
+    rate0, lo0, hi0 = bracket_rate(C_SALARY)
+    rate1, lo1, hi1 = bracket_rate(C_SALARY + C_RAISE)
+    record("01c", "salary before and after raise in the same 12% bracket", (rate0, rate1), (0.12, 0.12),
+           rate0 == rate1 == 0.12)
+    record("01c", "raise below the Social Security wage base", C_SALARY + C_RAISE, f"≤ {SS_WAGE_BASE:,}",
+           C_SALARY + C_RAISE <= SS_WAGE_BASE)
+    close("01c", "exact federal + FICA on the raise = raise × marginal",
+          round(fed_tax(C_SALARY + C_RAISE) - fed_tax(C_SALARY) + fica(C_SALARY + C_RAISE) - fica(C_SALARY), 2),
+          round(C_RAISE * C_MARGINAL, 2), 0.005)
+    eq("01c", "kept a day after federal + FICA → 'about $4' (pinned comment)", rnd(C_DAY_KEPT), 4)
+    record("01c", "'about $4' survives a state tax up to 8%", money(C_RAISE * (1 - C_MARGINAL - 0.08) / DAYS, 2),
+           "≥ $3.50", C_RAISE * (1 - C_MARGINAL - 0.08) / DAYS >= 3.5)
 
 
 def main():

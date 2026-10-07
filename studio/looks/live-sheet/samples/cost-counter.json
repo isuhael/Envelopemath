@@ -1,0 +1,47 @@
+{
+  "id": "cost-counter",
+  "sample": true,
+  "look": "live-sheet",
+  "format": "cost-counter",
+  "fps": 30,
+  "header": "What **$1 billion** earns\nwhile you watch this",
+  "footer": "ASSUMES 4% a year: $40M ÷ 31,536,000 s\nMedian pay: BLS $1,251 a week ÷ 40 hrs",
+  "captions": true,
+  "vo": [
+    { "t": 0.0, "d": 2.8, "text": "What **$1 billion** earns while you watch this." },
+    { "t": 3.0, "d": 2.4, "text": "At 4%: **≈ $1.27** a second." },
+    { "t": 5.6, "d": 2.6, "text": "There goes an hour at minimum wage." },
+    { "t": 8.5, "d": 3.9, "text": "4% of $1 billion is $40 million a year." },
+    { "t": 12.6, "d": 3.2, "text": "Spread over 31,536,000 seconds." },
+    { "t": 16.2, "d": 3.4, "text": "Divide your hourly pay by **1.27**." },
+    { "t": 19.8, "d": 3.0, "text": "That's how many seconds it takes." },
+    { "t": 24.4, "d": 2.6, "text": "That's an hour of **median pay**." },
+    { "t": 27.2, "d": 3.2, "text": "It earns an hour of median pay every **≈ 25 seconds**." }
+  ],
+  "verdict": { "t": 27.2, "text": "It earns an hour of median pay\nevery **≈ 25 seconds**." },
+  "data": {
+    "label": "$1 billion at 4%, since you hit play",
+    "perSecond": 1.268392,
+    "rateDisplay": "≈ $1.27 every second",
+    "counterT": [0.0, 27.0],
+    "startValue": 0,
+    "prefix": "$",
+    "dp": 2,
+    "milestones": [
+      { "value": 1.5, "label": "A Costco hot dog: $1.50" },
+      { "value": 7.25, "label": "An hour at federal minimum wage: $7.25" },
+      { "value": 31.28, "label": "An hour of median pay: ≈ $31.28" }
+    ],
+    "final": "≈ $34.25",
+    "hold": 3.6
+  },
+  "lookOpts": {
+    "columns": ["It has earned", "Amount", "Passed at"],
+    "rows": [
+      { "label": "A Costco hot dog", "amount": "$1.50", "at": "≈ 1.2 s" },
+      { "label": "An hour at federal minimum wage", "amount": "$7.25", "at": "≈ 5.7 s" },
+      { "label": "An hour of median pay", "amount": "≈ $31.28", "at": "≈ 24.7 s" }
+    ]
+  },
+  "notes": "Rate: $1,000,000,000 × 4% = $40,000,000 a year ÷ 31,536,000 s (365 days) = $1.268392 a second (≈ $1.27). Counter over 27.0 s: 1.268392 × 27 = $34.2466 → ≈ $34.25. Pass times = value ÷ 1.268392: Costco hot dog + soda $1.50 (unchanged since 1985) → 1.18 s (≈ 1.2 s); federal minimum wage $7.25/hr (since July 2009) → 5.72 s (≈ 5.7 s); median pay $1,251 a week (BLS Q2 2026, the series' yardstick) ÷ 40 hrs = $31.275 (≈ $31.28) → 24.66 s (≈ 24.7 s, so an hour of median pay every ≈ 25 seconds). Swap-in rule: your hourly pay ÷ 1.27 = the seconds it takes."
+}

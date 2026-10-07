@@ -3,36 +3,31 @@
   "look": "clean-sheet",
   "format": "dead-simple-list",
   "fps": 30,
-  "duration": 31.0,
-  "header": "3 DEAD SIMPLE NUMBERS\nIF YOU'RE PAID **EVERY 2 WEEKS**",
+  "duration": 26.0,
+  "header": "3 DEAD SIMPLE NUMBERS\nPAID **EVERY 2 WEEKS**? THE PAY YOUR BUDGET FORGETS",
   "footer": "ASSUMES 26 paydays a year (some years have 27) · pay before tax",
   "captions": true,
   "vo": [
-    { "t": 0.0,  "d": 3.6, "text": "Take your paycheck, times 26: $65,000 a year." },
-    { "t": 3.8,  "d": 2.7, "text": "Not times 24. That's only $60,000." },
-    { "t": 6.6,  "d": 2.4, "text": "Every 2 weeks means 26 paydays." },
-    { "t": 9.2,  "d": 2.8, "text": "A normal month: 2 checks, $5,000." },
-    { "t": 12.2, "d": 3.1, "text": "10 months a year look just like that." },
-    { "t": 15.5, "d": 3.2, "text": "Now take the year, minus 12 normal months." },
-    { "t": 18.8, "d": 1.6, "text": "$5,000 left over." },
-    { "t": 20.6, "d": 5.1, "text": "Those are your 2 'bonus' checks, in the 2 months with 3 paydays." },
-    { "t": 25.9, "d": 3.1, "text": "That's a 13th month of pay. Every year." }
+    { "t": 0.0,  "d": 4.3, "text": "Your paycheck, times 26. On $2,500: $65,000 a year." },
+    { "t": 4.5,  "d": 2.8, "text": "Not times 24: that's only $60,000." },
+    { "t": 7.4,  "d": 2.8, "text": "A normal month: 2 checks, $5,000." },
+    { "t": 10.4, "d": 2.0, "text": "12 normal months: $60,000." },
+    { "t": 12.6, "d": 2.8, "text": "From $65,000, that leaves $5,000." },
+    { "t": 15.6, "d": 4.7, "text": "It's your 2 extra checks, from the 2 months with 3 paydays." },
+    { "t": 20.5, "d": 3.2, "text": "That's a 13th month of pay. Every year." }
   ],
-  "verdict": { "t": 25.9, "text": "Every 2 weeks = **13 months** of pay a year" },
+  "verdict": { "t": 20.5, "text": "Every 2 weeks = **13\u00a0months** of pay a year" },
   "data": {
     "input": { "label": "Your paycheck", "value": "$2,500", "note": "every 2 weeks" },
     "typeDur": 0.8,
     "items": [
       { "t": 0.0, "label": "Your real yearly pay", "formula": "$2,500 × 26", "result": "$65,000",
-        "tone": "good", "note": "not × 24 = $60,000", "resultT": 1.9 },
-      { "t": 9.2, "label": "A normal month (2 checks)", "formula": "$2,500 × 2", "result": "$5,000",
-        "tone": "neutral", "note": "10 months a year", "resultT": 11.1 },
-      { "t": 15.5, "label": "Your 2 'bonus' checks", "formula": "$65,000 − $5,000 × 12", "result": "$5,000",
-        "tone": "goal", "note": "a 13th month of pay", "resultT": 18.8 }
+        "tone": "good", "note": "not × 24", "resultT": 2.7 },
+      { "t": 7.4, "label": "A normal month (2 checks)", "formula": "$2,500 × 2", "result": "$5,000",
+        "tone": "neutral", "note": "10 months a year", "resultT": 9.3 },
+      { "t": 10.4, "label": "The 2 checks your budget forgets", "formula": "$65,000 − $60,000", "result": "$5,000",
+        "tone": "goal", "resultT": 14.5 }
     ]
   },
-  "lookOpts": {
-    "wrongGuess": { "item": 0, "t": 3.8, "formula": "$2,500 × 24", "result": "$60,000", "strike": true }
-  },
-  "sfx": [ { "t": 25.9, "kind": "ding" } ]
+  "sfx": [ { "t": 20.5, "kind": "ding" } ]
 }

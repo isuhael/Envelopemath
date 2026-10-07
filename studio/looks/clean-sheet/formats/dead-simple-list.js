@@ -9,11 +9,13 @@
 //   stack3  label row / formula row / result row (labels as step headings)
 //   aside   formula row / result row, label beside the result
 //   bare    formula row / result row, labels left to the voice-over (the mockup)
-//   swap    one row per step: the result replaces its formula (long lists: 5-6 steps)
+//   dense   bare, packed: 40 px formulas set solid above results on slimmer boxes, tight gaps (5-6 steps); the
+//           working still stays on the sheet. Notes that do not fit beside their result are dropped first.
+//   swap    one row per step: the result replaces its formula (last resort: 6+ steps under a long header)
 // and takes the first that fits the work area with type above the floors. Notes sit beside the result, or after
 // the formula ("$65,000 ÷ 12 =  not $5,000") when the result is too wide. lookOpts.layout forces a mode.
 import { h, css as style, prog, ease, plain } from '../../../runtime/core.js'
-import { C, SIZE, GRID, MOTION, md, hlBox, typeLine, stepCircle, fadeUp, fade, show, blink, landing, durationOf, typeTime } from '../lib.js'
+import { C, SIZE, GRID, MOTION, md, hlBox, typeLine, stepCircle, fadeUp, fade, show, blink, landing, durationOf, typeTime, readCheck, breakLine } from '../lib.js'
 
 export const css = `
 .dsl > * { position: absolute; }
@@ -30,7 +32,8 @@ export const css = `
 `
 
 const SCALES = [1, 0.96, 0.92, 0.88, 0.85, 0.82]
-const MIN_SCALE = { stack3: 0.86, aside: 0.84, bare: 0.82, swap: 0.8 }
+const MIN_SCALE = { stack3: 0.86, aside: 0.84, bare: 0.82, dense: 0.79, swap: 0.8 }
+const RAISE = 14 // a dense sheet starts this much closer to the footer
 const FLOOR = { label: 40, formula: 40, result: 52, final: 60 }
 
 export default function deadSimpleList(spec, ctx) {
@@ -57,9 +60,9 @@ export default function deadSimpleList(spec, ctx) {
   const last = T[T.length - 1] || { res: 1 }
   const goalIdx = items.findIndex(it => it.tone === 'goal')
 
-  let checkText = d.check != null ? d.check : LO.check
-  if (checkText && !/^check\b/i.test(checkText)) checkText = 'check: ' + checkText
-  const checkT = d.checkT != null ? +d.checkT : LO.checkT != null ? +LO.checkT : last.res + 1.3
+  const chk = readCheck(d, LO) // a string or { t, text }, in data or lookOpts
+  const checkText = chk ? chk.text : ''
+  const checkT = chk && chk.t != null ? chk.t : last.res + 1.3
   const checkD = checkText ? typeTime(checkText) : 0
   const fin = (checkText ? checkT + checkD : last.res) + 0.9 // the finished sheet
 
@@ -95,7 +98,8 @@ export default function deadSimpleList(spec, ctx) {
     const circle = stepCircle(i + 1)
     const label = it.label ? h('div', { class: 'dsl-label', html: md(it.label) }) : null
     const formula = typeLine({ text: it.formula || '', suffix: ' =' })
-    const box = hlBox({ html: md(it.result || ''), tone: it.tone, px: goal ? SIZE.final : SIZE.result })
+    // results land on the green result highlighter (a neutral result too: sand is only ever a rested tint)
+    const box = hlBox({ html: md(it.result || ''), tone: it.tone === 'neutral' ? 'good' : it.tone, px: goal ? SIZE.final : SIZE.result })
     const note = it.note ? h('div', { class: 'dsl-note', html: md(it.note) }) : null
     const aside = h('div', { class: 'dsl-aside' })
     for (const e of [circle.el, formula.el, box.el, aside]) root.append(e)
@@ -106,7 +110,10 @@ export default function deadSimpleList(spec, ctx) {
 
   let check = null
   if (checkText) {
-    check = typeLine({ text: checkText, px: SIZE.check, color: C.accent, weight: 500, cls: 'dsl-check' })
+    // too long for the column: two lines, broken before "=" or an operator
+    const br = breakLine(root, checkText, P.right - GRID.textX)
+    check = typeLine({ text: br.text, px: SIZE.check, color: C.accent, weight: 500, cls: 'dsl-check' })
+    check.lines = br.lines
     root.append(check.el)
   }
 
@@ -117,13 +124,15 @@ export default function deadSimpleList(spec, ctx) {
   const hasLabels = R.some(r => r.label)
 
   function metrics(sc, mode) {
+    const dense = mode === 'dense'
     return {
-      label: Math.round(SIZE.label * sc), formula: Math.round(SIZE.formula * sc),
+      label: Math.round(SIZE.label * sc), formula: dense ? FLOOR.formula : Math.round(SIZE.formula * sc),
       result: Math.round(SIZE.result * sc), final: Math.round(SIZE.final * sc),
       note: SIZE.note,
-      circle: Math.round(SIZE.circle * Math.max(0.9, sc)),
-      gLabel: Math.round(4 * sc), gFormula: Math.round(8 * sc),
-      gap: Math.round((mode === 'stack3' ? 24 : 30) * sc), gGiven: Math.round(36 * sc),
+      circle: Math.round(SIZE.circle * Math.max(dense ? 0.86 : 0.9, sc)),
+      gLabel: Math.round(4 * sc), gFormula: dense ? 3 : Math.round(8 * sc),
+      gap: dense ? 12 : Math.round((mode === 'stack3' ? 24 : 30) * sc), gGiven: Math.round((dense ? 20 : 36) * sc),
+      fLH: dense ? 1.04 : 1.2, boxK: dense ? 1.2 : 1.3, raise: dense ? RAISE : 0,
     }
   }
   const okFloors = (m, mode) => m.formula >= FLOOR.formula && m.result >= FLOOR.result && m.final >= FLOOR.final && (mode !== 'stack3' || m.label >= FLOOR.label)
@@ -131,7 +140,8 @@ export default function deadSimpleList(spec, ctx) {
   // place everything for (mode, scale, extra gap); returns { fits, height }
   function place(mode, sc, extraGap = 0) {
     const m = metrics(sc, mode)
-    let y = P.top
+    const top0 = P.top - m.raise
+    let y = top0
     let fits = true
     if (given) {
       style(given.el, { left: GRID.left + 'px', top: y + 'px', height: given.h + 'px' })
@@ -139,11 +149,12 @@ export default function deadSimpleList(spec, ctx) {
     }
     R.forEach((r, i) => {
       const resPx = r.goal ? m.final : m.result
-      r.box.setPx(resPx)
-      const boxH = Math.round(resPx * 1.3)
+      const boxH = Math.round(resPx * m.boxK)
+      r.box.setPx(resPx, boxH)
       const pad = 14 * Math.sqrt(resPx / SIZE.result)
       r.formula.setPx(m.formula)
-      const fH = Math.round(m.formula * 1.2)
+      style(r.formula.el, { lineHeight: String(m.fLH) })
+      const fH = Math.round(m.formula * m.fLH)
       const lH = Math.round(m.label * 1.15)
       const labelInRow = mode === 'stack3' && !!r.label
       const labelInAside = mode === 'aside' && !!r.label
@@ -184,9 +195,10 @@ export default function deadSimpleList(spec, ctx) {
         const nw = r.note.getBoundingClientRect().width
         if (!labelInAside && asideW >= nw + 2) r.notePlace = 'aside'
         else if (mode !== 'swap' && textX + fw + 34 + nw <= right) r.notePlace = 'formula'
-        else fits = false
+        else if (mode !== 'dense' && mode !== 'swap') fits = false // dense lists drop a note before the working
         if (r.notePlace === 'aside') { r.aside.append(r.note); style(r.note, { left: '', top: '' }) }
-        else style(r.note, { left: Math.round(textX + fw + 34) + 'px', top: fTop + 'px', height: fH + 'px', lineHeight: fH + 'px' })
+        else if (r.notePlace === 'formula') style(r.note, { left: Math.round(textX + fw + 34) + 'px', top: fTop + 'px', height: fH + 'px', lineHeight: fH + 'px' })
+        show(r.note, r.notePlace !== 'none')
       }
       const asideKids = (labelInAside ? 1 : 0) + (r.notePlace === 'aside' ? 1 : 0)
       style(r.aside, { left: asideLeft + 'px', top: bTop + 'px', height: boxH + 'px', width: Math.max(0, asideW) + 'px', display: asideKids ? 'flex' : 'none' })
@@ -201,33 +213,33 @@ export default function deadSimpleList(spec, ctx) {
       check.setPx(Math.max(FLOOR.formula, Math.round(SIZE.check * Math.max(sc, 0.9))))
       y += Math.round(22 * sc) + Math.min(extraGap, 12)
       style(check.el, { left: textX + 'px', top: y + 'px' })
-      if (textX + check.measure() > right) fits = false
-      y += Math.round(SIZE.check * 1.2)
+      if (textX + check.measure() > right + 1) fits = false
+      y += Math.round(SIZE.check * 1.2) * check.lines
     }
-    const height = y - P.top
-    if (height > avail) fits = false
-    return { fits, height }
+    const height = y - top0
+    if (height > avail + m.raise) fits = false
+    return { fits, height, raise: m.raise }
   }
 
   const forced = LO.layout && MIN_SCALE[LO.layout] ? [LO.layout] : null
-  const modes = forced || (hasLabels ? ['stack3', 'aside', 'bare', 'swap'] : ['bare', 'swap'])
+  const modes = forced || (hasLabels ? ['stack3', 'aside', 'bare', 'dense', 'swap'] : ['bare', 'dense', 'swap'])
   let chosen = null
   outer: for (const mode of modes) {
     for (const sc of SCALES) {
       if (sc < MIN_SCALE[mode] - 1e-9) break
       if (!okFloors(metrics(sc, mode), mode)) continue
       const r = place(mode, sc)
-      if (r.fits) { chosen = { mode, sc, height: r.height }; break outer }
+      if (r.fits) { chosen = { mode, sc, height: r.height, raise: r.raise }; break outer }
     }
   }
   if (!chosen) {
     // last resort: the smallest swap layout (the linter reports whatever still does not fit)
-    chosen = { mode: 'swap', sc: 0.78, height: place('swap', 0.78).height }
+    chosen = { mode: 'swap', sc: 0.78, height: place('swap', 0.78).height, raise: 0 }
   }
   // breathe: spend spare height on the gaps (top-aligned like a real sheet), capped so blocks stay grouped
   const gaps = R.length - 1 + (given ? 1 : 0)
-  const spare = avail - chosen.height
-  const extra = gaps > 0 ? Math.max(0, Math.min(chosen.mode === 'swap' ? 40 : 30, Math.floor((spare * 0.55) / gaps))) : 0
+  const spare = avail + chosen.raise - chosen.height
+  const extra = gaps > 0 ? Math.max(0, Math.min(chosen.mode === 'swap' ? 40 : chosen.mode === 'dense' ? 10 : 30, Math.floor((spare * 0.55) / gaps))) : 0
   place(chosen.mode, chosen.sc, extra)
   const swap = chosen.mode === 'swap'
   root.dataset.mode = chosen.mode

@@ -286,7 +286,18 @@ These are suggestions, so the kit reads as one system:
 - **what-difference**: a `sheet` with one row per option and one column per metric. The stake goes in the formula bar. `delta` lands as a tooltip strip, and the winner row gets `hiRow` with a wipe at `verdict.t`.
 - **chart-race / pov-race**: `lineChart` on a white card (y 444 to about 1200), with tip counters as the format's own labels next to `tips[i]`. Show the leader's tip in a yellow-marker label and the laggard in ink. The stake goes in the formula bar (a standalone `formulaBar`) or a label row. Rescale y with `draw(x, { yMax })` for a growing axis.
 - **ledger-duel**: a `sheet` with year, then person A, then person B. Both output columns land together (same `t0`); a crash row gets `hiRow` with a `bad` tint or a tooltip strip, and the winner column is selected at the verdict.
-- **growth-ladder**: a `sheet` with the spec's columns. Rows unmask at `rowT`, and the last row counts up (`countText`) with `hiRow` when `highlightLast` is set.
+- **growth-ladder** (built, `formats/growth-ladder.js`; the header comment there has the full choreography): a `sheet` with the spec's columns. Rows unmask at `rowT`, and the last row counts up (`countText`) with `hiRow` when `highlightLast` is set. Its lookOpts (all optional):
+
+  | lookOpts | Default | Effect |
+  |---|---|---|
+  | `formulaBar` | none | `[{ t, text }]`: the working, retyped at each `t` (the first entry is already part-typed at frame 1, see `formulaAt0`). Without it the bar shows `data.formula`, else "= amount per at rate" |
+  | `marks` | none | `[{ t, row, tone, label }]`: at `t` the row tints (yellow for `good`/`goal`, rose for `bad`) and a dark tooltip with `label` opens under it; with no room for the slot, the label is typed into the formula bar instead. A `good` mark leaves its year cell yellow |
+  | `markStyle` | `'auto'` | `'tip'` (tooltip slot) or `'bar'` (label typed into the formula bar) |
+  | `inputsAtStart` | `false` | Show the "You put in" column for every row from frame 1 (only the Worth cells stay empty) |
+  | `unmask` | `'values'` | `'rows'` hides the year labels too (FinCalC's literal unmask) |
+  | `bars` | `'auto'` | Two-tone data bars behind the Worth cells (grey = put in, green = growth), on 3-column ladders |
+  | `subLabels` | `false` | Build column sub-labels from `data.input` ("You put in\n$100 a month") |
+  | `loop`, `countUp`, `letters`, `verdict`, `emphTone`, `formulaAt0` | as in the table above | |
 - **cost-counter**: a `bigCell` with the label, `rateDisplay` in its formula bar, and the counter. Milestones flash the cell and appear as tooltip-like rows or a small sheet under it.
 
 ## 9. Checklist before you hand a format back

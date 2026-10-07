@@ -25,9 +25,12 @@
 // insists on it), notes (auto; false hides them), formulas (auto | 'line' | 'slot' | false), debug,
 // wrongGuess { part, t, formula, result, strike = true, strikeT, until }: a wrong answer whose working types under
 // row `part` (or on the line under the sheet, where the check lands later, when there is no room) and whose result
-// lands on coral at `t`, struck through at strikeT, gone by `until` (default: as the next part starts).
+// lands on coral at `t`, struck through at strikeT, gone by `until` (default: as the next part starts). t <= 0 puts
+// the guess on the sheet already typed at frame 1 (the wrong answer as the hook); the loop restores it.
+// maskPct: [part index, ...]: those percentages read "?" until their row activates (the goal row's % would otherwise
+// answer the header at frame 1); a kit that ignores it simply shows the full sheet.
 import { h, css as style, prog, ease, clamp, lerp } from '../../../runtime/core.js'
-import { C, SIZE, GRID, MOTION, md, hlBox, typeLine, pointer, pathAt, fade, show, blink, landing, durationOf, typeTime, toneColor } from '../lib.js'
+import { C, SIZE, GRID, MOTION, md, hlBox, typeLine, pointer, pathAt, fade, show, blink, landing, durationOf, typeTime, toneColor, readCheck, breakLine } from '../lib.js'
 
 export const css = `
 .ss > * { position: absolute; }
@@ -51,11 +54,14 @@ export const css = `
 .ss-seg { border: 2px solid rgba(21, 23, 28, .16); }
 .ss-strike { height: 5px; background: #B42318; border-radius: 3px; transform-origin: 0 50%; pointer-events: none; }
 .ss-check, .ss-guess-f, .ss-f { white-space: pre; }
+.ss-pct .ss-pq { position: absolute; right: 0; top: 0; }
 .ss-check.wrap { white-space: pre-wrap; }
 `
 
 const SCALES = [1, 0.96, 0.92, 0.88, 0.84] // type clamps at the floors below (labels 40, amounts 50, total 56)
 const FLOOR = { label: 40, amount: 50, total: 56 }
+const INK_TINTS = ['#C9CDD3', '#9EA4AE', '#DDE0E4', '#B3B8C0'] // ink at ~22 / 40 / 14 / 31% on the page
+const RAISE = 14   // tight (dense) sheets start this much closer to the footer
 const LEAD = 0.3   // the row activates (pointer lands, % turns accent, leader traces) this long before typing / landing
 const F_GAP = 16   // gap either side of a formula on the line
 
@@ -81,7 +87,8 @@ export default function splitSheet(spec, ctx) {
   const n = parts.length
   const goalIdx = parts.findIndex(p => p.tone === 'goal')
   const wgSpec = LO.wrongGuess || d.wrongGuess || null
-  const checkRaw = String(d.check != null ? d.check : LO.check != null ? LO.check : '').replace(/^check:\s*/i, '')
+  const chk = readCheck(d, LO, { prefix: false }) // a string or { t, text }, in data or lookOpts
+  const checkRaw = chk ? chk.text : ''
 
   // ---------------------------------------------------------------- DOM (built once)
   const root = h('div', { class: 'ss' })
@@ -103,10 +110,14 @@ export default function splitSheet(spec, ctx) {
   const hasShares = n > 0 && shares.every(v => isFinite(v) && v > 0)
   const shareSum = hasShares ? shares.reduce((a, b) => a + b, 0) : 1
   const barRoot = h('div', { 'data-deco': '' })
+  // each segment its own tint: a toned part (good / goal / bad) in its tone, neutral parts in alternating ink tints,
+  // so neighbouring buckets never read as one
+  let nk = 0
   const segs = parts.map((p, i) => {
     const empty = h('div', { class: 'ss-seg-empty', 'data-deco': '' })
     const fill = h('div', { class: 'ss-seg', 'data-deco': '' })
-    style(fill, { background: toneColor(p.tone || 'neutral') })
+    const toned = p.tone && p.tone !== 'neutral'
+    style(fill, { background: toned ? toneColor(p.tone) : INK_TINTS[nk++ % INK_TINTS.length] })
     barRoot.append(empty, fill)
     return { empty, fill, share: hasShares ? shares[i] / Math.max(1, shareSum) : 0 }
   })
@@ -115,33 +126,44 @@ export default function splitSheet(spec, ctx) {
   const ruleSum = h('div', { class: 'ss-rule thin', 'data-deco': '' })
   root.append(barRoot, ruleTop, ruleSum, ...hairs)
 
+  const maskSet = new Set(Array.isArray(LO.maskPct) ? LO.maskPct.map(Number) : [])
   const R = parts.map((p, i) => {
     const goal = p.tone === 'goal'
+    const masked = !!p.pct && maskSet.has(i)
     const r = {
       p, i, goal,
       label: h('div', { class: 'ss-label', html: md(p.label || '') }),
       note: p.note ? h('div', { class: 'ss-note', html: md(p.note) }) : null,
-      pct: p.pct ? h('div', { class: 'ss-pct', html: md(p.pct) }) : null,
+      // a masked % keeps its real text for the layout (measured) and shows a right-aligned "?" over it until its turn
+      pct: p.pct ? h('div', { class: 'ss-pct', html: masked ? `<span class="ss-pv">${md(p.pct)}</span><span class="ss-pq">?</span>` : md(p.pct) }) : null,
       leader: h('div', { class: 'ss-leader', 'data-deco': '' }),
       trace: h('div', { class: 'ss-trace', 'data-deco': '' }),
       slot: h('div', { class: 'ss-slot', 'data-deco': '' }),
-      box: hlBox({ html: md(p.amount || ''), tone: p.tone || 'neutral', px: goal ? 66 : 60 }),
+      // a neutral amount lands on the green result highlighter (sand reads as a disabled field); tones keep theirs
+      box: hlBox({ html: md(p.amount || ''), tone: !p.tone || p.tone === 'neutral' ? 'good' : p.tone, px: goal ? 66 : 60 }),
       // the working: on the line (stays, ends in "=") or in the slot (erased by the highlighter)
       fLine: p.formula ? typeLine({ text: p.formula, suffix: ' =', px: 42, cls: 'ss-f' }) : null,
       fSlot: p.formula ? typeLine({ text: p.formula, px: 42, cls: 'ss-f' }) : null,
     }
+    if (masked) { r.pv = r.pct.querySelector('.ss-pv'); r.pq = r.pct.querySelector('.ss-pq') }
     if (r.fSlot) r.fSlot.el.setAttribute('data-overlap-ok', '') // erased by the highlighter's leading edge
     for (const e of [r.label, r.note, r.pct, r.leader, r.trace, r.slot, r.box.el, r.fLine && r.fLine.el, r.fSlot && r.fSlot.el]) if (e) root.append(e)
     style(r.box.el, { position: 'absolute' })
     return r
   })
 
-  // check line: with the 'check: ' prefix, or without it for a sum too long to carry it (chosen at layout)
-  const checks = checkRaw ? ['check: ' + checkRaw, checkRaw].map(txt => {
-    const k = typeLine({ text: txt, px: SIZE.check, color: C.accent, weight: 500, cls: 'ss-check' })
+  // check line, measured against the column (x 84 -> 940): with the 'check: ' prefix on one line, else without it,
+  // else two lines broken before "=" or an operator (" + ")
+  const checks = []
+  if (checkRaw) {
+    const full = width => [breakLine(root, 'check: ' + checkRaw, width), breakLine(root, checkRaw, width)]
+    const [a, b] = full(xR - x0)
+    const pick = a.lines === 1 ? a : b.lines === 1 ? b : a
+    const k = typeLine({ text: pick.text, px: SIZE.check, color: C.accent, weight: 500, cls: 'ss-check' })
+    k.lines = pick.lines
     root.append(k.el)
-    return k
-  }) : []
+    checks.push(k)
+  }
   let check = null
 
   const hasGuess = !!(wgSpec && wgSpec.formula && wgSpec.result)
@@ -172,11 +194,12 @@ export default function splitSheet(spec, ctx) {
     return {
       lpx: Math.max(FLOOR.label, Math.round(SIZE.label * sc)), apx: Math.max(FLOOR.amount, Math.round(60 * sc)),
       gpx: Math.max(FLOOR.amount + 4, Math.round(66 * sc)), tpx: Math.max(FLOOR.total, Math.round((tight ? 64 : 72) * sc)),
-      boxK: tight ? 1.2 : 1.3, wrapLH: tight ? 1.02 : 1.1, gpxGuess: tight ? 44 : 48,
+      boxK: tight ? 1.2 : 1.3, wrapLH: tight ? 1.02 : 1.1, gpxGuess: tight ? 42 : 48,
+      raise: tight ? RAISE : 0, // a dense sheet starts a little closer to the footer
       ppx: Math.max(40, Math.round(44 * sc)), fpx: Math.max(40, Math.round(42 * sc)), npx: SIZE.note,
       G: Math.round(20 * sc), lead: 40,
       rowGap: Math.round((tight ? 12 : 22) * sc), g1: Math.round(24 * sc * g), g2: Math.round(30 * sc * g),
-      barH: Math.round(20 * sc), ruleGap: Math.round(22 * sc * g), checkGap: Math.round(16 * sc * g),
+      barH: Math.round(24 * sc), ruleGap: Math.round(22 * sc * g), checkGap: Math.round(16 * sc * g),
       noteGap: tight ? 0 : 2,
     }
   }
@@ -197,7 +220,7 @@ export default function splitSheet(spec, ctx) {
       r.box.setPx(r.apx, r.boxH)
       r.boxW = Math.ceil(r.box.width())
       r.padF = Math.round(14 * Math.sqrt(r.apx / SIZE.result))
-      r.f = r.fLine ? (c.formulas === 'line' ? r.fLine : c.formulas === 'slot' ? r.fSlot : null) : null
+      r.f = r.fLine ? (c.formulas === 'line' || c.formulas === 'under' ? r.fLine : c.formulas === 'slot' ? r.fSlot : null) : null
       if (r.fLine) { show(r.fLine.el, r.f === r.fLine); show(r.fSlot.el, r.f === r.fSlot) }
       r.fW = 0
       if (r.f) { r.f.setPx(m.fpx); r.fW = Math.ceil(r.f.measure()) + 8 } // + caret
@@ -250,7 +273,9 @@ export default function splitSheet(spec, ctx) {
     const tNoteW = tNoteOn ? Math.ceil(W(tot.note)) : 0
 
     // ---- vertical
-    let y = P.top
+    const top0 = P.top - m.raise
+    let y = top0
+    let totEnd = y
     {
       const mainH = Math.max(tBoxH, tLabH)
       const yc = y + mainH / 2
@@ -268,6 +293,7 @@ export default function splitSheet(spec, ctx) {
         bottom = Math.max(bottom, nt + noteH)
       }
       tot.yc = yc
+      totEnd = bottom
       y = Math.round(bottom) + m.g1 + Math.round(extra * 0.6)
     }
     show(barRoot, c.bar)
@@ -308,13 +334,25 @@ export default function splitSheet(spec, ctx) {
       if (Math.min(r.lead1, r.leadEnd) < m.lead - 0.5) why.push('leader ' + Math.round(Math.min(r.lead1, r.leadEnd)))
       style(r.leader, { left: r.ll + 'px', top: Math.round(r.yc - 1) + 'px', width: r.leadW + 'px' })
       style(r.trace, { left: r.ll + 'px', top: Math.round(r.yc - 1) + 'px', width: Math.min(r.lead1, r.leadEnd) + 'px' })
-      if (r.f) {
-        r.fLeft = c.formulas === 'line' ? r.slotLeft - F_GAP - r.fW : r.slotLeft + r.padF
-        style(r.f.el, { left: r.fLeft + 'px', top: Math.round(r.yc - (m.fpx * 1.2) / 2) + 'px' })
-      }
       let bottom = y + mainH
+      let under = Math.round(lt + r.labH + m.noteGap) // the next free line under the label
+      if (r.f) {
+        if (c.formulas === 'under') {
+          // the working under its label (grey mono, it stays): "Necessities / 5.5 × $350 ="
+          const fH = Math.round(m.fpx * 1.2)
+          if (x0 + r.fW > xR - r.boxW - m.G) under = Math.max(under, bt + r.boxH + 2) // too long: under the box
+          r.fLeft = x0
+          style(r.f.el, { left: x0 + 'px', top: under + 'px' })
+          if (x0 + r.fW > xR) why.push('formula too wide: ' + r.p.formula)
+          under += fH
+          bottom = Math.max(bottom, under)
+        } else {
+          r.fLeft = c.formulas === 'line' ? r.slotLeft - F_GAP - r.fW : r.slotLeft + r.padF
+          style(r.f.el, { left: r.fLeft + 'px', top: Math.round(r.yc - (m.fpx * 1.2) / 2) + 'px' })
+        }
+      }
       if (r.note && c.notes) {
-        let nt = Math.round(lt + r.labH + m.noteGap)
+        let nt = under
         if (x0 + r.noteW > r.ll - 4) nt = Math.max(nt, bt + r.boxH + 2) // a long note goes under the box
         if (x0 + r.noteW > xR) why.push('note too wide: ' + r.p.note)
         style(r.note, { left: x0 + 'px', top: nt + 'px' })
@@ -331,26 +369,23 @@ export default function splitSheet(spec, ctx) {
         style(hairs[i], { left: x0 + 'px', width: width + 'px', top: Math.round((bottom + y) / 2 - 1) + 'px' })
       }
     })
+    const rowsEnd = y
     // sum rule + check line (the wrong guess uses this line when it has no room under its row)
-    show(ruleSum, checks.length > 0)
+    const ckOn = checks.length > 0 && c.check !== false
+    check = ckOn ? checks[0] : null
+    for (const k of checks) show(k.el, ckOn)
+    show(ruleSum, ckOn)
     let lineTop = null
-    if (checks.length || (guess && !guessUnder)) {
+    if (ckOn || (guess && !guessUnder)) {
       y += m.ruleGap + Math.round(extra * 0.5)
       style(ruleSum, { left: x0 + 'px', top: y + 'px', width: width + 'px' })
       y += 2 + m.checkGap
       lineTop = y
       let lh = 0
-      if (checks.length) {
-        for (const k of checks) { show(k.el, true); k.el.classList.remove('wrap'); style(k.el, { width: '' }) }
-        check = checks.find(k => k.measure() <= width) || checks[1]
-        for (const k of checks) show(k.el, k === check)
-        const wrap = check.measure() > width
-        check.el.classList.toggle('wrap', wrap)
-        style(check.el, { left: x0 + 'px', top: y + 'px', width: wrap ? width + 'px' : '' })
-        const keepTxt = check.span.textContent
-        check.span.textContent = check.full
-        lh = H(check.el)
-        check.span.textContent = keepTxt
+      if (ckOn) {
+        style(check.el, { left: x0 + 'px', top: y + 'px' })
+        if (check.measure() > width + 1) why.push('check too wide')
+        lh = Math.round(SIZE.check * 1.2) * check.lines
       }
       if (guess && !guessUnder) lh = Math.max(lh, guessH)
       y += Math.round(lh)
@@ -368,23 +403,26 @@ export default function splitSheet(spec, ctx) {
       if (bl + bw > xR) why.push('wrong guess too wide')
       style(guess.strike, { left: x0 - 8 + 'px', top: Math.round(top + guessH / 2 - 2) + 'px', width: bw + fw + 32 + 'px' })
     }
-    const height = y - P.top
-    if (height > avail) why.push(`height ${Math.round(height)} > ${avail}`)
-    return { fits: !why.length, height, why }
+    const height = y - top0
+    if (height > avail + m.raise) why.push(`height ${Math.round(height)} > ${avail + m.raise} (rows end ${Math.round(rowsEnd)}, total ${Math.round(totEnd)})`)
+    return { fits: !why.length, height, raise: m.raise, why }
   }
 
-  // candidates, cheapest first. Cost: smaller type (4 per 4%), the working in the slot (5) or gone (10), no notes
-  // (6), no bar (2), dense spacing (3), the wrong guess off its row (4). The first that fits wins.
-  const fModes = !hasFormulas ? [false] : LO.formulas === false ? [false] : LO.formulas === 'line' ? ['line'] : LO.formulas === 'slot' ? ['slot'] : ['line', 'slot', false]
+  // candidates, cheapest first. Cost: smaller type (4 per 4%), no notes (6), no bar (2), dense spacing (3), the wrong
+  // guess off its row (4), the working under its label (20), no check line (30), the working typed in the slot and
+  // erased (45) or gone (60). The working outranks type size, notes and the check. The first that fits wins.
+  const fModes = !hasFormulas ? [false] : LO.formulas === false ? [false] : ['line', 'under', 'slot'].includes(LO.formulas) ? [LO.formulas] : ['line', 'under', 'slot', false]
   const cands = []
   for (const sc of SCALES) {
     if (!okFloors(metrics(sc, false))) continue
     for (const formulas of fModes) for (const notes of hasNotes ? [true, false] : [false]) for (const bar of barOK ? [true, false] : [false]) {
       if (!bar && barOK && LO.bar === true) continue
-      for (const tight of [false, true]) for (const guessUnder of guess ? [true, false] : [false]) {
-        const cost = Math.round((1 - sc) * 100) + (hasFormulas ? { line: 0, slot: 5, false: 10 }[formulas] : 0) +
-          (hasNotes && !notes ? 6 : 0) + (barOK && !bar ? 2 : 0) + (tight ? 3 : 0) + (guess && !guessUnder ? 4 : 0)
-        cands.push({ c: { sc, formulas, notes, bar, tight, guessUnder }, cost, k: cands.length })
+      for (const tight of [false, true]) for (const guessUnder of guess ? [true, false] : [false]) for (const ck of checks.length ? [true, false] : [true]) {
+        // the working outranks the notes: notes go before the working leaves its line (slot) or the sheet (false)
+        const cost = Math.round((1 - sc) * 100) + (hasFormulas ? { line: 0, under: 20, slot: 45, false: 60 }[formulas] : 0) +
+          (hasNotes && !notes ? 6 : 0) + (barOK && !bar ? 2 : 0) + (tight ? 3 : 0) + (guess && !guessUnder ? 4 : 0) +
+          (ck ? 0 : 30) // the check line goes before the working leaves the sheet
+        cands.push({ c: { sc, formulas, notes, bar, tight, guessUnder, check: ck }, cost, k: cands.length })
       }
     }
   }
@@ -393,19 +431,19 @@ export default function splitSheet(spec, ctx) {
   for (const { c, cost } of cands) {
     const r = place(c)
     if (debug) console.log('split-sheet', cost, JSON.stringify(c), r.fits ? 'FITS' : r.why.join('; '))
-    if (r.fits) { chosen = { c, height: r.height }; break }
+    if (r.fits) { chosen = { c, height: r.height, raise: r.raise }; break }
   }
   if (!chosen) {
     // last resort: the smallest bare tight layout (the linter reports whatever still does not fit)
-    const c = { formulas: false, notes: false, bar: false, sc: SCALES[SCALES.length - 1], tight: true, guessUnder: false }
-    chosen = { c, height: place(c).height }
+    const c = { formulas: false, notes: false, bar: false, sc: SCALES[SCALES.length - 1], tight: true, guessUnder: false, check: false }
+    chosen = { c, height: place(c).height, raise: RAISE }
   }
   // breathe: spend spare height on the row gaps (top-aligned like a real sheet), capped so the rows stay one sheet
   const LC = chosen.c
-  const spare = avail - chosen.height
+  const spare = avail + chosen.raise - chosen.height
   const extra = n > 1 ? Math.max(0, Math.min(LC.tight ? 14 : 26, Math.floor((spare * 0.5) / (n - 1 + 1.6)))) : 0
   place(LC, extra)
-  root.dataset.layout = [LC.notes ? 'notes' : 'bare', LC.bar && 'bar', LC.formulas && 'formulas-' + LC.formulas, LC.tight && 'tight', LC.guessUnder && 'guess-under'].filter(Boolean).join(' ')
+  root.dataset.layout = [LC.notes ? 'notes' : 'bare', LC.bar && 'bar', LC.formulas && 'formulas-' + LC.formulas, LC.tight && 'tight', LC.guessUnder && 'guess-under', checks.length && !LC.check && 'no-check'].filter(Boolean).join(' ')
   root.dataset.scale = String(LC.sc)
 
   // ---------------------------------------------------------------- timing
@@ -427,21 +465,23 @@ export default function splitSheet(spec, ctx) {
     T.push({ t, typeD, typeStart, arr })
   })
   const last = T[n - 1] || { t: 1 }
-  const checkT = d.checkT != null ? +d.checkT : LO.checkT != null ? +LO.checkT : last.t + 1.4
+  const checkT = chk && chk.t != null ? chk.t : last.t + 1.4
   const checkD = check ? typeTime(check.full) : 0
 
   let G = null
   if (guess) {
     const typeD = clamp(typeTime(guess.f.full), 0.35, 0.9)
-    const resT = wgSpec.t != null ? +wgSpec.t : (T[0] ? T[0].t + 2.0 : 2.5)
-    const gt = Math.max(T[0] ? T[0].t + 0.35 : 0, resT - 0.25 - typeD)
+    // t <= 0: the guess is on the sheet, typed and landed, from frame 1 (and the loop puts it back)
+    const frame1 = wgSpec.t != null && +wgSpec.t <= 0
+    const resT = frame1 ? -1 : wgSpec.t != null ? +wgSpec.t : (T[0] ? T[0].t + 2.0 : 2.5)
+    const gt = frame1 ? resT - 0.25 - typeD : Math.max(T[0] ? T[0].t + 0.35 : 0, resT - 0.25 - typeD)
     const strike = wgSpec.strike !== false
     const strikeT = strike ? (wgSpec.strikeT != null ? +wgSpec.strikeT : resT + 1.2) : null
     const settled = strike ? strikeT + 0.25 : resT
     const nextPart = T.find(x => x.t > settled + 0.3)
     let until = wgSpec.until != null ? +wgSpec.until : nextPart ? Math.max(settled + 0.6, (nextPart.arr > 0 ? nextPart.arr : nextPart.t) - 0.1) : settled + 1.6
     if (check) until = Math.min(until, checkT - 0.4)
-    G = { t: gt, typeD, resT, strike, strikeT, until }
+    G = { t: gt, typeD, resT, strike, strikeT, until, frame1 }
   }
 
   const lastBeat = Math.max(last.t + 0.6, check ? checkT + checkD : 0, G ? G.until + 0.3 : 0)
@@ -470,8 +510,10 @@ export default function splitSheet(spec, ctx) {
     ctx.cue(x.t + MOTION.popDelay, R[i].goal ? 'ding' : 'pop', { gain: R[i].goal ? 0.6 : 0.5 })
   })
   if (G) {
-    ctx.cue(G.t, 'type', { dur: G.typeD, gain: 0.4 })
-    ctx.cue(G.resT + MOTION.popDelay, 'pop', { gain: 0.4 })
+    if (!G.frame1) {
+      ctx.cue(G.t, 'type', { dur: G.typeD, gain: 0.4 })
+      ctx.cue(G.resT + MOTION.popDelay, 'pop', { gain: 0.4 })
+    }
     if (G.strike) ctx.cue(G.strikeT, 'swipe', { gain: 0.35 })
   }
   if (check) ctx.cue(checkT, 'type', { dur: checkD, gain: 0.4 })
@@ -502,6 +544,12 @@ export default function splitSheet(spec, ctx) {
         let act = on * (1 - off) * keep
         if (i === 0 && x.arr < 0) act = Math.max(act, clearP)
         if (r.pct) style(r.pct, { color: mix(C.grey, C.accent, act) })
+        if (r.pv) {
+          // masked %: "?" until the row activates; back to "?" with the loop reset (the frame-1 state)
+          const hid = reset || (x.arr >= 0 && t < x.arr)
+          style(r.pv, { visibility: hid ? 'hidden' : 'visible' })
+          style(r.pq, { visibility: hid ? 'visible' : 'hidden' })
+        }
         const tr = x.arr < 0 ? 1 : ease.out(prog(t, x.arr, 0.35))
         style(r.trace, { opacity: n3(act), clipPath: tr >= 1 || act <= 0 ? 'none' : `inset(0 ${((1 - tr) * 100).toFixed(1)}% 0 0)` })
         // a formula on the line: the leader retracts as the row activates, the working types and stays
@@ -514,10 +562,11 @@ export default function splitSheet(spec, ctx) {
         } else if (!reset) lp = L.wipe * (1 - clearB)
         const cut = Math.round(r.leadW - lerp(r.lead1, r.leadEnd, lp))
         style(r.leader, { clipPath: cut > 0 ? `inset(0 ${cut}px 0 0)` : 'none' })
-        if (r.f && LC.formulas === 'line') {
+        if (r.f && (LC.formulas === 'line' || LC.formulas === 'under')) {
+          // the working types (on the line, or under its label) and stays
           const tp = reset ? 0 : prog(t, x.typeStart, x.typeD)
           const typing = t >= x.typeStart && t < x.typeStart + x.typeD + 0.12 && t < clearT0
-          const waiting = act > 0.5 && t < x.typeStart && ret > 0.9
+          const waiting = act > 0.5 && t < x.typeStart && (LC.formulas === 'under' || ret > 0.9)
           r.f.seek(tp, typing || (waiting && blink(t)) || (reset && i === 0 && x.arr < 0 && blink(t)))
           fade(r.f.el, reset ? 1 : 1 - clearA)
         } else if (r.f) {
@@ -555,16 +604,19 @@ export default function splitSheet(spec, ctx) {
       // wrong guess: types, lands on coral, is struck through, dims, then leaves before the next part
       if (guess && G) {
         // every property is set on every frame (shown or not), so the state is a pure function of t
-        const on = !reset && t >= G.t && t < G.until + 0.3
+        const live = !reset && t >= G.t && t < G.until + 0.3
+        // a frame-1 guess comes back with the loop reset (after the check has cleared), so the last frame = frame 1
+        const back = G.frame1 && loop && reset ? 1 : 0
+        const on = live || back > 0
         for (const e of [guess.f.el, guess.box.el, guess.strike]) show(e, on)
-        const typing = on && t < G.t + G.typeD + 0.12
-        guess.f.seek(on ? prog(t, G.t, G.typeD) : 0, typing || (on && t < G.resT && blink(t)))
+        const typing = live && t < G.t + G.typeD + 0.12
+        guess.f.seek(back ? 1 : on ? prog(t, G.t, G.typeD) : 0, typing || (live && t < G.resT && blink(t)))
         const L = landing(t, G.resT)
-        guess.box.seek(on ? L.wipe : 0, on ? L.text : 0, 0)
-        const st = G.strike && on ? ease.out(prog(t, G.strikeT, 0.25)) : 0
+        guess.box.seek(back ? 1 : on ? L.wipe : 0, back ? 1 : on ? L.text : 0, 0)
+        const st = G.strike && live ? ease.out(prog(t, G.strikeT, 0.25)) : 0
         style(guess.strike, { transform: st >= 1 ? 'none' : `scaleX(${n3(st)})` })
         const gone = 1 - prog(t, G.until, 0.3)
-        const o = (1 - (G.strike ? 0.45 * prog(t, G.strikeT + 0.25, 0.2) : 0)) * gone * keep
+        const o = back ? 1 : (1 - (G.strike ? 0.45 * prog(t, G.strikeT + 0.25, 0.2) : 0)) * gone * keep
         for (const e of [guess.f.el, guess.box.el]) fade(e, o)
         fade(guess.strike, st > 0 ? gone * keep : 0)
       }

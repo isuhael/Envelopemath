@@ -4,59 +4,59 @@
   "format": "pov-race",
   "fps": 30,
   "duration": 28.0,
-  "header": "POV: Since 2014 you invested\nin Starbucks instead of paying\n**$4/day** for lattes",
+  "header": "POV: Since 2014 you invested\nin Starbucks instead of paying\n**$4/day** for a Starbucks latte",
   "footer": "$4 ≈ a grande latte · each year at its avg price · dividends reinvested",
   "captions": true,
   "vo": [
     {
       "t": 0.0,
-      "d": 2.0,
-      "text": "$4 lattes, daily, since 2014."
+      "d": 2.5,
+      "text": "Skip the $4 latte, get rich?"
     },
     {
-      "t": 2.05,
-      "d": 1.95,
-      "text": "You buy Starbucks stock instead."
+      "t": 2.6,
+      "d": 2.9,
+      "text": "Since 2014, it buys Starbucks stock instead."
     },
     {
-      "t": 4.05,
-      "d": 2.8,
-      "text": "That's $1,460 a year into the stock."
+      "t": 5.6,
+      "d": 2.9,
+      "text": "That's $1,460 a year."
     },
     {
-      "t": 7.2,
-      "d": 3.6,
+      "t": 8.7,
+      "d": 3.5,
       "text": "The stock climbs faster than the cups pile up."
     },
     {
-      "t": 12.2,
-      "d": 2.4,
+      "t": 12.4,
+      "d": 2.5,
       "text": "By 2021, you've doubled your money."
     },
     {
-      "t": 14.8,
-      "d": 2.4,
+      "t": 15.0,
+      "d": 2.35,
       "text": "Then it stalls. You keep buying."
     },
     {
-      "t": 18.1,
-      "d": 2.4,
-      "text": "End of 2025: $17,532 of lattes."
+      "t": 17.35,
+      "d": 3.25,
+      "text": "2025: $17,532 of lattes."
     },
     {
       "t": 20.6,
-      "d": 2.0,
+      "d": 2.9,
       "text": "Or about $24,900 in stock."
     },
     {
-      "t": 22.8,
-      "d": 3.9,
-      "text": "About 1.4 times your latte money. Not rich. Not zero."
+      "t": 23.7,
+      "d": 3.3,
+      "text": "About 1.4 times. Not rich. Not zero."
     }
   ],
   "verdict": {
-    "t": 22.8,
-    "text": "**≈ 1.4×** your latte money.\nNot rich. Not **$0**."
+    "t": 23.7,
+    "text": "**≈ 1.4×**. Not rich. Not zero."
   },
   "data": {
     "spend": {
@@ -193,24 +193,23 @@
       "dp": 0
     },
     "raceT": [
-      2.4,
+      0.5,
       20.4
     ],
     "hold": 7.6
   },
   "lookOpts": {
     "prop": "cup",
-    "ownProp": "coin",
     "jarLabel": "SBUX",
-    "gag": "The figure drinks a latte and tosses the cup onto a growing pile; the same coin drops into a jar that rides the green line. After the peak the jar stops rising while the cup pile keeps growing; on the verdict the figure shrugs at the jar."
+    "endPose": "shrug"
   },
   "sfx": [
     {
-      "t": 2.4,
+      "t": 0.5,
       "kind": "pop"
     },
     {
-      "t": 14.39,
+      "t": 13.76,
       "kind": "ding"
     },
     {

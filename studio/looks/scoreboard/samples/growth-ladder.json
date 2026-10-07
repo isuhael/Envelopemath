@@ -1,0 +1,36 @@
+{
+  "id": "sample-scoreboard-growth-ladder",
+  "sample": true,
+  "look": "scoreboard",
+  "format": "growth-ladder",
+  "fps": 30,
+  "header": "**$100 a month** at 7%.\nWhat's it worth in 40 years?",
+  "footer": "7% a year, compounded monthly · not a forecast",
+  "captions": true,
+  "vo": [
+    { "t": 0.0, "d": 3.4, "text": "$100 a month, invested at 7%." },
+    { "t": 3.6, "d": 2.8, "text": "Year 5: about $7,159." },
+    { "t": 6.6, "d": 3.2, "text": "Year 10: about $17,308." },
+    { "t": 10.0, "d": 4.6, "text": "Year 20: about $52,093. **More growth than you put in.**" },
+    { "t": 15.0, "d": 3.4, "text": "Year 30: about $121,997." },
+    { "t": 19.4, "d": 3.6, "text": "Year 40: about **$262,481.**" },
+    { "t": 23.4, "d": 3.6, "text": "You put in $48,000. **It's worth over 5 times that.**" }
+  ],
+  "verdict": { "t": 23.4, "text": "**$48,000** in.\n**≈ $262,481** out." },
+  "data": {
+    "input": { "amount": "$100", "per": "a month", "rate": "7% a year" },
+    "columns": ["Year", "You put in", "Worth"],
+    "rows": [
+      ["1", "$1,200", "≈ $1,239"],
+      ["5", "$6,000", "≈ $7,159"],
+      ["10", "$12,000", "≈ $17,308"],
+      ["20", "$24,000", "≈ $52,093"],
+      ["30", "$36,000", "≈ $121,997"],
+      ["40", "$48,000", "≈ $262,481"]
+    ],
+    "rowT": [0.0, 3.6, 6.6, 10.0, 15.0, 19.4],
+    "highlightLast": true,
+    "hold": 3.0
+  },
+  "notes": "Maths: $100 deposited at each month-end, 7%/12 a month, compounded monthly. Worth after n months = 100 × ((1 + 0.07/12)^n − 1) ÷ (0.07/12). Year 1 (n = 12) = $1,239.26; year 5 = $7,159.29; year 10 = $17,308.48; year 20 = $52,092.67; year 30 = $121,997.10; year 40 = $262,481.34. You put in = $100 × 12 × years. Growth passes what you put in during year 19 (month 217): at year 20 growth is $28,092.67 > $24,000 put in. $262,481.34 ÷ $48,000 = 5.47, so 'over 5 times'. 7% is a stated assumption (roughly the S&P 500's long-run return after inflation), not a forecast; no fees or taxes."
+}

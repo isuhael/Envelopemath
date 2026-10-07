@@ -1,0 +1,41 @@
+{
+  "id": "sample-scoreboard-cost-counter-2",
+  "sample": true,
+  "look": "scoreboard",
+  "format": "cost-counter",
+  "fps": 30,
+  "header": "New US debt,\nin **real time**",
+  "footer": "FY2026: debt +$2.46T ÷ 31,536,000 s",
+  "captions": false,
+  "vo": [
+    { "t": 0.0, "d": 2.4, "text": "A new car. A year's pay. Gone already." },
+    { "t": 4.6, "d": 2.4, "text": "A median new house." },
+    { "t": 7.9, "d": 2.6, "text": "10 years of median pay." },
+    { "t": 12.4, "d": 2.2, "text": "$1 million." },
+    { "t": 15.0, "d": 4.2, "text": "About $78,000 a second, every second, all year." },
+    { "t": 22.0, "d": 4.6, "text": "The debt grew $2.46 trillion in fiscal 2026." },
+    { "t": 29.0, "d": 3.6, "text": "Now a whole working life of median pay." },
+    { "t": 33.6, "d": 2.2, "text": "**≈ 33 seconds.**" }
+  ],
+  "verdict": { "t": 33.6, "text": "A whole working life\nin **≈ 33 seconds**" },
+  "data": {
+    "label": "New US debt since the counter started",
+    "perSecond": 78006.09,
+    "rateDisplay": "≈ $78,000 every second",
+    "counterT": [-0.4, 33.0],
+    "startValue": 0,
+    "prefix": "$",
+    "dp": 0,
+    "milestones": [
+      { "value": 50089, "label": "An average new car: $50,089" },
+      { "value": 65052, "label": "A year of median pay: $65,052" },
+      { "value": 393700, "label": "A median new house: $393,700" },
+      { "value": 650520, "label": "10 years of median pay: $650,520" },
+      { "value": 1000000, "label": "$1 million" },
+      { "value": 2602080, "label": "40 years of median pay, a whole working life: $2,602,080" }
+    ],
+    "final": "≈ $2,605,403",
+    "hold": 3.0
+  },
+  "notes": "Stress variant: captions off (the label stack sits in the caption band), 6 milestones (two of them 0.19 s apart), a long two-line label, a label without an amount, frame 1 already 0.4 s into the count (counterT[0] = -0.4, so the header says 'in real time', not 'since you hit play'), no lookOpts. Maths: rate = $2,460,000,000,000 ÷ 31,536,000 s = $78,006.09 a second (shown ≈ $78,000). Counting time to each milestone = value ÷ 78,006.09: car $50,089 → 0.642 s; pay $65,052 → 0.834 s; house $393,700 → 5.047 s; $650,520 → 8.339 s; $1,000,000 → 12.820 s; $2,602,080 (= $1,251 × 52 × 40) → 33.357 s (≈ 33 s, the verdict). Video time = counting time − 0.4 s. Frame 1 reads 78,006.09 × 0.4 = $31,202. Counter end 33.0 s → 78,006.09 × 33.4 = 2,605,403.4 → ≈ $2,605,403. Sources (as verified in teasers/v2/10-cost-counter.md, 10b): FY2026 debt growth $2.46T (Treasury Debt to the Penny via PrimeRates; GAO and Euronews consistency checks); average new-vehicle transaction price Aug 2026 $50,089 (Cox Automotive / KBB, 2026-09-10); BLS median full-time pay $1,251 a week (Q2 2026); Census median new house $393,700 (Aug 2026). The debt grows in steps (auctions, tax dates): this is the year's average rate."
+}

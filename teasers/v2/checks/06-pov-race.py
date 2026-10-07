@@ -13,9 +13,13 @@
    - every string in the spec that contains a digit is covered by one of those checks,
    - the hook rules the linter can't see: header <= 15 words with exactly one $ figure,
      a number in the header at t = 0, duration inside the 18-35 s lane for this format,
-   - VO timing: each line's d >= words / 2.6, no overlaps, last line ends before the end,
+   - VO timing: each line's d >= written words / 2.6 AND >= spoken words / 2.8 (numbers
+     counted as read aloud: "$17,532" = 5 words, "2025" = 2, "$7.99" = 2, "8.7" = 3),
+     no overlaps, last line ends at least 0.4 s before the end,
    - beat sync: each beat a VO line mentions lands (on the chart's x -> t clock) inside
-     that line's window, +/- 0.3 s; every sfx cue sits on its beat.
+     that line's window, +/- 0.3 s; every sfx cue sits on its beat,
+   - motion and payoff timing: the race starts by 1.0 s and the first year-end payoff
+     lands by 3.0 s (R10).
 4. Prints a table and exits 1 on any mismatch.
 
 Run:  python3 teasers/v2/checks/06-pov-race.py
@@ -31,7 +35,8 @@ from decimal import Decimal, ROUND_HALF_UP
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 SPECS = os.path.join(ROOT, "studio", "specs")
-WPS = 2.6            # VO read speed, words per second
+WPS = 2.6            # VO read speed, written words per second
+SPOKEN_WPS = 2.8     # VO read speed, spoken words per second (numbers read out in full)
 LANE = (18.0, 35.0)  # duration lane for pov-race (task brief)
 BEAT_TOL = 0.3       # s: a mentioned beat must land inside its VO line's window +/- this
 
@@ -54,11 +59,19 @@ IPHONE_GB = 4
 LAUNCH = dt.date(2007, 6, 29)
 VALUE_DATE = dt.date(2025, 12, 31)
 # StatMuse Money, AAPL closes (split- and dividend-adjusted): 2007-06-29 $3.66, 2007-12-31 $5.92.
-# Apple paid no dividend between 1995 and 2012, so the ratio of these two adjusted closes is the
-# same on any adjustment basis: it carries the launch-day price onto Macrotrends' basis.
-SM_AAPL_LAUNCH = 3.66
+SM_AAPL_LAUNCH = 3.66            # cross-check only: see AAPL_LAUNCH_ADJ
 SM_AAPL_YE2007 = 5.92
 SM_AAPL_YE2025 = 271.36          # StatMuse, 2025-12-31 close (cross-check only)
+# Raw (unadjusted) closes: ATPM 13.07 "Apple's share price ended June trading at $122.04"
+# (6/29/2007, launch day); 1stock1 "Apple yearly stock prices": 2007 began at $84.84 and ended
+# at $198.08 (+133.47%). Apple paid no dividend and did no split between these two dates, so
+# the launch-day close on ANY adjusted basis is that basis's 2007 close x 122.04 / 198.08.
+RAW_AAPL_LAUNCH = 122.04
+RAW_AAPL_YE2007 = 198.08
+# On the 5.92 basis that is 5.92 x 122.04 / 198.08 = 3.6474 -> $3.65. StatMuse's own $3.66 is
+# 0.3% off its $5.92 on the raw ratio (more than 2-dp rounding of either), so the launch price
+# used is the derived $3.65 (2 dp, like every other input), and StatMuse is the cross-check.
+AAPL_LAUNCH_ADJ = 3.65
 # Macrotrends, "Apple - 45 Year Stock Price History | AAPL" (adjusted for splits and dividends):
 # year close and annual % change.
 MT_AAPL_CLOSE = {2007: 5.97, 2008: 2.57, 2009: 6.36, 2010: 9.73, 2011: 12.21, 2012: 16.06,
@@ -68,7 +81,7 @@ MT_AAPL_CLOSE = {2007: 5.97, 2008: 2.57, 2009: 6.36, 2010: 9.73, 2011: 12.21, 20
 # The search returned the 2007-2011 rows on an older adjustment basis than the 2012+ rows: the
 # 2012 % change (32.57%) can't be reproduced from 12.21 -> 16.06 (31.53%). StatMuse's 2007 close
 # ($5.92) is the bridge: rescaling 2007-2011 by 5.92 / 5.97 makes 2012 reproduce (checked below),
-# and puts the launch-day close ($3.66, same StatMuse basis) on the 2012+ basis directly.
+# and the launch-day close ($3.65, derived from 5.92 by the raw ratio above) sits on that basis.
 AAPL_OLD_BASIS = range(2007, 2012)
 MT_AAPL_CHG = {2008: -56.91, 2009: 146.91, 2010: 53.07, 2011: 25.56, 2012: 32.57, 2013: 8.07,
                2014: 40.62, 2015: -3.01, 2016: 12.48, 2017: 48.46, 2018: -5.39, 2019: 88.96,
@@ -85,11 +98,13 @@ NFLX_PLAN = [(2012, 1, 7.99), (2014, 5, 8.99), (2015, 10, 9.99), (2017, 10, 10.9
              (2019, 1, 12.99), (2020, 10, 13.99), (2022, 1, 15.49), (2025, 1, 17.99)]
 NFLX_START, NFLX_END = 2012, 2025
 # Macrotrends, "Netflix - 24 Year Stock Price History | NFLX" (split-adjusted; Netflix pays no
-# dividend): average close of the year, year close, annual % change.
-MT_NFLX_AVG = {2012: 1.19, 2013: 3.53, 2014: 5.75, 2015: 9.19, 2016: 10.20, 2017: 16.54,
+# dividend): average close of the year, year close, annual % change. 2012-2014 at the table's
+# own 4-dp precision (a 2-dp copy of 2012's close, $1.33, broke the 2013 % change; $1.3227
+# reproduces +297.64% exactly).
+MT_NFLX_AVG = {2012: 1.1855, 2013: 3.5272, 2014: 5.7495, 2015: 9.19, 2016: 10.20, 2017: 16.54,
                2018: 31.93, 2019: 32.89, 2020: 44.68, 2021: 55.82, 2022: 28.46, 2023: 39.02,
                2024: 67.15, 2025: 109.71}
-MT_NFLX_CLOSE = {2011: 0.99, 2012: 1.33, 2013: 5.26, 2014: 4.88, 2015: 11.44, 2016: 12.38,
+MT_NFLX_CLOSE = {2011: 0.99, 2012: 1.3227, 2013: 5.2596, 2014: 4.8801, 2015: 11.44, 2016: 12.38,
                  2017: 19.20, 2018: 26.77, 2019: 32.36, 2020: 54.07, 2021: 60.24, 2022: 29.49,
                  2023: 48.69, 2024: 89.13, 2025: 93.76}
 MT_NFLX_CHG = {2012: 33.62, 2013: 297.64, 2014: -7.22, 2015: 134.38, 2016: 8.24, 2017: 55.06,
@@ -151,6 +166,53 @@ def mult(x):
     return f"{v:.0f}" if v >= 10 else f"{v:.1f}"
 
 
+ONES = ("zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen "
+        "fifteen sixteen seventeen eighteen nineteen").split()
+TENS = "_ _ twenty thirty forty fifty sixty seventy eighty ninety".split()
+
+
+def say_int(n):
+    """formal reading, compound tens hyphenated (one word): 17532 -> seventeen thousand five
+    hundred thirty-two (5 words). "dollars" is not counted."""
+    if n < 20:
+        return [ONES[n]]
+    if n < 100:
+        return [TENS[n // 10] + ("-" + ONES[n % 10] if n % 10 else "")]
+    if n < 1000:
+        return [ONES[n // 100], "hundred"] + (say_int(n % 100) if n % 100 else [])
+    for div, name in ((10 ** 9, "billion"), (10 ** 6, "million"), (1000, "thousand")):
+        if n >= div:
+            return say_int(n // div) + [name] + (say_int(n % div) if n % div else [])
+
+
+def say_year(y):
+    if 2000 <= y <= 2009:
+        return say_int(y)                     # two thousand seven
+    hi, lo = divmod(y, 100)
+    return say_int(hi) + (say_int(lo) if lo >= 10 else (["oh"] + say_int(lo) if lo else ["hundred"]))
+
+
+def spoken_words(text):
+    """the words a VO line takes to say, numbers read out: $499 -> four hundred ninety-nine,
+    $7.99 -> seven ninety-nine, 2012 -> twenty twelve, 8.7 -> eight point seven"""
+    out = []
+    for tok in re.findall(r"\$?\d[\d,]*(?:\.\d+)?|[A-Za-z][A-Za-z'’-]*", text):
+        if tok[0].isalpha():
+            out.append(tok)
+            continue
+        money = tok.startswith("$")
+        num = tok.lstrip("$").rstrip(",")
+        if "." in num:
+            whole, frac = num.split(".")
+            w = say_int(int(whole.replace(",", "")))
+            out += w + (say_int(int(frac)) if money else ["point"] + [ONES[int(c)] for c in frac])
+        elif not money and "," not in num and len(num) == 4 and 1900 <= int(num) <= 2099:
+            out += say_year(int(num))
+        else:
+            out += say_int(int(num.replace(",", "")))
+    return out
+
+
 def yearfrac(d):
     return d.year + (d.timetuple().tm_yday - 1) / (366 if calendar.isleap(d.year) else 365)
 
@@ -176,21 +238,10 @@ def check(sid, field, shown, want, ok=None, why=""):
         FAIL.append(f"{sid} {field}: shown {shown!r} != computed {want!r} {why}")
 
 
-# Known source quirk, documented in the write-up: Macrotrends' NFLX 2013 change (297.64%) needs a
-# 2012 close of ~$1.3229, the search returned $1.33 (the 2012 change, 33.62%, also points to
-# ~$1.323). Only the 2012 year-end chart point uses it (80.6 shares x $0.007 = $0.55); no display
-# string does. Accepted with this note instead of silently widening every tolerance.
-KNOWN_SOURCE_ROUNDING = {("NFLX", 2013): "2012 close returned as $1.33; % changes imply ~$1.323"}
-
-
 def table_consistency(name, close, chg):
     """each annual % change must be reproducible from the 2-dp closes (within their rounding)"""
     bad = []
     for y, c in chg.items():
-        if (name, y) in KNOWN_SOURCE_ROUNDING:
-            check("src", f"{name} {y} % change (known quirk)", KNOWN_SOURCE_ROUNDING[(name, y)],
-                  "noted", ok=True)
-            continue
         if y - 1 not in close:
             continue
         c0, c1 = close[y - 1], close[y]
@@ -223,7 +274,8 @@ table_consistency("AAPL", MT_AAPL_CLOSE, {y: c for y, c in MT_AAPL_CHG.items() i
 check("src", "AAPL 2012 % change across the bridged seam", f"{(AAPL_CLOSE[2012] / AAPL_CLOSE[2011] - 1) * 100:.2f}%",
       f"{MT_AAPL_CHG[2012]:.2f}% ± 0.15", ok=abs((AAPL_CLOSE[2012] / AAPL_CLOSE[2011] - 1) * 100 - MT_AAPL_CHG[2012]) <= 0.15)
 A["buy_x"] = rnd(yearfrac(LAUNCH), 2)                                    # 2007.49
-A["adj_buy"] = AAPL_CLOSE[2007] * SM_AAPL_LAUNCH / SM_AAPL_YE2007        # = 3.66 on the 2012+ basis
+A["adj_buy_exact"] = AAPL_CLOSE[2007] * RAW_AAPL_LAUNCH / RAW_AAPL_YE2007  # 3.6474 on the 2012+ basis
+A["adj_buy"] = AAPL_LAUNCH_ADJ                                           # 3.65, the input used
 A["shares"] = IPHONE_PRICE / A["adj_buy"]                                # adjusted shares
 A["own"] = [(A["buy_x"], float(IPHONE_PRICE))] + \
     [(ye(y), A["shares"] * AAPL_CLOSE[y]) for y in range(2007, 2026)]
@@ -237,7 +289,16 @@ A["x_below"] = cross_x(A["own"], IPHONE_PRICE, below=True)               # 2008 
 A["x_10k"] = cross_x(A["own"], 10_000, below=False)                      # passes $10,000
 A["drop_2022"] = 1 - AAPL_CLOSE[2022] / AAPL_CLOSE[2021]
 A["statmuse_only"] = IPHONE_PRICE * SM_AAPL_YE2025 / SM_AAPL_LAUNCH     # cross-check
-check("06a", "launch-day close on the 2012+ basis", f"{A['adj_buy']:.4f}", "3.6600")
+check("06a", "launch-day close: 5.92 x 122.04 / 198.08, to 2 dp = the input",
+      f"{A['adj_buy_exact']:.4f} -> {rnd(A['adj_buy_exact'], 2):.2f}", f"{AAPL_LAUNCH_ADJ:.2f}",
+      ok=rnd(A["adj_buy_exact"], 2) == AAPL_LAUNCH_ADJ)
+check("06a", "raw closes reproduce 2007's +133.47% (84.84 -> 198.08)",
+      f"{(RAW_AAPL_YE2007 / 84.84 - 1) * 100:.2f}%", "133.47%",
+      ok=abs((RAW_AAPL_YE2007 / 84.84 - 1) * 100 - 133.47) < 0.006)
+check("06a", "StatMuse's 3.66/5.92 vs the raw ratio (why 3.66 is not used)",
+      f"{SM_AAPL_LAUNCH / SM_AAPL_YE2007:.4f} vs {RAW_AAPL_LAUNCH / RAW_AAPL_YE2007:.4f}",
+      "differ by more than 2-dp rounding",
+      ok=SM_AAPL_LAUNCH / SM_AAPL_YE2007 - 0.005 / SM_AAPL_YE2007 > RAW_AAPL_LAUNCH / RAW_AAPL_YE2007)
 check("06a", "cross-check: StatMuse-only value within 0.5%",
       f"{A['statmuse_only']:,.0f} vs {A['final']:,.0f}", "≤ 0.5%",
       ok=abs(A["statmuse_only"] / A["final"] - 1) <= 0.005)
@@ -286,8 +347,11 @@ check("06b", "2022 'halves' (stake down 45-55%)", f"{B['drop_2022']:.3f}", "0.45
       ok=0.45 <= B["drop_2022"] <= 0.55)
 check("06b", "2020 stake 'over $9,000' (9,000-9,999)", f"{B['value'][2020]:,.2f}", "9,000-9,999",
       ok=9000 < B["value"][2020] < 10000)
-check("06b", "2012's bills 'almost half' (40-50%)", f"{B['share_2012']:.3f}", "0.40-0.50",
-      ok=0.40 <= B["share_2012"] < 0.50)
+check("06b", "pinned: 2012's bills are ≈ 43% of the final", f"{B['share_2012']:.4f}", "≈ 43%",
+      ok=rnd(B["share_2012"] * 100) == 43)
+check("06b", "pinned: 2012's shares worth ≈ $7,583", usd(B["shares_y"][2012] * MT_NFLX_CLOSE[NFLX_END]), "$7,583")
+B["x_9000"] = cross_x(B["own"], 9_000, below=False)
+check("06b", "'tops $9,000' in 2020", int(B["x_9000"]), 2020)
 check("06b", "second source: 2025 close", SM_NFLX_YE2025, MT_NFLX_CLOSE[2025])
 
 # ---------------------------------------------------------------- 06c
@@ -331,105 +395,130 @@ check("06c", "'it stalls': 2021->2025 stake gain < 15% of new money",
 EXP = {}
 
 # ---- 06a
+# The final is shown to the nearest $1,000 (2 significant figures: $37,065 -> ≈ $37,000), the
+# rounding a viewer can say in one breath; 06b and 06c use 3 (≈ $17,700, ≈ $24,900).
+A["final_disp"] = approx_usd(A["final"], 2)
+A["final_say"] = f"{sig(A['final'], 2):,.0f}"
 EXP["a"] = {
-    "raceT": [2.4, 21.4], "x": {"from": 2007, "to": ye(2025), "tickEvery": 3},
+    "raceT": [0.3, 21.4], "x": {"from": 2007, "to": ye(2025), "tickEvery": 3},
+    "first_payoff_x": ye(2007),
     "strings": {
-        "header": f"POV: YOU INVESTED IN APPLE\nINSTEAD OF PAYING **${IPHONE_PRICE}**\nFOR THE FIRST IPHONE",
-        "footer": f"Bought at the {LAUNCH.month}/{LAUNCH.day}/{LAUNCH.year} close · dividends reinvested"
-                  f" · valued {VALUE_DATE.month}/{VALUE_DATE.day}/{VALUE_DATE.year}",
+        "header": f"POV: IN {LAUNCH.year} YOU INVESTED IN APPLE\nINSTEAD OF PAYING **${IPHONE_PRICE}**\n"
+                  f"FOR THE FIRST IPHONE",
+        "footer": f"{LAUNCH.month}/{LAUNCH.day}/{LAUNCH:%y} close → {VALUE_DATE.month}/{VALUE_DATE.day}/"
+                  f"{VALUE_DATE:%y} · dividends reinvested",
         "verdict.text": f"**≈ {mult(A['mult'])}×** your ${IPHONE_PRICE}.\n"
-                        f"One doubling every **≈ {rnd(A['yrs_per_doubling']):.0f} years**.",
+                        f"2× every **≈ {rnd(A['yrs_per_doubling']):.0f} yrs**.",
         "data.spend.final": f"{usd(IPHONE_PRICE)} spent",
         "data.own.label": f"Same {usd(IPHONE_PRICE)} in Apple stock",
-        "data.own.final": approx_usd(A["final"]),
+        "data.own.final": A["final_disp"],
         "data.purchases.0.label": f"iPhone {IPHONE_GB}GB",
         "data.purchases.0.price": usd(IPHONE_PRICE),
         "lookOpts.footerSteps.0.text": f"{usd(IPHONE_PRICE)} × {rnd(A['mult'], 1)} ≈ "
-                                        f"${sig(IPHONE_PRICE * rnd(A['mult'], 1), 3):,.0f}",
+                                        f"${sig(IPHONE_PRICE * rnd(A['mult'], 1), 2):,.0f}",
     },
     "points": {"spend": A["spend"], "own": A["own"]},
     "purchases_x": [A["buy_x"]],
     # VO: numbers in order per line; 'about' required before rounded figures
     "vo_numbers": [
-        [str(LAUNCH.year), str(IPHONE_PRICE)],
+        [str(IPHONE_PRICE)],
         [],
-        [str(int(A["x_below"])), str(IPHONE_PRICE)],
         [], [],
         [str(int(A["x_10k"])), "10,000"],
         ["2022"],
-        [str(VALUE_DATE.year), f"{sig(A['final'], 3):,.0f}"],
+        [str(VALUE_DATE.year), A["final_say"]],
         [mult(A["mult"]), f"{rnd(A['yrs_per_doubling']):.0f}"],
     ],
-    "vo_about": {7: [f"{sig(A['final'], 3):,.0f}"], 8: [mult(A["mult"])]},
-    # beat sync: (vo line, x on the chart)
-    "sync": [(1, A["buy_x"], "purchase tick"), (2, A["x_below"], "line dips under $499"),
-             (5, A["x_10k"], "passes $10,000"), (6, ye(2022) - 0.5, "2022 drop"),
-             (7, ye(2025), "final value")],
+    "vo_about": {6: [A["final_say"]], 7: [mult(A["mult"]), f"{rnd(A['yrs_per_doubling']):.0f}"]},
+    # beat sync: (vo line, x on the chart). The 2008 dip (t 2.1-2.8) plays under vo[1] on purpose:
+    # the chart opens in the red while the premise is spoken (ChartOrbit's open-in-the-red device).
+    "sync": [(0, A["buy_x"], "purchase tick"), (0, ye(2007), "first payoff (end of 2007)"),
+             (4, A["x_10k"], "passes $10,000"), (5, ye(2022) - 0.5, "2022 drop"),
+             (6, ye(2025), "final value")],
     "sfx": {0: A["buy_x"], 1: ye(2008), 2: A["x_10k"], 3: ye(2025)},
     "lookOpts_t": {"footerSteps.0": ye(2025)},
 }
 
 # sanity on the claims baked into the strings above
 check("06a", "footer step result = final display", EXP["a"]["strings"]["lookOpts.footerSteps.0.text"].split("≈ ")[1],
-      approx_usd(A["final"]).split("≈ ")[1])
+      A["final_disp"].split("≈ ")[1])
+check("06a", "pinned: 136.7 shares x $271.12 ≈ $37,062", usd(rnd(A["shares"], 1) * MT_AAPL_CLOSE[2025]), "$37,062")
 
 # ---- 06b
+SHARES_2012_SHOWN = rnd(B["shares_y"][2012])                        # "≈ 81 shares"
+check("06b", "formula bar 2012: $95.88 ÷ $1.19 and ÷ $1.1855 both ≈ 81 shares",
+      f"{B['spend_y'][2012] / rnd(MT_NFLX_AVG[2012], 2):.2f} / {B['shares_y'][2012]:.2f}", "both round to 81",
+      ok=rnd(B["spend_y"][2012] / rnd(MT_NFLX_AVG[2012], 2)) == SHARES_2012_SHOWN == 81)
+check("06b", "formula bar: ≈ $17,700 ÷ $2,037.32 and the exact final both ≈ 8.7×",
+      f"{sig(B['final'], 3) / B['total']:.3f} / {B['mult']:.3f}", "both 8.7",
+      ok=mult(sig(B["final"], 3) / B["total"]) == mult(B["mult"]) == "8.7")
 fb = [
     f"= {usd(P0, 2)} × 12 = {usd(B['spend_y'][2012], 2)}",
-    f"≈ {usd(B['spend_y'][2012], 2)} ÷ {usd(MT_NFLX_AVG[2012], 2)} ≈ {rnd(B['shares_y'][2012], 1)} shares",
+    f"≈ {usd(B['spend_y'][2012], 2)} ÷ {usd(MT_NFLX_AVG[2012], 2)} ≈ {SHARES_2012_SHOWN:.0f} shares",
     f"= {m_old_2015} × {usd(plan_price(2015, 1), 2)} + {12 - m_old_2015} × {usd(plan_price(2015, 12), 2)}"
     f" = {usd(B['spend_2015'], 2)}",
     "≈ each year's bills ÷ that year's avg price",
     f"≈ {rnd(B['cum_shares'][NFLX_END], 1)} shares × {usd(MT_NFLX_CLOSE[NFLX_END], 2)} ≈ "
     f"${sig(rnd(B['cum_shares'][NFLX_END], 1) * MT_NFLX_CLOSE[NFLX_END], 3):,.0f}",
-    f"≈ {usd(B['final'])} ÷ {usd(B['total'], 2)} ≈ {mult(B['mult'])}×",
+    f"{approx_usd(B['final'])} ÷ {usd(B['total'], 2)} ≈ {mult(B['mult'])}×",
 ]
+# purchase tags: the start bill, then the hikes counted ("Hike 1" ... "Hike 7", R9)
+B["tag_labels"] = [lab if i == 0 else f"Hike {i} · {lab}" for i, (_, lab, _) in enumerate(B["ticks"])]
 EXP["b"] = {
-    "raceT": [2.0, 23.0], "x": {"from": NFLX_START, "to": ye(NFLX_END), "tickEvery": 3},
+    "raceT": [0.3, 23.0], "x": {"from": NFLX_START, "to": ye(NFLX_END), "tickEvery": 3},
+    "first_payoff_x": ye(NFLX_START),
     "strings": {
-        "header": f"POV: Since {NFLX_START} you put\nyour **{usd(P0, 2)}** Netflix bill\ninto Netflix stock",
+        "header": f"POV: You invested in Netflix\ninstead of paying Netflix,\never since it was **{usd(P0, 2)}**",
         "footer": "Standard plan list price · each year at its avg price · split-adjusted",
         "verdict.text": f"**≈ {mult(B['mult'])}×** what Netflix\ncharged you",
         "data.spend.final": f"{usd(B['total'], 2)} spent",
         "data.own.final": approx_usd(B["final"]),
-        **{f"data.purchases.{i}.label": lab for i, (_, lab, _) in enumerate(B["ticks"])},
+        **{f"data.purchases.{i}.label": lab for i, lab in enumerate(B["tag_labels"])},
         **{f"data.purchases.{i}.price": pr for i, (_, _, pr) in enumerate(B["ticks"])},
         **{f"lookOpts.formulaBar.{i}.text": s for i, s in enumerate(fb)},
     },
     "points": {"spend": B["spend"], "own": B["own"]},
     "purchases_x": [x for (x, _, _) in B["ticks"]],
     "vo_numbers": [
-        [str(NFLX_START), f"{P0:.2f}"],
+        [f"{P0:.2f}", str(NFLX_START)],
         [],
-        ["2013"],
         [], [],
-        ["2020", f"{plan_price(2020, 12):.2f}", "9,000"],
+        [str(int(B["x_9000"])), "9,000"],
         ["2022"],
         [],
         [f"{rnd(B['total']):,.0f}", f"{sig(B['final'], 3):,.0f}"],
-        [mult(B["mult"]), str(NFLX_START), f"{B['spend_y'][NFLX_START]:.2f}"],
+        [mult(B["mult"])],
     ],
-    "vo_about": {8: [f"{rnd(B['total']):,.0f}", f"{sig(B['final'], 3):,.0f}"], 9: [mult(B["mult"])]},
-    "sync": [(0, float(NFLX_START), "first bill"), (2, ye(2013), "2013 close"),
-             (3, B["ticks"][2][0], "Oct 2015 hike"), (4, B["ticks"][3][0], "Oct 2017 hike"),
-             (5, B["ticks"][5][0], "Oct 2020 hike"), (5, ye(2020), "2020 stake"),
-             (6, ye(2022) - 0.5, "2022 drop"), (8, ye(NFLX_END), "final value")],
+    "vo_about": {7: [f"{rnd(B['total']):,.0f}", f"{sig(B['final'], 3):,.0f}"], 8: [mult(B["mult"])]},
+    "sync": [(0, float(NFLX_START), "first bill"), (0, ye(NFLX_START), "first payoff (end of 2012)"),
+             (2, B["ticks"][2][0], "Oct 2015 hike"), (3, B["ticks"][3][0], "Oct 2017 hike"),
+             (4, B["ticks"][5][0], "Oct 2020 hike"), (4, B["x_9000"], "stake tops $9,000"),
+             (4, ye(2020), "2020 stake"), (5, ye(2022) - 0.5, "2022 drop"), (7, ye(NFLX_END), "final value")],
     "sfx": {0: B["ticks"][1][0], 1: B["ticks"][2][0], 2: B["ticks"][3][0], 3: B["ticks"][4][0],
             4: B["ticks"][5][0], 5: B["ticks"][6][0], 6: ye(2022), 7: B["ticks"][7][0],
             8: ye(NFLX_END)},
     "lookOpts_t": {"formulaBar.0": None, "formulaBar.1": None, "formulaBar.2": None,
                    "formulaBar.3": None, "formulaBar.4": None, "formulaBar.5": None},
+    "formulaBar_vo": [0, 1, 2, 3, 7, 8],
 }
 check("06b", "check line: 2015 bills = 9 old + 3 new months", m_old_2015, 9)
+check("06b", "pinned: 188.84 shares x $93.76 ≈ $17,706",
+      usd(rnd(B["cum_shares"][NFLX_END], 2) * MT_NFLX_CLOSE[NFLX_END]), "$17,706")
+check("06b", "pinned: 2012's 80.9 shares ≈ $7,600 of it",
+      f"${sig(rnd(B['shares_y'][2012], 1) * MT_NFLX_CLOSE[NFLX_END], 2):,.0f}", "$7,600")
+check("06b", "7 hikes after the $7.99 start", len(B["ticks"]) - 1, 7)
 
 # ---- 06c
 EXP["c"] = {
-    "raceT": [2.4, 20.4], "x": {"from": SBUX_START, "to": ye(SBUX_END), "tickEvery": 4},
+    "raceT": [0.5, 20.4], "x": {"from": SBUX_START, "to": ye(SBUX_END), "tickEvery": 4},
+    "first_payoff_x": ye(SBUX_START),
     "strings": {
         "header": f"POV: Since {SBUX_START} you invested\nin Starbucks instead of paying\n"
-                  f"**{usd(LATTE_STAKE)}/day** for lattes",
+                  f"**{usd(LATTE_STAKE)}/day** for a Starbucks latte",
         "footer": f"{usd(LATTE_STAKE)} ≈ a grande latte · each year at its avg price · dividends reinvested",
-        "verdict.text": f"**≈ {mult(C['mult'])}×** your latte money.\nNot rich. Not **$0**.",
+        # one line: the Becker Rig verdict band overflows by 6 px on any 2-line verdict (kit issue,
+        # logged); the judge's 2-line "Cups: $0. Stock: ≈ $24,900." version swaps in once it is fixed
+        "verdict.text": f"**≈ {mult(C['mult'])}×**. Not rich. Not zero.",
         "data.spend.final": f"{usd(C['total'])} spent",
         "data.own.label": f"Same {usd(LATTE_STAKE)}/day in Starbucks stock",
         "data.own.final": approx_usd(C["final"]),
@@ -439,8 +528,8 @@ EXP["c"] = {
     "points": {"spend": C["spend"], "own": C["own"]},
     "purchases_x": [float(SBUX_START)],
     "vo_numbers": [
-        [f"{LATTE_STAKE:.0f}", str(SBUX_START)],
-        [],
+        [f"{LATTE_STAKE:.0f}"],
+        [str(SBUX_START)],
         [f"{C['per_year']:,.0f}"],
         [],
         ["2021"],
@@ -450,13 +539,18 @@ EXP["c"] = {
         [mult(C["mult"])],
     ],
     "vo_about": {7: [f"{sig(C['final'], 3):,.0f}"], 8: [mult(C["mult"])]},
-    "sync": [(1, float(SBUX_START), "day-1 tick"), (2, ye(SBUX_START), "first year-end: $1,460 in"),
-             (4, ye(2021), "2021: doubled"), (5, ye(2022) - 0.5, "stall starts"),
+    "sync": [(0, float(SBUX_START), "day-1 tick"), (0, ye(SBUX_START), "first payoff (end of 2014)"),
+             (4, ye(2021), "2021: doubled"), (5, ye(2022), "2022 dip: the stall"),
              (6, ye(SBUX_END), "spend final"), (7, ye(SBUX_END), "own final")],
     "sfx": {0: float(SBUX_START), 1: ye(2021), 2: ye(SBUX_END)},
     "lookOpts_t": {},
 }
 check("06c", "2015 is a 365-day year ($1,460 rung)", C["spend_y"][2015], C["per_year"])
+check("06c", "pinned: 296.0 shares x $84.21 ≈ $24,926",
+      usd(rnd(C["final"] / MT_SBUX_CLOSE[2025], 1) * MT_SBUX_CLOSE[2025]), "$24,926")
+check("06c", "'climbs faster than the cups' while vo[3] plays (x 2018.9-2021.0)",
+      ", ".join(f"{y}: +{C['value'][y] - C['value'][y - 1]:,.0f}" for y in (2019, 2020, 2021)),
+      f"each > +{C['per_year']:,.0f}", ok=all(C["value"][y] - C["value"][y - 1] > C["per_year"] for y in (2019, 2020, 2021)))
 
 # =====================================================================================
 # SPEC CHECKS
@@ -554,6 +648,10 @@ def check_spec(key):
         n = len(words(line["text"]))
         need = n / WPS
         check(sid, f"vo[{i}] d ≥ {n} words / {WPS}", line["d"], f"≥ {need:.2f}", ok=line["d"] + 1e-9 >= need)
+        ns = len(spoken_words(line["text"]))
+        need_s = ns / SPOKEN_WPS
+        check(sid, f"vo[{i}] d ≥ {ns} spoken words / {SPOKEN_WPS}", line["d"], f"≥ {need_s:.2f}",
+              ok=line["d"] + 1e-9 >= need_s)
         check(sid, f"vo[{i}] starts after vo[{i - 1}]", line["t"], f"≥ {end_prev:.2f}",
               ok=line["t"] + 1e-9 >= end_prev)
         end_prev = line["t"] + line["d"]
@@ -561,10 +659,16 @@ def check_spec(key):
         want = e["vo_numbers"][i] if i < len(e["vo_numbers"]) else None
         check(sid, f"vo[{i}] numbers", got, want)
         for num in e["vo_about"].get(i, []):
-            ok = re.search(r"\babout\s+\$?" + re.escape(num), line["text"], re.I) is not None
+            ok = re.search(r"\babout\s+(?:every\s+)?\$?" + re.escape(num) + r"\b", line["text"], re.I) is not None
             check(sid, f"vo[{i}] 'about' before rounded {num}", ok, True)
     check(sid, "vo starts at 0.0 (hook spoken on frame 1)", vo[0]["t"], 0.0)
-    check(sid, "last vo ends before duration", rnd(end_prev, 2), f"≤ {dur}", ok=end_prev <= dur + 1e-9)
+    check(sid, "last vo ends ≥ 0.4 s before the end", rnd(end_prev, 2), f"≤ {dur - 0.4:.1f}",
+          ok=end_prev <= dur - 0.4 + 1e-9)
+
+    # --- motion within 1 s, first payoff by 3 s (R10)
+    check(sid, "race moving by 1.0 s", d["raceT"][0], "≤ 1.0", ok=d["raceT"][0] <= 1.0)
+    t_pay = chart_t(spec, e["first_payoff_x"])
+    check(sid, "first payoff (first year-end) by 3.0 s (R10)", f"t={t_pay:.2f}", "≤ 3.00", ok=t_pay <= 3.0)
 
     # --- verdict after the race lands
     check(sid, "verdict.t ≥ race end", spec["verdict"]["t"], f"≥ {d['raceT'][1]}",
@@ -598,7 +702,7 @@ def check_spec(key):
     if key == "b":
         # formula bar steps line up with the VO lines they illustrate
         fb_t = [s["t"] for s in spec["lookOpts"]["formulaBar"]]
-        want = [vo[0]["t"], vo[1]["t"], vo[3]["t"], vo[4]["t"], vo[8]["t"], vo[9]["t"]]
+        want = [vo[i]["t"] for i in e["formulaBar_vo"]]
         check(sid, "formulaBar t = its VO line t", fb_t, want)
 
     # --- coverage: every string with a digit must have been checked
@@ -617,10 +721,10 @@ specs = {k: check_spec(k) for k in IDS}
 # REPORT
 # =====================================================================================
 print("\nKey figures")
-print(f"  06a  $499 at {A['adj_buy']:.4f} (adj) -> {A['final']:,.2f} at 12/31/2025  "
+print(f"  06a  $499 at {A['adj_buy']:.2f} (adj; exact {A['adj_buy_exact']:.4f}) -> {A['final']:,.2f} at 12/31/2025  "
       f"= x{A['mult']:.2f}, {A['doublings']:.2f} doublings in {A['years']:.2f} y "
       f"(1 per {A['yrs_per_doubling']:.2f} y); StatMuse-only {A['statmuse_only']:,.0f}")
-print(f"  06b  bills {B['total']:,.2f} -> {B['final']:,.2f}  = x{B['mult']:.2f}; "
+print(f"  06b  bills {B['total']:,.2f} -> {B['final']:,.2f} ({B['cum_shares'][NFLX_END]:.3f} sh) = x{B['mult']:.3f}; "
       f"2012 share {B['share_2012']:.1%}; 2022 stake drop {B['drop_2022']:.1%}")
 print(f"  06c  lattes {C['total']:,.2f} -> {C['final']:,.2f}  = x{C['mult']:.3f}; "
       f"x{C['x2021']:.2f} at 2021; since 2021: +{C['since2021_in']:,.0f} in, "

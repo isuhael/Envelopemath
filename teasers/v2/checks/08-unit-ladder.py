@@ -15,8 +15,10 @@ Format 8 "unit-ladder" (P8, "Cost in units of X"): maths and spec check for teas
      ends before the next starts; every rung's t equals the start of the VO line that names it, and that
      line names it in its first words; the verdict lands with its VO line; duration is inside the 20-40 s
      lane and covers the last VO line (+0.4 s) and the verdict (+2.5 s); hold = duration - last landing;
-   - Scoreboard only (its kit is built): the counter lands before (or within 0.5 s of) the VO saying the
-     number, using the kit's own roll rules (looks/scoreboard/formats/unit-ladder.js);
+   - Scoreboard and Clean Sheet (their kits are built): the counter lands before (or within 0.5 s of) the VO
+     saying the number, using each kit's own timing rules (looks/scoreboard/formats/unit-ladder.js,
+     looks/clean-sheet/formats/unit-ladder.js); the first count lands within 3 s (R10); 08c's check line is
+     fully typed before the verdict; a rung pre-rolled under an opener line (08a) is spoken after it lands;
    - contract shape (studio/FORMATS.md, section 8): 4-7 rungs, cheap -> huge, units numeric, known icon,
      captions on, fps 30, id = file stem.
 4. Prints a table and exits 1 on any mismatch.
@@ -49,6 +51,7 @@ KBB_ATP = 50089                  # KBB average new-vehicle transaction price, Au
 NEW_HOUSE_2026 = 393700          # Census/HUD median sales price of new houses sold, Aug 2026 (released 2026-09-24)
 NEW_HOUSE_1985 = 84300           # Census median sales price of new houses sold, 1985 annual (FRED MSPNHSUSA; HUD USHMC)
 HOUSE_YEAR_THEN, HOUSE_YEAR_NOW = 1985, 2026
+HOUSE_MONTH_NOW = "Aug"         # the 2026 house figure is the August 2026 month (preliminary, NSA)
 RENT = 1531                      # Census HVS median asking rent, Q2 2026 (released 2026-07-28)
 # 2026 federal tax, single filer (IRS Rev. Proc. 2025-32, 2025-10-09; SSA 2026 fact sheet), as used in 01
 STD_DEDUCTION = 16100
@@ -198,7 +201,7 @@ def scoreboard_landings(rungs):
         lands.append(t0 + delay + roll)
     return lands
 
-FINAL_COUNT = 2.4   # stub kits (Becker Rig, Clean Sheet): last rung lands after the final count-up (same 2.4 s)
+FINAL_COUNT = 2.4   # stub kit (Becker Rig): each rung's count is assumed to land 2.4 s after its cut
 
 # ======================================================================================
 # Teaser builders: each returns (expected spec dict, rows for the table, allowed numbers,
@@ -210,13 +213,12 @@ def vo_line(t, d, text):
 def build_08a():
     unit = HOT_DOG_COMBO
     items = [
-        ("Your Costco membership", COSTCO_MEMBERSHIP, usd(COSTCO_MEMBERSHIP), "Costco membership"),
+        ("Your Costco membership", COSTCO_MEMBERSHIP, usd(COSTCO_MEMBERSHIP), "Your Costco membership"),
         ("An iPhone 18 Pro", IPHONE_18_PRO, usd(IPHONE_18_PRO), "An iPhone 18 Pro"),
-        ("An average new car", KBB_ATP, usd(KBB_ATP), "An average new car"),
-        (f"A median new house in {HOUSE_YEAR_THEN}", NEW_HOUSE_1985, usd(NEW_HOUSE_1985), f"A new house in {HOUSE_YEAR_THEN}"),
-        (f"A median new house in {HOUSE_YEAR_NOW}", NEW_HOUSE_2026, usd(NEW_HOUSE_2026), f"a new house in {HOUSE_YEAR_NOW}"),
+        (f"A median new house, {HOUSE_YEAR_THEN}", NEW_HOUSE_1985, usd(NEW_HOUSE_1985), f"A new house in {HOUSE_YEAR_THEN}"),
+        (f"A median new house, {HOUSE_MONTH_NOW} {HOUSE_YEAR_NOW}", NEW_HOUSE_2026, usd(NEW_HOUSE_2026), f"And a new house in {HOUSE_YEAR_NOW}"),
     ]
-    rung_t = [0.0, 7.1, 10.9, 14.0, 18.2]
+    rung_t = [0.0, 7.9, 11.4, 15.6]
     rows, rungs, qs = [], [], []
     for (item, cost, cost_disp, _), t in zip(items, rung_t):
         q = F(cost) / unit
@@ -229,21 +231,22 @@ def build_08a():
     ratio_disp = ap(ratio_r, ratio) + f"{float(ratio_r):.1f}×"
     assert ratio_disp == "≈ 4.7×"
     # in hot dogs the ratio is the same (the unit price never moved)
-    assert qs[4] / qs[3] == ratio
+    assert qs[3] / qs[2] == ratio
     rows.append(("Ratio house 2026 / 1985", f"{usd(NEW_HOUSE_2026)} ÷ {usd(NEW_HOUSE_1985)}", f"{float(ratio):.4f}", ratio_disp))
     v = [vo_round(q)[0] for q in qs]
+    u2 = usd(unit, 2)
     vo = [
-        vo_line(0.0, 2.8, f"Your Costco membership? **{count(qs[0])[0]} hot dogs**."),
-        vo_line(3.0, 3.9, f"That hot dog: still **{usd(unit, 2)}**, since {HOT_DOG_SINCE}."),
-        vo_line(7.1, 3.5, f"An iPhone 18 Pro? **{v[1]}**."),
-        vo_line(10.9, 3.1, f"An average new car now? **{v[2]}**."),
-        vo_line(14.0, 3.9, f"A new house in {HOUSE_YEAR_THEN}? **{v[3]}**."),
-        vo_line(18.2, 4.7, f"And a new house in {HOUSE_YEAR_NOW}? **{v[4]}**."),
-        vo_line(23.2, 4.3, f"Same hot dog. **{ratio_disp}** the hot dogs."),
+        # the opener: the frozen price, while rung 1 (the membership) is already rolling on screen
+        vo_line(0.0, 4.7, f"Costco hot dog, {HOT_DOG_SINCE}: **{u2}**. Today: **{u2}**."),
+        vo_line(4.9, 2.7, f"Your Costco membership? **{count(qs[0])[0]} hot dogs**."),
+        vo_line(7.9, 3.2, f"An iPhone 18 Pro? **{v[1]}**."),
+        vo_line(11.4, 3.9, f"A new house in {HOUSE_YEAR_THEN}? **{v[2]}**."),
+        vo_line(15.6, 4.7, f"And a new house in {HOUSE_YEAR_NOW}? **{v[3]}**."),
+        vo_line(20.6, 4.7, f"Same {u2}. **{ratio_disp}** the hot dogs."),
     ]
     for q, (s, n) in zip(qs, map(vo_round, qs)):
         rows.append(("  VO says", f"{float(q):,.2f} rounded for speech", "", s))
-    duration = 30.0
+    duration = 27.0
     lands = scoreboard_landings(rungs)
     hold = round(duration - lands[-1], 2)
     exp = {
@@ -252,33 +255,36 @@ def build_08a():
         "format": "unit-ladder",
         "fps": 30,
         "duration": duration,
-        "header": "COST IN UNITS OF\n**COSTCO HOT DOGS**",
-        "footer": f"Hot dog + soda = {usd(unit, 2)}, same since {HOT_DOG_SINCE}",
+        "header": f"A NEW HOUSE, {HOUSE_YEAR_THEN} VS {HOUSE_YEAR_NOW},\nIN **{u2}** COSTCO HOT DOGS",
+        "footer": f"Hot dog + soda: {u2} in {HOT_DOG_SINCE}. Still {u2}.",
         "captions": True,
         "vo": vo,
-        "verdict": {"t": 23.2, "text": f"Same hot dog.\nThe house: **{ratio_disp}** the hot dogs."},
+        "verdict": {"t": 20.6, "text": f"Hot dog: still {u2}.\nThe house: **{ratio_disp}** the hot dogs."},
         "data": {
-            "unit": {"name": "Costco hot dog", "price": usd(unit, 2), "icon": "hotdog"},
+            "unit": {"name": "Costco hot dog", "price": u2, "icon": "hotdog"},
             "rungs": rungs,
             "hold": hold,
         },
         "lookOpts": {
             "climaxFill": 1,
             "bigUnit": {"from": BIG_UNIT_FROM, "per": BIG_UNIT_PER, "legend": f"1 block = {BIG_UNIT_PER:,} hot dogs"},
+            "slots": [{"rung": 2, "label": f"{HOUSE_YEAR_THEN}: ?"}, {"rung": 3, "label": f"{HOUSE_YEAR_NOW}: ?"}],
         },
-        "sfx": [{"t": 23.2, "kind": "ding"}],
+        "sfx": [{"t": 20.6, "kind": "ding"}],
     }
-    allowed = {F(x) for x in [HOT_DOG_COMBO, COSTCO_MEMBERSHIP, IPHONE_18_PRO, KBB_ATP, NEW_HOUSE_1985,
+    allowed = {F(x) for x in [HOT_DOG_COMBO, COSTCO_MEMBERSHIP, IPHONE_18_PRO, NEW_HOUSE_1985,
                               NEW_HOUSE_2026, HOT_DOG_SINCE, HOUSE_YEAR_THEN, HOUSE_YEAR_NOW]}
     allowed |= {F(r["units"]) for r in rungs} | {F(vo_round(q)[1]) for q in qs} | {F(ratio_r)}
     labelled = {F(18): "model name 'iPhone 18 Pro'", F(1): "'1 block' (one unit)", F(BIG_UNIT_PER): "block size"}
     # with 1 block = 1,000 hot dogs the two house piles keep the ≈ 4.7× area ratio on screen
     blocks = [rhu(q / BIG_UNIT_PER) for q in qs if q >= BIG_UNIT_FROM]
-    rows.append(("Blocks (car / 1985 / 2026)", f"count ÷ {BIG_UNIT_PER:,}", "", " / ".join(map(str, blocks))))
-    mapping = {0: 0, 1: 2, 2: 3, 3: 4, 4: 5}           # rung index -> VO line index
+    rows.append(("Blocks (1985 / 2026)", f"count ÷ {BIG_UNIT_PER:,}", "", " / ".join(map(str, blocks))))
+    mapping = {0: 1, 1: 2, 2: 3, 3: 4}           # rung index -> VO line index
     opens = {i: items[i][3] for i in range(len(items))}
     say = {i: strip_markup(vo[mapping[i]]["text"]).split("? ")[1].rstrip(".") for i in range(len(items))}
-    return exp, rows, allowed, labelled, mapping, opens, say, lands, 6
+    # rung 0 is pre-rolled from frame 1 under the opener line (VO 0); its own VO line comes after the count lands
+    timing = {"prerolled": {0}, "lead": {}}
+    return exp, rows, allowed, labelled, mapping, opens, say, lands, 5, timing
 
 def take_home_per_hour():
     gross = WAGE * HOURS_PER_YEAR
@@ -305,7 +311,10 @@ def build_08b():
         kw = take_home_at(w)
         PINNED[f"08b keep at ${w}/hr"] = ("≈ " + usd(kw, 2), f"{float(kw / w) * 100:.1f}%")
     PINNED["08b keep share at $15/hr"] = (f"{float(k / WAGE) * 100:.1f}%",)
-    k_disp = "≈ " + usd(k, 2)                     # 13.1006 -> ≈ $13.10
+    k_disp = "≈ " + usd(k, 2)                     # 13.1006 -> ≈ $13.10 (what you keep, rounded)
+    U = rhu(k, F(1, 100))                         # the DEFINED unit: exactly $13.10; every count divides by it
+    assert U == F("13.10")
+    u_disp = usd(U, 2)                            # "$13.10": the operand the screen shows ("÷ $13.10")
     cut = WAGE - k
     cut_disp = "≈ " + usd(cut, 2)                 # 1.8994 -> ≈ $1.90
     assert k_disp == "≈ $13.10" and cut_disp == "≈ $1.90"
@@ -314,100 +323,134 @@ def build_08b():
         ("Federal income tax", f"10% × {usd(BRACKET_10_TOP)} + 12% × ({usd(gross)} − {usd(STD_DEDUCTION)} − {usd(BRACKET_10_TOP)})", f"{float(tax):,.2f}", usd(tax, 2)),
         ("FICA", f"7.65% × {usd(gross)}", f"{float(fica):,.2f}", usd(fica, 2)),
         ("Kept a year", f"{usd(gross)} − tax − FICA", f"{float(net):,.2f}", usd(net, 2)),
-        ("Kept per hour (unit)", f"{usd(net, 2)} ÷ {HOURS_PER_YEAR:,}", f"{float(k):.4f}", k_disp),
+        ("Kept per hour", f"{usd(net, 2)} ÷ {HOURS_PER_YEAR:,}", f"{float(k):.5f}", k_disp),
+        ("Unit (defined, rounded)", "kept per hour to the cent", f"{float(U):.2f}", u_disp),
         ("Tax snip per hour", f"{usd(WAGE)} − {float(k):.4f}", f"{float(cut):.4f}", cut_disp),
     ]
     items = [
-        ("A month of rent", RENT, usd(RENT), "A month of rent"),
-        ("A year of rent", RENT * MONTHS, usd(RENT * MONTHS), "A year of rent"),
+        ("Median rent, 1 month", RENT, usd(RENT), "Median rent"),
+        ("Median rent, 1 year", RENT * MONTHS, usd(RENT * MONTHS), "A year of rent"),
         ("An average new car", KBB_ATP, usd(KBB_ATP), "An average new car"),
         ("A median new house", NEW_HOUSE_2026, usd(NEW_HOUSE_2026), "A median new house"),
     ]
-    rung_t = [5.0, 10.4, 15.8, 20.0]
+    rung_t = [0.0, 8.4, 12.6, 16.8]
     rungs, qs = [], []
     for (item, cost, cost_disp, _), t in zip(items, rung_t):
-        q = F(cost) / k
+        q = F(cost) / U
         disp, n = count(q)
         qs.append(q)
         rungs.append({"t": t, "item": item, "cost": cost_disp, "units": n, "unitsDisplay": disp})
-        rows.append((item, f"{cost_disp} ÷ {float(k):.4f}", f"{float(q):,.3f}", disp))
-    weeks = qs[0] / HOURS_PER_WEEK                          # 2.92
-    months = qs[1] / (F(HOURS_PER_YEAR) / MONTHS)           # 8.09
-    years = qs[3] / HOURS_PER_YEAR                          # 14.45
-    w_r, m_r, y_r = rhu(weeks), rhu(months), rhu(years)
+        rows.append((item, f"{cost_disp} ÷ {u_disp}", f"{float(q):,.3f}", disp))
+    month_hours = F(HOURS_PER_YEAR, MONTHS)                 # 173.33 work hours a month
+    share = qs[0] / month_hours                              # 0.674 of every work hour goes to rent
+    assert abs(share - F(2, 3)) < F(1, 100), share          # "≈ 2 of every 3 hours"
+    weeks = qs[0] / HOURS_PER_WEEK                           # 2.92 work weeks (caption: "isn't a week of work")
+    years = qs[3] / HOURS_PER_YEAR                           # 14.45
+    y_r = rhu(years)
     rows += [
-        ("Rent month in work weeks", f"{float(qs[0]):.3f} ÷ {HOURS_PER_WEEK}", f"{float(weeks):.3f}", f"{ap(w_r, weeks)}{w_r} weeks"),
-        ("Rent year in work months", f"{float(qs[1]):.3f} ÷ (2,080 ÷ 12)", f"{float(months):.3f}", f"{ap(m_r, months)}{m_r} months"),
+        ("Rent share of work hours", f"{float(qs[0]):.3f} ÷ (2,080 ÷ 12 = {float(month_hours):.2f})", f"{float(share):.4f}", "≈ 2 of every 3"),
+        ("Rent month in work weeks", f"{float(qs[0]):.3f} ÷ {HOURS_PER_WEEK}", f"{float(weeks):.3f}", "caption: not a week; ≈ 3"),
         ("House in full-time years", f"{float(qs[3]):.3f} ÷ 2,080", f"{float(years):.3f}", f"{ap(y_r, years)}{y_r} years"),
     ]
+    PINNED["08b rent share"] = (f"{float(share) * 100:.1f}%",)
     v = [vo_round(q)[0] for q in qs]
     for q in qs:
         rows.append(("  VO says", f"{float(q):,.2f} rounded for speech", "", vo_round(q)[0]))
     vo = [
-        vo_line(0.0, 4.7, f"{usd(WAGE)} an hour? After tax, you keep **{k_disp}**."),
-        vo_line(5.0, 5.1, f"A month of rent? **{v[0]} hours**. That's {ap(w_r, weeks)}{w_r} weeks."),
-        vo_line(10.4, 5.1, f"A year of rent? **{v[1]} hours**: {ap(m_r, months)}{m_r} months."),
-        vo_line(15.8, 3.9, f"An average new car? **{v[2]} hours**."),
-        vo_line(20.0, 3.2, f"A median new house? **{v[3]} hours**."),
-        vo_line(23.5, 4.7, f"That's **{ap(y_r, years)}{y_r} years** of full-time work. Every cent you keep."),
+        vo_line(0.0, 4.3, f"{usd(WAGE)} an hour? Median rent: **{v[0]} hours**."),
+        vo_line(4.6, 3.5, "That's ≈ 2 of every 3 hours you work."),
+        vo_line(8.4, 3.9, f"A year of rent? **{v[1]} hours**."),
+        vo_line(12.6, 3.9, f"An average new car? **{v[2]} hours**."),
+        vo_line(16.8, 3.2, f"A median new house? **{v[3]} hours**."),
+        vo_line(20.3, 4.7, f"That's **{ap(y_r, years)}{y_r} years** of full-time work. Every cent you keep."),
     ]
-    duration = 30.0
+    duration = 27.0
     lands = [r["t"] + FINAL_COUNT for r in rungs]
     hold = round(duration - lands[-1], 2)
+    opener_land = 1.0
     exp = {
         "id": "08b-becker-rig-hours-at-15",
         "look": "becker-rig",
         "format": "unit-ladder",
         "fps": 30,
         "duration": duration,
-        "header": f"Cost in hours of work\nat **{usd(WAGE)} an hour**",
+        "header": f"Your rent, a car, a house:\nhours of work at **{usd(WAGE)}/hr**",
         "footer": f"{k_disp} kept: 2026 federal tax + FICA, single, no state tax",
         "captions": True,
         "vo": vo,
-        "verdict": {"t": 23.5, "text": f"**{ap(y_r, years)}{y_r} years** of full-time work.\nEvery cent you keep."},
+        "verdict": {"t": 20.3, "text": f"**{ap(y_r, years)}{y_r} years** of full-time work.\nEvery cent you keep."},
         "data": {
-            "unit": {"name": f"Hour of work at {usd(WAGE)} ({k_disp} kept)", "price": k_disp, "icon": "hour"},
+            "unit": {"name": f"Hour of work at {usd(WAGE)} ({k_disp} kept)", "price": u_disp, "icon": "hour"},
             "rungs": rungs,
             "hold": hold,
         },
         "lookOpts": {
             "stage": "white",
             "inputProp": "block",
-            "opener": {"t": 0.0, "verb": "snip", "tool": "TAX", "from": usd(WAGE), "cut": cut_disp,
-                       "becomes": f"{k_disp} = 1 hour block"},
+            "opener": {"t": 0.0, "land": opener_land, "verb": "snip", "tool": "TAX", "from": usd(WAGE), "cut": cut_disp,
+                       "becomes": f"{u_disp} = 1 hour block"},
+            "facedown": {"t": 0.0, "items": [2, 3], "note": "the car and house tags lie face-down at stage right until their rung"},
             "actions": [
-                {"item": 0, "verb": "stack", "tool": f"÷ {usd(k, 2)}", "becomes": f"a stack of {rungs[0]['units']} hour blocks under a rent tag"},
+                {"item": 0, "verb": "stack", "tool": f"÷ {u_disp}",
+                 "becomes": f"{rungs[0]['units']} hour blocks beside a month of {rhu(month_hours)} work hours: 2 of every 3 blocks go under the rent tag"},
                 {"item": 1, "verb": "pull back", "tool": f"× {MONTHS}", "becomes": f"{MONTHS} stacks side by side"},
-                {"item": 2, "verb": "fill", "tool": f"÷ {usd(k, 2)}", "becomes": "a car outline packed with hour blocks"},
-                {"item": 3, "verb": "topple", "tool": f"÷ {usd(k, 2)}", "becomes": "a house-sized pile that flattens the figure"},
+                {"item": 2, "verb": "fill", "tool": f"÷ {u_disp}", "becomes": "a car outline packed with hour blocks"},
+                {"item": 3, "verb": "topple", "tool": f"÷ {u_disp}", "becomes": "a house-sized pile that flattens the figure"},
             ],
-            "gag": {"t": 23.5, "text": f"{ap(y_r, years)}{y_r} YEARS"},
+            "gag": {"t": 20.3, "text": f"{ap(y_r, years)}{y_r} YEARS"},
         },
-        "sfx": [{"t": 3.1, "kind": "pop"}, {"t": 23.5, "kind": "thud"}],
+        "sfx": [{"t": opener_land, "kind": "pop"}, {"t": 20.3, "kind": "thud"}],
     }
     allowed = {F(x) for x in [WAGE, RENT, RENT * MONTHS, KBB_ATP, NEW_HOUSE_2026, MONTHS, 2026]}
-    allowed |= {rhu(k, F(1, 100)), rhu(cut, F(1, 100)), F(w_r), F(m_r), F(y_r)}
+    allowed |= {rhu(k, F(1, 100)), U, rhu(cut, F(1, 100)), F(y_r), F(2), F(3), F(rhu(month_hours))}
     allowed |= {F(r["units"]) for r in rungs} | {F(vo_round(q)[1]) for q in qs}
     labelled = {F(1): "'1 hour block' (one unit)"}
-    mapping = {0: 1, 1: 2, 2: 3, 3: 4}
+    mapping = {0: 0, 1: 2, 2: 3, 3: 4}
     opens = {i: items[i][3] for i in range(len(items))}
     say = {i: f"{v[i]} hours" for i in range(len(items))}
-    # sfx 'pop' at 3.1 s = when the VO says the kept amount (the snip lands)
-    snip_t = vo[0]["t"] + words_before(vo[0]["text"], k_disp) / WPS
-    assert abs(snip_t - 3.1) <= 0.35, f"08b snip sfx at 3.1 but VO says {k_disp} at {snip_t:.2f}"
-    return exp, rows, allowed, labelled, mapping, opens, say, lands, 5
+    # the TAX snip (pop) lands before the first hour count lands, and both inside the first 3 s (R10)
+    assert opener_land < lands[0] <= 3.0
+    # rung 0's line opens on the wage ("$15 an hour?"), then names the rent
+    timing = {"prerolled": set(), "lead": {0: 4}}
+    return exp, rows, allowed, labelled, mapping, opens, say, lands, 5, timing
+
+# Clean Sheet kit timing (mirrors looks/clean-sheet/formats/unit-ladder.js + theme.js MOTION)
+CS = dict(popDelay=0.16, activate=0.3, collapse=0.42, typeCps=18)
+
+def clean_sheet_landings(rungs, unit_price, count_speed=1.0):
+    """Landing time of each rung's counter: the formula types 'cost ÷ price =', the highlighter wipes in,
+    the count runs up and lands; a finished rung files into its row just before the next one opens."""
+    op = " ÷ " + unit_price
+    type_dur = min(max(len(op + " =") / 16, 0.4), 0.9)
+    T = []
+    for r in rungs:
+        res = r["t"] + type_dur + 0.25
+        cnt0 = res + CS["popDelay"]
+        cntD = min(max(0.45 + 0.26 * math.log10(r["units"] + 1), 0.45), 1.7) * count_speed
+        T.append([r["t"], cnt0, cntD, cnt0 + cntD])
+    for i in range(len(T) - 1):
+        act_next = T[i + 1][0] - CS["activate"]
+        colD = min(max(act_next - T[i][3] - 0.1, 0.25), CS["collapse"])
+        col = act_next - colD
+        if T[i][3] > col - 0.1:
+            T[i][2] = max(0.3, col - 0.1 - T[i][1])
+            T[i][3] = T[i][1] + T[i][2]
+    return [x[3] for x in T]
+
+def cs_type_time(text):
+    return min(max(len(text) / CS["typeCps"], 0.35), 2.2)
 
 def build_08c():
     unit = BIG_MAC
     items = [
-        ("Community college, 1 year", CB_PUBLIC_2YR, usd(CB_PUBLIC_2YR), "A year of community college"),
+        ("Community college, 1 year", CB_PUBLIC_2YR, usd(CB_PUBLIC_2YR), "Community college"),
         ("State school, in-state, 1 year", CB_PUBLIC_4YR_IN, usd(CB_PUBLIC_4YR_IN), "A state school, in-state"),
-        ("State school, out-of-state, 1 year", CB_PUBLIC_4YR_OUT, usd(CB_PUBLIC_4YR_OUT), "Same school, out-of-state"),
-        ("Private college, 1 year", CB_PRIVATE_4YR, usd(CB_PRIVATE_4YR), "A private college"),
-        (f"Private college, {DEGREE_YEARS} years, all-in", DEGREE_YEARS * CB_PRIVATE_BUDGET,
-         f"{DEGREE_YEARS} × {usd(CB_PRIVATE_BUDGET)}", f"{DEGREE_YEARS} years private, all-in"),
+        ("State school, out-of-state, 1 year", CB_PUBLIC_4YR_OUT, usd(CB_PUBLIC_4YR_OUT), "The same school, out-of-state"),
+        ("Private college, 1 year", CB_PRIVATE_4YR, usd(CB_PRIVATE_4YR), "A private college, 1 year"),
+        (f"Private, {DEGREE_YEARS} years, with housing & food", DEGREE_YEARS * CB_PRIVATE_BUDGET,
+         f"{DEGREE_YEARS} × {usd(CB_PRIVATE_BUDGET)}", f"{DEGREE_YEARS} years private, with housing and food"),
     ]
-    rung_t = [0.0, 4.6, 8.4, 11.9, 16.1]
+    rung_t = [0.0, 4.6, 8.4, 12.2, 16.4]
     rows, rungs, qs = [], [], []
     for (item, cost, cost_disp, _), t in zip(items, rung_t):
         q = F(cost) / unit
@@ -416,8 +459,12 @@ def build_08c():
         rungs.append({"t": t, "item": item, "cost": cost_disp, "units": n, "unitsDisplay": disp})
         rows.append((item, f"{cost_disp} ÷ {usd(unit, 2)}", f"{float(q):,.3f}", disp))
     rungs[-1]["tone"] = "goal"
+    tuition4 = F(DEGREE_YEARS * CB_PRIVATE_4YR) / unit                 # for the write-up: tuition alone, 4 years
+    rows.append(("(tuition only, 4 yrs private)", f"4 × {usd(CB_PRIVATE_4YR)} ÷ {usd(unit, 2)}", f"{float(tuition4):,.3f}", count(tuition4)[0]))
+    PINNED["08c 4 yrs private tuition only"] = (count(tuition4)[0],)
     instate4 = F(DEGREE_YEARS * CB_PUBLIC_4YR_IN_BUDGET) / unit
     PINNED["08c 4 yrs in-state all-in"] = (usd(DEGREE_YEARS * CB_PUBLIC_4YR_IN_BUDGET), count(instate4)[0])
+    PINNED["08c private full budget"] = (usd(CB_PRIVATE_BUDGET),)
     yrs = F(rungs[-1]["units"]) / DAYS_PER_YEAR          # one a day: 42,103 ÷ 365
     yrs_exact = qs[-1] / DAYS_PER_YEAR
     y_r = rhu(yrs)
@@ -427,46 +474,59 @@ def build_08c():
     for q in qs:
         rows.append(("  VO says", f"{float(q):,.2f} rounded for speech", "", vo_round(q)[0]))
     vo = [
-        vo_line(0.0, 4.3, f"A year of community college? **{v[0]} Big Macs**."),
+        vo_line(0.0, 4.3, f"Find your school. Community college? **{v[0]} Big Macs**."),
         vo_line(4.6, 3.5, f"A state school, in-state? **{v[1]}**."),
-        vo_line(8.4, 3.2, f"Same school, out-of-state? **{v[2]}**."),
-        vo_line(11.9, 3.9, f"A private college? **{v[3]}** a year."),
-        vo_line(16.1, 3.5, f"{DEGREE_YEARS} years private, all-in? **{v[4]} Big Macs**."),
-        vo_line(20.0, 4.7, f"That's a Big Mac a day for **{ap(y_r, yrs)}{y_r} years**."),
+        vo_line(8.4, 3.5, f"The same school, out-of-state? **{v[2]}**."),
+        vo_line(12.2, 3.9, f"A private college, 1 year? **{v[3]}**."),
+        vo_line(16.4, 3.9, f"{DEGREE_YEARS} years private, with housing and food? **{v[4]}**."),
+        vo_line(21.0, 4.7, f"That's a Big Mac a day for **{ap(y_r, yrs)}{y_r} years**."),
     ]
-    duration = 27.5
-    lands = [r["t"] + FINAL_COUNT for r in rungs]
+    duration = 27.0
+    count_speed = 0.5
+    lands = clean_sheet_landings(rungs, usd(unit, 2), count_speed)
     hold = round(duration - lands[-1], 2)
+    check_text = f"check: {rungs[-1]['unitsDisplay']} ÷ {DAYS_PER_YEAR} days {ap(y_r, yrs)}{y_r} years"
+    check_t = 18.6
+    verdict_t = 21.0
+    # the working before the answer: the check line starts after the final count lands and is fully typed
+    # before the verdict appears (the kit types at 18 characters a second)
+    assert lands[-1] < check_t and check_t + cs_type_time(check_text) <= verdict_t, (lands[-1], check_t + cs_type_time(check_text))
+    rows.append(("Check line types", f"{check_t:.1f} s + {len(check_text)} chars ÷ 18/s", f"{check_t + cs_type_time(check_text):.2f}", f"done before verdict {verdict_t}"))
     exp = {
         "id": "08c-clean-sheet-college-in-big-macs",
         "look": "clean-sheet",
         "format": "unit-ladder",
         "fps": 30,
         "duration": duration,
-        "header": "What college costs\nin **Big Macs**",
-        "footer": f"1 Big Mac = {usd(unit, 2)} (Jul 2026) · College Board 2025-26 averages, tuition & fees",
+        "header": "Your degree, in **Big Macs**:\nfind your school",
+        "footer": f"1 Big Mac = {usd(unit, 2)} (Jul 2026) · College Board 2025-26: tuition & fees; row {len(rungs)} = full budget",
         "captions": True,
         "vo": vo,
-        "verdict": {"t": 20.0, "text": f"A Big Mac a day\nfor **{ap(y_r, yrs)}{y_r} years**."},
+        "verdict": {"t": verdict_t, "text": f"A Big Mac a day\nfor **{ap(y_r, yrs)}{y_r} years**."},
         "data": {
             "unit": {"name": "Big Mac", "price": usd(unit, 2), "icon": "burger"},
             "rungs": rungs,
             "hold": hold,
         },
         "lookOpts": {
-            "badge": f"1 BIG MAC = {usd(unit, 2)}",
-            "check": f"check: {rungs[-1]['unitsDisplay']} ÷ {DAYS_PER_YEAR} days {ap(y_r, yrs)}{y_r} years",
+            "unitRow": "show",
+            "countSpeed": count_speed,
+            "check": check_text,
+            "checkT": check_t,
+            "preview": "labels",
         },
-        "sfx": [{"t": 20.0, "kind": "ding"}],
+        "sfx": [{"t": verdict_t, "kind": "ding"}],
     }
     allowed = {F(x) for x in [BIG_MAC, CB_PUBLIC_2YR, CB_PUBLIC_4YR_IN, CB_PUBLIC_4YR_OUT, CB_PRIVATE_4YR,
-                              CB_PRIVATE_BUDGET, DEGREE_YEARS, DAYS_PER_YEAR, 2026, 2025, 26]}
+                              CB_PRIVATE_BUDGET, DEGREE_YEARS, DAYS_PER_YEAR, 2026, 2025, 26, len(rungs)]}
     allowed |= {F(r["units"]) for r in rungs} | {F(vo_round(q)[1]) for q in qs} | {F(y_r)}
     labelled = {F(1): "'1 year' / '1 Big Mac' (one unit)"}
     mapping = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
     opens = {i: items[i][3] for i in range(len(items))}
     say = {i: v[i] for i in range(len(items))}
-    return exp, rows, allowed, labelled, mapping, opens, say, lands, 5
+    # rung 0's line opens on the task ("Find your school."), then names the row
+    timing = {"prerolled": set(), "lead": {0: 3}, "counter_sync": True}
+    return exp, rows, allowed, labelled, mapping, opens, say, lands, 5, timing
 
 # ======================================================================================
 # Checks
@@ -524,7 +584,7 @@ def display_strings(spec):
     return out
 
 def run(name, builder):
-    exp, rows, allowed, labelled, mapping, opens, say, lands, verdict_vo = builder()
+    exp, rows, allowed, labelled, mapping, opens, say, lands, verdict_vo, timing = builder()
     path = SPEC_DIR / f"{exp['id']}.json"
     print("=" * 108)
     print(f"{exp['id']}   ({exp['look']} · {exp['format']} · {exp['duration']} s)")
@@ -574,9 +634,15 @@ def run(name, builder):
         if i + 1 < len(vo):
             check(v["t"] + v["d"] <= vo[i + 1]["t"] + 1e-9, f"{name}: vo[{i}] overlaps vo[{i + 1}]")
     for ri, vi in mapping.items():
-        check(rungs[ri]["t"] == vo[vi]["t"], f"{name}: rung {ri} t={rungs[ri]['t']} but its VO line starts at {vo[vi]['t']}")
+        if ri in timing["prerolled"]:
+            # on screen (counter rolling) from frame 1 under the opener line; its own VO line follows the landing
+            check(rungs[ri]["t"] == 0.0 and vo[vi]["t"] >= lands[ri], f"{name}: pre-rolled rung {ri} must start at 0.0 and its VO line after the count lands")
+        else:
+            check(rungs[ri]["t"] == vo[vi]["t"], f"{name}: rung {ri} t={rungs[ri]['t']} but its VO line starts at {vo[vi]['t']}")
         wb = words_before(vo[vi]["text"], opens[ri])
-        check(wb <= 1, f"{name}: rung {ri}: VO line {vi} names the item late ({wb} words in)")
+        lead = timing["lead"].get(ri, 1)
+        check(wb <= lead, f"{name}: rung {ri}: VO line {vi} names the item late ({wb} words in, max {lead})")
+    check(lands[0] <= 3.0, f"{name}: first count lands at {lands[0]:.2f} s (R10: within about 3 s)")
     check(spec["verdict"]["t"] == vo[verdict_vo]["t"], f"{name}: verdict t != its VO line")
     dur = spec["duration"]
     check(LANE[0] <= dur <= LANE[1], f"{name}: duration {dur} outside {LANE}")
@@ -585,7 +651,7 @@ def run(name, builder):
     check(abs(lands[-1] + spec["data"]["hold"] - dur) <= 0.02, f"{name}: last landing {lands[-1]:.2f} + hold {spec['data']['hold']} != duration {dur}")
     for s in spec.get("sfx", []):
         check(0 <= s["t"] <= dur, f"{name}: sfx at {s['t']} outside the video")
-    if spec["look"] == "scoreboard":
+    if spec["look"] == "scoreboard" or timing.get("counter_sync"):
         for ri, vi in mapping.items():
             said = vo[vi]["t"] + words_before(vo[vi]["text"], say[ri]) / WPS
             check(said >= lands[ri] - 0.5, f"{name}: rung {ri}: VO says the number at {said:.2f} s, counter lands at {lands[ri]:.2f} s")

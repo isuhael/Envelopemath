@@ -95,7 +95,7 @@
       },
       {
         "t": 19.2,
-        "label": "Your bonus paychecks every year",
+        "label": "Months that pay you three times",
         "formula": "26 − 24",
         "result": "2 a year",
         "tone": "good",
