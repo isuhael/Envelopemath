@@ -37,17 +37,17 @@
     },
     {
       "t": 7.2,
-      "end": 8.6,
+      "end": 8.5,
       "text": "Heavier or lighter? Guess."
     },
     {
-      "t": 8.7,
-      "end": 10.5,
+      "t": 8.9,
+      "end": 10.7,
       "text": "About 275 tons. A photo finish.",
       "say": "About two hundred seventy-five tons. A photo finish."
     },
     {
-      "t": 10.7,
+      "t": 10.8,
       "end": 12.6,
       "text": "Minting them cost about $3 million.",
       "say": "Minting them cost about three million dollars."
@@ -160,13 +160,13 @@
     {
       "type": "write",
       "id": "l2",
-      "t": 4.1,
+      "t": 4.0,
       "text": "× 2.5 g = 250,000,000 g",
       "x": 540,
       "y": 870,
       "size": 80,
       "align": "center",
-      "cps": 30,
+      "cps": 40,
       "pen": "low"
     },
     {
@@ -198,7 +198,7 @@
       "y": 1065,
       "w": 760,
       "note": "heavier?",
-      "openAt": 8.7,
+      "openAt": 8.35,
       "cardSize": 112,
       "card": [
         "≈ 275 tons",
@@ -211,18 +211,18 @@
     },
     {
       "type": "timer",
-      "t": 6.5,
+      "t": 6.3,
       "seconds": 2,
       "y": 662
     },
     {
       "type": "flip",
-      "t": 10.6
+      "t": 10.75
     },
     {
       "type": "write",
       "id": "cost",
-      "t": 10.9,
+      "t": 11.05,
       "text": "100M × 3.02¢ = $3.02M",
       "x": 540,
       "y": 640,
@@ -232,19 +232,19 @@
     },
     {
       "type": "sticky",
-      "t": 10.95,
+      "t": 11.1,
       "x": 305,
       "y": 930,
       "w": 480,
       "size": 60,
-      "cps": 60,
+      "cps": 80,
       "rot": -4,
       "title": "ASSUME:",
       "text": "1¢ cost 3.02¢\nto make\n(US Mint, FY2025)."
     },
     {
       "type": "annotate",
-      "t": 11.6,
+      "t": 11.75,
       "kind": "double",
       "target": {
         "op": "cost",

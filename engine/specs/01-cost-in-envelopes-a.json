@@ -21,63 +21,63 @@
     },
     {
       "t": 3.4,
-      "end": 4.9,
+      "end": 5.0,
       "text": "He's worth about a trillion."
     },
     {
-      "t": 4.9,
-      "end": 6.2,
+      "t": 5.0,
+      "end": 6.7,
       "text": "A combo's a buck fifty."
     },
     {
-      "t": 6.3,
-      "end": 7.8,
+      "t": 6.9,
+      "end": 8.4,
       "text": "A trillion over a buck fifty:"
     },
     {
-      "t": 7.8,
-      "end": 10.1,
+      "t": 8.4,
+      "end": 10.7,
       "text": "about 667 billion hot dogs.",
       "say": "about six hundred sixty-seven billion hot dogs."
     },
     {
-      "t": 10.3,
-      "end": 11.6,
+      "t": 10.9,
+      "end": 12.2,
       "text": "Still can't picture it?"
     },
     {
-      "t": 11.6,
-      "end": 13.1,
+      "t": 12.2,
+      "end": 13.7,
       "text": "Split them with everyone on Earth."
     },
     {
-      "t": 13.2,
-      "end": 15.0,
+      "t": 13.8,
+      "end": 15.6,
       "text": "How many does each person get?"
     },
     {
-      "t": 15.0,
-      "end": 17.5,
+      "t": 15.6,
+      "end": 18.1,
       "text": "Guess before it opens."
     },
     {
-      "t": 17.7,
-      "end": 19.2,
+      "t": 18.8,
+      "end": 20.0,
       "text": "Eighty-one. Each."
     },
     {
-      "t": 19.2,
-      "end": 20.6,
+      "t": 20.0,
+      "end": 21.2,
       "text": "Every human alive."
     },
     {
-      "t": 20.8,
-      "end": 22.0,
+      "t": 21.4,
+      "end": 22.4,
       "text": "That's your tray."
     },
     {
-      "t": 22.0,
-      "end": 23.6,
+      "t": 22.4,
+      "end": 23.7,
       "text": "And your mom's. And everyone's."
     },
     {
@@ -155,19 +155,19 @@
       "y": 900,
       "w": 660,
       "size": 66,
-      "cps": 48,
+      "cps": 80,
       "rot": -3,
       "title": "ASSUME:",
-      "text": "Elon ≈ $1 trillion\n(Bloomberg, Oct 5 2026).\nCostco combo $1.50,\nsame price since 1985."
+      "text": "Elon ≈ $1 trillion\n(Bloomberg, Oct 5 2026).\nCostco combo $1.50\nsince 1985."
     },
     {
       "type": "flip",
-      "t": 6.2
+      "t": 6.8
     },
     {
       "type": "write",
       "id": "trillion",
-      "t": 6.5,
+      "t": 7.1,
       "text": "$1,000,000,000,000",
       "x": 540,
       "y": 720,
@@ -178,7 +178,7 @@
     {
       "type": "write",
       "id": "div",
-      "t": 7.25,
+      "t": 7.85,
       "text": "÷ $1.50",
       "x": 540,
       "y": 840,
@@ -189,7 +189,7 @@
     },
     {
       "type": "write",
-      "t": 7.85,
+      "t": 8.45,
       "text": "tip: ÷ 1.5 = × ⅔",
       "x": 930,
       "y": 918,
@@ -202,7 +202,7 @@
     {
       "type": "counter",
       "id": "count",
-      "t": 8.0,
+      "t": 8.6,
       "to": 666666666667,
       "x": 540,
       "y": 1110,
@@ -212,7 +212,7 @@
     },
     {
       "type": "annotate",
-      "t": 9.6,
+      "t": 10.2,
       "kind": "circle",
       "target": {
         "op": "count",
@@ -222,7 +222,7 @@
     },
     {
       "type": "write",
-      "t": 9.6,
+      "t": 8.6,
       "text": "hot dogs 🌭",
       "x": 540,
       "y": 1262,
@@ -233,11 +233,11 @@
     },
     {
       "type": "flip",
-      "t": 10.3
+      "t": 10.9
     },
     {
       "type": "write",
-      "t": 10.6,
+      "t": 11.2,
       "text": "666,666,666,667 🌭",
       "x": 540,
       "y": 700,
@@ -249,7 +249,7 @@
     },
     {
       "type": "emoji",
-      "t": 10.8,
+      "t": 11.4,
       "char": "🌍",
       "x": 540,
       "y": 915,
@@ -258,37 +258,37 @@
     {
       "type": "write",
       "id": "people",
-      "t": 11.3,
+      "t": 11.9,
       "text": "÷ 8.2 billion people",
       "x": 540,
       "y": 1175,
       "size": 88,
       "align": "center",
-      "cps": 22,
+      "cps": 30,
       "pen": true
     },
     {
       "type": "clear",
-      "t": 13.1
+      "t": 13.7
     },
     {
       "type": "write",
-      "t": 13.2,
+      "t": 13.8,
       "text": "Each person gets…",
       "x": 540,
       "y": 480,
       "size": 80,
       "align": "center",
       "cps": 24,
-      "until": 17.5
+      "until": 18.1
     },
     {
       "type": "envelope",
-      "t": 13.3,
+      "t": 13.9,
       "y": 1055,
       "w": 780,
       "note": "how many each?",
-      "openAt": 17.6,
+      "openAt": 18.2,
       "cardSize": 124,
       "card": [
         "≈ 81 each",
@@ -301,17 +301,17 @@
     },
     {
       "type": "timer",
-      "t": 14.3,
+      "t": 14.9,
       "seconds": 3,
       "y": 640
     },
     {
       "type": "flip",
-      "t": 20.7
+      "t": 21.3
     },
     {
       "type": "grid",
-      "t": 21.0,
+      "t": 21.6,
       "rows": 9,
       "cols": 9,
       "filled": 81,
