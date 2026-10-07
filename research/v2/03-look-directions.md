@@ -8,6 +8,11 @@
 **Not used:** [`watch/alan-becker.md`](watch/alan-becker.md) is a look reference the user asked for earlier. It is not a benchmark, so nothing below rests on it (see the appendix).
 **Mockups:** [`look-mockups/`](look-mockups/) holds 1080×1920 stills of frame 1 and the payoff frame for each direction, drawn with the specified fonts and colours to check that the specs fit at real size. Start with [`look-mockups/contact-sheet.png`](look-mockups/contact-sheet.png). The `*-frame1-safe.png` versions overlay the safe zones. They are layout tests, not finished designs.
 
+**Mockup revision (after this report):**
+- The Clean Sheet stills now open on a P1 hook, "4 dead simple numbers if you make **$20/hr**". The storyboard's "How long to save $10K?" is the goal-first anti-pattern (P3, see [`02-hook-bank.md`](02-hook-bank.md)). The math is unchanged.
+- The badge and pointer were dropped from those stills because they repeated the title.
+- The contact sheet now has a fourth column, **4 · Becker Rig**, built from [`watch/alan-becker.md`](watch/alan-becker.md): `d4-frame1.png`, `d4-math.png` and `d4-payoff.png` ($1,000 × 1.07^10 ≈ $1,967; × 1.07^30 ≈ $7,612).
+
 ---
 
 ## Summary
