@@ -1,6 +1,6 @@
 // Text ops: the masking-tape hook, handwriting, column arithmetic and ticking counters.
 import { font, ink, INK } from '../theme.js'
-import { handText, pen } from '../ink.js'
+import { handText, pen, penScale } from '../ink.js'
 import { clamp, ease, prog, lerp, rng, hash, fmtNum } from '../util.js'
 
 // "*word*" marks emphasis (drawn in red). Returns [{text, em}].
@@ -43,7 +43,10 @@ export const hook = {
     op.y ??= 400
     op.x ??= 540
     op.maxWidth ??= 860
-    g.font = font('marker', op.size)
+    op.font ??= 'marker'
+    // a hook on screen from the first frame is the thumbnail: show it finished, no slap-in
+    op.instant ??= op.t <= 0.05
+    g.font = font(op.font, op.size)
     const raw = Array.isArray(op.text) ? op.text : wrap(g, op.text, op.maxWidth)
     op._lines = balance(raw)
   },
@@ -51,10 +54,10 @@ export const hook = {
     const r = rng(hash(op._lines.join('|')))
     const lh = op.size * 1.32
     op._lines.forEach((line, i) => {
-      const k = ease.out(prog(lt, i * 0.14, 0.2))
+      const k = op.instant ? 1 : ease.out(prog(lt, i * 0.14, 0.2))
       if (k <= 0) return
       g.save()
-      g.font = font('marker', op.size)
+      g.font = font(op.font, op.size)
       const tw = g.measureText(plain(line)).width
       const cy = op.y + i * lh
       const rot = (r() - 0.5) * 0.045
@@ -73,7 +76,7 @@ export const hook = {
       g.restore()
     })
   },
-  sfx: op => (op._lines || [0]).map((_, i) => ({ at: op.t + i * 0.14, kind: 'tape' })),
+  sfx: op => (op.instant ? [] : (op._lines || [0]).map((_, i) => ({ at: op.t + i * 0.14, kind: 'tape' }))),
 }
 
 function tape(g, w, h, r) {
@@ -106,7 +109,7 @@ export const write = {
     const chars = lt * op.cps
     const res = handText(g, op.text, op.x, op.y, op, chars)
     const end = op.text.length / op.cps
-    if (op.pen !== false && op.font !== 'type' && lt < end + 0.3) pen(g, res.penX, res.penY + op.size * 0.2, lt, lt < end ? 1 : 1 - (lt - end) / 0.3)
+    if (op.pen !== false && op.font !== 'type' && lt < end + 0.3) pen(g, res.penX, res.penY + op.size * 0.2, lt, lt < end ? 1 : 1 - (lt - end) / 0.3, penScale(op.pen))
   },
   sfx: op => [{ at: op.t, kind: op.font === 'type' ? 'type' : 'scribble', dur: op.text.length / op.cps, n: op.text.length }],
 }
@@ -161,33 +164,60 @@ export const lines = {
       const res = handText(g, L.text, op.x, y, { ...op, size: L.size, color: L.color, seed: i }, chars)
       if (chars < L.text.length + op.cps * 0.3) penPos = [res.penX, res.penY + L.size * 0.2]
     })
-    if (penPos && op.pen !== false && op.font !== 'type') pen(g, penPos[0], penPos[1], lt)
+    if (penPos && op.pen !== false && op.font !== 'type') pen(g, penPos[0], penPos[1], lt, 1, penScale(op.pen))
   },
   sfx: op => op._sched.map(L => ({ at: op.t + L.at, kind: op.font === 'type' ? 'type' : 'scribble', dur: L.text.length / op.cps, n: L.text.length })),
 }
 
-/** counter: a number that runs from `from` to `to` (formatted like money), then pops. */
+/**
+ * counter: a number that runs from `from` to `to` (formatted like money), then pops.
+ * With `steps: [[t, value], ...]` (t relative to the op) it becomes a running total that
+ * tweens to each value at its time — one op instead of a chain of counters.
+ */
+function stepValue(op, lt) {
+  let prev = op.from, v = op.from, popAt = null
+  for (const [st, val] of op.steps) {
+    if (lt < st) break
+    const tw = Math.min(0.35, op.stepDur ?? 0.35)
+    const k = ease.out(prog(lt, st, tw))
+    v = lerp(prev, val, k)
+    popAt = st + tw
+    prev = val
+  }
+  return { v, popAt }
+}
+
 export const counter = {
-  duration: op => op.dur,
+  duration: op => (op.steps ? op.steps[op.steps.length - 1][0] + 0.35 : op.dur),
   prepare(op) {
-    op.from ??= 0
+    op.from ??= op.steps ? op.steps[0][1] : 0
     op.dur ??= 1.4
     op.size ??= 130
     op.align ??= 'center'
     op.font ??= 'hand'
+    if (op.steps) op.to ??= op.steps[op.steps.length - 1][1]
   },
   draw(g, op, lt) {
-    const k = prog(lt, 0, op.dur)
-    const v = lerp(op.from, op.to, (ease[op.ease] || ease.out)(k))
-    const text = fmtNum(k >= 1 ? op.to : v, op)
-    const pop = lt > op.dur ? 1 + 0.08 * Math.sin(clamp((lt - op.dur) / 0.25) * Math.PI) : 1
+    let text, pop = 1
+    if (op.steps) {
+      const { v, popAt } = stepValue(op, lt)
+      text = fmtNum(v, op)
+      if (popAt != null && lt > popAt) pop = 1 + 0.06 * Math.sin(clamp((lt - popAt) / 0.2) * Math.PI)
+    } else {
+      const k = prog(lt, 0, op.dur)
+      const v = lerp(op.from, op.to, (ease[op.ease] || ease.out)(k))
+      text = fmtNum(k >= 1 ? op.to : v, op)
+      pop = lt > op.dur ? 1 + 0.08 * Math.sin(clamp((lt - op.dur) / 0.25) * Math.PI) : 1
+    }
     g.save()
     g.translate(op.x, op.y)
     g.scale(pop, pop)
     handText(g, text, 0, 0, { ...op, jitter: 0.3, seed: 3 })
     g.restore()
   },
-  sfx: op => [{ at: op.t, kind: 'ticks', dur: op.dur }, { at: op.t + op.dur, kind: 'pop' }],
+  sfx: op => (op.steps
+    ? op.steps.slice(1).map(([st]) => ({ at: op.t + st, kind: 'ticks', dur: 0.3 }))
+    : [{ at: op.t, kind: 'ticks', dur: op.dur }, { at: op.t + op.dur, kind: 'pop' }]),
 }
 
 /**
@@ -238,7 +268,7 @@ export const ladder = {
         if (budget < val.length + op.cps * 0.3) penPos = [res.penX, res.penY + op.size * 0.2]
       } else penPos = [lab.penX, lab.penY + op.size * 0.2]
     })
-    if (penPos && op.pen !== false) pen(g, penPos[0], penPos[1], lt)
+    if (penPos && op.pen !== false) pen(g, penPos[0], penPos[1], lt, 1, penScale(op.pen))
   },
   sfx: op => op._sched.map(r => ({ at: op.t + r.at, kind: 'scribble', dur: ((r.factor || '').length + r.label.length + String(r.value).length) / op.cps, n: 10 })),
 }

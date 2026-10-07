@@ -139,7 +139,8 @@ export function sfxEvents(spec) {
     }
   }
   for (const f of spec._flips) ev.push({ at: f.t, kind: 'whoosh' })
-  return ev.filter(e => e.at < spec.duration).sort((a, b) => a.at - b.at)
+  // events before t=0 belong to pre-rolled ops (already on screen in frame 0): no sound
+  return ev.filter(e => e.at >= 0 && e.at < spec.duration).sort((a, b) => a.at - b.at)
 }
 
 /** Mix the spec's foley into a mono float buffer covering the whole duration. */
@@ -150,7 +151,7 @@ export function mix(spec) {
     const synth = SYNTH[e.kind]
     if (!synth) throw new Error(`no synth for sfx "${e.kind}"`)
     const buf = synth(r, e)
-    const o = sec(e.at)
+    const o = Math.round(e.at * RATE)
     const gain = (e.gain ?? 1) * (spec.sfxGain ?? 1)
     for (let i = 0; i < buf.length && o + i < out.length; i++) out[o + i] += buf[i] * gain
   }

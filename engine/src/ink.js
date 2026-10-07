@@ -15,14 +15,28 @@ function layout(g, chars) {
   return xs
 }
 
+// With `em: true`, "*word*" is drawn in red; returns the clean string and per-glyph flags.
+export function parseEm(str, enabled) {
+  if (!enabled || !str.includes('*')) return { clean: str, red: null }
+  const red = []
+  let clean = '', on = false
+  for (const ch of glyphs(str)) {
+    if (ch === '*') { on = !on; continue }
+    clean += ch
+    red.push(on)
+  }
+  return { clean, red }
+}
+
 /**
  * Draw `text` revealed up to `chars` glyphs (float: 3.5 = three glyphs + half of the fourth).
  * Returns the pen position (end of the revealed ink) and full width.
  */
-export function handText(g, str, x, y, o = {}, chars = Infinity) {
+export function handText(g, raw, x, y, o = {}, chars = Infinity) {
   const size = o.size || 80
   g.font = font(o.font || 'hand', size)
   g.textBaseline = 'alphabetic'
+  const { clean: str, red } = parseEm(raw, o.em)
   const text = glyphs(str)
   const xs = layout(g, text)
   const width = xs[xs.length - 1]
@@ -43,6 +57,7 @@ export function handText(g, str, x, y, o = {}, chars = Infinity) {
     if (ch === ' ') { penX = cx + cw; continue }
     g.save()
     g.globalAlpha *= alpha
+    if (red) g.fillStyle = red[i] ? ink('red') : ink(o.color)
     if (frac < 1) {
       g.beginPath()
       g.rect(cx - 4, y - size * 1.2, cw * frac + 4, size * 1.6)
@@ -55,15 +70,18 @@ export function handText(g, str, x, y, o = {}, chars = Infinity) {
     penX = cx + cw * frac
     penY = y + dy - size * 0.25
   }
-  return { penX, penY, width, x0 }
+  return { penX, penY, width, x0, glyphX: xs }
 }
 
-// A ballpoint pen whose tip sits at (x, y). `bob` animates a small writing wiggle.
-export function pen(g, x, y, bob = 0, alpha = 1) {
+export const penScale = p => (p === 'small' ? 0.6 : 1)
+
+// A ballpoint pen whose tip sits at (x, y). `bob` animates a small writing wiggle; `scale` 0.6 = small pen.
+export function pen(g, x, y, bob = 0, alpha = 1, scale = 1) {
   g.save()
   g.globalAlpha *= alpha
   g.translate(x + Math.sin(bob * 31) * 3, y + Math.cos(bob * 23) * 4)
   g.rotate(-0.62)
+  g.scale(scale, scale)
   g.shadowColor = 'rgba(20,10,0,0.35)'
   g.shadowBlur = 14
   g.shadowOffsetX = 10

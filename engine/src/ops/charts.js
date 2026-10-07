@@ -69,7 +69,15 @@ export const curve = {
   draw(g, op, lt) {
     const ak = ease.out(prog(lt, 0, 0.4))
     strokePartial(g, wobble([[op.x, op.y - op.h - 30], [op.x, op.y], [op.x + op.w + 30, op.y]], 21, 2, 12), ak, { color: 'ink', width: 5 })
-    if (op.xLabel) handText(g, op.xLabel, op.x + op.w, op.y + 62, { size: 44, color: 'ink', align: 'right' })
+    if (op.xLabel) handText(g, op.xLabel, op.x + op.w, op.y + (op.ticks ? 108 : 62), { size: 44, color: 'ink', align: 'right' })
+    if (op.ticks && ak >= 1) {
+      const n = op._vals.length - 1
+      for (const tk of op.ticks) {
+        const tx = op.x + (tk.i / n) * op.w
+        strokePartial(g, [[tx, op.y - 10], [tx, op.y + 10]], 1, { color: 'ink', width: 4 })
+        handText(g, String(tk.label), tx, op.y + 54, { size: 40, color: 'pencil', align: 'center', jitter: 0.3 })
+      }
+    }
     if (op.yLabel) handText(g, op.yLabel, op.x + 16, op.y - op.h - 40, { size: 44, color: 'ink' })
     const k = ease.inOut(prog(lt, 0.4, op.dur))
     if (op._cmp) {

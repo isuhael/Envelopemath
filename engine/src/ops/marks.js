@@ -174,6 +174,7 @@ export const postmark = {
     op.color ??= 'ink'
     op.rot ??= -12
     op.waves ??= true
+    op.instant ??= op.t <= 0.05
   },
   draw(g, op, lt) {
     let c = pmCache.get(op)
@@ -216,7 +217,7 @@ export const postmark = {
       for (let i = 0; i < 900; i++) { x.globalAlpha = r(); x.beginPath(); x.arc((r() - 0.3) * c.width, (r() - 0.5) * c.height, 0.5 + r() * 2.2, 0, 7); x.fill() }
       pmCache.set(op, c)
     }
-    const k = ease.out(prog(lt, 0, 0.2))
+    const k = op.instant ? 1 : ease.out(prog(lt, 0, 0.2))
     g.save()
     g.translate(op.x, op.y)
     g.rotate((op.rot * Math.PI) / 180)
@@ -225,7 +226,7 @@ export const postmark = {
     g.drawImage(c, -op.r - 10, -op.r - 10)
     g.restore()
   },
-  sfx: op => [{ at: op.t + 0.12, kind: 'stamp', gain: 0.35 }],
+  sfx: op => (op.instant ? [] : [{ at: op.t + 0.12, kind: 'stamp', gain: 0.35 }]),
 }
 
 /** postage: a perforated postage stamp with a value (e.g. the episode's key number). */
@@ -238,6 +239,7 @@ export const postage = {
     op.color ??= 'red'
     op.rot ??= 4
     op.label ??= 'ENVELOPE MATH'
+    op.labelSize ??= 18
   },
   draw(g, op, lt) {
     let c = psCache.get(op)
@@ -261,7 +263,7 @@ export const postage = {
       x.textAlign = 'center'; x.textBaseline = 'middle'
       x.font = font('marker', Math.min(64, (w - 50) / Math.max(3, String(op.value).length) * 1.7))
       x.fillText(String(op.value), w / 2, h * 0.47)
-      x.font = font('type', 18)
+      x.font = font('type', op.labelSize)
       x.fillText(op.label, w / 2, h - 38)
       if (op.art) { x.font = font('hand', 46); x.fillText(op.art, w / 2, 52) }
       psCache.set(op, c)
@@ -319,4 +321,80 @@ export const sticky = {
     g.restore()
   },
   sfx: op => [{ at: op.t, kind: 'paper', gain: 0.4 }, { at: op.t + 0.3, kind: 'scribble', dur: op.text.length / op.cps, n: op.text.length }],
+}
+
+/**
+ * quote: a claim card — the viral claim we're about to audit, in quotes, with an attribution line.
+ * Annotations can target its text (`target: {op: "<id>", match: "FREE"}`).
+ */
+export const quote = {
+  duration: () => 0.3,
+  prepare(op, g) {
+    op.x ??= 540
+    op.y ??= 760
+    op.w ??= 840
+    op.size ??= 66
+    op.font ??= 'marker'
+    op.rot ??= -1.5
+    op.instant ??= op.t <= 0.05
+    g.font = font(op.font, op.size)
+    op._lines = wrap(g, op.text, op.w - 130)
+    op._lh = op.size * 1.25
+    op._pad = 56
+    op._h = op._pad * 2 + op._lines.length * op._lh + (op.by ? 56 : 0)
+  },
+  draw(g, op, lt) {
+    const k = op.instant ? 1 : ease.out(prog(lt, 0, 0.3))
+    const top = op.y - op._h / 2
+    g.save()
+    g.translate(op.x, op.y + (1 - k) * 40)
+    g.rotate((op.rot * Math.PI) / 180)
+    g.translate(-op.x, -op.y)
+    g.globalAlpha *= k
+    g.shadowColor = 'rgba(20,10,0,0.28)'; g.shadowBlur = 16; g.shadowOffsetY = 8
+    g.fillStyle = '#fffdf7'
+    g.fillRect(op.x - op.w / 2, top, op.w, op._h)
+    g.shadowColor = 'transparent'
+    g.fillStyle = INK.red
+    g.font = font('marker', 150)
+    g.textBaseline = 'alphabetic'
+    g.fillText('“', op.x - op.w / 2 + 18, top + 120)
+    g.textAlign = 'center'
+    g.fillStyle = ink(op.color || 'black')
+    g.font = font(op.font, op.size)
+    op._lines.forEach((l, i) => g.fillText(l, op.x, top + op._pad + op.size * 0.85 + i * op._lh))
+    if (op.by) {
+      g.font = font('type', 34)
+      g.fillStyle = 'rgba(28,45,94,0.8)'
+      g.fillText(op.by, op.x, top + op._h - op._pad + 18)
+    }
+    g.restore()
+  },
+  sfx: op => (op.instant ? [] : [{ at: op.t, kind: 'paper', gain: 0.6 }]),
+}
+
+/** meter: a gauge that drains from `from`% to `to`% with a live typewriter label, then thumps. */
+export const meter = {
+  duration: op => op.dur + 0.3,
+  prepare(op) {
+    op.x ??= 160
+    op.w ??= 760
+    op.h ??= 70
+    op.from ??= 100
+    op.dur ??= 1.4
+    op.label ??= 'CLAIM SURVIVAL'
+    op.color ??= op.to < 50 ? 'red' : 'green'
+  },
+  draw(g, op, lt) {
+    const k = ease.inOut(prog(lt, 0, op.dur))
+    const v = lerp(op.from, op.to, k)
+    strokePartial(g, wobble([[op.x, op.y], [op.x + op.w, op.y + 2], [op.x + op.w - 2, op.y + op.h], [op.x + 2, op.y + op.h - 1], [op.x, op.y - 3]], 77, 2.5, 8), ease.out(prog(lt, 0, 0.3)), { color: 'ink', width: 5 })
+    g.save()
+    g.fillStyle = ink(op.color)
+    g.globalAlpha *= 0.85
+    g.fillRect(op.x + 8, op.y + 8, Math.max(0, (op.w - 16) * (v / 100)), op.h - 16)
+    g.restore()
+    handText(g, `${op.label}: ${Math.round(v)}%`, op.x, op.y - 26, { size: 48, color: op.color, font: 'type', jitter: 0.2 })
+  },
+  sfx: op => [{ at: op.t, kind: 'ticks', dur: op.dur }, { at: op.t + op.dur, kind: 'stamp', gain: 0.6 }],
 }

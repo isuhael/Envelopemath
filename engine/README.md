@@ -27,15 +27,17 @@ Units are always 1080×1920, with (0,0) top-left. The platform UI covers some ar
 
 | zone | y range | notes |
 |---|---|---|
-| flap / platform top bar | 0–230 | decoration only (postmark can sit at y≈300) |
+| flap / platform top bar | 0–230 | decoration only; the series postmark goes in the flap: `{"type":"postmark","t":0,"x":175,"y":258,"r":100,"persist":true}` |
 | hook (masking tape) | 380–620 | `hook` default y = 400 |
 | content | 600–1300 | math, props, charts |
 | caption band | 1320–1480 | `spec.captions` are drawn here; keep content out while they play |
 | platform caption/UI | 1480–1920 | nothing readable |
 | right button rail | x > 940 when y > 820 | the linter enforces this |
 
-`check` warns about text that leaves the safe area, text boxes that overlap while both are on
-screen, and content sitting in the caption band during captions.
+`check` warns about text that leaves the safe area, boxes that overlap while both are on screen
+(a stamp may land on a paper prop; `allowOverlap: true` silences an intended overlap), content in
+the caption band during captions, captions over 2 lines or faster than 4 words/s, a frame 0 with no
+readable hook, and runs over 60 s (75 s with `"lane": "long"`).
 
 ## Spec
 
@@ -46,11 +48,16 @@ screen, and content sitting in the caption band during captions.
   "paper": { "style": "kraft", "seed": 7 },
   "duration": 30,                       // optional; default = last animation + 0.8s
   "camera": [ { "t": 0, "zoom": 1 }, { "t": 6, "zoom": 1.25, "x": 540, "y": 900 } ], // optional
-  "captions": [ { "t": 0.2, "end": 2.8, "text": "spoken line, word-highlighted" } ],
+  "captions": [ { "t": 0.2, "end": 2.8, "text": "$2,500 every 2 weeks", "say": "twenty-five hundred every two weeks" } ],
+  "loop": true,                         // optional: crossfade the last 0.35s into frame 0 (seamless replays)
+  "lane": "long",                       // optional: allows up to 75s (default max 60s)
   "vo": "full voice-over script (not rendered)",
   "ops": [ { "type": "hook", "t": 0, "text": "..." }, ... ]
 }
 ```
+
+Captions show `text`; `say` (optional) is how the voice-over reads it. Give an op an `id` so
+annotations can target it. Ops with negative `t` are already on screen in frame 0 (no sound).
 
 Every op needs `type` and `t` (start, seconds). Ops stay on screen until a `clear`/`flip` after
 them, or until their own `until` (seconds), then fade over `fadeOut` (0.25s). `persist: true` keeps an
@@ -65,23 +72,25 @@ Wrap a word in `*asterisks*` in a hook to make it red.
 
 | type | what it draws | key params (defaults) |
 |---|---|---|
-| `hook` | marker headline on masking-tape strips, slapped in line by line | `text` (string or array of lines; `*em*` = red), `y` 400, `size` 84, `maxWidth` 860, `tape` true |
-| `write` | one line of handwriting with a moving pen | `text`, `x`, `y` (baseline), `size` 86, `color`, `align` left/center/right, `cps` 15, `font`, `pen` true |
+| `hook` | marker headline on masking-tape strips, slapped in line by line (a hook at `t: 0` renders finished, so frame 0 is a readable thumbnail) | `text` (string or array of lines; `*em*` = red), `y` 400, `size` 84, `maxWidth` 860, `tape` true, `font` marker (use `sans` or `hand` when the marker face misreads, e.g. "S&P"), `instant` (default: t ≤ 0.05) |
+| `quote` | **claim card**: the viral claim in big quotes with an attribution line (for audits) | `text`, `by`, `x` 540, `y` 760 (centre), `w` 840, `size` 66, `font` marker, `instant` (default t ≤ 0.05) |
+| `write` | one line of handwriting with a moving pen | `text`, `x`, `y` (baseline), `size` 86, `color`, `align` left/center/right, `cps` 15, `font`, `pen` true / false / `"small"`, `em` (true: `*word*` in red) |
 | `lines` | column arithmetic written line by line | `lines` [string or {text,color,size}], `x` (right edge if align right), `y` (first baseline), `size` 86, `align` right, `rule` (index of the total line: draws the sum bar above it), `cps` 15, `gap` 0.3 |
 | `ladder` | unit-conversion ladder: rungs of "label ····· value" with the multiplier (×7, ×52) in red in the left gutter; last rung in red | `rows` [{label, value, factor}], `x` 110, `y` (first baseline), `w` 820, `size` 88, `cps` 16 |
-| `counter` | a number counting up, then a pop | `to`, `from` 0, `x`, `y`, `size` 130, `dur` 1.4, `prefix`, `suffix`, `decimals` 0, `compact` (1.2M), `color`, `font` hand |
-| `annotate` | hand-drawn mark | `kind` circle/box (x,y,w,h), underline/double/strike (x,y,w), check/cross (x,y,w,h), arrow (`from`[x,y], `to`[x,y], `bend` 0.25); `color` red, `width` 7, `dur` 0.4 |
-| `highlight` | yellow marker swipe | `x`, `y`, `w`, `h`, `dur` 0.35 |
+| `counter` | a number counting up, then a pop; or a **running total** with `steps` | `to`, `from` 0, `x`, `y`, `size` 130, `dur` 1.4, `prefix`, `suffix`, `decimals` 0, `compact` (1.2M), `color`, `font` hand, `steps` [[t, value], …] (t relative to the op; tweens to each value) |
+| `annotate` | hand-drawn mark | `kind` circle/box (x,y,w,h), underline/double/strike (x,y,w), check/cross (x,y,w,h), arrow (`from`[x,y], `to`[x,y], `bend` 0.25); `color` red, `width` 7, `dur` 0.4; **or** `target` {op: "<id>" or index, match: "text", line, nth, pad} to land on text in a write/lines/hook/quote/counter/ladder op (inherits `fixed` from it) |
+| `highlight` | yellow marker swipe | `x`, `y`, `w`, `h`, `dur` 0.35, or `target` as above |
+| `meter` | gauge draining from `from`% to `to`% with a live "LABEL: N%" readout, then a thump | `to`, `from` 100, `x` 160, `y`, `w` 760, `h` 70, `label` CLAIM SURVIVAL, `color` (auto red < 50%), `dur` 1.4 |
 | `stamp` | rubber-stamp verdict that slams in and shakes the frame | `text` ("NOT\nWORTH IT"), `x`, `y` (centre), `size` 76, `rot` -8, `color` red, `shake` 16 |
 | `postmark` | circular postmark with wavy lines (the series badge) | `x`, `y`, `r` 112, `top`, `bottom`, `center` ["No.","001"], `rot` -12 |
-| `postage` | perforated postage stamp | `x`, `y`, `value` ("$5"), `label`, `art` ("≈"), `w` 210, `h` 250, `color` red |
+| `postage` | perforated postage stamp | `x`, `y`, `value` ("$5"), `label`, `labelSize` 18, `art` ("≈"), `w` 210, `h` 250, `color` red |
 | `sticky` | yellow sticky note, text written in | `x`, `y` (centre), `text`, `title` ("ASSUME:"), `w` 400, `size` 60 |
-| `envelope` | **sealed answer**: slides in, wiggles, opens at `openAt` and a card slides out | `openAt` (absolute s), `card` [lines], `cardSize` 96, `note` (red text on the envelope before opening), `label`, `x` 540, `y` 980, `w` 780 |
-| `receipt` | thermal receipt printing line by line | `x` (centre), `y` (top), `header`, `items` [[label,value]...], `total` [label,value], `footer`, `w` 640, `size` 40, `lps` 4 |
+| `envelope` | **sealed answer**: slides in, wiggles, opens at `openAt` and a card slides out; leave `openAt` out for one that stays sealed (answer in the pin / next post) | `openAt` (absolute s), `card` [string or {text, size, color, font, em}], `cardSize` 96 (scales with `w`), `note` (red text before opening), `label`, `x` 540, `y` 980, `w` 780 |
+| `receipt` | thermal receipt printing line by line | `x` (centre), `y` (top), `header`, `items` [[label,value]… or {label, value, at, color, highlight, strike}], `total` [label,value] or {label, value, at}, `footer`, `w` 640, `size` 40, `lps` 4, `compact` (header + rule print together), `instant`, `running` {label, prefix, decimals} (live subtotal until the total prints) |
 | `stuff` | cash-stuffing envelopes filling with bills, amounts counting | `items` [{label, amount}], `x`, `y`, `w` 840, `cols` ≤3, `stagger` 0.45, `prefix` $ |
 | `emoji` | colour emoji popping in | `char`, `x`, `y`, `size` 160, `bob`, `rot` |
 | `bars` | hatched hand-drawn bars growing | `items` [{label, value, color, display}], `x` (centre), `y` (baseline), `w` 820, `h` 600, `format` {prefix, compact, decimals}, `stagger` 0.45 |
-| `curve` | axes + a curve drawn by pen | `x`,`y` (origin, bottom-left), `w` 820, `h` 620, `values` [...] or `fn` {type: compound (principal, rate, years, contrib) or linear (principal, contrib, years)}, `compare` {fn or values}, `marks` [{i, text}], `format`, `xLabel`, `yLabel`, `endLabel` |
+| `curve` | axes + a curve drawn by pen | `x`,`y` (origin, bottom-left), `w` 820, `h` 620, `values` [...] or `fn` {type: compound (principal, rate, years, contrib) or linear (principal, contrib, years)}, `compare` {fn or values}, `marks` [{i, text}], `ticks` [{i, label}] (x-axis), `format`, `xLabel`, `yLabel`, `endLabel` |
 | `stack` | a pile of cash bricks growing to a height, with a red dimension line, a height label and an optional reference figure for scale | `x` (centre) 600, `y` (ground), `h` (px), `w` 240, `units` 10, `heightLabel`, `label`, `ref` {char "🧍", h px, label "you"}, `dur` 1.6 |
 | `grid` | rows×cols dots (or emoji) filling in | `rows`, `cols`, `filled`, `x` (centre), `y` (first row), `cell` 70, `emoji`, `label`, `color` |
 | `choices` | A/B/C index cards; answer circled at `revealAt` | `options` [...], `answer` (index), `revealAt` (absolute s), `y` 760, `w` 800, `size` 70 |

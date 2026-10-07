@@ -9,13 +9,14 @@
     {
       "type": "postmark",
       "t": 0,
-      "x": 190,
-      "y": 300,
+      "x": 175,
+      "y": 258,
       "center": [
         "No.",
         "000"
       ],
-      "persist": true
+      "persist": true,
+      "r": 100
     },
     {
       "type": "hook",

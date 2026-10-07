@@ -90,7 +90,7 @@ Each device maps to an engine op (`engine/README.md`).
 
 ## 7. Layout (1080×1920)
 
-- y 0–230: flap, clasp, postmark; decoration only.
+- y 0–230: flap, clasp, postmark (badge at x 175, y 258, r 100, sitting on the flap); decoration only.
 - y 380–620: the masking-tape hook.
 - y 600–1300: the working (math, props, charts).
 - y 1320–1480: captions.

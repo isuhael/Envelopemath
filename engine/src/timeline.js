@@ -3,13 +3,14 @@ import { createCanvas } from '@napi-rs/canvas'
 import { W, H, registerFonts } from './theme.js'
 import { paper } from './paper.js'
 import { ease, clamp, lerp } from './util.js'
+import { resolveAnchors } from './anchor.js'
 import { hook, write, lines, counter, ladder, drawCaption } from './ops/text.js'
-import { annotate, highlight, stamp, postmark, postage, sticky } from './ops/marks.js'
+import { annotate, highlight, stamp, postmark, postage, sticky, quote, meter } from './ops/marks.js'
 import { envelope, receipt, stuff, emoji } from './ops/props.js'
 import { bars, curve, grid, stack } from './ops/charts.js'
 import { choices, pick, timer, outro } from './ops/quiz.js'
 
-export const OPS = { hook, write, lines, counter, ladder, annotate, highlight, stamp, postmark, postage, sticky, envelope, receipt, stuff, emoji, bars, curve, grid, stack, choices, pick, timer, outro }
+export const OPS = { hook, write, lines, counter, ladder, annotate, highlight, stamp, postmark, postage, sticky, quote, meter, envelope, receipt, stuff, emoji, bars, curve, grid, stack, choices, pick, timer, outro }
 const CONTROL = new Set(['clear', 'flip'])
 
 /**
@@ -48,6 +49,7 @@ export function prepare(raw) {
       if (c.type === 'flip') op.fadeOut = 0
     }
   }
+  resolveAnchors(ops)
   spec._ops = ops.sort((a, b) => (a.z ?? 0) - (b.z ?? 0) || a.t - b.t)
   spec._flips = controls.filter(c => c.type === 'flip')
   spec._shakes = ops.filter(o => OPS[o.type].shake).map(o => OPS[o.type].shake(o)).filter(Boolean)
@@ -130,4 +132,16 @@ export function drawFrame(g, spec, t) {
   g.restore()
   const cap = spec.captions.find(c => t >= c.t && t < c.end)
   if (cap) drawCaption(g, cap, t)
+  // `loop: true` crossfades the last `loopFade` seconds into frame 0 so a replay has no seam
+  const fade = spec.loopFade ?? 0.35
+  if (spec.loop && t > spec.duration - fade) {
+    if (!spec._frame0) {
+      spec._frame0 = createCanvas(W, H)
+      drawFrame(spec._frame0.getContext('2d'), spec, 0)
+    }
+    g.save()
+    g.globalAlpha = ease.inOut(clamp((t - (spec.duration - fade)) / fade))
+    g.drawImage(spec._frame0, 0, 0)
+    g.restore()
+  }
 }
