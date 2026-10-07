@@ -144,6 +144,18 @@ def why_html(text):
     return ''.join(out)
 
 
+def hook_lines(hook):
+    # keep only the on-screen tape text: drop production notes and the spoken-line suffix
+    h = re.sub(r'^\s*(Tape|On-screen|Frame 1)\s*:\s*', '', hook, flags=re.I)
+    h = re.split(r'\s+\(|\s+\+\s|,\s+(?:with|over|plus)\s|\.\s+First spoken|\s+First spoken', h)[0]
+    h = h.strip().strip('"“”').replace('*', '')
+    return [x.strip() for x in h.split(' / ') if x.strip()]
+
+
+def clean_title(title):
+    return re.sub(r'\s*\((?:[^()]*\bNo\.\s*\w+)\)\s*$', '', title).strip()
+
+
 def final_render(stem):
     # prefer the clean final renders in engine/out/final/
     for p in (ROOT / 'engine' / 'out' / 'final' / f'{stem}.mp4', ROOT / 'engine' / 'out' / f'{stem}.mp4'):
@@ -185,8 +197,8 @@ def main():
                     encode(src, DIST / vid, DIST / poster, 0.9)
                 if hero is None and idx == 1:
                     hero = (vid, poster, t)
-            title = t.get('final_title') or t['title']
-            hook = t.get('final_hook') or t['hook']
+            title = clean_title(t.get('final_title') or t['title'])
+            hook = hook_lines(t.get('final_hook') or t['hook'])
             hb, ha = t.get('hook_score_before'), t.get('hook_score_after')
             score = f'<span class="chip">hook {esc(hb)}→{esc(ha)}/10</span>' if ha is not None else ''
             checks = ''.join([
@@ -203,7 +215,7 @@ def main():
         <div class="tmeta">
           <p class="tid">{esc(t['id'])} · {esc(round(t.get('runtime_s') or 0))} s</p>
           <h4>{esc(title)}</h4>
-          <p class="hook"><span>Frame 1</span> {esc(hook)}</p>
+          <div class="hook" aria-label="Frame-1 hook"><span class="hl">Frame 1</span>{''.join(f'<span class="tape">{esc(l)}</span>' for l in hook)}</div>
           <div class="chips">{score}{checks}</div>
           <ul class="nums">{nums}</ul>
           {f'<details><summary>Script, beats &amp; math</summary><div class="script">{md(block, 5)}</div></details>' if block.strip() else ''}
