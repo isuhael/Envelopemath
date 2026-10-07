@@ -29,8 +29,15 @@ def inline(text):
     t = re.sub(r'\*\*([^*]+)\*\*', r'<strong>\1</strong>', t)
     t = re.sub(r'(?<![\w*])\*([^*\n]+)\*(?![\w*])', r'<em>\1</em>', t)
     t = re.sub(r'\[([^\]]+)\]\((https?://[^)\s]+)\)', r'<a href="\2" target="_blank" rel="noopener">\1</a>', t)
-    t = re.sub(r'(?<![">])(https?://[^\s<)]+)', r'<a href="\1" target="_blank" rel="noopener">\1</a>', t)
+    t = re.sub(r'(?<![">])(https?://[^\s<)]+)', short_link, t)
     return t
+
+
+def short_link(m):
+    url = m.group(1).rstrip('.,;')
+    tail = m.group(1)[len(url):]
+    host = re.sub(r'^https?://(www\.)?', '', url).split('/')[0]
+    return f'<a href="{url}" target="_blank" rel="noopener">{host} ↗</a>{tail}'
 
 
 def md(src, base_level=3):
@@ -126,6 +133,17 @@ def encode(src, dst_mp4, dst_poster, poster_t):
                         '-q:v', '4', str(dst_poster)], check=True)
 
 
+def why_html(text):
+    # "PSYCHOLOGICAL: … ALGORITHMIC: …" → two labelled paragraphs
+    parts = re.split(r'\b(PSYCHOLOGICAL|ALGORITHMIC):\s*', text)
+    if len(parts) < 3:
+        return f'<p>{inline(text)}</p>'
+    out = [f'<p>{inline(parts[0])}</p>'] if parts[0].strip() else []
+    for label, body in zip(parts[1::2], parts[2::2]):
+        out.append(f'<p><strong>{label.capitalize()}.</strong> {inline(body.strip())}</p>')
+    return ''.join(out)
+
+
 def esc(s):
     return html.escape(str(s if s is not None else ''))
 
@@ -203,10 +221,12 @@ def main():
         </dl>
       </div>
     </header>
-    <div class="cols">
+    <h3 class="tease-h">Teasers</h3>
+    <div class="teasers">{''.join(cards) if cards else '<p class="muted">Teasers pending.</p>'}</div>
+    <div class="cols why-h">
       <div class="why">
         <h3>Why it goes viral</h3>
-        <p>{inline(a['why_it_goes_viral'])}</p>
+        {why_html(a['why_it_goes_viral'])}
         <h3>Evidence</h3>
         <ul class="evidence">{ev}</ul>
         <details><summary>Anatomy of the originals, hook formulas, pitfalls</summary>
@@ -221,8 +241,6 @@ def main():
         {md(upgrade, 4) if upgrade.strip() else '<p class="muted">Write-up pending.</p>'}
       </div>
     </div>
-    <h3 class="tease-h">Teasers</h3>
-    <div class="teasers">{''.join(cards) if cards else '<p class="muted">Teasers pending.</p>'}</div>
   </section>''')
 
     principles = ''.join(f'<li>{inline(p)}</li>' for p in top['cross_cutting_principles'])
