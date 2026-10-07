@@ -1,0 +1,925 @@
+[
+  {
+    "n": 1,
+    "name": "cost in envelopes",
+    "series_name": "Cost in Envelopes",
+    "file": "teasers/01-cost-in-envelopes.md",
+    "teasers": [
+      {
+        "id": "01A",
+        "title": "Elon's $1 trillion in Costco hot dogs: how many do you get? (Cost in Envelopes No. 01A)",
+        "hook": "ELON'S *$1 TRILLION* / IN COSTCO HOT DOGS. / HOW MANY DO YOU GET?",
+        "runtime_s": 27.2,
+        "spec": "engine/specs/01-cost-in-envelopes-a.json",
+        "key_numbers": [
+          "$1,000,000,000,000 ÷ $1.50 = 666,666,666,667 hot dogs (said 'about 667 billion')",
+          "÷ 8.2 billion people = 81.3 each (sealed card ≈ 81, within 0.4%)",
+          "Bloomberg $1.04T → 84.6 each; Forbes $936B → 76.1 each (pinned range)",
+          "9×9 tray = 81; rule: ÷1.5 = ×⅔"
+        ],
+        "sources": [
+          "Billionaires.Africa 2026-10-06 (Bloomberg Billionaires Index $1.04T, Forbes $936B on Oct 6 2026): https://www.billionaires.africa/2026/10/06/elon-musk-becomes-a-trillionaire-again-as-spacex-shares-hit-highest-since-june/",
+          "Forbes 2026-10-02: https://www.forbes.com/sites/fionariley/2026/10/02/elon-musk-gains-61-billion-in-a-day-as-spacex-and-tesla-shares-rise-pushing-net-worth-back-towards-1-trillion/",
+          "Bloomberg Government, first trillionaire 2026-06-12: https://news.bgov.com/capital-markets/elon-musk-becomes-worlds-first-trillionaire-after-spacex-ipo",
+          "Axios 2026-05-02, Costco $1.50 combo unchanged: https://axios.com/2026/05/02/costco-hot-dog-combo-options-water",
+          "KAIT/Gray TV 2026-04-29, same price 40 years: https://www.kait8.com/2026/04/29/costcos-iconic-150-hot-dog-combo-debuts-new-change-first-time-decades/",
+          "US Census Bureau, World Population Day 2026 (8.2B in July 2026): https://cdn.www.census.gov/newsroom/stories/world-population-day.html"
+        ],
+        "hook_score_before": 8,
+        "hook_score_after": 9,
+        "math_ok": true,
+        "facts_ok": false,
+        "replaced": false,
+        "review": null
+      },
+      {
+        "id": "01B",
+        "title": "The $40 trillion US debt in $10K envelopes: how tall is it? (Cost in Envelopes No. 01B)",
+        "hook": "*$40 TRILLION* US DEBT / IN $10K ENVELOPES. / HOW TALL IS IT?",
+        "runtime_s": 30.1,
+        "spec": "engine/specs/01-cost-in-envelopes-b.json",
+        "key_numbers": [
+          "1 envelope = 100 × $100 = 100 × 0.0043 in = 1.0922 cm (≈1.1 cm)",
+          "$1M = 100 envelopes = 1.09 m (waist high); $1B = 100,000 envelopes = 1,092 m > Burj Khalifa 828 m",
+          "$40T ÷ $10K = 4,000,000,000 envelopes × 1.1 cm ≈ 44,000 km (exact 43,688 km, within 0.7%)",
+          "Equator 40,075 km → 3,613 km to spare; passes geostationary orbit 35,786 km",
+          "Re-hook: in $1 bills 4,368,800 km ≈ 11.4 Moon distances; card holds while debt < $40.45T"
+        ],
+        "sources": [
+          "PBS NewsHour, Aug 2026 (debt crossed $40T): https://pbs.org/newshour/economy/the-u-s-national-debt-now-stands-at-40-trillion",
+          "Fox 10, Aug 2026 ($40.047T on Aug 18 2026, Treasury figures): https://www.fox10phoenix.com/news/us-national-debt-surpasses-record-40-trillion",
+          "Treasury Debt to the Penny ($40,242,446,619,209.33 on 2026-10-02, surfaced through search; re-pull on publish day): https://fiscaldata.treasury.gov/datasets/debt-to-the-penny/",
+          "BEP Currency FAQs (note ≈1 g; thickness .0043 in): https://www.bep.gov/currency/faqs ; corroboration: https://hypertextbook.com/facts/1999/DeneneWilliams.shtml",
+          "CTBUH Skyscraper Center, Burj Khalifa 828 m: https://www.skyscrapercenter.com/building/wd/3",
+          "NASA Earth Fact Sheet, equatorial radius 6,378.137 km: https://nssdc.gsfc.nasa.gov/planetary/factsheet/earthfact.html",
+          "AMS Glossary, geostationary 35,786 km: https://glossary.ametsoc.org/wiki/geostationary-satellite/",
+          "NASA Space Place, Moon 384,400 km: https://spaceplace.nasa.gov/moon-distance/"
+        ],
+        "hook_score_before": 6.5,
+        "hook_score_after": 8.5,
+        "math_ok": true,
+        "facts_ok": false,
+        "replaced": false,
+        "review": null
+      },
+      {
+        "id": "01C",
+        "title": "$1,000,000 in pennies vs. Lady Liberty: who's heavier? (Cost in Envelopes No. 01C)",
+        "hook": "*$1,000,000* IN PENNIES / VS. LADY LIBERTY: / WHO'S HEAVIER?",
+        "runtime_s": 18.5,
+        "spec": "engine/specs/01-cost-in-envelopes-c.json",
+        "key_numbers": [
+          "$1,000,000 = 100,000,000 pennies",
+          "× 2.5 g = 250,000,000 g = 250,000 kg = 551,156 lb = 275.6 US tons (card ≈275, within 0.2%)",
+          "Statue of Liberty 450,000 lb = 225 tons → pennies heavier by 50.6 tons (1.22×); also heavier than the 156-ton copper+steel figure",
+          "100M × 3.69¢ = $3,690,000 to mint (said $3.7M, within 0.3%)",
+          "Pinned follow-up: $1M in nickels = 110.2 US tons (lighter); rule: $1 of pennies = 250 g"
+        ],
+        "sources": [
+          "US Mint coin specifications (penny 2.500 g, nickel 5.000 g): https://www.usmint.gov/learn/coin-and-medal-programs/coin-specifications",
+          "PBS NewsHour, final penny struck 2025-11-12: https://www.pbs.org/newshour/nation/u-s-mint-in-philadelphia-to-press-final-penny-as-the-1-cent-coin-gets-canceled",
+          "US Mint press release, final ceremonial strike: https://www.usmint.gov/news/press-releases/united-states-mint-hosts-historic-ceremonial-strike-for-final-production-of-the-circulating-one-cent-coin",
+          "CoinNews 2025-02-10, penny cost 3.69¢ FY2024: https://www.coinnews.net/2025/02/10/penny-costs-3-69-cents-to-make-in-2024/",
+          "AP via KSAT 2025-05-23: https://www.ksat.com/business/2025/05/23/the-penny-costs-nearly-4-cents-to-make-heres-how-much-the-us-spends-on-minting-its-other-coins/",
+          "NPS Historical Handbook, Statue 450,000 lb (225 tons): https://www.nps.gov/parkhistory/online_books/hh/11/hh11k1.htm (also https://www.nps.gov/stli/learn/historyculture/statue-statistics.htm; re-check, not reachable from here)",
+          "Guinness World Records (alternative copper 31 + steel 125 tons): https://www.guinnessworldrecords.com/world-records/74085-heaviest-statue"
+        ],
+        "hook_score_before": 7.5,
+        "hook_score_after": 9,
+        "math_ok": true,
+        "facts_ok": true,
+        "replaced": false,
+        "review": null
+      }
+    ]
+  },
+  {
+    "n": 2,
+    "name": "rate clock",
+    "series_name": "Clocked (Envelope Math: Clocked)",
+    "file": "teasers/02-rate-clock.md",
+    "teasers": [
+      {
+        "id": "02A",
+        "title": "$50,000 an Hour Since Year 1, Still No $1 Trillion (Clocked No. 1)",
+        "hook": "EARN $50,000 AN HOUR / SINCE YEAR 1… / STILL NO *$1 TRILLION* (on screen at frame 0); spoken: \"Fifty grand an hour, since Year One.\"",
+        "runtime_s": 25.7,
+        "spec": "engine/specs/02-rate-clock-a.json",
+        "key_numbers": [
+          "$1T ÷ $50K/hr = 20,000,000 hrs",
+          "÷ 8,766 hrs/yr (365.25×24) ≈ 2,282 yrs (exact 2,281.54; within 0.02%)",
+          "Start 1 Jan AD 1 → $887.9B today (screen $888B, $112B short)",
+          "Start at Caesar's birth, 12 Jul 100 BC → $931.5B (screen $931B)",
+          "Exact start for $1T ≈ 9 Mar 256 BC (Julian calendar, no year zero)",
+          "Viral video's AD slip: 2,059 yrs → $901.8B",
+          "$1.2M/day, $438.3M/yr at $50K/hr"
+        ],
+        "sources": [
+          "Forbes via Nairametrics, 2026-06-13: Musk first trillionaire, $1.1T on 2026-06-12 after SpaceX Nasdaq debut — https://nairametrics.com/2026/06/13/elon-musk-becomes-worlds-first-trillionaire-as-spacex-shares-surge-on-nasdaq-debut/",
+          "Channel 4 News, 2026-06-12 — https://www.channel4.com/news/elon-musk-becomes-worlds-first-trillionaire-as-spacex-goes-public",
+          "Forbes 400 2026 via Gray News/WECT, 2026-09-19: Musk $908B — https://www.wect.com/2026/09/19/elon-musk-jeff-bezos-among-richest-americans-forbes-2026-list-heres-how-much-theyre-worth/",
+          "Julius Caesar born 12/13 July 100 BC — https://www.worldhistory.org/timeline/Julius_Caesar/ and https://en.wikipedia.org/wiki/Julius_Caesar (checked 2026-10-07)",
+          "$50K/hr hypothetical from the viral claim — research/watch/group1-video4.md"
+        ],
+        "hook_score_before": 7.5,
+        "hook_score_after": 8.5,
+        "math_ok": true,
+        "facts_ok": true,
+        "replaced": false,
+        "review": null
+      },
+      {
+        "id": "02B",
+        "title": "Apple Makes Your $65K Salary in How Many Seconds? (Clocked No. 2)",
+        "hook": "APPLE MAKES YOUR / *$65K* SALARY IN / *?? SECONDS* (on screen at frame 0); spoken: \"Apple makes your salary in how many seconds?\"",
+        "runtime_s": 21.2,
+        "spec": "engine/specs/02-rate-clock-b.json",
+        "key_numbers": [
+          "Apple FY2025 net sales $416.161B ÷ 31.536M s = $13,196/s (screen ≈$13.2K/s); exact 364-day FY $13,233/s",
+          "Typical full-time pay $1,251/wk × 52 = $65,052",
+          "$65K ÷ $13.2K/s ≈ 4.9 s (exact 4.92 s, within 0.3%)",
+          "40-yr career $2.60M ≈ 3.3 min (exact 3.28 min, within 0.7%)",
+          "Profit: $112.01B → $3,562/s → salary in 18.3 s, career in 12.2 min",
+          "Real-time counter $0 → $65,052 over 4.93 s",
+          "$791,783/min, $1.14B/day"
+        ],
+        "sources": [
+          "Apple Newsroom 'Apple reports fourth quarter results', 2025-10-30: FY2025 revenue $416B — https://www.apple.com/newsroom/2025/10/apple-reports-fourth-quarter-results/",
+          "Apple Form 10-K FY ended 2025-09-27 (52 weeks): net sales $416,161M, net income $112,010M — https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+          "Apple Newsroom Q3 FY2026, 2026-07-30: revenue $109.4B, +16% YoY — https://www.apple.com/au/newsroom/2026/07/apple-reports-third-quarter-results/",
+          "BLS Usual Weekly Earnings Q2 2026, released 2026-07-21: median full-time $1,251/wk — https://www.bls.gov/news.release/archives/wkyeng_07212026.htm"
+        ],
+        "hook_score_before": 7,
+        "hook_score_after": 8,
+        "math_ok": true,
+        "facts_ok": true,
+        "replaced": false,
+        "review": null
+      },
+      {
+        "id": "02C",
+        "title": "Spend $1 Billion in 24 Hours: How Much per Heartbeat? (Clocked No. 3)",
+        "hook": "SPEND *$1 BILLION* / IN 24 HOURS. / HOW MUCH PER / *HEARTBEAT?* (on screen at frame 0); spoken: \"Spend a billion in 24 hours. How much per heartbeat?\"",
+        "runtime_s": 17.8,
+        "spec": "engine/specs/02-rate-clock-c.json",
+        "key_numbers": [
+          "$1B ÷ 24 hrs = $41,666,667/hr (screen ≈$41.7M/hr)",
+          "$1B ÷ 86,400 s = $11,574.07/s",
+          "$694,444/min",
+          "$1B ÷ 100,000 beats = $10,000/beat; at 70 bpm $9,921 (within 0.8%); 60 bpm $11,574; 100 bpm $6,944",
+          "8 hrs asleep → $17,361/s while awake",
+          "This 17.8 s video = $206,019"
+        ],
+        "sources": [
+          "Cleveland Clinic, 'How Blood Flows Through Your Heart & Body': heart beats around 100,000 times daily — https://my.clevelandclinic.org/health/articles/17060-how-does-the-blood-flow-through-your-heart (checked 2026-10-07)",
+          "Texas Heart Institute, Heart Anatomy: average heart beats 100,000 times a day — https://www.texasheart.org/heart-health/heart-information-center/topics/heart-anatomy/ (checked 2026-10-07)",
+          "American Heart Association newsroom (cardiologist quote, 'over 100,000 times a day') — https://newsroom.heart.org/local-news/on-world-heart-day-hot-springs-cardiologist-urges-residents-to-take-charge-of-heart-health (checked 2026-10-07)",
+          "$1B-in-24h premise is hypothetical (Dr Bandana/Tilbury spend-down class) — research/raw/yt-big-number-math.md"
+        ],
+        "hook_score_before": 6.5,
+        "hook_score_after": 8,
+        "math_ok": true,
+        "facts_ok": true,
+        "replaced": false,
+        "review": null
+      }
+    ]
+  },
+  {
+    "n": 3,
+    "name": "read it ladder",
+    "series_name": "Day to Decade",
+    "file": "teasers/03-read-it-ladder.md",
+    "teasers": [
+      {
+        "id": "03A",
+        "title": "Your habit is $3 a day. For 10 years? (Day to Decade No. 03A)",
+        "hook": "YOUR HABIT IS / *$3* A DAY. / FOR 10 YEARS?  (3 tape strips, rendered finished on frame 0, with a coffee-cup prop)",
+        "runtime_s": 9,
+        "spec": "engine/specs/03-read-it-ladder-a.json",
+        "key_numbers": [
+          "$3 a day (the viewer's own number)",
+          "×7 = $21 a week",
+          "×52 → ≈$1,100 a year (exact $3×365 = $1,095; ×52 gives $1,092)",
+          "×10 → ≈$11,000 a decade (exact $10,950, or $10,957.50 with leap days; within 0.5%)",
+          "Flip side: a year of it ($1,095) < one iPhone 18 Pro ($1,199), by $104; break-even habit $3.28/day",
+          "Pinned invest-camp figure: $91.25/mo at an assumed 7%/yr for 10 years ≈ $15,800"
+        ],
+        "sources": [
+          "iPhone 18 Pro starting price $1,199 (Apple event 2026-09-09): CNBC live updates https://www.cnbc.com/2026/09/09/apple-event-today-live-updates.html ; MacRumors https://www.macrumors.com/2026/09/09/iphone-18-pro-price-hike-to-be-lower-than-expected/ (verified with WebSearch 2026-10-07 by the 05 writer, teasers/05-envelope-split.md)",
+          "The $3/day is the viewer's own number, not a quoted price; the 7% return is a labelled assumption used only in the pinned comment"
+        ],
+        "hook_score_before": 6,
+        "hook_score_after": 8,
+        "math_ok": true,
+        "facts_ok": false,
+        "replaced": false,
+        "review": null
+      },
+      {
+        "id": "03B",
+        "title": "A $1/hr raise is only $8 a day? (Day to Decade No. 03B)",
+        "hook": "A *$1/HR* RAISE IS / ONLY $8 A DAY?  (2 tape strips, finished on frame 0, with a dollar-bill prop; the red pen strikes ONLY at 3.8 s)",
+        "runtime_s": 9,
+        "spec": "engine/specs/03-read-it-ladder-b.json",
+        "key_numbers": [
+          "$1/hr × 8 hrs = $8 a day",
+          "×5 = $40 a week",
+          "×52 = $2,080 a year (2,080 hours)",
+          "×10 = $20,800 a decade, pre-tax (exact; 2026–2035 real weekdays = 2,608 → $20,864, within 0.3%)",
+          "Red strike through ONLY, then a SPECIAL DELIVERY stamp",
+          "BLS median $1,251/wk ÷ 40 = $31.275/hr → $1 is a 3.2% raise; $2,080 ÷ 365 = $5.70 per calendar day (pinned)"
+        ],
+        "sources": [
+          "BLS Usual Weekly Earnings, Q2 2026 (released 2026-07-21): median full-time weekly pay $1,251, https://www.bls.gov/news.release/archives/wkyeng_07212026.htm (verified with WebSearch 2026-10-07; recorded in teasers/08, 02 and 05)",
+          "The $1 raise is illustrative; 8-hr days × 5 days × 52 weeks, pre-tax, is on the ASSUME sticky"
+        ],
+        "hook_score_before": 6.5,
+        "hook_score_after": 8,
+        "math_ok": true,
+        "facts_ok": true,
+        "replaced": false,
+        "review": null
+      },
+      {
+        "id": "03C",
+        "title": "$2 a day on Powerball, for 10 years? (Day to Decade No. 03C)",
+        "hook": "*$2* A DAY ON / POWERBALL, / FOR 10 YEARS?  (3 tape strips, finished on frame 0, with a ticket prop)",
+        "runtime_s": 9,
+        "spec": "engine/specs/03-read-it-ladder-c.json",
+        "key_numbers": [
+          "$2 × 365 = $730 a year",
+          "×10 = $7,300 a decade (3,650 tickets; $7,304–$7,306 with leap days)",
+          "Per-ticket jackpot odds 1 in 292,201,338 (C(69,5) × 26)",
+          "3,650 tickets ≈ 1 in 80,055 (shown ≈1 in 80,000, within 0.07%)",
+          "Flip side: odds you spend the $7,300 = 1 in 1, then a POSTAGE DUE stamp",
+          "Pinned: ≈147 expected small wins (any prize 1 in 24.87); 50 years ≈ 1 in 16,000; 1-in-1,000 odds take ≈800 years (292,201 tickets)"
+        ],
+        "sources": [
+          "Official Powerball prize chart ($2 play; jackpot 1 in 292,201,338; any prize 1 in 24.87): https://www.powerball.com/powerball-prize-chart and https://www.lotteryusa.com/powerball/prizes-odds (verified with WebSearch 2026-10-07 by the 09 writer, teasers/09-itemized-tally.md); odds re-derived from the 5-of-69 + 1-of-26 matrix in the math check",
+          "1-800-GAMBLER, NCPG fact sheet: https://www.ncpgambling.org/wp-content/uploads/2023/12/1-800-GAMBLER-Fact-Sheet.pdf (recorded in teasers/09-itemized-tally.md)"
+        ],
+        "hook_score_before": 6,
+        "hook_score_after": 8,
+        "math_ok": true,
+        "facts_ok": true,
+        "replaced": false,
+        "review": null
+      }
+    ]
+  },
+  {
+    "n": 4,
+    "name": "two envelopes",
+    "series_name": "Two Envelopes",
+    "file": "teasers/04-two-envelopes.md",
+    "teasers": [
+      {
+        "id": "04A",
+        "title": "$1 million now or $1,000 a week for life? (Two Envelopes No. 04A)",
+        "hook": "$1,000,000 NOW / OR *$1,000 A WEEK* / FOR LIFE?",
+        "runtime_s": 31,
+        "spec": "engine/specs/04-two-envelopes-a.json",
+        "key_numbers": [
+          "$1,000,000 ÷ $1,000/wk = 1,000 weeks (exact)",
+          "1,000 ÷ 52 ≈ 19.2 years crossover (exact 19.23 = 19 yrs 12 wks; within 0.16%)",
+          "$52,000 ÷ $1,000,000 = 5.2% implied perpetuity rate (exact, sealed answer)",
+          "Pin: PV of $52K/yr over 30 yrs = $1.02M at 3%, $0.80M at 5%, $0.65M at 7%",
+          "Pin: year-20 $1,000 at an assumed 3% inflation ≈ $554 today",
+          "Description: $1,000 = 79.9% (about 80%) of the $1,251 BLS median full-time week"
+        ],
+        "sources": [
+          "No real-world statistic on screen: all amounts are the dilemma's stated hypotheticals",
+          "BLS, Usual Weekly Earnings of Wage and Salary Workers, Q2 2026, released 2026-07-21, median full-time weekly pay $1,251 (description only): https://www.bls.gov/news.release/archives/wkyeng_07212026.htm (team WebSearch verification 2026-10-07, cited in teasers/02, 05, 08)",
+          "Format evidence: Filomation 'Someone's never heard of compound interest', 5,662,642 views, 388.12x, https://www.youtube.com/shorts/klM8NXv-MFg (research/watch/group4-video4.md)"
+        ],
+        "hook_score_before": 8,
+        "hook_score_after": 8,
+        "math_ok": true,
+        "facts_ok": true,
+        "replaced": false,
+        "review": null
+      },
+      {
+        "id": "04B",
+        "title": "$200 a month from 25 or $400 a month from 35? (Two Envelopes No. 04B)",
+        "hook": "$200/MO FROM 25 / OR *$400/MO* FROM 35. / WHO HAS MORE AT 65?",
+        "runtime_s": 52.8,
+        "spec": "engine/specs/04-two-envelopes-b.json",
+        "key_numbers": [
+          "Deposits: A $96,000 (200×480) vs B $144,000 (400×360); B puts in $48,000 more",
+          "At 65 (7%/yr assumed, monthly): A $524,962.68 ≈ $525K vs B $487,988.40 ≈ $488K; A by $36,974 ≈ $37K (sealed)",
+          "A's head start at 35: $34,616.96 ≈ $34,600; its interest $201.93 ≈ $202/mo > B's extra $200, so the gap grows every month and B never catches up",
+          "Twist: at 6%, B passes A at 63 yrs 8 mo (deposit 464) and leads by $3,508 at 65",
+          "Pin: tie at 65 = 6.11% (tribonacci root); 'never' holds for rates ≥ 6.95%; yearly compounding $479,124 vs $453,412 (B would catch up ~age 85.5)"
+        ],
+        "sources": [
+          "No real-world inputs: deposits are the dilemma's stated amounts; 7%/yr compounded monthly is a labelled assumption on the ASSUME sticky and the 7% postage stamp (not a forecast, no ticker or fund named)",
+          "Race build from research/02-top-10-approaches.md §4 ($200/mo from 25 vs $400/mo from 35 at 7% → ≈$525K vs ≈$488K, re-derived in teasers/04-two-envelopes-mathcheck.py)",
+          "Format evidence: Finance With Sharan 'Why You Should Invest Early' 69,845,216 views https://www.youtube.com/shorts/sU9SFT1nAOw; Behind the Border 'Elon Musk vs MBS' 1,740,010 views, 535.07x https://www.youtube.com/shorts/72ifhkiGq40"
+        ],
+        "hook_score_before": 7,
+        "hook_score_after": 8,
+        "math_ok": true,
+        "facts_ok": true,
+        "replaced": false,
+        "review": null
+      },
+      {
+        "id": "04C",
+        "title": "$5,000 to sign or $2 more an hour? (Two Envelopes No. 04C)",
+        "hook": "$5,000 TO SIGN / OR *$2 MORE AN HOUR?* / PICK IN ONE SECOND.",
+        "runtime_s": 15,
+        "spec": "engine/specs/04-two-envelopes-c.json",
+        "key_numbers": [
+          "$2 × 40 hrs = $80 a week",
+          "$5,000 ÷ $80 = 62.5 weeks crossover (≈14.4 months, exact, no rounding)",
+          "After 62 weeks the raise has paid $4,960; after 63, $5,040 → 'leave before wk 63 / stay past wk 63'",
+          "$80 × 52 = +$4,160 every year after; 2 yrs $8,320, 3 yrs $12,480 vs $5,000",
+          "Description: $2 = 6.4% raise on the BLS median full-time wage ($1,251 ÷ 40 = $31.27/hr)"
+        ],
+        "sources": [
+          "No real-world statistic on screen: bonus, raise and 40-hour week are the dilemma's stated terms",
+          "BLS, Usual Weekly Earnings of Wage and Salary Workers, Q2 2026, released 2026-07-21, median full-time weekly pay $1,251 (description only): https://www.bls.gov/news.release/archives/wkyeng_07212026.htm (team WebSearch verification 2026-10-07)",
+          "Device evidence: Techtonic '$1 Million NOW or $5 Per Push-Up?' 1,059,551 views, 97.8x, https://www.youtube.com/shorts/duL1v9d3HOA"
+        ],
+        "hook_score_before": 7,
+        "hook_score_after": 8,
+        "math_ok": true,
+        "facts_ok": true,
+        "replaced": false,
+        "review": null
+      }
+    ]
+  },
+  {
+    "n": 5,
+    "name": "envelope split",
+    "series_name": "Envelope My Paycheck",
+    "file": "teasers/05-envelope-split.md",
+    "teasers": [
+      {
+        "id": "05A",
+        "title": "The median paycheck is $2,094.20. This envelope takes 30 months to fill. Yours too. (Envelope My Paycheck No. 05A)",
+        "hook": "Tape: \"$2,094.20 PAYCHECK / THIS ENVELOPE TAKES / 30 MONTHS. YOURS TOO.\" over a labelled OOPS 5% envelope showing $105, complete at t=0. VO (0.2-2.8 s): \"This envelope takes thirty months to fill. Yours too.\"",
+        "runtime_s": 39.2,
+        "spec": "engine/specs/05-envelope-split-a.json",
+        "key_numbers": [
+          "BLS median $1,251/wk x 52 = $65,052/yr; gross $2,502.00 per biweekly check",
+          "2026 federal income tax $5,626.24 + FICA $4,976.48 -> take-home $2,094.20 per paycheck",
+          "10% = $209.42; MUST $1,047.10 / FUTURE $314.13 / OOPS $104.71 / FUN $628.26 (envelopes show $1,047/$314/$105/$628 = $2,094)",
+          "3 x 50% = 150% of a month's pay, / 5% a month = 30 months = 65 paychecks",
+          "Same 30 months for median ($2,094.20), nurse ($2,979.09) and $7.25/hr ($535.63) take-home",
+          "6 months of cushion = 60 months (130 paychecks)"
+        ],
+        "sources": [
+          "BLS Usual Weekly Earnings Q2 2026, released 2026-07-21: https://www.bls.gov/news.release/archives/wkyeng_07212026.htm",
+          "IRS IR-2025-103 2026 inflation adjustments (std deduction $16,100; brackets), 2025-10-09: https://www.irs.gov/newsroom/irs-releases-tax-inflation-adjustments-for-tax-year-2026-including-amendments-from-the-one-big-beautiful-bill",
+          "Accounting Today 2026 brackets (10% to $12,400, 12% to $50,400, 22% to $105,700), Oct 2025: https://www.accountingtoday.com/news/irs-announces-inflation-adjustments-for-2026",
+          "Journal of Accountancy, 2026 SS wage base $184,500 (FICA 6.2% + 1.45%), Oct 2025: https://www.journalofaccountancy.com/news/2025/oct/social-security-wage-base-and-cola-announced-for-2026/",
+          "Fidelity 50/15/5 rule (50% essentials, 5% short-term savings of take-home): https://fidelity.ca/en/insights/articles/saving-spending-rule-of-thumb",
+          "Fidelity emergency fund 3-6 months of essential expenses: https://www.fidelity.com/learning-center/smart-money/emergency-fund",
+          "Texas no personal income tax (Tex. Const. art. 8 sec. 24-a): https://agecoext.tamu.edu/wp-content/uploads/2021/06/Understanding-Texas-Taxes-rev-2021-E584.pdf"
+        ],
+        "hook_score_before": 7,
+        "hook_score_after": 8.5,
+        "math_ok": true,
+        "facts_ok": true,
+        "replaced": false,
+        "review": null
+      },
+      {
+        "id": "05B",
+        "title": "$7.25/hr first job vs. the $1,199 iPhone 18 Pro: how many paychecks? (Envelope My Paycheck No. 05B)",
+        "hook": "Tape: \"$7.25/HR FIRST JOB / VS. A $1,199 iPHONE: / HOW MANY PAYCHECKS?\" with a phone emoji, complete at t=0. VO (0.2-2.4 s): \"Minimum wage versus the new iPhone.\"",
+        "runtime_s": 40.8,
+        "spec": "engine/specs/05-envelope-split-b.json",
+        "key_numbers": [
+          "80 hrs x $7.25 = $580; $15,080/yr < $16,100 std deduction so $0 income tax; FICA $44.37; take-home $535.63",
+          "10% = $53.56; MUST $267.82 / FUTURE $80.34 / OOPS $26.78 / FUN $160.69 (envelopes $268/$80/$27/$161 = $536)",
+          "$1,199 / $161 = 7.45 ~ 7.5 -> 8 paychecks = 16 weeks (exact 7.46)",
+          "Texas 8.25% tax $98.92 -> total $1,297.92; 8 x $160.69 = $1,285.52, $12.40 short -> 9 paychecks = 18 weeks",
+          "Median paycheck's FUN $628.26: 3 paychecks with tax (2 before tax)",
+          "8 paychecks still cover it below a 7.22% combined rate ($1,273.94 at the bare 6.25% state rate)"
+        ],
+        "sources": [
+          "U.S. DOL federal minimum wage $7.25: https://www.dol.gov/agencies/whd/minimum-wage and 2009 release https://www.dol.gov/newsroom/releases/esa/esa20090716",
+          "Texas Workforce Commission, Texas minimum wage = federal $7.25: https://twc.texas.gov/jobseekers/texas-minimum-wage-law",
+          "CNBC Apple event live updates, iPhone 18 Pro starts at $1,199, 2026-09-09: https://www.cnbc.com/2026/09/09/apple-event-today-live-updates.html",
+          "MacRumors, iPhone 18 Pro price hike, 2026-09-09: https://www.macrumors.com/2026/09/09/iphone-18-pro-price-hike-to-be-lower-than-expected/",
+          "Texas Comptroller local sales tax FAQ (6.25% + up to 2% = 8.25%): https://comptroller.texas.gov/taxes/sales/faq/local.php",
+          "IRS IR-2025-103 (2026 std deduction $16,100), 2025-10-09: https://www.irs.gov/newsroom/irs-releases-tax-inflation-adjustments-for-tax-year-2026-including-amendments-from-the-one-big-beautiful-bill",
+          "Journal of Accountancy FICA/wage base 2026, Oct 2025: https://www.journalofaccountancy.com/news/2025/oct/social-security-wage-base-and-cola-announced-for-2026/"
+        ],
+        "hook_score_before": 8,
+        "hook_score_after": 9,
+        "math_ok": true,
+        "facts_ok": false,
+        "replaced": false,
+        "review": null
+      },
+      {
+        "id": "05C",
+        "title": "A nurse's $2,979.09 paycheck vs. the $429,100 median home: how many paychecks to save the down payment? (Envelope My Paycheck No. 05C)",
+        "hook": "Tape: \"NURSE PAYCHECK: $2,979.09 / VS. A $429,100 HOUSE: / HOW MANY PAYCHECKS?\" with a house emoji, complete at t=0. VO (0.2-2.2 s): \"Nurse paycheck versus the median house.\"",
+        "runtime_s": 40.9,
+        "spec": "engine/specs/05-envelope-split-c.json",
+        "key_numbers": [
+          "RN median $97,550/yr ($3,751.92 gross per biweekly check); fed tax $12,631.00 + FICA $7,462.58 -> take-home $2,979.09",
+          "10% = $297.91; MUST $1,489.55 / FUTURE $446.86 / OOPS $148.95 / FUN $893.73 (envelopes round to $1,490/$447/$149/$894 = $2,980)",
+          "10% x $429,100 = $42,910; envelope 43,000/450 = 95.6 ~ 96 paychecks; exact 96.03 = 3.69 yrs (3 yrs 8 mo)",
+          "20% down $85,820 / $446.86 = 192.05 paychecks = 7.39 (7.4) years",
+          "Median first-time buyer age 40; first-time median down payment 10%"
+        ],
+        "sources": [
+          "BLS Occupational Outlook Handbook, Registered Nurses, median $97,550 (May 2025): https://www.bls.gov/ooh/healthcare/registered-nurses.htm",
+          "NAR Existing-Home Sales August 2026, median $429,100, released 2026-09-10: https://www.nar.realtor/newsroom/nar-existing-home-sales-report-shows-2-0-decrease-in-august",
+          "Mortgage News Daily on NAR August 2026 data, 2026-09-11: https://www.mortgagenewsdaily.com/news/09112026-existing-home-sales-nar-inventory-prices-appr",
+          "NAR 2025 Profile of Home Buyers and Sellers (10% median first-time down payment; median age 40), Nov 2025: https://www.nar.realtor/newsroom/first-time-home-buyer-share-falls-to-historic-low-of-21-median-age-rises-to-40",
+          "OCC HelpWithMyBank on PMI below 20% down: https://helpwithmybank.gov/help-topics/mortgages-home-equity/private-mortgage-insurance/pmi.html",
+          "IRS IR-2025-103 2026 brackets/std deduction, 2025-10-09: https://www.irs.gov/newsroom/irs-releases-tax-inflation-adjustments-for-tax-year-2026-including-amendments-from-the-one-big-beautiful-bill",
+          "Journal of Accountancy FICA/wage base 2026, Oct 2025: https://www.journalofaccountancy.com/news/2025/oct/social-security-wage-base-and-cola-announced-for-2026/"
+        ],
+        "hook_score_before": 8,
+        "hook_score_after": 8.5,
+        "math_ok": true,
+        "facts_ok": false,
+        "replaced": false,
+        "review": null
+      }
+    ]
+  },
+  {
+    "n": 6,
+    "name": "same pile different place",
+    "series_name": "Same Pile",
+    "file": "teasers/06-same-pile-different-place.md",
+    "teasers": [
+      {
+        "id": "06A",
+        "title": "Same $1,000 of pay, 6 countries: who taxes it most? (Same Pile No. 1)",
+        "hook": "Tape hook (fully drawn in frame 1, over the full 10-envelope pile, '10 envelopes × $100', $1K SAME PILE stamp): 'Same $1,000 of pay, / 6 countries: / who taxes it MOST?'. First spoken line: 'Same thousand bucks of pay.'",
+        "runtime_s": 31.5,
+        "spec": "engine/specs/06-same-pile-different-place-a.json",
+        "key_numbers": [
+          "Chile: $1,000 × 7.1% = $71 (0.71 envelopes)",
+          "Switzerland: × 18.1% = $181",
+          "UK: × 23.1% = $231",
+          "USA (interruption): × 24.3% = $243, just under OECD average $251 (25.1%)",
+          "Germany: × 38.7% = $387",
+          "Belgium (extreme, highest of 38 OECD): × 39.5% = $395 ≈ 4 of 10 envelopes (exact 3.95, within 1.3%)",
+          "$395 ÷ $71 = 5.563× (said ≈ 5½×, within 1.1%)",
+          "US cross-check: (15.4 + 7.1)/(100 − 7.5) = 24.32%"
+        ],
+        "sources": [
+          "OECD Taxing Wages 2026 overview (published 22 Apr 2026; Belgium 39.5%, Germany/Lithuania 38.7%, Chile 7.1%, Mexico 13.2%, OECD avg 25.1%): https://www.oecd.org/en/publications/taxing-wages-2026_3a5169ef-en/full-report/overview_d93131c3.html",
+          "OECD release date advisory: https://www.oecd.org/en/about/news/media-advisories/2026/04/oecd-to-release-taxing-wages-2026-on-wednesday-22-april.html",
+          "Belgium country note 39.5%: https://www.oecd.org/content/dam/oecd/en/publications/reports/2026/04/taxing-wages-2026-country-notes_491a0e97/belgium_2c42d1fc/f118830f-en.pdf",
+          "Germany country note 38.7%: https://www.oecd.org/content/dam/oecd/en/publications/reports/2026/04/taxing-wages-2026-country-notes_491a0e97/germany_649f0784/ca03c391-en.pdf",
+          "UK 23.1% (take-home 76.9%): https://www.oecd.org/en/publications/taxing-wages-2026_3a5169ef-en/full-report/united-kingdom-2025-2026-income-tax-year_98c92486.html",
+          "Switzerland 18.1%: https://www.oecd.org/content/dam/oecd/en/publications/reports/2026/04/taxing-wages-2026-country-notes_491a0e97/switzerland_2025165d/61078ba6-en.pdf",
+          "Korea 16.5% '5th lowest' (ranking cross-check): https://www.oecd.org/content/dam/oecd/en/publications/reports/2026/04/taxing-wages-2026-country-notes_491a0e97/korea_3ee85311/2d807492-en.pdf",
+          "USA 24.3%: https://www.oecd.org/en/publications/taxing-wages-2026_3a5169ef-en/full-report/united-states_4899032e.html (cross-check: Tax Foundation wedge split https://taxfoundation.org/publications/tax-burden-on-labor-in-the-oecd/; 2024 value 24.4% https://www.oecd.org/content/dam/oecd/en/publications/reports/2025/04/taxing-wages-2025-country-notes_16d47563/united-states_e44f6362/4a2a60b9-en.pdf)",
+          "All accessed via WebSearch 2026-10-07"
+        ],
+        "hook_score_before": 7,
+        "hook_score_after": 8,
+        "math_ok": true,
+        "facts_ok": false,
+        "replaced": false,
+        "review": null
+      },
+      {
+        "id": "06B",
+        "title": "Same $1,000 cash, 6 decades: what did inflation eat? (Same Pile No. 2)",
+        "hook": "Tape hook (fully drawn in frame 1, over the full 10-envelope pile, '10 envelopes × $100', $1K stamp): 'Same $1,000 cash, / 6 decades: / what did INFLATION eat?'. First spoken line: 'Same thousand bucks in cash. Six decades.'",
+        "runtime_s": 31.2,
+        "spec": "engine/specs/06-same-pile-different-place-b.json",
+        "key_numbers": [
+          "CPI-U Aug 2026 = 334.980",
+          "2016 (240.849): buys 28.10% less = $719.00 of 2016 prices; 3 envelopes crossed",
+          "2006 (203.9): 39.13% less = $608.69; 4 crossed",
+          "1996 (157.3): 53.04% less = $469.58; 5 crossed = 'half the pile' (pattern break)",
+          "1986 (109.7): 67.25% less = $327.48; 7 crossed",
+          "1976 (57.4): 82.86% less = $171.35; 8 crossed",
+          "1966 (32.7): 90.24% less = $97.62; 9 of 10 crossed (envelope said ≈ $100, within 2.4%)",
+          "335 ÷ 32.7 ≈ 10× (exact 10.244); matching 1966's $1,000 today = $10,244.04"
+        ],
+        "sources": [
+          "BLS CPI news release Aug 2026 (11 Sep 2026), CPI-U 334.980: https://www.bls.gov/news.release/archives/cpi_09112026.htm",
+          "Corroboration: https://cpiinflationcalculator.com/the-consumer-price-index-rises-0-4-in-august-2026-seasonally-adjusted-and-holds-at-3-4-annually/",
+          "BLS CPI release Aug 2016 (16 Sep 2016), CPI-U 240.849: https://www.bls.gov/news.release/archives/cpi_09162016.pdf",
+          "BLS historical CPI-U table (Aug 2006 203.9, Aug 1996 157.3, Aug 1986 109.7, Aug 1976 57.4): https://www.bls.gov/regions/mid-atlantic/data/consumerpriceindexhistorical_us_table.htm",
+          "BLS historical CPI-U monthly table (Aug 1966 32.7): https://www.bls.gov/cpi/tables/supplemental-files/historical-cpi-u-202402.pdf",
+          "All accessed via WebSearch 2026-10-07"
+        ],
+        "hook_score_before": 7,
+        "hook_score_after": 8,
+        "math_ok": true,
+        "facts_ok": false,
+        "replaced": false,
+        "review": null
+      },
+      {
+        "id": "06C",
+        "title": "Same $1 million, 6 jobs: how long to earn it? (Same Pile No. 3)",
+        "hook": "Tape hook (fully drawn in frame 1, over the full 10-envelope pile, '10 envelopes × $100K', $1M stamp): 'Same $1 million, / 6 jobs: how long / to EARN it?'. First spoken line: 'Same million bucks. Six jobs.'",
+        "runtime_s": 32.1,
+        "spec": "engine/specs/06-same-pile-different-place-c.json",
+        "key_numbers": [
+          "Minimum wage $7.25 × 2,080 hrs = $15,080/yr → 66.31 yrs",
+          "HS teacher $72,040 → 13.88 yrs",
+          "Registered nurse $97,550 → 10.25 yrs",
+          "Software developer $135,980 → 7.35 yrs",
+          "US President $400,000 (by law, interruption) → 2.5 yrs",
+          "Avg S&P 500 CEO $22.8M (2025, excl. Musk) → 16.01 days (extreme)",
+          "$22.8M ÷ 365 = $62,465.75/day; one $100K envelope every 38.42 h",
+          "Min wage: one $100K envelope = 6.63 yrs; incl. Musk avg $340.1M → 1.07 days (pinned)"
+        ],
+        "sources": [
+          "BLS OEWS May 2025 release (15 May 2026): https://www.bls.gov/news.release/ocwage.htm",
+          "BLS OOH high school teachers $72,040: https://www.bls.gov/ooh/education-training-and-library/high-school-teachers.htm",
+          "BLS OOH registered nurses $97,550: https://www.bls.gov/ooh/healthcare/registered-nurses.htm",
+          "BLS OOH software developers $135,980: https://www.bls.gov/ooh/computer-and-information-technology/software-developers.htm",
+          "US DOL federal minimum wage $7.25 since 24 Jul 2009: https://www.dol.gov/agencies/whd/minimum-wage/faq ; https://www.dol.gov/newsroom/releases/esa/esa20090716 ; still current 2026: https://onpay.com/insights/minimum-wage-by-state-summary/",
+          "President $400,000, 3 U.S.C. §102 (since 20 Jan 2001): https://www.everycrsreport.com/reports/RS20115.html ; https://federal-regs.com/uscode/title-3/102/",
+          "AFL-CIO Executive Paywatch 2026 (Aug 2026), avg S&P 500 CEO $22.8M excl. Musk, $340.1M incl.: https://aflcio.org/press/releases/afl-cio-report-shows-top-ceos-made-312-times-workers-pay-2025 ; https://aflcio.org/2026/8/13/12-things-you-need-know-afl-cios-2026-executive-paywatch-report",
+          "All accessed via WebSearch 2026-10-07"
+        ],
+        "hook_score_before": 7,
+        "hook_score_after": 8.5,
+        "math_ok": true,
+        "facts_ok": false,
+        "replaced": false,
+        "review": null
+      }
+    ]
+  },
+  {
+    "n": 7,
+    "name": "sealed envelope estimate",
+    "series_name": "Sealed Answer",
+    "file": "teasers/07-sealed-envelope-estimate.md",
+    "teasers": [
+      {
+        "id": "07A",
+        "title": "Fry left 93¢ in the bank for 1,000 years. How much is it now? (Sealed Answer No. 07A)",
+        "hook": "Tape: 93¢ IN THE BANK / FOR *1,000 YEARS*, with a sealed envelope noted \"Fry's balance now = ?\" and a 93¢ FUTURAMA stamp, all visible at frame 0. VO: \"Fry's ninety-three cents. In the bank. For a thousand years.\"",
+        "runtime_s": 36.8,
+        "spec": "engine/specs/07-sealed-envelope-estimate-a.json",
+        "key_numbers": [
+          "$0.93 at 2.25%/yr for 1,000 years (the show's givens)",
+          "Rule of 72: 72÷2.25 = 32 yrs → 31.25 doublings → 0.93×2^31 = $1,997,159,793 ≈ $2B (LOW)",
+          "Rule of 70: 70÷2.25 = 31.11 yrs → 32.14 doublings → 0.93×2^32 = $3,994,319,585 ≈ $4B (HIGH)",
+          "Sealed card $4.3B; exact 0.93×1.0225^1000 = $4,283,508,449.71",
+          "Rule of 70 within 7% (6.75%); rule of 72 53% low; exact doubling time 31.15 yrs (constant 70.09)",
+          "Year 500 = $63,116; last 31 years add 49.8% of the balance"
+        ],
+        "sources": [
+          "Futurama, 'A Fishful of Dollars' (1999): 93¢, 2.25%, 1,000 yrs, $4.3B",
+          "Abakcus (balance verified correct): https://abakcus.com/video/futurama-93-cents-turned-43-billion-dollars (via WebSearch 2026-10-07, research/raw/web-trends-and-whitespace.md §1.10)",
+          "VICE: https://vice.com/en/article/futurama-taught-me-everything-i-know-about-compound-interest (via WebSearch 2026-10-07, same file)",
+          "Rules of 72/70: pure arithmetic (teasers/07-sealed-envelope-estimate-mathcheck.py)"
+        ],
+        "hook_score_before": 7.5,
+        "hook_score_after": 8.5,
+        "math_ok": true,
+        "facts_ok": true,
+        "replaced": false,
+        "review": null
+      },
+      {
+        "id": "07B",
+        "title": "The 100 Envelope Challenge: how much is in all 100? Guess first. (Sealed Answer No. 07B)",
+        "hook": "Tape: THE 100 ENVELOPE / CHALLENGE: / HOW MUCH IN *ALL 100*?, over a filled 10×10 ✉️ grid labelled \"$1, $2, $3 … $100\", all at frame 0. VO: \"The hundred envelope challenge: how much in all?\"",
+        "runtime_s": 31.6,
+        "spec": "engine/specs/07-sealed-envelope-estimate-b.json",
+        "key_numbers": [
+          "LOW 100 × $1 = $100",
+          "HIGH 100 × $100 = $10,000",
+          "MIDDLE 100 × $50 ≈ $5,000 (exact average envelope $50.50)",
+          "Sealed card $5,050 = (100 + 10,000) ÷ 2 = 50 pairs × $101; envelope within 1% (0.99%)",
+          "Ruler arrow at dead centre (x=500)",
+          "Re-hook: 52-week challenge = $1,378, between $52 and $2,704 (answer saved for the next envelope)"
+        ],
+        "sources": [
+          "Bustle, 100 Envelope Challenge rules and $5,050: https://www.bustle.com/life/hundred-envelope-challenge-tiktok (via WebSearch 2026-10-07, research/raw/web-trends-and-whitespace.md §1.2)",
+          "Chime, 'how to save $5,000 in 3 months': https://www.chime.com/blog/100-envelope-challenge-how-to-save-5000-in-3-months/?bapage=1 (via WebSearch 2026-10-07)",
+          "TIME, 150M+ TikTok views: https://time.com/6249003 (via WebSearch 2026-10-07, research/raw/web-creator-case-studies.md line 222)",
+          "#cashstuffing ≈1.9B views / 103K posts (Canstar, research/raw/web-trends-and-whitespace.md §1.1, 2026-10-07); description context only",
+          "Totals are exact arithmetic (Gauss sums), recomputed in the math check"
+        ],
+        "hook_score_before": 7,
+        "hook_score_after": 8.5,
+        "math_ok": true,
+        "facts_ok": true,
+        "replaced": false,
+        "review": null
+      },
+      {
+        "id": "07C",
+        "title": "How much did the Eras Tour make? 149 shows. Guess first. (Sealed Answer No. 07C)",
+        "hook": "Tape: 149 SHOWS. / HOW MUCH DID THE / *ERAS TOUR* MAKE? + 🎤, with a sealed envelope reading \"$1B? $2B? $3B?\", all at frame 0. VO: \"How much did the Eras Tour make?\"",
+        "runtime_s": 34.2,
+        "spec": "engine/specs/07-sealed-envelope-estimate-c.json",
+        "key_numbers": [
+          "Tickets: 149 × 60K = 8,940,000 (8.9M) | 149 × 75K = 11,175,000 (11.2M); 60K–75K fans a night is an on-screen assumption",
+          "× avg ticket $150 | $250 (assumption)",
+          "Gross $1,341,000,000 ($1.3B) | $2,793,750,000 ($2.8B); middle ≈ $2B (arithmetic $2.07B, geometric $1.94B)",
+          "Sealed card $2.08B = $2,077,618,725 (VERIFY); envelope $2B within 4% (3.74%); real figure inside the range, arrow at 50.7%",
+          "$13.9M a night; actual averages 68,242 fans and $204.33 a ticket, both inside the assumptions"
+        ],
+        "sources": [
+          "VERIFY, NOT CHECKED IN THIS RUN: Billboard Boxscore final Eras Tour tally (Dec 2024): 149 shows, $2,077,618,725 gross, 10,168,008 tickets. WebSearch budget was exhausted and billboard.com/Wikipedia were egress-blocked; add the Billboard URL and date before posting",
+          "Stadium size (60K–75K) and average ticket ($150–$250) are labelled assumptions on the ASSUME sticky, not statistics"
+        ],
+        "hook_score_before": 8,
+        "hook_score_after": 8.5,
+        "math_ok": true,
+        "facts_ok": false,
+        "replaced": false,
+        "review": null
+      }
+    ]
+  },
+  {
+    "n": 8,
+    "name": "trap card",
+    "series_name": "Envelope Puzzle",
+    "file": "teasers/08-trap-card.md",
+    "teasers": [
+      {
+        "id": "08A",
+        "title": "$2,500 every 2 weeks is NOT $60,000 a year (Envelope Puzzle No. 08A)",
+        "hook": "$2,500 every 2 weeks / is NOT $60,000 a year!",
+        "runtime_s": 7.5,
+        "spec": "engine/specs/08-trap-card-a.json",
+        "key_numbers": [
+          "trap: $2,500 x 24 = $60,000",
+          "52 weeks / 2 = 26 paydays",
+          "26 x $2,500 = $65,000 (+$5,000 = 2 checks)",
+          "BLS median $1,251/wk x 52 = $65,052; envelope within 0.08% (said: within 0.1%)",
+          "2026 three-payday months (every other Friday from Jan 2): January, July",
+          "27 paydays in 2027 for that schedule (Jan 1 and Dec 31); ~once every 11.2 years",
+          "biweekly = 43.0% of private establishments (BLS CES)"
+        ],
+        "sources": [
+          "BLS, Usual Weekly Earnings of Wage and Salary Workers, Q2 2026 (released 2026-07-21): median full-time $1,251/week, https://www.bls.gov/news.release/archives/wkyeng_07212026.htm (verified via WebSearch 2026-10-07)",
+          "BLS CES, Length of pay periods: biweekly most common, 43.0% of private establishments (Feb 2023 data), https://www.bls.gov/ces/publications/length-pay-period.htm (verified via WebSearch 2026-10-07)"
+        ],
+        "hook_score_before": 7,
+        "hook_score_after": 8.5,
+        "math_ok": true,
+        "facts_ok": false,
+        "replaced": false,
+        "review": null
+      },
+      {
+        "id": "08B",
+        "title": "Stocks fell 57%. Back to even is NOT +57% (Envelope Puzzle No. 08B)",
+        "hook": "Stocks fell 57%. / Back to even / is NOT +57%!",
+        "runtime_s": 7.5,
+        "spec": "engine/specs/08-trap-card-b.json",
+        "key_numbers": [
+          "S&P 500 close 1,565.15 (2007-10-09) -> 676.53 (2009-03-09) = -56.78%",
+          "exact gain to get back: 1,565.15 / 676.53 - 1 = +131.35%",
+          "with rounded 57%: 1/0.43 - 1 = +132.56%",
+          "envelope: $43 x 2.3 = $98.9 -> ~+130%, within 1.03% (said: within 1.1%)",
+          "trap: +57% from the low takes $100 -> $43 -> $67.51 (still 32.14% below the peak with exact closes)",
+          "first close above the old high: 1,569.19 on 2013-03-28, 5.47 yrs after the peak",
+          "rule: -50% needs +100%"
+        ],
+        "sources": [
+          "ETF Trends S&P 500 Snapshot: closing high 1,565.15 on Oct 9 2007, closing low 676.53 on Mar 9 2009 (~57%), https://www.etftrends.com/innovative-etfs-content-hub/sp-500-snapshot-index-finishes-week-record-high/amp/ (verified via WebSearch 2026-10-07)",
+          "Benzinga, This Day In Market History: S&P 500's Lowest Closing Price Of The Great Recession (676.53, Mar 9 2009), https://benzinga.com/z/20077767 (verified via WebSearch 2026-10-07)",
+          "AP via WTVR 2013-03-28: record close 1,569.19 above the 1,565.15 Oct 2007 record, https://www.wtvr.com/2013/03/28/sp-stock-index-closes-at-all-time-high ; PRI 2013-03-28, https://www.pri.org/stories/2013-03-28/sp-500-closes-1569-new-record-high (verified via WebSearch 2026-10-07)"
+        ],
+        "hook_score_before": 7,
+        "hook_score_after": 8.5,
+        "math_ok": true,
+        "facts_ok": true,
+        "replaced": false,
+        "review": null
+      },
+      {
+        "id": "08C",
+        "title": "Gatorade went 32 oz to 28 oz, same price. The hike is NOT 12.5% (Envelope Puzzle No. 08C)",
+        "hook": "Gatorade: 32 oz → 28 oz / Same price. / The hike is NOT 12.5%!",
+        "runtime_s": 7.5,
+        "spec": "engine/specs/08-trap-card-c.json",
+        "key_numbers": [
+          "trap: 4/32 = 12.5% less drink",
+          "exact: 32/28 - 1 = 4/28 = 1/7 = +14.29% per ounce",
+          "envelope ~+14%, within 2.00%",
+          "rule: shrink by 1/n -> pay 1/(n-1) more per unit (1/8 -> 1/7)"
+        ],
+        "sources": [
+          "AP, 'No, you're not imagining it — package sizes are shrinking', 2022-06-08 (PepsiCo phasing out 32-oz Gatorade for 28-oz), https://www.bangordailynews.com/2022/06/08/nation/no-youre-not-imagining-it-package-sizes-are-shrinking/ (verified via WebSearch 2026-10-07)",
+          "NPR, 'Shrinkflation accelerates globally...', 2022-06-08 ('the equivalent of a 14% price increase'), https://www.npr.org/2022/06/08/1103766334/shrinkflation-globally-manufacturers-shrink-package-sizes (verified via WebSearch 2026-10-07)",
+          "NBC DFW, 'Paying the same but getting less: it's called shrinkflation' (28-oz bottle 'for the same price'), https://www.nbcdfw.com/news/local/paying-the-same-but-getting-less-its-called-shrinkflation/2970095/ (verified via WebSearch 2026-10-07)",
+          "WFSB 2026-04-16 shrinkflation story (topicality only, no figure used), https://www.wfsb.com/2026/04/16/shrinkflation-costs-average-family-41-more-per-year-grocery-store/"
+        ],
+        "hook_score_before": 6,
+        "hook_score_after": 8,
+        "math_ok": true,
+        "facts_ok": true,
+        "replaced": false,
+        "review": null
+      }
+    ]
+  },
+  {
+    "n": 9,
+    "name": "itemized tally",
+    "series_name": "Itemized",
+    "file": "teasers/09-itemized-tally.md",
+    "teasers": [
+      {
+        "id": "09A",
+        "title": "Itemized: 6 groceries cost $11.39 in 2006. Did they actually double? (Envelope Math No. 09A)",
+        "hook": "6 groceries: *$11.39* in 2006 / Did they *actually* double?",
+        "runtime_s": 51,
+        "spec": "engine/specs/09-itemized-tally-a.json",
+        "key_numbers": [
+          "2006 basket $11.39 (eggs 1.31, milk 3.08, bread 1.08, bananas 0.50, coffee 3.20, ground beef 2.22; BLS 2006 annual averages)",
+          "Aug 2026 basket $25.19 (2.27, 4.23, 1.82, 0.65, 9.30, 6.92; unrounded $25.198) = x2.21",
+          "Pattern break: bananas +15 cents in 20 years (x1.30); coffee x2.9, beef x3.1; coffee + beef = 78% of the $13.80 jump",
+          "Avg hourly pay (production & nonsupervisory) $16.79 (Aug 2006) -> $32.53 (Aug 2026) = x1.94",
+          "Minutes of work 40.70 -> 46.46 (+5.76 min, +14.1%); envelope said ~46 min, within 1%",
+          "Pinned: at federal minimum wage ($5.15 -> $7.25) 132.7 -> 208.5 min (+57%)"
+        ],
+        "sources": [
+          "BLS average prices via FRED: eggs https://fred.stlouisfed.org/series/APU0000708111 (Aug 2026 $2.272, released 2026-09-11; checked 2026-10-07)",
+          "Milk https://fred.stlouisfed.org/series/APU0000709112 ; https://www.usinflationcalculator.com/inflation/milk-prices-adjusted-for-inflation/ (2006 $3.08, Aug 2026 $4.229; checked 2026-10-07)",
+          "Bread https://fred.stlouisfed.org/series/APU0000702111 ; https://basketreport.com/prices/bread/history/ (2006 $1.08, Aug 2026 $1.823; checked 2026-10-07)",
+          "Bananas https://fred.stlouisfed.org/series/APU0000711211 ; https://basketreport.com/prices/bananas/ (2006 $0.50, Aug 2026 $0.652; checked 2026-10-07)",
+          "Coffee https://fred.stlouisfed.org/data/APU0000717311 ; https://www.usinflationcalculator.com/inflation/coffee-prices-by-year-and-adjust-for-inflation/ (2006 $3.203, Aug 2026 $9.299; checked 2026-10-07)",
+          "Ground beef https://fred.stlouisfed.org/series/APU0000703112 ; https://basketreport.com/prices/ground-beef/history/ ; https://themoneyoverview.com/25-ground-beef-averaged-6-92-a-pound-in-august-up-about-60-cents/ (2006 $2.22, Aug 2026 $6.923; checked 2026-10-07)",
+          "2006 eggs/milk/bread corroboration: https://www.aol.com/articles/much-21-everyday-grocery-items-123000733.html (checked 2026-10-07)",
+          "CPI release schedule (Aug 2026 data out 2026-09-11): https://www.bls.gov/news.release/cpi.htm",
+          "BLS Employment Situation Aug 2006 ($16.79, released 2006-09-01): https://www.bls.gov/news.release/archives/empsit_09012006.pdf",
+          "BLS Employment Situation Table B-8 / Real Earnings Aug 2026 ($32.53): https://www.bls.gov/news.release/empsit.t24.htm ; https://www.bls.gov/news.release/realer.nr0.htm (checked 2026-10-07)",
+          "Federal minimum wage $5.15 (1997-2007) and $7.25 since 2009-07-24: https://www.cbpp.org/sites/default/files/archive/8-31-06mw.htm ; https://www.ontheclock.com/State-Minimum-Wage (checked 2026-10-07)"
+        ],
+        "hook_score_before": 6.5,
+        "hook_score_after": 8.5,
+        "math_ok": true,
+        "facts_ok": false,
+        "replaced": false,
+        "review": null
+      },
+      {
+        "id": "09B",
+        "title": "Itemized: your $10 at Chipotle. How much is profit? (Envelope Math No. 09B)",
+        "hook": "*$10* at Chipotle. / How much is profit?",
+        "runtime_s": 38.8,
+        "spec": "engine/specs/09-itemized-tally-b.json",
+        "key_numbers": [
+          "Per $10 (FY2025, % of total revenue): food/drinks/packaging $2.96 (29.6%), crew $2.51 (25.1%), rent $0.52 (5.2%), ads/delivery/card fees/utilities $1.47 (14.7%)",
+          "Restaurant-level margin $2.54 (25.4%, cross-checked = 100 - 74.6)",
+          "HQ + depreciation + new stores $0.92 (25.4% - 16.2%) -> operating $1.62",
+          "Taxes net of interest income $0.33 (16.2% - 12.88%)",
+          "Profit $1.29 of every $10: net income $1,535.8M / revenue $11,925.6M = 12.88% ($1.288; within 0.2%)",
+          "Twist: crew = 85% of the food cost"
+        ],
+        "sources": [
+          "Chipotle Q4 & FY2025 results, 2026-02-03 (29.6% / 25.1% / 5.2% / 14.7% / RLM 25.4% / operating margin 16.2% / revenue $11.9B): https://ir.chipotle.com/2026-02-03-CHIPOTLE-ANNOUNCES-FOURTH-QUARTER-AND-FULL-YEAR-2025-RESULTS (checked 2026-10-07)",
+          "Chipotle FY2025 Form 10-K (revenue $11,925,601K; net income $1,535,761K; definition of other operating costs): https://www.sec.gov/Archives/edgar/data/1058090/000105809026000009/cmg-20251231.htm (checked 2026-10-07)"
+        ],
+        "hook_score_before": 7,
+        "hook_score_after": 8.5,
+        "math_ok": true,
+        "facts_ok": false,
+        "replaced": false,
+        "review": null
+      },
+      {
+        "id": "09C",
+        "title": "Itemized: what's a $2 Powerball ticket actually worth? (Envelope Math No. 09C)",
+        "hook": "*$2* Powerball ticket. / What's it *really* worth?",
+        "runtime_s": 44.8,
+        "spec": "engine/specs/09-itemized-tally-c.json",
+        "key_numbers": [
+          "Prize x chance per tier: $4 (1 in 38.32) 10.44c; three $4/$7 ways 6.55c; two $100 ways 0.96c; $50,000 (1 in 913,129.18) 5.48c; $1,000,000 (1 in 11,688,053.52) 8.56c",
+          "All non-jackpot prizes 31.99c (running total on screen 10, 17, 18, 23, 32 cents)",
+          "Twist: the $50,000 prize (5c) is worth less than the $4 prize (10c)",
+          "Jackpot slice: $199.8M cash x 0.63 = $125.874M / 292,201,338 = 43.08c",
+          "Whole ticket 75.07c per $2 (envelope said ~75c, within 0.1%); 37.5c back per $1",
+          "Break-even (pinned): ~$779.3M cash, ~$1.89B advertised at this week's 0.412 cash/annuity ratio (no split, no state tax)",
+          "Odds re-derived: C(69,5) x 26 = 292,201,338; any prize 1 in 24.87"
+        ],
+        "sources": [
+          "Official Powerball prize chart and odds: https://www.powerball.com/powerball-prize-chart ; https://www.lotteryusa.com/powerball/prizes-odds (checked 2026-10-07)",
+          "Jackpot for 2026-10-07 drawing ($485M est., $199.8M cash, after no winner on 2026-10-05): https://www.yahoo.com/news/us/articles/powerball-winning-numbers-oct-5-111407510.html ; https://www.wthr.com/article/news/nation-world/powerball-winning-numbers-oct-5-2026/507-9a01fc8b-0441-4f0c-bd7d-d614a4250379 (checked 2026-10-07)",
+          "2026 top federal rate 37% (single > $640,600; IRS inflation adjustments): https://www.journalofaccountancy.com/news/2025/oct/annual-inflation-adjustments-announced-for-tax-year-2026/ ; 24% withholding vs 37% liability: https://www.lotterycalc.com/blog/federal-lottery-tax-rate (checked 2026-10-07)",
+          "1-800-GAMBLER national helpline: https://www.ncpgambling.org/wp-content/uploads/2023/12/1-800-GAMBLER-Fact-Sheet.pdf (checked 2026-10-07)"
+        ],
+        "hook_score_before": 6.5,
+        "hook_score_after": 8,
+        "math_ok": true,
+        "facts_ok": false,
+        "replaced": false,
+        "review": null
+      }
+    ]
+  },
+  {
+    "n": 10,
+    "name": "envelope audit",
+    "series_name": "Envelope Audit",
+    "file": "teasers/10-envelope-audit.md",
+    "teasers": [
+      {
+        "id": "10A",
+        "title": "“Write off your $100-a-night chef. Dinner's free.” What does it actually cost? (Envelope Audit No. 10A)",
+        "hook": "Frame 1 (fully drawn at t=0): typewriter 'THE CLAIM:' over masking tape “Write off your / $100-a-night chef. / Dinner's FREE.” (FREE in red), AUDIT stamp slams at 0.4 s. First spoken line: \"Write off your hundred-dollar chef, and dinner's free?\"",
+        "runtime_s": 35.2,
+        "spec": "engine/specs/10-envelope-audit-a.json",
+        "key_numbers": [
+          "$100 a dinner (labelled assumption)",
+          "$100 × 50% meal cap = $50 deductible",
+          "$50 × 24% = $12 back (12¢ per $1)",
+          "Sealed answer: $88 a dinner",
+          "≈ $32K a year (exact $32,120; within 0.4%)",
+          "Claim survival: 12%",
+          "Pinned: even at a 50% combined tax rate the dinner costs $75; a family dinner is $0 deductible"
+        ],
+        "sources": [
+          "IRS, tax year 2026 inflation adjustments (Rev. Proc. 2025-32): 24% bracket $105,700–$201,775 single; 37% over $640,600; $16,100 standard deduction. https://www.irs.gov/newsroom/irs-releases-tax-inflation-adjustments-for-tax-year-2026-including-amendments-from-the-one-big-beautiful-bill (checked 2026-10-07)",
+          "26 U.S.C. §274(n) 50% food/beverage limit and §274(a) entertainment: https://www.law.cornell.edu/uscode/text/26/274 (checked 2026-10-07)",
+          "IRS Publication 463 (50% limit; you or an employee present; not lavish): https://www.irs.gov/publications/p463 (checked 2026-10-07)",
+          "Confirms the 50% rule in 2026 (temporary 100% expired after 2022): https://beancount.io/blog/2026/07/29/business-meals-2026-what-is-50-percent-deductible-after-temporary-100-expired-document-business-purpose-guide (2026-07-29)",
+          "26 U.S.C. §262 and 26 CFR §1.262-1, personal/household expenses including domestic service: https://www.law.cornell.edu/uscode/text/26/262 , https://www.law.cornell.edu/cfr/text/26/1.262-1 (checked 2026-10-07)",
+          "Context for the $100 assumption: MiumMium 2026 average private chef $76 per person: https://www.miummium.com/blog/how-much-do-personal-chefs-cost (checked 2026-10-07)",
+          "Evidence: Money Guy Show, Private Chef Every Night as a Tax Write-Off? 6,195,245 views, 272.45x: https://www.youtube.com/shorts/LcaiiOGG3SY"
+        ],
+        "hook_score_before": 7,
+        "hook_score_after": 8.5,
+        "math_ok": true,
+        "facts_ok": true,
+        "replaced": false,
+        "review": null
+      },
+      {
+        "id": "10B",
+        "title": "“Pay the minimum on $5,000 and you'll pay for 20 years”? We actually checked (Envelope Audit No. 10B)",
+        "hook": "Frame 1 (fully drawn at t=0): 'THE CLAIM:' over tape “Pay the minimum on / $5,000 and you'll / pay for 20 YEARS.” (20 YEARS in red), AUDIT stamp at 0.4 s. First spoken line: \"Twenty years to pay off five grand?\"",
+        "runtime_s": 35.2,
+        "spec": "engine/specs/10-envelope-audit-b.json",
+        "key_numbers": [
+          "$5,000 × 22% ÷ 12 ≈ $92 month-one interest",
+          "min: $92 + $50 = $142 → only $50 hits the debt",
+          "1%/mo → halves every ~6 yrs (rule of 70; exact 69 months)",
+          "Curve marks: yr 6 ≈ $2.4K, yr 12 ≈ $1.2K",
+          "Sealed answer: ≈ 19 years, ≈ $13,100 paid",
+          "Exact: 231 months (19 yr 3 mo), $13,158.75 paid, $8,158.75 interest (within 1.3% / 0.5%)",
+          "$40-floor card: 184 months, $12,516.44",
+          "Claim survival: 96%"
+        ],
+        "sources": [
+          "Federal Reserve G.19, interest rate on credit card plans, accounts assessed interest, Q2 2026 = 22.15% (prior quarter 21.52%), via FRED TERMCBCCINTNS: https://fred.stlouisfed.org/series/TERMCBCCINTNS ; release https://www.federalreserve.gov/releases/g19/ (checked 2026-10-07 via search summaries; the FRED page was egress-blocked, so re-confirm before publishing)",
+          "Capital One account terms, minimum = greater of $25 or 1% of New Balance + interest + late fees: https://card-apis.capitalone.com/disclosure.31753.en-US.html (checked 2026-10-07)",
+          "Chase, minimum = larger of $40 or 1% + interest + late fees: https://www.chase.com/personal/credit-cards/education/basics/how-to-calculate-your-minimum-credit-card-payment (checked 2026-10-07)",
+          "Reg Z 12 CFR 1026.7(b)(12) Minimum Payment Warning: https://www.consumercomplianceoutlook.org/articles/2010/first-issue-2010/an-overview-of-the-regulation-z-rules-implementing-the-card-act (checked 2026-10-07)",
+          "Evidence: David Sklar & Associates, Stop Paying the Minimum on Credit Cards, 303,523 views, 1,227.8x: https://www.youtube.com/shorts/XCmCiQaEg3k"
+        ],
+        "hook_score_before": 7.5,
+        "hook_score_after": 8.5,
+        "math_ok": true,
+        "facts_ok": false,
+        "replaced": false,
+        "review": null
+      },
+      {
+        "id": "10C",
+        "title": "“At $1.04 billion, a $2 Powerball ticket's worth $3.56”? What it's actually worth (Envelope Audit No. 10C)",
+        "hook": "Frame 1 (fully drawn at t=0): 'THE CLAIM:' over tape “At $1.04 BILLION, / a $2 Powerball / ticket's worth $3.56.” ($3.56 in red, size 80), AUDIT stamp at 0.4 s. First spoken line: \"A two-dollar ticket worth three fifty-six?\"",
+        "runtime_s": 34.5,
+        "spec": "engine/specs/10-envelope-audit-c.json",
+        "key_numbers": [
+          "$1.04B ÷ 292.2M ≈ $3.56 (the claim, credited)",
+          "$450.5M cash ÷ 292.2M ≈ $1.54",
+          "$1.54 × 63% (after 37% federal tax) ≈ 97¢",
+          "Exact 97.15¢ with 2026 brackets (effective 36.99%; within 0.2%)",
+          "All prizes, small ones tax-free: ≤ $1.29",
+          "Break-even advertised jackpot ≈ $2.14B (≈ $1.80B with small prizes tax-free)",
+          "Claim survival: 27%"
+        ],
+        "sources": [
+          "Powerball, $1.040 Billion Powerball Jackpot Won in Illinois (Aug 12, 2026 draw; $1.040B annuity, $450.5M cash): https://www.powerball.com/1.040-billion-powerball-jackpot-won-in-illinois (checked 2026-10-07 via search results; direct fetch was egress-blocked)",
+          "Illinois Lottery, winner claimed the prize and chose the lump sum (Sept 2026): https://www.illinoislottery.com/illinois-lottery/press-and-media-center/press-release/2026/9/mystery-solved-illinois-lottery-confirm-1-04-billion-powerball-jackpot-has-been-claimed (checked 2026-10-07)",
+          "Powerball prize chart: jackpot odds 1 in 292,201,338, $2 play, all prize tiers: https://www.powerball.com/powerball-prize-chart (checked 2026-10-07)",
+          "Powerball FAQs: annuity = 30 graduated payments over 29 years, rising 5% a year: https://www.powerball.com/faqs (checked 2026-10-07)",
+          "IRS 2026 rates, 37% top rate: https://www.irs.gov/newsroom/irs-releases-tax-inflation-adjustments-for-tax-year-2026-including-amendments-from-the-one-big-beautiful-bill (checked 2026-10-07)",
+          "Evidence: @sog_geovanie trillion fact-check, 2.4M views, 1,005.7x: https://www.tiktok.com/@sog_geovanie/video/7667278089755299085"
+        ],
+        "hook_score_before": 6.5,
+        "hook_score_after": 8,
+        "math_ok": true,
+        "facts_ok": false,
+        "replaced": false,
+        "review": null
+      }
+    ]
+  }
+]

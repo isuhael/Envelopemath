@@ -125,61 +125,161 @@
     },
     {
       "type": "receipt",
+      "id": "rcl",
+      "t": 0,
+      "x": 345,
+      "y": 600,
+      "w": 570,
+      "size": 46,
+      "rot": -0.6,
+      "instant": true,
+      "compact": true,
+      "header": "PRIZE · CHANCE",
+      "items": [
+        [
+          "$4",
+          "1 IN 38"
+        ],
+        [
+          "$4–$7",
+          "3 MORE WAYS"
+        ],
+        [
+          "$100",
+          "2 WAYS"
+        ],
+        [
+          "$50,000",
+          "1 IN 913K"
+        ],
+        [
+          "$1,000,000",
+          "1 IN 11.7M"
+        ],
+        [
+          "JACKPOT",
+          "1 IN 292.2M"
+        ]
+      ]
+    },
+    {
+      "type": "receipt",
       "id": "rc",
       "t": 0,
-      "x": 540,
+      "x": 794,
       "y": 600,
-      "w": 800,
-      "size": 42,
-      "rot": -1,
+      "w": 300,
+      "size": 46,
+      "rot": 0.8,
       "compact": true,
-      "header": "PRIZE × CHANCE = WORTH",
+      "header": "= WORTH",
       "items": [
         {
-          "label": "$4 · 1 IN 38",
+          "label": "=",
           "value": "10¢",
           "at": 4.6
         },
         {
-          "label": "$4–$7 · 3 MORE WAYS",
+          "label": "=",
           "value": "7¢",
           "at": 7.6
         },
         {
-          "label": "$100 · 2 WAYS",
+          "label": "=",
           "value": "1¢",
           "at": 10.6
         },
         {
-          "label": "$50,000 · 1 IN 913K",
+          "label": "=",
           "value": "5¢",
           "at": 13.6,
-          "color": "red"
-        },
-        {
-          "label": "  ↑ LESS THAN THE $4 PRIZE",
-          "value": "",
-          "at": 16.6,
+          "color": "red",
           "highlight": true
         },
         {
-          "label": "$1,000,000 · 1 IN 11.7M",
+          "label": "=",
           "value": "9¢",
           "at": 19.6
         },
         {
-          "label": "JACKPOT · 1 IN 292.2M",
+          "label": "=",
           "value": "?",
           "at": 22.6
         }
       ]
     },
     {
+      "type": "highlight",
+      "t": 4.6,
+      "x": 78.2,
+      "y": 777.4,
+      "w": 538,
+      "h": 58.7,
+      "dur": 0.3,
+      "until": 7.6,
+      "fadeOut": 0.15
+    },
+    {
+      "type": "highlight",
+      "t": 7.6,
+      "x": 78.9,
+      "y": 844.1,
+      "w": 538,
+      "h": 58.7,
+      "dur": 0.3,
+      "until": 10.6,
+      "fadeOut": 0.15
+    },
+    {
+      "type": "highlight",
+      "t": 10.6,
+      "x": 79.6,
+      "y": 910.8,
+      "w": 538,
+      "h": 58.7,
+      "dur": 0.3,
+      "until": 13.6,
+      "fadeOut": 0.15
+    },
+    {
+      "type": "highlight",
+      "t": 13.6,
+      "x": 80.3,
+      "y": 977.5,
+      "w": 538,
+      "h": 58.7,
+      "dur": 0.3,
+      "until": 19.6,
+      "fadeOut": 0.15
+    },
+    {
+      "type": "highlight",
+      "t": 19.6,
+      "x": 81.0,
+      "y": 1044.2,
+      "w": 538,
+      "h": 58.7,
+      "dur": 0.3,
+      "until": 22.6,
+      "fadeOut": 0.15
+    },
+    {
+      "type": "highlight",
+      "t": 22.6,
+      "x": 81.7,
+      "y": 1110.9,
+      "w": 538,
+      "h": 58.7,
+      "dur": 0.3,
+      "until": 25.8,
+      "fadeOut": 0.15
+    },
+    {
       "type": "counter",
       "id": "worth",
       "t": 0,
       "x": 540,
-      "y": 1276,
+      "y": 1282,
       "size": 92,
       "prefix": "worth so far: ",
       "suffix": "¢",
@@ -215,21 +315,21 @@
       "type": "annotate",
       "t": 14.3,
       "kind": "circle",
-      "x": 873.5,
-      "y": 949.9,
-      "w": 45,
-      "h": 37.8,
-      "pad": 14
+      "x": 861.3,
+      "y": 987.5,
+      "w": 49,
+      "h": 41.4,
+      "pad": 12
     },
     {
       "type": "annotate",
       "t": 14.8,
       "kind": "circle",
-      "x": 843.3,
-      "y": 767.5,
-      "w": 72,
-      "h": 37.8,
-      "pad": 14
+      "x": 835.1,
+      "y": 787.2,
+      "w": 78,
+      "h": 41.4,
+      "pad": 12
     },
     {
       "type": "stamp",

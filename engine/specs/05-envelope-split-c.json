@@ -5,466 +5,74 @@
     "style": "kraft",
     "seed": 53
   },
-  "duration": 31.0,
+  "duration": 31.8,
+  "loop": true,
+  "vo": "Nurse paycheck versus the median house. Median nurse pay: ninety-seven five fifty. Take-home, every two weeks: twenty-nine seventy-nine. Same four envelopes. FUTURE, fifteen percent: four forty-seven. First-time buyers put ten percent down: forty-two nine. Call it forty-three grand over four fifty: ninety-six paychecks. Exact: ninety-six point oh three. Three years, eight months. That's if every FUTURE dollar goes to the house. Twenty percent down, to skip PMI? The median first-time buyer is now forty. Double the down payment. How old would you be? Seven point four years.",
   "captions": [
-    {
-      "t": 0.2,
-      "end": 2.2,
-      "text": "Nurse paycheck versus the median house."
-    },
-    {
-      "t": 2.3,
-      "end": 4.0,
-      "text": "Median nurse pay: ninety-seven five fifty."
-    },
-    {
-      "t": 4.1,
-      "end": 5.2,
-      "text": "Take-home: twenty-nine seventy-nine."
-    },
-    {
-      "t": 5.3,
-      "end": 6.4,
-      "text": "Same four envelopes."
-    },
-    {
-      "t": 6.5,
-      "end": 8.0,
-      "text": "FUTURE, fifteen percent: four forty-seven."
-    },
-    {
-      "t": 8.4,
-      "end": 10.1,
-      "text": "First-time buyers put ten percent down:"
-    },
-    {
-      "t": 10.2,
-      "end": 11.2,
-      "text": "forty-two nine."
-    },
-    {
-      "t": 11.3,
-      "end": 13.3,
-      "text": "Call it forty-three grand over four fifty:"
-    },
-    {
-      "t": 13.4,
-      "end": 14.4,
-      "text": "ninety-six paychecks."
-    },
-    {
-      "t": 14.5,
-      "end": 16.0,
-      "text": "Exact: ninety-six point oh three."
-    },
-    {
-      "t": 16.1,
-      "end": 17.8,
-      "text": "Three years, eight months."
-    },
-    {
-      "t": 17.9,
-      "end": 20.5,
-      "text": "That's if every FUTURE dollar goes to the house."
-    },
-    {
-      "t": 20.9,
-      "end": 23.2,
-      "text": "Twenty percent down, to skip PMI?"
-    },
-    {
-      "t": 23.3,
-      "end": 25.9,
-      "text": "The median first-time buyer is now forty."
-    },
-    {
-      "t": 26.0,
-      "end": 27.4,
-      "text": "Double the down payment."
-    },
-    {
-      "t": 27.5,
-      "end": 28.9,
-      "text": "How old would you be?"
-    },
-    {
-      "t": 29.0,
-      "end": 30.8,
-      "text": "Seven point four years."
-    }
+    {"t": 0.2, "end": 2.2, "text": "Nurse paycheck versus the median house."},
+    {"t": 2.3, "end": 4.0, "text": "Median nurse pay: $97,550.", "say": "Median nurse pay: ninety-seven five fifty."},
+    {"t": 4.1, "end": 5.6, "text": "Take-home, every 2 weeks: $2,979.", "say": "Take-home, every two weeks: twenty-nine seventy-nine."},
+    {"t": 5.9, "end": 7.0, "text": "Same four envelopes."},
+    {"t": 7.1, "end": 8.6, "text": "FUTURE, 15%: $447.", "say": "FUTURE, fifteen percent: four forty-seven."},
+    {"t": 9.0, "end": 10.7, "text": "First-time buyers put 10% down:", "say": "First-time buyers put ten percent down:"},
+    {"t": 10.8, "end": 11.8, "text": "$42,910.", "say": "forty-two nine."},
+    {"t": 11.9, "end": 13.9, "text": "Call it $43K over $450:", "say": "Call it forty-three grand over four fifty:"},
+    {"t": 14.0, "end": 15.0, "text": "96 paychecks.", "say": "ninety-six paychecks."},
+    {"t": 15.1, "end": 16.6, "text": "Exact: 96.03.", "say": "Exact: ninety-six point oh three."},
+    {"t": 16.7, "end": 18.4, "text": "3 years, 8 months.", "say": "Three years, eight months."},
+    {"t": 18.5, "end": 21.1, "text": "That's if every FUTURE dollar goes to the house."},
+    {"t": 21.5, "end": 23.8, "text": "20% down, to skip PMI?", "say": "Twenty percent down, to skip PMI?"},
+    {"t": 23.9, "end": 26.5, "text": "The median first-time buyer is now 40.", "say": "The median first-time buyer is now forty."},
+    {"t": 26.6, "end": 28.0, "text": "Double the down payment."},
+    {"t": 28.1, "end": 29.5, "text": "How old would you be?"},
+    {"t": 29.6, "end": 31.4, "text": "7.4 years.", "say": "Seven point four years."}
   ],
-  "vo": "Nurse paycheck versus the median house. Median nurse pay: ninety-seven five fifty. Take-home: twenty-nine seventy-nine. Same four envelopes. FUTURE, fifteen percent: four forty-seven. First-time buyers put ten percent down: forty-two nine. Call it forty-three grand over four fifty: ninety-six paychecks. Exact: ninety-six point oh three. Three years, eight months. That's if every FUTURE dollar goes to the house. Twenty percent down, to skip PMI? The median first-time buyer is now forty. Double the down payment. How old would you be? Seven point four years.",
   "ops": [
-    {
-      "type": "postmark",
-      "t": -0.5,
-      "x": 190,
-      "y": 300,
-      "center": [
-        "No.",
-        "05C"
-      ],
-      "persist": true
-    },
-    {
-      "type": "hook",
-      "t": -0.8,
-      "y": 456,
-      "size": 64,
-      "until": 2.4,
-      "text": [
-        "NURSE PAYCHECK: $2,979.09",
-        "VS. A *$429,100* HOUSE:",
-        "HOW MANY PAYCHECKS?"
-      ]
-    },
-    {
-      "type": "emoji",
-      "t": -0.6,
-      "char": "🏠",
-      "x": 540,
-      "y": 900,
-      "size": 300,
-      "rot": -6,
-      "bob": true,
-      "until": 2.4
-    },
-    {
-      "type": "counter",
-      "t": 2.45,
-      "from": 3751.92,
-      "to": 2979.09,
-      "decimals": 2,
-      "prefix": "$",
-      "x": 80,
-      "y": 480,
-      "size": 104,
-      "align": "left",
-      "dur": 1.8,
-      "color": "ink"
-    },
-    {
-      "type": "write",
-      "t": 2.45,
-      "text": "$97,550 a year ÷ 26 = $3,751.92",
-      "x": 84,
-      "y": 552,
-      "size": 40,
-      "color": "pencil",
-      "cps": 40,
-      "until": 4.6
-    },
-    {
-      "type": "write",
-      "t": 2.8,
-      "text": "− fed tax − FICA",
-      "x": 540,
-      "y": 900,
-      "size": 84,
-      "align": "center",
-      "color": "red",
-      "cps": 22,
-      "until": 4.3
-    },
-    {
-      "type": "write",
-      "t": 4.6,
-      "text": "take-home, every 2 wks",
-      "x": 84,
-      "y": 552,
-      "size": 50,
-      "color": "pencil",
-      "cps": 30
-    },
-    {
-      "type": "sticky",
-      "t": 2.5,
-      "x": 790,
-      "y": 470,
-      "w": 380,
-      "size": 40,
-      "cps": 44,
-      "rot": 4,
-      "text": "RN median (BLS, May 2025) · single · Texas · 2026 fed tax + FICA",
-      "title": "ASSUME:"
-    },
-    {
-      "type": "stuff",
-      "t": 4.35,
-      "x": 300,
-      "y": 800,
-      "w": 340,
-      "cols": 1,
-      "ew": 340,
-      "eh": 190,
-      "items": [
-        {
-          "label": "MUST 50%",
-          "amount": 1490
-        }
-      ]
-    },
-    {
-      "type": "stuff",
-      "t": 4.65,
-      "x": 760,
-      "y": 800,
-      "w": 340,
-      "cols": 1,
-      "ew": 340,
-      "eh": 190,
-      "items": [
-        {
-          "label": "OOPS 5%",
-          "amount": 149
-        }
-      ]
-    },
-    {
-      "type": "stuff",
-      "t": 4.95,
-      "x": 300,
-      "y": 1090,
-      "w": 340,
-      "cols": 1,
-      "ew": 340,
-      "eh": 190,
-      "items": [
-        {
-          "label": "FUTURE 15%",
-          "amount": 447
-        }
-      ]
-    },
-    {
-      "type": "stuff",
-      "t": 5.25,
-      "x": 760,
-      "y": 1090,
-      "w": 340,
-      "cols": 1,
-      "ew": 340,
-      "eh": 190,
-      "items": [
-        {
-          "label": "FUN 30%",
-          "amount": 894
-        }
-      ]
-    },
-    {
-      "type": "write",
-      "t": 5.4,
-      "text": "10% = $298",
-      "x": 80,
-      "y": 640,
-      "size": 66,
-      "color": "red"
-    },
-    {
-      "type": "annotate",
-      "t": 7.0,
-      "kind": "circle",
-      "x": 230,
-      "y": 1203,
-      "w": 140,
-      "h": 66,
-      "width": 6
-    },
-    {
-      "type": "flip",
-      "t": 8.1
-    },
-    {
-      "type": "postage",
-      "t": 8.4,
-      "x": 815,
-      "y": 470,
-      "w": 250,
-      "h": 280,
-      "value": "$429K",
-      "label": "MEDIAN HOME",
-      "art": "🏠",
-      "rot": 5,
-      "until": 17.0
-    },
-    {
-      "type": "write",
-      "t": 8.4,
-      "text": "FUTURE → house",
-      "x": 80,
-      "y": 455,
-      "size": 72
-    },
-    {
-      "type": "write",
-      "t": 9.0,
-      "text": "$447 a paycheck",
-      "x": 80,
-      "y": 545,
-      "size": 62
-    },
-    {
-      "type": "stuff",
-      "t": 8.5,
-      "x": 540,
-      "y": 1135,
-      "w": 340,
-      "cols": 1,
-      "ew": 340,
-      "eh": 190,
-      "items": [
-        {
-          "label": "FUTURE 15%",
-          "amount": 447
-        }
-      ],
-      "until": 14.4
-    },
-    {
-      "type": "write",
-      "t": 9.2,
-      "text": "10% × $429,100 = $42,910",
-      "x": 850,
-      "y": 745,
-      "size": 80,
-      "align": "right"
-    },
-    {
-      "type": "write",
-      "t": 11.4,
-      "text": "÷ $447 a paycheck",
-      "x": 850,
-      "y": 860,
-      "size": 88,
-      "align": "right"
-    },
-    {
-      "type": "annotate",
-      "t": 12.6,
-      "kind": "underline",
-      "x": 300,
-      "y": 885,
-      "w": 550,
-      "color": "ink",
-      "width": 5,
-      "dur": 0.3
-    },
-    {
-      "type": "write",
-      "t": 13.0,
-      "text": "≈ 96 paychecks",
-      "x": 850,
-      "y": 990,
-      "size": 100,
-      "align": "right",
-      "color": "red"
-    },
-    {
-      "type": "write",
-      "t": 14.5,
-      "text": "exact: 96.03",
-      "x": 110,
-      "y": 1110,
-      "size": 70
-    },
-    {
-      "type": "stamp",
-      "t": 15.4,
-      "text": "ROUGHLY\nRIGHT",
-      "x": 795,
-      "y": 1118,
-      "size": 48,
-      "rot": -10
-    },
-    {
-      "type": "write",
-      "t": 16.1,
-      "text": "≈ 3 yrs, 8 months",
-      "x": 110,
-      "y": 1225,
-      "size": 80,
-      "color": "red"
-    },
-    {
-      "type": "sticky",
-      "t": 17.0,
-      "x": 800,
-      "y": 480,
-      "w": 360,
-      "size": 42,
-      "cps": 40,
-      "rot": 3,
-      "text": "all FUTURE $ → house · pay & price stay flat",
-      "title": "ASSUME:"
-    },
-    {
-      "type": "flip",
-      "t": 20.6
-    },
-    {
-      "type": "write",
-      "t": 20.9,
-      "text": "20% down = no PMI",
-      "x": 80,
-      "y": 455,
-      "size": 70
-    },
-    {
-      "type": "bars",
-      "t": 21.0,
-      "x": 540,
-      "y": 1180,
-      "w": 700,
-      "h": 400,
-      "stagger": 7.8,
-      "max": 192.05,
-      "items": [
-        {
-          "label": "10% down",
-          "value": 96.03,
-          "display": "3.7 yrs",
-          "color": "ink",
-          "valueSize": 80,
-          "labelSize": 56
-        },
-        {
-          "label": "20% down",
-          "value": 192.05,
-          "display": "7.4 yrs",
-          "color": "red",
-          "valueSize": 92,
-          "labelSize": 56
-        }
-      ]
-    },
-    {
-      "type": "write",
-      "t": 23.4,
-      "text": "median 1st-time buyer: 40",
-      "x": 80,
-      "y": 548,
-      "size": 62
-    },
-    {
-      "type": "write",
-      "t": 29.0,
-      "text": "192 paychecks",
-      "x": 80,
-      "y": 650,
-      "size": 72,
-      "color": "red",
-      "cps": 22
-    },
-    {
-      "type": "annotate",
-      "t": 29.9,
-      "kind": "circle",
-      "x": 590,
-      "y": 684,
-      "w": 250,
-      "h": 96,
-      "width": 6
-    }
+    {"type": "postmark", "t": 0, "x": 175, "y": 258, "r": 100, "center": ["No.", "05C"], "persist": true},
+    {"type": "hook", "t": 0, "y": 440, "size": 64, "until": 2.4, "text": ["NURSE PAYCHECK: $2,979.09", "VS. A *$429,100* HOUSE:", "HOW MANY PAYCHECKS?"]},
+    {"type": "emoji", "t": 0, "char": "🏠", "x": 540, "y": 970, "size": 360, "rot": -6, "bob": true, "until": 2.4},
+    {"type": "write", "t": 2.45, "text": "RN median: $97,550 a year", "x": 80, "y": 470, "size": 64, "color": "pencil", "cps": 34, "until": 5.75},
+    {"type": "write", "t": 3.0, "text": "÷ 26 = $3,751.92 gross", "x": 80, "y": 560, "size": 64, "color": "pencil", "cps": 34, "until": 5.75},
+    {"type": "counter", "t": 2.5, "from": 3751.92, "to": 2979.09, "decimals": 2, "prefix": "$", "x": 540, "y": 780, "size": 150, "dur": 2.0, "color": "ink", "until": 5.75},
+    {"type": "write", "t": 3.2, "text": "− fed tax − FICA", "x": 540, "y": 895, "size": 76, "align": "center", "color": "red", "cps": 26, "until": 5.75},
+    {"type": "sticky", "t": 2.9, "x": 540, "y": 1110, "w": 540, "size": 56, "cps": 56, "rot": -3, "title": "ASSUME:", "text": "BLS, May 2025 · single · Texas · 2026 federal tax + FICA", "until": 5.75},
+    {"type": "flip", "t": 5.7},
+    {"type": "write", "t": 6.0, "text": "$2,979.09", "x": 80, "y": 480, "size": 104, "cps": 40},
+    {"type": "write", "t": 6.55, "text": "take-home", "x": 470, "y": 480, "size": 64, "color": "pencil", "cps": 30},
+    {"type": "write", "t": 6.2, "text": "10% = $298", "x": 80, "y": 585, "size": 76, "color": "red", "cps": 24},
+    {"type": "write", "t": 7.15, "text": "15% = 10% + 5%", "x": 520, "y": 585, "size": 76, "color": "red", "cps": 28},
+    {"type": "stuff", "t": 6.05, "x": 300, "y": 745, "w": 380, "cols": 1, "ew": 380, "eh": 210, "items": [{"label": "", "amount": 1490, "color": "rgba(0,0,0,0)"}]},
+    {"type": "write", "t": 6.17, "text": "MUST 50%", "x": 300, "y": 835, "size": 64, "align": "center", "cps": 40, "pen": false, "allowOverlap": true, "id": "mustLabel"},
+    {"type": "counter", "t": 6.25, "from": 0, "to": 1490, "dur": 0.6, "prefix": "$", "x": 300, "y": 934, "size": 76, "color": "green", "align": "center", "allowOverlap": true, "id": "mustAmt"},
+    {"type": "stuff", "t": 6.35, "x": 745, "y": 745, "w": 380, "cols": 1, "ew": 380, "eh": 210, "items": [{"label": "", "amount": 149, "color": "rgba(0,0,0,0)"}]},
+    {"type": "write", "t": 6.47, "text": "OOPS 5%", "x": 745, "y": 835, "size": 64, "align": "center", "cps": 40, "pen": false, "allowOverlap": true, "id": "oopsLabel"},
+    {"type": "counter", "t": 6.55, "from": 0, "to": 149, "dur": 0.6, "prefix": "$", "x": 745, "y": 934, "size": 76, "color": "green", "align": "center", "allowOverlap": true, "id": "oopsAmt"},
+    {"type": "stuff", "t": 6.65, "x": 300, "y": 1065, "w": 380, "cols": 1, "ew": 380, "eh": 210, "items": [{"label": "", "amount": 447, "color": "rgba(0,0,0,0)"}]},
+    {"type": "write", "t": 6.7700000000000005, "text": "FUTURE 15%", "x": 300, "y": 1155, "size": 64, "align": "center", "cps": 40, "pen": false, "allowOverlap": true, "id": "futureLabel"},
+    {"type": "counter", "t": 6.8500000000000005, "from": 0, "to": 447, "dur": 0.6, "prefix": "$", "x": 300, "y": 1254, "size": 76, "color": "green", "align": "center", "allowOverlap": true, "id": "futureAmt"},
+    {"type": "stuff", "t": 6.95, "x": 745, "y": 1065, "w": 380, "cols": 1, "ew": 380, "eh": 210, "items": [{"label": "", "amount": 894, "color": "rgba(0,0,0,0)"}]},
+    {"type": "write", "t": 7.07, "text": "FUN 30%", "x": 745, "y": 1155, "size": 64, "align": "center", "cps": 40, "pen": false, "allowOverlap": true, "id": "funLabel"},
+    {"type": "counter", "t": 7.15, "from": 0, "to": 894, "dur": 0.6, "prefix": "$", "x": 745, "y": 1254, "size": 76, "color": "green", "align": "center", "allowOverlap": true, "id": "funAmt"},
+    {"type": "annotate", "t": 7.9, "kind": "circle", "target": {"op": "futureAmt", "pad": 4}, "width": 6},
+    {"type": "flip", "t": 8.7},
+    {"type": "postage", "t": 9.0, "x": 830, "y": 445, "w": 240, "h": 280, "value": "$429K", "label": "MEDIAN HOME", "labelSize": 22, "art": "🏠", "rot": 5, "until": 17.75},
+    {"type": "write", "t": 9.0, "text": "FUTURE → house", "x": 80, "y": 455, "size": 76, "cps": 26},
+    {"type": "write", "t": 9.6, "text": "$447 a paycheck", "x": 80, "y": 555, "size": 72, "cps": 26},
+    {"type": "write", "t": 9.8, "text": "10% × $429,100 = $42,910", "x": 900, "y": 735, "size": 84, "align": "right", "cps": 24, "id": "l1"},
+    {"type": "write", "t": 12.0, "text": "÷ $447 a paycheck", "x": 900, "y": 860, "size": 100, "align": "right", "cps": 20, "id": "l2"},
+    {"type": "annotate", "t": 13.3, "kind": "underline", "x": 95, "y": 892, "w": 805, "color": "ink", "width": 5, "dur": 0.3},
+    {"type": "write", "t": 13.65, "text": "≈ 96 paychecks", "x": 900, "y": 1010, "size": 120, "align": "right", "color": "red", "cps": 22, "id": "l3"},
+    {"type": "stuff", "t": 9.1, "x": 540, "y": 1150, "w": 360, "cols": 1, "ew": 360, "eh": 200, "items": [{"label": "", "amount": 447, "color": "rgba(0,0,0,0)"}], "until": 15.05},
+    {"type": "write", "t": 9.219999999999999, "text": "FUTURE 15%", "x": 540, "y": 1236, "size": 64, "align": "center", "cps": 40, "pen": false, "allowOverlap": true, "id": "future2Label", "until": 15.05},
+    {"type": "write", "t": 15.15, "text": "exact: 96.03", "x": 80, "y": 1135, "size": 80, "cps": 22},
+    {"type": "stamp", "t": 16.0, "text": "ROUGHLY\nRIGHT", "x": 760, "y": 1118, "size": 54, "rot": -9},
+    {"type": "write", "t": 16.75, "text": "= 3 yrs, 8 months", "x": 80, "y": 1262, "size": 88, "color": "red", "cps": 24},
+    {"type": "sticky", "t": 17.85, "x": 805, "y": 440, "w": 390, "size": 56, "cps": 44, "rot": 4, "title": "ASSUME:", "text": "all FUTURE $ → house · pay & price stay flat"},
+    {"type": "flip", "t": 21.2},
+    {"type": "write", "t": 21.5, "text": "20% down = no PMI", "x": 80, "y": 470, "size": 76, "cps": 24},
+    {"type": "write", "t": 24.0, "text": "median 1st-time buyer: 40", "x": 80, "y": 575, "size": 64, "color": "pencil", "cps": 30},
+    {"type": "bars", "t": 21.6, "x": 540, "y": 1180, "w": 700, "h": 400, "max": 192.05, "items": [{"label": "10% down", "value": 96.03, "display": "3.7 yrs", "color": "ink", "valueSize": 84, "labelSize": 64, "at": 0.25}, {"label": "20% down", "value": 192.05, "display": "7.4 yrs", "color": "red", "valueSize": 104, "labelSize": 64, "at": 8.0}]},
+    {"type": "write", "t": 29.75, "text": "192 paychecks", "x": 80, "y": 690, "size": 80, "color": "red", "cps": 24, "id": "n20"},
+    {"type": "annotate", "t": 30.4, "kind": "underline", "target": {"op": "n20"}, "width": 6}
   ]
 }

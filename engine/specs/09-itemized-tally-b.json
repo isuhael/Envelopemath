@@ -117,44 +117,134 @@
     },
     {
       "type": "receipt",
-      "id": "rb",
+      "id": "rbl",
       "t": 0,
-      "x": 540,
+      "x": 365,
       "y": 600,
-      "w": 800,
+      "w": 610,
       "size": 52,
-      "rot": -0.8,
+      "rot": -0.5,
+      "instant": true,
       "compact": true,
       "header": "WHERE YOUR $10 GOES",
       "items": [
+        [
+          "FOOD, DRINKS, BAGS",
+          ""
+        ],
+        [
+          "CREW (LABOR)",
+          ""
+        ],
+        [
+          "RENT",
+          ""
+        ],
+        [
+          "ADS, DELIVERY, FEES",
+          ""
+        ],
+        [
+          "HQ + DEPRECIATION",
+          ""
+        ]
+      ]
+    },
+    {
+      "type": "receipt",
+      "id": "rb",
+      "t": 0,
+      "x": 814,
+      "y": 600,
+      "w": 260,
+      "size": 52,
+      "rot": 0.7,
+      "compact": true,
+      "header": "AMOUNT",
+      "items": [
         {
-          "label": "FOOD, DRINKS, BAGS",
+          "label": "",
           "value": "-$2.96",
           "at": 4.9
         },
         {
-          "label": "CREW (LABOR)",
+          "label": "",
           "value": "-$2.51",
           "at": 8.1,
           "color": "red",
           "highlight": true
         },
         {
-          "label": "RENT",
+          "label": "",
           "value": "-$0.52",
           "at": 11.3
         },
         {
-          "label": "ADS, DELIVERY, FEES",
+          "label": "",
           "value": "-$1.47",
           "at": 14.5
         },
         {
-          "label": "HQ + DEPRECIATION",
+          "label": "",
           "value": "-$0.91",
           "at": 17.7
         }
       ]
+    },
+    {
+      "type": "highlight",
+      "t": 4.6,
+      "x": 78.0,
+      "y": 794.8,
+      "w": 578,
+      "h": 67.4,
+      "dur": 0.3,
+      "until": 7.8,
+      "fadeOut": 0.15
+    },
+    {
+      "type": "highlight",
+      "t": 7.8,
+      "x": 78.7,
+      "y": 870.2,
+      "w": 578,
+      "h": 67.4,
+      "dur": 0.3,
+      "until": 11.0,
+      "fadeOut": 0.15
+    },
+    {
+      "type": "highlight",
+      "t": 11.0,
+      "x": 79.3,
+      "y": 945.6,
+      "w": 578,
+      "h": 67.4,
+      "dur": 0.3,
+      "until": 14.2,
+      "fadeOut": 0.15
+    },
+    {
+      "type": "highlight",
+      "t": 14.2,
+      "x": 80.0,
+      "y": 1021.0,
+      "w": 578,
+      "h": 67.4,
+      "dur": 0.3,
+      "until": 17.4,
+      "fadeOut": 0.15
+    },
+    {
+      "type": "highlight",
+      "t": 17.4,
+      "x": 80.6,
+      "y": 1096.4,
+      "w": 578,
+      "h": 67.4,
+      "dur": 0.3,
+      "until": 20.5,
+      "fadeOut": 0.15
     },
     {
       "type": "counter",

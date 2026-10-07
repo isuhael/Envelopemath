@@ -143,72 +143,73 @@
 #### 09A: Six groceries, $11.39 in 2006. Did they actually double?
 
 **Working title:** Itemized: 6 groceries cost $11.39 in 2006. Did they actually double? · **Series tag:** (Envelope Math No. 09A · Itemized)
-**Lane / runtime:** Envelope, **41.5 s** master. The writer's 51 s cut spent 5 s on set-up with no new number and 6 s after the reveal; both were cut. A 47 s Reels/TikTok cut adds the minimum-wage beat (see platform notes).
+**Lane / runtime:** Envelope, **41.6 s** master, `loop: true`. The writer's 51 s cut spent 5 s on set-up with no new number and 6 s after the reveal; both were cut. A 47 s Reels/TikTok cut adds the minimum-wage beat (see platform notes).
 
-**Frame-1 hook** (fully drawn in frame 0, which is also the thumbnail)
-- **On screen:** masking tape "6 groceries: **$11.39** in 2006 / Did they **actually** double?", the postmark No. 09A, the receipt header "AVG U.S. PRICE 2006 → 2026" and a postage stamp "$11.39 · 6 ITEMS · 2006".
+**Frame-1 hook** (finished in frame 0, which is also the thumbnail)
+- **On screen:** masking tape "6 groceries: **$11.39** in 2006 / Did they **actually** double?", the postmark No. 09A in the flap, the full 2006 receipt (six BLS prices, red TOTAL $11.39) and, beside it, an empty receipt headed "AUG 2026". The empty column is the question.
 - **First spoken line (0.1 to 2.6 s):** "Six groceries cost eleven thirty-nine in 2006."
 
-**Beat sheet** (spec `09-itemized-tally-a.json`; receipt slot 3.2 s, header already printed at t 0)
+**Beat sheet** (spec `09-itemized-tally-a.json`; two receipts side by side, 44 px type; each 2026 price prints 1.3 s into its 3.2 s slot, on "Now…")
 
 | Time | Beat | On screen |
 |---|---|---|
-| 0.0 to 2.6 | Hook | Tape hook, postmark, receipt header, $11.39 postage stamp (all in frame 0) |
-| 2.6 to 4.9 | The stake + source | "Did they actually double? BLS prices, line by line." Receipt rule (1.8); RUNNING TOTAL $0.00 → $0.00 (2.0) |
-| 5.0 to 14.5 | Lines 1 to 3, **first payoff at 12%** | EGGS 1.31 → 2.27 · MILK 3.08 → 4.23 · BREAD 1.08 → 1.82; both totals tick 0.35 s after each row |
-| 14.6 to 17.7 | **Pattern break (35 to 43%)** | BANANAS 0.50 → 0.65: yellow highlight, 🍌, red "+15¢ in 20 years?!", red circle |
-| 17.8 to 24.1 | The big movers | COFFEE 3.20 → 9.30 (☕ "coffee ×2.9"); GROUND BEEF 2.22 → 6.92 (🥩 "beef ×3.1") |
-| 24.2 to 28.7 | Totals (58 to 69%) | **$11.39 → $25.19**, 2026 total circled, red "× 2.2", "(78% of it: coffee + beef)". VO: "2.2 times. In dollars, yes." |
+| 0.0 to 2.6 | Hook | Tape hook, postmark, 2006 receipt with TOTAL $11.39, empty AUG 2026 receipt (all in frame 0) |
+| 2.6 to 4.9 | The stake + source | "Did they actually double? BLS prices, line by line." |
+| 5.0 to 14.5 | Lines 1 to 3, **first payoff at 15%** | A highlighter swipe marks the 2006 row being read; then the 2026 price prints beside it with its multiplier: ×1.7 $2.28 (6.3) · ×1.4 $4.23 (9.5) · ×1.7 $1.82 (12.7). The 2026 TOTAL row updates with each print |
+| 14.6 to 17.7 | **Pattern break (35 to 43%)** | Hook leaves; BANANAS ×1.3 $0.65 prints highlighted (15.9); 🍌 and red "+15¢ in 20 years?!" |
+| 17.8 to 24.1 | The big movers + the line to beat | Pencil "double = $22.78" (17.9); COFFEE ×2.9 $9.30 in red (19.1); GROUND BEEF ×3.1 $6.92 in red (22.3): the 2026 TOTAL jumps $18.28 → $25.20 and "$22.78" gets a red circle (22.65) |
+| 24.2 to 28.7 | Totals (58 to 69%) | TOTAL $11.39 beside TOTAL $25.20; red "× 2.2", double-underlined (25.8); "78% of it: coffee + beef" with "coffee + beef" highlighted (26.4 to 27.4). VO: "2.2 times. In dollars, yes." |
 | 28.8 | Flip | Working side |
-| 29.0 to 36.2 | The adjustment line | ASSUME sticky (pay, 29.1); sealed envelope slides in (29.4); "2006: $11.39 ÷ $16.79 ≈ 41 min" (29.9); "2026: $25.19 ÷ $32.53 ≈" (33.9) |
-| 36.3 to 39.3 | Commit | PAUSE & GUESS timer, 3 s |
-| **39.3 to 41.5** | **Hero in the last 2 s** | Envelope opens (39.3); card out from 39.75 (96%): **≈ 46 min / ×1.1, not ×2.2**; red "46 min" completes line 2 (39.9); OPENED BY MISTAKE (40.3) |
-| 39.4 to 41.4 | Loop | "46 minutes. Not double." cuts to frame 1's "Did they actually double?" |
+| 29.1 to 36.1 | The adjustment line | ASSUME sticky (pay, 29.1); sealed envelope slides in (29.3); pencil "in minutes of work:" (29.6); "2006: $11.39 ÷ $16.79 ≈ 41 min" (30.0; "41 min" underlined at 32.3); "2026: $25.20 ÷ $32.53 ≈" (33.8) |
+| 36.2 to 39.2 | Commit | PAUSE & GUESS timer, 3 s |
+| **39.2 to 41.6** | **Hero in the last 2 s** | Envelope opens (39.2); card out from 39.65 (95%): **≈ 46 min / ×1.1, not ×2.2** (112 px); red "46 min" completes line 2 (39.8); OPENED BY MISTAKE (40.3) |
+| 39.3 to 41.6 | Loop | "46 minutes. Not double." then a 0.35 s crossfade into frame 0's "Did they actually double?" |
 
-**Full voice-over** (calm, dry; ≈ 170 wpm)
+**Full voice-over** (calm, dry; ≈ 170 wpm; the spec's `vo` and caption `say` fields carry the same words)
 > Six groceries cost eleven thirty-nine in 2006. Did they actually double? BLS prices, line by line.
-> Eggs: a buck thirty-one a dozen. Now two twenty-seven.
+> Eggs: a buck thirty-one a dozen. Now two twenty-eight.
 > Milk: three-oh-eight a gallon. Now four twenty-three.
 > Bread: a buck-oh-eight a pound. Now a buck eighty-two.
 > Bananas: fifty cents… now sixty-five. Fifteen cents in twenty years?!
 > Coffee: three twenty a pound. Now nine thirty.
 > Ground beef: two twenty-two. Now six ninety-two. Triple.
-> Total: eleven thirty-nine then. Twenty-five nineteen now. Two point two times. In dollars, yes.
+> Total: eleven thirty-nine then. Twenty-five twenty now. Two point two times. In dollars, yes.
 > But pay rose too: sixteen seventy-nine an hour in 2006. So that bag cost forty-one minutes of work.
 > Today: thirty-two fifty-three an hour. Today's bag costs… Pause. Guess the minutes.
 > Forty-six minutes. Not double.
 > *(loop)* Six groceries cost eleven thirty-nine in 2006. Did they actually double?
 
-**The envelope math** (the receipt carries the six sourced lines; the handwriting is two lines under a pencil label, and the sealed card holds the answer)
+**The envelope math** (the receipts carry the six sourced lines; the handwriting is two lines under a pencil label, and the sealed card holds the answer)
 1. `2006: $11.39 ÷ $16.79 ≈ 41 min` (exact 40.70 min)
-2. `2026: $25.19 ÷ $32.53 ≈ 46 min` (exact 46.46 min; "46 min" is written in red when the envelope opens)
+2. `2026: $25.20 ÷ $32.53 ≈ 46 min` (exact 46.48 min; 46.49 from the unrounded $25.205; "46 min" is written in red when the envelope opens)
 3. Sealed card: `≈ 46 min` / `×1.1, not ×2.2` (minutes ×1.14 exact, ×1.12 from the rounded 46 ÷ 41; prices ×2.21)
 
-The verdict is a ratio on purpose. The writer's "+6 min" was the exact 5.76 rounded, but the screen shows 41 and 46, and anyone subtracting those gets 5.
+The verdict is a ratio on purpose. The exact gap is 5.78 min, but the screen shows 41 and 46, and anyone subtracting those gets 5.
+The row multipliers (×1.7, ×1.4, ×1.7, ×1.3, ×2.9, ×3.1) are the shown 2026 price ÷ the 2006 price, and each rounds the same way from the unrounded BLS price.
 
-**ASSUME sticky:** "avg hourly pay / 2006: $16.79 / 2026: $32.53". The receipt header also flags the price basis: "AVG U.S. PRICE".
+**ASSUME sticky:** "avg hourly pay / 2006: $16.79 / 2026: $32.53". The receipt headers flag the price basis: "AVG PRICE, 2006" and "AUG 2026".
 
-**Sources** (writer-verified with WebSearch on 2026-10-07; the QA pass could not re-load them, see the Verification log)
+**Sources** (re-verified with WebSearch on 2026-10-07 in the polish pass; details in the Final fact check)
 
 | Input | Value | Source (date) |
 |---|---|---|
-| Eggs, grade A large, dozen (APU0000708111) | 2006 avg $1.31 · Aug 2026 $2.272 | BLS average price data via FRED, https://fred.stlouisfed.org/series/APU0000708111 ; 2006 avg also in https://www.aol.com/articles/much-21-everyday-grocery-items-123000733.html (Aug 2026 data released 2026-09-11) |
-| Milk, whole, gallon (APU0000709112) | 2006 avg $3.08 · Aug 2026 $4.229 | https://fred.stlouisfed.org/series/APU0000709112 ; https://www.usinflationcalculator.com/inflation/milk-prices-adjusted-for-inflation/ ; https://www.aol.com/articles/much-21-everyday-grocery-items-123000733.html |
-| Bread, white pan, lb (APU0000702111) | 2006 avg $1.08 · Aug 2026 $1.823 | https://fred.stlouisfed.org/series/APU0000702111 ; https://basketreport.com/prices/bread/history/ |
-| Bananas, lb (APU0000711211) | 2006 avg $0.50 · Aug 2026 $0.652 | https://fred.stlouisfed.org/series/APU0000711211 ; https://basketreport.com/prices/bananas/ |
-| Coffee, 100% ground roast, lb (APU0000717311) | 2006 avg $3.20 ($3.203) · Aug 2026 $9.299 | https://fred.stlouisfed.org/data/APU0000717311 ; https://www.usinflationcalculator.com/inflation/coffee-prices-by-year-and-adjust-for-inflation/ |
-| Ground beef, 100% beef, lb (APU0000703112) | 2006 avg $2.22 · Aug 2026 $6.923 | https://fred.stlouisfed.org/series/APU0000703112 ; https://basketreport.com/prices/ground-beef/history/ ; https://themoneyoverview.com/25-ground-beef-averaged-6-92-a-pound-in-august-up-about-60-cents/ |
-| Release schedule | Aug 2026 CPI/average prices out 2026-09-11; next 2026-10-14 | https://www.bls.gov/news.release/cpi.htm ; https://www.bls.gov/cpi/factsheets/average-prices.htm |
-| Avg hourly earnings, production & nonsupervisory, private | Aug 2006 $16.79 (as first published) | BLS Employment Situation, Aug 2006 (released 2006-09-01): https://www.bls.gov/news.release/archives/empsit_09012006.pdf |
-| Same series | Aug 2026 $32.53 | BLS Employment Situation, Table B-8: https://www.bls.gov/news.release/empsit.t24.htm ; Real Earnings Aug 2026: https://www.bls.gov/news.release/realer.nr0.htm |
-| Federal minimum wage (pinned comment only) | $5.15 (Sep 1997 to Jul 2007); $7.25 since 2009-07-24 | https://www.cbpp.org/sites/default/files/archive/8-31-06mw.htm ; https://www.ontheclock.com/State-Minimum-Wage |
+| Eggs, grade A large, dozen (APU0000708111) | 2006 avg $1.31 · **Aug 2026 $2.279** (was $2.272 in the writer's draft; +4.1% from July's $2.189) | BLS average price data via https://www.usinflationcalculator.com/inflation/egg-prices-adjusted-for-inflation/ (Aug data released 2026-09-11); https://themoneyoverview.com/36-egg-prices-ticked-back-up-to-about-2-28-a-dozen-in-august-bucking-the/ ; series https://fred.stlouisfed.org/series/APU0000708111 |
+| Milk, whole, gallon (APU0000709112) | 2006 avg $3.08 · Aug 2026 $4.229 | https://www.usinflationcalculator.com/inflation/milk-prices-adjusted-for-inflation/ ; https://fred.stlouisfed.org/series/APU0000709112 |
+| Bread, white pan, lb (APU0000702111) | 2006 avg $1.08 · Aug 2026 $1.823 | https://www.bakingbusiness.com/articles/66929-white-pan-bread-retail-price-rises-in-august ; https://fred.stlouisfed.org/data/APU0000702111 |
+| Bananas, lb (APU0000711211) | 2006 avg $0.50 · Aug 2026 $0.652 | https://tradingeconomics.com/united-states/bananas-per-lb-4536-gm-in-us-city-average-fed-data.html ; https://basketreport.com/prices/bananas/ ; https://fred.stlouisfed.org/data/APU0000711211 |
+| Coffee, 100% ground roast, lb (APU0000717311) | 2006 avg $3.20 ($3.203) · Aug 2026 $9.299 (July $9.317) | https://www.usinflationcalculator.com/inflation/coffee-prices-by-year-and-adjust-for-inflation/ ; https://fred.stlouisfed.org/data/APU0000717311 |
+| Ground beef, 100% beef, lb (APU0000703112) | 2006 avg $2.22 · Aug 2026 $6.923 | https://basketreport.com/prices/ground-beef/history/ ; https://themoneyoverview.com/25-ground-beef-averaged-6-92-a-pound-in-august-up-about-60-cents/ ; https://fred.stlouisfed.org/series/APU0000703112 |
+| Release schedule | Aug 2026 CPI/average prices out 2026-09-11; Sep 2026 due 2026-10-14 | https://eco3min.fr/en/next-us-cpi-release/ ; https://www.bls.gov/cpi/factsheets/average-prices.htm |
+| Avg hourly earnings, production & nonsupervisory, private | Aug 2006 $16.79 (as first published, "rose by 2 cents… to $16.79") | BLS Employment Situation, Aug 2006 (released 2006-09-01): https://www.bls.gov/news.release/archives/empsit_09012006.pdf |
+| Same series | Aug 2026 $32.53 (Sep 2026: $32.60, up 7 cents, released 2026-10-02) | BLS Real Earnings, Aug 2026 (2026-09-11): https://www.bls.gov/news.release/archives/realer_09112026.htm ; Sep jobs report: https://tradingeconomics.com/united-states/average-hourly-earnings/news/589162 |
+| Federal minimum wage (pinned comment only) | $5.15 (Sep 1997 to Jul 2007); $7.25 since 2009-07-24 | https://www.scrippsnews.com/life/money/despite-inflation-the-federal-minimum-wage-has-not-had-an-increase-in-15-years ; https://www.cbpp.org/sites/default/files/archive/8-31-06mw.htm |
 
-*Basis note, stated in the pin:* 2006 prices are BLS annual averages; the 2006 wage is August (mid-year, inside that year's $16.52 to $17.06 monthly range, and any month in that range still rounds to 40 to 41 min). 2026 prices and pay are both August 2026, so they share a month: August is the latest average-price release as of 2026-10-07 (September prices come out 2026-10-14). The September jobs report is already out, so the pay figure is the matched August one, not the newest one. Cite the August 2026 Employment Situation release itself, because the live Table B-8 link now shows later months.
+*Basis note, stated in the pin:* 2006 prices are BLS annual averages; the 2006 wage is August (mid-year, inside that year's $16.52 to $17.06 monthly range, and any month in that range still rounds to 40 to 41 min). 2026 prices and pay are both August 2026, so they share a month: August is the latest average-price release as of 2026-10-07 (September prices come out 2026-10-14). The September jobs report is already out ($32.60), so the pay figure is the matched August one, not the newest one; the September figure leaves the verdict unchanged ($25.20 ÷ $32.60 = 46.4 min). Cite the August 2026 Real Earnings release itself, because the live Table B-8 link now shows later months.
 
 **Ending**
-- **Loop line:** "46 minutes. Not double." cuts straight to the frame-1 tape "Did they actually double?", so the answer and the question meet at the seam.
+- **Loop line:** "46 minutes. Not double." crossfades straight into the frame-1 tape "Did they actually double?", so the answer and the question meet at the seam.
 - **Comment bait** (a genuine question, in the caption): "Which wage should the envelope use: average pay or minimum wage? (The pin has both.)"
-- **Pinned comment:** "Exact: $11.39 (2006 avg) → $25.198 (Aug 2026) = ×2.21. Pay $16.79 → $32.53/hr = ×1.94. Minutes of work: 40.7 → 46.5, +5.8 min (+14%), so ×1.1. Envelope said ≈46 min, within 1%. Coffee + beef = 78% of the $13.80 jump. At the federal minimum wage ($5.15 → $7.25) the same bag goes 133 → 208 min (+57%), so who's buying matters. Assumptions: BLS U.S. average prices (2006 annual avg; Aug 2026); BLS avg hourly earnings, non-managers (Aug 2006 as first published; Aug 2026). Sources in the description. Want a different item itemized? Comment it."
+- **Pinned comment:** "Exact: $11.39 (2006 avg) → $25.205 (Aug 2026) = ×2.21. Pay $16.79 → $32.53/hr = ×1.94. Minutes of work: 40.7 → 46.5, +5.8 min (+14%), so ×1.1. Envelope said ≈46 min, within 1%. Coffee + beef = 78% of the $13.81 jump. At the federal minimum wage ($5.15 → $7.25) the same bag goes 133 → 209 min (+57%), so who's buying matters. Assumptions: BLS U.S. average prices (2006 annual avg; Aug 2026); BLS avg hourly earnings, non-managers (Aug 2006 as first published; Aug 2026). Sources in the description. Want a different item itemized? Comment it."
 
 **Description**
 > Same 6 groceries, 2006 vs today, rung up line by line on one envelope. Then the line nobody draws: what the bag costs in minutes of work.
@@ -217,10 +218,10 @@ The verdict is a ratio on purpose. The writer's "+6 min" was the exact 5.76 roun
 > #inflation #groceryprices #thenvsnow #envelopemath #personalfinance
 
 **Platform notes**
-- **YouTube Shorts:** post the 41.5 s master. Title = the on-screen hook. Pin the comment at upload. Frame 0 (tape hook + $11.39 stamp + receipt header) is the thumbnail. Add to an "Itemized" playlist.
-- **Instagram Reels and TikTok:** a 47 s cut. After the reveal, add one beat that brings a new number: "At minimum wage? A hundred thirty-three minutes then. Two oh-eight now." Then loop. That lands Reels inside the 45 to 60 s sweet spot. Reels cover = the 27.5 s frame (both totals, "× 2.2"). For sends, the caption names a taggable person: "Send this to whoever says groceries doubled." Run it as a Trial Reel first. On TikTok, don't pad to 60 s just for Creator Rewards: it would take about 13 s more with no new number, which breaks the "every sentence adds a number" rule (report 01, §3.4). Native captions on, no music needed (the foley is the music).
+- **YouTube Shorts:** post the 41.6 s master. Title = the on-screen hook. Pin the comment at upload. Frame 0 (tape hook + the full 2006 receipt + the empty 2026 one) is the thumbnail. Add to an "Itemized" playlist.
+- **Instagram Reels and TikTok:** a 47 s cut. After the reveal, add one beat that brings a new number: "At minimum wage? A hundred thirty-three minutes then. Two oh-nine now." Then loop. That lands Reels inside the 45 to 60 s sweet spot. Reels cover = the 28.4 s frame (both TOTAL rows, "× 2.2", "78% of it: coffee + beef"). For sends, the caption names a taggable person: "Send this to whoever says groceries doubled." Run it as a Trial Reel first. On TikTok, don't pad to 60 s just for Creator Rewards: it would take about 13 s more with no new number, which breaks the "every sentence adds a number" rule (report 01, §3.4). Native captions on, no music needed (the foley is the music).
 
-**Why this one should travel.** It is the format's strongest small-account proof (Monarch, 603x on 4.9K subs) rebuilt with both of vidIQ's top fixes (a running total and a loop). It also adds the twist the watch notes asked for ("'Hours of work' re-pricing… often flips the story", `watch/group3-video3.md`). The hook now asks a yes/no question everyone already has an answer to ("did groceries double?"). The video then answers it twice: "in dollars, yes" at 58%, and "in minutes of work, ×1.1" in the last 2 s. The bananas pattern break lands at 35%, like Monarch's milk, and works the same way (the price that didn't follow). The ending gives two arguments, not one: "×2.2" vs "×1.1", and average pay vs minimum wage. Both are honest, labelled and pinned, which is the "one honest thing to argue about" rule (report 02, rules 5 and 6). A food-only basket avoids Monarch's cards-and-DVD fairness attack.
+**Why this one should travel.** It is the format's strongest small-account proof (Monarch, 603x on 4.9K subs) rebuilt with both of vidIQ's top fixes (a running total and a loop). It also adds the twist the watch notes asked for ("'Hours of work' re-pricing… often flips the story", `watch/group3-video3.md`). The hook asks a yes/no question everyone already has an answer to ("did groceries double?"), and every receipt row answers it in miniature (×1.7, ×1.4… ×3.1) while the 2026 total races the pencilled "double = $22.78". The video then answers it twice: "in dollars, yes" at 58%, and "in minutes of work, ×1.1" in the last 2 s. The bananas pattern break lands at 38%, like Monarch's milk, and works the same way (the price that didn't follow). The ending gives two arguments, not one: "×2.2" vs "×1.1", and average pay vs minimum wage. Both are honest, labelled and pinned, which is the "one honest thing to argue about" rule (report 02, rules 5 and 6). A food-only basket avoids Monarch's cards-and-DVD fairness attack.
 
 ---
 
