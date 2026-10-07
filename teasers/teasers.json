@@ -114,11 +114,10 @@
           "Musk first crossed $1T on 12 Jun 2026 (Forbes $1.1T, Bloomberg $1.11T); Bloomberg $1.04T on 5 Oct 2026, Forbes $936B early Oct (pinned comment)"
         ],
         "sources": [
-          "AP via The Gazette, 2026-06-12: SpaceX Nasdaq debut makes Musk the first trillionaire (Forbes $1.1T) — https://gazette.com/2026/06/12/spacex-soars-25-in-wall-street-debut-and-makes-elon-musk-the-first-trillionaire/",
-          "Nairametrics (Forbes figure), 2026-06-13 — https://nairametrics.com/2026/06/13/elon-musk-becomes-worlds-first-trillionaire-as-spacex-shares-surge-on-nasdaq-debut/ ; Washington Examiner (Bloomberg $1.11T) — https://www.washingtonexaminer.com/policy/technology/4606254/spacex-ipo-elon-musk-trillionaire/",
-          "Bloomberg Billionaires Index via Quartz, 2026-10-05: Musk $1.04T (pinned comment) — https://qz.com/elon-musk-trillionaire-spacex-stock-surge-100526 ; Billionaires.Africa, 2026-10-06 — https://www.billionaires.africa/2026/10/06/elon-musk-becomes-a-trillionaire-again-as-spacex-shares-hit-highest-since-june/",
-          "Forbes real-time list via Derecha Diario, Oct 2026: Musk $936B (pinned comment) — https://derechadiario.com.ar/negocios-finanzas/ranking-forbes-quienes-10-personas-ricas-mundo-en-octubre-2026",
-          "Julius Caesar born 12/13 July 100 BC — https://www.worldhistory.org/timeline/Julius_Caesar/ , https://en.wikipedia.org/wiki/Julius_Caesar , https://www.britannica.com/biography/Julius-Caesar-Roman-ruler (checked 2026-10-07)",
+          "Forbes via Nairametrics, 2026-06-13: Musk first trillionaire, $1.1T on 2026-06-12 after SpaceX Nasdaq debut — https://nairametrics.com/2026/06/13/elon-musk-becomes-worlds-first-trillionaire-as-spacex-shares-surge-on-nasdaq-debut/",
+          "Channel 4 News, 2026-06-12 — https://www.channel4.com/news/elon-musk-becomes-worlds-first-trillionaire-as-spacex-goes-public",
+          "Forbes 400 2026 via Gray News/WECT, 2026-09-19: Musk $908B — https://www.wect.com/2026/09/19/elon-musk-jeff-bezos-among-richest-americans-forbes-2026-list-heres-how-much-theyre-worth/",
+          "Julius Caesar born 12/13 July 100 BC — https://www.worldhistory.org/timeline/Julius_Caesar/ and https://en.wikipedia.org/wiki/Julius_Caesar (checked 2026-10-07)",
           "$50K/hr hypothetical from the viral claim — research/watch/group1-video4.md"
         ],
         "hook_score_before": 7.5,
@@ -145,7 +144,7 @@
         "sources": [
           "Apple Newsroom 'Apple reports fourth quarter results', 2025-10-30: FY2025 revenue $416B — https://www.apple.com/newsroom/2025/10/apple-reports-fourth-quarter-results/",
           "Apple Form 10-K FY ended 2025-09-27 (52 weeks): net sales $416,161M, net income $112,010M — https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
-          "Apple Newsroom Q3 FY2026, 2026-07-30: revenue $109.4B, +16% YoY (pinned comment) — https://www.apple.com/newsroom/2026/07/apple-reports-third-quarter-results/",
+          "Apple Newsroom Q3 FY2026, 2026-07-30: revenue $109.4B, +16% YoY — https://www.apple.com/au/newsroom/2026/07/apple-reports-third-quarter-results/",
           "BLS Usual Weekly Earnings Q2 2026, released 2026-07-21: median full-time $1,251/wk — https://www.bls.gov/news.release/archives/wkyeng_07212026.htm"
         ],
         "hook_score_before": 7,
@@ -213,7 +212,7 @@
         "math_ok": true,
         "facts_ok": true,
         "replaced": false,
-        "review": null
+        "review": "fixed"
       },
       {
         "id": "03B",
@@ -234,11 +233,11 @@
           "The $1 raise is illustrative; 8-hr days × 5 days × 52 weeks, pre-tax, is on the ASSUME sticky"
         ],
         "hook_score_before": 6.5,
-        "hook_score_after": 8,
+        "hook_score_after": 7.5,
         "math_ok": true,
         "facts_ok": true,
         "replaced": false,
-        "review": null
+        "review": "fixed"
       },
       {
         "id": "03C",
@@ -263,7 +262,7 @@
         "math_ok": true,
         "facts_ok": true,
         "replaced": true,
-        "review": null
+        "review": "fixed"
       }
     ]
   },
@@ -296,7 +295,7 @@
         "math_ok": true,
         "facts_ok": true,
         "replaced": false,
-        "review": null
+        "review": "fixed"
       },
       {
         "id": "04B",
@@ -321,7 +320,7 @@
         "math_ok": true,
         "facts_ok": true,
         "replaced": false,
-        "review": null
+        "review": "fixed"
       },
       {
         "id": "04C",
@@ -342,11 +341,11 @@
           "Device evidence: Techtonic '$1 Million NOW or $5 Per Push-Up?' 1,059,551 views, 97.8x, https://www.youtube.com/shorts/duL1v9d3HOA"
         ],
         "hook_score_before": 7,
-        "hook_score_after": 8,
+        "hook_score_after": 7,
         "math_ok": true,
         "facts_ok": true,
         "replaced": false,
-        "review": null
+        "review": "fixed"
       }
     ]
   },
