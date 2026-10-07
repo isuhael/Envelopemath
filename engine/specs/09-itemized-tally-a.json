@@ -12,7 +12,7 @@
     {
       "t": 0.1,
       "end": 2.6,
-      "text": "Six groceries cost $11.39 in 2006.",
+      "text": "Six groceries cost\n$11.39 in 2006.",
       "say": "Six groceries cost eleven thirty-nine in 2006."
     },
     {
@@ -65,7 +65,7 @@
     {
       "t": 15.8,
       "end": 17.7,
-      "text": "Now 65. 15 cents in 20 years?!",
+      "text": "Now 65.\n15 cents in 20 years?!",
       "say": "now sixty-five. Fifteen cents in twenty years?!"
     },
     {
@@ -95,7 +95,7 @@
     {
       "t": 24.2,
       "end": 26.4,
-      "text": "Total: $11.39 then. $25.20 now.",
+      "text": "Total: $11.39 then.\n$25.20 now.",
       "say": "Total: eleven thirty-nine then. Twenty-five twenty now."
     },
     {
@@ -107,13 +107,13 @@
     {
       "t": 29.0,
       "end": 31.7,
-      "text": "But pay rose too: $16.79 an hour in 2006.",
+      "text": "But pay rose too:\n$16.79 an hour in 2006.",
       "say": "But pay rose too: sixteen seventy-nine an hour in 2006."
     },
     {
       "t": 31.7,
       "end": 33.7,
-      "text": "So that bag cost 41 minutes of work.",
+      "text": "So that bag cost\n41 minutes of work.",
       "say": "So that bag cost forty-one minutes of work."
     },
     {
@@ -429,7 +429,7 @@
       "w": 680,
       "openAt": 39.2,
       "cardSize": 112,
-      "label": "2026 = ? MIN",
+      "label": "",
       "card": [
         {
           "text": "≈ 46 min",
@@ -458,7 +458,8 @@
       "text": "2006: $11.39 ÷ $16.79 ≈ 41 min",
       "x": 90,
       "y": 1138,
-      "size": 66
+      "size": 66,
+      "pen": "low"
     },
     {
       "type": "annotate",
@@ -476,7 +477,8 @@
       "text": "2026: $25.20 ÷ $32.53 ≈",
       "x": 90,
       "y": 1242,
-      "size": 66
+      "size": 66,
+      "pen": "low"
     },
     {
       "type": "timer",
@@ -495,7 +497,8 @@
       "y": 1242,
       "size": 66,
       "color": "red",
-      "cps": 24
+      "cps": 24,
+      "pen": "low"
     },
     {
       "type": "stamp",

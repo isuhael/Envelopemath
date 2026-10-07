@@ -13,6 +13,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 def pct(x): return f"{x * 100:.2f}%"
 def within(env, exact): return abs(env - exact) / abs(exact)
 def spec(f): return json.loads((ROOT / f"engine/specs/08-trap-card-{f}.json").read_text())
+MD = (ROOT / "teasers/08-trap-card.md").read_text()
 def texts(s):
     out = []
     for o in s["ops"]:
@@ -20,7 +21,7 @@ def texts(s):
             t = o.get(key)
             if t is None: continue
             out += t if isinstance(t, list) else [t]
-    return [(t["text"] if isinstance(t, dict) else t).replace("*", "") for t in out]
+    return [(t["text"] if isinstance(t, dict) else t).replace("*", "").replace("\n", " ") for t in out]
 
 print("=== 08A  $2,500 every 2 weeks ===")
 pay = 2_500
@@ -94,14 +95,14 @@ print(f"envelope: 'about 1/7 = +14%'; within {pct(within(0.14, float(more)))} of
 assert within(0.14, float(more)) <= 0.02 + 1e-12
 print(f"check: 1 - 1/(1 + 1/7) = {1 - 1 / (1 + more)} (the 1/8 shrink)")
 print(f"rule: shrink by 1/n -> pay 1/(n-1) more per unit; e.g. 1/10 smaller -> +{pct(10 / 9 - 1)}")
-print(f"NPR's 'about 14%' vs exact {pct(float(more))}: consistent")
+print(f"the 14% is our own arithmetic (32/28 - 1 = 1/7 = {pct(float(more))}); no outside '14%' figure is quoted")
 
 print("\n=== on-screen strings and engine features in the specs ===")
 need_on_screen = {
     "a": ["$2,500 every 2 weeks", "is NOT $60,000 a year!", "1 year = $ ?", "no calculator.", "$2,500 × 24", "= $60,000",
           "every 2 weeks ≠ twice a month", "1 year =", "pre-tax pay ≈ US median (BLS)"],
     "b": ["Stocks fell 57%.", "Back to even", "is NOT +57%!", "To get back: + ? %", "no calculator.", "$100 − 57% = $43",
-          "$43 + 57% = $100?", "= $67.51", "To get back:", "S&P 500 price only, Oct '07 → Mar '09"],
+          "$43 + 57% = $100?", "= $67.51", "To get back:", "S&P 500 price only Oct '07 → Mar '09"],
     "c": ["Gatorade: 32 oz → 28 oz", "Same price.", "The hike is NOT 12.5%!", "Per ounce: + ? %", "no calculator.",
           "4 ÷ 32 = 12.5%", "= less drink", "≠ price per ounce", "Per ounce:", "same shelf price, old & new bottle"],
 }
@@ -126,8 +127,11 @@ for f, want in need_on_screen.items():
     for c in s["captions"]:
         words = len(c["text"].split())
         assert words / (c["end"] - c["t"]) <= 4, (f, c)
+    said = " ".join(c.get("say", c["text"]) for c in s["captions"])
+    assert said == s["vo"], (f, said, s["vo"])         # captions (as read) = the VO script
+    assert f"> {s['vo']}" in MD, f                    # the md's VO block matches the spec
     caps = " ".join(c["text"] for c in s["captions"])
-    print(f"08{f.upper()}: strings present; hook at t 0; postmark in the flap; envelope sealed; loop on; red mark on '{match}'; captions <= 4 words/s: {caps}")
+    print(f"08{f.upper()}: strings present; hook at t 0; postmark in the flap; envelope sealed; loop on; red mark on '{match}'; captions <= 4 words/s and = VO: {caps}")
 assert "60 grand" in " ".join(c["text"] for c in spec("a")["captions"])
 assert "+57%" in " ".join(c["text"] for c in spec("b")["captions"])
 assert "12.5%" in " ".join(c["text"] for c in spec("c")["captions"])

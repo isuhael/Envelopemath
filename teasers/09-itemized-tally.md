@@ -228,26 +228,26 @@ The row multipliers (×1.7, ×1.4, ×1.7, ×1.3, ×2.9, ×3.1) are the shown 202
 #### 09B: Your $10 at Chipotle. How much is profit?
 
 **Working title:** Itemized: your $10 at Chipotle. How much is profit? · **Series tag:** (Envelope Math No. 09B · Itemized)
-**Lane / runtime:** Envelope, **31.2 s**. That is Tilbury's 27 to 30 s Cost vs Price length plus the sealed reveal. The writer's 38.8 s cut had a 7.3 s set-up and 6 s after the reveal.
+**Lane / runtime:** Envelope, **31.2 s**, `loop: true`. That is Tilbury's 27 to 30 s Cost vs Price length plus the sealed reveal. The writer's 38.8 s cut had a 7.3 s set-up and 6 s after the reveal.
 
-**Frame-1 hook** (fully drawn in frame 0)
-- **On screen:** masking tape "**$10** at Chipotle. / How much is profit?", the postmark No. 09B, the receipt header "WHERE YOUR $10 GOES" and a postage stamp "$10 · ONE ORDER".
+**Frame-1 hook** (finished in frame 0)
+- **On screen:** masking tape "**$10** at Chipotle. / How much is profit?", the postmark No. 09B in the flap, the receipt "WHERE YOUR $10 GOES" with all five cost lines already printed and an empty AMOUNT column beside it, and the ballpoint counter "left: $10.00".
 - **First spoken line (0.1 to 2.3 s):** "Ten bucks at Chipotle. How much is profit?"
 
-**Beat sheet** (spec `09-itemized-tally-b.json`; receipt slot 3.2 s, header printed at t 0)
+**Beat sheet** (spec `09-itemized-tally-b.json`; 52 px type; a highlighter swipe marks the line being read, its amount prints 0.3 s into the beat, and the counter steps 0.35 s later)
 
 | Time | Beat | On screen |
 |---|---|---|
-| 0.0 to 2.3 | Hook | Tape hook, postmark, receipt header, $10 postage (all in frame 0) |
-| 2.3 to 4.5 | Source | "Chipotle's own 2025 numbers, line by line." Rule prints (1.4); LEFT OF YOUR $10: $10.00 (1.8) |
-| 4.6 to 7.7 | Line 1, **first payoff (15%)** | FOOD, DRINKS, BAGS $2.96 → counter $7.04. VO: "Seven bucks profit? Rip-off?" |
-| 7.8 to 10.9 | **Twist (25 to 35%)** | CREW (LABOR) $2.51 → $4.53; red circles on $2.51 and $2.96; **POSTAGE DUE** slams (9.7, 31%) |
-| 11.0 to 17.3 | Restaurant costs | RENT $0.52 → $4.01; ADS, DELIVERY, FEES $1.47 → **$2.54** underlined (what the restaurant level keeps) |
-| 17.4 to 23.7 | The company's costs | HQ + DEPRECIATION $0.92 → $1.62; TAXES (NET) $0.33 prints (20.6), but the counter **holds at $1.62** |
-| 23.8 | Flip | ASSUME sticky (24.1); "$1.62 − $0.33 = ?" (24.4); sealed envelope, "guess first" (25.0) |
-| 26.0 to 29.0 | Commit | DO THE MATH timer, 3 s |
-| **29.0 to 31.2** | **Hero in the last 2 s** | Envelope opens (29.0); card out from 29.45 (94%): **$1.29 / of every $10** |
-| 29.1 to 31.1 | Re-hook + loop | "$1.29. Rip-off or not?" cuts back to frame 1's "How much is profit?" |
+| 0.0 to 2.3 | Hook | Tape hook, postmark, the five cost lines, empty AMOUNT column, "left: $10.00" (all in frame 0) |
+| 2.3 to 4.5 | Source | "Chipotle's own 2025 numbers, line by line." |
+| 4.6 to 7.7 | Line 1, **first payoff (16%)** | -$2.96 beside FOOD, DRINKS, BAGS (4.9) → left: $7.04 (5.25). VO: "Seven bucks profit? Rip-off?" |
+| 7.8 to 10.9 | **Twist (26 to 35%)** | -$2.51 beside CREW (LABOR), highlighted in red (8.1) → $4.53; hook leaves (9.4); **POSTAGE DUE** slams (9.7, 31%) |
+| 11.0 to 17.3 | Restaurant costs | -$0.52 RENT (11.3) → $4.01; -$1.47 ADS, DELIVERY, FEES (14.5) → **$2.54**, underlined (15.9): what the restaurant level keeps |
+| 17.4 to 20.5 | The company's costs | -$0.91 HQ + DEPRECIATION (17.7) → left: $1.63 |
+| 20.7 | Flip | ASSUME sticky (20.9); pencil "taxes, minus interest earned:" (21.0); sealed envelope, "guess first" (21.1); "$1.63 − $0.34 = ?" at 100 px (22.5) |
+| 26.0 to 29.0 | Commit | DO THE MATH timer, 3 s; red circle on the "?" |
+| **29.0 to 31.2** | **Hero in the last 2 s** | Envelope opens (29.0); card out from 29.45 (94%): **$1.29 / of every $10** (110 px) |
+| 29.1 to 31.2 | Re-hook + loop | "$1.29. Rip-off or not?" then a 0.35 s crossfade into frame 0's "How much is profit?" |
 
 **Full voice-over** (≈ 175 wpm)
 > Ten bucks at Chipotle. How much is profit? Chipotle's own 2025 numbers, line by line.
@@ -255,37 +255,42 @@ The row multipliers (×1.7, ×1.4, ×1.7, ×1.3, ×2.9, ×3.1) are the shown 202
 > Not so fast. The crew: two fifty-one. Almost as much as the food.
 > Rent: fifty-two cents. Down to four-oh-one.
 > Ads, delivery, card fees: a buck forty-seven. The restaurant keeps two fifty-four.
-> Headquarters, depreciation, new stores: ninety-two cents.
-> Then taxes, minus the interest it earns: thirty-three cents.
+> Headquarters, depreciation, new stores: ninety-one cents.
+> Then taxes, minus the interest it earns: thirty-four cents.
 > You do the last subtraction. Pause. What's left of your ten?
 > A buck twenty-nine. Rip-off or not?
 
-**The envelope math** (the receipt rows are each line's share of revenue × $10; the handwriting is one line and the sealed card holds the answer)
-1. `$1.62 − $0.33 = ?` (operating margin 16.2% × $10, minus taxes net of interest income)
+**The envelope math** (each amount is one exact FY2025 10-K line ÷ revenue × $10; the handwriting is one line and the sealed card holds the answer)
+1. `$1.63 − $0.34 = ?` (what the five printed rows leave, minus income tax net of interest income)
 2. Sealed card: `$1.29 / of every $10` (check: net income $1,535.8M ÷ revenue $11,925.6M = 12.88% → $1.288)
 
-The "12.9% profit" line and the "food $2.96 · profit $1.29" pair moved to the pin. Both sat after the reveal and pushed the hero 6 s from the end.
+**Why $1.63 and not $1.62.** The polish pass rebuilt every amount from the exact 10-K dollar line instead of the rounded % shares. Rounded to the cent, the seven amounts (2.96 + 2.51 + 0.52 + 1.47 + 0.91 + 0.34 + 1.29) add up to exactly $10.00, so every subtraction on screen is exact. The writer's version used 25.4% − 16.2% = 9.2% ($0.92) for HQ and 16.2% − 12.88% ($0.33) for taxes; the exact lines are $0.914 and $0.335, which round to $0.91 and $0.34 (the old QA had flagged that taxes would flip to $0.34 above a 16.228% operating margin; the exact margin is 16.23%). The operating margin itself is $1.62 per $10; the rounded rows leave $1.63. The pin says both.
+
+The "12.9% profit" line and the "food $2.96 · profit $1.29" pair live in the pin.
 
 **ASSUME sticky:** "your $10 splits like Chipotle's 2025 average". These are company-wide averages, not one order; delivery orders and regions differ.
 
-**Sources** (writer-verified with WebSearch on 2026-10-07; the QA pass could not re-load them, see the Verification log)
+**Sources** (re-verified with WebSearch on 2026-10-07 in the polish pass)
 
 | Input | Value | Source (date) |
 |---|---|---|
-| Food, beverage & packaging | 29.6% of total revenue (FY2025) | Chipotle Q4 & FY2025 results, 2026-02-03: https://ir.chipotle.com/2026-02-03-CHIPOTLE-ANNOUNCES-FOURTH-QUARTER-AND-FULL-YEAR-2025-RESULTS |
-| Labor | 25.1% | same release |
-| Occupancy | 5.2% | same release; FY2025 10-K: https://www.sec.gov/Archives/edgar/data/1058090/000105809026000009/cmg-20251231.htm |
-| Other operating costs (marketing, delivery, card fees, utilities, technology, maintenance) | 14.7% | same release + 10-K definition |
-| Restaurant-level operating margin | 25.4% (= 100 − 74.6, cross-checked) | same release |
-| Operating margin | 16.2% | same release |
-| Total revenue / net income FY2025 | $11,925,601K / $1,535,761K | FY2025 10-K (filed 2026-02-04), link above |
+| Total revenue FY2025 | $11,925,601K (+5.4%) | Chipotle Q4 & FY2025 results, 2026-02-03: https://ir.chipotle.com/2026-02-03-CHIPOTLE-ANNOUNCES-FOURTH-QUARTER-AND-FULL-YEAR-2025-RESULTS ; same release as SEC exhibit 99.1: https://www.sec.gov/Archives/edgar/data/1058090/000105809026000007/cmg-20260203xex991.htm |
+| Food, beverage & packaging | $3,527,043K (29.6%) | same |
+| Labor | $2,991,680K (25.1%) | same |
+| Occupancy | $624,898K (5.2%) | same |
+| Other operating costs (marketing, delivery, card fees, utilities, technology, maintenance) | $1,755,824K (14.7%) | same + FY2025 10-K definition: https://www.sec.gov/Archives/edgar/data/1058090/000105809026000009/cmg-20251231.htm |
+| G&A · D&A · pre-opening | $652,017K · $361,382K · $49,507K | same |
+| Income from operations | $1,935,798K (16.2%) | same |
+| Interest and other income · provision for income taxes | $73,721K · $473,758K | same |
+| Net income | $1,535,761K (= 1,935,798 + 73,721 − 473,758) | same |
+| Restaurant-level operating margin | 25.4% (reported; 25.38% from the lines) | same |
 
-The "HQ + depreciation" row is 25.4% − 16.2% = 9.2% (G&A, depreciation & amortization, pre-opening and impairment/closure costs). The "taxes (net)" row is 16.2% − 12.88% = 3.32% (income tax minus interest and other income). Both are derived in the math check, not claimed.
+The "HQ + depreciation" row is G&A + D&A + pre-opening + impairment/closure costs. Impairment ($27,452K) is derived as revenue − operating income − every other line, so the row is $1,090,358K = 9.14% → $0.91. The "taxes (net)" row is $473,758K − $73,721K = $400,037K = 3.35% → $0.34. Both are derived in the math check, not claimed.
 
 **Ending**
-- **Re-hook / loop:** "A buck twenty-nine. Rip-off or not?" lands on the card and cuts back to the frame-1 question "How much is profit?"
+- **Re-hook / loop:** "A buck twenty-nine. Rip-off or not?" lands on the card and crossfades back to the frame-1 question "How much is profit?"
 - **Comment bait:** "Rip-off or not? And which chain's $10 should we itemize next?"
-- **Pinned comment:** "Exact: Chipotle's 2025 net income $1,535.8M ÷ revenue $11,925.6M = 12.88%, so $1.288 of every $10 (envelope said $1.29, within 0.2%). Food $2.96 vs profit $1.29. Lines are % of total revenue, FY2025: food/bev/packaging 29.6%, labor 25.1%, occupancy 5.2%, other operating 14.7% → restaurant margin 25.4% ($2.54); operating margin 16.2% ($1.62); taxes net of interest income 3.3% ($0.33). Company averages, not your order. Source: Chipotle FY2025 results (Feb 3 2026) & 10-K."
+- **Pinned comment:** "Exact: Chipotle's 2025 net income $1,535.8M ÷ revenue $11,925.6M = 12.88%, so $1.288 of every $10 (envelope said $1.29, within 0.2%). Food $2.96 vs profit $1.29. Each line is an exact FY2025 10-K line per $10 of revenue: food/bev/packaging $2.96 (29.6%), labor $2.51 (25.1%), occupancy $0.52 (5.2%), other operating $1.47 (14.7%) → the restaurant level keeps $2.54 (25.4%); G&A + depreciation + pre-opening + impairment $0.91 (9.1%); operating income $1.62 (16.2%; the rounded rows leave $1.63); income tax net of interest income $0.34 (3.4%); profit $1.29. Company averages, not your order. Source: Chipotle FY2025 results (Feb 3 2026) & 10-K."
 
 **Description**
 > Your $10 at Chipotle, itemized from Chipotle's own 2025 numbers: food, crew, rent, everything else, headquarters, taxes. Then you do the last subtraction.
@@ -294,39 +299,39 @@ The "HQ + depreciation" row is 25.4% − 16.2% = 9.2% (G&A, depreciation & amort
 > #chipotle #costvsprice #businessmath #envelopemath #fastfood
 
 **Platform notes**
-- **YouTube Shorts:** 31.2 s master. The title starts with the brand ("Itemized: your $10 at Chipotle") for search reach outside finance. No logos and no restaurant footage: the brand name only.
-- **Instagram Reels:** the master, with a taggable person in the caption: "Send to the friend who says Chipotle is a rip-off." Cover = the 17 s frame (POSTAGE DUE, both circles, $2.54 underlined).
+- **YouTube Shorts:** 31.2 s master. The title starts with the brand ("Itemized: your $10 at Chipotle") for search reach outside finance. No logos and no restaurant footage: the brand name only. Frame 0 (the five cost lines with an empty AMOUNT column) is the thumbnail.
+- **Instagram Reels:** the master, with a taggable person in the caption: "Send to the friend who says Chipotle is a rip-off." Cover = the 16.5 s frame (POSTAGE DUE, the red crew row, "left: $2.54" underlined).
 - **TikTok:** a 37 s cut. Add one beat after the reveal: "So how'd they make a billion and a half? Volume: eleven point nine billion in sales." Show "$1.54B ÷ $11.93B = 12.9%" in ink, then loop. Don't pad to 60 s. TikTok bans branded financial content, but this is organic and unpaid, so it doesn't apply. Never imply wrongdoing (pitfall 4): the script credits the costs.
 
-**Why this one should travel.** It is Tilbury's 29.4M Cost vs Price structure (famous price → layer-by-layer tally → "hidden costs" twist → open subtraction), with every line from a public filing. That makes it the version that survives the "source?" comments, and our accuracy is the advantage (report 01, §3.13). The twist does the job Tilbury's "hidden costs" did, but specifically: the crew ($2.51) costs about 85% as much as the food. The POSTAGE DUE stamp makes the hidden-cost moment visual at 31%. The open subtraction ($1.62 − $0.33) recreates the Big Mac's comment engine on purpose, and "Rip-off or not?" splits the audience in the last 2 s, just as the loop restarts.
+**Why this one should travel.** It is Tilbury's 29.4M Cost vs Price structure (famous price → layer-by-layer tally → "hidden costs" twist → open subtraction), with every line from a public filing. That makes it the version that survives the "source?" comments, and our accuracy is the advantage (report 01, §3.13). The cost lines sit in frame 0 with their amounts blank, so every row is a guess before it prints. The twist does the job Tilbury's "hidden costs" did, but specifically: the crew ($2.51) costs about 85% as much as the food. The POSTAGE DUE stamp makes the hidden-cost moment visual at 31%. The open subtraction ($1.63 − $0.34) recreates the Big Mac's comment engine on purpose, and "Rip-off or not?" splits the audience in the last 2 s, just as the loop restarts.
 
 ---
 
 #### 09C: What's a $2 Powerball ticket actually worth?
 
 **Working title:** Itemized: what's a $2 Powerball ticket actually worth? · **Series tag:** (Envelope Math No. 09C · Itemized)
-**Lane / runtime:** Envelope, **39.5 s**. That is under half of Matka's 84 s, with all its math shown. The writer's 44.8 s cut put a 5.9 s re-hook after the reveal; the break-even question now lives in the pin and the comment bait.
+**Lane / runtime:** Envelope, **39.6 s**, `loop: true`. That is under half of Matka's 84 s, with all its math shown. The writer's 44.8 s cut put a 5.9 s re-hook after the reveal; the break-even question now lives in the pin and the comment bait.
 
-**Frame-1 hook** (fully drawn in frame 0)
-- **On screen:** masking tape "**$2** Powerball ticket. / What's it **really** worth?", the postmark No. 09C, the receipt header "PRIZE × CHANCE = WORTH" and a postage stamp "$2 · ONE TICKET". ("Really" fits the tape at 74 px; "actually" only fits at 66 px. The title keeps "actually".)
+**Frame-1 hook** (finished in frame 0)
+- **On screen:** masking tape "**$2** Powerball ticket. / What's it **really** worth?", the postmark No. 09C in the flap, the official prize chart already printed as a receipt ("PRIZE · CHANCE": $4 1 IN 38 … JACKPOT 1 IN 292.2M) with an empty "= WORTH" column beside it, and the counter "worth so far: 0¢". ("Really" fits the tape at 74 px; "actually" doesn't. The title keeps "actually".)
 - **First spoken line (0.1 to 2.4 s):** "A two-dollar Powerball ticket. What's it really worth?"
 
-**Beat sheet** (spec `09-itemized-tally-c.json`; receipt slot 3.0 s, header printed at t 0)
+**Beat sheet** (spec `09-itemized-tally-c.json`; 46 px type; a highlighter swipe marks the tier being read, its worth prints at the start of the beat, and the counter steps 0.35 s later)
 
 | Time | Beat | On screen |
 |---|---|---|
-| 0.0 to 2.4 | Hook | Tape hook, postmark, receipt header, $2 postage (all in frame 0) |
-| 2.4 to 4.5 | Rule of the game | "Each prize: prize × chance. Add them up." Rule prints (1.6); WORTH SO FAR 0¢ (1.8) |
-| 4.6 to 7.5 | Line 1, **first payoff (12%)** | $4 · 1 IN 38 ... 10¢ → 10¢ |
-| 7.6 to 13.5 | Small prizes | $4–$7 · 3 MORE WAYS ... 7¢ → 17¢ · $100 · 2 WAYS ... 1¢ → 18¢ |
-| 13.6 to 19.5 | **Twist (34 to 49%)** | $50,000 · 1 IN 913K ... 5¢ → 23¢; red circles on 5¢ and 10¢; receipt prints "↑ LESS THAN THE $4 PRIZE" (16.6); **OPENED BY MISTAKE** (16.9, 43%) |
-| 19.6 to 22.5 | Partial total (50 to 57%) | $1,000,000 · 1 IN 11.7M ... 9¢ → **32¢** |
-| 22.6 to 25.5 | Cliffhanger | JACKPOT · 1 IN 292.2M ... ? |
+| 0.0 to 2.4 | Hook | Tape hook, postmark, the prize chart, empty WORTH column, "worth so far: 0¢" (all in frame 0) |
+| 2.4 to 4.5 | Rule of the game | "Each prize: prize × chance. Add them up." |
+| 4.6 to 7.5 | Line 1, **first payoff (12%)** | = 10¢ beside $4 · 1 IN 38 (4.6) → worth so far: 10¢ |
+| 7.6 to 13.5 | Small prizes | = 7¢ beside $4–$7 · 3 MORE WAYS → 17¢ · = 1¢ beside $100 · 2 WAYS → 18¢ |
+| 13.6 to 19.5 | **Twist (34 to 49%)** | = 5¢ beside $50,000 · 1 IN 913K, highlighted in red (13.6) → 23¢; red circles on 5¢ (14.3) and 10¢ (14.8); VO "Less than the four-dollar prize!" (16.6) as the hook leaves; **OPENED BY MISTAKE** (16.9, 43%) |
+| 19.6 to 22.5 | Partial total (50 to 57%) | = 9¢ beside $1,000,000 · 1 IN 11.7M → **worth so far: 32¢** |
+| 22.6 to 25.5 | Cliffhanger | = ? beside JACKPOT · 1 IN 292.2M |
 | 25.8 | Flip | ASSUME sticky (26.1); sealed envelope slides in (26.4) |
-| 26.0 to 33.6 | The jackpot line | "$199.8M × 0.63 ≈ $125.9M" (27.0; 0.63 underlined at 29.2; **POSTAGE DUE** for the tax at 29.5); "÷ 292.2M ≈ 43¢" (31.0) |
-| 33.7 to 37.3 | Commit | "+ 32¢ small prizes = ?" (33.7); DO THE MATH timer, 2 s (35.3) |
-| **37.4 to 39.5** | **Hero in the last 2 s** | Envelope opens (37.4); card out from 37.85 (96%): **≈ 75¢ / per $2 ticket** |
-| 37.5 to 39.4 | Loop | "About 75 cents. For two dollars." cuts back to frame 1's "$2 Powerball ticket. What's it really worth?" |
+| 27.0 to 35.3 | The jackpot line | "$199.8M × 0.63 ≈ $125.9M" (27.0; 0.63 underlined at 29.2; **POSTAGE DUE** for the tax at 29.5); "÷ 292.2M ≈ 43¢" (31.0); "+ 32¢ small prizes = ?" (33.7) |
+| 35.4 to 37.4 | Commit | DO THE MATH timer, 2 s |
+| **37.4 to 39.6** | **Hero in the last 2 s** | Envelope opens (37.4); card out from 37.85 (96%): **≈ 75¢ / per $2 ticket** (110 px) |
+| 37.5 to 39.6 | Loop | "About 75 cents. For two dollars." then a 0.35 s crossfade into frame 0's "$2 Powerball ticket. What's it really worth?" |
 
 **Full voice-over** (≈ 170 wpm; the odds are long words)
 > A two-dollar Powerball ticket. What's it really worth? Each prize: prize times chance. Add them up.
@@ -341,58 +346,61 @@ The "HQ + depreciation" row is 25.4% − 16.2% = 9.2% (G&A, depreciation & amort
 > Times a one-in-two-hundred-ninety-two-million chance: forty-three cents.
 > Plus the thirty-two cents. So the whole ticket is worth… about seventy-five cents. For two dollars.
 
-**The envelope math** (the receipt rows are prize × chance per tier; the handwriting is three lines)
+**The envelope math** (the receipt rows are prize × chance per tier; the handwriting is three lines at 72 px)
 1. `$199.8M × 0.63 ≈ $125.9M` (cash option after a 37% federal rate; exact $125.874M)
 2. `÷ 292.2M ≈ 43¢` (exact 43.08¢; the rounded line, 125.9 ÷ 292.2, also gives 43.09¢)
 3. `+ 32¢ small prizes = ?` → sealed card **≈ 75¢ per $2 ticket** (exact 75.07¢; within 0.1%)
 
-**ASSUME sticky:** "cash ≈ $199.8M (Oct 7 est.) · 37% fed tax · no split". It also says, by leaving it out, that there is no state tax; the pin says so outright. The small prizes are counted before tax, and the pin says that too.
+**ASSUME sticky:** "cash $199.8M (Oct 7 est.) / 37% fed tax, no split". It also says, by leaving it out, that there is no state tax; the pin says so outright. The small prizes are counted before tax, and the pin says that too.
 
-**Sources** (writer-verified with WebSearch on 2026-10-07; the QA pass could not re-load them, see the Verification log)
+**Sources** (re-verified with WebSearch on 2026-10-07 in the polish pass)
 
 | Input | Value | Source (date) |
 |---|---|---|
-| Prize chart and odds ($2 play) | PB only $4, 1 in 38.32 · 1+PB $4, 1 in 91.98 · 2+PB $7, 1 in 701.33 · 3 $7, 1 in 579.76 · 3+PB $100, 1 in 14,494.11 · 4 $100, 1 in 36,525.17 · 4+PB $50,000, 1 in 913,129.18 · 5 $1,000,000, 1 in 11,688,053.52 · 5+PB jackpot, 1 in 292,201,338 · any prize 1 in 24.87 | Official chart: https://www.powerball.com/powerball-prize-chart (also https://www.lotteryusa.com/powerball/prizes-odds). Every figure is re-derived from C(69,5) × 26 in the math check |
-| Jackpot for Wed 2026-10-07 | $485M estimated annuity; cash ≈ $199.8M | https://www.yahoo.com/news/us/articles/powerball-winning-numbers-oct-5-111407510.html ; https://www.wthr.com/article/news/nation-world/powerball-winning-numbers-oct-5-2026/507-9a01fc8b-0441-4f0c-bd7d-d614a4250379 (after no winner on 2026-10-05) |
-| Federal tax | Top rate 37% for 2026 (single > $640,600); 24% is only the withholding | https://www.journalofaccountancy.com/news/2025/oct/annual-inflation-adjustments-announced-for-tax-year-2026/ ; https://www.lotterycalc.com/blog/federal-lottery-tax-rate |
-| Help line (description) | 1-800-GAMBLER (National Problem Gambling Helpline) | https://www.ncpgambling.org/wp-content/uploads/2023/12/1-800-GAMBLER-Fact-Sheet.pdf |
+| Prize chart and odds ($2 play) | PB only $4, 1 in 38.32 · 1+PB $4, 1 in 91.98 · 2+PB $7, 1 in 701.33 · 3 $7, 1 in 579.76 · 3+PB $100, 1 in 14,494.11 · 4 $100, 1 in 36,525.17 · 4+PB $50,000, 1 in 913,129.18 · 5 $1,000,000, 1 in 11,688,053.52 · 5+PB jackpot, 1 in 292,201,338 · any prize 1 in 24.87 | Official chart: https://www.powerball.com/powerball-prize-chart ; https://www.lotteryusa.com/powerball/prizes-odds . Every figure is re-derived from C(69,5) × 26 in the math check |
+| Jackpot for Wed 2026-10-07 | $485M estimated annuity; cash $199.8M (Mon 2026-10-05 drawing: $467M / $192.4M cash, no jackpot winner) | https://www.kgw.com/article/news/nation-world/powerball-winning-numbers-oct-5-2026/507-9a01fc8b-0441-4f0c-bd7d-d614a4250379 ; https://www.wkyc.com/article/news/lottery/winning-powerball-numbers-467-million-jackpot-monday-october-5-results-ohio-lottery-winners/95-0b0d7131-48fb-45a9-b24c-a46ad1dca5a4 ; https://www.yahoo.com/news/us/articles/powerball-winning-numbers-oct-5-111407510.html |
+| Federal tax | Top rate 37% for 2026 (single > $640,600); 24% is only the withholding | https://www.nysscpa.org/article-content/irs-adjusts-2026-tax-brackets-and-standard-deductions-for-inflation-102425 ; https://www.journalofaccountancy.com/news/2025/oct/annual-inflation-adjustments-announced-for-tax-year-2026/ |
+| Help line (pin, description) | **1-800-MY-RESET**, the National Problem Gambling Helpline since 2026-01-29 (a court order ended NCPG's use of 1-800-GAMBLER after 2025-09-29) | https://www.ncpgambling.org/news/1-800-my-reset-announcement/ ; https://sbcamericas.com/2026/01/29/ncpg-unveils-new-1-800-my-reset/ |
 
-*Freshness rule:* the jackpot line is the only input that moves. Re-check the cash value on the morning of upload, update the sticky, line 1 and the card, and re-run the math check. The 32¢ of small prizes never changes.
+*Freshness rule:* the jackpot line is the only input that moves. Re-check the cash value on the morning of upload, update the sticky, line 1 and the card, and re-run the math check. The 32¢ of small prizes never changes. The cash/annuity ratio (199.8 ÷ 485 = 0.412) matches Monday's 192.4 ÷ 467 = 0.412, so the earlier QA's worry about it is settled for this week.
 
 **Ending**
-- **Loop:** "About 75 cents. For two dollars." cuts back to frame 1's "$2 Powerball ticket. What's it really worth?", so "two dollars" meets "$2" at the seam.
+- **Loop:** "About 75 cents. For two dollars." crossfades back into frame 1's "$2 Powerball ticket. What's it really worth?", so "two dollars" meets "$2" at the seam.
 - **Comment bait** (the old spoken re-hook, moved to the caption): "How big must the jackpot get to break even? Guess before you open the pin."
-- **Pinned comment:** "Exact: small prizes 31.99¢ + jackpot slice 43.08¢ = 75.07¢ per $2 ticket (envelope said ≈75¢, within 0.1%), about 37.5¢ back per $1. Small prizes are counted before tax: tax the $50K and $1M tiers at the same 37% and it's ≈70¢. Break-even: the cash prize would have to reach ≈ $779M (taxed at 37%), about $1.89B advertised at this week's cash/annuity ratio. That's before state tax and before splitting, and splits get likelier as jackpots grow. Odds: official prize chart; C(69,5) × 26 = 292,201,338. Jackpot: $485M est., $199.8M cash, Oct 7 2026 drawing. This is arithmetic, not a recommendation. Gambling problem? 1-800-GAMBLER."
+- **Pinned comment:** "Exact: small prizes 31.99¢ + jackpot slice 43.08¢ = 75.07¢ per $2 ticket (envelope said ≈75¢, within 0.1%), about 37.5¢ back per $1. Small prizes are counted before tax: tax the $50K and $1M tiers at the same 37% and it's ≈70¢. Break-even: the cash prize would have to reach ≈ $779M (taxed at 37%), about $1.89B advertised at this week's cash/annuity ratio. That's before state tax and before splitting, and splits get likelier as jackpots grow. Odds: official prize chart; C(69,5) × 26 = 292,201,338. Jackpot: $485M est., $199.8M cash, Oct 7 2026 drawing. This is arithmetic, not a recommendation. Gambling problem? Call 1-800-MY-RESET (National Problem Gambling Helpline)."
 
 **Description**
 > Every prize on a $2 Powerball ticket, worth = prize × chance, itemized on one envelope. The $50,000 prize is worth less than the $4 one.
-> Odds: official Powerball prize chart. Jackpot: $485M est. ($199.8M cash) for the Oct 7 2026 drawing; 37% top federal rate; no split, no state tax. Exact figures pinned. Help: 1-800-GAMBLER.
+> Odds: official Powerball prize chart. Jackpot: $485M est. ($199.8M cash) for the Oct 7 2026 drawing; 37% top federal rate; no split, no state tax. Exact figures pinned. Help: 1-800-MY-RESET (National Problem Gambling Helpline).
 > Educational math, not financial advice.
 > #powerball #lottery #expectedvalue #envelopemath #moneymath
 
 **Platform notes**
-- **YouTube Shorts:** 39.5 s master. Expect limited ads on a gambling topic (pitfall 5), so keep it framed as expected value only, with no "how to win", no strategy and no "buy". Pin at upload. Post while the jackpot story is live, and only after re-checking the cash value that morning (freshness rule above).
+- **YouTube Shorts:** 39.6 s master. Expect limited ads on a gambling topic (pitfall 5), so keep it framed as expected value only, with no "how to win", no strategy and no "buy". Pin at upload. Post while the jackpot story is live, and only after re-checking the cash value that morning (freshness rule above). Frame 0 (the prize chart with an empty WORTH column) is the thumbnail.
 - **Instagram Reels:** the master, with a taggable person in the caption: "Send to the coworker who runs the office pool." Cover = the 17.5 s frame (OPENED BY MISTAKE over the circled 5¢ and 10¢).
 - **TikTok:** a cut of about 46 s. After the reveal, add two beats: "Twenty tickets a year? Forty bucks in, about fifteen back" (20 × $2 = $40; 20 × 75.07¢ = $15.01), then the break-even question with "it's pinned". Then loop. No sponsored or affiliate lottery links (TikTok bans financial branded content). Organic only.
 
-**Why this one should travel.** Matka proved the payout ladder at 467.6x on an 8.3K-sub channel, but it spoke its math and got the punchline wrong. This version shows prize × chance on every line and corrects the framing instead of repeating it (report 02 pitfall 6). It newsjacks a live half-billion jackpot (report 01, §3.11). The twist at 34 to 49% ("the $50,000 prize is worth less than the $4 one") is counterintuitive, true and checkable, the ideal "math police" comment magnet (§3.7). The hero lands in the last 2 s, and "for two dollars" loops straight into the "$2" hook. The break-even question gives the pin a reason to be opened.
+**Why this one should travel.** Matka proved the payout ladder at 467.6x on an 8.3K-sub channel, but it spoke its math and got the punchline wrong. This version prints the whole ladder in frame 0 and shows prize × chance on every line, and it corrects the framing instead of repeating it (report 02 pitfall 6). It newsjacks a live half-billion jackpot (report 01, §3.11). The twist at 34 to 49% ("the $50,000 prize is worth less than the $4 one") is counterintuitive, true and checkable, the ideal "math police" comment magnet (§3.7). The hero lands in the last 2 s, and "for two dollars" loops straight into the "$2" hook. The break-even question gives the pin a reason to be opened.
 
 ---
 
 ### Math check
 
-The script is at `teasers/09-itemized-tally-math.py` (reproduced below). It recomputes every number on screen, in the VO and in the pins from the sourced inputs. Its assertions fail if any displayed rounding is wrong. It also re-derives all eight fixed-prize odds and the jackpot odds from C(69,5) × 26 and checks them against the published chart. Since the QA pass it also reads the three specs and asserts:
-- every receipt row, running-total counter and handwritten line matches the math;
-- the hook, postage stamp and dollar figure are fully drawn in frame 0;
-- the first payoff lands by 40% and the sealed card lands in the last 2 s;
-- every caption allows at least 0.25 s per word.
+The script is at `teasers/09-itemized-tally-math.py` (reproduced below). It recomputes every number on screen, in the VO and in the pins from the sourced inputs. Its assertions fail if any displayed rounding is wrong. It re-derives all eight fixed-prize odds and the jackpot odds from C(69,5) × 26 and checks them against the published chart, and it rebuilds 09B from the exact 10-K dollar lines (the seven rounded amounts must add up to exactly $10.00). It then reads the three specs and asserts:
+- every receipt row, multiplier, counter step and handwritten line matches the math;
+- no op has a negative `t`, the hook is at t 0 with a dollar figure, the postmark sits in the flap (175, 258, r 100) and `loop` is on;
+- the first payoff lands by 40% and the sealed card (≥ 100 px) lands in the last 2 s;
+- every handwritten line is at least 64 px, and every caption allows at least 0.25 s per word.
 
 ```python
 #!/usr/bin/env python3
 """Math check for teasers 09A, 09B, 09C (Envelope Math: Itemized).
 
 Recomputes every number shown on screen, spoken in the VO or quoted in a pinned comment,
-from the sourced inputs only, and asserts the rounded values we display.
+from the sourced inputs only, and asserts the rounded values we display. Then reads the three
+engine specs and checks every on-screen number, plus the format rules (hook in frame 0, no
+negative-t pre-rolls, postmark in the flap, loop on, hero card in the last 2 s).
+Inputs re-verified 2026-10-07 (polish pass); see the md's "Final fact check".
 Run: python3 teasers/09-itemized-tally-math.py
 """
 from fractions import Fraction as F
@@ -410,8 +418,9 @@ def within(approx, exact):
 # ======================================================================= 09A
 print("=" * 72, "\n09A  6 groceries, 2006 vs Aug 2026 (BLS average prices)\n" + "=" * 72)
 # BLS CPI average prices, U.S. city average. 2006 = annual average; 2026 = August 2026 (released 2026-09-11).
+# Polish pass: eggs Aug 2026 corrected from 2.272 to 2.279 (BLS; +4.1% from July's 2.189).
 items = [  # name, 2006 avg, Aug 2026 (3 decimals as published)
-    ("eggs, grade A large, dozen", 1.31, 2.272),
+    ("eggs, grade A large, dozen", 1.31, 2.279),
     ("milk, whole, gallon", 3.08, 4.229),
     ("bread, white pan, lb", 1.08, 1.823),
     ("bananas, lb", 0.50, 0.652),
@@ -419,19 +428,26 @@ items = [  # name, 2006 avg, Aug 2026 (3 decimals as published)
     ("ground beef, 100% beef, lb", 2.22, 6.923),
 ]
 run06 = run26 = 0.0
+mult = []
 for name, p06, p26 in items:
     shown = round(p26, 2)
     run06 = round(run06 + p06, 2)
     run26 = round(run26 + shown, 2)
-    print(f"  {name:32s} {p06:5.2f} -> {shown:5.2f}  x{p26 / p06:4.2f}  running {run06:6.2f} | {run26:6.2f}")
+    mult.append(f"×{shown / p06:.1f}")
+    print(f"  {name:32s} {p06:5.2f} -> {shown:5.2f}  x{shown / p06:5.3f} ('{mult[-1]}')  running {run06:6.2f} | {run26:6.2f}")
+    assert round(shown / p06, 1) == round(p26 / p06, 1)  # the multiplier is the same from the unrounded price
 t06 = sum(p for _, p, _ in items)
 t26_shown = sum(round(q, 2) for *_, q in items)
 t26_exact = sum(q for *_, q in items)
-assert round(t06, 2) == 11.39 and round(t26_shown, 2) == 25.19
+assert round(t06, 2) == 11.39 and round(t26_shown, 2) == 25.20
 print(f"  totals: 2006 ${t06:.2f} | 2026 ${t26_shown:.2f} (receipt) / ${t26_exact:.3f} (unrounded)")
+double = 2 * round(t06, 2)
+print(f"  'double = ${double:.2f}': the 2026 running total passes it on the beef line "
+      f"({run26 - round(6.923, 2):.2f} -> {run26:.2f})")
+assert round(double, 2) == 22.78 and round(t26_shown - round(6.923, 2), 2) < double < round(t26_shown, 2)
 ratio = t26_shown / t06
-print(f"  ratio {ratio:.3f}  -> on screen x2.2   (+{(ratio - 1) * 100:.1f}%)")
-assert round(ratio, 1) == 2.2
+print(f"  ratio {ratio:.4f} (unrounded {t26_exact / t06:.4f})  -> on screen x2.2   (+{(ratio - 1) * 100:.1f}%)")
+assert round(ratio, 1) == 2.2 and round(t26_exact / t06, 1) == 2.2
 jump = t26_shown - t06
 cof = round(9.299, 2) - 3.20
 beef = round(6.923, 2) - 2.22
@@ -439,9 +455,11 @@ share = (cof + beef) / jump
 print(f"  increase ${jump:.2f}; coffee +${cof:.2f}, beef +${beef:.2f} = ${cof + beef:.2f} = {pct(share)} of the jump -> '78%'")
 assert round(share * 100) == 78
 print(f"  bananas +${round(0.652, 2) - 0.50:.2f} in 20 yrs (x{0.652 / 0.50:.2f}); coffee x{9.299 / 3.20:.1f}; beef x{6.923 / 2.22:.1f}")
+assert round(round(0.652, 2) - 0.50, 2) == 0.15
 assert round(9.299 / 3.20, 1) == 2.9 and round(6.923 / 2.22, 1) == 3.1
 # Average hourly earnings, production & nonsupervisory employees, private (BLS Employment Situation):
-# Aug 2006 $16.79 (as first published 2006-09-01); Aug 2026 $32.53.
+# Aug 2006 $16.79 (as first published 2006-09-01); Aug 2026 $32.53 (BLS Real Earnings, 2026-09-11; the
+# 2026-10-02 jobs report put September at $32.60, "up 7 cents", so August still reads $32.53).
 w06, w26 = 16.79, 32.53
 m06 = t06 / w06 * 60
 m26 = t26_shown / w26 * 60
@@ -450,40 +468,64 @@ print(f"  pay ratio x{w26 / w06:.3f} -> 'x1.9'")
 assert round(w26 / w06, 1) == 1.9
 print(f"  minutes of work: 2006 {m06:.2f} min | 2026 {m26:.2f} min ({m26x:.2f} unrounded)")
 print(f"  difference {m26 - m06:.2f} min (+{(m26 / m06 - 1) * 100:.1f}%)")
-assert round(m06) == 41 and round(m26) == 46
-# QA fix: the screen shows "41 min" and "46 min", so a viewer subtracting gets 5, not the exact 5.76 -> "+6".
-# The verdict is therefore a ratio, which survives rounding either way: "x1.1, not x2.2".
+assert round(m06) == 41 and round(m26) == 46 and round(m26x) == 46
+# The screen shows "41 min" and "46 min", so the verdict is a ratio, which survives rounding either way.
 assert round(m26 / m06, 1) == 1.1 and round(round(m26) / round(m06), 1) == 1.1
-assert round(ratio, 1) == 2.2
 print(f"  verdict 'x1.1, not x2.2': exact {m26 / m06:.3f}; from the rounded screen values {round(m26) / round(m06):.3f}")
 print(f"  envelope said ~46 min: within {pct(within(46, m26))}; ~41 min: within {pct(within(41, m06))}")
 mw06, mw26 = 5.15, 7.25  # federal minimum wage 2006 / 2026
-print(f"  at federal minimum wage: {t06 / mw06 * 60:.1f} min -> {t26_shown / mw26 * 60:.1f} min (+{(t26_shown / mw26) / (t06 / mw06) * 100 - 100:.0f}%)")
+mm06, mm26 = t06 / mw06 * 60, t26_shown / mw26 * 60
+print(f"  at federal minimum wage: {mm06:.1f} min -> {mm26:.1f} min (+{mm26 / mm06 * 100 - 100:.0f}%)")
+assert round(mm06) == 133 and round(mm26) == 209 and round(mm26 / mm06 * 100 - 100) == 57
 
 # ======================================================================= 09B
-print("=" * 72, "\n09B  $10 at Chipotle (FY2025 10-K / Q4 release, % of total revenue)\n" + "=" * 72)
-food, labor, occ, other = 29.6, 25.1, 5.2, 14.7
-rlm_reported, opm = 25.4, 16.2
-revenue, net_income = 11_925_601, 1_535_761  # $ thousands, FY2025
-rlm = 100 - (food + labor + occ + other)
-print(f"  restaurant costs {food + labor + occ + other:.1f}% -> restaurant-level margin {rlm:.1f}% (reported {rlm_reported}%)")
-assert abs(rlm - rlm_reported) < 1e-9
+print("=" * 72, "\n09B  $10 at Chipotle (FY2025 10-K / Q4 release, $ thousands)\n" + "=" * 72)
+# Polish pass: rows now come from the exact 10-K dollar lines, not the rounded % shares. That moves
+# "HQ + depreciation" from $0.92 to $0.91 and "taxes (net)" from $0.33 to $0.34 (exact $0.3354).
+revenue = 11_925_601
+food, labor, occ, other = 3_527_043, 2_991_680, 624_898, 1_755_824
+ga, da, preopen = 652_017, 361_382, 49_507
+op_income, interest_other, tax, net_income = 1_935_798, 73_721, 473_758, 1_535_761
+assert op_income + interest_other - tax == net_income
+impair = revenue - op_income - (food + labor + occ + other + ga + da + preopen)
+print(f"  impairment, closure & asset disposal (derived): ${impair:,}K")
+assert 0 < impair < 50_000
+shares = {"food": food, "labor": labor, "occ": occ, "other": other}
+for k, v in shares.items():
+    print(f"  {k:6s} {v / revenue * 100:6.3f}% of revenue")
+assert [round(v / revenue * 100, 1) for v in shares.values()] == [29.6, 25.1, 5.2, 14.7]
+rlm = (revenue - food - labor - occ - other) / revenue
+opm = op_income / revenue
 net = net_income / revenue
-print(f"  net margin {net_income:,} / {revenue:,} = {pct(net)}")
-lines = [("food, drinks, bags", food / 10), ("crew (labor)", labor / 10), ("rent (occupancy)", occ / 10),
-         ("ads, delivery, card fees, utilities (other op.)", other / 10),
-         ("HQ + depreciation + new stores (to operating)", (rlm - opm) / 10)]
-left = 10.0
-for name, v in lines:
-    left = round(left - round(v, 2), 2)
-    print(f"  {name:48s} ${v:5.2f}   left ${left:5.2f}")
-assert left == round(opm / 10, 2) == 1.62
-tax_line = opm / 10 - net * 10
-print(f"  taxes, net of interest income: {opm / 10:.2f} - {net * 10:.4f} = ${tax_line:.4f} -> $0.33")
-assert round(tax_line, 2) == 0.33 and round(1.62 - 0.33, 2) == 1.29 == round(net * 10, 2)
+print(f"  restaurant-level margin {pct(rlm)} (reported 25.4%); operating margin {pct(opm)} (reported 16.2%); net {pct(net)}")
+assert round(rlm * 100, 1) == 25.4 and round(opm * 100, 1) == 16.2
+hq = ga + da + preopen + impair
+lines = [("food, drinks, bags", food), ("crew (labor)", labor), ("rent (occupancy)", occ),
+         ("ads, delivery, card fees, utilities (other op.)", other),
+         ("HQ + depreciation + new stores (G&A, D&A, pre-opening, impairment)", hq),
+         ("taxes, net of interest income", tax - interest_other), ("profit (net income)", net_income)]
+per10 = [(n, v / revenue * 10) for n, v in lines]
+shown_b = [round(v, 2) for _, v in per10]
+for (n, v), s in zip(per10, shown_b):
+    print(f"  {n:68s} ${v:6.4f} -> ${s:.2f}")
+assert abs(sum(v for _, v in per10) - 10) < 1e-9
+assert round(sum(shown_b), 2) == 10.00, sum(shown_b)  # the rounded rows add up to exactly $10.00
+assert shown_b == [2.96, 2.51, 0.52, 1.47, 0.91, 0.34, 1.29]
+left = [10.0]
+for s in shown_b[:5]:
+    left.append(round(left[-1] - s, 2))
+print(f"  left of $10 after each receipt row: {left}")
+assert left == [10.0, 7.04, 4.53, 4.01, 2.54, 1.63]
+assert round(left[-1] - shown_b[5], 2) == shown_b[6] == 1.29
+print(f"  on screen: ${left[-1]:.2f} - ${shown_b[5]:.2f} = ${shown_b[6]:.2f};  exact: operating ${opm * 10:.4f}, "
+      f"taxes net ${(tax - interest_other) / revenue * 10:.4f}, profit ${net * 10:.4f}")
 print(f"  profit per $10: ${net * 10:.4f} -> '$1.29' (within {pct(within(1.29, net * 10))}); '12.9%'")
+assert round(net * 100, 1) == 12.9
+print(f"  restaurant keeps ${rlm * 10:.4f} -> '$2.54' (the rounded chain also gives {left[4]:.2f})")
+assert round(rlm * 10, 2) == left[4] == 2.54
 print(f"  crew vs food: {labor / food * 100:.0f}% ('almost as much'); food $2.96 vs profit $1.29 = {2.96 / 1.29:.1f}x")
 print(f"  revenue growth check: {revenue / 11_313_853 - 1:.4f} (reported +5.4%)")
+assert round((revenue / 11_313_853 - 1) * 100, 1) == 5.4
 
 # ======================================================================= 09C
 print("=" * 72, "\n09C  a $2 Powerball ticket (official prize chart, Oct 7 2026 jackpot est.)\n" + "=" * 72)
@@ -511,6 +553,7 @@ for lab, prize, k, pb, pub in tiers:
     print(f"  {lab:15s} ${prize:>9,}  1 in {float(one_in):>14,.2f} (matches chart)  worth {float(ev[lab]) * 100:6.3f} c")
 win_any = sum(p(k, pb) for _, _, k, pb, _ in tiers) + F(1, total)
 print(f"  overall odds of any prize: 1 in {float(1 / win_any):.2f} (chart: 24.87)")
+assert round(float(1 / win_any), 2) == 24.87
 groups = [("$4  1 in 38", ["Powerball only"]), ("$4-$7  3 more ways", ["1 + PB", "2 + PB", "3"]),
           ("$100  2 ways", ["3 + PB", "4"]), ("$50,000", ["4 + PB"]), ("$1,000,000", ["5"])]
 shown = [10, 7, 1, 5, 9]
@@ -527,28 +570,31 @@ small = float(sum(ev.values()))
 print(f"  all non-jackpot prizes: ${small:.5f}")
 print(f"  twist: $50,000 tier {float(ev['4 + PB']) * 100:.2f} c < $4 Powerball-only tier {float(ev['Powerball only']) * 100:.2f} c")
 assert ev["4 + PB"] < ev["Powerball only"]
-cash, tax = 199_800_000, 0.37
-after = cash * (1 - tax)
+# Jackpot for Wed 2026-10-07: $485M estimated annuity, $199.8M cash (after no winner on Mon 2026-10-05).
+cash, annuity, tax_rate = 199_800_000, 485_000_000, 0.37
+after = cash * (1 - tax_rate)
 jp = after / total
-print(f"  jackpot: ${cash / 1e6:.1f}M x {1 - tax:.2f} = ${after / 1e6:.3f}M -> '$125.9M';  / {total:,} = ${jp:.5f} -> 43 c")
+print(f"  jackpot: ${cash / 1e6:.1f}M x {1 - tax_rate:.2f} = ${after / 1e6:.3f}M -> '$125.9M';  / {total:,} = ${jp:.5f} -> 43 c")
 assert round(after / 1e6, 1) == 125.9 and round(jp * 100) == 43
+assert round(round(after / 1e6, 1) / round(total / 1e6, 1) * 100) == 43  # the rounded line gives 43 c too
 whole = small + jp
 print(f"  whole ticket: {small * 100:.3f} + {jp * 100:.3f} = {whole * 100:.3f} c -> '~75 c' (within {pct(within(0.75, whole))})")
-assert round(whole * 100) == 75
+assert round(whole * 100) == 75 and cum_shown + round(jp * 100) == 75
 print(f"  return per $1 spent: {whole / 2:.3f}")
 print(f"  TikTok beat: 20 tickets = ${20 * 2} in, ${20 * whole:.2f} back on average -> 'about fifteen back'")
 assert round(20 * whole) == 15
-need_cash = (2 - small) * total / (1 - tax)
-ratio_now = 199.8 / 485
+need_cash = (2 - small) * total / (1 - tax_rate)
+ratio_now = cash / annuity
 print(f"  break-even cash (no split, 37% fed only): ${need_cash / 1e6:,.1f}M; "
       f"at this week's cash/annuity ratio {ratio_now:.4f} ~ ${need_cash / ratio_now / 1e9:.2f}B advertised")
+assert round(need_cash / 1e6, 1) == 779.3 and round(need_cash / ratio_now / 1e9, 2) == 1.89
 print(f"  if the $50K and $1M tiers are taxed at the same 37%: small prizes {(small - 0.37 * float(ev['4 + PB'] + ev['5'])) * 100:.2f} c, "
       f"ticket {(small - 0.37 * float(ev['4 + PB'] + ev['5']) + jp) * 100:.2f} c -> '~70 c' (pin note)")
 assert round((small - 0.37 * float(ev['4 + PB'] + ev['5']) + jp) * 100) == 70
 
 # ======================================================================= specs
-# QA addition: the specs are the source of what viewers see. Check every on-screen number against the math above,
-# and check the format-bible timing rules (number in frame 0, payoff by ~40%, hero in the last 2 s).
+# The specs are the source of what viewers see: check every on-screen number against the math above,
+# and the format rules (number in frame 0, payoff by ~40%, hero in the last 2 s, loop, no pre-roll hacks).
 import json
 import os
 import re
@@ -561,146 +607,162 @@ def load(stem):
         return json.load(f)
 
 
+def op(spec, **kw):
+    hits = [o for o in spec["ops"] if all(o.get(k) == v for k, v in kw.items())]
+    assert len(hits) == 1, (kw, len(hits))
+    return hits[0]
+
+
 def texts(spec):
     out = []
     for o in spec["ops"]:
-        for k in ("text", "label", "value", "note", "header"):
+        for k in ("text", "note", "header"):
             v = o.get(k)
             if isinstance(v, list):
                 out += [str(x) for x in v]
             elif v is not None:
                 out.append(str(v))
-        for it in o.get("items", []):
-            out += [str(x) for x in it]
         for c in o.get("card", []):
             out.append(c if isinstance(c, str) else c["text"])
+        for it in o.get("items", []):
+            out += [str(x) for x in (it if isinstance(it, list) else (it["label"], it["value"]))]
     return out
 
 
-def chain(spec, x):
-    """Final values of a chained counter at column x, in time order."""
-    return [o["to"] for o in sorted((o for o in spec["ops"] if o["type"] == "counter" and o["x"] == x), key=lambda o: o["t"])]
-
-
-def rows(spec):
-    r = next(o for o in spec["ops"] if o["type"] == "receipt")
-    return [round(r["t"] + i / r["lps"], 2) for i in range(2 + len(r["items"]))], r
-
-
-def frame0(spec):
-    hook = next(o for o in spec["ops"] if o["type"] == "hook")
-    lines = len(hook["text"]) if isinstance(hook["text"], list) else 1
-    assert hook["t"] + 0.2 + 0.14 * (lines - 1) <= 0, "hook is not fully drawn in frame 0"
-    stamp_ = next(o for o in spec["ops"] if o["type"] == "postage")
-    assert stamp_["t"] + 0.35 <= 0, "postage stamp is not in frame 0"
-    assert re.search(r"\$\d", " ".join(hook["text"])), "no dollar figure on the frame-0 hook"
-
-
-def hero(spec):
-    env = next(o for o in spec["ops"] if o["type"] == "envelope")
+def rule_checks(spec, code):
+    ops = spec["ops"]
+    assert all(o["t"] >= 0 for o in ops), "negative-t pre-roll left in the spec"
+    hook = next(o for o in ops if o["type"] == "hook")
+    assert hook["t"] == 0 and re.search(r"\$\d", " ".join(hook["text"])), "frame 0 needs the hook with a dollar figure"
+    pm = next(o for o in ops if o["type"] == "postmark")
+    assert (pm["t"], pm["x"], pm["y"], pm["r"], pm["persist"], pm["center"][1]) == (0, 175, 258, 100, True, code)
+    assert spec.get("loop") is True
+    env = next(o for o in ops if o["type"] == "envelope")
     card_in = env["openAt"] + 0.45
     assert spec["duration"] - 2.0 <= card_in < spec["duration"] - 1.2, (card_in, spec["duration"])
-    return env
+    hero = env["card"][0]
+    hero_size = hero.get("size", env["cardSize"]) if isinstance(hero, dict) else env["cardSize"]
+    assert hero_size >= 100, hero_size
+    for o in ops:  # handwriting floors for this pass: 64px working lines (hero >= 100 checked above)
+        if o["type"] == "write" and o.get("font", "hand") == "hand":
+            assert o["size"] >= 64, (o["text"], o["size"])
+    caps = spec["captions"]
+    for x in caps:
+        assert x["end"] - x["t"] >= 0.25 * len(x["text"].split()) - 1e-9, x
+        assert x["end"] <= spec["duration"]
+    for x, y in zip(caps, caps[1:]):
+        assert y["t"] >= x["end"] - 1e-9, (x, y)
+    return card_in
 
 
 print("=" * 72, "\nspecs: on-screen numbers and timing\n" + "=" * 72)
 a, b, c = load("a"), load("b"), load("c")
-for s_ in (a, b, c):
-    frame0(s_)
-    hero(s_)
-    caps = s_["captions"]
-    for x in caps:
-        assert x["end"] - x["t"] >= 0.25 * len(x["text"].split()) - 1e-9, x
-    for x, y in zip(caps, caps[1:]):
-        assert y["t"] >= x["end"] - 1e-9, (x, y)
 
-# 09A
+# 09A: a 2006 receipt (printed in frame 0) beside a 2026 receipt that prints line by line
+heroA = rule_checks(a, "09A")
+r06, r26 = op(a, id="r06"), op(a, id="r26")
+assert r06["instant"] and [v for _, v in r06["items"]] == [f"${p06:.2f}" for _, p06, _ in items]
+assert [it["value"] for it in r26["items"]] == [f"${round(p26, 2):.2f}" for *_, p26 in items]
+assert [it["label"] for it in r26["items"]] == mult
+assert r06["running"]["label"] == r26["running"]["label"] == "TOTAL"
 tA = texts(a)
-r_t, rec = rows(a)
-want = [f"{p06:.2f} → {round(p26, 2):.2f}" for _, p06, p26 in items]
-assert [it[1] for it in rec["items"]] == want, rec["items"]
-c06, c26 = chain(a, 560), chain(a, 820)
-assert c06[1:] == [round(sum(p for _, p, _ in items[:i + 1]), 2) for i in range(6)], c06
-assert c26[1:] == [round(sum(round(q, 2) for *_, q in items[:i + 1]), 2) for i in range(6)], c26
-for s in ("+15¢ in 20 years?!", "coffee ×2.9", "beef ×3.1", "× 2.2", "(78% of it: coffee + beef)",
-          "2006: $11.39 ÷ $16.79 ≈ 41 min", "2026: $25.19 ÷ $32.53 ≈", "46 min", "≈ 46 min", "×1.1, not ×2.2"):
+for s in ("+15¢ in 20 years?!", f"double = ${double:.2f}", "× 2.2", "78% of it: coffee + beef",
+          "2006: $11.39 ÷ $16.79 ≈ 41 min", "2026: $25.20 ÷ $32.53 ≈", "46 min", "≈ 46 min", "×1.1, not ×2.2"):
     assert s in tA, s
-assert "$16.79" in next(o["text"] for o in a["ops"] if o["type"] == "sticky")
-assert "$32.53" in next(o["text"] for o in a["ops"] if o["type"] == "sticky")
-ban = r_t[2 + 3] / a["duration"]
-print(f"  09A  eggs (first payoff) {r_t[2]:.1f}s = {r_t[2] / a['duration']:.0%}; bananas break {r_t[5]:.1f}s = {ban:.0%}; "
-      f"hero card {hero(a)['openAt'] + 0.45:.2f}s of {a['duration']}s")
-assert r_t[2] / a["duration"] <= 0.4 and 0.3 <= ban <= 0.45
+sticky = op(a, type="sticky")["text"]
+assert "$16.79" in sticky and "$32.53" in sticky
+eggs_at = r26["items"][0]["at"]
+ban_at = r26["items"][3]["at"]
+print(f"  09A  eggs (first payoff) {eggs_at:.1f}s = {eggs_at / a['duration']:.0%}; bananas break {ban_at:.1f}s = {ban_at / a['duration']:.0%}; "
+      f"hero card {heroA:.2f}s of {a['duration']}s")
+assert eggs_at / a["duration"] <= 0.4 and 0.3 <= ban_at / a["duration"] <= 0.45
 
-# 09B
+# 09B: the cost lines are printed in frame 0; their amounts (exact 10-K lines per $10) print beside them
+# one by one, and the "left:" counter steps down after each
+heroB = rule_checks(b, "09B")
+rbl, rb = op(b, id="rbl"), op(b, id="rb")
+assert rbl["instant"] and [lab for lab, _ in rbl["items"]] == ["FOOD, DRINKS, BAGS", "CREW (LABOR)", "RENT",
+                                                             "ADS, DELIVERY, FEES", "HQ + DEPRECIATION"]
+assert [it["value"] for it in rb["items"]] == [f"-${s:.2f}" for s in shown_b[:5]]
+cnt = op(b, id="left")
+assert [v for _, v in cnt["steps"]] == left
+for it, (st, _) in zip(rb["items"], cnt["steps"][1:]):
+    assert abs(st - (it["at"] + 0.35)) < 1e-9
 tB = texts(b)
-r_t, rec = rows(b)
-want = [f"${round(v, 2):.2f}" for _, v in lines] + [f"${round(tax_line, 2):.2f}"]
-assert [it[1] for it in rec["items"]] == want, (rec["items"], want)
-left_chain = [10.0]
-for _, v in lines:
-    left_chain.append(round(left_chain[-1] - round(v, 2), 2))
-assert chain(b, 770) == left_chain, chain(b, 770)
-for s in ("$1.62 − $0.33 = ?", "$1.29", "of every $10"):
+for s in (f"${left[-1]:.2f} − ${shown_b[5]:.2f} = ?", "$1.29", "of every $10"):
     assert s in tB, s
-print(f"  09B  food (first payoff) {r_t[2]:.1f}s = {r_t[2] / b['duration']:.0%}; crew twist {r_t[3]:.1f}s = {r_t[3] / b['duration']:.0%}; "
-      f"hero card {hero(b)['openAt'] + 0.45:.2f}s of {b['duration']}s")
-assert r_t[2] / b["duration"] <= 0.4
+food_at, crew_at = rb["items"][0]["at"], rb["items"][1]["at"]
+print(f"  09B  food (first payoff) {food_at:.1f}s = {food_at / b['duration']:.0%}; crew twist {crew_at:.1f}s = {crew_at / b['duration']:.0%}; "
+      f"hero card {heroB:.2f}s of {b['duration']}s")
+assert food_at / b["duration"] <= 0.4
 
-# 09C
-tC = texts(c)
-r_t, rec = rows(c)
-vals = [it[1] for it in rec["items"] if it[1] not in ("", "?")]
+# 09C: the prize chart is printed in frame 0; each tier's worth prints beside it; the counter adds them up
+heroC = rule_checks(c, "09C")
+rcl, rc = op(c, id="rcl"), op(c, id="rc")
+assert rcl["instant"] and rcl["items"] == [["$4", "1 IN 38"], ["$4–$7", "3 MORE WAYS"], ["$100", "2 WAYS"],
+                                           ["$50,000", f"1 IN {913_129.18 / 1e3:.0f}K"],
+                                           ["$1,000,000", f"1 IN {11_688_053.52 / 1e6:.1f}M"],
+                                           ["JACKPOT", f"1 IN {total / 1e6:.1f}M"]]
+vals = [it["value"] for it in rc["items"] if it["value"] not in ("", "?")]
 assert vals == [f"{s}¢" for s in shown], vals
-run = [sum(shown[:i + 1]) for i in range(len(shown))]
-assert chain(c, 780) == [0] + run, chain(c, 780)
-for s in ("$4 · 1 IN 38", "$50,000 · 1 IN 913K", "$1,000,000 · 1 IN 11.7M", "JACKPOT · 1 IN 292.2M",
-          f"${cash / 1e6:.1f}M × {1 - tax:.2f} ≈ ${after / 1e6:.1f}M", f"÷ {total / 1e6:.1f}M ≈ {round(jp * 100)}¢",
+wc = op(c, id="worth")
+assert [v for _, v in wc["steps"]] == [0] + [sum(shown[:i + 1]) for i in range(len(shown))], wc["steps"]
+tC = texts(c)
+for s in (f"${cash / 1e6:.1f}M × {1 - tax_rate:.2f} ≈ ${after / 1e6:.1f}M", f"÷ {total / 1e6:.1f}M ≈ {round(jp * 100)}¢",
           f"+ {cum_shown}¢ small prizes = ?", f"≈ {round(whole * 100)}¢"):
-    assert s in tC, s
-assert round(after / 1e6, 1) / round(total / 1e6, 1) * 100 > 42.5  # the rounded line also gives 43c
-assert f"${cash / 1e6:.1f}M" in next(o["text"] for o in c["ops"] if o["type"] == "sticky")
-print(f"  09C  $4 row (first payoff) {r_t[2]:.1f}s = {r_t[2] / c['duration']:.0%}; $50K twist {r_t[5]:.1f}s = {r_t[5] / c['duration']:.0%}; "
-      f"hero card {hero(c)['openAt'] + 0.45:.2f}s of {c['duration']}s")
-assert r_t[2] / c["duration"] <= 0.4
+    assert any(s in t for t in tC), s
+assert f"${cash / 1e6:.1f}M" in op(c, type="sticky")["text"]
+first_at, twist_at = rc["items"][0]["at"], rc["items"][3]["at"]
+print(f"  09C  $4 row (first payoff) {first_at:.1f}s = {first_at / c['duration']:.0%}; $50K twist {twist_at:.1f}s = {twist_at / c['duration']:.0%}; "
+      f"hero card {heroC:.2f}s of {c['duration']}s")
+assert first_at / c["duration"] <= 0.4
 
 print("\nall assertions passed")
 ```
 
-**Output** (run 2026-10-07, after the QA fixes):
+**Output** (run 2026-10-07, after the polish pass):
 
 ```
 ======================================================================== 
 09A  6 groceries, 2006 vs Aug 2026 (BLS average prices)
 ========================================================================
-  eggs, grade A large, dozen        1.31 ->  2.27  x1.73  running   1.31 |   2.27
-  milk, whole, gallon               3.08 ->  4.23  x1.37  running   4.39 |   6.50
-  bread, white pan, lb              1.08 ->  1.82  x1.69  running   5.47 |   8.32
-  bananas, lb                       0.50 ->  0.65  x1.30  running   5.97 |   8.97
-  coffee, 100% ground roast, lb     3.20 ->  9.30  x2.91  running   9.17 |  18.27
-  ground beef, 100% beef, lb        2.22 ->  6.92  x3.12  running  11.39 |  25.19
-  totals: 2006 $11.39 | 2026 $25.19 (receipt) / $25.198 (unrounded)
-  ratio 2.212  -> on screen x2.2   (+121.2%)
-  increase $13.80; coffee +$6.10, beef +$4.70 = $10.80 = 78.26% of the jump -> '78%'
+  eggs, grade A large, dozen        1.31 ->  2.28  x1.740 ('×1.7')  running   1.31 |   2.28
+  milk, whole, gallon               3.08 ->  4.23  x1.373 ('×1.4')  running   4.39 |   6.51
+  bread, white pan, lb              1.08 ->  1.82  x1.685 ('×1.7')  running   5.47 |   8.33
+  bananas, lb                       0.50 ->  0.65  x1.300 ('×1.3')  running   5.97 |   8.98
+  coffee, 100% ground roast, lb     3.20 ->  9.30  x2.906 ('×2.9')  running   9.17 |  18.28
+  ground beef, 100% beef, lb        2.22 ->  6.92  x3.117 ('×3.1')  running  11.39 |  25.20
+  totals: 2006 $11.39 | 2026 $25.20 (receipt) / $25.205 (unrounded)
+  'double = $22.78': the 2026 running total passes it on the beef line (18.28 -> 25.20)
+  ratio 2.2125 (unrounded 2.2129)  -> on screen x2.2   (+121.2%)
+  increase $13.81; coffee +$6.10, beef +$4.70 = $10.80 = 78.20% of the jump -> '78%'
   bananas +$0.15 in 20 yrs (x1.30); coffee x2.9; beef x3.1
   pay ratio x1.937 -> 'x1.9'
-  minutes of work: 2006 40.70 min | 2026 46.46 min (46.48 unrounded)
-  difference 5.76 min (+14.1%)
-  verdict 'x1.1, not x2.2': exact 1.141; from the rounded screen values 1.122
-  envelope said ~46 min: within 0.99%; ~41 min: within 0.73%
-  at federal minimum wage: 132.7 min -> 208.5 min (+57%)
+  minutes of work: 2006 40.70 min | 2026 46.48 min (46.49 unrounded)
+  difference 5.78 min (+14.2%)
+  verdict 'x1.1, not x2.2': exact 1.142; from the rounded screen values 1.122
+  envelope said ~46 min: within 1.03%; ~41 min: within 0.73%
+  at federal minimum wage: 132.7 min -> 208.6 min (+57%)
 ======================================================================== 
-09B  $10 at Chipotle (FY2025 10-K / Q4 release, % of total revenue)
+09B  $10 at Chipotle (FY2025 10-K / Q4 release, $ thousands)
 ========================================================================
-  restaurant costs 74.6% -> restaurant-level margin 25.4% (reported 25.4%)
-  net margin 1,535,761 / 11,925,601 = 12.88%
-  food, drinks, bags                               $ 2.96   left $ 7.04
-  crew (labor)                                     $ 2.51   left $ 4.53
-  rent (occupancy)                                 $ 0.52   left $ 4.01
-  ads, delivery, card fees, utilities (other op.)  $ 1.47   left $ 2.54
-  HQ + depreciation + new stores (to operating)    $ 0.92   left $ 1.62
-  taxes, net of interest income: 1.62 - 1.2878 = $0.3322 -> $0.33
+  impairment, closure & asset disposal (derived): $27,452K
+  food   29.575% of revenue
+  labor  25.086% of revenue
+  occ     5.240% of revenue
+  other  14.723% of revenue
+  restaurant-level margin 25.38% (reported 25.4%); operating margin 16.23% (reported 16.2%); net 12.88%
+  food, drinks, bags                                                   $2.9575 -> $2.96
+  crew (labor)                                                         $2.5086 -> $2.51
+  rent (occupancy)                                                     $0.5240 -> $0.52
+  ads, delivery, card fees, utilities (other op.)                      $1.4723 -> $1.47
+  HQ + depreciation + new stores (G&A, D&A, pre-opening, impairment)   $0.9143 -> $0.91
+  taxes, net of interest income                                        $0.3354 -> $0.34
+  profit (net income)                                                  $1.2878 -> $1.29
+  left of $10 after each receipt row: [10.0, 7.04, 4.53, 4.01, 2.54, 1.63]
+  on screen: $1.63 - $0.34 = $1.29;  exact: operating $1.6232, taxes net $0.3354, profit $1.2878
   profit per $10: $1.2878 -> '$1.29' (within 0.17%); '12.9%'
+  restaurant keeps $2.5375 -> '$2.54' (the rounded chain also gives 2.54)
   crew vs food: 85% ('almost as much'); food $2.96 vs profit $1.29 = 2.3x
   revenue growth check: 0.0541 (reported +5.4%)
 ======================================================================== 
@@ -732,9 +794,9 @@ print("\nall assertions passed")
 ======================================================================== 
 specs: on-screen numbers and timing
 ========================================================================
-  09A  eggs (first payoff) 5.0s = 12%; bananas break 14.6s = 35%; hero card 39.75s of 41.5s
-  09B  food (first payoff) 4.6s = 15%; crew twist 7.8s = 25%; hero card 29.45s of 31.2s
-  09C  $4 row (first payoff) 4.6s = 12%; $50K twist 13.6s = 34%; hero card 37.85s of 39.5s
+  09A  eggs (first payoff) 6.3s = 15%; bananas break 15.9s = 38%; hero card 39.65s of 41.6s
+  09B  food (first payoff) 4.9s = 16%; crew twist 8.1s = 26%; hero card 29.45s of 31.2s
+  09C  $4 row (first payoff) 4.6s = 12%; $50K twist 13.6s = 34%; hero card 37.85s of 39.6s
 
 all assertions passed
 ```
@@ -742,6 +804,8 @@ all assertions passed
 ---
 
 ### Verification log
+
+*First QA pass, kept as history. Where it disagrees with the **Polish pass** below, the polish pass wins: the negative-t pre-rolls it added are gone (the engine now draws a t 0 hook finished), the postage stamps are gone, 09A's eggs are $2.28 (2026 bag $25.20), 09B's last rows are $0.91 / $0.34, and the help line is 1-800-MY-RESET.*
 
 QA pass by an independent fact-checker, editor and QA reviewer, 2026-10-07. I assumed there were mistakes and looked for them.
 - **Files touched:** this md, `teasers/09-itemized-tally-math.py`, `engine/specs/09-itemized-tally-{a,b,c}.json`, the re-rendered `engine/out/sheets/09-itemized-tally-{a,b,c}.png`, and `engine/out/stills/09-itemized-tally-*`.
@@ -842,3 +906,69 @@ QA pass by an independent fact-checker, editor and QA reviewer, 2026-10-07. I as
 3. Add an anchor for annotations on receipt rows (for example `annotate.target: {op, row}`), so circles and highlights don't need hand-computed y values that break when `size` changes.
 4. Add a `check` warning when frame 0 has no readable text, and another when an `envelope` card lands earlier than `duration − 2` (format bible §2.2 and §2.5).
 5. Give `hook` an `instant: true` option. Pre-rolled ops (negative `t`) currently stack all their SFX on sample 1, because `sec()` clamps to 1. A pre-rolled op should either drop its SFX or start them at 0 with their natural spacing.
+
+### Final fact check
+
+Polish pass, 2026-10-07, with a fresh WebSearch budget. Direct page loads (WebFetch) of bls.gov, fred.stlouisfed.org, ir.chipotle.com, yahoo.com and most news sites were blocked by the egress proxy, so each value below was confirmed from search results that quote the cited page; the URL is the page the value comes from. "Corrected" rows changed the md, specs, captions, VO and math check.
+
+| Input | Value used | Source URL | Checked on | Status |
+|---|---|---|---|---|
+| Eggs, grade A large, 2006 annual avg | $1.31 / dozen | https://www.usinflationcalculator.com/inflation/egg-prices-adjusted-for-inflation/ | 2026-10-07 | confirmed |
+| Eggs, Aug 2026 (BLS, released 2026-09-11) | **$2.279** → $2.28 on screen | https://www.usinflationcalculator.com/inflation/egg-prices-adjusted-for-inflation/ ("$2.279… 4.1% increase from the July price of $2.189"); https://themoneyoverview.com/36-egg-prices-ticked-back-up-to-about-2-28-a-dozen-in-august-bucking-the/ | 2026-10-07 | **corrected** (writer had $2.272 → $2.27) |
+| Milk, whole, 2006 avg · Aug 2026 | $3.08 · $4.229 | https://www.usinflationcalculator.com/inflation/milk-prices-adjusted-for-inflation/ | 2026-10-07 | confirmed |
+| White bread, 2006 avg · Aug 2026 | $1.08 · $1.823 (182.3¢) | https://fred.stlouisfed.org/data/APU0000702111 ; https://www.bakingbusiness.com/articles/66929-white-pan-bread-retail-price-rises-in-august | 2026-10-07 | confirmed |
+| Bananas, 2006 avg · Aug 2026 | $0.50 · $0.652 | https://fred.stlouisfed.org/data/APU0000711211 ; https://tradingeconomics.com/united-states/bananas-per-lb-4536-gm-in-us-city-average-fed-data.html | 2026-10-07 | confirmed |
+| Coffee, 100% ground roast, 2006 avg · Aug 2026 | $3.203 ($3.20) · $9.299 (July $9.317) | https://www.usinflationcalculator.com/inflation/coffee-prices-by-year-and-adjust-for-inflation/ | 2026-10-07 | confirmed |
+| Ground beef, 100% beef, 2006 avg · Aug 2026 | $2.22 · $6.923 | https://basketreport.com/prices/ground-beef/history/ ; https://themoneyoverview.com/25-ground-beef-averaged-6-92-a-pound-in-august-up-about-60-cents/ | 2026-10-07 | confirmed |
+| CPI average-price releases | Aug 2026 data 2026-09-11; Sep 2026 data due 2026-10-14 | https://eco3min.fr/en/next-us-cpi-release/ | 2026-10-07 | confirmed |
+| Avg hourly earnings, prod. & nonsupervisory, Aug 2006 | $16.79 ("rose by 2 cents… to $16.79", first published) | https://www.bls.gov/news.release/archives/empsit_09012006.pdf | 2026-10-07 | confirmed |
+| Same series, Aug 2026 | $32.53 | https://www.bls.gov/news.release/archives/realer_09112026.htm | 2026-10-07 | confirmed |
+| Same series, Sep 2026 (context only) | $32.60, up 7 cents (released 2026-10-02) | https://tradingeconomics.com/united-states/average-hourly-earnings/news/589162 | 2026-10-07 | confirmed; not used on screen (prices are August, so pay stays August; verdict unchanged at 46.4 min) |
+| 2006 monthly wage range (basis note only) | $16.52 to $17.06 | writer's figure | 2026-10-07 | not re-checked this pass; not on screen, and the 40 to 41 min conclusion holds across it |
+| Federal minimum wage (pin only) | $5.15 (1997 to 2007) · $7.25 since 2009-07-24 | https://www.scrippsnews.com/life/money/despite-inflation-the-federal-minimum-wage-has-not-had-an-increase-in-15-years | 2026-10-07 | confirmed |
+| Chipotle FY2025 revenue | $11,925,601K (+5.4%) | https://www.sec.gov/Archives/edgar/data/1058090/000105809026000007/cmg-20260203xex991.htm (Q4/FY2025 release, 2026-02-03) | 2026-10-07 | confirmed |
+| Chipotle FY2025 cost lines | food/bev/packaging $3,527,043K · labor $2,991,680K · occupancy $624,898K · other operating $1,755,824K · G&A $652,017K · D&A $361,382K · pre-opening $49,507K | same | 2026-10-07 | confirmed; **now used as dollar lines** (HQ row $0.92 → $0.91) |
+| Chipotle FY2025 operating income · interest & other income · income tax · net income | $1,935,798K · $73,721K · $473,758K · $1,535,761K | same; https://www.sec.gov/Archives/edgar/data/1058090/000105809026000009/cmg-20251231.htm (10-K) | 2026-10-07 | confirmed; **taxes row corrected** $0.33 → $0.34 (exact $0.3354), open subtraction now $1.63 − $0.34 |
+| Chipotle restaurant-level / operating margin | 25.4% · 16.2% | https://ir.chipotle.com/2026-02-03-CHIPOTLE-ANNOUNCES-FOURTH-QUARTER-AND-FULL-YEAR-2025-RESULTS | 2026-10-07 | confirmed |
+| Powerball prize chart and odds | 1 in 38.32 … 1 in 292,201,338; any prize 1 in 24.87 | https://www.lotteryusa.com/powerball/prizes-odds | 2026-10-07 | confirmed (and re-derived from C(69,5) × 26) |
+| Powerball jackpot, Wed 2026-10-07 | $485M est.; $199.8M cash | https://www.kgw.com/article/news/nation-world/powerball-winning-numbers-oct-5-2026/507-9a01fc8b-0441-4f0c-bd7d-d614a4250379 | 2026-10-07 | confirmed (re-check on upload morning) |
+| Powerball, Mon 2026-10-05 | $467M / $192.4M cash; no jackpot winner | https://www.wkyc.com/article/news/lottery/winning-powerball-numbers-467-million-jackpot-monday-october-5-results-ohio-lottery-winners/95-0b0d7131-48fb-45a9-b24c-a46ad1dca5a4 | 2026-10-07 | confirmed; same 0.412 cash/annuity ratio, which settles the first QA's flag |
+| Federal top rate, 2026 | 37% (single > $640,600) | https://www.nysscpa.org/article-content/irs-adjusts-2026-tax-brackets-and-standard-deductions-for-inflation-102425 | 2026-10-07 | confirmed |
+| Problem-gambling help line | **1-800-MY-RESET** (National Problem Gambling Helpline, adopted 2026-01-29) | https://www.ncpgambling.org/news/1-800-my-reset-announcement/ ; https://sbcamericas.com/2026/01/29/ncpg-unveils-new-1-800-my-reset/ | 2026-10-07 | **corrected** (1-800-GAMBLER: NCPG lost the right to use it after 2025-09-29) |
+| Draw days | 2026-10-05 = Monday, 2026-10-07 = Wednesday | python3 `datetime` | 2026-10-07 | confirmed |
+| Creator evidence table (views, outliers, lengths, watch-file claims) | e.g. Big Mac 29,408,278 views, 11.55x | `research/raw/web-creator-case-studies.md` (snapshot 2026-02-19), `research/02-top-10-approaches.md`, `research/watch/` | 2026-10-07 | not re-checked live (WebSearch doesn't return view counts); research snapshots, not on screen |
+
+### Polish pass
+
+2026-10-07, finishing producer. Files touched: this md, `teasers/09-itemized-tally-math.py`, `engine/specs/09-itemized-tally-{a,b,c}.json`, new renders `engine/out/09-itemized-tally-{a,b,c}.mp4` and stills `engine/out/stills/09-itemized-tally-*`. `engine/src` was not edited.
+
+**Facts**
+- 09A eggs, Aug 2026: $2.272 → **$2.279** (BLS). Knock-on: the eggs row $2.27 → $2.28, the 2026 bag $25.19 → **$25.20** (receipt TOTAL, caption, VO, working line 2), the pin's unrounded total $25.198 → $25.205, the jump $13.80 → $13.81, minutes 46.46 → 46.48, and minimum-wage minutes 208 → 209 (TikTok beat and pin). Every verdict holds: ×2.2, 78%, ≈ 46 min, ×1.1.
+- 09B rebuilt from the exact 10-K dollar lines instead of rounded % shares: HQ + depreciation $0.92 → **$0.91**, taxes (net) $0.33 → **$0.34**, left after HQ $1.62 → **$1.63**, the open subtraction "$1.62 − $0.33" → "**$1.63 − $0.34**". The seven rounded amounts now add up to exactly $10.00, and the answer is still $1.29. VO, captions, pin and Sources updated.
+- 09C help line: 1-800-GAMBLER → **1-800-MY-RESET** in the pin, description and Sources.
+- Noted the September 2026 wage ($32.60, out 2026-10-02) and kept the month-matched August figure; settled the 09C cash/annuity flag (Monday's ratio is the same 0.412).
+- Math check rewritten for the new numbers and the new spec structure; it passes.
+
+**Specs (all three regenerated for the upgraded engine; `check` returns zero warnings)**
+- Frame 0: the hook is at t 0 (drawn finished); every negative-t pre-roll is gone. The postmark moved into the flap at (175, 258, r 100). The postage stamps are gone (they only reached frame 0 through a negative t).
+- One layout for the series: an `instant` receipt holds the list in frame 0 (09A the 2006 prices with TOTAL $11.39; 09B the five cost lines; 09C the prize chart), and a second receipt beside it prints the money column one row at a time with per-row `at` (09A 2026 prices with ×multipliers; 09B amounts; 09C worth). A highlighter swipe marks the row being read. The frame-0 thumbnail is now a full receipt beside an empty column instead of a header over blank kraft.
+- Running totals: 09A uses receipt `running` TOTAL rows (the two totals end side by side); 09B and 09C use one `counter` with `steps` each ("left: $", "worth so far:"), readable from frame 0. These replace 14, 6 and 6 chained counters.
+- Marks: text-anchored `target` annotations replace hand-measured ones (09A circle on "$22.78", double underline on "2.2", highlight on "coffee + beef", underline on "41 min"; 09B underline on the counter's amount, circle on the "?"; 09C underline on "0.63"). Receipt rows aren't anchorable, so twist rows use row `highlight`/`color`; 09C's two circles on 10¢ and 5¢ and the reading-pointer swipes are computed from the engine's receipt geometry, not hand-measured.
+- Sizes: handwriting is 64 to 120 px (was 48 to 80), the hero cards 110 to 112 px, receipts 44 to 52 px type (the 34 px labels are gone), stickies 56 px. The content zone (600 to 1300) is filled on both screens: receipts and counter on screen 1; sticky, timer, envelope and working on screen 2.
+- Stacked working lines (09A lines 1 and 2, 09B's subtraction, 09C lines 2 and 3) use `pen: "low"`, so the moving pen never covers the line above.
+- `loop: true` on all three (0.35 s crossfade into frame 0). Captions keep ≤ 2 lines and ≤ 4 words/s; `say` added wherever the VO reads a number differently, and each spec's `vo` is now built from the same `say` text.
+- 09A: added "double = $22.78" as the line the 2026 total has to beat (circled when beef pushes it past), plus the per-row multipliers; dropped the coffee/beef margin notes the multipliers now carry; moved "× 2.2" and "78% of it" 0.6 s earlier so they're readable for 1.4 s before the flip. Duration 41.5 → 41.6 s.
+- 09B: the taxes row moved off the receipt into the handwritten line after the flip; flip at 20.7.
+- 09C: the "↑ LESS THAN THE $4 PRIZE" row is gone (it would have printed in frame 0 on the instant chart); the VO, caption, circles and OPENED BY MISTAKE carry the twist. POSTAGE DUE moved off the wax seal to the top-left. Duration 39.5 → 39.6 s.
+
+**Render review** (frames pulled from each MP4 at 0.0 s, partial payoff, reveal and duration − 0.2 s; audio via `volumedetect`)
+- The engine was updated mid-pass (low pen, captions wrapped at 820 px, a lint for text cleared before it finishes writing). The final specs pass the new `check` with zero warnings, and the final MP4s were rendered after that update.
+- Audio: 09A mean −26.6 dB / max −1.6 dB; 09B −26.9 / −2.3; 09C −26.8 / −1.8. All inside the target.
+- Fixed after looking: frames 0 of 09B/09C were a receipt header over empty kraft (led to the two-receipt layout); the second card line was clipped by the envelope front at 120 to 130 px card size (now 110 to 112); POSTAGE DUE sat on the wax seal; the 09B underline anchored to the "$" of the counter prefix (now the amount); the 09A "78%" line was readable for only 0.8 s.
+- Left as is: the last 0.35 s of each render is a deliberate double exposure (the loop crossfade); the stamp's 0.28 s slam briefly overlaps nearby text before it settles.
+
+**Engine requests (not implemented; engine/src untouched)**
+1. Receipt rule: the dash count assumes 0.62 × size per dash, but a Special Elite dash is 0.636 × size, so the dashed rule runs about 20 px past the receipt's right edge. In 09A to 09C the right-hand receipt hides the left one's overflow; the right one's still shows.
+2. Let `target` anchor to receipt rows ({op, row} or match on a row's label/value), so circles on receipt values don't need computed coordinates.
+3. The envelope's `label` and `note` scale with `w` (26 px label at w 680), too small for a phone; add `labelSize`/`noteSize`.
+4. Give receipt `running` a `suffix` (for cents, "32¢").

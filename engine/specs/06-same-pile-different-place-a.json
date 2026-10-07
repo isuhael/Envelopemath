@@ -12,32 +12,38 @@
     {
       "t": 0.15,
       "end": 1.75,
-      "text": "Same thousand bucks of pay."
+      "text": "Same $1,000 of pay.",
+      "say": "Same thousand bucks of pay."
     },
     {
       "t": 1.75,
       "end": 3.35,
-      "text": "Six countries. Who taxes it most?"
+      "text": "6 countries. Who taxes it most?",
+      "say": "Six countries. Who taxes it most?"
     },
     {
       "t": 3.4,
       "end": 5.4,
-      "text": "Same rule: income tax plus social security."
+      "text": "Same rule: income tax + social security.",
+      "say": "Same rule: income tax plus social security."
     },
     {
       "t": 5.45,
       "end": 8.25,
-      "text": "Chile: seventy-one bucks. Not even one envelope."
+      "text": "Chile: $71. Not even 1 envelope.",
+      "say": "Chile: seventy-one bucks. Not even one envelope."
     },
     {
       "t": 8.3,
       "end": 10.9,
-      "text": "Switzerland: one eighty-one. Under two envelopes."
+      "text": "Switzerland: $181. Under 2 envelopes.",
+      "say": "Switzerland: one eighty-one. Under two envelopes."
     },
     {
       "t": 10.95,
       "end": 13.45,
-      "text": "The UK: two thirty-one."
+      "text": "The UK: $231.",
+      "say": "The UK: two thirty-one."
     },
     {
       "t": 13.5,
@@ -47,32 +53,38 @@
     {
       "t": 15.2,
       "end": 17.35,
-      "text": "Two forty-three. Just under the OECD average."
+      "text": "$243. Just under the OECD average.",
+      "say": "Two forty-three. Just under the OECD average."
     },
     {
       "t": 17.4,
       "end": 19.95,
-      "text": "Then Germany jumps to three eighty-seven."
+      "text": "Then Germany jumps to $387.",
+      "say": "Then Germany jumps to three eighty-seven."
     },
     {
-      "t": 20.0,
+      "t": 20,
       "end": 21.6,
-      "text": "And the highest of all thirty-eight?"
+      "text": "And the highest of all 38?",
+      "say": "And the highest of all thirty-eight?"
     },
     {
       "t": 21.65,
       "end": 23.95,
-      "text": "Belgium. Three ninety-five."
+      "text": "Belgium. $395.",
+      "say": "Belgium. Three ninety-five."
     },
     {
       "t": 24.15,
       "end": 26.1,
-      "text": "Five and a half times Chile's cut."
+      "text": "5½× Chile's cut.",
+      "say": "Five and a half times Chile's cut."
     },
     {
       "t": 26.1,
       "end": 28.2,
-      "text": "That's almost four envelopes out of ten."
+      "text": "That's almost 4 envelopes out of 10.",
+      "say": "That's almost four envelopes out of ten."
     },
     {
       "t": 28.25,
@@ -83,7 +95,7 @@
   "ops": [
     {
       "type": "postmark",
-      "t": -0.5,
+      "t": 0,
       "x": 175,
       "y": 258,
       "r": 100,
@@ -95,7 +107,7 @@
     },
     {
       "type": "postage",
-      "t": -0.5,
+      "t": -0.4,
       "x": 880,
       "y": 334,
       "value": "$1K",
@@ -107,62 +119,87 @@
     },
     {
       "type": "hook",
-      "t": -0.6,
+      "t": 0,
       "text": [
         "Same $1,000 of pay,",
         "6 countries:",
         "who taxes it *most*?"
       ],
-      "y": 480,
-      "size": 76,
+      "y": 490,
+      "size": 84,
       "until": 3.35
     },
     {
       "type": "grid",
-      "t": -0.7,
+      "t": -0.4,
       "x": 540,
-      "y": 800,
+      "y": 850,
       "rows": 2,
       "cols": 5,
       "filled": 10,
+      "prefilled": 10,
       "emoji": "✉️",
-      "cell": 135,
-      "dur": 0.35,
-      "label": "10 envelopes × $100",
+      "cell": 150,
+      "dur": 0.01,
+      "until": 3.35
+    },
+    {
+      "type": "write",
+      "t": -1.2,
+      "text": "10 envelopes × $100",
+      "x": 540,
+      "y": 1215,
+      "size": 72,
+      "align": "center",
+      "color": "red",
+      "cps": 30,
       "until": 3.35
     },
     {
       "type": "write",
       "t": 3.4,
-      "text": "$1,000 × tax rate",
+      "text": "income tax + social security",
       "x": 540,
       "y": 545,
-      "size": 100,
+      "size": 84,
       "align": "center",
-      "cps": 20,
+      "color": "pencil",
+      "cps": 26,
+      "until": 5.45
+    },
+    {
+      "type": "write",
+      "id": "fixed",
+      "t": 3.55,
+      "text": "$1,000 × ",
+      "x": 160,
+      "y": 690,
+      "size": 92,
+      "cps": 18
+    },
+    {
+      "type": "write",
+      "t": 4.1,
+      "text": "tax rate",
+      "x": 470.8,
+      "y": 690,
+      "size": 92,
+      "color": "pencil",
+      "cps": 18,
       "until": 5.45
     },
     {
       "type": "sticky",
-      "t": 3.45,
-      "x": 700,
-      "y": 1000,
-      "w": 440,
-      "size": 46,
-      "cps": 75,
+      "t": 3.6,
+      "x": 712,
+      "w": 420,
+      "size": 64,
+      "cps": 60,
+      "rot": -3,
       "title": "ASSUME:",
       "text": "average-wage single worker, no kids · income tax + employee social security · OECD, 2025",
-      "until": 10.95
-    },
-    {
-      "type": "write",
-      "t": 5.5,
-      "text": "$1,000 × ",
-      "x": 179,
-      "y": 652,
-      "size": 88,
-      "color": "ink",
-      "cps": 18
+      "until": 10.95,
+      "y": 1019
     },
     {
       "type": "write",
@@ -173,38 +210,28 @@
       "size": 100,
       "align": "center",
       "color": "ink",
-      "cps": 18,
+      "cps": 24,
+      "pen": "small",
       "until": 8.3
     },
     {
       "type": "write",
-      "t": 5.8,
-      "text": "7.1% = ",
-      "x": 478,
-      "y": 652,
-      "size": 88,
-      "color": "ink",
-      "cps": 18,
-      "until": 8.3
-    },
-    {
-      "type": "write",
-      "t": 6.2,
-      "text": "$71",
-      "x": 710,
-      "y": 652,
-      "size": 88,
-      "color": "red",
+      "t": 6,
+      "text": "7.1% = *$71*",
+      "em": true,
+      "x": 470.8,
+      "y": 690,
+      "size": 92,
       "cps": 18,
       "until": 8.3
     },
     {
       "type": "bars",
       "t": 5.9,
-      "x": 186.67,
-      "y": 1225,
-      "w": 132,
-      "h": 460,
+      "x": 173.7,
+      "y": 1215,
+      "w": 133.3,
+      "h": 400,
       "max": 400,
       "dur": 0.9,
       "items": [
@@ -214,7 +241,7 @@
           "display": "$71",
           "color": "ink",
           "labelSize": 64,
-          "valueSize": 60
+          "valueSize": 64
         }
       ]
     },
@@ -227,38 +254,28 @@
       "size": 100,
       "align": "center",
       "color": "ink",
-      "cps": 18,
+      "cps": 24,
+      "pen": "small",
       "until": 10.95
     },
     {
       "type": "write",
-      "t": 8.65,
-      "text": "18.1% = ",
-      "x": 478,
-      "y": 652,
-      "size": 88,
-      "color": "ink",
-      "cps": 18,
-      "until": 10.95
-    },
-    {
-      "type": "write",
-      "t": 9.05,
-      "text": "$181",
-      "x": 750,
-      "y": 652,
-      "size": 88,
-      "color": "red",
+      "t": 8.8,
+      "text": "18.1% = *$181*",
+      "em": true,
+      "x": 470.8,
+      "y": 690,
+      "size": 92,
       "cps": 18,
       "until": 10.95
     },
     {
       "type": "bars",
-      "t": 8.75,
-      "x": 320,
-      "y": 1225,
-      "w": 132,
-      "h": 460,
+      "t": 8.8,
+      "x": 307,
+      "y": 1215,
+      "w": 133.3,
+      "h": 400,
       "max": 400,
       "dur": 0.9,
       "items": [
@@ -268,7 +285,7 @@
           "display": "$181",
           "color": "ink",
           "labelSize": 64,
-          "valueSize": 60
+          "valueSize": 64
         }
       ]
     },
@@ -281,38 +298,28 @@
       "size": 100,
       "align": "center",
       "color": "ink",
-      "cps": 18,
+      "cps": 24,
+      "pen": "small",
       "until": 13.5
     },
     {
       "type": "write",
-      "t": 11.3,
-      "text": "23.1% = ",
-      "x": 478,
-      "y": 652,
-      "size": 88,
-      "color": "ink",
-      "cps": 18,
-      "until": 13.5
-    },
-    {
-      "type": "write",
-      "t": 11.7,
-      "text": "$231",
-      "x": 750,
-      "y": 652,
-      "size": 88,
-      "color": "red",
+      "t": 11.5,
+      "text": "23.1% = *$231*",
+      "em": true,
+      "x": 470.8,
+      "y": 690,
+      "size": 92,
       "cps": 18,
       "until": 13.5
     },
     {
       "type": "bars",
       "t": 11.4,
-      "x": 453.33,
-      "y": 1225,
-      "w": 132,
-      "h": 460,
+      "x": 440.3,
+      "y": 1215,
+      "w": 133.3,
+      "h": 400,
       "max": 400,
       "dur": 0.9,
       "items": [
@@ -322,19 +329,9 @@
           "display": "$231",
           "color": "ink",
           "labelSize": 64,
-          "valueSize": 60
+          "valueSize": 64
         }
       ]
-    },
-    {
-      "type": "hook",
-      "t": 13.5,
-      "text": [
-        "Wait… the *US*?"
-      ],
-      "y": 530,
-      "size": 84,
-      "until": 15.2
     },
     {
       "type": "write",
@@ -345,38 +342,28 @@
       "size": 100,
       "align": "center",
       "color": "ink",
-      "cps": 18,
+      "cps": 24,
+      "pen": "small",
       "until": 17.4
     },
     {
       "type": "write",
-      "t": 15.55,
-      "text": "24.3% = ",
-      "x": 478,
-      "y": 652,
-      "size": 88,
-      "color": "ink",
-      "cps": 18,
-      "until": 17.4
-    },
-    {
-      "type": "write",
-      "t": 15.95,
-      "text": "$243",
-      "x": 750,
-      "y": 652,
-      "size": 88,
-      "color": "red",
+      "t": 15.7,
+      "text": "24.3% = *$243*",
+      "em": true,
+      "x": 470.8,
+      "y": 690,
+      "size": 92,
       "cps": 18,
       "until": 17.4
     },
     {
       "type": "bars",
-      "t": 15.65,
-      "x": 586.67,
-      "y": 1225,
-      "w": 132,
-      "h": 460,
+      "t": 15.7,
+      "x": 573.7,
+      "y": 1215,
+      "w": 133.3,
+      "h": 400,
       "max": 400,
       "dur": 0.9,
       "items": [
@@ -386,7 +373,7 @@
           "display": "$243",
           "color": "ink",
           "labelSize": 64,
-          "valueSize": 60
+          "valueSize": 64
         }
       ]
     },
@@ -399,38 +386,28 @@
       "size": 100,
       "align": "center",
       "color": "ink",
-      "cps": 18,
-      "until": 20.0
+      "cps": 24,
+      "pen": "small",
+      "until": 20
     },
     {
       "type": "write",
-      "t": 17.75,
-      "text": "38.7% = ",
-      "x": 478,
-      "y": 652,
-      "size": 88,
-      "color": "ink",
+      "t": 17.9,
+      "text": "38.7% = *$387*",
+      "em": true,
+      "x": 470.8,
+      "y": 690,
+      "size": 92,
       "cps": 18,
-      "until": 20.0
-    },
-    {
-      "type": "write",
-      "t": 18.15,
-      "text": "$387",
-      "x": 750,
-      "y": 652,
-      "size": 88,
-      "color": "red",
-      "cps": 18,
-      "until": 20.0
+      "until": 20
     },
     {
       "type": "bars",
-      "t": 17.85,
-      "x": 720,
-      "y": 1225,
-      "w": 132,
-      "h": 460,
+      "t": 17.8,
+      "x": 707,
+      "y": 1215,
+      "w": 133.3,
+      "h": 400,
       "max": 400,
       "dur": 0.9,
       "items": [
@@ -440,21 +417,9 @@
           "display": "$387",
           "color": "ink",
           "labelSize": 64,
-          "valueSize": 60
+          "valueSize": 64
         }
       ]
-    },
-    {
-      "type": "write",
-      "t": 20.0,
-      "text": "the highest of all 38?",
-      "x": 540,
-      "y": 545,
-      "size": 84,
-      "align": "center",
-      "color": "pencil",
-      "cps": 20,
-      "until": 21.65
     },
     {
       "type": "write",
@@ -465,38 +430,29 @@
       "size": 100,
       "align": "center",
       "color": "red",
-      "cps": 18,
-      "until": 24.0
+      "cps": 24,
+      "pen": "small",
+      "until": 24
     },
     {
       "type": "write",
-      "t": 22.0,
-      "text": "39.5% = ",
-      "x": 478,
-      "y": 652,
-      "size": 88,
-      "color": "ink",
+      "t": 22.2,
+      "text": "39.5% = *$395*",
+      "em": true,
+      "x": 470.8,
+      "y": 690,
+      "size": 92,
       "cps": 18,
-      "until": 24.0
-    },
-    {
-      "type": "write",
-      "t": 22.4,
-      "text": "$395",
-      "x": 748,
-      "y": 652,
-      "size": 88,
-      "color": "red",
-      "cps": 18,
-      "until": 24.0
+      "until": 24,
+      "id": "be"
     },
     {
       "type": "bars",
       "t": 22.1,
-      "x": 853.33,
-      "y": 1225,
-      "w": 132,
-      "h": 460,
+      "x": 840.3,
+      "y": 1215,
+      "w": 133.3,
+      "h": 400,
       "max": 400,
       "dur": 0.9,
       "items": [
@@ -506,66 +462,88 @@
           "display": "$395",
           "color": "red",
           "labelSize": 64,
-          "valueSize": 60
+          "valueSize": 64
         }
       ]
     },
     {
+      "type": "hook",
+      "t": 13.5,
+      "text": [
+        "Wait… the *US*?"
+      ],
+      "y": 545,
+      "size": 84,
+      "until": 15.2
+    },
+    {
+      "type": "write",
+      "t": 20,
+      "text": "the highest of all 38?",
+      "x": 540,
+      "y": 545,
+      "size": 84,
+      "align": "center",
+      "color": "pencil",
+      "cps": 24,
+      "until": 21.65
+    },
+    {
       "type": "annotate",
-      "t": 23.0,
+      "t": 23,
       "kind": "circle",
-      "x": 748,
-      "y": 586,
-      "w": 156,
-      "h": 80,
+      "target": {
+        "op": "be",
+        "match": "$395"
+      },
       "dur": 0.4
     },
     {
       "type": "flip",
-      "t": 24.0
+      "t": 24
     },
     {
       "type": "write",
       "t": 24.35,
       "text": "$395 ÷ $71 ≈ 5½×",
       "x": 540,
-      "y": 560,
+      "y": 600,
       "size": 96,
       "align": "center",
-      "color": "ink",
       "cps": 16
     },
     {
       "type": "grid",
-      "t": 25.0,
+      "t": 25,
       "x": 540,
-      "y": 740,
+      "y": 760,
       "rows": 2,
       "cols": 5,
       "filled": 10,
+      "prefilled": 10,
       "emoji": "✉️",
-      "cell": 135,
-      "dur": 0.3
+      "cell": 150,
+      "dur": 0.01
     },
     {
       "type": "annotate",
       "t": 26.3,
       "kind": "cross",
-      "x": 766,
-      "y": 831,
-      "w": 88,
-      "h": 88,
+      "x": 792,
+      "y": 862,
+      "w": 96,
+      "h": 96,
       "width": 9,
       "dur": 0.22
     },
     {
       "type": "annotate",
-      "t": 26.55,
+      "t": 26.6,
       "kind": "cross",
-      "x": 631,
-      "y": 831,
-      "w": 88,
-      "h": 88,
+      "x": 642,
+      "y": 862,
+      "w": 96,
+      "h": 96,
       "width": 9,
       "dur": 0.22
     },
@@ -573,42 +551,43 @@
       "type": "annotate",
       "t": 26.8,
       "kind": "cross",
-      "x": 496,
-      "y": 831,
-      "w": 88,
-      "h": 88,
+      "x": 492,
+      "y": 862,
+      "w": 96,
+      "h": 96,
       "width": 9,
       "dur": 0.22
     },
     {
       "type": "annotate",
-      "t": 27.05,
+      "t": 27.1,
       "kind": "cross",
-      "x": 361,
-      "y": 831,
-      "w": 88,
-      "h": 88,
+      "x": 342,
+      "y": 862,
+      "w": 96,
+      "h": 96,
       "width": 9,
       "dur": 0.22
     },
     {
       "type": "write",
-      "t": 27.9,
+      "id": "hero",
+      "t": 27.6,
       "text": "🇧🇪 ≈ 4 of 10 ✉",
       "x": 540,
-      "y": 1105,
-      "size": 110,
+      "y": 1150,
+      "size": 116,
       "align": "center",
       "color": "red",
       "cps": 14
     },
     {
       "type": "stamp",
-      "t": 28.3,
+      "t": 28.7,
       "text": "POSTAGE DUE",
       "x": 540,
-      "y": 1232,
-      "size": 66,
+      "y": 1255,
+      "size": 60,
       "rot": -6
     }
   ]

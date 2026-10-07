@@ -1,11 +1,12 @@
 ## 10. The Envelope Audit (Claim Check)
 
-**Writer brief:** take a money claim people are already sharing and paraphrase it on masking tape in frame 1. Give the claim credit for what's true, then red-pen it down to its honest number, seal that number for a two-second guess, and stamp a verdict.
-**Lane:** Envelope (a 35.4 s master), cut to about 45 s for Instagram and about 62 s for TikTok.
-**Series:** **Envelope Audit**. Each episode ends on one recurring number: **Claim Survival %**, the share of the claim that's still standing after the red pen.
-**Specs:** `engine/specs/10-envelope-audit-{a,b,c}.json` · **Sheets:** `engine/out/sheets/10-envelope-audit-{a,b,c}.png` · **Math check:** `teasers/10-envelope-audit-mathcheck.py` (110 checks, all pass; it also reads the three specs)
-**Facts checked:** 2026-10-07. Every view count, outlier score and URL in the evidence sections is copied from `research/raw/` or `research/watch/`. The writer checked the real-world inputs with WebSearch on 2026-10-07. The QA pass could not re-open any web source: the search budget was used up and every primary site was egress-blocked. The Verification log at the end says what was confirmed another way and what must be re-checked before publishing.
-**Lane discipline:** an audit tests **one claim** and reveals the answer inside the video. It does not use the receipt or running-tally devices (#9, Itemized Tally), and it never holds the answer back for a later post (#8, Trap Card).
+**Writer brief:** take a money claim people are already sharing and paraphrase it on a claim card in frame 0 (the thumbnail). Give the claim credit for what's true, then red-pen it down to its honest number, seal that number for a two-second guess, and stamp a verdict.
+**Lane:** Envelope (36.0 s, 36.6 s and 37.0 s masters that loop), cut to about 45 s for Instagram and about 62 s for TikTok.
+**Series:** **Envelope Audit**. Each episode ends on one recurring number: **Claim Survival %**, the share of the claim that's still standing after the red pen, shown on a draining gauge.
+**Specs:** `engine/specs/10-envelope-audit-{a,b,c}.json` · **Sheets:** `engine/out/sheets/10-envelope-audit-{a,b,c}.png` · **Math check:** `teasers/10-envelope-audit-mathcheck.py` (136 checks, all pass; it also reads the three specs) · **MP4s:** `engine/out/10-envelope-audit-{a,b,c}.mp4`
+**Facts checked:** 2026-10-07. Every view count, outlier score and URL in the evidence sections is copied from `research/raw/` or `research/watch/`. Every real-world input on screen or in this file was re-verified with WebSearch on 2026-10-07 in the polish pass (see **Final fact check**). Direct page fetches of the primary sites (irs.gov, federalreserve.gov, dol.gov, ici.org and others) are egress-blocked here, so each value was confirmed from search results that index or quote those pages; the table says which.
+**Slate change (2026-10-07):** 10C is new. The old 10C (a $1.04B Powerball expected-value audit) duplicated 09C and overlapped 03C, so it was replaced with an audit of "A 1% fee eats a third of your retirement."
+**Lane discipline:** an audit tests **one claim** and reveals the answer inside the video. It does not use the receipt or running-tally devices (#9, Itemized Tally), and it never holds the answer back for a later post (#8, Trap Card): every envelope here opens.
 
 ---
 
@@ -18,7 +19,7 @@
 3. **Unquantified claims are comment fuel, and quantified ones are send fuel.** Money Guy shows **no number at all**, and Sklar never says how long "forever" is. Both broke out on topic alone, so the math they skipped is open territory. *(watch/group6-video2; watch/group5-video1)*
 4. **Accuracy is scarce in this category.** About 70% of 10 graded high-view finance TikToks scored C or lower (DayTrading.com, n = 10). Vivian Tu credits a 3M-view, 100K-follower first week to "I actually showed people the math" ([CNBC](https://www.cnbc.com/2022/01/28/how-your-rich-bff-vivian-tu-built-a-massive-tiktok-following.html)). *(report 01 §3.13)*
 5. **Rounding that people can correct, labelled as rounding, drives comments without bait.** @anatalksmoney's own caption said "the math police blew up my comments" (491.2x), and Kel King's 48-week "year" drew thousands of "actually…" replies. We round on purpose, label it ≈, and pin the exact figure. *(report 01 §3.7; watch/group3-video2)*
-6. **Each audit has a taggable person built in:** "the friend who writes everything off", "the friend who only pays the minimum", "the office pool guy". Instagram weights sends per reach most heavily for non-followers. *(report 01 §3.12, §4.1)*
+6. **Each audit has a taggable person built in:** "the friend who writes everything off", "the friend who only pays the minimum", "the friend who's never looked up their fee". Instagram weights sends per reach most heavily for non-followers. *(report 01 §3.12, §4.1)*
 
 **Evidence**
 
@@ -58,35 +59,36 @@ One 75 s talking-head take: the myth is rejected by 0:08, then the mechanism ("p
 ### The Envelope Math upgrade
 
 **What we replicate**
-- The claim is on screen in frame 1 and visible skepticism follows at 0.4 s (the tape quote plus a slammed **AUDIT** stamp in place of a grimacing host).
+- The claim is on screen in frame 0 and visible skepticism follows at 0.4 s (the claim card plus a slammed **AUDIT** stamp in place of a grimacing host).
 - The debunk arc where every step is a mini-reveal (sog_geovanie), but compressed from 65 s of calculator into **three handwritten lines**.
 - A 30–40 s runtime on YouTube (Money Guy's 36 s), with longer cuts for Instagram and TikTok.
 
 **What we improve**
-1. **The number they never show.** Every audit ends on an honest figure: $88 a dinner, 19 years, 97¢.
-2. **Credit first.** The claim's true part gets a **green ✓** before any red ink (business meals *are* deductible; $1.04B ÷ 292.2M *is* $3.56). It's fair, keeps believers watching, and protects the brand from smugness.
-3. **Cite the rule on screen** (vidIQ's suggestion for Money Guy): "IRC §274(n)", "Aug 12, 2026 draw", "Minimum Payment Warning".
+1. **The number they never show.** Every audit ends on an honest figure: $88 a dinner, 19 years, 31% (not 33%).
+2. **Credit first.** The claim's true part gets a **green ✓** before any red ink (business meals *are* deductible; a fee *does* come off the whole balance every year). It's fair, keeps believers watching, and protects the brand from smugness.
+3. **Cite the rule on screen** (vidIQ's suggestion for Money Guy): "IRC §274(n)", "Minimum Payment Warning", and the fine print that limits a claim ("left all 40 yrs" vs "added yearly").
 4. **Assumptions on a sticky note, rounding labelled ≈, exact figure pinned.** This turns the "math police" into a feature (report 01 §3.7) without ever being wrong.
 5. **Commit before the reveal.** The honest number is sealed in the envelope behind a 3-second PAUSE & GUESS timer (report 01 §3.6).
-6. **No borrowed clips, no named creator.** The claim is paraphrased in our own words on tape. We audit claims, not people.
+6. **No borrowed clips, no named creator.** The claim is paraphrased in our own words on a claim card. We audit claims, not people, and we name no products.
 7. **End on a question that splits the comments** instead of a punchline, land the biggest number in the last 2 seconds, and loop to the claim.
 
-**The uniquely-ours twist: Claim Survival %.** Every audit closes on a typewritten line, **CLAIM SURVIVAL: N%**: the honest number as a share of what the claim promised. A "free" dinner that saves 12% survives at **12%**. "20 years" that's really 19¼ survives at **96%**. A "$3.56 ticket" worth 97¢ survives at **27%**. This gives the series a collectible, comparable stat ("what's the lowest survival rate so far?"), and since some claims survive, viewers can't predict the stamp, which keeps the loop open.
+**The uniquely-ours twist: Claim Survival %.** Every audit closes on a gauge that drains from 100% to **CLAIM SURVIVAL: N%**: the honest number as a share of what the claim promised. A "free" dinner that saves 12% survives at **12%**. "20 years" that's really 19¼ survives at **96%**. "A third" that's really 31% survives at **94%**. This gives the series a collectible, comparable stat ("what's the lowest survival rate so far?"), and since some claims survive, viewers can't predict the stamp, which keeps the loop open.
 
 **The ritual (same every episode): Quote → Check → Strike → Seal → Stamp → Re-hook + Survival.**
 
 | Beat | Device (format bible) | Engine op |
 |---|---|---|
-| Quote the claim in frame 1 | Masking-tape hook in quotation marks + "THE CLAIM:" typewriter label + red AUDIT stamp | `hook`, `write` (type), `stamp` |
+| Quote the claim in frame 0 | Claim card under a "THE CLAIM:" tape label, red AUDIT stamp on its corner, red underline on the claim's number | `quote`, `hook`, `stamp`, `annotate` (`target`) |
+| Keep the claim in view | Tape reminder of the claim's key words above the working; struck in red where it fails | `hook` (`persist` + `until`), `annotate` strike (`target`) |
 | Check: credit the true part | Ballpoint working + a green check | `write`, `annotate` check (green) |
-| Strike: correct it | Red pen strikes, circles, red notes | `annotate` strike / circle, red `write` |
+| Strike: correct it | Red pen strikes, circles, red notes, the fine print | `annotate` strike / circle (`target`), red `write` |
 | State assumptions | ASSUME: sticky | `sticky` |
-| The unit | Postage stamp holding the unit ($2 ticket, 12¢ coupon) | `postage` |
+| The unit / the picture | Postage stamp holding the unit (12¢ coupon); bars for a split ($92 vs $50); curves for a path (balance, 7% vs 6%) | `postage`, `bars`, `curve` |
 | Seal: guess first | The Sealed Answer (wax ≈) + PAUSE & GUESS | `envelope`, `timer` |
 | Stamp: verdict | Stamp lexicon: RETURN TO SENDER, ROUGHLY RIGHT, OPENED BY MISTAKE | `stamp` |
-| Last 2 s: re-hook, biggest number, survival | Tape question + the episode's biggest number in red + typewritten CLAIM SURVIVAL | `hook`, `write`, `annotate` double |
-| Series identity | Postmark No. 10A/B/C | `postmark` |
-| Scene changes | Flip | `flip`, `clear` |
+| Last 2 s: re-hook, biggest number, survival | Tape question + the episode's biggest number in red (≥ 104 px) + the CLAIM SURVIVAL gauge | `hook`, `write`, `annotate` double, `meter` |
+| Series identity | Postmark No. 10A/B/C in the envelope flap | `postmark` (x 175, y 258, r 100) |
+| Scene changes, loop | Flip; the last 0.35 s crossfade into frame 0 | `flip`, `clear`, `loop: true` |
 
 **Title template:** `"[Claim, with its number]"? [What it actually costs / We actually checked] (Envelope Audit No. [N])`. The on-screen claim, the title and the first spoken line all carry the claim's number. The honest number stays out of the title and out of the first line of the description, because those show under the video on TikTok and Instagram and would spoil the PAUSE & GUESS.
 
@@ -96,34 +98,36 @@ One 75 s talking-head take: the myth is rejected by 0:08, then the mechanism ("p
 
 ### Teasers
 
-All three run 35.4 s in the Envelope lane (report 01 §4.2: YouTube favours under 30 s, Instagram 45–60 s and TikTok over 60 s, so the master is cut three ways). The claim and its number are on screen in frame 1. Each has a first answer by 28–34%, a red-pen pattern break at 27–41%, the sealed reveal at 68–71% and the verdict stamp at 74–80%. The re-hook question follows, and the episode's **biggest number lands in the last 2 seconds** with the CLAIM SURVIVAL stat. The last frame cuts back to the claim tape.
+All three run 36–37 s in the Envelope lane (report 01 §4.2: YouTube favours under 30 s, Instagram 45–60 s and TikTok over 60 s, so the master is cut three ways). The claim card and its number are on screen, finished, in frame 0, which is also the thumbnail. Each has a first answer by 32–33%, a red-pen pattern break, the sealed reveal at 59–70% and the verdict stamp at 66–75%. The re-hook question follows, the episode's **biggest number lands in the last 2 seconds**, and the **CLAIM SURVIVAL** gauge drains to its value at least 0.75 s before `loop: true` crossfades the last 0.35 s back into the claim card.
+
+**Shared layout (engine upgrade, polish pass 2026-10-07):** postmark No. 10A/B/C in the flap; a **THE CLAIM:** tape label over a white **claim card** (`quote`) in the content zone; the red **AUDIT** stamp slams onto the card's corner at 0.4 s and the red pen underlines the claim's number at 1.3 s. After the flip, a short **tape reminder** of the claim stays at the top of the working screens. Working lines are 88–104 px handwriting, hero numbers 130–150 px, ASSUME stickies 62 px. Captions show numerals; each caption's `say` holds the spoken words, which are the voice-over.
 
 #### 10A: "“Write off your $100-a-night chef. Dinner's free.” What does it actually cost?" · *Envelope Audit No. 10A*
 
 **Topic:** taxes / write-offs · **Verdict:** RETURN TO SENDER · **Claim survival:** 12%
-**Lane / runtime:** Envelope, 35.4 s master (spec `10-envelope-audit-a.json`)
+**Lane / runtime:** Envelope, 36.0 s master, loops (spec `10-envelope-audit-a.json`)
 
-**Frame-1 hook**
-- On screen (fully drawn in frame 1): small typewriter label **THE CLAIM:** above **“Write off your / $100-a-night chef. / Dinner's FREE.”** ("FREE" in red), with a red **AUDIT** stamp slamming in at 0.4 s.
-- First spoken line (0.1–2.2 s): **"Write off your hundred-dollar chef, and dinner's free?"**
+**Frame-0 hook**
+- On screen (finished in frame 0): tape label **THE CLAIM:** over the claim card **“Write off your / $100-a-night / chef. Dinner's / FREE.”** The red **AUDIT** stamp slams onto the card's corner at 0.4 s and the red pen underlines **FREE** at 1.3 s.
+- First spoken line (0.1–2.3 s): **"Write off your hundred-dollar chef, and dinner's free?"** (caption: "Write off your $100 chef, and dinner's free?")
 
 **Beat sheet**
 | Time | Beat | On screen |
 |---|---|---|
-| 0.0–2.2 | Hook: the claim | Tape quote (frame 1), AUDIT stamp at 0.4 s, postmark No. 10A |
-| 2.2–3.8 | "Let's audit it on one envelope." | Pen writes **$100 a dinner** |
-| 3.8–6.4 | Set the number | ASSUME sticky: $100 = chef + food, 24% bracket, a real business meal |
-| 6.4–9.2 | **Credit first** | "business meals:" **deductible ✓** (green) |
-| 9.2–10.8 | Pattern break (27%) | Red pen strikes **FREE** on the tape. Flip |
-| 10.8–14.0 | Strike 1: the 50% cap (**first payoff: $50**, written by 12.1 s = 34%) | **$100 × 50% cap = $50** (circled), red note "meals: 50% cap · IRC §274(n)" |
+| 0.0–2.2 | Hook: the claim | Claim card + THE CLAIM tape (frame 0), AUDIT stamp 0.4 s, FREE underlined 1.3 s, postmark No. 10A in the flap |
+| 2.2–3.9 | "Let's audit it on one envelope." | Flip. Tape reminder **“Dinner's FREE.”** (stays up through the math). Pen writes **$100 a dinner** (130 px) |
+| 3.9–6.4 | Set the number | ASSUME sticky: $100 = chef + food, 24% tax bracket, a real business meal |
+| 6.4–9.2 | **Credit first** | "business meals:" **deductible ✓** (green, 98 px) |
+| 9.2–10.8 | Pattern break (26%) | Red pen strikes **FREE** on the tape at 9.4 s; the strike stays up through the math. Flip |
+| 10.8–14.0 | Strike 1: the 50% cap (**first payoff: $50**, written by 11.8 s = 33%) | **$100 × 50% cap = $50** (100 px, $50 circled), red note "meals: 50% cap · IRC §274(n)" |
 | 14.0–17.4 | Strike 2: a deduction isn't a refund | **$50 back?** struck in red, plus "not a refund" |
 | 17.4–20.0 | The coupon | **$50 × 24% = $12 back** ($12 circled, double underline) |
-| 20.0–24.4 | Seal and guess | "the $100 “free” dinner:", sealed envelope ("what it really costs"), 3-2-1 PAUSE & GUESS |
-| 24.4–26.2 | **Reveal** (69%) | Card: **$88** / not $0 |
-| 26.3 | **Verdict** (74%) | Stamp **RETURN TO SENDER** ("That claim? Return to sender.") |
-| 27.9–31.5 | The rule | **written off ≠ paid off**, plus a postage stamp **12¢ BACK PER $1** |
-| 31.5–33.0 | Re-hook | Tape **Still want the chef at $88 a night?** |
-| 33.0–35.4 | **Biggest number + survival (last 2 s)** | "every night:" **≈ $32K a year** in red, double-underlined (fully written at 33.7 s), then **CLAIM SURVIVAL: 12%** (34.5 s). Cuts back to the claim tape |
+| 20.0–24.4 | Seal and guess | "the $100 “free” dinner:", sealed envelope ("what it really costs"), 3-2-1 PAUSE & GUESS (21.2–24.2 s) |
+| 24.4–26.2 | **Reveal** (68%) | Card: **$88** (130 px) / not $0 |
+| 26.3 | **Verdict** (73%) | Stamp **RETURN TO SENDER** ("That claim? Return to sender.") |
+| 27.9–31.5 | The rule | **written off ≠ paid off** (140 px), plus a postage stamp **12¢ BACK PER $1** (label now 40 px) |
+| 31.6–33.2 | Re-hook | Tape **Still want the chef at $88 a night?**, pencil "every night:" (32.2 s) |
+| 33.3–36.0 | **Biggest number + survival (last 2 s)** | **≈ $32K a year** (140 px, red, written by 34.0 s, double underline), then the CLAIM SURVIVAL gauge drains 100% → **12%** (34.1–34.9 s). The last 0.35 s crossfade into the claim card |
 
 **Full voice-over**
 > Write off your hundred-dollar chef, and dinner's free? Let's audit it on one envelope. Say dinner's a hundred bucks, chef and groceries. True part first: business meals really are deductible. But free? Two problems. One: meals are capped at fifty percent. So fifty bucks. Two: a deduction isn't a refund. It saves you your tax rate. At twenty-four percent, that's twelve bucks back. So the hundred-dollar dinner really costs you… *(two-second pause, ticking)* Eighty-eight dollars. Not zero. That claim? Return to sender. Written off isn't paid off. It's a coupon: twelve cents on the dollar. Still want the chef? Every night, that's thirty-two grand a year.
@@ -135,16 +139,16 @@ All three run 35.4 s in the Envelope lane (report 01 §4.2: YouTube favours unde
 
 **ASSUME sticky:** "$100 = chef + food. 24% tax bracket. A real business meal."
 
-| Input | Value used | Source (writer checked 2026-10-07; QA status in the Verification log) |
+| Input | Value used | Source (re-verified 2026-10-07; see Final fact check) |
 |---|---|---|
 | Dinner cost | **$100**, a labelled round assumption (not a market rate) | n/a (assumption on the sticky) |
-| Meal deduction limit | **50%** | 26 U.S.C. §274(n) ([Cornell LII](https://www.law.cornell.edu/uscode/text/26/274)); IRS Publication 463: 50% of business meals, and only if you (or an employee) are present and it isn't lavish ([irs.gov/publications/p463](https://www.irs.gov/publications/p463)); the temporary 100% restaurant rule covered only 2021–2022 ([beancount.io, 2026-07-29](https://beancount.io/blog/2026/07/29/business-meals-2026-what-is-50-percent-deductible-after-temporary-100-expired-document-business-purpose-guide)) |
+| Meal deduction limit | **50%** | 26 U.S.C. §274(n) ([Cornell LII](https://www.law.cornell.edu/uscode/text/26/274)); IRS Publication 463: 50% of business meals, and only if you (or an employee) are present and it isn't lavish ([irs.gov/publications/p463](https://www.irs.gov/publications/p463)); the temporary 100% restaurant rule covered only 2021–2022 (IRS Notice 2021-25, [irs.gov](https://www.irs.gov/pub/irs-drop/n-21-25.pdf)) |
 | Tax bracket | **24%** (single filers, $105,700–$201,775 of taxable income in 2026) | IRS, "IRS releases tax inflation adjustments for tax year 2026, including amendments from the One, Big, Beautiful Bill" (Rev. Proc. 2025-32) ([irs.gov](https://www.irs.gov/newsroom/irs-releases-tax-inflation-adjustments-for-tax-year-2026-including-amendments-from-the-one-big-beautiful-bill)) |
 | Family / personal dinners | **$0 deductible** | 26 U.S.C. §262 ([Cornell LII](https://www.law.cornell.edu/uscode/text/26/262)); 26 CFR §1.262-1 lists household expenses including domestic service ([Cornell LII](https://www.law.cornell.edu/cfr/text/26/1.262-1)) |
 | Entertainment | Not deductible | 26 U.S.C. §274(a) ([Cornell LII](https://www.law.cornell.edu/uscode/text/26/274)) |
 
 **Ending**
-- Loop / re-hook: the tape asks "Still want the chef at $88 a night?", the VO lands "Every night, that's thirty-two grand a year." on the red ≈ $32K, and the cut returns to the "Dinner's FREE" tape.
+- Loop / re-hook: the tape asks "Still want the chef at $88 a night?", the VO lands "Every night, that's thirty-two grand a year." on the red ≈ $32K, the gauge settles on 12%, and the loop crossfades into the "Dinner's FREE." claim card.
 - Comment bait (a real question, not "comment YES"): *Still want the chef at $88 a night?*
 - **Pinned comment:** "Exact: $88.00 a dinner, $32,120 a year (envelope said ≈ $32K, within 0.4%). That's the best case: every dinner a real business meal with you at the table, federal income tax at 24%. A dinner with family is personal, so $0 deductible and the full $100. Even at a 50% combined tax rate the dinner still costs $75. Rules: IRC §274(n) (50% meal cap), IRC §262, IRS Pub 463, IRS 2026 brackets. Illustrative math, not tax advice. Claim survival: 12%. What should we audit next?"
 
@@ -152,9 +156,9 @@ All three run 35.4 s in the Envelope lane (report 01 §4.2: YouTube favours unde
 **Hashtags:** #taxes #writeoff #smallbusiness #moneymath #envelopemath
 
 **Platform notes**
-- **YouTube Shorts:** use the 35.4 s master. The title carries the claim's number ("$100-a-night chef"), not the answer. Pin the exact figure. No music needed: the stamp thump and pen scratch are the sound.
+- **YouTube Shorts:** use the 36.0 s master. The title carries the claim's number ("$100-a-night chef"), not the answer. Pin the exact figure. No music needed: the stamp thump and pen scratch are the sound.
 - **Instagram Reels (~45 s):** add a third strike after "Two problems": "Three: dinner with family? Personal. Zero." (IRC §262; the card reads $100, not $88). Caption line: "Send this to the friend who writes everything off." Post first as a Trial Reel. Keep to 5 hashtags.
-- **TikTok (~62 s):** add the family-dinner strike plus a "but my state and self-employment tax…" beat that shows robustness: even at a 50% combined rate, $100 → $75. Then the yearly ladder ($12 × 365 = $4,380 back on $36,500). Paraphrase the claim on tape and never stitch the original. TikTok bans branded finance content, so don't take a sponsor on this one.
+- **TikTok (~62 s):** add the family-dinner strike plus a "but my state and self-employment tax…" beat that shows robustness: even at a 50% combined rate, $100 → $75. Then the yearly ladder ($12 × 365 = $4,380 back on $36,500). Paraphrase the claim on the card and never stitch the original. TikTok bans branded finance content, so don't take a sponsor on this one.
 
 **Why this one should travel:** it rides the topic that gave Money Guy its 272.45x outlier (6.2M) and does the one thing that video never did: put the number on screen. It busts a misconception millions half-believe ("a write-off makes it free") with one line of arithmetic. It has a taggable person built in (the friend who writes everything off), and a rule worth saving ("written off ≠ paid off"). Small-business and side-hustle viewers extend reach beyond finance (02-top-10 §10, "Algorithmic").
 
@@ -163,58 +167,57 @@ All three run 35.4 s in the Envelope lane (report 01 §4.2: YouTube favours unde
 #### 10B: "“Pay the minimum on $5,000 and you'll pay for 20 years”? We actually checked" · *Envelope Audit No. 10B*
 
 **Topic:** credit card debt · **Verdict:** ROUGHLY RIGHT · **Claim survival:** 96%
-**Lane / runtime:** Envelope, 35.4 s master (spec `10-envelope-audit-b.json`)
+**Lane / runtime:** Envelope, 36.6 s master, loops (spec `10-envelope-audit-b.json`)
 
-**Frame-1 hook**
-- On screen (fully drawn in frame 1): **THE CLAIM:** above **“Pay the minimum on / $5,000 and you'll / pay for 20 YEARS.”** ("20 YEARS" in red), with the **AUDIT** stamp at 0.4 s.
-- First spoken line (0.1–2.0 s): **"Twenty years to pay off five grand?"**
+**Frame-0 hook**
+- On screen (finished in frame 0): **THE CLAIM:** tape over the claim card **“Pay the / minimum on / $5,000 and / you'll pay for / 20 YEARS.”** AUDIT stamp at 0.4 s, red underline on **20 YEARS** at 1.3 s. The card stays up through "Sounds like a scare tactic."
+- First spoken line (0.1–2.2 s): **"Twenty years to pay off five grand?"** (caption: "20 years to pay off $5,000?")
 
 **Beat sheet**
 | Time | Beat | On screen |
 |---|---|---|
-| 0.0–2.0 | Hook: the claim | Tape quote (frame 1), AUDIT stamp at 0.4 s, postmark No. 10B |
-| 2.0–4.2 | "Sounds like a scare tactic. Let's audit it." | Pen writes **$5,000**. ASSUME sticky slaps on at 3.0 s |
-| 4.2–7.0 | Set the inputs (VO: "no new charges") | "on a credit card at 22%", 💳, sticky: 22% APR, minimum = interest + 1% ($25 floor). Flip |
-| 7.0–9.6 | Line 1 | **$5,000 × 22% ÷ 12 ≈ $92** |
-| 9.6–12.6 | Line 2 (**first payoff**, written by 10.9 s = 31%) | **min: $92 + $50 = $142** |
-| 12.6–14.6 | Pattern break (36–41%) | Red circle on **$50**, plus "only $50 hits the debt" |
-| 14.6–17.8 | Line 3, the shortcut | **1%/mo → halves every ~6 yrs** |
-| 16.2–21.0 | The crawl | Napkin curve of the balance: **yr 6 ≈ $2.4K** (17.5 s), **yr 12 ≈ $1.2K** (17.8 s), a long tail |
-| 21.0–25.0 | Seal and guess | "$5,000, minimum only:", sealed envelope "how long, really?", PAUSE & GUESS |
-| 25.0–26.8 | **Reveal** (71%) | Card: **≈ 19 years** / the claim said 20 |
-| 26.9 | **Verdict** (76%) | Stamp **ROUGHLY RIGHT** |
-| 28.8–31.2 | Save-worthy pointer | Hand-drawn statement box: **MINIMUM PAYMENT WARNING / pay only the minimum:** |
-| 31.2–32.6 | Re-hook | Tape **What does YOUR box say?** |
-| 32.6–35.4 | **Biggest number + survival (last 2 s)** | In the box, in red: **ours: ≈19 yrs, ≈$13,100** ($13,100 underlined; fully written at 33.65 s), then **CLAIM SURVIVAL: 96%** (34.6 s). Cuts back to "20 YEARS" |
+| 0.0–2.8 | Hook: the claim, then skepticism | Claim card (frame 0), AUDIT stamp 0.4 s, 20 YEARS underlined 1.3 s, postmark No. 10B. "Sounds like a scare tactic. Let's audit it." starts over the card |
+| 2.8–8.2 | Set the inputs (VO: "no new charges", "about average") | Flip. Tape reminder **“…pay for 20 YEARS.”** (stays through the math), **$5,000** (150 px), "on a credit card at 22%", ASSUME sticky (4.6 s), 💳. Flip |
+| 8.0–10.4 | Line 1 | **$5,000 × 22% ÷ 12 ≈ $92** |
+| 10.4–13.2 | Line 2 (**first payoff**, written by 11.9 s = 32%) | **min: $92 + $50 = $142**; hatched bars split the payment: $92 interest, $50 the debt (12.2 s) |
+| 13.2–15.7 | Pattern break (36%) | Red circle on **$50**, plus "only $50 hits the debt" (84 px, red). Flip |
+| 15.7–17.5 | Line 3, the shortcut | **1%/mo → halves every ~6 yrs** |
+| 17.0–21.6 | The crawl | Napkin curve of the exact balance, drawn at an even pace: **yr 6 ≈ $2.4K** (18.5 s), **yr 12 ≈ $1.2K** (19.5 s), then the long tail |
+| 21.6–25.6 | Seal and guess | "$5,000, minimum only:", sealed envelope "how long, really?", PAUSE & GUESS (22.5–25.5 s) |
+| 25.6–27.4 | **Reveal** (70%) | Card: **≈ 19 years** (130 px) / the claim said 20 |
+| 27.5 | **Verdict** (75%) | Stamp **ROUGHLY RIGHT** |
+| 29.4–31.8 | Save-worthy pointer | Hand-drawn statement box: **MINIMUM PAYMENT WARNING / pay only the minimum:** |
+| 31.8–33.9 | Re-hook | Tape **What does YOUR box say?** |
+| 33.95–36.6 | **Biggest number + survival (last 2 s)** | In the box, in red: **ours: ≈ $13,100** (104 px, written by 34.6 s, underlined), then the gauge drains to **96%** (34.7–35.45 s). The loop crossfades into the claim card |
 
 **Full voice-over**
 > Twenty years to pay off five grand? Sounds like a scare tactic. Let's audit it. Five grand, no new charges, at twenty-two percent, about average. Month one, the interest alone is about ninety-two bucks. A common minimum is that plus one percent: one forty-two. So only fifty bucks touches the debt. One percent a month halves the debt about every six years. Year six: still twenty-four hundred. Year twelve: twelve hundred. So how long, really? *(two-second pause, ticking)* About nineteen years. The scary claim checks out. Roughly. Your statement's warning box prints your own number. What does yours say? Ours: about thirteen grand paid on five.
 
 **The envelope math (3 lines)**
 1. `$5,000 × 22% ÷ 12 ≈ $92` (month-one interest; exact $91.67 at 22%, $92.29 at 22.15%)
-2. `min: $92 + $50 = $142` (only the 1%, **$50**, reduces the debt)
-3. `1%/mo → halves every ~6 yrs` (rule of 70: 70 ÷ 1 = 70 months; exact ln 2 ÷ −ln 0.99 = 69 months ≈ 5.75 years). Two halvings bring $5,000 to about $1,200 by year 12, and the $25 floor mops up the tail, so the envelope says **≈ 19 years**. At the envelope's 22% that's $13,099.76 paid, written **≈ $13,100**.
+2. `min: $92 + $50 = $142` (only the 1%, **$50**, reduces the debt; the bars show the split)
+3. `1%/mo → halves every ~6 yrs` (rule of 70: 70 ÷ 1 = 70 months; exact ln 2 ÷ −ln 0.99 = 69 months ≈ 5.75 years). Two halvings bring $5,000 to about $1,200 by year 12, and the $25 floor mops up the tail, so the envelope says **≈ 19 years**. At the envelope's 22% that's $13,099.76 paid, written **ours: ≈ $13,100**.
 - The curve is the exact month-by-month balance at 22.15% (231 months), sampled every 3 months (78 points, $0 at month 231). Its marks: year 6 = $2,425, year 12 = $1,176. Until the floor kicks in, paying interest + 1% shrinks the balance by exactly 1% a month whatever the APR, which is why the shortcut works.
 
 **ASSUME sticky:** "22% APR. Minimum = interest + 1% ($25 floor)." The $5,000 balance and "no new charges" are said in the VO and repeated in the pinned comment and description.
 
-| Input | Value used | Source (writer checked 2026-10-07; QA status in the Verification log) |
+| Input | Value used | Source (re-verified 2026-10-07; see Final fact check) |
 |---|---|---|
-| APR | **22%** on screen. The exact calculation uses **22.15%**, the Fed G.19 "interest rate on credit card plans, accounts assessed interest" for Q2 2026 (prior quarter 21.52%) | FRED series TERMCBCCINTNS ([fred.stlouisfed.org](https://fred.stlouisfed.org/series/TERMCBCCINTNS)); Federal Reserve G.19 ([federalreserve.gov](https://www.federalreserve.gov/releases/g19/)). *Caveat: neither the writer nor QA could open FRED or the Fed page. The writer took the figure from two search-result summaries citing G.19 (release of Sept 8, 2026). Re-open G.19 before publishing. The on-screen answer does not hinge on it: any APR from 21% to 23% gives 228–232 months, still ≈ 19 years.* |
-| Minimum-payment formula | Greater of **$25** or **1% of balance + that month's interest** (+ fees) | Capital One account terms ([capitalone.com](https://card-apis.capitalone.com/disclosure.31753.en-US.html)). Chase uses the larger of **$40** or 1% + interest + late fees ([chase.com](https://www.chase.com/personal/credit-cards/education/basics/how-to-calculate-your-minimum-credit-card-payment)), so the pinned comment gives the $40-floor result too |
-| Statement warning box | Issuers must print a "Minimum Payment Warning" with the payoff time and total cost | Reg Z 12 CFR 1026.7(b)(12) ([Consumer Compliance Outlook](https://www.consumercomplianceoutlook.org/articles/2010/first-issue-2010/an-overview-of-the-regulation-z-rules-implementing-the-card-act)) |
+| APR | **22%** on screen. The exact calculation uses **22.15%**, the Fed G.19 "interest rate on credit card plans, accounts assessed interest" for Q2 2026 (prior quarter 21.52%; all accounts 20.94%) | Federal Reserve G.19 ([federalreserve.gov](https://www.federalreserve.gov/releases/g19/current/)); FRED series TERMCBCCINTNS ([fred.stlouisfed.org](https://fred.stlouisfed.org/series/TERMCBCCINTNS)); the Q2 2026 figures as reported in LendingTree's 2026 Credit Card Debt Statistics ([lendingtree.com](https://www.lendingtree.com/credit-cards/study/credit-card-debt-statistics/)). The Fed page itself can't be fetched from this environment; the on-screen answer doesn't hinge on it (21–23% APR gives 228–232 months, still ≈ 19 years) |
+| Minimum-payment formula | Greater of **$25** or **1% of balance + that month's interest** (+ late fees) | Capital One terms, as quoted in WalletHub's answer on the Capital One minimum ([wallethub.com](https://wallethub.com/answers/cc/capital-one-platinum-minimum-payment-1000334-2140659296/)). Chase uses the larger of **$40** or 1% + interest + late fees ([chase.com](https://www.chase.com/personal/credit-cards/education/basics/how-to-calculate-your-minimum-credit-card-payment)), so the pinned comment gives the $40-floor result too |
+| Statement warning box | Issuers must print a "Minimum Payment Warning" with the payoff time and total cost | Reg Z 12 CFR 1026.7(b)(12) and Appendix M1 ([Cornell LII](https://www.law.cornell.edu/cfr/text/12/appendix-M1_to_part_1026); [CFPB](https://www.consumerfinance.gov/rules-policy/regulations/1026/m1/)) |
 | Balance | **$5,000**, a labelled round assumption, no new charges | n/a (assumption) |
 
 **Ending**
-- Loop / re-hook: the tape asks "What does YOUR box say?", the VO lands "Ours: about thirteen grand paid on five." on the red ≈ $13,100, and the cut returns to "Pay the minimum on $5,000 and you'll pay for 20 YEARS."
+- Loop / re-hook: the tape asks "What does YOUR box say?", the VO lands "Ours: about thirteen grand paid on five." on the red ≈ $13,100, the gauge settles on 96%, and the loop crossfades into the "…pay for 20 YEARS." claim card.
 - Comment bait: *What does the Minimum Payment Warning box on your statement say?* (Viewers can post the years; balances aren't needed.)
 - **Pinned comment:** "Exact: 231 months (19 yr 3 mo) and $13,158.75 paid, $8,158.75 of it interest (envelope said ≈ 19 years and ≈ $13,100, within 1.3% and 0.5%). The claim's '20 years' is within 4%. Assumptions: $5,000, no new charges, 22.15% APR (Fed G.19, Q2 2026), minimum = interest + 1% with a $25 floor. Anywhere from 21% to 23% APR it's still about 19 years (228–232 months), because the 1% does the paying. On a card with a $40 floor: 184 months (15 yr 4 mo), $12,516.44. Real cards compute interest daily, so your box will differ a little. Terms vary by issuer. Claim survival: 96%."
 
-**Description:** "Pay only the minimum on $5,000 and you'll pay for 20 years? We audited it on one envelope. Only the 1% part of the minimum touches the debt, so the balance halves roughly every six years: about 19 years and about $13,100 paid. Assumptions: $5,000 balance, no new charges, 22.15% APR (Federal Reserve G.19, Q2 2026), minimum = interest + 1% of balance with a $25 floor (a common issuer formula, e.g. Capital One account terms; Chase uses $40). Your statement's Minimum Payment Warning box (Reg Z §1026.7(b)(12)) shows your own number. Checked 2026-10-07. Terms vary by issuer. Educational math, not financial advice."
+**Description:** "Pay only the minimum on $5,000 and you'll pay for 20 years? We audited it on one envelope. Only the 1% part of the minimum touches the debt, so the balance halves roughly every six years: about 19 years and about $13,100 paid. Assumptions: $5,000 balance, no new charges, 22.15% APR (Federal Reserve G.19, Q2 2026), minimum = interest + 1% of balance with a $25 floor (a common issuer formula, e.g. Capital One; Chase uses $40). Your statement's Minimum Payment Warning box (Reg Z §1026.7(b)(12)) shows your own number. Checked 2026-10-07. Terms vary by issuer. Educational math, not financial advice."
 **Hashtags:** #creditcarddebt #personalfinance #moneymath #envelopemath #debt
 
 **Platform notes**
-- **YouTube Shorts:** use the 35.4 s master. The title puts the claim and its number first and keeps the answer sealed ("We actually checked").
+- **YouTube Shorts:** use the 36.6 s master. The title puts the claim and its number first and keeps the answer sealed ("We actually checked").
 - **Instagram Reels (~45 s):** after the reveal, add a "depends on your card" beat: the same math on a $40-floor card is 15 years 4 months and $12,516 paid, written as a second line on the card. That's the honest range, and it invites "mine says…" comments. Caption: "Send this to whoever says 'I just pay the minimum'."
 - **TikTok (~62 s):** add the rule-of-70 explainer (70 ÷ 1 = 70 months), the interest total ($8,158.75 of interest on a $5,000 balance, about 2.6× repaid), and the $40-floor comparison. Every sentence carries a new number, as the research advises for long cuts (report 01 §3.4).
 
@@ -222,81 +225,94 @@ All three run 35.4 s in the Envelope lane (report 01 §4.2: YouTube favours unde
 
 ---
 
-#### 10C: "“At $1.04 billion, a $2 Powerball ticket's worth $3.56”? What it's actually worth" · *Envelope Audit No. 10C*
+#### 10C: "“A 1% fee eats a third of your retirement”? What it actually eats" · *Envelope Audit No. 10C*
 
-**Topic:** lottery / expected value · **Verdict:** OPENED BY MISTAKE · **Claim survival:** 27%
-**Lane / runtime:** Envelope, 35.4 s master (spec `10-envelope-audit-c.json`)
+**Replaced (polish pass, 2026-10-07; replaced = true).** The earlier 10C audited "At $1.04 billion, a $2 Powerball ticket's worth $3.56". It duplicated 09C (the expected value of a $2 Powerball ticket), and 03C is also lottery-based, so it was cut from the slate. Its spec was overwritten; its old math and sources are retired (the Verification log below still describes them as they were).
 
-**Frame-1 hook**
-- On screen (fully drawn in frame 1): **THE CLAIM:** above **“At $1.04 BILLION, / a $2 Powerball / ticket's worth $3.56.”** ("$3.56" in red), with the **AUDIT** stamp at 0.4 s.
-- First spoken line (0.1–2.0 s): **"A two-dollar ticket worth three fifty-six?"**
+**Topic:** investing fees / compounding · **Verdict:** ROUGHLY RIGHT · **Claim survival:** 94%
+**Lane / runtime:** Envelope, 37.0 s master, loops (spec `10-envelope-audit-c.json`)
+
+**The claim, and where it circulates.** We paraphrase a family of widely repeated fee warnings into one testable sentence: "A 1% fee eats a third of your retirement." Versions in circulation (each re-found with WebSearch on 2026-10-07):
+- U.S. Department of Labor (EBSA), *A Look at 401(k) Plan Fees*: $25,000 over 35 years at 7% grows to $227,000 with 0.5% in fees and $163,000 with 1.5%. "The 1 percent difference in fees and expenses would reduce your account balance at retirement by 28 percent." ([dol.gov PDF](https://dol.gov/sites/dolgov/files/ebsa/about-ebsa/our-activities/resource-center/publications/401k-plan-fees.pdf))
+- Demos, *The Retirement Savings Drain* (2012): fees consume "nearly one-third (30.3%)" of an investor's potential gains ([demos.org PDF](https://www.demos.org/sites/default/files/publications/TheRetirementSavingsDrain-Final.pdf); covered by PLANSPONSOR, "Retirement Plan Fees Consume 30% of Returns", [plansponsor.com](https://www.plansponsor.com/retirement-plan-fees-consume-30-of-returns/)).
+- Economic Opportunity Institute, "Retirement plan fees eat up almost 1/3 of household savings" ([opportunityinstitute.org](https://www.opportunityinstitute.org/blog/post/retirement-plan-fees-eat-up-almost-1-3-of-household-savings/)).
+- 24/7 Wall St., Aug 4, 2026, "Your adviser's 1% fee quietly costs six figures over a retirement" ([247wallst.com](https://247wallst.com/investing/etf/2026/08/04/your-advisers-1-fee-quietly-costs-six-figures-over-a-retirement-these-3-etfs-do-it-for-near-zero/)).
+- Forbes, Feb 5, 2021, "How A 1% Investment Fee Can Wreck Your Retirement" ([forbes.com](https://www.forbes.com/sites/robertberger/2021/02/05/how-a-1-investment-fee-can-wreck-your-retirement/)).
+
+We audit the arithmetic, not a person or a firm. No funds, tickers, providers or products are named or shown.
+
+**Frame-0 hook**
+- On screen (finished in frame 0): **THE CLAIM:** tape over the claim card **“A 1% fee eats / a THIRD of your / retirement.”** AUDIT stamp at 0.4 s, red underline on **THIRD** at 1.3 s.
+- First spoken line (0.1–2.4 s): **"A one percent fee eats a third of your retirement?"** (caption: "A 1% fee eats a third of your retirement?")
 
 **Beat sheet**
 | Time | Beat | On screen |
 |---|---|---|
-| 0.0–2.0 | Hook: the claim | Tape quote (frame 1), AUDIT stamp at 0.4 s, postmark No. 10C |
-| 2.0–4.0 | "Let's audit the jackpot math." | 🎟️ (claim stays up) |
-| 4.0–8.2 | The real inputs | **Aug 12, 2026 jackpot: $1.04B**, **odds: 1 in 292,201,338**. Flip |
-| 8.2–10.6 | **Credit first / first payoff** (written by 9.9 s = 28%) | **$1.04B ÷ 292.2M ≈ $3.56 ✓** (green), postage stamp **$2 ONE TICKET**, ASSUME sticky |
-| 10.6–12.8 | Strike 1: the annuity (pattern break, 31%) | **$1.04B** struck, "= 30 yearly payments" |
-| 12.8–17.4 | The cash (**second payoff, already under $2**) | "→ cash: $450.5M", **$450.5M ÷ 292.2M ≈ $1.54** (circled) |
-| 17.4–20.0 | Strike 2: tax | "− 37% federal tax", **$1.54 × 63% ≈ ?** (red ?) |
-| 20.0–24.0 | Seal and guess | "jackpot share of one $2 ticket:", sealed envelope "what's it really worth?", PAUSE & GUESS |
-| 24.0–28.4 | **Reveal** (68%) | Card: **≈ 97¢** / all prizes, tax-free: ≤ $1.29 |
-| 28.4 | **Verdict** (80%) | Stamp **OPENED BY MISTAKE** |
-| 30.2–32.2 | Re-hook | Tape **When is the jackpot share worth $2?**, pencil "about 2 × $1.04B →" |
-| 32.2–35.4 | **Biggest number + survival (last 2 s)** | **≈ $2.1 BILLION** in red, double-underlined (fully written at 33.5 s), then **CLAIM SURVIVAL: 27%** (34.6 s). VO "Ever seen one that big?" cuts back to the $1.04 BILLION claim tape |
+| 0.0–2.3 | Hook: the claim | Claim card + THE CLAIM tape (frame 0), AUDIT stamp 0.4 s, THIRD underlined 1.3 s, postmark No. 10C in the flap |
+| 2.3–4.0 | "Sounds dramatic. Let's audit it." | Flip. Tape reminder **“…eats a THIRD.”** (stays through the math). Pen writes **$10,000** (150 px) |
+| 4.0–7.7 | Set the inputs | "left alone 40 years" (84 px), ASSUME sticky (5.9 s): 7% a year before fees, no new deposits |
+| 7.7–10.3 | **Credit first** | Green **1% of it all, / every year ✓**: the claim's mechanism is real (the fee comes off the whole balance every year, so it compounds too). Flip |
+| 10.4–12.6 | Line 1 (**first payoff**, written by 11.7 s = 32%) | **7%: $10K → ≈ $150K** (98 px); the ink curve of the 7% path draws under it |
+| 12.6–16.0 | Line 2, red pattern break (35%) | **6%: $10K → ≈ $103K** ("6%" in red); the red 6% curve draws under the ink one, and the gap between them is the fee |
+| 16.0–19.6 | Line 3, seal | **$103K ÷ $150K ≈ 0.69** (100 px), sealed envelope "how much did the fee eat?" |
+| 18.9–21.9 | Guess | 3-2-1 PAUSE & GUESS |
+| 22.0–23.6 | **Reveal** (59%) | Card: **≈ 31% less** (130 px) / the claim said 33% |
+| 24.6 | **Verdict** (66%) | Stamp **ROUGHLY RIGHT** ("The claim said a third. Roughly right.") |
+| 25.5–32.0 | The fine print (red pen) | Flip. Tape **The fine print:**; "left all 40 yrs: ≈ 31% less", "added yearly: ≈ 22% less" (≈ 22% circled in red at 29.25 s), "later $ grow for less time" |
+| 32.0–34.2 | Re-hook | Tape **What's YOUR fee?**, pencil "every $10K left 40 yrs:" |
+| 34.2–37.0 | **Biggest number + survival (last 2 s)** | **fee eats ≈ $47K** (130 px, red, written by 35.0 s, double underline), then the gauge drains to **94%** (35.1–35.9 s). The loop crossfades into the claim card |
 
 **Full voice-over**
-> A two-dollar ticket worth three fifty-six? Let's audit the jackpot math. August's jackpot: one point oh four billion. Odds: one in two hundred ninety-two million. Divide, and yes: three fifty-six. On paper. But the billion is thirty yearly payments. Take the cash instead: four fifty point five million. That's a dollar fifty-four a ticket. Then federal tax takes the top rate: thirty-seven percent. So what's it really worth per ticket? *(two-second pause, ticking)* About ninety-seven cents. Add every smaller prize, even tax-free: a dollar twenty-nine. The obvious math opened the wrong envelope. When is the jackpot share worth two bucks? Roughly double: two point one billion. Ever seen one that big?
+> A one percent fee eats a third of your retirement? Sounds dramatic. Let's audit it. Say ten grand, left alone for forty years, growing seven percent a year before fees. True part first: the fee hits every year, on everything. At seven percent, it grows to about a hundred fifty grand. Take the one percent off: six percent. Same forty years: about a hundred and three grand. Divide: one-oh-three over one-fifty. So how much did the fee eat? *(two-second pause, ticking)* About thirty-one percent. The claim said a third. Roughly right. But only for money that sits all forty years. Add the same amount yearly? About twenty-two percent. Later dollars grow for less time. What's your fee? Every ten grand left forty years: the fee eats about forty-seven grand.
 
 **The envelope math (3 lines)**
-1. `$1.04B ÷ 292.2M ≈ $3.56` (the claim's own math, credited ✓; exact $3.5592)
-2. `$450.5M ÷ 292.2M ≈ $1.54` (cash option; exact $1.5417)
-3. `$1.54 × 63% ≈ ?`, sealed as **≈ 97¢** (exact with the 2026 brackets: $0.9715). Card line 2: **all prizes, tax-free: ≤ $1.29** (upper bound: + 32.0¢ of smaller prizes, pre-tax)
-- Last 2 s: the jackpot share scales with the jackpot, so it reaches $2 at $2 ÷ 97.15¢ = 2.06 × $1.04B, written "about 2 × $1.04B → **≈ $2.1 BILLION**" (exact $2.14B, within 2%). This is a scaling of line 3, not a new calculation line.
+1. `7%: $10K → ≈ $150K` (exact $10,000 × 1.07⁴⁰ = $149,744.58)
+2. `6%: $10K → ≈ $103K` (7% − 1% fee = 6%; exact $10,000 × 1.06⁴⁰ = $102,857.18)
+3. `$103K ÷ $150K ≈ 0.69`, sealed as **≈ 31% less**. Exact: (1.06 ÷ 1.07)⁴⁰ = 0.6869, so 31.31% less. Card line 2: "the claim said 33%" (a third = 33.3%).
+- Fine print: the same amount added at each year-end for 40 years ends 22.48% lower (≈ 22%), because later deposits compound for fewer years.
+- Last 2 s: per $10K left 40 years, the fee eats $149,744.58 − $102,857.18 = $46,887.40, written **≈ $47K** (within 0.3%). That's a subtraction of lines 1 and 2, not a new calculation line.
+- Claim survival: 31.31% ÷ 33.33% = **94%**.
+- Robustness: any gross return from 4% to 10% gives 30.6–32.1% less, so the 7% assumption doesn't drive the verdict.
 
-**ASSUME sticky:** "One winner, no split. Federal tax only, no state tax."
+**ASSUME sticky:** "7% a year before fees. No new deposits." The $10,000 and the 40 years are written on screen; "the fee comes off the return" (7% → 6%) is spoken and written as line 2.
 
-| Input | Value used | Source (writer checked 2026-10-07; QA status in the Verification log) |
+| Input | Value used | Source (verified 2026-10-07; see Final fact check) |
 |---|---|---|
-| Jackpot (annuity) | **$1.040 billion**, Powerball draw of **Wed Aug 12, 2026**, one ticket sold in Quincy, IL | Powerball, "$1.040 Billion Powerball Jackpot Won in Illinois" ([powerball.com](https://www.powerball.com/1.040-billion-powerball-jackpot-won-in-illinois)) |
-| Cash value | **$450.5 million** (the cash option) | Same page. The video no longer says which option the winner chose. Context only: the writer found an Illinois Lottery release saying the lump sum was taken ([illinoislottery.com](https://www.illinoislottery.com/illinois-lottery/press-and-media-center/press-release/2026/9/mystery-solved-illinois-lottery-confirm-1-04-billion-powerball-jackpot-has-been-claimed)) |
-| Annuity structure | 30 graduated payments over 29 years, rising 5% a year ("thirty yearly payments" on screen) | Powerball FAQs ([powerball.com/faqs](https://www.powerball.com/faqs)) |
-| Jackpot odds, ticket price, smaller prizes | **1 in 292,201,338** (= C(69,5) × 26, re-derived in the math check); **$2** per play; every tier from $1M (1 in 11,688,053.52) to $4 (1 in 38.32) | Powerball prize chart ([powerball.com](https://www.powerball.com/powerball-prize-chart)); the same chart is cited independently in `teasers/09-itemized-tally.md` |
-| Federal tax | **37%** top rate (over $640,600, single, 2026). Exact calculation uses the full 2026 schedule with a $16,100 standard deduction | IRS, tax year 2026 inflation adjustments (Rev. Proc. 2025-32) ([irs.gov](https://www.irs.gov/newsroom/irs-releases-tax-inflation-adjustments-for-tax-year-2026-including-amendments-from-the-one-big-beautiful-bill)) |
-| State tax, jackpot splits | Excluded (both would make the ticket worth *less*) | Assumption on the sticky |
-| Help line | 1-800-GAMBLER (National Problem Gambling Helpline) | NCPG fact sheet ([ncpgambling.org](https://www.ncpgambling.org/wp-content/uploads/2023/12/1-800-GAMBLER-Fact-Sheet.pdf)), as cited by the 09 team |
-
-*Caveat: powerball.com and illinoislottery.com were egress-blocked for direct fetching for both the writer and QA. The jackpot, cash value and draw date come from the writer's WebSearch results on those official pages and local-news syndication of the same AP report. QA could only check consistency: Aug 12, 2026 was a Wednesday (a draw day), and the 09 team's sourced Oct 7, 2026 jackpot ($485M after 23 rollovers) fits a reset in mid-August. Re-open the pages before publishing.*
+| Amount and horizon | **$10,000** left alone for **40 years**, labelled assumptions | n/a (on screen and in the VO) |
+| Gross return | **7% a year before fees**, an assumption on the sticky. It's the same rate the Department of Labor uses in its own fee example | DOL EBSA, *A Look at 401(k) Plan Fees* ([dol.gov PDF](https://dol.gov/sites/dolgov/files/ebsa/about-ebsa/our-activities/resource-center/publications/401k-plan-fees.pdf)) |
+| Fee | **1% a year**, the claim's own number, modelled as 1 point off the return (7% → 6%) | The claim. The pin gives the other common model (1% of the balance each year: 33.1% less) |
+| Fee averages (pin and description only, not on screen) | US **equity mutual funds: 0.40%** asset-weighted average expense ratio in 2025 (unchanged from 2024); index equity ETFs 0.14% | ICI, *Trends in the Expenses and Fees of Funds, 2025*, released Mar 25, 2026 ([ici.org news release](https://www.ici.org/news-release/mutual-fund-and-etf-fees-remained-near-historic-lows-in-2025); [report PDF](https://www.ici.org/system/files/2026-03/per32-01.pdf)) |
+| | **All US mutual funds and ETFs: 0.32%** asset-weighted in 2025 (0.34% in 2024) | Morningstar, *2026 US Fund Fee Study* ([morningstar.com](https://www.morningstar.com/business/insights/blog/us-fund-fee-study)) |
 
 **Ending**
-- Loop / re-hook: the tape asks "When is the jackpot share worth $2?", the red ≈ $2.1 BILLION lands, and "Ever seen one that big?" cuts back to the "$1.04 BILLION" claim tape.
-- Comment bait: *Ever seen a jackpot that big?* (Viewers post the biggest jackpot they remember, and the "math police" argue about it. We don't assert a record figure until one has been re-sourced.)
-- **Pinned comment:** "Exact: 97.15¢ of jackpot value per $2 ticket (envelope said ≈ 97¢, within 0.2%), using 2026 federal brackets on the $450.5M cash option (effective 36.99%), one winner, no state tax. Every smaller prize, counted tax-free, adds at most 32.0¢, so ≤ $1.29. The claim's $3.56 used the 30-payment annuity. Break-even for the jackpot share alone: ≈ $2.14B advertised (envelope said ≈ $2.1B, within 2%), or ≈ $1.80B counting smaller prizes tax-free, at the same 43% cash ratio and 37% tax, assuming nobody splits it (splits push it higher). Claim survival: 27%. This is arithmetic, not a recommendation. Gambling problem? 1-800-GAMBLER."
+- Loop / re-hook: the tape asks "What's YOUR fee?", the red ≈ $47K lands, the gauge settles on 94%, and the loop crossfades into the "A 1% fee eats a THIRD" claim card.
+- Comment bait: *What's your fee?* Viewers can answer with a percentage; nobody needs to share a balance.
+- **Pinned comment:** "Exact: $10,000 at 7% for 40 years = $149,744.58; at 6% = $102,857.18. That's 31.31% less (envelope said ≈ 31%), and the fee ate $46,887.40 (envelope said ≈ $47K). The claim's 'a third' survives at 94%. Any return from 4% to 10% gives 30.6–32.1% less. If the fee comes off the balance instead (× 0.99 a year), it's 33.1%: a third on the nose. Measured against the growth instead of the balance, it's 33.6% of the gains. Shorter horizon, smaller bite: 30 years → 24.5%. Saving the same amount every year: 22.5% less (23.2% if you deposit at the start of each year). For scale: US equity mutual funds averaged a 0.40% expense ratio in 2025 (ICI), which works out to 13.9% less on the same envelope; all US funds and ETFs averaged 0.32% (Morningstar), 11.3% less. Illustrative math, not investment advice. Claim survival: 94%."
 
-**Description:** "At $1.04 billion, a $2 Powerball ticket's worth $3.56? On paper, yes. We audited it on one envelope. The billion is 30 yearly payments: the cash option was $450.5M, and federal tax takes 37%. The jackpot share of a ticket is about 97¢. Even with every smaller prize counted tax-free, it's about $1.29. Sources: Powerball (Aug 12, 2026 draw, $1.040B annuity / $450.5M cash; prize chart odds 1 in 292,201,338) and the IRS 2026 tax rates. Assumes one winner, no state tax. Checked 2026-10-07. Gambling problem? 1-800-GAMBLER. Educational math, not financial advice."
-**Hashtags:** #powerball #lottery #moneymath #envelopemath #math
+**Description:** "A 1% fee eats a third of your retirement? We audited it on one envelope. $10,000 left 40 years at 7% before fees grows to about $150K; at 6% (after a 1% fee) to about $103K. That's about 31% less: roughly right for money that sits all 40 years, and about 22% if you add the same amount every year. Assumptions: $10,000, 40 years, 7% a year before fees, fee = 1 point off the return, no new deposits. For scale: US equity mutual funds averaged a 0.40% expense ratio in 2025 (ICI, Trends in the Expenses and Fees of Funds, 2025); all US funds and ETFs averaged 0.32% (Morningstar, 2026 US Fund Fee Study). The claim circulates in many forms, e.g. the U.S. Department of Labor's 'A Look at 401(k) Plan Fees' (a 1-point fee difference = 28% less over 35 years). Checked 2026-10-07. Educational math, not financial advice."
+**Hashtags:** #investing #retirement #moneymath #envelopemath #compoundinterest
 
 **Platform notes**
-- **YouTube Shorts:** use the 35.4 s master. Repost-proof: only names and public numbers, no lottery logos or broadcast clips. Post it the week Powerball next crosses $1B (report 01 §3.11, "ride the price story of the week") and update the inputs with that week's annuity and cash figures (the math check re-runs in a second).
-- **Instagram Reels (~45 s):** add a beat on splits, "more tickets sold means more chance you share it", with no number on screen unless sourced. Then extend the ending with the all-prizes break-even (≈ $1.8B advertised, counting smaller prizes tax-free). Caption: "Send this to the office-pool organiser."
-- **TikTok (~62 s):** add the splits beat and the tax-bracket detail (effective 36.99%, not a flat 37%). *Don't name a record jackpot until it has been re-sourced; it wasn't verified here.* Skip the tier-by-tier prize ladder: it is the whole of teaser 09C (Itemized Tally), so the two shouldn't post in the same window.
+- **YouTube Shorts:** use the 37.0 s master. The title carries the claim and its numbers ("1%", "a third") and keeps the 31% sealed. No fund names, tickers, logos or provider screenshots.
+- **Instagram Reels (~45 s):** add a "two ways to measure it" beat: against the balance the fee takes 31%, against the growth 33.6%. Same fee, two honest denominators, and the comments will argue about which one the claim meant. Caption: "Send this to the friend who's never looked up their fee."
+- **TikTok (~62 s):** add the robustness ladder (4% → 32.1% less, 7% → 31.3%, 10% → 30.6%), the 30-year case (24.5%) and the 1%-of-balance version (33.1%). Every sentence carries a new number. If the averages go on screen (ICI 0.40%, Morningstar 0.32%), show them with their source and year, as context, never as a pick.
 
-**Why this one should travel:** a famous noun (Powerball) is in frame 1, and the viral "expected value" claim is *correct on paper*, so the credit beat is real and the twist (OPENED BY MISTAKE) earns its stamp. It rides a dated news event (a $1.04B jackpot won on Aug 12, 2026), and the research shows topical prices drive breakouts (report 01 §3.11). Specific numbers (292,201,338; $450.5M) read as true (report 01 §3.8). The ending lands a bigger number than the hook (≈ $2.1B) and asks a question viewers love to answer from memory (report 01 §3.6–3.7).
+**Why this one should travel:** the claim is everywhere, from a federal agency's 401(k) guide to a 24/7 Wall St. piece two months ago, and it is almost never shown with its denominator. Retirement-number topics travel in our evidence set (Money Guy, "Is $3 Million Really Enough to Retire?", 1,321,361 views, 30.48x). The twist is that the claim *survives* the audit (ROUGHLY RIGHT), and then the fine print shows when it doesn't (≈ 22% for steady savers), so believers and skeptics both have something to say. "What's your fee?" is a question most 401(k) and IRA holders can answer by looking it up, and it isn't advice. It also gives the slate a third, different topic (taxes, debt, investing) in place of a second Powerball video.
 
 ---
 
 ### Math check
 
-Script: `teasers/10-envelope-audit-mathcheck.py` (run with `python3 teasers/10-envelope-audit-mathcheck.py`). It recomputes every on-screen, spoken, sealed-card and pinned-comment number in 10A–10C. It simulates the minimum-payment payoff month by month (cent rounding), computes the lottery tax with the full 2026 single-filer schedule, and shows the 10B answer holds for any APR from 21% to 23%. It then reads the three specs and asserts:
-- the on-screen strings;
-- captions that match the VO word for word;
-- a fully drawn claim hook with a $ figure in frame 1;
+Script: `teasers/10-envelope-audit-mathcheck.py` (run with `python3 teasers/10-envelope-audit-mathcheck.py`). It recomputes every on-screen, spoken, sealed-card, gauge and pinned-comment number in 10A–10C. It simulates the minimum-payment payoff month by month (cent rounding), compounds the 10C fee case year by year (a lump sum, and the same amount added every year), and shows that neither 10B's APR nor 10C's 7% return decides its verdict. It then reads the three specs and asserts:
+- the on-screen strings (whitespace-normalised, so the extra spaces around circled figures don't matter);
+- captions whose `say` (or `text` when there's no `say`) matches the VO word for word;
+- a finished claim card carrying a number in frame 0, the postmark in the flap, no negative-`t` ops and `loop: true`;
 - ≥ 0.25 s per word on every caption;
 - the first payoff by 40%;
 - the biggest number inside the last 2 s;
-- the 10B curve equal to the exact 22.15% balance path.
+- the sealed reveal after a 3 s timer;
+- a CLAIM SURVIVAL gauge equal to the computed survival that settles ≥ 0.75 s before the loop crossfade;
+- the 10B curve equal to the exact 22.15% balance path, and the 10C curves equal to $10K compounding at 7% and at 6%.
 
 It stops with `MISMATCH` or `FAILED` if anything drifts.
 
@@ -305,10 +321,10 @@ It stops with `MISMATCH` or `FAILED` if anything drifts.
 """Math check for approach #10, The Envelope Audit (teasers 10A, 10B, 10C).
 
 Recomputes every number that appears on screen, in the voice-over, on the
-sealed card, in the pinned comments and in the "claim survival" stat, then
+sealed card, in the pinned comments and in the "claim survival" gauge, then
 reads the three specs and asserts that what is drawn matches what is computed.
 Inputs are the real-world figures listed in teasers/10-envelope-audit.md
-(sources, dates and verification status there).
+(sources, dates and the final fact check table are there).
 Run from anywhere: python3 teasers/10-envelope-audit-mathcheck.py
 """
 from decimal import Decimal as D, ROUND_HALF_UP
@@ -367,7 +383,8 @@ check("a year of dinners: $100 x 365 = $36,500", dinner * year, 36_500)
 check("you still pay a year: $88 x 365 = $32,120", you_pay * year, 32_120)
 check("tax back a year: $12 x 365 = $4,380", back * year, 4_380)
 check("last 2 s: '≈ $32K a year' is within 0.4% of $32,120", pct_off(32_000, you_pay * year), 0.37, 0.005)
-check("claim survival: $12 saved of the $100 'free' = 12%", back / dinner * 100, 12)
+surv_a = round(back / dinner * 100)
+check("claim survival: $12 saved of the $100 'free' = 12%", surv_a, 12)
 # Robustness for the pinned comment: even a 50% combined marginal rate.
 check("pinned: at a 50% combined rate the dinner still costs $75", dinner - dinner * meal_cap * 0.50, 75)
 # Personal / family dinners: 26 USC 262 -> $0 deductible -> pay the full $100.
@@ -402,6 +419,7 @@ env_int = B0 * 0.22 / 12
 check("line 1: $5,000 x 22% / 12 ≈ $92 interest", env_int, 91.67, 0.005)
 check("line 2: + 1% of $5,000 = $50", B0 * 0.01, 50)
 check("line 2: min ≈ $92 + $50 = $142", round(env_int) + 50, 142)
+check("bars: $92 to interest, $50 to the debt (of $142)", round(env_int) + B0 * 0.01, 142)
 halving = math.log(2) / -math.log(1 - 0.01)
 check("line 3: debt shrinks 1%/mo -> halves every ~69 months", halving, 68.97, 0.01)
 check("        69 months = 5.75 years ('about every 6 years')", halving / 12, 5.75, 0.01)
@@ -427,8 +445,9 @@ check("pinned: $40 floor -> $12,516.44 paid", paid40, 12_516.44, 0.005)
 check("first month exact interest at 22.15%", money(B0 * 0.2215 / 12), 92.29)
 check("pay $5,000, hand over ≈ 2.6x", paid_ex / B0, 2.63, 0.01)
 check("claim '20 years' is within 4% of the exact 19.25", pct_off(20, m_ex / 12), 3.90, 0.005)
-check("claim survival: 19.25 of the claimed 20 years = 96%", round(m_ex / 12 / 20 * 100), 96)
-# Robustness: the APR could not be re-verified by QA, so show the answer does not hinge on it.
+surv_b = round(m_ex / 12 / 20 * 100)
+check("claim survival: 19.25 of the claimed 20 years = 96%", surv_b, 96)
+# Robustness: the answer must not hinge on the exact APR.
 spread = {apr: payoff(B0, apr, 25)[0] for apr in (0.21, 0.215, 0.22, 0.2215, 0.225, 0.23)}
 print("  robustness, months by APR ($25 floor): " + ", ".join(f"{a*100:.2f}%: {m}" for a, m in spread.items()))
 assert_true("every APR from 21% to 23% still rounds to ≈ 19 years", all(round(m / 12) == 19 for m in spread.values()))
@@ -437,71 +456,64 @@ check("curve mark 'yr 12 ≈ $1.2K' (written rounded)", path_ex[144], 1_200, 50)
 check("balance path is APR-independent until the floor: yr 6 at 22% = at 22.15%", path22[72], path_ex[72], 0.01)
 
 # ----------------------------------------------------------------------------
-print("\n10C  'At $1.04 BILLION, a $2 Powerball ticket's worth $3.56.'")
-# Inputs: Powerball draw of Aug 12 2026: $1.040B annuity, $450.5M cash (powerball.com).
-# Jackpot odds 1 in 292,201,338; $2 play (Powerball prize chart).
-# Top federal rate 37% (IRS, tax year 2026). State tax excluded. Single winner assumed.
-odds = 292_201_338
-annuity = 1.040e9
-cash = 450.5e6
-check("odds = C(69,5) x 26", math.comb(69, 5) * 26, odds)
-naive = annuity / odds
-cash_per = cash / odds
-after_tax_flat = cash * (1 - 0.37) / odds
-check("line 1 (the claim): $1.04B / 292.2M ≈ $3.56", naive, 3.56, 0.005)
-check("line 2: $450.5M cash / 292.2M ≈ $1.54", cash_per, 1.54, 0.005)
-check("line 3: $1.54 x 63% ≈ $0.97 (envelope uses the rounded $1.54)", 1.54 * 0.63, 0.97, 0.005)
-check("line 3 unrounded: cash x 63% / odds", after_tax_flat, 0.97, 0.005)
-check("cash share of the advertised jackpot ≈ 43%", cash / annuity * 100, 43.32, 0.01)
-
-# Exact federal tax with the 2026 single-filer schedule (Rev. Proc. 2025-32),
-# standard deduction $16,100, no other income (state tax excluded).
-brackets = [(12_400, .10), (50_400, .12), (105_700, .22), (201_775, .24),
-            (256_225, .32), (640_600, .35), (float("inf"), .37)]
-
-
-def tax_2026_single(income):
-    taxable = max(0.0, income - 16_100)
-    tax, lo = 0.0, 0.0
-    for hi, r in brackets:
-        if taxable > lo:
-            tax += (min(taxable, hi) - lo) * r
-        lo = hi
-    return tax
+print("\n10C  'A 1% fee eats a THIRD of your retirement.'")
+# Inputs: ASSUME $10,000 left alone for 40 years, 7% a year before fees, no new
+# deposits; the 1% fee is modelled as 1 point off the yearly return (7% -> 6%).
+# Context figures (pinned comment only): ICI 2025 equity mutual fund average
+# expense ratio 0.40%; Morningstar 2025 asset-weighted average for all US funds 0.32%.
+P, g, fee, n = 10_000.0, 0.07, 0.01, 40
+gross = P * (1 + g) ** n
+net = P * (1 + g - fee) ** n
+ratio = net / gross
+less = (1 - ratio) * 100
+print(f"  $10K at 7% for 40 yrs = ${gross:,.2f}; at 6% = ${net:,.2f}; ratio {ratio:.4f}; {less:.2f}% less")
+check("7% - 1% fee = 6%", g - fee, 0.06, 1e-12)
+check("line 1: $10K at 7%, 40 yrs ≈ $150K", gross, 150_000, 500)
+check("line 2: $10K at 6%, 40 yrs ≈ $103K", net, 103_000, 500)
+check("line 3 (rounded inputs): $103K / $150K ≈ 0.69", 103 / 150, 0.69, 0.005)
+check("line 3 exact = (1.06 / 1.07)^40", ratio, (1.06 / 1.07) ** 40)
+check("  (1.06 / 1.07)^40 ≈ 0.687", ratio, 0.687, 0.0005)
+check("sealed card: ≈ 31% less", less, 31, 0.5)
+check("  envelope 31% vs exact 31.31%: within 1%", pct_off(31, less), 0.99, 0.01)
+check("card line 2: the claim's 'a third' = 33%", 100 / 3, 33, 0.5)
+surv_c = round(less / (100 / 3) * 100)
+check("claim survival: 31.31% of the claimed 33.33% = 94%", surv_c, 94)
+check("last 2 s: the fee eats ≈ $47K per $10K", gross - net, 47_000, 500)
+check("  envelope $47K vs exact $46,887.40: within 0.3%", pct_off(47_000, gross - net), 0.24, 0.005)
+check("  $47K is ≈ 4.7x the $10K put in", (gross - net) / P, 4.69, 0.005)
 
 
-fed = tax_2026_single(cash)
-exact = (cash - fed) / odds
-print(f"  exact 2026 federal tax on $450.5M: ${fed:,.0f} (effective {fed/cash*100:.4f}%)")
-check("sealed card: ≈ 97¢ (exact brackets)", exact, 0.97, 0.005)
-check("  envelope 97¢ vs exact: within 0.2%", pct_off(0.97, exact), 0.15, 0.005)
+def fv_yearly(r, years=n, due=False):
+    """Future value of $1 added every year for `years` years (end of year unless due)."""
+    v = ((1 + r) ** years - 1) / r
+    return v * (1 + r) if due else v
 
-small = [  # (prize, odds per $2 play), Powerball prize chart; two $100, two $7 and two $4 tiers
-    (1_000_000, 11_688_053.52), (50_000, 913_129.18), (100, 36_525.17), (100, 14_494.11),
-    (7, 579.76), (7, 701.33), (4, 91.98), (4, 38.32),
-]
-ev_small = sum(prize / o for prize, o in small)
-check("TikTok cut: the $1M tier is worth ≈ 8.6¢ a ticket", 1_000_000 / 11_688_053.52, 0.086, 0.0005)
-check("every smaller prize, pre-tax ≈ 32.0¢", ev_small, 0.320, 0.0005)
-upper = exact + ev_small
-check("card line 2: all prizes, small ones tax-free, ≤ $1.29", upper, 1.29, 0.005)
-check("claim survival: $0.97 of the claimed $3.56 = 27%", round(exact / naive * 100), 27)
-be_jackpot_only = 2 * odds / ((cash / annuity) * 0.63)
-be_exact_scaling = annuity * 2 / exact
-be_with_small = (2 - ev_small) * odds / ((cash / annuity) * 0.63)
-check("last 2 s: 'about 2 x $1.04B' (multiplier $2 / 97.15¢)", 2 / exact, 2.06, 0.005)
-check("pinned: break-even ≈ $2.14B jackpot share alone (flat 37%)", be_jackpot_only / 1e9, 2.14, 0.005)
-check("  same by scaling the exact 97.15¢", be_exact_scaling / 1e9, 2.14, 0.005)
-check("last 2 s: '≈ $2.1 BILLION' is within 2% of $2.14B", pct_off(2.1e9, be_jackpot_only), 1.94, 0.005)
-check("pinned: break-even ≈ $1.80B with small prizes tax-free", be_with_small / 1e9, 1.80, 0.005)
-check("the claim's own break-even: 2 x 292,201,338 = $584.4M", 2 * odds / 1e6, 584.40, 0.005)
+
+yearly = (1 - fv_yearly(g - fee) / fv_yearly(g)) * 100
+yearly_due = (1 - fv_yearly(g - fee, due=True) / fv_yearly(g, due=True)) * 100
+check("fine print: the same amount added each year-end -> ≈ 22% less", yearly, 22, 0.5)
+check("  exact 22.48% (pinned)", yearly, 22.48, 0.005)
+check("  added at each year-start instead: 23.2% (pinned)", yearly_due, 23.20, 0.01)
+check("pinned: fee taken as 1% of the balance (x 0.99 a year): 33.1% less", (1 - 0.99 ** n) * 100, 33.10, 0.005)
+check("pinned: measured against the growth (not the balance), the fee takes 33.6% of the gains",
+      (gross - net) / (gross - P) * 100, 33.55, 0.005)
+check("pinned: over 30 years instead of 40: 24.5% less", (1 - (1.06 / 1.07) ** 30) * 100, 24.55, 0.005)
+check("pinned: a 0.40% fee (ICI 2025 equity fund average) -> 13.9% less", (1 - ((1 + g - 0.004) / (1 + g)) ** n) * 100, 13.91, 0.005)
+check("pinned: a 0.32% fee (Morningstar 2025 all-fund average) -> 11.3% less", (1 - ((1 + g - 0.0032) / (1 + g)) ** n) * 100, 11.29, 0.005)
+rob = {G: (1 - ((1 + G - fee) / (1 + G)) ** n) * 100 for G in (0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.10)}
+print("  robustness, % less by gross return: " + ", ".join(f"{G*100:.0f}%: {v:.1f}" for G, v in rob.items()))
+assert_true("any gross return from 4% to 10% gives 30.6-32.1% less (≈ 31%)", all(30.5 < v < 32.1 for v in rob.values()))
 
 # ----------------------------------------------------------------------------
-print("\nSpecs: on-screen strings, captions, frame 1, timing")
+print("\nSpecs: on-screen strings, captions, frame 0, timing")
 
 
 def load(stem):
     return json.loads((SPECS / f"{stem}.json").read_text())
+
+
+def norm(s):
+    return re.sub(r"\s+", " ", s.replace("*", "")).strip()
 
 
 def drawn_text(spec):
@@ -511,43 +523,46 @@ def drawn_text(spec):
         if isinstance(t, list):
             out.extend(t)
         elif isinstance(t, str):
-            out.append(t)
+            out.extend(t.split("\n"))
+            out.append(t.replace("\n", " "))
         for c in op.get("card", []):
             out.append(c if isinstance(c, str) else c["text"])
         for m in op.get("marks", []):
             out.append(m["text"])
+        for it in op.get("items", []):
+            out.append(f'{it["label"]} {it.get("display", "")}')
         if op["type"] == "postage":
             out.append(f'{op["value"]} {op.get("label", "")}')
-    return [s.replace("*", "") for s in out]
+    return [norm(s) for s in out]
 
 
 def has(spec, s):
     return any(s in t for t in drawn_text(spec))
 
 
-def words(s):
-    return len([w for w in re.split(r"\s+", s) if re.search(r"[A-Za-z0-9$¢%?≈≠]", w)])
+def op_by_id(spec, i):
+    return next(op for op in spec["ops"] if op.get("id") == i)
 
 
-def hook_ready(op):
-    return op["t"] + 0.2 + 0.14 * (len(op["text"]) - 1)
+def written_by(op):
+    return op["t"] + len(op["text"]) / op["cps"]
 
 
 musts = {
-    "10-envelope-audit-a": ["$100-a-night chef.", "$100 × 50% cap = $50", "$50 × 24% = $12 back", "$88", "not $0",
-                             "12¢ BACK PER $1", "≈ $32K a year", "CLAIM SURVIVAL: 12%", "IRC §274(n)"],
+    "10-envelope-audit-a": ["$100-a-night chef.", "Dinner's FREE.", "$100 × 50% cap = $50", "$50 × 24% = $12 back",
+                             "$88", "not $0", "12¢ BACK PER $1", "≈ $32K a year", "IRC §274(n)", "deductible",
+                             "24% tax bracket"],
     "10-envelope-audit-b": ["$5,000 and you'll", "20 YEARS", "$5,000 × 22% ÷ 12 ≈ $92", "min: $92 + $50 = $142",
-                             "1%/mo → halves every ~6 yrs", "yr 6 ≈ $2.4K", "yr 12 ≈ $1.2K", "≈ 19 years",
-                             "the claim said 20", "≈$13,100", "CLAIM SURVIVAL: 96%", "22% APR"],
-    "10-envelope-audit-c": ["$1.04 BILLION", "$3.56", "odds: 1 in 292,201,338", "$1.04B ÷ 292.2M ≈ $3.56",
-                             "$450.5M ÷ 292.2M ≈ $1.54", "$1.54 × 63% ≈", "≈ 97¢", "≤ $1.29", "30 yearly payments",
-                             "about 2 × $1.04B", "≈ $2.1 BILLION", "CLAIM SURVIVAL: 27%"],
+                             "interest $92", "the debt $50", "1%/mo → halves every ~6 yrs", "yr 6 ≈ $2.4K",
+                             "yr 12 ≈ $1.2K", "≈ 19 years", "the claim said 20", "ours: ≈ $13,100", "22% APR",
+                             "($25 floor)"],
+    "10-envelope-audit-c": ["A 1% fee eats", "THIRD", "$10,000", "left alone 40 years", "7% a year before fees",
+                             "No new deposits", "7%: $10K → ≈ $150K", "6%: $10K → ≈ $103K", "$103K ÷ $150K ≈ 0.69",
+                             "≈ 31% less", "the claim said 33%", "≈ 31% less", "≈ 22% less", "fee eats ≈ $47K",
+                             "every $10K left 40 yrs:"],
 }
-# the biggest number of each video and where it must land (last 2 s)
-biggest = {"10-envelope-audit-a": "≈ $32K a year", "10-envelope-audit-b": "ours: ≈19 yrs, ≈$13,100",
-           "10-envelope-audit-c": "≈ $2.1 BILLION"}
-first_payoff = {"10-envelope-audit-a": "$100 × 50% cap = $50", "10-envelope-audit-b": "min: $92 + $50 = $142",
-                "10-envelope-audit-c": "$1.04B ÷ 292.2M ≈ $3.56"}
+survival = {"10-envelope-audit-a": surv_a, "10-envelope-audit-b": surv_b, "10-envelope-audit-c": surv_c}
+first_payoff = {"10-envelope-audit-a": "l1", "10-envelope-audit-b": "l2", "10-envelope-audit-c": "l1"}
 
 for stem, strings in musts.items():
     spec = load(stem)
@@ -556,32 +571,42 @@ for stem, strings in musts.items():
     for s in strings:
         assert_true(f"on screen: '{s}'", has(spec, s))
     vo = re.sub(r"\s*\[[^\]]*\]\s*", " ", spec["vo"]).split()
-    caps = " ".join(c["text"] for c in spec["captions"]).split()
-    assert_true("captions = voice-over word for word", vo == caps)
-    hooks = [op for op in spec["ops"] if op["type"] == "hook"]
-    assert_true("frame 1: the claim hook is fully drawn at t = 0", hook_ready(hooks[0]) <= 0.0)
-    assert_true("frame 1: the claim hook carries a $ figure", any("$" in line for line in hooks[0]["text"]))
-    slow = [c for c in spec["captions"] if c["end"] - c["t"] < 0.25 * words(c["text"]) - 1e-9]
+    spoken = " ".join(c.get("say", c["text"]) for c in spec["captions"]).split()
+    assert_true("captions (say, else text) = voice-over word for word", vo == spoken)
+    claim = next(op for op in spec["ops"] if op["type"] == "quote")
+    assert_true("frame 0: the claim card is on screen, finished, at t = 0", claim["t"] == 0)
+    assert_true("frame 0: the claim carries a number", bool(re.search(r"\d", claim["text"])))
+    pm = next(op for op in spec["ops"] if op["type"] == "postmark")
+    assert_true("postmark in the flap at (175, 258), r 100, t 0",
+                (pm["t"], pm["x"], pm["y"], pm["r"], pm.get("persist")) == (0, 175, 258, 100, True))
+    assert_true("no negative-t ops", all(op["t"] >= 0 for op in spec["ops"]))
+    assert_true("loop: true", spec.get("loop") is True)
+    slow = [c for c in spec["captions"] if c["end"] - c["t"] < 0.25 * len(c["text"].split()) - 1e-9]
     assert_true("every caption is on screen ≥ 0.25 s per word", not slow)
-    fp = next(op for op in spec["ops"] if op.get("text") == first_payoff[stem])
-    fp_done = fp["t"] + len(fp["text"]) / fp["cps"]
+    fp_done = written_by(op_by_id(spec, first_payoff[stem]))
     assert_true(f"first payoff written by {fp_done:.1f}s = {fp_done/dur*100:.0f}% (≤ 40%)", fp_done / dur <= 0.40)
-    big = next(op for op in spec["ops"] if op.get("text") == biggest[stem])
-    big_done = big["t"] + len(big["text"]) / big["cps"]
-    assert_true(f"biggest number '{biggest[stem]}' lands at {big_done:.2f}s, inside the last 2 s",
+    big = op_by_id(spec, "big")
+    big_done = written_by(big)
+    assert_true(f"biggest number '{norm(big['text'])}' lands at {big_done:.2f}s, inside the last 2 s",
                 dur - 2 <= big_done <= dur - 1.0)
     env = next(op for op in spec["ops"] if op["type"] == "envelope")
     assert_true(f"sealed reveal at {env['openAt']}s = {env['openAt']/dur*100:.0f}% (after a 3 s timer)",
                 any(op["type"] == "timer" and op["t"] + op["seconds"] <= env["openAt"] for op in spec["ops"]))
-    surv = next(op for op in spec["ops"] if str(op.get("text", "")).startswith("CLAIM SURVIVAL"))
-    assert_true("claim-survival stat finishes ≥ 0.75 s before the end",
-                surv["t"] + len(surv["text"]) / surv["cps"] <= dur - 0.75)
+    meter = next(op for op in spec["ops"] if op["type"] == "meter")
+    check("claim-survival gauge reads the computed survival %", meter["to"], survival[stem])
+    m_done = meter["t"] + meter["dur"]
+    assert_true(f"claim-survival gauge settles at {m_done:.2f}s, ≥ 0.75 s before the loop crossfade",
+                m_done <= dur - 0.35 - 0.75 + 1e-9)
 
 curve = next(op for op in load("10-envelope-audit-b")["ops"] if op["type"] == "curve")
 want = [round(path_ex[k]) for k in range(0, len(path_ex), 3)]
 assert_true(f"10B curve = exact 22.15% balance every 3 months ({len(want)} points, 0 at month {m_ex})",
             curve["values"] == want)
 assert_true("10B curve marks sit at month 72 and 144", [m["i"] * 3 for m in curve["marks"]] == [72, 144])
+curves_c = [op for op in load("10-envelope-audit-c")["ops"] if op["type"] == "curve"]
+assert_true("10C curves = $10K compounding at 7% and at 6%, year by year (41 points each)",
+            [c["values"] for c in curves_c] == [[round(P * (1 + r) ** k) for k in range(n + 1)] for r in (0.07, 0.06)])
+assert_true("10C curves share one scale (max $150,000)", all(c["max"] == 150_000 for c in curves_c))
 
 print(f"\nAll {ok_count} checks passed.")
 ```
@@ -606,6 +631,7 @@ Output (run 2026-10-07):
   ok  line 1: $5,000 x 22% / 12 ≈ $92 interest: computed 91.6667 | on screen 91.6700
   ok  line 2: + 1% of $5,000 = $50: computed 50.0000 | on screen 50.0000
   ok  line 2: min ≈ $92 + $50 = $142: computed 142.0000 | on screen 142.0000
+  ok  bars: $92 to interest, $50 to the debt (of $142): computed 142.0000 | on screen 142.0000
   ok  line 3: debt shrinks 1%/mo -> halves every ~69 months: computed 68.9676 | on screen 68.9700
   ok          69 months = 5.75 years ('about every 6 years'): computed 5.7473 | on screen 5.7500
   ok  rule of 70 shortcut (TikTok cut): 70 / 1 = 70 months: computed 70.0000 | on screen 70.0000
@@ -631,97 +657,125 @@ Output (run 2026-10-07):
   ok  curve mark 'yr 12 ≈ $1.2K' (written rounded): computed 1,176.0800 | on screen 1,200.0000
   ok  balance path is APR-independent until the floor: yr 6 at 22% = at 22.15%: computed 2,424.9500 | on screen 2,424.9400
 
-10C  'At $1.04 BILLION, a $2 Powerball ticket's worth $3.56.'
-  ok  odds = C(69,5) x 26: computed 292,201,338.0000 | on screen 292,201,338.0000
-  ok  line 1 (the claim): $1.04B / 292.2M ≈ $3.56: computed 3.5592 | on screen 3.5600
-  ok  line 2: $450.5M cash / 292.2M ≈ $1.54: computed 1.5417 | on screen 1.5400
-  ok  line 3: $1.54 x 63% ≈ $0.97 (envelope uses the rounded $1.54): computed 0.9702 | on screen 0.9700
-  ok  line 3 unrounded: cash x 63% / odds: computed 0.9713 | on screen 0.9700
-  ok  cash share of the advertised jackpot ≈ 43%: computed 43.3173 | on screen 43.3200
-  exact 2026 federal tax on $450.5M: $166,635,000 (effective 36.9889%)
-  ok  sealed card: ≈ 97¢ (exact brackets): computed 0.9715 | on screen 0.9700
-  ok    envelope 97¢ vs exact: within 0.2%: computed 0.1514 | on screen 0.1500
-  ok  TikTok cut: the $1M tier is worth ≈ 8.6¢ a ticket: computed 0.0856 | on screen 0.0860
-  ok  every smaller prize, pre-tax ≈ 32.0¢: computed 0.3199 | on screen 0.3200
-  ok  card line 2: all prizes, small ones tax-free, ≤ $1.29: computed 1.2913 | on screen 1.2900
-  ok  claim survival: $0.97 of the claimed $3.56 = 27%: computed 27.0000 | on screen 27.0000
-  ok  last 2 s: 'about 2 x $1.04B' (multiplier $2 / 97.15¢): computed 2.0587 | on screen 2.0600
-  ok  pinned: break-even ≈ $2.14B jackpot share alone (flat 37%): computed 2.1415 | on screen 2.1400
-  ok    same by scaling the exact 97.15¢: computed 2.1411 | on screen 2.1400
-  ok  last 2 s: '≈ $2.1 BILLION' is within 2% of $2.14B: computed 1.9361 | on screen 1.9400
-  ok  pinned: break-even ≈ $1.80B with small prizes tax-free: computed 1.7990 | on screen 1.8000
-  ok  the claim's own break-even: 2 x 292,201,338 = $584.4M: computed 584.4027 | on screen 584.4000
+10C  'A 1% fee eats a THIRD of your retirement.'
+  $10K at 7% for 40 yrs = $149,744.58; at 6% = $102,857.18; ratio 0.6869; 31.31% less
+  ok  7% - 1% fee = 6%: computed 0.0600 | on screen 0.0600
+  ok  line 1: $10K at 7%, 40 yrs ≈ $150K: computed 149,744.5784 | on screen 150,000.0000
+  ok  line 2: $10K at 6%, 40 yrs ≈ $103K: computed 102,857.1794 | on screen 103,000.0000
+  ok  line 3 (rounded inputs): $103K / $150K ≈ 0.69: computed 0.6867 | on screen 0.6900
+  ok  line 3 exact = (1.06 / 1.07)^40: computed 0.6869 | on screen 0.6869
+  ok    (1.06 / 1.07)^40 ≈ 0.687: computed 0.6869 | on screen 0.6870
+  ok  sealed card: ≈ 31% less: computed 31.3116 | on screen 31.0000
+  ok    envelope 31% vs exact 31.31%: within 1%: computed 0.9951 | on screen 0.9900
+  ok  card line 2: the claim's 'a third' = 33%: computed 33.3333 | on screen 33.0000
+  ok  claim survival: 31.31% of the claimed 33.33% = 94%: computed 94.0000 | on screen 94.0000
+  ok  last 2 s: the fee eats ≈ $47K per $10K: computed 46,887.3990 | on screen 47,000.0000
+  ok    envelope $47K vs exact $46,887.40: within 0.3%: computed 0.2402 | on screen 0.2400
+  ok    $47K is ≈ 4.7x the $10K put in: computed 4.6887 | on screen 4.6900
+  ok  fine print: the same amount added each year-end -> ≈ 22% less: computed 22.4776 | on screen 22.0000
+  ok    exact 22.48% (pinned): computed 22.4776 | on screen 22.4800
+  ok    added at each year-start instead: 23.2% (pinned): computed 23.2021 | on screen 23.2000
+  ok  pinned: fee taken as 1% of the balance (x 0.99 a year): 33.1% less: computed 33.1028 | on screen 33.1000
+  ok  pinned: measured against the growth (not the balance), the fee takes 33.6% of the gains: computed 33.5522 | on screen 33.5500
+  ok  pinned: over 30 years instead of 40: 24.5% less: computed 24.5494 | on screen 24.5500
+  ok  pinned: a 0.40% fee (ICI 2025 equity fund average) -> 13.9% less: computed 13.9131 | on screen 13.9100
+  ok  pinned: a 0.32% fee (Morningstar 2025 all-fund average) -> 11.3% less: computed 11.2907 | on screen 11.2900
+  robustness, % less by gross return: 4%: 32.1, 5%: 31.8, 6%: 31.6, 7%: 31.3, 8%: 31.1, 9%: 30.8, 10%: 30.6
+  ok  any gross return from 4% to 10% gives 30.6-32.1% less (≈ 31%)
 
-Specs: on-screen strings, captions, frame 1, timing
- 10-envelope-audit-a (35.4s)
+Specs: on-screen strings, captions, frame 0, timing
+ 10-envelope-audit-a (36.0s)
   ok  on screen: '$100-a-night chef.'
+  ok  on screen: 'Dinner's FREE.'
   ok  on screen: '$100 × 50% cap = $50'
   ok  on screen: '$50 × 24% = $12 back'
   ok  on screen: '$88'
   ok  on screen: 'not $0'
   ok  on screen: '12¢ BACK PER $1'
   ok  on screen: '≈ $32K a year'
-  ok  on screen: 'CLAIM SURVIVAL: 12%'
   ok  on screen: 'IRC §274(n)'
-  ok  captions = voice-over word for word
-  ok  frame 1: the claim hook is fully drawn at t = 0
-  ok  frame 1: the claim hook carries a $ figure
+  ok  on screen: 'deductible'
+  ok  on screen: '24% tax bracket'
+  ok  captions (say, else text) = voice-over word for word
+  ok  frame 0: the claim card is on screen, finished, at t = 0
+  ok  frame 0: the claim carries a number
+  ok  postmark in the flap at (175, 258), r 100, t 0
+  ok  no negative-t ops
+  ok  loop: true
   ok  every caption is on screen ≥ 0.25 s per word
-  ok  first payoff written by 12.1s = 34% (≤ 40%)
-  ok  biggest number '≈ $32K a year' lands at 33.72s, inside the last 2 s
-  ok  sealed reveal at 24.4s = 69% (after a 3 s timer)
-  ok  claim-survival stat finishes ≥ 0.75 s before the end
- 10-envelope-audit-b (35.4s)
+  ok  first payoff written by 11.8s = 33% (≤ 40%)
+  ok  biggest number '≈ $32K a year' lands at 34.02s, inside the last 2 s
+  ok  sealed reveal at 24.4s = 68% (after a 3 s timer)
+  ok  claim-survival gauge reads the computed survival %: computed 12.0000 | on screen 12.0000
+  ok  claim-survival gauge settles at 34.90s, ≥ 0.75 s before the loop crossfade
+ 10-envelope-audit-b (36.6s)
   ok  on screen: '$5,000 and you'll'
   ok  on screen: '20 YEARS'
   ok  on screen: '$5,000 × 22% ÷ 12 ≈ $92'
   ok  on screen: 'min: $92 + $50 = $142'
+  ok  on screen: 'interest $92'
+  ok  on screen: 'the debt $50'
   ok  on screen: '1%/mo → halves every ~6 yrs'
   ok  on screen: 'yr 6 ≈ $2.4K'
   ok  on screen: 'yr 12 ≈ $1.2K'
   ok  on screen: '≈ 19 years'
   ok  on screen: 'the claim said 20'
-  ok  on screen: '≈$13,100'
-  ok  on screen: 'CLAIM SURVIVAL: 96%'
+  ok  on screen: 'ours: ≈ $13,100'
   ok  on screen: '22% APR'
-  ok  captions = voice-over word for word
-  ok  frame 1: the claim hook is fully drawn at t = 0
-  ok  frame 1: the claim hook carries a $ figure
+  ok  on screen: '($25 floor)'
+  ok  captions (say, else text) = voice-over word for word
+  ok  frame 0: the claim card is on screen, finished, at t = 0
+  ok  frame 0: the claim carries a number
+  ok  postmark in the flap at (175, 258), r 100, t 0
+  ok  no negative-t ops
+  ok  loop: true
   ok  every caption is on screen ≥ 0.25 s per word
-  ok  first payoff written by 10.9s = 31% (≤ 40%)
-  ok  biggest number 'ours: ≈19 yrs, ≈$13,100' lands at 33.65s, inside the last 2 s
-  ok  sealed reveal at 25.0s = 71% (after a 3 s timer)
-  ok  claim-survival stat finishes ≥ 0.75 s before the end
- 10-envelope-audit-c (35.4s)
-  ok  on screen: '$1.04 BILLION'
-  ok  on screen: '$3.56'
-  ok  on screen: 'odds: 1 in 292,201,338'
-  ok  on screen: '$1.04B ÷ 292.2M ≈ $3.56'
-  ok  on screen: '$450.5M ÷ 292.2M ≈ $1.54'
-  ok  on screen: '$1.54 × 63% ≈'
-  ok  on screen: '≈ 97¢'
-  ok  on screen: '≤ $1.29'
-  ok  on screen: '30 yearly payments'
-  ok  on screen: 'about 2 × $1.04B'
-  ok  on screen: '≈ $2.1 BILLION'
-  ok  on screen: 'CLAIM SURVIVAL: 27%'
-  ok  captions = voice-over word for word
-  ok  frame 1: the claim hook is fully drawn at t = 0
-  ok  frame 1: the claim hook carries a $ figure
+  ok  first payoff written by 11.9s = 32% (≤ 40%)
+  ok  biggest number 'ours: ≈ $13,100' lands at 34.63s, inside the last 2 s
+  ok  sealed reveal at 25.6s = 70% (after a 3 s timer)
+  ok  claim-survival gauge reads the computed survival %: computed 96.0000 | on screen 96.0000
+  ok  claim-survival gauge settles at 35.45s, ≥ 0.75 s before the loop crossfade
+ 10-envelope-audit-c (37.0s)
+  ok  on screen: 'A 1% fee eats'
+  ok  on screen: 'THIRD'
+  ok  on screen: '$10,000'
+  ok  on screen: 'left alone 40 years'
+  ok  on screen: '7% a year before fees'
+  ok  on screen: 'No new deposits'
+  ok  on screen: '7%: $10K → ≈ $150K'
+  ok  on screen: '6%: $10K → ≈ $103K'
+  ok  on screen: '$103K ÷ $150K ≈ 0.69'
+  ok  on screen: '≈ 31% less'
+  ok  on screen: 'the claim said 33%'
+  ok  on screen: '≈ 31% less'
+  ok  on screen: '≈ 22% less'
+  ok  on screen: 'fee eats ≈ $47K'
+  ok  on screen: 'every $10K left 40 yrs:'
+  ok  captions (say, else text) = voice-over word for word
+  ok  frame 0: the claim card is on screen, finished, at t = 0
+  ok  frame 0: the claim carries a number
+  ok  postmark in the flap at (175, 258), r 100, t 0
+  ok  no negative-t ops
+  ok  loop: true
   ok  every caption is on screen ≥ 0.25 s per word
-  ok  first payoff written by 9.9s = 28% (≤ 40%)
-  ok  biggest number '≈ $2.1 BILLION' lands at 33.48s, inside the last 2 s
-  ok  sealed reveal at 24.0s = 68% (after a 3 s timer)
-  ok  claim-survival stat finishes ≥ 0.75 s before the end
+  ok  first payoff written by 11.7s = 32% (≤ 40%)
+  ok  biggest number 'fee eats ≈ $47K' lands at 35.03s, inside the last 2 s
+  ok  sealed reveal at 22.0s = 59% (after a 3 s timer)
+  ok  claim-survival gauge reads the computed survival %: computed 94.0000 | on screen 94.0000
+  ok  claim-survival gauge settles at 35.90s, ≥ 0.75 s before the loop crossfade
   ok  10B curve = exact 22.15% balance every 3 months (78 points, 0 at month 231)
   ok  10B curve marks sit at month 72 and 144
+  ok  10C curves = $10K compounding at 7% and at 6%, year by year (41 points each)
+  ok  10C curves share one scale (max $150,000)
 
-All 110 checks passed.
+All 136 checks passed.
 ```
 
 ---
 
 ### Verification log
+
+*Historical: this is the first QA pass, before the engine upgrade and the slate change. Its "10C" is the retired Powerball audit, and its timings and sizes describe the old specs. The current state is in **Final fact check** and **Polish pass** below.*
 
 QA pass by an independent fact-checker, editor and QA reviewer, 2026-10-07. I assumed there were mistakes and looked for them. Files touched: this md, `teasers/10-envelope-audit-mathcheck.py`, `engine/specs/10-envelope-audit-{a,b,c}.json`, and the re-rendered `engine/out/sheets/10-envelope-audit-{a,b,c}.png` and `engine/out/stills/10-envelope-audit-*`. `engine/src` was not edited.
 
@@ -821,3 +875,80 @@ QA pass by an independent fact-checker, editor and QA reviewer, 2026-10-07. I as
 2. A `labelSize` param for `postage`. The fixed 18 px label ("BACK PER $1", "ONE TICKET") can't be read on a phone; for now the VO carries it.
 3. `check` should lint `stamp`, `annotate` and `postage` boxes for overlaps and the safe area. A red circle can cross a glyph and still pass.
 4. `check` should warn when frame 0 has no readable text (format bible §2.2), and when an op stays on screen for less than 0.25 s per word after it finishes writing.
+
+---
+
+### Final fact check
+
+Every real-world input that appears on screen, in a VO, pinned comment or description, checked with WebSearch on 2026-10-07 (the polish pass had a fresh search budget). Direct fetches of the primary sites are egress-blocked from this environment, so "confirmed" means the value was read from a search result that indexes or quotes the source named. Assumptions are labelled on screen and listed for completeness.
+
+| Input | Value used | Source URL | Checked on | Status |
+|---|---|---|---|---|
+| 10A · Meal deduction limit | 50% of business meals (you or an employee present, not lavish) | https://www.law.cornell.edu/uscode/text/26/274 · https://www.irs.gov/pub/irs-pdf/p463.pdf | 2026-10-07 | Confirmed (§274(n)(1) text on Cornell LII; IRS Pub 463) |
+| 10A · Temporary 100% restaurant-meal rule | 2021–2022 only; back to 50% from 2023 | https://www.irs.gov/pub/irs-drop/n-21-25.pdf | 2026-10-07 | Confirmed (IRS Notice 2021-25; 2026 guides say it ended 12/31/2022). Source upgraded from a blog to the IRS notice |
+| 10A · 24% bracket, single, 2026 | $105,700–$201,775 of taxable income | https://www.irs.gov/newsroom/irs-releases-tax-inflation-adjustments-for-tax-year-2026-including-amendments-from-the-one-big-beautiful-bill | 2026-10-07 | Confirmed (IRS release of Oct 9, 2025; Rev. Proc. 2025-32) |
+| 10A · Personal / family meals | Not deductible | https://www.law.cornell.edu/uscode/text/26/262 | 2026-10-07 | Confirmed (§262(a)) |
+| 10A · Entertainment | Not deductible | https://www.law.cornell.edu/uscode/text/26/274 | 2026-10-07 | Confirmed (§274(a)) |
+| 10A · Dinner cost | $100 | n/a | n/a | Labelled assumption (sticky) |
+| 10B · Credit card APR, accounts assessed interest, Q2 2026 | 22.15% (Q1 2026: 21.52%; all accounts: 20.94%); 22% on screen | https://www.federalreserve.gov/releases/g19/current/ · https://www.lendingtree.com/credit-cards/study/credit-card-debt-statistics/ | 2026-10-07 | Confirmed from several reports citing G.19 (LendingTree, The Money Overview). The Fed page itself wasn't fetchable. Verdict holds for any APR from 21% to 23% |
+| 10B · Capital One minimum payment | Greater of $25 or 1% of balance + interest + late fees | https://wallethub.com/answers/cc/capital-one-platinum-minimum-payment-1000334-2140659296/ | 2026-10-07 | Confirmed from a secondary source quoting the terms; capitalone.com not opened |
+| 10B · Chase minimum payment | Larger of $40 or 1% of balance + interest + late fees | https://www.chase.com/personal/credit-cards/education/basics/how-to-calculate-your-minimum-credit-card-payment | 2026-10-07 | Confirmed (Chase's own page, via WebSearch) |
+| 10B · Minimum Payment Warning box | Required on statements: payoff time and total cost at the minimum | https://www.law.cornell.edu/cfr/text/12/appendix-M1_to_part_1026 · https://www.consumerfinance.gov/rules-policy/regulations/1026/m1/ | 2026-10-07 | Confirmed (12 CFR 1026.7(b)(12), App. M1) |
+| 10B · Balance | $5,000, no new charges | n/a | n/a | Labelled assumption |
+| 10C · Claim circulation: DOL | 1-point fee difference = 28% less after 35 years ($25,000 at 7%: $227,000 vs $163,000) | https://dol.gov/sites/dolgov/files/ebsa/about-ebsa/our-activities/resource-center/publications/401k-plan-fees.pdf | 2026-10-07 | Confirmed (DOL text quoted in search results, also in TheStreet) |
+| 10C · Claim circulation: Demos (2012) | Fees consume "nearly one-third (30.3%)" of potential gains | https://www.demos.org/sites/default/files/publications/TheRetirementSavingsDrain-Final.pdf · https://www.plansponsor.com/retirement-plan-fees-consume-30-of-returns/ | 2026-10-07 | Confirmed |
+| 10C · Claim circulation: EOI | "Retirement plan fees eat up almost 1/3 of household savings" | https://www.opportunityinstitute.org/blog/post/retirement-plan-fees-eat-up-almost-1-3-of-household-savings/ | 2026-10-07 | Confirmed (title) |
+| 10C · Claim circulation: 24/7 Wall St. | "Your adviser's 1% fee quietly costs six figures over a retirement", Aug 4, 2026 | https://247wallst.com/investing/etf/2026/08/04/your-advisers-1-fee-quietly-costs-six-figures-over-a-retirement-these-3-etfs-do-it-for-near-zero/ | 2026-10-07 | Confirmed (title, date). Cited for circulation only; its product picks are not used |
+| 10C · Claim circulation: Forbes | "How A 1% Investment Fee Can Wreck Your Retirement", Feb 5, 2021 | https://www.forbes.com/sites/robertberger/2021/02/05/how-a-1-investment-fee-can-wreck-your-retirement/ | 2026-10-07 | Confirmed (title, date) |
+| 10C · Equity mutual fund average expense ratio, 2025 | 0.40% asset-weighted (unchanged); index equity ETFs 0.14% (pin and description only) | https://www.ici.org/news-release/mutual-fund-and-etf-fees-remained-near-historic-lows-in-2025 · https://www.ici.org/system/files/2026-03/per32-01.pdf | 2026-10-07 | Confirmed (ICI, *Trends in the Expenses and Fees of Funds, 2025*, released Mar 25, 2026) |
+| 10C · All US funds and ETFs, average expense ratio, 2025 | 0.32% asset-weighted (0.34% in 2024) (pin and description only) | https://www.morningstar.com/business/insights/blog/us-fund-fee-study | 2026-10-07 | Confirmed (Morningstar, *2026 US Fund Fee Study*) |
+| 10C · Gross return | 7% a year before fees | https://dol.gov/sites/dolgov/files/ebsa/about-ebsa/our-activities/resource-center/publications/401k-plan-fees.pdf | 2026-10-07 | Labelled assumption (sticky); the DOL's own fee example uses 7%. Verdict holds for 4–10% |
+| 10C · Amount, horizon, fee | $10,000, 40 years, 1% a year | n/a | n/a | Labelled assumptions / the claim's own number |
+| Old 10C (retired) | Powerball $1.040B / $450.5M (Aug 12, 2026), 1 in 292,201,338, 37% top rate | n/a | n/a | Not shown anywhere any more; not re-checked |
+
+---
+
+### Polish pass
+
+Finishing producer, 2026-10-07. Files touched: this md, `teasers/10-envelope-audit-mathcheck.py`, `engine/specs/10-envelope-audit-{a,b,c}.json`, and the outputs `engine/out/10-envelope-audit-{a,b,c}.mp4`, `engine/out/sheets/10-envelope-audit-{a,b,c}.png`, `engine/out/stills/10-envelope-audit-*`. `engine/src` was not edited.
+
+**Slate**
+- **10C replaced** (replaced = true). The Powerball audit duplicated 09C and overlapped 03C. The new 10C audits "A 1% fee eats a third of your retirement": $10K for 40 years at 7% vs 6% → (1.06/1.07)⁴⁰ = 0.687 → ≈ 31% less, verdict ROUGHLY RIGHT, survival 94%, with a fine-print beat (≈ 22% for steady yearly saving) and ≈ $47K eaten per $10K in the last 2 s. New spec, beat sheet, VO, captions, sources, pin, description, platform notes and math.
+
+**Engine upgrade (all three specs)**
+- Frame 0 is now the thumbnail: a `quote` **claim card** and a **THE CLAIM:** tape at `t: 0` render finished. The negative-`t` hook, label and postmark hacks are gone. The 3-line tape hook became the claim card, with the AUDIT stamp (now 96 px) slammed onto its corner and the claim's number underlined in red at 1.3 s by text anchor.
+- Postmark moved into the flap: `{x: 175, y: 258, r: 100, persist: true}`.
+- Every mark on text uses a `target` anchor with an `id` (circles on $50/$12, strikes on FREE and "$50 back?", underlines and double underlines). No hand-measured coordinates are left on text. Two spaces sit around circled figures so the circles stop clipping "=" and "back".
+- A **tape reminder** of the claim ("Dinner's FREE.", "…pay for 20 YEARS.", "…eats a THIRD.") stays at the top of the working screens (`persist` + `until`). In 10A the red strike on FREE persists with it, so the struck claim stays visible through the math.
+- The typewritten CLAIM SURVIVAL line became a `meter` gauge (12% red, 96% green, 94% green). Each one settles ≥ 0.75 s before the loop crossfade.
+- `loop: true` on all three. The last 0.35 s crossfade back into the claim card.
+- The envelope reveals keep `openAt` (an audit always opens its envelope; lane discipline vs #8).
+
+**Legibility and layout**
+- Calculation lines went from 52–96 px to 88–104 px (red notes and pencil labels 72–84 px); hero numbers are 130–150 px; reveal cards 130 px with line 2 at 72–84 px (line 2 stays above the envelope lip); ASSUME stickies went from 46–48 px to 62 px; the 10A postage label went from 18 px to 40 px (the stamp grew to 300×320 px); 10B's curve marks are 66 px and the 44 px axis labels were dropped.
+- The content zone (600–1300) now carries the working on every screen: setup screens put the hero number at y 690–700, the sticky and the credit lower down, and the end screens put the number at y 940–1030 with the gauge at 1170–1200.
+- 10A: the green check moved off the "e" of "deductible"; "every night:" comes in 0.6 s earlier so the end screen isn't empty for a second.
+- 10B: the claim card now holds 2.8 s (11 words); the sticky prints earlier and faster so it reads for ≥ 2.25 s; new hatched **bars** show the $142 split ($92 interest vs $50 the debt); line 3 and the curve got their own screen; the curve draws at an even (`linear`) pace so "yr 6" and "yr 12" land with the VO; the end number is now **ours: ≈ $13,100** at 104 px (it was "ours: ≈19 yrs, ≈$13,100" at 72 px; the 19 years is already on the card).
+- 10C: the claim card is forced to three lines ("A 1% fee eats / a THIRD of your / retirement."); the 7%/6% curve labels sit right of the curve ends; the 6% curve finishes 0.7 s before the clear so its label reads.
+
+**Timing**
+- Durations: 10A 36.0 s, 10B 36.6 s, 10C 37.0 s (all were 35.4 s). The extra time pays for reading time and for the gauge to settle before the loop.
+- Every text op now stays ≥ 0.25 s per word after it finishes writing (checked with the engine's own `prepare()` timings). Fixed: 10A "$50 × 24% = $12 back" (1.31 → 1.60 s), 10B claim card (2.05 → 2.75 s), 10B "on a credit card at 22%", 10B sticky (0.05 → 2.42 s), 10B "only $50 hits the debt" (0.53 → 1.35 s), 10C "added yearly" and "later $ grow for less time" (0.22 → 1.50 s; it got its own VO line, "Later dollars grow for less time.").
+- First payoffs 32–33%; reveals 68% / 70% / 59% (10C reveals earlier to make room for the fine print); verdicts 73% / 75% / 66%; biggest number done at 34.0 / 34.6 / 35.0 s, inside each last 2 s.
+
+**Captions**
+- Captions now show numerals ($100, 50%, $5,000, 22%, $150K, 31%…) and carry `say` with the spoken words, so the VO is unchanged for 10A and 10B. All are ≤ 2 lines and ≤ 4 words/s (lint).
+
+**Facts** (see Final fact check)
+- No on-screen value changed in 10A or 10B. The 22.15% G.19 rate, unconfirmed in the first QA pass, is now confirmed from several reports citing G.19. Sources upgraded: IRS Notice 2021-25 for the 2021–22 rule, Cornell/CFPB for Reg Z, a WalletHub quote of Capital One's terms (capitalone.com isn't reachable from here).
+- 10C's inputs, circulation and fee averages are sourced and dated. The fee averages appear only in the pin and description, as context.
+
+**Checks**
+- `node src/cli.js check` → zero warnings on all three.
+- Math check: 110 → 136 checks, all pass (the Powerball checks were removed, 10C fee math and the upgraded spec asserts were added).
+- Rendered with `node src/cli.js render`. Frames looked at: 0.0 s, the partial payoff (10A 13.6, 10B 14.0, 10C 14.6), the reveal (25.6 / 26.8 / 23.2), the 10C fine print (30.6) and duration − 0.2 s (mid-crossfade into the claim card, as designed), plus 1.5 s contact tiles of every MP4.
+- Audio (`volumedetect`): 10A mean −24.6 dB, max −1.6 dB; 10B mean −24.3 dB, max −1.7 dB; 10C mean −24.4 dB, max −1.7 dB.
+
+**Open items**
+- Before publishing, re-open the Fed G.19 page (Q2 2026 rate) and Capital One's own terms, which couldn't be fetched from this environment.
+- The VO is a script only: the engine renders foley, not speech. Record or synthesise the VO from each caption's `say`.

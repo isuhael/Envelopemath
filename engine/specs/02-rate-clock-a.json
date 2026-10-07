@@ -6,6 +6,8 @@
   "seed": 21
  },
  "duration": 24.5,
+ "loop": true,
+ "sfxGain": 0.75,
  "vo": "Fifty grand an hour, since Year One. Still no trillion. Musk crossed it in June, on paper. A trillion over fifty grand: twenty million hours. Divide by hours in a year: about twenty-two eighty-two years. So what year did you have to start? Guess. Start in Year One: eight hundred eighty-eight billion. Short. Julius Caesar's birth? Nine hundred thirty-one billion. Still short. You'd clock in around two fifty-six BC. Drop your hourly rate. I'll clock yours.",
  "captions": [
   {
@@ -15,38 +17,42 @@
   },
   {
    "t": 2.0,
-   "end": 5.0,
+   "end": 4.8,
    "text": "Still no trillion. Musk\ncrossed it in June, on paper."
   },
   {
    "t": 5.0,
    "end": 7.6,
-   "text": "A trillion over fifty grand: twenty million hours."
+   "text": "A trillion over fifty grand:\ntwenty million hours."
   },
   {
    "t": 7.6,
    "end": 11.1,
-   "text": "Divide by hours in a year: about 2,282 years."
+   "text": "Divide by hours in a year:\nabout 2,282 years.",
+   "say": "Divide by hours in a year: about twenty-two eighty-two years."
   },
   {
    "t": 11.1,
    "end": 14.0,
-   "text": "So what year did you have to start? Guess."
+   "text": "So what year did\nyou have to start? Guess."
   },
   {
    "t": 14.0,
    "end": 17.0,
-   "text": "Start in Year One:\n$888 billion. Short."
+   "text": "Start in Year One:\n$888 billion. Short.",
+   "say": "Start in Year One: eight hundred eighty-eight billion. Short."
   },
   {
    "t": 17.0,
    "end": 20.1,
-   "text": "Julius Caesar's birth? $931 billion. Still short."
+   "text": "Julius Caesar's birth?\n$931 billion. Still short.",
+   "say": "Julius Caesar's birth? Nine hundred thirty-one billion. Still short."
   },
   {
    "t": 20.1,
    "end": 22.5,
-   "text": "You'd clock in\naround 256 BC."
+   "text": "You'd clock in\naround 256 BC.",
+   "say": "You'd clock in around two fifty-six BC."
   },
   {
    "t": 22.5,
@@ -57,19 +63,21 @@
  "ops": [
   {
    "type": "postmark",
-   "t": -0.3,
-   "x": 190,
-   "y": 300,
+   "t": 0,
+   "x": 175,
+   "y": 258,
+   "r": 100,
+   "persist": true,
    "center": [
     "No.",
     "02A"
    ],
-   "persist": true
+   "centerSize": 34
   },
   {
    "type": "hook",
-   "t": -0.6,
-   "y": 480,
+   "t": 0,
+   "y": 400,
    "size": 74,
    "text": [
     "EARN $50,000 AN HOUR",
@@ -78,12 +86,21 @@
    ]
   },
   {
+   "type": "emoji",
+   "t": 0,
+   "char": "🕰️",
+   "x": 540,
+   "y": 870,
+   "size": 250
+  },
+  {
    "type": "write",
+   "id": "tril",
    "t": 0.05,
    "text": "$1,000,000,000,000",
-   "x": 530,
-   "y": 975,
-   "size": 108,
+   "x": 540,
+   "y": 1110,
+   "size": 110,
    "align": "center",
    "cps": 30
   },
@@ -91,20 +108,22 @@
    "type": "annotate",
    "t": 0.75,
    "kind": "double",
-   "x": 120,
-   "y": 1005,
-   "w": 820
+   "target": {
+    "op": "tril"
+   }
   },
   {
    "type": "write",
+   "id": "musk",
    "t": 2.1,
    "text": "Musk crossed it in June (on paper)",
-   "x": 530,
-   "y": 1125,
-   "size": 60,
+   "x": 540,
+   "y": 1245,
+   "size": 64,
    "align": "center",
    "color": "red",
-   "cps": 30
+   "cps": 30,
+   "pen": "low"
   },
   {
    "type": "flip",
@@ -113,10 +132,10 @@
   {
    "type": "sticky",
    "t": 5.05,
-   "x": 320,
-   "y": 560,
-   "w": 400,
-   "size": 50,
+   "x": 300,
+   "y": 545,
+   "w": 460,
+   "size": 64,
    "title": "ASSUME:",
    "text": "$50K every hour, 24/7, no days off. 365¼-day years"
   },
@@ -124,31 +143,48 @@
    "type": "postage",
    "t": 5.2,
    "x": 800,
-   "y": 545,
+   "y": 525,
    "value": "$50K",
    "label": "PER HOUR",
    "art": "≈"
   },
   {
    "type": "lines",
+   "id": "math",
    "t": 5.5,
    "x": 905,
-   "y": 930,
-   "size": 80,
+   "y": 900,
+   "size": 82,
    "cps": 15,
-   "gap": 0.7,
+   "em": true,
+   "pen": "low",
    "lines": [
-    "$1T ÷ $50K/hr = 20M hrs",
-    "÷ 8,766 hrs/yr ≈ 2,282 yrs"
+    {
+     "text": "$1T ÷ $50K/hr = 20M hrs"
+    },
+    {
+     "text": "÷ 8,766 hrs/yr ≈ *2,282 yrs*",
+     "at": 2.2
+    }
    ]
   },
   {
+   "type": "annotate",
+   "t": 9.45,
+   "kind": "circle",
+   "target": {
+    "op": "math",
+    "match": "2,282 yrs"
+   },
+   "pad": 10
+  },
+  {
    "type": "write",
-   "t": 7.75,
+   "t": 9.5,
    "text": "(8,766 = 365¼ days × 24 hrs)",
    "x": 905,
-   "y": 1110,
-   "size": 50,
+   "y": 1125,
+   "size": 64,
    "color": "pencil",
    "align": "right",
    "cps": 30,
@@ -157,18 +193,10 @@
    "fadeOut": 0.05
   },
   {
-   "type": "annotate",
-   "t": 9.5,
-   "kind": "circle",
-   "x": 655,
-   "y": 980,
-   "w": 250,
-   "h": 72
-  },
-  {
    "type": "timer",
    "t": 11.1,
-   "y": 1140,
+   "y": 1125,
+   "r": 105,
    "seconds": 3,
    "label": "GUESS THE YEAR"
   },
@@ -180,9 +208,9 @@
    "type": "annotate",
    "t": 14.25,
    "kind": "underline",
-   "x": 110,
-   "y": 520,
-   "w": 800,
+   "x": 120,
+   "y": 455,
+   "w": 790,
    "color": "ink",
    "width": 6,
    "dur": 0.35
@@ -191,20 +219,21 @@
    "type": "write",
    "t": 14.4,
    "text": "2026",
-   "x": 910,
-   "y": 478,
-   "size": 50,
+   "x": 905,
+   "y": 420,
+   "size": 64,
    "color": "pencil",
-   "align": "right",
-   "cps": 30
+   "align": "center",
+   "cps": 30,
+   "pen": false
   },
   {
    "type": "write",
    "t": 14.4,
    "text": "|",
    "x": 905,
-   "y": 548,
-   "size": 54,
+   "y": 478,
+   "size": 64,
    "color": "ink",
    "align": "center",
    "cps": 30,
@@ -215,19 +244,20 @@
    "t": 14.55,
    "text": "Year 1",
    "x": 208,
-   "y": 478,
-   "size": 50,
+   "y": 420,
+   "size": 64,
    "color": "pencil",
    "align": "center",
-   "cps": 30
+   "cps": 30,
+   "pen": false
   },
   {
    "type": "write",
    "t": 14.55,
    "text": "|",
    "x": 208,
-   "y": 548,
-   "size": 54,
+   "y": 478,
+   "size": 64,
    "color": "ink",
    "align": "center",
    "cps": 30,
@@ -238,19 +268,19 @@
    "t": 14.7,
    "text": "start in…",
    "x": 110,
-   "y": 688,
-   "size": 44,
+   "y": 668,
+   "size": 46,
    "font": "type",
    "color": "pencil",
    "cps": 40
   },
   {
    "type": "write",
-   "t": 14.7,
+   "t": 14.82,
    "text": "you'd have today",
    "x": 930,
-   "y": 688,
-   "size": 44,
+   "y": 668,
+   "size": 46,
    "font": "type",
    "color": "pencil",
    "align": "right",
@@ -258,13 +288,16 @@
   },
   {
    "type": "ladder",
+   "id": "lad",
    "t": 14.9,
    "x": 110,
-   "y": 800,
+   "y": 790,
    "w": 820,
-   "size": 82,
+   "size": 86,
+   "rowH": 124,
+   "gutter": 0,
    "cps": 14,
-   "gap": 1.785,
+   "pen": "low",
    "rows": [
     {
      "label": "Year 1",
@@ -272,11 +305,13 @@
     },
     {
      "label": "Caesar's birth",
-     "value": "$931B ✗"
+     "value": "$931B ✗",
+     "at": 2.7
     },
     {
      "label": "≈ 256 BC",
-     "value": "$1T ✓"
+     "value": "$1T ✓",
+     "at": 6.0
     }
    ]
   },
@@ -286,22 +321,23 @@
    "kind": "arrow",
    "from": [
     900,
-    545
+    470
    ],
    "to": [
-    125,
-    550
+    118,
+    470
    ],
-   "bend": -0.08,
+   "bend": -0.06,
    "dur": 0.7
   },
   {
    "type": "write",
+   "id": "bc",
    "t": 20.6,
    "text": "≈ 256 BC",
-   "x": 110,
-   "y": 625,
-   "size": 56,
+   "x": 80,
+   "y": 590,
+   "size": 100,
    "color": "red",
    "cps": 24,
    "pen": false
@@ -310,19 +346,20 @@
    "type": "annotate",
    "t": 21.9,
    "kind": "box",
-   "x": 222,
-   "y": 992,
-   "w": 290,
-   "h": 78,
+   "target": {
+    "op": "lad",
+    "match": "≈ 256 BC"
+   },
+   "pad": 14,
    "width": 6
   },
   {
    "type": "stamp",
    "t": 22.6,
    "text": "CLOCKED IN\n256 BC",
-   "x": 570,
-   "y": 1205,
-   "size": 60,
+   "x": 560,
+   "y": 1200,
+   "size": 66,
    "rot": -6
   }
  ]

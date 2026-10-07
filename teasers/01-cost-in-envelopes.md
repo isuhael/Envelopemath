@@ -1,9 +1,9 @@
 ## 1. Cost in Envelopes (the Unit Swap)
 
-**Series:** *Cost in Envelopes* · **Lanes:** Flash (01C, 13.9 s) and Envelope (01A 24.2 s, 01B 26.4 s) · **Lead devices:** postage stamp (the unit), ballpoint working, counter, grid / stack, sealed answer, verdict stamp
+**Series:** *Cost in Envelopes* · **Lanes:** Flash (01C, 14.0 s) and Envelope (01A 26.0 s, 01B 27.8 s) · **Lead devices:** postage stamp (the unit), ballpoint working, counter, grid / envelope stack, sealed answer, verdict stamp
 **Teasers:** 01A Elon's $1 trillion in Costco hot dogs: how many do you get? · 01B The $40 trillion US debt in $10K envelopes: how tall is it? · 01C $1,000,000 in pennies vs. Lady Liberty: who's heavier?
-**Specs:** `engine/specs/01-cost-in-envelopes-{a,b,c}.json` · **Sheets:** `engine/out/sheets/01-cost-in-envelopes-{a,b,c}.png` · **Math check:** `teasers/01-cost-in-envelopes-mathcheck.py`
-**Inputs:** gathered by the writer with WebSearch on 2026-10-07. Every real-world number is listed with its source and date under each teaser. The independent QA pass could not re-run the web checks (see the verification log at the end), so the publish-day re-checks listed there are mandatory.
+**Specs:** `engine/specs/01-cost-in-envelopes-{a,b,c}.json` · **Renders:** `engine/out/01-cost-in-envelopes-{a,b,c}.mp4` · **Math check:** `teasers/01-cost-in-envelopes-mathcheck.py`
+**Inputs:** gathered by the writer with WebSearch on 2026-10-07, then re-verified live in the polish pass the same day (see **Final fact check** at the end). Two inputs changed: the US Mint's penny unit cost is now the FY2025 figure (3.02¢, was FY2024's 3.69¢), and the Statue of Liberty is now the current NPS estimate (560,000 lb = 280 tons, was 450,000 lb = 225 tons). The second change flips 01C's answer from "the pennies win" to "a photo finish: she wins by a hair".
 
 ---
 
@@ -86,37 +86,37 @@ The research's first principle backs this: raw mega-numbers flop and converted o
 **What we improve**
 1. **Show the division.** Each count is worked in ≤3 ink lines on the envelope ("$1,000,000,000,000 ÷ $1.50"). The originals hide this, and it's our whole thesis.
 2. **Source and date the unit.** The unit price sits on the stamp, and the assumptions go on an ASSUME sticky with source and date. The exact figures go in the pinned comment ("envelope said ≈ X, within Y%").
-3. **Add the one "so what" line the originals never give:** 81 hot dogs *for every person on Earth*; a stack that *wraps the equator*; pennies *heavier than the Statue of Liberty*.
+3. **Add the one "so what" line the originals never give:** 81 hot dogs *for every person on Earth*; a stack that *wraps the equator*; pennies that *weigh about as much as the Statue of Liberty*.
 4. **Make the scale physically honest:**
    - bill thickness 0.0043 in (BEP);
    - penny 2.500 g (US Mint);
    - the $1M and $1B stacks are drawn to scale against a 1.7 m person and the 828 m Burj Khalifa.
 5. **Make the viewer commit before the reveal.** The final count is sealed in the envelope with a 2 to 3 s PAUSE & GUESS timer, the most consistent tiny-channel breakout mechanic in the research (report 01, §3.6).
 
-**The uniquely-ours twist: "The Unit Stamp."** Every episode issues its unit as a perforated **postage stamp** printed with the unit's sourced price: 🌭 **$1.50 COSTCO COMBO**, 💵 **$10K 1 ENVELOPE**, 🪙 **1¢ 2.5 g US MINT**. The stamp is the episode's collectible identity, the count is sealed in the envelope, and the verdict stamp (SPECIAL DELIVERY / POSTAGE DUE / RETURN TO SENDER) cancels it. Comments then request the next stamp ("do it in Taco Bell Baja Blasts"), which feeds the series. That gives it a request-driven, collectible structure no copycat template has.
+**The uniquely-ours twist: "The Unit Stamp."** Every episode issues its unit as a perforated **postage stamp** printed with the unit's sourced price: 🌭 **$1.50 COSTCO COMBO**, 💵 **$10K 1 ENVELOPE**, 🪙 **1¢ 2.5 g EACH**. The stamp is the episode's collectible identity, the count is sealed in the envelope, and the verdict stamp (SPECIAL DELIVERY / POSTAGE DUE / RETURN TO SENDER) cancels it. Comments then request the next stamp ("do it in Taco Bell Baja Blasts"), which feeds the series. That gives it a request-driven, collectible structure no copycat template has.
 
 Each episode also leaves one **save-worthy envelope rule**:
 - ÷ 1.5 is × ⅔.
 - In $100 bills, a million is about a meter and a billion is about a kilometer.
-- $1 of pennies weighs 250 g.
+- $1 of pennies weighs 250 g, so $1 million of them weighs about one Statue of Liberty.
 
 **Anti-template guardrail.** The mechanic stays fixed but the payoff shape rotates: count → **split** (01A), count → **height** (01B), count → **weight** (01C). Never run the same unit twice in a row.
 
 **Series name:** **Cost in Envelopes**. The postmark carries the episode number (No. 01A, 01B, 01C).
 **Title template:** `[Big price or fortune] in [unit]: [question]? (Cost in Envelopes No. ___)`, e.g. "Elon's $1 trillion in Costco hot dogs: how many do you get? (Cost in Envelopes No. 01A)". The title, the tape on frame 1 and the first spoken line say the same thing (report 01, §3.3).
-**Hook template (tape, three strips):** `[WHO]'S *$[N]* / IN [UNIT]. / [QUESTION]?` or `*$[N]* [THING] / IN [UNIT]. / [QUESTION]?`. The red word is always the number. The third strip is the question the sealed envelope answers ("HOW MANY DO YOU GET?", "HOW TALL IS IT?", "WHO'S HEAVIER?"), so the viewer commits to a guess from frame 1 (report 01, §3.6). All three strips are fully drawn on the first frame (the ops start at a negative `t`).
+**Hook template (tape: two or three number/unit strips, then a question strip):** `[WHO]'S *$[N]* / IN [UNIT]. / [QUESTION]?` or `*$[N]* [THING] / IN [UNIT]. / [QUESTION]?`. The red word is always the number. The last strip is the question the sealed envelope answers ("HOW MANY DO YOU GET?", "HOW TALL IS IT?", "WHO'S HEAVIER?"), so the viewer commits to a guess from frame 1 (report 01, §3.6). The question is its own, slightly smaller strip (a second `hook` op) so the number and unit can run at 80–86 px. Every strip is a `hook` at `t: 0`, which the engine renders finished, so frame 0 is the thumbnail.
 
 **Envelope devices used (format bible §3):**
 
 | Device | Engine op | 01A | 01B | 01C |
 |---|---|---|---|---|
 | Masking-tape hook | `hook` | ✓ | ✓ | ✓ |
-| Postage stamp = the unit | `postage` | 🌭 $1.50 | 💵 $10K | 🪙 1¢ + 🗽 225 tons |
+| Postage stamp = the unit | `postage` | 🌭 $1.50 | 💵 $10K | 🪙 1¢ + 🗽 280 tons |
 | ASSUME sticky | `sticky` | ✓ | ✓ | ✓ |
 | Ballpoint working (≤3 lines) | `write` | ✓ | ✓ | ✓ |
 | Running count | `counter` | 0 → 666,666,666,667 | n/a | n/a |
-| Napkin chart / scale | `grid`, `stack`, `annotate` | 9×9 tray | stacks + Burj + globe ring | n/a |
-| Red pen | `annotate` | circle | box, ring | underline, circle |
+| Napkin chart / scale | `grid`, `stack`, `annotate` | 9×9 tray | manila-envelope stacks (`skin: envelope`) + Burj + globe ring | ⚖️ |
+| Red pen | `annotate` (text-anchored `target` where it marks text) | circle on the counter | ring on the globe | underline on 100,000,000; double underline on $3.02M |
 | Sealed Answer + guess timer | `envelope`, `timer` | ✓ (3 s) | ✓ (3 s) | ✓ (2 s) |
 | Verdict stamp | `stamp` | SPECIAL DELIVERY | POSTAGE DUE | RETURN TO SENDER |
 | Postmark No. | `postmark` | 01A | 01B | 01C |
@@ -131,73 +131,74 @@ Each episode also leaves one **save-worthy envelope rule**:
 - **Working title:** Elon's $1 trillion in Costco hot dogs: how many do you get? (Cost in Envelopes No. 01A)
 - **Money topic:** billionaire wealth (Musk back at ≈ $1 trillion this week)
 - **Unit stamp:** 🌭 $1.50 COSTCO COMBO
-- **Lane / runtime:** Envelope, **24.2 s**, at the lane's short edge (bible §5 says 25 to 45 s). This is the YouTube master, under 30 s per the length research. Every beat sits at or just above its reading-time floor (0.25 s per word), so it isn't padded out to 25 s.
-- **Spec:** `engine/specs/01-cost-in-envelopes-a.json` · **Sheet:** `engine/out/sheets/01-cost-in-envelopes-a.png`
+- **Lane / runtime:** Envelope, **26.0 s** (bible §5: 25 to 45 s). This is the YouTube master, under 30 s per the length research. Every caption runs at ≤ 4 words/s and every screen holds one idea.
+- **Spec:** `engine/specs/01-cost-in-envelopes-a.json` · **Render:** `engine/out/01-cost-in-envelopes-a.mp4`
 
 **Frame-1 hook**
-- On screen from the very first frame (three tape strips): **ELON'S *$1 TRILLION* / IN COSTCO HOT DOGS. / HOW MANY DO YOU GET?**, with the $1.50 COSTCO COMBO stamp and a bobbing 🌭.
-- First spoken line (0.1 to 3.2 s): *"Elon's trillion dollars, in Costco hot dogs. How many do you get?"*
+- On screen, finished, in frame 0 (three tape strips): **ELON'S *$1 TRILLION* / IN COSTCO HOT DOGS.** at 80 px, then the question strip **HOW MANY DO YOU GET?** at 70 px. Below them, filling the content zone: a 330 px bobbing 🌭 and a large $1.50 COSTCO COMBO stamp (label at 40 px).
+- First spoken line (0.1 to 3.3 s): *"Elon's trillion dollars, in Costco hot dogs. How many do you get?"*
 
 **Beat sheet**
 
 | Time | Beat | On screen |
 |---|---|---|
-| 0.0–3.0 | Hook | Tape hook (number + stake + question); 🌭 bobs; $1.50 COSTCO COMBO stamp |
-| 3.0–5.4 | Flip, set-up, line 1 | ASSUME sticky; small unit stamp; "$1,000,000,000,000 ÷ $1.50" written |
-| 5.1–7.3 | **Partial payoff (30%)** | Red tip "÷ 1.5 = × ⅔"; red counter runs 0 → **666,666,666,667** and pops at 7.2 s; "hot dogs 🌭"; red circle |
-| 8.6–11.5 | Pattern break | Line 3 "÷ 8.2 billion people 🌍" |
-| 11.5–15.6 | Seal + guess | Header "8.2 billion people. Each gets…"; sealed envelope "how many each?"; 3-s PAUSE & GUESS |
-| 15.7–18.6 | **Reveal (65%)** | Envelope opens: card **"≈ 81 each / hot dogs per person"** |
-| 18.6–22.2 | Scale shot | Flip; a 9×9 tray of 🌭 fills: "your share: 81" |
-| 22.2–24.2 | **Verdict + loop (last 2.0 s)** | SPECIAL DELIVERY slams; loop line |
+| 0.0–3.3 | Hook (frame 0 = thumbnail) | Tape hook (number + unit) and question strip; 🌭 bobs; $1.50 COSTCO COMBO stamp |
+| 3.3–6.2 | Flip, set-up | Large ASSUME sticky (66 px): "Elon ≈ $1 trillion (Bloomberg, Oct 5 2026). Costco combo $1.50, same price since 1985." |
+| 6.2–10.3 | Flip, line 1 + **partial payoff (37%)** | "$1,000,000,000,000" over "÷ $1.50" (96 px column); red tip "÷ 1.5 = × ⅔"; red counter (124 px) runs 0 → **666,666,666,667** and pops at 9.6 s; red circle anchored to the counter; "hot dogs 🌭" |
+| 10.3–13.1 | Flip, pattern break (line 3) | "666,666,666,667 🌭" in red; 🌍; "÷ 8.2 billion people" (88 px) |
+| 13.1–17.6 | Seal + guess | "Each person gets…"; sealed envelope "how many each?"; 3-s PAUSE & GUESS (14.3–17.3) |
+| 17.6–20.7 | **Reveal (68%)** | Envelope opens: card **"≈ 81 each"** (124 px) / "hot dogs per person" |
+| 20.7–24.0 | Flip, scale shot | A 9×9 tray of 🌭 fills (21.3–22.9 s): "your share: 81" (76 px) |
+| 24.0–26.0 | **Verdict + loop (last 2.0 s)** | SPECIAL DELIVERY slams above the tray; `loop: true` crossfades the last 0.35 s into frame 0 |
 
-**Voice-over** (the captions are exactly these lines)
+**Voice-over** (the captions are exactly these lines, split into 15 caption cards of ≤ 2 lines at ≤ 4 words/s; the "667 billion" card carries `say: "about six hundred sixty-seven billion hot dogs."`)
 
 > Elon's trillion dollars, in Costco hot dogs. How many do you get? *(0.1)*
-> He's worth about a trillion. A combo's a buck fifty. *(3.2)*
-> A trillion over a buck fifty: about 667 billion hot dogs. *(5.8)*
-> Still can't picture it? Split them with everyone on Earth. *(8.65)*
-> How many does each person get? Guess before it opens. *(11.6)*
-> Eighty-one. Each. Every human alive. *(15.7)*
-> That's your tray. And your mom's. And everyone's. *(18.7)*
-> All from one man's net worth. *(21.8, loops to the first line)*
+> He's worth about a trillion. A combo's a buck fifty. *(3.4)*
+> A trillion over a buck fifty: about 667 billion hot dogs. *(6.3)*
+> Still can't picture it? Split them with everyone on Earth. *(10.3)*
+> How many does each person get? Guess before it opens. *(13.2)*
+> Eighty-one. Each. Every human alive. *(17.7)*
+> That's your tray. And your mom's. And everyone's. *(20.8)*
+> All from one man's net worth. *(23.8, loops to the first line)*
 
 **The envelope math (3 lines)**
 
-1. `$1,000,000,000,000 ÷ $1.50` (tip: ÷ 1.5 = × ⅔)
+1. `$1,000,000,000,000` over `÷ $1.50`, written as a column (tip: ÷ 1.5 = × ⅔)
 2. `= 666,666,666,667 hot dogs` (the red counter; exact 666,666,666,666.67; said "about 667 billion")
-3. `÷ 8.2 billion people 🌍` (sealed card "≈ 81 each"; exact 81.30)
+3. `÷ 8.2 billion people` with a 🌍 (sealed card "≈ 81 each"; exact 81.30)
 
-**ASSUME sticky (on screen):** "Elon ≈ $1T (Bloomberg, Oct 6 2026). Combo $1.50 since 1985."
+**ASSUME sticky (on screen):** "Elon ≈ $1 trillion (Bloomberg, Oct 5 2026). Costco combo $1.50, same price since 1985."
 
-**Sources (gathered 2026-10-07 by the writer; see the verification log for what QA could and could not re-check)**
+**Sources (re-verified live on 2026-10-07; full table under Final fact check)**
 - **Musk ≈ $1 trillion.**
-  - Bloomberg Billionaires Index put him at **$1.04T** and Forbes at **$936B** on 2026-10-06, as reported by Billionaires.Africa, 2026-10-06: https://www.billionaires.africa/2026/10/06/elon-musk-becomes-a-trillionaire-again-as-spacex-shares-hit-highest-since-june/
-  - Forbes, 2026-10-02, "…Pushing Net Worth Back Towards $1 Trillion": https://www.forbes.com/sites/fionariley/2026/10/02/elon-musk-gains-61-billion-in-a-day-as-spacex-and-tesla-shares-rise-pushing-net-worth-back-towards-1-trillion/
-  - First trillionaire on 2026-06-12 after the SpaceX IPO: https://news.bgov.com/capital-markets/elon-musk-becomes-worlds-first-trillionaire-after-spacex-ipo. Independently corroborated by the 02 Rate Clock sources (Nairametrics, 2026-06-13; Channel 4 News, 2026-06-12; Forbes $1.1T on 2026-06-12).
+  - Bloomberg Billionaires Index: **$1.04T** after a $65B jump on Monday 2026-10-05 (SpaceX +7.6%, Tesla +2.2%). Reported by Billionaires.Africa, 2026-10-06: https://www.billionaires.africa/2026/10/06/elon-musk-becomes-a-trillionaire-again-as-spacex-shares-hit-highest-since-june/ and Benzinga, Oct 2026: https://www.benzinga.com/trading-ideas/movers/26/10/62179650/elon-musk-is-a-trillionaire-again-thanks-to-spacex-stock
+  - Forbes put him at **about $1 trillion** on the morning of 2026-10-05 (Yahoo Finance, "Elon Musk Hits Trillionaire Status for the 2nd Time…"): https://finance.yahoo.com/markets/stocks/articles/elon-musk-hits-trillionaire-status-171431066.html. Forbes, 2026-10-02, "…Pushing Net Worth Back Towards $1 Trillion": https://www.forbes.com/sites/fionariley/2026/10/02/elon-musk-gains-61-billion-in-a-day-as-spacex-and-tesla-shares-rise-pushing-net-worth-back-towards-1-trillion/
+  - **Correction:** the earlier draft said "Forbes $936B on 2026-10-06". The $936B is Forbes' figure **as of 2026-10-01** (Forbes Australia, "The top 10 richest people in the world (October 2026)": https://www.forbes.com.au/news/billionaires/top-10-richest-people-in-world/).
+  - First trillionaire on 2026-06-12 after the SpaceX IPO: Times of Israel, 2026-06-12: https://www.timesofisrael.com/liveblog_entry/elon-musk-worlds-first-trillionaire-after-spacex-debut/
   - The envelope uses the round **$1T** on purpose; the range goes in the pinned comment.
 - **Costco hot dog + soda = $1.50, unchanged since 1985.**
-  - Axios, 2026-05-02: https://axios.com/2026/05/02/costco-hot-dog-combo-options-water
-  - Gray TV/KAIT, 2026-04-29: https://www.kait8.com/2026/04/29/costcos-iconic-150-hot-dog-combo-debuts-new-change-first-time-decades/
-- **World population 8.2 billion (July 2026).** US Census Bureau, World Population Day 2026: https://www.census.gov/newsroom/stories/world-population-day.html (the writer's search result pointed at the `cdn.www.census.gov` mirror of the same page).
+  - Gray TV/KFVS12, 2026-04-29 (water option added, price unchanged): https://www.kfvs12.com/2026/04/29/costcos-iconic-150-hot-dog-combo-debuts-new-change-first-time-decades/
+  - Fortune, 2026-03-21 (CEO confirms $1.50): https://fortune.com/2026/03/21/costco-hot-dog-price-1-50-ceo-confirms
+- **World population 8.2 billion (July 2026).** US Census Bureau, World Population Day 2026 (International Database projection): https://www.census.gov/newsroom/stories/world-population-day.html. The UN's projection for 2026-07-01 is higher (≈ 8.30 billion); at that figure it's 80.3 each, so the envelope's "≈ 81" is within 0.9%. Pinned comment only.
 
 **Ending**
 - **Loop line:** "All from one man's net worth." This flows straight back into "Elon's trillion dollars, in Costco hot dogs." The spec sets `loop: true`, so the last 0.35 s crossfades into frame 1.
 - **Comment bait (a real question):** "What should we count his trillion in next? Best unit gets its own stamp."
 - **Pinned comment:**
-  > Exact: $1,000,000,000,000 ÷ $1.50 = 666,666,666,667 hot dogs ÷ 8.2 billion people = 81.3 each (envelope said ≈ 81, within 0.4%). His number moves daily: at Bloomberg's $1.04T (Oct 6, 2026) it's 84.6 each; at Forbes' $936B it's 76.1 each. Assumptions: net worth ≈ $1T (on paper, not cash); combo $1.50 (Costco, same price since 1985); world population 8.2B (US Census Bureau, July 2026). Envelope rule: dividing by 1.5 is the same as taking two-thirds. What should we count his trillion in next?
+  > Exact: $1,000,000,000,000 ÷ $1.50 = 666,666,666,667 hot dogs ÷ 8.2 billion people = 81.3 each (envelope said ≈ 81, within 0.4%). His number moves daily: at Bloomberg's $1.04T (Oct 5, 2026) it's 84.6 each; at Forbes' $936B (Oct 1, 2026) it's 76.1 each. With the UN's 8.3B people instead of the Census Bureau's 8.2B, it's 80.3 each. Assumptions: net worth ≈ $1T (on paper, not cash); combo $1.50 (Costco, same price since 1985); world population 8.2B (US Census Bureau, July 2026). Envelope rule: dividing by 1.5 is the same as taking two-thirds. What should we count his trillion in next?
 
 **Description:**
 > Elon's back at about $1 trillion. Here's that fortune counted in $1.50 Costco hot dog combos, then split with all 8.2 billion people on Earth. How many do you get? Rough math, real money: $1T ÷ $1.50 ≈ 667 billion hot dogs ≈ 81 each. Exact figures are in the pinned comment.
-> Sources (checked Oct 7, 2026): net worth, Bloomberg Billionaires Index $1.04T and Forbes $936B (Oct 6, 2026); Costco combo $1.50 since 1985 (Axios, May 2, 2026); world population 8.2B (US Census Bureau, July 2026).
+> Sources (checked Oct 7, 2026): net worth, Bloomberg Billionaires Index $1.04T (Oct 5, 2026) and Forbes about $1T (Oct 5, 2026); Costco combo $1.50 since 1985 (Gray TV, Apr 29, 2026; Fortune, Mar 21, 2026); world population 8.2B (US Census Bureau, July 2026).
 > Educational math, not financial advice.
 > #EnvelopeMath #CostInEnvelopes #Costco #ElonMusk #MoneyMath
 
 **Platform notes**
-- **YouTube Shorts:** post the 24.2 s master as is. The title equals the tape hook plus the series tag; pin the exact-figures comment.
+- **YouTube Shorts:** post the 26.0 s master as is. The title equals the tape hook plus the series tag; pin the exact-figures comment.
   - Musk's net worth swings by tens of billions a day, so post within 48 h of the last check and re-check the morning you post. If neither Bloomberg nor Forbes is within 5% of $1T (i.e. both are outside $950B to $1.05T), retitle with the current figure and re-run the math check (it's one variable).
 - **Instagram Reels:** same cut, max 5 hashtags. Sends are the top non-follower signal, so the "your mom's" line is the taggable beat. Use a Trial Reel first, and keep the comment ask a real question (no "comment YES").
-- **TikTok:** a 60 s+ cut earns Creator Rewards and more reach (Buffer: +43.2%). Extend by voicing the Bloomberg-vs-Forbes range on screen (84.6 vs 76.1 each) and answering the best unit request from the comments in a follow-up.
+- **TikTok:** a 60 s+ cut earns Creator Rewards and more reach (Buffer: +43.2%). Extend by voicing the Bloomberg-vs-Forbes range on screen (84.6 each at $1.04T vs 76.1 each at $936B) and answering the best unit request from the comments in a follow-up.
 
 **Why this one should travel**
 - **The live search is the hook.** "Elon becomes trillionaire" was a live search that carried a 1.3K-follower account to 2.4M at 1,005.7x (`research/watch/group1-video4.md`). Elon is the subject of 7 of the 33 big-number outliers.
@@ -212,43 +213,43 @@ Each episode also leaves one **save-worthy envelope rule**:
 - **Working title:** The $40 trillion US debt in $10K envelopes: how tall is it? (Cost in Envelopes No. 01B)
 - **Money topic:** government debt (the US crossed $40T on 2026-08-18)
 - **Unit stamp:** 💵 $10K 1 ENVELOPE (100 × $100). This is the format's namesake unit.
-- **Lane / runtime:** Envelope, **26.4 s**. It uses the approach doc's "How tall is $[N] in $10K envelopes?" formula as the hook question.
-- **Spec:** `engine/specs/01-cost-in-envelopes-b.json` · **Sheet:** `engine/out/sheets/01-cost-in-envelopes-b.png`
+- **Lane / runtime:** Envelope, **27.8 s**. It uses the approach doc's "How tall is $[N] in $10K envelopes?" formula as the hook question.
+- **Spec:** `engine/specs/01-cost-in-envelopes-b.json` · **Render:** `engine/out/01-cost-in-envelopes-b.mp4`
 
 **Frame-1 hook**
-- On screen from the very first frame (three tape strips): ***$40 TRILLION* US DEBT / IN $10K ENVELOPES. / HOW TALL IS IT?**, with a bobbing ✉️ and the $10K stamp.
-- First spoken line (0.1 to 3.25 s): *"Forty trillion in US debt, in ten-grand envelopes. How tall is it?"*
+- On screen, finished, in frame 0 (four tape strips): ***$40 TRILLION* / OF US DEBT / IN $10K ENVELOPES.** at 86 px, then **HOW TALL IS IT?** at 72 px, with a 270 px bobbing ✉️ and a large $10K "1 ENVELOPE" stamp.
+- First spoken line (0.1 to 3.3 s): *"Forty trillion in US debt, in ten-grand envelopes. How tall is it?"*
 
 **Beat sheet**
 
 | Time | Beat | On screen |
 |---|---|---|
-| 0.0–3.1 | Hook | Tape hook (number + question); ✉️ bobs; $10K "1 ENVELOPE" stamp |
-| 2.6–6.5 | Set-up + line 1 (the unit) | ASSUME sticky; "100 × $100 = $10K ≈ 1.1 cm" |
-| 6.5–9.6 | **Partial payoff 1 (32%)** | Flip; "$1 million = 100 envelopes"; the stack grows beside a 🧍 "you" (1.7 m) to a red dimension "≈ 1.1 m" (lands at 8.4 s) |
-| 9.6–14.0 | **Partial payoff 2 + pattern break** | Flip; "$1 billion = 100,000 envelopes"; the tall stack reaches "≈ 1.1 km"; pencil outline labelled "Burj Khalifa / 828 m" to scale, and shorter |
-| 14.0–18.4 | Seal + guess | Line 2 "$40T ÷ $10K = 4 billion envelopes"; sealed envelope "how tall?"; 3-s PAUSE & GUESS |
-| 18.5–21.4 | **Reveal (70%)** | Card **"≈ 44,000 km / 4 billion × 1.1 cm"** (line 3) |
-| 21.4–24.4 | Scale shot | Flip; 🌍 with a red ring around the equator; "equator: 40,075 km"; red "≈ 1.1 laps of the equator" |
-| 24.4–26.4 | **Verdict + re-hook (last 2.0 s)** | POSTAGE DUE slams; "now in $1 bills…?" |
+| 0.0–3.3 | Hook (frame 0 = thumbnail) | Tape hook (number + unit) and question strip; ✉️ bobs; $10K "1 ENVELOPE" stamp |
+| 3.3–7.0 | Flip, set-up + line 1 (the unit) | Large ASSUME sticky (64 px); "100 × $100 = $10K ≈ 1.1 cm" (76 px) |
+| 7.0–10.4 | Flip, **partial payoff 1 (32%)** | "$1 million = 100 envelopes"; a stack of manila $10K envelopes (`skin: envelope`) grows beside a 🧍 "you" (1.7 m) to a red dimension "≈ 1.1 m" (lands at 8.8 s) |
+| 10.4–14.7 | Flip, **partial payoff 2 + pattern break** | "$1 billion = 100,000 envelopes"; the envelope stack reaches "≈ 1.1 km"; pencil outline labelled "Burj Khalifa / 828 m" to scale, and shorter |
+| 14.7–19.4 | Seal + guess | Line 2 as a column, "$40T ÷ $10K / = 4 billion envelopes" (84 px); sealed envelope "how tall?"; 3-s PAUSE & GUESS (16.2–19.2) |
+| 19.4–22.4 | **Reveal (70%)** | Card **"≈ 44,000 km"** (112 px) / "4 billion × 1.1 cm" (line 3) |
+| 22.4–25.8 | Flip, scale shot | 🌍 with a red ring around the equator; "equator: 40,075 km"; red "≈ 1.1 laps of the equator" |
+| 25.8–27.8 | **Verdict + re-hook (last 2.0 s)** | POSTAGE DUE slams; "now in $1 bills…?"; `loop: true` crossfades into frame 0 |
 
-**Voice-over** (the captions are exactly these lines)
+**Voice-over** (the captions are exactly these lines, split into 14 caption cards of ≤ 2 lines at ≤ 4 words/s; the "1.1 centimeters" card carries `say: "About one point one centimeters thick."`)
 
 > Forty trillion in US debt, in ten-grand envelopes. How tall is it? *(0.1)*
-> A hundred hundreds each. About 1.1 centimeters thick. *(3.25)*
-> A million? A hundred envelopes. About waist high. *(6.7)*
-> A billion? A hundred thousand envelopes. *(9.8)*
-> Taller than the Burj Khalifa. *(12.3)*
-> Forty trillion? Four billion envelopes. *(14.1)*
-> How tall is that stack? Guess before it opens. *(15.9)*
-> About forty-four thousand kilometers. *(18.5)*
-> Longer than the equator. It wraps the whole planet. *(21.6)*
-> Now in one-dollar bills: where does it reach? *(24.3, re-hook)*
+> A hundred hundreds each. About 1.1 centimeters thick. *(3.4)*
+> A million? A hundred envelopes. About waist high. *(7.2)*
+> A billion? A hundred thousand envelopes. *(10.6)*
+> Taller than the Burj Khalifa. *(12.7)*
+> Forty trillion? Four billion envelopes. *(14.8)*
+> How tall is that stack? Guess before it opens. *(16.8)*
+> About forty-four thousand kilometers. *(19.5)*
+> Longer than the equator. It wraps the whole planet. *(22.6)*
+> Now in one-dollar bills: where does it reach? *(25.7, re-hook)*
 
 **The envelope math (3 lines)**
 
 1. `100 × $100 = $10K ≈ 1.1 cm` (exact 100 × 0.0043 in = 0.43 in = 1.0922 cm)
-2. `$40T ÷ $10K = 4 billion envelopes` (4,000,000,000)
+2. `$40T ÷ $10K` over `= 4 billion envelopes` (4,000,000,000)
 3. `4 billion × 1.1 cm ≈ 44,000 km` (sealed card; exact 43,688 km)
 
 The rungs come from line 1 and are drawn to scale:
@@ -257,37 +258,38 @@ The rungs come from line 1 and are drawn to scale:
 
 The scale shot only uses numbers already on screen: 44,000 ÷ 40,075 = 1.098 ≈ **1.1 laps**. The exact 43,688 km is 1.090 laps, which also rounds to 1.1, so the envelope and the exact figure agree.
 
-**ASSUME sticky (on screen):** "Debt ≈ $40T (Treasury, Aug 2026). 1 bill = 0.0043 in (BEP)."
+**ASSUME sticky (on screen):** "Debt ≈ $40 trillion (US Treasury, Aug 2026). 1 bill = 0.0043 in thick (BEP)."
 
-**Sources (gathered 2026-10-07 by the writer; see the verification log)**
-- **US debt crossed $40 trillion on 2026-08-18 ($40.047T, Treasury figures).**
+**Sources (re-verified live on 2026-10-07; full table under Final fact check)**
+- **US debt crossed $40 trillion in August 2026: $40.05T at the close of business on Tuesday 2026-08-18, in Treasury data released 2026-08-19.**
   - PBS NewsHour, Aug 2026: https://pbs.org/newshour/economy/the-u-s-national-debt-now-stands-at-40-trillion
-  - Fox 10, Aug 2026: https://www.fox10phoenix.com/news/us-national-debt-surpasses-record-40-trillion
-  - Latest: Treasury Debt to the Penny showed **$40,242,446,619,209.33 on 2026-10-02** (surfaced through search; the Treasury site was not reachable from this environment). **Re-pull it on publish day:** https://fiscaldata.treasury.gov/datasets/debt-to-the-penny/
+  - Fox 35 Orlando, Aug 2026: https://www.fox35orlando.com/news/us-national-debt-surpasses-record-40-trillion
+  - NPR (via WFAE), 2026-08-20: https://www.wfae.org/2026-08-20/u-s-debt-tops-40-trillion
+  - Latest: Treasury Debt to the Penny showed **$40,249,104,431,078 on 2026-10-05** (FiscalData dataset as reported by IndexBox: https://www.indexbox.io/blog/us-public-debt-outstanding-reaches-40249104431078-dollars-on-october-5-2026/). The envelope's "$40T" is within 0.62% of it, and the "≈ 44,000 km" card holds while the debt stays under $40.455T. **Re-pull it on publish day:** https://fiscaldata.treasury.gov/datasets/debt-to-the-penny/
 - **Bill thickness 0.0043 in, weight ≈ 1 g.** Bureau of Engraving and Printing, Currency FAQs: https://www.bep.gov/currency/faqs. The BEP quote is corroborated by The Physics Factbook: https://hypertextbook.com/facts/1999/DeneneWilliams.shtml
-- **Burj Khalifa 828 m.** CTBUH Skyscraper Center: https://www.skyscrapercenter.com/building/wd/3
+- **Burj Khalifa 828 m**, still the world's tallest building. CTBUH Skyscraper Center: https://www.skyscrapercenter.com/building/wd/3
 - **Earth's equatorial radius 6,378.137 km**, so the circumference is 40,075 km. NASA Earth Fact Sheet: https://nssdc.gsfc.nasa.gov/planetary/factsheet/earthfact.html
 - **Pinned comment only:**
-  - geostationary orbit 35,786 km, AMS Glossary: https://glossary.ametsoc.org/wiki/geostationary-satellite/
-  - average Moon distance 384,400 km, NASA Space Place: https://spaceplace.nasa.gov/moon-distance/
+  - geostationary orbit 35,786 km, AMS Glossary: https://glossary.ametsoc.org/wiki/Geostationary_satellite
+  - average Moon distance 384,400 km, NASA Space Place: https://spaceplace.nasa.gov/moon-distance/en/
 
 **Ending**
 - **Re-hook (second question):** "Now in one-dollar bills: where does it reach?" Then it crossfades back to frame 1 (`loop: true`).
 - **Comment bait:** "Guess where the $1-bill stack reaches before you open the pinned comment."
 - **Pinned comment:**
-  > Exact: $40T ÷ $10K = 4,000,000,000 envelopes × 1.0922 cm (100 bills × 0.0043 in) = 43,688 km (envelope said ≈ 44,000, within 0.7%). Earth's equator is 40,075 km, so that's 1.09 laps (envelope said ≈ 1.1), or 3,613 km to spare, and stood up it passes the geostationary satellites (35,786 km). At the latest Debt to the Penny (~$40.24T, Oct 2, 2026) it's ~43,950 km. Cash only; envelope paper ignored. In $1 bills: 4,368,800 km ≈ 11.4 times the Earth–Moon distance. Envelope rule: in $100 bills, $1 million is about a meter and $1 billion is about a kilometer.
+  > Exact: $40T ÷ $10K = 4,000,000,000 envelopes × 1.0922 cm (100 bills × 0.0043 in) = 43,688 km (envelope said ≈ 44,000, within 0.7%). Earth's equator is 40,075 km, so that's 1.09 laps (envelope said ≈ 1.1), or 3,613 km to spare, and stood up it passes the geostationary satellites (35,786 km). At the latest Debt to the Penny (~$40.25T, Oct 5, 2026) it's ~43,960 km. Cash only; envelope paper ignored. In $1 bills: 4,368,800 km ≈ 11.4 times the Earth–Moon distance. Envelope rule: in $100 bills, $1 million is about a meter and $1 billion is about a kilometer.
 
 **Description:**
 > The US national debt passed $40 trillion in August. How tall is it in $10,000 envelopes (100 hundred-dollar bills, about 1.1 cm each)? A million is waist high, a billion beats the Burj Khalifa, and $40 trillion ≈ 44,000 km: about 1.1 laps of the equator. Exact figures are in the pinned comment.
-> Sources (checked Oct 7, 2026): debt, US Treasury via PBS NewsHour ($40T crossed Aug 18, 2026) and Treasury Debt to the Penny; note thickness 0.0043 in (Bureau of Engraving and Printing); Burj Khalifa 828 m (CTBUH); Earth's equatorial radius 6,378.137 km (NASA).
+> Sources (checked Oct 7, 2026): debt, US Treasury via PBS NewsHour ($40T crossed Aug 18, 2026) and Treasury Debt to the Penny ($40.25T on Oct 5, 2026); note thickness 0.0043 in (Bureau of Engraving and Printing); Burj Khalifa 828 m (CTBUH); Earth's equatorial radius 6,378.137 km (NASA).
 > Educational math, not financial advice.
 > #EnvelopeMath #CostInEnvelopes #NationalDebt #MoneyMath
 
 **Platform notes**
-- **YouTube Shorts:** the 26.4 s master is the YouTube cut. Pin the exact comment.
+- **YouTube Shorts:** the 27.8 s master is the YouTube cut. Pin the exact comment.
   - The debt rises daily, so re-pull Debt to the Penny on publish day. The envelope's "≈ 44,000 km" holds while the debt is under $40.45T (4.045 billion envelopes × 1.1 cm = 44,500 km). Above that, update line 2, line 3 and the card from the math check (one variable). "≈ 1.1 laps" holds until about $41.9T.
 - **Instagram Reels:** same cut; open with a Trial Reel. "Send this to whoever says 'just print more'" is the share prompt, used as caption copy rather than in the VO.
-- **TikTok:** a ~65 s cut adds the answer rung on screen. A fourth stack in $1 bills runs off the top of the frame as an engine request; until then, a hand-drawn "→ 🌕 × 11" arrow works. Add a fifth "how far is it to the satellites" rung (35,786 km) before the equator wrap.
+- **TikTok:** a ~65 s cut adds the answer rung on screen. A fourth stack in $1 bills that runs off the top of the frame is still an engine request; until then, a hand-drawn "→ 🌕 × 11" arrow works. Add a fifth "how far is it to the satellites" rung (35,786 km) before the equator wrap.
 
 **Why this one should travel**
 - **It fixes a proven failure.** Raw debt posts scored 1.35x ("The national debt is hard to comprehend") and 3 to 11x for "debt surpasses $38T" news (report 01, §3.1). Converted to a physical scale and asked as a question, it lands where the corpus says conversions win.
@@ -301,79 +303,76 @@ The scale shot only uses numbers already on screen: 44,000 ÷ 40,075 = 1.098 ≈
 
 - **Working title:** $1,000,000 in pennies vs. Lady Liberty: who's heavier? (Cost in Envelopes No. 01C)
 - **Money topic:** cash and coins: the dead penny (US penny production ended 2025-11-12) and the "what $1 million looks like" curiosity
-- **Unit stamp:** 🪙 1¢ 2.5 g US MINT, versus a 🗽 225 tons stamp
-- **Lane / runtime:** Flash, **13.9 s**, hard loop. This is the series' Flash-lane test: three of the top six big-number Shorts run 14 s or shorter (report 01, §3.4).
-- **Spec:** `engine/specs/01-cost-in-envelopes-c.json` · **Sheet:** `engine/out/sheets/01-cost-in-envelopes-c.png`
+- **Unit stamp:** 🪙 1¢ 2.5 g EACH, versus a 🗽 280 tons LADY LIBERTY stamp
+- **Lane / runtime:** Flash, **14.0 s**, hard loop. This is the series' Flash-lane test: three of the top six big-number Shorts run 14 s or shorter (report 01, §3.4).
+- **Spec:** `engine/specs/01-cost-in-envelopes-c.json` · **Render:** `engine/out/01-cost-in-envelopes-c.mp4`
+- **What changed in the polish pass:** the live re-check found that the National Park Service's current figure for the statue is **560,000 lb (280 US tons)**, not the 450,000 lb (225 tons) of its 1954 handbook. A million in pennies is 275.6 tons, so the honest answer is no longer "the pennies win". It is **a photo finish that she wins by a hair** (4.4 tons, 1.6%). The question, the hook and the loop still work, and the near-tie is the more surprising fact: $1 million in pennies weighs about one Statue of Liberty.
 
 **Frame-1 hook**
-- On screen from the very first frame (three tape strips): ***$1,000,000* IN PENNIES / VS. LADY LIBERTY: / WHO'S HEAVIER?**, with the 1¢ stamp, a red "vs" and the 🗽 225 tons stamp.
-- First spoken line (0.1 to 2.4 s): *"A million in pennies versus Lady Liberty. Who's heavier?"*
+- On screen, finished, in frame 0 (four tape strips): ***$1,000,000* / IN PENNIES / VS. LADY LIBERTY:** at 86 px, then **WHO'S HEAVIER?** at 74 px. Below them: the 1¢ "2.5 g EACH" stamp, a red "vs" and the 🗽 "280 tons" LADY LIBERTY stamp (labels at 40 px).
+- First spoken line (0.1 to 2.6 s): *"A million in pennies versus Lady Liberty. Who's heavier?"*
 
 **Beat sheet**
 
 | Time | Beat | On screen |
 |---|---|---|
-| 0.0–2.3 | Hook | Tape hook (number + dilemma + question); 1¢ stamp, "vs", 225 tons stamp |
-| 2.3–3.7 | **Partial payoff (25%)** | Line 1 "$1,000,000 = 100,000,000 pennies", red underline on the count |
-| 3.7–5.9 | Line 2 | "× 2.5 g = 250,000,000 g" |
-| 5.9–8.3 | Seal + guess | Header "Heavier than 225 tons?"; sealed envelope "heavier?"; 2-s PAUSE & GUESS |
-| 8.4–10.7 | **Reveal (60%)** | Card **"≈ 275 tons / the pennies win"** |
-| 10.7–11.9 | Twist | Flip; 🪙; line 3 "100M × 3.69¢ = $3.69M"; ASSUME sticky; red circle on $3.69M |
-| 11.9–13.9 | **Verdict + loop (last 2.0 s)** | RETURN TO SENDER slams; red "$3.69M to make $1M"; "No wonder they stopped." cuts back to frame 1 |
+| 0.0–2.6 | Hook (frame 0 = thumbnail) | Tape hook (number + dilemma) and question strip; 1¢ stamp, "vs", 280 tons stamp |
+| 2.6–5.9 | Flip, **partial payoff (27%)** + line 2 | Line 1 "$1,000,000 = 100,000,000 pennies" (72 px), red underline anchored to "100,000,000" at 3.85 s; line 2 "× 2.5 g = 250,000,000 g" (80 px); ⚖️ |
+| 5.9–8.7 | Seal + guess | "Heavier than her 280 tons?"; sealed envelope "heavier?"; 2-s PAUSE & GUESS (6.5–8.5) |
+| 8.7–10.6 | **Reveal (62%)** | Card **"≈ 275 tons"** (112 px) / red "she wins by a hair" |
+| 10.6–12.0 | Flip, twist | Line 3 "100M × 3.02¢ = $3.02M" (80 px), red double underline anchored to "$3.02M"; ASSUME sticky "1¢ cost 3.02¢ to make (US Mint, FY2025)." |
+| 12.0–14.0 | **Verdict + loop (last 2.0 s)** | RETURN TO SENDER slams beside the sticky; red "$3.02M to make $1M"; "No wonder they stopped." crossfades into frame 0 (`loop: true`) |
 
-**Voice-over** (the captions are exactly these lines)
+**Voice-over** (the captions are exactly these lines, split into 9 caption cards of ≤ 2 lines at ≤ 4 words/s; the number cards carry `say` readings: "two hundred eighty tons", "two hundred seventy-five tons", "three million dollars")
 
 > A million in pennies versus Lady Liberty. Who's heavier? *(0.1)*
-> A hundred million pennies. Two and a half grams each. *(2.4)*
-> She weighs 225 tons. *(5.0)*
-> Heavier or lighter? Guess. *(6.1)*
-> About 275 tons. The pennies win. *(8.4)*
-> Minting them cost $3.7 million. *(10.8)*
+> A hundred million pennies. Two and a half grams each. *(2.7)*
+> She's about 280 tons. *(5.9)*
+> Heavier or lighter? Guess. *(7.2)*
+> About 275 tons. A photo finish. *(8.7)*
+> Minting them cost about $3 million. *(10.7)*
 > No wonder they stopped. *(12.7, loops to the first line)*
 
 **The envelope math (3 lines)**
 
 1. `$1,000,000 = 100,000,000 pennies`
-2. `× 2.5 g = 250,000,000 g` (= 250,000 kg = 551,156 lb = 275.6 US tons; sealed card "≈ 275 tons")
-3. `100M × 3.69¢ = $3.69M` (exact $3,690,000; said "$3.7 million"; red verdict line "$3.69M to make $1M")
+2. `× 2.5 g = 250,000,000 g` (= 250,000 kg = 551,156 lb = 275.6 US tons; sealed card "≈ 275 tons"; she is 280 tons, so she wins by 4.4 tons, 1.6%)
+3. `100M × 3.02¢ = $3.02M` (exact $3,020,000; said "about $3 million"; red verdict line "$3.02M to make $1M")
 
-**ASSUME sticky (on screen):** "1¢ costs 3.69¢ to make (US Mint, FY2024)." The other two inputs sit on the stamps with their sources: "1¢ · 2.5 g · US MINT" and "225 tons · LADY LIBERTY · NPS". The labels are set to `labelSize` 24 so they can be read on a phone, and the sources are also in the description.
+**ASSUME sticky (on screen):** "1¢ cost 3.02¢ to make (US Mint, FY2025)." The other two inputs sit on the stamps: "1¢ · 2.5 g EACH" and "280 tons · LADY LIBERTY" (40 px typewriter labels). Their sources are in the description and the pinned comment.
 
-**Sources (gathered 2026-10-07 by the writer; see the verification log)**
+**Sources (re-verified live on 2026-10-07; full table under Final fact check)**
 - **Penny weight 2.500 g; nickel 5.000 g.** US Mint coin specifications: https://www.usmint.gov/learn/coin-and-medal-programs/coin-specifications
 - **Final circulating penny struck 2025-11-12.**
-  - PBS NewsHour: https://www.pbs.org/newshour/nation/u-s-mint-in-philadelphia-to-press-final-penny-as-the-1-cent-coin-gets-canceled
   - US Mint press release: https://www.usmint.gov/news/press-releases/united-states-mint-hosts-historic-ceremonial-strike-for-final-production-of-the-circulating-one-cent-coin
-- **Cost per penny 3.69¢ (FY2024, US Mint Annual Report).**
-  - CoinNews, 2025-02-10: https://www.coinnews.net/2025/02/10/penny-costs-3-69-cents-to-make-in-2024/
-  - AP via KSAT, 2025-05-23: https://www.ksat.com/business/2025/05/23/the-penny-costs-nearly-4-cents-to-make-heres-how-much-the-us-spends-on-minting-its-other-coins/
-  - No FY2025 unit cost was published in the results; re-check before posting.
-- **Statue of Liberty 450,000 lb (225 tons).** NPS historical handbook: https://www.nps.gov/parkhistory/online_books/hh/11/hh11k1.htm (NPS Statue Statistics page: https://www.nps.gov/stli/learn/historyculture/statue-statistics.htm).
-  - **Caveat:** other references give copper 62,000 lb + steel 250,000 lb = 156 tons (e.g. Guinness World Records, https://www.guinnessworldrecords.com/world-records/74085-heaviest-statue). The verdict holds under both: 275.6 tons beats 225 and 156.
-  - Confirm on the NPS page before publishing; it was blocked from this environment.
+  - CoinNews, 2025-11-12: https://www.coinnews.net/2025/11/12/us-mint-marks-end-circulating-penny/
+- **Cost per penny 3.02¢ (FY2025, US Mint 2025 Annual Report).** The report says the FY2025 unit cost was 3.02 cents, above face value for the 20th consecutive fiscal year: https://www.usmint.gov/content/dam/usmint/reports/2025-annual-report.pdf. Corroborated by Greysheet ("unit costs for the penny were 3.02 cents and the nickel was 13.31 cents"): https://www.greysheet.com/news/story/house-passed-measure-could-impact-five-cent-coin-production
+  - This replaces FY2024's 3.69¢ (CoinNews, 2025-02-10: https://www.coinnews.net/2025/02/10/penny-costs-3-69-cents-to-make-in-2024/). At 3.69¢ the line would have read $3.69M.
+- **Statue of Liberty ≈ 560,000 lb (280 US tons).** NPS, Statue of Liberty Facts: "estimated to weigh 560,000 pounds (254,000 kg), of which 179,200 pounds (81,300 kg) are copper": https://www.nps.gov/stli/learn/statue-of-liberty-facts.htm. The same figure was posted by the Department of the Interior on X in 2026: https://x.com/Interior/status/2070203740594811366
+  - **The figure varies by source, so the pinned comment gives all three:** NPS Historical Handbook No. 11 (1954) says 450,000 lb = 225 tons (https://www.nps.gov/parkhistory/online_books/hh/11/hh11k1.htm), which the pennies would beat; NPS Statue Statistics lists 176,000 lb of copper and 440,000 lb of framework (https://www.nps.gov/stli/learn/historyculture/statue-statistics.htm), 308 tons together. The envelope uses the NPS Facts page because it is the one current, explicit total.
 
 **Ending**
 - **Loop line:** "No wonder they stopped." It crossfades (`loop: true`) to "A million in pennies versus Lady Liberty. Who's heavier?"
 - **Comment bait (second question):** "Same $1M in nickels: heavier or lighter than her? Answer's pinned."
 - **Pinned comment:**
-  > Exact: 100,000,000 pennies × 2.500 g = 250,000 kg = 551,156 lb = 275.6 US tons (envelope said ≈ 275, within 0.2%). Lady Liberty: 450,000 lb = 225 tons (NPS), so the pennies win by ~51 tons (1.22×). Some references count only her copper + steel (156 tons); the pennies win by more. Minting cost: 100M × $0.0369 (US Mint FY2024 unit cost) = $3,690,000 (we said $3.7M, within 0.3%). In nickels (5 g each): 20M × 5 g = 110.2 tons, lighter than her. Envelope rule: $1 of pennies weighs 250 g.
+  > Exact: 100,000,000 pennies × 2.500 g = 250,000 kg = 551,156 lb = 275.6 US tons (envelope said ≈ 275, within 0.2%). Lady Liberty: the National Park Service estimates 560,000 lb = 280 tons, so she wins by about 4.4 tons (1.6%). Photo finish. Her weight depends on whose figure you use: the NPS's 1954 handbook said 450,000 lb (225 tons), which the pennies beat; its statistics page lists 176,000 lb of copper plus 440,000 lb of framework (308 tons). Minting cost: 100M × $0.0302 (US Mint FY2025 unit cost) = $3,020,000 (we said about $3M, within 0.7%). In nickels (5 g each): 20M × 5 g = 110.2 tons, lighter than her on every figure. Envelope rule: $1 of pennies weighs 250 g.
 
 **Description:**
-> Who's heavier: a million dollars in pennies or the Statue of Liberty? $1M is 100,000,000 coins at 2.5 g each: about 275 tons, heavier than Lady Liberty (225 tons). And at 3.69¢ apiece, minting them cost about $3.7M. Exact figures are in the pinned comment.
-> Sources (checked Oct 7, 2026): coin weights (US Mint coin specifications); penny unit cost 3.69¢ (US Mint FY2024 Annual Report via CoinNews, Feb 10, 2025); Statue of Liberty 450,000 lb (National Park Service); last circulating penny struck Nov 12, 2025 (PBS NewsHour).
+> Who's heavier: a million dollars in pennies or the Statue of Liberty? $1M is 100,000,000 coins at 2.5 g each: about 275 tons. The National Park Service puts her at about 280 tons, so it's a photo finish. And at 3.02¢ apiece (FY2025), minting them cost about $3 million. Exact figures and the other weight estimates are in the pinned comment.
+> Sources (checked Oct 7, 2026): coin weights (US Mint coin specifications); penny unit cost 3.02¢ (US Mint 2025 Annual Report); Statue of Liberty ≈ 560,000 lb (National Park Service, Statue of Liberty Facts); last circulating penny struck Nov 12, 2025 (US Mint).
 > Educational math, not financial advice.
 > #EnvelopeMath #CostInEnvelopes #Penny #MoneyMath #StatueOfLiberty
 
 **Platform notes**
-- **YouTube Shorts:** the 13.9 s cut loops cleanly. The last line lands on the hook again, and replays count as views. Keep the title equal to the tape hook.
+- **YouTube Shorts:** the 14.0 s cut loops cleanly. The last line lands on the hook again, and replays count as views. Keep the title equal to the tape hook.
 - **Instagram Reels:** the short-loop cluster is where small IG accounts break out (1,106x, 1,131x, 522x at 5 to 8 s). This is our closest fit; let it loop. Tag line in the caption: "tag the friend with the penny jar."
 - **TikTok:** post as is for the loop, then a 60 s+ follow-up that answers the nickel question and runs the denomination ladder by weight. Each rung goes on its own envelope line: $1M in pennies 275.6 US tons → nickels 110.2 US tons → $1 bills 1,000 kg ≈ 1.1 US tons (BEP: ≈ 1 g per note) → $100 bills 10 kg. All of those inputs are already sourced above.
 
 **Why this one should travel**
 - **It sits inside a proven family.** "What $1 million looks like" is the highest-outlier unit-swap original (FVIDEOS, 890.12x on 3.85K subs), with @g1djuan's "$100k in cash" at 187.2x. We add the comparison object vidIQ said was missing.
 - **The penny is still live news.** Production ended in Nov 2025, and stores are rounding cash totals.
-- **"Who's heavier?" is a 2-second commitment** asked on frame 1 (report 01, §3.6).
-- **RETURN TO SENDER is an argument people want to have:** spending $3.69 to make $1.
+- **"Who's heavier?" is a 2-second commitment** asked on frame 1 (report 01, §3.6), and a photo finish means both camps were nearly right, which is an argument people want to finish in the comments (225 vs 280 vs 308 tons).
+- **RETURN TO SENDER is an argument people want to have:** spending $3.02 to make $1.
 - **It's the series' Flash-lane test** (report 01, §3.4).
 
 ---
@@ -381,10 +380,12 @@ The scale shot only uses numbers already on screen: 44,000 ÷ 40,075 = 1.098 ≈
 ### Math check
 
 `teasers/01-cost-in-envelopes-mathcheck.py` recomputes every number said or shown in 01A, 01B and 01C from the sourced inputs. It also opens the three specs and asserts:
-- the counter target, the sealed-card numbers, the 9×9 tray and the on-screen working lines;
-- the stack heights in pixels, so the $1M and $1B stacks and the Burj outline really are to scale;
-- that "≈ 1.1 laps" is true for both the envelope figure and the exact figure;
-- the format-bible structure: the hook is fully drawn on frame 1 and its red word is a number, the spec loops back to frame 1, the captions read exactly as the VO, the ≤ 3 core lines are on screen as written, the first partial payoff lands by 40% of the runtime, and the verdict stamp lands in the last 2 s.
+- the counter target, the sealed-card numbers, the stamp values, the 9×9 tray and the on-screen working lines (including `lines` columns);
+- the stack heights in pixels, so the $1M and $1B envelope stacks and the Burj outline really are to scale;
+- that "≈ 1.1 laps" is true for both the envelope figure and the exact figure, and that the "≈ 44,000 km" card still holds at the latest Debt to the Penny;
+- 01C's new answer: the statue (560,000 lb = 280 tons) is heavier than 275.6 tons of pennies by under 2%, and $3.02M is 100M × 3.02¢;
+- the format-bible structure: every hook is at `t: 0` (finished in frame 0, no negative-t hack) and its red word is a number, the postmark sits in the flap, the spec loops back to frame 0, the captions read exactly as the VO, the ≤ 3 core lines are on screen as written, the first partial payoff lands by 40% of the runtime, and the verdict stamp lands in the last 2 s;
+- and it runs `node src/cli.js check` on the three specs and requires zero warnings.
 
 Run it with `python3 teasers/01-cost-in-envelopes-mathcheck.py`.
 
@@ -392,11 +393,13 @@ Run it with `python3 teasers/01-cost-in-envelopes-mathcheck.py`.
 #!/usr/bin/env python3
 """Math check for approach #1, Cost in Envelopes (teasers 01A, 01B, 01C).
 
-Recomputes every number said or shown in the three teasers from the sourced inputs,
-then cross-checks the values baked into engine/specs/01-cost-in-envelopes-{a,b,c}.json:
-counter targets, sealed cards, on-screen working, the to-scale stack heights, and the
-format-bible structure (number in frame 1, captions == VO, first payoff by ~40%,
-verdict in the last 2 s).
+Recomputes every number said or shown in the three teasers from the sourced inputs
+(facts re-verified 2026-10-07; see the md's "Final fact check" table), then cross-checks
+the values baked into engine/specs/01-cost-in-envelopes-{a,b,c}.json: counter targets,
+sealed cards, on-screen working, stamp values, the to-scale stack heights, and the
+format-bible structure (hook finished on frame 0 with no negative-t hack, postmark in the
+flap, captions == VO, first payoff by ~40%, verdict in the last 2 s, loop). It also runs
+the engine linter and requires zero warnings.
 Run from anywhere:  python3 teasers/01-cost-in-envelopes-mathcheck.py
 Exits non-zero if any check fails.
 """
@@ -404,9 +407,11 @@ import json
 import math
 import os
 import re
+import subprocess
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SPECS = os.path.join(ROOT, "engine", "specs")
+ENGINE = os.path.join(ROOT, "engine")
+SPECS = os.path.join(ENGINE, "specs")
 fails = []
 
 
@@ -429,46 +434,60 @@ def ops(s, kind):
     return [o for o in s["ops"] if o["type"] == kind]
 
 
+def by_id(s, op_id):
+    return next(o for o in s["ops"] if o.get("id") == op_id)
+
+
 def texts(s):
-    """Every string drawn on screen (write text, sticky, card lines, hook lines)."""
+    """Every string drawn on screen (write, lines, sticky, card lines, hook lines, stamp values)."""
     out = []
     for o in s["ops"]:
         if o["type"] in ("write", "sticky"):
             out.append(o["text"])
+        elif o["type"] == "lines":
+            out += [x if isinstance(x, str) else x["text"] for x in o["lines"]]
         elif o["type"] == "envelope":
             out += [c if isinstance(c, str) else c["text"] for c in o["card"]]
         elif o["type"] == "hook":
-            out += o["text"]
+            out += o["text"] if isinstance(o["text"], list) else [o["text"]]
+        elif o["type"] == "postage":
+            out.append(str(o["value"]))
     return out
 
 
 def structure(s, payoff_at, core):
     """Format-bible §2 checks shared by all three teasers. `core` = the md's three envelope
-    lines: a string must be drawn on screen verbatim, an int must be a counter target."""
+    lines, each a list of pieces: a string must be drawn on screen verbatim, an int must be a
+    counter target."""
     dur = s["duration"]
-    hook = ops(s, "hook")[0]
-    lines = hook["text"]
-    fully_in = hook["t"] + 0.2 + 0.14 * (len(lines) - 1)      # engine: line i lands at t + 0.14 i + 0.2
-    check("frame 1: hook fully drawn at t = 0 (first frame / thumbnail)", fully_in <= 0)
-    check("frame 1: the hook's red word is a number", bool(re.search(r"\*\$[\d,]+", " ".join(lines))))
+    hooks = ops(s, "hook")
+    check("frame 0: every hook starts at t = 0 (renders finished; no negative-t hack)", all(h["t"] == 0 for h in hooks))
+    lines = [l for h in hooks for l in (h["text"] if isinstance(h["text"], list) else [h["text"]])]
+    check("frame 0: the hook's red word is a number", bool(re.search(r"\*\$[\d,]+", " ".join(lines))))
+    pm = ops(s, "postmark")
+    check("series postmark sits in the flap (x 175, y 258, r 100, persist, t 0)",
+          len(pm) == 1 and (pm[0]["x"], pm[0]["y"], pm[0]["r"], pm[0]["t"]) == (175, 258, 100, 0) and pm[0].get("persist") is True)
     caps = " ".join(c["text"] for c in s["captions"])
     norm = lambda x: re.sub(r"\s+", " ", x.replace("…", "...")).strip()
     check("captions read exactly as the VO script", norm(caps) == norm(s["vo"]))
     stamp_t = ops(s, "stamp")[-1]["t"]
     check(f"verdict stamp lands in the last 2 s ({dur - stamp_t:.1f} s before the end)", dur - stamp_t <= 2.0 + 1e-9)
     check(f"first partial payoff by ~40% of runtime ({payoff_at / dur:.0%})", payoff_at / dur <= 0.40)
-    check("ends on a seamless loop back to frame 1 (spec loop: true)", s.get("loop") is True)
+    check("ends on a seamless loop back to frame 0 (spec loop: true)", s.get("loop") is True)
     shown = texts(s) + [o["to"] for o in ops(s, "counter")]
-    check("three-line rule: the md's ≤ 3 core lines are on screen as written", len(core) <= 3 and all(x in shown for x in core))
+    check("three-line rule: the md's ≤ 3 core lines are on screen as written",
+          len(core) <= 3 and all(piece in shown for line in core for piece in line))
 
 
 # ---------------------------------------------------------------- 01A
 print("01A  Elon's $1 trillion in Costco hot dogs: how many do you get?")
 NET_WORTH = 1_000_000_000_000          # envelope input: "about $1 trillion"
-BLOOMBERG = 1_040_000_000_000          # Bloomberg Billionaires Index, Oct 6 2026
-FORBES = 936_000_000_000               # Forbes real-time, Oct 6 2026
-COMBO = 1.50                           # Costco hot dog + soda, unchanged since 1985
-WORLD = 8_200_000_000                  # US Census Bureau, world population, July 2026
+BLOOMBERG = 1_040_000_000_000          # Bloomberg Billionaires Index after Mon Oct 5 2026 (+$65B)
+FORBES_OCT5 = 1_000_000_000_000        # Forbes real-time, Mon Oct 5 2026 morning ("about $1 trillion")
+FORBES_OCT1 = 936_000_000_000          # Forbes top-10 list, as of Oct 1 2026
+COMBO = 1.50                           # Costco hot dog + soda, unchanged since 1985 (Apr 2026 reporting)
+WORLD = 8_200_000_000                  # US Census Bureau IDB, world population, July 2026
+WORLD_UN = 8_300_678_395               # UN WPP projection, July 1 2026 (pinned comment only)
 
 dogs = NET_WORTH / COMBO
 each = dogs / WORLD
@@ -477,33 +496,37 @@ print(f"  L2  shown as {round(dogs):,} (counter) and said as 'about 667 billion'
 print(f"  L3  / 8.2 billion people = {each:.4f} each  -> envelope says 'about 81'")
 print(f"      envelope 81 vs exact {each:.2f}: within {within(81, each):.2f}%")
 print(f"      tip: /1.5 == x2/3 -> {NET_WORTH * 2 / 3:,.2f}")
-for name, nw in (("Bloomberg $1.04T", BLOOMBERG), ("Forbes $936B", FORBES)):
+for name, nw in (("Bloomberg $1.04T (Oct 5)", BLOOMBERG), ("Forbes ~$1T (Oct 5)", FORBES_OCT5), ("Forbes $936B (Oct 1)", FORBES_OCT1)):
     d = nw / COMBO
     print(f"      at {name}: {d:,.0f} hot dogs, {d / WORLD:.2f} each (envelope 81 is within {within(81, d / WORLD):.1f}%)")
+print(f"      at the UN's {WORLD_UN / 1e9:.2f}B people: {dogs / WORLD_UN:.2f} each (envelope 81 is within {within(81, dogs / WORLD_UN):.1f}%)")
 print(f"      tray: 9 x 9 = {9 * 9}")
 print(f"      refresh rule: 'about $1T' stays within 5% for ${NET_WORTH * 0.95 / 1e9:,.0f}B to ${NET_WORTH * 1.05 / 1e9:,.0f}B")
 print(f"      'same price since 1985' -> {2026 - 1985} years by 2026")
 a = spec("a")
-counter = ops(a, "counter")[0]
+counter = by_id(a, "count")
+grid = ops(a, "grid")[0]
 check("counter shows round($1T / $1.50)", counter["to"] == round(dogs))
 check("'667 billion' is dogs rounded to the nearest billion", round(dogs / 1e9) == 667 and "667 billion" in a["vo"])
-check("card '≈ 81 each' matches round(each)", round(each) == 81 and "81" in ops(a, "envelope")[0]["card"][0])
-check("grid holds 81 hot dogs", ops(a, "grid")[0]["rows"] * ops(a, "grid")[0]["cols"] == 81 == ops(a, "grid")[0]["filled"])
+check("card '≈ 81 each' matches round(each)", round(each) == 81 and ops(a, "envelope")[0]["card"][0] == "≈ 81 each")
+check("grid holds 81 hot dogs", grid["rows"] * grid["cols"] == 81 == grid["filled"])
 check("/1.5 equals x2/3", abs(NET_WORTH / 1.5 - NET_WORTH * 2 / 3) < 1e-3)
-check("on-screen line 1 and line 3 carry the same inputs", "$1,000,000,000,000 ÷ $1.50" in texts(a) and "÷ 8.2 billion people 🌍" in texts(a))
-structure(a, counter["t"] + counter["dur"], ["$1,000,000,000,000 ÷ $1.50", 666_666_666_667, "÷ 8.2 billion people 🌍"])
+check("stamp value is the sourced $1.50", any(o["value"] == "$1.50" for o in ops(a, "postage")))
+check("both current trackers are within 5% of the envelope's $1T", all(abs(x / NET_WORTH - 1) <= 0.05 for x in (BLOOMBERG, FORBES_OCT5)))
+check("red circle is anchored to the counter (target, not coordinates)", any(o.get("target", {}).get("op") == "count" for o in ops(a, "annotate")))
+structure(a, counter["t"] + counter["dur"], [["$1,000,000,000,000", "÷ $1.50"], [666_666_666_667], ["÷ 8.2 billion people"]])
 
 # ---------------------------------------------------------------- 01B
 print("\n01B  The $40 trillion US debt in $10K envelopes: how tall is it?")
 DEBT = 40e12                           # envelope input: "$40 trillion" (crossed Aug 18 2026)
-DEBT_AUG18 = 40.047e12                 # Treasury figure on the crossing day (as reported)
-DEBT_OCT2 = 40_242_446_619_209.33      # Debt to the Penny, Oct 2 2026 (search-surfaced; re-pull at publish)
+DEBT_AUG18 = 40.05e12                  # Treasury, close of business Tue Aug 18 2026 (as reported Aug 19-20)
+DEBT_OCT5 = 40_249_104_431_078         # Debt to the Penny, Oct 5 2026 (FiscalData via IndexBox)
 BILL_IN = 0.0043                       # BEP: thickness of one note, inches
 BILLS_PER_ENV = 100                    # one $10K envelope = 100 x $100
 R_EQ_KM = 6378.137                     # NASA Earth fact sheet, equatorial radius
 BURJ_M = 828                           # CTBUH, Burj Khalifa height
-GEO_KM = 35_786                        # geostationary orbit altitude
-MOON_KM = 384_400                      # NASA, average Earth-Moon distance
+GEO_KM = 35_786                        # AMS Glossary, geostationary altitude
+MOON_KM = 384_400                      # NASA Space Place, average Earth-Moon distance
 
 env_cm = BILL_IN * 2.54 * BILLS_PER_ENV
 equator = 2 * math.pi * R_EQ_KM
@@ -522,11 +545,12 @@ print(f"      equator = 2 x pi x {R_EQ_KM} = {equator:,.1f} km")
 print(f"      laps: envelope {km_env:,.0f} / {equator:,.0f} = {km_env / equator:.3f}; exact {km_exact / equator:.3f}  (shown: ≈ 1.1 laps)")
 print(f"      spare (pinned only): exact {km_exact - equator:,.1f} km")
 print(f"      past geostationary orbit ({GEO_KM:,} km)? {km_exact > GEO_KM}")
-for name, debt in (("Aug 18 $40.047T", DEBT_AUG18), ("Oct 2 $40.242T", DEBT_OCT2)):
+for name, debt in (("Aug 18 $40.05T", DEBT_AUG18), ("Oct 5 $40.249T", DEBT_OCT5)):
     k = debt / 1e4 * env_cm / 1e5
     print(f"      at {name}: {k:,.0f} km, {k / equator:.3f} laps, spare {k - equator:,.0f} km")
 limit = 44_500 / 1.1 * 1e5 * 1e4
 print(f"      refresh rule: card '≈ 44,000 km' (1.1 cm) holds while debt < ${limit / 1e12:.3f}T")
+print(f"      'about $40T' vs the latest Debt to the Penny: within {within(DEBT, DEBT_OCT5):.2f}%")
 ones_km = DEBT * BILL_IN * 2.54 / 1e5
 print(f"      re-hook, in $1 bills: {DEBT:,.0f} x 0.0043 in = {ones_km:,.0f} km = {ones_km / MOON_KM:.2f} Earth-Moon distances")
 b = spec("b")
@@ -535,65 +559,83 @@ px_per_m_1 = stacks[0]["ref"]["h"] / 1.7
 check("$1M stack height in px matches 1.0922 m beside a 1.7 m person",
       abs(stacks[0]["h"] - m_env * env_cm / 100 * px_per_m_1) < 1.5)
 check("$1B stack height in px = 1,092.2 m at 0.6 px/m", abs(stacks[1]["h"] - b_env * env_cm / 100 * 0.6) < 1.5)
+check("both stacks are drawn as manila $10K envelopes (skin: envelope)", all(st.get("skin") == "envelope" for st in stacks))
 burj = [o for o in ops(b, "annotate") if o.get("kind") == "box"][0]
 check("Burj outline = 828 m at 0.6 px/m, standing on the same ground", abs(burj["h"] - BURJ_M * 0.6) < 1 and burj["y"] + burj["h"] == stacks[1]["y"])
-check("4 billion envelopes", n_env == 4e9 and "$40T ÷ $10K = 4 billion envelopes" in texts(b))
-check("card '≈ 44,000 km' = 4e9 x 1.1 cm", round(km_env) == 44_000 and "44,000" in ops(b, "envelope")[0]["card"][0])
+check("4 billion envelopes", n_env == 4e9 and by_id(b, "envelopes")["lines"] == ["$40T ÷ $10K", "= 4 billion envelopes"])
+check("card '≈ 44,000 km' = 4e9 x 1.1 cm", round(km_env) == 44_000 and ops(b, "envelope")[0]["card"][0] == "≈ 44,000 km")
+check("card still holds at the latest Debt to the Penny", DEBT_OCT5 < limit)
 check("stack is longer than the equator", km_exact > equator)
 check("'≈ 1.1 laps' holds for the envelope figure AND the exact figure",
       round(km_env / equator, 1) == 1.1 == round(km_exact / equator, 1) and "≈ 1.1 laps of the equator" in texts(b))
 check("on screen, the equator is the sourced 40,075 km", f"equator: {equator:,.0f} km" in texts(b))
 check("$1B stack is taller than the Burj Khalifa", b_env * env_cm / 100 > BURJ_M)
 check("'1.1 cm' on screen is 1.0922 cm rounded", round(env_cm, 1) == 1.1 and "1.1 cm" in " ".join(texts(b)) and "1.1 centimeters" in b["vo"])
-structure(b, stacks[0]["t"] + stacks[0]["dur"], ["100 × $100 = $10K ≈ 1.1 cm", "$40T ÷ $10K = 4 billion envelopes", "4 billion × 1.1 cm"])
+structure(b, stacks[0]["t"] + stacks[0]["dur"],
+          [["100 × $100 = $10K ≈ 1.1 cm"], ["$40T ÷ $10K", "= 4 billion envelopes"], ["≈ 44,000 km", "4 billion × 1.1 cm"]])
 
 # ---------------------------------------------------------------- 01C
 print("\n01C  $1,000,000 in pennies vs Lady Liberty: who's heavier?")
 PENNY_G = 2.500                        # US Mint coin specifications
 LB = 0.45359237                        # kg per pound (exact)
-STATUE_LB = 450_000                    # NPS: 225 tons
-STATUE_ALT_LB = 62_000 + 250_000       # other references: copper + steel only
-UNIT_COST = 0.0369                     # US Mint FY2024 cost to make and ship one penny
+STATUE_LB = 560_000                    # NPS "Statue of Liberty Facts": estimated 560,000 lb (179,200 lb copper)
+STATUE_1954_LB = 450_000               # NPS Historical Handbook No. 11 (1954): 450,000 lb = 225 tons
+STATUE_STATS_LB = 176_000 + 440_000    # NPS "Statue Statistics": copper 176,000 lb + framework 440,000 lb
+UNIT_COST = 0.0302                     # US Mint 2025 Annual Report: FY2025 penny unit cost 3.02 cents
+UNIT_COST_FY24 = 0.0369                # FY2024 (previous version of this teaser)
 
 pennies = 1_000_000 / 0.01
 grams = pennies * PENNY_G
 kg = grams / 1000
 lb = kg / LB
 tons = lb / 2000
+statue_t = STATUE_LB / 2000
 print(f"  L1  $1,000,000 / $0.01 = {pennies:,.0f} pennies")
 print(f"  L2  x 2.5 g = {grams:,.0f} g = {kg:,.0f} kg = {lb:,.1f} lb = {tons:.2f} US tons  (card: ≈ 275 tons)")
 print(f"      envelope 275 vs exact {tons:.2f}: within {within(275, tons):.2f}%")
-print(f"      Lady Liberty {STATUE_LB:,} lb = {STATUE_LB / 2000:.0f} tons = {STATUE_LB * LB / 1000:.1f} t; "
-      f"pennies heavier by {tons - STATUE_LB / 2000:.1f} tons ({tons / (STATUE_LB / 2000):.2f}x)")
-print(f"      vs copper+steel only ({STATUE_ALT_LB:,} lb = {STATUE_ALT_LB / 2000:.0f} tons): {tons / (STATUE_ALT_LB / 2000):.2f}x")
+print(f"      Lady Liberty (NPS facts) {STATUE_LB:,} lb = {statue_t:.0f} US tons = {STATUE_LB * LB / 1000:.1f} t; "
+      f"she is heavier by {statue_t - tons:.2f} tons; pennies = {tons / statue_t:.3f} of her ({100 - tons / statue_t * 100:.1f}% short)")
+for name, slb in (("NPS 1954 handbook", STATUE_1954_LB), ("NPS statistics copper+framework", STATUE_STATS_LB)):
+    st = slb / 2000
+    print(f"      vs {name} ({slb:,} lb = {st:.0f} tons): pennies/statue = {tons / st:.2f} -> {'pennies' if tons > st else 'statue'} heavier")
 cost = pennies * UNIT_COST
-print(f"  L3  {pennies:,.0f} x $0.0369 = ${cost:,.0f}  (said: $3.7 million, within {within(3.7e6, cost):.2f}%)")
-print(f"      per dollar of pennies: 100 x 3.69 cents = ${100 * UNIT_COST:.2f}; weight of $1 in pennies = {100 * PENNY_G:.0f} g")
+print(f"  L3  {pennies:,.0f} x $0.0302 = ${cost:,.0f}  (said: about $3 million, within {within(3e6, cost):.2f}%)")
+print(f"      at the FY2024 3.69 cents it was ${pennies * UNIT_COST_FY24:,.0f}")
+print(f"      per dollar of pennies: 100 x 3.02 cents = ${100 * UNIT_COST:.2f}; weight of $1 in pennies = {100 * PENNY_G:.0f} g")
 NICKEL_G = 5.000                       # US Mint coin specifications (pinned-comment follow-up)
 nickels = 1_000_000 / 0.05
 n_tons = nickels * NICKEL_G / 1000 / LB / 2000
 print(f"      pinned follow-up, $1M in nickels: {nickels:,.0f} x 5 g = {nickels * NICKEL_G / 1000:,.0f} kg = {n_tons:.1f} US tons "
-      f"({'lighter' if n_tons < STATUE_LB / 2000 else 'heavier'} than Lady Liberty)")
+      f"({'lighter' if n_tons < STATUE_1954_LB / 2000 else 'heavier'} than every Lady Liberty figure)")
 NOTE_G = 1.0                           # BEP: a note weighs about 1 gram
 print(f"      TikTok ladder: $1M in $1 bills = {1e6 * NOTE_G / 1000:,.0f} kg = {1e6 * NOTE_G / 1000 / LB / 2000:.2f} US tons; "
       f"in $100 bills = {1e4 * NOTE_G / 1000:.0f} kg")
 c = spec("c")
-check("$1M in nickels is lighter than 225 tons", n_tons < STATUE_LB / 2000)
+check("$1M in nickels is lighter than every Lady Liberty figure", n_tons < min(STATUE_LB, STATUE_1954_LB, STATUE_STATS_LB) / 2000)
 check("100,000,000 pennies", pennies == 1e8 and "$1,000,000 = 100,000,000 pennies" in texts(c))
 check("250,000,000 g", grams == 2.5e8 and "× 2.5 g = 250,000,000 g" in texts(c))
-check("card '≈ 275 tons' rounds the exact US tons", round(tons / 5) * 5 == 275 and "275" in ops(c, "envelope")[0]["card"][0])
-check("heavier than 225 tons", tons > STATUE_LB / 2000)
-check("heavier than the copper+steel-only figure too", tons > STATUE_ALT_LB / 2000)
-check("$3.69M to mint", round(cost) == 3_690_000 and "100M × 3.69¢ = $3.69M" in texts(c) and "$3.69M to make $1M" in texts(c))
-check("'$3.7 million' (VO) is $3.69M rounded", round(cost / 1e5) / 10 == 3.7 and "$3.7 million" in c["vo"])
-under = [o for o in ops(c, "write") if o["text"].startswith("$1,000,000 =")][0]
-structure(c, under["t"] + len(under["text"]) / under["cps"], ["$1,000,000 = 100,000,000 pennies", "× 2.5 g = 250,000,000 g", "100M × 3.69¢ = $3.69M"])
+check("card '≈ 275 tons' rounds the exact US tons", round(tons / 5) * 5 == 275 and ops(c, "envelope")[0]["card"][0] == "≈ 275 tons")
+check("stamp '280 tons' is the NPS 560,000 lb", statue_t == 280 and any(o["value"] == "280 tons" for o in ops(c, "postage")))
+check("'she wins by a hair': statue heavier, by under 2%", tons < statue_t and (statue_t - tons) / statue_t < 0.02)
+check("'photo finish' holds for the envelope figures too (275 vs 280)", 275 < 280 and (280 - 275) / 280 < 0.02)
+check("$3.02M to mint", round(cost) == 3_020_000 and "100M × 3.02¢ = $3.02M" in texts(c) and "$3.02M to make $1M" in texts(c))
+check("'about $3 million' (VO) is $3.02M rounded", round(cost / 1e6) == 3 and "about $3 million" in c["vo"])
+check("sticky carries the FY2025 unit cost", "3.02¢" in ops(c, "sticky")[0]["text"] and "FY2025" in ops(c, "sticky")[0]["text"])
+l1 = by_id(c, "l1")
+structure(c, l1["t"] + len(l1["text"]) / l1["cps"], [["$1,000,000 = 100,000,000 pennies"], ["× 2.5 g = 250,000,000 g"], ["100M × 3.02¢ = $3.02M"]])
+
+# ---------------------------------------------------------------- engine lint
+print("\nengine lint (node src/cli.js check)")
+res = subprocess.run(["node", "src/cli.js", "check"] + [f"specs/01-cost-in-envelopes-{k}.json" for k in "abc"],
+                     cwd=ENGINE, capture_output=True, text=True)
+print("  " + res.stdout.strip().replace("\n", "\n  "))
+check("zero linter warnings on all three specs", res.returncode == 0 and "⚠" not in res.stdout and res.stdout.count("✓") == 3)
 
 print(f"\n{'ALL CHECKS PASS' if not fails else f'{len(fails)} CHECK(S) FAILED'}")
 raise SystemExit(1 if fails else 0)
 ```
 
-**Output** (run 2026-10-07):
+**Output** (run 2026-10-07, polish pass):
 
 ```text
 01A  Elon's $1 trillion in Costco hot dogs: how many do you get?
@@ -602,8 +644,10 @@ raise SystemExit(1 if fails else 0)
   L3  / 8.2 billion people = 81.3008 each  -> envelope says 'about 81'
       envelope 81 vs exact 81.30: within 0.37%
       tip: /1.5 == x2/3 -> 666,666,666,666.67
-      at Bloomberg $1.04T: 693,333,333,333 hot dogs, 84.55 each (envelope 81 is within 4.2%)
-      at Forbes $936B: 624,000,000,000 hot dogs, 76.10 each (envelope 81 is within 6.4%)
+      at Bloomberg $1.04T (Oct 5): 693,333,333,333 hot dogs, 84.55 each (envelope 81 is within 4.2%)
+      at Forbes ~$1T (Oct 5): 666,666,666,667 hot dogs, 81.30 each (envelope 81 is within 0.4%)
+      at Forbes $936B (Oct 1): 624,000,000,000 hot dogs, 76.10 each (envelope 81 is within 6.4%)
+      at the UN's 8.30B people: 80.31 each (envelope 81 is within 0.9%)
       tray: 9 x 9 = 81
       refresh rule: 'about $1T' stays within 5% for $950B to $1,050B
       'same price since 1985' -> 41 years by 2026
@@ -612,13 +656,16 @@ raise SystemExit(1 if fails else 0)
   [ok] card '≈ 81 each' matches round(each)
   [ok] grid holds 81 hot dogs
   [ok] /1.5 equals x2/3
-  [ok] on-screen line 1 and line 3 carry the same inputs
-  [ok] frame 1: hook fully drawn at t = 0 (first frame / thumbnail)
-  [ok] frame 1: the hook's red word is a number
+  [ok] stamp value is the sourced $1.50
+  [ok] both current trackers are within 5% of the envelope's $1T
+  [ok] red circle is anchored to the counter (target, not coordinates)
+  [ok] frame 0: every hook starts at t = 0 (renders finished; no negative-t hack)
+  [ok] frame 0: the hook's red word is a number
+  [ok] series postmark sits in the flap (x 175, y 258, r 100, persist, t 0)
   [ok] captions read exactly as the VO script
   [ok] verdict stamp lands in the last 2 s (2.0 s before the end)
-  [ok] first partial payoff by ~40% of runtime (30%)
-  [ok] ends on a seamless loop back to frame 1 (spec loop: true)
+  [ok] first partial payoff by ~40% of runtime (37%)
+  [ok] ends on a seamless loop back to frame 0 (spec loop: true)
   [ok] three-line rule: the md's ≤ 3 core lines are on screen as written
 
 01B  The $40 trillion US debt in $10K envelopes: how tall is it?
@@ -631,53 +678,68 @@ raise SystemExit(1 if fails else 0)
       laps: envelope 44,000 / 40,075 = 1.098; exact 1.090  (shown: ≈ 1.1 laps)
       spare (pinned only): exact 3,613.0 km
       past geostationary orbit (35,786 km)? True
-      at Aug 18 $40.047T: 43,739 km, 1.091 laps, spare 3,664 km
-      at Oct 2 $40.242T: 43,953 km, 1.097 laps, spare 3,878 km
+      at Aug 18 $40.05T: 43,743 km, 1.092 laps, spare 3,668 km
+      at Oct 5 $40.249T: 43,960 km, 1.097 laps, spare 3,885 km
       refresh rule: card '≈ 44,000 km' (1.1 cm) holds while debt < $40.455T
+      'about $40T' vs the latest Debt to the Penny: within 0.62%
       re-hook, in $1 bills: 40,000,000,000,000 x 0.0043 in = 4,368,800 km = 11.37 Earth-Moon distances
   [ok] $1M stack height in px matches 1.0922 m beside a 1.7 m person
   [ok] $1B stack height in px = 1,092.2 m at 0.6 px/m
+  [ok] both stacks are drawn as manila $10K envelopes (skin: envelope)
   [ok] Burj outline = 828 m at 0.6 px/m, standing on the same ground
   [ok] 4 billion envelopes
   [ok] card '≈ 44,000 km' = 4e9 x 1.1 cm
+  [ok] card still holds at the latest Debt to the Penny
   [ok] stack is longer than the equator
   [ok] '≈ 1.1 laps' holds for the envelope figure AND the exact figure
   [ok] on screen, the equator is the sourced 40,075 km
   [ok] $1B stack is taller than the Burj Khalifa
   [ok] '1.1 cm' on screen is 1.0922 cm rounded
-  [ok] frame 1: hook fully drawn at t = 0 (first frame / thumbnail)
-  [ok] frame 1: the hook's red word is a number
+  [ok] frame 0: every hook starts at t = 0 (renders finished; no negative-t hack)
+  [ok] frame 0: the hook's red word is a number
+  [ok] series postmark sits in the flap (x 175, y 258, r 100, persist, t 0)
   [ok] captions read exactly as the VO script
   [ok] verdict stamp lands in the last 2 s (2.0 s before the end)
   [ok] first partial payoff by ~40% of runtime (32%)
-  [ok] ends on a seamless loop back to frame 1 (spec loop: true)
+  [ok] ends on a seamless loop back to frame 0 (spec loop: true)
   [ok] three-line rule: the md's ≤ 3 core lines are on screen as written
 
 01C  $1,000,000 in pennies vs Lady Liberty: who's heavier?
   L1  $1,000,000 / $0.01 = 100,000,000 pennies
   L2  x 2.5 g = 250,000,000 g = 250,000 kg = 551,155.7 lb = 275.58 US tons  (card: ≈ 275 tons)
       envelope 275 vs exact 275.58: within 0.21%
-      Lady Liberty 450,000 lb = 225 tons = 204.1 t; pennies heavier by 50.6 tons (1.22x)
-      vs copper+steel only (312,000 lb = 156 tons): 1.77x
-  L3  100,000,000 x $0.0369 = $3,690,000  (said: $3.7 million, within 0.27%)
-      per dollar of pennies: 100 x 3.69 cents = $3.69; weight of $1 in pennies = 250 g
-      pinned follow-up, $1M in nickels: 20,000,000 x 5 g = 100,000 kg = 110.2 US tons (lighter than Lady Liberty)
+      Lady Liberty (NPS facts) 560,000 lb = 280 US tons = 254.0 t; she is heavier by 4.42 tons; pennies = 0.984 of her (1.6% short)
+      vs NPS 1954 handbook (450,000 lb = 225 tons): pennies/statue = 1.22 -> pennies heavier
+      vs NPS statistics copper+framework (616,000 lb = 308 tons): pennies/statue = 0.89 -> statue heavier
+  L3  100,000,000 x $0.0302 = $3,020,000  (said: about $3 million, within 0.66%)
+      at the FY2024 3.69 cents it was $3,690,000
+      per dollar of pennies: 100 x 3.02 cents = $3.02; weight of $1 in pennies = 250 g
+      pinned follow-up, $1M in nickels: 20,000,000 x 5 g = 100,000 kg = 110.2 US tons (lighter than every Lady Liberty figure)
       TikTok ladder: $1M in $1 bills = 1,000 kg = 1.10 US tons; in $100 bills = 10 kg
-  [ok] $1M in nickels is lighter than 225 tons
+  [ok] $1M in nickels is lighter than every Lady Liberty figure
   [ok] 100,000,000 pennies
   [ok] 250,000,000 g
   [ok] card '≈ 275 tons' rounds the exact US tons
-  [ok] heavier than 225 tons
-  [ok] heavier than the copper+steel-only figure too
-  [ok] $3.69M to mint
-  [ok] '$3.7 million' (VO) is $3.69M rounded
-  [ok] frame 1: hook fully drawn at t = 0 (first frame / thumbnail)
-  [ok] frame 1: the hook's red word is a number
+  [ok] stamp '280 tons' is the NPS 560,000 lb
+  [ok] 'she wins by a hair': statue heavier, by under 2%
+  [ok] 'photo finish' holds for the envelope figures too (275 vs 280)
+  [ok] $3.02M to mint
+  [ok] 'about $3 million' (VO) is $3.02M rounded
+  [ok] sticky carries the FY2025 unit cost
+  [ok] frame 0: every hook starts at t = 0 (renders finished; no negative-t hack)
+  [ok] frame 0: the hook's red word is a number
+  [ok] series postmark sits in the flap (x 175, y 258, r 100, persist, t 0)
   [ok] captions read exactly as the VO script
   [ok] verdict stamp lands in the last 2 s (2.0 s before the end)
-  [ok] first partial payoff by ~40% of runtime (25%)
-  [ok] ends on a seamless loop back to frame 1 (spec loop: true)
+  [ok] first partial payoff by ~40% of runtime (27%)
+  [ok] ends on a seamless loop back to frame 0 (spec loop: true)
   [ok] three-line rule: the md's ≤ 3 core lines are on screen as written
+
+engine lint (node src/cli.js check)
+  ✓ specs/01-cost-in-envelopes-a.json (26s, 20 ops)
+  ✓ specs/01-cost-in-envelopes-b.json (27.8s, 24 ops)
+  ✓ specs/01-cost-in-envelopes-c.json (14s, 18 ops)
+  [ok] zero linter warnings on all three specs
 
 ALL CHECKS PASS
 ```
@@ -685,6 +747,8 @@ ALL CHECKS PASS
 ---
 
 ### Verification log
+
+*(First QA pass, kept as history. Where it disagrees with the **Final fact check** and **Polish pass** below, those win: the negative-t hooks, 3.69¢, 225 tons and "the pennies win" described here have all been replaced.)*
 
 Independent fact-check, edit and QA pass on 2026-10-07, run against this file, the three specs and the math check. The approach was to assume mistakes, recompute everything, render and look.
 
@@ -747,3 +811,64 @@ Titles, tape, first spoken line and description now say the same thing (report �
 2. `check`: a reading-time lint for on-screen text (words vs seconds fully written on screen), not just captions. 8 of the 9 reading-time failures above were in on-screen text or cards, not captions.
 3. `grid`: a `labelSize` ("your share: 81" is fixed at 56 px).
 4. `stack`: a fourth, off-the-top-of-frame stack for the TikTok $1-bill rung (01B platform note).
+
+---
+
+### Final fact check
+
+Re-verified live with WebSearch on **2026-10-07** (polish pass). WebFetch to every cited domain was blocked by this environment's egress proxy, so each value was confirmed from the search results' text for the cited page, with a second independent result wherever one existed. "Changed" rows were fixed everywhere: md, spec text, stamps, cards, captions/VO and the math check (re-run, all pass).
+
+| Input | Value used | Source URL | Checked on | Status |
+|---|---|---|---|---|
+| Musk net worth (01A envelope) | ≈ $1T | Bloomberg via https://www.billionaires.africa/2026/10/06/elon-musk-becomes-a-trillionaire-again-as-spacex-shares-hit-highest-since-june/ and https://www.benzinga.com/trading-ideas/movers/26/10/62179650/elon-musk-is-a-trillionaire-again-thanks-to-spacex-stock | 2026-10-07 | ✓ Confirmed: Bloomberg $1.04T after +$65B on Mon 2026-10-05. Sticky date corrected Oct 6 → Oct 5 |
+| Musk, Forbes figure (pinned range) | ≈ $1T (Oct 5); $936B (Oct 1) | https://finance.yahoo.com/markets/stocks/articles/elon-musk-hits-trillionaire-status-171431066.html · https://www.forbes.com.au/news/billionaires/top-10-richest-people-in-world/ | 2026-10-07 | **Corrected:** the draft said "Forbes $936B on Oct 6"; $936B is Forbes' Oct 1 figure, and Forbes had him at about $1T on Oct 5 |
+| Musk first trillionaire | 2026-06-12 (SpaceX IPO) | https://www.timesofisrael.com/liveblog_entry/elon-musk-worlds-first-trillionaire-after-spacex-debut/ | 2026-10-07 | ✓ Confirmed (md context only) |
+| Costco hot dog + soda | $1.50, unchanged since 1985 | https://www.kfvs12.com/2026/04/29/costcos-iconic-150-hot-dog-combo-debuts-new-change-first-time-decades/ · https://fortune.com/2026/03/21/costco-hot-dog-price-1-50-ceo-confirms | 2026-10-07 | ✓ Confirmed (Apr 2026 water option, price unchanged) |
+| World population | 8.2 billion (July 2026) | https://www.census.gov/newsroom/stories/world-population-day.html | 2026-10-07 | ✓ Confirmed (Census IDB). The UN projection (≈ 8.30B, 2026-07-01) gives 80.3 each; noted in the pinned comment |
+| US population | 342,620,143 (2026-07-01) | https://www.census.gov/newsroom/stories/world-population-day.html | 2026-10-07 | ✓ Confirmed; not used on screen or in the math |
+| US debt crossing $40T | $40.05T at close of business 2026-08-18 | https://pbs.org/newshour/economy/the-u-s-national-debt-now-stands-at-40-trillion · https://www.wfae.org/2026-08-20/u-s-debt-tops-40-trillion | 2026-10-07 | ✓ Confirmed (draft's "$40.047T" restated as the reported $40.05T) |
+| Debt to the Penny, latest | $40,249,104,431,078 (2026-10-05) | https://www.indexbox.io/blog/us-public-debt-outstanding-reaches-40249104431078-dollars-on-october-5-2026/ (dataset: https://fiscaldata.treasury.gov/datasets/debt-to-the-penny/) | 2026-10-07 | **Updated** (was $40.242T on Oct 2). "$40T" within 0.62%; the 44,000 km card holds below $40.455T |
+| Note thickness / weight | 0.0043 in; ≈ 1 g | https://www.bep.gov/currency/faqs | 2026-10-07 | ✓ Confirmed |
+| Burj Khalifa | 828 m | https://www.skyscrapercenter.com/building/wd/3 | 2026-10-07 | ✓ Confirmed (still the tallest building) |
+| Earth's equatorial radius | 6,378.137 km (→ 40,075 km) | https://nssdc.gsfc.nasa.gov/planetary/factsheet/earthfact.html | 2026-10-07 | ✓ Confirmed |
+| Geostationary altitude | 35,786 km | https://glossary.ametsoc.org/wiki/Geostationary_satellite | 2026-10-07 | ✓ Confirmed (pinned only) |
+| Mean Earth–Moon distance | 384,400 km | https://spaceplace.nasa.gov/moon-distance/en/ | 2026-10-07 | ✓ Confirmed (pinned only) |
+| Penny / nickel weight | 2.500 g / 5.000 g | https://www.usmint.gov/learn/coin-and-medal-programs/coin-specifications | 2026-10-07 | ✓ Confirmed |
+| Penny unit cost | **3.02¢ (FY2025)** | https://www.usmint.gov/content/dam/usmint/reports/2025-annual-report.pdf · https://www.greysheet.com/news/story/house-passed-measure-could-impact-five-cent-coin-production | 2026-10-07 | **Changed** from FY2024's 3.69¢: line 3, sticky, verdict line and VO now say 100M × 3.02¢ = $3.02M, "about $3 million" |
+| Final circulating penny | struck 2025-11-12 | https://www.usmint.gov/news/press-releases/united-states-mint-hosts-historic-ceremonial-strike-for-final-production-of-the-circulating-one-cent-coin · https://www.coinnews.net/2025/11/12/us-mint-marks-end-circulating-penny/ | 2026-10-07 | ✓ Confirmed |
+| Statue of Liberty weight | **560,000 lb = 280 US tons** | https://www.nps.gov/stli/learn/statue-of-liberty-facts.htm · https://x.com/Interior/status/2070203740594811366 | 2026-10-07 | **Changed** from 450,000 lb (225 tons, NPS 1954 handbook). The pennies (275.6 tons) now lose by 1.6%: card "she wins by a hair", VO "A photo finish". All three NPS figures are in the pinned comment |
+| YouTube Shorts views count replays | since 2025-03-31 | https://support.sproutsocial.com/hc/en-us/articles/35874991211533-YouTube-Shorts-View-Count-Update-March-2025 | 2026-10-07 | ✓ Confirmed (md context) |
+| YouTube Oct 1 2026 Shorts originality update ("template-based bulk changes") | 2026-10-01 | https://ppc.land/re-uploaded-shorts-lose-reach-as-youtube-favours-original-clips/ | 2026-10-07 | ✓ Confirmed (md context) |
+| Instagram Reels "views" include replays | plays + replays | https://developers.facebook.com/docs/instagram-platform/reference/instagram-media/insights/ | 2026-10-07 | ✓ Confirmed (md context) |
+| Evidence-table view counts and outlier scores | as captured in `research/` | URLs in the evidence table | not re-checked | Research corpus with its own capture dates; not shown on screen |
+
+### Polish pass
+
+Finishing-producer pass on 2026-10-07 against the upgraded engine (README re-read first). `engine/src` was not edited.
+
+**Facts (see the table above).** Three inputs changed and were fixed everywhere:
+- **01C, Statue of Liberty 450,000 lb → 560,000 lb (NPS, current).** This flipped the verdict: 275.6 tons of pennies is 1.6% *lighter* than 280 tons. The stamp now reads "280 tons", the seal header "Heavier than her 280 tons?", the card "≈ 275 tons / she wins by a hair", the VO "She's about 280 tons… About 275 tons. A photo finish." The pinned comment sets out all three NPS figures (225 / 280 / 308 tons) so the comments can argue with sources.
+- **01C, penny unit cost 3.69¢ (FY2024) → 3.02¢ (FY2025, US Mint 2025 Annual Report).** Line 3 is now "100M × 3.02¢ = $3.02M", the sticky "1¢ cost 3.02¢ to make (US Mint, FY2025).", the verdict line "$3.02M to make $1M", and the VO "Minting them cost about $3 million."
+- **01A, Forbes figure.** "$936B on Oct 6" was really Forbes' Oct 1 figure; Forbes had him at about $1T on Oct 5. The sticky's Bloomberg date is now Oct 5 (the day of the $65B jump to $1.04T). The envelope's round $1T stands.
+- **01B, latest Debt to the Penny** refreshed to $40,249,104,431,078 (Oct 5). No on-screen change: the 44,000 km card holds below $40.455T.
+
+**Specs (all three rebuilt for the new engine; `check` returns zero warnings).**
+- **Frame 0 is the thumbnail.** Every hook is now at `t: 0`, so the engine renders it finished; the old `t: -0.6` hook hacks are gone. The number and unit run at 80–86 px (they were 68–70 px), and the question is its own strip at 70–74 px. The hook's longest line ("HOW MANY DO YOU GET?") can't fit at 80 px. The frame-0 props are larger and fill the content zone: a 330 px 🌭 / 270 px ✉️ beside 320 × 380 stamps with 40 px labels (they were 24–30 px), and `valueSize` set on each stamp. The postage stamps keep a `t: -0.4` start because `postage` has no `instant` mode and the stamp belongs in the thumbnail. The README documents this as "already on screen in frame 0".
+- **Postmark moved into the flap** (`x 175, y 258, r 100, persist`), clear of the hook.
+- **Legibility.** All working lines are now 64–96 px (some were 56–66 px), and the hero numbers 112–124 px (the counter was 112; the cards were 100–110). Sticky text is 60–66 px with explicit line breaks so it wraps cleanly. "you" under the 1.7 m figure is a 64 px write: the stack's built-in reference label is fixed at 44 px. Pen modes are chosen per line: `low` where a line sits under another, the default or `small` near the caption band so the pen never dips into the captions.
+- **One idea per screen, content zone filled.** Each beat now has its own screen with a `flip` or `clear` between them: hook → sticky → working → pattern break → seal → reveal → scale shot. Content sits in y 600–1300 instead of piling up at the top.
+- **Text anchors replace hand-measured marks:** the 01A circle targets the counter (`target {op: "count", pad: 40}`), and the pad is sized so the ellipse clears the end digits (the old circle clipped the last "7"). In 01C, the underline targets "100,000,000" and a red **double underline** targets "$3.02M". A circle around that short word can't avoid the "=" beside it.
+- **Envelope stacks:** both 01B stacks use `skin: "envelope"` (manila $10K envelopes instead of cash bricks), still to scale (321 px = 1.09 m beside a 500 px = 1.7 m person; 655 px = 1,092 m beside the 497 px = 828 m Burj at 0.6 px/m).
+- **Columns:** 01A writes "$1,000,000,000,000" over "÷ $1.50" (96 px). 01B's line 2 is a `lines` column "$40T ÷ $10K / = 4 billion envelopes" (84 px).
+- **`grid.labelSize`** 76 for "your share: 81" (it was fixed at 56). The tray grew to 70 px cells.
+- **Captions:** every card is ≤ 2 lines and ≤ 4 words/s, which split them into 15 / 14 / 9 cards. The two that failed the new linter (01A "Still can't picture it? Split them…" at 3 lines; 01C's opening at 3 lines) were split. `say` was added where the voice should read a number differently ("667 billion", "1.1 centimeters", "280 tons", "275 tons", "$3 million"). The VO text is unchanged for 01A and 01B; 01C's changed with the facts. Captions equal the VO (asserted).
+- **Loop:** `loop: true` on all three, so the last 0.35 s crossfades into frame 0.
+- **Runtimes:** 01A 24.2 → 26.0 s and 01B 26.4 → 27.8 s (the extra flips and the reading floor), both still under 30 s. 01C 13.9 → 14.0 s (Flash). Partial payoffs land at 37% / 32% / 27% and reveals at 68% / 70% / 62%. The verdict stamps land exactly 2.0 s before the end.
+
+**Render QA.** All three were rendered with `node src/cli.js render … -o out/`, and frames were extracted from each MP4 at 0.0 s, the partial payoff, the reveal and duration − 0.2 s (`engine/out/stills/01-cost-in-envelopes-*`). I looked at every one. Fixed between renders: the 01A circle clipping the last digit; the sticky wraps; the 01C stamp label overflowing its frame ("US MINT · 2.5 g" → "2.5 g EACH"); the 01C RETURN TO SENDER stamp covering the sticky's text (moved to the lower right); the `low` pen dipping into the caption band on lines near y 1250; and ops starting before a flip's midpoint (the linter flagged them as overlaps). The duration − 0.2 s frames show the intended crossfade back to the hook.
+
+**Audio** (`ffmpeg -af volumedetect`): 01A mean −25.2 dB / max −2.1 dB; 01B −24.5 / −1.7; 01C −23.7 / −1.9. All are inside the −30 to −18 dB mean and below the −1 dB max.
+
+**Math check** rewritten for the new specs (multiple hook ops, `lines` columns, stamp values, 01C's new answer, FY2025 cost, postmark position, no negative-t hooks, and the linter run) and re-run: all checks pass.
+
+**Engine requests (still open):** `postage` has no `instant` flag (stamps in the thumbnail still need a negative `t`); `stack`'s `ref.label` is fixed at 44 px (worked around with a 64 px write); a fourth, off-the-top-of-frame stack for the TikTok $1-bill rung (01B).

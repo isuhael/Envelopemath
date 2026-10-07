@@ -282,9 +282,12 @@ print(f"  09A  eggs (first payoff) {eggs_at:.1f}s = {eggs_at / a['duration']:.0%
       f"hero card {heroA:.2f}s of {a['duration']}s")
 assert eggs_at / a["duration"] <= 0.4 and 0.3 <= ban_at / a["duration"] <= 0.45
 
-# 09B: receipt rows are the exact 10-K lines; the "left:" counter steps down after each row
+# 09B: the cost lines are printed in frame 0; their amounts (exact 10-K lines per $10) print beside them
+# one by one, and the "left:" counter steps down after each
 heroB = rule_checks(b, "09B")
-rb = op(b, id="rb")
+rbl, rb = op(b, id="rbl"), op(b, id="rb")
+assert rbl["instant"] and [lab for lab, _ in rbl["items"]] == ["FOOD, DRINKS, BAGS", "CREW (LABOR)", "RENT",
+                                                             "ADS, DELIVERY, FEES", "HQ + DEPRECIATION"]
 assert [it["value"] for it in rb["items"]] == [f"-${s:.2f}" for s in shown_b[:5]]
 cnt = op(b, id="left")
 assert [v for _, v in cnt["steps"]] == left
@@ -298,16 +301,19 @@ print(f"  09B  food (first payoff) {food_at:.1f}s = {food_at / b['duration']:.0%
       f"hero card {heroB:.2f}s of {b['duration']}s")
 assert food_at / b["duration"] <= 0.4
 
-# 09C: prize x chance receipt; the "worth so far" counter steps up after each priced row
+# 09C: the prize chart is printed in frame 0; each tier's worth prints beside it; the counter adds them up
 heroC = rule_checks(c, "09C")
-rc = op(c, id="rc")
+rcl, rc = op(c, id="rcl"), op(c, id="rc")
+assert rcl["instant"] and rcl["items"] == [["$4", "1 IN 38"], ["$4–$7", "3 MORE WAYS"], ["$100", "2 WAYS"],
+                                           ["$50,000", f"1 IN {913_129.18 / 1e3:.0f}K"],
+                                           ["$1,000,000", f"1 IN {11_688_053.52 / 1e6:.1f}M"],
+                                           ["JACKPOT", f"1 IN {total / 1e6:.1f}M"]]
 vals = [it["value"] for it in rc["items"] if it["value"] not in ("", "?")]
 assert vals == [f"{s}¢" for s in shown], vals
 wc = op(c, id="worth")
 assert [v for _, v in wc["steps"]] == [0] + [sum(shown[:i + 1]) for i in range(len(shown))], wc["steps"]
 tC = texts(c)
-for s in ("$4 · 1 IN 38", "$50,000 · 1 IN 913K", "$1,000,000 · 1 IN 11.7M", "JACKPOT · 1 IN 292.2M",
-          f"${cash / 1e6:.1f}M × {1 - tax_rate:.2f} ≈ ${after / 1e6:.1f}M", f"÷ {total / 1e6:.1f}M ≈ {round(jp * 100)}¢",
+for s in (f"${cash / 1e6:.1f}M × {1 - tax_rate:.2f} ≈ ${after / 1e6:.1f}M", f"÷ {total / 1e6:.1f}M ≈ {round(jp * 100)}¢",
           f"+ {cum_shown}¢ small prizes = ?", f"≈ {round(whole * 100)}¢"):
     assert any(s in t for t in tC), s
 assert f"${cash / 1e6:.1f}M" in op(c, type="sticky")["text"]

@@ -102,8 +102,8 @@
       {
         "id": "02A",
         "title": "$50,000 an Hour Since Year 1, Still No $1 Trillion (Clocked No. 1)",
-        "hook": "EARN $50,000 AN HOUR / SINCE YEAR 1… / STILL NO *$1 TRILLION* (on screen at frame 0); spoken: \"Fifty grand an hour, since Year One.\"",
-        "runtime_s": 25.7,
+        "hook": "EARN $50,000 AN HOUR / SINCE YEAR 1… / STILL NO *$1 TRILLION* over a 🕰️ (finished at frame 0, the thumbnail); spoken: \"Fifty grand an hour, since Year One.\"",
+        "runtime_s": 24.5,
         "spec": "engine/specs/02-rate-clock-a.json",
         "key_numbers": [
           "$1T ÷ $50K/hr = 20,000,000 hrs",
@@ -115,10 +115,11 @@
           "$1.2M/day, $438.3M/yr at $50K/hr"
         ],
         "sources": [
-          "Forbes via Nairametrics, 2026-06-13: Musk first trillionaire, $1.1T on 2026-06-12 after SpaceX Nasdaq debut — https://nairametrics.com/2026/06/13/elon-musk-becomes-worlds-first-trillionaire-as-spacex-shares-surge-on-nasdaq-debut/",
-          "Channel 4 News, 2026-06-12 — https://www.channel4.com/news/elon-musk-becomes-worlds-first-trillionaire-as-spacex-goes-public",
-          "Forbes 400 2026 via Gray News/WECT, 2026-09-19: Musk $908B — https://www.wect.com/2026/09/19/elon-musk-jeff-bezos-among-richest-americans-forbes-2026-list-heres-how-much-theyre-worth/",
-          "Julius Caesar born 12/13 July 100 BC — https://www.worldhistory.org/timeline/Julius_Caesar/ and https://en.wikipedia.org/wiki/Julius_Caesar (checked 2026-10-07)",
+          "AP via The Gazette, 2026-06-12: SpaceX Nasdaq debut, Musk first trillionaire (Forbes $1.1T; Bloomberg $1.11T) — https://gazette.com/2026/06/12/spacex-soars-25-in-wall-street-debut-and-makes-elon-musk-the-first-trillionaire/",
+          "Nairametrics, 2026-06-13 (Forbes $1.1T) — https://nairametrics.com/2026/06/13/elon-musk-becomes-worlds-first-trillionaire-as-spacex-shares-surge-on-nasdaq-debut/",
+          "Quartz, 2026-10-05: Bloomberg Billionaires Index $1.04T, trillionaire again — https://qz.com/elon-musk-trillionaire-spacex-stock-surge-100526 (also Billionaires.Africa, 2026-10-06)",
+          "Forbes real-time list via Derecha Diario, Oct 2026: Musk $936B — https://derechadiario.com.ar/negocios-finanzas/ranking-forbes-quienes-10-personas-ricas-mundo-en-octubre-2026",
+          "Julius Caesar born 12/13 July 100 BC — https://en.wikipedia.org/wiki/Julius_Caesar ; https://www.worldhistory.org/timeline/Julius_Caesar/ ; Britannica (re-checked 2026-10-07)",
           "$50K/hr hypothetical from the viral claim — research/watch/group1-video4.md"
         ],
         "hook_score_before": 7.5,
@@ -126,13 +127,14 @@
         "math_ok": true,
         "facts_ok": true,
         "replaced": false,
-        "review": null
+        "review": null,
+        "mp4": "engine/out/02-rate-clock-a.mp4"
       },
       {
         "id": "02B",
         "title": "Apple Makes Your $65K Salary in How Many Seconds? (Clocked No. 2)",
-        "hook": "APPLE MAKES YOUR / *$65K* SALARY IN / *?? SECONDS* (on screen at frame 0); spoken: \"Apple makes your salary in how many seconds?\"",
-        "runtime_s": 21.2,
+        "hook": "APPLE MAKES YOUR / *$65K* SALARY IN / *?? SECONDS* over a ⏱️ (finished at frame 0); spoken: \"Apple makes your salary in how many seconds?\"",
+        "runtime_s": 19.8,
         "spec": "engine/specs/02-rate-clock-b.json",
         "key_numbers": [
           "Apple FY2025 net sales $416.161B ÷ 31.536M s = $13,196/s (screen ≈$13.2K/s); exact 364-day FY $13,233/s",
@@ -144,23 +146,25 @@
           "$791,783/min, $1.14B/day"
         ],
         "sources": [
-          "Apple Newsroom 'Apple reports fourth quarter results', 2025-10-30: FY2025 revenue $416B — https://www.apple.com/newsroom/2025/10/apple-reports-fourth-quarter-results/",
-          "Apple Form 10-K FY ended 2025-09-27 (52 weeks): net sales $416,161M, net income $112,010M — https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
-          "Apple Newsroom Q3 FY2026, 2026-07-30: revenue $109.4B, +16% YoY — https://www.apple.com/au/newsroom/2026/07/apple-reports-third-quarter-results/",
-          "BLS Usual Weekly Earnings Q2 2026, released 2026-07-21: median full-time $1,251/wk — https://www.bls.gov/news.release/archives/wkyeng_07212026.htm"
+          "Apple Form 10-K FY ended 2025-09-27 (52 weeks): net sales $416,161M, net income $112,010M — https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm (re-checked 2026-10-07)",
+          "Apple Newsroom 'Apple reports fourth quarter results', 2025-10-30 — https://www.apple.com/newsroom/2025/10/apple-reports-fourth-quarter-results/",
+          "Apple Newsroom Q3 FY2026, 2026-07-30: revenue $109.4B, +16% YoY (pinned comment context; re-confirmed 2026-10-07) — https://www.apple.com/newsroom/2026/07/apple-reports-third-quarter-results/",
+          "Apple Q4 FY2026 report date not yet announced as of 2026-10-07 — https://www.macobserver.com/news/apple-q4-fy2026-earnings-date-not-announced/",
+          "BLS Usual Weekly Earnings Q2 2026, released 2026-07-21: median full-time $1,251/wk (Q3 due 2026-10-28) — https://www.bls.gov/news.release/archives/wkyeng_07212026.htm"
         ],
         "hook_score_before": 7,
         "hook_score_after": 8,
         "math_ok": true,
         "facts_ok": true,
         "replaced": false,
-        "review": null
+        "review": null,
+        "mp4": "engine/out/02-rate-clock-b.mp4"
       },
       {
         "id": "02C",
         "title": "Spend $1 Billion in 24 Hours: How Much per Heartbeat? (Clocked No. 3)",
-        "hook": "SPEND *$1 BILLION* / IN 24 HOURS. / HOW MUCH PER / *HEARTBEAT?* (on screen at frame 0); spoken: \"Spend a billion in 24 hours. How much per heartbeat?\"",
-        "runtime_s": 17.8,
+        "hook": "SPEND *$1 BILLION* / IN 24 HOURS. / HOW MUCH PER / *HEARTBEAT?* over 💸 and a real 24:00:00 countdown (finished at frame 0); spoken: \"Spend a billion in 24 hours. How much per heartbeat?\"",
+        "runtime_s": 17.0,
         "spec": "engine/specs/02-rate-clock-c.json",
         "key_numbers": [
           "$1B ÷ 24 hrs = $41,666,667/hr (screen ≈$41.7M/hr)",
@@ -168,10 +172,11 @@
           "$694,444/min",
           "$1B ÷ 100,000 beats = $10,000/beat; at 70 bpm $9,921 (within 0.8%); 60 bpm $11,574; 100 bpm $6,944",
           "8 hrs asleep → $17,361/s while awake",
-          "This 17.8 s video = $206,019"
+          "This 17.0 s video = $196,759",
+          "Heart at a true 70 bpm; running total +$10K per beat ($40K after 4 beats)"
         ],
         "sources": [
-          "Cleveland Clinic, 'How Blood Flows Through Your Heart & Body': heart beats around 100,000 times daily — https://my.clevelandclinic.org/health/articles/17060-how-does-the-blood-flow-through-your-heart (checked 2026-10-07)",
+          "Cleveland Clinic: heart beats about 100,000 times a day — https://my.clevelandclinic.org/health/articles/17060-how-does-the-blood-flow-through-your-heart ; https://health.clevelandclinic.org/facts-about-the-heart (re-checked 2026-10-07)",
           "Texas Heart Institute, Heart Anatomy: average heart beats 100,000 times a day — https://www.texasheart.org/heart-health/heart-information-center/topics/heart-anatomy/ (checked 2026-10-07)",
           "American Heart Association newsroom (cardiologist quote, 'over 100,000 times a day') — https://newsroom.heart.org/local-news/on-world-heart-day-hot-springs-cardiologist-urges-residents-to-take-charge-of-heart-health (checked 2026-10-07)",
           "$1B-in-24h premise is hypothetical (Dr Bandana/Tilbury spend-down class) — research/raw/yt-big-number-math.md"
@@ -181,7 +186,8 @@
         "math_ok": true,
         "facts_ok": true,
         "replaced": false,
-        "review": null
+        "review": null,
+        "mp4": "engine/out/02-rate-clock-c.mp4"
       }
     ]
   },

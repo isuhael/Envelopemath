@@ -17,24 +17,24 @@
     { "type": "hook", "t": 0, "text": ["$2,500 every 2 weeks", "is *NOT* $60,000 a year!"], "y": 430, "size": 76, "persist": true },
 
     { "type": "write", "id": "q", "t": -1.2, "text": "1 year = $ ?", "x": 540, "y": 820, "size": 170, "align": "center" },
-    { "type": "sticky", "t": -1.2, "x": 540, "y": 1138, "w": 420, "size": 64, "cps": 40, "rot": -3, "title": "ASSUME:", "text": "pre-tax pay ≈ US median (BLS)" },
+    { "type": "sticky", "t": -1.2, "x": 540, "y": 1138, "w": 440, "size": 64, "cps": 40, "rot": -3, "title": "ASSUME:", "text": "pre-tax pay ≈\nUS median (BLS)" },
     { "type": "stamp", "t": 0.35, "text": "ENVELOPE\nPUZZLE", "x": 858, "y": 300, "size": 44, "rot": 7, "shake": 8 },
     { "type": "annotate", "t": 0.55, "kind": "circle", "target": { "op": "q", "match": "?" }, "dur": 0.35 },
-    { "type": "write", "t": 0.85, "text": "no calculator.", "x": 540, "y": 948, "size": 84, "align": "center", "color": "red", "cps": 18 },
+    { "type": "write", "t": 0.85, "text": "no calculator.", "x": 540, "y": 948, "size": 84, "align": "center", "color": "red", "cps": 24, "pen": "small-low" },
 
     { "type": "flip", "t": 1.85, "dur": 0.5 },
-    { "type": "lines", "id": "trap", "t": 2.1, "lines": ["$2,500 × 24", "= $60,000"], "x": 520, "y": 790, "size": 116, "lineHeight": 140, "align": "center", "color": "pencil", "cps": 26, "gap": 0.12 },
+    { "type": "lines", "id": "trap", "t": 2.1, "lines": ["$2,500 × 24", "= $60,000"], "x": 520, "y": 790, "size": 116, "lineHeight": 140, "align": "center", "color": "pencil", "cps": 26, "gap": 0.12, "pen": "low" },
     { "type": "annotate", "t": 3.05, "kind": "strike", "target": { "op": "trap", "match": "24" }, "width": 9, "dur": 0.3 },
-    { "type": "write", "t": 3.4, "text": "every 2 weeks ≠ twice a month", "x": 520, "y": 1062, "size": 76, "align": "center", "color": "red", "cps": 32 },
+    { "type": "write", "t": 3.4, "text": "every 2 weeks ≠ twice a month", "x": 490, "y": 1062, "size": 76, "align": "center", "color": "red", "cps": 40, "pen": "low" },
     { "type": "stamp", "t": 4.3, "text": "RETURN\nTO SENDER", "x": 540, "y": 1200, "size": 60, "rot": -6, "shake": 12 },
 
     { "type": "flip", "t": 4.8, "dur": 0.5 },
-    { "type": "write", "t": 5.05, "text": "1 year =", "x": 540, "y": 710, "size": 120, "align": "center", "cps": 24 },
+    { "type": "write", "t": 5.05, "text": "1 year =", "x": 540, "y": 710, "size": 120, "align": "center", "cps": 24, "pen": "low" },
     { "type": "envelope", "t": 5.1, "x": 540, "y": 1000, "w": 720, "label": " " },
     { "type": "stamp", "t": 5.75, "text": "IN THE PIN", "x": 540, "y": 1158, "size": 56, "rot": -5, "shake": 10 },
 
     { "type": "flip", "t": 6.75, "dur": 0.5 },
     { "type": "write", "t": 7.0, "text": "1 year = $ ?", "x": 540, "y": 820, "size": 170, "align": "center", "cps": 300, "pen": false },
-    { "type": "sticky", "t": 7.0, "x": 540, "y": 1138, "w": 420, "size": 64, "cps": 1000, "rot": -3, "title": "ASSUME:", "text": "pre-tax pay ≈ US median (BLS)" }
+    { "type": "sticky", "t": 7.0, "x": 540, "y": 1138, "w": 440, "size": 64, "cps": 1000, "rot": -3, "title": "ASSUME:", "text": "pre-tax pay ≈\nUS median (BLS)" }
   ]
 }

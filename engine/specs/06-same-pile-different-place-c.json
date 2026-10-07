@@ -12,7 +12,8 @@
     {
       "t": 0.15,
       "end": 1.7,
-      "text": "Same million bucks. Six jobs."
+      "text": "Same $1 million. 6 jobs.",
+      "say": "Same million bucks. Six jobs."
     },
     {
       "t": 1.7,
@@ -27,7 +28,8 @@
     {
       "t": 5.65,
       "end": 7.85,
-      "text": "Federal minimum wage: sixty-six years."
+      "text": "Federal minimum wage: 66 years.",
+      "say": "Federal minimum wage: sixty-six years."
     },
     {
       "t": 7.85,
@@ -37,17 +39,20 @@
     {
       "t": 8.95,
       "end": 11.6,
-      "text": "A high school teacher: about fourteen."
+      "text": "A high school teacher: about 14.",
+      "say": "A high school teacher: about fourteen."
     },
     {
       "t": 11.65,
       "end": 14.2,
-      "text": "A nurse: just over ten."
+      "text": "A nurse: just over 10.",
+      "say": "A nurse: just over ten."
     },
     {
       "t": 14.25,
       "end": 16.8,
-      "text": "A software developer: just over seven."
+      "text": "A software developer: just over 7.",
+      "say": "A software developer: just over seven."
     },
     {
       "t": 16.85,
@@ -57,32 +62,38 @@
     {
       "t": 18.3,
       "end": 21.25,
-      "text": "Four hundred grand, set by law. Two and a half years."
+      "text": "$400K, set by law. 2½ years.",
+      "say": "Four hundred grand, set by law. Two and a half years."
     },
     {
       "t": 21.3,
       "end": 22.85,
-      "text": "And the average S&P 500 CEO?"
+      "text": "And the average S&P 500 CEO?",
+      "say": "And the average S and P five hundred CEO?"
     },
     {
       "t": 22.9,
       "end": 24.85,
-      "text": "Sixteen days."
+      "text": "16 days.",
+      "say": "Sixteen days."
     },
     {
-      "t": 25.0,
+      "t": 25,
       "end": 26.6,
-      "text": "Sixty-two grand a day."
+      "text": "$62K a day.",
+      "say": "Sixty-two grand a day."
     },
     {
       "t": 26.6,
       "end": 28.3,
-      "text": "An envelope every thirty-eight hours."
+      "text": "An envelope every 38 hours.",
+      "say": "An envelope every thirty-eight hours."
     },
     {
-      "t": 28.35,
+      "t": 28.75,
       "end": 30.35,
-      "text": "Minimum wage: six point six years for one."
+      "text": "Minimum wage: 6.6 years for one.",
+      "say": "Minimum wage: six point six years for one."
     },
     {
       "t": 30.4,
@@ -93,7 +104,7 @@
   "ops": [
     {
       "type": "postmark",
-      "t": -0.5,
+      "t": 0,
       "x": 175,
       "y": 258,
       "r": 100,
@@ -105,7 +116,7 @@
     },
     {
       "type": "postage",
-      "t": -0.5,
+      "t": -0.4,
       "x": 880,
       "y": 334,
       "value": "$1M",
@@ -117,28 +128,40 @@
     },
     {
       "type": "hook",
-      "t": -0.6,
+      "t": 0,
       "text": [
         "Same $1 million,",
         "6 jobs: how long",
         "to *earn* it?"
       ],
-      "y": 480,
-      "size": 76,
+      "y": 490,
+      "size": 84,
       "until": 3.1
     },
     {
       "type": "grid",
-      "t": -0.7,
+      "t": -0.4,
       "x": 540,
-      "y": 800,
+      "y": 850,
       "rows": 2,
       "cols": 5,
       "filled": 10,
+      "prefilled": 10,
       "emoji": "✉️",
-      "cell": 135,
-      "dur": 0.35,
-      "label": "10 envelopes × $100K",
+      "cell": 150,
+      "dur": 0.01,
+      "until": 3.1
+    },
+    {
+      "type": "write",
+      "t": -1.2,
+      "text": "10 envelopes × $100K",
+      "x": 540,
+      "y": 1215,
+      "size": 72,
+      "align": "center",
+      "color": "red",
+      "cps": 30,
       "until": 3.1
     },
     {
@@ -146,72 +169,79 @@
       "t": 3.15,
       "text": "$1,000,000 ÷ a year's pay",
       "x": 540,
-      "y": 545,
-      "size": 80,
+      "y": 575,
+      "size": 88,
       "align": "center",
-      "cps": 22,
+      "cps": 24,
       "until": 5.6
     },
     {
       "type": "sticky",
       "t": 3.2,
       "x": 540,
-      "y": 1000,
-      "w": 600,
-      "size": 48,
+      "w": 640,
+      "size": 64,
       "cps": 70,
+      "rot": -3,
       "title": "ASSUME:",
       "text": "full-time, before tax · BLS medians, May 2025 · CEO: S&P 500 average, 2025 (AFL-CIO)",
-      "until": 8.95
+      "until": 8.95,
+      "y": 1026
     },
     {
       "type": "write",
       "t": 5.65,
-      "text": "time to earn $1M:",
-      "x": 540,
-      "y": 532,
-      "size": 88,
-      "align": "center",
-      "cps": 20
-    },
-    {
-      "type": "write",
-      "t": 5.75,
       "text": "⏰ Minimum wage",
       "x": 110,
-      "y": 650,
-      "size": 64,
+      "y": 720,
+      "size": 68,
       "color": "pencil",
-      "cps": 18
-    },
-    {
-      "type": "write",
-      "t": 6.3,
-      "text": "$7.25 × 2,080 hrs = $15,080",
-      "x": 186,
-      "y": 704,
-      "size": 46,
-      "color": "red",
-      "cps": 34
-    },
-    {
-      "type": "write",
-      "t": 6.7,
-      "text": "· · · · ·",
-      "x": 544,
-      "y": 642,
-      "size": 48,
-      "color": "pencil",
-      "cps": 60,
+      "cps": 20,
       "pen": false
     },
     {
       "type": "write",
-      "t": 7.0,
+      "t": 5.8,
+      "text": "$1M ÷ $15,080 a year",
+      "x": 540,
+      "y": 530,
+      "size": 84,
+      "align": "center",
+      "cps": 26,
+      "until": 8.95
+    },
+    {
+      "type": "write",
+      "t": 6.7,
+      "text": "($7.25/hr × 2,080 hrs)",
+      "x": 540,
+      "y": 615,
+      "size": 64,
+      "align": "center",
+      "color": "pencil",
+      "cps": 34,
+      "pen": "small",
+      "until": 8.95
+    },
+    {
+      "type": "write",
+      "t": 6.7,
+      "text": "· ·",
+      "x": 576.3,
+      "y": 712,
+      "size": 56,
+      "color": "pencil",
+      "cps": 60,
+      "pen": false,
+      "decor": true
+    },
+    {
+      "type": "write",
+      "t": 7,
       "text": "66.3 yrs",
-      "x": 905,
-      "y": 650,
-      "size": 80,
+      "x": 920,
+      "y": 720,
+      "size": 88,
       "align": "right",
       "color": "ink",
       "cps": 14
@@ -221,39 +251,42 @@
       "t": 8.95,
       "text": "🍎 HS teacher",
       "x": 110,
-      "y": 770,
-      "size": 64,
+      "y": 830,
+      "size": 68,
       "color": "pencil",
-      "cps": 18
+      "cps": 20,
+      "pen": false
     },
     {
       "type": "write",
-      "t": 9.5,
-      "text": "$72,040 a year",
-      "x": 186,
-      "y": 824,
-      "size": 46,
-      "color": "red",
-      "cps": 34
+      "t": 9.1,
+      "text": "$1M ÷ $72,040 a year",
+      "x": 540,
+      "y": 530,
+      "size": 84,
+      "align": "center",
+      "cps": 26,
+      "until": 11.65
     },
     {
       "type": "write",
       "t": 9.9,
-      "text": "· · · · · · · · ·",
-      "x": 471,
-      "y": 762,
-      "size": 48,
+      "text": "· · · · · ·",
+      "x": 498.7,
+      "y": 822,
+      "size": 56,
       "color": "pencil",
       "cps": 60,
-      "pen": false
+      "pen": false,
+      "decor": true
     },
     {
       "type": "write",
       "t": 10.2,
       "text": "13.9 yrs",
-      "x": 905,
-      "y": 770,
-      "size": 80,
+      "x": 920,
+      "y": 830,
+      "size": 88,
       "align": "right",
       "color": "ink",
       "cps": 14
@@ -263,39 +296,42 @@
       "t": 11.65,
       "text": "🩺 Nurse (RN)",
       "x": 110,
-      "y": 890,
-      "size": 64,
+      "y": 940,
+      "size": 68,
       "color": "pencil",
-      "cps": 18
+      "cps": 20,
+      "pen": false
     },
     {
       "type": "write",
-      "t": 12.2,
-      "text": "$97,550 a year",
-      "x": 186,
-      "y": 944,
-      "size": 46,
-      "color": "red",
-      "cps": 34
+      "t": 11.8,
+      "text": "$1M ÷ $97,550 a year",
+      "x": 540,
+      "y": 530,
+      "size": 84,
+      "align": "center",
+      "cps": 26,
+      "until": 14.25
     },
     {
       "type": "write",
       "t": 12.6,
-      "text": "· · · · · · · ·",
-      "x": 480,
-      "y": 882,
-      "size": 48,
+      "text": "· · · · ·",
+      "x": 508.3,
+      "y": 932,
+      "size": 56,
       "color": "pencil",
       "cps": 60,
-      "pen": false
+      "pen": false,
+      "decor": true
     },
     {
       "type": "write",
       "t": 12.9,
       "text": "10.3 yrs",
-      "x": 905,
-      "y": 890,
-      "size": 80,
+      "x": 920,
+      "y": 940,
+      "size": 88,
       "align": "right",
       "color": "ink",
       "cps": 14
@@ -305,91 +341,100 @@
       "t": 14.25,
       "text": "💻 Software dev",
       "x": 110,
-      "y": 1010,
-      "size": 64,
+      "y": 1050,
+      "size": 68,
       "color": "pencil",
-      "cps": 18
+      "cps": 20,
+      "pen": false
     },
     {
       "type": "write",
-      "t": 14.8,
-      "text": "$135,980 a year",
-      "x": 186,
-      "y": 1064,
-      "size": 46,
-      "color": "red",
-      "cps": 34
+      "t": 14.4,
+      "text": "$1M ÷ $135,980 a year",
+      "x": 540,
+      "y": 530,
+      "size": 84,
+      "align": "center",
+      "cps": 26,
+      "until": 16.85
     },
     {
       "type": "write",
       "t": 15.2,
-      "text": "· · · · · · · · ·",
-      "x": 500,
-      "y": 1002,
-      "size": 48,
+      "text": "· · · · · ·",
+      "x": 529.7,
+      "y": 1042,
+      "size": 56,
       "color": "pencil",
       "cps": 60,
-      "pen": false
+      "pen": false,
+      "decor": true
     },
     {
       "type": "write",
       "t": 15.5,
       "text": "7.4 yrs",
-      "x": 905,
-      "y": 1010,
-      "size": 80,
+      "x": 920,
+      "y": 1050,
+      "size": 88,
       "align": "right",
       "color": "ink",
       "cps": 14
-    },
-    {
-      "type": "hook",
-      "t": 16.85,
-      "text": [
-        "Wait… the *President*?"
-      ],
-      "y": 1116,
-      "size": 66,
-      "until": 18.3
     },
     {
       "type": "write",
       "t": 18.3,
       "text": "🏛️ US President",
       "x": 110,
-      "y": 1130,
-      "size": 64,
+      "y": 1160,
+      "size": 68,
       "color": "pencil",
-      "cps": 18
+      "cps": 20,
+      "pen": false
     },
     {
       "type": "write",
-      "t": 18.85,
-      "text": "$400,000 a year, by law",
-      "x": 186,
-      "y": 1184,
-      "size": 46,
-      "color": "red",
-      "cps": 34
+      "t": 18.5,
+      "text": "$1M ÷ $400,000 a year",
+      "x": 540,
+      "y": 530,
+      "size": 84,
+      "align": "center",
+      "cps": 26,
+      "until": 21.3
     },
     {
       "type": "write",
-      "t": 19.25,
-      "text": "· · · · · · · · ·",
-      "x": 505,
-      "y": 1122,
-      "size": 48,
+      "t": 19.3,
+      "text": "(set by law)",
+      "x": 540,
+      "y": 615,
+      "size": 64,
+      "align": "center",
+      "color": "pencil",
+      "cps": 34,
+      "pen": "small",
+      "until": 21.3
+    },
+    {
+      "type": "write",
+      "t": 19.3,
+      "text": "· · · · · ·",
+      "x": 535,
+      "y": 1152,
+      "size": 56,
       "color": "pencil",
       "cps": 60,
-      "pen": false
+      "pen": false,
+      "decor": true
     },
     {
       "type": "write",
       "t": 19.55,
       "text": "2.5 yrs",
-      "x": 905,
-      "y": 1130,
-      "size": 80,
+      "x": 920,
+      "y": 1160,
+      "size": 88,
       "align": "right",
       "color": "ink",
       "cps": 14
@@ -399,51 +444,78 @@
       "t": 21.3,
       "text": "💼 S&P 500 CEO",
       "x": 110,
-      "y": 1250,
-      "size": 64,
+      "y": 1270,
+      "size": 68,
       "color": "pencil",
-      "cps": 18
+      "cps": 20,
+      "pen": false
     },
     {
       "type": "write",
-      "t": 21.85,
-      "text": "$22.8M a year, excl. Musk",
-      "x": 186,
-      "y": 1304,
-      "size": 46,
-      "color": "red",
-      "cps": 34
+      "t": 21.5,
+      "text": "$1M ÷ $22.8M a year",
+      "x": 540,
+      "y": 530,
+      "size": 84,
+      "align": "center",
+      "cps": 26,
+      "until": 24.9
+    },
+    {
+      "type": "write",
+      "t": 22.3,
+      "text": "(average, excl. Musk)",
+      "x": 540,
+      "y": 615,
+      "size": 64,
+      "align": "center",
+      "color": "pencil",
+      "cps": 34,
+      "pen": "small",
+      "until": 24.9
     },
     {
       "type": "write",
       "t": 22.6,
-      "text": "· · · ·",
-      "x": 532,
-      "y": 1242,
-      "size": 48,
+      "text": "· ·",
+      "x": 563.2,
+      "y": 1262,
+      "size": 56,
       "color": "pencil",
       "cps": 60,
-      "pen": false
+      "pen": false,
+      "decor": true
     },
     {
       "type": "write",
       "t": 22.9,
       "text": "16 days",
-      "x": 905,
-      "y": 1250,
-      "size": 96,
+      "x": 920,
+      "y": 1270,
+      "size": 112,
       "align": "right",
       "color": "red",
-      "cps": 14
+      "cps": 14,
+      "id": "ceo"
+    },
+    {
+      "type": "hook",
+      "t": 16.85,
+      "text": [
+        "Wait… the *President*?"
+      ],
+      "y": 560,
+      "size": 80,
+      "until": 18.3
     },
     {
       "type": "annotate",
       "t": 23.6,
       "kind": "circle",
-      "x": 646,
-      "y": 1172,
-      "w": 259,
-      "h": 92,
+      "target": {
+        "op": "ceo",
+        "match": "16 days"
+      },
       "dur": 0.4
     },
     {
@@ -454,52 +526,92 @@
       "type": "write",
       "t": 25.2,
       "text": "$22.8M ÷ 365 ≈ $62K a day",
-      "x": 129,
-      "y": 545,
+      "x": 540,
+      "y": 575,
       "size": 80,
-      "color": "ink",
-      "cps": 22
+      "align": "center",
+      "cps": 24
     },
     {
       "type": "grid",
-      "t": 25.9,
+      "t": 25.75,
       "x": 540,
-      "y": 700,
+      "y": 760,
       "rows": 2,
       "cols": 5,
       "filled": 10,
       "emoji": "✉️",
-      "cell": 135,
-      "dur": 1.5
+      "cell": 150,
+      "dur": 1.4
     },
     {
       "type": "write",
-      "t": 27.3,
+      "t": 27.1,
       "text": "all 10 ✉ in 16 days",
-      "x": 235,
-      "y": 1040,
-      "size": 84,
+      "x": 540,
+      "y": 1160,
+      "size": 92,
+      "align": "center",
       "color": "red",
-      "cps": 20
+      "cps": 24
     },
     {
       "type": "stamp",
-      "t": 27.9,
+      "t": 27.6,
       "text": "FIRST CLASS",
       "x": 560,
-      "y": 770,
+      "y": 835,
       "size": 74,
       "rot": -7
     },
     {
+      "type": "clear",
+      "t": 28.75
+    },
+    {
       "type": "write",
-      "t": 29.0,
-      "text": "min. wage: 1 ✉ ≈ 6.6 yrs",
-      "x": 160,
-      "y": 1190,
-      "size": 80,
-      "color": "red",
+      "t": 28.8,
+      "text": "minimum wage:",
+      "x": 540,
+      "y": 720,
+      "size": 88,
+      "align": "center",
+      "color": "pencil",
       "cps": 20
+    },
+    {
+      "type": "write",
+      "id": "mw",
+      "t": 29.35,
+      "text": "1 ✉ ≈ 6.6 yrs",
+      "x": 540,
+      "y": 905,
+      "size": 130,
+      "align": "center",
+      "color": "red",
+      "cps": 12
+    },
+    {
+      "type": "grid",
+      "t": 28.85,
+      "x": 540,
+      "y": 1060,
+      "rows": 2,
+      "cols": 5,
+      "filled": 1,
+      "emoji": "✉️",
+      "cell": 130,
+      "dur": 0.5
+    },
+    {
+      "type": "annotate",
+      "t": 30.5,
+      "kind": "underline",
+      "target": {
+        "op": "mw",
+        "match": "6.6 yrs"
+      },
+      "dur": 0.35
     }
   ]
 }

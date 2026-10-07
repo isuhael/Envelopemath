@@ -1,367 +1,51 @@
 {
   "id": "07-sealed-envelope-estimate-b",
   "title": "The 100 Envelope Challenge: how much is in all 100? Guess first. (Sealed Answer No. 07B)",
-  "paper": {
-    "style": "kraft",
-    "seed": 11
-  },
+  "paper": {"style": "kraft", "seed": 11},
   "duration": 27.8,
   "loop": true,
-  "vo": "The hundred envelope challenge: how much in all? / A dollar in the first, a hundred in the last. Guess the total. / Low end: every envelope a dollar. A hundred bucks. / High end: every envelope a hundred. Ten grand. / Even steps, so the average is about fifty. Call it five grand. / Under a hundred, or over ten grand? You're already out. / The exact total's in here. Lock in your guess. / Five thousand fifty. Exactly halfway. / Now guess the fifty-two week challenge.",
+  "vo": "The hundred envelope challenge: how much in all? / A dollar in the first, a hundred in the last. / Guess the total. / Low end: every envelope a dollar. A hundred bucks. / High end: every envelope a hundred. Ten grand. / Even steps, so the average is about fifty. Call it five grand. / Under a hundred, or over ten grand? You're already out. / The exact total's in here. Lock in your guess. / Five thousand fifty. Exactly halfway. / Now guess the fifty-two week challenge.",
   "captions": [
-    {
-      "t": 0.2,
-      "end": 2.8,
-      "text": "The 100 envelope challenge: how much in all?",
-      "say": "The hundred envelope challenge: how much in all?"
-    },
-    {
-      "t": 2.9,
-      "end": 6.2,
-      "text": "A dollar in the first, a hundred in the last. Guess the total.",
-      "say": "A dollar in the first, a hundred in the last. Guess the total."
-    },
-    {
-      "t": 6.6,
-      "end": 9.6,
-      "text": "Low end: every envelope $1. 100 bucks.",
-      "say": "Low end: every envelope a dollar. A hundred bucks."
-    },
-    {
-      "t": 9.7,
-      "end": 12.5,
-      "text": "High end: every envelope $100. Ten grand.",
-      "say": "High end: every envelope a hundred. Ten grand."
-    },
-    {
-      "t": 12.6,
-      "end": 16.2,
-      "text": "Even steps, so the average is about $50. Call it five grand.",
-      "say": "Even steps, so the average is about fifty. Call it five grand."
-    },
-    {
-      "t": 16.6,
-      "end": 19.7,
-      "text": "Under $100, or over ten grand? You're already out.",
-      "say": "Under a hundred, or over ten grand? You're already out."
-    },
-    {
-      "t": 19.8,
-      "end": 22.8,
-      "text": "The exact total's in here. Lock in your guess.",
-      "say": "The exact total's in here. Lock in your guess."
-    },
-    {
-      "t": 23.2,
-      "end": 25.5,
-      "text": "5,050. Exactly halfway.",
-      "say": "Five thousand fifty. Exactly halfway."
-    },
-    {
-      "t": 25.6,
-      "end": 27.6,
-      "text": "Now guess the 52-week challenge.",
-      "say": "Now guess the fifty-two week challenge."
-    }
+    {"t": 0.2, "end": 2.7, "text": "The 100 envelope challenge: how much in all?", "say": "The hundred envelope challenge: how much in all?"},
+    {"t": 2.7, "end": 5.1, "text": "$1 in the first, $100 in the last.", "say": "A dollar in the first, a hundred in the last."},
+    {"t": 5.1, "end": 6.2, "text": "Guess the total."},
+    {"t": 6.6, "end": 9.6, "text": "Low end: every envelope $1. 100 bucks.", "say": "Low end: every envelope a dollar. A hundred bucks."},
+    {"t": 9.7, "end": 12.5, "text": "High end: every envelope $100. Ten grand.", "say": "High end: every envelope a hundred. Ten grand."},
+    {"t": 12.6, "end": 16.2, "text": "Even steps, so the average is about $50. Call it five grand.", "say": "Even steps, so the average is about fifty. Call it five grand."},
+    {"t": 16.6, "end": 19.7, "text": "Under $100, or over ten grand? You're already out.", "say": "Under a hundred, or over ten grand? You're already out."},
+    {"t": 19.8, "end": 22.8, "text": "The exact total's in here. Lock in your guess."},
+    {"t": 23.2, "end": 25.5, "text": "5,050. Exactly halfway.", "say": "Five thousand fifty. Exactly halfway."},
+    {"t": 25.6, "end": 27.6, "text": "Now guess the 52-week challenge.", "say": "Now guess the fifty-two week challenge."}
   ],
   "ops": [
-    {
-      "type": "postmark",
-      "t": -0.8,
-      "x": 175,
-      "y": 258,
-      "r": 100,
-      "center": [
-        "No.",
-        "07B"
-      ],
-      "persist": true
-    },
-    {
-      "type": "hook",
-      "t": -0.8,
-      "text": [
-        "THE 100 ENVELOPE",
-        "CHALLENGE:",
-        "HOW MUCH IN *ALL 100*?"
-      ],
-      "y": 420,
-      "size": 68
-    },
-    {
-      "type": "grid",
-      "t": -2.0,
-      "rows": 10,
-      "cols": 10,
-      "filled": 100,
-      "emoji": "✉️",
-      "x": 540,
-      "y": 690,
-      "cell": 50,
-      "dur": 1.4,
-      "label": "$1, $2, $3 … $100",
-      "color": "ink",
-      "until": 2.8
-    },
-    {
-      "type": "envelope",
-      "t": 2.8,
-      "x": 540,
-      "y": 855,
-      "w": 690,
-      "note": "all 100 = ?"
-    },
-    {
-      "type": "timer",
-      "t": 3.1,
-      "seconds": 3,
-      "x": 540,
-      "y": 1150
-    },
-    {
-      "type": "flip",
-      "t": 6.3
-    },
-    {
-      "type": "sticky",
-      "t": 6.6,
-      "x": 525,
-      "y": 445,
-      "w": 440,
-      "size": 56,
-      "cps": 40,
-      "title": "RULES:",
-      "text": "#1 holds $1, #2 holds $2 … #100 holds $100."
-    },
-    {
-      "type": "postage",
-      "t": 6.65,
-      "x": 855,
-      "y": 455,
-      "w": 170,
-      "h": 205,
-      "value": "100",
-      "label": "ENVELOPES",
-      "art": "✉️",
-      "rot": 7
-    },
-    {
-      "type": "write",
-      "t": 6.7,
-      "text": "LOW: every envelope $1",
-      "x": 90,
-      "y": 730,
-      "size": 56,
-      "color": "pencil",
-      "cps": 24
-    },
-    {
-      "type": "write",
-      "t": 7.7,
-      "text": "100 × $1 = $100",
-      "x": 90,
-      "y": 820,
-      "size": 84
-    },
-    {
-      "type": "write",
-      "t": 9.8,
-      "text": "HIGH: every envelope $100",
-      "x": 90,
-      "y": 915,
-      "size": 56,
-      "color": "pencil",
-      "cps": 24
-    },
-    {
-      "type": "write",
-      "t": 10.8,
-      "text": "100 × $100 = $10,000",
-      "x": 90,
-      "y": 1005,
-      "size": 84
-    },
-    {
-      "type": "write",
-      "t": 12.7,
-      "text": "MIDDLE: average ≈ $50",
-      "x": 90,
-      "y": 1100,
-      "size": 56,
-      "color": "pencil",
-      "cps": 24
-    },
-    {
-      "type": "write",
-      "t": 13.7,
-      "text": "100 × $50 ≈ $5,000",
-      "x": 90,
-      "y": 1195,
-      "size": 92,
-      "color": "red"
-    },
-    {
-      "type": "annotate",
-      "t": 15.0,
-      "kind": "circle",
-      "x": 548,
-      "y": 1130,
-      "w": 226,
-      "h": 72,
-      "color": "red",
-      "width": 6
-    },
-    {
-      "type": "flip",
-      "t": 16.3
-    },
-    {
-      "type": "hook",
-      "t": 16.6,
-      "text": [
-        "EXACT TOTAL: *SEALED*"
-      ],
-      "y": 440,
-      "size": 66,
-      "until": 22.9
-    },
-    {
-      "type": "envelope",
-      "t": 16.6,
-      "x": 540,
-      "y": 890,
-      "w": 700,
-      "note": "ours: ≈ $5,000",
-      "openAt": 22.9,
-      "cardSize": 116,
-      "card": [
-        "$5,050",
-        {
-          "text": "exactly halfway",
-          "size": 56,
-          "color": "red"
-        }
-      ]
-    },
-    {
-      "type": "annotate",
-      "t": 16.75,
-      "kind": "underline",
-      "x": 200,
-      "y": 1185,
-      "w": 600,
-      "color": "ink",
-      "width": 6,
-      "dur": 0.5
-    },
-    {
-      "type": "write",
-      "t": 16.9,
-      "text": "|",
-      "x": 200,
-      "y": 1205,
-      "size": 60,
-      "align": "center",
-      "pen": false
-    },
-    {
-      "type": "write",
-      "t": 16.9,
-      "text": "|",
-      "x": 800,
-      "y": 1205,
-      "size": 60,
-      "align": "center",
-      "pen": false
-    },
-    {
-      "type": "write",
-      "t": 17.0,
-      "text": "$100",
-      "x": 200,
-      "y": 1265,
-      "size": 56,
-      "align": "center",
-      "pen": false
-    },
-    {
-      "type": "write",
-      "t": 17.2,
-      "text": "$10,000",
-      "x": 800,
-      "y": 1265,
-      "size": 56,
-      "align": "center",
-      "pen": false
-    },
-    {
-      "type": "annotate",
-      "t": 17.6,
-      "kind": "cross",
-      "x": 96,
-      "y": 1160,
-      "w": 44,
-      "h": 44,
-      "color": "red",
-      "width": 6
-    },
-    {
-      "type": "annotate",
-      "t": 18.4,
-      "kind": "cross",
-      "x": 852,
-      "y": 1160,
-      "w": 44,
-      "h": 44,
-      "color": "red",
-      "width": 6
-    },
-    {
-      "type": "write",
-      "t": 20.6,
-      "text": "your guess: $ ______",
-      "x": 540,
-      "y": 590,
-      "size": 66,
-      "align": "center",
-      "cps": 26,
-      "until": 22.9
-    },
-    {
-      "type": "annotate",
-      "t": 24.3,
-      "kind": "arrow",
-      "from": [
-        500,
-        1112
-      ],
-      "to": [
-        500,
-        1176
-      ],
-      "bend": 0,
-      "head": 26,
-      "color": "red",
-      "width": 7
-    },
-    {
-      "type": "write",
-      "t": 24.6,
-      "text": "$5,050",
-      "x": 524,
-      "y": 1158,
-      "size": 56,
-      "color": "red",
-      "pen": false
-    },
-    {
-      "type": "stamp",
-      "t": 25.9,
-      "text": "ROUGHLY\nRIGHT",
-      "x": 650,
-      "y": 900,
-      "size": 72,
-      "rot": -8
-    }
+    {"type": "postmark", "t": 0, "x": 175, "y": 258, "r": 100, "center": ["No.", "07B"], "persist": true},
+    {"type": "hook", "t": 0, "text": ["THE 100 ENVELOPE", "CHALLENGE:", "HOW MUCH IN *ALL 100*?"], "y": 400, "size": 72},
+    {"type": "grid", "t": -0.5, "rows": 10, "cols": 10, "filled": 100, "prefilled": 100, "emoji": "✉️", "x": 540, "y": 690, "cell": 54, "label": "$1, $2, $3 … $100", "labelSize": 64, "color": "ink", "until": 2.8},
+    {"type": "envelope", "t": 2.8, "x": 540, "y": 860, "w": 700, "note": "all 100 = ?"},
+    {"type": "timer", "t": 3.1, "seconds": 3, "x": 540, "y": 1150},
+    {"type": "flip", "t": 6.3},
+    {"type": "sticky", "t": 6.6, "x": 500, "y": 430, "w": 480, "size": 64, "cps": 40, "title": "RULES:", "text": "#1 holds $1, #2 holds $2 … #100 holds $100."},
+    {"type": "postage", "t": 6.65, "x": 865, "y": 440, "w": 170, "h": 205, "value": "100", "label": "ENVELOPES", "labelSize": 22, "art": "✉️", "rot": 7},
+    {"type": "write", "t": 6.8, "text": "LOW", "x": 70, "y": 790, "size": 46, "font": "type", "color": "pencil"},
+    {"type": "write", "id": "lo", "t": 7.0, "text": "100 × $1 = $100", "x": 910, "y": 790, "size": 90, "align": "right", "cps": 18, "pen": "low"},
+    {"type": "write", "t": 9.8, "text": "HIGH", "x": 70, "y": 930, "size": 46, "font": "type", "color": "pencil"},
+    {"type": "write", "id": "hi", "t": 10.0, "text": "100 × $100 = $10,000", "x": 910, "y": 930, "size": 90, "align": "right", "cps": 18, "pen": "low"},
+    {"type": "write", "t": 12.7, "text": "MIDDLE: average ≈ $50", "x": 70, "y": 1070, "size": 64, "color": "pencil", "cps": 26, "pen": "low"},
+    {"type": "write", "id": "mid", "t": 13.7, "text": "100 × $50 ≈ $5,000", "x": 910, "y": 1210, "size": 100, "color": "red", "align": "right", "cps": 16, "pen": "small"},
+    {"type": "annotate", "t": 15.0, "kind": "circle", "target": {"op": "mid", "match": "$5,000"}, "color": "red", "width": 6},
+    {"type": "flip", "t": 16.3},
+    {"type": "hook", "t": 16.6, "text": ["EXACT TOTAL: *SEALED*"], "y": 420, "size": 70, "until": 22.9},
+    {"type": "envelope", "t": 16.6, "x": 540, "y": 860, "w": 700, "note": "ours: ≈ $5,000", "openAt": 22.9, "cardSize": 120, "card": ["$5,050", {"text": "exactly halfway", "size": 64, "color": "red"}]},
+    {"type": "annotate", "t": 16.75, "kind": "underline", "x": 200, "y": 1170, "w": 600, "color": "ink", "width": 6, "dur": 0.5},
+    {"type": "write", "t": 16.9, "text": "|", "x": 200, "y": 1192, "size": 64, "align": "center", "pen": false},
+    {"type": "write", "t": 16.9, "text": "|", "x": 800, "y": 1192, "size": 64, "align": "center", "pen": false},
+    {"type": "write", "t": 17.0, "text": "$100", "x": 200, "y": 1262, "size": 64, "align": "center", "pen": false},
+    {"type": "write", "t": 17.2, "text": "$10,000", "x": 800, "y": 1262, "size": 64, "align": "center", "pen": false},
+    {"type": "annotate", "t": 17.6, "kind": "cross", "x": 96, "y": 1148, "w": 44, "h": 44, "color": "red", "width": 6},
+    {"type": "annotate", "t": 18.4, "kind": "cross", "x": 860, "y": 1148, "w": 44, "h": 44, "color": "red", "width": 6},
+    {"type": "write", "t": 20.6, "text": "your guess: $ ______", "x": 540, "y": 590, "size": 68, "align": "center", "cps": 26, "until": 22.9, "pen": "low"},
+    {"type": "annotate", "t": 24.3, "kind": "arrow", "from": [500, 1085], "to": [500, 1150], "bend": 0, "head": 26, "color": "red", "width": 7},
+    {"type": "write", "t": 24.6, "text": "$5,050", "x": 524, "y": 1135, "size": 64, "color": "red", "pen": false},
+    {"type": "stamp", "t": 25.9, "text": "ROUGHLY\nRIGHT", "x": 640, "y": 830, "size": 76, "rot": -8}
   ]
 }

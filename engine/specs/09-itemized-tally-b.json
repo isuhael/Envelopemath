@@ -12,13 +12,13 @@
     {
       "t": 0.1,
       "end": 2.3,
-      "text": "$10 at Chipotle. How much is profit?",
+      "text": "$10 at Chipotle.\nHow much is profit?",
       "say": "Ten bucks at Chipotle. How much is profit?"
     },
     {
       "t": 2.3,
       "end": 4.5,
-      "text": "Chipotle's own 2025 numbers, line by line.",
+      "text": "Chipotle's own\n2025 numbers, line by line.",
       "say": "Chipotle's own twenty twenty-five numbers, line by line."
     },
     {
@@ -47,7 +47,7 @@
     {
       "t": 11.0,
       "end": 14.1,
-      "text": "Rent: 52 cents. Down to $4.01.",
+      "text": "Rent: 52 cents.\nDown to $4.01.",
       "say": "Rent: fifty-two cents. Down to four-oh-one."
     },
     {
@@ -71,7 +71,7 @@
     {
       "t": 20.7,
       "end": 23.6,
-      "text": "Then taxes, minus interest it earns: 34 cents.",
+      "text": "Then taxes, minus\ninterest it earns: 34 cents.",
       "say": "Then taxes, minus the interest it earns: thirty-four cents."
     },
     {
@@ -82,7 +82,8 @@
     {
       "t": 26.0,
       "end": 28.9,
-      "text": "Pause. What's left of your ten?"
+      "text": "Pause.\nWhat's left of your ten?",
+      "say": "Pause. What's left of your ten?"
     },
     {
       "t": 29.1,
@@ -323,11 +324,13 @@
       "y": 776,
       "w": 680,
       "openAt": 29.0,
-      "note": "guess first",
-      "label": "WHAT'S LEFT?",
+      "label": "",
       "cardSize": 110,
       "card": [
-        "$1.29",
+        {
+          "text": "$1.29",
+          "color": "red"
+        },
         {
           "text": "of every $10",
           "size": 64,
@@ -351,7 +354,8 @@
       "text": "$1.63 − $0.34 = ?",
       "x": 90,
       "y": 1205,
-      "size": 100
+      "size": 100,
+      "pen": "low"
     },
     {
       "type": "annotate",

@@ -30,7 +30,7 @@
     {
       "t": 7.6,
       "end": 10.5,
-      "text": "Three more small wins: 7 cents.",
+      "text": "Three more small wins:\n7 cents.",
       "say": "Three more small wins: seven cents."
     },
     {
@@ -42,7 +42,7 @@
     {
       "t": 13.6,
       "end": 16.5,
-      "text": "$50,000, at 1 in 913,000: 5 cents.",
+      "text": "$50,000, at 1 in 913,000:\n5 cents.",
       "say": "Fifty grand, at one in nine hundred thirteen thousand: five cents."
     },
     {
@@ -54,13 +54,13 @@
     {
       "t": 19.6,
       "end": 22.5,
-      "text": "A million bucks: 9 cents. 32 cents so far.",
+      "text": "A million bucks: 9 cents.\n32 cents so far.",
       "say": "A million bucks: nine cents. Thirty-two cents so far."
     },
     {
       "t": 22.6,
       "end": 25.5,
-      "text": "Now the jackpot: 1 in 292 million.",
+      "text": "Now the jackpot:\n1 in 292 million.",
       "say": "Now the jackpot: one in two hundred ninety-two million."
     },
     {
@@ -90,12 +90,13 @@
     {
       "t": 35.4,
       "end": 37.3,
-      "text": "So the whole ticket is worth…"
+      "text": "So the whole ticket\nis worth…",
+      "say": "So the whole ticket is worth…"
     },
     {
       "t": 37.5,
       "end": 39.5,
-      "text": "About 75 cents. For two dollars.",
+      "text": "About 75 cents.\nFor two dollars.",
       "say": "About seventy-five cents. For two dollars."
     }
   ],
@@ -363,7 +364,7 @@
       "w": 680,
       "openAt": 37.4,
       "cardSize": 110,
-      "label": "WHOLE TICKET = ?",
+      "label": "",
       "card": [
         {
           "text": "≈ 75¢",
@@ -411,7 +412,8 @@
       "text": "÷ 292.2M ≈ 43¢",
       "x": 90,
       "y": 1186,
-      "size": 72
+      "size": 72,
+      "pen": "low"
     },
     {
       "type": "write",
@@ -420,7 +422,8 @@
       "text": "+ 32¢ small prizes = ?",
       "x": 90,
       "y": 1280,
-      "size": 72
+      "size": 72,
+      "pen": "low"
     },
     {
       "type": "timer",

@@ -6,12 +6,15 @@
   "seed": 47
  },
  "duration": 17.0,
+ "loop": true,
+ "sfxGain": 0.75,
  "vo": "Spend a billion in 24 hours. How much per heartbeat? Whatever's left, you lose. That's almost forty-two million an hour. Per second? Over eleven and a half grand. Your heart beats about a hundred thousand times a day. So: ten grand. Every. Single. Heartbeat. What's beat one buying? Your clock starts now.",
  "captions": [
   {
    "t": 0.0,
    "end": 3.2,
-   "text": "Spend a billion in 24 hours. How much per heartbeat?"
+   "text": "Spend a billion in 24 hours.\nHow much per heartbeat?",
+   "say": "Spend a billion in twenty-four hours. How much per heartbeat?"
   },
   {
    "t": 3.2,
@@ -21,7 +24,8 @@
   {
    "t": 4.4,
    "end": 6.6,
-   "text": "That's almost 42 million an hour."
+   "text": "That's almost\n42 million an hour.",
+   "say": "That's almost forty-two million an hour."
   },
   {
    "t": 6.6,
@@ -31,12 +35,13 @@
   {
    "t": 9.0,
    "end": 11.9,
-   "text": "Your heart beats\nabout 100,000 times a day."
+   "text": "Your heart beats\nabout 100,000 times a day.",
+   "say": "Your heart beats about a hundred thousand times a day."
   },
   {
    "t": 11.9,
    "end": 14.3,
-   "text": "So: ten grand. Every. Single. Heartbeat."
+   "text": "So: ten grand.\nEvery. Single. Heartbeat."
   },
   {
    "t": 14.3,
@@ -47,20 +52,22 @@
  "ops": [
   {
    "type": "postmark",
-   "t": -0.3,
-   "x": 190,
-   "y": 300,
+   "t": 0,
+   "x": 175,
+   "y": 258,
+   "r": 100,
+   "persist": true,
    "center": [
     "No.",
     "02C"
    ],
-   "persist": true
+   "centerSize": 34
   },
   {
    "type": "hook",
-   "t": -0.7,
-   "y": 470,
-   "size": 76,
+   "t": 0,
+   "y": 400,
+   "size": 80,
    "text": [
     "SPEND *$1 BILLION*",
     "IN 24 HOURS.",
@@ -70,24 +77,27 @@
   },
   {
    "type": "emoji",
-   "t": -0.4,
+   "t": 0,
    "char": "💸",
    "x": 540,
-   "y": 985,
-   "size": 220,
+   "y": 905,
+   "size": 200,
    "bob": true
   },
   {
-   "type": "write",
-   "t": 0.3,
-   "text": "24:00:00",
+   "type": "counter",
+   "id": "clock",
+   "t": 0,
+   "from": 86400,
+   "to": 86396,
+   "dur": 4.0,
+   "ease": "linear",
+   "time": "hms",
    "x": 540,
-   "y": 1235,
-   "size": 96,
+   "y": 1185,
+   "size": 120,
    "font": "type",
-   "color": "red",
-   "align": "center",
-   "cps": 24
+   "color": "red"
   },
   {
    "type": "flip",
@@ -97,52 +107,70 @@
    "type": "emoji",
    "t": 4.65,
    "char": "⏳",
-   "x": 320,
-   "y": 560,
+   "x": 300,
+   "y": 520,
    "size": 200
   },
   {
    "type": "postage",
    "t": 4.7,
    "x": 800,
-   "y": 545,
+   "y": 525,
    "value": "$1B",
    "label": "IN 24 HOURS",
    "art": "≈"
   },
   {
    "type": "lines",
+   "id": "m",
    "t": 4.8,
-   "x": 905,
-   "y": 930,
-   "size": 74,
+   "x": 915,
+   "y": 940,
+   "size": 82,
    "cps": 16,
-   "gap": 0.5,
+   "em": true,
+   "pen": "low",
    "lines": [
-    "$1B ÷ 24 hrs ≈ $41.7M/hr",
-    "$1B ÷ 86,400 sec ≈ $11,574/s"
+    {
+     "text": "$1B ÷ 24 hrs ≈ *$41.7M/hr*"
+    },
+    {
+     "text": "$1B ÷ 86,400 s ≈ *$11,574/s*",
+     "at": 2.1,
+     "cps": 18
+    }
    ]
   },
   {
+   "type": "annotate",
+   "t": 6.4,
+   "kind": "underline",
+   "target": {
+    "op": "m",
+    "match": "$41.7M/hr"
+   }
+  },
+  {
    "type": "write",
-   "t": 6.9,
+   "t": 6.4,
    "text": "(86,400 = seconds in a day)",
-   "x": 905,
-   "y": 1110,
-   "size": 48,
+   "x": 915,
+   "y": 1170,
+   "size": 64,
    "color": "pencil",
    "align": "right",
-   "cps": 30,
+   "cps": 50,
    "pen": false
   },
   {
    "type": "annotate",
-   "t": 8.6,
+   "t": 8.5,
    "kind": "circle",
-   "x": 655,
-   "y": 970,
-   "w": 252,
-   "h": 70
+   "target": {
+    "op": "m",
+    "match": "$11,574/s"
+   },
+   "pad": 12
   },
   {
    "type": "flip",
@@ -151,363 +179,99 @@
   {
    "type": "sticky",
    "t": 9.25,
-   "x": 320,
-   "y": 610,
-   "w": 400,
-   "size": 48,
+   "x": 300,
+   "y": 550,
+   "w": 460,
+   "size": 64,
+   "cps": 30,
    "title": "ASSUME:",
-   "text": "heart ≈ 100,000 beats a day (about 70 a minute)",
-   "cps": 30
+   "text": "heart ≈ 100,000 beats a day (about 70 a minute)"
+  },
+  {
+   "type": "emoji",
+   "t": 9.3,
+   "char": "❤️",
+   "x": 790,
+   "y": 520,
+   "size": 230,
+   "pulse": {
+    "bpm": 140,
+    "scale": 0.15
+   }
   },
   {
    "type": "write",
+   "id": "b1",
    "t": 11.9,
-   "text": "$1B ÷ 100K beats = $10K/beat",
-   "x": 905,
-   "y": 975,
-   "size": 74,
-   "align": "right",
+   "text": "$1B ÷ 100K beats",
+   "x": 540,
+   "y": 880,
+   "size": 90,
+   "align": "center",
    "cps": 16
   },
   {
+   "type": "write",
+   "id": "b2",
+   "t": 12.95,
+   "text": "= $10K a beat",
+   "x": 540,
+   "y": 1040,
+   "size": 130,
+   "color": "red",
+   "align": "center",
+   "cps": 16,
+   "pen": "low"
+  },
+  {
    "type": "annotate",
-   "t": 13.7,
+   "t": 13.78,
    "kind": "circle",
-   "x": 646,
-   "y": 915,
-   "w": 262,
-   "h": 72
+   "target": {
+    "op": "b2",
+    "match": "$10K"
+   },
+   "pad": 12
+  },
+  {
+   "type": "counter",
+   "id": "spent",
+   "t": 13.8,
+   "steps": [
+    [
+     0.0,
+     10000
+    ],
+    [
+     0.857,
+     20000
+    ],
+    [
+     1.714,
+     30000
+    ],
+    [
+     2.571,
+     40000
+    ]
+   ],
+   "stepDur": 0.05,
+   "compact": true,
+   "prefix": "$",
+   "suffix": " spent",
+   "x": 790,
+   "y": 748,
+   "size": 80,
+   "color": "red"
   },
   {
    "type": "stamp",
    "t": 15.1,
    "text": "CLOCKED\n$10K A HEARTBEAT",
    "x": 540,
-   "y": 1180,
-   "size": 62,
+   "y": 1195,
+   "size": 58,
    "rot": -6
-  },
-  {
-   "type": "write",
-   "t": 9.3,
-   "text": "❤️",
-   "x": 770,
-   "y": 678,
-   "size": 190,
-   "align": "center",
-   "font": "type",
-   "cps": 200,
-   "pen": false,
-   "until": 9.6,
-   "fadeOut": 0
-  },
-  {
-   "type": "write",
-   "t": 9.6,
-   "text": "❤️",
-   "x": 770,
-   "y": 694,
-   "size": 232,
-   "align": "center",
-   "font": "type",
-   "cps": 200,
-   "pen": false,
-   "until": 9.84,
-   "fadeOut": 0
-  },
-  {
-   "type": "write",
-   "t": 9.84,
-   "text": "❤️",
-   "x": 770,
-   "y": 678,
-   "size": 190,
-   "align": "center",
-   "font": "type",
-   "cps": 200,
-   "pen": false,
-   "until": 10.457,
-   "fadeOut": 0
-  },
-  {
-   "type": "write",
-   "t": 10.457,
-   "text": "❤️",
-   "x": 770,
-   "y": 694,
-   "size": 232,
-   "align": "center",
-   "font": "type",
-   "cps": 200,
-   "pen": false,
-   "until": 10.697,
-   "fadeOut": 0
-  },
-  {
-   "type": "write",
-   "t": 10.697,
-   "text": "❤️",
-   "x": 770,
-   "y": 678,
-   "size": 190,
-   "align": "center",
-   "font": "type",
-   "cps": 200,
-   "pen": false,
-   "until": 11.314,
-   "fadeOut": 0
-  },
-  {
-   "type": "write",
-   "t": 11.314,
-   "text": "❤️",
-   "x": 770,
-   "y": 694,
-   "size": 232,
-   "align": "center",
-   "font": "type",
-   "cps": 200,
-   "pen": false,
-   "until": 11.554,
-   "fadeOut": 0
-  },
-  {
-   "type": "write",
-   "t": 11.554,
-   "text": "❤️",
-   "x": 770,
-   "y": 678,
-   "size": 190,
-   "align": "center",
-   "font": "type",
-   "cps": 200,
-   "pen": false,
-   "until": 12.171,
-   "fadeOut": 0
-  },
-  {
-   "type": "write",
-   "t": 12.171,
-   "text": "❤️",
-   "x": 770,
-   "y": 694,
-   "size": 232,
-   "align": "center",
-   "font": "type",
-   "cps": 200,
-   "pen": false,
-   "until": 12.411,
-   "fadeOut": 0
-  },
-  {
-   "type": "write",
-   "t": 12.411,
-   "text": "❤️",
-   "x": 770,
-   "y": 678,
-   "size": 190,
-   "align": "center",
-   "font": "type",
-   "cps": 200,
-   "pen": false,
-   "until": 13.029,
-   "fadeOut": 0
-  },
-  {
-   "type": "write",
-   "t": 13.029,
-   "text": "❤️",
-   "x": 770,
-   "y": 694,
-   "size": 232,
-   "align": "center",
-   "font": "type",
-   "cps": 200,
-   "pen": false,
-   "until": 13.269,
-   "fadeOut": 0
-  },
-  {
-   "type": "write",
-   "t": 13.269,
-   "text": "❤️",
-   "x": 770,
-   "y": 678,
-   "size": 190,
-   "align": "center",
-   "font": "type",
-   "cps": 200,
-   "pen": false,
-   "until": 13.886,
-   "fadeOut": 0
-  },
-  {
-   "type": "write",
-   "t": 13.886,
-   "text": "❤️",
-   "x": 770,
-   "y": 694,
-   "size": 232,
-   "align": "center",
-   "font": "type",
-   "cps": 200,
-   "pen": false,
-   "until": 14.126,
-   "fadeOut": 0
-  },
-  {
-   "type": "write",
-   "t": 14.126,
-   "text": "❤️",
-   "x": 770,
-   "y": 678,
-   "size": 190,
-   "align": "center",
-   "font": "type",
-   "cps": 200,
-   "pen": false,
-   "until": 14.743,
-   "fadeOut": 0
-  },
-  {
-   "type": "write",
-   "t": 14.743,
-   "text": "❤️",
-   "x": 770,
-   "y": 694,
-   "size": 232,
-   "align": "center",
-   "font": "type",
-   "cps": 200,
-   "pen": false,
-   "until": 14.983,
-   "fadeOut": 0
-  },
-  {
-   "type": "write",
-   "t": 14.983,
-   "text": "❤️",
-   "x": 770,
-   "y": 678,
-   "size": 190,
-   "align": "center",
-   "font": "type",
-   "cps": 200,
-   "pen": false,
-   "until": 15.6,
-   "fadeOut": 0
-  },
-  {
-   "type": "write",
-   "t": 15.6,
-   "text": "❤️",
-   "x": 770,
-   "y": 694,
-   "size": 232,
-   "align": "center",
-   "font": "type",
-   "cps": 200,
-   "pen": false,
-   "until": 15.84,
-   "fadeOut": 0
-  },
-  {
-   "type": "write",
-   "t": 15.84,
-   "text": "❤️",
-   "x": 770,
-   "y": 678,
-   "size": 190,
-   "align": "center",
-   "font": "type",
-   "cps": 200,
-   "pen": false,
-   "until": 16.457,
-   "fadeOut": 0
-  },
-  {
-   "type": "write",
-   "t": 16.457,
-   "text": "❤️",
-   "x": 770,
-   "y": 694,
-   "size": 232,
-   "align": "center",
-   "font": "type",
-   "cps": 200,
-   "pen": false,
-   "until": 16.697,
-   "fadeOut": 0
-  },
-  {
-   "type": "write",
-   "t": 16.697,
-   "text": "❤️",
-   "x": 770,
-   "y": 678,
-   "size": 190,
-   "align": "center",
-   "font": "type",
-   "cps": 200,
-   "pen": false,
-   "until": 17.0,
-   "fadeOut": 0
-  },
-  {
-   "type": "write",
-   "t": 13.886,
-   "text": "+$10K",
-   "x": 770,
-   "y": 822,
-   "size": 72,
-   "color": "red",
-   "align": "center",
-   "cps": 80,
-   "pen": false,
-   "until": 14.506,
-   "fadeOut": 0.15
-  },
-  {
-   "type": "write",
-   "t": 14.743,
-   "text": "+$10K",
-   "x": 770,
-   "y": 822,
-   "size": 72,
-   "color": "red",
-   "align": "center",
-   "cps": 80,
-   "pen": false,
-   "until": 15.363,
-   "fadeOut": 0.15
-  },
-  {
-   "type": "write",
-   "t": 15.6,
-   "text": "+$10K",
-   "x": 770,
-   "y": 822,
-   "size": 72,
-   "color": "red",
-   "align": "center",
-   "cps": 80,
-   "pen": false,
-   "until": 16.22,
-   "fadeOut": 0.15
-  },
-  {
-   "type": "write",
-   "t": 16.457,
-   "text": "+$10K",
-   "x": 770,
-   "y": 822,
-   "size": 72,
-   "color": "red",
-   "align": "center",
-   "cps": 80,
-   "pen": false,
-   "until": 17.0,
-   "fadeOut": 0.15
   }
  ]
 }

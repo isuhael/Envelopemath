@@ -79,6 +79,11 @@ print(f"ladder  start for exactly $1T  -> {era(y)}, month {m}, day {d:.1f} (Juli
 print(f"        naive 2,282 - 2,026 = 256 BC lands on the right year because two errors cancel: no year 0 (+1 yr)")
 print(f"        vs. starting from Oct 2026 with 2,281.5 yrs, not 2,282 (2026.77 - 2281.54 = astronomical -254.8 -> 256 BC)")
 print(f"        Caesar born 100 BC -> the start is {(1 - y) - 100} years before his birth")
+# the screen-3 timeline is drawn to scale: 256 BC at x=120, Year 1 at x=208, 2026 at x=905 (spec 02-rate-clock-a)
+X_START, X_NOW = 120, 905
+px_per_yr = (X_NOW - X_START) / years
+x_year1 = X_START + (jd_year1 - jd_start) / 365.25 * px_per_yr
+print(f"        timeline scale {px_per_yr:.3f} px/yr -> Year 1 tick belongs at x = {x_year1:.0f}  (spec: 208)")
 
 print()
 print("=" * 72)
@@ -117,6 +122,8 @@ print(f"        salary in profit         = {salary/ni_ps:.1f} s (365-day) / {sal
 print(f"        career in profit         = {career/ni_ps/60:.1f} min (365-day) / {career/ni_ps_fy/60:.1f} min (364-day)")
 print(f"extended cut: sales per minute ${rev_ps*60:,.0f}/min, per day ${APPLE_REV/365/1e9:,.2f}B (365-day)")
 print(f"counter runs $0 -> ${salary:,} over {t_salary:.2f} s in the video (real time at the 365-day rate)")
+print(f"        counter speed ${salary/round(t_salary, 2):,.0f}/s vs Apple ${rev_ps:,.0f}/s; stopwatch 0.0 -> {round(t_salary, 2)} s (shows 4.9)")
+print(f"        career on the clock: {t_career:.0f} s = {int(t_career // 60)} min {t_career % 60:.0f} s (stamp: 3.3 MINUTES)")
 
 print()
 print("=" * 72)
@@ -141,3 +148,13 @@ RUNTIME = 17.0                          # length of the 02C video in seconds (QA
 print(f"        VO 'over eleven and a half grand': ${per_sec:,.2f} > $11,500 -> {per_sec > 11_500}")
 print(f"        bonus: 8 hrs asleep -> ${BILLION/(16*3600):,.0f}/sec while awake")
 print(f"        bonus: this {RUNTIME}-second video = ${per_sec * RUNTIME:,.0f} of the billion")
+# animation timing in spec 02-rate-clock-c
+CLOCK_FROM, CLOCK_DUR = 86_400, 4.0
+end = CLOCK_FROM - CLOCK_DUR
+print(f"anim    countdown 24:00:00 -> {int(end // 3600):02d}:{int(end % 3600 // 60):02d}:{int(end % 60):02d} over {CLOCK_DUR} s (1 clock second per real second)")
+HEART_BPM = 70
+period = 60 / HEART_BPM
+# engine pulse = 1 + scale*max(0, sin(pi*t*bpm/60))^8 beats once every 120/bpm s, so the spec passes bpm 140
+print(f"        heart: pulse bpm 2 x {HEART_BPM} -> one beat every {120 / (2 * HEART_BPM):.3f} s = {60 / (120 / (2 * HEART_BPM)):.0f} bpm")
+beats_shown = 4
+print(f"        running total: +$10,000 on each of {beats_shown} beats, {period:.3f} s apart -> ${10_000 * beats_shown:,} spent after {period * (beats_shown - 1):.3f} s")

@@ -1,409 +1,55 @@
 {
   "id": "07-sealed-envelope-estimate-a",
   "title": "Fry left 93¢ in the bank for 1,000 years. How much is it now? (Sealed Answer No. 07A)",
-  "paper": {
-    "style": "kraft",
-    "seed": 7
-  },
+  "paper": {"style": "kraft", "seed": 7},
   "duration": 33.9,
   "loop": true,
   "vo": "Fry's ninety-three cents. In the bank. For a thousand years. / At two and a quarter percent. Guess the balance. / Rule of seventy-two: doubles every thirty-two years. / A thousand years: about thirty-one doublings. / That's about two billion dollars. / Seventy-two is tuned for eight percent. Try seventy. / Seventy says thirty-one years. Thirty-two doublings. Four billion. / One year apart. Two billion dollars apart. / Year five hundred? Just sixty-three grand. / Two billion or four? The show's number is in here. / Four point three billion. Seventy wins. / All from…",
   "captions": [
-    {
-      "t": 0.2,
-      "end": 3.0,
-      "text": "Fry's 93 cents. In the bank. For a thousand years.",
-      "say": "Fry's ninety-three cents. In the bank. For a thousand years."
-    },
-    {
-      "t": 3.1,
-      "end": 6.0,
-      "text": "At 2.25%. Guess the balance.",
-      "say": "At two and a quarter percent. Guess the balance."
-    },
-    {
-      "t": 6.5,
-      "end": 9.5,
-      "text": "Rule of 72: doubles every 32 years.",
-      "say": "Rule of seventy-two: doubles every thirty-two years."
-    },
-    {
-      "t": 9.6,
-      "end": 12.1,
-      "text": "A thousand years: about 31 doublings.",
-      "say": "A thousand years: about thirty-one doublings."
-    },
-    {
-      "t": 12.2,
-      "end": 14.5,
-      "text": "That's about 2 billion dollars.",
-      "say": "That's about two billion dollars."
-    },
-    {
-      "t": 14.6,
-      "end": 17.7,
-      "text": "72 is tuned for 8%. Try 70.",
-      "say": "Seventy-two is tuned for eight percent. Try seventy."
-    },
-    {
-      "t": 17.8,
-      "end": 21.2,
-      "text": "70 says 31 years. 32 doublings. 4 billion.",
-      "say": "Seventy says thirty-one years. Thirty-two doublings. Four billion."
-    },
-    {
-      "t": 21.3,
-      "end": 23.9,
-      "text": "One year apart. 2 billion dollars apart.",
-      "say": "One year apart. Two billion dollars apart."
-    },
-    {
-      "t": 24.4,
-      "end": 27.0,
-      "text": "Year 500? Just 63 grand.",
-      "say": "Year five hundred? Just sixty-three grand."
-    },
-    {
-      "t": 27.1,
-      "end": 29.7,
-      "text": "2 billion or 4? The show's number is in here.",
-      "say": "Two billion or four? The show's number is in here."
-    },
-    {
-      "t": 30.1,
-      "end": 32.1,
-      "text": "4.3 billion. 70 wins.",
-      "say": "Four point three billion. Seventy wins."
-    },
-    {
-      "t": 32.3,
-      "end": 33.7,
-      "text": "All from…",
-      "say": "All from…"
-    }
+    {"t": 0.2, "end": 3.0, "text": "Fry's 93 cents. In the bank. For a thousand years.", "say": "Fry's ninety-three cents. In the bank. For a thousand years."},
+    {"t": 3.1, "end": 6.0, "text": "At 2.25%. Guess the balance.", "say": "At two and a quarter percent. Guess the balance."},
+    {"t": 6.5, "end": 9.5, "text": "Rule of 72: doubles every 32 years.", "say": "Rule of seventy-two: doubles every thirty-two years."},
+    {"t": 9.6, "end": 12.1, "text": "A thousand years: about 31 doublings.", "say": "A thousand years: about thirty-one doublings."},
+    {"t": 12.2, "end": 14.5, "text": "That's about 2 billion dollars.", "say": "That's about two billion dollars."},
+    {"t": 14.6, "end": 17.7, "text": "72 is tuned for 8%. Try 70.", "say": "Seventy-two is tuned for eight percent. Try seventy."},
+    {"t": 17.8, "end": 21.2, "text": "70 says 31 years. 32 doublings. 4 billion.", "say": "Seventy says thirty-one years. Thirty-two doublings. Four billion."},
+    {"t": 21.3, "end": 23.9, "text": "One year apart. 2 billion dollars apart.", "say": "One year apart. Two billion dollars apart."},
+    {"t": 24.4, "end": 27.0, "text": "Year 500? Just 63 grand.", "say": "Year five hundred? Just sixty-three grand."},
+    {"t": 27.1, "end": 29.7, "text": "2 billion or 4? The show's number is in here.", "say": "Two billion or four? The show's number is in here."},
+    {"t": 30.1, "end": 32.1, "text": "4.3 billion. 70 wins.", "say": "Four point three billion. Seventy wins."},
+    {"t": 32.3, "end": 33.7, "text": "All from…"}
   ],
   "ops": [
-    {
-      "type": "postmark",
-      "t": -0.8,
-      "x": 175,
-      "y": 258,
-      "r": 100,
-      "center": [
-        "No.",
-        "07A"
-      ],
-      "persist": true
-    },
-    {
-      "type": "hook",
-      "t": -0.8,
-      "text": [
-        "93¢ IN THE BANK",
-        "FOR *1,000 YEARS*"
-      ],
-      "y": 440,
-      "size": 80
-    },
-    {
-      "type": "envelope",
-      "t": -0.8,
-      "x": 540,
-      "y": 835,
-      "w": 780,
-      "note": "Fry's balance now = ?"
-    },
-    {
-      "type": "postage",
-      "t": -0.8,
-      "x": 845,
-      "y": 690,
-      "w": 150,
-      "h": 180,
-      "value": "93¢",
-      "label": "FUTURAMA",
-      "art": "🏦",
-      "rot": 8,
-      "allowOverlap": true
-    },
-    {
-      "type": "timer",
-      "t": 3.1,
-      "seconds": 3,
-      "x": 540,
-      "y": 1150
-    },
-    {
-      "type": "flip",
-      "t": 6.2
-    },
-    {
-      "type": "sticky",
-      "t": 6.5,
-      "x": 525,
-      "y": 445,
-      "w": 440,
-      "size": 56,
-      "cps": 40,
-      "title": "GIVEN:",
-      "text": "93¢ · 2.25% a year · 1,000 years (Futurama, 1999)"
-    },
-    {
-      "type": "postage",
-      "t": 6.55,
-      "x": 855,
-      "y": 455,
-      "w": 170,
-      "h": 205,
-      "value": "93¢",
-      "label": "FUTURAMA",
-      "art": "🏦",
-      "rot": 7
-    },
-    {
-      "type": "write",
-      "t": 6.6,
-      "text": "RULE OF 72",
-      "x": 600,
-      "y": 705,
-      "size": 40,
-      "font": "type",
-      "color": "pencil",
-      "align": "right"
-    },
-    {
-      "type": "write",
-      "t": 6.9,
-      "text": "72 ÷ 2.25",
-      "x": 600,
-      "y": 795,
-      "size": 66,
-      "align": "right",
-      "cps": 12
-    },
-    {
-      "type": "write",
-      "t": 7.7,
-      "text": "doubles every",
-      "x": 90,
-      "y": 905,
-      "size": 56,
-      "color": "pencil",
-      "cps": 22
-    },
-    {
-      "type": "write",
-      "t": 8.4,
-      "text": "32 yrs",
-      "x": 600,
-      "y": 905,
-      "size": 82,
-      "align": "right"
-    },
-    {
-      "type": "write",
-      "t": 9.7,
-      "text": "doublings",
-      "x": 90,
-      "y": 1020,
-      "size": 56,
-      "color": "pencil",
-      "cps": 22
-    },
-    {
-      "type": "write",
-      "t": 10.3,
-      "text": "≈ 31",
-      "x": 600,
-      "y": 1020,
-      "size": 82,
-      "align": "right"
-    },
-    {
-      "type": "write",
-      "t": 12.1,
-      "text": "93¢ grows to",
-      "x": 90,
-      "y": 1140,
-      "size": 56,
-      "color": "pencil",
-      "cps": 22
-    },
-    {
-      "type": "write",
-      "t": 12.6,
-      "text": "$2B",
-      "x": 600,
-      "y": 1140,
-      "size": 100,
-      "align": "right"
-    },
-    {
-      "type": "annotate",
-      "t": 12.9,
-      "kind": "underline",
-      "x": 463,
-      "y": 1162,
-      "w": 137,
-      "color": "ink",
-      "width": 6
-    },
-    {
-      "type": "write",
-      "t": 16.7,
-      "text": "RULE OF 70",
-      "x": 880,
-      "y": 705,
-      "size": 40,
-      "font": "type",
-      "color": "pencil",
-      "align": "right"
-    },
-    {
-      "type": "write",
-      "t": 16.9,
-      "text": "70 ÷ 2.25",
-      "x": 880,
-      "y": 795,
-      "size": 66,
-      "color": "red",
-      "align": "right",
-      "cps": 12
-    },
-    {
-      "type": "write",
-      "t": 18.2,
-      "text": "31 yrs",
-      "x": 880,
-      "y": 905,
-      "size": 82,
-      "color": "red",
-      "align": "right"
-    },
-    {
-      "type": "write",
-      "t": 19.3,
-      "text": "≈ 32",
-      "x": 880,
-      "y": 1020,
-      "size": 82,
-      "color": "red",
-      "align": "right"
-    },
-    {
-      "type": "write",
-      "t": 20.3,
-      "text": "$4B",
-      "x": 880,
-      "y": 1140,
-      "size": 100,
-      "color": "red",
-      "align": "right"
-    },
-    {
-      "type": "annotate",
-      "t": 21.3,
-      "kind": "box",
-      "x": 452,
-      "y": 1072,
-      "w": 436,
-      "h": 88,
-      "color": "red",
-      "width": 6
-    },
-    {
-      "type": "write",
-      "t": 21.6,
-      "text": "1 yr apart = $2B apart",
-      "x": 540,
-      "y": 1262,
-      "size": 58,
-      "color": "red",
-      "align": "center",
-      "cps": 22
-    },
-    {
-      "type": "flip",
-      "t": 24.0
-    },
-    {
-      "type": "curve",
-      "t": 24.35,
-      "x": 170,
-      "y": 660,
-      "w": 720,
-      "h": 210,
-      "fn": {
-        "type": "compound",
-        "principal": 0.93,
-        "rate": 0.0225,
-        "years": 1000
-      },
-      "color": "red",
-      "dur": 2.0,
-      "endLabel": "?",
-      "format": {
-        "prefix": "$",
-        "compact": true
-      },
-      "marks": [
-        {
-          "i": 500,
-          "text": "year 500: $63K",
-          "align": "center",
-          "dx": 0,
-          "dy": -36,
-          "size": 56,
-          "color": "ink"
-        },
-        {
-          "i": 969,
-          "text": "½ in the last 31 yrs",
-          "align": "right",
-          "dx": -30,
-          "dy": -10,
-          "size": 56
-        }
-      ],
-      "until": 29.8
-    },
-    {
-      "type": "envelope",
-      "t": 24.4,
-      "x": 540,
-      "y": 960,
-      "w": 780,
-      "note": "$2B or $4B?",
-      "openAt": 29.8,
-      "cardSize": 116,
-      "card": [
-        "$4.3B",
-        {
-          "text": "the show's number",
-          "size": 56,
-          "color": "red"
-        }
-      ]
-    },
-    {
-      "type": "stamp",
-      "t": 31.9,
-      "text": "ROUGHLY\nRIGHT",
-      "x": 640,
-      "y": 990,
-      "size": 72,
-      "rot": -8
-    },
-    {
-      "type": "write",
-      "t": 32.0,
-      "text": "rule of 70: within 7%",
-      "x": 540,
-      "y": 1262,
-      "size": 60,
-      "color": "red",
-      "align": "center",
-      "cps": 36
-    }
+    {"type": "postmark", "t": 0, "x": 175, "y": 258, "r": 100, "center": ["No.", "07A"], "persist": true},
+    {"type": "hook", "t": 0, "text": ["93¢ IN THE BANK", "FOR *1,000 YEARS*"], "y": 400, "size": 88},
+    {"type": "envelope", "t": -0.5, "x": 540, "y": 824, "w": 780, "note": "Fry's balance now = ?"},
+    {"type": "postage", "t": -0.5, "x": 845, "y": 700, "w": 170, "h": 205, "value": "93¢", "label": "FUTURAMA", "labelSize": 24, "art": "🏦", "rot": 8, "allowOverlap": true},
+    {"type": "timer", "t": 3.1, "seconds": 3, "x": 540, "y": 1150},
+    {"type": "flip", "t": 6.2},
+    {"type": "sticky", "t": 6.5, "x": 500, "y": 430, "w": 480, "size": 64, "cps": 40, "title": "GIVEN:", "text": "93¢, 2.25% a year, 1,000 years (Futurama, 1999)"},
+    {"type": "postage", "t": 6.55, "x": 865, "y": 440, "w": 170, "h": 205, "value": "93¢", "label": "FUTURAMA", "labelSize": 24, "art": "🏦", "rot": 7},
+    {"type": "write", "t": 6.6, "text": "RULE OF 72", "x": 620, "y": 700, "size": 44, "font": "type", "color": "pencil", "align": "right"},
+    {"type": "write", "t": 6.9, "text": "72 ÷ 2.25", "x": 620, "y": 790, "size": 72, "align": "right", "cps": 12, "pen": "low"},
+    {"type": "write", "t": 7.7, "text": "doubles every", "x": 80, "y": 910, "size": 64, "color": "pencil", "cps": 22, "pen": "low"},
+    {"type": "write", "t": 8.4, "text": "32 yrs", "x": 620, "y": 910, "size": 96, "align": "right", "pen": "low"},
+    {"type": "write", "t": 9.7, "text": "doublings", "x": 80, "y": 1035, "size": 64, "color": "pencil", "cps": 22, "pen": "low"},
+    {"type": "write", "t": 10.3, "text": "≈ 31", "x": 620, "y": 1035, "size": 96, "align": "right", "pen": "low"},
+    {"type": "write", "t": 12.0, "text": "93¢ grows to", "x": 80, "y": 1170, "size": 64, "color": "pencil", "cps": 24, "pen": "small-low"},
+    {"type": "write", "id": "v72", "t": 12.6, "text": "$2B", "x": 620, "y": 1170, "size": 120, "align": "right", "pen": "small-low"},
+    {"type": "annotate", "t": 12.9, "kind": "underline", "target": {"op": "v72"}, "color": "ink", "width": 6},
+    {"type": "write", "t": 14.7, "text": "72 is tuned for 8%: try 70", "x": 540, "y": 1275, "size": 64, "color": "red", "align": "center", "cps": 26, "until": 21.3, "pen": "small"},
+    {"type": "write", "t": 16.3, "text": "RULE OF 70", "x": 920, "y": 700, "size": 44, "font": "type", "color": "red", "align": "right"},
+    {"type": "write", "t": 16.6, "text": "70 ÷ 2.25", "x": 920, "y": 790, "size": 72, "color": "red", "align": "right", "cps": 12, "pen": "low"},
+    {"type": "write", "t": 18.2, "text": "31 yrs", "x": 920, "y": 910, "size": 96, "color": "red", "align": "right", "pen": "low"},
+    {"type": "write", "t": 19.3, "text": "≈ 32", "x": 920, "y": 1035, "size": 96, "color": "red", "align": "right", "pen": "low"},
+    {"type": "write", "id": "v70", "t": 20.3, "text": "$4B", "x": 920, "y": 1170, "size": 120, "color": "red", "align": "right", "pen": "small-low"},
+    {"type": "annotate", "t": 21.3, "kind": "box", "target": {"op": "v72", "pad": 4}, "color": "red", "width": 6},
+    {"type": "annotate", "t": 21.55, "kind": "box", "target": {"op": "v70", "pad": 4}, "color": "red", "width": 6},
+    {"type": "write", "t": 21.8, "text": "1 yr apart = $2B apart", "x": 540, "y": 1275, "size": 72, "color": "red", "align": "center", "cps": 22, "pen": "small"},
+    {"type": "flip", "t": 24.0},
+    {"type": "curve", "t": 24.35, "x": 150, "y": 770, "w": 740, "h": 300, "fn": {"type": "compound", "principal": 0.93, "rate": 0.0225, "years": 1000}, "color": "red", "dur": 2.0, "endLabel": "?", "format": {"prefix": "$", "compact": true}, "marks": [{"i": 500, "text": "year 500: $63K", "align": "center", "dx": 0, "dy": -40, "size": 64, "color": "ink"}, {"i": 969, "text": "½ in the last 31 yrs", "align": "right", "dx": -30, "dy": -10, "size": 64}], "until": 29.8},
+    {"type": "envelope", "t": 24.4, "x": 540, "y": 1080, "w": 780, "note": "$2B or $4B?", "openAt": 29.8, "cardSize": 120, "card": ["$4.3B", {"text": "the show's number", "size": 64, "color": "red"}]},
+    {"type": "stamp", "t": 31.9, "text": "ROUGHLY\nRIGHT", "x": 650, "y": 1090, "size": 76, "rot": -8},
+    {"type": "write", "t": 32.0, "text": "rule of 70: within 7%", "x": 540, "y": 455, "size": 72, "color": "red", "align": "center", "cps": 36, "pen": "low"}
   ]
 }

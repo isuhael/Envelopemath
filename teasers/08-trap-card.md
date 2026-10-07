@@ -57,7 +57,7 @@ The title is a confession that invites correction, on a 6 s money-math clip. It 
 
 **What we improve:**
 1. **Money with real stakes and a cited input.** We don't use grammar puzzles. Each trap teaches a rule you can save, and each real number (BLS median pay, S&P 500 closes, the Gatorade bottle size) is cited in the description.
-2. **Motion and sound.** The whole puzzle card is up in frame 0 (tape hook, the question in big ballpoint, the ASSUME sticky), so frame 0 doubles as the thumbnail. The "ENVELOPE PUZZLE" stamp thumps at 0.55 s (the sonic logo), the red pen circles the "?", the card flips to the tempting math in pencil, and the red pen catches it. A 23–25-word voice-over carries the sound-on viewer, and burned-in captions carry the sound-off viewer (69% of US adults aged 18–54 said they watch video with the sound off in public: Verizon Media / Publicis Media survey of 5,616 adults, April 2019).
+2. **Motion and sound.** The whole puzzle card is up in frame 0 (tape hook, the question in big ballpoint, the ASSUME sticky), so frame 0 doubles as the thumbnail. The "ENVELOPE PUZZLE" stamp thumps at 0.55 s (the sonic logo), the red pen circles the "?", the card flips to the tempting math in pencil, and the red pen catches it. A 22–25-word voice-over carries the sound-on viewer, and burned-in captions carry the sound-off viewer (69% of US adults aged 18–54 said they watch video with the sound off in public: Verizon Media / Publicis Media survey of 5,616 adults, April 2019).
 3. **Always resolved.** The exact answer is pinned and the **Opened** short goes up within 24 h. That fixes the trust problem of mathsgenius and Teacherman without killing the comment debate on day one.
 4. **An honest thing to argue about.** The pinned comment follows the house template, "Exact: X (envelope said ≈ Y, within Z%)", plus one true nuance for the "well actually" crowd: 27-paycheck years, rounded vs exact index closes, "less drink" vs "price per ounce".
 
@@ -76,15 +76,15 @@ The title is a confession that invites correction, on a 6 s money-math clip. It 
 | screen 1, 230–370 right | Red rubber stamp **ENVELOPE PUZZLE** (series badge), thump at 0.55 s | `stamp` t 0.35 |
 | screen 1, 680–860 | **Hero question** in ballpoint, 124–170 px ("1 year = $ ?", "To get back: + ? %", "Per ounce: + ? %"), already written in frame 0 | `write` id `q` (t −1.2/−1.5) |
 | screen 1, on the "?" | Red-pen circle, anchored to the glyph (0.55–0.90 s) | `annotate` circle, `target {op:"q", match:"?"}` |
-| screen 1, 845–970 | Red "no calculator." (the permission frame), 80–84 px, 0.85–1.63 s | `write` |
+| screen 1, 845–970 | Red "no calculator." (the permission frame), 80–84 px, 0.85–1.43 s, small low pen (keeps the circled "?" clear) | `write`, `pen: "small-low"` |
 | screen 1, 945–1315 | **ASSUME:** sticky (64 px) with the assumption and the source, already in frame 0 | `sticky` (t −1.2) |
 | 1.85–2.35 s | Flip | `flip` |
-| screen 2, 690–960 | Pencil trap math, 100–124 px (the tempting answer) | `lines` / `write` id `trap` |
+| screen 2, 690–960 | Pencil trap math, 100–124 px (the tempting answer) | `lines` / `write` id `trap`, `pen: "low"` |
 | screen 2, on the trap | Red mark anchored to the trap text: **the partial payoff, about 3.0–3.4 s (39–45%)** | `annotate` strike/underline, `target {op:"trap", match:…}` |
-| screen 2, 960–1090 | The red-pen reason (76–120 px) | `write` red |
+| screen 2, 960–1090 | The red-pen reason (76–120 px); the low pen keeps the marked trap above it visible | `write` red, `pen: "low"` |
 | screen 2, 1100–1300 | **RETURN TO SENDER** stamp at 4.3 s (thump 4.5 s): the verdict | `stamp` |
 | 4.80–5.30 s | Flip | `flip` |
-| screen 3, 620–800 | The question restated ("1 year =", "To get back:", "Per ounce:") | `write` |
+| screen 3, 620–800 | The question restated ("1 year =", "To get back:", "Per ounce:") | `write`, `pen: "low"` |
 | screen 3, 785–1250 | The Sealed Answer, w 720, wax "≈", wiggles, **never opens** | `envelope` with no `openAt` |
 | screen 3, on the envelope | **IN THE PIN** stamp at 5.75 s (thump 5.95 s) | `stamp` (allowed on a paper prop) |
 | 6.75–7.25 s | Flip "to show the answer" lands on the puzzle card (question + sticky re-laid at 7.0 s); loop crossfade 7.35–7.6 s into frame 0 | `flip`, `write`, `sticky`, `loop: true`, `loopFade` 0.25 |
@@ -114,14 +114,14 @@ The title is a confession that invites correction, on a 6 s money-math clip. It 
 
 | Time | Picture | Sound / VO |
 |---|---|---|
-| 0.00 | **Frame 0 = the full puzzle card (and the thumbnail):** postmark No. 08A in the flap, both tape strips, **1 year = $ ?** in 170 px ballpoint, ASSUME sticky *pre-tax pay ≈ US median (BLS)* | VO "Twenty-five hundred every two weeks." (0.1–1.8) |
+| 0.00 | **Frame 0 = the full puzzle card (and the thumbnail):** postmark No. 08A in the flap, both tape strips, **1 year = $ ?** in 170 px ballpoint, ASSUME sticky *pre-tax pay ≈ / US median (BLS)* (two lines) | VO "Twenty-five hundred every two weeks." (0.1–1.8) |
 | 0.35 | **ENVELOPE PUZZLE** rubber stamp slams onto the flap | stamp *thump* at 0.55 (sonic logo) |
 | 0.55–0.90 | Red circle snaps around the "?" (anchored to the glyph) | scribble |
-| 0.85–1.63 | Red pen writes *no calculator.* (84 px) | pen scratch |
+| 0.85–1.43 | Red pen writes *no calculator.* (84 px) | pen scratch |
 | 1.85–2.35 | **Flip** to a clean back (the hook stays on the tape) | whoosh; VO "It's not sixty grand a year." (1.8–3.4) |
 | 2.10–2.99 | Pencil writes the tempting math, 116 px: **$2,500 × 24** / **= $60,000** | pencil scratch |
 | 3.05–3.35 (40–44%) | **Partial payoff:** the red pen strikes the **24**. The count is the trap; the right count stays sealed | scribble |
-| 3.40–4.31 | Red pen: *every 2 weeks ≠ twice a month* (76 px), the reason 24 is wrong, without the right number | pen; VO "So what is it? No calculator." (3.4–5.1) |
+| 3.40–4.13 | Red pen: *every 2 weeks ≠ twice a month* (76 px, centred at x 490 so it clears the right button rail), the reason 24 is wrong, without the right number | pen; VO "So what is it? No calculator." (3.4–5.1) |
 | 4.30 (thump 4.50, 59%) | **Verdict:** **RETURN TO SENDER** slams under the struck trap | stamp *thump* |
 | 4.80–5.30 | **Flip** | whoosh |
 | 5.05–5.38 | Pen writes **1 year =** | VO "Ours is sealed in the pin." (5.1–6.9) |
@@ -138,7 +138,7 @@ The title is a confession that invites correction, on a 6 s money-math clip. It 
 2. `26 × $2,500 = $65,000`
 3. `not 24 → +$5,000 (2 "extra" checks)`
 
-**ASSUME sticky:** *pre-tax pay ≈ US median (BLS)* (64 px, in frame 0). The $2,500 is a round stand-in for the real median full-time paycheck: $1,251 a week × 2 = $2,502.
+**ASSUME sticky:** *pre-tax pay ≈ / US median (BLS)* (64 px, two lines, in frame 0). The $2,500 is a round stand-in for the real median full-time paycheck: $1,251 a week × 2 = $2,502.
 **Trap on screen (pencil + red):** `$2,500 × 24` / `= $60,000` in pencil with the **24** struck in red (a text-anchored strike), then the red reason *every 2 weeks ≠ twice a month* (twice a month is 2 × 12 = 24 paydays). The arithmetic is right; the count is the trap.
 **Sources (re-verified with WebSearch 2026-10-07 in the finishing pass; see Final fact check):**
 - U.S. Bureau of Labor Statistics, *Usual Weekly Earnings of Wage and Salary Workers, Second Quarter 2026*, released 2026-07-21: median weekly earnings of the 120.9 million full-time wage and salary workers = **$1,251** (not seasonally adjusted). https://www.bls.gov/news.release/archives/wkyeng_07212026.htm
@@ -181,13 +181,13 @@ The title is a confession that invites correction, on a 6 s money-math clip. It 
 
 | Time | Picture | Sound / VO |
 |---|---|---|
-| 0.00 | **Frame 0 = the full puzzle card (and the thumbnail):** postmark No. 08B in the flap, all three tape strips, **To get back: + ? %** in 124 px ballpoint, ASSUME sticky *S&P 500 price only, Oct '07 → Mar '09* | VO "Stocks fell fifty-seven percent." (0.1–1.7) |
+| 0.00 | **Frame 0 = the full puzzle card (and the thumbnail):** postmark No. 08B in the flap, all three tape strips, **To get back: + ? %** in 124 px ballpoint, ASSUME sticky *S&P 500 price only / Oct '07 → Mar '09* (two lines) | VO "Stocks fell fifty-seven percent." (0.1–1.7) |
 | 0.35 | **ENVELOPE PUZZLE** stamp | thump at 0.55 |
 | 0.55–0.90 | Red circle around the "?" (anchored to the glyph) | scribble |
-| 0.85–1.63 | Red *no calculator.* (80 px) | pen scratch |
+| 0.85–1.43 | Red *no calculator.* (80 px) | pen scratch |
 | 1.85–2.35 | **Flip** | whoosh; VO "Back to even isn't plus fifty-seven." (1.7–3.4) |
 | 2.10–3.17 | Pencil, 100 px: **$100 − 57% = $43** / **$43 + 57% = $100?** | pencil scratch |
-| 3.20–3.83 (42–50%) | **Partial payoff:** red strike through "$100?", red pen writes **= $67.51** (120 px) under it. Proof that +57% fails; the real gain stays sealed | scribble; VO "So what gain is it? No calculator." (3.4–5.2) |
+| 3.20–3.83 (42–50%) | **Partial payoff:** red strike through "$100?", red pen writes **= $67.51** (120 px) under it. Proof that +57% fails; the real gain stays sealed | scribble; VO "So what is it? No calculator." (3.4–5.2) |
 | 4.30 (thump 4.50, 59%) | **Verdict:** **RETURN TO SENDER** under the trap | thump |
 | 4.80–5.30 | **Flip** | whoosh |
 | 5.05–5.45 | Pen writes **To get back:** | VO "Ours is sealed in the pin." (5.2–7.0) |
@@ -196,15 +196,15 @@ The title is a confession that invites correction, on a 6 s money-math clip. It 
 | 6.75–7.25 (89%) | Flip "to show the answer" lands on the puzzle card again | whoosh |
 | 7.35–7.60 | Loop crossfade into frame 0 | → loop |
 
-**Voice-over (23 words):**
-> Stocks fell fifty-seven percent. Back to even isn't plus fifty-seven. So what gain is it? No calculator. Ours is sealed in the pin.
+**Voice-over (22 words):**
+> Stocks fell fifty-seven percent. Back to even isn't plus fifty-seven. So what is it? No calculator. Ours is sealed in the pin.
 
 **The envelope math:**
 1. `$100 − 57% = $43`
 2. `$43 × 2.3 ≈ $100`
 3. `≈ +130% to get back (not +57%)`
 
-**ASSUME sticky:** *S&P 500 price only, Oct '07 → Mar '09* (64 px, in frame 0; closing prices; price index, no dividends).
+**ASSUME sticky:** *S&P 500 price only / Oct '07 → Mar '09* (64 px, two lines, in frame 0; closing prices; price index, no dividends).
 **Trap on screen (pencil + red):** `$100 − 57% = $43` / `$43 + 57% = $100?` in pencil, "$100?" struck in red (a text-anchored strike) and **= $67.51** written in red under it (43 × 1.57 = 67.51).
 **Sources (re-verified with WebSearch 2026-10-07 in the finishing pass; see Final fact check):**
 - S&P 500 closing high **1,565.15 on 2007-10-09** and closing low **676.53 on 2009-03-09** (≈57% off the high, 17 months later): ETF Trends "S&P 500 Snapshot" series, https://www.etftrends.com/innovative-etfs-content-hub/sp-500-snapshot-index-finishes-week-record-high/amp/ ; Benzinga, "This Day In Market History: S&P 500's Lowest Closing Price Of The Great Recession", https://benzinga.com/z/20077767
@@ -249,8 +249,8 @@ The title is a confession that invites correction, on a 6 s money-math clip. It 
 | 0.00 | **Frame 0 = the full puzzle card (and the thumbnail):** postmark No. 08C in the flap, all three tape strips, **Per ounce: + ? %** in 130 px ballpoint, ASSUME sticky *same shelf price, old & new bottle* | VO "Gatorade: thirty-two ounces to twenty-eight." (0.1–2.0) |
 | 0.35 | **ENVELOPE PUZZLE** stamp | thump at 0.55 |
 | 0.55–0.90 | Red circle around the "?" (anchored to the glyph) | scribble |
-| 0.85–1.63 | Red *no calculator.* (80 px) | pen scratch |
-| 1.85–2.35 | **Flip** | whoosh; VO "Same price. The hike's not twelve and a half percent." (2.0–3.8) |
+| 0.85–1.43 | Red *no calculator.* (80 px) | pen scratch |
+| 1.85–2.35 | **Flip** | whoosh; VO "Same price." (2.0–2.6) "The hike's not twelve and a half percent." (2.6–3.8) |
 | 2.10–2.60 | Pencil writes the tempting math, 124 px: **4 ÷ 32 = 12.5%** | pencil scratch |
 | 2.65–3.41 (35–45%) | **Partial payoff:** red underline on **12.5%**, red pen writes **= less drink** (110 px). The 12.5% is the drink you lost, not the price change; the price change stays sealed | scribble |
 | 3.72–4.22 | Red pen: *≠ price per ounce* (76 px) | pen; VO "Per ounce? No calculator." (3.8–5.2) |
@@ -323,6 +323,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 def pct(x): return f"{x * 100:.2f}%"
 def within(env, exact): return abs(env - exact) / abs(exact)
 def spec(f): return json.loads((ROOT / f"engine/specs/08-trap-card-{f}.json").read_text())
+MD = (ROOT / "teasers/08-trap-card.md").read_text()
 def texts(s):
     out = []
     for o in s["ops"]:
@@ -330,7 +331,7 @@ def texts(s):
             t = o.get(key)
             if t is None: continue
             out += t if isinstance(t, list) else [t]
-    return [(t["text"] if isinstance(t, dict) else t).replace("*", "") for t in out]
+    return [(t["text"] if isinstance(t, dict) else t).replace("*", "").replace("\n", " ") for t in out]
 
 print("=== 08A  $2,500 every 2 weeks ===")
 pay = 2_500
@@ -404,14 +405,14 @@ print(f"envelope: 'about 1/7 = +14%'; within {pct(within(0.14, float(more)))} of
 assert within(0.14, float(more)) <= 0.02 + 1e-12
 print(f"check: 1 - 1/(1 + 1/7) = {1 - 1 / (1 + more)} (the 1/8 shrink)")
 print(f"rule: shrink by 1/n -> pay 1/(n-1) more per unit; e.g. 1/10 smaller -> +{pct(10 / 9 - 1)}")
-print(f"NPR's 'about 14%' vs exact {pct(float(more))}: consistent")
+print(f"the 14% is our own arithmetic (32/28 - 1 = 1/7 = {pct(float(more))}); no outside '14%' figure is quoted")
 
 print("\n=== on-screen strings and engine features in the specs ===")
 need_on_screen = {
     "a": ["$2,500 every 2 weeks", "is NOT $60,000 a year!", "1 year = $ ?", "no calculator.", "$2,500 × 24", "= $60,000",
           "every 2 weeks ≠ twice a month", "1 year =", "pre-tax pay ≈ US median (BLS)"],
     "b": ["Stocks fell 57%.", "Back to even", "is NOT +57%!", "To get back: + ? %", "no calculator.", "$100 − 57% = $43",
-          "$43 + 57% = $100?", "= $67.51", "To get back:", "S&P 500 price only, Oct '07 → Mar '09"],
+          "$43 + 57% = $100?", "= $67.51", "To get back:", "S&P 500 price only Oct '07 → Mar '09"],
     "c": ["Gatorade: 32 oz → 28 oz", "Same price.", "The hike is NOT 12.5%!", "Per ounce: + ? %", "no calculator.",
           "4 ÷ 32 = 12.5%", "= less drink", "≠ price per ounce", "Per ounce:", "same shelf price, old & new bottle"],
 }
@@ -436,15 +437,18 @@ for f, want in need_on_screen.items():
     for c in s["captions"]:
         words = len(c["text"].split())
         assert words / (c["end"] - c["t"]) <= 4, (f, c)
+    said = " ".join(c.get("say", c["text"]) for c in s["captions"])
+    assert said == s["vo"], (f, said, s["vo"])         # captions (as read) = the VO script
+    assert f"> {s['vo']}" in MD, f                    # the md's VO block matches the spec
     caps = " ".join(c["text"] for c in s["captions"])
-    print(f"08{f.upper()}: strings present; hook at t 0; postmark in the flap; envelope sealed; loop on; red mark on '{match}'; captions <= 4 words/s: {caps}")
+    print(f"08{f.upper()}: strings present; hook at t 0; postmark in the flap; envelope sealed; loop on; red mark on '{match}'; captions <= 4 words/s and = VO: {caps}")
 assert "60 grand" in " ".join(c["text"] for c in spec("a")["captions"])
 assert "+57%" in " ".join(c["text"] for c in spec("b")["captions"])
 assert "12.5%" in " ".join(c["text"] for c in spec("c")["captions"])
 print("\nall asserts passed")
 ```
 
-Output (run 2026-10-07, finishing pass):
+Output (run 2026-10-07, final review):
 
 ```
 === 08A  $2,500 every 2 weeks ===
@@ -474,12 +478,12 @@ exact: price per oz up = 32/28 - 1 = 4/28 = 1/7 = +14.29%
 envelope: 'about 1/7 = +14%'; within 2.00% of exact (stated 'within 2%')
 check: 1 - 1/(1 + 1/7) = 1/8 (the 1/8 shrink)
 rule: shrink by 1/n -> pay 1/(n-1) more per unit; e.g. 1/10 smaller -> +11.11%
-NPR's 'about 14%' vs exact 14.29%: consistent
+the 14% is our own arithmetic (32/28 - 1 = 1/7 = 14.29%); no outside '14%' figure is quoted
 
 === on-screen strings and engine features in the specs ===
-08A: strings present; hook at t 0; postmark in the flap; envelope sealed; loop on; red mark on '24'; captions <= 4 words/s: $2,500 every two weeks. It's NOT 60 grand a year. So what is it? No calculator. Ours is sealed in the pin.
-08B: strings present; hook at t 0; postmark in the flap; envelope sealed; loop on; red mark on '$100?'; captions <= 4 words/s: Stocks fell 57%. Back to even isn't +57%. So what gain is it? No calculator. Ours is sealed in the pin.
-08C: strings present; hook at t 0; postmark in the flap; envelope sealed; loop on; red mark on '12.5%'; captions <= 4 words/s: Gatorade: 32 ounces to 28. Same price. The hike's NOT 12.5%. Per ounce? No calculator. Ours is sealed in the pin.
+08A: strings present; hook at t 0; postmark in the flap; envelope sealed; loop on; red mark on '24'; captions <= 4 words/s and = VO: $2,500 every two weeks. It's NOT 60 grand a year. So what is it? No calculator. Ours is sealed in the pin.
+08B: strings present; hook at t 0; postmark in the flap; envelope sealed; loop on; red mark on '$100?'; captions <= 4 words/s and = VO: Stocks fell 57%. Back to even isn't +57%. So what is it? No calculator. Ours is sealed in the pin.
+08C: strings present; hook at t 0; postmark in the flap; envelope sealed; loop on; red mark on '12.5%'; captions <= 4 words/s and = VO: Gatorade: 32 ounces to 28. Same price. The hike's NOT 12.5%. Per ounce? No calculator. Ours is sealed in the pin.
 
 all asserts passed
 ```
@@ -608,3 +612,44 @@ Finishing producer, 2026-10-07. Files touched: this md, `teasers/08-trap-card-ma
 - The 69% sound-off claim is narrowed to its survey (US adults 18–54, 2019). The Buffer claim is made exact. The BLS Q3 2026 release date (Oct 28) is noted.
 - The Verification log's "before publishing" item is closed. Its four engine requests (instant hook, stamp overlap lint, frame-0 lint, the sticky's real wrapped height) are all covered by the upgraded engine.
 - Math check: the script now reads `lines` ops and asserts the hook at t 0, the postmark in the flap, the envelope with no `openAt`, `loop`, the text anchors and caption pace. All asserts pass (output above).
+
+### Final review
+
+Independent final reviewer, 2026-10-07. I assumed the producer missed things. Files touched: this md, `teasers/08-trap-card-mathcheck.py`, `engine/specs/08-trap-card-{a,b,c}.json`; re-rendered `engine/out/08-trap-card-{a,b,c}.mp4`, `engine/out/sheets/08-trap-card-{a,b,c}.png` and `engine/out/stills/08-trap-card-{a,b,c}-{0.0,3.05,5.7,7.55}.png` (old stills deleted). `engine/src` was not edited.
+
+**How it was checked**
+- Contact sheets (`sheet --n 12`), safe-zone stills (`still --safe`) at the beats, full-scale crops of screen 1, and four frames pulled from each MP4 (0.0 s, 3.05 s ≈ 40%, 5.7 s = 75%, 7.55 s = end), all viewed at about phone size (540 px wide).
+- `node src/cli.js check`: zero warnings on all three, before and after the fixes.
+- `python3 teasers/08-trap-card-mathcheck.py`: all asserts pass (output above). The md's copy of the script is identical to the file.
+- Audio (`volumedetect`): mean −20.6 dB, max −1.7 dB on all three.
+- Facts spot-checked with WebSearch on 2026-10-07: BLS Q2 2026 median weekly earnings of full-time wage and salary workers **$1,251** (120.9M workers; https://www.bls.gov/news.release/archives/wkyeng_07212026.htm); S&P 500 closes **1,565.15** (2007-10-09), **676.53** (2009-03-09, "~57% off its high from exactly 17 months before") and **1,569.19** (2013-03-28) (ETF Trends S&P 500 Snapshot, https://www.etftrends.com/?p=626442); PepsiCo "phasing out the 32-ounce Gatorade bottles in favor of 28-ounce ones" (AP via NPR, 2022-06-08, https://www.npr.org/2022/06/08/1103766334/shrinkflation-globally-manufacturers-shrink-package-sizes); NBC DFW, "Paying the same but getting less: it's called shrinkflation" (32-oz → 28-oz Gatorade, https://www.nbcdfw.com/news/local/paying-the-same-but-getting-less-its-called-shrinkflation/2970095/). All match the md. This pass's NBC DFW extract did not repeat the "both exactly the same price" quote; the headline and the Kottke line ("for the same price as before") still back the premise, and it stays labelled as an assumption on the ASSUME sticky.
+
+**Found and fixed (all three)**
+- **The MP4s were stale.** They were rendered at 08:05–08:06, before the engine's `ink.js`, `anchor.js`, `ops/text.js`, `ops/marks.js` and `check.js` changed (08:15–08:16). All three were re-rendered from the final specs.
+- **The pen hid the payoff.** The default pen tilts up-right, so each new line's pen covered the line above: the circled "?" while *no calculator.* was written (0.85–1.9 s), the red underline on 12.5% while *= less drink* was written (08C, 2.95–3.7 s), the struck trap while the red reason was written, and the persistent tape hook during the screen-3 write. Every write that sits under another line now uses `pen: "low"`; *no calculator.* uses `pen: "small-low"` and writes at 24 cps (done at 1.43 s, not 1.63 s), so the pen only brushes the sticky's edge briefly.
+- **Math check:** it printed "NPR's 'about 14%' … consistent", a quote the Final fact check had already removed as not found. The line now says the 14% is our own arithmetic. The script also asserts two new things: the captions (read via `say`) join to exactly the spec's `vo`, and each spec's VO appears verbatim in this md. It reads `\n` in sticky text as a space.
+
+**Found and fixed (per teaser)**
+- **08A:** the red reason *every 2 weeks ≠ twice a month* (816 px wide at 76 px, centred at x 520) ended at about x 928, against the right button rail at 940. Re-centred at x 490 (now ≈ 82–898). It also finished at 4.31 s, only 0.49 s before the flip began, which is too little for 6 words. It now writes at 40 cps (3.40–4.13 s). The ASSUME sticky wrapped as "pre-tax pay ≈ / US median / (BLS)". It is now two lines, *pre-tax pay ≈ / US median (BLS)* (w 440, same height).
+- **08B:** the caption "So what gain is it? No calculator." wrapped to two lines and left "calculator." alone on line 2. It is now "So what is it? No calculator." (one line, matching 08A; the on-screen "To get back: + ? %" says what "it" is). The VO, the beat sheet and the word count (22) were updated to match. The ASSUME sticky broke as "S&P 500 price / only, Oct '07 → / Mar '09". It is now two lines, *S&P 500 price only / Oct '07 → Mar '09* (w 480, inside 932–1316, clear of *no calculator.* and the caption band).
+- **08C:** the caption "Same price. The hike's NOT 12.5%." wrapped with "12.5%." orphaned on line 2. It is split into "Same price." (2.0–2.6 s, 3.3 words/s) and "The hike's NOT 12.5%." (2.6–3.8 s, 3.3 words/s), one line each, and the `say` lines still join to the VO.
+
+**Checked and left as is**
+- Frame 0 of all three is the full puzzle card: tape hook with the tempting number and a red NOT, the hero question with "?", and the ASSUME sticky. The hook is `t: 0` (no negative-t workaround). The question and sticky use negative `t`, which the README documents as "already on screen in frame 0"; `write` has no `instant` option, so this is the supported way to pre-draw them, not a hack.
+- The envelope has no `openAt` (stays sealed), the postmark is the series op in the flap, `loop: true` with a 0.25 s crossfade lands on a card identical to frame 0 (the re-laid sticky is fully written by 7.37 s, as the fade starts at 7.35 s), and the red marks are text-anchored.
+- Numbers agree across screen, captions, VO, pinned comments and descriptions: $2,500 × 24 = $60,000 vs × 26 = $65,000 (+$5,000); $43 × 1.57 = $67.51, exact +131.35% (envelope +130%, within 1.03%); 4/32 = 12.5% less drink vs 32/28 − 1 = 1/7 = +14.29% per ounce (envelope +14%, within 2.00%).
+- Known minor limits: the RETURN TO SENDER stamp's slam-in (scale-down, 4.30–4.50 s) briefly passes over the red reason line before it settles below it. The ENVELOPE PUZZLE stamp (44 px typewriter) and the postmark's "No. 08A/B/C" are small but are series branding, kept the same as the other approaches; the number is also in each title. The small pen brushing the sticky's top edge on screen 1 (about 0.9–1.7 s) is the cost of keeping the circled "?" clear.
+- No advice language, no borrowed footage, no logos or bottle art.
+- Before posting 08A after Oct 28 2026, re-check the BLS median against the Q3 2026 release.
+
+**Hook scores (1–10, against `research/02-top-10-approaches.md` §8: pre-emptive negation in frame 1, a permission frame, a two-line money trap with a real ambiguity, real stakes, a sealed answer, a loop)**
+
+| | Score | Why |
+|---|---|---|
+| 08A | **8** | It matches the formula: the tempting $60,000 is crossed out in frame 0 above a big "1 year = $ ?", the stakes are personal and broad (biweekly is the most common US pay period), and there is an honest 26-vs-27-paycheck argument. It sits below 08B because many biweekly earners already know "26 checks", so the dissonance is weaker than a percentage trap. |
+| 08B | **8.5** | This is the research's flagship trap (−X% then +X% is not even) on a famous, sourced crash. The right answer (≈ +130%) can't be done instantly in your head, so it forces the rewatch, and the comments split 130/131/133. Three tape strips are a little more to read in frame 0, and "Stocks" is less of a hook than "S&P 500" would be (kept because the marker face renders "&" as "+"). |
+| 08C | **8** | It has a famous noun, a live grocery anxiety and the mathsgenius-style two true-sounding readings (12.5% less drink vs +14.3% per ounce). It is the longest frame-0 read (three strips, about a dozen words), and the 12.5% reading has to be handed to the viewer rather than arising on its own. |
+
+**Verdicts:** 08A **fixed**, 08B **fixed**, 08C **fixed**. All three are ready to post after these fixes. Zero lint warnings, all math asserts pass, and the MP4s are re-rendered.
+
+*Superseded by this review:* the Polish pass's caption note ("tightest: 08B 'So what gain is it? No calculator.'") and its "0.85–1.63 s" *no calculator.* timing.

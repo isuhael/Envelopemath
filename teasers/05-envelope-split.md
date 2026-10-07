@@ -1,8 +1,8 @@
 ## 5. The Envelope Split
 
 **Series:** *Envelope My Paycheck* · **Format brand:** Envelope Math · **Lane:** Envelope (31–39 s masters, cut per platform)
-**Written:** 2026-10-07. The writer checked every real-world input with WebSearch on that date; sources and dates sit with each teaser. Every number was recomputed by the script in [Math check](#math-check). **QA pass (same day):** see [Verification log](#verification-log). Two inputs (the iPhone 18 Pro price and NAR's August 2026 median) could not be re-opened by QA and must be re-checked before publishing.
-**Specs:** `engine/specs/05-envelope-split-a.json`, `-b.json`, `-c.json` · **Contact sheets:** `engine/out/sheets/05-envelope-split-{a,b,c}.png`
+**Written:** 2026-10-07. The writer checked every real-world input with WebSearch on that date; sources and dates sit with each teaser. Every number was recomputed by the script in [Math check](#math-check). **QA pass (same day):** see [Verification log](#verification-log). **Polish pass (same day):** every real-world input was re-verified live against primary sources, including the two QA could not open (the iPhone 18 Pro price and NAR's August 2026 median; both confirmed, nothing cascades); the specs were rebuilt for the upgraded renderer and all three MP4s rendered. See [Final fact check](#final-fact-check) and [Polish pass](#polish-pass).
+**Specs:** `engine/specs/05-envelope-split-a.json`, `-b.json`, `-c.json` · **MP4s:** `engine/out/05-envelope-split-{a,b,c}.mp4` · **Stills:** `engine/out/stills/05-envelope-split-*`
 
 One real paycheck goes into four labelled cash envelopes on screen. Then we add the part nobody adds: **how long one envelope takes to fill.**
 
@@ -97,7 +97,7 @@ One real paycheck goes into four labelled cash envelopes on screen. Then we add 
 - **Labels persist on screen.** Each envelope carries its name and percentage ("OOPS 5%"), so the frame is screenshot-able for saves.
 - **We show where the paycheck comes from.** Every episode states the pay frequency (every 2 weeks) and derives take-home on screen: a counter ticks gross down to net after 2026 federal tax and FICA. The assumptions sit on an **ASSUME: sticky**, and every input is sourced and dated.
 - **The split happens in your head.** We teach the four shortcuts once and reuse them: 10% = move the decimal; 5% = half that; 15% = both; 30% = three tens; 50% = half.
-- **It's faster.** A dollar figure is on screen in frame 1 (the hook is pre-rolled, so the very first frame is complete), and the first envelope fills by 4.4–5.9 s; moneyletter took 20 s to reach a calculation. Each cash drop gets its own foley.
+- **It's faster.** A dollar figure is on screen in frame 1 (a hook at t = 0 renders finished, so the very first frame is the thumbnail), and the split's first envelope drops at 6.0–6.4 s after a one-beat gross-to-net counter; moneyletter took 20 s to reach a calculation. Each cash drop gets its own foley.
 - **It's honest about rounding.** Envelopes show whole dollars, the pinned comment shows the cents, and red pen marks the rounding.
 - **It ends on a loop or a re-hook**, not a sign-off.
 
@@ -131,16 +131,16 @@ We present it as "here's the math on a common rule", never "you should".
 |---|---|
 | The Envelope (`paper: kraft`) | The stage |
 | Masking-tape hook (`hook`) | The claim in frame 1 |
-| Postmark No. (`postmark`) | 05A/B/C badge |
-| **Stuffed envelopes** (`stuff`) | Lead device; one drop per spoken shortcut |
-| Ballpoint working (`write`, rule via `annotate underline`) | The ≤3-line math |
-| Red pen (`annotate` circle/box/double) | Marks the key amounts |
+| Postmark No. (`postmark`) | 05A/B/C badge, in the flap (175, 258) |
+| **Stuffed envelopes** (`stuff`) | Lead device; one drop per spoken shortcut; 64 px labels and 76 px amounts (`labelSize`/`amountSize`) |
+| Ballpoint working (`lines`, per-line `at`, `rule: 2`) | The ≤3-line math, each line landing on its VO line, with the sum bar drawn above line 3 |
+| Red pen (`annotate` circle/box/underline/double, text `target` anchors) | Marks the key amounts |
 | **ASSUME: sticky** (`sticky`) | The take-home basis and fill assumptions |
 | Postage stamp (`postage`) | The goal's price as the unit (05B, 05C) |
-| Receipt (`receipt`) | 05B's sales-tax twist |
-| Napkin charts (`grid` of dots or 💵, `bars`) | The Fill Line |
+| Receipt (`receipt`, per-row `at`, highlighted total) | 05B's sales-tax twist, printed in time with the VO |
+| Napkin charts (`grid` of dots or 💵 with `prefilled`, `bars` with per-bar `at`) | The Fill Line |
 | Ladder (`ladder`) | 05A's "any paycheck" proof |
-| Counter (`counter`) | Gross ticking down to take-home |
+| Counter (`counter`, `steps`) | Gross ticking down to take-home; 05B's running total of FUN deposits |
 | Verdict stamps (`stamp`) | OPENED BY MISTAKE, POSTAGE DUE, ROUGHLY RIGHT |
 | Flip (`flip`) | The pattern break into the timing scene |
 
@@ -153,12 +153,12 @@ We present it as "here's the math on a common rule", never "you should".
 - paid every two weeks (26 paychecks);
 - take-home = (gross − the year's federal income tax − FICA) ÷ 26. Actual withholding can differ by a few dollars.
 
-Sources:
+Sources (all re-verified 2026-10-07; see [Final fact check](#final-fact-check)):
 - IRS IR-2025-103, Oct 9 2025: https://www.irs.gov/newsroom/irs-releases-tax-inflation-adjustments-for-tax-year-2026-including-amendments-from-the-one-big-beautiful-bill. Brackets corroborated by Accounting Today, Oct 2025: https://www.accountingtoday.com/news/irs-announces-inflation-adjustments-for-2026.
-- 2026 wage base: Journal of Accountancy, Oct 2025, https://www.journalofaccountancy.com/news/2025/oct/social-security-wage-base-and-cola-announced-for-2026/.
-- Texas has no personal income tax (Tex. Const. art. 8 §24-a): Texas A&M AgriLife, "Understanding Texas Taxes", https://agecoext.tamu.edu/wp-content/uploads/2021/06/Understanding-Texas-Taxes-rev-2021-E584.pdf, and TaxAct, https://blog.taxact.com/does-texas-have-state-income-tax.
-- Fidelity 50/15/5: https://fidelity.ca/en/insights/articles/saving-spending-rule-of-thumb (summarised by UW, Feb 15 2023: https://thewholeu.uw.edu/2023/02/15/50-15-5-a-saving-and-spending-rule-of-thumb).
-- Fidelity's emergency fund of "three to six months' worth of essential expenses": https://www.fidelity.com/learning-center/smart-money/emergency-fund.
+- 2026 wage base and FICA rates: SSA, Oct 24 2025, https://www.ssa.gov/news/en/press/releases/2025-10-24.html and https://www.ssa.gov/oact/cola/cbb.html (also Journal of Accountancy, Oct 2025, https://www.journalofaccountancy.com/news/2025/oct/social-security-wage-base-and-cola-announced-for-2026/).
+- Texas has no personal income tax (Tex. Const. art. 8 §24-a, added Nov 5 2019): https://statutes.capitol.texas.gov/docviewer/?docName=CN.8.24-a.htm; Texas A&M AgriLife, "Understanding Texas Taxes", https://agecoext.tamu.edu/wp-content/uploads/2021/06/Understanding-Texas-Taxes-rev-2021-E584.pdf.
+- Fidelity 50/15/5: https://www.fidelity.com/mymoneybasics/50-15-5-saving-spending-rule and https://fidelity.ca/en/insights/articles/saving-spending-rule-of-thumb (summarised by UW, Feb 15 2023: https://thewholeu.uw.edu/2023/02/15/50-15-5-a-saving-and-spending-rule-of-thumb).
+- Fidelity's emergency fund of "three to six months' worth of essential expenses": https://www.fidelity.com/learning-center/smart-money/emergency-fund (the 50/15/5 page says the same).
 
 ---
 
@@ -168,38 +168,41 @@ Sources:
 
 - **Series tag:** Envelope My Paycheck No. 05A (the series pilot)
 - **Money topic:** the emergency fund
-- **Lane:** Envelope · **Runtime:** 39.2 s master
+- **Lane:** Envelope · **Runtime:** 39.8 s master (`loop: true`)
 - **Spec:** `engine/specs/05-envelope-split-a.json`
 
-**Frame-1 hook** (complete at t = 0: the tape, envelope and postmark are pre-rolled, so the first frame is the thumbnail)
-- **On screen (masking tape):** `$2,094.20 PAYCHECK` / `THIS ENVELOPE TAKES` / `30 MONTHS. YOURS TOO.` ("30 MONTHS." in red), over a labelled **OOPS 5%** cash envelope showing **$105**, with postmark No. 05A. As in moneyletter's cups, the system is on screen before it is explained.
+**Frame-1 hook** (complete at t = 0: the hook, envelope and postmark all start at t = 0 and render finished, so the first frame is the thumbnail)
+- **On screen (masking tape):** `$2,094.20 PAYCHECK` / `THIS ENVELOPE TAKES` / `30 MONTHS. YOURS TOO.` ("30 MONTHS." in red), over a big labelled **OOPS 5%** cash envelope (600 px wide, 96 px label) showing **$105**, with postmark No. 05A in the flap. As in moneyletter's cups, the system is on screen before it is explained.
 - **First spoken line (0.2–2.8 s):** "This envelope takes thirty months to fill. Yours too."
 
 **Beat sheet**
 
 | Time | On screen | VO |
 |---|---|---|
-| 0.0–2.9 | Tape hook; OOPS 5% envelope with $105; postmark | "This envelope takes thirty months to fill. Yours too." |
-| 2.9–5.3 | Counter ticks **$2,502.00 → $2,094.20** under "gross $2,502 → after tax"; ASSUME sticky writes in | "Median paycheck, after tax: two thousand ninety-four." |
-| 5.3–7.3 | **MUST 50%** envelope, bills drop, **$1,047** | "Half goes in MUST: ten forty-seven." |
-| 7.4–9.8 | Red "**10% = $209**", underlined | "Ten percent? Move the decimal: two oh nine." |
-| 9.9–12.0 | **OOPS 5%** drops, **$105** | "Half that is OOPS: a hundred five." |
-| 12.1–14.0 | **FUTURE 15%** drops, **$314** | "Ten plus five, FUTURE: three fourteen." |
-| 14.1–16.0 | **FUN 30%** drops, **$628**, red circle *(split complete: first partial payoff, 15.1 s = 39%)* | "What's left is FUN: six twenty-eight." |
-| 16.05 | **Flip** *(pattern break, 41%)* | |
-| 16.2–18.0 | "OOPS goal:"; ASSUME sticky "all 5% → OOPS · no interest · no raises"; big OOPS envelope | "Now time the OOPS envelope." |
-| 18.1–22.0 | "3 months of MUST"; line 1 **3 × 50% = 150%** | "Goal: three months of MUST. A hundred fifty percent of a month's pay." |
-| 22.1–24.0 | Line 2 **÷ 5% a month** | "It gets five percent a month." |
-| 24.1–27.4 | Sum bar, line 3 **= 30 months** (red); 65-dot paycheck grid fills, "65 paychecks" | "A hundred fifty over five: thirty months. Sixty-five paychecks." |
-| 27.5–29.7 | Red box around lines 1–2 (no $ in them) | "Notice: no paycheck anywhere in that math." |
-| 29.8–32.7 | Ladder: median $2,094 ··· 30 mo / nurse $2,979 ··· 30 mo / $7.25/hr $536 ··· 30 mo | "Median, nurse, minimum wage: thirty months." |
-| 32.8–34.9 | **OPENED BY MISTAKE** stamp slams (the "obvious" answer, that more pay fills it faster, is wrong) | "A bigger paycheck doesn't fill it faster." |
-| 35.0–37.1 | "6 months of MUST?" | "Six months of cushion?" |
-| 37.25–39.2 | Red **= 60 months**, double-underlined *(biggest number, lands at 37.25 s, inside the last 2 s)*; cut to frame 1 | "Sixty months." |
+| 0.0–2.85 | Tape hook; big OOPS 5% envelope with $105; postmark No. 05A in the flap | "This envelope takes thirty months to fill. Yours too." |
+| 2.95–5.9 | Pencil "BLS median: $1,251 a week" / "= $2,502 gross, every 2 wks"; counter **$2,502.00 → $2,094.20** (150 px); red "− fed tax − FICA"; ASSUME sticky | "Median paycheck, every two weeks, after tax: two thousand ninety-four." |
+| 5.9 | **Flip** | |
+| 6.2–7.9 | Header **$2,094.20** take-home; red shortcut "50% = half"; **MUST 50%** drops, **$1,047** | "Half goes in MUST: ten forty-seven." |
+| 8.1–10.2 | Shortcut becomes "**10% = $209**", $209 underlined | "Ten percent? Move the decimal: two oh nine." |
+| 10.4–12.4 | "5% = half of 10%"; **OOPS 5%** drops, **$105** | "Half that is OOPS: a hundred five." |
+| 12.6–14.4 | "15% = 10% + 5%"; **FUTURE 15%** drops, **$314** | "Ten plus five, FUTURE: three fourteen." |
+| 14.6–16.4 | "30% = what's left"; **FUN 30%** drops, **$628**, red circle at 15.75 *(split complete: first partial payoff, 15.75 s = 40%)* | "What's left is FUN: six twenty-eight." |
+| 16.45 | **Flip** *(pattern break, 41%)* | |
+| 16.75–20.1 | "OOPS goal:" / "3 months of MUST"; ASSUME sticky "all 5% → OOPS · no interest · no raises"; OOPS envelope prop | "Now time the OOPS envelope. Goal: three months of MUST." |
+| 20.2–22.4 | Line 1 **3 × 50% = 150%** | "That's a hundred fifty percent of a month's pay." |
+| 22.55–24.4 | Line 2 **÷ 5% a month** | "It gets five percent a month." |
+| 24.65–27.8 | Sum bar, line 3 **= 30 months** (red); 65-dot paycheck grid fills, "65 paychecks" | "A hundred fifty over five: thirty months. Sixty-five paychecks." |
+| 28.0–30.1 | Red box around lines 1–2 (no $ in them) | "Notice: no paycheck anywhere in that math." |
+| 30.15 | **Flip** | |
+| 30.45–33.1 | "OOPS full in:"; ladder median $2,094 ··· 30 mo / nurse $2,979 ··· 30 mo / $7.25/hr $536 ··· 30 mo | "Median, nurse, minimum wage: thirty months." |
+| 33.25–35.3 | **OPENED BY MISTAKE** stamp (the "obvious" answer, that more pay fills it faster, is wrong) | "A bigger paycheck doesn't fill it faster." |
+| 35.6 | **Flip** | |
+| 35.95–37.6 | "6 months of MUST?" / "6 × 50% ÷ 5%" | "Six months of cushion?" |
+| 37.75–39.8 | Red **= 60 months** (170 px), double-underlined *(biggest number, lands at 37.75 s, 2.05 s before the end)*; the last 0.35 s crossfades into frame 1 | "Sixty months." |
 
 **Full VO**
 
-> This envelope takes thirty months to fill. Yours too. Median paycheck, after tax: two thousand ninety-four. Half goes in MUST: ten forty-seven. Ten percent? Move the decimal: two oh nine. Half that is OOPS: a hundred five. Ten plus five, FUTURE: three fourteen. What's left is FUN: six twenty-eight. Now time the OOPS envelope. Goal: three months of MUST. A hundred fifty percent of a month's pay. It gets five percent a month. A hundred fifty over five: thirty months. Sixty-five paychecks. Notice: no paycheck anywhere in that math. Median, nurse, minimum wage: thirty months. A bigger paycheck doesn't fill it faster. Six months of cushion? Sixty months.
+> This envelope takes thirty months to fill. Yours too. Median paycheck, every two weeks, after tax: two thousand ninety-four. Half goes in MUST: ten forty-seven. Ten percent? Move the decimal: two oh nine. Half that is OOPS: a hundred five. Ten plus five, FUTURE: three fourteen. What's left is FUN: six twenty-eight. Now time the OOPS envelope. Goal: three months of MUST. That's a hundred fifty percent of a month's pay. It gets five percent a month. A hundred fifty over five: thirty months. Sixty-five paychecks. Notice: no paycheck anywhere in that math. Median, nurse, minimum wage: thirty months. A bigger paycheck doesn't fill it faster. Six months of cushion? Sixty months.
 
 **The envelope math (3 lines)**
 ```
@@ -216,10 +219,10 @@ Sources:
 
 The envelopes show $1,047 / $314 / $105 / $628, which add to $2,094.
 
-**ASSUME sticky 1:** `median $1,251/wk (BLS, Q2 2026) · single · Texas · 2026 fed tax + FICA`
+**ASSUME sticky 1:** `single · Texas · 2026 federal tax + FICA` (the BLS median, "$1,251 a week", and "= $2,502 gross, every 2 wks" are written in pencil above the counter)
 **ASSUME sticky 2:** `all 5% → OOPS · no interest · no raises`
 
-**Real-world inputs and sources** (verified 2026-10-07)
+**Real-world inputs and sources** (verified 2026-10-07; re-verified live in the polish pass)
 
 | Input | Value | Source (date) |
 |---|---|---|
@@ -231,7 +234,7 @@ The envelopes show $1,047 / $314 / $105 / $628, which add to $2,094.
 | Ladder rows: nurse $2,979 and $7.25/hr $536 take-home | computed | from 05C and 05B inputs (below) |
 
 **Ending**
-- **Loop / re-hook:** "Six months of cushion?" is a second question, and its answer, "Sixty months.", is the last thing on screen. The cut then lands on frame 1's "This envelope takes thirty months to fill. Yours too.", so the loop replays the 30 right after the 60.
+- **Loop / re-hook:** "Six months of cushion?" is a second question, and its answer, "Sixty months.", is the last thing on screen. `loop: true` crossfades the last 0.35 s into frame 1's "30 MONTHS. YOURS TOO.", so the replay lands the 30 right after the 60.
 - **Comment bait:** "How many months into your OOPS envelope are you? Comment your take-home and job. I'll envelope it next."
 - **Pinned comment:**
   > Exact: 30.0 months = 65 paychecks (envelope said 30 months, within 0%: it's a pure ratio, 3 × 50% ÷ 5%, so there's nothing to round). Check: 65 deposits × $104.71 = $6,806.15, exactly 3 months of MUST. The split on $2,094.20: MUST $1,047.10 · FUTURE $314.13 · OOPS $104.71 · FUN $628.26 (envelopes show whole dollars). Take-home = $1,251/wk × 52 = $65,052 − $5,626.24 federal income tax − $4,976.48 FICA = $54,449.28 ÷ 26. Assumes single, standard deduction, Texas (no state income tax), no 401(k)/insurance deductions, every OOPS dollar stays in OOPS, no interest, no raises. Six months of essentials = 60 months (130 paychecks). Sources: BLS weekly earnings Q2 2026 (Jul 21, 2026); IRS 2026 brackets; Fidelity 50/15/5 + emergency-fund guidance. Want yours? Comment your take-home and job.
@@ -243,9 +246,9 @@ The envelopes show $1,047 / $314 / $105 / $628, which add to $2,094.
 
 **Platform notes**
 - **YouTube Shorts (~35 s cut):**
-  - Trim the gross-to-net beat to 1.5 s and drop the ladder beat (29.8–32.7), so it reads "…no paycheck anywhere in that math. A bigger paycheck doesn't fill it faster. Six months of cushion? Sixty months." (~35.5 s).
+  - Trim the gross-to-net beat to 1.5 s and drop the ladder rows (30.45–33.1, keep the stamp), so it reads "…no paycheck anywhere in that math. A bigger paycheck doesn't fill it faster. Six months of cushion? Sixty months." (~35.5 s).
   - Title = the hook. Pin the comment.
-- **Instagram Reels (full 39 s; IG's highest median views were at 45–60 s, so also test a ~46 s cut with the "your turn" coda below):**
+- **Instagram Reels (full 39.8 s; IG's highest median views were at 45–60 s, so also test a ~46 s cut with the "your turn" coda below):**
   - Caption CTA "Comment your take-home + job and I'll envelope it" (the personalised-reply CTA, 125.1x).
   - Share line: "send to the friend who just started their first real job".
   - Test as a Trial Reel. 5 hashtags max.
@@ -266,33 +269,35 @@ The envelopes show $1,047 / $314 / $105 / $628, which add to $2,094.
 
 - **Series tag:** Envelope My Paycheck No. 05B
 - **Money topic:** saving for a big want (and the sales tax nobody budgets)
-- **Lane:** Envelope · **Runtime:** 30.8 s master
+- **Lane:** Envelope · **Runtime:** 31.3 s master (`loop: true`)
 - **Spec:** `engine/specs/05-envelope-split-b.json`
 
 **Frame-1 hook** (complete at t = 0)
-- **On screen (masking tape):** `$7.25/HR FIRST JOB` / `VS. A $1,199 iPHONE:` / `HOW MANY PAYCHECKS?` ($1,199 in red), with a 📱 and postmark No. 05B. That is the bible's hook formula in full: a number, a stake and a question.
+- **On screen (masking tape):** `$7.25/HR FIRST JOB` / `VS. A $1,199 iPHONE:` / `HOW MANY PAYCHECKS?` ($1,199 in red), with a big 📱 (360 px) and postmark No. 05B in the flap. That is the bible's hook formula in full: a number, a stake and a question.
 - **First spoken line (0.2–2.4 s):** "Minimum wage versus the new iPhone."
 
 **Beat sheet**
 
 | Time | On screen | VO |
 |---|---|---|
-| 0.0–2.5 | Tape hook, 📱 bobbing | "Minimum wage versus the new iPhone." |
-| 2.5–5.6 | Counter **$580.00 → $535.63** under "80 hrs × $7.25 = $580"; red "**− $44.37 FICA (7.65%)**"; ASSUME sticky "Texas · 40 hrs/wk · paid every 2 wks · $15,080/yr is under the $16,100 standard deduction" *(first partial payoff, the take-home, 5.0 s = 16%)* | "After FICA, a full-time paycheck is five thirty-five sixty-three." |
-| 5.7–9.0 | Red "**10% = $53.56**"; four envelopes drop: MUST **$268** · OOPS **$27** · FUTURE **$80** · FUN **$161**; red circle on $161 | "Ten percent: fifty-three fifty-six. FUN gets three tens: one sixty-one." |
-| 9.1 | **Flip** | |
-| 9.4–12.4 | Postage stamp **$1,199 · iPHONE 18 PRO**; "FUN envelope: $161 a paycheck"; big FUN envelope; line 1 **$1,199 ÷ $161**, line 2 **≈ 7.45** | "Eleven ninety-nine over one sixty-one: seven point four five." |
-| 12.3–14.4 | Sum bar, line 3 **→ 8 paychecks** (red) *(first answer, 12.3 s = 40%)*; 💵 row fills 8 of 9 (the 9th slot sits dim), "8 paychecks = 16 weeks" | "Call it eight paychecks. Sixteen weeks." |
-| 14.5 | **Flip** *(pattern break, 47%)* | |
-| 14.8–19.0 | Receipt prints: STICKER $1,199.00 / TX TAX 8.25% $98.92 / **TOTAL $1,297.92** | "Except that's the sticker. Texas sales tax: up to eight and a quarter percent." |
-| 19.0–22.2 | 💵 × 8 (9th dim); "8 checks = $1,285.52" | "Twelve ninety-eight. Eight paychecks only make twelve eighty-five." |
-| 22.3–24.3 | **POSTAGE DUE** stamp slams; red "**$12.40 short**" | "Twelve forty short." |
-| 24.4–27.4 | "median paycheck: 3 checks" | "A median paycheck covers it in three." |
-| 27.6–30.8 | The 9th bill fills; red **9 paychecks = 18 weeks**, double-underlined *(biggest number, lands at 28.8 s, inside the last 2 s)*; cut to frame 1 | "Minimum wage? Nine paychecks. Eighteen weeks of fun money." |
+| 0.0–2.5 | Tape hook, 📱 bobbing, postmark No. 05B | "Minimum wage versus the new iPhone." |
+| 2.6–5.9 | Pencil "80 hrs × $7.25 = $580" / "gross, every 2 weeks"; counter **$580.00 → $535.63**; red "**− $44.37 FICA (7.65%)**"; ASSUME sticky "Texas · $15,080/yr is under the $16,100 standard deduction" *(first partial payoff, the take-home, 4.65 s = 15%)* | "After FICA, a full-time paycheck, every two weeks: five thirty-five sixty-three." |
+| 6.0 | **Flip** | |
+| 6.3–9.3 | Header **$535.63** take-home; red "**10% = $53.56**" ($53.56 underlined), then "FUN = 3 tens"; four envelopes drop 6.4–7.45: MUST **$268** · OOPS **$27** · FUTURE **$80** · FUN **$161**; red circle on $161 at 8.55 | "Ten percent: fifty-three fifty-six. FUN gets three tens: one sixty-one." |
+| 9.4 | **Flip** | |
+| 9.7–12.6 | Postage stamp **$1,199 · iPHONE 18 PRO**; "FUN envelope: / $161 a paycheck"; FUN envelope prop; line 1 **$1,199 ÷ $161**, line 2 **≈ 7.45** | "Eleven ninety-nine over one sixty-one: seven point four five." |
+| 12.3–14.7 | Sum bar, line 3 **→ 8 paychecks** (red) *(first answer, 12.6 s = 40%)*; 💵 row fills 8 of 9 (the 9th slot dim), "8 paychecks = 16 weeks" | "Call it eight paychecks. Sixteen weeks." |
+| 14.85 | **Flip** *(pattern break, 47%)* | |
+| 15.1–19.3 | Receipt prints on the voice: iPHONE 18 PRO / STICKER $1,199.00 / TX TAX 8.25% $98.92 (red) / **TOTAL $1,297.92** (highlighted, prints at 19.3) | "Except that's the sticker. Texas sales tax: up to eight and a quarter percent. Twelve ninety-eight." |
+| 19.5–22.5 | 💵 × 8 (9th dim) fill while a running total counts the deposits, $160.69 → $1,285.52: "8 checks = $1,285.52" | "Eight paychecks only make twelve eighty-five." |
+| 22.55–24.5 | **POSTAGE DUE** stamp slams (lower right, clear of the receipt); red "**$12.40 short**" | "Twelve forty short." |
+| 24.65 | **Flip** | |
+| 24.95–27.5 | "with tax: $1,297.92"; "median paycheck:" with 💵 × 3; "3 checks" (green) | "A median paycheck covers it in three." |
+| 27.65–31.3 | "$7.25/hr:" with the 💵 row going 8 → 9; red **9 paychecks** (130 px) "= 18 weeks", double-underlined *(biggest number, lands at 28.6 s, 2.7 s before the end)*; the last 0.35 s crossfades into frame 1 | "Minimum wage? Nine paychecks. Eighteen weeks of fun money." |
 
 **Full VO**
 
-> Minimum wage versus the new iPhone. After FICA, a full-time paycheck is five thirty-five sixty-three. Ten percent: fifty-three fifty-six. FUN gets three tens: one sixty-one. Eleven ninety-nine over one sixty-one: seven point four five. Call it eight paychecks. Sixteen weeks. Except that's the sticker. Texas sales tax: up to eight and a quarter percent. Twelve ninety-eight. Eight paychecks only make twelve eighty-five. Twelve forty short. A median paycheck covers it in three. Minimum wage? Nine paychecks. Eighteen weeks of fun money.
+> Minimum wage versus the new iPhone. After FICA, a full-time paycheck, every two weeks: five thirty-five sixty-three. Ten percent: fifty-three fifty-six. FUN gets three tens: one sixty-one. Eleven ninety-nine over one sixty-one: seven point four five. Call it eight paychecks. Sixteen weeks. Except that's the sticker. Texas sales tax: up to eight and a quarter percent. Twelve ninety-eight. Eight paychecks only make twelve eighty-five. Twelve forty short. A median paycheck covers it in three. Minimum wage? Nine paychecks. Eighteen weeks of fun money.
 
 **The envelope math (3 lines, then a red-pen twist)**
 ```
@@ -310,35 +315,35 @@ The envelopes show $1,047 / $314 / $105 / $628, which add to $2,094.
 
 The envelopes show $268 / $80 / $27 / $161, which add to $536.
 
-**ASSUME sticky:** `Texas · 40 hrs/wk · paid every 2 wks · $15,080/yr is under the $16,100 standard deduction`
+**ASSUME sticky:** `Texas · $15,080/yr is under the $16,100 standard deduction` ("80 hrs × $7.25 = $580" and "gross, every 2 weeks" are written above the counter; full-time 40 hrs/wk is in the VO and the pin)
 
-**Real-world inputs and sources** (verified 2026-10-07)
+**Real-world inputs and sources** (verified 2026-10-07; re-verified live in the polish pass)
 
 | Input | Value | Source (date) |
 |---|---|---|
 | Federal minimum wage, unchanged since Jul 24 2009 | $7.25/hr | U.S. DOL: https://www.dol.gov/agencies/whd/minimum-wage and https://www.dol.gov/newsroom/releases/esa/esa20090716 |
-| Texas minimum wage = federal (Texas Minimum Wage Act) | $7.25/hr | Texas Workforce Commission: https://twc.texas.gov/jobseekers/texas-minimum-wage-law |
+| Texas minimum wage = federal (Texas Minimum Wage Act) | $7.25/hr | Texas Workforce Commission: https://www.twc.texas.gov/programs/wage-and-hour/texas-minimum-wage-law |
 | 2026 standard deduction; FICA 7.65% | $16,100; 6.2% + 1.45% | IRS IR-2025-103 (Oct 9 2025); Journal of Accountancy (Oct 2025) |
-| iPhone 18 Pro starting price (announced Sept 9 2026; $100 more than the iPhone 17 Pro) **(QA could not re-open these sources; re-verify before publishing, see Verification log)** | $1,199 | CNBC live updates, Sept 9 2026: https://www.cnbc.com/2026/09/09/apple-event-today-live-updates.html; MacRumors, Sept 9 2026: https://www.macrumors.com/2026/09/09/iphone-18-pro-price-hike-to-be-lower-than-expected/ |
-| Texas sales tax: 6.25% state + up to 2% local = 8.25% max | 8.25% | Texas Comptroller, local sales tax FAQ: https://comptroller.texas.gov/taxes/sales/faq/local.php |
+| iPhone 18 Pro starting price, 256GB (announced Sept 9 2026; preorders Sept 12, on sale Sept 18; $100 more than the iPhone 17 Pro). **Re-verified 2026-10-07 on Apple's own pages** | $1,199 | Apple Newsroom, Sept 9 2026: https://www.apple.com/newsroom/2026/09/apple-debuts-iphone-18-pro-and-iphone-18-pro-max/; Apple Store: https://www.apple.com/shop/buy-iphone/iphone-18-pro; MacRumors, Sept 9 2026: https://www.macrumors.com/2026/09/09/iphone-18-pro-pricing/ |
+| Texas sales tax: 6.25% state + up to 2% local = 8.25% max | 8.25% | Texas Comptroller: https://comptroller.texas.gov/taxes/sales/ and local sales tax FAQ: https://comptroller.texas.gov/taxes/sales/faq/local.php |
 | Median paycheck's FUN envelope (for the last line) | $628.26 | from 05A |
 
 **Ending**
-- **Loop / re-hook:** The two final numbers sit side by side (median 3, minimum wage 9), with the bigger one landing last. "…Eighteen weeks of fun money." then cuts back to "Minimum wage versus the new iPhone." and the tape's "HOW MANY PAYCHECKS?".
+- **Loop / re-hook:** The two final numbers sit side by side (median: 3 bills, minimum wage: 9 bills), with the bigger one landing last. "…Eighteen weeks of fun money." crossfades (`loop: true`) back to frame 1's tape, "HOW MANY PAYCHECKS?", and "Minimum wage versus the new iPhone."
 - **Comment bait:** "Worth eighteen weeks of fun money? Your call. Comment your first paycheck and what you saved for."
 - **Pinned comment:**
-  > Exact: $1,199 ÷ $160.69 = 7.46 paychecks (envelope said ≈ 7.45 using $161, within 0.2%) → 8 before tax. With Texas's 8.25% top combined rate: $1,297.92 ÷ $160.69 = 8.08 → 9 paychecks (18 weeks); 8 deposits = $1,285.52, $12.40 short. If your city's combined rate is 7.2% or less, 8 paychecks still cover it (at the bare 6.25% state rate it's $1,273.94). Take-home: 80 × $7.25 = $580 − $44.37 FICA = $535.63; $15,080 a year is under the $16,100 standard deduction, so no federal income tax is owed (withholding can differ by cents). Split: MUST $267.82 · FUTURE $80.34 · OOPS $26.78 · FUN $160.69. Median paycheck's FUN ($628.26): 2 paychecks before tax, 3 with tax. Sources: DOL, Texas Workforce Commission, IRS 2026, Apple pricing via CNBC/MacRumors (Sept 9, 2026), Texas Comptroller. Comment your first paycheck and I'll envelope it.
+  > Exact: $1,199 ÷ $160.69 = 7.46 paychecks (envelope said ≈ 7.45 using $161, within 0.2%) → 8 before tax. With Texas's 8.25% top combined rate: $1,297.92 ÷ $160.69 = 8.08 → 9 paychecks (18 weeks); 8 deposits = $1,285.52, $12.40 short. If your city's combined rate is 7.2% or less, 8 paychecks still cover it (at the bare 6.25% state rate it's $1,273.94). Take-home: 80 × $7.25 = $580 − $44.37 FICA = $535.63; $15,080 a year is under the $16,100 standard deduction, so no federal income tax is owed (withholding can differ by cents). Split: MUST $267.82 · FUTURE $80.34 · OOPS $26.78 · FUN $160.69. Median paycheck's FUN ($628.26): 2 paychecks before tax, 3 with tax. Sources: DOL, Texas Workforce Commission, IRS 2026, Apple Newsroom (Sept 9, 2026), Texas Comptroller. Comment your first paycheck and I'll envelope it.
 
 **Description**
-> A full-time first job at $7.25 an hour in Texas takes home $535.63 every two weeks. Split 50/15/5/30, the FUN envelope gets $160.69. The $1,199 iPhone 18 Pro takes 8 paychecks, until the receipt adds 8.25% Texas sales tax ($1,297.92) and it's 9. Inputs: U.S. DOL and Texas Workforce Commission (minimum wage), IRS 2026 standard deduction, Apple's Sept 9, 2026 pricing (via CNBC/MacRumors), Texas Comptroller (sales tax). Educational math, not financial advice.
+> A full-time first job at $7.25 an hour in Texas takes home $535.63 every two weeks. Split 50/15/5/30, the FUN envelope gets $160.69. The $1,199 iPhone 18 Pro takes 8 paychecks, until the receipt adds 8.25% Texas sales tax ($1,297.92) and it's 9. Inputs: U.S. DOL and Texas Workforce Commission (minimum wage), IRS 2026 standard deduction, Apple's Sept 9, 2026 pricing (Apple Newsroom), Texas Comptroller (sales tax). Educational math, not financial advice.
 >
 > #EnvelopeMath #cashstuffing #firstjob #iPhone18Pro #budgeting
 
 **Platform notes**
-- **YouTube Shorts (the 31 s master as is):**
+- **YouTube Shorts (the 31.3 s master as is):**
   - The take-home is already one 3 s counter beat; keep the receipt twist intact. The twist is the payoff.
   - Ride "iPhone 18 Pro" search in the title during launch month.
-- **Instagram Reels (31 s master; also test a ~45 s cut with the part-time variant, since IG's best median views were at 45–60 s):**
+- **Instagram Reels (31.3 s master; also test a ~45 s cut with the part-time variant, since IG's best median views were at 45–60 s):**
   - Share framing "send to someone with a new job".
   - Caption CTA "Comment your first paycheck"; carousel-style first frame. 3–5 hashtags.
 - **TikTok (~60–65 s cut):**
@@ -357,34 +362,35 @@ The envelopes show $268 / $80 / $27 / $161, which add to $536.
 
 - **Series tag:** Envelope My Paycheck No. 05C
 - **Money topic:** buying a home (down payment)
-- **Lane:** Envelope · **Runtime:** 31.0 s master
+- **Lane:** Envelope · **Runtime:** 31.8 s master (`loop: true`)
 - **Spec:** `engine/specs/05-envelope-split-c.json`
 
 **Frame-1 hook** (complete at t = 0)
-- **On screen (masking tape):** `NURSE PAYCHECK: $2,979.09` / `VS. A $429,100 HOUSE:` / `HOW MANY PAYCHECKS?` ($429,100 in red), with a 🏠 and postmark No. 05C.
+- **On screen (masking tape):** `NURSE PAYCHECK: $2,979.09` / `VS. A $429,100 HOUSE:` / `HOW MANY PAYCHECKS?` ($429,100 in red), with a big 🏠 (360 px) and postmark No. 05C in the flap.
 - **First spoken line (0.2–2.2 s):** "Nurse paycheck versus the median house."
 
 **Beat sheet**
 
 | Time | On screen | VO |
 |---|---|---|
-| 0.0–2.4 | Tape hook, 🏠 bobbing | "Nurse paycheck versus the median house." |
-| 2.3–5.2 | Counter **$3,751.92 → $2,979.09** under "$97,550 a year ÷ 26 = $3,751.92"; red "− fed tax − FICA"; ASSUME sticky | "Median nurse pay: ninety-seven five fifty. Take-home: twenty-nine seventy-nine." |
-| 4.35–8.0 | Four envelopes drop in 0.9 s: MUST **$1,490** · OOPS **$149** · FUTURE **$447** · FUN **$894**; red "10% = $298"; red circle on **$447** *(partial payoff, 7.0 s = 23%)* | "Same four envelopes. FUTURE, fifteen percent: four forty-seven." |
-| 8.1 | **Flip** | |
-| 8.4–11.2 | Postage **$429K · MEDIAN HOME**; "FUTURE → house / $447 a paycheck"; big FUTURE envelope; line 1 **10% × $429,100 = $42,910** *(the target, written by 10.8 s = 35%)* | "First-time buyers put ten percent down: forty-two nine." |
-| 11.3–14.4 | Line 2 **÷ $447 a paycheck**, sum bar, line 3 **≈ 96 paychecks** (red) *(first answer in time, 13.0 s = 42%)* | "Call it forty-three grand over four fifty: ninety-six paychecks." |
-| 14.5–17.8 | "exact: 96.03"; **ROUGHLY RIGHT** stamp; red "≈ 3 yrs, 8 months" | "Exact: ninety-six point oh three. Three years, eight months." |
-| 17.9–20.5 | ASSUME sticky: "all FUTURE $ → house · pay & price stay flat" | "That's if every FUTURE dollar goes to the house." |
-| 20.6 | **Flip** *(pattern break)* | |
-| 20.9–23.2 | "20% down = no PMI"; hatched bar "10% down **3.7 yrs**" grows; the 20% slot stays empty | "Twenty percent down, to skip PMI?" |
-| 23.3–25.9 | "median 1st-time buyer: 40" | "The median first-time buyer is now forty." |
-| 26.0–28.9 | The empty 20% slot holds (an open loop) | "Double the down payment. How old would you be?" |
-| 29.0–31.0 | Red bar "20% down **7.4 yrs**" grows and is circled; red "**192 paychecks**" *(biggest number, lands at 29.0 s, inside the last 2 s)*; cut to frame 1 | "Seven point four years." |
+| 0.0–2.5 | Tape hook, 🏠 bobbing, postmark No. 05C | "Nurse paycheck versus the median house." |
+| 2.55–5.7 | Pencil "RN median: $97,550 a year" / "÷ 26 = $3,751.92 gross"; counter **$3,751.92 → $2,979.09**; red "− fed tax − FICA"; ASSUME sticky | "Median nurse pay: ninety-seven five fifty. Take-home, every two weeks: twenty-nine seventy-nine." |
+| 5.7 | **Flip** | |
+| 6.0–8.6 | Header **$2,979.09** take-home; red "10% = $298" and "15% = 10% + 5%"; four envelopes drop 6.05–6.95: MUST **$1,490** · OOPS **$149** · FUTURE **$447** · FUN **$894**; red circle on **$447** at 7.9 *(partial payoff, 7.9 s = 25%)* | "Same four envelopes. FUTURE, fifteen percent: four forty-seven." |
+| 8.7 | **Flip** | |
+| 9.0–11.8 | Postage **$429K · MEDIAN HOME**; "FUTURE → house / $447 a paycheck"; FUTURE envelope prop; line 1 **10% × $429,100 = $42,910** *(the target, written by 10.8 s = 34%)* | "First-time buyers put ten percent down: forty-two nine." |
+| 12.0–15.0 | Line 2 **÷ $447 a paycheck**, sum bar, line 3 **≈ 96 paychecks** (red) *(first answer, 13.65 s = 43%)* | "Call it forty-three grand over four fifty: ninety-six paychecks." |
+| 15.15–18.4 | "exact: 96.03"; **ROUGHLY RIGHT** stamp (16.0); red "= 3 yrs, 8 months" | "Exact: ninety-six point oh three. Three years, eight months." |
+| 17.55–21.1 | ASSUME sticky "all FUTURE $ → house · pay & price stay flat" replaces the postage | "That's if every FUTURE dollar goes to the house." |
+| 21.2 | **Flip** *(pattern break)* | |
+| 21.5–23.8 | "20% down = no PMI"; hatched bar "10% down **3.7 yrs**" grows; the 20% slot stays empty | "Twenty percent down, to skip PMI?" |
+| 23.9–26.5 | "median 1st-time buyer: 40" | "The median first-time buyer is now forty." |
+| 26.6–29.5 | The empty 20% slot holds (an open loop) | "Double the down payment. How old would you be?" |
+| 29.6–31.8 | Red bar "20% down **7.4 yrs**" (104 px) grows and is circled; red "**192 paychecks**", underlined *(biggest number, lands at 29.6 s, 2.2 s before the end)*; the last 0.35 s crossfades into frame 1 | "Seven point four years." |
 
 **Full VO**
 
-> Nurse paycheck versus the median house. Median nurse pay: ninety-seven five fifty. Take-home: twenty-nine seventy-nine. Same four envelopes. FUTURE, fifteen percent: four forty-seven. First-time buyers put ten percent down: forty-two nine. Call it forty-three grand over four fifty: ninety-six paychecks. Exact: ninety-six point oh three. Three years, eight months. That's if every FUTURE dollar goes to the house. Twenty percent down, to skip PMI? The median first-time buyer is now forty. Double the down payment. How old would you be? Seven point four years.
+> Nurse paycheck versus the median house. Median nurse pay: ninety-seven five fifty. Take-home, every two weeks: twenty-nine seventy-nine. Same four envelopes. FUTURE, fifteen percent: four forty-seven. First-time buyers put ten percent down: forty-two nine. Call it forty-three grand over four fifty: ninety-six paychecks. Exact: ninety-six point oh three. Three years, eight months. That's if every FUTURE dollar goes to the house. Twenty percent down, to skip PMI? The median first-time buyer is now forty. Double the down payment. How old would you be? Seven point four years.
 
 **The envelope math (3 lines)**
 ```
@@ -401,21 +407,21 @@ The envelopes show $268 / $80 / $27 / $161, which add to $536.
 
 The envelopes show $1,490 / $447 / $149 / $894. Each one is rounded to the dollar, so they add to $2,980, and the pinned comment says so.
 
-**ASSUME sticky 1:** `RN median (BLS, May 2025) · single · Texas · 2026 fed tax + FICA`
+**ASSUME sticky 1:** `BLS, May 2025 · single · Texas · 2026 tax + FICA` ("RN median: $97,550 a year" and "÷ 26 = $3,751.92 gross" are written above the counter)
 **ASSUME sticky 2:** `all FUTURE $ → house · pay & price stay flat`
 
-**Real-world inputs and sources** (verified 2026-10-07)
+**Real-world inputs and sources** (verified 2026-10-07; re-verified live in the polish pass)
 
 | Input | Value | Source (date) |
 |---|---|---|
 | Median annual wage, registered nurses, May 2025 | $97,550 ($46.90/hr) | BLS *Occupational Outlook Handbook*, Registered Nurses: https://www.bls.gov/ooh/healthcare/registered-nurses.htm |
 | 2026 brackets, standard deduction, FICA; Texas no income tax | see shared assumptions | IRS IR-2025-103 (Oct 9 2025); Journal of Accountancy (Oct 2025); Texas A&M AgriLife |
-| Median existing-home price, all housing types, August 2026 (+1.6% y/y as reported by the writer) **(QA could not re-open these sources; re-verify before publishing, see Verification log)** | $429,100 | NAR Existing-Home Sales, released Sept 10 2026: https://www.nar.realtor/newsroom/nar-existing-home-sales-report-shows-2-0-decrease-in-august; Mortgage News Daily, Sept 11 2026: https://www.mortgagenewsdaily.com/news/09112026-existing-home-sales-nar-inventory-prices-appr |
+| Median existing-home price, all housing types, August 2026 (+1.6% y/y from a revised $422,400; sales 3.98M SAAR). **Re-verified 2026-10-07: figure and date confirmed.** NAR's 2026 calendar moved releases earlier: August data came out Thu Sept 10, and September data is due Tue Oct 13, so this is still the latest | $429,100 | NAR Existing-Home Sales, released Sept 10 2026: https://www.nar.realtor/newsroom/nar-existing-home-sales-report-shows-2-0-decrease-in-august; NAR 2026 release schedule: https://www.nar.realtor/press-releases/nar-releases-2026-statistical-news-release-schedule; Mortgage News Daily, Sept 11 2026: https://www.mortgagenewsdaily.com/news/09112026-existing-home-sales-nar-inventory-prices-appr |
 | First-time buyers' median down payment; median first-time buyer age | 10%; 40 | NAR 2025 Profile of Home Buyers and Sellers (Nov 2025): https://www.nar.realtor/newsroom/first-time-home-buyer-share-falls-to-historic-low-of-21-median-age-rises-to-40 |
-| PMI is usually required below 20% down | 20% | OCC HelpWithMyBank: https://helpwithmybank.gov/help-topics/mortgages-home-equity/private-mortgage-insurance/pmi.html; CFPB PMI guidance: https://www.consumerfinance.gov/about-us/newsroom/cfpb-provides-guidance-about-private-mortgage-insurance-cancellation-and-termination/ |
+| PMI is usually required below 20% down | 20% | OCC HelpWithMyBank: https://www2.helpwithmybank.gov/help-topics/mortgages-home-equity/private-mortgage-insurance/pmi.html; CFPB: https://www.consumerfinance.gov/ask-cfpb/what-is-mortgage-insurance-and-how-does-it-work-en-1953/ |
 
 **Ending**
-- **Loop / re-hook:** "How old would you be?" is asked *before* the answer lands, so every viewer adds 7.4 years to their own age as the bar grows. The cut back to "Nurse paycheck versus the median house." and its "HOW MANY PAYCHECKS?" tape restarts the loop.
+- **Loop / re-hook:** "How old would you be?" is asked *before* the answer lands, so every viewer adds 7.4 years to their own age as the bar grows. `loop: true` crossfades back to frame 1's "HOW MANY PAYCHECKS?" tape and "Nurse paycheck versus the median house.", which restarts the loop.
 - **Comment bait:** "How old would you be when the house envelope fills? Comment your take-home and your city. I'll envelope it." It has a taggable target: nurses, nursing students, first-time buyers.
 - **Pinned comment:**
   > Exact: $42,910 ÷ $446.86 = 96.03 paychecks = 3.69 years (envelope said ≈ 96, within 0.03%; the 97th paycheck tops it off). 20% down: $85,820 ÷ $446.86 = 192.05 paychecks = 7.39 years. Take-home: $97,550 − $12,631.00 federal income tax − $7,462.58 FICA = $77,456.42 ÷ 26 = $2,979.09. Split: MUST $1,489.55 · FUTURE $446.86 · OOPS $148.95 · FUN $893.73 (envelopes round to the dollar, so they add to $2,980). Assumes single, standard deduction, Texas, no 401(k)/insurance deductions, every FUTURE dollar goes to the house and none to retirement, price and pay stay flat, no interest, closing costs not included. Sources: BLS (RN median, May 2025), NAR (Aug 2026 median price; 2025 buyer profile), OCC (PMI), IRS 2026. Nurses: comment your take-home.
@@ -426,10 +432,10 @@ The envelopes show $1,490 / $447 / $149 / $894. Each one is rounded to the dolla
 > #EnvelopeMath #nurse #firsttimehomebuyer #downpayment #budgeting
 
 **Platform notes**
-- **YouTube Shorts (the 31 s master as is; ~28 s cut optional):**
-  - The gross derivation is already one counter beat. For a shorter cut, move the assumption beat (17.9–20.5) into the pinned comment. Keep 96 → ROUGHLY RIGHT → 7.4 years.
+- **YouTube Shorts (the 31.8 s master as is; ~29 s cut optional):**
+  - The gross derivation is already one counter beat. For a shorter cut, move the assumption beat (18.5–21.1) into the pinned comment. Keep 96 → ROUGHLY RIGHT → 7.4 years.
   - "Down payment" and "nurse" carry search.
-- **Instagram Reels (31 s master; test a ~45 s cut with the third bar below, since IG's best median views were at 45–60 s):**
+- **Instagram Reels (31.8 s master; test a ~45 s cut with the third bar below, since IG's best median views were at 45–60 s):**
   - Send-to-a-nurse framing in the caption.
   - Ask "what's your city's median?" to start a reply series.
 - **TikTok (~65 s cut):**
@@ -446,18 +452,13 @@ The envelopes show $1,490 / $447 / $149 / $894. Each one is rounded to the dolla
 
 ### Production notes (all three)
 
-- **QA status (re-run by QA, 2026-10-07):**
-  - `node src/cli.js check` passes with zero warnings on all three specs.
-  - Contact sheets are at `engine/out/sheets/05-envelope-split-{a,b,c}.png`. Stills with the safe-zone overlay are in `engine/out/stills/`: frame 0 (`-0.png`), the first answer (`-a-15.8`, `-b-12.9`, `-c-14.2`) and the final reveal (`-a-37.6`, `-b-29.9`, `-c-30.0`).
-  - A test render of 05B to MP4 (540×960, 30.8 s, with audio) succeeded, and its first decoded frame shows the complete hook.
-- **Writer's earlier fixes (kept):**
-  - a stamp covering the receipt total;
-  - a stamp colliding with handwriting;
-  - a circle clipping "7.4 yrs";
-  - a too-fast grid beat;
-  - empty lower halves during setup beats;
-  - hook tape overlapping the postmark.
-- **Hook pre-roll:** the hook, postmark, frame-1 envelope and emoji start at a negative `t` (−0.5 to −1.2 s), so they are fully drawn at t = 0. With `t: 0` the first frame was an empty envelope. Their tape and cash foley collapse onto the first audio sample; trim them in the edit if they sound stacked.
+- **Status after the polish pass (2026-10-07):**
+  - `node src/cli.js check` returns zero warnings on all three specs under the stricter linter (phone-legible sizes, overlaps, caption lines and pace, frame 0, lane-aware duration).
+  - All three are rendered: `engine/out/05-envelope-split-{a,b,c}.mp4` (1080×1920, 30 fps, AAC foley; 39.8 / 31.3 / 31.8 s). Audio: mean −26.1 / −25.4 / −25.3 dB, max −1.9 / −2.0 / −1.9 dB.
+  - Frames extracted from the MP4s are in `engine/out/stills/05-envelope-split-{a,b,c}-<t>.png`: frame 0, the partial payoff, the reveal and duration − 0.2 s.
+- **Frame 0:** every frame-0 element (hook, postmark, envelope, emoji) starts at t = 0, and the engine draws them finished, so the first frame is the thumbnail. There is no negative-t pre-roll and no stacked foley on sample 1.
+- **Sizes:** working lines are ≥ 64 px handwriting, hero numbers are 120–170 px, envelope labels and amounts are 64 / 76 px, stickies are 56 px and receipt rows are 50 px typewriter.
+- **Layout:** hook and header lines sit in y 380–620, everything else in the 600–1300 content zone, and nothing sits in the caption band while captions play. A flip separates the big beats (05A: 4, 05B: 4, 05C: 3).
 - **Cross-episode continuity:** 05A's ladder uses the 05B and 05C take-homes, so the three cross-promote. Post 05A first.
 
 ---
@@ -473,17 +474,17 @@ The envelopes show $1,490 / $447 / $149 / $894. Each one is rounded to the dolla
 Recomputes every number that appears on screen, in the voice-over or in a pinned comment,
 and asserts the values the scripts and specs use. Run:  python3 teasers/05-envelope-split-math.py
 
-Real-world inputs (verified 2026-10-07; sources in teasers/05-envelope-split.md):
-  BLS median usual weekly earnings, full-time wage & salary workers, Q2 2026 ... $1,251
-  BLS median annual wage, registered nurses, May 2025 ......................... $97,550
-  Federal minimum wage (= Texas minimum wage) ................................. $7.25/hr
-  2026 standard deduction, single ............................................. $16,100
-  2026 brackets, single: 10% to $12,400 · 12% to $50,400 · 22% to $105,700
-  FICA, employee: 6.2% Social Security (wage base $184,500) + 1.45% Medicare
-  iPhone 18 Pro starting price (Apple, Sept 2026) ............................. $1,199
-  Texas max combined sales tax (6.25% state + up to 2% local) ................. 8.25%
-  NAR median existing-home price, August 2026 ................................. $429,100
-  NAR 2025 Profile: first-time buyers' median down payment 10%, median age 40
+Real-world inputs (re-verified live 2026-10-07 in the polish pass; sources in the md's Final fact check):
+  BLS median usual weekly earnings, full-time wage & salary workers, Q2 2026 ... $1,251   (BLS, Jul 21 2026)
+  BLS median annual wage, registered nurses, May 2025 ......................... $97,550  (BLS OOH)
+  Federal minimum wage (= Texas minimum wage) ................................. $7.25/hr (DOL; TWC)
+  2026 standard deduction, single ............................................. $16,100  (IRS IR-2025-103)
+  2026 brackets, single: 10% to $12,400 · 12% to $50,400 · 22% to $105,700 · 24% to $201,775
+  FICA, employee: 6.2% Social Security (2026 wage base $184,500) + 1.45% Medicare (SSA, Oct 24 2025)
+  iPhone 18 Pro starting price ................................................ $1,199   (Apple Newsroom, Sept 9 2026)
+  Texas max combined sales tax (6.25% state + up to 2% local) ................. 8.25%    (Texas Comptroller)
+  NAR median existing-home price, August 2026 ................................. $429,100 (NAR, released Sept 10 2026)
+  NAR 2025 Profile: first-time buyers' median down payment 10%, median age 40   (NAR, Nov 4 2025)
   Fidelity 50/15/5: 50% of take-home on essentials, 5% of take-home to short-term savings;
   Fidelity emergency fund: 3 to 6 months of essential expenses
 """
@@ -604,6 +605,9 @@ short = total - eight
 need = total / fun_b
 print(f'  8 deposits of ${fun_b} = ${eight:,} -> ${short} short;  ${total:,} / ${fun_b} = {need:.3f} -> {math.ceil(need)} paychecks = {2*math.ceil(need)} weeks')
 assert eight == D('1285.52') and short == D('12.40') and math.ceil(need) == 9
+running = [fun_b * k for k in range(1, 9)]  # the on-screen running total, one FUN deposit per paycheck
+print('  running total of FUN deposits: ' + ' · '.join(f'${v:,}' for v in running))
+assert running == [D(v) for v in ('160.69', '321.38', '482.07', '642.76', '803.45', '964.14', '1124.83', '1285.52')]
 state_only = c(phone * D('1.0625'))
 breakeven = (eight / phone - 1) * 100
 covers = lambda rate: phone + c(phone * rate) <= eight
@@ -652,16 +656,77 @@ print(f'  20%: ${dp20:,.0f} / ${fut} = {n20:.2f} paychecks = {n20/PAYS:.2f} year
 assert dp10 == 42910 and dp20 == 85820
 assert round(rough_c) == 96 and round(n10) == 96 and c(n10) == D('96.03')
 assert int(n10 / PAYS) == 3 and round(((n10 / PAYS) - 3) * 12) == 8
-assert round(n20) == 192 and round(n20 / PAYS, 1) == D('7.4')
+assert round(n20) == 192 and round(n20 / PAYS, 1) == D('7.4') and round(n10 / PAYS, 1) == D('3.7')  # bars: 3.7 yrs / 7.4 yrs
 med_fut = ex_a['FUTURE']
 print(f'  TikTok third bar, median worker: ${dp10:,.0f} / ${med_fut} = {dp10/med_fut:.1f} paychecks = {dp10/med_fut/PAYS:.2f} years')
 assert round(dp10 / med_fut, 1) == D('136.6') and round(dp10 / med_fut / PAYS, 1) == D('5.3')
 print(f'  pinned: exact {n10:.2f} paychecks (envelope said ~96: within {pct_off(96, n10):.2f}%)')
+
+print()
+print('=' * 72)
+print('Cross-check: every number drawn on screen in the three specs')
+print('=' * 72)
+import json, re, os
+SPECS = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'engine', 'specs')
+def on_screen(op):
+    t = op['type']
+    if t in ('write', 'hook'):
+        return op['text'] if isinstance(op['text'], list) else [op['text']]
+    if t == 'lines':
+        return [l if isinstance(l, str) else l['text'] for l in op['lines']]
+    if t == 'counter':
+        return [str(op[k]) for k in ('to', 'from') if k in op] + [str(v) for _, v in op.get('steps', [])]
+    if t == 'stuff':
+        return [f"{i['label']} ${i['amount']}" for i in op['items']]
+    if t == 'ladder':
+        return [f"{r['label']} {r['value']}" for r in op['rows']]
+    if t == 'receipt':
+        rows = [op.get('header', '')] + [f"{i['label']} {i['value']}" for i in op['items']]
+        return rows + [f"{op['total']['label']} {op['total']['value']}"]
+    if t == 'sticky':
+        return [op['text']]
+    if t == 'postage':
+        return [op['value'], op['label']]
+    if t == 'grid':
+        return [op.get('label', '')]
+    if t == 'bars':
+        return [f"{i['label']} {i.get('display', '')}" for i in op['items']]
+    if t == 'stamp':
+        return [op['text']]
+    return []
+# computed outputs (this script) + the inputs and fixed labels they come from
+allowed = {D(x) for x in [
+    # inputs and labels: rates, shares, hours, years, counts
+    '1251', '97550', '7.25', '16100', '15080', '1199', '8.25', '7.65', '429100', '429', '18', '2026', '2025', '50', '15', '5', '30', '10', '20',
+    '40', '80', '26', '52', '2', '3', '6', '1',
+    # 05A
+    '2502', '2094.20', '2094.2', '1047', '209', '105', '314', '628', '150', '60', '65', '2979', '536',
+    # 05B
+    '580', '535.63', '44.37', '53.56', '268', '27', '161', '7.45', '8', '16', '9', '98.92', '1199.00', '1297.92', '1285.52', '12.40',
+    '160.69', '321.38', '482.07', '642.76', '803.45', '964.14', '1124.83',
+    # 05C
+    '3751.92', '2979.09', '298', '1490', '149', '447', '894', '42910', '96', '96.03', '3.7', '7.4', '192', '192.05', '0',
+    # rounded forms used in the ladder and captions: take-homes to the dollar; 05C's 'call it $43K over $450'
+    '2094', '43', '450']}
+assert d(c(pay_a)) == 2094 and d(c(pay_c)) == 2979 and d(pay_b) == 536
+assert round(dp10 / 1000) == 43 and round(fut, -1) == 450
+assert {c(gross_a / PAYS), c(pay_a), c(pay_b), fica_b, c(pay_c), c(gross_c / PAYS), total, eight, short, tax_amt} <= allowed
+assert {D(rd_a[k]) for k in rd_a} | {D(rd_b[k]) for k in rd_b} | {D(rd_c[k]) for k in rd_c} <= allowed
+assert {D(int(dp10)), c(n10), D(round(n20)), round(n10 / PAYS, 1), round(n20 / PAYS, 1), round(rough, 2)} <= allowed
+num = re.compile(r'\d[\d,]*(?:\.\d+)?')
+for s_ in 'abc':
+    spec = json.load(open(os.path.join(SPECS, f'05-envelope-split-{s_}.json')))
+    texts = [x for op in spec['ops'] for x in on_screen(op)] + [cap['text'] for cap in spec['captions']]
+    found = {D(m.replace(',', '')) for tx in texts for m in num.findall(tx)}
+    stray = sorted(found - allowed)
+    print(f'  05{s_.upper()}: {len(found)} distinct numbers on screen and in captions, {len(stray)} not traced to the math {stray or ""}')
+    assert not stray
+
 print()
 print('All assertions passed.')
 ```
 
-**Output** (re-run by QA, 2026-10-07):
+**Output** (re-run in the polish pass, 2026-10-07):
 
 ```
 ========================================================================
@@ -701,6 +766,7 @@ print('All assertions passed.')
   exact pre-tax: $1,199 / $160.69 = 7.4616 -> 8 paychecks
   Texas tax 8.25%: $98.92  -> total $1,297.92
   8 deposits of $160.69 = $1,285.52 -> $12.40 short;  $1,297.92 / $160.69 = 8.077 -> 9 paychecks = 18 weeks
+  running total of FUN deposits: $160.69 · $321.38 · $482.07 · $642.76 · $803.45 · $964.14 · $1,124.83 · $1,285.52
   at the bare 6.25% state rate: $1,273.94 -> 8 paychecks; 8 paychecks stop covering it above a 7.216% combined rate (so: covered at 7.2% or less)
   median FUN $628.26: pre-tax 1.908 -> 2 paychecks; with tax 2.066 -> 3 paychecks
   TikTok variant, 20 hrs/wk: take-home $267.81 -> FUN $80.34 -> 16.16 -> 17 paychecks with tax
@@ -725,6 +791,13 @@ print('All assertions passed.')
   20%: $85,820 / $446.86 = 192.05 paychecks = 7.39 years
   TikTok third bar, median worker: $42,910 / $314.13 = 136.6 paychecks = 5.25 years
   pinned: exact 96.03 paychecks (envelope said ~96: within 0.03%)
+
+========================================================================
+Cross-check: every number drawn on screen in the three specs
+========================================================================
+  05A: 24 distinct numbers on screen and in captions, 0 not traced to the math 
+  05B: 37 distinct numbers on screen and in captions, 0 not traced to the math 
+  05C: 33 distinct numbers on screen and in captions, 0 not traced to the math 
 
 All assertions passed.
 ```
@@ -779,6 +852,8 @@ Independent QA pass on 2026-10-07: fact-check, edit and visual QA. QA used:
   - The md's embedded script and output were re-synced with the file.
 
 #### 2. Facts (as of 2026-10-07)
+
+*Superseded by the live re-check in [Final fact check](#final-fact-check): both inputs marked UNVERIFIED below are now confirmed.*
 
 QA could not run live searches. This run's shared WebSearch budget was used up before QA's first query. Direct fetches of the cited primary sources were also refused by the network egress proxy (bls.gov, irs.gov, nar.realtor, apple.com, macrumors.com, cnbc.com). Each input was checked as follows.
 
@@ -895,5 +970,100 @@ Hooks were scored 1–10 against research/02 §5 (evidence and hook formulas) an
 
 #### Still open before publishing
 
-- Re-verify the iPhone 18 Pro price (05B) and NAR's August 2026 median (05C) against the primary pages, and cascade any change through the specs, pins and descriptions (the script has every formula).
-- Re-render the final MP4s for all three.
+- ~~Re-verify the iPhone 18 Pro price (05B) and NAR's August 2026 median (05C) against the primary pages, and cascade any change through the specs, pins and descriptions.~~ **Done in the polish pass (2026-10-07):** both confirmed; nothing cascades. See [Final fact check](#final-fact-check).
+- ~~Re-render the final MP4s for all three.~~ **Done:** `engine/out/05-envelope-split-{a,b,c}.mp4`.
+- The engine requests above have since been resolved in the engine (1: the README now says sticky `title` has no default; 2: ops at t = 0 render finished and pre-roll foley is dropped; 3: per-bar `at`; 4: the 3-line caption warning; 5: grid `prefilled`), and the polish pass uses them.
+- Before posting: NAR's September existing-home sales come out Tue Oct 13, 2026, and BLS's Q3 weekly earnings Wed Oct 21, 2026. If 05C or 05A posts after those dates, re-run the math script with the new figure (every formula is in it) or keep the dated source line as is.
+
+---
+
+### Final fact check
+
+Polish pass, 2026-10-07. Every real-world input on screen or in this md was re-checked live with WebSearch, against the primary source where one exists. Direct page fetches were blocked by the network egress proxy (bls.gov, nar.realtor, apple.com, rate.com, mortgagenewsdaily.com), so each value below was read from the search engine's view of the cited page, restricted to that domain. No value changed, so nothing cascaded. The math script still passes, and every number on screen and in captions traces to it.
+
+| Input | Value used | Source URL | Checked on | Status |
+|---|---|---|---|---|
+| BLS median usual weekly earnings, full-time wage and salary workers, Q2 2026 | $1,251 (120.9M workers; +4.6% y/y) | https://www.bls.gov/news.release/wkyeng.nr0.htm (release of Tue Jul 21 2026; archive https://www.bls.gov/news.release/archives/wkyeng_07212026.htm) | 2026-10-07 | **Confirmed.** Still the latest: the Q3 2026 release is scheduled for Oct 21 2026 (https://www.bls.gov/schedule/news_release/wkyeng.htm). |
+| BLS median annual wage, registered nurses, May 2025 | $97,550 ($46.90/hr) | https://www.bls.gov/ooh/healthcare/registered-nurses.htm | 2026-10-07 | **Confirmed** |
+| Federal minimum wage | $7.25/hr, unchanged since Jul 24 2009 | https://www.dol.gov/agencies/whd/minimum-wage/state ; https://www.dol.gov/general/topic/wages/minimumwage | 2026-10-07 | **Confirmed** |
+| Texas minimum wage = federal (Texas Minimum Wage Act) | $7.25/hr | https://www.twc.texas.gov/programs/wage-and-hour/texas-minimum-wage-law | 2026-10-07 | **Confirmed** |
+| 2026 standard deduction, single | $16,100 | https://www.irs.gov/newsroom/irs-releases-tax-inflation-adjustments-for-tax-year-2026-including-amendments-from-the-one-big-beautiful-bill (IR-2025-103, Oct 9 2025) | 2026-10-07 | **Confirmed** |
+| 2026 brackets, single | 10% to $12,400 · 12% to $50,400 · 22% to $105,700 · 24% to $201,775 (no paycheck here reaches 24%) | same IRS release; Rev. Proc. 2025-32: https://www.irs.gov/pub/irs-drop/rp-25-32.pdf | 2026-10-07 | **Confirmed** |
+| 2026 Social Security wage base; FICA rates | $184,500; 6.2% + 1.45% (employee) | https://www.ssa.gov/oact/cola/cbb.html ; https://www.ssa.gov/news/en/press/releases/2025-10-24.html (Oct 24 2025) | 2026-10-07 | **Confirmed.** Doesn't bind: every wage here is below the base. |
+| Texas has no personal income tax | Tex. Const. art. 8 §24-a (added Nov 5 2019) | https://statutes.capitol.texas.gov/docviewer/?docName=CN.8.24-a.htm | 2026-10-07 | **Confirmed** |
+| Texas sales tax | 6.25% state + up to 2% local = 8.25% max | https://comptroller.texas.gov/taxes/sales/ ; https://comptroller.texas.gov/taxes/sales/faq/local.php | 2026-10-07 | **Confirmed** |
+| iPhone 18 Pro starting price (05B) | $1,199 (256GB; Pro Max $1,299; announced Sept 9 2026, preorders Sept 12, on sale Sept 18; +$100 vs the iPhone 17 Pro) | https://www.apple.com/newsroom/2026/09/apple-debuts-iphone-18-pro-and-iphone-18-pro-max/ (Sept 9 2026); https://www.apple.com/shop/buy-iphone/iphone-18-pro ; https://www.macrumors.com/2026/09/09/iphone-18-pro-pricing/ | 2026-10-07 | **Confirmed on Apple's own newsroom and store pages** (QA had it UNVERIFIED). The old MacRumors rumour-headline link is replaced. |
+| NAR median existing-home price, August 2026 (05C) | $429,100 (+1.6% y/y from a revised $422,400; sales 3.98M SAAR) | https://www.nar.realtor/newsroom/nar-existing-home-sales-report-shows-2-0-decrease-in-august | 2026-10-07 | **Confirmed: figure and date** (QA had it UNVERIFIED). NAR's 2026 schedule (https://www.nar.realtor/press-releases/nar-releases-2026-statistical-news-release-schedule) moved releases earlier: August EHS on Thu Sept 10 2026 at 10 a.m. ET, September EHS on Tue Oct 13 2026. So Sept 10 is correct, and August is still the latest month as of Oct 7. QA's "+1.5%" came from the first-reported Aug 2025 figure; NAR's year-ago base is now $422,400, and 429,100 / 422,400 = +1.59%. |
+| NAR 2025 Profile of Home Buyers and Sellers | first-time buyers' median down payment 10%; median first-time buyer age 40 (share 21%) | https://www.nar.realtor/press-releases/first-time-home-buyer-share-falls-to-historic-low-of-21-median-age-rises-to-40 ; https://www.nar.realtor/news/real-estate-news/nar-2025-profile-of-home-buyers-sellers-reveals-market-extremes | 2026-10-07 | **Confirmed.** The 2025 Profile (Nov 2025) is still the latest edition. |
+| PMI usually required below 20% down | 20% | https://www.consumerfinance.gov/ask-cfpb/what-is-mortgage-insurance-and-how-does-it-work-en-1953/ ; https://www2.helpwithmybank.gov/help-topics/mortgages-home-equity/private-mortgage-insurance/pmi.html | 2026-10-07 | **Confirmed** |
+| Fidelity 50/15/5 | 50% of take-home on essentials; 15% of *pre-tax* pay (incl. employer) to retirement; 5% of take-home to short-term savings | https://www.fidelity.com/mymoneybasics/50-15-5-saving-spending-rule | 2026-10-07 | **Confirmed.** The md already says the envelope simplifies Fidelity's 15% to 15% of take-home. |
+| Fidelity emergency fund | 3 to 6 months of essential expenses | https://www.fidelity.com/mymoneybasics/50-15-5-saving-spending-rule ; https://www.fidelity.com/learning-center/smart-money/emergency-fund | 2026-10-07 | **Confirmed** |
+| Evidence-table creator stats (views, outliers) | as listed | copied from `research/` (dated research sweeps) | not re-checked | Research-corpus figures, not on screen; unchanged. |
+
+### Polish pass
+
+2026-10-07, finishing producer. `engine/src` was not edited. Specs were regenerated from a layout script so the three episodes share one grid (flap, header 380–620, content 600–1300, captions 1320–1480).
+
+**Facts**
+- All inputs re-verified (table above). The iPhone 18 Pro $1,199 price is now sourced to Apple's newsroom and store pages. NAR's $429,100 and its Sept 10 release date are confirmed: NAR's 2026 calendar moved releases earlier. Nothing changed, so the math, specs, pins and descriptions keep their numbers.
+- The math script header now carries the source and date for each input. New asserts cover 05B's on-screen running total ($160.69 × 1…8) and 05C's "3.7 yrs" bar. A new cross-check loads the three specs and confirms every number drawn on screen or in a caption (24 / 37 / 33 distinct values) traces to the math. The script and its output are re-embedded above.
+
+**Specs (all three)**
+- **Frame 0:** the hook, postmark, envelope or emoji all start at `t: 0` and render finished. All negative-t pre-roll is gone.
+- **Postmark** moved into the flap at (175, 258), r 100.
+- **Legibility:** every handwriting line is ≥ 64 px (it was 40–50 px for the gross line, "take-home" label and stickies). Hero numbers are 120–170 px, stickies 56 px, ladder labels 74 px and bar labels 64 px. Stuff envelopes use `labelSize` 64 / `amountSize` 76 instead of 46 / 56. The receipt is 50 px typewriter.
+- **Layout and pacing:** the content zone is filled instead of the top. The take-home beat puts its counter (150 px), the red deductions and the ASSUME sticky in the content zone. The split is a 2×2 grid of 380 px envelopes under a header. A flip separates every big beat.
+- **Engine features:**
+  - The 3-line math is one `lines` op with per-line `at` (synced to the VO) and `rule: 2` (the sum bar).
+  - `$209` / `$53.56` underlines and the hero double-underlines use text `target` anchors.
+  - 05B's receipt prints each row on its VO line (`at`) and highlights the total.
+  - 05B counts a `steps` running total of FUN deposits while the bills fill.
+  - 05B's 9th bill uses grid `prefilled` 8 → 9.
+  - 05C's 20% bar lands on cue via per-bar `at`.
+  - `loop: true` on all three.
+- **Captions:** each caption shows numerals ("$2,094", "150%", "7.45"), and `say` carries the spoken form. Every caption is ≤ 2 lines and ≤ 4 words/s. `vo` is the joined `say` text.
+- **Lint:** `node src/cli.js check` returns zero warnings on all three. The prop envelopes in the timing scenes carry `allowOverlap`: they leave (`until`) before line 3 is written, but the linter boxes a `lines` op's lines from the op's start.
+
+**Specs (per episode)**
+- **05A:**
+  - Frame 0 has a 600 px OOPS envelope (it was 380).
+  - The pay frequency is now in the VO and on screen ("every 2 wks").
+  - The red shortcut line swaps per envelope ("50% = half" → "10% = $209" → "5% = half of 10%" → "15% = 10% + 5%" → "30% = what's left"), so sound-off viewers get every shortcut.
+  - The 3-line math moved down into the content zone. The "no paycheck" box is tightened so it no longer sits on the sum bar.
+  - The ladder rose from 64 to 92 px.
+  - "= 60 months" is now 170 px on its own screen.
+  - Runtime 39.2 → 39.8 s.
+- **05B:**
+  - The 📱 is 360 px.
+  - The take-home sticky is trimmed to fit its 2.5 s ("Texas · $15,080/yr is under the $16,100 standard deduction").
+  - POSTAGE DUE moved off the receipt's dollar values (it covered $1,199.00 / $98.92 in the first draft of this pass) to the lower-right corner.
+  - The ending is two bill rows side by side (median 3, minimum wage 8 → 9), with "9 paychecks" at 130 px.
+  - Runtime 30.8 → 31.3 s.
+- **05C:**
+  - The hook holds to 2.5 s (10 words need 2.5 s).
+  - "exact: 96.03" and "= 3 yrs, 8 months" are right-aligned, so the pen exits right instead of sweeping over the ROUGHLY RIGHT stamp, which moved left.
+  - A red circle marks the 20% bar's "7.4 yrs". "192 paychecks" is underlined.
+  - Runtime 31.0 → 31.8 s.
+
+**Render QA**
+- All three rendered to 1080×1920 MP4 with foley.
+- Frames extracted from the MP4s are in `engine/out/stills/`:
+  - 05A: 0.0, 16.2, 26.4, 39.0, 39.6 s.
+  - 05B: 0.0, 5.2, 14.0, 23.6, 30.4, 31.1 s.
+  - 05C: 0.0, 8.4, 14.9, 18.3, 31.0, 31.6 s.
+- Frame 0 is a complete thumbnail in all three. The last frame is mid-crossfade into frame 0.
+- A reading-time check (≥ 0.25 s per word once fully written, loaded through the engine's `prepare()`) passes for every text. It flagged and fixed the three take-home stickies and the 05C hook.
+- Audio:
+
+| Episode | Mean | Max |
+|---|---|---|
+| 05A | −26.1 dB | −1.9 dB |
+| 05B | −25.4 dB | −2.0 dB |
+| 05C | −25.3 dB | −1.9 dB |
+
+All within the −30 to −18 dB mean / below −1 dB peak target.
+
+**md**
+- Beat sheets, Full VO, ASSUME stickies, frame-1 hooks, runtimes, loop notes and platform-note timestamps were rewritten to match the final specs.
+- The iPhone and NAR rows now carry verified primary sources. The production notes describe the t = 0 frame 0 (no pre-roll).
+- "Still open before publishing" is closed out. It now only notes the NAR (Oct 13) and BLS (Oct 21) releases that land after today.

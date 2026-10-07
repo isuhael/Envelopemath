@@ -8,7 +8,8 @@
   "vo": "Gatorade: thirty-two ounces to twenty-eight. Same price. The hike's not twelve and a half percent. Per ounce? No calculator. Ours is sealed in the pin.",
   "captions": [
     { "t": 0.1, "end": 2.0, "text": "Gatorade: 32 ounces to 28.", "say": "Gatorade: thirty-two ounces to twenty-eight." },
-    { "t": 2.0, "end": 3.8, "text": "Same price. The hike's NOT 12.5%.", "say": "Same price. The hike's not twelve and a half percent." },
+    { "t": 2.0, "end": 2.6, "text": "Same price.", "say": "Same price." },
+    { "t": 2.6, "end": 3.8, "text": "The hike's NOT 12.5%.", "say": "The hike's not twelve and a half percent." },
     { "t": 3.8, "end": 5.2, "text": "Per ounce? No calculator." },
     { "t": 5.2, "end": 7.0, "text": "Ours is sealed in the pin." }
   ],
@@ -20,17 +21,17 @@
     { "type": "sticky", "t": -1.2, "x": 540, "y": 1128, "w": 420, "size": 64, "cps": 40, "rot": -3, "title": "ASSUME:", "text": "same shelf price, old & new bottle" },
     { "type": "stamp", "t": 0.35, "text": "ENVELOPE\nPUZZLE", "x": 858, "y": 300, "size": 44, "rot": 7, "shake": 8 },
     { "type": "annotate", "t": 0.55, "kind": "circle", "target": { "op": "q", "match": "?" }, "dur": 0.35 },
-    { "type": "write", "t": 0.85, "text": "no calculator.", "x": 540, "y": 910, "size": 80, "align": "center", "color": "red", "cps": 18 },
+    { "type": "write", "t": 0.85, "text": "no calculator.", "x": 540, "y": 910, "size": 80, "align": "center", "color": "red", "cps": 24, "pen": "small-low" },
 
     { "type": "flip", "t": 1.85, "dur": 0.5 },
-    { "type": "write", "id": "trap", "t": 2.1, "text": "4 ÷ 32 = 12.5%", "x": 520, "y": 810, "size": 124, "align": "center", "color": "pencil", "cps": 28 },
+    { "type": "write", "id": "trap", "t": 2.1, "text": "4 ÷ 32 = 12.5%", "x": 520, "y": 810, "size": 124, "align": "center", "color": "pencil", "cps": 28, "pen": "low" },
     { "type": "annotate", "t": 2.65, "kind": "underline", "target": { "op": "trap", "match": "12.5%" }, "width": 8, "dur": 0.3 },
-    { "type": "write", "t": 2.95, "text": "= less drink", "x": 520, "y": 960, "size": 110, "align": "center", "color": "red", "cps": 26 },
-    { "type": "write", "t": 3.72, "text": "≠ price per ounce", "x": 520, "y": 1068, "size": 76, "align": "center", "color": "red", "cps": 34 },
+    { "type": "write", "t": 2.95, "text": "= less drink", "x": 520, "y": 960, "size": 110, "align": "center", "color": "red", "cps": 26, "pen": "low" },
+    { "type": "write", "t": 3.72, "text": "≠ price per ounce", "x": 520, "y": 1068, "size": 76, "align": "center", "color": "red", "cps": 34, "pen": "low" },
     { "type": "stamp", "t": 4.3, "text": "RETURN\nTO SENDER", "x": 540, "y": 1206, "size": 60, "rot": -6, "shake": 12 },
 
     { "type": "flip", "t": 4.8, "dur": 0.5 },
-    { "type": "write", "t": 5.05, "text": "Per ounce:", "x": 540, "y": 772, "size": 110, "align": "center", "cps": 26 },
+    { "type": "write", "t": 5.05, "text": "Per ounce:", "x": 540, "y": 772, "size": 110, "align": "center", "cps": 26, "pen": "low" },
     { "type": "envelope", "t": 5.1, "x": 540, "y": 1035, "w": 720, "label": " " },
     { "type": "stamp", "t": 5.75, "text": "IN THE PIN", "x": 540, "y": 1192, "size": 56, "rot": -5, "shake": 10 },
 
