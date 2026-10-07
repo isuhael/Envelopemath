@@ -183,7 +183,7 @@ export default function unitLadder(spec, ctx) {
   const digW = (str, px) => measure(str, `900 ${px}px ${F.head}`, { letterSpacing: '-0.035em' })
   const labW = str => measure(str, `800 ${LABPX}px ${F.head}`, { letterSpacing: '-0.01em' })
   const counters = [...(intro ? [{ digits: '1', label: labelOne, plate: false }] : []), ...R]
-  const besideFits = px => counters.every(a => (a.plate ? 2 * PLATE[0] + 12 : 0) + digW(a.digits, px) + 28 + labW(a.label) <= HW)
+  const besideFits = px => counters.every(a => (a.plate ? 2 * PLATE[0] + 24 : 0) + digW(a.digits, px) + 28 + labW(a.label) <= HW)
   let cPx = 136
   while (cPx > 104 && !besideFits(cPx)) cPx -= 4
   const labelBelow = !besideFits(cPx)
@@ -195,7 +195,7 @@ export default function unitLadder(spec, ctx) {
     yDiv = yItem + itemLines * lhI + 6
     const yNum = yDiv + lhD + 22                                 // room for the landing bump
     base = yNum + 0.864 * cPx                                   // Inter Tight baseline at line-height 1
-    yLabBase = labelBelow ? base + PLATE[1] + 10 + 0.837 * LABLH : base
+    yLabBase = labelBelow ? base + 0.241 * cPx + 52 : base        // below: clear of the digits' descent box
     const bottom = labelBelow ? yLabBase + 0.2 * LABLH : Math.max(yNum + cPx, base + PLATE[1] + 6)
     VPtop = Math.round(bottom + 16)
   }
@@ -279,6 +279,7 @@ export default function unitLadder(spec, ctx) {
       r.fillDur = clamp(fd, 0.6, 2.2)
     } else r.fillDur = clamp(gap * 0.3, 0.5, 1.6)
     r.land = r.fill0 + r.fillDur
+    r.pull = clamp(r.fillDur * 0.62, 0.35, r.last ? 1.1 : 0.8)
     r.whole = Math.floor(r.units + 1e-9)
     r.frac = r.units - r.whole
     r.hasPart = r.frac > 0.04 && r.whole < 1000
@@ -334,7 +335,12 @@ export default function unitLadder(spec, ctx) {
       r.contact = [r.cx + ox, r.cy + oy - 3]
     }
     if (!showFig) r.contact = null
-    r.coin = coin(g.mid, { r: r.rw, text: '' })
+    // the price is the coin: its label repeats the HUD's working line, so it is decoration (it shrinks with the
+    // camera); dropped when it would be too small to read even up close
+    const fitPx = Math.min(r.rw * 0.62, (1.5 * r.rw) / Math.max(1, [...r.cost].length * 0.6))
+    r.label$ = fitPx >= 30 ? r.cost : ''
+    r.coin = coin(g.mid, { r: r.rw, text: r.label$ })
+    r.coin.g.setAttribute('data-deco', '')
     r.dropH = FLOOR - VPtop + 40 + r.rw * 2
     r.dropT0 = r.coinLand - Math.sqrt((2 * r.dropH) / 5200)
   }
@@ -431,13 +437,13 @@ export default function unitLadder(spec, ctx) {
   ctx.stage.append(hud)
   const itemTop = tx => yItem + (itemLines - itemLinesOf(tx)) * lhI
   const padOf = r => (r && r.plate ? PLATE[0] + 6 : 0)
-  const labXFor = (r, txt) => (labelBelow ? HX : HX + 2 * padOf(r) + digW(txt, cPx) + 28)
+  const labXFor = (r, txt) => (labelBelow ? HX : HX + 2 * padOf(r) + digW(txt, cPx) + (r && r.plate ? 40 : 28))
   // the final plate box (round the last rung's digits)
   const plR = R.find(r => r.plate && r.last) || null
   const plBox = plR ? { x: HX, y: base - 0.727 * cPx - PLATE[1] - 6, w: digW(plR.digits, cPx) + 2 * padOf(plR), h: 0.727 * cPx + 2 * PLATE[1] + 12 } : null
   if (plBox) {
     style(plate, { width: plBox.w.toFixed(0) + 'px', height: plBox.h.toFixed(0) + 'px' })
-    hudFx.impact(plR.land, { x: plBox.x + plBox.w / 2, y: plBox.y + plBox.h / 2, rx: plBox.w / 2 + 10, ry: plBox.h / 2 + 10, r: 40, lines: 14, shake: 0, cue: null })
+    hudFx.impact(plR.land, { x: plBox.x + plBox.w / 2, y: plBox.y + plBox.h / 2, rx: plBox.w / 2 + 8, ry: plBox.h / 2 + 2, r: 17, lines: 12, shake: 0, cue: null })
   }
 
   const duration = durationOf(spec, R[N - 1].land + 0.6, hold)
@@ -449,7 +455,10 @@ export default function unitLadder(spec, ctx) {
       if (t < r.T) break
       if (r.push) z = Math.exp(lerp(Math.log(z), 0, E.inOut(prog(t, r.push[0], r.push[1]))))
       else z = 1
-      if (t >= r.fill0) z = Math.min(z, fitZ(r, nAt(r, t)))
+      if (t >= r.punch) {   // pull back after the punch, following the units out to the end of the row
+        const w = E.inOut(prog(t, r.punch + 0.06, r.pull))
+        if (w > 0) z = Math.exp(lerp(Math.log(z), Math.log(Math.min(z, fitZ(r, nAt(r, t)))), w))
+      }
     }
     return z
   }
@@ -491,7 +500,7 @@ export default function unitLadder(spec, ctx) {
     }
   }
 
-  function seekCoins(t) {
+  function seekCoins(t, z) {
     for (const r of R) {
       const c = r.coin
       if (t >= r.punch + 0.09 || (!r.placed && t < r.dropT0)) { c.set({ opacity: 0 }); continue }
@@ -504,7 +513,8 @@ export default function unitLadder(spec, ctx) {
       }
       if (t >= r.punch) { const p = prog(t, r.punch, 0.09); k = 1 + 0.22 * p; op = 1 - p }
       else if (t > r.punch - 0.12) { const q = E.in(prog(t, r.punch - 0.12, 0.12)); sx *= 1 - 0.04 * q; sy *= 1 + 0.03 * q }
-      c.set({ x: r.cx, y: y + r.rw * (1 - sy), r: r.rw * k, sx, sy, rot, opacity: op })
+      const topS = FLOOR + z * (y - r.rw - FLOOR)                 // its label shows once it is fully in view
+      c.set({ x: r.cx, y: y + r.rw * (1 - sy), r: r.rw * k, sx, sy, rot, opacity: op, text: topS >= VPtop + 30 ? r.label$ : '' })
     }
   }
 
@@ -530,7 +540,7 @@ export default function unitLadder(spec, ctx) {
       }
     }
     const figH = 288 * (FIGK / 1.1) * z
-    const op = clamp((88 - figH) / 30)
+    const op = clamp((62 - figH) / 20)
     attr(ring, 'opacity', op.toFixed(3))
     if (op > 0) {
       const rs = Math.max(30, figH * 0.72 + 12)
@@ -577,7 +587,7 @@ export default function unitLadder(spec, ctx) {
           nr = r
           numTxt = t >= r.land ? r.digits : rollTo(nAt(r, t) / Math.max(1e-9, r.units), 0, r.digits)
           const bump = 1 + wobble(t, r.land, r.last ? 0.08 : 0.06, 2.4, 7)
-          numOp = b.op; nsx = b.sx * bump; nsy = b.sy * bump; ncol = numColor(r)
+          numOp = b.op; nsx = b.sx * bump; nsy = b.sy * bump; ncol = r.plate && t < r.land ? C.heroInk : numColor(r)
           labTxt = r.label; labOp = 1; lx = labXFor(r, numTxt)
         }
       }
@@ -606,7 +616,7 @@ export default function unitLadder(spec, ctx) {
     attr(floorLn, 'stroke-width', (S.thin / z).toFixed(2))
     seekPiles(t, z)
     seekFlights(t, cur)
-    seekCoins(t)
+    seekCoins(t, z)
     seekFigure(t, z)
     seekHud(t, cur)
     hudFx.seek(t)

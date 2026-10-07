@@ -1,0 +1,35 @@
+{
+  "id": "becker-rig-unit-ladder-2",
+  "sample": true,
+  "look": "becker-rig",
+  "format": "unit-ladder",
+  "fps": 30,
+  "header": "What it really costs in\n**hours of work at $20**",
+  "footer": "$20/hr before tax · 2026 US prices · 1 work year = 2,080 hours",
+  "captions": true,
+  "vo": [
+    { "t": 0.0,  "d": 3.0, "text": "Twenty bucks an hour. Netflix? **≈ 0.9 hours.**" },
+    { "t": 3.4,  "d": 2.9, "text": "AirPods Pro? **≈ 12 hours.**" },
+    { "t": 6.8,  "d": 2.9, "text": "An iPhone 17? **≈ 40.** A whole work week." },
+    { "t": 10.2, "d": 3.0, "text": "A year of groceries for four? **660 hours.**" },
+    { "t": 13.6, "d": 3.0, "text": "A year of rent? **1,020.**" },
+    { "t": 17.0, "d": 3.0, "text": "An average new car? **≈ 2,500.**" },
+    { "t": 20.4, "d": 3.0, "text": "A $400,000 house, in cash? **20,000 hours.**" },
+    { "t": 23.8, "d": 2.6, "text": "That's **9.6 years** of full-time work." }
+  ],
+  "verdict": { "t": 23.8, "text": "One house: **≈ 9.6 years**\nof full-time work." },
+  "data": {
+    "unit": { "name": "Hour of work at $20 (before tax)", "price": "$20", "icon": "hour" },
+    "rungs": [
+      { "t": 0.0,  "item": "A month of Netflix",                                   "cost": "$17.99",   "units": 0.8995, "unitsDisplay": "≈ 0.9" },
+      { "t": 3.4,  "item": "AirPods Pro 3",                                        "cost": "$249",     "units": 12.45,  "unitsDisplay": "≈ 12" },
+      { "t": 6.8,  "item": "An iPhone 17",                                         "cost": "$799",     "units": 39.95,  "unitsDisplay": "≈ 40" },
+      { "t": 10.2, "item": "A year of groceries for a family of four, at $1,100 a month", "cost": "$13,200",  "units": 660,    "unitsDisplay": "660" },
+      { "t": 13.6, "item": "A year of rent at $1,700 a month",                     "cost": "$20,400",  "units": 1020,   "unitsDisplay": "1,020" },
+      { "t": 17.0, "item": "An average new car",                                   "cost": "≈ $50,000", "units": 2500,  "unitsDisplay": "≈ 2,500" },
+      { "t": 20.4, "item": "A $400,000 house, paid in cash",                       "cost": "$400,000", "units": 20000,  "unitsDisplay": "20,000", "tone": "goal" }
+    ],
+    "hold": 3.0
+  },
+  "notes": "Stress variant: 7 rungs, a fractional first rung at t = 0 (no intro: the first coin is already standing), a two-line item label, a long unit name, exact and rounded displays, a goal tone. Maths at $20/hr before tax: $17.99 ÷ $20 = 0.8995 h; $249 ÷ $20 = 12.45 h; $799 ÷ $20 = 39.95 h; $1,100 × 12 = $13,200, ÷ $20 = 660 h; $1,700 × 12 = $20,400, ÷ $20 = 1,020 h; $50,000 ÷ $20 = 2,500 h; $400,000 ÷ $20 = 20,000 h; 20,000 ÷ 2,080 h a year = 9.62 years (≈ 9.6). Prices: Netflix Standard $17.99/mo, AirPods Pro 3 $249 and iPhone 17 $799 (US launch prices, Sept 2025), average new-car transaction price ≈ $50,000 (KBB 2025); groceries and rent are stated assumptions."
+}

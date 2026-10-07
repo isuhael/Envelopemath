@@ -16,8 +16,16 @@
 //   event  the row's event text pops as a pill right above the row (tone colour) until the next row lands;
 //          the row label keeps the tone colour
 //   final  the winner's last value lands on a gold plate (impact + camera punch + `cash`); the winner hops and
-//          celebrates on the taller stack, then points at the ledger; the loser slumps and his column settles grey
-// "Less is better" duels (debt: the winner ends LOWER) flip the colours: paying down is green, nothing crashes.
+//          celebrates on the taller stack, then points at the ledger; the loser slumps (the right-hand one turns his
+//          back on the ledger) and his column settles grey
+// "Less is better" duels (debt: the winner ends LOWER) draw the stacks as red debt piles and flip the colours:
+// paying down is green, nothing crashes. Row 0 is the start, never a crash.
+//
+// Layout (all measured at mount): values 64 → 40 px, labels ~0.8 of that, names 48 px, plans 40 px. When the rows
+// do not fit, the fitter scores the alternatives and keeps the best: drop the stake line, drop the headroom for a
+// last-row event (its pill then covers the column heads for 2.4 s, which dim), move long plans into a full-width
+// legend ("● Name  plan", one line each, heads keep "● Name"), and as a last resort 36-38 px values (warns).
+// The figures stand left of the ledger, so the tallest stack is capped to keep them under the stake line / legend.
 //
 // lookOpts (all optional; it renders fully without them):
 //   figure: false                     no figures (the stacks still grow and get knocked down)
@@ -26,8 +34,8 @@
 //   rowLabelsAtStart: false           hide the dim future labels (rows appear as they land)
 //   stake: false                      hide the stake line under the footer
 //   keyLabel: 'Year'                  a head over the label column
-//   beats: [{ t, act, person, targets }]   extra acting: act = a POSES name (or cheer | peek | shrug) for
-//                                     `person`, or 'impact' on `targets` (skipped where a crash already hits)
+//   beats: [{ t, act, person, targets, d }]   extra acting: act = a POSES name (or cheer | peek) for `person`
+//                                     (held d = 1.4 s), or 'impact' on `targets` (skipped where a crash already hits)
 import {
   h, s, style, attr, prog, clamp, lerp, plain, markup, rng,
   C, F, L, E, RIG, POSES, poseTrack, fk, secondary, Figure, makeWorld, makeFx, camera, NumObj,
@@ -110,7 +118,7 @@ export default function ledgerDuel(spec, ctx) {
   const V = rows.map(r => r.values.slice(0, 2).map(num))
   for (let i = 0; i < N; i++) for (let p = 0; p < 2; p++) if (!Number.isFinite(V[i][p])) V[i][p] = i ? V[i - 1][p] : 0
   const stakeN = num(d.stake)
-  const startV = [0, 1].map(p => (Number.isFinite(stakeN) && rows[0].t > 0.3 ? stakeN : V[0][p]))
+  const startV = [0, 1].map(p => (Number.isFinite(stakeN) && times[0] > 0.3 ? stakeN : V[0][p]))
   const winner = d.winner === 0 || d.winner === 1 ? d.winner : (V[last][0] >= V[last][1] ? 0 : 1)
   const loser = 1 - winner
   const lessIsBetter = V[last][winner] < V[last][loser]          // debt duels: the winner ends lower
@@ -123,7 +131,7 @@ export default function ledgerDuel(spec, ctx) {
     if (dv === 0) return 'flat'
     if (dv > 0) return 'grow'
     const drop = pv > 0 ? -dv / pv : 0
-    if (!lessIsBetter && (drop >= 0.12 || (r.tone === 'bad' && drop > 0.03))) return 'crash'
+    if (i > 0 && !lessIsBetter && (drop >= 0.12 || (r.tone === 'bad' && drop > 0.03))) return 'crash'
     return 'dip'
   }))
   const SIGN = rows.map((r, i) => [0, 1].map(p => { const dv = V[i][p] - prevV(i, p); return dv === 0 || i === 0 ? 0 : ((dv > 0) !== lessIsBetter ? 1 : -1) }))
