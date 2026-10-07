@@ -2,8 +2,8 @@
 
 **Series:** *Itemized* (an Envelope Math series) · **Lane:** Envelope (31 to 42 s masters; 43 to 47 s Reels/TikTok cuts with one extra beat) · **Lead devices:** thermal receipt, ballpoint running total, red pen, verdict stamp (POSTAGE DUE / OPENED BY MISTAKE), Sealed Answer
 **Teasers:** 09A Six groceries, $11.39 in 2006: did they actually double? (in dollars, and in minutes of work) · 09B Your $10 at Chipotle: how much is profit? · 09C A $2 Powerball ticket: what's it actually worth?
-**Specs:** `engine/specs/09-itemized-tally-{a,b,c}.json` · **Sheets:** `engine/out/sheets/09-itemized-tally-{a,b,c}.png` · **Math check:** `teasers/09-itemized-tally-math.py`
-**Inputs verified:** 2026-10-07 by the writer (WebSearch). Every real-world number is listed with its source and date under each teaser. Nothing below is a creator's claim we haven't recomputed. The QA pass recomputed all the math but could not re-load the sources (its search budget was used up and the source sites were blocked); see the Verification log at the end.
+**Specs:** `engine/specs/09-itemized-tally-{a,b,c}.json` · **Renders:** `engine/out/09-itemized-tally-{a,b,c}.mp4` (stills in `engine/out/stills/`) · **Math check:** `teasers/09-itemized-tally-math.py`
+**Inputs verified:** 2026-10-07, twice: by the writer, and again in the polish pass with a fresh WebSearch budget (see **Final fact check** at the end). Every real-world number is listed with its source and date under each teaser. Nothing below is a creator's claim we haven't recomputed. The polish pass corrected August 2026 eggs ($2.272 → $2.279, so the 2026 bag is $25.20), rebuilt 09B's rows from the exact 10-K dollar lines (HQ $0.91, taxes $0.34), and replaced the retired 1-800-GAMBLER helpline with 1-800-MY-RESET.
 
 ---
 
@@ -92,8 +92,8 @@
 - One subtraction left for the viewer to do.
 
 **What we improve.**
-1. **A running total on screen, always.** A ballpoint counter under the receipt ticks after every line ("RUNNING TOTAL", "LEFT OF YOUR $10", "WORTH SO FAR"). This is the fix vidIQ ranked first for Monarch.
-2. **Sourced lines only.** Each line is a public number (BLS average prices, a 10-K, the official prize chart) or a labelled ASSUME. There are no Tilbury-style claimed costs and no fabricated receipt. 09A's receipt header says what it is: "AVG U.S. PRICE 2006 → 2026".
+1. **A running total on screen, always.** 09A's 2026 receipt carries a live TOTAL row that updates with every printed price; 09B and 09C have a ballpoint counter under the receipt ("left: $10.00", "worth so far: 0¢") that steps after every line and is already readable in frame 0. This is the fix vidIQ ranked first for Monarch.
+2. **Sourced lines only.** Each line is a public number (BLS average prices, a 10-K, the official prize chart) or a labelled ASSUME. There are no Tilbury-style claimed costs and no fabricated receipt. 09A's two receipts say what they are: "AVG PRICE, 2006" and "AUG 2026" (BLS U.S. averages, not a store receipt).
 3. **The adjustment line the originals never draw**, written in three handwritten lines or fewer after a flip:
    - minutes of work (09A);
    - company-level costs after the restaurant (09B);
@@ -121,19 +121,20 @@
 
 | Device | Op | Job in this series |
 |---|---|---|
-| Masking-tape hook | `hook` | Frame-1 number + question, fully drawn in frame 0 (starts at t −0.8); fades when the twist needs the top band |
-| Postmark No. 09A/B/C | `postmark` | Series badge, persistent |
-| **Receipt** | `receipt` | The tally: one row per beat (`lps` = 1 ÷ slot length) |
-| Ballpoint running total | chained `counter` ops | Updates 0.35 s after each row prints |
-| Postage stamp | `postage` | "The unit" ($11.39 bag, $10 order, $2 ticket); fills the frame until the receipt grows into it |
-| Red pen | `annotate` (circle, underline), `highlight` | The twist row and the totals |
+| Masking-tape hook | `hook` at t 0 | Frame-1 number + question, finished in frame 0 (the thumbnail); leaves when the twist needs the top band |
+| Postmark No. 09A/B/C | `postmark` | Series badge in the flap (175, 258, r 100), persistent |
+| **Receipt** | `receipt` | The tally: one row per beat, each printed at its own `at`. 09A pairs an `instant` 2006 receipt (printed in frame 0) with a 2026 receipt that prints line by line |
+| Running total | receipt `running` row (09A) · `counter` with `steps` (09B, 09C) | Updates with every printed row; 09B/09C's counter is readable in frame 0 |
+| Red pen | `annotate` with text `target` anchors (circle, underline, double), `highlight` | The line to beat, the verdict, the first answer and the open "?" |
+| Row marks | receipt row `highlight` / `color` | The twist rows (bananas; crew; the $50K row and its "less than" note) and the doubled prices in red |
 | Verdict stamps | `stamp` | POSTAGE DUE (09B crew, 09C tax) · OPENED BY MISTAKE (09A verdict, 09C twist) |
-| Item icons | `emoji` | 🍌 ☕ 🥩 on 09A's movers |
+| Item icon | `emoji` | 🍌 on 09A's pattern break |
 | Flip | `flip` | Receipt side → working side |
-| ASSUME: sticky | `sticky` | The inputs the adjustment line depends on |
-| Ballpoint working (≤3 lines) | `write` | The adjustment math |
+| ASSUME: sticky | `sticky` | The inputs the adjustment line depends on (56 px) |
+| Ballpoint working (≤3 lines) | `write` | The adjustment math, 64 to 100 px |
 | Pause & guess | `timer` | 2 to 3 s commit before the reveal |
-| **Sealed Answer** | `envelope` | The hero number |
+| **Sealed Answer** | `envelope` | The hero number (card 110 to 112 px) |
+| Loop | spec `loop: true` | The last 0.35 s crossfades into frame 0 |
 
 ---
 
