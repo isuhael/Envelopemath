@@ -5,7 +5,7 @@ Inputs:
   research/top-10.json           ranked approaches from the research workflow
   teasers/teasers.json           teaser metadata + verification results
   teasers/NN-*.md                per-approach write-ups (upgrade section, scripts)
-  engine/out/NN-*.mp4            full-res renders (re-encoded to small previews here)
+  engine/out/final/NN-*.mp4      full-res renders (re-encoded to small previews here)
 
 Usage: python3 playbook/build.py [--no-media]
 """
@@ -144,6 +144,14 @@ def why_html(text):
     return ''.join(out)
 
 
+def final_render(stem):
+    # prefer the clean final renders in engine/out/final/
+    for p in (ROOT / 'engine' / 'out' / 'final' / f'{stem}.mp4', ROOT / 'engine' / 'out' / f'{stem}.mp4'):
+        if p.exists():
+            return p
+    return ROOT / 'engine' / 'out' / f'{stem}.mp4'
+
+
 def esc(s):
     return html.escape(str(s if s is not None else ''))
 
@@ -169,7 +177,7 @@ def main():
         cards = []
         for k, t in enumerate(s.get('teasers', [])):
             stem = Path(t['spec']).stem
-            src = ROOT / 'engine' / 'out' / f'{stem}.mp4'
+            src = final_render(stem)
             vid = poster = None
             if src.exists():
                 vid, poster = f'media/{stem}.mp4', f'media/{stem}.jpg'
@@ -246,7 +254,7 @@ def main():
     principles = ''.join(f'<li>{inline(p)}</li>' for p in top['cross_cutting_principles'])
     rules = ''.join(f'<li>{inline(p)}</li>' for p in top['platform_rules'])
     n_teasers = sum(len(s.get('teasers', [])) for s in slate)
-    trailer = ROOT / 'engine' / 'out' / '00-channel-trailer.mp4'
+    trailer = final_render('00-channel-trailer')
     if trailer.exists():
         if with_media:
             encode(trailer, MEDIA / '00-channel-trailer.mp4', MEDIA / '00-channel-trailer.jpg', 5.6)
