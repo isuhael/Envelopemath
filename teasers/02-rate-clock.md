@@ -142,7 +142,7 @@ Dr Bandana puts the stakes in sentence one ("spend $1 billion in 24 hours or go 
 | Input | Value | Source (date) |
 |---|---|---|
 | Musk crossed $1T on paper | Fri 12 Jun 2026, SpaceX's Nasdaq debut (opened at $150 vs a $135 IPO price): Forbes $1.1T; Bloomberg $1.11T | AP via The Gazette, 2026-06-12, https://gazette.com/2026/06/12/spacex-soars-25-in-wall-street-debut-and-makes-elon-musk-the-first-trillionaire/ ; Nairametrics (Forbes figure), 2026-06-13, https://nairametrics.com/2026/06/13/elon-musk-becomes-worlds-first-trillionaire-as-spacex-shares-surge-on-nasdaq-debut/ ; Washington Examiner (Bloomberg figure), https://www.washingtonexaminer.com/policy/technology/4606254/spacex-ipo-elon-musk-trillionaire/ (all re-checked 2026-10-07) |
-| Musk now (pinned comment only; context for "on paper") | Bloomberg Billionaires Index **$1.04T** on Mon 5 Oct 2026 (+$65B that day; trillionaire again for the first time since June); Forbes real-time **$936B** (early Oct 2026) | Quartz, 2026-10-05, https://qz.com/elon-musk-trillionaire-spacex-stock-surge-100526 ; Billionaires.Africa, 2026-10-06, https://www.billionaires.africa/2026/10/06/elon-musk-becomes-a-trillionaire-again-as-spacex-shares-hit-highest-since-june/ ; Forbes real-time ranking via Derecha Diario, Oct 2026, https://derechadiario.com.ar/negocios-finanzas/ranking-forbes-quienes-10-personas-ricas-mundo-en-octubre-2026 (re-checked 2026-10-07) |
+| Musk now (pinned comment only; context for "on paper") | Bloomberg Billionaires Index **$1.04T** on Mon 5 Oct 2026 (+$65B that day; trillionaire again for the first time since June); Forbes real-time **$936B** (as of Oct 1 2026, per Forbes Australia, https://www.forbes.com.au/news/billionaires/top-10-richest-people-in-world/; Forbes had him back near $1T on Oct 5, as recorded in 01's Final fact check) | Quartz, 2026-10-05, https://qz.com/elon-musk-trillionaire-spacex-stock-surge-100526 ; Billionaires.Africa, 2026-10-06, https://www.billionaires.africa/2026/10/06/elon-musk-becomes-a-trillionaire-again-as-spacex-shares-hit-highest-since-june/ ; Forbes real-time ranking via Derecha Diario, Oct 2026, https://derechadiario.com.ar/negocios-finanzas/ranking-forbes-quienes-10-personas-ricas-mundo-en-octubre-2026 (re-checked 2026-10-07) |
 | Julius Caesar's birth | 12 or 13 July 100 BC (the traditional year; Britannica calls it "perhaps most probable") | World History Encyclopedia, https://www.worldhistory.org/timeline/Julius_Caesar/ ; Wikipedia, https://en.wikipedia.org/wiki/Julius_Caesar ; Britannica, https://www.britannica.com/biography/Julius-Caesar-Roman-ruler (re-checked 2026-10-07) |
 | $50,000 an hour | Hypothetical: the rate in the viral claim | `research/watch/group1-video4.md` |
 
@@ -150,7 +150,7 @@ Dr Bandana puts the stakes in sentence one ("spend $1 billion in 24 hours or go 
 - **Loop / re-hook:** the last frame is the full envelope with "$1T ✓" and the CLOCKED IN stamp; the cut back to frame 1 ("EARN $50,000 AN HOUR…", already on screen at frame 0) reads as "again?".
 - **Comment bait:** "Drop your hourly rate. I'll clock yours." (a genuine request that feeds future episodes; no vote-bait)
 - **Pinned comment:**
-  > Exact: $1T ÷ $50K/hr = 20,000,000 hours ÷ 8,766 hrs/yr (365.25 days × 24) = 2,281.5 years (envelope said ≈2,282, within 0.02%). Counting back from Oct 7, 2026 lands on about March 9, 256 BC (Julian calendar, and yes, we skipped year zero because there isn't one). Start Jan 1, AD 1 → $887.9B today. Start July 12, 100 BC, Caesar's birthday → $931.5B. Assumptions: $50K every hour, 24/7, no raises, no interest, no taxes. Musk's trillion is on paper: he first crossed $1T on Jun 12, 2026 (SpaceX IPO); on Oct 5, 2026 Bloomberg had him back at $1.04T, while Forbes' real-time list showed $936B in early October. Want yours? Comment your hourly rate.
+  > Exact: $1T ÷ $50K/hr = 20,000,000 hours ÷ 8,766 hrs/yr (365.25 days × 24) = 2,281.5 years (envelope said ≈2,282, within 0.02%). Counting back from Oct 7, 2026 lands on about March 9, 256 BC (Julian calendar, and yes, we skipped year zero because there isn't one). Start Jan 1, AD 1 → $887.9B today. Start July 12, 100 BC, Caesar's birthday → $931.5B. Assumptions: $50K every hour, 24/7, no raises, no interest, no taxes. Musk's trillion is on paper: he first crossed $1T on Jun 12, 2026 (SpaceX IPO); on Oct 5, 2026 Bloomberg had him back at $1.04T (Forbes' real-time list had him at $936B on Oct 1). Want yours? Comment your hourly rate.
 
 **Description**
 > $50,000 an hour, every hour since Year 1, and you'd still be $112 billion short of a trillion. One envelope, two lines, one timeline. Sources: Forbes and Bloomberg via AP / Nairametrics (Jun 12–13 2026); Bloomberg Billionaires Index via Quartz (Oct 5 2026); Forbes real-time list (Oct 2026); World History Encyclopedia (Caesar, 100 BC). Exact math in the pinned comment.
@@ -159,8 +159,8 @@ Dr Bandana puts the stakes in sentence one ("spend $1 billion in 24 hours or go 
 
 **Platform notes**
 - **YouTube Shorts (master, 24.5 s):** title = hook. Post while "trillionaire" still searches (the "trillionaire again" coverage ran Oct 5–6, 2026). Pin the comment immediately. No end card; the envelope frame loops.
-- **Instagram Reels (~35 s cut):** Rate Clock is unproven on Reels, so post as a **Trial Reel** first. Add one beat: the per-day figure ("$1.2M a day, every day") before the guess. Caption: "Send this to the friend who says a billion is 'basically a million'." ≤5 hashtags.
-- **TikTok (~65 s fact-check cut, for the >60 s reach lift and Creator Rewards):** open on the claim in our own words (never the original clip): "A viral video says $50K an hour since Jesus was born still isn't a trillion. He added 33 years because 'AD means After Death'. It doesn't." Show his 2,059 → $901.8B in pencil, red-pen strike the 33, redo it as 2,025 years → $888B, then run the ladder. That turns the correction comments into credibility.
+- **Instagram Reels (~35 s cut):** Rate Clock is unproven on Reels, so post as a **Trial Reel** first. Add one beat: the per-day figure ("$1.2M a day, every day") before the guess. Caption: "For the friend who says a billion is 'basically a million'." (a dedication, not a "send this" ask, which Meta demotes as share-baiting) ≤5 hashtags.
+- **TikTok (~65 s fact-check cut, for the >60 s reach lift and Creator Rewards):** open on the claim in our own words (never the original clip): "A viral claim says $50K an hour since Year 1 still isn't a trillion. It counts 33 extra years, as if 'AD' meant 'After Death'. It doesn't." (Audit the claim, not the person: no creator name, handle, clip or screenshot.) Show the claim's 2,059 → $901.8B in pencil, red-pen strike the 33, redo it as 2,025 years → $888B, then run the ladder. That turns the correction comments into credibility.
 
 **Slate note:** 01A (Cost in Envelopes) also uses Musk's $1 trillion. Different mechanic, same famous number, and the research shows celebrity repeats decay (535x → 29.8x → 5.2x). If both ship, post them at least a week apart, or run 02A's no-name variant: beat 2 VO "Still no trillion. That's a one and twelve zeros." with the red note "a 1 and 12 zeros", and Musk moves to the pinned comment only. Everything else, including the timing, is unchanged.
 
@@ -234,7 +234,7 @@ FY2025 is still the latest *full* fiscal year on 2026-10-07: Apple has not yet a
 
 **Platform notes**
 - **YouTube Shorts (master, 19.8 s):** title = hook. The real-time count is the retention spike; keep the 4.4 s of ticking with no VO.
-- **Instagram Reels (~35 s cut):** Trial Reel first. Add the profit beat on screen (a red-pen line: "in profit: 18 seconds") before the stamp. Caption: "Send this to your coworker on their lunch break." Sends are IG's top non-follower signal.
+- **Instagram Reels (~35 s cut):** Trial Reel first. Add the profit beat on screen (a red-pen line: "in profit: 18 seconds") before the stamp. Caption: "For your coworker on their lunch break." (a dedication, not a "send this" ask) Sends are IG's top non-follower signal.
 - **TikTok (~60 s cut):** run the same clock for the profit line, and add "per minute" ($791,783) and "per day" ($1.14B). A multi-company version (Tilbury's companies-to-$1M format) needs each company's figure sourced first; do not ad-lib. No branded content (TikTok bans it for financial products; none here).
 
 **Why this one should travel**
@@ -305,7 +305,7 @@ Line 2 divides the billion by 86,400 directly rather than dividing the rounded $
 
 **Platform notes**
 - **YouTube Shorts (master, 17.0 s):** title = hook. Shortest of the three; the heartbeat foley carries the last 3 s into the loop.
-- **Instagram Reels (~30 s cut):** Trial Reel first. Add the sleep twist ("sleep 8 hours? $17,361 a second while you're awake") as a red-pen line before the stamp. Caption: "Send this to the friend who'd blow it in the first hour."
+- **Instagram Reels (~30 s cut):** Trial Reel first. Add the sleep twist ("sleep 8 hours? $17,361 a second while you're awake") as a red-pen line before the stamp. Caption: "For the friend who'd blow it in the first hour." (a dedication, not a "send this" ask)
 - **TikTok (~60 s cut):** run it as the story Dr Bandana never computed: hour-stamped beats (Hour 1: $41.7M gone, Hour 8 asleep: catch-up rate, Hour 23…) with the envelope line under each, ending on the heartbeat. Ask viewers to stitch their first purchase.
 
 **Why this one should travel**
@@ -748,7 +748,7 @@ Live WebSearch on **2026-10-07** (finishing pass). The egress proxy blocks direc
 | Musk first crossed $1T (02A on screen: "crossed it in June (on paper)") | Fri 12 Jun 2026, SpaceX Nasdaq debut; Forbes $1.1T, Bloomberg $1.11T | https://gazette.com/2026/06/12/spacex-soars-25-in-wall-street-debut-and-makes-elon-musk-the-first-trillionaire/ ; https://nairametrics.com/2026/06/13/elon-musk-becomes-worlds-first-trillionaire-as-spacex-shares-surge-on-nasdaq-debut/ ; https://www.washingtonexaminer.com/policy/technology/4606254/spacex-ipo-elon-musk-trillionaire/ | 2026-10-07 | Confirmed |
 | SpaceX IPO price / first trade (sources only) | $135 offer, opened at $150 | https://www.dailyindependent.com/national/spacex-opens-11-higher-at-150-a-share-and-makes-musk-the-first-trillionaire/article_8ee41ee7-9fbb-56ea-b097-094343d5e65d.html | 2026-10-07 | Confirmed |
 | Musk net worth now, Bloomberg (02A pinned comment) | $1.04T on Mon 5 Oct 2026 (+$65B that day) | https://qz.com/elon-musk-trillionaire-spacex-stock-surge-100526 ; https://www.billionaires.africa/2026/10/06/elon-musk-becomes-a-trillionaire-again-as-spacex-shares-hit-highest-since-june/ | 2026-10-07 | Confirmed; **date corrected** from "Oct 6" to Oct 5 (the day of the gain; Billionaires.Africa reported it Oct 6) |
-| Musk net worth now, Forbes real-time (02A pinned comment) | $936B, early Oct 2026 | https://derechadiario.com.ar/negocios-finanzas/ranking-forbes-quienes-10-personas-ricas-mundo-en-octubre-2026 | 2026-10-07 | Confirmed via a report of the Forbes list; **source replaced** (the forbes.com URL carried over from 01 could not be found by search) |
+| Musk net worth now, Forbes real-time (02A pinned comment) | $936B, as of Oct 1 2026 (date per Forbes Australia, as in 01's Final fact check; aligned in the slate audit, 2026-10-07) | https://derechadiario.com.ar/negocios-finanzas/ranking-forbes-quienes-10-personas-ricas-mundo-en-octubre-2026 | 2026-10-07 | Confirmed via a report of the Forbes list; **source replaced** (the forbes.com URL carried over from 01 could not be found by search) |
 | Apple FY2025 net sales (02B postage, line 1) | $416,161M ("$416B") | https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm ; https://www.apple.com/newsroom/2025/10/apple-reports-fourth-quarter-results/ | 2026-10-07 | Confirmed |
 | Apple FY2025 net income (02B pinned comment) | $112,010M | same 10-K | 2026-10-07 | Confirmed |
 | Apple FY2025 length | 52 weeks, ended 27 Sep 2025 (FY2024 also 52, FY2023 53) | same 10-K | 2026-10-07 | Confirmed |
@@ -863,3 +863,12 @@ Independent final reviewer, 2026-10-07. I assumed the producer missed things. Fi
 **Verdicts:** 02A **fixed**, 02B **fixed**, 02C **fixed**. All three are ready to post after these fixes. Zero lint warnings, the math and screen checks pass, and the MP4s are re-rendered.
 
 *Superseded by this review:* the Polish pass's "right edge of every working line sits at … ≤ 915 (circled lines)" (now 890/900), "Lines at 82 px" for 02C (now 78 px) and `pen: "low"` on the division lines (now `"small-low"`), and the QA note's 02A footnote timing.
+
+### Compliance audit (2026-10-07)
+
+Last-line-of-defence pass on advice language, claims, brand non-negotiables and platform rules (md edits only; specs untouched).
+- **Advice / promise language:** none. "Drop your hourly rate. I'll clock yours." is a genuine request for the viewer's own number, not "comment YES" bait. All three descriptions carry the disclaimer.
+- **Claims:** Musk "crossed it in June (on paper)" and Apple FY2025 sales ($416B, with "sales, not profit" on screen) stay within their cited sources.
+- **Non-negotiables:** pass (payoff 1 at 35–39%, CLOCKED stamps 1.9 s before the end, loops, exact figures pinned). Mechanic: mega-number ÷ human rate, approach 2.
+- **Fixed in this md:** the three Reels "Send this to…" caption lines (share-baiting) are now "For the friend…" dedications. The TikTok fact-check note now audits the claim ("a viral claim… counts 33 extra years") instead of a person ("he added 33 years"), per approach 10's "audit claims, not people".
+- **Spec issues:** none.

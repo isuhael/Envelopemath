@@ -101,6 +101,7 @@ A lexicon stamp gives the verdict, and a second, quicker flip (0.4 s, starting 0
 
 #### 03A: "Your habit is $3 a day. For 10 years?" · *Day to Decade No. 03A*
 
+- **Working title:** Your habit is $3 a day. For 10 years? (Day to Decade No. 03A)
 - **Topic:** everyday spending habits. **Lane:** Flash, **9.0 s** loop.
 - **Spec:** `engine/specs/03-read-it-ladder-a.json` · **Sheet:** `engine/out/sheets/03-read-it-ladder-a.png` · **MP4:** `engine/out/03-read-it-ladder-a.mp4`
 
@@ -161,6 +162,7 @@ A lexicon stamp gives the verdict, and a second, quicker flip (0.4 s, starting 0
 
 #### 03B: "A $1/hr raise is only $8 a day?" · *Day to Decade No. 03B*
 
+- **Working title:** A $1/hr raise is only $8 a day? (Day to Decade No. 03B)
 - **Topic:** pay and raises (income). **Lane:** Flash, **9.0 s** loop.
 - **Spec:** `engine/specs/03-read-it-ladder-b.json` · **Sheet:** `engine/out/sheets/03-read-it-ladder-b.png` · **MP4:** `engine/out/03-read-it-ladder-b.mp4`
 
@@ -196,7 +198,7 @@ A lexicon stamp gives the verdict, and a second, quicker flip (0.4 s, starting 0
 
 **ASSUME sticky:** *8 hrs × 5 days, pre-tax.* (52 weeks a year is the ×52 in the gutter.)
 **Sources:**
-- **Median usual weekly earnings, full-time wage and salary workers, Q2 2026: $1,251** (BLS *Usual Weekly Earnings* release, 2026-07-21): https://www.bls.gov/news.release/archives/wkyeng_07212026.htm (current release page: https://www.bls.gov/news.release/wkyeng.htm). **Re-verified live with WebSearch on 2026-10-07** (polish pass): still the latest; the Q3 2026 release is due Oct 21 2026 (https://www.bls.gov/schedule/news_release/wkyeng.htm). Used in the pinned comment and description only: $1,251 ÷ 40 = $31.275 an hour, so $1 is a **3.2%** raise.
+- **Median usual weekly earnings, full-time wage and salary workers, Q2 2026: $1,251** (BLS *Usual Weekly Earnings* release, 2026-07-21): https://www.bls.gov/news.release/archives/wkyeng_07212026.htm (current release page: https://www.bls.gov/news.release/wkyeng.htm). **Re-verified live with WebSearch on 2026-10-07** (polish pass): still the latest; the Q3 2026 release is scheduled for Oct 28 2026 on BLS's October 2026 calendar (https://www.bls.gov/schedule/2026/10_sched_list.htm; BLS's per-release page, https://www.bls.gov/schedule/news_release/wkyeng.htm, lists Oct 21, so re-check from Oct 21). Used in the pinned comment and description only: $1,251 ÷ 40 = $31.275 an hour, so $1 is a **3.2%** raise.
 - The $1 raise is illustrative (it is the viewer's raise), and 2,080 hours is the standard full-time convention (40 × 52).
 - "Your boss did this math too" is a wry line, not a factual claim about any employer.
 
@@ -225,6 +227,7 @@ A lexicon stamp gives the verdict, and a second, quicker flip (0.4 s, starting 0
 
 > **Replaced 2026-10-07 (polish pass).** The old 03C ("$2 a day on Powerball, for 10 years?") was the slate's third Powerball teaser (09C and the old 10C also cover it), so it was retired. The new 03C keeps the Day to Decade shape on a different everyday number: the average new-car payment. It isn't a lottery, coffee or phone topic (03A and 05B cover habits and phones). Its Powerball facts, pin and help line are retired with it.
 
+- **Working title:** The average new-car payment is $787/mo. For 10 years? (Day to Decade No. 03C)
 - **Topic:** car payments (the biggest recurring bill most people never ladder). **Lane:** Flash, **9.6 s** loop (`loop: true`).
 - **Spec:** `engine/specs/03-read-it-ladder-c.json` · **Sheet:** `engine/out/sheets/03-read-it-ladder-c.png` · **MP4:** `engine/out/03-read-it-ladder-c.mp4`
 
@@ -271,7 +274,7 @@ A lexicon stamp gives the verdict, and a second, quicker flip (0.4 s, starting 0
 - **Loop / re-hook:** "…of every hour you work." → POSTAGE DUE → flip → crossfade into "The average new-car payment is seven eighty-seven a month."
 - **Comment bait (a real question):** "What's your payment? I'll run it per hour." Everyone knows their own number, so it's a one-word comment ("$640"), and replies feed the series (each reply is a video ladder).
 - **Pinned comment:**
-  > Exact: $787 × 12 = $9,444 a year; × 10 = $94,440 a decade (120 payments). ÷ 20,800 work hours (40 hrs × 52 weeks × 10 years) = $4.5404, shown as $4.54. Per calendar day it's $25.87. At the median full-time wage ($1,251 a week, BLS Q2 2026, about $31.28 an hour) $4.54 is 14.5% of gross pay: roughly the first 8.7 minutes of every hour, before tax. Source: Edmunds Q3 2026 (released Oct 1 2026), average payment on financed new vehicles, up from $756 a year earlier. Assumption: the same $787 every month for 10 years, one loan after the next. Arithmetic, not a recommendation. What's your payment? I'll run it per hour.
+  > Exact: $787 × 12 = $9,444 a year; × 10 = $94,440 a decade (120 payments). ÷ 20,800 work hours (40 hrs × 52 weeks × 10 years) = $4.5404, shown as $4.54 (within 0.01%; the VO's "ninety-four grand" is within 0.5% of $94,440). Per calendar day it's $25.87. At the median full-time wage ($1,251 a week, BLS Q2 2026, about $31.28 an hour) $4.54 is 14.5% of gross pay: roughly the first 8.7 minutes of every hour, before tax. Source: Edmunds Q3 2026 (released Oct 1 2026), average payment on financed new vehicles, up from $756 a year earlier. Assumption: the same $787 every month for 10 years, one loan after the next. Arithmetic, not a recommendation. What's your payment? I'll run it per hour.
   > *Reply key (40-hr weeks):* $400 → $2.31 an hour · $600 → $3.46 · $1,000 → $5.77 (21.2% of new-car buyers pay $1,000+, Edmunds Q3 2026).
 
 **Description**
@@ -446,7 +449,7 @@ Sheets for all three were rendered and viewed four times as fixes landed. Stills
 
 *Updated by the polish pass.*
 - ~~Re-verify the iPhone 18 Pro $1,199 starting price.~~ Done 2026-10-07 (Apple store page; see the Final fact check).
-- BLS's Q3 2026 *Usual Weekly Earnings* is due **Oct 21 2026**. If it's out at posting time, refresh $1,251 and the 3.2% in 03B's pin, and the $31.28 / 14.5% / 8.7 minutes in 03C's pin (re-run the math check).
+- BLS's Q3 2026 *Usual Weekly Earnings* is scheduled for **Oct 28 2026** on BLS's October 2026 calendar (its per-release schedule page lists Oct 21, so check from Oct 21). If it's out at posting time, refresh $1,251 and the 3.2% in 03B's pin, and the $31.28 / 14.5% / 8.7 minutes in 03C's pin (re-run the math check).
 - 03C: if Edmunds' Q4 2026 figure is out at posting time, keep the video (it says "Q3 2026" on screen) but add the new figure to the pin.
 - Record the VO to the caption timings in the specs: each caption's `say` is the line to read, and each spec's `vo` is those lines joined (24–29 words in 8.5–9 s).
 
@@ -460,7 +463,7 @@ Polish pass, 2026-10-07. Every real-world input that is on screen or in this md 
 |---|---|---|---|---|
 | iPhone 18 Pro starting price (03A pin, description; the on-screen claim only needs ≥ $1,096) | $1,199 (256GB; announced Sept 9 2026; +$100 vs the iPhone 17 Pro) | https://www.apple.com/shop/buy-iphone/iphone-18-pro ; https://www.macrumors.com/2026/09/09/iphone-18-pro-pricing/ (Sept 9 2026) | 2026-10-07 | **Confirmed** on Apple's store page and MacRumors (QA had it unverified). The rumour-slug MacRumors link is replaced. |
 | iPhone 17 Pro launch price (03A md, as the floor the claim survives) | $1,099 | implied by the same MacRumors report ("$100 increase over the equivalent iPhone 17 Pro") | 2026-10-07 | **Confirmed** (indirectly: $1,199 − $100) |
-| BLS median usual weekly earnings, full-time wage and salary workers, Q2 2026 (03B pin and description; 03C pin) | $1,251 (120.9M workers; +4.6% y/y) | https://www.bls.gov/news.release/wkyeng.htm (release of Jul 21 2026; archive https://www.bls.gov/news.release/archives/wkyeng_07212026.htm) | 2026-10-07 | **Confirmed.** Still the latest; Q3 2026 is due Oct 21 2026 (https://www.bls.gov/schedule/news_release/wkyeng.htm). |
+| BLS median usual weekly earnings, full-time wage and salary workers, Q2 2026 (03B pin and description; 03C pin) | $1,251 (120.9M workers; +4.6% y/y) | https://www.bls.gov/news.release/wkyeng.htm (release of Jul 21 2026; archive https://www.bls.gov/news.release/archives/wkyeng_07212026.htm) | 2026-10-07 | **Confirmed.** Still the latest; Q3 2026 is scheduled for Oct 28 2026 on BLS's October 2026 calendar (https://www.bls.gov/schedule/2026/10_sched_list.htm). The per-release page (https://www.bls.gov/schedule/news_release/wkyeng.htm) lists Oct 21, so re-check from Oct 21. *(Date aligned with 02, 04 and 08 in the slate audit, 2026-10-07.)* |
 | Edmunds: average monthly payment, financed new-vehicle purchases, Q3 2026 (03C **on screen**: tape, sticky, ladder, captions) | **$787** (Q2 2026 $777; Q3 2025 $756) | https://www.globenewswire.com/news-release/2026/10/01/3373320/0/en/new-car-financing-records-pile-up-in-q3-as-buyers-borrow-more-and-stretch-loans-longer-according-to-edmunds.html (Edmunds release, Oct 1 2026); https://www.cnbc.com/2026/10/06/car-loans-are-getting-longer-as-monthly-payments-hit-record-highs.html (Oct 6 2026) | 2026-10-07 | **Confirmed** in two independent sources. A record high. |
 | Edmunds Q3 2026: share of financed new-car purchases at $1,000+/month (03C reply key) | 21.2% (Q2 20.3%; Q3 2025 19.1%) | same Edmunds release; CNBC Oct 6 2026 | 2026-10-07 | **Confirmed** |
 | Edmunds Q3 2026: average APR; average amount financed (03C sources line) | 7.0%; $44,664 | same Edmunds release; CNBC Oct 6 2026 | 2026-10-07 | **Confirmed** |
@@ -486,7 +489,7 @@ Polish pass, 2026-10-07. Every real-world input that is on screen or in this md 
   - Hook score (same rubric as the QA pass): **8**. It has a number, a stake and a question, and its comparison hook is proven in the research (AutoBuddy, the bald trader).
 
 **Facts**
-- Every input was re-verified live (table above). 03A's iPhone 18 Pro price is now sourced to Apple's store page. 03B's BLS figure is confirmed as still the latest (Q3 is due Oct 21). One md wording fix: the 69% sound-off figure covers adults aged 18–54 in a 2019 survey.
+- Every input was re-verified live (table above). 03A's iPhone 18 Pro price is now sourced to Apple's store page. 03B's BLS figure is confirmed as still the latest (Q3 is scheduled for Oct 28 on BLS's October calendar; one BLS page lists Oct 21). One md wording fix: the 69% sound-off figure covers adults aged 18–54 in a 2019 survey.
 - The math script header now carries the source and check date for each input. The Powerball block is gone, the 03C car-payment block is new, and a spec cross-check was added. The script and its output are re-embedded above.
 
 **Specs (all three)**
@@ -581,4 +584,13 @@ All match the md. I also confirmed the research citations in 03C's "Why it shoul
 - 03C's "$94,440." caption appears as the pen starts the value (3.80 s; the ink finishes at 4.15), and the VO rounds it to "ninety-four grand". The rounding is documented, and the ink and caption both show the exact figure.
 - At about 3.85 s in 03C the pen briefly crosses the end of "$9,444" as it moves down to the decade rung, about 0.3 s after that rung has been on screen for 2.6 s.
 
-**Verdicts:** 03A **fixed** · 03B **fixed** · 03C **fixed**. All three are ready to post once the "Open before publishing" items above are done (BLS Q3 on Oct 21; Edmunds Q4 if it's out).
+**Verdicts:** 03A **fixed** · 03B **fixed** · 03C **fixed**. All three are ready to post once the "Open before publishing" items above are done (BLS Q3, scheduled Oct 28, so check from Oct 21; Edmunds Q4 if it's out).
+
+### Compliance audit (2026-10-07)
+
+Last-line-of-defence pass (md edits only; specs untouched).
+- **Advice / promise language:** none. 03A's flip side validates rather than lectures; the invested-value number lives only in the pin, labelled "at an assumed 7%… Arithmetic, not a recommendation." 03B's "Your boss did this math too" is flagged in the md as a wry line, not a claim about any employer.
+- **Claims:** iPhone 18 Pro $1,199 (Apple) and Edmunds' $787 (dated on screen) are within their sources.
+- **Non-negotiables:** pass (3-rung ladders, number in frame 0, ≈ rungs with exact figures pinned, first rung by 13–22%, verdict stamp 1.5–1.7 s before the end, flip-back loop). Mechanic: day/month → decade ladder, approach 3.
+- **Engagement:** caption lines already use "For the friend who…" (no tag or share bait).
+- **Spec issues:** none.

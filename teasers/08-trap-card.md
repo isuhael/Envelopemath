@@ -104,6 +104,7 @@ The title is a confession that invites correction, on a 6 s money-math clip. It 
 
 #### 08A: "$2,500 every 2 weeks is NOT $60,000 a year" · *Envelope Puzzle No. 08A*
 
+- **Working title:** $2,500 every 2 weeks is NOT $60,000 a year (Envelope Puzzle No. 08A)
 - **Topic:** paychecks (income). **Lane:** Flash. **Runtime:** 7.6 s looping puzzle post; Opened post 12 s the next day.
 - **Spec:** `engine/specs/08-trap-card-a.json` · **Sheet:** `engine/out/sheets/08-trap-card-a.png`
 
@@ -170,6 +171,7 @@ The title is a confession that invites correction, on a 6 s money-math clip. It 
 
 #### 08B: "Stocks fell 57%. Back to even is NOT +57%" · *Envelope Puzzle No. 08B*
 
+- **Working title:** Stocks fell 57%. Back to even is NOT +57% (Envelope Puzzle No. 08B)
 - **Topic:** investing / market crashes. **Lane:** Flash. **Runtime:** 7.6 s looping puzzle post; Opened post 12 s the next day.
 - **Spec:** `engine/specs/08-trap-card-b.json` · **Sheet:** `engine/out/sheets/08-trap-card-b.png`
 
@@ -236,6 +238,7 @@ The title is a confession that invites correction, on a 6 s money-math clip. It 
 
 #### 08C: "Gatorade went 32 oz to 28 oz, same price. The hike is NOT 12.5%" · *Envelope Puzzle No. 08C*
 
+- **Working title:** Gatorade went 32 oz to 28 oz, same price. The hike is NOT 12.5% (Envelope Puzzle No. 08C)
 - **Topic:** groceries / shrinkflation. **Lane:** Flash. **Runtime:** 7.6 s looping puzzle post; Opened post 12 s the next day.
 - **Spec:** `engine/specs/08-trap-card-c.json` · **Sheet:** `engine/out/sheets/08-trap-card-c.png`
 
@@ -287,9 +290,9 @@ The title is a confession that invites correction, on a 6 s money-math clip. It 
   > Exact: +14.3% per ounce (envelope said ≈ +14%, within 2%). Going 32 → 28 oz cuts 4 oz, which is 12.5% of the old bottle (4/32). But the same price now buys only 28 oz, so each ounce costs 4/28 = 1/7 = 14.29% more. Rule: shrink by 1/8, pay 1/7 more per unit. Assumes the same shelf price for both bottles, as reported when PepsiCo switched in 2022 (AP, NBC DFW). Where a store charged more for the 28-oz bottle, the per-ounce rise is bigger, never smaller. Opened short: Envelope Puzzle No. 08C: Opened.
 
 **Description**
-> Gatorade went from 32 oz to 28 oz for the same price. That's NOT a 12.5% price hike. Per ounce, how much more? No calculator. Answer sealed in the pinned comment. For the friend who only reads the shelf price.
+> In 2022 Gatorade went from 32 oz to 28 oz bottles, at the same shelf price (as reported by NBC DFW). That's NOT a 12.5% price hike. Per ounce, how much more? No calculator. Answer sealed in the pinned comment. For the friend who only reads the shelf price.
 > Educational math, not financial advice.
-> Sources: AP, "No, you're not imagining it — package sizes are shrinking" (Jun 8 2022, also run by NPR); NBC DFW, "Paying the same but getting less: it's called shrinkflation" · checked Oct 7 2026.
+> Sources: AP, "No, you're not imagining it — package sizes are shrinking" (Jun 8 2022, also run by NPR: the 32 → 28 oz switch); NBC DFW, "Paying the same but getting less: it's called shrinkflation" (the same shelf price) · checked Oct 7 2026. Where a store charged more for the 28-oz bottle, the per-ounce rise is bigger, never smaller.
 > #EnvelopeMath #shrinkflation #groceries #mathpuzzle
 
 **Platform notes**
@@ -653,3 +656,12 @@ Independent final reviewer, 2026-10-07. I assumed the producer missed things. Fi
 **Verdicts:** 08A **fixed**, 08B **fixed**, 08C **fixed**. All three are ready to post after these fixes. Zero lint warnings, all math asserts pass, and the MP4s are re-rendered.
 
 *Superseded by this review:* the Polish pass's caption note ("tightest: 08B 'So what gain is it? No calculator.'") and its "0.85–1.63 s" *no calculator.* timing.
+
+### Compliance audit (2026-10-07)
+
+Last-line-of-defence pass (md edits only; specs untouched).
+- **Advice / promise language:** none. 08B uses a historical index (S&P 500 price, 2007–09), not a ticker or a prediction ("Past index levels, not a prediction" is in the description), with no "buy the dip". All three descriptions carry the disclaimer.
+- **Claims:** BLS median pay and S&P 500 closes are within their sources. **08C, fixed in this md:** the description stated "Gatorade went from 32 oz to 28 oz for the same price" as a bare fact, and cited AP for it. AP supports the size change, but it also says the 28-oz bottle was "more expensive" at some stores. The description now dates the change (2022), attributes "same shelf price" to NBC DFW, and notes that a higher shelf price only makes the per-ounce rise bigger. On screen the price is already on an ASSUME: sticky.
+- **Non-negotiables:** pass for the trap-card shape (partial payoff at 40–45%, IN THE PIN 1.85 s before the end, loop; the answer is pinned, then the Opened post).
+- **Engagement:** the puzzles prompt genuine answers, which is not vote-bait, and the captions use "For the friend who…".
+- **Spec issues:** none.

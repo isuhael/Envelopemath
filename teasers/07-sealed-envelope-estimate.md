@@ -205,7 +205,7 @@ Sealed card: **$4.3B** (the show's number). The exact balance is above both colu
 
 **Platform notes**
 - **YouTube Shorts:** post the 33.9 s master. Title = tape hook + series tag. Pin the exact-figures comment. The rule-of-72 vs 70 disagreement is the "math police" comment engine (report 01 §3.7), so reply to corrections with the pinned math.
-- **Instagram Reels:** same cut, at most 5 hashtags. The send line for the caption: "send this to the friend who swears by the rule of 72". Run it as a Trial Reel first; it is pure fandom plus math and should travel to non-followers.
+- **Instagram Reels:** same cut, at most 5 hashtags. The send line for the caption, as a dedication rather than a "send this" ask (Meta demotes share-baiting): "For the friend who swears by the rule of 72." Run it as a Trial Reel first; it is pure fandom plus math and should travel to non-followers.
 - **TikTok:** make a 62 s cut for Creator Rewards and the longer-video reach lift (+43.2%, Buffer). Add two beats before the seal:
   - "Why 70?": the exact doubling time is 31.15 years, so the true constant is 70.1.
   - "Year 900: $463M. Year 950: $1.4B. Year 1,000: ?"
@@ -290,7 +290,7 @@ Sealed card: **$5,050**. It is exactly (100 + 10,000) ÷ 2, because the envelope
 
 **Platform notes**
 - **YouTube Shorts:** post the 27.8 s master. Cash stuffing tops out at 146K on Shorts (report 01 §5.3); this works there only because the hook is a guess, not a stuffing ASMR clip. Keep "The 100 Envelope Challenge: how much is in all 100?" as the title.
-- **Instagram Reels:** the strongest sends candidate of the three. The caption line is "send this to whoever's on day 1 of the 100 Envelope Challenge" (Instagram weights sends most for non-followers, report 01 §4.1). Use at most 5 hashtags.
+- **Instagram Reels:** the strongest sends candidate of the three. The caption line is the dedication "For whoever's on day 1 of the 100 Envelope Challenge." (not a "send this" ask) (Instagram weights sends most for non-followers, report 01 §4.1). Use at most 5 hashtags.
 - **TikTok:** this is TikTok's home trend (#cashstuffing ≈ 1.9B views). Cut to 60 s by adding the pairing proof on screen ($1 + $100, $2 + $99 …) after the reveal, and stitch-friendly framing ("check your binder").
 - **Scheduling note:** the 100 Envelope Challenge total is also listed in approach #8's "verified puzzle bank" (`research/02-top-10-approaches.md`, line 556). The #8 teasers don't use it, but the calendar should run it once, here, as a sealed estimate.
 
@@ -382,8 +382,8 @@ Middle ≈ $2B (arithmetic midpoint $2.07B, geometric $1.94B). Sealed card: **$2
 
 **Platform notes**
 - **YouTube Shorts:** post the 30.5 s master. The famous-noun title does the discovery work (report 01 §3.2). Pin the comment and answer "do X next" requests: that is the calendar.
-- **Instagram Reels:** the caption send line is "send this to the Swiftie who still has their wristband". Use at most 5 hashtags. Fan-account resharing is the likely amplifier.
-- **TikTok:** cut to 60 s+ by adding a second Fermi pass after the reveal ("per night: $2.08B ÷ 149 ≈ $14M") and a "who's next" poll in the comments. Do not use the artist's music: original foley only. Licensed music also cuts Shorts revenue share (report 01 §4.3).
+- **Instagram Reels:** the caption send line is the dedication "For the Swiftie who still has their wristband." (not a "send this" ask). Use at most 5 hashtags. Fan-account resharing is the likely amplifier.
+- **TikTok:** cut to 60 s+ by adding a second Fermi pass after the reveal ("per night: $2.08B ÷ 149 ≈ $14M") and an open "who's next?" question in the comments (free-text nominations, not a vote-bait poll). Do not use the artist's music: original foley only. Licensed music also cuts Shorts revenue share (report 01 §4.3).
 
 **Why this one should travel**
 - **The biggest pocket-watching subject on the internet, with no defamation risk.** It's jamaal's 908x mechanic ("how much does X make?") pointed at a public box-office figure instead of someone's private income.
@@ -728,3 +728,12 @@ All three MP4s were re-rendered with `node src/cli.js render`: 07A 1,017 frames 
 - **07A:** fixed, ready to post.
 - **07B:** fixed, ready to post (weakest hook of the three, because the answer is widely known).
 - **07C:** fixed, ready to post.
+
+### Compliance audit (2026-10-07)
+
+Last-line-of-defence pass (md edits only; specs untouched).
+- **Advice / promise language:** none. 07A's 2.25% sits on a **GIVEN:** sticky, not ASSUME:, because it is the show's premise, not an assumed return. That is the honest label, and nothing implies a real 2.25% for 1,000 years. All three descriptions carry the disclaimer.
+- **Claims / IP:** Futurama is named and quoted, with no character art, clip or audio. The Eras Tour uses Billboard's public box-office gross, with no image, music or footage of the artist. Both are within their sources.
+- **Non-negotiables:** pass (first payoff at 28–37%, reveal at 86–91%, ROUGHLY RIGHT 1.9–2.0 s before the end, loop or "who's next?"). Mechanic: seal → work → open, approach 7.
+- **Fixed in this md:** the three Reels "send this to…" caption lines are now "For the…" dedications, and 07C's TikTok "who's next poll" is now an open free-text question (not vote-bait).
+- **Spec issues:** none.

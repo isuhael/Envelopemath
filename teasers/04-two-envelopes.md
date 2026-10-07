@@ -227,7 +227,7 @@ The closing range ("earn 0%? $1M lasts 19.2 yrs / earn 5.2%? it lasts forever") 
   - If 3-second retention is fine but the end dips, cut a 26.4 s version that drops the range screen (26.4–32.0) and loops from the OPENED BY MISTAKE stamp.
   - A/B test a title that teases the twist (the research hook formula): "$1M now or $1,000 a week for life? (The answer is 5.2%)".
 - **Instagram Reels:** same cut, max 5 hashtags.
-  - Sends are the top non-follower signal. The caption carries the taggable line: "send this to the friend who'd grab the million."
+  - Sends are the top non-follower signal. The caption carries the taggable line as a dedication: "For the friend who'd grab the million." (no "send this" or "tag a friend" ask: Meta demotes both as engagement bait)
   - Run it as a Trial Reel first. Keep the comment ask a real question; no "comment YES".
 - **TikTok:** a 60 s+ cut (Creator Rewards needs over 1 minute; Buffer measured +43.2% reach for 60 s+, report 01 §4). Add two more envelope beats after the range: the inflation drag (3% assumed, $554) and the "how long it lasts" row at 3/4/5%. Each is one line and one new number per sentence.
 
@@ -326,8 +326,8 @@ The deposits ($96,000 vs $144,000) are shown as stuffed envelopes, not ink lines
 - **YouTube Shorts:** post the 51.0 s master. The research puts races at 45–62 s on Shorts. Our photo finish (ages 60 → 65) runs at 40–46% of runtime (20.5–23.3 s), close to where Behind the Border's overtake lands (~53%).
   - Keep it under 60 s: a Short over 1 minute with any Content ID claim is blocked globally (report 01 §4), and our foley is original anyway.
 - **Instagram Reels:** this is the native length (45–60 s had the highest median views, Socialinsider, report 01 §4).
-  - Caption question: "Which one are you, A or B?"
-  - Taggable line: "send it to the friend who says they'll start next year."
+  - Caption question: "Which one are you, and what rate are you assuming?" (a real question; a bare "A or B?" reads as vote-baiting, which Meta demotes)
+  - Taggable line (a dedication, not a share ask): "For the friend who says they'll start next year."
 - **TikTok:** a 65 s cut. After the twist, add the math-police beat: yearly compounding is $479K vs $453K, and B would only catch up at ~85. Then the tie rate (6.1%). Every added sentence carries a new number.
 
 **Why this one should travel**
@@ -389,7 +389,7 @@ The deposits ($96,000 vs $144,000) are shown as stuffed envelopes, not ink lines
 - **Loop line:** "…versus five grand." flows straight into "Five grand to sign… or two bucks more an hour?"
 - **Comment bait (a real question):** "What's your crossover week? Bonus ÷ (raise × hours a week)."
 - **Pinned comment:**
-  > Exact: $2 × 40 = $80 a week; $5,000 ÷ $80 = 62.5 weeks ≈ 14.4 months (no rounding on this one). After 62 weeks the raise has paid $4,960; after 63, $5,040. One year: $4,160; two: $8,320; three: $12,480, about 2.5× the bonus. Assumptions: 40 paid hours a week, 52 paid weeks a year, before tax. Not modelled: future % raises (they'd apply to the higher wage), overtime, any repayment clause on the bonus, retirement match. Envelope rule: crossover = bonus ÷ (raise × hours). What's your crossover week?
+  > Exact: $2 × 40 = $80 a week; $5,000 ÷ $80 = 62.5 weeks ≈ 14.4 months (envelope said 62.5 weeks, within 0%: no rounding on this one). After 62 weeks the raise has paid $4,960; after 63, $5,040. One year: $4,160; two: $8,320; three: $12,480, about 2.5× the bonus. Assumptions: 40 paid hours a week, 52 paid weeks a year, before tax. Not modelled: future % raises (they'd apply to the higher wage), overtime, any repayment clause on the bonus, retirement match. Envelope rule: crossover = bonus ÷ (raise × hours). What's your crossover week?
 
 **Description**
 > $5,000 to sign, or $2 more an hour? $2 × 40 hours = $80 a week, and $5,000 ÷ $80 = 62.5 weeks. Stay longer and the raise wins: three years of it is $12,480. Leave sooner and the bonus wins. Hypothetical offer, pre-tax, 40-hour weeks. Exact figures are pinned. For scale: that $80 a week is about 6.4% of the median US full-time weekly pay ($1,251, BLS Usual Weekly Earnings, Q2 2026).
@@ -402,7 +402,7 @@ The deposits ($96,000 vs $144,000) are shown as stuffed envelopes, not ink lines
 - **YouTube Shorts:** a 14 s loop. The hook, the three lines and the verdict are readable sound-off; `loop: true` crossfades the last 0.35 s into frame 1, and the last words ("…versus five grand") run into the first ("Five grand to sign…").
 - **Instagram Reels:** same cut.
   - Caption with a direct question.
-  - Taggable line: "send to the friend with an offer on the table."
+  - Taggable line (a dedication, not a share ask): "For the friend with an offer on the table."
   - Max 5 hashtags.
 - **TikTok:** a 60 s+ "your offers" cut. Solve three viewer-submitted bonus-vs-raise pairs from the comments, one envelope each with the same rule. That clears the Creator Rewards bar and turns comments into the next episode.
 
@@ -655,3 +655,13 @@ Hook: 7/10, one below the producer's 8. "$5,000 TO SIGN / OR $2 MORE AN HOUR? / 
 **Files.** Specs: `engine/specs/04-two-envelopes-{a,b,c}.json` · MP4s re-rendered: `engine/out/04-two-envelopes-{a,b,c}.mp4` (960 / 1530 / 420 frames, 1080×1920, 30 fps) · sheets regenerated: `engine/out/sheets/04-two-envelopes-{a,b,c}.png` · stills from the final MP4s (stale ones deleted): `engine/out/stills/04-two-envelopes-a-{0.0,8.9,10.6,12.4,12.8,21.6,24.0,24.5,28.0,31.0,31.9}.png`, `…-b-{0.0,14.5,17.95,20.4,23.9,32.0,33.8,38.2,43.9,48.9,50.9}.png`, `…-c-{0.0,2.9,5.6,6.8,8.1,9.3,10.5,11.5,12.3,13.9}.png` · math check updated: `teasers/04-two-envelopes-mathcheck.py` (B labels as marks, the age-counter sync, whitespace-normalised on-screen strings).
 
 **Verdicts:** 04A **fixed** (hook 8) · 04B **fixed** (hook 8) · 04C **fixed** (hook 7). All three are ready to publish once the description BLS line is re-checked, if posting on or after 2026-10-28.
+
+### Compliance audit (2026-10-07)
+
+Last-line-of-defence pass (md edits only; specs untouched while the renders run, so the spec items below are **reported, not applied**).
+- **Advice / promise language:** none ("which envelope?" is always left to the viewer). 04C's "PICK IN ONE SECOND." is a game prompt, not financial urgency. No tickers or funds. All three descriptions carry the disclaimer.
+- **Assumed rates:** 04B's 7% is labelled on screen twice (ASSUME sticky and the "7% ASSUMED" stamp) and as "assumed" in the description and pin.
+  - **04A gap (spec issue, "should"):** the 5.2% is a solved break-even rate, not an assumption, but "a year, forever" / "same check forever + you keep $1M" carry no on-screen tax/inflation qualifier. The qualifier is only in the description and pin. Proposed fix: append an `ASSUME:` sticky "pre-tax, / no inflation" at t 22.3 (x 815, y 700, w 250, 56 px). It was checked on a scratch copy: lint is clean, and it sits right of the opened card, clear of the stamp and the rail.
+  - **04B (spec issue, nit):** the VO says "Same seven percent". Proposed: "Assume seven percent a year for both…".
+- **Non-negotiables:** pass. One drift: 04B's last verdict (the 6% FIRST CLASS flip, `revealAt` 48.1 s) lands 2.9 s before the 51.0 s end, outside the bible's last 2 s. It sat inside them before the runtime grew from 50.0 s. Reported as a nit: `revealAt` 49.0. Mechanic: pick-one → crossover, approach 4.
+- **Fixed in this md:** three "send this/it to…" Reels caption lines are now "For the friend…" dedications, and 04B's "Which one are you, A or B?" (vote-bait) is now a real question: "Which one are you, and what rate are you assuming?".

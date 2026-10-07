@@ -104,6 +104,7 @@ All three run 36–37 s in the Envelope lane (report 01 §4.2: YouTube favours u
 
 #### 10A: "“Write off your $100-a-night chef. Dinner's free.” What does it actually cost?" · *Envelope Audit No. 10A*
 
+**Working title:** “Write off your $100-a-night chef. Dinner's free.” What does it actually cost? (Envelope Audit No. 10A)
 **Topic:** taxes / write-offs · **Verdict:** RETURN TO SENDER · **Claim survival:** 12%
 **Lane / runtime:** Envelope, 36.0 s master, loops (spec `10-envelope-audit-a.json`)
 
@@ -139,6 +140,8 @@ All three run 36–37 s in the Envelope lane (report 01 §4.2: YouTube favours u
 
 **ASSUME sticky:** "$100 = chef + food. 24% tax bracket. A real business meal."
 
+**Sources**
+
 | Input | Value used | Source (re-verified 2026-10-07; see Final fact check) |
 |---|---|---|
 | Dinner cost | **$100**, a labelled round assumption (not a market rate) | n/a (assumption on the sticky) |
@@ -149,15 +152,15 @@ All three run 36–37 s in the Envelope lane (report 01 §4.2: YouTube favours u
 
 **Ending**
 - Loop / re-hook: the tape asks "Still want the chef at $88 a night?", the VO lands "Every night, that's thirty-two grand a year." on the red ≈ $32K, the gauge settles on 12%, and the loop crossfades into the "Dinner's FREE." claim card.
-- Comment bait (a real question, not "comment YES"): *Still want the chef at $88 a night?*
-- **Pinned comment:** "Exact: $88.00 a dinner, $32,120 a year (envelope said ≈ $32K, within 0.4%). That's the best case: every dinner a real business meal with you at the table, federal income tax at 24%. A dinner with family is personal, so $0 deductible and the full $100. Even at a 50% combined tax rate the dinner still costs $75. Rules: IRC §274(n) (50% meal cap), IRC §262, IRS Pub 463, IRS 2026 brackets. Illustrative math, not tax advice. Claim survival: 12%. What should we audit next?"
+- Comment bait (a real question, not "comment YES"): *Still want the chef at $88 a night, best case? (Cooking for you or your family, it's the full $100.)* The compliance audit added the qualifier: the chef "write-off" only applies to a genuine business meal, so the caption must not imply a nightly home chef is 50% deductible.
+- **Pinned comment:** "Exact: $88.00 a dinner, $32,120 a year (envelope said ≈ $32K, within 0.4%). That's the best case, not the usual one: every dinner a real business meal with a client and you at the table, federal income tax at 24%. A chef cooking for you or your family is a personal expense (IRC §262), so $0 deductible and the full $100 ($36,500 a year). Even at a 50% combined tax rate the dinner still costs $75. Rules: IRC §274(n) (50% meal cap), IRC §262, IRS Pub 463, IRS 2026 brackets. Illustrative math, not tax advice. Claim survival: 12%. What should we audit next?"
 
-**Description:** "Write off your $100-a-night chef and dinner's free? We audited it on one envelope. Business meals are deductible, but only 50%, and a deduction saves your tax rate, not the bill: $100 → $88. Assumptions: $100 a dinner, 24% federal bracket, a genuine business meal (best case). Sources: 26 U.S.C. §274(n) and §262; IRS Publication 463; IRS tax year 2026 inflation adjustments (Rev. Proc. 2025-32). Checked 2026-10-07. Illustrative, US federal only. Educational math, not financial advice."
+**Description:** "Write off your $100-a-night chef and dinner's free? We audited it on one envelope. Business meals are deductible, but only 50%, and a deduction saves your tax rate, not the bill: $100 → $88. Assumptions: $100 a dinner, 24% federal bracket, a genuine business meal (best case). A chef cooking for you or your family is a personal expense: $0 deductible (26 U.S.C. §262). Sources: 26 U.S.C. §274(n) and §262; IRS Publication 463; IRS tax year 2026 inflation adjustments (Rev. Proc. 2025-32). Checked 2026-10-07. Illustrative, US federal only. Educational math, not financial advice."
 **Hashtags:** #taxes #writeoff #smallbusiness #moneymath #envelopemath
 
 **Platform notes**
 - **YouTube Shorts:** use the 36.0 s master. The title carries the claim's number ("$100-a-night chef"), not the answer. Pin the exact figure. No music needed: the stamp thump and pen scratch are the sound.
-- **Instagram Reels (~45 s):** add a third strike after "Two problems": "Three: dinner with family? Personal. Zero." (IRC §262; the card reads $100, not $88). Caption line: "Send this to the friend who writes everything off." Post first as a Trial Reel. Keep to 5 hashtags.
+- **Instagram Reels (~45 s):** add a third strike after "Two problems": "Three: dinner with family? Personal. Zero." (IRC §262; the card reads $100, not $88). Caption line (a dedication, not a "send this" ask, which Meta demotes): "For the friend who writes everything off." Post first as a Trial Reel. Keep to 5 hashtags.
 - **TikTok (~62 s):** add the family-dinner strike plus a "but my state and self-employment tax…" beat that shows robustness: even at a 50% combined rate, $100 → $75. Then the yearly ladder ($12 × 365 = $4,380 back on $36,500). Paraphrase the claim on the card and never stitch the original. TikTok bans branded finance content, so don't take a sponsor on this one.
 
 **Why this one should travel:** it rides the topic that gave Money Guy its 272.45x outlier (6.2M) and does the one thing that video never did: put the number on screen. It busts a misconception millions half-believe ("a write-off makes it free") with one line of arithmetic. It has a taggable person built in (the friend who writes everything off), and a rule worth saving ("written off ≠ paid off"). Small-business and side-hustle viewers extend reach beyond finance (02-top-10 §10, "Algorithmic").
@@ -166,6 +169,7 @@ All three run 36–37 s in the Envelope lane (report 01 §4.2: YouTube favours u
 
 #### 10B: "“Pay the minimum on $5,000 and you'll pay for 20 years”? We actually checked" · *Envelope Audit No. 10B*
 
+**Working title:** “Pay the minimum on $5,000 and you'll pay for 20 years”? We actually checked (Envelope Audit No. 10B)
 **Topic:** credit card debt · **Verdict:** ROUGHLY RIGHT · **Claim survival:** 96%
 **Lane / runtime:** Envelope, 36.6 s master, loops (spec `10-envelope-audit-b.json`)
 
@@ -201,6 +205,8 @@ All three run 36–37 s in the Envelope lane (report 01 §4.2: YouTube favours u
 
 **ASSUME sticky:** "22% APR. Minimum = interest + 1% ($25 floor)." The $5,000 balance and "no new charges" are said in the VO and repeated in the pinned comment and description.
 
+**Sources**
+
 | Input | Value used | Source (re-verified 2026-10-07; see Final fact check) |
 |---|---|---|
 | APR | **22%** on screen. The exact calculation uses **22.15%**, the Fed G.19 "interest rate on credit card plans, accounts assessed interest" for Q2 2026 (prior quarter 21.52%; all accounts 20.94%) | Federal Reserve G.19, release of Aug 7, 2026 ([federalreserve.gov](https://www.federalreserve.gov/releases/g19/20260807/)); FRED series TERMCBCCINTNS ([fred.stlouisfed.org](https://fred.stlouisfed.org/series/TERMCBCCINTNS)); the Q2 2026 figures as reported in LendingTree's 2026 Credit Card Debt Statistics ([lendingtree.com](https://www.lendingtree.com/credit-cards/study/credit-card-debt-statistics/)). The Fed page itself can't be fetched from this environment; the on-screen answer doesn't hinge on it (21–23% APR gives 228–232 months, still ≈ 19 years) |
@@ -218,7 +224,7 @@ All three run 36–37 s in the Envelope lane (report 01 §4.2: YouTube favours u
 
 **Platform notes**
 - **YouTube Shorts:** use the 36.6 s master. The title puts the claim and its number first and keeps the answer sealed ("We actually checked").
-- **Instagram Reels (~45 s):** after the reveal, add a "depends on your card" beat: the same math on a $40-floor card is 15 years 4 months and $12,516 paid, written as a second line on the card. That's the honest range, and it invites "mine says…" comments. Caption: "Send this to whoever says 'I just pay the minimum'."
+- **Instagram Reels (~45 s):** after the reveal, add a "depends on your card" beat: the same math on a $40-floor card is 15 years 4 months and $12,516 paid, written as a second line on the card. That's the honest range, and it invites "mine says…" comments. Caption (a dedication, not a share ask): "For whoever says 'I just pay the minimum'."
 - **TikTok (~62 s):** add the rule-of-70 explainer (70 ÷ 1 = 70 months), the interest total ($8,158.75 of interest on a $5,000 balance, about 2.6× repaid), and the $40-floor comparison. Every sentence carries a new number, as the research advises for long cuts (report 01 §3.4).
 
 **Why this one should travel:** Sklar's numberless take on this exact myth hit 1,227.8x from 1.36K subs, and vidIQ's own fix for it ("$5,000 at the minimum taking 20+ years") is this video. The claim *surviving* is a twist on the format (believers win this round), and it proves the series audits both ways. "Check the box on your statement" is a save-worthy, non-advice action, and the topic sits in Caleb Hammer's APR-outrage lane (9.2M on a 900% PS5 loan).
@@ -229,6 +235,7 @@ All three run 36–37 s in the Envelope lane (report 01 §4.2: YouTube favours u
 
 **Replaced (polish pass, 2026-10-07; replaced = true).** The earlier 10C audited "At $1.04 billion, a $2 Powerball ticket's worth $3.56". It duplicated 09C (the expected value of a $2 Powerball ticket), and 03C is also lottery-based, so it was cut from the slate. Its spec was overwritten; its old math and sources are retired (the Verification log below still describes them as they were).
 
+**Working title:** “A 1% fee eats a third of your retirement”? What it actually eats (Envelope Audit No. 10C)
 **Topic:** investing fees / compounding · **Verdict:** ROUGHLY RIGHT · **Claim survival:** 94%
 **Lane / runtime:** Envelope, 37.0 s master, loops (spec `10-envelope-audit-c.json`)
 
@@ -276,6 +283,8 @@ We audit the arithmetic, not a person or a firm. No funds, tickers, providers or
 
 **ASSUME sticky:** "7% a year before fees. No new deposits." The $10,000 and the 40 years are written on screen; "the fee comes off the return" (7% → 6%) is spoken and written as line 2.
 
+**Sources** (the circulation sources for the claim are listed above, under "The claim, and where it circulates")
+
 | Input | Value used | Source (verified 2026-10-07; see Final fact check) |
 |---|---|---|
 | Amount and horizon | **$10,000** left alone for **40 years**, labelled assumptions | n/a (on screen and in the VO) |
@@ -287,14 +296,14 @@ We audit the arithmetic, not a person or a firm. No funds, tickers, providers or
 **Ending**
 - Loop / re-hook: the tape asks "What's YOUR fee?", the red ≈ $47K lands, the gauge settles on 94%, and the loop crossfades into the "A 1% fee eats a THIRD" claim card.
 - Comment bait: *What's your fee?* Viewers can answer with a percentage; nobody needs to share a balance.
-- **Pinned comment:** "Exact: $10,000 at 7% for 40 years = $149,744.58; at 6% = $102,857.18. That's 31.31% less (envelope said ≈ 31%), and the fee ate $46,887.40 (envelope said ≈ $47K). The claim's 'a third' survives at 94%. Any return from 4% to 10% gives 30.6–32.1% less. If the fee comes off the balance instead (× 0.99 a year), it's 33.1%: a third on the nose. Measured against the growth instead of the balance, it's 33.6% of the gains. Shorter horizon, smaller bite: 30 years → 24.5%. Saving the same amount every year: 22.5% less (23.2% if you deposit at the start of each year). For scale: US equity mutual funds averaged a 0.40% expense ratio in 2025 (ICI), which works out to 13.9% less on the same envelope; all US funds and ETFs averaged 0.32% (Morningstar), 11.3% less. Illustrative math, not investment advice. Claim survival: 94%."
+- **Pinned comment:** "Exact: $10,000 at 7% for 40 years = $149,744.58; at 6% = $102,857.18. That's 31.31% less (envelope said ≈ 31%, within 1%), and the fee ate $46,887.40 (envelope said ≈ $47K, within 0.3%). The claim's 'a third' survives at 94%. Any return from 4% to 10% gives 30.6–32.1% less. If the fee comes off the balance instead (× 0.99 a year), it's 33.1%: a third on the nose. Measured against the growth instead of the balance, it's 33.6% of the gains. Shorter horizon, smaller bite: 30 years → 24.5%. Saving the same amount every year: 22.5% less (23.2% if you deposit at the start of each year). For scale: US equity mutual funds averaged a 0.40% expense ratio in 2025 (ICI), which works out to 13.9% less on the same envelope; all US funds and ETFs averaged 0.32% (Morningstar), 11.3% less. Illustrative math, not investment advice. Claim survival: 94%."
 
 **Description:** "A 1% fee eats a third of your retirement? We audited it on one envelope. $10,000 left 40 years at 7% before fees grows to about $150K; at 6% (after a 1% fee) to about $103K. That's about 31% less: roughly right for money that sits all 40 years, and about 22% if you add the same amount every year. Assumptions: $10,000, 40 years, 7% a year before fees, fee = 1 point off the return, no new deposits. For scale: US equity mutual funds averaged a 0.40% expense ratio in 2025 (ICI, Trends in the Expenses and Fees of Funds, 2025); all US funds and ETFs averaged 0.32% (Morningstar, 2026 US Fund Fee Study). The claim circulates in many forms, e.g. the U.S. Department of Labor's 'A Look at 401(k) Plan Fees' (a 1-point fee difference = 28% less over 35 years). Checked 2026-10-07. Educational math, not financial advice."
 **Hashtags:** #investing #retirement #moneymath #envelopemath #compoundinterest
 
 **Platform notes**
 - **YouTube Shorts:** use the 37.0 s master. The title carries the claim and its numbers ("1%", "a third") and keeps the 31% sealed. No fund names, tickers, logos or provider screenshots.
-- **Instagram Reels (~45 s):** add a "two ways to measure it" beat: against the balance the fee takes 31%, against the growth 33.6%. Same fee, two honest denominators, and the comments will argue about which one the claim meant. Caption: "Send this to the friend who's never looked up their fee."
+- **Instagram Reels (~45 s):** add a "two ways to measure it" beat: against the balance the fee takes 31%, against the growth 33.6%. Same fee, two honest denominators, and the comments will argue about which one the claim meant. Caption (a dedication, not a share ask): "For the friend who's never looked up their fee."
 - **TikTok (~62 s):** add the robustness ladder (4% → 32.1% less, 7% → 31.3%, 10% → 30.6%), the 30-year case (24.5%) and the 1%-of-balance version (33.1%). Every sentence carries a new number. If the averages go on screen (ICI 0.40%, Morningstar 0.32%), show them with their source and year, as context, never as a pick.
 
 **Why this one should travel:** the claim is everywhere, from a federal agency's 401(k) guide to a 24/7 Wall St. piece two months ago, and it is almost never shown with its denominator. Retirement-number topics travel in our evidence set (Money Guy, "Is $3 Million Really Enough to Retire?", 1,321,361 views, 30.48x). The twist is that the claim *survives* the audit (ROUGHLY RIGHT), and then the fine print shows when it doesn't (≈ 22% for steady savers), so believers and skeptics both have something to say. "What's your fee?" is a question most 401(k) and IRA holders can answer by looking it up, and it isn't advice. It also gives the slate a third, different topic (taxes, debt, investing) in place of a second Powerball video.
@@ -1011,3 +1020,23 @@ Independent final reviewer, 2026-10-07. Re-read `engine/README.md` first. Files 
 1. `check` should measure curve `marks` and end labels against the right rail and the safe area. Two labels crossed the rail with zero warnings.
 2. `check` should flag a pen that lies across text already on screen, or `write` could default to `pen: "low"` when it starts below another line that's still showing.
 3. Captions wrap at 820 px centred on x 540 (x 130–950), so a full caption line can end past the x 940 rail. A 780 px wrap, or a lint warning, would keep captions clear of it.
+
+### Compliance audit (2026-10-07)
+
+Last-line-of-defence pass (md edits only; specs untouched while the renders run, so the spec item below is **reported, not applied**).
+- **10A, BLOCKER (spec): the master implies a nightly personal chef is a 50%-deductible business meal.**
+  - The video credits "business meals really are deductible ✓" against the claim "write off your $100-a-night chef".
+  - It then closes on "Still want the chef at $88 a night? Every night, that's $32K a year."
+  - A chef cooking for you or your family is a personal expense (IRC §262): $0 deductible, the full $100.
+  - The only on-screen hint is "A real business meal" on the ASSUME sticky, so a sound-off viewer can take away a wrong tax rule.
+  - Proposed spec fix, lint-checked on a scratch copy with stills at 9.0 s and 35.6 s:
+    - Sticky: "…Best case: a real business meal."
+    - Last tape: "Family dinner? / **$0** off."
+    - Pencil line: "best case, every night:"
+    - Captions and VO: "Family dinner? Zero off. Best case, every night: thirty-two grand a year."
+  - The math check's must-have strings are unaffected.
+  - Fixed in this md now: the description and pinned comment lead with the personal-expense rule ($0, $36,500 a year), and the caption comment bait says "best case".
+  - **Do not publish 10A from the current render.**
+- **10B, 10C:** no advice language. The rates are labelled (22% APR, 7% before fees) on ASSUME stickies and in the descriptions. "Terms vary by issuer" and "Illustrative math, not investment advice" are in place. No products, funds or creators are named.
+- **Non-negotiables:** pass for all three (first payoff at 32–33%, sealed reveal at 59–70%, biggest number + survival gauge in the last 2.7 s, loop to the claim card). Mechanic: quote → credit → strike → seal → stamp, approach 10.
+- **Fixed in this md:** the three Reels "Send this to…" caption lines are now "For the…" dedications.

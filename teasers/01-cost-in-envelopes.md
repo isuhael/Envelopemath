@@ -288,7 +288,7 @@ The scale shot only uses numbers already on screen: 44,000 ÷ 40,075 = 1.098 ≈
 **Platform notes**
 - **YouTube Shorts:** the 27.8 s master is the YouTube cut. Pin the exact comment.
   - The debt rises daily, so re-pull Debt to the Penny on publish day. The envelope's "≈ 44,000 km" holds while the debt is under $40.45T (4.045 billion envelopes × 1.1 cm = 44,500 km). Above that, update line 2, line 3 and the card from the math check (one variable). "≈ 1.1 laps" holds until about $41.9T.
-- **Instagram Reels:** same cut; open with a Trial Reel. "Send this to whoever says 'just print more'" is the share prompt, used as caption copy rather than in the VO.
+- **Instagram Reels:** same cut; open with a Trial Reel. "For whoever says 'just print more'." is the caption's send line (a dedication, not a "send this" or "tag a friend" ask, both of which Meta demotes as engagement bait), used as caption copy rather than in the VO.
 - **TikTok:** a ~65 s cut adds the answer rung on screen. A fourth stack in $1 bills that runs off the top of the frame is still an engine request; until then, a hand-drawn "→ 🌕 × 11" arrow works. Add a fifth "how far is it to the satellites" rung (35,786 km) before the equator wrap.
 
 **Why this one should travel**
@@ -365,7 +365,7 @@ The scale shot only uses numbers already on screen: 44,000 ÷ 40,075 = 1.098 ≈
 
 **Platform notes**
 - **YouTube Shorts:** the 14.0 s cut loops cleanly. The last line lands on the hook again, and replays count as views. Keep the title equal to the tape hook.
-- **Instagram Reels:** the short-loop cluster is where small IG accounts break out (1,106x, 1,131x, 522x at 5 to 8 s). This is our closest fit; let it loop. Tag line in the caption: "tag the friend with the penny jar."
+- **Instagram Reels:** the short-loop cluster is where small IG accounts break out (1,106x, 1,131x, 522x at 5 to 8 s). This is our closest fit; let it loop. Send line in the caption: "For the friend with the penny jar." (a dedication, not a "tag a friend" ask: Meta demotes tag-baiting).
 - **TikTok:** post as is for the loop, then a 60 s+ follow-up that answers the nickel question and runs the denomination ladder by weight. Each rung goes on its own envelope line: $1M in pennies 275.6 US tons → nickels 110.2 US tons → $1 bills 1,000 kg ≈ 1.1 US tons (BEP: ≈ 1 g per note) → $100 bills 10 kg. All of those inputs are already sourced above.
 
 **Why this one should travel**
@@ -979,3 +979,14 @@ Negative test: run against the pre-review specs (git `d716b4d~1`), these checks 
 - **01A: fixed.** The sticky, two short holds and the reveal-spoiling caption are fixed. It is ready to post after the publish-day net-worth re-check in its platform notes.
 - **01B: fixed.** The VO/visual contradiction and the reveal sync are fixed. It is ready after the publish-day Debt to the Penny re-pull.
 - **01C: fixed.** The payoff hold, the reveal sync and the line-2 hold are fixed. It is ready.
+
+### Compliance audit (2026-10-07)
+
+Last-line-of-defence pass on advice language, claims, brand non-negotiables and platform rules (md edits only; `engine/specs` and `engine/src` untouched while the renders run).
+- **Advice / promise language:** none on screen, in captions, VO, pins or descriptions. No tickers, funds or urgency. All three descriptions carry "Educational math, not financial advice."
+- **Claims about real people and companies:** Musk ≈ $1T (Bloomberg/Forbes, dated, "on paper" in the pin), Costco $1.50, US Treasury, US Mint, NPS: all within their cited sources. No logos, footage or likenesses.
+- **Non-negotiables:** ≤ 3 lines, a number in frame 0, ≈ rounding with the exact figure pinned, partial payoff by 39% / 32% / 27%, verdict stamp exactly 2.0 s before the end, `loop: true`. All pass.
+- **Mechanic:** all three are unit swaps (count → split, height, weight), the approach-1 mechanic.
+- **Engagement bait, fixed in this md:** 01C's Reels caption said "tag the friend with the penny jar" (tag-baiting, which Meta demotes) and 01B's said "Send this to whoever…" (share-baiting). Both are now "For the friend…" dedications.
+- **Slate note:** 01A and 02A both lead on Musk's $1 trillion. Post them at least a week apart (or use 02A's no-name variant), as 02A's slate note says.
+- **Spec issues:** none.

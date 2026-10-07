@@ -106,6 +106,7 @@ The pattern holds for all three variables we use. **Place:** AJ's tax video (22.
 
 #### 06A: "Same $1,000 of pay, 6 countries: who taxes it most?" (Same Pile No. 1)
 
+- **Working title:** Same $1,000 of pay, 6 countries: who taxes it most? (Same Pile No. 1)
 - **Topic:** taxes on a paycheck. **Variable:** country.
 - **Lane:** Envelope, **29.9 s** (YT/IG master; AJ ran 31 s and Tilbury 26 s).
 - **Spec:** `engine/specs/06-same-pile-different-place-a.json` · **Sheet:** `engine/out/sheets/06-same-pile-different-place-a.png`.
@@ -168,7 +169,7 @@ The pattern holds for all three variables we use. **Place:** AJ's tax video (22.
 **Ending**
 - **Loop line:** "All out of the…", which flows into frame 1, "Same thousand bucks of pay."
 - **Comment bait (a genuine question):** caption line 1 is *"Where does your country land? We'll pull its envelopes next."*
-- **Taggable person:** "send this to the friend who keeps threatening to move abroad."
+- **Taggable person** (a caption dedication, not a "send this" or "tag a friend" ask, both of which Meta demotes as engagement bait): "For the friend who keeps threatening to move abroad."
 - **Pinned comment:**
   > Exact: Belgium's taxman takes $395 of every $1,000 an average single worker earns; Chile's takes $71. That's 5.56× (envelope said ≈ 5½×, within 1.2%; "≈ 4 of 10 envelopes" vs exact 3.95, within 1.3%). US: $243, just under the OECD average of $251. Assumptions: OECD Taxing Wages 2026 (2025 data), single, no kids, average wage, income tax + employee social security, net of cash benefits; each country's rate is for its own average-wage worker, applied to the same $1,000. Chile's 10% private-pension deposit counts as a non-tax payment in OECD's books, so it isn't in the 7.1%. Sources in the description. Want yours? Comment your country.
 
@@ -201,6 +202,7 @@ The pattern holds for all three variables we use. **Place:** AJ's tax video (22.
 
 #### 06B: "Same $1,000 cash, 6 decades: what did inflation eat?" (Same Pile No. 2)
 
+- **Working title:** Same $1,000 cash, 6 decades: what did inflation eat? (Same Pile No. 2)
 - **Topic:** inflation and cash savings, the whitespace no one is doing the maths for: the cash-stuffing culture with about 1.9B #cashstuffing views (report 01 §6, gap 3). **Variable:** the decade you stuffed the envelope.
 - **Lane:** Envelope, **30.9 s**.
 - **Spec:** `engine/specs/06-same-pile-different-place-b.json` · **Sheet:** `engine/out/sheets/06-same-pile-different-place-b.png`.
@@ -253,7 +255,7 @@ The pattern holds for all three variables we use. **Place:** AJ's tax video (22.
 **Ending**
 - **Loop line:** "And the envelope still holds the…", which flows into frame 1, "Same thousand bucks in cash."
 - **Comment bait:** caption line 1 is *"What year would you have stuffed it? We'll open that envelope next."*
-- **Taggable person:** "send this to the grandparent with the coffee-can savings."
+- **Taggable person** (a caption dedication, not a share ask): "For the grandparent with the coffee-can savings."
 - **Pinned comment:**
   > Exact: $1,000 stuffed in August 1966 now buys what $97.62 bought then (envelope said ≈ $100, within 2.5%). Prices are 10.24× higher (CPI-U Aug 2026 334.980 vs Aug 1966 32.7), so matching 1966's $1,000 today takes $10,244. 2016 $719 · 2006 $609 · 1996 $470 · 1986 $327 · 1976 $171. Assumptions: BLS CPI-U, U.S. city average, all items, not seasonally adjusted, August each year; cash earns 0%. Sources in the description. What year would you have stuffed it?
 
@@ -282,6 +284,7 @@ The pattern holds for all three variables we use. **Place:** AJ's tax video (22.
 
 #### 06C: "Same $1 million, 6 jobs: how long to earn it?" (Same Pile No. 3)
 
+- **Working title:** Same $1 million, 6 jobs: how long to earn it? (Same Pile No. 3)
 - **Topic:** pay and careers. **Variable:** job.
 - **Lane:** Envelope, **31.9 s**.
 - **Spec:** `engine/specs/06-same-pile-different-place-c.json` · **Sheet:** `engine/out/sheets/06-same-pile-different-place-c.png`.
@@ -343,7 +346,7 @@ The pattern holds for all three variables we use. **Place:** AJ's tax video (22.
 **Ending**
 - **Loop line:** "Still chasing the…", which flows into frame 1, "Same million bucks."
 - **Comment bait:** caption line 1 is *"Comment your job and we'll run your million next."*
-- **Taggable person:** "tag the nurse or teacher in your life."
+- **Taggable person** (a caption dedication; the old "tag the nurse or teacher" ask was tag-baiting, which Meta demotes): "For the nurse or teacher in your life."
 - **Pinned comment:**
   > Exact: the average S&P 500 CEO earned $1M in 16.01 days in 2025 (envelope said 16 days, within 0.1%): $62,465.75 a day, one $100K envelope every 38.4 hours. Minimum wage ($7.25 × 2,080 hrs = $15,080/yr) needs 66.3 years for $1M and 6.63 years per envelope. Teacher 13.88 yrs · nurse 10.25 · software dev 7.35 · President 2.5. Gross pay, before tax, full-time; BLS May 2025 medians. AFL-CIO's $22.8M average excludes Elon Musk; with him included it's $340.1M, about 1.1 days. Comment your job and we'll run it.
 
@@ -356,7 +359,7 @@ The pattern holds for all three variables we use. **Place:** AJ's tax video (22.
 - **IG Reels (~45 s):**
   - Add ✈️ airline pilot ($232,140, BLS May 2025, so 4.3 yrs) between the software developer and the interruption.
   - Hold the FIRST CLASS frame.
-  - The "tag the nurse or teacher" line is the send driver.
+  - The "for the nurse or teacher in your life" line is the send driver.
 - **TikTok (~65 s):**
   - Add the pilot rung and the "with one outlier included: about a day" twist (AFL-CIO's $340.1M) as a second sting.
   - Then run the comment-request format ("your job next") as a series.
@@ -829,3 +832,13 @@ Independent final reviewer, 2026-10-07, after the engine upgrade. I re-read `eng
 - **06A: ship** (no changes).
 - **06B: fixed** (one re-timed sub-line, re-rendered).
 - **06C: ship** (no changes).
+
+### Compliance audit (2026-10-07)
+
+Last-line-of-defence pass (md edits only; specs untouched).
+- **Advice / promise language:** none. No judgement on any government. The President beat is the salary set by law only. All three descriptions carry the disclaimer.
+- **Claims:** OECD Taxing Wages 2026, BLS CPI-U and OEWS, DOL, 3 U.S.C. §102 and AFL-CIO Paywatch 2026 (the "excl. Musk" qualifier is on screen and in the pin). All within their sources.
+- **Non-negotiables:** pass (first answer at 22–26%, extreme last, hero/stamp in the last 2 s, a fragment loop). Mechanic: one fixed pile, one variable, extreme last (approach 6).
+- **Fixed in this md:** 06C's "tag the nurse or teacher in your life" (tag-baiting, demoted by Meta) and 06A/06B's "send this to…" lines are now "For the…" dedications.
+- **Slate note:** 06B (inflation on cash since 1966) and 09A (groceries 2006 → 2026 in minutes of work) share the inflation theme but not the mechanic. Schedule them apart.
+- **Spec issues:** none.

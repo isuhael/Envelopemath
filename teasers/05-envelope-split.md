@@ -166,6 +166,7 @@ Sources (all re-verified 2026-10-07; see [Final fact check](#final-fact-check)):
 
 #### 05A: "The median paycheck is $2,094.20. This envelope takes 30 months to fill. Yours too."
 
+- **Working title:** The median paycheck is $2,094.20. This envelope takes 30 months to fill. Yours too. (Envelope My Paycheck No. 05A)
 - **Series tag:** Envelope My Paycheck No. 05A (the series pilot)
 - **Money topic:** the emergency fund
 - **Lane:** Envelope · **Runtime:** 39.8 s master (`loop: true`)
@@ -250,7 +251,7 @@ The envelopes show $1,047 / $314 / $105 / $628, which add to $2,094.
   - Title = the hook. Pin the comment.
 - **Instagram Reels (full 39.8 s; IG's highest median views were at 45–60 s, so also test a ~46 s cut with the "your turn" coda below):**
   - Caption CTA "Comment your take-home + job and I'll envelope it" (the personalised-reply CTA, 125.1x).
-  - Share line: "send to the friend who just started their first real job".
+  - Share line (a dedication, not a "send this" ask, which Meta demotes): "For the friend who just started their first real job."
   - Test as a Trial Reel. 5 hashtags max.
 - **TikTok (~62 s cut):**
   - Add a "your turn" coda that works a viewer-submitted paycheck in 15 s, plus the 6-month line done in full (6 × 50% ÷ 5% = 60).
@@ -267,6 +268,7 @@ The envelopes show $1,047 / $314 / $105 / $628, which add to $2,094.
 
 #### 05B: "$7.25/hr first job vs. the $1,199 iPhone 18 Pro: how many paychecks?"
 
+- **Working title:** $7.25/hr first job vs. the $1,199 iPhone 18 Pro: how many paychecks? (Envelope My Paycheck No. 05B)
 - **Series tag:** Envelope My Paycheck No. 05B
 - **Money topic:** saving for a big want (and the sales tax nobody budgets)
 - **Lane:** Envelope · **Runtime:** 31.3 s master (`loop: true`)
@@ -344,7 +346,7 @@ The envelopes show $268 / $80 / $27 / $161, which add to $536.
   - The take-home is already one 3 s counter beat; keep the receipt twist intact. The twist is the payoff.
   - Ride "iPhone 18 Pro" search in the title during launch month.
 - **Instagram Reels (31.3 s master; also test a ~45 s cut with the part-time variant, since IG's best median views were at 45–60 s):**
-  - Share framing "send to someone with a new job".
+  - Share framing (a dedication, not a "send this" ask): "For someone with a new job."
   - Caption CTA "Comment your first paycheck"; carousel-style first frame. 3–5 hashtags.
 - **TikTok (~60–65 s cut):**
   - Add the "what if it's part-time" variant (20 hrs/wk → FUN $80.34 → 17 paychecks with tax, verified at edit time) as a second sealed number, and the 6.25%-vs-8.25% city check.
@@ -360,6 +362,7 @@ The envelopes show $268 / $80 / $27 / $161, which add to $536.
 
 #### 05C: "A nurse's $2,979.09 paycheck vs. the $429,100 median home: how many paychecks to save the down payment?"
 
+- **Working title:** A nurse's $2,979.09 paycheck vs. the $429,100 median home: how many paychecks to save the down payment? (Envelope My Paycheck No. 05C)
 - **Series tag:** Envelope My Paycheck No. 05C
 - **Money topic:** buying a home (down payment)
 - **Lane:** Envelope · **Runtime:** 31.8 s master (`loop: true`)
@@ -436,7 +439,7 @@ The envelopes show $1,490 / $447 / $149 / $894. Each one is rounded to the dolla
   - The gross derivation is already one counter beat. For a shorter cut, move the assumption beat (18.5–21.1) into the pinned comment. Keep 96 → ROUGHLY RIGHT → 7.4 years.
   - "Down payment" and "nurse" carry search.
 - **Instagram Reels (31.8 s master; test a ~45 s cut with the third bar below, since IG's best median views were at 45–60 s):**
-  - Send-to-a-nurse framing in the caption.
+  - A nurse dedication in the caption ("For the nurse in your life."), not a "send this" or "tag a nurse" ask.
   - Ask "what's your city's median?" to start a reply series.
 - **TikTok (~65 s cut):**
   - Add a third bar: the median worker from 05A. FUTURE $314.13 → 136.6 paychecks ≈ 5.3 years at 10% down (recompute at edit time).
@@ -818,6 +821,8 @@ All assertions passed.
 
 ### Verification log
 
+*First QA pass, kept as history. Where it disagrees with the **Final fact check**, **Polish pass** or **Final review** below, those win: its runtimes (39.2 / 30.8 / 31.0 s; now 39.8 / 31.3 / 31.8 s), its negative-`t` pre-rolls (gone; frame-0 ops now start at `t: 0`), its UNVERIFIED iPhone and NAR rows (both confirmed) and its timings describe the pre-polish specs.*
+
 Independent QA pass on 2026-10-07: fact-check, edit and visual QA. QA used:
 - `python3` with exact fractions, in a recomputation written separately from the writer's script;
 - the renderer's `check`, `sheet`, `still` and `render`;
@@ -984,7 +989,7 @@ Hooks were scored 1–10 against research/02 §5 (evidence and hook formulas) an
 - ~~Re-verify the iPhone 18 Pro price (05B) and NAR's August 2026 median (05C) against the primary pages, and cascade any change through the specs, pins and descriptions.~~ **Done in the polish pass (2026-10-07):** both confirmed; nothing cascades. See [Final fact check](#final-fact-check).
 - ~~Re-render the final MP4s for all three.~~ **Done:** `engine/out/05-envelope-split-{a,b,c}.mp4`.
 - The engine requests above have since been resolved in the engine (1: the README now says sticky `title` has no default; 2: ops at t = 0 render finished and pre-roll foley is dropped; 3: per-bar `at`; 4: the 3-line caption warning; 5: grid `prefilled`), and the polish pass uses them.
-- Before posting: NAR's September existing-home sales come out Tue Oct 13, 2026, and BLS's Q3 weekly earnings Wed Oct 21, 2026. If 05C or 05A posts after those dates, re-run the math script with the new figure (every formula is in it) or keep the dated source line as is.
+- Before posting: NAR's September existing-home sales come out Tue Oct 13, 2026, and BLS's Q3 weekly earnings are scheduled for Wed Oct 28, 2026 on BLS's October 2026 calendar (BLS's per-release page lists Oct 21, so check from Oct 21). If 05C or 05A posts after those dates, re-run the math script with the new figure (every formula is in it) or keep the dated source line as is.
 
 ---
 
@@ -994,7 +999,7 @@ Polish pass, 2026-10-07. Every real-world input on screen or in this md was re-c
 
 | Input | Value used | Source URL | Checked on | Status |
 |---|---|---|---|---|
-| BLS median usual weekly earnings, full-time wage and salary workers, Q2 2026 | $1,251 (120.9M workers; +4.6% y/y) | https://www.bls.gov/news.release/wkyeng.nr0.htm (release of Tue Jul 21 2026; archive https://www.bls.gov/news.release/archives/wkyeng_07212026.htm) | 2026-10-07 | **Confirmed.** Still the latest: the Q3 2026 release is scheduled for Oct 21 2026 (https://www.bls.gov/schedule/news_release/wkyeng.htm). |
+| BLS median usual weekly earnings, full-time wage and salary workers, Q2 2026 | $1,251 (120.9M workers; +4.6% y/y) | https://www.bls.gov/news.release/wkyeng.nr0.htm (release of Tue Jul 21 2026; archive https://www.bls.gov/news.release/archives/wkyeng_07212026.htm) | 2026-10-07 | **Confirmed.** Still the latest: the Q3 2026 release is scheduled for Oct 28 2026 on BLS's October 2026 calendar (https://www.bls.gov/schedule/2026/10_sched_list.htm). The per-release page (https://www.bls.gov/schedule/news_release/wkyeng.htm) lists Oct 21, so re-check from Oct 21. *(Date aligned with 02, 04 and 08 in the slate audit, 2026-10-07.)* |
 | BLS median annual wage, registered nurses, May 2025 | $97,550 ($46.90/hr) | https://www.bls.gov/ooh/healthcare/registered-nurses.htm | 2026-10-07 | **Confirmed** |
 | Federal minimum wage | $7.25/hr, unchanged since Jul 24 2009 | https://www.dol.gov/agencies/whd/minimum-wage/state ; https://www.dol.gov/general/topic/wages/minimumwage | 2026-10-07 | **Confirmed** |
 | Texas minimum wage = federal (Texas Minimum Wage Act) | $7.25/hr | https://www.twc.texas.gov/programs/wage-and-hour/texas-minimum-wage-law | 2026-10-07 | **Confirmed** |
@@ -1077,7 +1082,7 @@ All within the −30 to −18 dB mean / below −1 dB peak target.
 **md**
 - Beat sheets, Full VO, ASSUME stickies, frame-1 hooks, runtimes, loop notes and platform-note timestamps were rewritten to match the final specs.
 - The iPhone and NAR rows now carry verified primary sources. The production notes describe the t = 0 frame 0 (no pre-roll).
-- "Still open before publishing" is closed out. It now only notes the NAR (Oct 13) and BLS (Oct 21) releases that land after today.
+- "Still open before publishing" is closed out. It now only notes the NAR (Oct 13) and BLS (scheduled Oct 28; one BLS page lists Oct 21) releases that land after today.
 
 ---
 
@@ -1172,3 +1177,13 @@ Each hook is scored 1–10 against research/02 §5: the frame-1 system plus an o
 - `check`: zero warnings on all three.
 - Math script: all assertions pass. The script and its output are re-embedded in [Math check](#math-check).
 - Beat sheets, Full VO and frame-1 hook text above are updated to match the specs.
+
+### Compliance audit (2026-10-07)
+
+Last-line-of-defence pass (md edits only; specs untouched).
+- **Advice / promise language:** none. The 50/15/5/30 split is presented as "the math on a common rule" (Fidelity's 50/15/5, cited), never "you should". "Yours too" in 05A's hook is a ratio fact under that stated split (3 × 50% ÷ 5%), and the ASSUME stickies carry the conditions. All three descriptions carry the disclaimer.
+- **Claims:** BLS, IRS, DOL/TWC, Apple, Texas Comptroller and NAR figures are within their sources. "20% down = no PMI" is the conventional-loan rule (OCC/CFPB cited). It is accepted as envelope shorthand.
+- **Non-negotiables:** pass (first payoff 15–40%, biggest number 2.05–2.7 s before the end, loops, exact cents pinned). Mechanic: stuffed-envelope split + time-to-fill, approach 5.
+- **Fixed in this md:** the Reels share lines ("send to the friend…", "send to someone…", "send-to-a-nurse") are now "For the…" dedications (Meta demotes share/tag bait).
+- **Note:** the "Comment your take-home… I'll envelope it" CTA asks viewers to post pay publicly. Replies should stay arithmetic on the house split, never individual recommendations.
+- **Spec issues:** none.
