@@ -1,0 +1,286 @@
+{
+ "id": "02-rate-clock-b",
+ "title": "Apple Makes Your $65K Salary in How Many Seconds? (Clocked No. 2)",
+ "paper": {
+  "style": "kraft",
+  "seed": 33
+ },
+ "duration": 19.8,
+ "vo": "Apple makes your salary in how many seconds? Apple brings in about thirteen grand a second. Your sixty-five grand? About four point nine seconds. Watch. Real time. (4.4 s of ticking, no VO) Done. That's your whole year. Your whole forty-year career? About three point three minutes. That's sales, not profit. Profit's pinned.",
+ "captions": [
+  {
+   "t": 0.0,
+   "end": 2.5,
+   "text": "Apple makes your salary in how many seconds?"
+  },
+  {
+   "t": 2.5,
+   "end": 4.9,
+   "text": "Apple brings in about\n13 grand a second."
+  },
+  {
+   "t": 4.9,
+   "end": 7.5,
+   "text": "Your 65 grand? About 4.9 seconds."
+  },
+  {
+   "t": 7.5,
+   "end": 8.8,
+   "text": "Watch. Real time."
+  },
+  {
+   "t": 13.2,
+   "end": 14.9,
+   "text": "Done.\nThat's your whole year."
+  },
+  {
+   "t": 14.9,
+   "end": 17.8,
+   "text": "Your whole 40-year career? About 3.3 minutes."
+  },
+  {
+   "t": 17.8,
+   "end": 19.8,
+   "text": "That's sales, not profit. Profit's pinned."
+  }
+ ],
+ "ops": [
+  {
+   "type": "postmark",
+   "t": -0.3,
+   "x": 190,
+   "y": 300,
+   "center": [
+    "No.",
+    "02B"
+   ],
+   "persist": true
+  },
+  {
+   "type": "hook",
+   "t": -0.6,
+   "y": 480,
+   "size": 74,
+   "text": [
+    "APPLE MAKES YOUR",
+    "*$65K* SALARY IN",
+    "*?? SECONDS*"
+   ]
+  },
+  {
+   "type": "emoji",
+   "t": -0.4,
+   "char": "⏱️",
+   "x": 500,
+   "y": 1020,
+   "size": 290,
+   "bob": true
+  },
+  {
+   "type": "write",
+   "t": 0.3,
+   "text": "?",
+   "x": 730,
+   "y": 1000,
+   "size": 150,
+   "color": "red",
+   "cps": 10,
+   "pen": false
+  },
+  {
+   "type": "flip",
+   "t": 2.5
+  },
+  {
+   "type": "sticky",
+   "t": 2.75,
+   "x": 320,
+   "y": 560,
+   "w": 410,
+   "size": 46,
+   "title": "ASSUME:",
+   "text": "typical full-time pay $1,251/wk × 52 ≈ $65K"
+  },
+  {
+   "type": "postage",
+   "t": 2.9,
+   "x": 800,
+   "y": 545,
+   "value": "$416B",
+   "label": "APPLE SALES FY25",
+   "art": "≈"
+  },
+  {
+   "type": "lines",
+   "t": 3.0,
+   "x": 905,
+   "y": 930,
+   "size": 72,
+   "cps": 16,
+   "gap": 0.6,
+   "lines": [
+    "$416B ÷ 31.5M sec ≈ $13.2K/s",
+    "$65K ÷ $13.2K/s ≈ 4.9 sec"
+   ]
+  },
+  {
+   "type": "write",
+   "t": 4.8,
+   "text": "(31.5M = seconds in a year)",
+   "x": 905,
+   "y": 1110,
+   "size": 48,
+   "color": "pencil",
+   "align": "right",
+   "cps": 30,
+   "pen": false
+  },
+  {
+   "type": "annotate",
+   "t": 6.95,
+   "kind": "circle",
+   "x": 690,
+   "y": 968,
+   "w": 215,
+   "h": 70
+  },
+  {
+   "type": "flip",
+   "t": 7.5
+  },
+  {
+   "type": "write",
+   "t": 7.75,
+   "text": "Apple's sales, in real time:",
+   "x": 540,
+   "y": 720,
+   "size": 60,
+   "color": "pencil",
+   "align": "center",
+   "cps": 40
+  },
+  {
+   "type": "emoji",
+   "t": 7.8,
+   "char": "⏱️",
+   "x": 540,
+   "y": 480,
+   "size": 190
+  },
+  {
+   "type": "counter",
+   "t": 8.2,
+   "from": 0,
+   "to": 65052,
+   "dur": 4.93,
+   "ease": "linear",
+   "prefix": "$",
+   "x": 540,
+   "y": 960,
+   "size": 175,
+   "color": "green"
+  },
+  {
+   "type": "counter",
+   "t": 8.2,
+   "from": 0,
+   "to": 4.93,
+   "dur": 4.93,
+   "ease": "linear",
+   "decimals": 1,
+   "suffix": " sec",
+   "x": 540,
+   "y": 1150,
+   "size": 110,
+   "color": "red"
+  },
+  {
+   "type": "write",
+   "t": 13.2,
+   "text": "= a year of your work",
+   "x": 540,
+   "y": 1265,
+   "size": 62,
+   "color": "red",
+   "align": "center",
+   "cps": 30
+  },
+  {
+   "type": "flip",
+   "t": 14.9
+  },
+  {
+   "type": "postage",
+   "t": 15.15,
+   "x": 800,
+   "y": 545,
+   "value": "$416B",
+   "label": "APPLE SALES FY25",
+   "art": "≈"
+  },
+  {
+   "type": "lines",
+   "t": 15.2,
+   "x": 905,
+   "y": 825,
+   "size": 70,
+   "cps": 90,
+   "gap": 0.1,
+   "lines": [
+    "$416B ÷ 31.5M sec ≈ $13.2K/s",
+    "$65K ÷ $13.2K/s ≈ 4.9 sec"
+   ]
+  },
+  {
+   "type": "annotate",
+   "t": 15.8,
+   "kind": "underline",
+   "x": 300,
+   "y": 935,
+   "w": 605,
+   "color": "ink",
+   "width": 5,
+   "dur": 0.3
+  },
+  {
+   "type": "write",
+   "t": 16.0,
+   "text": "4.9 sec × 40 yrs ≈ 3.3 min",
+   "x": 905,
+   "y": 1025,
+   "size": 80,
+   "align": "right",
+   "cps": 18
+  },
+  {
+   "type": "annotate",
+   "t": 17.45,
+   "kind": "circle",
+   "x": 715,
+   "y": 960,
+   "w": 190,
+   "h": 74
+  },
+  {
+   "type": "sticky",
+   "t": 17.6,
+   "x": 320,
+   "y": 545,
+   "w": 380,
+   "size": 50,
+   "title": "P.S.",
+   "text": "that's sales, not profit. Profit: pinned 📌",
+   "rot": -5,
+   "cps": 40
+  },
+  {
+   "type": "stamp",
+   "t": 17.9,
+   "text": "CLOCKED\n3.3 MINUTES",
+   "x": 540,
+   "y": 1205,
+   "size": 66,
+   "rot": -6
+  }
+ ]
+}

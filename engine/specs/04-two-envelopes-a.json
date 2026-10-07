@@ -1,0 +1,451 @@
+{
+  "id": "04-two-envelopes-a",
+  "title": "$1 million now or $1,000 a week for life? (Two Envelopes No. 04A)",
+  "paper": {
+    "style": "kraft",
+    "seed": 41
+  },
+  "duration": 31.0,
+  "vo": "A million now… or a thousand a week, for life? [1-second silent pick] A million divided by a thousand a week… is a thousand weeks. Nineteen point two years. Collect longer, and the weekly check wins. But the million can earn interest. What rate pays a grand a week, forever? [3-second pause to guess] Five point two percent. A year. Forever. That weekly check is a five-point-two-percent bond in disguise. Beat that forever, the million wins. Can’t? The check. So: a million now, or a thousand a week?",
+  "captions": [
+    {
+      "t": 0.15,
+      "end": 3.1,
+      "text": "A million now… or a thousand a week, for life?"
+    },
+    {
+      "t": 4.35,
+      "end": 6.75,
+      "text": "A million divided by a thousand a week…"
+    },
+    {
+      "t": 6.75,
+      "end": 9.2,
+      "text": "…is a thousand weeks. 19.2 years."
+    },
+    {
+      "t": 9.3,
+      "end": 11.5,
+      "text": "Collect longer, and the weekly check wins."
+    },
+    {
+      "t": 12.0,
+      "end": 14.0,
+      "text": "But the million can earn interest."
+    },
+    {
+      "t": 14.0,
+      "end": 16.4,
+      "text": "What rate pays a grand a week, forever?"
+    },
+    {
+      "t": 19.4,
+      "end": 21.6,
+      "text": "5.2 percent. A year. Forever."
+    },
+    {
+      "t": 21.6,
+      "end": 24.9,
+      "text": "That weekly check is a 5.2% bond in disguise."
+    },
+    {
+      "t": 25.2,
+      "end": 28.0,
+      "text": "Beat that forever, the million wins. Can’t? The check."
+    },
+    {
+      "t": 28.1,
+      "end": 30.9,
+      "text": "So: a million now, or a thousand a week?"
+    }
+  ],
+  "ops": [
+    {
+      "type": "postmark",
+      "t": 0,
+      "x": 190,
+      "y": 300,
+      "center": [
+        "No.",
+        "04A"
+      ],
+      "persist": true
+    },
+    {
+      "type": "hook",
+      "t": 0,
+      "text": [
+        "$1,000,000 NOW",
+        "OR *$1,000 A WEEK*",
+        "FOR LIFE?"
+      ],
+      "y": 400,
+      "size": 80,
+      "until": 4.1
+    },
+    {
+      "type": "pick",
+      "t": 0.12,
+      "options": [
+        {
+          "label": "$1,000,000",
+          "sub": "today"
+        },
+        {
+          "label": "$1,000 a wk",
+          "sub": "for life"
+        }
+      ],
+      "y": 885,
+      "ew": 380,
+      "eh": 290,
+      "size": 66,
+      "stagger": 0.15
+    },
+    {
+      "type": "timer",
+      "t": 3.1,
+      "seconds": 1,
+      "y": 1140,
+      "label": "PICK ONE"
+    },
+    {
+      "type": "flip",
+      "t": 4.1,
+      "dur": 0.5
+    },
+    {
+      "type": "write",
+      "t": 4.35,
+      "text": "crossover = head start ÷ catch-up",
+      "x": 540,
+      "y": 452,
+      "size": 38,
+      "font": "type",
+      "color": "pencil",
+      "align": "center",
+      "cps": 40
+    },
+    {
+      "type": "write",
+      "t": 4.45,
+      "text": "$1,000,000 ÷ $1,000/wk = 1,000 wks",
+      "x": 520,
+      "y": 575,
+      "size": 64,
+      "align": "center",
+      "cps": 16
+    },
+    {
+      "type": "annotate",
+      "t": 6.7,
+      "kind": "underline",
+      "x": 714.0,
+      "y": 592,
+      "w": 222.0,
+      "dur": 0.3
+    },
+    {
+      "type": "write",
+      "t": 6.8,
+      "text": "1,000 wks ÷ 52 ≈ 19.2 yrs",
+      "x": 520,
+      "y": 690,
+      "size": 72,
+      "align": "center",
+      "cps": 16
+    },
+    {
+      "type": "annotate",
+      "t": 8.45,
+      "kind": "circle",
+      "x": 656.0,
+      "y": 640,
+      "w": 204.0,
+      "h": 62,
+      "pad": 14
+    },
+    {
+      "type": "curve",
+      "t": 6.4,
+      "x": 170,
+      "y": 1235,
+      "w": 700,
+      "h": 360,
+      "values": [
+        0,
+        52000,
+        104000,
+        156000,
+        208000,
+        260000,
+        312000,
+        364000,
+        416000,
+        468000,
+        520000,
+        572000,
+        624000,
+        676000,
+        728000,
+        780000,
+        832000,
+        884000,
+        936000,
+        988000,
+        1040000,
+        1092000,
+        1144000,
+        1196000,
+        1248000,
+        1300000,
+        1352000,
+        1404000,
+        1456000,
+        1508000,
+        1560000
+      ],
+      "compare": {
+        "values": [
+          1000000,
+          1000000,
+          1000000,
+          1000000,
+          1000000,
+          1000000,
+          1000000,
+          1000000,
+          1000000,
+          1000000,
+          1000000,
+          1000000,
+          1000000,
+          1000000,
+          1000000,
+          1000000,
+          1000000,
+          1000000,
+          1000000,
+          1000000,
+          1000000,
+          1000000,
+          1000000,
+          1000000,
+          1000000,
+          1000000,
+          1000000,
+          1000000,
+          1000000,
+          1000000,
+          1000000
+        ],
+        "color": "ink"
+      },
+      "max": 1560000,
+      "dur": 3.6,
+      "endLabel": false,
+      "marks": [
+        {
+          "i": 19,
+          "text": "yr 19.2",
+          "dx": -70,
+          "dy": -44,
+          "size": 58,
+          "align": "center"
+        }
+      ],
+      "xLabel": "years collected"
+    },
+    {
+      "type": "write",
+      "t": 6.45,
+      "text": "A: $1M, today",
+      "x": 180,
+      "y": 772,
+      "size": 48,
+      "color": "ink",
+      "cps": 30
+    },
+    {
+      "type": "write",
+      "t": 7.0,
+      "text": "B: +$52K a year",
+      "x": 880,
+      "y": 772,
+      "size": 48,
+      "color": "red",
+      "align": "right",
+      "cps": 30
+    },
+    {
+      "type": "annotate",
+      "t": 10.45,
+      "kind": "circle",
+      "x": 593,
+      "y": 978,
+      "w": 52,
+      "h": 52,
+      "pad": 8,
+      "width": 6
+    },
+    {
+      "type": "stamp",
+      "t": 10.9,
+      "text": "FIRST CLASS",
+      "x": 740,
+      "y": 1150,
+      "size": 50,
+      "rot": -8,
+      "shake": 8
+    },
+    {
+      "type": "flip",
+      "t": 11.7,
+      "dur": 0.5
+    },
+    {
+      "type": "write",
+      "t": 12.0,
+      "text": "but $1M earns interest…",
+      "x": 560,
+      "y": 500,
+      "size": 62,
+      "color": "red",
+      "align": "center",
+      "cps": 20,
+      "until": 19.35
+    },
+    {
+      "type": "envelope",
+      "t": 12.6,
+      "x": 380,
+      "y": 830,
+      "w": 600,
+      "openAt": 19.4,
+      "card": [
+        "5.2%",
+        {
+          "text": "a year, forever",
+          "size": 46,
+          "color": "red"
+        }
+      ],
+      "cardSize": 100
+    },
+    {
+      "type": "write",
+      "t": 13.2,
+      "text": "$52,000 ÷ $1,000,000 =",
+      "x": 100,
+      "y": 1195,
+      "size": 66,
+      "cps": 16
+    },
+    {
+      "type": "timer",
+      "t": 16.4,
+      "seconds": 3,
+      "x": 820,
+      "y": 790,
+      "label": "GUESS"
+    },
+    {
+      "type": "write",
+      "t": 20.3,
+      "text": "5.2%",
+      "x": 683,
+      "y": 1195,
+      "size": 72,
+      "color": "red",
+      "cps": 12
+    },
+    {
+      "type": "annotate",
+      "t": 20.75,
+      "kind": "circle",
+      "x": 683,
+      "y": 1140,
+      "w": 121,
+      "h": 66,
+      "pad": 14
+    },
+    {
+      "type": "write",
+      "t": 21.7,
+      "text": "the weekly = a 5.2% bond",
+      "x": 500,
+      "y": 1290,
+      "size": 60,
+      "color": "red",
+      "align": "center",
+      "cps": 20
+    },
+    {
+      "type": "stamp",
+      "t": 23.6,
+      "text": "OPENED BY\nMISTAKE",
+      "x": 735,
+      "y": 975,
+      "size": 54,
+      "rot": -10,
+      "shake": 10
+    },
+    {
+      "type": "flip",
+      "t": 25.0,
+      "dur": 0.5
+    },
+    {
+      "type": "write",
+      "t": 25.3,
+      "text": "beat 5.2% forever? → $1M",
+      "x": 520,
+      "y": 470,
+      "size": 66,
+      "align": "center",
+      "cps": 20,
+      "until": 27.95
+    },
+    {
+      "type": "write",
+      "t": 26.7,
+      "text": "can’t? → the weekly",
+      "x": 520,
+      "y": 575,
+      "size": 66,
+      "align": "center",
+      "cps": 20,
+      "until": 27.95
+    },
+    {
+      "type": "pick",
+      "t": 25.25,
+      "options": [
+        {
+          "label": "$1,000,000",
+          "sub": "beat 5.2%?"
+        },
+        {
+          "label": "$1,000 a wk",
+          "sub": "19.2+ yrs?"
+        }
+      ],
+      "y": 885,
+      "ew": 380,
+      "eh": 290,
+      "size": 66,
+      "stagger": 0.15
+    },
+    {
+      "type": "hook",
+      "t": 28.1,
+      "text": [
+        "$1,000,000 NOW",
+        "OR *$1,000 A WEEK*",
+        "FOR LIFE?"
+      ],
+      "y": 400,
+      "size": 80
+    }
+  ]
+}

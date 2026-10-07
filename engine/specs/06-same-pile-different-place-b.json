@@ -1,0 +1,674 @@
+{
+  "id": "06-same-pile-different-place-b",
+  "title": "Same $1,000 cash, 6 decades: what did inflation eat? (Same Pile No. 2)",
+  "paper": {
+    "style": "kraft",
+    "seed": 62
+  },
+  "duration": 30.9,
+  "loop": true,
+  "vo": "Same thousand bucks in cash. Six decades. What did inflation eat? Opened today. Only the year you stuffed it changes. 2016? It buys twenty-eight percent less. Three envelopes, gone. 2006? Thirty-nine percent less. Four. 1996? Fifty-three percent. Half the pile, gone. 1986? Sixty-seven percent. Seven envelopes. 1976? Eighty-three. Eight envelopes. And 1966? Ninety percent. Nine of ten envelopes, eaten. Prices are ten times higher. So your grand buys a hundred. And the envelope still holds the…",
+  "captions": [
+    {
+      "t": 0.15,
+      "end": 1.9,
+      "text": "Same thousand bucks in cash. Six decades."
+    },
+    {
+      "t": 1.9,
+      "end": 3.45,
+      "text": "What did inflation eat?"
+    },
+    {
+      "t": 3.5,
+      "end": 6.7,
+      "text": "Opened today. Only the year you stuffed it changes."
+    },
+    {
+      "t": 6.8,
+      "end": 8.55,
+      "text": "2016? It buys twenty-eight percent less."
+    },
+    {
+      "t": 8.55,
+      "end": 9.75,
+      "text": "Three envelopes, gone."
+    },
+    {
+      "t": 9.8,
+      "end": 12.45,
+      "text": "2006? Thirty-nine percent less. Four."
+    },
+    {
+      "t": 12.5,
+      "end": 15.65,
+      "text": "1996? Fifty-three percent. Half the pile, gone."
+    },
+    {
+      "t": 15.7,
+      "end": 18.55,
+      "text": "1986? Sixty-seven percent. Seven envelopes."
+    },
+    {
+      "t": 18.6,
+      "end": 21.35,
+      "text": "1976? Eighty-three. Eight envelopes."
+    },
+    {
+      "t": 21.4,
+      "end": 22.85,
+      "text": "And 1966?"
+    },
+    {
+      "t": 22.9,
+      "end": 25.35,
+      "text": "Ninety percent. Nine of ten envelopes, eaten."
+    },
+    {
+      "t": 25.4,
+      "end": 27.2,
+      "text": "Prices are ten times higher."
+    },
+    {
+      "t": 27.25,
+      "end": 29.05,
+      "text": "So your grand buys a hundred."
+    },
+    {
+      "t": 29.1,
+      "end": 30.75,
+      "text": "And the envelope still holds the…"
+    }
+  ],
+  "ops": [
+    {
+      "type": "postmark",
+      "t": -0.5,
+      "x": 175,
+      "y": 258,
+      "r": 100,
+      "center": [
+        "No.",
+        "06B"
+      ],
+      "persist": true
+    },
+    {
+      "type": "postage",
+      "t": -0.5,
+      "x": 880,
+      "y": 334,
+      "value": "$1K",
+      "label": "SAME PILE",
+      "art": "≈",
+      "w": 172,
+      "h": 210,
+      "persist": true
+    },
+    {
+      "type": "hook",
+      "t": -0.6,
+      "text": [
+        "Same $1,000 cash,",
+        "6 decades:",
+        "what did *inflation* eat?"
+      ],
+      "y": 480,
+      "size": 76,
+      "until": 3.45
+    },
+    {
+      "type": "grid",
+      "t": -0.7,
+      "x": 540,
+      "y": 800,
+      "rows": 2,
+      "cols": 5,
+      "filled": 10,
+      "emoji": "✉️",
+      "cell": 135,
+      "dur": 0.35
+    },
+    {
+      "type": "write",
+      "t": -1.0,
+      "text": "10 envelopes × $100",
+      "x": 540,
+      "y": 1122,
+      "size": 62,
+      "align": "center",
+      "color": "red",
+      "cps": 32,
+      "until": 3.45
+    },
+    {
+      "type": "sticky",
+      "t": 3.5,
+      "x": 540,
+      "y": 518,
+      "w": 460,
+      "size": 48,
+      "cps": 60,
+      "title": "ASSUME:",
+      "text": "US CPI-U · August of each year vs Aug 2026 · cash earns 0%",
+      "until": 6.75
+    },
+    {
+      "type": "write",
+      "t": 3.7,
+      "text": "$1,000 × CPI then ÷ CPI now",
+      "x": 540,
+      "y": 1152,
+      "size": 72,
+      "align": "center",
+      "cps": 22,
+      "until": 6.75
+    },
+    {
+      "type": "write",
+      "t": 5.0,
+      "text": "= what it buys, in then-dollars",
+      "x": 540,
+      "y": 1252,
+      "size": 54,
+      "align": "center",
+      "color": "pencil",
+      "cps": 32,
+      "until": 6.75
+    },
+    {
+      "type": "write",
+      "t": 6.75,
+      "text": "stuffed in ",
+      "x": 273,
+      "y": 548,
+      "size": 92,
+      "color": "ink",
+      "cps": 18,
+      "until": 29.0
+    },
+    {
+      "type": "write",
+      "t": 7.3,
+      "text": "2016",
+      "x": 590,
+      "y": 548,
+      "size": 120,
+      "color": "ink",
+      "cps": 12,
+      "until": 9.8
+    },
+    {
+      "type": "write",
+      "t": 7.6,
+      "text": "buys ",
+      "x": 325,
+      "y": 1152,
+      "size": 92,
+      "color": "ink",
+      "cps": 16,
+      "until": 9.8
+    },
+    {
+      "type": "write",
+      "t": 7.85,
+      "text": "28%",
+      "x": 486,
+      "y": 1152,
+      "size": 92,
+      "color": "red",
+      "cps": 16,
+      "until": 9.8
+    },
+    {
+      "type": "write",
+      "t": 8.05,
+      "text": " less",
+      "x": 625,
+      "y": 1152,
+      "size": 92,
+      "color": "ink",
+      "cps": 16,
+      "until": 9.8
+    },
+    {
+      "type": "write",
+      "t": 8.25,
+      "text": "= what $719 bought in 2016",
+      "x": 270,
+      "y": 1252,
+      "size": 54,
+      "color": "pencil",
+      "cps": 30,
+      "until": 9.8
+    },
+    {
+      "type": "annotate",
+      "t": 8.7,
+      "kind": "cross",
+      "x": 766,
+      "y": 891,
+      "w": 88,
+      "h": 88,
+      "width": 9,
+      "dur": 0.22
+    },
+    {
+      "type": "annotate",
+      "t": 8.9,
+      "kind": "cross",
+      "x": 631,
+      "y": 891,
+      "w": 88,
+      "h": 88,
+      "width": 9,
+      "dur": 0.22
+    },
+    {
+      "type": "annotate",
+      "t": 9.1,
+      "kind": "cross",
+      "x": 496,
+      "y": 891,
+      "w": 88,
+      "h": 88,
+      "width": 9,
+      "dur": 0.22
+    },
+    {
+      "type": "write",
+      "t": 9.85,
+      "text": "2006",
+      "x": 590,
+      "y": 548,
+      "size": 120,
+      "color": "ink",
+      "cps": 12,
+      "until": 12.5
+    },
+    {
+      "type": "write",
+      "t": 10.15,
+      "text": "buys ",
+      "x": 325,
+      "y": 1152,
+      "size": 92,
+      "color": "ink",
+      "cps": 16,
+      "until": 12.5
+    },
+    {
+      "type": "write",
+      "t": 10.4,
+      "text": "39%",
+      "x": 486,
+      "y": 1152,
+      "size": 92,
+      "color": "red",
+      "cps": 16,
+      "until": 12.5
+    },
+    {
+      "type": "write",
+      "t": 10.6,
+      "text": " less",
+      "x": 624,
+      "y": 1152,
+      "size": 92,
+      "color": "ink",
+      "cps": 16,
+      "until": 12.5
+    },
+    {
+      "type": "write",
+      "t": 10.8,
+      "text": "= what $609 bought in 2006",
+      "x": 270,
+      "y": 1252,
+      "size": 54,
+      "color": "pencil",
+      "cps": 30,
+      "until": 12.5
+    },
+    {
+      "type": "annotate",
+      "t": 11.4,
+      "kind": "cross",
+      "x": 361,
+      "y": 891,
+      "w": 88,
+      "h": 88,
+      "width": 9,
+      "dur": 0.22
+    },
+    {
+      "type": "write",
+      "t": 12.55,
+      "text": "1996",
+      "x": 590,
+      "y": 548,
+      "size": 120,
+      "color": "ink",
+      "cps": 12,
+      "until": 15.7
+    },
+    {
+      "type": "write",
+      "t": 12.85,
+      "text": "buys ",
+      "x": 325,
+      "y": 1152,
+      "size": 92,
+      "color": "ink",
+      "cps": 16,
+      "until": 15.7
+    },
+    {
+      "type": "write",
+      "t": 13.1,
+      "text": "53%",
+      "x": 486,
+      "y": 1152,
+      "size": 92,
+      "color": "red",
+      "cps": 16,
+      "until": 15.7
+    },
+    {
+      "type": "write",
+      "t": 13.3,
+      "text": " less",
+      "x": 624,
+      "y": 1152,
+      "size": 92,
+      "color": "ink",
+      "cps": 16,
+      "until": 15.7
+    },
+    {
+      "type": "write",
+      "t": 13.5,
+      "text": "= what $470 bought in 1996",
+      "x": 270,
+      "y": 1252,
+      "size": 54,
+      "color": "pencil",
+      "cps": 30,
+      "until": 15.7
+    },
+    {
+      "type": "annotate",
+      "t": 14.1,
+      "kind": "cross",
+      "x": 226,
+      "y": 891,
+      "w": 88,
+      "h": 88,
+      "width": 9,
+      "dur": 0.22
+    },
+    {
+      "type": "annotate",
+      "t": 14.5,
+      "kind": "box",
+      "x": 200,
+      "y": 872,
+      "w": 680,
+      "h": 126,
+      "color": "red",
+      "width": 6,
+      "dur": 0.4,
+      "until": 15.7
+    },
+    {
+      "type": "write",
+      "t": 15.75,
+      "text": "1986",
+      "x": 590,
+      "y": 548,
+      "size": 120,
+      "color": "ink",
+      "cps": 12,
+      "until": 18.6
+    },
+    {
+      "type": "write",
+      "t": 16.05,
+      "text": "buys ",
+      "x": 324,
+      "y": 1152,
+      "size": 92,
+      "color": "ink",
+      "cps": 16,
+      "until": 18.6
+    },
+    {
+      "type": "write",
+      "t": 16.3,
+      "text": "67%",
+      "x": 485,
+      "y": 1152,
+      "size": 92,
+      "color": "red",
+      "cps": 16,
+      "until": 18.6
+    },
+    {
+      "type": "write",
+      "t": 16.5,
+      "text": " less",
+      "x": 626,
+      "y": 1152,
+      "size": 92,
+      "color": "ink",
+      "cps": 16,
+      "until": 18.6
+    },
+    {
+      "type": "write",
+      "t": 16.7,
+      "text": "= what $327 bought in 1986",
+      "x": 270,
+      "y": 1252,
+      "size": 54,
+      "color": "pencil",
+      "cps": 30,
+      "until": 18.6
+    },
+    {
+      "type": "annotate",
+      "t": 17.1,
+      "kind": "cross",
+      "x": 766,
+      "y": 756,
+      "w": 88,
+      "h": 88,
+      "width": 9,
+      "dur": 0.22
+    },
+    {
+      "type": "annotate",
+      "t": 17.35,
+      "kind": "cross",
+      "x": 631,
+      "y": 756,
+      "w": 88,
+      "h": 88,
+      "width": 9,
+      "dur": 0.22
+    },
+    {
+      "type": "write",
+      "t": 18.65,
+      "text": "1976",
+      "x": 590,
+      "y": 548,
+      "size": 120,
+      "color": "ink",
+      "cps": 12,
+      "until": 21.4
+    },
+    {
+      "type": "write",
+      "t": 18.95,
+      "text": "buys ",
+      "x": 325,
+      "y": 1152,
+      "size": 92,
+      "color": "ink",
+      "cps": 16,
+      "until": 21.4
+    },
+    {
+      "type": "write",
+      "t": 19.2,
+      "text": "83%",
+      "x": 486,
+      "y": 1152,
+      "size": 92,
+      "color": "red",
+      "cps": 16,
+      "until": 21.4
+    },
+    {
+      "type": "write",
+      "t": 19.4,
+      "text": " less",
+      "x": 625,
+      "y": 1152,
+      "size": 92,
+      "color": "ink",
+      "cps": 16,
+      "until": 21.4
+    },
+    {
+      "type": "write",
+      "t": 19.6,
+      "text": "= what $171 bought in 1976",
+      "x": 270,
+      "y": 1252,
+      "size": 54,
+      "color": "pencil",
+      "cps": 30,
+      "until": 21.4
+    },
+    {
+      "type": "annotate",
+      "t": 20.0,
+      "kind": "cross",
+      "x": 496,
+      "y": 756,
+      "w": 88,
+      "h": 88,
+      "width": 9,
+      "dur": 0.22
+    },
+    {
+      "type": "write",
+      "t": 21.5,
+      "text": "1966",
+      "x": 590,
+      "y": 548,
+      "size": 120,
+      "color": "red",
+      "cps": 5,
+      "until": 29.0
+    },
+    {
+      "type": "write",
+      "t": 22.95,
+      "text": "buys ",
+      "x": 325,
+      "y": 1152,
+      "size": 92,
+      "color": "ink",
+      "cps": 16,
+      "until": 25.4
+    },
+    {
+      "type": "write",
+      "t": 23.2,
+      "text": "90%",
+      "x": 486,
+      "y": 1152,
+      "size": 92,
+      "color": "red",
+      "cps": 16,
+      "until": 25.4
+    },
+    {
+      "type": "write",
+      "t": 23.4,
+      "text": " less",
+      "x": 624,
+      "y": 1152,
+      "size": 92,
+      "color": "ink",
+      "cps": 16,
+      "until": 25.4
+    },
+    {
+      "type": "write",
+      "t": 23.6,
+      "text": "= what $98 bought in 1966",
+      "x": 282,
+      "y": 1252,
+      "size": 54,
+      "color": "pencil",
+      "cps": 30,
+      "until": 25.4
+    },
+    {
+      "type": "annotate",
+      "t": 24.0,
+      "kind": "cross",
+      "x": 361,
+      "y": 756,
+      "w": 88,
+      "h": 88,
+      "width": 9,
+      "dur": 0.22
+    },
+    {
+      "type": "annotate",
+      "t": 24.5,
+      "kind": "circle",
+      "x": 218,
+      "y": 750,
+      "w": 104,
+      "h": 100,
+      "color": "red",
+      "width": 7,
+      "dur": 0.45
+    },
+    {
+      "type": "write",
+      "t": 25.5,
+      "text": "prices: 335 ÷ 32.7 ≈ 10×",
+      "x": 202,
+      "y": 1152,
+      "size": 76,
+      "color": "ink",
+      "cps": 18
+    },
+    {
+      "type": "write",
+      "t": 27.85,
+      "text": "$1,000 ÷ 10 ≈ $100",
+      "x": 215,
+      "y": 1258,
+      "size": 88,
+      "color": "red",
+      "cps": 16
+    },
+    {
+      "type": "stamp",
+      "t": 29.1,
+      "text": "RETURN TO SENDER",
+      "x": 540,
+      "y": 540,
+      "size": 60,
+      "rot": -6
+    }
+  ]
+}

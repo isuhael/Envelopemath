@@ -1,0 +1,413 @@
+{
+  "id": "07-sealed-envelope-estimate-c",
+  "title": "How much did the Eras Tour make? 149 shows. Guess first. (Sealed Answer No. 07C)",
+  "paper": {
+    "style": "kraft",
+    "seed": 19
+  },
+  "duration": 30.5,
+  "loop": true,
+  "vo": "How much did the Eras Tour make? / A hundred forty-nine shows. Lock in a guess. / Stadiums. Say sixty to seventy-five thousand fans a night. / That's about nine to eleven million tickets. / Average ticket: a hundred fifty to two-fifty. / So: one point three to two point eight billion. / Middle of the range: about two billion. / Billboard counted every show. Their number's in here. / Final guess? / Two point oh eight billion. Inside our range. / Who should I open next?",
+  "captions": [
+    {
+      "t": 0.2,
+      "end": 2.3,
+      "text": "How much did the Eras Tour make?",
+      "say": "How much did the Eras Tour make?"
+    },
+    {
+      "t": 2.4,
+      "end": 5.6,
+      "text": "149 shows. Lock in a guess.",
+      "say": "A hundred forty-nine shows. Lock in a guess."
+    },
+    {
+      "t": 6.1,
+      "end": 9.6,
+      "text": "Stadiums. Say 60 to 75 thousand fans a night.",
+      "say": "Stadiums. Say sixty to seventy-five thousand fans a night."
+    },
+    {
+      "t": 9.7,
+      "end": 12.6,
+      "text": "That's about 9 to 11 million tickets.",
+      "say": "That's about nine to eleven million tickets."
+    },
+    {
+      "t": 12.7,
+      "end": 15.6,
+      "text": "Average ticket: $150 to $250.",
+      "say": "Average ticket: a hundred fifty to two-fifty."
+    },
+    {
+      "t": 15.7,
+      "end": 18.6,
+      "text": "So: 1.3 to 2.8 billion.",
+      "say": "So: one point three to two point eight billion."
+    },
+    {
+      "t": 18.7,
+      "end": 21.0,
+      "text": "Middle of the range: about 2 billion.",
+      "say": "Middle of the range: about two billion."
+    },
+    {
+      "t": 21.5,
+      "end": 24.6,
+      "text": "Billboard counted every show. Their number's in here.",
+      "say": "Billboard counted every show. Their number's in here."
+    },
+    {
+      "t": 24.7,
+      "end": 26.1,
+      "text": "Final guess?",
+      "say": "Final guess?"
+    },
+    {
+      "t": 26.4,
+      "end": 28.6,
+      "text": "2.08 billion. Inside our range.",
+      "say": "Two point oh eight billion. Inside our range."
+    },
+    {
+      "t": 28.7,
+      "end": 30.3,
+      "text": "Who should I open next?",
+      "say": "Who should I open next?"
+    }
+  ],
+  "ops": [
+    {
+      "type": "postmark",
+      "t": -0.8,
+      "x": 175,
+      "y": 258,
+      "r": 100,
+      "center": [
+        "No.",
+        "07C"
+      ],
+      "persist": true
+    },
+    {
+      "type": "hook",
+      "t": -0.8,
+      "text": [
+        "149 SHOWS.",
+        "HOW MUCH DID THE",
+        "*ERAS TOUR* MAKE?"
+      ],
+      "y": 420,
+      "size": 68
+    },
+    {
+      "type": "envelope",
+      "t": -0.8,
+      "x": 540,
+      "y": 855,
+      "w": 690,
+      "note": "$1B? $2B? $3B?"
+    },
+    {
+      "type": "emoji",
+      "t": -0.8,
+      "char": "🎤",
+      "x": 870,
+      "y": 405,
+      "size": 100,
+      "rot": 14
+    },
+    {
+      "type": "timer",
+      "t": 2.6,
+      "seconds": 3,
+      "x": 540,
+      "y": 1150
+    },
+    {
+      "type": "flip",
+      "t": 5.8
+    },
+    {
+      "type": "sticky",
+      "t": 6.1,
+      "x": 515,
+      "y": 445,
+      "w": 520,
+      "size": 56,
+      "cps": 44,
+      "title": "ASSUME:",
+      "text": "60K–75K fans a night. Avg ticket $150–$250. Our guesses, not data."
+    },
+    {
+      "type": "postage",
+      "t": 6.15,
+      "x": 870,
+      "y": 455,
+      "w": 170,
+      "h": 205,
+      "value": "149",
+      "label": "SHOWS",
+      "art": "🎤",
+      "rot": 7
+    },
+    {
+      "type": "write",
+      "t": 6.2,
+      "text": "LOW",
+      "x": 640,
+      "y": 705,
+      "size": 40,
+      "font": "type",
+      "color": "pencil",
+      "align": "right"
+    },
+    {
+      "type": "write",
+      "t": 6.2,
+      "text": "HIGH",
+      "x": 900,
+      "y": 705,
+      "size": 40,
+      "font": "type",
+      "color": "pencil",
+      "align": "right"
+    },
+    {
+      "type": "write",
+      "t": 6.6,
+      "text": "149 × 60K–75K",
+      "x": 90,
+      "y": 815,
+      "size": 56,
+      "color": "ink",
+      "cps": 14
+    },
+    {
+      "type": "write",
+      "t": 9.9,
+      "text": "8.9M",
+      "x": 640,
+      "y": 815,
+      "size": 84,
+      "align": "right"
+    },
+    {
+      "type": "write",
+      "t": 10.5,
+      "text": "11.2M",
+      "x": 900,
+      "y": 815,
+      "size": 84,
+      "align": "right"
+    },
+    {
+      "type": "write",
+      "t": 12.8,
+      "text": "× avg ticket",
+      "x": 90,
+      "y": 940,
+      "size": 56,
+      "color": "pencil",
+      "cps": 22
+    },
+    {
+      "type": "write",
+      "t": 13.6,
+      "text": "$150",
+      "x": 640,
+      "y": 940,
+      "size": 84,
+      "align": "right"
+    },
+    {
+      "type": "write",
+      "t": 14.3,
+      "text": "$250",
+      "x": 900,
+      "y": 940,
+      "size": 84,
+      "align": "right"
+    },
+    {
+      "type": "write",
+      "t": 15.8,
+      "text": "= gross",
+      "x": 90,
+      "y": 1075,
+      "size": 56,
+      "color": "pencil",
+      "cps": 22
+    },
+    {
+      "type": "write",
+      "t": 16.2,
+      "text": "$1.3B",
+      "x": 640,
+      "y": 1075,
+      "size": 100,
+      "align": "right"
+    },
+    {
+      "type": "write",
+      "t": 17.0,
+      "text": "$2.8B",
+      "x": 900,
+      "y": 1075,
+      "size": 100,
+      "align": "right"
+    },
+    {
+      "type": "annotate",
+      "t": 17.7,
+      "kind": "box",
+      "x": 430,
+      "y": 1003,
+      "w": 475,
+      "h": 92,
+      "color": "red",
+      "width": 6
+    },
+    {
+      "type": "write",
+      "t": 18.9,
+      "text": "middle ≈ $2B",
+      "x": 540,
+      "y": 1225,
+      "size": 70,
+      "color": "red",
+      "align": "center",
+      "cps": 18
+    },
+    {
+      "type": "flip",
+      "t": 21.1
+    },
+    {
+      "type": "hook",
+      "t": 21.45,
+      "text": [
+        "BILLBOARD'S TOTAL: *SEALED*"
+      ],
+      "y": 440,
+      "size": 62,
+      "until": 26.2
+    },
+    {
+      "type": "envelope",
+      "t": 21.5,
+      "x": 540,
+      "y": 890,
+      "w": 700,
+      "note": "ours: $1.3B – $2.8B",
+      "openAt": 26.2,
+      "cardSize": 116,
+      "card": [
+        "$2.08B",
+        {
+          "text": "Billboard Boxscore",
+          "size": 56,
+          "color": "red"
+        }
+      ]
+    },
+    {
+      "type": "annotate",
+      "t": 21.6,
+      "kind": "underline",
+      "x": 200,
+      "y": 1185,
+      "w": 600,
+      "color": "ink",
+      "width": 6,
+      "dur": 0.5
+    },
+    {
+      "type": "write",
+      "t": 21.8,
+      "text": "|",
+      "x": 200,
+      "y": 1205,
+      "size": 60,
+      "align": "center",
+      "pen": false
+    },
+    {
+      "type": "write",
+      "t": 21.8,
+      "text": "|",
+      "x": 800,
+      "y": 1205,
+      "size": 60,
+      "align": "center",
+      "pen": false
+    },
+    {
+      "type": "write",
+      "t": 21.9,
+      "text": "$1.3B",
+      "x": 200,
+      "y": 1265,
+      "size": 56,
+      "align": "center",
+      "pen": false
+    },
+    {
+      "type": "write",
+      "t": 22.1,
+      "text": "$2.8B",
+      "x": 800,
+      "y": 1265,
+      "size": 56,
+      "align": "center",
+      "pen": false
+    },
+    {
+      "type": "write",
+      "t": 24.35,
+      "text": "your guess: $ ______",
+      "x": 540,
+      "y": 590,
+      "size": 66,
+      "align": "center",
+      "cps": 30,
+      "until": 26.2
+    },
+    {
+      "type": "annotate",
+      "t": 27.4,
+      "kind": "arrow",
+      "from": [
+        504,
+        1112
+      ],
+      "to": [
+        504,
+        1176
+      ],
+      "bend": 0,
+      "head": 26,
+      "color": "red",
+      "width": 7
+    },
+    {
+      "type": "write",
+      "t": 27.7,
+      "text": "real",
+      "x": 528,
+      "y": 1158,
+      "size": 56,
+      "color": "red",
+      "pen": false
+    },
+    {
+      "type": "stamp",
+      "t": 28.6,
+      "text": "ROUGHLY\nRIGHT",
+      "x": 650,
+      "y": 900,
+      "size": 72,
+      "rot": -8
+    }
+  ]
+}

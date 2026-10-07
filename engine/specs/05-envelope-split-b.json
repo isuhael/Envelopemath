@@ -1,0 +1,495 @@
+{
+  "id": "05-envelope-split-b",
+  "title": "$7.25/hr first job vs. the $1,199 iPhone 18 Pro: how many paychecks? (Envelope My Paycheck No. 05B)",
+  "paper": {
+    "style": "kraft",
+    "seed": 52
+  },
+  "duration": 30.8,
+  "captions": [
+    {
+      "t": 0.2,
+      "end": 2.4,
+      "text": "Minimum wage versus the new iPhone."
+    },
+    {
+      "t": 2.5,
+      "end": 4.5,
+      "text": "After FICA, a full-time paycheck is"
+    },
+    {
+      "t": 4.6,
+      "end": 5.6,
+      "text": "five thirty-five sixty-three."
+    },
+    {
+      "t": 5.7,
+      "end": 7.1,
+      "text": "Ten percent: fifty-three fifty-six."
+    },
+    {
+      "t": 7.2,
+      "end": 9.0,
+      "text": "FUN gets three tens: one sixty-one."
+    },
+    {
+      "t": 9.4,
+      "end": 10.9,
+      "text": "Eleven ninety-nine over one sixty-one:"
+    },
+    {
+      "t": 11.0,
+      "end": 12.4,
+      "text": "seven point four five."
+    },
+    {
+      "t": 12.5,
+      "end": 14.4,
+      "text": "Call it eight paychecks. Sixteen weeks."
+    },
+    {
+      "t": 14.8,
+      "end": 16.1,
+      "text": "Except that's the sticker."
+    },
+    {
+      "t": 16.2,
+      "end": 19.0,
+      "text": "Texas sales tax: up to eight and a quarter percent."
+    },
+    {
+      "t": 19.1,
+      "end": 20.2,
+      "text": "Twelve ninety-eight."
+    },
+    {
+      "t": 20.3,
+      "end": 22.2,
+      "text": "Eight paychecks only make twelve eighty-five."
+    },
+    {
+      "t": 22.3,
+      "end": 24.3,
+      "text": "Twelve forty short."
+    },
+    {
+      "t": 24.4,
+      "end": 27.4,
+      "text": "A median paycheck covers it in three."
+    },
+    {
+      "t": 27.6,
+      "end": 29.0,
+      "text": "Minimum wage? Nine paychecks."
+    },
+    {
+      "t": 29.1,
+      "end": 30.6,
+      "text": "Eighteen weeks of fun money."
+    }
+  ],
+  "vo": "Minimum wage versus the new iPhone. After FICA, a full-time paycheck is five thirty-five sixty-three. Ten percent: fifty-three fifty-six. FUN gets three tens: one sixty-one. Eleven ninety-nine over one sixty-one: seven point four five. Call it eight paychecks. Sixteen weeks. Except that's the sticker. Texas sales tax: up to eight and a quarter percent. Twelve ninety-eight. Eight paychecks only make twelve eighty-five. Twelve forty short. A median paycheck covers it in three. Minimum wage? Nine paychecks. Eighteen weeks of fun money.",
+  "ops": [
+    {
+      "type": "postmark",
+      "t": -0.5,
+      "x": 190,
+      "y": 300,
+      "center": [
+        "No.",
+        "05B"
+      ],
+      "persist": true
+    },
+    {
+      "type": "hook",
+      "t": -0.8,
+      "y": 456,
+      "size": 72,
+      "until": 2.5,
+      "text": [
+        "$7.25/HR FIRST JOB",
+        "VS. A *$1,199* iPHONE:",
+        "HOW MANY PAYCHECKS?"
+      ]
+    },
+    {
+      "type": "emoji",
+      "t": -0.6,
+      "char": "📱",
+      "x": 540,
+      "y": 900,
+      "size": 300,
+      "rot": 8,
+      "bob": true,
+      "until": 2.5
+    },
+    {
+      "type": "counter",
+      "t": 2.6,
+      "from": 580,
+      "to": 535.63,
+      "decimals": 2,
+      "prefix": "$",
+      "x": 80,
+      "y": 480,
+      "size": 104,
+      "align": "left",
+      "dur": 2.4,
+      "color": "ink"
+    },
+    {
+      "type": "write",
+      "t": 2.6,
+      "text": "80 hrs × $7.25 = $580",
+      "x": 84,
+      "y": 552,
+      "size": 48,
+      "color": "pencil",
+      "cps": 30,
+      "until": 5.7
+    },
+    {
+      "type": "write",
+      "t": 3.4,
+      "text": "− $44.37 FICA (7.65%)",
+      "x": 540,
+      "y": 900,
+      "size": 84,
+      "align": "center",
+      "color": "red",
+      "cps": 22,
+      "until": 5.75
+    },
+    {
+      "type": "write",
+      "t": 5.7,
+      "text": "take-home, every 2 wks",
+      "x": 84,
+      "y": 552,
+      "size": 50,
+      "color": "pencil",
+      "cps": 30
+    },
+    {
+      "type": "sticky",
+      "t": 2.7,
+      "x": 790,
+      "y": 470,
+      "w": 380,
+      "size": 40,
+      "cps": 44,
+      "rot": 4,
+      "text": "Texas · 40 hrs/wk · paid every 2 wks · $15,080/yr is under the $16,100 standard deduction",
+      "title": "ASSUME:"
+    },
+    {
+      "type": "write",
+      "t": 5.8,
+      "text": "10% = $53.56",
+      "x": 80,
+      "y": 640,
+      "size": 66,
+      "color": "red"
+    },
+    {
+      "type": "annotate",
+      "t": 6.6,
+      "kind": "underline",
+      "x": 80,
+      "y": 652,
+      "w": 330,
+      "width": 5
+    },
+    {
+      "type": "stuff",
+      "t": 5.9,
+      "x": 300,
+      "y": 800,
+      "w": 340,
+      "cols": 1,
+      "ew": 340,
+      "eh": 190,
+      "items": [
+        {
+          "label": "MUST 50%",
+          "amount": 268
+        }
+      ]
+    },
+    {
+      "type": "stuff",
+      "t": 6.3,
+      "x": 760,
+      "y": 800,
+      "w": 340,
+      "cols": 1,
+      "ew": 340,
+      "eh": 190,
+      "items": [
+        {
+          "label": "OOPS 5%",
+          "amount": 27
+        }
+      ]
+    },
+    {
+      "type": "stuff",
+      "t": 6.7,
+      "x": 300,
+      "y": 1090,
+      "w": 340,
+      "cols": 1,
+      "ew": 340,
+      "eh": 190,
+      "items": [
+        {
+          "label": "FUTURE 15%",
+          "amount": 80
+        }
+      ]
+    },
+    {
+      "type": "stuff",
+      "t": 7.1,
+      "x": 760,
+      "y": 1090,
+      "w": 340,
+      "cols": 1,
+      "ew": 340,
+      "eh": 190,
+      "items": [
+        {
+          "label": "FUN 30%",
+          "amount": 161
+        }
+      ]
+    },
+    {
+      "type": "annotate",
+      "t": 8.1,
+      "kind": "circle",
+      "x": 698,
+      "y": 1203,
+      "w": 124,
+      "h": 66,
+      "width": 6
+    },
+    {
+      "type": "flip",
+      "t": 9.1
+    },
+    {
+      "type": "postage",
+      "t": 9.4,
+      "x": 815,
+      "y": 470,
+      "w": 240,
+      "h": 280,
+      "value": "$1,199",
+      "label": "iPHONE 18 PRO",
+      "art": "📱",
+      "rot": 5
+    },
+    {
+      "type": "write",
+      "t": 9.4,
+      "text": "FUN envelope:",
+      "x": 80,
+      "y": 455,
+      "size": 72
+    },
+    {
+      "type": "write",
+      "t": 10.0,
+      "text": "$161 a paycheck",
+      "x": 80,
+      "y": 545,
+      "size": 62
+    },
+    {
+      "type": "stuff",
+      "t": 9.5,
+      "x": 540,
+      "y": 1135,
+      "w": 340,
+      "cols": 1,
+      "ew": 340,
+      "eh": 190,
+      "items": [
+        {
+          "label": "FUN 30%",
+          "amount": 161
+        }
+      ],
+      "until": 12.6
+    },
+    {
+      "type": "write",
+      "t": 9.6,
+      "text": "$1,199 ÷ $161",
+      "x": 830,
+      "y": 745,
+      "size": 96,
+      "align": "right"
+    },
+    {
+      "type": "write",
+      "t": 11.3,
+      "text": "≈ 7.45",
+      "x": 830,
+      "y": 860,
+      "size": 96,
+      "align": "right"
+    },
+    {
+      "type": "annotate",
+      "t": 12.0,
+      "kind": "underline",
+      "x": 300,
+      "y": 885,
+      "w": 530,
+      "color": "ink",
+      "width": 5,
+      "dur": 0.3
+    },
+    {
+      "type": "write",
+      "t": 12.3,
+      "text": "→ 8 paychecks",
+      "x": 830,
+      "y": 985,
+      "size": 100,
+      "align": "right",
+      "color": "red"
+    },
+    {
+      "type": "grid",
+      "t": 12.7,
+      "x": 540,
+      "y": 1110,
+      "rows": 1,
+      "cols": 9,
+      "filled": 8,
+      "cell": 84,
+      "emoji": "💵",
+      "dur": 0.6,
+      "label": "8 paychecks = 16 weeks"
+    },
+    {
+      "type": "flip",
+      "t": 14.5
+    },
+    {
+      "type": "receipt",
+      "t": 14.8,
+      "x": 540,
+      "y": 400,
+      "w": 660,
+      "size": 42,
+      "lps": 2.6,
+      "header": "iPHONE 18 PRO",
+      "items": [
+        [
+          "STICKER",
+          "$1,199.00"
+        ],
+        [
+          "TX TAX 8.25%",
+          "$98.92"
+        ]
+      ],
+      "total": [
+        "TOTAL",
+        "$1,297.92"
+      ]
+    },
+    {
+      "type": "grid",
+      "t": 19.0,
+      "x": 540,
+      "y": 1035,
+      "rows": 1,
+      "cols": 9,
+      "filled": 8,
+      "cell": 84,
+      "emoji": "💵",
+      "dur": 0.6,
+      "until": 27.7,
+      "fadeOut": 0.5
+    },
+    {
+      "type": "write",
+      "t": 20.3,
+      "text": "8 checks = $1,285.52",
+      "x": 540,
+      "y": 1182,
+      "size": 72,
+      "align": "center",
+      "until": 24.4
+    },
+    {
+      "type": "stamp",
+      "t": 22.3,
+      "text": "POSTAGE\nDUE",
+      "x": 770,
+      "y": 900,
+      "size": 62,
+      "rot": -11
+    },
+    {
+      "type": "write",
+      "t": 22.5,
+      "text": "$12.40 short",
+      "x": 540,
+      "y": 1272,
+      "size": 74,
+      "align": "center",
+      "color": "red",
+      "until": 24.4
+    },
+    {
+      "type": "write",
+      "t": 24.5,
+      "text": "median paycheck: 3 checks",
+      "x": 540,
+      "y": 1182,
+      "size": 64,
+      "align": "center",
+      "color": "pencil",
+      "cps": 22
+    },
+    {
+      "type": "grid",
+      "t": 27.7,
+      "x": 540,
+      "y": 1035,
+      "rows": 1,
+      "cols": 9,
+      "filled": 9,
+      "cell": 84,
+      "emoji": "💵",
+      "dur": 0.2
+    },
+    {
+      "type": "write",
+      "t": 28.8,
+      "text": "9 paychecks = 18 weeks",
+      "x": 540,
+      "y": 1272,
+      "size": 84,
+      "align": "center",
+      "color": "red",
+      "cps": 24
+    },
+    {
+      "type": "annotate",
+      "t": 29.8,
+      "kind": "double",
+      "x": 195,
+      "y": 1292,
+      "w": 690,
+      "width": 5
+    }
+  ]
+}

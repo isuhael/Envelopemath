@@ -1,0 +1,191 @@
+{
+ "id": "03-read-it-ladder-a",
+ "title": "Your habit is $3 a day. For 10 years? (Day to Decade No. 03A)",
+ "paper": {
+  "style": "kraft",
+  "seed": 31
+ },
+ "duration": 9.0,
+ "vo": "Your habit is three bucks a day. For ten years? About eleven grand. Flip side? A year of it costs less than one iPhone 18 Pro. Return to sender.",
+ "captions": [
+  {
+   "t": 0.05,
+   "end": 1.55,
+   "text": "Your habit is $3 a day."
+  },
+  {
+   "t": 1.55,
+   "end": 2.5,
+   "text": "For 10 years?"
+  },
+  {
+   "t": 2.65,
+   "end": 3.7,
+   "text": "About $11,000."
+  },
+  {
+   "t": 3.85,
+   "end": 4.5,
+   "text": "Flip side?"
+  },
+  {
+   "t": 4.5,
+   "end": 6.05,
+   "text": "A year of it costs less"
+  },
+  {
+   "t": 6.05,
+   "end": 7.55,
+   "text": "than one iPhone 18 Pro."
+  },
+  {
+   "t": 7.6,
+   "end": 8.6,
+   "text": "Return to sender."
+  }
+ ],
+ "ops": [
+  {
+   "type": "postmark",
+   "t": -0.4,
+   "x": 190,
+   "y": 290,
+   "center": [
+    "No.",
+    "03A"
+   ],
+   "persist": true
+  },
+  {
+   "type": "hook",
+   "t": 0,
+   "y": 432,
+   "size": 80,
+   "text": [
+    "YOUR HABIT IS",
+    "*$3* A DAY.",
+    "FOR 10 YEARS?"
+   ]
+  },
+  {
+   "type": "emoji",
+   "t": -0.5,
+   "char": "☕",
+   "x": 872,
+   "y": 300,
+   "size": 120,
+   "bob": true,
+   "rot": 8
+  },
+  {
+   "type": "ladder",
+   "t": 0.45,
+   "x": 110,
+   "y": 770,
+   "w": 800,
+   "size": 80,
+   "rowH": 104,
+   "cps": 21,
+   "gap": 0.2,
+   "rows": [
+    {
+     "factor": "×7",
+     "label": "a week",
+     "value": "$21"
+    },
+    {
+     "factor": "×52",
+     "label": "a year",
+     "value": "≈$1,100"
+    },
+    {
+     "factor": "×10",
+     "label": "a decade",
+     "value": "≈$11,000"
+    }
+   ]
+  },
+  {
+   "type": "sticky",
+   "t": 1.3,
+   "x": 245,
+   "y": 1145,
+   "w": 340,
+   "size": 56,
+   "rot": -4,
+   "cps": 30,
+   "title": "ASSUME:",
+   "text": "same $3, every day, 10 years"
+  },
+  {
+   "type": "annotate",
+   "t": 3.2,
+   "kind": "double",
+   "x": 562,
+   "y": 1000,
+   "w": 348,
+   "dur": 0.35
+  },
+  {
+   "type": "flip",
+   "t": 4.15
+  },
+  {
+   "type": "hook",
+   "t": 4.45,
+   "y": 455,
+   "size": 88,
+   "text": [
+    "FLIP SIDE"
+   ]
+  },
+  {
+   "type": "lines",
+   "t": 4.65,
+   "x": 540,
+   "y": 770,
+   "size": 86,
+   "align": "center",
+   "cps": 26,
+   "gap": 0.1,
+   "color": "red",
+   "lines": [
+    "A year of it costs less",
+    "than one iPhone 18 Pro."
+   ]
+  },
+  {
+   "type": "emoji",
+   "t": 6.1,
+   "char": "📱",
+   "x": 268,
+   "y": 1180,
+   "size": 150,
+   "bob": true,
+   "rot": -10
+  },
+  {
+   "type": "write",
+   "t": 6.8,
+   "text": "(exactly $1,095)",
+   "x": 540,
+   "y": 1000,
+   "size": 60,
+   "align": "center",
+   "cps": 30
+  },
+  {
+   "type": "stamp",
+   "t": 7.55,
+   "text": "RETURN\nTO SENDER",
+   "x": 650,
+   "y": 1190,
+   "size": 64,
+   "rot": -7
+  },
+  {
+   "type": "flip",
+   "t": 8.75
+  }
+ ]
+}

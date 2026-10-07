@@ -1,0 +1,461 @@
+{
+  "id": "05-envelope-split-a",
+  "title": "The median paycheck is $2,094.20. This envelope takes 30 months to fill. Yours too. (Envelope My Paycheck No. 05A)",
+  "paper": {
+    "style": "kraft",
+    "seed": 51
+  },
+  "duration": 39.2,
+  "captions": [
+    {
+      "t": 0.2,
+      "end": 2.8,
+      "text": "This envelope takes thirty months to fill. Yours too."
+    },
+    {
+      "t": 2.9,
+      "end": 5.2,
+      "text": "Median paycheck, after tax: two thousand ninety-four."
+    },
+    {
+      "t": 5.3,
+      "end": 7.3,
+      "text": "Half goes in MUST: ten forty-seven."
+    },
+    {
+      "t": 7.4,
+      "end": 9.8,
+      "text": "Ten percent? Move the decimal: two oh nine."
+    },
+    {
+      "t": 9.9,
+      "end": 12.0,
+      "text": "Half that is OOPS: a hundred five."
+    },
+    {
+      "t": 12.1,
+      "end": 14.0,
+      "text": "Ten plus five, FUTURE: three fourteen."
+    },
+    {
+      "t": 14.1,
+      "end": 16.0,
+      "text": "What's left is FUN: six twenty-eight."
+    },
+    {
+      "t": 16.2,
+      "end": 18.0,
+      "text": "Now time the OOPS envelope."
+    },
+    {
+      "t": 18.1,
+      "end": 19.6,
+      "text": "Goal: three months of MUST."
+    },
+    {
+      "t": 19.7,
+      "end": 22.0,
+      "text": "A hundred fifty percent of a month's pay."
+    },
+    {
+      "t": 22.1,
+      "end": 24.0,
+      "text": "It gets five percent a month."
+    },
+    {
+      "t": 24.1,
+      "end": 26.2,
+      "text": "A hundred fifty over five: thirty months."
+    },
+    {
+      "t": 26.3,
+      "end": 27.4,
+      "text": "Sixty-five paychecks."
+    },
+    {
+      "t": 27.5,
+      "end": 29.7,
+      "text": "Notice: no paycheck anywhere in that math."
+    },
+    {
+      "t": 29.8,
+      "end": 32.7,
+      "text": "Median, nurse, minimum wage: thirty months."
+    },
+    {
+      "t": 32.8,
+      "end": 34.9,
+      "text": "A bigger paycheck doesn't fill it faster."
+    },
+    {
+      "t": 35.0,
+      "end": 37.1,
+      "text": "Six months of cushion?"
+    },
+    {
+      "t": 37.2,
+      "end": 38.9,
+      "text": "Sixty months."
+    }
+  ],
+  "vo": "This envelope takes thirty months to fill. Yours too. Median paycheck, after tax: two thousand ninety-four. Half goes in MUST: ten forty-seven. Ten percent? Move the decimal: two oh nine. Half that is OOPS: a hundred five. Ten plus five, FUTURE: three fourteen. What's left is FUN: six twenty-eight. Now time the OOPS envelope. Goal: three months of MUST. A hundred fifty percent of a month's pay. It gets five percent a month. A hundred fifty over five: thirty months. Sixty-five paychecks. Notice: no paycheck anywhere in that math. Median, nurse, minimum wage: thirty months. A bigger paycheck doesn't fill it faster. Six months of cushion? Sixty months.",
+  "ops": [
+    {
+      "type": "postmark",
+      "t": -0.5,
+      "x": 190,
+      "y": 300,
+      "center": [
+        "No.",
+        "05A"
+      ],
+      "persist": true
+    },
+    {
+      "type": "hook",
+      "t": -0.8,
+      "y": 456,
+      "size": 70,
+      "until": 2.9,
+      "text": [
+        "$2,094.20 PAYCHECK",
+        "THIS ENVELOPE TAKES",
+        "*30 MONTHS.* YOURS TOO."
+      ]
+    },
+    {
+      "type": "stuff",
+      "t": -1.2,
+      "x": 540,
+      "y": 940,
+      "w": 380,
+      "cols": 1,
+      "ew": 380,
+      "eh": 210,
+      "until": 2.9,
+      "items": [
+        {
+          "label": "OOPS 5%",
+          "amount": 105
+        }
+      ]
+    },
+    {
+      "type": "counter",
+      "t": 3.0,
+      "from": 2502,
+      "to": 2094.2,
+      "decimals": 2,
+      "prefix": "$",
+      "x": 80,
+      "y": 480,
+      "size": 104,
+      "align": "left",
+      "dur": 1.8,
+      "color": "ink"
+    },
+    {
+      "type": "write",
+      "t": 3.0,
+      "text": "gross $2,502 → after tax:",
+      "x": 84,
+      "y": 552,
+      "size": 48,
+      "color": "pencil",
+      "cps": 30,
+      "until": 5.3
+    },
+    {
+      "type": "write",
+      "t": 5.3,
+      "text": "take-home, every 2 wks",
+      "x": 84,
+      "y": 552,
+      "size": 50,
+      "color": "pencil",
+      "cps": 30
+    },
+    {
+      "type": "sticky",
+      "t": 3.1,
+      "x": 790,
+      "y": 470,
+      "w": 380,
+      "size": 42,
+      "cps": 34,
+      "rot": 4,
+      "text": "median $1,251/wk (BLS, Q2 2026) · single · Texas · 2026 fed tax + FICA",
+      "title": "ASSUME:"
+    },
+    {
+      "type": "stuff",
+      "t": 5.4,
+      "x": 300,
+      "y": 800,
+      "w": 340,
+      "cols": 1,
+      "ew": 340,
+      "eh": 190,
+      "items": [
+        {
+          "label": "MUST 50%",
+          "amount": 1047
+        }
+      ]
+    },
+    {
+      "type": "write",
+      "t": 8.3,
+      "text": "10% = $209",
+      "x": 80,
+      "y": 640,
+      "size": 66,
+      "color": "red"
+    },
+    {
+      "type": "annotate",
+      "t": 9.0,
+      "kind": "underline",
+      "x": 80,
+      "y": 652,
+      "w": 290,
+      "width": 5
+    },
+    {
+      "type": "stuff",
+      "t": 10.3,
+      "x": 760,
+      "y": 800,
+      "w": 340,
+      "cols": 1,
+      "ew": 340,
+      "eh": 190,
+      "items": [
+        {
+          "label": "OOPS 5%",
+          "amount": 105
+        }
+      ]
+    },
+    {
+      "type": "stuff",
+      "t": 12.4,
+      "x": 300,
+      "y": 1090,
+      "w": 340,
+      "cols": 1,
+      "ew": 340,
+      "eh": 190,
+      "items": [
+        {
+          "label": "FUTURE 15%",
+          "amount": 314
+        }
+      ]
+    },
+    {
+      "type": "stuff",
+      "t": 14.1,
+      "x": 760,
+      "y": 1090,
+      "w": 340,
+      "cols": 1,
+      "ew": 340,
+      "eh": 190,
+      "items": [
+        {
+          "label": "FUN 30%",
+          "amount": 628
+        }
+      ]
+    },
+    {
+      "type": "annotate",
+      "t": 15.1,
+      "kind": "circle",
+      "x": 690,
+      "y": 1203,
+      "w": 140,
+      "h": 66,
+      "width": 6
+    },
+    {
+      "type": "flip",
+      "t": 16.05
+    },
+    {
+      "type": "write",
+      "t": 16.3,
+      "text": "OOPS goal:",
+      "x": 80,
+      "y": 455,
+      "size": 72
+    },
+    {
+      "type": "sticky",
+      "t": 16.6,
+      "x": 800,
+      "y": 470,
+      "w": 360,
+      "size": 44,
+      "cps": 30,
+      "rot": 3,
+      "text": "all 5% → OOPS · no interest · no raises",
+      "until": 32.8,
+      "title": "ASSUME:"
+    },
+    {
+      "type": "stuff",
+      "t": 16.5,
+      "x": 540,
+      "y": 1135,
+      "w": 340,
+      "cols": 1,
+      "ew": 340,
+      "eh": 190,
+      "items": [
+        {
+          "label": "OOPS 5%",
+          "amount": 105
+        }
+      ],
+      "until": 24.2
+    },
+    {
+      "type": "write",
+      "t": 18.2,
+      "text": "3 months of MUST",
+      "x": 80,
+      "y": 545,
+      "size": 62,
+      "until": 35.0
+    },
+    {
+      "type": "write",
+      "t": 19.8,
+      "text": "3 × 50% = 150%",
+      "x": 830,
+      "y": 745,
+      "size": 96,
+      "align": "right"
+    },
+    {
+      "type": "write",
+      "t": 22.2,
+      "text": "÷ 5% a month",
+      "x": 830,
+      "y": 860,
+      "size": 96,
+      "align": "right"
+    },
+    {
+      "type": "annotate",
+      "t": 24.2,
+      "kind": "underline",
+      "x": 330,
+      "y": 885,
+      "w": 500,
+      "color": "ink",
+      "width": 5,
+      "dur": 0.3
+    },
+    {
+      "type": "write",
+      "t": 24.6,
+      "text": "= 30 months",
+      "x": 830,
+      "y": 985,
+      "size": 104,
+      "align": "right",
+      "color": "red"
+    },
+    {
+      "type": "grid",
+      "t": 25.8,
+      "x": 540,
+      "y": 1036,
+      "rows": 5,
+      "cols": 13,
+      "filled": 65,
+      "cell": 44,
+      "dur": 1.4,
+      "label": "65 paychecks",
+      "until": 29.8
+    },
+    {
+      "type": "annotate",
+      "t": 27.6,
+      "kind": "box",
+      "x": 285,
+      "y": 670,
+      "w": 555,
+      "h": 205,
+      "width": 6,
+      "dur": 0.5
+    },
+    {
+      "type": "ladder",
+      "t": 29.8,
+      "x": 110,
+      "y": 1092,
+      "w": 800,
+      "size": 64,
+      "cps": 30,
+      "gap": 0.15,
+      "until": 35.1,
+      "rows": [
+        {
+          "label": "median $2,094",
+          "value": "30 mo"
+        },
+        {
+          "label": "nurse $2,979",
+          "value": "30 mo"
+        },
+        {
+          "label": "$7.25/hr $536",
+          "value": "30 mo"
+        }
+      ]
+    },
+    {
+      "type": "stamp",
+      "t": 32.9,
+      "text": "OPENED BY\nMISTAKE",
+      "x": 770,
+      "y": 470,
+      "size": 62,
+      "rot": -9
+    },
+    {
+      "type": "write",
+      "t": 35.1,
+      "text": "6 months of MUST?",
+      "x": 540,
+      "y": 1130,
+      "size": 76,
+      "align": "center",
+      "cps": 20
+    },
+    {
+      "type": "write",
+      "t": 37.25,
+      "text": "= 60 months",
+      "x": 540,
+      "y": 1268,
+      "size": 130,
+      "align": "center",
+      "color": "red",
+      "cps": 24
+    },
+    {
+      "type": "annotate",
+      "t": 37.95,
+      "kind": "double",
+      "x": 255,
+      "y": 1292,
+      "w": 570,
+      "width": 5
+    }
+  ]
+}

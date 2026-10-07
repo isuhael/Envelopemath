@@ -1,0 +1,505 @@
+{
+  "id": "06-same-pile-different-place-c",
+  "title": "Same $1 million, 6 jobs: how long to earn it? (Same Pile No. 3)",
+  "paper": {
+    "style": "kraft",
+    "seed": 63
+  },
+  "duration": 31.9,
+  "loop": true,
+  "vo": "Same million bucks. Six jobs. How long to earn it? Divide by a year's pay. Full-time, before tax. Federal minimum wage: sixty-six years. Longer than a career. A high school teacher: about fourteen. A nurse: just over ten. A software developer: just over seven. Wait, what about the President? Four hundred grand, set by law. Two and a half years. And the average S&P 500 CEO? Sixteen days. Sixty-two grand a day. An envelope every thirty-eight hours. Minimum wage: six point six years for one. Still chasing the…",
+  "captions": [
+    {
+      "t": 0.15,
+      "end": 1.7,
+      "text": "Same million bucks. Six jobs."
+    },
+    {
+      "t": 1.7,
+      "end": 3.1,
+      "text": "How long to earn it?"
+    },
+    {
+      "t": 3.15,
+      "end": 5.6,
+      "text": "Divide by a year's pay. Full-time, before tax."
+    },
+    {
+      "t": 5.65,
+      "end": 7.85,
+      "text": "Federal minimum wage: sixty-six years."
+    },
+    {
+      "t": 7.85,
+      "end": 8.9,
+      "text": "Longer than a career."
+    },
+    {
+      "t": 8.95,
+      "end": 11.6,
+      "text": "A high school teacher: about fourteen."
+    },
+    {
+      "t": 11.65,
+      "end": 14.2,
+      "text": "A nurse: just over ten."
+    },
+    {
+      "t": 14.25,
+      "end": 16.8,
+      "text": "A software developer: just over seven."
+    },
+    {
+      "t": 16.85,
+      "end": 18.25,
+      "text": "Wait, what about the President?"
+    },
+    {
+      "t": 18.3,
+      "end": 21.25,
+      "text": "Four hundred grand, set by law. Two and a half years."
+    },
+    {
+      "t": 21.3,
+      "end": 22.85,
+      "text": "And the average S&P 500 CEO?"
+    },
+    {
+      "t": 22.9,
+      "end": 24.85,
+      "text": "Sixteen days."
+    },
+    {
+      "t": 25.0,
+      "end": 26.6,
+      "text": "Sixty-two grand a day."
+    },
+    {
+      "t": 26.6,
+      "end": 28.3,
+      "text": "An envelope every thirty-eight hours."
+    },
+    {
+      "t": 28.35,
+      "end": 30.35,
+      "text": "Minimum wage: six point six years for one."
+    },
+    {
+      "t": 30.4,
+      "end": 31.7,
+      "text": "Still chasing the…"
+    }
+  ],
+  "ops": [
+    {
+      "type": "postmark",
+      "t": -0.5,
+      "x": 175,
+      "y": 258,
+      "r": 100,
+      "center": [
+        "No.",
+        "06C"
+      ],
+      "persist": true
+    },
+    {
+      "type": "postage",
+      "t": -0.5,
+      "x": 880,
+      "y": 334,
+      "value": "$1M",
+      "label": "SAME PILE",
+      "art": "≈",
+      "w": 172,
+      "h": 210,
+      "persist": true
+    },
+    {
+      "type": "hook",
+      "t": -0.6,
+      "text": [
+        "Same $1 million,",
+        "6 jobs: how long",
+        "to *earn* it?"
+      ],
+      "y": 480,
+      "size": 76,
+      "until": 3.1
+    },
+    {
+      "type": "grid",
+      "t": -0.7,
+      "x": 540,
+      "y": 800,
+      "rows": 2,
+      "cols": 5,
+      "filled": 10,
+      "emoji": "✉️",
+      "cell": 135,
+      "dur": 0.35,
+      "label": "10 envelopes × $100K",
+      "until": 3.1
+    },
+    {
+      "type": "write",
+      "t": 3.15,
+      "text": "$1,000,000 ÷ a year's pay",
+      "x": 540,
+      "y": 545,
+      "size": 80,
+      "align": "center",
+      "cps": 22,
+      "until": 5.6
+    },
+    {
+      "type": "sticky",
+      "t": 3.2,
+      "x": 540,
+      "y": 1000,
+      "w": 600,
+      "size": 48,
+      "cps": 70,
+      "title": "ASSUME:",
+      "text": "full-time, before tax · BLS medians, May 2025 · CEO: S&P 500 average, 2025 (AFL-CIO)",
+      "until": 8.95
+    },
+    {
+      "type": "write",
+      "t": 5.65,
+      "text": "time to earn $1M:",
+      "x": 540,
+      "y": 532,
+      "size": 88,
+      "align": "center",
+      "cps": 20
+    },
+    {
+      "type": "write",
+      "t": 5.75,
+      "text": "⏰ Minimum wage",
+      "x": 110,
+      "y": 650,
+      "size": 64,
+      "color": "pencil",
+      "cps": 18
+    },
+    {
+      "type": "write",
+      "t": 6.3,
+      "text": "$7.25 × 2,080 hrs = $15,080",
+      "x": 186,
+      "y": 704,
+      "size": 46,
+      "color": "red",
+      "cps": 34
+    },
+    {
+      "type": "write",
+      "t": 6.7,
+      "text": "· · · · ·",
+      "x": 544,
+      "y": 642,
+      "size": 48,
+      "color": "pencil",
+      "cps": 60,
+      "pen": false
+    },
+    {
+      "type": "write",
+      "t": 7.0,
+      "text": "66.3 yrs",
+      "x": 905,
+      "y": 650,
+      "size": 80,
+      "align": "right",
+      "color": "ink",
+      "cps": 14
+    },
+    {
+      "type": "write",
+      "t": 8.95,
+      "text": "🍎 HS teacher",
+      "x": 110,
+      "y": 770,
+      "size": 64,
+      "color": "pencil",
+      "cps": 18
+    },
+    {
+      "type": "write",
+      "t": 9.5,
+      "text": "$72,040 a year",
+      "x": 186,
+      "y": 824,
+      "size": 46,
+      "color": "red",
+      "cps": 34
+    },
+    {
+      "type": "write",
+      "t": 9.9,
+      "text": "· · · · · · · · ·",
+      "x": 471,
+      "y": 762,
+      "size": 48,
+      "color": "pencil",
+      "cps": 60,
+      "pen": false
+    },
+    {
+      "type": "write",
+      "t": 10.2,
+      "text": "13.9 yrs",
+      "x": 905,
+      "y": 770,
+      "size": 80,
+      "align": "right",
+      "color": "ink",
+      "cps": 14
+    },
+    {
+      "type": "write",
+      "t": 11.65,
+      "text": "🩺 Nurse (RN)",
+      "x": 110,
+      "y": 890,
+      "size": 64,
+      "color": "pencil",
+      "cps": 18
+    },
+    {
+      "type": "write",
+      "t": 12.2,
+      "text": "$97,550 a year",
+      "x": 186,
+      "y": 944,
+      "size": 46,
+      "color": "red",
+      "cps": 34
+    },
+    {
+      "type": "write",
+      "t": 12.6,
+      "text": "· · · · · · · ·",
+      "x": 480,
+      "y": 882,
+      "size": 48,
+      "color": "pencil",
+      "cps": 60,
+      "pen": false
+    },
+    {
+      "type": "write",
+      "t": 12.9,
+      "text": "10.3 yrs",
+      "x": 905,
+      "y": 890,
+      "size": 80,
+      "align": "right",
+      "color": "ink",
+      "cps": 14
+    },
+    {
+      "type": "write",
+      "t": 14.25,
+      "text": "💻 Software dev",
+      "x": 110,
+      "y": 1010,
+      "size": 64,
+      "color": "pencil",
+      "cps": 18
+    },
+    {
+      "type": "write",
+      "t": 14.8,
+      "text": "$135,980 a year",
+      "x": 186,
+      "y": 1064,
+      "size": 46,
+      "color": "red",
+      "cps": 34
+    },
+    {
+      "type": "write",
+      "t": 15.2,
+      "text": "· · · · · · · · ·",
+      "x": 500,
+      "y": 1002,
+      "size": 48,
+      "color": "pencil",
+      "cps": 60,
+      "pen": false
+    },
+    {
+      "type": "write",
+      "t": 15.5,
+      "text": "7.4 yrs",
+      "x": 905,
+      "y": 1010,
+      "size": 80,
+      "align": "right",
+      "color": "ink",
+      "cps": 14
+    },
+    {
+      "type": "hook",
+      "t": 16.85,
+      "text": [
+        "Wait… the *President*?"
+      ],
+      "y": 1116,
+      "size": 66,
+      "until": 18.3
+    },
+    {
+      "type": "write",
+      "t": 18.3,
+      "text": "🏛️ US President",
+      "x": 110,
+      "y": 1130,
+      "size": 64,
+      "color": "pencil",
+      "cps": 18
+    },
+    {
+      "type": "write",
+      "t": 18.85,
+      "text": "$400,000 a year, by law",
+      "x": 186,
+      "y": 1184,
+      "size": 46,
+      "color": "red",
+      "cps": 34
+    },
+    {
+      "type": "write",
+      "t": 19.25,
+      "text": "· · · · · · · · ·",
+      "x": 505,
+      "y": 1122,
+      "size": 48,
+      "color": "pencil",
+      "cps": 60,
+      "pen": false
+    },
+    {
+      "type": "write",
+      "t": 19.55,
+      "text": "2.5 yrs",
+      "x": 905,
+      "y": 1130,
+      "size": 80,
+      "align": "right",
+      "color": "ink",
+      "cps": 14
+    },
+    {
+      "type": "write",
+      "t": 21.3,
+      "text": "💼 S&P 500 CEO",
+      "x": 110,
+      "y": 1250,
+      "size": 64,
+      "color": "pencil",
+      "cps": 18
+    },
+    {
+      "type": "write",
+      "t": 21.85,
+      "text": "$22.8M a year, excl. Musk",
+      "x": 186,
+      "y": 1304,
+      "size": 46,
+      "color": "red",
+      "cps": 34
+    },
+    {
+      "type": "write",
+      "t": 22.6,
+      "text": "· · · ·",
+      "x": 532,
+      "y": 1242,
+      "size": 48,
+      "color": "pencil",
+      "cps": 60,
+      "pen": false
+    },
+    {
+      "type": "write",
+      "t": 22.9,
+      "text": "16 days",
+      "x": 905,
+      "y": 1250,
+      "size": 96,
+      "align": "right",
+      "color": "red",
+      "cps": 14
+    },
+    {
+      "type": "annotate",
+      "t": 23.6,
+      "kind": "circle",
+      "x": 646,
+      "y": 1172,
+      "w": 259,
+      "h": 92,
+      "dur": 0.4
+    },
+    {
+      "type": "flip",
+      "t": 24.9
+    },
+    {
+      "type": "write",
+      "t": 25.2,
+      "text": "$22.8M ÷ 365 ≈ $62K a day",
+      "x": 129,
+      "y": 545,
+      "size": 80,
+      "color": "ink",
+      "cps": 22
+    },
+    {
+      "type": "grid",
+      "t": 25.9,
+      "x": 540,
+      "y": 700,
+      "rows": 2,
+      "cols": 5,
+      "filled": 10,
+      "emoji": "✉️",
+      "cell": 135,
+      "dur": 1.5
+    },
+    {
+      "type": "write",
+      "t": 27.3,
+      "text": "all 10 ✉ in 16 days",
+      "x": 235,
+      "y": 1040,
+      "size": 84,
+      "color": "red",
+      "cps": 20
+    },
+    {
+      "type": "stamp",
+      "t": 27.9,
+      "text": "FIRST CLASS",
+      "x": 560,
+      "y": 770,
+      "size": 74,
+      "rot": -7
+    },
+    {
+      "type": "write",
+      "t": 29.0,
+      "text": "min. wage: 1 ✉ ≈ 6.6 yrs",
+      "x": 160,
+      "y": 1190,
+      "size": 80,
+      "color": "red",
+      "cps": 20
+    }
+  ]
+}

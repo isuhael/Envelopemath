@@ -1,0 +1,256 @@
+{
+  "id": "01-cost-in-envelopes-a",
+  "title": "Elon's $1 trillion in Costco hot dogs: how many do you get? (Cost in Envelopes No. 01A)",
+  "paper": {
+    "style": "kraft",
+    "seed": 11
+  },
+  "duration": 24.2,
+  "vo": "Elon's trillion dollars, in Costco hot dogs. How many do you get? He's worth about a trillion. A combo's a buck fifty. A trillion over a buck fifty: about 667 billion hot dogs. Still can't picture it? Split them with everyone on Earth. How many does each person get? Guess before it opens. Eighty-one. Each. Every human alive. That's your tray. And your mom's. And everyone's. All from one man's net worth.",
+  "captions": [
+    {
+      "t": 0.1,
+      "end": 1.9,
+      "text": "Elon's trillion dollars, in Costco hot dogs."
+    },
+    {
+      "t": 1.9,
+      "end": 3.2,
+      "text": "How many do you get?"
+    },
+    {
+      "t": 3.2,
+      "end": 5.8,
+      "text": "He's worth about a trillion. A combo's a buck fifty."
+    },
+    {
+      "t": 5.8,
+      "end": 8.65,
+      "text": "A trillion over a buck fifty: about 667 billion hot dogs."
+    },
+    {
+      "t": 8.65,
+      "end": 11.4,
+      "text": "Still can't picture it? Split them with everyone on Earth."
+    },
+    {
+      "t": 11.6,
+      "end": 15.6,
+      "text": "How many does each person get? Guess before it opens."
+    },
+    {
+      "t": 15.7,
+      "end": 18.6,
+      "text": "Eighty-one. Each. Every human alive."
+    },
+    {
+      "t": 18.7,
+      "end": 21.6,
+      "text": "That's your tray. And your mom's. And everyone's."
+    },
+    {
+      "t": 21.8,
+      "end": 24.0,
+      "text": "All from one man's net worth."
+    }
+  ],
+  "ops": [
+    {
+      "type": "postmark",
+      "t": -0.3,
+      "x": 190,
+      "y": 300,
+      "center": [
+        "No.",
+        "01A"
+      ],
+      "persist": true
+    },
+    {
+      "type": "hook",
+      "t": -0.6,
+      "text": [
+        "ELON'S *$1 TRILLION*",
+        "IN COSTCO HOT DOGS.",
+        "HOW MANY DO YOU GET?"
+      ],
+      "y": 445,
+      "size": 68
+    },
+    {
+      "type": "postage",
+      "t": -0.5,
+      "x": 770,
+      "y": 870,
+      "w": 250,
+      "h": 300,
+      "value": "$1.50",
+      "label": "COSTCO COMBO",
+      "art": "🌭",
+      "rot": 5,
+      "labelSize": 28
+    },
+    {
+      "type": "emoji",
+      "t": -0.4,
+      "char": "🌭",
+      "x": 300,
+      "y": 880,
+      "size": 230,
+      "bob": true,
+      "rot": -12
+    },
+    {
+      "type": "flip",
+      "t": 3.0
+    },
+    {
+      "type": "sticky",
+      "t": 3.3,
+      "x": 390,
+      "y": 600,
+      "w": 440,
+      "size": 56,
+      "cps": 45,
+      "title": "ASSUME:",
+      "text": "Elon ≈ $1T (Bloomberg, Oct 6 2026). Combo $1.50 since 1985."
+    },
+    {
+      "type": "postage",
+      "t": 3.4,
+      "x": 810,
+      "y": 575,
+      "w": 170,
+      "h": 205,
+      "value": "$1.50",
+      "label": "COSTCO COMBO",
+      "art": "🌭",
+      "rot": 6
+    },
+    {
+      "type": "write",
+      "t": 3.6,
+      "text": "$1,000,000,000,000 ÷ $1.50",
+      "x": 100,
+      "y": 850,
+      "size": 74,
+      "cps": 18
+    },
+    {
+      "type": "write",
+      "t": 5.1,
+      "text": "tip: ÷ 1.5 = × ⅔",
+      "x": 920,
+      "y": 915,
+      "size": 56,
+      "align": "right",
+      "color": "red",
+      "cps": 22
+    },
+    {
+      "type": "counter",
+      "t": 5.4,
+      "to": 666666666667,
+      "x": 520,
+      "y": 1045,
+      "size": 112,
+      "color": "red",
+      "dur": 1.8
+    },
+    {
+      "type": "write",
+      "t": 7.2,
+      "text": "hot dogs 🌭",
+      "x": 520,
+      "y": 1150,
+      "size": 66,
+      "align": "center",
+      "pen": false
+    },
+    {
+      "type": "annotate",
+      "t": 7.3,
+      "kind": "circle",
+      "x": 125,
+      "y": 945,
+      "w": 790,
+      "h": 128
+    },
+    {
+      "type": "write",
+      "t": 8.9,
+      "text": "÷ 8.2 billion people 🌍",
+      "x": 520,
+      "y": 1262,
+      "size": 70,
+      "align": "center",
+      "cps": 17
+    },
+    {
+      "type": "clear",
+      "t": 11.5
+    },
+    {
+      "type": "write",
+      "t": 11.6,
+      "text": "8.2 billion people. Each gets…",
+      "x": 540,
+      "y": 450,
+      "size": 64,
+      "align": "center",
+      "cps": 20,
+      "until": 15.5
+    },
+    {
+      "type": "envelope",
+      "t": 11.7,
+      "y": 1010,
+      "w": 760,
+      "note": "how many each?",
+      "openAt": 15.7,
+      "cardSize": 110,
+      "card": [
+        "≈ 81 each",
+        {
+          "text": "hot dogs per person",
+          "size": 56,
+          "color": "red"
+        }
+      ]
+    },
+    {
+      "type": "timer",
+      "t": 12.5,
+      "seconds": 3,
+      "y": 605
+    },
+    {
+      "type": "flip",
+      "t": 18.6
+    },
+    {
+      "type": "grid",
+      "t": 18.9,
+      "rows": 9,
+      "cols": 9,
+      "filled": 81,
+      "emoji": "🌭",
+      "x": 540,
+      "y": 630,
+      "cell": 68,
+      "dur": 1.6,
+      "label": "your share: 81",
+      "color": "red"
+    },
+    {
+      "type": "stamp",
+      "t": 22.2,
+      "text": "SPECIAL\nDELIVERY",
+      "x": 540,
+      "y": 470,
+      "size": 64,
+      "rot": -7
+    }
+  ],
+  "loop": true
+}

@@ -1,0 +1,499 @@
+{
+  "id": "04-two-envelopes-b",
+  "title": "$200 a month at 25 or $400 a month at 35? (Two Envelopes No. 04B)",
+  "paper": {
+    "style": "kraft",
+    "seed": 42
+  },
+  "duration": 52.8,
+  "vo": "Two hundred a month at twenty-five… or four hundred a month at thirty-five? [1-second silent pick] Same seven percent a year for both, until sixty-five. A puts in ninety-six grand. B puts in a hundred forty-four. Forty-eight grand more. Does B catch up? Age twenty-five: A starts. [1-second beat] At thirty-five: A’s got thirty-five grand. B: zero. Then B puts in double… and the gap… never… closes. Sixty-five. Who’s ahead, and by how much? Guess. [3-second pause] A. By about thirty-seven grand. With forty-eight grand less put in. Why? At thirty-five, A’s head start is thirty-five grand. That alone earns two-oh-two a month. B’s extra is two hundred. B never gains a dollar. Drop it to six percent, though, and B passes A at sixty-three and eight months. So: two hundred at twenty-five, or four hundred at thirty-five?",
+  "captions": [
+    {
+      "t": 0.15,
+      "end": 2.2,
+      "text": "Two hundred a month at 25…"
+    },
+    {
+      "t": 2.2,
+      "end": 4.3,
+      "text": "…or four hundred a month at 35?"
+    },
+    {
+      "t": 5.6,
+      "end": 8.6,
+      "text": "Same 7% a year for both, until 65."
+    },
+    {
+      "t": 8.6,
+      "end": 12.2,
+      "text": "A puts in 96 grand. B puts in 144."
+    },
+    {
+      "t": 12.3,
+      "end": 14.7,
+      "text": "48 grand more. Does B catch up?"
+    },
+    {
+      "t": 15.0,
+      "end": 17.0,
+      "text": "Age 25: A starts."
+    },
+    {
+      "t": 18.0,
+      "end": 20.7,
+      "text": "At 35: A’s got 35 grand. B: zero."
+    },
+    {
+      "t": 20.7,
+      "end": 22.6,
+      "text": "Then B puts in double…"
+    },
+    {
+      "t": 22.6,
+      "end": 25.4,
+      "text": "…and the gap never closes."
+    },
+    {
+      "t": 25.9,
+      "end": 28.6,
+      "text": "65. Who’s ahead, and by how much? Guess."
+    },
+    {
+      "t": 31.6,
+      "end": 35.4,
+      "text": "A. By about 37 grand. With 48 grand less put in."
+    },
+    {
+      "t": 35.8,
+      "end": 39.1,
+      "text": "Why? At 35, A’s head start is 35 grand."
+    },
+    {
+      "t": 39.1,
+      "end": 41.6,
+      "text": "That alone earns $202 a month."
+    },
+    {
+      "t": 41.6,
+      "end": 44.4,
+      "text": "B’s extra is $200. B never gains a dollar."
+    },
+    {
+      "t": 44.5,
+      "end": 49.0,
+      "text": "Drop it to 6%, though, and B passes A at 63 and 8 months."
+    },
+    {
+      "t": 49.35,
+      "end": 52.6,
+      "text": "So: $200 at 25, or $400 at 35?"
+    }
+  ],
+  "ops": [
+    {
+      "type": "postmark",
+      "t": 0,
+      "x": 190,
+      "y": 300,
+      "center": [
+        "No.",
+        "04B"
+      ],
+      "persist": true
+    },
+    {
+      "type": "hook",
+      "t": 0,
+      "text": [
+        "$200 A MONTH AT 25",
+        "OR *$400 A MONTH*",
+        "AT 35?"
+      ],
+      "y": 400,
+      "size": 80,
+      "until": 5.3
+    },
+    {
+      "type": "pick",
+      "t": 0.12,
+      "options": [
+        {
+          "label": "$200/mo",
+          "sub": "starting at 25"
+        },
+        {
+          "label": "$400/mo",
+          "sub": "starting at 35"
+        }
+      ],
+      "y": 885,
+      "eh": 290,
+      "size": 70,
+      "stagger": 0.15
+    },
+    {
+      "type": "timer",
+      "t": 4.3,
+      "seconds": 1,
+      "y": 1140,
+      "label": "PICK ONE"
+    },
+    {
+      "type": "flip",
+      "t": 5.3,
+      "dur": 0.5
+    },
+    {
+      "type": "sticky",
+      "t": 5.6,
+      "x": 330,
+      "y": 600,
+      "w": 440,
+      "size": 46,
+      "title": "ASSUME:",
+      "text": "7% a year, compounded monthly. Both invest until 65. Before fees, tax & inflation."
+    },
+    {
+      "type": "postage",
+      "t": 6.2,
+      "x": 790,
+      "y": 590,
+      "value": "7%",
+      "label": "ASSUMED",
+      "art": "≈",
+      "rot": 5
+    },
+    {
+      "type": "stuff",
+      "t": 8.6,
+      "x": 520,
+      "y": 935,
+      "w": 700,
+      "ew": 320,
+      "eh": 200,
+      "items": [
+        {
+          "label": "A · 40 yrs",
+          "amount": 96000,
+          "color": "red"
+        },
+        {
+          "label": "B · 30 yrs",
+          "amount": 144000,
+          "color": "ink"
+        }
+      ],
+      "stagger": 1.6
+    },
+    {
+      "type": "write",
+      "t": 12.35,
+      "text": "B puts in $48,000 more",
+      "x": 520,
+      "y": 1200,
+      "size": 64,
+      "color": "red",
+      "align": "center",
+      "cps": 18
+    },
+    {
+      "type": "flip",
+      "t": 14.7,
+      "dur": 0.5
+    },
+    {
+      "type": "write",
+      "t": 15.05,
+      "text": "A: $200 at 25",
+      "x": 170,
+      "y": 528,
+      "size": 52,
+      "color": "red",
+      "cps": 30
+    },
+    {
+      "type": "write",
+      "t": 15.5,
+      "text": "B: $400 at 35",
+      "x": 880,
+      "y": 528,
+      "size": 52,
+      "color": "ink",
+      "align": "right",
+      "cps": 30
+    },
+    {
+      "type": "curve",
+      "t": 15.0,
+      "x": 160,
+      "y": 1150,
+      "w": 700,
+      "h": 500,
+      "values": [
+        0.0,
+        2478.52,
+        5136.21,
+        7986.02,
+        11041.85,
+        14318.58,
+        17832.19,
+        21599.8,
+        25639.76,
+        29971.78,
+        34616.96,
+        39597.94,
+        44939.0,
+        50666.16,
+        56807.34,
+        63392.46,
+        70453.62,
+        78025.24,
+        86144.21,
+        94850.09,
+        104185.33,
+        114195.42,
+        124929.13,
+        136438.78,
+        148780.47,
+        162014.34,
+        176204.89,
+        191421.27,
+        207737.64,
+        225233.53,
+        243994.2,
+        264111.08,
+        285682.2,
+        308812.71,
+        333615.32,
+        360210.92,
+        388729.11,
+        419308.89,
+        452099.28,
+        487260.09,
+        524962.68
+      ],
+      "compare": {
+        "values": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          4957.03,
+          10272.41,
+          15972.04,
+          22083.69,
+          28637.16,
+          35664.38,
+          43199.59,
+          51279.53,
+          59943.56,
+          69233.92,
+          79195.88,
+          89877.99,
+          101332.32,
+          113614.67,
+          126784.92,
+          140907.24,
+          156050.48,
+          172288.41,
+          189700.19,
+          208370.66,
+          228390.83,
+          249858.26,
+          272877.56,
+          297560.94,
+          324028.68,
+          352409.77,
+          382842.54,
+          415475.29,
+          450467.06,
+          487988.4
+        ],
+        "color": "ink"
+      },
+      "max": 524962.68,
+      "dur": 10.0,
+      "color": "red",
+      "xLabel": "age 25 → 65",
+      "endLabel": "≈$525K",
+      "marks": [
+        {
+          "i": 10,
+          "text": "35: $34.6K",
+          "dx": 180,
+          "dy": -110,
+          "size": 50
+        }
+      ]
+    },
+    {
+      "type": "flip",
+      "t": 25.6,
+      "dur": 0.5
+    },
+    {
+      "type": "envelope",
+      "t": 25.9,
+      "x": 540,
+      "y": 790,
+      "w": 640,
+      "openAt": 31.6,
+      "card": [
+        "A by ≈ $37K",
+        {
+          "text": "$525K vs $488K",
+          "size": 52,
+          "color": "red"
+        }
+      ],
+      "cardSize": 84
+    },
+    {
+      "type": "write",
+      "t": 26.2,
+      "text": "at 65: who’s ahead, by how much?",
+      "x": 520,
+      "y": 1060,
+      "size": 56,
+      "align": "center",
+      "cps": 22,
+      "until": 31.6
+    },
+    {
+      "type": "timer",
+      "t": 28.6,
+      "seconds": 3,
+      "y": 1180,
+      "label": "PAUSE & GUESS"
+    },
+    {
+      "type": "stamp",
+      "t": 32.4,
+      "text": "FIRST CLASS",
+      "x": 540,
+      "y": 1120,
+      "size": 58,
+      "rot": -6,
+      "shake": 10
+    },
+    {
+      "type": "flip",
+      "t": 35.5,
+      "dur": 0.5
+    },
+    {
+      "type": "write",
+      "t": 35.8,
+      "text": "crossover = head start ÷ catch-up",
+      "x": 540,
+      "y": 452,
+      "size": 38,
+      "font": "type",
+      "color": "pencil",
+      "align": "center",
+      "cps": 40
+    },
+    {
+      "type": "write",
+      "t": 35.9,
+      "text": "A’s head start at 35 ≈ $34,600",
+      "x": 500,
+      "y": 600,
+      "size": 66,
+      "align": "center",
+      "cps": 17
+    },
+    {
+      "type": "write",
+      "t": 39.1,
+      "text": "$34,600 × 7% ÷ 12 ≈ $202/mo",
+      "x": 500,
+      "y": 715,
+      "size": 66,
+      "align": "center",
+      "cps": 17
+    },
+    {
+      "type": "write",
+      "t": 41.6,
+      "text": "B’s extra $200 < $202 → never",
+      "x": 500,
+      "y": 830,
+      "size": 66,
+      "align": "center",
+      "cps": 17
+    },
+    {
+      "type": "annotate",
+      "t": 43.5,
+      "kind": "circle",
+      "x": 740.5,
+      "y": 778,
+      "w": 120.0,
+      "h": 64,
+      "pad": 14
+    },
+    {
+      "type": "write",
+      "t": 44.6,
+      "text": "at 6%: B passes A at 63 yrs 8 mo",
+      "x": 500,
+      "y": 990,
+      "size": 58,
+      "color": "red",
+      "align": "center",
+      "cps": 20
+    },
+    {
+      "type": "stamp",
+      "t": 47.0,
+      "text": "OPENED BY\nMISTAKE",
+      "x": 560,
+      "y": 1160,
+      "size": 56,
+      "rot": -8,
+      "shake": 10
+    },
+    {
+      "type": "flip",
+      "t": 49.1,
+      "dur": 0.5
+    },
+    {
+      "type": "pick",
+      "t": 49.35,
+      "options": [
+        {
+          "label": "$200/mo",
+          "sub": "starting at 25"
+        },
+        {
+          "label": "$400/mo",
+          "sub": "starting at 35"
+        }
+      ],
+      "y": 885,
+      "eh": 290,
+      "size": 70,
+      "stagger": 0.12
+    },
+    {
+      "type": "hook",
+      "t": 49.4,
+      "text": [
+        "$200 A MONTH AT 25",
+        "OR *$400 A MONTH*",
+        "AT 35?"
+      ],
+      "y": 400,
+      "size": 80
+    }
+  ]
+}

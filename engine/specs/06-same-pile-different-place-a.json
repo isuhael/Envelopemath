@@ -1,0 +1,615 @@
+{
+  "id": "06-same-pile-different-place-a",
+  "title": "Same $1,000 of pay, 6 countries: who taxes it most? (Same Pile No. 1)",
+  "paper": {
+    "style": "kraft",
+    "seed": 61
+  },
+  "duration": 29.9,
+  "loop": true,
+  "vo": "Same thousand bucks of pay. Six countries. Who taxes it most? Same rule: income tax plus social security. Chile: seventy-one bucks. Not even one envelope. Switzerland: one eighty-one. Under two envelopes. The UK: two thirty-one. Wait, what about the US? Two forty-three. Just under the OECD average. Then Germany jumps to three eighty-seven. And the highest of all thirty-eight? Belgium. Three ninety-five. Five and a half times Chile's cut. That's almost four envelopes out of ten. All out of the…",
+  "captions": [
+    {
+      "t": 0.15,
+      "end": 1.75,
+      "text": "Same thousand bucks of pay."
+    },
+    {
+      "t": 1.75,
+      "end": 3.35,
+      "text": "Six countries. Who taxes it most?"
+    },
+    {
+      "t": 3.4,
+      "end": 5.4,
+      "text": "Same rule: income tax plus social security."
+    },
+    {
+      "t": 5.45,
+      "end": 8.25,
+      "text": "Chile: seventy-one bucks. Not even one envelope."
+    },
+    {
+      "t": 8.3,
+      "end": 10.9,
+      "text": "Switzerland: one eighty-one. Under two envelopes."
+    },
+    {
+      "t": 10.95,
+      "end": 13.45,
+      "text": "The UK: two thirty-one."
+    },
+    {
+      "t": 13.5,
+      "end": 15.15,
+      "text": "Wait, what about the US?"
+    },
+    {
+      "t": 15.2,
+      "end": 17.35,
+      "text": "Two forty-three. Just under the OECD average."
+    },
+    {
+      "t": 17.4,
+      "end": 19.95,
+      "text": "Then Germany jumps to three eighty-seven."
+    },
+    {
+      "t": 20.0,
+      "end": 21.6,
+      "text": "And the highest of all thirty-eight?"
+    },
+    {
+      "t": 21.65,
+      "end": 23.95,
+      "text": "Belgium. Three ninety-five."
+    },
+    {
+      "t": 24.15,
+      "end": 26.1,
+      "text": "Five and a half times Chile's cut."
+    },
+    {
+      "t": 26.1,
+      "end": 28.2,
+      "text": "That's almost four envelopes out of ten."
+    },
+    {
+      "t": 28.25,
+      "end": 29.75,
+      "text": "All out of the…"
+    }
+  ],
+  "ops": [
+    {
+      "type": "postmark",
+      "t": -0.5,
+      "x": 175,
+      "y": 258,
+      "r": 100,
+      "center": [
+        "No.",
+        "06A"
+      ],
+      "persist": true
+    },
+    {
+      "type": "postage",
+      "t": -0.5,
+      "x": 880,
+      "y": 334,
+      "value": "$1K",
+      "label": "SAME PILE",
+      "art": "≈",
+      "w": 172,
+      "h": 210,
+      "persist": true
+    },
+    {
+      "type": "hook",
+      "t": -0.6,
+      "text": [
+        "Same $1,000 of pay,",
+        "6 countries:",
+        "who taxes it *most*?"
+      ],
+      "y": 480,
+      "size": 76,
+      "until": 3.35
+    },
+    {
+      "type": "grid",
+      "t": -0.7,
+      "x": 540,
+      "y": 800,
+      "rows": 2,
+      "cols": 5,
+      "filled": 10,
+      "emoji": "✉️",
+      "cell": 135,
+      "dur": 0.35,
+      "label": "10 envelopes × $100",
+      "until": 3.35
+    },
+    {
+      "type": "write",
+      "t": 3.4,
+      "text": "$1,000 × tax rate",
+      "x": 540,
+      "y": 545,
+      "size": 100,
+      "align": "center",
+      "cps": 20,
+      "until": 5.45
+    },
+    {
+      "type": "sticky",
+      "t": 3.45,
+      "x": 700,
+      "y": 1000,
+      "w": 440,
+      "size": 46,
+      "cps": 75,
+      "title": "ASSUME:",
+      "text": "average-wage single worker, no kids · income tax + employee social security · OECD, 2025",
+      "until": 10.95
+    },
+    {
+      "type": "write",
+      "t": 5.5,
+      "text": "$1,000 × ",
+      "x": 179,
+      "y": 652,
+      "size": 88,
+      "color": "ink",
+      "cps": 18
+    },
+    {
+      "type": "write",
+      "t": 5.45,
+      "text": "🇨🇱 Chile",
+      "x": 540,
+      "y": 545,
+      "size": 100,
+      "align": "center",
+      "color": "ink",
+      "cps": 18,
+      "until": 8.3
+    },
+    {
+      "type": "write",
+      "t": 5.8,
+      "text": "7.1% = ",
+      "x": 478,
+      "y": 652,
+      "size": 88,
+      "color": "ink",
+      "cps": 18,
+      "until": 8.3
+    },
+    {
+      "type": "write",
+      "t": 6.2,
+      "text": "$71",
+      "x": 710,
+      "y": 652,
+      "size": 88,
+      "color": "red",
+      "cps": 18,
+      "until": 8.3
+    },
+    {
+      "type": "bars",
+      "t": 5.9,
+      "x": 186.67,
+      "y": 1225,
+      "w": 132,
+      "h": 460,
+      "max": 400,
+      "dur": 0.9,
+      "items": [
+        {
+          "label": "🇨🇱",
+          "value": 71,
+          "display": "$71",
+          "color": "ink",
+          "labelSize": 64,
+          "valueSize": 60
+        }
+      ]
+    },
+    {
+      "type": "write",
+      "t": 8.3,
+      "text": "🇨🇭 Switzerland",
+      "x": 540,
+      "y": 545,
+      "size": 100,
+      "align": "center",
+      "color": "ink",
+      "cps": 18,
+      "until": 10.95
+    },
+    {
+      "type": "write",
+      "t": 8.65,
+      "text": "18.1% = ",
+      "x": 478,
+      "y": 652,
+      "size": 88,
+      "color": "ink",
+      "cps": 18,
+      "until": 10.95
+    },
+    {
+      "type": "write",
+      "t": 9.05,
+      "text": "$181",
+      "x": 750,
+      "y": 652,
+      "size": 88,
+      "color": "red",
+      "cps": 18,
+      "until": 10.95
+    },
+    {
+      "type": "bars",
+      "t": 8.75,
+      "x": 320,
+      "y": 1225,
+      "w": 132,
+      "h": 460,
+      "max": 400,
+      "dur": 0.9,
+      "items": [
+        {
+          "label": "🇨🇭",
+          "value": 181,
+          "display": "$181",
+          "color": "ink",
+          "labelSize": 64,
+          "valueSize": 60
+        }
+      ]
+    },
+    {
+      "type": "write",
+      "t": 10.95,
+      "text": "🇬🇧 UK",
+      "x": 540,
+      "y": 545,
+      "size": 100,
+      "align": "center",
+      "color": "ink",
+      "cps": 18,
+      "until": 13.5
+    },
+    {
+      "type": "write",
+      "t": 11.3,
+      "text": "23.1% = ",
+      "x": 478,
+      "y": 652,
+      "size": 88,
+      "color": "ink",
+      "cps": 18,
+      "until": 13.5
+    },
+    {
+      "type": "write",
+      "t": 11.7,
+      "text": "$231",
+      "x": 750,
+      "y": 652,
+      "size": 88,
+      "color": "red",
+      "cps": 18,
+      "until": 13.5
+    },
+    {
+      "type": "bars",
+      "t": 11.4,
+      "x": 453.33,
+      "y": 1225,
+      "w": 132,
+      "h": 460,
+      "max": 400,
+      "dur": 0.9,
+      "items": [
+        {
+          "label": "🇬🇧",
+          "value": 231,
+          "display": "$231",
+          "color": "ink",
+          "labelSize": 64,
+          "valueSize": 60
+        }
+      ]
+    },
+    {
+      "type": "hook",
+      "t": 13.5,
+      "text": [
+        "Wait… the *US*?"
+      ],
+      "y": 530,
+      "size": 84,
+      "until": 15.2
+    },
+    {
+      "type": "write",
+      "t": 15.2,
+      "text": "🇺🇸 USA",
+      "x": 540,
+      "y": 545,
+      "size": 100,
+      "align": "center",
+      "color": "ink",
+      "cps": 18,
+      "until": 17.4
+    },
+    {
+      "type": "write",
+      "t": 15.55,
+      "text": "24.3% = ",
+      "x": 478,
+      "y": 652,
+      "size": 88,
+      "color": "ink",
+      "cps": 18,
+      "until": 17.4
+    },
+    {
+      "type": "write",
+      "t": 15.95,
+      "text": "$243",
+      "x": 750,
+      "y": 652,
+      "size": 88,
+      "color": "red",
+      "cps": 18,
+      "until": 17.4
+    },
+    {
+      "type": "bars",
+      "t": 15.65,
+      "x": 586.67,
+      "y": 1225,
+      "w": 132,
+      "h": 460,
+      "max": 400,
+      "dur": 0.9,
+      "items": [
+        {
+          "label": "🇺🇸",
+          "value": 243,
+          "display": "$243",
+          "color": "ink",
+          "labelSize": 64,
+          "valueSize": 60
+        }
+      ]
+    },
+    {
+      "type": "write",
+      "t": 17.4,
+      "text": "🇩🇪 Germany",
+      "x": 540,
+      "y": 545,
+      "size": 100,
+      "align": "center",
+      "color": "ink",
+      "cps": 18,
+      "until": 20.0
+    },
+    {
+      "type": "write",
+      "t": 17.75,
+      "text": "38.7% = ",
+      "x": 478,
+      "y": 652,
+      "size": 88,
+      "color": "ink",
+      "cps": 18,
+      "until": 20.0
+    },
+    {
+      "type": "write",
+      "t": 18.15,
+      "text": "$387",
+      "x": 750,
+      "y": 652,
+      "size": 88,
+      "color": "red",
+      "cps": 18,
+      "until": 20.0
+    },
+    {
+      "type": "bars",
+      "t": 17.85,
+      "x": 720,
+      "y": 1225,
+      "w": 132,
+      "h": 460,
+      "max": 400,
+      "dur": 0.9,
+      "items": [
+        {
+          "label": "🇩🇪",
+          "value": 387,
+          "display": "$387",
+          "color": "ink",
+          "labelSize": 64,
+          "valueSize": 60
+        }
+      ]
+    },
+    {
+      "type": "write",
+      "t": 20.0,
+      "text": "the highest of all 38?",
+      "x": 540,
+      "y": 545,
+      "size": 84,
+      "align": "center",
+      "color": "pencil",
+      "cps": 20,
+      "until": 21.65
+    },
+    {
+      "type": "write",
+      "t": 21.65,
+      "text": "🇧🇪 Belgium",
+      "x": 540,
+      "y": 545,
+      "size": 100,
+      "align": "center",
+      "color": "red",
+      "cps": 18,
+      "until": 24.0
+    },
+    {
+      "type": "write",
+      "t": 22.0,
+      "text": "39.5% = ",
+      "x": 478,
+      "y": 652,
+      "size": 88,
+      "color": "ink",
+      "cps": 18,
+      "until": 24.0
+    },
+    {
+      "type": "write",
+      "t": 22.4,
+      "text": "$395",
+      "x": 748,
+      "y": 652,
+      "size": 88,
+      "color": "red",
+      "cps": 18,
+      "until": 24.0
+    },
+    {
+      "type": "bars",
+      "t": 22.1,
+      "x": 853.33,
+      "y": 1225,
+      "w": 132,
+      "h": 460,
+      "max": 400,
+      "dur": 0.9,
+      "items": [
+        {
+          "label": "🇧🇪",
+          "value": 395,
+          "display": "$395",
+          "color": "red",
+          "labelSize": 64,
+          "valueSize": 60
+        }
+      ]
+    },
+    {
+      "type": "annotate",
+      "t": 23.0,
+      "kind": "circle",
+      "x": 748,
+      "y": 586,
+      "w": 156,
+      "h": 80,
+      "dur": 0.4
+    },
+    {
+      "type": "flip",
+      "t": 24.0
+    },
+    {
+      "type": "write",
+      "t": 24.35,
+      "text": "$395 ÷ $71 ≈ 5½×",
+      "x": 540,
+      "y": 560,
+      "size": 96,
+      "align": "center",
+      "color": "ink",
+      "cps": 16
+    },
+    {
+      "type": "grid",
+      "t": 25.0,
+      "x": 540,
+      "y": 740,
+      "rows": 2,
+      "cols": 5,
+      "filled": 10,
+      "emoji": "✉️",
+      "cell": 135,
+      "dur": 0.3
+    },
+    {
+      "type": "annotate",
+      "t": 26.3,
+      "kind": "cross",
+      "x": 766,
+      "y": 831,
+      "w": 88,
+      "h": 88,
+      "width": 9,
+      "dur": 0.22
+    },
+    {
+      "type": "annotate",
+      "t": 26.55,
+      "kind": "cross",
+      "x": 631,
+      "y": 831,
+      "w": 88,
+      "h": 88,
+      "width": 9,
+      "dur": 0.22
+    },
+    {
+      "type": "annotate",
+      "t": 26.8,
+      "kind": "cross",
+      "x": 496,
+      "y": 831,
+      "w": 88,
+      "h": 88,
+      "width": 9,
+      "dur": 0.22
+    },
+    {
+      "type": "annotate",
+      "t": 27.05,
+      "kind": "cross",
+      "x": 361,
+      "y": 831,
+      "w": 88,
+      "h": 88,
+      "width": 9,
+      "dur": 0.22
+    },
+    {
+      "type": "write",
+      "t": 27.9,
+      "text": "🇧🇪 ≈ 4 of 10 ✉",
+      "x": 540,
+      "y": 1105,
+      "size": 110,
+      "align": "center",
+      "color": "red",
+      "cps": 14
+    },
+    {
+      "type": "stamp",
+      "t": 28.3,
+      "text": "POSTAGE DUE",
+      "x": 540,
+      "y": 1232,
+      "size": 66,
+      "rot": -6
+    }
+  ]
+}

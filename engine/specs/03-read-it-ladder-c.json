@@ -1,0 +1,195 @@
+{
+ "id": "03-read-it-ladder-c",
+ "title": "$2 a day on Powerball, for 10 years? (Day to Decade No. 03C)",
+ "paper": {
+  "style": "kraft",
+  "seed": 33
+ },
+ "duration": 9.0,
+ "vo": "Two bucks a day on Powerball, for ten years? Seventy-three hundred. Jackpot odds? One in eighty thousand. Flip side? Odds you spend it? One in one.",
+ "captions": [
+  {
+   "t": 0.05,
+   "end": 1.3,
+   "text": "$2 a day on Powerball,"
+  },
+  {
+   "t": 1.3,
+   "end": 2.1,
+   "text": "for 10 years?"
+  },
+  {
+   "t": 2.1,
+   "end": 3.0,
+   "text": "$7,300."
+  },
+  {
+   "t": 3.0,
+   "end": 3.6,
+   "text": "Jackpot odds?"
+  },
+  {
+   "t": 3.6,
+   "end": 4.6,
+   "text": "1 in 80,000."
+  },
+  {
+   "t": 4.6,
+   "end": 5.25,
+   "text": "Flip side?"
+  },
+  {
+   "t": 5.4,
+   "end": 6.6,
+   "text": "Odds you spend it?"
+  },
+  {
+   "t": 7.0,
+   "end": 8.1,
+   "text": "1 in 1."
+  }
+ ],
+ "ops": [
+  {
+   "type": "postmark",
+   "t": -0.4,
+   "x": 190,
+   "y": 290,
+   "center": [
+    "No.",
+    "03C"
+   ],
+   "persist": true
+  },
+  {
+   "type": "hook",
+   "t": 0,
+   "y": 432,
+   "size": 80,
+   "text": [
+    "*$2* A DAY ON",
+    "POWERBALL,",
+    "FOR 10 YEARS?"
+   ]
+  },
+  {
+   "type": "emoji",
+   "t": -0.5,
+   "char": "🎟️",
+   "x": 872,
+   "y": 300,
+   "size": 120,
+   "bob": true,
+   "rot": 10
+  },
+  {
+   "type": "ladder",
+   "t": 0.45,
+   "x": 110,
+   "y": 770,
+   "w": 800,
+   "size": 80,
+   "rowH": 104,
+   "cps": 20,
+   "gap": 0.3,
+   "rows": [
+    {
+     "factor": "×365",
+     "label": "a year",
+     "value": "$730"
+    },
+    {
+     "factor": "×10",
+     "label": "a decade",
+     "value": "$7,300"
+    },
+    {
+     "label": "jackpot",
+     "value": "≈1 in 80,000"
+    }
+   ]
+  },
+  {
+   "type": "sticky",
+   "t": 1.3,
+   "x": 245,
+   "y": 1160,
+   "w": 340,
+   "size": 56,
+   "rot": -4,
+   "cps": 36,
+   "title": "ASSUME:",
+   "text": "1 ticket a day; each is 1 in 292,201,338"
+  },
+  {
+   "type": "annotate",
+   "t": 3.7,
+   "kind": "double",
+   "x": 462,
+   "y": 1000,
+   "w": 446,
+   "dur": 0.35
+  },
+  {
+   "type": "flip",
+   "t": 4.75
+  },
+  {
+   "type": "hook",
+   "t": 5.05,
+   "y": 455,
+   "size": 88,
+   "text": [
+    "FLIP SIDE"
+   ]
+  },
+  {
+   "type": "lines",
+   "t": 5.25,
+   "x": 540,
+   "y": 770,
+   "size": 92,
+   "align": "center",
+   "cps": 26,
+   "gap": 0.1,
+   "lines": [
+    "Odds you spend",
+    "the $7,300?"
+   ]
+  },
+  {
+   "type": "emoji",
+   "t": 6.3,
+   "char": "💸",
+   "x": 214,
+   "y": 1196,
+   "size": 130,
+   "bob": true,
+   "rot": -8
+  },
+  {
+   "type": "write",
+   "t": 6.95,
+   "text": "1 in 1.",
+   "x": 540,
+   "y": 1050,
+   "size": 160,
+   "align": "center",
+   "color": "red",
+   "cps": 12
+  },
+  {
+   "type": "stamp",
+   "t": 7.75,
+   "text": "POSTAGE\nDUE",
+   "x": 710,
+   "y": 1215,
+   "size": 60,
+   "rot": -7
+  },
+  {
+   "type": "flip",
+   "t": 8.75
+  }
+ ]
+}
