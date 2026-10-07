@@ -1,6 +1,6 @@
 {
   "id": "_demo-all-ops",
-  "title": "Engine demo \u2014 every op",
+  "title": "Engine demo — every op",
   "paper": {
     "style": "kraft"
   },
@@ -25,7 +25,7 @@
     {
       "type": "emoji",
       "t": 0.6,
-      "char": "\u2615",
+      "char": "☕",
       "x": 800,
       "y": 760,
       "size": 150
@@ -37,8 +37,8 @@
       "y": 820,
       "lines": [
         "$5",
-        "\u00d7 5 days",
-        "\u00d7 52 weeks",
+        "× 5 days",
+        "× 52 weeks",
         "$1,300"
       ],
       "rule": 3
@@ -70,15 +70,16 @@
       "title": "ASSUME:",
       "text": "7% a year, 30 years",
       "x": 300,
-      "y": 520
+      "y": 470,
+      "w": 380
     },
     {
       "type": "curve",
       "t": 7.4,
       "x": 140,
-      "y": 1280,
+      "y": 1290,
       "w": 760,
-      "h": 520,
+      "h": 500,
       "fn": {
         "type": "compound",
         "principal": 0,
@@ -175,7 +176,7 @@
       "note": "guess first",
       "openAt": 22.5,
       "card": [
-        "\u2248 $123K",
+        "≈ $123K",
         {
           "text": "rough, but right",
           "size": 56,
@@ -215,12 +216,12 @@
       "y": 1050,
       "value": "$5",
       "label": "PER CUP",
-      "art": "\u2248"
+      "art": "≈"
     },
     {
       "type": "write",
       "t": 26.8,
-      "text": "or\u2026",
+      "text": "or…",
       "x": 160,
       "y": 1120,
       "size": 90,
@@ -258,7 +259,7 @@
       "rows": 3,
       "cols": 10,
       "filled": 22,
-      "emoji": "\u2615",
+      "emoji": "☕",
       "cell": 74,
       "label": "22 work days"
     },
