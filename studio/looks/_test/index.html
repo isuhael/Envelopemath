@@ -1,0 +1,42 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../../fonts/fonts.css">
+<link rel="stylesheet" href="../../runtime/base.css">
+<style>
+  #stage { background: #0D0E11; color: #fff; font-family: 'Inter', 'Inter Full', sans-serif; }
+  .title { position: absolute; left: 60px; top: 260px; width: 900px; font: 800 72px/1.1 'Inter', 'Inter Full'; }
+  .title em { font-style: normal; color: #FFD60A; }
+  .count { position: absolute; left: 60px; top: 700px; font: 900 160px 'Inter'; color: #2BFF88; }
+  .tiny { position: absolute; left: 60px; top: 1000px; font: 500 20px 'Inter'; }
+  .deco { position: absolute; left: 60px; top: 120px; font: 600 30px 'Inter'; color: #888; }
+</style></head>
+<body><div id="stage"></div>
+<script type="module">
+// Minimal kit used by the studio tests (not a channel look).
+import { defineKit, h, css, setText, money, tween, markup, captionAt } from '../../runtime/core.js'
+defineKit({
+  name: '_test',
+  formats: {
+    counter(spec, ctx) {
+      const d = spec.data
+      const title = h('div', { class: 'title', html: markup(d.title) })
+      const n = h('div', { class: 'count', style: { display: d.hideCount ? 'none' : 'block' } })
+      const deco = h('div', { class: 'deco', 'data-deco': '' }, 'back of the envelope')
+      const extra = d.tiny ? h('div', { class: 'tiny' }, d.tiny) : null
+      const cap = h('div', { style: { position: 'absolute', left: '60px', top: '1340px', font: '700 52px Inter', color: '#fff' } })
+      ctx.stage.append(...[deco, title, n, extra, cap].filter(Boolean))
+      ctx.cue(0.5, 'tick')
+      ctx.cue(d.dur - 0.5, 'ding')
+      return {
+        duration: d.dur,
+        seek(t) {
+          setText(n, money(tween(t, 0.3, d.dur - 0.8, d.from, d.to)))
+          css(title, { opacity: String(tween(t, 0, 0.3, 0.999, 1)) })
+          const c = captionAt(spec.vo, t)
+          setText(cap, c ? c.line.text : '')
+        },
+      }
+    },
+  },
+})
+</script></body></html>

@@ -1,0 +1,3 @@
+{ "id": "t-counter", "look": "_test", "format": "counter",
+  "vo": [{ "t": 0.2, "text": "Five dollars a day." }, { "t": 1.5, "text": "Invested." }],
+  "data": { "title": "Your **$5** a day, invested", "from": 0, "to": 185500, "dur": 6 } }

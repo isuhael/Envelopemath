@@ -1,0 +1,10 @@
+/* Shared page frame for every look kit. Frames are captured at 1080x1920, so nothing may animate on its own:
+   every visual state must be set by the kit's seek(t). */
+html, body { margin: 0; padding: 0; width: 1080px; height: 1920px; overflow: hidden; background: #000; }
+*, *::before, *::after { box-sizing: border-box; transition: none !important; animation: none !important; caret-color: transparent; }
+#stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision; }
+.abs { position: absolute; }
+/* Debug overlay, toggled by STUDIO.debug(true): platform UI zones in red, caption band in yellow. */
+#safe-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 9999; display: none; }
+#safe-overlay.on { display: block; }
+#safe-overlay i { position: absolute; display: block; }
