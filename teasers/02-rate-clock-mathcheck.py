@@ -158,3 +158,84 @@ period = 60 / HEART_BPM
 print(f"        heart: pulse bpm 2 x {HEART_BPM} -> one beat every {120 / (2 * HEART_BPM):.3f} s = {60 / (120 / (2 * HEART_BPM)):.0f} bpm")
 beats_shown = 4
 print(f"        running total: +$10,000 on each of {beats_shown} beats, {period:.3f} s apart -> ${10_000 * beats_shown:,} spent after {period * (beats_shown - 1):.3f} s")
+
+# ---------------------------------------------------------------------------
+# Screen check (final review): every number drawn in the three specs must be
+# the rounding of the values computed above, and the captions' spoken text
+# (`say`, else `text`) must join to the spec's `vo`.
+import json
+import re
+from pathlib import Path
+
+SPECS = Path(__file__).resolve().parent.parent / "engine" / "specs"
+
+
+def spec(stem):
+    return json.loads((SPECS / f"{stem}.json").read_text(encoding="utf-8"))
+
+
+def screen_text(sp):
+    """Every string the spec draws (write/lines/ladder/stamp/sticky/postage/hook), em markers removed."""
+    out = []
+    for op in sp["ops"]:
+        for key in ("text", "value", "label", "title"):
+            v = op.get(key)
+            if isinstance(v, str):
+                out.append(v)
+            elif isinstance(v, list):
+                out.extend(x for x in v if isinstance(x, str))
+        for L in op.get("lines", []):
+            out.append(L["text"] if isinstance(L, dict) else L)
+        for r in op.get("rows", []):
+            out += [r["label"], r["value"]]
+    return " | ".join(s.replace("*", "").replace("\n", " ") for s in out)
+
+
+def captions_match_vo(sp):
+    said = " ".join(c.get("say", c["text"]).replace("\n", " ") for c in sp["captions"])
+    vo = re.sub(r"\(.*?\)", "", sp["vo"])
+    return " ".join(said.split()) == " ".join(vo.split())
+
+
+def op(sp, **kw):
+    hits = [o for o in sp["ops"] if all(o.get(k) == v for k, v in kw.items())]
+    assert len(hits) == 1, kw
+    return hits[0]
+
+
+print()
+print("=" * 72)
+print("Screen check: spec text and animation vs the numbers above")
+print("=" * 72)
+a, b, c = spec("02-rate-clock-a"), spec("02-rate-clock-b"), spec("02-rate-clock-c")
+A_, B_, C_ = screen_text(a), screen_text(b), screen_text(c)
+checks = [
+    ("A trillion inked", f"${TRILLION:,}" in A_),
+    ("A line 1", f"$1T ÷ $50K/hr = {hours / 1e6:.0f}M hrs" in A_),
+    ("A line 2", f"÷ {HRS_PER_YR:,.0f} hrs/yr ≈ {round(years):,} yrs" in A_),
+    ("A footnote", f"({HRS_PER_YR:,.0f} = 365¼ days × 24 hrs)" in A_),
+    ("A rung Year 1", f"${round(earned_year1 / 1e9)}B ✗" in A_),
+    ("A rung Caesar", f"${round(earned_caesar / 1e9)}B ✗" in A_),
+    ("A start year", f"≈ {era(y)}" in A_ and f"CLOCKED IN {era(y)}" in A_),
+    ("A Year 1 tick", op(a, type="write", text="Year 1")["x"] == round(x_year1)),
+    ("A captions = VO", captions_match_vo(a)),
+    ("B postage", f"${APPLE_REV / 1e9:.0f}B" in B_),
+    ("B line 1", f"${APPLE_REV / 1e9:.0f}B ÷ {SEC_365 / 1e6:.1f}M s ≈ ${rev_ps / 1e3:.1f}K/s" in B_),
+    ("B sticky", f"${WEEKLY:,}/wk × 52 ≈ ${salary / 1e3:.0f}K" in B_),
+    ("B line 2", f"${salary / 1e3:.0f}K ÷ ${rev_ps / 1e3:.1f}K/s ≈ {t_salary:.1f} sec" in B_),
+    ("B real-time counter", op(b, type="counter", to=salary)["dur"] == round(t_salary, 2)),
+    ("B career", f"≈ {t_career / 60:.1f} min" in B_ and f"{t_salary:.1f} sec × 40 yrs" in B_),
+    ("B captions = VO", captions_match_vo(b)),
+    ("C line 1", f"$1B ÷ 24 hrs ≈ ${per_hr / 1e6:.1f}M/hr" in C_),
+    ("C line 2", f"$1B ÷ 86,400 s ≈ ${per_sec:,.0f}/s" in C_),
+    ("C hero", f"${per_beat / 1e3:.0f}K a beat" in C_.replace("  ", " ")),
+    ("C countdown", op(c, id="clock")["from"] - op(c, id="clock")["to"] == CLOCK_DUR == op(c, id="clock")["dur"]),
+    ("C heart 70 bpm", op(c, type="emoji", char="❤️")["pulse"]["bpm"] == 2 * HEART_BPM),
+    ("C running total", [s[1] for s in op(c, id="spent")["steps"]] == [10_000 * k for k in range(1, beats_shown + 1)]
+     and all(abs(s[0] - k * period) < 0.001 for k, s in enumerate(op(c, id="spent")["steps"]))),
+    ("C captions = VO", captions_match_vo(c)),
+]
+for name, ok in checks:
+    print(f"  {'ok ' if ok else 'BAD'}  {name}")
+assert all(ok for _, ok in checks), "screen check failed"
+print("all screen checks pass")

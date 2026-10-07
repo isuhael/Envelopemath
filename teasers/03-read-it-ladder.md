@@ -73,7 +73,7 @@ A single selfie lip-sync take to a trending audio clip ("I didn't have a pen and
 - **03B:** it reverses the lecture onto income: your boss did this math too.
 - **03C:** it turns the decade back into your working hour: $94,440 ÷ 20,800 hours = $4.54 of every hour you work.
 
-A lexicon stamp gives the verdict, and a second flip in the last 0.6 s turns the envelope back over while the page crossfades into frame 1 (`loop: true`). The loop reads as "turning the envelope back over". The ladder is gone from the back before you finish reading it, which is what drives the rewatch. No other ladder account flips the paper, so the format can't be copied caption-for-caption: the back of the envelope *is* the joke.
+A lexicon stamp gives the verdict, and a second, quicker flip (0.4 s, starting 0.75 s before the end) turns the envelope back over; the blank envelope then crossfades into frame 1 (`loop: true`). The loop reads as "turning the envelope back over". The ladder is gone from the back before you finish reading it, which is what drives the rewatch. No other ladder account flips the paper, so the format can't be copied caption-for-caption: the back of the envelope *is* the joke.
 
 **Series name:** *Day to Decade*.
 **Title template:** `[tape text] (Day to Decade No. N)`, e.g. "Your habit is $3 a day. For 10 years? (Day to Decade No. 03A)". Title = tape text = first spoken line.
@@ -91,7 +91,7 @@ A lexicon stamp gives the verdict, and a second flip in the last 0.6 s turns the
 | 660–1060 | Frame 0: one big emoji prop (330–340 px), gone at 0.40–0.45 s. Then the `ladder`: 2–3 rungs, labels 74–83 px, red multipliers 66–75 px in the gutter, last rung red at 106–120 px with a target-anchored double underline; values end at x 910 (30 px clear of the button rail) | Punchline in red pen (96–108 px, 2 lines), or 03C's division line, then the 190 px hero |
 | 1046–1316 | ASSUME: sticky, 56–58 px (left) · small emoji prop (right) · 03C's pencil source line | Emoji prop · verdict stamp |
 | 1320–1480 | Word-highlighted captions (numerals; `say` gives the spoken form), ≤ 2 lines, ≤ 4 words/s | Captions |
-| loop | | Final flip 0.6 s before the end; `loop: true` crossfades the last 0.35 s into frame 0 |
+| loop | | Final 0.4 s flip starts 0.75 s before the end and finishes as `loop: true` begins its 0.35 s crossfade into frame 0 (final review) |
 
 **Keeping to our lane:** no unit counts (#1), no division of a mega-number into time (#2), no A-vs-B pick or crossover (#4). The only comparison is a one-line benchmark on the back (one phone), the way the originals use "not a nice car". 03C's back divides a personal monthly bill by the viewer's own work hours. That is the wage-ladder variant already in our evidence (@financebestiechloe), not #2's mega-number rate.
 
@@ -123,7 +123,7 @@ A lexicon stamp gives the verdict, and a second flip in the last 0.6 s turns the
 | 6.10 | 📱 pops, bottom-left | pop |
 | 6.80–7.51 | Ink, 76 px: *(a year: exactly $1,095)*; red underline under $1,095 at 7.52 | scratch |
 | 7.50 (thump 7.70, 86%) | **Verdict:** stamp **RETURN TO SENDER** (the lecture, sent back) | stamp thump · "Return to sender." (7.50–8.50) |
-| 8.40–9.00 | The envelope flips back over (cut at 8.65), then crossfades into frame 0 | whoosh → loop |
+| 8.25–9.00 | The envelope flips back over (0.4 s flip, cut at 8.45, done by 8.65), then the blank envelope crossfades into frame 0 (8.65–9.00) | whoosh → loop |
 
 **Voice-over (29 words, about 3.4 words/s, dry, amused):**
 > Your habit is three bucks a day. For ten years? About eleven grand. Flip side? A year of it costs less than one iPhone eighteen Pro. Return to sender.
@@ -184,7 +184,7 @@ A lexicon stamp gives the verdict, and a second flip in the last 0.6 s turns the
 | 6.30 | 👔 pops, bottom-right | pop |
 | 6.70–7.29 | Ink, 92 px: *Now you have.* | "Now you have." (6.70–7.70) |
 | 7.50 (thump 7.70, 86%) | **Verdict:** stamp **OPENED BY MISTAKE** (the "only" was wrong, and you've now read the boss's math) | stamp thump |
-| 8.40–9.00 | The envelope flips back over (cut at 8.65), then crossfades into frame 0 | whoosh → loop |
+| 8.25–9.00 | The envelope flips back over (0.4 s flip, cut at 8.45, done by 8.65), then the blank envelope crossfades into frame 0 (8.65–9.00) | whoosh → loop |
 
 **Voice-over (24 words, about 3.1 words/s):**
 > A one-dollar raise? Only eight bucks a day? Twenty thousand eight hundred. Only. Flip side? Your boss did this math too. Now you have.
@@ -245,11 +245,11 @@ A lexicon stamp gives the verdict, and a second flip in the last 0.6 s turns the
 | 4.75–5.25 (49%) | **Pattern break:** the envelope flips (cut at 5.00) | whoosh · "Flip side?" (4.75–5.40) |
 | 5.05 | Back: tape **FLIP SIDE** | tape |
 | 5.20–6.03 | Ink (80 px, 5.20–5.76): *$94,440 ÷ 20,800 hrs*; pencil under it (64 px, 5.45–6.03, no pen): *(10 yrs of 40-hr weeks)* | scratch |
-| 6.05–6.47 | **Hero line**, red pen, 190 px: ***$4.54*** | scratch · "That's $4.54" (5.50–6.50) |
-| 6.78–7.51 | Ink (84 px): *of every hour you work* | "of every hour you work." (6.50–7.80) |
+| 6.05–6.47 | **Hero line**, red pen, 190 px: ***$4.54*** | scratch · "That's $4.54" (5.95–6.75) |
+| 6.78–7.51 | Ink (84 px): *of every hour you work* | "of every hour you work." (6.75–8.05) |
 | 7.25 | 🚗 pops, bottom-left | pop |
 | 7.90 (thump 8.10, 84%) | **Verdict:** stamp **POSTAGE DUE** (the per-hour cost nobody quotes you) | stamp thump · "Postage due." (8.05–8.95) |
-| 9.00–9.60 | The envelope flips back over (cut at 9.25), then crossfades into frame 0 | whoosh → loop |
+| 8.85–9.60 | The envelope flips back over (0.4 s flip, cut at 9.05, done by 9.25), then the blank envelope crossfades into frame 0 (9.25–9.60) | whoosh → loop |
 
 **Voice-over (26 words, about 2.9 words/s, dry):**
 > The average new-car payment is seven eighty-seven a month. For ten years? Ninety-four grand. Flip side? That's four fifty-four of every hour you work. Postage due.
@@ -327,10 +327,10 @@ Output (2026-10-07, after the polish pass):
              shown '$4.54': within 0.008%
   VO 'ninety-four grand': $94,000, within 0.47% of $94,440
   per calendar day: $9,444 / 365 = $25.8740 -> '$25.87' (pin)
-  per clock hour, 24/7: $9,444 / 8,760 = $1.078 (pin: '≈$1.08 an hour, even parked')
+  per clock hour, 24/7: $9,444 / 8,760 = $1.078 (context only: not in the pin)
   vs BLS median $31.275/hr: 14.52% of gross pay = the first 8.71 min of every hour (pin: '≈8.7 min')
   a $1,000 payment (21.2% of new-car buyers): $5.7692 of every hour -> '$5.77' (pin)
-  Edmunds context (pin): Q2 2026 $777, Q3 2025 $756 -> +$31 (4.1%) in a year; APR 7.0%, financed $44,664, interest $9,938; 25.5% of loans 84+ months
+  Edmunds context (the pin uses only Q3 2025 $756): Q2 2026 $777, Q3 2025 $756 -> +$31 (4.1%) in a year; APR 7.0%, financed $44,664, interest $9,938; 25.5% of loans 84+ months
     $  400/mo -> $2.31 of every hour worked
     $  600/mo -> $3.46 of every hour worked
     $  787/mo -> $4.54 of every hour worked
@@ -527,3 +527,58 @@ Polish pass, 2026-10-07. Every real-world input that is on screen or in this md 
   - 03A's $1,095 underline started before the number finished writing. The sub-line now starts at 6.80 s and the underline at 7.52 s (it was 7.2).
   - 03C's source line was 58 px; it is now 64 px and shortened to "Edmunds, Q3 2026".
 - **Audio** (`volumedetect`): 03A mean −22.6 dB, max −1.9 dB; 03B mean −22.9 dB, max −1.8 dB; 03C mean −23.0 dB, max −2.2 dB. All are within the −30 to −18 dB target, with peaks below −1 dB.
+
+---
+
+### Final review
+
+Independent final reviewer, 2026-10-07. I re-read `engine/README.md` first and did not touch `engine/src`. Files changed: `engine/specs/03-read-it-ladder-{a,b,c}.json`, `teasers/03-read-it-ladder-mathcheck.py` (two print labels only), this md, the MP4s `engine/out/03-read-it-ladder-{a,b,c}.mp4` (re-rendered), the sheets `engine/out/sheets/03-read-it-ladder-{a,b,c}.png` (re-rendered, `--n 12`), and the stills `engine/out/stills/03-read-it-ladder-{a,b}-{0.0,3.6,6.75,8.9}.png` and `03-read-it-ladder-c-{0.0,3.85,7.2,9.5}.png` (pulled from the new MP4s at 540 px).
+
+**What I looked at.** For each spec I viewed a 12-frame contact sheet and four MP4 frames at 540 px (phone scale): 0.0 s, about 40% (3.6 / 3.6 / 3.85 s), about 75% (6.75 / 6.75 / 7.2 s) and the end (8.9 / 8.9 / 9.5 s). I also pulled extra frames at the verdict stamps (8.2 / 8.2 / 8.7 s), through both flips, frame by frame through the loop crossfade, and at every moment a caption names a number.
+
+**Passed as delivered:**
+- **Frame 0 has a number in all three:** red *$3* / *$1/HR* / *$787* on the tape, the postmark in the flap and a big prop. No caption covers it. It is a clean thumbnail.
+- **Phone legibility:** every piece of handwriting is readable at 540 px. The smallest are the stickies (56–58 px) and the gutter multipliers, which are still clear. The marker face's "$" is a slashed S, but "$3", "$8", "$1/HR" and "$787" all read as dollars at phone size.
+- **Safe areas:** nothing readable sits in 0–230 (only the postmark decoration), in the platform band (1480+) or on the right rail. Ladder values end at x 910, and the 03C source line is right-aligned at x 910.
+- **Overlaps:** no stamp, emoji, sticky or caption overlaps any text. All three stamps land clear of the props.
+- **Captions:** every caption is 1 line and ≤ 4 words/s. Each spec's `vo` equals its joined `say` text (the script asserts this).
+
+**Problems found and fixed:**
+
+| # | Teaser | Problem (seen in the render) | Fix |
+|---|---|---|---|
+| 1 | 03A, 03B, 03C | **Double exposure in the loop.** The closing flip (0.5 s, starting 0.6 s before the end) was still expanding while the 0.35 s loop crossfade drew frame 0 on top of it. For about 0.2 s (03A 8.67–8.87 s) you saw a ghost second postmark beside the real one and dark bars down both sides under the fading hook. The polish pass said this frame was "not a double exposure", but it was. | Closing flip is now `{"type":"flip","t":8.25,"dur":0.4}` (03A/03B) and `{"t":8.85,"dur":0.4}` (03C). It finishes exactly when the crossfade starts (8.65 / 9.25 s), so the crossfade runs from a blank envelope (postmark persistent, same position) into frame 0. Re-checked frame by frame: there is no ghosting now. The stamps still get 0.55–0.75 s settled before the flip, and they stay visible through the squash. |
+| 2 | 03C | **The caption spoiled the hero.** "That's $4.54" was on screen from 5.50 s, but the red $4.54 isn't written until 6.05–6.47 s, so the payoff was read (and heard) about 0.55 s before the pen wrote it. | Captions retimed: "That's $4.54" now runs 5.95–6.75 and "of every hour you work." 6.75–8.05 (3.8 words/s). The VO pauses while the division line writes, and the number is now spoken as the pen writes it (frame at 6.4 s: "$4.5" half-written, caption on "That's"). "Postage due." is unchanged at 8.05. |
+| 3 | math script | Two print lines claimed to be in the 03C pin ("≈$1.08 an hour, even parked"; the Edmunds interest and 84-month figures), but the pin doesn't contain them. | Relabelled "context only: not in the pin" and "the pin uses only Q3 2025 $756". The embedded output above is updated. The values themselves ($9,938 average interest; 25.5% of loans at 84+ months, Edmunds Q3 2026) were confirmed with WebSearch today, but nothing is published from them. |
+
+The beat sheets (closing-flip rows; 03C hero caption rows), the Why-it-goes-viral flip description and the screen template's loop row were updated to the new timings.
+
+**Math.** `python3 teasers/03-read-it-ladder-mathcheck.py` passes, and its output matches the embedded copy. I also recomputed the numbers independently in python3:
+- 03A: $21 / $1,092 / $1,095 / $10,950 ($10,957.50 with leap days), ≈$11,000 within 0.46%, $1,199 − $1,095 = $104, $3.285 break-even, end-of-month 7% annuity $15,794.
+- 03B: $40 / $2,080 / $20,800; 2026–2035 has 2,608 weekdays → $20,864 (0.31%); $31.275/hr; 3.20%; $5.70 a day.
+- 03C: $9,444 / $94,440; ÷ 20,800 = $4.5404; $25.87 a day; 14.52% of the median wage (8.71 min an hour); reply key $2.31 / $3.46 / $5.77; VO "ninety-four grand" within 0.47%.
+
+Every number on screen and in the captions agrees with the ink, the md beat sheets, the pins and the descriptions. No arithmetic errors.
+
+**Facts: on-screen and pin inputs re-checked with WebSearch on 2026-10-07:**
+- Edmunds Q3 2026 average payment on financed new vehicles: **$787** (Q2 $777, Q3 2025 $756), with a $1,000+ share of 21.2%. Sources: Auto Remarketing (https://www.autoremarketing.com/?p=131431) and NewsNation (https://digital-release.newsnationnow.com/?p=2442337), both reporting the Edmunds release of 2026-10-01.
+- iPhone 18 Pro from **$1,199** (256GB; pre-orders opened 2026-09-12): https://www.iclarified.com/102195/iphone-18-pro-and-iphone-18-pro-max-now-available-to-preorder
+- BLS median usual weekly earnings for full-time workers, Q2 2026: **$1,251** (release of 2026-07-21): https://www.bls.gov/news.release/archives/wkyeng_07212026.htm
+
+All match the md. I also confirmed the research citations in 03C's "Why it should travel" (AutoBuddy 2,328,824; the bald trader 3,197,058 at 17.7x) in `research/raw/yt-personal-money-math.md` rows 13 and 16. No advice language turned up in the VO, the captions, the pins or the descriptions.
+
+**Lint.** `node src/cli.js check specs/03-read-it-ladder-{a,b,c}.json`: **0 warnings** on all three, after the fixes.
+
+**Hook scores** (1–10, against `research/02` §3: the frame-1 number, the hook formulas "A [habit] is $[X] a day" and "If you make $X/hr…", and the evidence table):
+
+| Teaser | Score | Why |
+|---|---|---|
+| 03A | **8** | The format's best-proven shape (@mightym11805, "$3 a day", 1,106.2x; daily-habit cluster median 285.7x), with the number in red in frame 0 and a stake question that the ink answers at 34%. Held back from 9 because "YOUR HABIT" is generic where the winner named the thing (an energy drink), and because frame 0 shows one rung, not the whole too-long-to-read block that drives the original's rewatch. The ☕ prop only partly makes up for it. |
+| 03B | **7.5** | Strong dare ("ONLY … ?"), and the red-pen strike on ONLY is a real twist. But the wage-ladder hook has the thinnest evidence in the table (@financebestiechloe, 29.9x), and a per-hour raise speaks to hourly earners only. |
+| 03C | **8** | A specific, record-high, sourced number from this week's news. The car-payment question is proven (AutoBuddy 2.33M as structure only; the bald trader 3.2M at 17.7x; Kel King's car ladder 1,131.1x), and the flip side ($4.54 of every hour) is the strongest twist of the three. Held back because $787/mo isn't the small daily number the format thrives on, the 8-word, 3-strip tape is the heaviest frame 0 in the set, and "for 10 years" is a stated assumption that commenters will push on (engagement, but also a credibility test). |
+
+**Residual notes (judged acceptable, not changed):**
+- 03C's "$94,440." caption appears as the pen starts the value (3.80 s; the ink finishes at 4.15), and the VO rounds it to "ninety-four grand". The rounding is documented, and the ink and caption both show the exact figure.
+- At about 3.85 s in 03C the pen briefly crosses the end of "$9,444" as it moves down to the decade rung, about 0.3 s after that rung has been on screen for 2.6 s.
+
+**Verdicts:** 03A **fixed** · 03B **fixed** · 03C **fixed**. All three are ready to post once the "Open before publishing" items above are done (BLS Q3 on Oct 21; Edmunds Q4 if it's out).

@@ -126,7 +126,7 @@ assert round(c_decade, -3) == 94_000
 per_day = F(c_year, 365)
 print(f"  per calendar day: ${c_year:,} / 365 = ${float(per_day):.4f} -> '$25.87' (pin)")
 assert round(float(per_day), 2) == 25.87
-print(f"  per clock hour, 24/7: ${c_year:,} / 8,760 = ${c_year / 8760:.3f} (pin: '≈$1.08 an hour, even parked')")
+print(f"  per clock hour, 24/7: ${c_year:,} / 8,760 = ${c_year / 8760:.3f} (context only: not in the pin)")
 assert round(c_year / 8760, 2) == 1.08
 share = float(per_hr) / med_hr
 print(f"  vs BLS median ${med_hr:.3f}/hr: {share * 100:.2f}% of gross pay = the first {share * 60:.2f} min of every hour (pin: '≈8.7 min')")
@@ -134,7 +134,7 @@ assert round(share * 100, 1) == 14.5 and round(share * 60, 1) == 8.7
 p1000 = 1000 * 12 / hrs_year
 print(f"  a $1,000 payment ({SHARE_1000}% of new-car buyers): ${p1000:.4f} of every hour -> '$5.77' (pin)")
 assert round(p1000, 2) == 5.77
-print(f"  Edmunds context (pin): Q2 2026 ${CAR_PAYMENT_Q2}, Q3 2025 ${CAR_PAYMENT_Q3_2025} -> +${CAR_PAYMENT - CAR_PAYMENT_Q3_2025} "
+print(f"  Edmunds context (the pin uses only Q3 2025 $756): Q2 2026 ${CAR_PAYMENT_Q2}, Q3 2025 ${CAR_PAYMENT_Q3_2025} -> +${CAR_PAYMENT - CAR_PAYMENT_Q3_2025} "
       f"({(CAR_PAYMENT / CAR_PAYMENT_Q3_2025 - 1) * 100:.1f}%) in a year; APR {CAR_APR}%, financed ${CAR_FINANCED:,}, "
       f"interest ${CAR_INTEREST:,}; {SHARE_84}% of loans 84+ months")
 assert CAR_PAYMENT - CAR_PAYMENT_Q3_2025 == 31 and round((CAR_PAYMENT / CAR_PAYMENT_Q3_2025 - 1) * 100, 1) == 4.1

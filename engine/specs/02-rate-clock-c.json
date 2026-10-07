@@ -8,7 +8,7 @@
  "duration": 17.0,
  "loop": true,
  "sfxGain": 0.75,
- "vo": "Spend a billion in 24 hours. How much per heartbeat? Whatever's left, you lose. That's almost forty-two million an hour. Per second? Over eleven and a half grand. Your heart beats about a hundred thousand times a day. So: ten grand. Every. Single. Heartbeat. What's beat one buying? Your clock starts now.",
+ "vo": "Spend a billion in twenty-four hours. How much per heartbeat? Whatever's left, you lose. That's almost forty-two million an hour. Per second? Over eleven and a half grand. Your heart beats about a hundred thousand times a day. So: ten grand. Every. Single. Heartbeat. What's beat one buying? Your clock starts now.",
  "captions": [
   {
    "t": 0.0,
@@ -124,12 +124,12 @@
    "type": "lines",
    "id": "m",
    "t": 4.8,
-   "x": 915,
+   "x": 900,
    "y": 940,
-   "size": 82,
+   "size": 78,
    "cps": 16,
    "em": true,
-   "pen": "low",
+   "pen": "small-low",
    "lines": [
     {
      "text": "$1B ÷ 24 hrs ≈ *$41.7M/hr*"
@@ -139,7 +139,8 @@
      "at": 2.1,
      "cps": 18
     }
-   ]
+   ],
+   "lineHeight": 112
   },
   {
    "type": "annotate",
@@ -154,8 +155,8 @@
    "type": "write",
    "t": 6.4,
    "text": "(86,400 = seconds in a day)",
-   "x": 915,
-   "y": 1170,
+   "x": 900,
+   "y": 1225,
    "size": 64,
    "color": "pencil",
    "align": "right",
@@ -170,7 +171,7 @@
     "op": "m",
     "match": "$11,574/s"
    },
-   "pad": 12
+   "pad": 20
   },
   {
    "type": "flip",
@@ -214,7 +215,7 @@
    "type": "write",
    "id": "b2",
    "t": 12.95,
-   "text": "= $10K a beat",
+   "text": "=  $10K  a beat",
    "x": 540,
    "y": 1040,
    "size": 130,
@@ -229,9 +230,9 @@
    "kind": "circle",
    "target": {
     "op": "b2",
-    "match": "$10K"
+    "match": "$10K "
    },
-   "pad": 12
+   "pad": 18
   },
   {
    "type": "counter",

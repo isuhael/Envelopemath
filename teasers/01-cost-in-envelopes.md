@@ -143,23 +143,23 @@ Each episode also leaves one **save-worthy envelope rule**:
 | Time | Beat | On screen |
 |---|---|---|
 | 0.0–3.3 | Hook (frame 0 = thumbnail) | Tape hook (number + unit) and question strip; 🌭 bobs; $1.50 COSTCO COMBO stamp |
-| 3.3–6.2 | Flip, set-up | Large ASSUME sticky (66 px): "Elon ≈ $1 trillion (Bloomberg, Oct 5 2026). Costco combo $1.50, same price since 1985." |
-| 6.2–10.3 | Flip, line 1 + **partial payoff (37%)** | "$1,000,000,000,000" over "÷ $1.50" (96 px column); red tip "÷ 1.5 = × ⅔"; red counter (124 px) runs 0 → **666,666,666,667** and pops at 9.6 s; red circle anchored to the counter; "hot dogs 🌭" |
-| 10.3–13.1 | Flip, pattern break (line 3) | "666,666,666,667 🌭" in red; 🌍; "÷ 8.2 billion people" (88 px) |
-| 13.1–17.6 | Seal + guess | "Each person gets…"; sealed envelope "how many each?"; 3-s PAUSE & GUESS (14.3–17.3) |
-| 17.6–20.7 | **Reveal (68%)** | Envelope opens: card **"≈ 81 each"** (124 px) / "hot dogs per person" |
-| 20.7–24.0 | Flip, scale shot | A 9×9 tray of 🌭 fills (21.3–22.9 s): "your share: 81" (76 px) |
+| 3.3–6.8 | Flip, set-up | Large ASSUME sticky (66 px, written in 1.2 s, then held 2 s): "Elon ≈ $1 trillion (Bloomberg, Oct 5 2026). Costco combo $1.50 since 1985." |
+| 6.8–10.9 | Flip, line 1 + **partial payoff (39%)** | "$1,000,000,000,000" over "÷ $1.50" (96 px column); red tip "÷ 1.5 = × ⅔"; red counter (124 px) runs 0 → **666,666,666,667** over "hot dogs 🌭" (written as the count starts) and pops at 10.2 s; red circle anchored to the counter |
+| 10.9–13.7 | Flip, pattern break (line 3) | "666,666,666,667 🌭" in red; 🌍; "÷ 8.2 billion people" (88 px) |
+| 13.7–18.2 | Seal + guess | "Each person gets…"; sealed envelope "how many each?"; 3-s PAUSE & GUESS (14.9–17.9) |
+| 18.2–21.3 | **Reveal (70%)** | Envelope opens at 18.2 s; card **"≈ 81 each"** (124 px) / "hot dogs per person" fully out at 19.25 s and held 2 s. The VO says "Eighty-one" at 18.8 s, with the card's ding, not before it |
+| 21.3–24.0 | Flip, scale shot | A 9×9 tray of 🌭 fills (21.6–23.2 s): "your share: 81" (76 px) |
 | 24.0–26.0 | **Verdict + loop (last 2.0 s)** | SPECIAL DELIVERY slams above the tray; `loop: true` crossfades the last 0.35 s into frame 0 |
 
 **Voice-over** (the captions are exactly these lines, split into 15 caption cards of ≤ 2 lines at ≤ 4 words/s; the "667 billion" card carries `say: "about six hundred sixty-seven billion hot dogs."`)
 
 > Elon's trillion dollars, in Costco hot dogs. How many do you get? *(0.1)*
 > He's worth about a trillion. A combo's a buck fifty. *(3.4)*
-> A trillion over a buck fifty: about 667 billion hot dogs. *(6.3)*
-> Still can't picture it? Split them with everyone on Earth. *(10.3)*
-> How many does each person get? Guess before it opens. *(13.2)*
-> Eighty-one. Each. Every human alive. *(17.7)*
-> That's your tray. And your mom's. And everyone's. *(20.8)*
+> A trillion over a buck fifty: about 667 billion hot dogs. *(6.9)*
+> Still can't picture it? Split them with everyone on Earth. *(10.9)*
+> How many does each person get? Guess before it opens. *(13.8)*
+> Eighty-one. Each. Every human alive. *(18.8)*
+> That's your tray. And your mom's. And everyone's. *(21.4)*
 > All from one man's net worth. *(23.8, loops to the first line)*
 
 **The envelope math (3 lines)**
@@ -168,7 +168,7 @@ Each episode also leaves one **save-worthy envelope rule**:
 2. `= 666,666,666,667 hot dogs` (the red counter; exact 666,666,666,666.67; said "about 667 billion")
 3. `÷ 8.2 billion people` with a 🌍 (sealed card "≈ 81 each"; exact 81.30)
 
-**ASSUME sticky (on screen):** "Elon ≈ $1 trillion (Bloomberg, Oct 5 2026). Costco combo $1.50, same price since 1985."
+**ASSUME sticky (on screen):** "Elon ≈ $1 trillion (Bloomberg, Oct 5 2026). Costco combo $1.50 since 1985."
 
 **Sources (re-verified live on 2026-10-07; full table under Final fact check)**
 - **Musk ≈ $1 trillion.**
@@ -226,10 +226,10 @@ Each episode also leaves one **save-worthy envelope rule**:
 |---|---|---|
 | 0.0–3.3 | Hook (frame 0 = thumbnail) | Tape hook (number + unit) and question strip; ✉️ bobs; $10K "1 ENVELOPE" stamp |
 | 3.3–7.0 | Flip, set-up + line 1 (the unit) | Large ASSUME sticky (64 px); "100 × $100 = $10K ≈ 1.1 cm" (76 px) |
-| 7.0–10.4 | Flip, **partial payoff 1 (32%)** | "$1 million = 100 envelopes"; a stack of manila $10K envelopes (`skin: envelope`) grows beside a 🧍 "you" (1.7 m) to a red dimension "≈ 1.1 m" (lands at 8.8 s) |
+| 7.0–10.4 | Flip, **partial payoff 1 (32%)** | "$1 million = 100 envelopes"; a stack of manila $10K envelopes (`skin: envelope`) grows beside a 🧍 "you" (1.7 m) to a red dimension "≈ 1.1 m" (lands at 8.8 s); VO "Just over a meter." |
 | 10.4–14.7 | Flip, **partial payoff 2 + pattern break** | "$1 billion = 100,000 envelopes"; the envelope stack reaches "≈ 1.1 km"; pencil outline labelled "Burj Khalifa / 828 m" to scale, and shorter |
 | 14.7–19.4 | Seal + guess | Line 2 as a column, "$40T ÷ $10K / = 4 billion envelopes" (84 px); sealed envelope "how tall?"; 3-s PAUSE & GUESS (16.2–19.2) |
-| 19.4–22.4 | **Reveal (70%)** | Card **"≈ 44,000 km"** (112 px) / "4 billion × 1.1 cm" (line 3) |
+| 19.4–22.4 | **Reveal (70%)** | Card **"≈ 44,000 km"** (112 px) / "4 billion × 1.1 cm" (line 3), fully out at 20.45 s; the VO says it at 20.1 s, as the card clears the envelope |
 | 22.4–25.8 | Flip, scale shot | 🌍 with a red ring around the equator; "equator: 40,075 km"; red "≈ 1.1 laps of the equator" |
 | 25.8–27.8 | **Verdict + re-hook (last 2.0 s)** | POSTAGE DUE slams; "now in $1 bills…?"; `loop: true` crossfades into frame 0 |
 
@@ -237,12 +237,12 @@ Each episode also leaves one **save-worthy envelope rule**:
 
 > Forty trillion in US debt, in ten-grand envelopes. How tall is it? *(0.1)*
 > A hundred hundreds each. About 1.1 centimeters thick. *(3.4)*
-> A million? A hundred envelopes. About waist high. *(7.2)*
+> A million? A hundred envelopes. Just over a meter. *(7.2)*
 > A billion? A hundred thousand envelopes. *(10.6)*
 > Taller than the Burj Khalifa. *(12.7)*
 > Forty trillion? Four billion envelopes. *(14.8)*
 > How tall is that stack? Guess before it opens. *(16.8)*
-> About forty-four thousand kilometers. *(19.5)*
+> About forty-four thousand kilometers. *(20.1)*
 > Longer than the equator. It wraps the whole planet. *(22.6)*
 > Now in one-dollar bills: where does it reach? *(25.7, re-hook)*
 
@@ -280,7 +280,7 @@ The scale shot only uses numbers already on screen: 44,000 ÷ 40,075 = 1.098 ≈
   > Exact: $40T ÷ $10K = 4,000,000,000 envelopes × 1.0922 cm (100 bills × 0.0043 in) = 43,688 km (envelope said ≈ 44,000, within 0.7%). Earth's equator is 40,075 km, so that's 1.09 laps (envelope said ≈ 1.1), or 3,613 km to spare, and stood up it passes the geostationary satellites (35,786 km). At the latest Debt to the Penny (~$40.25T, Oct 5, 2026) it's ~43,960 km. Cash only; envelope paper ignored. In $1 bills: 4,368,800 km ≈ 11.4 times the Earth–Moon distance. Envelope rule: in $100 bills, $1 million is about a meter and $1 billion is about a kilometer.
 
 **Description:**
-> The US national debt passed $40 trillion in August. How tall is it in $10,000 envelopes (100 hundred-dollar bills, about 1.1 cm each)? A million is waist high, a billion beats the Burj Khalifa, and $40 trillion ≈ 44,000 km: about 1.1 laps of the equator. Exact figures are in the pinned comment.
+> The US national debt passed $40 trillion in August. How tall is it in $10,000 envelopes (100 hundred-dollar bills, about 1.1 cm each)? A million is just over a meter, a billion beats the Burj Khalifa, and $40 trillion ≈ 44,000 km: about 1.1 laps of the equator. Exact figures are in the pinned comment.
 > Sources (checked Oct 7, 2026): debt, US Treasury via PBS NewsHour ($40T crossed Aug 18, 2026) and Treasury Debt to the Penny ($40.25T on Oct 5, 2026); note thickness 0.0043 in (Bureau of Engraving and Printing); Burj Khalifa 828 m (CTBUH); Earth's equatorial radius 6,378.137 km (NASA).
 > Educational math, not financial advice.
 > #EnvelopeMath #CostInEnvelopes #NationalDebt #MoneyMath
@@ -317,10 +317,10 @@ The scale shot only uses numbers already on screen: 44,000 ÷ 40,075 = 1.098 ≈
 | Time | Beat | On screen |
 |---|---|---|
 | 0.0–2.6 | Hook (frame 0 = thumbnail) | Tape hook (number + dilemma) and question strip; 1¢ stamp, "vs", 280 tons stamp |
-| 2.6–5.9 | Flip, **partial payoff (27%)** + line 2 | Line 1 "$1,000,000 = 100,000,000 pennies" (72 px), red underline anchored to "100,000,000" at 3.85 s; line 2 "× 2.5 g = 250,000,000 g" (80 px); ⚖️ |
-| 5.9–8.7 | Seal + guess | "Heavier than her 280 tons?"; sealed envelope "heavier?"; 2-s PAUSE & GUESS (6.5–8.5) |
-| 8.7–10.6 | **Reveal (62%)** | Card **"≈ 275 tons"** (112 px) / red "she wins by a hair" |
-| 10.6–12.0 | Flip, twist | Line 3 "100M × 3.02¢ = $3.02M" (80 px), red double underline anchored to "$3.02M"; ASSUME sticky "1¢ cost 3.02¢ to make (US Mint, FY2025)." |
+| 2.6–5.9 | Flip, **partial payoff (27%)** + line 2 | Line 1 "$1,000,000 = 100,000,000 pennies" (72 px), red underline anchored to "100,000,000" at 3.85 s; line 2 "× 2.5 g = 250,000,000 g" (80 px, written 4.0–4.6 s); ⚖️ |
+| 5.9–8.35 | Seal + guess | "Heavier than her 280 tons?"; sealed envelope "heavier?"; 2-s PAUSE & GUESS (6.3–8.3) |
+| 8.35–10.75 | **Reveal (60%)** | Envelope opens at 8.35 s; card **"≈ 275 tons"** (112 px) / red "she wins by a hair" fully out at 9.4 s and held 1.35 s; the VO says it at 8.9 s, as the card rises |
+| 10.75–12.0 | Flip, twist | Line 3 "100M × 3.02¢ = $3.02M" (80 px), red double underline anchored to "$3.02M" at 11.75 s; ASSUME sticky "1¢ cost 3.02¢ to make (US Mint, FY2025)." |
 | 12.0–14.0 | **Verdict + loop (last 2.0 s)** | RETURN TO SENDER slams beside the sticky; red "$3.02M to make $1M"; "No wonder they stopped." crossfades into frame 0 (`loop: true`) |
 
 **Voice-over** (the captions are exactly these lines, split into 9 caption cards of ≤ 2 lines at ≤ 4 words/s; the number cards carry `say` readings: "two hundred eighty tons", "two hundred seventy-five tons", "three million dollars")
@@ -329,8 +329,8 @@ The scale shot only uses numbers already on screen: 44,000 ÷ 40,075 = 1.098 ≈
 > A hundred million pennies. Two and a half grams each. *(2.7)*
 > She's about 280 tons. *(5.9)*
 > Heavier or lighter? Guess. *(7.2)*
-> About 275 tons. A photo finish. *(8.7)*
-> Minting them cost about $3 million. *(10.7)*
+> About 275 tons. A photo finish. *(8.9)*
+> Minting them cost about $3 million. *(10.8)*
 > No wonder they stopped. *(12.7, loops to the first line)*
 
 **The envelope math (3 lines)**
@@ -385,6 +385,7 @@ The scale shot only uses numbers already on screen: 44,000 ÷ 40,075 = 1.098 ≈
 - that "≈ 1.1 laps" is true for both the envelope figure and the exact figure, and that the "≈ 44,000 km" card still holds at the latest Debt to the Penny;
 - 01C's new answer: the statue (560,000 lb = 280 tons) is heavier than 275.6 tons of pennies by under 2%, and $3.02M is 100M × 3.02¢;
 - the format-bible structure: every hook is at `t: 0` (finished in frame 0, no negative-t hack) and its red word is a number, the postmark sits in the flap, the spec loops back to frame 0, the captions read exactly as the VO, the ≤ 3 core lines are on screen as written, the first partial payoff lands by 40% of the runtime, and the verdict stamp lands in the last 2 s;
+- the reveal timing and reading time (added in the final review): the answer is not captioned/spoken before the card is out of the envelope (≥ openAt + 0.5 s), the card stays fully readable for ≥ 1.3 s, and every handwritten line and sticky holds ≥ 1 s once written;
 - and it runs `node src/cli.js check` on the three specs and requires zero warnings.
 
 Run it with `python3 teasers/01-cost-in-envelopes-mathcheck.py`.
@@ -477,6 +478,26 @@ def structure(s, payoff_at, core):
     shown = texts(s) + [o["to"] for o in ops(s, "counter")]
     check("three-line rule: the md's ≤ 3 core lines are on screen as written",
           len(core) <= 3 and all(piece in shown for line in core for piece in line))
+    # Final review (2026-10-07): the card rises out of the envelope from openAt + 0.45 s and is fully
+    # out at openAt + 1.05 s (engine envelope op), so the spoken/captioned answer must not beat it.
+    env = ops(s, "envelope")[0]
+    reveal = min((c for c in s["captions"] if c["t"] >= env["openAt"]), key=lambda c: c["t"])
+    check(f"reveal VO waits for the card (caption at +{reveal['t'] - env['openAt']:.2f} s after openAt; card visible from +0.45 s)",
+          reveal["t"] - env["openAt"] >= 0.5)
+    cuts = sorted(o["t"] for o in s["ops"] if o["type"] in ("flip", "clear"))
+    card_leave = next(t for t in cuts if t > env["openAt"])
+    check(f"sealed card fully readable for ≥ 1.3 s ({card_leave - (env['openAt'] + 1.05):.2f} s)",
+          card_leave - (env["openAt"] + 1.05) >= 1.3 - 1e-9)
+    # every handwritten line and sticky stays fully written on screen for ≥ 1 s before it is cleared
+    short = []
+    for o in s["ops"]:
+        if o["type"] not in ("write", "sticky"):
+            continue
+        done = o["t"] + (0.3 if o["type"] == "sticky" else 0) + len(o["text"]) / o.get("cps", 22 if o["type"] == "sticky" else 15)
+        leave = min([o.get("until", dur)] + [t for t in cuts if t > o["t"]])
+        if leave - done < 1.0 - 1e-9:
+            short.append(f"{o['text'][:24]!r} {leave - done:.2f}s")
+    check("reading time: every written line / sticky holds ≥ 1 s once finished" + (f" (short: {short})" if short else ""), not short)
 
 
 # ---------------------------------------------------------------- 01A
@@ -533,7 +554,7 @@ equator = 2 * math.pi * R_EQ_KM
 print(f"  L1  100 x 0.0043 in = {BILL_IN * 100:.2f} in = {env_cm:.4f} cm per envelope  (envelope: ≈ 1.1 cm)")
 m_env = 1e6 / 1e4
 b_env = 1e9 / 1e4
-print(f"      $1M = {m_env:,.0f} envelopes = {m_env * env_cm / 100:.3f} m   (said: about waist high, ≈ 1.1 m)")
+print(f"      $1M = {m_env:,.0f} envelopes = {m_env * env_cm / 100:.3f} m   (said: just over a meter; shown ≈ 1.1 m)")
 print(f"      $1B = {b_env:,.0f} envelopes = {b_env * env_cm / 100:,.1f} m vs Burj {BURJ_M} m "
       f"(taller by {b_env * env_cm / 100 - BURJ_M:,.1f} m, {b_env * env_cm / 100 / BURJ_M:.2f}x)")
 n_env = DEBT / 1e4
@@ -570,7 +591,9 @@ check("'≈ 1.1 laps' holds for the envelope figure AND the exact figure",
       round(km_env / equator, 1) == 1.1 == round(km_exact / equator, 1) and "≈ 1.1 laps of the equator" in texts(b))
 check("on screen, the equator is the sourced 40,075 km", f"equator: {equator:,.0f} km" in texts(b))
 check("$1B stack is taller than the Burj Khalifa", b_env * env_cm / 100 > BURJ_M)
-check("'1.1 cm' on screen is 1.0922 cm rounded", round(env_cm, 1) == 1.1 and "1.1 cm" in " ".join(texts(b)) and "1.1 centimeters" in b["vo"])
+check("'Just over a meter.' (VO) is the $1M stack: 1 m < 1.0922 m and it rounds to the on-screen ≈ 1.1 m",
+      1 < m_env * env_cm / 100 and round(m_env * env_cm / 100, 1) == 1.1 and "Just over a meter." in b["vo"] and "waist" not in b["vo"])
+check("'1.1 cm' on screen is 1.0922 cm rounded",round(env_cm, 1) == 1.1 and "1.1 cm" in " ".join(texts(b)) and "1.1 centimeters" in b["vo"])
 structure(b, stacks[0]["t"] + stacks[0]["dur"],
           [["100 × $100 = $10K ≈ 1.1 cm"], ["$40T ÷ $10K", "= 4 billion envelopes"], ["≈ 44,000 km", "4 billion × 1.1 cm"]])
 
@@ -635,7 +658,7 @@ print(f"\n{'ALL CHECKS PASS' if not fails else f'{len(fails)} CHECK(S) FAILED'}"
 raise SystemExit(1 if fails else 0)
 ```
 
-**Output** (run 2026-10-07, polish pass):
+**Output** (run 2026-10-07, final review):
 
 ```text
 01A  Elon's $1 trillion in Costco hot dogs: how many do you get?
@@ -664,13 +687,16 @@ raise SystemExit(1 if fails else 0)
   [ok] series postmark sits in the flap (x 175, y 258, r 100, persist, t 0)
   [ok] captions read exactly as the VO script
   [ok] verdict stamp lands in the last 2 s (2.0 s before the end)
-  [ok] first partial payoff by ~40% of runtime (37%)
+  [ok] first partial payoff by ~40% of runtime (39%)
   [ok] ends on a seamless loop back to frame 0 (spec loop: true)
   [ok] three-line rule: the md's ≤ 3 core lines are on screen as written
+  [ok] reveal VO waits for the card (caption at +0.60 s after openAt; card visible from +0.45 s)
+  [ok] sealed card fully readable for ≥ 1.3 s (2.05 s)
+  [ok] reading time: every written line / sticky holds ≥ 1 s once finished
 
 01B  The $40 trillion US debt in $10K envelopes: how tall is it?
   L1  100 x 0.0043 in = 0.43 in = 1.0922 cm per envelope  (envelope: ≈ 1.1 cm)
-      $1M = 100 envelopes = 1.092 m   (said: about waist high, ≈ 1.1 m)
+      $1M = 100 envelopes = 1.092 m   (said: just over a meter; shown ≈ 1.1 m)
       $1B = 100,000 envelopes = 1,092.2 m vs Burj 828 m (taller by 264.2 m, 1.32x)
   L2  $40T / $10K = 4,000,000,000 envelopes
   L3  x 1.1 cm = 44,000 km (envelope)  | exact 43,688.0 km  -> within 0.71%
@@ -694,6 +720,7 @@ raise SystemExit(1 if fails else 0)
   [ok] '≈ 1.1 laps' holds for the envelope figure AND the exact figure
   [ok] on screen, the equator is the sourced 40,075 km
   [ok] $1B stack is taller than the Burj Khalifa
+  [ok] 'Just over a meter.' (VO) is the $1M stack: 1 m < 1.0922 m and it rounds to the on-screen ≈ 1.1 m
   [ok] '1.1 cm' on screen is 1.0922 cm rounded
   [ok] frame 0: every hook starts at t = 0 (renders finished; no negative-t hack)
   [ok] frame 0: the hook's red word is a number
@@ -703,6 +730,9 @@ raise SystemExit(1 if fails else 0)
   [ok] first partial payoff by ~40% of runtime (32%)
   [ok] ends on a seamless loop back to frame 0 (spec loop: true)
   [ok] three-line rule: the md's ≤ 3 core lines are on screen as written
+  [ok] reveal VO waits for the card (caption at +0.70 s after openAt; card visible from +0.45 s)
+  [ok] sealed card fully readable for ≥ 1.3 s (1.95 s)
+  [ok] reading time: every written line / sticky holds ≥ 1 s once finished
 
 01C  $1,000,000 in pennies vs Lady Liberty: who's heavier?
   L1  $1,000,000 / $0.01 = 100,000,000 pennies
@@ -734,6 +764,9 @@ raise SystemExit(1 if fails else 0)
   [ok] first partial payoff by ~40% of runtime (27%)
   [ok] ends on a seamless loop back to frame 0 (spec loop: true)
   [ok] three-line rule: the md's ≤ 3 core lines are on screen as written
+  [ok] reveal VO waits for the card (caption at +0.55 s after openAt; card visible from +0.45 s)
+  [ok] sealed card fully readable for ≥ 1.3 s (1.35 s)
+  [ok] reading time: every written line / sticky holds ≥ 1 s once finished
 
 engine lint (node src/cli.js check)
   ✓ specs/01-cost-in-envelopes-a.json (26s, 20 ops)
@@ -872,3 +905,77 @@ Finishing-producer pass on 2026-10-07 against the upgraded engine (README re-rea
 **Math check** rewritten for the new specs (multiple hook ops, `lines` columns, stamp values, 01C's new answer, FY2025 cost, postmark position, no negative-t hooks, and the linter run) and re-run: all checks pass.
 
 **Engine requests (still open):** `postage` has no `instant` flag (stamps in the thumbnail still need a negative `t`); `stack`'s `ref.label` is fixed at 44 px (worked around with a 64 px write); a fourth, off-the-top-of-frame stack for the TikTok $1-bill rung (01B).
+
+### Final review
+
+Independent final review, 2026-10-07, against the upgraded engine (README re-read first; `engine/src` not edited). Method: a 12-frame contact sheet per spec (`engine/out/review01/sheet-{a,b,c}.png`); frames pulled from each MP4 at 0.0 s, ~40%, ~75% and the end, plus every beat that changed, before and after the fixes (`engine/out/review01/f/`, `engine/out/review01/g/`), all looked at as a phone viewer would. Then `node src/cli.js check`, the math check, a scripted reading-time audit (seconds each text stays fully written on screen), a scan that every number on screen or in a caption also appears in this md (all 42 do), and a live WebSearch spot-check of the volatile inputs. Where this section disagrees with the **Polish pass** above (timings, payoff percentages, the 01B "waist high" line), this section wins.
+
+**Facts spot-checked live (WebSearch, 2026-10-07).** WebFetch to nps.gov is still blocked by the egress proxy, so values were read from the search results for the cited pages.
+
+| Input | Result | Source (date) |
+|---|---|---|
+| Musk ≈ $1T | ✓ Bloomberg Billionaires Index $1.04T after +$65B on Mon 2026-10-05; Forbes reported him back above $1T the same day | Forbes, 2026-10-05: https://www.forbes.com/sites/alisondurkee/2026/10/05/elon-musk-becomes-a-trillionaire-again-after-spacex-stock-jumps/ · Billionaires.Africa, 2026-10-06 (cited above) |
+| Costco combo $1.50 | ✓ unchanged; water option added | Axios, 2026-05-02: https://axios.com/2026/05/02/costco-hot-dog-combo-options-water · KFVS12, 2026-04-29 (cited above) |
+| World population 8.2B | ✓ Census IDB projection for July 2026 | US Census Bureau, World Population Day 2026 (cited above) |
+| Statue of Liberty 560,000 lb | ✓ "estimated to weigh 560,000 pounds (254,000 kg), of which 179,200 pounds (81,300 kg) are copper" | NPS, Statue of Liberty Facts (cited above) |
+| Penny unit cost 3.02¢ (FY2025) | ✓ 20th straight year above face value | Greysheet, citing the US Mint 2025 Annual Report (cited above) |
+| US debt > $40T | Not re-pulled; the Oct 5 Debt to the Penny figure above stands. The publish-day re-pull rule in 01B's platform notes is unchanged | — |
+
+**Findings and fixes** (all three specs re-rendered with `node src/cli.js render … -o out/`; runtimes unchanged at 26.0 / 27.8 / 14.0 s)
+
+*01A: Elon's $1 trillion in Costco hot dogs*
+1. **The ASSUME sticky couldn't be read.** It finished writing at 5.69 s and the flip started at 6.2 s, leaving 0.51 s for 16 words. Fix: trimmed to "Elon ≈ $1 trillion (Bloomberg, Oct 5 2026). Costco combo $1.50 since 1985." and written at 80 cps instead of 48. Every op and caption from 6.2 s to 20.7 s moves 0.6 s later, and the tray beat absorbs the 0.6 s, so the stamp still lands at 24.0 s (the last 2 s). The sticky now holds for 1.97 s and is on screen for 3.2 s.
+2. **"hot dogs 🌭" was written at the pop and cleared 0.37 s later.** It is now written when the count starts (8.6 s), so the counter reads "N hot dogs" the whole time (1.97 s hold).
+3. **"÷ 8.2 billion people" held for 0.89 s.** Now written at 30 cps: 1.13 s.
+4. **The VO gave away the reveal.** "Eighty-one. Each." was captioned 0.1 s after `openAt`, but the engine's card only starts rising at openAt + 0.45 s and is fully out at + 1.05 s. A sound-off viewer read "Eighty-one" over a sealed envelope. The caption now starts at openAt + 0.6 s (18.8 s, on the card's ding), after a 0.7 s gap that the paper-tear sound fills.
+5. The first partial payoff now lands at 39% (was 37%; the limit is 40%) and the reveal at 70%.
+
+*01B: $40 trillion of US debt in $10K envelopes*
+1. **The VO contradicted the picture.** It said "About waist high", but the 🧍 reference has cartoon proportions: its waist sits at about 36% of its height, while the 1.09 m stack reaches 64%, which is chest height on the emoji. The VO and caption now say **"Just over a meter."** That's true (1.0922 m), matches the on-screen "≈ 1.1 m" and seeds the envelope rule (a million ≈ a meter). The description was updated to match.
+2. **The reveal caption was 0.1 s after `openAt`.** It now starts at openAt + 0.7 s (20.1 s).
+3. **Faster writing on the set-up screen.** The sticky now writes at 80 cps (was 50), so its hold goes from 1.58 to 2.15 s. "100 × $100 = $10K ≈ 1.1 cm" writes at 28 cps (was 22), so its hold goes from 1.02 to 1.27 s.
+
+*01C: $1,000,000 in pennies vs. Lady Liberty*
+1. **The payoff card was on screen fully for only 0.85 s**, and the caption "About 275 tons" arrived at `openAt` + 0.0 s, while the wax seal was still on.
+   - Fix: the guess timer runs 6.3–8.3 s (was 6.5–8.5), the envelope opens at 8.35 s (was 8.7), and the twist flip moves to 10.75 s (was 10.6). The twist ops move 0.15 s later; the stamp stays at 12.0 s.
+   - The caption now lands at 8.9 s.
+   - The card is fully out at 9.4 s and held for 1.35 s, after 0.5 s of rising during which "≈ 275 tons" is already legible.
+2. **"× 2.5 g = 250,000,000 g" held for 1.03 s.** It now starts at 4.0 s at 40 cps: 1.33 s.
+3. **The sticky writes at 80 cps (was 60).** It holds for 2.10 s.
+
+**Math check extended.** The script now also asserts:
+- the answer is not captioned before the card is out (caption ≥ openAt + 0.5 s);
+- the card is fully readable for ≥ 1.3 s;
+- every handwritten line and sticky holds ≥ 1 s once written;
+- plus that "Just over a meter." is true and that "waist" is gone from 01B's VO.
+
+Negative test: run against the pre-review specs (git `d716b4d~1`), these checks fail 6 times as expected. They pass on the current specs. The code and output blocks above were regenerated from the script.
+
+**Checked and left as is (with reasons)**
+- **Frame 0** of all three: the finished tape hook with a red number, the unit stamp(s), the postmark in the flap, nothing in the top 230 px but decoration. The last 0.35 s crossfades into it (`loop: true`); confirmed on the end frames.
+- **Negative t on the frame-0 stamps.** The postage stamps (and 01C's "vs") keep `t: -0.4`, because `postage` and `write` have no `instant` mode. The README documents negative t as "already on screen in frame 0 (no sound)". No hook uses a negative-t workaround.
+- **Platform UI.** Nothing readable sits at x > 940 below y 820. The one exception is 01A's red circle, whose right stroke reaches x ≈ 990 at y ≈ 1100. The digits end at x ≈ 935, and a tighter circle would clip the last "7" again, so I left it. Captions are ≤ 2 lines inside 1320–1480, and nothing readable is below 1480.
+- **Envelope notes** ("how many each?", "how tall?", "heavier?") are drawn by the engine at 54 × w/780 px, about 53 px. That's just under the 56 px handwriting floor, and the linter doesn't check it. They're legible in the frames, and the line above each envelope repeats them.
+- **Envelope slide-in.** The sealed envelope slides up through the caption band for about 0.4 s (the engine animates it in from +900 px). This is transient.
+- **01C stamp overlap.** RETURN TO SENDER covers the sticky's corner, not its text (a stamp on a paper prop is allowed).
+- **Audio** (volumedetect): 01A −25.5 / −2.5 dB, 01B −24.6 / −2.0 dB, 01C −23.9 / −1.9 dB (mean / max).
+- **Advice language and impersonation.** There is no advice language. Musk, Costco and the NPS appear as names and public figures only, with drawn props and no borrowed footage.
+
+**Engine requests** (not fixed here; `engine/src` was not touched):
+1. An `instant` flag for `postage` and `write`, so frame-0 props don't need negative t.
+2. Lint the envelope `note` size, and a reading-time lint for on-screen text (this pass found 7 short holds the linter can't see).
+3. Lint `annotate` against the right rail.
+4. A `stack` ref figure with adult proportions, or a waist tick, so "waist high" can be drawn honestly.
+
+**Hook scores** (1–10, against `research/02-top-10-approaches.md` §1)
+
+| Teaser | Hook (frame 0) | Score | Why |
+|---|---|---|---|
+| 01A | ELON'S *$1 TRILLION* / IN COSTCO HOT DOGS. / HOW MANY DO YOU GET? | **9** | Hits two of the doc's formulas ("Cost in Units of [cheap, recognisable, topical item]"; "1 [unit] = $[X]. Here's [a billionaire]"). The subject is this week's live search (trillionaire again on Oct 5), and the unit is an iconic fixed price in the lattes / Big Mac / Red Bull food family. The "you" question makes the viewer commit. Risk: Elon-wealth conversions are a crowded genre, and the number moves daily. |
+| 01B | *$40 TRILLION* / OF US DEBT / IN $10K ENVELOPES. / HOW TALL IS IT? | **8** | Uses the doc's own formula ("How tall is $[N] in $10K envelopes?") and its namesake unit, and pays off with the Earth-wrap scale shot the evidence favours. Held back because debt is the corpus's weakest topic (1.35x; 3–11x for debt-milestone news), and a $10K envelope is a less instantly familiar unit than a hot dog. |
+| 01C | *$1,000,000* / IN PENNIES / VS. LADY LIBERTY: / WHO'S HEAVIER? | **9** | A 2-second binary vote on frame 0 inside the "what $1M looks like" family (890x, 187x). The penny's end is live news, and the photo-finish answer (275 vs 280 tons, with the 225/308-ton NPS variants pinned) invites correction comments. Flash length suits the loop cluster. |
+
+**Verdicts**
+- **01A: fixed.** The sticky, two short holds and the reveal-spoiling caption are fixed. It is ready to post after the publish-day net-worth re-check in its platform notes.
+- **01B: fixed.** The VO/visual contradiction and the reveal sync are fixed. It is ready after the publish-day Debt to the Penny re-pull.
+- **01C: fixed.** The payoff hold, the reveal sync and the line-2 hold are fixed. It is ready.

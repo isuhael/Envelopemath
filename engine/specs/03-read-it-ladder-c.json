@@ -11,8 +11,8 @@
     { "t": 3.0, "end": 3.8, "text": "For 10 years?", "say": "For ten years?" },
     { "t": 3.8, "end": 4.7, "text": "$94,440.", "say": "Ninety-four grand." },
     { "t": 4.75, "end": 5.4, "text": "Flip side?" },
-    { "t": 5.5, "end": 6.5, "text": "That's $4.54", "say": "That's four fifty-four" },
-    { "t": 6.5, "end": 7.8, "text": "of every hour you work." },
+    { "t": 5.95, "end": 6.75, "text": "That's $4.54", "say": "That's four fifty-four" },
+    { "t": 6.75, "end": 8.05, "text": "of every hour you work." },
     { "t": 8.05, "end": 8.95, "text": "Postage due." }
   ],
   "ops": [
@@ -38,6 +38,6 @@
     { "type": "write", "t": 6.78, "text": "of every hour you work", "x": 540, "y": 1058, "size": 84, "align": "center", "cps": 30, "pen": "small-low" },
     { "type": "emoji", "t": 7.25, "char": "🚗", "x": 230, "y": 1205, "size": 170, "bob": true, "rot": -6 },
     { "type": "stamp", "t": 7.9, "text": "POSTAGE\nDUE", "x": 650, "y": 1205, "size": 66, "rot": -7 },
-    { "type": "flip", "t": 9.0 }
+    { "type": "flip", "t": 8.85, "dur": 0.4 }
   ]
 }

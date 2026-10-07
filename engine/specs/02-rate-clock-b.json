@@ -121,12 +121,12 @@
    "type": "lines",
    "id": "m",
    "t": 3.0,
-   "x": 915,
+   "x": 900,
    "y": 900,
    "size": 78,
    "cps": 16,
    "em": true,
-   "pen": "low",
+   "pen": "small-low",
    "lines": [
     {
      "text": "$416B ÷ 31.5M s ≈ $13.2K/s"
@@ -141,8 +141,8 @@
    "type": "write",
    "t": 4.66,
    "text": "(31.5M = seconds in a year)",
-   "x": 915,
-   "y": 1115,
+   "x": 900,
+   "y": 1185,
    "size": 64,
    "color": "pencil",
    "align": "right",
@@ -157,7 +157,7 @@
     "op": "m",
     "match": "4.9 sec"
    },
-   "pad": 12
+   "pad": 24
   },
   {
    "type": "flip",
@@ -269,7 +269,7 @@
     "op": "c2",
     "match": "3.3 min"
    },
-   "pad": 14
+   "pad": 38
   },
   {
    "type": "sticky",

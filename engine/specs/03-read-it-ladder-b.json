@@ -37,6 +37,6 @@
     { "type": "write", "t": 6.7, "text": "Now you have.", "x": 540, "y": 990, "size": 92, "align": "center", "cps": 22, "pen": "small" },
     { "type": "emoji", "t": 6.3, "char": "👔", "x": 810, "y": 1170, "size": 170, "bob": true, "rot": 8 },
     { "type": "stamp", "t": 7.5, "text": "OPENED BY\nMISTAKE", "x": 420, "y": 1175, "size": 66, "rot": -7 },
-    { "type": "flip", "t": 8.4 }
+    { "type": "flip", "t": 8.25, "dur": 0.4 }
   ]
 }

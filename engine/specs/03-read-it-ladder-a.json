@@ -37,6 +37,6 @@
     { "type": "write", "t": 6.8, "id": "exact", "text": "(a year: exactly $1,095)", "x": 540, "y": 930, "size": 76, "align": "center", "cps": 34, "pen": "small" },
     { "type": "annotate", "t": 7.52, "kind": "underline", "target": { "op": "exact", "match": "$1,095" }, "dur": 0.25 },
     { "type": "stamp", "t": 7.5, "text": "RETURN\nTO SENDER", "x": 655, "y": 1150, "size": 70, "rot": -7 },
-    { "type": "flip", "t": 8.4 }
+    { "type": "flip", "t": 8.25, "dur": 0.4 }
   ]
 }

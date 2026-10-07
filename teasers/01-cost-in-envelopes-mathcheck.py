@@ -85,6 +85,26 @@ def structure(s, payoff_at, core):
     shown = texts(s) + [o["to"] for o in ops(s, "counter")]
     check("three-line rule: the md's ≤ 3 core lines are on screen as written",
           len(core) <= 3 and all(piece in shown for line in core for piece in line))
+    # Final review (2026-10-07): the card rises out of the envelope from openAt + 0.45 s and is fully
+    # out at openAt + 1.05 s (engine envelope op), so the spoken/captioned answer must not beat it.
+    env = ops(s, "envelope")[0]
+    reveal = min((c for c in s["captions"] if c["t"] >= env["openAt"]), key=lambda c: c["t"])
+    check(f"reveal VO waits for the card (caption at +{reveal['t'] - env['openAt']:.2f} s after openAt; card visible from +0.45 s)",
+          reveal["t"] - env["openAt"] >= 0.5)
+    cuts = sorted(o["t"] for o in s["ops"] if o["type"] in ("flip", "clear"))
+    card_leave = next(t for t in cuts if t > env["openAt"])
+    check(f"sealed card fully readable for ≥ 1.3 s ({card_leave - (env['openAt'] + 1.05):.2f} s)",
+          card_leave - (env["openAt"] + 1.05) >= 1.3 - 1e-9)
+    # every handwritten line and sticky stays fully written on screen for ≥ 1 s before it is cleared
+    short = []
+    for o in s["ops"]:
+        if o["type"] not in ("write", "sticky"):
+            continue
+        done = o["t"] + (0.3 if o["type"] == "sticky" else 0) + len(o["text"]) / o.get("cps", 22 if o["type"] == "sticky" else 15)
+        leave = min([o.get("until", dur)] + [t for t in cuts if t > o["t"]])
+        if leave - done < 1.0 - 1e-9:
+            short.append(f"{o['text'][:24]!r} {leave - done:.2f}s")
+    check("reading time: every written line / sticky holds ≥ 1 s once finished" + (f" (short: {short})" if short else ""), not short)
 
 
 # ---------------------------------------------------------------- 01A
@@ -141,7 +161,7 @@ equator = 2 * math.pi * R_EQ_KM
 print(f"  L1  100 x 0.0043 in = {BILL_IN * 100:.2f} in = {env_cm:.4f} cm per envelope  (envelope: ≈ 1.1 cm)")
 m_env = 1e6 / 1e4
 b_env = 1e9 / 1e4
-print(f"      $1M = {m_env:,.0f} envelopes = {m_env * env_cm / 100:.3f} m   (said: about waist high, ≈ 1.1 m)")
+print(f"      $1M = {m_env:,.0f} envelopes = {m_env * env_cm / 100:.3f} m   (said: just over a meter; shown ≈ 1.1 m)")
 print(f"      $1B = {b_env:,.0f} envelopes = {b_env * env_cm / 100:,.1f} m vs Burj {BURJ_M} m "
       f"(taller by {b_env * env_cm / 100 - BURJ_M:,.1f} m, {b_env * env_cm / 100 / BURJ_M:.2f}x)")
 n_env = DEBT / 1e4
@@ -178,7 +198,9 @@ check("'≈ 1.1 laps' holds for the envelope figure AND the exact figure",
       round(km_env / equator, 1) == 1.1 == round(km_exact / equator, 1) and "≈ 1.1 laps of the equator" in texts(b))
 check("on screen, the equator is the sourced 40,075 km", f"equator: {equator:,.0f} km" in texts(b))
 check("$1B stack is taller than the Burj Khalifa", b_env * env_cm / 100 > BURJ_M)
-check("'1.1 cm' on screen is 1.0922 cm rounded", round(env_cm, 1) == 1.1 and "1.1 cm" in " ".join(texts(b)) and "1.1 centimeters" in b["vo"])
+check("'Just over a meter.' (VO) is the $1M stack: 1 m < 1.0922 m and it rounds to the on-screen ≈ 1.1 m",
+      1 < m_env * env_cm / 100 and round(m_env * env_cm / 100, 1) == 1.1 and "Just over a meter." in b["vo"] and "waist" not in b["vo"])
+check("'1.1 cm' on screen is 1.0922 cm rounded",round(env_cm, 1) == 1.1 and "1.1 cm" in " ".join(texts(b)) and "1.1 centimeters" in b["vo"])
 structure(b, stacks[0]["t"] + stacks[0]["dur"],
           [["100 × $100 = $10K ≈ 1.1 cm"], ["$40T ÷ $10K", "= 4 billion envelopes"], ["≈ 44,000 km", "4 billion × 1.1 cm"]])
 

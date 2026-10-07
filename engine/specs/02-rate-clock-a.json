@@ -17,7 +17,7 @@
   },
   {
    "t": 2.0,
-   "end": 4.8,
+   "end": 4.95,
    "text": "Still no trillion. Musk\ncrossed it in June, on paper."
   },
   {
@@ -152,12 +152,12 @@
    "type": "lines",
    "id": "math",
    "t": 5.5,
-   "x": 905,
+   "x": 890,
    "y": 900,
    "size": 82,
    "cps": 15,
    "em": true,
-   "pen": "low",
+   "pen": "small-low",
    "lines": [
     {
      "text": "$1T ÷ $50K/hr = 20M hrs"
@@ -176,18 +176,18 @@
     "op": "math",
     "match": "2,282 yrs"
    },
-   "pad": 10
+   "pad": 24
   },
   {
    "type": "write",
-   "t": 9.5,
+   "t": 7.05,
    "text": "(8,766 = 365¼ days × 24 hrs)",
-   "x": 905,
-   "y": 1125,
+   "x": 890,
+   "y": 1180,
    "size": 64,
    "color": "pencil",
    "align": "right",
-   "cps": 30,
+   "cps": 45,
    "pen": false,
    "until": 11.05,
    "fadeOut": 0.05
