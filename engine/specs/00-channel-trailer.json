@@ -1,0 +1,135 @@
+{
+  "id": "00-channel-trailer",
+  "title": "Back of the Envelope: channel trailer",
+  "vo": "A billion dollars. One dollar every second. That's a billion seconds. Call it thirty-one point seven years. Rough, but right. Five bucks a day? About eighteen grand a decade. Back of the Envelope. Rough math, real money.",
+  "paper": {
+    "style": "kraft"
+  },
+  "ops": [
+    {
+      "type": "postmark",
+      "t": 0,
+      "x": 190,
+      "y": 300,
+      "center": [
+        "No.",
+        "000"
+      ],
+      "persist": true
+    },
+    {
+      "type": "hook",
+      "t": 0,
+      "text": [
+        "$1 billion, paid",
+        "*$1 every second*"
+      ],
+      "y": 430
+    },
+    {
+      "type": "lines",
+      "t": 0.5,
+      "x": 900,
+      "y": 760,
+      "size": 92,
+      "lines": [
+        "$1,000,000,000",
+        "÷ $1 a second",
+        {
+          "text": "= 1 billion seconds",
+          "color": "ink"
+        }
+      ],
+      "rule": 2
+    },
+    {
+      "type": "write",
+      "t": 4.1,
+      "text": "≈ 31.7 years",
+      "x": 100,
+      "y": 1170,
+      "size": 104,
+      "color": "red",
+      "cps": 16
+    },
+    {
+      "type": "annotate",
+      "t": 5.0,
+      "kind": "underline",
+      "x": 100,
+      "y": 1190,
+      "w": 490,
+      "color": "red"
+    },
+    {
+      "type": "stamp",
+      "t": 5.4,
+      "text": "ROUGHLY\nRIGHT",
+      "x": 790,
+      "y": 1135,
+      "size": 46,
+      "rot": -10
+    },
+    {
+      "type": "flip",
+      "t": 6.6
+    },
+    {
+      "type": "hook",
+      "t": 7.0,
+      "text": [
+        "$5 a day is",
+        "*$18,250* a decade"
+      ],
+      "y": 430
+    },
+    {
+      "type": "ladder",
+      "t": 7.3,
+      "y": 790,
+      "rows": [
+        {
+          "label": "a day",
+          "value": "$5"
+        },
+        {
+          "label": "a year",
+          "value": "$1,825",
+          "factor": "×365"
+        },
+        {
+          "label": "a decade",
+          "value": "$18,250",
+          "factor": "×10"
+        }
+      ]
+    },
+    {
+      "type": "outro",
+      "t": 11.4
+    }
+  ],
+  "captions": [
+    {
+      "t": 0.2,
+      "end": 2.6,
+      "text": "A billion dollars. One dollar every second."
+    },
+    {
+      "t": 2.6,
+      "end": 5.2,
+      "text": "That's a billion seconds. Call it 31.7 years."
+    },
+    {
+      "t": 5.2,
+      "end": 6.5,
+      "text": "Rough, but right."
+    },
+    {
+      "t": 7.0,
+      "end": 10.8,
+      "text": "Five bucks a day? About eighteen grand a decade."
+    }
+  ],
+  "duration": 15
+}
