@@ -4,3 +4,4 @@ engine/out/
 *.wav
 playbook/dist/
 __pycache__/
+playbook/v2/dist/
