@@ -1,0 +1,166 @@
+{
+  "id": "08-trap-card-b",
+  "title": "Stocks fell 57%. Back to even is NOT +57% (Envelope Puzzle No. 08B)",
+  "paper": {
+    "style": "kraft",
+    "seed": 82
+  },
+  "duration": 7.5,
+  "vo": "Stocks fell fifty-seven percent. Back to even isn't plus fifty-seven. So what gain is it? No calculator. Ours is sealed in the pin.",
+  "captions": [
+    {
+      "t": 0.1,
+      "end": 1.7,
+      "text": "Stocks fell 57%."
+    },
+    {
+      "t": 1.7,
+      "end": 3.45,
+      "text": "Back to even isn't +57%."
+    },
+    {
+      "t": 3.45,
+      "end": 5.25,
+      "text": "So what gain is it? No calculator."
+    },
+    {
+      "t": 5.25,
+      "end": 7.2,
+      "text": "Ours is sealed in the pin."
+    }
+  ],
+  "ops": [
+    {
+      "type": "postmark",
+      "t": -0.3,
+      "x": 190,
+      "y": 300,
+      "center": [
+        "No.",
+        "08B"
+      ],
+      "persist": true
+    },
+    {
+      "type": "hook",
+      "t": -0.5,
+      "text": [
+        "Stocks fell 57%.",
+        "Back to even",
+        "is *NOT* +57%!"
+      ],
+      "y": 425,
+      "size": 72
+    },
+    {
+      "type": "stamp",
+      "t": 0.4,
+      "text": "ENVELOPE\nPUZZLE",
+      "x": 858,
+      "y": 292,
+      "size": 44,
+      "rot": 7,
+      "shake": 8
+    },
+    {
+      "type": "write",
+      "t": 0.5,
+      "text": "To get back: + ? %",
+      "x": 540,
+      "y": 785,
+      "size": 110,
+      "align": "center",
+      "cps": 20
+    },
+    {
+      "type": "annotate",
+      "t": 1.4,
+      "kind": "circle",
+      "x": 747,
+      "y": 699,
+      "w": 46,
+      "h": 91,
+      "pad": 16,
+      "dur": 0.35
+    },
+    {
+      "type": "write",
+      "t": 1.55,
+      "text": "no calculator.",
+      "x": 540,
+      "y": 866,
+      "size": 60,
+      "align": "center",
+      "color": "red",
+      "cps": 24
+    },
+    {
+      "type": "write",
+      "t": 2.1,
+      "text": "$43 + 57% = $100?",
+      "x": 72,
+      "y": 955,
+      "size": 58,
+      "align": "left",
+      "color": "pencil",
+      "cps": 30
+    },
+    {
+      "type": "annotate",
+      "t": 2.72,
+      "kind": "strike",
+      "x": 344,
+      "y": 937,
+      "w": 126,
+      "width": 8,
+      "dur": 0.25
+    },
+    {
+      "type": "write",
+      "t": 2.9,
+      "text": "$67.51",
+      "x": 490,
+      "y": 955,
+      "size": 58,
+      "align": "left",
+      "color": "red",
+      "cps": 24
+    },
+    {
+      "type": "envelope",
+      "t": 3.2,
+      "x": 700,
+      "y": 1165,
+      "w": 450,
+      "openAt": 99,
+      "label": "ANSWER · IN THE PIN"
+    },
+    {
+      "type": "sticky",
+      "t": 3.45,
+      "x": 250,
+      "y": 1160,
+      "w": 300,
+      "size": 46,
+      "cps": 32,
+      "rot": -4,
+      "title": "ASSUME:",
+      "text": "S&P 500 price only, Oct '07 → Mar '09"
+    },
+    {
+      "type": "stamp",
+      "t": 6.05,
+      "text": "RETURN\nTO SENDER",
+      "x": 800,
+      "y": 955,
+      "size": 40,
+      "rot": -8,
+      "shake": 10
+    },
+    {
+      "type": "flip",
+      "t": 7.0,
+      "dur": 0.5
+    }
+  ]
+}

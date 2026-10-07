@@ -1,0 +1,611 @@
+{
+  "id": "09-itemized-tally-a",
+  "title": "Itemized: 6 groceries cost $11.39 in 2006. Did they actually double? (Envelope Math No. 09A)",
+  "paper": {
+    "style": "kraft",
+    "seed": 9
+  },
+  "duration": 41.5,
+  "vo": "Six groceries cost eleven thirty-nine in 2006. Did they actually double? BLS prices, line by line. Eggs: a buck thirty-one a dozen. Now two twenty-seven. Milk: three-oh-eight a gallon. Now four twenty-three. Bread: a buck-oh-eight a pound. Now a buck eighty-two. Bananas: fifty cents… now sixty-five. Fifteen cents in twenty years?! Coffee: three twenty a pound. Now nine thirty. Ground beef: two twenty-two. Now six ninety-two. Triple. Total: eleven thirty-nine then. Twenty-five nineteen now. Two point two times. In dollars, yes. But pay rose too: sixteen seventy-nine an hour in 2006. So that bag cost forty-one minutes of work. Today: thirty-two fifty-three an hour. Today's bag costs… Pause. Guess the minutes. Forty-six minutes. Not double.",
+  "captions": [
+    {
+      "t": 0.1,
+      "end": 2.6,
+      "text": "Six groceries cost $11.39 in 2006."
+    },
+    {
+      "t": 2.6,
+      "end": 4.9,
+      "text": "Did they actually double? BLS prices, line by line."
+    },
+    {
+      "t": 5.0,
+      "end": 8.1,
+      "text": "Eggs: $1.31 a dozen. Now $2.27."
+    },
+    {
+      "t": 8.2,
+      "end": 11.3,
+      "text": "Milk: $3.08 a gallon. Now $4.23."
+    },
+    {
+      "t": 11.4,
+      "end": 14.5,
+      "text": "Bread: $1.08 a pound. Now $1.82."
+    },
+    {
+      "t": 14.6,
+      "end": 16.2,
+      "text": "Bananas: 50 cents… now 65."
+    },
+    {
+      "t": 16.2,
+      "end": 17.7,
+      "text": "15 cents in 20 years?!"
+    },
+    {
+      "t": 17.8,
+      "end": 20.9,
+      "text": "Coffee: $3.20 a pound. Now $9.30."
+    },
+    {
+      "t": 21.0,
+      "end": 24.1,
+      "text": "Ground beef: $2.22. Now $6.92. Triple."
+    },
+    {
+      "t": 24.2,
+      "end": 26.5,
+      "text": "Total: $11.39 then. $25.19 now."
+    },
+    {
+      "t": 26.5,
+      "end": 28.7,
+      "text": "2.2 times. In dollars, yes."
+    },
+    {
+      "t": 29.0,
+      "end": 31.7,
+      "text": "But pay rose too: $16.79 an hour in 2006."
+    },
+    {
+      "t": 31.7,
+      "end": 33.8,
+      "text": "So that bag cost 41 minutes of work."
+    },
+    {
+      "t": 33.9,
+      "end": 36.2,
+      "text": "Today: $32.53 an hour. Today's bag costs…"
+    },
+    {
+      "t": 36.3,
+      "end": 39.2,
+      "text": "Pause. Guess the minutes."
+    },
+    {
+      "t": 39.4,
+      "end": 41.4,
+      "text": "46 minutes. Not double."
+    }
+  ],
+  "ops": [
+    {
+      "type": "postmark",
+      "t": -0.5,
+      "x": 190,
+      "y": 300,
+      "center": [
+        "No.",
+        "09A"
+      ],
+      "persist": true
+    },
+    {
+      "type": "hook",
+      "t": -0.8,
+      "text": [
+        "6 groceries: *$11.39* in 2006",
+        "Did they *actually* double?"
+      ],
+      "size": 68,
+      "y": 400,
+      "until": 14.6
+    },
+    {
+      "type": "receipt",
+      "t": -1.4,
+      "x": 540,
+      "y": 600,
+      "w": 780,
+      "size": 48,
+      "rot": -1,
+      "lps": 0.3125,
+      "header": "AVG U.S. PRICE  2006 → 2026",
+      "items": [
+        [
+          "EGGS, DOZEN",
+          "1.31 → 2.27"
+        ],
+        [
+          "MILK, GALLON",
+          "3.08 → 4.23"
+        ],
+        [
+          "WHITE BREAD, LB",
+          "1.08 → 1.82"
+        ],
+        [
+          "BANANAS, LB",
+          "0.50 → 0.65"
+        ],
+        [
+          "COFFEE, LB",
+          "3.20 → 9.30"
+        ],
+        [
+          "GROUND BEEF, LB",
+          "2.22 → 6.92"
+        ]
+      ]
+    },
+    {
+      "type": "postage",
+      "t": -0.5,
+      "x": 540,
+      "y": 1050,
+      "w": 230,
+      "h": 270,
+      "value": "$11.39",
+      "label": "6 ITEMS · 2006",
+      "art": "≈",
+      "rot": 4,
+      "until": 8.0,
+      "fadeOut": 0.15
+    },
+    {
+      "type": "write",
+      "t": 2.0,
+      "text": "RUNNING TOTAL",
+      "x": 150,
+      "y": 1287,
+      "size": 34,
+      "font": "type",
+      "color": "pencil"
+    },
+    {
+      "type": "write",
+      "t": 2.1,
+      "text": "→",
+      "x": 690,
+      "y": 1284,
+      "size": 46,
+      "font": "type",
+      "color": "pencil",
+      "align": "center"
+    },
+    {
+      "type": "counter",
+      "t": 2.2,
+      "from": 0.0,
+      "to": 0.0,
+      "x": 560,
+      "y": 1287,
+      "size": 66,
+      "prefix": "$",
+      "suffix": "",
+      "decimals": 2,
+      "dur": 0.01,
+      "color": "ink",
+      "fadeOut": 0,
+      "until": 5.35
+    },
+    {
+      "type": "counter",
+      "t": 5.35,
+      "from": 0.0,
+      "to": 1.31,
+      "x": 560,
+      "y": 1287,
+      "size": 66,
+      "prefix": "$",
+      "suffix": "",
+      "decimals": 2,
+      "dur": 0.8,
+      "color": "ink",
+      "fadeOut": 0,
+      "until": 8.55
+    },
+    {
+      "type": "counter",
+      "t": 8.55,
+      "from": 1.31,
+      "to": 4.39,
+      "x": 560,
+      "y": 1287,
+      "size": 66,
+      "prefix": "$",
+      "suffix": "",
+      "decimals": 2,
+      "dur": 0.8,
+      "color": "ink",
+      "fadeOut": 0,
+      "until": 11.75
+    },
+    {
+      "type": "counter",
+      "t": 11.75,
+      "from": 4.39,
+      "to": 5.47,
+      "x": 560,
+      "y": 1287,
+      "size": 66,
+      "prefix": "$",
+      "suffix": "",
+      "decimals": 2,
+      "dur": 0.8,
+      "color": "ink",
+      "fadeOut": 0,
+      "until": 14.95
+    },
+    {
+      "type": "counter",
+      "t": 14.95,
+      "from": 5.47,
+      "to": 5.97,
+      "x": 560,
+      "y": 1287,
+      "size": 66,
+      "prefix": "$",
+      "suffix": "",
+      "decimals": 2,
+      "dur": 0.8,
+      "color": "ink",
+      "fadeOut": 0,
+      "until": 18.15
+    },
+    {
+      "type": "counter",
+      "t": 18.15,
+      "from": 5.97,
+      "to": 9.17,
+      "x": 560,
+      "y": 1287,
+      "size": 66,
+      "prefix": "$",
+      "suffix": "",
+      "decimals": 2,
+      "dur": 0.8,
+      "color": "ink",
+      "fadeOut": 0,
+      "until": 21.35
+    },
+    {
+      "type": "counter",
+      "t": 21.35,
+      "from": 9.17,
+      "to": 11.39,
+      "x": 560,
+      "y": 1287,
+      "size": 66,
+      "prefix": "$",
+      "suffix": "",
+      "decimals": 2,
+      "dur": 0.8,
+      "color": "ink",
+      "fadeOut": 0
+    },
+    {
+      "type": "counter",
+      "t": 2.2,
+      "from": 0.0,
+      "to": 0.0,
+      "x": 820,
+      "y": 1287,
+      "size": 66,
+      "prefix": "$",
+      "suffix": "",
+      "decimals": 2,
+      "dur": 0.01,
+      "color": "ink",
+      "fadeOut": 0,
+      "until": 5.35
+    },
+    {
+      "type": "counter",
+      "t": 5.35,
+      "from": 0.0,
+      "to": 2.27,
+      "x": 820,
+      "y": 1287,
+      "size": 66,
+      "prefix": "$",
+      "suffix": "",
+      "decimals": 2,
+      "dur": 0.8,
+      "color": "ink",
+      "fadeOut": 0,
+      "until": 8.55
+    },
+    {
+      "type": "counter",
+      "t": 8.55,
+      "from": 2.27,
+      "to": 6.5,
+      "x": 820,
+      "y": 1287,
+      "size": 66,
+      "prefix": "$",
+      "suffix": "",
+      "decimals": 2,
+      "dur": 0.8,
+      "color": "ink",
+      "fadeOut": 0,
+      "until": 11.75
+    },
+    {
+      "type": "counter",
+      "t": 11.75,
+      "from": 6.5,
+      "to": 8.32,
+      "x": 820,
+      "y": 1287,
+      "size": 66,
+      "prefix": "$",
+      "suffix": "",
+      "decimals": 2,
+      "dur": 0.8,
+      "color": "ink",
+      "fadeOut": 0,
+      "until": 14.95
+    },
+    {
+      "type": "counter",
+      "t": 14.95,
+      "from": 8.32,
+      "to": 8.97,
+      "x": 820,
+      "y": 1287,
+      "size": 66,
+      "prefix": "$",
+      "suffix": "",
+      "decimals": 2,
+      "dur": 0.8,
+      "color": "ink",
+      "fadeOut": 0,
+      "until": 18.15
+    },
+    {
+      "type": "counter",
+      "t": 18.15,
+      "from": 8.97,
+      "to": 18.27,
+      "x": 820,
+      "y": 1287,
+      "size": 66,
+      "prefix": "$",
+      "suffix": "",
+      "decimals": 2,
+      "dur": 0.8,
+      "color": "ink",
+      "fadeOut": 0,
+      "until": 21.35
+    },
+    {
+      "type": "counter",
+      "t": 21.35,
+      "from": 18.27,
+      "to": 25.19,
+      "x": 820,
+      "y": 1287,
+      "size": 66,
+      "prefix": "$",
+      "suffix": "",
+      "decimals": 2,
+      "dur": 0.8,
+      "color": "ink",
+      "fadeOut": 0
+    },
+    {
+      "type": "highlight",
+      "t": 15.0,
+      "x": 156,
+      "y": 993,
+      "w": 766,
+      "h": 56
+    },
+    {
+      "type": "emoji",
+      "t": 15.0,
+      "char": "🍌",
+      "x": 172,
+      "y": 512,
+      "size": 112,
+      "rot": -12,
+      "until": 17.8
+    },
+    {
+      "type": "write",
+      "t": 15.1,
+      "text": "+15¢ in 20 years?!",
+      "x": 590,
+      "y": 540,
+      "size": 80,
+      "color": "red",
+      "align": "center",
+      "until": 17.8
+    },
+    {
+      "type": "annotate",
+      "t": 15.7,
+      "kind": "circle",
+      "x": 596,
+      "y": 997,
+      "w": 308,
+      "h": 42,
+      "pad": 12,
+      "until": 17.8
+    },
+    {
+      "type": "emoji",
+      "t": 18.2,
+      "char": "☕",
+      "x": 172,
+      "y": 512,
+      "size": 112,
+      "rot": -12,
+      "until": 21.0
+    },
+    {
+      "type": "write",
+      "t": 18.3,
+      "text": "coffee ×2.9",
+      "x": 590,
+      "y": 540,
+      "size": 80,
+      "color": "red",
+      "align": "center",
+      "until": 21.0
+    },
+    {
+      "type": "emoji",
+      "t": 21.4,
+      "char": "🥩",
+      "x": 172,
+      "y": 512,
+      "size": 112,
+      "rot": -12,
+      "until": 24.3
+    },
+    {
+      "type": "write",
+      "t": 21.5,
+      "text": "beef ×3.1",
+      "x": 590,
+      "y": 540,
+      "size": 80,
+      "color": "red",
+      "align": "center",
+      "until": 24.3
+    },
+    {
+      "type": "write",
+      "t": 24.4,
+      "text": "× 2.2",
+      "x": 540,
+      "y": 505,
+      "size": 110,
+      "color": "red",
+      "align": "center"
+    },
+    {
+      "type": "annotate",
+      "t": 24.8,
+      "kind": "circle",
+      "x": 738,
+      "y": 1235,
+      "w": 166,
+      "h": 60,
+      "pad": 16
+    },
+    {
+      "type": "write",
+      "t": 25.3,
+      "text": "(78% of it: coffee + beef)",
+      "x": 540,
+      "y": 584,
+      "size": 48,
+      "color": "red",
+      "align": "center",
+      "cps": 28
+    },
+    {
+      "type": "flip",
+      "t": 28.8
+    },
+    {
+      "type": "sticky",
+      "t": 29.1,
+      "title": "ASSUME:",
+      "text": "avg hourly pay\n2006: $16.79\n2026: $32.53",
+      "x": 770,
+      "y": 428,
+      "w": 360,
+      "size": 50,
+      "until": 36.0
+    },
+    {
+      "type": "write",
+      "t": 29.4,
+      "text": "in minutes of work:",
+      "x": 90,
+      "y": 998,
+      "size": 52,
+      "color": "pencil"
+    },
+    {
+      "type": "envelope",
+      "t": 29.4,
+      "x": 540,
+      "y": 772,
+      "w": 600,
+      "openAt": 39.3,
+      "cardSize": 100,
+      "label": "2026 = ? MIN",
+      "card": [
+        {
+          "text": "≈ 46 min",
+          "color": "red"
+        },
+        {
+          "text": "×1.1, not ×2.2",
+          "size": 54,
+          "color": "red"
+        }
+      ]
+    },
+    {
+      "type": "write",
+      "t": 29.9,
+      "text": "2006: $11.39 ÷ $16.79 ≈ 41 min",
+      "x": 90,
+      "y": 1088,
+      "size": 66
+    },
+    {
+      "type": "write",
+      "t": 33.9,
+      "text": "2026: $25.19 ÷ $32.53 ≈",
+      "x": 90,
+      "y": 1178,
+      "size": 66
+    },
+    {
+      "type": "timer",
+      "t": 36.3,
+      "x": 800,
+      "y": 430,
+      "r": 72,
+      "seconds": 3
+    },
+    {
+      "type": "write",
+      "t": 39.9,
+      "text": "46 min",
+      "x": 708,
+      "y": 1178,
+      "size": 66,
+      "color": "red",
+      "cps": 24
+    },
+    {
+      "type": "stamp",
+      "t": 40.3,
+      "text": "OPENED BY\nMISTAKE",
+      "x": 540,
+      "y": 760,
+      "size": 60,
+      "rot": -8
+    }
+  ]
+}

@@ -1,0 +1,349 @@
+{
+  "id": "09-itemized-tally-b",
+  "title": "Itemized: your $10 at Chipotle. How much is profit? (Envelope Math No. 09B)",
+  "paper": {
+    "style": "kraft",
+    "seed": 19
+  },
+  "duration": 31.2,
+  "vo": "Ten bucks at Chipotle. How much is profit? Chipotle's own 2025 numbers, line by line. Food, drinks and the bag: two ninety-six. Seven bucks profit? Rip-off? Not so fast. The crew: two fifty-one. Almost as much as the food. Rent: fifty-two cents. Down to four-oh-one. Ads, delivery, card fees: a buck forty-seven. The restaurant keeps two fifty-four. Headquarters, depreciation, new stores: ninety-two cents. Then taxes, minus the interest it earns: thirty-three cents. You do the last subtraction. Pause. What's left of your ten? A buck twenty-nine. Rip-off or not?",
+  "captions": [
+    {
+      "t": 0.1,
+      "end": 2.3,
+      "text": "$10 at Chipotle. How much is profit?"
+    },
+    {
+      "t": 2.3,
+      "end": 4.5,
+      "text": "Chipotle's own 2025 numbers, line by line."
+    },
+    {
+      "t": 4.6,
+      "end": 6.3,
+      "text": "Food, drinks and the bag: $2.96."
+    },
+    {
+      "t": 6.3,
+      "end": 7.7,
+      "text": "Seven bucks profit? Rip-off?"
+    },
+    {
+      "t": 7.8,
+      "end": 9.5,
+      "text": "Not so fast. The crew: $2.51."
+    },
+    {
+      "t": 9.5,
+      "end": 10.9,
+      "text": "Almost as much as food."
+    },
+    {
+      "t": 11.0,
+      "end": 14.1,
+      "text": "Rent: 52 cents. Down to $4.01."
+    },
+    {
+      "t": 14.2,
+      "end": 15.9,
+      "text": "Ads, delivery, card fees: $1.47."
+    },
+    {
+      "t": 15.9,
+      "end": 17.3,
+      "text": "The restaurant keeps $2.54."
+    },
+    {
+      "t": 17.4,
+      "end": 20.5,
+      "text": "Headquarters, depreciation, new stores: 92 cents."
+    },
+    {
+      "t": 20.6,
+      "end": 23.7,
+      "text": "Then taxes, minus interest it earns: 33 cents."
+    },
+    {
+      "t": 24.0,
+      "end": 25.9,
+      "text": "You do the last subtraction."
+    },
+    {
+      "t": 26.0,
+      "end": 28.9,
+      "text": "Pause. What's left of your ten?"
+    },
+    {
+      "t": 29.1,
+      "end": 31.1,
+      "text": "$1.29. Rip-off or not?"
+    }
+  ],
+  "ops": [
+    {
+      "type": "postmark",
+      "t": -0.5,
+      "x": 190,
+      "y": 300,
+      "center": [
+        "No.",
+        "09B"
+      ],
+      "persist": true
+    },
+    {
+      "type": "hook",
+      "t": -0.8,
+      "text": [
+        "*$10* at Chipotle.",
+        "How much is profit?"
+      ],
+      "size": 84,
+      "y": 400,
+      "until": 9.4
+    },
+    {
+      "type": "receipt",
+      "t": -1.8,
+      "x": 540,
+      "y": 600,
+      "w": 780,
+      "size": 48,
+      "rot": -1,
+      "lps": 0.3125,
+      "header": "WHERE YOUR $10 GOES",
+      "items": [
+        [
+          "FOOD, DRINKS, BAGS",
+          "$2.96"
+        ],
+        [
+          "CREW (LABOR)",
+          "$2.51"
+        ],
+        [
+          "RENT",
+          "$0.52"
+        ],
+        [
+          "ADS, DELIVERY, FEES",
+          "$1.47"
+        ],
+        [
+          "HQ + DEPRECIATION",
+          "$0.92"
+        ],
+        [
+          "TAXES (NET)",
+          "$0.33"
+        ]
+      ]
+    },
+    {
+      "type": "postage",
+      "t": -0.5,
+      "x": 540,
+      "y": 1050,
+      "w": 230,
+      "h": 270,
+      "value": "$10",
+      "label": "ONE ORDER",
+      "art": "≈",
+      "rot": 4,
+      "until": 7.6,
+      "fadeOut": 0.15
+    },
+    {
+      "type": "write",
+      "t": 1.6,
+      "text": "LEFT OF YOUR $10",
+      "x": 150,
+      "y": 1287,
+      "size": 34,
+      "font": "type",
+      "color": "pencil"
+    },
+    {
+      "type": "counter",
+      "t": 1.8,
+      "from": 10.0,
+      "to": 10.0,
+      "x": 770,
+      "y": 1287,
+      "size": 80,
+      "prefix": "$",
+      "suffix": "",
+      "decimals": 2,
+      "dur": 0.01,
+      "color": "ink",
+      "fadeOut": 0,
+      "until": 4.95
+    },
+    {
+      "type": "counter",
+      "t": 4.95,
+      "from": 10.0,
+      "to": 7.04,
+      "x": 770,
+      "y": 1287,
+      "size": 80,
+      "prefix": "$",
+      "suffix": "",
+      "decimals": 2,
+      "dur": 0.8,
+      "color": "ink",
+      "fadeOut": 0,
+      "until": 8.15
+    },
+    {
+      "type": "counter",
+      "t": 8.15,
+      "from": 7.04,
+      "to": 4.53,
+      "x": 770,
+      "y": 1287,
+      "size": 80,
+      "prefix": "$",
+      "suffix": "",
+      "decimals": 2,
+      "dur": 0.8,
+      "color": "ink",
+      "fadeOut": 0,
+      "until": 11.35
+    },
+    {
+      "type": "counter",
+      "t": 11.35,
+      "from": 4.53,
+      "to": 4.01,
+      "x": 770,
+      "y": 1287,
+      "size": 80,
+      "prefix": "$",
+      "suffix": "",
+      "decimals": 2,
+      "dur": 0.8,
+      "color": "ink",
+      "fadeOut": 0,
+      "until": 14.55
+    },
+    {
+      "type": "counter",
+      "t": 14.55,
+      "from": 4.01,
+      "to": 2.54,
+      "x": 770,
+      "y": 1287,
+      "size": 80,
+      "prefix": "$",
+      "suffix": "",
+      "decimals": 2,
+      "dur": 0.8,
+      "color": "ink",
+      "fadeOut": 0,
+      "until": 17.75
+    },
+    {
+      "type": "counter",
+      "t": 17.75,
+      "from": 2.54,
+      "to": 1.62,
+      "x": 770,
+      "y": 1287,
+      "size": 80,
+      "prefix": "$",
+      "suffix": "",
+      "decimals": 2,
+      "dur": 0.8,
+      "color": "ink",
+      "fadeOut": 0
+    },
+    {
+      "type": "annotate",
+      "t": 8.4,
+      "kind": "circle",
+      "x": 772,
+      "y": 858,
+      "w": 132,
+      "h": 42,
+      "pad": 12
+    },
+    {
+      "type": "annotate",
+      "t": 8.8,
+      "kind": "circle",
+      "x": 772,
+      "y": 788,
+      "w": 132,
+      "h": 42,
+      "pad": 12
+    },
+    {
+      "type": "stamp",
+      "t": 9.7,
+      "text": "POSTAGE\nDUE",
+      "x": 540,
+      "y": 482,
+      "size": 84,
+      "rot": -7
+    },
+    {
+      "type": "annotate",
+      "t": 16.0,
+      "kind": "underline",
+      "x": 676,
+      "y": 1306,
+      "w": 190,
+      "until": 17.6
+    },
+    {
+      "type": "flip",
+      "t": 23.8
+    },
+    {
+      "type": "sticky",
+      "t": 24.1,
+      "title": "ASSUME:",
+      "text": "your $10 splits like Chipotle's 2025 average",
+      "x": 800,
+      "y": 430,
+      "w": 330,
+      "size": 46
+    },
+    {
+      "type": "write",
+      "t": 24.4,
+      "text": "$1.62 − $0.33 = ?",
+      "x": 80,
+      "y": 545,
+      "size": 80
+    },
+    {
+      "type": "envelope",
+      "t": 25.0,
+      "x": 540,
+      "y": 1050,
+      "w": 640,
+      "openAt": 29.0,
+      "note": "guess first",
+      "cardSize": 110,
+      "card": [
+        "$1.29",
+        {
+          "text": "of every $10",
+          "size": 52,
+          "color": "red"
+        }
+      ]
+    },
+    {
+      "type": "timer",
+      "t": 26.0,
+      "x": 540,
+      "y": 690,
+      "r": 80,
+      "seconds": 3,
+      "label": "DO THE MATH"
+    }
+  ]
+}

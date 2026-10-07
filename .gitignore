@@ -1,6 +1,5 @@
 node_modules/
-engine/out/*.mp4
-engine/out/stills/
+engine/out/
 .DS_Store
 *.wav
 playbook/dist/
