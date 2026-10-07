@@ -199,8 +199,9 @@ export const postmark = {
       }
       ring(op.top, 0, 1)
       ring(op.bottom, 0, -1)
-      x.font = font('type', 30)
-      op.center.forEach((l, i) => x.fillText(l, 0, (i - (op.center.length - 1) / 2) * 34))
+      const cs = op.centerSize ?? 30
+      x.font = font('type', cs)
+      op.center.forEach((l, i) => x.fillText(l, 0, (i - (op.center.length - 1) / 2) * cs * 1.13))
       if (op.waves) {
         x.lineWidth = 5
         for (let i = 0; i < 5; i++) {
@@ -261,7 +262,7 @@ export const postage = {
       x.fillStyle = col
       x.globalAlpha = 0.12; x.fillRect(16, 16, w - 32, h - 32); x.globalAlpha = 1
       x.textAlign = 'center'; x.textBaseline = 'middle'
-      x.font = font('marker', Math.min(64, (w - 50) / Math.max(3, String(op.value).length) * 1.7))
+      x.font = font('marker', op.valueSize ?? Math.min(64, (w - 50) / Math.max(3, String(op.value).length) * 1.7))
       x.fillText(String(op.value), w / 2, h * 0.47)
       x.font = font('type', op.labelSize)
       x.fillText(op.label, w / 2, h - 38)

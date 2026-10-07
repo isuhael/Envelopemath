@@ -73,14 +73,16 @@ export function handText(g, raw, x, y, o = {}, chars = Infinity) {
   return { penX, penY, width, x0, glyphX: xs }
 }
 
-export const penScale = p => (p === 'small' ? 0.6 : 1)
+// pen: true | 'small' | 'low' | 'small-low' — 'low' tilts the pen down-right so it never covers the line above
+export const penScale = p => (typeof p === 'string' && p.includes('small') ? 0.6 : 1)
+export const penAngle = p => (typeof p === 'string' && p.includes('low') ? 0.62 : -0.62)
 
 // A ballpoint pen whose tip sits at (x, y). `bob` animates a small writing wiggle; `scale` 0.6 = small pen.
-export function pen(g, x, y, bob = 0, alpha = 1, scale = 1) {
+export function pen(g, x, y, bob = 0, alpha = 1, scale = 1, angle = -0.62) {
   g.save()
   g.globalAlpha *= alpha
   g.translate(x + Math.sin(bob * 31) * 3, y + Math.cos(bob * 23) * 4)
-  g.rotate(-0.62)
+  g.rotate(angle)
   g.scale(scale, scale)
   g.shadowColor = 'rgba(20,10,0,0.35)'
   g.shadowBlur = 14

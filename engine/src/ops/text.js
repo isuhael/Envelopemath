@@ -1,6 +1,6 @@
 // Text ops: the masking-tape hook, handwriting, column arithmetic and ticking counters.
 import { font, ink, INK } from '../theme.js'
-import { handText, pen, penScale } from '../ink.js'
+import { handText, pen, penScale, penAngle } from '../ink.js'
 import { clamp, ease, prog, lerp, rng, hash, fmtNum } from '../util.js'
 
 // "*word*" marks emphasis (drawn in red). Returns [{text, em}].
@@ -107,9 +107,16 @@ export const write = {
   },
   draw(g, op, lt) {
     const chars = lt * op.cps
+    g.save()
+    if (op.rot) {
+      g.translate(op.x, op.y)
+      g.rotate((op.rot * Math.PI) / 180)
+      g.translate(-op.x, -op.y)
+    }
     const res = handText(g, op.text, op.x, op.y, op, chars)
     const end = op.text.length / op.cps
-    if (op.pen !== false && op.font !== 'type' && lt < end + 0.3) pen(g, res.penX, res.penY + op.size * 0.2, lt, lt < end ? 1 : 1 - (lt - end) / 0.3, penScale(op.pen))
+    if (op.pen !== false && op.font !== 'type' && lt < end + 0.3) pen(g, res.penX, res.penY + op.size * 0.2, lt, lt < end ? 1 : 1 - (lt - end) / 0.3, penScale(op.pen), penAngle(op.pen))
+    g.restore()
   },
   sfx: op => [{ at: op.t, kind: op.font === 'type' ? 'type' : 'scribble', dur: op.text.length / op.cps, n: op.text.length }],
 }
@@ -131,9 +138,11 @@ export const lines = {
       const L = typeof l === 'string' ? { text: l } : { ...l }
       L.size ??= op.size
       L.color ??= op.color
+      L.cps ??= op.cps
+      if (L.at != null) cursor = L.at // per-line start (s after the op), e.g. to sync with the VO
       if (op.rule === i) { L.ruleAt = cursor; cursor += 0.3 }
       L.at = cursor
-      cursor += L.text.length / op.cps + op.gap
+      cursor += L.text.length / L.cps + op.gap
       return L
     })
     op._end = cursor
@@ -160,13 +169,13 @@ export const lines = {
         g.restore()
       }
       if (lt < L.at) return
-      const chars = (lt - L.at) * op.cps
+      const chars = (lt - L.at) * L.cps
       const res = handText(g, L.text, op.x, y, { ...op, size: L.size, color: L.color, seed: i }, chars)
-      if (chars < L.text.length + op.cps * 0.3) penPos = [res.penX, res.penY + L.size * 0.2]
+      if (chars < L.text.length + L.cps * 0.3) penPos = [res.penX, res.penY + L.size * 0.2]
     })
-    if (penPos && op.pen !== false && op.font !== 'type') pen(g, penPos[0], penPos[1], lt, 1, penScale(op.pen))
+    if (penPos && op.pen !== false && op.font !== 'type') pen(g, penPos[0], penPos[1], lt, 1, penScale(op.pen), penAngle(op.pen))
   },
-  sfx: op => op._sched.map(L => ({ at: op.t + L.at, kind: op.font === 'type' ? 'type' : 'scribble', dur: L.text.length / op.cps, n: L.text.length })),
+  sfx: op => op._sched.map(L => ({ at: op.t + L.at, kind: op.font === 'type' ? 'type' : 'scribble', dur: L.text.length / L.cps, n: L.text.length })),
 }
 
 /**
@@ -174,6 +183,14 @@ export const lines = {
  * With `steps: [[t, value], ...]` (t relative to the op) it becomes a running total that
  * tweens to each value at its time — one op instead of a chain of counters.
  */
+// time: 'hms' → 23:59:59, 'ms' → 59:59 (value in seconds); otherwise money/number formatting
+function fmtValue(v, op) {
+  if (!op.time) return fmtNum(v, op)
+  const s = Math.max(0, Math.round(v))
+  const two = n => String(n).padStart(2, '0')
+  return op.time === 'ms' ? `${two(Math.floor(s / 60))}:${two(s % 60)}` : `${two(Math.floor(s / 3600))}:${two(Math.floor((s % 3600) / 60))}:${two(s % 60)}`
+}
+
 function stepValue(op, lt) {
   let prev = op.from, v = op.from, popAt = null
   for (const [st, val] of op.steps) {
@@ -201,12 +218,12 @@ export const counter = {
     let text, pop = 1
     if (op.steps) {
       const { v, popAt } = stepValue(op, lt)
-      text = fmtNum(v, op)
+      text = fmtValue(v, op)
       if (popAt != null && lt > popAt) pop = 1 + 0.06 * Math.sin(clamp((lt - popAt) / 0.2) * Math.PI)
     } else {
       const k = prog(lt, 0, op.dur)
       const v = lerp(op.from, op.to, (ease[op.ease] || ease.out)(k))
-      text = fmtNum(k >= 1 ? op.to : v, op)
+      text = fmtValue(k >= 1 ? op.to : v, op)
       pop = lt > op.dur ? 1 + 0.08 * Math.sin(clamp((lt - op.dur) / 0.25) * Math.PI) : 1
     }
     g.save()
@@ -233,17 +250,21 @@ export const ladder = {
     op.gap ??= 0.35
     op.rowH ??= op.size * 1.5
     op.x ??= 110
+    op.gutter ??= 120
+    op.lastEmph ??= true
     let cursor = 0
     op._sched = op.rows.map((row, i) => {
+      if (row.at != null) cursor = row.at // per-row start (s after the op)
       const at = cursor
       const n = (row.factor || '').length + row.label.length + String(row.value).length
       cursor += n / op.cps + op.gap
-      return { ...row, at, last: i === op.rows.length - 1 }
+      const last = i === op.rows.length - 1
+      return { ...row, at, last, emph: row.emph ?? (last && op.lastEmph) }
     })
     op._end = cursor
   },
   draw(g, op, lt) {
-    const gutter = 120
+    const gutter = op.gutter
     let penPos = null
     op._sched.forEach((row, i) => {
       if (lt < row.at) return
@@ -254,12 +275,12 @@ export const ladder = {
         budget -= row.factor.length
       }
       if (budget <= 0) return
-      const col = row.last ? 'red' : op.color
+      const col = row.color ?? (row.emph ? 'red' : op.color)
       const lab = handText(g, row.label, op.x + gutter, y, { size: op.size * 0.8, color: 'pencil', seed: i }, budget)
       budget -= row.label.length
       if (budget > 0) {
         const val = String(row.value)
-        const res = handText(g, val, op.x + op.w, y, { size: row.last ? op.size * 1.15 : op.size, color: col, align: 'right', seed: i + 9 }, budget)
+        const res = handText(g, val, op.x + op.w, y, { size: row.emph ? op.size * 1.15 : op.size, color: col, align: 'right', seed: i + 9 }, budget)
         // dotted leader between label and value
         g.save()
         g.fillStyle = 'rgba(28,45,94,0.35)'
@@ -268,7 +289,7 @@ export const ladder = {
         if (budget < val.length + op.cps * 0.3) penPos = [res.penX, res.penY + op.size * 0.2]
       } else penPos = [lab.penX, lab.penY + op.size * 0.2]
     })
-    if (penPos && op.pen !== false) pen(g, penPos[0], penPos[1], lt, 1, penScale(op.pen))
+    if (penPos && op.pen !== false) pen(g, penPos[0], penPos[1], lt, 1, penScale(op.pen), penAngle(op.pen))
   },
   sfx: op => op._sched.map(r => ({ at: op.t + r.at, kind: 'scribble', dur: ((r.factor || '').length + r.label.length + String(r.value).length) / op.cps, n: 10 })),
 }
@@ -278,7 +299,7 @@ export function drawCaption(g, cap, t) {
   const size = cap.size || 56
   g.save()
   g.font = font('sans', size, 900)
-  const linesOut = wrap(g, cap.text, 860).slice(0, 3)
+  const linesOut = wrap(g, cap.text, 820).slice(0, 3)
   const words = cap.text.split(/\s+/)
   const k = clamp((t - cap.t) / Math.max(0.01, cap.end - cap.t))
   const active = Math.min(words.length - 1, Math.floor(k * words.length))

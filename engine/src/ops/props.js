@@ -247,10 +247,10 @@ export const stuff = {
       g.shadowColor = 'transparent'
       g.strokeStyle = 'rgba(80,60,30,0.3)'; g.lineWidth = 2
       g.beginPath(); g.moveTo(-op.ew / 2, -op.eh * 0.2); g.lineTo(0, op.eh * 0.16); g.lineTo(op.ew / 2, -op.eh * 0.2); g.stroke()
-      handText(g, it.label, 0, op.eh * 0.38, { size: 46, color: 'ink', align: 'center', seed: i })
+      handText(g, it.label, 0, op.eh * 0.38, { size: op.labelSize ?? 46, color: 'ink', align: 'center', seed: i })
       g.restore()
       const ck = op.instant ? 1 : prog(lt, k0 + 0.2, 0.6)
-      if (ck > 0) handText(g, fmtNum(Math.round(it.amount * ease.out(ck)), { prefix: op.prefix }), cx, cy + op.eh * 0.5 + 70, { size: 56, color: it.color || 'green', align: 'center', jitter: 0.3 })
+      if (ck > 0) handText(g, fmtNum(Math.round(it.amount * ease.out(ck)), { prefix: op.prefix }), cx, cy + op.eh * 0.5 + 70, { size: op.amountSize ?? 56, color: it.color || 'green', align: 'center', jitter: 0.3 })
     })
   },
   sfx: op => (op.instant ? [] : op.items.flatMap((_, i) => [0, 1, 2].map(b => ({ at: op.t + i * op.stagger + 0.3 + b * 0.12, kind: 'cash' })))),
@@ -264,15 +264,17 @@ export const emoji = {
     op.instant ??= op.t <= 0.05
   },
   draw(g, op, lt) {
-    const k = op.instant ? 1 : ease.back(prog(lt, 0, 0.35))
+    const k = op.instant || op.pop === false ? 1 : ease.back(prog(lt, 0, 0.35))
+    // pulse: {bpm, scale} beats like a heart
+    const beat = op.pulse ? 1 + (op.pulse.scale ?? 0.15) * Math.pow(Math.max(0, Math.sin(Math.PI * lt * ((op.pulse.bpm ?? 72) / 60))), 8) : 1
     g.save()
     g.translate(op.x, op.y + (op.bob ? Math.sin(lt * 3) * 8 : 0))
     g.rotate(((op.rot || 0) * Math.PI) / 180)
-    g.scale(k, k)
+    g.scale(k * beat, k * beat)
     g.font = `${op.size}px "Noto Color Emoji"`
     g.textAlign = 'center'; g.textBaseline = 'middle'
     g.fillText(op.char, 0, 0)
     g.restore()
   },
-  sfx: op => (op.instant ? [] : [{ at: op.t, kind: 'pop' }]),
+  sfx: op => (op.instant || op.pop === false ? [] : [{ at: op.t, kind: 'pop' }]),
 }

@@ -49,10 +49,10 @@ function textLines(op) {
     case 'ladder':
       return op._sched.flatMap((r, i) => {
         const y = op.y + i * op.rowH
-        const vs = r.last ? op.size * 1.15 : op.size
+        const vs = r.emph ? op.size * 1.15 : op.size
         const v = String(r.value)
         return [
-          { t: r.label, kind: 'hand', size: op.size * 0.8, x0: op.x + 120, base: y },
+          { t: r.label, kind: 'hand', size: op.size * 0.8, x0: op.x + op.gutter, base: y },
           { t: v, kind: 'hand', size: vs, x0: op.x + op.w - width(v, 'hand', vs), base: y },
         ]
       })

@@ -156,3 +156,11 @@ test('lint warns when frame 0 has no readable hook', () => {
   const ok = lint(prepare({ ops: [{ type: 'hook', t: 0, text: 'number first' }] }))
   assert.ok(!ok.some(w => w.startsWith('frame 0')))
 })
+
+test('curve crossover ignores a shared start and finds the lead change', async () => {
+  const { crossing } = await import('../src/ops/charts.js')
+  assert.deepEqual(crossing([0, 2, 4, 6, 8, 10, 12, 14], [0, 0, 0, 3, 6, 9, 12, 15]), { x: 6, y: 12 })
+  const c = crossing([0, 1, 2, 3], [0, 0, 1.5, 4])
+  assert.ok(Math.abs(c.x - 7 / 3) < 1e-9 && Math.abs(c.y - 7 / 3) < 1e-9)
+  assert.equal(crossing([0, 1, 2], [0, 0.5, 1]), null)
+})

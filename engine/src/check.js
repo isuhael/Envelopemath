@@ -182,6 +182,9 @@ export function lint(spec) {
     if (op.type === 'receipt') small(op, op.size, 'type', 'receipt rows')
     if (op.type === 'envelope') op.card.forEach((l, i) => small(op, (typeof l === 'object' && l.size) || op.cardSize, (typeof l === 'object' && l.font) || 'hand', `envelope card line ${i}`))
     if (op.type === 'bars') small(op, Math.min(...op.items.map(i => i.labelSize || 50)), 'hand', 'bar labels')
+    if (op.type === 'stuff') { small(op, op.labelSize ?? 46, 'hand', 'envelope labels'); small(op, op.amountSize ?? 56, 'hand', 'envelope amounts') }
+    if (op.type === 'pick') { small(op, op.size, 'hand', 'pick labels'); if (op.options.some(o => o.sub)) small(op, op.subSize ?? op.size * 0.7, 'hand', 'pick sub-labels') }
+    if (op.type === 'grid' && op.label) small(op, op.labelSize ?? 56, 'hand', 'grid label')
   }
   // text that is cleared before the pen finishes writing it
   for (const op of spec._ops) {
@@ -197,7 +200,7 @@ export function lint(spec) {
   for (let i = 1; i < caps.length; i++) if (caps[i].t < caps[i - 1].end - 0.01) warn.push(`caption at ${caps[i].t}s overlaps the previous caption`)
   for (const c of caps) {
     probe.font = font('sans', c.size || 56, 900)
-    const n = wrap(probe, c.text, 860).length
+    const n = wrap(probe, c.text, 820).length
     if (n > 2) warn.push(`caption at ${c.t}s wraps to ${n} lines (max 2; split it)`)
     const words = c.text.split(/\s+/).filter(Boolean).length
     const pace = words / Math.max(0.01, c.end - c.t)

@@ -98,7 +98,7 @@ export const pick = {
       g.fillText(String.fromCharCode(65 + i), -op.ew / 2 + 38, -op.eh / 2 + 40)
       g.textAlign = 'left'
       handText(g, opt.label, 0, op.eh * 0.18, { size: opt.size || op.size, color: 'ink', align: 'center', seed: i })
-      if (opt.sub) handText(g, opt.sub, 0, op.eh * 0.18 + op.size * 0.95, { size: op.size * 0.7, color: 'red', align: 'center', seed: i + 7 })
+      if (opt.sub) handText(g, opt.sub, 0, op.eh * 0.18 + op.size * 0.95, { size: op.subSize ?? op.size * 0.7, color: 'red', align: 'center', seed: i + 7 })
       g.restore()
     })
     if (revealK > 0 && op.answer != null) {

@@ -5,13 +5,15 @@
     "style": "kraft",
     "seed": 9
   },
-  "duration": 41.5,
-  "vo": "Six groceries cost eleven thirty-nine in 2006. Did they actually double? BLS prices, line by line. Eggs: a buck thirty-one a dozen. Now two twenty-seven. Milk: three-oh-eight a gallon. Now four twenty-three. Bread: a buck-oh-eight a pound. Now a buck eighty-two. Bananas: fifty cents… now sixty-five. Fifteen cents in twenty years?! Coffee: three twenty a pound. Now nine thirty. Ground beef: two twenty-two. Now six ninety-two. Triple. Total: eleven thirty-nine then. Twenty-five nineteen now. Two point two times. In dollars, yes. But pay rose too: sixteen seventy-nine an hour in 2006. So that bag cost forty-one minutes of work. Today: thirty-two fifty-three an hour. Today's bag costs… Pause. Guess the minutes. Forty-six minutes. Not double.",
+  "duration": 41.6,
+  "loop": true,
+  "vo": "Six groceries cost eleven thirty-nine in 2006. Did they actually double? BLS prices, line by line. Eggs: a buck thirty-one a dozen. Now two twenty-eight. Milk: three-oh-eight a gallon. Now four twenty-three. Bread: a buck-oh-eight a pound. Now a buck eighty-two. Bananas: fifty cents… now sixty-five. Fifteen cents in twenty years?! Coffee: three twenty a pound. Now nine thirty. Ground beef: two twenty-two. Now six ninety-two. Triple. Total: eleven thirty-nine then. Twenty-five twenty now. Two point two times. In dollars, yes. But pay rose too: sixteen seventy-nine an hour in 2006. So that bag cost forty-one minutes of work. Today: thirty-two fifty-three an hour. Today's bag costs… Pause. Guess the minutes. Forty-six minutes. Not double.",
   "captions": [
     {
       "t": 0.1,
       "end": 2.6,
-      "text": "Six groceries cost $11.39 in 2006."
+      "text": "Six groceries cost $11.39 in 2006.",
+      "say": "Six groceries cost eleven thirty-nine in 2006."
     },
     {
       "t": 2.6,
@@ -20,90 +22,134 @@
     },
     {
       "t": 5.0,
+      "end": 6.4,
+      "text": "Eggs: $1.31 a dozen.",
+      "say": "Eggs: a buck thirty-one a dozen."
+    },
+    {
+      "t": 6.4,
       "end": 8.1,
-      "text": "Eggs: $1.31 a dozen. Now $2.27."
+      "text": "Now $2.28.",
+      "say": "Now two twenty-eight."
     },
     {
       "t": 8.2,
+      "end": 9.6,
+      "text": "Milk: $3.08 a gallon.",
+      "say": "Milk: three-oh-eight a gallon."
+    },
+    {
+      "t": 9.6,
       "end": 11.3,
-      "text": "Milk: $3.08 a gallon. Now $4.23."
+      "text": "Now $4.23.",
+      "say": "Now four twenty-three."
     },
     {
       "t": 11.4,
+      "end": 12.8,
+      "text": "Bread: $1.08 a pound.",
+      "say": "Bread: a buck-oh-eight a pound."
+    },
+    {
+      "t": 12.8,
       "end": 14.5,
-      "text": "Bread: $1.08 a pound. Now $1.82."
+      "text": "Now $1.82.",
+      "say": "Now a buck eighty-two."
     },
     {
       "t": 14.6,
-      "end": 16.2,
-      "text": "Bananas: 50 cents… now 65."
+      "end": 15.8,
+      "text": "Bananas: 50 cents…",
+      "say": "Bananas: fifty cents…"
     },
     {
-      "t": 16.2,
+      "t": 15.8,
       "end": 17.7,
-      "text": "15 cents in 20 years?!"
+      "text": "Now 65. 15 cents in 20 years?!",
+      "say": "now sixty-five. Fifteen cents in twenty years?!"
     },
     {
       "t": 17.8,
+      "end": 19.2,
+      "text": "Coffee: $3.20 a pound.",
+      "say": "Coffee: three twenty a pound."
+    },
+    {
+      "t": 19.2,
       "end": 20.9,
-      "text": "Coffee: $3.20 a pound. Now $9.30."
+      "text": "Now $9.30.",
+      "say": "Now nine thirty."
     },
     {
       "t": 21.0,
+      "end": 22.4,
+      "text": "Ground beef: $2.22.",
+      "say": "Ground beef: two twenty-two."
+    },
+    {
+      "t": 22.4,
       "end": 24.1,
-      "text": "Ground beef: $2.22. Now $6.92. Triple."
+      "text": "Now $6.92. Triple.",
+      "say": "Now six ninety-two. Triple."
     },
     {
       "t": 24.2,
-      "end": 26.5,
-      "text": "Total: $11.39 then. $25.19 now."
+      "end": 26.4,
+      "text": "Total: $11.39 then. $25.20 now.",
+      "say": "Total: eleven thirty-nine then. Twenty-five twenty now."
     },
     {
-      "t": 26.5,
+      "t": 26.4,
       "end": 28.7,
-      "text": "2.2 times. In dollars, yes."
+      "text": "2.2 times. In dollars, yes.",
+      "say": "Two point two times. In dollars, yes."
     },
     {
       "t": 29.0,
       "end": 31.7,
-      "text": "But pay rose too: $16.79 an hour in 2006."
+      "text": "But pay rose too: $16.79 an hour in 2006.",
+      "say": "But pay rose too: sixteen seventy-nine an hour in 2006."
     },
     {
       "t": 31.7,
-      "end": 33.8,
-      "text": "So that bag cost 41 minutes of work."
+      "end": 33.7,
+      "text": "So that bag cost 41 minutes of work.",
+      "say": "So that bag cost forty-one minutes of work."
     },
     {
-      "t": 33.9,
-      "end": 36.2,
-      "text": "Today: $32.53 an hour. Today's bag costs…"
+      "t": 33.8,
+      "end": 36.1,
+      "text": "Today: $32.53 an hour. Today's bag costs…",
+      "say": "Today: thirty-two fifty-three an hour. Today's bag costs…"
     },
     {
-      "t": 36.3,
-      "end": 39.2,
+      "t": 36.2,
+      "end": 39.1,
       "text": "Pause. Guess the minutes."
     },
     {
-      "t": 39.4,
-      "end": 41.4,
-      "text": "46 minutes. Not double."
+      "t": 39.3,
+      "end": 41.5,
+      "text": "46 minutes. Not double.",
+      "say": "Forty-six minutes. Not double."
     }
   ],
   "ops": [
     {
       "type": "postmark",
-      "t": -0.5,
-      "x": 190,
-      "y": 300,
+      "t": 0,
+      "x": 175,
+      "y": 258,
+      "r": 100,
+      "persist": true,
       "center": [
         "No.",
         "09A"
-      ],
-      "persist": true
+      ]
     },
     {
       "type": "hook",
-      "t": -0.8,
+      "t": 0,
       "text": [
         "6 groceries: *$11.39* in 2006",
         "Did they *actually* double?"
@@ -114,410 +160,251 @@
     },
     {
       "type": "receipt",
-      "t": -1.4,
-      "x": 540,
+      "id": "r06",
+      "t": 0,
+      "x": 295,
       "y": 600,
-      "w": 780,
-      "size": 48,
-      "rot": -1,
-      "lps": 0.3125,
-      "header": "AVG U.S. PRICE  2006 → 2026",
+      "w": 470,
+      "size": 44,
+      "rot": 0.4,
+      "instant": true,
+      "compact": true,
+      "header": "AVG PRICE, 2006",
       "items": [
         [
-          "EGGS, DOZEN",
-          "1.31 → 2.27"
+          "EGGS, DOZ",
+          "$1.31"
         ],
         [
-          "MILK, GALLON",
-          "3.08 → 4.23"
+          "MILK, GAL",
+          "$3.08"
         ],
         [
-          "WHITE BREAD, LB",
-          "1.08 → 1.82"
+          "BREAD, LB",
+          "$1.08"
         ],
         [
           "BANANAS, LB",
-          "0.50 → 0.65"
+          "$0.50"
         ],
         [
           "COFFEE, LB",
-          "3.20 → 9.30"
+          "$3.20"
         ],
         [
-          "GROUND BEEF, LB",
-          "2.22 → 6.92"
+          "GR. BEEF, LB",
+          "$2.22"
         ]
-      ]
+      ],
+      "running": {
+        "label": "TOTAL",
+        "prefix": "$",
+        "decimals": 2
+      }
     },
     {
-      "type": "postage",
-      "t": -0.5,
-      "x": 540,
-      "y": 1050,
-      "w": 230,
-      "h": 270,
-      "value": "$11.39",
-      "label": "6 ITEMS · 2006",
-      "art": "≈",
-      "rot": 4,
-      "until": 8.0,
-      "fadeOut": 0.15
-    },
-    {
-      "type": "write",
-      "t": 2.0,
-      "text": "RUNNING TOTAL",
-      "x": 150,
-      "y": 1287,
-      "size": 34,
-      "font": "type",
-      "color": "pencil"
-    },
-    {
-      "type": "write",
-      "t": 2.1,
-      "text": "→",
-      "x": 690,
-      "y": 1284,
-      "size": 46,
-      "font": "type",
-      "color": "pencil",
-      "align": "center"
-    },
-    {
-      "type": "counter",
-      "t": 2.2,
-      "from": 0.0,
-      "to": 0.0,
-      "x": 560,
-      "y": 1287,
-      "size": 66,
-      "prefix": "$",
-      "suffix": "",
-      "decimals": 2,
-      "dur": 0.01,
-      "color": "ink",
-      "fadeOut": 0,
-      "until": 5.35
-    },
-    {
-      "type": "counter",
-      "t": 5.35,
-      "from": 0.0,
-      "to": 1.31,
-      "x": 560,
-      "y": 1287,
-      "size": 66,
-      "prefix": "$",
-      "suffix": "",
-      "decimals": 2,
-      "dur": 0.8,
-      "color": "ink",
-      "fadeOut": 0,
-      "until": 8.55
-    },
-    {
-      "type": "counter",
-      "t": 8.55,
-      "from": 1.31,
-      "to": 4.39,
-      "x": 560,
-      "y": 1287,
-      "size": 66,
-      "prefix": "$",
-      "suffix": "",
-      "decimals": 2,
-      "dur": 0.8,
-      "color": "ink",
-      "fadeOut": 0,
-      "until": 11.75
-    },
-    {
-      "type": "counter",
-      "t": 11.75,
-      "from": 4.39,
-      "to": 5.47,
-      "x": 560,
-      "y": 1287,
-      "size": 66,
-      "prefix": "$",
-      "suffix": "",
-      "decimals": 2,
-      "dur": 0.8,
-      "color": "ink",
-      "fadeOut": 0,
-      "until": 14.95
-    },
-    {
-      "type": "counter",
-      "t": 14.95,
-      "from": 5.47,
-      "to": 5.97,
-      "x": 560,
-      "y": 1287,
-      "size": 66,
-      "prefix": "$",
-      "suffix": "",
-      "decimals": 2,
-      "dur": 0.8,
-      "color": "ink",
-      "fadeOut": 0,
-      "until": 18.15
-    },
-    {
-      "type": "counter",
-      "t": 18.15,
-      "from": 5.97,
-      "to": 9.17,
-      "x": 560,
-      "y": 1287,
-      "size": 66,
-      "prefix": "$",
-      "suffix": "",
-      "decimals": 2,
-      "dur": 0.8,
-      "color": "ink",
-      "fadeOut": 0,
-      "until": 21.35
-    },
-    {
-      "type": "counter",
-      "t": 21.35,
-      "from": 9.17,
-      "to": 11.39,
-      "x": 560,
-      "y": 1287,
-      "size": 66,
-      "prefix": "$",
-      "suffix": "",
-      "decimals": 2,
-      "dur": 0.8,
-      "color": "ink",
-      "fadeOut": 0
-    },
-    {
-      "type": "counter",
-      "t": 2.2,
-      "from": 0.0,
-      "to": 0.0,
-      "x": 820,
-      "y": 1287,
-      "size": 66,
-      "prefix": "$",
-      "suffix": "",
-      "decimals": 2,
-      "dur": 0.01,
-      "color": "ink",
-      "fadeOut": 0,
-      "until": 5.35
-    },
-    {
-      "type": "counter",
-      "t": 5.35,
-      "from": 0.0,
-      "to": 2.27,
-      "x": 820,
-      "y": 1287,
-      "size": 66,
-      "prefix": "$",
-      "suffix": "",
-      "decimals": 2,
-      "dur": 0.8,
-      "color": "ink",
-      "fadeOut": 0,
-      "until": 8.55
-    },
-    {
-      "type": "counter",
-      "t": 8.55,
-      "from": 2.27,
-      "to": 6.5,
-      "x": 820,
-      "y": 1287,
-      "size": 66,
-      "prefix": "$",
-      "suffix": "",
-      "decimals": 2,
-      "dur": 0.8,
-      "color": "ink",
-      "fadeOut": 0,
-      "until": 11.75
-    },
-    {
-      "type": "counter",
-      "t": 11.75,
-      "from": 6.5,
-      "to": 8.32,
-      "x": 820,
-      "y": 1287,
-      "size": 66,
-      "prefix": "$",
-      "suffix": "",
-      "decimals": 2,
-      "dur": 0.8,
-      "color": "ink",
-      "fadeOut": 0,
-      "until": 14.95
-    },
-    {
-      "type": "counter",
-      "t": 14.95,
-      "from": 8.32,
-      "to": 8.97,
-      "x": 820,
-      "y": 1287,
-      "size": 66,
-      "prefix": "$",
-      "suffix": "",
-      "decimals": 2,
-      "dur": 0.8,
-      "color": "ink",
-      "fadeOut": 0,
-      "until": 18.15
-    },
-    {
-      "type": "counter",
-      "t": 18.15,
-      "from": 8.97,
-      "to": 18.27,
-      "x": 820,
-      "y": 1287,
-      "size": 66,
-      "prefix": "$",
-      "suffix": "",
-      "decimals": 2,
-      "dur": 0.8,
-      "color": "ink",
-      "fadeOut": 0,
-      "until": 21.35
-    },
-    {
-      "type": "counter",
-      "t": 21.35,
-      "from": 18.27,
-      "to": 25.19,
-      "x": 820,
-      "y": 1287,
-      "size": 66,
-      "prefix": "$",
-      "suffix": "",
-      "decimals": 2,
-      "dur": 0.8,
-      "color": "ink",
-      "fadeOut": 0
+      "type": "receipt",
+      "id": "r26",
+      "t": 0,
+      "x": 746,
+      "y": 600,
+      "w": 396,
+      "size": 44,
+      "rot": 0.9,
+      "compact": true,
+      "header": "AUG 2026",
+      "items": [
+        {
+          "label": "×1.7",
+          "value": "$2.28",
+          "at": 6.3
+        },
+        {
+          "label": "×1.4",
+          "value": "$4.23",
+          "at": 9.5
+        },
+        {
+          "label": "×1.7",
+          "value": "$1.82",
+          "at": 12.7
+        },
+        {
+          "label": "×1.3",
+          "value": "$0.65",
+          "at": 15.9,
+          "highlight": true
+        },
+        {
+          "label": "×2.9",
+          "value": "$9.30",
+          "at": 19.1,
+          "color": "red"
+        },
+        {
+          "label": "×3.1",
+          "value": "$6.92",
+          "at": 22.3,
+          "color": "red"
+        }
+      ],
+      "running": {
+        "label": "TOTAL",
+        "prefix": "$",
+        "decimals": 2
+      }
     },
     {
       "type": "highlight",
-      "t": 15.0,
-      "x": 156,
-      "y": 993,
-      "w": 766,
-      "h": 56
+      "t": 5.0,
+      "x": 74.6,
+      "y": 771.6,
+      "w": 438,
+      "h": 55.8,
+      "dur": 0.3,
+      "until": 8.2,
+      "fadeOut": 0.15
+    },
+    {
+      "type": "highlight",
+      "t": 8.2,
+      "x": 74.2,
+      "y": 835.4,
+      "w": 438,
+      "h": 55.8,
+      "dur": 0.3,
+      "until": 11.4,
+      "fadeOut": 0.15
+    },
+    {
+      "type": "highlight",
+      "t": 11.4,
+      "x": 73.7,
+      "y": 899.2,
+      "w": 438,
+      "h": 55.8,
+      "dur": 0.3,
+      "until": 14.6,
+      "fadeOut": 0.15
+    },
+    {
+      "type": "highlight",
+      "t": 14.6,
+      "x": 73.3,
+      "y": 963.0,
+      "w": 438,
+      "h": 55.8,
+      "dur": 0.3,
+      "until": 17.8,
+      "fadeOut": 0.15
+    },
+    {
+      "type": "highlight",
+      "t": 17.8,
+      "x": 72.8,
+      "y": 1026.8,
+      "w": 438,
+      "h": 55.8,
+      "dur": 0.3,
+      "until": 21.0,
+      "fadeOut": 0.15
+    },
+    {
+      "type": "highlight",
+      "t": 21.0,
+      "x": 72.4,
+      "y": 1090.6,
+      "w": 438,
+      "h": 55.8,
+      "dur": 0.3,
+      "until": 24.2,
+      "fadeOut": 0.15
     },
     {
       "type": "emoji",
-      "t": 15.0,
+      "t": 15.7,
       "char": "🍌",
-      "x": 172,
-      "y": 512,
-      "size": 112,
+      "x": 160,
+      "y": 470,
+      "size": 120,
       "rot": -12,
-      "until": 17.8
+      "until": 17.7
     },
     {
       "type": "write",
-      "t": 15.1,
+      "t": 15.8,
       "text": "+15¢ in 20 years?!",
-      "x": 590,
-      "y": 540,
-      "size": 80,
+      "x": 600,
+      "y": 500,
+      "size": 76,
       "color": "red",
       "align": "center",
-      "until": 17.8
+      "cps": 20,
+      "until": 17.7
+    },
+    {
+      "type": "write",
+      "id": "dbl",
+      "t": 17.9,
+      "text": "double = $22.78",
+      "x": 540,
+      "y": 495,
+      "size": 72,
+      "color": "pencil",
+      "align": "center",
+      "until": 25.6
     },
     {
       "type": "annotate",
-      "t": 15.7,
+      "t": 22.650000000000002,
       "kind": "circle",
-      "x": 596,
-      "y": 997,
-      "w": 308,
-      "h": 42,
+      "target": {
+        "op": "dbl",
+        "match": "$22.78",
+        "pad": 6
+      },
       "pad": 12,
-      "until": 17.8
-    },
-    {
-      "type": "emoji",
-      "t": 18.2,
-      "char": "☕",
-      "x": 172,
-      "y": 512,
-      "size": 112,
-      "rot": -12,
-      "until": 21.0
+      "until": 25.6
     },
     {
       "type": "write",
-      "t": 18.3,
-      "text": "coffee ×2.9",
-      "x": 590,
-      "y": 540,
-      "size": 80,
-      "color": "red",
-      "align": "center",
-      "until": 21.0
-    },
-    {
-      "type": "emoji",
-      "t": 21.4,
-      "char": "🥩",
-      "x": 172,
-      "y": 512,
-      "size": 112,
-      "rot": -12,
-      "until": 24.3
-    },
-    {
-      "type": "write",
-      "t": 21.5,
-      "text": "beef ×3.1",
-      "x": 590,
-      "y": 540,
-      "size": 80,
-      "color": "red",
-      "align": "center",
-      "until": 24.3
-    },
-    {
-      "type": "write",
-      "t": 24.4,
+      "id": "x22",
+      "t": 25.8,
       "text": "× 2.2",
       "x": 540,
-      "y": 505,
-      "size": 110,
+      "y": 470,
+      "size": 120,
       "color": "red",
-      "align": "center"
+      "align": "center",
+      "cps": 12
     },
     {
       "type": "annotate",
-      "t": 24.8,
-      "kind": "circle",
-      "x": 738,
-      "y": 1235,
-      "w": 166,
-      "h": 60,
-      "pad": 16
+      "t": 26.3,
+      "kind": "double",
+      "target": {
+        "op": "x22",
+        "match": "2.2"
+      }
     },
     {
       "type": "write",
-      "t": 25.3,
-      "text": "(78% of it: coffee + beef)",
+      "id": "p78",
+      "t": 26.4,
+      "text": "78% of it: coffee + beef",
       "x": 540,
-      "y": 584,
-      "size": 48,
-      "color": "red",
+      "y": 568,
+      "size": 64,
       "align": "center",
-      "cps": 28
+      "cps": 26
+    },
+    {
+      "type": "highlight",
+      "t": 27.4,
+      "target": {
+        "op": "p78",
+        "match": "coffee + beef"
+      }
     },
     {
       "type": "flip",
@@ -528,29 +415,20 @@
       "t": 29.1,
       "title": "ASSUME:",
       "text": "avg hourly pay\n2006: $16.79\n2026: $32.53",
-      "x": 770,
-      "y": 428,
-      "w": 360,
-      "size": 50,
-      "until": 36.0
-    },
-    {
-      "type": "write",
-      "t": 29.4,
-      "text": "in minutes of work:",
-      "x": 90,
-      "y": 998,
-      "size": 52,
-      "color": "pencil"
+      "x": 790,
+      "y": 400,
+      "w": 400,
+      "size": 56,
+      "until": 38.9
     },
     {
       "type": "envelope",
-      "t": 29.4,
-      "x": 540,
-      "y": 772,
-      "w": 600,
-      "openAt": 39.3,
-      "cardSize": 100,
+      "t": 29.3,
+      "x": 548,
+      "y": 776,
+      "w": 680,
+      "openAt": 39.2,
+      "cardSize": 112,
       "label": "2026 = ? MIN",
       "card": [
         {
@@ -559,41 +437,62 @@
         },
         {
           "text": "×1.1, not ×2.2",
-          "size": 54,
+          "size": 64,
           "color": "red"
         }
       ]
     },
     {
       "type": "write",
-      "t": 29.9,
-      "text": "2006: $11.39 ÷ $16.79 ≈ 41 min",
+      "t": 29.6,
+      "text": "in minutes of work:",
       "x": 90,
-      "y": 1088,
-      "size": 66
+      "y": 1038,
+      "size": 64,
+      "color": "pencil"
     },
     {
       "type": "write",
-      "t": 33.9,
-      "text": "2026: $25.19 ÷ $32.53 ≈",
+      "id": "w06",
+      "t": 30.0,
+      "text": "2006: $11.39 ÷ $16.79 ≈ 41 min",
       "x": 90,
-      "y": 1178,
+      "y": 1138,
+      "size": 66
+    },
+    {
+      "type": "annotate",
+      "t": 32.3,
+      "kind": "underline",
+      "target": {
+        "op": "w06",
+        "match": "41 min"
+      }
+    },
+    {
+      "type": "write",
+      "id": "w26",
+      "t": 33.8,
+      "text": "2026: $25.20 ÷ $32.53 ≈",
+      "x": 90,
+      "y": 1242,
       "size": 66
     },
     {
       "type": "timer",
-      "t": 36.3,
-      "x": 800,
-      "y": 430,
-      "r": 72,
+      "t": 36.2,
+      "x": 300,
+      "y": 410,
+      "r": 80,
       "seconds": 3
     },
     {
       "type": "write",
-      "t": 39.9,
+      "id": "w46",
+      "t": 39.8,
       "text": "46 min",
-      "x": 708,
-      "y": 1178,
+      "x": 709,
+      "y": 1242,
       "size": 66,
       "color": "red",
       "cps": 24
@@ -602,8 +501,8 @@
       "type": "stamp",
       "t": 40.3,
       "text": "OPENED BY\nMISTAKE",
-      "x": 540,
-      "y": 760,
+      "x": 548,
+      "y": 860,
       "size": 60,
       "rot": -8
     }

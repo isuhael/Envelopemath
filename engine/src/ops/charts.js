@@ -1,7 +1,7 @@
 // Napkin charts: hatched bars, a growth curve drawn by pen, and a dot/emoji grid.
 import { ink } from '../theme.js'
-import { handText, wobble, strokePartial, hatch } from '../ink.js'
-import { ease, prog, fmtNum, hash } from '../util.js'
+import { handText, wobble, strokePartial, hatch, ellipsePts } from '../ink.js'
+import { ease, prog, fmtNum, hash, clamp } from '../util.js'
 
 /** bars: hand-drawn hatched bars. items: [{label, value, color, display, at}] grow left to right (`at`: start, s after the op). */
 export const bars = {
@@ -36,6 +36,37 @@ export const bars = {
   sfx: op => op.items.map((it, i) => ({ at: op.t + (it.at ?? 0.2 + i * op.stagger), kind: 'scribble', dur: op.dur, n: 6 })),
 }
 
+// Where two equal-length series first swap the lead (ignoring a shared start): fractional index x and value y.
+export function crossing(a, b) {
+  let lead = 0
+  for (let i = 0; i < a.length; i++) {
+    const s = Math.sign(a[i] - b[i])
+    if (s === 0) continue
+    if (lead && s !== lead) {
+      const d0 = a[i - 1] - b[i - 1], d1 = a[i] - b[i]
+      const f = d0 === 0 ? 0 : d0 / (d0 - d1)
+      return { x: i - 1 + f, y: a[i - 1] + f * (a[i] - a[i - 1]) }
+    }
+    lead = s
+  }
+  return null
+}
+
+// Fraction of a polyline's length reached when the pen is a fraction kx along the x axis.
+function lenFrac(pts, kx) {
+  if (kx <= 0) return 0
+  if (kx >= 1) return 1
+  const x = pts[0][0] + kx * (pts[pts.length - 1][0] - pts[0][0])
+  let total = 0, upto = 0
+  for (let i = 1; i < pts.length; i++) {
+    const seg = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1])
+    if (pts[i][0] <= x) upto += seg
+    else if (pts[i - 1][0] < x) upto += seg * ((x - pts[i - 1][0]) / (pts[i][0] - pts[i - 1][0]))
+    total += seg
+  }
+  return total ? upto / total : 0
+}
+
 // Series for common money curves, so specs don't have to hard-code points.
 export function series(fn) {
   const out = []
@@ -63,8 +94,10 @@ export const curve = {
     const n = op._vals.length - 1
     op._pts = op._vals.map((v, i) => [op.x + (i / n) * op.w, op.y - (v / op._max) * op.h])
     if (op.compare) {
-      op._cmp = (op.compare.values || series(op.compare.fn)).map((v, i, a) => [op.x + (i / (a.length - 1)) * op.w, op.y - (v / op._max) * op.h])
+      op._cmpVals = op.compare.values || series(op.compare.fn)
+      op._cmp = op._cmpVals.map((v, i, a) => [op.x + (i / (a.length - 1)) * op.w, op.y - (v / op._max) * op.h])
     }
+    if (op.crossover && op._cmpVals?.length === op._vals.length) op._cross = crossing(op._vals, op._cmpVals)
   },
   draw(g, op, lt) {
     const ak = ease.out(prog(lt, 0, 0.4))
@@ -79,21 +112,34 @@ export const curve = {
       }
     }
     if (op.yLabel) handText(g, op.yLabel, op.x + 16, op.y - op.h - 40, { size: 44, color: 'ink' })
-    const k = ease.inOut(prog(lt, 0.4, op.dur))
-    if (op._cmp) {
-      strokePartial(g, op._cmp, k, { color: op.compare.color || 'pencil', width: 6 })
-    }
-    strokePartial(g, op._pts, k, { color: op.color, width: 8 })
+    // kx: how far along the x axis the pen is (0..1); `ease: 'linear'` paces years evenly
+    const kx = (ease[op.ease] || ease.inOut)(prog(lt, 0.4, op.dur))
     const n = op._pts.length - 1
-    for (const m of op.marks || []) {
-      if (k * n < m.i) continue
-      const [px, py] = op._pts[m.i]
-      g.save(); g.fillStyle = ink(m.color || op.color); g.beginPath(); g.arc(px, py, 11, 0, 7); g.fill(); g.restore()
-      handText(g, m.text, px + (m.dx ?? -20), py + (m.dy ?? -30), { size: m.size || 52, color: m.color || op.color, align: m.align || 'right', jitter: 0.4 })
+    const drawSeries = (pts, vals, opts, marks, endLabel, endColor) => {
+      strokePartial(g, pts, lenFrac(pts, kx), opts)
+      for (const m of marks || []) {
+        if (kx * n < m.i) continue
+        const [px, py] = pts[m.i]
+        g.save(); g.fillStyle = ink(m.color || endColor); g.beginPath(); g.arc(px, py, 11, 0, 7); g.fill(); g.restore()
+        handText(g, m.text, px + (m.dx ?? -20), py + (m.dy ?? -30), { size: m.size || 52, color: m.color || endColor, align: m.align || 'right', jitter: 0.4 })
+      }
+      if (endLabel !== false && kx >= 1 && vals) {
+        const [ex, ey] = pts[pts.length - 1]
+        handText(g, endLabel || fmtNum(vals[vals.length - 1], op.format), ex, ey - 34, { size: 72, color: endColor, align: 'right' })
+      }
     }
-    if (op.endLabel !== false && k >= 1) {
-      const [ex, ey] = op._pts[n]
-      handText(g, op.endLabel || fmtNum(op._vals[n], op.format), ex, ey - 34, { size: 72, color: op.color, align: 'right' })
+    if (op._cmp) {
+      const c = op.compare
+      drawSeries(op._cmp, op._cmpVals, { color: c.color || 'pencil', width: 6 }, c.marks, c.endLabel ?? false, c.color || 'pencil')
+    }
+    drawSeries(op._pts, op._vals, { color: op.color, width: 8 }, op.marks, op.endLabel, op.color)
+    if (op._cross && kx * n >= op._cross.x) {
+      const X = op.crossover
+      const px = op.x + (op._cross.x / n) * op.w, py = op.y - (op._cross.y / op._max) * op.h
+      const ck = ease.out(clamp((kx * n - op._cross.x) / 2))
+      strokePartial(g, ellipsePts(px, py, 34, 34, 41), ck, { color: X.color || 'red', width: 6 })
+      const label = (X.label || 'crossover: {x}').replace('{x}', op._cross.x.toFixed(X.decimals ?? 1)).replace('{y}', fmtNum(op._cross.y, op.format))
+      handText(g, label, px + (X.dx ?? 0), py + (X.dy ?? -56), { size: X.size || 56, color: X.color || 'red', align: X.align || 'center', jitter: 0.4 }, ck * 99)
     }
   },
   sfx: op => [{ at: op.t, kind: 'scribble', dur: 0.4, n: 4 }, { at: op.t + 0.4, kind: 'scribble', dur: op.dur, n: 20 }],
@@ -121,12 +167,22 @@ export const stack = {
       const top = op.y - (i + 1) * bh
       g.save()
       g.globalAlpha *= f
-      g.fillStyle = i % 2 ? '#86b07f' : '#7aa673'
-      g.fillRect(op.x - op.w / 2, top + (1 - f) * -30, op.w, bh - 2)
-      g.fillStyle = '#e9e0c4'
-      g.fillRect(op.x - 18, top + (1 - f) * -30, 36, bh - 2)
-      g.strokeStyle = 'rgba(40,70,40,0.6)'; g.lineWidth = 2
-      g.strokeRect(op.x - op.w / 2, top + (1 - f) * -30, op.w, bh - 2)
+      const by = top + (1 - f) * -30
+      if (op.skin === 'envelope') {
+        // manila $10K envelopes instead of cash bricks
+        g.fillStyle = i % 2 ? '#e3c78f' : '#d9bb80'
+        g.fillRect(op.x - op.w / 2, by, op.w, bh - 2)
+        g.strokeStyle = 'rgba(110,80,30,0.55)'; g.lineWidth = 2
+        g.strokeRect(op.x - op.w / 2, by, op.w, bh - 2)
+        if (bh > 10) { g.beginPath(); g.moveTo(op.x - op.w / 2, by); g.lineTo(op.x, by + Math.min(bh - 2, 26)); g.lineTo(op.x + op.w / 2, by); g.stroke() }
+      } else {
+        g.fillStyle = i % 2 ? '#86b07f' : '#7aa673'
+        g.fillRect(op.x - op.w / 2, by, op.w, bh - 2)
+        g.fillStyle = '#e9e0c4'
+        g.fillRect(op.x - 18, by, 36, bh - 2)
+        g.strokeStyle = 'rgba(40,70,40,0.6)'; g.lineWidth = 2
+        g.strokeRect(op.x - op.w / 2, by, op.w, bh - 2)
+      }
       g.restore()
     }
     if (op.ref) {
@@ -186,7 +242,7 @@ export const grid = {
       }
       g.restore()
     }
-    if (op.label && lt > 0.3) handText(g, op.label, op.x, op.y + op.rows * op.cell + 30, { size: 56, color: op.color, align: 'center' })
+    if (op.label && lt > 0.3) handText(g, op.label, op.x, op.y + op.rows * op.cell + 30, { size: op.labelSize ?? 56, color: op.color, align: 'center' })
   },
   sfx: op => [{ at: op.t + 0.3, kind: 'ticks', dur: op.dur }],
 }

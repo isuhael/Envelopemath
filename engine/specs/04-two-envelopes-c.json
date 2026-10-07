@@ -464,18 +464,18 @@
   {
    "type": "write",
    "id": "l3",
-   "t": 10.8,
+   "t": 10.35,
    "text": "$80 × 52 wks × 3 yrs = *$12,480*",
    "em": true,
    "x": 540,
    "y": 560,
    "size": 72,
    "align": "center",
-   "cps": 20
+   "cps": 24
   },
   {
    "type": "annotate",
-   "t": 12.5,
+   "t": 12.05,
    "kind": "circle",
    "target": {
     "op": "l3",

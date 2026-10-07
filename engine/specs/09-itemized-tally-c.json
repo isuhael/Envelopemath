@@ -5,294 +5,238 @@
     "style": "kraft",
     "seed": 29
   },
-  "duration": 39.5,
-  "vo": "A two-dollar Powerball ticket. What's it really worth? Each prize: prize times chance. Add them up. Four bucks, at one in thirty-eight: worth ten cents. Three more small wins: seven cents. Both hundred-dollar prizes: one cent. Fifty grand, at one in nine hundred thirteen thousand: five cents. Less than the four-dollar prize! A million bucks: nine cents. Thirty-two cents so far. Now the jackpot: one in two hundred ninety-two million. Jackpot cash this week: about a hundred ninety-nine point eight million. Minus thirty-seven percent federal tax. Times a one-in-two-hundred-ninety-two-million chance: forty-three cents. Plus the thirty-two cents. So the whole ticket is worth… about seventy-five cents. For two dollars.",
+  "duration": 39.6,
+  "loop": true,
+  "vo": "A two-dollar Powerball ticket. What's it really worth? Each prize: prize times chance. Add them up. Four bucks, at one in thirty-eight: worth ten cents. Three more small wins: seven cents. Both hundred-dollar prizes: one cent. Fifty grand, at one in nine hundred thirteen thousand: five cents. Less than the four-dollar prize! A million bucks: nine cents. Thirty-two cents so far. Now the jackpot: one in two hundred ninety-two million. Jackpot cash this week: about a hundred ninety-nine point eight million. Minus thirty-seven percent federal tax. Times a one-in-two-hundred-ninety-two-million chance: forty-three cents. Plus the thirty-two cents. So the whole ticket is worth… About seventy-five cents. For two dollars.",
   "captions": [
     {
       "t": 0.1,
       "end": 2.4,
-      "text": "A $2 Powerball ticket. What's it really worth?"
+      "text": "A $2 Powerball ticket. What's it really worth?",
+      "say": "A two-dollar Powerball ticket. What's it really worth?"
     },
     {
       "t": 2.4,
       "end": 4.5,
-      "text": "Each prize: prize × chance. Add them up."
+      "text": "Each prize: prize × chance. Add them up.",
+      "say": "Each prize: prize times chance. Add them up."
     },
     {
       "t": 4.6,
       "end": 7.5,
-      "text": "$4, at 1 in 38: worth 10 cents."
+      "text": "$4, at 1 in 38: worth 10 cents.",
+      "say": "Four bucks, at one in thirty-eight: worth ten cents."
     },
     {
       "t": 7.6,
       "end": 10.5,
-      "text": "Three more small wins: 7 cents."
+      "text": "Three more small wins: 7 cents.",
+      "say": "Three more small wins: seven cents."
     },
     {
       "t": 10.6,
       "end": 13.5,
-      "text": "Both $100 prizes: 1 cent."
+      "text": "Both $100 prizes: 1 cent.",
+      "say": "Both hundred-dollar prizes: one cent."
     },
     {
       "t": 13.6,
       "end": 16.5,
-      "text": "$50,000, at 1 in 913,000: 5 cents."
+      "text": "$50,000, at 1 in 913,000: 5 cents.",
+      "say": "Fifty grand, at one in nine hundred thirteen thousand: five cents."
     },
     {
       "t": 16.6,
       "end": 19.5,
-      "text": "Less than the $4 prize!"
+      "text": "Less than the $4 prize!",
+      "say": "Less than the four-dollar prize!"
     },
     {
       "t": 19.6,
       "end": 22.5,
-      "text": "A million bucks: 9 cents. 32 cents so far."
+      "text": "A million bucks: 9 cents. 32 cents so far.",
+      "say": "A million bucks: nine cents. Thirty-two cents so far."
     },
     {
       "t": 22.6,
       "end": 25.5,
-      "text": "Now the jackpot: 1 in 292 million."
+      "text": "Now the jackpot: 1 in 292 million.",
+      "say": "Now the jackpot: one in two hundred ninety-two million."
     },
     {
       "t": 26.0,
       "end": 28.6,
-      "text": "Jackpot cash this week: about $199.8 million."
+      "text": "Jackpot cash this week: about $199.8 million.",
+      "say": "Jackpot cash this week: about a hundred ninety-nine point eight million."
     },
     {
       "t": 28.6,
       "end": 30.9,
-      "text": "Minus 37% federal tax."
+      "text": "Minus 37% federal tax.",
+      "say": "Minus thirty-seven percent federal tax."
     },
     {
       "t": 30.9,
       "end": 33.6,
-      "text": "Times a 1-in-292-million chance: 43 cents."
+      "text": "Times a 1-in-292-million chance: 43 cents.",
+      "say": "Times a one-in-two-hundred-ninety-two-million chance: forty-three cents."
     },
     {
       "t": 33.7,
-      "end": 35.2,
-      "text": "Plus the 32 cents."
+      "end": 35.3,
+      "text": "Plus the 32 cents.",
+      "say": "Plus the thirty-two cents."
     },
     {
-      "t": 35.3,
+      "t": 35.4,
       "end": 37.3,
       "text": "So the whole ticket is worth…"
     },
     {
       "t": 37.5,
-      "end": 39.4,
-      "text": "About 75 cents. For two dollars."
+      "end": 39.5,
+      "text": "About 75 cents. For two dollars.",
+      "say": "About seventy-five cents. For two dollars."
     }
   ],
   "ops": [
     {
       "type": "postmark",
-      "t": -0.5,
-      "x": 190,
-      "y": 300,
+      "t": 0,
+      "x": 175,
+      "y": 258,
+      "r": 100,
+      "persist": true,
       "center": [
         "No.",
         "09C"
-      ],
-      "persist": true
+      ]
     },
     {
       "type": "hook",
-      "t": -0.8,
+      "t": 0,
       "text": [
         "*$2* Powerball ticket.",
         "What's it *really* worth?"
       ],
       "size": 74,
       "y": 400,
-      "until": 13.6
+      "until": 16.6
     },
     {
       "type": "receipt",
-      "t": -1.4,
+      "id": "rc",
+      "t": 0,
       "x": 540,
-      "y": 590,
-      "w": 780,
-      "size": 44,
+      "y": 600,
+      "w": 800,
+      "size": 42,
       "rot": -1,
-      "lps": 0.333333,
+      "compact": true,
       "header": "PRIZE × CHANCE = WORTH",
       "items": [
+        {
+          "label": "$4 · 1 IN 38",
+          "value": "10¢",
+          "at": 4.6
+        },
+        {
+          "label": "$4–$7 · 3 MORE WAYS",
+          "value": "7¢",
+          "at": 7.6
+        },
+        {
+          "label": "$100 · 2 WAYS",
+          "value": "1¢",
+          "at": 10.6
+        },
+        {
+          "label": "$50,000 · 1 IN 913K",
+          "value": "5¢",
+          "at": 13.6,
+          "color": "red"
+        },
+        {
+          "label": "  ↑ LESS THAN THE $4 PRIZE",
+          "value": "",
+          "at": 16.6,
+          "highlight": true
+        },
+        {
+          "label": "$1,000,000 · 1 IN 11.7M",
+          "value": "9¢",
+          "at": 19.6
+        },
+        {
+          "label": "JACKPOT · 1 IN 292.2M",
+          "value": "?",
+          "at": 22.6
+        }
+      ]
+    },
+    {
+      "type": "counter",
+      "id": "worth",
+      "t": 0,
+      "x": 540,
+      "y": 1276,
+      "size": 92,
+      "prefix": "worth so far: ",
+      "suffix": "¢",
+      "decimals": 0,
+      "steps": [
         [
-          "$4 · 1 IN 38",
-          "10¢"
+          0,
+          0
         ],
         [
-          "$4–$7 · 3 MORE WAYS",
-          "7¢"
+          4.95,
+          10
         ],
         [
-          "$100 · 2 WAYS",
-          "1¢"
+          7.95,
+          17
         ],
         [
-          "$50,000 · 1 IN 913K",
-          "5¢"
+          10.95,
+          18
         ],
         [
-          "  ↑ LESS THAN THE $4 PRIZE",
-          ""
+          13.95,
+          23
         ],
         [
-          "$1,000,000 · 1 IN 11.7M",
-          "9¢"
-        ],
-        [
-          "JACKPOT · 1 IN 292.2M",
-          "?"
+          19.95,
+          32
         ]
       ]
     },
     {
-      "type": "postage",
-      "t": -0.5,
-      "x": 540,
-      "y": 1050,
-      "w": 230,
-      "h": 270,
-      "value": "$2",
-      "label": "ONE TICKET",
-      "art": "≈",
-      "rot": 4,
-      "until": 10.4,
-      "fadeOut": 0.15
-    },
-    {
-      "type": "write",
-      "t": 1.6,
-      "text": "WORTH SO FAR",
-      "x": 150,
-      "y": 1290,
-      "size": 34,
-      "font": "type",
-      "color": "pencil"
-    },
-    {
-      "type": "counter",
-      "t": 1.8,
-      "from": 0.0,
-      "to": 0.0,
-      "x": 780,
-      "y": 1290,
-      "size": 80,
-      "prefix": "",
-      "suffix": "¢",
-      "decimals": 0,
-      "dur": 0.01,
-      "color": "ink",
-      "fadeOut": 0,
-      "until": 4.95
-    },
-    {
-      "type": "counter",
-      "t": 4.95,
-      "from": 0.0,
-      "to": 10,
-      "x": 780,
-      "y": 1290,
-      "size": 80,
-      "prefix": "",
-      "suffix": "¢",
-      "decimals": 0,
-      "dur": 0.8,
-      "color": "ink",
-      "fadeOut": 0,
-      "until": 7.95
-    },
-    {
-      "type": "counter",
-      "t": 7.95,
-      "from": 10,
-      "to": 17,
-      "x": 780,
-      "y": 1290,
-      "size": 80,
-      "prefix": "",
-      "suffix": "¢",
-      "decimals": 0,
-      "dur": 0.8,
-      "color": "ink",
-      "fadeOut": 0,
-      "until": 10.95
-    },
-    {
-      "type": "counter",
-      "t": 10.95,
-      "from": 17,
-      "to": 18,
-      "x": 780,
-      "y": 1290,
-      "size": 80,
-      "prefix": "",
-      "suffix": "¢",
-      "decimals": 0,
-      "dur": 0.8,
-      "color": "ink",
-      "fadeOut": 0,
-      "until": 13.95
-    },
-    {
-      "type": "counter",
-      "t": 13.95,
-      "from": 18,
-      "to": 23,
-      "x": 780,
-      "y": 1290,
-      "size": 80,
-      "prefix": "",
-      "suffix": "¢",
-      "decimals": 0,
-      "dur": 0.8,
-      "color": "ink",
-      "fadeOut": 0,
-      "until": 19.95
-    },
-    {
-      "type": "counter",
-      "t": 19.95,
-      "from": 23,
-      "to": 32,
-      "x": 780,
-      "y": 1290,
-      "size": 80,
-      "prefix": "",
-      "suffix": "¢",
-      "decimals": 0,
-      "dur": 0.8,
-      "color": "ink",
-      "fadeOut": 0
+      "type": "annotate",
+      "t": 14.3,
+      "kind": "circle",
+      "x": 873.5,
+      "y": 949.9,
+      "w": 45,
+      "h": 37.8,
+      "pad": 14
     },
     {
       "type": "annotate",
-      "t": 14.6,
+      "t": 14.8,
       "kind": "circle",
-      "x": 852,
-      "y": 956,
-      "w": 54,
-      "h": 40,
-      "pad": 13
-    },
-    {
-      "type": "annotate",
-      "t": 15.0,
-      "kind": "circle",
-      "x": 826,
-      "y": 764,
-      "w": 80,
-      "h": 40,
-      "pad": 13
+      "x": 843.3,
+      "y": 767.5,
+      "w": 72,
+      "h": 37.8,
+      "pad": 14
     },
     {
       "type": "stamp",
       "t": 16.9,
       "text": "OPENED BY\nMISTAKE",
       "x": 540,
-      "y": 470,
+      "y": 440,
       "size": 72,
       "rot": -7
     },
@@ -304,21 +248,21 @@
       "type": "sticky",
       "t": 26.1,
       "title": "ASSUME:",
-      "text": "cash ≈ $199.8M\n(Oct 7 est.)\n37% fed tax\nno split",
-      "x": 770,
-      "y": 425,
-      "w": 360,
-      "size": 48,
-      "until": 35.0
+      "text": "cash $199.8M\n(Oct 7 est.)\n37% fed tax, no split",
+      "x": 790,
+      "y": 420,
+      "w": 450,
+      "size": 56,
+      "until": 37.2
     },
     {
       "type": "envelope",
       "t": 26.4,
-      "x": 540,
-      "y": 772,
-      "w": 600,
+      "x": 548,
+      "y": 810,
+      "w": 680,
       "openAt": 37.4,
-      "cardSize": 100,
+      "cardSize": 110,
       "label": "WHOLE TICKET = ?",
       "card": [
         {
@@ -327,68 +271,63 @@
         },
         {
           "text": "per $2 ticket",
-          "size": 54,
+          "size": 64,
           "color": "red"
         }
       ]
     },
     {
       "type": "write",
-      "t": 26.6,
-      "text": "the jackpot line:",
-      "x": 90,
-      "y": 998,
-      "size": 52,
-      "color": "pencil"
-    },
-    {
-      "type": "write",
+      "id": "jp1",
       "t": 27.0,
       "text": "$199.8M × 0.63 ≈ $125.9M",
       "x": 90,
-      "y": 1088,
-      "size": 68
+      "y": 1092,
+      "size": 72
     },
     {
       "type": "annotate",
       "t": 29.2,
       "kind": "underline",
-      "x": 368,
-      "y": 1102,
-      "w": 107
+      "target": {
+        "op": "jp1",
+        "match": "0.63"
+      }
     },
     {
       "type": "stamp",
       "t": 29.5,
       "text": "POSTAGE\nDUE",
-      "x": 330,
-      "y": 505,
-      "size": 60,
+      "x": 300,
+      "y": 462,
+      "size": 64,
       "rot": -10,
-      "until": 37.4
+      "until": 35.3
     },
     {
       "type": "write",
+      "id": "jp2",
       "t": 31.0,
       "text": "÷ 292.2M ≈ 43¢",
       "x": 90,
-      "y": 1178,
-      "size": 68
+      "y": 1186,
+      "size": 72
     },
     {
       "type": "write",
+      "id": "jp3",
       "t": 33.7,
       "text": "+ 32¢ small prizes = ?",
       "x": 90,
-      "y": 1268,
-      "size": 68
+      "y": 1280,
+      "size": 72
     },
     {
       "type": "timer",
-      "t": 35.3,
-      "x": 800,
-      "y": 430,
-      "r": 72,
+      "t": 35.4,
+      "x": 300,
+      "y": 410,
+      "r": 80,
       "seconds": 2,
       "label": "DO THE MATH"
     }
