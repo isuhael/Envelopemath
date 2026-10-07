@@ -1,0 +1,5 @@
+node_modules/
+engine/out/*.mp4
+engine/out/stills/
+.DS_Store
+*.wav

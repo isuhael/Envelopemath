@@ -1,0 +1,287 @@
+{
+  "id": "_demo-all-ops",
+  "title": "Engine demo \u2014 every op",
+  "paper": {
+    "style": "kraft"
+  },
+  "ops": [
+    {
+      "type": "postmark",
+      "t": 0,
+      "x": 190,
+      "y": 300,
+      "center": [
+        "No.",
+        "000"
+      ],
+      "persist": true
+    },
+    {
+      "type": "hook",
+      "t": 0,
+      "text": "Your $5 coffee costs *$1,300* a year",
+      "y": 500
+    },
+    {
+      "type": "emoji",
+      "t": 0.6,
+      "char": "\u2615",
+      "x": 800,
+      "y": 760,
+      "size": 150
+    },
+    {
+      "type": "lines",
+      "t": 0.8,
+      "x": 700,
+      "y": 820,
+      "lines": [
+        "$5",
+        "\u00d7 5 days",
+        "\u00d7 52 weeks",
+        "$1,300"
+      ],
+      "rule": 3
+    },
+    {
+      "type": "annotate",
+      "t": 4.6,
+      "kind": "circle",
+      "x": 470,
+      "y": 1060,
+      "w": 240,
+      "h": 70
+    },
+    {
+      "type": "stamp",
+      "t": 5.2,
+      "text": "ROUGHLY\nRIGHT",
+      "x": 300,
+      "y": 1180,
+      "size": 64
+    },
+    {
+      "type": "flip",
+      "t": 6.4
+    },
+    {
+      "type": "sticky",
+      "t": 6.9,
+      "title": "ASSUME:",
+      "text": "7% a year, 30 years",
+      "x": 300,
+      "y": 520
+    },
+    {
+      "type": "curve",
+      "t": 7.4,
+      "x": 140,
+      "y": 1280,
+      "w": 760,
+      "h": 520,
+      "fn": {
+        "type": "compound",
+        "principal": 0,
+        "rate": 0.07,
+        "years": 30,
+        "contrib": 1300
+      },
+      "compare": {
+        "fn": {
+          "type": "linear",
+          "principal": 0,
+          "contrib": 1300,
+          "years": 30
+        }
+      },
+      "format": {
+        "prefix": "$",
+        "compact": true,
+        "decimals": 0
+      },
+      "xLabel": "years",
+      "marks": [
+        {
+          "i": 10,
+          "text": "yr 10"
+        }
+      ]
+    },
+    {
+      "type": "clear",
+      "t": 11.5
+    },
+    {
+      "type": "bars",
+      "t": 11.6,
+      "x": 540,
+      "y": 1180,
+      "w": 800,
+      "h": 520,
+      "items": [
+        {
+          "label": "spent",
+          "value": 39000
+        },
+        {
+          "label": "invested",
+          "value": 122800
+        }
+      ],
+      "format": {
+        "prefix": "$",
+        "compact": true,
+        "decimals": 0
+      }
+    },
+    {
+      "type": "highlight",
+      "t": 13.6,
+      "x": 600,
+      "y": 1200,
+      "w": 260,
+      "h": 70
+    },
+    {
+      "type": "flip",
+      "t": 14.6
+    },
+    {
+      "type": "choices",
+      "t": 15.1,
+      "options": [
+        "about $40K",
+        "about $120K",
+        "about $400K"
+      ],
+      "answer": 1,
+      "revealAt": 19.2,
+      "y": 600
+    },
+    {
+      "type": "timer",
+      "t": 15.9,
+      "y": 1130,
+      "seconds": 3
+    },
+    {
+      "type": "clear",
+      "t": 20.2
+    },
+    {
+      "type": "envelope",
+      "t": 20.3,
+      "y": 950,
+      "note": "guess first",
+      "openAt": 22.5,
+      "card": [
+        "\u2248 $123K",
+        {
+          "text": "rough, but right",
+          "size": 56,
+          "color": "red"
+        }
+      ]
+    },
+    {
+      "type": "flip",
+      "t": 25.2
+    },
+    {
+      "type": "receipt",
+      "t": 25.7,
+      "x": 540,
+      "y": 430,
+      "header": "YEAR OF COFFEE",
+      "items": [
+        [
+          "latte x 260",
+          "$1,300"
+        ],
+        [
+          "tips",
+          "$130"
+        ]
+      ],
+      "total": [
+        "TOTAL",
+        "$1,430"
+      ]
+    },
+    {
+      "type": "postage",
+      "t": 26.4,
+      "x": 830,
+      "y": 1050,
+      "value": "$5",
+      "label": "PER CUP",
+      "art": "\u2248"
+    },
+    {
+      "type": "write",
+      "t": 26.8,
+      "text": "or\u2026",
+      "x": 160,
+      "y": 1120,
+      "size": 90,
+      "color": "red"
+    },
+    {
+      "type": "clear",
+      "t": 29.0
+    },
+    {
+      "type": "stuff",
+      "t": 29.1,
+      "x": 540,
+      "y": 620,
+      "items": [
+        {
+          "label": "COFFEE",
+          "amount": 108
+        },
+        {
+          "label": "INVEST",
+          "amount": 108
+        },
+        {
+          "label": "FUN",
+          "amount": 40
+        }
+      ]
+    },
+    {
+      "type": "grid",
+      "t": 31.0,
+      "x": 540,
+      "y": 1000,
+      "rows": 3,
+      "cols": 10,
+      "filled": 22,
+      "emoji": "\u2615",
+      "cell": 74,
+      "label": "22 work days"
+    },
+    {
+      "type": "outro",
+      "t": 34.2
+    }
+  ],
+  "captions": [
+    {
+      "t": 0.2,
+      "end": 3.0,
+      "text": "Your five dollar coffee? Let's do the envelope math."
+    },
+    {
+      "t": 3.0,
+      "end": 6.2,
+      "text": "Five bucks, five days, fifty-two weeks."
+    },
+    {
+      "t": 15.2,
+      "end": 19.0,
+      "text": "If you invested it instead, roughly how much after 30 years?"
+    }
+  ]
+}
