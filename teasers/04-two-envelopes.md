@@ -1,13 +1,13 @@
 ## 4. Two Envelopes (Pick-One Dilemma -> Race to the Crossover)
 
-**Series:** *Two Envelopes* · **Lanes:** one per lane, on purpose: Envelope (04A, 30.2 s), Long envelope / race (04B, 50.0 s), Flash (04C, 14.0 s) · **Lead devices:** `pick` (two sealed envelopes, A and B), a 1-second silent pick beat, the typed crossover rule, a napkin race chart (`curve` + `compare`), red-pen crossover circle, Sealed Answer + guess timer, `FIRST CLASS` / `OPENED BY MISTAKE` stamps, postmark No.
+**Series:** *Two Envelopes* · **Lanes:** one per lane, on purpose: Envelope (04A, 32.0 s), Long envelope / race (04B, 51.0 s), Flash (04C, 14.0 s) · **Lead devices:** `pick` (two sealed envelopes, A and B), a 1-second silent pick beat, the typed crossover rule, a napkin race chart (`curve` + `compare`) whose crossover the engine finds, circles and labels, Sealed Answer + guess timer, `FIRST CLASS` / `OPENED BY MISTAKE` stamps, postmark No.
 **Teasers:** 04A $1,000,000 now or $1,000 a week for life? · 04B $200 a month from 25 or $400 a month from 35: who has more at 65? · 04C $5,000 to sign or $2 more an hour?
-**Specs:** `engine/specs/04-two-envelopes-{a,b,c}.json` (all three lint clean, `loop: true`) · **Sheets:** `engine/out/sheets/04-two-envelopes-{a,b,c}.png` · **Stills:** `engine/out/stills/04-two-envelopes-*.png` · **Math check:** `teasers/04-two-envelopes-mathcheck.py` (all assertions pass, output below; it also reads the spec files and asserts the on-screen strings, curve arrays and red-pen positions)
+**Specs:** `engine/specs/04-two-envelopes-{a,b,c}.json` (all three lint with zero warnings on the upgraded engine, `loop: true`) · **MP4s:** `engine/out/04-two-envelopes-{a,b,c}.mp4` · **Sheets:** `engine/out/sheets/04-two-envelopes-{a,b,c}.png` · **Stills (from the MP4s):** `engine/out/stills/04-two-envelopes-{a,b,c}-<t>.png` · **Math check:** `teasers/04-two-envelopes-mathcheck.py` (all assertions pass, output below; it also reads the spec files and asserts the on-screen strings, curve arrays and the engine's crossover labels)
 
-**Sourcing note (read before publishing).** Nothing in these three teasers depends on a real-world statistic, on screen or off:
+**Sourcing note (read before publishing).** Nothing on screen in these three teasers depends on a real-world statistic:
 - every amount in the dilemmas is the dilemma's own stated hypothetical;
 - every rate or hour count is a labelled assumption (ASSUME sticky and `7%` stamp in 04B; "raise, 40 hrs/wk" on envelope 04C-B; "× 52 wks" written out in the ink);
-- the BLS median-pay "for scale" line the writer put in the 04A and 04C descriptions has been **taken out of the published text**. Neither the writer nor the QA pass could verify it first-hand on 2026-10-07 (the shared WebSearch budget was exhausted and bls.gov, api.bls.gov and fred.stlouisfed.org are blocked by the egress proxy). It is kept below as an *optional* line to add only after re-checking the source on publish day.
+- the one real-world figure is the BLS median-pay "for scale" line in the 04A and 04C **descriptions** (not on screen): $1,251 a week, full-time wage and salary workers, Q2 2026. It was re-verified on 2026-10-07 (see the Final fact check) and is back in both descriptions with its source. BLS publishes Q3 2026 on 2026-10-28: if either teaser posts on or after that date, re-check the figure and the percentage first.
 
 Two topics that would have needed fresh sourcing were dropped rather than published unverified: Social Security at 62 vs 70, and this week's Powerball cash vs annuity. The evidence tables (views, outliers, URLs) are copied from `research/02-top-10-approaches.md` §4 and `research/watch/`; platform claims are from `research/01-viral-finance-shorts-research.md` §4 with the sources cited there.
 
@@ -90,11 +90,12 @@ So: **fresh pairs only** (no penny), and a **different payoff shape every episod
 **What we replicate**
 - **The dilemma is frame 1, the title and the first spoken line**, with both options as physical sealed envelopes A and B (`pick`), already on screen in frame 0 so the thumbnail shows the whole choice.
 - **A silent 1-second pick beat** (`timer`, "PICK ONE"), as the research build specifies (0.5–1 s).
-- **The race.** Two lines on a napkin chart (`curve` + `compare`) drawn by the pen, with the crossover arriving late.
-  - 04A: the lines cross at 8.3 s of 30.2 s.
-  - 04B: a slow start (25 → 35), a fast middle (35 → 60 in 2.7 s) and a slow photo finish (60 → 65), the Behind the Border rhythm.
+- **The race.** Two lines on a napkin chart (`curve` + `compare`) drawn by the pen, each on its own screen, with the crossover arriving late. The engine computes the exact crossing, circles it and writes the label (`crossover: {label: "yr {x}"}`), so the circle can never drift off the lines.
+  - 04A: even year pacing (`ease: "linear"`); the lines cross at 11.3 s of 32.0 s and the label reads "yr 19.2".
+  - 04B: a slow start (25 → 35 in 3.6 s), a fast middle (35 → 60 in 2.6 s) and a slow photo finish (60 → 65 in 2.8 s), the Behind the Border rhythm. The lines never cross, so the engine draws no circle.
+  - 04C: even week pacing; "wk 62.5" is circled at 8.5 s of 14.0 s.
 - **Two final numbers side by side** and a **twist that flips the answer** (04A: at 5.2% the million pays the same check forever; 04B: at 6% the late starter wins).
-- **A hard loop.** Every spec sets `loop: true` (the last 0.35 s crossfades into frame 1), and the last spoken line is a question that runs straight into the first one.
+- **A hard loop.** On the last screen the tape hook re-slaps over the same two envelopes, so the closing frames already look like frame 1; every spec sets `loop: true` (the last 0.35 s crossfades into frame 1), and the last spoken line is a question that runs straight into the first one.
 
 **What we improve**
 1. **Show the envelope.** Every crossover is worked in ≤3 ink lines. None of the originals shows a single line of it.
@@ -128,19 +129,19 @@ When the catch-up is zero or negative, the crossover never comes. That makes it 
 
 | Device | Engine op | 04A | 04B | 04C |
 |---|---|---|---|---|
-| Masking-tape hook (frame 1 and loop) | `hook` + `loop: true` | ✓ | ✓ | ✓ |
-| Which envelope? A/B | `pick` | ✓ (open + range) | ✓ (open) | ✓ (open + conditions) |
+| Masking-tape hook (frame 1, re-slapped on the last screen for the loop) | `hook` (renders finished at `t: 0`) + `loop: true` | ✓ | ✓ | ✓ |
+| Which envelope? A/B | `pick` (labels 82–84 px, `subSize` 60–64) | ✓ (open + range) | ✓ (open + 6% reveal: B stamped, A dims) | ✓ (open + conditions) |
 | Silent pick beat | `timer` (1 s, PICK ONE) | ✓ | ✓ | ✓ |
-| Typed crossover rule | `write` (type font, 40 px) | ✓ | ✓ | ✓ |
-| Ballpoint working (≤3 lines) | `write` | 3 lines | 3 lines | 3 lines |
-| Napkin race chart | `curve` + `compare` + `marks` | flat $1M vs +$52K/yr | 40-yr race, 25 → 65 | flat $5K vs +$80/wk |
-| Red pen | `annotate` | underline, 4 circles | underline, circle "never" | underline, 3 circles |
-| ASSUME sticky / postage stamp | `sticky`, `postage` | n/a (all inputs are the dilemma's) | ✓ sticky + `7%` stamp | n/a (assumption on envelope B: "raise, 40 hrs/wk") |
-| Stuffed envelopes | `stuff` | n/a | $96,000 vs $144,000 deposits | n/a |
+| Typed crossover rule | `write` (type font, 48 px) | ✓ | ✓ | ✓ |
+| Ballpoint working (≤3 lines) | `write` (72–84 px; hero number 100–124 px) | 3 lines, hero "≈ 19.2 yrs" | 3 lines, hero "never" | 3 lines, heroes "62.5 weeks", "$12,480" |
+| Napkin race chart | `curve` + `compare` + `crossover` / `marks` / `endLabel` / `ticks` | flat $1M vs +$52K/yr, `ease: "linear"`, engine crossover "yr 19.2" | 40-yr race 25 → 65 (age ticks), finish marks "A ≈$525K" / "B ≈$488K", no crossover | flat $5K vs +$80/wk, `ease: "linear"`, engine crossover "wk 62.5" |
+| Red pen | `annotate` with text anchors (`target`) | underline, 3 circles + the engine's crossover circle | underline, circle on "never" | underline, 2 circles + the engine's crossover circle |
+| ASSUME sticky / postage stamp | `sticky` (64 px), `postage` | n/a (all inputs are the dilemma's) | ✓ sticky + `7%` stamp | n/a (assumption on envelope B: "raise, 40 hrs/wk") |
+| Stuffed envelopes | `stuff` (`labelSize` 62, `amountSize` 80) | n/a | $96,000 vs $144,000 deposits | n/a |
 | Sealed Answer + guess timer | `envelope`, `timer` | ✓ 5.2% (3 s) | ✓ gap at 65 (3 s) | n/a (Flash: the race is the reveal) |
-| Verdict stamps | `stamp` | FIRST CLASS + OPENED BY MISTAKE | FIRST CLASS + OPENED BY MISTAKE (last 2 s) | FIRST CLASS |
-| Postmark No. | `postmark` (x 175, y 258, r 100) | 04A | 04B | 04C |
-| Flip | `flip` | ✓ | ✓ | ✓ |
+| Verdict stamps | `stamp`, `pick` reveal | FIRST CLASS + OPENED BY MISTAKE | FIRST CLASS on the sealed answer, then FIRST CLASS moves to envelope B at 6% (last 3 s) | FIRST CLASS |
+| Postmark No. | `postmark` in the flap (x 175, y 258, r 100, t 0) | 04A | 04B | 04C |
+| Flip | `flip` | ✓ (4) | ✓ (5) | ✓ (3) |
 
 ---
 
@@ -150,11 +151,11 @@ When the catch-up is zero or negative, the crossover never comes. That makes it 
 
 - **Working title:** $1 million now or $1,000 a week for life? (Two Envelopes No. 04A)
 - **Money topic:** windfalls and payouts: lump sum vs a lifetime stream (the annuity question)
-- **Lane / runtime:** Envelope, **30.2 s** (card + solve, `loop: true`). The research build is ~24 s. This runs longer because the captions are paced at ≤4 words/s and it includes a 3-second guess.
+- **Lane / runtime:** Envelope, **32.0 s** (card + solve, `loop: true`; bible lane 25–45 s). The research build is ~24 s. This runs longer because the captions are paced at ≤4 words/s, it includes a 3-second guess, and the race now gets its own screen instead of sharing one with the math.
 - **Spec:** `engine/specs/04-two-envelopes-a.json` · **Sheet:** `engine/out/sheets/04-two-envelopes-a.png`
 
 **Frame-1 hook** (hook score 8/10, unchanged: it is the exact pair behind Filomation's 388x on 1.75K subs)
-- On screen (tape, three strips): **$1,000,000 NOW / OR *$1,000 A WEEK* / FOR LIFE?** Envelope A "$1,000,000 · today" and envelope B "$1,000 a wk · for life" are already in frame 0.
+- On screen (tape, three strips, 80 px): **$1,000,000 NOW / OR *$1,000 A WEEK* / FOR LIFE?** The hook renders finished in frame 0, and envelope A "$1,000,000 · today" and envelope B "$1,000 a wk · for life" (82 px labels) are already settled there, so frame 0 is the thumbnail.
 - First spoken line (0.15–3.0 s): *"A million now… or a thousand a week, for life?"*
 
 **Beat sheet**
@@ -164,18 +165,18 @@ When the catch-up is zero or negative, the crossover never comes. That makes it 
 | 0.0–3.0 | Hook | Tape hook; envelopes A and B |
 | 3.0–4.0 | **Silent pick** | 1-s PICK ONE ring; no VO |
 | 4.0–4.4 | Flip | Clean side |
-| 4.25–6.25 | Line 1 | Typed rule "crossover = head start ÷ catch-up"; ink "$1,000,000 ÷ $1,000/wk = 1,000 wks", red underline (6.25) |
-| 6.0–9.8 | Race chart | Flat ink line "A: $1M, today" vs red line "B: +$52K a year", 30 years on the x-axis |
-| 6.4–8.3 | **Partial payoff (~25%)** | Line 2 "1,000 wks ÷ 52 ≈ 19.2 yrs", circled at 7.9; the lines cross at "yr 19.2" at 8.3 |
-| 8.9–10.9 | Verdict 1 | Crossing circled (9.3); **FIRST CLASS** lands on B's side (9.6) |
-| 10.9–11.3 | Flip | **Pattern break at ~36%** |
-| 11.15–15.4 | The other side | Red "but $1M earns interest…"; sealed envelope slides in; line 3 "$52,000 ÷ $1,000,000 =" |
-| 15.4–18.4 | Guess | 3-s GUESS ring; the envelope wiggles |
-| 18.4–19.9 | **Reveal** | Envelope opens: card "5.2% / a year, forever"; red "5.2%" written into line 3, circled (19.65) |
-| 20.4–24.7 | Twist | Red "same check, forever + you keep $1M"; **OPENED BY MISTAKE** (23.2) |
-| 24.7–25.1 | Flip | Envelopes return exactly as in frame 1 |
-| 25.0–28.65 | **The range, biggest verdict last** | "earn 0%? $1M lasts 19.2 yrs" / "earn 5.2%? it lasts *forever*"; "forever" inked by 28.5 and circled at 28.65 (last 2 s) |
-| 28.8–30.2 | Loop | "So… which envelope?"; the last 0.35 s crossfades into frame 1 |
+| 4.25–6.55 | Line 1 | Typed rule "crossover = head start ÷ catch-up"; ink "$1,000,000 ÷ $1,000/wk = 1,000 wks", red underline on "1,000 wks" (6.25) |
+| 6.6–8.75 | **Partial payoff (~26%)** | Line 2 "1,000 wks ÷ 52 =", then the hero "≈ 19.2 yrs" (120 px) inked by 8.26 and circled at 8.35 |
+| 9.0–9.4 | Flip | |
+| 9.2–12.6 | **The race** | Flat ink line "A: $1M today" vs the red line, 30 years at even pacing (ticks 0/10/20/30 yrs); the engine circles the crossing and writes "yr 19.2" at 11.27; **FIRST CLASS** lands on B's side (11.75); "B: +$52K a yr" at the finish (12.2) |
+| 12.6–13.0 | Flip | **Pattern break at ~39%** |
+| 12.85–17.0 | The other side | Red "but $1M can earn interest…"; sealed envelope slides in; line 3 "$52,000 ÷ $1,000,000 =" |
+| 17.0–20.0 | Guess | 3-s GUESS ring beside the envelope |
+| 20.0–21.75 | **Reveal (62%)** | Envelope opens: card "5.2% / a year, forever"; red "5.2%" written into line 3, circled (21.35) |
+| 22.2–26.4 | Twist | Red "same check forever + you keep $1M"; **OPENED BY MISTAKE** on the envelope (25.0) |
+| 26.4–26.8 | Flip | The hook and both envelopes return exactly as in frame 1 |
+| 26.6–30.5 | **The range, biggest verdict last** | "earn 0%? $1M lasts 19.2 yrs" / "earn 5.2%? it lasts *forever*"; "forever" inked by 30.15 and circled at 30.1–30.5 (last 2 s) |
+| 30.5–32.0 | Loop | "So… which envelope?"; the screen already matches frame 1 and the last 0.35 s crossfades into it |
 
 **Voice-over** (timings = captions in the spec; captions show numerals, the VO says them as below)
 
@@ -183,20 +184,20 @@ When the catch-up is zero or negative, the crossover never comes. That makes it 
 > *[1-second silent pick]*
 > A million divided by a thousand a week… *(4.25)*
 > …is a thousand weeks. Nineteen point two years. *(6.6)*
-> Collect longer, and the weekly check wins. *(8.9)*
-> But the million can earn interest. *(11.15)*
-> What rate pays a grand a week, forever? *(13.2)*
+> Collect longer than that… *(9.2)* …and the weekly check wins. *(11.25)*
+> But the million can earn interest. *(12.85)*
+> What rate pays a grand a week, forever? *(14.8)*
 > *[3-second pause to guess]*
-> Five point two percent. A year. Forever. *(18.4)*
-> Earn that, and the million pays the same check forever… *(20.4)*
-> …and you still keep the million. *(23.0)*
-> Earn nothing? The million lasts nineteen point two years. *(24.95)*
-> Earn five point two? It lasts forever. *(27.0)*
-> So… which envelope? *(28.8, loops to the first line)*
+> Five point two percent. A year. Forever. *(20.0)*
+> Earn that, and the million… *(22.0)* …pays the same check forever… *(23.5)*
+> …and you still keep the million. *(24.9)*
+> Earn nothing? The million lasts nineteen point two years. *(26.65)*
+> Earn five point two? It lasts forever. *(28.7)*
+> So… which envelope? *(30.5, loops to the first line)*
 
 **The envelope math (3 lines)**
 1. `$1,000,000 ÷ $1,000/wk = 1,000 wks` (exact)
-2. `1,000 wks ÷ 52 ≈ 19.2 yrs` (exact 19.23 = 19 years 12 weeks; within 0.16%)
+2. `1,000 wks ÷ 52 = ≈ 19.2 yrs` (written as "1,000 wks ÷ 52 =" with the hero "≈ 19.2 yrs" on its own row; exact 19.23 = 19 years 12 weeks; within 0.16%)
 3. `$52,000 ÷ $1,000,000 = 5.2%` (exact: 5.2% ÷ 52 = 0.1% a week, which is $1,000 a week on $1M with the million untouched)
 
 The closing range ("earn 0%? $1M lasts 19.2 yrs / earn 5.2%? it lasts forever") restates lines 2 and 3; it adds no new calculation.
@@ -206,6 +207,7 @@ The closing range ("earn 0%? $1M lasts 19.2 yrs / earn 5.2%? it lasts forever") 
 **Sources (checked 2026-10-07)**
 - **On-screen numbers:** none are real-world statistics. All are the stated hypothetical and arithmetic.
 - **Format reference** (not a fact used on screen): Filomation's meme, `research/watch/group4-video4.md`. No real winner, screenshot or lottery brand appears.
+- **Description "for scale" line:** median usual weekly earnings of full-time wage and salary workers, $1,251, Q2 2026 (BLS release of 2026-07-21, https://www.bls.gov/news.release/archives/wkyeng_07212026.htm), re-verified 2026-10-07. Not on screen.
 
 **Ending**
 - **Loop line:** "So… which envelope?" runs straight into "A million now… or a thousand a week, for life?" over the same two envelopes (`loop: true`).
@@ -214,15 +216,15 @@ The closing range ("earn 0%? $1M lasts 19.2 yrs / earn 5.2%? it lasts forever") 
   > Exact: $1,000,000 ÷ $1,000 a week = 1,000 weeks = 19.23 years, i.e. 19 years and 12 weeks (envelope said ≈ 19.2, within 0.2%). $52,000 ÷ $1,000,000 = 5.2% exactly: that's 0.1% a week, which pays $1,000 every week without touching the million (5.33% a year if you compound it weekly). How long the million pays $1,000 a week, by what it earns: 0% → 19.2 yrs · 3% → 28.7 yrs · 4% → 36.7 yrs · 5% → 65.2 yrs · 5.2% → forever. So the real question is your rate × how long you'd collect. What the envelope leaves out: tax (rules differ by country and payout type); inflation (at an assumed 3%, year 20's $1,000 buys what about $554 buys today, which tilts toward the million); and whether the payer is good for it. Envelope rule: crossover = head start ÷ catch-up. Which did you pick?
 
 **Description**
-> $1 million now, or $1,000 a week for life? The envelope math: $1M ÷ $1,000 a week = 1,000 weeks ≈ 19.2 years to break even if the million earns nothing. And $52,000 ÷ $1M = 5.2%: earn that, and the million pays the same $1,000 a week forever while you keep the million. Anywhere in between, it's the rate against how long you collect (table in the pinned comment). Hypothetical dilemma, pre-tax, before inflation.
+> $1 million now, or $1,000 a week for life? The envelope math: $1M ÷ $1,000 a week = 1,000 weeks ≈ 19.2 years to break even if the million earns nothing. And $52,000 ÷ $1M = 5.2%: earn that, and the million pays the same $1,000 a week forever while you keep the million. Anywhere in between, it's the rate against how long you collect (table in the pinned comment). Hypothetical dilemma, pre-tax, before inflation. For scale: $1,000 a week is about 80% of the median US full-time weekly pay ($1,251, BLS Usual Weekly Earnings, Q2 2026).
 > Educational math, not financial advice.
 > #EnvelopeMath #TwoEnvelopes #MoneyMath #WouldYouRather #LumpSum
 
-*Optional "for scale" line, add only after re-verifying the BLS figure on publish day:* "$1,000 a week is about 80% of median US full-time weekly pay ($1,251, BLS Usual Weekly Earnings, Q2 2026)." ($1,000 ÷ $1,251 = 79.9%.)
+*"For scale" line:* $1,000 ÷ $1,251 = 79.9%. Source: BLS, "Usual Weekly Earnings of Wage and Salary Workers, Second Quarter 2026" (released 2026-07-21), re-verified 2026-10-07. BLS releases Q3 2026 on 2026-10-28; if posting on or after that date, re-check the figure and the percentage.
 
 **Platform notes**
-- **YouTube Shorts:** post the 30.2 s master; the title equals the tape hook plus the series tag.
-  - If 3-second retention is fine but the end dips, cut a 25 s version that drops the range beat (24.7–28.8) and loops from the OPENED BY MISTAKE stamp.
+- **YouTube Shorts:** post the 32.0 s master; the title equals the tape hook plus the series tag.
+  - If 3-second retention is fine but the end dips, cut a 26.4 s version that drops the range screen (26.4–32.0) and loops from the OPENED BY MISTAKE stamp.
   - A/B test a title that teases the twist (the research hook formula): "$1M now or $1,000 a week for life? (The answer is 5.2%)".
 - **Instagram Reels:** same cut, max 5 hashtags.
   - Sends are the top non-follower signal. The caption carries the taggable line: "send this to the friend who'd grab the million."
@@ -240,11 +242,11 @@ The closing range ("earn 0%? $1M lasts 19.2 yrs / earn 5.2%? it lasts forever") 
 
 - **Working title:** $200 a month from 25 or $400 a month from 35? (Two Envelopes No. 04B)
 - **Money topic:** saving and investing timing: starting early vs doubling up later (the race variant)
-- **Lane / runtime:** Long envelope (race), **50.0 s**, five one-line mini-reveals (deposits → age 35 → the gap at 65 → why → the 6% twist). Research: 45–62 s races on Shorts; Instagram's 45–60 s median-view sweet spot.
+- **Lane / runtime:** Long envelope (race), **51.0 s** (bible lane 50–75 s; under 60 s, so no `lane: "long"` needed), five one-line mini-reveals (deposits → age 35 → the gap at 65 → why → the 6% twist). Research: 45–62 s races on Shorts; Instagram's 45–60 s median-view sweet spot.
 - **Spec:** `engine/specs/04-two-envelopes-b.json` · **Sheet:** `engine/out/sheets/04-two-envelopes-b.png`
 
 **Frame-1 hook** (hook score 7 → 8/10 after the rewrite: the stake is now explicit and "from" removes the "only at 25?" misread)
-- On screen (tape): **$200/MO FROM 25 / OR *$400/MO* FROM 35. / WHO HAS MORE AT 65?**, with envelope A "$200/mo · starting at 25" and envelope B "$400/mo · starting at 35" in frame 0.
+- On screen (tape, 72 px): **$200/MO FROM 25 / OR *$400/MO* FROM 35. / WHO HAS MORE AT 65?**, rendered finished in frame 0, with envelope A "$200/mo · starting at 25" and envelope B "$400/mo · starting at 35" (84 px labels) already settled there.
 - First spoken line (0.15–4.5 s): *"Two hundred a month from twenty-five… or four hundred from thirty-five. Who has more at sixty-five?"*
 
 **Beat sheet**
@@ -254,21 +256,23 @@ The closing range ("earn 0%? $1M lasts 19.2 yrs / earn 5.2%? it lasts forever") 
 | 0.0–4.5 | Hook | Tape hook; envelopes A and B |
 | 4.5–5.5 | **Silent pick** | 1-s PICK ONE ring |
 | 5.5–5.9 | Flip | Clean side |
-| 5.75–8.4 | Assumptions | ASSUME sticky writes in; `7%` postage stamp "ASSUMED" |
-| 8.3–11.4 | What each puts in | Stuffed envelopes fill and count up: "A · 40 yrs" **$96,000**, "B · 30 yrs" **$144,000** |
-| 11.3–13.6 | Stakes | Red "B puts in $48,000 more" |
+| 5.75–7.6 | Assumptions | ASSUME sticky writes in; `7%` postage stamp "ASSUMED" |
+| 8.3–12.0 | What each puts in | Stuffed envelopes fill and count up: "A · 40 yrs" **$96,000** (ink), "B · 30 yrs" **$144,000** (red) |
+| 11.3–13.65 | Stakes | Red "B puts in $48,000 more" |
 | 13.65–14.05 | Flip | |
-| 13.9–18.1 | Race, slow start | Legend "A: $200 from 25" (red) / "B: $400 from 35" (ink); A's line leaves 25; B sits at $0 |
-| 17.6–19.8 | **Partial payoff (~36%)** | Dot "35: $34.6K" (18.1); B lifts off at 35 |
-| 18.1–20.8 | **Pattern break: the fast middle** | B, on double deposits, climbs as steeply as A; ages 35 → 60 pass in 2.7 s |
-| 20.8–24.5 | Photo finish (slow) | The two lines run parallel to 65; "≈$525K" lands on A at 23.8 |
+| 13.9–17.9 | Race, slow start | Age ticks 25…65; A's ink line leaves 25; B's red line sits at $0 |
+| 17.9 | **Partial payoff (35%)** | Dot "35: $34.6K" on A as B lifts off at 35 |
+| 17.9–20.5 | **Pattern break: the fast middle** | B, on double deposits, climbs as steeply as A; ages 35 → 60 pass in 2.6 s |
+| 20.5–24.5 | Photo finish (slow) | The two lines run side by side to 65; finish dots "A ≈$525K" / "B ≈$488K" land at 23.3; no crossover circle, because the lines never cross |
+| 24.5–24.9 | Flip | |
 | 24.75–27.3 | Sealed question | Sealed envelope; "at 65: who's ahead, by how much?" |
-| 27.3–30.3 | Guess | 3-s PAUSE & GUESS |
-| 30.3–34.3 | **Reveal (61%)** | Card "A by ≈ $37K / $525K vs $488K"; **FIRST CLASS** (31.1) |
+| 27.3–30.3 | Guess | 3-s GUESS ring beside the envelope |
+| 30.3–34.3 | **Reveal (59%)** | Card "A by ≈ $37K / $525K vs $488K"; **FIRST CLASS** on the envelope (31.1); red "with $48K less put in" (31.7) |
 | 34.3–34.7 | Flip | |
-| 34.55–42.6 | The why (3 lines) | Typed rule; lines 1–3; underline "$202/mo" (39.6); red circle on "never" (42.6) |
-| 43.8–47.6 | **Twist** | Red "at 6%: B passes A at 63 yrs 8 mo" (44.0–45.6) |
-| 47.6–50.0 | **Verdict in the last 2 s + loop** | **OPENED BY MISTAKE** (48.1); "So… which envelope now?"; the last 0.35 s crossfades into frame 1 |
+| 34.55–43.25 | The why (3 lines) | Typed rule; lines 1–3; underline "$202/mo" (39.6); hero "never" (120 px), circled (42.85) |
+| 44.3–44.7 | Flip | The hook and both envelopes return as in frame 1 |
+| 44.55–48.7 | **Twist** | "at 6%: B passes A" / red "at 63 yrs 8 mo" (45.0–47.8); at 48.1 envelope B gets **FIRST CLASS** and A dims (the winner flips, last 3 s) |
+| 49.0–51.0 | Loop | "So… which envelope now?"; the screen already matches frame 1 and the last 0.35 s crossfades into it |
 
 **Voice-over**
 
@@ -286,13 +290,13 @@ The closing range ("earn 0%? $1M lasts 19.2 yrs / earn 5.2%? it lasts forever") 
 > Why? At thirty-five, A's head start is about thirty-four six. *(34.55)*
 > That alone earns two-oh-two a month. *(37.9)*
 > B's extra is two hundred. B never gains a dollar. *(40.6)*
-> Drop it to six percent, though, and B passes A at sixty-three and eight months. *(43.8)*
-> So… which envelope now? *(47.6, loops)*
+> Drop the rate to six percent, though… *(44.55)* …and B passes A at sixty-three and eight months. *(46.6)*
+> So… which envelope now? *(49.0, loops)*
 
 **The envelope math (3 lines, the "why")**
 1. `A's head start at 35 ≈ $34,600` (exact $34,616.96 = $200 a month for 120 months at 7%/12; within 0.05%)
 2. `$34,600 × 7% ÷ 12 ≈ $202/mo` (exact $201.93 on the unrounded balance; $201.83 as written; both ≈ $202)
-3. `B's extra $200 < $202 → never` (the gap grows by $1.93 in month 121, and more every month after)
+3. `B's extra $200 < $202 → never` (written as "B's extra $200 < $202 →" with the hero "never" on its own row; the gap grows by $1.93 in month 121, and more every month after)
 
 The deposits ($96,000 vs $144,000) are shown as stuffed envelopes, not ink lines. The race values (A $524,962.68, B $487,988.40, gap $36,974.28) come from the chart and the sealed card; all 41 yearly points on both lines are checked against the formula.
 
@@ -319,7 +323,7 @@ The deposits ($96,000 vs $144,000) are shown as stuffed envelopes, not ink lines
 > #EnvelopeMath #TwoEnvelopes #CompoundInterest #MoneyMath #Investing
 
 **Platform notes**
-- **YouTube Shorts:** post the 50.0 s master. The research puts races at 45–62 s on Shorts. Our photo finish runs at 42–48% of runtime, close to where Behind the Border's overtake lands (~53%).
+- **YouTube Shorts:** post the 51.0 s master. The research puts races at 45–62 s on Shorts. Our photo finish (ages 60 → 65) runs at 40–46% of runtime (20.5–23.3 s), close to where Behind the Border's overtake lands (~53%).
   - Keep it under 60 s: a Short over 1 minute with any Content ID claim is blocked globally (report 01 §4), and our foley is original anyway.
 - **Instagram Reels:** this is the native length (45–60 s had the highest median views, Socialinsider, report 01 §4).
   - Caption question: "Which one are you, A or B?"
@@ -341,7 +345,7 @@ The deposits ($96,000 vs $144,000) are shown as stuffed envelopes, not ink lines
 - **Spec:** `engine/specs/04-two-envelopes-c.json` · **Sheet:** `engine/out/sheets/04-two-envelopes-c.png`
 
 **Frame-1 hook** (hook score 7 → 8/10 after the rewrite: the third strip makes the silent pick an explicit 1-second commitment, the research build's "Pick one." beat)
-- On screen (tape): **$5,000 TO SIGN / OR *$2 MORE AN HOUR?* / PICK IN ONE SECOND.** Envelope A "$5,000 · signing bonus" and envelope B "+$2/hr · raise, 40 hrs/wk" are in frame 0. ("ONE" is spelled out: in the marker face a lone "1" reads as "I".)
+- On screen (tape, 72 px): **$5,000 TO SIGN / OR *$2 MORE AN HOUR?* / PICK IN ONE SECOND.**, rendered finished in frame 0, with envelope A "$5,000 · signing bonus" and envelope B "+$2/hr · raise, 40 hrs/wk" (84 px labels, 60 px subs) already settled there. ("ONE" is spelled out: in the marker face a lone "1" reads as "I".)
 - First spoken line (0.1–2.4 s): *"Five grand to sign… or two bucks more an hour?"*
 
 **Beat sheet**
@@ -351,35 +355,35 @@ The deposits ($96,000 vs $144,000) are shown as stuffed envelopes, not ink lines
 | 0.0–2.4 | Hook | Tape hook; envelopes A and B |
 | 2.4–3.4 | **Silent pick** | 1-s PICK ONE ring |
 | 3.4–3.75 | Flip | |
-| 3.6–4.9 | **Line 1 (first partial payoff, 35%)** | Typed rule; "$2 × 40 hrs = $80 a week", red underline (4.9) |
-| 4.45–7.85 | Race chart | Flat ink "A: $5,000 once" vs red "B: +$80 a week" over 104 weeks |
-| 5.0–6.46 | **Line 2 (the answer, ~44%)** | "$5,000 ÷ $80 = 62.5 weeks", circled (6.35); lines cross at "wk 62.5" (6.46) |
-| 7.45–9.05 | Verdict | Crossing circled (7.5); **FIRST CLASS** (7.8) |
-| 9.05–9.4 | Flip | |
-| 9.3–10.75 | Conditions | Envelopes return: A "leave < 62.5 wks?", B "stay 62.5+ wks?" |
-| 10.35–12.05 | **Line 3, biggest number last** | "$80 × 52 wks × 3 yrs = *$12,480*" inked by 11.7, circled at 12.05 (last 2 s) |
-| 12.5–14.0 | Loop | "…versus five grand." The last 0.35 s crossfades into frame 1 |
+| 3.6–4.95 | **Line 1 (first partial payoff, 33%)** | Typed rule; "$2 × 40 hrs = $80 a week" (84 px), red underline on "$80 a week" (4.65) |
+| 5.1–6.6 | **Line 2 (the answer, ~44%)** | "$5,000 ÷ $80 =", then the hero "62.5 weeks" (120 px) inked by 6.2 and circled (6.25) |
+| 7.0–7.35 | Flip | |
+| 7.2–9.4 | **The race** | Flat ink "A: $5,000 once" vs the red line over 104 weeks at even pacing (ticks 0 / 1 yr / 2 yrs); the engine circles the crossing and writes "wk 62.5" (8.5); **FIRST CLASS** (8.75); "B: +$80 a wk" at the finish (9.1) |
+| 9.4–9.75 | Flip | The hook and both envelopes return, now labelled A "leave < 62.5 wks?", B "stay 62.5+ wks?" |
+| 10.3–12.1 | **Line 3, biggest number last** | "$80 × 52 wks × 3 yrs =", then red "$12,480" (110 px) inked by 11.7 and circled at 11.75–12.1 (last 2.3 s) |
+| 12.5–14.0 | Loop | "…versus five grand."; the screen already matches frame 1 and the last 0.35 s crossfades into it |
 
 **Voice-over**
 
 > Five grand to sign… or two bucks more an hour? *(0.1)*
 > *[1-second silent pick]*
 > Two bucks times forty hours: eighty a week. *(3.6)*
-> Five grand over eighty: sixty-two and a half weeks. *(5.45)*
-> Stay longer, and the raise wins. *(7.45)*
-> Leave sooner? The five grand. *(9.3)*
-> Stay three years? Twelve thousand four eighty… *(10.75)*
+> Five grand over eighty: sixty-two and a half weeks. *(5.4)*
+> Stay past that, and the raise wins. *(7.2)*
+> Leave sooner? The five grand. *(9.6)*
+> Stay three years? Twelve thousand four eighty… *(10.9)*
 > …versus five grand. *(12.5, loops into "Five grand to sign…")*
 
 **The envelope math (3 lines)**
 1. `$2 × 40 hrs = $80 a week` (exact)
-2. `$5,000 ÷ $80 = 62.5 weeks` (exact, ≈ 14.4 months; after 62 weeks the raise has paid $4,960, after 63 weeks $5,040, hence "< 62.5 / 62.5+")
-3. `$80 × 52 wks × 3 yrs = $12,480` (exact; about 2.5× the bonus)
+2. `$5,000 ÷ $80 = 62.5 weeks` (hero "62.5 weeks" on its own row; exact, ≈ 14.4 months; after 62 weeks the raise has paid $4,960, after 63 weeks $5,040, hence "< 62.5 / 62.5+")
+3. `$80 × 52 wks × 3 yrs = $12,480` (written as "$80 × 52 wks × 3 yrs =" with the red hero "$12,480" on its own row; exact; about 2.5× the bonus)
 
 **ASSUME (on the envelope, no separate sticky in the Flash cut):** envelope B reads "raise, 40 hrs/wk", and line 3 writes out the 52 weeks. The pinned comment states the rest (before tax).
 
 **Sources (checked 2026-10-07)**
 - **On-screen numbers:** none are real-world statistics. The bonus, the raise and the 40-hour week are the dilemma's stated terms.
+- **Description "for scale" line:** the same BLS figure as 04A ($1,251 a week, Q2 2026, https://www.bls.gov/news.release/archives/wkyeng_07212026.htm), re-verified 2026-10-07. Not on screen.
 
 **Ending**
 - **Loop line:** "…versus five grand." flows straight into "Five grand to sign… or two bucks more an hour?"
@@ -388,16 +392,16 @@ The deposits ($96,000 vs $144,000) are shown as stuffed envelopes, not ink lines
   > Exact: $2 × 40 = $80 a week; $5,000 ÷ $80 = 62.5 weeks ≈ 14.4 months (no rounding on this one). After 62 weeks the raise has paid $4,960; after 63, $5,040. One year: $4,160; two: $8,320; three: $12,480, about 2.5× the bonus. Assumptions: 40 paid hours a week, 52 paid weeks a year, before tax. Not modelled: future % raises (they'd apply to the higher wage), overtime, any repayment clause on the bonus, retirement match. Envelope rule: crossover = bonus ÷ (raise × hours). What's your crossover week?
 
 **Description**
-> $5,000 to sign, or $2 more an hour? $2 × 40 hours = $80 a week, and $5,000 ÷ $80 = 62.5 weeks. Stay longer and the raise wins: three years of it is $12,480. Leave sooner and the bonus wins. Hypothetical offer, pre-tax, 40-hour weeks. Exact figures are pinned.
+> $5,000 to sign, or $2 more an hour? $2 × 40 hours = $80 a week, and $5,000 ÷ $80 = 62.5 weeks. Stay longer and the raise wins: three years of it is $12,480. Leave sooner and the bonus wins. Hypothetical offer, pre-tax, 40-hour weeks. Exact figures are pinned. For scale: that $80 a week is about 6.4% of the median US full-time weekly pay ($1,251, BLS Usual Weekly Earnings, Q2 2026).
 > Educational math, not financial advice.
 > #EnvelopeMath #TwoEnvelopes #JobOffer #MoneyMath #Salary
 
-*Optional "for scale" line, add only after re-verifying the BLS figure on publish day:* "$2 is about a 6.4% raise on the median US full-time wage ($1,251 a week ÷ 40 = $31.275 an hour, BLS Usual Weekly Earnings, Q2 2026)."
+*"For scale" line:* $80 ÷ $1,251 = 6.39% → "about 6.4%". (The draft's wording, "a 6.4% raise on the median US full-time wage", was loose: $1,251 ÷ 40 is the median full-time weekly pay spread over 40 hours, not the median hourly wage, so the line now compares weekly pay to weekly pay.) Source and re-check rule as in 04A: BLS Q2 2026 release of 2026-07-21, re-verified 2026-10-07; Q3 2026 comes out 2026-10-28.
 
 **Platform notes**
 - **YouTube Shorts:** a 14 s loop. The hook, the three lines and the verdict are readable sound-off; `loop: true` crossfades the last 0.35 s into frame 1, and the last words ("…versus five grand") run into the first ("Five grand to sign…").
 - **Instagram Reels:** same cut.
-  - Caption with a direct question (Humphrey's caption questions earned 4–6x more comments per view, report 01).
+  - Caption with a direct question.
   - Taggable line: "send to the friend with an offer on the table."
   - Max 5 hashtags.
 - **TikTok:** a 60 s+ "your offers" cut. Solve three viewer-submitted bonus-vs-raise pairs from the comments, one envelope each with the same rule. That clears the Creator Rewards bar and turns comments into the next episode.
@@ -412,14 +416,15 @@ The deposits ($96,000 vs $144,000) are shown as stuffed envelopes, not ink lines
 
 ### Math check
 
-`teasers/04-two-envelopes-mathcheck.py` recomputes every number shown on screen, spoken, pinned or put in a description, asserts each displayed rounding, and opens the three spec files to assert the on-screen strings, the curve arrays and the red-pen crossing circles. That includes:
-- the 1,000-week and 19.2-year crossover, the 5.2% (0.1% a week) at which the million lasts forever, and the pinned "how long it lasts" table;
-- the monthly 40-year race (all 41 points of both lines), with a month-by-month proof that the gap never shrinks;
+`teasers/04-two-envelopes-mathcheck.py` recomputes every number shown on screen, spoken, pinned or put in a description, asserts each displayed rounding, and opens the three spec files to assert the on-screen strings (writes, hooks, cards, pick labels, stuffed-envelope labels, chart marks, end labels and ticks, captions) and the curve arrays. It also ports the engine's crossover finder (`crossing()` in `engine/src/ops/charts.js`) to Python and asserts the label the engine will write. That includes:
+- the 1,000-week and 19.2-year crossover (engine label "yr 19.2"), the 5.2% (0.1% a week) at which the million lasts forever, and the pinned "how long it lasts" table;
+- the monthly 40-year race (all 41 points of both lines), that B never leads at any point (so no crossover is drawn), and a month-by-month proof that the gap never shrinks;
 - the 6% overtake month, the tribonacci tie rate and the "never" threshold;
 - the yearly-compounding "math police" case;
-- the 62.5-week crossover and the 3-year $12,480.
+- the 62.5-week crossover (engine label "wk 62.5") and the 3-year $12,480;
+- the two BLS "for scale" percentages (79.9% and 6.4%).
 
-**Output** (`python3 teasers/04-two-envelopes-mathcheck.py`, run 2026-10-07):
+**Output** (`python3 teasers/04-two-envelopes-mathcheck.py`, run 2026-10-07 after the polish pass):
 
 ```text
 ============================================================================ 
@@ -428,7 +433,7 @@ The deposits ($96,000 vs $144,000) are shown as stuffed envelopes, not ink lines
   line 1  $1,000,000 / $1,000 a week = 1,000 weeks
   line 2  1,000 / 52 = 19.2308 years -> "19.2 yrs" (within 0.16%) = 19 years + 12 weeks
   line 3  $1,000 x 52 = $52,000 a year; $52,000 / $1,000,000 = 5.2% (exact)
-  chart   lines cross at year 19.23 -> pixel (618.7, 1017.1); drawn at t = 8.28 s; circle centred there
+  chart   engine crossover at index 19.2308 (= 1,000/52 years) -> label "yr 19.2"; drawn at t = 11.27 s
   twist   5.2% / 52 = 0.100% a week -> $1,000 a week forever, principal untouched (compounded weekly that is 5.33% a year)
   pin     how long $1M pays $1,000/wk:  0.0% -> 19.2 yrs  3.0% -> 28.7 yrs  4.0% -> 36.7 yrs  5.0% -> 65.2 yrs  5.2% -> forever
   note    30-year horizon: the million and the weekly are worth the same at 3.15% a year
@@ -445,6 +450,7 @@ The deposits ($96,000 vs $144,000) are shown as stuffed envelopes, not ink lines
   line 1  A at 35: $34,616.96 -> "35: $34.6K" / "≈ $34,600" / "almost $35K" (within 0.049%)
   line 2  $34,616.96 x 7% / 12 = $201.93; as written ($34,600 x 7% / 12) = $201.83 -> "≈ $202/mo"
   line 3  B's extra deposit $200 < $201.93: the gap grows by $1.93 in month 121
+  chart   B never leads A at any of the 41 points -> no engine crossover; marks at age 35 (i=10) and 65 (i=40)
   never   gap rises every month from 35 to 125 (both still depositing): B never catches up
   twist   at 6%: B first >= A after deposit 464 -> age 63 yrs 8 mo
   pin     at 6%, age 65: A $398,298 vs B $401,806 (B ahead by $3,508)
@@ -458,23 +464,21 @@ The deposits ($96,000 vs $144,000) are shown as stuffed envelopes, not ink lines
   line 2  $5,000 / $80 = 62.5 weeks = 14.4 months
   verdict after 62 weeks the raise has paid $4,960; after 63 weeks $5,040 -> "leave < 62.5 wks? / stay 62.5+ wks?"
   line 3  $80 x 52 wks x 3 yrs = $12,480 (vs the $5,000 bonus: 2.5x)
-  chart   lines cross at week 62.5 -> pixel (590.7, 1036.7); drawn at t = 6.46 s; circle centred there
+  chart   engine crossover at week 62.5 -> label "wk 62.5"; drawn at t = 8.50 s
   pin     after 1 yr: raise $4,160 vs bonus $5,000
   pin     after 2 yr: raise $8,320 vs bonus $5,000
   pin     after 3 yr: raise $12,480 vs bonus $5,000
   pin     after 5 yr: raise $20,800 vs bonus $5,000
-  option  if re-verified: $1,000 / $1,251 = 79.9% ("about 80%"); $2 / ($1,251 / 40 = $31.27/hr) = 6.4% raise
+  scale   04A: $1,000 / $1,251 = 79.94% -> "about 80%"; 04C: $80 / $1,251 = 6.39% -> "about 6.4%"
 
 all assertions passed
 ```
-
-(The last line's $31.27 is Python rounding $31.275 down; the optional description line writes the exact $31.275.)
 
 ---
 
 ### Verification log
 
-QA pass, 2026-10-07: independent fact-check, short-form edit and visual QA of the writer's draft. Every number was recomputed in a separate script before the shipped math check was rewritten; the specs were re-timed and re-laid-out; the md above was brought in line with the specs.
+QA pass, 2026-10-07: independent fact-check, short-form edit and visual QA of the writer's draft. (This is the record of that pass; its timings and pixel positions describe the pre-polish specs. The current specs, timings and facts are in the beat sheets above, the Final fact check and the Polish pass log below.) Every number was recomputed in a separate script before the shipped math check was rewritten; the specs were re-timed and re-laid-out; the md above was brought in line with the specs.
 
 **1. Math (python3, independent recompute of the md, every spec string, every curve array, every caption)**
 
@@ -536,4 +540,64 @@ QA pass, 2026-10-07: independent fact-check, short-form edit and visual QA of th
 - `pick`: lint the `sub` labels (drawn at 0.7 × `size`, so ~50 px at size 72) and allow a `subSize`.
 - `curve`: an `endLabel` for the `compare` series (B's "≈$488K"), and an option to keep the end label for a set hold time after the line finishes.
 
-**Still open:** re-verify the BLS figure before using either optional "for scale" line; a full MP4 render was not part of this pass (sheets and stills only).
+**Still open (at the end of the QA pass):** re-verify the BLS figure before using either optional "for scale" line; a full MP4 render was not part of this pass (sheets and stills only). *Both closed in the polish pass below; the three engine requests above shipped in the engine upgrade and are used in the specs (`stuff` sizes, `pick` `subSize`, `compare` marks / end labels).*
+
+### Final fact check
+
+Polish pass, 2026-10-07. Fresh web-search budget. bls.gov, tiktok.com, buffer.com, socialinsider.io and pages.stern.nyu.edu are blocked by this environment's egress proxy, so where a page could not be opened the value was confirmed from the search engine's text of that exact page (noted in the status column). YouTube figures were pulled through the vidIQ API (YouTube Data).
+
+| Input | Value used | Source URL | Checked on | Status |
+|---|---|---|---|---|
+| Median usual weekly earnings, full-time wage and salary workers, Q2 2026 (not seasonally adjusted); 04A and 04C description "for scale" lines only | $1,251 a week (→ $1,000 = 79.9% "about 80%"; $80 = 6.39% "about 6.4%") | https://www.bls.gov/news.release/archives/wkyeng_07212026.htm (BLS release of 2026-07-21) | 2026-10-07 | **Verified** (page text via search: "$1,251 in the second quarter of 2026", 120.9 million workers). Latest release on the check date |
+| Next BLS release (staleness trigger for the line above) | Q3 2026 on 2026-10-28 | https://www.bls.gov/schedule/2026/10_sched_list.htm | 2026-10-07 | **Verified** (search text). Re-check the line if posting on or after 2026-10-28 |
+| 04B growth rate | 7% a year, compounded monthly, until 65, before fees, tax and inflation | none (labelled assumption on the sticky and the `7%` stamp; not presented as a forecast or a market average) | 2026-10-07 | **Assumption, labelled.** No historical-return claim is made anywhere. The primary source for context (Damodaran, NYU Stern `histretSP`) could not be opened, and secondary summaries were not used, so no "historical average" line was added |
+| 04B twist rate | 6% | none (what-if on the same assumption) | 2026-10-07 | Assumption, labelled ("at 6%") |
+| 04A pin inflation | 3% a year (→ $554) | none | 2026-10-07 | Assumption, labelled "assumed" in the pin |
+| Dilemma terms | $1,000,000 vs $1,000 a week; $200 a month from 25 vs $400 from 35, to 65; $5,000 bonus vs +$2 an hour, 40 hrs/wk, 52 wks | none (stated hypotheticals) | 2026-10-07 | Hypothetical, no source needed |
+| YouTube: a Short over 1 minute with any active Content ID claim is blocked globally (04B platform note) | as stated | https://support.google.com/youtube/answer/15424877 | 2026-10-07 | **Verified** (search text of the Help page) |
+| TikTok: only videos longer than 1 minute earn Creator Rewards (04A/04C TikTok notes) | as stated | https://www.tiktok.com/legal/page/global/tiktok-creator-rewards-program-eea/en | 2026-10-07 | **Verified** (search text; qualified views are of videos longer than 1 minute) |
+| Buffer: TikToks over 60 s get 43.2% more reach (04A platform note) | +43.2% reach, 1.1M videos | https://buffer.com/resources/longer-tiktoks-get-more-views-data/ | 2026-10-07 | **Verified** (search text) |
+| Socialinsider: 45–60 s Reels get the highest median views (04B platform note) | 45–60 s bracket highest | https://socialinsider.io/blog/instagram-reels-length/ | 2026-10-07 | **Verified** (search text). The page now reports 6M Reels from H1 2026 (report 01 quoted an earlier ~140K-Reel version); the claim is unchanged |
+| "Humphrey's caption questions earned 4–6x more comments per view" (04C IG note) | removed | `research/02-top-10-approaches.md` line 600 (the 4–6× is one video's comments per 1K views against his norm, not a caption-question effect) | 2026-10-07 | **Misattributed → removed** from the platform note |
+| Evidence table: 11 YouTube Shorts (views, lengths, URLs) | research snapshot as printed | vidIQ `vidiq_get_videos_by_ids` (YouTube Data API) for all 11 IDs | 2026-10-07 | **Verified live.** All 11 URLs resolve; every length matches; views equal or slightly above the snapshot (Filomation 5,662,642 unchanged; Behind the Border 1,744,912 vs 1,740,010; Sharan 69,845,249; Planktin 9,059,354; Humphrey 8,404,026; Granny Drive 5,612,757; Techtonic 1,059,688; Zenwish 454,859; Teacherman 308,973 and 246,317; Alaric Moses Ong 51,480). Table kept as the snapshot its outlier scores were computed from |
+| Evidence table: Instagram / TikTok rows (@investment_timeline, @jacobhartmanofficial, @ruinvests, @mem.efarm) | research snapshot | the URLs in the table | 2026-10-07 | Not re-checked (instagram.com / tiktok.com not reachable from here); format evidence only, not used on screen or in any description |
+| Behind the Border overtake at 0:33 of 62 s | 53% | `research/watch/group4-video1.md` | 2026-10-07 | Internal watch notes; the 62 s length is confirmed by vidIQ (PT1M2S) |
+
+Nothing on screen changed value in this pass. The only published-text changes are the re-verified BLS lines (back in both descriptions, with source and date) and the removed Humphrey statistic.
+
+### Polish pass
+
+Polish pass, 2026-10-07, on the upgraded engine (README re-read; `engine/src` not edited). All three specs were rebuilt from scratch, each `node src/cli.js check` returns **zero warnings**, and each was rendered to MP4 and reviewed frame by frame.
+
+**Engine upgrade adopted (all three specs)**
+- **Frame 0 is the thumbnail.** The hook sits at `t: 0` and renders finished; the postmark moved to `t: 0` in the flap (x 175, y 258, r 100, `persist`). The old `t: -0.3` postmark hack is gone. The two `pick` envelopes stay at `t: -0.6` (the README's way to have a non-hook op already settled in frame 0, so the thumbnail shows both options); no hook uses negative t.
+- **Engine crossover.** 04A and 04C drop the hand-placed crossing circles (pixel boxes computed in the math check) and the hand-placed `marks` labels: `crossover: {label: "yr {x}"}` / `"wk {x}"` now finds, circles and labels the exact crossing (19.2308 → "yr 19.2"; 62.5 → "wk 62.5"). The math check ports the engine's `crossing()` and asserts both labels.
+- **Legends → chart labels.** The separate "A: … / B: …" legend writes are gone. 04A and 04C label A with a `compare.marks` dot at the start ("A: $1M today", "A: $5,000 once") and B with the curve's `endLabel` at the finish ("B: +$52K a yr", "B: +$80 a wk"). 04B labels the finish with two marks ("A ≈$525K" ink, "B ≈$488K" red, placed right of the end so they can't collide) and keeps "35: $34.6K" as a mark at age 35.
+- **`ease: "linear"`** on 04A and 04C (even year / week pacing, so the crossing lands exactly where the VO says it does); 04B keeps the default ease-in-out for the slow-fast-slow race. **`ticks`** on all three x axes (0/10/20/30 yrs; ages 25…65; 0 / 1 yr / 2 yrs).
+- **`pick` `subSize`** 60–64 (was 46–50 px, below the phone floor) and labels 82–84 px; **`stuff` `labelSize` 62 / `amountSize` 80** (was 46/56); typed rule 48 px (was 40).
+- **Text anchors** for every red-pen mark on text ("1,000 wks", "19.2 yrs", "5.2%", "forever", "$202/mo", "never", "$80 a week", "62.5 weeks", "$12,480").
+- **Sealed envelopes** both open on purpose (`openAt` = the reveal), so no far-future `openAt` hacks were needed.
+- **Captions:** every caption ≤ 2 lines and ≤ 4 words/s (the two 3-line captions, 04A "Earn that, and the million pays the same check forever…" and 04B "Drop it to 6%, though, and B passes A…", were split). `say` added wherever the voice reads numerals differently from the caption.
+- `loop: true` kept on all three.
+
+**Layout: bigger, one idea per screen, content zone filled**
+- Working lines 64–84 px (were 56–80; the ASSUME sticky 56 → 64 px, chart labels 56 → 64–72 px, sealed-card second lines 46–60 → 64 px); hero numbers 100–124 px: "≈ 19.2 yrs" 120, card "5.2%" 124, ink "5.2%" 104, card "A by ≈ $37K" 100, "never" 120, "at 63 yrs 8 mo" 100, "62.5 weeks" 120, "$12,480" 110.
+- The race chart now gets its own screen in 04A and 04C (it used to share a screen with two lines of math and squeeze both). Charts are 480–540 px tall in the y 630–1190 band instead of 330–500 px.
+- Each screen holds one idea and fills y 600–1300: hook + envelopes / the math / the race / the sealed answer / the range or twist. 04A has 4 flips, 04B 5, 04C 3.
+- **Loop:** on the last screen of each teaser the hook re-slaps over the same two envelopes (04A 26.65 s, 04B 44.6 s, 04C 9.65 s). The top of the closing screen is no longer empty, and the end frame already matches frame 0 before the 0.35 s crossfade.
+- 04B: the 6% twist now shows the winner flipping. The returning envelopes use the `pick` reveal: B gets FIRST CLASS and A dims at 48.1 s, in place of a separate OPENED BY MISTAKE stamp (a stamp on a `fixed` pick has to be `fixed` too, or the envelope covers it; the reveal avoids that and reads more clearly).
+- 04A: the guess timer and the envelope sit side by side; the card is sized (`cardSize` 100, envelope w 600) so both card lines clear the envelope lip; "same check forever + you keep $1M" writes with a `low` pen so it no longer covers line 3.
+- 04C: everything stays inside the Flash lane (14.0 s), with three flips. Ops start after each flip's midpoint (the linter caught three that started 0.025 s early).
+
+**Copy and timing changes (md synced with the specs)**
+- Runtimes: 04A 30.2 → **32.0 s** (the race has its own screen); 04B 50.0 → **51.0 s**; 04C **14.0 s** (unchanged).
+- 04A VO "Collect longer, and the weekly check wins." → "Collect longer than that… / …and the weekly check wins." (it now plays over the race and lands on the crossing). 04C "Stay longer, and the raise wins." → "Stay past that, and the raise wins." 04B "Drop it to 6%…" → "Drop the rate to 6%…".
+- On-screen wording: 04A line 2 and 04B/04C line 3 put their answers on a hero row ("≈ 19.2 yrs", "never", "$12,480"); 04A "but $1M earns interest…" → "but $1M can earn interest…"; 04B adds "with $48K less put in" under the reveal; 04B guess label "PAUSE & GUESS" → "GUESS" (the long label overlapped the envelope beside it).
+- Facts: the BLS "for scale" lines were re-verified and restored to both descriptions with source and date (04C's wording corrected to compare weekly pay with weekly pay); the unsupported Humphrey "4–6x" claim was removed. No on-screen number changed.
+
+**Render check**
+- `node src/cli.js render` → `engine/out/04-two-envelopes-{a,b,c}.mp4` (1080×1920, 30 fps: 960, 1530 and 420 frames).
+- Frames pulled from the MP4s (`engine/out/stills/04-two-envelopes-{a,b,c}-<t>.png`) and viewed: 04A at 0.0, 8.8 (partial payoff), 11.6 / 12.4 (crossover + FIRST CLASS), 16.4, 19.0, 21.6 (reveal), 25.6 (twist), 28.0, 30.6, 31.8 (duration − 0.2); 04B at 0.0, 12.8, 18.5 (partial payoff), 23.9 (finish), 28.5 (guess), 32.5 (reveal), 43.4 (never), 48.9 (6% flip), 50.8; 04C at 0.0, 2.9, 4.9, 6.8 (answer), 9.2 (crossover), 11.0, 12.2 ($12,480), 13.8. Nothing cramped, overlapping or cut off; no screen sits empty for more than a beat.
+- Audio (`ffmpeg -af volumedetect`): 04A mean −24.0 dB / max −2.2 dB; 04B −24.8 / −1.7; 04C −23.7 / −1.6. All inside the −30 to −18 dB mean target with peaks below −1 dB.
+- Contact sheets regenerated: `engine/out/sheets/04-two-envelopes-{a,b,c}.png`. Stale pre-polish stills were deleted.
+- `python3 teasers/04-two-envelopes-mathcheck.py`: all assertions pass (output above).

@@ -238,16 +238,16 @@
     },
     {
       "type": "write",
-      "t": 8.5,
+      "t": 8.45,
       "text": "= what $719 bought in 2016",
       "x": 540,
       "y": 1250,
       "size": 68,
       "align": "center",
       "color": "pencil",
-      "cps": 36,
+      "cps": 45,
       "pen": "small",
-      "until": 9.8
+      "until": 9.9
     },
     {
       "type": "annotate",

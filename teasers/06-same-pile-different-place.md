@@ -215,7 +215,7 @@ The pattern holds for all three variables we use. **Place:** AJ's tax video (22.
 |---|---|---|
 | 0.0–3.45 | Hook | Tape hook, the full pile and `10 envelopes × $100`, all complete in frame 0 |
 | 3.5–6.75 | The rule (its own screen) | `$1,000 × CPI then ÷ CPI now` (3.55, 80 px); `= what it buys, in then-dollars` (4.75, done 5.8); ASSUME sticky in the centre with 72 px text (3.6–6.75) |
-| 6.75–9.8 | 2016 | The pile returns and stays to the end. `stuffed in` stays fixed and only the year is written (`2016`, 7.35); `buys 28% less` as one 100 px line with the 28% in red (7.7); `= what $719 bought in 2016` (8.5, done 9.2); red pen crosses 3 envelopes (8.7–9.1). **First partial payoff at 8.0 s (26%)** |
+| 6.75–9.8 | 2016 | The pile returns and stays to the end. `stuffed in` stays fixed and only the year is written (`2016`, 7.35); `buys 28% less` as one 100 px line with the 28% in red (7.7); `= what $719 bought in 2016` (8.45, done 9.03, held to 9.9); red pen crosses 3 envelopes (8.7–9.1). **First partial payoff at 8.0 s (26%)** |
 | 9.8–12.5 | 2006 | `2006` (9.9); `buys 39% less`; `$609`; cross #4 (11.4) |
 | 12.5–15.7 | **Pattern break** (46%) | `1996`; `buys 53% less`; `$470`; cross #5 (14.1), so the whole bottom row is gone; **red box around the bottom row** (14.5): "Half the pile, gone." |
 | 15.7–18.6 | 1986 | `1986`; `buys 67% less`; `$327`; crosses #6 and #7 |
@@ -783,3 +783,49 @@ Finishing producer, 2026-10-07, after the engine upgrade (frame-0 hooks, text an
 - Audio (`volumedetect`): 06A mean −24.9 dB / max −1.9 dB; 06B −25.1 / −2.3; 06C −25.0 / −1.6. All inside the −30 to −18 dB mean and below −1 dB max targets.
 
 **Engine note (no `engine/src` edits).** `write`'s duration is `text.length / cps` in UTF-16 units and counts the `*` em markers, while the pen reveals glyphs. So a line with a flag or a red word reports a later finish than viewers see (e.g. `🇧🇪 ≈ 4 of 10 ✉`: 1.14 s computed vs 0.93 s drawn). The linter is conservative as a result. The math check counts glyphs.
+
+### Final review
+
+Independent final reviewer, 2026-10-07, after the engine upgrade. I re-read `engine/README.md` before touching any spec.
+
+**What was checked**
+- **Contact sheets.** Fresh 12-frame sheets from each spec (`node src/cli.js sheet … --n 12`), plus key-time sheets with the safe-zone overlay: 06A at 0 / 7.2 / 9.9 / 15.0 / 17.2 / 23.8 / 27.4 / 29.4 s, 06B at 6.4 / 15.0 / 25.2 / 29.7 s and 06C at 7.5 / 23.9 / 27.95 / 30.8 s.
+- **MP4 frames.** Four frames from each render (start, about 40%, about 75%, end): 06A at 0.0 / 12.0 / 22.4 / 29.85 s, 06B at 0.0 / 12.4 / 23.2 / 30.85 s and 06C at 0.0 / 12.8 / 23.9 / 31.85 s (`engine/out/stills/06-same-pile-different-place-*-<t>.png`).
+- **Extra MP4 frames.** Every transition (06A 3.5 / 24.25 / 25.2 s, 06B 3.7 / 6.9 / 29.25 s, 06C 3.4 / 17.1 / 28.95 / 31.7 s) and the last full frame before the loop crossfade (06A 29.5 s, 06B 30.5 s, 06C 31.5 s).
+- **Math.** `python3 teasers/06-same-pile-different-place-mathcheck.py` passes: ALL CHECKS PASSED. The script in this file matches the standalone file, and the printed output above matches a fresh run exactly.
+- **Numbers spot-check.** Every number in a caption was matched against the on-screen op showing it at that moment. Spoken roundings ("about fourteen", "2½ years", "38 hours") match the exact values in the script. The descriptions, pins and long-cut extras were recomputed and all agree.
+- **Lint.** `node src/cli.js check` gives zero warnings on all three specs, before and after the fix.
+- **Reading time.** Every `write` and `sticky` op was checked against two rules: at least 0.25 s on screen per word, and at least 0.4 s fully written (counting glyphs, as the pen reveals them).
+- **Facts.** I re-ran WebSearch on 2026-10-07 for the inputs most likely to move:
+  - **OECD *Taxing Wages 2026*:** Belgium's personal average tax rate is 39.5%, the highest. The lowest are Mexico 13.2%, Costa Rica 9.8%, Chile 7.1% and Colombia 0.0%. Sources: the [overview](https://www.oecd.org/en/publications/taxing-wages-2026_3a5169ef-en/full-report/overview_d93131c3.html) and the [Chile page](https://www.oecd.org/en/publications/taxing-wages-2026_3a5169ef-en/full-report/chile_af0e688d.html).
+  - **BLS CPI-U, Aug 2026:** 334.980, +3.4% year on year ([release of 11 Sep 2026](https://www.bls.gov/news.release/archives/cpi_09112026.htm)).
+  - **AFL-CIO Paywatch 2026:** $22.8M excluding Musk and $340.1M including him (https://aflcio.org/node/10787; https://www.hrreporter.com/focus-areas/compensation-and-benefits/including-elon-musk-average-sp-500-ceo-pay-explodes-to-3401-million/394779).
+  - **High-school teacher median:** $72,040 (BLS, May 2025). Search results quote it from secondary sites; the cited primary is still the BLS OOH page.
+  - All held, and nothing on screen changed.
+
+**Findings and fixes**
+
+| # | Teaser | Finding | Action |
+|---|---|---|---|
+| 1 | 06B | The first data beat's sub-line `= what $719 bought in 2016` was on screen for only 1.30 s for 6 words (under 0.25 s/word), written 8.5–9.2 and cleared at 9.8. This is the beat where viewers learn the pattern. The polish pass had re-timed it below the first QA pass's own reading standard. | Now starts at 8.45 at 45 cps, is done at 9.03 and is held to 9.9, when `2006` starts writing. That gives 1.45 s on screen plus the 0.25 s fade, 0.87 s fully written. Nothing else moved: the 28% still lands at 8.0 s and the crosses stay at 8.7–9.1. Beat sheet updated, lint clean, MP4 and sheet re-rendered (`engine/out/06-same-pile-different-place-b.mp4`, 30.9 s; −25.1 dB mean / −2.3 dB max). |
+| 2 | 06A | The red circle anchored to `$395` grazes the `=` before it: the ellipse's left edge sits about 4 px from the `=`, so the 7 px stroke touches it. | A tighter `target.pad` (−10) was tried and cut into the `$` and `5` of `$395`, which is worse. The default stays; the line still reads clearly at phone size. |
+| 3 | 06C | The circle on `16 days` reaches x ≈ 938 plus its stroke, right at the 940 px right-rail line. The text itself ends at 920. | Accepted. It is a pen stroke, not text, and the platform buttons start further right. Moving the value column would mean re-placing every dotted leader. |
+| 4 | All | Props (pile, `10 envelopes × …`, SAME PILE stamp) are still at negative `t`. | Kept on purpose. `grid`, `postage` and `write` have no `instant` flag; it exists only on `hook`, `quote`, `emoji`, `stuff`, `postmark` and `receipt`. The README documents negative `t` as the silent way to have other ops finished in frame 0, and the linter's frame-0 rule expects it. Every hook is at `t: 0`, and the MP4 frame 0 shows hook, pile, label and stamp complete. |
+| 5 | All | At beat changes, incoming ops draw over outgoing ones for their 0.25 s fade (06A 3.4 s, 06B 6.75 s, 06C 28.75 s). The previous line's pen also fades for 0.3 s after it finishes. | Accepted. This is engine behaviour, and in motion it reads as a dissolve. |
+| 6 | 06A | "Well actually" risk: search results lead with Belgium's 52.5% **tax wedge**, which includes employer contributions. The video uses the 39.5% **personal average tax rate**. | No change. The ASSUME sticky and the pinned comment both state the basis (income tax + employee social security). Be ready to reply with that distinction. |
+
+**Phone-view checks** (all pass)
+- Frame 0 of every MP4 carries a dollar figure in three places: the tape hook, `10 envelopes × $100`/`$100K` and the `$1K`/`$1M` stamp.
+- All readable text sits inside y 230–1300. Nothing sits in x > 940 below y 820, nothing in the 1480+ platform block, and captions use 1–2 lines.
+- Nothing is clipped. The only overlaps are the intended stamp-on-pile in 06C, and the 06A bar labels `$387`/`$395`, which sit about 25 px apart but read separately.
+- The SAME PILE label on the postage stamp is 18 px decoration; the value (`$1K`/`$1M`) is the readable part.
+
+**Hook scores** (against `research/02-top-10-approaches.md` §6)
+- **06A: 8/10.** It is the research's top formula ("Same $[X], [N] countries…", AJ's 17,564.8x), with the series' fixed pile and the basis on screen. It falls short of AJ in two ways: the first answer lands at 6.5 s, where AJ gives it within about 2 s, and $1,000 is less aspirational than AJ's "1 Million". $1,000 is the honest choice, though, because the OECD rates are for average wages.
+- **06B: 8/10.** It has a vivid verb ("what did *inflation* eat?") and a concrete pile, aimed at the #cashstuffing whitespace. Each year is a hook for identity comments. "6 decades" is a bit more abstract than a flag or a job, and the first answer lands at 8.0 s (26%).
+- **06C: 8.5/10.** It is the closest match to Tilbury's 23.0M "How long … to make $1 million?". $1M is the strongest fixed number of the three, and the unit drops from years to *days*. First answer at 7.0 s.
+
+**Verdicts**
+- **06A: ship** (no changes).
+- **06B: fixed** (one re-timed sub-line, re-rendered).
+- **06C: ship** (no changes).

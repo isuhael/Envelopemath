@@ -19,7 +19,7 @@ def spec(stem):
 
 
 def texts(s):
-    """Every string a viewer can read: writes, hooks, cards, pick labels, captions."""
+    """Every string a viewer can read: writes, hooks, cards, pick labels, chart marks/labels, captions."""
     out = []
     for o in s['ops']:
         if o['type'] == 'write':
@@ -32,10 +32,44 @@ def texts(s):
             for opt in o['options']:
                 out += [opt['label'], opt.get('sub', '')]
         elif o['type'] == 'curve':
-            out += [m['text'] for m in o.get('marks', [])] + [str(o.get('endLabel', ''))]
+            out += [m['text'] for m in o.get('marks', []) + o.get('compare', {}).get('marks', [])]
+            out += [str(o.get('endLabel', '')), str(o.get('compare', {}).get('endLabel', ''))]
+            out += [str(t['label']) for t in o.get('ticks', [])]
         elif o['type'] == 'sticky':
             out.append(o['text'])
+        elif o['type'] == 'stuff':
+            out += [it['label'] for it in o['items']]
     return out + [c['text'] for c in s['captions']]
+
+
+def crossing(a, b):
+    """Python port of the engine's curve crossover (engine/src/ops/charts.js `crossing`): the fractional
+    index where two equal-length series first swap the lead, ignoring a shared start."""
+    lead = 0
+    for k in range(len(a)):
+        d = a[k] - b[k]
+        sgn = (d > 0) - (d < 0)
+        if sgn == 0:
+            continue
+        if lead and sgn != lead:
+            d0, d1 = a[k - 1] - b[k - 1], d
+            f = 0 if d0 == 0 else d0 / (d0 - d1)
+            return k - 1 + f, a[k - 1] + f * (a[k] - a[k - 1])
+        lead = sgn
+    return None
+
+
+def crossover_label(cv):
+    """The label the engine writes at the crossing ("yr {x}" with x to `decimals`) and when it is drawn."""
+    hit = crossing(cv['values'], cv['compare']['values'])
+    assert hit, f'no crossing in curve at t={cv["t"]}'
+    x, _ = hit
+    n = len(cv['values']) - 1
+    X = cv['crossover']
+    label = X['label'].replace('{x}', f'{x:.{X.get("decimals", 1)}f}')
+    assert cv.get('ease') == 'linear', 'crossing time below assumes ease: linear'
+    t_draw = cv['t'] + 0.4 + (x / n) * cv['dur']
+    return x, label, t_draw
 
 
 def on_screen(s, *needles):
@@ -62,11 +96,6 @@ def lasts_weeks(pv, pmt, j):
     return log(1 / (1 - pv * j / pmt)) / log(1 + j)
 
 
-def ease_inout_inv(f):
-    """Inverse of the engine's ease.inOut (curve progress) -> linear time fraction."""
-    return (f / 4) ** (1 / 3) if f < 0.5 else 1 - (2 * (1 - f)) ** (1 / 3) / 2
-
-
 # ============================================================================ 04A
 print('=' * 76, '\n04A  $1,000,000 now or $1,000 a week for life?\n' + '=' * 76)
 A = spec('a')
@@ -81,19 +110,18 @@ print(f'  line 2  {weeks:,.0f} / 52 = {years:.4f} years -> "19.2 yrs" (within {w
 print(f'  line 3  $1,000 x 52 = ${yearly:,} a year; ${yearly:,} / $1,000,000 = {rate:.1%} (exact)')
 assert weeks == 1000 and round(years, 1) == 19.2 and yearly == 52_000 and abs(rate - 0.052) < 1e-12
 assert (int(weeks // 52), round(weeks % 52)) == (19, 12)
-on_screen(A, '$1,000,000 ÷ $1,000/wk = 1,000 wks', '1,000 wks ÷ 52 ≈ 19.2 yrs', '$52,000 ÷ $1,000,000 =',
-          '5.2%', 'B: +$52K a year', 'yr 19.2', 'earn 0%? $1M lasts 19.2 yrs', 'earn 5.2%? it lasts forever')
+on_screen(A, '$1,000,000 ÷ $1,000/wk = 1,000 wks', '1,000 wks ÷ 52 =', '≈ 19.2 yrs', '$52,000 ÷ $1,000,000 =',
+          '5.2%', 'a year, forever', 'A: $1M today', 'B: +$52K a yr', 'same check forever + you keep $1M',
+          'earn 0%? $1M lasts 19.2 yrs', 'earn 5.2%? it lasts forever', '30 yrs')
 
-# chart: cumulative weekly payments (per year) vs the flat lump, and where the red-pen circle sits
+# chart: cumulative weekly payments (per year) vs the flat lump; the engine computes and circles the crossing
 cv = next(o for o in A['ops'] if o['type'] == 'curve')
 assert cv['values'] == [yearly * y for y in range(31)] and cv['compare']['values'] == [LUMP] * 31
 assert cv['max'] == yearly * 30 == 1_560_000
-cx = cv['x'] + years / 30 * cv['w']
-cy = cv['y'] - LUMP / cv['max'] * cv['h']
-ring = next(o for o in A['ops'] if o['type'] == 'annotate' and o.get('kind') == 'circle' and 'target' not in o)
-assert abs(ring['x'] + ring['w'] / 2 - cx) < 1 and abs(ring['y'] + ring['h'] / 2 - cy) < 1
-t_cross = cv['t'] + 0.4 + ease_inout_inv(years / 30) * cv['dur']
-print(f'  chart   lines cross at year {years:.2f} -> pixel ({cx:.1f}, {cy:.1f}); drawn at t = {t_cross:.2f} s; circle centred there')
+x, label, t_cross = crossover_label(cv)
+assert abs(x - years) < 1e-9 and label == 'yr 19.2'
+print(f'  chart   engine crossover at index {x:.4f} (= {weeks:,.0f}/52 years) -> label "{label}"; drawn at t = {t_cross:.2f} s')
+assert 'B: +$52K a yr' == cv['endLabel'] and yearly == 52_000
 
 # the twist: 5.2% means 0.1% a week, which pays $1,000 every week and leaves the $1M untouched
 j = rate / 52
@@ -143,8 +171,9 @@ print(f'  race    at 65: A ${A65:,.2f} -> "≈$525K" ({within(525_000, A65):.3%}
 print(f'  sealed  gap ${gap65:,.2f} -> "A by ≈ $37K" (within {within(37_000, gap65):.2%})')
 assert round(A65 / 1000) == 525 and round(B65 / 1000) == 488 and round(gap65 / 1000) == 37
 cb = next(o for o in B['ops'] if o['type'] == 'curve')
-assert all(abs(cb['values'][y] - fv(200, i, 12 * y)) < 0.006 for y in range(41))
-assert all(abs(cb['compare']['values'][y] - fv(400, i, 12 * (y - 10))) < 0.006 for y in range(41))
+assert all(abs(cb['compare']['values'][y] - fv(200, i, 12 * y)) < 0.006 for y in range(41))  # A (ink)
+assert all(abs(cb['values'][y] - fv(400, i, 12 * (y - 10))) < 0.006 for y in range(41))  # B (red)
+assert cb['max'] == cb['compare']['values'][-1]
 print('  chart   all 41 yearly points of both race lines match the monthly FV formula (to the cent)')
 
 head = fv(200, i, 120)
@@ -156,8 +185,20 @@ print(f'  line 2  $34,616.96 x 7% / 12 = ${interest:.2f}; as written ($34,600 x 
 assert round(interest) == 202 and round(interest_env) == 202
 print(f'  line 3  B\'s extra deposit $200 < ${interest:.2f}: the gap grows by ${interest - 200:.2f} in month 121')
 assert interest > 200
-on_screen(B, 'A’s head start at 35 ≈ $34,600', '$34,600 × 7% ÷ 12 ≈ $202/mo', 'B’s extra $200 < $202 → never',
-          'A by ≈ $37K', '$525K vs $488K', 'at 6%: B passes A at 63 yrs 8 mo', 'B puts in $48,000 more', '35: $34.6K')
+on_screen(B, 'A’s head start at 35 ≈ $34,600', '$34,600 × 7% ÷ 12 ≈ $202/mo', 'B’s extra $200 < $202 →', 'never',
+          'A by ≈ $37K', '$525K vs $488K', 'at 6%: B passes A', 'at 63 yrs 8 mo', 'B puts in $48,000 more',
+          'with $48K less put in', '35: $34.6K', 'A ≈$525K', 'B ≈$488K', 'A · 40 yrs', 'B · 30 yrs')
+assert 144_000 - 96_000 == 48_000
+# the race chart: main series = B (red), compare = A (ink); the lines never swap the lead, so the engine
+# draws no crossover circle (and the spec asks for none)
+assert crossing(cb['values'], cb['compare']['values']) is None and 'crossover' not in cb
+assert all(bv <= av for bv, av in zip(cb['values'], cb['compare']['values']))
+assert [t['label'] for t in cb['ticks']] == ['25', '35', '45', '55', '65'] and [t['i'] for t in cb['ticks']] == [0, 10, 20, 30, 40]
+mk = {m['text']: m['i'] for m in cb['marks'] + cb['compare']['marks']}
+assert mk == {'35: $34.6K': 10, 'A ≈$525K': 40, 'B ≈$488K': 40}
+print('  chart   B never leads A at any of the 41 points -> no engine crossover; marks at age 35 (i=10) and 65 (i=40)')
+twist = next(o for o in B['ops'] if o['type'] == 'pick' and o.get('revealAt'))
+assert twist['answer'] == 1 and twist['stamp'] == 'FIRST CLASS'  # at 6%, B (the second envelope) wins
 
 # "never": simulate month by month for 100 years; the gap A - B must rise every single month after 35
 a, b, prev_gap = 0.0, 0.0, None
@@ -218,28 +259,28 @@ assert weekly * 62 < BONUS < weekly * 63
 three = weekly * 52 * 3
 print(f'  line 3  $80 x 52 wks x 3 yrs = ${three:,} (vs the $5,000 bonus: {three / BONUS:.1f}x)')
 assert three == 12_480
-on_screen(C, '$2 × 40 hrs = $80 a week', '$5,000 ÷ $80 = 62.5 weeks', '$80 × 52 wks × 3 yrs = $12,480',
-          'wk 62.5', 'B: +$80 a week', 'leave < 62.5 wks?', 'stay 62.5+ wks?')
+on_screen(C, '$2 × 40 hrs = $80 a week', '$5,000 ÷ $80 =', '62.5 weeks', '$80 × 52 wks × 3 yrs =', '$12,480',
+          'A: $5,000 once', 'B: +$80 a wk', 'leave < 62.5 wks?', 'stay 62.5+ wks?', 'raise, 40 hrs/wk', '1 yr', '2 yrs')
 cc = next(o for o in C['ops'] if o['type'] == 'curve')
 assert cc['values'] == [weekly * w for w in range(105)] and cc['compare']['values'] == [BONUS] * 105
 assert cc['max'] == weekly * 104 == 8320
-px = cc['x'] + cross / 104 * cc['w']
-py = cc['y'] - BONUS / cc['max'] * cc['h']
-ring = next(o for o in C['ops'] if o['type'] == 'annotate' and o.get('kind') == 'circle' and 'target' not in o)
-assert abs(ring['x'] + ring['w'] / 2 - px) < 1 and abs(ring['y'] + ring['h'] / 2 - py) < 1
-print(f'  chart   lines cross at week 62.5 -> pixel ({px:.1f}, {py:.1f}); drawn at t = '
-      f'{cc["t"] + 0.4 + ease_inout_inv(cross / 104) * cc["dur"]:.2f} s; circle centred there')
+x, label, t_cross = crossover_label(cc)
+assert x == cross and label == 'wk 62.5'
+print(f'  chart   engine crossover at week {x} -> label "{label}"; drawn at t = {t_cross:.2f} s')
 for yrs in (1, 2, 3, 5):
     print(f'  pin     after {yrs} yr: raise ${weekly * 52 * yrs:,} vs bonus $5,000')
 assert weekly * 52 == 4160 and weekly * 52 * 2 == 8320 and weekly * 52 * 5 == 20_800
 
-# ============================================================== optional context (not published yet)
-# BLS median usual weekly earnings, full-time wage & salary workers, Q2 2026 = $1,251 (release
-# 2026-07-21, as cited by teasers 02/03/05/08). QA could not re-open bls.gov or run a fresh search on
-# 2026-10-07, so this is NOT in any 04 description or pin. Only add the line after re-verifying.
+# ============================================================== "for scale" context (descriptions only)
+# BLS median usual weekly earnings, full-time wage and salary workers, Q2 2026 = $1,251 (not seasonally
+# adjusted). Source: BLS "Usual Weekly Earnings of Wage and Salary Workers, Second Quarter 2026", released
+# 2026-07-21 (https://www.bls.gov/news.release/archives/wkyeng_07212026.htm). Re-verified by web search on
+# 2026-10-07; still the latest release (Q3 2026 is scheduled for 2026-10-28, so re-check if posting after that).
 BLS_WEEKLY = 1251
-print(f'  option  if re-verified: $1,000 / ${BLS_WEEKLY:,} = {WEEKLY / BLS_WEEKLY:.1%} ("about 80%"); '
-      f'$2 / (${BLS_WEEKLY:,} / 40 = ${BLS_WEEKLY / 40:.2f}/hr) = {RAISE / (BLS_WEEKLY / 40):.1%} raise')
-assert round(WEEKLY / BLS_WEEKLY, 2) == 0.80 and round(RAISE / (BLS_WEEKLY / 40) * 100, 1) == 6.4
+share_a = WEEKLY / BLS_WEEKLY            # 04A: $1,000 a week vs the median full-time weekly pay
+share_c = weekly / BLS_WEEKLY            # 04C: the raise's $80 a week vs the same median
+print(f'  scale   04A: $1,000 / ${BLS_WEEKLY:,} = {share_a:.2%} -> "about 80%"; '
+      f'04C: $80 / ${BLS_WEEKLY:,} = {share_c:.2%} -> "about 6.4%"')
+assert round(share_a * 100) == 80 and round(share_c * 100, 1) == 6.4
 
 print('\nall assertions passed')

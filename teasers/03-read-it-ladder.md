@@ -1,14 +1,14 @@
 ## 3. The Read-It Ladder
 
-**Writer brief:** one small recurring number climbs the calendar (a week, a year, a decade) in ballpoint on the back of an envelope, inside a 9 s loop. Then the envelope **flips over**, and the back carries the one line the money lecture never says.
-**Lane:** Flash. Each teaser is **9.0 s**: the research's loop lane is 6 to 9 s, and our voice-over needs the top of it.
+**Writer brief:** one small recurring number climbs the calendar (a week, a year, a decade) in ballpoint on the back of an envelope, inside a 9 to 9.6 s loop. Then the envelope **flips over**, and the back carries the one line the money lecture never says.
+**Lane:** Flash. 03A and 03B run **9.0 s** and 03C runs **9.6 s**, all with `loop: true`: the research's loop lane is 6 to 9 s, and our voice-over needs the top of it (03C's longer number words need 0.6 s more).
 **Series:** **Day to Decade**. The postmark carries the number (No. 03A, 03B, 03C).
-**Specs:** `engine/specs/03-read-it-ladder-{a,b,c}.json` · **Sheets:** `engine/out/sheets/03-read-it-ladder-{a,b,c}.png` · **Stills:** `engine/out/stills/03-read-it-ladder-*.png` · **Math check:** `teasers/03-read-it-ladder-mathcheck.py`
-**Facts checked:** 2026-10-07. Every view count, outlier score and URL in the evidence sections is copied from `research/raw/` or `research/watch/`. **QA pass (same day):** see the [Verification log](#verification-log). It fixed a blank first frame, caption pacing, the hooks and one overstated claim, and it took the one unconfirmed price off the rendered video.
+**Specs:** `engine/specs/03-read-it-ladder-{a,b,c}.json` · **Sheets:** `engine/out/sheets/03-read-it-ladder-{a,b,c}.png` · **Stills:** `engine/out/stills/03-read-it-ladder-*.png` · **MP4s:** `engine/out/03-read-it-ladder-{a,b,c}.mp4` · **Math check:** `teasers/03-read-it-ladder-mathcheck.py`
+**Facts checked:** 2026-10-07. Every view count, outlier score and URL in the evidence sections is copied from `research/raw/` or `research/watch/`. **QA pass (same day):** see the [Verification log](#verification-log). It fixed a blank first frame, caption pacing, the hooks and one overstated claim, and it took the one unconfirmed price off the rendered video. **Polish pass (same day):** 03C was replaced (Powerball → the average new-car payment), every real-world input was re-verified live with WebSearch, and the specs were rebuilt for the upgraded renderer. See the [Final fact check](#final-fact-check) and the [Polish pass](#polish-pass).
 
-> **Sourcing note:** this run's shared WebSearch budget was used up before this writer's first search, so I ran no new searches. I picked topics whose only real-world inputs had already been verified with WebSearch on 2026-10-07 by other writers in this run. Each one is cited below with its URL and the file that verified it. Everything else is pure arithmetic or a labelled assumption. Re-open each URL once before publishing.
+> **Sourcing note (writer's draft, superseded by the Final fact check):** this run's shared WebSearch budget was used up before this writer's first search, so I ran no new searches. I picked topics whose only real-world inputs had already been verified with WebSearch on 2026-10-07 by other writers in this run. Each one is cited below with its URL and the file that verified it. Everything else is pure arithmetic or a labelled assumption. Re-open each URL once before publishing.
 >
-> **QA note:** the QA pass couldn't search either (same exhausted budget), and direct fetches of the cited pages (apple.com, cnbc.com, macrumors.com, bls.gov, powerball.com, lotteryusa.com) were blocked by the egress proxy. Each input was cross-checked inside the repo and, where possible, re-derived from first principles. Details are in the Verification log.
+> **QA note (superseded by the Final fact check):** the QA pass couldn't search either (same exhausted budget), and direct fetches of the cited pages (apple.com, cnbc.com, macrumors.com, bls.gov, powerball.com, lotteryusa.com) were blocked by the egress proxy. Each input was cross-checked inside the repo and, where possible, re-derived from first principles. Details are in the Verification log.
 
 ---
 
@@ -64,36 +64,36 @@ A single selfie lip-sync take to a trending audio clip ("I didn't have a pen and
 **What we improve:**
 1. **The math is visible.** Each rung carries its red multiplier in the gutter (×7, ×52, ×10), so anyone can check it in a second. This is the fix vidIQ ranked first ("animate each line in sync with SFX"): the pen writes one rung per scratch.
 2. **Honest rounding.** Rounded rungs carry "≈", and the pinned comment gives the exact figure as "envelope said ≈X, within Y%". The math police get something to say, and we are never wrong.
-3. **Sourced, dated inputs, and the assumption on a sticky.** The yellow ASSUME: sticky sits under the ladder ("same $3, every day, 10 years").
-4. **Sound for both audiences.** A dry 9 s voice-over for sound-on, burned-in word-by-word captions for sound-off (69% of US adults watch sound-off in public), and original foley only: pen scratch, flip whoosh, stamp thump. No licensed music, so no Shorts revenue cut.
+3. **Sourced, dated inputs, and the assumption on a sticky.** The yellow ASSUME: sticky sits under the ladder ("every day, for 10 years"). 03C also writes its source on the envelope in pencil ("Edmunds, Q3 2026").
+4. **Sound for both audiences.** A dry 9 s voice-over for sound-on, burned-in word-by-word captions for sound-off (69% of US adults aged 18 to 54 watch video with the sound off in public: Verizon Media and Publicis Media survey, 2019), and original foley only: pen scratch, flip whoosh, stamp thump. No licensed music, so no Shorts revenue cut.
 5. **Both camps get a number.** Every pinned comment carries the other side's math (e.g. 03A's invested value at an assumed 7%), so the YOLO-vs-invest argument has an honest number to fight over.
 
 **Our own twist: The Flip Side.** The ladder climbs on the front of the envelope. Just when the viewer braces for the lecture, the **envelope flips over**. The back says one thing, under a masking-tape "FLIP SIDE" label, that turns the ladder around:
 - **03A:** it validates you: a year of the habit costs less than one iPhone 18 Pro.
 - **03B:** it reverses the lecture onto income: your boss did this math too.
-- **03C:** it mirrors the odds: 1 in 80,000 to win, 1 in 1 to spend it.
+- **03C:** it turns the decade back into your working hour: $94,440 ÷ 20,800 hours = $4.54 of every hour you work.
 
-A lexicon stamp gives the verdict, and a second flip at the 9.0 s mark cuts straight back into frame 1. The loop reads as "turning the envelope back over". The ladder is gone from the back before you finish reading it, which is what drives the rewatch. No other ladder account flips the paper, so the format can't be copied caption-for-caption: the back of the envelope *is* the joke.
+A lexicon stamp gives the verdict, and a second flip in the last 0.6 s turns the envelope back over while the page crossfades into frame 1 (`loop: true`). The loop reads as "turning the envelope back over". The ladder is gone from the back before you finish reading it, which is what drives the rewatch. No other ladder account flips the paper, so the format can't be copied caption-for-caption: the back of the envelope *is* the joke.
 
 **Series name:** *Day to Decade*.
 **Title template:** `[tape text] (Day to Decade No. N)`, e.g. "Your habit is $3 a day. For 10 years? (Day to Decade No. 03A)". Title = tape text = first spoken line.
-**Hook template (masking tape, 2–3 strips, finished on frame 0):** whose number it is + the daily figure (number in red) + the stake as a question: "YOUR HABIT IS / *$3* A DAY. / FOR 10 YEARS?", "A *$1/HR* RAISE IS / ONLY $8 A DAY?", "*$2* A DAY ON / POWERBALL, / FOR 10 YEARS?". Always a dollar figure in frame 1, never a concept, and the ink answers the question by about 35% of the runtime.
+**Hook template (masking tape, 2–3 strips, finished on frame 0):** whose number it is + the daily figure (number in red) + the stake as a question: "YOUR HABIT IS / *$3* A DAY. / FOR 10 YEARS?", "A *$1/HR* RAISE IS / ONLY $8 A DAY?", "AVERAGE NEW-CAR / PAYMENT: *$787*/MO. / FOR 10 YEARS?". Always a dollar figure in frame 1, never a concept, and the ink answers the question by about 35% of the runtime.
 **Spoken signature:** every episode says "**Flip side?**" on the flip. It is the sound-on cue for the series.
 
-**Format-bible devices used:** the Envelope (kraft), ballpoint working (`ladder`), red pen (gutter multipliers, double underline, strike), ASSUME: sticky, masking-tape hook (front and back), Postmark No., verdict stamps (RETURN TO SENDER, OPENED BY MISTAKE, POSTAGE DUE), the Flip (twice: the pattern break and the loop), and an emoji prop for the "product". No outro card, per the bible's Flash lane.
+**Format-bible devices used:** the Envelope (kraft), ballpoint working (`ladder`), red pen (gutter multipliers, double underline, strike), ASSUME: sticky, masking-tape hook (front and back), Postmark No., verdict stamps (RETURN TO SENDER, OPENED BY MISTAKE, POSTAGE DUE), the Flip (twice: the pattern break and the loop), and an emoji prop for the "product" (big on frame 0, small once the ink starts). No outro card, per the bible's Flash lane.
 
-**Screen template (all three specs, after QA):**
+**Screen template (all three specs, after the polish pass):**
 
-| Zone (y, 1080×1920) | Front (0 to ≈4.4–5.0 s) | Back, "the flip side" (to 9.0 s) |
+| Zone (y, 1080×1920) | Front (0 to the first flip, 4.15–4.75 s) | Back, "the flip side" |
 |---|---|---|
-| 200–380 | Postmark No. 03A/B/C (persistent, y 290), emoji prop top-right | Postmark |
-| 383–692 (3 strips, 03A/03C) · 400–625 (2 strips, 03B) | Tape hook, number in red, finished on frame 0 | Tape "FLIP SIDE" (y 455) |
-| 680–1000 | `ladder`: 3 rungs, red multipliers in the gutter, last rung red and larger, double-underlined; values end at x 910 (30 px clear of the button rail) | Punchline (2 lines), sub-line |
-| 1000–1320 | ASSUME: sticky, 56 px handwriting (left) | Emoji prop · verdict stamp |
-| 1320–1480 | Word-highlighted captions (numerals), ≥ 0.25 s per word | Captions |
-| loop | | 8.75 s flip → cut at 9.0 s to frame 0 |
+| 0–340 (flap) | Postmark No. 03A/B/C at (175, 258), r 100, persistent | Postmark |
+| 364–657 (3 strips, size 76: 03A, 03C) · 379–592 (2 strips, size 84: 03B) | Tape hook, number in red, finished on frame 0 | Tape "FLIP SIDE" (y 430, size 92) |
+| 660–1060 | Frame 0: one big emoji prop (330–340 px), gone at 0.40–0.45 s. Then the `ladder`: 2–3 rungs, labels 74–83 px, red multipliers 66–75 px in the gutter, last rung red at 106–120 px with a target-anchored double underline; values end at x 910 (30 px clear of the button rail) | Punchline in red pen (96–108 px, 2 lines), or 03C's division line, then the 190 px hero |
+| 1046–1316 | ASSUME: sticky, 56–58 px (left) · small emoji prop (right) · 03C's pencil source line | Emoji prop · verdict stamp |
+| 1320–1480 | Word-highlighted captions (numerals; `say` gives the spoken form), ≤ 2 lines, ≤ 4 words/s | Captions |
+| loop | | Final flip 0.6 s before the end; `loop: true` crossfades the last 0.35 s into frame 0 |
 
-**Keeping to our lane:** no unit counts (#1), no division of a mega-number into time (#2), no A-vs-B pick or crossover (#4). The only comparison is a one-line benchmark on the back (one phone), the way the originals use "not a nice car".
+**Keeping to our lane:** no unit counts (#1), no division of a mega-number into time (#2), no A-vs-B pick or crossover (#4). The only comparison is a one-line benchmark on the back (one phone), the way the originals use "not a nice car". 03C's back divides a personal monthly bill by the viewer's own work hours. That is the wage-ladder variant already in our evidence (@financebestiechloe), not #2's mega-number rate.
 
 ---
 
@@ -102,39 +102,40 @@ A lexicon stamp gives the verdict, and a second flip at the 9.0 s mark cuts stra
 #### 03A: "Your habit is $3 a day. For 10 years?" · *Day to Decade No. 03A*
 
 - **Topic:** everyday spending habits. **Lane:** Flash, **9.0 s** loop.
-- **Spec:** `engine/specs/03-read-it-ladder-a.json` · **Sheet:** `engine/out/sheets/03-read-it-ladder-a.png`
+- **Spec:** `engine/specs/03-read-it-ladder-a.json` · **Sheet:** `engine/out/sheets/03-read-it-ladder-a.png` · **MP4:** `engine/out/03-read-it-ladder-a.mp4`
 
-**Frame-1 hook (rendered finished on frame 0).** Tape, 3 strips: **YOUR HABIT IS** / ***$3* A DAY.** / **FOR 10 YEARS?** ($3 in red), with a ☕ top-right. That is a number, a stake and a question, and the answer is ink 3 s later.
+**Frame-1 hook (rendered finished on frame 0).** Tape, 3 strips: **YOUR HABIT IS** / ***$3* A DAY.** / **FOR 10 YEARS?** ($3 in red), with a big ☕ in the middle of the envelope. That is a number, a stake and a question, and the answer is ink 3 s later.
 **First spoken line (0.05–2.5 s):** "Your habit is three bucks a day. For ten years?"
 
 **Beat sheet** (times from the spec)
 
 | Time | Picture | Sound / VO (caption) |
 |---|---|---|
-| 0.00 | Postmark No. 03A, the 3-strip tape hook and ☕ are already on the envelope (frame 0 = thumbnail) | "Your habit is $3 a day." (0.05–1.55) |
-| 0.45–1.00 | Pen writes rung 1: red **×7**, *a week ······ $21* | scratch · "For 10 years?" (1.55–2.50) |
-| 1.17–1.93 (21%) | **Partial payoff:** rung 2, **×52**, *a year ······ ≈$1,100* | scratch |
-| 1.30–2.53 | ASSUME sticky: *same $3, every day, 10 years* | paper |
-| 2.14–3.04 (34%) | Rung 3, red and larger: **×10**, *a decade ······ ≈$11,000* (answers the hook) | scratch · "About $11,000." (2.65–3.70) |
-| 3.20–3.55 | Red double underline under ≈$11,000 | scribble |
+| 0.00 | Frame 0 = thumbnail: postmark No. 03A in the flap, the 3-strip tape hook ($3 in red), a big ☕ in the middle | "Your habit is $3 a day." (0.05–1.55) |
+| 0.45–0.97 | ☕ fades as the pen writes rung 1: red **×7**, *a week ······ $21* | scratch · "For 10 years?" (1.55–2.50) |
+| 1.17–1.94 (22%) | **Partial payoff:** rung 2, **×52**, *a year ······ ≈$1,100* | scratch |
+| 1.30–2.37 | ASSUME sticky: *every day, for 10 years* | paper |
+| 2.14–3.04 (34%) | Rung 3, red and larger (106 px): **×10**, *a decade ······ ≈$11,000* (answers the hook) | scratch · "About $11,000." (2.65–3.70) |
+| 2.55 | Small ☕ pops, lower right | pop |
+| 3.15–3.50 | Red double underline under ≈$11,000 (text anchor) | scribble |
 | 4.15–4.65 (46%) | **Pattern break:** the envelope flips (cut at 4.40) | whoosh · "Flip side?" (3.85–4.50) |
-| 4.45–6.62 | Back: tape **FLIP SIDE**; red pen: *A year of it costs less / than one iPhone 18 Pro.* | "A year of it costs less" (4.50–6.05) · "than one iPhone 18 Pro." (6.05–7.55) |
+| 4.45–6.52 | Back: tape **FLIP SIDE**; red pen, 96 px: *A year of it costs less / than one iPhone 18 Pro.* | "A year of it costs less" (4.50–6.05) · "than one iPhone 18 Pro." (6.05–7.45) |
 | 6.10 | 📱 pops, bottom-left | pop |
-| 6.80–7.33 | Ink: *(exactly $1,095)* | scratch |
-| 7.55 (thump 7.75, 86%) | **Verdict:** stamp **RETURN TO SENDER** (the lecture, sent back) | stamp thump · "Return to sender." (7.60–8.60) |
-| 8.75–9.00 | Envelope flips; cut at the squash → frame 0 | whoosh → loop |
+| 6.80–7.51 | Ink, 76 px: *(a year: exactly $1,095)*; red underline under $1,095 at 7.52 | scratch |
+| 7.50 (thump 7.70, 86%) | **Verdict:** stamp **RETURN TO SENDER** (the lecture, sent back) | stamp thump · "Return to sender." (7.50–8.50) |
+| 8.40–9.00 | The envelope flips back over (cut at 8.65), then crossfades into frame 0 | whoosh → loop |
 
 **Voice-over (29 words, about 3.4 words/s, dry, amused):**
-> Your habit is three bucks a day. For ten years? About eleven grand. Flip side? A year of it costs less than one iPhone 18 Pro. Return to sender.
+> Your habit is three bucks a day. For ten years? About eleven grand. Flip side? A year of it costs less than one iPhone eighteen Pro. Return to sender.
 
 **The envelope math (3 lines, the ladder):**
 1. `×7   a week ······ $21`  (exact: $3 × 7 = $21)
 2. `×52  a year ······ ≈$1,100`  (exact: $21 × 52 = $1,092; a calendar year is $3 × 365 = **$1,095**, which the back of the envelope shows)
 3. `×10  a decade ···· ≈$11,000`  (exact: **$10,950**; $10,957.50 counting leap days)
 
-**ASSUME sticky:** *same $3, every day, 10 years.*
+**ASSUME sticky:** *every day, for 10 years.* (The $3 is on the tape right above it.)
 **Sources:**
-- **iPhone 18 Pro starting price $1,199** (announced 2026-09-09; $100 more than the iPhone 17 Pro). CNBC live updates, 2026-09-09: https://www.cnbc.com/2026/09/09/apple-event-today-live-updates.html ; MacRumors, 2026-09-09: https://www.macrumors.com/2026/09/09/iphone-18-pro-price-hike-to-be-lower-than-expected/. Writer-verified with WebSearch on 2026-10-07 by the 05 team (`teasers/05-envelope-split.md`). **This QA pass could not re-open it** (see the Verification log), and 05's own QA marked it unverified. So the $1,199 is used **only in the pinned comment and description**, never in the rendered video. The on-screen claim holds at any starting price of $1,096 or more, so it survives even a flat price versus the iPhone 17 Pro's 2025 launch price ($1,099, from QA's reference knowledge, not re-searched). Re-check apple.com before posting the pin.
+- **iPhone 18 Pro starting price $1,199** (256GB; announced 2026-09-09, $100 more than the iPhone 17 Pro's $1,099). Apple's own store page: https://www.apple.com/shop/buy-iphone/iphone-18-pro ; MacRumors, 2026-09-09: https://www.macrumors.com/2026/09/09/iphone-18-pro-pricing/. **Re-verified live with WebSearch on 2026-10-07** (polish pass); the earlier rumour-headline MacRumors link is replaced. The rendered video still doesn't print the price: the claim "a year of it costs less than one iPhone 18 Pro" holds at any starting price of $1,096 or more, and the exact $1,095 on the back is pure math. $1,199 appears in the pin and description.
 - The $3 is the viewer's own number (the tape says "YOUR habit"). It is not a price we quote, so no source is needed. The comparison is made against the **Pro** on purpose: a base model may cost less than $1,095, so "one new iPhone" alone would not be safe.
 
 **Ending**
@@ -146,7 +147,7 @@ A lexicon stamp gives the verdict, and a second flip at the 9.0 s mark cuts stra
 **Description**
 > Your habit is $3 a day. For 10 years? About $11,000. Flip side? A whole year of it ($1,095) costs less than one iPhone 18 Pro. For the friend who keeps getting lectured about their energy drink.
 > Educational math, not financial advice.
-> Source (checked Oct 7, 2026): iPhone 18 Pro starts at $1,199, Apple event Sept 9, 2026 (CNBC; MacRumors). The $3 is your number. Exact figures pinned.
+> Source (checked Oct 7, 2026): iPhone 18 Pro starts at $1,199 (apple.com; announced Sept 9, 2026). The $3 is your number. Exact figures pinned.
 > #EnvelopeMath #DayToDecade #moneymath #budgeting
 
 **Platform notes**
@@ -161,28 +162,29 @@ A lexicon stamp gives the verdict, and a second flip at the 9.0 s mark cuts stra
 #### 03B: "A $1/hr raise is only $8 a day?" · *Day to Decade No. 03B*
 
 - **Topic:** pay and raises (income). **Lane:** Flash, **9.0 s** loop.
-- **Spec:** `engine/specs/03-read-it-ladder-b.json` · **Sheet:** `engine/out/sheets/03-read-it-ladder-b.png`
+- **Spec:** `engine/specs/03-read-it-ladder-b.json` · **Sheet:** `engine/out/sheets/03-read-it-ladder-b.png` · **MP4:** `engine/out/03-read-it-ladder-b.mp4`
 
-**Frame-1 hook (rendered finished on frame 0).** Tape: **A *$1/HR* RAISE IS** / **ONLY $8 A DAY?** ($1/HR in red), with 💵 top-right. The question mark turns the dismissive "only" into a dare.
+**Frame-1 hook (rendered finished on frame 0).** Tape: **A *$1/HR* RAISE IS** / **ONLY $8 A DAY?** ($1/HR in red), with a big 💵 in the middle of the envelope. The question mark turns the dismissive "only" into a dare.
 **First spoken line (0.05–2.1 s):** "A one-dollar raise? Only eight bucks a day?"
 
 **Beat sheet**
 
 | Time | Picture | Sound / VO (caption) |
 |---|---|---|
-| 0.00 | Postmark No. 03B, tape hook and 💵 already on the envelope (frame 0 = thumbnail) | "A $1 raise?" (0.05–0.90) · "Only $8 a day?" (0.90–2.10) |
-| 0.40–0.92 | Rung 1: red **×5**, *a week ······ $40* | scratch |
-| 1.12–1.83 (20%) | **Partial payoff:** rung 2, **×52**, *a year ······ $2,080* | scratch |
-| 1.25–2.32 | ASSUME sticky: *8 hrs × 5 days, pre-tax* | paper |
-| 2.04–2.90 (32%) | Rung 3, red and larger: **×10**, *a decade ······ $20,800* | scratch · "$20,800." (2.50–3.75) |
-| 3.10–3.45 | Red double underline under $20,800 | scribble |
-| 3.80–4.10 (42%) | **Twist 1:** red pen strikes **ONLY** on the tape | scratch · "Only." (3.80–4.40) |
+| 0.00 | Frame 0 = thumbnail: postmark No. 03B in the flap, 2-strip tape hook ($1/HR in red), a big 💵 in the middle | "A $1 raise?" (0.05–0.90) · "Only $8 a day?" (0.90–2.10) |
+| 0.40–0.92 | 💵 fades as the pen writes rung 1: red **×5**, *a week ······ $40* | scratch |
+| 1.12–1.84 (20%) | **Partial payoff:** rung 2, **×52**, *a year ······ $2,080* | scratch |
+| 1.25–2.28 | ASSUME sticky: *8 hrs × 5 days / pre-tax* | paper |
+| 2.04–2.90 (32%) | Rung 3, red and larger (110 px): **×10**, *a decade ······ $20,800* | scratch · "$20,800." (2.50–3.75) |
+| 2.45 | Small 💵 pops, lower right | pop |
+| 3.10–3.45 | Red double underline under $20,800 (text anchor) | scribble |
+| 3.80–4.10 (42%) | **Twist 1:** red pen strikes **ONLY** on the tape (text anchor on the hook) | scratch · "Only." (3.80–4.40) |
 | 4.60–5.10 (51%) | Envelope flips (cut at 4.85) | whoosh · "Flip side?" (4.40–5.05) |
-| 4.90–6.38 | Back: tape **FLIP SIDE**; red pen: *Your boss did / this math too.* | "Your boss did this math too." (5.05–6.60) |
+| 4.90–6.27 | Back: tape **FLIP SIDE**; red pen, 108 px: *Your boss did / this math too.* | "Your boss did this math too." (5.05–6.60) |
 | 6.30 | 👔 pops, bottom-right | pop |
-| 6.70–7.29 | Ink: *Now you have.* | "Now you have." (6.70–7.70) |
-| 7.65 (thump 7.85, 87%) | **Verdict:** stamp **OPENED BY MISTAKE** (the "only" was wrong, and you've now read the boss's math) | stamp thump |
-| 8.75–9.00 | Flip → frame 0 | whoosh → loop |
+| 6.70–7.29 | Ink, 92 px: *Now you have.* | "Now you have." (6.70–7.70) |
+| 7.50 (thump 7.70, 86%) | **Verdict:** stamp **OPENED BY MISTAKE** (the "only" was wrong, and you've now read the boss's math) | stamp thump |
+| 8.40–9.00 | The envelope flips back over (cut at 8.65), then crossfades into frame 0 | whoosh → loop |
 
 **Voice-over (24 words, about 3.1 words/s):**
 > A one-dollar raise? Only eight bucks a day? Twenty thousand eight hundred. Only. Flip side? Your boss did this math too. Now you have.
@@ -194,7 +196,7 @@ A lexicon stamp gives the verdict, and a second flip at the 9.0 s mark cuts stra
 
 **ASSUME sticky:** *8 hrs × 5 days, pre-tax.* (52 weeks a year is the ×52 in the gutter.)
 **Sources:**
-- **Median usual weekly earnings, full-time wage and salary workers, Q2 2026: $1,251** (BLS *Usual Weekly Earnings* release, 2026-07-21): https://www.bls.gov/news.release/archives/wkyeng_07212026.htm. Writer-verified with WebSearch on 2026-10-07 by the 08, 02 and 05 teams; this QA pass could not re-open it (see the Verification log). Used in the pinned comment and description only: $1,251 ÷ 40 = $31.275 an hour, so $1 is a **3.2%** raise.
+- **Median usual weekly earnings, full-time wage and salary workers, Q2 2026: $1,251** (BLS *Usual Weekly Earnings* release, 2026-07-21): https://www.bls.gov/news.release/archives/wkyeng_07212026.htm (current release page: https://www.bls.gov/news.release/wkyeng.htm). **Re-verified live with WebSearch on 2026-10-07** (polish pass): still the latest; the Q3 2026 release is due Oct 21 2026 (https://www.bls.gov/schedule/news_release/wkyeng.htm). Used in the pinned comment and description only: $1,251 ÷ 40 = $31.275 an hour, so $1 is a **3.2%** raise.
 - The $1 raise is illustrative (it is the viewer's raise), and 2,080 hours is the standard full-time convention (40 × 52).
 - "Your boss did this math too" is a wry line, not a factual claim about any employer.
 
@@ -219,72 +221,79 @@ A lexicon stamp gives the verdict, and a second flip at the 9.0 s mark cuts stra
 
 ---
 
-#### 03C: "$2 a day on Powerball, for 10 years?" · *Day to Decade No. 03C*
+#### 03C: "The average new-car payment is $787/mo. For 10 years?" · *Day to Decade No. 03C*
 
-- **Topic:** lottery odds (gambling and probability). **Lane:** Flash, **9.0 s** loop.
-- **Spec:** `engine/specs/03-read-it-ladder-c.json` · **Sheet:** `engine/out/sheets/03-read-it-ladder-c.png`
+> **Replaced 2026-10-07 (polish pass).** The old 03C ("$2 a day on Powerball, for 10 years?") was the slate's third Powerball teaser (09C and the old 10C also cover it), so it was retired. The new 03C keeps the Day to Decade shape on a different everyday number: the average new-car payment. It isn't a lottery, coffee or phone topic (03A and 05B cover habits and phones). Its Powerball facts, pin and help line are retired with it.
 
-**Frame-1 hook (rendered finished on frame 0).** Tape, 3 strips: ***$2* A DAY ON** / **POWERBALL,** / **FOR 10 YEARS?** ($2 in red), with 🎟️ top-right.
-**First spoken line (0.05–2.1 s):** "Two bucks a day on Powerball, for ten years?"
+- **Topic:** car payments (the biggest recurring bill most people never ladder). **Lane:** Flash, **9.6 s** loop (`loop: true`).
+- **Spec:** `engine/specs/03-read-it-ladder-c.json` · **Sheet:** `engine/out/sheets/03-read-it-ladder-c.png` · **MP4:** `engine/out/03-read-it-ladder-c.mp4`
 
-**Beat sheet**
+**Frame-1 hook (rendered finished on frame 0).** Tape, 3 strips: **AVERAGE NEW-CAR** / **PAYMENT: *$787*/MO.** / **FOR 10 YEARS?** ($787 in red), with a big 🚗 in the content zone and the No. 03C postmark in the flap. That is a sourced number, a stake and a question; the ink answers it at 4.15 s.
+**First spoken line (0.05–3.0 s):** "The average new-car payment is seven eighty-seven a month."
+
+**Beat sheet** (times from the spec)
 
 | Time | Picture | Sound / VO (caption) |
 |---|---|---|
-| 0.00 | Postmark No. 03C, tape hook and 🎟️ already on the envelope (frame 0 = thumbnail) | "$2 a day on Powerball," (0.05–1.30) · "for 10 years?" (1.30–2.10) |
-| 0.45–1.15 | Rung 1: red **×365**, *a year ······ $730* | scratch |
-| 1.30–2.71 | ASSUME sticky: *1 ticket a day; each is 1 in 292,201,338* | paper |
-| 1.45–2.30 (26%) | **Partial payoff:** rung 2, **×10**, *a decade ······ $7,300* | scratch · "$7,300." (2.10–3.00) |
-| 2.60–3.55 | Rung 3, red and larger: *jackpot ······ ≈1 in 80,000* | scratch · "Jackpot odds?" (3.00–3.60) · "1 in 80,000." (3.60–4.60) |
-| 3.70–4.05 | Red double underline under the odds | scribble |
-| 4.75–5.25 (53%) | Envelope flips (cut at 5.00) | whoosh · "Flip side?" (4.60–5.25) |
-| 5.05–6.41 | Back: tape **FLIP SIDE**; ink: *Odds you spend / the $7,300?* | "Odds you spend it?" (5.40–6.60) |
-| 6.30 | 💸 pops, bottom-left | pop |
-| 6.95–7.53 (77–84%) | **Hero line**, big red pen: ***1 in 1.*** | "1 in 1." (7.00–8.10) |
-| 7.75 (thump 7.95, 88%) | Stamp **POSTAGE DUE** (the cost you didn't see coming) | stamp thump |
-| 8.75–9.00 | Flip → frame 0 | whoosh → loop |
+| 0.00 | Frame 0 = thumbnail: postmark No. 03C in the flap, the 3-strip tape hook ($787 in red), a big 🚗 in the middle of the envelope | "Average new-car payment:" (0.05–1.50) |
+| 0.45–1.20 (13%) | 🚗 fades as the pen writes rung 1. **Partial payoff:** red **×12**, *a year ······ $9,444* | scratch |
+| 1.30–2.40 | ASSUME sticky: *$787 every month, 10 yrs* | paper · "$787 a month." (1.50–3.00) |
+| 1.45–2.02 | Pencil source line, right: *Edmunds, Q3 2026* | |
+| 2.60 | Small 🚗 pops, lower right | pop · "For 10 years?" (3.00–3.80) |
+| 3.25–4.15 (43%) | Rung 2, red and larger (120 px): **×10**, *a decade ······ $94,440*. The value lands 3.80–4.15 and answers the hook | scratch · "$94,440." (3.80–4.70) |
+| 4.20–4.55 | Red double underline under $94,440 (text anchor) | scribble |
+| 4.75–5.25 (49%) | **Pattern break:** the envelope flips (cut at 5.00) | whoosh · "Flip side?" (4.75–5.40) |
+| 5.05 | Back: tape **FLIP SIDE** | tape |
+| 5.20–6.03 | Ink (80 px, 5.20–5.76): *$94,440 ÷ 20,800 hrs*; pencil under it (64 px, 5.45–6.03, no pen): *(10 yrs of 40-hr weeks)* | scratch |
+| 6.05–6.47 | **Hero line**, red pen, 190 px: ***$4.54*** | scratch · "That's $4.54" (5.50–6.50) |
+| 6.78–7.51 | Ink (84 px): *of every hour you work* | "of every hour you work." (6.50–7.80) |
+| 7.25 | 🚗 pops, bottom-left | pop |
+| 7.90 (thump 8.10, 84%) | **Verdict:** stamp **POSTAGE DUE** (the per-hour cost nobody quotes you) | stamp thump · "Postage due." (8.05–8.95) |
+| 9.00–9.60 | The envelope flips back over (cut at 9.25), then crossfades into frame 0 | whoosh → loop |
 
-**Voice-over (26 words, about 3.2 words/s):**
-> Two bucks a day on Powerball, for ten years? Seventy-three hundred. Jackpot odds? One in eighty thousand. Flip side? Odds you spend it? One in one.
+**Voice-over (26 words, about 2.9 words/s, dry):**
+> The average new-car payment is seven eighty-seven a month. For ten years? Ninety-four grand. Flip side? That's four fifty-four of every hour you work. Postage due.
 
 **The envelope math (3 lines):**
-1. `×365  a year ······ $730`  ($2 × 365)
-2. `×10   a decade ···· $7,300`  (3,650 tickets)
-3. `jackpot ········· ≈1 in 80,000`  (292,201,338 ÷ 3,650 = **80,055.2**; 80,055.7 if every ticket is a separate draw)
+1. `×12  a year ······ $9,444`  ($787 × 12, exact)
+2. `×10  a decade ···· $94,440`  (120 payments, exact. The VO's "ninety-four grand" is within 0.5%.)
+3. Back: `$94,440 ÷ 20,800 hrs = $4.54`  (20,800 = 40 hrs × 52 weeks × 10 years, which is 03B's decade of hours; exact $4.5404, so $4.54 is within 0.01%)
 
-**ASSUME sticky:** *1 ticket a day; each is 1 in 292,201,338.* This puts the per-ticket odds on screen, so rung 3 can be checked: 292M ÷ 3,650 ≈ 80,000.
-**Sources:**
-- **Powerball: $2 per play; jackpot odds 1 in 292,201,338; any prize 1 in 24.87.** Official prize chart: https://www.powerball.com/powerball-prize-chart (also https://www.lotteryusa.com/powerball/prizes-odds). Writer-verified with WebSearch on 2026-10-07 by the 09 team (`teasers/09-itemized-tally.md`); this QA pass could not re-open it. Both odds are re-derived in our math check from the 5-of-69 + 1-of-26 matrix: C(69,5) × 26 = 292,201,338, and any prize = 1 in 24.867.
-- **Help line 1-800-GAMBLER** (National Council on Problem Gambling): https://www.ncpgambling.org/wp-content/uploads/2023/12/1-800-GAMBLER-Fact-Sheet.pdf (recorded in `teasers/09-itemized-tally.md`).
-- No jackpot size is used, so the video doesn't go stale when the jackpot moves.
+**ASSUME sticky:** *$787 every month, 10 yrs.* The back carries the second assumption in pencil: *(10 yrs of 40-hr weeks)*.
+**Sources** (all checked with WebSearch on 2026-10-07; see the Final fact check):
+- **Average monthly payment on financed new-vehicle purchases, Q3 2026: $787** (record; $777 in Q2 2026, $756 in Q3 2025). Edmunds press release, 2026-10-01: https://www.globenewswire.com/news-release/2026/10/01/3373320/0/en/new-car-financing-records-pile-up-in-q3-as-buyers-borrow-more-and-stretch-loans-longer-according-to-edmunds.html ; CNBC, 2026-10-06: https://www.cnbc.com/2026/10/06/car-loans-are-getting-longer-as-monthly-payments-hit-record-highs.html
+- Same release, used in the pin and reply only: **21.2%** of financed new-car purchases had payments of **$1,000 or more** in Q3 2026; average APR **7.0%**; average amount financed **$44,664**.
+- Corroboration on a different basis (all new-vehicle loans, Q2 2026): Experian, **$765**: https://www.experianplc.com/newsroom/press-releases/2026/hybrids-continue-to-gain-ground-amid-elevated-gas-prices--accord. We quote Edmunds because it is the newer quarter and the one the news cycle is using.
+- **BLS median full-time weekly earnings, Q2 2026: $1,251** (pin only), as in 03B.
+- The 10-year run and the 40-hour week are labelled assumptions, on screen.
 
 **Ending**
-- **Loop / re-hook:** "One in one." → POSTAGE DUE → flip → "Two bucks a day on Powerball, for ten years?"
-- **Comment bait (a real question):** "Guess: how many years of daily tickets to get your odds to 1 in 1,000?" The answer (≈800 years) goes in a pinned reply after 12 to 24 h, so the guessing happens first.
+- **Loop / re-hook:** "…of every hour you work." → POSTAGE DUE → flip → crossfade into "The average new-car payment is seven eighty-seven a month."
+- **Comment bait (a real question):** "What's your payment? I'll run it per hour." Everyone knows their own number, so it's a one-word comment ("$640"), and replies feed the series (each reply is a video ladder).
 - **Pinned comment:**
-  > Exact: $2 × 365 × 10 = $7,300 for 3,650 tickets ($7,304 to $7,306 with leap days). Each ticket's jackpot odds are 1 in 292,201,338 (C(69,5) × 26, official chart). 3,650 tickets ≈ 1 in 80,055 for the decade (envelope said ≈ 1 in 80,000, within 0.1%). Ticket #3,650 on its own is still 1 in 292,201,338. You'd expect about 147 prizes of any size along the way (any prize: 1 in 24.87). What each ticket is worth on average is in Itemized No. 09C. Fifty years of daily tickets: about 1 in 16,000. Arithmetic, not a recommendation either way. Gambling problem? 1-800-GAMBLER.
-  > *Reply at +12–24 h:* 1 in 1,000 takes 292,201 tickets: about 800 years of one a day (≈ $584,000).
+  > Exact: $787 × 12 = $9,444 a year; × 10 = $94,440 a decade (120 payments). ÷ 20,800 work hours (40 hrs × 52 weeks × 10 years) = $4.5404, shown as $4.54. Per calendar day it's $25.87. At the median full-time wage ($1,251 a week, BLS Q2 2026, about $31.28 an hour) $4.54 is 14.5% of gross pay: roughly the first 8.7 minutes of every hour, before tax. Source: Edmunds Q3 2026 (released Oct 1 2026), average payment on financed new vehicles, up from $756 a year earlier. Assumption: the same $787 every month for 10 years, one loan after the next. Arithmetic, not a recommendation. What's your payment? I'll run it per hour.
+  > *Reply key (40-hr weeks):* $400 → $2.31 an hour · $600 → $3.46 · $1,000 → $5.77 (21.2% of new-car buyers pay $1,000+, Edmunds Q3 2026).
 
 **Description**
-> $2 a day on Powerball, for 10 years? That's $7,300 for 3,650 tickets. Your jackpot odds by then? About 1 in 80,000. The odds you spend the $7,300? 1 in 1. For whoever runs the office pool.
-> Educational math, not financial advice. Not a recommendation to play or not to play.
-> Source (checked Oct 7, 2026): official Powerball prize chart ($2 play; jackpot 1 in 292,201,338): powerball.com/powerball-prize-chart. Exact figures pinned. Gambling problem? Call 1-800-GAMBLER.
-> #EnvelopeMath #DayToDecade #powerball #lottery #probability
+> The average new-car payment is $787 a month. For 10 years? $94,440. Flip side: that's $4.54 of every hour you work. For the friend who just said "it's only $787 a month."
+> Educational math, not financial advice.
+> Source (checked Oct 7, 2026): Edmunds Q3 2026 new-vehicle finance data, released Oct 1, 2026 (average monthly payment on financed new vehicles: $787). Assumptions: the same $787 every month for 10 years; 40-hour weeks, 52 weeks a year. Exact figures pinned.
+> #EnvelopeMath #DayToDecade #carpayment #moneymath
 
 **Platform notes**
-- **YouTube Shorts:** title = tape text + "(Day to Decade No. 03C)". Choose the 4.4 s frame as the thumbnail (≈1 in 80,000, underlined), or frame 0. A gambling topic may get limited ads, which matters little at Shorts RPMs, but keep it framed as arithmetic: no "how to win", no "buy". Post while a big jackpot is in the news (Powerball was at a $485M estimate on 2026-10-07, per `teasers/09-itemized-tally.md`).
-- **Instagram Reels:** cover = the 4.4 s frame. Five hashtags is the cap; this one uses all five. Cross-link Itemized No. 09C in the caption once it's live (series web).
-- **TikTok:** sound on: "One in one." lands just before the stamp thump. Keep the help line in the caption. There's no product promotion, so TikTok's finance branded-content ban doesn't apply.
+- **YouTube Shorts:** title = tape text + "(Day to Decade No. 03C)". Frame 0 (tape + 🚗) is the thumbnail; the 4.6 s frame ($94,440 double-underlined) is the alternative. The Edmunds figure came out on Oct 1 and CNBC ran it on Oct 6, so post while it's in the news. Edmunds publishes each quarter's figures shortly after the quarter closes (Q3 came out Oct 1), so refresh the $787 when the Q4 number is out; until then the on-screen "Edmunds, Q3 2026" line dates it honestly.
+- **Instagram Reels:** cover = the 4.6 s frame. The caption's "for the friend who…" line drives sends without "tag a friend" bait. Run it as a Trial Reel first. 4 hashtags.
+- **TikTok:** sound on: one scratch per rung, the flip whoosh, then the stamp thump after "of every hour you work." Invite "stitch this with your payment" and reply with per-hour video ladders. No lender, dealer or product is named or linked, so TikTok's finance branded-content rules aren't triggered.
 
-**Why this one should travel:** a lottery ticket is the most universal "small daily number". The ladder delivers a jaw-drop rung (ten years of tickets and the odds are still about 1 in 80,000) and then a back side that rhymes with it ("1 in 80,000" / "1 in 1"). That pairing is the kind of line people screenshot and send. It splits the comments the way the research wants: "someone has to win" vs "expected value" vs "it's $2 of hope". The odds are pure arithmetic from the official game matrix, so it's accurate in a category where about 70% of graded finance TikToks scored C or lower (report 01 §3.13).
+**Why this one should travel:** "How much are you paying a month for your car?" is a proven comparison hook in the research: AutoBuddy's street-interview short asks exactly that (2.33M views, but it is a paid ad, so we take the structure only), the bald trader's "Car Loan vs Cash Payment" did 3.2M at 17.7x, and Kel King's car ladder hit 1,131.1x (evidence table above; `research/raw/yt-personal-money-math.md` rows 13 and 16). The number is record-high and in this week's news. The front gives the Kel King-style big total ($94,440), and the flip side turns it back into the viewer's own working hour: the wage-ladder variant (@financebestiechloe, 399K) applied to a bill. It doesn't lecture. There's no "buy used", only a conversion everyone can redo with their own payment, which is what fills the comments ("mine's $1,100", "paid off, sorry", "it's a tool, I need it"). 20,800 hours is the same decade 03B wrote down, so the series rhymes.
 
 ---
 
 ### Math check
 
-Script: `teasers/03-read-it-ladder-mathcheck.py`. It recomputes every number that is written, spoken or pinned in 03A, 03B and 03C from the sourced inputs and labelled assumptions, asserts each displayed rounding, and prints the "within Y%" for each pinned comment. The QA pass added a final block: the 03A claim's price threshold, the compounding convention behind ≈$15,800, and the any-prize odds re-derived from the Powerball matrix. Run: `python3 teasers/03-read-it-ladder-mathcheck.py`
+Script: `teasers/03-read-it-ladder-mathcheck.py`. It recomputes every number that is written, spoken or pinned in 03A, 03B and 03C from the sourced inputs and labelled assumptions, asserts each displayed rounding, and prints the "within Y%" for each pinned comment. Each input carries its source and check date in the script header. The polish pass replaced the Powerball block with the 03C car-payment math (rungs, the $4.54 flip side, the pin's per-day, median-wage and $1,000-payment figures, and the reply key) and added a cross-check: it reads the three specs, confirms that every number drawn on screen or shown in a caption traces to the math, and confirms that each spec's `vo` is its captions' `say` text in order. Run: `python3 teasers/03-read-it-ladder-mathcheck.py`
 
-Output (2026-10-07, after the QA pass):
+Output (2026-10-07, after the polish pass):
 
 ```
 ======================================================================== 
@@ -295,8 +304,10 @@ Output (2026-10-07, after the QA pass):
   rung 3  x10: $1,095 x 10 = $10,950; with leap days $10,957.50
            shown '≈$11,000': within 0.46% of $10,950 and 0.39% of $10,957.50
   flip side: a year $1,095 < iPhone 18 Pro $1,199  (by $104, = 91.3% of the phone)
-  break-even habit: $1199 / 365 = $3.28 a day
-  invest-camp: $91.25/mo at an assumed 7%/yr for 120 months = $15,794  -> '≈$15,800'
+  claim 'a year < one iPhone 18 Pro' holds for any starting price >= $1,096
+  break-even habit: $1199 / 365 = $3.285 a day -> 'up to $3.28'
+  invest-camp: $91.25 at the end of each month, assumed 7%/yr compounded monthly, 120 months = $15,794 -> '≈$15,800'
+               (annual deposits, annual compounding would give $15,129)
 ======================================================================== 
 03B  A $1/hr raise is only $8 a day  (assumption: 8-hr days, 5 a week, 52 weeks, pre-tax)
 ========================================================================
@@ -305,29 +316,31 @@ Output (2026-10-07, after the QA pass):
   hours: 8 x 5 x 52 = 2,080 a year
   weekdays per calendar year: 2026:261, 2027:261, 2028:260, 2029:261, 2030:261, 2031:261, 2032:262, 2033:260, 2034:260, 2035:261, 2036:262
   2026-2035 weekdays x 8 hrs = 20,864 hrs -> $20,864 (envelope said $20,800, within 0.31%)
-  BLS median $1,251/wk / 40 = $31.275/hr -> $1 is a 3.2% raise
+  BLS median $1,251/wk / 40 = $31.275/hr -> $1 is a 3.20% raise
   per calendar day: $2,080 / 365 = $5.70
 ======================================================================== 
-03C  $2 a day on Powerball  (assumption: one $2 ticket every day for 10 years)
+03C  Average new-car payment $787/mo  (assumption: the same $787 every month for 10 years;
+     40-hr weeks, 52 weeks a year)
 ========================================================================
-  jackpot odds per ticket: C(69,5) x 26 = 11,238,513 x 26 = 1 in 292,201,338
-  rungs: $2 x 365 = $730 a year; x10 = $7,300 a decade (3,650 tickets)
-  with 2-3 leap days in a decade: 3,652-3,653 tickets = $7,304-$7,306
-  odds of at least one jackpot in 3,650 tickets: 1 in 80,055.16 (additive) / 1 in 80,055.66 (independent draws)
-  shown '≈1 in 80,000': within 0.07%
-  per-ticket odds unchanged on ticket #3,650: still 1 in 292,201,338
-  flip side: P(spend the $7,300 | you buy every day) = 1  -> '1 in 1'
-  any prize, 1 in 24.87 per ticket -> expected small wins in a decade: 146.8 (pinned: '≈147')
-  a lifetime habit (50 yrs = 18,250 tickets, $36,500): 1 in 16,011
-  comment-bait answer: 1 in 1,000 needs 292,201 tickets = 800.6 years (801.0 yrs if every ticket is a separate draw) -> '≈800 years', ≈$584,403
+  rungs: $787 x 12 = $9,444 a year; x 10 = $94,440 a decade (exact, 120 payments)
+  flip side: $94,440 / 20,800 hrs (10 yrs of 40-hr weeks) = $4.5404 an hour worked
+             shown '$4.54': within 0.008%
+  VO 'ninety-four grand': $94,000, within 0.47% of $94,440
+  per calendar day: $9,444 / 365 = $25.8740 -> '$25.87' (pin)
+  per clock hour, 24/7: $9,444 / 8,760 = $1.078 (pin: '≈$1.08 an hour, even parked')
+  vs BLS median $31.275/hr: 14.52% of gross pay = the first 8.71 min of every hour (pin: '≈8.7 min')
+  a $1,000 payment (21.2% of new-car buyers): $5.7692 of every hour -> '$5.77' (pin)
+  Edmunds context (pin): Q2 2026 $777, Q3 2025 $756 -> +$31 (4.1%) in a year; APR 7.0%, financed $44,664, interest $9,938; 25.5% of loans 84+ months
+    $  400/mo -> $2.31 of every hour worked
+    $  600/mo -> $3.46 of every hour worked
+    $  787/mo -> $4.54 of every hour worked
+    $1,000/mo -> $5.77 of every hour worked
 ======================================================================== 
-QA  checks added by the fact-check pass
+Cross-check: every number on screen or in a caption traces to the math above
 ========================================================================
-  03A claim 'a year < one iPhone 18 Pro' holds for any starting price >= $1,096
-    at $1,099: year $1,095 is $4 less; daily habit that still fits: up to $3.01
-    at $1,199: year $1,095 is $104 less; daily habit that still fits: up to $3.28
-  03A invest-camp: monthly compounding $15,794 (≈$15,800); annual deposits/compounding $15,129
-  03C any-prize odds from the matrix: 1 in 24.867 (chart 24.87); expected prizes in 3,650 tickets: 146.8
+  03A: 20 strings, numbers on screen/captions [3, 7, 10, 18, 21, 52, 1095, 1100, 11000] -> all trace
+  03B: 19 strings, numbers on screen/captions [1, 5, 8, 10, 40, 52, 2080, 20800] -> all trace
+  03C: 22 strings, numbers on screen/captions [3, 4.54, 10, 12, 40, 787, 2026, 9444, 20800, 94440] -> all trace
 
 all assertions passed
 ```
@@ -348,6 +361,8 @@ all assertions passed
 ---
 
 ### Verification log
+
+> **Historical.** This log records the first QA pass. Its 03C rows describe the retired Powerball teaser, and its iPhone and BLS rows ("couldn't re-open") are superseded by the [Final fact check](#final-fact-check), which re-verified them live. Spec coordinates and timings below are the pre-polish ones; the current ones are in the beat sheets above and in the [Polish pass](#polish-pass).
 
 QA pass by the independent fact-checker / editor, 2026-10-07. Everything below was checked against the md, the three specs, the rendered sheets and stills, and `research/`. Files changed: this md, `engine/specs/03-read-it-ladder-{a,b,c}.json`, `teasers/03-read-it-ladder-mathcheck.py` (a QA block was appended), and the sheets and stills in `engine/out/`. `engine/src` was not touched.
 
@@ -429,6 +444,86 @@ Sheets for all three were rendered and viewed four times as fixes landed. Stills
 
 #### Open before publishing
 
-- Re-verify the iPhone 18 Pro $1,199 starting price (03A pin and description only; the video doesn't depend on it).
-- If BLS's Q3 2026 *Usual Weekly Earnings* is out at posting time, refresh $1,251 and the 3.2% in 03B's pin.
-- Record the VO to the caption timings in the specs (24–29 words in about 8 s). The captions are timed for about 3.3 words a second.
+*Updated by the polish pass.*
+- ~~Re-verify the iPhone 18 Pro $1,199 starting price.~~ Done 2026-10-07 (Apple store page; see the Final fact check).
+- BLS's Q3 2026 *Usual Weekly Earnings* is due **Oct 21 2026**. If it's out at posting time, refresh $1,251 and the 3.2% in 03B's pin, and the $31.28 / 14.5% / 8.7 minutes in 03C's pin (re-run the math check).
+- 03C: if Edmunds' Q4 2026 figure is out at posting time, keep the video (it says "Q3 2026" on screen) but add the new figure to the pin.
+- Record the VO to the caption timings in the specs: each caption's `say` is the line to read, and each spec's `vo` is those lines joined (24–29 words in 8.5–9 s).
+
+---
+
+### Final fact check
+
+Polish pass, 2026-10-07. Every real-world input that is on screen or in this md was re-checked live with WebSearch, against the primary source where the search engine reached it. Direct page fetches were blocked by the network egress proxy (edmunds.com, globenewswire.com, autoremarketing.com, briefglance.com and others), so values were read from the search engine's view of the cited pages. No 03A or 03B value changed, so nothing cascaded. The new 03C input is the Edmunds Q3 2026 release. The math check passes, and its cross-check traces every number on screen and in captions to it.
+
+| Input | Value used | Source URL | Checked on | Status |
+|---|---|---|---|---|
+| iPhone 18 Pro starting price (03A pin, description; the on-screen claim only needs ≥ $1,096) | $1,199 (256GB; announced Sept 9 2026; +$100 vs the iPhone 17 Pro) | https://www.apple.com/shop/buy-iphone/iphone-18-pro ; https://www.macrumors.com/2026/09/09/iphone-18-pro-pricing/ (Sept 9 2026) | 2026-10-07 | **Confirmed** on Apple's store page and MacRumors (QA had it unverified). The rumour-slug MacRumors link is replaced. |
+| iPhone 17 Pro launch price (03A md, as the floor the claim survives) | $1,099 | implied by the same MacRumors report ("$100 increase over the equivalent iPhone 17 Pro") | 2026-10-07 | **Confirmed** (indirectly: $1,199 − $100) |
+| BLS median usual weekly earnings, full-time wage and salary workers, Q2 2026 (03B pin and description; 03C pin) | $1,251 (120.9M workers; +4.6% y/y) | https://www.bls.gov/news.release/wkyeng.htm (release of Jul 21 2026; archive https://www.bls.gov/news.release/archives/wkyeng_07212026.htm) | 2026-10-07 | **Confirmed.** Still the latest; Q3 2026 is due Oct 21 2026 (https://www.bls.gov/schedule/news_release/wkyeng.htm). |
+| Edmunds: average monthly payment, financed new-vehicle purchases, Q3 2026 (03C **on screen**: tape, sticky, ladder, captions) | **$787** (Q2 2026 $777; Q3 2025 $756) | https://www.globenewswire.com/news-release/2026/10/01/3373320/0/en/new-car-financing-records-pile-up-in-q3-as-buyers-borrow-more-and-stretch-loans-longer-according-to-edmunds.html (Edmunds release, Oct 1 2026); https://www.cnbc.com/2026/10/06/car-loans-are-getting-longer-as-monthly-payments-hit-record-highs.html (Oct 6 2026) | 2026-10-07 | **Confirmed** in two independent sources. A record high. |
+| Edmunds Q3 2026: share of financed new-car purchases at $1,000+/month (03C reply key) | 21.2% (Q2 20.3%; Q3 2025 19.1%) | same Edmunds release; CNBC Oct 6 2026 | 2026-10-07 | **Confirmed** |
+| Edmunds Q3 2026: average APR; average amount financed (03C sources line) | 7.0%; $44,664 | same Edmunds release; CNBC Oct 6 2026 | 2026-10-07 | **Confirmed** |
+| Edmunds Q2 2026 average payment (03C context) | $777 (APR 7.0%, financed $44,156) | https://gmauthority.com/blog/2026/07/new-car-buyers-stretching-out-loans-at-record-levels-in-q2-2026/ (Jul 2026) | 2026-10-07 | **Confirmed**; matches the Q3 release's prior-quarter figure |
+| Experian average monthly payment, new-vehicle loans, Q2 2026 (03C corroboration only) | $765 | https://www.experianplc.com/newsroom/press-releases/2026/hybrids-continue-to-gain-ground-amid-elevated-gas-prices--accord | 2026-10-07 | **Confirmed.** Different basis and quarter; not used on screen. |
+| YouTube Shorts counts every play and replay as a view; old metric kept as "engaged views" (Why it goes viral #1) | from Mar 31 2025 | https://emarketer.com/content/youtube-shorts-changes-view-count-rules-match-tiktok--instagram ; https://support.sproutsocial.com/hc/en-us/articles/35874991211533-YouTube-Shorts-View-Count-Update-March-2025 | 2026-10-07 | **Confirmed** |
+| Instagram "Views" replaces plays/replays and counts every start or replay of a Reel (Why it goes viral #1) | from Apr 21 2025 | https://support.agorapulse.com/en/articles/10749883-instagram-metrics-deprecation-apr-2025 ; https://www.socialpilot.co/instagram-marketing/instagram-views-metrics-changes | 2026-10-07 | **Confirmed** (secondary sources; Meta's own page wasn't in the results) |
+| Sound-off viewing (Upgrade #4) | 69% watch with the sound off in public (5,616 US adults aged 18–54, April 2019) | https://www.streamingmedia.com/Articles/News/Online-Video-News/80-of-Video-Caption-Users-Arent-Hearing-Impaired-Finds-Verizon-131860.aspx (Verizon Media + Publicis Media) | 2026-10-07 | **Corrected wording:** "69% of US adults" became "69% of US adults aged 18 to 54 … 2019 survey". |
+| Creator stats in the evidence tables and "Why it should travel" (views, outlier scores, follower counts, durations; AutoBuddy 2.33M, the bald trader 3.2M at 17.7x, Lugan3d) | as listed | copied from `research/raw/` and `research/watch/` (dated sweeps) | not re-checked | Research-corpus figures, not on screen; unchanged. |
+| Powerball odds and price, 1-800-GAMBLER (old 03C) | n/a | n/a | n/a | **Retired** with the old 03C; no longer used anywhere in this approach. |
+
+### Polish pass
+
+2026-10-07, finishing producer. `engine/src` was not edited. Files changed: this md, `engine/specs/03-read-it-ladder-{a,b,c}.json`, `teasers/03-read-it-ladder-mathcheck.py`, and the renders in `engine/out/` (MP4s, sheets, stills). `teasers/teasers.json` was left for the slate index to regenerate.
+
+**Slate change: 03C replaced.**
+- The old 03C was "$2 a day on Powerball", the slate's third Powerball teaser. The new 03C is "The average new-car payment is $787/mo. For 10 years?": $787 × 12 = $9,444 a year, × 10 = $94,440 a decade. On the flip side, $94,440 ÷ 20,800 work hours = $4.54 of every hour you work, and POSTAGE DUE lands on it.
+- The full 03C section (hook, beat sheet, VO, math, sticky, sources, loop, comment bait, pin and reply key, description, platform notes, why it travels) is written above. The new spec replaces `03-read-it-ladder-c.json`, and the math check was rewritten for it.
+- Why this topic:
+  - The number is sourced and dated, and it's in this week's news (Edmunds released it Oct 1, CNBC ran it Oct 6).
+  - Everyone knows their own payment, so the comment ask gets a one-word answer.
+  - The flip side turns a bill into the viewer's working hour, and its 20,800 hours rhymes with 03B.
+  - Hook score (same rubric as the QA pass): **8**. It has a number, a stake and a question, and its comparison hook is proven in the research (AutoBuddy, the bald trader).
+
+**Facts**
+- Every input was re-verified live (table above). 03A's iPhone 18 Pro price is now sourced to Apple's store page. 03B's BLS figure is confirmed as still the latest (Q3 is due Oct 21). One md wording fix: the 69% sound-off figure covers adults aged 18–54 in a 2019 survey.
+- The math script header now carries the source and check date for each input. The Powerball block is gone, the 03C car-payment block is new, and a spec cross-check was added. The script and its output are re-embedded above.
+
+**Specs (all three)**
+- **Frame 0** is the thumbnail. The hook, the postmark and a big emoji prop (330–340 px, centred in the content zone) all start at `t: 0` and render finished. The prop fades as the pen starts at 0.40–0.45 s. All negative-t pre-roll (postmark −0.4, prop −0.5) is gone.
+- **Postmark** moved into the flap at (175, 258), r 100. The old corner emoji next to it was dropped.
+- **Legibility:**
+  - Ladders went from size 80–90 to 92–104: labels 74–83 px (were 64–72), gutter multipliers 66–75 px (were 58–65), and red hero rungs 106–120 px.
+  - Back punchlines are 96–108 px. 03C's hero is 190 px. Sub-lines are 76–92 px (03A's "(exactly $1,095)" was 60 px). Stickies are 56–58 px.
+  - No handwriting is under 64 px except the ASSUME stickies (56–58 px). They are notes, not working, and are still above the linter floor.
+- **Layout:** the front fills the content zone. The ladder sits at 660–1060 and the sticky plus a small prop at 1046–1316, under a hook kept at 364–657. Each beat is one screen: the front is the ladder and the back is the flip side, separated by a flip.
+- **Engine features:**
+  - Every red mark uses a text `target` anchor: the decade double underlines, 03A's $1,095 underline and 03B's strike on ONLY (the hand-measured coordinates and the `fixed`/`z` workaround are gone).
+  - 03C's decade rung uses per-row `at` to land on its VO line.
+  - Back-side sub-lines use `pen: "small"` / `"small-low"`, and 03C's pencil lines use `pen: false`, so two pens never show at once.
+  - `loop: true` on all three. The final flip moved to 0.6 s before the end (it was 0.25 s), so the flip's cut lands just as the 0.35 s crossfade into frame 0 begins. The duration-0.2 s frame shows the blank envelope opening into the hook, not a double exposure.
+- **Captions:** they show numerals ("$3", "$20,800", "$94,440"), and `say` carries the spoken form ("three bucks", "twenty thousand eight hundred", "ninety-four grand"). Every caption is ≤ 2 lines and ≤ 4 words/s. Each spec's `vo` equals its joined `say` text, and the math check asserts it.
+- **Lint:** `node src/cli.js check` returns zero warnings on all three. Nothing uses `allowOverlap` or `decor`.
+
+**Specs (per episode)**
+- **03A (9.0 s):**
+  - The sticky now reads "every day, for 10 years". It fits on 2 lines at 58 px; the $3 is on the tape above it.
+  - The back sub-line is "(a year: exactly $1,095)" at 76 px, with a red underline on $1,095.
+  - RETURN TO SENDER lands at 7.50 s (thump 7.70) and reads for about 0.6 s, plus the 0.25 s squash, before the closing flip.
+- **03B (9.0 s):**
+  - Ladder size 90 → 96 and punchline 96 → 108 px. "Now you have." went from 88 to 92 px.
+  - The strike on ONLY targets the tape text.
+  - OPENED BY MISTAKE moved to 7.50 s.
+- **03C (9.6 s):** new. Front: 3-strip tape, a 2-rung ladder (×12, ×10) at size 104, the ASSUME sticky and an "Edmunds, Q3 2026" pencil source line. Back: the division line, its pencil explanation, the 190 px $4.54, "of every hour you work" and POSTAGE DUE.
+
+**Render QA** (`node src/cli.js render`, frames pulled with ffmpeg at 540 px and viewed)
+- **Frames checked:**
+  - 03A at 0.0 / 1.95 (partial payoff) / 3.6 (reveal) / 6.9 / 8.0 (verdict) / 8.8 s.
+  - 03B at 0.0 / 1.9 / 4.2 (reveal plus the struck ONLY) / 6.5 / 8.0 (verdict) / 8.8 s.
+  - 03C at 0.0 / 1.3 (partial payoff) / 4.6 (reveal) / 6.1 / 6.9 / 8.4 (verdict) / 9.4 s.
+- **Fixed after the first render:**
+  - The closing flip squashed the back while the loop crossfade drew frame 0 on top of it, which left a double exposure in the last 0.35 s. The flip now cuts before the crossfade starts.
+  - 03C's back drew two pens at once: the pencil line and the hero, then the hero's fading pen and the sub-line's. The pencil line is now a pen-less separate `write`, the division writes faster (cps 36), and the hero (6.05 s) and sub-line (6.78 s) wait for the previous pen to clear. 03A's back got the same fix: its sub-line starts after the punchline's pen lifts.
+  - 03A's $1,095 underline started before the number finished writing. The sub-line now starts at 6.80 s and the underline at 7.52 s (it was 7.2).
+  - 03C's source line was 58 px; it is now 64 px and shortened to "Edmunds, Q3 2026".
+- **Audio** (`volumedetect`): 03A mean −22.6 dB, max −1.9 dB; 03B mean −22.9 dB, max −1.8 dB; 03C mean −23.0 dB, max −2.2 dB. All are within the −30 to −18 dB target, with peaks below −1 dB.

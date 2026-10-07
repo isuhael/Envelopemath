@@ -14,8 +14,8 @@
     {"t": 12.6, "end": 16.2, "text": "Even steps, so the average is about $50. Call it five grand.", "say": "Even steps, so the average is about fifty. Call it five grand."},
     {"t": 16.6, "end": 19.7, "text": "Under $100, or over ten grand? You're already out.", "say": "Under a hundred, or over ten grand? You're already out."},
     {"t": 19.8, "end": 22.8, "text": "The exact total's in here. Lock in your guess."},
-    {"t": 23.2, "end": 25.5, "text": "5,050. Exactly halfway.", "say": "Five thousand fifty. Exactly halfway."},
-    {"t": 25.6, "end": 27.6, "text": "Now guess the 52-week challenge.", "say": "Now guess the fifty-two week challenge."}
+    {"t": 23.5, "end": 25.6, "text": "$5,050. Exactly halfway.", "say": "Five thousand fifty. Exactly halfway."},
+    {"t": 25.7, "end": 27.6, "text": "Now guess the 52-week challenge.", "say": "Now guess the fifty-two week challenge."}
   ],
   "ops": [
     {"type": "postmark", "t": 0, "x": 175, "y": 258, "r": 100, "center": ["No.", "07B"], "persist": true},
@@ -24,8 +24,8 @@
     {"type": "envelope", "t": 2.8, "x": 540, "y": 860, "w": 700, "note": "all 100 = ?"},
     {"type": "timer", "t": 3.1, "seconds": 3, "x": 540, "y": 1150},
     {"type": "flip", "t": 6.3},
-    {"type": "sticky", "t": 6.6, "x": 500, "y": 430, "w": 480, "size": 64, "cps": 40, "title": "RULES:", "text": "#1 holds $1, #2 holds $2 … #100 holds $100."},
-    {"type": "postage", "t": 6.65, "x": 865, "y": 440, "w": 170, "h": 205, "value": "100", "label": "ENVELOPES", "labelSize": 22, "art": "✉️", "rot": 7},
+    {"type": "sticky", "t": 6.6, "x": 540, "y": 430, "w": 480, "size": 64, "cps": 40, "title": "RULES:", "text": "#1 holds $1,\n#2 holds $2 …\n#100 holds $100."},
+    {"type": "postage", "t": 6.65, "x": 890, "y": 440, "w": 170, "h": 205, "value": "100", "label": "ENVELOPES", "labelSize": 22, "art": "✉️", "rot": 7},
     {"type": "write", "t": 6.8, "text": "LOW", "x": 70, "y": 790, "size": 46, "font": "type", "color": "pencil"},
     {"type": "write", "id": "lo", "t": 7.0, "text": "100 × $1 = $100", "x": 910, "y": 790, "size": 90, "align": "right", "cps": 18, "pen": "low"},
     {"type": "annotate", "t": 8.0, "kind": "underline", "target": {"op": "lo", "match": "$100"}, "color": "ink", "width": 6},

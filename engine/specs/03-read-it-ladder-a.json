@@ -34,9 +34,9 @@
     { "type": "lines", "t": 4.65, "x": 540, "y": 662, "size": 96, "align": "center", "cps": 26, "gap": 0.1, "color": "red",
       "lines": ["A year of it costs less", "than one iPhone 18 Pro."] },
     { "type": "emoji", "t": 6.1, "char": "📱", "x": 245, "y": 1150, "size": 190, "bob": true, "rot": -10 },
-    { "type": "write", "t": 6.65, "id": "exact", "text": "(a year: exactly $1,095)", "x": 540, "y": 930, "size": 76, "align": "center", "cps": 34, "pen": "small" },
-    { "type": "annotate", "t": 7.38, "kind": "underline", "target": { "op": "exact", "match": "$1,095" }, "dur": 0.25 },
-    { "type": "stamp", "t": 7.45, "text": "RETURN\nTO SENDER", "x": 655, "y": 1150, "size": 70, "rot": -7 },
+    { "type": "write", "t": 6.8, "id": "exact", "text": "(a year: exactly $1,095)", "x": 540, "y": 930, "size": 76, "align": "center", "cps": 34, "pen": "small" },
+    { "type": "annotate", "t": 7.52, "kind": "underline", "target": { "op": "exact", "match": "$1,095" }, "dur": 0.25 },
+    { "type": "stamp", "t": 7.5, "text": "RETURN\nTO SENDER", "x": 655, "y": 1150, "size": 70, "rot": -7 },
     { "type": "flip", "t": 8.4 }
   ]
 }

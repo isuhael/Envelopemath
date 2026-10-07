@@ -32,10 +32,10 @@
 
     { "type": "flip", "t": 4.75 },
     { "type": "hook", "t": 5.05, "y": 430, "size": 92, "text": ["FLIP SIDE"] },
-    { "type": "write", "t": 5.2, "id": "division", "text": "$94,440 ÷ 20,800 hrs", "x": 540, "y": 640, "size": 80, "align": "center", "cps": 30, "pen": "small" },
+    { "type": "write", "t": 5.2, "id": "division", "text": "$94,440 ÷ 20,800 hrs", "x": 540, "y": 640, "size": 80, "align": "center", "cps": 36, "pen": "small" },
     { "type": "write", "t": 5.45, "text": "(10 yrs of 40-hr weeks)", "x": 540, "y": 738, "size": 64, "align": "center", "color": "pencil", "cps": 40, "pen": false },
-    { "type": "write", "t": 5.95, "id": "hero", "text": "$4.54", "x": 540, "y": 925, "size": 190, "align": "center", "color": "red", "cps": 12 },
-    { "type": "write", "t": 6.5, "text": "of every hour you work", "x": 540, "y": 1058, "size": 84, "align": "center", "cps": 30, "pen": "small-low" },
+    { "type": "write", "t": 6.05, "id": "hero", "text": "$4.54", "x": 540, "y": 925, "size": 190, "align": "center", "color": "red", "cps": 12 },
+    { "type": "write", "t": 6.78, "text": "of every hour you work", "x": 540, "y": 1058, "size": 84, "align": "center", "cps": 30, "pen": "small-low" },
     { "type": "emoji", "t": 7.25, "char": "🚗", "x": 230, "y": 1205, "size": 170, "bob": true, "rot": -6 },
     { "type": "stamp", "t": 7.9, "text": "POSTAGE\nDUE", "x": 650, "y": 1205, "size": 66, "rot": -7 },
     { "type": "flip", "t": 9.0 }
