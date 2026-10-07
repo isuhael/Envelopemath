@@ -96,3 +96,18 @@ Each device maps to an engine op (`engine/README.md`).
 - y 1320–1480: captions.
 - Keep anything readable out of the right-hand button rail (x > 940 below y 820).
 - `node src/cli.js check` enforces this; `sheet` gives a contact sheet for eyeballing.
+
+## 8. The ten formats (from `research/02-top-10-approaches.md`)
+
+| # | Format | Lane | Lead devices |
+|---|---|---|---|
+| 1 | **Cost in Envelopes** (unit swap) | Flash / Envelope | `postage` (the unit), `counter`, `grid` or `stack`, `stamp` |
+| 2 | **The Rate Clock** | Flash / Envelope | `lines` (rate ÷), `counter`, `ladder` of human times, `stamp` |
+| 3 | **The Read-It Ladder** | Flash (6–9 s loop) | `ladder`, hook on tape, no outro, hard loop |
+| 4 | **Two Envelopes** (pick-one → crossover) | Envelope | `pick`, `timer`, `curve` with `compare`, `stamp FIRST CLASS` |
+| 5 | **The Envelope Split** | Envelope | `stuff` (labelled cash envelopes), `lines`, `sticky` |
+| 6 | **Same Pile, Different Place** | Envelope | `ladder` / `bars` with one fixed input, extreme last, `stamp` |
+| 7 | **The Sealed-Envelope Estimate** | Envelope / Long | `envelope` (sealed answer), `timer`, `lines`, `sticky`, `stamp ROUGHLY RIGHT` |
+| 8 | **The Trap Card** | Flash (5–8 s) | `hook` + one `write` puzzle, red-pen trap, answer in pinned comment / next post |
+| 9 | **The Itemized Tally** | Long envelope | `receipt`, running `counter`, `annotate`, `stamp POSTAGE DUE` |
+| 10 | **The Envelope Audit** | Envelope | `write` the claim, red-pen `strike`, `lines`, `stamp RETURN TO SENDER` / `ROUGHLY RIGHT` |
