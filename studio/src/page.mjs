@@ -54,6 +54,8 @@ export async function openSpec(browser, spec) {
   await page.waitForFunction(() => window.STUDIO, null, { timeout: 15000 }).catch(() => {
     throw new Error(`look "${spec.look}" never defined window.STUDIO${errors.length ? ':\n' + errors.join('\n') : ''}`)
   })
+  // load every declared face before mount, so text measured inside mount (fitText, column widths) uses real metrics
+  await page.evaluate(() => Promise.all([...document.fonts].map(f => f.load().catch(() => null))))
   await page.evaluate(() => document.fonts.ready)
   let info
   try {

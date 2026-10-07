@@ -34,18 +34,23 @@ function audit(SAFE) {
   const declared = new Set([...document.fonts].map(f => f.family.replace(/["']/g, '')))
 
   // what is painted behind point (x, y), skipping the text's own element
+  // cumulative opacity of an element and its ancestors (SVG groups fade their children)
+  const opacityOf = e => { let o = 1; for (let a = e; a && a !== document.documentElement; a = a.parentElement) o *= parseFloat(getComputedStyle(a).opacity); return o }
   function bgAt(x, y, self) {
+    // an element that paints its own background behind its own text (a highlighter <em>, a pill)
+    const own = parse(getComputedStyle(self).backgroundColor)
+    if (own && own.a > 0.5 && !(self instanceof SVGElement)) return own
     for (const e of document.elementsFromPoint(x, y)) {
       if (e === self || self.contains(e) || e.id === 'safe-overlay' || e.closest('#safe-overlay')) continue
       const cs = getComputedStyle(e)
       if (e instanceof SVGElement && !(e instanceof SVGSVGElement)) {
         if (e.tagName === 'text' || e.tagName === 'tspan') continue
         const f = parse(cs.fill)
-        if (f && f.a > 0.5 && parseFloat(cs.fillOpacity) > 0.5 && parseFloat(cs.opacity) > 0.5) return f
+        if (f && f.a > 0.5 && parseFloat(cs.fillOpacity) > 0.5 && opacityOf(e) > 0.5) return f
         continue
       }
       const c = parse(cs.backgroundColor)
-      if (c && c.a > 0.5 && parseFloat(cs.opacity) > 0.5) return c
+      if (c && c.a > 0.5 && opacityOf(e) > 0.5) return c
     }
     return null
   }
@@ -104,8 +109,9 @@ function audit(SAFE) {
       if (b.x0 < SAFE.left - TOL) add('safe-zone', 'error', it, `left ${Math.round(b.x0)} < ${SAFE.left}`)
       if (b.x1 > SAFE.right + TOL) add('safe-zone', 'error', it, `right ${Math.round(b.x1)} > ${SAFE.right}`)
       else if (b.y1 > SAFE.railY + TOL && b.x1 > SAFE.railX + TOL) add('safe-zone', 'error', it, `in right rail: right ${Math.round(b.x1)} > ${SAFE.railX} below y ${SAFE.railY}`)
-      if (it.px < 34) add('type-floor', 'error', it, `${it.px.toFixed(1)} px < 34`)
-      else if (it.px < 40) add('type-floor', 'warn', it, `${it.px.toFixed(1)} px < 40`)
+      // 0.5 px tolerance: offsetHeight is whole pixels, so fractional line-heights read a hair small
+      if (it.px < 33.5) add('type-floor', 'error', it, `${it.px.toFixed(1)} px < 34`)
+      else if (it.px < 39.5) add('type-floor', 'warn', it, `${it.px.toFixed(1)} px < 40`)
     }
     if (it.clipped && !it.roll) add('clipped', 'warn', it, 'partly clipped by an ancestor')
     if (declared.size && !loaded.has(it.family) && !/^(system-ui|sans-serif|serif|monospace)$/.test(it.family)) add('font', 'error', it, `font "${it.family}" not loaded`)

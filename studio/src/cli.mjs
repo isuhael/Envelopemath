@@ -3,7 +3,7 @@
 //   node src/cli.mjs render specs/a.json [specs/b.json ...] [--out out] [--jobs 2] [--crf 18] [--sheet]
 //   node src/cli.mjs check  specs/*.json [--every 0.25] [--json]
 //   node src/cli.mjs stills specs/a.json --at 0,1.5,end [--out out/stills]
-//   node src/cli.mjs sheet  specs/*.json [--n 12] [--out out/sheets]
+//   node src/cli.mjs sheet  specs/*.json [--n 12 | --at 0,1.5,3] [--out out/sheets]
 // With no spec arguments, every specs/*.json is used.
 import fs from 'node:fs'
 import path from 'node:path'
@@ -72,7 +72,8 @@ async function main() {
       await pool(specFiles, +(opt.jobs || 2), async f => {
         const spec = readSpec(f)
         try {
-          const { file } = await contactSheet(browser, spec, path.join(outDir, 'sheets', `${spec.id}.png`), { n: +(opt.n || 12) })
+          const times = opt.at ? String(opt.at).split(',').map(Number) : undefined
+          const { file } = await contactSheet(browser, spec, path.join(outDir, 'sheets', `${spec.id}.png`), { n: +(opt.n || 12), times })
           console.log(path.relative(process.cwd(), file))
         } catch (e) { failed++; console.error(`✗ ${spec.id}: ${e.message}`) }
       })
