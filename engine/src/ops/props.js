@@ -214,6 +214,7 @@ export const stuff = {
     op.ew ??= 250
     op.eh ??= 160
     op.prefix ??= '$'
+    op.instant ??= op.t <= 0.05
   },
   draw(g, op, lt) {
     const gapX = (op.w ?? 840) / op.cols
@@ -222,14 +223,14 @@ export const stuff = {
       const cx = op.x - ((op.cols - 1) * gapX) / 2 + col * gapX
       const cy = op.y + row * (op.eh + 150)
       const k0 = i * op.stagger
-      const appear = ease.back(prog(lt, k0, 0.3))
+      const appear = op.instant ? 1 : ease.back(prog(lt, k0, 0.3))
       if (appear <= 0) return
       g.save()
       g.translate(cx, cy)
       g.scale(appear, appear)
       // bills dropping in (behind the front of the envelope)
       for (let b = 0; b < 3; b++) {
-        const bk = ease.in(prog(lt, k0 + 0.2 + b * 0.12, 0.25))
+        const bk = op.instant ? 1 : ease.in(prog(lt, k0 + 0.2 + b * 0.12, 0.25))
         if (bk <= 0) continue
         const by = lerp(-op.eh * 1.6, -op.eh * 0.15, bk)
         g.save()
@@ -248,19 +249,22 @@ export const stuff = {
       g.beginPath(); g.moveTo(-op.ew / 2, -op.eh * 0.2); g.lineTo(0, op.eh * 0.16); g.lineTo(op.ew / 2, -op.eh * 0.2); g.stroke()
       handText(g, it.label, 0, op.eh * 0.38, { size: 46, color: 'ink', align: 'center', seed: i })
       g.restore()
-      const ck = prog(lt, k0 + 0.2, 0.6)
+      const ck = op.instant ? 1 : prog(lt, k0 + 0.2, 0.6)
       if (ck > 0) handText(g, fmtNum(Math.round(it.amount * ease.out(ck)), { prefix: op.prefix }), cx, cy + op.eh * 0.5 + 70, { size: 56, color: it.color || 'green', align: 'center', jitter: 0.3 })
     })
   },
-  sfx: op => op.items.flatMap((_, i) => [0, 1, 2].map(b => ({ at: op.t + i * op.stagger + 0.3 + b * 0.12, kind: 'cash' }))),
+  sfx: op => (op.instant ? [] : op.items.flatMap((_, i) => [0, 1, 2].map(b => ({ at: op.t + i * op.stagger + 0.3 + b * 0.12, kind: 'cash' })))),
 }
 
 /** emoji: a big colour emoji that pops in (e.g. ☕ 🏠 🚗). */
 export const emoji = {
   duration: () => 0.35,
-  prepare(op) { op.size ??= 160 },
+  prepare(op) {
+    op.size ??= 160
+    op.instant ??= op.t <= 0.05
+  },
   draw(g, op, lt) {
-    const k = ease.back(prog(lt, 0, 0.35))
+    const k = op.instant ? 1 : ease.back(prog(lt, 0, 0.35))
     g.save()
     g.translate(op.x, op.y + (op.bob ? Math.sin(lt * 3) * 8 : 0))
     g.rotate(((op.rot || 0) * Math.PI) / 180)
@@ -270,5 +274,5 @@ export const emoji = {
     g.fillText(op.char, 0, 0)
     g.restore()
   },
-  sfx: op => [{ at: op.t, kind: 'pop' }],
+  sfx: op => (op.instant ? [] : [{ at: op.t, kind: 'pop' }]),
 }

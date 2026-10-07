@@ -3,9 +3,9 @@ import { ink } from '../theme.js'
 import { handText, wobble, strokePartial, hatch } from '../ink.js'
 import { ease, prog, fmtNum, hash } from '../util.js'
 
-/** bars: hand-drawn hatched bars. items: [{label, value, color, display}] grow left to right. */
+/** bars: hand-drawn hatched bars. items: [{label, value, color, display, at}] grow left to right (`at`: start, s after the op). */
 export const bars = {
-  duration: op => (op.items.length - 1) * op.stagger + op.dur,
+  duration: op => Math.max(...op.items.map((it, i) => (it.at ?? 0.2 + i * op.stagger) + op.dur)),
   prepare(op) {
     op.dur ??= 0.9
     op.stagger ??= 0.45
@@ -20,7 +20,7 @@ export const bars = {
     // baseline
     strokePartial(g, wobble([[op.x - op.w / 2 - 20, op.y], [op.x + op.w / 2 + 20, op.y + 2]], 11, 2, 10), ease.out(prog(lt, 0, 0.3)), { color: 'ink', width: 5 })
     op.items.forEach((it, i) => {
-      const k = ease.out(prog(lt, 0.2 + i * op.stagger, op.dur))
+      const k = ease.out(prog(lt, it.at ?? 0.2 + i * op.stagger, op.dur))
       if (k <= 0) return
       const cx = op.x - op.w / 2 + slot * (i + 0.5)
       const bh = Math.max(4, (op.h * it.value) / op.max)
@@ -33,7 +33,7 @@ export const bars = {
       handText(g, it.label, cx, op.y + 70, { size: it.labelSize || 50, color: 'ink', align: 'center', seed: i })
     })
   },
-  sfx: op => op.items.map((_, i) => ({ at: op.t + 0.2 + i * op.stagger, kind: 'scribble', dur: op.dur, n: 6 })),
+  sfx: op => op.items.map((it, i) => ({ at: op.t + (it.at ?? 0.2 + i * op.stagger), kind: 'scribble', dur: op.dur, n: 6 })),
 }
 
 // Series for common money curves, so specs don't have to hard-code points.
@@ -151,7 +151,7 @@ export const stack = {
   sfx: op => [{ at: op.t, kind: 'ticks', dur: op.dur }, { at: op.t + op.dur, kind: 'scribble', dur: 0.4, n: 6 }],
 }
 
-/** grid: rows x cols of hand-drawn dots (or emoji); `filled` of them fill in over `dur`. */
+/** grid: rows x cols of hand-drawn dots (or emoji); `filled` of them fill in over `dur` (`prefilled` start filled). */
 export const grid = {
   duration: op => 0.3 + op.dur,
   prepare(op) {
@@ -162,7 +162,8 @@ export const grid = {
   draw(g, op, lt) {
     const total = op.rows * op.cols
     const show = ease.out(prog(lt, 0, 0.3))
-    const filled = Math.round(op.filled * ease.inOut(prog(lt, 0.3, op.dur)))
+    const pre = op.prefilled ?? 0
+    const filled = pre + Math.round((op.filled - pre) * ease.inOut(prog(lt, 0.3, op.dur)))
     const x0 = op.x - ((op.cols - 1) * op.cell) / 2
     for (let i = 0; i < total; i++) {
       const cx = x0 + (i % op.cols) * op.cell

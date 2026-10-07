@@ -191,7 +191,7 @@ Sealed card: **$4.3B** (the show's number). The exact balance is above both colu
 - **IP note:** we name the show and quote its numbers. We do not draw Fry or use any clip, still or audio.
 
 **Ending**
-- **Loop line:** "All from…" flows straight into "Fry's ninety-three cents. In the bank. For a thousand years." as one sentence.
+- **Loop line:** "All from…" flows straight into "Fry's ninety-three cents. In the bank. For a thousand years." as one sentence. The spec's `loop: true` crossfades the last 0.35 s into frame 0, so the picture loops with the sentence.
 - **Comment bait (a real question):** "Which one did you learn: the rule of 72 or the rule of 70?"
 - **Pinned comment:**
   > Exact: $4,283,508,449.71 (0.93 × 1.0225^1000; the show rounds it to $4.3 billion). Envelope said ≈ $4B with the rule of 70, within 7%. The rule of 72 said ≈ $2B, 53% low. Why: at 2.25% money doubles every 31.15 years, so 1,000 years is 32.1 doublings, and one extra doubling is worth $2B here. Rule of thumb: 72 is tuned for rates near 8%; near 2%, divide 70 by the rate. At year 500 the balance is only $63,116. Assumptions: compounded yearly. Source: Futurama, "A Fishful of Dollars" (1999): 93¢ at 2.25% a year for 1,000 years. Which rule did you learn?
@@ -235,7 +235,7 @@ Sealed card: **$4.3B** (the show's number). The exact balance is above both colu
 | 0.0–2.8 | Hook | Tape hook; the filled 100-envelope grid "$1, $2, $3 … $100" |
 | 2.8–6.2 | Guess window | Grid clears; sealed envelope "all 100 = ?"; 3-s PAUSE & GUESS timer (3.1–6.1) |
 | 6.3 | Flip | |
-| 6.6–9.6 | Set-up + LOW (**first payoff, 28%**) | RULES sticky "Envelope #1 holds $1, #2 holds $2 … #100 holds $100."; 100 ENVELOPES stamp; "LOW: every envelope $1" → **100 × $1 = $100** at 7.7 |
+| 6.6–9.6 | Set-up + LOW (**first payoff, 28%**) | RULES sticky "#1 holds $1, #2 holds $2 … #100 holds $100."; 100 ENVELOPES stamp; "LOW: every envelope $1" → **100 × $1 = $100** at 7.7 |
 | 9.7–12.5 | HIGH (39%) | "HIGH: every envelope $100" → **100 × $100 = $10,000** at 10.8 |
 | 12.6–16.2 | The estimate | "MIDDLE: average ≈ $50" → red **100 × $50 ≈ $5,000** at 13.7, circled |
 | 16.3 | Flip | New side: tape "EXACT TOTAL: SEALED"; sealed envelope "ours: ≈ $5,000" |
@@ -265,7 +265,7 @@ Sealed card: **$4.3B** (the show's number). The exact balance is above both colu
 
 Sealed card: **$5,050**. It is exactly (100 + 10,000) ÷ 2, because the envelopes rise evenly. Pairing check: $1 + $100 = $101, × 50 pairs = $5,050.
 
-**RULES sticky (on screen):** "Envelope #1 holds $1, #2 holds $2 … #100 holds $100." There are no real-world inputs beyond the challenge's rules.
+**RULES sticky (on screen):** "#1 holds $1, #2 holds $2 … #100 holds $100." There are no real-world inputs beyond the challenge's rules.
 
 **Sources**
 - **The challenge rules and the $5,050 total:** Bustle (https://www.bustle.com/life/hundred-envelope-challenge-tiktok); Chime, "how to save $5,000 in 3 months" (https://www.chime.com/blog/100-envelope-challenge-how-to-save-5000-in-3-months/?bapage=1).
@@ -538,18 +538,33 @@ Hooks were scored 1–10 against `research/02-top-10-approaches.md` §7 (evidenc
 - **07A:** "Four point three billion. Seventy wins. All from…" is one sentence with the opening "Fry's ninety-three cents", so the loop is seamless.
 - **07B:** re-hooks to the 52-week challenge.
 - **07C:** re-hooks with "Who should I open next?".
+- **All three:** `loop: true` crossfades the last 0.35 s into frame 0, so a replay has no visual seam.
 
 #### 5. Visual QA
 
-- **`check`:** zero warnings on all three specs. One overlap came up during the rework: 07B's sealed envelope at y = 860 touched the timer ring. It is back at y = 855.
-- **Contact sheets** (`engine/out/sheets/07-sealed-envelope-estimate-{a,b,c}.png`, 12 frames each) and **stills** were rendered and viewed. The stills were at t = 0 for all three, at 07A 23.6 and 33.8, 07B 27.7, and 07C 25.6 and 30.4.
-- **Problems found and fixed:**
-  - In all three endings the **ROUGHLY RIGHT stamp covered the envelope's "SEALED ANSWER" label**, and in 07A the moving pen crossed the stamp. All three stamps now sit on the envelope body (07A y 955; 07B/07C y 900), clear of the label.
-  - **07A "rule of 70: within 7%"** got only 0.83 s on screen after it finished writing, for 5 words. It now writes faster (cps 36), is larger (60 px) and has 1.3 s.
-  - **07C "your guess: $ ______"** got 0.73 s after writing. It now starts at 24.35 s at cps 30 and has 1.1 s.
-- **Captions:** 3 of the writer's captions were under 0.25 s per word: 07A 0.2–2.3, 07A 24.8–28.2 and 07B 2.4–5.6. All captions now clear 0.25 s per word, and the math check enforces it.
-- **MP4s:** all three were rendered with `node src/cli.js render` (33.9 s, 27.8 s and 30.5 s). The first decoded frame of each shows the full hook, a number and the sealed envelope.
-- **No engine requests.** Every fix used existing ops and params.
+**The engine changed during this QA pass.** Commits 78384a3 (frame 0, sealed envelopes, loop, new linter boxes) and 9966727 (minimum phone-legible text sizes) landed while QA was working. QA did not touch `engine/src`; the specs were brought up to the current engine and linter instead.
+
+| Engine change | What QA did in the 07 specs |
+|---|---|
+| Postmark: README standard is now (175, 258), r 100, in the flap; the linter now boxes its ring. The old (190, 300) ring collided with 07A's curve and with 07B's hook and card. | All three use the standard postmark. |
+| Envelope with no `openAt` stays sealed; the seal, note and label now scale with `w` / 780. | `openAt: 60` removed from the three never-opening envelopes. 07A's frame-1 envelope widened to `w` 780, so its "Fry's balance now = ?" note renders at the full 54 px. |
+| Linter boxes the card that rises from an opened envelope, and postage stamps. | 07A's frame-1 93¢ stamp is deliberately stuck on the envelope's corner, so it carries `allowOverlap: true`. |
+| Linter minimum text size: handwriting ≥ 56 px, typewriter ≥ 40 px. | 22 items were raised: sticky text 44–46 → 56, row labels 50–54 → 56, column heads 38 → 40, card second lines 46–50 → 56, ruler labels 52–54 → 56. Curve marks 50 → 56 too, though the linter doesn't check them. Stickies were widened (07A/07B 440 px, 07C 520 px) to stay at three lines. 07B's rule now reads "#1 holds $1, #2 holds $2 … #100 holds $100." 07C's sticky and its postage stamp moved right and down to clear the postmark. |
+| `loop: true` crossfades the last 0.35 s into frame 0; captions take a `say` field. | All three specs set `loop: true`, and every caption carries its VO line as `say`. |
+
+**Results.**
+- **`check`:** zero warnings on all three specs against the current engine. During the rework the linter also caught 07B's sealed envelope touching the timer ring at y = 860; it is back at y = 855.
+- **Contact sheets** (`engine/out/sheets/07-sealed-envelope-estimate-{a,b,c}.png`, 12 frames each) and **stills** were rendered and viewed after every change. Stills on disk: t = 0 for all three; 07A at 23.6, 27.5 and 33.4; 07B at 14.9 and 27.3; 07C at 18.5, 25.6 and 30.0.
+
+**Problems found and fixed.**
+- In all three endings the **ROUGHLY RIGHT stamp covered the envelope's "SEALED ANSWER" label**, and in 07A the moving pen crossed the stamp. All three stamps now sit on the envelope body (07A y 990; 07B and 07C y 900), clear of the label.
+- **07A "rule of 70: within 7%"** got only 0.83 s on screen after it finished writing, for 5 words. It now writes faster (cps 36), is larger (60 px) and has 1.3 s.
+- **07C "your guess: $ ______"** got 0.73 s after writing. It now starts at 24.35 s at cps 30 and has 1.1 s.
+- **Captions:** 3 of the writer's captions were under 0.25 s per word: 07A 0.2–2.3, 07A 24.8–28.2 and 07B 2.4–5.6. All captions now clear 0.25 s per word, and both the math check and the linter enforce it.
+
+**MP4s.** All three were rendered with `node src/cli.js render` on the final specs: 33.9 s, 27.8 s and 30.5 s. The first decoded frame of each shows the full hook, a number and the sealed envelope.
+
+**No engine requests.** Every fix used ops and params the engine already has.
 
 #### 6. Still open
 

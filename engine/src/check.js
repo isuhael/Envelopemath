@@ -183,6 +183,12 @@ export function lint(spec) {
     if (op.type === 'envelope') op.card.forEach((l, i) => small(op, (typeof l === 'object' && l.size) || op.cardSize, (typeof l === 'object' && l.font) || 'hand', `envelope card line ${i}`))
     if (op.type === 'bars') small(op, Math.min(...op.items.map(i => i.labelSize || 50)), 'hand', 'bar labels')
   }
+  // text that is cleared before the pen finishes writing it
+  for (const op of spec._ops) {
+    if (op.until == null || !['write', 'lines', 'ladder', 'sticky'].includes(op.type)) continue
+    const done = op.t + OPS[op.type].duration(op)
+    if (op.until < done - 0.05) warn.push(`op #${op._i} ${op.type} is cleared at ${op.until}s before it finishes writing (${done.toFixed(2)}s)`)
+  }
   // frame 0 is the thumbnail: something readable must already be there
   if (!spec._ops.some(o => READABLE_AT_ZERO.has(o.type) && o.t <= 0.05 && (o.type !== 'hook' && o.type !== 'quote' ? o.t < -0.3 : o.instant))) {
     warn.push('frame 0 has no readable text: put the hook on screen at t: 0 (it renders finished, so the first frame doubles as the thumbnail)')
