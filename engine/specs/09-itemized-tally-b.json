@@ -345,7 +345,8 @@
       "x": 90,
       "y": 1062,
       "size": 64,
-      "color": "pencil"
+      "color": "pencil",
+      "cps": 30
     },
     {
       "type": "write",
@@ -355,7 +356,7 @@
       "x": 90,
       "y": 1205,
       "size": 100,
-      "pen": "low"
+      "pen": "small-low"
     },
     {
       "type": "annotate",

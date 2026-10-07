@@ -1,7 +1,7 @@
 ## 5. The Envelope Split
 
 **Series:** *Envelope My Paycheck* · **Format brand:** Envelope Math · **Lane:** Envelope (31–39 s masters, cut per platform)
-**Written:** 2026-10-07. The writer checked every real-world input with WebSearch on that date; sources and dates sit with each teaser. Every number was recomputed by the script in [Math check](#math-check). **QA pass (same day):** see [Verification log](#verification-log). **Polish pass (same day):** every real-world input was re-verified live against primary sources, including the two QA could not open (the iPhone 18 Pro price and NAR's August 2026 median; both confirmed, nothing cascades); the specs were rebuilt for the upgraded renderer and all three MP4s rendered. See [Final fact check](#final-fact-check) and [Polish pass](#polish-pass).
+**Written:** 2026-10-07. The writer checked every real-world input with WebSearch on that date; sources and dates sit with each teaser. Every number was recomputed by the script in [Math check](#math-check). **QA pass (same day):** see [Verification log](#verification-log). **Polish pass (same day):** every real-world input was re-verified live against primary sources, including the two QA could not open (the iPhone 18 Pro price and NAR's August 2026 median; both confirmed, nothing cascades); the specs were rebuilt for the upgraded renderer and all three MP4s rendered. See [Final fact check](#final-fact-check) and [Polish pass](#polish-pass). **Final review (same day):** an independent reviewer fixed seven issues across the three specs and re-rendered all three MP4s; see [Final review](#final-review).
 **Specs:** `engine/specs/05-envelope-split-a.json`, `-b.json`, `-c.json` · **MP4s:** `engine/out/05-envelope-split-{a,b,c}.mp4` · **Stills:** `engine/out/stills/05-envelope-split-*`
 
 One real paycheck goes into four labelled cash envelopes on screen. Then we add the part nobody adds: **how long one envelope takes to fill.**
@@ -172,7 +172,7 @@ Sources (all re-verified 2026-10-07; see [Final fact check](#final-fact-check)):
 - **Spec:** `engine/specs/05-envelope-split-a.json`
 
 **Frame-1 hook** (complete at t = 0: the hook, envelope and postmark all start at t = 0 and render finished, so the first frame is the thumbnail)
-- **On screen (masking tape):** `$2,094.20 PAYCHECK` / `THIS ENVELOPE TAKES` / `30 MONTHS. YOURS TOO.` ("30 MONTHS." in red), over a big labelled **OOPS 5%** cash envelope (600 px wide, 96 px label) showing **$105**, with postmark No. 05A in the flap. As in moneyletter's cups, the system is on screen before it is explained.
+- **On screen (masking tape):** a 60 px kicker strip `MEDIAN PAYCHECK: $2,094.20` over the 70 px claim `THIS ENVELOPE TAKES` / `30 MONTHS. YOURS TOO.` ("30 MONTHS." in red), over a big labelled **OOPS 5%** cash envelope (600 px wide, 96 px label) showing **$105**, with postmark No. 05A in the flap. As in moneyletter's cups, the system is on screen before it is explained.
 - **First spoken line (0.2–2.8 s):** "This envelope takes thirty months to fill. Yours too."
 
 **Beat sheet**
@@ -292,12 +292,12 @@ The envelopes show $1,047 / $314 / $105 / $628, which add to $2,094.
 | 19.5–22.5 | 💵 × 8 (9th dim) fill while a running total counts the deposits, $160.69 → $1,285.52: "8 checks = $1,285.52" | "Eight paychecks only make twelve eighty-five." |
 | 22.55–24.5 | **POSTAGE DUE** stamp slams (lower right, clear of the receipt); red "**$12.40 short**" | "Twelve forty short." |
 | 24.65 | **Flip** | |
-| 24.95–27.5 | "with tax: $1,297.92"; "median paycheck:" with 💵 × 3; "3 checks" (green) | "A median paycheck covers it in three." |
-| 27.65–31.3 | "$7.25/hr:" with the 💵 row going 8 → 9; red **9 paychecks** (130 px) "= 18 weeks", double-underlined *(biggest number, lands at 28.6 s, 2.7 s before the end)*; the last 0.35 s crossfades into frame 1 | "Minimum wage? Nine paychecks. Eighteen weeks of fun money." |
+| 24.95–27.5 | "with tax: $1,297.92"; "median FUN:" with 💵 × 3; "3 checks" (green) | "On a median paycheck, FUN covers it in three." |
+| 27.65–31.3 | "$7.25/hr FUN:" with the 💵 row going 8 → 9; red **9 paychecks** (130 px) "= 18 weeks", double-underlined *(biggest number, lands at 28.6 s, 2.7 s before the end)*; the last 0.35 s crossfades into frame 1 | "Minimum wage? Nine paychecks. Eighteen weeks of fun money." |
 
 **Full VO**
 
-> Minimum wage versus the new iPhone. After FICA, a full-time paycheck, every two weeks: five thirty-five sixty-three. Ten percent: fifty-three fifty-six. FUN gets three tens: one sixty-one. Eleven ninety-nine over one sixty-one: seven point four five. Call it eight paychecks. Sixteen weeks. Except that's the sticker. Texas sales tax: up to eight and a quarter percent. Twelve ninety-eight. Eight paychecks only make twelve eighty-five. Twelve forty short. A median paycheck covers it in three. Minimum wage? Nine paychecks. Eighteen weeks of fun money.
+> Minimum wage versus the new iPhone. After FICA, a full-time paycheck, every two weeks: five thirty-five sixty-three. Ten percent: fifty-three fifty-six. FUN gets three tens: one sixty-one. Eleven ninety-nine over one sixty-one: seven point four five. Call it eight paychecks. Sixteen weeks. Except that's the sticker. Texas sales tax: up to eight and a quarter percent. Twelve ninety-eight. Eight paychecks only make twelve eighty-five. Twelve forty short. On a median paycheck, FUN covers it in three. Minimum wage? Nine paychecks. Eighteen weeks of fun money.
 
 **The envelope math (3 lines, then a red-pen twist)**
 ```
@@ -385,8 +385,8 @@ The envelopes show $268 / $80 / $27 / $161, which add to $536.
 | 21.2 | **Flip** *(pattern break)* | |
 | 21.5–23.8 | "20% down = no PMI"; hatched bar "10% down **3.7 yrs**" grows; the 20% slot stays empty | "Twenty percent down, to skip PMI?" |
 | 23.9–26.5 | "median 1st-time buyer: 40" | "The median first-time buyer is now forty." |
-| 26.6–29.5 | The empty 20% slot holds (an open loop) | "Double the down payment. How old would you be?" |
-| 29.6–31.8 | Red bar "20% down **7.4 yrs**" (104 px) grows and is circled; red "**192 paychecks**", underlined *(biggest number, lands at 29.6 s, 2.2 s before the end)*; the last 0.35 s crossfades into frame 1 | "Seven point four years." |
+| 26.6–29.5 | "3.7 × 2 = ?" (100 px, red "?") is written into the empty 20% slot at 26.65 and clears at 29.45, so sound-off viewers get the open loop too | "Double the down payment. How old would you be?" |
+| 29.6–31.8 | Red bar "20% down **7.4 yrs**" (104 px) grows and is circled; red "**≈ 192 paychecks**" (192.05; the 193rd tops it off), underlined *(biggest number, lands at 29.6 s, 2.2 s before the end)*; the last 0.35 s crossfades into frame 1 | "Seven point four years." |
 
 **Full VO**
 
@@ -454,7 +454,7 @@ The envelopes show $1,490 / $447 / $149 / $894. Each one is rounded to the dolla
 
 - **Status after the polish pass (2026-10-07):**
   - `node src/cli.js check` returns zero warnings on all three specs under the stricter linter (phone-legible sizes, overlaps, caption lines and pace, frame 0, lane-aware duration).
-  - All three are rendered: `engine/out/05-envelope-split-{a,b,c}.mp4` (1080×1920, 30 fps, AAC foley; 39.8 / 31.3 / 31.8 s). Audio: mean −26.1 / −25.4 / −25.3 dB, max −1.9 / −2.0 / −1.9 dB.
+  - All three are rendered: `engine/out/05-envelope-split-{a,b,c}.mp4` (1080×1920, 30 fps, AAC foley; 39.8 / 31.3 / 31.8 s). Audio: mean −26.1 / −25.4 / −25.2 dB, max −1.9 / −2.0 / −1.9 dB (final-review renders).
   - Frames extracted from the MP4s are in `engine/out/stills/05-envelope-split-{a,b,c}-<t>.png`: frame 0, the partial payoff, the reveal and duration − 0.2 s.
 - **Frame 0:** every frame-0 element (hook, postmark, envelope, emoji) starts at t = 0, and the engine draws them finished, so the first frame is the thumbnail. There is no negative-t pre-roll and no stacked foley on sample 1.
 - **Sizes:** working lines are ≥ 64 px handwriting, hero numbers are 120–170 px, envelope labels and amounts are 64 / 76 px, stickies are 56 px and receipt rows are 50 px typewriter.
@@ -619,6 +619,10 @@ fun_median = ex_a['FUN']
 print(f'  median FUN ${fun_median}: pre-tax {phone/fun_median:.3f} -> {math.ceil(phone/fun_median)} paychecks; '
       f'with tax {total/fun_median:.3f} -> {math.ceil(total/fun_median)} paychecks')
 assert math.ceil(total / fun_median) == 3 and math.ceil(phone / fun_median) == 2
+# final review: the ending says 'On a median paycheck, FUN covers it in 3' -- it is the FUN envelope, not the whole
+# paycheck: one whole median paycheck ($2,094.20) would cover the $1,297.92 in a single check
+assert math.ceil(total / c(pay_a)) == 1
+print(f'  (a whole median paycheck ${c(pay_a):,} covers ${total:,} in {math.ceil(total / c(pay_a))}; the 3 is the FUN envelope)')
 # TikTok-cut variant: part-time, 20 hrs/wk
 pt_pay = D('7.25') * 40 - c(D('7.25') * 40 * (SS_RATE + MED_RATE))
 pt_fun = c(pt_pay * SPLIT['FUN'])
@@ -657,6 +661,11 @@ assert dp10 == 42910 and dp20 == 85820
 assert round(rough_c) == 96 and round(n10) == 96 and c(n10) == D('96.03')
 assert int(n10 / PAYS) == 3 and round(((n10 / PAYS) - 3) * 12) == 8
 assert round(n20) == 192 and round(n20 / PAYS, 1) == D('7.4') and round(n10 / PAYS, 1) == D('3.7')  # bars: 3.7 yrs / 7.4 yrs
+# final review: on screen '3.7 x 2 = ?' then '7.4 yrs' (3.7 x 2 = 7.4 exactly; unrounded 3.693 x 2 = 7.387 -> 7.4)
+assert D('3.7') * 2 == D('7.4') and round(2 * n10 / PAYS, 1) == D('7.4')
+# '~ 192 paychecks' carries the approx sign: 192.05 means 192 deposits fall short and the 193rd tops it off
+assert 192 * fut < dp20 <= 193 * fut and math.ceil(n20) == 193
+print(f'  20% down: 192 x ${fut} = ${192*fut:,} (${dp20 - 192*fut} short) -> on screen "~ 192 paychecks"; the 193rd tops it off')
 med_fut = ex_a['FUTURE']
 print(f'  TikTok third bar, median worker: ${dp10:,.0f} / ${med_fut} = {dp10/med_fut:.1f} paychecks = {dp10/med_fut/PAYS:.2f} years')
 assert round(dp10 / med_fut, 1) == D('136.6') and round(dp10 / med_fut / PAYS, 1) == D('5.3')
@@ -726,7 +735,7 @@ print()
 print('All assertions passed.')
 ```
 
-**Output** (re-run in the polish pass, 2026-10-07):
+**Output** (re-run in the final review, 2026-10-07):
 
 ```
 ========================================================================
@@ -769,6 +778,7 @@ print('All assertions passed.')
   running total of FUN deposits: $160.69 · $321.38 · $482.07 · $642.76 · $803.45 · $964.14 · $1,124.83 · $1,285.52
   at the bare 6.25% state rate: $1,273.94 -> 8 paychecks; 8 paychecks stop covering it above a 7.216% combined rate (so: covered at 7.2% or less)
   median FUN $628.26: pre-tax 1.908 -> 2 paychecks; with tax 2.066 -> 3 paychecks
+  (a whole median paycheck $2,094.20 covers $1,297.92 in 1; the 3 is the FUN envelope)
   TikTok variant, 20 hrs/wk: take-home $267.81 -> FUN $80.34 -> 16.16 -> 17 paychecks with tax
   pinned: exact 7.46 paychecks pre-tax (envelope said ~7.45: within 0.16%); with tax 8.08 -> 9 paychecks
 
@@ -789,6 +799,7 @@ print('All assertions passed.')
   envelope: $43,000 / $450 = 95.56 ~ 96 paychecks
   exact: $42,910 / $446.86 = 96.03 paychecks = 3.693 years = 3 yrs 8.3 months  (97th paycheck tops it off: 96 x $446.86 = $42,898.56)
   20%: $85,820 / $446.86 = 192.05 paychecks = 7.39 years
+  20% down: 192 x $446.86 = $85,797.12 ($22.88 short) -> on screen "~ 192 paychecks"; the 193rd tops it off
   TikTok third bar, median worker: $42,910 / $314.13 = 136.6 paychecks = 5.25 years
   pinned: exact 96.03 paychecks (envelope said ~96: within 0.03%)
 
@@ -1067,3 +1078,97 @@ All within the −30 to −18 dB mean / below −1 dB peak target.
 - Beat sheets, Full VO, ASSUME stickies, frame-1 hooks, runtimes, loop notes and platform-note timestamps were rewritten to match the final specs.
 - The iPhone and NAR rows now carry verified primary sources. The production notes describe the t = 0 frame 0 (no pre-roll).
 - "Still open before publishing" is closed out. It now only notes the NAR (Oct 13) and BLS (Oct 21) releases that land after today.
+
+---
+
+### Final review
+
+Independent final review, 2026-10-07 (reviewer for approach #5). `engine/src` was not edited. All three specs were changed and all three MP4s were re-rendered.
+
+**Method**
+- **Visual:** for each teaser,
+  - a 12-frame contact sheet from the spec (`node src/cli.js sheet … --n 12`): `engine/out/sheets/05-envelope-split-{a,b,c}-review.png`;
+  - 4 frames pulled from the MP4 at 0.0 s, ~40%, ~75% and the end (A 0.0 / 15.9 / 29.85 / 39.7; B 0.0 / 12.5 / 23.5 / 31.2; C 0.0 / 12.7 / 23.85 / 31.7), viewed at 540 px wide, which is about phone size;
+  - full-resolution crops of every suspect spot.
+  - The frames, plus extra frames at the changed beats, are in `engine/out/stills/`, tiled as `engine/out/stills/review/final-strip-{a,b,c,c2,x}.png`.
+- **Renders vs specs:** before editing, the existing MP4s were diffed against stills rendered from the specs. Under 0.6% of pixels differed (pen jitter and emoji bob), so the review started from renders that matched the specs.
+- **Math:** `python3 teasers/05-envelope-split-math.py` was re-run before and after the fixes (all assertions pass). Every number on screen, in the captions and in the md was spot-checked against it by hand.
+- **Lint:** `node src/cli.js check` returns zero warnings on all three, before and after.
+- **Facts:** the five most time-sensitive inputs were re-searched live (table below).
+
+**What was wrong, and the fix**
+
+| Teaser | Problem | Fix |
+|---|---|---|
+| 05A | Frame 0, the thumbnail, never said whose paycheck $2,094.20 is. The md's own virality case ("'Median paycheck' invites comparison") rested on a word that first appeared in the second caption, at 2.9 s. | The tape now opens with a 60 px kicker strip `MEDIAN PAYCHECK: $2,094.20` over the unchanged 70 px claim (`THIS ENVELOPE TAKES` / `30 MONTHS. YOURS TOO.`). Two rejected alternatives: a single 64 px three-line hook pushed the tape outside the 60–1020 safe area (linter), and "MEDIAN PAY" would have called an after-tax figure "pay". |
+| 05A | The red "no paycheck in that math" box (28.0 s) touched "150%" and "month" with its right edge. Its bottom edge (y 908) fused with the blue sum bar (y 911). | Math `lineHeight` 145 → 155: baselines at 735 / 890 / 1045, sum bar at 931. The box was re-measured with the engine's fonts to x 284–904, y 650–914, `pad: 0`. It now clears the glyphs by ≥ 20 px and the sum bar by 17 px, and line 3 still clears the 65-dot grid. |
+| 05A, 05B, 05C | In each timing scene, the prop envelope was still fading out (`until` + 0.25 s) while the sum bar and line 3 started on top of it: A 24.6 vs 24.65; B 12.3 vs 12.3, with the bill row at 12.45; C 13.3 vs 13.35. | `until` is now 24.35 / 12.05 / 13.05, so each prop is gone before the sum bar draws. |
+| 05B | "A median paycheck covers it in three" is false as spoken. One median paycheck ($2,094.20) covers the $1,297.92 in one; the 3 is the median paycheck's **FUN envelope** ($628.26). | Caption and VO now say "On a median paycheck, FUN covers it in 3." On screen, "median paycheck:" → "median FUN:" and "$7.25/hr:" → "$7.25/hr FUN:". `vo` is still the joined `say` text. A new assert in the math script checks that the whole-paycheck count is 1. |
+| 05C | "192 paychecks" was written as an exact count. 192.05 means 192 deposits fall $22.88 short and the 193rd tops it off, and 05B rounds 8.08 *up* to 9. Line 3's "≈ 96" already carried the sign. | On screen: "≈ 192 paychecks" (76 px). The "7.4 yrs" circle's `pad` went 16 → 10 so the two red marks no longer touch. A new assert checks 192 × $446.86 < $85,820 ≤ 193 × $446.86. |
+| 05C | From 24.8 to 29.6 s, almost 5 s passed with nothing new on screen right before the payoff. "Double the down payment. How old would you be?" lived only in the audio and captions. | At 26.65 s, "3.7 × 2 = ?" (100 px, red "?") is written into the empty 20% slot. It clears at 29.45 s, just before the red bar grows into the same slot. Sound-off viewers now see the open loop and can do the doubling themselves. A new assert checks 3.7 × 2 = 7.4 and 2 × 3.693 → 7.4. |
+| 05C | The pen of "192 paychecks" sat over "40", the median first-time-buyer age, at about 30.3–30.5 s. | `pen: "small"`. It now only grazes the "0" for ~0.2 s. `pen: "low"` was tried and rejected because it swept across the hero "7.4 yrs". |
+
+**Checked and passed (no change)**
+- **Frame 0:**
+  - all three show a finished hook with a number: $2,094.20 / 30 MONTHS; $7.25/HR / $1,199; $2,979.09 / $429,100;
+  - the postmark is in the flap;
+  - the frame-1 object is on screen: the OOPS 5% envelope with $105, the 📱, the 🏠.
+- **Safe zones:** nothing readable sits in the flap (y 0–230), in the caption band while captions play (1320–1480), in the platform caption block (> 1480) or in the right rail (x > 940 below y 820). Every caption is ≤ 2 lines.
+- **Legibility at 540 px:** every working line, envelope label, receipt row and caption reads.
+  - The smallest element is the 💵 row in 05B (88 px cells, 9 bills). At full size it reads as 8 bills plus a dim 9th; at phone size the bills are small but countable, and the "8 paychecks = 16 weeks" label carries the meaning either way.
+- **Endings:** each hero number holds 1.1–1.3 s after it finishes drawing, before the 0.35 s loop crossfade:
+  - A "= 60 months": 38.2 → 39.45;
+  - B "9 paychecks": 29.1 → 30.95;
+  - C "7.4 yrs": ~30.2 → 31.45.
+- **Math** (every on-screen, caption and md number, re-checked):
+  - take-homes $2,094.20 / $535.63 / $2,979.09, and all 12 splits;
+  - 05A: 30 months, 65 paychecks, 60 months;
+  - 05B: 7.45, 8, $1,297.92, $1,285.52, $12.40, 9;
+  - 05C: 96.03, 3 yrs 8 mo, 3.7, 7.4.
+
+**Accepted as is (noted for the edit)**
+- **The take-home beats are dense.** A 2.95–5.9, B 2.6–6.0 and C 2.55–5.7 each put five text items (~25 words) on screen for ~3 s, more than one viewing can read. The hero number (the counter) does land. The take-home is then restated as the header of the next screen, for 10.5 s (A) and 3 s (B and C), before the next screen restates the envelope that matters. The pencil derivation and the ASSUME sticky are pause-to-read disclosure, repeated in the pinned comment. Lengthening each beat would shift every later cue for little gain.
+- **The split screens are glance frames.** B and C show four envelopes in ~3 s. They are glance-and-screenshot frames: the VO names only the envelope that matters, and the next screen restates it.
+- **05C's tape asks "how many paychecks?" against a $429,100 house, but the answer is for the 10% down payment.** The title says "to save the down payment", and line 1 shows "10% × $429,100 = $42,910" by 10.8 s, so the gap closes within 11 s.
+- **The research's hook "This envelope takes 30 paychecks to fill, no matter what you earn" is only right for monthly pay.** On biweekly pay it is 30 months, or 65 paychecks, and that is what 05A says.
+- **05B's POSTAGE DUE stamp is 52 px**, smaller than 05A's 70 px. It is legible and stays clear of the receipt's dollar values.
+
+**Facts (live spot-check, 2026-10-07)**
+
+| Input | Value | Source (date) | Status |
+|---|---|---|---|
+| iPhone 18 Pro starting price | $1,199 (Pro Max $1,299; announced at the Sept 9 2026 event) | MacRumors, Sept 9 2026: https://www.macrumors.com/2026/09/09/iphone-18-pro-pricing/ | Confirmed |
+| NAR median existing-home price, Aug 2026 | $429,100 (+1.6% y/y; 3.98M SAAR) | NAR: https://www.nar.realtor/newsroom/nar-existing-home-sales-report-shows-2-0-decrease-in-august ; Mortgage News Daily, Sept 11 2026: https://www.mortgagenewsdaily.com/news/09112026-existing-home-sales-nar-inventory-prices-appr | Confirmed |
+| BLS median usual weekly earnings, full-time, Q2 2026 | $1,251 (120.9M workers, +4.6% y/y) | BLS, Jul 21 2026: https://www.bls.gov/news.release/archives/wkyeng_07212026.htm | Confirmed |
+| BLS registered-nurse median annual wage, May 2025 | $97,550 | BLS OOH: https://www.bls.gov/ooh/healthcare/registered-nurses.htm | Confirmed |
+| NAR 2025 Profile: first-time buyers' median down payment; median age | 10%; 40 | NAR, Nov 2025: https://www.nar.realtor/news/real-estate-news/nar-2025-profile-of-home-buyers-sellers-reveals-market-extremes | Confirmed |
+
+The other inputs (IRS 2026 brackets and standard deduction, the SSA wage base, the DOL/TWC minimum wage, Texas Comptroller sales tax, Fidelity 50/15/5) are unchanged from the polish pass's live check in [Final fact check](#final-fact-check).
+
+**Hook scores**
+
+Each hook is scored 1–10 against research/02 §5: the frame-1 system plus an oddly specific paycheck plus an identity, the hook formulas, and the time-to-fill whitespace.
+
+| Teaser | Score | Why |
+|---|---|---|
+| 05A | 7.5 → **8.5** | Frame 1 now has all three of the research's ingredients: the labelled envelope (moneyletter, 316x), an oddly specific paycheck with an identity people compare themselves against ("MEDIAN"), and the hook formula "This envelope takes 30 [months] to fill… yours too", which sits in the time-to-fill whitespace. It falls short of 9 because the claim stays abstract until the math at 20 s, and there's no famous noun. |
+| 05B | **8.5** | It has a number, a stake and a question, a taggable identity (first job), and a famous noun in its launch month ("Cost in Units of iPhone 17 Pro" reached 14.9M). The receipt twist (8 → 9) pays the question off twice. It falls short of 9 because frame 1 shows the phone, not the envelopes, so it leans on approach #1's mechanic more than #5's. |
+| 05C | **8** | It has an identity (nurse; se33y 591.4x), an odd number, a huge stake and a question, and housing is the most argued-about money topic. It loses points for the house-vs-down-payment gap on the tape (closed at 10.8 s) and a slower middle. The new visible open loop helps the back half. |
+
+**Verdict:** all three are fixed and ready to post.
+- **05A (fixed):** the hook now carries the identity; the box and the prop fade are cleaned up.
+- **05B (fixed):** the median line is accurate; the prop fade is fixed.
+- **05C (fixed):** "≈ 192"; the open loop is visible; the pen is moved; the prop fade is fixed.
+
+**Final state**
+
+| Episode | Length | Audio mean | Audio max |
+|---|---|---|---|
+| 05A | 39.8 s | −26.1 dB | −1.9 dB |
+| 05B | 31.3 s | −25.4 dB | −2.0 dB |
+| 05C | 31.8 s | −25.2 dB | −1.9 dB |
+
+- MP4s: `engine/out/05-envelope-split-{a,b,c}.mp4`, 1080×1920, H.264 + AAC.
+- `check`: zero warnings on all three.
+- Math script: all assertions pass. The script and its output are re-embedded in [Math check](#math-check).
+- Beat sheets, Full VO and frame-1 hook text above are updated to match the specs.

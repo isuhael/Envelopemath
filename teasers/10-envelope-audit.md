@@ -203,7 +203,7 @@ All three run 36–37 s in the Envelope lane (report 01 §4.2: YouTube favours u
 
 | Input | Value used | Source (re-verified 2026-10-07; see Final fact check) |
 |---|---|---|
-| APR | **22%** on screen. The exact calculation uses **22.15%**, the Fed G.19 "interest rate on credit card plans, accounts assessed interest" for Q2 2026 (prior quarter 21.52%; all accounts 20.94%) | Federal Reserve G.19 ([federalreserve.gov](https://www.federalreserve.gov/releases/g19/current/)); FRED series TERMCBCCINTNS ([fred.stlouisfed.org](https://fred.stlouisfed.org/series/TERMCBCCINTNS)); the Q2 2026 figures as reported in LendingTree's 2026 Credit Card Debt Statistics ([lendingtree.com](https://www.lendingtree.com/credit-cards/study/credit-card-debt-statistics/)). The Fed page itself can't be fetched from this environment; the on-screen answer doesn't hinge on it (21–23% APR gives 228–232 months, still ≈ 19 years) |
+| APR | **22%** on screen. The exact calculation uses **22.15%**, the Fed G.19 "interest rate on credit card plans, accounts assessed interest" for Q2 2026 (prior quarter 21.52%; all accounts 20.94%) | Federal Reserve G.19, release of Aug 7, 2026 ([federalreserve.gov](https://www.federalreserve.gov/releases/g19/20260807/)); FRED series TERMCBCCINTNS ([fred.stlouisfed.org](https://fred.stlouisfed.org/series/TERMCBCCINTNS)); the Q2 2026 figures as reported in LendingTree's 2026 Credit Card Debt Statistics ([lendingtree.com](https://www.lendingtree.com/credit-cards/study/credit-card-debt-statistics/)). The Fed page itself can't be fetched from this environment; the on-screen answer doesn't hinge on it (21–23% APR gives 228–232 months, still ≈ 19 years) |
 | Minimum-payment formula | Greater of **$25** or **1% of balance + that month's interest** (+ late fees) | Capital One terms, as quoted in WalletHub's answer on the Capital One minimum ([wallethub.com](https://wallethub.com/answers/cc/capital-one-platinum-minimum-payment-1000334-2140659296/)). Chase uses the larger of **$40** or 1% + interest + late fees ([chase.com](https://www.chase.com/personal/credit-cards/education/basics/how-to-calculate-your-minimum-credit-card-payment)), so the pinned comment gives the $40-floor result too |
 | Statement warning box | Issuers must print a "Minimum Payment Warning" with the payoff time and total cost | Reg Z 12 CFR 1026.7(b)(12) and Appendix M1 ([Cornell LII](https://www.law.cornell.edu/cfr/text/12/appendix-M1_to_part_1026); [CFPB](https://www.consumerfinance.gov/rules-policy/regulations/1026/m1/)) |
 | Balance | **$5,000**, a labelled round assumption, no new charges | n/a (assumption) |
@@ -251,7 +251,7 @@ We audit the arithmetic, not a person or a firm. No funds, tickers, providers or
 | 0.0–2.3 | Hook: the claim | Claim card + THE CLAIM tape (frame 0), AUDIT stamp 0.4 s, THIRD underlined 1.3 s, postmark No. 10C in the flap |
 | 2.3–4.0 | "Sounds dramatic. Let's audit it." | Flip. Tape reminder **“…eats a THIRD.”** (stays through the math). Pen writes **$10,000** (150 px) |
 | 4.0–7.7 | Set the inputs | "left alone 40 years" (84 px), ASSUME sticky (5.9 s): 7% a year before fees, no new deposits |
-| 7.7–10.3 | **Credit first** | Green **1% of it all, / every year ✓**: the claim's mechanism is real (the fee comes off the whole balance every year, so it compounds too). Flip |
+| 7.5–10.3 | **Credit first** | Green **1% of it all, / every year ✓**: the claim's mechanism is real (the fee comes off the whole balance every year, so it compounds too). Flip |
 | 10.4–12.6 | Line 1 (**first payoff**, written by 11.7 s = 32%) | **7%: $10K → ≈ $150K** (98 px); the ink curve of the 7% path draws under it |
 | 12.6–16.0 | Line 2, red pattern break (35%) | **6%: $10K → ≈ $103K** ("6%" in red); the red 6% curve draws under the ink one, and the gap between them is the fee |
 | 16.0–19.6 | Line 3, seal | **$103K ÷ $150K ≈ 0.69** (100 px), sealed envelope "how much did the fee eat?" |
@@ -890,7 +890,7 @@ Every real-world input that appears on screen, in a VO, pinned comment or descri
 | 10A · Personal / family meals | Not deductible | https://www.law.cornell.edu/uscode/text/26/262 | 2026-10-07 | Confirmed (§262(a)) |
 | 10A · Entertainment | Not deductible | https://www.law.cornell.edu/uscode/text/26/274 | 2026-10-07 | Confirmed (§274(a)) |
 | 10A · Dinner cost | $100 | n/a | n/a | Labelled assumption (sticky) |
-| 10B · Credit card APR, accounts assessed interest, Q2 2026 | 22.15% (Q1 2026: 21.52%; all accounts: 20.94%); 22% on screen | https://www.federalreserve.gov/releases/g19/current/ · https://www.lendingtree.com/credit-cards/study/credit-card-debt-statistics/ | 2026-10-07 | Confirmed from several reports citing G.19 (LendingTree, The Money Overview). The Fed page itself wasn't fetchable. Verdict holds for any APR from 21% to 23% |
+| 10B · Credit card APR, accounts assessed interest, Q2 2026 | 22.15% (Q1 2026: 21.52%; all accounts: 20.94%); 22% on screen | https://www.federalreserve.gov/releases/g19/20260807/ · https://www.lendingtree.com/credit-cards/study/credit-card-debt-statistics/ | 2026-10-07 | Confirmed from several reports citing G.19 (LendingTree, The Money Overview). The Fed page itself wasn't fetchable. Verdict holds for any APR from 21% to 23% |
 | 10B · Capital One minimum payment | Greater of $25 or 1% of balance + interest + late fees | https://wallethub.com/answers/cc/capital-one-platinum-minimum-payment-1000334-2140659296/ | 2026-10-07 | Confirmed from a secondary source quoting the terms; capitalone.com not opened |
 | 10B · Chase minimum payment | Larger of $40 or 1% of balance + interest + late fees | https://www.chase.com/personal/credit-cards/education/basics/how-to-calculate-your-minimum-credit-card-payment | 2026-10-07 | Confirmed (Chase's own page, via WebSearch) |
 | 10B · Minimum Payment Warning box | Required on statements: payoff time and total cost at the minimum | https://www.law.cornell.edu/cfr/text/12/appendix-M1_to_part_1026 · https://www.consumerfinance.gov/rules-policy/regulations/1026/m1/ | 2026-10-07 | Confirmed (12 CFR 1026.7(b)(12), App. M1) |
@@ -952,3 +952,62 @@ Finishing producer, 2026-10-07. Files touched: this md, `teasers/10-envelope-aud
 **Open items**
 - Before publishing, re-open the Fed G.19 page (Q2 2026 rate) and Capital One's own terms, which couldn't be fetched from this environment.
 - The VO is a script only: the engine renders foley, not speech. Record or synthesise the VO from each caption's `say`.
+
+---
+
+### Final review
+
+Independent final reviewer, 2026-10-07. Re-read `engine/README.md` first. Files touched: this md (beat-sheet timing for 10C's credit, a dated G.19 source, this section), `engine/specs/10-envelope-audit-{a,b,c}.json`, and the re-rendered `engine/out/10-envelope-audit-{a,b,c}.mp4`, `engine/out/sheets/10-envelope-audit-{a,b,c}.png` and `engine/out/stills/10-envelope-audit-*`. `engine/src` and the math-check script were not edited.
+
+**What I looked at.** For each teaser: a 12-tile contact sheet from the spec, the MP4 at 0.0 s, 40%, 75% and the last frame, safe-zone overlay sheets (`--safe`) at every beat change, and full-size stills wherever text came close to the right rail. I checked them as a phone viewer would, against the top bar, the right rail (x > 940 below y 820) and the caption band. I also measured every text box and curve label with the engine's own `boxes()` and font metrics, and worked out how long each text stays on screen after it finishes writing.
+
+**Problems found and fixed**
+
+| Teaser | Problem (what a viewer would see) | Fix |
+|---|---|---|
+| 10A | While the red note "meals: 50% cap · IRC §274(n)" wrote (12.0–13.2 s), the pen lay across "50% cap" in line 1, at the moment the first payoff ($50) gets circled. The same thing happened on every later line: the pen covered the line above as it wrote. | `pen: "low"` on the red note, "$50 back?", "not a refund", line 3, "deductible", "≠ paid off" and the end number. The pen now points down and away from text already on screen. |
+| 10A | Line 3, "$50 × 24% = $12 back", ended at x 934, 6 px from the right rail, with "back" and its double underline touching the button column. | Size 100 → 96 (still inside the 88–104 px working range). The line now ends at x 901. |
+| 10B | The curve label "yr 12 ≈ $1.2K" ran to x 961, so "$1.2K" sat under the right rail. `check` didn't flag it because it doesn't measure curve marks. | Curve x 150 → 120, w 720 → 680. The label now ends at x 906. The values, marks and timing are unchanged (the math check still asserts the exact 22.15% path). |
+| 10B | At about 4.6 s the pen writing "on a credit card at 22%" covered ",0" in "$5,000", which read as "$5 900". The pen also covered line 1 while line 2 wrote, and line 2's circled $50 while "only $50 hits the debt" wrote. | `pen: "low"` on those writes and on "pay only the minimum:" and the end number. |
+| 10B | "only $50 hits the debt" finished at 14.60 s and the flip came at 15.7 s: 1.10 s for 5 words (0.22 s/word), below the 0.25 s/word floor. The polish pass logged 1.35 s, which was a mis-measurement. | It now starts at 13.4 s and writes at 24 cps, so it's done at 14.32 s and stays up 1.38 s (0.28 s/word). |
+| 10C | The 7% and 6% labels at the curve ends ran to x 947/949 at y ≈ 910, under the right rail. `check` didn't flag this either. | Both curves moved to x 160 → 140, w 700 → 680. The labels now end at x 907/909. |
+| 10C | The credit, "1% of it all, / every year ✓", finished at 9.53 s and the flip came at 10.3 s, so the whole 6-word phrase was complete for only 0.77 s. | It now writes at 7.5 s and 8.25 s (20 cps), finishing at 8.75 s, with the green check at 8.85 s. The phrase is complete for 1.55 s. The beat sheet now reads 7.5–10.3. |
+| 10C | The last caption, "Every $10K left 40 years: the fee eats about $47K.", showed $47K 1.2 s before the pen wrote it. Its first line also reached x 946, past the rail. | Split into "Every $10K left 40 years:" (33.0–34.35 s, 3.7 words/s) and "the fee eats about $47K." (34.35–36.4 s). The second lands with the red ≈ $47K. Each `say` is unchanged word for word, so captions still equal the VO. |
+
+**Checked and left alone**
+- **Frame 0 (the thumbnail):** each teaser opens on the finished claim card with a number: $100 (10A), $5,000 and 20 YEARS (10B), 1% and THIRD (10C). THE CLAIM tape and the No. 10A/B/C postmark sit in the flap, and nothing is under the top bar. The AUDIT stamp slams in at 0.4 s, so it isn't in frame 0. Putting it there would need a negative `t`, which the brief bans, and the 0.4 s slam is the "visible skepticism" beat. The last frame crossfades cleanly into frame 0 on all three.
+- **Phone legibility:** all handwriting meets the 56 px floor: 10B's bar labels are 60 px, stickies 62, curve marks 66, pencil labels 72–84, working lines 88–104 and hero numbers 130–150. Typewriter text is 48 px (the MINIMUM PAYMENT WARNING header and the gauge label), and the 10A postage label is 40 px; both are at or above the 40 px floor. The claim cards are 92 px marker. One exception: the engine draws the red note on a sealed envelope at a fixed 54 px with no size parameter, and `check` doesn't flag it. It's legible on a phone, and the caption says the same words at the same moment, so I left it.
+- **Overlaps:** RETURN TO SENDER and ROUGHLY RIGHT land on the envelope body and cover its small "SEALED ANSWER" label. That's the designed stamp-on-paper move and doesn't hide any number.
+- **Pacing:** every caption is at most 2 lines and 4 words/s (lint). After the fixes above, every text stays on screen at least 0.25 s per word after it finishes writing. The tightest are 10A line 3 (1.60 s for 6 words) and 10C "later $ grow for less time" (1.50 s for 6 words). The sealed reveals (68% / 70% / 59%) each follow a full 3 s PAUSE & GUESS, and no caption says the answer before the envelope opens.
+- **Audio** (`volumedetect` on the new MP4s): 10A mean −24.6 dB / max −1.6 dB; 10B −24.3 / −1.7; 10C −24.4 / −1.7. All three are 1080×1920 at 30 fps, and their durations (36.0, 36.6, 37.0 s) match the specs.
+
+**Math**
+- `python3 teasers/10-envelope-audit-mathcheck.py`: all 136 checks pass. Its output is unchanged byte for byte from the block above, and the script embedded in this md is identical to the file.
+- I recomputed everything independently in a separate python3 run, with exact fractions for 10A and an integer-cents month loop for 10B:
+  - 10A: $100 × ½ × 24% = $12 → $88, and $88 × 365 = $32,120. Survival 12%.
+  - 10B: 231 months and $13,158.75 at 22.15%, and 184 months and $12,516.44 at a $40 floor. Year 6 is $2,424.94 and year 12 is $1,176.08. Survival 19.25 / 20 = 96%. At 22% my loop gives $13,099.70 against the script's $13,099.76; that's a cent-rounding convention for the 1% term, and both say ≈ $13,100.
+  - 10C: $149,744.58 vs $102,857.18 → 31.31% less, and $46,887.40 eaten. Survival 93.9% → 94%. Saving yearly gives 22.48% less.
+- I spot-checked every number on screen, in the captions, in the VO and in the beat sheets against each other: the timings in the beat sheets (first payoff 33% / 32% / 32%, reveal, verdict, biggest number done at 34.0 / 34.6 / 35.0 s, gauge settling) match the specs, and the curve marks land at 18.5 s and 19.5 s as written. No mismatch was left after the timing edit above.
+
+**Facts re-spot-checked with WebSearch (2026-10-07)**
+- G.19, Q2 2026: 22.15% on accounts assessed interest and 20.94% on all accounts. This is now cited to the dated release ([federalreserve.gov, Aug 7, 2026](https://www.federalreserve.gov/releases/g19/20260807/)), which search indexes but this environment can't fetch.
+- 2026 single filers: the 24% bracket runs $105,700–$201,775 (Rev. Proc. 2025-32; [KPMG TaxNewsFlash](https://kpmg.com/us/en/taxnewsflash/news/2025/10/tnf-rev-proc-2025-32-inflation-adjustments-for-2026-individual-taxpayers.html)).
+- ICI: the 2025 equity mutual fund average was 0.40% and index equity ETFs 0.14% ([ici.org](https://www.ici.org/news-release/mutual-fund-and-etf-fees-remained-near-historic-lows-in-2025)).
+- Morningstar: all US funds and ETFs averaged 0.32% in 2025, down from 0.34% ([morningstar.com](https://www.morningstar.com/business/insights/blog/us-fund-fee-study)).
+- The §274(n) 50% business-meal limit is unchanged for 2026 under the OBBBA ([beancount.io guide, May 14, 2026](https://beancount.io/blog/2026/05/14/section-274n-business-meal-deduction-2026-50-percent-limit-274o-employer-convenience-meals-disallowance-entertainment-rules-guide); statute at [Cornell LII](https://www.law.cornell.edu/uscode/text/26/274)). The same source notes that §274(o) disallows 100% of employer-provided convenience meals from 2026. That isn't on screen and doesn't change 10A's best case. It's a possible extra strike for the TikTok cut, but re-check it against the statute text before using it.
+- No on-screen value changed.
+
+**Hook scores** (against 02-top-10 §10: claim card plus AUDIT stamp inside 2 s, a number in frame 0, visible skepticism by 1.5 s, an outrageous or half-believed claim)
+
+| Teaser | Score | Why |
+|---|---|---|
+| 10A | **8.5** | The proven topic: Money Guy's private-chef write-off, 6.2M views, 272.45x. A lifestyle fantasy with the claim's number in frame 0 and in the first spoken line. FREE is underlined at 1.3 s and AUDIT lands at 0.4 s. The claim collapses (12%), which drives comments. |
+| 10B | **8** | Sklar's 1,227.8x myth with the number vidIQ said was missing. The spoken hook "Twenty years to pay off five grand?" is crisp. The card holds 11 words on 5 lines, which is denser than ideal for a thumbnail but reads in the 2.8 s it holds. The "claim survives" twist keeps the stamp unpredictable. |
+| 10C | **7.5** | A short card with a built-in gap ("1%" vs "a THIRD"), and the claim circulates widely. But it's the least emotional of the three, and there's no direct fee-audit outlier in the research. Post it third. |
+
+**Verdicts:** 10A **fixed**, 10B **fixed**, 10C **fixed**. `node src/cli.js check` reports zero warnings on all three after the fixes, and the MP4s are re-rendered from the final specs.
+
+**Engine/lint requests** (not implemented; `engine/src` untouched)
+1. `check` should measure curve `marks` and end labels against the right rail and the safe area. Two labels crossed the rail with zero warnings.
+2. `check` should flag a pen that lies across text already on screen, or `write` could default to `pen: "low"` when it starts below another line that's still showing.
+3. Captions wrap at 820 px centred on x 540 (x 130–950), so a full caption line can end past the x 940 rail. A 780 px wrap, or a lint warning, would keep captions clear of it.

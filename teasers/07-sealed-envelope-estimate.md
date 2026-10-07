@@ -2,12 +2,13 @@
 
 **Series:** *Sealed Answer* · **Lane:** Envelope (27.8 to 33.9 s masters; 60 s+ TikTok cuts) · **Lead devices:** the Sealed Answer envelope, PAUSE & GUESS timer, ballpoint two-column working (LOW | HIGH, or two competing rules), ASSUME/GIVEN/RULES sticky, the range ruler, red pen, ROUGHLY RIGHT stamp
 **Teasers:** 07A Fry's 93¢ after 1,000 years · 07B What's in all 100 envelopes · 07C What the Eras Tour made
-**Specs:** `engine/specs/07-sealed-envelope-estimate-{a,b,c}.json` · **Sheets:** `engine/out/sheets/07-sealed-envelope-estimate-{a,b,c}.png` · **Stills:** `engine/out/stills/07-sealed-envelope-estimate-*` · **Math check:** `teasers/07-sealed-envelope-estimate-mathcheck.py` (102 checks, all pass; it also checks the specs' on-screen numbers and beat timings)
+**Specs:** `engine/specs/07-sealed-envelope-estimate-{a,b,c}.json` · **MP4s:** `engine/out/07-sealed-envelope-estimate-{a,b,c}.mp4` · **Sheets:** `engine/out/sheets/07-sealed-envelope-estimate-{a,b,c}.png` · **Stills (from the MP4s):** `engine/out/stills/07-sealed-envelope-estimate-*` · **Math check:** `teasers/07-sealed-envelope-estimate-mathcheck.py` (130 checks, all pass; it also checks the specs' on-screen numbers, frame 0, text sizes, anchors, captions and beat timings)
 
 > **Verification status. Read this before scheduling.**
-> - **07A and 07B: cleared.** Their only real-world inputs are the show's own figures (93¢, 2.25%, 1,000 years, $4.3B) and the challenge's published rule ($1 to $100). Both were checked by WebSearch on 2026-10-07 in the research pass and recorded with URLs in `research/raw/`. The arithmetic corroborates both: 0.93 × 1.0225^1000 = $4.28B, which rounds to the show's $4.3B, and 1 + 2 + … + 100 = $5,050, the challenge's published total.
-> - **07C: VERIFY before posting.** Its three real-world figures (149 shows, $2,077,618,725 gross, 10,168,008 tickets; Billboard Boxscore, Dec 2024) have **not** been verified by anyone. The writer's WebSearch budget was used up, and so was QA's (the limit is 200 calls per turn, shared by every agent). The egress proxy blocked billboard.com and wikipedia.org, and apnews.com refused the fetch. Do not post 07C until someone has searched these figures and pasted the source URL and date into its Sources. Everything else in 07C is labelled on screen as our assumption.
-> - QA log: see [Verification log](#verification-log) at the end.
+> - **All three are cleared to post** (polish pass, 2026-10-07). Every real-world input was confirmed by WebSearch on 2026-10-07; see [Final fact check](#final-fact-check). No value changed.
+> - **07C's Eras Tour figures are now verified.** Billboard's own article ("Taylor Swift's The Eras Tour Wraps as First Tour to Pass $2 Billion in Sales", published after the Sunday, Dec 8, 2024 finale) gives 149 shows, $2,077,618,725 and 10,168,008 tickets. Guinness World Records cites the same Billboard Boxscore figures, with a $204.33 average ticket and 68,242 average attendance. The page fetches are egress-blocked, so the numbers come from the search results' quotations of each page.
+> - **One nuance for 07C's comments:** Pollstar's estimate (via AP, Dec 9, 2024) is higher, at **$2.2B**. The card says "Billboard Boxscore" and uses Billboard's reported figure. The pin names both, and both fall inside our $1.3B–$2.8B range.
+> - Logs: [Verification log](#verification-log) (first QA), [Final fact check](#final-fact-check), [Polish pass](#polish-pass).
 
 ---
 
@@ -114,8 +115,8 @@ More guess-the-price breakouts from small channels: bris (24.9K subs) 6,805,887 
 | Flip to the working side and back | `flip` | ✓ | ✓ | ✓ |
 | GIVEN / RULES / ASSUME sticky | `sticky` | GIVEN | RULES | ASSUME |
 | Postage stamp (the unit) | `postage` | 93¢ FUTURAMA (stuck on the envelope) | 100 ENVELOPES | 149 SHOWS |
-| Ballpoint two-column working (3 lines) | `write` | RULE OF 72 \| RULE OF 70 | all-$1 \| all-$100 → middle | tickets → price → gross |
-| Red pen | `annotate` | underline, box | circle, ✗ outside range, arrow | box, arrow |
+| Ballpoint two-column working (3 lines) | `write` | RULE OF 72 \| RULE OF 70 | LOW / HIGH / MIDDLE equations | LOW \| HIGH: tickets → price → gross |
+| Red pen (text marks use `target` anchors) | `annotate` | underline on $2B, boxes on $2B and $4B | underlines on $100 and $10,000, circle on $5,000, ✗ outside range, arrow | boxes on $1.3B and $2.8B, arrow |
 | Napkin chart | `curve` / ruler | hockey-stick curve | range ruler | range ruler |
 | Verdict stamp | `stamp` | ROUGHLY RIGHT | ROUGHLY RIGHT | ROUGHLY RIGHT |
 | Postmark No. | `postmark` | 07A | 07B | 07C |
@@ -141,21 +142,21 @@ More guess-the-price breakouts from small channels: bris (24.9K subs) 6,805,887 
 
 | Time | Beat | On screen |
 |---|---|---|
-| 0.0–3.0 | Hook | Tape hook; sealed envelope "Fry's balance now = ?"; 93¢ FUTURAMA stamp |
+| 0.0–3.0 | Hook | Tape hook (88 px); sealed envelope "Fry's balance now = ?"; 93¢ FUTURAMA stamp on its corner. All finished in frame 0, which is the thumbnail |
 | 3.1–6.1 | Guess window | 3-s PAUSE & GUESS timer under the wiggling envelope |
 | 6.2 | Flip | To the back of the envelope |
-| 6.5–9.5 | Set-up + rule of 72 | GIVEN sticky "93¢ · 2.25% a year · 1,000 years (Futurama, 1999)"; 93¢ stamp; "RULE OF 72", "72 ÷ 2.25", "doubles every **32 yrs**" |
+| 6.5–9.5 | Set-up + rule of 72 | GIVEN sticky "93¢, 2.25% a year, 1,000 years (Futurama, 1999)"; 93¢ stamp; "RULE OF 72", "72 ÷ 2.25", "doubles every **32 yrs**" |
 | 9.6–12.1 | Line 2 | "doublings **≈ 31**" |
-| 12.2–14.5 | **Partial payoff (37%)** | "93¢ grows to **$2B**" at 12.6, underlined |
-| 14.6–17.7 | **Pattern break (43%)** | "72 is tuned for 8%. Try 70."; red "RULE OF 70", "70 ÷ 2.25" |
-| 17.8–21.2 | Rule-of-70 column | Red "31 yrs", "≈ 32", "**$4B**" |
-| 21.3–23.9 | The gap | Red box around $2B and $4B; "1 yr apart = $2B apart" |
+| 12.2–14.5 | **Partial payoff (37%)** | "93¢ grows to **$2B**" (120 px) at 12.6, underlined at 12.9 |
+| 14.6–17.7 | **Pattern break (43%)** | Red note "72 is tuned for 8%: try 70" at 14.7; red "RULE OF 70" at 16.3, "70 ÷ 2.25" at 16.6 |
+| 17.8–21.2 | Rule-of-70 column | Red "31 yrs" (18.2), "≈ 32" (19.3), "**$4B**" (20.3) |
+| 21.3–23.9 | The gap | Red boxes land on $2B (21.3) and $4B (21.55); "1 yr apart = $2B apart" at 21.8 |
 | 24.0 | Flip | |
-| 24.35–27.0 | Sanity check | Hockey-stick curve drawn in red: "year 500: $63K", "½ in the last 31 yrs", end label "?"; sealed envelope "$2B or $4B?" |
+| 24.35–27.0 | Sanity check | Hockey-stick curve drawn in red: "year 500: $63K", "½ in the last 31 yrs", end label "?"; sealed envelope "$2B or $4B?" below it |
 | 27.1–29.7 | Last guess | "Two billion or four?" |
 | 29.8–30.9 | **Reveal (91%)** | Envelope opens; the card slides out: **$4.3B**, "the show's number"; ding at 30.7 |
-| 31.9 | **Verdict (last 2 s)** | ROUGHLY RIGHT slams; "rule of 70: within 7%" |
-| 32.3–33.9 | Loop | "All from…" runs straight into the first line |
+| 31.9 | **Verdict (last 2 s)** | ROUGHLY RIGHT slams on the envelope; "rule of 70: within 7%" written above the card at 32.0 |
+| 32.3–33.9 | Loop | "All from…" runs straight into the first line; the last 0.35 s crossfades into frame 0 |
 
 **Voice-over**
 
@@ -183,10 +184,10 @@ More guess-the-price breakouts from small channels: bris (24.9K subs) 6,805,887 
 
 Sealed card: **$4.3B** (the show's number). The exact balance is above both columns, which is why they are labelled by rule, not LOW and HIGH. Curve marks: year 500 = $63,116; the last 31 years add 49.8% of the total.
 
-**GIVEN sticky (on screen):** "93¢ · 2.25% a year · 1,000 years (Futurama, 1999)". There are no assumptions beyond yearly compounding, which the pinned comment states: every input is the show's.
+**GIVEN sticky (on screen):** "93¢, 2.25% a year, 1,000 years (Futurama, 1999)". There are no assumptions beyond yearly compounding, which the pinned comment states: every input is the show's.
 
 **Sources**
-- **The 93¢, the 2.25% rate, the 1,000 years and the $4.3 billion balance:** *Futurama*, "A Fishful of Dollars" (1999). The balance is confirmed as mathematically correct by Abakcus (https://abakcus.com/video/futurama-93-cents-turned-43-billion-dollars) and VICE (https://vice.com/en/article/futurama-taught-me-everything-i-know-about-compound-interest). Both were found by WebSearch on 2026-10-07 and recorded in `research/raw/web-trends-and-whitespace.md` §1.10, with the research team's own check ($4,283,508,449.71), which the math check reproduces. QA could not re-load either page (abakcus.com is egress-blocked; see the log).
+- **The 93¢, the 2.25% rate, the 1,000 years and the $4.3 billion balance:** *Futurama*, "A Fishful of Dollars" (season 1, episode 6, first aired on Fox on April 27, 1999; https://en.wikipedia.org/wiki/A_Fishful_of_Dollars). In the scene, the bank teller tells Fry that his 93¢ balance, at an average of 2.25% interest over 1,000 years, now comes to $4.3 billion. The balance is confirmed as mathematically correct by Abakcus (https://abakcus.com/video/futurama-93-cents-turned-43-billion-dollars) and VICE (https://vice.com/en/article/futurama-taught-me-everything-i-know-about-compound-interest). All re-confirmed by WebSearch on 2026-10-07 (polish pass) and first recorded in `research/raw/web-trends-and-whitespace.md` §1.10. The research team's own check ($4,283,508,449.71) is reproduced by the math check. Direct page fetches are egress-blocked.
 - **Rules of 72 and 70:** pure arithmetic, no external input. The rule of 72 is exact at 7.85%; at 2.25% the exact constant is 70.09. Both are in the math check.
 - **IP note:** we name the show and quote its numbers. We do not draw Fry or use any clip, still or audio.
 
@@ -226,30 +227,31 @@ Sealed card: **$4.3B** (the show's number). The exact balance is above both colu
 
 **Frame-1 hook** (all on screen at frame 0)
 - **On screen (tape):** **THE 100 ENVELOPE / CHALLENGE: / HOW MUCH IN *ALL 100*?** A full 10 × 10 grid of ✉️ sits underneath, labelled "$1, $2, $3 … $100".
-- **First spoken line (0.2–2.8 s):** *"The hundred envelope challenge: how much in all?"*
+- **First spoken line (0.2–2.7 s):** *"The hundred envelope challenge: how much in all?"*
 
 **Beat sheet**
 
 | Time | Beat | On screen |
 |---|---|---|
-| 0.0–2.8 | Hook | Tape hook; the filled 100-envelope grid "$1, $2, $3 … $100" |
-| 2.8–6.2 | Guess window | Grid clears; sealed envelope "all 100 = ?"; 3-s PAUSE & GUESS timer (3.1–6.1) |
+| 0.0–2.7 | Hook | Tape hook (72 px, 3 strips); the filled 10 × 10 grid of ✉️ labelled "$1, $2, $3 … $100" (64 px). All finished in frame 0 |
+| 2.7–6.2 | Guess window | Grid clears; sealed envelope "all 100 = ?" slides in at 2.8; 3-s PAUSE & GUESS timer (3.1–6.1) |
 | 6.3 | Flip | |
-| 6.6–9.6 | Set-up + LOW (**first payoff, 28%**) | RULES sticky "#1 holds $1, #2 holds $2 … #100 holds $100."; 100 ENVELOPES stamp; "LOW: every envelope $1" → **100 × $1 = $100** at 7.7 |
-| 9.7–12.5 | HIGH (39%) | "HIGH: every envelope $100" → **100 × $100 = $10,000** at 10.8 |
-| 12.6–16.2 | The estimate | "MIDDLE: average ≈ $50" → red **100 × $50 ≈ $5,000** at 13.7, circled |
+| 6.6–9.6 | Set-up + LOW (**first payoff, 28%**) | RULES sticky "#1 holds $1, #2 holds $2 … #100 holds $100."; 100 ENVELOPES stamp; LOW tag, then **100 × $1 = $100** written 7.0–7.8, "$100" underlined at 8.0 |
+| 9.7–12.5 | HIGH (40%) | HIGH tag, then **100 × $100 = $10,000** written 10.0–11.1, "$10,000" underlined at 11.25 |
+| 12.6–16.2 | The estimate | "MIDDLE: average ≈ $50" at 12.7 → red **100 × $50 ≈ $5,000** (100 px) at 13.7, "$5,000" circled at 15.0 |
 | 16.3 | Flip | New side: tape "EXACT TOTAL: SEALED"; sealed envelope "ours: ≈ $5,000" |
 | 16.6–19.7 | Range ruler | Ruler $100 … $10,000 draws; red ✗ beyond each end ("already out") |
-| 19.8–22.8 | Lock-in | "your guess: $ ______" written above the envelope |
+| 19.8–22.8 | Lock-in | "your guess: $ ______" written above the envelope at 20.6 |
 | 22.9–24.0 | **Reveal (86%)** | Envelope opens: **$5,050**, "exactly halfway"; ding at 23.8 |
 | 24.3 | Score | Red arrow drops at the dead centre of the ruler, "$5,050" |
-| 25.9 | **Verdict (last 2 s)** | ROUGHLY RIGHT slams |
-| 25.6–27.8 | Re-hook | "Now guess the fifty-two week challenge." |
+| 25.9 | **Verdict (last 2 s)** | ROUGHLY RIGHT slams on the envelope |
+| 25.6–27.8 | Re-hook | "Now guess the fifty-two week challenge."; the last 0.35 s crossfades into frame 0 |
 
 **Voice-over**
 
 > The hundred envelope challenge: how much in all? *(0.2)*
-> A dollar in the first, a hundred in the last. Guess the total. *(2.9)*
+> A dollar in the first, a hundred in the last. *(2.7)*
+> Guess the total. *(5.1)*
 > Low end: every envelope a dollar. A hundred bucks. *(6.6)*
 > High end: every envelope a hundred. Ten grand. *(9.7)*
 > Even steps, so the average is about fifty. Call it five grand. *(12.6)*
@@ -268,10 +270,10 @@ Sealed card: **$5,050**. It is exactly (100 + 10,000) ÷ 2, because the envelope
 **RULES sticky (on screen):** "#1 holds $1, #2 holds $2 … #100 holds $100." There are no real-world inputs beyond the challenge's rules.
 
 **Sources**
-- **The challenge rules and the $5,050 total:** Bustle (https://www.bustle.com/life/hundred-envelope-challenge-tiktok); Chime, "how to save $5,000 in 3 months" (https://www.chime.com/blog/100-envelope-challenge-how-to-save-5000-in-3-months/?bapage=1).
-- **150M+ TikTok views on the hashtag:** TIME (https://time.com/6249003).
-- Both were found by WebSearch on 2026-10-07 and recorded in `research/raw/web-creator-case-studies.md` (line 222) and `research/raw/web-trends-and-whitespace.md` §1.2. The total itself is exact arithmetic (Gauss sum), recomputed in the math check. QA could not re-load bustle.com or chime.com (egress-blocked).
-- **The 52-week challenge ($1 in week one … $52 in week 52 = $1,378):** `research/raw/web-trends-and-whitespace.md` line 63, recomputed in the math check.
+- **The challenge rules and the $5,050 total:** Bustle (https://www.bustle.com/life/hundred-envelope-challenge-tiktok); Chime, "how to save $5,000 in 3 months" (https://www.chime.com/blog/100-envelope-challenge-how-to-save-5000-in-3-months/?bapage=1). Re-confirmed by WebSearch on 2026-10-07 (polish pass) against Entrepreneur, "What is the 100-Envelope Challenge? A Fun Way to Save $5,050" (https://www.entrepreneur.com/finance/what-is-the-100-envelope-challenge-a-fun-way-to-save-5050/469346), and Ramsey Solutions (https://ramseysolutions.com/saving/100-envelope-challenge): envelopes numbered 1 to 100, $1 in #1 … $100 in #100, $5,050 in total.
+- **150M+ TikTok views on the hashtag:** TIME, "TikTok's 100 Envelopes Challenge Works—Sort Of" (Jan 21, 2023; https://time.com/6249003/100-envelopes-challenge-tiktok/). Re-confirmed by WebSearch on 2026-10-07. The figure is as of TIME's date; it is used here as context only, never on screen.
+- First found by WebSearch on 2026-10-07 and recorded in `research/raw/web-creator-case-studies.md` (line 222) and `research/raw/web-trends-and-whitespace.md` §1.2. The total itself is exact arithmetic (Gauss sum), recomputed in the math check.
+- **The 52-week challenge ($1 in week one … $52 in week 52 = $1,378):** Experian, "How to Do the 52-Week Money Challenge" (https://www.experian.com/blogs/ask-experian/how-to-do-52-week-money-challenge/), re-confirmed by WebSearch on 2026-10-07; also `research/raw/web-trends-and-whitespace.md` line 63. Recomputed in the math check.
 - **#cashstuffing scale (≈1.9B views across ≈103K posts):** Canstar, via `research/raw/web-trends-and-whitespace.md` §1.1 (2026-10-07). This is planning context only and never appears on screen or in the description.
 
 **Ending**
@@ -293,7 +295,7 @@ Sealed card: **$5,050**. It is exactly (100 + 10,000) ÷ 2, because the envelope
 - **Scheduling note:** the 100 Envelope Challenge total is also listed in approach #8's "verified puzzle bank" (`research/02-top-10-approaches.md`, line 556). The #8 teasers don't use it, but the calendar should run it once, here, as a sealed estimate.
 
 **Why this one should travel**
-- **It names the trend and the channel's double meaning.** The research's whitespace #3 is "nobody does the math behind cash-stuffing… the Gauss sum behind the 100-envelope challenge" (report 01 §6). The hashtag has 150M+ views, and its total is never shown as math. Naming the challenge on the tape lets its audience recognise it in frame 1.
+- **It names the trend and the channel's double meaning.** The research's whitespace #3 is "nobody does the math behind cash-stuffing… the Gauss sum behind the 100-envelope challenge" (report 01 §6). The hashtag had 150M+ TikTok views by January 2023 (TIME), and its total is never shown as math. Naming the challenge on the tape lets its audience recognise it in frame 1.
 - **The bounds trick is the save.** "At least, at most, middle" is the Fermi move in its purest form, and here the middle is *exactly* right. That's a satisfying surprise, and a rule viewers can reuse on any savings challenge.
 - **Built-in sequel.** The 52-week envelope is a ready-made second episode, the "follow for part 2" pull that Monica and Abdullah Habib used.
 
@@ -305,7 +307,7 @@ Sealed card: **$5,050**. It is exactly (100 + 10,000) ÷ 2, because the envelope
 - **Money topic:** live-event business and celebrity money (the "pocket watching" lane, built on a public box-office figure rather than a guess at someone's personal income)
 - **Lane / runtime:** Envelope, **30.5 s** master
 - **Spec:** `engine/specs/07-sealed-envelope-estimate-c.json` · **Sheet:** `engine/out/sheets/07-sealed-envelope-estimate-c.png`
-- **Status: VERIFY before posting** (see the sources below)
+- **Status: cleared** (Billboard figures verified by WebSearch on 2026-10-07; see the sources below)
 
 **Frame-1 hook** (all on screen at frame 0)
 - **On screen (tape):** **149 SHOWS. / HOW MUCH DID THE / *ERAS TOUR* MAKE?**, with a 🎤. The sealed envelope's red note reads "$1B? $2B? $3B?".
@@ -315,20 +317,21 @@ Sealed card: **$5,050**. It is exactly (100 + 10,000) ÷ 2, because the envelope
 
 | Time | Beat | On screen |
 |---|---|---|
-| 0.0–2.3 | Hook | Tape hook + 🎤; sealed envelope "$1B? $2B? $3B?" |
+| 0.0–2.3 | Hook | Tape hook (72 px, 3 strips) + 🎤; sealed envelope "$1B? $2B? $3B?". All finished in frame 0 |
 | 2.4–5.6 | Guess window | 3-s PAUSE & GUESS timer (2.6–5.6) |
 | 5.8 | Flip | |
-| 6.1–9.6 | Set-up | ASSUME sticky "60K–75K fans a night. Avg ticket $150–$250. Our guesses, not data."; 149 SHOWS stamp; LOW / HIGH tags; "149 × 60K–75K" |
-| 9.7–12.6 | **Partial payoff (32%)** | Tickets **8.9M \| 11.2M** at 9.9 ("about 9 to 11 million") |
+| 6.1–9.6 | Set-up | ASSUME sticky "60K–75K fans a night. / Avg ticket $150–$250. / Our guesses, not data." (6.1); 149 SHOWS stamp (6.3); LOW (6.45) / HIGH (6.65) column heads; "149 × 60K–75K" (6.9) |
+| 9.7–12.6 | **Partial payoff (32%)** | Tickets **8.9M \| 11.2M** (96 px) at 9.9 and 10.5 ("about 9 to 11 million") |
 | 12.7–15.6 | Line 2 | "× avg ticket **$150 \| $250**" |
-| 15.7–18.6 | Line 3 | "= gross **$1.3B \| $2.8B**", boxed in red |
+| 15.7–18.6 | Line 3 | "= gross **$1.3B \| $2.8B**" (110 px); red boxes land on each at 17.7 and 17.95 |
 | 18.7–21.0 | Sanity middle | Red "middle ≈ $2B" |
-| 21.1 | Flip | Tape "BILLBOARD'S TOTAL: SEALED"; range ruler $1.3B … $2.8B; sealed envelope "ours: $1.3B – $2.8B" |
+| 21.1 | Flip | Tape "BILLBOARD'S TOTAL: / SEALED" (2 strips); range ruler $1.3B … $2.8B; sealed envelope "ours: $1.3B – $2.8B" |
+| 21.2–24.6 | Set-up of the reveal | "Billboard counted every show." / "Their number's in here." (two captions) |
 | 24.35–26.1 | Lock-in | "your guess: $ ______"; "Final guess?" |
 | 26.2–27.3 | **Reveal (89%)** | Envelope opens: **$2.08B**, "Billboard Boxscore"; ding at 27.1 |
 | 27.4 | Score | Red arrow lands "real" just right of the ruler's middle (inside our range) |
-| 28.6 | **Verdict (last 2 s)** | ROUGHLY RIGHT slams |
-| 28.7–30.5 | Re-hook | "Who should I open next?" |
+| 28.6 | **Verdict (last 2 s)** | ROUGHLY RIGHT slams on the envelope |
+| 28.7–30.5 | Re-hook | "Who should I open next?"; the last 0.35 s crossfades into frame 0 |
 
 **Voice-over**
 
@@ -339,7 +342,8 @@ Sealed card: **$5,050**. It is exactly (100 + 10,000) ÷ 2, because the envelope
 > Average ticket: a hundred fifty to two-fifty. *(12.7)*
 > So: one point three to two point eight billion. *(15.7)*
 > Middle of the range: about two billion. *(18.7)*
-> Billboard counted every show. Their number's in here. *(21.5)*
+> Billboard counted every show. *(21.2)*
+> Their number's in here. *(23.0)*
 > Final guess? *(24.7)*
 > Two point oh eight billion. Inside our range. *(26.4)*
 > Who should I open next? *(28.7, re-hook)*
@@ -356,8 +360,11 @@ Middle ≈ $2B (arithmetic midpoint $2.07B, geometric $1.94B). Sealed card: **$2
 
 **ASSUME sticky (on screen):** "60K–75K fans a night. Avg ticket $150–$250. Our guesses, not data." Both are stated as assumptions, not claims. If the Billboard figures verify, the real averages (68,242 fans a night, $204.33 a ticket) fall inside both ranges; the math check asserts this.
 
-**Sources (VERIFY: not checked by the writer or by QA)**
-- **149 shows; $2,077,618,725 gross; 10,168,008 tickets:** Billboard Boxscore final tally of the Eras Tour (December 2024). **Unverified.** The writer's and QA's WebSearch budgets were both exhausted; billboard.com and wikipedia.org were egress-blocked, and apnews.com refused the fetch. These are the widely reported final figures as both the writer and QA know them, which is not verification. Before posting, search "Eras Tour Billboard Boxscore final gross 149 shows", paste the Billboard URL and date here and in the description, and re-run the math check if any figure differs (it will fail loudly on the card, the pinned averages and the arrow position).
+**Sources (verified by WebSearch on 2026-10-07, polish pass)**
+- **149 shows; $2,077,618,725 gross; 10,168,008 tickets:** Billboard, "Taylor Swift's The Eras Tour Wraps as First Tour to Pass $2 Billion in Sales" (https://www.billboard.com/music/chart-beat/taylor-swift-eras-tour-earnings-2-billion-sales-1235847513/), published after the last of the 149 shows on Sunday, Dec 8, 2024: "grossing $2,077,618,725 and selling 10,168,008 tickets". All three figures match the values used; none changed.
+- **Corroboration and the pinned averages:** Guinness World Records, "Highest-grossing music tour" (https://guinnessworldrecords.com/world-records/69631-highest-grossing-music-tour): $2,077,618,725 from 149 shows, 17 Mar 2023 to 8 Dec 2024, per figures reported to Billboard Boxscore; 10,168,008 tickets; $204.33 average ticket; 68,242 average attendance. The math check reproduces both averages from the three Billboard inputs.
+- **Pollstar's higher estimate ($2.2B, pin only):** AP via KPLC, "Taylor Swift's Eras Tour ends by shattering own record, grossing an estimated $2.2B, Pollstar says" (Dec 9, 2024; https://www.kplctv.com/2024/12/09/taylor-swifts-eras-tour-ends-by-shattering-own-record-grossing-an-estimated-22b-pollstar-says/). Billboard's figure is the reported box office; Pollstar's is an estimate. The card shows Billboard's.
+- Page fetches of billboard.com, guinnessworldrecords.com and the AP syndications are egress-blocked from this environment, so each figure was confirmed from the search results' quotation of that page, with three independent result sets agreeing.
 - Everything else (stadium sizes, ticket averages) is an on-screen assumption, not a statistic.
 - **Likeness note:** this uses the public box-office gross, not an estimate of anyone's personal income. No image of the artist, no music, no concert footage. The 🎤 emoji only.
 
@@ -365,11 +372,11 @@ Middle ≈ $2B (arithmetic midpoint $2.07B, geometric $1.94B). Sealed card: **$2
 - **Re-hook / loop:** "Who should I open next?" It is spoken over the verdict frame and flows back into frame 1's "How much did the Eras Tour make?", a question to a question, with a sealed envelope on screen in both.
 - **Comment bait (a real question):** "Who should we open next? Name a tour, a creator or a business."
 - **Pinned comment:**
-  > Exact: $2,077,618,725 from 149 shows and 10,168,008 tickets (Billboard Boxscore, Dec 2024). Envelope said $1.3B–$2.8B, middle ≈ $2B, within 4%. The real averages were 68,242 fans a night and $204.33 a ticket, both inside our assumptions. That's about $13.9M a night. Assumptions: 60K–75K fans a night and a $150–$250 average ticket (our guesses). Who should we open next?
+  > Exact: $2,077,618,725 from 149 shows and 10,168,008 tickets (Billboard Boxscore, Dec 2024). Envelope said $1.3B–$2.8B, middle ≈ $2B, within 4%. The real averages were 68,242 fans a night and $204.33 a ticket, both inside our assumptions. That's about $13.9M a night. (Pollstar's estimate is higher, $2.2B; that's inside our range too.) Assumptions: 60K–75K fans a night and a $150–$250 average ticket (our guesses). Who should we open next?
 
 **Description**
 > How much did the Eras Tour make? 149 shows, worked out on the back of an envelope: 9 to 11 million tickets, times a $150 to $250 average ticket, gives $1.3B to $2.8B. Then we opened Billboard's number: $2.08 billion, about $14 million a night. Rough math, real money. Exact figures are in the pinned comment.
-> Source: Billboard Boxscore, final Eras Tour tally (Dec 2024) [URL to add at verification]. Stadium sizes and ticket averages are our assumptions.
+> Source: Billboard Boxscore, final Eras Tour tally (Dec 2024): https://www.billboard.com/music/chart-beat/taylor-swift-eras-tour-earnings-2-billion-sales-1235847513/ (checked Oct 7, 2026). Stadium sizes and ticket averages are our assumptions.
 > Educational math, not financial advice.
 > #EnvelopeMath #SealedAnswer #ErasTour #TaylorSwift #MoneyMath
 
@@ -388,19 +395,20 @@ Middle ≈ $2B (arithmetic midpoint $2.07B, geometric $1.94B). Sealed card: **$2
 ### Math check
 
 Script: `teasers/07-sealed-envelope-estimate-mathcheck.py` (python3, standard library only). Run it with `python3 teasers/07-sealed-envelope-estimate-mathcheck.py`. It has three jobs:
-- **Math.** It recomputes every spoken, written, carded and pinned number in all three teasers and asserts each rounding.
+- **Math.** It recomputes every spoken, written, carded and pinned number in all three teasers and asserts each rounding. The 07C inputs are Billboard's verified figures; the script also checks that Pollstar's higher $2.2B estimate falls inside our range, as the pin says.
 - **Spec cross-check.** It opens the three engine specs and asserts that every on-screen number string is present, that 07A carries no LOW/HIGH labels, that the curve uses the show's inputs, and that both ruler arrows sit where the math puts them.
-- **Timing rules.** For each spec it asserts:
-  - the hook is on screen at frame 0;
-  - the first payoff lands by 40%;
-  - the hero card is out at 85–95%;
-  - the verdict stamp falls in the last 2 s;
-  - there is one VO line per caption;
-  - every caption gets at least 0.25 s per word.
+- **Format rules (upgraded engine).** For each spec it asserts:
+  - the hook is at `t: 0` (it renders finished, so frame 0 is the thumbnail) and no hook uses a negative `t`;
+  - the series postmark sits in the flap (175, 258, r 100) from `t: 0`;
+  - any prop at a negative `t` is one with no `instant` mode (envelope, grid, postage) and is pre-rolled just long enough to be fully in place at frame 0;
+  - the guess-window envelope has no `openAt`, so it stays sealed;
+  - the first payoff lands by 40%, the hero card is out at 85–95% and its number is at least 100 px, and the verdict stamp falls in the last 2 s;
+  - `loop` is on, every handwritten line is at least 64 px, and every text mark uses a `target` anchor on an existing op id;
+  - there is one VO line per caption, each VO line equals that caption's `say` (or its text), and every caption runs at 4 words/s or less.
 
-The 07C checks prove the arithmetic only. They cannot prove that the three Billboard inputs are right; that is what the VERIFY step is for.
+The 07C checks prove the arithmetic. The inputs themselves are covered by the [Final fact check](#final-fact-check).
 
-**Output** (QA run, 2026-10-07; intermediate print lines kept, `[ok]` lines for the on-screen string checks trimmed):
+**Output** (polish pass, 2026-10-07; the per-string `[ok] spec shows …` lines and the per-rounding `[ok]` lines are trimmed; the computed values and the structural checks are kept):
 
 ```
 ========================================================================
@@ -415,48 +423,76 @@ The 07C checks prove the arithmetic only. They cannot prove that the three Billb
   year 500: $63,116.26; year 900: $462,879,514; year 950: $1,408,100,958
   share of the final balance earned in the last 31 years: 49.83%
   [ok] 07A spec has no LOW/HIGH labels (they implied the $4B was a ceiling)
-  [ok] 07-sealed-envelope-estimate-a: hook fully on screen at frame 0 (t <= -0.5)
+  [ok] 07-sealed-envelope-estimate-a: hook at t 0 (renders finished, so frame 0 is the thumbnail)
+  [ok] 07-sealed-envelope-estimate-a: no negative-t hook hacks
+  [ok] 07-sealed-envelope-estimate-a: postmark in the flap (175, 258, r 100) at t 0, persistent
+  [ok] 07-sealed-envelope-estimate-a: frame-0 props fully in place at frame 0 (envelope, postage)
+  [ok] 07-sealed-envelope-estimate-a: guess-window envelope stays sealed (no openAt)
   [ok] 07-sealed-envelope-estimate-a: first payoff by 40% (12.6 s of 33.9 s = 37%)
   [ok] 07-sealed-envelope-estimate-a: hero card out at 85-95% (30.85 s = 91%)
+  [ok] 07-sealed-envelope-estimate-a: hero card number >= 100 px (120 px)
   [ok] 07-sealed-envelope-estimate-a: verdict stamp in the last 2 s (31.9 s, ends 33.9 s)
+  [ok] 07-sealed-envelope-estimate-a: loop on
+  [ok] 07-sealed-envelope-estimate-a: every handwritten line >= 64 px
+  [ok] 07-sealed-envelope-estimate-a: 3 text marks use target anchors on existing ids
   [ok] 07-sealed-envelope-estimate-a: one VO line per caption (12)
-  [ok] 07-sealed-envelope-estimate-a: every caption gets >= 0.25 s per word
+  [ok] 07-sealed-envelope-estimate-a: each caption's VO line is its 'say' (or its text)
+  [ok] 07-sealed-envelope-estimate-a: every caption <= 4 words/s
 ========================================================================
 07B  The 100 Envelope Challenge ($1 in envelope 1 ... $100 in envelope 100)
 ========================================================================
   LOW 100 x $1 = $100; HIGH 100 x $100 = $10,000; average $50.50; estimate $5,000; exact $5,050
   ruler arrow x = 500.0 px (ruler 200..800)
   [ok] 07B arrow at the dead centre of the ruler
-  [ok] 07-sealed-envelope-estimate-b: hook fully on screen at frame 0 (t <= -0.5)
-  [ok] 07-sealed-envelope-estimate-b: first payoff by 40% (7.7 s of 27.8 s = 28%)
+  [ok] 07-sealed-envelope-estimate-b: hook at t 0 (renders finished, so frame 0 is the thumbnail)
+  [ok] 07-sealed-envelope-estimate-b: no negative-t hook hacks
+  [ok] 07-sealed-envelope-estimate-b: postmark in the flap (175, 258, r 100) at t 0, persistent
+  [ok] 07-sealed-envelope-estimate-b: frame-0 props fully in place at frame 0 (grid)
+  [ok] 07-sealed-envelope-estimate-b: guess-window envelope stays sealed (no openAt)
+  [ok] 07-sealed-envelope-estimate-b: first payoff by 40% (7.0 s of 27.8 s = 25%)
   [ok] 07-sealed-envelope-estimate-b: hero card out at 85-95% (23.95 s = 86%)
+  [ok] 07-sealed-envelope-estimate-b: hero card number >= 100 px (120 px)
   [ok] 07-sealed-envelope-estimate-b: verdict stamp in the last 2 s (25.9 s, ends 27.8 s)
-  [ok] 07-sealed-envelope-estimate-b: one VO line per caption (9)
-  [ok] 07-sealed-envelope-estimate-b: every caption gets >= 0.25 s per word
+  [ok] 07-sealed-envelope-estimate-b: loop on
+  [ok] 07-sealed-envelope-estimate-b: every handwritten line >= 64 px
+  [ok] 07-sealed-envelope-estimate-b: 3 text marks use target anchors on existing ids
+  [ok] 07-sealed-envelope-estimate-b: one VO line per caption (10)
+  [ok] 07-sealed-envelope-estimate-b: each caption's VO line is its 'say' (or its text)
+  [ok] 07-sealed-envelope-estimate-b: every caption <= 4 words/s
 ========================================================================
-07C  The Eras Tour gross. INPUTS NOT VERIFIED IN THIS RUN (see the md's VERIFY gate)
+07C  The Eras Tour gross (Billboard Boxscore final tally; verified by WebSearch 2026-10-07)
 ========================================================================
   tickets 8,940,000 | 11,175,000; gross $1,341,000,000 | $2,793,750,000
   middle: arithmetic $2,067,375,000; geometric $1,935,566,777
   '$2B' vs exact: 3.74%
   per show $13,943,750; avg ticket $204.33; avg crowd 68,242
+  [ok] pinned 'Pollstar estimate $2.2B is also inside our range'
   ruler arrow x = 504.2 px (exact ends); 511.0 px against the rounded labels
   [ok] 07C arrow at the exact position
-  [ok] 07-sealed-envelope-estimate-c: hook fully on screen at frame 0 (t <= -0.5)
+  [ok] 07-sealed-envelope-estimate-c: hook at t 0 (renders finished, so frame 0 is the thumbnail)
+  [ok] 07-sealed-envelope-estimate-c: no negative-t hook hacks
+  [ok] 07-sealed-envelope-estimate-c: postmark in the flap (175, 258, r 100) at t 0, persistent
+  [ok] 07-sealed-envelope-estimate-c: frame-0 props fully in place at frame 0 (envelope)
+  [ok] 07-sealed-envelope-estimate-c: guess-window envelope stays sealed (no openAt)
   [ok] 07-sealed-envelope-estimate-c: first payoff by 40% (9.9 s of 30.5 s = 32%)
   [ok] 07-sealed-envelope-estimate-c: hero card out at 85-95% (27.25 s = 89%)
+  [ok] 07-sealed-envelope-estimate-c: hero card number >= 100 px (120 px)
   [ok] 07-sealed-envelope-estimate-c: verdict stamp in the last 2 s (28.6 s, ends 30.5 s)
-  [ok] 07-sealed-envelope-estimate-c: one VO line per caption (11)
-  [ok] 07-sealed-envelope-estimate-c: every caption gets >= 0.25 s per word
+  [ok] 07-sealed-envelope-estimate-c: loop on
+  [ok] 07-sealed-envelope-estimate-c: every handwritten line >= 64 px
+  [ok] 07-sealed-envelope-estimate-c: 2 text marks use target anchors on existing ids
+  [ok] 07-sealed-envelope-estimate-c: one VO line per caption (12)
+  [ok] 07-sealed-envelope-estimate-c: each caption's VO line is its 'say' (or its text)
+  [ok] 07-sealed-envelope-estimate-c: every caption <= 4 words/s
 ========================================================================
-ALL 102 CHECKS PASSED
+ALL 130 CHECKS PASSED
 ```
 
 ---
 
 ### Verification log
 
-QA pass, 2026-10-07: an independent fact-check, edit and visual QA of the writer's draft. The writer's originals are superseded in place; `git diff` shows every change.
+QA pass, 2026-10-07: an independent fact-check, edit and visual QA of the writer's draft. The writer's originals are superseded in place; `git diff` shows every change. **Where this log describes engine workarounds (negative-`t` pre-rolls for the hooks, 56 px text, explicit mark coordinates), the [Polish pass](#polish-pass) below supersedes it.**
 
 #### 1. Math
 
@@ -568,5 +604,68 @@ Hooks were scored 1–10 against `research/02-top-10-approaches.md` §7 (evidenc
 
 #### 6. Still open
 
-- **07C's Billboard figures are unverified.** Search, cite (URL + date) and re-run the math check before posting 07C.
-- **Re-load the Futurama and 100 Envelope sources on publish day.** The research team verified them by WebSearch on 2026-10-07, but QA could not re-load them.
+Both items were closed in the polish pass (2026-10-07):
+- ~~07C's Billboard figures are unverified.~~ **Verified**: Billboard URL and date are in 07C's Sources and description; the math check was re-run (130/130).
+- ~~Re-load the Futurama and 100 Envelope sources on publish day.~~ **Re-confirmed by WebSearch on 2026-10-07.** Direct page fetches are still egress-blocked; see the [Final fact check](#final-fact-check).
+
+### Final fact check
+
+Every real-world input on screen or in this md, re-checked by WebSearch on 2026-10-07 (polish pass). Direct page fetches of these domains (billboard.com, guinnessworldrecords.com, wikipedia.org, vice.com, consequence.net, foxbusiness.com and others) are refused by the environment's egress proxy, so each value was confirmed against the search engine's quotation of the named page. Where possible, two or more independent result sets were used.
+
+| Input | Value used | Source URL | Checked on | Status |
+|---|---|---|---|---|
+| *Futurama*, "A Fishful of Dollars": episode and year | S1E6, first aired on Fox on Apr 27, 1999 (on screen: "Futurama, 1999") | https://en.wikipedia.org/wiki/A_Fishful_of_Dollars | 2026-10-07 | Confirmed |
+| Fry's starting balance | 93¢ | https://en.wikipedia.org/wiki/A_Fishful_of_Dollars · https://abakcus.com/video/futurama-93-cents-turned-43-billion-dollars | 2026-10-07 | Confirmed (the teller's line: 93¢ "at an average of 2.25% interest over 1,000 years") |
+| Interest rate | 2.25% a year | same as above · https://vice.com/en/article/futurama-taught-me-everything-i-know-about-compound-interest | 2026-10-07 | Confirmed |
+| Time asleep | 1,000 years | same as above | 2026-10-07 | Confirmed |
+| The show's balance | $4.3 billion (card "$4.3B") | https://abakcus.com/video/futurama-93-cents-turned-43-billion-dollars · https://vice.com/en/article/futurama-taught-me-everything-i-know-about-compound-interest | 2026-10-07 | Confirmed; exact 0.93 × 1.0225^1000 = $4,283,508,449.71 rounds to it (math check) |
+| 100 Envelope Challenge rules | envelopes #1–#100 hold $1–$100 | https://www.entrepreneur.com/finance/what-is-the-100-envelope-challenge-a-fun-way-to-save-5050/469346 · https://ramseysolutions.com/saving/100-envelope-challenge | 2026-10-07 | Confirmed |
+| 100 Envelope Challenge total | $5,050 (card) | same as above · https://www.barchart.com/story/news/23866872/what-is-the-100-envelope-challenge-a-fun-way-to-save-5050 | 2026-10-07 | Confirmed; Gauss sum (math check) |
+| Hashtag reach (md context only) | 150M+ TikTok views | https://time.com/6249003/100-envelopes-challenge-tiktok/ (TIME, Jan 21, 2023) | 2026-10-07 | Confirmed as of Jan 2023; now dated in the md, never on screen |
+| 52-week challenge total (07B re-hook, pin) | $1 … $52 = $1,378 | https://www.experian.com/blogs/ask-experian/how-to-do-52-week-money-challenge/ | 2026-10-07 | Confirmed; recomputed in the math check |
+| #cashstuffing scale (planning context only) | ≈1.9B views, ≈103K posts | https://www.canstar.com.au/budgeting/tiktok-money-trends/ | 2026-10-07 | Confirmed as Canstar's figure (a snapshot; other outlets cite 3B+ views for all cash-stuffing videos). Never on screen |
+| Eras Tour shows | 149 | https://www.billboard.com/music/chart-beat/taylor-swift-eras-tour-earnings-2-billion-sales-1235847513/ | 2026-10-07 | **Confirmed (first verification)** |
+| Eras Tour gross | $2,077,618,725 (card "$2.08B") | same Billboard URL · https://guinnessworldrecords.com/world-records/69631-highest-grossing-music-tour | 2026-10-07 | **Confirmed (first verification)** |
+| Eras Tour tickets | 10,168,008 | same Billboard URL · same Guinness URL | 2026-10-07 | **Confirmed (first verification)** |
+| Eras Tour dates (md only) | Mar 17, 2023 – Dec 8, 2024 (final show in Vancouver) | same Billboard and Guinness URLs | 2026-10-07 | Confirmed |
+| Eras averages (pin) | $204.33 a ticket; 68,242 a show | https://guinnessworldrecords.com/world-records/69631-highest-grossing-music-tour | 2026-10-07 | Confirmed; reproduced from the three Billboard inputs (math check) |
+| Pollstar's estimate (pin) | $2.2B | https://www.kplctv.com/2024/12/09/taylor-swifts-eras-tour-ends-by-shattering-own-record-grossing-an-estimated-22b-pollstar-says/ (AP, Dec 9, 2024) · https://news.pollstar.com/2024/12/09/taylor-swifts-eras-tour-sets-all-time-touring-record-breaking-2b/ | 2026-10-07 | Confirmed; added to the pin (inside our range) |
+| TikTok length lift (platform note) | videos over 60 s get 43.2% more reach | https://buffer.com/resources/longer-tiktoks-get-more-views-data/ | 2026-10-07 | Confirmed |
+| YouTube Shorts policy (counter-evidence note) | a Short over 1 minute with any Content ID claim is blocked globally | https://support.google.com/youtube/answer/15424877 | 2026-10-07 | Confirmed |
+| Creator evidence table (views, outliers, lengths) | as listed | `research/raw/*`, `research/watch/*` (dated research snapshots) | not re-queried | Research metrics, not real-world money inputs. They never appear on screen, in a description or in a pin. QA checked them line by line against the research files; live counts drift daily |
+
+**Values changed: none.** Every published figure matched its source.
+
+### Polish pass
+
+Finishing-producer pass, 2026-10-07, against the upgraded engine (README re-read first). `engine/src` was not touched.
+
+**Facts**
+- 07C's three Eras Tour inputs were verified for the first time, against Billboard's own article and Guinness. No value changed. The VERIFY gate is lifted; 07C's Sources, description (now with the Billboard URL) and status line are updated.
+- Re-confirmed the Futurama premise (93¢, 2.25%, 1,000 years, $4.3B; aired Apr 27, 1999), the 100 Envelope Challenge rules and $5,050 total, the 52-week $1,378, TIME's 150M+ (now dated Jan 2023 in the md), Canstar's #cashstuffing figure, Buffer's 43.2% and YouTube's Content ID rule for Shorts over a minute.
+- Added Pollstar's higher $2.2B estimate to 07C's pin, so the likely "it was 2.2!" comment is answered in advance. It is inside our range too, and the math check asserts that.
+- Added the [Final fact check](#final-fact-check) table.
+
+**Specs (all three): `check` returns zero warnings** (before: 2 warnings, a 3-line caption in 07B at 2.9 s and one in 07C at 21.5 s).
+- **Frame 0 without hacks.** The hooks and postmarks are at `t: 0` and render finished (the hook's `instant` default), as is 07C's 🎤 (emoji `instant`). The envelope, postage and grid have no `instant` mode and slide in over 0.3–0.45 s, so they use the README's documented pre-roll (`t: -0.5`, already on screen in frame 0, no sound) instead of the old −0.8/−2.0. The math check enforces both rules.
+- **Postmark** at the README's flap position (175, 258, r 100) from `t: 0`.
+- **Sealed envelopes:** the guess-window envelopes have no `openAt` and stay sealed; only the reveal envelopes open.
+- **Legibility:** working handwriting is 64–96 px (was 56–84), hero numbers 100–120 px (07A $2B/$4B 120, 07B $5,000 100, 07C $1.3B/$2.8B 110, cards 120). Stickies are 60–64 px, ruler labels 64, "your guess" 68, curve marks 64. Hooks went up to 88 px (07A) and 72 px (07B and 07C; 07B's third strip is the widest that fits the safe area).
+- **Layout fills the content zone.** Each working screen now runs from y ≈ 650 to 1290 instead of crowding the top half. 07A: a two-column RULE OF 72 | RULE OF 70 table with pencil row labels at x 80 and value columns ending at x 620 and 920. 07B: LOW/HIGH tags with right-aligned equations ending at x 910 (clear of the button rail), a MIDDLE line, then the red estimate. 07C: a LOW | HIGH table ending at x 655 and 920. On the reveal side, 07A's curve is 740 × 300 (was 720 × 210) with the envelope under it; 07B/07C's ruler sits at y 1170 with 64 px labels.
+- **One idea per screen.** Each teaser keeps its three sides (guess, working, reveal), separated by flips. 07A's pattern break now has its own visual, the red note "72 is tuned for 8%: try 70" (14.7–21.3), so the RULE OF 70 column no longer appears over a silent gap.
+- **Target anchors** replace hand-measured mark coordinates: 07A underline + two boxes on `v72`/`v70`; 07B underlines on "$100" and "$10,000" (new micro-payoffs on each bound) and the circle on "$5,000"; 07C boxes on `glo`/`ghi`. The ruler arrows and ✗ marks keep explicit coordinates because they point at positions on the ruler, not at text.
+- **Pens:** `pen: "low"` on working lines so the pen never covers the line above, `"small-low"` on rows at y 1100–1200 and `"small"` on lines at y ≥ 1200. Mid-write stills showed the full-size low pen reaching into the caption band.
+- **Stickies reworded for clean wraps:** 07A "93¢, 2.25% a year, 1,000 years (Futurama, 1999)" (no line starting with "·"); 07C "60K–75K fans a night. / Avg ticket $150–$250. / Our guesses, not data." (3 lines at w 560; the old wrap split "fans a / night"). Postage labels went from 18 px to 22–24 px.
+- **Stamps** moved to y 830 in 07B and 07C so ROUGHLY RIGHT no longer clips the envelope's SEALED ANSWER label.
+- **Captions:** 07B's "A dollar in the first, a hundred in the last. Guess the total." became two captions (2.7–5.1, 5.1–6.2), and 07C's "Billboard counted every show. Their number's in here." became two (21.2–22.9, 23.0–24.6). The VO and beat sheets follow. `say` is kept only where the voice reads differently from the caption (numbers, "$1" → "a dollar"). All captions are 2 lines max and ≤ 4 words/s.
+- **Loop:** `loop: true` on all three (unchanged; verified on the last frame of each MP4).
+- **Audio:** 07C's first render peaked at −0.8 dB at 6.2 s, where the sticky, the stamp and both typewriter column heads fired together. They are now staggered (6.1 / 6.3 / 6.45 / 6.65, first row 6.9).
+
+**Render and review**
+- `node src/cli.js render` on all three. Durations by frame count: 07A 33.9 s (1,017 frames), 07B 27.8 s (834), 07C 30.5 s (915).
+- Frames extracted from the MP4s with ffmpeg and viewed: 07A at 0.0, 13.0 (partial payoff), 22.9, 27.5, 31.0 (reveal), 33.7; 07B at 0.0, 8.2 (partial payoff), 12.0, 15.8, 24.0 (reveal), 25.4, 27.6; 07C at 0.0, 10.4 (partial payoff), 19.6, 25.5, 27.3 (reveal), 30.3. Frame 0 of each is a finished thumbnail: tape hook, a number, the sealed envelope and the postmark. The last frame of each is mid-crossfade into frame 0.
+- Fixes made after viewing: 07B's partial-payoff frame was sparse, so ink underlines were added on "$100" and "$10,000"; 07B's red circle crossed x 940 into the button rail, so the equations moved to end at x 910; 07C's two gross boxes nearly touched, so their pad went from 18 to 6; the low pen entered the caption band, so the bottom rows use small pens (see above).
+- Audio (`ffmpeg -af volumedetect`): 07A mean −25.8 dB / max −2.0 dB; 07B −25.1 / −2.3; 07C −26.0 / −2.1. All are inside the −30 to −18 dB mean target with peaks below −1 dB.
+- Stale stills from the first QA pass (old layout) were removed from `engine/out/stills/`; the remaining 07 stills are the frames listed above. Contact sheets were regenerated.
+
+**Math check:** rewritten for the new engine. It went from 102 to 130 checks, and the hook rule is now "`t: 0`, no negative-`t` hooks" (the old rule *required* `t ≤ −0.5`). It also covers the postmark position, sealed guess envelopes, frame-0 prop pre-roll, hero ≥ 100 px, handwriting ≥ 64 px, anchored marks, VO = `say`, caption pace and the Pollstar range check. All pass.

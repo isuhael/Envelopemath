@@ -2,14 +2,21 @@
 """Math check for teasers 03A, 03B, 03C (Envelope Math: Day to Decade / The Read-It Ladder).
 
 Recomputes every number that is written on the envelope, spoken in the VO, or quoted in a
-pinned comment, from the sourced inputs and the labelled assumptions only. It asserts each
-rounded value we display and prints how far the envelope's rounding sits from the exact figure.
+pinned comment or description, from the sourced inputs and the labelled assumptions only. It
+asserts each rounded value we display and prints how far the envelope's rounding sits from the
+exact figure. The last block reads the three renderer specs and checks that every number drawn
+on screen or shown in a caption traces to this script.
 Run: python3 teasers/03-read-it-ladder-mathcheck.py
+
+Polish pass 2026-10-07: 03C was replaced (Powerball -> the average new-car payment). The
+Powerball block is retired; its numbers no longer appear anywhere in this approach.
 """
 import calendar
 import datetime as dt
+import json
+import os
+import re
 from fractions import Fraction as F
-from math import comb
 
 
 def within(shown, exact):
@@ -22,12 +29,23 @@ def weekdays(year):
                if (dt.date(year, 1, 1) + dt.timedelta(d - 1)).weekday() < 5)
 
 
-# ---------------------------------------------------------------- sourced inputs (2026-10-07)
-IPHONE_18_PRO = 1199          # Apple, Sept 9 2026 event (CNBC / MacRumors), starting price
-BLS_MEDIAN_WEEKLY = 1251      # BLS Usual Weekly Earnings, Q2 2026, full-time (released 2026-07-21)
-PB_WHITE, PB_RED = 69, 26     # Powerball matrix: 5 of 69 white balls + 1 of 26 Powerballs
-PB_PRICE = 2                  # Powerball, $2 per play (official prize chart)
-PB_ANY_PRIZE_ODDS = 24.87     # official chart: overall odds of winning any prize, 1 in 24.87
+# ---------------------------------------------------------------- sourced inputs (all re-checked 2026-10-07)
+# Apple store page (https://www.apple.com/shop/buy-iphone/iphone-18-pro) and MacRumors 2026-09-09
+# (https://www.macrumors.com/2026/09/09/iphone-18-pro-pricing/): iPhone 18 Pro from $1,199 (256GB).
+IPHONE_18_PRO = 1199
+# BLS Usual Weekly Earnings, Q2 2026, released 2026-07-21 (https://www.bls.gov/news.release/wkyeng.htm):
+# median weekly earnings of full-time wage and salary workers. Q3 2026 is due 2026-10-21.
+BLS_MEDIAN_WEEKLY = 1251
+# Edmunds Q3 2026 new-vehicle finance data, press release 2026-10-01 (GlobeNewswire
+# https://www.globenewswire.com/news-release/2026/10/01/3373320/0/en/new-car-financing-records-pile-up-in-q3-as-buyers-borrow-more-and-stretch-loans-longer-according-to-edmunds.html ;
+# CNBC 2026-10-06 https://www.cnbc.com/2026/10/06/car-loans-are-getting-longer-as-monthly-payments-hit-record-highs.html)
+CAR_PAYMENT = 787             # average monthly payment, financed new-vehicle purchases, Q3 2026
+CAR_PAYMENT_Q2, CAR_PAYMENT_Q3_2025 = 777, 756
+CAR_APR = 7.0                 # average APR, % (pin only)
+CAR_FINANCED = 44_664         # average amount financed (pin only)
+CAR_INTEREST = 9_938          # average total interest over the life of the loan (pin only)
+SHARE_1000 = 21.2             # % of financed new-car purchases with payments of $1,000+ (pin only)
+SHARE_84 = 25.5               # % with terms of 84 months or longer (pin only)
 
 # ======================================================================= 03A
 print("=" * 72, "\n03A  Your habit is $3 a day  (assumption: same $3, every day, 10 years)\n" + "=" * 72)
@@ -50,15 +68,21 @@ assert within(shown_year, year) < 0.5 and within(shown_decade, decade_365) < 0.5
 gap = IPHONE_18_PRO - year
 print(f"  flip side: a year ${year:,} < iPhone 18 Pro ${IPHONE_18_PRO:,}  (by ${gap}, = {year / IPHONE_18_PRO * 100:.1f}% of the phone)")
 assert year < IPHONE_18_PRO and shown_year < IPHONE_18_PRO and year_52 < IPHONE_18_PRO
-# daily habit that would exactly equal one iPhone a year (pinned-comment nuance)
-print(f"  break-even habit: ${IPHONE_18_PRO} / 365 = ${IPHONE_18_PRO / 365:.2f} a day")
-assert round(IPHONE_18_PRO / 365, 2) == 3.28
+assert f"(a year: exactly ${year:,})" == "(a year: exactly $1,095)"   # the back's sub-line
+# the claim does not hang on the exact price: it holds for any starting price above $1,095
+print(f"  claim 'a year < one iPhone 18 Pro' holds for any starting price >= ${year + 1:,}")
+# daily habit that would still come in under one iPhone a year (pinned-comment nuance)
+print(f"  break-even habit: ${IPHONE_18_PRO} / 365 = ${IPHONE_18_PRO / 365:.3f} a day -> 'up to $3.28'")
+assert int(IPHONE_18_PRO / 365 * 100) / 100 == 3.28 and 3.28 * 365 < IPHONE_18_PRO < 3.29 * 365
 # the invest-it camp's number (pinned comment, labelled assumption: 7%/yr, monthly compounding)
 monthly = year / 12
 r = 0.07 / 12
 fv = monthly * ((1 + r) ** 120 - 1) / r
-print(f"  invest-camp: ${monthly:.2f}/mo at an assumed 7%/yr for 120 months = ${fv:,.0f}  -> '≈$15,800'")
+fv_annual = year * ((1.07 ** 10 - 1) / 0.07)
+print(f"  invest-camp: ${monthly:.2f} at the end of each month, assumed 7%/yr compounded monthly, 120 months = ${fv:,.0f} -> '≈$15,800'")
+print(f"               (annual deposits, annual compounding would give ${fv_annual:,.0f})")
 assert monthly == 91.25 and round(fv, -2) == 15800
+assert round(decade_365, -3) == 11000   # VO: "about eleven grand"
 
 # ======================================================================= 03B
 print("=" * 72, "\n03B  A $1/hr raise is only $8 a day  (assumption: 8-hr days, 5 a week, 52 weeks, pre-tax)\n" + "=" * 72)
@@ -77,68 +101,91 @@ assert wd[2026] == 261 and min(wd.values()) >= 260 and max(wd.values()) <= 262
 dec_hours = sum(wd[y] for y in range(2026, 2036)) * 8
 print(f"  2026-2035 weekdays x 8 hrs = {dec_hours:,} hrs -> ${dec_hours:,} (envelope said $20,800, within {within(r_decade, dec_hours):.2f}%)")
 med_hr = BLS_MEDIAN_WEEKLY / 40
-print(f"  BLS median ${BLS_MEDIAN_WEEKLY:,}/wk / 40 = ${med_hr:.3f}/hr -> $1 is a {raise_hr / med_hr * 100:.1f}% raise")
+print(f"  BLS median ${BLS_MEDIAN_WEEKLY:,}/wk / 40 = ${med_hr:.3f}/hr -> $1 is a {raise_hr / med_hr * 100:.2f}% raise")
 assert med_hr == 31.275 and round(raise_hr / med_hr * 100, 1) == 3.2  # $31.275 -> said '≈$31.28'
 print(f"  per calendar day: ${r_year:,} / 365 = ${r_year / 365:.2f}")
 assert round(r_year / 365, 2) == 5.70
 
-# ======================================================================= 03C
-print("=" * 72, "\n03C  $2 a day on Powerball  (assumption: one $2 ticket every day for 10 years)\n" + "=" * 72)
-N = comb(PB_WHITE, 5) * PB_RED
-assert N == 292_201_338
-print(f"  jackpot odds per ticket: C(69,5) x 26 = {comb(PB_WHITE, 5):,} x 26 = 1 in {N:,}")
-c_year = PB_PRICE * 365
+# ======================================================================= 03C (replaced 2026-10-07)
+print("=" * 72, "\n03C  Average new-car payment $787/mo  (assumption: the same $787 every month for 10 years;"
+      "\n     40-hr weeks, 52 weeks a year)\n" + "=" * 72)
+c_year = CAR_PAYMENT * 12
 c_decade = c_year * 10
-tickets = 365 * 10
-assert (c_year, c_decade, tickets) == (730, 7300, 3650)
-print(f"  rungs: $2 x 365 = ${c_year} a year; x10 = ${c_decade:,} a decade ({tickets:,} tickets)")
-print(f"  with 2-3 leap days in a decade: 3,652-3,653 tickets = ${2 * 3652:,}-${2 * 3653:,}")
-p1 = F(1, N)
-p_add = tickets * p1                       # distinct tickets: exact if several share one draw
-p_ind = 1 - (1 - p1) ** tickets            # tickets on 3,650 different draws (independent)
-one_in_add = float(1 / p_add)
-one_in_ind = 1 / float(p_ind)
-print(f"  odds of at least one jackpot in {tickets:,} tickets: 1 in {one_in_add:,.2f} (additive) / 1 in {one_in_ind:,.2f} (independent draws)")
-assert round(one_in_add) == 80055 and abs(one_in_ind - one_in_add) < 1
-print(f"  shown '≈1 in 80,000': within {within(80000, one_in_add):.2f}%")
-assert within(80000, one_in_add) < 0.1
-print(f"  per-ticket odds unchanged on ticket #3,650: still 1 in {N:,}")
-print(f"  flip side: P(spend the ${c_decade:,} | you buy every day) = 1  -> '1 in 1'")
-small_wins = tickets / PB_ANY_PRIZE_ODDS
-print(f"  any prize, 1 in {PB_ANY_PRIZE_ODDS} per ticket -> expected small wins in a decade: {small_wins:.1f} (pinned: '≈147')")
-assert round(small_wins) == 147
-print(f"  a lifetime habit (50 yrs = 18,250 tickets, $36,500): 1 in {N / 18250:,.0f}")
-from math import log
-k_add = N / 1000                                   # tickets for a 1-in-1,000 shot (additive)
-k_ind = log(1 - 0.001) / log(1 - 1 / N)            # same, independent draws
-print(f"  comment-bait answer: 1 in 1,000 needs {k_add:,.0f} tickets = {k_add / 365:,.1f} years "
-      f"({k_ind / 365:,.1f} yrs if every ticket is a separate draw) -> '≈800 years', ≈${2 * k_add:,.0f}")
-assert round(k_add / 365, -2) == 800 and round(k_ind / 365, -2) == 800
+assert (c_year, c_decade) == (9_444, 94_440)
+print(f"  rungs: ${CAR_PAYMENT} x 12 = ${c_year:,} a year; x 10 = ${c_decade:,} a decade (exact, 120 payments)")
+hrs_year = 40 * 52
+hrs_decade = hrs_year * 10
+assert (hrs_year, hrs_decade) == (2_080, 20_800)   # 20,800 = 03B's decade of hours (series web)
+per_hr = F(c_decade, hrs_decade)
+assert per_hr == F(c_year, hrs_year) == F(CAR_PAYMENT * 12, 2080)
+print(f"  flip side: ${c_decade:,} / {hrs_decade:,} hrs (10 yrs of 40-hr weeks) = ${float(per_hr):.4f} an hour worked")
+print(f"             shown '$4.54': within {within(4.54, float(per_hr)):.3f}%")
+assert round(float(per_hr), 2) == 4.54
+print(f"  VO 'ninety-four grand': ${round(c_decade, -3):,}, within {within(94_000, c_decade):.2f}% of ${c_decade:,}")
+assert round(c_decade, -3) == 94_000
+per_day = F(c_year, 365)
+print(f"  per calendar day: ${c_year:,} / 365 = ${float(per_day):.4f} -> '$25.87' (pin)")
+assert round(float(per_day), 2) == 25.87
+print(f"  per clock hour, 24/7: ${c_year:,} / 8,760 = ${c_year / 8760:.3f} (pin: '≈$1.08 an hour, even parked')")
+assert round(c_year / 8760, 2) == 1.08
+share = float(per_hr) / med_hr
+print(f"  vs BLS median ${med_hr:.3f}/hr: {share * 100:.2f}% of gross pay = the first {share * 60:.2f} min of every hour (pin: '≈8.7 min')")
+assert round(share * 100, 1) == 14.5 and round(share * 60, 1) == 8.7
+p1000 = 1000 * 12 / hrs_year
+print(f"  a $1,000 payment ({SHARE_1000}% of new-car buyers): ${p1000:.4f} of every hour -> '$5.77' (pin)")
+assert round(p1000, 2) == 5.77
+print(f"  Edmunds context (pin): Q2 2026 ${CAR_PAYMENT_Q2}, Q3 2025 ${CAR_PAYMENT_Q3_2025} -> +${CAR_PAYMENT - CAR_PAYMENT_Q3_2025} "
+      f"({(CAR_PAYMENT / CAR_PAYMENT_Q3_2025 - 1) * 100:.1f}%) in a year; APR {CAR_APR}%, financed ${CAR_FINANCED:,}, "
+      f"interest ${CAR_INTEREST:,}; {SHARE_84}% of loans 84+ months")
+assert CAR_PAYMENT - CAR_PAYMENT_Q3_2025 == 31 and round((CAR_PAYMENT / CAR_PAYMENT_Q3_2025 - 1) * 100, 1) == 4.1
+# comment-bait answer key: what a few common payments are per hour worked (40 x 52)
+for pay in (400, 600, 787, 1000):
+    print(f"    ${pay:>5,}/mo -> ${pay * 12 / 2080:.2f} of every hour worked")
+
+# ======================================================================= cross-check: specs vs math
+print("=" * 72, "\nCross-check: every number on screen or in a caption traces to the math above\n" + "=" * 72)
+SPECS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "engine", "specs")
+NUM = re.compile(r"\d[\d,]*(?:\.\d+)?")
+# numbers each episode may show: computed values + factors/assumptions + labels that are names, not math
+ALLOWED = {
+    "a": {day, week, year, shown_year, shown_decade, 7, 52, 10, 18},           # 18 = "iPhone 18 Pro" (a name)
+    "b": {raise_hr, r_day, r_week, r_year, r_decade, 5, 52, 10, 8},
+    "c": {CAR_PAYMENT, c_year, c_decade, hrs_decade, 4.54, 12, 10, 40, 3, 2026},  # 3, 2026 = "Q3 2026" (the source)
+}
 
 
-# ======================================================================= QA additions (2026-10-07)
-print("=" * 72, "\nQA  checks added by the fact-check pass\n" + "=" * 72)
-# 03A back: the ink now shows the exact year, and the claim must not hang on one unverified price.
-assert f"(exactly ${year:,})" == "(exactly $1,095)"
-min_price_for_claim = year + 1                      # "a year of it costs less than one iPhone 18 Pro"
-print(f"  03A claim 'a year < one iPhone 18 Pro' holds for any starting price >= ${min_price_for_claim:,}")
-for p_ in (1099, 1199):  # 1099 = iPhone 17 Pro 2025 launch price (QA reference knowledge, not re-searched); 1199 = writer-sourced 18 Pro price
-    assert year < p_
-    print(f"    at ${p_:,}: year ${year:,} is ${p_ - year} less; daily habit that still fits: up to ${int(p_ / 365 * 100) / 100:.2f}")
-assert int(IPHONE_18_PRO / 365 * 100) / 100 == 3.28 and 3.28 * 365 < IPHONE_18_PRO < 3.29 * 365
-# 03A VO rounding: "about eleven grand"
-assert round(decade_365, -3) == 11000
-# invest-camp figure is end-of-month deposits, monthly compounding (annual compounding gives less)
-fv_annual = year * ((1.07 ** 10 - 1) / 0.07)
-print(f"  03A invest-camp: monthly compounding ${fv:,.0f} (≈$15,800); annual deposits/compounding ${fv_annual:,.0f}")
-# 03B VO "twenty thousand eight hundred" is exact; 03C VO "seventy-three hundred", "one in eighty thousand"
-assert r_decade == 20800 and c_decade == 7300 and round(one_in_add, -4) == 80000
-# 03C: overall 'any prize' odds re-derived from the matrix (chart: 1 in 24.87)
-def ways(k, pb):
-    return comb(5, k) * comb(PB_WHITE - 5, 5 - k) * (1 if pb else PB_RED - 1)
-win_ways = sum(ways(k, pb) for k, pb in [(5, 1), (5, 0), (4, 1), (4, 0), (3, 1), (3, 0), (2, 1), (1, 1), (0, 1)])
-any_odds = N / win_ways
-print(f"  03C any-prize odds from the matrix: 1 in {any_odds:.3f} (chart 24.87); expected prizes in 3,650 tickets: {tickets / any_odds:.1f}")
-assert round(any_odds, 2) == PB_ANY_PRIZE_ODDS and round(tickets / any_odds) == 147
+def texts(op):
+    t = op.get("type")
+    if t == "hook":
+        return op["text"] if isinstance(op["text"], list) else [op["text"]]
+    if t in ("write", "sticky"):
+        return [op["text"]] + ([op["title"]] if op.get("title") else [])
+    if t == "lines":
+        return [l if isinstance(l, str) else l["text"] for l in op["lines"]]
+    if t == "ladder":
+        return [f"{r.get('factor', '')} {r['label']} {r['value']}" for r in op["rows"]]
+    if t == "stamp":
+        return [op["text"]]
+    if t == "postmark":
+        return []  # "No. 03A" is the episode number
+    return []
+
+
+for s in "abc":
+    spec = json.load(open(os.path.join(SPECS, f"03-read-it-ladder-{s}.json")))
+    found = set()
+    strings = [x for op in spec["ops"] for x in texts(op)] + [c["text"] for c in spec["captions"]]
+    for txt in strings:
+        for m in NUM.findall(txt.replace("*", "")):
+            v = float(m.replace(",", ""))
+            v = int(v) if v.is_integer() else v
+            assert v in ALLOWED[s], f"03{s.upper()}: '{m}' in {txt!r} does not trace to the math"
+            found.add(v)
+    print(f"  03{s.upper()}: {len(strings)} strings, numbers on screen/captions {sorted(found)} -> all trace")
+    assert spec["loop"] is True and spec["duration"] <= 10
+    # VO text = the captions' spoken form, in order
+    spoken = " ".join(c.get("say", c["text"]) for c in spec["captions"])
+    norm = lambda x: re.sub(r"[^a-z0-9 ]", "", x.lower().replace("-", " ")).split()
+    assert norm(spoken) == norm(spec["vo"]), f"03{s.upper()}: vo and caption 'say' text differ"
 
 print("\nall assertions passed")

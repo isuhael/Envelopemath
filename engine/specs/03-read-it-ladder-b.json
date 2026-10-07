@@ -1,202 +1,42 @@
 {
- "id": "03-read-it-ladder-b",
- "title": "A $1/hr raise is only $8 a day? (Day to Decade No. 03B)",
- "paper": {
-  "style": "kraft",
-  "seed": 32
- },
- "duration": 9.0,
- "vo": "A one-dollar raise? Only eight bucks a day? Twenty thousand eight hundred. Only. Flip side? Your boss did this math too. Now you have.",
- "captions": [
-  {
-   "t": 0.05,
-   "end": 0.9,
-   "text": "A $1 raise?"
-  },
-  {
-   "t": 0.9,
-   "end": 2.1,
-   "text": "Only $8 a day?"
-  },
-  {
-   "t": 2.5,
-   "end": 3.75,
-   "text": "$20,800."
-  },
-  {
-   "t": 3.8,
-   "end": 4.4,
-   "text": "\"Only.\""
-  },
-  {
-   "t": 4.4,
-   "end": 5.05,
-   "text": "Flip side?"
-  },
-  {
-   "t": 5.05,
-   "end": 6.6,
-   "text": "Your boss did this math too."
-  },
-  {
-   "t": 6.7,
-   "end": 7.7,
-   "text": "Now you have."
-  }
- ],
- "ops": [
-  {
-   "type": "postmark",
-   "t": -0.4,
-   "x": 190,
-   "y": 290,
-   "center": [
-    "No.",
-    "03B"
-   ],
-   "persist": true
-  },
-  {
-   "type": "hook",
-   "t": 0,
-   "y": 455,
-   "size": 88,
-   "text": [
-    "A *$1/HR* RAISE IS",
-    "ONLY $8 A DAY?"
-   ]
-  },
-  {
-   "type": "emoji",
-   "t": -0.5,
-   "char": "💵",
-   "x": 872,
-   "y": 310,
-   "size": 120,
-   "bob": true,
-   "rot": -8
-  },
-  {
-   "type": "ladder",
-   "t": 0.4,
-   "x": 110,
-   "y": 725,
-   "w": 800,
-   "size": 90,
-   "rowH": 116,
-   "cps": 21,
-   "gap": 0.2,
-   "rows": [
-    {
-     "factor": "×5",
-     "label": "a week",
-     "value": "$40"
-    },
-    {
-     "factor": "×52",
-     "label": "a year",
-     "value": "$2,080"
-    },
-    {
-     "factor": "×10",
-     "label": "a decade",
-     "value": "$20,800"
-    }
-   ]
-  },
-  {
-   "type": "sticky",
-   "t": 1.25,
-   "x": 255,
-   "y": 1135,
-   "w": 360,
-   "size": 56,
-   "rot": -4,
-   "cps": 30,
-   "title": "ASSUME:",
-   "text": "8 hrs × 5 days, pre-tax"
-  },
-  {
-   "type": "annotate",
-   "t": 3.1,
-   "kind": "double",
-   "x": 606,
-   "y": 981,
-   "w": 304,
-   "dur": 0.35
-  },
-  {
-   "type": "annotate",
-   "t": 3.8,
-   "kind": "strike",
-   "x": 201,
-   "y": 576,
-   "w": 222,
-   "width": 9,
-   "dur": 0.3,
-   "fixed": true,
-   "z": 5
-  },
-  {
-   "type": "flip",
-   "t": 4.6
-  },
-  {
-   "type": "hook",
-   "t": 4.9,
-   "y": 455,
-   "size": 88,
-   "text": [
-    "FLIP SIDE"
-   ]
-  },
-  {
-   "type": "lines",
-   "t": 5.05,
-   "x": 540,
-   "y": 790,
-   "size": 96,
-   "align": "center",
-   "cps": 24,
-   "gap": 0.1,
-   "color": "red",
-   "lines": [
-    "Your boss did",
-    "this math too."
-   ]
-  },
-  {
-   "type": "emoji",
-   "t": 6.3,
-   "char": "👔",
-   "x": 810,
-   "y": 1215,
-   "size": 130,
-   "bob": true,
-   "rot": 8
-  },
-  {
-   "type": "write",
-   "t": 6.7,
-   "text": "Now you have.",
-   "x": 540,
-   "y": 1075,
-   "size": 88,
-   "align": "center",
-   "cps": 22
-  },
-  {
-   "type": "stamp",
-   "t": 7.65,
-   "text": "OPENED BY\nMISTAKE",
-   "x": 430,
-   "y": 1225,
-   "size": 58,
-   "rot": -7
-  },
-  {
-   "type": "flip",
-   "t": 8.75
-  }
- ]
+  "id": "03-read-it-ladder-b",
+  "title": "A $1/hr raise is only $8 a day? (Day to Decade No. 03B)",
+  "paper": { "style": "kraft", "seed": 32 },
+  "duration": 9.0,
+  "loop": true,
+  "vo": "A one-dollar raise? Only eight bucks a day? Twenty thousand eight hundred. Only. Flip side? Your boss did this math too. Now you have.",
+  "captions": [
+    { "t": 0.05, "end": 0.9, "text": "A $1 raise?", "say": "A one-dollar raise?" },
+    { "t": 0.9, "end": 2.1, "text": "Only $8 a day?", "say": "Only eight bucks a day?" },
+    { "t": 2.5, "end": 3.75, "text": "$20,800.", "say": "Twenty thousand eight hundred." },
+    { "t": 3.8, "end": 4.4, "text": "\"Only.\"", "say": "Only." },
+    { "t": 4.4, "end": 5.05, "text": "Flip side?" },
+    { "t": 5.05, "end": 6.6, "text": "Your boss did this math too." },
+    { "t": 6.7, "end": 7.7, "text": "Now you have." }
+  ],
+  "ops": [
+    { "type": "postmark", "t": 0, "x": 175, "y": 258, "r": 100, "center": ["No.", "03B"], "persist": true },
+    { "type": "hook", "t": 0, "id": "hook", "y": 432, "size": 84, "text": ["A *$1/HR* RAISE IS", "ONLY $8 A DAY?"] },
+    { "type": "emoji", "t": 0, "char": "💵", "x": 540, "y": 900, "size": 330, "rot": -8, "until": 0.4 },
+
+    { "type": "ladder", "t": 0.4, "id": "ladder", "x": 110, "y": 762, "w": 800, "size": 96, "rowH": 128, "cps": 21, "gap": 0.2,
+      "rows": [
+        { "factor": "×5", "label": "a week", "value": "$40" },
+        { "factor": "×52", "label": "a year", "value": "$2,080" },
+        { "factor": "×10", "label": "a decade", "value": "$20,800" }
+      ] },
+    { "type": "sticky", "t": 1.25, "x": 265, "y": 1180, "w": 335, "size": 56, "rot": -4, "cps": 30, "title": "ASSUME:", "text": "8 hrs × 5 days\npre-tax" },
+    { "type": "emoji", "t": 2.45, "char": "💵", "x": 725, "y": 1185, "size": 180, "bob": true, "rot": -8 },
+    { "type": "annotate", "t": 3.1, "kind": "double", "target": { "op": "ladder", "match": "$20,800" }, "dur": 0.35 },
+    { "type": "annotate", "t": 3.8, "kind": "strike", "target": { "op": "hook", "match": "ONLY" }, "width": 9, "dur": 0.3 },
+
+    { "type": "flip", "t": 4.6 },
+    { "type": "hook", "t": 4.9, "y": 430, "size": 92, "text": ["FLIP SIDE"] },
+    { "type": "lines", "t": 5.05, "x": 540, "y": 690, "size": 108, "align": "center", "cps": 24, "gap": 0.1, "color": "red",
+      "lines": ["Your boss did", "this math too."] },
+    { "type": "write", "t": 6.7, "text": "Now you have.", "x": 540, "y": 990, "size": 92, "align": "center", "cps": 22, "pen": "small" },
+    { "type": "emoji", "t": 6.3, "char": "👔", "x": 810, "y": 1170, "size": 170, "bob": true, "rot": 8 },
+    { "type": "stamp", "t": 7.5, "text": "OPENED BY\nMISTAKE", "x": 420, "y": 1175, "size": 66, "rot": -7 },
+    { "type": "flip", "t": 8.4 }
+  ]
 }

@@ -196,7 +196,8 @@
    "size": 80,
    "align": "center",
    "color": "pencil",
-   "cps": 20
+   "cps": 20,
+   "pen": "low"
   },
   {
    "type": "sticky",
@@ -241,7 +242,8 @@
    "x": 96,
    "y": 830,
    "size": 96,
-   "cps": 17
+   "cps": 17,
+   "pen": "low"
   },
   {
    "type": "bars",
@@ -283,14 +285,15 @@
   },
   {
    "type": "write",
-   "t": 13.5,
+   "t": 13.4,
    "text": "only $50 hits the debt",
    "x": 540,
    "y": 948,
    "size": 84,
    "align": "center",
    "color": "red",
-   "cps": 20
+   "cps": 24,
+   "pen": "low"
   },
   {
    "type": "flip",
@@ -308,9 +311,9 @@
   {
    "type": "curve",
    "t": 17.0,
-   "x": 150,
+   "x": 120,
    "y": 1240,
-   "w": 720,
+   "w": 680,
    "h": 420,
    "dur": 3.4,
    "ease": "linear",
@@ -496,7 +499,8 @@
    "x": 165,
    "y": 895,
    "size": 84,
-   "cps": 20
+   "cps": 20,
+   "pen": "low"
   },
   {
    "type": "hook",
@@ -517,7 +521,8 @@
    "y": 1030,
    "size": 104,
    "color": "red",
-   "cps": 22
+   "cps": 22,
+   "pen": "low"
   },
   {
    "type": "annotate",

@@ -5,9 +5,9 @@
   "style": "kraft",
   "seed": 42
  },
- "duration": 50.0,
+ "duration": 51.0,
  "loop": true,
- "vo": "Two hundred a month from twenty-five… or four hundred from thirty-five. Who has more at sixty-five? [1-second silent pick] Same seven percent a year for both, until sixty-five. A puts in ninety-six grand. B puts in a hundred forty-four. Forty-eight grand more. Does B catch up? Age twenty-five: A starts. At thirty-five: A’s got almost thirty-five grand. B: zero. Then B puts in double… and the gap… never… closes. Sixty-five. Who’s ahead, and by how much? Guess. [3-second pause] A. By about thirty-seven grand. With forty-eight grand less put in. Why? At thirty-five, A’s head start is about thirty-four six. That alone earns two-oh-two a month. B’s extra is two hundred. B never gains a dollar. Drop it to six percent, though, and B passes A at sixty-three and eight months. So… which envelope now? [loops to the first line]",
+ "vo": "Two hundred a month from twenty-five… or four hundred from thirty-five. Who has more at sixty-five? [1-second silent pick] Same seven percent a year for both, until sixty-five. A puts in ninety-six grand. B puts in a hundred forty-four. Forty-eight grand more. Does B catch up? Age twenty-five: A starts. At thirty-five: A’s got almost thirty-five grand. B: zero. Then B puts in double… and the gap… never… closes. Sixty-five. Who’s ahead, and by how much? Guess. [3-second pause] A. By about thirty-seven grand. With forty-eight grand less put in. Why? At thirty-five, A’s head start is about thirty-four six. That alone earns two-oh-two a month. B’s extra is two hundred. B never gains a dollar. Drop the rate to six percent, though… and B passes A at sixty-three and eight months. So… which envelope now? [loops to the first line]",
  "captions": [
   {
    "t": 0.15,
@@ -93,21 +93,27 @@
    "say": "B’s extra is two hundred. B never gains a dollar."
   },
   {
-   "t": 43.8,
-   "end": 47.6,
-   "text": "Drop it to 6%, though, and B passes A at 63 and 8 months.",
-   "say": "Drop it to six percent, though, and B passes A at sixty-three and eight months."
+   "t": 44.55,
+   "end": 46.6,
+   "text": "Drop the rate to 6%, though…",
+   "say": "Drop the rate to six percent, though…"
   },
   {
-   "t": 47.6,
-   "end": 49.9,
+   "t": 46.6,
+   "end": 49.0,
+   "text": "…and B passes A at 63 and 8 months.",
+   "say": "…and B passes A at sixty-three and eight months."
+  },
+  {
+   "t": 49.0,
+   "end": 50.85,
    "text": "So… which envelope now?"
   }
  ],
  "ops": [
   {
    "type": "postmark",
-   "t": -0.3,
+   "t": 0,
    "x": 175,
    "y": 258,
    "r": 100,
@@ -126,12 +132,11 @@
     "WHO HAS MORE AT 65?"
    ],
    "y": 400,
-   "size": 72,
-   "until": 5.5
+   "size": 72
   },
   {
    "type": "pick",
-   "t": -0.5,
+   "t": -0.6,
    "options": [
     {
      "label": "$200/mo",
@@ -142,15 +147,17 @@
      "sub": "starting at 35"
     }
    ],
-   "y": 885,
-   "eh": 290,
-   "size": 70
+   "y": 880,
+   "ew": 380,
+   "eh": 360,
+   "size": 84,
+   "subSize": 62
   },
   {
    "type": "timer",
    "t": 4.5,
    "seconds": 1,
-   "y": 1140,
+   "y": 1160,
    "label": "PICK ONE"
   },
   {
@@ -162,9 +169,9 @@
    "type": "sticky",
    "t": 5.75,
    "x": 330,
-   "y": 600,
-   "w": 460,
-   "size": 56,
+   "y": 690,
+   "w": 480,
+   "size": 58,
    "cps": 45,
    "title": "ASSUME:",
    "text": "7% a year, compounded monthly, until 65. Before fees, tax & inflation."
@@ -173,9 +180,12 @@
    "type": "postage",
    "t": 6.3,
    "x": 800,
-   "y": 560,
+   "y": 650,
+   "w": 230,
+   "h": 270,
    "value": "7%",
    "label": "ASSUMED",
+   "labelSize": 30,
    "art": "≈",
    "rot": 5
   },
@@ -183,34 +193,38 @@
    "type": "stuff",
    "t": 8.3,
    "x": 540,
-   "y": 1010,
-   "w": 700,
-   "ew": 320,
-   "eh": 200,
+   "y": 1005,
+   "w": 720,
+   "ew": 340,
+   "eh": 215,
+   "labelSize": 62,
+   "amountSize": 80,
    "items": [
     {
      "label": "A · 40 yrs",
      "amount": 96000,
-     "color": "red"
+     "color": "ink"
     },
     {
      "label": "B · 30 yrs",
      "amount": 144000,
-     "color": "ink"
+     "color": "red"
     }
    ],
    "stagger": 1.4
   },
   {
    "type": "write",
+   "id": "more",
    "t": 11.3,
    "text": "B puts in $48,000 more",
    "x": 540,
-   "y": 1275,
-   "size": 64,
+   "y": 1285,
+   "size": 72,
    "color": "red",
    "align": "center",
-   "cps": 18
+   "cps": 18,
+   "pen": "low"
   },
   {
    "type": "flip",
@@ -218,134 +232,154 @@
    "dur": 0.4
   },
   {
-   "type": "write",
-   "t": 13.95,
-   "text": "A: $200 from 25",
-   "x": 160,
-   "y": 528,
-   "size": 56,
-   "color": "red",
-   "cps": 30
-  },
-  {
-   "type": "write",
-   "t": 14.3,
-   "text": "B: $400 from 35",
-   "x": 900,
-   "y": 528,
-   "size": 56,
-   "color": "ink",
-   "align": "right",
-   "cps": 30
-  },
-  {
    "type": "curve",
    "t": 13.9,
    "x": 160,
-   "y": 1150,
-   "w": 700,
-   "h": 500,
+   "y": 1170,
+   "w": 600,
+   "h": 540,
    "values": [
     0.0,
-    2478.52,
-    5136.21,
-    7986.02,
-    11041.85,
-    14318.58,
-    17832.19,
-    21599.8,
-    25639.76,
-    29971.78,
-    34616.96,
-    39597.94,
-    44939.0,
-    50666.16,
-    56807.34,
-    63392.46,
-    70453.62,
-    78025.24,
-    86144.21,
-    94850.09,
-    104185.33,
-    114195.42,
-    124929.13,
-    136438.78,
-    148780.47,
-    162014.34,
-    176204.89,
-    191421.27,
-    207737.64,
-    225233.53,
-    243994.2,
-    264111.08,
-    285682.2,
-    308812.71,
-    333615.32,
-    360210.92,
-    388729.11,
-    419308.89,
-    452099.28,
-    487260.09,
-    524962.68
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    4957.03,
+    10272.41,
+    15972.04,
+    22083.69,
+    28637.16,
+    35664.38,
+    43199.59,
+    51279.53,
+    59943.56,
+    69233.92,
+    79195.88,
+    89877.99,
+    101332.32,
+    113614.67,
+    126784.92,
+    140907.24,
+    156050.48,
+    172288.41,
+    189700.19,
+    208370.66,
+    228390.83,
+    249858.26,
+    272877.56,
+    297560.94,
+    324028.68,
+    352409.77,
+    382842.54,
+    415475.29,
+    450467.06,
+    487988.4
    ],
    "compare": {
     "values": [
      0.0,
-     0.0,
-     0.0,
-     0.0,
-     0.0,
-     0.0,
-     0.0,
-     0.0,
-     0.0,
-     0.0,
-     0.0,
-     4957.03,
-     10272.41,
-     15972.04,
-     22083.69,
-     28637.16,
-     35664.38,
-     43199.59,
-     51279.53,
-     59943.56,
-     69233.92,
-     79195.88,
-     89877.99,
-     101332.32,
-     113614.67,
-     126784.92,
-     140907.24,
-     156050.48,
-     172288.41,
-     189700.19,
-     208370.66,
-     228390.83,
-     249858.26,
-     272877.56,
-     297560.94,
-     324028.68,
-     352409.77,
-     382842.54,
-     415475.29,
-     450467.06,
-     487988.4
+     2478.52,
+     5136.21,
+     7986.02,
+     11041.85,
+     14318.58,
+     17832.19,
+     21599.8,
+     25639.76,
+     29971.78,
+     34616.96,
+     39597.94,
+     44939.0,
+     50666.16,
+     56807.34,
+     63392.46,
+     70453.62,
+     78025.24,
+     86144.21,
+     94850.09,
+     104185.33,
+     114195.42,
+     124929.13,
+     136438.78,
+     148780.47,
+     162014.34,
+     176204.89,
+     191421.27,
+     207737.64,
+     225233.53,
+     243994.2,
+     264111.08,
+     285682.2,
+     308812.71,
+     333615.32,
+     360210.92,
+     388729.11,
+     419308.89,
+     452099.28,
+     487260.09,
+     524962.68
     ],
-    "color": "ink"
+    "color": "ink",
+    "marks": [
+     {
+      "i": 10,
+      "text": "35: $34.6K",
+      "dx": -128,
+      "dy": -78,
+      "size": 60,
+      "align": "left"
+     },
+     {
+      "i": 40,
+      "text": "A ≈$525K",
+      "dx": 16,
+      "dy": -4,
+      "size": 60,
+      "align": "left"
+     }
+    ]
    },
-   "max": 524962.68,
-   "dur": 9.5,
-   "color": "red",
-   "xLabel": "age 25 → 65",
-   "endLabel": "≈$525K",
    "marks": [
     {
+     "i": 40,
+     "text": "B ≈$488K",
+     "dx": 16,
+     "dy": 58,
+     "size": 60,
+     "align": "left"
+    }
+   ],
+   "max": 524962.68,
+   "color": "red",
+   "dur": 9.0,
+   "endLabel": false,
+   "xLabel": "age",
+   "ticks": [
+    {
+     "i": 0,
+     "label": "25"
+    },
+    {
      "i": 10,
-     "text": "35: $34.6K",
-     "dx": 180,
-     "dy": -110,
-     "size": 56
+     "label": "35"
+    },
+    {
+     "i": 20,
+     "label": "45"
+    },
+    {
+     "i": 30,
+     "label": "55"
+    },
+    {
+     "i": 40,
+     "label": "65"
     }
    ]
   },
@@ -357,27 +391,30 @@
   {
    "type": "envelope",
    "t": 24.75,
-   "x": 540,
-   "y": 790,
-   "w": 640,
+   "x": 420,
+   "y": 850,
+   "w": 600,
    "openAt": 30.3,
    "card": [
-    "A by ≈ $37K",
+    {
+     "text": "A by ≈ $37K",
+     "size": 100
+    },
     {
      "text": "$525K vs $488K",
      "size": 60,
      "color": "red"
     }
    ],
-   "cardSize": 84
+   "cardSize": 100
   },
   {
    "type": "write",
    "t": 25.0,
    "text": "at 65: who’s ahead, by how much?",
-   "x": 540,
-   "y": 1060,
-   "size": 60,
+   "x": 500,
+   "y": 1150,
+   "size": 64,
    "align": "center",
    "cps": 22,
    "until": 30.3
@@ -386,18 +423,31 @@
    "type": "timer",
    "t": 27.3,
    "seconds": 3,
-   "y": 1185,
-   "label": "PAUSE & GUESS"
+   "x": 840,
+   "y": 850,
+   "label": "GUESS"
   },
   {
    "type": "stamp",
    "t": 31.1,
    "text": "FIRST CLASS",
-   "x": 540,
-   "y": 1130,
+   "x": 420,
+   "y": 915,
    "size": 58,
-   "rot": -6,
+   "rot": -7,
    "shake": 10
+  },
+  {
+   "type": "write",
+   "t": 31.7,
+   "text": "with $48K less put in",
+   "x": 500,
+   "y": 1160,
+   "size": 72,
+   "color": "red",
+   "align": "center",
+   "cps": 20,
+   "pen": "low"
   },
   {
    "type": "flip",
@@ -409,8 +459,8 @@
    "t": 34.55,
    "text": "crossover = head start ÷ catch-up",
    "x": 540,
-   "y": 455,
-   "size": 40,
+   "y": 650,
+   "size": 48,
    "font": "type",
    "color": "pencil",
    "align": "center",
@@ -421,21 +471,23 @@
    "t": 34.6,
    "text": "A’s head start at 35 ≈ $34,600",
    "x": 540,
-   "y": 600,
-   "size": 68,
+   "y": 790,
+   "size": 72,
    "align": "center",
-   "cps": 18
+   "cps": 18,
+   "pen": "low"
   },
   {
    "type": "write",
    "id": "w2",
    "t": 38.0,
    "text": "$34,600 × 7% ÷ 12 ≈ $202/mo",
-   "x": 540,
-   "y": 720,
-   "size": 68,
+   "x": 500,
+   "y": 930,
+   "size": 72,
    "align": "center",
-   "cps": 18
+   "cps": 18,
+   "pen": "low"
   },
   {
    "type": "annotate",
@@ -451,43 +503,97 @@
    "type": "write",
    "id": "w3",
    "t": 40.9,
-   "text": "B’s extra $200 < $202 → never",
-   "x": 515,
-   "y": 840,
-   "size": 68,
+   "text": "B’s extra $200 < $202 →",
+   "x": 500,
+   "y": 1075,
+   "size": 76,
    "align": "center",
-   "cps": 18
-  },
-  {
-   "type": "annotate",
-   "t": 42.6,
-   "kind": "circle",
-   "target": {
-    "op": "w3",
-    "match": "never",
-    "pad": 10
-   }
+   "cps": 18,
+   "pen": "low"
   },
   {
    "type": "write",
-   "t": 44.0,
-   "text": "at 6%: B passes A at 63 yrs 8 mo",
-   "x": 540,
-   "y": 985,
-   "size": 62,
-   "color": "red",
+   "id": "never",
+   "t": 42.25,
+   "text": "never",
+   "x": 500,
+   "y": 1250,
+   "size": 120,
    "align": "center",
-   "cps": 20
+   "cps": 10,
+   "pen": "low"
   },
   {
-   "type": "stamp",
-   "t": 48.1,
-   "text": "OPENED BY\nMISTAKE",
-   "x": 560,
+   "type": "annotate",
+   "t": 42.85,
+   "kind": "circle",
+   "target": {
+    "op": "never",
+    "pad": 8
+   }
+  },
+  {
+   "type": "flip",
+   "t": 44.3,
+   "dur": 0.4
+  },
+  {
+   "type": "pick",
+   "t": 44.55,
+   "options": [
+    {
+     "label": "$200/mo",
+     "sub": "starting at 25"
+    },
+    {
+     "label": "$400/mo",
+     "sub": "starting at 35"
+    }
+   ],
+   "y": 880,
+   "ew": 380,
+   "eh": 360,
+   "size": 84,
+   "subSize": 62,
+   "stagger": 0.12,
+   "revealAt": 48.1,
+   "answer": 1,
+   "stamp": "FIRST CLASS"
+  },
+  {
+   "type": "write",
+   "t": 45.0,
+   "text": "at 6%: B passes A",
+   "x": 500,
    "y": 1150,
-   "size": 58,
-   "rot": -8,
-   "shake": 10
+   "size": 76,
+   "align": "center",
+   "cps": 18,
+   "pen": "low"
+  },
+  {
+   "type": "write",
+   "id": "age",
+   "t": 46.8,
+   "text": "at 63 yrs 8 mo",
+   "x": 500,
+   "y": 1280,
+   "size": 100,
+   "color": "red",
+   "align": "center",
+   "cps": 14,
+   "pen": "low"
+  },
+  {
+   "type": "hook",
+   "t": 44.6,
+   "text": [
+    "$200/MO FROM 25",
+    "OR *$400/MO* FROM 35.",
+    "WHO HAS MORE AT 65?"
+   ],
+   "y": 400,
+   "size": 72
   }
  ]
 }

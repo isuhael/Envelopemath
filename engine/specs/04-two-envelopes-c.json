@@ -7,7 +7,7 @@
  },
  "duration": 14.0,
  "loop": true,
- "vo": "Five grand to sign… or two bucks more an hour? [1-second silent pick] Two bucks times forty hours: eighty a week. Five grand over eighty: sixty-two and a half weeks. Stay longer, and the raise wins. Leave sooner? The five grand. Stay three years? Twelve thousand four eighty… versus five grand. [loops to the first line]",
+ "vo": "Five grand to sign… or two bucks more an hour? [1-second silent pick] Two bucks times forty hours: eighty a week. Five grand over eighty: sixty-two and a half weeks. Stay past that, and the raise wins. Leave sooner? The five grand. Stay three years? Twelve thousand four eighty… versus five grand. [loops to the first line]",
  "captions": [
   {
    "t": 0.1,
@@ -17,28 +17,28 @@
   },
   {
    "t": 3.6,
-   "end": 5.45,
+   "end": 5.4,
    "text": "$2 × 40 hours: $80 a week.",
    "say": "Two bucks times forty hours: eighty a week."
   },
   {
-   "t": 5.45,
-   "end": 7.45,
+   "t": 5.4,
+   "end": 7.0,
    "text": "$5,000 ÷ $80: 62.5 weeks.",
    "say": "Five grand over eighty: sixty-two and a half weeks."
   },
   {
-   "t": 7.45,
-   "end": 9.05,
-   "text": "Stay longer, and the raise wins."
+   "t": 7.2,
+   "end": 9.4,
+   "text": "Stay past that, and the raise wins."
   },
   {
-   "t": 9.3,
-   "end": 10.75,
+   "t": 9.6,
+   "end": 10.9,
    "text": "Leave sooner? The five grand."
   },
   {
-   "t": 10.75,
+   "t": 10.9,
    "end": 12.5,
    "text": "Stay 3 years? $12,480…",
    "say": "Stay three years? Twelve thousand four eighty…"
@@ -46,14 +46,13 @@
   {
    "t": 12.5,
    "end": 13.9,
-   "text": "…versus five grand.",
-   "say": "…versus five grand."
+   "text": "…versus five grand."
   }
  ],
  "ops": [
   {
    "type": "postmark",
-   "t": -0.3,
+   "t": 0,
    "x": 175,
    "y": 258,
    "r": 100,
@@ -72,12 +71,11 @@
     "PICK IN ONE SECOND."
    ],
    "y": 400,
-   "size": 72,
-   "until": 3.4
+   "size": 72
   },
   {
    "type": "pick",
-   "t": -0.5,
+   "t": -0.6,
    "options": [
     {
      "label": "$5,000",
@@ -88,15 +86,17 @@
      "sub": "raise, 40 hrs/wk"
     }
    ],
-   "y": 885,
-   "eh": 290,
-   "size": 72
+   "y": 880,
+   "ew": 380,
+   "eh": 360,
+   "size": 84,
+   "subSize": 60
   },
   {
    "type": "timer",
    "t": 2.4,
    "seconds": 1,
-   "y": 1140,
+   "y": 1160,
    "label": "PICK ONE"
   },
   {
@@ -109,27 +109,28 @@
    "t": 3.6,
    "text": "crossover = head start ÷ catch-up",
    "x": 540,
-   "y": 455,
-   "size": 40,
+   "y": 650,
+   "size": 48,
    "font": "type",
    "color": "pencil",
    "align": "center",
-   "cps": 40
+   "cps": 45
   },
   {
    "type": "write",
    "id": "l1",
-   "t": 3.65,
+   "t": 3.62,
    "text": "$2 × 40 hrs = $80 a week",
    "x": 540,
-   "y": 585,
-   "size": 80,
+   "y": 800,
+   "size": 84,
    "align": "center",
-   "cps": 20
+   "cps": 24,
+   "pen": "low"
   },
   {
    "type": "annotate",
-   "t": 4.9,
+   "t": 4.65,
    "kind": "underline",
    "target": {
     "op": "l1",
@@ -139,32 +140,50 @@
   },
   {
    "type": "write",
-   "t": 4.5,
-   "text": "A: $5,000 once",
-   "x": 170,
-   "y": 795,
-   "size": 56,
-   "color": "ink",
-   "cps": 30
+   "id": "l2",
+   "t": 5.1,
+   "text": "$5,000 ÷ $80 =",
+   "x": 500,
+   "y": 955,
+   "size": 84,
+   "align": "center",
+   "cps": 24,
+   "pen": "low"
   },
   {
    "type": "write",
-   "t": 4.8,
-   "text": "B: +$80 a week",
-   "x": 900,
-   "y": 795,
-   "size": 56,
-   "color": "red",
-   "align": "right",
-   "cps": 30
+   "id": "wks",
+   "t": 5.7,
+   "text": "62.5 weeks",
+   "x": 500,
+   "y": 1140,
+   "size": 120,
+   "align": "center",
+   "cps": 20,
+   "pen": "low"
+  },
+  {
+   "type": "annotate",
+   "t": 6.25,
+   "kind": "circle",
+   "target": {
+    "op": "wks",
+    "pad": 10
+   },
+   "dur": 0.35
+  },
+  {
+   "type": "flip",
+   "t": 7.0,
+   "dur": 0.35
   },
   {
    "type": "curve",
-   "t": 4.45,
-   "x": 170,
-   "y": 1235,
-   "w": 700,
-   "h": 330,
+   "t": 7.2,
+   "x": 150,
+   "y": 1180,
+   "w": 720,
+   "h": 480,
    "values": [
     0,
     80,
@@ -380,72 +399,63 @@
      5000,
      5000
     ],
-    "color": "ink"
+    "color": "ink",
+    "marks": [
+     {
+      "i": 0,
+      "text": "A: $5,000 once",
+      "dx": 22,
+      "dy": -30,
+      "size": 64,
+      "align": "left"
+     }
+    ]
    },
    "max": 8320,
-   "dur": 3.0,
-   "endLabel": false,
-   "xLabel": "weeks on the job → 2 yrs",
-   "marks": [
+   "color": "red",
+   "ease": "linear",
+   "dur": 1.5,
+   "endLabel": "B: +$80 a wk",
+   "crossover": {
+    "label": "wk {x}",
+    "decimals": 1,
+    "dx": 105,
+    "dy": 78,
+    "size": 68
+   },
+   "ticks": [
     {
-     "i": 62,
-     "text": "wk 62.5",
-     "dx": -60,
-     "dy": -46,
-     "size": 58,
-     "align": "center"
+     "i": 0,
+     "label": "0"
+    },
+    {
+     "i": 52,
+     "label": "1 yr"
+    },
+    {
+     "i": 104,
+     "label": "2 yrs"
     }
    ]
   },
   {
-   "type": "write",
-   "id": "l2",
-   "t": 5.0,
-   "text": "$5,000 ÷ $80 = 62.5 weeks",
-   "x": 540,
-   "y": 700,
-   "size": 80,
-   "align": "center",
-   "cps": 20
-  },
-  {
-   "type": "annotate",
-   "t": 6.35,
-   "kind": "circle",
-   "target": {
-    "op": "l2",
-    "match": "62.5 weeks",
-    "pad": 12
-   }
-  },
-  {
-   "type": "annotate",
-   "t": 7.5,
-   "kind": "circle",
-   "x": 564.7,
-   "y": 1010.7,
-   "w": 52,
-   "h": 52,
-   "width": 6
-  },
-  {
    "type": "stamp",
-   "t": 7.8,
+   "t": 8.75,
    "text": "FIRST CLASS",
    "x": 700,
-   "y": 1150,
+   "y": 1095,
    "size": 56,
    "rot": -8,
    "shake": 8
   },
   {
    "type": "flip",
-   "t": 9.05,
+   "t": 9.4,
    "dur": 0.35
   },
   {
    "type": "pick",
-   "t": 9.3,
+   "t": 9.6,
    "options": [
     {
      "label": "$5,000",
@@ -456,32 +466,58 @@
      "sub": "stay 62.5+ wks?"
     }
    ],
-   "y": 885,
-   "eh": 290,
-   "size": 72,
+   "y": 880,
+   "ew": 380,
+   "eh": 360,
+   "size": 84,
+   "subSize": 60,
    "stagger": 0.1
   },
   {
    "type": "write",
    "id": "l3",
-   "t": 10.35,
-   "text": "$80 × 52 wks × 3 yrs = *$12,480*",
-   "em": true,
-   "x": 540,
-   "y": 560,
-   "size": 72,
+   "t": 10.3,
+   "text": "$80 × 52 wks × 3 yrs =",
+   "x": 500,
+   "y": 1150,
+   "size": 76,
    "align": "center",
-   "cps": 24
+   "cps": 26,
+   "pen": "low"
+  },
+  {
+   "type": "write",
+   "id": "big",
+   "t": 11.2,
+   "text": "$12,480",
+   "x": 500,
+   "y": 1285,
+   "size": 110,
+   "color": "red",
+   "align": "center",
+   "cps": 14,
+   "pen": "low"
   },
   {
    "type": "annotate",
-   "t": 12.05,
+   "t": 11.75,
    "kind": "circle",
    "target": {
-    "op": "l3",
-    "match": "$12,480",
-    "pad": 12
-   }
+    "op": "big",
+    "pad": 6
+   },
+   "dur": 0.35
+  },
+  {
+   "type": "hook",
+   "t": 9.65,
+   "text": [
+    "$5,000 TO SIGN",
+    "OR *$2 MORE AN HOUR?*",
+    "PICK IN ONE SECOND."
+   ],
+   "y": 400,
+   "size": 72
   }
  ]
 }

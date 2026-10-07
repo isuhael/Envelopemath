@@ -376,7 +376,7 @@
       "size": 120,
       "color": "red",
       "align": "center",
-      "cps": 12
+      "cps": 16
     },
     {
       "type": "annotate",
@@ -444,17 +444,18 @@
     },
     {
       "type": "write",
-      "t": 29.6,
+      "t": 29.4,
       "text": "in minutes of work:",
       "x": 90,
       "y": 1038,
       "size": 64,
-      "color": "pencil"
+      "color": "pencil",
+      "cps": 30
     },
     {
       "type": "write",
       "id": "w06",
-      "t": 30.0,
+      "t": 30.35,
       "text": "2006: $11.39 ÷ $16.79 ≈ 41 min",
       "x": 90,
       "y": 1138,
@@ -463,7 +464,7 @@
     },
     {
       "type": "annotate",
-      "t": 32.3,
+      "t": 32.45,
       "kind": "underline",
       "target": {
         "op": "w06",
@@ -478,7 +479,7 @@
       "x": 90,
       "y": 1242,
       "size": 66,
-      "pen": "low"
+      "pen": "small-low"
     },
     {
       "type": "timer",
@@ -498,7 +499,7 @@
       "size": 66,
       "color": "red",
       "cps": 24,
-      "pen": "low"
+      "pen": "small-low"
     },
     {
       "type": "stamp",

@@ -101,9 +101,15 @@
   },
   {
    "t": 33.0,
+   "end": 34.35,
+   "text": "Every $10K left 40 years:",
+   "say": "Every ten grand left forty years:"
+  },
+  {
+   "t": 34.35,
    "end": 36.4,
-   "text": "Every $10K left 40 years: the fee eats about $47K.",
-   "say": "Every ten grand left forty years: the fee eats about forty-seven grand."
+   "text": "the fee eats about $47K.",
+   "say": "the fee eats about forty-seven grand."
   }
  ],
  "ops": [
@@ -206,29 +212,29 @@
   },
   {
    "type": "write",
-   "t": 7.9,
+   "t": 7.5,
    "text": "1% of it all,",
    "x": 560,
    "y": 1010,
    "size": 84,
    "color": "green",
-   "cps": 16,
+   "cps": 20,
    "pen": "low"
   },
   {
    "type": "write",
-   "t": 8.9,
+   "t": 8.25,
    "text": "every year",
    "x": 560,
    "y": 1125,
    "size": 84,
    "color": "green",
-   "cps": 16,
+   "cps": 20,
    "pen": "low"
   },
   {
    "type": "annotate",
-   "t": 9.6,
+   "t": 8.85,
    "kind": "check",
    "x": 868,
    "y": 1062,
@@ -254,9 +260,9 @@
   {
    "type": "curve",
    "t": 11.3,
-   "x": 160,
+   "x": 140,
    "y": 1240,
-   "w": 700,
+   "w": 680,
    "h": 330,
    "dur": 1.5,
    "values": [
@@ -331,9 +337,9 @@
   {
    "type": "curve",
    "t": 13.5,
-   "x": 160,
+   "x": 140,
    "y": 1240,
-   "w": 700,
+   "w": 680,
    "h": 330,
    "dur": 1.4,
    "values": [
@@ -527,7 +533,8 @@
    "size": 130,
    "align": "center",
    "color": "red",
-   "cps": 18
+   "cps": 18,
+   "pen": "low"
   },
   {
    "type": "annotate",

@@ -413,7 +413,7 @@
       "x": 90,
       "y": 1186,
       "size": 72,
-      "pen": "low"
+      "pen": "small-low"
     },
     {
       "type": "write",
@@ -423,7 +423,7 @@
       "x": 90,
       "y": 1280,
       "size": 72,
-      "pen": "low"
+      "pen": "small-low"
     },
     {
       "type": "timer",

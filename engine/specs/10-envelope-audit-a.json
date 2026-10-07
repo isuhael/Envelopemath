@@ -202,7 +202,8 @@
    "y": 1065,
    "size": 98,
    "color": "green",
-   "cps": 16
+   "cps": 16,
+   "pen": "low"
   },
   {
    "type": "annotate",
@@ -249,7 +250,8 @@
    "y": 812,
    "size": 72,
    "color": "red",
-   "cps": 24
+   "cps": 24,
+   "pen": "low"
   },
   {
    "type": "annotate",
@@ -269,7 +271,8 @@
    "x": 96,
    "y": 975,
    "size": 100,
-   "cps": 14
+   "cps": 14,
+   "pen": "low"
   },
   {
    "type": "annotate",
@@ -288,7 +291,8 @@
    "y": 975,
    "size": 80,
    "color": "red",
-   "cps": 16
+   "cps": 16,
+   "pen": "low"
   },
   {
    "type": "write",
@@ -297,8 +301,9 @@
    "text": "$50 × 24% =  $12  back",
    "x": 96,
    "y": 1150,
-   "size": 100,
-   "cps": 20
+   "size": 96,
+   "cps": 20,
+   "pen": "low"
   },
   {
    "type": "annotate",
@@ -389,7 +394,8 @@
    "size": 140,
    "align": "center",
    "color": "red",
-   "cps": 14
+   "cps": 14,
+   "pen": "low"
   },
   {
    "type": "postage",
@@ -440,7 +446,8 @@
    "size": 140,
    "align": "center",
    "color": "red",
-   "cps": 18
+   "cps": 18,
+   "pen": "low"
   },
   {
    "type": "annotate",

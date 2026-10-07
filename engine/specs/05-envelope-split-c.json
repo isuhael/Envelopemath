@@ -61,7 +61,7 @@
     {"type": "write", "t": 24.0, "text": "median 1st-time buyer: 40", "x": 80, "y": 575, "size": 64, "color": "pencil", "cps": 30},
     {"type": "bars", "t": 21.6, "x": 540, "y": 1180, "w": 700, "h": 400, "max": 192.05, "items": [{"label": "10% down", "value": 96.03, "display": "3.7 yrs", "color": "ink", "valueSize": 84, "labelSize": 64, "at": 0.25}, {"label": "20% down", "value": 192.05, "display": "7.4 yrs", "color": "red", "valueSize": 104, "labelSize": 64, "at": 8.0}]},
     {"type": "write", "t": 26.65, "text": "3.7 × 2 = *?*", "em": true, "x": 710, "y": 1010, "size": 100, "align": "center", "cps": 16, "until": 29.45, "allowOverlap": true},
-    {"type": "write", "t": 29.75, "text": "≈ 192 paychecks", "x": 80, "y": 680, "size": 76, "color": "red", "cps": 26, "pen": "low", "id": "n20"},
+    {"type": "write", "t": 29.75, "text": "≈ 192 paychecks", "x": 80, "y": 680, "size": 76, "color": "red", "cps": 26, "pen": "small", "id": "n20"},
     {"type": "annotate", "t": 30.4, "kind": "underline", "target": {"op": "n20"}, "width": 6},
     {"type": "annotate", "t": 30.0, "kind": "circle", "x": 578, "y": 680, "w": 274, "h": 94, "pad": 10, "width": 6}
   ]
