@@ -1,0 +1,776 @@
+[
+  {
+    "n": 1,
+    "format": "dead-simple-list",
+    "name": "N dead simple numbers",
+    "pattern": "P1",
+    "looks": [
+      "clean-sheet",
+      "live-sheet",
+      "becker-rig"
+    ],
+    "file": "teasers/v2/01-dead-simple-list.md",
+    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/01-dead-simple-list.py (240 checks, 0 failed). New checks: every typed formula is re-evaluated against its displayed result ($1 or 1¢ rounding); ≈ appears only on rounded or rule-based results; payoff gaps are 7.5 s or less; no VO line after the verdict card; lookOpts limited to keys the kit reads; Becker hits are valid; 01b is within ±1% of the exact 2026 take-home; 01c covers the raise maths, a leap year, and the marginal rate in the pinned comment. I also ran a mutation test with 10 broken spec copies and the check caught all 10. The studio linter (node src/cli.mjs check) is clean on all 3 specs, with 0 errors and 0 warnings.",
+    "teasers": [
+      {
+        "id": "01a-clean-sheet-paid-biweekly",
+        "look": "clean-sheet",
+        "title": "Paid every 2 weeks? The pay your budget forgets",
+        "header": "3 DEAD SIMPLE NUMBERS\nPAID **EVERY 2 WEEKS**? THE PAY YOUR BUDGET FORGETS",
+        "runtime_s": 26,
+        "key_numbers": [
+          "$2,500 every 2 weeks (input)",
+          "$2,500 × 26 = $65,000 (at 2.7 s)",
+          "not × 24 ($60,000, voiced at 4.5 s)",
+          "$2,500 × 2 = $5,000 a normal month",
+          "$65,000 − $60,000 = $5,000 (the 2 checks your budget forgets)",
+          "verdict: every 2 weeks = 13 months of pay a year"
+        ],
+        "spec": "studio/specs/01a-clean-sheet-paid-biweekly.json",
+        "mp4": "studio/out/01a-clean-sheet-paid-biweekly.mp4",
+        "math_ok": true,
+        "facts_ok": true,
+        "hook_score": 8
+      },
+      {
+        "id": "01b-live-sheet-20-an-hour",
+        "look": "live-sheet",
+        "title": "What $20 an hour actually lands each month",
+        "header": "3 DEAD SIMPLE NUMBERS\nWHAT **$20/HR** ACTUALLY LANDS",
+        "runtime_s": 27,
+        "key_numbers": [
+          "$20 × 2,080 hrs = $41,600 a year, on paper (at 2.7 s)",
+          "$41,600 ÷ 12 ≈ $3,467 a month",
+          "$3,467 × 0.85 ≈ $2,947 a month kept (2026 federal tax + FICA, single, before state tax; exact $2,967.13, 0.68% off)",
+          "about $17 of every $20 hour",
+          "verdict: ≈ $2,947 a month lands of the $3,467 you earn"
+        ],
+        "spec": "studio/specs/01b-live-sheet-20-an-hour.json",
+        "mp4": "studio/out/01b-live-sheet-20-an-hour.mp4",
+        "math_ok": true,
+        "facts_ok": true,
+        "hook_score": 7
+      },
+      {
+        "id": "01c-becker-rig-60k-a-year",
+        "look": "becker-rig",
+        "title": "What a 3% raise on $60K actually pays you",
+        "header": "4 DEAD SIMPLE NUMBERS\nWHAT A 3% RAISE ON **$60,000**\nACTUALLY PAYS YOU",
+        "runtime_s": 26.5,
+        "key_numbers": [
+          "$60,000 × 3% = $1,800 a year (at 2.7 s)",
+          "$1,800 ÷ 12 = $150 a month",
+          "$1,800 ÷ 52 ≈ $35 a week (exact $34.62)",
+          "$1,800 ÷ 365 ≈ $5 a day (exact $4.93)",
+          "verdict: a 3% raise on $60,000 ≈ $5 a day, before tax",
+          "pinned comment: about $4 a day after the 12% bracket + 7.65% FICA ($3.96)"
+        ],
+        "spec": "studio/specs/01c-becker-rig-60k-a-year.json",
+        "mp4": "studio/out/01c-becker-rig-60k-a-year.mp4",
+        "math_ok": true,
+        "facts_ok": true,
+        "hook_score": 7
+      }
+    ]
+  },
+  {
+    "n": 2,
+    "format": "find-your-row",
+    "name": "Find-your-row lookup table",
+    "pattern": "P7",
+    "looks": [
+      "live-sheet",
+      "scoreboard",
+      "clean-sheet"
+    ],
+    "file": "teasers/v2/02-find-your-row.md",
+    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/02-find-your-row.py -> PASSED: all 170 checks (exit 0). The check was updated for the revised specs. It recomputes every row, pointer, verdict, formula, footer and VO number from inputs, including the 2026 federal tax brackets, standard deduction and FICA behind 02c, and compares each display string exactly with the 3 specs. Each VO line must now fit both 2.6 w/s (hyphenated numbers as one word) and 2.8 w/s (hyphenated numbers split, a spoken \"dollars\" counted). New checks: each pick lands after its row and when its VO line starts; a ding sits on the verdict; there are no top-level fields outside the contract; the md quotes every VO line, verdict, footer, formula and title verbatim. It also asserts cross-slate tax consistency with 01b (×0.85) and 08b ($13.10). Mutation test on scratch copies (one 02c row changed to ≈ $38.70, 02a vo[0] d cut from 4.3 to 3.9): FAILED 5 of 171, exit 1. Studio linter `node src/cli.mjs check` on all three specs: 3/3 clean, 0 errors, 0 warnings. Stills were rendered at the key beats of each spec and inspected.",
+    "teasers": [
+      {
+        "id": "02a-live-sheet-3-a-day-by-age",
+        "look": "live-sheet",
+        "title": "What $3 a Day Costs You by Age",
+        "header": "What **$3 a day**\ncosts you by age",
+        "runtime_s": 13,
+        "key_numbers": [
+          "$3 × 365 ÷ 12 = $91.25 a month at 7%/12 to 65",
+          "18: $51,465 spent vs ≈ $400,000 (FV $400,261.67)",
+          "25: $43,800 vs ≈ $240,000 (≈ 5.5×)",
+          "35: ≈ $111,000; FV25 ÷ FV35 = 2.152 (≈ 2.2×)",
+          "verdict: 10 years younger costs more than double (ratio 2.09-15.98 for every whole age 18-54)",
+          "pinned: at 10%, 25 → ≈ $577,000, 18 → ≈ $1,170,000; 7%/12 = 7.23% effective"
+        ],
+        "spec": "studio/specs/02a-live-sheet-3-a-day-by-age.json",
+        "mp4": "studio/out/02a-live-sheet-3-a-day-by-age.mp4",
+        "math_ok": true,
+        "facts_ok": true,
+        "hook_score": 7.5
+      },
+      {
+        "id": "02b-scoreboard-trillion-at-your-wage",
+        "look": "scoreboard",
+        "title": "Elon's $1 Trillion Pay Plan at Your Hourly Wage",
+        "header": "ELON'S **$1 TRILLION** PAY PLAN\nAT YOUR HOURLY WAGE",
+        "runtime_s": 14,
+        "key_numbers": [
+          "$1T ÷ (wage × 2,080)",
+          "$7.25/hr → ≈ 66.3 million years ago (66.31M vs K-Pg 66.04 Ma, 0.5% apart)",
+          "$1,000/hr → ≈ 481,000 (> 300,000-year species, ×1.6)",
+          "13 wage rows $7.25-$1,000",
+          "pinned: 24/7 at $7.25 ≈ 15.7 million yrs; plan's decade = ≈ $48 million an hour"
+        ],
+        "spec": "studio/specs/02b-scoreboard-trillion-at-your-wage.json",
+        "mp4": "studio/out/02b-scoreboard-trillion-at-your-wage.mp4",
+        "math_ok": true,
+        "facts_ok": true,
+        "hook_score": 6.5
+      },
+      {
+        "id": "02c-clean-sheet-salary-per-hour",
+        "look": "clean-sheet",
+        "title": "What You Actually Make Per Hour, by Salary",
+        "header": "What you **actually** make\nper hour, by salary",
+        "runtime_s": 13,
+        "key_numbers": [
+          "$65,000 ÷ 2,080 = $31.25 exactly; kept ≈ $26.16 (VO ≈ $26)",
+          "$100,000: ≈ $48.08 vs ≈ $38.07 kept → ≈ $10 an hour to tax (10.0096)",
+          "$200,000 (row 1): ≈ $96.15 vs ≈ $71.60",
+          "kept share 87.6% at $30K → 74.5% at $200K",
+          "2026 single: std ded $16,100; 10/12/22/24% to $12,400/$50,400/$105,700/$201,775; FICA 6.2% to $184,500 + 1.45%",
+          "BLS median $1,251 × 52 = $65,052 → ≈ $65,000 row"
+        ],
+        "spec": "studio/specs/02c-clean-sheet-salary-per-hour.json",
+        "mp4": "studio/out/02c-clean-sheet-salary-per-hour.mp4",
+        "math_ok": true,
+        "facts_ok": true,
+        "hook_score": 6.5
+      }
+    ]
+  },
+  {
+    "n": 3,
+    "format": "what-difference",
+    "name": "What difference does X make?",
+    "pattern": "P5",
+    "looks": [
+      "live-sheet",
+      "clean-sheet",
+      "scoreboard"
+    ],
+    "file": "teasers/v2/03-what-difference.md",
+    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/03-what-difference.py: 387 checks, 0 failures, exit 0. The script rebuilds every loan payment by payment from the sourced inputs. It then asserts that every display string and VO number matches the computed, formatted value, and that each shown delta equals the difference of the shown totals. It checks that ≈ and \"about\" appear only on rounded numbers, the contract shape, and R1, R2, R8 and R10, including that the baseline option's results are already on screen at frame 1. Each later option must land within 0.9 s of the word that names it, using resultT as the landing where the kit reads one. Lever and footer steps must sit on beats, every footer step must start after t = 0 and stay at or under 45 characters, and specs must carry no sfx. It also asserts that hold = duration minus the last VO end, and the sensitivity claims (Edmunds' exact $44,664, 6% and 8% what-ifs, 19.56% and 22.15% card rates, 7.28% mortgage rate). Mutation test: one interest cell changed, one \"about\" removed and the lever moved off its beat gave 4 failures and exit 1; the restored specs pass again. Studio linter (node src/cli.mjs check specs/03*.json): 3/3 clean, 0 errors, 0 warnings, against the built modules. 03a and 03c are also clean against the committed kits in a clean HEAD export. Stills and 12-frame contact sheets of all three were inspected.",
+    "teasers": [
+      {
+        "id": "03a-live-sheet-car-loan-weekly",
+        "look": "live-sheet",
+        "title": "What Difference Do Weekly Car Payments Really Make on $44,000?",
+        "header": "What difference do weekly and\nbiweekly payments really make\non a **$44,000** car loan?",
+        "runtime_s": 37.2,
+        "key_numbers": [
+          "$44,000 at 7% over 72 months: $750.16 a month",
+          "Monthly: 72 months, ≈ $10,000 interest ($10,011.20)",
+          "Biweekly $375.08: ≈ 65 months, ≈ $8,900 ($8,916.74)",
+          "Weekly $187.54: ≈ 65 months, ≈ $8,900 ($8,881.25), only $35.49 better than biweekly",
+          "13 × $750.16 = $9,752.08 = 26 × $375.08 = 52 × $187.54",
+          "Rounded up to $200 a week (+$12.46): ≈ 60 months, ≈ $8,200, ≈ $1,800 less, ≈ 1 year sooner (0.99)"
+        ],
+        "spec": "studio/specs/03a-live-sheet-car-loan-weekly.json",
+        "mp4": "studio/out/03a-live-sheet-car-loan-weekly.mp4",
+        "math_ok": true,
+        "facts_ok": true,
+        "hook_score": 8
+      },
+      {
+        "id": "03b-clean-sheet-card-minimum",
+        "look": "clean-sheet",
+        "title": "Minimum vs a Flat Payment on a $5,000 Card: What Difference Does It Make?",
+        "header": "Minimum vs a flat payment\non a **$5,000** credit card:\nwhat difference does it make?",
+        "runtime_s": 30.2,
+        "key_numbers": [
+          "$5,000 at 22% APR, minimum = 1% + interest with a $40 floor (Chase): first minimum $142.59",
+          "Minimum: 181 payments ≈ 15.1 years, ≈ $7,300 interest ($7,340.79, more than the $5,000 owed)",
+          "$150 − $142.59 = $7.41 more: ≈ 4.3 years, ≈ $2,800 ($2,798.09), ≈ 11 years sooner",
+          "$250 − $142.59 = $107.41 more: ≈ 2.2 years, ≈ $1,300 ($1,285.71), ≈ 13 years sooner",
+          "≈ $4,500 less interest with a flat $150 (caption)"
+        ],
+        "spec": "studio/specs/03b-clean-sheet-card-minimum.json",
+        "mp4": "studio/out/03b-clean-sheet-card-minimum.mp4",
+        "math_ok": true,
+        "facts_ok": true,
+        "hook_score": 7
+      },
+      {
+        "id": "03c-scoreboard-mortgage-extra-100",
+        "look": "scoreboard",
+        "title": "How Much Difference Does Just $100 Extra a Month Make on a Mortgage?",
+        "header": "HOW MUCH DIFFERENCE DOES\nJUST **$100** EXTRA A MONTH MAKE\nON A 30-YEAR MORTGAGE?",
+        "runtime_s": 29.8,
+        "key_numbers": [
+          "$400,000 at 7.3% (≈ Freddie Mac 7.28%, Oct 1 2026): $2,742.29 a month",
+          "Just the payment: 30 years, ≈ $587,200 interest ($587,216.16), more than the loan",
+          "+$100: 320 payments ≈ 26.7 years, ≈ $508,600, ≈ $78,600 less, 40 months sooner",
+          "+$500: 229 payments ≈ 19.1 years, ≈ $342,200, ≈ $245,000 less, ≈ 11 years sooner",
+          "≈ $78,600 ÷ ($100 × 319) ≈ $2.46 saved per extra dollar"
+        ],
+        "spec": "studio/specs/03c-scoreboard-mortgage-extra-100.json",
+        "mp4": "studio/out/03c-scoreboard-mortgage-extra-100.mp4",
+        "math_ok": true,
+        "facts_ok": true,
+        "hook_score": 8
+      }
+    ]
+  },
+  {
+    "n": 4,
+    "format": "chart-race",
+    "name": "Same-stake line-chart race",
+    "pattern": "P4",
+    "looks": [
+      "scoreboard",
+      "becker-rig",
+      "live-sheet"
+    ],
+    "file": "teasers/v2/04-chart-race.md",
+    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/04-chart-race.py → 407 checks, 0 failed. Studio linter (node src/cli.mjs check on the three specs): 3/3 clean, 0 errors, 0 warnings (the old 04a footer type-floor warning is gone). Mutation test: 12 of 12 broken spec copies caught, each by a failed claim rather than a crash. The checks cover: chart points to the cent; finals; footer and formula strings; ledger cells; VO numbers with ≈; read speed of 2.6 words/s; year sync; event and beat timing; sfx; verdict after the last VO line; no uncovered digits. New in this round: a spoken-number sync check (each mid-race figure must be on screen when the VO says it), a 2,916-table FDIC robustness sweep for 04b, frame-1 'open in the red' claims for 04a, and a stale-text check on the md. Contact sheets were rendered in all three kits.",
+    "teasers": [
+      {
+        "id": "04a-scoreboard-sp500-vs-gold",
+        "look": "scoreboard",
+        "title": "What If You Invested $10,000 in the S&P 500 and GOLD in 2000? (A/B: \"$10,000 in 2000: Stocks or Gold?\")",
+        "header": "POV: In 2000 you put **$10,000** in\nthe S&P 500 VS gold",
+        "runtime_s": 45.5,
+        "key_numbers": [
+          "frame 1 already under the stake: S&P $9,701 / gold $9,823 (raceT starts at -0.4 s)",
+          "By 2002: stocks ≈ −38%, gold ≈ +21% (cumulative, pinned on a flag from 3.28 s)",
+          "2013: gold ≈ −28%",
+          "S&P 500 ≈ $75,300 (≈ ×7.53, ≈ 2.9 doublings)",
+          "Gold ≈ $150,000 (≈ ×15.0, ≈ 3.9 doublings)",
+          "Gold ≈ 2× the S&P 500, ≈ one extra doubling",
+          "≈ 8.1% vs ≈ 11.0% a year; from 2010: ≈ ×8.3 vs ≈ ×3.9"
+        ],
+        "spec": "studio/specs/04a-scoreboard-sp500-vs-gold.json",
+        "mp4": "studio/out/04a-scoreboard-sp500-vs-gold.mp4",
+        "math_ok": true,
+        "facts_ok": true,
+        "hook_score": 8
+      },
+      {
+        "id": "04b-becker-rig-savings-vs-sp500",
+        "look": "becker-rig",
+        "title": "$1,000 in Savings vs the S&P 500 Since 2010: Which One Lost Value?",
+        "header": "POV: In 2010 you put **$1,000** in\n\"safe\" savings VS the S&P 500",
+        "runtime_s": 44.5,
+        "key_numbers": [
+          "first VO: 'One of these never had a down year. Guess which one lost.'",
+          "2014: the S&P doubled it (tip crosses $2,000 at 8.18 s)",
+          "Savings: under $10 of interest by 2019 (tip $1,007.76-$1,008.83 while said)",
+          "2022: stocks ≈ −18%",
+          "S&P 500 ≈ $8,280 vs savings ≈ $1,020",
+          "prices ≈ +50% (CPI-U 324.054 ÷ 215.949 = 1.50060), ≈ $1,501 in 2025 = $1,000 in 2010",
+          "≈ $1,020 buys what ≈ $680 did in 2010 → lost ≈ 32% of its buying power",
+          "max-rate case: 1,000 × 1.0047^16 = $1,077.91 ≈ $1,078"
+        ],
+        "spec": "studio/specs/04b-becker-rig-savings-vs-sp500.json",
+        "mp4": "studio/out/04b-becker-rig-savings-vs-sp500.mp4",
+        "math_ok": true,
+        "facts_ok": true,
+        "hook_score": 7
+      },
+      {
+        "id": "04c-live-sheet-usa-vs-europe",
+        "look": "live-sheet",
+        "title": "What If You Invested $10,000 in the USA and EUROPE in 2016? (A/B: \"Europe Won 2025. Who Won the Decade?\")",
+        "header": "POV: In 2016 you invested **$10,000** in\nUSA vs EUROPE",
+        "runtime_s": 38,
+        "key_numbers": [
+          "hook: 2025: Europe beat the USA ≈ 2 to 1 (35.41% ÷ 17.88% = 1.98)",
+          "2018: Europe ≈ −15% (said while the 2018 row is up)",
+          "2020: the USA doubled (≥ $20,334 for the whole line)",
+          "Europe still under $17,000 until 19.09 s",
+          "2025: Europe ≈ +35%, USA ≈ +18%",
+          "USA ≈ $39,800 (≈ ×3.98) vs Europe ≈ $22,700 (≈ ×2.27)",
+          "≈ 14.8% vs ≈ 8.5% a year; USA ≈ doubled twice (log2 1.994), Europe once (1.18)"
+        ],
+        "spec": "studio/specs/04c-live-sheet-usa-vs-europe.json",
+        "mp4": "studio/out/04c-live-sheet-usa-vs-europe.mp4",
+        "math_ok": true,
+        "facts_ok": true,
+        "hook_score": 8
+      }
+    ]
+  },
+  {
+    "n": 5,
+    "format": "split-sheet",
+    "name": "Split sheet",
+    "pattern": "P9",
+    "looks": [
+      "clean-sheet",
+      "becker-rig",
+      "scoreboard"
+    ],
+    "file": "teasers/v2/05-split-sheet.md",
+    "check": "teasers/v2/checks/05-split-sheet.py",
+    "teasers": [
+      {
+        "id": "05a-clean-sheet-chipotle-10",
+        "look": "clean-sheet",
+        "title": "Chipotle Keeps How Much of Your $10?",
+        "header": "What You're Really Paying For\nWhen You Spend **$10**\nat Chipotle:",
+        "runtime_s": 33.6,
+        "key_numbers": [
+          "$10.00 order",
+          "≈ $2.96 food, drinks & packaging (29.6%)",
+          "≈ $2.51 crew (25.1%)",
+          "≈ $0.52 rent (5.2%)",
+          "≈ $1.47 ads, delivery & card fees (14.7%)",
+          "≈ $0.91 HQ, wear & tear, new stores (9.1%)",
+          "≈ $0.34 tax − interest earned (3.4%; the tax alone would be ≈ $0.40)",
+          "≈ $1.29 profit (12.9%, masked '?' until 23.1 s)",
+          "$7.04 wrong guess on screen at frame 1, struck at 5.3 s",
+          "check $10.00 − $8.71 of costs = $1.29"
+        ],
+        "spec": "studio/specs/05a-clean-sheet-chipotle-10.json",
+        "mp4": "studio/out/05a-clean-sheet-chipotle-10.mp4",
+        "math_ok": true,
+        "facts_ok": true,
+        "hook_score": 8
+      },
+      {
+        "id": "05b-becker-rig-3000-paycheck",
+        "look": "becker-rig",
+        "title": "Could You Live on 50/30/20 With $3,000 a Month Take-Home?",
+        "header": "Could you live on 50/30/20\nwith **$3,000** a month take-home?",
+        "runtime_s": 29.3,
+        "key_numbers": [
+          "$3,000 a month take-home",
+          "$3,000 ÷ 10 = $300 (first payoff at 2.4 s)",
+          "needs 5 × $300 = $1,500 (goal, 5.4 s)",
+          "wants 3 × $300 = $900",
+          "savings 2 × $300 = $600",
+          "check $1,500 + $900 + $600 = $3,000",
+          "$900 ÷ 30 = $30 a day"
+        ],
+        "spec": "studio/specs/05b-becker-rig-3000-paycheck.json",
+        "mp4": "studio/out/05b-becker-rig-3000-paycheck.mp4",
+        "math_ok": true,
+        "facts_ok": true,
+        "hook_score": 7
+      },
+      {
+        "id": "05c-scoreboard-costco-100",
+        "look": "scoreboard",
+        "title": "How Much of Your $100 Does Costco Actually Keep?",
+        "header": "HOW MUCH OF YOUR **$100**\nDOES COSTCO ACTUALLY KEEP?",
+        "runtime_s": 26,
+        "key_numbers": [
+          "$100.00 cart",
+          "≈ $88.91 merchandise costs (264,279 ÷ 297,247)",
+          "≈ $9.15 SG&A (27,190 ÷ 297,247)",
+          "≈ $1.94 left for Costco before tax (masked '?' until 10.2 s)",
+          "hero $100.00 → ≈ $11.09 → ≈ $1.94",
+          "check $88.91 + $9.15 + $1.94 = $100.00",
+          "≈ $1.99 membership fees per $100 of sales (5,907 ÷ 297,247)",
+          "fees $5,907M > what the cart leaves, $5,778M"
+        ],
+        "spec": "studio/specs/05c-scoreboard-costco-100.json",
+        "mp4": "studio/out/05c-scoreboard-costco-100.mp4",
+        "math_ok": true,
+        "facts_ok": true,
+        "hook_score": 7.5
+      }
+    ]
+  },
+  {
+    "n": 6,
+    "format": "pov-race",
+    "name": "POV spend-vs-own race",
+    "pattern": "P6",
+    "looks": [
+      "scoreboard",
+      "live-sheet",
+      "becker-rig"
+    ],
+    "file": "teasers/v2/06-pov-race.md",
+    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/06-pov-race.py -> 352 checks, 0 failed, ALL PASS (exit 0). It used to be 313 checks. New checks cover: VO pacing in spoken words at 2.8 per second, counting numbers as they are read aloud; race moving by 1.0 s; first payoff by 3.0 s; raw-close derivation of the $3.65 launch price; every pinned-comment product multiplying out. Studio linter (node src/cli.mjs check): 06a, 06b and 06c each 0 errors, 0 warnings (3/3 clean).",
+    "teasers": [
+      {
+        "id": "06a-scoreboard-first-iphone-apple",
+        "look": "scoreboard",
+        "title": "What If You Invested $499 in Apple Instead of the First iPhone?",
+        "header": "POV: IN 2007 YOU INVESTED IN APPLE\nINSTEAD OF PAYING **$499**\nFOR THE FIRST IPHONE",
+        "runtime_s": 26.5,
+        "key_numbers": [
+          "$499 at the 6/29/2007 close, adjusted price $3.65 (5.92 x 122.04 / 198.08 = 3.6474), 136.71 shares",
+          "end of 2007 $809 (first payoff at 1.40 s); 2008 low $348 (opens in the red at 2.15-2.84 s)",
+          "passes $10,000 in 2020 (t 14.78); 2022 drop 26.4% ('a quarter')",
+          "final $37,065.45 shown as ≈ $37,000 (nearest $1,000); footer step $499 x 74.3 ≈ $37,000",
+          "≈ 74x (74.28); 2x every ≈ 3 yrs (6.21 doublings in 18.51 years = 2.98)",
+          "pinned: 136.7 x $271.12 (adjusted 12/31/2025 close) ≈ $37,062"
+        ],
+        "spec": "studio/specs/06a-scoreboard-first-iphone-apple.json",
+        "mp4": "studio/out/06a-scoreboard-first-iphone-apple.mp4",
+        "math_ok": true,
+        "facts_ok": true,
+        "hook_score": 8
+      },
+      {
+        "id": "06b-live-sheet-netflix-bill",
+        "look": "live-sheet",
+        "title": "What If Your Netflix Bill Bought Netflix Stock Since 2012?",
+        "header": "POV: You invested in Netflix\ninstead of paying Netflix,\never since it was **$7.99**",
+        "runtime_s": 30.5,
+        "key_numbers": [
+          "$7.99 Standard plan from Jan 2012, 7 hikes to $17.99 (tags 'Hike 1 · May 2014' ... 'Hike 7 · Jan 2025')",
+          "NFLX 2012-2014 at Macrotrends' 4 dp (1.1855/1.3227, 3.5272/5.2596, 5.7495/4.8801)",
+          "end of 2012 $107 vs $95.88 (first payoff at 1.91 s); formula bar ≈ $95.88 ÷ $1.19 ≈ 81 shares",
+          "2020 stake tops $9,000 ($9,181); 2022 halves ($10,410 -> $5,289, -49.2%)",
+          "$2,037.32 paid over 168 months; 188.84 shares x $93.76 = $17,705.59 shown as ≈ $17,700",
+          "≈ 8.7x (8.69); 2012's bills ≈ $7,600 of the final (≈ 43%)"
+        ],
+        "spec": "studio/specs/06b-live-sheet-netflix-bill.json",
+        "mp4": "studio/out/06b-live-sheet-netflix-bill.mp4",
+        "math_ok": true,
+        "facts_ok": true,
+        "hook_score": 7.5
+      },
+      {
+        "id": "06c-becker-rig-latte-starbucks",
+        "look": "becker-rig",
+        "title": "What If Every $4 Starbucks Latte Bought Starbucks Stock Instead?",
+        "header": "POV: Since 2014 you invested\nin Starbucks instead of paying\n**$4/day** for a Starbucks latte",
+        "runtime_s": 28,
+        "key_numbers": [
+          "$4/day (inside the FinanceBuzz grande-latte bracket $3.65 in 2014 to $4.45 in 2024); $1,460 a year",
+          "end of 2014 $1,586 vs $1,460 (first payoff at 2.14 s)",
+          "by 2021 $24,343 vs $11,688 spent (2.08x, 'doubled')",
+          "2022-2025: +$5,844 in, stake +$585 ('stalls')",
+          "$17,532 of lattes (4,383 days); 296.03 shares x $84.21 = $24,928.31 shown as ≈ $24,900",
+          "≈ 1.4x (1.42); verdict '≈ 1.4×. Not rich. Not zero.'"
+        ],
+        "spec": "studio/specs/06c-becker-rig-latte-starbucks.json",
+        "mp4": "studio/out/06c-becker-rig-latte-starbucks.mp4",
+        "math_ok": true,
+        "facts_ok": true,
+        "hook_score": 7.5
+      }
+    ]
+  },
+  {
+    "n": 7,
+    "format": "ledger-duel",
+    "name": "\"2 people invest\" ledger duel",
+    "pattern": "P4",
+    "looks": [
+      "live-sheet",
+      "becker-rig",
+      "clean-sheet"
+    ],
+    "file": "teasers/v2/07-ledger-duel.md",
+    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/07-ledger-duel.py → 406 checks, 0 failures, exit 0. Two planted errors, the old \"× ≈ 8.1\" in 07a's formula bar and \"$6,600\" in a 07b voice-over line, each made it exit 1 with a named failure; both specs were then restored. New checks: the first payoff row must land by 3.0 s (it previously allowed 3.5-3.6 s). A formula that multiplies shown factors must reproduce the shown result. Each formula-bar line must stay on screen long enough to type at 24 characters a second plus 1.5 s to read. Headers are capped at 4 lines. 07a's break-even rate (≈ 6.1%) and its 6% case are asserted. The studio linter (node src/cli.mjs check) gives 3/3 clean, 0 errors, 0 warnings. 07a and 07c were rendered as stills and contact sheets in their built kits.",
+    "teasers": [
+      {
+        "id": "07a-live-sheet-start-at-25",
+        "look": "live-sheet",
+        "title": "2 People Invest $200 a Month. One Stops at 35. Who Has More at 65?",
+        "header": "2 people invest **$200 a month**\n10 years vs 30 years. Who wins at 65?",
+        "runtime_s": 27.7,
+        "key_numbers": [
+          "$200 a month at 7%, compounded monthly",
+          "Ava puts in $24,000 (age 25-35), Ben puts in $72,000 (age 35-65)",
+          "Age 30 row ≈ $14,000 / $0 at 2.4 s",
+          "Formula bar: ≈ $34,617 × ≈ 8.12 ≈ $281,000 (shown factors give 281,090; exact 280,968.48)",
+          "At 65: Ava ≈ $281,000 vs Ben ≈ $244,000; Ava wins by ≈ $37,000",
+          "Break-even ≈ 6.1% (6.109%); at 6% Ben ≈ $201,000 vs Ava ≈ $197,000",
+          "Pinned comment: if Ava never stopped, ≈ $525,000"
+        ],
+        "spec": "studio/specs/07a-live-sheet-start-at-25.json",
+        "mp4": "studio/out/07a-live-sheet-start-at-25.mp4",
+        "math_ok": true,
+        "facts_ok": true,
+        "hook_score": 8
+      },
+      {
+        "id": "07b-becker-rig-panic-sell-2008",
+        "look": "becker-rig",
+        "title": "2 People Invest $10,000 Right Before 2008. One Sells in the Crash. How Far Apart Now?",
+        "header": "2 people invest **$10,000**\nright before 2008\nOne sells to cut his losses",
+        "runtime_s": 27,
+        "key_numbers": [
+          "$10,000 each, bought at the Dec 31, 2007 close",
+          "2008: −37.00% → $6,300 exactly, crash impact at 1.0 s",
+          "2012 ≈ $10,900, the first year-end back above $10,000 (2011: $9,360.23)",
+          "2022 dip ≈ −18% → ≈ $35,500",
+          "End of 2025: Alex ≈ $66,000 (65,995.78) vs Sam $6,300",
+          "≈ 10.5× as much (10.48); Alex ≈ 6.6× his $10,000",
+          "Pinned comment: Sam's cash at 5% a year 2009-2025 → ≈ $14,400, under a quarter of Alex's"
+        ],
+        "spec": "studio/specs/07b-becker-rig-panic-sell-2008.json",
+        "mp4": "studio/out/07b-becker-rig-panic-sell-2008.mp4",
+        "math_ok": true,
+        "facts_ok": true,
+        "hook_score": 8
+      },
+      {
+        "id": "07c-clean-sheet-savings-rate",
+        "look": "clean-sheet",
+        "title": "2 People Save $10,000: Big Bank vs High-Yield. How Far Apart in 5 Years?",
+        "header": "2 people save **$10,000**\nBig bank vs high-yield\nInterest after 5 years?",
+        "runtime_s": 22.1,
+        "key_numbers": [
+          "Chase Savings 0.01% APY (Oct 2, 2026 rate sheet) vs 4.00% APY high-yield",
+          "Plans show the working: × 1.0001 a year vs × 1.04 a year",
+          "Month 1 at 1.0 s: ≈ $10,000.08 (about 8 cents) vs ≈ $10,032.74 (about $33)",
+          "Year 1: $10,001 vs $10,400",
+          "Year 5: ≈ $10,005 vs ≈ $12,167",
+          "Interest after 5 years: ≈ $5 vs ≈ $2,167 (≈ 433×)",
+          "FDIC national average 0.37% → $37 a year on $10,000 (pinned comment)"
+        ],
+        "spec": "studio/specs/07c-clean-sheet-savings-rate.json",
+        "mp4": "studio/out/07c-clean-sheet-savings-rate.mp4",
+        "math_ok": true,
+        "facts_ok": true,
+        "hook_score": 7
+      }
+    ]
+  },
+  {
+    "n": 8,
+    "format": "unit-ladder",
+    "name": "Cost in units of X",
+    "pattern": "P8",
+    "looks": [
+      "scoreboard",
+      "becker-rig",
+      "clean-sheet"
+    ],
+    "file": "teasers/v2/08-unit-ladder.md",
+    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/08-unit-ladder.py",
+    "teasers": [
+      {
+        "id": "08a-scoreboard-costco-hot-dogs",
+        "look": "scoreboard",
+        "title": "A New House in Costco Hot Dogs: 1985 vs 2026",
+        "header": "A NEW HOUSE, 1985 VS 2026,\nIN **$1.50** COSTCO HOT DOGS",
+        "runtime_s": 27,
+        "key_numbers": [
+          "Hot dog + soda $1.50 in 1985, still $1.50 (footer + VO 0.0 s)",
+          "$65 membership ÷ $1.50 ≈ 43 (lands 0.61 s)",
+          "$1,199 iPhone 18 Pro ≈ 799",
+          "Median new house 1985 $84,300 = 56,200 hot dogs",
+          "Median new house Aug 2026 $393,700 ≈ 262,467 hot dogs",
+          "Verdict ≈ 4.7× (393,700 ÷ 84,300 = 4.6702)"
+        ],
+        "spec": "studio/specs/08a-scoreboard-costco-hot-dogs.json",
+        "mp4": "studio/out/08a-scoreboard-costco-hot-dogs.mp4",
+        "math_ok": true,
+        "facts_ok": true,
+        "hook_score": 6
+      },
+      {
+        "id": "08b-becker-rig-hours-at-15",
+        "look": "becker-rig",
+        "title": "Your Rent, a Car, a House: In Hours of Work at $15/hr",
+        "header": "Your rent, a car, a house:\nhours of work at **$15/hr**",
+        "runtime_s": 27,
+        "key_numbers": [
+          "$15/hr keeps ≈ $13.10 (2026 fed tax + FICA, single); unit defined as $13.10",
+          "Median rent $1,531 ÷ $13.10 ≈ 117 hours (lands ≈ 2.4 s)",
+          "≈ 2 of every 3 work hours (116.870 ÷ 173.33 = 67.4%)",
+          "Rent year $18,372 ≈ 1,402 h",
+          "Avg new car $50,089 ≈ 3,824 h",
+          "Median new house $393,700 ≈ 30,053 h ≈ 14 years full-time"
+        ],
+        "spec": "studio/specs/08b-becker-rig-hours-at-15.json",
+        "mp4": "studio/out/08b-becker-rig-hours-at-15.mp4",
+        "math_ok": true,
+        "facts_ok": true,
+        "hook_score": 7
+      },
+      {
+        "id": "08c-clean-sheet-college-in-big-macs",
+        "look": "clean-sheet",
+        "title": "What Your Degree Costs in Big Macs",
+        "header": "Your degree, in **Big Macs**:\nfind your school",
+        "runtime_s": 27,
+        "key_numbers": [
+          "1 Big Mac = $6.22 (Economist, Jul 2026)",
+          "Community college $4,150 ≈ 667 (lands 1.63 s)",
+          "In-state $11,950 ≈ 1,921",
+          "Out-of-state $31,880 ≈ 5,125",
+          "Private $45,000 ≈ 7,235",
+          "Private 4 yrs with housing & food 4 × $65,470 ≈ 42,103 → a Big Mac a day for ≈ 115 years"
+        ],
+        "spec": "studio/specs/08c-clean-sheet-college-in-big-macs.json",
+        "mp4": "studio/out/08c-clean-sheet-college-in-big-macs.mp4",
+        "math_ok": true,
+        "facts_ok": true,
+        "hook_score": 6.5
+      }
+    ]
+  },
+  {
+    "n": 9,
+    "format": "growth-ladder",
+    "name": "Year-by-year growth ladder",
+    "pattern": "P2",
+    "looks": [
+      "live-sheet",
+      "becker-rig",
+      "scoreboard"
+    ],
+    "file": "teasers/v2/09-growth-ladder.md",
+    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/09-growth-ladder.py: 518 checks, 0 failures, exit 0. I mutated one ladder cell in 09b (≈ $3,870 → ≈ $3,871) and one VO number in 09c ($765,400 → $765,500); the checker exited 1 on each, and the specs were restored. Studio linter (node src/cli.mjs check): 3/3 specs clean, 0 errors, 1 warning (the 09c footer renders at 37.7 px, under the 40 px recommendation and above the 34 px floor). The Live Sheet and Scoreboard growth-ladder modules have now landed, so this lint covers the 09a and 09c ladders for the first time. I read rendered stills of all three at their beats.",
+    "teasers": [
+      {
+        "id": "09a-live-sheet-100-a-month-doubles",
+        "look": "live-sheet",
+        "title": "$100 a Month at 8%: Doubled by Year 9?",
+        "header": "**$100 a month** at 8%.\nDoubled by year 9?",
+        "runtime_s": 29.5,
+        "key_numbers": [
+          "$100 a month at 8% compounded monthly",
+          "frame 1: Year 9: 2 × $10,800 = $21,600?",
+          "Rule of 72: 72 ÷ 8 = 9",
+          "year 9 ≈ $15,743 (1.46×)",
+          "year 15 ≈ $34,604 (1.92×)",
+          "year 16: $19,200 in, ≈ $38,721 (2.02×)",
+          "Yr 16: 1st $100 ≈ $356",
+          "year 30 ≈ $149,036 (4.1×)",
+          "same year 16 for $50/$500/$1,000 a month"
+        ],
+        "spec": "studio/specs/09a-live-sheet-100-a-month-doubles.json",
+        "mp4": "studio/out/09a-live-sheet-100-a-month-doubles.mp4",
+        "math_ok": true,
+        "facts_ok": true,
+        "hook_score": 7
+      },
+      {
+        "id": "09b-becker-rig-1000-times-1-07",
+        "look": "becker-rig",
+        "title": "Leave $1,000 at 7% for 30 Years. Is It Really Just $3,100?",
+        "header": "Leave **$1,000** at 7% for 30 years.\n$1,000 + 30 × $70 = __$3,100?__",
+        "runtime_s": 32.5,
+        "key_numbers": [
+          "$1,000 × 1.07 once a year",
+          "year 1 $1,070 (lands at 1.6 s)",
+          "year 2 ≈ $1,145 (adds $74.90)",
+          "year 10 ≈ $1,967",
+          "year 20 ≈ $3,870 (past $3,100; first past in year 17)",
+          "year 30 ≈ $7,612",
+          "simple guess $3,100; ≈ 2.46 times",
+          "got $5,000? × 5"
+        ],
+        "spec": "studio/specs/09b-becker-rig-1000-times-1-07.json",
+        "mp4": "studio/out/09b-becker-rig-1000-times-1-07.mp4",
+        "math_ok": true,
+        "facts_ok": true,
+        "hook_score": 7
+      },
+      {
+        "id": "09c-scoreboard-5-a-day-millionaire",
+        "look": "scoreboard",
+        "title": "Does $5 a Day Make You a Millionaire in 40 Years?",
+        "header": "**$5 A DAY**, INVESTED.\nA MILLIONAIRE IN 40 YEARS?",
+        "runtime_s": 35.2,
+        "key_numbers": [
+          "$5 × 365 ÷ 12 ≈ $152/mo at an effective 7% a year",
+          "year 10 ≈ $26,000",
+          "year 20 ≈ $77,200",
+          "year 30 ≈ $177,900",
+          "year 40 ≈ $375,900 (not even halfway)",
+          "year 50 ≈ $765,400",
+          "year 54 ≈ $1,011,700 (crosses $1M in month 646)",
+          "put in $98,550 (9.7%)",
+          "pinned: 10% a year → year 40 ≈ $844,100; 10%/12 → ≈ $961,800; needs ≈ 10.6%"
+        ],
+        "spec": "studio/specs/09c-scoreboard-5-a-day-millionaire.json",
+        "mp4": "studio/out/09c-scoreboard-5-a-day-millionaire.mp4",
+        "math_ok": true,
+        "facts_ok": true,
+        "hook_score": 7.5
+      }
+    ]
+  },
+  {
+    "n": 10,
+    "format": "cost-counter",
+    "name": "Real-time cost counter",
+    "pattern": "-",
+    "looks": [
+      "scoreboard",
+      "becker-rig",
+      "live-sheet"
+    ],
+    "file": "teasers/v2/10-cost-counter.md",
+    "check": "teasers/v2/checks/10-cost-counter.py",
+    "teasers": [
+      {
+        "id": "10a-scoreboard-debt-interest-live",
+        "look": "scoreboard",
+        "title": "US Debt Interest Since You Hit Play: How Much Comes Off the Debt?",
+        "header": "US debt interest since you hit **play**.\nHow much comes __off the debt__?",
+        "runtime_s": 36.5,
+        "key_numbers": [
+          "Footer at 0.0 s: FY25: $970B ÷ 31,536,000 s · pay $1,251 × 52",
+          "≈ $30,800 a second (exact $30,758.50)",
+          "a year of median pay ($65,052) passes at 2.11 s",
+          "Yearly pay ÷ 30,800 = your seconds (VO at 8.5 s)",
+          "≈ $111 million an hour",
+          "$1 million passes at 32.51 s (≈ 33 seconds)",
+          "$0 of it pays the debt down",
+          "counter final ≈ $1,002,727"
+        ],
+        "spec": "studio/specs/10a-scoreboard-debt-interest-live.json",
+        "mp4": "studio/out/10a-scoreboard-debt-interest-live.mp4",
+        "math_ok": true,
+        "facts_ok": true,
+        "hook_score": 7
+      },
+      {
+        "id": "10b-becker-rig-debt-vs-your-pay",
+        "look": "becker-rig",
+        "title": "Which Is Bigger: Your Yearly Pay or 1 Second of New US Debt?",
+        "header": "Your year's pay vs\n**1 second** of new US debt.\nWhich is bigger?",
+        "runtime_s": 39,
+        "key_numbers": [
+          "Debt to the Penny: $37,637,553,494,935.61 (2025-09-30) to $40,096,954,633,566.68 (2026-09-29) = ≈ $2.46T in 364 days",
+          "≈ $78,000 a second (exact $78,201.35 = Δ ÷ 31,449,600 s)",
+          "counter armed until 2.4 s, then passes $65,052 at 3.23 s (0.83 s of counting)",
+          "stamp '1 second ≈ $78,000' at 3.4 s",
+          "house ≈ 5 s, $1 million ≈ 13 s of counting",
+          "40 years of median pay $2,602,080 ≈ $2.6 million passes at 35.67 s (≈ 33 s of counting)",
+          "counter final ≈ $2,604,105",
+          "pinned: earn more than ≈ $78,000 a year and you win; new car $50,089 ≈ 0.64 s"
+        ],
+        "spec": "studio/specs/10b-becker-rig-debt-vs-your-pay.json",
+        "mp4": "studio/out/10b-becker-rig-debt-vs-your-pay.mp4",
+        "math_ok": true,
+        "facts_ok": true,
+        "hook_score": 7.5
+      },
+      {
+        "id": "10c-live-sheet-amazon-makes",
+        "look": "live-sheet",
+        "title": "What Amazon Really Keeps While You Watch This",
+        "header": "How much does Amazon **really** make\nwhile you watch this?",
+        "runtime_s": 31,
+        "key_numbers": [
+          "Amazon 2025 net sales $716.9B, net income $77.7B; footer pay $1,251 a week × 52",
+          "sales ≈ $22,700 a second (exact $22,732.75), the one rounding everywhere",
+          "kept ≈ $2,464 a second, ≈ 11% (exact 10.84%), the one rounding everywhere",
+          "both counters run from frame 1",
+          "sales passes a year of median pay ≈ 3 s (2.86 s), a median new house ≈ 17 s (17.32 s)",
+          "kept passes a year of median pay ≈ 26 s (26.40 s; $65,052 ÷ $2,464 = 26.40)",
+          "finals: sales ≈ $602,418, kept ≈ $65,292",
+          "verdict: sells a year of median pay in ≈ 3 s, keeps one every ≈ 26 s"
+        ],
+        "spec": "studio/specs/10c-live-sheet-amazon-makes.json",
+        "mp4": "studio/out/10c-live-sheet-amazon-makes.mp4",
+        "math_ok": true,
+        "facts_ok": true,
+        "hook_score": 6.5
+      }
+    ]
+  }
+]
