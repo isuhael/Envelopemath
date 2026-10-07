@@ -115,4 +115,30 @@ print(f"  comment-bait answer: 1 in 1,000 needs {k_add:,.0f} tickets = {k_add / 
       f"({k_ind / 365:,.1f} yrs if every ticket is a separate draw) -> '≈800 years', ≈${2 * k_add:,.0f}")
 assert round(k_add / 365, -2) == 800 and round(k_ind / 365, -2) == 800
 
+
+# ======================================================================= QA additions (2026-10-07)
+print("=" * 72, "\nQA  checks added by the fact-check pass\n" + "=" * 72)
+# 03A back: the ink now shows the exact year, and the claim must not hang on one unverified price.
+assert f"(exactly ${year:,})" == "(exactly $1,095)"
+min_price_for_claim = year + 1                      # "a year of it costs less than one iPhone 18 Pro"
+print(f"  03A claim 'a year < one iPhone 18 Pro' holds for any starting price >= ${min_price_for_claim:,}")
+for p_ in (1099, 1199):  # 1099 = iPhone 17 Pro 2025 launch price (QA reference knowledge, not re-searched); 1199 = writer-sourced 18 Pro price
+    assert year < p_
+    print(f"    at ${p_:,}: year ${year:,} is ${p_ - year} less; daily habit that still fits: up to ${int(p_ / 365 * 100) / 100:.2f}")
+assert int(IPHONE_18_PRO / 365 * 100) / 100 == 3.28 and 3.28 * 365 < IPHONE_18_PRO < 3.29 * 365
+# 03A VO rounding: "about eleven grand"
+assert round(decade_365, -3) == 11000
+# invest-camp figure is end-of-month deposits, monthly compounding (annual compounding gives less)
+fv_annual = year * ((1.07 ** 10 - 1) / 0.07)
+print(f"  03A invest-camp: monthly compounding ${fv:,.0f} (≈$15,800); annual deposits/compounding ${fv_annual:,.0f}")
+# 03B VO "twenty thousand eight hundred" is exact; 03C VO "seventy-three hundred", "one in eighty thousand"
+assert r_decade == 20800 and c_decade == 7300 and round(one_in_add, -4) == 80000
+# 03C: overall 'any prize' odds re-derived from the matrix (chart: 1 in 24.87)
+def ways(k, pb):
+    return comb(5, k) * comb(PB_WHITE - 5, 5 - k) * (1 if pb else PB_RED - 1)
+win_ways = sum(ways(k, pb) for k, pb in [(5, 1), (5, 0), (4, 1), (4, 0), (3, 1), (3, 0), (2, 1), (1, 1), (0, 1)])
+any_odds = N / win_ways
+print(f"  03C any-prize odds from the matrix: 1 in {any_odds:.3f} (chart 24.87); expected prizes in 3,650 tickets: {tickets / any_odds:.1f}")
+assert round(any_odds, 2) == PB_ANY_PRIZE_ODDS and round(tickets / any_odds) == 147
+
 print("\nall assertions passed")

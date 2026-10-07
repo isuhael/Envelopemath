@@ -226,7 +226,7 @@ Each episode also leaves one **save-worthy envelope rule**:
 | 0.0–3.1 | Hook | Tape hook (number + question); ✉️ bobs; $10K "1 ENVELOPE" stamp |
 | 2.6–6.5 | Set-up + line 1 (the unit) | ASSUME sticky; "100 × $100 = $10K ≈ 1.1 cm" |
 | 6.5–9.6 | **Partial payoff 1 (32%)** | Flip; "$1 million = 100 envelopes"; the stack grows beside a 🧍 "you" (1.7 m) to a red dimension "≈ 1.1 m" (lands at 8.4 s) |
-| 9.6–14.0 | **Partial payoff 2 + pattern break** | Flip; "$1 billion = 100,000 envelopes"; the tall stack reaches "≈ 1.1 km"; pencil outline "Burj Khalifa · 828 m" to scale, and shorter |
+| 9.6–14.0 | **Partial payoff 2 + pattern break** | Flip; "$1 billion = 100,000 envelopes"; the tall stack reaches "≈ 1.1 km"; pencil outline labelled "Burj Khalifa / 828 m" to scale, and shorter |
 | 14.0–18.4 | Seal + guess | Line 2 "$40T ÷ $10K = 4 billion envelopes"; sealed envelope "how tall?"; 3-s PAUSE & GUESS |
 | 18.5–21.4 | **Reveal (70%)** | Card **"≈ 44,000 km / 4 billion × 1.1 cm"** (line 3) |
 | 21.4–24.4 | Scale shot | Flip; 🌍 with a red ring around the equator; "equator: 40,075 km"; red "≈ 1.1 laps of the equator" |
@@ -738,11 +738,11 @@ Titles, tape, first spoken line and description now say the same thing (report �
 - **01A:** the red circle cut through the last "7" of 666,666,666,667. It is now widened to clear the digits, and the counter is set at 112 px.
 - **01A:** hook line 1 sat on the postmark ring. The hook moved to y 445.
 - **01C:** the red circle overlapped "to mint" and the "=". The line is now "100M × 3.69¢ = $3.69M" with a tight circle (pad 6), and "to make $1M" moved into the red verdict line.
-- **01C:** the ASSUME sticky appeared only after the reveal, at 40 px with 17 words. It now carries one assumption at 46 px and is readable for 2.2 s.
+- **01C:** the ASSUME sticky appeared only after the reveal, at 40 px with 17 words. It now carries one assumption at 56 px and is readable for 2.2 s.
 
 **Math check upgrades:** the math check now also asserts the structure: hook fully drawn at frame 1 with a red number, `loop: true`, captions == VO, core lines on screen, first payoff by 40% and the verdict in the last 2 s. As a negative test, I reintroduced the old frame-1, caption, verdict-timing and 3,600 km defects in a scratch copy: 4 of 4 failed as expected.
 
-**Engine requests (engine/src was not edited by this pass):** while this review ran, the renderer gained several of the features it needed. The specs now use them: a hook at t ≤ 0.05 renders `instant`; `postage.labelSize` is set to 28 to 30 for 01A/01B and 24 for 01C; `loop: true`. `check` now also lints frame 0, caption wraps and caption pace, and all three specs pass it with zero warnings. Still open:
+**Engine requests (engine/src was not edited by this pass):** while this review ran, the renderer gained several of the features it needed. The specs now use them: a hook at t ≤ 0.05 renders `instant`; `postage.labelSize` is set to 28 to 30 for 01A/01B and 24 for 01C; `loop: true`. `check` now also lints frame 0, caption wraps, caption pace and a 56 px floor for handwriting, and all three specs pass it with zero warnings. The floor arrived mid-review, so the stickies (42 to 46 px), the 01A "÷ 1.5 = × ⅔" tip (46 px), the 01B Burj label (46 px, now split into "Burj Khalifa" / "828 m" so it clears the $1B stack) and the card sub-lines (54 px) were raised to 56 px and re-laid out. The 01A sticky widened to 440 px and moved to y 600 to clear the postmark and line 1. Still open:
 1. `check`: include `annotate` in the overlap boxes (`stamp`, `postage` and `postmark` are now boxed). The red-circle collisions fixed above (circle through the last digit, circle over "to mint") were invisible to the linter.
 2. `check`: a reading-time lint for on-screen text (words vs seconds fully written on screen), not just captions. 8 of the 9 reading-time failures above were in on-screen text or cards, not captions.
 3. `grid`: a `labelSize` ("your share: 81" is fixed at 56 px).
