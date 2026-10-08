@@ -20,7 +20,10 @@
 //
 // Layout: the kit grid (captions on: stage ≈ 595-1130; the label stack and then the verdict take the slot above the
 // caption band). Rows are two lines (name + money on top, time bar below) when there is room (≥ 90 px a row);
-// otherwise one line (name, payoff, money) over a full-row time fill. The bar metric needs no column head on two-line
+// otherwise one line (name, payoff, money) over a full-row time fill. On two-line rows the bar's label rides inside
+// the bar's end when its landed label fits there (it waits at the track's start, the passing edge dimmed, until the end
+// reaches it), else just past the end: the side is decided from the landed bar, never switched mid-race. The bar
+// metric needs no column head on two-line
 // rows (its value rides the bar's end: "60 MONTHS"); every other metric gets its own column, right-aligned and
 // measured, with its head over it (a head may reach left over the next column's slack). At most two value columns
 // (the hero's metric first): a third value metric is left off the board. A metric that can't be a bar (dates, words)
@@ -46,14 +49,20 @@
 //                bumps (6%) and its glow flares, a smaller cousin of a landing, on a soft tick (ignored at t <= 0.05).
 //                { t, option, metric? }: the VO speaks a number already posted in that option's row instead: that cell
 //                (metric: default the hero's metric, else the first value column; the bar metric = the bar's label)
-//                bumps 10% and glows in its own colour, on a soft tick
+//                swells (up in 0.08 s, held 0.3 s, down in 0.25 s; 16%, less where the cell has less room) and glows
+//                in its own colour for as long, on a soft tick, while the label stack steps back to 55%
 //   keepSpeed    true: an option.resultT later than its race needs keeps the one shared bar speed (the bar waits, lit
 //                but empty, and starts so it lands on resultT) instead of crawling from the cut to resultT
 //   endTag       the hero's tag for the winner's payoff (default: the hero metric's label; false: no tag). A winner
 //                whose delta is a duration ("≈ 10 years sooner") rolls the hero to it when the hero's metric is a
 //                duration too, as a money delta does on a money hero
-//   labelSteps   [{ t, option, text }]: the label stack slams a line 2 of its own while that option is active (e.g. "40
-//                months sooner" as the VO says it, before the delta slams); line 1 stays the option's detail
+//   heroEnd      'value': the winner beat rolls the hero from the FIRST option's value of its metric (in that option's
+//                colour) to the winner's own (turning to its colour as it rolls), tagged with the metric's label: the
+//                gap between them is the motion, and the delta is left to the verdict, so the hero and the verdict
+//                never say the same words (03b: ≈ 15.1 → ≈ 4.8 years under "≈ 10 years sooner")
+//   labelSteps   [{ t, option, text, small? }]: the label stack slams a line 2 of its own while that option is active
+//                (e.g. "40 months sooner" as the VO says it, before the delta slams); line 1 stays the option's detail.
+//                small: true sets that line 2 one size down (x 0.88, >= 54 px), so the hero stays the focal number
 //   firstName    false: the first option, already landed at frame 1 (no intro), shows only its line 1 (the payment) in
 //                the label stack, so the frame-1 stack doesn't repeat lane 1's name under the hero
 //   heads        false: no column heads over the board (the hero's tag already names its metric); the rows take the room

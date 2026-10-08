@@ -10,7 +10,7 @@
 //            (dashed sockets), the stake in the working slot under the footer. Only an option whose t (or resultT) is
 //            given and <= 0 is already run: crate at its flag with its payoff on it, money in, coin pile full. The
 //            waiting figures stand with a hand on the chin and the other resting on their crate, a nod in the first
-//            second.
+//            second (and, with lookOpts.pat, a pat on the crate: "this loan").
 //   A run    the lane wakes (its name to ink, `step`; his figure turns green: it is his turn) and he steps back and
 //            leans in, both hands on the crate; on a long lead-in he strains against it and it trembles but holds,
 //            until it gives. Then he drives it along the lane, bent low, feet stepping on the floor, hands pinned to
@@ -23,6 +23,7 @@
 //            lane's pile under the money column (pile height = that money value: one honest scale, from zero, for
 //            every lane). A flag drops in where the debt is gone, the crate slams into its pole (`thud`, a squash, the
 //            pole wobbles), turns from red (debt) to green (paid) and its face lands on the payoff's display string.
+//            (Under a title row the flag drops from just below the row, never through its text.)
 //            The money value then drops onto its row (`pop`), a third metric's line pops in under it (`tick`) and the
 //            delta pops in (`pop`); he recoils, catches his breath hands on knees, reacts by tone (bad: slump;
 //            neutral: shrug or a nod; good / goal: a fist), and 1.6 s later turns back to slate.
@@ -32,16 +33,21 @@
 //            red, green or gold). Deltas are green (good, goal), red (bad) or ink (neutral). Figures are slate (the
 //            kit's rival colour) while they wait or rest, and green only on their own turn, a scan hop, a lever beat
 //            or a read of their lane, and for the winner: one figure in focus at a time.
-//   Winner   at data.winnerT (default verdict.t): a gold plate opens behind the winner's money value, which grows to
-//            1.15x on it (1.08x, or not at all, when the lanes are too tight for the headroom); impact: a mostly
+//   Winner   at data.winnerT (default verdict.t): a gold plate opens behind the winner's money value (which turns ink as
+//            it opens) and hugs its glyphs; the value grows to 1.15x on it only when the plate then keeps >= 14 px clear
+//            of the lane line above and of the crate and pennant under it, else to 1.08x, or not at all when 1.08x would
+//            leave under 4 px, and it shifts (<= 6 px) to centre the plate between them; the pennant under the plate flies
+//            level with the crate's top (not above it, into the plate). Impact: a mostly
 //            vertical shake, a light flash, a 1.8% punch about the titles' left edge (x 922 then reaches 939), `hit` +
 //            `cash`, and short rays fanning out of the plate's two ends only (the left fan only where the row is clear
 //            of the titles and the deltas: a burst all round would cross the crate faces and the lane above). Its crate
 //            and pennant turn gold, and when the verdict claims time (an emphasis with a time unit, "**14 months**"),
 //            its time-saved strip thickens and pulses with the plate. He crouches, jumps and lands celebrating (arms up
-//            in a wide V when that fits under whatever is above him, else the "yes!" pump or a punch from the crouch);
-//            the others slump, their values, deltas and crate faces settle grey. The chrome's verdict lands in the
-//            caption band (its `ding` is skipped when it would land on the winner's hit).
+//            in a wide V when that fits under whatever is above him, else the "yes!" pump or a punch from the crouch),
+//            and keeps a small wave going through the hold (it never freezes); a later read of his lane makes him hop.
+//            The others slump, their values, deltas and crate faces settle grey. The chrome's verdict lands in the
+//            caption band (its `ding` is skipped when it would land on the winner's hit). With lookOpts.gapLabel his
+//            pennant then unfurls into a banner carrying the time he saved ("≈ 12 mo") over his time-saved strip.
 //
 // Nothing on screen is computed: every number is a spec display string; the crate's running counter and a counted
 // money value land exactly on theirs. Months are read out of the payoff strings only to place the crates ("≈ 4.8
@@ -74,7 +80,9 @@
 // then figure size (0.36 and up, 0.3 at the least), run length (180 px and up, 120 at the least), crate face, the
 // winner's growth on its plate, and pays for every give-way: behaviours dropped (the working lines carry them),
 // two-line titles, 40 px names, deltas without a place of their own, the third metric left out, no coin pile. The 03a
-// teaser (4 lanes, 3-line hook, 2-line footer, 2-line working lines) lands in col: money 60 px, figure 0.46.
+// teaser (4 lanes, 3-line hook, 1-line footer, 2-line working lines) lands in col: money 64 px, figure 0.51, a 240 px
+// run (12 months = 40 px). Row would give it a 560 px run, but with figures at 0.30 and money at 48 px; its time saved
+// is carried by lookOpts.gapLabel instead.
 //
 // data: FORMATS.md §3 exactly: stake { label, value, terms }, metrics [{ key, label }] (the first time-like one is
 // the crate's; the first money one the money column's and the coin pile's, with no money metric another metric takes
@@ -97,14 +105,21 @@
 //                       ink, `**x**` in green, "−" in Inter (the mono minus reads as a hyphen). One line at a time, each
 //                       held until the next; a line too long for two lines steps down to 38, then 36 px
 //   steps: [{ t, text }]   extra working lines (the difference the VO speaks: "= $10,000 − $8,900\n≈ $1,100 less")
-//   lever: { t, text, options: [i, j] }   the line that explains WHY: shown in the slot at t; the listed lanes'
-//                       money values get a pale green band and bump, their crates pulse and their figures turn green
-//                       and nod (`swipe`), until the next slot line (3.6 s at most)
+//   lever: { t, text, options: [i, j], beats: [t] }   the line that explains WHY: shown in the slot at t; the listed
+//                       lanes' money values get a pale green band and bump, their crates pulse and their figures turn
+//                       green and nod (`swipe`), until the next slot line (3.6 s at most, or 0.9 s past the last beat).
+//                       beats: later words that drive it home ("13 ... payments"): the lanes bump and nod again
 //   reads: [{ t, option, metric }]   the VO reads a result already on screen: that money value (or crate, for the
 //                       crate's metric; the third metric's line; or 'delta') bumps 12% and flashes in its own colour,
 //                       and the lane's figure turns green for a moment (`tick`). option may be a list ([1, 2]: together)
 //   scan: { t, every = 0.4, options }   "guess which one": from t the waiting lanes' figures hop in turn (green for
 //                       the hop), their "?" popping (`tick`)
+//   pat: { t, every = 0.08, options }   "this loan": the waiting figures pat their crates in turn (the resting hand
+//                       lifts and drops back, the crate swells a little on contact, a soft `tick`); never over a scan hop
+//   gapLabel: string | { t, text }   the winner's time saved, as an object: a spec display string ("≈ 12 mo") on a
+//                       banner his pennant unfurls into at t (default 0.45 s after the winner beat), over his time-saved
+//                       strip, pointed at the far side; it pulses with his crate on a read. Left out (with a warning) when
+//                       it has no room between his flag and the coin pile, under his plate
 //   countCell: { option, metric, from: 'base' | number }   that lane's money value counts from the first option's (or
 //                       `from`) to its display over 0.8 s as it lands, then settles from 110% (may be a list). The
 //                       crate's metric always counts
