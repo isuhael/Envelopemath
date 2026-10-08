@@ -26,6 +26,10 @@ Format 10 "cost-counter" (real-time cost counter): maths and spec check for teas
      start with their VO line; the verdict lands with its VO line; the counter stops within 0.2 s of the
      verdict; duration is inside the 20-40 s lane and covers the last VO line (+0.4 s) and the verdict (+2.5 s);
      hold = duration - counterT[1];
+   - look-specific (10c, ported from the Live Sheet to the Scoreboard on 2026-10-08): the kit's passes
+     (value ÷ perSecond, from 0.0 s) land at 1.000 / 5.000 / 13.201 / 26.403 s, before the stop; the ladder
+     (pipLabels) is the milestones' own amounts and pipPassed the answers the label stack slams; every label beat
+     holds to the next one, so the resting rate never flashes between beats;
    - contract shape (studio/FORMATS.md, common fields + section 10), captions on, fps 30, id = file stem;
    - the caption and pinned-comment numbers in teasers/v2/10-cost-counter.md are computed or sourced values.
 4. Prints a table and exits 1 on any mismatch.
@@ -432,17 +436,17 @@ SPEC_B = {
 
 # ---------- 10c: 1 second of Amazon's profit, in weeks of median pay (hook pass 2) -------------
 C = {}
-C["keep_shown"] = rhu(KEEP_C)                                          # 2,464 (rate label, formula bar, VO, caption)
+C["keep_shown"] = rhu(KEEP_C)                                          # 2,464 (rate label, label-stack working, ladder, VO, caption)
 C["keep_cents"] = rhu(KEEP_C, F(1, 100))                               # 2,463.85 (perSecond; the 1-second row's value)
 C["wk1"] = KEEP_C / MEDIAN_WEEKLY                                      # 1.97 weeks of median pay per second
 C["wk1_shown"] = rhu(C["wk1"])                                         # 2
-C["fx_wk1"] = rhu(F(C["keep_shown"]) / MEDIAN_WEEKLY)                  # 2 (formula bar: $2,464 ÷ $1,251)
+C["fx_wk1"] = rhu(F(C["keep_shown"]) / MEDIAN_WEEKLY)                  # 2 (label stack at 2.8 s: $2,464 ÷ $1,251 a week)
 C["five"] = KEEP_C * 5                                                 # 12,319.25 (5 seconds of profit)
 C["five_cents"] = rhu(C["five"], F(1, 100))                            # 12,319.25 (the 5-second row's value)
 C["five_shown"] = rhu(C["five"])                                       # 12,319
 C["wk5"] = C["five"] / MEDIAN_WEEKLY                                   # 9.85 weeks
 C["wk5_shown"] = rhu(C["wk5"])                                         # 10
-C["fx_wk5"] = rhu(F(C["five_shown"]) / MEDIAN_WEEKLY)                  # 10 (formula bar: $12,319 ÷ $1,251)
+C["fx_wk5"] = rhu(F(C["five_shown"]) / MEDIAN_WEEKLY)                  # 10 (the shown $12,319 ÷ $1,251 rounds like the exact weeks)
 C["half"] = F(PAY, 2)                                                  # 32,526 (6 months of median pay, exact)
 C["t_half"] = C["half"] / KEEP_C                                       # 13.20 s
 C["s_half"] = rhu(C["t_half"])                                         # 13
@@ -455,31 +459,33 @@ C["fx_rate"] = f"= ${float(AMZN_NET_INCOME_2025 / 10**9)}B ÷ {SECONDS_PER_YEAR:
 C["final_exact"] = KEEP_C * (C["run"][1] - C["run"][0])                # 65,052.07
 C["lands_on"] = PAY
 C["final"] = usd(C["lands_on"])                                        # $65,052 (no ≈: within $0.50 at both rates)
-# the Live Sheet kit times its rows on the rate start -> final over counterT (preroll 0): the rows must still pass
-# at 1.000 / 5.000 / 13.201 / 26.403 s
-C["kit_rate"] = F(rhu(C["final_exact"])) / (C["run"][1] - C["run"][0])
-C["kit_t"] = [F(v) / C["kit_rate"] for v in (C["keep_cents"], C["five_cents"], C["half"], PAY)]
+# the Scoreboard kit times each pass at counterT[0] + value ÷ perSecond (the stored rate, from frame 1): the
+# milestones must pass at 1.000 / 5.000 / 13.201 / 26.403 s, all before the stop (port to Scoreboard, 2026-10-08)
+C["kit_rate"] = C["keep_cents"]
+C["kit_t"] = [C["run"][0] + F(v) / C["kit_rate"] for v in (C["keep_cents"], C["five_cents"], C["half"], PAY)]
+assert all(t < C["run"][1] for t in C["kit_t"]), "every milestone (the kit's pass) must come before the stop"
+assert C["kit_t"][0] == 1 and C["kit_t"][1] == 5, "the 1- and 5-second rows pass on the second exactly"
 assert C["final_exact"] > PAY, "the counter must pass a year of median pay before it stops"
 assert abs(C["final_exact"] - PAY) < F(1, 2) and abs(F("2463.85") * C["run"][1] - PAY) < F(1, 2), \
     "the counter must stop on $65,052 to the dollar (exact and stored rate)"
-assert C["fx_keep_pay"] == C["s_keep_pay"], "the formula-bar time must equal the exact time's rounding"
-assert C["fx_wk1"] == C["wk1_shown"], "the formula-bar weeks must equal the exact weeks' rounding"
-assert C["fx_wk5"] == C["wk5_shown"], "the formula-bar weeks (5 s) must equal the exact weeks' rounding"
+assert C["fx_keep_pay"] == C["s_keep_pay"], "$65,052 ÷ the shown $2,464 must round like the exact time"
+assert C["fx_wk1"] == C["wk1_shown"], "the label-stack working ($2,464 ÷ $1,251) must round like the exact weeks"
+assert C["fx_wk5"] == C["wk5_shown"], "$12,319 ÷ $1,251 must round like the exact weeks (5 s)"
 assert C["half"].denominator == 1, "half a year of median pay must be a whole dollar amount"
 assert all(abs(a - b) < F(1, 100) for a, b in zip(C["kit_t"], (1, 5, C["t_half"], C["t_keep_pay"]))), C["kit_t"]
 row("10c", "kept per second", "$77.7B ÷ 31,536,000 s", KEEP_C, f"≈ ${C['keep_shown']:,} (everywhere)")
-row("10c", "1 s in weeks", "rate ÷ $1,251", C["wk1"], f"≈ {C['wk1_shown']} weeks (row, VO, verdict)")
+row("10c", "1 s in weeks", "rate ÷ $1,251", C["wk1"], f"≈ {C['wk1_shown']} weeks (label, ladder, VO, caption)")
 row("10c", "5 s of profit", "rate × 5", C["five"], f"≈ ${C['five_shown']:,}")
 row("10c", "5 s in weeks", "rate × 5 ÷ $1,251", C["wk5"], f"≈ {C['wk5_shown']} weeks")
 row("10c", "half a year", "$65,052 ÷ 2", C["half"], f"{usd(C['half'])} (6 months, exact)")
 row("10c", "t half a year", "$32,526 ÷ rate", C["t_half"], f"≈ {C['s_half']} seconds")
 row("10c", "t a year", "$65,052 ÷ rate", C["t_keep_pay"], f"≈ {C['s_keep_pay']} seconds (also $65,052 ÷ $2,464)")
 row("10c", "counter final", "rate × 26.4026 s", C["final_exact"], C["final"] + " (stops on the 1-year pass)")
-row("10c", "at 1.5 s", "rate × 1.5", KEEP_C * F(3, 2), "$3,696 on the counter (frame check)")
+row("10c", "at 1.5 s", "rate × 1.5", KEEP_C * F(3, 2), "$3,695 on the Scoreboard counter (a running count rounds down; frame check)")
 
 SPEC_C = {
-    "id": "10c-live-sheet-amazon-makes",
-    "look": "live-sheet",
+    "id": "10c-scoreboard-amazon-makes",
+    "look": "scoreboard",
     "format": "cost-counter",
     "fps": 30,
     "duration": 31.0,
@@ -493,12 +499,14 @@ SPEC_C = {
         (5.2, 2.0, f"5 seconds: ≈ {C['wk5_shown']} weeks."),
         (7.4, 4.3, f"Amazon's 2025 profit: ${float(AMZN_NET_INCOME_2025 / 10**9)} billion."),
         (13.2, 2.4, f"≈ {C['s_half']} seconds: half a year."),
-        (15.8, 5.0, f"{C['keep_shown']:,} ÷ your weekly pay = your weeks."),
-        (21.0, 1.6, "And a whole year?"),
+        # a no-break space keeps "weekly pay" together in the caption ("… your weekly pay / = your weeks.")
+        (15.8, 5.0, f"{C['keep_shown']:,} ÷ your weekly\u00a0pay = your weeks."),
+        (22.8, 1.6, "And a whole year?"),     # into the riser (24.0-26.4 s): two 2 s silences, not one of 3.8 s
         (26.4, 1.6, f"≈ {C['s_keep_pay']} seconds."),
     ],
-    # the climax first (assembly pass 2), then the 1-second answer
-    "verdict": (26.4, f"A year of median pay: **≈ {C['s_keep_pay']} seconds**.\n1 second ≈ {C['wk1_shown']} weeks."),
+    # the climax, one short line each so it sets at ≈ 78 px in the Scoreboard's tall slot (fixer pass): the 1-second
+    # answer stays on the end frame as the ladder's bottom row ("≈ 2 weeks"), in caption line 1 and the pinned comment
+    "verdict": (26.4, f"A year of median pay:\n**≈ {C['s_keep_pay']} seconds**."),
     "data": {
         "label": "Amazon's profit since you hit play",
         "perSecond": float(C["keep_cents"]),
@@ -514,34 +522,54 @@ SPEC_C = {
         "final": C["final"],
         "hold": 4.5974,
     },
+    # Scoreboard (port, 2026-10-08): the Live Sheet's table becomes the milestone ladder and the label stack.
+    #   ladder (pipLabels): the Profit column, the targets ahead, from frame 1 (the answers stay hidden);
+    #   pipPassed: the You work column, each ladder label turning into its answer as its icon lands in the slot;
+    #   labels: each pass slams its row (time: profit / the answer); rateSteps: the old formula steps, one working
+    #   per VO beat, each held to the next beat (the resting rate shows only 0-1.0 s);
+    #   icons: bills for the first three rows (a stacked twin, no "×5"/"×13" badge from a time), a coin for the year.
     "lookOpts": {
-        "preroll": 0,
-        # one line each (<= 32 characters: the kit's bar keeps one 76 px line at 40-42 px), one working per VO beat
-        "formulaSteps": [
-            {"t": 0.0, "text": C["fx_rate"]},
-            {"t": 2.8, "text": f"= ${C['keep_shown']:,} ÷ {usd(MEDIAN_WEEKLY)} ≈ {C['fx_wk1']} weeks"},
-            {"t": 5.2, "text": f"= ${C['five_shown']:,} ÷ {usd(MEDIAN_WEEKLY)} ≈ {C['fx_wk5']} weeks"},
-            {"t": 13.2, "text": f"= {usd(PAY)} ÷ 2 = {usd(C['half'])}"},
-            {"t": 15.8, "text": f"= ${C['keep_shown']:,} ÷ your weekly pay"},
-            {"t": 26.4, "text": f"= {usd(PAY)} ÷ ${C['keep_shown']:,} ≈ {C['fx_keep_pay']} s"},
+        "labels": [
+            {"l1": f"1 second: ≈ ${C['keep_shown']:,}", "l2": f"≈ {C['wk1_shown']} weeks of work"},
+            {"l1": f"5 seconds: ≈ ${C['five_shown']:,}", "l2": f"≈ {C['wk5_shown']} weeks of work"},
+            {"l1": f"≈ {C['s_half']} seconds: {usd(C['half'])}", "l2": "6 months of work"},
+            {"l1": f"≈ {C['s_keep_pay']} seconds: {usd(PAY)}", "l2": "1 year of work"},
         ],
-        "columns": ["Since play", "Profit", "You work"],
-        "rows": [
-            {"label": "1 second", "amount": f"≈ ${C['keep_shown']:,}", "at": f"≈ {C['wk1_shown']} weeks"},
-            {"label": "5 seconds", "amount": f"≈ ${C['five_shown']:,}", "at": f"≈ {C['wk5_shown']} weeks"},
-            {"label": f"≈ {C['s_half']} seconds", "amount": usd(C["half"]), "at": "6 months"},
-            {"label": f"≈ {C['s_keep_pay']} seconds", "amount": usd(PAY), "at": "1 year"},
+        "rateSteps": [
+            {"t": 2.8, "l1": f"${C['keep_shown']:,} ÷ {usd(MEDIAN_WEEKLY)} a week", "l2": f"≈ {C['fx_wk1']} weeks of median pay", "d": 2.2},
+            {"t": 7.4, "l1": f"${float(AMZN_NET_INCOME_2025 / 10**9)}B ÷ {SECONDS_PER_YEAR:,} s", "l2": f"≈ ${C['keep_shown']:,} every second", "d": 5.9},
+            {"t": 15.8, "l1": f"${C['keep_shown']:,} ÷ your weekly pay", "l2": "your weeks per second", "d": 7.0},
+            {"t": 22.8, "l1": f"{usd(MEDIAN_WEEKLY)} × {WEEKS} = {usd(PAY)}", "l2": "Next: a year of median pay", "d": 3.6},
         ],
-        "loop": True,
+        "pips": True,
+        "pipLabels": [f"≈ ${C['keep_shown']:,}", f"≈ ${C['five_shown']:,}", usd(C["half"]), usd(PAY)],
+        "pipPassed": [f"≈ {C['wk1_shown']} weeks", f"≈ {C['wk5_shown']} weeks", "6 months", "1 year"],
+        "icons": ["bill", "bill", "bill", "coin"],
+        "badges": False,
+        "heroIcon": False,
+        "climaxScale": True,    # the coin grows on its pass toward the bills' width (as far as the stage allows)
+        "tallVerdict": True,    # the kit's 196 px boxed verdict slot: the two-line verdict sets at ≈ 78 px
     },
-    # The 1-second row snaps "≈ 2 weeks" on screen at its pass (1.000 s) while vo[0] asks the question; vo[1] reads
-    # it back at 2.8 s with the formula bar's working, so it is not in the 0.5 s VO sync list.
+    # The 1-second row's answer ("≈ 2 weeks of work") slams in at its pass (1.000 s) while vo[0] asks the question;
+    # vo[1] reads it back at 2.8 s with the label stack's working, so it is not in the 0.5 s VO sync list.
     "sync": [(C["five_cents"], 2, "5 seconds"), (C["half"], 4, "≈ 13"), (PAY, 7, "≈ 26")],
-    "beats": [(0.0, 0), (2.8, 1), (5.2, 2), (13.2, 4), (15.8, 5), (26.4, 7)],    # the formula-bar steps start their VO lines
+    "beats": [(2.8, 1), (7.4, 3), (15.8, 5), (22.8, 6)],    # lookOpts.rateSteps: (t, VO line it starts)
     "t0": 0.0,
     "rate": KEEP_C,
     "lands_on": C["lands_on"],   # the counter stops on the year-of-median-pay pass
 }
+
+# 10c in the Scoreboard: the ladder is the milestones' own amounts, in order; each pass label leads with its
+# milestone's label; the answers on the ladder are the label stack's answers; and the label stack never drops back
+# to the resting rate between beats (flash 3.0 s, the kit default; each rate step held to the next beat)
+_oc = SPEC_C["lookOpts"]
+assert _oc["pipLabels"] == [lab.split(": ")[1] for _, lab in SPEC_C["data"]["milestones"]], "ladder = the milestones' amounts"
+assert [x["l1"] for x in _oc["labels"]] == [lab for _, lab in SPEC_C["data"]["milestones"]], "pass labels = milestones"
+assert all(x["l2"].startswith(p) for x, p in zip(_oc["labels"], _oc["pipPassed"])), "ladder answers = label answers"
+_beats_c = sorted([(float(t), 3.0) for t in C["kit_t"]] + [(s["t"], s["d"]) for s in _oc["rateSteps"]])
+_beats_c = [b for b in _beats_c if b[0] < SPEC_C["verdict"][0]]
+assert all(t + hold >= nxt - 1e-9 for (t, hold), (nxt, _) in zip(_beats_c, _beats_c[1:] + [(SPEC_C["verdict"][0], 0)])), \
+    "10c: every label beat holds to the next one (the resting rate shows only before the first pass)"
 
 EXPECTED = [SPEC_A, SPEC_B, SPEC_C]
 

@@ -18,6 +18,10 @@
    05c's rows and hero roll in after their cut, so for 05c the check also recomputes each
    LANDING the way the scoreboard kit does (cut + 0.18 s + roll) and holds it to the spoken
    number, not just the cut (fix pass 2026-10-08: the payoff landed 1.4 s after it was said).
+   05a moved from Clean Sheet to Becker Rig on 2026-10-08 (the "carve" layout): its wrong guess
+   is now the header's answer slot (ghost "$7.04 profit?", struck on "Not even close" by his
+   stomp, replaced by "≈ $1.29 profit" on the verdict's "Not $7.04"); the check pins those strings
+   and times, and every scripted figure beat.
 4. Fact-consistency checks on the sourced inputs (identities and reported percentages)
    and the robustness of each verdict.
 
@@ -32,11 +36,11 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 SPECS = ROOT / "studio" / "specs"
 FILES = {
-    "05a": SPECS / "05a-clean-sheet-chipotle-10.json",
+    "05a": SPECS / "05a-becker-rig-chipotle-10.json",   # ported from Clean Sheet (2026-10-08)
     "05b": SPECS / "05b-becker-rig-3000-paycheck.json",
     "05c": SPECS / "05c-scoreboard-costco-100.json",
 }
-LOOKS = {"05a": "clean-sheet", "05b": "becker-rig", "05c": "scoreboard"}
+LOOKS = {"05a": "becker-rig", "05b": "becker-rig", "05c": "scoreboard"}
 WPS = 2.6              # guide VO read rate, words per second
 LANE = (20.0, 40.0)    # duration lane this format was briefed on
 EARLY, LATE = 0.8, 0.2  # a beat may land up to 0.8 s before / 0.2 s after the spoken number
@@ -153,8 +157,9 @@ A_LABELS_NODIGIT = True   # labels/notes in 05a carry no digits (checked by the 
 EXPECT = {
     "05a": {
         "header": f"What You're Really Paying For\nWhen You Spend **{money(A_ORDER)}**\nat Chipotle:",
-        # fix pass: one footer line (the 2-line footer sat between the hook and the sheet at ~40 px)
-        "footer": "Chipotle FY2025 10-K average · not your order",
+        # fix pass: one footer line (the 2-line footer sat between the hook and the sheet at ~40 px); Becker Rig QA pass:
+        # "Chipotle" dropped (it is in the header), so the footer is one 40 px mono line there too (it wrapped "· not / your order")
+        "footer": "FY2025 10-K average · not your order",
         # fix pass: the verdict is a lockup (64 px words, the goal on its blue highlighter at ~90 px, the guess struck)
         "verdict.text": f"Chipotle keeps\n**{approx(money(A_AMT[6], 2))}**, not __{money(A_WRONG, 2)}__.",
         "data.total.display": money(A_ORDER, 2),
@@ -163,8 +168,14 @@ EXPECT = {
         # one 40 px mono line under the sheet ("check: " + 28 characters fits the 856 px column; "$10.00" broke it
         # onto two lines and the kit dropped the check), worded as the VO says it: "$10 minus $8.71 of costs"
         "data.check": f"{money(A_ORDER)} − {money(A_COSTS, 2)} of costs = {money(r2(A_ORDER - A_COSTS), 2)}",
-        "lookOpts.wrongGuess.formula": f"{money(A_ORDER)} − {money(A_AMT[0], 2)}",
-        "lookOpts.wrongGuess.result": f"{money(A_WRONG, 2)} profit?",
+        # Becker Rig port: the wrong guess ($10 − $2.96 = $7.04, voiced in vo[0]) is the ghost in the header's answer
+        # slot from frame 1; the answer that replaces it is the profit row's amount, in the same words
+        "lookOpts.payoff.slot.ghost": f"{money(A_WRONG, 2)} profit?",
+        "lookOpts.payoff.slot.text": f"{approx(money(A_AMT[6], 2))} profit",
+        # Becker Rig QA pass: what is left of the slab once food has dropped reads the same guess ($10 − $2.96), and the
+        # closing payoff slab (the bookend of the frame-1 "YOUR ORDER $10.00" slab) reads the profit row's amount
+        "lookOpts.remainder.text": f"{money(A_WRONG, 2)}?",
+        "lookOpts.payoff.text": approx(money(A_AMT[6], 2)),
     },
     "05b": {
         "header": f"Rent **{money(B_RENT)}** on 50/30/20?\nFood and every bill get\nthis much a day:",
@@ -254,9 +265,17 @@ ANCHORS = {
         "data.checkT": "silent",
         # the verdict lockup lands on "Not $7.04" (≈ $1.29 on its highlighter, the guess struck)
         "verdict.t": (6, "Not"),
-        # the wrong guess is on the sheet at frame 1 (R5: the hook); vo[0] voices it, inside its first line
-        "lookOpts.wrongGuess.t": "frame1", "lookOpts.wrongGuess.strikeT": (1, None),
+        # the wrong guess is in the header's answer slot from frame 1 (R5: the hook; the kit draws the ghost at t = 0);
+        # it is struck on "Not even close" and replaced by the answer on the verdict's "Not $7.04"
+        "lookOpts.payoff.slot.strikeT": (1, None), "lookOpts.payoff.slot.t": (6, "Not"),
+        # Becker Rig QA pass: the slab's remainder is labelled with the guess as food lands ("≈ $2.96 of your $10"), and the
+        # PROFIT payoff slab stamps in with the profit row, on the spoken "$1.29"
+        "lookOpts.remainder.t": (0, "$2.96"), "lookOpts.payoff.t": (6, "$1.29"),
         "sfx[0].t": (1, None),
+        # the figure's scripted beats: he looks up at the header's $10 on "$10", shrugs on "keeps $7.04?", stomps on
+        # "Not even close" (his stomp strikes the guess), points at the check line (a silent beat) and shrugs on "Not"
+        "lookOpts.beats[0].t": (0, "$10"), "lookOpts.beats[1].t": (0, "$7.04"), "lookOpts.beats[2].t": (1, None),
+        "lookOpts.beats[3].t": "silent", "lookOpts.beats[4].t": (6, "Not"),
         # assembly pass: the hook's two numbers nudge as vo[0] says them, and each row activates (pointer, accent %,
         # the profit row's % unmasks) as its VO line names it; its amount still lands on the spoken number
         "lookOpts.bumps[0].t": (0, "$10"), "lookOpts.bumps[1].t": (0, "$7.04"),
@@ -579,8 +598,9 @@ def check_spec(key, spec):
     if mask:
         record(key, "the goal row is masked", goal, f"⊂ {mask}", all(j in mask for j in goal))
     wg = spec.get("lookOpts", {}).get("wrongGuess")
-    if wg:
-        res = float(re.search(r"[\d.]+", wg["result"]).group())
+    slot = (spec.get("lookOpts", {}).get("payoff") or {}).get("slot") or {}
+    if wg or slot.get("ghostTone") == "bad":
+        res = float(re.search(r"[\d.]+", wg["result"] if wg else slot["ghost"]).group())
         said = vo_numbers(vo[0]["text"])
         record(key, "wrong guess voiced in vo[0] (it is on screen from frame 1)", said, f"contains {res}",
                any(abs(x - res) < 1e-9 for x in said))
@@ -593,24 +613,49 @@ def check_spec(key, spec):
 
     # labels that carry a fact (notes can be hidden by a kit's layout solver, so the label must be right alone)
     if key == "05a":
-        wg = spec["lookOpts"]["wrongGuess"]
-        act = spec["lookOpts"]["activate"]
+        lo5a = spec["lookOpts"]
+        slot = lo5a["payoff"]["slot"]
+        act = lo5a["activate"]
         record(key, "each row activates before its amount lands, after the previous one landed",
                act, "parts[i-1].t < activate[i] ≤ parts[i].t",
                all(parts[i - 1]["t"] < act[i] <= parts[i]["t"] for i in range(1, len(parts))))
         # fix pass: row 1 lights a beat after frame 1, so frame 1's only loud figures are the $10.00 and the guess
         record(key, "row 1 activates after frame 1, before its amount (0 < activate[0] < parts[0].t)", act[0],
                f"0..{parts[0]['t']}", act[0] is not None and 0 < act[0] < parts[0]["t"])
-        lo5a = spec["lookOpts"]
-        record(key, "the payoff is the biggest figure: goal amount scaled ≥ 1.2x, verdict lockup on", (lo5a.get("goalScale"), lo5a.get("bigVerdict")),
-               "(≥ 1.2, True)", (lo5a.get("goalScale") or 0) >= 1.2 and lo5a.get("bigVerdict") is True)
+        # Becker Rig port: the carve layout (he saws the $10 slab on top of the sheet), the guess as a red ghost in the
+        # header's answer slot, the payoff on the goal row's gold plate and stamped into that slot
+        eq(key, "Becker Rig carve layout (the figure works on the slab)", lo5a.get("layout"), "carve")
+        record(key, "the wrong guess is the header slot's red ghost (on screen from frame 1)", (slot.get("ghost"), slot.get("ghostTone")),
+               f"('{money(A_WRONG, 2)} profit?', 'bad')", slot.get("ghost") == f"{money(A_WRONG, 2)} profit?" and slot.get("ghostTone") == "bad")
+        record(key, "the payoff is the climax: the profit row is the goal (gold plate + impact), the slot stamps its answer",
+               (parts[6].get("tone"), slot.get("text")), ("goal", f"{approx(money(A_AMT[6], 2))} profit"),
+               parts[6].get("tone") == "goal" and slot.get("text") == f"{approx(money(A_AMT[6], 2))} profit")
+        record(key, "the struck guess stays up until the answer replaces it, after profit lands (strikeT < parts[6].t ≤ slot.t)",
+               (slot.get("strikeT"), slot.get("t")), f"{slot.get('strikeT')} < {parts[6]['t']} ≤ slot.t",
+               slot["strikeT"] < parts[6]["t"] <= slot["t"])
+        stomp = [b["t"] for b in lo5a.get("beats", []) if b.get("act") == "stomp"]
+        record(key, "his stomp strikes the guess (a stomp beat at strikeT)", stomp, f"[{slot['strikeT']}]", stomp == [slot["strikeT"]])
         record(key, "check line types after profit lands and before the verdict", d["checkT"],
                f"{parts[6]['t']}..{spec['verdict']['t']}", parts[6]["t"] < d["checkT"] < spec["verdict"]["t"])
+        # Becker Rig QA pass: the silent check is fully in before the verdict's stamp, so the stamp is the last new
+        # thing on screen (the carve kit pops token m at checkT + 0.1 + 0.06·m, each in 0.16 s)
+        ntok = len(d["check"].split())
+        chk_in = round(d["checkT"] + 0.1 + 0.06 * (ntok - 1) + 0.16, 3)
+        record(key, "the check line is fully in ≥ 0.1 s before the verdict + header stamp (kit carve timing)", chk_in,
+               f"≤ {spec['verdict']['t'] - 0.1:.2f}", chk_in <= spec["verdict"]["t"] - 0.1 + 1e-9)
+        rem = lo5a.get("remainder") or {}
+        record(key, "the slab's remainder reads the header slot's guess (same figure, '?')", (rem.get("text"), slot.get("ghost")),
+               f"('{money(A_WRONG, 2)}?', '{money(A_WRONG, 2)} profit?')",
+               rem.get("text") == slot.get("ghost", "").replace(" profit?", "?") == f"{money(A_WRONG, 2)}?")
+        record(key, "the remainder is labelled once food has dropped, and struck with the slot (parts[0].t < remainder.t < strikeT)",
+               rem.get("t"), f"{parts[0]['t']}..{slot['strikeT']}", parts[0]["t"] < rem.get("t", -1) < slot["strikeT"])
+        pay = lo5a.get("payoff") or {}
+        record(key, "the PROFIT payoff slab = the profit row (label, amount) and stamps with it",
+               (pay.get("label"), pay.get("text"), pay.get("t")), (parts[6]["label"], parts[6]["amount"], parts[6]["t"]),
+               (pay.get("label"), pay.get("text"), pay.get("t")) == (parts[6]["label"], parts[6]["amount"], parts[6]["t"]))
         record(key, "bumps hit the frame-1 hook figures ($10 total, the $7.04 guess)",
                [b["at"] for b in spec["lookOpts"]["bumps"]], ["total", "guess"],
                [b["at"] for b in spec["lookOpts"]["bumps"]] == ["total", "guess"])
-        record(key, "struck guess stays until the check line replaces it (strikeT < until ≤ checkT)",
-               wg.get("until"), f"{wg['strikeT']}..{d['checkT']}", wg["strikeT"] < wg.get("until", -1) <= d["checkT"])
         lab = parts[5]["label"].lower()
         record(key, "row 6 label says the tax is net of interest (3.4% is not the provision, 4.0%)", parts[5]["label"],
                "mentions tax and interest", "tax" in lab and "interest" in lab)

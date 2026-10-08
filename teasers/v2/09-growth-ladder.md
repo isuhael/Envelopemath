@@ -1,33 +1,34 @@
 # Format 9: year-by-year growth ladder, three teasers
 
 **Channel:** Back of the Envelope (YouTube Shorts, Instagram Reels, TikTok), US audience, USD
-**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews). Hook pass 2026-10-08 (all three hooks kept), then hook pass 2 the same day (**all three hooks replaced**), then the assembly pass and the assembly fix pass (after QA) the same day. What changed and why is in the **Review log** at the end.
+**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews). Hook pass 2026-10-08 (all three hooks kept), then hook pass 2 the same day (**all three hooks replaced**), then the assembly pass and the assembly fix pass (after QA) the same day, then the **port of 09a to Becker Rig** (2026-10-08: the owner kept Scoreboard and Becker Rig and retired Clean Sheet and Live Sheet), then the **port QA fix pass** the same day. What changed and why is in the **Review log** at the end.
 **Format:** `growth-ladder`, hook pattern **P2** ("small amount × time =") for the ladders. Since hook pass 2 the hooks on top of them are a payout question (09a), a POV gift (09b) and a P1 "take your number × a constant" (09c).
 **Lane:** one small regular amount (or one small lump), year by year
 **Files:**
-- Specs (the ids and file names are unchanged by hook pass 2, so links, renders and the slate still resolve):
-  - [`studio/specs/09a-live-sheet-100-a-month-doubles.json`](../../studio/specs/09a-live-sheet-100-a-month-doubles.json)
+- Specs (the ids and file names were unchanged by hook pass 2; 09a's changed in the Becker Rig port, and its Live Sheet spec now sits in [`studio/specs/retired/`](../../studio/specs/retired/09a-live-sheet-100-a-month-doubles.json)):
+  - [`studio/specs/09a-becker-rig-100-a-month-doubles.json`](../../studio/specs/09a-becker-rig-100-a-month-doubles.json)
   - [`studio/specs/09b-becker-rig-1000-times-1-07.json`](../../studio/specs/09b-becker-rig-1000-times-1-07.json)
   - [`studio/specs/09c-scoreboard-5-a-day-millionaire.json`](../../studio/specs/09c-scoreboard-5-a-day-millionaire.json)
 - Check: [`teasers/v2/checks/09-growth-ladder.py`](checks/09-growth-ladder.py). Run `python3 teasers/v2/checks/09-growth-ladder.py`.
-  - It reports **492 checks, 0 failures** and exits 0 (after the assembly fix pass; 499 after the assembly pass, 468 after hook pass 2, 518 before that on the old ladders).
+  - It reports **509 checks, 0 failures** and exits 0 (after the port QA fix pass; 507 after the Becker Rig port, 492 after the assembly fix pass, 499 after the assembly pass, 468 after hook pass 2, 518 before that on the old ladders).
   - Break test, in a scratch copy: 09a's year-8 formula line "≈ $89/mo" → "≈ $90/mo", 09b's age-40 rung "≈ $14,974" → "≈ $14,975" and 09c's "about 75,176 times" → "75,177". It exited 1 with 4 failures, catching all three. Moving 09b's rung 1 back to 1.6 s also exits 1 (the $1,070 sync and the "lands by 1.0 s" claim).
   - Assembly-pass break test, in a scratch copy: 09a's year-8 Earns cell "≈ $89" → "≈ $90", 09b's verdict "81×" → "82×" and 09c's second beat "≈ $375,880" → "≈ $375,881". It exited 1 with 4 failures, catching all three.
   - Fix-pass break test, in a scratch copy: 09a's verdict "year 9" → "year 8" and a formula line given back its leading "≈"; 09c's hero beat "× 75,176" → "× 75,177", its tag's "≈" → "=" and its verdict "≈ $13.30" → "≈ $13.31". It exited 1 with 8 failures, catching all five.
+  - Port break test, in a scratch copy of 09a's Becker spec: the year-8 working line "≈ **$89/mo**" → "≈ **$90/mo**", the "under $100" tag held to 7.6 s (over row 9's incoming coin), the verdict relight moved to row 8, the gauge target "$100" → "$90" and `cols` [0, 2, 3] → [0, 1, 3]. It exited 1 with 8 failures, catching all five.
 
 **How the facts were checked**
 - None of the three teasers puts market data on screen. Every on-screen number comes from one stated assumption (8% or 7% a year), and the footer prints that assumption with "not a forecast". Nothing on screen needs a source.
 - **The stated rate matches every row in all three** (the P2 pitfall: FinCalC's 3.77M short is a 10% table under a "12%" label):
-  - 09a says "8% a year, compounded monthly" on screen, and every row uses 8% ÷ 12 a month. Its formula bar's "× 8% ÷ 12" is the same monthly rate.
+  - 09a says "8% a year, compounded monthly" on screen, and every row uses 8% ÷ 12 a month. Its working line's "× 8% ÷ 12" is the same monthly rate.
   - 09b says "7% a year, added once a year", and every rung is × 1.07 per year.
   - 09c says "7% a year", and every row grows each dollar by exactly 7% a year: the monthly rate is (1.07)^(1/12) − 1 ≈ 0.565%. The checker asserts this.
 - Real-world figures appear only in the captions and pinned comments: the S&P 500's long-run averages, used to explain why we chose 7% and 8%. See "Sources" under 09a for what is confirmed and what is not.
 - Web searches: 4 in round 1 and 2 in the revision; none in the hook passes (no new real-world figure). The egress proxy blocked every page fetch (NYU Stern, A Wealth of Common Sense, twice). Figures marked **[click-check]** come from search results and should be opened by someone before posting.
 
-**Studio linter:** `node src/cli.mjs check` on the three specs after hook pass 2, and again after the assembly fix pass: **3/3 clean, 0 errors, 0 warnings.**
+**Studio linter:** `node src/cli.mjs check` on the three specs after hook pass 2, and again after the assembly fix pass: **3/3 clean, 0 errors, 0 warnings.** After the Becker Rig port: 09a, 09b and the kit's two growth-ladder samples, **4/4 clean, 0 errors, 0 warnings** (09b's stills match its shipped MP4). After the port QA fix pass: the same four, **4/4 clean, 0 errors, 0 warnings**.
 - I rendered stills of all three at 0, 1.5 and 3 s and at their key beats and verdicts and read them (times in the review log).
-- Every 09a formula-bar line is 32 characters or fewer (the longest is 28), so the bar stays one line; the checker enforces that.
-- `lookOpts` in 09a (`inputsAtStart`, `formulaBar`, `marks`) and 09c (`input`) are read by the kits and documented in `looks/live-sheet/README.md` and `looks/scoreboard/README.md`. Newer options are documented only in their format file's header comment (the kit READMEs, which the assembly passes may not edit, do not list them yet): 09a's `verdictStyle: "stack"` and the overlay chip marks in `looks/live-sheet/formats/growth-ladder.js`; 09c's `beats` (assembly pass; since the fix pass a beat may move the hero with `hero` / `tag`), `heroTag` and `verdictStyle: "stack"` in `looks/scoreboard/formats/growth-ladder.js`. 09b carries no `lookOpts`. 09c no longer uses `goal` or `icon`.
+- Every 09a working line is 38 characters or fewer without its `**` (the longest is 29), so it stays one 40 px line inside x 62-940; the checker enforces that.
+- `lookOpts` in 09c (`input`) is read by the kit and documented in `looks/scoreboard/README.md`. Newer options are documented only in their format file's header comment (the kit READMEs, which the assembly and port passes may not edit, do not list them yet): 09a's `cols`, `second`, `target`, `working` and `beats` (Becker Rig port) in `looks/becker-rig/formats/growth-ladder.js`; 09c's `beats` (assembly pass; since the fix pass a beat may move the hero with `hero` / `tag`), `heroTag` and `verdictStyle: "stack"` in `looks/scoreboard/formats/growth-ladder.js`. 09b carries no `lookOpts`. 09c no longer uses `goal` or `icon`.
 
 ---
 
@@ -84,65 +85,69 @@
 
 ---
 
-## 09a: Live Sheet: "You add $100 a month. When does it earn $100 a month?"
+## 09a: Becker Rig: "You add $100 a month. When does it earn $100 a month?"
 
 | | |
 |---|---|
-| Look | `live-sheet` (yellow banner, "≈" formula bar, white sheet on black, mint input / peach output headers) |
-| Spec | `studio/specs/09a-live-sheet-100-a-month-doubles.json` (28.5 s) |
+| Look | `becker-rig` (since the port, 2026-10-08; it was `live-sheet`). A light void, one green stick figure at the foot of a ladder whose rungs are the years, a coin thrown up to each rung, a $100 gauge under each monthly figure, ink tags, a heave onto a gold plate on the last row |
+| Spec | `studio/specs/09a-becker-rig-100-a-month-doubles.json` (28.5 s). The Live Sheet spec is retired to `studio/specs/retired/09a-live-sheet-100-a-month-doubles.json` |
 | Platform title | **You Add $100 a Month. When Does It Earn $100 a Month?** |
-| On-screen hook (header) | **You add $100 a month. / When does it earn $100 a month?** (12 words, 2 lines; "$100 a month" in the black highlight on line 1) |
-| Frame 1 | Banner. Formula bar "$1,245 × 8% ÷ 12" behind the bar's yellow ≈ chip (no second "≈"), its result "≈ $8/mo" typing in by about 0.5 s: what the filled Year 1 Worth cell earns the next month. Columns Year / You put in / Worth / Earns a month. Row 1 filled: 1 · $1,200 · ≈ $1,245 · **≈ $8**, right under the question. Rows 5, 8, 9, 15, 20, 25 and 30 show their year and "You put in" (`lookOpts.inputsAtStart`), beside 7 empty Worth and Earns cells. Footer on |
-| Footer | ASSUMES 8% a year, compounded monthly / $100 in at each month-end · not a forecast (2 lines, broken at the separator) |
+| On-screen hook (header) | **You add $100 a month. / When does it earn $100 a month?** (12 words, 2 lines; "$100 a month" in the kit's hero green on line 1) |
+| Frame 1 | Header, the 2-line footer (16 px under the hook), and the working line "$1,245 × 8% ÷ 12 ≈ **$8/mo**" (in ink, result in green): what the Year 1 Worth earns the next month. Column heads Year / Worth / Earns a month (wrapped "Earns / a month"; YEAR stands over the top of the ladder). Rung 1 already settled: 1 · ≈ $1,245 · **≈ $8** (green, 58 px). The other 7 rungs show their year, dim, over dotted empty shelves. The figure (1.3×, clear of the rail) stands at the foot of the ladder, hand on chin, looking up it, and nods at 0.35 s; row 1's $100 gauge (a track ending in an upright tick) fills grey to 8% by 0.65 s |
+| Footer | ASSUMES 8% a year, compounded monthly / $100 in at month-end · not a forecast (2 lines, broken at the separator). Port: line 2 dropped "each" (42 → 37 characters), because the kit fits the footer to x 62-940 and the old line only fit at 36 px, under the 40 px floor |
 
 **Topic vs the seed:**
-- Kept: $100 a month at 8%, year by year, in FinCalC's put-in vs worth grammar, and round 2's verified Worth cells (years 1, 5, 9, 15, 20 and 30).
-- Changed in hook pass 2: the question. Round 2 asked "Doubled by year 9?", a trap that only lands for viewers who know the Rule of 72. Now the banner asks when the pile **earns** what you add: a payout noun, FinCalC's best-performing title type (payout-first median 100,740, hook bank 4.4).
-- "Earns" here means the balance's growth over the next month at the assumed rate: balance × 8% ÷ 12. It stays in the balance; it is not a payout. The formula bar shows that sum for every row, and the caption says it in words.
+- Kept: $100 a month at 8%, year by year, in FinCalC's put-in vs worth grammar, and round 2's verified Worth cells (years 1, 5, 9, 15, 20 and 30). Since the Becker Rig port the ladder prints Worth vs Earns a month; the put-in totals stay in the spec's data (and the checker) but are not drawn (see the look note).
+- Changed in hook pass 2: the question. Round 2 asked "Doubled by year 9?", a trap that only lands for viewers who know the Rule of 72. Now the header asks when the pile **earns** what you add: a payout noun, FinCalC's best-performing title type (payout-first median 100,740, hook bank 4.4).
+- "Earns" here means the balance's growth over the next month at the assumed rate: balance × 8% ÷ 12. It stays in the balance; it is not a payout. The working line shows that sum for every row, and the caption says it in words.
 - The ladder ends on a single repeatable answer: **year 9**, and the same year for any monthly amount.
 
 **Wrong belief it exploits:**
 - "$100 a month earns pocket change for decades." Frame 1 anchors it: by year 1 the pile earns ≈ $8 a month against the $100 you add, so the natural guess is 20-30 years. It earns more than $100 a month from year 9 (month 106 grows $100.91), at the assumed 8%.
-- A second belief busted at the verdict (the VO and the formula bar): "a bigger deposit gets there sooner." It doesn't. The amount cancels, so it is year 9 for $50, $500 or $5,000 a month.
+- A second belief busted at the verdict (the VO and the working line): "a bigger deposit gets there sooner." It doesn't. The amount cancels, so it is year 9 for $50, $500 or $5,000 a month.
 
 **Hook rules satisfied**
 
 | Rule | How |
 |---|---|
-| R1 | "$100 a month" in the banner, the Year 1 row ($1,200 → ≈ $1,245, earning ≈ $8 a month) and the formula bar "$1,245 × 8% ÷ 12" at 0.0 s; the bar's "≈ $8/mo" completes by 0.5 s |
-| R2 | One input ($100 a month). The banner asks for a year; no result is printed |
-| R3 | Pass: the answer is everyone's, because the amount cancels. The VO and the formula bar ("$50 or $500/mo: still year 9") say so at the verdict |
+| R1 | "$100 a month" in the header, "8%" and "$100" in the footer, the Year 1 rung (≈ $1,245, earning ≈ $8 a month) and the whole working line "$1,245 × 8% ÷ 12 ≈ $8/mo", all at 0.0 s |
+| R2 | One input ($100 a month). The header asks for a year; no result is printed |
+| R3 | Pass: the answer is everyone's, because the amount cancels. The VO and the working line ("$50 or $500/mo: still year 9") say so at the verdict |
 | R4 | $100 a month: small, round and ChartOrbit's stake |
 | R5 | Implied, not printed: ≈ $8 against $100 at 0.5 s makes "decades" the viewer's guess, and year 9 busts it |
-| R6 | Partial: "You add" + $100 a month. The banner names no horizon (both judges) |
+| R6 | Partial: "You add" + $100 a month. The header names no horizon (both judges) |
 | R7 | One target to take a side on: your own $100 a month |
 | R8 | 12 words, 2 lines |
-| R9 | 7 empty Worth and Earns-a-month cells from 0.0 s. Since the assembly pass the monthly figure the question asks about has its own column, "Earns a month", so each row answers in the sheet itself; the bar shows the working (Worth × 8% ÷ 12). This closes both judges' caveat that the monthly figure lived only in the bar |
-| R10 | First payoff (≈ $8 a month) at 0.0 s in the Earns cell. Biggest number (year 30, ≈ $149,036 earning ≈ $994 a month) last |
-| R11 | The banner asks; the verdict stack answers ("From **year 9** / it earns more than you add.", line 1 at 88 px) while row 9 re-lights. Caption line 1 holds the year back ("Sooner than you'd guess.") |
+| R9 | 7 dim year rungs over empty dotted shelves from 0.0 s. The monthly figure the question asks about, "Earns a month", is the ladder's hero column (it drops, turns green and takes the gold plate), and each row's $100 gauge shows how far that month's growth is from the deposit; the working line shows the sum (Worth × 8% ÷ 12) |
+| R10 | First payoff (≈ $8 a month) at 0.0 s in the Earns cell. Biggest number (year 30, ≈ $149,036 earning ≈ $994 a month, heaved onto the gold plate) last |
+| R11 | The header asks; the verdict answers in the caption band ("From **year 9** / it earns more than you add.", a green swoosh under "year 9") while rung 9 re-lights green and the figure points at it. Caption line 1 holds the year back ("Sooner than you'd guess.") |
 | R12 | One number to repeat in a comment: **year 9**, for any amount |
 
 **Benchmark hooks it is modelled on**
 - H32, FinCalC: "Monthly Income using Post Office MIS Scheme at 7.4% Interest Rate". 428,862 (54.46x), https://www.youtube.com/shorts/K2QbxGXa29k. Borrowed: a monthly payout noun as the hook.
 - H39, FinCalC: "How to Get ₹10K to ₹2 Lakh Monthly Income?". 100,740 (7.44x), https://www.youtube.com/shorts/I79lgAEBBjU. FinCalC's payout-first titles have a median of 100,740 (n=11), against 20,748 for its tax titles (hook bank 4.4).
 - H18, ChartOrbit: "Does investing 100$ monthly in BMW make you rich?". 1,391,731 (5.91x), https://www.youtube.com/shorts/2cF446rExhY. Borrowed: $100 a month as the stake, and a question that waits for an answer.
-- H84, Master Money: "4 DEAD SIMPLE NUMBERS…", slot 1 typing "$72,000 × 0.7" into "$50,400" before 3 s. 3,000,000 (140x), https://www.tiktok.com/@mastermoneyco/video/7680913784143105310. Borrowed: formula, then result, in the same slot: "$1,245 × 8% ÷ 12 ≈ $8/mo" by 0.5 s.
+- H84, Master Money: "4 DEAD SIMPLE NUMBERS…", slot 1 typing "$72,000 × 0.7" into "$50,400" before 3 s. 3,000,000 (140x), https://www.tiktok.com/@mastermoneyco/video/7680913784143105310. Borrowed: formula, then result, in the same slot: "$1,245 × 8% ÷ 12 ≈ $8/mo" on screen at 0.0 s.
 - H27, FinCalC: "₹2000 SIP Returns for 1-15 Years". 3,771,667, https://www.youtube.com/shorts/Y57tm58Y6zI. Borrowed: row 1 on screen at 0.0 s and the row unmask.
 
 **Beat sheet**
 
 | t (s) | On screen | VO |
 |---|---|---|
-| 0.0 | Banner. Formula bar "$1,245 × 8% ÷ 12", its result "≈ $8/mo" typed by about 0.5 s. Row **1**: $1,200 / ≈ $1,245 / ≈ $8, selected. The other 7 rows show year and put-in only. Footer | "By year 1 it's earning about $8 a month." (0.0-3.85) |
-| 3.2 | Row 5: ≈ $7,348 / ≈ $49. The selection snaps to the newest row's Worth and Earns cells (it never grows over the older rows). Bar "$7,348 × 8% ÷ 12" swaps in whole and types "≈ $49/mo" as the cell lands | |
-| 4.6 | Row **8**: ≈ $13,387 / **≈ $89**. Rose tint and a dark chip "under $100" dropping over the gridline under the ≈ $89 by 4.78 s: an overlay on row 9's still-empty cells, so nothing reflows. Bar "… ≈ $89/mo". Buzz. The chip fades out (opacity only) before row 9 lands | "Year 8: about $89. Not yet." (4.4-7.5) |
-| 8.0 | Row **9**: ≈ $15,743 / **≈ $105**. The crossing: the ≈ $105 cell lands bigger and turns ink on yellow, the year cell turns yellow (and stays yellow), and the chip "beats your **$100**" drops under it by 8.18 s. Bar "$15,743 × 8% ÷ 12 ≈ $105/mo". Pop | "Year 9: about $105. More than you add." (7.7-11.95) |
-| 12.2 | Row 15: ≈ $34,604 / ≈ $231 (the chip has faded out by 12.18 s). Bar "… ≈ $231/mo" | |
-| 13.9 | Row **20**: ≈ $58,902 / ≈ $393. Bar "… ≈ $393/mo" | "Year 20: about $393 a month." (13.6-17.45) |
-| 17.8 | Row 25: ≈ $95,103 / ≈ $634. Bar "… ≈ $634/mo" | |
-| 19.4 | Row **30**: ≈ $149,036 lands and its Earns cell counts up over 0.8 s to **≈ $994** (biggest, last; the summary row wipes yellow and the selection snaps onto its Earns cell, popping outward, never sliding through the Worth digits). Bar "$149,036 × 8% ÷ 12 ≈ $994/mo", its result typed as the count lands. Roll | "Year 30: about $994 a month. On its own." (19.0-24.0) |
-| 24.2 | Verdict stack in the caption band: "From **year 9**" (88 px, the marker wiping in) / "it earns more than you add." Row 9 re-lights full width with a bump and takes the selection; the summary row's yellow fades, so year 9 is the one focal point. Bar "$50 or $500/mo: still year 9". Ding | "Any monthly amount: year 9." (24.2-26.15) |
-| 26.15-28.5 | Hold on the finished sheet, then clear to frame 1 (loop) | |
+| 0.0 | Header, footer, working line "$1,245 × 8% ÷ 12 ≈ **$8/mo**" (ink, result green). Rung **1** settled: ≈ $1,245 / **≈ $8** (green), its $100 gauge filling grey to 8% (drawn at least 20 px long) by 0.65 s, up to the tick that marks $100. 7 dim rungs above. The figure thinks at the foot of the ladder (nod at 0.35 s) | "By year 1 it's earning about $8 a month." (0.0-3.85) |
+| 2.25-3.2 | He takes a coin, winds up and throws (release ≈ 2.8 s, swipe) | |
+| 3.2 | The coin lands as rung 5: ≈ $7,348 / ≈ $49 (thud); its rung turns ink, the gauge fills to 49%. The working line swaps to "$7,348 × 8% ÷ 12 ≈ **$49/mo**" (a hard swap with a 12 px slide) | |
+| 3.65-4.6 | The next throw (release ≈ 4.2 s) | |
+| 4.6 | Rung **8**: ≈ $13,387 / **≈ $89**, the gauge grey at 89%, short of the end. A red tag "under $100" on an ink plate drops over rung 9's empty slot, pointing down at ≈ $89 (in from 4.68 s, gone by 7.3 s). Buzz. He shrugs (4.74 s), then a hand on his chin (≈ 5.9 s). Line "… ≈ **$89/mo**" | "Year 8: about $89. Not yet." (4.4-7.5) |
+| 7.05-8.0 | The throw for rung 9 (release ≈ 7.6 s, after the tag has gone) | |
+| 8.0 | Rung **9**: ≈ $15,743 / **≈ $105**. The crossing: ≈ $105 swells to 1.15× (anchored right, 8.0-8.5 s) under a burst and a shake (hit lines clipped above its shelf and right of the Worth), pop; ≈ $89 is ink by 8.0 s, so ≈ $105 is the only green number; its gauge runs to the tick and snaps green with a pulse (8.65 s); once the burst has faded, a green tag "beats your **$100**" ($100 in coin yellow) drops over rung 15's empty slot (8.24-11.2 s). He celebrates with a hop (8.14 s), then points at the row (≈ 9.7 s). Line "$15,743 × 8% ÷ 12 ≈ **$105/mo**" | "Year 9: about $105. More than you add." (7.7-11.95) |
+| 12.2 | Rung 15: ≈ $34,604 / ≈ $231, gauge full and green from here up. Line "… ≈ **$231/mo**" | |
+| 13.9 | Rung **20**: ≈ $58,902 / ≈ $393. Line "… ≈ **$393/mo**". An act-only beat: he points at the ladder (14.04 s), then a hand on his chin (≈ 15.1 s), back to idle at 16.2 s, so he never freezes before the next coin (taken at 16.85 s) | "Year 20: about $393 a month." (13.6-17.45) |
+| 17.8 | Rung 25: ≈ $95,103 / ≈ $634. Line "… ≈ **$634/mo**" | |
+| 18.0-19.4 | The heave: a big coin into his arms (18.0), pressed overhead and wobbling under a riser (18.3), a dip (18.85) and the heave (≈ 19.0, whoosh) | |
+| 19.4 | Rung **30**: ≈ $149,036 / **≈ $994** on the gold plate (biggest, last): hit, shake, burst (clipped to the right of the plate's left edge − 8, clear of ≈ $149,036), a 3% camera punch, cash; coins spill down the right margin. The plated row has no gauge (the plate says "reached"). He celebrates with a hop, then points up at the plate (≈ 20.65 s). Line "$149,036 × 8% ÷ 12 ≈ **$994/mo**" | "Year 30: about $994 a month. On its own." (19.0-24.0) |
+| 24.2 | Verdict in the caption band: "From **year 9** / it earns more than you add." (green swoosh under "year 9"), ding. Rung 9's year and ≈ $105 turn green again with a bump, and a green outlined plate (the gold plate's pad and radius, no fill) pops in around rung 9 from its year to ≈ $105, its edges on the gauge lines over and under the row (those two gauges hand over to it); the gold plate steps back to a grey border and a paler fill (24.2-24.5 s). He turns and points at it (24.34 s): year 9 is the one focal point. Line "$50 or $500/mo: still **year 9**" | "Any monthly amount: year 9." (24.2-26.15) |
+| 26.15-28.5 | Hold on the finished ladder, rung 9 in its green plate, him pointing at it (loop) | |
 
 **Full guide VO** (57 spoken words)
 
@@ -156,7 +161,7 @@
 - **Formulas:**
   - Worth after n months: W(n) = 100 × ((1 + r)^n − 1) ÷ r.
   - You put in: $100 × 12 × year.
-  - "Earns a month" at a year-end: W × r, the next month's growth. The bar multiplies the shown Worth; the checker asserts it rounds to the same dollar as the exact Worth.
+  - "Earns a month" at a year-end: W × r, the next month's growth. The working line multiplies the shown Worth; the checker asserts it rounds to the same dollar as the exact Worth.
   - The crossing: month k grows W(k − 1) × r, which is at least the $100 deposit exactly when (1 + r)^(k − 1) ≥ 2, i.e. k − 1 ≥ ln 2 ÷ ln(1 + r) = 104.32. So month 106 is the first, and months 97-108 are year 9. The deposit cancels, so the month is the same for any amount.
 
 | On screen | Formula | Exact | Shown |
@@ -171,7 +176,7 @@
 | Year 30 | W(360) / 36,000; × r | 149,035.94 → 993.57 | ≈ $149,036 / ≈ $994/mo |
 | "By year 1 it's earning about $8 a month" | month 13's growth, W(12) × r | 8.30 (month 12: 7.58; year-1 average: 3.75) | about $8 |
 | Verdict "From year 9 it earns more than you add." | the first month with growth ≥ $100 | month 106: 100.91 (month 105: 99.58) | year 9 |
-| "Any monthly amount: year 9" (VO), "$50 or $500/mo: still year 9" (bar) | the amount cancels out of (1 + r)^(k − 1) ≥ 2 | month 106 for $50, $500, $1,000 and $5,000 | year 9 |
+| "Any monthly amount: year 9" (VO), "$50 or $500/mo: still year 9" (working line) | the amount cancels out of (1 + r)^(k − 1) ≥ 2 | month 106 for $50, $500, $1,000 and $5,000 | year 9 |
 | "On its own" (year 30) | 993.57 ÷ 100 | 9.94 | almost 10 times your $100 (caption) |
 | Pinned "72 ÷ 8 = 9" | 72 ÷ 8 | 9 | 9 |
 | Pinned "(1 + 8%/12)^n = 2" | ln 2 ÷ ln(1 + r) months; ÷ 12 | 104.32 months = 8.69 years | ≈ 8.7 years (a lump sum's doubling time) |
@@ -207,11 +212,16 @@ So the "≈ 10% before inflation" has two confirmed sources (10.09% and 9.94%), 
 > Year 9 isn't a coincidence: 72 ÷ 8 = 9. Monthly growth passes your deposit exactly when (1 + 8%/12)^n = 2, the lump-sum doubling time (≈ 8.7 years). At 7% it's year 11. At 10%, year 8.
 
 **Per-platform notes**
-- **YouTube Shorts:** the title repeats the banner's question, FinCalC's payout grammar. Keep the 2.35 s hold on the finished sheet: that is the screenshot frame.
-- **Instagram Reels:** cover on frame 1 (the question, the "≈ $8/mo" bar and the empty cells) or on row 9 turning yellow (8.0 s).
+- **YouTube Shorts:** the title repeats the header's question, FinCalC's payout grammar. Keep the 2.35 s hold on the finished ladder: that is the screenshot frame.
+- **Instagram Reels:** cover on frame 1 (the question, the "≈ $8/mo" working line and the dim rungs) or on the crossing at about 8.5 s (the "beats your $100" tag over ≈ $105, the figure celebrating).
 - **TikTok:** the comment fights will be the rate ("8% is too high or too low") and "that's compounding, not earning". The pinned comment takes the first (7% → year 11, 10% → year 8); the caption defines "earns" for the second. Keep "year 9" out of the first 100 characters of the caption (it first appears at about character 180).
 - **Not a 6 s card:** FinCalC's 2026 amount-first cards stalled at 9,017-10,445. Keep this voiced.
-- **Look note:** the sheet's 4th column, "Earns a month" (assembly pass; a no-break space makes it wrap as "Earns / a month"), prints each row's monthly figure, and the formula bar shows the working behind it ("Worth × 8% ÷ 12 ≈ $X/mo"), the Live Sheet's "formula bar as proof". `inputsAtStart` pre-shows only the put-in column, so Worth and Earns both land with their row. Every line is 32 characters or fewer (the longest is 28), so the bar stays one line at 40-42 px. A line starts on the Worth without its "≈": the bar's yellow chip in front of it is the ≈ sign (it read "≈ ≈ $1,245" before the fix pass), and a line swaps in whole and types only its result as the row lands. `lookOpts.marks` tints row 8 rose ("under $100") and row 9 yellow ("beats your **$100**"); each label is a dark chip laid over the next row's empty cells (no spacer row, nothing reflows), in within 0.2 s of its row and out by opacity before the next row lands. `lookOpts.verdictStyle: "stack"` sets the verdict as a two-line card (line 1 up to 88 px). Captions keep "about" with the number after it ("ABOUT $393 A MONTH").
+- **Look note (Becker Rig, since the port):**
+  - **Three columns, not four.** The kit stands the figure left of the ladder, which leaves x 312-922 for the table. Measured in the kit's fonts, four numbers a row need about 790 px at the smallest sizes the look allows (year 52, "$36,000" 160 in mono, "≈ $149,036" 250 at 44 px, the plated "≈ $994" 226), so `lookOpts.cols: [0, 2, 3]` prints Year / Worth / Earns a month. "You put in" stays in `data.rows` (the spec is still look-agnostic and the checker still verifies $1,200 … $36,000) but is not drawn here. The hero column is "Earns a month", the number the hook asks about: it is what the coins become, what turns green, and what takes the gold plate. `second: "bold"` sets the Worth in the hero face in ink (40 px), a balance rather than a grey deposit. The Earns cells land at 58 px (63 on the plate), 72 px apart, against 09b's Worth at 56 px (60 on the plate) 80 px apart. Two things buy that room (port QA fix pass): the footer sits 16 px under this 2-line hook instead of pinned at y 452 (about 66 px back), and the YEAR head may stand over the top of the ladder instead of right of its rails (the kit allows it only when the values would otherwise be under 56 px; 09b is unchanged).
+  - **The $100 gauge** (`target: "$100"`): under each Earns cell a 9 px track as long as your $100, ending in an upright tick ("up to here = $100"), filled grey to Earns ÷ $100 (8%, 49%, 89%; never shorter than 20 px), snapping green with its tick and a pulse on the rows that reach it, years 9 to 25. The plated year 30 has no gauge: the gold plate says "reached", and a gauge under it sat on the "$" of ≈ $634. It replaces the kit's put-in/growth meter, which would compare the wrong columns here.
+  - **The working line** (`working`) is the Live Sheet's formula bar as a Becker working line: the same nine lines, mono 40 px under the footer, in ink (the footer is grey, so the line reads as the maths, not as a third line of small print), one at a time, swapped as each rung lands, the result in green (`**…**`). With no ≈ chip in this look, a line starts on the shown Worth ("$1,245 × 8% ÷ 12 ≈ $8/mo"), which is the arithmetic on the shown figure, and the checker asserts it rounds like the exact one.
+  - **Beats** (`beats`, the Live Sheet's marks plus figure acts): year 8 gets the red tag "under $100", a buzz, a shrug and a hand on the chin; year 9 gets an impact (≈ $105 swells to 1.15× under a burst), the green tag "beats your **$100**" once the burst has faded, a pop, a hop and a point; year 20 gets an act-only beat (a point, then a hand on the chin) so the figure never stands still through "Year 20: about $393 a month."; the verdict relights rung 9 inside a green outlined plate while the gold plate steps back, and he points at it. Each tag sits over the next rung's empty slot and is gone at least 0.6 s before that rung's coin flies, and the act-only beat ends at least 0.6 s before the next coin's wind-up (the checker asserts both).
+  - Timing is unchanged: every rung, VO line and the verdict keep their times. Rung 25 → 30 is 1.6 s, so the last coin gets the kit's short heave (1.38 s), not 09b's long struggle. The spec's 19.4 s "roll" cue is gone (there is no count-up in this look); the kit adds swipes, thuds, the riser, whoosh, hit, cash and the verdict's ding. Captions keep "about" with the number after it.
 
 ---
 
@@ -706,3 +716,67 @@ QA scored the three below the round-2 bar: 09b 7.5, 09a 6.5 and 09c 6.5. It foun
   - scoreboard: the `ax` operators "=" and "×" render at about x-height.
   - The kit READMEs do not yet list the new options: live-sheet `verdictStyle` and chip marks; scoreboard `heroTag`, `verdictStyle`, and `beats[].hero` / `tag`.
 - **Not changed here:** `teasers/v2/teasers.json`'s format-9 check line still says 468 checks; this pass may not edit that file.
+
+### Port to Becker Rig (2026-10-08)
+
+The owner watched the teasers in all four looks and kept two, Scoreboard and Becker Rig. Clean Sheet and Live Sheet are retired, so 09a moved from Live Sheet to Becker Rig. 09b (already Becker Rig) and 09c (Scoreboard) are untouched.
+
+- **Kept exactly:** the header (the hook) and its first VO line, all 6 VO lines and their times, the verdict, the whole `data` block (all 32 cells, including the no-break space in "Earns a month"), every rung time, the duration (28.5 s) and the hold. The retired spec and the new one have identical `header`, `vo`, `verdict` and `data`.
+- **Spec:** new id `09a-becker-rig-100-a-month-doubles` with look `becker-rig`. The old spec was moved with `git mv` to `studio/specs/retired/`. `lookOpts` was rewritten for the Becker kit:
+  - dropped (Live Sheet only): `inputsAtStart`, `verdictStyle`, `formulaBar`, `marks`;
+  - added: `cols: [0, 2, 3]`, `second: "bold"`, `target: "$100"`, `working` (the formula bar's nine lines, now with the result in `**…**`), and `beats` (the two marks as tags, with figure acts, plus a relight of rung 9 at the verdict).
+  - The `roll` cue at 19.4 s is gone, because this look has no count-up. The buzz (4.6 s) and pop (8.0 s) stay on their rungs.
+- **Two changes the look needed:**
+  1. **"You put in" is not drawn.** Four numbers a row do not fit beside the figure: measured, about 790 px against the 610 px the ladder leaves. So the ladder prints Year / Worth / Earns a month. The put-in strings stay in the data and in the checker. Of the four columns they are the least tied to the hook: no VO line, mark, formula-bar line or verdict used them.
+  2. **The footer's line 2 lost "each"** ("$100 in at month-end · not a forecast"). The kit fits the footer to x 62-940, where the old 42-character line only fit at 36 px, a linter warning under the 40 px floor. The assumption list below the maths still spells out "each month-end".
+- **Format file** (`looks/becker-rig/formats/growth-ladder.js`, the only kit file touched). There are five new optional `lookOpts`, documented in its header comment: `cols`, `second`, `target`, `working` and `beats` (act / label + tone / impact / relight). Two small fixes came out of reading the stills:
+  - column heads now wrap only at ordinary spaces, so a no-break space keeps "a month" together ("Earns / a month", not "Earns a / month");
+  - a rung timed at t ≤ 0 is already settled at frame 1, with no squash on the cover frame and no thud for a drop nobody sees.
+  
+  Without the new options the format behaves as before: 09b and the kit's two growth-ladder samples lint clean, and 09b's stills at 9.6 and 24 s match its shipped MP4 (mean difference 1.15-1.27 of 255, compression only). No spec other than 09a has a rung at t ≤ 0.
+- **Found and fixed while reading the stills and lint:**
+  - the "Earns a / month" head wrap;
+  - the 36 px footer;
+  - a gauge track too faint to read as "the length of $100" (now the kit's line grey, with a slate fill);
+  - a blank working-line frame at each swap, and a slide-in that crossed x 60 (now a hard swap with a 12 px slide from the right);
+  - tags popping from 0.82 scale (33-36 px for a frame in a 0.1 s lint; they now drop and fade at full size);
+  - row 1 caught mid-squash on frame 1.
+- **Checker** (`checks/09-growth-ladder.py`):
+  - the new id; `lookOpts.working[i]` replaces `formulaBar[i]`, with the same tokens; `lookOpts.beats[0..1].label` replaces `marks`; `lookOpts.target` = "$100"; `lookOpts.cols` = [0, 2, 3] (numeric); beat durations are skipped as timing.
+  - New claims:
+    - working lines are ≤ 38 characters, land with their rungs and end on one `**…**` result, and start on the shown Worth;
+    - the tags are "under $100" (bad) and "beats your **$100**" (good) on rungs 8 and 9, each gone ≥ 0.6 s before the next rung;
+    - the relight is on the year-9 rung at `verdict.t` with a point;
+    - the impact is on the year-9 rung;
+    - the ladder prints Year / Worth / Earns a month;
+    - the $100 gauge stays short on exactly years 1, 5 and 8, by the shown cells and by the exact values.
+  - Result: **507 checks, 0 failures**. The break test is in the header notes (8 failures, all five edits caught).
+- **Linter:** `node src/cli.mjs check`: 09a clean (0 errors, 0 warnings), and 09b and both kit samples are still clean. At a 0.1 s step the only finding is a 3.3:1 contrast warning on a dim year label while his raised arm passes behind it (7.70 s). 09b shows the same thing at that step (3.10-5.10 s), so it is existing kit behaviour, not part of the port.
+- **Read:**
+  - the contact sheet;
+  - stills at 0, 0.2, 3.0, 3.2, 4.6, 4.75, 4.8, 6.5, 7.6, 8.0, 8.1, 8.25, 8.3, 10.0, 12.2, 13.9, 17.8, 18.6, 19.4, 19.55, 19.7, 20.8, 24.2, 24.4, 24.6, 25.5 and 28.47 s;
+  - every number on screen against the checker's computed strings: the 8 Worth and 8 Earns cells, the 9 working lines, the two tags, the footer and the verdict.
+- **MP4:** `studio/out/09a-becker-rig-100-a-month-doubles.mp4`: 28.5 s, 1080 × 1920, 30 fps, H.264 + AAC, 20 SFX cues. Frames pulled with ffmpeg at 0, 8.3 and 24.6 s match the stills (mean absolute difference 0.44-0.49%, compression only).
+- **Not changed here:**
+  - `teasers/v2/teasers.json` and `renders/v2/` still name the Live Sheet 09a; this pass may only edit the spec, the format file, this write-up and the check.
+  - The Becker Rig README does not list the five new growth-ladder options yet; the format file's header comment documents them.
+
+### Port QA fix pass (2026-10-08)
+
+QA scored the Becker Rig 09a 7/10, a step below 09b, with six shoulds and three nits. Every number, the hook, the VO lines and times, the verdict and the tags are unchanged; the spec gained one act-only beat. Everything else is in the format file (`looks/becker-rig/formats/growth-ladder.js`, its header comment updated).
+
+- **Should, small and dense numbers (50 px on a 64 px pitch):** the footer is now lifted to 16 px under a 1-2 line hook instead of pinned at y 452 (for this hook, about 66 px back), and the YEAR head may stand over the top of the ladder when keeping it right of the rails would leave the values under 56 px (here the head word, 121 px wide over "30", was what bound the row's width). The Earns cells now land at **58 px (63 on the plate), 72 px apart**; the Worth column at 41 px. 09b keeps its layout (3-line hook, values already at 56 px), checked element by element at 26 s.
+- **Should, the crossing at 8.0 s:** ≈ $105 swells to 1.15× (anchored right, over 0.5 s) under a bigger burst (12 lines, r 34, shake 8), still clipped above its shelf. ≈ $89 is ink by the time ≈ $105 lands (it used to stay green until 8.3 s), so ≈ $105 is the only green number from 8.0 s.
+- **Should, the gauge under the gold plate:** in target mode the plated row has no gauge (the plate already says "reached"); it used to sit on the "$" of ≈ $634 through the end hold.
+- **Should, the $100 gauge did not read as $100:** the track is 9 px and ends in an upright tick at the column's right edge (grey, green with the fill once the row reaches it), and a short fill is never under 20 px. The optional yellow cap for rows past $100 was not added; no multiple label was added.
+- **Should, the 14.5-16.8 s freeze:** an act-only beat `{ t: 13.9, row: 5, act: ["point", "think"], d: 2.3 }`. He points at 14.04 s, puts a hand on his chin at about 15.1 s and is back to idle at 16.2 s, 0.65 s before he takes the next coin (16.85 s). (2.3 s, not QA's 2.4 s: 2.4 s would end 0.55 s before that coin.) The checker asserts it (509 checks).
+- **Should, the gold plate outshone year 9 at the verdict:** a relight now pops a green outlined plate (the gold plate's 6 px border and 18 px radius, no fill) behind rung 9 from its year to ≈ $105. At this pitch a full-pad plate would cut the gauge of rung 15 above it, so its top and bottom edges ride exactly on the gauge lines over and under the row, and those two gauges (and their ticks) hand over to it as it pops in: one even border, nothing new in the text bands. The relight bump drops to 1.06× so the swelling digits stay clear of that edge. From 24.2 s the gold plate steps back over 0.3 s (grey border, 55% fill). Year 9 is the one focal point of the end hold.
+- **Nit, the hit lines through the fading tag:** an impact beat's tag now waits until its burst has faded (in at 8.24 s, not 8.08 s), and its position follows the swelling number.
+- **Nit, the working line read as small print:** it is set in ink (result still green) under the grey footer.
+- **Nit, the plate burst grazed ≈ $149,036:** the plate's hit lines are clipped to the right of its left edge − 8. This also keeps 09b's left hit line off its "$1,000" column during its plate impact (19.4-19.7 s); nothing else in 09b changes.
+- **Side effects checked:** the kit's two growth-ladder samples get the lifted footer too (both have 2-line hooks), and the 40-year sample's YEAR head now stands over its ladder top; both lint clean and read fine at their end frames.
+- **Checker:** 509 checks, 0 failures (one new claim for the act-only beat; it fails if the beat runs to 2.4 s).
+- **Linter:** 09a, 09b and both samples, 4/4 clean, 0 errors, 0 warnings.
+- **Read:** the 12-frame contact sheet and stills at 0, 1.0, 5.0, 8.0, 8.1, 8.17, 8.3, 8.5, 14.6, 15.0, 15.5, 16.0, 16.5, 19.4, 19.43, 19.45, 19.47, 19.5, 20.5, 24.25, 24.4, 24.6 and 28.47 s.
+- **MP4:** `studio/out/09a-becker-rig-100-a-month-doubles.mp4` re-rendered: 28.5 s, 1080 × 1920, 30 fps, H.264 + AAC, 20 SFX cues. Frames pulled at 8.5, 24.6 and 28.4 s match the stills (mean absolute difference 0.47-0.50%, compression only).
+- **Not changed here:** `teasers/v2/teasers.json` and `renders/v2/` (still the Live Sheet 09a); the Becker Rig README (the new behaviours are in the format file's header comment).

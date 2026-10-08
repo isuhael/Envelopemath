@@ -1,0 +1,62 @@
+{
+  "id": "09a-becker-rig-100-a-month-doubles",
+  "look": "becker-rig",
+  "format": "growth-ladder",
+  "fps": 30,
+  "duration": 28.5,
+  "header": "You add **$100 a month**.\nWhen does it earn $100 a month?",
+  "footer": "ASSUMES 8% a year, compounded monthly\n$100 in at month-end · not a forecast",
+  "captions": true,
+  "vo": [
+    { "t": 0.0, "d": 3.85, "text": "By year 1 it's earning about $8 a month." },
+    { "t": 4.4, "d": 3.1, "text": "Year 8: about $89. Not yet." },
+    { "t": 7.7, "d": 4.25, "text": "Year 9: about $105. More than you add." },
+    { "t": 13.6, "d": 3.85, "text": "Year 20: about $393 a month." },
+    { "t": 19.0, "d": 5.0, "text": "Year 30: about $994 a month. On its own." },
+    { "t": 24.2, "d": 1.95, "text": "Any monthly amount: year 9." }
+  ],
+  "verdict": { "t": 24.2, "text": "From **year 9**\nit earns more than you add." },
+  "data": {
+    "input": { "amount": "$100", "per": "a month", "rate": "8% a year" },
+    "columns": ["Year", "You put in", "Worth", "Earns a month"],
+    "rows": [
+      ["1", "$1,200", "≈ $1,245", "≈ $8"],
+      ["5", "$6,000", "≈ $7,348", "≈ $49"],
+      ["8", "$9,600", "≈ $13,387", "≈ $89"],
+      ["9", "$10,800", "≈ $15,743", "≈ $105"],
+      ["15", "$18,000", "≈ $34,604", "≈ $231"],
+      ["20", "$24,000", "≈ $58,902", "≈ $393"],
+      ["25", "$30,000", "≈ $95,103", "≈ $634"],
+      ["30", "$36,000", "≈ $149,036", "≈ $994"]
+    ],
+    "rowT": [0.0, 3.2, 4.6, 8.0, 12.2, 13.9, 17.8, 19.4],
+    "highlightLast": true,
+    "hold": 9.1
+  },
+  "lookOpts": {
+    "cols": [0, 2, 3],
+    "second": "bold",
+    "target": "$100",
+    "working": [
+      { "t": 0.0, "text": "$1,245 × 8% ÷ 12 ≈ **$8/mo**" },
+      { "t": 3.2, "text": "$7,348 × 8% ÷ 12 ≈ **$49/mo**" },
+      { "t": 4.6, "text": "$13,387 × 8% ÷ 12 ≈ **$89/mo**" },
+      { "t": 8.0, "text": "$15,743 × 8% ÷ 12 ≈ **$105/mo**" },
+      { "t": 12.2, "text": "$34,604 × 8% ÷ 12 ≈ **$231/mo**" },
+      { "t": 13.9, "text": "$58,902 × 8% ÷ 12 ≈ **$393/mo**" },
+      { "t": 17.8, "text": "$95,103 × 8% ÷ 12 ≈ **$634/mo**" },
+      { "t": 19.4, "text": "$149,036 × 8% ÷ 12 ≈ **$994/mo**" },
+      { "t": 24.2, "text": "$50 or $500/mo: still **year 9**" }
+    ],
+    "beats": [
+      { "t": 4.6, "row": 2, "act": ["shrug", "think"], "d": 2.7, "label": "under $100", "tone": "bad" },
+      { "t": 8.0, "row": 3, "act": ["celebrate", "point"], "d": 3.2, "label": "beats your **$100**", "tone": "good", "impact": true },
+      { "t": 13.9, "row": 5, "act": ["point", "think"], "d": 2.3 },
+      { "t": 24.2, "row": 3, "act": "point", "d": 4.3, "relight": true }
+    ]
+  },
+  "sfx": [
+    { "t": 4.6, "kind": "buzz", "gain": 0.35 },
+    { "t": 8.0, "kind": "pop" }
+  ]
+}

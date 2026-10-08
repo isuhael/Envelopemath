@@ -1,0 +1,115 @@
+{
+  "id": "08c-becker-rig-college-in-big-macs",
+  "look": "becker-rig",
+  "format": "unit-ladder",
+  "fps": 30,
+  "duration": 22.0,
+  "header": "Community? In-state?\nOut-of-state? Private?\nYour year in **Big Macs**",
+  "footer": "$6.22 Big Mac (Jul 2026) · 1 year of\nCollege Board 2025-26 tuition & fees",
+  "captions": true,
+  "vo": [
+    {
+      "t": 0.0,
+      "d": 3.3,
+      "text": "Community college? **≈ 667 Big Macs**."
+    },
+    {
+      "t": 3.4,
+      "d": 0.6,
+      "text": "In-state?"
+    },
+    {
+      "t": 5.1,
+      "d": 2.35,
+      "text": "**≈ 1,921**."
+    },
+    {
+      "t": 7.5,
+      "d": 0.6,
+      "text": "Out-of-state?"
+    },
+    {
+      "t": 9.25,
+      "d": 2.35,
+      "text": "**≈ 5,125**."
+    },
+    {
+      "t": 11.65,
+      "d": 0.6,
+      "text": "Private?"
+    },
+    {
+      "t": 13.45,
+      "d": 2.35,
+      "text": "**≈ 7,235**."
+    },
+    {
+      "t": 15.85,
+      "d": 0.8,
+      "text": "Versus community?"
+    },
+    {
+      "t": 17.35,
+      "d": 3.5,
+      "text": "One private year: **≈ 10.8** community-college years."
+    }
+  ],
+  "verdict": {
+    "t": 17.35,
+    "text": "One private year =\n**≈ 10.8** community-college years."
+  },
+  "data": {
+    "unit": {
+      "name": "Big Mac",
+      "price": "$6.22",
+      "icon": "burger"
+    },
+    "rungs": [
+      {
+        "t": -1.0,
+        "item": "Community",
+        "cost": "$4,150",
+        "units": 667,
+        "unitsDisplay": "≈ 667"
+      },
+      {
+        "t": 3.4,
+        "item": "In-state",
+        "cost": "$11,950",
+        "units": 1921,
+        "unitsDisplay": "≈ 1,921"
+      },
+      {
+        "t": 7.5,
+        "item": "Out-of-state",
+        "cost": "$31,880",
+        "units": 5125,
+        "unitsDisplay": "≈ 5,125"
+      },
+      {
+        "t": 11.65,
+        "item": "Private",
+        "cost": "$45,000",
+        "units": 7235,
+        "unitsDisplay": "≈ 7,235"
+      }
+    ],
+    "hold": 8.65
+  },
+  "lookOpts": {
+    "landAfter": 1.7,
+    "morph": {
+      "t": 17.35,
+      "ask": 15.85,
+      "item": "Private vs community",
+      "working": "$45,000 ÷ $4,150",
+      "display": "10.8",
+      "label": "community-college years",
+      "compare": [
+        0,
+        3
+      ]
+    }
+  },
+  "sfx": []
+}

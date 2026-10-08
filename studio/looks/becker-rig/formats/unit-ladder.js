@@ -5,7 +5,10 @@
 //
 //   frame 1   the rule is already running. If the first rung is not at t = 0 the figure holds up ONE unit
 //             (a hot dog), the counter reads 1 under "$1.50 ÷ $1.50 =". Otherwise the first price coin is already
-//             standing in front of him and the HUD shows the first rung.
+//             standing in front of him and the HUD shows the first rung. A first rung cut before frame 1 (t < 0) is
+//             pre-filled: punched, piled and counted before t = 0, so frame 1 shows its pile, its count and the "≈"
+//             working, with him pointing at it (no sound or shake from it); the camera frames him and the pile as one
+//             group, centred, and pans back to his usual spot as the next cut pushes in.
 //   per rung  the HUD swaps to the item and "cost ÷ price =", the counter becomes "?". The camera pushes in on
 //             the figure and a gold coin (the price) drops in front of him with a thud. He winds up and punches it
 //             (small coins: a karate chop). It bursts (hit + shake + hit lines) into units that arc over to the end
@@ -16,6 +19,10 @@
 //             rounded. He reacts, escalating: point, shrug, shocked.
 //   finale    the last count lands on a gold plate with the impact kit (hit + shake + flash + camera punch, hit
 //             lines round the plate). He jumps, then slumps. The verdict lands in the caption band.
+//   recap     (pileLabels) a table under the counter, one row per rung, biggest first: the "≈" in its own left-aligned
+//             slot, the count right-aligned, the name after it (the "≈" is glued to its count only when its slot would
+//             cost a name its line). Thin leaders run from the rows' ends to their piles' apexes only when every row
+//             gets a clean one: a lone leader reads as a stray stroke.
 //
 // A pile is one path filled with a brick pattern of the unit icon, so a pile of 266,667 is exactly 266,667 icons
 // and one DOM node; up close the units fly in one by one and squash as they land (big piles: an even sample of
@@ -41,7 +48,29 @@
 //                             with the ordinals (1st .. the answer) and stays while that rung's pile is on (decoration).
 //   morph: { t, working, display, label, approx = true }  at t (usually verdict.t) the HUD's last answer turns into
 //                             the takeaway: the working line becomes `working` + "≈", the gold plate shrinks round
-//                             `display` and the label beside it becomes `label` (one swap, like a rung's).
+//                             `display` and the label beside it becomes `label` (one swap, like a rung's). A label too
+//                             long to sit beside the plate on one line wraps to two balanced lines there.
+//     + ask: s                the takeaway is asked first, like a rung's cut: at `ask` the item line becomes `item`
+//     + item: '…'             (if given), the working "`working` =", the counter "?" flush left with the label after it
+//     + compare: [i, j]       (as on a rung's cut) and the plate pops out; he thinks. The "?" squashes out just before
+//     + beside: false         t; at t the answer pops in on the hit (hit + shake + flash + punch) at up to 1.2x the
+//                             counts' size, on a fresh plate (the biggest number in the video; it stays clear of the
+//                             working line, the recap table and x 938), hit lines round it, the label moves beside it,
+//                             and the "=" turns into "≈" once the number is fully in. He hops (see hop), then slumps.
+//                             compare: from the ask, the piles and recap rows of the other rungs dim (their leaders
+//                             go), and (unless beside: false) the smaller compared pile hops over the piles between
+//                             them to stand beside the bigger one (a squash and a thud as it lands), while those piles
+//                             shuffle along into the room it left, every gap kept. If the moved piles would crowd the
+//                             recap table, the camera also steps back a little (to 0.85) about the bigger pile's right
+//                             foot; if even that cannot clear it, the piles stay put.
+//   hop: true | false         a jump is a real hop: a crouch, take-off on the beat, an arc (lib's hop(), 56 px world on
+//                             the last count, 70 on the asked takeaway), a squash on touchdown, then "whoa" with his feet
+//                             down until the slump (1 s after take-off). false: the 'shocked' pose held in mid-air.
+//                             Default: on when the takeaway is asked (morph.ask), else off
+//   landAfter: s              every rung's count lands this long after its cut (coin drop, punch and fill keep their
+//                             proportions; the lead never goes under 0.4 s). Default: the kit's pacing (≈ 2.2 s on a 4 s gap)
+//   beats: [{ t, act, d }]    scripted reactions: a POSES name ('cheer' = celebrate) at t, back to idle after d s
+//                             (default 1.2; d: null holds it)
 //
 // Cuts: when the camera pushes back in on the figure for a new rung, the piles already standing would be sliced by the
 // top of the stage and the right frame edge; each earlier pile fades out as it leaves the frame and back in as the
@@ -49,8 +78,8 @@
 // final number's slot and the label sits where it lands (nothing slides when the count lands or the plate arrives).
 import {
   h, s, style, attr, setText, setHTML, prog, clamp, lerp, rng,
-  C, F, T, L, S, E, RIG, poseTrack, fk, secondary, pinLimb, blendJ, Figure, makeWorld, makeFx, camera, NumObj,
-  chromeParts, durationOf, num, rollTo, measure, arc, squashAt, fall, popIn, wobble, coin, icon, lerp2, smooth,
+  C, F, T, L, S, E, RIG, POSES, poseTrack, fk, secondary, pinLimb, blendJ, Figure, makeWorld, makeFx, camera, NumObj,
+  chromeParts, durationOf, num, rollTo, measure, arc, squashAt, fall, popIn, wobble, coin, icon, lerp2, smooth, mix, hop,
 } from '../lib.js'
 
 const FLOOR = L.floorY
@@ -77,6 +106,7 @@ export const css = `
 .ul-fx { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
 .ul-row { position: absolute; left: 0; top: 0; white-space: nowrap; display: flex; align-items: flex-start; }
 .ul-row .c { display: inline-block; text-align: right; font: 900 40px/50px ${F.head}; letter-spacing: -0.03em; color: ${C.ink}; }
+.ul-row .a { display: inline-block; text-align: left; font: 900 40px/50px ${F.head}; color: ${C.ink}; }
 .ul-row .n { display: inline-block; font: 800 40px/50px ${F.head}; letter-spacing: -0.01em; color: ${C.grey}; }
 `
 
@@ -92,6 +122,11 @@ const P_TOSS = { lean: -8, tilt: -18, aF: [138, 8], aB: [-34, 20], lF: [12, -4],
 const P_FLINCH = { lean: -16, tilt: -16, aF: [64, 104], aB: [44, 112], lF: [18, -16], lB: [-20, -14] }
 const P_WIND = { lean: -18, tilt: -4, aF: [-58, 118], aB: [58, 64], lF: [30, -36], lB: [-30, -22] }
 const P_PUNCH = { lean: 24, tilt: -6, aF: [92, 4], aB: [-46, 36], lF: [36, -42], lB: [-30, -6] }
+// the hop (lookOpts.hop): arms flung up and legs long in the air, knees giving on touchdown, then "whoa" with his
+// feet down (the lift comes from lib's hop(), never from a held pose)
+const P_AIR = { lean: -10, tilt: -18, aF: [152, 26], aB: [-152, -26], lF: [16, -18], lB: [-14, -26] }
+const P_LAND = { lean: 12, tilt: -4, aF: [138, 34], aB: [-138, -34], lF: [46, -82], lB: [34, -76] }
+const P_AGHAST = { lean: -10, tilt: -16, aF: [150, 30], aB: [-150, -30], lF: [12, -6], lB: [-12, -4] }
 
 const esc = x => String(x).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 // a pile's name tag: the rung's item without its article or trailing qualifier ("A year of rent at $1,700/mo" ->
@@ -240,6 +275,9 @@ export default function unitLadder(spec, ctx) {
   const FIGK = lo.figureScale ?? 1.1
   const showFig = lo.figure !== false
   const iconName = U.icon || 'token'
+  // lookOpts.landAfter: every rung's count lands this long after its cut (coin drop, punch and fill keep their
+  // proportions); default: the kit's own pacing (about 2.2 s on a 4 s gap)
+  const LA = Number.isFinite(+lo.landAfter) && +lo.landAfter > 0 ? Math.max(0.9, +lo.landAfter) : null
 
   // ================================================================== rungs, labels, timing
   const Ts = []
@@ -267,9 +305,16 @@ export default function unitLadder(spec, ctx) {
   const moT = mo ? +mo.t : Infinity
   const moWork = mo ? String(mo.working || '') : ''
   const moOp = mo && mo.approx === false ? '=' : '≈'
+  // morph.ask: the takeaway is asked first, like a rung's cut (item -> morph.item, working "… =", counter "?"),
+  // and lands at morph.t; morph.compare: the piles it divides stay lit from the ask, the others dim
+  const moAsk = mo && mo.ask != null && +mo.ask < moT ? +mo.ask : null
+  const moItem = mo && mo.item != null ? String(mo.item) : null
+  const moCmp = mo && Array.isArray(mo.compare) ? new Set(mo.compare.map(Number)) : null
+  const moFrom = moAsk ?? moT
+  const moLabel = mo ? String(mo.label || '') : ''
   const parts = chromeParts(spec, ctx)
   const introItem = String(U.name || '')
-  const itemTexts = [...(intro ? [introItem] : []), ...R.map(r => r.item)]
+  const itemTexts = [...(intro ? [introItem] : []), ...R.map(r => r.item), ...(moItem ? [moItem] : [])]
   let itemPx = 54
   for (; itemPx > 42; itemPx -= 2) {
     const font = `800 ${itemPx}px ${F.head}`
@@ -287,11 +332,27 @@ export default function unitLadder(spec, ctx) {
   const lhD = Math.round(divPx * 1.3)
   const digW = (str, px) => measure(str, `900 ${px}px ${F.head}`, { letterSpacing: '-0.035em' })
   const labW = str => measure(str, `800 ${LABPX}px ${F.head}`, { letterSpacing: '-0.01em' })
-  const counters = [...(intro ? [{ digits: '1', label: labelOne, plate: false }] : []), ...R, ...(mo ? [{ digits: String(mo.display), label: String(mo.label || ''), plate: true }] : [])]
+  const counters = [...(intro ? [{ digits: '1', label: labelOne, plate: false }] : []), ...R, ...(mo ? [{ digits: String(mo.display), label: moLabel, plate: true, morph: true }] : [])]
   const besideFits = px => counters.every(a => (a.plate ? 2 * PLATE[0] + 24 : 0) + digW(a.digits, px) + 28 + labW(a.label) <= HW)
   let cPx = 136
   while (cPx > 104 && !besideFits(cPx)) cPx -= 4
-  const labelBelow = !besideFits(cPx)
+  let labelBelow = !besideFits(cPx)
+  // a long takeaway label may wrap to two balanced lines beside its plate before every label goes below the counter
+  let moLines = null
+  if (labelBelow && mo) {
+    const ws = moLabel.split(/\s+/).filter(Boolean)
+    let best = null
+    for (let k = 1; k < ws.length; k++) {
+      const l2 = [ws.slice(0, k).join(' '), ws.slice(k).join(' ')], w = Math.max(labW(l2[0]), labW(l2[1]))
+      if (!best || w < best.w) best = { l: l2, w }
+    }
+    if (best) {
+      const fits2 = px => counters.every(a => (a.plate ? 2 * PLATE[0] + 24 : 0) + digW(a.digits, px) + 28 + (a.morph ? best.w : labW(a.label)) <= HW)
+      let p2 = 136
+      while (p2 > 104 && !fits2(p2)) p2 -= 4
+      if (fits2(p2)) { cPx = p2; labelBelow = false; moLines = best.l }
+    }
+  }
   if (labelBelow) { cPx = 136; while (cPx > 96 && counters.some(a => (a.plate ? 2 * PLATE[0] + 12 : 0) + digW(a.digits, cPx) > HW)) cPx -= 4 }
   // vertical stack: item (bottom-aligned in its block), working line, counter (+ label)
   let yItem, yDiv, base, yLabBase, VPtop
@@ -381,16 +442,26 @@ export default function unitLadder(spec, ctx) {
     const i = r.i
     const gap = i < N - 1 ? R[i + 1].T - r.T : Math.max(3.4, hold + 1.4)
     r.placed = i === 0 && !intro && r.T < 0.9                 // the first coin already stands there at t = 0
-    const lead = r.placed ? 0.45 : clamp(gap * 0.22, 0.45, 0.92)
-    r.punch = Math.max(0, r.T) + lead
+    // a first rung cut before frame 1 is pre-filled: punched, piled and counted before t = 0 (frame 1 shows it done)
+    r.prefill = i === 0 && !intro && r.T < 0
+    let lead = r.placed ? 0.45 : clamp(gap * 0.22, 0.45, 0.92)
+    let fillDur
+    if (r.last) {
+      let fd = 1.9
+      if (spec.verdict && spec.verdict.t != null) fd = Math.min(fd, spec.verdict.t - 0.5 - (Math.max(0, r.T) + lead + 0.05))
+      fillDur = clamp(fd, 0.6, 2.2)
+    } else fillDur = clamp(gap * 0.3, 0.5, 1.6)
+    if (LA && !r.prefill) {                                    // lookOpts.landAfter: same beats, compressed (or eased) to fit
+      const k = (LA - 0.05) / (lead + fillDur)
+      lead = Math.max(0.4, lead * k)
+      fillDur = Math.max(0.35, LA - 0.05 - lead)
+    }
+    const start = r.prefill ? Math.min(-0.4, r.T + lead + 0.05 + fillDur) - (lead + 0.05 + fillDur) : Math.max(0, r.T)
+    r.punch = start + lead
     r.coinLand = r.placed ? -Infinity : r.T + lead * 0.64
     r.push = i > 0 ? [r.T, Math.min(0.5, lead * 0.6)] : null
     r.fill0 = r.punch + 0.05
-    if (r.last) {
-      let fd = 1.9
-      if (spec.verdict && spec.verdict.t != null) fd = Math.min(fd, spec.verdict.t - 0.5 - r.fill0)
-      r.fillDur = clamp(fd, 0.6, 2.2)
-    } else r.fillDur = clamp(gap * 0.3, 0.5, 1.6)
+    r.fillDur = fillDur
     r.land = r.fill0 + r.fillDur
     // the pull-back follows the growing pile closely, so the new pile never hangs off the right edge for long
     r.pull = clamp(r.fillDur * 0.32, 0.3, r.last ? 0.6 : 0.45)
@@ -410,7 +481,20 @@ export default function unitLadder(spec, ctx) {
 
   // ================================================================== the figure's choreography
   const react = r => (r.last ? 'shocked' : r.e < 0.34 ? 'point' : r.e < 0.67 ? 'shrug' : 'shocked')
-  const keys = [{ t: 0, pose: intro ? P_PRESENT : 'lookUp' }]
+  // a pre-filled first rung: frame 1 has him already reacting to his pile (point), held while it is read
+  const keys = [{ t: 0, pose: R[0].prefill ? react(R[0]) : intro ? P_PRESENT : 'lookUp' }]
+  // lookOpts.hop: a jump is a real hop (crouch, take-off on the beat, an arc from lib's hop(), a squash on touchdown,
+  // then "whoa" with his feet down) instead of the 'shocked' pose held in mid-air. Default: on when the takeaway is
+  // asked (morph.ask), where both climaxes jump
+  const hopOn = lo.hop != null ? lo.hop !== false : moAsk != null
+  const hops = []
+  const addHop = (t0, dur, hgt) => {
+    keys.push({ t: t0 - 0.2, pose: 'crouch', d: 0.15, e: 'inOut' })
+    keys.push({ t: t0 - 0.03, pose: P_AIR, d: 0.1, e: 'out' })
+    keys.push({ t: t0 + dur - 0.05, pose: P_LAND, d: 0.06, e: 'out' })
+    keys.push({ t: t0 + dur + 0.09, pose: P_AGHAST, d: 0.24, e: 'spring' })
+    hops.push({ t0, dur, h: hgt })
+  }
   if (intro) {
     const T0 = R[0].T
     keys.push({ t: 0.5, pose: { ...P_PRESENT, tilt: 16, aF: [108, 40] }, d: 0.22, e: 'inOut' })
@@ -419,6 +503,11 @@ export default function unitLadder(spec, ctx) {
     keys.push({ t: T0 - 0.07, pose: P_TOSS, d: 0.09, e: 'out' })
   }
   for (const r of R) {
+    if (r.prefill) {
+      const nextT = N > 1 ? R[1].T : Infinity
+      keys.push({ t: clamp(2.2, r.land + 1.0, Math.max(r.land + 1.0, nextT - 0.6)), pose: 'idle', d: 0.45, e: 'inOut' })
+      continue
+    }
     if (!r.placed) {
       keys.push({ t: r.T + (intro && r.i === 0 ? 0.22 : 0.1), pose: 'lookUp', d: 0.26, e: 'spring' })
       keys.push({ t: r.coinLand, pose: { ...P_FLINCH, lean: -8 - 12 * r.e }, d: 0.08, e: 'out' })
@@ -427,6 +516,11 @@ export default function unitLadder(spec, ctx) {
     keys.push({ t: r.punch - 0.25, pose: r.mode === 'punch' ? P_WIND : 'chopUp', d: 0.17, e: 'inOut' })
     keys.push({ t: r.punch - 0.06, pose: r.mode === 'punch' ? P_PUNCH : 'chopDown', d: 0.07, e: 'out' })
     keys.push({ t: r.punch + 0.2, pose: 'lookUp', d: 0.3, e: 'spring' })
+    if (r.last && hopOn) {                                     // the count lands and knocks him into a hop
+      addHop(r.land, 0.42, 56)
+      keys.push({ t: r.land + 1.0, pose: 'slump', d: 0.4, e: 'spring' })
+      continue
+    }
     keys.push({ t: r.land, pose: react(r), d: 0.24, e: 'spring' })
     if (r.last) keys.push({ t: r.land + 0.8, pose: 'slump', d: 0.4, e: 'spring' })
     else keys.push({ t: r.land + 1.0, pose: 'idle', d: 0.45, e: 'inOut' })
@@ -442,7 +536,36 @@ export default function unitLadder(spec, ctx) {
       keys.push({ t: Math.min(bkLand + 1.3, nextT - 0.5), pose: 'idle', d: 0.45, e: 'inOut' })
     }
   }
+  // an asked takeaway (morph.ask): he thinks over the two piles, crouches, and the answer knocks him into a jump
+  if (moAsk != null) {
+    keys.push({ t: moAsk + 0.08, pose: 'think', d: 0.3, e: 'spring' })
+    if (hopOn) {                                               // the bigger hop: the payoff outranks the last count
+      addHop(moT, 0.46, 70)
+      keys.push({ t: moT + 1.0, pose: 'slump', d: 0.4, e: 'spring' })
+    } else {
+      keys.push({ t: moT - 0.24, pose: 'crouch', d: 0.16, e: 'inOut' })
+      keys.push({ t: moT - 0.04, pose: 'shocked', d: 0.14, e: 'out' })
+      keys.push({ t: moT + 0.75, pose: 'slump', d: 0.4, e: 'spring' })
+    }
+  }
+  // lookOpts.beats: scripted reactions [{ t, act, d }] (a POSES name; 'cheer' = celebrate), held d s (default 1.2)
+  for (const b of Array.isArray(lo.beats) ? lo.beats : []) {
+    const act = b && (b.act === 'cheer' ? 'celebrate' : b.act)
+    if (!b || b.t == null || !POSES[act]) continue
+    keys.push({ t: +b.t, pose: act, d: 0.24, e: 'spring' })
+    if (b.d !== null) keys.push({ t: +b.t + (b.d != null ? +b.d : 1.2), pose: 'idle', d: 0.45, e: 'inOut' })
+  }
   const tr = poseTrack(keys)
+  // the hops lift him off the ground (a parabola) on top of whatever pose the track holds
+  const trF = !hops.length ? tr : {
+    keys: tr.keys,
+    at: t => {
+      let lift = 0
+      for (const hp of hops) lift += hop(t, hp.t0, hp.dur, hp.h)
+      const p = tr.at(t)
+      return lift ? { ...p, lift: (p.lift || 0) + lift } : p
+    },
+  }
 
   // coins stand in front of him, placed so the punch (or the chop) lands on the rim
   const Jat = t => fk(secondary(tr.at(t), t, { prev: tr.at(t - 0.07) }), { x: XF, scale: FIGK })
@@ -562,6 +685,7 @@ export default function unitLadder(spec, ctx) {
   const hudFx = makeFx({ g: { fx: hudG }, flash: h('div') }, ctx)
   if (intro) ctx.cue(R[0].T - 0.04, 'swipe', { gain: 0.4, dur: 0.18 })
   for (const r of R) {
+    if (r.prefill) continue                                     // all of it happened before frame 1: no sound, no shake
     const zPrev = r.i ? R[r.i - 1].zEnd : 1
     if (r.push && zPrev < 0.55) ctx.cue(r.T, 'whoosh', { dur: r.push[1] + 0.1, gain: 0.3 })
     if (!r.placed) fx.impact(r.coinLand, { x: r.cx, y: FLOOR, burst: false, shake: 2 + 6 * r.e, cue: 'thud', gain: 0.4 + 0.35 * r.e })
@@ -579,6 +703,8 @@ export default function unitLadder(spec, ctx) {
   const numO = new NumObj(hud, { cls: 'ul-num', text: '', ax: 0, ay: 0.864, style: { fontSize: cPx + 'px' } })
   const qO = new NumObj(hud, { cls: 'ul-num', text: '?', ax: 0, ay: 0.864, style: { fontSize: cPx + 'px', color: C.dim } })
   const labO = new NumObj(hud, { cls: 'ul-lab', text: '', ax: 0, ay: 0.837 })
+  // the takeaway's label on two lines (moLines): its second line sits on the counter's label baseline
+  const moLabO = moLines ? new NumObj(hud, { cls: 'ul-lab', html: true, text: moLines.join('\n'), ax: 0, ay: (1 + 0.837) / 2, style: { opacity: '0' } }) : null
   hud.append(itemEl, divEl, hudSvg)
   ctx.stage.append(hud)
   const blank = bk ? hookBlank(parts.header, bk, bkLand, ctx) : null
@@ -600,9 +726,36 @@ export default function unitLadder(spec, ctx) {
     const body = k > 0 ? `<b>${esc(moWork.slice(0, k))}</b> ÷ ${esc(moWork.slice(k + 3))}` : `<b>${esc(moWork)}</b>`
     return `${body} <i class="${moOp === '≈' ? 'ap' : ''}">${moOp}</i>`
   })() : ''
+  const moDivQ = moAsk != null ? moDiv.replace(/<i class="[^"]*">[^<]*<\/i>$/, '<i class="">=</i>') : ''
+  // an asked takeaway is the climax: its number lands bigger than any count (up to 1.2x) on a plate of its own,
+  // centred where the last count's plate was, clear of the working line above and the recap table below, with its
+  // label still inside x 938. Its "?" waits flush left like a rung's; at morph.t the "?" is already out, the number
+  // pops in on the hit, and the working's "=" turns into "≈" once the number is fully in (never "≈ ?")
+  let moPx = cPx, moBase = base, moGap = 40
+  const MO_Q = 0.096, MO_FULL = 0.048, MO_POP = 0          // "?" out before the hit; the number fully in; plate pop
+  if (moAsk != null && plBox && !labelBelow) {
+    const cy = base - 0.3635 * cPx
+    const labWd = moLines ? Math.max(...moLines.map(labW)) : labW(moLabel)
+    for (let px = Math.round(1.2 * cPx); px > cPx; px -= 2) {
+      const b2 = cy + 0.3635 * px
+      if (b2 - 0.864 * px >= yDiv + lhD + 4 && b2 + 0.136 * px <= VPtop + 6 && HX + 2 * padOf(plR) + digW(moDigits, px) + 32 + labWd <= 938) {
+        moPx = px; moBase = b2; moGap = 32
+        break
+      }
+    }
+  }
+  const moBig = moAsk != null && plBox ? { x: HX, y: moBase - 0.727 * moPx - PLATE[1] - 6, w: digW(moDigits, moPx) + 2 * padOf(plR), h: 0.727 * moPx + 2 * PLATE[1] + 12 } : null
+  const moLabX = labelBelow ? HX : HX + 2 * padOf(plR) + digW(moDigits, moPx) + moGap
+  const moNumO = moBig ? new NumObj(hud, { cls: 'ul-num', text: moDigits, ax: 0, ay: 0.864, style: { fontSize: moPx + 'px', color: C.ink, opacity: '0' } }) : null
   if (moBox) {
-    hudFx.impact(moT + 0.16, { x: moBox.x + moBox.w / 2, y: moBox.y + moBox.h / 2, rx: moBox.w / 2 + 8, ry: moBox.h / 2 + 2, r: 17, lines: 12, shake: 0, cue: null })
-    ctx.cue(moT + 0.1, 'pop', { gain: 0.5 })
+    const hb = moBig || moBox
+    hudFx.impact(moT + (moBig ? 0.04 : 0.16), { x: hb.x + hb.w / 2, y: hb.y + hb.h / 2, rx: hb.w / 2 + 8, ry: hb.h / 2 + 2, r: 17, lines: 12, shake: 0, cue: null })
+    if (moAsk == null) ctx.cue(moT + 0.1, 'pop', { gain: 0.5 })
+    else {
+      // asked: the question swaps in like a rung's cut, the answer lands as the climax (hit, shake, flash, punch)
+      ctx.cue(moAsk, 'whoosh', { dur: 0.3, gain: 0.3 })
+      fx.impact(moT, { burst: false, shake: 10, flash: 0.3, punch: 0.025, cue: 'hit', gain: 0.85 })
+    }
   }
 
   // the hook's month: a calendar grid beside the first count, its days filling in step with the header's ordinals
@@ -636,24 +789,40 @@ export default function unitLadder(spec, ctx) {
   const figKAt = z => FIGK * Math.max(1, FIG_MIN / (figPx * z))
   const figXAt = z => XF - (1 - clamp(figPx * z / FIG_MIN)) * 48 / z
 
+  // ================================================================== the asked takeaway's two piles, side by side
+  // morph.ask + compare (morph.beside, default on): from the ask, the smaller compared pile hops over the piles between
+  // the two to stand beside the bigger one, and those piles shuffle along into the room it left (every gap keeps its
+  // width), so the two divided piles stand side by side. The recap table is fitted to both layouts.
+  let beside = null
+  if (moAsk != null && moCmp && mo.beside !== false) {
+    const [a, b] = [...moCmp].filter(k => Number.isInteger(k) && k >= 0 && k < N).sort((x, y) => x - y)
+    if (moCmp.size === 2 && b != null && b - a >= 2 && R[a].units < R[b].units) {
+      const gapB = R[b].px - (R[b - 1].px + R[b - 1].W)
+      beside = { a, b, delta: R[a + 1].px - R[a].px, to: R[b].px - gapB - R[a].W, t0: moAsk + 0.2, d: 0.55, hgt: 0, k: 1, S: FXS }
+    }
+  }
+  const pxAfter = r => (!beside ? r.px : r.i === beside.a ? beside.to : r.i > beside.a && r.i < beside.b ? r.px - beside.delta : r.px)
+
   // ================================================================== the ladder recap: one complete list
   // Once the last pile has landed the camera steps back a little and a recap table pops in under the counter: one
   // row per rung, biggest first (a leaderboard: the piles below read right to left down the table), the count
   // right-aligned in its column (ink, 40 px) and the pile's name after it (grey, 40 px). A long name wraps to a
   // second line; only when even that does not fit is it cut at a word with an ellipsis. Every rung gets its row: a
-  // count never appears without its name, and no rung is dropped. A thin leader runs from a row's end to its pile's
-  // apex wherever that line is clean (it crosses no other row, leader, pile or the figure). The table takes one
+  // count never appears without its name, and no rung is dropped. Thin leaders run from the rows' ends to their piles'
+  // apexes only when every row's line is clean (it crosses no other row, leader, pile or the figure). The table takes one
   // column when it fits above the piles, else two (read row by row or column by column, whichever keeps the names
   // whole); the step back (1 -> 0.4) is the gentlest that clears every pile and the figure.
   const tags = []
-  let tagStep = 1
+  let tagStep = 1, recapBot = VPtop
   const RP = 40, RPITCH = 50, RGAP = 16, CGAP = 36, RTOP = 10
   if (lo.pileLabels !== false && N >= 2) {
     const custom = Array.isArray(lo.pileLabels) ? lo.pileLabels : null
     const order = R.map((_, k) => k).sort((a, b) => R[b].units - R[a].units || b - a)      // biggest first
     const fC = `900 ${RP}px ${F.head}`, fN = `800 ${RP}px ${F.head}`
+    // the "≈" gets its own left-aligned slot before the right-aligned counts, so the signs line up in a column
     const memo = new Map()
     const wC = str => measure(str, fC, { letterSpacing: '-0.03em' })
+    const aw = R.some(r => r.approx) ? Math.ceil(measure('≈', fC) + 10) : 0
     const wN = str => { if (!memo.has(str)) memo.set(str, measure(str, fN, { letterSpacing: '-0.01em' })); return memo.get(str) }
     const nameOf = k => (custom && custom[k] != null ? String(custom[k]) : shortName(R[k].item))
     // cut at a word boundary with an ellipsis (never mid-word); the first word alone as the very last resort
@@ -683,8 +852,11 @@ export default function unitLadder(spec, ctx) {
     const top = VPtop + RTOP
     // ---- candidate tables (they do not depend on the camera): one column, or two with every split and width share
     const cands = []
-    const build = (colsK, x0 = HX, maxL = 2) => {
-      const cws = colsK.map(ks => Math.max(...ks.map(k => wC(R[k].disp))))
+    // al: the "≈" in its own slot (in a column that has one); else glued to its count, as the fallback when the
+    // slot costs a name its line
+    const build = (colsK, x0 = HX, maxL = 2, al = false) => {
+      const caw = colsK.map(ks => (al && ks.some(k => R[k].approx) ? aw : 0))
+      const cws = colsK.map((ks, c) => caw[c] + Math.max(...ks.map(k => wC(caw[c] ? R[k].digits : R[k].disp))))
       const avail = 938 - x0 - (colsK.length - 1) * CGAP - cws.reduce((x, y) => x + y, 0) - colsK.length * RGAP
       const shares = colsK.length === 1 ? [[avail]] : (() => { const o = []; for (let w1 = 150; w1 <= avail - 150; w1 += 10) o.push([w1, avail - w1]); return o })()
       for (const nm of shares) {
@@ -696,29 +868,31 @@ export default function unitLadder(spec, ctx) {
             const nl = nameLines(nameOf(k), nm[c], maxL)
             ell += nl.ell; wraps += nl.lines.length - 1
             const w = cws[c] + RGAP + Math.max(...nl.lines.map(wN))
-            rows.push({ k, x, y, lines: nl.lines, cwid: cws[c], box: { x0: x, y0: y, x1: x + w, y1: y + nl.lines.length * RPITCH - 2 } })
+            rows.push({ k, x, y, lines: nl.lines, cwid: cws[c], aw: caw[c], box: { x0: x, y0: y, x1: x + w, y1: y + nl.lines.length * RPITCH - 2 } })
             wMax = Math.max(wMax, w)
             y += nl.lines.length * RPITCH
           }
           hMax = Math.max(hMax, y - top)
           x += wMax + CGAP
         })
-        cands.push({ cols: colsK.length, rows, ell, wraps, hMax })
+        cands.push({ cols: colsK.length, rows, ell, wraps, hMax, al: caw.some(Boolean) })
       }
     }
-    for (const maxL of [2, 1]) {
-      build([order], HX, maxL)
-      build([order], FXS + 50, maxL)                          // one column beside the figure: it may reach lower
-    }
-    if (N >= 3) {
-      const half = Math.ceil(N / 2)
-      for (const s1 of [half, half - 1, half + 1].filter(v => v >= 1 && v < N)) {
-        build([order.slice(0, s1), order.slice(s1)])                                     // column by column
-        build([order.filter((_, j) => j % 2 === 0), order.filter((_, j) => j % 2 === 1)])    // row by row
+    for (const al of aw ? [true, false] : [false]) {
+      for (const maxL of [2, 1]) {
+        build([order], HX, maxL, al)
+        build([order], FXS + 50, maxL, al)                    // one column beside the figure: it may reach lower
+      }
+      if (N >= 3) {
+        const half = Math.ceil(N / 2)
+        for (const s1 of [half, half - 1, half + 1].filter(v => v >= 1 && v < N)) {
+          build([order.slice(0, s1), order.slice(s1)], HX, 2, al)                                     // column by column
+          build([order.filter((_, j) => j % 2 === 0), order.filter((_, j) => j % 2 === 1)], HX, 2, al)    // row by row
+        }
       }
     }
-    // the gentlest wins: whole names first, then fewer lines, then fewer wraps
-    cands.sort((p, q) => p.ell - q.ell || p.cols - q.cols || p.hMax - q.hMax || p.wraps - q.wraps)
+    // the gentlest wins: whole names first, then fewer lines, then the "≈" in its own slot, then fewer wraps
+    cands.sort((p, q) => p.ell - q.ell || p.cols - q.cols || q.al - p.al || p.hMax - q.hMax || p.wraps - q.wraps)
     const figTopAt = z => FLOOR - Math.max(FIG_MIN, figPx * z) - 34
     const inTri = (p, [a2, b2, c2]) => {
       const sg = (p1, p2, p3) => (p1[0] - p3[0]) * (p2[1] - p3[1]) - (p2[0] - p3[0]) * (p1[1] - p3[1])
@@ -738,11 +912,23 @@ export default function unitLadder(spec, ctx) {
     const trisAt = step => {
       tagStep = step
       const zF = zoomAt(R[N - 1].land + 1.4)
-      const scr = (wx, wy) => [FXS + (wx - XF) * zF, FLOOR + (wy - FLOOR) * zF]
-      return { zF, tris: R.map(r => {
-        const B = Math.max(1, Bc(r.units)), W = (B + 1) * cw, H = pileH(r.units)
-        return [scr(r.px, FLOOR), scr(r.px + W, FLOOR), scr(r.px + B * cw / 2 + cw / 2, FLOOR - H)]
-      }) }
+      return { zF, tris: R.map(r => triOf(r, r.px, FXS, zF)) }
+    }
+    // a pile's screen triangle [left foot, right foot, apex] with its left edge at world x px0 (camera fxs, z)
+    const triOf = (r, px0, fxs, z) => {
+      const scr = (wx, wy) => [fxs + (wx - XF) * z, FLOOR + (wy - FLOOR) * z]
+      const B = Math.max(1, Bc(r.units)), W = (B + 1) * cw, H = pileH(r.units)
+      return [scr(px0, FLOOR), scr(px0 + W, FLOOR), scr(px0 + B * cw / 2 + cw / 2, FLOOR - H)]
+    }
+    // morph.beside: the piles after the move must clear every row by a wide margin (a pile's apex beside a row's
+    // end reads as its leader). If they do not, the camera also steps back about the bigger pile's right foot (k)
+    const besideK = (cd, zF) => {
+      const S = FXS + (R[beside.b].px + R[beside.b].W - XF) * zF
+      for (const k of [1, 0.97, 0.94, 0.91, 0.88, 0.85]) {
+        const ts = R.map(r => triOf(r, pxAfter(r), S - (S - FXS) * k, zF * k))
+        if (cd.rows.every(row => { const q = { x0: row.box.x0 - 8, y0: row.box.y0 - 8, x1: row.box.x1 + 30, y1: row.box.y1 + 26 }; return !ts.some(T => boxHitsTri(q, T)) })) return k
+      }
+      return null
     }
     const fits = (cd, step) => {
       const { zF, tris } = trisAt(step)
@@ -752,6 +938,8 @@ export default function unitLadder(spec, ctx) {
         if (r.box.y1 > fy && r.box.x0 < FXS + 40) return null
         for (const T of tris) if (boxHitsTri(r.box, T)) return null
       }
+      const bk = beside ? besideK(cd, zF) : 1
+      if (bk == null) return null
       // leaders: from a row's end to its apex, only where the straight line is clean
       const tb = { x0: HX - 6, y0: top, x1: Math.max(...cd.rows.map(r => r.box.x1)) + 6, y1: Math.max(...cd.rows.map(r => r.box.y1)) }
       const figBox = { x0: 30, y0: fy, x1: FXS + 40, y1: FLOOR }
@@ -768,21 +956,30 @@ export default function unitLadder(spec, ctx) {
         if (segs.some(sg => cross(a2, apex, sg[0], sg[1]))) continue
         segs.push([a2, apex]); leads.set(r, [a2, apex])
       }
-      return { step, cd, leads }
+      // all or none: a lone leader reads as a stray stroke pointing at one pile
+      if (leads.size < cd.rows.length) leads.clear()
+      return { step, cd, leads, bk }
     }
     let pick = null
     const tiers = [[c => !c.ell && c.cols === 1, [1, 0.9, 0.8, 0.7, 0.6]], [c => !c.ell, [1, 0.9, 0.8, 0.7, 0.6]],
       [c => !c.ell, [0.52, 0.45, 0.4]], [() => true, [1, 0.9, 0.8, 0.7, 0.6, 0.52, 0.45, 0.4]]]
-    for (const [ok, steps] of tiers) {
-      for (const cd of cands) { if (!ok(cd)) continue; for (const st of steps) { pick = fits(cd, st); if (pick) break } if (pick) break }
-      if (pick) break
+    const search = () => {
+      for (const [ok, steps] of tiers) {
+        for (const cd of cands) { if (!ok(cd)) continue; for (const st of steps) { pick = fits(cd, st); if (pick) return } }
+      }
     }
+    search()
+    if (!pick && beside) { beside = null; search() }          // the moved piles would hit the table: they stay put
     if (!pick) { console.warn('unit-ladder: the recap table overlaps the piles at every step back'); pick = { step: 0.4, cd: cands[0], leads: new Map() } }
     tagStep = pick.step
+    if (beside) beside.k = pick.bk
+    recapBot = Math.max(...pick.cd.rows.map(r => r.box.y1))
     const t0 = R[N - 1].land + 1.0
     pick.cd.rows.forEach((r, j) => {
+      const sg = r.aw ? h('span', { class: 'a', style: { width: r.aw + 'px' } }, R[r.k].approx ? '≈' : '') : null
+      const cn = h('span', { class: 'c', style: { width: (r.cwid - r.aw).toFixed(0) + 'px' } }, r.aw ? R[r.k].digits : R[r.k].disp)
       const el = h('div', { class: 'ul-row', style: { opacity: '0', transform: `translate(${r.x}px,${r.y}px)` } },
-        h('span', { class: 'c', style: { width: r.cwid.toFixed(0) + 'px' } }, R[r.k].disp),
+        ...(sg ? [sg] : []), cn,
         h('span', { class: 'n', style: { marginLeft: RGAP + 'px' } }, ...r.lines.flatMap((ln, q) => (q ? [h('br'), ln] : [ln]))))
       hud.append(el)
       let line = null
@@ -793,10 +990,45 @@ export default function unitLadder(spec, ctx) {
         line.__len = len
         hudG.append(line)
       }
-      tags.push({ el, line, k: r.k, t0: t0 + 0.08 * j })
+      tags.push({ el, cnt: sg ? [sg, cn] : [cn], line, k: r.k, t0: t0 + 0.08 * j })
     })
     ctx.cue(t0, 'tick', { gain: 0.3 })
   }
+  if (beside) {
+    // the hop: about 80 px high on screen, never up into the recap table; it lands with a squash and a thud
+    const ra = R[beside.a], zA = zoomAt(beside.t0)
+    beside.S = FXS + (R[beside.b].px + R[beside.b].W - XF) * zA         // the camera's step back keeps this x put
+    const room = FLOOR - ra.H * zA - (recapBot + 14)
+    beside.hgt = clamp(room, 24, 80) / zA
+    beside.land = beside.t0 + beside.d
+    g.mid.append(ra.gp)                                        // it travels in front of the piles it hops over
+    fx.impact(beside.land, { x: beside.to + ra.W / 2, y: FLOOR, burst: false, shake: 3, cue: 'thud', gain: 0.35 })
+  }
+  // where a pile stands at t: [dx, lift, sx, sy] in world px (morph.beside moves them; else [0, 0, 1, 1])
+  const STAY = [0, 0, 1, 1]
+  const pileAt = (r, t) => {
+    if (!beside || t < beside.t0) return STAY
+    const p = prog(t, beside.t0, beside.d)
+    if (r.i === beside.a) {
+      if (p < 1) return [(beside.to - r.px) * E.inOutSine(p), 4 * beside.hgt * p * (1 - p), 1 - 0.05 * Math.sin(Math.PI * p), 1 + 0.08 * Math.sin(Math.PI * p)]
+      const q = squashAt(t, beside.land, 0.2)
+      return [beside.to - r.px, 0, q.sx, q.sy]
+    }
+    if (r.i > beside.a && r.i < beside.b) return [-beside.delta * E.inOut(p), 0, 1, 1]
+    return STAY
+  }
+  // a pre-filled first pile: frame 1 frames him and his pile as one group, centred (same zoom); the camera pans back
+  // to his usual spot as the next cut pushes in on him
+  let pan0 = 0
+  if (R[0].prefill) {
+    const z0 = zoomAt(0)
+    let x0w = R[0].px
+    if (fig) x0w = Math.min(x0w, fig.extentX(fig.pose(0, trF, { x: figXAt(z0), ground: FLOOR, noDraw: true, scale: figKAt(z0), stroke: Math.max(S.figure, S.figure / z0) }))[0])
+    const left = FXS + (x0w - XF) * z0, right = FXS + (R[0].px + R[0].W - XF) * z0
+    pan0 = Math.max(0, Math.min(540 - (left + right) / 2, XR - right))
+  }
+  const panAt = t => (!pan0 ? 0 : N < 2 ? pan0 : pan0 * (1 - E.inOut(prog(t, R[1].push[0], R[1].push[1]))))
+    + (beside && beside.k < 1 ? (beside.S - FXS) * (1 - besideCam(t)) : 0)
 
   // ================================================================== seek
   function zoomAt(t) {
@@ -813,10 +1045,14 @@ export default function unitLadder(spec, ctx) {
     // after the last pile lands the camera steps back once more, leaving sky above every pile for its tag
     const L2 = R[N - 1]
     if (tagStep < 1 && t > L2.land + 0.3) z *= lerp(1, tagStep, E.inOut(prog(t, L2.land + 0.3, 0.7)))
-    return z
+    return z * besideCam(t)
+  }
+  // morph.beside's camera: a small step back (k) about the bigger pile's right foot while the piles move
+  function besideCam(t) {
+    return beside && beside.k < 1 ? lerp(1, beside.k, E.inOut(prog(t, beside.t0, beside.d))) : 1
   }
 
-  function seekPiles(t, z, cur) {
+  function seekPiles(t, z, cur, fxs) {
     // level of detail: the smallest level whose icon is >= 22 px on screen; just past a threshold the next level
     // cross-fades in (over 0.2 of a level, a fraction of a second of camera pull)
     const kf = Math.max(0, Math.log2(22 / (cw * z)))
@@ -835,11 +1071,18 @@ export default function unitLadder(spec, ctx) {
       if (r.part) attr(r.part, 'opacity', t >= r.land + SETTLE ? '1' : '0')
       // an earlier pile fades out as the camera's push-in takes it past the top of the stage or the right edge, and
       // back in as the pull-back brings it home (never sliced flat by the frame)
+      const [dx, lift, psx, psy] = pileAt(r, t)
+      if (beside) {
+        const hw = r.W / 2
+        attr(r.gp, 'transform', `translate(${(r.px + dx + hw).toFixed(1)},${(FLOOR - lift).toFixed(1)}) scale(${psx.toFixed(3)},${psy.toFixed(3)}) translate(${(-hw).toFixed(1)},0)`)
+      }
       let fa = 1
       if (r.i < cur && n > 0) {
-        const top = FLOOR - pileH(n) * z, right = FXS + (r.px + pileW(n) - XF) * z
+        const top = FLOOR - pileH(n) * z, right = fxs + (r.px + dx + pileW(n) - XF) * z
         fa = Math.min(smooth(VPtop - 8, VPtop + 44, top), smooth(1112, 1046, right))
       }
+      // morph.compare: from the ask the piles it does not divide dim, so the two it does stand alone
+      if (moCmp && !moCmp.has(r.i)) fa *= 1 - 0.8 * E.inOut(prog(t, moFrom, 0.35))
       attr(r.gp, 'opacity', fa.toFixed(3))
     }
   }
@@ -890,13 +1133,16 @@ export default function unitLadder(spec, ctx) {
   function seekFigure(t, z) {
     if (!fig) return
     const kz = figKAt(z), xz = figXAt(z)
-    let J = fig.pose(t, tr, { x: xz, ground: FLOOR, noDraw: true, scale: kz, stroke: Math.max(S.figure, S.figure / z) })
+    let J = fig.pose(t, trF, { x: xz, ground: FLOOR, noDraw: true, scale: kz, stroke: Math.max(S.figure, S.figure / z) })
     for (const r of R) {
       if (!r.contact || t < r.punch - 0.09 || t > r.punch + 0.17) continue
       const w = t < r.punch ? E.out(prog(t, r.punch - 0.09, 0.09)) : 1 - E.inOut(prog(t, r.punch + 0.05, 0.12))
       J = blendJ(J, pinLimb({ ...J }, 'hF', r.contact, 1), w)
     }
-    fig.draw(J, { stroke: Math.max(S.figure, S.figure / z) })
+    // a hop's touchdown squashes him about his feet
+    let sqx = 1, sqy = 1
+    for (const hp of hops) { const q = squashAt(t, hp.t0 + hp.dur, 0.16); sqx *= q.sx; sqy *= q.sy }
+    fig.draw(J, { stroke: Math.max(S.figure, S.figure / z), sx: sqx, sy: sqy })
     if (pin) attr(pin.el, 'transform', `translate(${pin.x},0) rotate(${(234 - 0.6 * J.headRot).toFixed(1)})`)
     if (held) {
       const rel = R[0].T - 0.02
@@ -960,8 +1206,38 @@ export default function unitLadder(spec, ctx) {
     if (nr && cur >= 0 && nr === R[cur] && t < nr.land && numTxt) nx += digW(nr.digits, cPx) - digW(numTxt, cPx)
     let qx = HX + (cur >= 0 ? padOf(R[cur]) : 0)
     // the morph: one swap from the last answer to the takeaway (working line, plate, label)
-    let mw = 0
-    if (mo && t >= moT) {
+    let mw = 0, plOp = 1, plSc = 1, moOn = null, ly = yLabBase
+    const asked = moAsk != null && t >= moAsk
+    if (asked) {
+      // the asked takeaway: a cut like a rung's (item, working "… =", "?" flush left with the label after it, the
+      // plate pops out), then the answer lands on a fresh, bigger plate at morph.t and the label moves beside it (the
+      // working's "=" turns into "≈" once the answer is fully in)
+      if (moItem) {
+        const si = swapK(t, moAsk, itemPx)
+        const it2 = si.phase ? moItem : R[N - 1].item
+        setText(itemEl, it2)
+        style(itemEl, { top: itemTop(it2) + 'px', opacity: si.op.toFixed(3), transform: `scale(${si.sx.toFixed(3)},${si.sy.toFixed(3)})` })
+      }
+      const md = t < moT ? swapK(t, moAsk, divPx) : STILL
+      if (t >= moT + MO_FULL) setHTML(divEl, moDiv)
+      else if (md.phase) setHTML(divEl, moDivQ)
+      style(divEl, { opacity: md.op.toFixed(3), transform: `scale(${md.sx.toFixed(3)},${md.sy.toFixed(3)})` })
+      const mS = moT - MO_Q
+      if (t < mS) {
+        const a = swapK(t, moAsk, cPx)
+        if (!a.phase) { numOp = a.op; nsx = a.sx; nsy = a.sy; labOp = a.op }
+        else { numOp = 0; qOp = a.op; qs = a.sx; qx = HX; labTxt = moLabel; lx = labXFor(null, '?'); labOp = a.op }
+        const out = prog(t, moAsk, 0.14)
+        plOp = 1 - out; plSc = 1 - 0.25 * E.in(out)
+      } else {
+        // the "?" squashes out just before the hit; the answer pops in on it, on its own bigger plate
+        const m = swapK(t, mS, moPx)
+        numOp = 0; labTxt = moLabel; labOp = 1
+        if (!m.phase) { qOp = m.op; qs = m.sx; qx = HX; lx = labXFor(null, '?') }
+        else { moOn = m; lx = moLabX; ly = labelBelow ? yLabBase + moBase - base : moBase }
+        plOp = 0
+      }
+    } else if (mo && t >= moT) {
       const m = swapK(t, moT, cPx)
       const md = swapK(t, moT, divPx)
       if (md.phase) setHTML(divEl, moDiv)
@@ -975,14 +1251,31 @@ export default function unitLadder(spec, ctx) {
     }
     numO.set({ x: nx, y: base, sx: nsx, sy: nsy, opacity: numOp, text: numTxt, color: ncol })
     qO.set({ x: qx, y: base, sx: qs, sy: qs, opacity: qOp })
-    labO.set({ x: lx, y: yLabBase, opacity: labOp, text: labTxt })
-    if (plBox) {
-      const pp = popIn(t, plR.land - 0.01, 0.3, 0.6)
+    // the takeaway's two-line label (moLines) stands in for the one-line label
+    const two = moLabO && labTxt === moLabel && labOp > 0
+    labO.set({ x: lx, y: ly, opacity: two ? 0 : labOp, text: two ? '' : labTxt })
+    if (moLabO) moLabO.set({ x: lx, y: ly, opacity: two ? labOp : 0 })
+    if (moNumO) moNumO.set({ x: HX + padOf(plR), y: moBase, sx: moOn ? moOn.sx : 1, sy: moOn ? moOn.sy : 1, opacity: moOn ? moOn.op : 0 })
+    if (plBox && moBig) {
+      // the asked takeaway's plate: out at the ask, then a fresh, bigger one pops with the answer
+      const moPop = moT + MO_POP
+      const big = asked && t >= moPop
+      const box = big ? moBig : plBox
+      const pp = big ? popIn(t, moPop, 0.24, 0.76) : popIn(t, plR.land - 0.01, 0.3, 0.6)
+      const bump = big ? 1 + wobble(t, moT + 0.06, 0.07, 2.4, 7) : 1 + wobble(t, plR.land, 0.06, 2.4, 7)
+      style(plate, {
+        width: box.w.toFixed(1) + 'px', height: box.h.toFixed(1) + 'px',
+        opacity: big ? '1' : asked ? (t >= moT - MO_Q ? '0' : clamp(plOp).toFixed(3)) : t >= plR.land - 0.01 ? '1' : '0',
+        transform: `translate(${box.x.toFixed(1)}px,${box.y.toFixed(1)}px) scale(${(pp.scale * bump * (big ? 1 : plSc)).toFixed(3)})`,
+      })
+    } else if (plBox) {
+      const moPop = moT + 0.08                                   // the asked plate pops with the answer, once the "?" is out
+      const pp = asked && t >= moT ? popIn(t, moPop, 0.3, 0.6) : popIn(t, plR.land - 0.01, 0.3, 0.6)
       const bump = (1 + wobble(t, plR.land, 0.06, 2.4, 7)) * (moBox ? 1 + wobble(t, moT + 0.14, 0.07, 2.4, 7) : 1)
       if (moBox) style(plate, { width: lerp(plBox.w, moBox.w, mw).toFixed(1) + 'px' })
       style(plate, {
-        opacity: t >= plR.land - 0.01 ? '1' : '0',
-        transform: `translate(${plBox.x.toFixed(1)}px,${plBox.y.toFixed(1)}px) scale(${(pp.scale * bump).toFixed(3)})`,
+        opacity: asked ? (t >= moPop ? '1' : t >= moT ? '0' : clamp(plOp).toFixed(3)) : t >= plR.land - 0.01 ? '1' : '0',
+        transform: `translate(${plBox.x.toFixed(1)}px,${plBox.y.toFixed(1)}px) scale(${(pp.scale * bump * plSc).toFixed(3)})`,
       })
     }
     if (cal) {
@@ -1004,11 +1297,12 @@ export default function unitLadder(spec, ctx) {
     for (const r of R) if (t >= r.T) cur = r.i
     const f = fx.seek(t)
     const z = zoomAt(t) * f.zoom
-    cam.set({ fx: FXS, fy: FLOOR, x: XF, y: FLOOR, zoom: z, shake: f.shake })
+    const fxs = FXS + panAt(t)
+    cam.set({ fx: fxs, fy: FLOOR, x: XF, y: FLOOR, zoom: z, shake: f.shake })
     // the floor spans the screen at any zoom, 4 px thick on screen
-    attr(floorLn, 'x1', (XF + (-40 - FXS) / z).toFixed(1)); attr(floorLn, 'x2', (XF + (1120 - FXS) / z).toFixed(1))
+    attr(floorLn, 'x1', (XF + (-40 - fxs) / z).toFixed(1)); attr(floorLn, 'x2', (XF + (1120 - fxs) / z).toFixed(1))
     attr(floorLn, 'stroke-width', (S.thin / z).toFixed(2))
-    seekPiles(t, z, cur)
+    seekPiles(t, z, cur, fxs)
     seekFlights(t, cur)
     seekCoins(t, z)
     seekFigure(t, z)
@@ -1018,9 +1312,14 @@ export default function unitLadder(spec, ctx) {
     for (const tg of tags) {
       const p = prog(t, tg.t0, 0.22)
       style(tg.el, { opacity: (p <= 0 ? 0 : clamp(p * 2)).toFixed(3) })
+      // morph.compare: the rows of the piles it does not divide settle to the dim grey with their piles
+      const dim = moCmp && !moCmp.has(tg.k) ? E.inOut(prog(t, moFrom, 0.35)) : 0
+      if (moCmp) for (const c of tg.cnt) style(c, { color: dim > 0 ? mix(C.ink, C.dim, dim) : C.ink })
       if (tg.line) {
         const q = E.out(prog(t, tg.t0 + 0.12, 0.3))
-        attr(tg.line, 'opacity', q > 0 ? '1' : '0')
+        // from the ask a dimmed row's leader goes (it does not just dim), and every leader goes once piles move
+        const gone = moCmp && (beside || !moCmp.has(tg.k)) ? E.inOut(prog(t, moFrom, 0.25)) : 0
+        attr(tg.line, 'opacity', q > 0 && gone < 1 ? (1 - gone).toFixed(3) : '0')
         attr(tg.line, 'stroke-dashoffset', (tg.line.__len * (1 - q)).toFixed(1))
       }
     }

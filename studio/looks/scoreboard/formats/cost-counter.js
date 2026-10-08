@@ -47,11 +47,29 @@
 //                                            ducks the labels it crosses, and the big icon carries its own as a tag
 //   tags:      true                          with pipLabels: the big icon's target ("$250K") under its art, white
 //                                            while it fills, green on the pass, gone when it flies (false: off)
+//   pipPassed: ['≈ 2 weeks', ...]            with pipLabels: what a ladder label turns into once its milestone is
+//                                            passed (as its icon lands in the slot, with the slot's bump): the target
+//                                            ahead, the answer behind, so the passed rows read as a column of results
+//                                            (null keeps that row's pipLabel); the column is sized for the wider text
+//                                            A leading "≈ " (in either list) hangs in a fixed gutter at the column's
+//                                            left edge, so the digits and words of every row align and the ≈ sits in
+//                                            the margin (a column with no "≈" has no gutter)
+//   badges:    true                          false: a repeated icon never takes a "×N" badge from its name (names that
+//                                            lead with a time, "5 seconds", are not counts); it gets the stacked twin
+//   climaxScale: false | true | 1.3          the last milestone's icon grows on its pass (the pop): true = to the art
+//                                            width of the widest icon before it, a number = that factor; capped by the
+//                                            stage room (top to the stage foot, or to the verdict band) at the pop's
+//                                            peak. Its tag yields as it grows (the hero has just landed on the number)
+//   tallVerdict: false | true                the verdict takes the kit's 196 px boxed slot over the stage foot (a black
+//                                            band rises there), so a two-line verdict sets at about 78 px, above the
+//                                            label lines, instead of about 70 px in the 170 px label slot
 //   slot:      { label, empty, t, fill, tone }   an answer readout in the stage's top-right corner: `empty` ("$___")
 //                                            from frame 1, `fill` slams in at t in the tone colour (buzz when bad)
 //   stream:    14 | false                    dots a second in the money stream (false: off)
 //   icon:      'coin'                        the stage icon when there are no milestones (it fills toward `final`)
-// The verdict is the chrome's (the kit's one verdict slot at the foot of the frame).
+// The big icons keep clear of the ladder column at their biggest frame: the pass bump's peak (1 + amp) plus the glow,
+// so the art box shifts right of the region's centre (up to a resting right edge of x 960) or, past that, shrinks.
+// The verdict is the chrome's (the kit's one verdict slot at the foot of the frame; lookOpts.tallVerdict its boxed one).
 import { h, s, css as style, attr, prog, ease, clamp, lerp, rng, fitText } from '../../../runtime/core.js'
 import { C, SIZE, M, W, layoutFor } from '../theme.js'
 import {
@@ -64,6 +82,12 @@ const GHOST_ICON = 0.2                      // opacity of an unfilled milestone 
 const TAG_PX = 52                           // the big icon's target tag (its pip label, under the art)
 const TAG_ROOM = 64                         // stage height the tag takes from the big icon's art box
 const HERO_K = 0.92                         // the hero's cap height vs the board's fit (air above and below it)
+const AMP_PASS = 0.12, AMP_LAST = 0.16      // the big icon's pop on a pass (bump peaks at 1 + amp), and on the last one
+const GLOW_PAD = 16                         // how far the pop's glow reads past the art's edge
+const CLEAR = 14                            // the art's least gap to the ladder column at its biggest frame
+const ART_R = 960                           // the art's resting right edge may reach this (decoration)
+const GROW = 0.5, AMP_GROW = 0.08           // climaxScale: the growth's duration and the bump riding on it
+const AX_LEAD = /^≈\s+/                     // a leading "≈ " (hangs in the ladder column's gutter)
 
 export const css = `
 .cc-hero { position: absolute; transform-origin: 50% 55%; }
@@ -85,6 +109,7 @@ export const css = `
 .cc-stream { position: absolute; }
 .cc-lad-pip { position: absolute; width: 8px; border-radius: 4px; background: ${C.green}; box-shadow: 0 0 12px rgba(43, 255, 136, 0.8); }
 .cc-pl { position: absolute; font: 400 40px/1 'Anton', 'Inter Full', sans-serif; white-space: nowrap; letter-spacing: 0.01em; transform-origin: 0 50%; }
+.cc-gut { display: inline-block; white-space: pre; }
 .cc-tag { position: absolute; font: 400 ${TAG_PX}px/1 'Anton', 'Inter Full', sans-serif; white-space: nowrap; letter-spacing: 0.01em; transform-origin: 50% 50%;
   text-shadow: 0 0 10px #000, 0 2px 4px #000; }
 .cc-slot { position: absolute; box-sizing: border-box; height: 96px; display: flex; align-items: center; justify-content: space-between; gap: 20px;
@@ -172,6 +197,7 @@ export default function costCounter(spec, ctx) {
       icon: iconName(m.icon || (lo.icons && lo.icons[i]) || guessIcon(name + ' ' + raw)),
       l1: lab ? lab.l1 : amount, l2: lab ? lab.l2 : name,
       pip: lo.pipLabels && lo.pipLabels[i] != null ? String(lo.pipLabels[i]) : null,
+      pipDone: lo.pipPassed && lo.pipPassed[i] != null ? String(lo.pipPassed[i]) : null,
       tp: rate > 0 ? T0 + (value - start) / rate : Infinity,   // when the counter passes it
     }
   }).sort((a, b) => a.value - b.value)
@@ -183,7 +209,7 @@ export default function costCounter(spec, ctx) {
       const n = seen.get(m.icon) || 0
       seen.set(m.icon, n + 1)
       if (!n) return
-      const num = /(?:^|[^$\d.,])(\d[\d,]*(?:\.\d+)?)(?!\s*%)/.exec(m.name)
+      const num = lo.badges === false ? null : /(?:^|[^$\d.,])(\d[\d,]*(?:\.\d+)?)(?!\s*%)/.exec(m.name)
       if (num) m.badge = '×' + num[1]
       else m.twin = true
     })
@@ -223,17 +249,46 @@ export default function costCounter(spec, ctx) {
   // milestone ladder (left margin): one small icon per milestone, an optional price label beside it (readable text,
   // so it lives outside the decorative stage box)
   const plLeft = ladX + lsz / 2 + 26
+  // a leading "≈ " hangs in a gutter as wide as "≈ ", so the rows' digits align (a column with no "≈" has none)
+  const hang = showLadder && ms.some(m => AX_LEAD.test(m.pip || '') || AX_LEAD.test(m.pipDone || ''))
+  let gutW = 0
+  if (hang) {
+    const probe = h('div', { class: 'cc-pl', 'data-deco': '', style: { left: '0px', top: '0px', visibility: 'hidden' } }, h('span', { class: 'cc-gut', html: ax(esc('≈ ')) }))
+    stage.append(probe)
+    gutW = probe.firstChild.offsetWidth
+    probe.remove()
+  }
+  const plHTML = str => {
+    if (!hang) return ax(esc(str))
+    const lead = AX_LEAD.test(str)
+    return `<span class="cc-gut" style="width: ${gutW}px">${lead ? ax('≈') : ''}</span>${ax(esc(str.replace(AX_LEAD, '')))}`
+  }
   const ladder = ms.map((m, i) => {
     const twin = m.twin ? iconSVG(m.icon, lsz, { cls: 'cc-twin' }) : null
     const badge = m.badge ? h('div', { class: 'cc-badge', html: ax(esc(m.badge)) }) : null
     const el = h('div', { class: 'cc-lad', style: { left: ladX - lsz / 2 + 'px', top: slotY(i) - lsz / 2 + 'px', width: lsz + 'px', height: lsz + 'px' } }, twin, iconSVG(m.icon, lsz), badge)
     const pip = h('div', { class: 'cc-lad-pip', style: { left: ladX + lsz / 2 + 10 + 'px', top: slotY(i) - lsz * 0.3 + 'px', height: lsz * 0.6 + 'px' } })
-    const pl = showLadder && m.pip ? h('div', { class: 'cc-pl', html: ax(esc(m.pip)), style: { left: plLeft + 'px', top: L.stage.y + slotY(i) - 20 + 'px', color: C.grey } }) : null
+    const pl = showLadder && m.pip ? h('div', { class: 'cc-pl', style: { left: plLeft + 'px', top: L.stage.y + slotY(i) - 20 + 'px', color: C.grey } }) : null
+    // the target ahead (pipLabels) and, with pipPassed, the answer it turns into once passed: two spans, one shown
+    const plA = pl ? h('span', { html: plHTML(m.pip) }) : null
+    const plB = pl && m.pipDone ? h('span', { html: plHTML(m.pipDone) }) : null
+    if (pl) pl.append(plA)
+    if (plB) pl.append(plB)
     if (showLadder) box.append(el, pip)
-    if (pl) stage.append(pl)
-    return { el, pip, pl }
+    let plw = null
+    if (pl) {
+      stage.append(pl)
+      if (plB) style(plB, { display: 'none' })
+      plw = pl.offsetWidth
+      if (plB) {
+        style(plA, { display: 'none' }); style(plB, { display: 'inline' })
+        plw = Math.max(plw, pl.offsetWidth)
+        style(plB, { display: 'none' }); style(plA, { display: 'inline' })
+      }
+    }
+    return { el, pip, pl, plA, plB, plw }
   })
-  const colRight = Math.max(showLadder ? ladX + lsz / 2 + 18 : 0, ...ladder.map(l => (l.pl ? plLeft + l.pl.offsetWidth : 0)))
+  const colRight = Math.max(showLadder ? ladX + lsz / 2 + 18 : 0, ...ladder.map(l => (l.pl ? plLeft + l.plw : 0)))
 
   // answer slot (lookOpts.slot): a second readout in the stage's top-right corner, empty from frame 1, filled at slot.t
   const sl = lo.slot && (lo.slot.empty != null || lo.slot.fill != null) ? (() => {
@@ -265,7 +320,8 @@ export default function costCounter(spec, ctx) {
   const tagged = hasPL && lo.tags !== false && !silent
   const tagRoom = tagged ? TAG_ROOM : 0
   const ART_W = Math.min(560, regR - regL - 16), ART_H = Math.min(400, SH - regT - (sl ? 44 : 80)) - tagRoom
-  const bigCX = (regL + regR) / 2, bigCY = regT + (SH - regT) / 2 + 2 - tagRoom / 2
+  let bigCX = (regL + regR) / 2
+  const bigCY = regT + (SH - regT) / 2 + 2 - tagRoom / 2
 
   const parts = name => ICONS[name]
   const draw = (g, name) => {
@@ -274,7 +330,7 @@ export default function costCounter(spec, ctx) {
       : s('path', { d: p.d, fill: p.fill }))
     return g
   }
-  const bigs = ms.map((m, i) => {
+  const bigs0 = ms.map((m, i) => {
     const shapeId = `${id}-shape-${i}`, fillId = `${id}-fill-${i}`
     const fillRect = s('rect', { x: -10, y: 0, width: 120, height: 120 })
     const shape = s('clipPath', { id: shapeId })
@@ -292,6 +348,19 @@ export default function costCounter(spec, ctx) {
     let bb = { x: 5, y: 5, width: 90, height: 90 }
     try { const b = ghost.getBBox(); if (b.height > 1 && b.width > 1) bb = { x: b.x, y: b.y, width: b.width, height: b.height } } catch (e) { /* keep default */ }
     const k = Math.min(ART_W / bb.width, ART_H / bb.height)        // px per design unit
+    return { m, i, el, svg, ghost, full, fillRect, level, glowLine, bigBadge, bb, k }
+  })
+  // room for the pop: at its biggest frame (the bump's peak, 1 + amp, plus the glow) the art keeps CLEAR px off the
+  // ladder column. The art box shifts right of the region's centre for that (its resting right edge up to ART_R);
+  // an icon that still doesn't clear shrinks. The climax icon's growth (climaxScale) is sized against the same bound.
+  const peakOf = m => 1 + (m.last ? AMP_LAST : AMP_PASS)
+  const leftBound = showLadder ? colRight + CLEAR + GLOW_PAD : 8
+  if (showLadder) {
+    const want = Math.max(...bigs0.map(b => leftBound + (peakOf(b.m) * b.bb.width * b.k) / 2))
+    bigCX = Math.max(bigCX, Math.min(want, ART_R - Math.max(...bigs0.map(b => (b.bb.width * b.k) / 2))))
+    for (const b of bigs0) b.k = Math.min(b.k, (2 * Math.min((bigCX - leftBound) / peakOf(b.m), ART_R - bigCX)) / b.bb.width)
+  }
+  const bigs = bigs0.map(({ m, i, el, svg, ghost, full, fillRect, level, glowLine, bigBadge, bb, k }) => {
     const size = 100 * k, acx = (bb.x + bb.width / 2) * k, acy = (bb.y + bb.height / 2) * k
     attr(svg, 'width', size.toFixed(1)); attr(svg, 'height', size.toFixed(1))
     style(el, { width: size + 'px', height: size + 'px', left: bigCX - acx + 'px', top: bigCY - acy + 'px', transformOrigin: `${acx}px ${acy}px` })
@@ -311,6 +380,38 @@ export default function costCounter(spec, ctx) {
     }
     return { el, svg, ghost, full, fillRect, level, glowLine, top: bb.y, hgt: bb.height, size, to, artH: bb.height * k, artW: bb.width * k, kpx: k, elTop: bigCY - acy, badge: bigBadge, tag }
   })
+
+  // the verdict's slot: the kit's boxed 196 px one over the stage foot (lookOpts.tallVerdict), else the chrome's default
+  const vslot = lo.tallVerdict && spec.verdict && spec.verdict.text ? { y: L.limit - 196, h: 196, w: 800, boxed: true } : null
+  // climaxScale: the last icon grows on its pass, from 1 to S, on ease.back with a small bump riding on it, toward
+  // the widest earlier icon's art width (or the given factor). S is capped so its biggest frame (S × PF, PF the
+  // curve's own peak) fits the stage room, top to foot (or to the verdict band), and keeps off the ladder column.
+  const growAt = (t, ta, S) => {
+    const p = prog(t, ta, GROW)
+    return (1 + (S - 1) * ease.back(p, 1.4)) * bump(t, ta, { amp: AMP_GROW, dur: GROW })
+  }
+  const climax = (() => {
+    if (!lo.climaxScale || silent || N < 2) return null
+    const m = ms[N - 1], b = bigs[N - 1]
+    if (!m.reached || m.passed0) return null
+    const widest = Math.max(...bigs.slice(0, -1).map(x => x.artW))
+    const want = lo.climaxScale === true ? widest / b.artW : +lo.climaxScale
+    if (!(want > 1)) return null
+    // the curve's peak relative to its rest (numerically, for the S in play: the overshoot scales with S - 1)
+    const pf = S => { let mx = 1; for (let k = 0; k <= 120; k++) mx = Math.max(mx, growAt(k / 100, 0.0001, S) / S); return mx }
+    const top = 14, bottom = (vslot ? vslot.y - 10 - L.stage.y : SH) - 14
+    let S = want
+    for (let it = 0; it < 4; it++) {
+      const P = pf(S)
+      S = Math.min(want, (bottom - top) / (P * b.artH), (bigCX - leftBound) / ((P * b.artW) / 2), (ART_R - bigCX) / (b.artW / 2))
+    }
+    S = Math.max(1, S)
+    if (S < 1.02) return null
+    const half = (pf(S) * S * b.artH) / 2
+    // the art's centre once grown: where it was, moved just enough to keep its biggest frame inside the room
+    const cy = top + half >= bottom - half ? (top + bottom) / 2 : clamp(bigCY, top + half, bottom - half)
+    return { S, dy: cy - bigCY, ta: m.ta }
+  })()
 
   // money stream: green LED dots pour into the icon that is filling (decoration; a pure function of t).
   // Dot k leaves the top of the stage at s_k and lands on the fill level of the icon that is filling when it arrives.
@@ -512,6 +613,7 @@ export default function costCounter(spec, ctx) {
   return {
     duration,
     layout: L,
+    ...(vslot ? { verdictSlot: vslot } : {}),
     verdictCue: null,                                   // cued above (skipped next to a louder beat)
     seek(t) {
       const v = valueAt(t)
@@ -552,10 +654,14 @@ export default function costCounter(spec, ctx) {
           const tl = isFinite(m.enter) && m.enter > 0.001 ? m.enter + m.fall : -Infinity
           const flyAt = m.last || !m.reached ? Infinity : m.tp + m.pop
           if (t < tl || t >= flyAt) style(b.tag, { display: 'none' })
-          else {
+          else if (m.last && climax && t >= m.tp) {
+            // climaxScale: the tag yields as the icon grows over its place (the hero has just landed on the number)
+            const o = 1 - prog(t, m.tp, 0.1)
+            style(b.tag, { display: o > 0 ? 'block' : 'none', color: C.green, opacity: o.toFixed(3), transform: 'none' })
+          } else {
             const k2 = isFinite(tl) ? slam(t, tl, { from: 1.3 }) : { o: 1, s: 1 }
             const passed = m.reached && t >= m.tp
-            const kb = passed ? bump(t, m.tp, { amp: m.last ? 0.16 : 0.12, dur: m.last ? 0.55 : 0.4 }) : 1
+            const kb = passed ? bump(t, m.tp, { amp: m.last ? AMP_LAST : AMP_PASS, dur: m.last ? 0.55 : 0.4 }) : 1
             // it rides the art's bottom edge down as the icon bumps (the same bump), so the pop never covers it
             const dy = (kb - 1) * (b.artH / 2 + 12)
             style(b.tag, { display: 'block', color: passed ? C.green : C.white, opacity: String(k2.o), transform: `translateY(${dy.toFixed(1)}px) scale(${(k2.s * kb).toFixed(4)})` })
@@ -589,8 +695,10 @@ export default function costCounter(spec, ctx) {
           }
         } else {
           // passed: pop (bump + glow), then fly into the ladder slot (the last one stays, lit)
-          const k = bump(t, m.ta, { amp: m.last ? 0.16 : 0.12, dur: m.last ? 0.55 : 0.4 })
+          // (climaxScale: the last one grows to S instead, moving into the room it needs as it goes)
+          const k = m.last && climax ? growAt(t, m.ta, climax.S) : bump(t, m.ta, { amp: m.last ? AMP_LAST : AMP_PASS, dur: m.last ? 0.55 : 0.4 })
           sx = sy = k
+          if (m.last && climax) ty = climax.dy * ease.out(prog(t, m.ta, GROW))
           const ga = (m.last ? 1 : 0.8) * (1 - ease.out(prog(t, m.ta, m.last ? 1.2 : 0.6)))
           const rest = m.last ? 0.35 : 0
           f = `drop-shadow(0 0 ${(10 + 26 * ga).toFixed(1)}px rgba(43, 255, 136, ${(rest + 0.5 * ga).toFixed(3)}))`
@@ -637,6 +745,11 @@ export default function costCounter(spec, ctx) {
           })
           style(pip, { display: i === active ? 'block' : 'none' })
           if (pl) style(pl, { color: done ? C.green : cur ? C.white : C.grey, opacity: ladder[i].duck ? '0.25' : '1', transform: `scale(${(1 + Math.max(0, k - 1) * 0.5).toFixed(4)})` })
+          // pipPassed: the target turns into its answer as the icon lands (the slot's bump carries the swap)
+          if (ladder[i].plB) {
+            style(ladder[i].plA, { display: done ? 'none' : 'inline' })
+            style(ladder[i].plB, { display: done ? 'inline' : 'none' })
+          }
         })
       }
 

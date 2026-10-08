@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Math + spec check for format 4, "chart-race" (teasers 04a, 04b, 04c). Round-2 revision.
+"""Math + spec check for format 4, "chart-race" (teasers 04a, 04b, 04c). Round-2 revision; 04c ported to Scoreboard 2026-10-08
+(and its QA fixer pass the same day).
 
 1. Recomputes every on-screen number from its sourced inputs (below, each with its source).
 2. Loads the three spec JSONs and asserts that
@@ -41,7 +42,7 @@ WRITEUP = os.path.join(ROOT, "teasers", "v2", "04-chart-race.md")
 IDS = {
     "a": "04a-scoreboard-sp500-vs-gold",
     "b": "04b-becker-rig-savings-vs-sp500",
-    "c": "04c-live-sheet-usa-vs-europe",
+    "c": "04c-scoreboard-usa-vs-europe",
 }
 WPS = 2.6            # VO read speed, spoken words per second
 LANE = (25.0, 50.0)  # duration lane for this format (task brief)
@@ -913,9 +914,21 @@ for u in Sb.uncovered():
     claim("b", "uncovered string with a digit", u, "covered", ok=False)
 
 # ============================================================== 04c
-# Fixer pass (QA round 2): the Live Sheet's sheet race (lookOpts.valueRow). The values live in a sheet row under
-# the ledger row (they step with it: both always name the same year), the chart takes the card's full width, the
-# opening shows the hook row (2025) and rewinds, and the finale lands each final as a hero row when the VO names it.
+# Port to Scoreboard (2026-10-08; it was Live Sheet, now retired). The Scoreboard's chart race carries the teaser:
+# - a cold open on the claim (lookOpts.hook): the 2025 duel as two neon columns to scale (USA +17.88%, Europe +35.41%,
+#   Europe lit), the corner clock on 2025, the ask in the flag strip; a dashed rule at the USA's top halves Europe's
+#   column as "≈ 2" is said; then the rewind (counters roll down, the clock rolls back to 2016) into the race at 4.8 s;
+# - the working line is the footer (lookOpts.footerSteps): the 2018 and 2025 returns, the 2020 doubling, the finale's
+#   2025 steps and the doublings;
+# - the USA is held at its 2024 close while Europe draws its 2025 jump (the hero follows Europe as "≈ 35%" is said),
+#   then draws its own last leg under the riser as "Final: USA" is said, the hero riding it (holdBack.follow) to the
+#   climax as "≈ $39,800" is said; Europe's final takes the hero as it is named, and the hero rests on the decade
+#   winner from the doublings line (heroSteps);
+# - ×2 / ×4 rungs (the ×2 one early, as the USA first doubles), and the verdict's two emphases in each winner's colour.
+# Fixer pass (QA, 2026-10-08): the '≈ 2' beat gets a number (hook.ratioTag "≈ ×2") and an ink rule over the lit bar; the
+# spoken '≈ 15%' and '≈ 35%' ride flags (as in 04a); 'still under $17,000' gets its own footer step and a tip beat;
+# Europe's tip holds its exact close until its final is named (a late finalT); the clock holds the named closes'
+# years; the footer returns to the basis line under the verdict (the loop); the hero's stake is tagged 'EACH'.
 Sc = Spec("c")
 common(Sc)
 Sc.n(("header",), [str(C_Y0), f"${C_STAKE:,}"])
@@ -923,8 +936,10 @@ Sc.n(("footer",), [])                                            # one line: "To
 claim("c", "footer is one line (no author break)", "\n" in Sc.d["footer"], False)
 Sc.s(("data", "stake"), f"${C_STAKE:,} each · Jan {C_Y0}")
 chart(Sc, C_RACE, C_Y0, C["x1"], [C_us_pts, C_eu_pts], [C["fin_us"], C["fin_eu"]], ["USA · S&P 500", "Europe · MSCI Europe"])
+claim("c", "series short labels (tips, hero tag, hook columns, footer names)", [s.get("label") for s in Sc.d["data"]["series"]], ["USA", "Europe"])
+claim("c", "series colours: the kit's defaults (USA green = money, the decade winner; Europe yellow)",
+      [s.get("color") for s in Sc.d["data"]["series"]], [None, None])
 claim("c", "x tickEvery", Sc.d["data"]["x"]["tickEvery"], 2)
-claim("c", "lookOpts.xEven (even year ticks 2016-2024, QA nit)", Sc.d["lookOpts"]["xEven"], True)
 vo_numbers(Sc, [
     [str(C_Y1), f"≈ {round(C['ratio25'])}", "1"],
     [],                                                          # "Who won the decade?"
@@ -939,147 +954,184 @@ vo_numbers(Sc, [
 claim("c", "hook '2025: Europe beat the USA ≈ 2 to 1' (35.41 ÷ 17.88)", round(C["ratio25"], 3), "1.9-2.1, rounds to 2",
       ok=1.9 <= C["ratio25"] < 2.1 and round(C["ratio25"]) == 2)
 seen_c = year_sync(Sc, C, C_Y0, C_RACE[1], hook_years=(C_Y1,))
-events(Sc, C, C_RACE, C_Y0, C["x1"], [(2018.9, "2018 sell-off", (2, f"≈ {C['drop18']}%")), (2020.2, "COVID", False),
-                                      (2022.5, "2022 bear market", False)], seen_c)
-claim("c", "lookOpts.flags strip: flagHold (s)", Sc.d["lookOpts"]["flagHold"], 3.0)
+# fixer pass (QA, 2026-10-08): the spoken figures ride the flags, as in 04a: the 2018 flag carries Europe's drop and
+# a 2025 flag carries its jump (both neutral, the racer's name in its line colour: lookOpts.flagNames)
+FLAG18 = f"2018: Europe __≈ −{C['drop18']}%__"
+FLAG25 = f"2025: Europe ≈ +{C['jump25']}%"
+events(Sc, C, C_RACE, C_Y0, C["x1"], [(2018.9, FLAG18, (2, f"≈ {C['drop18']}%")), (2020.2, "COVID", False),
+                                      (2022.5, "2022 bear market", False), (2025.6, FLAG25, (5, f"≈ {C['jump25']}%"))], seen_c)
+claim("c", "flag tones: the two figure flags neutral (white), the crash flags red (default)",
+      [e.get("tone") for e in Sc.d["data"]["events"]], ["neutral", None, None, "neutral"])
+claim("c", "flag figures = the computed returns (Europe 2018 −14.86% → ≈ −15%, 2025 +35.41% → ≈ +35%)",
+      [nums(e["label"]) for e in Sc.d["data"]["events"] if e.get("tone")], [["2018", f"≈ −{C['drop18']}%"], ["2025", f"≈ +{C['jump25']}%"]])
+claim("c", "lookOpts.flagHold (s)", Sc.d["lookOpts"]["flagHold"], 1.8)
+claim("c", "lookOpts.flagNames (racer names in the flags in their line colours)", Sc.d["lookOpts"].get("flagNames"), True)
+# a chart-strip flag shows from its own t until min(t + flagHold, the next flag's t, max(finish, t + 1.5)) (chart-race.js;
+# the next flag retires it only when the labels would touch, so taking every next flag is conservative)
+C_TF = C_RACE[1] + 0.45                                          # chart-race.js SETTLE: the tips' finish
+
+
+def flag_win_c(k):
+    ev = Sc.d["data"]["events"]
+    te = t_of(ev[k]["x"], C_RACE, C_Y0, C["x1"])
+    nxt = t_of(ev[k + 1]["x"], C_RACE, C_Y0, C["x1"]) if k + 1 < len(ev) else math.inf
+    return te, min(te + Sc.d["lookOpts"]["flagHold"], nxt, max(C_TF, te + 1.5))
+
+
+shown_while_said(Sc, 2, f"≈ {C['drop18']}%", *flag_win_c(0), "the 2018 flag (Europe ≈ −15%)")
+shown_while_said(Sc, 5, f"≈ {C['jump25']}%", *flag_win_c(3), "the 2025 flag (Europe ≈ +35%)")
+claim("c", "the 2022 flag clears as vo[4] ('Europe? Still under $17,000') starts", round(flag_win_c(2)[1], 2), f"{vo_t(Sc, 4)} ± 0.05",
+      ok=abs(flag_win_c(2)[1] - vo_t(Sc, 4)) <= 0.05)
 Sc.s(("verdict", "text"), f"Europe won **{C_Y1}**.\nThe USA won the **decade**.")
 LO = Sc.d["lookOpts"]
-lg = ("lookOpts", "ledger")
-claim("c", "ledger columns", Sc.get(lg + ("columns",)), ["Year", "USA", "Europe"])
-claim("c", "ledger rows", len(Sc.get(lg + ("rows",))), 10)
-rowT = Sc.get(lg + ("rowT",))
-for i, y in enumerate(range(C_Y0, C_Y1 + 1)):
-    Sc.s(lg + ("rows", i, 0), str(y))
-    Sc.s(lg + ("rows", i, 1), pct_signed2(SP[y]))
-    Sc.s(lg + ("rows", i, 2), pct_signed2(EU[y]))
-    Sc.v(lg + ("rowT", i), C["tl"][y], tol=0.006, what=f"ledger rowT[{i}] = {y} close lands")
-claim("c", "lookOpts.preroll = 0 (the race sweeps x.from → x.to over raceT)", LO["preroll"], 0)
-claim("c", "lookOpts.valueRow (the values in a sheet row, not a lane beside the plot)", LO["valueRow"], {"label": "Value"})
+claim("c", "lookOpts.stakeLine", LO["stakeLine"], C_STAKE)
+claim("c", "lookOpts.tipLane (labels beside their dots at the finish)", LO["tipLane"], True)
+claim("c", "no Live Sheet options left", sorted(set(LO) & {"valueRow", "formulaSteps", "formulaAt0", "focus", "ledger", "preroll", "xEven", "finale"}), [])
 
-# ---- the opening: the hook row is the 2025 ledger row, Europe's cell lit; it rewinds as the race starts
-hk = LO["hook"]
-claim("c", "hook row = the 2025 ledger row", Sc.get(lg + ("rows", hk["row"], 0)), str(C_Y1))
-claim("c", "hook lights Europe (series 1), the 2025 winner", hk["series"] == 1 and EU[C_Y1] > SP[C_Y1], True)
-claim("c", "hook rewinds as the race starts (until = raceT[0])", hk["until"], C_RACE[0])
-Sc.s(("lookOpts", "hook", "ask"), f"{C_Y0} → {C_Y1}: who won?")
-shown_while_said(Sc, 0, f"≈ {round(C['ratio25'])}", 0.0, hk["until"], "the hook row (2025: +17.88% vs +35.41%)")
-claim("c", "vo[1] 'Who won the decade?' starts as the hook rewinds", vo_t(Sc, 1), f"{hk['until']}..{hk['until'] + 0.5}",
-      ok=hk["until"] <= vo_t(Sc, 1) <= hk["until"] + 0.5)
-claim("c", "lookOpts.formulaAt0 = 1 (the rule is fully typed at frame 1)", LO["formulaAt0"], 1)
+# ---- the hook: the 2025 duel as two columns to scale; it rewinds into the race as the race starts
+HOOK_RW = 0.7                                                    # looks/scoreboard/formats/chart-race.js: rewind + hand-over (s)
+hk = ("lookOpts", "hook")
+claim("c", "hook rewinds into the race (until = raceT[0])", Sc.get(hk + ("until",)), C_RACE[0])
+Sc.s(hk + ("values", 0), pct_signed2(SP[C_Y1]), "hook USA column = the S&P 500's 2025 return")
+Sc.s(hk + ("values", 1), pct_signed2(EU[C_Y1]), "hook Europe column = MSCI Europe's 2025 return")
+claim("c", "hook year = the claim's year (the corner clock shows it, then rolls back)", Sc.get(hk + ("year",)), C_Y1)
+claim("c", "hook lights Europe (series 1), the 2025 winner", Sc.get(hk + ("series",)) == 1 and EU[C_Y1] > SP[C_Y1], True)
+Sc.s(hk + ("sub", 0), "S&P 500", "hook USA column names its index")
+Sc.s(hk + ("sub", 1), "MSCI Europe", "hook Europe column names its index")
+Sc.s(hk + ("ask",), f"{C_Y0} → {C_Y1}: who won?")
+claim("c", "hook litT: Europe's column bumps as vo[0] says 'Europe'", Sc.get(hk + ("litT",)), round(said_at(Sc, 0, "Europe")[0], 2),
+      ok=abs(Sc.get(hk + ("litT",)) - said_at(Sc, 0, "Europe")[0]) < 0.006)
+claim("c", "hook ratioT: the halving rule wipes as vo[0] says '≈ 2'", Sc.get(hk + ("ratioT",)), round(said_at(Sc, 0, "≈ 2")[0], 2),
+      ok=abs(Sc.get(hk + ("ratioT",)) - said_at(Sc, 0, "≈ 2")[0]) < 0.006)
+half = SP[C_Y1] / EU[C_Y1]
+claim("c", "the rule at the USA column's top crosses Europe's at ≈ half its height (bars to scale)", round(half, 3), "0.45..0.55",
+      ok=0.45 <= half <= 0.55)
+shown_while_said(Sc, 0, f"≈ {round(C['ratio25'])}", 0.0, Sc.get(hk + ("until",)) - HOOK_RW, "the hook columns (2025: +17.88% vs +35.41%)")
+# fixer pass: the '≈ 2' beat gets its number: hook.ratioTag slams into Europe's column above the halving rule at ratioT
+Sc.s(hk + ("ratioTag",), f"≈ ×{round(C['ratio25'])}", "hook ratioTag = the rounded 2025 ratio (35.41 ÷ 17.88 = 1.98, so '≈')")
+claim("c", "the ratio tag needs its '≈' (the ratio is not exactly 2)", round(C["ratio25"], 3), "!= 2", ok=abs(C["ratio25"] - 2) > 0.005)
+claim("c", "the ratio tag lands (slam at ratioT) as vo[0] says '≈ 2', while the columns show", Sc.get(hk + ("ratioT",)),
+      f"{said_at(Sc, 0, '≈ 2')[0]:.2f}, < {Sc.get(hk + ('until',)) - HOOK_RW:.2f}",
+      ok=abs(Sc.get(hk + ("ratioT",)) - said_at(Sc, 0, "≈ 2")[0]) < 0.006 and Sc.get(hk + ("ratioT",)) < Sc.get(hk + ("until",)) - HOOK_RW)
+claim("c", "lookOpts.stakeTag: the hero's stake reads 'EACH $10,000' (data.stake: '$10,000 each')", LO.get("stakeTag"), "each",
+      ok=LO.get("stakeTag") == "each" and " each " in f" {Sc.d['data']['stake']} ")
+claim("c", "vo[1] 'Who won the decade?' starts as the race starts", vo_t(Sc, 1), f"{C_RACE[0]}..{C_RACE[0] + 0.5}",
+      ok=C_RACE[0] <= vo_t(Sc, 1) <= C_RACE[0] + 0.5)
 
-# ---- the value row: each rival's money at the latest close (it steps with the ledger row)
-def value_row(i, t):
-    """the value row at t: the close of the latest landed ledger row (with a finale, the last row holds)"""
-    pts = (C_us_pts, C_eu_pts)[i]
-    k = max([j for j, rt in enumerate(rowT) if rt <= t and rt < C_RACE[1] - 0.05], default=-1)
-    return pts[k + 1][1] if k >= 0 else pts[0][1]
-
-
-# spoken-number sync (the ledger row shows the latest closed year, replaced at each rowT; the finale's hero rows
-# replace it at finale.t)
-fin = LO["finale"]
-shown_while_said(Sc, 2, f"≈ {C['drop18']}%", rowT[2], rowT[3], "the 2018 ledger row (−14.86%)")
-shown_while_said(Sc, 5, f"≈ {C['jump25']}%", rowT[9], fin["t"], "the 2025 ledger row (+35.41%)")
-eu_rows = [value_row(1, vo_t(Sc, 4) + k * 0.01) for k in range(int(Sc.d["vo"][4]["d"] * 100) + 1)]
-claim("c", "sync: 'Still under $17,000' holds on the Europe value cell for the whole line", round(max(eu_rows), 2), f"< {C['eu_cap']:,}",
-      ok=max(eu_rows) < C["eu_cap"])
-eu_max = max(val_at(C_eu_pts, x_of(vo_t(Sc, 4) + k * 0.01, C_RACE, C_Y0, C["x1"])) for k in range(int(Sc.d["vo"][4]["d"] * 100) + 1))
-claim("c", "sync: 'Still under $17,000' holds on the Europe line's tip too", round(eu_max, 2), f"< {C['eu_cap']:,}", ok=eu_max < C["eu_cap"])
-claim("c", "'Still under $17,000': every Europe year-end 2016-2024", round(max(C_eu[y] for y in range(2016, 2025)), 2), f"< {C['eu_cap']:,}",
-      ok=max(C_eu[y] for y in range(2016, 2025)) < C["eu_cap"])
-us_rows = [value_row(0, vo_t(Sc, 3) + k * 0.01) for k in range(int(Sc.d["vo"][3]["d"] * 100) + 1)]
-claim("c", "sync: 'the USA has doubled' holds on the USA value cell for the whole line", round(min(us_rows), 2), f">= {2 * C_STAKE:,}",
-      ok=min(us_rows) >= 2 * C_STAKE)
-us_min = min(val_at(C_us_pts, x_of(vo_t(Sc, 3) + k * 0.01, C_RACE, C_Y0, C["x1"])) for k in range(int(Sc.d["vo"][3]["d"] * 100) + 1))
-claim("c", "sync: 'the USA has doubled' holds on the USA line's tip too", round(us_min, 2), f">= {2 * C_STAKE:,}", ok=us_min >= 2 * C_STAKE)
-claim("c", "the finals are said only after the race ends", vo_t(Sc, 6), f">= {C_RACE[1]}", ok=vo_t(Sc, 6) >= C_RACE[1])
-
-# ---- the doubling rungs: ×2 lands with the 2020 close (the 'doubled' line), ×4 with the doublings line
-rg = ("lookOpts", "rungs")
-claim("c", "rung count", len(LO["rungs"]), 2)
-for k, (m, t_want, what) in enumerate(((2, rowT[4], "the 2020 close"), (4, vo_t(Sc, 8), "vo[8] (doublings)"))):
-    Sc.v(rg + (k, "value"), C_STAKE * m, tol=1e-9, what=f"rung {k} value = stake × {m}")
-    Sc.s(rg + (k, "label"), f"×{m}")
-    claim("c", f"rung ×{m} lands with {what}", Sc.get(rg + (k, "t")), round(t_want, 2), ok=abs(Sc.get(rg + (k, "t")) - t_want) < 0.006)
-claim("c", "USA first over the ×2 rung at the 2020 close", C["first_double_us"], 2020)
-claim("c", "USA ends just under ×4 (1.99 doublings, said '≈ twice')", f"×{C['m_us']:.4f}", "3.9 <= × < 4", ok=3.9 <= C["m_us"] < 4)
-claim("c", "Europe ends over ×2, under ×4 (1.18 doublings, said 'once')", f"×{C['m_eu']:.4f}", "2 <= × < 4", ok=2 <= C["m_eu"] < 4)
-
-# ---- the finale: hero rows at vo[6]; each value rolls from its 2024 close and lands as the VO names it
-claim("c", "finale.t = vo[6] t ('Final: ...')", fin["t"], vo_t(Sc, 6))
-claim("c", "finale.roll (s per series)", fin["roll"], [1.0, 1.0])
-ft = LO["finalT"]
-for i, (j, tok) in enumerate(((6, C["fin_us"]), (7, C["fin_eu"]))):
-    s0 = said_at(Sc, j, tok)[0]
-    claim("c", f"finalT[{i}]: the hero value lands as vo[{j}] says '{tok}'", ft[i], f"{s0:.2f} ± 0.05", ok=abs(ft[i] - s0) <= 0.05)
-    claim("c", f"finale: roll {i} starts after the hero rows are in", round(ft[i] - fin["roll"][i], 2), f">= {fin['t'] + 0.45:.2f}",
-          ok=ft[i] - fin["roll"][i] >= fin["t"] + 0.45 - 1e-9)
-claim("c", "the hero rows' notes are the 2025 ledger row (kit: '2025: +17.88%', '2025: +35.41%')",
-      [Sc.get(lg + ("rows", 9, j)) for j in (1, 2)], [pct_signed2(SP[2025]), pct_signed2(EU[2025])])
-
-# ---- the formula bar: the selected cell's working, retyped as each year lands
-fm = ("lookOpts", "formulaSteps")
-FOCUS_YEAR = {2016: 1, 2017: 1, 2018: 1, 2019: 0, 2020: 0, 2021: 0, 2022: 1, 2023: 1, 2024: 1, 2025: 1}
-VALS = (C_us, C_eu)
-RATES = (SP, EU)
+# ---- the working line (lookOpts.footerSteps): each step lands on the beat that names it
+fs = ("lookOpts", "footerSteps")
 
 
 def year_step(y, i):
-    """'= $prev × (1 ± r%)' from the displayed (dollar-rounded) last close; '≈' when that product misses the shown close"""
+    """'= $prev × (1 ± r%)' from the dollar-rounded last close; '≈' when that product misses the shown close"""
+    VALS, RATES = (C_us, C_eu), (SP, EU)
     prev, r = int(rnd(VALS[i][y - 1])), RATES[i][y]
     exact = rnd(prev * (1 + r / 100)) == rnd(VALS[i][y])
     return f"{'=' if exact else '≈'} ${prev:,} × (1 {'+' if r >= 0 else '−'} {abs(r):.2f}%)"
 
 
-want_steps = [(0.0, "= last year × (1 + return)", None)]
-for k, y in enumerate(range(C_Y0, C_Y1 + 1)):
-    i = FOCUS_YEAR[y]
-    txt = f"≈ ${C_STAKE:,} × {sig(C_us[2020] / C_STAKE):.2f}" if y == 2020 else year_step(y, i)
-    want_steps.append((rowT[k], txt, i))
-want_steps += [
-    (ft[0] - fin["roll"][0], year_step(2025, 0), 0),
-    (ft[1] - fin["roll"][1], year_step(2025, 1), 1),
-    (vo_t(Sc, 8), f"≈ ×{sig(C['m_us']):.2f} ≈ {round(C['dbl_us'])} doublings", 0),
-    (said_at(Sc, 8, "Europe")[0], f"≈ ×{sig(C['m_eu']):.2f} ≈ {round(C['dbl_eu'])} doubling", 1),
+want_fs = [
+    (C["tl"][2018], f"2018: USA {pct_signed2(SP[2018])} · Europe {pct_signed2(EU[2018])}", "the 2018 close"),
+    (C["tl"][2020], f"2020: USA ${rnd(C_us[2020]):,.0f} ≈ ${C_STAKE:,} × {sig(C_us[2020] / C_STAKE):.2f}", "the 2020 close"),
+    (vo_t(Sc, 4), f"Europe: still under ${C['eu_cap']:,}", "vo[4] ('Europe? Still under $17,000')"),
+    (vo_t(Sc, 5), f"2025: USA {pct_signed2(SP[2025])} · Europe {pct_signed2(EU[2025])}", "vo[5] ('2025: Europe jumps')"),
+    (vo_t(Sc, 6), f"USA: {year_step(2025, 0)[2:]}", "vo[6] ('Final: USA')"),
+    (vo_t(Sc, 7), f"Europe: {year_step(2025, 1)[2:]}", "vo[7] ('Europe')"),
+    (vo_t(Sc, 8), f"USA: ≈ ×{sig(C['m_us']):.2f} ≈ {round(C['dbl_us'])} doublings", "vo[8] ('The USA ≈ doubled twice')"),
+    (said_at(Sc, 8, "Europe")[0], f"Europe: ≈ ×{sig(C['m_eu']):.2f} ≈ {round(C['dbl_eu'])} doubling", "vo[8] says 'Europe, once'"),
+    (Sc.d["verdict"]["t"], Sc.d["footer"], "the verdict (back to the assumption line, as the video loops)"),
 ]
-claim("c", "formula step count", len(LO["formulaSteps"]), len(want_steps))
-focus = LO["focus"]
-
-
-def focus_at(t):
-    f = None
-    for e in focus:
-        if e["t"] <= t + 1e-9:
-            f = e["series"]
-    return f
-
-
-for k, (t_w, txt, i) in enumerate(want_steps):
-    if k >= len(LO["formulaSteps"]):
+claim("c", "footer step count", len(LO["footerSteps"]), len(want_fs))
+for k, (t_w, txt, what) in enumerate(want_fs):
+    if k >= len(LO["footerSteps"]):
         break
-    Sc.s(fm + (k, "text"), txt, f"formulaStep[{k}] text")
-    claim("c", f"formulaStep[{k}] t", Sc.get(fm + (k, "t")), round(t_w, 2), ok=abs(Sc.get(fm + (k, "t")) - t_w) < 0.006)
-    if i is not None:
-        claim("c", f"formulaStep[{k}] is the selected cell's working (focus = series {i})", focus_at(Sc.get(fm + (k, "t"))), i)
-# the arithmetic each step shows
-for y in range(C_Y0, C_Y1 + 1):
-    for i in (0, 1):
-        prev, r = int(rnd(VALS[i][y - 1])), RATES[i][y]
-        miss = abs(rnd(prev * (1 + r / 100)) - rnd(VALS[i][y]))
-        claim("c", f"{('USA', 'Europe')[i]} {y}: ${prev:,} × (1 + {r}%) vs the shown ${rnd(VALS[i][y]):,.0f}", miss, "<= $1", ok=miss <= 1)
+    Sc.s(fs + (k, "text"), txt, f"footerStep[{k}] text")
+    claim("c", f"footerStep[{k}] t = {what}", Sc.get(fs + (k, "t")), round(t_w, 2), ok=abs(Sc.get(fs + (k, "t")) - t_w) < 0.006)
+    claim("c", f"footerStep[{k}] fits one 40 px footer line (<= 40 chars)", len(txt), "<= 40", ok=len(txt) <= 40)
+claim("c", "the finale steps multiply the shown 2024 close exactly to the dollar ('=' steps)",
+      [year_step(2025, i)[0] for i in (0, 1)], ["=", "="])
+claim("c", "2020 step: $10,000 × 2.03 = $20,300, not $20,305, so it carries '≈'", round(C_STAKE * sig(C_us[2020] / C_STAKE)), f"!= {rnd(C_us[2020]):,.0f}",
+      ok=round(C_STAKE * sig(C_us[2020] / C_STAKE)) != rnd(C_us[2020]))
 claim("c", "2020: $20,305 ÷ $10,000 ≈ 2.03 (the 'doubled' step)", round(C_us[2020] / C_STAKE, 4), "rounds to 2.03",
       ok=f"{sig(C_us[2020] / C_STAKE):.2f}" == "2.03")
 claim("c", "the USA roll: $33,791 × 1.1788 → ≈ $39,800", round(int(rnd(C_us[2024])) * (1 + SP[2025] / 100), 2), C["fin_us"],
       ok=usd_sig(int(rnd(C_us[2024])) * (1 + SP[2025] / 100)) == C["fin_us"])
 claim("c", "the Europe roll: $16,735 × 1.3541 → ≈ $22,700", round(int(rnd(C_eu[2024])) * (1 + EU[2025] / 100), 2), C["fin_eu"],
       ok=usd_sig(int(rnd(C_eu[2024])) * (1 + EU[2025] / 100)) == C["fin_eu"])
-claim("c", "focus at the verdict = the decade winner (USA)", focus_at(Sc.d["verdict"]["t"]), 0)
-claim("c", "focus at vo[4] ('Europe? Still under $17,000') = Europe", focus_at(vo_t(Sc, 4)), 1)
-claim("c", "focus at vo[3] ('2020: the USA has doubled') = USA", focus_at(vo_t(Sc, 3)), 0)
-claim("c", "focus at vo[2] ('2018: Europe drops') = Europe", focus_at(vo_t(Sc, 2)), 1)
+step_t = [Sc.get(fs + (k, "t")) for k in range(len(LO["footerSteps"]))] + [Sc.d["duration"]]
+# spoken-number sync: each figure is on the working line (or a tip) when it is said
+shown_while_said(Sc, 2, f"≈ {C['drop18']}%", step_t[0], step_t[1], "the 2018 step (Europe −14.86%)")
+shown_while_said(Sc, 5, f"≈ {C['jump25']}%", step_t[3], step_t[4], "the 2025 step (Europe +35.41%)")
+shown_while_said(Sc, 4, f"${C['eu_cap']:,}", step_t[2], step_t[3], "the 'still under $17,000' step")
+claim("c", "footer steps in time order", step_t == sorted(step_t), True)
+eu_step_max = max(val_at(C_eu_pts, x_of(step_t[2] + k * 0.01, C_RACE, C_Y0, C["x1"])) for k in range(max(0, int((step_t[3] - step_t[2]) * 100)) + 1))
+claim("c", "the step 'Europe: still under $17,000' holds on the Europe tip for as long as it shows", round(eu_step_max, 2),
+      f"< {C['eu_cap']:,}", ok=eu_step_max < C["eu_cap"])
+claim("c", "tipBeats: Europe's tip bumps as vo[4] names it", LO.get("tipBeats"), [{"t": vo_t(Sc, 4), "series": 1}])
+us_min = min(val_at(C_us_pts, x_of(vo_t(Sc, 3) + k * 0.01, C_RACE, C_Y0, C["x1"])) for k in range(int(Sc.d["vo"][3]["d"] * 100) + 1))
+claim("c", "sync: 'the USA has doubled' holds on the USA tip (and the hero) for the whole line", round(us_min, 2), f">= {2 * C_STAKE:,}",
+      ok=us_min >= 2 * C_STAKE)
+eu_max = max(val_at(C_eu_pts, x_of(vo_t(Sc, 4) + k * 0.01, C_RACE, C_Y0, C["x1"])) for k in range(int(Sc.d["vo"][4]["d"] * 100) + 1))
+claim("c", "sync: 'Still under $17,000' holds on the Europe tip for the whole line", round(eu_max, 2), f"< {C['eu_cap']:,}", ok=eu_max < C["eu_cap"])
+claim("c", "'Still under $17,000': every Europe year-end 2016-2024", round(max(C_eu[y] for y in range(2016, 2025)), 2), f"< {C['eu_cap']:,}",
+      ok=max(C_eu[y] for y in range(2016, 2025)) < C["eu_cap"])
+claim("c", "the finals are said only after the race ends", vo_t(Sc, 6), f">= {C_RACE[1]}", ok=vo_t(Sc, 6) >= C_RACE[1])
 
-sfx_on(Sc, [(C["tl"][2018], "thud"), (C["tl"][2020], "ding"), (19.9, "riser"), (Sc.d["verdict"]["t"], "ding")])
-claim("c", "the riser ends on the race end", round(19.9 + Sc.d["sfx"][2]["dur"], 2), C_RACE[1])
+# ---- the finish: the USA held at its 2024 close while Europe jumps; its last leg is the climax as it is named
+hb = LO["holdBack"]
+claim("c", "holdBack series = the USA (the decade winner, revealed in the climax)", hb["series"], 0)
+claim("c", "holdBack.follow (the hero rides the USA's last leg)", hb.get("follow"), True)
+t_hold = t_of(ye(2024), C_RACE, C_Y0, C["x1"])
+claim("c", "the USA stops at its 2024 close as vo[5] ('2025: Europe jumps') starts", round(t_hold, 2), f"{vo_t(Sc, 5)} ± 0.05",
+      ok=abs(t_hold - vo_t(Sc, 5)) <= 0.05)
+claim("c", "the USA's held tip = its 2024 close, $33,791 (the finale step's input)", f"${rnd(C_us[2024]):,.0f}", "$33,791")
+s_jump = said_at(Sc, 5, f"≈ {C['jump25']}%")[0]
+claim("c", "the hero shows Europe's jump as '≈ 35%' is said (the USA held, Europe racing)", round(s_jump, 2), f"{t_hold:.2f}..{hb['t'][0]}",
+      ok=t_hold <= s_jump < hb["t"][0])
+claim("c", "the USA's last leg starts as vo[6] ('Final: USA') starts", hb["t"][0], vo_t(Sc, 6))
+s_us = said_at(Sc, 6, C["fin_us"])[0]
+claim("c", "the USA's final lands (leg end) as vo[6] says it", hb["t"][1], f"{s_us:.2f} ± 0.05", ok=abs(hb["t"][1] - s_us) <= 0.05)
+ft = LO["finalT"]
+claim("c", "finalT[0] = the USA's leg end (the climax)", ft[0], hb["t"][1])
+s_eu = said_at(Sc, 7, C["fin_eu"])[0]
+claim("c", "finalT[1]: Europe's final takes the hero as vo[7] says it", ft[1], f"{s_eu:.2f} ± 0.05", ok=abs(ft[1] - s_eu) <= 0.05)
+# fixer pass: finalT[1] is later than raceT[1], so chart-race.js holds Europe's exact close on its tip (and in the hero) from
+# the race end, and lands the rounded '≈ $22,700' only at finalT[1] (no early land, no settle roll past the close)
+claim("c", "Europe is a late reveal (finalT[1] > raceT[1]): the tip holds its exact close until it is named", ft[1], f"> {C_RACE[1]}",
+      ok=ft[1] > C_RACE[1] + 1e-6)
+claim("c", "Europe's held close = its 2025 close to the dollar = the Europe finale step's product", f"${rnd(C_eu[2025]):,.0f}",
+      f"${rnd(int(rnd(C_eu[2024])) * (1 + EU[2025] / 100)):,.0f}", ok=rnd(C_eu[2025]) == rnd(int(rnd(C_eu[2024])) * (1 + EU[2025] / 100)))
+claim("c", "the held close needs no '≈' (it is the close to the dollar); the final '≈ $22,700' does", usd_round(C_eu[2025]).startswith("≈ "),
+      True)
+claim("c", "the winner (the USA) is the climax: its final is the bigger", C_us[2025] > C_eu[2025], True)
+claim("c", "heroSteps: the hero rests on the decade winner from the doublings line", LO["heroSteps"], [{"t": vo_t(Sc, 8), "series": 0}])
+
+# ---- the doubling rungs: ×2 as the USA first doubles (2020 close, the 'doubled' line), ×4 with the doublings line
+rg = ("lookOpts", "rungs")
+claim("c", "rungs.t (the y grid gives way) = vo[8] t", Sc.get(rg + ("t",)), vo_t(Sc, 8))
+claim("c", "rung count", len(Sc.get(rg + ("items",))), 2)
+for k, (m, t_want, what) in enumerate(((2, C["tl"][2020], "the 2020 close"), (4, vo_t(Sc, 8), "vo[8] (doublings)"))):
+    Sc.v(rg + ("items", k, 0), C_STAKE * m, tol=1e-9, what=f"rung {k} value = stake × {m}")
+    Sc.s(rg + ("items", k, 1), f"×{m}")
+    claim("c", f"rung ×{m} lands with {what}", Sc.get(rg + ("items", k, 2)), round(t_want, 2), ok=abs(Sc.get(rg + ("items", k, 2)) - t_want) < 0.006)
+claim("c", "USA first over the ×2 rung at the 2020 close", C["first_double_us"], 2020)
+claim("c", "USA ends just under ×4 (1.99 doublings, said '≈ twice')", f"×{C['m_us']:.4f}", "3.9 <= × < 4", ok=3.9 <= C["m_us"] < 4)
+claim("c", "Europe ends over ×2, under ×4 (1.18 doublings, said 'once')", f"×{C['m_eu']:.4f}", "2 <= × < 4", ok=2 <= C["m_eu"] < 4)
+claim("c", "the ×4 rung is on the end frame's y axis (kit headroom 1.2 × the max)", C_STAKE * 4, f"<= {1.2 * C_us[2025]:,.0f}",
+      ok=C_STAKE * 4 <= 1.2 * C_us[2025])
+
+# ---- the verdict's two emphases in their winners' colours: 2025 is Europe's (yellow), the decade the USA's (green)
+claim("c", "emColor = [Europe's yellow for **2025**, the USA's green for **decade**]", LO["emColor"], ["yellow", "green"])
+claim("c", "the verdict has 2 emphases, in that order", re.findall(r"\*\*(.+?)\*\*", Sc.d["verdict"]["text"]), [str(C_Y1), "decade"])
+
+# lookOpts.yearHold: the corner clock holds a year 0.5 s past its close when the VO names that close (2018: '≈ 15%' is said
+# at the close; 2020: 'the USA has doubled' starts at it), so it never reads the next year as the close is named
+claim("c", "yearHold = the closes the VO names mid-race", LO.get("yearHold"), [2018, 2020])
+claim("c", "yearHold 2018: '≈ 15%' is said at the 2018 close", round(said_at(Sc, 2, f"≈ {C['drop18']}%")[0], 2), f"{C['tl'][2018]:.2f} ± 0.3",
+      ok=abs(said_at(Sc, 2, f"≈ {C['drop18']}%")[0] - C["tl"][2018]) <= 0.3)
+claim("c", "yearHold 2020: vo[3] '2020: the USA has doubled' starts at the 2020 close", vo_t(Sc, 3), f"{C['tl'][2020]:.2f} ± 0.3",
+      ok=abs(vo_t(Sc, 3) - C["tl"][2020]) <= 0.3)
+sfx_on(Sc, [(C["tl"][2018], "thud"), (C["tl"][2020], "ding"), (Sc.d["verdict"]["t"], "ding")])
 # what the words claim
 claim("c", "'2020: the USA has doubled your money' (first year-end >= $20,000)", C["first_double_us"], 2020)
 claim("c", "Europe first >= $20,000 only in 2025", C["first_double_eu"], 2025)
@@ -1088,6 +1140,8 @@ claim("c", "'The USA ≈ doubled twice' (log2 ×, a rounding: needs ≈)", round
 claim("c", "'Europe, once' (log2 ×: 1 completed doubling, rounds to 1)", round(C["dbl_eu"], 3), "1 <= x < 1.5", ok=1 <= C["dbl_eu"] < 1.5)
 claim("c", "'Europe won 2025' (EU% > US%)", f"{EU[2025]} > {SP[2025]}", "", ok=EU[2025] > SP[2025])
 claim("c", "'The USA won the decade'", f"{C_us[2025]:,.0f} > {C_eu[2025]:,.0f}", "", ok=C_us[2025] > C_eu[2025])
+claim("c", "the USA leads at every year-end (no lead change: the hero is the USA until it is held)",
+      sum(C_us[y] > C_eu[y] for y in range(C_Y0, C_Y1 + 1)), C_Y1 - C_Y0 + 1)
 claim("c", "YCharts = MSCI factsheet, 2019-2025", all(YCHARTS_EU[y] == EU[y] for y in YCHARTS_EU), True)
 claim("c", "DWS ETF within 1 pt of MSCI, 2016-2025", max(abs(DWS_EU[y] - EU[y]) for y in EU), "<= 1.0",
       ok=max(abs(DWS_EU[y] - EU[y]) for y in EU) <= 1.0)
@@ -1125,6 +1179,14 @@ if os.path.exists(WRITEUP):
               "t 1.0 → 25.0", "1.0-6.99", "41.5-44.5"]:
         claim("b", f"04b section has no stale '{s}'", s in sec_b, False)
     claim("b", "04b section quotes the new header", "Your **$1,000**: 16 years of savings" in sec_b, True)
+    # the 04c section itself, since the port to Scoreboard (2026-10-08): no Live Sheet devices left in it
+    sec_c = md[md.find("### 04c"):md.find("## Sources")]
+    claim("c", "write-up's 04c section is the Scoreboard one", sec_c.startswith("### 04c · Scoreboard ·"), True)
+    for s in ["hook row", "value row", "formula bar", "valueRow", "formulaSteps", "formulaAt0", "preroll", "xEven",
+              "sheet-race", "ledger row", "the selection", "banner", "04c-live-sheet-usa-vs-europe.json`](",
+              "2018 SELL-OFF", "(brighter", "goes back to \"Total return", "flagHold: 3.0", "\"≈ $22,700\" at 22.25"]:
+        claim("c", f"04c section has no stale '{s}'", s in sec_c, False)
+    claim("c", "write-up links the new spec", f"studio/specs/{IDS['c']}.json" in md, True)
 else:
     claim("-", "write-up exists", WRITEUP, "exists", ok=False)
 

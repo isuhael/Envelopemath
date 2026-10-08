@@ -1,11 +1,11 @@
 # 08 · Unit ladder ("Cost in units of X"): three teasers
 
 **Format:** `unit-ladder` (rank 8 in [`../../research/v2/04-formats.md`](../../research/v2/04-formats.md), hook pattern **P8**)
-**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews). All three hooks were rewritten on 2026-10-08 in hook pass 2, and the round-2 QA fix pass (2026-10-08) rebuilt the reveals and payoffs; see the [Review log](#review-log).
-**Specs:** the file names are kept from the first draft.
+**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews). All three hooks were rewritten on 2026-10-08 in hook pass 2, and the round-2 QA fix pass (2026-10-08) rebuilt the reveals and payoffs. On 2026-10-08 08c was **ported from Clean Sheet (retired) to Becker Rig**; see the [Review log](#review-log).
+**Specs:** the file names are kept from the first draft (08c's carries its new look).
 - [`studio/specs/08a-scoreboard-costco-hot-dogs.json`](../../studio/specs/08a-scoreboard-costco-hot-dogs.json). The hook is now "What your $1.50 hot dog would cost if it rose like a house".
 - [`studio/specs/08b-becker-rig-hours-at-15.json`](../../studio/specs/08b-becker-rig-hours-at-15.json). The hook is now "At $15/hr, you work for rent from the 1st to the ___".
-- [`studio/specs/08c-clean-sheet-college-in-big-macs.json`](../../studio/specs/08c-clean-sheet-college-in-big-macs.json). The hook is now "Community? In-state? Out-of-state? Private? Your year in Big Macs".
+- [`studio/specs/08c-becker-rig-college-in-big-macs.json`](../../studio/specs/08c-becker-rig-college-in-big-macs.json). The hook is now "Community? In-state? Out-of-state? Private? Your year in Big Macs". The Clean Sheet version is kept for reference in [`studio/specs/retired/08c-clean-sheet-college-in-big-macs.json`](../../studio/specs/retired/08c-clean-sheet-college-in-big-macs.json).
 
 **Maths check:** [`checks/08-unit-ladder.py`](checks/08-unit-ladder.py).
 - It recomputes every on-screen number from the sourced inputs, in exact fractions, and rebuilds every display string and VO line from those numbers. Then it compares them with the three specs, leaf by leaf.
@@ -13,34 +13,35 @@
 - Timing:
   - every VO line fits 2.6 words/s;
   - no VO lines overlap;
-  - each rung's **question line** names it in its first words and starts on its cut. In 08b it starts up to 1.4 s after the cut. 08c's row 1 is pre-filled before frame 1 and read at 0.0. 08a's rung 1 cuts under the opener line and is asked after it;
+  - each rung's **question line** names it in its first words and starts on its cut. In 08b it starts up to 1.4 s after the cut. 08c's rung 1 is pre-filled before frame 1 and read at 0.0. 08a's rung 1 cuts under the opener line and is asked after it;
   - since the fix pass, each rung's **number has its own caption line**, which starts as the built kit lands the count (never before it, at most 0.6 s after). No caption prints an answer, grey or whole, before the screen shows it (QA's 08b must and the 08a/08c karaoke nits);
   - the first count lands within 3 s (R10);
   - the header is at most 15 words (R8).
 - It replays all three built kits' own timing rules from `looks/<look>/formats/unit-ladder.js`:
   - **Scoreboard (08a):** the counter roll, including the unit intro.
-  - **Becker Rig (08b):** coin drop, punch and fill.
-  - **Clean Sheet (08c):** type, wipe, count, pre-fill, the VO fit and filing, with the payoff step's own operand.
+  - **Becker Rig (08b, 08c):** coin drop, punch and fill; for 08c also the pre-fill of a rung cut before frame 1 and `lookOpts.landAfter` (each count lands 1.7 s after its cut).
   - In all three, the voice never says a number more than 0.5 s before its counter lands.
   - **08a's payoff** (`lookOpts.payoff`): its question line ("Rose like a house?") and the footer's working start on the payoff cut (16.80 s); the hero rolls from the unit price to the verdict's number; the **verdict lands with the hero** (18.40 s), and the voice says "≈ $7.01" after it (18.78 s).
   - **08b's blank** (`lookOpts.blank`): it starts ticking during its question line ("Every hour you work, to…"), prints the same day the voice says, lands (6.40 s) as its answer line starts (6.40 s), sits between rung 0's landing and rung 1's cut, and its month grid holds the day. **08b's morph** (`lookOpts.morph`): on the verdict's beat its working is the last count ÷ 2,080 a year, and its number is the verdict's ≈ 14.
-  - **08c's payoff step** (`lookOpts.payoff`): it opens after the last rung lands, prints ≈ ($45,000 ÷ $4,150) = ≈ 10.8×, both costs on the sheet, and the verdict lands with its box (17.31 → 17.35 s).
+  - **08c's asked takeaway** (`lookOpts.morph` with `ask`): it is asked after the last count lands, on its question line ("Versus community?", 15.85 s); its working divides the costs of the two piles it compares ($45,000 ÷ $4,150, both rungs on screen); its number is that ratio to 0.1 (10.8, after the working's "≈"); it lands on the verdict's beat (17.35 s), and the voice says "≈ 10.8" after it (18.50 s). The verdict carries the same number and label.
 - It also checks:
   - the contract shape;
   - "≈" on every rounded result;
   - the calendar claim behind 08b's "≈ the 20th", on a 30-day month, on the average month and on a Monday-Friday calendar for all 7 weekdays the 1st can fall on;
   - every pinned-comment and caption number in this file.
-- **Result: PASSED, all 680 checks** (503 before the assembly pass, 524 after it; see the [Review log](#review-log)).
+- **Result: PASSED, all 677 checks** (503 before the assembly pass, 524 after it, 680 after the fix pass; the Becker Rig port of 08c replaced the Clean Sheet replay (674); its QA fix pass added 3; see the [Review log](#review-log)).
 - **Mutation test:** on scratch copies of the three specs, six mutations: in 08a the verdict ≈ $7.01 → ≈ $7.00 and the rung-1 cut back to 2.0 s; in 08b "≈ the 20th" → "≈ the 18th" and vo[2] back on its cut at 8.4 s; in 08c one count ≈ 5,125 → ≈ 5,126 and row 1 moved to t = 0.0, so it is no longer pre-filled. 16 of 503 checks fail, and the script exits with code 1. Every mutation is caught by an independent rule as well as by the leaf-by-leaf comparison: R10 (first count at 3.48 s), the voice 0.69 s ahead of the counter, row 1 not pre-filled, or a number that is not computed.
 - **Assembly-pass mutations:** 08b's blank "≈ 20th" → "≈ 18th", 08b's blank start 4.7 → 6.0 s, and 08a's payoff start 20.2 → 21.5 s. Each fails 3 checks (the leaf comparison plus two independent rules: a number that is not computed or a day the voice does not say; the blank landing after the voice; the payoff landing 0.98 s after the voice), and the script exits with code 1.
+- **Port mutations** (08c in Becker Rig, scratch copies, 2026-10-08): `landAfter` 1.7 → 2.2 s; the morph's number 10.8 → 10.9; its working's divisor $4,150 → $11,950; the ask 15.85 → 13.0 s (before the last count lands); rung 1 cut at 0.0 instead of −1.0 (no longer pre-filled); verdict and morph 17.35 → 16.9 s. Each fails 3-6 checks, always including an independent rule (an answer line before its count lands; a number that is not the working's ratio; a working that does not divide the compared piles; an ask before the last landing; a rung not landed by frame 1; the voice off the verdict's beat), and the script exits with code 1.
 - **Fix-pass mutations** (scratch copies, 2026-10-08): 08a's verdict 18.4 → 16.8 s (before the hero lands); 08a's "≈ 43" cue 3.2 → 2.5 s (before its count); 08b's "≈ 117 hours" cue 2.4 → 1.0 s; 08b's morph working 30,053 → 30,000; 08c's payoff "≈ 10.8×" → "≈ 10.9×"; 08c's verdict 17.35 → 16.5 s. Each fails 3-4 checks, always including an independent rule (the verdict landing before its hero or box; a number cue outside its count's window; a morph that is not the last count ÷ 2,080; a payoff that is not the costs' ratio), and the script exits with code 1.
 
-**Studio linter** (`node src/cli.mjs check`): **3/3 clean, 0 errors, 0 warnings.** That covers safe zones, the type floor, overlap, contrast and the R1 hook number. The kits' `unit-ladder` samples (Scoreboard 2, Becker Rig 2, Clean Sheet 3) still lint clean after the fix pass's format changes. I rendered all three in the built kits and checked these stills by eye:
+**Studio linter** (`node src/cli.mjs check`): **3/3 clean, 0 errors, 0 warnings.** That covers safe zones, the type floor, overlap, contrast and the R1 hook number. The kits' `unit-ladder` samples (Scoreboard 2, Becker Rig 2) still lint clean after the port's and the 08c QA fix pass's format changes, and 08b renders pixel-identical to before them (109 stills every 0.25 s, compared in the same run). The fix pass changes the Becker Rig samples' recap only (no lone leader in `unit-ladder.json`, its "≈" in its own column). I rendered all three in the built kits and checked these stills by eye:
 - 08a at 0.0, 1.5, 2.9, 3.0, 4.9, 9.5, 17.95, 18.05, 18.2, 21.6 and 25.9 s; in the assembly pass at 0, 3, 9.5, 13.5, 15.9, 18.2, 20.9, 22.5 and 25.97 s; in the fix pass at 0, 12.6, 16.0, 18.0 and 19.0 s plus a 12-frame contact sheet;
 - 08b at 0.0, 1.5, 3.0, 6.5, 10.55, 10.68, 10.8, 19.6, 19.72, 19.8, 23.5 and 26.9 s; in the assembly pass at 0, 4.6, 5.5, 6.45, 6.8, 8.0, 15, 19.8, 22.5 and 26.97 s; in the fix pass at 0, 5.6, 8.8, 9.3, 9.5, 9.7, 9.8, 9.9, 13.6, 14.3, 18.0, 18.6, 18.7, 19.0, 22.3, 23 and 26.97 s plus a contact sheet;
-- 08c at 0.0, 1.5, 3.0, 5.4, 13.5, 15.8, 17.6 and 21.4 s; in the assembly pass at 0, 2, 5.5, 9.5, 13.5, 15.8, 18, 20.7 and 21.47 s; in the fix pass at 0, 14.2 and 19.5 s plus a contact sheet.
+- 08c (Clean Sheet, retired) at 0.0, 1.5, 3.0, 5.4, 13.5, 15.8, 17.6 and 21.4 s; in the assembly pass at 0, 2, 5.5, 9.5, 13.5, 15.8, 18, 20.7 and 21.47 s; in the fix pass at 0, 14.2 and 19.5 s plus a contact sheet;
+- 08c (Becker Rig port) at 0, 0.4, 3.0, 3.5, 3.85, 4.1, 4.6, 5.06, 5.1, 5.14, 5.3, 7.6, 8.2, 9.16, 9.2, 9.24, 9.4, 11.7, 12.0, 12.19, 13.31, 13.35, 13.39, 13.5, 14.5, 15.85, 16.0, 16.4, 17.3, 17.35, 17.4, 17.45, 17.5, 17.6, 18.0 and 21.97 s, plus a 12-frame contact sheet; in its QA fix pass at 0, 0.5, 1.5, 2.5, 3.2-4.2 (8 stills), 5.1, 9.2, 12.2, 13.1-14.6 (every 0.1 s), 15.0, 15.9-16.8 (10 stills), 17.1-18.6 (every 0.1 s, and every frame 17.30-17.47), 19.5 and 21.97 s, plus a 12-frame contact sheet and frames pulled from the MP4 at 0, 16.6 and 21.9 s.
 
-The counters read as the check predicts on both sides of each tested landing, for example 1,391 → 1,402 across 10.63 s and 29,971 → 30,053 across 19.67 s (assembly-pass timing).
+The counters read as the check predicts on both sides of each tested landing, for example 1,391 → 1,402 across 10.63 s and 29,971 → 30,053 across 19.67 s (assembly-pass timing), and in the 08c port 1,914 → 1,921 across 5.10 s, 5,107 → 5,125 across 9.20 s and 7,216 → 7,235 across 13.35 s.
 
 **Web searches used:** 14 in the first draft (log at the end), 1 in the first revision (the Costco frank and soda change, for the "same hot dog" fix) and 2 in the fix pass (a 2005 median new-house price; not used, see the search log). Hook pass 2 and the fix pass added no new facts: 08a's new rent rung reuses 08b's sourced Census rent, and every other new number is arithmetic on the sourced inputs.
 - The egress proxy blocks census.gov, fred.stlouisfed.org, huduser.gov, eia.gov, collegeboard.org and most news sites. Those figures were confirmed from search-result text that quotes the source, plus a second source.
@@ -98,16 +99,16 @@ All three keep HD Guy's footer device: "Tall Latte ☕ = $4.45" (H04) and "Price
 
 | | 08a | 08b | 08c |
 |---|---|---|---|
-| Look | Scoreboard | Becker Rig | Clean Sheet |
+| Look | Scoreboard | Becker Rig | Becker Rig (ported from Clean Sheet, 2026-10-08) |
 | Platform title | What Your $1.50 Costco Hot Dog Would Cost If It Rose Like a House | At $15/hr, You Work for Rent From the 1st Until… | Community? In-State? Private? Your Year of College in Big Macs |
 | On-screen header (t = 0) | WHAT YOUR **$1.50** HOT DOG WOULD / COST IF IT ROSE LIKE A HOUSE | At **$15/hr**, you work for rent / from the 1st to the ___ | Community? In-state? / Out-of-state? Private? / Your year in **Big Macs** |
 | Words in hook | 13 | 11 | 9 |
-| Unit (footer or unit row) | $1.50 hot dog + soda, the same price since 1985 | $13.10, the ≈ $13.10 you keep per $15 hour | $6.22 Big Mac (The Economist, Jul 2026) |
-| Frame 1 | Hero "$1.50" and one hot dog landing at 0.2 s, label "YOUR HOT DOG + SODA" | The figure beside the $1,531 rent coin, HUD "$1,531 ÷ $13.10 = / ? hours of work" | Unit row "1 Big Mac = $6.22 · 🍔 = 200"; row ① already answered (≈ 667, 4 icons); circles ②③④ and "=" waiting |
-| Rungs | 4: membership → a month of rent → house 1985 → house Aug 2026 | 4: rent month → rent year → new car → new house | 4: Community → In-state → Out-of-state → Private (1 year of tuition & fees each), then the payoff step |
+| Unit (footer or unit row) | $1.50 hot dog + soda, the same price since 1985 | $13.10, the ≈ $13.10 you keep per $15 hour | $6.22 Big Mac (The Economist, Jul 2026), in the footer and in every "÷ $6.22" working |
+| Frame 1 | Hero "$1.50" and one hot dog landing at 0.2 s, label "YOUR HOT DOG + SODA" | The figure beside the $1,531 rent coin, HUD "$1,531 ÷ $13.10 = / ? hours of work" | Rung 1 pre-filled: HUD "Community / $4,150 ÷ $6.22 ≈ / 667 Big Macs", its pile of Big Macs standing, the figure pointing at it |
+| Rungs | 4: membership → a month of rent → house 1985 → house Aug 2026 | 4: rent month → rent year → new car → new house | 4: Community → In-state → Out-of-state → Private (1 year of tuition & fees each), then the asked takeaway |
 | First count lands | 2.98 s (≈ 43) | 2.10 s (≈ 117) | pre-filled at 0.0 (≈ 667) |
 | Twist | The hot dog never rose. Had it risen like a new house: **≈ $7.01** | Rent takes every hour you work from the 1st to **≈ the 20th** | One private year is **≈ 10.8×** a community-college year |
-| Payoff lands | 18.40 s (hero ≈ $7.01 + verdict) | 21.80 s (the plate morphs to "14 · years of full-time work" + verdict) | 17.31 s (≈ 10.8× box), verdict 17.35 s |
+| Payoff lands | 18.40 s (hero ≈ $7.01 + verdict) | 21.80 s (the plate morphs to "14 · years of full-time work" + verdict) | 17.35 s (the plate lands "10.8 · community-college years" + verdict) |
 | Runtime | 22.0 s | 27.0 s | 22.0 s |
 | VO words (checker estimate) | 52 (11 cues) | 57 (11 cues) | 40 (9 cues) |
 | Verdict | Rose like a house? / A **≈ $7.01** hot dog. | **≈ 14 years** of full-time work. / Every cent you keep. | One private year = / **≈ 10.8** community-college years. |
@@ -473,73 +474,82 @@ Also assumed:
 
 ---
 
-## 08c · Clean Sheet · "Community? In-State? Private? Your Year of College in Big Macs"
+## 08c · Becker Rig · "Community? In-State? Private? Your Year of College in Big Macs"
 
-**Spec:** `studio/specs/08c-clean-sheet-college-in-big-macs.json` · **22.0 s** · captions on · lints clean · rendered in the Clean Sheet kit (stills listed at the top)
+**Spec:** `studio/specs/08c-becker-rig-college-in-big-macs.json` · **22.0 s** · captions on · lints clean (0 errors, 0 warnings) · rendered in the built Becker Rig `unit-ladder` (stills listed at the top). Ported from Clean Sheet on 2026-10-08 (the old spec is in `studio/specs/retired/`); the hook, every number, the VO and the verdict are unchanged. The QA fix pass after the port (2026-10-08) changed only the format's staging, not the spec (see the [Review log](#review-log)).
 
 **Platform title:** Community? In-State? Private? Your Year of College in Big Macs
 **On-screen hook (header):** Community? In-state? / Out-of-state? Private? / Your year in **Big Macs**
-**Footer (t = 0):** 1 Big Mac = $6.22 (Jul 2026) · College Board 2025-26: 1 year of published tuition & fees
+**Footer (t = 0):** $6.22 Big Mac (Jul 2026) · 1 year of / College Board 2025-26 tuition & fees
 
 ### Why this hook
 
 **Modelled on:**
-1. **H64, Gage Heward, "What $1 costs you by age"**: 1,150,974 (210x med), https://www.instagram.com/reel/Da_dukjxB56/. A row for every viewer, with the first row landing at 0 s. Ours names every row in the header, because the built kit hides a waiting row's label until it opens.
-2. **H32, FinCalC TV, "Monthly Income using Post Office MIS Scheme…"**: 428,862 (54.46x), https://www.youtube.com/shorts/K2QbxGXa29k. The answer is already on screen at 0.0. Ours pre-fills row ①.
+1. **H64, Gage Heward, "What $1 costs you by age"**: 1,150,974 (210x med), https://www.instagram.com/reel/Da_dukjxB56/. A row for every viewer, with the first row landing at 0 s. Ours names every row in the header: the Becker Rig HUD shows one rung at a time, and the recap table lists all four from 14.4 s.
+2. **H32, FinCalC TV, "Monthly Income using Post Office MIS Scheme…"**: 428,862 (54.46x), https://www.youtube.com/shorts/K2QbxGXa29k. The answer is already on screen at 0.0. Ours pre-fills rung 1: its pile and its count are standing at frame 1.
 3. **H11, HD Guy, "Cost in Units of Big Macs"**: 1,748,759 views (56.76x), https://www.youtube.com/shorts/Hv6aZR4hUEI. The same unit, already proven.
 - **Contrast:** HD Guy's "University Degrees" *as the unit* got 64,954. We use college as the subject and a cheap, familiar unit as the ruler.
 
-**Frame 1 has a row for every viewer** (checked in the 0.0 s still), all drawn by the built kit:
+**Frame 1** (checked in the 0.0 s still), all drawn by the built kit:
 - the 3-line header names all four options;
-- the unit row reads "🍔 1 Big Mac = $6.22 · 🍔 = 200" (the second half is the icon strips' shared scale);
-- row ① is already answered: "Community / $4,150 ÷ $6.22 =" with **≈ 667** in a bigger green box (`openScale` 1.25: about 84 px, round 1's was about 55) and its strip of 4 icons (3.3 at 200 Big Macs an icon). That is the kit's pre-fill for a rung whose result starts before frame 1;
-- the empty numbered circles ②③④ and an "=" circle (the payoff to come) wait under it.
+- the HUD is already answered: "Community / $4,150 ÷ $6.22 ≈ / **667** Big Macs" (the count at 136 px in hero green, its "=" already turned into "≈"). That is the kit's pre-fill for a first rung cut before frame 1 (t = −1.0);
+- the community-college pile stands on the floor (a brick pyramid of 667 Big Mac icons), and the figure points at it, his pencil behind his ear. The camera frames him and the pile as one group, centred (it pans back to his usual spot as the 3.4 s cut pushes in). He holds the point while the voice reads it, then idles.
 
-**The rows are the header's own four words** (fix pass, QA's must): "Community", "In-state", "Out-of-state", "Private", each on one line, and "1 year" moved to the footer. Round 1's labels wrapped into ragged 2-3 line stacks ("State school, / out-of-state, / 1 year"). A layout now fits only if every label is one line and every filed row keeps its cost (`oneLine`), so the finished sheet reads as four set rows: "Out-of-state $31,880 ··· ≈ 5,125".
+**Becker devices, as the kit builds them** (`looks/becker-rig/formats/unit-ladder.js`):
+- **"Operators are tools":** each later rung drops a gold coin with its price ($11,950, $31,880, $45,000) in front of him with a thud; he winds up and punches it, and it bursts into Big Macs. The coins grow rung by rung.
+- **"Results are transformations":** the Big Macs arc over and stack into a brick pyramid at the end of the row while the counter rolls in its slot, and the working's "=" turns into "≈" as the rounded count lands.
+- **"Scale is shown by the camera":** each cut pushes in on him (the piles already standing fade as they leave the frame), and each new pile pulls the camera back until the whole row, community to private, is in frame.
+- **The finale:** the private count lands on a gold plate with the impact kit, and the landing knocks him into a hop (a crouch, take-off on the count, an arc, a squash on touchdown, arms up with his feet down), then he slumps. A recap table pops in under the counter, biggest first: "≈ 7,235 Private / ≈ 5,125 Out-of-state / ≈ 1,921 In-state / ≈ 667 Community", the find-your-row list the header promised, with the four "≈" signs in one column and no leader lines.
+- **The payoff, asked like a rung** (`lookOpts.morph` with `ask`, added in the port): on "Versus community?" the HUD cuts to "Private vs community / $45,000 ÷ $4,150 = / ? community-college years" (the "?" flush left, as on every rung's cut), the plate pops out, and the in-state and out-of-state piles (and their recap counts) dim; he thinks. **The two divided piles are put side by side:** the community pile hops over the dimmed piles to stand at the private mountain's foot (a squash and a thud), the dimmed piles shuffle along into the room it left, and the camera steps back a little (×0.91) so the moved piles clear the recap table. On the verdict's beat the answer lands: **10.8** pops in on the hit at 162 px, 1.19× the counts' 136 px, on a fresh, taller gold plate (154 px against 135; the biggest number in the video; hit lines, hit, shake, flash, camera punch), "community-college years" moves beside it, the "=" turns into "≈" once the number is fully in, and he hops (higher than at 7,235), then slumps.
 
 **Rules:**
-- **R1 (pass):** at 0.0 s the sheet shows "$4,150 ÷ $6.22 = ≈ 667" and the unit row "1 Big Mac = $6.22". "$6.22" is also in the footer.
+- **R1 (pass):** at 0.0 s the HUD shows "$4,150 ÷ $6.22 ≈ 667 Big Macs" beside its pile. "$6.22" is also in the footer.
 - **R2 (pass):** no $ figure in the header.
-- **R3 (pass):** community college, in-state, out-of-state and private each get a row, named in the header.
+- **R3 (pass):** community college, in-state, out-of-state and private each get a rung and a recap row, named in the header.
 - **R7 (pass):** all four options are named before any maths.
 - **R8 (pass):** 9 words on 3 lines.
-- **R9 (pass):** the circles ②③④ count the three rows to go.
-- **R10 (pass):** the first answer is on screen at 0.0. The biggest count is the last rung (≈ 7,235 at 13.41 s), and the payoff (≈ 10.8×) lands last, on the biggest box on the sheet (17.31 s).
+- **R10 (pass):** the first answer is on screen at 0.0. The biggest count is the last rung (≈ 7,235 at 13.35 s), and the payoff (10.8) lands last, on the biggest plate (17.35 s).
 - **R12 (pass):** "One private year = ≈ 10.8 community-college years".
 - **R4 (partial):** the Big Mac is a proven, familiar unit, but most viewers are not paying for a year of college right now ("your year").
 - **R5 (miss):** nothing is attacked. Community < in-state < out-of-state < private is the order viewers expect, and only the size of the gap (≈ 10.8×) surprises. Both judges docked it.
+- **R9 (partial since the port):** Clean Sheet drew empty circles ②③④ counting the rows to go; Becker Rig has no row countdown. The header's four questions are the list, and each new pile stands beside the ones before.
 - **R11 (partial):** four questions stacked in a 3-line header are slower to read than H64's 6 words.
 
-**What it plays on:** the size of the gap, not the order. Viewers know private costs more than community college. Few would guess that one private year of tuition and fees buys ≈ 10.8 community-college years.
+**What it plays on:** the size of the gap, not the order. Viewers know private costs more than community college. Few would guess that one private year of tuition and fees buys ≈ 10.8 community-college years, and the payoff shot shows it: a pile of 667 Big Macs standing at the foot of a mountain of 7,235.
 
 ### Beat sheet
 
-Times are the Clean Sheet kit's own (reproduced by the check). Each step types "cost ÷ $6.22 =", wipes a highlighter in and runs the count up on it (`countSpeed` 0.5) while its strip of Big Mac icons fills at one shared scale (`iconScale`: one icon = 200 Big Macs, the same icon size and row count on every row, so the strips grow 4 → 10 → 26 → 37 icons). A finished step files into a one-line sheet row when the next one opens.
+Times are the built Becker Rig kit's own (reproduced by the check). Each rung's count lands 1.7 s after its cut (`lookOpts.landAfter`: the kit's coin drop, punch and fill compressed in proportion, because its default pacing would land each count ≈ 0.5 s after the voice's answer line). Each question is spoken on its cut; each answer has its own caption line from its landing.
 
-| t (s) | On screen (Clean Sheet) | VO (caption) |
+| t (s) | On screen (Becker Rig) | VO (caption) |
 |---|---|---|
-| 0.0 | Page; header; footer; unit row "🍔 1 Big Mac = $6.22 · 🍔 = 200"; ① "Community / $4,150 ÷ $6.22 =" already answered **≈ 667** with its 4-icon strip; empty circles ②③④ and "=" | "Community college? **≈ 667 Big Macs**." |
-| 2.7-3.1 | ① files into its row ("Community $4,150 ······ ≈ 667"); ② rises into place | |
-| 3.4 | ② "In-state": "$11,950 ÷ $6.22 =" → **≈ 1,921** (5.09), 10 icons | "In-state?" |
-| 5.1 | | "**≈ 1,921**." |
-| 7.5 | ③ "Out-of-state": "$31,880 ÷ $6.22 =" → **≈ 5,125** (9.24), 26 icons | "Out-of-state?" |
-| 9.25 | | "**≈ 5,125**." |
-| 11.65 | ④ "Private": "$45,000 ÷ $6.22 =" → **≈ 7,235** (13.41), 37 icons | "Private?" |
-| 13.45 | | "**≈ 7,235**." |
-| 15.85 | ④ files; the payoff step "=" opens: "Private vs community / $45,000 ÷ $4,150 =" | "Versus community?" |
-| 17.31 | Its blue box lands **≈ 10.8×** (about 113 px, the biggest box on the sheet; ding) | |
-| 17.35 | Verdict: "One private year = / **≈ 10.8** community-college years." | "One private year: **≈ 10.8** community-college years." |
-| 21.3-22.0 | The finished sheet clears back to the frame-1 state (loop) | (none) |
-
-**What changed in the fix pass:** the check line ("check: $45,000 ÷ $4,150 ≈ 10.8", typed in small mono before a 50 px verdict) became the payoff step: the same working, set as a full step of the ladder, landing on the biggest box on the page. Each answer is captioned exactly as its box prints it, in its own line from the landing, so the karaoke caption never shows a rounded or grey answer under a row that is still typing.
+| 0.0 | Header; footer; HUD "Community / $4,150 ÷ $6.22 ≈ / **667** Big Macs" (pre-filled); the 667 pile; the figure pointing at it | "Community college? **≈ 667 Big Macs**." |
+| 3.4 | Cut: HUD "In-state / $11,950 ÷ $6.22 = / ? Big Macs"; the camera pushes in (the 667 pile fades as it leaves the frame) | "In-state?" |
+| 3.85-4.10 | The $11,950 coin thuds down; he winds up and punches it (hit + shake); Big Macs arc into a second pile, the count rolls | |
+| 5.10 | Counter lands **1,921**; "=" turns to "≈"; the camera pulls back to both piles; he points | "**≈ 1,921**." |
+| 7.5 | Cut: "Out-of-state / $31,880 ÷ $6.22 = / ?" | "Out-of-state?" |
+| 7.95-8.20 | The $31,880 coin drops; punch | |
+| 9.20 | Counter lands **5,125**; three piles in frame; he shrugs | "**≈ 5,125**." |
+| 11.65 | Cut: "Private / $45,000 ÷ $6.22 = / ?" | "Private?" |
+| 11.99-12.19 | The $45,000 coin (taller than him) drops; punch | |
+| 13.15-13.35 | He crouches while the count rolls | |
+| 13.35 | Counter lands **7,235** on the gold plate (hit, shake, flash, camera punch); he hops off it (touchdown 13.77, squash), arms up, then slumps (14.35) | "**≈ 7,235**." |
+| 14.35-14.6 | The camera steps back a little; the recap table pops in under the counter, row by row, its "≈" signs in one column: ≈ 7,235 Private / ≈ 5,125 Out-of-state / ≈ 1,921 In-state / ≈ 667 Community | |
+| 15.85 | The ask: HUD "Private vs community / $45,000 ÷ $4,150 = / ? community-college years" (the "?" flush left); the plate pops out; the in-state and out-of-state piles and recap counts dim; he thinks | "Versus community?" |
+| 16.05-16.60 | The community pile hops over the dimmed piles and lands (squash, thud) at the private mountain's foot; the dimmed piles shuffle left into its old place; the camera steps back a little (×0.91) | |
+| 17.15-17.35 | He crouches; the "?" squashes out (17.25) | |
+| 17.35 | The answer lands: **10.8** pops in on the hit at 1.19× the counts' size on a fresh, taller gold plate, "community-college years" moves beside it (hit lines, hit, shake, flash, punch); "=" → "≈" at 17.40, once 10.8 is fully in; he hops (touchdown 17.81), arms up, then slumps (18.35). Verdict: "One private year = / **≈ 10.8** community-college years." (ding) | "One private year: **≈ 10.8** community-college years." |
+| 19.85-22.0 | Hold on the end state, then a hard cut back to frame 1 (the 667 pile) for the loop | (none) |
 
 ### Guide VO script (9 cues, about 40 spoken words, 15.4 s of speech in a 22 s video)
+
+Unchanged by the port: the same lines at the same times, so one recorded voice-over serves both cuts.
 
 | t | d | Caption text (spec) | Read it as |
 |---|---|---|---|
 | 0.0 | 3.3 | Community college? **≈ 667 Big Macs**. | "Community college? About six hundred sixty-seven Big Macs." |
 | 3.4 | 0.6 | In-state? | "In-state?" |
-| 5.1 | 2.35 | **≈ 1,921**. | "About nineteen hundred." (the caption shows the box's figure; the voice may round) |
+| 5.1 | 2.35 | **≈ 1,921**. | "About nineteen hundred." (the caption shows the counter's figure; the voice may round) |
 | 7.5 | 0.6 | Out-of-state? | "Out-of-state?" |
 | 9.25 | 2.35 | **≈ 5,125**. | "About fifty-one hundred." |
 | 11.65 | 0.6 | Private? | "Private?" |
@@ -549,23 +559,23 @@ Times are the Clean Sheet kit's own (reproduced by the check). Each step types "
 
 ### The maths
 
-**Rule:** Big Macs = cost ÷ $6.22, to the nearest whole Big Mac, with "≈". Since the fix pass the captions print the box's figure; the voice may still round for speech (below 1,000 to the unit, 1,000-9,999 to the 100).
+**Rule:** Big Macs = cost ÷ $6.22, to the nearest whole Big Mac, with "≈" (on screen the "≈" sits at the end of the working line, "$4,150 ÷ $6.22 ≈", and the counter shows the digits). The captions print the counter's figure; the voice may still round for speech (below 1,000 to the unit, 1,000-9,999 to the 100).
 
 | On screen | Formula | Exact | Shown | VO |
 |---|---|---:|---:|---:|
-| Community (1 year) | $4,150 ÷ $6.22 | 667.203 | ≈ 667 (4 icons: 3.34 × 200) | ≈ 667 |
-| In-state (1 year) | $11,950 ÷ $6.22 | 1,921.222 | ≈ 1,921 (10 icons: 9.61 × 200) | ≈ 1,921 (read ≈ 1,900) |
-| Out-of-state (1 year) | $31,880 ÷ $6.22 | 5,125.402 | ≈ 5,125 (26 icons: 25.63 × 200) | ≈ 5,125 (read ≈ 5,100) |
-| Private (1 year) | $45,000 ÷ $6.22 | 7,234.727 | ≈ 7,235 (37 icons: 36.18 × 200) | ≈ 7,235 (read ≈ 7,200) |
-| Payoff step / verdict | $45,000 ÷ $4,150 | 10.8434 | ≈ 10.8× | ≈ 10.8 community-college years |
+| Community (1 year) | $4,150 ÷ $6.22 | 667.203 | ≈ 667 (a pile of 667 icons) | ≈ 667 |
+| In-state (1 year) | $11,950 ÷ $6.22 | 1,921.222 | ≈ 1,921 | ≈ 1,921 (read ≈ 1,900) |
+| Out-of-state (1 year) | $31,880 ÷ $6.22 | 5,125.402 | ≈ 5,125 | ≈ 5,125 (read ≈ 5,100) |
+| Private (1 year) | $45,000 ÷ $6.22 | 7,234.727 | ≈ 7,235 | ≈ 7,235 (read ≈ 7,200) |
+| The asked takeaway / verdict | $45,000 ÷ $4,150 | 10.8434 | "$45,000 ÷ $4,150 ≈ [10.8] community-college years" | ≈ 10.8 community-college years |
 
-- The ratio is the same in Big Macs (7,234.727 ÷ 667.203 = 10.8434), because both rows divide by the same $6.22. The check asserts this.
+- The ratio is the same in Big Macs (7,234.727 ÷ 667.203 = 10.8434), because both rungs divide by the same $6.22. The check asserts this, and the payoff shot shows it with the two piles side by side: the private pile is 10.8 times the community pile, icon for icon.
+- Each pile is a brick pyramid of exactly its count of Big Mac icons (667, 1,921, 5,125, 7,235); far out the kit draws the same pattern with bigger icons (level of detail), so a pile never turns into a flat shape.
 - **Pinned-comment numbers** (checked):
   - College Board's full private budget (tuition, fees, housing, food, books, transport, other) is **$65,470** a year. 4 years is 4 × $65,470 = **$261,880** ÷ $6.22 = 42,102.894, so **≈ 42,103** Big Macs. ÷ 365 = 115.35, so a Big Mac a day for **≈ 115 years**.
   - 4 years in-state, full budget: 4 × $30,990 = **$123,960**, which is **≈ 19,929** Big Macs.
   - Write-up only: four years of private tuition and fees alone come to 4 × $45,000 ÷ $6.22 = 28,938.9, so **≈ 28,939** Big Macs.
-- Strip icons: one icon = 200 Big Macs on every row (the key is in the unit row), the last icon of each strip drawn to its share. 1 icon = 100 (QA's example) would need 73 icons for private, which do not fit beside the box at a legible size (≥ 18 px) on this page.
-- Captions print the box's figure (QA nit: "≈ 1,900" under a box showing "≈ 1,921" read like a discrepancy). 08a and 08b keep the rounded spoken figure: their captions are not in the same column as the number.
+- Captions print the counter's figure (QA nit in the Clean Sheet round: "≈ 1,900" under a box showing "≈ 1,921" read like a discrepancy). 08a and 08b keep the rounded spoken figure.
 
 ### Sources (all checked 2026-10-07)
 
@@ -580,8 +590,10 @@ Times are the Clean Sheet kit's own (reproduced by the check). Each step types "
 
 ### Assumptions (footer, on screen at t = 0)
 
-> 1 Big Mac = $6.22 (Jul 2026) · College Board 2025-26: 1 year of published tuition & fees
+> $6.22 Big Mac (Jul 2026) · 1 year of
+> College Board 2025-26 tuition & fees
 
+- The Becker Rig footer is at most two mono lines at 40 px, so the port rewords the Clean Sheet footer ("1 Big Mac = $6.22 (Jul 2026) · College Board 2025-26: 1 year of published tuition & fees", 3 lines at 40 px, 34 px and a type-floor warning in two). Every number and source stays; "published" moves to this section and the description.
 - Every row is one year of College Board's 2025-26 average published tuition and fees, so the rows compare like for like.
 - These are sticker (published) prices, before grants, scholarships or aid.
 - The full-budget figures (housing, food, books) appear only in the pinned comment, labelled as such.
@@ -601,9 +613,9 @@ Times are the Clean Sheet kit's own (reproduced by the check). Each step types "
 
 - **YouTube Shorts:**
   - Title "Community? In-State? Private? Your Year of College in Big Macs".
-  - No CTA; the loop clears the sheet back to frame 1.
+  - No CTA; a hard loop back to frame 1 (the pre-filled community pile).
 - **Instagram Reels:**
-  - Cover: the finished sheet (four one-line rows filed, the payoff step's blue ≈ 10.8× box). The sheet is the screenshot people save.
+  - Cover: the end state: "Private vs community / $45,000 ÷ $4,150 ≈ [10.8] community-college years" on the big gold plate, the four-row recap (the screenshot people save), the lit community pile standing beside the lit private mountain, and the verdict.
   - Caption line 1: "Community, in-state, out-of-state or private: which row is yours?"
   - Tag the back-to-school and #studentloans crowd.
 - **TikTok:**
@@ -615,11 +627,11 @@ Times are the Clean Sheet kit's own (reproduced by the check). Each step types "
 
 ## Kit notes (for the look builders)
 
-As of hook pass 2, all three kits' `unit-ladder` formats are built, and every spec uses only keys its kit reads. The fix pass (round-2 QA) added the options below, each in that kit's `formats/unit-ladder.js` only (no shared `lib.js`, `theme.js`, `kit.js`, CSS or README was touched); every kit's `unit-ladder` samples still lint clean and render as before unless they set the new keys.
+As of hook pass 2, all three kits' `unit-ladder` formats are built, and every spec uses only keys its kit reads. Since the 2026-10-08 port, 08c runs in Becker Rig; the Clean Sheet notes below are kept as history (Clean Sheet is retired). The fix pass (round-2 QA) added the options below, each in that kit's `formats/unit-ladder.js` only (no shared `lib.js`, `theme.js`, `kit.js`, CSS or README was touched); every kit's `unit-ladder` samples still lint clean and render as before unless they set the new keys.
 
 - **Scoreboard (08a), fix pass:** `introHero: "price"` (the unit intro's hero shows the unit price; the intro label then drops its price line); `payoff.label` (the label stack cuts to the payoff's question while the hero rolls; `payoff.working` would add a line 1); `split: { tags }` (once the last rung cuts, the previous rung's dots turn white inside the climax wall, tagged "1985" / "AUG 2026", and the wall stays lit behind the payoff instead of dimming). Captions now hide from `verdict.t`, or from the payoff cut when the payoff has a label (a CSS rule keyed to a stage attribute: the chrome's caption code is unchanged). The spec times the verdict on the hero's landing (`payoff.t` + 0.2 + 1.4 = 18.4) and sets the footer's working with the kit-wide `footerSteps`.
 - **Becker Rig (08b), fix pass:** `blank.calendar` (a 30-day month grid beside the first count, filling in step with the ordinals); `morph` (the HUD's last answer turns into the takeaway on the verdict's beat). Without options: earlier piles fade when the camera's push-in takes them out of frame (no flat slice under the HUD or at the right edge), the pull-back follows a growing pile more tightly (0.3-0.6 s), a rolling count is right-aligned in its final slot with its label parked where it lands, the "?" sits in the same slot, the figure never draws under ≈ 150 px, and the pencil counter-rotates against 60% of the head's tilt (tucked behind the ear in every pose). `pileLabels: false` drops the recap table.
-- **Clean Sheet (08c), fix pass:** `payoff` (one more step after the ladder, dividing two of its costs, on the biggest box: `payoffScale`); `iconScale` (one strip icon = k units, one icon size and row count for the whole ladder, with a key in the unit row); `openScale` / `filedScale` (the open box bigger, the filed results smaller); `oneLine` (a layout fits only when every label is one line and every filed row keeps its cost); `maxScale` (type scales above 1 are tried first; on this page the end state, with the payoff step, caps it at 1.02). A filed row keeps its cost with a leader down to 16 px.
+- **Clean Sheet (08c, retired), fix pass:** `payoff` (one more step after the ladder, dividing two of its costs, on the biggest box: `payoffScale`); `iconScale` (one strip icon = k units, one icon size and row count for the whole ladder, with a key in the unit row); `openScale` / `filedScale` (the open box bigger, the filed results smaller); `oneLine` (a layout fits only when every label is one line and every filed row keeps its cost); `maxScale` (type scales above 1 are tried first; on this page the end state, with the payoff step, caps it at 1.02). A filed row keeps its cost with a leader down to 16 px.
 
 - **Scoreboard (08a), built.**
   - The spec uses `data.unit.label` ("Your hot dog + soda") for the built unit intro, `lookOpts.climaxFill` and `lookOpts.payoff` (added in the assembly pass at {t 20.2, from "$1.50", display "≈ $7.01"}; since the fix pass {t 16.8, …, label "Rose like a house?"} with the verdict on the landing, 18.4 s).
@@ -630,7 +642,21 @@ As of hook pass 2, all three kits' `unit-ladder` formats are built, and every sp
   - It reads `figure`, `figureScale`, `unitLabel` / `unitLabelOne`, `intro`, `iconSize`, `plate`, `pileLabels`, `blank` and (fix pass) `morph`. The spec uses `pileLabels: false` (since the fix pass; before, it named the piles so the two rent piles read apart), `blank` {t 4.7, d 1.7, text "≈ 20th", calendar 30} (added in the assembly pass; the calendar in the fix pass), which writes the hook's answer into the header's "___", and `morph` {t 21.8, working "30,053 hours ÷ 2,080 a year", display "14", label "years of full-time work"}.
   - The first draft's staging keys (`opener` TAX snip, `facedown`, `actions`, `gag`, `stage`, `inputProp`) were never read and are removed. So are the pop and thud SFX cued for them. The kit cues its own hit, pop and roll.
   - The check replays the kit's per-rung schedule: lead = 0.22 × gap (0.45-0.92 s), punch, then a fill of 0.3 × gap (0.5-1.6 s), or 1.9 s on the last rung.
-- **Clean Sheet (08c), built.**
+- **Becker Rig (08c), port (2026-10-08).** Four options and one rule, all in `looks/becker-rig/formats/unit-ladder.js` only (no `lib.js`, `theme.js`, `kit.js`, `style.css` or README touched), documented in its header comment. 08b and both kit samples render pixel-identical to before (dense stills compared every 0.5 s) and lint clean.
+  - **Pre-fill (a rule, no option):** a first rung cut before frame 1 (t < 0) is punched, piled and counted before t = 0, with no sound or shake from it; frame 1 shows its pile, its count and the "≈" working, with him pointing at the pile until ≈ 2.2 s. Before, a negative t was clamped to 0 and the count landed at ≈ 1.8 s, under a caption that already said "≈ 667".
+  - **`landAfter`** (1.7 here): every rung's count lands that long after its cut; the coin drop, punch and fill keep their proportions, the lead never under 0.4 s. The kit's default pacing (≈ 2.2 s on a 4 s gap, 2.8 s on the last rung) would land each count 0.45-1.1 s after the voice's answer line, so the voice would have to move; with it the VO keeps its Clean Sheet times and every count lands 0.0-0.1 s before its line.
+  - **`morph.ask` / `morph.item` / `morph.compare`:** the takeaway is asked like a rung's cut (item, working "… =", "?" in the answer's slot with its label already in place, the plate pops out; he thinks), the piles and recap counts of the other rungs dim, and the answer lands on a fresh plate at `morph.t` with hit lines and the impact kit (hit, shake 10, flash 0.3, 2.5% punch); he jumps, then slumps. Without `ask` the morph is the one-swap version 08b uses, unchanged.
+  - **Two-line takeaway label:** a morph label too long to sit beside its plate on one line ("community-college years") wraps to two balanced lines there, instead of pushing every counter label below its digits (which cost the piles ≈ 75 px of height in the first render).
+  - **`beats`** ([{ t, act, d }], scripted poses) is available; 08c does not need it: the pre-fill point, the punches, the reactions and the asked payoff's think → jump → slump are the kit's own.
+  - The spec reads `landAfter` and `morph` {t 17.35, ask 15.85, item "Private vs community", working "$45,000 ÷ $4,150", display "10.8", label "community-college years", compare [0, 3]}. Clean Sheet's `unitRow`, `countSpeed`, `iconScale`, `openScale`, `filedScale`, `oneLine`, `maxScale`, `payoffScale` and `payoff` are dropped (Becker Rig does not read them), and so is the spec's `ding` cue: the Becker chrome cues its own on the verdict.
+- **Becker Rig (08c), QA fix pass after the port (2026-10-08).** All in `looks/becker-rig/formats/unit-ladder.js` only, documented in its header comment; the 08c spec is unchanged (every new behaviour is a default of the asked takeaway, or a format-wide recap rule). 08b renders pixel-identical (109 stills, 0.25 s apart, against the old code in the same run) and lints clean; the Becker Rig samples lint clean.
+  - **`hop`** (default: on when `morph.ask` is set): a jump is a real hop (crouch 0.2 s before, take-off on the beat, lib's `hop()` arc of 56 world px on the last count and 70 on the asked takeaway, a squash on touchdown, then arms up with his feet down until the slump 1 s after take-off). Before, the 'shocked' pose (lift 46) hung in mid-air for 0.8 s. 08b keeps the old jump (no `ask`); `hop: true` would give it the hop.
+  - **`morph.beside`** (default on with `ask` + `compare`): the smaller compared pile hops over the piles between the two to stand at the bigger one's foot (0.55 s from ask + 0.2 s, squash and thud), the piles between shuffle along into its old place (every gap kept), and when the moved piles would crowd the recap table the camera also steps back a little about the bigger pile's right foot (here ×0.91). If even ×0.85 cannot clear the table the piles stay put.
+  - **The asked takeaway's landing:** its "?" sits flush left with the label after it (as on every rung's cut, not right-aligned in the answer's slot); the "?" squashes out 0.096 s before `morph.t`, the number pops in on the hit at up to 1.2× the counts' size on a fresh plate (here 162 px against 136, the plate 154 px tall against 135: the biggest number in the video, clear of the working line, the recap table and x 938), the label moves beside it, and the working's "=" turns into "≈" only once the number is fully in (+0.048 s), so the screen never reads "≈ ?".
+  - **Recap table:** leaders are drawn all or none (a row whose line is not clean used to leave a lone stray leader; here the out-of-state row's ran to its pile through the climax and the end card), a dimmed row's leader goes at the ask instead of dimming, and the "≈" signs get their own left-aligned slot before the right-aligned counts (glued back only when the slot would cost a name its line, as in `unit-ladder-2.json`).
+  - **Frame 1 of a pre-filled first rung:** the camera centres the figure-and-pile group (same zoom, +160 px here) and pans back to the usual spot during the next cut's push-in.
+  - **Not changed (shared with 08b, so left alone):** an earlier pile still ghosts out at a cut as the push-in starts, and the new price coin still starts mid-air beside his head and falls through the HUD mask. Changing either changes 08b.
+- **Clean Sheet (08c, retired), built.**
   - It reads `unitRow`, `countSpeed`, `check` and `checkT`, and (fix pass) `payoff`, `payoffScale`, `iconScale`, `openScale`, `filedScale`, `oneLine` and `maxScale`. The spec no longer uses `check` / `checkT`: the payoff step replaces the check line.
   - It draws every waiting rung's numbered circle from frame 1, with the labels hidden. The request `preview: "labels"` is dropped (never read), and the header names the rows instead.
   - A rung whose result would start by frame 1 (here t = −1.0) is pre-filled: on frame 1 it already shows its count and icon grid.
@@ -672,7 +698,8 @@ As of hook pass 2, all three kits' `unit-ladder` formats are built, and every sp
   - The rent ($1,531) is a Census figure, cross-checked only against the same series' previous quarter (and by the verifier).
   - The College Board figures could not be opened at the source. They were read from search text plus one independent summary, then confirmed by the verifier.
 - **The VO word counts are estimates** (2.6 words/s; years read as two words, money with cents as three). They are conservative: the fix pass's short cues ("Costco card?", "In-state?") read faster than budgeted. The tightest lines are 08b's verdict line (4.23 s for 4.25 s), 08a's "And a new house in 2026?" (2.69 s for 2.7 s) and 08c's verdict line (3.46 s for 3.5 s).
-- **08c's lower page is empty below the caption band by design** (y > 1480 is platform UI: nothing readable there). The type scale tops out at 1.02 because the end state (unit row, four filed rows and the payoff step) fills the work area; the open box (≈ 84 px) and the payoff box (≈ 113 px) carry the size instead.
+- **08c's lower page is empty below the caption band by design** (y > 1480 is platform UI: nothing readable there).
+- **08c in Becker Rig has no row countdown** (Clean Sheet's empty circles ②③④), so R9 is partial since the port; the header carries the four rows, and the recap table lists them from 14.4 s.
 
 ---
 
@@ -882,3 +909,38 @@ QA scored 08a 6.5, 08b 6.0 and 08c 5.5. It found every number right (524/524 the
 **Check-script changes:** `build_08a`, `build_08b` and `build_08c` follow the new specs. New generic rule: a rung whose number has its own line must have it start as the count lands (−0.05 to +0.6 s) and after its question. New kit replays: 08a's payoff (question and footer on the cut, verdict on the landing), 08b's blank (ticks during its question, lands as its answer line starts, month grid) and morph (last count ÷ 2,080 = the verdict's years), 08c's payoff step (opens after the last rung, prints the ratio of two costs on the sheet, lands with the verdict); `clean_sheet_landings()` takes a per-step operand. **Result: PASSED, all 680 checks.** The six fix-pass mutations at the top of this file each fail 3-4 checks and exit 1.
 
 **Verification:** `node src/cli.mjs check` 3/3 clean (0 errors, 0 warnings), plus the kits' seven `unit-ladder` samples. Contact sheets and the stills listed at the top read as described in the beat sheets. MP4s re-rendered to `studio/out/` (22.0 / 27.0 / 22.0 s).
+
+### Port to Becker Rig (2026-10-08)
+
+The owner kept two looks, Scoreboard and Becker Rig, and retired Clean Sheet and Live Sheet. 08a (Scoreboard) and 08b (Becker Rig) stay as they are; **08c moved from Clean Sheet to Becker Rig**, with 08b as the bar.
+
+- **Spec:** `studio/specs/08c-becker-rig-college-in-big-macs.json` (new id `08c-becker-rig-college-in-big-macs`, look `becker-rig`). The old spec was moved with `git mv` to `studio/specs/retired/08c-clean-sheet-college-in-big-macs.json`.
+- **Kept exactly:** the header (the hook), all nine VO lines with their times, the verdict, every number, the rungs and their cut times (−1.0 / 3.4 / 7.5 / 11.65 s, each on the VO word that names it), the 22.0 s runtime and the pinned comment.
+- **Changed because the look needs it:**
+  - **Footer:** the Becker Rig footer is at most two mono lines at 40 px, and the Clean Sheet footer only fit at 34 px (a type-floor warning). It now reads "$6.22 Big Mac (Jul 2026) · 1 year of / College Board 2025-26 tuition & fees": every number, the source and the year basis stay, "published" moves to the Assumptions and the description.
+  - **`lookOpts`:** Clean Sheet's keys are dropped (Becker Rig does not read them). New: `landAfter: 1.7` and `morph` with `ask` {t 17.35, ask 15.85, item "Private vs community", working "$45,000 ÷ $4,150", display "10.8", label "community-college years", compare [0, 3]}. The payoff that was Clean Sheet's "payoff step" (≈ 10.8× in a blue box) is now Becker Rig's asked takeaway: the same working and number, "10.8 · community-college years" on the gold plate, matching the verdict's wording.
+  - **`data.hold`:** 4.69 → 8.65 (22.0 − the Becker Rig kit's last landing, 13.35 s).
+  - **`sfx`:** the spec's ding at 17.35 is dropped; the Becker chrome cues its own on the verdict.
+- **Format changes** (`looks/becker-rig/formats/unit-ladder.js` only; see the kit notes): the pre-fill of a first rung cut before frame 1, `landAfter`, `morph.ask` / `item` / `compare` (with the recap counts of the other rungs dimming too), a two-line takeaway label, and `beats` (unused here). 08b and both kit samples render pixel-identical to before and lint clean.
+- **Why the pacing option and not a VO retime:** at the kit's default pacing the counts land at 5.58 / 9.71 / 14.52 s, after the answer lines at 5.1 / 9.25 / 13.45 s, and Becker captions pop a whole line, so each caption would print a number 0.5-1.1 s before the counter. Moving the answer lines would push every later line and the verdict back; `landAfter: 1.7` keeps the recorded VO and lands every count 0.0-0.1 s before its line (5.10 / 9.20 / 13.35 s).
+- **Check script** (`checks/08-unit-ladder.py`): `build_08c` builds the Becker Rig spec; `becker_landings()` replays the pre-fill and `landAfter` (08b's replay is unchanged), and `becker_asked_payoff()` replaces the Clean Sheet payoff checks: asked after the last landing on its question line, the working divides the two compared piles' costs, the number is ≈ that ratio to 0.1, it lands on the verdict's beat and the voice says it after. The Clean Sheet replay (`clean_sheet_landings()` and its payoff rung) is removed. **Result: PASSED, all 674 checks.** Six mutations on scratch copies (listed at the top of this file) each fail 3-6 checks and exit 1.
+- **Verification:** `node src/cli.mjs check` clean (0 errors, 0 warnings) for 08a, 08b, 08c and both Becker Rig samples. A 12-frame contact sheet and stills at frame 1, every beat (each coin drop, punch and landing, ±0.04 s around each landing), the ask, the answer and the end, all read by eye; every number on screen (667, 1,921, 5,125, 7,235, the four costs, $6.22, the recap rows, $45,000 ÷ $4,150 ≈ 10.8, the verdict) matches the check. MP4 rendered to `studio/out/08c-becker-rig-college-in-big-macs.mp4` (22.0 s, 1080×1920, 30 fps); frames pulled from it at 0, 9.5 and 18 s match the stills.
+- **Not changed (outside this pass's files):** `teasers/v2/teasers.json` still lists 08c under Clean Sheet with "PASSED: all 503 checks".
+
+### QA fix pass after the port (2026-10-08)
+
+QA scored the port 7.5 (on par with 08b, no musts) with three shoulds and five nits. Every change is in `looks/becker-rig/formats/unit-ladder.js` (see the kit notes); the spec, the hook, every number, the VO and the verdict are unchanged.
+
+| QA item | Fix |
+|---|---|
+| should: a lone leader (out-of-state row to its pile) stays through the ask, the climax and the end card | Leaders are all or none (here none), and a dimmed row's leader goes at the ask instead of dimming. |
+| should: both jumps are a 0.8 s mid-air hover in the 'shocked' pose | `hop` (on with `morph.ask`): crouch, take-off on the count, a 56 px (13.35 s) and a 70 px (17.35 s) arc, a squash on touchdown (13.77 / 17.81 s), arms up with his feet down, slump 1 s after take-off (14.35 / 18.35 s). 08b keeps its jump. |
+| should: the 10.8 payoff is no bigger than the 7,235 beat, and the two compared piles stand at opposite ends | The community pile hops beside the private mountain at the ask (16.05-16.60 s; the dimmed piles shuffle along, the camera steps back ×0.91 to keep them clear of the recap table), and 10.8 lands at 162 px, 1.19× the counts' 136 px, on a taller plate (154 px against 135): the biggest number in the video. |
+| nit: the ask's "?" floats right-aligned mid-row | Flush left at x 62 with the label after it, as on the rung cuts; the label moves beside the plate when it lands. |
+| nit: "≈ ?" for 3-4 frames at 17.35 | The "?" squashes out before 17.35, 10.8 pops in on the hit, and the "=" turns into "≈" at 17.40, once 10.8 is fully in. |
+| nit: frame 1 is left-heavy | The figure-and-pile group is centred on frame 1 (+160 px pan, same zoom), panning back during the 3.4 s push-in. |
+| nit: ragged "≈" in the recap | The "≈" gets its own left-aligned column. |
+| nit: piles ghost out at cut time; the price coin pops in mid-air | Not changed: shared format behaviour, and fixing it changes 08b. |
+
+- **Check script:** `becker_asked_payoff()` gains three checks from the kit's timing: compare names the smaller pile first and it hops beside the bigger one; the two stand side by side (16.60 s) at least 0.5 s before the answer lands; the answer and its "≈" are fully in within 0.1 s of the verdict's beat (17.40 s) and before the voice says it (18.50 s). **Result: PASSED, all 677 checks.** Mutations on scratch copies: compare [3, 0] fails 5 checks, `beside: false` fails 2, and the ask at 16.95 s fails 4; each exits 1.
+- **Verification:** lint clean (0 errors, 0 warnings) for 08b, 08c and both Becker Rig samples; 08b pixel-identical; stills and a contact sheet read by eye (listed at the top); MP4 re-rendered to `studio/out/08c-becker-rig-college-in-big-macs.mp4` (22.0 s, 1080×1920, 30 fps, with audio), and frames pulled from it at 0, 16.6 and 21.9 s match the stills.

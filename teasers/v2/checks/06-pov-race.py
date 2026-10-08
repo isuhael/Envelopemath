@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Math + spec check for format 6, "pov-race" (teasers 06a, 06b, 06c).
 
+Looks: 06a and 06b Scoreboard (06b ported from Live Sheet on 2026-10-08), 06c Becker Rig.
+
 1. Recomputes every on-screen number from its inputs (below, each with its source).
 2. Cross-checks the source tables against themselves (closes vs annual % change) and
    against the second source where one exists.
@@ -42,7 +44,7 @@ BEAT_TOL = 0.3       # s: a mentioned beat must land inside its VO line's window
 
 IDS = {
     "a": "06a-scoreboard-first-iphone-apple",
-    "b": "06b-live-sheet-netflix-bill",
+    "b": "06b-scoreboard-netflix-bill",    # ported from 06b-live-sheet-netflix-bill (2026-10-08)
     "c": "06c-becker-rig-latte-starbucks",
 }
 
@@ -376,15 +378,16 @@ check("06b", "bar verdict: $17,706 ÷ $239.88 and exact both ≈ 74 years",
       ok=mult(rnd(B["final"]) / B["unit_y"]) == B["yrs_shown"][NFLX_END] == "74")
 
 
-# Assembly round 2: the answer row (Live Sheet lookOpts.unit) shows the stake live in years of today's bill. It
-# formats exactly like this (looks/live-sheet/formats/pov-race.js, unitText): under a year, whole months
-# (÷ unit.perMonth); 1-10 years, 1 dp; 10+ years, whole years. At each hold (a spoken year-end) it shows that
-# year-end's exact value, so what it shows there must equal what the VO and the bar say.
+# The answer row (Scoreboard pov-race lookOpts.unit; Live Sheet's before the 2026-10-08 port) shows the stake live
+# in years of today's bill. It counts exactly like this (looks/scoreboard/formats/pov-race.js, unitTpl): under a
+# year, whole months (÷ unit.perMonth; under 1 month it keeps the empty "? years" slot); 1-10 years, 1 dp; 10+
+# years, whole years. At each hold (a spoken year-end) it lands on that hold's display string, which must equal
+# this rule at that year-end's exact value, and what the VO and the working say.
 def answer_cell(v):
     yrs = v / B["unit_y"]
     if yrs < 1:
-        m = rnd(v / NFLX_STD_NOW)
-        return "< 1 month" if m < 1 else f"≈ {m:.0f} {'month' if m == 1 else 'months'}"
+        m = v / NFLX_STD_NOW
+        return "? years" if m < 1 else f"≈ {rnd(m):.0f} {'month' if rnd(m) == 1 else 'months'}"
     r1 = rnd(yrs, 1)
     return f"≈ {r1:.1f} years" if r1 < 10 else f"≈ {rnd(yrs):.0f} years"
 
@@ -504,8 +507,11 @@ check("06a", "pinned: 136.7 shares x $271.12 ≈ $37,062", usd(rnd(A["shares"], 
 # hook's unit at each beat: 2012 (in months), 2013, 2020, the 2022 halving, then the verdict.
 NOW = usd(NFLX_STD_NOW, 2)                                             # "$19.99"
 UNIT = usd(B["unit_y"], 2)                                             # "$239.88"
-# Assembly round 2: one line each (no wrap), no leading "≈" after the bar's ≈ chip, and every landed step names its
-# year (the race row has moved on by the time it shows). The "? years" slot is now the answer row's own cell.
+# The working, as the Live Sheet formula bar had it (assembly round 2: every landed step names its year, since the
+# race has moved on by the time it shows). Port to Scoreboard (2026-10-08): the same strings, split by where the
+# Scoreboard shows them. The answer row's line 1 carries the conversion (fb[0] without "= ") and each landing's
+# working (fb[1], fb[3], fb[4] up to the "≈", whose answer is line 2); the footer carries the method step (fb[2])
+# and the finish's two lines (fb[5], fb[6]).
 fb = [
     f"= stock ÷ ({NOW} × 12)",
     f"2012: {usd(B['value'][2012])} ÷ {NOW} ≈ {B['months_shown']:.0f} months",
@@ -528,14 +534,23 @@ EXP["b"] = {
         # frame-1 cells, and the ÷ $19.99 conversion is the formula bar's frame-1 formula.
         "header": f"**{NOW}** Netflix, free\nfor how many years?",
         "footer": f"Standard plan list price · {VALUE_DATE.month}/{VALUE_DATE.day}/{VALUE_DATE:%y} close",
-        "lookOpts.startLabel": str(NFLX_START),
+        # Scoreboard answer row: line 1 the working, line 2 the stake in years of today's bill
+        "lookOpts.unit.formula": fb[0].removeprefix("= "),
+        **{f"lookOpts.unit.holds.{i}.work": fb[j].split(" ≈ ")[0] for i, j in enumerate((1, 3, 4))},
+        **{f"lookOpts.unit.holds.{i}.display": B["holds"][y] for i, y in enumerate((2012, 2020, 2022))},
         "lookOpts.unit.final": f"≈ {B['yrs_shown'][NFLX_END]} years",
+        "lookOpts.unit.finalWork": fb[6].split(" ≈ ")[0],
+        # the payoff lands last in the hero: the board hard-cuts to one number at the verdict
+        "lookOpts.payoff.display": f"≈ {B['yrs_shown'][NFLX_END]} years",
+        # the footer's working steps: the method (capitalised as a footer line), then the finish's two lines
+        "lookOpts.footerSteps.0.text": fb[2][0].upper() + fb[2][1:],
+        "lookOpts.footerSteps.1.text": fb[5],
+        "lookOpts.footerSteps.2.text": fb[6],
         "verdict.text": f"**≈ {B['yrs_shown'][NFLX_END]} years** of Netflix\nat {NOW} a month",
         "data.spend.final": f"{usd(B['total'], 2)} spent",
         "data.own.final": approx_usd(B["final"]),
         **{f"data.purchases.{i}.label": lab for i, lab in enumerate(B["tag_labels"])},
         **{f"data.purchases.{i}.price": pr for i, (_, _, pr) in enumerate(B["ticks"])},
-        **{f"lookOpts.formulaBar.{i}.text": s for i, s in enumerate(fb)},
     },
     "points": {"spend": B["spend"], "own": B["own"]},
     "purchases_x": [x for (x, _, _) in B["ticks"]],
@@ -558,9 +573,10 @@ EXP["b"] = {
     "sfx": {0: B["ticks"][1][0], 1: B["ticks"][2][0], 2: B["ticks"][3][0], 3: B["ticks"][4][0],
             4: B["ticks"][5][0], 5: B["ticks"][6][0], 6: ye(2022), 7: B["ticks"][7][0],
             8: ye(NFLX_END)},
-    # bar steps 1, 3, 4 land on their year-ends (within 0.05 s); the rest start with a VO line
-    "lookOpts_t": {"formulaBar.1": ye(2012), "formulaBar.3": ye(2020), "formulaBar.4": ye(2022)},
-    "formulaBar_vo": {0: 0, 2: 3, 5: 7, 6: 8},          # bar step -> the VO line it starts with
+    # the footer's working steps start with the VO lines they illustrate (step -> VO line); the year-end workings
+    # ride the answer row's holds (below), which land on their year-ends
+    "lookOpts_t": {},
+    "footer_vo": {0: 3, 1: 7, 2: 8},
     # the answer row's landings: (spoken year-end x, the VO line that says it)
     "holds": [(ye(2012), 0), (ye(2020), 4), (ye(2022), 5)],
 }
@@ -698,7 +714,7 @@ def check_spec(key):
     # --- common fields
     check(sid, "id = file stem", spec["id"], sid)
     check(sid, "format", spec["format"], "pov-race")
-    check(sid, "look", spec["look"], {"a": "scoreboard", "b": "live-sheet", "c": "becker-rig"}[key])
+    check(sid, "look", spec["look"], {"a": "scoreboard", "b": "scoreboard", "c": "becker-rig"}[key])
     check(sid, "fps", spec.get("fps"), 30)
     check(sid, "captions", spec.get("captions"), True)
     dur = spec["duration"]
@@ -798,24 +814,44 @@ def check_spec(key):
         want_t = rnd(chart_t(spec, x), 2)
         check(sid, f"lookOpts.{p}.t on beat", node["t"], want_t, ok=abs(node["t"] - want_t) <= 0.05)
     if key == "b":
-        # formula bar steps line up with the VO lines they illustrate, or sit on a beat (above);
-        # every step is one or the other
-        bar = spec["lookOpts"]["formulaBar"]
-        on_beat = {int(p.split(".")[1]) for p, x in e["lookOpts_t"].items() if p.startswith("formulaBar.") and x}
-        check(sid, "every formulaBar step is on a beat or a VO line", sorted(on_beat | set(e["formulaBar_vo"])),
-              list(range(len(bar))))
-        fb_t = [bar[j]["t"] for j in e["formulaBar_vo"]]
-        want = [vo[i]["t"] for i in e["formulaBar_vo"].values()]
-        check(sid, "formulaBar t = its VO line t", fb_t, want)
+        # Scoreboard: the footer's working steps start with the VO lines they illustrate
+        lo_ = spec["lookOpts"]
+        steps = lo_["footerSteps"]
+        check(sid, "footerSteps count", len(steps), len(e["footer_vo"]))
+        check(sid, "footerSteps t = its VO line t", [steps[j]["t"] for j in e["footer_vo"]],
+              [vo[i]["t"] for i in e["footer_vo"].values()])
         # the answer row converts at today's bill, and lands on the spoken year-ends, each inside its VO line
-        unit = spec["lookOpts"]["unit"]
+        unit = lo_["unit"]
         check(sid, "lookOpts.unit.per = 12 × $19.99", unit["per"], B["unit_y"])
         check(sid, "lookOpts.unit.perMonth = $19.99", unit["perMonth"], NFLX_STD_NOW)
-        check(sid, "lookOpts.unit.holds = the spoken year-ends", unit["holds"], [x for x, _ in e["holds"]])
-        for x, i in e["holds"]:
+        check(sid, "lookOpts.unit.holds x = the spoken year-ends", [hq["x"] for hq in unit["holds"]], [x for x, _ in e["holds"]])
+        check(sid, "lookOpts.unit.empty = the hook's open slot (no number)", unit.get("empty"), "? years")
+        hold = unit.get("hold", 1.3)
+        for (x, i), hq in zip(e["holds"], unit["holds"]):
             t = chart_t(spec, x)
             lo, hi = vo[i]["t"] - BEAT_TOL, vo[i]["t"] + vo[i]["d"] + BEAT_TOL
             check(sid, f"answer row lands {int(x)} (t {t:.2f}) in vo[{i}]", f"t={t:.2f}", f"{lo:.2f}-{hi:.2f}", ok=lo <= t <= hi)
+            # a hold's working names its year, and its display is what the live count reads at that exact year-end
+            check(sid, f"answer row {int(x)}: work names its year", hq["work"].split(":")[0], str(int(x)))
+            check(sid, f"answer row {int(x)}: display = the live count at the year-end", hq["display"], answer_cell(B["value"][int(x)]))
+            # coral (tone "bad") exactly when the stake fell into that year-end (the 2022 halving)
+            fell = B["value"][int(x)] < B["value"].get(int(x) - 1, 0)
+            check(sid, f"answer row {int(x)}: tone bad iff the stake fell", hq.get("tone") == "bad", fell)
+        # holds never overlap one another or the finish, so each landing is held whole
+        ts = [chart_t(spec, x) for x, _ in e["holds"]] + [d["raceT"][1]]
+        check(sid, "answer row holds clear of each other and the finish", [round(b - a, 2) for a, b in zip(ts, ts[1:])],
+              f"each ≥ {hold}", ok=all(b - a >= hold for a, b in zip(ts, ts[1:])))
+        # the live count at the finish rounds to the final, so the landing never jumps; the finish's working divides out
+        check(sid, "answer row final = the live count at the finish", unit["final"], answer_cell(B["final"]))
+        check(sid, "answer row finalWork divides to the final", f"{rnd(B['final']) / B['unit_y']:.2f}",
+              unit["final"], ok=f"≈ {mult(rnd(B['final']) / B['unit_y'])} years" == unit["final"])
+        # the payoff: the hero rolls onto the verdict's answer as the verdict lands
+        po = lo_["payoff"]
+        check(sid, "payoff.t = verdict.t", po["t"], spec["verdict"]["t"])
+        check(sid, "payoff = the verdict's emphasised answer", po["display"],
+              re.search(r"\*\*(.+?)\*\*", spec["verdict"]["text"]).group(1))
+        check(sid, "payoff lands before the VO says it (roll ends inside vo[8])", f"t={po['t'] + po.get('dur', 1.4):.2f}",
+              f"≤ {vo[8]['t'] + vo[8]['d']:.2f}", ok=po["t"] + po.get("dur", 1.4) <= vo[8]["t"] + vo[8]["d"])
 
     if key == "c":
         # the "2×" mark's line height is k × the spend at x (the format reads both): the 2021 year-end, k = 2

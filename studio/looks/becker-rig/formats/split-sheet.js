@@ -19,6 +19,8 @@
 //         straight down onto its own track (a waterfall of the total), and the figure stands on the floor in the
 //         corner at the right and points. It degrades step by step (see rowsLayout) and throws only when 7
 //         one-line rows cannot fit.
+//   carve (lookOpts.layout 'carve', opt-in) the rows sheet on the full width with the figure working ON the slab, as
+//         in bins: see lookOpts.layout below.
 // The total's label is fitted to the slab (<= 2 lines, a non-breaking hyphen, 40 -> 34 px).
 // A working line under the slab (mono, one at a time) carries each part's note, the "÷ 10" formula and the gag.
 //
@@ -34,6 +36,10 @@
 //            take-home slab: the label in caps on its left, the display string at hero size on its right), stamped
 //            into the free air above the sum check at t (impact, hit + cash) while he celebrates. The display string
 //            is shown exactly as written. Skipped (console.warn) when the air above the check is too short for it.
+//            carve: the bookend of the frame-1 slab at its height and type size ("PROFIT ≈ $1.29" to "YOUR ORDER
+//            $10.00"), stamped right over the check's box and as wide as it, in the air the slab and he have left. It
+//            is the climax: with t on the goal part's landing it carries that impact (burst, shake, punch, hit + cash)
+//            and the goal row's plate just lands (thud). Its burst circumscribes the slab and stops under the footer.
 //   payoff.slot: { t, text, ghost = '$?' }  the header's answer slot (bins mode): a dashed gold box hung after the
 //            header's last line (a dotted leader runs from its colon), on screen from frame 1 with the ghost text,
 //            so the hook's "this much a day:" points at something. At t the text stamps in on a gold plate (impact,
@@ -46,7 +52,48 @@
 //            after that part lands, until the next raise (e.g. '÷ 30' on the per-day beat).
 //   headerSpacing: false                    keep the kit's header tracking (by default the header gets 0.2em word
 //            spacing and -0.01em letter spacing: the kit's tight setting ran words together at phone size)
-//   layout: 'bins' | 'rows'                 force a layout
+//   layout: 'bins' | 'rows' | 'carve'       force a layout. 'carve' (never picked automatically): rows on the full width
+//            (amounts end at x 920; the post stands right of them) with the figure working ON the slab as in bins. He
+//            saws through at each cut, the piece drops straight down onto its own row's track (a gold bar in a pale
+//            lane: a waterfall of the total), and the remainder shrinks under his feet. The last piece is the one he
+//            stands on: it drops out from under him, he falls onto the bare bracket (squash) and steps along it to the
+//            post, beside where the check then assembles (the check stops short of him; no fly-ups in carve). The
+//            slab hangs as high as his head allows: his head may rise into the footer's band wherever the footer has
+//            no text over the stretch he walks (measured from its line boxes). The fitter scores lane thickness most
+//            (14 -> 22 px: thin bars read as underlines), then amount size (56 -> 40), figure size (0.86 -> 0.62), the
+//            slab's height (frame 1's total) and one-line labels; leftover height lowers the slab. Falls back to rows
+//            (console.warn) when nothing fits. Built for 6-7 parts with long labels (05a). Carve details: each lane is
+//            a pale $10 track with a hairline edge; a piece fills its lane and, once landed, slides to the lane's left
+//            end, so the lanes end as a left-aligned bar chart of the total (no bar under a % or an amount). Labels
+//            keep 6 px over their lane (descenders never touch it). The slab carries no per-piece %; a slab text the
+//            first cut runs through fades as the saw starts, and notches under the total or its label are bottom-only
+//            and shallow. The goal's plate is trimmed (PLATE_C) and its row is tall enough that the plate clears the
+//            lane above by >= 10 px; the % column keeps 28 px from it. The last piece drops straight down (no tip,
+//            which swung it over row 1's amount) while he rides it down arms-up and drifts back onto the bracket. The
+//            check's box (and the payoff slab) stop short of where he lands; the silent check assembles in ~0.6 s
+//            (token m at checkT + 0.1 + 0.06·m), so it is complete before the verdict.
+//   activate: [t, ...]                      rows / carve: when the VO names each part. Its label turns from dim to ink
+//            and its % green (until the next part activates) with a bump; in carve his saw starts there, so he works
+//            while the part is talked in. Without it the labels are ink from frame 1, as before.
+//   maskPct: [i, ...]                       rows / carve: those parts' % read "?" until they activate (else until they
+//            drop), and their pieces never carry a % on the slab (on a round sum the goal's % answers the header)
+//   bumps: [{ t, at }]                      a 0.3 s swell with a tick as the VO says a figure: at 'total' (the slab's
+//            total while it is on the slab, else the header's emphasised figure, the hook's "$10"), 'guess' (the
+//            header's answer slot) or a part index (that amount)
+//   beats: [{ t, act, d = 1.2, hold }]      scripted figure acts: a POSES name or one of this format's poses (lookDown,
+//            pointDown, recoil, shrugLow, ...), held d s, then back to standing (hold: true keeps it to the end); or
+//            'stomp' (crouch, knee up, one foot slammed down: a small impact at his feet, thud). Automatic reaction
+//            keys inside the beat's window give way; saw, hop and drop keys stay. On the slab right under the footer
+//            use acts that keep his hands low (shrugLow, recoil, lookUp, pointDown, stomp).
+//   notes: false                            no part notes on the working line (its height goes to the sheet)
+//   payoff.slot.ghostTone: 'bad'            the slot's ghost is a wrong guess ("$7.04 profit?"): red text in a red dashed
+//            box instead of a grey "$?". payoff.slot.strikeT: at that t a red line slams through the ghost (swipe)
+//            and it greys out until the answer stamps in at payoff.slot.t. With strikeT the slot may sit lower (down
+//            to the footer's top, clear of the header line above) and go down to 48 px. The slot works in carve too.
+//   remainder: { t, text }                  carve: from t (after the first piece has dropped) what is left of the slab
+//            carries a label in the slot's ghost style (red text in a red dashed box: the wrong guess, "$7.04?" =
+//            $10 − food). It swells with the 'guess' bump, is struck with the slot at payoff.slot.strikeT, greys and
+//            fades 0.6 s later, so the slab is plain again before the next cut. Notches under it give way meanwhile.
 //   figure: false                           no figure (the pieces just drop on their beats)
 //   figureScale: number                     override the figure size
 // Bins mode details: amounts are capped at 85% of a bin's width (else the old fit), the fill targets are a solid
@@ -60,6 +107,7 @@ import {
 const X0 = 64, X1 = 936, W = X1 - X0       // the slab spans this in bins mode (text stays <= 940 below y 820)
 const BX1 = 806                             // bins end here: the floor corner right of them is the figure's spot
 const XR = 800                              // rows mode: the slab, trays and rows end here (same corner)
+const CARVE_R = 920                         // carve: the slab, trays and amounts end here (right of it: the post)
 const FIG_X = { bins: 862, rows: 884 }      // where he stands on the floor at the end (bins) / all along (rows)
 const FLOOR = L.floorY
 const FALL = 0.3                            // a piece falls from the slab into its bin in this long
@@ -67,7 +115,9 @@ const STAGGER = 0.07                        // bricks of one part land this far 
 // The slab is a physical object: it stands on an ink post at its right end (a bracket under its last stretch),
 // so the shrinking remainder he stands on is always held up, and the last piece tips off the bracket into its bin.
 const PLATE = [14, 7]                       // gold plate padding around a goal amount
-const WL_LH = 50                            // working line: 40 px mono on an integer 50 px line
+const PLATE_C = [12, 4]                     // carve: trimmed, so the plate clears the lane of the row above
+const PCT_GAP_C = 28                        // carve: air between the % column and the widest amount (the goal's plate)
+const WL_LH = 50                           // working line: 40 px mono on an integer 50 px line
 
 export const css = `
 .ss-totl { font: 800 40px/44px ${F.head}; letter-spacing: .06em; text-transform: uppercase; color: ${C.ink}; }
@@ -94,6 +144,7 @@ export const css = `
 .ss-needs { position: absolute; white-space: nowrap; font: 800 40px/${WL_LH}px ${F.head}; letter-spacing: 0; color: ${C.ink}; transform-origin: 0 50%; }
 .ss-slot { position: absolute; box-sizing: border-box; border-radius: 16px; transform-origin: 50% 50%; display: flex; align-items: center; justify-content: center; }
 .ss-slot span { font-family: ${F.head}; font-weight: 900; letter-spacing: -0.03em; line-height: 1; white-space: nowrap; }
+.ss-slot-strike { position: absolute; height: 8px; border-radius: 4px; background: ${C.red}; transform-origin: 0 50%; pointer-events: none; }
 .ss-slot-lead { position: absolute; height: 8px; background-repeat: repeat-x; background-size: 18px 8px; background-image: radial-gradient(circle at 4px 4px, ${C.dim} 0, ${C.dim} 3.2px, transparent 3.8px); }
 `
 
@@ -150,6 +201,22 @@ function lines2(text, font, w1, w2, mo = {}, cut = false) {
     }
   }
   return null
+}
+
+// the rendered line boxes of a text element, in stage px, one per line: [{ l, r, t, b }]
+function lineBoxes(el, stage) {
+  if (!el) return []
+  const rg = document.createRange()
+  rg.selectNodeContents(el)
+  const sr = stage.getBoundingClientRect()
+  const lines = []
+  for (const q of rg.getClientRects()) {
+    if (q.width < 2) continue
+    const t = q.top - sr.top, b = q.bottom - sr.top, l = q.left - sr.left, r = q.right - sr.left
+    const ln = lines.find(x => Math.abs(x.t - t) < 8)
+    if (ln) { ln.l = Math.min(ln.l, l); ln.r = Math.max(ln.r, r); ln.b = Math.max(ln.b, b) } else lines.push({ l, r, t, b })
+  }
+  return lines.sort((a, b) => a.t - b.t)
 }
 
 // ------------------------------------------------------------------ props (SVG, ink, round caps)
@@ -238,6 +305,13 @@ export default function splitSheet(spec, ctx) {
   const clvPx = x => clamp(Math.floor(42 * (CBW - 26) / Math.max(1, clvW42(x))), 30, 42)
   const needsO = lo.needs && lo.needs.text && Number.isFinite(lo.needs.t) && Array.isArray(lo.needs.parts) && lo.needs.parts.length ? lo.needs : null
   const slotO = lo.payoff && lo.payoff.slot && lo.payoff.slot.text != null && Number.isFinite(lo.payoff.slot.t) ? lo.payoff.slot : null
+  // rows / carve: per-part activation (when the VO names the row: its label turns from dim to ink, its % green, and in
+  // carve his saw starts there), masked percentages ("?" until the row activates), bumps and scripted figure beats
+  const actT = PP.map((p, i) => (Array.isArray(lo.activate) && Number.isFinite(lo.activate[i]) ? lo.activate[i] : null))
+  const masked = new Set((Array.isArray(lo.maskPct) ? lo.maskPct : []).map(Number).filter(i => i >= 0 && i < n))
+  const bumpsO = (Array.isArray(lo.bumps) ? lo.bumps : []).filter(b => b && Number.isFinite(b.t) && b.at != null)
+  const beatsO = (Array.isArray(lo.beats) ? lo.beats : []).filter(b => b && Number.isFinite(b.t) && b.act).sort((a, b) => a.t - b.t)
+  const showNotes = lo.notes !== false
 
   // units: the pieces that fall (one per part, or `count` bricks)
   const units = []
@@ -251,7 +325,7 @@ export default function splitSheet(spec, ctx) {
   const ux = v => X0 + v * SW
 
   // ---- working line (one string at a time): the ten formula, each note, the gag
-  const wlStrings = [...(ten && ten.formula ? [`${ten.formula} = ${ten.display}`] : []), ...PP.map(p => p.note || '').filter(Boolean), ...(gag ? [gag.text] : [])]
+  const wlStrings = [...(ten && ten.formula ? [`${ten.formula} = ${ten.display}`] : []), ...(showNotes ? PP.map(p => p.note || '').filter(Boolean) : []), ...(gag ? [gag.text] : [])]
   const wlFont = fM(700, 40), wlMo = { letterSpacing: '-0.02em' }
   const wlLines = wlStrings.length ? (wlStrings.some(x => measure(plain(x), wlFont, wlMo) > W - 4) ? 2 : 1) : 0
   let wlH = wlLines * WL_LH
@@ -402,14 +476,92 @@ export default function splitSheet(spec, ctx) {
     throw new Error('split-sheet: the parts do not fit the sheet (too many parts or labels too long)')
   }
 
+  // carve (lookOpts.layout 'carve'): a rows sheet on the full width with the figure working ON the slab, as in bins
+  // mode. He saws through at each cut, the piece drops straight down onto its own row's track (the waterfall), the
+  // remainder shrinks under his feet, and before the last piece drops he hops off into the rail right of the sheet.
+  // The slab hangs as high as his head allows: his head may rise into the footer's band wherever the footer has no
+  // text over the stretch he walks (measured from its line boxes). The rows are packed under the slab; what the
+  // fitter does not need goes to the slab's headroom. Scored: figure size, amount and label size, track thickness,
+  // one-line labels. null when nothing fits (the caller falls back to rows).
+  function carveLayout() {
+    const RW = CARVE_R - X0
+    const pctWs = PP.map(p => measure(String(p.pct || ''), fM(800, 40), { letterSpacing: '-0.03em' }))
+    const mo = { letterSpacing: '-0.01em' }
+    const boxes = [...lineBoxes(parts.header, ctx.stage), ...lineBoxes(parts.footer, ctx.stage)]
+    const ceilAt = (xa, xb) => Math.max(parts.headerBottom || L.headerTop, ...boxes.filter(q => q.r > xa && q.l < xb).map(q => q.b))
+    const cutX = []
+    for (let i = 0; i < n; i++) if (i < n - 1 || leftover) cutX.push(X0 + cum[i + 1] * RW)
+    if (!cutX.length) cutX.push(X0 + RW / 2)
+    let best = null
+    for (const k of lo.figureScale ? [lo.figureScale] : [0.86, 0.82, 0.78, 0.74, 0.7, 0.66, 0.62]) {
+      const xs = cutX.map(c => Math.min(c + 112 * k, CARVE_R - 34 * k))
+      const ceil = ceilAt(Math.min(...xs) - 64 * k - 10, Math.max(...xs) + 84 * k)
+      const ysMin = Math.max(top - 24, Math.ceil(ceil + figHgt(k) + (lo.headroom ?? 14)))
+      for (const slabH of [88, 80, 72]) {
+        const tf = totFit(RW, slabH)
+        if (!tf || tf.labPx < 40) continue
+        const rowsTop = ysMin + slabH + 12 + (wlH ? wlH + 12 : 0)
+        const avail = FLOOR - 6 - rowsTop
+        for (const lpx of [44, 40]) for (let apx = 56; apx >= 40; apx -= 4) {
+          const amtW = PP.map((p, i) => measure(String(p.amount), fH(900, apx), { letterSpacing: '-0.03em' }) + (tones[i] === 'goal' ? 2 * PLATE_C[0] + 6 : 0))
+          const aw = Math.max(...amtW)
+          // each label has the width its own percentage leaves (the % column is right-aligned, PCT_GAP_C left of
+          // the widest amount, so the goal's plate keeps its air)
+          const rooms = pctWs.map(pw => RW - aw - PCT_GAP_C - pw - 22)
+          if (Math.min(...rooms) < 200) continue
+          const ls = labs.map((x, i) => lines2(x, fH(800, lpx), rooms[i], rooms[i], mo))
+          if (ls.some(l => !l)) continue
+          const lh = Math.round(lpx * 1.1)
+          // text -> lane 6 px (descenders never touch the lane, so a bar never reads as an underline), lane -> next
+          // row 2 px (the next row's caps sit lower in their line box); the goal row is as tall as its plate needs to
+          // clear the lane above by >= 10 px (the plate is seated 2 px over the text line, see amts)
+          const g1 = 6, g2 = 2
+          const textH = ls.map((l, i) => Math.max(l.length * lh, apx + (tones[i] === 'goal' ? PLATE_C[1] + 10 - g2 : 0)))
+          // (a landed piece must read as a piece of the $10, not as an underline: lanes are 14-22 px)
+          for (const trackH of [22, 20, 18, 16, 14]) {
+            const used = textH.reduce((a, x) => a + x + g1 + trackH + g2, 0)
+            if (used > avail + 0.5) continue
+            const two = ls.filter(l => l.length > 1).length
+            // (the pieces' bars weigh most: thin ones read as underlines; then the amounts, the figure, the frame-1
+            // slab and the labels)
+            const score = k * 100 + apx * 2.5 + Math.min(trackH, 20) * 4 + lpx * 0.5 + slabH * 0.6 - 14 * two
+            if (!best || score > best.score) best = { score, k, slabH, tf, ys: ysMin, avail, lpx, lh, apx, aw, ls, textH, trackH, g1, g2, used }
+            break
+          }
+        }
+      }
+    }
+    if (!best) return null
+    const B0 = best
+    // rows get up to 22 px of air each; whatever is left lowers the slab (more headroom over his head)
+    const extra = B0.avail - B0.used
+    const pad = Math.min(extra / n, 22)
+    const ys = B0.ys + Math.max(0, extra - pad * n)
+    const wlTop = ys + B0.slabH + 12
+    let y = wlTop + (wlH ? wlH + 12 : 0)
+    const rows = PP.map((p, i) => {
+      const y0 = y + pad / 2
+      y += B0.textH[i] + B0.g1 + B0.trackH + B0.g2 + pad
+      return { textTop: y0, textBot: y0 + B0.textH[i], trackTop: y0 + B0.textH[i] + B0.g1, trackH: B0.trackH, lines: B0.ls[i].length, ls: B0.ls[i] }
+    })
+    return { mode: 'rows', carve: true, slabTop: ys, slabH: B0.slabH, wlTop, rowsTop: wlTop + (wlH ? wlH + 12 : 0), lpx: B0.lpx, lh: B0.lh, lines: Math.max(...B0.ls.map(l => l.length)), apx: B0.apx, aw: B0.aw, rows, room: 0, useWL: !!wlH, right: true, k: B0.k, tf: B0.tf }
+  }
+
   let lay = null
-  if (lo.layout !== 'rows') lay = binsLayout()
+  if (lo.layout === 'carve') {
+    lay = carveLayout()
+    if (!lay) console.warn('split-sheet: the carve layout does not fit; falling back to rows')
+  }
+  if (!lay && lo.layout !== 'rows' && lo.layout !== 'carve') lay = binsLayout()
   if (!lay) lay = rowsLayout()
   if (lay.mode === 'rows' && !lay.useWL) wlH = 0          // no room left for the working line: notes are dropped
   const bins = lay.mode === 'bins'
-  if (!bins) SW = XR - X0
+  const carve = !!lay.carve                               // rows, with the figure working on the slab
+  const onSlab = bins || carve
+  if (!bins) SW = (carve ? CARVE_R : XR) - X0
   const SX1 = X0 + SW                                     // the slab's right end
-  const POST_X = bins ? X1 - 24 : XR + 24                 // the post that holds the slab up (in the floor corner)
+  const POST_X = bins ? X1 - 24 : SX1 + 24                // the post that holds the slab up (in the floor corner / rail)
+  const unmaskT = i => actT[i] ?? partDrop(i)             // a masked % reads "?" until then
   const ys = lay.slabTop, slabH = lay.slabH
   const k = lay.k
 
@@ -458,39 +610,48 @@ export default function splitSheet(spec, ctx) {
   if (!bins) {
     PP.forEach((p, i) => {
       const r = R[i]
-      // the tray: one soft track the row's piece drops onto (no hatching: a clean line at phone size)
-      const tray = s('rect', { x: X0, y: r.trackTop + r.trackH / 2 - 2, width: SW, height: 4, rx: 2, fill: C.lineSoft })
+      // the tray: one soft track the row's piece drops onto (no hatching: a clean line at phone size); in carve a
+      // pale $10 track as tall as the piece, with a hairline edge, so its full width reads as the $10 and the landed
+      // piece (slid to the left end) as that row's share of it: the lanes become a bar chart of the $10
+      const tray = carve
+        ? s('rect', { x: X0, y: r.trackTop, width: SW, height: r.trackH, rx: Math.min(6, r.trackH / 2), fill: C.lineSoft, stroke: C.line, 'stroke-width': 2 })
+        : s('rect', { x: X0, y: r.trackTop + r.trackH / 2 - 2, width: SW, height: 4, rx: 2, fill: C.lineSoft })
       g.back.append(tray)
       const el = h('div', { class: 'ss-rl', style: { position: 'absolute', left: X0 + 'px', fontSize: lay.lpx + 'px', lineHeight: lay.lh + 'px', whiteSpace: 'nowrap' } })
-      const pctHtml = `<span class="p" style="font-size:40px">${esc(p.pct || '')}</span>`
+      const pctHtml = `<span class="p" style="font-size:40px">${esc(masked.has(i) ? '?' : (p.pct || ''))}</span>`
       el.innerHTML = r.ls.map(esc).join('<br>') + (lay.right ? '' : ' ' + pctHtml)
       html.append(el)
-      style(el, { top: (r.textBot - el.offsetHeight + 4).toFixed(0) + 'px' })
-      let pel = null
+      // (carve: the label's descenders keep clear of its lane, so the bar under it never reads as an underline)
+      style(el, { top: (r.textBot - el.offsetHeight + (carve ? 0 : 4)).toFixed(0) + 'px' })
+      let pel = null, pxy = null
       if (lay.right && p.pct) {
         // in the value column, left of where the amount lands (it is there from frame 1)
         pel = new NumObj(html, { cls: 'ss-rl', html: true, text: '', ax: 1, ay: 1, style: { fontSize: '40px' } })
         pel.el.innerHTML = pctHtml
-        pel.set({ x: SX1 - lay.aw - 20, y: r.textBot - (lay.apx - 40) * 0.12 })
+        pxy = { x: SX1 - lay.aw - (carve ? PCT_GAP_C : 20), y: r.textBot - (lay.apx - 40) * 0.12 }
+        pel.set(pxy)
       }
-      rowEls.push({ tray, el, pel })
+      const pspan = (pel ? pel.el : el).querySelector('.p')
+      rowEls.push({ tray, el, pel, pxy, pspan })
     })
   }
 
   // ---- amounts (+ gold plate for goal parts)
+  // (carve: a trimmed plate, seated 2 px over the text line, so it clears the lane of the row above; see carveLayout)
   const apx = lay.apx
+  const PL = carve ? PLATE_C : PLATE
   const amts = PP.map((p, i) => {
     let plate = null
     if (tones[i] === 'goal') { plate = h('div', { class: 'ss-plate' }); html.append(plate) }
     const o = new NumObj(html, { cls: 'ss-amt', text: String(p.amount), ax: bins ? 0.5 : 1, ay: 1, style: { fontSize: apx + 'px' } })
     const w = o.w, hh = apx
-    const pw = w + (plate ? 2 * PLATE[0] + 12 : 0)                    // painted width (plate included)
+    const pw = w + (plate ? 2 * PL[0] + 12 : 0)                       // painted width (plate included)
     const room = bins ? lay.bw + lay.gap - 12 : 2 * w
     // squash widens it: keep it inside its lane (bins) and inside x 62-936
     const sqMax = clamp(((room / pw) - 1) / 0.6, 0, 0.18)
-    const ax = bins ? clamp(B[i].cx, X0 + 6 + (pw * (1 + 0.6 * sqMax)) / 2, BX1 + 10 - (pw * (1 + 0.6 * sqMax)) / 2) : SX1 - (plate ? PLATE[0] + 6 : 0)
-    const ay = bins ? lay.amtBot : R[i].textBot - (plate ? PLATE[1] + 2 : 0)
-    if (plate) style(plate, { width: (w + 2 * PLATE[0]).toFixed(0) + 'px', height: (hh + 2 * PLATE[1]).toFixed(0) + 'px' })
+    const ax = bins ? clamp(B[i].cx, X0 + 6 + (pw * (1 + 0.6 * sqMax)) / 2, BX1 + 10 - (pw * (1 + 0.6 * sqMax)) / 2) : SX1 - (plate ? PL[0] + 6 : 0)
+    const ay = bins ? lay.amtBot : R[i].textBot - (plate ? (carve ? 2 : PLATE[1] + 2) : 0)
+    if (plate) style(plate, { width: (w + 2 * PL[0]).toFixed(0) + 'px', height: (hh + 2 * PL[1]).toFixed(0) + 'px' })
     return { o, plate, x: ax, y: ay, w, cx: bins ? ax : ax - w / 2, sqMax: bins ? sqMax : 0.12 }
   })
 
@@ -516,9 +677,17 @@ export default function splitSheet(spec, ctx) {
   const notches = []
   const seams = ten ? Array.from({ length: ten.cnt - 1 }, (_, k) => (k + 1) / ten.cnt) : cum.slice(1, n + (leftover ? 1 : 0))
   const nw = ten ? 9 : 11, nd = ten ? 7 : 13
+  // (carve: a notch under the slab's text, the total or its label, would bite into the digits at frame 1: there the
+  // top notch is skipped and the bottom one is shallow)
+  const slabTxt = carve ? [
+    [X0 + 26 - 10, X0 + 26 + Math.max(0, ...lay.tf.lines.map(x => measure(x, fH(800, lay.tf.labPx), { letterSpacing: '.06em' }))) + 10],
+    [X0 + SW - 26 - totW(lay.tf.totPx) - 10, X0 + SW - 26 + 10],
+  ] : []
   for (const fr of seams) {
     const x = ux(fr)
-    const el = s('path', { d: `M${x - nw},${ys - 3}L${x},${ys + nd}L${x + nw},${ys - 3}ZM${x - nw},${ys + slabH + 3}L${x},${ys + slabH - nd}L${x + nw},${ys + slabH + 3}Z`, fill: C.ink })
+    const under = slabTxt.some(([a, b]) => x + nw > a && x - nw < b)
+    const nd2 = under ? 6 : nd
+    const el = s('path', { d: `${under ? '' : `M${x - nw},${ys - 3}L${x},${ys + nd}L${x + nw},${ys - 3}Z`}M${x - nw},${ys + slabH + 3}L${x},${ys + slabH - nd2}L${x + nw},${ys + slabH + 3}Z`, fill: C.ink })
     notchG.append(el)
     notches.push({ el, x })
   }
@@ -562,6 +731,35 @@ export default function splitSheet(spec, ctx) {
     segs.forEach((sg, m) => { style(sg.o.el, { fontSize: px + 'px' }); if (px < 40) sg.o.el.setAttribute('data-deco', ''); sg.fits = ok ? wide[m] : wide[m] && measure(sg.o.el.textContent, fM(800, px), { letterSpacing: '-0.03em' }) + 12 <= ux(units[m].b) - ux(units[m].a) })
   }
 
+  // ---- the remainder's label (lookOpts.remainder, carve): once the first piece has dropped, what is left of the slab
+  // (the piece he stands on) reads the wrong guess, in the header slot's red ghost style ("$7.04?" = $10 − food). It
+  // swells with the 'guess' bump, is struck with the slot at payoff.slot.strikeT, then fades: the slab is left plain
+  let rem = null
+  const remO = lo.remainder && lo.remainder.text != null && Number.isFinite(lo.remainder.t) ? lo.remainder : null
+  if (remO && carve && n > 1) {
+    const rx0 = ux(cum[1]), rx1 = SX1
+    const txt = String(remO.text)
+    const H = slabH - 16
+    let px = Math.min(TF.totPx, H - 12)
+    while (px > 40 && measure(txt, fH(900, px), { letterSpacing: '-0.03em' }) + 40 > rx1 - rx0 - 40) px -= 2
+    const tw = measure(txt, fH(900, px), { letterSpacing: '-0.03em' })
+    const BW = Math.ceil(tw + 40), cx = Math.round((rx0 + rx1) / 2), cy = Math.round(ys + slabH / 2)
+    const box = h('div', { class: 'ss-slot ss-rem', style: { left: Math.round(cx - BW / 2) + 'px', top: Math.round(cy - H / 2) + 'px', width: BW + 'px', height: H + 'px', opacity: '0' } })
+    const span = h('span', { style: { fontSize: px + 'px' } })
+    span.textContent = txt
+    box.append(span)
+    const strike = h('div', { class: 'ss-slot-strike', 'data-deco': '', style: { left: Math.round(cx - tw / 2 - 8) + 'px', top: Math.round(cy - 4) + 'px', width: Math.round(tw + 16) + 'px', opacity: '0' } })
+    html.append(box, strike)
+    const strikeT = slotO && Number.isFinite(slotO.strikeT) ? slotO.strikeT : null
+    // (gone before the next cut: it never rides a piece down)
+    const outT = Math.min(strikeT != null ? strikeT + 0.6 : Infinity, (n > 1 ? partDrop(1) : Infinity) - 0.5)
+    rem = { t: remO.t, box, span, strike, strikeT, outT, x0: cx - BW / 2, x1: cx + BW / 2, state: null }
+  }
+  const remOp = t => {
+    if (!rem || t < rem.t) return 0
+    return popIn(t, rem.t, 0.22, 0.82).opacity * (1 - prog(t, rem.outT, 0.3))
+  }
+
   // ---- working line
   const wl = h('div', { class: 'ss-wl', style: { top: (bins ? lay.wlTop : lay.wlTop) + 'px', height: wlH + 'px' } })
   if (wlH) html.append(wl)
@@ -592,7 +790,7 @@ export default function splitSheet(spec, ctx) {
 
   // ---- the header's answer slot (payoff.slot): hung after the header's last line, on screen from frame 1
   let slot = null
-  if (slotO && bins) {
+  if (slotO && onSlab) {
     const rg = document.createRange()
     rg.selectNodeContents(parts.header)
     const sr0 = ctx.stage.getBoundingClientRect()
@@ -609,13 +807,16 @@ export default function splitSheet(spec, ctx) {
     const ghostTxt = String(slotO.ghost ?? '$?'), txt = String(slotO.text)
     const footTop = parts.footer ? parts.footer.offsetTop : L.headerBottom + 12
     let fit = null
-    for (let px = 88; px >= 56 && !fit; px -= 4) {
+    // (a long answer, such as a wrong guess, may sit lower: down to the footer's top, clear of the line above)
+    for (let px = 88; px >= (slotO.strikeT != null ? 48 : 56) && !fit; px -= 4) {
       const tw = Math.max(measure(txt, fH(900, px), { letterSpacing: '-0.03em' }), measure(ghostTxt, fH(900, px), { letterSpacing: '-0.03em' }))
       const SW2 = Math.ceil(tw + 2 * 22), SH2 = px + 22
-      const y1 = Math.min((last.top + last.bot) / 2 + SH2 / 2, footTop - 6), y0 = y1 - SH2
-      // clear of every header line it shares height with (and of the last line's colon by a leader's length)
-      const x0 = Math.max(last.right + 90, ...above.filter(l => l.bot - 6 > y0).map(l => l.right + 30))
-      if (x0 + SW2 <= L.right - 8) fit = { px, SW: SW2, SH: SH2, x0: Math.round(x0), y0: Math.round(y0) }
+      for (const low of slotO.strikeT != null ? [false, true] : [false]) {
+        const y1 = low ? footTop - 6 : Math.min((last.top + last.bot) / 2 + SH2 / 2, footTop - 6), y0 = y1 - SH2
+        // clear of every header line it shares height with (and of the last line's colon by a leader's length)
+        const x0 = Math.max(last.right + 90, ...above.filter(l => l.bot - 6 > y0).map(l => l.right + 30))
+        if (x0 + SW2 <= L.right - 8) { fit = { px, SW: SW2, SH: SH2, x0: Math.round(x0), y0: Math.round(y0) }; break }
+      }
     }
     if (!fit) console.warn('split-sheet: lookOpts.payoff.slot does not fit beside the header; skipped')
     else {
@@ -626,6 +827,16 @@ export default function splitSheet(spec, ctx) {
       const lead = h('div', { class: 'ss-slot-lead', 'data-deco': '', style: { left: Math.round(last.right + 18) + 'px', top: ly + 'px', width: Math.max(0, Math.round(fit.x0 - 16 - (last.right + 18))) + 'px' } })
       ctx.stage.append(lead, box)
       slot = { t: slotO.t, box, span, txt, ghostTxt, cx: fit.x0 + fit.SW / 2, cy: fit.y0 + fit.SH / 2, W: fit.SW, H: fit.SH, state: null }
+      // a wrong guess as the ghost (ghostTone 'bad': red, dashed): at strikeT a red line slams through it and it
+      // greys out; at t the answer stamps in over it
+      slot.bad = slotO.ghostTone === 'bad'
+      if (Number.isFinite(slotO.strikeT)) {
+        const gw = measure(ghostTxt, fH(900, fit.px), { letterSpacing: '-0.03em' })
+        const strike = h('div', { class: 'ss-slot-strike', 'data-deco': '', style: { left: Math.round(slot.cx - gw / 2 - 8) + 'px', top: Math.round(slot.cy - 4) + 'px', width: Math.round(gw + 16) + 'px', opacity: '0' } })
+        ctx.stage.append(strike)
+        slot.strike = { t: slotO.strikeT, el: strike }
+        cue(slotO.strikeT, 'swipe', { gain: 0.35, dur: 0.14 })
+      }
       // (no burst lines: under the slot sits the footer; the stamp is a gold ring instead, and the world shakes)
       fxk.impact(slot.t, { x: slot.cx, y: slot.cy, burst: false, shake: 9, punch: 0, cue: null })
       cue(slot.t - 0.18, 'whoosh', { dur: 0.18, gain: 0.3 })
@@ -636,7 +847,11 @@ export default function splitSheet(spec, ctx) {
 
   // ---- sum check: assembles where the slab was
   // (a stub left on the slab by shares that do not add up keeps its place: the check takes the free part)
-  const CW = leftover ? Math.max(300, ux(cum[n]) - 18 - X0) : SW
+  // (carve: he ends standing on the bare bracket at the slab's right end, so the check stops short of him)
+  const CARVE_END = SX1 + 4
+  // (and short of where he lands when the last piece drops from under him, where the payoff slab stamps in)
+  const lastStand = Math.min(ux(cum[Math.max(0, n - 1)]) + 112 * k, SX1 - 34 * k)
+  const CW = leftover ? Math.max(300, ux(cum[n]) - 18 - X0) : carve && showFig ? Math.min(SW, CARVE_END - 64 * k - 24 - X0, lastStand - 64 * k - 46 - X0) : SW
   const ghost = s('rect', { x: X0, y: ys, width: CW, height: slabH, rx: 14, fill: C.heroSoft, stroke: C.hero, 'stroke-width': 6, 'stroke-dasharray': '14 12', opacity: 0 })
   g.back.append(ghost)
   let chk = null
@@ -670,12 +885,15 @@ export default function splitSheet(spec, ctx) {
     const spans = [...el.querySelectorAll('.tk')]
     const sr = ctx.stage.getBoundingClientRect()
     const used = new Set()
+    // (carve: the silent check assembles fast, so the whole line is in ~0.6 s after checkT and the verdict's stamp
+    // stays the last new thing on screen)
     const tk = spans.map((sp, m) => {
       const r = sp.getBoundingClientRect()
-      const at = checkT + 0.32 + 0.11 * m
+      const at = carve ? checkT + 0.1 + 0.06 * m : checkT + 0.32 + 0.11 * m
       let fly = null
-      const pi = PP.findIndex((p, i) => !used.has(i) && String(p.amount) === toks[m])
-      if (pi >= 0) {
+      // (a rounded amount "≈ $1.29" feeds a check token "$1.29": the check is exact on the shown numbers)
+      const pi = carve ? -1 : PP.findIndex((p, i) => !used.has(i) && String(p.amount).replace(/^≈\s*/, '') === toks[m])
+      if (pi >= 0 && !carve) {
         used.add(pi)
         // (rows: it swings out over the slab's post, so it flies as a chip with its own void backing)
         const o = new NumObj(html, { cls: 'ss-amt', text: toks[m], ax: 0.5, ay: 1, style: { fontSize: apx + 'px', color: C.ink, ...(bins ? {} : { background: C.void, borderRadius: '10px', padding: '0 8px' }) } })
@@ -683,12 +901,47 @@ export default function splitSheet(spec, ctx) {
       }
       return { sp, at, fly }
     })
-    chk = { el, tk, px, end: tk.length ? tk[tk.length - 1].at + 0.2 : checkT }
+    chk = { el, tk, px, end: tk.length ? tk[tk.length - 1].at + (carve ? 0.12 : 0.2) : checkT }
   }
 
   // ---- payoff (bins): a gold slab in the free air between the footer and the sum check, centred on the sheet
+  // (carve: the bookend of the frame-1 slab, at its size, with its type: the label in caps on the left, the figure at
+  // the total's size on the right, in the air the slab and the figure have left, right over the check's box and as
+  // wide as it, so it stops short of him on the bracket)
   let pay = null
   const payO = lo.payoff && lo.payoff.text && Number.isFinite(lo.payoff.t) ? lo.payoff : null
+  if (payO && carve) {
+    const labTxt = String(payO.label || '').replace(/-/g, '\u2011').toUpperCase()
+    const txt = String(payO.text)
+    const gy = +ghost.getAttribute('y')
+    const bandTop = (parts.footerBottom || parts.headerBottom) + 24
+    const PH = slabH, PW = Math.round(CW)
+    const py0 = Math.round(gy - 16 - PH)
+    let fit = null
+    for (let px = TF.totPx; px >= 52 && !fit; px -= 4) {
+      const nw = measure(txt, fH(900, px), { letterSpacing: '-0.03em' })
+      const maxLab = PW - nw - 3 * 26
+      const ls = labTxt ? lines2(labTxt, fH(800, TF.labPx), maxLab, maxLab, { letterSpacing: '.06em' }) : []
+      if (ls && ls.length * TF.labPx <= PH - 16) fit = { px, nw, ls }
+    }
+    if (!fit || py0 < bandTop) console.warn('split-sheet: lookOpts.payoff does not fit above the check (carve); skipped')
+    else {
+      const pg = s('g')
+      const rect = s('rect', { x: X0, y: py0, width: PW, height: PH, rx: 14, fill: C.coin, stroke: C.ink, 'stroke-width': 10, opacity: 0 })
+      const ring = s('rect', { x: X0 + 12, y: py0 + 12, width: PW - 24, height: PH - 24, rx: 8, fill: 'none', stroke: C.coinDeep, 'stroke-width': 4, opacity: 0 })
+      pg.append(rect, ring)
+      g.mid.append(pg)
+      const lab = fit.ls.length ? new NumObj(html, { cls: 'ss-totl', text: '', ax: 0, ay: 0.5, style: { fontSize: TF.labPx + 'px', lineHeight: TF.labPx + 'px', hyphens: 'none' } }) : null
+      if (lab) lab.el.innerHTML = fit.ls.map(esc).join('<br>')
+      const num2 = new NumObj(html, { cls: 'ss-tot', text: txt, ax: 1, ay: 0.5, style: { fontSize: fit.px + 'px' } })
+      // (its burst stays under the footer: the lines are as long as the air above it allows)
+      // (the burst's ellipse circumscribes the slab, so no line starts inside a corner of so wide a slab; its lines
+      // stop short of the footer)
+      const erx = (PW / 2 + 8) * Math.SQRT2, ery = (PH / 2 + 8) * Math.SQRT2
+      pay = { t: payO.t, g: pg, rect, ring, lab, num: num2, x0: X0, y0: py0, W: PW, H: PH, cx: X0 + PW / 2, cy: py0 + PH / 2, pad: 26,
+        erx, ery, lines: 18, r: clamp((py0 + PH / 2 - ery - (bandTop - 16)) / 1.4, 16, 40) }
+    }
+  }
   if (payO && bins) {
     const bandTop = (parts.footerBottom || parts.headerBottom) + 22
     const bandBot = +ghost.getAttribute('y') - 22
@@ -716,7 +969,8 @@ export default function splitSheet(spec, ctx) {
       const lab = fit.ls.length ? new NumObj(html, { cls: 'ss-totl', text: '', ax: 0, ay: 0.5, style: { fontSize: '40px', lineHeight: '40px', hyphens: 'none' } }) : null
       if (lab) lab.el.innerHTML = fit.ls.map(esc).join('<br>')
       const num2 = new NumObj(html, { cls: 'ss-tot', text: txt, ax: 1, ay: 0.5, style: { fontSize: fit.px + 'px' } })
-      pay = { t: payO.t, g: pg, rect, ring, lab, num: num2, x0: px0, y0: py0, W: PW, H: fit.PH, cx: px0 + PW / 2, cy: py0 + fit.PH / 2 }
+      pay = { t: payO.t, g: pg, rect, ring, lab, num: num2, x0: px0, y0: py0, W: PW, H: fit.PH, cx: px0 + PW / 2, cy: py0 + fit.PH / 2, pad: 30, r: 46,
+        erx: PW / 2 + 12, ery: fit.PH / 2 + 12, lines: 14 }
     }
   }
 
@@ -724,8 +978,10 @@ export default function splitSheet(spec, ctx) {
   units.forEach(u => {
     if (u.k > 1) cue(u.land, 'tick', { gain: 0.32 })
   })
+  const payAtGoal = carve && pay && goalI >= 0 && Math.abs(pay.t - times[goalI]) < 0.15
   PP.forEach((p, i) => {
-    if (i === goalI) {
+    if (i === goalI && payAtGoal) cue(times[i], 'thud', { gain: 0.5 })   // (the payoff slab carries the impact)
+    else if (i === goalI) {
       const a = amts[i]
       fxk.impact(times[i], { x: a.cx, y: a.y - apx * 0.45, rx: a.w / 2 + PLATE[0] + 10, ry: apx / 2 + PLATE[1] + 10, r: 40, lines: 12, shake: 12, punch: 0.014, cue: null })
       cue(times[i], 'hit', { gain: 0.9 })
@@ -738,7 +994,7 @@ export default function splitSheet(spec, ctx) {
   }
   if (gag) cue(gag.t, 'pop', { gain: 0.5 })
   if (pay) {
-    fxk.impact(pay.t, { x: pay.cx, y: pay.cy, rx: pay.W / 2 + 12, ry: pay.H / 2 + 12, r: 46, lines: 14, shake: 14, punch: 0.016, cue: null })
+    fxk.impact(pay.t, { x: pay.cx, y: pay.cy, rx: pay.erx, ry: pay.ery, r: pay.r, lines: pay.lines, shake: 14, punch: 0.016, cue: null })
     cue(pay.t - 0.2, 'whoosh', { dur: 0.2, gain: 0.35 })
     cue(pay.t, 'hit', { gain: 0.95 })
     cue(pay.t + 0.1, 'cash', { gain: 0.6 })
@@ -746,8 +1002,8 @@ export default function splitSheet(spec, ctx) {
 
   // ================================================================== the figure
   const fig = showFig ? new Figure(g.fig, { scale: k }) : null
-  const saw = showFig && !ten && bins ? sawProp(toolLayer) : null
-  const clv = showFig && ten && bins ? cleaverProp(toolLayer, toolLabel, CBW, clvPx(toolLabel)) : null
+  const saw = showFig && !ten && onSlab ? sawProp(toolLayer) : null
+  const clv = showFig && ten && onSlab ? cleaverProp(toolLayer, toolLabel, CBW, clvPx(toolLabel)) : null
   const P = {
     sawing: { lean: 30, tilt: 18, aF: [70, 20], aB: [52, 40], lF: [34, -56], lB: [-22, -14] },
     carry: { lean: 4, tilt: 12, aF: [46, 60], aB: [36, 70], lF: [8, -6], lB: [-8, -4] },
@@ -757,6 +1013,11 @@ export default function splitSheet(spec, ctx) {
     pointDown: { lean: 8, tilt: 26, aF: [46, 4], aB: [-14, 18], lF: [8, -4], lB: [-10, -2] },
     jump: { lean: -4, tilt: -10, aF: [124, 36], aB: [-116, -30], lF: [42, -84], lB: [-8, -66] },
     land: { lean: 22, tilt: 10, aF: [40, 40], aB: [-50, 30], lF: [62, -118], lB: [44, -108] },
+    // beats on the slab (carve): no arms over his head there, the footer's band is just above him
+    recoil: { lean: -16, tilt: -14, aF: [104, 30], aB: [-104, -30], lF: [24, -40], lB: [-22, -34], lift: 12 },
+    shrugLow: { lean: -2, tilt: 12, aF: [26, 64], aB: [-26, -64], lF: [6, -4], lB: [-6, -4] },   // palms up at the hips
+    stompUp: { lean: -6, tilt: 6, aF: [70, 40], aB: [-60, 30], lF: [78, -96], lB: [-8, -4] },
+    stompDown: { lean: 18, tilt: 22, aF: [40, 30], aB: [-40, 30], lF: [30, -40], lB: [-12, -18] },
   }
   const toolXOf = c => c + CLV.gap + CBW / 2             // cleaver grip x when its blade is centred on the cut
   const lerpP = (a, b, p) => [lerp(a[0], b[0], p), lerp(a[1], b[1], p)]
@@ -765,7 +1026,7 @@ export default function splitSheet(spec, ctx) {
   const segs2 = { saw: [], tool: [], walk: [] }
   let hopSeg = null
 
-  if (showFig && bins) {
+  if (showFig && onSlab) {
     const standSaw = c => Math.min(c + 112 * k, SX1 - 34 * k)
     const standClv = c => Math.min(toolXOf(c) + 66 * k, SX1 - 30 * k)
     const cuts = []
@@ -810,7 +1071,10 @@ export default function splitSheet(spec, ctx) {
         const xs = standSaw(ct.c)
         // the first cut starts early (something moves inside the first second); later cuts take what time there is
         const first = !segs2.saw.length
-        const sawDur = clamp(tEnd - (first ? 0.55 : free) - (Math.abs(xs - cur) > 3 ? Math.abs(xs - cur) / 330 + 0.1 : 0) - (first ? 0 : 0.1), 0.36, first ? 2.4 : 1.1)
+        const walkT = Math.abs(xs - cur) > 3 ? Math.abs(xs - cur) / 330 + 0.1 : 0
+        let sawDur = clamp(tEnd - (first ? 0.55 : free) - walkT - (first ? 0 : 0.1), 0.36, first ? 2.4 : 1.1)
+        // with lookOpts.activate he starts sawing when the VO names the part (he works while it is talked in)
+        if (actT[ct.i] != null && !first) sawDur = clamp(tEnd - Math.max(actT[ct.i], free + walkT + 0.1), 0.36, 2.6)
         walkTo(xs, tEnd - sawDur - 0.1, free)
         segs2.saw.push({ t0: tEnd - sawDur, t1: tEnd, c: ct.c, xs })
         pk.push({ t: tEnd - sawDur - 0.12, pose: 'sawing', d: 0.14 })
@@ -820,10 +1084,27 @@ export default function splitSheet(spec, ctx) {
       }
       // after the piece lands: look/point down at the bin it filled
       const tl = times[ct.i]
-      pk.push({ t: tl + 0.08, pose: ct.i === goalI ? 'pointDown' : 'lookDown', d: 0.25 })
+      pk.push({ t: tl + 0.08, pose: ct.i === goalI ? 'pointDown' : 'lookDown', d: 0.25, soft: true })
       free = tl + 0.2
     }
-    if (!leftover) {
+    if (!leftover && carve) {
+      // carve: the last piece is the one he stands on ("what's left"): it drops out from under his feet, he falls
+      // onto the bare bracket (squash), then steps along it to the post, beside where the check will assemble
+      const tDrop = partDrop(n - 1)
+      const by = ys + slabH + 6 - S.prop / 2
+      // ('fall': arms up riding the drop; arms flung out sideways crossed the payoff slab stamping in beside him)
+      pk.push({ t: tDrop - 0.04, pose: 'fall', d: 0.1 })
+      pk.push({ t: tDrop + 0.18, pose: 'land', d: 0.06, e: 'out' })
+      pk.push({ t: tDrop + 0.34, pose: 'stand', d: 0.3 })
+      hopSeg = { t0: tDrop, t1: tDrop + 0.24, from: [cur, ys], to: [cur, by], drop: true }
+      // (he drifts back onto the bracket as he drops, clear of the payoff slab stamping in at his side)
+      const drift = Math.max(0, Math.min(20, SX1 - 18 * k - cur))
+      if (drift > 0) { xk.push({ t: tDrop, v: cur + drift, d: 0.24, e: 'out' }); cur += drift }
+      cue(tDrop + 0.24, 'step', { gain: 0.6 })
+      walkTo(Math.max(cur, CARVE_END), tDrop + 0.8, tDrop + 0.4)
+      const tl = times[n - 1]
+      pk.push({ t: Math.max(tl + 0.2, tDrop + 0.85), pose: n - 1 === goalI ? 'pointDown' : 'point', d: 0.3, soft: true })
+    } else if (!leftover) {
       // hop off the right end before the last piece drops
       const tDrop = partDrop(n - 1)
       const jt0 = tDrop - 0.1, jd = 0.5
@@ -833,13 +1114,13 @@ export default function splitSheet(spec, ctx) {
       pk.push({ t: jt0, pose: 'jump', d: 0.12, e: 'out' })
       pk.push({ t: jt0 + jd - 0.06, pose: 'land', d: 0.08, e: 'out' })
       pk.push({ t: jt0 + jd + 0.14, pose: 'stand', d: 0.3 })
-      hopSeg = { t0: jt0, t1: jt0 + jd, from: [cur, ys], to: [FIG_X.bins, FLOOR] }
+      hopSeg = { t0: jt0, t1: jt0 + jd, from: [cur, ys], to: [FIG_X.bins, FLOOR], h: 150 }
       cue(jt0 + jd, 'step', { gain: 0.6 })
       const tl = times[n - 1]
-      pk.push({ t: tl + 0.2, pose: n - 1 === goalI ? 'celebrate' : 'point', d: 0.3 })
+      pk.push({ t: tl + 0.2, pose: n - 1 === goalI ? 'celebrate' : 'point', d: 0.3, soft: true })
     }
   }
-  if (showFig && !bins) {
+  if (showFig && !onSlab) {
     // rows: he stands on the floor in the rail lane and points: at the slab as a piece breaks off, then at its row
     xk.push({ t: 0, v: FIG_X.rows, d: 0.01 })
     pk.push({ t: 0, pose: 'think' })
@@ -853,25 +1134,61 @@ export default function splitSheet(spec, ctx) {
     pk.push({ t: times[n - 1] + 0.6, pose: 'idle', d: 0.4 })
   }
   // closing poses (floor): point up at the check, celebrate on the verdict, point at the gag
-  if (showFig && (hopSeg || !bins)) {
-    if (checkT != null) pk.push({ t: checkT, pose: 'pointUp', d: 0.28 })
-    if (chk) pk.push({ t: chk.end + 0.1, pose: 'idle', d: 0.4 })
+  if (showFig && (hopSeg || !onSlab)) {
+    // (carve: he is still stepping along the bracket at checkT, under the payoff slab: he points across at the check
+    // once he has arrived, never up into the slab)
+    if (checkT != null && carve) pk.push({ t: Math.max(checkT, partDrop(n - 1) + 0.85), pose: 'point', d: 0.28, soft: true })
+    else if (checkT != null) pk.push({ t: checkT, pose: 'pointUp', d: 0.28, soft: true })
+    if (chk) pk.push({ t: chk.end + 0.1, pose: 'idle', d: 0.4, soft: true })
     const payLater = pay && spec.verdict && pay.t > spec.verdict.t + 0.5
-    if (spec.verdict) { pk.push({ t: spec.verdict.t + 0.05, pose: payLater ? 'pointUp' : 'celebrate', d: 0.24 }); pk.push({ t: spec.verdict.t + 1.4, pose: 'idle', d: 0.4 }) }
-    if (pay) { pk.push({ t: pay.t - 0.04, pose: 'celebrate', d: 0.2 }); pk.push({ t: pay.t + 1.5, pose: 'idle', d: 0.4 }) }
+    if (spec.verdict) { pk.push({ t: spec.verdict.t + 0.05, pose: payLater ? 'pointUp' : 'celebrate', d: 0.24, soft: true }); pk.push({ t: spec.verdict.t + 1.4, pose: 'idle', d: 0.4, soft: true }) }
+    if (pay && !carve) { pk.push({ t: pay.t - 0.04, pose: 'celebrate', d: 0.2 }); pk.push({ t: pay.t + 1.5, pose: 'idle', d: 0.4 }) }
     if (gag) pk.push({ t: gag.t, pose: 'pointUp', d: 0.28 })
+  }
+  // scripted beats (lookOpts.beats): [{ t, act, d = 1.2 }], act = a POSES name, one of this format's poses
+  // (lookDown, pointDown, recoil, ...), or 'stomp' (a stamp of one foot on the slab: crouch, knee up, slam, with a
+  // small impact at his feet). Automatic reaction keys inside the beat's window give way; saw and hop keys stay.
+  const stomps = []
+  if (showFig) {
+    beatsO.forEach((b, bi) => {
+      const d = Number.isFinite(b.d) ? b.d : 1.2
+      // (no return to rest when the next beat starts by then: that beat takes over)
+      const handOff = bi + 1 < beatsO.length && beatsO[bi + 1].t <= b.t + d + 0.02
+      const until = b.hold ? Infinity : b.t + d
+      for (let m = pk.length - 1; m >= 0; m--) if (pk[m].soft && pk[m].t >= b.t - 0.3 && pk[m].t < until) pk.splice(m, 1)
+      const back = hopSeg && b.t > hopSeg.t1 ? 'idle' : 'stand'
+      if (b.act === 'stomp') {
+        pk.push({ t: b.t - 0.3, pose: 'crouch', d: 0.1 })
+        pk.push({ t: b.t - 0.18, pose: 'stompUp', d: 0.1 })
+        pk.push({ t: b.t - 0.06, pose: 'stompDown', d: 0.06, e: 'out' })
+        if (!handOff) pk.push({ t: b.t + Math.max(0.3, d - 0.3), pose: back, d: 0.3 })
+        stomps.push(b.t)
+      } else {
+        pk.push({ t: b.t, pose: b.act, d: Number.isFinite(b.in) ? b.in : 0.2 })
+        if (!b.hold && !handOff) pk.push({ t: b.t + d, pose: back, d: 0.35 })
+      }
+    })
   }
   pk.sort((a, b) => a.t - b.t)
   const ptr = showFig ? poseTrack(pk.map(x => ({ ...x, pose: P[x.pose] || x.pose }))) : null
   const xtr = showFig ? track(xk.length ? xk : [{ t: 0, v: FIG_X.rows }]) : null
+  // a stomp lands with a small impact at his feet (shake, short hit lines along the slab, thud)
+  for (const st of stomps) {
+    const fx0 = xtr.at(st)
+    fxk.impact(st, { x: fx0, y: (onSlab && !(hopSeg && st > hopSeg.t0) ? ys : FLOOR) - 2, rx: 56 * k, ry: 12, r: 24, lines: 8, shake: 10, punch: 0, cue: null })
+    cue(st, 'thud', { gain: 0.75 })
+  }
 
   const walkW = t => { for (const w of segs2.walk) if (t > w.t0 - 0.05 && t < w.t1 + 0.05) return w; return null }
   function figState(t) {
-    let x = xtr.at(t), ground = bins ? ys : FLOOR, face = -1
-    if (!bins) return { x, ground, face }
-    if (hopSeg && t >= hopSeg.t0) {
+    let x = xtr.at(t), ground = onSlab ? ys : FLOOR, face = -1
+    if (!onSlab) return { x, ground, face }
+    if (hopSeg && hopSeg.drop && t >= hopSeg.t0) {
+      // a straight drop under gravity (x keeps following his track)
+      ground = lerp(hopSeg.from[1], hopSeg.to[1], E.inQuad(prog(t, hopSeg.t0, hopSeg.t1 - hopSeg.t0)))
+    } else if (hopSeg && t >= hopSeg.t0) {
       const p = prog(t, hopSeg.t0, hopSeg.t1 - hopSeg.t0)
-      const [px, py] = arc(p, hopSeg.from, hopSeg.to, 150)
+      const [px, py] = arc(p, hopSeg.from, hopSeg.to, hopSeg.h)
       x = px; ground = py
       if (t < hopSeg.t1 + 0.32) face = 1                 // he faces the way he jumps, then turns back to the sheet
     }
@@ -945,7 +1262,7 @@ export default function splitSheet(spec, ctx) {
   // ================================================================== working line states
   const WS = []
   if (ten && ten.formula) WS.push({ t0: toolT + 0.1, t1: partDrop(0) - 0.12, kind: 'ten' })
-  PP.forEach((p, i) => { if (p.note) WS.push({ t0: times[i] + 0.06, t1: i < n - 1 ? partDrop(i + 1) - 0.12 : (checkT ?? Infinity), kind: 'note', i }) })
+  if (showNotes) PP.forEach((p, i) => { if (p.note) WS.push({ t0: times[i] + 0.06, t1: i < n - 1 ? partDrop(i + 1) - 0.12 : (checkT ?? Infinity), kind: 'note', i }) })
   if (gag) WS.push({ t0: gag.t, t1: Infinity, kind: 'gag' })
   // the gag's result (after its last "=") is green, like the ten formula's
   const gagHtml = () => { const m = gag.text.lastIndexOf(' = '); return m < 0 || /\*\*|__/.test(gag.text) ? `<b>${markup(gag.text)}</b>` : `<b>${esc(gag.text.slice(0, m))}</b> = <em>${esc(gag.text.slice(m + 3))}</em>` }
@@ -966,9 +1283,17 @@ export default function splitSheet(spec, ctx) {
   }
 
   // ================================================================== seek
-  const tipLast = bins && !leftover && !ten
+  // (carve: the last piece drops straight down with him; tipped about its foot it swung over row 1's amount)
+  const tipLast = onSlab && !leftover && !ten && !carve
   const duration = durationOf(spec, Math.max(times[n - 1] + 0.8, chk ? chk.end + 0.6 : 0, gag ? gag.t + 1.2 : 0, pay ? pay.t + 1.2 : 0), d.hold ?? 3)
   const split = ten ? ten.t : partDrop(0) - 0.04         // the total stays on the slab until the first piece drops
+  // bumps (lookOpts.bumps: [{ t, at: 'total' | 'guess' | part index }]): a 0.3 s swell with a tick as the VO says the
+  // figure. 'total' swells the slab's total while it is still on the slab, else the header's emphasised figure (the
+  // hook's input, "$10"); 'guess' swells the header's answer slot; a part index swells that part's amount
+  const bumpAt = (t, key) => { let b = 1; for (const x of bumpsO) if (String(x.at) === String(key)) b = Math.max(b, 1 + 0.16 * Math.sin(Math.PI * prog(t, x.t, 0.3))); return b }
+  for (const x of bumpsO) cue(x.t, 'tick', { gain: 0.45 })
+  const hdrEm = parts.header && bumpsO.some(x => x.at === 'total' && x.t >= split) ? parts.header.querySelector('em') : null
+  if (hdrEm) style(hdrEm, { display: 'inline-block', transformOrigin: '50% 70%' })
 
   function seek(t) {
     // ---- slab: the remaining part is one rect (bricks after the ten chop)
@@ -981,7 +1306,13 @@ export default function splitSheet(spec, ctx) {
       attr(slabRect, 'x', remX0.toFixed(1)); attr(slabRect, 'width', Math.max(0, SX1 - remX0).toFixed(1))
       attr(slabRing, 'x', (remX0 + 12).toFixed(1)); attr(slabRing, 'width', Math.max(0, SX1 - remX0 - 24).toFixed(1))
     }
-    for (const nt of notches) attr(nt.el, 'opacity', nt.x > remX0 + 2 && !(ten && t >= ten.t + 0.05) ? '1' : '0')
+    // (a notch under the remainder's label gives way while the label is up)
+    const rOp = remOp(t)
+    for (const nt of notches) {
+      const on = nt.x > remX0 + 2 && !(ten && t >= ten.t + 0.05)
+      const under = rem && nt.x > rem.x0 - 12 && nt.x < rem.x1 + 12 ? rOp : 0
+      attr(nt.el, 'opacity', on ? (1 - under).toFixed(3) : '0')
+    }
     // kerf while sawing
     const sgNow = saw ? sawGrip(t) : null
     if (sgNow && t >= sgNow.sg.t0) {
@@ -1002,7 +1333,8 @@ export default function splitSheet(spec, ctx) {
         tx = b.ix0; tw = b.ix1 - b.ix0; th = lh; ty = lay.binFloor - 5 - (u.j + 1) * lh
       } else {
         const r = R[i]
-        tx = sx0 + 2; tw = Math.max(4, sx1 - sx0 - 4); th = Math.max(8, r.trackH - 6); ty = r.trackTop + r.trackH / 2 - th / 2
+        // (carve: the piece fills its lane, as thick as the track)
+        tx = sx0 + 2; tw = Math.max(4, sx1 - sx0 - 4); th = carve ? r.trackH : Math.max(8, r.trackH - 6); ty = r.trackTop + r.trackH / 2 - th / 2
       }
       if (t < u.drop) {
         if (!cracked) { attr(e.g, 'opacity', '0'); return }
@@ -1016,6 +1348,9 @@ export default function splitSheet(spec, ctx) {
       } else {
         const sq = squashAt(t, u.land, 0.22)
         w = tw * sq.sx; hh = th * sq.sy; x = tx + (tw - w) / 2; y = ty + (th - hh)
+        // carve: once it has landed, the piece slides to the left end of its lane, so the lanes end as a left-aligned
+        // bar chart of the $10 (no bar under a % or an amount)
+        if (carve) x += (X0 + 2 - tx) * E.inOut(prog(t, u.land + 0.12, 0.26))
         fill = mix(C.coin, toneOf(tones[i] === 'goal' || tones[i] === 'neutral' ? 'goal' : tones[i]).fill, prog(t, u.land, 0.15))
       }
       attr(e.g, 'opacity', '1')
@@ -1036,8 +1371,29 @@ export default function splitSheet(spec, ctx) {
     // ---- slab text
     const preSplit = t < split
     const aTot = ten ? (t < ten.t ? 1 : 0) : preSplit ? 1 : 1 - prog(t, split, 0.12)
-    if (totLab) totLab.set({ x: totLabX, y: ys + slabH / 2, opacity: aTot })
-    tot.set({ x: totX, y: ys + slabH / 2, opacity: aTot })
+    // (carve: a text the first cut runs through fades as the saw starts, so the kerf never splits it)
+    const saw0 = carve && segs2.saw[0] ? segs2.saw[0] : null
+    const cutIn = k2 => saw0 && slabTxt[k2] && saw0.c > slabTxt[k2][0] && saw0.c < slabTxt[k2][1]
+    const aLab = cutIn(0) ? Math.min(aTot, 1 - prog(t, saw0.t0, 0.1)) : aTot
+    const aTot2 = cutIn(1) ? Math.min(aTot, 1 - prog(t, saw0.t0, 0.1)) : aTot
+    if (totLab) totLab.set({ x: totLabX, y: ys + slabH / 2, opacity: aLab })
+    const bTot = bumpAt(t, 'total')
+    tot.set({ x: totX, y: ys + slabH / 2, opacity: aTot2, sx: t < split ? bTot : 1, sy: t < split ? bTot : 1 })
+    // ---- the remainder's label: pops in, swells with the guess, struck with the slot, then fades
+    if (rem) {
+      const struck = rem.strikeT != null && t >= rem.strikeT
+      const state = struck ? 'struck' : 'bad'
+      if (rem.state !== state) {
+        rem.state = state
+        style(rem.box, struck ? { background: '#EEF0F3', border: `5px dashed ${C.dim}` } : { background: C.white, border: `5px dashed ${C.red}` })
+        style(rem.span, { color: struck ? C.grey : C.red })
+      }
+      const sc = (t < rem.t ? 1 : popIn(t, rem.t, 0.22, 0.82).scale) * bumpAt(t, 'guess')
+      style(rem.box, { opacity: rOp.toFixed(3), transform: sc !== 1 ? `scale(${sc.toFixed(3)})` : 'none' })
+      const p = E.out(prog(t, rem.strikeT ?? Infinity, 0.12))
+      style(rem.strike, { opacity: struck ? rOp.toFixed(3) : '0', transform: `scaleX(${p.toFixed(3)})` })
+    }
+    if (hdrEm) style(hdrEm, { transform: t >= split && bTot > 1.0005 ? `scale(${bTot.toFixed(3)})` : 'none' })
     units.forEach((u, m) => {
       const sg = segs[m]
       const cx = (ux(u.a) + ux(u.b)) / 2
@@ -1053,6 +1409,8 @@ export default function splitSheet(spec, ctx) {
       } else if (!preSplit && sg.fits) {
         const pp = prog(t, split + 0.06, 0.2)
         op = clamp(pp * 2.5) * (t < u.drop ? 1 : 1 - prog(t, u.drop, 0.08)); sc = 1 + 0.12 * Math.sin(Math.PI * pp)
+        if (masked.has(u.part)) op = 0                     // (a masked part's piece never carries its %: the sheet unmasks it)
+        if (carve) op = 0                                  // (carve: the remainder is labelled instead, lookOpts.remainder)
       }
       sg.o.set({ x: cx, y, sx: sc, sy: sc, opacity: op })
       sg.o.overlap(t >= u.drop)
@@ -1071,19 +1429,32 @@ export default function splitSheet(spec, ctx) {
         // a small squash of the whole bin on landing
         const sq = squashAt(t, lastLand, 0.05)
         attr(be.bodyG, 'transform', sq.sy !== 1 ? `translate(${b.cx},${FLOOR}) scale(${sq.sx.toFixed(3)},${sq.sy.toFixed(3)}) translate(${-b.cx},${-FLOOR})` : '')
+      } else {
+        // rows: the label is dim until the row activates; its % is green while it is the row being worked
+        // (activation to the next one), a masked % reads "?" until then, and the % bumps as the row activates
+        const re = rowEls[i], at = actT[i]
+        if (at != null) style(re.el, { color: t < at ? C.dim : C.ink })
+        if (re.pspan) {
+          setHTML(re.pspan, esc(!masked.has(i) || t >= unmaskT(i) ? (p.pct || '') : '?'))
+          const nextA = i < n - 1 ? (actT[i + 1] ?? partDrop(i + 1)) : (checkT ?? Infinity)
+          style(re.pspan, { color: at != null && t >= at && t < nextA ? C.heroInk : C.grey })
+          if (re.pel && at != null) { const b = 1 + 0.16 * Math.sin(Math.PI * prog(t, at, 0.26)); re.pel.set({ ...re.pxy, sx: b, sy: b }) }
+        }
       }
       const a = amts[i]
       const dropY = t < lastLand ? 0 : 22 * (1 - E.out(prog(t, lastLand, 0.14)))   // drops the last few px onto the rim
       const isGoal = tones[i] === 'goal'
-      const sq = squashAt(t, lastLand + 0.05, Math.min(a.sqMax, isGoal ? 0.12 : Math.max(0, 1 - 42 / apx)))
-      const pp = popIn(t, lastLand, 0.22, 0.84)
+      // (carve's amounts are small: squash and pop never take them under the 41 px floor, the goal included)
+      const sq = squashAt(t, lastLand + 0.05, Math.min(a.sqMax, isGoal && !carve ? 0.12 : Math.max(0, 1 - 42 / apx)))
+      const pp = popIn(t, lastLand, 0.22, carve ? Math.max(0.84, 42 / apx) : 0.84)
       const nextT = i < n - 1 ? times[i + 1] : (checkT ?? Infinity)
       const tc = toneOf(tones[i]).text
       const col = isGoal ? C.ink : tones[i] === 'neutral' ? mix(C.heroInk, C.ink, prog(t, nextT, 0.3)) : tc
-      a.o.set({ x: a.x, y: a.y - dropY, sx: pp.scale * sq.sx, sy: pp.scale * sq.sy, opacity: t < lastLand ? 0 : pp.opacity, color: col })
+      const bk = bumpAt(t, i)
+      a.o.set({ x: a.x, y: a.y - dropY, sx: pp.scale * sq.sx * bk, sy: pp.scale * sq.sy * bk, opacity: t < lastLand ? 0 : pp.opacity, color: col })
       if (a.plate) {
         const pl = popIn(t, lastLand - 0.02, 0.3, 0.6)
-        const x = a.cx - a.w / 2 - PLATE[0], y = a.y - apx - PLATE[1] - dropY + 2
+        const x = a.cx - a.w / 2 - PL[0], y = a.y - apx - PL[1] - dropY + 2
         style(a.plate, { transform: `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) scale(${(pl.scale * sq.sx).toFixed(3)},${(pl.scale * sq.sy).toFixed(3)})`, opacity: t < lastLand - 0.02 ? '0' : '1' })
       }
     })
@@ -1124,21 +1495,31 @@ export default function splitSheet(spec, ctx) {
     if (slot) {
       const t0 = slot.t - 0.16
       const on = t >= t0
-      const state = on ? 'on' : 'ghost'
+      const struck = !on && slot.strike && t >= slot.strike.t
+      const state = on ? 'on' : struck ? 'struck' : 'ghost'
       if (slot.state !== state) {
         slot.state = state
         slot.span.textContent = on ? slot.txt : slot.ghostTxt
         style(slot.box, on
           ? { background: C.coin, border: `6px solid ${C.ink}` }
+          : struck ? { background: '#EEF0F3', border: `5px dashed ${C.dim}` }
+          : slot.bad ? { background: C.white, border: `5px dashed ${C.red}` }
           : { background: '#FFF8E0', border: `5px dashed ${C.coinDeep}` })
-        style(slot.span, { color: on ? C.ink : C.dim })
+        style(slot.span, { color: on ? C.ink : struck ? C.grey : slot.bad ? C.red : C.dim })
+      }
+      if (slot.strike) {
+        const p = E.out(prog(t, slot.strike.t, 0.12))
+        style(slot.strike.el, { opacity: struck ? '1' : '0', transform: `scaleX(${p.toFixed(3)})` })
       }
       let sc = on ? lerp(1.25, 1, E.inQuad(prog(t, t0, 0.16))) : 1
-      if (pay) sc *= 1 + 0.12 * Math.sin(Math.PI * prog(t, pay.t, 0.3))
+      // (a payoff before the slot's own stamp, carve's, leaves the still-struck guess alone)
+      const payBump = pay && pay.t > slot.t
+      if (payBump) sc *= 1 + 0.12 * Math.sin(Math.PI * prog(t, pay.t, 0.3))
+      sc *= bumpAt(t, 'guess')
       style(slot.box, { transform: sc !== 1 ? `scale(${sc.toFixed(3)})` : 'none' })
       // the stamp's ring: a gold halo that opens and fades (at the answer, and again with the payoff's re-slam)
       let ring = 0, ra = 0
-      for (const t1 of [slot.t, ...(pay ? [pay.t] : [])]) { const q = prog(t, t1, 0.4); if (t >= t1 && q < 1) { ring = 4 + 16 * E.out(q); ra = 0.85 * (1 - q) } }
+      for (const t1 of [slot.t, ...(payBump ? [pay.t] : [])]) { const q = prog(t, t1, 0.4); if (t >= t1 && q < 1) { ring = 4 + (slot.strike ? 8 : 16) * E.out(q); ra = 0.85 * (1 - q) } }
       style(slot.box, { boxShadow: ra > 0.01 ? `0 0 0 ${ring.toFixed(1)}px rgba(255, 211, 77, ${ra.toFixed(3)})` : 'none' })
     }
 
@@ -1149,7 +1530,7 @@ export default function splitSheet(spec, ctx) {
       attr(ghost, 'fill', t >= chk.end ? C.heroSoft : C.void)
       attr(ghost, 'stroke-dasharray', t >= chk.end ? 'none' : '14 12')
       for (const x of chk.tk) {
-        const pp = popIn(t, x.at, 0.2, Math.max(0.84, 41 / chk.px))   // never under the 40 px floor mid-pop
+        const pp = popIn(t, x.at, carve ? 0.16 : 0.2, Math.max(0.84, 41 / chk.px))   // never under the 40 px floor mid-pop
         style(x.sp, { opacity: t < x.at ? '0' : pp.opacity.toFixed(3), transform: `scale(${pp.scale.toFixed(3)})` })
         if (x.fly) {
           const f = x.fly
@@ -1180,13 +1561,15 @@ export default function splitSheet(spec, ctx) {
       const t0 = pay.t - 0.16
       const on = t >= t0
       const p = E.inQuad(prog(t, t0, 0.16))
-      const sc = on ? lerp(1.16, 1, p) : 1
+      // (carve's slab spans the safe width: its stamp overshoots only as far as keeps the label at x >= 60)
+      const s0 = carve ? Math.min(1.16, (pay.cx - 60) / Math.max(1, pay.cx - pay.x0 - pay.pad)) : 1.16
+      const sc = on ? lerp(s0, 1, p) : 1
       const op = on ? clamp((t - t0) / 0.07) : 0
       attr(pay.g, 'transform', sc !== 1 ? `translate(${pay.cx},${pay.cy}) scale(${sc.toFixed(3)}) translate(${-pay.cx},${-pay.cy})` : '')
       attr(pay.rect, 'opacity', op.toFixed(3)); attr(pay.ring, 'opacity', (0.75 * op).toFixed(3))
       const at = (x, y) => [pay.cx + (x - pay.cx) * sc, pay.cy + (y - pay.cy) * sc]
-      if (pay.lab) { const [x, y] = at(pay.x0 + 30, pay.cy); pay.lab.set({ x, y, sx: sc, sy: sc, opacity: op }) }
-      const [nx, ny] = at(pay.x0 + pay.W - 30, pay.cy)
+      if (pay.lab) { const [x, y] = at(pay.x0 + pay.pad, pay.cy); pay.lab.set({ x, y, sx: sc, sy: sc, opacity: op }) }
+      const [nx, ny] = at(pay.x0 + pay.W - pay.pad, pay.cy)
       pay.num.set({ x: nx, y: ny, sx: sc, sy: sc, opacity: op })
     }
 
@@ -1208,6 +1591,7 @@ export default function splitSheet(spec, ctx) {
       let J = fk(pose, { x: st.x, ground: st.ground, face: st.face, scale: k })
       let sq = { sx: 1, sy: 1 }
       if (hopSeg) { const s2 = squashAt(t, hopSeg.t1, 0.16); sq = s2 }
+      for (const st of stomps) if (t >= st && t < st + 0.45) sq = squashAt(t, st, 0.12)
       if (saw) {
         const sgr = sawGrip(t)
         if (sgr) {
@@ -1260,7 +1644,8 @@ export default function splitSheet(spec, ctx) {
     // ---- camera (impact punch about the goal plate)
     // the sheet runs edge to edge, so the shake is mostly vertical and the punch is about the screen's centre line
     const { shake, zoom } = fxk.seek(t)
-    const fy = goalI >= 0 ? amts[goalI].y - apx / 2 : 960
+    // (carve with a payoff slab: the punch is about the slab, the climax)
+    const fy = carve && pay ? pay.cy : goalI >= 0 ? amts[goalI].y - apx / 2 : 960
     cam.set({ fx: 500, fy, x: 500, y: fy, zoom, shake: [shake[0] * 0.3, shake[1]] })
   }
 

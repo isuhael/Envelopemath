@@ -1,0 +1,202 @@
+{
+  "id": "05a-becker-rig-chipotle-10",
+  "look": "becker-rig",
+  "format": "split-sheet",
+  "fps": 30,
+  "duration": 24.7,
+  "header": "What You're Really Paying For\nWhen You Spend **$10**\nat Chipotle:",
+  "footer": "FY2025 10-K average · not your order",
+  "captions": true,
+  "vo": [
+    {
+      "t": 0.0,
+      "d": 5.1,
+      "text": "Food: ≈ $2.96 of your $10. So Chipotle keeps $7.04?"
+    },
+    {
+      "t": 5.2,
+      "d": 3.1,
+      "text": "Not even close. Crew pay: ≈ $2.51."
+    },
+    {
+      "t": 8.4,
+      "d": 1.6,
+      "text": "Rent: ≈ 52 cents."
+    },
+    {
+      "t": 10.1,
+      "d": 2.7,
+      "text": "Ads, delivery, card fees: ≈ $1.47."
+    },
+    {
+      "t": 12.9,
+      "d": 3.5,
+      "text": "HQ, wear and tear, new stores: ≈ 91 cents."
+    },
+    {
+      "t": 16.5,
+      "d": 2.7,
+      "text": "Tax, minus interest earned: ≈ 34 cents."
+    },
+    {
+      "t": 19.3,
+      "d": 3.1,
+      "text": "What's left: ≈ $1.29. Not $7.04."
+    }
+  ],
+  "verdict": {
+    "t": 21.2,
+    "text": "Chipotle keeps\n**≈ $1.29**, not __$7.04__."
+  },
+  "data": {
+    "total": {
+      "label": "Your order",
+      "display": "$10.00",
+      "value": 10
+    },
+    "parts": [
+      {
+        "t": 0.8,
+        "label": "Food, drinks & packaging",
+        "pct": "29.6%",
+        "amount": "≈ $2.96",
+        "note": "the burrito, the cup, the bag",
+        "tone": "neutral",
+        "share": 0.296
+      },
+      {
+        "t": 7.4,
+        "label": "Crew pay",
+        "pct": "25.1%",
+        "amount": "≈ $2.51",
+        "note": "wages, benefits, payroll tax",
+        "tone": "neutral",
+        "share": 0.251
+      },
+      {
+        "t": 9.1,
+        "label": "Rent",
+        "pct": "5.2%",
+        "amount": "≈ $0.52",
+        "note": "occupancy",
+        "tone": "neutral",
+        "share": 0.052
+      },
+      {
+        "t": 11.9,
+        "label": "Ads, delivery & card fees",
+        "pct": "14.7%",
+        "amount": "≈ $1.47",
+        "note": "+ utilities, repairs, tech",
+        "tone": "neutral",
+        "share": 0.147
+      },
+      {
+        "t": 15.5,
+        "label": "HQ, wear & tear, new stores",
+        "pct": "9.1%",
+        "amount": "≈ $0.91",
+        "note": "G&A, depreciation, openings",
+        "tone": "neutral",
+        "share": 0.091
+      },
+      {
+        "t": 18.3,
+        "label": "Tax − interest earned",
+        "pct": "3.4%",
+        "amount": "≈ $0.34",
+        "note": "income tax − Chipotle's interest income",
+        "tone": "neutral",
+        "share": 0.034
+      },
+      {
+        "t": 20.3,
+        "label": "Profit",
+        "pct": "12.9%",
+        "amount": "≈ $1.29",
+        "note": "what Chipotle keeps",
+        "tone": "goal",
+        "share": 0.129
+      }
+    ],
+    "check": "$10 − $8.71 of costs = $1.29",
+    "checkT": 20.45,
+    "hold": 2.3
+  },
+  "lookOpts": {
+    "layout": "carve",
+    "notes": false,
+    "maskPct": [
+      6
+    ],
+    "activate": [
+      0.4,
+      6.3,
+      8.4,
+      10.1,
+      12.9,
+      16.5,
+      19.3
+    ],
+    "bumps": [
+      {
+        "t": 2.15,
+        "at": "total"
+      },
+      {
+        "t": 4.05,
+        "at": "guess"
+      }
+    ],
+    "remainder": {
+      "t": 0.9,
+      "text": "$7.04?"
+    },
+    "payoff": {
+      "t": 20.3,
+      "label": "Profit",
+      "text": "≈ $1.29",
+      "slot": {
+        "t": 21.2,
+        "text": "≈ $1.29 profit",
+        "ghost": "$7.04 profit?",
+        "ghostTone": "bad",
+        "strikeT": 5.2
+      }
+    },
+    "beats": [
+      {
+        "t": 2.0,
+        "act": "lookUp",
+        "d": 1.4
+      },
+      {
+        "t": 3.9,
+        "act": "shrugLow",
+        "d": 1.05
+      },
+      {
+        "t": 5.2,
+        "act": "stomp",
+        "d": 0.6
+      },
+      {
+        "t": 20.85,
+        "act": "point",
+        "d": 0.35
+      },
+      {
+        "t": 21.2,
+        "act": "shrug",
+        "hold": true
+      }
+    ]
+  },
+  "sfx": [
+    {
+      "t": 5.2,
+      "kind": "buzz",
+      "gain": 0.4
+    }
+  ]
+}

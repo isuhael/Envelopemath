@@ -1,0 +1,50 @@
+{
+  "id": "becker-rig-find-your-row-2",
+  "sample": true,
+  "look": "becker-rig",
+  "format": "find-your-row",
+  "fps": 30,
+  "header": "How much you need invested\nto **never work again**",
+  "footer": "Take out 4% a year, forever · before tax and inflation",
+  "captions": true,
+  "vo": [
+    { "t": 0.0, "d": 2.3, "text": "How much do you need to never work again?" },
+    { "t": 2.4, "d": 2.8, "text": "$4,000 a month? **$1.2 million**." },
+    { "t": 5.6, "d": 2.6, "text": "Each extra $1,000 a month: **$300,000** more." },
+    { "t": 8.4, "d": 2.0, "text": "$15,000 a month? **$4.5 million**." }
+  ],
+  "verdict": { "t": 10.6, "text": "Every **$500 a month** you spend\nadds $150,000 to the goal" },
+  "data": {
+    "columns": [
+      { "label": "You spend a month" },
+      { "label": "A year" },
+      { "label": "You need\n(4% rule)", "emph": true }
+    ],
+    "rows": [
+      ["$2,000", "$24,000", "$600,000"],
+      ["$2,500", "$30,000", "$750,000"],
+      ["$3,000", "$36,000", "$900,000"],
+      ["$3,500", "$42,000", "$1,050,000"],
+      ["$4,000", "$48,000", "$1,200,000"],
+      ["$4,500", "$54,000", "$1,350,000"],
+      ["$5,000", "$60,000", "$1,500,000"],
+      ["$6,000", "$72,000", "$1,800,000"],
+      ["$7,000", "$84,000", "$2,100,000"],
+      ["$8,000", "$96,000", "$2,400,000"],
+      ["$9,000", "$108,000", "$2,700,000"],
+      ["$10,000", "$120,000", "$3,000,000"],
+      ["$12,500", "$150,000", "$3,750,000"],
+      ["$15,000", "$180,000", "$4,500,000"]
+    ],
+    "formula": "= what you spend a month × 12 × 25",
+    "rowsT": 0.2,
+    "rowEvery": 0.15,
+    "pick": [
+      { "t": 2.4, "row": 4, "label": "$4,000 a month × 12 × 25 = **$1,200,000** invested" },
+      { "t": 5.6, "row": 6, "label": "+$1,000 a month = **+$300,000**" },
+      { "t": 8.4, "row": 13, "label": "**$15,000** a month: **$4.5 million**" }
+    ],
+    "hold": 3.0
+  },
+  "lookOpts": { "compare": [{ "pick": 1, "from": 4 }], "verdictRow": 0 }
+}

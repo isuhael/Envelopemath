@@ -1,0 +1,41 @@
+{
+  "id": "sample-scoreboard-dead-simple-list",
+  "sample": true,
+  "look": "scoreboard",
+  "format": "dead-simple-list",
+  "fps": 30,
+  "header": "4 dead simple numbers\nWhat **$72,000** really pays you",
+  "footer": "ASSUMES ×0.7 ≈ what you keep after tax, rough",
+  "captions": true,
+  "vo": [
+    { "t": 0.0, "d": 2.6, "text": "Take $72,000 and multiply it by 0.7:" },
+    { "t": 2.6, "d": 2.2, "text": "$50,400. That's what you keep." },
+    { "t": 5.0, "d": 1.8, "text": "Divide $72,000 by 2,000 hours:" },
+    { "t": 6.8, "d": 2.2, "text": "$36 an hour. On paper." },
+    { "t": 9.4, "d": 1.8, "text": "After tax, same 2,000 hours:" },
+    { "t": 11.2, "d": 2.4, "text": "$25.20 an hour." },
+    { "t": 14.0, "d": 2.8, "text": "Add a 10-hour commute: 2,500 hours." },
+    { "t": 16.8, "d": 2.4, "text": "**$20.16** an hour." },
+    { "t": 19.5, "d": 2.3, "text": "Check: $20.16 times 2,500 is $50,400." },
+    { "t": 22.0, "d": 3.0, "text": "$36 on paper. About **$20** for real." }
+  ],
+  "verdict": { "t": 22.0, "text": "$36 an hour on paper.\n**≈ $20** for real." },
+  "data": {
+    "input": { "label": "Your salary", "value": "$72,000", "note": "a year" },
+    "typeDur": 0.6,
+    "items": [
+      { "t": 0.0, "label": "After tax, roughly", "formula": "$72,000 × 0.7", "result": "$50,400",
+        "tone": "good", "note": "what you actually keep", "resultT": 2.6 },
+      { "t": 5.0, "label": "Your hourly pay", "formula": "$72,000 ÷ 2,000", "result": "$36/hr",
+        "tone": "neutral", "note": "2,000 h = 50 weeks × 40", "resultT": 6.8 },
+      { "t": 9.4, "label": "Hourly, after tax", "formula": "$50,400 ÷ 2,000", "result": "$25.20/hr",
+        "tone": "neutral", "note": "what an hour leaves you", "resultT": 11.2 },
+      { "t": 14.0, "label": "Hourly with a 10-hour commute", "formula": "$50,400 ÷ 2,500", "result": "$20.16/hr",
+        "tone": "goal", "note": "50 hours a week, not 40", "resultT": 16.8 }
+    ],
+    "check": "$20.16 × 2,500 = $50,400",
+    "checkT": 19.5,
+    "hold": 3.0
+  },
+  "notes": "Master Money's 'what you actually make' rebuilt on one consistent set of constants (research/v2/04-formats.md, rank 1: his reel mixed 2,000 h and 52 weeks). Maths: $72,000 × 0.7 = $50,400 (×0.7 is the stated rough after-tax rule); $72,000 ÷ 2,000 h = $36.00/h (2,000 h = 50 weeks × 40 h); $50,400 ÷ 2,000 = $25.20/h; with a 10-hour weekly commute, 50 weeks × 50 h = 2,500 h, $50,400 ÷ 2,500 = $20.16/h. Check: $20.16 × 2,500 = $50,400.00. Verdict: $20.16 rounds to ≈ $20."
+}

@@ -1,0 +1,56 @@
+{
+  "id": "sample-scoreboard-dead-simple-list-2",
+  "sample": true,
+  "look": "scoreboard",
+  "format": "dead-simple-list",
+  "fps": 30,
+  "header": "6 dead simple numbers\nIf you make **$25 an hour**",
+  "footer": "ASSUMES 50 weeks × 40 hours · ×0.7 ≈ after tax, rough",
+  "captions": true,
+  "vo": [
+    { "t": 0.0, "d": 2.4, "text": "$25 an hour, times 2,000 hours:" },
+    { "t": 2.4, "d": 1.8, "text": "$50,000 a year." },
+    { "t": 4.4, "d": 1.8, "text": "Keep about 70% after tax:" },
+    { "t": 6.2, "d": 1.8, "text": "$35,000." },
+    { "t": 8.4, "d": 1.6, "text": "So per hour you keep" },
+    { "t": 10.0, "d": 1.8, "text": "$17.50. Not $25." },
+    { "t": 12.0, "d": 1.8, "text": "Split it over 12 months:" },
+    { "t": 13.8, "d": 1.8, "text": "about $2,917 a month." },
+    { "t": 15.8, "d": 1.2, "text": "A $1,000 phone:" },
+    { "t": 17.0, "d": 1.2, "text": "40 hours of work?" },
+    { "t": 18.2, "d": 0.8, "text": "__No.__" },
+    { "t": 19.0, "d": 1.8, "text": "Divide by what you keep:" },
+    { "t": 20.8, "d": 1.6, "text": "about 57 hours." },
+    { "t": 22.6, "d": 2.4, "text": "Rent at 30% of what you take home:" },
+    { "t": 25.0, "d": 1.8, "text": "about **$875** a month." },
+    { "t": 27.0, "d": 2.0, "text": "Check: $17.50 times 2,000 is $35,000." },
+    { "t": 29.0, "d": 3.0, "text": "At $25 an hour, keep rent near $875." }
+  ],
+  "verdict": { "t": 29.0, "text": "$25 an hour = rent near **≈ $875** a month" },
+  "data": {
+    "input": { "label": "Your pay", "value": "$25/hr", "note": "40 hours a week" },
+    "typeDur": 0.6,
+    "items": [
+      { "t": 0.0, "label": "Your pay a year, before tax", "formula": "$25 × 2,000", "result": "$50,000",
+        "tone": "good", "note": "2,000 hours = 50 weeks × 40", "resultT": 2.4 },
+      { "t": 4.4, "label": "What you actually keep a year", "formula": "$50,000 × 0.7", "result": "$35,000",
+        "tone": "good", "note": "×0.7 ≈ what's left after tax", "resultT": 6.2 },
+      { "t": 8.4, "label": "Your real hourly, after tax", "formula": "$25 × 0.7", "result": "$17.50/hr",
+        "tone": "neutral", "note": "not $25", "resultT": 10.0 },
+      { "t": 12.0, "label": "Take-home every month", "formula": "$35,000 ÷ 12", "result": "≈ $2,917/mo",
+        "tone": "neutral", "note": "your budget starts here", "resultT": 13.8 },
+      { "t": 19.0, "label": "Hours of work for a $1,000 phone", "formula": "$1,000 ÷ $17.50", "result": "≈ 57 hours",
+        "tone": "bad", "note": "count the hours you keep", "resultT": 20.8 },
+      { "t": 22.6, "label": "Rent at 30% of what you take home", "formula": "$2,917 × 0.3", "result": "≈ $875/mo",
+        "tone": "goal", "note": "not $1,250: that's 30% before tax", "resultT": 25.0 }
+    ],
+    "check": "$17.50 × 2,000 = $35,000",
+    "checkT": 27.0,
+    "hold": 3.0
+  },
+  "lookOpts": {
+    "labels": "always",
+    "wrongGuess": { "item": 4, "t": 15.8, "formula": "$1,000 ÷ $25", "result": "40 hours", "resultT": 17.0, "strikeT": 18.2 }
+  },
+  "notes": "Stress sample: 6 items with captions on, long labels, unit results (/hr, /mo, hours), a wrong guess struck before its item, labels shown from frame 1, a long goal note, a check line. Maths (2,000 h = 50 weeks × 40 h; ×0.7 is the stated rough after-tax rule): $25 × 2,000 = $50,000; × 0.7 = $35,000; $25 × 0.7 = $17.50/h; $35,000 ÷ 12 = $2,916.67 ≈ $2,917/mo; a $1,000 phone: $1,000 ÷ $25 = 40 h (the wrong guess, on pay before tax), $1,000 ÷ $17.50 = 57.14 ≈ 57 h; rent at 30% of take-home: $2,917 × 0.3 = $875.10 ≈ $875/mo (exactly $875.00 from $35,000 × 0.3 ÷ 12); 30% of pay before tax would be $50,000 × 0.3 ÷ 12 = $1,250/mo. Check: $17.50 × 2,000 = $35,000."
+}

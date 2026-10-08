@@ -1,0 +1,346 @@
+{
+  "id": "06b-scoreboard-netflix-bill",
+  "look": "scoreboard",
+  "format": "pov-race",
+  "fps": 30,
+  "duration": 30.5,
+  "header": "**$19.99** Netflix, free\nfor how many years?",
+  "footer": "Standard plan list price · 12/31/25 close",
+  "captions": true,
+  "vo": [
+    {
+      "t": 0.0,
+      "d": 2.4,
+      "text": "Your Netflix, free. For how long?"
+    },
+    {
+      "t": 3.0,
+      "d": 2.9,
+      "text": "Since 2012, every bill buys Netflix stock."
+    },
+    {
+      "t": 6.0,
+      "d": 2.8,
+      "text": "Price hike? Your investment goes up too."
+    },
+    {
+      "t": 9.2,
+      "d": 3.6,
+      "text": "Each year's bills buy at that year's average price."
+    },
+    {
+      "t": 14.3,
+      "d": 2.4,
+      "text": "2020: about 38 years."
+    },
+    {
+      "t": 17.0,
+      "d": 1.6,
+      "text": "2022: it halves."
+    },
+    {
+      "t": 18.7,
+      "d": 2.4,
+      "text": "You keep paying. It comes back."
+    },
+    {
+      "t": 21.2,
+      "d": 4.7,
+      "text": "About $2,037 in bills. About $17,700 in stock."
+    },
+    {
+      "t": 26.0,
+      "d": 3.6,
+      "text": "At $19.99 a month: about 74 years of Netflix."
+    }
+  ],
+  "verdict": {
+    "t": 26.0,
+    "text": "**≈ 74 years** of Netflix\nat $19.99 a month"
+  },
+  "data": {
+    "spend": {
+      "label": "Paid to Netflix",
+      "points": [
+        [
+          2012.0,
+          7.99
+        ],
+        [
+          2012.99,
+          95.88
+        ],
+        [
+          2013.99,
+          191.76
+        ],
+        [
+          2014.99,
+          295.64
+        ],
+        [
+          2015.99,
+          406.52
+        ],
+        [
+          2016.99,
+          526.4
+        ],
+        [
+          2017.99,
+          649.28
+        ],
+        [
+          2018.99,
+          781.16
+        ],
+        [
+          2019.99,
+          937.04
+        ],
+        [
+          2020.99,
+          1095.92
+        ],
+        [
+          2021.99,
+          1263.8
+        ],
+        [
+          2022.99,
+          1449.68
+        ],
+        [
+          2023.99,
+          1635.56
+        ],
+        [
+          2024.99,
+          1821.44
+        ],
+        [
+          2025.99,
+          2037.32
+        ]
+      ],
+      "final": "$2,037.32 spent",
+      "item": "ticket"
+    },
+    "own": {
+      "label": "Same bills in Netflix stock",
+      "points": [
+        [
+          2012.0,
+          7.99
+        ],
+        [
+          2012.99,
+          106.98
+        ],
+        [
+          2013.99,
+          568.35
+        ],
+        [
+          2014.99,
+          615.52
+        ],
+        [
+          2015.99,
+          1580.93
+        ],
+        [
+          2016.99,
+          1856.33
+        ],
+        [
+          2017.99,
+          3021.61
+        ],
+        [
+          2018.99,
+          4323.51
+        ],
+        [
+          2019.99,
+          5379.69
+        ],
+        [
+          2020.99,
+          9181.15
+        ],
+        [
+          2021.99,
+          10409.99
+        ],
+        [
+          2022.99,
+          5288.73
+        ],
+        [
+          2023.99,
+          8964.01
+        ],
+        [
+          2024.99,
+          16655.88
+        ],
+        [
+          2025.99,
+          17705.59
+        ]
+      ],
+      "final": "≈ $17,700"
+    },
+    "purchases": [
+      {
+        "x": 2012.0,
+        "label": "Jan 2012",
+        "price": "$7.99"
+      },
+      {
+        "x": 2014.33,
+        "label": "Hike 1 · May 2014",
+        "price": "$8.99"
+      },
+      {
+        "x": 2015.75,
+        "label": "Hike 2 · Oct 2015",
+        "price": "$9.99"
+      },
+      {
+        "x": 2017.75,
+        "label": "Hike 3 · Oct 2017",
+        "price": "$10.99"
+      },
+      {
+        "x": 2019.0,
+        "label": "Hike 4 · Jan 2019",
+        "price": "$12.99"
+      },
+      {
+        "x": 2020.75,
+        "label": "Hike 5 · Oct 2020",
+        "price": "$13.99"
+      },
+      {
+        "x": 2022.0,
+        "label": "Hike 6 · Jan 2022",
+        "price": "$15.49"
+      },
+      {
+        "x": 2025.0,
+        "label": "Hike 7 · Jan 2025",
+        "price": "$17.99"
+      }
+    ],
+    "x": {
+      "from": 2012,
+      "to": 2025.99,
+      "tickEvery": 3
+    },
+    "y": {
+      "prefix": "$",
+      "dp": 0
+    },
+    "raceT": [
+      0.3,
+      23.0
+    ],
+    "hold": 7.5
+  },
+  "lookOpts": {
+    "cover": "clean",
+    "pips": true,
+    "unit": {
+      "per": 239.88,
+      "perMonth": 19.99,
+      "formula": "stock ÷ ($19.99 × 12)",
+      "empty": "? years",
+      "holds": [
+        {
+          "x": 2012.99,
+          "t": 1.91,
+          "work": "2012: $107 ÷ $19.99",
+          "display": "≈ 5 months"
+        },
+        {
+          "x": 2020.99,
+          "t": 14.9,
+          "hold": 1.8,
+          "work": "2020: $9,181 ÷ $239.88",
+          "display": "≈ 38 years"
+        },
+        {
+          "x": 2022.99,
+          "t": 18.5,
+          "work": "2022: $5,289 ÷ $239.88",
+          "display": "≈ 22 years",
+          "tone": "bad"
+        }
+      ],
+      "hold": 1.3,
+      "final": "≈ 74 years",
+      "finalWork": "≈ $17,700 ÷ $239.88",
+      "icon": "ticket"
+    },
+    "payoff": {
+      "t": 26.0,
+      "display": "≈ 74 years",
+      "icon": "ticket",
+      "dur": 0
+    },
+    "footerSteps": [
+      {
+        "t": 9.2,
+        "text": "Each year: bills ÷ avg price"
+      },
+      {
+        "t": 21.2,
+        "text": "188.8 shares × $93.76 ≈ $17,700"
+      },
+      {
+        "t": 26.0,
+        "text": "$17,706 ÷ $239.88 ≈ 74 years"
+      }
+    ]
+  },
+  "sfx": [
+    {
+      "t": 5.17,
+      "kind": "pop"
+    },
+    {
+      "t": 7.24,
+      "kind": "pop"
+    },
+    {
+      "t": 10.17,
+      "kind": "pop"
+    },
+    {
+      "t": 11.99,
+      "kind": "pop"
+    },
+    {
+      "t": 14.55,
+      "kind": "pop"
+    },
+    {
+      "t": 17.61,
+      "kind": "pop"
+    },
+    {
+      "t": 18.5,
+      "kind": "thud"
+    },
+    {
+      "t": 21.94,
+      "kind": "pop"
+    },
+    {
+      "t": 23.0,
+      "kind": "cash"
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "id": "scoreboard-ledger-duel-2",
+  "sample": true,
+  "look": "scoreboard",
+  "format": "ledger-duel",
+  "fps": 30,
+  "header": "2 people invest **$100,000** at 35\nOnly the fees are different",
+  "footer": "Assumes 7% a year before fees · nothing added",
+  "captions": false,
+  "vo": [
+    { "t": 0.0, "d": 2.6, "text": "Same $100,000. Same market. Different fees." },
+    { "t": 5.0, "d": 2.0, "text": "By 53 the gap passes $50,000." },
+    { "t": 9.0, "d": 2.4, "text": "At 65: $750,000 against $563,000." }
+  ],
+  "verdict": { "t": 12.4, "text": "A 1% fee cost Marcus\n__≈ $187,000__ by 65" },
+  "data": {
+    "people": [
+      { "name": "Priya", "plan": "DIY index fund · 0.05% a year" },
+      { "name": "Marcus", "plan": "With a financial advisor · 1% a year" }
+    ],
+    "stake": "$100,000 each at 35 · 7% a year",
+    "rows": [
+      { "label": "Age 35", "values": ["$100,000", "$100,000"] },
+      { "label": "Age 38", "values": ["≈ $122,000", "≈ $119,000"] },
+      { "label": "Age 41", "values": ["≈ $150,000", "≈ $141,000"] },
+      { "label": "Age 44", "values": ["≈ $183,000", "≈ $168,000"] },
+      { "label": "Age 47", "values": ["≈ $224,000", "≈ $200,000"] },
+      { "label": "Age 50", "values": ["≈ $274,000", "≈ $237,000"] },
+      { "label": "Age 53", "values": ["≈ $335,000", "≈ $282,000"], "event": "The gap passes **$50,000**", "tone": "bad" },
+      { "label": "Age 56", "values": ["≈ $410,000", "≈ $335,000"] },
+      { "label": "Age 59", "values": ["≈ $501,000", "≈ $399,000"] },
+      { "label": "Age 62", "values": ["≈ $613,000", "≈ $474,000"] },
+      { "label": "Age 65", "values": ["≈ $750,000", "≈ $563,000"], "event": "Gap ≈ $187,000", "tone": "goal" }
+    ],
+    "rowsT": 0,
+    "rowEvery": 0.7,
+    "winner": 0,
+    "hold": 3.0
+  },
+  "lookOpts": {
+    "marks": [ { "t": 6.2, "row": 6, "person": 1 } ],
+    "summary": { "label": "fees took", "values": ["≈ $11,000", "≈ $198,000"], "tone": "bad" },
+    "working": [ { "t": 10.6, "text": "$750,000 − $563,000 ≈ $187,000" } ]
+  },
+  "notes": "Stress variant: captions off (the label stack is the caption), 11 rows with no per-row t (default pacing: rowsT 0 so frame 1 has the start row landed, rowEvery 0.7, plus the kit's 1.0 s pause after the event row), wide 6-digit values with ≈ in narrow side-by-side panels, a long plan that wraps to three lines, an event with markup on a bad row, an event on the last row (goal), a mark on a cell, the summary line in coral, a working beat, a two-line footer and a two-line verdict with a coral emphasis. Both invest $100,000 once at 35, nothing added. Market return 7% a year before fees; the fee is taken as a share of the balance each year, so the net growth factor is 1.07 × (1 − fee). Priya 0.05%: 1.069465 a year; Marcus 1%: 1.0593 a year. Balances at 35 + n (n = 0, 3, …, 30), rounded to the nearest $1,000 on screen: 38 $122,321 / $118,866; 41 $149,623 / $141,291; 44 $183,020 / $167,946; 47 $223,872 / $199,631; 50 $273,841 / $237,293; 53 $334,964 / $282,060 (gap $52,904, the first above $50,000; at 50 it is $36,548); 56 $409,730 / $335,273; 59 $501,185 / $398,525; 62 $613,052 / $473,710; 65 $749,890 / $563,079. Gap at 65: $186,811 (≈ $187,000; also $750,000 − $563,000 on the rounded figures). 'Fees took' = the no-fee balance ($100,000 × 1.07^30 = $761,226) minus each balance: Priya $11,336 (≈ $11,000), Marcus $198,147 (≈ $198,000)."
+}

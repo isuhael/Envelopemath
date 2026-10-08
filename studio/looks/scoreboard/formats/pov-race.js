@@ -36,17 +36,39 @@
 // lookOpts (all optional):
 //   spendTag / ownTag   scoreboard labels (default: spend.label, and "in … stock" taken from own.label)
 //   footerSteps         [{ t, text }]: kit-wide: the footer rewrites to a working line at each t (spec.footer before)
-//   tags                false: no price tags on the chart (icons only)
+//   tags                false: no price tags on the chart (icons only). A tag takes the best-scored spot around its
+//                       icon (below, above, beside; scored at mount on the lines, tips and icons it would cover); when
+//                       every one of those crosses a line (a late purchase under a dip on a short plot), it parks in
+//                       the plot's top band instead, detached, over the faint corner year (which dims under it)
 //   spendTip            false: no "$499 / SPENT" tag riding the spend line's right end (it shows only in stretches
 //                       where it is clear of the own line, its tip and the icons, scored at mount)
 //   gapFill             false: no green/coral fill between the lines
 //   yearClock           false: no big year in the plot corner
-//   stageBottom         y where the stage ends (default 1300 with captions, 1236 without)
+//   stageBottom         y where the stage ends (default 1300 with captions, 1236 without; with `unit`, just above
+//                       the answer row)
+//   unit                the ANSWER ROW: the stake re-priced in the hook's own unit ("$19.99 Netflix, free for how many
+//                       years?"), in the bottom bar where the label stack sits (HD Guy grammar: line 1 the working,
+//                       line 2 the answer, big and green, the spend item's icon beside it). It yields to the verdict.
+//                       { per, perMonth?, formula, empty = "? years", holds: [{ x, work, display, tone? }],
+//                         final, finalWork, hold = 1.3, icon = spend.item }
+//                       - frame 1: line 1 `formula` ("stock ÷ ($19.99 × 12)"), line 2 `empty` ("? YEARS"): the open
+//                         slot. From raceT[0] line 2 counts the IN STOCK counter ÷ `per` live (its "≈" an unlit ghost):
+//                         under a year in whole months (÷ perMonth), 1-10 years to 1 dp, then whole years.
+//                       - each hold (a spoken year-end x): line 1 cuts to its `work` ("2020: $9,181 ÷ $239.88"),
+//                         line 2 lands on `display` ("≈ 38 years") with a bump, a glow flare, a floor bloom and a ding
+//                         (tone "bad", for a loss: coral, on a thud), holds `hold` s, then catches up with the race (0.35 s).
+//                       - the finish (raceT[1]): line 1 `finalWork`, line 2 lands on `final`.
+//   cover               "clean": frame 1 carries only the hook's own price: the board's counters wait LED-off ("—")
+//                       and a purchase at the clock's start drops in with the race at raceT[0] (no receipt on the cover)
+//   payoff              { t = verdict.t, display, icon = unit icon, dur = 1.4 }: the payoff lands last in the hero.
+//                       At t the split board hard-cuts to ONE hero number (the icon + an odometer at the hero size)
+//                       that rolls from 0 onto `display` ("≈ 74 years"): roll, then a 1.13 bump, glow, a stage bloom
+//                       and a hit. The board does not come back.
 import { h, s, css as style, setText, attr, prog, ease, clamp, lerp, fitText, fmtNum } from '../../../runtime/core.js'
 import { C, SIZE, M, layoutFor } from '../theme.js'
 import {
   rich, richUI, esc, ax, labelStack, stageFlash, flashAt, parseDisplay, odometer, bump, slam,
-  wobble, durationOf, valueAt, iconSVG, iconName, slamFromFor, formatLike,
+  wobble, durationOf, valueAt, iconSVG, iconName, slamFromFor, formatLike, heroRow,
 } from '../lib.js'
 
 export const css = `
@@ -74,6 +96,13 @@ export const css = `
   white-space: nowrap; transform-origin: 100% 100%; }
 .pr-stag-num { font: 400 44px/1 'Anton', 'Inter Full', sans-serif; letter-spacing: 0.01em; color: #FFFFFF; }
 .pr-stag-word { font: 700 40px/1 'Inter', 'Inter Full', sans-serif; text-transform: uppercase; letter-spacing: 0.02em; }
+.pr-led { position: absolute; left: 0; width: 480px; display: flex; justify-content: center; font: 400 100px/1 'Anton', 'Inter Full', sans-serif; color: rgba(255, 255, 255, 0.16); }
+.pr-ans { position: absolute; }
+.pr-ans-l1 { position: absolute; left: 0; top: 0; width: 100%; font: 400 54px/1 'Anton', 'Inter Full', sans-serif; text-transform: uppercase;
+  text-align: center; white-space: nowrap; letter-spacing: 0.01em; color: #2BFF88; transform-origin: 50% 50%; }
+.pr-ans-l1 .op { color: #9AA4B2; }
+.pr-ans .sb-odo-fix, .pr-pay .sb-odo-fix { text-transform: uppercase; }
+.pr-q { display: inline-block; font: 400 1em/1 'Anton', 'Inter Full', sans-serif; text-transform: uppercase; white-space: pre; height: 1em; }
 `
 
 const SPEND_COL = C.iconBody    // the spend line / number: white (money that is gone)
@@ -159,14 +188,84 @@ export default function povRace(spec, ctx) {
   const rt = Array.isArray(d.raceT) && d.raceT.length === 2 && +d.raceT[1] > +d.raceT[0] ? d.raceT.map(Number) : [1.2, 1.2 + clamp(span * 1.2, 8, 40)]
   const [R0, R1] = rt
   const TF = R1                                   // the finish: counters land on the final display strings
-  const xAt = t => lerp(X.from, X.to, prog(t, R0, R1 - R0))
-  const tAtX = x => R0 + ((x - X.from) / span) * (R1 - R0)
-  const secPerYear = (R1 - R0) / span
+
+  // the answer row (lookOpts.unit): the stake in the hook's unit, in the label stack's slot under the stage. Parsed
+  // before the clock: its holds pause the race.
+  const U = lo.unit && +lo.unit.per > 0 ? (() => {
+    const u = lo.unit
+    const hold = +u.hold > 0 ? +u.hold : 1.3
+    return {
+      per: +u.per, perMonth: +u.perMonth > 0 ? +u.perMonth : +u.per / 12,
+      formula: String(u.formula || ''), empty: String(u.empty || '? years'),
+      final: u.final != null ? String(u.final) : null, finalWork: String(u.finalWork || ''),
+      hold, pause: u.pause !== false,
+      icon: u.icon === false ? null : iconName(u.icon || (d.spend && d.spend.item) || 'token'),
+      holds: (Array.isArray(u.holds) ? u.holds : []).filter(q => q && isFinite(+q.x) && q.display != null)
+        .map(q => ({
+          x: +q.x, t: q.t != null && isFinite(+q.t) ? +q.t : null, hold: +q.hold > 0 ? +q.hold : hold,
+          work: String(q.work || ''), display: String(q.display), bad: q.tone === 'bad',
+        })).sort((a, b) => a.x - b.x),
+    }
+  })() : null
+
+  // ---------- clock: x sweeps linearly over raceT, pausing on each answer-row hold ----------
+  // knots [t, x]: x is linear between knots. Each hold (lookOpts.unit.holds, unless unit.pause is false) stops the
+  // clock at its x for its `hold` s, so the board's counters, both tips, the lines and the year clock all show the
+  // year-end the answer row is holding (a paused frame never sets a year-end figure against values that moved on).
+  // A hold's `t` pins when the race reaches it; holds without one share their gap's moving time in proportion to x.
+  let knots = [[R0, X.from], [R1, X.to]]
+  const pz = U && U.pause ? U.holds.filter(q => q.x > X.from + 1e-6 && q.x < X.to - 1e-6) : []
+  if (pz.length) {
+    const ks = [[R0, X.from]]
+    let i = 0
+    while (i <= pz.length) {
+      const [ta, xa] = ks[ks.length - 1]
+      let j = i
+      while (j < pz.length && pz[j].t == null) j++
+      const tb = j < pz.length ? pz[j].t : R1, xb = j < pz.length ? pz[j].x : X.to
+      const move = tb - ta - pz.slice(i, j).reduce((a, q) => a + q.hold, 0)
+      let acc = 0
+      for (let k = i; k < j; k++) {
+        const tk = ta + ((pz[k].x - xa) / Math.max(1e-9, xb - xa)) * move + acc
+        ks.push([tk, pz[k].x], [tk + pz[k].hold, pz[k].x]); acc += pz[k].hold
+      }
+      if (j < pz.length) ks.push([pz[j].t, pz[j].x], [pz[j].t + pz[j].hold, pz[j].x])
+      i = j + 1
+    }
+    ks.push([R1, X.to])
+    // every moving stretch must take time (x never jumps) and the clock never runs backwards
+    const ok = ks.every((k, n) => n === 0 || (k[0] >= ks[n - 1][0] - 1e-9 && (k[1] <= ks[n - 1][1] + 1e-9 || k[0] - ks[n - 1][0] > 0.05)))
+    if (ok) knots = ks
+    else console.warn('pov-race: lookOpts.unit.holds cannot pause the race in order (check holds[].t and hold); the clock runs straight')
+  }
+  const xAt = t => {
+    if (t <= knots[0][0]) return knots[0][1]
+    for (let k = 1; k < knots.length; k++) {
+      const [t1, x1] = knots[k]
+      if (t <= t1) { const [t0, x0] = knots[k - 1]; return t1 > t0 ? lerp(x0, x1, (t - t0) / (t1 - t0)) : x1 }
+    }
+    return knots[knots.length - 1][1]
+  }
+  // the time the race reaches x (at a hold's x: when the hold starts); outside the race, the plain linear clock
+  const tAtX = x => {
+    if (x > X.from && x <= X.to) {
+      for (let k = 1; k < knots.length; k++) {
+        const [t0, x0] = knots[k - 1], [t1, x1] = knots[k]
+        if (x1 > x0 + 1e-12 && x <= x1 + 1e-9) return t0 + ((x - x0) / (x1 - x0)) * (t1 - t0)
+      }
+    }
+    return R0 + ((x - X.from) / span) * (R1 - R0)
+  }
+  const paused = knots.reduce((a, k, n) => a + (n && k[1] === knots[n - 1][1] ? k[0] - knots[n - 1][0] : 0), 0)
+  const secPerYear = (R1 - R0 - paused) / span
 
   // ---------- layout ----------
   const L0 = layoutFor(spec)
   const capsOn = L0.captionsOn
-  const L = layoutFor(spec, { stageBottom: lo.stageBottom ?? (capsOn ? 1300 : 1236) })
+  // the answer row's type: line 1 (the working) 48 px with captions on (its ÷ stays ≥ 40 px through a slam's
+  // undershoot), so the plot keeps every px it can
+  const UT = U ? { l1: capsOn ? 48 : 62, v: capsOn ? 96 : 120, gap: 8 } : null
+  const L = layoutFor(spec, { stageBottom: lo.stageBottom ?? (U ? L0.limit - 16 - (UT.l1 + UT.gap + UT.v) - 4 : capsOn ? 1300 : 1236) })
   // breathing room under the hook: the header is bottom-aligned in its band, so its last line sat ~20 px over the
   // scoreboard's labels. The scoreboard row, the footer and the stage top move TOP_GAP down (the plot gives it up).
   const TOP_GAP = L.hero ? 24 : 0
@@ -199,13 +298,24 @@ export default function povRace(spec, ctx) {
   // a purchase at the clock's start is the stake itself: already on the line at frame 1 (the receipt in the hook),
   // its tag holding until shortly after the race starts
   // (one landing in the first 0.3 s is landed at frame 1 too: frame 1 never shows an entrance half-way)
-  purchases.forEach((p, i) => { p.i = i; p.t = tAtX(p.x); if (p.x <= X.from + 1e-6 || p.t < 0.3) p.t = Math.min(p.t, 0) })
+  // lookOpts.cover "clean": no receipt on the cover; a purchase at the clock's start drops in as the race starts
+  const clean = lo.cover === 'clean' && R0 > 0.1
+  purchases.forEach((p, i) => {
+    p.i = i; p.t = tAtX(p.x)
+    if (clean && p.t < R0 + 1e-6) p.t = R0
+    else if (p.x <= X.from + 1e-6 || p.t < 0.3) p.t = Math.min(p.t, 0)
+  })
   purchases.forEach((p, i) => {
     const hold = p.t <= 0 ? Math.max(R0, 0) + 1.0 : p.t + TAGHOLD
     const next = i + 1 < purchases.length ? purchases[i + 1].t : Infinity
     p.end = Math.min(next, hold); p.cut = next <= hold
   })
-  const stackMode = !capsOn && L.label.h >= 150
+  // lookOpts.pips: only the latest purchase stands on the line as a full icon; once the next purchase lands, a ticket
+  // shrinks into a small pip on the spend line (where the two lines run together, a full icon is cut by the own line)
+  const pipsOn = lo.pips === true
+  purchases.forEach((p, i) => { p.retire = pipsOn && i + 1 < purchases.length ? purchases[i + 1].t : Infinity })
+  const PIP_R = 8, PIP_DUR = 0.25
+  const stackMode = !U && !capsOn && L.label.h >= 150      // the answer row takes the label stack's slot
   const chartTags = lo.tags !== false && !stackMode
 
   // ---------- crossings (own vs spend), exact on the union of breakpoints ----------
@@ -307,8 +417,8 @@ export default function povRace(spec, ctx) {
 
   const svg = s('svg', { class: 'pr-svg', width: P.w, height: P.h, viewBox: `0 0 ${P.w} ${P.h}`, 'data-deco': '' })
   svg.append(s('defs', {}, s('filter', { id: 'prGlow', x: '-50%', y: '-50%', width: '200%', height: '200%' }, s('feGaussianBlur', { stdDeviation: 7 }))))
-  const gFill = s('g'), gGrid = s('g'), gLine = s('g'), gTip = s('g')
-  svg.append(gGrid, gFill, gLine, gTip)
+  const gFill = s('g'), gGrid = s('g'), gLine = s('g'), gPip = s('g'), gTip = s('g')
+  svg.append(gGrid, gFill, gLine, gPip, gTip)
   root.append(svg)
   // layers above the plot: purchase icons, then the own line (the hero line is never interrupted by an icon), then tags
   const iconLayer = h('div', { class: 'pr-layer', 'data-deco': '' })
@@ -384,10 +494,20 @@ export default function povRace(spec, ctx) {
     const lx = pxOf(p.x), ly = py(vAt(SP, p.x)) + 2
     return { lx, ly, cx: p.lead ? lx - ICON / 2 - 10 : lx, top: ly - ICON * (ibBot - ibTop) }
   }
+  // what a purchase covers at t: its icon, or (retired, lookOpts.pips) its pip on the line
+  const iconBox = (p, py, t) => {
+    const a = iconAt(p, py)
+    if (t >= p.retire + PIP_DUR * 0.5) return [a.lx - PIP_R - 2, a.ly - 2 - PIP_R - 2, a.lx + PIP_R + 2, a.ly - 2 + PIP_R + 2]
+    return [a.cx - ICON / 2, a.top, a.cx + ICON / 2, a.ly]
+  }
   for (const p of purchases) {
     p.icon = iconSVG(SP.item, ICON, { cls: 'pr-icon' })
     style(p.icon, { display: 'none' })
     iconLayer.append(p.icon)
+    if (p.retire < Infinity) {
+      p.pip = s('g', { opacity: 0 }, s('circle', { r: PIP_R, fill: SPEND_COL }), s('circle', { r: 3.5, fill: C.stage }))
+      gPip.append(p.pip)
+    }
     p.end = Math.min(p.end, TF - 0.05)                     // the finish is the one focal moment
     if (chartTags && (p.price || p.label) && p.end - Math.max(p.t, 0) > 0.35) {
       p.tag = h('div', { class: 'pr-tag' },
@@ -411,7 +531,26 @@ export default function povRace(spec, ctx) {
   for (const v of ['b', 'a']) for (const hz of ['c', 'r', 'l', 'R']) for (const dd of [0, 50, 110])
     SPOTS.push({ v, hz, dd, pref: (v === 'b' ? 0 : 10) + { c: 0, r: 8, l: 12, R: 34 }[hz] + 0.35 * dd })
   SPOTS.push({ v: 'm', hz: 'R', dd: 0, pref: 40 })
+  // parked: in the plot's top band, detached from the icon (over the faint corner year, which dims under a tag as it
+  // does for any tag passing it). For a purchase whose own spots all cross a line (a late hike right under a dip and
+  // its recovery on a short plot); they cost more, so a tag parks only when every attached spot scores clearly worse
+  for (const fx of [0, 0.5, 1]) SPOTS.push({ v: 'P', fx, pref: 120 + 40 * (1 - fx) })
+  // the top band: in the stage's strip over the plot (as chart-race's event flags), above the lines and the tips
+  // (the axis keeps the running max at 1/K of the plot), straight over its ticket (centred, or reaching right or left
+  // from it). It keeps the x-tick strip clear, so it is the default for mid-race tags; a lagging axis on a steep
+  // climb can bring a tip up into it, and then the tag scores elsewhere.
+  // ('L' / 'R': ending just left of, or starting just right of, its ticket, to clear a tip right over it)
+  for (const hz of ['c', 'r', 'l', 'L', 'R']) SPOTS.push({ v: 'T', hz, pref: { c: 0, r: 6, l: 6, L: 14, R: 14 }[hz] })
+  const TICK_COST = 30                              // per x-tick label a tag would hide (every sampled moment)
   function tagXY(p, sp, a) {
+    if (sp.v === 'P') return { left: clamp(sp.fx * (P.w - p.tw), 70 - P.x, 930 - P.x - p.tw), top: 8, drag: 0 }
+    if (sp.v === 'T') {
+      const l0 = { c: a.lx - p.tw / 2, r: a.lx - 34, l: a.lx - p.tw + 34, L: a.lx - 56 - p.tw, R: a.lx + 56 }[sp.hz]
+      const left = clamp(l0, 70 - P.x, 930 - P.x - p.tw)
+      // clamping is cheap here; what costs is how far the tag ends up from its ticket's x
+      const gap = Math.max(0, left - a.lx, a.lx - (left + p.tw))
+      return { left, top: L.stage.y + 8 - P.y, drag: 0.3 * Math.abs(left - l0) + gap }
+    }
     let top = sp.v === 'b' ? a.ly + 18 + sp.dd : sp.v === 'a' ? a.top - 12 - p.th - sp.dd : a.ly - p.th / 2
     let left = sp.hz === 'c' ? a.lx - p.tw / 2 : sp.hz === 'r' ? a.lx - 34 : sp.hz === 'l' ? a.lx - p.tw + 34 : a.lx + ICON / 2 + 80
     const l0 = left, t0 = top
@@ -429,7 +568,7 @@ export default function povRace(spec, ctx) {
       return a
     })
     const tips = both.map(sr => [pxOf(Math.max(x, sr.x0)), py(vAt(sr, Math.max(x, sr.x0)))])
-    return { py, segs, tips }
+    return { t, py, segs, tips }
   }
   const hit = (a, b) => a[0] < b[2] && a[2] > b[0] && a[1] < b[3] && a[3] > b[1]
   for (const p of purchases) {
@@ -446,11 +585,14 @@ export default function povRace(spec, ctx) {
         c += 0.3 * r.drag
         g.segs.forEach((sg, m) => { for (let i = 2; i < sg.length; i += 2) c += (m ? 1.4 : 0.6) * clipLen(sg[i - 2], sg[i - 1], sg[i], sg[i + 1], R) })
         for (const tp of g.tips) if (tp[0] > R[0] - 14 && tp[0] < R[2] + 14 && tp[1] > R[1] - 14 && tp[1] < R[3] + 14) c += 400
+        if (R[3] > P.h + 10) for (const tk of xTicks) {           // x-tick labels it would hide
+          const cx = pxOf(tk.xv), w = String(tk.xv).length * 18
+          if (hit(R, [cx - w / 2, P.h + 10, cx + w / 2, P.h + 44])) c += TICK_COST
+        }
         if (hit(R, [a.cx - ICON / 2, a.top, a.cx + ICON / 2, a.ly])) c += 600
         for (const q of purchases) {
           if (q === p || q.t > tA + 0.01) continue
-          const b = iconAt(q, g.py)
-          if (hit(R, [b.cx - ICON / 2, b.top, b.cx + ICON / 2, b.ly])) c += 40
+          if (hit(R, iconBox(q, g.py, g.t))) c += 40
         }
       }
       if (c < bestC) { bestC = c; best = sp }
@@ -504,7 +646,7 @@ export default function povRace(spec, ctx) {
         const tx = pxOf(x), ty = py(vAt(OW, x))
         if (tx > Rp[0] - 24 && tx < Rp[2] + 24 && ty > Rp[1] - 24 && ty < Rp[3] + 24) return false
       }
-      for (const p of purchases) { const a = iconAt(p, py); if (hit(Rp, [a.cx - ICON / 2, a.top, a.cx + ICON / 2, a.ly])) return false }
+      for (const p of purchases) if (hit(Rp, iconBox(p, py, t))) return false
       return true
     }
     // the tag's stints: every clear stretch of the race (0.05 s grid) at least 1.5 s long, or one running to the
@@ -571,9 +713,86 @@ export default function povRace(spec, ctx) {
     const S = Math.floor(clamp(100 * 410 / wmax, 56, Math.min(116, HH - 52)))
     // the glow box is padded so the drop-shadow's spill stays inside the element (no stale filter strips on re-seek)
     for (const hf of [H_SP, H_OW]) { style(hf.odo.el, { fontSize: S + 'px' }); style(hf.num, { top: 52 - 48 + 'px', height: S + 96 + 'px', paddingTop: '48px', boxSizing: 'border-box' }) }
+    // clean cover: each counter waits LED-off until the race starts: unlit ghost digits at the counter's size, in
+    // the shape of its first value ("$–.––" for "$7.99"), so it reads as a scoreboard waiting, never as a price
+    if (clean) for (const hf of [H_SP, H_OW]) {
+      const tpl0 = runTpl(hf.sr, hf.sr.first)
+      const ghost = formatLike(snap(hf.sr.first, tpl0), tpl0).replace(/\d/g, '–')
+      hf.led = h('div', { class: 'pr-led', 'data-deco': '', text: ghost, style: { top: '52px', fontSize: S + 'px' } })
+      hf.el.append(hf.led)
+    }
   }
 
   const vt = spec.verdict && spec.verdict.text ? Math.max(0, +spec.verdict.t || 0) : null
+
+  // ---------- the answer row (lookOpts.unit): line 1 the working, line 2 the stake in the hook's unit ----------
+  // working markup: a leading "2020:" grey, the money green, everything from the first ÷ on grey (".op")
+  const workHTML = str => {
+    const k = str.indexOf(' ÷ ')
+    let head = k >= 0 ? str.slice(0, k) : str
+    const tail = k >= 0 ? str.slice(k) : ''
+    const yr = /^(\d{4}:\s*)/.exec(head)
+    if (yr) head = head.slice(yr[0].length)
+    return `<span>${yr ? `<span class="op">${ax(esc(yr[1]))}</span>` : ''}${ax(esc(head))}${tail ? `<span class="op">${ax(esc(tail))}</span>` : ''}</span>`
+  }
+  let ans = null
+  if (U) {
+    const box = h('div', { class: 'pr-ans', 'data-yield': '', style: { top: L.label.y + 'px', left: (1080 - L.label.w) / 2 + 'px', width: L.label.w + 'px', height: L.label.h + 'px' } })
+    stage.append(box)
+    const line = str => {
+      const el = h('div', { class: 'pr-ans-l1', html: workHTML(str), style: { fontSize: UT.l1 + 'px' } })
+      box.append(el)
+      fitText(el, L.label.w, { minPx: 44 })
+      el.__from = slamFromFor(el.firstChild.offsetWidth, L.label.w - 8, 1.12)
+      style(el, { display: 'none' })
+      return el
+    }
+    const formulaEl = U.formula ? line(U.formula) : null
+    const holds = U.holds.map(q => ({ ...q, t: tAtX(q.x), v: vAt(OW, q.x), tpl: parseDisplay(q.display), el: q.work ? line(q.work) : formulaEl }))
+    const finalEl = U.finalWork ? line(U.finalWork) : formulaEl
+    const iconSize = Math.round(UT.v * 0.84)
+    const hero = heroRow(box, { hero: { y: UT.l1 + UT.gap, h: UT.v, w: L.label.w, size: UT.v, icon: iconSize } }, { icon: U.icon, size: UT.v, iconSize, gap: 18, maxInt: 3, maxDp: 1 })
+    style(hero.el, { left: '0px' })
+    const q = h('span', { class: 'pr-q', html: ax(esc(U.empty)), style: { fontSize: UT.v + 'px', color: OWN_COL } })
+    hero.glow.append(q)
+    const chapters = [{ t: -Infinity, el: formulaEl }]
+    for (const hq of holds) { chapters.push({ t: hq.t, el: hq.el }); chapters.push({ t: hq.t + hq.hold, el: formulaEl }) }
+    // the finish's working is a soft cut (no slam): the board's landing owns the finish
+    if (U.final) chapters.push({ t: TF, el: finalEl, soft: true })
+    chapters.sort((a, b) => a.t - b.t)
+    const lines = [...new Set([formulaEl, finalEl, ...holds.map(hq => hq.el)].filter(Boolean))]
+    const finalTpl = U.final ? parseDisplay(U.final) : null
+    if (finalTpl && !isFinite(finalTpl.value)) throw new Error('pov-race: lookOpts.unit.final has no number')
+    ans = { box, hero, q, holds, chapters, lines, iconSize, finalTpl }
+  }
+  // the live count in the hook's unit: under a year in whole months, 1-10 years to 1 dp, then whole years
+  const unitTpl = v => {
+    const m = v / U.perMonth, y = v / U.per
+    if (y < 1) return m < 1 ? null : { prefix: '≈ ', suffix: Math.round(m) === 1 ? ' month' : ' months', dp: 0, group: false, scale: 1, n: m }
+    return { prefix: '≈ ', suffix: ' years', dp: Math.round(y * 10) / 10 < 10 ? 1 : 0, group: false, scale: 1, n: y }
+  }
+
+  // ---------- the payoff (lookOpts.payoff): the board hard-cuts to one hero number that rolls onto the answer ----------
+  let pay = null
+  if (lo.payoff && lo.payoff.display != null && L.hero) {
+    const po = lo.payoff
+    const tpl = parseDisplay(String(po.display))
+    const icon = po.icon === false ? null : iconName(po.icon || (U && U.icon) || SP.item)
+    const hero = heroRow(stage, L, { icon, maxInt: Math.max(1, digitsOf(tpl.value)), maxDp: tpl.dp })
+    hero.el.classList.add('pr-pay')
+    hero.show(String(po.display))
+    // the number shrinks so icon + number fit 900 px at the 1.13 landing bump
+    const w0 = hero.odo.el.offsetWidth + (icon ? L.hero.icon + 12 : 0)
+    if (w0 * 1.13 > 900) {
+      const k = 900 / (w0 * 1.13)
+      style(hero.odo.el, { fontSize: Math.floor(L.hero.size * k) + 'px' })
+      hero.show(String(po.display))
+    }
+    style(hero.el, { display: 'none' })
+    // dur 0: no roll: the answer lands whole at t (a hard cut, then the 1.13 bump, glow, bloom and hit at t)
+    const dur = po.dur != null && isFinite(+po.dur) && +po.dur >= 0 ? +po.dur : 1.4
+    pay = { t: po.t != null ? +po.t : vt ?? TF + 2, dur, tpl, display: String(po.display), hero }
+  }
 
   // ---------- label stack (captions off): the matchup at rest; each purchase is a hard cut held to its tag's end ----------
   let labels = null
@@ -609,6 +828,9 @@ export default function povRace(spec, ctx) {
   cue(TF, ownWins ? 'hit' : 'thud', { gain: ownWins ? 0.85 : 0.7 })
   if (ownWins) cue(TF + 0.06, 'cash', { gain: 0.55 })
   for (const st of footSteps) if (st.t > 0.05 && Math.abs(st.t - TF) > 0.3 && !(vt != null && Math.abs(st.t - vt) < 0.3)) cue(st.t, 'tick', { gain: 0.35 })
+  // the answer row: a ding as each spoken year-end lands (a thud for a loss); the payoff: a roll, then a hit as it lands
+  if (ans) for (const hq of ans.holds) cue(hq.t, hq.bad ? 'thud' : 'ding', { gain: hq.bad ? 0.65 : 0.45 })   // a loss lands on a thud
+  if (pay) { if (pay.dur > 0) cue(pay.t, 'roll', { dur: pay.dur, gain: 0.45 }); cue(pay.t + pay.dur, 'hit', { gain: 0.75 }) }
 
   const duration = durationOf(spec, TF, d.hold ?? M.hold)
 
@@ -700,7 +922,10 @@ export default function povRace(spec, ctx) {
       for (const p of purchases) {
         const a = iconAt(p, py)
         const t0 = p.t - FALL
-        if (t < t0 && p.t > 0.001) { style(p.icon, { display: 'none' }); if (p.tag) style(p.tag, { display: 'none' }); continue }
+        if (t < t0 && p.t > 0.001) {
+          style(p.icon, { display: 'none' }); if (p.tag) style(p.tag, { display: 'none' }); if (p.pip) attr(p.pip, 'opacity', '0')
+          continue
+        }
         let dy = 0, sx = 1, sy = 1, op = 1
         if (p.t > 0.001 && t < p.t) {
           const q = prog(t, t0, FALL)
@@ -710,11 +935,20 @@ export default function povRace(spec, ctx) {
           sy = 1 - 0.18 * w; sx = 1 + 0.12 * w
           spendHit = Math.max(spendHit, 1 - ease.out(prog(t, p.t, 0.45)))
         }
+        // retired (lookOpts.pips): the icon shrinks down into its point on the line and a pip pops up there
+        const rq = prog(t, p.retire, PIP_DUR)
+        let dx = 0
+        if (rq > 0) { const e = ease.in(rq); sx *= 1 - 0.7 * e; sy *= 1 - 0.7 * e; op *= 1 - rq; dx = (a.lx - a.cx) * ease.inOut(rq) }
         style(p.icon, {
-          display: 'block', opacity: op.toFixed(3),
-          transform: `translate(${(a.cx - ICON / 2).toFixed(1)}px, ${(a.ly - ICON * ibBot + dy).toFixed(1)}px) scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`,
+          display: rq >= 1 ? 'none' : 'block', opacity: op.toFixed(3),
+          transform: `translate(${(a.cx - ICON / 2 + dx).toFixed(1)}px, ${(a.ly - ICON * ibBot + dy).toFixed(1)}px) scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`,
         })
-        if (t >= t0 || p.t <= 0.001) iconRects.push([a.cx - ICON / 2, a.top, a.cx + ICON / 2, a.ly])
+        if (p.pip) {
+          const pk = ease.out(prog(t, p.retire + PIP_DUR * 0.4, PIP_DUR * 0.6))
+          attr(p.pip, 'opacity', pk.toFixed(3))
+          attr(p.pip, 'transform', `translate(${a.lx.toFixed(1)} ${(a.ly - 2).toFixed(1)}) scale(${(0.4 + 0.6 * pk).toFixed(3)})`)
+        }
+        if (t >= t0 || p.t <= 0.001) iconRects.push(iconBox(p, py, t))
         if (!p.tag) continue
         const on = t >= p.t && t < p.end
         if (!on) { style(p.tag, { display: 'none' }); continue }
@@ -723,7 +957,7 @@ export default function povRace(spec, ctx) {
         const r = tagXY(p, p.spot, a)
         style(p.tag, {
           display: 'flex', left: r.left.toFixed(1) + 'px', top: r.top.toFixed(1) + 'px',
-          opacity: (k.o * fade).toFixed(3), transform: `scale(${k.s.toFixed(4)})`, transformOrigin: p.spot.v === 'b' ? '50% 0%' : p.spot.v === 'a' ? '50% 100%' : '0% 50%',
+          opacity: (k.o * fade).toFixed(3), transform: `scale(${k.s.toFixed(4)})`, transformOrigin: p.spot.v === 'b' || p.spot.v === 'T' ? '50% 0%' : p.spot.v === 'a' ? '50% 100%' : p.spot.v === 'P' ? '50% 50%' : '0% 50%',
         })
         tagRects.push([r.left - 8, r.top - 8, r.left + p.tw + 8, r.top + p.th + 8])
       }
@@ -805,9 +1039,86 @@ export default function povRace(spec, ctx) {
         if (t >= TF) glow = Math.max(glow, 1 - ease.out(prog(t, TF, 1.1)))
         fl = Math.max(fl, 0.55 * flashAt(t, TF, 0.9))
       } else sS *= bump(t, TF, { amp: 0.08, dur: 0.45 })
-      style(H_SP.num, { transform: sS !== 1 ? `scale(${sS.toFixed(4)})` : 'none' })
-      style(H_OW.num, { transform: sO !== 1 ? `scale(${sO.toFixed(4)})` : 'none' })
+      // clean cover: the counters wait LED-off, then slam in as the race starts
+      let numO = 1
+      if (clean) {
+        const k = slam(t, R0)
+        numO = t < R0 ? 0 : k.o
+        if (t >= R0) { sS *= k.s; sO *= k.s }
+        for (const hf of [H_SP, H_OW]) style(hf.led, { display: t < R0 ? 'flex' : 'none' })
+      }
+      style(H_SP.num, { transform: sS !== 1 ? `scale(${sS.toFixed(4)})` : 'none', opacity: String(numO) })
+      style(H_OW.num, { transform: sO !== 1 ? `scale(${sO.toFixed(4)})` : 'none', opacity: String(numO) })
       style(H_OW.num, { '--glow': (16 + 30 * glow).toFixed(1) + 'px', '--glowA': (0.36 + 0.45 * glow).toFixed(3) })
+
+      // ---- the answer row: line 1 the working (hard cuts), line 2 the stake in the hook's unit ----
+      if (ans) {
+        let ch = ans.chapters[0]
+        for (const c of ans.chapters) if (t >= c.t) ch = c
+        for (const el of ans.lines) {
+          if (el !== ch.el) { style(el, { display: 'none' }); continue }
+          const k = ch.t > 0 ? (ch.soft ? { o: 0.6 + 0.4 * prog(t, ch.t, 0.12), s: 1 } : slam(t, ch.t, { from: el.__from })) : { o: 1, s: 1 }
+          style(el, { display: 'block', opacity: k.o.toFixed(3), transform: k.s !== 1 ? `scale(${k.s.toFixed(4)})` : 'none' })
+        }
+        const hr = ans.hero
+        let held = null
+        for (const hq of ans.holds) if (t >= hq.t && t < hq.t + hq.hold) held = hq
+        let mode = null, tp = null, bad = false
+        if (U.final && t >= TF) mode = 'final'
+        else if (held) { mode = 'held'; bad = held.bad }
+        else if (t >= R0) {
+          let v = counter(OW, t).v
+          let last = null
+          for (const hq of ans.holds) if (t >= hq.t + hq.hold) last = hq
+          if (last) { const p = prog(t, last.t + last.hold, 0.35); if (p < 1) v = lerp(last.v, v, ease.out(p)) }
+          tp = unitTpl(v)
+          if (tp) mode = 'live'
+        }
+        // show the right piece BEFORE setting it: the icon is placed from the number's laid-out width
+        style(hr.odo.el, { display: mode ? '' : 'none' })
+        style(ans.q, { display: mode ? 'none' : 'inline-block' })
+        // the finish: no landing here (the board's dollars own the finish, the payoff lights the answer): the count
+        // rests on `final` with its "≈" still an unlit ghost, and line 2 dims to half
+        if (mode === 'final') hr.set(ans.finalTpl.value * ans.finalTpl.scale, ans.finalTpl, true)
+        else if (mode === 'held') hr.show(held.display)
+        else if (mode === 'live') hr.set(tp.n, tp, true)
+        else if (hr.icon) style(hr.icon, { left: (L.label.w / 2 - (ans.q.offsetWidth + ans.iconSize + 18) / 2).toFixed(1) + 'px' })
+        // landings: bump, glow flare and a floor bloom on each spoken year-end (none at the finish)
+        let sc = 1, g = 0
+        for (const hq of ans.holds) {
+          sc *= bump(t, hq.t, { amp: 0.09 })
+          if (t >= hq.t) g = Math.max(g, 1 - ease.out(prog(t, hq.t, 0.9)))
+          fl = Math.max(fl, 0.2 * flashAt(t, hq.t, 0.6))
+        }
+        const dim = mode === 'final' ? 1 - 0.5 * ease.out(prog(t, TF, 0.3)) : 1
+        style(hr.el, { transform: sc !== 1 ? `scale(${sc.toFixed(4)})` : 'none', opacity: dim.toFixed(3) })
+        style(hr.odo.el, { color: bad ? C.red : OWN_COL })
+        style(hr.glow, {
+          filter: bad ? `drop-shadow(0 0 var(--glow, 16px) ${rgba(C.red, 'var(--glowA, 0.38)')})` : '',
+          '--glow': (16 + 26 * g).toFixed(1) + 'px', '--glowA': (0.36 + 0.4 * g).toFixed(3),
+        })
+      }
+
+      // ---- the payoff: the board hard-cuts to one hero number that rolls onto the answer ----
+      if (pay) {
+        const y = prog(t, pay.t - 0.067, 0.067)
+        style(board, { opacity: String(1 - y), transform: y > 0 ? `translateY(${(14 * y).toFixed(1)}px)` : 'none', visibility: y >= 1 ? 'hidden' : 'visible' })
+        const hr = pay.hero
+        if (t < pay.t) style(hr.el, { display: 'none' })
+        else {
+          const p = prog(t, pay.t, pay.dur), tLand = pay.t + pay.dur
+          style(hr.el, { display: 'block' })            // visible before set: the icon is placed from the number's width
+          if (p < 1) hr.set(pay.tpl.value * pay.tpl.scale * ease.out(p), pay.tpl, true)
+          else hr.show(pay.display)
+          // a roll slams in, then lands; a hard cut (dur 0) lands as it appears: the bump is its only scale move
+          const k = pay.dur > 0 ? slam(t, pay.t) : { o: 0.6 + 0.4 * prog(t, pay.t, 0.08), s: 1 }
+          const sc = k.s * bump(t, tLand, { amp: 0.13, dur: 0.5 })
+          const g = t >= tLand ? 1 - ease.out(prog(t, tLand, 1.1)) : 0
+          style(hr.el, { opacity: k.o.toFixed(3), transform: `scale(${sc.toFixed(4)})` })
+          style(hr.glow, { '--glow': (16 + 30 * g).toFixed(1) + 'px', '--glowA': (0.36 + 0.45 * g).toFixed(3) })
+          fl = Math.max(fl, 0.55 * flashAt(t, tLand, 0.9))
+        }
+      }
       flash.set(fl)
 
       // ---- label stack (captions off) ----

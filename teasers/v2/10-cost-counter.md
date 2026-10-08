@@ -1,16 +1,16 @@
 # Format 10: real-time cost counter, three teasers
 
 **Channel:** Back of the Envelope (YouTube Shorts, Instagram Reels, TikTok), US audience, USD
-**Date:** 2026-10-07 (round-2 revision), hook pass 2026-10-08 (10b's hook replaced), hook pass 2 2026-10-08 (10a's and 10c's hooks replaced), assembly pass 2 2026-10-08 (10a and 10c re-paced; both counters now stop on their payoff), assembly pass 3 2026-10-08 (10b fitted and QA'd in the Becker kit's stack mode), assembly pass 4 2026-10-08 (10b's QA fixes: the counter stops on its payoff, a 2-line hook, a 30-year beat and a plinth countdown). What changed and why is in the **Review log** at the end.
+**Date:** 2026-10-07 (round-2 revision), hook pass 2026-10-08 (10b's hook replaced), hook pass 2 2026-10-08 (10a's and 10c's hooks replaced), assembly pass 2 2026-10-08 (10a and 10c re-paced; both counters now stop on their payoff), assembly pass 3 2026-10-08 (10b fitted and QA'd in the Becker kit's stack mode), assembly pass 4 2026-10-08 (10b's QA fixes: the counter stops on its payoff, a 2-line hook, a 30-year beat and a plinth countdown), port to Scoreboard 2026-10-08 (10c moved from the retired Live Sheet look to the Scoreboard; hook, numbers, VO and verdict unchanged), fixer pass 2026-10-08 (10c's Scoreboard QA: the verdict split into two short lines so it sets bigger than the labels, "And a whole year?" moved into the riser, the climax coin grown, and three kit nits). What changed and why is in the **Review log** at the end.
 **Format:** `cost-counter`. No hook pattern of its own in the hook bank ("–"). The hooks borrow the grammar of P4, P5, P6, P8 and P9 winners (quoted under each teaser).
 **Lane:** a real-time dollar counter at a verified rate (interest on the US debt, new US debt, a mega-company's profit per second)
 **Files:**
 - Specs:
   - [`studio/specs/10a-scoreboard-debt-interest-live.json`](../../studio/specs/10a-scoreboard-debt-interest-live.json)
   - [`studio/specs/10b-becker-rig-debt-vs-your-pay.json`](../../studio/specs/10b-becker-rig-debt-vs-your-pay.json)
-  - [`studio/specs/10c-live-sheet-amazon-makes.json`](../../studio/specs/10c-live-sheet-amazon-makes.json)
+  - [`studio/specs/10c-scoreboard-amazon-makes.json`](../../studio/specs/10c-scoreboard-amazon-makes.json) (ported from the Live Sheet on 2026-10-08; the old spec is in [`studio/specs/retired/`](../../studio/specs/retired/10c-live-sheet-amazon-makes.json))
 - Check: [`teasers/v2/checks/10-cost-counter.py`](checks/10-cost-counter.py). Run `python3 teasers/v2/checks/10-cost-counter.py`. It recomputes every number from the sourced inputs, rebuilds every display string, compares them with the three specs and with the caption and pinned-comment numbers in this file, prints a table and exits 1 on any mismatch.
-  - It reports **999 checks, 0 failures** and exits 0 (after assembly pass 4; 981 after assembly pass 2, 949 after the assembly pass, 915 after hook pass 2, 853 after the first hook pass). Assembly pass 4 moved 10b onto the "lands on" rule (its counter now stops on the 40-year pass) and added its 30-year row. Hook pass 2 rebuilt 10a on a salary ladder and 10c on Amazon's profit in weeks of median pay (4 rows), and dropped Amazon's sales from the check. Assembly pass 2 added the median and $500,000 rows to 10a's ladder (6 pass times) and a "lands on" rule: a counter that stops on its last milestone must be within $0.50 of it at both the exact and the stored rate, and then shows it with no "≈".
+  - It reports **1005 checks, 0 failures** and exits 0 (after the fixer pass on 10c: its verdict has no "1 second ≈ 2 weeks" line any more, so three fewer number checks; 1008 after the port of 10c to the Scoreboard; 999 after assembly pass 4, 981 after assembly pass 2, 949 after the assembly pass, 915 after hook pass 2, 853 after the first hook pass). Assembly pass 4 moved 10b onto the "lands on" rule (its counter now stops on the 40-year pass) and added its 30-year row. Hook pass 2 rebuilt 10a on a salary ladder and 10c on Amazon's profit in weeks of median pay (4 rows), and dropped Amazon's sales from the check. Assembly pass 2 added the median and $500,000 rows to 10a's ladder (6 pass times) and a "lands on" rule: a counter that stops on its last milestone must be within $0.50 of it at both the exact and the stored rate, and then shows it with no "≈".
   - New in round 2: every footer must carry the viewer-owned pay figure ("$1,251 … × 52") at 0.0 s; every header must ask a question; **one rounding per quantity** (any number within 5% of a computed quantity, in a spec string, a VO line, a caption or a pinned comment, must be that quantity's one shown rounding); and a list of banned overclaims ("live", "in real time", "fiscal 2026" for a 364-day window, "Under 1 second" as a universal claim). Hook pass 2 added one exemption: 10a's $30,000 salary row is an exact input that happens to sit 2.5% under the ≈ $30,800 rate, so it is not read as a second rounding of the rate.
   - As a test I broke one thing per teaser in a scratch copy: the 10a footer without the pay figure, 10b's caption back to "≈ $78,006", and 10c's vo[6] back to "≈ $2,500". It exited 1 with 7 failures, naming all three. Run against the round-1 captions, the new guards flagged "$30,758", "$78,006", "$22,733" and "fiscal 2026".
   - Hook pass 2 test, in a scratch copy: 10a's $100K label as "≈ 3.2 seconds", 10a's vo[4] moved to 9.0 s, 10c's first row as "≈ 3 weeks" and 10c's pinned comment as "≈ 1.97". It exited 1 with 10 failures, catching all four (the wrong rounding, the VO overlap and the 0.87 s sync miss, the unsourced 3, and the second rounding of 1.97 weeks).
@@ -24,10 +24,10 @@
 - **Nothing unverifiable on screen.** 10b no longer claims a fiscal-year figure, because the 2026-09-30 reading could not be confirmed (Review log, item V4).
 - **No market data.** No teaser uses a market price or a forecast on screen.
 
-**Studio linter:** `node src/cli.mjs check` passes on all three specs: **3/3 clean, 0 errors, 0 warnings** (rerun after hook pass 2; 10a and 10c rerun after the assembly pass and again after assembly pass 2: 2/2 clean; the four kit samples of the two edited `cost-counter` modules are clean too; 10b and the two Becker `cost-counter` samples rerun after assembly pass 4: 3/3 clean).
-- The Scoreboard, Live Sheet and Becker Rig `cost-counter` modules are all built (working tree), so all three specs are linted with their real counters.
-- I rendered stills at 0 s, 1.5 s and the verdict for all three (10b again at 0 / 1.5 / 3 / 25.5 / 33.4 s after the hook pass; 10a at 0 / 1.5 / 3 / 33.5 s and 10c at 0 / 1.1 / 1.5 / 3 / 26.6 / 27.5 s after hook pass 2). In each, the header, the footer, the caption band and the verdict fit their zones.
-- The Scoreboard and Live Sheet kits read every `lookOpts` key that 10a and 10c pass. The Becker kit draws 10b's block-stack, stopwatch, actions, heat keys and gag stamp (stack mode); only its `stamp` is not drawn (10b, Look note). Each spec still tells its story from the contract fields alone: the header asks, the footer carries the pay figure and the working, the counter runs, the verdict answers.
+**Studio linter:** `node src/cli.mjs check` passes on all three specs: **3/3 clean, 0 errors, 0 warnings** (rerun after hook pass 2; 10a and 10c rerun after the assembly pass and again after assembly pass 2: 2/2 clean; the four kit samples of the two edited `cost-counter` modules are clean too; 10b and the two Becker `cost-counter` samples rerun after assembly pass 4: 3/3 clean; after the port, 10c in the Scoreboard, 10a and the two Scoreboard `cost-counter` samples: 4/4 clean; the same four again after the fixer pass: 4/4 clean).
+- The Scoreboard and Becker Rig `cost-counter` modules are both built (working tree), so all three specs are linted with their real counters. 10a and 10c share the Scoreboard module.
+- I rendered stills at 0 s, 1.5 s and the verdict for all three (10b again at 0 / 1.5 / 3 / 25.5 / 33.4 s after the hook pass; 10a at 0 / 1.5 / 3 / 33.5 s and 10c at 0 / 1.1 / 1.5 / 3 / 26.6 / 27.5 s after hook pass 2; 10c in the Scoreboard at 0, every beat and the end after the port, and again after the fixer pass). In each, the header, the footer, the caption band and the verdict fit their zones.
+- The Scoreboard kit reads every `lookOpts` key that 10a and 10c pass. The Becker kit draws 10b's block-stack, stopwatch, actions, heat keys and gag stamp (stack mode); only its `stamp` is not drawn (10b, Look note). Each spec still tells its story from the contract fields alone: the header asks, the footer carries the pay figure and the working, the counter runs, the verdict answers.
 
 ---
 
@@ -63,26 +63,26 @@
 - **The counter is the answer machine; the header is the question.**
   - 10a: "When does it pass your salary?" The counter lights a ladder of salaries: $30,000 at ≈ 1.0 second, median pay at ≈ 2.1 seconds, $100,000 at ≈ 3.3 seconds, $1 million at ≈ 33 seconds, where it stops on exactly $1,000,000.
   - 10b: "40 years of your pay vs 1 minute of new US debt. Which is bigger?" The counter eats the 40 years in ≈ 33 seconds, 55% of the minute.
-  - 10c: "How long do you work for 1 second of Amazon's profit?" The answer cells fill as the counter passes them: ≈ 2 weeks of median pay at 1.0 s, a year of it at ≈ 26 s, where it stops on exactly $65,052.
+  - 10c: "How long do you work for 1 second of Amazon's profit?" Each answer slams into the label stack as the counter passes its target, and the target on the ladder turns into that answer: ≈ 2 weeks of median pay at 1.0 s, a year of it at ≈ 26 s, where it stops on exactly $65,052.
 - **The counter starts at frame 1, at $0** in all three, so "since you hit play" is literal: the number on screen is what passed while this viewer watched. The loop restarts the count, which is honest on every replay.
   - 10b's 2.4 s armed pause and its ding were dropped in the hook pass (2026-10-08): nothing moved in its first 1.5 s.
-  - 10c needs `lookOpts.preroll: 0`: without it the Live Sheet kit starts its counter 1 s in, which made the old 10c's frame 1 read $22,733 (found by the hook-pass-2 judges).
+  - 10c: the Scoreboard counts from `counterT[0]` (0.0 s) with no preroll, so frame 1 reads $0. In the retired Live Sheet build it needed `lookOpts.preroll: 0`: without it that kit started its counter 1 s in, which made the old 10c's frame 1 read $22,733 (found by the hook-pass-2 judges).
 - **The viewer's own number is on screen at 0.0 s in every teaser:** the footer carries the pay basis ($1,251 a week × 52 = **$65,052**, BLS Q2 2026), and the checker enforces it. 10a also prints its salary ladder ($30K to $1M, with the median as its own "Median $65K" row, so the footer's pay figure pays off at 2.1 s) beside the pips from frame 1, so every viewer has a row.
   - The milestones are pay yardsticks: round yearly salaries plus the median in 10a; years of median pay in 10b (3, 10, 20 and 40); weeks, months and a year of median pay in 10c. The median new house left the series in hook pass 2.
   - The first payoff lands by 2.5 s in every teaser: the $30,000 row at 0.98 s (10a), ≈ 2 weeks of median pay at 1.0 s (10c), 3 years of median pay at 2.5 s (10b; its first $65,052 brick goes into the board at 0.83 s).
   - The swap-in rule for the viewer's own pay (R3): the VO says it in 10a ("Your seconds: yearly pay ÷ 30,800.", with the label stack working it for the median: "$65,052 ÷ 30,800 / ≈ 2.1 seconds") and 10c ("2,464 ÷ your weekly pay = your weeks."); the pinned comments repeat it, and 10b's gives it.
-- **Rounding: one rounding per quantity.** A quantity shows one rounded figure everywhere it appears: spec strings, captions (the VO), formula bar, caption text and pinned comment. The checker enforces it.
+- **Rounding: one rounding per quantity.** A quantity shows one rounded figure everywhere it appears: spec strings, captions (the VO), label stack and ladder, caption text and pinned comment. The checker enforces it.
   - Every rounded number shows "≈" on screen and in the captions, including 10b's counter final (≈ $2,604,105). 10a and 10c stop on their last milestone, within $0.50 of it, so their finals ($1,000,000 and $65,052) are exact dollar readings and carry no "≈" (assembly pass 2; the checker holds both rates to the $0.50).
-  - Rates: 3 significant figures for 10a (≈ $30,800), 2 for 10b (≈ $78,000 a second, ≈ $4.7 million a minute), and Amazon's profit rate to the dollar (≈ $2,464) because the formula bar divides by it.
+  - Rates: 3 significant figures for 10a (≈ $30,800), 2 for 10b (≈ $78,000 a second, ≈ $4.7 million a minute), and Amazon's profit rate to the dollar (≈ $2,464) because the label stack's working and the swap-in rule divide by it.
   - Times: whole seconds from 5 s up (≈ 8, ≈ 13, ≈ 16, ≈ 26, ≈ 33 s). Under 5 s, 10a's rows show tenths (≈ 1.0 / 2.1 / 3.3 s): whole seconds would put $30,000 and the median both at "≈ 1-2 s" and lose the ladder's point. Each time still has one rounding everywhere it appears; the median's 2.1 s is the same by the exact rate (2.115 s) and by the swap-in rule ($65,052 ÷ 30,800 = 2.112).
 - **VO text uses numerals.** It doubles as the captions, and the checker reads its numbers. Line lengths assume 2.6 spoken words a second, with digits expanded the way they are read ("$65,052" = 4 words, "2025" = 2, "US" = 2).
 - **Sync:** the on-screen beat (label, thud, row) lands on the pass itself, and each milestone the VO names passes within 0.5 s of the moment it is said (the checker's limit).
   - 10a: median pay said at 2.1 s (pass 2.11), $100K at 3.25 (3.25), $250K at 8.5 (8.13, the widest gap at 0.37 s), $500K at 16.3 (16.26), $1 million at 32.5 (32.51). The $30K row is not spoken: it lights at 0.98 s, during "Find your salary.", and the label stack names it. Every label-stack beat starts with its VO line (5.4, 12.45, 19.1, 22.7, 28.0 s) and holds to the next beat, so the resting rate never shows over a line it does not match.
   - 10b: gaps of 0.03-0.14 s (3, 10, 20 and 40 years).
-  - 10c: 5 seconds said at 5.2 (pass 5.0), ≈ 13 at 13.2 (13.20), ≈ 26 at 26.4 (26.40). The 1-second row snaps on screen at 1.0 s while the opening question is still spoken, and vo[1] reads it back at 2.8 s with the formula bar's working: the one accepted gap (1.8 s), so the hook keeps its spoken question.
+  - 10c: 5 seconds said at 5.2 (pass 5.0), ≈ 13 at 13.2 (13.20), ≈ 26 at 26.4 (26.40). The 1-second answer slams into the label stack at 1.0 s while the opening question is still spoken, and vo[1] reads it back at 2.8 s with the label stack's working ("$2,464 ÷ $1,251 a week"): the one accepted gap (1.8 s), so the hook keeps its spoken question. Every rate step starts with its VO line (2.8, 7.4, 15.8, 22.8 s) and holds to the next beat, so the resting rate shows only before the first pass (0-1.0 s).
 - **Lane check:**
   - These are counters at a real rate, over one continuous stretch.
-  - No find-your-row table. 10a's salary ladder has a row for every kind of viewer, but it is the counter's own milestone ladder (6 pips the counter lights), with no per-row computation shown and the counter still the mechanic. 10c's 4 rows are time slices of one counter (1, 5, ≈ 13 and ≈ 26 s).
+  - No find-your-row table. 10a's salary ladder has a row for every kind of viewer, but it is the counter's own milestone ladder (6 pips the counter lights), with no per-row computation shown and the counter still the mechanic. 10c's 4 milestones are time slices of one counter (1, 5, ≈ 13 and ≈ 26 s), on the same kind of ladder as 10a's.
   - No unit stacks (that is `unit-ladder`). 10b's 40-brick stack is a prop the counter eats, not a ladder of units.
   - No race between two assets (`chart-race`): every teaser has one counter.
   - No "instead of paying" (`pov-race`).
@@ -240,6 +240,7 @@ The salary rows ($30,000 to $1 million) are round yardsticks chosen for the ladd
   - `final` is "$1,000,000" with no "≈", so the kit draws no unlit "≈" ghost beside the hero, and the number stays centred.
   - Kit changes in the Scoreboard `cost-counter` module (assembly pass 2): the big stage icon carries its pip label as a tag under the art (white while it fills, green on the pass, riding the icon's bump); ladder labels duck while a flying icon crosses them (this is what makes six labelled pips lint-clean: a $75K pip was dropped in hook pass 2 for exactly that contrast error); the hero is set 8% under its full fit, for air under the header and above the footer.
   - No `slot` (frame 1 holds one task), `heroIcon: false`, no spec sfx: the kit cues the riser, hit and cash on the last milestone.
+  - Kit change from 10c's fixer pass (no change to this spec): the big icon keeps clear of the ladder column at its pop's peak (bump 1 + amp, plus the glow), so the bills sit right of the region's centre (x 420-937 at rest). The median bill's pop at 2.15 s now clears "Median $65K" by 33 px (it came within about 9 px and its glow covered the "K"). Lint is still clean; the MP4 in `studio/out/` was re-rendered with it.
 
 ---
 
@@ -403,15 +404,15 @@ All "≈ N seconds" are counter time, and the counter starts at 0.0 s, so they a
 
 ---
 
-## 10c: Live Sheet: "How long do you work for 1 second of Amazon's profit?"
+## 10c: Scoreboard: "How long do you work for 1 second of Amazon's profit?"
 
 | | |
 |---|---|
-| Look | `live-sheet` (yellow banner, "≈" formula bar, white sheet on black, mint input and peach output headers) |
-| Spec | `studio/specs/10c-live-sheet-amazon-makes.json` (31.0 s) |
+| Look | `scoreboard` (black bars, neon-green odometer in the top bar, a milestone ladder and a filling icon on the dark stage, label stack in the bottom bar, footer working). Ported from the retired Live Sheet on 2026-10-08 (Review log, "Port to scoreboard"); the old spec is `studio/specs/retired/10c-live-sheet-amazon-makes.json` |
+| Spec | `studio/specs/10c-scoreboard-amazon-makes.json` (31.0 s) |
 | Platform title | **How Long Do You Work for 1 Second of Amazon's Profit?** |
-| On-screen hook (header) | **How long do you work for / 1 second of Amazon's profit?** (11 words, 2 lines; "you" highlighted) |
-| Frame 1 | Banner. The formula bar starts typing "= $77.7B ÷ 31,536,000 s ≈ $2,464" (one line). The counter row "Amazon's profit since you hit play / ≈ $2,464 every second" and the big cell at **$0**, counting ($3,696 at 1.5 s). Under it, the table "Since play · Profit · You work" with four rows, "1 second · ≈ $2,464", "5 seconds · ≈ $12,319", "≈ 13 seconds · $32,526" and "≈ 26 seconds · $65,052", and their four "You work" cells empty (the countable loop). 2-line footer with the pay basis. Caption "How long do you work for this?" |
+| On-screen hook (header) | **HOW LONG DO YOU WORK FOR / 1 SECOND OF AMAZON'S PROFIT?** (11 words, 2 lines; "YOU" in green) |
+| Frame 1 | Header. The odometer reads **$0**, centred, and counts from frame 1 ($3,695 at 1.5 s). Under it the 2-line footer with the pay basis. On the stage, a 4-pip ladder of the profit targets, **≈ $2,464 · ≈ $12,319 · $32,526 · $65,052** (bottom to top; ≈ $2,464 lit white as the next one; each "≈" hangs in a gutter, so the "$" and digits of all four rows line up), and the big bill ghost of the 1-second row, the money stream already pouring into it, tagged "≈ $2,464" under it. No answer is on screen yet (the countable loop: each target turns into its answer as it is passed). Label stack "≈ $2,464 every second / AMAZON'S PROFIT SINCE YOU HIT PLAY". Caption "How long do you work for this?" |
 | Footer | Amazon 2025 net income: $77.7B / Pay: BLS median $1,251 a week × 52 |
 
 **Topic vs the seed:**
@@ -419,7 +420,7 @@ All "≈ N seconds" are counter time, and the counter starts at 0.0 s, so they a
 - Changed in hook pass 2: the counter is **profit** (2025 net income, $77.7B, ≈ $2,464 a second), and the answer is in the viewer's own unit, **weeks of median pay**, not dollars. The sales counter, the house row and the "makes vs keeps" twist are gone.
   - Both judges scored the old hook 4 and marked it dishonest as rendered: without `preroll`, the Live Sheet kit starts its counter 1 s in, so frame 1 read $22,733 under "since you hit play" and every pass landed ≈ 1 s early.
   - "Revenue isn't profit" is a correction most viewers already hold.
-- Fixed: `lookOpts.preroll: 0`, so frame 1 is $0 and "since you hit play" is literal.
+- Fixed: `lookOpts.preroll: 0`, so frame 1 is $0 and "since you hit play" is literal. The Scoreboard (port) has no preroll: its counter runs from `counterT[0]` = 0.0 s, so frame 1 is $0 without a key.
 - Why Amazon: a household brand, and its profit per second (≈ $2,464) is the size of a couple of weeks' pay, so the comparison lands in a unit the viewer lives in.
 
 **Wrong belief it exploits:** "A second of a company's profit is pocket change." 1 second of Amazon's 2025 profit (≈ $2,464) is **≈ 2 weeks** of median full-time pay; 5 seconds is ≈ 10 weeks; half a year of pay goes in ≈ 13 seconds and a whole year in ≈ 26.
@@ -428,18 +429,18 @@ All "≈ N seconds" are counter time, and the counter starts at 0.0 s, so they a
 
 | Rule | How |
 |---|---|
-| R1 | The counter ($0, counting), the formula bar ($77.7B ÷ 31,536,000 s), the four time rows with their profit amounts and the footer's pay basis are on screen at 0.0 s |
-| R2 | The hook line has one input (1 second) and no result: the four answer cells are empty |
-| R3 | The answer unit is the viewer's: weeks of work, under the column head "You work" (the header's "you"). The rows use the median ($1,251 a week, in the footer and the verdict); the swap-in rule is spoken at 15.8 s ("2,464 ÷ your weekly pay = your weeks.") and pinned. Partial pass: the cells are the median's, not the viewer's own |
-| R4 | Small, round inputs (1 second, 5 seconds) and a familiar unit (weeks, months, a year of pay). "$77.7 billion" appears only in the formula bar, the footer and once in the VO |
-| R5 | The implied wrong answer is "a few minutes of my work". The first cell says ≈ 2 weeks |
+| R1 | The counter ($0, counting), the rate ("≈ $2,464 every second"), the ladder's four profit targets and the footer ($77.7B, $1,251 a week × 52) are on screen at 0.0 s |
+| R2 | The hook line has one input (1 second) and no result: no answer is on screen until the first pass |
+| R3 | The answer unit is the viewer's: weeks of work ("≈ 2 WEEKS OF WORK", the header's "you"). The answers use the median ($1,251 a week, in the footer, the 2.8 s working and the verdict); the swap-in rule is spoken and worked in the label stack at 15.8 s ("$2,464 ÷ your weekly pay / your weeks per second") and pinned. Partial pass: the answers are the median's, not the viewer's own |
+| R4 | Small, round inputs (1 second, 5 seconds) and a familiar unit (weeks, months, a year of pay). "$77.7 billion" appears only in the footer, the 7.4 s working and once in the VO |
+| R5 | The implied wrong answer is "a few minutes of my work". The first answer says ≈ 2 weeks |
 | R6 | You ("do you work") + an amount (a second of profit) + a horizon ("since you hit play"). The money is Amazon's, so this is a partial pass |
 | R7 | The VO opens on the question, not a label |
 | R8 | 11 words, 2 lines |
-| R9 | 4 empty answer cells, filled at 1.0, 5.0, 13.2 and 26.4 s (each pops 1.2× on a solid yellow fill for 0.6 s), with a yellow progress line under the next row and a riser into the last |
-| R10 | First payoff at 1.000 s: row 1's cell pops "≈ 2 weeks". The biggest answer (a year of pay) comes last, as the big cell lands on exactly $65,052 |
-| R11 | The question is on screen and in the title; the verdict answers it, climax first |
-| R12 | A line to repeat: **A year of median pay: ≈ 26 seconds. 1 second ≈ 2 weeks.** |
+| R9 | 4 targets on the ladder from 0.0 s, the next one glowing; the big icon fills toward it (tagged with its amount) and pops on the pass at 1.0, 5.0, 13.2 and 26.4 s (thud + ding), the label stack slams the answer and the ladder label turns into it (≈ 2 weeks, ≈ 10 weeks, 6 months, 1 year). "And a whole year?" lands into a 2.4 s riser before the last |
+| R10 | First payoff at 1.000 s: the bill pops and the label stack slams "1 SECOND: ≈ $2,464 / ≈ 2 WEEKS OF WORK". The biggest answer (a year of pay) comes last, as the hero lands on exactly $65,052 (hit + cash) and the coin grows to the biggest object of the video (424 px, taller than the bills) |
+| R11 | The question is on screen and in the title; the verdict answers it with the climax, and the end frame keeps the 1-second answer (the ladder's bottom row, ≈ 2 weeks) |
+| R12 | A line to repeat: **A year of median pay: ≈ 26 seconds.** The hook's own answer (1 second ≈ 2 weeks) is caption line 1 and the pinned comment |
 
 **Benchmark hooks it is modelled on**
 - **H04 and H01, HD Guy, "Cost in Units of Starbucks Lattes" and "Cost in Units of RTX 5090"**. **9,858,084 (106.16x) and 30,617,461 (62.49x).** https://www.youtube.com/shorts/NHbMe2F_JXY, https://www.youtube.com/shorts/E2oVrAwHDOw
@@ -449,30 +450,32 @@ All "≈ N seconds" are counter time, and the counter starts at 0.0 s, so they a
 - **H64, Gage Heward, "What $1 costs you by age"**. **1,150,974, 210x median.** https://www.instagram.com/reel/Da_dukjxB56/
   - Borrowed: a personal cost, with every answer cell empty until it fills.
 - **H32, FinCalC TV, 16-row Post Office MIS table**. **428,862, 54.46x.** https://www.youtube.com/shorts/K2QbxGXa29k
-  - Borrowed: a sheet whose output cells fill row by row.
+  - Borrowed: output cells that fill row by row (in the Scoreboard, the ladder labels that turn into their answers).
 - **H02, HD Guy, "F-16 Afterburner Fuel Cost in Real Time"**. **28,289,823, 110.85x.** https://www.youtube.com/shorts/2DtXV2uxM_E
   - Borrowed: the counter is running at 0.0 s, and round milestones pull the viewer through.
-- **Look evidence:** Debt Freedom's formula bar as proof ("What difference…", **1,900,000, 902.5x**, https://www.tiktok.com/@thedebtfreedomproject/video/7668828789551418637).
+- **Look evidence:** HD Guy's counters are this look (H02 above; "Cost in Units of…", H01 and H04): a neon odometer in a black top bar, one object on a dark stage, a hard-cut label stack. The working the Live Sheet put in its formula bar now rides the label stack's line 1.
 
-**Beat sheet** (row pass time = value ÷ $2,463.85 a second, with `preroll: 0`; formula-bar steps from `lookOpts.formulaSteps`)
+**Beat sheet** (milestone pass time = value ÷ $2,463.85 a second, from 0.0 s; label beats from `lookOpts.labels` and `lookOpts.rateSteps`; as rendered in the Scoreboard, port 2026-10-08, re-paced in the fixer pass)
 
 | t (s) | On screen | VO |
 |---|---|---|
-| 0.0 | Banner. The formula bar types "= $77.7B ÷ 31,536,000 s ≈ $2,464". Big cell **$0**, counting. Table with 4 empty "You work" cells. Footer | "How long do you work for this?" (0.0-2.7) |
-| 1.00 | The counter passes ≈ $2,464 (1 second). Row 1's cell pops **≈ 2 weeks** (1.2×, solid yellow, 0.6 s); yellow wipe; pop sound. The progress line moves under "5 seconds" | |
-| 1.5 | The counter reads $3,696 | |
-| 2.8 | The formula bar retypes "= $2,464 ÷ $1,251 ≈ 2 weeks" | "≈ 2 weeks, at median pay." (2.8-5.2) |
-| 5.00 | The counter passes ≈ $12,319. Row 2 pops **≈ 10 weeks** (its scale capped so it stays 14 px clear of "≈ $12,319") | |
-| 5.2 | The formula bar retypes "= $12,319 ÷ $1,251 ≈ 10 weeks" (held to 13.2) | "5 seconds: ≈ 10 weeks." (5.2-7.2) |
-| 7.4 | (the footer carries "$77.7B") | "Amazon's 2025 profit: $77.7 billion." (7.4-11.7) |
-| 13.20 | The counter passes **$32,526**. Row 3 pops **6 months**. Formula bar "= $65,052 ÷ 2 = $32,526" | "≈ 13 seconds: half a year." (13.2-15.6) |
-| 15.8 | The formula bar retypes "= $2,464 ÷ your weekly pay" (the swap-in rule, held to 26.4) | "2,464 ÷ your weekly pay = your weeks." (15.8-20.8) |
-| 21.0 | (the progress line runs under the last row) | "And a whole year?" (21.0-22.6) |
-| 24.0-26.4 | No VO: a 2.4 s riser as the counter closes on $65,052 | |
-| 26.40 | The counter passes **$65,052** and stops on it exactly (counterT ends 26.4026 s). Row 4 pops **1 year**; hit. Formula bar "= $65,052 ÷ $2,464 ≈ 26 s". Verdict card in the caption band: "A year of median pay: **≈ 26 seconds**. / 1 second ≈ 2 weeks." | "≈ 26 seconds." (26.4-28.0) |
-| 26.4-31.0 | Hold the finished sheet, then clear to frame 1 (loop) | |
+| 0.0 | Header. Odometer **$0**, counting. Ladder "≈ $2,464 · ≈ $12,319 · $32,526 · $65,052" (≈ $2,464 lit as the next target). Bill ghost filling, tagged "≈ $2,464". Label "≈ $2,464 every second / AMAZON'S PROFIT SINCE YOU HIT PLAY". 2-line footer | "How long do you work for this?" (0.0-2.7) |
+| 1.00 | The counter passes **≈ $2,464** (1 second). The bill pops (bump, glow, floor bloom), its tag turns green; thud + ding. Label slams "1 SECOND: ≈ $2,464 / ≈ 2 WEEKS OF WORK" (held to 2.8). The bill flies to the ladder (the labels it crosses duck), and as it lands (1.72 s) its ladder label turns **≈ 2 weeks** in green; the 5-second bill drops in, already part full | |
+| 1.5 | The counter reads $3,695 | |
+| 2.8 | Label "$2,464 ÷ $1,251 A WEEK / ≈ 2 WEEKS OF MEDIAN PAY": the working, for the footer's pay (to 5.0) | "≈ 2 weeks, at median pay." (2.8-5.2) |
+| 5.00 | The counter passes **≈ $12,319**. The bill pops; label "5 SECONDS: ≈ $12,319 / ≈ 10 WEEKS OF WORK" (to 7.4); its ladder label turns **≈ 10 weeks** (5.72 s); the $32,526 bill drops in | "5 seconds: ≈ 10 weeks." (5.2-7.2) |
+| 7.4 | Label "$77.7B ÷ 31,536,000 S / ≈ $2,464 EVERY SECOND" (the rate's working, held to the 13.2 pass) | "Amazon's 2025 profit: $77.7 billion." (7.4-11.7) |
+| 13.20 | The counter passes **$32,526**. Label "≈ 13 SECONDS: $32,526 / 6 MONTHS OF WORK" (to 15.8); its ladder label turns **6 months** (13.92 s); the coin drops in, about half full, tagged "$65,052" | "≈ 13 seconds: half a year." (13.2-15.6) |
+| 15.8 | Label "$2,464 ÷ YOUR WEEKLY PAY / YOUR WEEKS PER SECOND" (the swap-in rule, to 22.8) | "2,464 ÷ your weekly pay = your weeks." (15.8-20.8; the caption breaks "… your weekly pay / = your weeks.") |
+| 20.8-22.8 | No VO: the swap-in rule holds on the label stack (≈ 2.0 s to read it) | |
+| 22.8 | Label "$1,251 × 52 = $65,052 / NEXT: A YEAR OF MEDIAN PAY" (held until the verdict replaces it) | "And a whole year?" (22.8-24.4) |
+| 24.0-26.4 | The kit's 2.4 s riser as the counter closes on $65,052; the question lands into its start, then 2.0 s with no VO | |
+| 26.2-26.4 | A black band rises over the stage foot (the kit's tall verdict slot, `tallVerdict`) | |
+| 26.4 | Verdict replaces the label stack, two short lines at 78 px: "A YEAR OF MEDIAN PAY: / **≈ 26 SECONDS**." | "≈ 26 seconds." (26.4-28.0) |
+| 26.40 | The counter passes **$65,052** and stops on it exactly (counterT ends 26.4026 s). The coin pops and grows over 0.5 s from 336 to 424 px (`climaxScale`), lit in the centre; its "$65,052" tag fades in 0.1 s as the coin grows over it (the hero carries the number); the top ladder label turns **1 year**; hit + cash | |
+| 26.4-31.0 | Hold: the hero on $65,052, the big lit coin, the ladder reading ≈ 2 weeks · ≈ 10 weeks · 6 months · 1 year, the verdict. Hard cut back to frame 1 (loop) | |
 
-The one VO gap over 0.5 s: row 1 snaps on screen at its pass (1.0 s) while the opening question is still spoken, and vo[1] reads it back at 2.8 s, with the formula bar's working typed at the same moment. Every other row is said within 0.2 s of its pass.
+The one VO gap over 0.5 s: the 1-second answer slams in at its pass (1.0 s) while the opening question is still spoken, and vo[1] reads it back at 2.8 s, with the label stack's working cut in at the same moment. Every other pass is said within 0.2 s of it. The resting rate shows only before the first pass (0-1.0 s): every later beat holds to the next one (the checker asserts it).
 
 **Full guide VO** (53 spoken words, digits expanded)
 
@@ -482,20 +485,20 @@ The one VO gap over 0.5 s: row 1 snaps on screen at its pass (1.0 s) while the o
 
 - **Basis:** Amazon's 2025 net income of $77,700,000,000, spread evenly over a 365-day year.
 - **Rate:** k = $77.7B ÷ 31,536,000 = $2,463.851… a second (`perSecond` 2,463.85).
-- **Counter:** value(t) = k × t, from 0.0 s (`preroll: 0`).
+- **Counter:** value(t) = k × t, from 0.0 s (the Scoreboard counts from `counterT[0]`; the running count shows whole dollars, rounded down).
 
 | On screen | Formula | Exact | Shown (everywhere) |
 |---|---|---:|---|
-| Profit rate | 77.7e9 ÷ 31,536,000 | 2,463.851 | ≈ $2,464 a second (formula bar, rate label, row 1, VO, caption, pinned) |
-| 1 second in weeks of median pay | 2,463.851 ÷ 1,251 | 1.970 | ≈ 2 weeks (row, VO, verdict, caption); the formula bar's $2,464 ÷ $1,251 = 1.970 rounds the same |
+| Profit rate | 77.7e9 ÷ 31,536,000 | 2,463.851 | ≈ $2,464 a second (rate label, ladder, the 1-second label, the 2.8 / 7.4 / 15.8 s working, VO, caption, pinned) |
+| 1 second in weeks of median pay | 2,463.851 ÷ 1,251 | 1.970 | ≈ 2 weeks (label, ladder, VO, caption, pinned); the 2.8 s working's $2,464 ÷ $1,251 = 1.970 rounds the same |
 | 5 seconds of profit | k × 5 | 12,319.25 | ≈ $12,319 |
-| 5 seconds in weeks | 12,319.25 ÷ 1,251 | 9.848 | ≈ 10 weeks (row, formula bar, VO, caption); the formula bar's $12,319 ÷ $1,251 = 9.847 rounds the same |
+| 5 seconds in weeks | 12,319.25 ÷ 1,251 | 9.848 | ≈ 10 weeks (label, ladder, VO, caption); $12,319 ÷ $1,251 = 9.847 rounds the same |
 | Half a year of median pay | $65,052 ÷ 2 | 32,526 | $32,526 = 6 months (exact) |
-| Pass: half a year | 32,526 ÷ k | 13.201 s | ≈ 13 seconds (row, VO) |
-| Pass: a year of median pay | 65,052 ÷ k | 26.403 s | ≈ 26 seconds (row, formula bar, VO, verdict, caption); 65,052 ÷ 2,464 = 26.401 rounds the same |
-| Counter at 1.5 s | k × 1.5 | 3,695.78 | $3,696 (frame check) |
+| Pass: half a year | 32,526 ÷ k | 13.201 s | ≈ 13 seconds (label, VO) |
+| Pass: a year of median pay | 65,052 ÷ k | 26.403 s | ≈ 26 seconds (VO, verdict, caption; the never-shown last pass label); 65,052 ÷ 2,464 = 26.401 rounds the same |
+| Counter at 1.5 s | k × 1.5 | 3,695.78 | $3,695 (frame check: the Scoreboard's running count rounds down, as 10a's $46,137) |
 | Counter final | k × 26.4026 | 65,052.07 | $65,052 (stops on the 1-year pass; no ≈: the dollar reading is exact) |
-| Kit row timing | value ÷ (65,052 ÷ 26.4026) | 1.000 / 5.000 / 13.201 / 26.403 s | the rows snap on the pass; row 4 at the stop itself |
+| Kit pass timing | value ÷ 2,463.85 (the stored rate), from 0.0 s | 1.000 / 5.000 / 13.201 / 26.403 s | each pass beat lands on its pass; the last at the stop itself (26.40258 < 26.4026) |
 
 **Sources (real-world inputs)**
 
@@ -519,19 +522,27 @@ The one VO gap over 0.5 s: row 1 snaps on screen at its pass (1.0 s) while the o
 > 2,464 ÷ your weekly pay = weeks of your work per second of Amazon's profit. Median ($1,251): ≈ 2. Yours?
 
 **Per-platform notes**
-- **YouTube Shorts:** the title is the header's question. Keep the 4.5 s hold on the finished sheet: that is the screenshot frame.
-- **Instagram Reels:** use the finished sheet with the verdict (27 s on: the big cell at $65,052, row 4 "1 year", the verdict card) as the cover. Caption line 1 is the verdict's second line (1 second ≈ 2 weeks).
+- **YouTube Shorts:** the title is the header's question. Keep the 4.6 s hold on the finished board: that is the screenshot frame.
+- **Instagram Reels:** use the finished board with the verdict (27 s on: the hero at $65,052, the big lit coin, the ladder reading ≈ 2 weeks · ≈ 10 weeks · 6 months · 1 year, the verdict) as the cover. Caption line 1 carries the hook's answer (1 second ≈ 2 weeks), which the verdict no longer repeats; on the cover it is the ladder's bottom row (≈ 2 weeks).
 - **TikTok:**
   - Expected fights: "that's before tax" (the weeks are gross median pay, as the footer says), "net income includes one-off gains" (answer: the video uses the net income Amazon reports; other lines are not used on screen) and "AWS makes all the profit" (answer with the release's own segment figures only if asked).
   - Keep "1 second ≈ 2 weeks of median full-time pay" in the first 100 characters.
 - **Look note:**
-  - The Live Sheet `cost-counter` module reads everything this spec passes: `preroll`, `formulaSteps`, `columns`, `rows` (the display strings for each row) and `loop`. There is no `kept` row any more.
-  - `final` is "$65,052" with no "≈", so the big cell lands on the row-4 amount with no ≈ chip, at the moment row 4 pops.
-  - The 6 formula steps are one line each (32 characters at most). The kit sizes the bar for its longest string, and the round-2 steps ("… ≈ $2,464 a second", "… $1,251 a week ≈ 2 weeks") forced a 2-line, 128 px bar with a one-word orphan ("a second", "weeks") on the second line. One line gives the table and the counter that 52 px back. Assembly pass 2 dropped the 7.4 s retype of the frame-1 rate (it read as a loop glitch), so "= $12,319 ÷ $1,251 ≈ 10 weeks" holds to 13.2 s.
-  - Kit changes in the Live Sheet `cost-counter` module (assembly pass 2): each answer cell pops on its pass (`pop`, default 1.2×, capped 14 px clear of the amount column, on a solid yellow fill for 0.6 s), and a riser (with a hit) carries a quiet run-up into the last pass (`riser`, default on).
-  - `preroll: 0` is required: the kit's default 1 s preroll would put $2,464 in frame 1 and snap the 1-second row before the first frame.
-  - The column head is "You work" (assembly pass 2; it was "Median pay", which put a pay label over durations). It is shorter, so no label wraps: "Median pay for" had narrowed the label column until "≈ 13 seconds" wrapped and the footer ran into the caption band.
-  - No Amazon logo or brand colours: the name is text in the banner.
+  - Ported from the Live Sheet to the Scoreboard on 2026-10-08 (Review log, "Port to scoreboard"). The header, footer, every number and the VO wording are unchanged. The fixer pass (Review log, "Fixer pass") split the verdict for the Scoreboard's slot (its second sentence, "1 second ≈ 2 weeks.", left it), moved "And a whole year?" from 21.0 to 22.8 s and dropped a leading "=" from a label line.
+  - The Live Sheet's table becomes the Scoreboard's milestone ladder and label stack:
+    - the Profit column is the ladder (`pipLabels` "≈ $2,464", "≈ $12,319", "$32,526", "$65,052", the milestones' own amounts) and the big icon's tag: the targets the hero is chasing, from frame 1;
+    - the You work column is what each ladder label turns into as its icon lands in the slot (`pipPassed` "≈ 2 weeks", "≈ 10 weeks", "6 months", "1 year"), so the answers stay hidden until passed and the end frame reads as the old finished column;
+    - the Since play column rides the pass labels (`labels`: "1 SECOND: ≈ $2,464 / ≈ 2 WEEKS OF WORK" … ), the answer in the label stack's big line;
+    - the formula bar's steps become `rateSteps`, one working per VO beat, each starting with its line and held to the next beat (2.8 s the median working, 7.4 s the rate's working, 15.8 s the swap-in rule, held 7.0 s, and 22.8 s "$1,251 × 52 = $65,052 / Next: a year of median pay", as 10a's "Next" beat, held 3.6 s into the verdict). The 7.4 s step is held 5.9 s, past the 13.2013 s pass, so frame 13.2 never flashes the resting rate (5.8 s ended 1.3 ms short; the checker caught it).
+  - `icons`: bills for the first three rows and a coin for the year, as 10a's ladder ends on a coin. `badges: false`: the kit would otherwise stamp the repeated bills "×5", "×13" from the names "5 seconds" and "≈ 13 seconds" (×13 is not true: it is 13.2 seconds), so they take the stacked twin on the ladder instead.
+  - `final` is "$65,052" with no "≈", so the hero draws no unlit "≈" ghost and lands centred on the pass, as 10a's $1,000,000 does.
+  - Dropped with the Live Sheet: `preroll`, `formulaSteps`, `columns`, `rows`, `loop` (the Scoreboard reads none of them; its counter runs from `counterT[0]` = 0.0 s, so frame 1 is $0 without a preroll key).
+  - The 2-line footer stays as written: the Scoreboard sets a `\n` footer as two 40 px rows and starts the stage one row lower.
+  - The verdict is two short lines, "A year of median pay: / **≈ 26 seconds**." (fixer pass). The judged version, "A year of median pay: **≈ 26 seconds**. / 1 second ≈ 2 weeks.", was width-bound in the Scoreboard's slot (line 1 at 776 px) and set at 54 px (caps 47), under the 72 px label line it replaces. Split, each line is short, and with `tallVerdict` (the kit's 196 px boxed slot: a black band rises over the stage foot in the 0.2 s before) it sets at **78 px** (caps about 68 px), above the label lines and level with 10a's one-line verdict (76 px). In the 170 px slot without the band it would set at 70 px. The 1-second answer stays on the end frame as the ladder's bottom row, in caption line 1 and in the pinned comment. If the owner wants "1 second ≈ 2 weeks" back in the verdict, the shorter route is "A year of pay: **≈ 26 seconds**." (the median is in the footer), at about 65 px.
+  - `climaxScale: true`: the coin grows on its pass toward the bills' width, as far as the stage allows: 336 → 424 px across (the bills are 537 × 327), its top and foot 16 px inside the stage and the band. Its tag yields as it grows; the hero has just landed on the same $65,052.
+  - Kit changes in the Scoreboard `cost-counter` module (this port; defaults unchanged, so 10a and the two samples render pixel-identically): `pipPassed` (a ladder label that turns into its answer once passed, the column sized for the wider text) and `badges: false`.
+  - Kit changes in the fixer pass: `climaxScale` and `tallVerdict` (both opt-in, default off); a leading "≈ " in a ladder label hangs in a gutter as wide as "≈ ", so the column's digits align (only in a column that has one, so not in 10a); and the big icon keeps clear of the ladder column at its pop's peak (the bump's 1 + amp, plus 16 px of glow, plus 14 px): its art box sits right of the region's centre (here x 404-938 at rest, 33 px clear of "≈ 10 weeks" at the peak, was 4 px). That last one shows in 10a too (its Look note).
+  - No `slot`: the label stack and the ladder carry the answers, and frame 1 holds one task. No Amazon logo or brand colours: the name is text in the header.
 
 ---
 
@@ -807,3 +818,56 @@ The round-2 assembly QA scored 10b 7/10: the build was clean and every number ri
 - Contact sheet and stills at 0, 1.0, 12.0, 16.6, 17.0, 18.4, 18.6, 23.4, 25.1, 25.3, 33.27, 33.3, 33.5, 34.0 and 36.5 s. Every counter reading equals floor(78,201.35 × t) ($78,201 at 1.0 s, $938,416 at 12.0, $1,438,904 at 18.4, $1,829,911 at 23.4, $1,962,853 at 25.1, $2,601,758 at 33.27), then $2,602,080 from the stop. The plinth's count matches the bricks left (39 at 1.0 s, 26 at 12.0, 20 at 17.0, 18 at 18.4, 12 at 23.4, 10 at 25.1, 1 at 33.27, 0 from 33.3).
 - MP4 rendered to `studio/out/10b-becker-rig-debt-vs-your-pay.mp4` (36.6 s, 1080×1920, 30 fps, h264 + aac). Frames pulled from it at 12.0 s ($938,416, "26 years left", footer line 1 in ink, the caption wrapped before "≈ $2.46 trillion") and 34.5 s ($2,602,080 over the matching ✓, the green stamp, "0 years left", the verdict, him seated clear of the post) match the stills. A brick tick now measures ≈ 10 dB under a pass pop (RMS 460 against 1,440, each over its own length).
 - `teasers/v2/teasers.json` still carries the pre-pass 10b entry (the 3-line header, the four milestones, "counter final ≈ $2,604,105 at 33.3 s"); it was outside this pass's files.
+
+### Port to scoreboard (2026-10-08): 10c from the Live Sheet
+
+The owner kept two looks, Scoreboard and Becker Rig, and retired the Live Sheet. 10c moved to the Scoreboard as `10c-scoreboard-amazon-makes`, held to the bar of 10a (the Scoreboard teaser of this format). The old spec is `studio/specs/retired/10c-live-sheet-amazon-makes.json` (moved with `git mv`). Check: **1008 checks, 0 failures**. Lint: 0 errors, 0 warnings (and 10a and the two Scoreboard `cost-counter` samples: 4/4 clean).
+
+**Kept, word for word:** the header (the hook), the 2-line footer, all 8 VO lines and their times, the verdict, `data` (label, rate, counterT [0.0, 26.4026], the 4 milestones, final "$65,052", hold 4.5974), the duration (31.0 s), the caption and the pinned comment. No number changed, and no beat moved: the passes land at 1.000 / 5.000 / 13.201 / 26.403 s as before.
+
+**Changed (`lookOpts` only, for the new kit):**
+
+| Live Sheet | Scoreboard | Why |
+|---|---|---|
+| `preroll: 0` | (none) | The Scoreboard counts from `counterT[0]`; frame 1 is $0 without a key |
+| `columns` + `rows` (Since play · Profit · You work) | `pipLabels` (the Profit column) on the milestone ladder; `pipPassed` (the You work column) as what each ladder label turns into once passed; `labels` (time: profit / the answer) slammed into the label stack on each pass | The Scoreboard has no table. The ladder keeps the countable loop (four targets from frame 1, no answer until its pass), and the passed rows end as the old finished column |
+| `formulaSteps` (6) | `rateSteps` (4): the median working at 2.8 s, the rate's working at 7.4 s, the swap-in rule at 15.8 s, "$1,251 × 52 = $65,052 / Next: a year of median pay" at 21.0 s | Labels carry the working, captions the sentence (10a's rule). The 0.0, 5.2, 13.2 and 26.4 s steps are now the resting rate and the pass labels; the 26.4 s working ("$65,052 ÷ $2,464 ≈ 26 s") is the verdict's job |
+| `loop` | (none) | The Scoreboard has no loop key; the hold ends on the finished board and the replay restarts at $0 |
+| | `icons` (bill, bill, bill, coin), `badges: false`, `heroIcon: false`, `pips: true` | One money object per row, the coin for the climax (as 10a). Without `badges: false` the kit would stamp the repeated bills "×5" and "×13" from the time names ("≈ 13 seconds" is 13.2 s, so "×13" would be wrong) |
+
+**Kit changes** (`studio/looks/scoreboard/formats/cost-counter.js` only; both default off, so 10a and the two samples render pixel-identically to before, checked on 10a's stills at 0, 1.5, 8.3, 16.5 and 33.5 s):
+- `pipPassed`: a ladder label shows its target ahead and turns into its answer as its icon lands in the slot, with the slot's bump (the column is sized for the wider of the two, so the big icon's region and the flying icon's ducking stay right).
+- `badges: false`: a repeated icon never takes a "×N" badge from its name; it gets the stacked twin.
+
+**Found and fixed during the port:**
+- The 7.4 s rate step, held 5.8 s, ended at 13.2 s, 1.3 ms before the half-year pass (13.2013 s): frame 13.2 would have flashed the resting rate between two beats. Held 5.9 s (the pass cuts it). The checker now asserts that every label beat holds to the next one.
+- The frame check at 1.5 s is $3,695, not the Live Sheet's $3,696: the Scoreboard's running count rounds down (as 10a's $46,137). Maths table and checker row updated.
+
+**Checker** (`checks/10-cost-counter.py`): 10c's id and look; the expected `lookOpts` built from the computed numbers (labels, rate steps, ladder targets and answers); the kit-timing rule switched from the Live Sheet's (final ÷ run) to the Scoreboard's (value ÷ perSecond from 0.0 s), with all four passes before the stop; new asserts that the ladder is the milestones' own amounts, the pass labels are the milestone labels, the ladder answers match the label stack's, and no label beat leaves a gap; `beats` lists the four rate steps against the VO lines they start. Break test in a scratch copy: the look back to "live-sheet", the 7.4 s step back to 5.8 s, and the first ladder answer as "≈ 3 weeks". It reported 3 failures, catching all three (the look, the `lookOpts` mismatch and the unsourced 3).
+
+**Checked:**
+- Contact sheet and stills at 0, 1.0, 1.5, 2.8, 5.0, 7.4, 13.2, 15.8, 21.0, 26.4 and 30.97 s (end). Frame 1 shows the header, $0, the footer with $1,251 × 52, the four targets on the ladder, the bill ghost tagged "≈ $2,464" and the resting rate. Every hero reading equals floor(2,463.85 × t): $2,463 (1.0 s), $3,695 (1.5), $6,898 (2.8), $12,319 (5.0), $18,232 (7.4), $32,522 (13.2), $38,928 (15.8), $51,740 (21.0), $65,045 (26.4), then $65,052 from the stop. The ladder ("≈ $2,464 · ≈ $12,319 · $32,526 · $65,052", turning "≈ 2 weeks · ≈ 10 weeks · 6 months · 1 year"), the tags, every label, the footer and the verdict match this file and the check.
+- MP4 rendered to `studio/out/10c-scoreboard-amazon-makes.mp4` (31.0 s, 930 frames, 1080×1920, 30 fps, h264 + aac, 34 sfx). Frames pulled from it at 0 ($0, frame 1), 5.0 s ($12,319, "5 SECONDS: ≈ $12,319 / ≈ 10 WEEKS OF WORK", the ladder's "≈ 2 weeks") and the last frame ($65,052, the lit coin, the four answers, the verdict) match the stills (PSNR 41.9, 41.0 and 38.7 dB: encoder noise only).
+
+**Left as is** (the verdict and the coin were fixed in the fixer pass below): the two-line verdict sets at about 54 px in the Scoreboard's slot, under the 72 px label line (10a's A6 issue). The verdict is the blind-judged one, so its words stay; the payoff number lands full size in the hero. `teasers/v2/teasers.json` still lists 10c as `10c-live-sheet-amazon-makes` (its spec and `renders/v2/` paths); it was outside this port's files, and so was copying the new MP4 into `renders/v2/`.
+
+### Fixer pass (2026-10-08): 10c QA fixes in the Scoreboard
+
+The Scoreboard QA scored the port 7.5/10: a clean, accurate port, almost level with 10a, with one real gap, the end frame's verdict setting smaller than the label line before it. Every should is fixed below where this pass owns the files, and so is every nit. Check: **1005 checks, 0 failures**. Lint: 0 errors, 0 warnings (and 10a and the two Scoreboard `cost-counter` samples: 4/4 clean). Files: the spec, `looks/scoreboard/formats/cost-counter.js` (no shared kit file), this write-up and the check.
+
+| # | Severity | Issue | What I did |
+|---|---|---|---|
+| F1 | should | The verdict set at about 53 px (46 px caps) under the 62 px caps of the label line it replaces; line 1 ("A YEAR OF MEDIAN PAY: ≈ 26 SECONDS.") was width-bound at 776 px | **Fixed.** Verdict **"A year of median pay: / **≈ 26 seconds**."**, each line short, with "≈ 26 SECONDS" alone on its green line. In the 170 px label slot two lines fit at 70 px, so the spec also sets `tallVerdict` (new, opt-in): the verdict takes the kit's own 196 px boxed slot (`L.limit - 196`, the band that chart-race and pov-race use) and sets at **78 px** (caps about 68), above the label lines and level with 10a's 76 px. The dropped second line ("1 second ≈ 2 weeks.") is the hook's answer: it stays on the end frame as the ladder's bottom row ("≈ 2 weeks"), in caption line 1 and in the pinned comment. This changes the judged verdict's wording, as the look needs (QA flagged it for the owner); the md notes the shorter one-line route if the owner wants the 1-second line back. R11, R12, the beat sheet, the Look note and the Reels note are updated, and the check's expected verdict |
+| F2 | should | The port's MP4 is only in `studio/out/`; `renders/v2/` and `teasers/v2/teasers.json` still point at the retired Live Sheet build | **Not done in this pass: outside its files** (the rules allow the spec, this format's kit file, this write-up and the check). For whoever owns them: copy `studio/out/10c-scoreboard-amazon-makes.mp4` to `renders/v2/`, point the `teasers.json` entry (lines 751-767) at id `10c-scoreboard-amazon-makes`, spec `studio/specs/10c-scoreboard-amazon-makes.json`, mp4 `renders/v2/10c-scoreboard-amazon-makes.mp4`, look `scoreboard`, and move or retire `renders/v2/10c-live-sheet-amazon-makes.mp4`. Its key numbers should take the new verdict |
+| F3 | nit | 3.8 s with no VO before the climax (22.6-26.4), 1.4 s of it before the riser | **Fixed.** vo[6] "And a whole year?" and its rate step moved 21.0 → 22.8 s (words unchanged), so the question lands into the riser (24.0-26.4 s, still 2.4 s: the kit times it from the last beat). The silences are now 20.8-22.8 s, with the swap-in rule holding (its step is held 7.0 s), and 24.4-26.4 s, on the riser. The checker's beat list and VO time follow |
+| F4 | nit | Each pass's bump scaled the big bill to about 9 px from "≈ 10 weeks", its glow over the "s" (10a the same with "Median $65K") | **Fixed in the format file.** The big icon's left bound now counts its biggest frame: the bump's peak (1 + amp: 1.12 on a pass, 1.16 on the last), plus 16 px of glow, plus 14 px of air off the ladder column. The art box shifts right of the region's centre for that (its resting right edge up to x 960; past that it would shrink). 10c's bills sit at x 404-938 and clear "≈ 10 weeks" by 33 px at 13.25 s (was 4 px); 10a's clear "Median $65K" by 33 px at 2.15 s. A pure function of t, as before; the samples (no ladder labels) do not move |
+| F5 | nit | The "≈" prefixes made the ladder column ragged by about 37 px | **Fixed in the format file.** A leading "≈ " in `pipLabels` / `pipPassed` hangs in a gutter as wide as "≈ " at the column's left edge, so every row's "$" or first digit starts at one x and the ≈ sits in the margin. The column's right edge (and so the big icon's region) does not move. Only a column with a "≈" gets the gutter, so 10a's ladder is unchanged |
+| F6 | nit | Label line 2 opened with a bare "=" ("= YOUR WEEKS PER SECOND"); the caption split "weekly / pay" | **Fixed.** The 15.8 s step's l2 is "your weeks per second" (the two lines still read as working). vo[5] joins "weekly pay" with a no-break space (wording unchanged; the Scoreboard's caption splitter breaks only at plain spaces), so the caption reads "2,464 ÷ your weekly pay / = your weeks.". Both are in the check's expected strings |
+| F7 | nit | The climax coin (about 335 px) was smaller than the bills before it (about 535 px wide) | **Fixed in the format file, opt-in.** `climaxScale: true \| n` (default off, so 10a is unchanged): the last milestone's icon grows on its pass, from its own size to the widest earlier icon's art width (or n×), on `ease.back` with a small bump riding on it, as far as the stage allows at the curve's peak (top to the stage foot, or to the verdict band). Here the stage's height is the cap: the coin goes 336 → **424 px** across (26% wider, 59% more area; taller than the 327 px bills), 16 px inside the stage top and the band. It takes the stage's whole height (it moves 16 px down to centre in it as it grows), so its tag has no room under it: the tag turns green and fades in 0.1 s as the coin grows over it, while the hero lands on the same $65,052 (one focal number) |
+
+**Checked:**
+- Lint 0 errors, 0 warnings (10c, 10a and the two samples).
+- Stills at 0, 13.25, 17.0, 21.5, 23.2, 26.43, 26.5 and 30.97 s (end), and geometry probes at every frame from 26.43 to 27.0 s. Frame 1 is unchanged but for the ladder gutter and the bill 28 px to the right. Hero readings equal floor(2,463.85 × t): $32,646 (13.25 s), $41,885 (17.0), $57,161 (23.2), then $65,052 from the stop. The caption at 17.0 s wraps "2,464 ÷ your weekly pay / = your weeks."; at 23.2 s the label stack holds "$1,251 × 52 = $65,052 / NEXT: A YEAR OF MEDIAN PAY" under "And a whole year?". The coin rests at x 459-883, y 661-1086 (stage 645-1130, band from 1102); at its biggest frames (26.5-26.8 s) it stays 9 px inside the stage top and 14 px above the band. The end frame: the hero on $65,052, the lit coin, the ladder "1 year · 6 months · ≈ 10 weeks · ≈ 2 weeks" with the digits aligned, and the verdict at 78 px.
+- 10a: stills at 2.15 s and the end. Its median bill clears the ladder label by 33 px at the pop's peak; nothing else moved (its verdict, 76 px, and ladder are unchanged).
+- Break test in a scratch copy of the specs: vo[6] back at 21.0 s, the "=" back on l2, vo[5] with a plain space, and the verdict with "1 second ≈ 3 weeks." added. It reported 6 failures, catching all four (the VO time and the beat, the `lookOpts` mismatch, the VO text, the verdict and the unsourced 3).
+- MP4s rendered to `studio/out/10c-scoreboard-amazon-makes.mp4` (31.0 s, 930 frames, 1080×1920, 30 fps, h264 + aac, 34 sfx) and, for the kit's bump-room change, `studio/out/10a-scoreboard-debt-interest-live.mp4` (36.5 s, 1095 frames, 45 sfx). Frames pulled from the 10c MP4 at 0, 17.0, 26.5 s and the last frame (the grown coin, the aligned ladder, the 78 px verdict) match fresh stills (PSNR 41.9, 39.7, 39.5 and 40.0 dB), and 10a's frame 66 (2.2 s) matches its still (39.3 dB): encoder noise only.

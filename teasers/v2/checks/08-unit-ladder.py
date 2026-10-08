@@ -212,28 +212,40 @@ def scoreboard_landings(rungs):
 # ======================================================================================
 # Becker Rig kit timing (mirrors looks/becker-rig/formats/unit-ladder.js, "per-rung schedule")
 # ======================================================================================
-def becker_landings(rungs, hold, verdict_t=None, intro_opt=True):
-    """Each rung: the coin drops, he punches it after a lead, the units fill and the count lands."""
+def becker_landings(rungs, hold, verdict_t=None, intro_opt=True, land_after=None):
+    """Each rung: the coin drops, he punches it after a lead, the units fill and the count lands. lookOpts.landAfter
+    scales the lead and the fill so the count lands that long after the cut (the lead never under 0.4 s). A first rung
+    cut before frame 1 (t < 0) is pre-filled: its whole schedule ends by -0.4 s, so frame 1 shows it landed."""
     Ts = [r["t"] for r in rungs]
     n = len(rungs)
     intro = intro_opt and Ts[0] >= 0.9
+    la = max(0.9, land_after) if land_after else None
     lands = []
     for i, r in enumerate(rungs):
         last = i == n - 1
         gap = Ts[i + 1] - Ts[i] if not last else max(3.4, hold + 1.4)
         placed = i == 0 and not intro and Ts[i] < 0.9          # the first coin already stands there at t = 0
+        prefill = i == 0 and not intro and Ts[i] < 0           # cut before frame 1: done by t = 0
         lead = 0.45 if placed else min(max(gap * 0.22, 0.45), 0.92)
-        punch = max(0, Ts[i]) + lead
-        fill0 = punch + 0.05
         if last:
             fd = 1.9
             if verdict_t is not None:
-                fd = min(fd, verdict_t - 0.5 - fill0)
+                fd = min(fd, verdict_t - 0.5 - (max(0, Ts[i]) + lead + 0.05))
             fill = min(max(fd, 0.6), 2.2)
         else:
             fill = min(max(gap * 0.3, 0.5), 1.6)
-        lands.append(fill0 + fill)
+        if la and not prefill:
+            k = (la - 0.05) / (lead + fill)
+            lead = max(0.4, lead * k)
+            fill = max(0.35, la - 0.05 - lead)
+        start = (min(-0.4, Ts[i] + lead + 0.05 + fill) - (lead + 0.05 + fill)) if prefill else max(0, Ts[i])
+        lands.append(start + lead + 0.05 + fill)
     return lands
+
+def becker_lands(sp):
+    """The Becker Rig kit's landings on a spec as written (rungs, hold, verdict, lookOpts.landAfter)."""
+    return becker_landings(sp["data"]["rungs"], sp["data"]["hold"], sp["verdict"]["t"],
+                           land_after=sp.get("lookOpts", {}).get("landAfter"))
 
 # ======================================================================================
 # Teaser builders: each returns (expected spec dict, rows for the table, allowed numbers,
@@ -577,81 +589,17 @@ def becker_morph(sp, years_r):
          "08b: the morph's number must be the working's result and the verdict's", f"  morph: at {mo['t']:5.2f}  {mo['working']} ≈ [{mo['display']}] {mo.get('label', '')}"),
     ]
 
-# Clean Sheet kit timing (mirrors looks/clean-sheet/formats/unit-ladder.js + theme.js MOTION)
-CS = dict(popDelay=0.16, activate=0.3, collapse=0.42, typeCps=18, wipe=0.26, pop=0.22)
-
-def clean_sheet_landings(rungs, unit_price, count_speed=1.0, vo=None):
-    """Landing time of each rung's counter: the formula types 'cost ÷ price =', the highlighter wipes in,
-    the count runs up and lands; a rung whose result starts by frame 1 is pre-filled (already landed at 0.0);
-    a count overlapping a VO line lands by 60% of that line (or just before its own digits); a finished rung
-    files into its row just before the next one opens."""
-    T = []
-    for i, r in enumerate(rungs):
-        op = r.get("op", " ÷ " + unit_price)              # the payoff step divides by its own operand
-        type_dur = min(max(len(op + " =") / 16, 0.4), 0.9)
-        res = r["t"] + type_dur + 0.25
-        act = -1 if i == 0 else r["t"] - CS["activate"]
-        cnt0 = res + CS["popDelay"]
-        cntD = min(max(0.45 + 0.26 * math.log10(r["units"] + 1), 0.45), 1.7) * count_speed
-        pre = res <= 0
-        if pre:
-            res = min(res, -(CS["wipe"] + 0.05))
-            cnt0 = min(res + CS["popDelay"], -(CS["pop"] + 0.05))
-            cntD = 0
-        T.append({"act": act, "cnt0": cnt0, "cntD": cntD, "land": cnt0 + cntD, "pre": pre})
-    for i, x in enumerate(T):
-        if x["pre"] or not vo:
-            continue
-        raw = re.search(r"\d[\d,]*(?:\.\d+)?", rungs[i]["unitsDisplay"]).group(0)
-        by = None
-        for v in vo:
-            text = v["text"].replace("**", "").replace("__", "")
-            if v["t"] > x["land"] or v["t"] + v["d"] < x["cnt0"]:
-                continue
-            at = v["t"] + 0.6 * v["d"]
-            k = text.find(raw)
-            if k >= 0:
-                at = min(at, v["t"] + (k / max(1, len(text))) * v["d"] * 0.88 - 0.1)
-            by = at if by is None else min(by, at)
-        if by is not None and by < x["land"]:
-            x["cntD"] = max(0.35, by - x["cnt0"])
-            x["land"] = x["cnt0"] + x["cntD"]
-    for i in range(len(T) - 1):
-        x, nx = T[i], T[i + 1]
-        colD = min(max(nx["act"] - x["land"] - 0.1, 0.25), CS["collapse"])
-        col = nx["act"] - colD
-        if x["land"] > col - 0.1:
-            x["cntD"] = max(0.3, col - 0.1 - x["cnt0"])
-            x["land"] = x["cnt0"] + x["cntD"]
-    return [x["land"] for x in T], [x["pre"] for x in T]
-
-def cs_type_time(text):
-    return min(max(len(text) / CS["typeCps"], 0.35), 2.2)
-
-def clean_sheet_payoff_rung(sp):
-    """lookOpts.payoff as the kit builds it: one more step after the ladder, dividing by its own operand."""
-    po = sp.get("lookOpts", {}).get("payoff")
-    if not po:
-        return []
-    units = float(re.sub(r"[^\d.]", "", po["display"]))
-    return [{"t": po["t"], "item": po["label"], "cost": po["cost"], "unitsDisplay": po["display"], "units": units, "op": " ÷ " + po["by"]}]
-
-def clean_sheet_lands(sp):
-    rr = sp["data"]["rungs"] + clean_sheet_payoff_rung(sp)
-    return clean_sheet_landings(rr, sp["data"]["unit"]["price"], sp.get("lookOpts", {}).get("countSpeed", 1.0), sp["vo"])[0]
-
 def build_08c():
     unit = BIG_MAC
-    # the rows are the header's own four words (one line each); "1 year" lives in the footer
+    # the rungs are the header's own four words (one line each); "1 year" lives in the footer
     items = [
         ("Community", CB_PUBLIC_2YR, usd(CB_PUBLIC_2YR), "Community college"),
         ("In-state", CB_PUBLIC_4YR_IN, usd(CB_PUBLIC_4YR_IN), "In-state"),
         ("Out-of-state", CB_PUBLIC_4YR_OUT, usd(CB_PUBLIC_4YR_OUT), "Out-of-state"),
         ("Private", CB_PRIVATE_4YR, usd(CB_PRIVATE_4YR), "Private"),
     ]
-    # row 1 starts before frame 1, so the built kit shows it already answered at 0.0 (its pre-fill)
+    # rung 1 is cut before frame 1, so the built Becker Rig kit pre-fills it: frame 1 shows its pile and ≈ 667
     rung_t = [-1.0, 3.4, 7.5, 11.65]
-    icon_k = 200                                   # lookOpts.iconScale: one strip icon = 200 Big Macs
     rows, rungs, qs = [], [], []
     for (item, cost, cost_disp, _), t in zip(items, rung_t):
         q = F(cost) / unit
@@ -659,16 +607,15 @@ def build_08c():
         qs.append(q)
         rungs.append({"t": t, "item": item, "cost": cost_disp, "units": n, "unitsDisplay": disp})
         rows.append((item, f"{cost_disp} ÷ {usd(unit, 2)}", f"{float(q):,.3f}", disp))
-    for r in rungs:
-        rows.append((f"  strip: {r['item']}", f"{r['units']:,} ÷ {icon_k}", f"{r['units'] / icon_k:.3f}", f"{math.ceil(r['units'] / icon_k)} icons (last one {r['units'] / icon_k % 1:.0%})"))
     # the payoff: private vs community college, the same ratio in dollars and in Big Macs
     ratio = F(CB_PRIVATE_4YR, CB_PUBLIC_2YR)
     assert qs[3] / qs[0] == ratio
     ratio_r = rhu(ratio, F(1, 10))
     ratio_num = ap(ratio_r, ratio) + f"{float(ratio_r):.1f}"
     assert ratio_num == "≈ 10.8"
-    rows.append(("Private ÷ community (payoff)", f"{usd(CB_PRIVATE_4YR)} ÷ {usd(CB_PUBLIC_2YR)}", f"{float(ratio):.4f}", ratio_num + "×"))
-    # write-up and pinned-comment numbers (full budgets are not on screen any more)
+    rows.append(("Private ÷ community (payoff)", f"{usd(CB_PRIVATE_4YR)} ÷ {usd(CB_PUBLIC_2YR)}", f"{float(ratio):.4f}", f"[{ratio_num.replace('≈ ', '')}] (working ends '≈')"))
+    rows.append(("  the same in Big Macs", f"{float(qs[3]):,.3f} ÷ {float(qs[0]):,.3f}", f"{float(qs[3] / qs[0]):.4f}", ratio_num))
+    # write-up and pinned-comment numbers (full budgets are not on screen)
     tuition4 = F(DEGREE_YEARS * CB_PRIVATE_4YR) / unit                 # tuition alone, 4 years private
     rows.append(("(tuition only, 4 yrs private)", f"4 × {usd(CB_PRIVATE_4YR)} ÷ {usd(unit, 2)}", f"{float(tuition4):,.3f}", count(tuition4)[0]))
     PINNED["08c 4 yrs private tuition only"] = (count(tuition4)[0],)
@@ -681,41 +628,41 @@ def build_08c():
     rows.append(("(pinned) 4 yrs private all-in", f"4 × {usd(CB_PRIVATE_BUDGET)} ÷ {usd(unit, 2)}", f"{float(private4):,.3f}", count(private4)[0]))
     rows.append(("(pinned) a Big Mac a day", f"{count(private4)[1]:,} ÷ {DAYS_PER_YEAR}", f"{float(yrs):.3f}", f"{ap(y_r, yrs)}{y_r} years"))
     PINNED["08c private full budget"] = (usd(CB_PRIVATE_BUDGET), usd(DEGREE_YEARS * CB_PRIVATE_BUDGET), count(private4)[0], f"{ap(y_r, yrs)}{y_r} years")
-    # captions print the figure the box shows (the voice may round it: see the write-up's VO table)
+    # captions print the figure the counter shows (the voice may round it: see the write-up's VO table)
     say = [r["unitsDisplay"] for r in rungs]
     vo = [
         vo_line(0.0, 3.3, f"Community college? **{say[0]} Big Macs**."),
-        # each later row: the header's word as the question on its cut, the box's figure in its own line as it lands
+        # each later rung: the header's word as the question on its cut, the count in its own line as it lands
         vo_line(3.4, 0.6, "In-state?"),
         vo_line(5.1, 2.35, f"**{say[1]}**."),
         vo_line(7.5, 0.6, "Out-of-state?"),
         vo_line(9.25, 2.35, f"**{say[2]}**."),
         vo_line(11.65, 0.6, "Private?"),
         vo_line(13.45, 2.35, f"**{say[3]}**."),
-        # the payoff: its question on its cut, the verdict line as its box lands
+        # the payoff: its question on the ask, the verdict line as its answer lands
         vo_line(15.85, 0.8, "Versus community?"),
         vo_line(17.35, 3.5, f"One private year: **{ratio_num}** community-college years."),
     ]
     duration = 22.0
-    count_speed = 0.5
     verdict_t = 17.35
-    payoff = {"t": 15.85, "label": "Private vs community", "cost": usd(CB_PRIVATE_4YR), "by": usd(CB_PUBLIC_2YR), "display": ratio_num + "×"}
-    lo = {"unitRow": "show", "countSpeed": count_speed, "iconScale": icon_k, "openScale": 1.25, "filedScale": 0.9,
-          "oneLine": True, "maxScale": 1.3, "payoffScale": 1.35, "payoff": payoff}
-    probe = {"data": {"rungs": rungs, "unit": {"price": usd(unit, 2)}}, "lookOpts": lo, "vo": vo}
-    lands = clean_sheet_lands(probe)
-    pre = clean_sheet_landings(rungs + clean_sheet_payoff_rung(probe), usd(unit, 2), count_speed, vo)[1]
-    assert pre == [True, False, False, False, False], pre       # only row 1 is pre-filled at frame 1
+    land_after = 1.7                               # lookOpts.landAfter: each count lands 1.7 s after its cut
+    pay_label = "community-college years"
+    morph = {"t": verdict_t, "ask": 15.85, "item": "Private vs community",
+             "working": f"{usd(CB_PRIVATE_4YR)} ÷ {usd(CB_PUBLIC_2YR)}", "display": ratio_num.replace("≈ ", ""),
+             "label": pay_label, "compare": [0, 3]}
+    lands = becker_landings(rungs, 8.65, verdict_t, land_after=land_after)
     hold = round(duration - lands[-1], 2)
-    rows.append(("Payoff box lands", f"{payoff['t']} s + type + wipe + count", f"{lands[-1]:.2f}", f"verdict at {verdict_t}"))
+    assert becker_landings(rungs, hold, verdict_t, land_after=land_after) == lands
+    rows.append(("Counts land (Becker Rig kit)", "pre-filled; then cut + 1.7 s", "", " / ".join(f"{x:.2f}" for x in lands)))
     exp = {
-        "id": "08c-clean-sheet-college-in-big-macs",
-        "look": "clean-sheet",
+        "id": "08c-becker-rig-college-in-big-macs",
+        "look": "becker-rig",
         "format": "unit-ladder",
         "fps": 30,
         "duration": duration,
         "header": "Community? In-state?\nOut-of-state? Private?\nYour year in **Big Macs**",
-        "footer": f"1 Big Mac = {usd(unit, 2)} (Jul 2026) · College Board 2025-26: 1 year of published tuition & fees",
+        # the Becker Rig footer is at most 2 mono lines at 40 px: the same facts, "published" dropped
+        "footer": f"{usd(unit, 2)} Big Mac (Jul 2026) · 1 year of\nCollege Board 2025-26 tuition & fees",
         "captions": True,
         "vo": vo,
         "verdict": {"t": verdict_t, "text": f"One private year =\n**{ratio_num}** community-college years."},
@@ -724,46 +671,61 @@ def build_08c():
             "rungs": rungs,
             "hold": hold,
         },
-        # built kit: one strip icon = 200 Big Macs on every row (key in the unit row), one-line rows that keep their
-        # costs, a bigger open box, and the payoff step "Private vs community / $45,000 ÷ $4,150 = [≈ 10.8×]" as the
-        # biggest box on the sheet (lookOpts.payoff)
-        "lookOpts": lo,
-        "sfx": [{"t": verdict_t, "kind": "ding"}],
+        # built kit: the pre-filled first pile at frame 1; every count lands 1.7 s after its cut (on the voice's
+        # answer line); the asked takeaway (morph.ask): "Private vs community / $45,000 ÷ $4,150 = / ? community-college
+        # years" on "Versus community?", the other piles dimmed, the answer [10.8] landing on the verdict's beat
+        "lookOpts": {"landAfter": land_after, "morph": morph},
+        "sfx": [],
     }
     allowed = {F(x) for x in [BIG_MAC, CB_PUBLIC_2YR, CB_PUBLIC_4YR_IN, CB_PUBLIC_4YR_OUT, CB_PRIVATE_4YR,
                               2026, 2025, 26]}
     allowed |= {F(r["units"]) for r in rungs} | {F(ratio_r)}
-    labelled = {F(1): "'1 year' / '1 Big Mac' (one unit)"}
+    labelled = {F(1): "'1 year' (one unit)"}
     mapping = {0: 0, 1: 1, 2: 3, 3: 5}           # rung -> its question line
     answer = {0: 0, 1: 2, 2: 4, 3: 6}            # rung -> the line that prints and says its figure
     opens = {i: items[i][3] for i in range(len(items))}
     say = {i: say[i] for i in range(len(items))}
-    # row 1 is pre-filled before frame 1 and the opener line reads the answer already on screen
+    # rung 1 is pre-filled before frame 1 and the opener line reads the answer already on screen
     timing = {"prerolled": set(), "prefilled": {0}, "lead": {}, "lag": 0.0, "counter_sync": True, "answer": answer,
-              "lands_of": clean_sheet_lands, "extras": clean_sheet_payoff}
+              "lands_of": becker_lands, "extras": lambda sp, ld: becker_asked_payoff(sp, ld, ratio_r)}
     return exp, rows, allowed, labelled, mapping, opens, say, lands, 8, timing
 
-def clean_sheet_payoff(sp, lands):
-    """The payoff step (lookOpts.payoff): it opens after the last rung has landed, its question line starts on its cut,
-    its box prints the ratio of the two costs it divides (both on the sheet), and the verdict (with its line) lands
-    as the box lands (never before it, within 0.1 s)."""
-    po = sp.get("lookOpts", {}).get("payoff")
-    if not po:
-        return [(False, "08c: lookOpts.payoff missing", None)]
+def becker_asked_payoff(sp, lands, ratio_r):
+    """The asked takeaway (lookOpts.morph with ask, in looks/becker-rig/formats/unit-ladder.js): it is asked after the
+    last count lands, on its question line; its working divides the costs of the two piles it compares (both on
+    screen as rungs); its number is that ratio to 0.1 with the "≈" the working ends on; it lands on the verdict's beat
+    (the verdict line says it, never before it), and the verdict carries the same number and label."""
+    mo = sp.get("lookOpts", {}).get("morph")
+    if not mo or mo.get("ask") is None:
+        return [(False, "08c: lookOpts.morph with ask missing", None)]
     rungs = sp["data"]["rungs"]
-    costs = {r["cost"]: r for r in rungs}
-    ok_ops = po["cost"] in costs and po["by"] in costs
-    ratio = F(po["cost"].replace("$", "").replace(",", "")) / F(po["by"].replace("$", "").replace(",", "")) if ok_ops else F(0)
-    shown = F(re.sub(r"[^\d.]", "", po["display"]))
-    land = lands[-1]
+    cmp_ = mo.get("compare", [])
+    m = re.match(r"^(\$[\d,]+) ÷ (\$[\d,]+)$", mo.get("working", ""))
+    ok_w = bool(m) and len(cmp_) == 2 and m.group(1) == rungs[cmp_[1]]["cost"] and m.group(2) == rungs[cmp_[0]]["cost"]
+    ratio = F(m.group(1)[1:].replace(",", "")) / F(m.group(2)[1:].replace(",", "")) if m else F(0)
+    qline = next((v for v in sp["vo"] if abs(v["t"] - mo["ask"]) < 1e-9), None)
     vline = next((v for v in sp["vo"] if abs(v["t"] - sp["verdict"]["t"]) < 1e-9), None)
-    qline = next((v for v in sp["vo"] if abs(v["t"] - po["t"]) < 1e-9), None)
+    disp = str(mo.get("display"))
+    said = vline["t"] + words_before(vline["text"], "≈ " + disp) / WPS if vline and ("≈ " + disp) in strip_markup(vline["text"]) else -1
+    # the kit's asked-takeaway timing (looks/becker-rig/formats/unit-ladder.js): the smaller compared pile hops beside
+    # the bigger one from ask + 0.2 s for 0.55 s (morph.beside); the "?" squashes out 0.096 s before t, the answer pops
+    # in on t and is fully in (with the working's "≈") at t + 0.048 s
+    side_land = mo["ask"] + 0.2 + 0.55
+    full_in = mo["t"] + 0.048
+    ok_side = len(cmp_) == 2 and cmp_[0] < cmp_[1] and rungs[cmp_[0]]["units"] < rungs[cmp_[1]]["units"] and mo.get("beside", True) is not False
     return [
-        (len(lands) == len(rungs) + 1 and po["t"] > lands[-2], "08c: the payoff must open after the last rung lands", None),
-        (ok_ops and rhu(ratio, F(1, 10)) == shown and po["display"].startswith("≈ ") and po["display"].endswith("×"), "08c: the payoff must print ≈ (its cost ÷ its operand), both costs on the sheet", None),
-        (qline is not None, "08c: the payoff's question line must start on its cut", None),
-        (vline is not None and land - 1e-9 <= sp["verdict"]["t"] <= land + 0.1, f"08c: the verdict ({sp['verdict']['t']} s) must land with the payoff box ({land:.2f} s)",
-         f"  payoff: cut {po['t']:5.2f}  {po['cost']} ÷ {po['by']} = [{po['display']}] lands {land:5.2f}  verdict + its line {sp['verdict']['t']:5.2f}"),
+        (ok_side, "08c: compare must name the smaller pile first, and it hops beside the bigger one (morph.beside)", None),
+        (side_land <= mo["t"] - 0.5, f"08c: the compared piles must stand side by side ({side_land:.2f} s) before the answer lands",
+         f"  side by side: the {rungs[cmp_[0]]['item'] if ok_side else '?'} pile hops beside the {rungs[cmp_[1]]['item'] if ok_side else '?'} pile {mo['ask'] + 0.2:5.2f}-{side_land:5.2f}; the answer is fully in (and '≈') at {full_in:5.2f}"),
+        (full_in <= mo["t"] + 0.1 and (said < 0 or full_in <= said), "08c: the answer (and its '≈') must be fully in within 0.1 s of the verdict's beat, before the voice says it", None),
+        (mo["ask"] > lands[-1] + 0.5, "08c: the takeaway must be asked after the last count lands", None),
+        (qline is not None, "08c: the takeaway's question line must start on its ask", None),
+        (ok_w, "08c: the morph's working must divide the costs of the two piles it compares", None),
+        (ok_w and rhu(ratio, F(1, 10)) == F(disp) == ratio_r and mo.get("approx", True) is True, "08c: the morph's number must be ≈ the working's ratio to 0.1", None),
+        (abs(mo["t"] - sp["verdict"]["t"]) < 1e-9 and vline is not None, "08c: the answer must land on the verdict's beat, with its line", None),
+        (("≈ " + disp) in strip_markup(sp["verdict"]["text"]) and mo.get("label", "") in strip_markup(sp["verdict"]["text"]), "08c: the verdict must carry the morph's number and label", None),
+        (said >= mo["t"] - 1e-9, f"08c: the voice says ≈ {disp} at {said:.2f} s, before it lands ({mo['t']:.2f} s)",
+         f"  payoff: asked {mo['ask']:5.2f} ('{qline['text'] if qline else '?'}')  {mo['working']} ≈ [{disp}] {mo.get('label', '')} lands {mo['t']:5.2f} (= verdict)  VO says it at {said:5.2f}"),
     ]
 
 # ======================================================================================

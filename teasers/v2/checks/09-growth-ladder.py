@@ -27,6 +27,17 @@
    the caption only), its one beat moves the hero ("× 75,176", tagged "YEAR 40 ≈ / DAILY AMOUNT"), its verdict leads
    with the million ("A MILLION BY YEAR 40: / ≈ $13.30 A DAY"), and its footer no longer repeats "7% a year" (the
    input strip "$1 A DAY · 7% A YEAR" carries the rate from frame 1).
+   Port to Becker Rig (2026-10-08): 09a moved from the retired Live Sheet look to Becker Rig (new id
+   09a-becker-rig-100-a-month-doubles; the old spec is in studio/specs/retired/). Its data, VO, header and verdict
+   are unchanged. The formula bar became lookOpts.working (the same nine lines, with the result in **…**), the
+   marks became lookOpts.beats (the same two labels, now tags with figure acts, plus a relight of row 9 at the
+   verdict), lookOpts.cols [0, 2, 3] prints Year / Worth / Earns a month (the kit cannot fit a 4th number a row
+   beside the figure, so "You put in" stays in the data but is not drawn), and lookOpts.target "$100" turns the
+   meters into a gauge to the $100 deposit. The footer's line 2 lost "each" to fit at 40 px.
+   Port QA fix pass (2026-10-08): no number, VO line, header, verdict or tag changed. One act-only beat (no label)
+   joins lookOpts.beats at rowT[5] (year 20, 13.9 s, point then think, 2.3 s), so the figure acts through the
+   14.5-16.8 s gap; a claim asserts it is the only one, sits on the year-20 rung and ends >= 0.6 s before the next
+   coin's wind-up (which starts at most 0.95 s before its rung). Everything else in that pass is in the format file.
 4. Prints a table and exits 1 on any mismatch.
 
 Run:  python3 teasers/v2/checks/09-growth-ladder.py
@@ -180,9 +191,10 @@ def E(s):
     return ("exact", s)
 
 expect, vo_expect, beats, extra_t, columns = {}, {}, {}, {}, {}
+numeric_expect = {}  # numeric (non-string) values that must match (09a's lookOpts.cols)
 
 # ---- 09a
-ida = "09a-live-sheet-100-a-month-doubles"
+ida = "09a-becker-rig-100-a-month-doubles"
 ea = {
     "header": T(money(A_M), money(A_M)),
     "footer": T(pct(A_RATE * 100), money(A_M)),
@@ -190,19 +202,22 @@ ea = {
     "data.input.amount": E(money(A_M)),
     "data.input.rate": E(pct(A_RATE * 100) + " a year"),
     # one formula-bar line per row: the row's Worth × 8% ÷ 12 = what it earns the next month
-    f"lookOpts.formulaBar[{len(A_YEARS)}].text": T(money(A_ALT_AMOUNTS[0]), money(A_ALT_AMOUNTS[1]),
-                                                   str(a_cross(A_ALT_AMOUNTS[0]))),
-    "lookOpts.marks[0].label": T(money(A_M)),      # "under $100" on row 8
-    "lookOpts.marks[1].label": T(money(A_M)),      # "beats your $100" on row 9
+    # working line 9 (at the verdict): "$50 or $500/mo: still **year 9**"
+    f"lookOpts.working[{len(A_YEARS)}].text": T(money(A_ALT_AMOUNTS[0]), money(A_ALT_AMOUNTS[1]),
+                                                str(a_cross(A_ALT_AMOUNTS[0]))),
+    "lookOpts.beats[0].label": T(money(A_M)),      # tag "under $100" on row 8
+    "lookOpts.beats[1].label": T(money(A_M)),      # tag "beats your **$100**" on row 9
+    "lookOpts.target": E(money(A_M)),              # the gauge under each Earns cell runs to your $100 deposit
 }
 for i, y in enumerate(A_YEARS):
     ea[f"data.rows[{i}][0]"] = E(str(y))
     ea[f"data.rows[{i}][1]"] = E(money(A_IN[y]))
     ea[f"data.rows[{i}][2]"] = E(money(A_W[y]))
     ea[f"data.rows[{i}][3]"] = E(money(A_EARN[y]))     # "Earns a month": next month's growth on that Worth
-    # the line starts on the row's Worth without its "≈": the bar's chip in front of it is the ≈ sign
-    ea[f"lookOpts.formulaBar[{i}].text"] = T(bare(money(A_W[y])), pct(A_RATE * 100), "12", money(A_EARN[y]))
+    # the working line multiplies the row's shown Worth (its cell's number without the "≈"): "$1,245 × 8% ÷ 12 ≈ $8/mo"
+    ea[f"lookOpts.working[{i}].text"] = T(bare(money(A_W[y])), pct(A_RATE * 100), "12", money(A_EARN[y]))
 expect[ida] = ea
+numeric_expect[ida] = {"lookOpts.cols[0]": 0, "lookOpts.cols[1]": 2, "lookOpts.cols[2]": 3}   # Year / Worth / Earns
 columns[ida] = ["Year", "You put in", "Worth", "Earns a\u00a0month"]   # no-break space: wraps "Earns / a month"
 # VO: (token, mode) with mode exact | about | over
 vo_expect[ida] = [
@@ -280,8 +295,6 @@ beats[idc] = [("1", 0, "Year 1"), ("10", 1, "Year 10"), ("20", 2, "Year 20"), ("
               (str(C_LAST), 4, f"Year {C_LAST}")]
 extra_t[idc] = []
 
-# numeric (non-string) values that must match the maths
-numeric_expect = {}
 
 # ============================================================== text helpers
 
@@ -438,7 +451,7 @@ def check_spec(sid):
     for p, v in leaves(spec):
         if p in ("id", "look", "format", "fps", "duration", "captions") or p.startswith("sfx") or p == "data.hold":
             continue
-        if re.fullmatch(r"vo\[\d+\]\.(t|d)|verdict\.t|data\.rowT\[\d+\]|lookOpts\..*\.(t|row)|data\.highlightLast", p):
+        if re.fullmatch(r"vo\[\d+\]\.(t|d)|verdict\.t|data\.rowT\[\d+\]|lookOpts\..*\.(t|d|row)|data\.highlightLast", p):
             continue
         if isinstance(v, bool) or (isinstance(v, str) and not re.search(r"\d", v)):
             continue
@@ -478,8 +491,8 @@ def check_spec(sid):
             ok = any(abs(item["t"] - a) < 1e-9 for a in anchors) or any(
                 abs(item["t"] - t) < 1e-9 for _, t, _, _ in extra_t[sid])
             record(sid, f"lookOpts beat t={item['t']} anchored", item["t"], "row/VO/verdict t", ok)
-    for item in spec.get("lookOpts", {}).get("marks", []):
-        record(sid, f"mark row {item['row']} lands with its row", item["t"], ts[item["row"]], abs(item["t"] - ts[item["row"]]) < 1e-9)
+    for item in [b for b in spec.get("lookOpts", {}).get("beats", []) if "label" in b and "row" in b]:
+        record(sid, f"tag on row {item['row']} lands with its row", item["t"], ts[item["row"]], abs(item["t"] - ts[item["row"]]) < 1e-9)
     for cue in spec.get("sfx", []):
         ok = any(abs(cue["t"] - a) < 1e-9 for a in anchors + [t for _, t, _, _ in extra_t[sid]])
         record(sid, f"sfx {cue['kind']} on a beat", cue["t"], "row/VO/beat t", ok)
@@ -501,8 +514,8 @@ claim(ida, "'By year 1 it's earning about $8': month 13 grows ≈ $8 (month 12 �
       "≈ $8.30 / ≈ $7.58 / ≈ $3.75",
       money(A_GROWTH(13)) == "≈ $8" and money(A_GROWTH(13), 0.01) == "≈ $8.30"
       and money(A_GROWTH(12), 0.01) == "≈ $7.58" and money(A_Y1_AVG, 0.01) == "≈ $3.75")
-claim(ida, "year 8 'Not yet' / mark 'under $100' (earns < $100)", money(A_EARN[8], 0.01), "< $100", A_EARN[8] < A_M)
-claim(ida, "year 9 'More than you add' / mark 'beats your $100' / verdict 'it earns more than you add'",
+claim(ida, "year 8 'Not yet' / tag 'under $100' (earns < $100)", money(A_EARN[8], 0.01), "< $100", A_EARN[8] < A_M)
+claim(ida, "year 9 'More than you add' / tag 'beats your $100' / verdict 'it earns more than you add'",
       money(A_EARN[9], 0.01), "> $100", A_EARN[9] > A_M)
 claim(ida, "first month earning ≥ $100 = 106, in year 9 (month 105 earns < $100)",
       f"m{A_CROSS_MONTH} {money(A_GROWTH(A_CROSS_MONTH), 0.01)} / m{A_CROSS_MONTH - 1} "
@@ -525,30 +538,67 @@ claim(ida, "pinned: same crossing at 7% → year 11, at 10% → year 8",
       [a_cross(100, r_) for r_ in A_PINNED_RATES], [11, 8],
       [a_cross(100, r_) for r_ in A_PINNED_RATES] == [11, 8])
 _sa = load(ida)
-_long = [x["text"] for x in _sa["lookOpts"]["formulaBar"] if len(x["text"]) > 32]
-claim(ida, "formula-bar lines fit one line (≤ 32 chars at 40 px mono)", _long or "all ≤ 32", "all ≤ 32", not _long)
+_lo = _sa["lookOpts"]
+_wl = _lo["working"]
+_plain = lambda x: strip_markup(x)
+_long = [x["text"] for x in _wl if len(_plain(x["text"])) > 38]
+claim(ida, "working lines fit one line (≤ 38 chars of 40 px mono in x 62-940)", _long or "all ≤ 38", "all ≤ 38", not _long)
 _ecol = [r[3] for r in _sa["data"]["rows"]]
-_ebar = [tokens(x["text"])[-1] for x in _sa["lookOpts"]["formulaBar"][:len(A_YEARS)]]
-claim(ida, "'Earns a month' cells = each row's formula-bar result (same string)", " | ".join(_ecol), " | ".join(_ebar),
+_ebar = [tokens(x["text"])[-1] for x in _wl[:len(A_YEARS)]]
+claim(ida, "'Earns a month' cells = each row's working-line result (same string)", " | ".join(_ecol), " | ".join(_ebar),
       _ecol == _ebar)
+claim(ida, "each row's working line appears as its row lands; the last at the verdict",
+      [x["t"] for x in _wl], _sa["data"]["rowT"] + [_sa["verdict"]["t"]],
+      [x["t"] for x in _wl] == _sa["data"]["rowT"] + [_sa["verdict"]["t"]])
+claim(ida, "working-line results are the emphasis ('≈ **$8/mo**' … '**year 9**')",
+      [re.findall(r"\*\*(.+?)\*\*", x["text"]) for x in _wl][:2], "one **…** each, ending the line",
+      all(re.fullmatch(r".*\*\*[^*]+\*\*", x["text"]) and x["text"].count("**") == 2 for x in _wl))
 _ev = [float(re.sub(r"[^\d.]", "", bare(x))) for x in _ecol]
-claim(ida, "'Earns a month' rises row by row; year 8 < $100 ≤ year 9 (the marks' rows 2 and 3)", _ecol[2:4],
+_tags = [b for b in _lo["beats"] if "label" in b]
+claim(ida, "'Earns a month' rises row by row; year 8 < $100 ≤ year 9 (the tags' rows 2 and 3)", _ecol[2:4],
       "≈ $89 / ≈ $105", all(a < b for a, b in zip(_ev, _ev[1:])) and _ev[2] < A_M <= _ev[3]
-      and [m["row"] for m in _sa["lookOpts"]["marks"]] == [2, 3])
+      and [b["row"] for b in _tags] == [2, 3])
 claim(ida, "verdict names the crossing year in its emphasis ('From **year 9**') and says 'more than you add'",
       _sa["verdict"]["text"].replace("\n", " / "), "From **year 9** / it earns more than you add.",
       _sa["verdict"]["text"] == f"From **year {A_CROSS}**\nit earns more than you add.")
-claim(ida, "marks: row 8 'under $100' (bad), row 9 'beats your **$100**' (good)",
-      " / ".join(m["label"] for m in _sa["lookOpts"]["marks"]), "under $100 / beats your **$100**",
-      [(m["label"], m["tone"]) for m in _sa["lookOpts"]["marks"]] == [("under $100", "bad"), ("beats your **$100**", "good")])
-claim(ida, "formula-bar lines don't start with a second '≈' (the bar's chip is the ≈)",
-      [x["text"][:2] for x in _sa["lookOpts"]["formulaBar"] if x["text"].startswith("≈")] or "none", "none",
-      not any(x["text"].startswith("≈") for x in _sa["lookOpts"]["formulaBar"]))
+claim(ida, "tags: row 8 'under $100' (bad), row 9 'beats your **$100**' (good)",
+      " / ".join(b["label"] for b in _tags), "under $100 / beats your **$100**",
+      [(b["label"], b["tone"]) for b in _tags] == [("under $100", "bad"), ("beats your **$100**", "good")])
+claim(ida, "each tag is gone ≥ 0.6 s before the next row lands (it sits on that row's empty slot)",
+      [round(b["t"] + b["d"], 2) for b in _tags], [round(_sa["data"]["rowT"][b["row"] + 1] - 0.6, 2) for b in _tags],
+      all(b["t"] + b["d"] <= _sa["data"]["rowT"][b["row"] + 1] - 0.6 + 1e-9 for b in _tags))
+_rl = [b for b in _lo["beats"] if b.get("relight")]
+claim(ida, "the verdict relights the crossing row (year 9) while the figure points at it",
+      [(b["row"], b["t"], b.get("act")) for b in _rl], f"row of year {A_CROSS} at verdict.t, act point",
+      len(_rl) == 1 and _sa["data"]["rows"][_rl[0]["row"]][0] == str(A_CROSS) and _rl[0]["t"] == _sa["verdict"]["t"]
+      and _rl[0].get("act") == "point")
+claim(ida, "the year-9 impact sits on the crossing row", [(b["row"], b["t"]) for b in _lo["beats"] if b.get("impact")],
+      f"row of year {A_CROSS}", [_sa["data"]["rows"][b["row"]][0] for b in _lo["beats"] if b.get("impact")] == [str(A_CROSS)])
+# port QA fix pass: one act-only beat fills the year-20 gap (13.9 s rung, next coin's wind-up starts ≤ 0.95 s before 17.8 s)
+_acts = [b for b in _lo["beats"] if "label" not in b and not b.get("relight") and not b.get("impact")]
+_rt = _sa["data"]["rowT"]
+claim(ida, "one act-only beat on the year-20 rung, at its landing, ending ≥ 0.6 s before the next coin's wind-up",
+      [(_sa["data"]["rows"][b["row"]][0], b["t"], round(b["t"] + b["d"], 2), b.get("act")) for b in _acts],
+      f"year 20 at {_rt[5]}, ends ≤ {round(_rt[6] - 0.95 - 0.6, 2)}",
+      len(_acts) == 1 and _sa["data"]["rows"][_acts[0]["row"]][0] == "20" and _acts[0]["t"] == _rt[_acts[0]["row"]]
+      and _acts[0]["t"] + _acts[0]["d"] <= _rt[_acts[0]["row"] + 1] - 0.95 - 0.6 + 1e-9 and bool(_acts[0].get("act")))
+_cols = [_sa["data"]["columns"][k] for k in _lo["cols"]]
+claim(ida, "the ladder prints Year / Worth / Earns a month (Earns = the hook's number is the hero)",
+      " / ".join(_cols), "Year / Worth / Earns a month", _cols == ["Year", "Worth", "Earns a\u00a0month"]
+      and _lo.get("second") == "bold")
+_short = [_sa["data"]["rows"][i][0] for i in range(len(A_YEARS)) if _ev[i] < A_M]   # rows whose gauge stays grey
+claim(ida, "the $100 gauge stays short (grey) on years 1, 5, 8 and fills green from year 9 on, by the shown cells and exactly",
+      _short, ["1", "5", "8"], _short == ["1", "5", "8"]
+      and [y for y in A_YEARS if A_EARN[y] < A_M] == [1, 5, 8] and _lo["target"] == money(A_M))
+claim(ida, "working lines multiply the shown Worth (the line starts with the Worth cell's number, no second '≈')",
+      [x["text"][:2] for x in _wl if x["text"].startswith("≈")] or "none", "none",
+      not any(x["text"].startswith("≈") for x in _wl)
+      and all(tokens(x["text"])[0] == bare(r[2]) for x, r in zip(_wl, _sa["data"]["rows"])))
 claim(ida, "footer states the compounding convention", "compounded monthly" in _sa["footer"], True,
       "compounded monthly" in _sa["footer"])
-claim(ida, "frame 1: row 1's Worth and its formula line are on screen at 0.0 s",
-      f"{_sa['data']['rowT'][0]} / {_sa['lookOpts']['formulaBar'][0]['t']}", "0.0 / 0.0",
-      _sa["data"]["rowT"][0] == 0.0 and _sa["lookOpts"]["formulaBar"][0]["t"] == 0.0)
+claim(ida, "frame 1: row 1 and its working line are on screen at 0.0 s",
+      f"{_sa['data']['rowT'][0]} / {_wl[0]['t']}", "0.0 / 0.0",
+      _sa["data"]["rowT"][0] == 0.0 and _wl[0]["t"] == 0.0)
 
 # 09b: "POV: someone invested just $1,000 for you at birth. What's it worth at 65?"
 claim(idb, "age 1 = $1,000 × 1.07 = $1,070 (exact)", money(B_V[1]), "$1,070", money(B_V[1]) == "$1,070")

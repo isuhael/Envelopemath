@@ -65,7 +65,42 @@
 //                rungs at each value (stake × 2, × 4 …), labelled with their display strings in the axis margin,
 //                wiping in bottom-up one every 0.16 s with a tick: each line's tip sits under its doublings count
 //   yearAlpha    the corner clock's white alpha (default 0.34; it dims to 40% of that under ink)
+//                rungs.items[k][2] (optional): that rung's own time. An early rung (before rungs.t) wipes in over
+//                the live y grid (the "×2" as a racer first doubles); a grid label a timed rung's label would touch
+//                gives way. The grid itself gives way at rungs.t as before
+//   hook         { until, values: [display per data.series], year?, series?, ask?, sub?: [line per series],
+//                ratioT?, ratioTag? }: a cold open on the claim. Until `until` (= raceT[0]) the plot holds a duel of
+//                neon columns instead of the parked race: one column per racer (its `values` display over a bar to
+//                scale, the racer's name inside the bar, `sub` under the floor), the `series` column lit, the corner
+//                clock on `year` (at the race's alpha), and the `ask` in the flag strip. The clock and the tallest
+//                column's number keep >= 24 px under the ask (the clock sits that much lower for the whole video, the
+//                columns stay to scale). At ratioT a dashed rule wipes from the shorter column's top across the
+//                taller one ("≈ 2 to 1"), set in stage ink where it crosses a lit bar, and `ratioTag` (a display
+//                string, "≈ ×2") slams into the taller column's part above the rule; at litT (as the VO names it)
+//                the lit column's number bumps with a pop. From `until` - HOOK_RW (0.7 s), the rewind: the counters
+//                roll down with the bars on one curve (the names fade as their bars get too short), the bars drain
+//                into the floor and the clock rolls back to x.from (0.5 s); then the race (axis, stake line, tips)
+//                fades in (HOOK_IN, 0.2 s) and starts. The hero holds the stake meanwhile
+//   holdBack.follow  true: the hero follows the held series over its last leg [t0, t1] (a hard cut and a swipe
+//                at t0): it rolls up with the line and lands on the final at t1 (the climax)
+//   heroSteps    [{ t, series }]: after the finish, the hero cuts back to that racer's final at t (once it has
+//                been revealed): a bump and a swipe. The latest reveal or step wins
+//   emColor      also an array: the verdict's ** runs take its colours in order (the last one also colours the
+//                rule and every flag emphasis): "Europe won **2025** (yellow). The USA won the **decade** (green)"
+//   finalT       a non-winner revealed after the finish (a hard cut in the hero) gets a pop. A series (not held
+//                back) whose finalT is later than raceT[1] stops on its exact close: its tip (and the hero, while it
+//                shows it) holds the running-format value ("$22,661": no "≈", no settle roll, no land), and the
+//                rounded `final` lands at its finalT with the tip bump, the hero bump and a pop. With finalT at or
+//                before raceT[1] (or none) the finish is as before
 //   footer steps (lookOpts.footerSteps, drawn here): a racer's name in a step's text is set in its line colour
+//   flagNames    true: the same in the chart-strip flag labels ("2018: EUROPE ≈ −15%", EUROPE in its line colour)
+//   tipBeats     [{ t, series }]: that racer's tip label bumps and its halo flares at t, with a soft pop (a spoken
+//                bound on a live tip: "Europe? Still under $17,000")
+//   yearHold     [year, ...]: closes the VO names mid-race; the corner clock holds that year 0.5 s past its close
+//                before it rolls on (the clock never reads the next year as the close is named)
+//   stakeTag     a grey caps tag beside the hero while it shows the stake ("EACH": the same stake in every racer)
+//   rungs.items[k][2]  a timed rung, before rungs.t, ends at the race's current x (it never runs on past the tips,
+//                under a tip label); from rungs.t every rung spans the data
 import { h, s, css as style, setText, setHTML, attr, prog, ease, clamp, lerp, fitText, fmtNum } from '../../../runtime/core.js'
 import { C, SIZE, M, layoutFor } from '../theme.js'
 import {
@@ -99,6 +134,15 @@ export const css = `
 .cr-mline { display: block; white-space: nowrap; line-height: 1; }
 .cr-mline.two { white-space: normal; text-wrap: balance; }
 .cr-mvs { display: block; font-family: 'Inter', 'Inter Full', sans-serif; font-weight: 700; line-height: 1; letter-spacing: 0.06em; color: #9AA4B2; }
+.cr-hk-bar { position: absolute; border-radius: 10px 10px 0 0; }
+.cr-hk-name { position: absolute; left: 0; right: 0; text-align: center; font: 400 60px/1 'Anton', 'Inter Full', sans-serif; text-transform: uppercase; letter-spacing: 0.02em; color: #0E1116; white-space: nowrap; }
+.cr-hk-num { position: absolute; display: flex; justify-content: center; }
+.cr-hk-sub { position: absolute; text-align: center; font: 600 40px/1 'Inter', 'Inter Full', sans-serif; color: #9AA4B2; white-space: nowrap; }
+.cr-hk-ratio { position: absolute; height: 0; border-top: 4px dashed rgba(255, 255, 255, 0.85); transform-origin: 0 50%; }
+.cr-hk-ink { position: absolute; top: -5px; height: 6px; }
+.cr-hk-tag { position: absolute; font: 400 72px/1 'Anton', 'Inter Full', sans-serif; text-transform: uppercase; white-space: nowrap; transform-origin: 50% 50%; }
+.cr-ask { position: absolute; font: 700 42px/1.1 'Inter', 'Inter Full', sans-serif; text-transform: uppercase; letter-spacing: 0.03em; white-space: nowrap; color: #FFFFFF;
+  padding: 6px 18px; border: 2px solid #232B36; border-radius: 12px; background: #07090C; }
 `
 
 const SETTLE = 0.45    // s: once the lines stop, tips and hero roll their last digits, then land on `final`
@@ -107,6 +151,11 @@ const LEAD = 1.004     // a challenger must lead by 0.4% to take the hero (no fl
 const K = 1.2          // the y axis keeps the running max at 1/K of the plot height
 const FLAG_HOLD = 2.5  // s an event flag holds the label stack (captions off) before the matchup comes back
 const GX0 = 24         // px from a tip to a label right of it
+const HOOK_RW = 0.7    // s: lookOpts.hook's rewind + hand-over, before `until`: the counters roll down, the bars drain
+                       // and the clock rolls back over the first HOOK_RW - HOOK_IN s (the columns gone at its end)...
+const HOOK_IN = 0.2    // s: ...then the race (axis, stake line, tips) fades in, so the two never share a frame
+const ASK_GAP = 24     // px: the hook's clock and its tallest number keep at least this much under the ask
+const YEAR_HOLD = 0.5  // s: lookOpts.yearHold keeps the clock on a named close's year this long past the close
 
 const rgba = (hex, a) => {
   if (!/^#[0-9a-f]{6}$/i.test(hex)) hex = C.white
@@ -184,16 +233,56 @@ export default function chartRace(spec, ctx) {
   // each series' own clock: the race clock, except a held-back series (stopped at xH, then its last leg)
   const xOf = (sr, t) => (!held(sr) ? xAt(t) : t < HB.t0 ? Math.min(xAt(t), HB.xH) : lerp(HB.xH, X.to, prog(t, HB.t0, HB.t1 - HB.t0)))
   const endOf = sr => (held(sr) ? HB.t1 : R1)        // when a series' line stops
-  const landOf = sr => (held(sr) ? HB.t1 : TF)       // when its counter lands on its final
   // staggered finish (lookOpts.finalT): when each racer's final takes the hero, and when it lands there
   const finTs = Array.isArray(lo.finalT) ? lo.finalT : null
   const revealT = sr => { if (held(sr)) return HB.t1; const v = finTs ? +finTs[sr.i] : NaN; return isFinite(v) ? Math.max(R1, v) : R1 }
   const landT = sr => (revealT(sr) <= R1 + 1e-6 ? TF : revealT(sr))
+  // a late reveal (finalT after raceT[1], not held back): the line stops on its exact close and the counter holds it
+  // (running format, no "≈") until the rounded final lands at finalT, as the VO names it
+  const late = sr => !held(sr) && revealT(sr) > R1 + 1e-6
+  const landOf = sr => (held(sr) ? HB.t1 : late(sr) ? revealT(sr) : TF)   // when its counter lands on its final
   // the hero after the finish: the racer revealed last so far (ties: the winner, so without finalT it is the winner)
   const heroOrder = racers.slice().sort((a, b) => revealT(a) - revealT(b) || (a === winner) - (b === winner))
-  const heroAfter = t => { let sr = null; for (const r of heroOrder) if (t >= revealT(r)) sr = r; return sr }
+  // lookOpts.heroSteps: after the finish the hero may cut back to a racer already revealed (the latest event wins)
+  const heroSteps = (Array.isArray(lo.heroSteps) ? lo.heroSteps : [])
+    .map(st => ({ t: +(st && st.t), sr: racers.find(r => r.i === +(st && st.series)) }))
+    .filter(st => isFinite(st.t) && st.sr && st.t >= revealT(st.sr) - 1e-6).sort((a, b) => a.t - b.t)
+  // lookOpts.tipBeats: a racer's tip label bumps and its halo flares at t (a spoken bound on a live tip)
+  const tipBeats = (Array.isArray(lo.tipBeats) ? lo.tipBeats : [])
+    .map(b => ({ t: +(b && b.t), sr: ser[+(b && b.series)] })).filter(b => isFinite(b.t) && b.sr)
+  const heroAfter = t => {
+    let sr = null, at = -Infinity
+    for (const r of heroOrder) if (t >= revealT(r) && revealT(r) >= at) { sr = r; at = revealT(r) }
+    for (const st of heroSteps) if (t >= st.t && st.t >= at) { sr = st.sr; at = st.t }
+    return sr
+  }
   const TW = landT(winner)                // the climax: the winner's final lands in the hero
-  const TEND = Math.max(TF, HB ? HB.t1 : 0)   // every counter has landed
+  const TEND = Math.max(TF, HB ? HB.t1 : 0, ...racers.filter(late).map(revealT))   // every counter has landed
+  const follow = !!(HB && lo.holdBack.follow)  // the hero rides the held series' last leg
+
+  // lookOpts.hook: a cold open on the claim (a duel of neon columns) that rewinds into the race at `until`
+  const HK = (() => {
+    const o = lo.hook
+    if (!o || !Array.isArray(o.values) || !(+o.until > HOOK_RW)) return null
+    const cols = racers.map(sr => {
+      const disp = o.values[sr.i] != null ? String(o.values[sr.i]) : ''
+      const tpl = parseDisplay(disp)
+      const sign = /[−-]/.test(tpl.prefix) ? -1 : 1
+      return { sr, disp, tpl, v: sign * tpl.value * tpl.scale, sub: Array.isArray(o.sub) && o.sub[sr.i] != null ? String(o.sub[sr.i]) : '' }
+    })
+    if (!cols.length || cols.some(c => !isFinite(c.v))) return null
+    const until = +o.until
+    return {
+      until, r0: until - HOOK_RW, cols,
+      year: isFinite(+o.year) ? Math.floor(+o.year) : Math.floor(X.to + 1e-6),
+      lit: o.series != null ? racers.find(r => r.i === +o.series) || null : null,
+      ask: o.ask ? String(o.ask) : '', ratioT: o.ratioT != null && isFinite(+o.ratioT) ? +o.ratioT : null,
+      ratioTag: o.ratioTag != null && String(o.ratioTag).trim() ? String(o.ratioTag) : '',
+      litT: o.litT != null && isFinite(+o.litT) && +o.litT > 0 ? +o.litT : null,
+    }
+  })()
+  // the race's own elements (axis, stake line, lines, tips, labels): hidden under the hook, in over its last HOOK_IN s
+  const raceA = t => (HK ? prog(t, HK.until - HOOK_IN, HOOK_IN) : 1)
 
   // ---------- layout: a tall stage; captions on: the chart runs to 1300, the caption band below ----------
   const L0 = layoutFor(spec)
@@ -303,7 +392,10 @@ export default function chartRace(spec, ctx) {
   const root = h('div', { class: 'cr-root', style: { left: P.x + 'px', top: P.y + 'px', width: P.w + 'px', height: P.h + 'px' } })
   stage.append(root)
   // lookOpts.emColor: ** emphasis in the flags and the verdict (and the verdict's rule) in that colour
-  const emCol = lo.emColor === 'winner' ? winner.color : lo.emColor ? (C[lo.emColor] || String(lo.emColor)) : null
+  const colOf = k => (k === 'winner' ? winner.color : C[k] || String(k))
+  // an array colours the verdict's ** runs in order (seek); its last colour is the rule's and the flags'
+  const emList = Array.isArray(lo.emColor) && lo.emColor.length ? lo.emColor.map(colOf) : null
+  const emCol = emList ? emList[emList.length - 1] : lo.emColor ? colOf(lo.emColor) : null
   const emOk = !!emCol && /^#[0-9a-f]{6}$/i.test(emCol)
   stage.classList.toggle('cr-emc', emOk)
   if (emOk) style(stage, { '--cr-em': emCol, '--cr-emg': rgba(emCol, 0.5) })
@@ -311,26 +403,46 @@ export default function chartRace(spec, ctx) {
   // the clock: a big rolling year in the plot's top-left corner, behind the lines (decoration: the x axis and the VO
   // carry the year too). Money races climb to the top-right, so that corner stays clear; it dims while a line or a
   // tip label passes through it.
+  // (lookOpts.hook) the ask sits in the flag strip; the hook's clock and its tallest number keep ASK_GAP px under it
+  let askEl = null, askBottom = null
+  if (HK && HK.ask) {
+    askEl = h('div', { class: 'cr-ask', html: richUI(HK.ask), style: { top: L.stage.y + 12 + 'px' } })
+    stage.append(askEl)
+    style(askEl, { left: (540 - askEl.offsetWidth / 2).toFixed(1) + 'px' })
+    askBottom = L.stage.y + 12 + askEl.offsetHeight
+  }
+
   const YS = +lo.yearSize || 160
   const yearBox = h('div', { class: 'cr-year', 'data-deco': '' })
   root.append(yearBox)
   const yearA = clamp(+(lo.yearAlpha ?? 0.34) || 0.34, 0.08, 0.6)
+  // (under a hook the clock names the claim's year at the race's own alpha: the ask and the caption say it too, so the
+  // lit column stays the one focal number under the hero)
   const yearOdo = odometer(yearBox, { size: YS, color: `rgba(255, 255, 255, ${yearA})`, maxInt: calendar ? 4 : 3, maxDp: 0 })
   const yearTpl = { prefix: calendar ? '' : (lo.yearPrefix ?? 'YEAR '), suffix: '', dp: 0, group: false, scale: 1, value: 0 }
-  style(yearBox, { left: '12px', top: Math.round(-0.02 * YS) + 'px' })
+  // its caps start about at the plot top (measured: 1-2 px above it at 160 px); under an ask it sits lower, for the
+  // whole video (the clock never moves)
+  const yearDY = askBottom != null ? Math.max(0, Math.ceil(askBottom + ASK_GAP - (P.y - 2))) : 0
+  style(yearBox, { left: '12px', top: Math.round(-0.02 * YS + yearDY) + 'px' })
   const rollF = clamp(0.24 / Math.max(1e-6, secPerYear), 0.04, 0.4)    // the year digits roll in ~0.24 s
   // the year rolls into y + 1 over the last rollF of year y, and never past the clock's last year (x.to = 2025 holds
-  // "2025"; x.to = 2025.99 holds "2025" too)
+  // "2025"; x.to = 2025.99 holds "2025" too). lookOpts.yearHold: a close the VO names holds its year YEAR_HOLD s past
+  // the close, then rolls (so the clock never reads 2019 as "≈ 15%" is said at the 2018 close)
   const yearEnd = Math.floor(X.to + 1e-6)
+  const yearHolds = (Array.isArray(lo.yearHold) ? lo.yearHold : []).map(Number).filter(isFinite).map(Math.floor)
   const yearV = x => {
+    for (const hy of yearHolds) {
+      const xh = hy + 1 + YEAR_HOLD / Math.max(1e-6, secPerYear)
+      if (x >= hy + 1 - rollF && x < xh + rollF) return Math.max(Math.floor(X.from + 1e-6), Math.min(yearEnd, hy + clamp((x - xh) / rollF)))
+    }
     const y = Math.floor(x + 1e-6)
     return Math.max(Math.floor(X.from + 1e-6), Math.min(yearEnd, y + clamp((x - (y + 1 - rollF)) / rollF)))
   }
 
   const svg = s('svg', { class: 'cr-svg', width: P.w, height: P.h, viewBox: `0 0 ${P.w} ${P.h}`, 'data-deco': '' })
   svg.append(s('defs', {}, s('filter', { id: 'crGlow', x: '-50%', y: '-50%', width: '200%', height: '200%' }, s('feGaussianBlur', { stdDeviation: 7 }))))
-  const gBand = s('g'), gGrid = s('g'), gStake = s('g'), gRung = s('g'), gRule = s('g'), gLine = s('g'), gTip = s('g')
-  svg.append(gBand, gGrid, gStake, gRung, gRule, gLine, gTip)
+  const gBand = s('g'), gGrid = s('g'), gBase = s('g'), gStake = s('g'), gRung = s('g'), gRule = s('g'), gLine = s('g'), gTip = s('g')
+  svg.append(gBand, gGrid, gBase, gStake, gRung, gRule, gLine, gTip)
   root.append(svg)
 
   // lines, tips, tip labels (name + live odometer)
@@ -402,7 +514,7 @@ export default function chartRace(spec, ctx) {
     return { line, lab }
   })
   const baseLine = s('line', { x1: 0, x2: DW, y1: P.h, y2: P.h, stroke: '#2A3340', 'stroke-width': 3 })
-  gGrid.append(baseLine)
+  gBase.append(baseLine)                                         // (its own group: it stays while a hook hides the grid)
   const logTicks = []
   if (Y.log) {
     // fixed log ticks: 1-2-5 per decade, at least 56 px apart
@@ -444,13 +556,43 @@ export default function chartRace(spec, ctx) {
   const RG = lo.rungs && Array.isArray(lo.rungs.items) && isFinite(+lo.rungs.t) ? lo.rungs : null
   const rungT = RG ? +RG.t : Infinity
   const rungs = RG ? RG.items.filter(it => Array.isArray(it) && isFinite(+it[0]) && it[1] != null)
-    .map(it => ({ v: +it[0], text: String(it[1]) })).sort((a, b) => a.v - b.v).map((r, k) => {
+    .map(it => ({ v: +it[0], text: String(it[1]), own: it[2] != null && isFinite(+it[2]) ? +it[2] : null })).sort((a, b) => a.v - b.v).map((r, k) => {
       const line = s('line', { x1: 0, x2: 0, stroke: C.white, 'stroke-width': 3, 'stroke-dasharray': '14 10', 'stroke-linecap': 'round', opacity: 0 })
       gRung.append(line)
       const lab = h('div', { class: 'cr-rung', style: { right: P.w + 16 + 'px', display: 'none' } }, r.text)
       root.append(lab)
-      return { ...r, line, lab, t: rungT + 0.16 * k }
+      const t = r.own != null ? r.own : rungT + 0.16 * k
+      return { ...r, line, lab, t, early: t < rungT - 1e-6 }       // an early rung shows over the live y grid (r.own: timed)
     }) : []
+
+  // a racer's name in a working line ("Gold ≈ 3.9 doublings · S&P 500 ≈ 2.9") or (lookOpts.flagNames) a flag label is
+  // set in its line colour (colour only: a fitted width holds)
+  const paintNames = (() => {
+    const reEsc = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const names = racers.map(sr => ({ n: bare(nameOf(sr)).trim(), col: sr.color })).filter(x => x.n).sort((a, b) => b.n.length - a.n.length)
+    const re = names.length ? new RegExp(`(?<![\\w&])(${names.map(x => reEsc(x.n)).join('|')})(?![\\w])`, 'g') : null
+    return el => {
+      if (!re || !el) return
+      const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT)
+      const nodes = []
+      while (walker.nextNode()) nodes.push(walker.currentNode)
+      for (const node of nodes) {
+        const txt = node.textContent
+        re.lastIndex = 0
+        if (!re.test(txt)) continue
+        const frag = document.createDocumentFragment()
+        let i = 0
+        txt.replace(re, (m, g, at) => {
+          if (at > i) frag.append(txt.slice(i, at))
+          frag.append(h('span', { class: 'cr-fname', style: { color: names.find(x => x.n === m).col } }, m))
+          i = at + m.length
+          return m
+        })
+        if (i < txt.length) frag.append(txt.slice(i))
+        node.replaceWith(frag)
+      }
+    }
+  })()
 
   // events: dashed rule (+ band), flag label in the strip above the plot (chart mode)
   const evEls = events.map(e => {
@@ -461,6 +603,7 @@ export default function chartRace(spec, ctx) {
     let lab = null
     if (flagStrip && e.label) {
       lab = h('div', { class: 'cr-flag', html: richUI(e.label), style: { color: e.col, top: L.stage.y + 14 + 'px' } })
+      if (lo.flagNames) paintNames(lab)
       stage.append(lab)
     }
     return { e, band, rule, lab, retire: Infinity }
@@ -483,6 +626,78 @@ export default function chartRace(spec, ctx) {
       // a label holds at most flagHold s, and the strip clears as the finals land (the finish owns the frame)
       ev.retire = Math.min(ev.retire, ev.e.t + hold, Math.max(TF, ev.e.t + 1.5))
     })
+  }
+
+  // lookOpts.hook: the duel of neon columns that holds the plot until the race starts. Each column stands on the plot
+  // floor: its value (Anton, an odometer so the rewind can roll it down) over a bar to scale, the racer's name set
+  // inside the bar's foot, and `sub` (the index) under the floor, where the x ticks will be. The lit column glows;
+  // the other is a tinted outline (its name in white). The ask sits in the flag strip (built with the clock).
+  let hook = null
+  if (HK) {
+    const n = HK.cols.length
+    const NUM = 100, BW = n > 2 ? 190 : 230
+    const vmax = Math.max(...HK.cols.map(c => Math.max(0, c.v)), 1e-9)
+    // the tallest number's caps (~2-4 px under its box) keep ASK_GAP px under the ask: the columns give up that height,
+    // all to the same scale
+    const askRoom = askBottom != null ? Math.max(0, Math.ceil(askBottom + ASK_GAP - (P.y + 10))) : 0
+    const HMAX = P.h - NUM - 26 - askRoom
+    // (columns sit right of centre: the corner clock, which names the claim's year, keeps the top-left)
+    const CXS = n === 1 ? [0.6] : n === 2 ? [0.31, 0.76] : [0.2, 0.52, 0.84]
+    const cols = HK.cols.map((c, k) => {
+      const lit = !HK.lit || c.sr === HK.lit
+      const cx = P.w * CXS[k]
+      const hgt = Math.max(10, (HMAX * Math.max(0, c.v)) / vmax)
+      const bar = h('div', { class: 'cr-hk-bar', style: { left: (cx - BW / 2).toFixed(1) + 'px', width: BW + 'px' } })
+      style(bar, lit
+        ? { background: c.sr.color, boxShadow: `0 0 40px ${rgba(c.sr.color, 0.5)}, 0 0 12px ${rgba(c.sr.color, 0.6)}` }
+        : { background: rgba(c.sr.color, 0.4), border: `4px solid ${c.sr.color}`, borderBottom: 'none', boxSizing: 'border-box' })
+      const name = h('div', { class: 'cr-hk-name', html: `<span>${rich(nameOf(c.sr))}</span>`, style: { bottom: '16px', color: lit ? C.stage : C.white } })
+      bar.append(name)
+      root.append(bar)
+      const numBox = h('div', { class: 'cr-hk-num', style: { left: (cx - 260).toFixed(1) + 'px', width: '520px', height: NUM + 'px' } })
+      const odo = odometer(numBox, { size: NUM, color: c.sr.color, maxInt: 3, maxDp: Math.max(0, c.tpl.dp) })
+      if (lit) style(numBox, { filter: `drop-shadow(0 0 14px ${rgba(c.sr.color, 0.55)})` })
+      root.append(numBox)
+      let sub = null
+      if (c.sub) {
+        sub = h('div', { class: 'cr-hk-sub', html: richUI(c.sub), style: { left: (cx - 200).toFixed(1) + 'px', width: '400px', top: P.h + 10 + 'px' } })
+        root.append(sub)
+      }
+      // the name fits the bar (one size for every column: the smallest that any name needs, >= 40 px)
+      return { c, lit, cx, hgt, bar, name, numBox, odo, sub }
+    })
+    const nameW = Math.max(...cols.map(o => { style(o.bar, { top: '0px', height: '200px' }); return o.name.firstChild.offsetWidth }))
+    if (nameW > BW - 24) {
+      const px = Math.max(40, Math.floor((60 * (BW - 24)) / nameW))
+      for (const o of cols) style(o.name, { fontSize: px + 'px' })
+    }
+    // "≈ 2 to 1": a dashed rule from the shortest column's top across the tallest. Where it crosses a lit bar it is set
+    // in stage ink (6 px dashes, the gaps in the bar's own colour): a white rule on a neon bar vanishes exactly where it
+    // shows "half". hook.ratioTag ("≈ ×2", a display string) slams into the tallest column's part above the rule
+    let ratio = null, ratioTag = null
+    if (HK.ratioT != null && cols.length > 1) {
+      const lo2 = cols.reduce((a, b) => (b.hgt < a.hgt ? b : a)), hi2 = cols.reduce((a, b) => (b.hgt > a.hgt ? b : a))
+      const x0 = Math.min(lo2.cx, hi2.cx) - BW / 2 - 14, x1 = Math.max(lo2.cx, hi2.cx) + BW / 2 + 14
+      ratio = h('div', { class: 'cr-hk-ratio', 'data-deco': '', style: { left: x0.toFixed(1) + 'px', width: (x1 - x0).toFixed(1) + 'px', top: (P.h - lo2.hgt - 2).toFixed(1) + 'px' } })
+      if (hi2.lit) {
+        const ink = h('div', { class: 'cr-hk-ink', 'data-deco': '', style: { left: (hi2.cx - BW / 2 - x0).toFixed(1) + 'px', width: BW + 'px' } })
+        style(ink, { background: `repeating-linear-gradient(90deg, ${C.stage} 0 18px, ${hi2.c.sr.color} 18px 30px)` })
+        ratio.append(ink)
+      }
+      root.append(ratio)
+      if (HK.ratioTag) {
+        const FS = 72
+        ratioTag = h('div', { class: 'cr-hk-tag', html: `<span>${rich(HK.ratioTag)}</span>`, style: { color: hi2.lit ? C.stage : C.white } })
+        root.append(ratioTag)
+        // the caps (0.02-0.89 em) centred between the column's top and the rule; fitted to the bar
+        const tw = ratioTag.offsetWidth
+        const fs = tw > BW - 32 ? Math.max(42, Math.floor((FS * (BW - 32)) / tw)) : FS
+        if (fs !== FS) style(ratioTag, { fontSize: fs + 'px' })
+        const cy = P.h - (hi2.hgt + lo2.hgt) / 2
+        style(ratioTag, { left: (hi2.cx - ratioTag.offsetWidth / 2).toFixed(1) + 'px', top: (cy - 0.455 * fs).toFixed(1) + 'px', display: 'none' })
+      }
+    }
+    hook = { cols, ratio, ratioTag, ask: askEl, NUM }
   }
 
   // the tip labels go back on top of the axis and stake text (they were built first, to size the lane)
@@ -515,12 +730,25 @@ export default function chartRace(spec, ctx) {
     style(el, { display: 'none' })
     tags.set(sr, { el, w: tw })
   }
+  // lookOpts.stakeTag: a grey caps tag beside the stake while the hero shows it ("EACH $10,000": the same stake in
+  // every racer), in the slot the leader's name takes once the race runs
+  let stakeTag = null
+  if (stakeTok && stakeMode && lo.stakeTag) {
+    const el = h('div', { class: 'cr-tag', html: `<span>${richUI(String(lo.stakeTag))}</span>`, style: { color: C.grey } })
+    stage.append(el)
+    const w = Math.ceil(el.offsetWidth) + 2
+    hero.el.append(el)
+    style(el, { height: L.hero.h + 'px', width: w + 'px', display: 'flex' })
+    fitText(el, w, { maxH: L.hero.h - 8, minPx: 42 })
+    style(el, { display: 'none' })
+    stakeTag = { el, w }
+  }
   {
     // one hero size for the whole video: the widest group (tag + number) fits the 960 px row at its biggest bump
     const room = L.hero.w / 1.14
     let f = 1
     const fit = (fn, sp) => { fn(); const ow = hero.odo.el.offsetWidth; if (ow + sp > room) f = Math.min(f, (room - sp) / ow) }
-    if (stakeTok) fit(() => hero.show(stakeTok), 0)
+    if (stakeTok) fit(() => hero.show(stakeTok), stakeTag ? stakeTag.w + TAGGAP : 0)
     for (const sr of racers) {
       const sp = tags.get(sr).w + TAGGAP
       const mx = Math.max(...sr.points.map(p => p[1]))
@@ -582,32 +810,7 @@ export default function chartRace(spec, ctx) {
   // ---------- footer + lookOpts.footerSteps: drawn here (body.footer = false), so that a racer's name in a working
   // line ("Gold ≈ 3.9 doublings · S&P 500 ≈ 2.9") is set in its line colour (colour only: the fitted width holds)
   const foot = footerSteps(stage, spec, L)
-  if (foot && foot.steps) {
-    const reEsc = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-    const names = racers.map(sr => ({ n: bare(nameOf(sr)).trim(), col: sr.color })).filter(x => x.n).sort((a, b) => b.n.length - a.n.length)
-    const re = names.length ? new RegExp(`(?<![\\w&])(${names.map(x => reEsc(x.n)).join('|')})(?![\\w])`, 'g') : null
-    for (const st of foot.steps) {
-      if (!re || !st.el) continue
-      const walker = document.createTreeWalker(st.el, NodeFilter.SHOW_TEXT)
-      const nodes = []
-      while (walker.nextNode()) nodes.push(walker.currentNode)
-      for (const node of nodes) {
-        const txt = node.textContent
-        re.lastIndex = 0
-        if (!re.test(txt)) continue
-        const frag = document.createDocumentFragment()
-        let i = 0
-        txt.replace(re, (m, g, at) => {
-          if (at > i) frag.append(txt.slice(i, at))
-          frag.append(h('span', { class: 'cr-fname', style: { color: names.find(x => x.n === m).col } }, m))
-          i = at + m.length
-          return m
-        })
-        if (i < txt.length) frag.append(txt.slice(i))
-        node.replaceWith(frag)
-      }
-    }
-  }
+  if (foot && foot.steps) for (const st of foot.steps) if (st.el) paintNames(st.el)
 
   // ---------- sound: whoosh at the start, a tick per flag (thud per label cut), swipe on a pass, riser → hit ----------
   const cue = (t, kind, o) => { if (t >= 0) ctx.cue(t, kind, o) }
@@ -619,16 +822,26 @@ export default function chartRace(spec, ctx) {
   if (riseDur > 0.6) cue(TW - riseDur, 'riser', { dur: riseDur, gain: 0.4 })
   cue(TW, 'hit', { gain: 0.85 })
   cue(TW + 0.06, 'cash', { gain: 0.5 })
-  if (TW > TF + 0.05) cue(TF, 'pop', { gain: 0.6 })            // staggered: the tips (and the first reveal) land
+  // staggered: the tips (and the first reveal) land; not when every racer is held back or a late reveal
+  if (TW > TF + 0.05 && racers.some(r => !held(r) && !late(r))) cue(TF, 'pop', { gain: 0.6 })
   if (HB && HB.tH > 0.05 && HB.tH < R1) cue(HB.tH, 'swipe', { gain: 0.4 })   // the held series stops: the hero cuts over
   rungs.forEach(r => cue(r.t, 'tick', { gain: 0.5 }))
+  if (follow) cue(HB.t0, 'swipe', { gain: 0.45 })             // the hero cuts to the held series' last leg
+  for (const r of racers) if (r !== winner && !held(r) && revealT(r) > R1 + 1e-6) cue(revealT(r), 'pop', { gain: 0.55 })   // a later reveal: a hard cut
+  for (const st of heroSteps) cue(st.t, 'swipe', { gain: 0.4 })
+  for (const b of tipBeats) cue(b.t, 'pop', { gain: 0.3 })
+  if (HK) {
+    if (HK.ratioT != null) cue(HK.ratioT, 'tick', { gain: 0.55 })
+    if (HK.litT != null) cue(HK.litT, 'pop', { gain: 0.4 })
+    cue(HK.r0, 'roll', { dur: HOOK_RW - HOOK_IN, gain: 0.35 })   // the rewind: counters and the clock roll back
+  }
 
   const duration = durationOf(spec, TEND, d.hold ?? M.hold)
   const yearRect = { x: 0, y: 0, w: 0, h: 0 }
   {
     yearOdo.set(Math.floor(X.to + 1e-6), yearTpl)
     yearRect.w = yearBox.offsetWidth; yearRect.h = YS * 0.88
-    yearRect.x = 12; yearRect.y = 0
+    yearRect.x = 12; yearRect.y = yearDY
   }
   const hit = (a, b) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y
 
@@ -641,12 +854,31 @@ export default function chartRace(spec, ctx) {
     const r1 = endOf(sr), tf = landOf(sr)
     if (t >= r1 && sr.finalTpl) {
       if (t >= tf) return { disp: sr.final }
-      v = lerp(lastV(sr), sr.finalTpl.value * sr.finalTpl.scale, ease.out(prog(t, r1, tf - r1)))
+      // (a late reveal holds its exact close; the others roll their last digits onto the final)
+      v = late(sr) ? lastV(sr) : lerp(lastV(sr), sr.finalTpl.value * sr.finalTpl.scale, ease.out(prog(t, r1, tf - r1)))
     }
     const tpl = tplAt(v)
     return { v: snapT(v, tpl), tpl }
   }
   const showOn = (odo, c) => (c.disp ? odo.show(c.disp) : odo.set(c.v, c.tpl))
+
+  // who the hero shows at t, and its counter: stake → leader (a hard cut on a pass) → the finals
+  function heroPick(t) {
+    const done = t >= R1
+    let hsr = null, c
+    if (HB && t >= HB.tH && t < HB.t1) {
+      // the held-back series has stopped: the hero follows the rivals still racing, then their finals; with
+      // holdBack.follow it rides the held series' own last leg
+      hsr = follow && t >= HB.t0 ? HB.sr
+        : (done && heroAfter(t)) || racers.filter(r => r !== HB.sr).reduce((a, b) => (vAt(b, xOf(b, t)) > vAt(a, xOf(a, t)) ? b : a))
+      c = counter(hsr, t, xOf(hsr, t))
+    } else if (done) { hsr = heroAfter(t) || leaderAt(t); c = counter(hsr, t, xOf(hsr, t)) }
+    else if (stakeMode && t <= R0) c = stakeTok ? { disp: stakeTok } : { v: starts[0], tpl: tplAt(starts[0]) }
+    else { hsr = leaderAt(t); c = counter(hsr, t, xOf(hsr, t)) }
+    return { hsr, c }
+  }
+  // (a rival still racing while a held series waits is either revealed at the finish, landing with the tips, or a
+  // late reveal that holds its exact close until its own finalT: nothing lands in the hero at TF in between)
 
   // ---------- tip-label placement ----------
   // A tip label must never sit on a line, on a tip or on another label, and it must not flicker. Where it goes is
@@ -831,8 +1063,12 @@ export default function chartRace(spec, ctx) {
       const ph = phAt(t), YBt = ph - 4
       const py = pyFor(ymax, ph)
       const done = t >= R1
+      const ra = raceA(t)
+      if (HK) for (const g of [gGrid, gStake, gRung, gRule, gLine, gTip]) attr(g, 'opacity', ra.toFixed(3))
       // ---- the plot box (compresses before a boxed verdict) ----
       attr(baseLine, 'y1', ph.toFixed(1)); attr(baseLine, 'y2', ph.toFixed(1))
+      // under a hook the floor spans the whole plot (the columns stand on it); it draws back to the data over the rewind
+      if (HK) attr(baseLine, 'x2', lerp(P.w, DW, ease.inOut(prog(t, HK.r0, HOOK_RW - HOOK_IN))).toFixed(1))
       for (const tk of xTicks) style(tk.lab, { top: (ph + 12).toFixed(1) + 'px' })
       for (const lt of logTicks) {
         const yy = py(lt.v)
@@ -848,7 +1084,8 @@ export default function chartRace(spec, ctx) {
           const v = Y.min + step * (k + 1)
           const on = v < ymax * 0.97 && rg < 1
           attr(g.line, 'opacity', on ? (1 - rg).toFixed(3) : '0')
-          style(g.lab, { display: on ? 'block' : 'none', opacity: (1 - rg).toFixed(3) })
+          style(g.lab, { display: on ? 'block' : 'none', opacity: (HK ? (1 - rg) * ra : 1 - rg).toFixed(3) })
+          g.yy = on ? py(v) : null
           // a hidden grid line parks at one fixed state (the DOM at t never depends on the frame before)
           if (!on) { attr(g.line, 'y1', '0'); attr(g.line, 'y2', '0'); setText(g.lab, ''); style(g.lab, { top: '0px' }); return }
           const yy = py(v)
@@ -859,18 +1096,61 @@ export default function chartRace(spec, ctx) {
       }
       // (top-down: a rung label with no room under the one above it stays unlabelled, its rung still drawn)
       let lastTop = -Infinity
+      const earlyY = []
       for (let k = rungs.length - 1; k >= 0; k--) {
         const r = rungs[k]
         const yy = py(r.v), p = ease.out(prog(t, r.t, 0.3))
         const vis = t >= r.t && yy >= 0
         attr(r.line, 'opacity', vis ? '0.6' : '0')
-        attr(r.line, 'y1', yy.toFixed(1)); attr(r.line, 'y2', yy.toFixed(1)); attr(r.line, 'x2', (DW * p).toFixed(1))
+        // (a timed rung ends at the race's current x: it never runs on past the tips, under a tip label)
+        attr(r.line, 'y1', yy.toFixed(1)); attr(r.line, 'y2', yy.toFixed(1)); attr(r.line, 'x2', (r.own != null ? Math.min(DW * p, pxOf(x)) : DW * p).toFixed(1))
         const room = vis && yy - 20 >= lastTop + 46
         if (room) lastTop = yy - 20
         style(r.lab, { display: room ? 'block' : 'none', top: (yy - 20).toFixed(1) + 'px', opacity: p.toFixed(3) })
+        if (r.own != null && room) earlyY.push(yy)
       }
-      for (const tk of xTicks) style(tk.lab, { opacity: tk.xv <= x + 1e-6 ? '1' : '0.4' })
-      yearOdo.set(yearV(x), yearTpl)
+      // a timed rung's label sits in the axis margin over the live (or fading) grid: a grid label it would touch gives way
+      if (rungs.some(r => r.own != null)) for (const g of grid) style(g.lab, { visibility: g.yy != null && earlyY.some(y => Math.abs(y - g.yy) < 42) ? 'hidden' : 'visible' })
+      for (const tk of xTicks) style(tk.lab, { opacity: HK ? ((tk.xv <= x + 1e-6 ? 1 : 0.4) * ra).toFixed(3) : tk.xv <= x + 1e-6 ? '1' : '0.4' })
+      // under a hook the clock holds the claim's year and rolls back to the start over the rewind
+      yearOdo.set(HK && t < HK.until ? lerp(HK.year, yearV(x), ease.inOut(prog(t, HK.r0, HOOK_RW - HOOK_IN))) : yearV(x), yearTpl)
+
+      // ---- the hook: the duel of columns, then the rewind ----
+      if (hook) {
+        const tOut = HK.until - HOOK_IN                       // the columns are gone before the race fades in
+        const p = prog(t, HK.r0, tOut - HK.r0)
+        const on = t < tOut
+        const fade = (1 - prog(t, tOut - 0.15, 0.15)).toFixed(3)
+        // the rewind: each bar and its counter drain on one curve (a number never reads half while its bar is full)
+        const dq = ease.inOut(p)
+        for (const o of hook.cols) {
+          const hh = o.hgt * (1 - dq)
+          // the lit column lands its beat (lookOpts.hook.litT): a bump and a glow flare
+          const lb = o.lit && HK.litT != null ? bump(t, HK.litT, { amp: 0.08, dur: 0.45 }) : 1
+          style(o.bar, { display: on ? 'block' : 'none', top: (P.h - hh).toFixed(1) + 'px', height: hh.toFixed(1) + 'px', opacity: fade })
+          // the name (at the bar's foot) fades as its bar gets too short to hold it
+          style(o.name, { opacity: clamp((hh - 84) / 56).toFixed(3) })
+          // (near the floor the numbers stand side by side: they shrink with the drain and fade over its second half,
+          // so they never touch; scaled from the bar's top, where they stand)
+          const nf = (+fade * (1 - prog(dq, 0.5, 0.4))).toFixed(3)
+          const ns = lb * (1 - 0.4 * dq)
+          style(o.numBox, { display: on ? 'flex' : 'none', top: (P.h - hh - hook.NUM - 16).toFixed(1) + 'px', opacity: nf, transformOrigin: '50% 100%', transform: ns !== 1 ? `scale(${ns.toFixed(4)})` : 'none' })
+          if (p <= 0) o.odo.show(o.c.disp)
+          else o.odo.set(Math.abs(o.c.v) * (1 - dq), o.c.tpl)
+          if (o.sub) style(o.sub, { display: on ? 'block' : 'none', opacity: (1 - dq).toFixed(3) })
+        }
+        if (hook.ratio) {
+          const q = ease.out(prog(t, HK.ratioT, 0.3))
+          style(hook.ratio, { display: on && t >= HK.ratioT ? 'block' : 'none', transform: `scaleX(${q.toFixed(4)})`, opacity: (1 - prog(t, HK.r0, 0.15)).toFixed(3) })
+        }
+        if (hook.ratioTag) {
+          // "≈ ×2" slams in as the rule lands (ratioT); it clears with the rule as the rewind starts
+          const k = slam(t, HK.ratioT, { from: 1.16 })
+          const vis = on && t >= HK.ratioT && t < HK.r0 + 0.15
+          style(hook.ratioTag, { display: vis ? 'block' : 'none', opacity: (k.o * (1 - prog(t, HK.r0, 0.15))).toFixed(3), transform: `scale(${k.s.toFixed(4)})` })
+        }
+        if (hook.ask) style(hook.ask, { display: t < HK.r0 ? 'block' : 'none' })
+      }
 
       // ---- events ----
       for (const ev of evEls) {
@@ -913,11 +1193,14 @@ export default function chartRace(spec, ctx) {
         for (const c of [o.halo, o.dot, o.core]) { attr(c, 'cx', tx.toFixed(1)); attr(c, 'cy', ty.toFixed(1)); attr(c, 'visibility', started ? 'visible' : 'hidden') }
         // a held-back tip breathes while it waits for its last leg
         const wait = held(o.sr) && t >= HB.tH && t < HB.t0 ? 0.5 - 0.5 * Math.cos((2 * Math.PI * (t - HB.tH)) / 1.3) : 0
-        attr(o.halo, 'r', (26 + 48 * win + 10 * wait).toFixed(1))
-        attr(o.halo, 'opacity', (0.28 + 0.18 * win + 0.16 * wait).toFixed(3))
+        let beat = 0
+        for (const b of tipBeats) if (b.sr === o.sr) beat = Math.max(beat, flashAt(t, b.t, 0.6))
+        attr(o.halo, 'r', (26 + 48 * win + 10 * wait + 30 * beat).toFixed(1))
+        attr(o.halo, 'opacity', (0.28 + 0.18 * win + 0.16 * wait + 0.2 * beat).toFixed(3))
         const c = counter(o.sr, t, xs)
         showOn(o.odo, c)
-        style(o.lab, { display: started ? 'flex' : 'none' })
+        style(o.lab, { display: started && ra > 0 ? 'flex' : 'none' })
+        if (HK) style(o.lab, { opacity: ra.toFixed(3) })
         return { o, tx, ty, started, c, poly: started ? poly : [] }
       })
 
@@ -935,7 +1218,8 @@ export default function chartRace(spec, ctx) {
       separate(items, YBt)
       const rects = []
       for (const it of items) {
-        const lb = bump(t, landOf(it.tp.o.sr), { amp: 0.08, dur: 0.4 })
+        let lb = bump(t, landOf(it.tp.o.sr), { amp: 0.08, dur: 0.4 })
+        for (const b of tipBeats) if (b.sr === it.tp.o.sr) lb *= bump(t, b.t, { amp: 0.1, dur: 0.45 })
         const right = it.x + it.w / 2 > it.tp.tx            // scale away from the tip, never over it
         style(it.tp.o.lab, {
           left: it.x.toFixed(1) + 'px', top: it.y.toFixed(1) + 'px',
@@ -978,30 +1262,28 @@ export default function chartRace(spec, ctx) {
             for (let i = 2; i < a.length && !near; i += 2) near = clipLen(a[i - 2], a[i - 1], a[i], a[i + 1], r.x - 24, r.y - 24, r.x + r.w + 24, r.y + r.h + 24) > 0
           }
           const hidden = sy < 46 || near || rects.some(q => hit(q, r)) || hit(yearRect, r)
-          style(stakeLab, { left: r.x.toFixed(1) + 'px', top: r.y.toFixed(1) + 'px', display: hidden ? 'none' : 'block' })
+          style(stakeLab, { left: r.x.toFixed(1) + 'px', top: r.y.toFixed(1) + 'px', display: hidden || ra <= 0 ? 'none' : 'block' })
+          if (HK) style(stakeLab, { opacity: ra.toFixed(3) })
         }
       }
 
       // ---- hero: stake → leader (hard cut on a pass) → the winner's final ----
-      let hsr = null, c
-      if (HB && t >= HB.tH && t < HB.t1) {
-        // the held-back series has stopped: the hero follows the rivals still racing, then their finals
-        hsr = (done && heroAfter(t)) || racers.filter(r => r !== HB.sr).reduce((a, b) => (vAt(b, xOf(b, t)) > vAt(a, xOf(a, t)) ? b : a))
-        c = counter(hsr, t, xOf(hsr, t))
-      } else if (done) { hsr = heroAfter(t) || leaderAt(t); c = counter(hsr, t, xOf(hsr, t)) }
-      else if (stakeMode && t <= R0) c = stakeTok ? { disp: stakeTok } : { v: starts[0], tpl: tplAt(starts[0]) }
-      else { hsr = leaderAt(t); c = counter(hsr, t, xOf(hsr, t)) }
+      const { hsr, c } = heroPick(t)
       showOn(hero, c)
       const hcol = hsr ? hsr.color : C.green
       style(hero.odo.el, { color: hcol })
       style(hero.glow, { filter: glowFor(hcol) })
       for (const [sr, tg] of tags) style(tg.el, { display: sr === hsr ? 'flex' : 'none' })
-      const tg = hsr ? tags.get(hsr) : null
+      const stakeOn = !hsr && !!stakeTag && c.disp === stakeTok
+      if (stakeTag) style(stakeTag.el, { display: stakeOn ? 'flex' : 'none' })
+      const tg = hsr ? tags.get(hsr) : stakeOn ? stakeTag : null
       const space = tg ? tg.w + TAGGAP : 0
       style(hero.glow, { paddingLeft: space + 'px' })
       if (tg) style(tg.el, { left: (L.hero.w / 2 - (hero.odo.el.offsetWidth + space) / 2).toFixed(1) + 'px' })
       let sc = 1, glow = 0, fl = 0
       if (HB && HB.tH < R1) sc *= bump(t, HB.tH, { amp: 0.05 })   // the cut to the rivals still racing
+      if (follow) sc *= bump(t, HB.t0, { amp: 0.05 })             // the cut to the held series' last leg
+      for (const st of heroSteps) sc *= bump(t, st.t, { amp: 0.06 })
       for (const sg of changes) {
         sc *= bump(t, sg.t, { amp: 0.06 })
         if (t >= sg.t) glow = Math.max(glow, 0.5 * (1 - ease.out(prog(t, sg.t, 0.5))))
@@ -1018,6 +1300,8 @@ export default function chartRace(spec, ctx) {
       style(hero.el, { transform: `scale(${sc.toFixed(4)})` })
       style(hero.glow, { '--glow': (16 + 30 * glow).toFixed(1) + 'px', '--glowA': (0.38 + 0.45 * glow).toFixed(3) })
       flash.set(fl)
+      // lookOpts.emColor as an array: the verdict's ** runs take its colours in order
+      if (emList) stage.querySelectorAll('.sb-verdict-text em').forEach((e, k) => style(e, { color: emList[Math.min(k, emList.length - 1)] }))
 
       // ---- label stack (captions off) ----
       if (labels) {

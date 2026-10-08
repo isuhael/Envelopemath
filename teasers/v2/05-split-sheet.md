@@ -1,9 +1,9 @@
 # 05 · Split sheet: three teasers
 
 **Format:** `split-sheet` (rank 5 in [`../../research/v2/04-formats.md`](../../research/v2/04-formats.md), hook pattern **P9**)
-**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews), hook pass 1 on 2026-10-08 (05b and 05c kept), **hook pass 2 on 2026-10-08 (05b and 05c rewritten: rewrite A adopted for both)**, then the assembly pass on 2026-10-08 (the three teasers fitted, rendered and fixed frame by frame; no figure changed), then the **QA fix pass on 2026-10-08** (05a retimed to 24.7 s with a big verdict lockup; 05b's header answer slot, needs bracket and retime; 05c's landings put on the spoken numbers, the hero tagged and rolled to ≈ $3.93 at the verdict). 05a was in neither hook pass. What changed and why is in the "Review log" at the end.
+**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews), hook pass 1 on 2026-10-08 (05b and 05c kept), **hook pass 2 on 2026-10-08 (05b and 05c rewritten: rewrite A adopted for both)**, then the assembly pass on 2026-10-08 (the three teasers fitted, rendered and fixed frame by frame; no figure changed), then the **QA fix pass on 2026-10-08** (05a retimed to 24.7 s with a big verdict lockup; 05b's header answer slot, needs bracket and retime; 05c's landings put on the spoken numbers, the hero tagged and rolled to ≈ $3.93 at the verdict), then the **port to Becker Rig on 2026-10-08** (the owner kept Scoreboard and Becker Rig and retired Clean Sheet, so 05a moved to Becker Rig: same hook, numbers, VO lines and verdict, restaged with the figure carving the $10 slab; its Clean Sheet spec is in `studio/specs/retired/`), then the **QA fix pass on the Becker Rig port on 2026-10-08** (05a: the climax is one beat, a "PROFIT ≈ $1.29" payoff slab bookends the "YOUR ORDER $10.00" slab, the slab's remainder carries the "$7.04?" guess, the lanes end as a bar chart of the $10, and the footer is one line; no number, VO line or verdict changed). 05a was in neither hook pass. What changed and why is in the "Review log" at the end.
 **Specs:**
-- [`studio/specs/05a-clean-sheet-chipotle-10.json`](../../studio/specs/05a-clean-sheet-chipotle-10.json) (24.7 s)
+- [`studio/specs/05a-becker-rig-chipotle-10.json`](../../studio/specs/05a-becker-rig-chipotle-10.json) (24.7 s; Becker Rig since the port, was [`05a-clean-sheet-chipotle-10.json`](../../studio/specs/retired/05a-clean-sheet-chipotle-10.json))
 - [`studio/specs/05b-becker-rig-3000-paycheck.json`](../../studio/specs/05b-becker-rig-3000-paycheck.json) (22.1 s; the file stem keeps "3000-paycheck", the $3,000 take-home on the slab, so links stay valid)
 - [`studio/specs/05c-scoreboard-costco-100.json`](../../studio/specs/05c-scoreboard-costco-100.json) (22.8 s)
 
@@ -11,16 +11,16 @@
 - "≈" sits on every rounded amount and on no exact one, **on screen and in the VO text** (captions are on, so the VO is on screen too).
 - The shown parts add up to the total with no plug.
 - The contract shape, and hook rules R1, R2, R8 and R10.
-- Timing: VO at 2.6 words/s ("≈" counts as a spoken word, "about"), no overlapping lines, and every beat, look option and sfx anchored to the word that voices it. A beat may land up to 0.8 s before the spoken number and 0.2 s after it. 05a's wrong guess is checked as a frame-1 element that the first VO line voices; 05a's check line is a silent beat between the profit landing and the verdict.
+- Timing: VO at 2.6 words/s ("≈" counts as a spoken word, "about"), no overlapping lines, and every beat, look option and sfx anchored to the word that voices it. A beat may land up to 0.8 s before the spoken number and 0.2 s after it. 05a's wrong guess is checked as a frame-1 element that the first VO line voices (since the Becker Rig port, the ghost in the header's answer slot); 05a's check line is a silent beat between the profit landing and the verdict.
 - **Landing, not just the cut (fix pass, 05c):** the scoreboard kit rolls a number in after its cut, so the script recomputes each row's landing the way the kit does (cut + 0.18 s + roll, `lookOpts.rolls`) and the verdict hero's (t + 0.04 + 1.1 s), and holds each landing to the spoken number (from 0.15 s before it starts to 0.15 s after it ends). Each footer working must land with its row, and the hero's LEFT counter must roll with the row it subtracts. 05b's check line may lead its VO line by up to 0.6 s.
 - The masked percentage (`lookOpts.maskPct`) sits only on the goal row (05a), or on every row (05c since hook pass 2, so no cart dollar is printed at frame 1); the goal row is always masked.
 - The header's one dollar figure is the input the viewer holds up against their own: the total, or 05b's rent (whose row repeats it and is exempt from "no result in the header"). 05b's bricks must be whole (share × 10), or the kit drops them.
 - Labels that carry a fact: 05a's tax row must say it is net of interest; 05c's header and verdict must not say "keep", "before tax" must be on screen when ≈ $1.94 lands, and the membership row must be on the sheet at frame 1.
-- Assembly pass: 05a's two hook nudges must land on the spoken "$10" and "$7.04", each row must activate as its VO line names it (and before its amount lands), and the struck guess must stay on the check line until the check replaces it; 05b's closing payoff slab must read the header's answer in its unit ("$10 a day") and land on the spoken "$10"; 05c's return to the membership row must sit on the start of the line that names it.
+- Assembly pass: 05a's two hook nudges must land on the spoken "$10" and "$7.04", each row must activate as its VO line names it (and before its amount lands), and the struck guess must stay up until the right answer replaces it (since the port: in the header slot, struck on "Not even close" by his stomp, replaced on the verdict's "Not $7.04"; every scripted figure beat sits on the word it acts out; since the Becker Rig QA pass, the slab's "$7.04?" label must be the slot's guess and appear once food has dropped, the PROFIT payoff slab must be the profit row's label and amount and stamp with it, and the silent check must be fully in 0.1 s before the verdict, by the kit's carve timing); 05b's closing payoff slab must read the header's answer in its unit ("$10 a day") and land on the spoken "$10"; 05c's return to the membership row must sit on the start of the line that names it.
 - Fact identities and the robustness of each verdict.
 
-Result: **531 checks, 0 failures, exit 0** (after the QA fix pass; 512 after the assembly pass, 494 after hook pass 2, 481 before). The fix pass's in-memory mutation test caught **12 of 12**: the pre-fix 05c spec, 05c with the kit's default rolls (rows land late), footer step 3 back at the cut, a $3.94 hero, the LEFT counter rolling with row 3, a bare "$3.93" caption, 05b's slot filling late, "= 4 bricks", a "$11" slot, 05a's check after the verdict, 05a's row 1 lit at frame 1, and "$7.40" in 05a's verdict. In the round-2 mutation test, eight broken copies each failed with exit 1: a missing "≈" in a caption, "≈" on an exact $10, "Costco keeps" back in the verdict, the row label back to "Income tax", the wrong guess moved off frame 1, the mask on a non-goal row, the hero landing on ≈ $1.94 early, and "before tax" dropped from footer step 3. Hook pass 2's in-memory mutation test of the new 05b and 05c specs caught **10 of 10** (food row $310, "$11 a day" in a VO line, the rent landing off "four", $3,000 back in the 05b header, 8 bricks, 05c masking only the goal row, the membership row moved off frame 1, "Costco keeps" in the verdict, $11,686M in footer step 5, a bare "$1.94" in a caption).
-**Studio linter:** `node src/cli.mjs check specs/05*.json` gives **3/3 clean, 0 errors, 0 warnings** after the fix pass (the assembly pass removed hook pass 2's one warning, 05b's "=" at 38.7 px mid-pop at 14.5 s: the check tokens now pop from at least 41 px). (Round-2 note: the four kit samples for split-sheet in clean-sheet and scoreboard are also clean, and `node --test` passes 6/6). All three kits now implement `split-sheet`; renders of every beat were inspected for this revision.
+Result: **554 checks, 0 failures, exit 0** (after the Becker Rig QA fix pass of 05a; 544 after the port, 531 after the QA fix pass, 512 after the assembly pass, 494 after hook pass 2, 481 before). The Becker Rig QA pass's in-memory mutation test caught **11 of 11**, and the port's caught **12 of 12** (both listed in their Review log entries). The fix pass's in-memory mutation test caught **12 of 12**: the pre-fix 05c spec, 05c with the kit's default rolls (rows land late), footer step 3 back at the cut, a $3.94 hero, the LEFT counter rolling with row 3, a bare "$3.93" caption, 05b's slot filling late, "= 4 bricks", a "$11" slot, 05a's check after the verdict, 05a's row 1 lit at frame 1, and "$7.40" in 05a's verdict. In the round-2 mutation test, eight broken copies each failed with exit 1: a missing "≈" in a caption, "≈" on an exact $10, "Costco keeps" back in the verdict, the row label back to "Income tax", the wrong guess moved off frame 1, the mask on a non-goal row, the hero landing on ≈ $1.94 early, and "before tax" dropped from footer step 3. Hook pass 2's in-memory mutation test of the new 05b and 05c specs caught **10 of 10** (food row $310, "$11 a day" in a VO line, the rent landing off "four", $3,000 back in the 05b header, 8 bricks, 05c masking only the goal row, the membership row moved off frame 1, "Costco keeps" in the verdict, $11,686M in footer step 5, a bare "$1.94" in a caption).
+**Studio linter:** `node src/cli.mjs check specs/05*.json` gives **3/3 clean, 0 errors, 0 warnings** after the fix pass, and again after the Becker Rig port and its QA fix pass (05a also clean at a 0.05 s step) (the assembly pass removed hook pass 2's one warning, 05b's "=" at 38.7 px mid-pop at 14.5 s: the check tokens now pop from at least 41 px). (Round-2 note: the four kit samples for split-sheet in clean-sheet and scoreboard are also clean, and `node --test` passes 6/6). All three kits now implement `split-sheet`; renders of every beat were inspected for this revision.
 **Web searches used:** 12 in round 1 + 4 in this revision (see the search log). The egress proxy blocks page fetches (eia.gov in round 1, sec.gov again today), so every figure rests on the search engine's result text for the named primary page. Each figure is cross-checked against a second, independent source or an accounting identity (see each Sources table).
 
 **One topic changed: 05c.** The seed was "Where your $100 of gasoline goes" (EIA price components). It could not be verified:
@@ -58,15 +58,15 @@ Following the brief ("if a figure can't be verified, choose a topic that doesn't
 
 | | 05a | 05b | 05c |
 |---|---|---|---|
-| Look | Clean Sheet | Becker Rig | Scoreboard |
+| Look | Becker Rig (ported from Clean Sheet, 2026-10-08) | Becker Rig | Scoreboard |
 | Round sum | $10 at Chipotle | $3,000 a month after tax, with $1,200 rent | $100 at Costco |
 | Parts | 7 (food · crew · rent · ads/delivery/fees · HQ/wear/new stores · tax − interest earned · profit) | 4 bins in $300 bricks (rent 4 · food + every bill 1 · wants 3 · savings 2) | 3 (goods · staff & warehouses · left from your cart) + the membership-fee row |
 | On-screen hook (t = 0) | What You're Really Paying For / When You Spend **$10** / at Chipotle: | Rent **$1,200** on 50/30/20? / Food and every bill get / this much a day: | IS COSTCO'S PROFIT / ALL MEMBERSHIP FEES? / FOLLOW YOUR **$100** CART: |
 | Words in hook | 11 | 13 | 10 |
-| Number at 0.0 s | $10 (header) · $10.00 total · six percentages (profit "?") · the coral wrong guess "$10 − $2.96 = $7.04 profit?" (row 1 lights at 0.4 s, so these two are frame 1's only loud figures) | $1,200 (header) · the header's dashed answer slot "$?" · $3,000 (slab) · RENT 40% / FOOD + BILLS 10% / WANTS 30% / SAVINGS 20% | $100 (header) · hero "$100.00" · one solid "$100.00" bar · membership fees ≈ $1.99 per $100 of sales (landed) · three cart rows all "?" |
+| Number at 0.0 s | $10 (header) · the wrong guess "$7.04 profit?" in red in the header's answer slot · $10.00 (slab) · six percentages (profit "?"; labels dim, row 1 lights at 0.4 s, so the guess and the slab are frame 1's only loud figures) | $1,200 (header) · the header's dashed answer slot "$?" · $3,000 (slab) · RENT 40% / FOOD + BILLS 10% / WANTS 30% / SAVINGS 20% | $100 (header) · hero "$100.00" · one solid "$100.00" bar · membership fees ≈ $1.99 per $100 of sales (landed) · three cart rows all "?" |
 | First payoff | ≈ $2.96 at 0.8 s | $3,000 ÷ 10 = $300, 10 bricks, at 1.2 s | ≈ $88.91 lands at 0.93 s, on the spoken number (cut at 0.25 s; the hero rolls to LEFT ≈ $11.09 with it) |
 | Wrong belief busted | "Chipotle keeps the other $7.04" | "rent under half my take-home is fine under 50/30/20" | "Costco's profit is all membership fees" |
-| Verdict (screen) | Chipotle keeps / **≈ $1.29**, not ~~$7.04~~. (64 px words, ≈ $1.29 at ~90 px on blue, $7.04 struck) | $1,200 rent leaves food and / every bill **$10 a day**. | Not all fees: your cart leaves **≈ $1.94**. / Membership fees: **≈ $1.99**. (the hero rolls to PROFIT PER $100 ≈ $3.93 above it) |
+| Verdict (screen) | Chipotle keeps / **≈ $1.29**, not $7.04. (64 px, green swoosh under ≈ $1.29, $7.04 in red); on the same word the header slot's struck guess is stamped over: "at Chipotle: **≈ $1.29 profit**" | $1,200 rent leaves food and / every bill **$10 a day**. | Not all fees: your cart leaves **≈ $1.94**. / Membership fees: **≈ $1.99**. (the hero rolls to PROFIT PER $100 ≈ $3.93 above it) |
 | Runtime | 24.7 s | 22.1 s | 22.8 s |
 | Closest benchmark hook | H70, 221,830 (+ H84's "Actually", 3M, 140x) | H84, 3M, 140x (run it on your own number) + H04, 9.9M, 106.16x (a unit on screen) + H49, 382,100, 289.1x (small daily verdict) | H31, 578,461 ("NOT EMI" myth-bust) + H18, 1,391,731, 5.91x (yes/no) + H70 |
 
@@ -77,9 +77,9 @@ Following the brief ("if a figure can't be verified, choose a topic that doesn't
 
 ---
 
-## 05a · Clean Sheet · What you're really paying for when you spend $10 at Chipotle
+## 05a · Becker Rig · What you're really paying for when you spend $10 at Chipotle
 
-**Spec:** `studio/specs/05a-clean-sheet-chipotle-10.json` · 24.7 s · captions on
+**Spec:** `studio/specs/05a-becker-rig-chipotle-10.json` · 24.7 s · captions on · **ported from Clean Sheet on 2026-10-08** (hook, numbers, VO and verdict unchanged; the Clean Sheet spec is in `studio/specs/retired/`), then fixed after QA the same day (see "QA fix pass on the Becker Rig port")
 **Platform title:** Chipotle Keeps How Much of Your $10?
 **On-screen hook (header):** What You're Really Paying For / When You Spend **$10** / at Chipotle:
 
@@ -88,21 +88,21 @@ Following the brief ("if a figure can't be verified, choose a topic that doesn't
 **Modelled on:**
 1. **H70, The Market Hustle:** "What You're Buying / When You Invest / $10,000 in These ETFs", **221,830 plays, 617 comments.** We take its exact grammar: a 3-line headline ending in a colon, a round anchor, the full grid at 0.0 s, and a remainder line. "Buying" becomes "Paying For", the old hook #6 rewrite A from the hook bank.
 2. **H84, Master Money:** "4 DEAD SIMPLE NUMBERS / That Tell You What / You Actually Make", **3,000,000 views, 140x.** One word implies the viewer's number is wrong: "Actually" there, "**Really**" here.
-3. **Hook bank §4.6, rewrite B** ("Does Chipotle Really Make $7 on Your $10?"): the wrong answer goes **on screen at frame 1**, "$10 − $2.96 = $7.04 profit?" in coral under the sheet, with the profit row's % masked, so the only profit figure on screen at 0.0 s is the wrong one. The first VO line voices it ("So Chipotle keeps $7.04?") and the second strikes it ("Not even close."). Row 1 lights only at 0.4 s, so frame 1's loud figures are just the $10.00 total and the coral guess.
+3. **Hook bank §4.6, rewrite B** ("Does Chipotle Really Make $7 on Your $10?"): the wrong answer goes **on screen at frame 1**, with the profit row's % masked, so the only profit figure on screen at 0.0 s is the wrong one. Since the Becker Rig port it hangs off the header's colon as its answer, "at Chipotle: ···· **$7.04 profit?**" in red in a red dashed box (on Clean Sheet it was "$10 − $2.96 = $7.04 profit?" in coral under the sheet). The first VO line voices it with its working ("Food: ≈ $2.96 of your $10. So Chipotle keeps $7.04?"). Once the food piece has dropped (0.9 s), the rest of the slab he is standing on carries the same red "$7.04?", so the guess is the object under his feet. The second line strikes it ("Not even close."): the figure stomps on the slab and a red line slams through the guess in both places. Labels are dim until their row is named, so frame 1's loud figures are just the $10.00 slab and the red guess.
 4. **H53, Yannick:** the finished sheet with every row visible at frame 1, **739,347 plays (40.7x med)**; only the dollars fill.
 
 **Rules satisfied:**
-- **R1:** "$10" in the header, "$10.00" as the total, six percentages and the wrong guess on screen at 0.0 s.
+- **R1:** "$10" in the header, the wrong guess in the header's answer slot, "$10.00" on the slab and six percentages on screen at 0.0 s.
 - **R2:** one dollar figure in the header (the input), no result.
 - **R3:** the viewer's own $10 order; the percentages scale to any order.
 - **R4:** a sum they have spent.
-- **R5:** "Really" plus the coral "$7.04 profit?" at frame 1: the belief is named before the scroll decision, then beaten.
+- **R5:** "Really" plus the red "$7.04 profit?" as the header's answer at frame 1: the belief is named before the scroll decision, then struck (5.2 s) and replaced by the real answer (21.2 s).
 - **R6:** "you" + $10.
 - **R7:** every option is named on the sheet; no label hook.
 - **R8:** 11 words.
-- **R9:** seven empty amount cells and a "?" where the profit share should be.
-- **R10:** first dollar at 0.8 s; the payoff is last and biggest: ≈ $1.29 lands 1.3x the size of the other amounts and stays that size, then the verdict sets it at ~90 px.
-- **R11:** the question is on screen (the coral "?"), the verdict is the caption's first line ("Nowhere near $7.").
+- **R9:** seven empty amount slots and empty lanes under the rows, the slab scored at its six cut marks, and a "?" where the profit share should be.
+- **R10:** first dollar at 0.8 s; the payoff is last and loudest. As the profit row lands (20.3 s), a gold "PROFIT ≈ $1.29" slab stamps in at the size of the frame-1 "YOUR ORDER $10.00" slab (68 px figure, the largest number in the working area; hit, burst, shake, camera punch, cash). The silent check is complete by 21.1 s, and at 21.2 s the answer stamps into the header's answer slot ("≈ $1.29 profit", over the struck guess) as the verdict sets it at 64 px with the green swoosh.
+- **R11:** the question is on screen (the red "?"), the verdict is the caption's first line ("Nowhere near $7.").
 - **R12:** "What's left: ≈ $1.29. Not $7.04."
 
 **The wrong belief it plays on:** "A $10 burrito costs them maybe $3 in food, so they pocket about $7." The sheet shows that the food really is ≈ $2.96, and that the five lines between food and profit eat ≈ $5.75 more:
@@ -118,20 +118,23 @@ Profit is ≈ $1.29, and the crew gets almost twice that.
 
 | t (s) | On screen | VO |
 |---|---|---|
-| 0.0 | Page + brand mark. Header (3 lines, **$10** on yellow). Footer (one line): "Chipotle FY2025 10-K average · not your order". Total badge **$10.00**, pointer on it. Seven rows with labels and percentages: Food, drinks & packaging 29.6% · Crew pay 25.1% · Rent 5.2% · Ads, delivery & card fees 14.7% · HQ, wear & tear, new stores 9.1% · Tax − interest earned 3.4% · Profit **?**. Seven empty amount slots, all the same width. Under the sum rule, in coral, already typed: "$10 − $2.96 = **$7.04 profit?**", the naive bottom line right under Profit **?**. Frame 1's only loud figures: the $10.00 and the coral guess | "Food: ≈ $2.96 of your $10. So Chipotle keeps $7.04?" |
-| 0.4 | Row 1 lights: the pointer moves to it and 29.6% turns blue | |
-| 0.8 | Row 1 amount swipes in: **≈ $2.96** (first payoff) | |
-| 2.15 / 4.05 | The hook's two figures nudge as the VO says them (tick): the **$10.00** total re-lights and bumps on "your $10", the coral **$7.04 profit?** bumps on "keeps $7.04?" | |
-| 5.2 / 6.3 | The guess is struck through (buzz) and dims to 55%; it stays on the bottom line, struck, while the real costs fill in, and clears at 20.3 for the check. At 6.3, on "Crew", the pointer moves to row 2 and its % turns blue | "Not even close. Crew pay: ≈ $2.51." |
-| 7.4 | Row 2: **≈ $2.51** | |
-| 8.4 / 9.1 | Row 3 activates on "Rent"; **≈ $0.52** at 9.1 | "Rent: ≈ 52 cents." |
-| 10.1 / 11.9 | Pointer to row 4 as the VO names it; **≈ $1.47** at 11.9 | "Ads, delivery, card fees: ≈ $1.47." |
-| 12.9 / 15.5 | Row 5 activates on "HQ"; **≈ $0.91** at 15.5 | "HQ, wear and tear, new stores: ≈ 91 cents." |
-| 16.5 / 18.3 | Row 6 activates on "Tax"; **≈ $0.34** at 18.3 | "Tax, minus interest earned: ≈ 34 cents." |
-| 19.3 / 20.3 | Row 7 activates on "What's left": its % turns from "?" to **12.9%**, then **≈ $1.29** lands on the blue goal highlighter at **1.3x** the other amounts' size, and stays that size | "What's left: ≈ $1.29. Not $7.04." |
-| 20.8 | Check line types silently on the line the struck guess held: "check: $10 − $8.71 of costs = $1.29": the right bottom line replaces the wrong one | |
-| 21.2 | Verdict lockup in the caption band: "Chipotle keeps" (64 px), then **≈ $1.29** lands on its blue highlighter at ~90 px (pop), then ", not $7.04." with $7.04 in cost red, struck through at 22.1 (swipe). The $10.00 total rests, so ≈ $1.29 is the only loud figure | (same line) |
-| 22.4-24.7 | The finished sheet holds (2.3 s); the last 0.7 s clears back to frame 1: amounts out, profit % back to "?", the coral guess back on the bottom line (loop) | (none) |
+| 0.0 | White void + floor + brand mark. Header (3 lines, **$10** in green), and after its colon a dotted leader to the header's answer slot holding the wrong guess in red, in a red dashed box: **$7.04 profit?**. Footer (one line): "FY2025 10-K average · not your order". The gold slab "YOUR ORDER · **$10.00**" on its post at the right, notched at its six cut marks (the notches under "YOUR ORDER" and "$10.00" are shallow and on the bottom edge only, so none bites into the text), with the figure standing on it, saw in hand (think pose). Under it the sheet, seven one-line rows, labels dim and percentages in a right-aligned column: Food, drinks & packaging 29.6% · Crew pay 25.1% · Rent 5.2% · Ads, delivery & card fees 14.7% · HQ, wear & tear, new stores 9.1% · Tax − interest earned 3.4% · Profit **?**; under each row an empty pale $10 lane (hairline edge, full width), empty amount slots on the right. Frame 1's loud figures: the $10.00 slab and the red guess | "Food: ≈ $2.96 of your $10. So Chipotle keeps $7.04?" |
+| 0.1-0.5 | He saws through the food cut (swipes); "YOUR ORDER" fades as the saw starts (0.12-0.22), so the kerf never splits it; at 0.4 row 1 activates (label ink, 29.6% green, bump) | |
+| 0.5 / 0.8 | The food piece drops straight down into row 1's lane (thud, squash) and **≈ $2.96** lands in green (first payoff). The slab's $10.00 fades; he looks down at the row | |
+| 0.9 | What is left of the slab, the piece he stands on, gets a label in the header guess's style: **$7.04?** in red in a red dashed box (no per-piece % on the slab) | |
+| 2.0 / 2.15 | He looks up at the header; its **$10** swells on "your $10" (tick) | |
+| 3.9 / 4.05 | Palms-up shrug on "keeps $7.04?" while the red guess swells in both places, the header slot and the slab under his feet (tick). He is standing on what the guess means, and the slab says so | |
+| 5.2 | "Not even close": he stomps on the slab (crouch, knee up, slam: hit lines at his feet, shake, thud) and a red line slams through the guess in the slot and on the slab (swipe, buzz); both grey out. The slot's stays struck; the slab's fades by 6.1, leaving the slab plain | "Not even close. Crew pay: ≈ $2.51." |
+| 5.5-7.4 | He walks to the crew cut; row 2 activates on "Crew" (6.3) and he saws from there; the piece drops at 7.1 and **≈ $2.51** lands at 7.4. Each piece fills its lane and, once landed, slides to the lane's left end, so the lanes build into a left-aligned bar chart of the $10 (crew visibly about twice profit) | |
+| 8.4 / 9.1 | Rent: row 3 activates on "Rent", a short saw, **≈ $0.52** at 9.1 | "Rent: ≈ 52 cents." |
+| 10.1 / 11.9 | Ads, delivery & card fees: he saws through the whole line (1.5 s), **≈ $1.47** at 11.9 | "Ads, delivery, card fees: ≈ $1.47." |
+| 12.9 / 15.5 | HQ, wear & tear, new stores: a 2.3 s saw, **≈ $0.91** at 15.5 | "HQ, wear and tear, new stores: ≈ 91 cents." |
+| 16.5 / 18.3 | Tax − interest earned: **≈ $0.34** at 18.3. He is now standing on the last piece of the slab, which is what is left | "Tax, minus interest earned: ≈ 34 cents." |
+| 19.3 | Row 7 activates on "What's left": its % turns from "?" to **12.9%** (green) | "What's left: ≈ $1.29. Not $7.04." |
+| 20.0 / 20.3 | The last piece drops straight out from under his feet into the profit lane: he rides it down arms-up and lands on the bare bracket (squash), and **≈ $1.29** lands on its row's gold plate (thud). On the same beat, in the air the slab and he have left, a gold **PROFIT ≈ $1.29** slab stamps in at the size of the frame-1 "YOUR ORDER $10.00" slab (68 px figure; hit, burst, shake, camera punch, cash). He steps along the bracket to the post | |
+| 20.45-21.1 | Right under it, where the slab was, the check assembles fast and silently in a green ghost slab: "$10 − $8.71 of costs = $1.29", complete by 21.1; he points at it (20.85) | |
+| 21.2 | Verdict in the caption band: "Chipotle keeps / **≈ $1.29**, not $7.04." (64 px, green swoosh under ≈ $1.29, $7.04 in red; ding). On the same words, "Not $7.04", the struck guess in the header slot is stamped over with **≈ $1.29 profit** on a gold plate (hit, cash, gold ring, the world shakes), so the header now reads "…at Chipotle: ≈ $1.29 profit". He shrugs and holds it | (same line) |
+| 22.4-24.7 | The finished sheet holds (2.3 s): the header's answer, the PROFIT slab, the check, the bar chart of the $10 with every dollar, and the verdict | (none) |
 
 ### Guide VO script (7 lines, 56 spoken words ≈ 21.5 s at 2.6 words/s; read "≈" as "about")
 
@@ -159,7 +162,10 @@ Each row's share is the 10-K dollar line ÷ total revenue (FY2025, $ thousands).
 | Profit (net income) | 1,935,798 + 73,721 − 473,758 = 1,535,761 | 12.8778% · $1.2878 | 12.9% · ≈ $1.29 (masked "?" until the row activates at 19.3 s) |
 | Totals | exact shares sum to 1; rounded cents 2.96 + 2.51 + 0.52 + 1.47 + 0.91 + 0.34 + 1.29 = 10.00; shares 29.6 + 25.1 + 5.2 + 14.7 + 9.1 + 3.4 + 12.9 = 100.0 | | no plug |
 | $10.00 total | the input | | $10.00 |
-| "$10 − $2.96" → "$7.04 profit?" (the wrong guess, frame 1) | 10 − 2.96 | | $7.04 (exact on the shown numbers, so no ≈) |
+| "$7.04 profit?" (the wrong guess, frame 1: the header slot's red ghost since the Becker Rig port; the VO gives its working, "≈ $2.96 of your $10") | 10 − 2.96 | | $7.04 (exact on the shown numbers, so no ≈) |
+| "$7.04?" (the slab's remainder label, 0.9-6.1 s, since the Becker Rig QA pass) | 10 − 2.96, the same guess as the header slot | | $7.04 (exact on the shown numbers, so no ≈) |
+| "≈ $1.29 profit" (the header slot's answer, stamped over the struck guess at 21.2 s) | the profit row | | ≈ $1.29 (rounded, so ≈) |
+| "PROFIT ≈ $1.29" (the payoff slab, stamped at 20.3 s, since the Becker Rig QA pass) | the profit row's label and amount | | ≈ $1.29 (rounded, so ≈) |
 | Check: "$10 − $8.71 of costs = $1.29" | 2.96 + 2.51 + 0.52 + 1.47 + 0.91 + 0.34 = 8.71; 10.00 − 8.71 = 1.29 (= the profit row) | | exact on shown numbers |
 | Caption: "crew gets almost twice the profit" | 2,991,680 ÷ 1,535,761 = 1.95 | | |
 
@@ -180,7 +186,7 @@ FY2025 is the latest 10-K as of Oct 7, 2026: Chipotle's fiscal year is the calen
 
 ### Assumptions (footer, on screen from 0.0 s)
 
-"Chipotle FY2025 10-K average · not your order" (one line since the fix pass; the two-line "ASSUMES $10 splits like Chipotle's FY2025 revenue (10-K) · an average, not your order" sat at ~40 px between the hook and the sheet). The caption and the pinned comment carry the full method.
+"FY2025 10-K average · not your order" (since the Becker Rig QA pass). It was "Chipotle FY2025 10-K average · not your order", one line on Clean Sheet since the fix pass (the two-line "ASSUMES $10 splits like Chipotle's FY2025 revenue (10-K) · an average, not your order" had sat at ~40 px between the hook and the sheet). Becker Rig sets footers in 40 px mono, where those words wrapped as "…· not / your order", leaving "not" cut off from "your order" for the whole video and on the cover. "Chipotle" is already in the header, so dropping it gives one 36-character line. The caption and the pinned comment carry the full method.
 
 ### Caption / description (verdict first, R11)
 
@@ -195,10 +201,19 @@ FY2025 is the latest 10-K as of Oct 7, 2026: Chipotle's fiscal year is the calen
 
 ### Per-platform notes
 
-- **YouTube Shorts:** use the 24.7 s master. Title: "Chipotle Keeps How Much of Your $10?" (a question the header does not already answer). No logo and no store footage, only the brand name in text. Frame 0 (the full sheet, the coral "$7.04 profit?", profit "?") is the cover.
-- **Instagram Reels:** the master. The cover is the finished-sheet frame at ~23 s: the full dollar column plus the verdict lockup, which works as a save-able cheat sheet, as with Yannick's finished sheet. Put the pinned comment's exact table in the first comment.
+- **YouTube Shorts:** use the 24.7 s master. Title: "Chipotle Keeps How Much of Your $10?" (a question the header does not already answer). No logo and no store footage, only the brand name in text. Frame 0 (the red "$7.04 profit?" in the header slot, the $10.00 slab with the figure on it, the full sheet with profit "?") is the cover.
+- **Instagram Reels:** the master. The cover is the finished-sheet frame at ~23 s: the header reading "at Chipotle: ≈ $1.29 profit", the gold "PROFIT ≈ $1.29" slab, the check line, the bar chart of the $10 with the full dollar column, and the verdict, which works as a save-able cheat sheet, as with Yannick's finished sheet. Put the pinned comment's exact table in the first comment.
 - **TikTok:** the master. Caption line 1 stays the verdict ("Nowhere near $7."); the $1.29 sits below the fold. The pinned "Which chain's $10 next?" feeds reply videos (The Debt Freedom Project's reply sticker earned 127.3x, H50).
 - **All:** the voice-over starts on the first calculation with no greeting (H55, H76, H84).
+
+### Look notes (Becker Rig, since the port)
+
+- **Why a new layout.** The kit's split-sheet had two layouts: **bins** (up to 5 parts; 05b) and **rows** (more parts or long labels), where the figure only stood in the floor corner and pointed while the pieces fell. Seven parts with long labels forced rows, and a plain rows port (tried first) read as a table with a bystander: profit's 12.9% printed at frame 1, no wrong guess, 40 px amounts and pieces landing as thin underlines. So the port adds an opt-in **carve** layout (`lookOpts.layout: "carve"`, in `looks/becker-rig/formats/split-sheet.js` only): the rows run the full width (amounts end at x 920, the post stands right of them) and the figure works **on** the slab, as in bins. He saws through each cut while the VO names the part, the piece drops straight down into its own row's lane (a gold bar: the sheet becomes a waterfall of the $10), and the slab shrinks under his feet until he stands on the last piece, the profit. That piece drops out from under him; he falls onto the bare bracket and ends there, beside the check.
+- **Sizes (measured, fitted at mount):** figure scale 0.7, slab 80 px with "$10.00" at 68 px, row labels 40 px on one line each, % 40 px mono, amounts 44 px (the goal on a gold plate), lanes 14 px, check line 56 px, header slot 52 px. The slab hangs as high as his head allows: his head rises into the footer's band only right of its short second line.
+- **lookOpts used:** `layout: "carve"`; `notes: false` (the part notes do not fit a working line once the sheet has seven rows; the labels carry the facts, and the caption and pinned comment carry the method); `maskPct: [6]`; `activate` (unchanged times, now also the start of each saw); `bumps` (`total` now swells the header's **$10**, because the slab's total has given way to its pieces by 2.15 s; `guess` swells the slot); `payoff.slot` with `ghost: "$7.04 profit?"`, `ghostTone: "bad"`, `strikeT: 5.2` and `t: 21.2`, `text: "≈ $1.29 profit"`; `beats` (look up 2.0, low palms-up shrug 3.9, stomp 5.2, point at the check 20.85, shrug held from 21.2). New in the format file for this port (header comment): `layout: 'carve'`, `activate`, `maskPct` and `bumps` for rows/carve, `beats` (POSES names, the format's own `recoil` / `shrugLow`, and `stomp`), `notes: false`, and `payoff.slot.ghostTone` / `strikeT`. Every other spec of the format renders pixel-identical (05b and both kit samples, compared frame by frame against the committed file).
+- **Dropped from the Clean Sheet spec:** `pointer`, `loop`, `goalScale`, `bigVerdict` and `wrongGuess` (the Becker kit does not read them; the slot, the gold plate and the kit's verdict swoosh do their jobs).
+- **Retimed:** nothing in `data`, `vo` or `verdict`. The guess's `until` (20.3) is gone: the struck guess now stays in the header slot until the answer replaces it at 21.2 s, on the verdict's "Not $7.04".
+- **Not changed, on purpose:** a lane's gold bar can sit under a percentage (the ads row's under 14.7%): pieces fall straight down from where they were cut, which is the waterfall. Falling pieces cross the rows above their lane for 0.3 s, as in the kit's rows mode.
 
 ---
 
@@ -461,6 +476,7 @@ The FY2026 10-K was filed on Oct 6, 2026 (search, Oct 7, 2026), so it is cited a
    - becker-rig: `payoff.slot` (the header's answer slot), `needs` (the bracket), `actions[i].after` and per-cut cleaver labels, `headerSpacing` (default on), and the amount-width cap, solid fill lines, "$300" on the bricks and brick-seam scoring.
    - scoreboard: `rolls`, `heroTag`, `labelWorking`, `introTag`, `solidBar` (05c uses all five, plus `intro: true` and `heroFinal`).
    A rebuild without them still renders, but 05a's payoff shrinks back to row size and a 44 px verdict, 05b's colon points at nothing again, and 05c's rows land 1-1.5 s after they are said.
+   **Becker Rig port of 05a (2026-10-08):** 05a no longer uses any clean-sheet option. It relies on becker-rig's split-sheet `layout: 'carve'`, `activate`, `maskPct`, `bumps`, `beats`, `notes: false` and `payoff.slot` with `ghostTone` / `strikeT`, all added to `looks/becker-rig/formats/split-sheet.js` in the port (documented in its header comment) and all opt-in: 05b and both kit samples render pixel-identical. The QA fix pass added `remainder` (the slab's "$7.04?" label) and made `payoff` (the closing gold slab) work in carve; both are opt-in too, and carve's lanes, plate, check timing and fitter changed only in carve. The becker-rig README's split-sheet section still needs a line for them (not editable in this pass). A rebuild without them still renders 05a, but in the plain rows layout: the figure back in the corner, profit's 12.9% printed at frame 1 and no wrong guess.
    **Kit owners (not editable here):** becker-rig's theme sets the header at −0.025em with no extra word space ("thismuch a day"); 05b's format overrides its own header (0.2em word spacing, −0.01em tracking), but the kit default should change for every format. Clean-sheet's mono % column gave the decimal point a full cell ("3 . 4%"); the split-sheet format now sets its % column in Inter with tabular figures, and the kit's other formats may want the same.
 3. **05c replaced the gasoline seed** (reasons at the top). If the owner still wants gasoline, it needs one unblocked read of EIA's "Gasoline and Diesel Fuel Update" components box (crude / refining / distribution & marketing / taxes for the latest month). The same Scoreboard spec structure then works with 4 parts.
 4. **Slate overlap, for the owner:** 05c (Costco, is its profit all membership fees?) and 08a (Costco hot dogs as a unit) share the brand and the Scoreboard look, and both touch membership; since hook pass 2, 05c's header leads with it. Keep both only if a Costco pair is wanted; otherwise 05c can move to another look, or to another retailer whose 10-K splits the same way.
@@ -737,3 +753,81 @@ QA scored the three at 5.5 (05a), 6.5 (05b) and 6 (05c). Every must, should and 
 - MP4s re-rendered to `studio/out/` (24.7 s, 22.1 s, 22.8 s). Frame strips pulled from the 05c MP4 at 5 fps show ≈ $88.91 in its row at 1.0 s and ≈ $1.94 at 9.0 s, each while the VO is saying it (QA measured 1.8 s and 10.4 s).
 - Not changed: `teasers.json` (outside this pass's files) still lists the old runtimes (33.6 / 22.5 s) and check count for format 5.
 
+### Port to Becker Rig (2026-10-08)
+
+The owner watched the 30 teasers in four looks and kept two, Scoreboard and Becker Rig; Clean Sheet and Live Sheet are retired. 05a moved from Clean Sheet to Becker Rig, and the goal was to make it as strong there as 05b, the look's best split-sheet. **The hook, every number, every VO line, the footer and the verdict are unchanged.** `data` and `vo` are byte-identical to the Clean Sheet spec. Only `id`, `look` and `lookOpts` changed, plus the wrong guess's staging (its words "$7.04 profit?" are the same).
+
+**Files:**
+- `studio/specs/05a-becker-rig-chipotle-10.json` is new.
+- The Clean Sheet spec was moved with `git mv` to `studio/specs/retired/05a-clean-sheet-chipotle-10.json`.
+- `looks/becker-rig/formats/split-sheet.js` gained the opt-in carve layout and options (see "Look notes" under 05a).
+- This write-up and `checks/05-split-sheet.py` were updated to match.
+
+**What a straight port looked like, and the fix:**
+
+| Problem (plain port, default lookOpts) | Fix |
+|---|---|
+| Seven parts with long labels forced the kit's rows layout. The figure stood in the floor corner and pointed: a bystander next to a table, not a figure working the maths | New `layout: "carve"`. Full-width one-line rows, with the figure on the slab sawing each cut as the VO names it. The pieces drop into their own row's lane (a waterfall of the $10), and the slab shrinks under his feet. He ends standing on the last piece, the profit, which drops out from under him |
+| Profit's 12.9% printed at frame 1, which answers the header | `maskPct: [6]` in rows/carve: "?" until the row activates at 19.3 s, and the profit piece never carries its % on the slab |
+| No wrong guess on screen at frame 1, so the hook lost its R5 device | `payoff.slot` with `ghost: "$7.04 profit?"`, `ghostTone: "bad"`: the guess hangs off the header's colon in red from frame 1. `strikeT: 5.2`: on "Not even close" he stomps on the slab and a red line slams through it. `t: 21.2`, `text: "≈ $1.29 profit"`: the answer stamps over it on the verdict's "Not $7.04" |
+| No motion tied to the hook's words | `bumps`: the header's $10 swells on "your $10", the guess on "keeps $7.04?". `beats`: he looks up at 2.0, gives a palms-up shrug at 3.9, stomps at 5.2, points at the check at 20.85 and shrugs from 21.2 to the end |
+| 40 px amounts, and pieces landing as thin underlines | The carve fitter: amounts 44 px, lanes 14 px with the gold piece filling its lane, figure 0.7 |
+| Clean Sheet-only options did nothing | Dropped: `pointer`, `loop`, `goalScale`, `bigVerdict`, `wrongGuess`. The gold plate with impact, the stamped header slot and the kit's verdict swoosh carry the payoff |
+
+**Found and fixed while reading the stills:**
+- The default shrug raised the saw into the footer text, so the on-slab shrug is a low, palms-up variant (`shrugLow`).
+- The first hop-off path crossed the amounts column. It was replaced by the drop onto the bracket.
+- The check's fly-up crossed the amounts. The carve layout has no fly-ups.
+- The stamp's gold ring overlapped the header's $10. The ring is smaller for a slot that has a strike.
+- A beat's return to standing overrode the next beat. A beat now hands off to the next one, and a held beat beats the automatic closing poses.
+- The goal amount dipped to 38 px mid-pop (lint warning at a 0.05 s step). Carve amounts never squash under 41 px.
+
+**Check script:**
+- It now points at the new spec and look.
+- The guess and answer strings are pinned ("$7.04 profit?" = $10 − $2.96, and "≈ $1.29 profit" = the profit row).
+- Timing anchors: the strike on vo[1]'s start, the answer on "Not", and every beat on its word (the check-line point is a silent beat).
+- Becker-specific checks: the carve layout, the red ghost, the goal row plus the slot as the payoff, the struck guess staying up until profit has landed and the answer replaces it, and a stomp at strikeT.
+- The Clean Sheet-only checks (goalScale/bigVerdict, the guess's `until`) are gone.
+
+**Verification:**
+- `python3 teasers/v2/checks/05-split-sheet.py`: **544 checks, 0 failed**. The in-memory mutation test caught **12 of 12**: a $7.40 guess, a ≈ $1.92 answer, an answer without "≈", the strike late, the answer before profit lands, the stomp off the strike, the rows layout, the shrug off its word, a guess that is not red, the profit % unmasked, row 3 lit at frame 1, and an unanchored beat.
+- `node src/cli.mjs check`: 05a has **0 errors, 0 warnings** at the default step and at 0.05 s. 05b and both becker-rig split-sheet samples are still clean.
+- Regression: 05b and both kit samples render **pixel-identical, with identical SFX**, against the committed `split-sheet.js` (14 frames each).
+- Contact sheet and stills read at 0, 0.4, 0.8, 2.3, 4.2, 5.3, 6.3, 7.4, 8.4, 9.1, 10.1, 11.9, 12.9, 15.5, 16.5, 18.3, 19.3, 20.1, 20.35, 20.8, 21.25, 22.4 and the end. Every number on them matches the computed table: $10, $7.04 profit?, $10.00, 29.6/25.1/5.2/14.7/9.1/3.4/12.9%, ≈ $2.96 / $2.51 / $0.52 / $1.47 / $0.91 / $0.34 / $1.29, "$10 − $8.71 of costs = $1.29" and "≈ $1.29 profit".
+- MP4: `studio/out/05a-becker-rig-chipotle-10.mp4` (24.7 s, 741 frames, 40 SFX cues). Frames pulled at 5.3, 12.9 and 24.5 s match the stills (PSNR 41.0 / 41.3 / 39.2 dB, x264 noise only).
+- Not changed: `teasers.json` and the becker-rig README (outside this pass's files); both still need a line for the port.
+
+### QA fix pass on the Becker Rig port (2026-10-08)
+
+QA scored the ported 05a at **6.5**: correct and clean, with a strong hook, but short of 05b (the look's best split-sheet) and of 01c / 06c's 70-90 px gold hero plates. Every must, should and nit was fixed. **The hook, every number, every VO line and the verdict are unchanged.** Spec changes:
+- `footer` is now "FY2025 10-K average · not your order".
+- `data.checkT` moves from 20.8 to 20.45.
+- `lookOpts.remainder` is new: `{ t: 0.9, text: "$7.04?" }`.
+- `lookOpts.payoff` gains `t: 20.3`, `label: "Profit"` and `text: "≈ $1.29"`.
+
+The new display strings are pinned in the check.
+
+| QA item | Fix |
+|---|---|
+| **must** · The climax was split: the silent check was still typing until ~22.0, after the verdict and the header stamp (21.2), so four things competed for the eye | `checkT` 20.45. In carve the check assembles fast (token m at checkT + 0.1 + 0.06·m, each popping in 0.16 s), so "$10 − $8.71 of costs = $1.29" is complete by 21.07 and its box turns solid at 21.03. The verdict and the header stamp at 21.2 are now the last new event. The check script models this timing and fails if the line is not complete 0.1 s before the verdict. |
+| should · The payoff did not read as the climax: ≈ $1.29 was a 44 px plate, the same size as every amount, and the 56 px check was the biggest thing in the working area | `payoff` now works in carve as a bookend of the frame-1 slab: a gold "PROFIT ≈ $1.29" slab at the same height (80 px) and figure size (68 px) as "YOUR ORDER $10.00". It stamps in at 20.3 with the profit row, in the air the slab and the figure have left, right over the check's box and as wide as it. It carries the goal's impact (burst, shake, 1.6% camera punch about it, hit, cash), and the row's plate just lands (thud), so there is one burst and one hit + cash. The check is now 50 px, so the 68 px payoff is the largest number in the working area. |
+| should · After the food piece dropped, the slab became an anonymous bar showing only "25.1%" and "14.7%", so his "standing on $7.04" beat was invisible | `remainder`: from 0.9 s the rest of the slab reads **$7.04?** in the header guess's style (red, red dashed box). It swells with the guess bump at 4.05, is struck with the slot by his stomp at 5.2 (red line, greys), and fades by 6.1, leaving the slab plain. Carve draws no per-piece % on the slab. The check pins "$7.04?" to $10 − $2.96 and to the slot's ghost. |
+| should · The footer wrapped as "…· not / your order" | "FY2025 10-K average · not your order", one line ("Chipotle" is in the header). The md's Assumptions note and the check's footer pin were updated. |
+| should · The profit plate rose into the tax row's lane (≈ $0.34's piece sat on it like a nub, for the whole hold and the cover), and sat 20 px from "12.9%" | Carve's plate is trimmed (padding 12 × 4, was 14 × 7) and seated 2 px over the text line. The goal row is tall enough that the plate clears the lane above by at least 10 px (measured: tax lane ends at y 1210, plate starts at 1220). The % column sits 28 px left of the widest amount (plate 732, % ends 704). Pieces now slide to the left end of their lanes, so none sits next to the plate. |
+| should · The waterfall pieces were 14 px bars just under the text, reading as underlines and scuffs, under "14.7%" and the ≈ signs | Each lane is a pale $10 track with a hairline edge. A piece fills its lane (18 px, was 14 px; the fitter now weighs lane thickness most) and, once landed, slides to the lane's left end. The lanes build into a left-aligned bar chart of the $10: crew about twice profit, and no bar under a % or an amount. Labels keep 6 px over their lane, so no descender touches a bar. To make room, the figure is 0.62 (was 0.66), labels sit on a 44 px line and the lane gaps are tighter; the slab stays 80 px and the amounts 44 px. |
+| nit · Falling pieces crossed the amounts: at 20.05 the tipping profit piece covered "≈ $2.96"; at 20.35 the goal burst cut "≈ $0.34" and went below the floor | Pieces are already under the text layer. The last piece now drops straight down, with no tip about its foot, which had swung it over row 1's amount. He rides it down arms-up ('fall', not 'recoil', whose out-flung arms crossed the stamping slab) and drifts 20 px back onto the bracket. The goal row has no burst; the payoff slab's burst circumscribes the slab, so no line starts inside a corner, and stops above the footer. |
+| nit · At frame 1 the cut notches bit into "$10.00"; at 0.4-0.6 the saw split "YOUR ORD\|ER" | Notches under the total's or the label's text box are bottom-only and shallow (6 px). The label fades as the first saw stroke starts (0.12-0.22 s), before the kerf reaches it. |
+
+**Found and fixed while reading the stills:**
+- The header slot re-bumped with a gold ring when the payoff stamped at 20.3, while it still showed the struck guess (a bins-mode re-slam meant for a payoff after the slot). The re-bump now fires only for a payoff after the slot's own stamp; 05b is unchanged.
+- The payoff's 1.16× stamp pushed "PROFIT" to x 42 mid-stamp (lint at a 0.05 s step). Carve's stamp overshoots only as far as keeps the label at x ≥ 60 (about 1.08×).
+- Landing, his head grazed the stamping slab's corner. The check's box and the payoff slab now stop short of where he lands.
+
+**Verification:**
+- `python3 teasers/v2/checks/05-split-sheet.py`: **554 checks, 0 failed**.
+- The in-memory mutation test caught **11 of 11**: the old two-line footer wording, "$7.40?" on the slab, the slab label before food lands, the slab label after the strike, a ≈ $1.28 payoff, a payoff without "≈", a late payoff (20.8), a payoff labelled "Profits", `checkT` back at 20.8 (the check would finish after the verdict), no slab label, and no payoff slab.
+- `node src/cli.mjs check`: 05a, 05b and both becker-rig split-sheet samples have **0 errors, 0 warnings**; 05a is also clean at a 0.05 s step.
+- Regression: 05b and both kit samples render **pixel-identical, with identical SFX**, against the committed `split-sheet.js` (41 frames each).
+- Contact sheet and stills read at 0, 0.1, 0.2, 0.3, 0.5, 0.95, 1.0, 4.1, 4.15, 5.25, 5.4, 5.85, 6.0, 7.55, 12.5, 18.1, 20.05, 20.1, 20.15, 20.16, 20.22, 20.28, 20.3, 20.34, 20.35, 20.38, 20.45, 20.6, 20.7, 21.0, 21.3 and the end. Every number on them matches the computed table: $10, $7.04 profit?, $7.04?, $10.00, 29.6/25.1/5.2/14.7/9.1/3.4/12.9%, ≈ $2.96 / $2.51 / $0.52 / $1.47 / $0.91 / $0.34 / $1.29, PROFIT ≈ $1.29, "$10 − $8.71 of costs = $1.29" and "≈ $1.29 profit".
+- MP4: `studio/out/05a-becker-rig-chipotle-10.mp4` (24.7 s, 741 frames, 42 SFX cues). Frames pulled at 4.2, 20.4 and 24.5 s match the stills (PSNR 40.5 / 38.9 / 39.4 dB, x264 noise only).
+- Not changed: `teasers.json` and the becker-rig README (outside this pass's files). The README's split-sheet section still needs a line for carve, `remainder` and carve's `payoff`.

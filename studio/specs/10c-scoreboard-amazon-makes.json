@@ -1,0 +1,61 @@
+{
+  "id": "10c-scoreboard-amazon-makes",
+  "look": "scoreboard",
+  "format": "cost-counter",
+  "fps": 30,
+  "duration": 31.0,
+  "header": "How long do **you** work for\n1 second of Amazon's profit?",
+  "footer": "Amazon 2025 net income: $77.7B\nPay: BLS median $1,251 a week × 52",
+  "captions": true,
+  "vo": [
+    { "t": 0.0,  "d": 2.7, "text": "How long do you work for this?" },
+    { "t": 2.8,  "d": 2.4, "text": "≈ 2 weeks, at median pay." },
+    { "t": 5.2,  "d": 2.0, "text": "5 seconds: ≈ 10 weeks." },
+    { "t": 7.4,  "d": 4.3, "text": "Amazon's 2025 profit: $77.7 billion." },
+    { "t": 13.2, "d": 2.4, "text": "≈ 13 seconds: half a year." },
+    { "t": 15.8, "d": 5.0, "text": "2,464 ÷ your weekly\u00a0pay = your weeks." },
+    { "t": 22.8, "d": 1.6, "text": "And a whole year?" },
+    { "t": 26.4, "d": 1.6, "text": "≈ 26 seconds." }
+  ],
+  "verdict": { "t": 26.4, "text": "A year of median pay:\n**≈ 26 seconds**." },
+  "data": {
+    "label": "Amazon's profit since you hit play",
+    "perSecond": 2463.85,
+    "rateDisplay": "≈ $2,464 every second",
+    "counterT": [0.0, 26.4026],
+    "startValue": 0,
+    "prefix": "$",
+    "dp": 0,
+    "milestones": [
+      { "value": 2463.85, "label": "1 second: ≈ $2,464" },
+      { "value": 12319.25, "label": "5 seconds: ≈ $12,319" },
+      { "value": 32526, "label": "≈ 13 seconds: $32,526" },
+      { "value": 65052, "label": "≈ 26 seconds: $65,052" }
+    ],
+    "final": "$65,052",
+    "hold": 4.5974
+  },
+  "lookOpts": {
+    "labels": [
+      { "l1": "1 second: ≈ $2,464", "l2": "≈ 2 weeks of work" },
+      { "l1": "5 seconds: ≈ $12,319", "l2": "≈ 10 weeks of work" },
+      { "l1": "≈ 13 seconds: $32,526", "l2": "6 months of work" },
+      { "l1": "≈ 26 seconds: $65,052", "l2": "1 year of work" }
+    ],
+    "rateSteps": [
+      { "t": 2.8,  "l1": "$2,464 ÷ $1,251 a week", "l2": "≈ 2 weeks of median pay", "d": 2.2 },
+      { "t": 7.4,  "l1": "$77.7B ÷ 31,536,000 s", "l2": "≈ $2,464 every second", "d": 5.9 },
+      { "t": 15.8, "l1": "$2,464 ÷ your weekly pay", "l2": "your weeks per second", "d": 7.0 },
+      { "t": 22.8, "l1": "$1,251 × 52 = $65,052", "l2": "Next: a year of median pay", "d": 3.6 }
+    ],
+    "pips": true,
+    "pipLabels": ["≈ $2,464", "≈ $12,319", "$32,526", "$65,052"],
+    "pipPassed": ["≈ 2 weeks", "≈ 10 weeks", "6 months", "1 year"],
+    "icons": ["bill", "bill", "bill", "coin"],
+    "badges": false,
+    "heroIcon": false,
+    "climaxScale": true,
+    "tallVerdict": true
+  },
+  "sfx": []
+}

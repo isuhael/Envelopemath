@@ -4,26 +4,26 @@
 **Date:** 2026-10-07
 **Writer:** format 4 of 10, round 2 (revised after the verifier and hook-judge reviews, then two hook passes; 04b's hook was rewritten in hook pass 2. See the Review log at the end)
 **Deliverables:**
-- Specs (all three pass the studio linter, `node src/cli.mjs check`: 0 errors, 0 warnings; contact sheets rendered in all three kits):
+- Specs (all three pass the studio linter, `node src/cli.mjs check`: 0 errors, 0 warnings; contact sheets rendered in both kits, Scoreboard and Becker rig):
   - [`studio/specs/04a-scoreboard-sp500-vs-gold.json`](../../studio/specs/04a-scoreboard-sp500-vs-gold.json)
   - [`studio/specs/04b-becker-rig-savings-vs-sp500.json`](../../studio/specs/04b-becker-rig-savings-vs-sp500.json)
-  - [`studio/specs/04c-live-sheet-usa-vs-europe.json`](../../studio/specs/04c-live-sheet-usa-vs-europe.json)
-- Check: [`teasers/v2/checks/04-chart-race.py`](checks/04-chart-race.py). It recomputes every series from the sourced annual returns and passes **637 checks with 0 failures** (591 before the 04b fixer pass, 566 before the 04b assembly pass, 451 before the QA fixer pass, 445 before the assembly pass, 407 before hook pass 2). New in this revision:
-  - a spoken-number sync check: every figure the VO quotes mid-race must be on screen at the moment it is said (on a tip counter, a flag, a beat label, the ledger row or 04c's value row);
+  - [`studio/specs/04c-scoreboard-usa-vs-europe.json`](../../studio/specs/04c-scoreboard-usa-vs-europe.json) (ported from Live Sheet on 2026-10-08; the retired spec is [`studio/specs/retired/04c-live-sheet-usa-vs-europe.json`](../../studio/specs/retired/04c-live-sheet-usa-vs-europe.json))
+- Check: [`teasers/v2/checks/04-chart-race.py`](checks/04-chart-race.py). It recomputes every series from the sourced annual returns and passes **614 checks with 0 failures** since the 04c fixer pass (582 after the 04c port to Scoreboard, 637 before it, 591 before the 04b fixer pass, 566 before the 04b assembly pass, 451 before the QA fixer pass, 445 before the assembly pass, 407 before hook pass 2). New in this revision:
+  - a spoken-number sync check: every figure the VO quotes mid-race must be on screen at the moment it is said (on a tip counter, a flag, a beat label, or a working-line step);
   - a 2,916-table sweep over the uncertain savings-rate inputs (04b);
   - a stale-text check on this write-up (since hook pass 2, also a 04b-section check that no text from the old hook is left).
 - Mutation test: the check caught **12 of 12** deliberately broken spec copies (listed under Caveats), and **8 of 8** more for the new 04b hook in hook pass 2.
 
 **Evidence base:**
 - The benchmark only: [`research/v2/02-hook-bank.md`](../../research/v2/02-hook-bank.md) (P4, R1-R12, section 2.10 "open in the red"), [`research/v2/04-formats.md`](../../research/v2/04-formats.md) (rank 4), and the watch studies [`chartorbit.md`](../../research/v2/watch/chartorbit.md) and [`jake-jacobdoesmoney.md`](../../research/v2/watch/jake-jacobdoesmoney.md).
-- Looks: [`03-look-directions.md`](../../research/v2/03-look-directions.md) (Scoreboard, Live Sheet) and [`watch/alan-becker.md`](../../research/v2/watch/alan-becker.md) sections 3, 4 and 6 (Becker rig).
+- Looks: [`03-look-directions.md`](../../research/v2/03-look-directions.md) (Scoreboard; 04c was first built in Live Sheet, a look since retired) and [`watch/alan-becker.md`](../../research/v2/watch/alan-becker.md) sections 3, 4 and 6 (Becker rig).
 
 ---
 
 ## (a) The format in 5 lines
 
 1. **Mechanic.** The same round stake goes into 2 named rivals on the same date. One continuous line chart races year by year, with a live counter at each line tip, a big year counter, crash flags and 0 cuts, and it ends dead on the verified final values.
-2. **Hook.** The title asks ("What If You Invested $5,000 in A and B?"). The frame-1 header says you already did it ("POV: In [year] you invested $[stake] in A VS B"); 04b's header (hook pass 2) is a handicap duel in the same A VS B grammar ("Your $1,000: 16 years of savings VS 1 year of the S&P 500"). The stake is the only accent colour. In ChartOrbit's winners the chart is already moving at 0.0 s, below the stake. 04a and 04b copy that: their race clocks start at −0.4 s, so 04a's frame 1 shows both tips under the stake and 04b's shows the S&P already ahead ($1,041 vs $1,001). 04c opens on its claim instead: the 2025 ledger row, large, with Europe's +35.41% lit, over the parked race; at 4.8 s it rewinds into the race.
+2. **Hook.** The title asks ("What If You Invested $5,000 in A and B?"). The frame-1 header says you already did it ("POV: In [year] you invested $[stake] in A VS B"); 04b's header (hook pass 2) is a handicap duel in the same A VS B grammar ("Your $1,000: 16 years of savings VS 1 year of the S&P 500"). The stake is the only accent colour. In ChartOrbit's winners the chart is already moving at 0.0 s, below the stake. 04a and 04b copy that: their race clocks start at −0.4 s, so 04a's frame 1 shows both tips under the stake and 04b's shows the S&P already ahead ($1,041 vs $1,001). 04c opens on its claim instead: the 2025 duel as two neon columns to scale, Europe's +35.41% lit, in place of the parked race; at 4.8 s it rewinds into the race.
 3. **Pace.** About 2-2.7 s per year in the benchmark (61 s). Ours run 1.2-1.7 s per year, 36.5-45.5 s, to stay inside this round's 25-50 s lane. The biggest number lands last, then the verdict.
 4. **Evidence.**
 
@@ -50,18 +50,18 @@
 - **Real yearly data points only.** Each series is the stake × (1 + that year's sourced return), compounded. A Dec-31 close sits at x = year + 0.99 (the same convention as 06a/06c), so a year counter that floors x reads the right year. Between two closes, the kits draw a straight line, so a tip counter between closes is an interpolation (this includes 04a's frame 1).
 - **Every rounded figure carries "≈", and so does every rounded multiple.**
   - Finals are given to 3 significant figures, the savings balance included. (Round 1 showed it to the nearest dollar; the 04b sweep showed that the dollar digit rests on unsourced midpoint years, so it is no longer shown.)
-  - Scoreboard footer: "$10,000 grew ≈ ×7.53 → ≈ $75,300". Live Sheet formula bar: "≈ ×3.98 ≈ 2 doublings"; a year's step whose dollar-rounded inputs miss the shown close by $1 starts with "≈" instead of "=" ("≈ $16,145 × (1 − 15.06%)"). Pinned comments: "≈ ×15.0", "≈ ×3.98".
+  - Scoreboard footer: "$10,000 grew ≈ ×7.53 → ≈ $75,300". 04c's working line: "USA: ≈ ×3.98 ≈ 2 doublings"; a step whose rounded inputs miss the shown figure starts or links with "≈" ("2020: USA $20,305 ≈ $10,000 × 2.03"). Pinned comments: "≈ ×15.0", "≈ ×3.98".
   - VO text uses "≈" too, because captions show it. The owner reads "≈" as "about".
-- **A figure the VO quotes mid-race is on screen when it is said.** The race moves 1.2-1.7 s per year, while a spoken figure takes 1-3 s to reach. So each mid-race figure is either pinned (a flag, a beat label, or the ledger or value row that carries it), or it is a bound that holds on the live tip (and 04c's value row) for the whole line ("still under $17,000", "under $10 so far"). The check computes when each figure is said (the line's start plus its spoken words ÷ 2.6) and tests what is showing then.
-- **The verdict lands after the last VO line ends.** The Becker rig and Live Sheet chrome hide captions while the verdict shows.
+- **A figure the VO quotes mid-race is on screen when it is said.** The race moves 1.2-1.7 s per year, while a spoken figure takes 1-3 s to reach. So each mid-race figure is either pinned (a flag, a beat label, or a working-line step that carries it), or it is a bound that holds on the live tip for the whole line ("still under $17,000", "under $10 so far"). The check computes when each figure is said (the line's start plus its spoken words ÷ 2.6) and tests what is showing then.
+- **The verdict lands after the last VO line ends.** The Becker rig chrome hides captions while the verdict shows, and the Scoreboard verdict must not land on a caption that is still running.
 - **The first VO line plants the wrong answer (R5); it never reads the header aloud.** (04b: the first line gives the target, ≈ $151, and the second plants the belief, "Savings gets 16 years to match it.")
 - **Captions: line 1 on IG and TikTok is a curiosity line, and the verdict goes after the fold.** TikTok shows line 1 over the video from 0 s, so a verdict there gives the twist away.
 - **Rule-of-thumb line (the format's "envelope twist" from 04-formats).** Each teaser converts its ending into doublings, or into "% a year", so the result is a number you can carry.
-- **Swap-in for R3.** The multiple is printed in the footer or formula bar, so viewers can multiply their own amount. The pinned comments say so.
+- **Swap-in for R3.** The multiple is printed in the footer (the working line), so viewers can multiply their own amount. The pinned comments say so.
 - **No logos, no licensed music.**
-  - Names are in text; the Live Sheet race can show flags (not brand marks).
+  - Names are in text (no country flags or brand marks).
   - ChartOrbit's ABBA track is replaced by kit SFX (licensing for us is unknown).
-- **Kits.** All three looks now implement chart-race. Each spec carries optional `lookOpts` (documented per teaser below) that the kits read; a kit renders sensibly without them.
+- **Kits.** The two kept looks carry the format: Scoreboard (04a, and 04c since its port on 2026-10-08) and Becker rig (04b). Each spec carries optional `lookOpts` (documented per teaser below) that the kits read; a kit renders sensibly without them.
 
 ---
 
@@ -385,56 +385,63 @@
 
 ---
 
-### 04c · Live Sheet · "POV: In 2016 you invested $10,000 in USA vs EUROPE"
+### 04c · Scoreboard · "POV: In 2016 you invested $10,000 in USA vs EUROPE"
 
-- **Look:** Live Sheet, in its sheet-race mode (QA fixer pass). A white sheet on black, a yellow title banner and a "≈" formula-bar chip. The sheet is a header row (Year | USA | Europe), a ledger row (the latest closed year and each rival's return that year) and a value row (each rival's money at that close, in its line colour). The values live in the sheet, so the chart under it takes the card's full width (a plot of about 766 × 394 px, up from about 480 × 320). Green for good, red for drops; yellow only for the point.
+*Ported to Scoreboard on 2026-10-08 (it was built in Live Sheet, now retired; the old spec is in `studio/specs/retired/`). The hook, the VO, every number and the verdict are unchanged. What changed is how the screen carries them; see "Port to Scoreboard (2026-10-08)" in the Review log.*
+
+- **Look:** Scoreboard, the same chart-race kit as 04a: black bars, stage `#0E1116`, money green `#2BFF88` for the USA (the decade winner), second-contender yellow `#FFD23F` for Europe, Anton header, the hero odometer in the top bar, the footer as the one-line working. The race is two neon lines with live tip counters, a dashed $10,000 stake line, the corner year clock, crash flags in the strip above the plot, and ×2 / ×4 doubling rungs. Before the race, the plot holds a cold open: the 2025 duel as two neon columns to scale.
 - **Topic change from the seed:** the seed was "US vs international since 2010, $10,000 each".
   - **Europe instead of "international":** it is the one country pair in the benchmark with a 345.09x multiple and 4× the comment rate (national rivalry). "International" is an unnamed set (R7).
   - **2016 instead of 2010:** MSCI's own factsheet, the primary source for MSCI Europe, covers 2012-2025, so 2010-2011 could not be two-sourced. A 10-year window (Jan 2016 → Dec 2025) also gives Jake's "10 years" grammar.
 - **Platform title:** "What If You Invested $10,000 in the USA and EUROPE in 2016?" (A/B: "Europe Won 2025. Who Won the Decade?")
-- **On-screen hook (banner, 10 words):** `POV: In 2016 you invested **$10,000** in` / `USA vs EUROPE` (kept: it is H17's 345x header almost word for word).
-- **First VO lines:** "2025: Europe beat the USA ≈ 2 to 1." (0.0 s, read "about two to one"), then "Who won the decade?" (5.05 s, as the sheet rewinds).
+- **On-screen hook (header, 10 words):** `POV: In 2016 you invested **$10,000** in` / `USA vs EUROPE` (kept: it is H17's 345x header almost word for word).
+- **First VO lines:** "2025: Europe beat the USA ≈ 2 to 1." (0.0 s, read "about two to one"), then "Who won the decade?" (5.05 s, as the race starts).
 - **Hook rules it satisfies:**
-  - **R1:** "$10,000" in the banner, and the claim itself at frame 1: the hook row "2025 | +17.88% | +35.41%" at 72 px, Europe's cell yellow under the selection.
+  - **R1:** "$10,000" in the header and the hero ("EACH $10,000"), and the claim itself at frame 1: two columns, "+17.88%" (USA) and "+35.41%" (Europe, lit), Europe's bar twice the USA's, beside the corner clock's "2025".
   - **R2.**
   - **R4.**
-  - **R5:** the first line plants the belief the ending breaks ("Europe is beating the US now"), and the question pill ("2016 → 2025: who won?") turns it into a loop.
+  - **R5:** the first line plants the belief the ending breaks ("Europe is beating the US now"), and the ask in the flag strip ("2016 → 2025: who won?") turns it into a loop.
   - **R6.**
   - **R7:** named countries.
   - **R8:** 10 words.
-  - **R9:** even year ticks (2016, 2018, 2020, 2022, 2024) on a fixed axis, so the remaining years are countable.
-  - **R10:** the claim is on screen from 0.0 s; the race starts at 4.8 s and its first close lands at 6.48 s.
+  - **R9:** a fixed 2016-2025 x-axis with even year ticks (2016-2024), so the remaining years are countable.
+  - **R10:** the claim is on screen from 0.0 s, Europe's column bumps as "Europe" is said (1.15 s), and as "≈ 2" is said (3.46 s) a dashed rule halves its bar and "≈ ×2" slams into the half above it; the race starts at 4.8 s and its first close lands at 6.48 s.
   - **R11.**
   - **R12:** "Europe won 2025. The USA won the decade."
 - **Modelled on:**
   - ChartOrbit H17, "POV: In 2008 You invested $5000 in [US flag] VS [EU flag]" (2,808,307 views, 345.09x, 1,220 comments).
   - ChartOrbit H19, "What If You Invested $5,000 in USA and CHINA?" (1,068,784, 5.18x).
   - Jake's H78/H80, "2 people invest $10,000 / 10 years ago" (322,339 / 276,471).
-  - Live Sheet's formula bar comes from Debt Freedom's spreadsheet-as-proof (H48, 1.9M, 902.5x).
-  - Contrast cases we avoid: S&P500 and NASDAQ100 48,161 and USA and CANADA 30,478. That is why the labels say USA and EUROPE first and the index names second.
+  - HD Guy's scoreboard grammar for the cold open (a duel of big neon numbers before the race).
+  - Contrast cases we avoid: S&P500 and NASDAQ100 48,161 and USA and CANADA 30,478. That is why the labels say USA and EUROPE, with the index names under the hook columns.
 - **Wrong belief it exploits:** "Europe is beating the US now." In 2025, Europe +35.41% vs the USA +17.88%, ≈ 2 to 1. Over the decade, the USA ≈ $39,800 vs Europe ≈ $22,700: the USA ≈ doubled twice, Europe once.
 
-**Beat sheet** (race: x 2016.0 → 2025.99 over t 4.8 → 21.8 s, 1.70 s per year, with `lookOpts.preroll: 0` so the kit sweeps exactly this range; the ledger and value rows change on `lookOpts.ledger.rowT`, the closes)
+**Beat sheet** (race: x 2016.0 → 2025.99 over t 4.8 → 21.8 s, 1.70 s per year; the USA is held at its 2024 close from 20.10 s and draws its 2025 leg over 23.25 → 24.79 s)
 
 | t (s) | On screen | VO |
 |---|---|---|
-| 0.0 | Banner. Formula bar "= last year × (1 + return)", fully typed (one line: the rule). Header row Year · USA (S&P 500) · Europe (MSCI Europe). The hook row, tall, values at 72 px: "2025 · +17.88% · **+35.41%**", Europe's cell yellow under the selection. The chart is parked at the start: both dots on the dashed $10,000 "money in" line, named "USA" / "Europe", and a dark pill "2016 → 2025: who won?". Footer (one line) "Total return in US$ · no fees or tax" | "2025: Europe beat the USA ≈ 2 to 1." (0.0-5.0; "≈ 2" said at 3.46 s) |
-| 4.8-5.3 | The rewind: the hook row's year counts back 2025 → 2016 and its values lift out; it shrinks to the ledger row ("2016", cells empty) and the value row snaps in, "Value · $10,000 · $10,000", the selection on Europe's cell. The pill and the start tags clear and the race starts. Whoosh | "Who won the decade?" (5.05-6.65) |
-| 6.48 | 2016 close: "+11.96% / −0.40%"; the values roll to $11,196 / $9,960; the bar types Europe's step "= $10,000 × (1 − 0.40%)". Tick | — |
-| 8.19 | 2017: "+21.83% / +25.51%"; $13,640 / $12,501; "= $9,960 × (1 + 25.51%)" | "2018: Europe drops ≈ 15%." (7.97; "≈ 15%" said at 9.89 s) |
-| 9.73-9.89 | "2018 sell-off" pill slams into the strip at the top of the plot (its dashed rule fades with it, and the year labels stay clear). 2018 close at 9.89: "−4.38% / −14.86%" (red); $13,043 / $10,643; "= $12,501 × (1 − 14.86%)". Thud | (continues) |
-| 11.59-11.95 | 2019: "+31.49% / +23.77%"; $17,150 / $13,173. The selection springs to the USA's cell: "= $13,043 × (1 + 31.49%)". "COVID" pill at 11.95 | — |
-| 13.29 | 2020: "+18.40% / +5.38%". The USA cell reads $20,305 and flashes yellow; a dashed "×2" rung wipes across the chart at $20,000; the bar types "≈ $10,000 × 2.03". Ding | "2020: the USA has doubled your money." (13.3-17.6; the USA value stays at or above $20,305) |
-| 14.99 | 2021: "+28.71% / +16.30%"; $26,135 / $16,145; "= $20,305 × (1 + 28.71%)" | (continues) |
-| 15.86-16.69 | "2022 bear market" pill. 2022 at 16.69: "−18.11% / −15.06%"; $21,402 / $13,713. The selection goes back to Europe: "≈ $16,145 × (1 − 15.06%)" | (continues) |
-| 17.65-20.10 | 2023 at 18.40: "+26.29% / +19.89%"; $27,029 / $16,441; "= $13,713 × (1 + 19.89%)". The flag strip empties and the lines take its headroom back. 2024 at 20.10: "+25.02% / +1.79%"; $33,791 / $16,735. Riser from 19.9 | "Europe? Still under $17,000." (17.65-20.05) · "2025: Europe jumps ≈ 35%." (20.1; "≈ 35%" said at 22.02 s) |
-| 21.8 | Race ends. Row 2025: "+17.88% / +35.41%". The value row holds the 2024 closes in grey (not computed yet); the bar types "= $16,735 × (1 + 35.41%)" | (continues) |
-| 23.25-23.7 | The finale: the header and both rows clear, and two hero rows wipe in: "USA · 2025: +17.88% · $33,791" and "Europe · 2025: +35.41% · $16,735", values at 94 px. Swipe | "Final: USA ≈ $39,800." (23.25; "≈ $39,800" said at 24.79 s) |
-| 23.79-24.79 | The selection springs to the USA's value; the bar types "= $33,791 × (1 + 17.88%)"; the value rolls like an odometer and lands "≈ $39,800" at 24.79 s (flash, pop) | (continues) |
-| 26.6-27.6 | The selection springs to Europe's value; "= $16,735 × (1 + 35.41%)"; it rolls and lands "≈ $22,700" at 27.6 s. Pop | "Europe ≈ $22,700." (27.2; said at 27.58 s) |
-| 29.95 | A "×4" rung wipes in at $40,000: the USA line ends just under it, Europe's just over ×2. The selection on the USA, the bar "≈ ×3.98 ≈ 2 doublings". Pop | "The USA ≈ doubled twice. Europe, once." (29.95-33.45) |
-| 32.64 | The selection on Europe, the bar "≈ ×2.27 ≈ 1 doubling" | ("Europe, once") |
-| 33.5-36.5 | The verdict card spans the sheet (x 60-960) in the caption band: "Europe won **2025**. / The USA won the **decade**." The USA's value turns yellow (the decade) and Europe's "2025: +35.41%" gets a yellow marker (the year). Ding. The last 0.5 s rewind to frame 1 (loop) | — |
+| 0.0 | Header. Hero "EACH $10,000" (the stake, with a grey caps tag: the same stake in both). Footer "Total return in US$ · no fees or tax". The plot holds the hook: two neon columns standing on the floor, to scale: "+17.88%" over a tinted green bar named USA, and "+35.41%" over a glowing yellow bar named EUROPE (lit), the index names "S&P 500" / "MSCI Europe" under the floor. The corner clock reads "2025" at the race's own dim alpha, 25 px under the ask (the lit "+35.41%" sits 27 px under it), so the lit column is the one focal number under the hero. The ask "2016 → 2025: WHO WON?" sits in the flag strip | "2025: Europe beat the USA ≈ 2 to 1." (0.0-5.0) |
+| 1.15 | Europe's "+35.41%" bumps. Pop | ("Europe" said) |
+| 3.46 | A dashed rule wipes from the top of the USA's bar across Europe's: it crosses Europe's bar at half its height (17.88 ÷ 35.41 = 0.505), set in stage ink (6 px dashes) where it crosses the lit yellow bar. "≈ ×2" (dark Anton, 72 px) slams into Europe's bar above the rule. Tick | ("≈ 2" said) |
+| 4.10-4.60 | The rewind: the ask, the rule and "≈ ×2" clear, each counter rolls down with its bar on one curve while the bars drain into the floor (the names fade as their bars get too short; the numbers shrink with the drain and fade over its second half), and the clock rolls back 2025 → 2016. Roll | (continues) |
+| 4.60-4.80 | The race fades in: y axis, the dashed $10,000 stake line, both tips at the stake ("USA $10,000", "EUROPE $10,000"). At 4.8 it starts. Whoosh | "Who won the decade?" (5.05-6.65) |
+| 4.8-20.1 | The hero is the leader, "USA", live (the USA leads at every year-end, so there is no lead change); the "EACH" tag gives its slot to "USA" | — |
+| 6.48 | 2016 close: USA $11,196, Europe $9,960 | — |
+| 9.73-9.89 | The flag "2018: EUROPE ≈ −15%" (white, EUROPE in its yellow, "≈ −15%" red; `flagNames`) with a white dashed rule, held 1.8 s (to 11.54). 2018 close at 9.89: $13,043 / $10,643. The footer cuts to "2018: USA −4.38% · Europe −14.86%", each name in its line colour. The corner clock holds "2018" to 10.40 s, then rolls to 2019 (`yearHold`). Thud | "2018: Europe drops ≈ 15%." (7.97; "≈ 15%" said at 9.89 s) |
+| 11.95 | "COVID" flag (to 13.75) | — |
+| 13.29 | 2020 close: the USA tip passes $20,000 ($20,305). A dashed "×2" rung wipes in at $20,000 over the live grid (its "$20K" label gives way); until the race ends it reaches only as far as the tips, so it never runs on under the USA's tip label. The footer cuts to "2020: USA $20,305 ≈ $10,000 × 2.03". The clock holds "2020" to 13.80 s. Tick + ding | "2020: the USA has doubled your money." (13.3-17.6; the USA tip stays at or above $20,334) |
+| 15.86 | "2022 BEAR MARKET" flag (it clears at 17.66 s); 2022 close at 16.69: $21,402 / $13,713 | (continues) |
+| 17.65 | The footer cuts to "Europe: still under $17,000" ("Europe" in its yellow). Europe's tip label bumps and its halo flares (`tipBeats`). Pop | "Europe? Still under $17,000." (17.65-20.05; "$17,000" said at 18.80 s; the Europe tip stays under $16,735 for as long as the step shows) |
+| 20.10 | 2024 close. The USA stops there (`holdBack`): its tip holds "$33,791" and breathes. The hero hard-cuts to "EUROPE", live, as Europe draws its 2025 leg alone. The footer cuts to "2025: USA +17.88% · Europe +35.41%". Swipe | "2025: Europe jumps ≈ 35%." (20.1-23.2) |
+| 21.14 | The flag "2025: EUROPE ≈ +35%" (white, EUROPE yellow) with its white dashed rule, held to 22.64 s. Tick | ("jumps") |
+| 21.80 | Europe's line ends on its exact 2025 close: its tip and the hero hold "$22,661" (the close to the dollar, no "≈", no land: `finalT` is later than the race end) | ("≈ 35%" said at 22.02 s, while the flag and the footer step show it) |
+| 22.39 | Riser (the kit's, 2.4 s, into the climax) | — |
+| 23.25-24.79 | The USA draws its 2025 leg (+17.88%). The hero hard-cuts to "USA" and rolls with the line, $33,791 → $39,833. The footer: "USA: $33,791 × (1 + 17.88%)". Swipe | "Final: USA ≈ $39,800." (23.25; said at 24.79 s) |
+| 24.79 | The climax: the USA's tip and the hero land "≈ $39,800" with the 1.13 bump, glow, floor flare and the tip flare. Hit + cash. Both labels sit right of their own dots, in the lane past the data (`tipLane`) | (continues) |
+| 27.20-27.60 | The footer: "Europe: $16,735 × (1 + 35.41%)" (= $22,661, the figure on Europe's tip). At 27.6 the rounded final lands for the first time: Europe's tip turns to "≈ $22,700" with a bump, and the hero hard-cuts to "EUROPE ≈ $22,700" (bump, glow, pop) | "Europe ≈ $22,700." (27.2; said at 27.58 s) |
+| 29.95 | The y grid gives way to the rungs: "×4" wipes in at $40,000, just over the USA's dot; Europe's sits over ×2. The hero cuts back to "USA ≈ $39,800" (swipe). The footer: "USA: ≈ ×3.98 ≈ 2 doublings". Tick | "The USA ≈ doubled twice. Europe, once." (29.95-33.45) |
+| 32.64 | The footer: "Europe: ≈ ×2.27 ≈ 1 doubling" | ("Europe, once") |
+| 33.20-33.50 | The plot compresses above the verdict band. At 33.5 the verdict slams in at the foot of the frame: "Europe won **2025**. / The USA won the **decade**.", "2025" in Europe's yellow, "decade" in the USA's green, and a green rule (`emColor`). The hero stays on the USA. The footer returns to the basis line frame 1 opens on, "Total return in US$ · no fees or tax" (loop). Reveal + ding. Hold, then the hard cut back to frame 1 | — |
 
 **Guide VO script (as read, 9 lines):**
 > 2025: Europe beat the USA about two to one.
@@ -453,7 +460,7 @@
   - USA r = S&P 500 total return.
   - Europe r = MSCI Europe net total return in US dollars.
 
-  | Year-end | t (s) | USA (S&P 500) | Europe (MSCI Europe) | Ledger row (USA / Europe) |
+  | Year-end | t (s) | USA (S&P 500) | Europe (MSCI Europe) | Returns (USA / Europe) |
   |---|---:|---:|---:|---|
   | start (Dec 31, 2015 close) | 4.80 | $10,000.00 | $10,000.00 | — |
   | 2016 | 6.48 | $11,196.00 | $9,960.00 | +11.96% / −0.40% |
@@ -465,23 +472,29 @@
   | 2022 | 16.69 | $21,401.96 | $13,713.14 | −18.11% / −15.06% |
   | 2023 | 18.40 | $27,028.53 | $16,440.68 | +26.29% / +19.89% |
   | 2024 | 20.10 | $33,791.07 | $16,734.97 | +25.02% / +1.79% |
-  | 2025 | 21.80 | $39,832.91 | $22,660.82 | +17.88% / +35.41% |
+  | 2025 | 21.80 (Europe) / 24.79 (USA, held back) | $39,832.91 | $22,660.82 | +17.88% / +35.41% |
 
-  The value row shows each close to the dollar ($13,043, $10,643 …) and steps with the ledger row, so both always name the same year.
-- **"≈ 2 to 1" (hook) and "≈ 35%":** 35.41% ÷ 17.88% = 1.98; 35.41 → 35. The USA's 17.88% is on screen (hook row, 2025 row, hero note) but no longer spoken.
-- **Formula bar (the selected cell's step, retyped at each close):** the last close shown, to the dollar, × (1 ± that year's return). Each product rounds to the value shown in the cell, except two, which carry "≈":
-  - 2020 (USA): $17,150 × 1.1840 = $20,305.60 → $20,306, $1 over the shown $20,305 (the true close is $20,305.34). That step shows the doubling instead: $20,305.34 ÷ $10,000 = 2.0305 → "≈ $10,000 × 2.03".
-  - 2022 (Europe): $16,145 × 0.8494 = $13,713.56 → $13,714 vs the shown $13,713, so "≈ $16,145 × (1 − 15.06%)".
-  - The finale's steps: $33,791 × 1.1788 = $39,832.83 → ≈ $39,800; $16,735 × 1.3541 = $22,660.86 → ≈ $22,700.
-- **"≈ 15%":** Europe 2018, −14.86%.
-- **"doubled" (2020):** the first USA year-end at or above $20,000 is 2020 ($20,305.34; 2019 was $17,149.78). Europe first passes $20,000 only in 2025. The ×2 rung sits at $20,000 = 2 × the stake.
-- **"Still under $17,000":** Europe's highest year-end before 2025 is $16,734.97 (2024). Its value cell shows $13,713 then $16,441 during the line, and its tip crosses $17,000 only at x ≈ 2025.04, after the line ends.
-- **Finals:** $39,832.91 → **≈ $39,800**; $22,660.82 → **≈ $22,700**.
+  The tip counters show each line's value live, to the dollar, between the closes (an interpolation, as in 04a).
+- **The hook columns:** the 2025 returns, +17.88% (S&P 500) and +35.41% (MSCI Europe), each bar to scale. The dashed rule at the USA's top crosses Europe's bar at 17.88 ÷ 35.41 = 0.505 of its height, the picture of "≈ 2 to 1", and the tag above it reads "≈ ×2" (35.41 ÷ 17.88 = 1.98, so it carries "≈").
+- **"≈ 2 to 1" (hook) and "≈ 35%":** 35.41% ÷ 17.88% = 1.98; 35.41 → 35. The USA's 17.88% is on screen (the hook column, the 2025 footer step, the finale step) but not spoken.
+- **The working line (footer steps):**
+  - 2018: "USA −4.38% · Europe −14.86%", on screen from the 2018 close (9.89 s) to 13.29 s; "≈ 15%" is said at 9.89 s, while this step and the flag "2018: Europe ≈ −15%" (9.73-11.54 s) show.
+  - 2020: $20,305.34 ÷ $10,000 = 2.0305 → "$20,305 ≈ $10,000 × 2.03" ($10,000 × 2.03 = $20,300, so "≈").
+  - "Europe: still under $17,000", from 17.65 s (as the line starts) to 20.10 s; "$17,000" is said at 18.80 s. It ends as Europe's 2025 leg starts: Europe's tip passes $17,000 only at about 20.18 s.
+  - 2025: "USA +17.88% · Europe +35.41%", from 20.10 s (as "2025: Europe jumps" starts) to 23.25 s; "≈ 35%" is said at 22.02 s, while this step and the flag "2025: Europe ≈ +35%" (21.14-22.64 s) show.
+  - Under the verdict (33.5 s) the footer returns to the basis line "Total return in US$ · no fees or tax", the one frame 1 opens on.
+  - The finale: $33,791 × 1.1788 = $39,832.83 → ≈ $39,800; $16,735 × 1.3541 = $22,660.86 → ≈ $22,700. Both inputs are the 2024 closes to the dollar, and both products round to the true closes ($39,833, $22,661), so the steps need no "≈".
+  - The doublings: "USA: ≈ ×3.98 ≈ 2 doublings" (29.95 s), "Europe: ≈ ×2.27 ≈ 1 doubling" (32.64 s, as "Europe, once" is said).
+- **"≈ 15%":** Europe 2018, −14.86% (the flag shows it signed, "≈ −15%"; the 2025 flag "≈ +35%" is +35.41%).
+- **"doubled" (2020):** the first USA year-end at or above $20,000 is 2020 ($20,305.34; 2019 was $17,149.78). Europe first passes $20,000 only in 2025. The ×2 rung sits at $20,000 = 2 × the stake. Through the whole line (13.3-17.6 s) the USA tip reads at least $20,334.
+- **"Still under $17,000":** Europe's highest year-end before 2025 is $16,734.97 (2024). Through the whole line (17.65-20.05 s) its tip stays under that, and Europe's 2025 leg starts only after the USA is held at 20.10 s. The step that says it shows 17.65-20.10 s, and the tip stays under $17,000 for all of it.
+- **The hold-back:** the USA stops at its 2024 close ($33,791) at 20.10 s, so the hero shows Europe's jump while "≈ 35%" is said; the USA's own 2025 leg draws over 23.25-24.79 s, and its final lands as "≈ $39,800" is said (24.79 s).
+- **Finals:** $39,832.91 → **≈ $39,800**; $22,660.82 → **≈ $22,700**. Europe's tip and the hero hold the exact close, "$22,661", from the end of its line (21.8 s) until "≈ $22,700" is said (27.6 s); the rounded figure first lands then.
 - **Multiples:** 3.9833 → "≈ ×3.98" ($10,000 × 3.98 = $39,800); 2.2661 → "≈ ×2.27" ($22,700).
 - **Per year:** 3.9833^(1/10) − 1 = 14.82%, **≈ 14.8%**; 2.2661^(1/10) − 1 = 8.52%, **≈ 8.5%** (caption and pinned comment).
-- **Doublings:** log₂ 3.9833 = 1.994, just short of 2 ("≈ doubled twice" and "≈ ×3.98 ≈ 2 doublings", so both carry "≈"; the USA line ends just under the ×4 rung); log₂ 2.2661 = 1.18 (one completed doubling: "once", "≈ 1 doubling"; Europe ends just over ×2). Rule of 72 for the pinned comment: 72 ÷ 14.8 ≈ 4.9 years per doubling; 72 ÷ 8.5 ≈ 8.5.
+- **Doublings:** log₂ 3.9833 = 1.994, just short of 2 ("≈ doubled twice" and "≈ ×3.98 ≈ 2 doublings", so both carry "≈"; the USA's dot ends just under the ×4 rung); log₂ 2.2661 = 1.18 (one completed doubling: "once", "≈ 1 doubling"; Europe ends just over ×2). Rule of 72 for the pinned comment: 72 ÷ 14.8 ≈ 4.9 years per doubling; 72 ÷ 8.5 ≈ 8.5.
 
-**Assumptions** (footer: "Total return in US$ · no fees or tax"; which index is which is named in the sheet's header cells, "USA / S&P 500" and "Europe / MSCI Europe"; the window is in the banner and the ledger's years):
+**Assumptions** (footer: "Total return in US$ · no fees or tax"; which index is which is named under the hook columns, "S&P 500" and "MSCI Europe"; the window is in the header and the x-axis):
 - Both are total-return indexes in US dollars, so Europe's line includes the euro/pound moves against the dollar.
 - MSCI Europe is "net" (after dividend withholding tax), while the S&P 500 series is gross. This tilts roughly 0.3-0.5 points a year toward the USA, far smaller than the 6.3-point gap. The one-line footer can't hold this, so the description says "MSCI Europe net".
 - No fund fees or personal tax. Bought at the Dec 31, 2015 close and valued at the Dec 31, 2025 close.
@@ -496,20 +509,24 @@
 
 **Per-platform notes:**
 - **YouTube Shorts:** ChartOrbit's exact title grammar, plus #linechart; A/B it against "Europe Won 2025. Who Won the Decade?". Country pairs drew about 4× the comments per view, so reply to the "what about currency / dividends?" comments with the footer basis.
-- **Instagram Reels:** caption line 1 is "Europe won 2025. Who won the decade?". Cover = frame 1 (the 2025 hook row with Europe lit, and the "2016 → 2025: who won?" pill). Test it against the finished sheet (both hero rows and the verdict).
+- **Instagram Reels:** caption line 1 is "Europe won 2025. Who won the decade?". Cover = frame 1 (the two 2025 columns with Europe lit, the ask, "$10,000" in the hero). Test it against the climax frame (24.8 s: "USA ≈ $39,800" over both finished lines).
 - **TikTok:** caption "Europe won 2025. Who won the decade? $10,000 in the USA vs Europe since 2016. Not advice." The national-rivalry comments are the point; don't add a third country (ChartOrbit's three-way titles fell to a 53,469 median).
 
-**lookOpts (Live Sheet, sheet-race mode; documented in the format file's header):**
-- `valueRow: { label: "Value" }`: the values move into a sheet row under the ledger row and step with it (a 0.35 s roll at each close), so the chart takes the card's full width. This replaces the value cells that rode beside the plot in a 270 px lane.
-- `hook: { row: 9, until: 4.8, series: 1, ask: "2016 → 2025: who won?" }`: frame 1 shows the 2025 ledger row as a tall row with large values, Europe's cell yellow under the selection, and the question pill over the parked race; at 4.8 s it rewinds into the race.
-- `formulaAt0: 1` and `formulaSteps` (15 steps): the rule, fully typed at frame 1, then the selected cell's step at each close, each finale roll and each half of the doublings line. All fit one line, so the bar stays 76 px.
-- `focus`: the selection's cell over time (Europe from the rewind, the USA from the 2019 close, Europe from the 2022 close, then each final as it is named, and the USA, the decade winner, at the verdict). The formula bar always shows the selected cell's working.
-- `ledger`: columns, 10 rows of exact yearly returns, and `rowT`, the moment each year's close lands on the chart.
-- `rungs`: ×2 at $20,000 with the 2020 close (the "doubled" line), ×4 at $40,000 with the doublings line.
-- `finale: { t: 23.25, roll: [1.0, 1.0] }` and `finalT: [24.79, 27.6]`: the hero rows wipe in as "Final:" starts; each value rolls from its 2024 close and lands as the VO says its final.
-- `flagHold: 3.0`: the event pills sit in a strip at the top of the plot (never over the year labels); each holds 3 s and its dashed rule fades with it.
-- `xEven: true`: even year ticks, 2016-2024 (the 2025 label is no longer forced in beside 2024).
-- `preroll: 0` (assembly pass): the race sweeps x 2016.0 → 2025.99 over 4.8 → 21.8 s, as the check's clock assumes.
+**lookOpts (Scoreboard; documented in `looks/scoreboard/formats/chart-race.js`'s header):**
+- `data.series[].label` "USA" / "Europe": the short names on the tips, the hero tag, the hook columns and the footer (where the kit sets each in its line colour). The full names ("USA · S&P 500", "Europe · MSCI Europe") stay in the spec.
+- `hook: { until: 4.8, values: ["+17.88%", "+35.41%"], year: 2025, series: 1, sub: ["S&P 500", "MSCI Europe"], ask: "2016 → 2025: who won?", litT: 1.15, ratioT: 3.46, ratioTag: "≈ ×2" }` (new in the kit for this port): the cold open on the claim, in place of the parked race. Europe's column is lit, bumps as "Europe" is said (`litT`), and the halving rule wipes as "≈ 2" is said (`ratioT`), in stage ink where it crosses the lit bar, with `ratioTag` slammed into the bar above it (fixer pass). The clock reads the claim's year at the race's alpha and, like the tallest number, keeps 24 px under the ask (fixer pass: the clock sits that much lower for the whole video). Over 4.1-4.6 s the rewind (counters down with their bars, the clock back to 2016); over 4.6-4.8 s the race fades in.
+- `stakeTag: "each"` (fixer pass, new in the kit): the hero reads "EACH $10,000" while it shows the stake.
+- `stakeLine: 10000`, `tipLane: true`: as in 04a. `flagHold: 1.8` (fixer pass; 3.0 before): every flag still covers its spoken figure, and "2022 bear market" clears as "Europe? Still under $17,000" starts.
+- `events` (fixer pass): the 2018 flag carries Europe's drop, "2018: Europe __≈ −15%__" (neutral, the figure red), and a fourth flag at x 2025.6, "2025: Europe ≈ +35%" (neutral), carries its jump; COVID and the 2022 bear market are unchanged. `flagNames: true` (new in the kit) sets "Europe" in its line colour in the flags, as the footer does.
+- `footerSteps` (9): the working line at the 2018 and 2020 closes, "Europe: still under $17,000" at 17.65 s, the 2025 returns at 20.10 s, the finale's two 2025 steps, the two doublings lines, and the assumption line again under the verdict (33.5 s). Each fits one 40 px line, so the grid keeps a one-row footer.
+- `tipBeats: [{ t: 17.65, series: 1 }]` (fixer pass, new in the kit): Europe's tip label bumps and its halo flares, with a soft pop, as "Europe? Still under $17,000" starts.
+- `yearHold: [2018, 2020]` (fixer pass, new in the kit): the corner clock holds 2018 and 2020 for 0.5 s past their closes, so it never reads the next year as "≈ 15%" or "2020: the USA has doubled" is said.
+- `holdBack: { series: 0, t: [23.25, 24.79], follow: true }`: the USA stops at its 2024 close while Europe jumps; its 2025 leg draws as "Final: USA" is said, with the hero riding it (`follow`, new in the kit) to the climax at 24.79 s.
+- `finalT: [24.79, 27.6]`: the USA's final is the climax at 24.79 s; Europe's takes the hero again at 27.6 s as it is named (a hard cut with a pop: new in the kit for a non-winner revealed after the finish). Since the fixer pass a finalT later than the race end is a late reveal: Europe's tip and the hero hold the exact close "$22,661" from 21.8 s and land "≈ $22,700" (tip bump, hero bump, pop) only at 27.6 s.
+- `heroSteps: [{ t: 29.95, series: 0 }]` (new in the kit): the hero cuts back to the decade winner as the doublings line starts and holds it through the verdict, so the payoff is the last number up top.
+- `rungs: { t: 29.95, items: [[20000, "×2", 13.29], [40000, "×4", 29.95]] }`: a third item is a rung's own time (new in the kit). The ×2 rung lands at the 2020 close over the live grid, and until the race ends it reaches only as far as the tips (fixer pass); the ×4 rung, and the grid giving way, come with the doublings line. A grid label a timed rung's label would touch gives way.
+- `emColor: ["yellow", "green"]` (an array is new in the kit): the verdict's "2025" in Europe's colour, "decade" and the rule in the USA's.
+- `sfx`: thud at the 2018 close, ding at the 2020 close (the ×2 rung), ding at the verdict. The Live Sheet's riser at 19.9 s was dropped: the kit's own riser now leads into the USA's climax.
 
 ---
 
@@ -561,7 +578,7 @@ All were verified by web search: round 1 on 2026-10-07 (14 searches), plus 7 mor
 |---|---|---|---|---|---|---|---|
 | 04a | Scoreboard | "POV: In 2000 you put $10,000 in / the S&P 500 VS gold" (12) | "Stocks should crush gold." | $10,000 each, Jan 2000 → Dec 2025 | ≈ $75,300 vs ≈ $150,000 | Gold ≈ 2× the S&P 500 | 45.5 s |
 | 04b | Becker rig | "Your $1,000: 16 years of savings / VS 1 year of the S&P 500" (13) | "Year one in the S&P: ≈ $151." then "Savings gets 16 years to match it." | $1,000 each, Jan 2010 → Dec 2025 | ≈ $8,280 vs ≈ $1,020 | The S&P 500's 2010 alone beat 16 years of savings (≈ +$151 vs under +$30, on the payoff card) | 36.0 s |
-| 04c | Live Sheet | "POV: In 2016 you invested $10,000 in / USA vs EUROPE" (10) | "2025: Europe beat the USA ≈ 2 to 1." then "Who won the decade?" | $10,000 each, Jan 2016 → Dec 2025 | ≈ $39,800 vs ≈ $22,700 | Europe won 2025; the USA won the decade | 36.5 s |
+| 04c | Scoreboard | "POV: In 2016 you invested $10,000 in / USA vs EUROPE" (10) | "2025: Europe beat the USA ≈ 2 to 1." then "Who won the decade?" | $10,000 each, Jan 2016 → Dec 2025 | ≈ $39,800 vs ≈ $22,700 | Europe won 2025; the USA won the decade | 36.5 s |
 
 ## Caveats
 
@@ -813,3 +830,80 @@ QA scored 04b 6/10: the numbers were right, but the hook's answer was not the cl
 - Purity: 12.3 s and 29.5 s are pixel-identical whatever was rendered before. A 2.0 s frame rendered after a frame where the grey figure sits (24.65 s on) differs by sub-pixel seam shading on that figure only; the DOM is set the same way, so this looks like Chrome's clip-path caching for the figure's halo in lib.js (reported, not changed). Forward renders (the MP4, contact sheets, the linter) are unaffected.
 - The MP4 is 36.0 s, 1080 × 1920 at 30 fps with 18 SFX cues. Frames pulled from it at 0, 2.0, 16.3, 28.9 and 35.9 s match the stills, with a mean pixel difference of 1.07-1.22 (compression).
 
+
+### Port to Scoreboard (2026-10-08): 04c
+
+The owner kept two looks, Scoreboard and Becker rig, and retired Live Sheet, so 04c moved from Live Sheet to Scoreboard. The new spec is `studio/specs/04c-scoreboard-usa-vs-europe.json`. The old one went to `studio/specs/retired/` (`git mv`). The bar to meet was 04a, the Scoreboard chart race already in the look.
+
+**Kept unchanged:** the header, all 9 VO lines and their timings, the verdict, the race clock (x 2016.0 → 2025.99 over 4.8 → 21.8 s), every chart point, the finals, the three event flags, `hold` and the 36.5 s duration. Every number the Live Sheet showed that still has a place is still on screen: the 2018 and 2025 returns, "$20,305 ≈ $10,000 × 2.03", the finale's "$33,791 × (1 + 17.88%)" and "$16,735 × (1 + 35.41%)", "≈ ×3.98 ≈ 2 doublings", "≈ ×2.27 ≈ 1 doubling", and the ×2 / ×4 rungs. The yearly ledger rows (the other 2016-2024 returns) and the per-year formula steps are not on screen any more. The live tip counters carry the race year by year, and the table under "The maths" keeps every return.
+
+**How the Scoreboard carries each Live Sheet device:**
+
+| Live Sheet | Scoreboard |
+|---|---|
+| Frame 1: the 2025 hook row, Europe's cell lit, the ask pill over the parked race | A cold open on the stage (`lookOpts.hook`): two neon columns to scale, USA "+17.88%" and EUROPE "+35.41%" (lit, bumps as "Europe" is said), the index names under the floor, the corner clock on "2025", the ask in the flag strip. As "≈ 2" is said, a dashed rule from the USA's top halves Europe's bar. The hero holds the $10,000 stake |
+| The rewind at 4.8 s (the year counts back) | Over 4.1-4.6 s the counters roll down, the bars drain into the floor and the clock rolls 2025 → 2016. Over 4.6-4.8 s the race fades in (axis, stake line, both tips at $10,000). The two never share a frame |
+| Ledger row + value row stepping at each close | Live tip counters (to the dollar), the hero on the leader, and the footer as the working line at the beats the VO names: 2018, 2020, 2025 |
+| Formula bar (15 steps) | 8 footer steps (`footerSteps`). The racers' names are set in their line colours |
+| The finale's hero rows, each value rolling as it is named | `holdBack` (+ the new `follow`). The USA stops at its 2024 close at 20.10 s, so the hero shows Europe's +35.41% leg as "≈ 35%" is said. The USA's own 2025 leg draws as "Final: USA" is said, and the hero rides it to the climax at 24.79 s ("≈ $39,800": riser, hit + cash, the 1.13 bump). Europe's final takes the hero again at 27.6 s as it is named (`finalT`) |
+| `focus` back to the USA at the verdict | `heroSteps`: the hero cuts back to "USA ≈ $39,800" with the doublings line (29.95 s) and holds it through the verdict, so the payoff is the last number up top |
+| ×2 / ×4 rungs | The same rungs. The ×2 rung lands at the 2020 close over the live y grid (its own time, a new third item in `rungs.items`); the grid gives way as ×4 lands |
+| Verdict card, yellow highlights | The Scoreboard verdict at the foot of the frame, with the plot compressed above it. `emColor: ["yellow", "green"]` sets "2025" in Europe's colour and "decade" (and the rule) in the USA's |
+
+**Kit changes** (`looks/scoreboard/formats/chart-race.js` only; all opt-in, documented in its header): `hook`, `holdBack.follow`, `heroSteps`, `rungs.items[k][2]` (a rung's own time; a grid label a timed rung's label would touch gives way), `emColor` as an array, a pop for a non-winner revealed after the finish, and a small land when the rival still racing lands in the hero at the finish. The baseline moved into its own SVG group (same z-order), so the hook can hide the grid while the columns keep a floor. 04a and both kit samples (`samples/chart-race.json`, `chart-race-2.json`) render **pixel-identical** to before at 13 + 10 sampled times.
+
+**Spec changes beyond id and look:** `data.series[].label` "USA" / "Europe" (the short names on the tips, the hero tag and the columns; the full names stay). The Live Sheet lookOpts are gone (`valueRow`, `hook` row, `formulaAt0`, `formulaSteps`, `focus`, `ledger`, `preroll`, `finale`, `xEven`). The new lookOpts are `stakeLine`, `hook`, `footerSteps`, `flagHold`, `tipLane`, `holdBack`, `finalT`, `heroSteps`, `rungs` and `emColor`. The sfx drop the old riser at 19.9 s, because the kit's riser now leads into the USA's climax at 24.79 s.
+
+**Check:** the 04c section of `checks/04-chart-race.py` is rewritten for the Scoreboard spec. The ledger, value-row, formula-step and focus claims are gone. New claims cover:
+- the hook columns (both 2025 returns, the year, the lit series, the index names, the ask, `litT` / `ratioT` on their spoken words, the halving ratio 0.505, and "≈ 2" said while the columns show, before the rewind);
+- the 8 footer steps (text, time, one-line width, the `=` / `≈` rounding rule, and both spoken figures said while their step shows);
+- the hold-back (the USA stops as vo[5] starts, the hero shows Europe while "≈ 35%" is said, the leg starts with vo[6] and lands as "≈ $39,800" is said);
+- `finalT`, `heroSteps`, the timed rungs, `emColor` against the verdict's two emphases, the series labels and default colours, and that no Live Sheet option is left;
+- that the USA leads at every year-end (no lead change);
+- a stale-text check on the 04c section.
+
+Result: **582 checks, 0 failed** (637 before the port). Mutation test: **11 of 11** broken copies caught (a hook value, a late 2018 step, a wrong 2025 step, a late Europe reveal, a late USA leg, a late ×2 rung, swapped verdict colours, an early halving rule, the hero resting on Europe, a Live Sheet option left in, a rewind that starts before "≈ 2").
+
+**Verified:**
+- `node src/cli.mjs check` gives 0 errors and 0 warnings for 04c (also at `--every 0.1`), 04a and both kit samples.
+- I read the contact sheet and stills at 0, 1.3, 3.7, 4.05, 4.3, 4.5, 4.62, 4.7, 4.8, 4.85, 7, 9.95, 12.2, 13.6, 16.5, 19, 20.6, 22.1, 22.6, 23.9, 25, 27.8, 29.98, 30.2, 30.3, 32.8, 34 and 36.47 s. Every tip counter matches the model to the dollar: $10,035 / $9,999 at 4.85 s, $13,192 / $10,735 at 9.95 s, $21,362 / $14,292 at 13.6 s, $29,426 / $16,545 at 19 s, the USA held at $33,791 with Europe at $18,482 at 20.6 s, and the USA rolling at $36,341 at 23.9 s. Then come the finals ≈ $39,800 / ≈ $22,700.
+- Purity: stills at 1.3, 4.5, 22.6, 25 and 28 s are pixel-identical whether rendered first or after later frames.
+- The MP4 is 36.5 s, 1080 × 1920 at 30 fps with 21 SFX cues (`studio/out/04c-scoreboard-usa-vs-europe.mp4`). Frames I pulled from it at 0, 3.7, 25 and 34 s match the stills, with a mean pixel difference of 0.76-0.87 (compression).
+
+**Open (not changed):**
+- ~~Europe's final shows on its tip (and in the hero) from 22.25 s, 5.3 s before "Europe ≈ $22,700" is said.~~ Resolved in the fixer pass below: Europe's tip holds its exact close until 27.6 s.
+- `teasers/v2/teasers.json` and `slate.json` still list the old id. They are outside this port's files.
+
+### Fixer pass (QA, 2026-10-08): 04c
+
+QA scored the port 8/10, as strong as 04a, with no must-fix items, five shoulds and five nits. Every item was applied. The hook (header and first VO line), every number, the VO wording and timings, the verdict, the race clock, the chart points and the 36.5 s duration are unchanged.
+
+**Shoulds**
+1. **The "≈ 2" beat barely showed** (the white halving rule vanished on the yellow bar, and no number went with "≈ 2"). Where the rule crosses the lit bar it is now set in stage ink (6 px dashes, the gaps in the bar's yellow). `hook.ratioTag: "≈ ×2"` (dark Anton, 72 px) slams into Europe's bar above the rule at 3.46 s, as "≈ 2" is said. It carries "≈" because 35.41 ÷ 17.88 = 1.98. The check covers the tag's text, its "≈" and its time.
+2. **Frame 1 was cramped at the top** (the ask touched the bright 160 px "2025"). Under a hook the clock now uses the race's own alpha (0.34, not 0.6), and it sits 25 px under the ask for the whole video, so it never moves. The columns give up 13 px, still to scale, so the lit "+35.41%" sits 27 px under the ask (measured on the frame-1 still). The 2025 → 2016 rewind roll is unchanged.
+3. **"≈ 15%" was only in the grey footer.** The 2018 flag is now "2018: Europe __≈ −15%__" (neutral, so the text is white; Europe in its yellow; the figure red), as 04a carries its spoken figures in flags. The footer step stays. `flagHold` went from 3.0 to 1.8 s, so "2022 bear market" clears as the next line starts (17.66 s). Every spoken flag figure is still on screen when it is said.
+4. **"Europe? Still under $17,000" had no visual beat.** The 17.65 s footer step is now "Europe: still under $17,000", with Europe in its yellow, and Europe's tip label bumps while its halo flares (`tipBeats`, a soft pop). The 2025 step moved from 21.8 to 20.10 s, as "2025: Europe jumps" starts, so the "under $17,000" step never shows after Europe's tip passes $17,000 (at about 20.18 s). The check tests the tip against the bound for as long as the step shows.
+5. **The 2025 beat.** (a) A neutral flag at x 2025.6, "2025: Europe ≈ +35%", shows 21.14-22.64 s, while "≈ 35%" is said (22.02 s). (b) Kit: a series whose `finalT` is later than raceT[1] is now a late reveal. Its tip and the hero hold the exact close ("$22,661": no "≈", no settle roll past the close, no early land), and the rounded "≈ $22,700" lands at 27.6 s, with the tip bump, the hero bump and a pop, as it is named. The TF pop and the hero's small land at 22.25 s are gone for 04c. 04a is unaffected: its S&P finalT equals raceT[1].
+
+**Nits**
+- **Verdict hold:** a ninth footer step at 33.5 s brings back the basis line "Total return in US$ · no fees or tax", so the basis is on screen as the video loops into frame 1.
+- **Untagged hero:** `stakeTag: "each"` makes the hero read "EACH $10,000" (grey caps) while it shows the stake. The tag hands its slot to "USA" when the race starts.
+- **Clock rolling as a close is named:** `yearHold: [2018, 2020]` holds the corner clock 0.5 s past those closes. It reads "2018" at 9.95 s and "2020" at 13.45 s.
+- **The timed ×2 rung under the USA label:** until the race ends, a timed rung reaches only as far as the race's current x. At 13.45 s it ends at the USA's dot.
+- **The rewind:** each bar and its counter drain on one eased curve (at 4.35 s "+8.94%" sits over a half-height bar). The names fade as their bars get too short. The numbers shrink with the drain and fade over its second half, so near the floor they never touch.
+
+**Kit changes** (`looks/scoreboard/formats/chart-race.js` only, documented in its header). All of them are opt-in, or only apply under `hook`: `hook.ratioTag` and the ink rule; the hook clock's alpha and its offset under the ask (`ASK_GAP`); the synced rewind; late reveals for a finalT later than raceT[1] (the old `tfLand` path is removed, since it could only fire for a late reveal); `flagNames`, the footer's name colouring factored out as `paintNames`; `tipBeats`; `yearHold`; `stakeTag`; and a timed rung that ends at the current x. 04a and both kit samples render **pixel-identical** to before at 12 + 9 + 9 sampled times.
+
+**Check:** 614 checks, 0 failed (582 before). New claims cover:
+- both figure flags (text from the computed returns, tones, `flagNames`) and their show windows while each figure is said;
+- the 2022 flag clearing as vo[4] starts;
+- the "$17,000" step, its timing and the tip bound while it shows;
+- the 2025 step at vo[5];
+- the late reveal (finalT[1] > raceT[1], and the held "$22,661" equal to the finale step's product);
+- `ratioTag`, `stakeTag`, `tipBeats` and `yearHold`;
+- the basis line under the verdict;
+- footer steps in time order.
+
+Mutation test: **12 of 12** broken copies caught (a wrong 2018 flag figure, flagHold 3.0, Europe revealed at the race end, a late "$17,000" step, a ratio tag without "≈", an early 2025 flag, no stake tag, a missing 2020 hold, no basis line at the verdict, the 2025 step back at 21.8 s, "$16,000", the tip beat on the USA).
+
+**Verified:** `check` gives 0 errors and 0 warnings for 04c, 04a and both kit samples. I read stills at 0, 3.7, 4.2, 4.35, 4.5, 9.95, 13.45, 17.8, 21.2, 22.1, 27.3, 27.8 and 34 s against the beat sheet above. The MP4 is re-rendered to `studio/out/04c-scoreboard-usa-vs-europe.mp4`.

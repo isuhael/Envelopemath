@@ -1,0 +1,327 @@
+{
+  "id": "04c-scoreboard-usa-vs-europe",
+  "look": "scoreboard",
+  "format": "chart-race",
+  "fps": 30,
+  "duration": 36.5,
+  "header": "POV: In 2016 you invested **$10,000** in\nUSA vs EUROPE",
+  "footer": "Total return in US$ · no fees or tax",
+  "captions": true,
+  "vo": [
+    {
+      "t": 0.0,
+      "d": 5.0,
+      "text": "2025: Europe beat the USA ≈ 2 to 1."
+    },
+    {
+      "t": 5.05,
+      "d": 1.6,
+      "text": "Who won the decade?"
+    },
+    {
+      "t": 7.97,
+      "d": 3.1,
+      "text": "2018: Europe drops ≈ 15%."
+    },
+    {
+      "t": 13.3,
+      "d": 4.3,
+      "text": "2020: the USA has doubled your money."
+    },
+    {
+      "t": 17.65,
+      "d": 2.4,
+      "text": "Europe? Still under $17,000."
+    },
+    {
+      "t": 20.1,
+      "d": 3.1,
+      "text": "2025: Europe jumps ≈ 35%."
+    },
+    {
+      "t": 23.25,
+      "d": 3.9,
+      "text": "Final: USA ≈ $39,800."
+    },
+    {
+      "t": 27.2,
+      "d": 2.7,
+      "text": "Europe ≈ $22,700."
+    },
+    {
+      "t": 29.95,
+      "d": 3.5,
+      "text": "The USA ≈ doubled twice. Europe, once."
+    }
+  ],
+  "verdict": {
+    "t": 33.5,
+    "text": "Europe won **2025**.\nThe USA won the **decade**."
+  },
+  "data": {
+    "stake": "$10,000 each · Jan 2016",
+    "series": [
+      {
+        "name": "USA · S&P 500",
+        "label": "USA",
+        "points": [
+          [
+            2016.0,
+            10000.0
+          ],
+          [
+            2016.99,
+            11196.0
+          ],
+          [
+            2017.99,
+            13640.09
+          ],
+          [
+            2018.99,
+            13042.65
+          ],
+          [
+            2019.99,
+            17149.78
+          ],
+          [
+            2020.99,
+            20305.34
+          ],
+          [
+            2021.99,
+            26135.01
+          ],
+          [
+            2022.99,
+            21401.96
+          ],
+          [
+            2023.99,
+            27028.53
+          ],
+          [
+            2024.99,
+            33791.07
+          ],
+          [
+            2025.99,
+            39832.91
+          ]
+        ],
+        "final": "≈ $39,800"
+      },
+      {
+        "name": "Europe · MSCI Europe",
+        "label": "Europe",
+        "points": [
+          [
+            2016.0,
+            10000.0
+          ],
+          [
+            2016.99,
+            9960.0
+          ],
+          [
+            2017.99,
+            12500.8
+          ],
+          [
+            2018.99,
+            10643.18
+          ],
+          [
+            2019.99,
+            13173.06
+          ],
+          [
+            2020.99,
+            13881.77
+          ],
+          [
+            2021.99,
+            16144.5
+          ],
+          [
+            2022.99,
+            13713.14
+          ],
+          [
+            2023.99,
+            16440.68
+          ],
+          [
+            2024.99,
+            16734.97
+          ],
+          [
+            2025.99,
+            22660.82
+          ]
+        ],
+        "final": "≈ $22,700"
+      }
+    ],
+    "x": {
+      "from": 2016,
+      "to": 2025.99,
+      "tickEvery": 2
+    },
+    "y": {
+      "prefix": "$",
+      "dp": 0,
+      "compact": false,
+      "log": false
+    },
+    "raceT": [
+      4.8,
+      21.8
+    ],
+    "events": [
+      {
+        "x": 2018.9,
+        "label": "2018: Europe __≈ −15%__",
+        "tone": "neutral"
+      },
+      {
+        "x": 2020.2,
+        "label": "COVID"
+      },
+      {
+        "x": 2022.5,
+        "label": "2022 bear market"
+      },
+      {
+        "x": 2025.6,
+        "label": "2025: Europe ≈ +35%",
+        "tone": "neutral"
+      }
+    ],
+    "hold": 14.7
+  },
+  "lookOpts": {
+    "stakeLine": 10000,
+    "hook": {
+      "until": 4.8,
+      "values": [
+        "+17.88%",
+        "+35.41%"
+      ],
+      "year": 2025,
+      "series": 1,
+      "sub": [
+        "S&P 500",
+        "MSCI Europe"
+      ],
+      "ask": "2016 → 2025: who won?",
+      "litT": 1.15,
+      "ratioT": 3.46,
+      "ratioTag": "≈ ×2"
+    },
+    "footerSteps": [
+      {
+        "t": 9.89,
+        "text": "2018: USA −4.38% · Europe −14.86%"
+      },
+      {
+        "t": 13.29,
+        "text": "2020: USA $20,305 ≈ $10,000 × 2.03"
+      },
+      {
+        "t": 17.65,
+        "text": "Europe: still under $17,000"
+      },
+      {
+        "t": 20.1,
+        "text": "2025: USA +17.88% · Europe +35.41%"
+      },
+      {
+        "t": 23.25,
+        "text": "USA: $33,791 × (1 + 17.88%)"
+      },
+      {
+        "t": 27.2,
+        "text": "Europe: $16,735 × (1 + 35.41%)"
+      },
+      {
+        "t": 29.95,
+        "text": "USA: ≈ ×3.98 ≈ 2 doublings"
+      },
+      {
+        "t": 32.64,
+        "text": "Europe: ≈ ×2.27 ≈ 1 doubling"
+      },
+      {
+        "t": 33.5,
+        "text": "Total return in US$ · no fees or tax"
+      }
+    ],
+    "tipBeats": [
+      {
+        "t": 17.65,
+        "series": 1
+      }
+    ],
+    "flagHold": 1.8,
+    "flagNames": true,
+    "tipLane": true,
+    "holdBack": {
+      "series": 0,
+      "t": [
+        23.25,
+        24.79
+      ],
+      "follow": true
+    },
+    "finalT": [
+      24.79,
+      27.6
+    ],
+    "heroSteps": [
+      {
+        "t": 29.95,
+        "series": 0
+      }
+    ],
+    "rungs": {
+      "t": 29.95,
+      "items": [
+        [
+          20000,
+          "×2",
+          13.29
+        ],
+        [
+          40000,
+          "×4",
+          29.95
+        ]
+      ]
+    },
+    "emColor": [
+      "yellow",
+      "green"
+    ],
+    "yearHold": [
+      2018,
+      2020
+    ],
+    "stakeTag": "each"
+  },
+  "sfx": [
+    {
+      "t": 9.89,
+      "kind": "thud"
+    },
+    {
+      "t": 13.29,
+      "kind": "ding"
+    },
+    {
+      "t": 33.5,
+      "kind": "ding"
+    }
+  ]
+}

@@ -27,15 +27,53 @@
 //                             coin drops into his arms (he buckles), he tries to hitch it up and sags, then presses
 //                             it overhead under a riser and strains, wobbling, until he heaves it onto the plate.
 // The climax keeps clear of the table's chrome: the impact's hit lines are clipped to the band between the column
-// heads and the row under the plate, and the coins spill down the right margin (x 940-1000), never over a label.
+// heads and the row under the plate and to the right of the plate's left edge - 8 (they never graze the second
+// column), and the coins spill down the right margin (x 940-1000), never over a label.
+// Layout: a 1-2 line hook leaves the band down to L.footerTop empty, so the footer is lifted to 16 px under the hook
+// and the ladder starts from its new bottom (a 3-line hook has no slack and is unchanged). Throw mode keeps the year
+// head right of the rails; only when that leaves the values under 56 px (a wide head word such as YEAR over short
+// years, beside a wide second column) may the head overhang the rails, above the ladder top.
 // Kit workarounds kept here (reported to the kit owner): the header gets 0.1em word spacing (the heavy display face
 // fuses "invested just" at phone size), and the Worth cells set "≈ $X" with a visible space (word spacing), as the
 // verdict and captions do.
 //   establish: true           climb mode: open on a wide shot of the whole ladder, then push in (rung labels
 //                             appear as the push-in makes them legible)
+//   cols: [0, 2, 3]           which three data columns the ladder prints, as [year, second, hero] (default [0, 1, 2]).
+//                             A 4-column spec (09a: Year / You put in / Worth / Earns a month) cannot print four
+//                             numbers a row beside the figure, so it picks three: the 4th column becomes the hero
+//                             (it is what drops, turns green and gets the gold plate) and the Worth the second
+//                             column. Columns left out stay in the data for other kits; they are not drawn here.
+//   second: 'bold'            the second column in the hero face (Inter Tight 800, ink) instead of grey mono: for a
+//                             second column that is a balance, not a deposit
+//   target: "$100"            the meters become a target gauge instead of the put-in/growth composition: under each
+//                             hero a soft track (9 px) as long as the target, ending in an upright tick at the
+//                             column's right edge ("up to here = the target"), filled grey to hero ÷ target (never
+//                             shorter than 20 px), snapping green with its tick (and a pulse) on the rows that reach
+//                             it. The gold-plate row has no gauge (the plate already says "reached"). Needed whenever
+//                             cols moves the hero off the Worth (a composition meter would compare the wrong columns;
+//                             without a target it is off)
+//   working: [{ t, text }]    working lines: one mono line at a time over the column heads, swapped in at t (hold,
+//                             then snap), set in ink with `**x**` the result (heroInk), so it reads as the maths and
+//                             not as more of the grey footer. A line at t <= 0 is on screen at frame 1
+//   beats: [{ t, row, act, d, label, tone, impact, relight }]   scripted moments on a row (throw mode):
+//       act      a POSES name, or a list of them shared out over d ('celebrate' adds a hop): the figure takes it
+//                0.14 s after t and holds it for d (default 1.6 s), cut short by his next throw
+//       label    a tag on an ink plate, dropped over the empty slot above the row's hero from t + 0.08 to t + d
+//                (t + 0.24 on an impact beat, once its burst has faded; tone 'good' = green, 'bad' = red;
+//                `**x**` = coin yellow). It must be gone before the next row's coin flies, so keep t + d under the
+//                next row's time minus about 0.6 s
+//       impact   true: the row's hero swells to 1.15x (anchored right, over 0.5 s) under a burst and a shake at t,
+//                and the row below is ink by the time it lands, so it is the only green number (no sound: put a
+//                cue in spec.sfx)
+//       relight  true: from t the row's year and hero turn green again with a bump and stay green, and a green
+//                outlined plate (the gold plate's pad and radius, no fill) pops in behind the row's year-to-hero
+//                span, its edges riding on the gauge lines over and under the row (those two gauges hand over to
+//                it). The gold plate then steps back (grey border, paler fill): the verdict pointing back at the
+//                row that answers the hook is the one focal point of the end hold
+//       (a beat with only act, no label: the figure acts on a row that has no other moment, e.g. to fill a gap)
 import {
-  h, s, style, attr, prog, clamp, lerp, plain,
-  fitText, C, F, T, L, S, E, poseTrack, poseOf, fk, secondary, Figure, makeWorld, makeFx, camera, NumObj, pinLimb, blendJ, shiftJ, floorLine,
+  h, s, style, attr, prog, clamp, lerp, plain, markup, bump,
+  fitText, C, F, T, L, S, E, POSES, poseTrack, poseOf, fk, secondary, Figure, makeWorld, makeFx, camera, NumObj, pinLimb, blendJ, shiftJ, floorLine,
   chromeParts, durationOf, num, measure, arc, squashAt, fall, toss, popIn, hop, wobble, hbar, ladder, coin, RIG, figStroke,
 } from '../lib.js'
 
@@ -46,8 +84,15 @@ export const css = `
 .gl-in { font-family: ${F.mono}; font-weight: 700; letter-spacing: -0.03em; color: ${C.grey}; }
 .gl-worth { font-family: ${F.head}; font-weight: 900; letter-spacing: -0.03em; word-spacing: 0.14em; }
 .gl-plate { position: absolute; left: 0; top: 0; background: ${C.coin}; border: 6px solid ${C.ink}; border-radius: 18px; transform-origin: 100% 50%; }
+.gl-relit { position: absolute; left: 0; top: 0; border: 6px solid ${C.hero}; border-radius: 18px; transform-origin: 50% 50%; opacity: 0; }
 .gl-input { position: absolute; left: 62px; font: 700 40px/1 ${F.mono}; letter-spacing: -0.02em; color: ${C.grey}; white-space: nowrap; }
 .gl-input b { color: ${C.ink}; font-weight: 800; }
+.gl-in2 { font-family: ${F.head}; font-weight: 800; letter-spacing: -0.02em; word-spacing: 0.14em; color: ${C.ink}; }
+.gl-work { position: absolute; left: 62px; font: 700 40px/48px ${F.mono}; letter-spacing: -0.02em; color: ${C.ink}; white-space: nowrap; transform-origin: 0 50%; }
+#stage .gl-work em { font-style: normal; font-weight: 800; color: ${C.heroInk}; }
+.gl-tag { background: ${C.ink}; border-radius: 12px; padding: 7px 16px 7px; font: 800 40px/46px ${F.mono}; letter-spacing: -0.03em; white-space: nowrap; }
+#stage .gl-tag em { font-style: normal; color: ${C.coin}; }
+.gl-tag::after { content: ''; position: absolute; right: 34px; bottom: -11px; border: 12px solid transparent; border-bottom: 0; border-top-color: ${C.ink}; }
 `
 
 const hex = c => [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16))
@@ -58,14 +103,32 @@ const smooth = p => p * p * (3 - 2 * p)
 export default function growthLadder(spec, ctx) {
   const d = spec.data || {}
   const lo = spec.lookOpts || {}
-  const rows = d.rows || []
+  const allCols = d.columns && d.columns.length >= 3 ? d.columns : ['Year', 'You put in', 'Worth']
+  // which data columns are printed, as [year, second, hero] (lookOpts.cols; default the first three)
+  const okCols = Array.isArray(lo.cols) && lo.cols.length === 3 && lo.cols.every(k => Number.isInteger(k) && k >= 0 && k < allCols.length)
+    && (d.rows || []).every(r => lo.cols.every(k => r[k] != null))
+  const SHOW = okCols ? lo.cols : [0, 1, 2]
+  const custom = SHOW.join() !== '0,1,2'
+  const rows = (d.rows || []).map(r => SHOW.map(k => r[k]))
   const N = rows.length
   if (!N) throw new Error('growth-ladder: data.rows is empty')
-  const cols = d.columns && d.columns.length >= 3 ? d.columns : ['Year', 'You put in', 'Worth']
+  const cols = SHOW.map(k => allCols[k])
   const times = rows.map((_, i) => (d.rowT && d.rowT[i] != null ? d.rowT[i] : (d.rowsT ?? 1.5) + i * (d.rowEvery ?? 1.2)))
   const hold = d.hold ?? 3
   const hl = d.highlightLast !== false
   const vals = rows.map(r => ({ inN: num(r[1]), worthN: num(r[2]) }))
+  // meters: the put-in/growth composition (default), a target gauge (lookOpts.target), or none (a custom hero
+  // without a target: the composition would compare the wrong columns)
+  const tgtN = lo.target != null ? num(String(lo.target)) : NaN
+  const meterMode = Number.isFinite(tgtN) && tgtN > 0 ? 'target' : (custom ? 'none' : 'composition')
+  // the second column: grey mono (a deposit) or, with lookOpts.second 'bold', the hero face in ink (a balance)
+  const BOLD2 = lo.second === 'bold'
+  const IN = BOLD2 ? { w: 800, fam: F.head, ls: '-0.02em', ws: 0.14, cls: 'gl-in2' } : { w: 700, fam: F.mono, ls: '-0.03em', ws: 0, cls: 'gl-in' }
+  // beats and working lines (validated once; times are seconds)
+  const beatsIn = (Array.isArray(lo.beats) ? lo.beats : []).filter(b => b && Number.isFinite(+b.t) && Number.isInteger(b.row) && b.row >= 0 && b.row < N)
+    .map(b => ({ ...b, t: +b.t, d: Number.isFinite(+b.d) && +b.d > 0 ? +b.d : 1.6 }))
+  const WL = (Array.isArray(lo.working) ? lo.working : []).filter(x => x && x.text != null && Number.isFinite(+x.t))
+    .map(x => ({ t: +x.t, text: String(x.text) })).sort((a, b) => a.t - b.t)
 
   // ================================================================== layout
   const parts = chromeParts(spec, ctx)
@@ -77,11 +140,38 @@ export default function growthLadder(spec, ctx) {
   }
   const fixed = h('div', { class: 'gl-fixed' })          // column heads + input badge: never move with the camera
   let top = parts.workTop
+  // a short (1-2 line) hook leaves the band down to L.footerTop empty: lift the footer to 16 px under the hook
+  // and start the ladder from its new bottom, so the rows get that room (a 3-line hook has no slack: unchanged)
+  if (parts.footer) {
+    const hb = spec.header ? L.headerTop + parts.header.offsetHeight : L.headerTop
+    const ft = Math.ceil(hb + 16)
+    if (ft < parseFloat(parts.footer.style.top || L.footerTop)) {
+      style(parts.footer, { top: ft + 'px' })
+      top = ft + parts.footer.offsetHeight + 28
+    }
+  }
   if (d.input && d.input.amount && !plain(spec.header || '').includes(d.input.amount)) {
     const el = h('div', { class: 'gl-input', style: { top: top + 'px' } })
     el.innerHTML = `<b>${esc(d.input.amount)}</b> ${esc(d.input.per || '')}${d.input.rate ? ' · ' + esc(d.input.rate) : ''}`
     fixed.append(el)
     top += 40 + 24
+  }
+  // working lines (lookOpts.working): one slot, one line at a time, under the footer and over the column heads
+  // (the working line is set in ink, with the result green: it reads as the maths, not as a third line of the grey
+  // small print above it)
+  const workEls = WL.map(x => {
+    const el = h('div', { class: 'gl-work', style: { top: top + 'px', opacity: '0' } })
+    el.innerHTML = markup(x.text)
+    fixed.append(el)
+    return el
+  })
+  if (workEls.length) {
+    // never past x 940 (it sits above y 820, but the rail rule is kept for safety): shrink a long line, not below 40
+    WL.forEach((x, k) => {
+      const w = measure(x.text, `700 40px ${F.mono}`, { letterSpacing: '-0.02em', html: true })
+      if (w > 940 - 62) style(workEls[k], { fontSize: Math.max(40, Math.floor(40 * (940 - 62) / w)) + 'px' })
+    })
+    top += 48 + 20
   }
   // the ladder stands in from the edge: in throw mode he stands left of it, clear of the rails
   const throwish = lo.mode === 'throw' || (lo.mode !== 'climb' && N <= 10)
@@ -103,9 +193,11 @@ export default function growthLadder(spec, ctx) {
 
   // greedy word-wrap of a column head into lines no wider than A (null if a single word is wider)
   let HLS_ = '.07em'                // column-head letter-spacing (tightened to .04em to keep heads on one line)
+  let OVER = false                  // throw mode: the year head may overhang the rails (see the throw-mode search)
   function wrapHead(text, px, A) {
     const font = fontStr(800, px, F.head), o = { letterSpacing: HLS_, upper: true }
-    const words = String(text).split(/\s+/).filter(Boolean)
+    // (split at ordinary spaces only: a no-break space keeps "a month" together, so "Earns a month" wraps "Earns / a month")
+    const words = String(text).split(/[ \t\r\n]+/).filter(Boolean)
     const lines = []
     let cur = ''
     for (const w of words) {
@@ -132,19 +224,20 @@ export default function growthLadder(spec, ctx) {
     const yearPx = Math.max(Math.min(40, worthPx), Math.round(worthPx * 0.84))
     const inPx = Math.max(Math.min(40, worthPx), Math.round(worthPx * 0.7))
     const vY = Math.max(...rows.map(r => measure(r[0], fontStr(800, yearPx, F.head), { letterSpacing: '-0.02em' })))
-    const vI = Math.max(...rows.map(r => measure(r[1], fontStr(700, inPx, F.mono), { letterSpacing: '-0.03em' })))
+    const vI = Math.max(...rows.map(r => measure(r[1], fontStr(IN.w, inPx, IN.fam), { letterSpacing: IN.ls }) + (String(r[1]).split(' ').length - 1) * IN.ws * inPx))
     const wv = rows.map(r => mW(r[2], worthPx))
     const wLast = wv[N - 1]
     const vW = Math.max(...wv.slice(0, hl ? -1 : undefined), hl ? wLast * HLS + PLATE_PAD[0] : 0)
     for (let headPx = T.small; headPx >= (allowWrap ? 34 : T.small); headPx -= 2) {
       const yearWord = Math.max(...String(cols[0]).split(/\s+/).map(w => measure(w, fontStr(800, headPx, F.head), { letterSpacing: HLS_, upper: true })))
-      const xYear = Math.max(X0 + vY, RAIL[1] + 18 + yearWord)
+      // (OVER: the year head may overhang the rails, as it sits above the ladder top in throw mode; never past x 60)
+      const xYear = Math.max(X0 + vY, OVER ? L.left + 4 + yearWord : RAIL[1] + 18 + yearWord)
       // single-line heads must fit beside each other too; wrapped heads only need their longest word to fit
       const hw = c => (allowWrap ? 0 : measure(c, fontStr(800, headPx, F.head), { letterSpacing: HLS_, upper: true }))
       const loI = Math.max(xYear + CG + vI, xYear + 36 + hw(cols[1])), hiI = Math.min(XR - vW - CG, XR - 36 - hw(cols[2]))
       if (loI > hiI) return null
       const xIn = clamp((xYear + vI + XR - vW) / 2, loI, hiI)
-      const hs = [wrapHead(cols[0], headPx, xYear - RAIL[1] - 18), wrapHead(cols[1], headPx, xIn - xYear - 36), wrapHead(cols[2], headPx, XR - xIn - 36)]
+      const hs = [wrapHead(cols[0], headPx, xYear - (OVER ? L.left + 4 : RAIL[1] + 18)), wrapHead(cols[1], headPx, xIn - xYear - 36), wrapHead(cols[2], headPx, XR - xIn - 36)]
       if (hs.every(Boolean) && (allowWrap || hs.every(x => x.lines.length === 1))) {
         const nl = Math.max(...hs.map(x => x.lines.length))
         return { worthPx, yearPx, inPx, wLast, xYear, xIn, headPx, heads: hs, headH: nl * headPx * 1.04, hls: HLS_ }
@@ -164,24 +257,35 @@ export default function growthLadder(spec, ctx) {
   if (mode !== 'climb') {
     const minPx = mode === 'throw' ? 34 : 44
     const few = N <= 5
-    // (a short table prefers big values over single-line heads: its heads may wrap to reach 60-84 px)
-    // (one-line heads first: at the house letter-spacing, then tightened to .04em; only then may they wrap)
-    for (const [wrap, floorPx, startPx, hls] of [...(few ? [[false, 60, 84, '.07em'], [false, 60, 84, '.04em'], [true, 60, 84, '.07em']] : []), [false, 50, 76, '.07em'], [false, 50, 76, '.04em'], [true, minPx, 76, '.07em']]) {
-      HLS_ = hls
-      for (let px = startPx; px >= floorPx && !lay; px -= 2) {
-        const c = columns(px, wrap)
-        if (!c) continue
-        const topExtra = hl ? 0.97 * px * HLS + PLATE_PAD[1] + 8 : 0.97 * px
-        const room = bottomThrow - GAP - topExtra - (top + c.headH + 20)
-        const avail = N > 1 ? room / (N - 1) : 999
-        if (avail >= rowNeed(c)) {
-          lay = c; mode = 'throw'
-          pitch = Math.min(avail, few ? Math.max(rowNeed(c) + 60, 2.6 * px) : Math.max(rowNeed(c) + 40, 2 * px))
-          if (few) lift0 = Math.max(0, (room - (N - 1) * pitch) / 2)
+    const search = () => {
+      // (a short table prefers big values over single-line heads: its heads may wrap to reach 60-84 px)
+      // (one-line heads first: at the house letter-spacing, then tightened to .04em; only then may they wrap)
+      for (const [wrap, floorPx, startPx, hls] of [...(few ? [[false, 60, 84, '.07em'], [false, 60, 84, '.04em'], [true, 60, 84, '.07em']] : []), [false, 50, 76, '.07em'], [false, 50, 76, '.04em'], [true, minPx, 76, '.07em']]) {
+        HLS_ = hls
+        for (let px = startPx; px >= floorPx; px -= 2) {
+          const c = columns(px, wrap)
+          if (!c) continue
+          const topExtra = hl ? 0.97 * px * HLS + PLATE_PAD[1] + 8 : 0.97 * px
+          const room = bottomThrow - GAP - topExtra - (top + c.headH + 20)
+          const avail = N > 1 ? room / (N - 1) : 999
+          if (avail >= rowNeed(c)) {
+            const p = Math.min(avail, few ? Math.max(rowNeed(c) + 60, 2.6 * px) : Math.max(rowNeed(c) + 40, 2 * px))
+            return { c, hls, pitch: p, lift0: few ? Math.max(0, (room - (N - 1) * p) / 2) : 0 }
+          }
         }
       }
-      if (lay) break
+      return null
     }
+    // the year head stays right of the rails; only when that leaves the values under 56 px (a wide head word over
+    // short years, e.g. YEAR over "30" beside a wide second column) may it overhang them, above the ladder top
+    let best = search()
+    if (!best || best.c.worthPx < 56) {
+      OVER = true
+      const b2 = search()
+      if (b2 && (!best || b2.c.worthPx > best.c.worthPx)) best = b2
+      else OVER = false
+    }
+    if (best) { lay = best.c; HLS_ = best.hls; pitch = best.pitch; lift0 = best.lift0; mode = 'throw' }
   }
   // ---- climb mode: fixed pitch, the camera scrolls
   if (!lay) {
@@ -218,8 +322,9 @@ export default function growthLadder(spec, ctx) {
   }
   ctx.stage.append(fixed)
   const g = world.g
-  const showBars = lo.bars !== false && pitch >= 56
-  const barW = clamp(Math.round(pitch * 0.09), 6, 9)
+  const showBars = lo.bars !== false && pitch >= 56 && meterMode !== 'none'
+  // (a target gauge is drawn at the thickest weight: with its end tick it must read as a gauge, not an underline)
+  const barW = meterMode === 'target' ? 9 : clamp(Math.round(pitch * 0.09), 6, 9)
 
   // ladder: light structure (plus filler rungs down to the floor in climb mode) + an ink copy that climbs
   const fillers = []
@@ -236,8 +341,19 @@ export default function growthLadder(spec, ctx) {
   // composition meter under each Worth: grey = what you put in, green = growth
   const meterW = Math.max(160, ...rows.slice(0, hl ? -1 : undefined).map(r => mW(r[2], worthPx)))
   const M0 = XR - meterW
+  // (target mode: the soft track is the target's length; the fill is grey until it reaches the end, then green)
+  const tracks = meterMode === 'target' ? rows.map(() => hbar(g.back, { color: C.line, width: barW })) : []
+  // ... and each track ends in a short upright tick at x = XR ("up to here = the target"); grey until the row
+  // reaches it, then green with the fill
+  const TICK = { x: XR + 6, up: 9, down: 10 }
+  const ticks = meterMode === 'target' ? rows.map(() => { const el = s('line', { stroke: C.grey, 'stroke-width': 5, 'stroke-linecap': 'round', opacity: 0 }); g.mid.append(el); return el }) : []
+  const FILL_MIN = 20                // a short fill (≈ $8 of $100) still reads as a fill, not a stray underscore
   const barsIn = rows.map(() => hbar(g.mid, { color: C.line, width: barW }))
   const barsGrow = rows.map(() => hbar(g.mid, { color: C.hero, width: barW }))
+  const reach = vals.map(v => (meterMode === 'target' ? Math.max(0, v.worthN) / tgtN : 0))   // hero ÷ target
+  if (meterMode === 'target') barsIn.forEach(b => attr(b.el, 'stroke', C.grey))
+  // relight beats: from t the row's year and hero are green again (the first relight per row wins)
+  const relightT = rows.map((_, i) => { const b = beatsIn.filter(x => x.relight && x.row === i).sort((a, c) => a.t - c.t)[0]; return b ? b.t : null })
 
   // column heads (fixed layer), right-aligned over their columns, wrapped to 1-2 lines
   lay.heads.forEach((hd, k) => {
@@ -249,13 +365,28 @@ export default function growthLadder(spec, ctx) {
     style(el, { left: ([xYear, xIn, xWorth][k] - el.offsetWidth).toFixed(1) + 'px' })
   })
 
+  // relight: a green outlined plate (the gold plate's pad and radius, no fill) behind the relit row's year-to-hero
+  // span; its top and bottom edges ride on the gauge lines above and below the row, so it never cuts a value
+  const relitBox = rows.map((_, i) => {
+    if (relightT[i] == null || climb) return null
+    const el = h('div', { class: 'gl-relit', 'data-deco': '' })
+    world.html.append(el)
+    const vYmax = Math.max(...rows.map(r => measure(r[0], fontStr(800, yearPx, F.head), { letterSpacing: '-0.02em' })))
+    const x0 = xYear - vYmax - PLATE_PAD[0], x1 = xWorth + PLATE_PAD[0]
+    // (with gauges: from the centre of the gauge over the row to the centre of the row's own gauge; without, the
+    // plate's own pad around the digits)
+    const yTop = showBars && i < N - 1 ? shelfY(i + 1) + 3 - 3 : baseY(i) - 0.86 * worthPx - PLATE_PAD[1]
+    const yBot = showBars ? shelfY(i) + 3 + 3 : baseY(i) + 0.14 * worthPx + PLATE_PAD[1]
+    style(el, { width: (x1 - x0).toFixed(0) + 'px', height: (yBot - yTop).toFixed(0) + 'px' })
+    return { el, x0, y0: yTop, w: x1 - x0, h: yBot - yTop }
+  })
   let plate = null
   const R = rows.map((r, i) => {
     const last = i === N - 1
     if (last && hl) { plate = h('div', { class: 'gl-plate' }); world.html.append(plate) }
     return {
       year: new NumObj(world.html, { cls: 'gl-year', text: r[0], ax: 1, ay: 1, style: { fontSize: yearPx + 'px' } }),
-      inv: new NumObj(world.html, { cls: 'gl-in', text: r[1], ax: 1, ay: 1, style: { fontSize: inPx + 'px' } }),
+      inv: new NumObj(world.html, { cls: IN.cls, text: r[1], ax: 1, ay: 1, style: { fontSize: inPx + 'px' } }),
       worth: new NumObj(world.html, { cls: 'gl-worth', text: r[2], ax: 1, ay: 1, style: { fontSize: worthPx + 'px' } }),
       t: times[i], last,
     }
@@ -283,12 +414,14 @@ export default function growthLadder(spec, ctx) {
       if (!climb && burst) {
         const y0 = headBottom + 10, y1 = N > 1 ? baseY(N - 2) - 0.8 * worthPx - 6 : L.floorY
         const id = 'gl-burst-clip-' + Math.round(pb.cx) + '-' + Math.round(pb.cy)
-        const cp = s('clipPath', { id, clipPathUnits: 'userSpaceOnUse' }, s('rect', { x: -200, y: y0.toFixed(1), width: 1480, height: Math.max(0, y1 - y0).toFixed(1) }))
+        // (and never left of the plate's left edge - 8: a hit line must not graze the row's second column)
+        const cx0 = pb.x - 8
+        const cp = s('clipPath', { id, clipPathUnits: 'userSpaceOnUse' }, s('rect', { x: cx0.toFixed(1), y: y0.toFixed(1), width: (1280 - cx0).toFixed(1), height: Math.max(0, y1 - y0).toFixed(1) }))
         world.g.fx.append(cp)
         burst.setAttribute('clip-path', `url(#${id})`)
       }
       ctx.cue(Tl + 0.12, 'cash', { gain: 0.6 })
-    } else ctx.cue(Tl, 'thud', { gain: 0.45 })
+    } else if (Tl > 0) ctx.cue(Tl, 'thud', { gain: 0.45 })     // (a row at t <= 0 is already down at frame 1)
   })
   const spill = []
   if (hl) {
@@ -302,6 +435,34 @@ export default function growthLadder(spec, ctx) {
       spill.push({ c, t0: Tl + 0.03 + k * 0.025, p0: [Math.min(1000 - r - 8, right + dx), pb.cy + 4], v: [vx, vy], r })
     })
   }
+
+  // ================================================================== beats: tags, impacts (lookOpts.beats)
+  const heroBox = i => {                       // the row's hero cell: [left, right, top of the digits, baseline]
+    const w = mW(rows[i][2], worthPx) * (i === N - 1 && hl ? HLS : 1)
+    return { x0: xWorth - w, x1: xWorth, top: baseY(i) - 0.73 * worthPx * (i === N - 1 && hl ? HLS : 1), base: baseY(i) }
+  }
+  const tags = beatsIn.filter(b => b.label).map(b => {
+    const n = new NumObj(world.html, { cls: 'gl-tag', text: b.label, html: true, ax: 1, ay: 1 })
+    n.set({ opacity: 0, color: b.tone === 'bad' ? C.red : C.hero })
+    return { b, n }
+  })
+  // an impact beat swells its row's hero to IMPACT_K (anchored right, over 0.5 s) under a burst sized to the swell
+  const IMPACT_K = 1.15
+  const impactT = rows.map((_, i) => beatsIn.filter(b => b.impact && b.row === i).map(b => b.t))
+  beatsIn.filter(b => b.impact).forEach(b => {
+    const hb = heroBox(b.row)
+    const w = (hb.x1 - hb.x0) * IMPACT_K, hgt = (hb.base - hb.top) * IMPACT_K
+    fxk.impact(b.t, { x: hb.x1 - w / 2, y: hb.base - hgt / 2, shake: 8, r: 34, lines: 12,
+      rx: w / 2 + 12, ry: hgt / 2 + 14, cue: null })
+    // its hit lines stay right of the row's second column and above its shelf (the rows below are filled)
+    const burst = world.g.fx.lastElementChild
+    if (burst) {
+      const id = `gl-beat-clip-${b.row}-${Math.round(b.t * 100)}`
+      const y0 = headBottom + 10, y1 = shelfY(b.row) + 4, x0 = xIn + 10
+      world.g.fx.append(s('clipPath', { id, clipPathUnits: 'userSpaceOnUse' }, s('rect', { x: x0.toFixed(1), y: y0.toFixed(1), width: (1080 - x0).toFixed(1), height: Math.max(0, y1 - y0).toFixed(1) })))
+      burst.setAttribute('clip-path', `url(#${id})`)
+    }
+  })
 
   // ================================================================== the figure
   const showFig = lo.figure !== false
@@ -382,6 +543,23 @@ export default function growthLadder(spec, ctx) {
       }
     }
     if (!heaveOn) keys.push({ t: lastT + 0.9, pose: 'pointUp', d: 0.32, e: 'spring' })
+    // scripted acts (lookOpts.beats[].act): 0.14 s after the beat, held for d, cut short by his next throw or heave
+    const starts = coins.map(cn => cn.a - (cn.heavy ? 0.3 : 0)).sort((a, b) => a - b)
+    for (const b of beatsIn) {
+      const acts = (Array.isArray(b.act) ? b.act : b.act ? [b.act] : []).filter(p => typeof p === 'string' && POSES[p])
+      if (!acts.length) continue
+      const s0 = b.t + 0.14
+      const nxt = starts.find(x => x > s0) ?? Infinity
+      const end = Math.min(b.t + b.d, nxt - 0.02)
+      if (end - s0 < 0.3) continue
+      const step = (end - s0) / acts.length
+      acts.forEach((p, k) => {
+        keys.push({ t: s0 + k * step, pose: p, d: 0.24, e: 'spring' })
+        if (p === 'celebrate' || p === 'win') hops.push({ t0: s0 + k * step, dur: 0.42, h: 40 })
+      })
+      if (nxt - end > 0.3) keys.push({ t: end, pose: 'idle', d: 0.3, e: 'inOut' })
+    }
+    keys.sort((a, b) => a.t - b.t)
     const tr = poseTrack(keys)
     const figPose = t => {
       let p = tr.at(t)
@@ -516,6 +694,10 @@ export default function growthLadder(spec, ctx) {
   const camZ = t => (wide ? lerp(Z0, 1, E.inOut(prog(t, pushT[0], pushT[1] - pushT[0]))) : 1)
 
   // ================================================================== seek
+  // once the verdict relights the row that answers the hook, the gold plate steps back (grey border, paler fill):
+  // the relit row is the one focal point of the end hold
+  const quietT = hl ? Math.min(...relightT.filter((x, i) => x != null && i !== N - 1)) : Infinity
+  const coinRGB = hex(C.coin).join(',')
   const reachY = t => {
     let y = L.floorY
     for (let i = 0; i < N; i++) y = lerp(y, shelfY(i), E.inOut(prog(t, times[i] - 0.25, 0.3)))
@@ -539,37 +721,98 @@ export default function growthLadder(spec, ctx) {
       const next = i < N - 1 ? times[i + 1] : Infinity
       const isPlate = row.last && hl
       const a = vis(baseY(i) - worthPx * (isPlate ? HLS : 1) - (isPlate ? PLATE_PAD[1] + 6 : 0), shelfY(i) + 8)
-      row.year.set({ x: xYear, y: boxBottom(i, yearPx), color: mix(C.dim, C.ink, prog(t, Tl - 0.2, 0.2)), opacity: a })
+      const rl = relightT[i] != null && t >= relightT[i] ? relightT[i] : null      // relit: green again, with a bump
+      const rb = rl != null ? 1 + (relitBox[i] ? 0.06 : 0.1) * bump(t, rl, 0.4) : 1
+      // an impact beat swells the hero (anchored right) for 0.5 s
+      const ik = 1 + (IMPACT_K - 1) * Math.max(0, ...impactT[i].map(x => bump(t, x, 0.5)))
+      row.year.set({ x: xYear, y: boxBottom(i, yearPx), sx: rb, sy: rb, color: rl != null ? mix(C.ink, C.heroInk, prog(t, rl, 0.12)) : mix(C.dim, C.ink, prog(t, Tl - 0.2, 0.2)), opacity: a })
       const pin = prog(t, Tl - 0.2, 0.2)
       row.inv.set({ x: xIn, y: boxBottom(i, inPx) - 16 * (1 - E.out(pin)), opacity: (pin <= 0 ? 0 : clamp(pin * 1.6)) * a })
       // worth: drops the last few px onto the shelf, squashes, settles; green while it is the newest
-      const f = fall(t, Tl - dropDur, DROP, { e: 0.3, n: 2 })
-      const sq = squashAt(t, Tl, (isPlate ? 0.6 : 1) * squashAmt)
+      // (a row timed at t <= 0 has already landed on frame 1: settled, not caught mid-squash on the cover frame)
+      const pre = Tl <= 0
+      const f = pre ? { y: 0 } : fall(t, Tl - dropDur, DROP, { e: 0.3, n: 2 })
+      const sq = pre ? { sx: 1, sy: 1 } : squashAt(t, Tl, (isPlate ? 0.6 : 1) * squashAmt)
       const sc = isPlate ? HLS : 1
       row.worth.set({
-        x: xWorth, y: boxBottom(i, worthPx) - f.y, sx: sc * sq.sx, sy: sc * sq.sy,
+        x: xWorth, y: boxBottom(i, worthPx) - f.y, sx: sc * sq.sx * rb * ik, sy: sc * sq.sy * rb * ik,
         opacity: (t >= Tl - 0.06 ? clamp((t - (Tl - 0.06)) / 0.03) : 0) * a,
-        color: isPlate ? C.ink : mix(C.ink, C.heroInk, 1 - prog(t, next, 0.3)),
+        // (it settles to ink as the next row lands; before an impact row it is ink by the time that row lands, so
+        // the impact's number is the only green one on screen)
+        color: isPlate ? C.ink : rl != null ? mix(C.ink, C.heroInk, prog(t, rl, 0.12))
+          : mix(C.ink, C.heroInk, 1 - (i < N - 1 && impactT[i + 1].length ? prog(t, next - 0.1, 0.1) : prog(t, next, 0.3))),
       })
+      if (relitBox[i]) {
+        const bx = relitBox[i], pp = popIn(t, rl ?? Infinity, 0.3, 0.9)
+        style(bx.el, { transform: `translate(${bx.x0.toFixed(1)}px,${bx.y0.toFixed(1)}px) scale(${pp.scale.toFixed(3)})`, opacity: String(pp.opacity * a) })
+      }
       if (isPlate && plate) {
         const pp = popIn(t, Tl - 0.01, 0.3, 0.55)
+        const qp = prog(t, quietT, 0.3)
         style(plate, {
           transform: `translate(${pb.x.toFixed(1)}px,${(pb.y - f.y * 0.5).toFixed(1)}px) scale(${(pp.scale * sq.sx).toFixed(3)},${(pp.scale * sq.sy).toFixed(3)})`,
           opacity: t < Tl - 0.01 ? '0' : String(a),
+          background: `rgba(${coinRGB},${(1 - 0.45 * qp).toFixed(3)})`, borderColor: mix(C.ink, C.grey, qp),
         })
       }
       if (showBars) {
         const pm = E.inOut(prog(t, Tl + 0.1, 0.55))
-        const xs = M0 + meterW * clamp(vals[i].inN / vals[i].worthN), x1 = M0 + meterW * pm
         const my = shelfY(i) + 3 + (isPlate ? Math.max(0, pb.y + pb.h + barW / 2 + 5 - shelfY(i) - 3) : 0)   // clear the plate
-        barsIn[i].set({ x0: M0, x1: Math.min(x1, xs), y: my })
-        barsGrow[i].set({ x0: xs, x1: Math.max(xs, x1), y: my })
+        if (meterMode === 'target' && isPlate) {
+          // (the plate row has no gauge: the gold plate already says "reached", and a gauge under it would sit on the
+          // row below)
+          tracks[i].set({ opacity: 0 }); barsIn[i].set({ opacity: 0 }); barsGrow[i].set({ opacity: 0 }); attr(ticks[i], 'opacity', '0')
+        } else if (meterMode === 'target') {
+          // a gauge to the target: grey to hero ÷ target (never shorter than FILL_MIN); a row that reaches it snaps
+          // green, with a pulse, as it fills. The track ends in an upright tick: "up to here = the target"
+          const f = Math.min(1, reach[i]), done = reach[i] >= 1 && pm >= 0.999
+          // (a relit row's plate rides on its own gauge line and the one over it: those two gauges and their ticks
+          // hand over to its edges as it pops in, so its border is one even weight and its corners stay clean)
+          const boxed = [relitBox[i] && relightT[i], i > 0 && relitBox[i - 1] && relightT[i - 1]].filter(x => x != null && x !== false)
+          const op = prog(t, Tl, 0.12) * (1 - Math.max(0, ...boxed.map(x => prog(t, x + 0.1, 0.2))))
+          tracks[i].set({ x0: M0, x1: XR, y: my, opacity: op })
+          barsIn[i].set({ x0: M0, x1: done ? M0 : M0 + Math.max(f < 1 ? FILL_MIN : 0, meterW * f) * pm, y: my, opacity: op })
+          barsGrow[i].set({ x0: M0, x1: done ? XR : M0, y: my, opacity: op })
+          const rl = relightT[i]
+          const pulse = bump(t, Tl + 0.65, 0.3) + (rl != null && !relitBox[i] ? bump(t, rl, 0.45) : 0)
+          attr(barsGrow[i].el, 'stroke-width', (barW * (1 + 0.7 * pulse)).toFixed(2))
+          const tickOp = op
+          attr(ticks[i], 'x1', TICK.x.toFixed(1)); attr(ticks[i], 'x2', TICK.x.toFixed(1))
+          attr(ticks[i], 'y1', (my - TICK.up).toFixed(1)); attr(ticks[i], 'y2', (my + TICK.down).toFixed(1))
+          attr(ticks[i], 'stroke', done ? C.hero : C.grey)
+          attr(ticks[i], 'opacity', tickOp.toFixed(3))
+        } else {
+          const xs = M0 + meterW * clamp(vals[i].inN / vals[i].worthN), x1 = M0 + meterW * pm
+          barsIn[i].set({ x0: M0, x1: Math.min(x1, xs), y: my })
+          barsGrow[i].set({ x0: xs, x1: Math.max(xs, x1), y: my })
+        }
         attr(guides[i], 'x2', String(lerp(XR, M0 - 16, E.inOut(prog(t, Tl + 0.1, 0.3)))))
       }
       attr(guides[i], 'opacity', String(1 - 0.5 * prog(t, Tl, 0.4)))
       attr(inkLad.rungs[i], 'opacity', String(prog(t, Tl - 0.08, 0.1)))
       attr(inkLad.rungs[i], 'stroke-width', (S.rung * (1 + 0.6 * Math.sin(Math.PI * prog(t, Tl - 0.08, 0.3)))).toFixed(2))
     }
+    // tags (beats with a label): dropped over the empty slot above the row's hero, pointing down at it
+    for (const { b, n } of tags) {
+      const hb = heroBox(b.row)
+      // (an impact beat's tag waits until its burst has faded, so the hit lines never show through it as it fades in)
+      const t0 = b.t + (b.impact ? 0.24 : 0.08), t1 = b.t + b.d
+      if (t < t0 || t >= t1) { n.set({ opacity: 0 }); continue }
+      // (a drop, a fade and the overshoot of a pop, never below scale 1: the tag is never under 40 px)
+      const pp = popIn(t, t0, 0.22, 0.82), sc = Math.max(1, pp.scale)
+      const lift = 0.87 * worthPx * (IMPACT_K - 1) * Math.max(0, ...impactT[b.row].map(x => bump(t, x, 0.5)))
+      n.set({ x: xWorth + 4, y: hb.top - 16 - lift - 10 * (1 - E.out(prog(t, t0, 0.2))), sx: sc, sy: sc,
+        opacity: pp.opacity * (1 - prog(t, t1 - 0.15, 0.15)), color: b.tone === 'bad' ? C.red : C.hero })
+    }
+    // working lines: one at a time; a hard swap (never a blank frame, never shrunk below 40 px) with a short
+    // 12 px slide in from the right, so it never crosses x 60 (a line at t <= 0 is up at frame 1)
+    let wk = -1
+    for (let k = 0; k < WL.length; k++) if (t >= WL[k].t) wk = k
+    workEls.forEach((el, k) => {
+      if (k !== wk) { style(el, { opacity: '0' }); return }
+      const dx = WL[k].t <= 0 ? 0 : 12 * (1 - E.out(prog(t, WL[k].t, 0.14)))
+      style(el, { opacity: '1', transform: `translateX(${dx.toFixed(1)}px)` })
+    })
     if (showFig) figSeek(t)
     for (const sp of spill) {
       if (t < sp.t0) { sp.c.set({ opacity: 0 }); continue }
