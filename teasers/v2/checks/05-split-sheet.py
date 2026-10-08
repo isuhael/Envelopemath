@@ -584,6 +584,8 @@ def facts():
     record("05c", "'about half each' (VO): cart and fees both 45-55% of operating income",
            (round(C_LEFT_M / C_OPINC, 3), round(C_MEMBER / C_OPINC, 3)), "0.45..0.55 each",
            all(0.45 <= x / C_OPINC <= 0.55 for x in (C_LEFT_M, C_MEMBER)))
+    record("05c", "not all fees after tax either: fees < net income (md: 64%)", round(C_MEMBER / C_NI, 3), "< 1 (0.640)",
+           C_MEMBER < C_NI and round(C_MEMBER / C_NI, 3) == 0.640)
     record("05c", "'your cart makes almost as much' (VO): cart / fees 95-100%, exact and shown",
            (round(C_LEFT_M / C_MEMBER, 3), round(C_AMT[2] / C_FEES, 3)), "0.95..1.0",
            all(0.95 <= x < 1.0 for x in (C_LEFT_M / C_MEMBER, C_AMT[2] / C_FEES)))

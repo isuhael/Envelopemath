@@ -549,10 +549,12 @@ claim("a", "frame 1: gold tip under $10,000", round(val_at(A_au_pts, x_f1)), f"<
 # from its own t until the next flag (conservative: the kit retires a label only when a newer one overlaps it)
 def flag_window(S, race, x0, x1, label):
     evs = sorted(S.d["data"]["events"], key=lambda e: e["x"])
+    hold = S.d.get("lookOpts", {}).get("flagHold")          # the Scoreboard clears a flag label after flagHold s
     for k, e in enumerate(evs):
         if e.get("label") == label:
+            t0 = t_of(e["x"], race, x0, x1)
             nxt = t_of(evs[k + 1]["x"], race, x0, x1) if k + 1 < len(evs) else S.d["duration"]
-            return t_of(e["x"], race, x0, x1), nxt
+            return t0, min(nxt, t0 + hold) if hold else nxt
     return None
 
 
@@ -574,8 +576,14 @@ for i, j in ((0, 6), (1, 7), (2, 8)):
     claim("a", f"footerStep[{i}] t = vo[{j}] t", Sa.get(fs + (i, "t")), vo_t(Sa, j))
 claim("a", "footerStep 0 arithmetic", round(A_STAKE * sig(A["m_sp"])), round(sig(A_sp[2025])))
 claim("a", "footerStep 1 arithmetic", round(A_STAKE * sig(A["m_au"])), round(sig(A_au[2025])))
+# the gold reveal's cash (and hit, riser) are the kit's own climax cues at lookOpts.finalT[1], so the spec has none
 sfx_on(Sa, [(A["tl"][2002], "thud"), (A["tl"][2008], "thud"), (A["tl"][2013], "hit"), (A_RACE[1], "roll"),
-            (vo_t(Sa, 7), "cash"), (Sa.d["verdict"]["t"], "ding")])
+            (Sa.d["verdict"]["t"], "ding")])
+# staggered finish: the hero shows each final when the VO names it (S&P at the race end, gold last = the climax)
+claim("a", "lookOpts.finalT = [race end, vo[7] t]", Sa.d["lookOpts"]["finalT"], [A_RACE[1], vo_t(Sa, 7)])
+claim("a", "the S&P final takes the hero as vo[6] names it", Sa.d["lookOpts"]["finalT"][0], vo_t(Sa, 6))
+claim("a", "the winner (gold) is revealed last", A_au[2025] > A_sp[2025] and Sa.d["lookOpts"]["finalT"][1] > Sa.d["lookOpts"]["finalT"][0], True)
+claim("a", "lookOpts.flagHold (s)", Sa.d["lookOpts"]["flagHold"], 5.0)
 claim("a", "final roll on the race end", A_RACE[1], A["tl"][2025], ok=abs(A_RACE[1] - A["tl"][2025]) < 1e-9)
 claim("a", "the finals are said only after the race ends", vo_t(Sa, 6), f">= {A_RACE[1]}", ok=vo_t(Sa, 6) >= A_RACE[1])
 # what the words claim
@@ -764,7 +772,7 @@ seen_c = year_sync(Sc, C, C_Y0, C_RACE[1], hook_years=(C_Y1,))
 events(Sc, C, C_RACE, C_Y0, C["x1"], [(2018.9, "2018 sell-off", True), (2020.2, "COVID", False), (2022.5, "2022 bear market", False)], seen_c)
 Sc.s(("verdict", "text"), f"Europe won **{C_Y1}**.\nThe USA won the **decade**.")
 fm = ("lookOpts", "formulaSteps")
-Sc.s(fm + (0, "text"), f"= ${C_STAKE:,} × (1 + each year's return)")
+Sc.s(fm + (0, "text"), f"= ${C_STAKE:,}\n× (1 + each year's return)")
 Sc.s(fm + (1, "text"), f"= ${C_STAKE:,} × {1 + SP[2016] / 100:.4f} · = ${C_STAKE:,} × {1 + EU[2016] / 100:.4f}")
 Sc.s(fm + (2, "text"), f"≈ ${C_STAKE:,} × {sig(C['m_us']):.2f} · ≈ ${C_STAKE:,} × {sig(C['m_eu']):.2f}")
 Sc.s(fm + (3, "text"), f"≈ {C['cagr_us'] * 100:.1f}% a year vs ≈ {C['cagr_eu'] * 100:.1f}% a year")
@@ -795,6 +803,10 @@ us_min = min(val_at(C_us_pts, x_of(vo_t(Sc, 2) + k * 0.01, C_RACE, C_Y0, C["x1"]
 claim("c", "sync: 'the USA has doubled' holds on the USA tip for the whole line", round(us_min, 2), f">= {2 * C_STAKE:,}", ok=us_min >= 2 * C_STAKE)
 claim("c", "the finals are said only after the race ends", vo_t(Sc, 5), f">= {C_RACE[1]}", ok=vo_t(Sc, 5) >= C_RACE[1])
 sfx_on(Sc, [(C["tl"][2018], "thud"), (C["tl"][2020], "ding"), (19.1, "riser"), (C_RACE[1], "roll"), (Sc.d["verdict"]["t"], "ding")])
+# the clock above (x.from at raceT[0], linear) is the kit's only when it opens without a preroll
+claim("c", "lookOpts.preroll = 0 (the race sweeps x.from → x.to over raceT)", Sc.d["lookOpts"]["preroll"], 0)
+# each final cell lands again as the VO names it
+claim("c", "lookOpts.finalT = [vo[5] t, vo[6] t]", Sc.d["lookOpts"]["finalT"], [vo_t(Sc, 5), vo_t(Sc, 6)])
 # what the words claim
 claim("c", "'2020: the USA has doubled your money' (first year-end >= $20,000)", C["first_double_us"], 2020)
 claim("c", "Europe first >= $20,000 only in 2025", C["first_double_eu"], 2025)

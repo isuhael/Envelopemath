@@ -120,6 +120,27 @@
     }
   ],
   "lookOpts": {
-    "stake": "show"
+    "stake": "show",
+    "marks": [
+      {
+        "t": 2.3,
+        "row": 1,
+        "person": 0,
+        "tone": "bad"
+      },
+      {
+        "t": 3.9,
+        "row": 1,
+        "person": 1,
+        "tone": "good"
+      },
+      {
+        "t": 10.0,
+        "row": 5,
+        "person": 0,
+        "tone": "bad"
+      }
+    ],
+    "winnerT": 12.2
   }
 }

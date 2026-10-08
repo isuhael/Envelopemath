@@ -3,33 +3,31 @@
   "look": "scoreboard",
   "format": "unit-ladder",
   "fps": 30,
-  "duration": 27.0,
-  "header": "A NEW HOUSE, 1985 VS 2026,\nIN **$1.50** COSTCO HOT DOGS",
+  "duration": 26.0,
+  "header": "WHAT YOUR **$1.50** HOT DOG WOULD\nCOST IF IT ROSE LIKE A HOUSE",
   "footer": "Hot dog + soda: $1.50 in 1985. Still $1.50.",
   "captions": true,
   "vo": [
-    { "t": 0.0,  "d": 4.7, "text": "Costco hot dog, 1985: **$1.50**. Today: **$1.50**." },
-    { "t": 4.9,  "d": 2.7, "text": "Your Costco membership? **≈ 43 hot dogs**." },
-    { "t": 7.9,  "d": 3.2, "text": "An iPhone 18 Pro? **≈ 799**." },
-    { "t": 11.4, "d": 3.9, "text": "A new house in 1985? **56,200**." },
-    { "t": 15.6, "d": 4.7, "text": "And a new house in 2026? **≈ 262,000**." },
-    { "t": 20.6, "d": 4.7, "text": "Same $1.50. **≈ 4.7×** the hot dogs." }
+    { "t": 0.0,  "d": 3.5, "text": "Your **$1.50** hot dog, since 1985." },
+    { "t": 3.7,  "d": 3.0, "text": "Your Costco card? **≈ 43** of them." },
+    { "t": 7.4,  "d": 3.2, "text": "An iPhone 18 Pro? **≈ 799**." },
+    { "t": 11.0, "d": 3.9, "text": "A new house in 1985? **56,200**." },
+    { "t": 15.2, "d": 4.7, "text": "And a new house in 2026? **≈ 262,000**." },
+    { "t": 20.2, "d": 4.7, "text": "Rose like a house? A **≈ $7.01** hot dog." }
   ],
-  "verdict": { "t": 20.6, "text": "Hot dog: still $1.50.\nThe house: **≈ 4.7×** the hot dogs." },
+  "verdict": { "t": 20.2, "text": "Rose like a house?\nA **≈ $7.01** hot dog." },
   "data": {
-    "unit": { "name": "Costco hot dog", "price": "$1.50", "icon": "hotdog" },
+    "unit": { "name": "Costco hot dog", "label": "Your hot dog + soda", "price": "$1.50", "icon": "hotdog" },
     "rungs": [
-      { "t": 0.0,  "item": "Your Costco membership",       "cost": "$65",      "units": 43,     "unitsDisplay": "≈ 43" },
-      { "t": 7.9,  "item": "An iPhone 18 Pro",             "cost": "$1,199",   "units": 799,    "unitsDisplay": "≈ 799" },
-      { "t": 11.4, "item": "A median new house, 1985",     "cost": "$84,300",  "units": 56200,  "unitsDisplay": "56,200" },
-      { "t": 15.6, "item": "A median new house, Aug 2026", "cost": "$393,700", "units": 262467, "unitsDisplay": "≈ 262,467" }
+      { "t": 1.5,  "item": "Your Costco membership",       "cost": "$65",      "units": 43,     "unitsDisplay": "≈ 43" },
+      { "t": 7.4,  "item": "An iPhone 18 Pro",             "cost": "$1,199",   "units": 799,    "unitsDisplay": "≈ 799" },
+      { "t": 11.0, "item": "A median new house, 1985",     "cost": "$84,300",  "units": 56200,  "unitsDisplay": "56,200" },
+      { "t": 15.2, "item": "A median new house, Aug 2026", "cost": "$393,700", "units": 262467, "unitsDisplay": "≈ 262,467" }
     ],
-    "hold": 8.58
+    "hold": 7.98
   },
   "lookOpts": {
-    "climaxFill": 1,
-    "bigUnit": { "from": 10000, "per": 1000, "legend": "1 block = 1,000 hot dogs" },
-    "slots": [ { "rung": 2, "label": "1985: ?" }, { "rung": 3, "label": "2026: ?" } ]
+    "climaxFill": 1
   },
-  "sfx": [ { "t": 20.6, "kind": "ding" } ]
+  "sfx": [ { "t": 20.2, "kind": "ding" } ]
 }

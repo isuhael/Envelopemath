@@ -8,7 +8,7 @@
   - [`studio/specs/04a-scoreboard-sp500-vs-gold.json`](../../studio/specs/04a-scoreboard-sp500-vs-gold.json)
   - [`studio/specs/04b-becker-rig-savings-vs-sp500.json`](../../studio/specs/04b-becker-rig-savings-vs-sp500.json)
   - [`studio/specs/04c-live-sheet-usa-vs-europe.json`](../../studio/specs/04c-live-sheet-usa-vs-europe.json)
-- Check: [`teasers/v2/checks/04-chart-race.py`](checks/04-chart-race.py). It recomputes every series from the sourced annual returns and passes **445 checks with 0 failures** (407 before hook pass 2). New in this revision:
+- Check: [`teasers/v2/checks/04-chart-race.py`](checks/04-chart-race.py). It recomputes every series from the sourced annual returns and passes **451 checks with 0 failures** (445 before the assembly pass, 407 before hook pass 2). New in this revision:
   - a spoken-number sync check: every figure the VO quotes mid-race must be on screen at the moment it is said (on a tip counter, a flag, a beat label or the ledger row);
   - a 2,916-table sweep over the uncertain savings-rate inputs (04b);
   - a stale-text check on this write-up (since hook pass 2, also a 04b-section check that no text from the old hook is left).
@@ -98,13 +98,13 @@
 | 0.0 | Header. The race is already moving: S&P 500 tip $9,701, gold tip $9,823, both under the dashed $10,000 stake line; the top counter shows the leader, "GOLD $9,823". Big year "2000". Fixed x-axis 2000-2025. Footer "S&P + dividends · gold · year-ends 2000–2025" | "26 years. Stocks should crush gold." (0.0-2.4) |
 | 0.82-0.83 | 2000 close lands (S&P $9,090, gold $9,460). "Dot-com crash" flag | — |
 | 2.5 | Both lines run down and apart | "By 2002: stocks ≈ −38%. Gold ≈ +21%." (2.5-7.9; the two figures are said at 4.4 s and 6.4 s) |
-| 3.28 | 2002 close: S&P $6,239 vs gold $12,089. Flag "S&P ≈ −38% · gold ≈ +21%" (white, with −38% in red) holds until the 2008 flag at 10.37 s. Thud | (continues) |
+| 3.28 | 2002 close: S&P $6,239 vs gold $12,089. Flag "S&P ≈ −38% · gold ≈ +21%" (white, with −38% in red) holds 5 s (`flagHold`), to 8.28 s. Thud | (continues) |
 | 10.37-10.67 | "2008 crash" flag. 2008 close: S&P $7,187 vs gold $30,567. Thud | "2008: stocks crash again. Gold keeps climbing." (10.4) |
-| 15.98-16.83 | "Gold ≈ −28%" flag (holds until 27.30 s). Gold falls $58,204 → $41,907 at 16.83 s. Hit | "2013: gold drops ≈ 28% in one year." (16.8; "≈ 28%" said at 18.7 s) |
+| 15.98-16.83 | "Gold ≈ −28%" flag (holds 5 s, to 20.98 s). Gold falls $58,204 → $41,907 at 16.83 s. Hit | "2013: gold drops ≈ 28% in one year." (16.8; "≈ 28%" said at 18.7 s) |
 | 16.8-26.7 | The S&P climbs from $16,398 (2013) to $49,395 (2021); gold reaches $63,518 | "Then stocks run for years and close in." (21.2) · "2021: still behind." (26.7) |
-| 27.30 | "2022 bear market" flag | — |
-| 31.6 | Race ends. S&P tip pinned to "≈ $75,300". Roll. Footer step "$10,000 grew ≈ ×7.53 → ≈ $75,300" | "End of 2025: stocks ≈ $75,300." |
-| 36.4 | Gold tip pinned to "≈ $150,000". Cash. Footer step "$10,000 grew ≈ ×15.0 → ≈ $150,000" | "Gold ≈ $150,000." |
+| 27.30 | "2022 bear market" flag (clears at 32.05 s, as the finals land) | — |
+| 31.6-32.05 | Race ends. Both tips roll their last digits and land at 32.05 s on "≈ $75,300" / "≈ $150,000"; the flag strip clears. The hero cuts from gold to the S&P 500 (`finalT[0]`) and lands "S&P 500 ≈ $75,300" (bump, pop). Roll. Footer step "$10,000 grew ≈ ×7.53 → ≈ $75,300" | "End of 2025: stocks ≈ $75,300." |
+| 36.4 | The climax (`finalT[1]`): the hero hard-cuts to "GOLD ≈ $150,000" with the 1.13 bump, glow and floor flare and a flare on the gold tip. Riser from 34.0 s, then hit + cash (the kit's cues). Footer step "$10,000 grew ≈ ×15.0 → ≈ $150,000" | "Gold ≈ $150,000." |
 | 39.3 | Footer step "≈ ×15.0 → ≈ 3.9 doublings · ≈ ×7.53 → ≈ 2.9" | "Gold doubled ≈ 4 times. Stocks, ≈ 3." |
 | 42.5-45.5 | Verdict slams into the caption band: "Gold ended **≈ 2×** the S&P 500. / ≈ one extra doubling." Ding. Hold, then hard cut to frame 1 (loop) | — |
 
@@ -205,6 +205,8 @@
 - `stage: "race"`.
 - `stakeLine: 10000`: a dashed line at the stake, so "below the stake" reads at a glance.
 - `footerSteps`: the working line rewrites at 31.6, 36.4 and 39.3 s, as in 06a.
+- `finalT: [31.6, 36.4]` (assembly pass): a staggered finish that follows the VO. Both tips still land at the race end, but the hero shows the S&P 500's final as "End of 2025: stocks ≈ $75,300" is said, and cuts to gold's (the climax: riser, hit + cash, bump, flare) on "Gold ≈ $150,000". Before this, the hero showed GOLD ≈ $150,000 from 32.05 s, under the S&P line, and the gold line had no beat of its own. The spec's own cash cue at 36.4 s was dropped (the kit cues hit + cash there).
+- `flagHold: 5.0` (assembly pass): a flag label clears after 5 s, so "Gold ≈ −28%" no longer sits over "2021: still behind". Each spoken figure is still said while its flag shows (the check uses the shorter window). All flag labels clear as the finals land.
 - `data.raceT[0] = −0.4`: the Scoreboard kit opens mid-race when raceT starts below 0 ("already moving at 0.0 s").
 - The 2002 flag uses `tone: "neutral"` (white text), with `__≈ −38%__` (red) and `**≈ +21%**` (emphasis) inside it, so gold's gain is not drawn in crash red.
 
@@ -368,7 +370,7 @@
 - **On-screen hook (banner, 10 words):** `POV: In 2016 you invested **$10,000** in` / `USA vs EUROPE` (kept: it is H17's 345x header almost word for word).
 - **First VO line (0.0 s):** "2025: Europe beat the USA ≈ 2 to 1. Who won the decade?" (read "about two to one").
 - **Hook rules it satisfies:**
-  - **R1:** "$10,000", plus the formula bar "= $10,000 × (1 + each year's return)" and two $10,000 counters at 0.0 s.
+  - **R1:** "$10,000", plus the formula bar "= $10,000 / × (1 + each year's return)" (two lines) and two $10,000 counters at 0.0 s.
   - **R2.**
   - **R4.**
   - **R5:** the first line plants the belief the ending breaks ("Europe is beating the US now") at 0.0 s, and turns the generic "USA or Europe?" into a loop with a planted wrong answer: who won the decade?
@@ -387,11 +389,11 @@
   - Contrast cases we avoid: S&P500 and NASDAQ100 48,161 and USA and CANADA 30,478. That is why the labels say USA and EUROPE first and the index names second.
 - **Wrong belief it exploits:** "Europe is beating the US now." In 2025, Europe +35.41% vs the USA +17.88%, ≈ 2 to 1. Over the decade, the USA ≈ $39,800 vs Europe ≈ $22,700: the USA ≈ doubled twice, Europe once.
 
-**Beat sheet** (race: x 2016.0 → 2025.99 over t 1.0 → 21.0 s, 2.0 s per year, ChartOrbit pace; the ledger row changes on `lookOpts.ledger.rowT`)
+**Beat sheet** (race: x 2016.0 → 2025.99 over t 1.0 → 21.0 s, 2.0 s per year, ChartOrbit pace, with `lookOpts.preroll: 0` so the kit sweeps exactly this range; the ledger row changes on `lookOpts.ledger.rowT`)
 
 | t (s) | On screen | VO |
 |---|---|---|
-| 0.0 | Banner. Formula bar "≈ │ = $10,000 × (1 + each year's return)" mid-typing. Header row Year · USA · Europe; ledger row "2016" with empty cells. Counters "$10,000" / "$10,000". Footer "USA = S&P 500, Europe = MSCI Europe (net) · total return in US$ · Jan 2016 → Dec 2025 · no fees or tax" | "2025: Europe beat the USA ≈ 2 to 1. Who won the decade?" (0.0-6.6) |
+| 0.0 | Banner. Formula bar "≈ │ = $10,000 / × (1 + each year's return)" mid-typing (two lines). Header row Year · USA (S&P 500) · Europe (MSCI Europe); ledger row "2016" with empty cells. Counters "$10,000" / "$10,000" at the start of both lines. Footer (two lines) "Total return in US$ (MSCI Europe net) / Jan 2016 → Dec 2025 · no fees or tax" | "2025: Europe beat the USA ≈ 2 to 1. Who won the decade?" (0.0-6.6) |
 | 2.98 | Ledger row 2016 "+11.96%" / "−0.40%". Formula bar "= $10,000 × 1.1196 · = $10,000 × 0.9960". Tips $11,196 / $9,960 | (continues) |
 | 4.98 | Row 2017: +21.83% / +25.51% | (continues) |
 | 6.81-6.99 | "2018 sell-off" flag. Row 2018: −4.38% / −14.86% (red), on screen until 8.99 s. Europe tip $10,643. Thud | "2018: Europe drops ≈ 15%." (6.8; "≈ 15%" said at 8.7 s) |
@@ -401,8 +403,8 @@
 | 15.4-17.8 | Europe tip $14,266 → $16,559 | "Europe? Still under $17,000." |
 | 19.09-21.0 | Europe crosses $17,000 at 19.09 s and jumps to $22,661. Riser from 19.1 | "2025: Europe jumps ≈ 35%. USA, ≈ 18%." (19.2; "≈ 35%" said at 21.1 s, "≈ 18%" at 23.4 s) |
 | 21.0 | Race ends. Row 2025: +17.88% / **+35.41%**. Tips pinned "≈ $39,800" / "≈ $22,700". Formula bar "≈ $10,000 × 3.98 · ≈ $10,000 × 2.27". Roll | (continues) |
-| 24.6 | USA cell | "Final: USA ≈ $39,800." |
-| 28.6 | Europe cell | "Europe ≈ $22,700." |
+| 24.6 | USA cell lands again (`finalT[0]`): its value re-pops from 118% and the cell flashes. Pop | "Final: USA ≈ $39,800." |
+| 28.6 | Europe cell lands again (`finalT[1]`): re-pop, flash. Pop | "Europe ≈ $22,700." |
 | 31.4 | Formula bar "≈ 14.8% a year vs ≈ 8.5% a year" | "The USA ≈ doubled twice. Europe, once." (31.4-34.9) |
 | 35.0-38.0 | Verdict band "Europe won **2025**. / The USA won the **decade**." Ding. Hold; the last 0.5 s rewind to frame 1 (loop) | — |
 
@@ -446,7 +448,7 @@
 - **Per year:** 3.9833^(1/10) − 1 = 14.82%, **≈ 14.8%**; 2.2661^(1/10) − 1 = 8.52%, **≈ 8.5%**.
 - **Doublings:** log₂ 3.9833 = 1.994, just short of 2 ("≈ doubled twice", so it carries "≈"); log₂ 2.2661 = 1.18 (one completed doubling: "once"). Rule of 72 for the pinned comment: 72 ÷ 14.8 ≈ 4.9 years per doubling; 72 ÷ 8.5 ≈ 8.5.
 
-**Assumptions** (footer, above):
+**Assumptions** (footer, above; which index is which is named in the sheet's header cells, "USA / S&P 500" and "Europe / MSCI Europe"):
 - Both are total-return indexes in US dollars, so Europe's line includes the euro/pound moves against the dollar.
 - MSCI Europe is "net" (after dividend withholding tax), while the S&P 500 series is gross. This tilts roughly 0.3-0.5 points a year toward the USA, far smaller than the 6.3-point gap.
 - No fund fees or personal tax. Bought at the Dec 31, 2015 close and valued at the Dec 31, 2025 close.
@@ -465,8 +467,10 @@
 - **TikTok:** caption "Europe won 2025. Who won the decade? $10,000 in the USA vs Europe since 2016. Not advice." The national-rivalry comments are the point; don't add a third country (ChartOrbit's three-way titles fell to a 53,469 median).
 
 **lookOpts (Live Sheet):**
-- `formulaSteps`: the formula bar text at 0.0, 2.98, 21.0 and 31.4 s.
+- `formulaSteps`: the formula bar text at 0.0, 2.98, 21.0 and 31.4 s. The first step carries an author line break ("= $10,000" / "× (1 + each year's return)"); without it the kit broke the bar as "= $10,000 × (1" / "+ each year's return)".
 - `ledger`: columns, 10 rows of exact yearly returns, and `rowT`, the moment each year's close lands on the chart. The kit shows one row at a time (the latest year).
+- `preroll: 0` (assembly pass): the kit's default preroll opened the race 0.6 years in and swept 2016.6 → 2025.99 over raceT, so every close landed early and the chart ran up to a year ahead of the ledger row (at 3.1 s the 2016 row read −0.40% beside a Europe tip of $11,473). With no preroll the race sweeps x 2016.0 → 2025.99 over 1.0 → 21.0 s, as the check's clock assumes, and frame 1 shows both rivals at $10,000.
+- `finalT: [24.6, 28.6]` (assembly pass): each final cell lands again as the VO names it (the finals swap in at 21.0 s).
 
 ---
 
@@ -526,7 +530,7 @@ All were verified by web search: round 1 on 2026-10-07 (14 searches), plus 7 mor
 - **No 2026 data on screen.** The races end at the Dec 31, 2025 close (see the decisions above). A refresh after Dec 31, 2026 needs one more year per series.
 - **Search-summary provenance.** Every figure was seen only in search summaries, never on the page itself. The **[click-check]** rows need one human click before posting. The weakest inputs are the FDIC readings for 2010, 2021 and 2024 and the five midpoint years; the 04b sweep shows that none of them can change an on-screen figure.
 - **Benchmark caveats carry over.** The format's only benchmark channel (ChartOrbit) has collapsed to a ~1,557 median since leaving its formula. Our lengths (38.0-45.5 s) sit between its 61 s winners and its 31 s decline, by brief.
-- **Kit nit, not fixed here:** the Live Sheet caption chunker (and the Scoreboard caption wrap) can split "≈" from its number ("BEAT THE USA ≈" / "2 TO 1"). The chunker splits on any whitespace, so a no-break space does not help; the fix belongs in the kits (glue "≈" to the next word). Queued as a separate task.
+- **Kit nit, since fixed in the kits:** the Live Sheet caption chunker (and the Scoreboard caption wrap) used to split "≈" from its number ("BEAT THE USA ≈" / "2 TO 1"). In the assembly-pass stills "≈ 2 TO 1", "JUMPS ≈ 35%", "USA, ≈ 18%" and "Gold doubled ≈ 4" all keep "≈" with its number.
 - **Mutation test (12 of 12 caught):** a wrong final; a missing "≈" in the VO; an off-beat VO line; VO read too fast; a wrong ledger cell; an unchecked string containing a digit; a wrong chart point; a header over 15 words; a verdict that lands while the last VO line is still running; the 04c "2018" line moved 0.4 s later (its "≈ 15%" is then said after the ledger row has moved on); the 04a 2002 flag deleted (the spoken figures lose their anchor); the 04b savings final shown to the dollar. Hook pass 2 added 8 for the new 04b, all caught as failed claims, not crashes:
   - a verdict without "2010";
   - the year-1 cheer before the 2010 close;

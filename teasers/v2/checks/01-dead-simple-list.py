@@ -14,7 +14,8 @@ Social Security wage-cap hook since hook pass 2: "You pay 6.2% to Social Securit
    are shown, or 0.1 point for a percent): one rounding rule for the whole series, so
    anyone who redoes a visible formula gets the visible answer.
 4. Checks the timing contract: VO read at ~2.6 words/s, no overlapping lines, each
-   beat's t / resultT at the moment the VO says it, header + a number at t = 0,
+   beat's t / resultT (and a held-back note's noteT, 01a's check line) at the moment the VO
+   says it, a note that continues its result ("× 12 = $60,000") is true, header + a number at t = 0,
    first payoff by 3 s, results every ≤ 7.5 s, duration inside the 26-44 s lane, the
    verdict on the last VO line (the chrome swaps captions for the verdict card, so a
    line after it would have no on-screen text).
@@ -210,13 +211,14 @@ EXPECT = {
         "data.items[0].formula": f"{money(A_PAY)} × {A_PAYDAYS}",
         "data.items[0].result": money(A_YEAR),
         "data.items[0].note": f"not × {A_SEMI}",
-        "data.items[1].label": "A normal month (2 checks)",
+        "data.items[1].label": "A normal month",
         "data.items[1].formula": f"{money(A_PAY)} × 2",
         "data.items[1].result": money(A_MONTH),
-        "data.items[1].note": f"{A_NORMAL_MONTHS} months a year",
+        "data.items[1].note": f"× {MONTHS} = {money(A_TWELVE)}",
         "data.items[2].formula": f"{money(A_YEAR)} − {money(A_WRONG)}",
         "data.items[2].result": money(A_LEFT),
         "data.items[2].label": f"The {A_EXTRA} checks your budget forgets",
+        "data.check": f"{A_PAYDAYS} − {A_SEMI} = {A_EXTRA} checks",
     },
     "01b": {
         "header": (f"3 DEAD SIMPLE NUMBERS\nYOU PAY **{SS_PCT_S}%** TO SOCIAL SECURITY.\n"
@@ -298,12 +300,16 @@ VO_NUMBERS = {
 ANCHORS = {
     "01a": {"items": [((0, None), (0, money(A_YEAR))),
                       ((2, None), (2, money(A_MONTH))),
-                      ((3, None), (4, money(A_LEFT)))],
-            "verdict": (6, None)},
+                      ((4, None), (4, money(A_LEFT)))],
+            "verdict": (6, None),
+            # notes held back to the VO line that says them (item.noteT), and the check line (data.checkT)
+            "notes": {0: (1, None), 1: (3, None)},     # "Not times 24…", "12 normal months: $60,000."
+            "check": (5, None)},                        # "It's your 2 extra checks…"
     "01b": {"items": [((0, None), (0, money(B_SS_D))),
                       ((2, "stops"), (2, money(B_CAPPED))),
                       ((3, None), (3, B_RATE_S))],
             "verdict": (5, None),
+            "notes": {2: (4, None)},                    # "yours: 6.2%" opens on "Yours: 6.2%, on every dollar…"
             # the struck flat-rate guess: types on vo[1], lands on "$62,000", is struck on vo[2]'s "No."
             "wrongGuess": {"t": (1, None), "resultT": (1, money(B_WRONG)), "strikeT": (2, None)}},
     "01c": {"items": [((0, None), (0, money(C_NEW))),
@@ -518,6 +524,39 @@ def check_spec(key, spec):
     for s in spec.get("sfx", []):
         record(key, f"sfx {s['kind']} inside duration", s["t"], f"< {dur}", 0 <= s["t"] < dur)
 
+    # 5b. notes held back to their VO line (item.noteT) land after their result, at the VO mention; a note that
+    # continues its result ("× 12 = $60,000" beside "$5,000") is arithmetic and must be true
+    note_anchors = ANCHORS[key].get("notes", {})
+    for i, it in enumerate(items):
+        if "noteT" in it or i in note_anchors:
+            ln = note_anchors.get(i)
+            est = anchor_time(vo, *ln) if ln else None
+            record(key, f"items[{i}].noteT at VO mention", it.get("noteT"),
+                   "(no anchor)" if est is None else f"{est:.2f}±{ANCHOR_TOL}",
+                   est is not None and "noteT" in it and abs(it["noteT"] - est) <= ANCHOR_TOL)
+            record(key, f"items[{i}].noteT after its result", it.get("noteT"), f"≥ {it['resultT']}",
+                   it.get("noteT", -1) >= it["resultT"])
+        note = it.get("note", "")
+        if re.match(r"^[×÷+−]", note) and "=" in note:
+            lhs, rhs = note.split("=", 1)
+            got = eval_formula(f"{it['result']} {lhs}")
+            want, dp, sc = display_value(rhs)
+            record(key, f"items[{i}] note '{it['result']} {note}' is true", f"{got:,.4f}", show(want, dp, sc),
+                   abs(got * sc - want) < 1e-9)
+    if "check" in d:
+        lhs, rhs = d["check"].split("=", 1)
+        got, want = eval_formula(lhs), vo_numbers(rhs)
+        record(key, f"check line '{d['check']}' is true", got, want, len(want) == 1 and abs(got - want[0]) < 1e-9)
+        ln = ANCHORS[key].get("check")
+        est = anchor_time(vo, *ln) if ln else None
+        record(key, "data.checkT at VO mention", d.get("checkT"),
+               "(no anchor)" if est is None else f"{est:.2f}±{ANCHOR_TOL}",
+               est is not None and abs(d.get("checkT", -99) - est) <= ANCHOR_TOL)
+        typed = d["checkT"] + len("check: " + d["check"]) / 18      # the clean-sheet kit types 18 chars/s
+        record(key, "check line typed after the last result, before the verdict", f"{d['checkT']}-{typed:.1f}",
+               f"{items[-1]['resultT']} … {spec['verdict']['t']}",
+               items[-1]["resultT"] < d["checkT"] and typed < spec["verdict"]["t"])
+
     # 6. contract: only lookOpts the kit reads
     lo = spec.get("lookOpts", {})
     unknown = sorted(set(lo) - KIT_LOOKOPTS[spec["look"]])
@@ -572,6 +611,11 @@ def sensitivity():
            10 <= 1 / share <= 12)
     eq("01a", "27-payday year pay (pinned comment)", money(A_27), "$67,500")
     eq("01a", "13 months = year ÷ a normal month", A_YEAR / A_MONTH, 13.0)
+    eq("01a", "② note: a normal month × 12 = ③'s $60,000 = the × 24 guess", (A_MONTH * MONTHS, A_PAY * A_SEMI),
+       (A_WRONG, A_WRONG))
+    eq("01a", "check line: 26 − 24 = the 2 checks in ③'s label = ③ ÷ $2,500", (A_PAYDAYS - A_SEMI, A_LEFT // A_PAY),
+       (A_EXTRA, A_EXTRA))
+    eq("01a", "a normal month happens 10 times a year (write-up)", A_NORMAL_MONTHS, 10)
 
     # 01b: the Social Security wage cap (2026, employee share)
     close("01b", "Social Security on $41,600 (6.2%)", round(B_SS, 2), 2579.20, 0.005)

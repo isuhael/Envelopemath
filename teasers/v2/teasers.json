@@ -314,7 +314,7 @@
       "scoreboard"
     ],
     "file": "teasers/v2/05-split-sheet.md",
-    "check": "teasers/v2/checks/05-split-sheet.py",
+    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/05-split-sheet.py -> 494 checks, 0 failed, exit 0 (after hook pass 2: 05b and 05c rewritten to rewrite A). 05b derives the $1,200 rent bin (4 bricks), food + every bill (1,500 − 1,200 = $300 = 1 brick = $10 a day; $9.86 in a 30.44-day month) and the pinned-comment sums; 05c checks every row masked at frame 1, the membership row landed at frame 1, 'not zero', 'about half each' (49.4% / 50.6%), 'almost as much' (97.8%) and fees < net income (64%). In-memory mutation test of the new 05b/05c specs: 10 of 10 caught. Studio linter (node src/cli.mjs check specs/05*.json): 3/3 clean, 0 errors, 1 warning (05b check-line '=' 38.7 px at 14.5 s while assembling). Stills at 0, 1.5 and 3 s and every beat inspected for 05b and 05c.",
     "teasers": [
       {
         "id": "05a-clean-sheet-chipotle-10",
@@ -343,45 +343,45 @@
       {
         "id": "05b-becker-rig-3000-paycheck",
         "look": "becker-rig",
-        "title": "Could You Live on 50/30/20 With $3,000 a Month Take-Home?",
-        "header": "Could you live on 50/30/20\nwith **$3,000** a month take-home?",
-        "runtime_s": 29.3,
+        "title": "Pay $1,200 Rent? 50/30/20 Leaves Food and Bills How Much a Day?",
+        "header": "Rent **$1,200** on 50/30/20?\nFood and every bill get\nthis much a day:",
+        "runtime_s": 22.5,
         "key_numbers": [
-          "$3,000 a month take-home",
-          "$3,000 ÷ 10 = $300 (first payoff at 2.4 s)",
-          "needs 5 × $300 = $1,500 (goal, 5.4 s)",
-          "wants 3 × $300 = $900",
-          "savings 2 × $300 = $600",
-          "check $1,500 + $900 + $600 = $3,000",
-          "$900 ÷ 30 = $30 a day"
+          "$3,000 a month after tax (slab) · $1,200 rent (header)",
+          "$3,000 ÷ 10 = $300, 10 bricks (first payoff at 1.2 s)",
+          "rent 4 × $300 = $1,200 (40%)",
+          "food + every bill 1 × $300 = $300 (10%, goal, 6.9 s)",
+          "$300 ÷ 30 = $10 a day (verdict)",
+          "wants 3 × $300 = $900 · savings 2 × $300 = $600",
+          "check $1,200 + $300 + $900 + $600 = $3,000"
         ],
         "spec": "studio/specs/05b-becker-rig-3000-paycheck.json",
         "mp4": "studio/out/05b-becker-rig-3000-paycheck.mp4",
         "math_ok": true,
         "facts_ok": true,
-        "hook_score": 7
+        "hook_score": 7.25
       },
       {
         "id": "05c-scoreboard-costco-100",
         "look": "scoreboard",
-        "title": "How Much of Your $100 Does Costco Actually Keep?",
-        "header": "HOW MUCH OF YOUR **$100**\nDOES COSTCO ACTUALLY KEEP?",
-        "runtime_s": 26,
+        "title": "Is Costco's Profit All Membership Fees? Follow Your $100 Cart",
+        "header": "IS COSTCO'S PROFIT\nALL MEMBERSHIP FEES?\nFOLLOW YOUR **$100** CART:",
+        "runtime_s": 22.8,
         "key_numbers": [
           "$100.00 cart",
+          "≈ $1.99 membership fees per $100 of sales (5,907 ÷ 297,247), on screen at frame 1",
           "≈ $88.91 merchandise costs (264,279 ÷ 297,247)",
           "≈ $9.15 SG&A (27,190 ÷ 297,247)",
-          "≈ $1.94 left for Costco before tax (masked '?' until 10.2 s)",
+          "≈ $1.94 left from your cart, before tax (all rows masked '?' until their cut)",
           "hero $100.00 → ≈ $11.09 → ≈ $1.94",
           "check $88.91 + $9.15 + $1.94 = $100.00",
-          "≈ $1.99 membership fees per $100 of sales (5,907 ÷ 297,247)",
-          "fees $5,907M > what the cart leaves, $5,778M"
+          "cart $5,778M + fees $5,907M = $11,685M operating income (49.4% / 50.6%)"
         ],
         "spec": "studio/specs/05c-scoreboard-costco-100.json",
         "mp4": "studio/out/05c-scoreboard-costco-100.mp4",
         "math_ok": true,
         "facts_ok": true,
-        "hook_score": 7.5
+        "hook_score": 7.0
       }
     ]
   },

@@ -3,36 +3,33 @@
   "look": "clean-sheet",
   "format": "unit-ladder",
   "fps": 30,
-  "duration": 27.0,
-  "header": "Your degree, in **Big Macs**:\nfind your school",
-  "footer": "1 Big Mac = $6.22 (Jul 2026) · College Board 2025-26: tuition & fees; row 5 = full budget",
+  "duration": 21.5,
+  "header": "Community? In-state?\nOut-of-state? Private?\nYour year in **Big Macs**",
+  "footer": "1 Big Mac = $6.22 (Jul 2026) · College Board 2025-26: published tuition & fees",
   "captions": true,
   "vo": [
-    { "t": 0.0,  "d": 4.3, "text": "Find your school. Community college? **≈ 667 Big Macs**." },
-    { "t": 4.6,  "d": 3.5, "text": "A state school, in-state? **≈ 1,900**." },
-    { "t": 8.4,  "d": 3.5, "text": "The same school, out-of-state? **≈ 5,100**." },
-    { "t": 12.2, "d": 3.9, "text": "A private college, 1 year? **≈ 7,200**." },
-    { "t": 16.4, "d": 3.9, "text": "4 years private, with housing and food? **≈ 42,000**." },
-    { "t": 21.0, "d": 4.7, "text": "That's a Big Mac a day for **≈ 115 years**." }
+    { "t": 0.0,  "d": 3.3, "text": "Community college? **≈ 667 Big Macs**." },
+    { "t": 3.6,  "d": 3.7, "text": "A state school, in-state? **≈ 1,900**." },
+    { "t": 7.6,  "d": 3.7, "text": "The same school, out-of-state? **≈ 5,100**." },
+    { "t": 11.6, "d": 3.9, "text": "A private college, 1 year? **≈ 7,200**." },
+    { "t": 16.2, "d": 4.3, "text": "Private vs community: **≈ 10.8×** the Big Macs." }
   ],
-  "verdict": { "t": 21.0, "text": "A Big Mac a day\nfor **≈ 115 years**." },
+  "verdict": { "t": 16.2, "text": "Private vs community college:\n**≈ 10.8×** the Big Macs." },
   "data": {
     "unit": { "name": "Big Mac", "price": "$6.22", "icon": "burger" },
     "rungs": [
-      { "t": 0.0,  "item": "Community college, 1 year",             "cost": "$4,150",      "units": 667,   "unitsDisplay": "≈ 667" },
-      { "t": 4.6,  "item": "State school, in-state, 1 year",        "cost": "$11,950",     "units": 1921,  "unitsDisplay": "≈ 1,921" },
-      { "t": 8.4,  "item": "State school, out-of-state, 1 year",    "cost": "$31,880",     "units": 5125,  "unitsDisplay": "≈ 5,125" },
-      { "t": 12.2, "item": "Private college, 1 year",               "cost": "$45,000",     "units": 7235,  "unitsDisplay": "≈ 7,235" },
-      { "t": 16.4, "item": "Private, 4 years, with housing & food", "cost": "4 × $65,470", "units": 42103, "unitsDisplay": "≈ 42,103", "tone": "goal" }
+      { "t": -1.0, "item": "Community college, 1 year",          "cost": "$4,150",  "units": 667,  "unitsDisplay": "≈ 667" },
+      { "t": 3.6,  "item": "State school, in-state, 1 year",     "cost": "$11,950", "units": 1921, "unitsDisplay": "≈ 1,921" },
+      { "t": 7.6,  "item": "State school, out-of-state, 1 year", "cost": "$31,880", "units": 5125, "unitsDisplay": "≈ 5,125" },
+      { "t": 11.6, "item": "Private college, 1 year",            "cost": "$45,000", "units": 7235, "unitsDisplay": "≈ 7,235", "tone": "goal" }
     ],
-    "hold": 8.74
+    "hold": 8.14
   },
   "lookOpts": {
     "unitRow": "show",
     "countSpeed": 0.5,
-    "check": "check: ≈ 42,103 ÷ 365 days ≈ 115 years",
-    "checkT": 18.6,
-    "preview": "labels"
+    "check": "check: $45,000 ÷ $4,150 ≈ 10.8",
+    "checkT": 14.0
   },
-  "sfx": [ { "t": 21.0, "kind": "ding" } ]
+  "sfx": [ { "t": 16.2, "kind": "ding" } ]
 }

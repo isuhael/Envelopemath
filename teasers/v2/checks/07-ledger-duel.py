@@ -221,7 +221,9 @@ ea = {
     "lookOpts.formulaBar[0].text": T(money(A_DEPOSIT), pct(A_RATE * 100)),
     "lookOpts.formulaBar[1].text": T(money(A_DEPOSIT), str((A_STOP - A_START) * 12), money(A_IN)),
     "lookOpts.formulaBar[2].text": T(money(A_DEPOSIT), str((END_AGE - B_START) * 12), money(B_IN)),
-    "lookOpts.formulaBar[3].text": T(money(ava(A_STOP)), num(A_GROW30, 2), money_k(A_FINAL), str(END_AGE)),
+    # assembly (2026-10-08): one line, "Ava's ≈ $34,617 grows × ≈ 8.12", typed as the Age 65 row counts up to the
+    # product (≈ $281,000), so the bar stays one line and the caption band stays free
+    "lookOpts.formulaBar[3].text": T(money(ava(A_STOP)), num(A_GROW30, 2)),
 }
 for i, age in enumerate(A_ROWS):
     ea[f"data.rows[{i}].label"] = E(f"Age {age}")
@@ -493,6 +495,22 @@ def check_spec(sid):
         need = (n - shown) / BAR_CPS + BAR_READ
         record(sid, f"formulaBar[{i}] on screen ≥ type + read", round(until - k["t"], 2), f"≥ {need:.2f}",
                until - k["t"] >= need)
+    # VO-locked marks (lookOpts.marks [{t, row, person}], and 07c's lookOpts.winnerT on the winner's final cell):
+    # each lands after its row, inside a VO line, and that line names the marked cell's value (as shown, to the
+    # dollar, or in cents)
+    lo = spec.get("lookOpts", {})
+    picks = [(m["t"], m["row"], m["person"], f"mark {m['row']}/{m['person']}") for m in lo.get("marks", [])]
+    if "winnerT" in lo:
+        picks.append((lo["winnerT"], len(d["rows"]) - 1, d["winner"], "winnerT"))
+    for mt, mr, mp, what in picks:
+        cell = d["rows"][mr]["values"][mp]
+        val = float(re.sub(r"[^\d.]", "", bare(cell)))
+        said = {bare(cell), money(val, 1, approx_sign=False), f"{rnd(val * 100, 1):.0f} cents"}
+        line = next((v for v in vo if v["t"] <= mt <= v["t"] + v["d"]), None)
+        text = strip_markup(line["text"]) if line else ""
+        named = any(re.search(re.escape(x) + r"(?![\d,])", text) for x in said)
+        record(sid, f"{what} at {mt} names {cell}", text or "(no VO line)", f"after row t {d['rows'][mr]['t']}, VO names it",
+               bool(line) and named and mt >= d["rows"][mr]["t"])
     for b in spec.get("lookOpts", {}).get("beats", []):
         anchors = ts + [line["t"] + k * 0.1 for line in vo for k in range(int(line["d"] * 10) + 1)]
         record(sid, f"rig beat {b['act']} inside a row or VO line", b["t"], "anchored", any(abs(b["t"] - a) < 0.051 for a in anchors))
@@ -508,7 +526,7 @@ claim(ida, "Ava never behind at any row", min(ava(a) - ben(a) for a in A_ROWS) >
       all(ava(a) > ben(a) for a in A_ROWS))
 claim(ida, "gap from display finals", money_k(A_FINAL), "≈ $281,000 − ≈ $244,000 = ≈ $37,000",
       rnd(A_FINAL, 1000) - rnd(B_FINAL, 1000) == rnd(A_GAP, 1000))
-claim(ida, "formula bar: shown $34,617 × 8.12 → shown final", round(A_AVA35_SHOWN * A_GROW_SHOWN, 2),
+claim(ida, "formula bar: shown $34,617 × 8.12 → Age 65 cell", round(A_AVA35_SHOWN * A_GROW_SHOWN, 2),
       money_k(A_FINAL), money_k(A_AVA35_SHOWN * A_GROW_SHOWN) == money_k(A_FINAL))
 claim(ida, "pinned: Ava never stops", money_k(A_FULL40), "≈ $525,000", money_k(A_FULL40) == "≈ $525,000")
 claim(ida, "caption: break-even rate", f"{A_BREAKEVEN * 100:.3f}%", "≈ 6.1%", pct(A_BREAKEVEN * 100, 1) == "≈ 6.1%")

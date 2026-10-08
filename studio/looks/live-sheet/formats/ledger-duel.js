@@ -34,6 +34,8 @@
 //     a tone colours it instead of the leader rule)
 //   · eventPause (1.4 s: extra time after an event row when rows have no t)
 //   · leader ('high': in each row the bigger value is ink and the rest grey · 'low' for a cost duel · false: off)
+//   · marks ([{ t, row, person }]: after its row has landed, the selection springs onto that one value at t and it
+//     flashes, so the picture follows a voice-over that names the finished values; ignored after the winner beat)
 import {
   h, setStyle, clamp, prog, ease, fitText, plain, C, G, M, S, barScript, springRect,
   sheet, tipStrip, fitTips, tipWindow, mk, mkLen, typedMk, typedCount, typeDur, wordCut, caretOn, parseDisplay, displayValue,
@@ -327,11 +329,24 @@ export default function ledgerDuel(spec, ctx) {
   })
   const shiftAt = (r, t) => { let dy = 0; for (const st of strips) if (r > st.row) dy += slotH * st.win.open(t); return dy }
 
-  // ---------- selection keyframes: the fill handle drags down, then the winner's column ----------
+  // ---------- marks (lookOpts.marks): the selection springs onto the one cell the voice is naming ----------
+  // [{ t, row, person }]: a landed value (row index into data.rows, person index) is selected at t and pops with a
+  // flash, so a long stretch of voice-over over a finished ledger keeps a picture locked to the words. Marks after
+  // the winner beat or the loop clear are ignored.
+  const marksOpt = opt(spec, 'marks', null)
+  const marks = (Array.isArray(marksOpt) ? marksOpt : [])
+    .map(m => ({ t: +m.t, row: Math.round(+m.row), j: Math.round(+(m.person ?? 0)) }))
+    .filter(m => Number.isFinite(m.t) && m.row >= 0 && m.row < NR && m.j >= 0 && m.j < nP
+      && m.t >= tOf(m.row) && m.t < Math.min(hiT, loopT0) - 0.3)
+    .sort((a, b) => a.t - b.t)
+  const markOf = (r, j, t) => { let x = null; for (const m of marks) if (m.row === r && m.j === j && t >= m.t) x = m; return x }
+
+  // ---------- selection keyframes: the fill handle drags down, then any marks, then the winner's column ----------
   const landStep = (t, r) => (isPre(r) ? 1 : ease.out(prog(t, tOf(r) - 0.07, 0.16)))
   const fillRows = t => { let b = 1; for (let r = 1; r < NR; r++) b += landStep(t, r); return b }
   const dyFn = t => r => shiftAt(r, t)
   const K = [{ t: -Infinity, rect: t => sh.rangeRect(0, fillRows(t), outC0, outC1, dyFn(t)), head: t => [0, Math.floor(fillRows(t) - 0.01), outC0, outC1], handle: true }]
+  for (const m of marks) K.push({ t: m.t, dur: M.pick, spring: 1.4, rect: t => sh.rangeRect(m.row, m.row + 1, m.j + 1, m.j + 1, dyFn(t)), head: () => [m.row, m.row, m.j + 1, m.j + 1], handle: false })
   if (Number.isFinite(hiT)) K.push({ t: hiT, dur: M.pick, spring: 1.4, rect: t => sh.rangeRect(0, NR, wc, wc, dyFn(t)), head: () => [0, NR - 1, wc, wc], handle: false })
   if (loopOn) K.push({ t: loopT0, dur: 0.34, e: ease.inOut, rect: () => sh.rangeRect(0, fillRows(0), outC0, outC1), head: () => [0, Math.floor(fillRows(0) - 0.01), outC0, outC1], handle: true })
   const rectAt = (k, t) => {
@@ -350,6 +365,7 @@ export default function ledgerDuel(spec, ctx) {
     else ctx.cue(rowT[i], 'tick', { gain: 0.6 })
   })
   if (summary && sumT > 0) ctx.cue(sumT, 'pop', { gain: 0.7 })
+  for (const m of marks) ctx.cue(m.t + 0.12, 'pop', { gain: 0.5 })
   if (Number.isFinite(hiT)) ctx.cue(hiT, 'swipe', { gain: 0.45 })
   if (vEntry) ctx.cue(vEntry.end + 0.05, 'ding')
   else if (Number.isFinite(hiT) && vMode !== 'band') ctx.cue(hiT + 0.3, 'ding')
@@ -444,7 +460,14 @@ export default function ledgerDuel(spec, ctx) {
               if (ap > 0 && ap < 1 && out <= 0) scale = Math.max(scale, 1 + 0.08 * (1 - ease.out(ap)))
             }
           }
-          const flash = preR || (crash[r] && r < N) || (r < N && tone[r] === 'good' && rows[r].event) ? 0 : flashAlpha(t, flashT)
+          let flash = preR || (crash[r] && r < N) || (r < N && tone[r] === 'good' && rows[r].event) ? 0 : flashAlpha(t, flashT)
+          // a mark: the selection lands on this cell, which flashes and settles from 108%
+          const mOn = markOf(r, j, t)
+          if (mOn && out <= 0) {
+            flash = Math.max(flash, flashAlpha(t, mOn.t + 0.12, 0.6))
+            const mp = prog(t, mOn.t + 0.1, 0.3)
+            if (mp > 0 && mp < 1) scale = Math.max(scale, 1 + 0.08 * (1 - ease.out(mp)))
+          }
           sh.setCell(r, c, { text, p, out, flash, color, fill, scale, enter: isFell && crash[r] ? 'drop' : 'snap' })
         }
       }
