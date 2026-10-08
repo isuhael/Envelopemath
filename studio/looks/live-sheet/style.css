@@ -78,6 +78,7 @@
 }
 .ls-fline em { background: #FFD60A; color: #101828; border-radius: 6px; padding: 0 0.12em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 .ls-fline u.mark2 { color: #D92D20; }
+.ls-fline em.op { background: none; padding: 0; color: #101828; font-weight: 800; }
 .ls-caret { display: inline-block; width: 4px; height: 1.02em; margin-left: 4px; background: #2E90FA; vertical-align: -0.17em; border-radius: 1px; }
 
 /* ---------- sheet card ---------- */

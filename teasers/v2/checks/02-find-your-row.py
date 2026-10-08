@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """
-Format 2 "find-your-row" (P7): maths and spec check for teasers 02a, 02b and 02c (round-2 revision).
+Format 2 "find-your-row" (P7): maths and spec check for teasers 02a, 02b and 02c (round-2 revision,
+then the round-2 hook pass of 2026-10-07: 02a "It's just $3 a day", 02b "earns your whole career's pay",
+02c "what time your 9-to-5 starts paying you").
 
 1. Recomputes every on-screen number from its inputs (the sourced inputs are named
    constants below; everything else is arithmetic on them).
@@ -40,12 +42,9 @@ WPS_SPLIT = 2.8  # second, stricter read: hyphenated numbers split ("twenty-five
 # --------------------------------------------------------------------------------------
 FED_MIN_WAGE = 7.25          # USD/hr. US DOL Wage and Hour Division (in force since 2009-07-24);
                              # BLS CPS annual table 44: "$7.25 per hour in 2025".
-KPG_MYA = 66.0               # million years ago: Chicxulub impact / non-avian dinosaur extinction.
-                             # Renne et al., Science 2013: 66.038 / 66.043 Ma.
-SAPIENS_YEARS = 300_000      # years Homo sapiens has existed: Hublin et al., Nature 2017 (Jebel Irhoud,
-                             # ~315,000 yrs); "at least 300,000 years ago".
-MUSK_PLAN_MAX = 1_000_000_000_000   # Tesla 2025 CEO award "worth up to $1 trillion" if every target is hit;
-                                    # approved by shareholders 2025-11-06 (Reuters). Caption/header context only.
+MUSK_PLAN_MAX = 1_000_000_000_000   # Tesla 2025 CEO award "worth up to $1 trillion" if every target is hit,
+                                    # "over the next decade"; approved by shareholders 2025-11-06 (Reuters).
+DAYS_PER_YEAR_AVG = 365.25   # average calendar year (leap years included): 8,766 hrs a year, 24/7
 BLS_MEDIAN_WEEKLY = 1251     # USD, median usual weekly earnings, full-time wage & salary workers,
                              # Q2 2026, not seasonally adjusted. BLS release 2026-07-21.
 # 2026 federal income tax, single filer (IRS Rev. Proc. 2025-32, 2025-10-09)
@@ -60,10 +59,10 @@ ADDL_MEDICARE_RATE, ADDL_MEDICARE_THRESHOLD = 0.009, 200_000
 HOURS_PER_WEEK, WEEKS_PER_YEAR = 40, 52
 HOURS_PER_YEAR = HOURS_PER_WEEK * WEEKS_PER_YEAR          # 2,080
 
-TITLES = {
-    "02a-live-sheet-3-a-day-by-age": "What $3 a Day Costs You by Age",
-    "02b-scoreboard-trillion-at-your-wage": "Elon's $1 Trillion Pay Plan at Your Hourly Wage",
-    "02c-clean-sheet-salary-per-hour": "What You Actually Make Per Hour, by Salary",
+TITLES = {   # hook pass (2026-10-07): the adopted candidates' platform titles
+    "02a-live-sheet-3-a-day-by-age": "\"It's Just $3 a Day\": What It Costs You by 65, by Age",
+    "02b-scoreboard-trillion-at-your-wage": "How Fast Elon's $1 Trillion Pay Plan Earns Your Whole Career's Pay",
+    "02c-clean-sheet-salary-per-hour": "What Time Your 9-to-5 Starts Paying You, by Salary",
 }
 
 # --------------------------------------------------------------------------------------
@@ -204,18 +203,20 @@ def build_02a():
     lump_10y = (1 + RATE / 12) ** 120
     assert lump_10y > 2 * 0.99 and lump_10y < 2.01   # ≈ ×2.01: "roughly doubles every decade"
 
+    # hook pass: the excuse the viewer already holds ("it's just $3 a day") is the header, and the spend
+    # column is relabelled as that wrong answer, in red, beside the real cost
     vo = [
-        {"t": 0.0, "d": 4.3, "text": f"{usd(DAILY)} a day at {AGES[i18]}: **{rows[i18][2]}**."},
-        {"t": 4.5, "d": 3.3, "text": f"At {AGES[i25]}: **{rows[i25][2]}**."},
-        {"t": 8.0, "d": 3.5, "text": f"{gap} years younger? It costs you **more than double**."},
+        {"t": 0.0, "d": 4.7, "text": f"Just {usd(DAILY)} a day? At {AGES[i18]}: **{rows[i18][2]}**."},
+        {"t": 4.9, "d": 3.3, "text": f"At {AGES[i25]}: **{rows[i25][2]}**."},
+        {"t": 8.4, "d": 3.5, "text": f"{gap} years younger? It costs you **more than double**."},
     ]
     picks = [
-        {"t": vo[1]["t"], "row": i25, "label": f"≈ {ratio_disp:.1f}× what you'd spend"},
+        {"t": vo[1]["t"], "row": i25, "label": f"≈ {ratio_disp:.1f}× what you think"},
         {"t": vo[2]["t"], "row": i35, "label": f"At {AGES[i25]}: ≈ {younger_disp:.1f}× this"},
     ]
     verdict_t = round(mention_time(vo[2], "more than double"), 1)
     rows_t, row_every = 0.0, 0.5
-    duration = 13.0
+    duration = round(vo[-1]["t"] + vo[-1]["d"] + 1.5, 1)          # 11.9 + 1.5 = 13.4
     last_beat = max(rows_t + row_every * (len(rows) - 1), picks[-1]["t"])
     exp = {
         "id": "02a-live-sheet-3-a-day-by-age",
@@ -223,7 +224,7 @@ def build_02a():
         "format": "find-your-row",
         "fps": 30,
         "duration": duration,
-        "header": f"What **{usd(DAILY)} a day**\ncosts you by age",
+        "header": f"\"It's just **{usd(DAILY)} a day**.\"\nWhat it costs you by {END_AGE}:",
         "footer": f"At {round(RATE * 100)}% a year until {END_AGE} · no tax, fees, inflation",
         "captions": True,
         "vo": vo,
@@ -231,8 +232,8 @@ def build_02a():
         "data": {
             "columns": [
                 {"label": "Your age"},
-                {"label": f"You'd spend\nby {END_AGE}"},
-                {"label": f"It costs you\nby {END_AGE}", "emph": True},
+                {"label": "__What you think__\n__it costs__", "tone": "bad"},   # the held (wrong) answer, in red
+                {"label": "What it really\ncosts you", "emph": True},
             ],
             "rows": rows,
             "formula": f"= {usd(DAILY)} × {DAYS} ÷ 12 = {usd(MONTHLY, 2)} a month",
@@ -251,8 +252,12 @@ def build_02a():
     at10_25 = round_half_up(cost(25, 0.10), 1000)
     at10_18 = round_half_up(cost(18, 0.10), 10000)
     assert (at10_25, at10_18) == (577_000, 1_170_000)
+    # the red "what you think" number beside the real cost in the rows that land in the first 1.5 s
+    first = [(a, cost(a) / spend(a)) for a in AGES[:4]]
     nums += [
         ("$3 a day", f"{usd(DAILY)} × {DAYS} = {usd(ANNUAL)} a year; ÷ 12 = {usd(MONTHLY, 2)} a month"),
+        ("red vs real", "rows landing by 1.5 s: " + ", ".join(f"{a}: ×{r:.2f}" for a, r in first)),
+        ("first payoff", f"VO reaches '{rows[i18][2]}' at {mention_time(vo[0], rows[i18][2]):.2f} s"),
         ("pick 25", f"{usd(cost(25), 2)} ÷ {usd(spend(25))} = {ratio:.3f} → ≈ {ratio_disp:.1f}×"),
         ("pick 35", f"FV(25) ÷ FV(35) = {usd(cost(25), 2)} ÷ {usd(cost(35), 2)} = {younger:.3f} → ≈ {younger_disp:.1f}×"),
         ("verdict", f"FV(age) ÷ FV(age + 10), ages 18-54: min {min(whole.values()):.3f} (age {min(whole, key=whole.get)}), max {max(whole.values()):.2f} (all > 2)"),
@@ -263,46 +268,67 @@ def build_02a():
     return exp, allowed, nums
 
 # --------------------------------------------------------------------------------------
-# 02b  Scoreboard  "Elon's $1 trillion pay plan at your hourly wage"
+# 02b  Scoreboard  "How fast Elon's $1 trillion pay plan earns your whole career's pay"  (hook pass)
 # --------------------------------------------------------------------------------------
 def build_02b():
     TARGET = MUSK_PLAN_MAX
     WAGES = [FED_MIN_WAGE, 10, 15, 20, 25, 30, 40, 50, 75, 100, 250, 500, 1000]
+    PLAN_YEARS = 10                                           # "over the next decade" (Reuters)
+    SECS = int(PLAN_YEARS * DAYS_PER_YEAR_AVG * 24 * 3600)    # 315,576,000 s (365.25-day years, 24/7)
+    RATE = TARGET / SECS                                      # $3,168.81 a second
+    CAREER_YEARS = 40
+    CAREER_HOURS = HOURS_PER_YEAR * CAREER_YEARS              # 83,200 hours
 
-    def years(w):
-        return TARGET / (w * HOURS_PER_YEAR)
+    def career(w):                                            # 40 years of pay, exact (no "≈")
+        return w * CAREER_HOURS
 
-    def fmt_years(y):
-        if y >= 1_000_000:
-            m = round(y / 1_000_000, 1)
-            return f"≈ {m:.1f} million", m * 1_000_000
-        r = round_half_up(y, 1000)
-        return f"{approx(r, y)}{r:,}", r
+    def secs(w):                                              # how long the plan's average takes to earn it
+        return career(w) / RATE
+
+    def fmt_time(x):                                          # minutes to 0.1 below an hour, else hours to 0.1
+        m = x / 60
+        if m < 60:
+            r = round(m, 1)
+            return f"{approx(r, m)}{r:.1f} min", r
+        hrs = m / 60
+        r = round(hrs, 1)
+        return f"{approx(r, hrs)}{r:.1f} hrs", r
 
     def fmt_wage(w):
         return (usd(w, 2) if w != int(w) else usd(w)) + "/hr"
 
+    def fmt_career(w):
+        c = career(w)
+        assert abs(c - round(c)) < 1e-9                       # whole dollars, so exact
+        return usd(round(c))
+
     rows, nums = [], []
     for w in WAGES:
-        y = years(w)
-        disp, _ = fmt_years(y)
-        rows.append([fmt_wage(w), disp])
-        nums.append((f"row {fmt_wage(w)}", f"$1,000,000,000,000 ÷ ({usd(w, 2)} × {HOURS_PER_YEAR:,}) = {y:,.0f} yrs → {disp}"))
+        disp, _ = fmt_time(secs(w))
+        rows.append([fmt_wage(w), fmt_career(w), disp])
+        nums.append((f"row {fmt_wage(w)}", f"{usd(w, 2)} × {CAREER_HOURS:,} = {fmt_career(w)};  ÷ {usd(RATE, 2)}/s = {secs(w):,.1f} s = {secs(w) / 60:.3f} min → {disp}"))
 
-    y_min, y_top = years(FED_MIN_WAGE), years(WAGES[-1])
     assert WAGES[0] == FED_MIN_WAGE
-    assert abs(y_min / 1e6 - KPG_MYA) / KPG_MYA < 0.01, "minimum-wage row is not ≈ 66 million"
-    assert y_top > SAPIENS_YEARS, "$1,000/hr row must exceed the age of our species"
+    assert SECS == 315_576_000
+    rate_disp = round(RATE)                                   # ≈ $3,169 a second
+    i20, i100 = WAGES.index(20), WAGES.index(100)
+    min_min = secs(FED_MIN_WAGE) / 60                         # 3.17 → "≈ 3 minutes"
+    m20 = secs(20) / 60                                       # 8.75 → "under 9 minutes"
+    under20 = 9
+    assert m20 < under20 and m20 > under20 - 1
+    m100 = secs(100) / 60                                     # 43.76 → "≈ 44 minutes"
+    m100_disp = round(m100)
+    min_disp = round(min_min)
     vo = [
-        {"t": 0.0, "d": 4.0, "text": f"Minimum wage? Start **{rows[0][1]} years** ago."},
-        {"t": 4.2, "d": 2.8, "text": "You'd have clocked in with the dinosaurs."},
-        {"t": 7.2, "d": 4.8, "text": f"Even **{usd(WAGES[-1])} an hour**? Longer than our species has existed."},
+        {"t": 0.0, "d": 3.9, "text": f"{CAREER_YEARS} years at minimum wage? **≈ {min_disp} minutes** of his."},
+        {"t": 4.2, "d": 2.7, "text": f"{usd(WAGES[i20])} an hour? Under {under20} minutes."},
+        {"t": 7.2, "d": 4.7, "text": f"Even **{usd(WAGES[i100])} an hour**, for {CAREER_YEARS} years? ≈ {m100_disp} minutes."},
     ]
     picks = [
-        {"t": vo[1]["t"], "row": 0, "label": "≈ when the dinosaurs died out"},
-        {"t": vo[2]["t"], "row": len(WAGES) - 1, "label": f"Our species: ≈ {SAPIENS_YEARS:,} years"},
+        {"t": vo[1]["t"], "row": i20, "label": f"{fmt_career(20)} in under {under20} min"},
+        {"t": vo[2]["t"], "row": i100, "label": f"{fmt_career(100)} in ≈ {m100_disp} min"},
     ]
-    verdict_t = round(mention_time(vo[2], "Longer than"), 1)
+    verdict_t = round(mention_time(vo[2], f"≈ {m100_disp} minutes"), 1)
     rows_t, row_every = 0.0, 0.35
     duration = 14.0
     last_beat = max(rows_t + row_every * (len(rows) - 1), picks[-1]["t"])
@@ -312,18 +338,19 @@ def build_02b():
         "format": "find-your-row",
         "fps": 30,
         "duration": duration,
-        "header": "ELON'S **$1 TRILLION** PAY PLAN\nAT YOUR HOURLY WAGE",
-        "footer": f"Plan's max, if every target is hit · {HOURS_PER_YEAR:,} hrs a year · every cent kept",
+        "header": "ELON'S **$1 TRILLION** PAY PLAN\nEARNS YOUR WHOLE CAREER'S PAY IN…",
+        "footer": f"Plan's max, if every target is hit, ÷ {PLAN_YEARS} years, 24/7 · you: {CAREER_YEARS} years × {HOURS_PER_YEAR:,} hrs",
         "captions": True,
         "vo": vo,
-        "verdict": {"t": verdict_t, "text": f"Even **{usd(WAGES[-1])}/hr**: longer than our species has existed."},
+        "verdict": {"t": verdict_t, "text": f"Even **{usd(WAGES[i100])}/hr** for {CAREER_YEARS} years: ≈ {m100_disp} minutes of his."},
         "data": {
             "columns": [
                 {"label": "Your wage"},
-                {"label": "Start this many\nyears ago", "emph": True},
+                {"label": f"{CAREER_YEARS} years\nof your pay"},
+                {"label": "His plan earns\nit in", "emph": True},
             ],
             "rows": rows,
-            "formula": f"= {usd(TARGET)} ÷ (wage × {HOURS_PER_YEAR:,})",
+            "formula": f"= wage × {HOURS_PER_YEAR:,} × {CAREER_YEARS} ÷ ≈ {usd(rate_disp)} a second",
             "rowsT": rows_t,
             "rowEvery": row_every,
             "pick": picks,
@@ -331,19 +358,20 @@ def build_02b():
         },
         "sfx": [{"t": verdict_t, "kind": "ding"}],
     }
-    allowed = {1.0, float(TARGET), float(HOURS_PER_YEAR), float(SAPIENS_YEARS)}
+    allowed = {1.0, float(TARGET), float(HOURS_PER_YEAR), float(CAREER_YEARS), float(PLAN_YEARS),
+               24.0, 7.0,                                     # "24/7" in the footer (24 hrs, 7 days)
+               float(rate_disp), float(min_disp), float(under20), float(m100_disp)}
     for r in rows:
         for cell in r:
             allowed.update(number_tokens(cell))
-    per_hr_10y = TARGET / (10 * HOURS_PER_YEAR)
     nums += [
-        ("2,080", f"{HOURS_PER_WEEK} × {WEEKS_PER_YEAR} = {HOURS_PER_YEAR:,} hrs a year"),
-        ("dinosaurs", f"{y_min / 1e6:.2f} million yrs vs K–Pg {KPG_MYA} Ma (Renne 2013: 66.04) → {abs(y_min / 1e6 - KPG_MYA) / KPG_MYA:.1%} apart"),
-        ("our species", f"{y_top:,.0f} yrs > {SAPIENS_YEARS:,} yrs (×{y_top / SAPIENS_YEARS:.1f})"),
-        ("pinned 24/7", f"$1T ÷ ($7.25 × 8,766 hrs) = {TARGET / (FED_MIN_WAGE * 8766) / 1e6:.1f} million yrs"),
-        ("pinned decade", f"$1T ÷ (10 yrs × 2,080 hrs) = {usd(per_hr_10y)} an hour → ≈ $48 million"),
+        ("plan clock", f"{PLAN_YEARS} × {DAYS_PER_YEAR_AVG} × 24 × 3,600 = {SECS:,} s; $1,000,000,000,000 ÷ {SECS:,} = {usd(RATE, 2)}/s → ≈ {usd(rate_disp)}"),
+        ("career", f"{CAREER_YEARS} yrs × {HOURS_PER_YEAR:,} hrs = {CAREER_HOURS:,} hrs; wage × {CAREER_HOURS:,} is exact (no ≈)"),
+        ("VO min wage", f"{secs(FED_MIN_WAGE):.2f} s = {min_min:.3f} min → '≈ {min_disp} minutes' (at {mention_time(vo[0], f'≈ {min_disp} minutes'):.2f} s)"),
+        ("VO $20", f"{m20:.3f} min → 'under {under20} minutes'"),
+        ("VO $100", f"{m100:.3f} min → '≈ {m100_disp} minutes'; verdict at {mention_time(vo[2], f'≈ {m100_disp} minutes'):.2f} s"),
+        ("$1,000/hr", f"{secs(1000) / 3600:.3f} hrs; plan per hour = {usd(RATE * 3600)} (pinned)"),
     ]
-    assert round(per_hr_10y / 1e6) == 48
     return exp, allowed, nums
 
 # --------------------------------------------------------------------------------------
@@ -367,23 +395,41 @@ def build_02c():
     SALARIES = [200_000, 150_000, 100_000, 90_000, 80_000, 70_000, 65_000,
                 60_000, 50_000, 40_000, 35_000, 30_000]   # biggest bite first (R10); 12 rows keep the
                                                           # formula line and the pick legend on screen
+    # hook pass: the tax share of the year read as clock time on an 8-hour 9-to-5 (the Tax-Freedom-Day logic)
+    DAY_START_H, DAY_END_H = 9, 17                        # 9 am to 5 pm
+    DAY_MIN = (DAY_END_H - DAY_START_H) * 60              # 480 min = 8 hrs (2,080 hrs = 8 hrs × 260 workdays)
+    assert DAY_MIN * 260 == HOURS_PER_YEAR * 60
 
     def per_hour(s):
         return s / HOURS_PER_YEAR
 
+    def taxes(s):
+        return fed_tax_2026(s) + fica_2026(s)
+
     def kept(s):
-        return s - fed_tax_2026(s) - fica_2026(s)
+        return s - taxes(s)
 
     def kept_hour(s):
         return kept(s) / HOURS_PER_YEAR
 
+    def tax_min(s):                                       # minutes of each workday that go to tax + FICA
+        return DAY_MIN * taxes(s) / s
+
+    def clock(minutes_after_9):                           # "≈ 10:18 am" (rounded to the minute)
+        m = round_half_up(minutes_after_9, 1)
+        hh, mm = divmod(DAY_START_H * 60 + m, 60)
+        ampm = "am" if hh < 12 else "pm"
+        h12 = hh if hh <= 12 else hh - 12
+        return f"{approx(m, minutes_after_9)}{h12}:{mm:02d} {ampm}", m
+
     rows, nums = [], []
     for s in SALARIES:
-        h, k = per_hour(s), kept_hour(s)
-        hr, kr = cents(h), cents(k)
-        rows.append([usd(s), approx(hr, h) + usd(hr, 2), approx(kr, k) + usd(kr, 2)])
+        tm = tax_min(s)
+        tmr = round_half_up(tm, 1)
+        ck, _ = clock(tm)
+        rows.append([usd(s), f"{approx(tmr, tm)}{tmr} min", ck])
         nums.append((f"row {usd(s)}",
-                     f"÷ 2,080 = {h:.4f} → {rows[-1][1]};  fed {usd(fed_tax_2026(s), 2)} + FICA {usd(fica_2026(s), 2)} → kept {usd(kept(s), 2)} ({kept(s) / s:.1%}) ÷ 2,080 = {k:.4f} → {rows[-1][2]}"))
+                     f"fed {usd(fed_tax_2026(s), 2)} + FICA {usd(fica_2026(s), 2)} = {usd(taxes(s), 2)} ({taxes(s) / s:.2%}) × {DAY_MIN} min = {tm:.2f} min → {rows[-1][1]} → {ck}"))
 
     # BLS median pointer
     median_annual = BLS_MEDIAN_WEEKLY * WEEKS_PER_YEAR          # 65,052
@@ -392,28 +438,28 @@ def build_02c():
     assert abs(median_annual - median_row_salary) / median_annual < 0.01
     im = SALARIES.index(median_row_salary)
     i100 = SALARIES.index(100_000)
-    gap100 = per_hour(100_000) - kept_hour(100_000)               # 10.0096
-    gap100_disp = round(gap100)                                   # ≈ $10
-    assert abs(gap100 - gap100_disp) < 0.05
-    kept65_disp = round(kept_hour(65_000))                        # ≈ $26
-    assert per_hour(65_000) == 31.25                              # exact: no ≈
-    # sanity: the kept share falls as pay rises (progressive tax), every row
-    shares = [kept(s) / s for s in SALARIES]
-    assert all(a < b for a, b in zip(shares, shares[1:]))
+    m100 = round_half_up(tax_min(100_000), 1)                     # 100 min
+    h100, mm100 = divmod(m100, 60)                                # 1 hr 40 min
+    # sanity: the tax share rises with pay (progressive tax), so every row's clock is later than the one below
+    shares = [taxes(s) / s for s in SALARIES]
+    assert all(a > b for a, b in zip(shares, shares[1:]))
+    assert all(tax_min(a) > tax_min(b) for a, b in zip(SALARIES, SALARIES[1:]))
+    # the previous cut's per-hour figures still hold on the same model (the pinned comment uses $65,000)
+    assert per_hour(65_000) == 31.25 and round(kept_hour(65_000)) == 26
     # consistency with 01b (× 0.85 kept at $41,600) and 08b ($15/hr → ≈ $13.10 kept): same tax model
     assert abs(kept(41_600) / 41_600 - 0.85) < 0.01
     assert cents(kept(15 * HOURS_PER_YEAR) / HOURS_PER_YEAR) == 13.10
 
     vo = [
-        {"t": 0.0, "d": 4.0, "text": f"**{rows[im][0]}**? {rows[im][1]} an hour."},
-        {"t": 4.2, "d": 2.9, "text": f"After tax, you keep **≈ ${kept65_disp}**."},
-        {"t": 7.4, "d": 3.9, "text": f"Six figures? **≈ ${gap100_disp}** an hour never reaches you."},
+        {"t": 0.0, "d": 4.3, "text": f"{rows[im][0]}? You work for tax till **{rows[im][2][:-3]}**."},
+        {"t": 4.5, "d": 2.6, "text": f"That's {rows[im][1].replace(' min', ' minutes')}, every workday."},
+        {"t": 7.4, "d": 2.4, "text": f"Six figures? Until **{rows[i100][2][:-3]}**."},
     ]
     picks = [
         {"t": vo[1]["t"], "row": im, "label": "≈ US median full-time pay"},
-        {"t": vo[2]["t"], "row": i100, "label": f"≈ ${gap100_disp} an hour goes to tax"},
+        {"t": vo[2]["t"], "row": i100, "label": f"≈ {h100} hr {mm100} min, every workday"},
     ]
-    verdict_t = round(mention_time(vo[2], f"≈ ${gap100_disp}"), 1)
+    verdict_t = round(mention_time(vo[2], rows[i100][2][:-3]), 1)
     rows_t, row_every = 0.0, 0.2
     duration = 13.0
     last_beat = max(rows_t + row_every * (len(rows) - 1), picks[-1]["t"])
@@ -423,19 +469,19 @@ def build_02c():
         "format": "find-your-row",
         "fps": 30,
         "duration": duration,
-        "header": "What you **actually** make\nper hour, by salary",
+        "header": f"What time your {DAY_START_H}-to-{DAY_END_H - 12}\nstarts paying **you**, by salary",
         "footer": "Single · 2026 federal tax + FICA · no state tax",
         "captions": True,
         "vo": vo,
-        "verdict": {"t": verdict_t, "text": f"{usd(100_000)}: **≈ ${gap100_disp}** of every hour never reaches you."},
+        "verdict": {"t": verdict_t, "text": f"{usd(100_000)}: you work for tax till **{rows[i100][2][:-3]}**, every workday."},
         "data": {
             "columns": [
                 {"label": "Salary"},
-                {"label": f"Per hour\n÷ {HOURS_PER_YEAR:,}"},
-                {"label": "You keep\nper hour", "emph": True},
+                {"label": "Tax + FICA,\nmin a day"},
+                {"label": "Paying you\nfrom", "emph": True},
             ],
             "rows": rows,
-            "formula": f"= (salary − tax − FICA) ÷ {HOURS_PER_YEAR:,}",
+            "formula": f"= {DAY_START_H}:00 am + {DAY_MIN} min × (tax + FICA) ÷ salary",
             "rowsT": rows_t,
             "rowEvery": row_every,
             "pick": picks,
@@ -443,17 +489,18 @@ def build_02c():
         },
         "sfx": [{"t": verdict_t, "kind": "ding"}],
     }
-    allowed = {float(HOURS_PER_YEAR), 2026.0, float(gap100_disp), float(kept65_disp)}
+    allowed = {float(DAY_START_H), float(DAY_END_H - 12), 0.0, float(DAY_MIN), 2026.0, float(h100), float(mm100)}
     for r in rows:
         for cell in r:
             allowed.update(number_tokens(cell))
     nums += [
-        ("median", f"BLS ${BLS_MEDIAN_WEEKLY:,}/wk × {WEEKS_PER_YEAR} = {usd(median_annual)} → ≈ {usd(median_row_salary)} (row {im}); ÷ 40 hrs = ${BLS_MEDIAN_WEEKLY / 40:.3f}/hr"),
-        ("$65,000", f"{rows[im][1]} an hour; kept {kept_hour(65_000):.4f} → ≈ ${kept65_disp} (VO); {per_hour(65_000) - kept_hour(65_000):.2f}/hr to tax"),
-        ("verdict", f"$100,000: {per_hour(100_000):.4f} − {kept_hour(100_000):.4f} = {gap100:.4f} → ≈ ${gap100_disp} of every hour"),
-        ("kept share", f"{shares[0]:.1%} at {usd(SALARIES[0])} … {shares[-1]:.1%} at {usd(SALARIES[-1])} (falls as pay rises)"),
+        ("workday", f"9 am-5 pm = {DAY_MIN} min; × 260 workdays = {HOURS_PER_YEAR:,} hrs a year (the slate's ÷ 2,080)"),
+        ("median", f"BLS ${BLS_MEDIAN_WEEKLY:,}/wk × {WEEKS_PER_YEAR} = {usd(median_annual)} → ≈ {usd(median_row_salary)} (row {im})"),
+        ("$65,000", f"{taxes(65_000) / 65_000:.4%} × 480 = {tax_min(65_000):.2f} min → {rows[im][1]} → {rows[im][2]}; VO reaches it at {mention_time(vo[0], rows[im][2][:-3]):.2f} s"),
+        ("$100,000", f"{taxes(100_000) / 100_000:.4%} × 480 = {tax_min(100_000):.2f} min = {h100} hr {mm100} min → {rows[i100][2]}"),
+        ("spread", f"{rows[-1][2]} at {usd(SALARIES[-1])} … {rows[0][2]} at {usd(SALARIES[0])} ({round_half_up(tax_min(SALARIES[0]), 1) - round_half_up(tax_min(SALARIES[-1]), 1)} min apart)"),
+        ("pinned $65,000", f"{usd(65_000)} ÷ 2,080 = $31.25 an hour; kept {kept_hour(65_000):.4f} → ≈ $26"),
         ("cross-check", f"01b: $41,600 keeps {kept(41_600) / 41_600:.3f} (≈ 0.85); 08b: $15/hr keeps {usd(kept(31_200) / 2080, 2)}"),
-        ("pinned PTO", f"3 weeks off = 120 hrs → 1,960 hrs worked; $65,000 kept ÷ 1,960 = {kept(65_000) / 1960:.2f} vs ÷ 2,080 = {kept_hour(65_000):.2f}"),
     ]
     return exp, allowed, nums
 

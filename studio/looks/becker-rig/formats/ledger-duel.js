@@ -52,6 +52,7 @@ export const css = `
 .ld-name i { display: inline-block; border-radius: 50%; }
 .ld-plan { font-family: ${F.head}; font-weight: 700; font-size: 40px; line-height: 46px; letter-spacing: -0.01em; color: ${C.grey}; }
 .ld-leg { position: absolute; left: 62px; width: 878px; font: 700 40px/46px ${F.head}; letter-spacing: -0.01em; color: ${C.grey}; }
+.ld-leg.one { white-space: nowrap; }
 .ld-leg b { font-weight: 900; letter-spacing: -0.02em; margin-right: 14px; }
 .ld-leg i { display: inline-block; width: 26px; height: 26px; border-radius: 50%; margin-right: 12px; vertical-align: 0px; }
 .ld-key { position: absolute; font: 800 40px/42px ${F.head}; letter-spacing: .07em; text-transform: uppercase; color: ${C.grey}; white-space: nowrap; }
@@ -111,6 +112,10 @@ export default function ledgerDuel(spec, ctx) {
     else if (i === 0) times.push(d.rowsT ?? 1.0)
     else times.push(times[i - 1] + (d.rowEvery ?? 0.6) + (rows[i - 1].event ? EVENT_PAUSE : 0))
   }
+  // the stake row (equal values, no explicit t) and any row at t <= 0 are already standing at frame 1: they land
+  // before the video starts, so the thumbnail never catches a number mid-squash
+  if (N > 1 && rows[0].t == null && String(rows[0].values[0]) === String(rows[0].values[1])) times[0] = 0
+  const landT = times.map(x => (x <= 0 ? -0.6 : x))
   const lastT = times[last]
   const nextT = i => (i < last ? times[i + 1] : Infinity)
 
@@ -177,7 +182,7 @@ export default function ledgerDuel(spec, ctx) {
   }
 
   // legend (fallback for long plans): one line per person, "● Name  plan", full width under the stake line
-  let legEls = [], legH = 0
+  let legEls = [], legH = 0, legH1 = 0
   if (people.some(x => x.plan)) {
     legEls = [0, 1].map(p => {
       const el = h('div', { class: 'ld-leg' })
@@ -187,6 +192,7 @@ export default function ledgerDuel(spec, ctx) {
     })
     if (!fixed.parentNode) ctx.stage.append(fixed)
     legH = legEls.reduce((a, el) => a + el.offsetHeight, 0) + 6
+    legH1 = legEls.length * 46 + 6                       // one line each, the plan cut with an ellipsis (last resort)
   }
 
   function wrap(text, font, ls, maxW) {
@@ -224,7 +230,10 @@ export default function ledgerDuel(spec, ctx) {
       const xA = xYear + G + vW[0] + slack * f
       const headW = [xA - (keyLabel ? xYear + 24 : X0), xB - xA - 26]
       const names = [0, 1].map(p => {
-        for (let px = 48; px >= 40; px -= 2) { const w = mW(nameOf(p), fnt(900, px), '-0.02em') + px * 0.6 + 12; if (w <= headW[p] || px === 40) return { px, w } }
+        for (let px = 48; px >= 40; px -= 2) { const w = mW(nameOf(p), fnt(900, px), '-0.02em') + px * 0.6 + 12; if (w <= headW[p]) return { px, w } }
+        // with the legend on screen (it names both people), a head too narrow for the name keeps only its dot
+        if (cf.lg) return { px: 40, w: 30, dotOnly: true }
+        return { px: 40, w: Infinity }
       })
       const plans = [0, 1].map(p => (people[p].plan && !cf.lg ? wrap(plain(people[p].plan), fnt(700, 40), '-0.01em', headW[p]) : { lines: [], w: 0, over: false }))
       if (names.some((n, p) => n.w > headW[p] + 0.5) || plans.some(x => x.over)) continue
@@ -232,11 +241,12 @@ export default function ledgerDuel(spec, ctx) {
       if (!best || nl < best.nl) best = { xA, names, plans, nl }
     }
     if (!best || best.nl > cf.pl) return null
-    const nameLH = Math.max(...best.names.map(n => n.px)) + 4
+    // heads that kept only their dot need just the dot's height
+    const nameLH = best.names.every(n => n.dotOnly) ? 30 : Math.max(...best.names.map(n => n.px)) + 4
     const headH = nameLH + best.nl * 46
     // vertical: rows from the floor up; heads just above the top row (and the stake line above them)
     const legTop = top0 + (cf.st ? stakeH + 18 : 0)
-    const top = legTop + (cf.lg ? legH + 18 : cf.st ? 4 : 0)
+    const top = legTop + (cf.lg ? (cf.lg === 1 ? legH1 : legH) + 18 : cf.st ? 4 : 0)
     const rowNeed = 1.2 * Math.max(vp, yp) + 1
     const topExtra = plateOn ? 0.97 * vp * HLS + PLATE[1] + 8 : 0.97 * vp
     const headroom = cf.hr ? pillH + 14 : 0
@@ -249,18 +259,31 @@ export default function ledgerDuel(spec, ctx) {
   // score every config by its best value size; the stake line and the last-row headroom are worth a few px
   let lay = null
   for (const st of stakeEl ? [true, false] : [false]) for (const hr of rows[last].event ? [true, false] : [false])
-  for (const [pl, lg] of legEls.length ? [[2, false], [3, false], [0, true]] : [[2, false]]) {
+  for (const [pl, lg] of legEls.length ? [[2, false], [3, false], [0, true], [0, 1]] : [[2, false]]) {
     for (let vp = 64; vp >= 36; vp -= 2) {
       const l = tryLayout(vp, { st, hr, pl, lg })
       if (!l) continue
-      l.score = vp + (st ? 8 : 0) + (hr ? 4 : 0) - (pl === 3 ? 5 : 0) - (lg ? 4 : 0) - (vp < 40 ? 12 : 0)
+      l.score = vp + (st ? 8 : 0) + (hr ? 4 : 0) - (pl === 3 ? 5 : 0) - (lg ? 4 : 0) - (lg === 1 ? 10 : 0) - (vp < 40 ? 12 : 0)
       if (!lay || l.score > lay.score) lay = l
       break
     }
   }
   if (!lay) throw new Error('ledger-duel: the rows do not fit (too many rows, or values/labels too wide)')
   if (stakeEl && !lay.cf.st) { stakeEl.remove(); stakeEl = null }
-  if (lay.cf.lg) { let y = lay.legTop; for (const el of legEls) { style(el, { top: y + 'px' }); y += el.offsetHeight + 6 } }
+  if (lay.cf.lg) {
+    let y = lay.legTop
+    legEls.forEach((el, p) => {
+      if (lay.cf.lg === 1) {
+        // one line: the plan is cut at a word (or a letter) and ends with an ellipsis, measured, never CSS-clipped
+        el.classList.add('one')
+        const head = `<i style="background:${pal[p].fig}"></i><b style="color:${pal[p].text}">${esc(nameOf(p))}</b>`
+        let plan = plain(people[p].plan || '')
+        el.innerHTML = head + esc(plan)
+        while (plan.length > 1 && el.scrollWidth > 878) { plan = plan.slice(0, -1).trimEnd(); el.innerHTML = head + esc(plan) + '…' }
+      }
+      style(el, { top: y + 'px' }); y += el.offsetHeight + 6
+    })
+  }
   else for (const el of legEls) el.remove()
   const top = lay.top
   const stakeBottom = stakeEl ? top0 + stakeH : top0 - 28
@@ -285,7 +308,7 @@ export default function ledgerDuel(spec, ctx) {
     const el = h('div', { class: 'ld-head' })
     const nm = lay.names[p], dot = Math.round(nm.px * 0.6)
     el.innerHTML = `<div class="ld-name" style="font-size:${nm.px}px;line-height:${lay.nameLH}px;color:${pal[p].text}">`
-      + `<i style="width:${dot}px;height:${dot}px;margin-right:12px;vertical-align:${Math.round(nm.px * 0.02)}px;background:${pal[p].fig}"></i>${esc(plain(people[p].name || ''))}</div>`
+      + `<i style="width:${dot}px;height:${dot}px;margin-right:${nm.dotOnly ? 0 : 12}px;vertical-align:${Math.round(nm.px * 0.02)}px;background:${pal[p].fig}"></i>${nm.dotOnly ? '' : esc(plain(people[p].name || ''))}</div>`
       + lay.plans[p].lines.map(l => `<div class="ld-plan">${esc(l)}</div>`).join('')
     fixed.append(el)
     style(el, { top: headTop + 'px', left: (xCol[p] - el.offsetWidth).toFixed(1) + 'px' })
@@ -442,7 +465,7 @@ export default function ledgerDuel(spec, ctx) {
     if (i === last && plateOn) {
       fxk.impact(Ti, { x: pb.cx, y: pb.cy, shake: 13, punch: 0.025, rx: pb.w / 2 + 14, ry: pb.h / 2 + 12, r: 44, lines: 13, cue: 'hit', gain: 0.95 })
       ctx.cue(Ti + 0.12, 'cash', { gain: 0.6 })
-    } else if (!crashed.length) ctx.cue(Ti, 'thud', { gain: 0.42 })
+    } else if (!crashed.length && Ti > 0) ctx.cue(Ti, 'thud', { gain: 0.42 })
     if (r.event && !crashed.length && !(i === last)) ctx.cue(Ti + 0.08, 'pop', { gain: 0.5 })
     else if (leadChange[i] >= 0 && !r.event) ctx.cue(Ti + 0.1, 'pop', { gain: 0.45 })
   })
@@ -589,9 +612,9 @@ export default function ledgerDuel(spec, ctx) {
       for (const j of pl.under) dimUnder.set(j, Math.max(dimUnder.get(j) || 0, vis))
       if (pl.overHeads) headDim = Math.max(headDim, vis)
     }
-    for (const el of heads) style(el, { opacity: (1 - 0.92 * headDim).toFixed(3) })
+    for (const el of heads) style(el, { opacity: (1 - headDim).toFixed(3) })          // gone, never a ghost
     for (let i = 0; i < N; i++) {
-      const row = R[i], Ti = times[i]
+      const row = R[i], Ti = landT[i]
       const reach = prog(t, Ti - 0.2, 0.2)
       const tn = rows[i].tone && rows[i].event ? rows[i].tone : null
       const lc = tn === 'bad' ? C.red : tn === 'good' ? C.heroInk : C.ink

@@ -20,9 +20,11 @@
 //
 // lookOpts (all optional; it renders fully without them):
 //   figure: false                 no figures (tip dots + counters only)
-//   figureScale: 0.76             figure size
+//   figureScale                   figure size (default 0.76 with 2 series, 0.56 with 3)
 //   fill: false                   no pale hill under the hero line
-//   figures: [{ series, color }]  colour per series: 'hero' (green) | 'neutral' (slate) | 'ink'
+//   figures: [{ series, color }]  colour per series: 'hero' (green) | 'neutral' (slate) | 'ink'. Default: the series
+//                                 that finishes highest (the one that gets the gold plate) is the hero, the others
+//                                 neutral then ink, in series order
 //   beats: [{ t, act, series, label, to, d }]   scripted reactions on top of the race:
 //          act = cheer | shrug | impact | grow | peek | flood | any POSES name; label = a note under that figure's
 //          counter (or on the tide for flood); flood = a red "prices" tide rising from the stake to value `to`.
@@ -31,7 +33,7 @@
 import {
   h, s, style, attr, setText, setHTML, markup, prog, clamp, lerp,
   C, F, L, E, RIG, POSES, blendPose, secondary, fk, pinLimb, Figure, makeWorld, makeFx, camera,
-  chromeParts, durationOf, measure, squashAt, popIn, swapAt, hop, fall, fmtNum, num,
+  chromeParts, durationOf, measure, squashAt, popIn, swapAt, hop, fall, fmtNum, num, mix, smooth, bump, lerp2,
 } from '../lib.js'
 
 export const css = `
@@ -58,11 +60,6 @@ const PAL = {
   ink: { line: C.ink, fig: C.ink, text: C.ink, fill: C.lineSoft },
 }
 PAL.grey = PAL.neutral
-const hex = c => [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16))
-const mix = (a, b, p) => { const x = hex(a), y = hex(b); return `rgb(${x.map((v, i) => Math.round(v + (y[i] - v) * clamp(p))).join(',')})` }
-const smooth = (a, b, x) => { const p = clamp((x - a) / (b - a)); return p * p * (3 - 2 * p) }
-const bump = (t, t0, d) => (t <= t0 || t >= t0 + d ? 0 : Math.sin(Math.PI * (t - t0) / d))
-const lerp2 = (a, b, p) => [a[0] + (b[0] - a[0]) * p, a[1] + (b[1] - a[1]) * p]
 const f1 = v => v.toFixed(1)
 const DT = 1 / 240                                       // precompute step (gait, physics, axis follower)
 const sampleAt = (arr, t) => {
@@ -121,7 +118,10 @@ export default function chartRace(spec, ctx) {
   const endV = SER.map((_, i) => valueAt(i, xt))
   const winner = N > 1 ? endV.indexOf(Math.max(...endV)) : 0
   const losers = SER.map((_, i) => i).filter(i => i !== winner && endV[i] < endV[winner] * 0.995)
-  const colKey = SER.map((_, i) => (['hero', 'neutral', 'ink'])[i])
+  // the hero colour belongs to the series that finishes highest (it gets the gold plate); the rest take neutral, ink
+  const colKey = SER.map(() => null)
+  colKey[winner] = 'hero'
+  { let r = 0; for (let i = 0; i < N; i++) if (i !== winner) colKey[i] = ['neutral', 'ink'][r++] }
   for (const f of lo.figures || []) if (f && f.series != null && f.series < N && PAL[f.color]) colKey[f.series] = f.color
   const pal = colKey.map(k => PAL[k])
   const showFig = lo.figure !== false
@@ -129,12 +129,13 @@ export default function chartRace(spec, ctx) {
 
   // ============================================================================ layout
   const parts = chromeParts(spec, ctx)
-  const FK = lo.figureScale ?? 0.76
+  const FK = lo.figureScale ?? (N >= 3 ? 0.56 : 0.76)
   const kk = FK / 0.68
   const hudTop = parts.workTop - 12
   const YEAR_PX = 96
   const hudBottom = hudTop + YEAR_PX
-  const BASE = L.floorY                                          // value 0 (or the log floor) sits on the floor line
+  const BASE = L.floorY - 72                                     // value 0 (or the log floor); the year labels get the
+                                                                 // clear band between it and the floor line
   const FIGH = showFig ? Math.round(186 * kk) : 36               // figure height above his line (feet to head top)
   const TOPF = 0.86                                              // the highest tip rides at most this high up the axis
   const plotH = (BASE - (hudBottom + 8 + FIGH)) / TOPF
@@ -145,11 +146,13 @@ export default function chartRace(spec, ctx) {
   const wVal = (str, px) => measure(str, valFont(px), { letterSpacing: '-0.03em' })
   const peak = SER.map((q, i) => Math.max(...q.pts.map(p => p[1]), valueAt(i, xt)))
   const strs = SER.flatMap((_, i) => [finals[i], tipText(peak[i]), tipText(stakeV)])
-  let VAL_PX = 64
+  let VAL_PX = 60
   while (VAL_PX > 52 && Math.max(...strs.map(x => wVal(x, VAL_PX))) > 940 - (566 + 46)) VAL_PX -= 2
   const valW = Math.max(...strs.map(x => wVal(x, VAL_PX)))
   const LAB_GAP = 58
-  const X_TIP = clamp(940 - valW - 10 - LAB_GAP, 520, 700)
+  // the column also widens (down to x 520) for long names, so they fit 2 lines at 40 px without an ellipsis
+  const nameNeed = Math.max(...SER.map(q => measure(q.name, `800 40px ${F.head}`, { letterSpacing: '-0.01em' }) / 2 + 30))
+  const X_TIP = clamp(Math.min(940 - valW - 10 - LAB_GAP, 940 - LAB_GAP - nameNeed), 520, 700)
   const colW = 940 - (X_TIP + LAB_GAP)
 
   // ============================================================================ value axis (precomputed follower)
@@ -238,12 +241,13 @@ export default function chartRace(spec, ctx) {
   const famAt = t => { let k = FAMS.length - 1; while (k > 0 && FAMS[k].t > t) k--; return k }
   const gridVals = [...GRIDV].filter(v => v > 0).sort((a, b) => a - b)
   const isDecade = v => Math.abs(Math.log10(v) - Math.round(Math.log10(v))) < 1e-6
-  const GUT = Math.max(60, ...gridVals.map(v => measure(gridLabel(v), `700 34px ${F.mono}`, { letterSpacing: '-0.03em' })))
-  const PLOT_L = Math.round(66 + GUT + 18)
+  // the value labels sit on their gridlines at the left edge (decoration), so the plot starts near the margin
+  const PLOT_L = 104
   const DX = X_TIP - PLOT_L
   // at the start line the figures stand one behind the other; the rearmost must clear the value labels
-  const LAG = showFig ? (N > 1 ? Math.min(116 * kk, Math.max(84 * kk, (X_TIP - 60 - PLOT_L - 50 * kk) / (N - 1))) : 0) : 0
-  const S0 = Math.min(X_TIP - 60, PLOT_L + 70 + LAG * (N - 1))  // where the start line sits at t = 0
+  const LAG = showFig ? (N > 1 ? Math.min(116 * kk, Math.max(84 * kk, (X_TIP - 60 - PLOT_L - 110 * kk) / (N - 1))) : 0) : 0
+  const S0 = Math.min(X_TIP - 60, PLOT_L + 130 + LAG * (N - 1))  // where the start line sits at t = 0 (the rearmost
+                                                                  // figure stands clear of the value labels)
   const W0 = 0.22 * span                                         // roll-out: the tips travel S0 -> X_TIP over this much x
 
   // ============================================================================ x mapping (treadmill)
@@ -493,7 +497,7 @@ export default function chartRace(spec, ctx) {
   {
     const yEnd = SER.map((_, i) => Ys(endV[i], AX[NS - 1]))
     const rank = SER.map((_, i) => i).sort((a, b) => endV[b] - endV[a] || a - b)
-    rank.forEach((i, r) => { for (const j of rank.slice(0, r)) if (Math.abs(yEnd[i] - yEnd[j]) < 0.9 * FIGH) OFFS[i] = Math.max(OFFS[i], OFFS[j] + 68 * kk) })
+    rank.forEach((i, r) => { for (const j of rank.slice(0, r)) if (Math.abs(yEnd[i] - yEnd[j]) < 0.9 * FIGH) OFFS[i] = Math.max(OFFS[i], OFFS[j] + 96 * kk) })
   }
   const ledgeP = t => (showFig && t >= T1 - 0.05 ? E.back(prog(t, T1 - 0.05, 0.3), 2.2) : 0)
 
@@ -590,6 +594,8 @@ export default function chartRace(spec, ctx) {
   })
   const stakeLine = s('line', { x1: 62, stroke: C.dim, 'stroke-width': 4, 'stroke-dasharray': '2 14', 'stroke-linecap': 'round', opacity: 0.85 })
   g.back.append(stakeLine)
+  // the value axis' base (value 0 / the log floor): the year labels hang under it, in their own band
+  g.back.append(s('line', { x1: 62, x2: 1018, y1: BASE, y2: BASE, stroke: C.line, 'stroke-width': 4, 'stroke-linecap': 'round' }))
   // a flag drops onto the terrain where the event happened once the walker is clear of the spot (it never lands
   // under his feet); an event too close to the finish keeps only its HUD chip and band
   const POLE = 62 * kk
@@ -619,7 +625,7 @@ export default function chartRace(spec, ctx) {
     const txt = String(Math.round(x))
     const lab = h('div', { class: 'cr-tick', 'data-deco': '' }, txt)
     world.html.append(lab)
-    const mark = s('line', { y1: BASE - 12, y2: BASE, stroke: C.ink, 'stroke-width': 4, 'stroke-linecap': 'round', opacity: 0 })
+    const mark = s('line', { y1: BASE, y2: BASE + 12, stroke: C.ink, 'stroke-width': 4, 'stroke-linecap': 'round', opacity: 0 })
     g.back.append(mark)
     const n = Math.round((x - tick0) / te)
     ticks.push({ x, lab, mark, w: measure(txt, `700 34px ${F.mono}`, { letterSpacing: '-0.03em' }), fams: [1, 2, 5, 10, 20].filter(f => n % f === 0) })
@@ -655,20 +661,28 @@ export default function chartRace(spec, ctx) {
     for (const w of String(text).split(/\s+/)) { const nx = cur ? cur + ' ' + w : w; if (!cur || measure(nx, font, o) <= colW) cur = nx; else { lines++; cur = w } }
     return lines
   }
-  const nameFit = name => {
-    for (let px = 40; px >= 34; px -= 2) {
-      const font = `800 ${px}px ${F.head}`, o = { letterSpacing: '-0.01em' }
-      if (name.split(/\s+/).some(w => measure(w, font, o) > colW)) continue
-      const lines = wrapLines(name, font, o)
-      if (lines <= 2) return { px, lines }
-    }
-    return { px: 34, lines: 2 }
+  // names: 40 px (the must-read size), at most 2 lines; a parenthesis never breaks inside ("(big tech)" stays
+  // whole); a name still too long ends its second line with an ellipsis
+  const NAME_PX = 40, nFont = `800 ${NAME_PX}px ${F.head}`, nO = { letterSpacing: '-0.01em' }
+  const nameFit = raw => {
+    const name = String(raw).replace(/\(([^)]*)\)/g, (_, x) => '(' + x.replace(/ /g, '\u00A0') + ')')
+    const words = name.split(/ +/)
+    const lines = []
+    let cur = ''
+    for (const w of words) { const nx = cur ? cur + ' ' + w : w; if (!cur || measure(nx, nFont, nO) <= colW) cur = nx; else { lines.push(cur); cur = w } }
+    if (cur) lines.push(cur)
+    if (lines.length <= 2 && lines.every(l => measure(l, nFont, nO) <= colW)) return { px: NAME_PX, lines: lines.length, text: name }
+    // ellipsize: line 1 as wrapped, line 2 cut to fit with "…"
+    const l1 = measure(lines[0], nFont, nO) <= colW ? lines[0] : ''
+    let rest = name.slice(l1.length).trim()
+    while (rest.length > 1 && measure(rest + '…', nFont, nO) > colW) rest = rest.slice(0, -1)
+    return { px: NAME_PX, lines: l1 ? 2 : 1, text: (l1 ? l1 + ' ' : '') + rest.trimEnd() + '…' }
   }
   const tags = SER.map((q, i) => {
     const nf = nameFit(q.name)
     const nameLH = nf.px + 2
     const tag = h('div', { class: 'cr-tag' })
-    const name = h('div', { class: 'cr-name', style: { fontSize: nf.px + 'px', lineHeight: nameLH + 'px', width: colW + 'px', color: pal[i].text } }, q.name)
+    const name = h('div', { class: 'cr-name', style: { fontSize: nf.px + 'px', lineHeight: nameLH + 'px', width: colW + 'px', color: pal[i].text } }, nf.text)
     const vrow = h('div', { class: 'cr-vrow', style: { height: VAL_PX + 'px' } })
     const plate = h('div', { class: 'cr-plate', style: { opacity: '0' } })
     const val = h('div', { class: 'cr-val', style: { fontSize: VAL_PX + 'px', lineHeight: VAL_PX + 'px' } })
@@ -680,8 +694,9 @@ export default function chartRace(spec, ctx) {
     const PADX = 18, PADY = 9
     style(plate, { left: -PADX + 'px', top: -PADY + 'px', width: (fw + 2 * PADX).toFixed(0) + 'px', height: (VAL_PX + 2 * PADY).toFixed(0) + 'px' })
     const noteLines = NOTES[i].map(n => wrapLines(n.text, `800 40px ${F.head}`))
-    const wMax = Math.max(fw, wVal(tipText(peak[i]), VAL_PX), Math.min(colW, measure(q.name, `800 ${nf.px}px ${F.head}`, { letterSpacing: '-0.01em' })))
-    return { tag, name, val, plate, note, baseH: nf.lines * nameLH + 8 + VAL_PX, nameH: nf.lines * nameLH, noteLines, fw, wMax, PADX, PADY }
+    const wMax = Math.max(fw, wVal(tipText(peak[i]), VAL_PX), Math.min(colW, measure(nf.text, nFont, nO)))
+    const nameH = Math.max(nf.lines * nameLH, name.offsetHeight)              // measured: the stack never overlaps
+    return { tag, name, val, plate, note, baseH: nameH + 8 + VAL_PX, nameH, noteLines, fw, wMax, PADX, PADY }
   })
   const noteAt = (i, t) => { for (let k = NOTES[i].length - 1; k >= 0; k--) { const n = NOTES[i][k]; if (t >= n.t && t < n.t1) return k } return -1 }
   const tagH = (i, t) => { const k = noteAt(i, t); return tags[i].baseH + (k >= 0 ? 8 + 42 * tags[i].noteLines[k] : 0) }
@@ -833,7 +848,7 @@ export default function chartRace(spec, ctx) {
       let a = 0
       for (const f of tk.fams) a = Math.max(a, smooth(96, 120, m.k * te * f))
       a *= (tk.x <= m.xn + 1e-6 ? 1 : 0) * clamp((m.tip - 40 - sx) / 40) * clamp((sx - PLOT_L + 40) / 30)
-      style(tk.lab, { transform: `translate(${f1(sx - tk.w / 2)}px,${BASE - 48}px)`, opacity: a.toFixed(3), display: a > 0.01 ? '' : 'none' })
+      style(tk.lab, { transform: `translate(${f1(sx - tk.w / 2)}px,${BASE + 18}px)`, opacity: a.toFixed(3), display: a > 0.01 ? '' : 'none' })
       attr(tk.mark, 'x1', f1(sx)); attr(tk.mark, 'x2', f1(sx)); attr(tk.mark, 'opacity', (a * 0.8).toFixed(3))
     }
     // ---- events: crash bands grow with the tip; flags drop onto the terrain where the event happens
@@ -859,11 +874,23 @@ export default function chartRace(spec, ctx) {
       attr(ledges[i], 'opacity', lp > 0 ? '1' : '0')
     }
     // ---- figures
-    if (showFig) for (let i = 0; i < N; i++) {
-      const { J } = figure(i, t, m, uA)
-      let sx = 1, sy = 1
-      for (const ld of LANDS[i]) if (t >= ld.t && t < ld.t + 0.6) { const q = squashAt(t, ld.t, ld.amt); sx *= q.sx; sy *= q.sy }
-      figs[i].draw(J, { sx, sy })
+    if (showFig) {
+      // a figure behind a better-placed one (lower value) fades to 0.6 while their bodies overlap, so the leader
+      // and his tip always read
+      const Js = SER.map((_, i) => figure(i, t, m, uA).J)
+      const box = J => { const xs = ['head', 'hF', 'hB', 'fF', 'fB', 'hip'].map(k => J[k][0]), ys = ['hF', 'hB', 'fF', 'fB'].map(k => J[k][1]); return { x0: Math.min(...xs) - J.R, x1: Math.max(...xs) + J.R, y0: Math.min(J.head[1] - J.R, ...ys), y1: Math.max(...ys) } }
+      const bx = Js.map(box), vNow = SER.map((_, i) => valueAt(i, m.xn))
+      for (let i = 0; i < N; i++) {
+        let fade = 0
+        for (let j = 0; j < N; j++) {
+          if (j === i || vNow[j] < vNow[i] || (vNow[j] === vNow[i] && j > i)) continue
+          const ox = Math.min(bx[i].x1, bx[j].x1) - Math.max(bx[i].x0, bx[j].x0), oy = Math.min(bx[i].y1, bx[j].y1) - Math.max(bx[i].y0, bx[j].y0)
+          if (ox > 0 && oy > 0) fade = Math.max(fade, smooth(0, 24, Math.min(ox, oy)))
+        }
+        let sx = 1, sy = 1
+        for (const ld of LANDS[i]) if (t >= ld.t && t < ld.t + 0.6) { const q = squashAt(t, ld.t, ld.amt); sx *= q.sx; sy *= q.sy }
+        figs[i].draw(Js[i], { sx, sy, opacity: +(1 - 0.4 * fade).toFixed(3) })
+      }
     }
     // ---- tags (tip counters)
     const lay = layoutTags(t, m, uA)

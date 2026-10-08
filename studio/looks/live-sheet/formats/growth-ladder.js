@@ -36,7 +36,7 @@ import {
   h, setStyle, clamp, prog, ease, C, G, M, S,
   sheet, tipStrip, fitTips, tipWindow, mk, mkLen, typedMk, typedCount, wordCut, caretOn, countText, displayValue,
   popScale, flashAlpha, lerpRect, rgba, durationOf, hasCaptions, opt, layer, footerHeight, fitFormula, textW, font,
-  toneColor, toneFill, cellSizes, isNumeric, hasUnits, fitBarVerdict,
+  toneColor, toneFill, cellSizes, isNumeric, hasUnits, fitBarVerdict, springRect, fitWarn,
 } from '../lib.js'
 
 export const css = `
@@ -68,7 +68,7 @@ export default function growthLadder(spec, ctx) {
 
   // ---------- options ----------
   const loopOn = opt(spec, 'loop', true)
-  const caps = hasCaptions(spec)
+  let caps = hasCaptions(spec)
   const unmaskRows = opt(spec, 'unmask', 'values') === 'rows'
   const inputsAtStart = !unmaskRows && !!opt(spec, 'inputsAtStart', false)
   const hiLast = d.highlightLast !== false
@@ -123,54 +123,76 @@ export default function growthLadder(spec, ctx) {
   const fullBottom = G.safeBottom - 4 - (fH ? fH + G.gap : 0)
   const fbOf = strs => fitFormula(strs.filter(Boolean).map(glueOps), G.width).ht
   const estRow = (bottom, letters, frac, fbH, slot) => (bottom - G.cardTop - fbH - (letters ? G.lettersH : 0) - labelGuess - slot) / (N + frac)
-  let vMode = opt(spec, 'verdict', 'auto')
-  if (!verdict) vMode = 'none'
-  // the verdict is a card in the caption band whenever rows keep 50 px with the band reserved
-  else if (vMode === 'auto') vMode = caps || estRow(bandBottom, false, hiLast ? 0.3 : 0, fbOf(fe.map(e => e.text)), 0) >= 50 ? 'band' : 'formula'
-  const bandUsed = caps || vMode === 'band'
-  const bottom = bandUsed ? bandBottom : fullBottom
-  const minRowH = bandUsed ? 52 : 48 // a dense silent card may go tighter (text stays 40 px)
   // a mark is a tooltip in a slot under its row when that slot fits; otherwise its label is typed into the
   // formula bar (the row still lights up)
   const markOpt = opt(spec, 'markStyle', 'auto')
   const markAt = m => Math.max(m.t, pre[m.row] ? 0 : landEnd(m.row)) + 0.08
-  const fStrs = fe.map(e => e.text)
-  const markMode = !marks.length ? 'none' : markOpt === 'bar' || markOpt === 'tip' ? markOpt
-    : estRow(bottom, false, 0, fbOf(fStrs), slotFull) >= 56 ? 'tip' : 'bar'
-  if (markMode === 'bar') marks.forEach(m => fe.push({ t: markAt(m), text: m.label, mark: true }))
-  fe = fe.map(e => ({ ...e, text: glueOps(e.text) }))
-  // a verdict typed into the bar has its own fit (Inter 800) and never sizes the bar
-  if (vMode === 'formula') fe.push({ t: verdict.t, text: fitBarVerdict(verdict.text, G.width).text, verdict: true })
-  fe.sort((a, b) => a.t - b.t || !!a.verdict - !!b.verdict)
-  const slotH = markMode === 'tip' ? slotFull : 0
-  const fbH = fitFormula(fe.filter(e => !e.verdict).map(e => e.text), G.width).ht
-  // the A B C row is decoration: it goes first when rows get cramped; then the summary row gives back its extra
+  const fe0 = fe
   const lOpt = opt(spec, 'letters', 'auto')
-  let frac = hiLast ? 0.5 : 0
-  const letters = lOpt === 'auto' ? estRow(bottom, true, frac, fbH, slotH) >= 64 : !!lOpt
-  while (frac > 0.001 && estRow(bottom, letters, frac, fbH, slotH) < 58) frac = Math.max(0, +(frac - 0.1).toFixed(2))
-
-  // Column widths: sheet() sizes columns from `values`. A one-word label ("Year") cannot wrap, so when the width
-  // allows it, a sizing-only row carries each label's longest word and no column comes out narrower than its
-  // label. (Alignment is pinned from the real rows, so the sizing row cannot flip it.)
+  const vOpt = opt(spec, 'verdict', 'auto')
+  const capsWanted = caps
   const ls = { letterSpacing: '-0.01em' }
-  const estFs = cellSizes(clamp(Math.floor(estRow(bottom, letters, frac, fbH, slotH)), minRowH, 102))
-  const cellFont = j => (j === 0 ? font(800, estFs.input) : j === outC ? font(800, estFs.result) : font(700, estFs.mid))
-  const longWord = j => String(cols0[j].label || '').split('\n')[0].split(/\s+/).reduce((a, w) => (w.length > a.length ? w : a), '') + (j === 0 || j === outC ? '' : '\u00A0\u00A0')
-  const needEst = j => Math.max(40, ...rows.map(r => textW(esc(r[j]), cellFont(j), ls)), textW(esc(longWord(j)), cellFont(j), ls)) + 2 * G.padX + 4
-  const sizeRow = cols0.reduce((a, _, j) => a + needEst(j), 0) <= G.width - G.gutter ? [cols0.map((_, j) => longWord(j))] : []
   const align = cols0.map((c, j) => c.align || (rows.every(r => !r[j] || isNumeric(r[j])) ? 'right' : 'left'))
-
   const L = layer(ctx, 'gl')
-  const sh = sheet(L, {
-    columns: cols0.map((c, j) => ({
-      label: c.label, kind: j === 0 ? 'input' : j === outC ? 'output' : 'mid',
-      tone: j === outC ? emphTone : c.tone, align: align[j], units: rows.some(r => hasUnits(r[j])),
-    })),
-    // the mark slot is planned for but not drawn: the card grows while a tooltip is open
-    values: [...rows, ...sizeRow], rows: N, reserve: slotH, grow: true, spare: frac, minRowH, tail: frac ? 0 : 16,
-    bottom, formula: { strings: fe.filter(e => !e.verdict).map(e => e.text), verdict: vMode === 'formula' ? verdict.text : null }, letters,
-  })
+  // Layout: build the sheet, measure it, and give way until it ends above its budget. With the band (captions or a
+  // band verdict): the A B C row and 22 px padding go first, then rows go down to 46 px (the text is already at the
+  // 40 px floor) and the summary row gives back its extra height, then marks are typed into the bar instead of
+  // opening slots. Last, the band itself: captions off, the verdict retyped into the bar, the sheet down to y 1476.
+  const build = (band, markMode, tier) => {
+    const vMode = !verdict ? 'none' : band ? (vOpt === 'formula' ? 'formula' : 'band') : 'formula'
+    const bottom = band ? bandBottom : fullBottom
+    const minRowH = tier.minRowH ?? (band ? 52 : 48)
+    let fe = fe0.slice()
+    if (markMode === 'bar') marks.forEach(m => fe.push({ t: markAt(m), text: m.label, mark: true }))
+    fe = fe.map(e => ({ ...e, text: glueOps(e.text) }))
+    // a verdict typed into the bar has its own fit (Inter 800) and never sizes the bar
+    if (vMode === 'formula') fe.push({ t: verdict.t, text: fitBarVerdict(verdict.text, G.width).text, verdict: true })
+    fe.sort((a, b) => a.t - b.t || !!a.verdict - !!b.verdict)
+    const slotH = markMode === 'tip' ? slotFull : 0
+    const fbH = fitFormula(fe.filter(e => !e.verdict).map(e => e.text), G.width).ht
+    // the A B C row is decoration: it goes first when rows get cramped; then the summary row gives back its extra
+    let frac = hiLast && !tier.flat ? 0.5 : 0
+    const letters = tier.letters === 'auto' ? estRow(bottom, true, frac, fbH, slotH) >= 64 : !!tier.letters
+    while (frac > 0.001 && estRow(bottom, letters, frac, fbH, slotH) < 58) frac = Math.max(0, +(frac - 0.1).toFixed(2))
+    // Column widths: sheet() sizes columns from `values`. A one-word label ("Year") cannot wrap, so when the width
+    // allows it, a sizing-only row carries each label's longest word and no column comes out narrower than its
+    // label. (Alignment is pinned from the real rows, so the sizing row cannot flip it.)
+    const estFs = cellSizes(clamp(Math.floor(estRow(bottom, letters, frac, fbH, slotH)), minRowH, 102))
+    const cellFont = j => (j === 0 ? font(800, estFs.input) : j === outC ? font(800, estFs.result) : font(700, estFs.mid))
+    const longWord = j => String(cols0[j].label || '').split('\n')[0].split(/\s+/).reduce((a, w) => (w.length > a.length ? w : a), '') + (j === 0 || j === outC ? '' : '  ')
+    const needEst = j => Math.max(40, ...rows.map(r => textW(esc(r[j]), cellFont(j), ls)), textW(esc(longWord(j)), cellFont(j), ls)) + 2 * (tier.pad ?? G.padX) + 4
+    const sizeRow = cols0.reduce((a, _, j) => a + needEst(j), 0) <= G.width - G.gutter ? [cols0.map((_, j) => longWord(j))] : []
+    L.replaceChildren()
+    const sh = sheet(L, {
+      columns: cols0.map((c, j) => ({
+        label: c.label, kind: j === 0 ? 'input' : j === outC ? 'output' : 'mid',
+        tone: j === outC ? emphTone : c.tone, align: align[j], units: rows.some(r => hasUnits(r[j])),
+      })),
+      // the mark slot is planned for but not drawn: the card grows while a tooltip is open
+      values: [...rows, ...sizeRow], rows: N, reserve: slotH, grow: true, spare: frac, minRowH, tail: frac ? 0 : 16,
+      bottom, pad: tier.pad, formula: { strings: fe.filter(e => !e.verdict).map(e => e.text), verdict: vMode === 'formula' ? verdict.text : null }, letters,
+    })
+    return { sh, fe, slotH, frac, vMode, markMode, band, caps: band && capsWanted, fits: sh.maxBottom <= bottom + 1, bottom }
+  }
+  const markModes = !marks.length ? ['none'] : markOpt === 'bar' || markOpt === 'tip' ? [markOpt]
+    : estRow(caps || (verdict && vOpt !== 'formula') ? bandBottom : fullBottom, false, 0, fbOf(fe0.map(e => e.text)), slotFull) >= 56 ? ['tip', 'bar'] : ['bar']
+  const tiers = [
+    { letters: lOpt },
+    { letters: lOpt === true, pad: 12 },
+    { letters: lOpt === true, pad: 12, minRowH: 46, flat: true },
+  ]
+  const plans = []
+  // a silent ladder with an 'auto' verdict takes the band only while rows keep 50 px there (else the bar)
+  const bandOK = caps || (verdict && (vOpt === 'band' || (vOpt === 'auto' && estRow(bandBottom, false, hiLast ? 0.3 : 0, fbOf(fe0.map(e => e.text)), 0) >= 50)))
+  if (bandOK) for (const mm of markModes) for (const tier of tiers) plans.push([true, mm, tier])
+  for (const mm of markModes) for (const tier of tiers) plans.push([false, mm, tier])
+  let B = null
+  for (const pl of plans) { B = build(...pl); if (B.fits) break }
+  fitWarn('growth-ladder', B.sh.maxBottom + (fH ? G.gap + fH : 0), B.band ? G.workBottom : G.safeBottom - 4)
+  if (capsWanted && !B.caps) console.warn('live-sheet growth-ladder: too many rows for captions; running silent')
+  const { sh, slotH, frac, vMode, markMode } = B
+  fe = B.fe
+  caps = B.caps
   // a one-word label that still cannot fit its column (a dense 4-column card): trade the label cell's padding
   // for the word, rather than letting it clip
   sh.labelEls.forEach((el, j) => {
@@ -280,10 +302,15 @@ export default function growthLadder(spec, ctx) {
   })
   const K = [{ t: -Infinity, rect: t => rangeRect(0, fillRows(t), sc0, sc1, t), head: t => [0, Math.max(0, Math.ceil(fillRows(t) - 0.02) - 1), sc0, sc1] }]
   const finalT = N && !pre[last] ? landEnd(last) + 0.1 : null
-  if (finalT != null && hiLast) K.push({ t: finalT, dur: M.pick, e: x => ease.back(x, 1.6), rect: t => rangeRect(last, last + 1, outC, outC, t), head: () => [last, last, outC, outC] })
+  if (finalT != null && hiLast) K.push({ t: finalT, dur: M.pick, spring: 1.6, rect: t => rangeRect(last, last + 1, outC, outC, t), head: () => [last, last, outC, outC] })
   if (verdict) K.push({ t: verdict.t, dur: 0.4, e: ease.inOut, rect: t => rangeRect(0, N, outC, outC, t), head: () => [0, N - 1, outC, outC] })
   if (loopOn) K.push({ t: loopT0, dur: 0.34, e: ease.inOut, rect: t => rangeRect(0, Math.max(1, pre.filter(Boolean).length), sc0, sc1, t), head: () => [0, Math.max(0, pre.filter(Boolean).length - 1), sc0, sc1] })
-  const rectAt = (k, t) => (k === 0 ? K[0].rect(t) : lerpRect(rectAt(k - 1, t), K[k].rect(t), K[k].e(prog(t, K[k].t, K[k].dur))))
+  const rectAt = (k, t) => {
+    if (k === 0) return K[0].rect(t)
+    const a = rectAt(k - 1, t), b = K[k].rect(t), p = prog(t, K[k].t, K[k].dur)
+    // a spring collapsing the range onto the final cell eases in without overshoot (no edge strikes the total)
+    return K[k].spring ? springRect(a, b, p, K[k].spring) : lerpRect(a, b, K[k].e(p))
+  }
 
   // ---------- formula bar ----------
   const cut = fe[0].t <= 0 ? wordCut(fe[0].text, opt(spec, 'formulaAt0', 0.7)) : 0

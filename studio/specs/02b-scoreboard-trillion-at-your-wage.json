@@ -4,43 +4,44 @@
   "format": "find-your-row",
   "fps": 30,
   "duration": 14.0,
-  "header": "ELON'S **$1 TRILLION** PAY PLAN\nAT YOUR HOURLY WAGE",
-  "footer": "Plan's max, if every target is hit · 2,080 hrs a year · every cent kept",
+  "header": "ELON'S **$1 TRILLION** PAY PLAN\nEARNS YOUR WHOLE CAREER'S PAY IN…",
+  "footer": "Plan's max, if every target is hit, ÷ 10 years, 24/7 · you: 40 years × 2,080 hrs",
   "captions": true,
   "vo": [
-    { "t": 0.0, "d": 4.0, "text": "Minimum wage? Start **≈ 66.3 million years** ago." },
-    { "t": 4.2, "d": 2.8, "text": "You'd have clocked in with the dinosaurs." },
-    { "t": 7.2, "d": 4.8, "text": "Even **$1,000 an hour**? Longer than our species has existed." }
+    { "t": 0.0, "d": 3.9, "text": "40 years at minimum wage? **≈ 3 minutes** of his." },
+    { "t": 4.2, "d": 2.7, "text": "$20 an hour? Under 9 minutes." },
+    { "t": 7.2, "d": 4.7, "text": "Even **$100 an hour**, for 40 years? ≈ 44 minutes." }
   ],
-  "verdict": { "t": 9.5, "text": "Even **$1,000/hr**: longer than our species has existed." },
+  "verdict": { "t": 10.7, "text": "Even **$100/hr** for 40 years: ≈ 44 minutes of his." },
   "data": {
     "columns": [
       { "label": "Your wage" },
-      { "label": "Start this many\nyears ago", "emph": true }
+      { "label": "40 years\nof your pay" },
+      { "label": "His plan earns\nit in", "emph": true }
     ],
     "rows": [
-      ["$7.25/hr", "≈ 66.3 million"],
-      ["$10/hr", "≈ 48.1 million"],
-      ["$15/hr", "≈ 32.1 million"],
-      ["$20/hr", "≈ 24.0 million"],
-      ["$25/hr", "≈ 19.2 million"],
-      ["$30/hr", "≈ 16.0 million"],
-      ["$40/hr", "≈ 12.0 million"],
-      ["$50/hr", "≈ 9.6 million"],
-      ["$75/hr", "≈ 6.4 million"],
-      ["$100/hr", "≈ 4.8 million"],
-      ["$250/hr", "≈ 1.9 million"],
-      ["$500/hr", "≈ 962,000"],
-      ["$1,000/hr", "≈ 481,000"]
+      ["$7.25/hr", "$603,200", "≈ 3.2 min"],
+      ["$10/hr", "$832,000", "≈ 4.4 min"],
+      ["$15/hr", "$1,248,000", "≈ 6.6 min"],
+      ["$20/hr", "$1,664,000", "≈ 8.8 min"],
+      ["$25/hr", "$2,080,000", "≈ 10.9 min"],
+      ["$30/hr", "$2,496,000", "≈ 13.1 min"],
+      ["$40/hr", "$3,328,000", "≈ 17.5 min"],
+      ["$50/hr", "$4,160,000", "≈ 21.9 min"],
+      ["$75/hr", "$6,240,000", "≈ 32.8 min"],
+      ["$100/hr", "$8,320,000", "≈ 43.8 min"],
+      ["$250/hr", "$20,800,000", "≈ 1.8 hrs"],
+      ["$500/hr", "$41,600,000", "≈ 3.6 hrs"],
+      ["$1,000/hr", "$83,200,000", "≈ 7.3 hrs"]
     ],
-    "formula": "= $1,000,000,000,000 ÷ (wage × 2,080)",
+    "formula": "= wage × 2,080 × 40 ÷ ≈ $3,169 a second",
     "rowsT": 0.0,
     "rowEvery": 0.35,
     "pick": [
-      { "t": 4.2, "row": 0, "label": "≈ when the dinosaurs died out" },
-      { "t": 7.2, "row": 12, "label": "Our species: ≈ 300,000 years" }
+      { "t": 4.2, "row": 3, "label": "$1,664,000 in under 9 min" },
+      { "t": 7.2, "row": 9, "label": "$8,320,000 in ≈ 44 min" }
     ],
     "hold": 6.8
   },
-  "sfx": [ { "t": 9.5, "kind": "ding" } ]
+  "sfx": [ { "t": 10.7, "kind": "ding" } ]
 }

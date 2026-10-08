@@ -1,7 +1,7 @@
 # Format 10: real-time cost counter, three teasers
 
 **Channel:** Back of the Envelope (YouTube Shorts, Instagram Reels, TikTok), US audience, USD
-**Date:** 2026-10-07 (round-2 revision; what changed and why is in the **Review log** at the end)
+**Date:** 2026-10-07 (round-2 revision), hook pass 2026-10-08 (10b's hook replaced). What changed and why is in the **Review log** at the end.
 **Format:** `cost-counter`. No hook pattern of its own in the hook bank ("–"). The hooks borrow the grammar of P4, P5, P6, P8 and P9 winners (quoted under each teaser).
 **Lane:** a real-time dollar counter at a verified rate (interest on the US debt, new US debt, a mega-company's sales and profit per second)
 **Files:**
@@ -10,7 +10,7 @@
   - [`studio/specs/10b-becker-rig-debt-vs-your-pay.json`](../../studio/specs/10b-becker-rig-debt-vs-your-pay.json)
   - [`studio/specs/10c-live-sheet-amazon-makes.json`](../../studio/specs/10c-live-sheet-amazon-makes.json)
 - Check: [`teasers/v2/checks/10-cost-counter.py`](checks/10-cost-counter.py). Run `python3 teasers/v2/checks/10-cost-counter.py`. It recomputes every number from the sourced inputs, rebuilds every display string, compares them with the three specs and with the caption and pinned-comment numbers in this file, prints a table and exits 1 on any mismatch.
-  - It reports **861 checks, 0 failures** and exits 0.
+  - It reports **853 checks, 0 failures** and exits 0 (after the 2026-10-08 hook pass; it was 861 before 10b's new hook replaced the house, $1 million and car checks with the minute, crossover and 3/10/20-year checks).
   - New in this round: every footer must carry the viewer-owned pay figure ("$1,251 … × 52") at 0.0 s; every header must ask a question; **one rounding per quantity** (any number within 5% of a computed quantity, in a spec string, a VO line, a caption or a pinned comment, must be that quantity's one shown rounding); and a list of banned overclaims ("live", "in real time", "fiscal 2026" for a 364-day window, "Under 1 second" as a universal claim).
   - As a test I broke one thing per teaser in a scratch copy: the 10a footer without the pay figure, 10b's caption back to "≈ $78,006", and 10c's vo[6] back to "≈ $2,500". It exited 1 with 7 failures, naming all three. Run against the round-1 captions, the new guards flagged "$30,758", "$78,006", "$22,733" and "fiscal 2026".
 
@@ -22,8 +22,8 @@
 - **No market data.** No teaser uses a market price or a forecast on screen.
 
 **Studio linter:** `node src/cli.mjs check` passes on all three specs: **3/3 clean, 0 errors, 0 warnings**.
-- The Scoreboard and Live Sheet `cost-counter` modules are now built (working tree), so 10a and 10c are linted with their real counters. The Becker Rig module is still a stub, so 10b's lint covers the header, footer, captions and verdict only.
-- I rendered stills at 0 s, 1.5 s and the verdict for all three. In each, the header, the two-part footer, the caption band and the verdict fit their zones.
+- The Scoreboard, Live Sheet and Becker Rig `cost-counter` modules are all built (working tree), so all three specs are linted with their real counters.
+- I rendered stills at 0 s, 1.5 s and the verdict for all three (10b again at 0 / 1.5 / 3 / 25.5 / 33.4 s after the hook pass). In each, the header, the two-part footer, the caption band and the verdict fit their zones.
 - Everything in `lookOpts` is a proposal for the kit builder. Each spec tells its story from the contract fields alone: the header asks, the footer carries the pay figure and the working, the counter runs, the verdict answers.
 
 ---
@@ -59,30 +59,30 @@
 
 - **The counter is the answer machine; the header is the question.**
   - 10a: "How much comes off the debt?" The counter shows $1 million of interest; the answer is $0.
-  - 10b: "Your year's pay vs 1 second of new US debt. Which is bigger?" The counter answers in under 1 second of its own time.
+  - 10b: "40 years of your pay vs 1 minute of new US debt. Which is bigger?" The counter eats the 40 years in ≈ 33 seconds, 55% of the minute.
   - 10c: "How much does Amazon really make?" Two counters (sales and kept) answer it from frame 1.
-- **The counter starts at frame 1, at $0** in 10a and 10c, so "since you hit play" is literal: the number on screen is what passed while this viewer watched. The loop restarts the count, which is honest on every replay.
-  - **Exception, 10b:** the counter is armed at $0 for 2.4 s so the viewer can pick a side ("Pick."), then starts on a ding. Its label says so: "New US debt, from the ding".
+- **The counter starts at frame 1, at $0** in all three, so "since you hit play" is literal: the number on screen is what passed while this viewer watched. The loop restarts the count, which is honest on every replay.
+  - 10b's 2.4 s armed pause and its ding were dropped in the hook pass (2026-10-08): nothing moved in its first 1.5 s.
 - **The viewer's own number is on screen at 0.0 s in every teaser:** the footer carries the pay basis ($1,251 a week × 52 = **$65,052**, BLS Q2 2026). The checker enforces it.
-  - The milestones are the viewer's yardsticks and repeat across the series: a year of median full-time pay ($65,052) and a median new house (**$393,700**, Census, Aug 2026).
-  - The pay milestone is the first payoff in every teaser: 2.1 s (10a), 3.2 s (10b, 0.83 s after the ding), 2.9 s (10c).
+  - The milestones are the viewer's yardsticks and repeat across the series: a year of median full-time pay ($65,052) and a median new house (**$393,700**, Census, Aug 2026). 10b counts in years of that pay (3, 10, 20 and 40).
+  - Pay is the first payoff in every teaser: a year of median pay at 2.1 s (10a) and 2.9 s (10c); 3 years of median pay at 2.5 s in 10b (its first $65,052 block goes at 0.83 s in the proposed block-stack).
   - The swap-in rule for the viewer's own pay (R3): the VO says it in 10a ("Yearly pay ÷ 30,800 = your seconds."); the pinned comments say it in 10b and 10c.
 - **Rounding: one rounding per quantity.** A quantity shows one rounded figure everywhere it appears: spec strings, captions (the VO), formula bar, caption text and pinned comment. The checker enforces it.
   - Every rounded number shows "≈" on screen and in the captions, including the counters' final readings.
-  - Rates: 3 significant figures (≈ $30,800, ≈ $22,700), 2 for 10b (≈ $78,000), and Amazon's kept rate to the dollar (≈ $2,464) because the formula bar divides by it.
+  - Rates: 3 significant figures (≈ $30,800, ≈ $22,700), 2 for 10b (≈ $78,000 a second, ≈ $4.7 million a minute), and Amazon's kept rate to the dollar (≈ $2,464) because the formula bar divides by it.
   - Times: whole seconds everywhere, the Live Sheet included (≈ 3 s, ≈ 17 s, ≈ 26 s). The rates are year averages, so tenths of a second would be false precision. The one exception is the 10a caption's "≈ 2.1 seconds" for a year of median pay, which is never shown beside a different rounding.
 - **VO text uses numerals.** It doubles as the captions, and the checker reads its numbers. Line lengths assume 2.6 spoken words a second, with digits expanded the way they are read ("$65,052" = 4 words, "2025" = 2, "US" = 2).
-- **Sync:** each milestone passes within 0.29 s of the start of the VO line that names it, and the on-screen beat (label, thud, row) lands on the pass itself. The 0.29 s case is 10a's first pass: the opening question runs to 2.4 s and the pay passes at 2.11 s. Every other gap is 0.07 s or less.
+- **Sync:** each milestone passes within 0.29 s of the start of the VO line that names it, and the on-screen beat (label, thud, row) lands on the pass itself. The 0.29 s case is 10a's first pass: the opening question runs to 2.4 s and the pay passes at 2.11 s. 10b's gaps are 0.03-0.14 s (3, 10, 20 and 40 years). Every other gap is 0.07 s or less.
 - **Lane check:**
   - These are counters at a real rate, over one continuous stretch.
   - No find-your-row table: 10c has 2 milestone rows and 1 kept row, not one per viewer.
-  - No unit stacks (that is `unit-ladder`).
+  - No unit stacks (that is `unit-ladder`). 10b's proposed 40-block stack is a prop the counter eats, not a ladder of units.
   - No race between two assets (`chart-race`); 10c's two counters are one company's sales and profit, not rival assets.
   - No "instead of paying" (`pov-race`).
   - 10c's makes-vs-keeps is a **per-second rate** comparison, not a split of one sum into shares (that is `split-sheet`).
 - **10a and 10b are both about the federal debt, but they ask different questions:**
   - 10a is the interest, and what it does to the debt (nothing: "$0 off the debt");
-  - 10b is the growth of the debt itself, against the viewer's year of pay.
+  - 10b is the growth of the debt itself, against the viewer's working life (40 years of pay vs 1 minute).
   - Post them at least a week apart, or as a labelled pair ("Part 2: the debt itself").
 - **Tone:**
   - Factual and non-partisan: no party, no person and no policy is named.
@@ -227,104 +227,115 @@
 
 ---
 
-## 10b: Becker Rig: "Your year's pay vs 1 second of new US debt. Which is bigger?"
+## 10b: Becker Rig: "40 years of your pay vs 1 minute of new US debt. Which is bigger?"
 
 | | |
 |---|---|
 | Look | `becker-rig` (white void and floor, our green stick figure with the pencil, maths in ink, impact kit) |
-| Spec | `studio/specs/10b-becker-rig-debt-vs-your-pay.json` (39.0 s) |
-| Platform title | **Which Is Bigger: Your Yearly Pay or 1 Second of New US Debt?** |
-| On-screen hook (header) | **Your year's pay vs / 1 second of new US debt. / Which is bigger?** (12 words, 3 lines; "1 second" in green) |
-| Frame 1 | Header and the 2-line footer. A generic "debt clock" readout panel ("NEW US DEBT, FROM THE DING", no real branding) is **armed at $0** with a blinking "1 SECOND" tag. The figure holds a **$65,052** block overhead (sub-label "1 year of median pay"). On the floor, the queue that is coming: a house ($393,700) and a giant block "40 years × $65,052 / ≈ $2.6 million" |
+| Spec | `studio/specs/10b-becker-rig-debt-vs-your-pay.json` (36.6 s) |
+| Platform title | **Which Is Bigger: 40 Years of Your Pay or 1 Minute of New US Debt?** |
+| On-screen hook (header) | **40 years of your pay vs / 1 minute of new US debt. / Which is bigger?** (15 words, 3 lines; "1 minute" in green) |
+| Frame 1 | Header and the 2-line footer. A generic "debt clock" readout panel ("NEW US DEBT SINCE YOU HIT PLAY", no real branding) is **already counting from $0** (≈ $117,302 at 1.5 s). Under it, the kit's NEXT ticker names the first target: "3 years of median pay: $195,156", with that object's dashed ghost on the floor. Proposed for the kit: the figure hugs a tall stack of 40 small **$65,052** blocks ("40 × $65,052 / 40 years of median pay"), and a "1 MINUTE" ring on the panel starts draining |
 | Footer | New debt ≈ $2.46T ÷ (364 × 86,400 s) / Pay: BLS median $1,251 a week × 52 |
 
 **Topic vs the seed:**
 - Kept: what the US national debt adds per second, in the Becker overheating counter (watch/alan-becker.md §6 idea 9, built on the *Clicks Per Second* structure).
-- Changed: the counter is a **duel against the viewer's own pay** (HD Guy's "Which is cheaper? A or B" grammar). The viewer gets 2.4 s to pick a side before the counter starts. The escalation ends on "a whole working life".
-- Changed this round: the basis is the **364 days between two confirmed Debt to the Penny readings**, not "fiscal 2026", because the fiscal year's last reading could not be confirmed (Review log, item V4).
+- Kept: a **duel against the viewer's own pay** (HD Guy's "Which is cheaper? A or B" grammar), where one side is a rate.
+- Changed in the hook pass: the stake grew from "your year's pay vs 1 second" to **"40 years of your pay vs 1 minute"**. The old duel was close (1.2x) and flipped for anyone earning more than ≈ $78,000. The new one is lopsided (1.8x) and holds for anyone under ≈ $117,000 a year. The counter now runs from frame 1, so the 2.4 s armed pause and its ding are gone.
+- The basis is the **364 days between two confirmed Debt to the Penny readings**, not "fiscal 2026", because the fiscal year's last reading could not be confirmed (Review log, item V4).
 - Rejected: a company counter. That would repeat 10c.
 
 **Wrong belief it exploits**
-- "A whole year of my work is bigger than one second of anything." For the median earner it isn't: 1 second of new debt (≈ $78,000) is more than a year of median pay ($65,052). Viewers above ≈ $78,000 a year win, barely (pinned comment).
-- The escalation then busts the belief that the debt clock moves slowly. A whole 40-year working life of median pay ($2,602,080) goes in ≈ 33 s.
+- "My whole working life is obviously bigger than 1 minute of anything." It isn't: 1 minute of new debt (≈ $4.7 million) is 1.8x a 40-year working life of median pay ($2,602,080). It holds for anyone earning under ≈ $117,000 a year (pinned comment).
+- The escalation then busts the belief that the debt clock moves slowly: that whole working life goes in **≈ 33 seconds**, 55% of the minute.
 
 **Hook rules satisfied**
 
 | Rule | How |
 |---|---|
-| R1 | The $65,052 block, the armed panel ($0) and the footer ($2.46T, 364 × 86,400 s, $1,251 × 52) are on screen at 0.0 s |
-| R2 | One input in the hook ("1 second"); the result is not given |
-| R3 | "Your year's pay" is the stake. The block shows the median, and the pinned comment gives the flip point (≈ $78,000 a year), so each viewer places themselves against one line |
-| R4 | A year of pay and 1 second are both familiar units |
-| R5 | The implied wrong answer is "my year, obviously". 1 second of the counter beats it for the median earner |
-| R6 | You + your yearly pay + 1 second |
-| R7 | Two named options, and the viewer gets 2.4 s to pick ("Your year, or 1 second? Pick.") before the counter starts |
-| R8 | 12 words, 3 lines |
-| R9 | The prop queue (pay block in his hands; the house and the 40-year block on the floor) is visible from frame 1: each prop goes into the counter in turn |
-| R10 | First payoff at 3.23 s (0.83 s after the ding), just past the 3 s mark because of the pick window. The biggest number (a working life, $2.6 million) comes last |
-| R11 | The question is on screen and in the title; the caption gives the verdict |
-| R12 | A winner you can repeat: **a working life of median pay ≈ 33 seconds of new debt** |
+| R1 | The running counter ($0 at frame 1), the NEXT ticker ("3 years of median pay: $195,156") and the footer ($2.46T, 364 × 86,400 s, $1,251 × 52) are on screen at 0.0 s. Proposed: the 40-block stack ("40 × $65,052") |
+| R2 | One input against one input in the hook ("40 years" vs "1 minute"); the result is not given |
+| R3 | "Your pay" is the stake. The blocks show the median, so the pinned comment gives the flip point (≈ $117,000 a year) and the swap-in rule (yearly pay × 40 ÷ 78,000 = your working life in seconds). Partial pass: the on-screen blocks are not the viewer's own |
+| R4 | 40 years and 1 minute are round, familiar units. "$2.6 million" appears only as the working (40 × $65,052) |
+| R5 | The implied wrong answer is "my 40 years, obviously". 1 minute is 1.8x bigger |
+| R6 | You + 40 years of your pay + 1 minute. The debt is the government's, so this is a partial pass |
+| R7 | Two named sides in the header and in the first VO line ("Your 40 years, or 1 minute?"); the counter answers |
+| R8 | 15 words, 3 lines |
+| R9 | The kit shows the next target at all times (NEXT ticker) and checks off 3, 10, 20 and 40 years. Proposed: the 40 blocks in his arms, one eaten every 0.83 s, a loop the viewer can count down |
+| R10 | The counter moves at 0.0 s. First payoff at 2.50 s (3 years of median pay, VO 2.4 s); proposed earlier beats: the first block eaten at 0.83 s and the "1 SECOND ≈ $78,000" stamp at 1.0 s. The biggest number (a working life, $2.6 million) comes last |
+| R11 | The question is on screen and in the title; the caption leads with the verdict |
+| R12 | A lopsided pair to repeat: **a working life ≈ 33 seconds; 1 minute ≈ $4.7 million** |
 
 **Benchmark hooks it is modelled on**
 - **H07, HD Guy, "Which is cheaper? 1 Missile or 75 Rounds/Second"**. **11,957,600 views, 3.81x.** https://www.youtube.com/shorts/TIRAehb_9sc
   - It is the channel's only question-form title, and it is in its top 6 by views.
-  - Borrowed: "Which is [X]: A, or [a per-second amount]?", where one side is a rate.
-- **H17, ChartOrbit, "POV: In 2008 You invested $5000 in [USA] VS [EU]"**. **2,808,307, 345.09x.** https://www.youtube.com/shorts/VwfZNjxu6fU
+  - Borrowed: "Which is [X]: A, or [a per-time amount]?", where one side is a rate.
+- **H17, ChartOrbit, "POV: In 2008 You invested $5000 in [USA] VS [EU]"**. **2,808,307, 345.09x.** https://www.youtube.com/shorts/VwfZNjxu6fU (and **H16**, Netflix vs Disney, **15,876,376, 100.45x**, https://www.youtube.com/shorts/KmtLGAPIutg)
   - Borrowed: two named sides at frame 1 and a lopsided end.
+- **H78-H80, "2 people invest $10,000 / 10 years ago"** (Instagram, **276,471-322,339**). https://www.instagram.com/reel/DdUZ5K1gGlc/
+  - Borrowed: a round horizon inside the stake ("40 years").
 - **H02, HD Guy, "F-16 Afterburner Fuel Cost in Real Time"**, frame 1 "$0.30". **28,289,823, 110.85x.** https://www.youtube.com/shorts/2DtXV2uxM_E
-  - Borrowed: round milestones and an ending at the peak.
+  - Borrowed: the counter is already moving at 0.0 s, round milestones, and an ending at the peak.
 - **H84, Master Money, "Take your salary and multiply it by 0.7"**. **3,000,000, 140x.** https://www.tiktok.com/@mastermoneyco/video/7680913784143105310
-  - Borrowed: the viewer's own pay as the input.
+  - Borrowed: the viewer's own pay as the input (the pinned swap-in rule).
 - **Look reference** (not benchmark evidence): Alan Becker's *Clicks Per Second*, watch/alan-becker.md §2.3.
-  - Frame 1 is a familiar UI ready to count.
-  - It escalates (solo → team → magic), and the counter heats from blue to orange to white, cracks and explodes.
+  - Frame 1 is a familiar UI already counting.
+  - It escalates, and the counter heats from green to orange to white, cracks and explodes.
 
-**Beat sheet** (milestone pass time = 2.4 + value ÷ $78,201.35 a second; gag beats from `lookOpts`)
+**Beat sheet** (milestone pass time = value ÷ $78,201.35 a second, from 0.0 s; gag beats from `lookOpts`)
 
 | t (s) | On screen (Becker action) | VO |
 |---|---|---|
-| 0.0 | Header, footer. The panel is **armed at $0** with a blinking "1 SECOND" tag. The figure lifts the **$65,052** block ("1 year of median pay"). The house and the 40-year block wait on the floor | "Your year, or 1 second? Pick." (0.0-2.4) |
-| 2.4 | **Ding.** The tag drops and the counter starts | |
-| 3.23 | The counter passes **$65,052**. **Swallow:** the panel slurps the block out of his hands. Thud, small shake. Label "A year of median pay: $65,052" | "Median pay loses." (3.3-4.9) |
-| 3.4 | The counter has run exactly 1 second. A stamp lands under the panel: "1 SECOND ≈ $78,000" | |
-| 5.0 | He stares at his empty hands, then at the panel | "≈ $78,000 a second." (5.0-7.4) |
-| 7.43 | The counter passes **$393,700**. **Push:** he shoves the house from the queue into the slot; it goes down in one gulp. Label "A median new house: $393,700" | "A median new house: ≈ 5 seconds." (7.4-10.2) |
-| 15.19 | The counter passes **$1,000,000**. **Shocked:** he jumps back; the panel turns **orange** and its last digits blur. Buzz | "$1 million: ≈ 13 seconds." (15.2-17.6) |
-| 17.9 | **Carry:** he drags the huge block, "40 years × $65,052 / ≈ $2.6 million", off the floor, with an effort loop | "Now 40 years of median pay." (17.9-20.3) |
-| 20.5 | He heaves it up to the slot. It sticks halfway | "40 × $65,052 ≈ $2.6 million." (20.5-25.2) |
-| 25.4 | He leans on it. The panel shudders | "That's a whole working life." (25.4-27.4) |
-| 27.7 | The panel goes **white-hot** and smoke curls | "The debt grew ≈ $2.46 trillion in 364 days." (27.7-33.5) |
-| 33.5-35.7 | No VO: a riser as the panel cracks (hold, then snap) | |
-| 35.67 | The counter passes **$2,602,080**. **Burst:** the panel bursts (white impact frame, shake, hit), and the 40-year block drops on the figure (flattened). Gag stamp "≈ 33 SECONDS" | "A working life: ≈ 33 seconds." (35.7-38.1) |
-| 35.7 | The counter stops at **≈ $2,604,105**. Verdict in the caption band: "A working life, 40 years of median pay: / **≈ 33 seconds** of new US debt." | |
-| 35.7-39.0 | Hold. He peels himself off the floor and stares at the cracked panel. Hard cut to frame 1: the panel re-arms, and he picks the pay block back up (loop) | |
+| 0.0 | Header, footer. The panel counts from **$0**. NEXT: "3 years of median pay: $195,156", with its ghost on the floor. Proposed: the figure hugs the 40-block stack ("40 × $65,052 / 40 years of median pay"); the "1 MINUTE" ring starts draining | "Your 40 years, or 1 minute?" (0.0-2.4) |
+| 0.83 | Proposed: the panel slurps the top block (1 year of median pay, $65,052) | |
+| 1.0 | Proposed: the counter has run exactly 1 second. A stamp lands under the panel: "1 SECOND ≈ $78,000" | |
+| 1.5 | The counter reads ≈ $117,302 (2.5% of the minute gone) | |
+| 2.50 | The counter passes **$195,156**. The strip flashes "✓ 3 years of median pay: $195,156"; the wad of bills drops. **Swallow:** he hugs the rest of his stack tighter | "3 years, gone." (2.4-4.0) |
+| 4.2 | (counter running) | "≈ $78,000 a second." (4.2-6.6) |
+| 8.32 | The counter passes **$650,520**. **Push:** he shoves back against the slot; it keeps eating | "10 years of median pay." (8.2-10.6) |
+| 10.6 | (counter running) | "The debt grew ≈ $2.46 trillion in 364 days." (10.6-16.4) |
+| 16.5 | Heat key "orange": the panel heats up and its last digits blur. Buzz | "Halfway: 20 years." (16.5-18.0) |
+| 16.64 | The counter passes **$1,301,040**. **Shocked:** his stack is half gone | ("20 years" is said at 16.88) |
+| 18.2 | NEXT: "40 years of median pay: $2,602,080" | "40 × $65,052 ≈ $2.6 million." (18.2-22.9) |
+| 23.1 | He looks at the few blocks left | "That's a whole working life." (23.1-25.1) |
+| 25.3 | Proposed: the ring's 60 s mark gets its label, "≈ $4.7 MILLION" | "1 minute: ≈ $4.7 million." (25.3-28.4) |
+| 28.6 | Heat key "white": the panel is near its peak, vibrating, with steam | "How long do 40 years last?" (28.6-31.0) |
+| 31.1-33.3 | No VO: a riser as the panel cracks | |
+| 33.27 | The counter passes **$2,602,080** | |
+| 33.3 | The counter locks on **≈ $2,604,105**. **Burst:** white impact frame, shake, hit; the blast knocks him flat (flattened), arms empty. Gag stamp "≈ 33 SECONDS". Verdict in the caption band: "40 years of median pay: **≈ 33 seconds**. / 1 minute of new US debt ≈ **$4.7 million**." The ring stops at 55% | "A working life: ≈ 33 seconds." (33.3-35.7) |
+| 33.3-36.6 | Hold. He peels himself off the floor and stares at the cracked panel. Hard cut to frame 1: the counter back at $0, the stack back in his arms (loop) | |
 
-All "≈ N seconds" in the VO are counter time (since the ding): the house at 5.03 s, $1 million at 12.79 s and the working life at 33.27 s of counting.
+All "≈ N seconds" are counter time, and the counter starts at 0.0 s, so they are also video time.
 
-**Full guide VO** (72 spoken words, digits expanded)
+**Full guide VO** (75 spoken words, digits expanded)
 
-> Your year, or 1 second? Pick. Median pay loses. About $78,000 a second. A median new house: about 5 seconds. $1 million: about 13 seconds. Now 40 years of median pay. 40 times $65,052: about $2.6 million. That's a whole working life. The debt grew about $2.46 trillion in 364 days. A working life: about 33 seconds.
+> Your 40 years, or 1 minute? 3 years, gone. About $78,000 a second. 10 years of median pay. The debt grew about $2.46 trillion in 364 days. Halfway: 20 years. 40 times $65,052: about $2.6 million. That's a whole working life. 1 minute: about $4.7 million. How long do 40 years last? A working life: about 33 seconds.
 
 **The maths**
 
 - **Basis:** total public debt outstanding (Treasury's Debt to the Penny) rose from **$37,637,553,494,935.61** on 2025-09-30 to **$40,096,954,633,566.68** on 2026-09-29: Δ = **$2,459,401,138,631.07** in **364 days**.
 - **Rate:** r = Δ ÷ (364 × 86,400 s) = Δ ÷ 31,449,600 s = $78,201.349… a second (`perSecond` 78,201.35).
-- **Counter:** value(t) = r × (t − 2.4), from the ding at 2.4 s.
+- **Counter:** value(t) = r × t, from 0.0 s.
 
 | On screen | Formula | Exact | Shown |
 |---|---|---:|---|
 | Growth | $40,096,954,633,566.68 − $37,637,553,494,935.61 | 2,459,401,138,631.07 | ≈ $2.46T (footer, VO, caption) |
-| Rate | Δ ÷ 31,449,600 s | 78,201.349 | ≈ $78,000 every second (stamp, VO, caption, pinned) |
-| A year of median pay | $1,251 × 52 | 65,052 | $65,052 |
+| Rate | Δ ÷ 31,449,600 s | 78,201.349 | ≈ $78,000 every second (strip, stamp, VO, caption, pinned) |
+| 1 minute of new debt | r × 60 | 4,692,080.93 | ≈ $4.7 million (VO, verdict, ring label, caption) |
+| A year of median pay | $1,251 × 52 | 65,052 | $65,052 (one block) |
 | 40 years of median pay | $65,052 × 40 | 2,602,080 | $2,602,080 / ≈ $2.6 million |
-| The duel | r vs $65,052 | 78,201 > 65,052 | median pay loses; passed 0.83 s after the ding |
-| Pass: a year of pay | 2.4 + 65,052 ÷ r | 3.232 s | (0.832 s of counting) |
-| Pass: a median new house | 2.4 + 393,700 ÷ r | 7.434 s | ≈ 5 seconds (5.034 s of counting) |
-| Pass: $1 million | 2.4 + 1,000,000 ÷ r | 15.188 s | ≈ 13 seconds (12.788 s of counting) |
-| Pass: 40 years of pay | 2.4 + 2,602,080 ÷ r | 35.674 s | ≈ 33 seconds (33.274 s of counting) |
-| Counter final | r × (35.7 − 2.4) | 2,604,104.91 | ≈ $2,604,105 |
-| "≈ 0.64 seconds" (pinned) | $50,089 ÷ r | 0.641 s | ≈ 0.64 seconds |
-| TikTok reply: the part held by the public | $2.09T ÷ 31,449,600 s | 66,455.5 | ≈ $66,000 a second |
+| The duel | 1 minute ÷ 40 years of median pay | 1.803 | 1 minute is bigger (1.8x, md only); margin ≈ $2.1 million (md only) |
+| Crossover pay | 1 minute ÷ 40 | 117,302.02 | ≈ $117,000 a year (pinned) |
+| 1 minute in years of median pay | 1 minute ÷ $65,052 | 72.13 | ≈ 72 years of median pay (caption) |
+| Block n eaten | n × $65,052 ÷ r | n × 0.8319 s | proposed block-stack timing |
+| Pass: 3 years of pay | $195,156 ÷ r | 2.496 s | VO 2.4 |
+| Pass: 10 years of pay | $650,520 ÷ r | 8.319 s | VO 8.2 |
+| Pass: 20 years of pay | $1,301,040 ÷ r | 16.637 s | VO 16.5 ("20 years" said at 16.88) |
+| Pass: 40 years of pay | $2,602,080 ÷ r | 33.274 s | ≈ 33 seconds (VO and verdict at 33.3) |
+| Share of the minute used | 33.274 ÷ 60 | 55.5% | the ring stops at 55% (proposal) |
+| Counter at 1.5 s | r × 1.5 | 117,302.02 | (frame check; equal to the crossover pay because 1.5 = 60 ÷ 40) |
+| Counter final | r × 33.3 | 2,604,104.91 | ≈ $2,604,105 |
+| TikTok reply: the part held by the public | $2.09T ÷ 31,449,600 s | 66,455.5 | ≈ $66,000 a second; × 60 = 3,987,332 ≈ $4.0 million a minute |
 
 **Sources (real-world inputs)**
 
@@ -336,36 +347,34 @@ All "≈ N seconds" in the VO are counter time (since the ding): the house at 5.
 | Consistency check 2 (pace): $38T in October 2025, $39T in March 2026, $40.047T at the close of 2026-08-18. That is ≈ $2.0T in ≈ 10 months, or ≈ $2.4-2.5T a year | Euronews, "Five charts explaining America's $40 trillion debt" | 2026-08-22 | https://www.euronews.com/2026/08/22/five-charts-explaining-americas-40-trillion-debt |
 | Primary dataset (API and page fetch both blocked by the proxy) | U.S. Treasury, Fiscal Data, "Debt to the Penny" | daily | https://fiscaldata.treasury.gov/datasets/debt-to-the-penny/ |
 | **Not used:** the 2026-09-30 reading. Search summaries gave unsourced, mutually inconsistent figures ("$40.17 trillion" for FY2026; $40,260,641,972,390 on 2026-10-01; $40,242,446,619,209.33 on 2026-10-02). If $40.17T is right, full-year growth was ≈ $2.53T, which is why nothing on screen says "fiscal 2026" | search results only | 2026-10-07 | (no primary page reachable) |
-| Median full-time pay $1,251 a week; median new house $393,700 | BLS (2026-07-21) and DWM Magazine (2026-07-24); Census/HUD (2026-09-24) and First Trust (2026-09-24) | | see 10a |
-| **Average new-vehicle transaction price, August 2026: $50,089** (pinned comment only) | Cox Automotive / Kelley Blue Book, "August 2026 ATP report" | 2026-09-10 | https://www.coxautoinc.com/insights/august-2026-atp-report/ |
-| Same, second source | Kelley Blue Book press release via Cision (WBOY), "Average New-Vehicle Transaction Price Moves Back Above $50,000 in August" | 2026-09-10 | https://digital-release.wboy.com/business/press-releases/cision/20260910LA45270/kelley-blue-book-report-average-new-vehicle-transaction-price-moves-back-above-50000-in-august |
+| Median full-time pay $1,251 a week | BLS (2026-07-21) and DWM Magazine (2026-07-24) | | see 10a |
 
 **Assumptions** (in the 2-line footer and the milestone labels)
 - The 364-day growth is spread evenly over those 364 days. The debt grows in steps (auctions, tax dates, month-end trust-fund credits), so this is the average rate.
 - The debt is gross federal debt, which includes intragovernmental holdings.
-- Pay is BLS median weekly earnings × 52. A "working life" is 40 years of that pay, with no raises. The labels say "40 years of median pay".
+- Pay is BLS median weekly earnings × 52. A "working life" is 40 years of that pay, with no raises. The labels and the verdict say "median pay"; the header's "your pay" is answered for every viewer by the pinned flip point (≈ $117,000 a year).
 
 **Caption (IG / TikTok; also the YouTube description)**
-> 40 years of median pay ≈ 33 seconds of new US debt. Even 1 second (≈ $78,000) beats a year of median pay ($65,052). Treasury's Debt to the Penny: $37.638 trillion on Sept. 30, 2025, $40.097 trillion on Sept. 29, 2026, so ≈ $2.46 trillion more in 364 days. Divide by 364 × 86,400 seconds: ≈ $78,000 a second. 40 years of median pay ($1,251 a week × 52 × 40 = $2,602,080) ≈ 33 seconds. Educational maths, not advice.
+> 40 years of median pay ≈ 33 seconds of new US debt. 1 minute of it ≈ $4.7 million, or ≈ 72 years of median pay. Treasury's Debt to the Penny: $37.638 trillion on Sept. 30, 2025, $40.097 trillion on Sept. 29, 2026, so ≈ $2.46 trillion more in 364 days. Divide by 364 × 86,400 seconds: ≈ $78,000 a second. 40 years of median pay ($1,251 a week × 52 × 40 = $2,602,080) ≈ 33 seconds. Educational maths, not advice.
 > #nationaldebt #debtclock #moneymath
 
 **Pinned comment**
-> Earn more than ≈ $78,000 a year? Your year beats 1 second. Barely. A new car ($50,089, KBB, August 2026) lasts ≈ 0.64 seconds.
+> Earn more than ≈ $117,000 a year? Your 40 years beat 1 minute. Yours: yearly pay × 40 ÷ 78,000 = your working life in seconds.
 
 **Per-platform notes**
 - **Before posting (optional upgrade):** if Debt to the Penny can be read, take the 2026-09-30 reading. A full fiscal year would let the footer say "FY2026" and divide by 31,536,000 s; rerun the check after changing `DEBT_2026_09_29`, `DAYS_B` and the strings it lists. The 364-day version is correct as it stands.
-- **YouTube Shorts:** the question title is HD Guy's rarest and one of his biggest (H07). Keep the ending as a hard cut back to frame 1: the panel re-arms, and the loop restarts the pick.
-- **Instagram Reels:** use the burst frame (35.7 s) as the cover, with the verdict. Caption line 1 is the working-life verdict.
+- **YouTube Shorts:** the question title is HD Guy's rarest and one of his biggest (H07). Keep the ending as a hard cut back to frame 1: the counter restarts at $0 and the stack is back in his arms.
+- **Instagram Reels:** use the burst frame (33.3 s) as the cover, with the verdict. Caption line 1 is the working-life verdict.
 - **TikTok:**
-  - Expected fight: "the debt includes money the government owes itself". The pinned reply: of the $2.46T, $2.09T is held by the public. That is still ≈ $66,000 a second, still more than a year of median pay. It comes from the PrimeRates source above: 2.09e12 ÷ 31,449,600 = $66,456.
+  - Expected fight: "the debt includes money the government owes itself". The pinned reply: of the $2.46T, $2.09T is held by the public. That is still ≈ $66,000 a second, so 1 minute of it (≈ $4.0 million) still beats a working life of median pay ($2.6 million). It comes from the PrimeRates source above: 2.09e12 ÷ 31,449,600 = $66,456.
+  - Expected fight: "I earn more than that". The pinned comment gives the flip point (≈ $117,000) and the swap-in rule.
   - Expected question: "why 364 days?" Answer: those are the two official readings either side of the fiscal year we could confirm.
   - Keep "40 years of median pay ≈ 33 seconds" in the first 100 characters.
 - **Look note:**
-  - This needs the Becker kit's cost-counter module (still a stub), a generic **debt-clock panel prop** (an LED readout, no usdebtclock.org styling), and 4 actions from the pose library: lift, push, shocked, flattened (all in §7.2's pilot set).
-  - **New proposals:** `armed` (the panel holds $0 with a blinking "1 SECOND" tag until `go`, then the ding), `queue` (the house and the 40-year block sit on the floor from frame 1, R9) and `stamp` (the "1 SECOND ≈ $78,000" stamp at exactly 1 s of counting).
-  - `lookOpts.heat` drives the overheat: cool → orange (15.2 s) → white (27.7 s) → burst (35.7 s).
+  - The Becker Rig `cost-counter` module is built (working tree; another session is restyling it as this is written). It draws the readout panel counting from frame 1, the NEXT ticker with the next target's ghost, a dropping object and a "✓" strip flash at each milestone, the heat ramp and the lock with the impact kit. It reads `lookOpts.heat` (the "orange", "white" and "burst" keys at 16.5, 28.6 and 33.3 s) and maps them onto its own colour ramp. It guesses a wad of bills for every "years of median pay" milestone.
+  - **Proposals for the kit builder** (the module ignores them today; the story renders without them): `opener` with `prop: "block-stack"`, `blocks: 40`, `unit: 65052` (40 blocks in his arms, block n eaten at n × 65,052 ÷ perSecond, so every 0.83 s); `stamp` ("1 SECOND ≈ $78,000" at exactly 1 s of counting); `timer` (a "1 MINUTE" ring that drains from 0.0 s, gets the label "≈ $4.7 million" on its 60 s mark at 25.3 s and stops at 55% on the lock); `actions` (swallow, push, shocked, flattened, all in §7.2's pilot set); `gag` ("≈ 33 seconds" at the burst).
+  - The old `armed`, `queue` and `carry` proposals are gone: the counter runs from frame 1 and the stack is in his arms from the start.
   - One impact kit, at the burst only (README: "one per short").
-  - Kit note: the chrome's verdict enters from 26 px below. A 2-line verdict at full 72 px size dips about 6 px under the caption band for its first ~0.1 s. This verdict's longer first line sets a smaller size and clears it, but the kit should clamp the entry.
 
 ---
 
@@ -513,3 +522,75 @@ Round 2 review: one verifier (maths, facts, contract, timing) and one hook judge
 | J1 | 10a | 5 → est. 7 | **Adopted the rewrite.** Header "US debt interest since you hit play. / How much comes off the debt?" ("off the debt" in red); first VO is the question; the verdict pairs "$1 million in ≈ 33 seconds" with "$0 of it pays the debt down"; the title is a question. Proposed the labelled pips and the red "OFF THE DEBT  $___" cell as `lookOpts` (`pipLabels`, `slot`). From the contract fields alone, the header asks and the verdict answers. **Three deviations, with reasons:** (1) The opening line is the 6-word "How much comes off the debt?", not "How much of this comes off the debt?". The 8-word version takes 3.1 s at 2.6 w/s and would push "There goes a year of median pay" a full second past the 2.11 s pass; the 6-word one keeps it at 2.4 s. (2) The verdict leads with "$1 million in ≈ 33 seconds" rather than "≈ $1,002,727 of interest": the round number is the one viewers repeat, and the counter already shows the exact one. (3) Title "…How Much Comes Off the Debt?": "How Much Comes Off?" alone is ambiguous. The interest-only angle also separates 10a from 10b |
 | J2 | 10b | 7 → est. 7.5 | **Adopted the rewrite.** Header "Your year's pay vs / 1 second of new US debt. / Which is bigger?" (12 words). The panel is armed at $0 with a "1 SECOND" tag until 2.4 s ("Your year, or 1 second? Pick."), then starts on a ding, labelled "New US debt, from the ding" (the SFX set has no beep). The house and the 40-year block sit in a visible queue (R9); a stamp "1 SECOND ≈ $78,000" lands at exactly 1 s of counting; then "Median pay loses."; every later beat moves +2.4 s; caption line 1 is the working-life verdict. **Deviations:** the stamp and pinned comment use "≈ $78,000", not "$78,006" (V6 wins); the duration is 39.0 s, not 39.9 (hold 3.3 s); and verdict line 1 became "A working life, 40 years of median pay:". At full size the 2-line verdict dipped 6 px under the caption band during its entry animation (a lint error); the longer first line sets a smaller size and clears it. **Cost, accepted:** the counter is not running at frame 1, and the first payoff is at 3.23 s, not 0.83 s. Frame 1 still holds three numbers, and the pick window is what makes the question work (R7) |
 | J3 | 10c | 5 → est. 6.5 | **Adopted the core of the rewrite.** Header "How much does Amazon really make / while you watch this?" (a question, R5 via "really"); both counters run from frame 1 (`kept.t: 0`, which the Live Sheet kit already supports); the first VO names them ("Top: sales. Bottom: what it keeps.", since this kit stacks them); the verdict pair is "Sells a year of median pay in ≈ 3 s. / Keeps one every ≈ 26 s."; title "What Amazon Really Keeps While You Watch This". "There goes a year of median pay" (word for word in 10a) became "Sales just passed…". **Not adopted:** the 2×2 "Passed at" grid with a 4th cell "= $393,700 ÷ $2,464 ≈ 160 s". The Live Sheet's cost-counter table has 3 columns and no passed-at cell on the kept row, and a fourth number arriving after the counters stop would dilute the verdict pair. The kept pass is shown in the formula bar instead ("= $65,052 ÷ $2,464 ≈ 26 s"). R3 stays partial (no row of the viewer's own), so I estimate below the judge's 7 |
+
+### Hook pass (2026-10-08)
+
+Two judges scored each teaser's current hook and four candidate rewrites (A-D) out of 10. The rule: adopt the best candidate only if its average is at least 7.5 and at least 0.75 above the current hook. A key that either judge marks dishonest is out. Judge 2's 10c scores for C and D were cut off in transit, and so was the full text of the 10c candidates.
+
+| Teaser | Current | A | B | C | D | Decision |
+|---|---|---|---|---|---|---|
+| 10a | 5 / 5 → **5.00** | 7 / 7 → **7.00** | 4 (dishonest) / 5.5 → out | 4 / 4.5 → 4.25 | 6 / 6 → 6.00 | **Keep current** |
+| 10b | 6 / 6 → **6.00** | 7.5 / 7.5 → **7.50** | 5.5 / 6 → 5.75 | 5 / 6 → 5.50 | 5.5 / 5.5 → 5.50 | **Adopt A** |
+| 10c | 4 / 4.5 → **4.25** | 5 / 5 → 5.00 | 5.5 / 6 → **5.75** | 4.5 / cut off | 6.5 / cut off | **Keep current** |
+
+**10a: kept.**
+- The best candidate, A ("…how many years of **your pay**?", with a tally of years), averaged 7.00. That clears the +0.75 margin but misses the 7.5 floor.
+- Both judges held it back for the same reasons: "your pay" on screen is really the median, the money is the government's (R6 partial), and the count of 15 years is set by the video's length.
+- B is out: judge 1 marked it dishonest. Judge 1 reports that Treasury's FY2025 function table puts both Medicare ($996.7B) and Health ($978.9B) above net interest (~$970.7B). If so, "only 2 bills are bigger" holds only under AAF's program grouping. Judge 2 accepted AAF's ranking, but the rule drops a key that either judge marks dishonest. The "third-largest outlay" wording in 10a's source row is AAF's own wording, and it is not on screen.
+- Title kept. A's title and D's title only work with their own headers, and neither judge scored a title on its own.
+
+**10c: kept.**
+- No visible score comes near the floor. The best fully scored candidate is B at 5.75.
+- For C to reach 7.5, judge 2 would need a 10.5. For D, judge 2 would need an 8.5, above every score judge 2 gave in this format (its highest was 7.5).
+- D's full spec was also cut off in transit, so it could not have been applied as written.
+- Title kept for the same reason as 10a.
+
+**10b: adopted A, "40 years of your pay vs 1 minute of new US debt. Which is bigger?"**
+- **Why it won:** both judges gave it 7.5. It attacks the strongest wrong belief in the format: "my whole working life obviously beats 1 minute".
+  - The duel is lopsided: 1 minute ≈ $4.7 million is 1.8x a working life of median pay ($2,602,080).
+  - It holds for anyone under ≈ $117,000 a year. The old duel flipped at ≈ $78,000.
+  - The counter is live at 0.0 s, where the old one was armed and still for 2.4 s.
+- **Applied as written:**
+  - header, title and vo[0];
+  - data.label "New US debt since you hit play";
+  - counterT [0.0, 33.3];
+  - the milestones 3 / 10 / 20 / 40 years of median pay;
+  - the final ≈ $2,604,105 and hold 3.3;
+  - VO lines 1-8 at the candidate's times;
+  - no `armed`, no `queue`;
+  - `opener` block-stack "40 × $65,052";
+  - stamp "1 second ≈ $78,000" at 1.0 s;
+  - `timer` (1 minute, 60 s);
+  - heat orange at 16.5 s;
+  - the sfx (no ding; buzz 16.5, riser 2.2 s, hit);
+  - the pinned flip point (≈ $117,000) and "≈ 72 years of median pay" in the caption.
+- **Deviations, with reasons:**
+  1. **The verdict, the last VO line, the burst, the hit and the gag are at 33.3 s, not 33.2 s.** The 40-year pass is at 33.274 s, and the kit's lock (the burst) is at counterT[1] = 33.3 s. At 33.2 s, the verdict would land 2 frames before the pass. The riser moved from 31.0 to 31.1 s, so it still runs 2.2 s and ends on the hit. Duration (36.6 s) and hold (3.3 s) are unchanged.
+  2. **New vo[9], "How long do 40 years last?" (28.6-31.0 s, 6 words, 2.31 s).** As written, A left 4.8 s with no VO (28.4-33.2 s). Judge 2 marked down 4.7 s and 5.6 s silences in 10a-D and 10b-C. The new line re-opens the loop that the verdict closes, and the silent riser before the burst is now 2.2 s, as it was before. White heat moved from 28.4 to 28.6 s to start with the line.
+  3. **Verdict line 1 is "40 years of median pay: ≈ 33 seconds."**, not "A working life: ≈ 33 seconds." This keeps round 2's rule (V5) that the verdict names the median. The VO still says "A working life".
+  4. **The pinned comment adds the swap-in rule:** "yearly pay × 40 ÷ 78,000 = your working life in seconds". Both judges docked A because the blocks are the median, not the viewer's own pay. The new-car line went, because it belonged to the old 1-second duel.
+  5. **The `timer` gets an end label, "≈ $4.7 million" on its 60 s mark, at 25.3 s** (a proposal, like the timer itself). Judge 2 said the minute "is asserted in the VO, not shown".
+  6. **Kit-facing changes:**
+     - `opener` carries `blocks: 40` and `unit: 65052`, so a kit can time the block-eating from the data (block n at n × 0.8319 s).
+     - `carry` is removed, because the stack is in his arms from frame 1.
+     - `actions` are rewritten for the new milestones.
+- **What the judges still flag (not fixed here):**
+  - "40 years of pay" is not a small input (R4).
+  - The debt is the government's (R6 partial).
+  - The block-stack, the stamp and the ring are proposals that the Becker kit does not draw yet.
+- **Today's render, checked in stills at 0, 1.5, 3, 25.5 and 33.4 s:**
+  - At 0.0 s, frame 1 shows the header, the footer with $1,251 × 52, the panel at $0 and NEXT "3 years of median pay: $195,156".
+  - At 1.5 s the counter reads $117,302 under the caption "Your 40 years, or 1 minute?".
+  - At 3.0 s the strip shows "✓ 3 years of median pay: $195,156" as the wad lands. This is the first rendered payoff, at 2.50 s.
+  - The 2-line verdict fits the caption band at 33.4 s.
+- **Write-up:** the 10b section was rewritten: hook, title, frame 1, wrong belief, rules, benchmarks, beat sheet, VO, maths, caption, pinned comment and notes. The shared decisions were updated too. The car's source rows are gone, along with the car itself.
+
+**Files:**
+- `studio/specs/10b-becker-rig-debt-vs-your-pay.json`: new hook. `node src/cli.mjs check`: 0 errors, 0 warnings. 10a and 10c are unchanged and still clean.
+- `checks/10-cost-counter.py` changes:
+  - It rebuilds 10b from the new hook. New constants: `MINUTE`, `PAY3` and `PAY20`.
+  - New asserts: 1 minute beats 40 years; the working life goes inside the minute; the public-held part alone still wins; the 40-year pass comes before the stop.
+  - One-rounding guards were added for ≈ $4.7 million, ≈ $117,000 and ≈ 72 years.
+  - The house, $1 million and car checks were dropped from 10b.
+  - Result: **853 checks, 0 failures**.
+- `teasers/v2/teasers.json`: the 10b entry's title, header, runtime (36.6 s) and key numbers were updated.

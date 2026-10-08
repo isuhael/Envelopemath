@@ -410,20 +410,24 @@ export class Figure {
     parent.append(this.g)
     this.opacity = opacity
   }
-  /** Draw a joint set. o: { opacity, sx, sy } (squash about the ground under the hips). */
+  /** Draw a joint set. o: { opacity, sx, sy (squash about the ground under the hips), stroke (limb width for this
+   *  frame, e.g. counter-scaled under a camera zoom) }. Joints solved at another scale (J.k) scale the pencil too. */
   draw(J, o = {}) {
     const f = n => J[n][0].toFixed(1) + ',' + J[n][1].toFixed(1)
+    const sw = o.stroke ?? this.sw, ow = this.ow * (sw / this.sw)
+    for (const k in this.limbs) { attr(this.limbs[k], 'stroke-width', sw.toFixed(2)); if (this.ko) attr(this.ko[k], 'stroke-width', (sw + ow).toFixed(2)) }
     const D = {
       lB: `M${f('hip')}L${f('kB')}L${f('fB')}`, lF: `M${f('hip')}L${f('kF')}L${f('fF')}`,
       aB: `M${f('sh')}L${f('eB')}L${f('hB')}`, aF: `M${f('sh')}L${f('eF')}L${f('hF')}`,
       torso: `M${f('hip')}L${f('nk')}`,
     }
     for (const k in D) { attr(this.limbs[k], 'd', D[k]); if (this.ko) attr(this.ko[k], 'd', D[k]) }
-    for (const [el, r] of [[this.head, J.R], ...(this.ko ? [[this.ko.head, J.R + this.ow / 2]] : [])]) {
+    for (const [el, r] of [[this.head, J.R], ...(this.ko ? [[this.ko.head, J.R + ow / 2]] : [])]) {
       attr(el, 'cx', J.head[0].toFixed(1)); attr(el, 'cy', J.head[1].toFixed(1))
       attr(el, 'rx', r.toFixed(1)); attr(el, 'ry', r.toFixed(1))
     }
-    if (this.pencil) attr(this.pencil, 'transform', `translate(${J.head[0].toFixed(1)},${J.head[1].toFixed(1)}) scale(${J.face},1) rotate(${J.headRot.toFixed(1)})`)
+    const pk = (J.k || this.k) / this.k
+    if (this.pencil) attr(this.pencil, 'transform', `translate(${J.head[0].toFixed(1)},${J.head[1].toFixed(1)}) scale(${(J.face * pk).toFixed(4)},${pk.toFixed(4)}) rotate(${J.headRot.toFixed(1)})`)
     const sx = (o.sx ?? 1) * J.sx, sy = (o.sy ?? 1) * J.sy
     if (sx !== 1 || sy !== 1) {
       const cx = J.hip[0], cy = J.ground

@@ -3,35 +3,36 @@
   "look": "becker-rig",
   "format": "cost-counter",
   "fps": 30,
-  "duration": 39.0,
-  "header": "Your year's pay vs\n**1 second** of new US debt.\nWhich is bigger?",
+  "duration": 36.6,
+  "header": "40 years of your pay vs\n**1 minute** of new US debt.\nWhich is bigger?",
   "footer": "New debt ≈ $2.46T ÷ (364 × 86,400 s)\nPay: BLS median $1,251 a week × 52",
   "captions": true,
   "vo": [
-    { "t": 0.0,  "d": 2.4, "text": "Your year, or 1 second? Pick." },
-    { "t": 3.3,  "d": 1.6, "text": "Median pay **loses.**" },
-    { "t": 5.0,  "d": 2.4, "text": "**≈ $78,000** a second." },
-    { "t": 7.4,  "d": 2.8, "text": "A median new house: ≈ 5 seconds." },
-    { "t": 15.2, "d": 2.4, "text": "$1 million: ≈ 13 seconds." },
-    { "t": 17.9, "d": 2.4, "text": "Now 40 years of median pay." },
-    { "t": 20.5, "d": 4.7, "text": "40 × $65,052 ≈ **$2.6 million**." },
-    { "t": 25.4, "d": 2.0, "text": "That's a whole working life." },
-    { "t": 27.7, "d": 5.8, "text": "The debt grew ≈ $2.46 trillion in 364 days." },
-    { "t": 35.7, "d": 2.4, "text": "A working life: **≈ 33 seconds.**" }
+    { "t": 0.0,  "d": 2.4, "text": "Your 40 years, or 1 minute?" },
+    { "t": 2.4,  "d": 1.6, "text": "3 years, gone." },
+    { "t": 4.2,  "d": 2.4, "text": "**≈ $78,000** a second." },
+    { "t": 8.2,  "d": 2.4, "text": "10 years of median pay." },
+    { "t": 10.6, "d": 5.8, "text": "The debt grew ≈ $2.46 trillion in 364 days." },
+    { "t": 16.5, "d": 1.5, "text": "Halfway: 20 years." },
+    { "t": 18.2, "d": 4.7, "text": "40 × $65,052 ≈ **$2.6 million**." },
+    { "t": 23.1, "d": 2.0, "text": "That's a whole working life." },
+    { "t": 25.3, "d": 3.1, "text": "1 minute: ≈ $4.7 million." },
+    { "t": 28.6, "d": 2.4, "text": "How long do 40 years last?" },
+    { "t": 33.3, "d": 2.4, "text": "A working life: **≈ 33 seconds.**" }
   ],
-  "verdict": { "t": 35.7, "text": "A working life, 40 years of median pay:\n**≈ 33 seconds** of new US debt." },
+  "verdict": { "t": 33.3, "text": "40 years of median pay: **≈ 33 seconds**.\n1 minute of new US debt ≈ __$4.7 million__." },
   "data": {
-    "label": "New US debt, from the ding",
+    "label": "New US debt since you hit play",
     "perSecond": 78201.35,
     "rateDisplay": "≈ $78,000 every second",
-    "counterT": [2.4, 35.7],
+    "counterT": [0.0, 33.3],
     "startValue": 0,
     "prefix": "$",
     "dp": 0,
     "milestones": [
-      { "value": 65052, "label": "A year of median pay: $65,052" },
-      { "value": 393700, "label": "A median new house: $393,700" },
-      { "value": 1000000, "label": "$1 million" },
+      { "value": 195156, "label": "3 years of median pay: $195,156" },
+      { "value": 650520, "label": "10 years of median pay: $650,520" },
+      { "value": 1301040, "label": "20 years of median pay: $1,301,040" },
       { "value": 2602080, "label": "40 years of median pay: $2,602,080" }
     ],
     "final": "≈ $2,604,105",
@@ -40,33 +41,27 @@
   "lookOpts": {
     "stage": "white",
     "surface": "debt-clock",
-    "surfaceLabel": "New US debt, from the ding",
-    "opener": { "t": 0.0, "pose": "lift", "prop": "block", "text": "$65,052", "sub": "1 year of median pay" },
-    "queue": [
-      { "prop": "house", "text": "$393,700", "sub": "A median new house" },
-      { "prop": "block", "text": "40 years × $65,052", "sub": "≈ $2.6 million" }
-    ],
-    "armed": { "tag": "1 second", "go": 2.4 },
-    "stamp": { "t": 3.4, "text": "1 second ≈ $78,000" },
+    "surfaceLabel": "New US debt since you hit play",
+    "opener": { "t": 0.0, "pose": "lift", "prop": "block-stack", "blocks": 40, "unit": 65052, "text": "40 × $65,052", "sub": "40 years of median pay" },
+    "stamp": { "t": 1.0, "text": "1 second ≈ $78,000" },
+    "timer": { "t0": 0.0, "label": "1 minute", "total": 60, "endLabel": { "t": 25.3, "text": "≈ $4.7 million" } },
     "actions": [
-      { "milestone": 0, "verb": "swallow", "becomes": "the counter slurps the pay block out of his hands; he stares at his empty hands" },
-      { "milestone": 1, "verb": "push", "becomes": "he shoves the house from the queue into the counter's slot; it goes down in one gulp" },
-      { "milestone": 2, "verb": "shocked", "becomes": "the counter turns orange and its last digits blur" },
-      { "milestone": 3, "verb": "flattened", "becomes": "white-hot, it cracks and bursts; the 40-year block drops on him" }
+      { "milestone": 0, "verb": "swallow", "becomes": "the panel has been slurping blocks off the top of his stack since frame 1, one per year of pay; he hugs the rest tighter" },
+      { "milestone": 1, "verb": "push", "becomes": "he shoves back against the panel's slot; it keeps eating" },
+      { "milestone": 2, "verb": "shocked", "becomes": "halfway: his stack is half gone; the counter turns orange and its last digits blur" },
+      { "milestone": 3, "verb": "flattened", "becomes": "white-hot, it cracks and bursts as the last block goes in; the blast knocks him flat, arms empty" }
     ],
-    "carry": { "t": 17.9, "text": "40 years × $65,052", "sub": "≈ $2.6 million" },
     "heat": [
       { "t": 0.0, "state": "cool" },
-      { "t": 15.2, "state": "orange" },
-      { "t": 27.7, "state": "white" },
-      { "t": 35.7, "state": "burst" }
+      { "t": 16.5, "state": "orange" },
+      { "t": 28.6, "state": "white" },
+      { "t": 33.3, "state": "burst" }
     ],
-    "gag": { "t": 35.7, "text": "≈ 33 seconds" }
+    "gag": { "t": 33.3, "text": "≈ 33 seconds" }
   },
   "sfx": [
-    { "t": 2.4, "kind": "ding" },
-    { "t": 15.2, "kind": "buzz", "gain": 0.35 },
-    { "t": 33.5, "kind": "riser", "dur": 2.2 },
-    { "t": 35.7, "kind": "hit" }
+    { "t": 16.5, "kind": "buzz", "gain": 0.35 },
+    { "t": 31.1, "kind": "riser", "dur": 2.2 },
+    { "t": 33.3, "kind": "hit" }
   ]
 }

@@ -11,7 +11,7 @@
 //             (small coins: a karate chop). It bursts (hit + shake + hit lines) into units that arc over to the end
 //             of a row of piles and stack into a brick pyramid; the counter rolls with every unit that lands. The
 //             growing pile pushes the camera back until the whole row is in frame: the price ladder, cheap to
-//             huge, left to right, with him at the far left (a green ring finds him once he is a speck). The
+//             huge, left to right, with him at the far left (never under ~96 px on screen). The
 //             count lands exactly on the spec's unitsDisplay and its "=" turns into "≈" when the result is
 //             rounded. He reacts, escalating: point, shrug, shocked.
 //   finale    the last count lands on a gold plate with the impact kit (hit + shake + flash + camera punch, hit
@@ -57,14 +57,18 @@ export const css = `
 .ul-lab { font: 800 ${LABPX}px/${LABLH}px ${F.head}; letter-spacing: -0.01em; color: ${C.grey}; }
 .ul-plate { position: absolute; left: 0; top: 0; box-sizing: border-box; background: ${C.coin}; border: 6px solid ${C.ink}; border-radius: 20px; transform-origin: 50% 50%; }
 .ul-fx { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+.ul-tag { position: absolute; left: 0; top: 0; text-align: center; white-space: nowrap; }
+.ul-tag .n { display: block; font: 800 40px/44px ${F.head}; letter-spacing: -0.01em; color: ${C.grey}; }
+.ul-tag .c { display: block; font: 900 44px/48px ${F.head}; letter-spacing: -0.03em; color: ${C.ink}; }
+.ul-tag.list { text-align: left; }
+.ul-tag.list .ln { display: block; white-space: nowrap; line-height: 50px; }
+.ul-tag.list .n, .ul-tag.list .c { display: inline; line-height: 50px; }
 `
 
-// average colour of each icon once it is too small to draw (what a pile reads as from far away)
-const FLAT = {
-  hotdog: '#D49A62', burger: '#B07A4E', pizza: '#E2B347', coin: '#E3B83E', bill: '#97C5AE', cup: '#B5BBC3',
-  phone: '#BCC1C9', car: '#B3B8C0', house: '#BBC0C7', gas: '#BBC0C7', ticket: '#E3B83E', bag: '#C2C6CD',
-  egg: '#CDD0D5', hour: '#BDC2C9', token: '#9ED2B8',
-}
+// what a pile reads as once one icon is too small to draw: a clean palette silhouette with an ink edge.
+// Coin yellow only for money units; everything else is the neutral structure grey.
+const FLAT = { coin: C.coin, bill: C.coin, ticket: C.coin }
+const flatOf = name => FLAT[name] || C.line
 
 // poses used only here (the shared library has the rest)
 const P_PRESENT = { lean: -3, tilt: 4, aF: [116, 30], aB: [-14, 16], lF: [10, -4], lB: [-12, -2] }
@@ -75,6 +79,13 @@ const P_WIND = { lean: -18, tilt: -4, aF: [-58, 118], aB: [58, 64], lF: [30, -36
 const P_PUNCH = { lean: 24, tilt: -6, aF: [92, 4], aB: [-46, 36], lF: [36, -42], lB: [-30, -6] }
 
 const esc = x => String(x).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+// a pile's name tag: the rung's item without its article or trailing qualifier ("A year of rent at $1,700/mo" ->
+// "Year of rent", "A $400,000 house, paid in cash" -> "$400,000 house"). Words are dropped, never changed.
+function shortName(item) {
+  let s2 = String(item).trim().replace(/^(?:a|an|the)\s+/i, '')
+  s2 = s2.split(/,\s|\s(?:at|for|per|paid|in|on|with)\s/)[0].trim()
+  return s2 ? (/^[a-z]+(\s|$)/.test(s2) ? s2[0].toUpperCase() + s2.slice(1) : s2) : String(item)
+}
 const Bc = n => (Math.sqrt(8 * Math.max(0, n) + 1) - 1) / 2          // pyramid base (continuous) for n units
 const tri = B => (B * (B + 1)) / 2
 const growth = u => 1 - (1 - u) * (1 - u)                             // pile size over the fill (ease-out)
@@ -174,9 +185,10 @@ export default function unitLadder(spec, ctx) {
   const itemLinesOf = tx => { const w = wrapWords(tx, `800 ${itemPx}px ${F.head}`, '-0.015em', HW); return w ? Math.min(3, w.length) : 2 }
   const itemLines = Math.max(...itemTexts.map(itemLinesOf))
   const lhI = Math.round(itemPx * 1.16)
-  const introDiv = `<b>${esc(price)}</b> ÷ ${esc(price)} <i>=</i>`
+  // the intro states the unit's definition ("1 hot dog = $1.50"), not a division the spec never made
+  const introDiv = `<i>1</i> ${esc(labelOne)} <i>=</i> <b>${esc(price)}</b>`
   const divHTML = (cost, op = '=', ap = false) => `<b>${esc(cost)}</b> ÷ ${esc(price)} <i class="${ap ? 'ap' : ''}">${op}</i>`
-  const divTexts = [...(intro ? [`${price} ÷ ${price} =`] : []), ...R.map(r => `${r.cost} ÷ ${price} ≈`)]
+  const divTexts = [...(intro ? [`1 ${labelOne} = ${price}`] : []), ...R.map(r => `${r.cost} ÷ ${price} ≈`)]
   let divPx = 46
   for (; divPx > 40; divPx -= 2) if (divTexts.every(tx => measure(tx, `800 ${divPx}px ${F.mono}`, { letterSpacing: '-0.03em' }) <= HW)) break
   const lhD = Math.round(divPx * 1.3)
@@ -377,7 +389,7 @@ export default function unitLadder(spec, ctx) {
   // build the piles: silhouette (far away) < pattern-filled staircase < outline (far away) < fractional unit
   for (const r of R) {
     const gp = s('g', { transform: `translate(${r.px.toFixed(1)},${FLOOR})` })
-    r.flat = s('path', { fill: FLAT[iconName] || FLAT.token })
+    r.flat = s('path', { fill: flatOf(iconName) })
     r.fill = s('path', { fill: 'url(#ul-pat)' })
     r.edge = s('path', { fill: 'none', stroke: C.ink, 'stroke-linejoin': 'round' })
     gp.append(r.flat, r.fill, r.edge)
@@ -409,12 +421,10 @@ export default function unitLadder(spec, ctx) {
     })
   }
 
-  // ================================================================== figure, ring, held unit
+  // ================================================================== figure, held unit
   const fig = showFig ? new Figure(g.fig, { scale: FIGK }) : null
   const held = intro && showFig ? use({ opacity: 0 }) : null
   if (held) g.front.append(held)
-  const ring = s('circle', { fill: 'none', stroke: C.hero, opacity: 0 })      // finds him once he is a speck
-  g.front.append(ring)
 
   // ================================================================== impacts, cues
   const fx = makeFx(world, ctx)
@@ -458,6 +468,140 @@ export default function unitLadder(spec, ctx) {
 
   const duration = durationOf(spec, R[N - 1].land + 0.6, hold)
 
+  // ================================================================== the ladder recap: a tag on every pile
+  // Once the last pile has landed the camera steps back a little and each pile gets a tag: its name and count
+  // (screen-fixed, 40 / 44 px), or the count alone where the name does not fit. A tag sits on its own pile when the
+  // pile is big enough, otherwise in the sky nearest its apex without touching another tag, a pile or the figure,
+  // with a thin leader to the apex. The step back is the smallest one (of 0.8 / 0.7 / 0.6 / 0.5) that tags every pile.
+  const tags = []
+  let tagStep = 1
+  if (lo.pileLabels !== false && N >= 2) {
+    const custom = Array.isArray(lo.pileLabels) ? lo.pileLabels : null
+    // measure both variants of every tag once
+    const variants = R.map((r, k) => [true, false].map(full => {
+      const el = h('div', { class: 'ul-tag', style: { opacity: '0' } }, ...(full ? [h('span', { class: 'n' }, custom && custom[k] != null ? String(custom[k]) : shortName(r.item))] : []), h('span', { class: 'c' }, r.disp))
+      hud.append(el)
+      return { el, w: el.offsetWidth, hh: el.offsetHeight, full }
+    }))
+    const inTri = (p, [a, b, c]) => {
+      const sgn = (p1, p2, p3) => (p1[0] - p3[0]) * (p2[1] - p3[1]) - (p2[0] - p3[0]) * (p1[1] - p3[1])
+      const d1 = sgn(p, a, b), d2 = sgn(p, b, c), d3 = sgn(p, c, a)
+      return !((d1 < 0 || d2 < 0 || d3 < 0) && (d1 > 0 || d2 > 0 || d3 > 0))
+    }
+    const segHitsBox = (a, b, q, m = 4) => { for (let u = 0; u <= 24; u++) { const x = lerp(a[0], b[0], u / 24), y = lerp(a[1], b[1], u / 24); if (x > q.x0 - m && x < q.x1 + m && y > q.y0 - m && y < q.y1 + m) return true } return false }
+    const segHitsTri = (a, b, T) => { for (let u = 1; u < 24; u++) if (inTri([lerp(a[0], b[0], u / 24), lerp(a[1], b[1], u / 24)], T)) return true; return false }
+    const cross = (p1, p2, p3, p4) => {
+      const d = (a, b, c) => (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0])
+      return d(p1, p2, p3) * d(p1, p2, p4) < 0 && d(p3, p4, p1) * d(p3, p4, p2) < 0
+    }
+    const boxHit = (b, q) => b.x0 < q.x1 + 10 && b.x1 > q.x0 - 10 && b.y0 < q.y1 + 6 && b.y1 > q.y0 - 6
+    const listTag = ks => {
+      const el = h('div', { class: 'ul-tag list', style: { opacity: '0' } }, ...ks.map(k => h('span', { class: 'ln' },
+        h('span', { class: 'n' }, custom && custom[k] != null ? String(custom[k]) : shortName(R[k].item)), ' ', h('span', { class: 'c' }, R[k].disp))))
+      hud.append(el)
+      return { el, w: el.offsetWidth, hh: el.offsetHeight, group: ks }
+    }
+    const layoutTags = step => {
+      tagStep = step
+      const zF = zoomAt(R[N - 1].land + 1.4)
+      const scr = (wx, wy) => [FXS + (wx - XF) * zF, FLOOR + (wy - FLOOR) * zF]
+      const tris = R.map(r => {
+        const B = Math.max(1, Bc(r.units)), W = (B + 1) * cw, H = pileH(r.units)
+        return [scr(r.px, FLOOR), scr(r.px + W, FLOOR), scr(r.px + B * cw / 2 + cw / 2, FLOOR - H)]
+      })
+      const figBox = { x0: 40, y0: FLOOR - 120, x1: FXS + 24, y1: FLOOR }
+      const placed = [], segs = [], out = []
+      const hits = (b, own) => {
+        for (const q of placed) if (boxHit(b, q)) return true
+        if (b.x0 < figBox.x1 && b.x1 > figBox.x0 && b.y1 > figBox.y0) return true
+        for (const sg of segs) if (segHitsBox(sg[0], sg[1], b)) return true
+        for (let k = 0; k < tris.length; k++) {
+          const T = tris[k]
+          if (T[2][0] >= b.x0 && T[2][0] <= b.x1 && T[2][1] >= b.y0 && T[2][1] <= b.y1 + (k === own ? 6 : 0)) return true
+          for (let u = 0; u <= 8; u++) for (const y of [b.y0, b.y1]) if (inTri([b.x0 + (b.x1 - b.x0) * u / 8, y], T)) return true
+          for (const x of [b.x0, b.x1]) for (let u = 0; u <= 4; u++) if (inTri([x, b.y0 + (b.y1 - b.y0) * u / 4], T)) return true
+        }
+        return false
+      }
+      // the nearest free spot in the sky for a w x hh tag pointing at apex (own: the piles it may touch)
+      const sky = (w, hh, apex, own) => {
+        let best = null, bestCost = Infinity
+        for (let y1 = FLOOR - 24; y1 - hh >= VPtop + 40; y1 -= 8) {
+          for (let xx = HX; xx + w <= 938; xx += 16) {
+            const b = { x0: xx, y0: y1 - hh, x1: xx + w, y1 }
+            const anchor = apex[1] > y1 ? [clamp(apex[0], xx + 16, xx + w - 16), y1 + 4] : [apex[0] < xx ? xx - 4 : b.x1 + 4, clamp(apex[1], b.y0 + 10, y1 - 10)]
+            const cost = Math.hypot(anchor[0] - apex[0], (anchor[1] - apex[1]) * 0.8) + (anchor[0] !== apex[0] ? 30 : 0) + (apex[1] <= y1 ? 60 : 0)
+            if (cost >= bestCost || hits(b, own.length === 1 ? own[0] : -1)) continue
+            const tip = [apex[0], apex[1] - 5]
+            const long = Math.hypot(tip[0] - anchor[0], tip[1] - anchor[1]) > 18
+            if (long && (placed.some(q => segHitsBox(anchor, tip, q)) || tris.some((T2, j) => !own.includes(j) && segHitsTri(anchor, tip, T2)) || segs.some(sg => cross(anchor, tip, sg[0], sg[1])))) continue
+            best = { b, anchor, tip, long }; bestCost = cost
+          }
+        }
+        return best
+      }
+      const commit = (k, best) => { placed.push(best.b); if (best.long) segs.push([best.anchor, best.tip]); out.push({ k, ...best }) }
+      // a cluster of small piles side by side (the cheap end of the ladder) shares one list tag, placed first
+      const small = R.map((_, k) => k).filter(k => tris[k][2][1] > FLOOR - 60)
+      let cluster = []
+      for (const k of small) {
+        if (cluster.length && tris[k][2][0] - tris[cluster[cluster.length - 1]][2][0] > 90) break
+        cluster.push(k)
+      }
+      // (it gives up its biggest members, which can carry their own tags, until it finds room)
+      let done = false
+      for (let n = cluster.length; n >= 2 && !done; n--) {
+        const ks = cluster.slice(0, n)
+        if (n * 50 > FLOOR - 24 - (VPtop + 40)) continue
+        const V = listTag(ks)
+        const ax = ks.reduce((a, k) => a + tris[k][2][0], 0) / n, ay = Math.min(...ks.map(k => tris[k][2][1]))
+        const best = sky(V.w, V.hh, [ax, ay], ks)
+        if (best) { commit(ks[0], { V, ...best, group: ks }); cluster = ks; done = true }
+        else V.el.remove()
+      }
+      if (!done) cluster = []
+      // then every other pile, biggest first (they have the least sky above them)
+      const order = R.map((_, k) => k).filter(k => !cluster.includes(k)).sort((a, b) => R[b].units - R[a].units)
+      for (const k of order) {
+        let best = null
+        for (const V of variants[k]) {
+          const { w, hh } = V
+          const T = tris[k], apex = T[2]
+          // written on the pile itself, at its foot (a big pile has the room; no leader)
+          const x0 = clamp(apex[0] - w / 2, HX, 938 - w), b0 = { x0, y0: FLOOR - 14 - hh, x1: x0 + w, y1: FLOOR - 14 }
+          if ([[b0.x0 - 10, b0.y0 - 10], [b0.x1 + 10, b0.y0 - 10], [b0.x0 - 10, b0.y1], [b0.x1 + 10, b0.y1]].every(p => inTri(p, T)) && !placed.some(q => boxHit(b0, q))) { best = { V, b: b0, inside: true }; break }
+          const sk = sky(w, hh, apex, [k])
+          if (sk) { best = { V, ...sk }; break }
+        }
+        if (best) commit(k, best)
+      }
+      return out
+    }
+    let pick = null
+    const covered = out => out.reduce((a, o) => a + (o.group ? o.group.length : 1), 0)
+    const individual = out => out.filter(o => !o.group).length
+    for (const step of [0.8, 0.7, 0.6]) {
+      const out = layoutTags(step)
+      const better = !pick || covered(out) > covered(pick.out) || (covered(out) === covered(pick.out) && individual(out) > individual(pick.out))
+      if (better) { if (pick) for (const o of pick.out) if (o.group) o.V.el.remove(); pick = { step, out } }
+      else for (const o of out) if (o.group) o.V.el.remove()
+      if (individual(out) === N) break
+    }
+    tagStep = pick.step
+    for (const { k, V, b, long, anchor, tip } of pick.out) {
+      let line = null
+      if (long) {
+        line = s('line', { x1: anchor[0].toFixed(1), y1: anchor[1].toFixed(1), x2: tip[0].toFixed(1), y2: tip[1].toFixed(1), stroke: C.line, 'stroke-width': 3, 'stroke-linecap': 'round', opacity: 0 })
+        hudG.append(line)
+      }
+      style(V.el, { transform: `translate(${b.x0.toFixed(1)}px,${b.y0.toFixed(1)}px)` })
+      tags.push({ el: V.el, line, k, t0: R[N - 1].land + 1.0 + 0.1 * k })
+    }
+    for (const vs of variants) for (const V of vs) if (!tags.some(tg => tg.el === V.el)) V.el.remove()
+    tags.sort((a, b) => a.k - b.k)
+    if (tags.length) ctx.cue(tags[0].t0, 'tick', { gain: 0.3 })
+  }
+
   // ================================================================== seek
   function zoomAt(t) {
     let z = 1
@@ -470,12 +614,15 @@ export default function unitLadder(spec, ctx) {
         if (w > 0) z = Math.exp(lerp(Math.log(z), Math.log(Math.min(z, fitZ(r, nAt(r, t)))), w))
       }
     }
+    // after the last pile lands the camera steps back once more, leaving sky above every pile for its tag
+    const L2 = R[N - 1]
+    if (tagStep < 1 && t > L2.land + 0.3) z *= lerp(1, tagStep, E.inOut(prog(t, L2.land + 0.3, 0.7)))
     return z
   }
 
   function seekPiles(t, z) {
     const tile = cw * z
-    const patOp = clamp((tile - 3) / 5)
+    const patOp = clamp((tile - 16) / 8)                          // icon texture only while one icon is >= ~18 px
     for (const r of R) {
       const n = t < r.fill0 ? 0 : nAt(r, t - SETTLE)
       const p = pilePath(n)
@@ -483,7 +630,7 @@ export default function unitLadder(spec, ctx) {
       attr(r.fill, 'opacity', patOp.toFixed(3))
       attr(r.flat, 'opacity', (1 - patOp).toFixed(3))
       attr(r.edge, 'opacity', (0.9 * (1 - patOp)).toFixed(3))
-      attr(r.edge, 'stroke-width', (3 / z).toFixed(2))
+      attr(r.edge, 'stroke-width', (4 / z).toFixed(2))
       if (r.part) attr(r.part, 'opacity', t >= r.land + SETTLE ? '1' : '0')
     }
   }
@@ -528,15 +675,22 @@ export default function unitLadder(spec, ctx) {
     }
   }
 
+  // He never shrinks to a speck: once the camera pulls back past the point where he would be under ~96 px on
+  // screen, he is drawn bigger in the world (same pose, constant 13 px line on screen) and eases a little left, so
+  // he stands at the foot of the row, looking up at the mountain he made.
+  const FIG_MIN = 96, figPx = 262 * FIGK
+  const figKAt = z => FIGK * Math.max(1, FIG_MIN / (figPx * z))
+  const figXAt = z => XF - (1 - clamp(figPx * z / FIG_MIN)) * 48 / z
   function seekFigure(t, z) {
     if (!fig) return
-    let J = fig.pose(t, tr, { x: XF, ground: FLOOR, noDraw: true })
+    const kz = figKAt(z), xz = figXAt(z)
+    let J = fig.pose(t, tr, { x: xz, ground: FLOOR, noDraw: true, scale: kz, stroke: Math.max(S.figure, S.figure / z) })
     for (const r of R) {
       if (!r.contact || t < r.punch - 0.09 || t > r.punch + 0.17) continue
       const w = t < r.punch ? E.out(prog(t, r.punch - 0.09, 0.09)) : 1 - E.inOut(prog(t, r.punch + 0.05, 0.12))
       J = blendJ(J, pinLimb({ ...J }, 'hF', r.contact, 1), w)
     }
-    fig.draw(J)
+    fig.draw(J, { stroke: Math.max(S.figure, S.figure / z) })
     if (held) {
       const rel = R[0].T - 0.02
       if (t < rel) {
@@ -548,14 +702,6 @@ export default function unitLadder(spec, ctx) {
         attr(held, 'transform', `translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${(-8 + 540 * dt).toFixed(1)})`)
         attr(held, 'opacity', dt < 0.7 ? '1' : '0')
       }
-    }
-    const figH = 288 * (FIGK / 1.1) * z
-    const op = clamp((62 - figH) / 20)
-    attr(ring, 'opacity', op.toFixed(3))
-    if (op > 0) {
-      const rs = Math.max(30, figH * 0.72 + 12)
-      attr(ring, 'cx', XF.toFixed(1)); attr(ring, 'cy', (FLOOR - 0.5 * 288 * (FIGK / 1.1)).toFixed(1))
-      attr(ring, 'r', (rs / z).toFixed(1)); attr(ring, 'stroke-width', (6 / z).toFixed(2))
     }
   }
 
@@ -570,7 +716,7 @@ export default function unitLadder(spec, ctx) {
     let dHTML = introDiv, ds = STILL
     if (cur >= 0) {
       const r = R[cur], pr = cur > 0 ? R[cur - 1] : null
-      ds = first ? STILL : swapK(t, r.T + 0.05, divPx)
+      ds = first ? STILL : swapK(t, r.T, divPx)             // one swap timeline: item, working line, counter
       const landed = t >= r.land
       dHTML = ds.phase ? divHTML(r.cost, landed && r.approx ? '≈' : '=', landed && r.approx) : pr ? divHTML(pr.cost, pr.approx ? '≈' : '=', pr.approx) : introDiv
     }
@@ -630,6 +776,11 @@ export default function unitLadder(spec, ctx) {
     seekFigure(t, z)
     seekHud(t, cur)
     hudFx.seek(t)
+    for (const tg of tags) {
+      const p = prog(t, tg.t0, 0.22)
+      style(tg.el, { opacity: (p <= 0 ? 0 : clamp(p * 2)).toFixed(3) })
+      if (tg.line) attr(tg.line, 'opacity', p > 0 ? '1' : '0')
+    }
   }
 
   // the verdict rides 10 px high in the caption band so its entry slide never dips under y 1480

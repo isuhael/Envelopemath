@@ -27,11 +27,26 @@ export const ax = html => String(html).replace(/[≈→]/g, '<span class="ax">$&
 /** keep hyphenated words on one line ("SIT-DOWN" never breaks at the hyphen) */
 export const keepHyphens = html => String(html).replace(/(^|[\s>])([^\s<>]+-[^\s<>]+)/g, '$1<span class="nb">$2</span>')
 
+/**
+ * Line-break hygiene for markup HTML (before ax/keepHyphens):
+ *   - "≈ " and "→ " are glued to the token after them with a no-break space, so the honesty mark never ends a line
+ *     away from its number ("SAME $5,000. ≈ / $11,800" can't happen)
+ *   - a short emphasis run (3 words or fewer, 24 characters or fewer) never breaks inside ("≈ 1.2 / MILLION" can't
+ *     happen, and a wrapped <em> box never spans two lines)
+ */
+export const bindMarks = html => String(html)
+  .replace(/([≈→]) (?=\S)/g, '$1 ')
+  .replace(/<(em|u class="mark2")>([^<]*)<\/(em|u)>/g, (m, open, body, close) => {
+    const words = body.replace(/ /g, ' ').trim().split(/\s+/).filter(Boolean)
+    if (words.length > 3 || body.length > 24) return m
+    return `<${open === 'em' ? 'em class="nb"' : 'u class="mark2 nb"'}>${body}</${close}>`
+  })
+
 /** spec markup (**em**, __mark2__, \n) → HTML for an Anton context */
-export const rich = str => keepHyphens(ax(markup(str)))
+export const rich = str => keepHyphens(ax(bindMarks(markup(str))))
 
 /** spec markup → HTML for an Inter context (no glyph patch needed) */
-export const richUI = str => markup(str)
+export const richUI = str => bindMarks(markup(str))
 
 /**
  * a display string as Anton HTML with every digit in a 0.5em slot (tabular, like the odometer: columns line up and

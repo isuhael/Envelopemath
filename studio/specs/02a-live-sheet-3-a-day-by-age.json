@@ -3,21 +3,21 @@
   "look": "live-sheet",
   "format": "find-your-row",
   "fps": 30,
-  "duration": 13.0,
-  "header": "What **$3 a day**\ncosts you by age",
+  "duration": 13.4,
+  "header": "\"It's just **$3 a day**.\"\nWhat it costs you by 65:",
   "footer": "At 7% a year until 65 · no tax, fees, inflation",
   "captions": true,
   "vo": [
-    { "t": 0.0, "d": 4.3, "text": "$3 a day at 18: **≈ $400,000**." },
-    { "t": 4.5, "d": 3.3, "text": "At 25: **≈ $240,000**." },
-    { "t": 8.0, "d": 3.5, "text": "10 years younger? It costs you **more than double**." }
+    { "t": 0.0, "d": 4.7, "text": "Just $3 a day? At 18: **≈ $400,000**." },
+    { "t": 4.9, "d": 3.3, "text": "At 25: **≈ $240,000**." },
+    { "t": 8.4, "d": 3.5, "text": "10 years younger? It costs you **more than double**." }
   ],
-  "verdict": { "t": 10.3, "text": "10 years younger: it costs **more than double**." },
+  "verdict": { "t": 10.7, "text": "10 years younger: it costs **more than double**." },
   "data": {
     "columns": [
       { "label": "Your age" },
-      { "label": "You'd spend\nby 65" },
-      { "label": "It costs you\nby 65", "emph": true }
+      { "label": "__What you think__\n__it costs__", "tone": "bad" },
+      { "label": "What it really\ncosts you", "emph": true }
     ],
     "rows": [
       ["18", "$51,465", "≈ $400,000"],
@@ -35,10 +35,10 @@
     "rowsT": 0.0,
     "rowEvery": 0.5,
     "pick": [
-      { "t": 4.5, "row": 2, "label": "≈ 5.5× what you'd spend" },
-      { "t": 8.0, "row": 4, "label": "At 25: ≈ 2.2× this" }
+      { "t": 4.9, "row": 2, "label": "≈ 5.5× what you think" },
+      { "t": 8.4, "row": 4, "label": "At 25: ≈ 2.2× this" }
     ],
     "hold": 5.0
   },
-  "sfx": [ { "t": 10.3, "kind": "ding" } ]
+  "sfx": [ { "t": 10.7, "kind": "ding" } ]
 }

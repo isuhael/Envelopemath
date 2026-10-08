@@ -14,8 +14,8 @@ Format 10 "cost-counter" (real-time cost counter): maths and spec check for teas
    - numerics: perSecond = exact rate to the cent; the counter final = perSecond × run time (checked with the
      stored and the exact rate); milestones ascend and are all passed before the counter stops;
    - frame 1: the header asks a question (R11) and the footer carries the viewer-owned pay number
-     ("$1,251 ... × 52") at t = 0 (R1, R3); the counter starts where the write-up says (0.0 s, or 10b's 2.4 s
-     "ding", after the viewer has picked a side);
+     ("$1,251 ... × 52") at t = 0 (R1, R3); the counter starts where the write-up says (0.0 s in all three:
+     10b's armed pause is gone since the hook pass);
    - one rounding per quantity: any number within 5% of a computed quantity, in any display string, VO line,
      caption or pinned comment, must be that quantity's one shown rounding (no "$22,733" beside "$22,700");
    - timing:
@@ -60,7 +60,6 @@ AMZN_SALES_2025 = F("716.9") * 10**9    # Amazon Q4 2025 release (Feb 2026): net
 AMZN_NET_INCOME_2025 = F("77.7") * 10**9  # same release: net income FY2025
 MEDIAN_WEEKLY = 1251                    # BLS, Usual Weekly Earnings Q2 2026 (2026-07-21): median full-time, NSA
 NEW_HOUSE = 393700                      # Census/HUD New Residential Sales, Aug 2026 (2026-09-24): median new house
-NEW_CAR = 50089                         # Cox Automotive / KBB average transaction price, Aug 2026 (2026-09-10)
 
 # Conventions (printed on screen)
 WEEKS = 52
@@ -70,6 +69,7 @@ DAYS_B = 364                            # 10b's window: 2025-09-30 -> 2026-09-29
 DEBT_GROWTH = DEBT_2026_09_29 - DEBT_2025_09_30   # 2,459,401,138,631.07
 WORKING_YEARS = 40
 TEN = 10
+MINUTE = 60                             # seconds in the header's minute
 
 # ======================================================================================
 # Formatting helpers
@@ -171,7 +171,9 @@ def words_before(text, phrase):
 # The maths
 # ======================================================================================
 PAY = MEDIAN_WEEKLY * WEEKS                                  # 65,052
+PAY3 = PAY * 3                                               # 195,156 (10b)
 PAY10 = PAY * TEN                                            # 650,520
+PAY20 = PAY * 20                                             # 1,301,040 (10b)
 PAY40 = PAY * WORKING_YEARS                                  # 2,602,080
 
 RATE_A = F(NET_INTEREST_FY2025, SECONDS_PER_YEAR)            # $/s, interest
@@ -276,71 +278,86 @@ SPEC_A = {
     "rate": RATE_A,
 }
 
-# ---------- 10b: new US debt vs your pay -----------------------------------------------
+# ---------- 10b: 40 years of your pay vs 1 minute of new US debt -------------------------
 B = {}
 B["rate_shown"] = sig(RATE_B, 2)                                       # 78,000
 B["rate_disp"] = f"{ap(B['rate_shown'], RATE_B)}${B['rate_shown']:,}"
-B["t0"] = F("2.4")                                                     # the counter starts on the ding
-B["t_pay"] = pass_time(PAY, RATE_B, B["t0"])
-B["t_house"] = pass_time(NEW_HOUSE, RATE_B, B["t0"])
-B["t_1m"] = pass_time(10**6, RATE_B, B["t0"])
+B["t0"] = F("0.0")                                                     # the counter runs from frame 1
+B["t_pay"] = pass_time(PAY, RATE_B, B["t0"])                           # the first block (1 year) goes at 0.83 s
+B["t_pay3"] = pass_time(PAY3, RATE_B, B["t0"])
+B["t_pay10"] = pass_time(PAY10, RATE_B, B["t0"])
+B["t_pay20"] = pass_time(PAY20, RATE_B, B["t0"])
 B["t_pay40"] = pass_time(PAY40, RATE_B, B["t0"])
-B["s_house"] = rhu(B["t_house"] - B["t0"])                             # 5  (seconds of counter time)
-B["s_1m"] = rhu(B["t_1m"] - B["t0"])                                   # 13
 B["s_pay40"] = rhu(B["t_pay40"] - B["t0"])                             # 33
 B["pay40_m"] = rhu(F(PAY40, 10**6), F(1, 10))                          # 2.6
 B["growth_t"] = rhu(DEBT_GROWTH / 10**12, F(1, 100))                   # 2.46
-B["car_s"] = rhu(F(NEW_CAR) / RATE_B, F(1, 100))                       # 0.64 (pinned)
-B["public_rate"] = sig(DEBT_HELD_PUBLIC_GROWTH / (DAYS_B * SECONDS_PER_DAY), 2)   # 66,000 (pinned reply)
-B["run"] = (B["t0"], F("35.7"))
+B["minute"] = MINUTE * RATE_B                                          # 4,692,080.93 (1 minute of new debt)
+B["minute_m"] = rhu(B["minute"] / 10**6, F(1, 10))                     # 4.7 (VO, verdict, timer, caption)
+B["cross_pay"] = sig(B["minute"] / WORKING_YEARS, 3)                   # 117,000 (pinned: the pay where 40 years = 1 minute)
+B["minute_years"] = rhu(B["minute"] / PAY)                             # 72 (caption: 1 minute in years of median pay)
+B["minute_used"] = rhu((B["t_pay40"] - B["t0"]) / MINUTE * 100)        # 55 (% of the minute used at the burst; md only)
+B["public_rate"] = sig(DEBT_HELD_PUBLIC_GROWTH / (DAYS_B * SECONDS_PER_DAY), 2)   # 66,000 (TikTok reply)
+B["public_minute_m"] = rhu(DEBT_HELD_PUBLIC_GROWTH / (DAYS_B * SECONDS_PER_DAY) * MINUTE / 10**6, F(1, 10))   # 4.0
+B["run"] = (B["t0"], F("33.3"))
 B["final_exact"] = RATE_B * (B["run"][1] - B["run"][0])
 B["final"] = f"{ap(rhu(B['final_exact']), B['final_exact'])}{usd(B['final_exact'])}"
 assert B["t_pay"] - B["t0"] < 1, "a year's median pay must pass in under 1 second"
 assert B["growth_t"] == F("2.46"), "the readings must still round to the $2.46T PrimeRates headline"
+assert B["minute"] > PAY40, "1 minute of new debt must beat 40 years of median pay (the header's answer)"
+assert B["t_pay40"] - B["t0"] < MINUTE, "the working life must go inside the minute"
+assert DEBT_HELD_PUBLIC_GROWTH / (DAYS_B * SECONDS_PER_DAY) * MINUTE > PAY40, "the public part alone must still win"
+assert B["t_pay40"] < B["run"][1], "the counter must pass 40 years before it stops"
 row("10b", "growth", "$40.097T − $37.638T", DEBT_GROWTH / 10**12, f"≈ ${float(B['growth_t'])}T")
-row("10b", "rate", "Δ ÷ (364 × 86,400 s)", RATE_B, B["rate_disp"] + " every second")
-row("10b", "t pay", "2.4 + $65,052 ÷ rate", B["t_pay"], "under 1 s of counter (stamp at 3.4)")
-row("10b", "t house", "2.4 + $393,700 ÷ rate", B["t_house"], f"≈ {B['s_house']} seconds")
-row("10b", "t $1M", "2.4 + $1,000,000 ÷ rate", B["t_1m"], f"≈ {B['s_1m']} seconds")
+row("10b", "rate", "Δ ÷ (364 × 86,400 s)", RATE_B, B["rate_disp"] + " every second (stamp at 1.0 s)")
+row("10b", "1 minute", "rate × 60 s", B["minute"], f"≈ ${d1(B['minute_m'])} million")
 row("10b", "40 years of pay", "$65,052 × 40", PAY40, f"{usd(PAY40)} / ≈ ${d1(B['pay40_m'])} million")
-row("10b", "t 40 yrs pay", "2.4 + $2,602,080 ÷ rate", B["t_pay40"], f"≈ {B['s_pay40']} seconds")
+row("10b", "minute ÷ 40 yrs", "1 minute ÷ $2,602,080", B["minute"] / PAY40, "1.8x (md only)")
+row("10b", "crossover pay", "1 minute ÷ 40", B["minute"] / WORKING_YEARS, f"≈ ${B['cross_pay']:,} a year (pinned)")
+row("10b", "minute in pay", "1 minute ÷ $65,052", B["minute"] / PAY, f"≈ {B['minute_years']} years of median pay (caption)")
+row("10b", "t 1 yr (block 1)", "$65,052 ÷ rate", B["t_pay"], "0.83 s (first block eaten)")
+row("10b", "t 3 yrs pay", "$195,156 ÷ rate", B["t_pay3"], "VO 2.4")
+row("10b", "t 10 yrs pay", "$650,520 ÷ rate", B["t_pay10"], "VO 8.2")
+row("10b", "t 20 yrs pay", "$1,301,040 ÷ rate", B["t_pay20"], "VO 16.5 ('20 years' at 16.88)")
+row("10b", "t 40 yrs pay", "$2,602,080 ÷ rate", B["t_pay40"], f"≈ {B['s_pay40']} seconds (VO 33.3)")
+row("10b", "minute used", "t 40 yrs ÷ 60 s", (B["t_pay40"] - B["t0"]) / MINUTE * 100, f"{B['minute_used']}% (md only)")
 row("10b", "counter final", "rate × 33.3 s", B["final_exact"], B["final"])
-row("10b", "new car (pinned)", "$50,089 ÷ rate", F(NEW_CAR) / RATE_B, f"≈ {float(B['car_s'])} seconds")
-row("10b", "public part", "$2.09T ÷ (364 × 86,400 s)", DEBT_HELD_PUBLIC_GROWTH / (DAYS_B * SECONDS_PER_DAY), f"≈ ${B['public_rate']:,} a second")
+row("10b", "public part", "$2.09T ÷ (364 × 86,400 s)", DEBT_HELD_PUBLIC_GROWTH / (DAYS_B * SECONDS_PER_DAY), f"≈ ${B['public_rate']:,} a second; ≈ ${d1(B['public_minute_m'])} million a minute (TikTok reply)")
 
 SPEC_B = {
     "id": "10b-becker-rig-debt-vs-your-pay",
     "look": "becker-rig",
     "format": "cost-counter",
     "fps": 30,
-    "duration": 39.0,
-    "header": "Your year's pay vs\n**1 second** of new US debt.\nWhich is bigger?",
+    "duration": 36.6,
+    "header": f"{WORKING_YEARS} years of your pay vs\n**1 minute** of new US debt.\nWhich is bigger?",
     "footer": (f"New debt ≈ ${float(B['growth_t'])}T ÷ ({DAYS_B} × {SECONDS_PER_DAY:,} s)"
                f"\nPay: BLS median {usd(MEDIAN_WEEKLY)} a week × {WEEKS}"),
     "captions": True,
     "vo": [
-        (0.0, 2.4, "Your year, or 1 second? Pick."),
-        (3.3, 1.6, "Median pay **loses.**"),
-        (5.0, 2.4, f"**{B['rate_disp']}** a second."),
-        (7.4, 2.8, f"A median new house: ≈ {B['s_house']} seconds."),
-        (15.2, 2.4, f"$1 million: ≈ {B['s_1m']} seconds."),
-        (17.9, 2.4, f"Now {WORKING_YEARS} years of median pay."),
-        (20.5, 4.7, f"{WORKING_YEARS} × {usd(PAY)} ≈ **${d1(B['pay40_m'])} million**."),
-        (25.4, 2.0, "That's a whole working life."),
-        (27.7, 5.8, f"The debt grew ≈ ${float(B['growth_t'])} trillion in {DAYS_B} days."),
-        (35.7, 2.4, f"A working life: **≈ {B['s_pay40']} seconds.**"),
+        (0.0, 2.4, f"Your {WORKING_YEARS} years, or 1 minute?"),
+        (2.4, 1.6, "3 years, gone."),
+        (4.2, 2.4, f"**{B['rate_disp']}** a second."),
+        (8.2, 2.4, f"{TEN} years of median pay."),
+        (10.6, 5.8, f"The debt grew ≈ ${float(B['growth_t'])} trillion in {DAYS_B} days."),
+        (16.5, 1.5, "Halfway: 20 years."),
+        (18.2, 4.7, f"{WORKING_YEARS} × {usd(PAY)} ≈ **${d1(B['pay40_m'])} million**."),
+        (23.1, 2.0, "That's a whole working life."),
+        (25.3, 3.1, f"1 minute: ≈ ${d1(B['minute_m'])} million."),
+        (28.6, 2.4, f"How long do {WORKING_YEARS} years last?"),
+        (33.3, 2.4, f"A working life: **≈ {B['s_pay40']} seconds.**"),
     ],
-    "verdict": (35.7, f"A working life, {WORKING_YEARS} years of median pay:\n**≈ {B['s_pay40']} seconds** of new US debt."),
+    "verdict": (33.3, f"{WORKING_YEARS} years of median pay: **≈ {B['s_pay40']} seconds**."
+                      f"\n1 minute of new US debt ≈ __${d1(B['minute_m'])} million__."),
     "data": {
-        "label": "New US debt, from the ding",
+        "label": "New US debt since you hit play",
         "perSecond": float(rhu(RATE_B, F(1, 100))),
         "rateDisplay": f"{B['rate_disp']} every second",
         "counterT": [float(B["run"][0]), float(B["run"][1])],
         "startValue": 0, "prefix": "$", "dp": 0,
         "milestones": [
-            (PAY, f"A year of median pay: {usd(PAY)}"),
-            (NEW_HOUSE, f"A median new house: {usd(NEW_HOUSE)}"),
-            (10**6, "$1 million"),
+            (PAY3, f"3 years of median pay: {usd(PAY3)}"),
+            (PAY10, f"{TEN} years of median pay: {usd(PAY10)}"),
+            (PAY20, f"20 years of median pay: {usd(PAY20)}"),
             (PAY40, f"{WORKING_YEARS} years of median pay: {usd(PAY40)}"),
         ],
         "final": B["final"],
@@ -349,31 +366,28 @@ SPEC_B = {
     "lookOpts": {
         "stage": "white",
         "surface": "debt-clock",
-        "surfaceLabel": "New US debt, from the ding",
-        "opener": {"t": 0.0, "pose": "lift", "prop": "block", "text": usd(PAY), "sub": "1 year of median pay"},
-        "queue": [
-            {"prop": "house", "text": usd(NEW_HOUSE), "sub": "A median new house"},
-            {"prop": "block", "text": f"{WORKING_YEARS} years × {usd(PAY)}", "sub": f"≈ ${d1(B['pay40_m'])} million"},
-        ],
-        "armed": {"tag": "1 second", "go": float(B["t0"])},
+        "surfaceLabel": "New US debt since you hit play",
+        "opener": {"t": 0.0, "pose": "lift", "prop": "block-stack", "blocks": WORKING_YEARS, "unit": PAY,
+                   "text": f"{WORKING_YEARS} × {usd(PAY)}", "sub": f"{WORKING_YEARS} years of median pay"},
         "stamp": {"t": float(B["t0"] + 1), "text": f"1 second {B['rate_disp']}"},
+        "timer": {"t0": float(B["t0"]), "label": "1 minute", "total": MINUTE,
+                  "endLabel": {"t": 25.3, "text": f"≈ ${d1(B['minute_m'])} million"}},
         "actions": [
-            {"milestone": 0, "verb": "swallow", "becomes": "the counter slurps the pay block out of his hands; he stares at his empty hands"},
-            {"milestone": 1, "verb": "push", "becomes": "he shoves the house from the queue into the counter's slot; it goes down in one gulp"},
-            {"milestone": 2, "verb": "shocked", "becomes": "the counter turns orange and its last digits blur"},
-            {"milestone": 3, "verb": "flattened", "becomes": f"white-hot, it cracks and bursts; the {WORKING_YEARS}-year block drops on him"},
+            {"milestone": 0, "verb": "swallow", "becomes": "the panel has been slurping blocks off the top of his stack since frame 1, one per year of pay; he hugs the rest tighter"},
+            {"milestone": 1, "verb": "push", "becomes": "he shoves back against the panel's slot; it keeps eating"},
+            {"milestone": 2, "verb": "shocked", "becomes": "halfway: his stack is half gone; the counter turns orange and its last digits blur"},
+            {"milestone": 3, "verb": "flattened", "becomes": "white-hot, it cracks and bursts as the last block goes in; the blast knocks him flat, arms empty"},
         ],
-        "carry": {"t": 17.9, "text": f"{WORKING_YEARS} years × {usd(PAY)}", "sub": f"≈ ${d1(B['pay40_m'])} million"},
         "heat": [
-            {"t": 0.0, "state": "cool"}, {"t": 15.2, "state": "orange"},
-            {"t": 27.7, "state": "white"}, {"t": 35.7, "state": "burst"},
+            {"t": 0.0, "state": "cool"}, {"t": 16.5, "state": "orange"},
+            {"t": 28.6, "state": "white"}, {"t": 33.3, "state": "burst"},
         ],
-        "gag": {"t": 35.7, "text": f"≈ {B['s_pay40']} seconds"},
+        "gag": {"t": 33.3, "text": f"≈ {B['s_pay40']} seconds"},
     },
-    "sync": [(PAY, 1, "Median pay"), (NEW_HOUSE, 3, "A median new house"), (10**6, 4, "$1 million"),
-             (PAY40, 9, "A working life")],
-    "beats": [(17.9, 5), (15.2, 4), (27.7, 8), (35.7, 9)],
-    "t0": 2.4,               # armed for the question; starts on the ding, after "Pick."
+    "sync": [(PAY3, 1, "3 years"), (PAY10, 3, "10 years"), (PAY20, 5, "20 years"),
+             (PAY40, 10, "A working life")],
+    "beats": [(16.5, 5), (25.3, 8), (28.6, 9), (33.3, 10)],   # heat orange, timer end label, heat white, burst/gag
+    "t0": 0.0,               # the counter runs from frame 1 (no armed pause)
     "rate": RATE_B,
 }
 
@@ -470,9 +484,9 @@ QUANTITIES = {
     "10a": [("rate", RATE_A, A["rate_shown"]), ("per hour, millions", RATE_A * 3600 / 10**6, A["hour_m"]),
             ("pass: pay", A["t_pay"], A["s_pay"]), ("pass: $1M", A["t_1m"], A["s_1m"])],
     "10b": [("growth, $T", DEBT_GROWTH / 10**12, B["growth_t"]), ("rate", RATE_B, B["rate_shown"]),
-            ("pass: house", B["t_house"] - B["t0"], B["s_house"]), ("pass: $1M", B["t_1m"] - B["t0"], B["s_1m"]),
             ("pass: 40 years", B["t_pay40"] - B["t0"], B["s_pay40"]), ("40 years, $M", F(PAY40, 10**6), B["pay40_m"]),
-            ("car", F(NEW_CAR) / RATE_B, B["car_s"])],   # (the ≈ $66,000 public-part rate is a TikTok reply note only)
+            ("1 minute, $M", B["minute"] / 10**6, B["minute_m"]), ("crossover pay", B["minute"] / WORKING_YEARS, B["cross_pay"]),
+            ("1 minute in years of pay", B["minute"] / PAY, B["minute_years"])],   # (≈ $66,000 public part: TikTok note only)
     "10c": [("rate", RATE_C, C["rate_shown"]), ("kept rate", KEEP_C, C["keep_shown"]),
             ("margin %", MARGIN * 100, C["margin_pct"]), ("pass: pay", C["t_pay"], C["at_pay"]),
             ("pass: house", C["t_house"], C["at_house"]), ("kept pass: pay", C["t_keep_pay"], C["s_keep_pay"])],
@@ -492,9 +506,9 @@ def allowed_numbers(tid):
         return common | {F(A["fy"]), F(2025), F(970), F(A["rate_shown"]), F(A["hour_m"]), F(TEN), F(PAY10),
                          F(A["s_1m"]), F(rhu(A["final_exact"])), F(3600), F(0)}
     if tid == "10b":
-        return common | {F(DAYS_B), F(SECONDS_PER_DAY), B["growth_t"], F(B["rate_shown"]), F(B["s_house"]),
-                         F(B["s_1m"]), F(WORKING_YEARS), F(PAY40), F(B["pay40_m"]), F(B["s_pay40"]),
-                         F(rhu(B["final_exact"]))}
+        return common | {F(DAYS_B), F(SECONDS_PER_DAY), B["growth_t"], F(B["rate_shown"]), F(3), F(PAY3), F(TEN),
+                         F(PAY10), F(20), F(PAY20), F(WORKING_YEARS), F(PAY40), F(B["pay40_m"]), F(B["s_pay40"]),
+                         B["minute_m"], F(rhu(B["final_exact"]))}
     return common | {F(2025), F("716.9"), F("77.7"), F(C["rate_shown"]), F(C["keep_shown"]), F(C["margin_pct"]),
                      F(C["s_keep_pay"]), F(C["at_pay"]), F(C["at_house"]), F(rhu(C["final_exact"])),
                      F(rhu(C["kept_exact"]))}
@@ -598,7 +612,7 @@ def check_spec(want):
             check("≈" in text, tid, f"≈ on rounded {where}", text)
 
     # ---- "≈" on rounded results only: a "≈ X" in VO/verdict must not be exact ----------
-    exact_set = {F(MEDIAN_WEEKLY), F(PAY), F(NEW_HOUSE), F(PAY10), F(PAY40), F(SECONDS_PER_YEAR), F(10**6)}
+    exact_set = {F(MEDIAN_WEEKLY), F(PAY), F(NEW_HOUSE), F(PAY3), F(PAY10), F(PAY20), F(PAY40), F(SECONDS_PER_YEAR), F(10**6)}
     for where, text in display_strings(spec):
         for m in re.finditer(r"≈ \$?(\d[\d,]*(?:\.\d+)?)", strip_markup(text)):
             n = F(m.group(1).replace(",", ""))
@@ -675,7 +689,7 @@ def check_md():
         "10a": {F(2026), A["s_pay"], F(cbo_pct), F(11)},                         # 2.1 s; CBO: 12%, 11 months
         "10b": {rhu(DEBT_2025_09_30 / 10**12, F(1, 1000)), rhu(DEBT_2026_09_29 / 10**12, F(1, 1000)),
                 F(30), F(29), F(2025), F(2026),                                  # Sept. 30, 2025 / Sept. 29, 2026
-                F(NEW_CAR), B["car_s"]},                                         # pinned: KBB Aug 2026, 0.64 s
+                F(B["minute_years"]), F(B["cross_pay"])},                        # caption: ≈ 72 years; pinned: ≈ $117,000
         "10c": {F(11), F(4), F(2026)},                                           # 11 cents; "Q4 2025"; Feb 2026
     }
     assert rhu(MARGIN * 100) == 11 and cbo_pct == 12

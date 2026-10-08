@@ -4,30 +4,30 @@
   "format": "dead-simple-list",
   "fps": 30,
   "duration": 26.5,
-  "header": "4 DEAD SIMPLE NUMBERS\nWHAT A 3% RAISE ON **$60,000**\nACTUALLY PAYS YOU",
-  "footer": "ASSUMES a 3% raise (example) · pay\u00a0before\u00a0tax",
+  "header": "4 DEAD SIMPLE NUMBERS\nWILL A 3% RAISE PUSH **$65,000**\nINTO A HIGHER BRACKET?",
+  "footer": "ASSUMES single, 2026, standard deduction · federal income tax only",
   "captions": true,
   "vo": [
-    { "t": 0.0,  "d": 3.9, "text": "Take your salary, times 3%: a $1,800 raise." },
-    { "t": 4.2,  "d": 1.6, "text": "Now watch it shrink." },
-    { "t": 6.6,  "d": 2.8, "text": "A month: divide by 12. $150." },
-    { "t": 10.2, "d": 2.8, "text": "A week: divide by 52. About $35." },
-    { "t": 14.2, "d": 3.2, "text": "A day: divide by 365. About $5." },
-    { "t": 18.4, "d": 4.3, "text": "$1,800 sounded big. It's about $5 a day, before tax." }
+    { "t": 0.0,  "d": 3.6, "text": "$65,000, plus 3%: $66,950." },
+    { "t": 4.6,  "d": 4.0, "text": "22% starts at $66,500 of pay." },
+    { "t": 8.8,  "d": 2.5, "text": "You crossed it by $450." },
+    { "t": 12.0, "d": 4.4, "text": "Only those $450 pay 22%. 10 points more: $45." },
+    { "t": 16.6, "d": 3.3, "text": "Not your whole raise. Not your whole pay." },
+    { "t": 20.4, "d": 3.6, "text": "Higher bracket? Yes. It costs you $45 a year." }
   ],
-  "verdict": { "t": 18.4, "text": "A 3% raise on $60,000 ≈\u00a0**$5\u00a0a\u00a0day**, before tax" },
+  "verdict": { "t": 20.4, "text": "Higher bracket? Yes. It costs you **$45 a year**" },
   "data": {
-    "input": { "label": "Salary", "value": "$60,000", "note": "a year" },
+    "input": { "label": "Salary", "value": "$65,000", "note": "a year" },
     "typeDur": 0.7,
     "items": [
-      { "t": 0.0, "label": "Your raise, a year", "formula": "$60,000 × 3%", "result": "$1,800",
-        "tone": "good", "resultT": 2.7 },
-      { "t": 6.6, "label": "A month", "formula": "$1,800 ÷ 12", "result": "$150",
-        "tone": "good", "resultT": 8.5 },
-      { "t": 10.2, "label": "A week", "formula": "$1,800 ÷ 52", "result": "≈ $35",
-        "tone": "neutral", "note": "exact $34.62", "resultT": 12.5 },
-      { "t": 14.2, "label": "A day", "formula": "$1,800 ÷ 365", "result": "≈ $5",
-        "tone": "goal", "note": "exact $4.93", "resultT": 16.9 }
+      { "t": 0.0, "label": "Your new pay", "formula": "$65,000 × 1.03", "result": "$66,950",
+        "tone": "good", "resultT": 2.3 },
+      { "t": 4.6, "label": "Where 22% starts", "formula": "$50,400 + $16,100", "result": "$66,500",
+        "tone": "neutral", "note": "taxed-pay line + standard deduction", "resultT": 6.1 },
+      { "t": 8.8, "label": "Pay over the line", "formula": "$66,950 − $66,500", "result": "$450",
+        "tone": "neutral", "note": "only this is taxed 22%", "resultT": 10.3 },
+      { "t": 12.0, "label": "What the bracket costs you", "formula": "$450 × 10%", "result": "$45",
+        "tone": "goal", "note": "22% − 12% = 10 points", "resultT": 15.8 }
     ]
   },
   "lookOpts": { "hits": ["kick", "chop", "kick", "slam"] }

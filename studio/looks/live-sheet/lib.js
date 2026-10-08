@@ -32,12 +32,13 @@ export function parseMarkup(str = '') {
 }
 // a hyphenated word ("full-time", "Debt-free") is kept on one line: never broken at its hyphen
 const nbHyphens = html => html.replace(/[\p{L}\p{N}$%]+(?:-[\p{L}\p{N}$%]+)+/gu, m => `<span class="ls-nb">${m}</span>`)
-function segHTML(text, k) {
+function segHTML(text, k, whole = text) {
   // "≈ $230,000" never breaks after its "≈" (or "×", "÷"): the operator is glued to its number
   const body = nbHyphens(esc(text)).replace(/([≈×÷]) (?=[\d$−-])/g, '$1\u00A0').replace(/\n/g, '<br>')
   // the inner <span> matters: the linter reads the colour behind a text node from its parent's ancestors,
   // so emphasis that paints its own background must wrap the text one level deeper.
-  if (k === 1) return `<em><span>${body}</span></em>`
+  // a lone operator in emphasis ("growth **>** put in") is set bold in ink where a marker box would look like a glitch
+  if (k === 1) return `<em${/^\s*[^\p{L}\p{N}\s]\s*$/u.test(whole) ? ' class="op"' : ''}><span>${body}</span></em>`
   if (k === 2) return `<u class="mark2"><span>${body}</span></u>`
   return body
 }
@@ -51,7 +52,7 @@ export function typedMk(str, n) {
   for (const seg of parseMarkup(str)) {
     if (left <= 0) break
     const g = graphemes(seg.text)
-    html += segHTML(g.slice(0, left).join(''), seg.k)
+    html += segHTML(g.slice(0, left).join(''), seg.k, seg.text)
     left -= g.length
   }
   return html
@@ -83,10 +84,11 @@ function meter() {
   return meas
 }
 /** rendered width (px) of html in a CSS font shorthand, e.g. textW('$1,040', '800 56px Inter') */
-export function textW(html, font, { letterSpacing = 'normal', transform = 'none' } = {}) {
+export function textW(html, font, { letterSpacing = 'normal', transform = 'none', wordSpacing = 'normal' } = {}) {
   const m = meter()
   m.style.font = font
   m.style.letterSpacing = letterSpacing
+  m.style.wordSpacing = wordSpacing
   m.style.textTransform = transform
   m.innerHTML = html
   const w = m.getBoundingClientRect().width
@@ -105,9 +107,10 @@ export const isNumeric = v => /\d/.test(String(v)) && !/[A-Za-z]{2,}/.test(Strin
 export function unitHTML(str, brAt = null) {
   const hasDigit = /\d/.test(str)
   let out = '', i = 0
-  for (const tok of String(str).split(/(\s+)/)) {
+  // (a no-break space is part of its token: "≈\u00A0$4,680" stays one piece)
+  for (const tok of String(str).split(/([ \t\n]+)/)) {
     if (!tok) continue
-    if (/^\s+$/.test(tok)) out += i === brAt ? '<br>' : esc(tok)
+    if (/^[ \t\n]+$/.test(tok)) out += i === brAt ? '<br>' : esc(tok)
     else out += hasDigit && /^[A-Za-z]/.test(tok) ? `<span class="ls-u">${esc(tok)}</span>` : esc(tok)
     i += tok.length
   }
@@ -220,6 +223,23 @@ export function durationOf(spec, { beats = [], hold = M.hold, min = 5, max = 90,
     d = Math.max(d, done + 2.5 + (loop ? M.loopOut : 0))
   }
   return Math.min(max, Math.max(min, Math.round(d * 30) / 30))
+}
+/**
+ * The formula-like part of a verdict, for the bar's shortcut rewrite: from its "≈" or "=" to the end of the clause,
+ * when that holds an operator ("Max rent ≈ **your hourly wage × 52**" → "≈ your hourly wage × 52"). Null otherwise.
+ */
+export function shortcutOf(text) {
+  const p = plain(String(text || '')).replace(/\s*\n\s*/g, ' ')
+  const i = p.search(/[≈=]/)
+  if (i < 0) return null
+  const rest = p.slice(i)
+  const end = rest.search(/[;!?]|[.,](?=\s|$)/)
+  const part = (end < 0 ? rest : rest.slice(0, end)).trim()
+  return /[×÷+−*/]/.test(part.slice(1)) && part.length > 3 ? part : null
+}
+/** say once (console.warn) that a layout could not fit its budget; the linter will show where */
+export function fitWarn(name, bottom, limit) {
+  if (bottom > limit + 1) console.warn(`live-sheet ${name}: content ends at y ${Math.round(bottom)}, over its ${limit} budget`)
 }
 /** lookOpts value with a default */
 export const opt = (spec, key, dflt) => (spec.lookOpts && spec.lookOpts[key] != null ? spec.lookOpts[key] : dflt)
@@ -617,6 +637,73 @@ export function formulaBar(parent, { x = 0, y = 0, w = G.width, ht = G.fbarH, st
     },
   }
 }
+/**
+ * A formula bar's script over time. entries: [{ t, text, verdict?, cps? }] (markup strings, typed in time order).
+ * The first entry (t <= 0) is already mid-typing at frame 1 with `cut` graphemes shown. Every later entry erases what
+ * shows (`erase` s) and types at a speed that finishes 0.8 s before the next entry is due (never under M.cps; a
+ * verdict never under 26 cps). minHold: an entry never starts until the one before has been readable that long
+ * after its typing ended (later entries are pushed back; the caller uses the returned times). From loopT0 the bar
+ * erases what shows and retypes frame 1's prefix, so the short loops.
+ * Returns { fx (the timed entries: t, start, end, len, from, cps, erase …), at(t) → { str, n, caret, verdict, entry },
+ * html(state), end (last typing end), cue(ctx) (a 'type' cue per entry) }.
+ */
+export function barScript(entries, { cut = 0, loopT0 = Infinity, minHold = 0, erase = 0.16, vCps = 26 } = {}) {
+  const es = entries.filter(e => e && e.text != null && String(e.text) !== '')
+    .map(e => ({ ...e, t: Number.isFinite(+e.t) ? +e.t : 0, text: String(e.text) }))
+    .sort((a, b) => a.t - b.t || !!a.verdict - !!b.verdict)
+  const fx = []
+  let prevEnd = -Infinity
+  es.forEach((e, i) => {
+    const er = i > 0 ? erase : 0
+    const t0 = i > 0 ? Math.max(e.t, prevEnd + minHold) : e.t
+    const start = t0 + er
+    const len = mkLen(e.text), from = i === 0 ? Math.min(cut, len) : 0
+    const nextT = es[i + 1] ? Math.max(es[i + 1].t, start + 0.3) : Infinity
+    const room = nextT - start - 0.8
+    let cps = e.cps ?? (Number.isFinite(room) && room > 0.3 ? Math.max(M.cps, (len - from) / room) : M.cps)
+    if (e.verdict) cps = Math.max(vCps, cps)
+    const end = start + Math.max(0, len - from) / cps
+    fx.push({ ...e, t: t0, erase: er, start, len, from, cps, end })
+    prevEnd = end
+  })
+  const first = fx[0] || { text: '', t: 0, start: 0, len: 0, from: 0, cps: M.cps, end: 0 }
+  function play(t) {
+    let i = -1
+    for (let k = 0; k < fx.length; k++) if (t >= fx[k].t || (k === 0 && fx[0].t <= 0)) i = k
+    if (i < 0) return { str: '', n: 0, caret: caretOn(t, false) }
+    const e = fx[i]
+    if (i > 0 && t < e.start) {
+      const pe = fx[i - 1]
+      const n0 = typedCount(e.t, pe.start, pe.text, { cps: pe.cps, from: pe.from })
+      return { str: pe.text, n: Math.round(n0 * (1 - prog(t, e.t, e.erase))), caret: true, verdict: !!pe.verdict, entry: pe }
+    }
+    const n = typedCount(t, e.start, e.text, { cps: e.cps, from: e.from })
+    return { str: e.text, n, caret: caretOn(t, t >= e.start && n < e.len), verdict: !!e.verdict, entry: e }
+  }
+  function at(t) {
+    if (t < loopT0) return play(t)
+    // the loop: erase whatever shows, then retype frame 1's prefix
+    const cur = play(loopT0 - 1e-4), e1 = 0.22
+    if (t < loopT0 + e1) {
+      const n = Math.round(cur.n * (1 - prog(t, loopT0, e1)))
+      return { str: cur.str, n: cur.str === first.text ? Math.max(Math.min(cut, first.len), n) : n, caret: true, verdict: cur.verdict && n > 0 }
+    }
+    if (cur.str === first.text) return { str: first.text, n: Math.min(cut, first.len), caret: true }
+    return { str: first.text, n: Math.round(Math.min(cut, first.len) * prog(t, loopT0 + e1, 0.2)), caret: true }
+  }
+  return {
+    fx, at, first,
+    html: st => typedMk(st.str, st.n),
+    end: fx.length ? Math.max(...fx.map(e => e.end)) : 0,
+    cue(ctx) {
+      fx.forEach((e, i) => {
+        if (e.len <= e.from || e.start >= loopT0) return
+        ctx.cue(i === 0 ? Math.max(0, e.start) : e.start, 'type', { dur: Math.max(0.15, (e.len - e.from) / e.cps) })
+      })
+    },
+  }
+}
+
 /** font size (and line count) for a formula bar of width w so every string fits */
 export function fitFormula(strings, w = G.width) {
   const avail = w - 102 - 22
@@ -706,6 +793,20 @@ export function sheet(parent, o) {
   const labKw = k => cols.map((c, j) => { const L = labStrs(j); return Math.max(...L.map((l, i) => narrowest(l, font(i ? 600 : 800, i ? S.sub : S.labelMin), i && L.length > 2 ? k - 1 : k, i ? '-0.01em' : '-0.012em'))) })
   const lab2w = labKw(2), lab3w = labKw(3)
   const wordsOnly = cols.map((c, j) => Math.max(...labStrs(j).map((l, i) => Math.max(0, ...plain(l).split(/\s+/).filter(Boolean).map(wd => textW(esc(wd), font(i ? 600 : 800, i ? S.sub : S.labelMin), { letterSpacing: '-0.012em' }))))))
+  // lines a label takes (its main part and every sub-label line, at the 40 px floor, wrapped) in a column w wide
+  const wordWs = cols.map((c, j) => labStrs(j).map((l, i) => plain(l).split(/\s+/).filter(Boolean).map(wd => textW(esc(wd), font(i ? 600 : 800, i ? S.sub : S.labelMin), { letterSpacing: i ? '-0.01em' : '-0.012em' }))))
+  const spaceW = textW('a&nbsp;a', font(800, S.labelMin)) - textW('aa', font(800, S.labelMin))
+  const labelLinesAt = (j, w, pd) => {
+    const room = w - 2 * pd - 2
+    let n = 0
+    for (const ws of wordWs[j]) {
+      if (!ws.length) continue
+      let line = -spaceW, k = 1
+      for (const x of ws) { if (line + spaceW + x > room && line > 0) { k++; line = x } else line += spaceW + x }
+      n += k
+    }
+    return n
+  }
   // columns sharing a `group` key (a duel's people) get one width: the widest floor of the group, then equal shares
   const grouped = arr => arr.map((x, j) => (cols[j].group == null ? x : Math.max(...arr.filter((_, k) => cols[k].group === cols[j].group))))
   const floorOf = (need, labw) => grouped(cols.map((c, j) => c.w ?? Math.max(need[j], labw[j] + 2 * pad + 8, c.minW ?? 0)))
@@ -721,9 +822,10 @@ export function sheet(parent, o) {
   const fs0 = fsFor(rowH)
   let fs = fs0, need, widths = null
   const pads = o.pad != null ? [o.pad] : [G.padX, 12]
+  const allocate = fsStart => {
   for (const p of pads) {
     pad = p
-    fs = fs0
+    fs = fsStart
     need = needFor(fs)
     let floor = floorOf(need, lab2w)
     // too wide: every cell size shrinks together (never under 40 px) before any one column gives way
@@ -736,13 +838,36 @@ export function sheet(parent, o) {
     }
     if (sum(floor) > avail + 0.5) floor = floorOf(need, lab3w) // labels may take three lines
     if (sum(floor) > avail + 0.5) {
-      // values first: every column keeps its widest value and its label's longest word; the labels share what is
-      // left (they wrap further)
+      // values first: every column keeps its widest value and its label's longest word. The spare width then goes
+      // to the tallest label, a line at a time (the label row is as tall as its tallest label), until every label
+      // is down to two lines or the width runs out; what is left goes by values. When a label would still take
+      // more than three lines, the tighter padding is tried first.
       const base = cols.map((c, j) => c.w ?? Math.max(need[j], wordsOnly[j] + 2 * pad + 4, c.minW ?? 0))
       if (sum(base) > avail + 0.5) { if (p !== pads[pads.length - 1]) continue; widths = base.map(x => (x * avail) / sum(base)); break } // last resort: all give
-      const left = avail - sum(base)
-      const ex = cols.map((c, j) => (c.w != null ? 0 : Math.max(0, floor[j] - base[j])))
-      widths = base.map((b, j) => b + (sum(ex) ? (left * ex[j]) / sum(ex) : 0))
+      widths = base.slice()
+      let left = avail - sum(base)
+      const members = j => (cols[j].group == null ? [j] : cols.map((c, k) => k).filter(k => cols[k].group === cols[j].group))
+      const free = cols.map((c, j) => j).filter(j => cols[j].w == null)
+      for (let it = 0; it < 80 && left > 0.5 && free.length; it++) {
+        const lnow = free.map(j => labelLinesAt(j, widths[j], pad))
+        const top = Math.max(...lnow)
+        if (top <= 2) break
+        // every label at the top line count must lose a line, or the row does not get shorter
+        let cost = 0
+        const grow = []
+        for (const j of free.filter((j, k) => lnow[k] === top)) {
+          let w = widths[j]
+          while (w < widths[j] + left && labelLinesAt(j, w, pad) >= top) w += 4
+          if (labelLinesAt(j, w, pad) >= top) { cost = Infinity; break }
+          grow.push([j, w]); cost += (w - widths[j]) * members(j).length
+        }
+        if (!(cost <= left)) break
+        for (const [j, w] of grow) for (const k of members(j)) { left -= Math.max(0, w - widths[k]); widths[k] = Math.max(widths[k], w) }
+      }
+      if (p !== pads[pads.length - 1] && Math.max(0, ...free.map(j => labelLinesAt(j, widths[j], pad))) > 3) continue
+      const flex = grouped(cols.map((c, j) => (c.w != null ? 0 : need[j])))
+      const Fx = sum(flex)
+      widths = widths.map((x, j) => x + (Fx ? (left * flex[j]) / Fx : 0))
       break
     }
     let left = avail - sum(floor)
@@ -763,6 +888,19 @@ export function sheet(parent, o) {
     const js = cols.map((c, j) => j).filter(j => cols[j].group === gk)
     const avg = sum(js.map(j => widths[j])) / js.length
     js.forEach(j => { widths[j] = avg })
+  }
+  }
+  allocate(fs0)
+  // The cell sizes above came from a guessed label row. Estimate the real one from these widths: when it is taller,
+  // the rows (and their type) get smaller, so the columns are shared out again for the smaller values (the label
+  // that needed the room gets it back).
+  if (!o.rowH) {
+    const labHt = Math.max(76, Math.ceil(Math.max(...cols.map((c, j) => labelLinesAt(j, widths[j], pad) * S.labelMin * 1.1)) + 24))
+    const f2 = fsFor(rowHFor(labHt))
+    if (f2.input < fs.input || f2.mid < fs.mid || f2.result < fs.result) {
+      const fsMin = { input: Math.min(fs.input, f2.input), mid: Math.min(fs.mid, f2.mid), result: Math.min(fs.result, f2.result) }
+      allocate(fsMin)
+    }
   }
   // integer columns that add up exactly
   const colX = [gutter]
@@ -1028,7 +1166,7 @@ function niceStep(raw) {
 }
 /**
  * A chart in the sheet's style: white card (surface 'sheet', default) or straight on the surround ('dark').
- * opts: x, y, w, ht (card box, stage px); pad { l, r, t, b }; xr [from, to]; xEvery (tick step); xFmt(v);
+ * opts: x, y, w, ht (card box, stage px); pad { l, r, t, b }; xr [from, to]; xEvery (tick step) or xTicks ([x…]); xFmt(v);
  *   yr [min, max] (default 0 … max of all points × 1.1); yTicks (≈ count, default 4); yFmt(v); log (y log scale);
  *   series [{ points: [[x, v]…], color, tone, width, area (default: first series only), dash }]; events [{ x }] (dashed markers)
  * draw(xNow, { yMax, yMin }) reveals every series up to xNow (and rescales y if asked); returns the tips
@@ -1065,7 +1203,8 @@ export function lineChart(parent, o) {
   gGrid.append(base)
   const xEvery = o.xEvery || niceStep((xr[1] - xr[0]) / 5)
   const xFmt = o.xFmt || (v => String(Math.round(v)))
-  for (let v = Math.ceil(xr[0] / xEvery) * xEvery; v <= xr[1] + 1e-9; v += xEvery) {
+  const xTicks = o.xTicks || (() => { const v = []; for (let x = Math.ceil(xr[0] / xEvery) * xEvery; x <= xr[1] + 1e-9; x += xEvery) v.push(x); return v })()
+  for (const v of xTicks) {
     const d = h('div', { class: 'ls-axis x', 'data-deco': '', text: xFmt(v), style: { left: lx(X(v)) + 'px', top: ly(plot.y + plot.h) + 12 + 'px' } })
     el.append(d)
   }

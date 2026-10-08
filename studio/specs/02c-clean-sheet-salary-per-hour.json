@@ -4,43 +4,43 @@
   "format": "find-your-row",
   "fps": 30,
   "duration": 13.0,
-  "header": "What you **actually** make\nper hour, by salary",
+  "header": "What time your 9-to-5\nstarts paying **you**, by salary",
   "footer": "Single · 2026 federal tax + FICA · no state tax",
   "captions": true,
   "vo": [
-    { "t": 0.0, "d": 4.0, "text": "**$65,000**? $31.25 an hour." },
-    { "t": 4.2, "d": 2.9, "text": "After tax, you keep **≈ $26**." },
-    { "t": 7.4, "d": 3.9, "text": "Six figures? **≈ $10** an hour never reaches you." }
+    { "t": 0.0, "d": 4.3, "text": "$65,000? You work for tax till **≈ 10:18**." },
+    { "t": 4.5, "d": 2.6, "text": "That's ≈ 78 minutes, every workday." },
+    { "t": 7.4, "d": 2.4, "text": "Six figures? Until **≈ 10:40**." }
   ],
-  "verdict": { "t": 8.2, "text": "$100,000: **≈ $10** of every hour never reaches you." },
+  "verdict": { "t": 8.6, "text": "$100,000: you work for tax till **≈ 10:40**, every workday." },
   "data": {
     "columns": [
       { "label": "Salary" },
-      { "label": "Per hour\n÷ 2,080" },
-      { "label": "You keep\nper hour", "emph": true }
+      { "label": "Tax + FICA,\nmin a day" },
+      { "label": "Paying you\nfrom", "emph": true }
     ],
     "rows": [
-      ["$200,000", "≈ $96.15", "≈ $71.60"],
-      ["$150,000", "≈ $72.12", "≈ $54.71"],
-      ["$100,000", "≈ $48.08", "≈ $38.07"],
-      ["$90,000", "≈ $43.27", "≈ $34.69"],
-      ["$80,000", "≈ $38.46", "≈ $31.30"],
-      ["$70,000", "≈ $33.65", "≈ $27.92"],
-      ["$65,000", "$31.25", "≈ $26.16"],
-      ["$60,000", "≈ $28.85", "≈ $24.23"],
-      ["$50,000", "≈ $24.04", "≈ $20.36"],
-      ["$40,000", "≈ $19.23", "$16.50"],
-      ["$35,000", "≈ $16.83", "≈ $14.57"],
-      ["$30,000", "≈ $14.42", "≈ $12.64"]
+      ["$200,000", "≈ 123 min", "≈ 11:03 am"],
+      ["$150,000", "≈ 116 min", "≈ 10:56 am"],
+      ["$100,000", "≈ 100 min", "≈ 10:40 am"],
+      ["$90,000", "≈ 95 min", "≈ 10:35 am"],
+      ["$80,000", "≈ 89 min", "≈ 10:29 am"],
+      ["$70,000", "≈ 82 min", "≈ 10:22 am"],
+      ["$65,000", "≈ 78 min", "≈ 10:18 am"],
+      ["$60,000", "≈ 77 min", "≈ 10:17 am"],
+      ["$50,000", "≈ 73 min", "≈ 10:13 am"],
+      ["$40,000", "≈ 68 min", "≈ 10:08 am"],
+      ["$35,000", "≈ 64 min", "≈ 10:04 am"],
+      ["$30,000", "≈ 59 min", "≈ 9:59 am"]
     ],
-    "formula": "= (salary − tax − FICA) ÷ 2,080",
+    "formula": "= 9:00 am + 480 min × (tax + FICA) ÷ salary",
     "rowsT": 0.0,
     "rowEvery": 0.2,
     "pick": [
-      { "t": 4.2, "row": 6, "label": "≈ US median full-time pay" },
-      { "t": 7.4, "row": 2, "label": "≈ $10 an hour goes to tax" }
+      { "t": 4.5, "row": 6, "label": "≈ US median full-time pay" },
+      { "t": 7.4, "row": 2, "label": "≈ 1 hr 40 min, every workday" }
     ],
     "hold": 5.6
   },
-  "sfx": [ { "t": 8.2, "kind": "ding" } ]
+  "sfx": [ { "t": 8.6, "kind": "ding" } ]
 }

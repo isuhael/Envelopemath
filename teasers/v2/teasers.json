@@ -84,18 +84,19 @@
       "clean-sheet"
     ],
     "file": "teasers/v2/02-find-your-row.md",
-    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/02-find-your-row.py -> PASSED: all 170 checks (exit 0). The check was updated for the revised specs. It recomputes every row, pointer, verdict, formula, footer and VO number from inputs, including the 2026 federal tax brackets, standard deduction and FICA behind 02c, and compares each display string exactly with the 3 specs. Each VO line must now fit both 2.6 w/s (hyphenated numbers as one word) and 2.8 w/s (hyphenated numbers split, a spoken \"dollars\" counted). New checks: each pick lands after its row and when its VO line starts; a ding sits on the verdict; there are no top-level fields outside the contract; the md quotes every VO line, verdict, footer, formula and title verbatim. It also asserts cross-slate tax consistency with 01b (×0.85) and 08b ($13.10). Mutation test on scratch copies (one 02c row changed to ≈ $38.70, 02a vo[0] d cut from 4.3 to 3.9): FAILED 5 of 171, exit 1. Studio linter `node src/cli.mjs check` on all three specs: 3/3 clean, 0 errors, 0 warnings. Stills were rendered at the key beats of each spec and inspected.",
+    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/02-find-your-row.py -> PASSED: all 170 checks (exit 0), after the round-2 hook pass. The builders were rewritten for the adopted hooks: 02a's quoted header, red 'what you think it costs' column and new timings; 02b's plan clock (10 × 365.25 × 24 × 3,600 = 315,576,000 s, $3,168.81/s) and 13 career-pay rows; 02c's tax-minutes and clock-time rows on the same 2026 federal tax + FICA model (asserting the clock rises with every row). Every VO line fits both 2.6 w/s and 2.8 w/s (split hyphens); picks land with their VO line and after their row; the md quotes every VO line, verdict, footer, formula and title verbatim. Mutation test on scratch copies (02c row ≈ 10:40 am → ≈ 10:41 am; 02b vo[2] d 4.7 → 4.4): FAILED 5 of 171, exit 1. Studio linter on all three specs: 3/3 clean, 0 errors, 0 warnings; stills at 0, 1.5, 3 s and each verdict inspected.",
     "teasers": [
       {
         "id": "02a-live-sheet-3-a-day-by-age",
         "look": "live-sheet",
-        "title": "What $3 a Day Costs You by Age",
-        "header": "What **$3 a day**\ncosts you by age",
-        "runtime_s": 13,
+        "title": "\"It's Just $3 a Day\": What It Costs You by 65, by Age",
+        "header": "\"It's just **$3 a day**.\"\nWhat it costs you by 65:",
+        "runtime_s": 13.4,
         "key_numbers": [
           "$3 × 365 ÷ 12 = $91.25 a month at 7%/12 to 65",
-          "18: $51,465 spent vs ≈ $400,000 (FV $400,261.67)",
-          "25: $43,800 vs ≈ $240,000 (≈ 5.5×)",
+          "18: $51,465 (red, 'what you think it costs') vs ≈ $400,000 (FV $400,261.67); VO reaches it at ≈ 2.7 s",
+          "real ÷ red in the rows landing by 1.5 s: 7.78× / 7.02× / 5.47× / 4.29× (ages 18/20/25/30)",
+          "25: $43,800 vs ≈ $240,000 (≈ 5.5× what you think)",
           "35: ≈ $111,000; FV25 ÷ FV35 = 2.152 (≈ 2.2×)",
           "verdict: 10 years younger costs more than double (ratio 2.09-15.98 for every whole age 18-54)",
           "pinned: at 10%, 25 → ≈ $577,000, 18 → ≈ $1,170,000; 7%/12 = 7.23% effective"
@@ -109,33 +110,34 @@
       {
         "id": "02b-scoreboard-trillion-at-your-wage",
         "look": "scoreboard",
-        "title": "Elon's $1 Trillion Pay Plan at Your Hourly Wage",
-        "header": "ELON'S **$1 TRILLION** PAY PLAN\nAT YOUR HOURLY WAGE",
+        "title": "How Fast Elon's $1 Trillion Pay Plan Earns Your Whole Career's Pay",
+        "header": "ELON'S **$1 TRILLION** PAY PLAN\nEARNS YOUR WHOLE CAREER'S PAY IN…",
         "runtime_s": 14,
         "key_numbers": [
-          "$1T ÷ (wage × 2,080)",
-          "$7.25/hr → ≈ 66.3 million years ago (66.31M vs K-Pg 66.04 Ma, 0.5% apart)",
-          "$1,000/hr → ≈ 481,000 (> 300,000-year species, ×1.6)",
-          "13 wage rows $7.25-$1,000",
-          "pinned: 24/7 at $7.25 ≈ 15.7 million yrs; plan's decade = ≈ $48 million an hour"
+          "plan clock: $1T ÷ (10 × 365.25 × 24 × 3,600 = 315,576,000 s) = $3,168.81/s → ≈ $3,169 a second",
+          "career = wage × 2,080 × 40 = wage × 83,200 (exact)",
+          "$7.25/hr: $603,200 → 190.4 s = ≈ 3.2 min (VO ≈ 3 minutes at ≈ 1.9 s)",
+          "$20/hr: $1,664,000 → 8.75 min (under 9); $100/hr: $8,320,000 → 43.76 min (≈ 44)",
+          "$1,000/hr: $83,200,000 → ≈ 7.3 hrs",
+          "pinned: ≈ $11.4 million an hour; plan = stock, paid only if targets are hit"
         ],
         "spec": "studio/specs/02b-scoreboard-trillion-at-your-wage.json",
         "mp4": "studio/out/02b-scoreboard-trillion-at-your-wage.mp4",
         "math_ok": true,
         "facts_ok": true,
-        "hook_score": 6.5
+        "hook_score": 7.75
       },
       {
         "id": "02c-clean-sheet-salary-per-hour",
         "look": "clean-sheet",
-        "title": "What You Actually Make Per Hour, by Salary",
-        "header": "What you **actually** make\nper hour, by salary",
+        "title": "What Time Your 9-to-5 Starts Paying You, by Salary",
+        "header": "What time your 9-to-5\nstarts paying **you**, by salary",
         "runtime_s": 13,
         "key_numbers": [
-          "$65,000 ÷ 2,080 = $31.25 exactly; kept ≈ $26.16 (VO ≈ $26)",
-          "$100,000: ≈ $48.08 vs ≈ $38.07 kept → ≈ $10 an hour to tax (10.0096)",
-          "$200,000 (row 1): ≈ $96.15 vs ≈ $71.60",
-          "kept share 87.6% at $30K → 74.5% at $200K",
+          "min a day = 480 × (2026 fed tax + FICA) ÷ salary; clock = 9:00 am + min",
+          "$65,000: $10,592.50 (16.30%) → 78.22 min → ≈ 10:18 am (VO at ≈ 3.1 s)",
+          "$100,000: $20,820 (20.82%) → 99.94 min = ≈ 1 hr 40 min → ≈ 10:40 am",
+          "$200,000 (row 1): 122.58 min → ≈ 11:03 am; $30,000: 59.44 min → ≈ 9:59 am",
           "2026 single: std ded $16,100; 10/12/22/24% to $12,400/$50,400/$105,700/$201,775; FICA 6.2% to $184,500 + 1.45%",
           "BLS median $1,251 × 52 = $65,052 → ≈ $65,000 row"
         ],
@@ -143,7 +145,7 @@
         "mp4": "studio/out/02c-clean-sheet-salary-per-hour.mp4",
         "math_ok": true,
         "facts_ok": true,
-        "hook_score": 6.5
+        "hook_score": 7.5
       }
     ]
   },
@@ -730,18 +732,18 @@
       {
         "id": "10b-becker-rig-debt-vs-your-pay",
         "look": "becker-rig",
-        "title": "Which Is Bigger: Your Yearly Pay or 1 Second of New US Debt?",
-        "header": "Your year's pay vs\n**1 second** of new US debt.\nWhich is bigger?",
-        "runtime_s": 39,
+        "title": "Which Is Bigger: 40 Years of Your Pay or 1 Minute of New US Debt?",
+        "header": "40 years of your pay vs\n**1 minute** of new US debt.\nWhich is bigger?",
+        "runtime_s": 36.6,
         "key_numbers": [
           "Debt to the Penny: $37,637,553,494,935.61 (2025-09-30) to $40,096,954,633,566.68 (2026-09-29) = ≈ $2.46T in 364 days",
-          "≈ $78,000 a second (exact $78,201.35 = Δ ÷ 31,449,600 s)",
-          "counter armed until 2.4 s, then passes $65,052 at 3.23 s (0.83 s of counting)",
-          "stamp '1 second ≈ $78,000' at 3.4 s",
-          "house ≈ 5 s, $1 million ≈ 13 s of counting",
-          "40 years of median pay $2,602,080 ≈ $2.6 million passes at 35.67 s (≈ 33 s of counting)",
-          "counter final ≈ $2,604,105",
-          "pinned: earn more than ≈ $78,000 a year and you win; new car $50,089 ≈ 0.64 s"
+          "≈ $78,000 a second (exact $78,201.35 = Δ ÷ 31,449,600 s); counter runs from 0.0 s (≈ $117,302 at 1.5 s)",
+          "1 minute = 60 × $78,201.35 = $4,692,080.93 ≈ $4.7 million, 1.8x 40 years of median pay",
+          "40 years of median pay $2,602,080 ≈ $2.6 million passes at 33.27 s (≈ 33 seconds, 55% of the minute)",
+          "milestones 3 / 10 / 20 / 40 years of median pay pass at 2.50 / 8.32 / 16.64 / 33.27 s",
+          "counter final ≈ $2,604,105 at 33.3 s",
+          "caption: 1 minute ≈ 72 years of median pay",
+          "pinned: earn more than ≈ $117,000 a year and your 40 years beat 1 minute; yearly pay × 40 ÷ 78,000 = your working life in seconds"
         ],
         "spec": "studio/specs/10b-becker-rig-debt-vs-your-pay.json",
         "mp4": "studio/out/10b-becker-rig-debt-vs-your-pay.mp4",
