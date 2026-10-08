@@ -499,7 +499,8 @@ export default function deadSimpleList(spec, ctx) {
     if (!pre && typeD > room) typeD = Math.max(0.12, room)
     if (ts + typeD + WIND + flight > T0.res - 0.04) flight = Math.max(0.2, T0.res - 0.04 - ts - typeD - WIND)
     Object.assign(T0, { ts, typeD, flight, tr: T0.res - flight })
-    T0.tw = Math.max(ts + typeD + 0.04, T0.tr - (r.style === 'slam' ? 0.62 : WIND))
+    // the goal's heave winds up longest (up to 1 s, a riser under it): the climax is earned
+    T0.tw = Math.max(ts + typeD + 0.04, T0.tr - (r.style === 'slam' ? (r.goal ? 1.0 : 0.62) : WIND))
     T0.tHold = ts + typeD * r.split                                 // the plate pops into his hands here
   })
 
@@ -645,7 +646,7 @@ export default function deadSimpleList(spec, ctx) {
   // a pointed-at answer pulses with a ring of hit lines (no shake) and a pop
   for (const pu of pulses) {
     const r = R[pu.i], hw = r.sw / 2 + (r.goal ? PLATE[0] + 6 : 0)
-    fxk.impact(pu.t, { x: r.home - (r.goal ? PLATE[0] + 6 : 0) + hw, y: yV(pu.i), rx: hw + 14, ry: VhI(pu.i) / 2 + 4, r: 26, lines: 10, shake: 0, punch: r.goal ? 0.015 : 0, cue: 'pop', gain: r.goal ? 0.7 : 0.5 })
+    fxk.impact(pu.t, { x: r.home - (r.goal ? PLATE[0] + 6 : 0) + hw, y: yV(pu.i), rx: hw + 14, ry: VhI(pu.i) / 2 + 4, r: 20, lines: 8, shake: 0, punch: r.goal ? 0.015 : 0, cue: 'pop', gain: r.goal ? 0.7 : 0.5 })
   }
   // while he points at an answer that is not the goal, it is the focal number again: green until the next point
   const focusOf = i => pulses.map((pu, j) => (pu.i === i ? { t0: pu.t, t1: (pulses[j + 1] || { t: Infinity }).t } : null)).filter(Boolean)
@@ -683,7 +684,7 @@ export default function deadSimpleList(spec, ctx) {
       const r = R[i], T0 = TI[i]
       const active = t >= actT(i)
       // (an answer he points at in his acting after the goal gets the ring back while he points)
-      const current = (active && (i === N - 1 ? t < tEnd + 0.4 : t < actT(i + 1))) || aims.some(a => !a.fin && a.i === i && t >= a.t0 && t < a.t1)
+      const current = (active && (i === N - 1 ? t < Math.min(tEnd + 0.4, tAct0) : t < actT(i + 1))) || aims.some(a => !a.fin && a.i === i && t >= a.t0 && t < a.t1)
       // tab: outlined until reached, ink after; a green ring while it is the current slot
       style(r.tabBg, {
         background: active ? C.ink : C.white,
@@ -750,7 +751,7 @@ export default function deadSimpleList(spec, ctx) {
         const settle = next ? prog(t, next.res, 0.3) : 0
         const fw = focusAt(r, t), pz = pulseAt(r, t)
         const col = r.goal ? C.ink : r.it.tone === 'bad' ? C.red : fw > 0 ? mix(C.ink, C.heroInk, fw) : mix(r.tone.text, C.ink, settle)
-        r.val.set({ x: r.home, y: yV(i), sx: gs * pp.scale * sq.sx * pz, sy: gs * pp.scale * sq.sy * pz, opacity: pp.opacity, color: col })
+        r.val.set({ x: r.home - (pz - 1) * r.sw / 2, y: yV(i), sx: gs * pp.scale * sq.sx * pz, sy: gs * pp.scale * sq.sy * pz, opacity: pp.opacity, color: col })
         if (r.plate) {
           const pw = r.sw + 2 * PLATE[0] + 12, ph = plateH(v)
           const p2 = popIn(t, T0.res, 0.3, 0.5)

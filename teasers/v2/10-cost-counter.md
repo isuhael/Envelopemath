@@ -68,7 +68,7 @@
   - 10c needs `lookOpts.preroll: 0`: without it the Live Sheet kit starts its counter 1 s in, which made the old 10c's frame 1 read $22,733 (found by the hook-pass-2 judges).
 - **The viewer's own number is on screen at 0.0 s in every teaser:** the footer carries the pay basis ($1,251 a week × 52 = **$65,052**, BLS Q2 2026), and the checker enforces it. 10a also prints its salary ladder ($30K to $1M, with the median as its own "Median $65K" row, so the footer's pay figure pays off at 2.1 s) beside the pips from frame 1, so every viewer has a row.
   - The milestones are pay yardsticks: round yearly salaries plus the median in 10a; years of median pay in 10b (3, 10, 20 and 40); weeks, months and a year of median pay in 10c. The median new house left the series in hook pass 2.
-  - The first payoff lands by 2.5 s in every teaser: the $30,000 row at 0.98 s (10a), ≈ 2 weeks of median pay at 1.0 s (10c), 3 years of median pay at 2.5 s (10b; its first $65,052 block goes at 0.83 s in the proposed block-stack).
+  - The first payoff lands by 2.5 s in every teaser: the $30,000 row at 0.98 s (10a), ≈ 2 weeks of median pay at 1.0 s (10c), 3 years of median pay at 2.5 s (10b; its first $65,052 brick goes into the board at 0.83 s).
   - The swap-in rule for the viewer's own pay (R3): the VO says it in 10a ("Your seconds: yearly pay ÷ 30,800.", with the label stack working it for the median: "$65,052 ÷ 30,800 / ≈ 2.1 seconds") and 10c ("2,464 ÷ your weekly pay = your weeks."); the pinned comments repeat it, and 10b's gives it.
 - **Rounding: one rounding per quantity.** A quantity shows one rounded figure everywhere it appears: spec strings, captions (the VO), formula bar, caption text and pinned comment. The checker enforces it.
   - Every rounded number shows "≈" on screen and in the captions, including 10b's counter final (≈ $2,604,105). 10a and 10c stop on their last milestone, within $0.50 of it, so their finals ($1,000,000 and $65,052) are exact dollar readings and carry no "≈" (assembly pass 2; the checker holds both rates to the $0.50).
@@ -82,7 +82,7 @@
 - **Lane check:**
   - These are counters at a real rate, over one continuous stretch.
   - No find-your-row table. 10a's salary ladder has a row for every kind of viewer, but it is the counter's own milestone ladder (6 pips the counter lights), with no per-row computation shown and the counter still the mechanic. 10c's 4 rows are time slices of one counter (1, 5, ≈ 13 and ≈ 26 s).
-  - No unit stacks (that is `unit-ladder`). 10b's proposed 40-block stack is a prop the counter eats, not a ladder of units.
+  - No unit stacks (that is `unit-ladder`). 10b's 40-brick stack is a prop the counter eats, not a ladder of units.
   - No race between two assets (`chart-race`): every teaser has one counter.
   - No "instead of paying" (`pov-race`).
 - **10a and 10b are both about the federal debt, but they ask different questions:**
@@ -337,7 +337,7 @@ All "≈ N seconds" are counter time, and the counter starts at 0.0 s, so they a
 |---|---|---:|---|
 | Growth | $40,096,954,633,566.68 − $37,637,553,494,935.61 | 2,459,401,138,631.07 | ≈ $2.46T (footer, VO, caption) |
 | Rate | Δ ÷ 31,449,600 s | 78,201.349 | ≈ $78,000 every second (strip, stamp, VO, caption, pinned) |
-| 1 minute of new debt | r × 60 | 4,692,080.93 | ≈ $4.7 million (VO, verdict, ring label, caption) |
+| 1 minute of new debt | r × 60 | 4,692,080.93 | ≈ $4.7 million (VO, verdict, stopwatch end label, caption) |
 | A year of median pay | $1,251 × 52 | 65,052 | $65,052 (one block) |
 | 40 years of median pay | $65,052 × 40 | 2,602,080 | $2,602,080 / ≈ $2.6 million |
 | The duel | 1 minute ÷ 40 years of median pay | 1.803 | 1 minute is bigger (1.8x, md only); margin ≈ $2.1 million (md only) |
