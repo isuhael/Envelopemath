@@ -437,7 +437,7 @@ export default function whatDifference(spec, ctx) {
   const { VS, NS, two, colL, P, X0c, Hc, CT, crateW, XF } = G
   const FACE2 = G.face === 2
   const COL = G.mode === 'col'
-  if (lo.debug) { const gr = geometry("row", 44, 40, false, true, 0, false); window.__wd = { G, top, cands, slot: slotE.map(x => [x.text, x.lines]), workTop: parts.workTop, row: { room: gr.room, X0c: gr.X0c, colL: gr.colL, sc: gr.sc, names: lanes.map(l => [nameW(l, 40), detW(l), deltaW(l)]) } } }
+  if (lo.debug) { window.__H = [PUSH_H, STAND_H]; const gr = geometry("row", 44, 40, false, true, 0, false); window.__wd = { G, top, cands, slot: slotE.map(x => [x.text, x.lines]), workTop: parts.workTop, H: [PUSH_H, STAND_H], row: { room: gr.room, X0c: gr.X0c, colL: gr.colL, sc: gr.sc, names: lanes.map(l => [nameW(l, 40), detW(l), deltaW(l)]) } } }
   const k = Math.max(0.3, G.sc), reachX = G.reach
   const lanesTop = FLOOR - n * P
   const headsBottom = lanesTop - 10
