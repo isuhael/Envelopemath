@@ -1,83 +1,126 @@
 // becker-rig · what-difference (FORMATS.md §3, hook P5): one fixed debt handled 2-4 ways. "Guess which one."
 //
 // The debt is a crate, and the crate is the clock. Every option gets a lane: a floor line, the figure behind the
-// same crate on the start line, and a title row above (the option's name and behaviour on the left, dim until its
-// turn; its money result on the right, under a column head). The lane is a TIME axis shared by every lane: the crate
-// travels as many months as the option takes to pay off, so the longest payoff reaches the far side (a dashed guide
-// in every lane) and the winning lane's flag is the nearest: it got to "paid off" first.
+// same crate on the start line, the option's name and behaviour (dim until its turn), and its money result on the
+// right under a column head. The lane is a TIME axis shared by every lane, from 0 months at the start line: the crate
+// travels as far as the option takes to pay off, so the longest payoff reaches the far side (a dashed guide in every
+// lane), the winning lane's flag is the nearest (it got to "paid off" first), and the floor from each flag to the far
+// side turns green (the time it saved).
 //   Frame 1  the question: every lane named, every crate on its start line showing "?", the money slots empty
-//            (dashed sockets), the stake in the working slot under the footer. Options with t <= 0 (or a resultT
-//            <= 0) are already run: crate at its flag with its payoff on it, money in, coin pile full. The waiting
-//            figures stand hand on chin, with a nod in the first second.
-//   A run    at option.t the lane wakes (its name to ink, `step`) and he leans in, hands on the crate; on a long
-//            lead-in (resultT well after t) he strains against it, wobbling, and it trembles but holds, until it
-//            gives. Then he drives it along the lane, bent low, feet stepping on the floor, hands pinned to the
-//            crate by 2-bone IK (`swipe` on the push-off, a `roll` under the run). The crate's face counts the
-//            months up as it goes (grey digits, never the "≈"). Every few strides an interest coin flies off the
-//            crate onto the lane's pile under the money column (pile height = that money value, one honest scale for
-//            every lane). A flag drops in where the debt is gone, the crate slams into its pole (`thud`, squash, the
-//            pole wobbles), turns from red (debt) to green (paid) and its face lands on the payoff's display
-//            string. The money value then drops onto the title row (`pop`); a delta swaps in for the behaviour
-//            (`pop`); he catches his breath, hands on knees, and reacts by tone (bad: slump; neutral: shrug; good and
-//            goal: a fist pump).
-//   Colour   the newest money value is green (heroInk) and settles to ink (a `bad` option's to red) when the next
-//            lane lands: one focal number at a time. Crate faces are always ink (on red, green or gold).
-//   Winner   at data.winnerT (default verdict.t): a gold plate opens behind the winner's money value (impact: hit
-//            lines, shake, a 2% punch about it, `hit` + `cash`), its crate and pennant turn gold and its figure
-//            jumps and celebrates (arms up when nothing readable is above him, else a fist pump); the others slump,
-//            turn slate and their values settle grey. The chrome's verdict lands in the caption band (its `ding` is
-//            skipped when it would land on the winner's hit).
+//            (dashed sockets), the stake in the working slot under the footer. Only an option whose t (or resultT) is
+//            given and <= 0 is already run: crate at its flag with its payoff on it, money in, coin pile full. The
+//            waiting figures stand with a hand on the chin and the other resting on their crate, a nod in the first
+//            second.
+//   A run    the lane wakes (its name to ink, `step`; his figure turns green: it is his turn) and he steps back and
+//            leans in, both hands on the crate; on a long lead-in he strains against it and it trembles but holds,
+//            until it gives. Then he drives it along the lane, bent low, feet stepping on the floor, hands pinned to
+//            the crate by 2-bone IK (`swipe` on the push-off, a `roll` under the run). Every run moves at one shared
+//            speed (lookOpts.race), so run time is payoff time too (unless resultT asks for a shorter run, or the next
+//            lane wakes first: a run then ends 0.8 s before it, 0.6 s at the least, so two lanes never push at once).
+//            The crate's face counts the months up as it goes (grey digits, never the "≈"; a compound payoff such as
+//            "11 yrs 5 mo" counts whole years, "4 yrs", and pops its exact string on landing), and every few strides
+//            an interest coin flies off its front face, low (under the money value and anything under it), onto the
+//            lane's pile under the money column (pile height = that money value: one honest scale, from zero, for
+//            every lane). A flag drops in where the debt is gone, the crate slams into its pole (`thud`, a squash, the
+//            pole wobbles), turns from red (debt) to green (paid) and its face lands on the payoff's display string.
+//            The money value then drops onto its row (`pop`), a third metric's line pops in under it (`tick`) and the
+//            delta pops in (`pop`); he recoils, catches his breath hands on knees, reacts by tone (bad: slump;
+//            neutral: shrug or a nod; good / goal: a fist), and 1.6 s later turns back to slate.
+//   Colour   a money value lands in its tone's colour: green (heroInk) for good and goal, red for bad, ink (with a
+//            bump) for neutral; a green one settles to ink when the next lane lands (one focal number at a time), a red
+//            one stays red. A read flashes a value in its own colour and bumps it 12%. Crate faces are always ink (on
+//            red, green or gold). Deltas are green (good, goal), red (bad) or ink (neutral). Figures are slate (the
+//            kit's rival colour) while they wait or rest, and green only on their own turn, a scan hop, a lever beat
+//            or a read of their lane, and for the winner: one figure in focus at a time.
+//   Winner   at data.winnerT (default verdict.t): a gold plate opens behind the winner's money value, which grows to
+//            1.15x on it (1.08x, or not at all, when the lanes are too tight for the headroom); impact: a mostly
+//            vertical shake, a light flash, a 1.8% punch about the titles' left edge (x 922 then reaches 939), `hit` +
+//            `cash`, and short rays fanning out of the plate's two ends only (the left fan only where the row is clear
+//            of the titles and the deltas: a burst all round would cross the crate faces and the lane above). Its crate
+//            and pennant turn gold, and when the verdict claims time (an emphasis with a time unit, "**14 months**"),
+//            its time-saved strip thickens and pulses with the plate. He crouches, jumps and lands celebrating (arms up
+//            in a wide V when that fits under whatever is above him, else the "yes!" pump or a punch from the crouch);
+//            the others slump, their values, deltas and crate faces settle grey. The chrome's verdict lands in the
+//            caption band (its `ding` is skipped when it would land on the winner's hit).
 //
-// Nothing on screen is computed: every number is a spec display string; the crate's running counter lands exactly
-// on its string, and so does a counted money value. Months are read out of the payoff strings only to place the
-// crates ("≈ 4.8 years" = 57.6 months; a bare "72" takes its unit from the metric label, else months).
+// Nothing on screen is computed: every number is a spec display string; the crate's running counter and a counted
+// money value land exactly on theirs. Months are read out of the payoff strings only to place the crates ("≈ 4.8
+// years" = 57.6 months; "11 yrs 5 mo" = 137, every number-and-unit pair summed; a bare "72" takes its unit from the
+// metric label, else months). The parser is local: lib's num("60 months") reads the "m" of "months" as millions.
 //
-// Layout (measured at mount): the working slot (1-2 mono lines) under the footer, then the heads row (the crate
-// metric as a legend over the start line: a little crate + its label; the money metric right-aligned over its
-// column), then the lanes, bottom-up from the kit's floor line at y 1300. A lane is a title row (name 44 → 40 px,
-// behaviour mono 40 px beside it or under it, the money value 64 → 44 px right-aligned at x 922) over a track band
-// the figure fits in bent over: he only stands tall in the start gutter, where nothing is written above him, so his
-// size comes from the band (4 lanes under a 3-line hook: ~0.4; 3 lanes ~0.55; 2 lanes 0.8). The crate is as tall as
-// the band allows under the money column (its pennant stays clear of the value), its face 41-60 px. The fitter
-// tries every money size, name size and one- or two-line titles and keeps the best of big money, a big figure and a
-// big crate face; with long behaviours it moves them under the name, then drops them (the working lines carry them).
+// Layout (measured at mount, every candidate scored; lookOpts.layout pins one). Top down: the working slot (1-2 mono
+// lines) under the footer; the heads row (a little red crate + the crate metric's label at the left, the money
+// metric's label right-aligned over its column; caps, else sentence case, else two lines; with a third metric shown,
+// its label in grey mono under the money head); then the lanes, bottom-up from the kit's floor line at y 1300 (at
+// most 300 px each). Two lane layouts:
+//   row  the title (name 44/40 px + behaviour mono 40 px on one line, or on two) sits on a row over the track,
+//        starting over the crate; the money value (72 → 44 px) ends the row at x 922. He passes under the title bent
+//        over, so his size comes from the band under it (his pencil may not reach the text). Long runs.
+//   col  the titles stand in a column at the left (name, then behaviour or delta, wrapping balanced; no word and no
+//        delta may break); the track starts right of it, he has the lane's full height, but the run is shorter.
+// Deltas go, in the fitter's order of preference: 'own' (in the title, in place of the behaviour), 'under' (a 40 px
+// line right-aligned under the money value), 'beside' (col only: on the money row, right-aligned 24 px left of its
+// own value, clear of his reach), and only as the last resort 'pop' (each pops over its title for 2.4 s, the title
+// giving way, and again for a `reads` of it). All but 'pop' stay to the last frame.
+// A third metric ("Total paid") is a grey mono 40 px line under the money value, its label under the money head; it
+// lands 0.4 s after the value. When the lanes have no room for it (4 lanes with long payoff strings, say) it is left
+// out with a console warning; a fourth metric is always left out (with a warning).
+// The crate is as tall as the lane allows under the money column (its pennant beside its top stays clear of the
+// value), and a crate that reaches up beside the lines under a money value stops short of them; its face is one line
+// ("72", "≈ 65", "11 yrs 5 mo"; as big as its inside allows) or, when every payoff is one number and a unit word and
+// the crate is tall enough, the number over its unit ("60" / "months"), 41-56 px. The far side stays clear of the
+// coin pile, and the figure behind the longest crate stays left of the money column. The score puts the money value
+// first (60 px and up; under 60 costs 50 points plus 3 a px, so the figure, the run or the behaviours give way first),
+// then figure size (0.36 and up, 0.3 at the least), run length (180 px and up, 120 at the least), crate face, the
+// winner's growth on its plate, and pays for every give-way: behaviours dropped (the working lines carry them),
+// two-line titles, 40 px names, deltas without a place of their own, the third metric left out, no coin pile. The 03a
+// teaser (4 lanes, 3-line hook, 2-line footer, 2-line working lines) lands in col: money 60 px, figure 0.46.
 //
 // data: FORMATS.md §3 exactly: stake { label, value, terms }, metrics [{ key, label }] (the first time-like one is
-// the crate's; the first money one the title row's and the coin pile's; with no money metric the second metric
-// takes the column and there is no pile), options [{ t, name, detail, values, delta?, tone? }] (2-4), winner,
-// hold. Also read when present (other kits' extensions):
-//   option.resultT   when that option's payoff lands (the run is timed to end there; <= 0: already run at frame 1)
+// the crate's; the first money one the money column's and the coin pile's, with no money metric another metric takes
+// the column and there is no pile; a third one the line under the money value), options [{ t, name, detail, values,
+// delta?, tone? }] (2-4), winner, hold. option.t is when the lane WAKES. Options without t (and without resultT) are
+// paced by the kit: the first at 1.6 s, each next one 2.2 s after the previous lane's last landing (its money value,
+// third metric or delta), or 5.4 s apart when no option has a time; squeezed (gaps down to 0.7 s) so the last lands
+// 0.6 s before the winner beat. Also read when present (other kits' extensions):
+//   option.resultT   when that option's payoff LANDS, always honoured: the run keeps the shared speed when the lead-in
+//                    allows, else it shortens (0.35 s at the least), and when even that does not fit he wakes before
+//                    t. Without t, the lane wakes in time to land on it. <= 0: already run at frame 1
 //   option.valueEvery / data.valueEvery   gap between the payoff landing and the money value (default 0.45 s)
-//   option.deltaT    when the delta swaps in (default 0.55 s after the money value)
+//   option.deltaT    when the delta pops in (default 0.55 s after the money value, 0.8 s with a third metric)
 //   option.note, option.noteT   a working line shown at noteT (default: when the money value lands)
-//   data.winnerT     when the winner is crowned (default verdict.t, else 1.2 s after the last value)
+//   data.winnerT     when the winner is crowned (default verdict.t, else 1.2 s after the last landing)
 //
-// lookOpts (all optional; it renders fully without them):
-//   formulas: [string | { t, text }]  a working line per option, shown in the slot from that option's t (a pre-run
-//                       option's from its first `reads` time, else 2 s). "\n" breaks the line; numbers print in ink,
-//                       `**x**` in green. The slot holds one line at a time and keeps it until the next one
+// lookOpts (all optional; it renders fully without them. The live-sheet teaser's keys carry over as they are):
+//   formulas: [string | { t, text }]  a working line per option, shown in the slot from that option's wake (a
+//                       pre-run option's from its first `reads` time, else 2 s). "\n" breaks the line; numbers print in
+//                       ink, `**x**` in green, "−" in Inter (the mono minus reads as a hyphen). One line at a time, each
+//                       held until the next; a line too long for two lines steps down to 38, then 36 px
 //   steps: [{ t, text }]   extra working lines (the difference the VO speaks: "= $10,000 − $8,900\n≈ $1,100 less")
 //   lever: { t, text, options: [i, j] }   the line that explains WHY: shown in the slot at t; the listed lanes'
-//                       money values get a pale green band, their crates pulse and their figures nod (`swipe`),
-//                       until the next slot line (3.6 s at most)
-//   reads: [{ t, option, metric }]   the VO reads a result already on screen: that value (or crate, for the crate's
-//                       metric) bumps 12% and the value flashes green (`tick`). option may be a list ([1, 2]: they
-//                       flash together); metric = a metric key or 'delta'
-//   scan: { t, every = 0.4, options }   "guess which one": from t the waiting lanes' figures hop in turn (`tick`)
-//   countCell: { option, metric, from: 'base' | number }   the money value counts from the first option's value (or
-//                       `from`) to its display over 0.8 s as it lands, then settles from 110% (may be a list; the
-//                       crate's metric always counts)
-//   stakeLine: false | string   the slot's frame-1 line (default "label · value · terms"; the value is left out when
-//                       the hook already shows it)
-//   heads: 'upper' | 'sentence' | false   heads style (default upper caps, sentence case when caps do not fit)
-//   pile: false         no coin piles (no flying coins either)
-//   race: 1.8           seconds the longest run takes (every run moves at that one speed; each >= 0.6 s)
+//                       money values get a pale green band and bump, their crates pulse and their figures turn green
+//                       and nod (`swipe`), until the next slot line (3.6 s at most)
+//   reads: [{ t, option, metric }]   the VO reads a result already on screen: that money value (or crate, for the
+//                       crate's metric; the third metric's line; or 'delta') bumps 12% and flashes in its own colour,
+//                       and the lane's figure turns green for a moment (`tick`). option may be a list ([1, 2]: together)
+//   scan: { t, every = 0.4, options }   "guess which one": from t the waiting lanes' figures hop in turn (green for
+//                       the hop), their "?" popping (`tick`)
+//   countCell: { option, metric, from: 'base' | number }   that lane's money value counts from the first option's (or
+//                       `from`) to its display over 0.8 s as it lands, then settles from 110% (may be a list). The
+//                       crate's metric always counts
+//   stakeLine: false | string   the slot's frame-1 line (default "label · value · terms", leaving out whatever the
+//                       hook or the footer already says; when it would wrap while every other slot line fits on one,
+//                       it drops the label, then keeps the value alone)
+//   heads: 'upper' | 'sentence' | false   the heads row's style (default caps, sentence case when caps collide;
+//                       false also leaves out a third metric, which would have no label)
+//   layout: 'row' | 'col'   pin a lane layout (default: the fitter's best)
+//   pile: false         no coin piles (and no flying coins)
+//   race: 1.8           seconds the longest run takes (every run moves at that one speed; each run >= 0.6 s)
 //   figure: false       no figures (the crates slide by themselves)
-//   figureScale: 0.5    the figure's size (capped by the band)
-//   endPose: 'celebrate' | 'point' | 'pump'   the winner's pose after his jump (default celebrate when there is
-//                       head room above him, else a low fist pump)
+//   figureScale: 0.5    cap the figure's size (it is already capped by the lane)
+//   endPose: 'celebrate' | 'pump' | 'point'   the winner's pose after his jump (default: the biggest that fits)
 import {
-  h, s, style, attr, prog, clamp, lerp, plain, markup,
+  h, s, style, attr, prog, clamp, lerp, plain, markup, rng,
   C, F, E, POSES, blendPose, fk, secondary, Figure, makeWorld, makeFx, camera, NumObj, pinLimb,
   chromeParts, durationOf, numLike, fmtLike, measure, squashAt, fall, popIn, bump, hop, wobble, mix, mixOk, smooth,
 } from '../lib.js'
@@ -98,6 +141,8 @@ export const css = `
 .wd-det { font-family: ${F.mono}; font-weight: 700; font-size: 40px; line-height: 48px; letter-spacing: -0.03em; color: ${C.grey}; }
 .wd-val { font-family: ${F.head}; font-weight: 900; letter-spacing: -0.03em; word-spacing: 0.14em; }
 .wd-delta { font-family: ${F.head}; font-weight: 800; font-size: 40px; line-height: 48px; letter-spacing: -0.01em; word-spacing: 0.1em; }
+.wd-ex { font-family: ${F.mono}; font-weight: 700; font-size: 40px; line-height: 48px; letter-spacing: -0.03em; color: ${C.grey}; white-space: nowrap; }
+.wd-exhead { position: absolute; font: 700 40px/48px ${F.mono}; letter-spacing: -0.03em; color: ${C.grey}; text-align: right; white-space: nowrap; }
 .wd-plate { position: absolute; left: 0; top: 0; box-sizing: border-box; background: ${C.coin}; border: 6px solid ${C.ink}; border-radius: 16px; transform-origin: 50% 50%; }
 .wd-band { position: absolute; left: 0; top: 0; background: ${BAND}; border-radius: 14px; transform-origin: 50% 50%; }
 .wd-crate-t { font-family: ${F.head}; font-weight: 900; letter-spacing: -0.02em; word-spacing: 0.12em; }
@@ -114,44 +159,53 @@ const KMAX = 7            // coins thrown by the most expensive lane
 const SLOT_LH = 48
 const PILE_RX = 23, PILE_RY = 7
 const PILE_X = XR - PILE_RX     // the coin pile stands at the right edge, under the money value
+const U_LH = 48, U_GAP = 8      // an under-line (a delta, an extra metric) under the money value: line box, gap
 
 const esc = x => String(x).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-const TONE_TXT = { bad: C.red, good: C.heroInk, goal: C.ink, neutral: C.ink }
+// a pop for 40 px text that never dips under its size (an opacity ramp and a 6% overshoot): a pop from 0.82 would
+// read under the 40 px floor for its first frames
+const popUp = (t, t0, dur = 0.22, amp = 0.06) => (t < t0 ? { scale: 1, opacity: 0 } : { scale: 1 + amp * bump(t, t0, dur * 1.4), opacity: clamp(prog(t, t0, dur) * 3) })
+const TONE_TXT = { bad: C.red, good: C.heroInk, goal: C.heroInk, neutral: C.ink }     // a delta's colour by tone
 
 // local poses (lib.js §2 conventions; + = the way he faces, which is always right here)
 const PZ = {
   think: { ...POSES.think, aF: [30, 140], tilt: 16 },
   wait: { lean: 8, tilt: 12, aF: [70, 30], aB: [34, 136], lF: [8, -4], lB: [-10, -2] },        // hand on chin, one on the crate
   airUp: { lean: -4, tilt: -18, aF: [150, 20], aB: [-150, -20], lF: [40, -70], lB: [-20, -50] },
-  ready: { lean: 34, tilt: -10, aF: [92, 14], aB: [86, 20], lF: [26, -46], lB: [-28, -20] },
+  ready: { lean: 50, tilt: -22, aF: [92, 14], aB: [86, 20], lF: [40, -70], lB: [-36, -14] },
   strain: { lean: 52, tilt: -26, aF: [90, 8], aB: [84, 14], lF: [40, -64], lB: [-44, -6] },
   crouch: { lean: 54, tilt: -24, aF: [90, 10], aB: [84, 16], lF: [70, -120], lB: [30, -96] },
   push: { lean: 50, tilt: -24, aF: [90, 8], aB: [84, 14], lF: [40, -60], lB: [-40, -8] },
-  recoil: { lean: 30, tilt: -4, aF: [70, 30], aB: [60, 36], lF: [34, -56], lB: [-20, -30] },
+  recoil: { lean: 44, tilt: -16, aF: [70, 30], aB: [60, 36], lF: [44, -80], lB: [-20, -50] },
   knees: { lean: 44, tilt: 22, aF: [36, 8], aB: [30, 10], lF: [44, -78], lB: [26, -70] },      // hands on knees, panting
   slump: { lean: 40, tilt: 40, aF: [10, 6], aB: [4, 4], lF: [40, -76], lB: [22, -66] },
   pumpLow: { lean: 26, tilt: -4, aF: [70, 100], aB: [-40, 40], lF: [44, -80], lB: [-26, -46] },    // fist up, knees bent
-  punch: { lean: 44, tilt: -10, aF: [104, 30], aB: [20, 20], lF: [44, -78], lB: [26, -70] },       // a fist forward, from the crouch
+  punch: { lean: 48, tilt: -14, aF: [104, 30], aB: [20, 20], lF: [44, -78], lB: [26, -70] },       // a fist forward, from the crouch
   shrugLow: { lean: 30, tilt: 12, aF: [50, 110], aB: [-40, -100], lF: [40, -74], lB: [-20, -50] },
   nod: { lean: 40, tilt: 34, aF: [36, 8], aB: [30, 10], lF: [44, -78], lB: [26, -70] },
-  win: { lean: -6, tilt: -18, aF: [144, -16], aB: [-144, 16], lF: [16, -10], lB: [-16, -8] },
-  winLow: { lean: -6, tilt: -18, aF: [144, -16], aB: [-144, 16], lF: [40, -70], lB: [-20, -50] },  // arms up, knees bent
+  win: { lean: -6, tilt: -18, aF: [128, -10], aB: [-128, 10], lF: [16, -10], lB: [-16, -8] },      // a wide V: the head between
+  winLow: { lean: -4, tilt: -18, aF: [126, -10], aB: [-126, 10], lF: [52, -96], lB: [-26, -64] },  // arms up, knees bent
   yes: { lean: 8, tilt: -8, aF: [62, 112], aB: [-34, 30], lF: [34, -60], lB: [-16, -20] },          // the "yes!" fist pump
   point: { lean: 4, tilt: -14, aF: [128, 6], aB: [-16, 22], lF: [10, -6], lB: [-12, -4] },
 }
 const BODY = ['hip', 'nk', 'sh', 'head', 'eF', 'hF', 'eB', 'hB', 'kF', 'fF', 'kB', 'fB']
 
-// a pose's full height at scale 1, feet planted: limbs (with half the stroke), head, and the pencil's eraser end
-// (it rises as he leans forward: bent over, the pencil is the top of him)
-function poseTop(p) {
-  const J = fk(p, { x: 0, ground: 0, scale: 1 })
+// a pose's height at scale 1, feet planted: its body (limbs with half the stroke, head) and, separately, the top of
+// the pencil behind his head (it rises as he leans forward; a thin line, it may brush a lane line, never text)
+function poseTop(p, pencil = false, hipY = null) {
+  const J = hipY == null ? fk(p, { x: 0, ground: 0, scale: 1 }) : fk(p, { x: 0, y: -hipY, scale: 1 })
+  const body = -Math.min(J.head[1] - J.R, J.hF[1] - 6.5, J.hB[1] - 6.5, J.eF[1] - 6.5, J.eB[1] - 6.5)
+  if (!pencil) return body
   const a = (J.headRot * Math.PI) / 180, R = J.R
-  const ey = J.head[1] - 2.0 * R * Math.sin(a) - 1.35 * R * Math.cos(a)
-  return -Math.min(J.head[1] - R, J.hF[1] - 6.5, J.hB[1] - 6.5, J.eF[1] - 6.5, J.eB[1] - 6.5, ey - 3)
+  return Math.max(body, -(J.head[1] - 2.0 * R * Math.sin(a) - 1.35 * R * Math.cos(a) - 3))
 }
-// his height under a title row (every pose he takes there) and standing in the start gutter, at scale 1
-const PUSH_H = Math.ceil(Math.max(...['push', 'ready', 'strain', 'crouch', 'recoil', 'knees', 'slump', 'nod', 'punch'].map(k => poseTop(PZ[k]))) + 4)
+// his heights under a title row (every pose he takes there; + the run's bob) and standing in the start gutter
+// (the run's legs are procedural: his hips ride at 92 px, bobbing 3, whatever the push pose's legs say)
+const LOW = ['ready', 'strain', 'crouch', 'recoil', 'knees', 'slump', 'nod', 'punch']
+const PUSH_H = Math.ceil(Math.max(poseTop(PZ.push, false, 95), ...LOW.map(k => poseTop(PZ[k]))) + 4)
+const PUSH_P = Math.ceil(Math.max(poseTop(PZ.push, true, 95), ...LOW.map(k => poseTop(PZ[k], true))) + 4)
 const STAND_H = Math.ceil(Math.max(poseTop(PZ.wait), poseTop(PZ.think)) + 2)
+const STAND_P = Math.ceil(Math.max(poseTop(PZ.wait, true), poseTop(PZ.think, true)) + 2)
 
 // time-unit of a payoff string (months per unit); null = no unit in it
 function unitOf(str) {
@@ -173,15 +227,27 @@ function numOf(display) {
   const mult = { K: 1e3, M: 1e6, B: 1e9, T: 1e12 }[(m[3] || '').toUpperCase()] || 1
   return (m[1] ? -1 : 1) * parseFloat(m[2].replace(/,/g, '')) * mult
 }
-/** "≈ 18.3 years" -> { n: "≈ 18.3", u: "years" }; a string with no trailing unit word -> { n: str, u: '' } */
+/** "≈ 18.3 years" -> { n: "≈ 18.3", u: "years" }: ONE number, then unit words (no digits in them). Anything else
+ *  ("11 yrs 5 mo", "72") -> { n: str, u: '' } (a compound payoff never splits over two lines) */
 function splitUnit(str) {
-  const m = /^(.*?\d(?:[\d,.]*\d)?)\s+([A-Za-z][A-Za-z .]*)$/.exec(String(str))
+  const m = /^([^\d]*\d(?:[\d,.]*\d)?)\s+([A-Za-z][A-Za-z .]*)$/.exec(String(str))
   return m ? { n: m[1], u: m[2] } : { n: String(str), u: '' }
 }
+/** "11 yrs 5 mo": more than one number-and-unit pair */
+const PAIR = /(\d[\d,]*(?:\.\d+)?)\s*([A-Za-z]+)?/g
+const pairsOf = str => [...String(str).split('(')[0].matchAll(PAIR)].map(m => ({ v: parseFloat(m[1].replace(/,/g, '')), u: m[2] ? unitOf(m[2]) : null, word: m[2] || '' }))
+const isCompound = str => { const p = pairsOf(str); return p.length > 1 && p.every(x => x.u != null) }
 
-/** running counter text in the style of `disp`, without its "≈" (the "≈" only comes with the landed string) */
-function rollText(p, from, disp) {
+/** running counter text in the style of `disp`, without its "≈" (the "≈" only comes with the landed string).
+ *  A compound payoff ("11 yrs 5 mo") counts its leading unit only ("0 yrs" ... "11 yrs", whole units passed, from
+ *  `months` of progress), and the exact string pops in on landing */
+function rollText(p, from, disp, months = null) {
   if (p >= 1) return String(disp)
+  if (months != null && isCompound(disp)) {
+    const m = /^(\D*?)(\d[\d,]*(?:\.\d+)?)(\s*[A-Za-z]+)/.exec(String(disp))
+    const lead = pairsOf(disp)[0]
+    return m[1].replace(/≈\s*/g, '').replace(/^\s+/, '') + Math.floor(clamp(p) * months / lead.u + 1e-9) + m[3]
+  }
   const like = numLike(disp)
   like.prefix = like.prefix.replace(/≈\s*/g, '').replace(/^\s+/, '')
   const target = numOf(disp), k = Math.pow(10, -like.dp)
@@ -205,50 +271,98 @@ export default function whatDifference(spec, ctx) {
   const valsOf = m => opts.map(o => String(o.values[m.key]))
   const barM = metrics.find(m => isTimeLike(m, valsOf(m))) || metrics.find(m => valsOf(m).every(v => Number.isFinite(numOf(v)))) || metrics[0]
   const sideM = metrics.find(m => m !== barM && isMoney(valsOf(m))) || metrics.find(m => m !== barM) || null
+  // a third metric ("Total paid") is shown as a smaller grey line under the money value, with its label under the
+  // money head (when the fitter finds room; else it is left out with a warning). A fourth is always left out
+  const exMs = metrics.filter(m => m !== barM && m !== sideM)
+  const exM = exMs[0] || null
+  if (exMs.length > 1) console.warn(`what-difference (becker-rig): metrics ${exMs.slice(1).map(m => `"${m.key}"`).join(', ')} not shown (at most 3 metrics)`)
   const barUnit = unitOf(barM.label) || 1
-  const monthsOf = str => { const v = numOf(str); return Number.isFinite(v) ? Math.max(0, v * (unitOf(str) ?? barUnit)) : 1 }
-  const showPile = !!sideM && isMoney(valsOf(sideM)) && lo.pile !== false
+  // months, for geometry only: every number-and-unit pair counts ("11 yrs 5 mo" = 137); a bare number takes the
+  // unit of the metric's label, else months
+  const monthsOf = str => {
+    const ps = pairsOf(str)
+    if (!ps.length) return 1
+    const sum = ps.length > 1 && ps.every(p => p.u != null) ? ps.reduce((a, p) => a + p.v * p.u, 0) : ps[0].v * (ps[0].u ?? unitOf(str) ?? barUnit)
+    return Math.max(0, sum)
+  }
+  const wantPile = !!sideM && isMoney(valsOf(sideM)) && lo.pile !== false
   const showFig = lo.figure !== false
+  const fin = x => x != null && x !== '' && Number.isFinite(+x)
 
   // ================================================================== timing
+  // option.t is when its lane wakes, option.resultT when its payoff lands (always honoured). With neither, the kit
+  // paces it: the first at 1.6 s, each next one 2.2 s after the previous lane's last landing (5.4 s apart when no
+  // option has a time), squeezed (gaps down to 0.7 s) so the last lands before the winner beat
   const RACE = Number.isFinite(+lo.race) && +lo.race > 0.4 ? +lo.race : 1.8
-  const dVal = Number.isFinite(+d.valueEvery) ? +d.valueEvery : 0.45
+  const dVal = fin(d.valueEvery) ? +d.valueEvery : 0.45
   const lanes = opts.map((o, i) => {
     const B = sideM ? numOf(String(o.values[sideM.key])) : 0
     return { i, o, name: String(o.name ?? ''), detail: o.detail != null ? String(o.detail) : '', delta: o.delta != null ? String(o.delta) : '',
       tone: o.tone || 'neutral', bar: String(o.values[barM.key]), side: sideM ? String(o.values[sideM.key]) : '',
-      M: monthsOf(String(o.values[barM.key])), B: Number.isFinite(B) ? Math.abs(B) : 0, t0: Number.isFinite(+o.t) ? +o.t : 0 }
+      ex: exM ? String(o.values[exM.key]) : '', M: monthsOf(String(o.values[barM.key])), B: Number.isFinite(B) ? Math.abs(B) : 0 }
   })
   const Mmax = Math.max(1e-6, ...lanes.map(l => l.M))
   const Bmax = Math.max(1e-6, ...lanes.map(l => l.B))
   const secPerM = RACE / Mmax
-  for (const l of lanes) {
+  const LEAD = 0.42           // wake -> push-off: he steps back and leans in
+  function timeLane(l, wake, nextWake) {
     const o = l.o
-    const natural = Math.max(0.6, l.M * secPerM)
-    const rT = o.resultT != null && Number.isFinite(+o.resultT) ? +o.resultT : null
-    l.pre = (l.t0 <= 0 && (rT == null || rT <= 0.05)) || (rT != null && rT <= 0.05)
+    let natural = Math.max(0.6, l.M * secPerM)
+    const rT = fin(o.resultT) ? +o.resultT : null
     if (l.pre) {
       l.tLand = Math.min(rT ?? -0.6, -0.6); l.tStart = l.tLand - natural; l.actT = l.tStart - 0.5
-    } else if (rT != null && rT > l.t0 + 0.9) {
-      l.actT = l.t0; l.tLand = rT; l.tStart = Math.max(l.t0 + 0.42, rT - natural)
+    } else if (rT != null) {
+      // the payoff lands on resultT: at the shared speed when the lead-in allows, else a shorter run (>= 0.35 s);
+      // when even that does not fit he wakes before t
+      const lead = clamp(rT - wake - 0.35, 0.3, LEAD)
+      l.actT = Math.min(wake, rT - 0.35 - lead)
+      l.tStart = Math.max(rT - natural, l.actT + lead)
+      l.tLand = rT
     } else {
-      l.actT = l.t0; l.tStart = l.t0 + 0.42; l.tLand = l.tStart + natural
+      l.actT = wake; l.tStart = wake + LEAD
+      // two lanes never push at once: a run ends 0.8 s before the next lane wakes (0.6 s at the least)
+      if (nextWake != null) natural = Math.min(natural, Math.max(0.6, nextWake - l.tStart - 0.8))
+      l.tLand = l.tStart + natural
     }
     l.run = l.tLand - l.tStart
-    const ve = Number.isFinite(+o.valueEvery) ? +o.valueEvery : dVal
+    const ve = fin(o.valueEvery) ? +o.valueEvery : dVal
     l.tVal = l.pre ? l.tLand : l.tLand + (sideM ? ve : 0)
-    l.tDelta = l.delta ? (Number.isFinite(+o.deltaT) ? +o.deltaT : l.tVal + 0.55) : null
-    if (l.pre && l.tDelta != null && !Number.isFinite(+o.deltaT)) l.tDelta = -0.1
+    l.tEx = l.pre ? l.tLand : l.tVal + 0.4
+    l.tDelta = l.delta ? (fin(o.deltaT) ? +o.deltaT : l.tVal + (exM ? 0.8 : 0.55)) : null
+    if (l.pre && l.tDelta != null && !fin(o.deltaT)) l.tDelta = -0.1
+    l.end = Math.max(l.tLand, l.tVal, exM ? l.tEx : -1, l.tDelta ?? -1)
   }
-  // the newest money value is green until the next lane lands
+  const anyTime = opts.some(o => fin(o.t) || fin(o.resultT))
+  const paced = opts.some(o => !fin(o.t) && !fin(o.resultT))
+  const winTarget = fin(d.winnerT) ? +d.winnerT : vt
+  for (const gap of anyTime ? [2.2, 1.8, 1.4, 1.0, 0.7] : [5.4, 4.6, 3.8, 3.2, 2.6, 2.0]) {
+    let prev = null
+    lanes.forEach((l, i) => {
+      const o = l.o
+      const tE = fin(o.t) ? +o.t : null, rT = fin(o.resultT) ? +o.resultT : null
+      // already run at frame 1 only when its t (or resultT) says so
+      l.pre = (tE != null && tE <= 0 && (rT == null || rT <= 0.05)) || (rT != null && rT <= 0.05)
+      const wake = tE != null ? tE
+        : rT != null ? Math.max(0, rT - Math.max(0.6, l.M * secPerM) - LEAD)
+          : !anyTime ? 1.6 + gap * i
+            : prev == null ? 1.6 : Math.max(1.6, prev.end + gap)
+      // the next lane to wake (a given t, or the even pacing), for the run's cap
+      const wakes = lanes.map((x, j) => (!anyTime ? 1.6 + gap * j : fin(x.o.t) && !fin(x.o.resultT) ? +x.o.t : null))
+        .filter((w, j) => j !== i && w != null && w > wake + 0.05)
+      timeLane(l, wake, wakes.length ? Math.min(...wakes) : null)
+      prev = l
+    })
+    if (!paced || winTarget == null || Math.max(...lanes.map(l => l.end)) <= winTarget - 0.6) break
+  }
+  // the newest money value lands in its tone's colour; a good one settles to ink when the next lane lands
   const landOrder = lanes.map(l => l.tLand).sort((a, b) => a - b)
   for (const l of lanes) {
     const nxt = landOrder.find(x => x > l.tLand + 1e-6)
-    l.settleT = l.pre ? -1 : (nxt != null ? nxt : Math.max(l.tVal, l.tDelta ?? 0) + 1.6)
+    l.settleT = l.pre ? -1 : (nxt != null ? Math.max(nxt, l.tVal + 0.6) : l.end + 1.6)
   }
   const winner = Number.isInteger(d.winner) && d.winner >= 0 && d.winner < n ? d.winner : null
-  const lastVal = Math.max(...lanes.map(l => Math.max(l.tVal, l.tDelta ?? -1)))
-  const winT = winner == null ? null : (Number.isFinite(+d.winnerT) ? +d.winnerT : vt != null ? vt : lastVal + 1.2)
+  const lastVal = Math.max(...lanes.map(l => l.end))
+  const winT = winner == null ? null : (fin(d.winnerT) ? +d.winnerT : vt != null ? vt : lastVal + 1.2)
 
   // ---- lookOpts beats
   const asList = x => (Array.isArray(x) ? x : x != null ? [x] : [])
@@ -271,10 +385,17 @@ export default function whatDifference(spec, ctx) {
   // ---- working slot entries (one at a time; each holds until the next)
   const hookTxt = plain(spec.header || '')
   const slotIn = []
-  const stakeText = lo.stakeLine === false ? null : typeof lo.stakeLine === 'string' ? lo.stakeLine
-    : [stake.label && !hookTxt.toLowerCase().includes(String(stake.label).toLowerCase()) ? stake.label : null,
-      stake.value && !hookTxt.includes(String(stake.value)) ? stake.value : null, stake.terms].filter(Boolean).join(' · ') || null
-  if (stakeText) slotIn.push({ t: -1e9, text: stakeText, kind: 'stake' })
+  // the stake line leaves out what the hook or the footer already says ("24% APR"), and every "·" binds to the word
+  // before it (a no-break space), so a wrap never starts a line with a separator
+  const said = (hookTxt + ' \n ' + plain(spec.footer || '')).toLowerCase()
+  const stakeParts = [stake.label, stake.value, ...String(stake.terms || '').split(/\s*·\s*/)]
+    .map(x => (x == null ? '' : String(x).trim())).filter(x => x && !said.includes(x.toLowerCase()))
+  const stakeText = lo.stakeLine === false ? null : typeof lo.stakeLine === 'string' ? lo.stakeLine : stakeParts.join(' · ') || null
+  // (shorter forms, for when the full line would wrap while every other slot line fits on one: without the label,
+  // then the value alone)
+  const stakeAlts = typeof lo.stakeLine === 'string' ? [] : [stakeParts.filter(x => x !== stake.label), stakeParts.filter(x => x === stake.value)]
+    .map(ps => ps.join('\u00A0· ')).filter(x => x && x !== stakeText)
+  if (stakeText) slotIn.push({ t: -1e9, text: stakeText, kind: 'stake', alts: stakeAlts })
   asList(lo.formulas).forEach((f, i) => {
     if (!f || i >= n) return
     const l = lanes[i]
@@ -296,16 +417,31 @@ export default function whatDifference(spec, ctx) {
   ctx.stage.append(fixed)
   let top = parts.workTop
   // the working slot: every line measured at 40 px (one too long for two lines steps down to 38, then 36)
+  const slotHTML = text => (/\*\*|__/.test(text) ? markup(text)
+    : esc(text).replace(/(≈\s*)?[−-]?\$?\d[\d,]*(\.\d+)?(%|[KMBT]\b)?/g, m => `<b>${m}</b>`).replace(/\n/g, '<br>')).replace(/−/g, '<span class="op">−</span>')
   const slotEls = slotE.map(x => {
-    const el = h('div', { class: 'wd-slot', style: { top: top + 'px', opacity: '0' } })
-    el.innerHTML = /\*\*|__/.test(x.text) ? markup(x.text)
-      : esc(x.text).replace(/(≈\s*)?[−-]?\$?\d[\d,]*(\.\d+)?(%|[KMBT]\b)?/g, m => `<b>${m}</b>`).replace(/\n/g, '<br>')
-    el.innerHTML = el.innerHTML.replace(/−/g, '<span class="op">−</span>')
+    const el = h('div', { class: 'wd-slot', style: { top: top + 'px', opacity: '0', transform: 'none', display: 'none' } })
+    el.innerHTML = slotHTML(x.text)
     fixed.append(el)
+    el.style.display = ''
     let px = 40
     while (el.offsetHeight > 2 * SLOT_LH + 1 && px > 36) { px -= 2; style(el, { fontSize: px + 'px', lineHeight: Math.round(px * 1.2) + 'px' }) }
     x.lines = Math.max(1, Math.round(el.offsetHeight / SLOT_LH))
+    el.style.display = 'none'
     return el
+  })
+  // the stake line gives way first: it never makes the slot taller than the working lines need
+  const otherLines = Math.max(1, ...slotE.filter(x => x.kind !== 'stake').map(x => x.lines))
+  slotE.forEach((x, j) => {
+    if (x.kind !== 'stake' || x.lines <= otherLines) return
+    const el = slotEls[j]
+    el.style.display = ''
+    for (const alt of x.alts) {
+      style(el, { fontSize: '40px', lineHeight: SLOT_LH + 'px' })
+      el.innerHTML = slotHTML(alt)
+      if (el.offsetHeight <= otherLines * SLOT_LH + 1) { x.text = alt; x.lines = otherLines; break }
+    }
+    el.style.display = 'none'
   })
   const slotLines = slotEls.length ? Math.max(...slotE.map(x => x.lines)) : 0
   if (slotLines) top += slotLines * SLOT_LH + 14
@@ -346,35 +482,58 @@ export default function whatDifference(spec, ctx) {
   const nameLines = (l, NS, w) => linesOf(markup(l.name), `800 ${NS}px ${F.head}`, 48, w, '-0.02em')
   const detLines = (txt, w) => (txt ? linesOf(esc(txt), `700 40px ${F.mono}`, 48, w, '-0.03em') : 0)
   const deltaLines = (l, w) => (l.delta ? linesOf(esc(l.delta), `800 40px ${F.head}`, 48, w, '-0.01em') : 0)
-  const headsFor = () => {
+  const monoW = txt => mw(String(txt), `700 40px ${F.mono}`, { letterSpacing: '-0.03em' })
+  const exHeadW = exM ? monoW(plain(exM.label)) : 0
+  // the heads row; with the third metric shown, its label (mono, grey, like its values) under the money head, and
+  // the crate's head beside it (or up on the money head's line when they would collide)
+  const headsFor = ex => {
     if (lo.heads === false) return { heads: null, headsH: 0 }
+    const exH = ex ? U_LH : 0
     for (const st of lo.heads === 'sentence' ? ['sent'] : ['up', 'sent']) {
       const wl = GLYPH_W + headW(barM.label, st), wr = sideM ? headW(sideM.label, st) : 0
-      if (62 + wl + 30 <= XR - wr) return { heads: { st, lines: 1, wl, wr }, headsH: 56 }
+      if (62 + wl + 30 <= XR - Math.max(wr, ex ? exHeadW : 0)) return { heads: { st, lines: 1, wl, wr, ex, up: false }, headsH: 56 + exH }
+      if (ex && 62 + wl + 30 <= XR - wr && 62 + 30 <= XR - exHeadW) return { heads: { st, lines: 1, wl, wr, ex, up: true }, headsH: 56 + exH }
     }
     const st = lo.heads === 'sentence' ? 'sent' : 'up'
-    return { heads: { st, lines: 2, wl: Math.min(GLYPH_W + headW(barM.label, st), 520), wr: sideM ? Math.min(headW(sideM.label, st), 300) : 0 }, headsH: 100 }
+    return { heads: { st, lines: 2, wl: Math.min(GLYPH_W + headW(barM.label, st), 520), wr: sideM ? Math.min(headW(sideM.label, st), 300) : 0, ex, up: true }, headsH: 100 + exH }
   }
-  const HEADS = headsFor()
   const UNITS = lanes.every(l => splitUnit(l.bar).u)
   const unitW = u => mw(u, `800 40px ${F.head}`, { letterSpacing: '-0.01em' })
-  // dPop: the deltas get no room of their own (each pops over its title for a while, then gives the row back)
-  function geometry(mode, VS, NS, two, withDetail, TWc = 0, dPop = false) {
-    const dW = l => (dPop ? 0 : deltaW(l)), dL = (l, w) => (dPop ? 0 : deltaLines(l, w))
-    const colW = sideM ? Math.max(...lanes.map(l => valW(l.side, VS))) : 0
+  // dMode: where the deltas go. 'own': in the title (in place of the behaviour); 'under': a line under the money
+  // value, right-aligned (it stays); 'pop': no room at all (each pops over its title for 2.4 s: the last resort).
+  // exOn: the third metric's line under the money value. WS: the winner's money value grows to WS on its plate (the
+  // money row keeps that much headroom in every lane)
+  // a 'beside' delta's right edge: 24 px left of its own money value (38 px left of the winner's grown value: its
+  // plate reaches 20 px past it, and opens with a ~10 px overshoot)
+  const besideR = (l, VS, WS) => XR - (sideM ? valW(l.side, VS) * (l.i === winner ? WS : 1) : 0) - (l.i === winner && sideM ? 38 : 24)
+  function geometry(mode, VS, NS, two, withDetail, TWc, dMode, exOn, WS) {
+    const own = dMode === 'own'
+    const dW = l => (own ? deltaW(l) : 0), dL = (l, w) => (own ? deltaLines(l, w) : 0)
+    const valWL = l => (sideM ? valW(l.side, VS) * (l.i === winner ? WS : 1) + (l.i === winner && WS > 1 ? 10 : 0) : 0)
+    const colW = Math.max(0, ...lanes.map(valWL))
     const colL = XR - colW
-    const P = Math.min(P_MAX, (FLOOR - top - HEADS.headsH) / n)
-    const valB = 6 + Math.max(sideM ? VS : 0, 48) + 2          // the money value's bottom, from the lane's top
-    let room, RH, figH, X0c, TW = 0, titleH = 0, ok = true
+    const HD = headsFor(exOn)
+    const P = Math.min(P_MAX, (FLOOR - top - HD.headsH) / n)
+    const headR = sideM && winner != null ? Math.ceil(0.9 * VS * (WS - 1)) : 0
+    const valB = 6 + headR + Math.max(sideM ? VS : 0, 48) + 2      // the money value's bottom, from the lane's top
+    // the lines under the money value (a third metric, an 'under' delta): their count, their widest, their bottom
+    const uLines = l => (exOn ? 1 : 0) + (dMode === 'under' && l.delta ? 1 : 0)
+    const uW = l => Math.max(exOn ? monoW(l.ex) : 0, dMode === 'under' && l.delta ? deltaW(l) : 0)
+    const uB = u => valB + U_GAP + U_LH * u
+    let room, RH, figH, X0c, TW = 0, titleH = 0
+    let ok = lanes.every(l => !uLines(l) || uB(uLines(l)) + 4 <= P)
     if (mode === 'row') {
       RH = (two ? 48 : 0) + valB - 6
       figH = P - RH - 16                                      // under the title row
-      const sc0 = Math.min(S_MAX, (figH - 2) / PUSH_H)
+      const sc0 = Math.min(S_MAX, (figH - 2) / PUSH_H, (figH + 2) / PUSH_P)
       X0c = Math.max(96, Math.round(24 + 84 * sc0 + 13 + 112 * sc0))
       room = (sideM ? colL - NAME_GAP : XR) - X0c
-      ok = lanes.every(l => {
+      ok = ok && lanes.every(l => {
+        const rm = (sideM ? XR - valWL(l) - NAME_GAP : XR) - X0c
         const det = withDetail ? Math.max(detW(l), dW(l)) : dW(l)
-        return two ? nameW(l, NS) <= room && det <= room : nameW(l, NS) + (det ? 16 + det : 0) <= room
+        // (a second title line shares its height with the lines under the money value)
+        const clear = !two || !det || !uLines(l) || X0c + det + 16 <= XR - uW(l)
+        return clear && (two ? nameW(l, NS) <= rm && det <= rm : nameW(l, NS) + (det ? 16 + det : 0) <= rm)
       })
     } else {
       // the column: as wide as its longest name or behaviour, 150-330 px; wrapping balanced
@@ -385,24 +544,26 @@ export default function whatDifference(spec, ctx) {
       const words = l => [
         ...plain(l.name).split(/\s+/).map(w => mw(esc(w), `800 ${NS}px ${F.head}`, { letterSpacing: '-0.02em', html: true })),
         ...(withDetail ? l.detail.split(/\s+/).map(w => (w ? mw(w, `700 40px ${F.mono}`, { letterSpacing: '-0.03em' }) : 0)) : []),
-        ...(!dPop && l.delta ? l.delta.split(/\s+/).map(w => (w ? mw(w, `800 40px ${F.head}`, { letterSpacing: '-0.01em' }) : 0)) : []),
+        ...(own && l.delta ? l.delta.split(/\s+/).map(w => (w ? mw(w, `800 40px ${F.head}`, { letterSpacing: '-0.01em' }) : 0)) : []),
       ]
       // ... and a delta is one line (a lone "less" or "sooner" on a line of its own reads as a stray word)
-      ok = titleH <= P - 10 && (!sideM || 60 + TW + 30 <= colL) && lanes.every(l => Math.max(0, ...words(l)) <= TW + 0.5 && (dPop || deltaW(l) <= TW + 0.5))
+      ok = ok && titleH <= P - 10 && (!sideM || 60 + TW + 30 <= colL) && lanes.every(l => Math.max(0, ...words(l)) <= TW + 0.5 && (!own || deltaW(l) <= TW + 0.5)
+        && (!uLines(l) || 60 + TW + 30 <= XR - uW(l)))
       RH = valB - 6
       figH = P - 12
-      const sc0 = Math.min(S_MAX, (figH - 2) / PUSH_H, (P - 12) / STAND_H)
+      const sc0 = Math.min(S_MAX, (figH - 2) / PUSH_H, (P - 12) / STAND_H, (P + 6) / STAND_P)
       X0c = Math.round(60 + TW + 30 + 112 * sc0)
       room = TW
     }
-    let sc = Math.min(S_MAX, (figH - 2) / PUSH_H, (P - 12) / STAND_H)
+    let sc = Math.min(S_MAX, (figH - 2) / PUSH_H, (P - 12) / STAND_H, (P + 6) / STAND_P, mode === 'row' ? (figH + 2) / PUSH_P : 9)
     if (Number.isFinite(+lo.figureScale)) sc = Math.min(sc, +lo.figureScale)
     if (!showFig) sc = Math.max(0.4, sc)
     // the crate: as tall as the lane allows under the money column (the pennant beside its top stays clear)
     // Its face is one line ("72", "60 months"), or two when every payoff ends in a unit word and the crate is tall
     // enough: the number over its unit ("≈ 18.3" / "years"), which keeps a long string from making a long crate
     const Hc = Math.round(clamp(Math.min(P - valB - 14, mode === 'row' ? figH + 4 : P - 20), 46, Math.min(112, 180 * sc + 24)))
-    let face = 1, CT = Math.round(clamp(Hc * 0.7, 40, 52))
+    // (one line: as big as the crate's inside allows, 7 px or more above and below its caps)
+    let face = 1, CT = Math.round(clamp(Math.min(Hc * 0.7 + 8, Hc - 14), 40, 52))
     let crateW = Math.max(Hc * 1.15, ...lanes.map(l => valW(l.bar, CT)), valW('?', CT)) + 38
     if (UNITS && Hc >= 101) {
       const CT2 = Math.min(56, Math.floor((Hc - 8 - 49 + 5) / 1.22))
@@ -410,34 +571,67 @@ export default function whatDifference(spec, ctx) {
       if (W2 < crateW - 16) { face = 2; CT = CT2; crateW = W2 }
     }
     crateW = Math.round(crateW)
+    // the coin pile (under the money value, at the right edge) stays under the lines below it: one scale for every
+    // lane, and no pile at all when the tallest would be under 22 px
+    let pileMax = wantPile ? P - valB - 16 : 0
+    if (wantPile) for (const l of lanes) if (uLines(l) && l.B > 0) pileMax = Math.min(pileMax, (P - uB(uLines(l)) - 10) * Bmax / l.B)
+    const pileOn = wantPile && pileMax >= 22
     // the far side: clear of the pile, and the figure behind the longest crate stays left of the money column
-    const XF = Math.min(showPile ? PILE_X - PILE_RX - 50 : 880, sideM ? colL - 14 + crateW : 880)
+    let XF = Math.min(pileOn ? PILE_X - PILE_RX - 50 : 880, sideM ? colL - 14 + crateW : 880)
+    // ... and a crate (with its pennant) that would reach up beside the lines under its money value stops short of them
+    const X0f = X0c + crateW
+    for (const l of lanes) {
+      if (!uLines(l) || P - Hc - 12 >= uB(uLines(l)) + 4 || l.M <= 0) continue
+      XF = Math.min(XF, X0f + (XR - uW(l) - 54 - X0f) * Mmax / l.M)
+    }
     const RUN = XF - X0c - crateW
-    return { mode, VS, NS, two, withDetail, dPop, colW, colL, P, valB, RH, figH, sc, reach: 112 * sc, X0c, TW, titleH, Hc, CT, face, crateW, XF, RUN, room, ok }
+    // 'beside' (the column layout): each delta stands on the money row, right-aligned 24 px left of its own money
+    // value (its plate, for the winner), clear of the title column and of his reach where his crate stops (crates
+    // stay under the money row)
+    if (dMode === 'beside') {
+      ok = ok && mode === 'col' && lanes.every(l => {
+        if (!l.delta) return true
+        const xEnd = X0f + (l.M / Mmax) * Math.max(120, RUN), dL = besideR(l, VS, WS) - deltaW(l)
+        // (his front reaches 100 x scale past his hip at the most: his head as he leans in, a fist; the winner steps
+        // back before his jump)
+        const back = l.i === winner ? clamp(xEnd - X0f - 12 * sc, 0, 18) : 0
+        return dL >= 60 + TW + 30 && dL >= xEnd - crateW - 122 * sc + 100 * sc - back + 8
+      })
+    }
+    return { mode, VS, NS, two, withDetail, dMode, exOn, WS, HD, colW, colL, P, valB, headR, uB, uLines, uW, RH, figH, sc, reach: 112 * sc,
+      X0c, TW, titleH, Hc, CT, face, crateW, XF, RUN, room, pileOn, pileMax, ok }
   }
   let G = null, best = -Infinity
-  const cands = []
-  // every combination, scored: big money, a big figure (0.36 and up; 0.3 at the least), a long run (180 px and up;
-  // 120 at the least), a big crate face; behaviours kept when there are any; deltas with their own room
+  // every combination, scored: big money first (60 px and up), then a big figure (0.36 and up; 0.3 at the least), a
+  // long run (180 px and up; 120 at the least), a big crate face; behaviours kept when there are any; deltas with
+  // room of their own; the third metric shown; the winner's value growing on its plate
   const anyDetail = lanes.some(l => l.detail), anyDelta = lanes.some(l => l.delta)
-  for (const dPop of anyDelta ? [false, true] : [false]) for (const mode of ['row', 'col']) for (const withDetail of anyDetail ? [true, false] : [false])
-    for (const two of mode === 'row' ? [false, true] : [false]) for (const TWc of mode === 'row' ? [0] : [0, 300, 260, 220, 180])
-      for (const VS of [64, 60, 56, 52, 48, 44]) for (const NS of [44, 40]) {
-        const g = geometry(mode, VS, NS, two, withDetail, TWc, dPop)
-        if (!g.ok || g.RUN < 120 || (showFig && g.sc < 0.3) || g.CT < 41) continue
-        const score = 0.5 * VS + 150 * Math.min(g.sc, 0.6) + 0.12 * Math.min(g.RUN, 560) + 0.6 * g.CT
-          - (g.sc < S_MIN && showFig ? 30 : 0) - 0.3 * Math.max(0, 180 - g.RUN)
-          - (two ? 4 : 0) - (NS < 44 ? 3 : 0) - (anyDetail && !withDetail ? 40 : 0) - (dPop ? 25 : 0)
-        cands.push([mode, withDetail, two, TWc, dPop, VS, NS, +g.sc.toFixed(2), Math.round(g.RUN), g.CT, g.face, +score.toFixed(1)])
-        if (lo.layout && lo.layout !== mode) continue
-        if (score > best) { best = score; G = g }
-      }
-  if (!G) G = geometry('row', 44, 40, false, false, 0, true)   // nothing fits: the smallest layout (the linter will say why)
+  const canEx = !!exM && !!sideM && lo.heads !== false
+  for (const dMode of anyDelta ? ['own', 'under', 'beside', 'pop'] : ['own']) for (const exOn of canEx ? [true, false] : [false])
+    for (const WS of sideM && winner != null ? [1.15, 1.08, 1] : [1]) for (const mode of ['row', 'col'])
+      for (const withDetail of anyDetail ? [true, false] : [false]) for (const two of mode === 'row' ? [false, true] : [false])
+        for (const TWc of mode === 'row' ? [0] : [0, 300, 260, 220, 180]) for (const VS of [72, 68, 64, 60, 56, 52, 48, 44]) for (const NS of [44, 40]) {
+          if ((lo.layout && lo.layout !== mode) || (dMode === 'beside' && mode !== 'col')) continue
+          const g = geometry(mode, VS, NS, two, withDetail, TWc, dMode, exOn, WS)
+          if (!g.ok || g.RUN < 120 || (showFig && g.sc < 0.3) || g.CT < 41) continue
+          const score = 2 * Math.min(VS, 64) + 0.5 * Math.max(0, VS - 64) - (VS < 60 ? 50 : 0)
+            + 150 * Math.min(g.sc, 0.6) + 0.12 * Math.min(g.RUN, 560) + 0.6 * g.CT
+            - (g.sc < S_MIN && showFig ? 30 : 0) - 0.3 * Math.max(0, 180 - g.RUN)
+            - (two ? 4 : 0) - (NS < 44 ? 3 : 0) - (anyDetail && !withDetail ? 40 : 0)
+            - (dMode === 'pop' ? 60 : dMode === 'beside' ? 5 : dMode === 'under' ? 2 : 0) - (exM && !exOn ? 45 : 0) + 80 * (WS - 1) - (wantPile && !g.pileOn ? 6 : 0)
+          if (score > best) { best = score; G = g }
+        }
+  // nothing fits: the smallest layout (the linter will say why)
+  if (!G) G = geometry('row', 44, 40, false, false, 0, anyDelta ? 'pop' : 'own', false, 1)
+  if (exM && !G.exOn) console.warn(`what-difference (becker-rig): no room for the "${exM.key}" metric's line; it is not shown`)
   probe.remove()
   const { VS, NS, two, colL, P, X0c, Hc, CT, crateW, XF } = G
+  const HEADS = G.HD
   const FACE2 = G.face === 2
   const COL = G.mode === 'col'
-  if (lo.debug) { window.__H = [PUSH_H, STAND_H]; const gr = geometry("row", 44, 40, false, true, 0, false); window.__wd = { G, top, cands, slot: slotE.map(x => [x.text, x.lines]), workTop: parts.workTop, H: [PUSH_H, STAND_H], row: { room: gr.room, X0c: gr.X0c, colL: gr.colL, sc: gr.sc, names: lanes.map(l => [nameW(l, 40), detW(l), deltaW(l)]) } } }
+  const UNDER = G.dMode === 'under', BESIDE = G.dMode === 'beside', POP = G.dMode === 'pop', EX = G.exOn
+  const WS = G.WS
+  const showPile = G.pileOn
   const k = Math.max(0.3, G.sc), reachX = G.reach
   const lanesTop = FLOOR - n * P
   const headsBottom = lanesTop - 10
@@ -454,7 +648,13 @@ export default function whatDifference(spec, ctx) {
     l.yF = l.yT + P
     l.xEnd = xFront(l.M)
     l.K = showPile ? Math.max(2, Math.round(KMAX * l.B / Bmax)) : 0
-    l.pileH = showPile ? Math.max(18, l.yF - l.yRowB - 16) * l.B / Bmax : 0
+    l.pileH = showPile ? Math.max(18, G.pileMax) * l.B / Bmax : 0
+    // the lines under the money value: the third metric, then an 'under' delta
+    l.uN = G.uLines(l)
+    l.exY = EX ? l.yT + G.uB(1) : null
+    l.dUY = UNDER && l.delta ? l.yT + G.uB(EX ? 2 : 1) : null
+    l.uBottom = l.yT + (l.uN ? G.uB(l.uN) : G.valB)
+    l.dBx = besideR(l, VS, WS)
     if (COL) {
       l.nameXY = [60, l.yT + 8]
       l.detXY = [60, l.yT + 8 + 48 * nameLines(l, NS, G.TW)]
@@ -473,18 +673,26 @@ export default function whatDifference(spec, ctx) {
 
   // heads (fixed: they never shake): a little crate + the crate's metric at the left; the money head right
   if (HEADS.heads) {
-    const HD = HEADS.heads, H2 = HD.lines * 44
+    const HD = HEADS.heads, H2 = HD.lines * 44, exH = HD.ex ? U_LH : 0
+    const bL = headsBottom - (HD.up ? exH : 0), bR = headsBottom - exH      // the left and the money head's bottoms
     const cls = 'wd-head' + (HD.st === 'sent' ? ' sent' : '') + (HD.lines > 1 ? ' two' : '')
-    const gl = s('svg', { class: 'wd-glyph', width: 44, height: 34, 'data-deco': '', style: `left:62px;top:${headsBottom - H2 + 22 - 17}px` })
+    // (over the titles' left edge: x 60 in the column layout, the crate's start in the row layout when it fits)
+    const LX = !COL && HD.lines === 1 && X0c + HD.wl + 30 <= XR - Math.max(HD.wr, HD.ex && !HD.up ? exHeadW : 0) ? X0c : 62
+    const gl = s('svg', { class: 'wd-glyph', width: 44, height: 34, 'data-deco': '', style: `left:${LX}px;top:${bL - H2 + 22 - 17}px` })
     gl.append(s('rect', { x: 3, y: 3, width: 38, height: 28, rx: 6, fill: C.redSoft, stroke: C.ink, 'stroke-width': 5 }))
     fixed.append(gl)
-    const hl = h('div', { class: cls, style: { left: 62 + GLYPH_W + 'px', width: Math.ceil(HD.wl - GLYPH_W + 4) + 'px' } }, plain(barM.label))
+    const hl = h('div', { class: cls, style: { left: LX + GLYPH_W + 'px', width: Math.ceil(HD.wl - GLYPH_W + 4) + 'px' } }, plain(barM.label))
     fixed.append(hl)
-    style(hl, { top: (headsBottom - hl.offsetHeight) + 'px' })
+    style(hl, { top: (bL - hl.offsetHeight) + 'px' })
     if (sideM) {
       const hr = h('div', { class: cls + ' r', style: { left: Math.floor(XR - HD.wr - 4) + 'px', width: Math.ceil(HD.wr + 4) + 'px' } }, plain(sideM.label))
       fixed.append(hr)
-      style(hr, { top: (headsBottom - hr.offsetHeight) + 'px' })
+      style(hr, { top: (bR - hr.offsetHeight) + 'px' })
+    }
+    if (HD.ex) {
+      const he = h('div', { class: 'wd-exhead', style: { left: Math.floor(XR - exHeadW - 4) + 'px', width: Math.ceil(exHeadW + 4) + 'px' } }, plain(exM.label))
+      fixed.append(he)
+      style(he, { top: (headsBottom - he.offsetHeight) + 'px' })
     }
   }
 
@@ -492,7 +700,8 @@ export default function whatDifference(spec, ctx) {
   for (const l of lanes) {
     // floor line and the far-side guide (decoration)
     g.back.append(s('line', { x1: -20, x2: 1100, y1: l.yF, y2: l.yF, stroke: C.ink, 'stroke-width': 4, 'stroke-linecap': 'round', opacity: 0.85 }))
-    g.back.append(s('line', { x1: XF, x2: XF, y1: (sideM && XF > colL - 12 ? l.yRowB + 12 : l.yT + 12).toFixed(1), y2: l.yF - 8, stroke: C.line, 'stroke-width': 4, 'stroke-dasharray': '8 10', 'stroke-linecap': 'round' }))
+    const gy = Math.max(sideM && XF > colL - 12 ? l.yRowB + 12 : l.yT + 12, l.uN && XF > XR - G.uW(l) - 12 ? l.uBottom + 8 : 0)
+    g.back.append(s('line', { x1: XF, x2: XF, y1: gy.toFixed(1), y2: l.yF - 8, stroke: C.line, 'stroke-width': 4, 'stroke-dasharray': '8 10', 'stroke-linecap': 'round' }))
     // a socket for the money value (dashed, decoration) until it lands
     if (sideM) {
       const w = Math.max(VS * 2, G.colW * 0.8), hh = VS * 0.76
@@ -547,19 +756,23 @@ export default function whatDifference(spec, ctx) {
     const ay = COL ? 0 : 1
     l.nameO = new NumObj(world.html, { cls: 'wd-name', text: l.name, ax: 0, ay, html: true, style: { fontSize: NS + 'px', lineHeight: '48px', ...wrap } })
     l.detO = l.detail && G.withDetail ? new NumObj(world.html, { cls: 'wd-det', text: l.detail, ax: 0, ay, style: wrap }) : null
-    l.deltaO = l.delta ? new NumObj(world.html, { cls: 'wd-delta', text: l.delta, ax: 0, ay, style: { color: TONE_TXT[l.tone] || C.ink, ...wrap } }) : null
-    // the money value (+ the lever band and the winner's plate behind it)
+    // (in the column a delta wraps inside it, in place of the behaviour; 'under': one line under the money value)
+    const dCol = TONE_TXT[l.tone] || C.ink
+    l.deltaO = l.delta ? new NumObj(world.html, UNDER || BESIDE ? { cls: 'wd-delta', text: l.delta, ax: 1, ay: 1, style: { color: dCol, whiteSpace: 'nowrap' } }
+      : { cls: 'wd-delta', text: l.delta, ax: 0, ay, style: { color: dCol, ...wrap } }) : null
+    // the money value (+ the lever band and the winner's plate behind it), and the third metric's line under it
     l.band = sideM && lever && lever.lanes.includes(l.i) ? h('div', { class: 'wd-band' }) : null
     if (l.band) world.html.append(l.band)
     l.plate = sideM && winner === l.i ? h('div', { class: 'wd-plate' }) : null
     if (l.plate) world.html.append(l.plate)
     l.val = sideM ? new NumObj(world.html, { cls: 'wd-val', text: l.side, ax: 1, ay: 1, style: { fontSize: VS + 'px', lineHeight: VS + 'px' } }) : null
+    l.exO = EX ? new NumObj(world.html, { cls: 'wd-ex', text: l.ex, ax: 1, ay: 1 }) : null
     l.cnt = counts.find(c => c.option === l.i) || null
-    // the figure
-    l.fig = showFig ? new Figure(g.fig, { scale: k, outlineWidth: 10 }) : null
+    // the figure (slate while it waits or rests; green while it is his turn, and for the winner)
+    l.fig = showFig ? new Figure(g.fig, { scale: k, outlineWidth: 10, color: C.grey }) : null
   }
-  // the box behind a lane's money value (plate, band, impact)
-  const valBox = l => ({ x0: G.colL - 16, x1: XR + 12, y0: l.yRowB - VS * 0.9 - 6, y1: l.yRowB - VS * 0.1 + 10 })
+  // the box behind a lane's money value (plate, band, impact), for the value at scale S
+  const valBox = (l, S = 1) => ({ x0: XR - valW(l.side, VS) * S - 16, x1: XR + 12, y0: l.yRowB - VS * S * 0.9 - 6, y1: l.yRowB - VS * 0.1 + 10 })
 
   // ================================================================== motion (pure)
   const runE = p => (p <= 0 ? 0 : p >= 1 ? 1 : p - (0.32 * Math.sin(2 * Math.PI * p)) / (2 * Math.PI))   // gentle accel/decel
@@ -571,22 +784,26 @@ export default function whatDifference(spec, ctx) {
 
   // the winner's end pose: a full celebration when nothing readable is above him, else a low fist pump
   for (const l of lanes) {
-    l.jumpH = 16; l.endPose = PZ.pumpLow
+    l.jumpH = 16; l.endPose = PZ.pumpLow; l.backStep = 0
     if (winner !== l.i) continue
-    const hx = l.xEnd - crateW - reachX - 10 * k
+    // he steps back a little before his jump (never behind his start line): room for his arms
+    l.backStep = clamp(l.xEnd - X0f - 12 * k, 0, 18)
+    const hx = l.xEnd - crateW - reachX - 10 * k - l.backStep
     const f0 = hx - 95 * k, f1 = hx + 95 * k
     let free, roomUp
+    const rightOK = (!sideM || f1 < colL - 10) && (!l.uN || f1 < XR - G.uW(l) - 10)
     if (COL) {
-      free = !sideM || f1 < colL - 10
+      free = rightOK
       roomUp = P - 4                                  // he stays inside his lane (the lane above has its own figure)
     } else {
-      const titleEnd = X0c + Math.max(nameW(l, NS) + (two ? 0 : (l.detO || l.deltaO ? 16 + Math.max(l.detO ? detW(l) : 0, deltaW(l)) : 0)), two ? Math.max(l.detO ? detW(l) : 0, deltaW(l)) : 0)
-      free = (f0 > titleEnd + 10) && (!sideM || f1 < colL - 10)
+      const dw = l.deltaO && G.dMode === 'own' ? deltaW(l) : 0, line2 = Math.max(l.detO ? detW(l) : 0, dw)
+      const titleEnd = X0c + Math.max(Math.max(nameW(l, NS), POP ? deltaW(l) : 0) + (two ? 0 : line2 ? 16 + line2 : 0), two ? line2 : 0)
+      free = (f0 > titleEnd + 10) && rightOK
       roomUp = P - 6
     }
     // arms up (standing, else knees bent) when that fits under whatever is above him, else the "yes!" pump
     const want = lo.endPose === 'point' ? PZ.point : lo.endPose === 'pump' ? PZ.yes : lo.endPose === 'celebrate' ? PZ.win : null
-    const hWin = poseTop(PZ.win) * k + 8, hLow = poseTop(PZ.winLow) * k + 8, hYes = poseTop(PZ.yes) * k + 8, hPunch = poseTop(PZ.punch) * k + 4
+    const hWin = poseTop(PZ.win, true) * k + 4, hLow = poseTop(PZ.winLow, true) * k + 4, hYes = poseTop(PZ.yes, true) * k + 4, hPunch = poseTop(PZ.punch, true) * k + 2
     const capH = COL ? roomUp : free ? roomUp : band                    // under the title row he stays bent over
     l.endPose = want || (hWin <= capH ? PZ.win : hLow <= capH ? PZ.winLow : hYes <= capH ? PZ.yes : PZ.punch)
     const hEnd = l.endPose === PZ.win ? hWin : l.endPose === PZ.winLow ? hLow : l.endPose === PZ.yes ? hYes : hPunch
@@ -643,8 +860,11 @@ export default function whatDifference(spec, ctx) {
     st.pose = pz
     if (winT != null && t >= winT - 0.3) {
       if (l.i === winner) {
+        const sb = E.inOut(prog(t, winT - 0.3, 0.2))
+        st.hipX -= l.backStep * sb
+        if (l.backStep > 0) st.lift = hop(t, winT - 0.3, 0.2, 5)
         st.pose = blendPose(st.pose, PZ.crouch, bump(t, winT - 0.26, 0.3) * 0.8)
-        st.lift = hop(t, winT + 0.04, 0.46, l.jumpH)
+        st.lift = Math.max(st.lift, hop(t, winT + 0.04, 0.46, l.jumpH))
         const air = E.inOut(prog(t, winT + 0.02, 0.12)) * (1 - E.inOut(prog(t, winT + 0.42, 0.14)))
         if (air > 0) st.pose = blendPose(st.pose, PZ.airUp, air * (l.endPose === PZ.win ? 1 : 0.4))
         const ew = E.inOut(prog(t, winT + 0.5, 0.18))
@@ -681,16 +901,43 @@ export default function whatDifference(spec, ctx) {
     ctx.cue(l.tStart + 0.05, 'roll', { dur: Math.max(0.3, l.run - 0.1), gain: 0.4 })
     ctx.cue(l.tLand, 'thud')
     if (sideM) ctx.cue(l.tVal, 'pop', { gain: 0.75 })
+    if (EX) ctx.cue(l.tEx, 'tick', { gain: 0.35 })
     if (l.tDelta != null && l.tDelta > 0) ctx.cue(l.tDelta, 'pop', { gain: 0.6 })
   }
   for (const r of reads) if (r.t > 0.05) ctx.cue(r.t, 'tick', { gain: 0.5 })
   for (const hs of hops) for (const th of hs) ctx.cue(th, 'tick', { gain: 0.45 })
   if (lever && lever.lanes.length) ctx.cue(lever.t, 'swipe', { gain: 0.5 })
+  // the climax: the winner's money value grows to WS on its gold plate (impact: a mostly vertical shake, a light
+  // flash, a 1.8% punch, `hit` + `cash`), and short rays fan out of the plate's two ends only: a burst all round would
+  // cross the crate faces below it and the lane above. The left fan only where the row is clear of the titles
+  const rays = []
+  // the verdict claims time ("**14 months** sooner"): the winner's time-saved strip thickens with the plate
+  const verdictEm = spec.verdict && spec.verdict.text ? [...String(spec.verdict.text).matchAll(/\*\*(.+?)\*\*/g)].map(m => plain(m[1])) : []
+  const timeClaim = winner != null && verdictEm.some(e => unitOf(e) != null || e.includes(lanes[winner].bar.replace(/^≈\s*/, '')))
   if (winner != null) {
     const l = lanes[winner]
-    const b = sideM ? valBox(l) : { x0: l.xEnd - crateW, x1: l.xEnd, y0: l.yF - Hc, y1: l.yF }
-    fxk.impact(winT, { x: (b.x0 + b.x1) / 2, y: (b.y0 + b.y1) / 2, shake: 10, punch: 0.018, rx: (b.x1 - b.x0) / 2 + 10, ry: (b.y1 - b.y0) / 2 + 8, r: 34, lines: 14, cue: 'hit', gain: 0.9 })
+    const b = sideM ? valBox(l, WS) : { x0: l.xEnd - crateW, x1: l.xEnd, y0: l.yF - Hc, y1: l.yF }
+    fxk.impact(winT, { x: (b.x0 + b.x1) / 2, y: (b.y0 + b.y1) / 2, shake: 11, flash: 0.22, punch: 0.018, burst: false, cue: 'hit', gain: 0.95 })
     ctx.cue(winT + 0.06, 'cash', { gain: 0.8 })
+    const cy = (b.y0 + b.y1) / 2, hh = b.y1 - b.y0
+    let titleEnd = BESIDE && l.delta ? l.dBx : 60 + G.TW
+    if (!COL) {
+      const dw = l.deltaO && G.dMode === 'own' ? deltaW(l) : 0, line2 = Math.max(l.detO ? detW(l) : 0, dw)
+      titleEnd = X0c + Math.max(Math.max(nameW(l, NS), POP ? deltaW(l) : 0) + (two ? 0 : line2 ? 16 + line2 : 0), two ? line2 : 0)
+    }
+    const rnd = rng(613)
+    const fan = (x, dir, nR, len) => {
+      for (let j = 0; j < nR; j++) {
+        const u = j / (nR - 1)
+        const a = ((-22 + 44 * u + (rnd() - 0.5) * 6) * Math.PI) / 180
+        const el = s('line', { stroke: C.ink, 'stroke-width': 7, 'stroke-linecap': 'round', opacity: 0, 'data-deco': '' })
+        g.fx.append(el)
+        rays.push({ el, x, y: cy + (u - 0.5) * 0.5 * hh, c: dir * Math.cos(a), sn: Math.sin(a), len: len * (0.85 + 0.3 * rnd()) })
+      }
+    }
+    fan(b.x1 + 10, 1, 5, 46)
+    const leftRoom = b.x0 - 10 - (titleEnd + 16)
+    if (leftRoom >= 40) fan(b.x0 - 10, -1, 4, Math.min(44, leftRoom - 4))
   }
 
   // ================================================================== seek
@@ -699,6 +946,17 @@ export default function whatDifference(spec, ctx) {
   const chromeOpts = { verdictCue: winT != null && vt != null && Math.abs(vt - winT) < 0.35 ? null : 'ding' }
   const readAt = (l, key, t) => { let b = 0; for (const r of reads) if (r.key === key && r.lanes.includes(l.i)) b = Math.max(b, bump(t, r.t, 0.42)); return b }
 
+  // his colour: slate while he waits or rests, green while it is his lane's turn (from the wake to 1.6 s after its
+  // money value lands), on a scan hop, a lever beat or a read of his lane, and for the winner from the winner beat
+  const figGreen = (l, t) => {
+    let w = l.pre ? 0 : clamp(prog(t, l.actT - 0.05, 0.2)) * (1 - prog(t, l.end + 1.6, 0.4))
+    for (const th of hops[l.i]) w = Math.max(w, clamp(3 * bump(t, th, 0.44)))
+    w = Math.max(w, leverOn(l, t))
+    for (const r of reads) if (r.lanes.includes(l.i)) w = Math.max(w, clamp(3 * bump(t, r.t - 0.05, 0.8)))
+    if (winT != null) w = l.i === winner ? Math.max(w, clamp(prog(t, winT - 0.3, 0.2))) : w * (1 - prog(t, winT + 0.1, 0.2))
+    return w
+  }
+
   function seekLane(l, t) {
     const active = t >= l.actT
     const winOn = winT != null && t >= winT
@@ -706,32 +964,40 @@ export default function whatDifference(spec, ctx) {
     // ---- title row
     const wake = COL || l.pre ? 0 : bump(t, l.actT, 0.3)
     const dT = l.tDelta
-    // a delta with no room of its own (G.dPop) pops over the title for 2.4 s, the title giving way, then gives it back
-    const popW = G.dPop && dT != null ? prog(t, dT, 0.12) * (1 - prog(t, dT + 2.4, 0.15)) : 0
+    // 'pop' (the deltas get no room at all; the last resort): each pops over its title for 2.4 s, the title giving
+    // way, then gives it back (a read of the delta pops it again for 1.4 s)
+    let popW = POP && dT != null ? prog(t, dT, 0.12) * (1 - prog(t, dT + 2.4, 0.15)) : 0
+    if (POP && dT != null) for (const r of reads) if (r.key === 'delta' && r.lanes.includes(l.i) && r.t > dT + 2.5) popW = Math.max(popW, prog(t, r.t - 0.12, 0.12) * (1 - prog(t, r.t + 1.4, 0.15)))
     l.nameO.set({ x: l.nameXY[0], y: l.nameXY[1], color: active ? C.ink : C.dim, sx: 1 + 0.05 * wake, sy: 1 + 0.05 * wake, opacity: 1 - popW })
     l.nameO.overlap(popW > 0 && popW < 1)
     if (l.detO) {
-      const out = G.dPop ? popW : dT != null ? prog(t, dT, 0.12) : 0
+      // ('own': the delta swaps in for the behaviour; 'under': the behaviour stays)
+      const out = POP ? popW : G.dMode === 'own' && dT != null ? prog(t, dT, 0.12) : 0
       l.detO.set({ x: l.detXY[0], y: l.detXY[1] + 8 * out, opacity: 1 - out, color: active ? C.grey : C.dim })
     }
     if (l.deltaO) {
-      const pi = dT != null ? popIn(t, dT + 0.1, 0.22) : { scale: 1, opacity: 0 }
-      const rb = readAt(l, 'delta', t)
-      const at = G.dPop ? l.nameXY : l.detXY
-      const op = G.dPop ? pi.opacity * (1 - prog(t, dT + 2.4, 0.15)) : pi.opacity
-      l.deltaO.set({ x: at[0], y: at[1], opacity: op, sx: pi.scale * (1 + 0.12 * rb), sy: pi.scale * (1 + 0.12 * rb) })
-      if (G.dPop) l.deltaO.overlap(op > 0 && op < 1)
+      const pi = dT != null ? popUp(t, dT + 0.1) : { scale: 1, opacity: 0 }
+      const rb = readAt(l, 'delta', t), wb = l.i === winner && winT != null ? bump(t, winT + 0.04, 0.34) : 0
+      const at = UNDER ? [XR, l.dUY] : BESIDE ? [l.dBx, l.yRowB] : POP ? l.nameXY : l.detXY
+      const op = POP ? (t < dT + 2.4 ? pi.opacity * (1 - prog(t, dT + 2.4, 0.15)) : popW) : pi.opacity
+      const sc = pi.scale * (1 + 0.12 * rb + 0.06 * wb)
+      const dc = TONE_TXT[l.tone] || C.ink
+      l.deltaO.set({ x: at[0], y: at[1], opacity: op, sx: sc, sy: sc, color: loser ? mixOk(dc, C.grey, prog(t, winT + 0.1, 0.16)) : dc })
+      // (a bump is a passing emphasis: it may brush the line above or below for a few frames)
+      l.deltaO.overlap((POP && op > 0 && op < 1) || sc > 1.03)
     }
-    // ---- the money value: drops onto the row; newest green, settling to ink (a bad option's to red)
+    // ---- the money value: drops onto the row in its tone's colour (green kept, red lost, ink neutral); a green one
+    // settles to ink when the next lane lands. A read flashes it in its own colour and bumps it 12%
     if (l.val) {
       const tIn = l.tVal
+      const toneCol = TONE_TXT[l.tone] || C.ink
       const base = l.tone === 'bad' ? C.red : C.ink
-      let col = l.pre ? base : mix(C.heroInk, base, E.inOut(prog(t, l.settleT, 0.3)))
+      let col = l.pre ? base : mix(toneCol, base, E.inOut(prog(t, l.settleT, 0.3)))
       if (loser) col = mixOk(base, C.grey, prog(t, winT + 0.1, 0.16))
       if (isWin) col = C.ink
       const rb = readAt(l, sideM.key, t)
-      if (rb > 0 && !isWin) col = mix(col.startsWith('#') ? col : base, C.heroInk, Math.min(1, rb * 2.2))
-      let text = l.side, sx = 1, sy = 1, op = 1, y = l.yRowB
+      if (rb > 0 && !isWin) col = mix(loser ? C.grey : !l.pre && t < l.settleT ? toneCol : base, toneCol, Math.min(1, rb * 2.2))
+      let text = l.side, sx = 1, sy = 1, op = 1, y = l.yRowB, inFlight = false
       if (t < tIn) op = 0
       else if (l.cnt && !l.pre) {
         const from = l.cnt.from === 'base' || l.cnt.from == null ? numOf(lanes[0].side) : numOf(String(l.cnt.from))
@@ -740,17 +1006,20 @@ export default function whatDifference(spec, ctx) {
         const pi = popIn(t, tIn, 0.2), sc = 1 + 0.1 * bump(t, tIn + 0.8, 0.3)
         sx = sy = pi.scale * sc; op = pi.opacity
       } else if (!l.pre) {
-        // falls the last few px and squashes on contact (never under 41 px)
+        // falls the last few px and squashes on contact (never under 41 px); a neutral one (ink) bumps as it lands
         const f = fall(t, tIn - 0.11, 34)
         y = l.yRowB - f.y
         const q = f.landed ? squashAt(t, f.lastHit, Math.min(0.14, 1 - 41 / VS)) : { sx: 1, sy: 1 }
-        sx = q.sx; sy = q.sy
+        const nb = l.tone === 'neutral' || !TONE_TXT[l.tone] ? 1 + 0.1 * bump(t, tIn + 0.08, 0.36) : 1
+        sx = q.sx * nb; sy = q.sy * nb
         op = clamp((t - tIn + 0.11) / 0.06)
-        l.val.overlap(!f.landed)
+        inFlight = !f.landed
       }
+      l.val.overlap(inFlight)
       const lb = 1 + 0.12 * rb + 0.06 * bump(t, lever ? lever.t : -9, 0.4) * (l.band ? 1 : 0)
       sx *= lb; sy *= lb
-      if (isWin) { const pb = 1 + 0.1 * bump(t, winT + 0.04, 0.34); sx *= pb; sy *= pb }
+      // the winner's grows to WS on its plate (a little past it first)
+      if (l.i === winner && winT != null) { const gw = (1 + (WS - 1) * E.back(prog(t, winT - 0.02, 0.24), 1.6)) * (1 + 0.06 * bump(t, winT + 0.04, 0.34)); sx *= gw; sy *= gw }
       l.val.set({ x: XR, y, text, color: col, opacity: op, sx, sy })
       attr(l.sock, 'opacity', t < tIn ? (active ? '1' : '0.7') : '0')
       if (l.band) {
@@ -759,15 +1028,22 @@ export default function whatDifference(spec, ctx) {
           opacity: on.toFixed(3), transform: `scaleX(${(0.9 + 0.1 * E.out(clamp(prog(t, lever.t, 0.16)))).toFixed(3)})`, display: on > 0.001 ? '' : 'none' })
       }
       if (l.plate) {
-        const b = valBox(l), p = prog(t, winT - 0.04, 0.2)
+        const b = valBox(l, WS), p = prog(t, winT - 0.04, 0.2)
         style(l.plate, { left: (b.x0 - 4).toFixed(0) + 'px', top: (b.y0 - 4).toFixed(0) + 'px', width: (b.x1 - b.x0 + 8).toFixed(0) + 'px', height: (b.y1 - b.y0 + 8).toFixed(0) + 'px',
           transform: `scale(${(p <= 0 ? 0 : 0.2 + 0.8 * E.back(p, 1.8)).toFixed(3)},${(p <= 0 ? 0 : 0.6 + 0.4 * E.out(p)).toFixed(3)})`, display: p > 0 ? '' : 'none' })
       }
     }
+    // ---- the third metric's line under it (grey mono; a read bumps it and turns it ink)
+    if (l.exO) {
+      const pi = popUp(t, l.tEx, 0.2), rb = readAt(l, exM.key, t), sc = pi.scale * (1 + 0.12 * rb)
+      l.exO.set({ x: XR, y: l.exY, opacity: pi.opacity, sx: sc, sy: sc, color: rb > 0 ? mix(C.grey, C.ink, Math.min(1, rb * 2.2)) : C.grey })
+      l.exO.overlap(sc > 1.03)
+    }
     // ---- the crate: "?" until it moves, then the running months, then the payoff's string
     const xf = frontAt(l, t)
     let csx = 1, csy = 1, crot = 0
-    if (t >= l.tLand && !l.pre) { const q = squashAt(t, l.tLand, 0.06); csx = q.sx; csy = q.sy }
+    // (the squash's rebound never narrows it: its 40 px unit word would read under 40)
+    if (t >= l.tLand && !l.pre) { const q = squashAt(t, l.tLand, 0.06); csx = Math.max(1, q.sx); csy = q.sy }
     if (t >= l.tStart && t < l.tLand) crot = -1.2 * Math.sin(2 * Math.PI * 4 * (t - l.tStart)) * smooth(0, 0.15, t - l.tStart)
     if (t >= l.actT + 0.45 && t < l.tStart && l.tStart - l.actT > 1.3) crot = 0.8 * Math.sin(2 * Math.PI * 9 * t)     // strain
     let hopB = 0
@@ -779,7 +1055,8 @@ export default function whatDifference(spec, ctx) {
     attr(l.crateR, 'fill', fill)
     let face = '?', fcol = active ? C.grey : C.dim
     const barN = FACE2 ? l.unit.n : l.bar
-    if (t >= l.tStart) { face = rollText(runE(prog(t, l.tStart, l.run)), 0, barN); fcol = t >= l.tLand ? C.ink : C.grey }
+    // (a compound payoff, "11 yrs 5 mo", counts its whole years and pops its exact string on landing)
+    if (t >= l.tStart) { face = rollText(runE(prog(t, l.tStart, l.run)), 0, barN, l.M); fcol = t >= l.tLand ? C.ink : C.grey }
     if (l.crateU) attr(l.crateU, 'opacity', t >= l.tStart ? '1' : '0')
     if (loser) fcol = mixOk(C.ink, C.grey, prog(t, winT + 0.1, 0.16))
     setTextAttr(l.crateT, face, fcol)
@@ -794,16 +1071,21 @@ export default function whatDifference(spec, ctx) {
       const gp = l.pre ? 1 : E.out(prog(t, l.tLand + 0.12, 0.35))
       attr(l.gap, 'x2', (l.xEnd + 12 + Math.max(0, XF - l.xEnd - 12) * gp).toFixed(1))
       attr(l.gap, 'opacity', gp > 0 ? '1' : '0')
+      // the time it saved is the verdict's claim: the winner's strip thickens with the plate
+      const sw = l.i === winner && timeClaim ? 11 + 7 * E.out(prog(t, winT, 0.2)) + 5 * bump(t, winT + 0.04, 0.34) : 11
+      attr(l.gap, 'stroke-width', sw.toFixed(1))
     }
-    // ---- coins: fly from the crate's top to the pile; the pile grows as they land
+    // ---- coins: fly off the crate's front face onto the pile, low (under the money value, the lines under it and a
+    // second title line); the pile grows as they land
     let landedK = 0
+    const capY = Math.max(l.uBottom, !COL && two ? l.yT + 6 + G.RH : 0) + 18
     l.coins.forEach((e, j) => {
       const t0 = coinT(l, j), p = prog(t, t0, FLY)
       if (t >= t0 + FLY) landedK++
-      if (!(t >= t0 && t < t0 + FLY)) { attr(e, 'opacity', '0'); attr(e, 'cx', '0'); attr(e, 'cy', '0'); return }
-      const xs = frontAt(l, t0) - crateW * 0.3, ys = l.yF - Hc - 10
+      if (!(t >= t0 && t < t0 + FLY)) { attr(e, 'opacity', '0'); attr(e, 'cx', '0'); attr(e, 'cy', '0'); attr(e, 'rx', '13'); return }
+      const xs = frontAt(l, t0) + 6, ys = l.yF - Hc * 0.55
       const ye = l.yF - 4 - l.pileH * (j / l.K) - 10, xe = PILE_X
-      const apex = Math.min(ys, ye) - 30
+      const apex = Math.max(capY, Math.min(ys, ye) - 30)
       const yy = (1 - p) * (1 - p) * ys + 2 * p * (1 - p) * (2 * apex - (ys + ye) / 2) + p * p * ye
       attr(e, 'cx', lerp(xs, xe, p).toFixed(1)); attr(e, 'cy', yy.toFixed(1))
       attr(e, 'rx', (13 * Math.abs(Math.cos(Math.PI * 2.5 * p)) + 3).toFixed(1))
@@ -814,7 +1096,8 @@ export default function whatDifference(spec, ctx) {
     // ---- figure
     if (l.fig) {
       const st = figState(l, t)
-      const pz = secondary({ ...st.pose, lift: 0 }, t + l.i * 0.7, { breathe: 0.8 })
+      const gw = figGreen(l, t)
+      const pz = secondary({ ...st.pose, lift: 0 }, t + l.i * 1.13, { breathe: 0.45 + 0.35 * gw })
       let J
       if (st.legs > 0) {
         const ph = (st.hipX - hip0) / (2 * SL)
@@ -835,7 +1118,7 @@ export default function whatDifference(spec, ctx) {
       }
       if (st.lift) for (const key of BODY) J[key] = [J[key][0], J[key][1] - st.lift]
       J.ground = l.yF
-      const colF = loser ? mixOk(C.hero, C.grey, prog(t, winT + 0.1, 0.2)) : C.hero
+      const colF = gw <= 0.001 ? C.grey : gw >= 0.999 ? C.hero : mix(C.grey, C.hero, gw)
       for (const kk in l.fig.limbs) attr(l.fig.limbs[kk], 'stroke', colF)
       attr(l.fig.head, 'fill', colF)
       l.fig.draw(J)
@@ -853,18 +1136,27 @@ export default function whatDifference(spec, ctx) {
       // working slot: one line at a time (hold, then snap)
       slotE.forEach((x, j) => {
         const el = slotEls[j]
-        if (!(t >= x.t && t < x.end)) { style(el, { opacity: '0', display: 'none' }); return }
-        const pi = x.t < 0 ? { scale: 1, opacity: 1 } : popIn(t, x.t, 0.18, 0.94)
+        if (!(t >= x.t && t < x.end)) { style(el, { opacity: '0', transform: 'none', display: 'none' }); return }
+        const pi = x.t < 0 ? { scale: 1, opacity: 1 } : popUp(t, x.t, 0.18, 0.03)
         const out = Number.isFinite(x.end) ? 1 - prog(t, x.end - 0.1, 0.1) : 1
-        style(el, { display: '', opacity: (pi.opacity * out).toFixed(3), transform: `translateY(${((1 - pi.opacity) * 10).toFixed(1)}px) scale(${pi.scale.toFixed(3)})` })
+        style(el, { opacity: (pi.opacity * out).toFixed(3), transform: `translateY(${((1 - pi.opacity) * 10).toFixed(1)}px) scale(${pi.scale.toFixed(3)})`, display: '' })
       })
       for (const l of lanes) seekLane(l, t)
+      // the climax rays: out of the plate's ends for 0.26 s (parked, invisible, the rest of the time)
+      for (const ry of rays) {
+        const dt = t - winT, on = dt >= 0 && dt < 0.26
+        attr(ry.el, 'opacity', on ? (1 - E.inQuad(prog(dt, 0, 0.26))).toFixed(3) : '0')
+        const pq = on ? E.out(prog(dt, 0, 0.22)) : 0
+        const r0 = ry.len * (0.05 + 0.45 * pq), r1 = ry.len * (0.3 + 0.7 * pq)
+        attr(ry.el, 'x1', (ry.x + ry.c * r0).toFixed(1)); attr(ry.el, 'y1', (ry.y + ry.sn * r0).toFixed(1))
+        attr(ry.el, 'x2', (ry.x + ry.c * r1).toFixed(1)); attr(ry.el, 'y2', (ry.y + ry.sn * r1).toFixed(1))
+      }
       const { shake, zoom } = fxk.seek(t)
       // the punch zooms about the titles' left edge (x 60 stays put, x 922 reaches 939), and the shake is mostly
       // vertical: the titles stand on the safe zone's left edge
       const sh = [shake[0] * 0.25, shake[1]]
       if (winner != null) {
-        const cy = sideM ? (valBox(lanes[winner]).y0 + valBox(lanes[winner]).y1) / 2 : lanes[winner].yF - Hc / 2
+        const cy = sideM ? (valBox(lanes[winner], WS).y0 + valBox(lanes[winner], WS).y1) / 2 : lanes[winner].yF - Hc / 2
         cam.set({ fx: 60, fy: cy, x: 60, y: cy, zoom, shake: sh })
       } else cam.set({ shake: sh, zoom })
     },

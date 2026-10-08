@@ -4,7 +4,7 @@
   "look": "becker-rig",
   "format": "what-difference",
   "fps": 30,
-  "header": "What difference does a **flat payment**\nmake on a credit card?",
+  "header": "What difference does\na **flat payment** make\non a credit card?",
   "footer": "24% APR · minimum = 1% + interest, $35 floor · no new charges",
   "captions": false,
   "vo": [
@@ -150,5 +150,5 @@
       "from": "base"
     }
   },
-  "notes": "Stress variant: 4 options, the first already run at frame 1 (t 0), medium names with long behaviours (they drop to the working lines when the row is full), mixed payoff units (≈ 18.3 years vs 47 / 26 / 14 months on one time axis), a 2-line footer, captions off, resultT (a 2.4 s lead-in: he strains before the crate gives) and deltaT on option 2, a counted money value (from the minimum's), a lever across lanes 0 and 1, reads of a crate, a money value and two deltas. Maths: $6,000 at 24% APR (2% a month), no new charges, simulated month by month (re-checked in Python): minimum = 1% of the balance + that month's interest, $35 floor; first payment $60 + $120 = $180; 219 payments (18.25 years ≈ 18.3), interest $10,441.80. Flat $200: 47 payments, $3,254.63 ($7,187.17 less; 219 − 47 = 172 months ≈ 14.3 years sooner). Flat $300: 26 payments, $1,739.24 ($8,702.56 less). Flat $500: 14 payments, $929.90 ($9,511.90 less)."
+  "notes": "Stress variant: 4 options, the first already run at frame 1 (t 0); long behaviours (the fitter drops them to the working lines) and long deltas with no room in the titles or under the values: they stand on the money row beside their own values (the 'beside' place, clear of his reach; the winner steps back before his jump), to the last frame, and bump when read at 16.4; mixed payoff units on one time axis (≈ 18.3 years vs 47 / 26 / 14 months: the fast plans barely leave the start line and their saved-time strips run most of the lane); a 2-line footer; 2-line working lines; captions off; resultT on option 2 (a 2.4 s lead-in: he strains and the crate trembles before it gives) and deltaT; a counted money value (from the minimum's); a lever across lanes 0 and 1; reads of a crate, a money value and two deltas. Lands in the col layout, money at 60 px. The header breaks in three balanced lines (no one-word orphan). Maths: $6,000 at 24% APR (2% a month), no new charges, simulated month by month (re-checked in Python): minimum = 1% of the balance + that month's interest, $35 floor; first payment $60 + $120 = $180; 219 payments (18.25 years ≈ 18.3), interest $10,441.80. Flat $200: 47 payments, $3,254.63 ($7,187.17 less; 219 − 47 = 172 months ≈ 14.3 years sooner). Flat $300: 26 payments, $1,739.24 ($8,702.56 less). Flat $500: 14 payments, $929.90 ($9,511.90 less)."
 }

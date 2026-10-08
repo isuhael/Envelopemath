@@ -8,12 +8,12 @@
   "footer": "Take out 4% a year, forever · before tax and inflation",
   "captions": true,
   "vo": [
-    { "t": 0.0, "d": 2.3, "text": "How much do you need to never work again?" },
-    { "t": 2.4, "d": 2.8, "text": "$4,000 a month? **$1.2 million**." },
-    { "t": 5.6, "d": 2.6, "text": "Each extra $1,000 a month: **$300,000** more." },
-    { "t": 8.4, "d": 2.0, "text": "$15,000 a month? **$4.5 million**." }
+    { "t": 1.5, "d": 2.0, "text": "How much do you need to never work again?" },
+    { "t": 3.6, "d": 2.6, "text": "$4,000 a month? **$1.2 million**." },
+    { "t": 6.3, "d": 2.5, "text": "Each extra $1,000 a month: **$300,000** more." },
+    { "t": 8.9, "d": 1.9, "text": "$15,000 a month? **$4.5 million**." }
   ],
-  "verdict": { "t": 10.6, "text": "Every **$500 a month** you spend\nadds $150,000 to the goal" },
+  "verdict": { "t": 11.0, "text": "Every **$500 a month** you spend\nadds $150,000 to the goal" },
   "data": {
     "columns": [
       { "label": "You spend a month" },
@@ -40,11 +40,15 @@
     "rowsT": 0.2,
     "rowEvery": 0.15,
     "pick": [
-      { "t": 2.4, "row": 4, "label": "$4,000 a month × 12 × 25 = **$1,200,000** invested" },
-      { "t": 5.6, "row": 6, "label": "+$1,000 a month = **+$300,000**" },
-      { "t": 8.4, "row": 13, "label": "**$15,000** a month: **$4.5 million**" }
+      { "t": 3.6, "row": 4, "label": "**$4,000** × 12 × 25" },
+      { "t": 6.3, "row": 6, "label": "+$1,000 → **+$300,000**" },
+      { "t": 8.9, "row": 13, "label": "= **$4.5 million**" }
     ],
     "hold": 3.0
   },
-  "lookOpts": { "compare": [{ "pick": 1, "from": 4 }], "verdictRow": 0 }
+  "lookOpts": {
+    "compare": [
+      { "pick": 1, "from": 4 }
+    ]
+  }
 }

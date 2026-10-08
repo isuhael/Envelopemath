@@ -24,22 +24,26 @@
       { "key": "interest", "label": "Interest" }
     ],
     "options": [
-      { "t": 1.8, "name": "Pay the bill", "detail": "$554.43", "values": { "payoff": "60 months", "interest": "≈ $5,266" }, "tone": "bad" },
-      { "t": 5.4, "name": "Round up to $600", "detail": "+$45.57", "values": { "payoff": "55 months", "interest": "≈ $4,779" }, "delta": "−$487", "tone": "good" },
-      { "t": 10.6, "name": "Round up to $700", "detail": "+$145.57", "values": { "payoff": "46 months", "interest": "≈ $3,978" }, "delta": "−$1,288", "tone": "goal" }
+      { "t": 0.9, "resultT": 2.8, "valueEvery": 0.8, "name": "Pay the bill", "detail": "$554.43",
+        "values": { "payoff": "60 months", "interest": "≈ $5,266" }, "tone": "bad" },
+      { "t": 5.4, "resultT": 8.3, "deltaT": 9.2, "name": "Round up to $600", "detail": "+$45.57",
+        "values": { "payoff": "55 months", "interest": "≈ $4,779" }, "delta": "−$487", "tone": "good" },
+      { "t": 10.6, "resultT": 12.9, "valueEvery": 0.5, "deltaT": 14.6, "name": "Round up to $700", "detail": "+$145.57",
+        "values": { "payoff": "46 months", "interest": "≈ $3,978" }, "delta": "−$1,288", "tone": "goal" }
     ],
     "winner": 2,
     "hold": 3.0
   },
   "lookOpts": {
-    "scan": { "t": 0.5, "every": 0.38 },
+    "race": 1.5,
+    "scan": { "t": 0.25, "every": 0.3 },
     "formulas": [
       "= $28,000 at 7% for 60 months",
       "= $554.43 + $45.57 = $600 a month",
       "= $554.43 + $145.57 = $700 a month"
     ],
     "steps": [ { "t": 13.6, "text": "= 60 − 46 = **14 months** sooner" } ],
-    "reads": [ { "t": 9.0, "option": 1, "metric": "interest" } ]
+    "reads": [ { "t": 13.7, "option": [0, 2], "metric": "payoff" } ]
   },
-  "notes": "Maths: $28,000 at 7% APR (0.5833% a month) over 60 months: payment = 28,000 × r ÷ (1 − (1 + r)^−60) = $554.43; interest = $5,265.80 ≈ $5,266. A flat $600 (+$45.57) clears it in 55 payments with $4,779.48 interest (≈ $487 less); a flat $700 (+$145.57) in 46 payments with $3,977.73 interest (≈ $1,288 less; 60 − 46 = 14 months sooner). Monthly amortisation simulated payment by payment, the last payment partial (re-checked in Python for this sample; same figures as the scoreboard sample). Shows: scan hops, a run per option at the shared speed, coin piles, deltas swapping in for the behaviour, formulas and a step in the working slot, a read, the gold-plate winner."
+  "notes": "Maths: $28,000 at 7% APR (0.5833% a month) over 60 months: payment = 28,000 × r ÷ (1 − (1 + r)^−60) = $554.43; interest = $5,265.80 ≈ $5,266. A flat $600 (+$45.57) clears it in 55 payments with $4,779.48 interest (≈ $487 less); a flat $700 (+$145.57) in 46 payments with $3,977.73 interest (≈ $1,288 less; 60 − 46 = 14 months sooner). Monthly amortisation simulated payment by payment, the last payment partial (re-checked in Python for this sample; same figures as the scoreboard sample). Shows: scan hops; VO-locked beats (each lane wakes as the VO names it, its payoff lands on resultT as the VO says it: 60 months at 2.8 s, 55 at 8.3, 46 at 12.9; its money value and delta on valueEvery / deltaT, as the VO says them); one shared run speed (race 1.5); coin piles; deltas swapping in for the behaviour; formulas and a step in the working slot; a read of two crates (60 − 46); the gold-plate winner and its time-saved strip (the verdict claims 14 months)."
 }

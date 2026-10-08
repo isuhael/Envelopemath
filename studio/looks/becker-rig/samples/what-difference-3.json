@@ -1,0 +1,42 @@
+{
+  "id": "becker-rig-what-difference-3",
+  "sample": true,
+  "look": "becker-rig",
+  "format": "what-difference",
+  "fps": 30,
+  "header": "What difference does **$50 more**\na month make on a credit card?",
+  "footer": "Assumes 22% APR, no new spending",
+  "captions": false,
+  "verdict": { "t": 9.0, "text": "**$50 more** a month saves **$5,880**" },
+  "data": {
+    "stake": { "label": "Credit card balance", "value": "$5,000", "terms": "22% APR · no new spending" },
+    "metrics": [
+      { "key": "time", "label": "Debt-free in" },
+      { "key": "interest", "label": "Interest paid" },
+      { "key": "total", "label": "Total you pay back" }
+    ],
+    "options": [
+      { "t": 0, "name": "$100 a month", "detail": "the habit",
+        "values": { "time": "11 yrs 5 mo", "interest": "$8,678", "total": "$13,678" }, "tone": "bad" },
+      { "name": "$150 a month", "detail": "$50 more",
+        "values": { "time": "4 yrs 4 mo", "interest": "$2,798", "total": "$7,798" }, "delta": "−$5,880", "tone": "goal" },
+      { "name": "$250 a month", "detail": "$150 more",
+        "values": { "time": "2 yrs 2 mo", "interest": "$1,286", "total": "$6,286" }, "delta": "−$7,392", "tone": "good" }
+    ],
+    "winner": 1,
+    "hold": 3.0
+  },
+  "lookOpts": {
+    "formulas": [
+      { "t": 0.4, "text": "= $100 − $92 interest = $8 off" },
+      "= $150 − $92 interest = $58 off",
+      "= $250 − $92 interest = $158 off"
+    ],
+    "steps": [ { "t": 8.4, "text": "= $8,678 − $2,798 = **$5,880**" } ],
+    "reads": [
+      { "t": 8.5, "option": [0, 1], "metric": "interest" },
+      { "t": 10.4, "option": 1, "metric": "total" }
+    ]
+  },
+  "notes": "Port case: the content of the live-sheet what-difference-2 sample cut to 3 options. Shows: option times left out (only the first has t 0, so it is already run at frame 1; the kit paces the others: the first at 1.6 s, the next one gap after the previous lane's last landing, squeezed from 2.2 to 1.8 s so it lands before the verdict at 9.0); compound payoffs (\"11 yrs 5 mo\": the crates are placed by total months, 137 / 52 / 26, and the running counter counts whole years, then pops the exact string); a third metric (Total you pay back) as a grey line under each money value with its label under the money head; deltas; a read of two money values and one of a total; the gold-plate winner. Silent. Maths: $5,000 at 22% APR, 22% ÷ 12 = 1.8333% a month on the balance, a fixed payment, no new charges, simulated month by month (re-checked in Python): first month's interest $91.67 ≈ $92 (so $8, $58, $158 of the first payment comes off the debt). $100/mo: 137 payments = 11 yrs 5 mo, interest $8,678.06, total $13,678.06. $150/mo: 52 payments = 4 yrs 4 mo, interest $2,798.05, total $7,798.05; 8,678.06 − 2,798.05 = $5,880.01 → −$5,880. $250/mo: 26 payments = 2 yrs 2 mo, interest $1,285.72 ≈ $1,286, total $6,285.72 ≈ $6,286; $7,392.34 less → −$7,392. Winner $150: the first $50 a month saves $5,880."
+}

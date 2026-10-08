@@ -39,10 +39,10 @@
     "pick": [
       { "t": 2.0, "row": 0, "label": "≈ 7.8× what you think" },
       { "t": 4.9, "row": 2, "label": "≈ 5.5× what you think" },
-      { "t": 8.4, "row": 4, "label": "≈ 2.2×" }
+      { "t": 8.4, "row": 2, "label": "**≈ 2.2×** the cost at 35" }
     ],
     "hold": 5.0
   },
-  "lookOpts": { "compare": [{ "pick": 2, "from": 2 }] },
+  "lookOpts": { "compare": [{ "pick": 2, "from": 4 }] },
   "sfx": [ { "t": 10.7, "kind": "ding" } ]
 }
