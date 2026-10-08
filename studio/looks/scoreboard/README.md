@@ -11,7 +11,7 @@ Sources: `research/v2/03-look-directions.md` (Direction 3, and §3.0 for the sha
 | `lib.js` | Shared components: odometer, unit icons and pile, header, footer and footer steps, label stack, captions, verdict, score panel, race chart, ladder pips, `tabHTML`, timing helpers, `chrome()`, `stub()` |
 | `style.css` | Classes used by `lib.js`, plus Anton re-declared with tight vertical metrics (see Type) |
 | `kit.js` | `defineKit({ name: 'scoreboard', formats, chrome })`. It imports every `formats/<id>.js` one at a time, so a broken format only breaks itself |
-| `formats/<id>.js` | One module per format, all built: `unit-ladder` (the flagship), `find-your-row`, `what-difference`, `chart-race`, `split-sheet`, `pov-race`, `growth-ladder`, `cost-counter`. Each file's header comment is the full reference for its choreography |
+| `formats/<id>.js` | One module per format, all built: `unit-ladder` (the flagship), `dead-simple-list`, `find-your-row`, `what-difference`, `chart-race`, `split-sheet`, `pov-race`, `ledger-duel`, `growth-ladder`, `cost-counter`. Each file's header comment is the full reference for its choreography |
 | `samples/*.json` | Sample specs (`"sample": true`), two per format |
 
 ---
@@ -99,7 +99,7 @@ Always take positions from `const L = layoutFor(spec, opts)`, and return `layout
 Rules:
 - Nothing slides linearly except counters and race clocks. Nothing idles or loops.
 - No camera moves.
-- One focal number at a time: the hero rolls while the labels sit still. **The payoff lands last in the hero** (unit-ladder's last rung, a race's winner, growth-ladder's last row, split-sheet's verdict figure, what-difference's winning delta).
+- One focal number at a time: the hero rolls while the labels sit still. **The payoff lands last in the hero** (unit-ladder's last rung or its `payoff`, a race's winner, growth-ladder's last row, split-sheet's verdict figure, what-difference's winning delta, dead-simple-list's goal via `heroFinal`). ledger-duel has no hero row: its payoff is the winner panel's flood.
 - Frame 1 never shows an entrance mid-way: `slam`/`rise` with `t0 ≤ 0` return the landed state.
 - **One verdict spot.** The verdict always lands at the foot of the frame (`L.verdict`); the header band holds the hook for the whole video.
 
@@ -111,6 +111,8 @@ Each cue marks a real event, and none repeats per frame.
 - `ding` (gain ≈ 0.5): a count lands.
 - `riser` with `dur`, then `hit` + `cash`: the biggest number.
 - `reveal` (gain 0.7) at `verdict.t`: the verdict. The chrome adds it; set `verdictCue: null` to drop it or name another kind.
+- `buzz` (gain 0.3-0.5): something struck out or lost (dead-simple-list's struck wrong guess, a ledger-duel crash row, a cost-counter `slot` in tone `bad`).
+- `tick` (gain ≈ 0.45-0.55): a soft beat on a number already on screen (what-difference `reads`, ledger-duel `marks`, chart-race `rungs`).
 - In races: `whoosh` for the start (a soft one at 0 s when the race opens mid-way), `tick` for event flags, `swipe` (0.5) on a lead change.
 
 There is no music bed. The look runs on diegetic UI sound, as HD Guy does.
@@ -234,7 +236,7 @@ The format steers the chrome through fields on the object it returns:
 |---|---|
 | `layout: L` | the grid the chrome draws; **always return it** |
 | `scaffold: { grid: false }` | stage without the grid |
-| `header: false` / `footer: false` / `verdict: false` | the format draws that piece itself (no format does any more) |
+| `header: false` / `footer: false` / `verdict: false` | the format draws that piece itself (growth-ladder draws its header, and its verdict with `verdictStyle: 'stack'`; chart-race draws its footer and steps) |
 | `verdictSlot: { y, h, w, boxed }` | another verdict slot (default `L.verdict`; keep it at the foot of the frame) |
 | `verdictTone: 'bad'` | a coral verdict rule (a loss) |
 | `verdictCue: 'pop'` / `null` | the verdict SFX (default `reveal`) |
@@ -283,9 +285,9 @@ Checklist:
 
 | Key | Formats | Effect |
 |---|---|---|
-| `footerSteps: [{ t, text }]` | all (the chrome draws it) | The footer rewrites to a working line at each t (`spec.footer` before the first): a hard cut with a 12 px rise. A line too wide for 960 px at 40 px breaks at its " · " into two lines, and the grid makes room for the tallest footer from frame 1 |
-| `intro: true / false` | unit-ladder, what-difference, split-sheet | Forces the stake/unit intro on or off (default: on when the first beat starts at ≥ 0.5 s; otherwise frame 1 is already mid-roll on beat 1) |
-| `stageBottom: y` | what-difference, split-sheet, chart-race, pov-race | Moves the stage/label split (see `layoutFor`) |
+| `footerSteps: [{ t, text }]` | all (the chrome draws it; chart-race draws its own, with each racer's name set in its line colour) | The footer rewrites to a working line at each t (`spec.footer` before the first): a hard cut with a 12 px rise. A line too wide for 960 px at 40 px breaks at its " · " into two lines, and the grid makes room for the tallest footer from frame 1 |
+| `intro: true / false` | unit-ladder, what-difference, split-sheet | Forces the stake/unit intro on or off (default: on when the first beat starts at ≥ 0.5 s; otherwise frame 1 is already mid-roll on beat 1). dead-simple-list and cost-counter take `intro: { l1, l2 }` instead (the label stack's resting state) |
+| `stageBottom: y` | what-difference, split-sheet, chart-race, pov-race, dead-simple-list, ledger-duel | Moves the stage/label split (see `layoutFor`) |
 
 ---
 
@@ -307,6 +309,10 @@ Checklist:
   3. Icons rain in while the hero odometer rolls on the same `ease.out` curve.
   4. The hero lands exactly on `unitsDisplay`: bump, glow flare, a floor bloom and a `ding`.
 - **The last rung** fills the stage edge to edge (LED-dot wall), rolls for 2.4 s over a `riser`, and lands with `hit` + `cash`.
+- **Overflow rungs**: a non-final rung too big for the pile at its density (cells under 5 px) would fill the stage like the climax, so two huge rungs would look the same. From the first such rung on, every LED dot stands for the same number of units as in the climax wall: an overflow rung fills the stage with bigger dots, and the next rung re-packs it into exactly units_prev / units_next of the stage before its own dots rain in.
+- **Payoff** (`lookOpts.payoff`): after the ladder the hero cuts to `from` and rolls up to `display`, landing with the climax impact (`roll`, then `hit` + `cash`), so "what the unit would cost" lands last in the hero. With `label` the label stack cuts to it (line 2, "ROSE LIKE A HOUSE?"; line 1 `working`), so the question sits under the rolling hero and the verdict answers it. Without a split the wall dims behind the payoff.
+- **Split** (`lookOpts.split`): once the last rung cuts, the previous rung's dots (re-packed into the last wall) turn a second tint, so the earlier share stays readable inside the climax wall; `tags` pills name the two parts. The wall stays lit behind the payoff. It applies only where both walls are LED dots (cells under 10 px).
+- **Captions** hide from verdict.t (the verdict carries that line), or from the payoff cut when the payoff has a label.
 - **The verdict** (optional) replaces the label stack.
 - **Timing:** rungs without `t` start at 1.0 s and then come every 3.4 s. Duration is the last landing + `hold` (default 3 s), or the VO / verdict end if later.
 
@@ -319,6 +325,11 @@ Checklist:
 | `climaxFill` | `1` | share of the stage the last rung covers |
 | `intro` | `'auto'` | `true`/`false` forces the unit intro on or off (auto: on when rung 1 starts at ≥ 0.5 s) |
 | `pips` | `true` | the vertical ladder progress pips |
+| `introHero` | `'count'` | `'price'`: the unit intro shows the unit price in the hero (frame 1 reads "$1.50", not a bare "1"); the intro label then drops its price line |
+| `payoff` | none | `{ t, from, display, roll, label, working }`: `t` defaults to verdict.t, else 1.5 s after the last landing (never before landing + 0.3 s); `from` to the unit price; `roll` to 1.4 s. `display` is printed exactly |
+| `split` | none | `true` or `{ tags: [prevTag, lastTag], tint }` (tint default `#E4E9EF`): the previous rung's share of the last wall in a second tint |
+
+Ported: `studio/specs/08a-scoreboard-costco-hot-dogs.json` (`introHero: 'price'`, a `payoff` from $1.50 to ≈ $7.01 with a label, a tagged `split`).
 
 **Writing rungs:**
 - Pick a cheap, habitual or tribal unit (latte, Big Mac, RTX card), not a luxury or abstract one (research: unit choice swings views 800x).
