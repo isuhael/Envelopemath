@@ -38,6 +38,27 @@ Assembly pass (2026-10-08): no number or wording changed. New timing fields are 
 the sheet marks a value already on screen as the VO speaks it; 03c: the hero bumps as the VO speaks its frame-1
 score) and option.deltaT (03c: each delta slams in on its spoken number), each within 0.25 s of its anchor word and marking the value that word speaks. The 03a workings and
 lever carry a "\n" (a forced break before "= $9,752.08 a year" and "13 payments"); the token checks ignore it.
+Port (2026-10-08): the owner kept two looks, so 03a moved from Live Sheet to Becker Rig
+(03a-becker-rig-car-loan-weekly) and 03b from Clean Sheet to Scoreboard (03b-scoreboard-card-minimum); the old specs
+are in studio/specs/retired/. No number, VO line or verdict changed. Look-specific checks:
+   - 03a (Becker Rig): option.t is the lane's WAKE (on the word that names it) and option.resultT the crate's payoff
+     landing (on the word that speaks it); the money value lands 0.45 s later (the round-up lane's counts down from
+     the baseline's and settles on "$1,800"); working-slot lines pop whole at their t (no typing), each by its word and
+     no more than 0.8 s early, and each holds >= 2 s; the footer is one line ("Daily interest, posted when paid");
+   - 03b (Scoreboard): option.t is the hard cut (on the word that names it), option.resultT the race's landing (on the
+     payoff's word, lookOpts.keepSpeed: the race keeps the shared speed); the hero rolls the payoff metric and lands the
+     winner's "≈ 10 years sooner" on "ten" (data.winnerT = option.deltaT); reads bump the hero ("fifteen") or a row cell
+     ("$7,300", "$3,100"); lookOpts.labelSteps carry the shrink note at frame 1 (it was option.note), "More than the
+     $5,000 owed" on "More" and "$0 more than the first minimum" on "dollar".
+Port QA fixer pass (2026-10-08): no number, VO line or verdict changed.
+   - 03a: a slot step "= 72 − 60 ≈ 12 months / ≈ 1 year sooner" by "year" (a − b = c on the shown values; ≈ because
+     60 is rounded), a read of Round up's crate on "year", the winner's time-saved label "≈ 12 mo" (lookOpts.gapLabel:
+     the same ≈ 12, months being the crate metric's unit), a read of Monthly's crate on "twelve" ("not 12": Monthly is
+     the 12-payments-a-year lane, outside the lever), a second lever beat on "thirteen", and the waiting figures' pat on
+     "this loan" (lookOpts.pat, before the scan);
+   - 03b: no option carries a delta any more (the verdict alone says "≈ 10 years sooner"; ③'s "≈ 13 years sooner" is
+     write-up only); lookOpts.heroEnd "value": the winner beat rolls the hero from ①'s ≈ 15.1 down to ②'s own ≈ 4.8 and
+     lands on "ten" (data.winnerT), the shown gap 15.1 − 4.8 rounding to the verdict's ≈ 10.
 
 Run:  python3 teasers/v2/checks/03-what-difference.py
 """
@@ -280,7 +301,7 @@ def years_disp(y, dp=1):
 expect, vo_expect, beats, steps = {}, {}, {}, {}
 
 # ---- 03a
-ida = "03a-live-sheet-car-loan-weekly"
+ida = "03a-becker-rig-car-loan-weekly"
 car_keys = ["monthly", "biweekly", "weekly", "rounded"]
 ea = {
     "header": T(money(CAR_P)),
@@ -307,6 +328,13 @@ ea = {
     "lookOpts.steps[1].text": T(money(CAR_WK_VS_BIWK)),
     "lookOpts.steps[2].text": T(bare(money(CAR["monthly"]["interest"], 100)), bare(money(CAR["rounded"]["interest"], 100)),
                                 money(CAR_SAVE["rounded"], 100)),
+    # port (Becker Rig): the round-up working comes back into the slot as the VO says "about $12 more a week"
+    "lookOpts.steps[3].text": T(money(CAR_WK, 0.01), money(CAR_ROUND_EXTRA_WK, 0.01), money(CAR_ROUND_UP)),
+    # port QA fixer: the verdict's "about a year" gets its working (shown 72 − shown 60 = 12; "≈" because 60 is rounded)
+    "lookOpts.steps[4].text": T(str(CAR["monthly"]["n"]), bare(num(CAR["rounded"]["months"])),
+                                num(CAR["monthly"]["months"] - CAR["rounded"]["months"]), num(CAR_ROUND_SOONER_YRS)),
+    # ... and the time saved as an object: the winner's flag carries "≈ 12 mo" (months: the crate metric's unit)
+    "lookOpts.gapLabel": T(num(CAR["monthly"]["months"] - CAR["rounded"]["months"])),
 }
 for i, k in enumerate(car_keys):
     run = CAR[k]
@@ -331,7 +359,7 @@ beats[ida] = [(1, 2, "Biweekly"), (2, 3, "Weekly"), (3, 5, "round")]
 year_lines = {ida: [0, 7]}
 
 # ---- 03b
-idb = "03b-clean-sheet-card-minimum"
+idb = "03b-scoreboard-card-minimum"
 FIRST_S = money(CARD_FIRST_MIN, 0.01)
 eb = {
     "header": T(money(CARD_B)),
@@ -339,8 +367,12 @@ eb = {
     "data.stake.value": E(money(CARD_B)),
     "data.stake.terms": E(f"{pct(CARD_APR)} APR · no new charges"),
     "data.options[0].detail": E(f"starts at {FIRST_S}, then shrinks"),
-    # hook pass: the shrink proved in numbers in the first 1.5 s (the minimum at the end of year 3)
-    "data.options[0].note": E(f"{FIRST_S} → {money(CARD_MIN_AT_NOTE, 0.01)} by year {CARD_NOTE_MONTH // 12}"),
+    # hook pass: the shrink proved in numbers in the first 1.5 s (the minimum at the end of year 3). Port (Scoreboard):
+    # it was option 1's typed note; it is now the label stack's line 2 at frame 1
+    "lookOpts.labelSteps[0].text": E(f"{FIRST_S} → {money(CARD_MIN_AT_NOTE, 0.01)} by year {CARD_NOTE_MONTH // 12}"),
+    # port: the two lines the Clean Sheet answered with reads (the header's $5,000 re-swipe, the "$0 more" working)
+    "lookOpts.labelSteps[1].text": E(f"More than the {money(CARD_B)} owed"),
+    "lookOpts.labelSteps[2].text": E(f"{money(0)} more than the first minimum"),
     "data.options[0].values.payoff": E(years_disp(CARD["min"]["years"])),
     "data.options[0].values.interest": E(money(CARD["min"]["interest"], 100)),
     # option 2 = the lever the hook asks about: the first minimum held flat, $0 more
@@ -348,12 +380,10 @@ eb = {
     "data.options[1].detail": E(f"{FIRST_S} − {FIRST_S} = {money(0)} more"),
     "data.options[1].values.payoff": E(years_disp(CARD_FLAT_FIRST["years"])),
     "data.options[1].values.interest": E(money(CARD_FLAT_FIRST["interest"], 100)),
-    "data.options[1].delta": E(f"{num(CARD_SOONER_F1)} years sooner"),
     "data.options[2].name": E(f"A flat {money(250)}"),
     "data.options[2].detail": E(f"{money(250)} − {FIRST_S} = {money(250 - CARD_FIRST_MIN, 0.01)} more"),
     "data.options[2].values.payoff": E(years_disp(CARD[250]["years"])),
     "data.options[2].values.interest": E(money(CARD[250]["interest"], 100)),
-    "data.options[2].delta": E(f"{num(CARD_SOONER[250])} years sooner"),
     "verdict.text": T(money(0), num(CARD_SOONER_F1)),
 }
 expect[idb] = eb
@@ -366,8 +396,8 @@ vo_expect[idb] = [
     [(money(250), False), (bare(num(CARD[250]["years"], 1)), True)],
     [(bare(num(CARD_SOONER_F1)), True)],                                   # "Same payment: about 10 years sooner."
 ]
-# fixer pass: option 2's results land on the words that speak them (no longer 5-6 s early); option 3's on "2.2"
-beats[idb] = [(1, 4, "4.8"), (2, 5, "2.2")]
+# port (Scoreboard): each option's hard cut on the word that names it; its race lands on the payoff's word (value_beats)
+beats[idb] = [(1, 2, "keep"), (2, 5, "flat")]
 
 # ---- 03c
 idc = "03c-scoreboard-mortgage-extra-100"
@@ -417,22 +447,31 @@ year_lines[idc] = []
 READ_TOL = 0.25
 reads_expect = {
     # fixer pass: a pair read marks both ≈ $8,900 cells on "$35" (the same shown total; the VO speaks the exact gap)
+    # port (Becker Rig): Round up's crate lands on "60" and its count-down settles on "$1,800" (value_beats), so the two
+    # reads that marked its cells are gone
+    # port QA fixer: Monthly's crate on "twelve" (the lane that pays 12 a year, against the lever's 13) and Round up's
+    # crate on "year" (its shown gap to Monthly's 72 is the verdict's ≈ 1 year)
     ida: [((0, "payoff"), 1, "72"), ((0, "interest"), 1, "$10,000"), (((1, 2), "interest"), 3, "$35"),
-          ((3, "payoff"), 6, "60"), ((3, "interest"), 6, "$1,800")],
+          ((0, "payoff"), 4, "12"), ((3, "payoff"), 7, "year")],
     # fixer pass: the stake row is gone (the header shows $5,000; its highlight re-swipes on the stake read), option
     # 2's values land on their words (no reads needed), and its working "$0 more" is marked on "dollar"
-    idb: [((0, "payoff"), 0, "15"), ((0, "interest"), 1, "$7,300"), ("stake", 1, "More than you owed"),
-          (("detail", 1), 3, "dollar")],
+    # port (Scoreboard): the hero (holding ≈ 15.1 years) bumps on "fifteen"; row cells on "$7,300" and "$3,100"
+    idb: [("hero", 0, "15"), ((0, "interest"), 1, "$7,300"), ((1, "interest"), 4, "$3,100")],
     # scoreboard: a read is the hero (lookOpts.counter "interest") answering the VO while it holds option 0's score
     idc: [("hero", 0, "$587,200")],
 }
-delta_beats = {ida: [], idb: [(1, 6, "10")], idc: [(1, 3, "About $78,600"), (2, 5, "About $245,000")]}
+# (port QA fixer: 03b's options carry no delta; its winner beat is checked with heroEnd below)
+delta_beats = {ida: [], idb: [], idc: [(1, 3, "About $78,600"), (2, 5, "About $245,000")]}
 pair_exact = {ida: CAR_WK_VS_BIWK}   # the exact gap a pair read's equal cells hide
 # fixer pass: clean-sheet values pinned to their words (resultT + valueEvery per metric)
-value_beats = {ida: [], idb: [((1, "payoff"), 4, "4.8"), ((1, "interest"), 4, "$3,100"), ((2, "payoff"), 5, "2.2")], idc: []}
+# port: Becker Rig crates (resultT) on the spoken payoff; Scoreboard races (resultT) on the spoken payoff
+value_beats = {ida: [((1, "payoff"), 2, "65"), ((2, "payoff"), 3, "65"), ((3, "payoff"), 6, "60")],
+               idb: [((1, "payoff"), 4, "4.8"), ((2, "payoff"), 5, "2.2")], idc: []}
 # fixer pass: bar steps (03a) and label steps (03c): the number each one carries is on screen by the word that
 # speaks it (03a: typed by then, and no more than 0.8 s early; 03c: the slam within 0.25 s of the word)
-step_beats = {ida: [(0, 2, "$1,100"), (1, 3, "$35"), (2, 6, "$1,800")], idb: [], idc: [(0, 3, "40"), (1, 5, "11")]}
+step_beats = {ida: [(0, 2, "$1,100"), (1, 3, "$35"), (2, 6, "$1,800"), (3, 7, "$12"), (4, 7, "year")], idb: [], idc: [(0, 3, "40"), (1, 5, "11")]}
+# port (Scoreboard 03b): label steps (k, VO line, anchor word or None for frame 1)
+label_beats = {idb: [(0, 0, None), (1, 1, "More"), (2, 3, "dollar")]}
 
 # ============================================================== text helpers
 
@@ -555,10 +594,13 @@ def check_spec(sid):
     # when each option's results are on screen. live-sheet: option.t IS the landing (t <= 0 = pre-filled).
     # clean-sheet / scoreboard: option.resultT pins the landing (clean-sheet: t is when the working starts
     # typing; scoreboard: t is the hard cut that names the option).
-    land = [o.get("resultT", o["t"]) if look in ("clean-sheet", "scoreboard") else o["t"] for o in opts]
-    if look in ("clean-sheet", "scoreboard"):
-        record(sid, "every option pins its landing (resultT)", ["resultT" in o for o in opts], "all",
-               look == "scoreboard" and "resultT" in opts[0] or all("resultT" in o for o in opts))
+    # becker-rig (port): option.t is when the lane WAKES, option.resultT when its crate lands (a pre-run option, t <= 0,
+    # has landed before frame 1)
+    land = [o.get("resultT", o["t"]) if look in ("clean-sheet", "scoreboard", "becker-rig") else o["t"] for o in opts]
+    if look in ("clean-sheet", "scoreboard", "becker-rig"):
+        pins = ["resultT" in o for o in opts]
+        record(sid, "every option pins its landing (resultT)", pins, "all" if look == "clean-sheet" else "all but a pre-run first",
+               all(pins[1:]) if look == "becker-rig" else (look == "scoreboard" and pins[0] or all(pins)))
     record(sid, "R10 first values on screen", land[0], f"≤ {FIRST_VALUES_BY}", land[0] <= FIRST_VALUES_BY)
     # frame 1 = the baseline already worked out (R1 full answer, R10 shock first). clean-sheet: both metrics
     # (0.5 s apart) and the 0.38 s highlighter must have settled before t = 0
@@ -632,6 +674,10 @@ def check_spec(sid):
         if look == "clean-sheet":
             record(sid, f"option {oi} working types first (t < resultT)", (opts[oi]["t"], land[oi]), "t + 0.15 ≤ resultT",
                    opts[oi]["t"] + 0.15 <= land[oi])
+        if look == "becker-rig":
+            # the kit wakes the lane at t only if the lead-in (0.42 s) and the shortest run (0.35 s) fit before resultT
+            record(sid, f"option {oi} wakes on its word: resultT − t ≥ 0.77 s", round(land[oi] - opts[oi]["t"], 2), "≥ 0.77",
+                   land[oi] - opts[oi]["t"] >= 0.77 - 1e-9)
     # reads and delta slams on the spoken number (assembly pass)
     lo_r = spec.get("lookOpts", {}).get("reads", [])
     rx = reads_expect[sid]
@@ -643,7 +689,7 @@ def check_spec(sid):
             got_t, shown_v, on_by = rd.get("target"), d["stake"]["value"], 0.0
             ok_t = got_t == "stake"
         elif tgt == "hero":
-            # the hero holds option 0's interest from its landing until option 1's cut
+            # the hero holds option 0's value of its metric (lookOpts.counter) from its landing until option 1's cut
             got_t, shown_v, on_by = rd.get("target"), opts[0]["values"][spec["lookOpts"].get("counter", "interest")], land[0]
             ok_t = got_t == "hero" and rd["t"] < opts[1]["t"]
         elif tgt[0] == "detail":
@@ -661,8 +707,17 @@ def check_spec(sid):
             # on screen by: live-sheet t is the landing (+0.42 s for the second metric); clean-sheet resultT
             # (+ valueEvery per metric, 0.5 s by default) plus the 0.38 s highlighter
             j = keys.index(mk)
-            on_by = max((land[oi] + opts[oi].get("valueEvery", 0.5) * j + 0.38) if look == "clean-sheet" else (opts[oi]["t"] + 0.42 * j)
-                        for oi in ois)
+            # becker-rig: the crate's metric at resultT, the money value 0.45 s later (valueEvery); scoreboard: every
+            # metric with the race's landing (resultT, else the cut + the race)
+            def on_screen(oi):
+                if look == "clean-sheet":
+                    return land[oi] + opts[oi].get("valueEvery", 0.5) * j + 0.38
+                if look == "becker-rig":
+                    return land[oi] + (opts[oi].get("valueEvery", d.get("valueEvery", 0.45)) if j else 0)
+                if look == "scoreboard":
+                    return land[oi] if "resultT" in opts[oi] else opts[oi]["t"] + 0.35 + 2.4
+                return opts[oi]["t"] + 0.42 * j
+            on_by = max(on_screen(oi) for oi in ois)
         record(sid, f"reads[{k}] target", got_t, tgt, ok_t)
         record(sid, f"reads[{k}] on VO word '{kw}'", rd["t"], f"{est:.2f} ± {READ_TOL}", abs(rd["t"] - est) <= READ_TOL)
         record(sid, f"reads[{k}] value already on screen", round(on_by, 2), f"< {rd['t']}", on_by < rd["t"])
@@ -671,8 +726,10 @@ def check_spec(sid):
                 record(sid, f"reads[{k}] stake read on 'more than you owed' (interest > stake)", shown_v, val(base["interest"]),
                        val(base["interest"]) > val(shown_v))
             else:
+                # (the VO may round the hero's value to whole units: "about 15 years" for "≈ 15.1 years")
                 said = val(spoken_tok[0]) if spoken_tok else None
-                record(sid, f"reads[{k}] anchor speaks the marked value", spoken_tok, shown_v, said == val(shown_v))
+                record(sid, f"reads[{k}] anchor speaks the marked value", spoken_tok, shown_v,
+                       said is not None and (said == val(shown_v) or (said == int(said) and said == round(val(shown_v)))))
         elif tgt[0] == "detail":
             # "not a dollar more" marks the working that ends "= $0 more"
             ok = shown_v.endswith(f"= {money(0)} more") and "not a dollar more" in vo[li]["text"].lower()
@@ -684,6 +741,17 @@ def check_spec(sid):
             record(sid, f"reads[{k}] pair cells show the same total", vals_, "equal", len(set(vals_)) == 1)
             record(sid, f"reads[{k}] anchor = exact gap the equal cells hide", spoken_tok, money(gap),
                    bool(spoken_tok) and spoken_tok[0] == bare(money(gap)))
+        elif sid == ida and kw == "12":
+            # "... a year, not 12": the read marks Monthly's crate, the lane that pays 12 a year, the one the lever's
+            # 13-payment lanes leave out
+            lev = spec.get("lookOpts", {}).get("lever", {}).get("options", [])
+            record(sid, f"reads[{k}] 'not 12' marks Monthly (12 payments a year, outside the lever)", (tgt[0], lev), "0 ∉ lever",
+                   tgt[0] == 0 and 0 not in lev and opts[0]["name"] == "Monthly" and "not 12" in vo[li]["text"])
+        elif sid == ida and kw == "year":
+            # "about a year sooner": the read marks the winner's crate; its shown gap to Monthly's 72 is 12 months = ≈ 1 year
+            gap_ = val(opts[0]["values"]["payoff"]) - val(shown_v)
+            record(sid, f"reads[{k}] 'year' marks the winner's crate: shown 72 − 60 = 12 months ≈ 1 year", (tgt[0], gap_), "winner, 12",
+                   tgt[0] == d["winner"] and gap_ == 12 and num(CAR_ROUND_SOONER_YRS) == "≈ 1" and "about a year" in vo[li]["text"].lower())
         elif tgt[1] == "interest" and spoken_tok and val(spoken_tok[0]) != val(shown_v):
             # the anchor speaks the difference this cell makes against the baseline's shown value
             diff = val(opts[0]["values"]["interest"]) - val(shown_v)
@@ -705,7 +773,17 @@ def check_spec(sid):
         est = word_time(vo[li], kw)
         dt = opts[oi].get("deltaT")
         record(sid, f"option {oi} deltaT on VO words '{kw}'", dt, f"{est:.2f} ± {READ_TOL}", dt is not None and abs(dt - est) <= READ_TOL)
-        if look == "scoreboard":
+        # a winner's delta held for the verdict line (03b): the clean-sheet rules below; on the scoreboard the hero lands it
+        held = dt is not None and dt >= spec["verdict"]["t"] and oi == d["winner"]
+        if look == "scoreboard" and held:
+            lo_s = spec.get("lookOpts", {})
+            o_d = opts[oi]["delta"]
+            record(sid, f"option {oi} delta held for the verdict: the hero lands it (counter = its metric, a duration)",
+                   (lo_s.get("counter"), o_d), "payoff · '… years sooner'",
+                   lo_s.get("counter") == "payoff" and bool(re.search(r"\byears?\b", o_d)) and bool(re.search(r"\byears?\b", opts[oi]["values"]["payoff"])))
+            record(sid, f"option {oi} the hero's 1 s payoff roll starts after the verdict (winnerT − 1.04 ≥ verdict.t)",
+                   round(d.get("winnerT", 0) - 1.04, 2), f"≥ {spec['verdict']['t']}", d.get("winnerT", 0) - 1.04 >= spec["verdict"]["t"] - 1e-9)
+        if look == "scoreboard" and not held:
             record(sid, f"option {oi} deltaT after its race lands (t + 0.35 + 2.4 s at most)", dt, f"≥ {opts[oi]['t'] + 2.75:.2f}",
                    dt is not None and dt >= opts[oi]["t"] + 2.75)
             record(sid, f"option {oi} deltaT before the next option", dt, "< next t",
@@ -724,7 +802,12 @@ def check_spec(sid):
     lo_ = spec.get("lookOpts", {})
     for k, li, kw in step_beats[sid]:
         est = word_time(vo[li], kw)
-        if look == "live-sheet":
+        if look == "becker-rig":
+            # a working-slot line pops in whole at its t (no typing): by the word that speaks its number, <= 0.8 s early
+            stp = lo_["steps"][k]
+            record(sid, f"lookOpts.steps[{k}] on screen by VO word '{kw}'", stp["t"], f"{est - 0.8:.2f}-{est + 0.25:.2f}",
+                   est - 0.8 <= stp["t"] <= est + 0.25)
+        elif look == "live-sheet":
             stp = lo_["steps"][k]
             txt = stp["text"]
             tok = bare(tokens(kw)[0]) if tokens(kw) else kw
@@ -739,8 +822,14 @@ def check_spec(sid):
             record(sid, f"lookOpts.labelSteps[{k}] on VO word '{kw}'", stp["t"], f"{est:.2f} ± {READ_TOL}", abs(stp["t"] - est) <= READ_TOL)
             record(sid, f"lookOpts.labelSteps[{k}] after its race, before its delta", stp["t"],
                    f"{opts[oi]['t'] + 2.75:.2f}-{opts[oi].get('deltaT')}", opts[oi]["t"] + 2.75 <= stp["t"] < opts[oi].get("deltaT", 1e9))
-        record(sid, f"step {k} carries the number VO line {li} speaks", tokens((lo_.get("steps") or lo_.get("labelSteps"))[k]["text"]), kw,
-               any(val(x) == val(tokens(kw)[0]) for x in tokens((lo_.get("steps") or lo_.get("labelSteps"))[k]["text"])))
+        # (the VO may round it: "about $12" for $12.46; "about a year" has no digit: the step must carry the ≈ 1)
+        stoks = tokens((lo_.get("steps") or lo_.get("labelSteps"))[k]["text"])
+        if tokens(kw):
+            record(sid, f"step {k} carries the number VO line {li} speaks", stoks, kw,
+                   any(val(x) == val(tokens(kw)[0]) or round(val(x)) == val(tokens(kw)[0]) for x in stoks))
+        else:
+            record(sid, f"step {k} carries the 'about a year' VO line {li} speaks", stoks, "≈ 1",
+                   "about a year" in vo[li]["text"].lower() and num(CAR_ROUND_SOONER_YRS) in stoks)
     if sid == ida:
         # scan: on "Guess", over the columns still empty then
         sc_ = lo_.get("scan", {})
@@ -756,9 +845,105 @@ def check_spec(sid):
         record(sid, "lookOpts.countCell = the winner's interest, counted down from the baseline", cc_, "winner · interest · base",
                cc_.get("option") == d["winner"] and cc_.get("metric") == "interest" and cc_.get("from") == "base")
         # each bar step's result is the difference of the two shown totals it names (no drift)
-        for k in (0, 2):
+        for k in (0, 2, 4):
             tk = tokens(lo_["steps"][k]["text"])
             record(sid, f"lookOpts.steps[{k}] shown a − b = its ≈ result", tk, "a − b = c", abs(val(tk[0]) - val(tk[1]) - val(tk[2])) < 1e-6)
+        # port QA fixer: steps[4] works the verdict's year from the two crates on screen; "≈" only because 60 is rounded
+        tk = tokens(lo_["steps"][4]["text"])
+        record(sid, "lookOpts.steps[4]: a = Monthly's crate, b = the winner's crate (bare), ≈ on c", tk,
+               f"{opts[0]['values']['payoff']} − {bare(opts[d['winner']]['values']['payoff'])}",
+               tk[0] == opts[0]["values"]["payoff"] and tk[1] == bare(opts[d["winner"]]["values"]["payoff"])
+               and tk[2].startswith("≈ ") and not is_exact(CAR["monthly"]["months"] - CAR["rounded"]["months"], val(tk[2])) and val(tk[2]) == 12)
+        record(sid, "lookOpts.steps[4]: 12 months = the ≈ 1 year it states", (tk[2], tk[3]), "12 / 12 = 1", val(tk[2]) / 12 == val(tk[3]))
+        # the gap label: the same ≈ 12, in the crate metric's unit (months), on the winner's flag after the winner beat
+        gl_ = lo_.get("gapLabel")
+        record(sid, "lookOpts.gapLabel = the step's ≈ 12, in months ('mo'; the crate metric is months)", gl_, f"{tk[2]} mo",
+               isinstance(gl_, str) and tokens(gl_) == [tk[2]] and gl_.endswith(" mo") and "month" in d["metrics"][0]["label"].lower())
+        # the lever's second beat: the two 13-payment lanes nod again on "thirteen"
+        lb_ = lo_.get("lever", {}).get("beats", [])
+        est = word_time(vo[4], "13")
+        record(sid, "lookOpts.lever.beats[0] on VO word '13'", lb_[0] if lb_ else None, f"{est:.2f} ± {READ_TOL}",
+               len(lb_) == 1 and abs(lb_[0] - est) <= READ_TOL and lb_[0] > lo_["lever"]["t"] + 0.3)
+        # the pat: the waiting figures pat their crates on "this loan", done before the scan hops start
+        pt_ = lo_.get("pat", {})
+        est = word_time(vo[0], "this")
+        record(sid, "lookOpts.pat on VO word 'this' (\"this loan\")", pt_.get("t"), f"{est:.2f} ± {READ_TOL}",
+               pt_.get("t") is not None and abs(pt_["t"] - est) <= READ_TOL)
+        pat_end = pt_.get("t", 0) + 2 * pt_.get("every", 0.08) + 0.34
+        record(sid, "lookOpts.pat ends before the scan (3 lanes, 0.34 s each)", round(pat_end, 2), f"< {lo_['scan']['t']}",
+               pat_end < lo_["scan"]["t"] and all(o["t"] > pat_end for o in opts[1:]))
+    if look == "becker-rig":
+        # port (Becker Rig): the footer is one mono line (40 px, x 62-940: 36 characters at most), so it never leaves an
+        # orphan word and the lanes keep the height
+        ft = spec["footer"]
+        record(sid, "becker footer: one line (≤ 36 characters, no break)", f"{len(ft)} chars", "≤ 36", len(ft) <= 36 and "\n" not in ft)
+        # the working slot shows one line at a time; each holds long enough to read (>= 2 s until the next one)
+        firstRead = min([r["t"] for r in lo_.get("reads", []) if (r["option"] if isinstance(r["option"], list) else [r["option"]]) == [0]] or [2.0])
+        slot = sorted([(firstRead if i == 0 and opts[0]["t"] <= 0 else opts[i]["t"], f"formulas[{i}]") for i in range(len(lo_.get("formulas", [])))]
+                      + [(st["t"], f"steps[{k}]") for k, st in enumerate(lo_.get("steps", []))]
+                      + ([(lo_["lever"]["t"], "lever")] if "lever" in lo_ else []))
+        for (ta, na), (tb, nb) in zip(slot, slot[1:]):
+            record(sid, f"slot line {na} holds ≥ 2 s (until {nb})", round(tb - ta, 2), "≥ 2.0", tb - ta >= 2.0 - 1e-9)
+        # the counted money value (countCell) settles on the word that speaks the drop it shows
+        cc_ = lo_.get("countCell", {})
+        if cc_:
+            oi = cc_["option"]
+            settle = land[oi] + opts[oi].get("valueEvery", d.get("valueEvery", 0.45)) + 0.8
+            li = 6
+            est = word_time(vo[li], "$1,800")
+            record(sid, f"countCell: option {oi}'s count-down settles on VO word '$1,800'", round(settle, 2), f"{est:.2f} ± {READ_TOL}",
+                   abs(settle - est) <= READ_TOL)
+            drop = val(opts[0]["values"]["interest"]) - val(opts[oi]["values"]["interest"])
+            record(sid, "countCell: the count's drop (shown base − shown value) = the VO's $1,800", drop, val("$1,800"), drop == val("$1,800"))
+    if sid == idb:
+        lo_s = spec.get("lookOpts", {})
+        # port (Scoreboard): the hero rolls the payoff (time): frame 1 is the hook's first spoken number, in red
+        record(sid, "scoreboard hero = the payoff metric (frame 1: '≈ 15.1 years', red)", (lo_s.get("counter"), opts[0]["values"]["payoff"], opts[0]["tone"]),
+               "payoff · ≈ 15.1 years · bad", lo_s.get("counter") == "payoff" and opts[0]["values"]["payoff"] == years_disp(CARD["min"]["years"]) and opts[0]["tone"] == "bad")
+        # keepSpeed: every later race keeps the shared speed (2.4 s for the longest bar, >= 0.7 s) and starts after its
+        # cut, so no bar crawls and no intermediate figure holds the screen
+        record(sid, "lookOpts.keepSpeed", lo_s.get("keepSpeed"), True, lo_s.get("keepSpeed") is True)
+        longest = max(val(o["values"]["payoff"]) for o in opts)
+        for i, o in enumerate(opts[1:], 1):
+            dur_ = min(2.4, max(0.7, 2.4 * val(o["values"]["payoff"]) / longest))
+            st_ = land[i] - dur_
+            record(sid, f"option {i} race starts after its cut + 0.35 s (shared speed)", round(st_, 2), f"≥ {o['t'] + 0.35:.2f}", st_ >= o["t"] + 0.35)
+        # the label steps: the note at frame 1 (hook pass: the shrink in numbers within 1.5 s), the others on their words,
+        # each while its option holds the label stack
+        for k, li, kw in label_beats[sid]:
+            stp = lo_s["labelSteps"][k]
+            if kw is None:
+                record(sid, f"lookOpts.labelSteps[{k}] on screen at frame 1", stp["t"], "0.0", stp["t"] == 0.0)
+            else:
+                est = word_time(vo[li], kw)
+                record(sid, f"lookOpts.labelSteps[{k}] on VO word '{kw}'", stp["t"], f"{est:.2f} ± {READ_TOL}", abs(stp["t"] - est) <= READ_TOL)
+            oi = stp["option"]
+            nxt = opts[oi + 1]["t"] if oi + 1 < len(opts) else spec["verdict"]["t"]
+            record(sid, f"lookOpts.labelSteps[{k}] while option {oi} holds the stack", (opts[oi]["t"], stp["t"], nxt), "t_opt ≤ t < next",
+                   opts[oi]["t"] <= stp["t"] < nxt)
+        record(sid, "labelSteps[1] 'More than the $5,000 owed': interest > stake", (opts[0]["values"]["interest"], money(CARD_B)), "> $5,000",
+               val(opts[0]["values"]["interest"]) > CARD_B and CARD["min"]["interest"] > CARD_B)
+        record(sid, "labelSteps[2] '$0 more' answers 'not a dollar more' and option 1's working", opts[1]["detail"], f"… = {money(0)} more",
+               opts[1]["detail"].endswith(f"= {money(0)} more") and "not a dollar more" in vo[3]["text"].lower())
+        # port QA fixer: one focal "≈ 10 years sooner" (the verdict's). The winner beat rolls the hero from ①'s payoff down
+        # to ②'s own and lands it on "ten"; no option carries a delta (③'s "≈ 13 years sooner" is write-up only)
+        record(sid, "no option carries a delta (the verdict alone says '≈ 10 years sooner')", [o.get("delta") for o in opts], "none",
+               not any("delta" in o or "deltaT" in o for o in opts))
+        record(sid, "lookOpts.heroEnd = 'value' (the hero lands ②'s own payoff; no endTag)", (lo_s.get("heroEnd"), lo_s.get("endTag")), "value · none",
+               lo_s.get("heroEnd") == "value" and "endTag" not in lo_s)
+        est = word_time(vo[6], "10")
+        record(sid, "data.winnerT (the hero lands ≈ 4.8) on VO word '10'", d.get("winnerT"), f"{est:.2f} ± {READ_TOL}",
+               d.get("winnerT") is not None and abs(d["winnerT"] - est) <= READ_TOL)
+        record(sid, "the hero's 1 s roll starts after the verdict (winnerT − 1.04 ≥ verdict.t)", round(d.get("winnerT", 0) - 1.04, 2),
+               f"≥ {spec['verdict']['t']}", d.get("winnerT", 0) - 1.04 >= spec["verdict"]["t"] - 1e-9)
+        shown_gap = val(opts[0]["values"]["payoff"]) - val(opts[d["winner"]]["values"]["payoff"])
+        record(sid, "the hero's roll (① 15.1 → ② 4.8) shows the verdict's ≈ 10: shown 15.1 − 4.8 rounds to it",
+               (opts[0]["values"]["payoff"], opts[d["winner"]]["values"]["payoff"], round(shown_gap, 1)), num(CARD_SOONER_F1),
+               num(shown_gap) == num(CARD_SOONER_F1) == "≈ 10" and tokens(spec["verdict"]["text"])[-1] == "≈ 10")
+        record(sid, "frame-1 label step one size down (the hero is the focal number)", lo_s["labelSteps"][0].get("small"), True,
+               lo_s["labelSteps"][0].get("small") is True and lo_s["labelSteps"][0]["t"] == 0.0)
+        record(sid, "no '13 years' anywhere on screen (write-up only)", "", "absent",
+               not any(re.search(r"\b13 years", x) for _, x in string_leaves(spec)))
     for li in year_lines[sid]:
         record(sid, f"vo[{li}] says 'about a year'", vo[li]["text"], "contains 'about a year'", "about a year" in vo[li]["text"].lower())
     anchors = ts + [spec["verdict"]["t"]] + [line["t"] for line in vo]
@@ -775,7 +960,7 @@ def check_spec(sid):
     if "checkT" in lo:
         record(sid, "lookOpts.checkT on a beat", lo["checkT"], "an option/VO/verdict t",
                any(abs(lo["checkT"] - a) < 1e-9 for a in anchors))
-    if look == "live-sheet" and "formulas" in lo:
+    if look in ("live-sheet", "becker-rig") and "formulas" in lo:
         record(sid, "lookOpts.formulas: one per option", len(lo["formulas"]), len(opts), len(lo["formulas"]) == len(opts))
     for cue in spec.get("sfx", []):
         record(sid, f"sfx {cue['kind']} on a beat", cue["t"], "an option/VO/verdict t", any(abs(cue["t"] - a) < 1e-9 for a in anchors))
@@ -826,6 +1011,9 @@ claim(idb, "caption states no interest saving: shown 7,300 − 3,100 drifts from
 claim(idb, "pinned: rounding up to $150 ($7.41 above) only takes it from 57 months to 52",
       (money(CARD_150_OVER_MIN, 0.01), CARD_FLAT_FIRST["n"], CARD[150]["n"]), "($7.41, 57, 52)",
       money(CARD_150_OVER_MIN, 0.01) == "$7.41" and CARD_FLAT_FIRST["n"] == 57 and CARD[150]["n"] == 52)
+claim(idb, "write-up only: a flat $250 is ≈ 13 years sooner than the minimum (shown 15.1 − 2.2 = 12.9 rounds the same)",
+      (num(CARD_SOONER[250], 2), round(rnd(CARD["min"]["years"], 0.1) - rnd(CARD[250]["years"], 0.1), 1)), "≈ 13",
+      num(CARD_SOONER[250]) == "≈ 13" and num(rnd(CARD["min"]["years"], 0.1) - rnd(CARD[250]["years"], 0.1)) == "≈ 13")
 lo_card = card_case(BANKRATE_AUG_2026)
 hi_card = card_case(FED_G19_Q2_2026)
 claim(idb, "verdict holds at 19.56% and 22.15%: the first minimum held flat ≈ 10 yrs sooner",

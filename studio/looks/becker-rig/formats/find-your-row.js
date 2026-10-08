@@ -16,9 +16,10 @@
 //            "the last few px" (never through the row above): the light cells fall that far; the emphasised cell is
 //            the heavy one: it pops in (never under 41 px), lands with a squash, and its plank bows under it and
 //            springs back. The newest emphasised value is green and settles to ink when the next row lands (the
-//            last one after 0.8 s); the key turns from dim to ink. While a pick is lit, rows land straight in ink
-//            (the picked row stays the only green thing on screen). Sound: a soft `thud` per row (0.15 under a lit
-//            pick); a fast fill (rows < 0.3 s apart) is one `roll` over the run plus a `thud` on its last row.
+//            last one after 0.8 s; when a pick lights in that frame it snaps to ink with the pick's glow, in 0.1 s);
+//            the key turns from dim to ink. While a pick is lit, rows land straight in ink (the picked row stays the
+//            only green thing on screen). Sound: a soft `thud` per row (0.15 under a lit pick); a fast fill (rows
+//            < 0.3 s apart) is one `roll` over the run plus a `thud` on its last row.
 //   Pick     the figure crouches and leaps up (or hops down) the pegs to the picked row (`swipe` on a big take-off,
 //            `step` on landing) and points at it, his hand pinned to the row's left end by IK. The row lifts off its
 //            ledge (as far as the pitch allows, often 0 in a dense table) and lights in the emphasised column's tone
@@ -32,14 +33,17 @@
 //   Compare  a pick named in lookOpts.compare is measured: he gets to row `from`'s peg (a jump, or an early first
 //            compare starts him there), takes the pencil from behind his head (`tick`), sets it on row `from` and
 //            steps down (or up) the pegs to the picked row, one leg per peg, drawing a bracket beside the keys as he
-//            goes (`swipe`; its ticks stop 14 px short of the keys). Its label is an ink-rimmed pill (on the shelf;
-//            in the table: between the two rows when the gap holds it, else under the lower one). Row `from` keeps a
-//            soft grey frame while the bracket is up.
+//            goes (`swipe`; drawn at the look's prop stroke, 10 px; its ticks stop >= 13 px short of the keys). Its
+//            label is an ink-rimmed pill (on the shelf; in the table: between the two rows when the gap holds it,
+//            else under the lower one). Row `from` is the reference while the bracket is up: a soft grey band
+//            behind it (red text keeps 3.5:1 on it) and its ledge in solid ink, so the row reads as underlined.
 //   Payoff   the last pick is the climax (the last labelled pick, or the lookOpts.verdictRow pick when that comes
 //            later): as it lands, its emphasised value turns ink on a gold plate (coin fill, whatever the column's
 //            tone; an ink rim when the pitch allows) with the impact kit (hit lines fanning right of the plate, a shake,
 //            a 2% punch, `hit`, then `cash` unless the column is a cost or the verdict lands on it). It is the only
-//            impact in the short. Its label, the glow and the plate hold through the verdict.
+//            impact in the short. On the note shelf its label is 48 px when that fits (one line), popping with the
+//            plate. Its label, the glow and the plate hold through the verdict. The plate stays 3 px clear of the
+//            row above's plank (at a tight pitch its "$" may reach a few px past the plate's top edge).
 //   Verdict  the chrome's verdict in the caption band (its `ding` is skipped when the spec cues one at verdict.t).
 //            He nods and keeps pointing at the last pick (lookOpts.endPose).
 //   Loop     (lookOpts.loop, default on) the finished table holds (the cover frame), then in the last 0.7 s it
@@ -55,11 +59,13 @@
 // bottom-aligned, >= 40 px apart: house caps (.07em, then .04em) on at most two lines, else sentence case on up to
 // three (`__x__` red, `**x**` green, `\n` forces a break; a column's tone colours its head). The notes are scored
 // against the type: the formula (a mono 40 px line or two, numbers in ink) is worth 8 px of value type, on the note
-// shelf ("foot", shared with the labels: it shows whenever no label is up) or under the footer ("top"); labels that
+// shelf ("foot", shared with the labels: it shows whenever no label is up; right-aligned, it may reach 40 px left of
+// the keys, short of the pegs, to stay on one line) or under the footer ("top"); labels that
 // cover no row (on the shelf, or in a table roomy enough to tuck them between rows) are worth 8 px more. When the
 // table cannot spare the formula a line, it shows in the caption band while no caption is up (a gap >= 1.4 s
 // before the verdict), else it is dropped with a console warning. The figure is 0.72 when the width allows (0.62,
-// 0.56, 0.5 otherwise). When nothing fits at 40 px: a pick grows 3%, the figure goes to 0.42, then no figure (the
+// 0.56, 0.5 otherwise). The shelving post stands at x 22; in the poses he holds on screen (hand on chin, the
+// shrug, pointing) his pencil and limbs stay >= 12 px right of its centre line, >= 26 px inside the frame in any. When nothing fits at 40 px: a pick grows 3%, the figure goes to 0.42, then no figure (the
 // table takes the full width), and only then 36 / 34 px values (the linter warns). A short table sits mid-frame
 // with a taller pitch. Real limits: 3 columns x 14 rows, or 4 columns of values up to ~8 characters.
 //
@@ -72,6 +78,16 @@
 // lookOpts (all optional; it renders fully without them). compare and verdictRow mean the same as in the live-sheet
 // and clean-sheet kits, so a port keeps them:
 //   compare: [{ pick, from }]   pick number `pick` (its index in data.pick) is measured from row `from` (any row)
+//                               start (optional, s): a timed compare. He sets off for row `from` at `start` (the
+//                               VO word that starts the comparison), row `from` takes its grey frame as he lands
+//                               on it, he takes the pencil at once and the bracket fills the time up to the pick,
+//                               so the plate lands on the word the pick is timed to (default: he arrives just in
+//                               time for the pick, a quick draw)
+//   beats: [{ t, act, d }]      scripted acts: a POSES name (or a local pose: think, crouch, grab, ...) played over
+//                               his track from t for d s (default 1.2), easing in 0.2 s and out 0.25 s; the pinned
+//                               pointing hand wins while a pick holds. A beat that starts while a pick holds also
+//                               taps its value (the picked emphasised cell pulses 5%, its plank dips 3 px), so the
+//                               act lands on the number being said. No sound of their own
 //   verdictRow: 2               at verdict.t, row 2 is picked too (he goes there; no label, no extra sound)
 //   prefill: 3                  the first 3 rows are already stocked at frame 1, whatever rowsT says
 //   pillHold: 2                 the longest an in-table label stays up (s); on a shelf shared with the formula, a
@@ -89,7 +105,7 @@
 //                               'shrug' | 'slump' | 'think' (default 'celebrate' when there are no picks)
 import {
   h, s, style, attr, prog, clamp, lerp, plain, markup, toneOf,
-  C, F, L, E, RIG, POSES, poseOf, poseTrack, fk, secondary, Figure, makeWorld, makeFx, camera, NumObj, pinLimb,
+  C, F, L, E, S as STROKE, RIG, POSES, poseOf, poseTrack, blendPose, fk, secondary, Figure, makeWorld, makeFx, camera, NumObj, pinLimb,
   chromeParts, durationOf, measure, squashAt, fall, popIn, springStep, arc, bump, wordTokens,
 } from '../lib.js'
 
@@ -131,6 +147,13 @@ const SHELF_PAD = [8, 6]   // the note shelf: px under the last row's plank, and
 const SHELF_IN = 12        // the shelf's pills may start this far left of the keys
 const W_FORM = 8, W_NOTES = 8   // the formula / labels that cover no row are worth this many px of value type
 const LOOP = 0.7           // the loop clear (s)
+const POST_X = 22          // the shelving post (x of its centre line; 8 px wide)
+const POST_CLEAR = 12      // in the poses he holds on screen, his pencil and limbs stay this far right of the post's centre
+const FORM_IN = 40         // the formula on the note shelf may reach this far left of the keys (the pegs stop short of it)
+const PILL_BIG = 48        // the payoff's shelf label (it pops with the plate): 48 px on one line when it fits
+const BRK_W = STROKE.prop  // the compare bracket: the look's prop stroke, so it reads beside the figure
+const BRK_TICK = 10        // its end ticks (they stop >= 13 px short of the keys: a tick that close reads as a minus)
+const REF_BAND = '#F1F3F6'    // a compare's reference row: a soft grey band (red text keeps 3.5:1 on it) and an ink ledge while the bracket is up
 
 const esc = x => String(x).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 const rgbOf = c => (c[0] === '#' ? [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16)) : c.match(/[\d.]+/g).slice(0, 3).map(Number))
@@ -197,7 +220,12 @@ export default function findYourRow(spec, ctx) {
     .map(p => ({ t: +p.t, row: p.row, label: p.label != null && String(p.label).trim() ? String(p.label) : '', idx: p.idx, from: null }))
   for (const c of Array.isArray(lo.compare) ? lo.compare : []) {
     const pk = picks.find(p => c && p.idx === c.pick)
-    if (pk && Number.isInteger(c.from) && c.from >= 0 && c.from < N && c.from !== pk.row) pk.from = c.from
+    if (pk && Number.isInteger(c.from) && c.from >= 0 && c.from < N && c.from !== pk.row) {
+      pk.from = c.from
+      // a timed compare: he sets off for row `from` at `start` (on the VO word) and the bracket fills the time to
+      // the pick, so the measuring plays under the line that names it
+      if (c.start != null && Number.isFinite(+c.start) && +c.start < pk.t - 0.8) pk.cstart = +c.start
+    }
   }
   if (Number.isInteger(lo.verdictRow) && lo.verdictRow >= 0 && lo.verdictRow < N && vt != null) picks.push({ t: vt, row: lo.verdictRow, label: '', idx: -1, from: null, quiet: true })
   picks.sort((a, b) => a.t - b.t)
@@ -261,16 +289,30 @@ export default function findYourRow(spec, ctx) {
   const wKey = (str, px) => mw(str, fnt(800, px), { letterSpacing: '-0.02em' })
   const wVal = (str, px, wt) => mw(str, fnt(wt, px), { letterSpacing: '-0.03em' }) + (str.trim().split(/\s+/).length - 1) * 0.14 * px
 
-  // pill sizing at a max width: 42 px on one line, else 40 px, else two balanced lines at 40 px (DOM-measured)
+  // pill sizing at a max width: 42 px on one line, else 40 px, else two balanced lines at 40 px (DOM-measured). The
+  // payoff's shelf label (big) is 48 px on one line when that fits, else sized as any other
   const pc = new Map()
-  function sizePill(html, maxW) {
+  function sizePill(html, maxW, big = false) {
     maxW = Math.floor(maxW)
-    const key = maxW + '|' + html
+    const key = maxW + '|' + (big ? 'B|' : '') + html
     let r = pc.get(key)
     if (r) return r
     const el = h('div', { class: 'fy-pill' })
     el.innerHTML = html
     fixed.append(el)
+    if (big) {
+      style(el, { fontSize: PILL_BIG + 'px', lineHeight: (PILL_BIG + 4) + 'px' })
+      if (el.offsetWidth <= maxW) {
+        r = { px: PILL_BIG, lh: PILL_BIG + 4, two: false, w: el.offsetWidth, h: el.offsetHeight, width: '', lines: 1 }
+        el.remove()
+        pc.set(key, r)
+        return r
+      }
+      el.remove()
+      r = sizePill(html, maxW, false)
+      pc.set(key, r)
+      return r
+    }
     let px = 42
     if (el.offsetWidth > maxW) { px = 40; el.style.fontSize = '40px' }
     if (el.offsetWidth > maxW) {
@@ -351,27 +393,31 @@ export default function findYourRow(spec, ctx) {
     return out
   }
 
-  // the figure's gutter for a scale k: he stands on the pegs with his pencil >= 26 px inside the frame, and his
-  // pointing hand reaches the keys' left edge
+  // the figure's gutter for a scale k: he stands on the pegs with his pencil >= 26 px inside the frame (in every
+  // pose), clear of the shelving post in the poses he holds on screen (hand on chin, looking up or along the
+  // shelves; the shrug; pointing), and his pointing hand reaches the keys' left edge
   const probe = s('g')
   function zoneFor(k) {
     const f = new Figure(probe, { scale: k })
-    let minX = Infinity
-    for (const p of [PZ.think, PZ.point, PZ.crouch, PZ.airUp, PZ.airDown, PZ.land, PZ.grab, 'celebrate', 'shrug']) {
-      minX = Math.min(minX, f.extentX(fk(poseOf(p), { x: 0, ground: 1000, scale: k }))[0])
-    }
-    const FX = Math.ceil(26 - minX)
+    const ext = p => f.extentX(fk(poseOf(p), { x: 0, ground: 1000, scale: k }))[0]
+    let minX = Infinity, minHold = Infinity
+    for (const p of [PZ.think, PZ.point, PZ.crouch, PZ.airUp, PZ.airDown, PZ.land, PZ.grab, 'celebrate', 'shrug']) minX = Math.min(minX, ext(p))
+    for (const p of [PZ.think, { ...PZ.think, tilt: -26 }, { ...PZ.think, tilt: 6 }, PZ.point, 'shrug']) minHold = Math.min(minHold, ext(p))
+    const FX = Math.ceil(Math.max(26 - minX, POST_X + POST_CLEAR - minHold))
     const Jp = fk(poseOf(PZ.point), { x: FX, ground: 1000, scale: k })
     const X0 = Math.ceil(Jp.sh[0] + 0.84 * (RIG.upperArm + RIG.foreArm) * k + 18)
     return { k, FX, X0 }
   }
 
-  // the note shelf under the last row: the tallest label (at the shelf's width) and / or the formula
+  // the note shelf under the last row: the tallest label (at the shelf's width) and / or the formula (a right-aligned
+  // footnote: it may reach a little further left, short of the pegs, to stay on one line)
   const shelfPillMax = z => XR + PILL_BW - (z.X0 - SHELF_IN)
+  const shelfFormMax = z => XR + PILL_BW - (z.X0 - FORM_IN)
+  const bigPill = pk => pk === climax && plateOn
   function shelfContentH(z, fm, ls) {
     let hh = 0
-    if (ls) for (const pk of labelled) { const r = sizePill(pillHTML(pk), shelfPillMax(z)); if (r.lines > 2) return -1; hh = Math.max(hh, r.h) }
-    if (fm === 'foot') { const n = formLinesAt(shelfPillMax(z)); if (n > 2) return -1; hh = Math.max(hh, n * FORM_LH) }
+    if (ls) for (const pk of labelled) { const r = sizePill(pillHTML(pk), shelfPillMax(z), bigPill(pk)); if (r.lines > 2) return -1; hh = Math.max(hh, r.h) }
+    if (fm === 'foot') { const n = formLinesAt(shelfFormMax(z)); if (n > 2) return -1; hh = Math.max(hh, n * FORM_LH) }
     return hh
   }
 
@@ -502,7 +548,7 @@ export default function findYourRow(spec, ctx) {
     if (FM === 'top') style(formEl, { top: top0 + 'px', width: '878px' })
     else if (FM === 'foot') {
       // (right-aligned under the values, like the labels that take turns with it)
-      const fw = shelfPillMax(lay.z), fh = formLinesAt(fw) * FORM_LH
+      const fw = shelfFormMax(lay.z), fh = formLinesAt(fw) * FORM_LH
       formEl.classList.add('foot')
       style(formEl, { left: (XR + PILL_BW - fw) + 'px', width: fw + 'px', top: (shelfTop + (lay.sc - fh) / 2).toFixed(0) + 'px' })
     } else {
@@ -555,7 +601,7 @@ export default function findYourRow(spec, ctx) {
   const tints = rows.map((_, i) => {
     // (its top edge runs halfway between the ledge above and the caps, never along the row above's plank)
     const y0 = i ? (ledgeY(i - 1) + base(i) - 0.75 * ep) / 2 : base(0) - 0.97 * ep - 2, y1 = ledgeY(i) + 5
-    const el = s('rect', { x: bandX0 + 2, width: bandX1 - bandX0 - 4, y: y0.toFixed(1), height: (y1 - y0).toFixed(1), rx: 13, fill: 'none', stroke: C.line, 'stroke-width': 4, opacity: 0, 'data-deco': '' })
+    const el = s('rect', { x: bandX0, width: bandX1 - bandX0, y: y0.toFixed(1), height: (y1 - y0).toFixed(1), rx: 13, fill: REF_BAND, opacity: 0, 'data-deco': '' })
     g.back.append(el)
     return el
   })
@@ -565,7 +611,6 @@ export default function findYourRow(spec, ctx) {
   const pegY = []
   for (let i = 0; i < N; i++) pegY.push(ledgeY(i))
   for (let y = ledgeY(N - 1) + pitch; y < L.floorY - 0.6 * pitch; y += pitch) pegY.push(y)
-  const POST_X = 34
   // the compare bracket's x: its ticks end 14 px short of the keys (a tick that close reads as a minus sign); the
   // pegs stop short of it
   const XB = X0 - 28
@@ -586,6 +631,12 @@ export default function findYourRow(spec, ctx) {
     g.back.append(el)
     return el
   })
+  // (a compare's reference row: its ledge in solid ink while the bracket is up)
+  const refLedges = rows.map((_, i) => {
+    const el = s('line', { x1: X0 - 10, x2: (plankX(i)[0] - 12).toFixed(1), y1: ledgeY(i).toFixed(1), y2: ledgeY(i).toFixed(1), fill: 'none', stroke: C.ink, 'stroke-width': PLANK, 'stroke-linecap': 'round', opacity: 0, 'data-deco': '' })
+    g.back.append(el)
+    return el
+  })
   const planks = rows.map(() => { const el = s('path', { fill: 'none', stroke: C.ink, 'stroke-width': PLANK, 'stroke-linecap': 'round' }); g.mid.append(el); return el })
 
   // the payoff's gold plate (under the value: built before the cells). It fills the free band between the
@@ -595,9 +646,12 @@ export default function findYourRow(spec, ctx) {
     const i = climax.row, sc = PSC
     const anchor = boxB(i, ep) - liftMax(i)                    // the value's bottom edge (its scale anchor), lifted
     const top = anchor - (0.14 + 0.8) * ep * sc, bot = anchor + 0.03 * ep * sc   // its "$" top and comma bottom
-    const yA = i > 0 ? base(i - 1) + 0.17 * ep + 3 : lay.yHeads + lay.headH + 3
+    // (3 px clear of the row above's ink and of its plank: at a tight pitch the plate's top runs just under the plank
+    // and the "$" may reach a few px past it, rather than the plate fusing with the plank)
+    const yA = i > 0 ? Math.max(base(i - 1) + 0.17 * ep + 3, ledgeY(i - 1) + PLANK / 2 + 3) : lay.yHeads + lay.headH + 3
     const yB = i < N - 1 ? base(i + 1) - 0.8 * ep - 3 : Math.min(L.floorY - 6, shelfTop - 3)
-    const padT = clamp(top - yA, 2, 14), padB = clamp(yB - bot, 2, 14)
+    const dT = top - yA
+    const padT = dT >= 2 ? Math.min(14, dT) : Math.max(dT, -6), padB = clamp(yB - bot, 2, 14)
     const bw = Math.min(padT, padB) >= 9 ? 4 : Math.min(padT, padB) >= 6 ? 3 : 0
     const x1 = right[EM] + 14, x0 = Math.min(right[EM] - wEm[i] * sc - 14, right[EM] - wEmMax - 8)
     pb = { i, x0, y0: top - padT, w: x1 - x0, h: bot + padB - (top - padT), bw, yA, yB }
@@ -641,7 +695,13 @@ export default function findYourRow(spec, ctx) {
         const drawDur = dyv => clamp(0.32 + 0.0012 * Math.abs(dyv), 0.36, 0.8) + 0.42
         if (Math.abs(yF - curY) > 1) {
           const jf = clamp(0.22 + 0.0005 * Math.abs(yF - curY), 0.24, 0.5), jc = Math.abs(yF - curY) > 160 ? 0.2 : 0.14
-          if (n === 0 && tArr - drawDur(y1 - yF) - jf - jc - 0.25 < 0.4) { startY = curY = yF; curT = 0 }
+          if (pk.cstart != null && pk.cstart >= curT + 0.1 && pk.cstart + jc + jf + 0.25 + 0.6 <= tArr) {
+            // (timed: the hop to row `from` takes off at `start`)
+            const c0 = pk.cstart, land = c0 + jc + jf
+            pk.pre2 = { kind: 'jump', c0, up: c0 + jc, land, y0: curY, y1: yF, dy: yF - curY, pk: null }
+            moves.push(pk.pre2)
+            curY = yF; curT = land
+          } else if (n === 0 && tArr - drawDur(y1 - yF) - jf - jc - 0.25 < 0.4) { startY = curY = yF; curT = 0 }
           else if (tArr - curT - 0.25 >= drawDur(y1 - yF) + jf + jc + 0.15) {
             const land = tArr - drawDur(y1 - yF) - 0.1
             pk.pre2 = { kind: 'jump', c0: land - jf - jc, up: land - jf, land, y0: curY, y1: yF, dy: yF - curY, pk: null }
@@ -653,6 +713,8 @@ export default function findYourRow(spec, ctx) {
         let fl = clamp(0.32 + 0.0012 * Math.abs(dyd), 0.36, 0.8), gr = 0.42
         const room = tArr - curT - 0.25
         if (room < fl + gr) { const q = Math.max(0.4, room / (fl + gr)); fl *= q; gr *= q }
+        // (timed: he takes the pencil as soon as he stands on row `from`, and draws until the pick lands)
+        else if (pk.cstart != null) fl = Math.max(fl, tArr - Math.max(curT + 0.25, pk.cstart) - gr)
         m = { kind: 'draw', g0: tArr - fl - gr, c0: tArr - fl, up: tArr - fl, land: tArr, y0: curY, y1, dy: dyd, pk }
       } else if (Math.abs(dy) < 1) {
         m = { kind: 'stay', c0: tArr - 0.2, up: tArr - 0.08, land: tArr, y0: curY, y1, dy: 0, pk }
@@ -685,11 +747,11 @@ export default function findYourRow(spec, ctx) {
 
   // ================================================================== labels: pills, the cells they hide
   const pills = []
-  function makePill(pk, { border, caret, maxW }) {
-    const r = sizePill(pillHTML(pk), maxW)
+  function makePill(pk, { border, caret, maxW, big = false }) {
+    const r = sizePill(pillHTML(pk), maxW, big)
     const el = h('div', { class: 'fy-pill' + (r.two ? ' two' : '') })
     el.innerHTML = pillHTML(pk)
-    style(el, { borderColor: border, fontSize: r.px + 'px', ...(r.two ? { width: r.width } : {}) })
+    style(el, { borderColor: border, fontSize: r.px + 'px', ...(r.lh ? { lineHeight: r.lh + 'px' } : {}), ...(r.two ? { width: r.width } : {}) })
     world.html.append(el)
     const w = el.offsetWidth, hh = el.offsetHeight
     // the pop never takes its text under 41 px (the type floor), so 40 px text only fades and slides in
@@ -740,7 +802,8 @@ export default function findYourRow(spec, ctx) {
     let pl
     if (SHELF) {
       // the note shelf: right-aligned under the values, centred in the shelf; it covers no row
-      pl = makePill(pk, { border: pk.from != null ? C.ink : HI.fill, caret: null, maxW: shelfPillMax(lay.z) })
+      // (the payoff's label is 48 px when it fits: it pops with the plate and the impact)
+      pl = makePill(pk, { border: pk.from != null ? C.ink : HI.fill, caret: null, maxW: shelfPillMax(lay.z), big: bigPill(pk) })
       pl.x0 = XR + PILL_BW - pl.w
       pl.y0 = shelfTop + (lay.sc - pl.h) / 2
       // (sharing the shelf with the formula: give it back after a while, when the formula then gets >= 1.2 s)
@@ -838,11 +901,13 @@ export default function findYourRow(spec, ctx) {
 
   // the compare bracket (pencil): drawn as he steps from row `from` to the picked row; up while the pick is
   const brackets = picks.filter(pk => pk.from != null).map(pk => {
-    const el = s('path', { fill: 'none', stroke: C.ink, 'stroke-width': 6, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', opacity: 0, 'data-deco': '' })
+    const el = s('path', { fill: 'none', stroke: C.ink, 'stroke-width': BRK_W, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', opacity: 0, 'data-deco': '' })
     g.mid.append(el)
     const m = pk.move
     const d0 = showFig ? m.up : pk.t - 0.4, d1 = showFig ? m.land : pk.t - 0.04
-    return { el, pk, d0, d1 }
+    // (a timed compare marks row `from` as soon as he stands on it)
+    const tint0 = pk.cstart != null && showFig ? (pk.pre2 ? pk.pre2.land : m.g0) : d0
+    return { el, pk, d0, d1, tint0 }
   })
   const pencil = showFig && brackets.length ? pencilProp(FIGK) : null
   if (pencil) g.front.append(pencil)
@@ -934,7 +999,7 @@ export default function findYourRow(spec, ctx) {
   const glowOf = (i, t) => { const pk = pickOn(i, t); return pk ? (pk.pre ? 1 : clamp((t - pk.tg) / 0.1)) * (1 - clamp((t - pk.end) / 0.16)) : 0 }
   const tintOf = (i, t) => {
     let v = 0
-    for (const b of brackets) if (b.pk.from === i) v = Math.max(v, clamp((t - b.d0) / 0.15) * (1 - clamp((t - b.pk.end) / 0.16)))
+    for (const b of brackets) if (b.pk.from === i) v = Math.max(v, clamp((t - b.tint0) / 0.15) * (1 - clamp((t - b.pk.end) / 0.16)))
     return v
   }
   // a heavy cell's plank sags on impact and springs back
@@ -953,6 +1018,8 @@ export default function findYourRow(spec, ctx) {
   const plateSq = clamp(1 - 41.5 / ep, 0, 0.1)        // (the plate lands before the pick has grown the value)
   // one focal point: the newest heavy value is green until the next row lands (the last one: 0.8 s) or a pick
   // lights; a row that lands while a pick is lit is born in ink
+  // (a value that settles because a pick lights snaps to ink in the frames the pick's glow comes up: two greens never
+  // share the screen)
   const litAt = x => picks.some(p => x >= p.tg && x < p.end + 0.16)
   const settleT = rows.map((_, i) => {
     if (landT[i] > 0 && litAt(landT[i])) return -Infinity
@@ -962,11 +1029,12 @@ export default function findYourRow(spec, ctx) {
     for (const p of picks) if (p.tg > landT[i]) n = Math.min(n, p.tg)
     return n
   })
+  const settleD = settleT.map(x => (picks.some(p => p.tg > 0 && Math.abs(p.tg - x) < 1e-6) ? 0.1 : 0.25))
   // the heavy cell's colour: fresh (green) until it settles, the pick's tone while lit, ink on the gold plate
   const freshC = emTone === 'bad' ? C.red : emTone === 'goal' || emTone === 'neutral' ? C.ink : C.heroInk
   const settledC = emTone === 'bad' ? C.red : C.ink
   const emColor = (i, t, glow) => {
-    let c = mixc(freshC, settledC, settleT[i] === -Infinity ? 1 : prog(t, settleT[i], 0.25))
+    let c = mixc(freshC, settledC, settleT[i] === -Infinity ? 1 : prog(t, settleT[i], settleD[i]))
     c = mixc(c, HI.text, glow)
     if (pb && i === pb.i) c = mixc(c, C.ink, prog(t, climax.t, 0.1) * glow)
     return c
@@ -1040,9 +1108,26 @@ export default function findYourRow(spec, ctx) {
   const look0 = showFig ? lookTilt(0) : 0
   const loopSettle = loopMove ? loopMove.land + 0.04 : loopT0 + 0.1
 
+  // scripted acts (lookOpts.beats): a pose played over the track for d s, easing in over 0.2 s and out over 0.25 s
+  // (the pinned pointing hand still wins while a pick holds)
+  const beats = (Array.isArray(lo.beats) ? lo.beats : [])
+    .filter(b => b && Number.isFinite(+b.t) && (POSES[b.act] || PZ[b.act]))
+    .map(b => ({ t: +b.t, d: Math.max(0.5, Number.isFinite(+b.d) ? +b.d : 1.2), pose: PZ[b.act] || b.act }))
+  // a beat that starts while a pick holds also taps its value: the picked row's emphasised cell pulses (5%) and its
+  // plank dips (3 px), silently, so the act lands on the number being said
+  const pulses = beats.map(b => { const pk = picks.find(p => p.tg <= b.t && b.t < p.end); return pk ? { row: pk.row, t0: b.t + 0.06, d: 0.4 } : null }).filter(Boolean)
+  const pulseOf = (i, t) => { let v = 0; for (const q of pulses) if (q.row === i) v = Math.max(v, bump(t, q.t0, q.d)); return v }
+  const withBeats = (P, t) => {
+    for (const b of beats) {
+      const w = E.out(prog(t, b.t, 0.2)) * (1 - E.inOut(prog(t, b.t + b.d - 0.25, 0.25)))
+      if (w > 0) P = blendPose(P, b.pose, w)
+    }
+    return P
+  }
+
   function drawFigure(t) {
-    let P = tr.at(t)
-    const prev = tr.at(t - 0.07)
+    let P = withBeats(tr.at(t), t)
+    const prev = withBeats(tr.at(t - 0.07), t - 0.07)
     // before he first sets off: his head follows the rows as they land (he reads the shelves)
     if (startRow == null && t < firstDepart + 0.1) P = { ...P, tilt: lerp(P.tilt, lookTilt(t), 0.8 * (1 - prog(t, firstDepart - 0.1, 0.2))) }
     if (startRow == null && loopOn && t > loopSettle) P = { ...P, tilt: lerp(P.tilt, look0, 0.8 * prog(t, loopSettle, 0.16)) }
@@ -1130,7 +1215,8 @@ export default function findYourRow(spec, ctx) {
         if (heavy && pb && i === pb.i && t >= tc) { const z = squashAt(t, tc, plateSq); sq = { sx: sq.sx * z.sx, sy: sq.sy * z.sy } }
         // a heavy cell also pops in (from >= 41 px) as it lands, so it lands with weight even with no room to fall
         const pop = heavy && Ti >= 0 ? popIn(t, Ti - 0.09, 0.24, Math.min(1, Math.max(0.86, 41 / px))) : { scale: 1, opacity: 1 }
-        const sc = (heavy ? 1 + (PSC - 1) * glow : 1) * pop.scale
+        const pu = heavy ? pulseOf(i, t) : 0
+        const sc = (heavy ? 1 + (PSC - 1) * glow : 1) * pop.scale * (1 + 0.05 * pu)
         let color = valColor(j)
         if (heavy) {
           color = emColor(i, t, glow)
@@ -1143,9 +1229,9 @@ export default function findYourRow(spec, ctx) {
         const tfade = tp >= 0 ? 1 - prog(tp, 0.02, 0.1) : 1
         // in flight (and while a heavy cell rides its plank's rebound, or tips off), its line box may reach into a
         // neighbour's (the ink never does while it is readable)
-        row.vals[j - 1].overlap((Ti >= 0 && t >= Math.min(t0, Ti - 0.09) && t < Ti + (heavy ? 0.5 : 0)) || tp >= 0)
+        row.vals[j - 1].overlap((Ti >= 0 && t >= Math.min(t0, Ti - 0.09) && t < Ti + (heavy ? 0.5 : 0)) || tp >= 0 || pu > 0)
         row.vals[j - 1].set({
-          x: right[j], y: boxB(i, px) - f.y + (heavy ? sagOf(i, t) : 0) - lift + tdrop, rot: trot,
+          x: right[j], y: boxB(i, px) - f.y + (heavy ? sagOf(i, t) + 3 * pu : 0) - lift + tdrop, rot: trot,
           sx: sc * sq.sx, sy: sc * sq.sy,
           opacity: (1 - hv) * tfade * (Ti < 0 ? 1 : heavy ? (t >= Math.min(t0, Ti - 0.09) ? pop.opacity : 0) : t >= t0 ? clamp((t - t0) / 0.03) : 0),
           color,
@@ -1153,7 +1239,7 @@ export default function findYourRow(spec, ctx) {
       }
       // the plank under the heavy cell (it arrives with its value, sags under it, greys out again in the clear)
       const [px0, px1] = plankX(i)
-      const sag = sagOf(i, t), ly = ledgeY(i) - lift * 0.5
+      const sag = sagOf(i, t) + 3 * pulseOf(i, t), ly = ledgeY(i) - lift * 0.5
       attr(planks[i], 'd', `M${px0.toFixed(1)},${ly.toFixed(1)} Q${((px0 + px1) / 2).toFixed(1)},${(ly + 2 * sag).toFixed(1)} ${px1.toFixed(1)},${ly.toFixed(1)}`)
       attr(planks[i], 'stroke', mixc(C.ink, HI.fill, glow))
       const stocked = (Ti < 0 ? 1 : 0.18 + 0.82 * prog(t, Ti - 0.02, 0.06)) * (1 - (tip >= 0 ? prog(tip, 0, 0.2) : 0))
@@ -1162,7 +1248,9 @@ export default function findYourRow(spec, ctx) {
       attr(litLedges[i], 'opacity', String(+glow.toFixed(3)))
       attr(bands[i], 'opacity', String(+glow.toFixed(3)))
       attr(bands[i], 'transform', `translate(0,${(-lift * 0.5).toFixed(1)})`)
-      attr(tints[i], 'opacity', String(+(tintOf(i, t) * (1 - glow)).toFixed(3)))
+      const ref = tintOf(i, t) * (1 - glow)
+      attr(tints[i], 'opacity', String(+ref.toFixed(3)))
+      attr(refLedges[i], 'opacity', String(+ref.toFixed(3)))
     }
     if (plate) {
       const on = t >= tc - 0.01 && t < END_T + 0.16
@@ -1181,8 +1269,8 @@ export default function findYourRow(spec, ctx) {
       if (!on) { attr(b.el, 'opacity', '0'); attr(b.el, 'd', 'M0,0'); continue }     // (one canonical hidden state)
       const yF = rowMid(b.pk.from) - liftOf(b.pk.from, t), yE = t >= b.d1 ? rowMid(b.pk.row) - liftOf(b.pk.row, t) : bracketEnd(b, t)
       const done = prog(t, b.d1 - 0.02, 0.08)
-      let dpath = `M${XB + 14},${yF.toFixed(1)} L${XB},${yF.toFixed(1)} L${XB},${yE.toFixed(1)}`
-      if (done > 0) dpath += ` L${(XB + 14 * done).toFixed(1)},${yE.toFixed(1)}`
+      let dpath = `M${XB + BRK_TICK},${yF.toFixed(1)} L${XB},${yF.toFixed(1)} L${XB},${yE.toFixed(1)}`
+      if (done > 0) dpath += ` L${(XB + BRK_TICK * done).toFixed(1)},${yE.toFixed(1)}`
       attr(b.el, 'd', dpath)
       attr(b.el, 'opacity', String(+(1 - clamp((t - b.pk.end) / 0.16)).toFixed(3)))
     }

@@ -25,11 +25,12 @@
 //          reads as the next year's note). It holds 1.6 s at most (lookOpts.pillHold) and is gone before the next
 //          row. A loss row's label keeps its red; a good row's label is green while its pill is up, then ink
 //   final  the winner's last value lands at 1.3x on a gold plate (the plate opens from its centre first; impact,
-//          camera punch, a short fan of rays above the plate, `cash`); the winner hops and celebrates on the taller
-//          stack, then points at the ledger; the loser slumps (the right-hand one turns his back on the ledger) and
-//          his column settles grey. Half a second later the rows in between settle to 55% (the first row, the last
-//          row and any row a pencil mark rings stay full), so the plate, the ringed cells and the verdict carry the
-//          end frame
+//          camera punch, a short fan of rays above the plate, `cash`); the winner hops (up to 52 px, keeping his
+//          raised hands >= 24 px under the text line above the rig; under 12 px of room, no hop) and celebrates on
+//          the taller stack, then points at the ledger; the loser slumps (the right-hand one turns his back on the
+//          ledger) and his column settles grey. Half a second later the rows in between settle to 55% (the first
+//          row, the last row and any row a pencil mark rings stay full; a start row of zeros on both sides settles
+//          too, both sides alike), so the plate, the ringed cells and the verdict carry the end frame
 // "Less is better" duels (debt: the winner ends LOWER) draw the stacks as red debt piles and flip the colours:
 // paying down is green, nothing crashes. Row 0 is the start, never a crash. The figures carry no pencil here
 // (lookOpts.pencil: true brings it back).
@@ -61,8 +62,32 @@
 //                                     longer grows) and sweeps his lost coins off the floor; `label` pops as a pill
 //                                     right-aligned over his column in the slot above the latest row, its caret on
 //                                     his cell (an event pill in that slot closes first)
-//   marks: [{ t, row, person }]       a pencil ring is drawn around one landed cell at t (the cell pops; `swipe`);
-//                                     it holds until the next row, sell or later mark, or for good on the last row
+//   marks: [{ t, row, person, tone }] a pencil ring is drawn around one landed cell at t (the cell pops about its
+//                                     centre, never into its ring; `swipe`); it holds until the next row, sell or
+//                                     later mark, or for good on the last row. The ring is red round a loss, else
+//                                     ink; tone 'bad' | 'good' makes it red | green and tints its cell the same while
+//                                     it is up (the VO's "bad number"). The loop starts upper-left; where that would
+//                                     come within 9 px of the ink on its left (the row's label, or A's cell), it
+//                                     starts at the top instead (its left side is then one clean pass) and each side
+//                                     is sized on its own: never inside 8 px of the cell's own ink ("≈" included,
+//                                     with room for a 2% pop), then as clear of the neighbour's ink (left: the
+//                                     label; right: B's cell or the plate) as the room allows. A 'point' beat while
+//                                     one of the pointer's own cells is ringed aims his arm at that cell
+//   winnerT: s                        crown the winner later than the last row, on the VO line that names his value:
+//                                     the last row then lands like any other (the winner's value at 1x, in green,
+//                                     a thud), and at winnerT his value grows onto the gold plate (the plate opens
+//                                     0.07 s before; impact, punch, rays, cash); the end acting, the loser's greying
+//                                     and the rows settling to 55% all follow the crown. A ring on the winner's last
+//                                     cell before the crown closes as the plate grows. The winner rides his last row
+//                                     plain (no arms up): his celebration waits for the crown
+//   ponder: person                    who ponders the ledger on frame 1, hand on chin (default: the hero figure),
+//                                     e.g. the viewer's stand-in when the winner is the hero; the other stands ready
+//   minGain: coins                    a gain that adds less than this much of a coin to its stack (on the shared
+//                                     scale) is quiet: its value lands in ink, not the fresh green, and its owner does
+//                                     not ride it (nothing moved). E.g. 0.5 for cents against hundreds of dollars
+// (A stack thinner than one coin is one thin coin; its corner radius never goes negative.)
+// Porting from another look: marks (with their tone), winnerT and rowLabelsAtStart carry over as written; a beat
+// at t <= 0 is not needed for the hook frame (the hero figure ponders the ledger from frame 1).
 import {
   h, s, style, attr, prog, clamp, lerp, plain, markup, rng,
   C, F, L, E, RIG, POSES, poseTrack, fk, secondary, Figure, makeWorld, makeFx, camera, NumObj,
@@ -159,7 +184,7 @@ export default function ledgerDuel(spec, ctx) {
   const soldAt = [0, 1].map(p => Math.min(Infinity, ...sells.filter(x => x.p === p).map(x => x.t)))
   const marks = (Array.isArray(lo.marks) ? lo.marks : [])
     .filter(m => m && m.t != null && Number.isInteger(m.row) && m.row >= 0 && m.row < N && (m.person === 0 || m.person === 1))
-    .map(m => ({ t: +m.t, i: m.row, p: m.person }))
+    .map(m => ({ t: +m.t, i: m.row, p: m.person, tone: m.tone === 'bad' || m.tone === 'good' ? m.tone : null }))
   for (const m of marks) {
     // a mark holds until the next focus: the next row to land, a sell, or a later mark
     const after = [...times.filter(x => x > m.t + 0.01), ...sells.map(x => x.t).filter(x => x > m.t + 0.01),
@@ -175,9 +200,18 @@ export default function ledgerDuel(spec, ctx) {
   const winner = d.winner === 0 || d.winner === 1 ? d.winner : (V[last][0] >= V[last][1] ? 0 : 1)
   const loser = 1 - winner
   const lessIsBetter = V[last][winner] < V[last][loser]          // debt duels: the winner ends lower
-  const TW = lastT                                                 // the winner is crowned as the last row lands
+  // the winner is crowned as the last row lands, or later at lookOpts.winnerT: the last row then lands like any
+  // other row (the winner's value at 1x, in green, a thud), and the plate, the impact, the rays, the end acting and
+  // the settling wait for the VO line that names the winner's value
+  const wT = lo.winnerT == null || lo.winnerT === '' ? NaN : +lo.winnerT
+  const TW = Number.isFinite(wT) && wT > lastT + 0.05 ? wT : lastT
+  const lateCrown = TW > lastT
+  // a ring on the winner's last cell before a late crown closes as the plate grows under it
+  if (lateCrown) for (const m of marks) if (m.i === last && m.p === winner && m.t < TW) m.end = Math.min(m.end, TW - 0.05)
   const plateOn = true
   const prevV = (i, p) => (i ? V[i - 1][p] : startV[p])
+  // a start row of zeros on both sides, standing from frame 1 ("Start: $0.00 | $0.00")
+  const zeroStart = N > 1 && times[0] <= 0.05 && V[0][0] === 0 && V[0][1] === 0
   // change class per row and person: kind (motion) and sign (good +1 / bad -1 / 0)
   const KIND = rows.map((r, i) => [0, 1].map(p => {
     const pv = prevV(i, p), dv = V[i][p] - pv
@@ -513,32 +547,78 @@ export default function ledgerDuel(spec, ctx) {
     pills.push(pl)
   }
 
-  // pencil marks: a hand-drawn loop around one cell (red on a loss, ink otherwise), drawn on in ~0.28 s
+  // pencil marks: a hand-drawn loop around one cell (red on a loss, ink otherwise), drawn on in ~0.28 s: one loop and
+  // a bit around a squarish oval (a superellipse, so the corners of the figures stay inside), with a slight wobble
+  // and a widening spiral (a pencil, not a compass). rxL / rxR: the half-widths left and right of the cell's centre.
+  const RING_N = 120, RING_SPAN = Math.PI * 2.14, RING_CLR = 8 + 3   // >= 8 px from the cell's ink to the 6 px stroke
+  const se = (v, e) => Math.sign(v) * Math.pow(Math.abs(v), e)
+  const ringPts = (cx, cy, rxL, rxR, ry, k, a0, e = 0.7) => {
+    const pts = []
+    for (let q = 0; q <= RING_N; q++) {
+      const u = q / RING_N, a = a0 + RING_SPAN * u
+      const g = 1 + 0.025 * Math.sin(2 * a + 0.7 + k) + 0.05 * u, c = Math.cos(a)
+      pts.push([cx + (c < 0 ? rxL : rxR) * g * se(c, e), cy + ry * g * se(Math.sin(a), e) - 3 * u])
+    }
+    return pts
+  }
+  // a ring side of half-width r puts each of its points at x = cx + side * r * f (f = g * |se(cos a)|, y fixed), so
+  // against an ink edge at distance d from the centre, over the points whose y falls in the ink's band:
+  //   the cell's own ink (inside): r >= (d + gap) / f        a neighbour's ink (outside): r <= (d - gap) / f
+  const sidePts = (ry, k, a0, e, side) => ringPts(0, 0, 1, 1, ry, k, a0, e).map(([x, y]) => ({ f: side * x, y })).filter(o => o.f > 1e-6)
+  const inBand = (P, y0, y1) => P.filter(o => o.y >= y0 && o.y <= y1)
+  const rIn = (P, d, gap, y0, y1) => Math.max(0, ...inBand(P, y0, y1).map(o => (d + gap) / o.f))
+  const rOut = (P, d, gap, y0, y1) => Math.min(Infinity, ...inBand(P, y0, y1).map(o => (d - gap) / o.f))
   const rings = marks.map((m, k) => {
     const { i, p } = m
-    const onPlate = i === last && p === winner && plateOn
+    const onPlate = i === last && p === winner && plateOn && m.t >= TW - 0.01
     const tw = wVal(rows[i].values[p], vp) * (onPlate ? HLS : 1)
     const cx = onPlate ? pb.cx : xCol[p] - tw / 2
     const cy = onPlate ? pb.cy : baseY(i) - 0.38 * vp
-    const rx = onPlate ? pb.w / 2 + 14 : tw / 2 + 22
     const ry = onPlate ? pb.h / 2 + 10 : 0.42 * vp + 11
-    // one loop and a bit around a squarish oval (a superellipse, so the corners of the figures stay inside), starting
-    // upper-left, with a slight wobble and a widening spiral (a pencil, not a compass)
-    const pts = [], a0 = Math.PI * 1.1, span = Math.PI * 2.14, n = 120
-    const se = v => Math.sign(v) * Math.pow(Math.abs(v), 0.7)
-    for (let q = 0; q <= n; q++) {
-      const u = q / n, a = a0 + span * u
-      const g = 1 + 0.025 * Math.sin(2 * a + 0.7 + k) + 0.05 * u
-      pts.push([cx + rx * g * se(Math.cos(a)), cy + ry * g * se(Math.sin(a)) - 3 * u])
+    let rxL = onPlate ? pb.w / 2 + 14 : tw / 2 + 22, rxR = rxL, a0 = Math.PI * 1.1   // the loop starts upper-left
+    let e = 0.7                                         // its squareness (superellipse exponent)
+    let amp = 0.1                                       // the marked cell's pop
+    if (!onPlate) {
+      // ink bands (y relative to the ring's centre, 0.38 vp above the baseline): the glyphs' core, where they are
+      // widest (the "≈" sits at -0.14..+0.33 vp; the digits' bellies), which also holds the default loop's start
+      // stroke (-0.28 vp); a whole value (the "$" with its tails); the row's label (cap height to the baseline)
+      const core = [-0.3 * vp, 0.36 * vp], whole = [-0.42 * vp, 0.5 * vp], lab = [0.38 * vp - 0.72 * yp, 0.38 * vp]
+      const leftInk = p === 0 ? X0 + wLab(String(rows[i].label ?? ''), yp) : xCol[0] + (i === last && winner === 0 && plateOn ? PLATE[0] : 0)
+      const leftBand = p === 0 ? lab : whole
+      const plateR = p === 0 && i === last && winner === 1 && plateOn
+      const rightInk = p === 1 ? null : plateR ? pb.x : xCol[1] - wVal(rows[i].values[1], vp)
+      const rightBand = plateR ? [pb.y - cy, pb.y + pb.h - cy] : whole
+      // a tight spot (the default loop would come within 9 px of the ink on its left: "Year 3 ≈ $0.53"): the loop
+      // starts at the top instead, so its left side is one clean pass with no start stroke in it; it is squarer
+      // (straighter sides, so it can run down a narrow gap); and each side is sized on its own: never inside
+      // RING_CLR of the cell's own ink (with room for a 2% pop), then as clear of the neighbour's ink as the room
+      // allows
+      if (rxL * 1.075 > cx - leftInk - 12) {
+        a0 = Math.PI * 1.5
+        e = 0.5
+        amp = 0.02
+        const PL = sidePts(ry, k, a0, e, -1), PR = sidePts(ry, k, a0, e, 1)
+        const gap = RING_CLR + amp * tw / 2
+        const loL = rIn(PL, tw / 2, gap, ...core), hiL = rOut(PL, cx - leftInk, 12, ...leftBand)
+        rxL = hiL >= loL ? clamp(tw / 2 + 22, loL, hiL) : loL
+        const loR = rIn(PR, tw / 2, gap, ...core), hiR = rightInk != null ? rOut(PR, rightInk - cx, 12, ...rightBand) : Infinity
+        rxR = clamp(tw / 2 + 22, loR, Math.max(loR, hiR))
+      }
+      // the pop grows about the cell's centre and never brings the glyphs' core inside RING_CLR of the loop
+      const clr = Math.min(...[[-1, rxL], [1, rxR]].map(([sd, r]) => Math.min(...inBand(sidePts(ry, k, a0, e, sd), ...core).map(o => r * o.f))))
+        - tw / 2 - RING_CLR
+      amp = clamp(Math.min(amp, (2 * clr) / tw), 0, 0.1)
     }
+    const pts = ringPts(cx, cy, rxL, rxR, ry, k, a0, e)
     let len = 0
     for (let q = 1; q < pts.length; q++) len += Math.hypot(pts[q][0] - pts[q - 1][0], pts[q][1] - pts[q - 1][1])
-    const red = SIGN[i][p] < 0                                    // the cell is red (a loss)
+    // red round a loss (or a mark with tone "bad"), green with tone "good", else ink
+    const red = m.tone ? m.tone === 'bad' : SIGN[i][p] < 0
     const el = s('path', { d: 'M' + pts.map(x => x[0].toFixed(1) + ',' + x[1].toFixed(1)).join(' L'), fill: 'none',
-      stroke: red ? C.red : C.ink, 'stroke-width': 6, 'stroke-linecap': 'round', 'stroke-linejoin': 'round',
+      stroke: m.tone === 'good' ? C.heroInk : red ? C.red : C.ink, 'stroke-width': 6, 'stroke-linecap': 'round', 'stroke-linejoin': 'round',
       'stroke-dasharray': len.toFixed(1), 'stroke-dashoffset': len.toFixed(1), opacity: 0, 'data-deco': '' })
     g.top.append(el)
-    return { ...m, el, len }
+    return { ...m, el, len, tw, amp, onPlate }
   })
 
   // ---- coin stacks: edge-on coins, height = money on one shared scale
@@ -555,6 +635,12 @@ export default function ledgerDuel(spec, ctx) {
   const scale = Math.min(...[0, 1].map(p => roomFor(p) / maxVp[p]))   // one honest scale for both
   const H_MAX = scale * Math.max(...maxVp)
   const HV = V.map(r => r.map(v => Math.max(0, v) * scale))
+  // lookOpts.minGain (in coins): a gain that adds less than that much of a coin to the stack on the shared scale
+  // is quiet: its value lands in ink, not the fresh green, and its owner does not ride it (nothing moved)
+  const minGain = Number.isFinite(+lo.minGain) && +lo.minGain > 0 ? +lo.minGain : 0
+  if (minGain) for (let i = 1; i < N; i++) for (let p = 0; p < 2; p++) {
+    if (SIGN[i][p] > 0 && Math.abs(V[i][p] - prevV(i, p)) * scale < minGain * SLAB) SIGN[i][p] = 0
+  }
   const h0 = startV.map(v => Math.max(0, v) * scale)
   const nSlab = Math.ceil(H_MAX / (SLAB - 2)) + 3
   const stacks = [0, 1].map(p => {
@@ -619,7 +705,7 @@ export default function ledgerDuel(spec, ctx) {
       if (!on) continue
       attr(sl[k], 'y', (floorY - (k + 1) * th).toFixed(1))
       attr(sl[k], 'height', th.toFixed(2))
-      attr(sl[k], 'rx', (th / 2 - 0.5).toFixed(2))
+      attr(sl[k], 'rx', Math.max(0, th / 2 - 0.5).toFixed(2))
     }
     // the cash brick pops in as the chop lands (from the floor up) and gives a little under his landing
     if (bricks[p]) {
@@ -685,10 +771,11 @@ export default function ledgerDuel(spec, ctx) {
       }
     })
     if (i === last && plateOn) {
-      // the climax: shake, camera punch and a short fan of rays into the free space above the plate (never over
-      // the neighbouring cells or labels)
-      fxk.impact(Ti, { x: pb.cx, y: pb.cy, shake: 13, punch: 0.025, burst: false, cue: 'hit', gain: 0.95 })
-      ctx.cue(Ti + 0.12, 'cash', { gain: 0.6 })
+      // the climax (at the crown): shake, camera punch and a short fan of rays into the free space above the plate
+      // (never over the neighbouring cells or labels)
+      fxk.impact(TW, { x: pb.cx, y: pb.cy, shake: 13, punch: 0.025, burst: false, cue: 'hit', gain: 0.95 })
+      ctx.cue(TW + 0.12, 'cash', { gain: 0.6 })
+      if (lateCrown && !crashed.length && Ti > 0) ctx.cue(Ti, 'thud', { gain: 0.42 })
     } else if (!crashed.length && Ti > 0) ctx.cue(Ti, 'thud', { gain: 0.42 })
     if (r.event && !crashed.length && !(i === last)) ctx.cue(Ti + 0.08, 'pop', { gain: 0.5 })
     else if (leadChange[i] >= 0 && !r.event) ctx.cue(Ti + 0.1, 'pop', { gain: 0.45 })
@@ -729,12 +816,14 @@ export default function ledgerDuel(spec, ctx) {
   const keys = [[], []], faceK = [[{ t: 0, v: 1 }], [{ t: 0, v: 1 }]], hops = [[], []], squashes = [[], []]
   const addK = (p, t, pose, dd = 0.2, e = 'spring') => keys[p].push({ t, pose, d: dd, e })
   // frame 1: the hero ponders the ledger, hand on chin; the rival stands ready. A nod in the first second.
+  // (lookOpts.ponder: the one who ponders on frame 1, e.g. the viewer's stand-in when he is not the hero)
   const hero = pal[0].fig === C.hero ? 0 : pal[1].fig === C.hero ? 1 : winner
-  addK(hero, 0, 'thinkUp', 0.2)
-  addK(1 - hero, 0, PZ.ready, 0.2)
+  const ponder = lo.ponder === 0 || lo.ponder === 1 ? lo.ponder : hero
+  addK(ponder, 0, 'thinkUp', 0.2)
+  addK(1 - ponder, 0, PZ.ready, 0.2)
   if (times[Math.min(1, last)] > 1.1 || N === 1) {
-    addK(hero, 0.35, { ...POSES.thinkUp, tilt: -4, aF: [40, 142] }, 0.3, 'inOut')
-    addK(hero, 0.75, 'thinkUp', 0.35)
+    addK(ponder, 0.35, { ...POSES.thinkUp, tilt: -4, aF: [40, 142] }, 0.3, 'inOut')
+    addK(ponder, 0.75, 'thinkUp', 0.35)
   }
   // the way a figure faces at time tt (1 = toward the ledger), from the face keys added so far
   const faceAt = (p, tt) => { let v = 1, bt = -Infinity; for (const x of faceK[p]) if (x.t <= tt && x.t >= bt) { v = x.v; bt = x.t } return v }
@@ -777,9 +866,12 @@ export default function ledgerDuel(spec, ctx) {
         back(Ti + 0.95, 'idle', 0.4)
       } else if (sg > 0) {
         const rel = Math.abs(V[i][p] - prevV(i, p)) / Math.max(1, Math.abs(prevV(i, p)))
+        // under a late crown the winner rides his last row plain (no arms up): the celebration waits for the crown,
+        // and the moment belongs to the VO line in between
+        const up = rel >= 0.25 && !(lateCrown && i === last && p === winner)
         addK(p, Ti - 0.12, PZ.bob, 0.08, 'out')
-        addK(p, Ti + 0.03, rel >= 0.25 ? PZ.lifted : 'idle', 0.16)
-        if (rel >= 0.25) back(Ti + 0.6, 'idle', 0.35)
+        addK(p, Ti + 0.03, up ? PZ.lifted : 'idle', 0.16)
+        if (up) back(Ti + 0.6, 'idle', 0.35)
       } else if (sg < 0) {
         addK(p, Ti - 0.02, PZ.sink, 0.14, 'inOut')
         back(Ti + 0.4, 'idle', 0.35)
@@ -792,10 +884,20 @@ export default function ledgerDuel(spec, ctx) {
     if (KIND[last][w] !== 'crash') {
       addK(w, TW + 0.16, PZ.bob, 0.1, 'out')
       addK(w, TW + 0.3, 'celebrate', 0.14)
-      hops[w].push({ t0: TW + 0.3, dur: 0.44, h: 52 })
-      squashes[w].push({ t: TW + 0.74, amt: 0.18 })
+      // the hop (up to 52 px) keeps his raised hands >= 24 px under the text line above the rig (the stake line,
+      // the legend or the footer); with under 12 px to spare he cheers without it
+      let hopH = 52
+      if (showFig) {
+        const J = fk('celebrate', { x: PX[w], ground: floorY - HV[last][w], face: 1, scale: FIGK })
+        const topY = Math.min(J.hF[1], J.hB[1], J.eF[1], J.eB[1], J.head[1] - J.R) - figs[w].sw / 2 - 3
+        hopH = clamp(Math.floor(topY - (capBottom(w) + 24)), 0, 52)
+      }
+      if (hopH >= 12) {
+        hops[w].push({ t0: TW + 0.3, dur: 0.44, h: hopH })
+        squashes[w].push({ t: TW + 0.74, amt: 0.18 })
+        ctx.cue(TW + 0.74, 'step', { gain: 0.55 })
+      }
       addK(w, TW + 1.45, 'point', 0.3)
-      ctx.cue(TW + 0.74, 'step', { gain: 0.55 })
     }
     // the loser: the right-hand one turns his back on the ledger, the left-hand one stays facing it; both droop
     // upright (a forward slump would put the left one's head on the ledger labels, and the right one's over the
@@ -830,9 +932,20 @@ export default function ledgerDuel(spec, ctx) {
       }
       continue
     }
-    const pose = ACT[b.act] || (POSES[b.act] ? b.act : null)
+    let pose = ACT[b.act] || (POSES[b.act] ? b.act : null)
     const p = b.person
     if (b.act === 'sell' || !pose || !(p === 0 || p === 1)) continue
+    // a point while one of his own cells is ringed aims at that cell (the arm angled from his shoulder, as he
+    // stands at that moment), not level at whatever row is at shoulder height
+    const aimAt = b.act === 'point' && showFig ? rings.find(m => m.p === p && !m.onPlate && m.t <= b.t + 0.3 && m.end >= b.t) : null
+    if (aimAt) {
+      const f = faceAt(p, b.t)
+      const P = { ...POSES.point }
+      const J = fk(P, { x: PX[p], ground: floorY - hStack(p, b.t + 0.25), face: f, scale: FIGK })
+      const tx = cellCx(aimAt.i, p), ty = baseY(aimAt.i) - 0.38 * vp
+      const abs = (Math.atan2(f * (tx - J.sh[0]), ty - J.sh[1]) * 180) / Math.PI   // from straight down, + forward
+      pose = { ...P, aF: [abs + (P.lean || 0), 0] }
+    }
     addK(p, b.t, pose, 0.25)
     // the beat's return pose is skipped when his own cash-out follows (it would land on the sell's wind-up and
     // swallow it; the sell returns him to idle itself)
@@ -871,16 +984,26 @@ export default function ledgerDuel(spec, ctx) {
     const settled = sg < 0 ? C.red : C.ink
     let c = mix(fresh, settled, prog(t, nextT(i), 0.08))   // the previous cell goes straight to its settled colour
     if (i === last) c = mix(fresh, settled, prog(t, TW + 0.5, 0.4))
-    if (p === loser && sg >= 0) c = mix(c, C.grey, prog(t, TW + 0.5, 0.5))
+    if (p === loser && sg >= 0 && !(zeroStart && i === 0)) c = mix(c, C.grey, prog(t, TW + 0.5, 0.5))
     return c
   }
-  const duration = durationOf(spec, lastT + 1.6, d.hold ?? 3)
+  const duration = durationOf(spec, TW + 1.6, d.hold ?? 3)
   // the end frame belongs to the payoff: once the winner's value has landed, the rows in between (all but the
-  // first row, the last row and any row a pencil mark rings) settle to 55%
-  const focusRows = new Set([0, last, ...marks.map(m => m.i)])
+  // first row, the last row and any row a pencil mark rings) settle to 55%. A start row of zeros on both sides
+  // ("Start: $0.00 | $0.00") says nothing at the end: it settles with them, both sides alike (no loser grey)
+  const focusRows = new Set([...(zeroStart ? [] : [0]), last, ...marks.map(m => m.i)])
   const labelSettle = rows.map((r, i) => { const pl = pills.find(x => x.i === i && x.tone !== 'neutral'); return pl ? pl.t1 : nextT(i) })
   const endDim = (i, t) => (focusRows.has(i) || N < 4 ? 1 : 1 - 0.45 * E.inOut(prog(t, TW + 0.5, 0.5)))
 
+  // a mark with a tone ("bad" red, "good" green) also tints its cell while its ring is up
+  const markTint = (i, p, t, c) => {
+    for (const m of rings) {
+      if (!m.tone || m.i !== i || m.p !== p || t < m.t || t >= m.end + 0.2) continue
+      const k = E.out(prog(t, m.t, 0.15)) * (1 - prog(t, m.end, 0.2))
+      if (k > 0) return mix(c, m.tone === 'bad' ? C.red : C.heroInk, k)
+    }
+    return c
+  }
   function seek(t) {
     // pills first: they dim the future labels they sit on
     const dimUnder = new Map()
@@ -917,21 +1040,36 @@ export default function ledgerDuel(spec, ctx) {
       const fy = t >= Ti ? 0 : f
       for (let p = 0; p < 2; p++) {
         const plateVal = isPlateRow && p === winner
-        const sq = squashAt(t, Ti, (plateVal ? 0.6 : 1) * squashAmt)
-        let sc = plateVal ? HLS : 1
-        for (const m of rings) if (m.i === i && m.p === p) sc *= 1 + 0.1 * bump(t, m.t, 0.34)   // a marked cell pops
+        // (a late crown: the cell lands at 1x like the others, then grows onto the plate at TW; it turns ink as the
+        // plate starts to open under it, 0.07 s before, so green never sits on gold)
+        const crowned = plateVal && (!lateCrown || t >= TW - 0.07)
+        let sq = squashAt(t, Ti, (plateVal && !lateCrown ? 0.6 : 1) * squashAmt)
+        let sc = plateVal && !lateCrown ? HLS : 1
+        if (plateVal && lateCrown && t >= TW) {
+          sc = HLS * popIn(t, TW, 0.24, 1 / HLS).scale
+          const z = squashAt(t, TW, 0.6 * squashAmt)
+          sq = { sx: sq.sx * z.sx, sy: sq.sy * z.sy }
+        }
+        // a marked cell pops (about its centre, never into its ring; on the plate, as the plate's value)
+        let dx = 0
+        for (const m of rings) {
+          if (m.i !== i || m.p !== p) continue
+          const k = 1 + (m.onPlate ? 0.1 : m.amp) * bump(t, m.t, 0.34)
+          sc *= k
+          if (!m.onPlate) dx += (m.tw * (k - 1)) / 2
+        }
         row.vals[p].set({
-          x: xCol[p], y: boxBottom(i, vp) - fy, sx: sc * sq.sx, sy: sc * sq.sy,
+          x: xCol[p] + dx, y: boxBottom(i, vp) - fy, sx: sc * sq.sx, sy: sc * sq.sy,
           opacity: fade * (t >= Ti - dropDur ? clamp((t - (Ti - dropDur)) / 0.03) : 0),
-          color: plateVal ? C.ink : valColor(i, p, t),
+          color: markTint(i, p, t, crowned ? C.ink : valColor(i, p, t)),
         })
       }
       if (isPlateRow && plate) {
         // the plate opens from its centre just before the number lands (>= 90% open by the time the number shows),
         // so the number lands on a whole plate
-        const t0 = Ti - dropDur - 0.07
+        const t0 = lateCrown ? TW - 0.07 : Ti - dropDur - 0.07
         const pp = popIn(t, t0, 0.24, 0.6)
-        const sq = squashAt(t, Ti, 0.6 * squashAmt)
+        const sq = squashAt(t, lateCrown ? TW : Ti, 0.6 * squashAmt)
         style(plate, {
           transform: `translate(${pb.x.toFixed(1)}px,${pb.y.toFixed(1)}px) scale(${(pp.scale * sq.sx).toFixed(3)},${(pp.scale * sq.sy).toFixed(3)})`,
           opacity: t < t0 ? '0' : '1',

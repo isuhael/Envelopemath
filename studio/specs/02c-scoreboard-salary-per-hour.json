@@ -1,0 +1,49 @@
+{
+  "id": "02c-scoreboard-salary-per-hour",
+  "look": "scoreboard",
+  "format": "find-your-row",
+  "fps": 30,
+  "duration": 13.0,
+  "header": "What time your **9-to-5**\nstarts paying you, by salary",
+  "footer": "Single · 2026 federal tax + FICA · no state tax",
+  "captions": true,
+  "vo": [
+    { "t": 0.0, "d": 1.45, "text": "$65,000?" },
+    { "t": 1.5, "d": 3.1, "text": "You work for tax till **≈ 10:18**." },
+    { "t": 4.7, "d": 2.6, "text": "That's ≈ 78 minutes a day." },
+    { "t": 7.4, "d": 2.4, "text": "Six figures? Until **≈ 10:40**." }
+  ],
+  "verdict": { "t": 10.0, "text": "$200,000: you work for tax till **≈ 11:03**, every workday." },
+  "data": {
+    "columns": [
+      { "label": "Salary" },
+      { "label": "Tax + FICA,\nminutes a day" },
+      { "label": "Paying you\nfrom", "emph": true }
+    ],
+    "rows": [
+      ["$200,000", "≈ 123 min", "≈ 11:03 am"],
+      ["$150,000", "≈ 116 min", "≈ 10:56 am"],
+      ["$100,000", "≈ 100 min", "≈ 10:40 am"],
+      ["$90,000", "≈ 95 min", "≈ 10:35 am"],
+      ["$80,000", "≈ 89 min", "≈ 10:29 am"],
+      ["$70,000", "≈ 82 min", "≈ 10:22 am"],
+      ["$65,000", "≈ 78 min", "≈ 10:18 am"],
+      ["$60,000", "≈ 77 min", "≈ 10:17 am"],
+      ["$50,000", "≈ 73 min", "≈ 10:13 am"],
+      ["$40,000", "≈ 68 min", "≈ 10:08 am"],
+      ["$35,000", "≈ 64 min", "≈ 10:04 am"],
+      ["$30,000", "≈ 59 min", "≈ 9:59 am"]
+    ],
+    "formula": "= 9:00 am + 480 min × (tax + FICA) ÷ salary",
+    "rowsT": 0.0,
+    "rowEvery": 0.2,
+    "pick": [
+      { "t": 1.5, "row": 6, "label": "≈ US median full-time pay" },
+      { "t": 4.7, "row": 6, "label": "≈ 78 min of tax a day" },
+      { "t": 7.4, "row": 2, "label": "≈ 1 hr 40 min of tax a day" }
+    ],
+    "hold": 5.6
+  },
+  "lookOpts": { "verdictRow": 0 },
+  "sfx": [ { "t": 10.0, "kind": "ding" } ]
+}

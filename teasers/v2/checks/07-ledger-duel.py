@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Math + spec check for format 7, "ledger-duel" (teasers 07a, 07b, 07c).
+"""Math + spec check for format 7, "ledger-duel" (teasers 07a Scoreboard, 07b Becker rig, 07c Becker rig).
 
 1. Recomputes every on-screen number from its inputs (below).
 2. Loads the three spec JSONs and asserts that
@@ -10,8 +10,13 @@
    - every string in the spec that contains a digit is covered by a check,
    - VO timing fits ~2.6 spoken words per second, lines don't overlap, each mentioned beat
      lands within 0.9 s of the moment its VO line says it, durations sit in the 12-30 s lane,
-   - the first payoff row lands by 3.0 s (R10), each formula-bar line stays up long enough to
-     type and read, and a formula that multiplies shown factors reproduces the shown result.
+   - the first payoff row lands by 3.0 s (R10), each working line (07a, Scoreboard label stack) stays up
+     long enough to read, and a formula that multiplies shown factors reproduces the shown result,
+   - the look-specific staging (port to Scoreboard / Becker rig, 2026-10-08): no option of a retired look
+     is left, 07a's climax count lands on its spoken value, its table (rows, and its cut in the VO gap), its
+     plan focus on the "3 times" line and its resting working line; 07c's quiet gains, crown,
+     mark tones, hero figure and the Becker mono footer/stake line budgets,
+   - every spec path the write-up names exists (in specs/ or specs/retired/).
 3. Prints a table and exits 1 on any mismatch.
 
 Run:  python3 teasers/v2/checks/07-ledger-duel.py
@@ -28,8 +33,14 @@ WPS = 2.6           # VO read speed, spoken words per second
 LANE = (12.0, 30.0)  # duration lane for this format (task brief)
 BEAT_TOL = 0.9       # a mentioned beat must land within this many seconds of its word
 R10_MAX = 3.0        # first payoff row lands within about 3 s (hook bank R10)
-BAR_CPS = 24         # Live Sheet formula bar types ~24 characters a second (03-look-directions)
-BAR_READ = 1.5       # seconds a typed formula-bar line must then stay readable
+BAR_READ = 1.5       # seconds a working line must stay readable
+WORK_CPS = 15        # a Scoreboard working line is a hard cut (slam, 0.22 s): read at ~15 characters a second
+SLAM = 0.22
+MONO_LINE = 37       # Becker rig footer / stake line: JetBrains Mono 700 40 px, -0.02em, 878 px wide = 37 characters
+RETIRED_OPTS = {     # options of the retired looks that must not survive the port
+    "07a-scoreboard-start-at-25": ("formulaBar", "rowLabelsAtStart", "eventStyle", "total"),
+    "07c-becker-rig-savings-rate": ("formulas", "badge"),
+}
 
 # ============================================================== inputs
 
@@ -208,7 +219,7 @@ beats = {}         # id -> list of (row label, vo line index, keyword)
 first_payoff = {}  # id -> latest allowed t of the first non-start payoff row
 
 # ---- 07a
-ida = "07a-live-sheet-start-at-25"
+ida = "07a-scoreboard-start-at-25"
 ea = {
     "header": T("2", money(A_DEPOSIT), str(A_STOP - A_START), str(END_AGE - B_START), str(END_AGE)),
     "footer": T(pct(A_RATE * 100)),
@@ -216,14 +227,17 @@ ea = {
     "data.people[0].plan": T(str(A_START), str(A_STOP), money(A_IN)),
     "data.people[1].plan": T(str(B_START), str(END_AGE), money(B_IN)),
     "verdict.text": T(money_k(A_GAP)),
-    "lookOpts.formulaBar[0].text": T(money(A_DEPOSIT), pct(A_RATE * 100)),
-    "lookOpts.formulaBar[1].text": T(money(A_DEPOSIT), str((A_STOP - A_START) * 12), money(A_IN)),
-    "lookOpts.formulaBar[2].text": T(money(A_DEPOSIT), str((END_AGE - B_START) * 12), money(B_IN)),
+    "lookOpts.working[0].text": T(money(A_DEPOSIT), pct(A_RATE * 100)),
+    "lookOpts.working[1].text": T(money(A_DEPOSIT), str((A_STOP - A_START) * 12), money(A_IN)),
+    "lookOpts.working[2].text": T(money(A_DEPOSIT), str((END_AGE - B_START) * 12), money(B_IN)),
     # round-2 fix pass (2026-10-08): the bar carries the twist. "Ben: $72,000 = 3 × $24,000" on "Ben invests 3 times
     # as much", then each person's money in → their Age 65 cell, as the marks land on those cells
-    "lookOpts.formulaBar[3].text": T(money(B_IN), num(B_IN / A_IN), money(A_IN)),
-    "lookOpts.formulaBar[4].text": T(money(A_IN), money_k(A_FINAL)),
-    "lookOpts.formulaBar[5].text": T(money(B_IN), money_k(B_FINAL)),
+    "lookOpts.working[3].text": T(money(B_IN), num(B_IN / A_IN), money(A_IN)),
+    # Scoreboard fix pass (2026-10-08): the working line goes back to the resting line as the Age 65 row cuts
+    # (no stale "3 × $24,000" under the climax); no new numbers
+    "lookOpts.working[4].text": T(money(A_DEPOSIT), pct(A_RATE * 100)),
+    "lookOpts.working[5].text": T(money(A_IN), money_k(A_FINAL)),
+    "lookOpts.working[6].text": T(money(B_IN), money_k(B_FINAL)),
 }
 for i, age in enumerate(A_ROWS):
     ea[f"data.rows[{i}].label"] = E(f"Age {age}")
@@ -283,7 +297,7 @@ beats[idb] = [("2008", 0, "takes"), (str(first_back), 3, str(first_back)),
 first_payoff[idb] = R10_MAX
 
 # ---- 07c (hook pass 2: "You save $100 a month / 5 years = $6,000 / A big bank adds: ?")
-idc = "07c-clean-sheet-savings-rate"
+idc = "07c-becker-rig-savings-rate"
 ec = {
     "header": T(money(C_DEPOSIT), str(C_YEARS), money(C_IN)),
     # round-2 fix pass: the footer no longer names Chase (its Oct 2 rate sheet is still unopened, [click-check]);
@@ -494,14 +508,17 @@ def check_spec(sid):
     for cue in spec.get("sfx", []):
         anchors = ts + [spec["verdict"]["t"]] + [b["t"] for b in spec.get("lookOpts", {}).get("beats", [])]
         record(sid, f"sfx {cue['kind']} on a beat", cue["t"], "a row/verdict/beat t", any(abs(cue["t"] - a) < 1e-9 for a in anchors))
-    bar = spec.get("lookOpts", {}).get("formulaBar", [])
+    # the Scoreboard working line (label stack line 1) is a hard cut that holds until the next line, and the
+    # label stack yields at verdict.t: each line must stay up long enough to read
+    bar = spec.get("lookOpts", {}).get("working", [])
     for i, k in enumerate(bar):
-        until = bar[i + 1]["t"] if i + 1 < len(bar) else dur - 0.5        # the loop clears the last 0.5 s
-        n = len(strip_markup(k["text"]))
-        shown = 0.7 * n if k["t"] <= 0 else 0.0                        # frame 1 arrives ~70% typed
-        need = (n - shown) / BAR_CPS + BAR_READ
-        record(sid, f"formulaBar[{i}] on screen ≥ type + read", round(until - k["t"], 2), f"≥ {need:.2f}",
+        until = bar[i + 1]["t"] if i + 1 < len(bar) else spec["verdict"]["t"]
+        n = len(re.sub(r"^\s*=\s*", "", strip_markup(k["text"])))      # the kit drops a leading "= "
+        need = (SLAM if k["t"] > 0 else 0.0) + max(BAR_READ, n / WORK_CPS)   # a line at t <= 0 is landed on frame 1
+        record(sid, f"working[{i}] on screen ≥ slam + read", round(until - k["t"], 2), f"≥ {need:.2f}",
                until - k["t"] >= need)
+    for opt in RETIRED_OPTS.get(sid, ()):
+        record(sid, f"no retired-look option '{opt}'", opt in spec.get("lookOpts", {}), False, opt not in spec.get("lookOpts", {}))
     # VO-locked marks (lookOpts.marks [{t, row, person}], and 07c's lookOpts.winnerT on the winner's final cell):
     # each lands after its row, inside a VO line, and that line names the marked cell's value (as shown, to the
     # dollar, or in cents)
@@ -573,6 +590,125 @@ claim(idc, "write-up: Wells 0.15% case", money(C_WELLS, 0.01), "≈ $22.16", mon
 claim(idc, "write-up: Chase 0.02% relationship rate", money(C_CHASE_REL, 0.01), "≈ $2.95", money(C_CHASE_REL, 0.01) == "≈ $2.95")
 claim(idc, "write-up: deposits at month-start instead", f"{money(C_BEGIN_BIG, 0.01)} / {money(C_BEGIN_HY, 0.01)}",
       "≈ $1.53 / ≈ $639.57", (money(C_BEGIN_BIG, 0.01), money(C_BEGIN_HY, 0.01)) == ("≈ $1.53", "≈ $639.57"))
+
+# ---- look-specific staging (port to Scoreboard / Becker rig, 2026-10-08)
+def load(sid):
+    with open(os.path.join(SPECS, sid + ".json"), encoding="utf-8") as f:
+        return json.load(f)
+
+def word_t(line, kw):
+    """Estimated time the VO line reaches keyword kw (uniform spoken-word rate, as the beat check)."""
+    sp = [w.lower() for w in spoken(line["text"])]
+    k = [w.lower() for w in spoken(kw)]
+    idx = next(j for j in range(len(sp)) if sp[j:j + len(k)] == k)
+    return line["t"] + line["d"] * idx / len(sp)
+
+SA, SC = load(ida), load(idc)
+loA, loC = SA.get("lookOpts", {}), SC.get("lookOpts", {})
+rowsA = SA["data"]["rows"]
+
+# 07a, Scoreboard: no leader border (both panels stay neutral until the verdict floods Ava's)
+claim(ida, "Scoreboard: leader border off", loA.get("leader"), False, loA.get("leader") is False)
+# the climax: the Age 65 count rolls from its cut (+0.08 s) for max(1.0 s, the kit's jump time), stretched to land
+# 0.15 s before the first mark on that row (lookOpts.finalRoll, default 2.4 s, caps it): it must land as the VO says
+# Ava's final, and the mark that lights her panel must follow it
+def roll_for(a, b):
+    lo_, hi_ = min(a, b), max(a, b)
+    if abs(b - a) < 1e-9:
+        return 0.0
+    return min(1.9, max(0.8, 0.7 + 0.45 * __import__("math").log2(hi_ / lo_))) if lo_ > 0 else 1.1
+startA = rowsA[-1]["t"] + 0.08
+rollA = max(roll_for(ava(60), ava(65)), roll_for(ben(60), ben(65)))
+mk65 = [m for m in loA.get("marks", []) if m["row"] == len(rowsA) - 1]
+limitA = min(m["t"] for m in mk65) - 0.15 if mk65 else 1e9
+landA = startA + min(loA.get("finalRoll", 2.4), max(max(1.0, rollA), limitA - startA))
+sayA = word_t(SA["vo"][3], bare(money_k(A_FINAL)))
+claim(ida, "Scoreboard: Age 65 count lands on the spoken '$281,000'", round(landA, 2), f"{sayA:.2f} ± {BEAT_TOL}",
+      abs(landA - sayA) <= BEAT_TOL)
+sayB = word_t(SA["vo"][4], bare(money_k(B_FINAL)))
+for m in loA.get("marks", []):
+    who = SA["data"]["people"][m["person"]]["name"]
+    say = sayA if m["person"] == 0 else sayB
+    claim(ida, f"Scoreboard: {who}'s mark on the Age 65 row, on the spoken final", (m["row"], m["t"]),
+          f"row {len(rowsA) - 1}, {say:.2f} ± {BEAT_TOL}, after the land", m["row"] == len(rowsA) - 1
+          and abs(m["t"] - say) <= BEAT_TOL and m["t"] >= landA)
+w4 = next(w for w in loA["working"] if money_k(A_FINAL) in strip_markup(w["text"]))
+claim(ida, "Scoreboard: the working line with ≈ $281,000 cuts in after the count lands", w4["t"], f"≥ {landA:.2f}",
+      w4["t"] >= landA - 1e-6 and money_k(A_FINAL) in strip_markup(w4["text"]))
+# fix pass (2026-10-08): as the Age 65 row cuts, the working line goes back to the resting line (word for word)
+wk65 = [w for w in loA["working"] if abs(w["t"] - rowsA[-1]["t"]) < 1e-9]
+claim(ida, "Scoreboard: the working line rests as the Age 65 row cuts", [w["text"] for w in wk65], loA["working"][0]["text"],
+      len(wk65) == 1 and wk65[0]["text"] == loA["working"][0]["text"])
+# the full table forms in the VO gap after Ava's line (her ≈ $281,000 owns the stage while it is said), with Ben's
+# working line on the same cut, and before Ben's mark
+vo3, vo4 = SA["vo"][3], SA["vo"][4]
+tT = loA.get("tableT")
+claim(ida, "Scoreboard: table forms in the VO gap after Ava's final", tT, f"{vo3['t'] + vo3['d']:.2f}-{vo4['t']:.2f}",
+      tT is not None and vo3["t"] + vo3["d"] - 1e-9 <= tT <= vo4["t"] and tT > landA)
+wB = next(w for w in loA["working"] if money_k(B_FINAL) in strip_markup(w["text"]))
+claim(ida, "Scoreboard: Ben's working line cuts with the table", wB["t"], tT, tT is not None and abs(wB["t"] - tT) < 1e-9)
+# the plans' money pieces ("put in $24,000", "put in $72,000") light on "Ben invests 3 times as much"; the focus
+# ends before the climax row cuts
+vo2 = SA["vo"][2]
+pfs = loA.get("planFocus", [])
+claim(ida, "Scoreboard: plan focus on the '3 times as much' line", [(x["t"], x.get("d")) for x in pfs],
+      f"inside {vo2['t']}-{vo2['t'] + vo2['d']:.2f}, off before {rowsA[-1]['t']}",
+      len(pfs) == 1 and vo2["t"] <= pfs[0]["t"] <= vo2["t"] + vo2["d"]
+      and pfs[0]["t"] + pfs[0].get("d", 2.0) + 0.3 <= rowsA[-1]["t"] + 1e-9
+      and num(B_IN / A_IN) in strip_markup(vo2["text"])
+      and all(money(x) in SA["data"]["people"][k]["plan"] for k, x in ((0, A_IN), (1, B_IN))))
+keepA = sorted({0, len(rowsA) - 1, *loA.get("tableRows", range(len(rowsA)))})
+claim(ida, "Scoreboard: final table rows (decades after the twist row)", [rowsA[i]["label"] for i in keepA],
+      ["Age 30", "Age 35", "Age 45", "Age 55", "Age 65"],
+      [rowsA[i]["label"] for i in keepA] == ["Age 30", "Age 35", "Age 45", "Age 55", "Age 65"]
+      and any(rowsA[i].get("event") for i in keepA))
+
+# 07c, Becker rig
+figC = {f["person"]: f["color"] for f in loC.get("figures", [])}
+# fix pass (2026-10-08): the kit default, winner = hero. Leo (the winner) is the green figure, so the green figure,
+# Leo's green column head, his fresh green cells, his green ring and the verdict's green ≈ $617.90 all name the same
+# person; You (the viewer's stand-in, in the losing seat) is slate and still ponders the hook on frame 1
+claim(idc, "Becker: Leo (winner) is the hero figure, You neutral", figC, "{0: neutral, 1: hero}",
+      figC == {0: "neutral", 1: "hero"} and SC["data"]["winner"] == 1)
+claim(idc, "Becker: You ponders the hook on frame 1", loC.get("ponder"), 0, loC.get("ponder") == 0)
+# quiet gains: one coin is 15 px; the tallest stack (Leo's ≈ $617.90) stands 300-600 px. You's yearly gains must stay
+# under minGain coins at any such height (his cells land in ink, he never rides them); Leo's must clear it
+mg = loC.get("minGain", 0)
+gainsY = [c_interest(C_APY_BIG, 12 * y) - c_interest(C_APY_BIG, 12 * (y - 1)) for y in range(1, C_YEARS + 1)]
+gainsL = [c_interest(C_APY_HY, 12 * y) - c_interest(C_APY_HY, 12 * (y - 1)) for y in range(1, C_YEARS + 1)]
+claim(idc, "Becker: You's gains are quiet (< minGain coins at a 600 px tower)", round(max(gainsY) * 600 / C_INT_HY / 15, 4),
+      f"< {mg}", mg > 0 and max(gainsY) * 600 / C_INT_HY < mg * 15)
+claim(idc, "Becker: Leo's gains are not quiet (>= minGain coins at a 300 px tower)", round(min(gainsL) * 300 / C_INT_HY / 15, 3),
+      f">= {mg}", min(gainsL) * 300 / C_INT_HY >= mg * 15)
+# the crown (gold plate, impact, cash) lands as the VO says Leo's final, after the Year 5 row
+sayL = word_t(SC["vo"][5], bare(money(C_INT_HY)))
+claim(idc, "Becker: crown (winnerT) on the spoken '$618'", loC.get("winnerT"), f"{sayL:.2f} ± {BEAT_TOL}",
+      loC.get("winnerT", 0) > SC["data"]["rows"][-1]["t"] and abs(loC.get("winnerT", 0) - sayL) <= BEAT_TOL)
+# ring tones follow the verdict's colours: You's numbers are __red__, Leo's **green**
+vtext = SC["verdict"]["text"]
+claim(idc, "Becker: verdict colours You's final red, Leo's green",
+      vtext.replace("\n", " / "), "__≈ $1.48__ … **≈ $617.90**",
+      f"__{money(C_INT_BIG, 0.01)}__" in vtext and f"**{money(C_INT_HY, 0.01)}**" in vtext)
+for m in loC.get("marks", []):
+    want = "bad" if m["person"] == 0 else "good"
+    claim(idc, f"Becker: ring tone on row {m['row']} person {m['person']}", m.get("tone"), want, m.get("tone") == want)
+# the mono footer (<= 2 lines) and stake line (1 line) fit 878 px at 40 px
+fl = SC["footer"].split("\n")
+claim(idc, "Becker: footer ≤ 2 mono lines of ≤ 37 characters", [len(x) for x in fl], f"≤ {MONO_LINE}",
+      len(fl) <= 2 and all(len(x) <= MONO_LINE for x in fl))
+claim(idc, "Becker: stake line one mono line", len(SC["data"]["stake"]), f"≤ {MONO_LINE}", len(SC["data"]["stake"]) <= MONO_LINE)
+claim(idc, "Becker: plans set on two lines", [pp["plan"].count("\n") for pp in SC["data"]["people"]], [1, 1],
+      all(pp["plan"].count("\n") == 1 for pp in SC["data"]["people"]))
+
+# ---- the write-up names only spec files that exist (live in specs/, retired in specs/retired/)
+MD = os.path.join(ROOT, "teasers", "v2", "07-ledger-duel.md")
+with open(MD, encoding="utf-8") as f:
+    md_text = f.read()
+for ref in sorted(set(re.findall(r"studio/specs/(?:retired/)?[\w.-]+\.json", md_text))):
+    claim("md", f"path exists: {ref}", os.path.exists(os.path.join(ROOT, ref)), True, os.path.exists(os.path.join(ROOT, ref)))
+for sid in (ida, idb, idc):
+    claim("md", f"write-up names the live spec {sid}", f"studio/specs/{sid}.json" in md_text, True,
+          f"studio/specs/{sid}.json" in md_text)
 
 for sid in (ida, idb, idc):
     check_spec(sid)

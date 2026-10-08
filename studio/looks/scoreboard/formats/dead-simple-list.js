@@ -9,29 +9,39 @@
 //      the left margin jumps to it), its label slams into the slot and its working slams into the slot's answer area
 //      ("$2,500 × 26": the first operand in the tone colour, the rest grey; Anton at the row's answer size, fitted to
 //      the room right of the label, >= 44 px; a working that can't fit shows its first operand alone). The label
-//      stack slams the same working as its big line (the lit slot already names the item). When the working uses
-//      the input, the hero bumps and flares (the working takes your number).
+//      stack slams the working (line 1, its first operand in the tone colour) over the item's label (line 2, white
+//      caps), the 03c / 08a grammar. When the working uses the input, the stepped-back hero re-lights green for
+//      0.4 s with a bump and a flare (the working takes your number), then steps back again.
 //   2. swap + roll: the working hard-cuts to the slot's odometer (a small pop), which rolls from the working's first
 //      operand when that reads exactly like the answer would ($2,500 → $65,000; $65,000 → $5,000, rolling down), else
 //      from 0, and ends exactly at resultT. The working holds typeDur, longer when the roll needs less time, shorter
 //      (down to 0.4 s; the goal 0.5 s) so the roll keeps >= 0.8 s. Rolls take 0.8-1.9 s by jump size, the "≈" an
 //      unlit ghost while it runs; a count within one unit of its answer shows the answer (no "$0,000" mid-carry).
 //   3. land (ding): it lands exactly on the item's `result`: bump, glow flare, a floor bloom. A word answer ("Never")
-//      slams in at resultT in the working's place.
-//   4. note (tick): the item's note rises into the slot's sub-line at noteT (default 0.35 s after the landing) and
+//      slams in at resultT in the working's place. The label stack hard-cuts to the working (line 1, white) over
+//      "= answer" (line 2, in the answer's colour).
+//   4. note (thud): the item's note rises into the slot's sub-line at noteT (default 0.35 s after the landing) and
 //      stays; until then the label sits centred in its row, and it steps up to make room just before. The
-//      finished board is a cheat sheet of N answers with their working notes. (No room for sub-lines: at noteT the
-//      label stack hard-cuts (thud) to the working (line 1) over the note instead; see Layout.)
+//      finished board is a cheat sheet of N answers with their working notes. The label stack hard-cuts to
+//      "working = answer" (line 1) over the note in big type (line 2): a note "not … = X" sets X coral and strikes it
+//      (buzz) as the VO line running at noteT says X; another note "… = X" pulses X as the VO says it. (No room for
+//      sub-lines: the label stack alone carries the note; see Layout.)
 // The goal (the first item with tone "goal", else the last item) is the climax: a taller slot, its answer about
 // 1.3x bigger, a riser from its cut, a roll of >= 2.4 s when the timing allows, a landing with hit + cash, a big floor
-// bloom, a neon green wash and a glow that stays lit. The previous slots settle (no glow): one focal number at a time.
-// From the goal's landing the input hero steps back (white, 75% opacity, no glow, over 0.3 s), so the goal slot is
-// the one lit green number. Then the payoff lands last in the hero (heroFinal, on by default): at verdict.t (no
+// bloom, a neon green wash and a glow that stays lit. The previous slots settle (no glow), and a green answer before
+// it settles to white over 0.3 s from the goal's landing (an echo slot excepted): one focal number at a time.
+// The input hero steps back (white, 75% opacity, no glow, over 0.3 s) as soon as the first answer starts to count
+// (never on frame 1), so each landing is the one lit green number; it re-lights only for 0.4 s on a cut that takes
+// your number, and stays back from the goal's landing. Then the payoff lands last in the hero (heroFinal, on by
+// default; the label stack cuts to its tag, or clears when the tag is ''): at verdict.t (no
 // verdict: after the last beat) the hero hard-cuts to the goal's label as its tag (Inter 700 caps 42 px: one line,
 // else two or three balanced lines as the row allows, <= 620 px and leaving the number >= 80% of its size; no tag
 // fits: no payoff roll, console warning) and rolls to the goal's result (from the input when it reads like the
 // answer, else from 0), green again, landing with a bump, a glow flare and a ding; it holds >= 1.8 s. The goal slot
 // keeps its glow but does not flare again (the hero is the focal number). A word goal ("Never") has no payoff roll.
+// heroFinal.icon (+ count): that many unit icons (lib ICONS) sit between the tag and the number, fanned, and drop in
+// one by one across the roll (a short fall, a squash and a pop on landing; the last as the count lands): each is one
+// unit of the payoff (01a: 2 bills = "your 2 extra checks"). They take their room before the tag and the number fit.
 // Wrong guess (lookOpts.wrongGuess, or data.wrongGuess): before its item, the slot lights white, its naive working
 // slams into the slot and the label stack (struck later), swaps to the odometer and rolls to the wrong answer, which
 // lands (pop). At strikeT a coral line strikes it (and the working in the label stack), and it dims to coral (buzz).
@@ -39,8 +49,9 @@
 // has sub-lines), the real working slams into the answer area, and the real answer rolls like any other. The item's
 // note, when it comes, replaces the struck tag.
 // Check (data.check at checkT): a dashed check slot under the list (a ✓ cell, empty until then) slams the check line
-// in ("10 × 2 + 2 × 3 = 26 PAYDAYS", the part after its last "=" in green, on one or two lines), the ✓ lights green,
-// ding. When the board has no room for that slot, the label stack carries it instead: line 1 the sum (one line at the
+// in ("10 × 2 + 2 × 3 = 26 PAYDAYS", the part after its last "=" in green when it is money, else white like the
+// rest: a count is not money; on one or two lines), the ✓ lights green, ding. The label stack cuts to it too. When
+// the board has no room for that slot, the label stack alone carries it: line 1 the sum (one line at the
 // label stack's l1 size, else down to 40 px, else two balanced lines broken at the " + " nearest the middle), line 2
 // "= 26 PAYDAYS" in green; a sum too long even for that becomes "Σ = …" (console warning). A sum that can't go on
 // one line in the label stack weighs more in the layout solver: the board gives up notes-in-slot or padding first.
@@ -48,7 +59,8 @@
 // to it). At verdict.t the pointer returns to the goal slot (and, with heroFinal off, it flares again).
 // Frame 1: the header, the hero (the input), the footer, the numbered slots. Item 1's t defaults to 0, and an item 1
 // at t <= 0.3 is already cut at frame 1: its slot lit, its label and working in the slot and in the label stack (the
-// research's "slot 1 already typing"); with typeDur 0 (no working in the slot) frame 1 is 0.35 s into its roll.
+// research's "slot 1 already typing"); its working swaps to the roll by 0.35 s and the roll stretches to its resultT
+// (so the opening moves at once); with typeDur 0 (no working in the slot) frame 1 is 0.35 s into its roll.
 // Without data.input there is no hero row (the board takes the room); a late item 1 (t > 0.3) then leaves frame 1
 // without a figure, and the kit warns in the console.
 //
@@ -85,9 +97,10 @@
 //                                          an input). ('result', the old mirror of each slot's answer, is retired:
 //                                          it showed the rolling number twice; it now means the default.)
 //   heroTag     true | false                the input's label and note beside the hero (default true)
-//   heroFinal   true | false | { t, display, tag }   the payoff lands last in the hero (default true): at t (default
+//   heroFinal   true | false | { t, display, tag, icon, count }   the payoff lands last in the hero (default true): at t (default
 //                                          verdict.t, else after the last beat) the hero rolls to `display` (default
-//                                          the goal's result) under `tag` (default the goal's label; '' for none).
+//                                          the goal's result) under `tag` (default the goal's label; '' for none),
+//                                          with `count` (1-4, default 1) `icon`s dropping in beside it (default none).
 //                                          false keeps the input up to the last frame (the research's "the input is
 //                                          the biggest number" variant; it still steps back at the goal's landing)
 //   slotFormula true | false                the working shows in the slot's answer area before its roll (default
@@ -104,6 +117,13 @@
 //               struck out at strikeT (default 0.5 s after it lands, or 0.45 s before the item's cut); strike: false
 //               only replaces it; label: a line over its working in the label stack
 //   goal        item index | false          the climax item (default: the first tone "goal", else the last)
+//   echo        [item, …] | { t, items }    earlier slots that light with the goal at t (default verdict.t, else after
+//                                          the last beat; never before the goal lands): each hard-cuts to the goal's
+//                                          lit state (border, cell, a softer neon wash, its answer in the goal's
+//                                          colour) with a pop, a bump and a glow flare, and stays half-lit like the
+//                                          goal. For an earlier answer that IS the payoff in another guise (01a: "a
+//                                          normal month" $5,000 = "the 2 checks your budget forgets" $5,000). A soft
+//                                          pop sounds unless t is the verdict's (the chrome's reveal covers it)
 //   intro       { l1, l2 }                  the label stack before the first cut (default: empty)
 //   layout      'side' | 'under'            force a row shape (the stack shape still applies per row)
 //   pointer     true | false                the pointer in the left margin (default true)
@@ -114,7 +134,7 @@ import { h, s, css as style, attr, prog, ease, clamp, lerp } from '../../../runt
 import { C, M, layoutFor } from '../theme.js'
 import {
   rich, richUI, esc, ax, bare, inkWidth, slamFit, heroRow, labelStack, odometer, stageFlash, flashAt,
-  parseDisplay, formatLike, bump, slam, rise, durationOf, toneColor,
+  parseDisplay, formatLike, bump, slam, rise, durationOf, toneColor, iconSVG, wobble,
 } from '../lib.js'
 
 export const css = `
@@ -169,6 +189,12 @@ export const css = `
 .sb-labels .dsl-wline { position: absolute; left: -6px; right: -6px; top: 44%; height: max(6px, 0.08em); border-radius: 4px; background: #FF4D5E;
   box-shadow: 0 0 12px rgba(255, 77, 94, 0.7); transform-origin: 0 50%; transform: scaleX(0); }
 .sb-labels .dsl-chk1 { display: block; line-height: 1.06; text-align: center; white-space: nowrap; }
+/* a note's tie-back in the label stack: the wrong total ("not × 24 = $60,000") coral and struck as the VO says it;
+   another note's total pulses as the VO says it */
+.sb-labels .dsl-nwl .dsl-wt { color: #FF4D5E; }
+.sb-labels .dsl-np { display: inline-block; transform-origin: 50% 60%; }
+/* the payoff's unit icons in the hero row (lookOpts.heroFinal.icon) */
+.dsl-hic { position: absolute; left: 0; top: 0; transform-origin: 50% 100%; }
 `
 
 // ---------- geometry (frame px) ----------
@@ -180,6 +206,8 @@ const CHK_LH = 1.04
 const CUT = 0.18                       // a cut's slam lands before its roll starts (no working in the slot)
 const PRE = 0.35                       // frame 1 is this far into the first roll (typeDur 0, first item at t <= 0.3)
 const ROLL0_MAX = 3.2                  // the frame-1 roll may stretch to this, so it lands on its resultT
+const PRE_FRM = 0.35                   // an item 1 cut at frame 1 with its working in the slot swaps to its roll by this
+const HERO_FLARE = 0.4                 // the stepped-back input hero re-lights this long on a cut that takes your number
 const MARGIN = 16                      // board inset from the stage edges
 const RS_STEPS = [92, 84, 76, 70, 64, 58, 52, 48]
 const LS_STEPS = [56, 52, 48, 46, 44, 42, 40]        // labels under 42 px enter without the slam's scale (its ~2% undershoot)
@@ -276,6 +304,10 @@ export default function deadSimpleList(spec, ctx) {
     if (ph.frm) {
       const holdMin = ph.big ? Math.min(typeDur, 0.5) : Math.min(typeDur, Math.max(0.4, win - M.rollMin))
       ph.rs = ph.cut + clamp(Math.max(holdMin, win - want), 0, Math.max(0, win - 0.3))
+      // frame 1 shows the working already cut (the thumbnail); it swaps to the odometer by 0.35 s and the roll
+      // stretches to land on its resultT, so the opening moves from the first third of a second (the label stack
+      // keeps the working readable)
+      if (ph.first && ph.cut <= 0 && ph.rs > PRE_FRM && ph.land - PRE_FRM <= ROLL0_MAX) ph.rs = PRE_FRM
     } else {
       ph.rs = ph.land - Math.max(0.3, Math.min(want, ph.land - ph.cut - CUT))
       // frame 1 is already into the first roll (the thumbnail moves); the roll stretches to land on its resultT
@@ -352,13 +384,15 @@ export default function deadSimpleList(spec, ctx) {
   const chkRaw = d.check ?? lo.check
   const chkText = chkRaw == null ? '' : String(typeof chkRaw === 'object' ? chkRaw.text ?? '' : chkRaw).replace(/^\s*check:\s*/i, '').replace(/\s*[✓✔]\s*$/, '').trim()
   const checkT = chkText ? +(d.checkT ?? (typeof chkRaw === 'object' ? chkRaw.t : null) ?? lo.checkT ?? lastLand + 1.2) : Infinity
-  // the part after the last "=" is the tie-back: green
+  // the part after the last "=" is the tie-back: green when it is money ("= $50,400"); a count ("= 26 PAYDAYS")
+  // stays white (green is for the number that matters)
   let chkL = chkText, chkR = ''
   if (chkText && !/\*\*|__/.test(chkText)) {
     const k = chkText.lastIndexOf('=')
     if (k > 0) { chkL = chkText.slice(0, k).trim(); chkR = chkText.slice(k).trim() }
   }
-  const chkMarkup = chkR ? `${chkL} **${chkR}**` : chkText
+  const chkMoney = /[$€£]/.test(chkR)
+  const chkMarkup = chkR && chkMoney ? `${chkL} **${chkR}**` : chkText
 
   // ---------- measuring (real fonts, memoised) ----------
   const probe = h('div', { style: { position: 'absolute', left: '0px', top: '0px', width: '2000px', visibility: 'hidden' } })
@@ -441,10 +475,11 @@ export default function deadSimpleList(spec, ctx) {
           if (Math.max(wAt(split.a, px), wAt(split.b, px)) <= maxW) l1 = sized(px, [split.a, split.b])
         }
       }
-      if (l1) chkStack = { l1, l2: richA(chkR), l2Color: C.green, hard }
+      const cc = chkMoney ? C.green : C.white
+      if (l1) chkStack = { l1, l2: richA(chkR), l1Color: cc, l2Color: cc, hard }
       else {
         console.warn('scoreboard dead-simple-list: the check line is too long for the label stack; it shows as "Σ ' + chkR + '" (shorten data.check, or give the board room for its check slot)')
-        chkStack = { l1: '', l2: richA('Σ ' + chkR), l2Color: C.green, hard: true }
+        chkStack = { l1: '', l2: richA('Σ ' + chkR), l1Color: cc, l2Color: cc, hard: true }
       }
     }
   }
@@ -744,13 +779,23 @@ export default function deadSimpleList(spec, ctx) {
       const from = fromOf(input.value, tpl) ?? 0
       const roll = clamp(rollWant(from, val, false), 1.0, 1.4)
       heroFinal = { t: t0, start: t0 + 0.04, roll, land: t0 + 0.04 + roll, display, tpl, val, from, col: G.col,
-        tag: hf.tag != null ? String(hf.tag) : G.label }
+        tag: hf.tag != null ? String(hf.tag) : G.label,
+        icon: hf.icon ? String(hf.icon) : null, count: hf.icon ? clamp(Math.round(+hf.count || 1), 1, 4) : 0 }
     }
   }
 
+  // ---------- echo (lookOpts.echo): earlier slots that light with the goal ----------
+  const echoRaw = lo.echo
+  const echoItems = new Set((Array.isArray(echoRaw) ? echoRaw : echoRaw && typeof echoRaw === 'object' ? [].concat(echoRaw.items ?? echoRaw.item ?? []) : [])
+    .map(Number).filter(i => Number.isInteger(i) && i >= 0 && i < N && i !== goalIdx))
+  const echoT = echoItems.size && G
+    ? Math.max(G.land + 0.3, ...[...echoItems].map(i => R[i].land + 0.3),
+      echoRaw && !Array.isArray(echoRaw) && echoRaw.t != null ? +echoRaw.t : vT != null ? vT : beatsEnd + 0.2)
+    : Infinity
+
   // ---------- the hero ----------
   let hero = null
-  const HS = { inPx: 0, inTag: null, finPx: 0, finTag: null }
+  const HS = { inPx: 0, inTag: null, finPx: 0, finTag: null, finIcons: null, finIcW: 0, finIcSz: 0, finIcStep: 0 }
   const itpl = input ? parseDisplay(input.value) : null
   if (heroMode !== 'none') {
     hero = heroRow(stage, L, { maxInt: 10, maxDp: 2 })
@@ -791,7 +836,21 @@ export default function deadSimpleList(spec, ctx) {
       let owF = owAt(heroFinal.display, L.hero.size)
       if (heroFinal.from > heroFinal.val) owF = Math.max(owF, owAt(formatLike(heroFinal.from, heroFinal.tpl), L.hero.size))
       const maxRow = L.hero.w / 1.12                    // the payoff's landing bump (1.1) plus air
-      const fits = w => w <= 620 && w + TAGGAP + owF * 0.8 <= maxRow
+      // the payoff's unit icons (heroFinal.icon, count): between the tag and the number, overlapping like a fanned
+      // stack; they take their room before the tag and the number are fitted
+      if (heroFinal.icon) {
+        const isz = Math.round(L.hero.icon * 0.94), step = Math.round(isz * 0.56)
+        HS.finIcons = Array.from({ length: heroFinal.count }, () => {
+          const el = iconSVG(heroFinal.icon, isz, { cls: 'dsl-hic' })
+          style(el, { top: Math.round((L.hero.h - isz) / 2) + 'px', display: 'none' })
+          hero.el.append(el)
+          return el
+        })
+        HS.finIcSz = isz; HS.finIcStep = step
+        HS.finIcW = isz + step * (heroFinal.count - 1) + 14
+      }
+      const icW = HS.finIcW
+      const fits = w => w <= 620 && w + TAGGAP + icW + owF * 0.8 <= maxRow
       const text = heroFinal.tag.trim()
       let tg = null
       if (text) {
@@ -818,9 +877,9 @@ export default function deadSimpleList(spec, ctx) {
       }
       if (heroFinal) {
         HS.finTag = tg
-        const room = maxRow - (tg ? tg.w + TAGGAP : 0)
+        const room = maxRow - (tg ? tg.w + TAGGAP : 0) - icW
         HS.finPx = owF > room ? Math.floor(L.hero.size * Math.max(0.45, room / owF)) : L.hero.size
-      }
+      } else if (HS.finIcons) { HS.finIcons.forEach(el => el.remove()); HS.finIcons = null; HS.finIcW = 0 }
     }
     for (const tg of [HS.inTag, HS.finTag]) if (tg) style(tg.el, { display: 'none' })
     owAt(input.value, HS.inPx)
@@ -830,15 +889,41 @@ export default function deadSimpleList(spec, ctx) {
     ...R.filter(r => r.cut > 0.05 && r.formula.includes(input.value)).map(r => r.cut),
     ...R.filter(r => r.wrong && r.wrong.t > 0.05 && r.wrong.formula.includes(input.value)).map(r => r.wrong.t),
   ] : []
+  // one focal number at a time: the input hero steps back (white, 75%, no glow) once the first answer starts to
+  // count (never on frame 1), re-lights green for HERO_FLARE s on each cut that takes your number, and stays back
+  // from the goal's landing until the payoff rolls in (heroFinal)
+  const stepT = heroMode === 'input' ? Math.max(0.25, Math.min(...R.map(r => Math.min(r.rs, r.wrong ? r.wrong.rs ?? r.wrong.land : Infinity)))) : Infinity
+  // the payoff's icons land one by one across its roll (the last as it lands): each one is a unit of the payoff
+  const icLand = heroFinal && HS.finIcons ? HS.finIcons.map((_, k, a) => (a.length > 1 ? lerp(heroFinal.start + 0.2, heroFinal.land, k / (a.length - 1)) : heroFinal.start + 0.2)) : []
 
-  // ---------- the label stack: one group per beat ----------
-  // the slots name their items, so the stack's big line is the working (line 2); slots without labels: the working
-  // in line 1 over the label in line 2 (the only place the item is named)
+  // ---------- the label stack: one group per beat, a beat for every VO line ----------
+  // cut: line 1 the working (its first operand in the tone colour), line 2 the item's label (slots without labels:
+  // the only place the item is named); landing: line 1 the working, line 2 "= answer" in the answer's colour; note:
+  // line 1 "working = answer", line 2 the note big ("NOT × 24 = $60,000": a wrong total coral, struck as the VO says
+  // it; another note's total pulses as the VO says it); the payoff (heroFinal): its tag; the check: its sum over its
+  // tie-back. The verdict then replaces the stack (the chrome)
   const groups = [], beats = []   // beats: { t, g }
   const workHTML = (wk, struck) => {
     if (!wk.a) return ''
     const html = plainA(wk.a) + (wk.b ? `<span class="dsl-op">${plainA(wk.b)}</span>` : '')
     return struck ? `<span class="dsl-wl"><span class="dsl-wt">${html}</span><i class="dsl-wline" data-deco></i></span>` : html
+  }
+  const eqH = `<span class="dsl-op">${eqOut(EQ)}</span>`
+  // when the VO says a figure: the line running at `from` that speaks it, at the spoken share of the line before
+  // it (a figure of 1,000 or more reads as two words: "sixty thousand")
+  const spokenAt = (str, from) => {
+    const want = normD(bare(String(str)))
+    const weight = w => { const n = parseDisplay(w.replace(/[.,:;?!]+$/, '')); return isNum(n) && Math.abs(n.value * n.scale) >= 1000 ? 2 : 1 }
+    for (const line of Array.isArray(spec.vo) ? spec.vo : []) {
+      const t0 = +line.t, d0 = +line.d || 0
+      if (!(t0 <= from + 1e-6 && from < t0 + d0)) continue
+      const words = String(line.text || '').replace(/\*\*|__/g, '').split(/\s+/).filter(Boolean)
+      const k = words.findIndex(w => normD(w.replace(/[.,:;?!]+$/, '')) === want)
+      if (k < 0) continue
+      const ws = words.map(weight), all = ws.reduce((a, b) => a + b, 0)
+      return t0 + d0 * ws.slice(0, k).reduce((a, b) => a + b, 0) / all
+    }
+    return null
   }
   const intro = lo.intro && (lo.intro.l1 || lo.intro.l2) ? groups.push({ l1: lo.intro.l1 ? richA(String(lo.intro.l1)) : '', l2: lo.intro.l2 ? richA(String(lo.intro.l2)) : '' }) - 1 : -1
   const l1Col = r => (r.tone === 'bad' ? C.red : C.green)
@@ -850,22 +935,46 @@ export default function deadSimpleList(spec, ctx) {
         : { l1: r.wrong.label ? richA(r.wrong.label) : '', l1Color: C.white, l2: wl, l2Color: C.white }) - 1
       beats.push({ t: r.wrong.t, g: r.wrong.g })
     }
-    r.g = groups.push(bareRows
-      ? { l1: workHTML(r.work), l1Color: l1Col(r), l2: richA(r.label) }
-      : { l1: '', l2: workHTML(r.work), l2Color: l1Col(r) }) - 1
+    r.g = groups.push({ l1: workHTML(r.work), l1Color: l1Col(r), l2: r.label ? richA(r.label) : '' }) - 1
     beats.push({ t: r.cut, g: r.g })
-    if (r.note && !noteSlot) {
-      r.ng = groups.push({ l1: workHTML(r.work), l1Color: l1Col(r), l2: richA(r.note) }) - 1
+    const ansH = plainA(r.disp)
+    r.lg = groups.push(r.work.a
+      ? { l1: workHTML(r.work), l1Color: C.white, l2: `${eqH} ${ansH}`, l2Color: r.col }
+      : { l1: r.label ? richA(r.label) : '', l1Color: C.white, l2: ansH, l2Color: r.col }) - 1
+    beats.push({ t: r.land, g: r.lg })
+    if (r.note) {
+      const nm = /^(.*?)\s*=\s*([^=]+)$/.exec(r.note)
+      let l2 = richA(r.note)
+      r.nWrong = false
+      if (nm && nm[1].trim() && !/\*\*|__/.test(r.note)) {
+        const right = nm[2].trim()
+        r.nWrong = /^not\b/i.test(nm[1].trim())
+        const tie = r.nWrong
+          ? `<span class="dsl-wl dsl-nwl"><span class="dsl-wt">${plainA(right)}</span><i class="dsl-wline" data-deco></i></span>`
+          : `<span class="dsl-np">${plainA(right)}</span>`
+        l2 = `<span>${richA(nm[1].trim())}</span> ${eqH} ${tie}`
+        const said = spokenAt(right, r.noteT)
+        r.nT = said != null ? Math.max(r.noteT + 0.3, said) : r.nWrong ? r.noteT + 0.6 : Infinity
+      }
+      const l1 = r.work.a ? `${workHTML(r.work)} ${eqH} <span style="color:${r.col}">${ansH}</span>` : `<span style="color:${r.col}">${ansH}</span>`
+      r.ng = groups.push({ l1, l1Color: C.white, l2, l2Color: C.white }) - 1
       beats.push({ t: r.noteT, g: r.ng })
     }
   })
-  if (chkText && !chkBoard) {
-    const cg = groups.push({ l1: chkStack.l1, l1Color: C.green, l2: chkStack.l2, l2Color: chkStack.l2Color }) - 1
+  if (heroFinal) beats.push({ t: heroFinal.t, g: groups.push({ l1: '', l2: heroFinal.tag.trim() ? richA(heroFinal.tag.trim()) : '' }) - 1 })
+  if (chkText) {
+    const cg = groups.push({ l1: chkStack.l1, l1Color: chkStack.l1Color ?? C.green, l2: chkStack.l2, l2Color: chkStack.l2Color }) - 1
     beats.push({ t: checkT, g: cg })
   }
   beats.sort((a, b) => a.t - b.t)
   const labels = labelStack(stage, L, groups)
   R.forEach(r => {
+    if (r.ng != null) {
+      const grp = labels.groups[r.ng]
+      r.nLine = grp.querySelector('.dsl-nwl .dsl-wline')
+      r.nTxt = grp.querySelector('.dsl-nwl .dsl-wt')
+      r.nPulse = grp.querySelector('.dsl-np')
+    }
     if (!r.wrong) return
     r.wrong.line = labels.groups[r.wrong.g].querySelector('.dsl-wline')
     r.wrong.txt = labels.groups[r.wrong.g].querySelector('.dsl-wt')
@@ -887,10 +996,14 @@ export default function deadSimpleList(spec, ctx) {
       ctx.cue(r.land, 'hit', { gain: 0.9 })
       ctx.cue(r.land + 0.06, 'cash', { gain: 0.65 })
     } else ctx.cue(r.land, 'ding', { gain: 0.5 })
-    if (Number.isFinite(r.noteT)) ctx.cue(r.noteT, noteSlot ? 'tick' : 'thud', { gain: noteSlot ? 0.4 : 0.45 })
+    // the note: the label stack hard-cuts to it (a thud); a wrong total is struck as the VO says it (a buzz)
+    if (Number.isFinite(r.noteT)) ctx.cue(r.noteT, 'thud', { gain: 0.45 })
+    if (r.nWrong && Number.isFinite(r.nT)) ctx.cue(r.nT, 'buzz', { gain: 0.35 })
   })
   if (chkText && Number.isFinite(checkT)) ctx.cue(checkT, 'ding', { gain: 0.45 })
   if (heroFinal) { ctx.cue(heroFinal.start, 'roll', { dur: heroFinal.roll - 0.05, gain: 0.5 }); ctx.cue(heroFinal.land, 'ding', { gain: 0.5 }) }
+  icLand.forEach(tl => { if (!(heroFinal && Math.abs(tl - heroFinal.land) < 0.05)) ctx.cue(tl, 'pop', { gain: 0.3 }) })
+  if (Number.isFinite(echoT) && !(vT != null && Math.abs(echoT - vT) < 0.05)) ctx.cue(echoT, 'pop', { gain: 0.4 })
 
   // ---------- timeline helpers ----------
   // the goal slot flares again at the verdict only when the hero does not take the payoff there
@@ -951,23 +1064,33 @@ export default function deadSimpleList(spec, ctx) {
         const reached = t >= r.cut0
         const isActive = active === i
         const a = answerAt(r, t, E)
+        // an echo slot (lookOpts.echo) lights with the goal from echoT: the goal's colour, half-lit after a flare
+        const isEcho = echoItems.has(i), echoOn = isEcho && t >= echoT
+        if (echoOn && (a.kind === 'odo' || a.kind === 'txt')) a.color = G.col
+        // once the goal lands, an earlier green answer settles to white: the goal is the one lit green number
+        else if (G && !r.climax && !isEcho && t >= G.land && !a.wrongPhase && (a.kind === 'odo' || a.kind === 'txt') && a.color === C.green) {
+          a.color = mixHex(C.white, C.green, ease.out(prog(t, G.land, 0.3)))
+        }
         // lit state and tone
         let lit = 0, tone = r.col
         if (isActive) {
           lit = 1
           if (a.wrongPhase || (r.wrong && t < r.cut)) tone = a.color === C.red ? C.red : C.white
+          if (echoOn) tone = G.col
         } else if (reached && r.climax && t >= r.land) lit = 0.5
+        else if (echoOn) { lit = 0.5 + 0.5 * (1 - ease.out(prog(t, echoT, 0.8))); tone = G.col }
         style(E.el, litStyle(lit, tone))
-        // a pop on each cut of this slot (and the verdict's return to the goal)
+        // a pop on each cut of this slot (and the verdict's return to the goal, and an echo)
         let sc = 1
-        for (const tc of new Set([r.cut0, r.cut, ...(r.climax && slotFlareT != null ? [slotFlareT] : [])])) if (tc > 0.05) sc *= bump(t, tc, { amp: 0.025, dur: 0.3 })
+        for (const tc of new Set([r.cut0, r.cut, ...(r.climax && slotFlareT != null ? [slotFlareT] : []), ...(isEcho ? [echoT] : [])])) if (tc > 0.05) sc *= bump(t, tc, { amp: 0.025, dur: 0.3 })
         style(E.el, { transform: sc === 1 ? 'none' : `scale(${sc.toFixed(4)})` })
         // number cell: LED off (dim) → a solid lit block while active (the goal stays lit) → grey when done
-        const cellOn = isActive || (r.climax && t >= r.land)
+        const cellOn = isActive || (r.climax && t >= r.land) || echoOn
         style(E.cell, { background: cellOn ? tone : 'transparent', borderRightColor: cellOn ? tone : '#1E2530' })
         style(E.num, { color: cellOn ? C.panel : reached ? C.grey : C.dim })
-        // the goal's neon wash
+        // the goal's neon wash (an echo gets a softer one)
         if (r.climax) style(E.wash, { opacity: t >= r.land ? Math.min(1, 0.7 + 0.3 * flashAt(t, r.land, 0.9) + (slotFlareT != null ? 0.3 * flashAt(t, slotFlareT, 0.8) : 0)).toFixed(3) : '0' })
+        else if (isEcho) style(E.wash, { opacity: echoOn ? Math.min(1, 0.5 + 0.4 * flashAt(t, echoT, 0.9)).toFixed(3) : '0' })
         // the sub-line's arrival: the label (and the answer, when the sub-line runs under it) step up to make room in
         // the 0.16 s before it, so the note rises into a clear line
         const qs = Number.isFinite(E.subT) ? ease.inOut(prog(t, E.subT - 0.16, 0.16)) : 0
@@ -1011,7 +1134,7 @@ export default function deadSimpleList(spec, ctx) {
         const showNum = a.kind === 'odo' || a.kind === 'txt' || a.kind === 'wtxt'
         style(E.rskel, { display: a.kind === 'none' ? 'block' : 'none', transform: dyRes === 0 ? 'none' : `translateY(${dyRes.toFixed(1)}px)` })
         if (E.odo) style(E.odo.el, { display: a.kind === 'odo' ? 'inline-flex' : 'none' })
-        if (E.txt) style(E.txt, { display: a.kind === 'txt' ? 'block' : 'none', opacity: a.kind === 'txt' ? String(slam(t, r.land, { from: 1.12 }).o) : '1' })
+        if (E.txt) style(E.txt, { display: a.kind === 'txt' ? 'block' : 'none', color: a.kind === 'txt' ? a.color : r.col, opacity: a.kind === 'txt' ? String(slam(t, r.land, { from: 1.12 }).o) : '1' })
         if (E.wtxt) style(E.wtxt, { display: a.kind === 'wtxt' ? 'block' : 'none', color: a.color || C.white, opacity: String(a.dim ?? 1) })
         if (E.odo) {
           // hidden, the odometer rests on 0 in the slot's template (no state from another frame)
@@ -1040,9 +1163,13 @@ export default function deadSimpleList(spec, ctx) {
         } else {
           rsc *= bump(t, r.land, { amp: 0.1 })
           if (t >= r.land) glow = Math.max(glow, 0.75 * (1 - ease.out(prog(t, r.land, 0.6))))
+          if (isEcho) {
+            rsc *= bump(t, echoT, { amp: 0.1, dur: 0.45 })
+            if (echoOn) glow = Math.max(glow, 0.42 + 0.58 * (1 - ease.out(prog(t, echoT, 1.2))))
+          }
         }
         style(E.res, { transform: dyRes === 0 && rsc === 1 ? 'none' : `translateY(${dyRes.toFixed(1)}px)` + (rsc === 1 ? '' : ` scale(${rsc.toFixed(4)})`) })
-        const gc = a.color || r.col
+        const gc = /^#/.test(a.color || '') ? a.color : r.col
         style(E.res, { filter: glow > 0.01 && showNum ? `drop-shadow(0 0 ${(6 + 22 * glow).toFixed(1)}px ${rgba(gc === C.white ? C.white : gc, 0.25 + 0.5 * glow)})` : 'none' })
       })
 
@@ -1083,11 +1210,16 @@ export default function deadSimpleList(spec, ctx) {
           style(hero.odo.el, { fontSize: HS.inPx + 'px' })
           sufStyle(hero.odo, itpl, HS.inPx)
           hero.show(input.value)
+          let flare = 0
           for (const rt of reads) {
             sc *= bump(t, rt, { amp: 0.06, dur: M.bump })
-            if (t >= rt) glow = Math.max(glow, 0.5 * (1 - ease.out(prog(t, rt, 0.6))))
+            if (t >= rt) {
+              glow = Math.max(glow, 0.5 * (1 - ease.out(prog(t, rt, 0.6))))
+              flare = Math.max(flare, 1 - ease.out(prog(t, rt + HERO_FLARE, 0.3)))
+            }
           }
-          if (G && t >= G.land) back = ease.out(prog(t, G.land, 0.3))
+          back = ease.out(prog(t, stepT, 0.3)) * (1 - flare)
+          if (G && t >= G.land) back = Math.max(back, ease.out(prog(t, G.land, 0.3)))
           tg = HS.inTag
         } else {
           style(hero.odo.el, { fontSize: HS.finPx + 'px' })
@@ -1101,8 +1233,19 @@ export default function deadSimpleList(spec, ctx) {
           tg = HS.finTag
         }
         for (const x of [HS.inTag, HS.finTag]) if (x) style(x.el, { display: x === tg ? 'flex' : 'none' })
-        style(hero.glow, { paddingLeft: (tg ? tg.w + TAGGAP : 0) + 'px' })
-        if (tg) style(tg.el, { left: (L.hero.w / 2 - (hero.odo.el.offsetWidth + tg.w + TAGGAP) / 2).toFixed(1) + 'px' })
+        const icW = fin && HS.finIcons ? HS.finIcW : 0, tgW = tg ? tg.w + TAGGAP : 0
+        style(hero.glow, { paddingLeft: (tgW + icW) + 'px' })
+        const x0 = L.hero.w / 2 - (hero.odo.el.offsetWidth + tgW + icW) / 2
+        if (tg) style(tg.el, { left: x0.toFixed(1) + 'px' })
+        // the payoff's icons drop in one by one (a short fall, a squash on landing)
+        if (HS.finIcons) HS.finIcons.forEach((el, k) => {
+          const tl = icLand[k], on = fin && t >= tl - 0.2
+          if (!on) { style(el, { display: 'none', opacity: '1', transform: 'none', left: '0px' }); return }
+          const p = prog(t, tl - 0.2, 0.2), w = wobble(prog(t, tl, 0.32))
+          const dy = -36 * (1 - ease.in(p))
+          style(el, { display: 'block', left: (x0 + tgW + k * HS.finIcStep).toFixed(1) + 'px', opacity: clamp(p / 0.35).toFixed(3),
+            transform: `translateY(${dy.toFixed(1)}px) scale(${(1 + 0.08 * w).toFixed(4)}, ${(1 - 0.16 * w).toFixed(4)})` })
+        })
         style(hero.odo.el, { color: fin ? heroFinal.col : back > 0 ? mixHex(C.white, C.green, back) : C.green })
         style(hero.el, { transform: `scale(${sc.toFixed(4)})`, opacity: (1 - 0.25 * back).toFixed(3) })
         style(hero.glow, { '--glow': (16 + 30 * glow).toFixed(1) + 'px', '--glowA': ((0.38 + 0.45 * glow) * (1 - back)).toFixed(3) })
@@ -1117,6 +1260,18 @@ export default function deadSimpleList(spec, ctx) {
       let gi = intro, g0 = 0
       for (const b of beats) if (t >= b.t) { gi = b.g; g0 = b.t }
       labels.seek(t, gi, g0)
+      // a note's wrong total is struck as the VO says it; another note's total pulses then
+      R.forEach(r => {
+        if (r.nLine) {
+          const q = Number.isFinite(r.nT) ? ease.out(prog(t, r.nT, 0.22)) : 0
+          style(r.nLine, { transform: `scaleX(${q.toFixed(3)})` })
+          style(r.nTxt, { opacity: q > 0 ? '0.55' : '1' })
+        }
+        if (r.nPulse) {
+          const b = Number.isFinite(r.nT) ? bump(t, r.nT, { amp: 0.12, dur: 0.4 }) : 1
+          style(r.nPulse, { transform: b === 1 ? 'none' : `scale(${b.toFixed(4)})` })
+        }
+      })
       // the wrong working is struck with its answer
       R.forEach(r => {
         if (!r.wrong || !r.wrong.line) return

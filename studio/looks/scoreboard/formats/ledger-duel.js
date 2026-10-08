@@ -10,14 +10,18 @@
 //               part ("AGE") is set small and grey before the number; when only the number moves it rolls on an
 //               odometer (0.32 s) and bumps; any other change (text keys: "Start") is a hard cut (slam). Coral on a
 //               bad row. A key too wide for its room shrinks (the pips keep theirs). When the climax row cuts, the
-//               ticker steps back (grey, 60%): from then on the money is the biggest thing on the stage.
+//               ticker steps back (grey, 60%): from then on the money is the biggest thing on the stage. Between
+//               cuts the number rests in a light grey (lookOpts.tickerRest): white on its cut (a pulse each row),
+//               then it settles 0.5 s later, so at each row the money odometers are the loudest thing.
 //             - the PIPS, right-aligned on the ticker's baseline: one LED bar per row (passed dim green, current lit,
 //               ahead dark, bad rows coral), so the open loop is countable from frame 1 (decoration).
 //             - the STRIP (the mini ledger of past rows): when a row cuts, the row it replaces ships out of the panels
 //               into the strip's bottom slot (it rises out from behind them in 0.2 s, the older lines move up a slot,
 //               the oldest fades off the top). Key on the left, each value right-aligned in its column (Anton 40-44
 //               px, tabular digits, the person's colour; a value that went the wrong way is coral; a bad row keeps a
-//               coral slot edge and key). Value A sits over panel A's right edge; a key too wide for the room left of
+//               coral slot edge and key; any other event row, where the story turned, keeps a slot edge in its
+//               tone's colour (neutral white, good green) and a white key, and in a dense table a bar of that colour
+//               on its left end). Value A sits over panel A's right edge; a key too wide for the room left of
 //               it moves column A right (up to the room column B leaves), then the type goes down to 40 px, then
 //               every key that ends in a number shows only that number ("Dot-com bust 2002" → "2002": the ticker
 //               already showed the full label), then a key still too wide is cut with "…". Empty slots are LED-off
@@ -29,7 +33,8 @@
 //               grey; a " · " piece that names money or a rate is white; one line when it fits, else one line per
 //               " · " piece, a long piece wrapping in balanced lines of its own), a hairline, then the odometer
 //               (Anton, one size for both panels: the widest value either side ever shows fits at its landing bump,
-//               the climax row's at its held 1.07x plus the bump). Each row both odometers roll from the previous
+//               the climax row's at its held 1.07x plus the bump, and a value a mark lights keeps >= 24 px of air
+//               inside the lit border at its mark bump, on top of the climax hold). Each row both odometers roll from the previous
 //               values on one ease.out curve (the "≈" an unlit ghost until they land, exactly on the row's display
 //               strings) and land with a bump and a glow flare. A row that switches to a scaled display ("≈ $1.4M"
 //               after "≈ $80,000") rolls in the previous row's units until it reaches a tenth of the new unit, so it
@@ -46,7 +51,8 @@
 //             with hit + cash, a bump, a full glow on the better value and a green floor bloom; both values then hold
 //             at 1.07x. A climax where the better side went the wrong way (a portfolio that fell) lands with thud +
 //             a soft buzz instead (no cash, no bloom). An event on the last row waits for that landing.
-//   Table     "the full table holds": 0.5 s after the climax lands (at the winner beat at the latest) the ticker
+//   Table     "the full table holds": 0.5 s after the climax lands (at the winner beat at the latest; or at
+//             lookOpts.tableT, e.g. in a VO gap after the climax's own line, so the payoff gets its moment) the ticker
 //             and the pips yield and the strip re-packs, as a hard cut with a thud, into the whole room above the
 //             panels: every row, the last one too (key in white, a lit slot edge), then the TOTALS line (below).
 //             The pitch is what the room leaves (up to the strip's, down to 44 px at 40 px type; under 54 px the lines
@@ -96,6 +102,9 @@
 //   strip: 'auto' | true | false | n the mini ledger of past rows ('auto': 2-6 slots as the stage allows, else none;
 //                                    true: also 1 slot; n: at most n slots; false: none, and no final table)
 //   table: true | false              the final full table (default true)
+//   tableRows: [i, ...]              the rows the final table keeps (row indices; the first and the last always
+//                                    stay), e.g. an even sample of a long duel instead of the kit's own pick; if
+//                                    they still do not fit, the kit's drop rule thins them further
 //   pips: true | false               the row pips beside the ticker (default true)
 //   working: [{ t, text }]           the working line (label stack line 1) over time; data.stake before the first.
 //                                    formulaBar (the live sheet's) is read as an alias; a leading "= " is dropped
@@ -112,6 +121,16 @@
 //                                    0.6 s without, and before a mark on the last row)
 //   winnerT: s                       the winner beat (default: verdict.t; with no verdict 1.2 s after the last
 //                                    landing, or 1.6 s after the last mark; reveal)
+//   tableT: s                        when the full table forms (default 0.5 s after the climax lands; kept between
+//                                    0.1 s after the landing and the winner beat). Until then the ticker, the pips
+//                                    and the strip hold, so the climax value owns the stage while the VO names it
+//   planFocus: [{ t, d }]            the picture for a VO line about the stakes ("Ben invests 3 times as much"): at t
+//                                    the money piece of each plan (the white " · " piece: "put in $72,000") lights
+//                                    in its person's colour with a glow and a bump, the rest of the plan dims, and
+//                                    both odometers step back to 70%, held d s (default 2.0). A row cut inside
+//                                    [t - 0.3, t + d] lands quietly (its thud, no ding), so the deposits are what
+//                                    the viewer sees and hears
+//   tickerRest: true | false         the ticker number rests in light grey between cuts (default true; false: white)
 //   footerSteps, stageBottom         kit-wide
 //   Porting from another look: marks, formulaBar / working, winnerT, eventPause and leader carry over as written
 //   (keep them: they lock the picture to the VO); the other looks' own keys are ignored (the live sheet's
@@ -140,6 +159,10 @@ const TICK = 0.32                      // the ticker's roll
 const TICK_BACK = 0.6                  // the ticker's opacity once the climax row has cut
 const EV_HOLD = 2.5
 const HOLD = 1.07                      // the climax values stay this much bigger once landed
+const MARK_AMP = 0.08                  // a mark's bump on its value
+const MARK_AIR = 24                    // a marked value keeps this much air inside its lit border (at its mark bump)
+const TICK_REST = 0.7                  // the ticker number rests this far from white towards grey between cuts
+const PF_D = 2.0                       // lookOpts.planFocus: default hold (s)
 const TP_MIN = 44                      // the final table's tightest pitch (40 px type)
 const PLAN_LH = 46
 const FONT_PLAN = "600 40px 'Inter', 'Inter Full', sans-serif"
@@ -275,6 +298,16 @@ export default function ledgerDuel(spec, ctx) {
     .filter(m => m && isFinite(+m.t) && Number.isInteger(+m.row) && +m.row >= 0 && +m.row < N && (+m.person === 0 || +m.person === 1))
     .map(m => ({ t: +m.t, row: +m.row, person: +m.person })).sort((a, b) => a.t - b.t)
   const sumIn = lo.summary && Array.isArray(lo.summary.values) ? lo.summary : null
+  // lookOpts.planFocus: the plans' money pieces light up for a VO line about the stakes
+  const planFocus = (Array.isArray(lo.planFocus) ? lo.planFocus : []).filter(x => x && isFinite(+x.t))
+    .map(x => ({ t: +x.t, d: +x.d > 0 ? +x.d : PF_D })).sort((a, b) => a.t - b.t)
+  const pfAt = t => {
+    let f = 0
+    for (const x of planFocus) f = Math.max(f, Math.min(ease.out(prog(t, x.t, 0.15)), 1 - ease.inOut(prog(t, x.t + x.d, 0.3))))
+    return f
+  }
+  // a row cut while a plan focus is up lands quietly (its thud, no ding)
+  const quietCut = i => planFocus.some(x => cutT[i] >= x.t - 0.3 && cutT[i] <= x.t + x.d)
 
   // ---------- values: numerics drive the rolls; every printed number is a display string ----------
   const tpl = rows.map(r => r.values.map(tplOf))
@@ -380,8 +413,9 @@ export default function ledgerDuel(spec, ctx) {
   // a mark takes effect once its row has landed, and holds until the next mark or the winner beat
   const marks = marksIn.map(m => ({ ...m, on: Math.max(m.t, steps[m.row].land) }))
   marks.forEach((m, j) => { m.off = Math.min(j + 1 < marks.length ? marks[j + 1].on : Infinity, winT ?? Infinity) })
-  // the full table forms 0.5 s after the climax lands (at the winner beat at the latest)
-  const tableT = Math.max(lastLand + 0.1, Math.min(lastLand + 0.5, winT ?? Infinity))
+  // the full table forms 0.5 s after the climax lands (at the winner beat at the latest), or at lookOpts.tableT
+  const tableWant = isFinite(+lo.tableT) && lo.tableT !== null && lo.tableT !== '' ? +lo.tableT : lastLand + 0.5
+  const tableT = Math.max(lastLand + 0.1, Math.min(tableWant, winT ?? Infinity))
 
   // ---------- panels: measure the head (name, plan) and the value ----------
   const inner = PW - 6 - 2 * PAD                 // inside the 3 px border
@@ -417,12 +451,15 @@ export default function ledgerDuel(spec, ctx) {
   const PEAK = 1.1, PEAK_LAST = HOLD * 1.1
   let VS = VMAX
   const fitVS = (w, room, peak) => { VS = Math.min(VS, (room / peak / Math.max(1, w)) * 100) }
+  const markedRow = new Set(marksIn.map(m => m.row))
   rows.forEach((r, i) => [0, 1].forEach(p => {
     let w
     if (isNum[i][p]) { probe.show(r.values[p]); w = probe.el.getBoundingClientRect().width }
     else { setHTML(txtProbe, rich(r.values[p])); w = txtProbe.getBoundingClientRect().width }
     if (i === LI && climax) fitVS(w, PW - 24, PEAK_LAST)
     else fitVS(w, PW - 40, PEAK)
+    // a value a mark lights: MARK_AIR px of air each side inside the lit border (3 px) at the mark's bump
+    if (markedRow.has(i)) fitVS(w, PW - 6 - 2 * MARK_AIR, (i === LI && climax ? HOLD : 1) * (1 + MARK_AMP))
     const rt = runTpl[i][p]
     if (rt) { probe.show(formatLike(rt.below - rt.tpl.scale, rt.tpl)); fitVS(probe.el.getBoundingClientRect().width, PW - 40, 1.0) }
   }))
@@ -500,14 +537,21 @@ export default function ledgerDuel(spec, ctx) {
 
   // ---------- the ledger lines: the moving strip (past rows) and the final table (every row, then the totals) ----------
   const sumTone = sum && sum.tone ? toneColor(sum.tone) : null
-  const lineOf = i => ({ key: rows[i].label, values: rows[i].values, bad: rows[i].tone === 'bad', worse: worse[i], i, fin: i === LI })
+  // (an event row that is not a crash, where the story turned, keeps a slot edge in its tone's colour)
+  const lineOf = i => ({ key: rows[i].label, values: rows[i].values, bad: rows[i].tone === 'bad', worse: worse[i], i, fin: i === LI,
+    ev: !!rows[i].event && rows[i].tone !== 'bad' && i !== LI ? toneCol(rows[i].tone) : null })
   const totalLine = sumMode === 'strip' ? { key: sum.label, values: sum.values, total: true, worse: [false, false], i: LI } : null
   // the final table: as many lines as the room above the panels holds at >= 44 px; a long duel drops plain rows
   // first (the ones closest to the trend of their kept neighbours, evenly spread), never the first row, the last,
   // the totals or an event or crash row
   const tRoom = stripBottom - top
   let tableOn = lo.table !== false && lo.strip !== false && N >= 2 && Math.floor(tRoom / TP_MIN) >= 3
+  // lookOpts.tableRows: the rows the final table keeps (the first and the last always stay); without it, every row
   let keep = rows.map((_, i) => i)
+  if (Array.isArray(lo.tableRows)) {
+    const want = new Set([0, LI, ...lo.tableRows.map(x => +x).filter(x => Number.isInteger(x) && x >= 0 && x < N)])
+    keep = keep.filter(i => want.has(i))
+  }
   if (tableOn) {
     const cap = Math.floor(tRoom / TP_MIN) - (totalLine ? 1 : 0)
     const lv = i => [0, 1].map(p => Math.log1p(Math.max(0, V[i][p])))
@@ -594,15 +638,16 @@ export default function ledgerDuel(spec, ctx) {
   }
   const buildLine = (l, sH, fs, y, zebra = -1) => {
     const el = h('div', { class: 'ld-srow', 'data-band-unit': '', style: { top: (y ?? 0) + 'px', height: sH + 'px', display: 'none' } })
-    const edge = l.total ? sumTone || C.white : l.bad ? rgba(C.red, 0.7) : l.fin ? rgba(C.white, 0.42) : C.edge
+    const edge = l.total ? sumTone || C.white : l.bad ? rgba(C.red, 0.7) : l.fin ? rgba(C.white, 0.42) : l.ev ? rgba(l.ev, 0.6) : C.edge
     const slot = h('div', { class: 'ld-sslot' + (l.total ? ' total' : '') + (zebra >= 0 ? ' dense' : ''), 'data-deco': '', style: { height: sH + 'px', borderColor: edge } })
-    // dense: the stripes carry what the edges did (a bad row coral-tinted, the last row lit, the totals under a rule)
+    // dense: the stripes carry what the edges did (a bad row coral-tinted, the last row lit, the totals under a rule,
+    // an event row a bar in its tone's colour on its left end)
     if (zebra >= 0) {
       style(slot, { background: l.bad ? rgba(C.red, 0.2) : l.fin ? '#262F3B' : zebra % 2 ? '#1A212B' : '#05070A',
-        boxShadow: l.total ? `inset 0 3px 0 ${edge}` : l.fin ? `inset 0 0 0 2px ${rgba(C.white, 0.3)}` : 'none' })
+        boxShadow: l.total ? `inset 0 3px 0 ${edge}` : l.fin ? `inset 0 0 0 2px ${rgba(C.white, 0.3)}` : l.ev ? `inset 7px 0 0 ${rgba(l.ev, 0.85)}` : 'none' })
     }
     const ty = Math.round(sH / 2 - 0.47 * fs)
-    const key = h('div', { class: 'ld-scell', html: rich(keyText.get(l.key) ?? l.key), style: { left: SKX + 'px', top: ty + 'px', fontSize: fs + 'px', color: l.total || l.fin ? C.white : l.bad ? C.red : C.grey } })
+    const key = h('div', { class: 'ld-scell', html: rich(keyText.get(l.key) ?? l.key), style: { left: SKX + 'px', top: ty + 'px', fontSize: fs + 'px', color: l.total || l.fin || l.ev ? C.white : l.bad ? C.red : C.grey } })
     const vals = [0, 1].map(p => h('div', { class: 'ld-scell', html: tabHTML(l.values[p], { tight: true }),
       style: { right: SX + SW - VR[p] + 'px', top: ty + 'px', fontSize: fs + 'px', color: l.total ? sumTone || COL[p] : l.worse[p] ? C.red : l.fin ? COL[p] : mix(COL[p], C.panel, 0.12) } }))
     const rings = [0, 1].map(() => h('div', { class: 'ld-ring', 'data-deco': '' }))
@@ -634,6 +679,10 @@ export default function ledgerDuel(spec, ctx) {
     const name = h('div', { class: 'ld-name' + (nameTwo ? ' two' : ''), html: `<span>${rich(pp.name)}</span>`, style: { top: PT + 'px', height: nameH + 'px', fontSize: nameSize + 'px', color: col } })
     const plan = h('div', { class: 'ld-plan', style: { top: PT + nameH + 8 + 'px', height: planH + 'px' } },
       ...plans[p].map(b => h('span', { class: 'ld-pl' + (b.wrap ? ' wrap' : ''), html: b.html })))
+    // lookOpts.planFocus: the money pieces light up (and bump: inline blocks), the rest of the plan dims
+    const pfB = planFocus.length ? [...plan.querySelectorAll('b')] : []
+    const pfRest = planFocus.length ? [...plan.children].filter(sp => !sp.querySelector('b')) : []
+    pfB.forEach(b => style(b, { display: 'inline-block', transformOrigin: '50% 60%' }))
     const rule = h('div', { class: 'ld-rule', 'data-deco': '', style: { top: headH + 'px' } })
     // the glow filter sits on the fixed value box (its raster region never changes with the number's width)
     const vbox = h('div', { class: 'ld-vbox', style: { top: headH + 2 + 8 + 'px', height: vboxH + 'px',
@@ -652,7 +701,7 @@ export default function ledgerDuel(spec, ctx) {
     }
     el.append(wash, flood, stripe, name, plan, rule, vbox, ...(sumEl ? [sumSkel, sumEl] : []))
     stage.append(el)
-    return { el, wash, flood, stripe, name, plan, vbox, odo, txt, sumEl, sumVal, sumSkel, col }
+    return { el, wash, flood, stripe, name, plan, vbox, odo, txt, sumEl, sumVal, sumSkel, col, pfB, pfRest }
   })
 
   // ---------- ticker + pips ----------
@@ -772,11 +821,11 @@ export default function ledgerDuel(spec, ctx) {
     if (st.last && st.roll >= 0.8) ctx.cue(st.start, 'riser', { dur: Math.max(0.5, st.roll), gain: 0.5 })
     if (st.roll > 0 && anyMove) {
       if (st.last && sadClimax) { ctx.cue(st.land, 'thud', { gain: 0.75 }); ctx.cue(st.land + 0.03, 'buzz', { gain: 0.3 }) }
-      else {
-        ctx.cue(st.land, st.last ? 'hit' : 'ding', { gain: st.last ? 0.9 : 0.45 })
-        if (st.last) ctx.cue(st.land + 0.06, 'cash', { gain: 0.65 })
-      }
-    } else if (i > 0 && anyMove) ctx.cue(st.land, 'pop', { gain: 0.35 })
+      else if (st.last) {
+        ctx.cue(st.land, 'hit', { gain: 0.9 })
+        ctx.cue(st.land + 0.06, 'cash', { gain: 0.65 })
+      } else if (!quietCut(i)) ctx.cue(st.land, 'ding', { gain: 0.45 })   // (a plan focus: thud only)
+    } else if (i > 0 && anyMove && !quietCut(i)) ctx.cue(st.land, 'pop', { gain: 0.35 })
   })
   leadChanges.forEach(c => ctx.cue(c.t + 0.04, 'swipe', { gain: 0.45 }))
   marks.forEach(m => ctx.cue(m.on, 'tick', { gain: 0.55 }))
@@ -804,7 +853,9 @@ export default function ledgerDuel(spec, ctx) {
       const kA = keys[a], kP = a > 0 ? keys[a - 1] : null
       const cutA = a > 0 ? cutT[a] : 0
       const back = climax && a === LI
-      const tickCol = rows[a].tone === 'bad' ? C.red : back ? C.grey : C.white
+      // white on its cut, then (lookOpts.tickerRest) it settles to a light grey: the money is the focal point
+      const rest = lo.tickerRest === false ? 0 : TICK_REST * ease.inOut(prog(t, cutA + 0.5, 0.4))
+      const tickCol = rows[a].tone === 'bad' ? C.red : back ? C.grey : rest > 0 ? mix(C.white, C.grey, rest) : C.white
       const tickOp = back ? TICK_BACK : 1
       if (kA.pre != null) {
         style(tTxt, { display: 'none' })
@@ -923,7 +974,7 @@ export default function ledgerDuel(spec, ctx) {
           if (s2.last && big && !sadClimax) fl = Math.max(fl, 0.6 * flashAt(t, s2.land, 0.9))
         })
         for (const lc of leadChanges) if (lc.p === p) { sc *= bump(t, lc.t, { amp: 0.06 }); if (t >= lc.t) glow = Math.max(glow, 0.45 * (1 - ease.out(prog(t, lc.t, 0.5)))) }
-        for (const m of marks) if (m.person === p && m.row === a) { sc *= bump(t, m.on, { amp: 0.08 }); if (t >= m.on && t < m.off) glow = Math.max(glow, 0.35 + 0.65 * (1 - ease.out(prog(t, m.on, 0.7)))) }
+        for (const m of marks) if (m.person === p && m.row === a) { sc *= bump(t, m.on, { amp: MARK_AMP }); if (t >= m.on && t < m.off) glow = Math.max(glow, 0.35 + 0.65 * (1 - ease.out(prog(t, m.on, 0.7)))) }
         if (won) glow = 0
         style(pn.odo.el, { transform: sc !== 1 ? `scale(${sc.toFixed(4)})` : 'none' })
         style(pn.txt, { transform: sc !== 1 ? `scale(${sc.toFixed(4)})` : 'none' })
@@ -946,7 +997,21 @@ export default function ledgerDuel(spec, ctx) {
         attr(pn.el, 'class', 'sb-panel ld-panel' + (won ? ' fl' : ''))
         style(pn.name, { color: won ? C.bar : pn.col })
         style(pn.stripe, { opacity: won ? '0' : '1' })
-        const dimV = focus >= 0 && focus !== p ? 0.7 : 1
+        // lookOpts.planFocus: the money pieces light in the person's colour (glow, bump), the rest of the plan
+        // dims, and the odometer steps back while it holds
+        const pf = pfAt(t)
+        if (pn.pfB.length) {
+          let pb = 1
+          // (never under 1x: the plan type sits on the 40 px floor)
+          for (const x of planFocus) pb *= Math.max(1, bump(t, x.t, { amp: 0.1, dur: 0.45 }))
+          pn.pfB.forEach(b => style(b, {
+            color: pf > 0.001 ? mix(C.white, pn.col, pf) : '',
+            textShadow: pf > 0.001 ? `0 0 ${(4 + 18 * pf).toFixed(1)}px ${rgba(pn.col, (0.75 * pf).toFixed(3))}` : 'none',
+            transform: pb !== 1 ? `scale(${pb.toFixed(4)})` : 'none',
+          }))
+          pn.pfRest.forEach(sp => style(sp, { opacity: (1 - 0.5 * pf).toFixed(3) }))
+        }
+        const dimV = (focus >= 0 && focus !== p ? 0.7 : 1) * (1 - 0.3 * pf)
         const dim = lost && winT != null ? 1 - 0.4 * ease.out(prog(t, winT, 0.12)) : 1
         style(pn.vbox, { opacity: dimV.toFixed(3) })
         style(pn.el, { opacity: dim.toFixed(3), boxShadow: won ? `0 0 ${(30 + 30 * flood).toFixed(0)}px ${rgba(pn.col, 0.55)}` : '' })

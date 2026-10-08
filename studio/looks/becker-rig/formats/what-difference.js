@@ -126,6 +126,7 @@ import {
 } from '../lib.js'
 
 const BAND = '#E6F6EE'      // lever band: a paler hero tint (heroInk text on it stays >= 3.5:1)
+const GAP_H = 48, GAP_PADL = 9, GAP_PADR = 4, GAP_TIP = 11      // the gap label's banner: its height, the air left and right of its text, its point
 
 export const css = `
 .wd-fixed { position: absolute; left: 0; top: 0; width: 1080px; height: 0; }
@@ -143,7 +144,7 @@ export const css = `
 .wd-delta { font-family: ${F.head}; font-weight: 800; font-size: 40px; line-height: 48px; letter-spacing: -0.01em; word-spacing: 0.1em; }
 .wd-ex { font-family: ${F.mono}; font-weight: 700; font-size: 40px; line-height: 48px; letter-spacing: -0.03em; color: ${C.grey}; white-space: nowrap; }
 .wd-exhead { position: absolute; font: 700 40px/48px ${F.mono}; letter-spacing: -0.03em; color: ${C.grey}; text-align: right; white-space: nowrap; }
-.wd-plate { position: absolute; left: 0; top: 0; box-sizing: border-box; background: ${C.coin}; border: 6px solid ${C.ink}; border-radius: 16px; transform-origin: 50% 50%; }
+.wd-plate { position: absolute; left: 0; top: 0; box-sizing: border-box; background: ${C.coin}; border: 5px solid ${C.ink}; border-radius: 14px; transform-origin: 50% 50%; }
 .wd-band { position: absolute; left: 0; top: 0; background: ${BAND}; border-radius: 14px; transform-origin: 50% 50%; }
 .wd-crate-t { font-family: ${F.head}; font-weight: 900; letter-spacing: -0.02em; word-spacing: 0.12em; }
 .wd-glyph { position: absolute; overflow: visible; }
@@ -371,7 +372,11 @@ export default function whatDifference(spec, ctx) {
     t: +r.t, lanes: asList(r.option).filter(okLane), key: r.metric || barM.key,
   })).filter(r => r.lanes.length)
   const lever = lo.lever && typeof lo.lever === 'object' && Number.isFinite(+lo.lever.t)
-    ? { t: +lo.lever.t, text: String(lo.lever.text || ''), lanes: asList(lo.lever.options).filter(okLane), end: +lo.lever.t + 3.6 } : null
+    ? { t: +lo.lever.t, text: String(lo.lever.text || ''), lanes: asList(lo.lever.options).filter(okLane), end: +lo.lever.t + 3.6,
+      // (lever.beats: the VO's later words that drive the lever home, "13 ... payments": the lanes nod and bump again)
+      beats: asList(lo.lever.beats).map(Number).filter(x => Number.isFinite(x) && x > +lo.lever.t + 0.3).sort((a, b) => a - b) } : null
+  if (lever && lever.beats.length) lever.end = Math.max(lever.end, lever.beats[lever.beats.length - 1] + 0.9)
+  const leverBeats = lever ? [lever.t, ...lever.beats] : []
   const counts = asList(lo.countCell).filter(c => c && okLane(c.option) && sideM && (c.metric == null || c.metric === sideM.key))
   // scan: the waiting lanes' figures hop in turn
   const hops = lanes.map(() => [])
@@ -380,6 +385,20 @@ export default function whatDifference(spec, ctx) {
     const list = asList(lo.scan.options).filter(okLane)
     const order = list.length ? list : lanes.filter(l => !l.pre && l.actT > +lo.scan.t + 0.3).map(l => l.i)
     order.forEach((li, j) => { const tt = +lo.scan.t + j * every; if (lanes[li].actT > tt + 0.3) hops[li].push(tt) })
+  }
+  // pat: "this loan": the waiting figures pat their crates (the resting hand lifts and drops back on the crate's corner,
+  // the crate swells a little on contact, a soft tick), top lane first, `every` apart
+  const PAT = 0.34                 // a pat: the hand's lift and drop (contact at the end)
+  const pats = lanes.map(() => [])
+  if (lo.pat && Number.isFinite(+lo.pat.t)) {
+    const every = Number.isFinite(+lo.pat.every) && +lo.pat.every >= 0 ? +lo.pat.every : 0.08
+    const list = asList(lo.pat.options).filter(okLane)
+    const order = list.length ? list : lanes.filter(l => !l.pre).map(l => l.i)
+    order.forEach((li, j) => {
+      const tt = +lo.pat.t + j * every
+      // (only while he waits, clear of his scan hops)
+      if (lanes[li].actT > tt + PAT + 0.2 && hops[li].every(th => Math.abs(th - tt) > PAT + 0.1)) pats[li].push(tt)
+    })
   }
 
   // ---- working slot entries (one at a time; each holds until the next)
@@ -663,6 +682,69 @@ export default function whatDifference(spec, ctx) {
       l.nameXY = [X0c, two ? rowB - 48 : rowB]
       l.detXY = two ? [X0c, rowB] : [X0c + nameW(l, NS) + 16, rowB]
     }
+    l.poleH = poleH
+  }
+
+  // ---- the winner's plate: it hugs its value (the glyphs' ink box, its 6 px border and 2 px of air). The value grows
+  // to WS on it only when the plate then keeps >= 14 px clear of the lane line above and of the crate and pennant under
+  // it; else to 1.08x (or not at all, when 1.08x would leave under 4 px), and it shifts a few px to centre the plate
+  // between them. The pennant under the plate then flies level with the crate's top instead of above it
+  const inkCtx = document.createElement('canvas').getContext('2d')
+  const inkV = (text, px) => {
+    // ink top and bottom of a value, in px above the bottom of its line box (line-height = font size)
+    inkCtx.font = `900 ${px}px ${F.head}`
+    const m = inkCtx.measureText(text)
+    const base = (px - (m.fontBoundingBoxAscent + m.fontBoundingBoxDescent)) / 2 + m.fontBoundingBoxAscent
+    return { top: px - (base - m.actualBoundingBoxAscent), bot: px - (base + m.actualBoundingBoxDescent) }
+  }
+  const PLATE_PAD = 6               // its 5 px border and 1 px of air
+  const plateAt = (l, S, dy = 0) => {
+    const ink = inkV(l.side, VS)
+    return { x0: XR - valW(l.side, VS) * S - 20, x1: XR + 16, y0: l.yRowB + dy - ink.top * S - PLATE_PAD, y1: l.yRowB + dy - ink.bot * S + PLATE_PAD }
+  }
+  let WSe = 1, plateDY = 0
+  if (winner != null && sideM) {
+    const l = lanes[winner]
+    const above = l.yT + 2                                 // the lane line above (or the heads' rule), its stroke's bottom
+    const pen = (x0, x1) => x1 > l.xEnd + 3 && x0 < l.xEnd + 46
+    const below = (p, poleTop) => Math.min(
+      p.x1 > l.xEnd - crateW - 4 && p.x0 < l.xEnd + 4 ? l.yF - Hc - 4 : Infinity,      // the crate's top stroke
+      pen(p.x0, p.x1) ? l.yF - poleTop - 3 : Infinity,                                   // the pennant
+      l.uN ? l.yRowB + U_GAP : Infinity)                                                  // a line under the value
+    const fit = S => {
+      const p = plateAt(l, S)
+      const lo_ = below(p, Math.min(poleH, Hc))
+      const h_ = p.y1 - p.y0, room = lo_ - above
+      // (centred, unless a line under the value pins it)
+      const dy = l.uN ? 0 : clamp(above + (room - h_) / 2 - p.y0, -6, 6)
+      return { S, dy, clear: Math.min(p.y0 + dy - above, lo_ - (p.y1 + dy)) }
+    }
+    const tries = [WS, 1.08, 1].filter((x, j, a) => x <= WS && a.indexOf(x) === j).map(fit)
+    const pick = tries.find(f => f.clear >= 14) || tries.find(f => f.S <= 1.08 && f.clear >= 4) || tries[tries.length - 1]
+    WSe = pick.S; plateDY = pick.dy
+    l.plateB = plateAt(l, WSe, plateDY)
+    // the pennant under the plate flies level with the crate's top (never above it, into the plate)
+    if (pen(l.plateB.x0, l.plateB.x1)) l.poleH = clamp(Math.floor(l.yF - l.plateB.y1 - 6), Hc - 8, poleH)
+  }
+  for (const l of lanes) if (!l.plateB) l.plateB = sideM ? plateAt(l, 1) : null
+
+  // ---- lookOpts.gapLabel: the time the winner saved, as an object. His flag's pennant unfurls into a banner that
+  // carries the label (a spec display string, "≈ 12 mo") over his time-saved strip, toward the far side: it hangs from
+  // the pole top, under his plate and clear of the coin pile; left out (with a warning) when it has no room there
+  const gapSpec = lo.gapLabel == null || winner == null ? null : typeof lo.gapLabel === 'string' ? { text: lo.gapLabel }
+    : lo.gapLabel.text ? { text: String(lo.gapLabel.text), t: Number.isFinite(+lo.gapLabel.t) ? +lo.gapLabel.t : null } : null
+  let gapLab = null
+  if (gapSpec) {
+    const l = lanes[winner]
+    const w = mw(gapSpec.text, `800 40px ${F.head}`, { letterSpacing: '-0.01em' }) + 0.1 * 40 * (gapSpec.text.split(' ').length - 1)
+    const bx0 = l.xEnd + 5 + 2, bw = Math.ceil(GAP_PADL + w + GAP_PADR + GAP_TIP), bx1 = bx0 + bw
+    const by0 = l.yF - l.poleH, by1 = by0 + GAP_H
+    const right = showPile ? PILE_X - PILE_RX - 6 : XR
+    const overPlate = l.plateB && bx1 > l.plateB.x0 ? l.plateB.y1 + 4 : -Infinity
+    const overUnder = l.uN && bx1 > XR - G.uW(l) - 8 ? l.uBottom + 6 : -Infinity
+    if (XF - l.xEnd > 14 && bx1 <= right && by0 >= Math.max(overPlate, overUnder, l.yT + 4) && by1 <= l.yF - 6)
+      gapLab = { ...gapSpec, w, bw, tx: bx0 + GAP_PADL, ty: by1 }
+    else console.warn(`what-difference (becker-rig): no room for gapLabel "${gapSpec.text}" on the winner's flag; it is left out`)
   }
 
   // ================================================================== build
@@ -724,8 +806,15 @@ export default function whatDifference(spec, ctx) {
     if (l.gap) g.back.append(l.gap)
     // flag (pole + pennant), dropped in where the debt is gone
     l.flag = s('g', { 'data-deco': '' })
-    l.pennant = s('path', { d: `M3,${-poleH}L38,${-poleH + 12}L3,${-poleH + 24}Z`, fill: C.hero, stroke: C.ink, 'stroke-width': 4, 'stroke-linejoin': 'round' })
-    l.flag.append(s('line', { x1: 0, x2: 0, y1: 0, y2: -poleH - 2, stroke: C.ink, 'stroke-width': 6, 'stroke-linecap': 'round' }), l.pennant)
+    l.pennant = s('path', { d: `M3,${-l.poleH}L38,${-l.poleH + 12}L3,${-l.poleH + 24}Z`, fill: C.hero, stroke: C.ink, 'stroke-width': 4, 'stroke-linejoin': 'round' })
+    l.flag.append(s('line', { x1: 0, x2: 0, y1: 0, y2: -l.poleH - 2, stroke: C.ink, 'stroke-width': 6, 'stroke-linecap': 'round' }), l.pennant)
+    // (the winner's pennant unfurls into the gap label's banner)
+    if (gapLab && l.i === winner) {
+      // (a long pennant: square at the pole, pointed at the far side)
+      const y0 = -l.poleH, y1 = y0 + GAP_H, x1 = 2 + gapLab.bw
+      l.banner = s('path', { d: `M2,${y0}L${x1 - GAP_TIP},${y0}L${x1},${y0 + GAP_H / 2}L${x1 - GAP_TIP},${y1}L2,${y1}Z`, fill: C.hero, stroke: C.ink, 'stroke-width': 4, 'stroke-linejoin': 'round', 'data-deco': '', opacity: 0 })
+      l.flag.append(l.banner)
+    }
     g.mid.append(l.flag)
     // the crate (its face is the clock)
     l.crate = s('g')
@@ -773,6 +862,12 @@ export default function whatDifference(spec, ctx) {
   }
   // the box behind a lane's money value (plate, band, impact), for the value at scale S
   const valBox = (l, S = 1) => ({ x0: XR - valW(l.side, VS) * S - 16, x1: XR + 12, y0: l.yRowB - VS * S * 0.9 - 6, y1: l.yRowB - VS * 0.1 + 10 })
+  // the gap label (lookOpts.gapLabel) on its banner: unfurls after the winner beat (or at its own t)
+  if (gapLab) {
+    gapLab.o = new NumObj(world.html, { cls: 'wd-delta', text: gapLab.text, ax: 0, ay: 1, style: { color: C.ink, whiteSpace: 'nowrap' } })
+    gapLab.t0 = gapLab.t != null ? gapLab.t : winT != null ? winT + 0.45 : lastVal + 0.6
+    ctx.cue(gapLab.t0, 'pop', { gain: 0.5 })
+  }
 
   // ================================================================== motion (pure)
   const runE = p => (p <= 0 ? 0 : p >= 1 ? 1 : p - (0.32 * Math.sin(2 * Math.PI * p)) / (2 * Math.PI))   // gentle accel/decel
@@ -791,7 +886,7 @@ export default function whatDifference(spec, ctx) {
     const hx = l.xEnd - crateW - reachX - 10 * k - l.backStep
     const f0 = hx - 95 * k, f1 = hx + 95 * k
     let free, roomUp
-    const rightOK = (!sideM || f1 < colL - 10) && (!l.uN || f1 < XR - G.uW(l) - 10)
+    const rightOK = (!sideM || f1 < l.plateB.x0 - 10) && (!l.uN || f1 < XR - G.uW(l) - 10)
     if (COL) {
       free = rightOK
       roomUp = P - 4                                  // he stays inside his lane (the lane above has its own figure)
@@ -822,6 +917,11 @@ export default function whatDifference(spec, ctx) {
       // scan hops (the hand leaves the crate for the hop)
       st.pose = { ...PZ.wait, tilt: PZ.wait.tilt + 12 * bump(t, 0.12, 0.7) }
       st.rest = 1
+      // a pat: the resting hand lifts off the crate and drops back on it; he looks down at it
+      for (const tp of pats[l.i]) {
+        const w = bump(t, tp, PAT)
+        if (w > 0) { st.patLift = 36 * k * w; st.pose = { ...st.pose, tilt: st.pose.tilt + 10 * bump(t, tp - 0.04, PAT + 0.16) } }
+      }
       for (const th of hops[l.i]) {
         const w = bump(t, th, 0.44)
         if (w > 0) { st.lift = hop(t, th + 0.06, 0.32, Math.min(20, Math.max(6, P - 12 - STAND_H * k))); st.pose = blendPose(st.pose, PZ.airUp, w * 0.75); st.rest = 1 - Math.min(1, 2 * w) }
@@ -855,7 +955,8 @@ export default function whatDifference(spec, ctx) {
       const react = l.tone === 'bad' ? PZ.slump : !COL ? (l.tone === 'neutral' ? PZ.nod : PZ.punch) : l.tone === 'neutral' ? PZ.shrugLow : PZ.pumpLow
       pz = blendPose(pz, react, E.inOut(prog(dt, 0.75, 0.25)) * (1 - E.inOut(prog(dt, 1.9, 0.35))))
     }
-    const lv = lever && lever.lanes.includes(l.i) ? bump(t, lever.t + 0.05, 0.5) : 0
+    let lv = 0
+    if (lever && lever.lanes.includes(l.i)) for (const tb of leverBeats) lv = Math.max(lv, bump(t, tb + 0.05, 0.5))
     if (lv > 0) pz = blendPose(pz, PZ.nod, lv)
     st.pose = pz
     if (winT != null && t >= winT - 0.3) {
@@ -867,9 +968,12 @@ export default function whatDifference(spec, ctx) {
         st.lift = Math.max(st.lift, hop(t, winT + 0.04, 0.46, l.jumpH))
         const air = E.inOut(prog(t, winT + 0.02, 0.12)) * (1 - E.inOut(prog(t, winT + 0.42, 0.14)))
         if (air > 0) st.pose = blendPose(st.pose, PZ.airUp, air * (l.endPose === PZ.win ? 1 : 0.4))
+        // a read of his lane after the beat ("about a YEAR sooner"): a little hop
+        for (const r of reads) if (r.lanes.includes(l.i) && r.t > winT + 0.6) st.lift = Math.max(st.lift, hop(t, r.t, 0.34, Math.min(12, l.jumpH)))
         const ew = E.inOut(prog(t, winT + 0.5, 0.18))
         if (ew > 0) {
-          const wave = 9 * Math.sin(2 * Math.PI * 1.5 * (t - winT - 0.5)) * Math.exp(-(t - winT - 0.5) / 3)
+          // (the wave settles to a smaller one that keeps going: the hold never freezes)
+          const wave = 9 * Math.sin(2 * Math.PI * 1.5 * (t - winT - 0.5)) * Math.max(0.5, Math.exp(-(t - winT - 0.5) / 3))
           const P2 = l.endPose
           st.pose = blendPose(st.pose, { ...P2, aF: [P2.aF[0] + wave, P2.aF[1]], aB: [P2.aB[0] - wave, P2.aB[1]] }, ew)
         }
@@ -906,7 +1010,8 @@ export default function whatDifference(spec, ctx) {
   }
   for (const r of reads) if (r.t > 0.05) ctx.cue(r.t, 'tick', { gain: 0.5 })
   for (const hs of hops) for (const th of hs) ctx.cue(th, 'tick', { gain: 0.45 })
-  if (lever && lever.lanes.length) ctx.cue(lever.t, 'swipe', { gain: 0.5 })
+  if (lever && lever.lanes.length) for (const tb of leverBeats) ctx.cue(tb, 'swipe', { gain: tb === lever.t ? 0.5 : 0.4 })
+  for (const ps of pats) for (const tp of ps) ctx.cue(tp + PAT - 0.04, 'tick', { gain: 0.3 })
   // the climax: the winner's money value grows to WS on its gold plate (impact: a mostly vertical shake, a light
   // flash, a 1.8% punch, `hit` + `cash`), and short rays fan out of the plate's two ends only: a burst all round would
   // cross the crate faces below it and the lane above. The left fan only where the row is clear of the titles
@@ -916,7 +1021,7 @@ export default function whatDifference(spec, ctx) {
   const timeClaim = winner != null && verdictEm.some(e => unitOf(e) != null || e.includes(lanes[winner].bar.replace(/^≈\s*/, '')))
   if (winner != null) {
     const l = lanes[winner]
-    const b = sideM ? valBox(l, WS) : { x0: l.xEnd - crateW, x1: l.xEnd, y0: l.yF - Hc, y1: l.yF }
+    const b = sideM ? l.plateB : { x0: l.xEnd - crateW, x1: l.xEnd, y0: l.yF - Hc, y1: l.yF }
     fxk.impact(winT, { x: (b.x0 + b.x1) / 2, y: (b.y0 + b.y1) / 2, shake: 11, flash: 0.22, punch: 0.018, burst: false, cue: 'hit', gain: 0.95 })
     ctx.cue(winT + 0.06, 'cash', { gain: 0.8 })
     const cy = (b.y0 + b.y1) / 2, hh = b.y1 - b.y0
@@ -935,9 +1040,9 @@ export default function whatDifference(spec, ctx) {
         rays.push({ el, x, y: cy + (u - 0.5) * 0.5 * hh, c: dir * Math.cos(a), sn: Math.sin(a), len: len * (0.85 + 0.3 * rnd()) })
       }
     }
-    fan(b.x1 + 10, 1, 5, 46)
-    const leftRoom = b.x0 - 10 - (titleEnd + 16)
-    if (leftRoom >= 40) fan(b.x0 - 10, -1, 4, Math.min(44, leftRoom - 4))
+    fan(b.x1 + 6, 1, 5, 46)
+    const leftRoom = b.x0 - 6 - (titleEnd + 16)
+    if (leftRoom >= 40) fan(b.x0 - 6, -1, 4, Math.min(44, leftRoom - 4))
   }
 
   // ================================================================== seek
@@ -994,7 +1099,8 @@ export default function whatDifference(spec, ctx) {
       const base = l.tone === 'bad' ? C.red : C.ink
       let col = l.pre ? base : mix(toneCol, base, E.inOut(prog(t, l.settleT, 0.3)))
       if (loser) col = mixOk(base, C.grey, prog(t, winT + 0.1, 0.16))
-      if (isWin) col = C.ink
+      // (ink from the moment its plate starts to open: green on gold would not read)
+      if (l.i === winner && winT != null && t >= winT - 0.05) col = C.ink
       const rb = readAt(l, sideM.key, t)
       if (rb > 0 && !isWin) col = mix(loser ? C.grey : !l.pre && t < l.settleT ? toneCol : base, toneCol, Math.min(1, rb * 2.2))
       let text = l.side, sx = 1, sy = 1, op = 1, y = l.yRowB, inFlight = false
@@ -1016,10 +1122,16 @@ export default function whatDifference(spec, ctx) {
         inFlight = !f.landed
       }
       l.val.overlap(inFlight)
-      const lb = 1 + 0.12 * rb + 0.06 * bump(t, lever ? lever.t : -9, 0.4) * (l.band ? 1 : 0)
+      let lvb = 0
+      for (const tb of leverBeats) lvb = Math.max(lvb, bump(t, tb, 0.4))
+      const lb = 1 + 0.12 * rb + 0.06 * lvb * (l.band ? 1 : 0)
       sx *= lb; sy *= lb
-      // the winner's grows to WS on its plate (a little past it first)
-      if (l.i === winner && winT != null) { const gw = (1 + (WS - 1) * E.back(prog(t, winT - 0.02, 0.24), 1.6)) * (1 + 0.06 * bump(t, winT + 0.04, 0.34)); sx *= gw; sy *= gw }
+      // the winner's grows to WSe on its plate (a little past it first), shifting the few px that centre the plate
+      if (l.i === winner && winT != null) {
+        const gp = prog(t, winT - 0.02, 0.24)
+        const gw = (1 + (WSe - 1) * E.back(gp, 1.6)) * (1 + 0.06 * bump(t, winT + 0.04, 0.34))
+        sx *= gw; sy *= gw; y += plateDY * E.out(gp)
+      }
       l.val.set({ x: XR, y, text, color: col, opacity: op, sx, sy })
       attr(l.sock, 'opacity', t < tIn ? (active ? '1' : '0.7') : '0')
       if (l.band) {
@@ -1028,8 +1140,8 @@ export default function whatDifference(spec, ctx) {
           opacity: on.toFixed(3), transform: `scaleX(${(0.9 + 0.1 * E.out(clamp(prog(t, lever.t, 0.16)))).toFixed(3)})`, display: on > 0.001 ? '' : 'none' })
       }
       if (l.plate) {
-        const b = valBox(l, WS), p = prog(t, winT - 0.04, 0.2)
-        style(l.plate, { left: (b.x0 - 4).toFixed(0) + 'px', top: (b.y0 - 4).toFixed(0) + 'px', width: (b.x1 - b.x0 + 8).toFixed(0) + 'px', height: (b.y1 - b.y0 + 8).toFixed(0) + 'px',
+        const b = l.plateB, p = prog(t, winT - 0.04, 0.2)
+        style(l.plate, { left: b.x0.toFixed(0) + 'px', top: b.y0.toFixed(0) + 'px', width: (b.x1 - b.x0).toFixed(0) + 'px', height: (b.y1 - b.y0).toFixed(0) + 'px',
           transform: `scale(${(p <= 0 ? 0 : 0.2 + 0.8 * E.back(p, 1.8)).toFixed(3)},${(p <= 0 ? 0 : 0.6 + 0.4 * E.out(p)).toFixed(3)})`, display: p > 0 ? '' : 'none' })
       }
     }
@@ -1048,7 +1160,10 @@ export default function whatDifference(spec, ctx) {
     if (t >= l.actT + 0.45 && t < l.tStart && l.tStart - l.actT > 1.3) crot = 0.8 * Math.sin(2 * Math.PI * 9 * t)     // strain
     let hopB = 0
     for (const th of hops[l.i]) hopB = Math.max(hopB, bump(t, th + 0.1, 0.3))
-    const pulse = 1 + 0.08 * readAt(l, barM.key, t) + 0.07 * hopB + 0.05 * (l.band || (lever && lever.lanes.includes(l.i)) ? bump(t, lever.t, 0.4) : 0) + (isWin ? 0.06 * bump(t, winT + 0.04, 0.34) : 0)
+    let lvc = 0, patB = 0
+    if (lever && lever.lanes.includes(l.i)) for (const tb of leverBeats) lvc = Math.max(lvc, bump(t, tb, 0.4))
+    for (const tp of pats[l.i]) patB = Math.max(patB, bump(t, tp + PAT - 0.04, 0.22))
+    const pulse = 1 + 0.08 * readAt(l, barM.key, t) + 0.07 * hopB + 0.05 * lvc + 0.05 * patB + (isWin ? 0.06 * bump(t, winT + 0.04, 0.34) : 0)
     attr(l.crate, 'transform', `translate(${(xf - crateW / 2).toFixed(1)},${l.yF.toFixed(1)}) rotate(${crot.toFixed(2)}) scale(${(csx * pulse).toFixed(3)},${(csy * pulse).toFixed(3)})`)
     let fill = t >= l.tLand ? mix(C.redSoft, C.heroSoft, l.pre ? 1 : prog(t, l.tLand, 0.2)) : C.redSoft
     if (isWin) fill = mix(C.heroSoft, C.coin, prog(t, winT, 0.2))
@@ -1062,7 +1177,8 @@ export default function whatDifference(spec, ctx) {
     setTextAttr(l.crateT, face, fcol)
     // ---- flag: drops in just before the crate arrives, wobbles when it is hit
     const tDrop = l.tLand - 0.3
-    const f = fall(t, tDrop, 90, { n: 2 })
+    // (under a title row it drops from just below the row, never through the text)
+    const f = fall(t, tDrop, COL ? 90 : clamp(l.yF - l.poleH - 2 - (l.yT + 6 + G.RH) - 6, 0, 90), { n: 2 })
     const wob = t >= l.tLand && !l.pre ? wobble(t, l.tLand, 7, 3.2, 5) : 0
     attr(l.flag, 'transform', `translate(${(l.xEnd + 5).toFixed(1)},${(l.yF - f.y).toFixed(1)}) rotate(${wob.toFixed(2)})`)
     attr(l.flag, 'opacity', t >= tDrop ? '1' : '0')
@@ -1072,7 +1188,7 @@ export default function whatDifference(spec, ctx) {
       attr(l.gap, 'x2', (l.xEnd + 12 + Math.max(0, XF - l.xEnd - 12) * gp).toFixed(1))
       attr(l.gap, 'opacity', gp > 0 ? '1' : '0')
       // the time it saved is the verdict's claim: the winner's strip thickens with the plate
-      const sw = l.i === winner && timeClaim ? 11 + 7 * E.out(prog(t, winT, 0.2)) + 5 * bump(t, winT + 0.04, 0.34) : 11
+      const sw = l.i === winner && timeClaim ? 11 + 7 * E.out(prog(t, winT, 0.2)) + 5 * bump(t, winT + 0.04, 0.34) + (t > winT ? 6 * readAt(l, barM.key, t) : 0) : 11
       attr(l.gap, 'stroke-width', sw.toFixed(1))
     }
     // ---- coins: fly off the crate's front face onto the pile, low (under the money value, the lines under it and a
@@ -1113,7 +1229,7 @@ export default function whatDifference(spec, ctx) {
       if (st.rest > 0) {
         // the waiting hand rests on the crate's top corner
         const Jp = { ...J }
-        pinLimb(Jp, 'hF', [bx + 14, l.yF - Hc - 1], 1)
+        pinLimb(Jp, 'hF', [bx + 14, l.yF - Hc - 1 - (st.patLift || 0)], 1)
         for (const key of ['eF', 'hF']) J[key] = [lerp(J[key][0], Jp[key][0], st.rest), lerp(J[key][1], Jp[key][1], st.rest)]
       }
       if (st.lift) for (const key of BODY) J[key] = [J[key][0], J[key][1] - st.lift]
@@ -1142,6 +1258,18 @@ export default function whatDifference(spec, ctx) {
         style(el, { opacity: (pi.opacity * out).toFixed(3), transform: `translateY(${((1 - pi.opacity) * 10).toFixed(1)}px) scale(${pi.scale.toFixed(3)})`, display: '' })
       })
       for (const l of lanes) seekLane(l, t)
+      if (gapLab) {
+        // the pennant unfurls (scaled out from the pole) into the banner, then the label pops on it; both pulse with
+        // the strip and the crate when the VO reads the winner's time
+        const l = lanes[winner], u = E.back(prog(t, gapLab.t0, 0.2), 1.4)
+        const rb = t > gapLab.t0 + 0.3 ? readAt(l, barM.key, t) : 0
+        attr(l.banner, 'opacity', t >= gapLab.t0 ? '1' : '0')
+        attr(l.banner, 'transform', `translate(2,${-l.poleH}) scale(${Math.max(0.001, u * (1 + 0.06 * rb)).toFixed(3)},${(1 + 0.06 * rb).toFixed(3)}) translate(-2,${l.poleH})`)
+        attr(l.pennant, 'opacity', t >= gapLab.t0 + 0.06 ? '0' : '1')
+        const pi = popUp(t, gapLab.t0 + 0.12, 0.2, 0.06), sc = pi.scale * (1 + 0.06 * rb)
+        gapLab.o.set({ x: gapLab.tx, y: gapLab.ty, opacity: pi.opacity, sx: sc, sy: sc })
+        gapLab.o.overlap(false)
+      }
       // the climax rays: out of the plate's ends for 0.26 s (parked, invisible, the rest of the time)
       for (const ry of rays) {
         const dt = t - winT, on = dt >= 0 && dt < 0.26
@@ -1156,7 +1284,7 @@ export default function whatDifference(spec, ctx) {
       // vertical: the titles stand on the safe zone's left edge
       const sh = [shake[0] * 0.25, shake[1]]
       if (winner != null) {
-        const cy = sideM ? (valBox(lanes[winner], WS).y0 + valBox(lanes[winner], WS).y1) / 2 : lanes[winner].yF - Hc / 2
+        const cy = sideM ? (lanes[winner].plateB.y0 + lanes[winner].plateB.y1) / 2 : lanes[winner].yF - Hc / 2
         cam.set({ fx: 60, fy: cy, x: 60, y: cy, zoom, shake: sh })
       } else cam.set({ shake: sh, zoom })
     },

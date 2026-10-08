@@ -39,6 +39,14 @@
 //   dim:       0.5                             opacity of the other rows while a pick lands (1 = no dimming)
 //   dimRest:   0.85                            what they recover to 1.6 s later
 //   pointer:   true                            the green pointer on the left margin
+//   verdictRow: 0                              at verdict.t, row 0 is picked too (the same meaning as in the other
+//                                              kits, so a port keeps it): the pointer glides to it, the row lights,
+//                                              the others dim, and its emphasised cell lands the climax bump (1.13,
+//                                              glow flare). It leads the verdict by up to 0.25 s (never before the
+//                                              last VO line ends, and >= 0.6 s after the pick before it), so the row
+//                                              is lit and bumping as the verdict slams in, not after it; the label
+//                                              before it holds the strip until the verdict lands. No label (the
+//                                              verdict takes the strip) and no sound of its own (the verdict's)
 import { h, s, css as style, setHTML, attr, prog, ease, clamp, lerp, fitText } from '../../../runtime/core.js'
 import { C, M, W, layoutFor } from '../theme.js'
 import { rich, richUI, esc, bare, keepHyphens, tabHTML as tabLib, slam, wobble, durationOf, inkWidth, slamFit, toneColor } from '../lib.js'
@@ -95,6 +103,7 @@ const FOCUS = 1.6       // seconds the other rows stay dimmed after a pick, befo
 const SLIDE = 44        // px the values travel (from the left, so nothing ever crosses the right rail)
 const HOLD = 2.5        // s a pick label holds before the formula comes back (swap strip, or a two-line pick)
 const BACK_MIN = 1.5    // s the formula must be able to stand before the next pick / the verdict, or it stays away
+const VLEAD = 0.25     // s the verdictRow pick may light its row ahead of the verdict (from the end of the VO)
 
 export default function findYourRow(spec, ctx) {
   const d = spec.data || {}
@@ -122,6 +131,18 @@ export default function findYourRow(spec, ctx) {
     if (!p || !(p.row >= 0 && p.row < N)) continue
     const prev = picks.length ? picks[picks.length - 1].t : fillEnd + 1.0 - 3.0
     picks.push({ row: Math.floor(p.row), label: p.label || '', t: p.t != null ? +p.t : prev + 3.0 })
+  }
+  // lookOpts.verdictRow: the verdict lights its row (a quiet pick: no label, no sound; the verdict has the strip).
+  // The row leads the verdict by up to VLEAD s (from the end of the last VO line, and >= 0.6 s after the pick
+  // before it), so the pointer has glided, the row is lit and its climax bump is under way as the verdict slams in:
+  // the payoff row lights before the payoff text, never after it. Until the verdict lands, the strip keeps the
+  // label that was up
+  const vRowT = spec.verdict && spec.verdict.text && Number.isFinite(+spec.verdict.t) ? +spec.verdict.t : null
+  if (Number.isInteger(lo.verdictRow) && lo.verdictRow >= 0 && lo.verdictRow < N && vRowT != null) {
+    const voEnd0 = Math.max(-Infinity, ...(spec.vo || []).map((v, i, a) => (v.d != null ? v.t + v.d : a[i + 1] ? a[i + 1].t : v.t + 2.5)))
+    const before = Math.max(-Infinity, ...picks.filter(p => p.t < vRowT).map(p => p.t + 0.6))
+    const lead = clamp(vRowT - Math.max(voEnd0, before), 0, VLEAD)
+    picks.push({ row: lo.verdictRow, label: '', t: vRowT - lead, tv: vRowT, quiet: true })
   }
   picks.sort((a, b) => a.t - b.t)
 
@@ -415,16 +436,18 @@ export default function findYourRow(spec, ctx) {
     style(line, { display: 'none' })
     return line
   }
-  const pickEls = picks.map(p => pickLine(p.label))
+  const pickEls = picks.map(p => (p.quiet ? null : pickLine(p.label)))
   const promptEl = prompt && mode === 'stack' ? pickLine(prompt) : null
   // until when pick j's label shows: the next pick; in a shared slot (swap) or as two lines, HOLD s at most, then the
   // formula comes back (the row stays lit and the pointer stays on it). The formula only comes back when it can stand
   // BACK_MIN s before the next thing in the strip (the next pick, or the verdict that takes the strip over); a
   // shorter return reads as a flicker (label → formula for 0.5 s → label), so the label holds until then instead.
   const vT = spec.verdict && spec.verdict.text && Number.isFinite(+spec.verdict.t) ? +spec.verdict.t : Infinity
+  // (a quiet verdict-row pick that leads the verdict takes the strip over only when the verdict lands)
   const pickEnd = picks.map((p, j) => {
-    const next = j + 1 < picks.length ? picks[j + 1].t : Infinity
-    if (!(formula && (mode === 'swap' || pickEls[j].__two))) return next
+    const nx = picks[j + 1]
+    const next = nx ? (nx.quiet && nx.tv != null ? nx.tv : nx.t) : Infinity
+    if (!pickEls[j] || !(formula && (mode === 'swap' || pickEls[j].__two))) return next
     const until = Math.min(next, vT > p.t ? vT : Infinity)   // the strip's next event
     return until - (p.t + HOLD) < BACK_MIN ? next : Math.min(next, p.t + HOLD)
   })
@@ -436,7 +459,7 @@ export default function findYourRow(spec, ctx) {
     else ctx.cue(t, 'tick', { gain: 0.38 })
   })
   picks.forEach(p => {
-    if (p.t <= 0.05) return
+    if (p.t <= 0.05 || p.quiet) return
     ctx.cue(p.t - 0.04, 'swipe', { gain: 0.42 })
     ctx.cue(p.t + 0.16, 'ding', { gain: 0.42 })
   })
@@ -496,7 +519,13 @@ export default function findYourRow(spec, ctx) {
           transform: `translateX(${(-SLIDE * (1 - ease.out(p))).toFixed(1)}px)`,
         })
         style(r.flash, { opacity: (pre || !landed ? 0 : 0.16 * (1 - ease.out(prog(t, t0, 0.4)))).toFixed(3) })
-        if (r.emphCell) style(r.emphCell, { transform: `scale(${(pre ? 1 : 1 + 0.1 * Math.max(0, wobble(prog(t, t0 + 0.12, M.bump)))).toFixed(4)})` })
+        if (r.emphCell) {
+          let sc = pre ? 1 : 1 + 0.1 * Math.max(0, wobble(prog(t, t0 + 0.12, M.bump)))
+          // (the verdict row: the climax bump, 1.13)
+          // (it peaks as the row's light completes, just before the verdict slams in, so the slam never masks it)
+          for (const pk of picks) if (pk.quiet && pk.row === i) sc += 0.13 * Math.max(0, wobble(prog(t, Math.max(pk.t + 0.06, (pk.tv ?? pk.t) - 0.1), M.bump)))
+          style(r.emphCell, { transform: `scale(${sc.toFixed(4)})` })
+        }
         const lit = litOf.get(i) || 0
         let lift = lit
         for (const pk of picks) if (pk.row === i && pk.t > 0.001) lift += 1.2 * Math.max(0, wobble(prog(t, pk.t + 0.1, 0.4)))
@@ -519,10 +548,13 @@ export default function findYourRow(spec, ctx) {
 
       // strip: prompt until the first pick, then each pick label slams in; the formula stays (stack, one-line pick) or
       // gives way while a pick label holds (swap, or a two-line pick) and comes back after it
-      const showing = k >= 0 && t < pickEnd[k] ? k : -1
-      if (formula) style(formula, { display: showing >= 0 && (mode === 'swap' || pickEls[showing].__two) ? 'none' : 'flex' })
+      // (while a quiet verdict-row pick leads the verdict, the label before it holds the strip)
+      const sk = k > 0 && picks[k].quiet && picks[k].tv != null && t < picks[k].tv ? k - 1 : k
+      const showing = sk >= 0 && t < pickEnd[sk] ? sk : -1
+      if (formula) style(formula, { display: showing >= 0 && pickEls[showing] && (mode === 'swap' || pickEls[showing].__two) ? 'none' : 'flex' })
       if (promptEl) style(promptEl, { display: k < 0 ? 'flex' : 'none', opacity: '1', transform: 'none' })
       pickEls.forEach((line, j) => {
+        if (!line) return
         if (j !== showing) { style(line, { display: 'none' }); return }
         const sl = slam(t, picks[j].t, { from: line.__from })
         style(line, { display: 'flex', opacity: String(sl.o), transform: `scale(${sl.s.toFixed(4)})` })

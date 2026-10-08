@@ -10,8 +10,13 @@
 // 0.1 s he flips that plate up and catches it (it turns like a card) until his wind-up: the opening never freezes.
 // He winds up and throws the plate: it tumbles up the screen and slams down onto the number. Impact (hit lines,
 // chips, shake, sound), and the pair crunches into the answer, which squashes into its socket; its note follows.
+// A crunch's hit lines are clipped 6 px under the label over its value line (the goal's burst, the climax, is not).
+// A plate in his hands never sits on an empty socket: while one shares a socket's band (from its pop-in to his
+// wind-up), that socket stops 16 px short of the plate's left edge (it keeps >= 120 px).
 // The goal answer is a two-handed heave (the longest wind-up, up to 1 s over a riser) that lands on a gold plate
 // with the big impact (white flash, camera punch, cash); he celebrates and points at it (his hand aims at it).
+// The goal's note sits beside its gold plate when it fits (one line, else two lines at the plate's mid-line, clear
+// of its <= 1.05x pulse), as the other notes sit beside their answers; only then on the label's line.
 // In the rows layout the goal is the climax by size too: its answer is set 1.45x (else 1.35x, 1.3x, 1.15x) when
 // every other answer still gets 64 px or more; only the goal row is as tall as its plate, plus clear space above
 // and below it (GOAL_CLR), so the plate is staged rather than squeezed between its label and the floor.
@@ -43,6 +48,21 @@
 //                                            sparks at both ends instead of the ring); a non-goal answer turns green again, and its
 //                                            tab gets the ring, until the next point), 'wag' ("no, no"), 'shrug',
 //                                            'nod', 'cheer' (a jump) or 'proud' (hands on hips, elbows out, held)
+//   finale: 'cheer' | 'shocked'              his jump when the goal lands: a "yes!" (default) or a shocked jump, arms
+//                                            flung up (a payoff that is an outrage, not a win: 01b's ≈ 1.1%)
+//   wrongGuess: { item, t, formula, result, resultT, strikeT, hit, react }   (or data.wrongGuess; one guess)
+//                                            the naive working, worked like any item in that item's slot before its
+//                                            own turn: the block (formula's first number) drops and types, the plate
+//                                            (the rest) pops into his hands, he throws it (hit, default 'kick'), and
+//                                            the wrong answer crunches out at resultT in pencil grey. At strikeT
+//                                            (default 0.5 s after it lands) a red bar strikes through it, it turns red
+//                                            and a red burst + buzz go off; he wags "no, no" (react: false to skip)
+//                                            until the item's turn. When the item's block drops onto the slot it
+//                                            crushes the struck guess (it splits away under the block, with chips and
+//                                            a thud). The guess must start >= 0.35 s, after the previous item lands,
+//                                            and land >= 0.35 s before its item's t; else it is skipped (console)
+// data.items[].noteT: when the note shows (default 0.24 s after its answer; never before that). A note the VO says
+//                     later than its answer waits for it.
 import {
   h, s, style, attr, setHTML, fitText, prog, clamp, lerp, plain, markup, typed, graphemes,
   C, F, L, M, E, poseTrack, Figure, makeWorld, makeFx, camera, NumObj, pinLimb, blendJ,
@@ -79,6 +99,8 @@ export const css = `
 .ds-note em { color: ${C.ink}; }
 .ds-plate { position: absolute; left: 0; top: 0; box-sizing: border-box; background: ${C.coin}; border: 6px solid ${C.ink}; border-radius: 16px; transform-origin: 50% 50%; }
 .ds-input { position: absolute; left: 62px; top: 0; font: 700 44px/44px ${F.mono}; letter-spacing: -0.02em; color: ${C.grey}; white-space: nowrap; }
+.ds-strike { position: absolute; left: -10px; right: -10px; top: 50%; height: 9px; margin-top: -2px; border-radius: 5px; background: ${C.red};
+  transform-origin: 0 50%; transform: scaleX(0); }
 .ds-input b { color: ${C.ink}; font-weight: 800; }
 `
 
@@ -124,6 +146,18 @@ export default function deadSimpleList(spec, ctx) {
   const typeDur = d.typeDur != null ? Math.max(0.1, +d.typeDur) : 0.6
   const isGoal = it => it.tone === 'goal'
   const F2 = items.map(it => { const [a, b] = splitFormula(String(it.formula || '')); return { num: a, op: b || '=' } })
+  // the wrong guess (lookOpts.wrongGuess): its working is F2[GI]; its timing is checked once the items are timed
+  const wgRaw = lo.wrongGuess ?? d.wrongGuess
+  const wg0 = Array.isArray(wgRaw) ? wgRaw[0] : wgRaw
+  const GI = N
+  let WG = null
+  if (wg0 && typeof wg0 === 'object' && Number.isInteger(+wg0.item) && +wg0.item >= 0 && +wg0.item < N &&
+      wg0.result != null && wg0.t != null && String(wg0.formula || '').trim()) {
+    const [a, b] = splitFormula(String(wg0.formula))
+    F2[GI] = { num: a, op: b || '=' }
+    WG = { item: +wg0.item, t: +wg0.t, result: String(wg0.result), resultT: wg0.resultT != null ? +wg0.resultT : null,
+      strikeT: wg0.strikeT != null ? +wg0.strikeT : null, hit: wg0.hit, react: wg0.react !== false }
+  } else if (wg0) console.warn('dead-simple-list: wrongGuess needs item, t, formula and result; it is skipped')
 
   // ============================================================================================ measure
   const parts = chromeParts(spec, ctx)
@@ -138,6 +172,9 @@ export default function deadSimpleList(spec, ctx) {
   const glyphW = (i, v) => { const [a, b] = splitResult(items[i].result || ''); return wV(a, v) + (b ? wU(b, unitPx(v)) : 0) }
   const resW = (i, v) => { const it = items[i]; const w = glyphW(i, v); return isGoal(it) ? w * HL + 2 * PLATE[0] + 12 : w }
   const blockW = (i, m) => Math.ceil(wM(F2[i].num, m) + 0.2 * m + 2 * (BP.x + BP.b))
+  // the wrong guess's answer (it lands in its item's row, in the row's value size)
+  const gResW = v => { const [a, b] = splitResult(WG.result); return wV(a, v) + (b ? wU(b, unitPx(v)) : 0) }
+  const opsWide = (m, w) => items.some((_, i) => opW(i, m) > w) || (WG && opW(GI, m) > w)
   const opW = (i, m) => Math.ceil(wM(F2[i].op, m) + 0.2 * m + 2 * OP.x)
   const blockH = m => Math.round(1.2 * m) + 2 * BP.y + 2 * BP.b
   const opH = m => Math.round(1.2 * m) + 2 * OP.y
@@ -210,7 +247,7 @@ export default function deadSimpleList(spec, ctx) {
     const l = v >= 64 ? 44 : v >= 58 ? 42 : 40
     const lh = Math.round(1.2 * l)
     let m = clamp(Math.round(v * 0.68), 40, 52)
-    while (m > 40 && items.some((_, i) => opW(i, m) > 330)) m = Math.max(40, m - 2)
+    while (m > 40 && opsWide(m, 330)) m = Math.max(40, m - 2)
     const cz = corner(k, m)
     // the value line: a plain row fits its answer and the glyph block; only the goal row is as tall as its gold plate
     const Vh = Math.max(Math.round(1.21 * v), blockH(m) + 2)
@@ -233,6 +270,15 @@ export default function deadSimpleList(spec, ctx) {
       const place = order => items.map((it, i) => {
         if (!it.note) return { kind: 'none' }
         const nw = wN(it.note, n), rw = resW(i, v), lw = it.label && nl === 1 ? wL(it.label, l) : Infinity
+        // the goal's note sits beside its gold plate when it fits (one line, else two lines at the plate's
+        // mid-line, clear of the plate's <= 1.05x pulse), as the other notes sit beside their answers; only then on
+        // the label's line
+        if (isGoal(it)) {
+          if (X0 + rw + 26 + nw <= R[i]) return { kind: 'val', n, x: X0 + rw + 26 }
+          const gx = X0 + rw + 28 + Math.ceil(0.05 * rw)
+          const gl = wrapN(it.note, n, R[i] - gx)
+          if (gl && gl.length === 2 && 2 * nlh <= VhA[i] + 10) return { kind: 'block', n, x: gx, lines: gl, lh: nlh }
+        }
         for (const kind of order) {
           if (kind === 'val' && X0 + rw + 26 + nw <= R[i]) return { kind, n, x: X0 + rw + 26 }
           if (kind === 'label' && it.label && X0 + lw + 26 + nw <= R[i]) return { kind, n, x: X0 + lw + 26 }
@@ -265,6 +311,7 @@ export default function deadSimpleList(spec, ctx) {
         for (let i = 0; i < N && ok; i++) {
           const it = items[i]
           if (X0 + resW(i, v) > RR[i].V || X0 + blockW(i, m) + 6 + opW(i, m) > RR[i].B + 0.4 * opW(i, m)) ok = false
+          else if (WG && WG.item === i && (X0 + gResW(v) > RR[i].V || X0 + blockW(GI, m) + 6 + opW(GI, m) > RR[i].B + 0.4 * opW(GI, m))) ok = false
           else if (it.label && nLines(i, RR[i].L - X0, l, lh) > nl) ok = false
         }
         if (!ok) return null
@@ -283,7 +330,7 @@ export default function deadSimpleList(spec, ctx) {
   function tryLines(v, allowDrop, k, tight = false) {
     const l = 40, lh = tight ? 46 : 48, pad = tight ? 8 : 14       // tight: the last resort before giving up
     let m = Math.min(48, Math.max(40, Math.round(v * 0.72)))     // formulas never below the 40 px must-read floor
-    while (m > 40 && items.some((_, i) => opW(i, m) > 300)) m = Math.max(40, m - 2)
+    while (m > 40 && opsWide(m, 300)) m = Math.max(40, m - 2)
     const cz = corner(k, m)
     const goal = items.some(isGoal)
     const Vh = Math.max(Math.round(1.21 * v), blockH(m) + 2, goal ? plateH(v) - 8 : 0)
@@ -337,6 +384,7 @@ export default function deadSimpleList(spec, ctx) {
       if (pass === 3) return null
     }
     for (let i = 0; i < N; i++) if (X0 + blockW(i, m) > R[i].B) return null
+    if (WG && (X0 + blockW(GI, m) > R[WG.item].B || X0 + gResW(v) > sol.VE)) return null
     R = R.map(x => ({ ...x, V: sol.VE }))
     return { mode: 'lines', v, l, lh, m, Vh, pad, sgap: tight ? 0 : 4, hs: sol.hs, Sy, R, notes: sol.notes, lines: sol.rw.map(x => x.lines), colW: sol.rw.map(x => x.colW), stack: sol.rw.map(x => x.stack), k }
   }
@@ -402,6 +450,18 @@ export default function deadSimpleList(spec, ctx) {
     const res = Math.max(it.resultT != null ? +it.resultT : t0 + typeDur + 0.3, t0 + 0.3)
     TI.push({ t0, res })
   })
+  // the wrong guess: worked between the previous item's landing and its own item's turn
+  if (WG) {
+    const T1 = TI[WG.item], prev = TI[WG.item - 1]
+    const res = Math.max(WG.resultT ?? WG.t + typeDur + 0.3, WG.t + 0.3)
+    if (WG.t < 0.35 || (prev && WG.t < prev.res + 0.3) || res > T1.t0 - 0.35) {
+      console.warn(`dead-simple-list: wrongGuess at ${WG.t} s is skipped (it must start >= 0.35 s, after item ${WG.item}'s previous item lands, and land >= 0.35 s before item ${WG.item + 1}'s t)`)
+      WG = null
+    } else {
+      WG.T = { t0: WG.t, res }
+      WG.strikeT = clamp(WG.strikeT ?? res + 0.5, res + 0.1, T1.t0 - 0.2)
+    }
+  }
 
   // ============================================================================================ build
   const world = makeWorld(ctx)
@@ -472,7 +532,8 @@ export default function deadSimpleList(spec, ctx) {
     r.val.el.innerHTML = esc(numS) + (unitS ? `<span class="u" style="font-size:${unitPx(v)}px">${esc(unitS)}</span>` : '')
     // empty socket (dashed), sized for this row's own answer
     const hh = Math.round(1.21 * v) + 6, sw = resW(i, v) + 28
-    r.socket = s('rect', { x: rows ? X0 - 14 : RA[i].V - sw + 14, y: yV(i) - hh / 2, width: sw, height: hh, rx: 14, fill: 'none', stroke: C.line, 'stroke-width': 4, 'stroke-dasharray': '14 12' })
+    r.sock = { x: rows ? X0 - 14 : RA[i].V - sw + 14, y: yV(i) - hh / 2, w: sw, h: hh }
+    r.socket = s('rect', { x: r.sock.x, y: r.sock.y, width: sw, height: hh, rx: 14, fill: 'none', stroke: C.line, 'stroke-width': 4, 'stroke-dasharray': '14 12' })
     g.back.append(r.socket)
     // note
     const nt = lay.notes[i]
@@ -501,11 +562,37 @@ export default function deadSimpleList(spec, ctx) {
     return i % 2 ? 'kick' : 'chop'
   }
 
+  // the wrong guess: its own block, plate and (pencil grey) answer in its item's row; a red strike bar inside the answer
+  let GR = null
+  if (WG) {
+    const i = WG.item, [numS, unitS] = splitResult(WG.result)
+    GR = { i, guess: true, goal: false, style: HIT[WG.hit] || 'kick', right: RA[i].B, rightL: RA[i].L }
+    GR.rw = gResW(v); GR.sw = GR.rw
+    GR.home = rows ? X0 : RA[i].V - GR.sw
+    GR.bw = blockW(GI, m)
+    GR.bx = rows ? X0 : GR.right - GR.bw
+    GR.pw = opW(GI, m)
+    GR.dockX = Math.min(GR.bx + GR.bw + 6 + GR.pw / 2, GR.right - GR.pw / 2)
+    GR.block = new NumObj(world.html, { cls: 'ds-block', ax: 0.5, ay: 0.5 })
+    style(GR.block.el, { width: GR.bw + 'px', height: BH + 'px', fontSize: m + 'px', lineHeight: (BH - 2 * BP.b) + 'px', opacity: '0' })
+    GR.op = new NumObj(world.html, { cls: 'ds-op', ax: 0.5, ay: 0.5 })
+    style(GR.op.el, { width: GR.pw + 'px', height: PH + 'px', fontSize: m + 'px', lineHeight: PH + 'px', opacity: '0' })
+    GR.hasUnit = !!unitS
+    GR.val = new NumObj(world.html, { cls: 'ds-val', ax: 0, ay: 0.5, style: { fontSize: v + 'px', opacity: '0' } })
+    GR.val.el.innerHTML = esc(numS) + (unitS ? `<span class="u" style="font-size:${unitPx(v)}px">${esc(unitS)}</span>` : '')
+    GR.strike = h('i', { class: 'ds-strike', 'data-deco': '' })
+    GR.val.el.append(GR.strike)
+    world.html.insertBefore(GR.val.el, R[i].block.el)             // the item's block lands on top of it
+  }
+  // every throw in time order: the items, with the guess before its own item
+  const TH = R.map((r, i) => ({ r, T: TI[i], f: F2[i], row: i }))
+  if (GR) TH.splice(WG.item, 0, { r: GR, T: WG.T, f: F2[GI], row: WG.item, guess: true })
+
   // ============================================================================================ choreography
   const fig = new Figure(g.fig, { scale: k })
-  R.forEach((r, i) => {
-    const T0 = TI[i]
-    const g0 = graphemes(F2[i].num).length, g1 = graphemes(F2[i].op).length
+  TH.forEach(th => {
+    const r = th.r, T0 = th.T, i = th.row
+    const g0 = graphemes(th.f.num).length, g1 = graphemes(th.f.op).length
     r.split = g0 / Math.max(1, g0 + g1)                            // share of the typing that goes on the block
     // the plate's flight: up the lane right of every row, edge-on (a row in his corner: straight across the corner),
     // then it whips left along the row's value line and docks against the number. It never crosses the list.
@@ -514,7 +601,7 @@ export default function deadSimpleList(spec, ctx) {
     r.via = [r.inCorner ? Math.min(r.right + r.pw / 2 + 12, XMAX - r.pw / 2) : LANE, yV(i)]
     const rise = Math.max(0, (L.floorY - 150 * k) - yV(i))
     let flight = clamp(0.3 + rise / 2400 + (r.via[0] - r.land[0]) / 4000, 0.32, 0.6)
-    const pre = i === 0 && T0.t0 <= 0.3
+    const pre = th === TH[0] && !th.guess && T0.t0 <= 0.3
     let typeD = clamp(typeDur, 0.12, 2)
     let ts = pre ? -typeD - 0.05 : T0.t0
     // typing ends before the wind-up; when the slot is short, the typing then the flight give way
@@ -554,8 +641,15 @@ export default function deadSimpleList(spec, ctx) {
     ctx.cue(f.c, 'tick', { gain: 0.5 })
     ctx.cue(f.c + 0.01, 'thud', { gain: 0.14 })
   }
-  for (let i = 0; i < N; i++) {
-    const r = R[i], T0 = TI[i]
+  // "no, no": the forearm up, wagging at the elbow (the other hand on his hip), until `next`
+  const wagKeys = (t0, next) => {
+    K(t0, P.wagA, 0.16, 'out')
+    let tt = t0 + 0.2
+    for (let q = 0; q < 6 && tt + 0.14 < next; q++, tt += 0.13) K(tt, q % 2 ? P.wagA : P.wagB, 0.13, 'inOut')
+    if (tt + 0.3 < next) K(tt, 'stand', 0.3, 'spring')
+  }
+  TH.forEach((th, j) => {
+    const r = th.r, T0 = th.T, i = j
     K(T0.tHold - 0.12, P.hold, 0.16, 'spring')
     if (r.style === 'chop') {
       K(T0.tw, P.back, T0.tr - T0.tw - 0.02, 'inOut')
@@ -577,9 +671,11 @@ export default function deadSimpleList(spec, ctx) {
     }
     xKeys.push({ t: T0.res + 0.3, v: FX, d: 0.4, e: 'inOut' })
     K(T0.res + 0.14, 'idle', 0.34, 'spring')
-    const next = TI[i + 1]
-    if (!r.goal && next && next.tHold - T0.res > 1.6) K(T0.res + 0.55, i % 2 ? P.proud : 'think', 0.34, 'spring')
-  }
+    const next = TH[j + 1] && TH[j + 1].T
+    // the struck guess: he wags "no, no" from the strike until he takes his next plate
+    if (th.guess && WG.react) wagKeys(WG.strikeT, next ? next.tHold - 0.12 : Infinity)
+    else if (!r.goal && next && next.tHold - T0.res > 1.6) K(T0.res + 0.55, i % 2 ? P.proud : 'think', 0.34, 'spring')
+  })
   // finale: a jump for joy, then he points at the answer (his hand aims at it)
   const lastR = R[N - 1], lastT = TI[N - 1]
   const tCel = lastT.res + 0.3
@@ -592,7 +688,7 @@ export default function deadSimpleList(spec, ctx) {
   const tAct0 = acts.length ? acts[0].t : Infinity
   const aims = []                                  // { t0, t1, i }: his pointing hand aims at answer i
   const pulses = []                                // { t, i }: answer i pulses (and, if it is not the goal, turns green)
-  K(tCel, 'celebrate', 0.14, 'out')
+  K(tCel, lo.finale === 'shocked' ? 'shocked' : 'celebrate', 0.14, 'out')
   hops.push({ t0: tCel + 0.04, dur: 0.36, h: 46 })
   if (tCel + 0.62 < tAct0 - 0.1) K(tCel + 0.62, 'stand', 0.18, 'spring')
   if (tCel + 0.9 < tAct0 - 0.1) { K(tCel + 0.9, pointAt(N - 1), 0.3, 'spring'); aims.push({ t0: tCel + 0.9, t1: tAct0, i: N - 1, fin: true }) }
@@ -604,11 +700,8 @@ export default function deadSimpleList(spec, ctx) {
       K(a.t, pointAt(i), 0.26, 'spring')
       aims.push({ t0: a.t, t1: next, i })
       pulses.push({ t: a.t + 0.12, i })
-    } else if (a.act === 'wag') {                 // "no, no": the forearm up, wagging at the elbow
-      K(a.t, P.wagA, 0.16, 'out')
-      let tt = a.t + 0.2
-      for (let q = 0; q < 6 && tt + 0.14 < next; q++, tt += 0.13) K(tt, q % 2 ? P.wagA : P.wagB, 0.13, 'inOut')
-      if (tt + 0.3 < next) K(tt, 'stand', 0.3, 'spring')
+    } else if (a.act === 'wag') {                 // "no, no"
+      wagKeys(a.t, next)
     } else if (a.act === 'shrug') {
       K(a.t, 'shrug', 0.2, 'spring')
       hops.push({ t0: a.t + 0.02, dur: 0.22, h: 10 })
@@ -651,8 +744,7 @@ export default function deadSimpleList(spec, ctx) {
   // where the plate sits while he holds it: it hangs from his hands (top edge in his grip), left of the rail,
   // never over his head and never through the floor
   const capY = figTop(k) + 2 * RIG.headR * k + PH / 2 - 2
-  function heldAt(J, i) {
-    const r = R[i]
+  function heldAt(J, r) {                                       // r: the throw's row object (its plate width)
     const hx = (J.hF[0] + J.hB[0]) / 2, hy = Math.min(J.hF[1], J.hB[1])
     return [Math.min(hx, XMAX - r.pw / 2), clamp(hy + PH / 2 - 8, capY, L.floorY - 4 - PH / 2)]
   }
@@ -672,8 +764,8 @@ export default function deadSimpleList(spec, ctx) {
   }
   // the frisbee flip while it flies up the lane edge-on (a 3D spin faked with a squash)
   const flipAt = (r, p) => (!r.inCorner && p > 0.14 && p < 0.7 ? 0.35 + 0.65 * Math.abs(Math.cos(Math.PI * 3 * (p - 0.14) / 0.56)) : 1)
-  R.forEach((r, i) => { r.from = heldAt(Jat(TI[i].tr), i) })
-  for (const f of flips) { f.p0 = heldAt(Jat(f.r), 0); f.p1 = heldAt(Jat(f.c), 0) }
+  TH.forEach(th => { th.r.from = heldAt(Jat(th.T.tr), th.r) })
+  for (const f of flips) { f.p0 = heldAt(Jat(f.r), R[0]); f.p1 = heldAt(Jat(f.c), R[0]) }
   // a flipped plate: off his hands at f.r, back in them at f.c -> [x, y, rot, sx] | null
   const tossAt = t => {
     const f = flips.find(q => t >= q.r && t < q.c)
@@ -683,20 +775,60 @@ export default function deadSimpleList(spec, ctx) {
       0.3 + 0.7 * Math.abs(Math.cos(Math.PI * f.spins * p))]
   }
   const handsFree = t => flips.reduce((w, f) => Math.max(w, smooth(f.r, f.r + 0.06, t) * (1 - smooth(f.c - 0.07, f.c, t))), 0)
+  // a held plate never sits on an empty socket: when a plate in his hands (from its pop-in to his wind-up) shares an
+  // empty socket's band, that socket's right edge stops 16 px short of the plate's left edge (01b's wide frame-1
+  // plate "× 2,080 × 6.2%" over the goal's socket). The socket keeps at least 120 px; else it is left as it is
+  R.forEach((r, i) => {
+    const sk = r.sock, gone = (GR && GR.i === i ? WG.T.ts : TI[i].ts) - 0.12
+    let minL = Infinity
+    for (const th of TH) {
+      const a = Math.max(0, th.T.tHold - 0.12), b = Math.min(th.T.tw, gone)
+      for (let t = a; t <= b + 1e-6; t += 1 / 30) {
+        const fl = th.r === R[0] ? tossAt(t) : null
+        const [cx, cy] = fl || heldAt(Jat(t), th.r)
+        if (cy + PH / 2 > sk.y && cy - PH / 2 < sk.y + sk.h) minL = Math.min(minL, cx - th.r.pw / 2)
+      }
+    }
+    const w = Math.floor(minL - 16 - sk.x)
+    if (w < sk.w && w >= 120) { sk.w = w; attr(r.socket, 'width', String(w)) }
+  })
 
   // ---- impacts, cues
   const fxk = makeFx(world, ctx)
   const cam = camera(world)
-  R.forEach((r, i) => {
-    const T0 = TI[i]
+  // a crunch's hit lines never reach the label over its value line: each burst is clipped 6 px under the label's
+  // box (the burst keeps its size and its sideways and downward lines; only the tips that would cross into the
+  // label are cut). The goal's burst is the climax and is not clipped (its plate has clear space above it, GOAL_CLR)
+  const labBot = i => (rows ? (items[i].label ? yLT(i) + nlR[i] * lay.lh : null) : stk(i) ? yLabTop(i) + lay.lines[i] * lay.lh : null)
+  const fxSvg = world.g.fx.ownerSVGElement
+  const defs = fxSvg.querySelector('defs') || fxSvg.insertBefore(s('defs'), fxSvg.firstChild)
+  let nClip = 0
+  const capFx = (t, i, o) => {
+    fxk.impact(t, o)
+    const lb = labBot(i), g0 = world.g.fx.lastChild
+    if (lb == null || !g0 || g0.tagName.toLowerCase() !== 'g') return
+    const id = `ds-fxclip-${nClip++}`
+    const cp = s('clipPath', { id })
+    cp.append(s('rect', { x: -2000, y: Math.round(lb + 6), width: 6000, height: 6000 }))
+    defs.append(cp)
+    attr(g0, 'clip-path', `url(#${id})`)
+  }
+  TH.forEach(th => {
+    const r = th.r, T0 = th.T, i = th.row
     if (T0.ts + T0.typeD > 0.05) ctx.cue(Math.max(0, T0.ts), 'type', { dur: T0.typeD + Math.min(0, T0.ts), gain: 0.45 })   // (pre-typed: silent)
     if (T0.tHold > 0.05) ctx.cue(T0.tHold, 'pop', { gain: 0.3 })
     ctx.cue(T0.tr, 'swipe', { gain: 0.45 })
     const cx = (r.bx + r.dockX + r.pw / 2) / 2, rx = (r.dockX + r.pw / 2 - r.bx) / 2
     if (r.goal) fxk.impact(T0.res, { x: cx, y: yV(i), rx: rx + 8, ry: BH / 2 + 12, r: 34, lines: 14, shake: 12, flash: 0.45, punch: 0.03, cue: 'hit', gain: 0.95 })
-    else fxk.impact(T0.res, { x: cx, y: yV(i), rx: rx + 6, ry: BH / 2 + 8, r: 30, lines: 10, shake: 5 + Math.min(4, i), cue: 'hit', gain: 0.55 })
+    else capFx(T0.res, i, { x: cx, y: yV(i), rx: rx + 6, ry: BH / 2 + 8, r: 30, lines: 10, shake: 5 + Math.min(4, i), cue: 'hit', gain: 0.55 })
     ctx.cue(T0.res + 0.03, 'thud', { gain: 0.35 })
     if (r.goal) ctx.cue(T0.res + 0.06, 'cash', { gain: 0.6 })
+    if (th.guess) {
+      // the strike: a red burst and a buzz around the wrong answer; the crush: the real block lands on it (a thud)
+      const gx = r.home + r.sw / 2, gy = yV(i)
+      capFx(WG.strikeT, i, { x: gx, y: gy, rx: r.sw / 2 + 12, ry: v * 0.5, r: 24, lines: 8, shake: 5, cue: 'buzz', gain: 0.5, color: C.red })
+      capFx(TI[i].ts, i, { x: gx, y: gy, rx: r.sw / 2 + 8, ry: BH / 2 + 6, r: 22, lines: 8, shake: 6, cue: 'thud', gain: 0.5 })
+    }
   })
   ctx.cue(tCel + 0.4, 'step', { gain: 0.4 })
   // a pointed-at answer pulses with a ring of hit lines (no shake) and a pop. The goal pulses about its plate's
@@ -732,17 +864,79 @@ export default function deadSimpleList(spec, ctx) {
       chips.push({ el, t0: TI[i].res, p0, v: [side * (220 + rnd() * 360), -(40 + rnd() * 120)], floor: Sy(i) - 2, spin: (rnd() - 0.5) * 900 })
     }
   })
+  // the guess: its own crunch (block + plate), then the struck answer's red bits when the real block crushes it
+  if (GR) {
+    const i = GR.i
+    for (const [seed, t0, x0, red] of [[131, WG.T.res, GR.dockX - GR.pw / 2, false], [173, TI[i].ts, GR.home + GR.sw / 2, true]]) {
+      const rnd = rng(seed)
+      for (let c = 0; c < 6; c++) {
+        const el = s('rect', { width: 10 + rnd() * 8, height: 7 + rnd() * 6, rx: 2, fill: red ? (c % 2 ? C.red : C.white) : c % 3 ? C.ink : C.white,
+          stroke: red ? C.red : C.ink, 'stroke-width': 2.5, opacity: 0 })
+        g.front.append(el)
+        const side = c % 2 ? 1 : -1
+        const p0 = [x0 + side * (20 + 40 * rnd()), yV(i) - BH / 2]
+        chips.push({ el, t0, p0, v: [side * (220 + rnd() * 360), -(40 + rnd() * 120)], floor: Sy(i) - 2, spin: (rnd() - 0.5) * 900 })
+      }
+    }
+  }
 
   // ============================================================================================ seek
   const lastBeat = Math.max(tEnd + 0.6, lastT.res + 1.2)
   const duration = durationOf(spec, lastBeat, d.hold ?? 3)
-  const actT = i => TI[i].ts - 0.15
+  const actT = i => (GR && GR.i === i ? WG.T.ts : TI[i].ts) - 0.15   // a row is reached at its first throw (its guess)
   const goalHit = R.find(r => r.goal)
+
+  // a throw's block and plate (an item's, or the wrong guess's) at t
+  function drawThrow(th, t, J) {
+    const r = th.r, T0 = th.T, i = th.row
+    // block: drops in, types the number, waits; the plate lands on it and both crunch away
+    const tDrop = T0.ts - 0.11
+    if (t < tDrop || t >= T0.res + 0.07) { r.block.set({ opacity: 0 }); setHTML(r.block.el, '') }
+    else {
+      const fy = t < T0.ts ? 40 * (1 - E.inQuad(prog(t, tDrop, 0.11))) : 0
+      let sx = 1, sy = 1, op = clamp((t - tDrop) / 0.05)
+      if (t >= T0.res) { const q = prog(t, T0.res, 0.07); sx = 1 + 0.16 * q; sy = 1 - 0.5 * q; op = 1 - q }
+      else { const sq = squashAt(t, T0.ts, Math.min(0.1, Math.max(0, 1 - 41 / m))); sx = sq.sx; sy = sq.sy }
+      r.block.set({ x: r.bx + r.bw / 2, y: yV(i) - fy, sx, sy, opacity: op })
+      if (t >= T0.res) setHTML(r.block.el, '')
+      else {
+        const p = prog(t, T0.ts, T0.typeD * r.split)
+        const caretOn = p < 1
+        setHTML(r.block.el, esc(typed(th.f.num, p)) + (caretOn ? '<span class="ds-caret"></span>' : ''))
+      }
+    }
+    // operator plate: pops into his hands, types, rides his hands through the wind-up, flies, slams down
+    if (t < T0.tHold - 0.12 || t >= T0.res + 0.07) { r.op.set({ opacity: 0 }); r.op.overlap(false); setHTML(r.op.el, '') }
+    else {
+      let x, y, rot = 0, sx = 1, sy = 1, op = 1
+      if (t < T0.tr) {
+        ;[x, y] = heldAt(J, r)
+        const pp = popIn(t, T0.tHold - 0.12, 0.2, 0.84)
+        sx = sy = pp.scale; op = pp.opacity
+        rot = t >= T0.tw ? -8 * Math.sin(Math.PI * prog(t, T0.tw, T0.tr - T0.tw)) : 0
+        const fl = r === R[0] ? tossAt(t) : null
+        if (fl) { [x, y, rot] = fl; sx = fl[3] }                 // (it spins like a card turning on its axis)
+      } else if (t < T0.res) {
+        const p = prog(t, T0.tr, T0.flight)
+        ;[x, y, rot] = flightAt(r, p)
+        sy = flipAt(r, p)
+      } else {
+        ;[x, y] = r.land
+        const q = prog(t, T0.res, 0.07)
+        sx = 1 - 0.3 * q; sy = 1 + 0.1 * q; op = 1 - q            // rammed into the number: squashes sideways
+      }
+      r.op.set({ x, y, rot, sx, sy, opacity: op })
+      r.op.overlap(t >= T0.tw)                                     // in motion over the list: an intended overlap
+      const p = prog(t, T0.tHold, T0.typeD * (1 - r.split))
+      const typing = t < T0.tr && p < 1 && T0.ts >= 0
+      setHTML(r.op.el, t >= T0.res ? '' : esc(typed(th.f.op, T0.ts < 0 ? 1 : p)) + (typing ? '<span class="ds-caret"></span>' : ''))
+    }
+  }
 
   function seek(t) {
     const J = Jat(t)
-    let held = -1                                                  // the item whose plate is in his hands
-    for (let i = 0; i < N; i++) if (t >= TI[i].tHold - 0.12 && t < TI[i].tr) held = i
+    let held = null                                                // the throw whose plate is in his hands
+    for (const th of TH) if (t >= th.T.tHold - 0.12 && t < th.T.tr) held = th
     // ---------------- rows
     for (let i = 0; i < N; i++) {
       const r = R[i], T0 = TI[i]
@@ -762,48 +956,6 @@ export default function deadSimpleList(spec, ctx) {
         style(r.label, { color: active ? C.ink : C.dim, opacity: clamp(op).toFixed(3) })
       }
       if (ledges[i]) attr(ledges[i], 'stroke', t >= T0.res ? C.ink : C.line)
-      // block: drops in, types the number, waits; the plate lands on it and both crunch away
-      const tDrop = T0.ts - 0.11
-      if (t < tDrop || t >= T0.res + 0.07) { r.block.set({ opacity: 0 }); setHTML(r.block.el, '') }
-      else {
-        const fy = t < T0.ts ? 40 * (1 - E.inQuad(prog(t, tDrop, 0.11))) : 0
-        let sx = 1, sy = 1, op = clamp((t - tDrop) / 0.05)
-        if (t >= T0.res) { const q = prog(t, T0.res, 0.07); sx = 1 + 0.16 * q; sy = 1 - 0.5 * q; op = 1 - q }
-        else { const sq = squashAt(t, T0.ts, Math.min(0.1, Math.max(0, 1 - 41 / m))); sx = sq.sx; sy = sq.sy }
-        r.block.set({ x: r.bx + r.bw / 2, y: yV(i) - fy, sx, sy, opacity: op })
-        if (t >= T0.res) setHTML(r.block.el, '')
-        else {
-          const p = prog(t, T0.ts, T0.typeD * r.split)
-          const caretOn = p < 1
-          setHTML(r.block.el, esc(typed(F2[i].num, p)) + (caretOn ? '<span class="ds-caret"></span>' : ''))
-        }
-      }
-      // operator plate: pops into his hands, types, rides his hands through the wind-up, flies, slams down
-      if (t < T0.tHold - 0.12 || t >= T0.res + 0.07) { r.op.set({ opacity: 0 }); r.op.overlap(false); setHTML(r.op.el, '') }
-      else {
-        let x, y, rot = 0, sx = 1, sy = 1, op = 1
-        if (t < T0.tr) {
-          ;[x, y] = heldAt(J, i)
-          const pp = popIn(t, T0.tHold - 0.12, 0.2, 0.84)
-          sx = sy = pp.scale; op = pp.opacity
-          rot = t >= T0.tw ? -8 * Math.sin(Math.PI * prog(t, T0.tw, T0.tr - T0.tw)) : 0
-          const fl = i === 0 ? tossAt(t) : null
-          if (fl) { [x, y, rot] = fl; sx = fl[3] }                 // (it spins like a card turning on its axis)
-        } else if (t < T0.res) {
-          const p = prog(t, T0.tr, T0.flight)
-          ;[x, y, rot] = flightAt(r, p)
-          sy = flipAt(r, p)
-        } else {
-          ;[x, y] = r.land
-          const q = prog(t, T0.res, 0.07)
-          sx = 1 - 0.3 * q; sy = 1 + 0.1 * q; op = 1 - q            // rammed into the number: squashes sideways
-        }
-        r.op.set({ x, y, rot, sx, sy, opacity: op })
-        r.op.overlap(t >= T0.tw)                                     // in motion over the list: an intended overlap
-        const p = prog(t, T0.tHold, T0.typeD * (1 - r.split))
-        const typing = t < T0.tr && p < 1 && T0.ts >= 0
-        setHTML(r.op.el, t >= T0.res ? '' : esc(typed(F2[i].op, T0.ts < 0 ? 1 : p)) + (typing ? '<span class="ds-caret"></span>' : ''))
-      }
       // result: crunches out of the block and plate, squashes into the socket; newest = tone colour, then settles
       if (t < T0.res) {
         r.val.set({ opacity: 0 })
@@ -832,11 +984,29 @@ export default function deadSimpleList(spec, ctx) {
           })
         }
       }
-      // socket: gives way to the block when it lands
-      attr(r.socket, 'opacity', String(+(1 - prog(t, T0.ts - 0.12, 0.1)).toFixed(3)))
+      // socket: gives way to the first block that lands in it (the wrong guess's, when there is one)
+      attr(r.socket, 'opacity', String(+(1 - prog(t, (GR && GR.i === i ? WG.T.ts : T0.ts) - 0.12, 0.1)).toFixed(3)))
       if (r.note) {
-        const p = prog(t, T0.res + 0.24, 0.22)
+        // (data.items[].noteT holds a note back to the VO line that says it)
+        const p = prog(t, Math.max(T0.res + 0.24, r.it.noteT != null ? +r.it.noteT : -Infinity), 0.22)
         style(r.note, { opacity: (p <= 0 ? 0 : clamp(p * 1.4)).toFixed(3), transform: `translate(${(r.noteX + 14 * (1 - E.out(p))).toFixed(1)}px,${r.noteY}px)` })
+      }
+    }
+    // ---------------- blocks and plates (every throw: the items, and the wrong guess)
+    for (const th of TH) drawThrow(th, t, J)
+    // ---------------- the wrong guess's answer: pencil grey, struck in red at strikeT, crushed by its item's block
+    if (GR) {
+      const i = GR.i, T0 = WG.T, tC = TI[i].ts
+      if (t < T0.res || t >= tC + 0.07) { GR.val.set({ opacity: 0 }); GR.val.overlap(false); style(GR.strike, { transform: 'scaleX(0)' }) }
+      else {
+        const pp = popIn(t, T0.res + 0.02, 0.16, 0.86)
+        const sq = squashAt(t, T0.res + 0.04, Math.min(0.18, Math.max(0, 1 - 41 / (GR.hasUnit ? unitPx(v) : v))))
+        let sx = pp.scale * sq.sx, sy = pp.scale * sq.sy, op = pp.opacity
+        // crushed: it splits away sideways under the landing block (never under the type floor), and is gone in 0.07 s
+        if (t >= tC) { const q = prog(t, tC, 0.07); sx *= 1 + 0.16 * q; sy *= Math.max(41 / v, 1 - 0.5 * q); op *= 1 - q }
+        GR.val.set({ x: GR.home, y: yV(i), sx, sy, opacity: op, color: mix(C.grey, C.red, smooth(WG.strikeT, WG.strikeT + 0.12, t)) })
+        GR.val.overlap(t >= tC - 0.12)                               // the block drops onto it
+        style(GR.strike, { transform: `scaleX(${E.out(prog(t, WG.strikeT, 0.22)).toFixed(3)})` })
       }
     }
     // ---------------- chips
@@ -847,10 +1017,10 @@ export default function deadSimpleList(spec, ctx) {
       attr(c.el, 'transform', `translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${(c.spin * Math.min(t - c.t0, 0.4)).toFixed(1)})`)
     }
     // ---------------- the figure: hands on the plate while he holds it
-    if (held >= 0) {
-      const [cx, cy] = heldAt(J, held)
-      const by = cy - PH / 2 + 8, half = R[held].pw / 2
-      const w = smooth(TI[held].tHold - 0.12, TI[held].tHold + 0.06, t) * (held === 0 ? 1 - handsFree(t) : 1)
+    if (held) {
+      const [cx, cy] = heldAt(J, held.r)
+      const by = cy - PH / 2 + 8, half = held.r.pw / 2
+      const w = smooth(held.T.tHold - 0.12, held.T.tHold + 0.06, t) * (held.r === R[0] ? 1 - handsFree(t) : 1)
       const J2 = { ...J }
       pinLimb(J2, 'hF', [clamp(J.hF[0], cx - half + 18, cx + half - 18), by], 1)
       pinLimb(J2, 'hB', [clamp(J.hB[0], cx - half + 18, cx + half - 18), by], -1)

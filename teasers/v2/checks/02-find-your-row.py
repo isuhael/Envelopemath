@@ -2,7 +2,10 @@
 """
 Format 2 "find-your-row" (P7): maths and spec check for teasers 02a, 02b and 02c (round-2 revision,
 then the round-2 hook pass of 2026-10-07: 02a "It's just $3 a day", 02b "earns your whole career's pay",
-02c "what time your 9-to-5 starts paying you").
+02c "what time your 9-to-5 starts paying you"; then the port of 2026-10-08, when the owner kept two looks:
+02a moved from Live Sheet to Becker Rig and 02c from Clean Sheet to Scoreboard; then the fix pass on the two
+ports: 02a's line-4 caption breaks at its clause, a hop on "≈ $240,000" and the figure at 0.82; 02c's line 3
+gets its own pick label, "≈ 78 min of tax a day").
 
 1. Recomputes every on-screen number from its inputs (the sourced inputs are named
    constants below; everything else is arithmetic on them).
@@ -16,7 +19,10 @@ then the round-2 hook pass of 2026-10-07: 02a "It's just $3 a day", 02b "earns y
      (hyphenated numbers as one word) AND 2.8 words/s (hyphenated numbers split, e.g.
      "twenty-five" = 2 words); VO lines do not overlap; each pointer lands when its VO line
      starts and after its row has landed; the verdict lands when the VO says it; duration is
-     inside the 6-16 s lane; hold = duration - last row/pick; the VO ends >= 1.5 s before the end;
+     inside the 6-16 s lane; hold = duration - last row/pick; the VO ends >= 1.5 s before the end
+     (02a in Becker Rig: the compare pick is timed, so the figure sets off on its VO line's first word and the
+     pick, its gold plate, lands with the verdict on "more than double"; the shrug beat plays inside line 1,
+     the hop inside line 3 once the VO reaches "≈ $240,000", while the 25 row is pointed at);
    - contract shape (FORMATS.md section 2): 2-4 columns, 5-14 rows, no extra data fields;
    - the write-up (teasers/v2/02-find-your-row.md) quotes every VO line, verdict and footer
      exactly as the specs carry them, and carries the platform titles below.
@@ -59,10 +65,10 @@ ADDL_MEDICARE_RATE, ADDL_MEDICARE_THRESHOLD = 0.009, 200_000
 HOURS_PER_WEEK, WEEKS_PER_YEAR = 40, 52
 HOURS_PER_YEAR = HOURS_PER_WEEK * WEEKS_PER_YEAR          # 2,080
 
-TITLES = {   # hook pass (2026-10-07): the adopted candidates' platform titles
-    "02a-live-sheet-3-a-day-by-age": "\"It's Just $3 a Day\": What It Costs You by 65, by Age",
+TITLES = {   # hook pass (2026-10-07): the adopted candidates' platform titles (ids from the 2026-10-08 port)
+    "02a-becker-rig-3-a-day-by-age": "\"It's Just $3 a Day\": What It Costs You by 65, by Age",
     "02b-scoreboard-trillion-at-your-wage": "How Fast Elon's $1 Trillion Pay Plan Earns Your Whole Career's Pay",
-    "02c-clean-sheet-salary-per-hour": "What Time Your 9-to-5 Starts Paying You, by Salary",
+    "02c-scoreboard-salary-per-hour": "What Time Your 9-to-5 Starts Paying You, by Salary",
 }
 
 # --------------------------------------------------------------------------------------
@@ -160,7 +166,7 @@ def mention_time(line, phrase):
     return line["t"] + spoken_words(plain[:i]) / WPS
 
 # --------------------------------------------------------------------------------------
-# 02a  Live Sheet  "What $3 a day costs you by age"
+# 02a  Becker Rig (ported from Live Sheet, 2026-10-08)  "It's just $3 a day": what it costs you by 65
 # --------------------------------------------------------------------------------------
 def build_02a():
     DAILY = 3
@@ -213,25 +219,34 @@ def build_02a():
         {"t": 0.0, "d": 1.95, "text": f"Just {usd(DAILY)} a day?"},
         {"t": 2.0, "d": 2.7, "text": f"At {AGES[i18]}: **{rows[i18][2]}**."},
         {"t": 4.9, "d": 3.3, "text": f"At {AGES[i25]}: **{rows[i25][2]}**."},
-        {"t": 8.4, "d": 3.5, "text": f"{gap} years younger? It costs you **more than double**."},
+        # (fix pass after the port: the caption breaks at the clause, "10 years younger?" / "It costs you ...";
+        # same words, a "\n" in place of the space)
+        {"t": 8.4, "d": 3.5, "text": f"{gap} years younger?\nIt costs you **more than double**."},
     ]
+    verdict_t = round(mention_time(vo[3], "more than double"), 1)
+    # Becker Rig port (2026-10-08): the last pick is the payoff (its value lands on the gold plate), so the compare
+    # runs from the 35 row UP to the 25 row ("10 years younger"), and the plate lands on 25's ≈ $240,000. It is a
+    # timed compare: he sets off for the 35 row as line 4 starts and draws the bracket up to 25 under "It costs you",
+    # so the pick (and the plate) lands on "more than double", with the verdict. The pill sits on the note shelf, away
+    # from the bracket, so it names what it compares
     picks = [
         {"t": vo[1]["t"], "row": i18, "label": f"≈ {ratio18_disp:.1f}× what you think"},
         {"t": vo[2]["t"], "row": i25, "label": f"≈ {ratio_disp:.1f}× what you think"},
-        {"t": vo[3]["t"], "row": i35, "label": f"≈ {younger_disp:.1f}×"},
+        {"t": verdict_t, "row": i25, "label": f"**≈ {younger_disp:.1f}×** the cost at {AGES[i35]}"},
     ]
-    verdict_t = round(mention_time(vo[3], "more than double"), 1)
     rows_t, row_every = 0.0, 0.5
     duration = round(vo[-1]["t"] + vo[-1]["d"] + 1.5, 1)          # 11.9 + 1.5 = 13.4
     last_beat = max(rows_t + row_every * (len(rows) - 1), picks[-1]["t"])
     exp = {
-        "id": "02a-live-sheet-3-a-day-by-age",
-        "look": "live-sheet",
+        "id": "02a-becker-rig-3-a-day-by-age",
+        "look": "becker-rig",
         "format": "find-your-row",
         "fps": 30,
         "duration": duration,
         "header": f"“It’s just **{usd(DAILY)} a day**.”\nWhat it costs you by {END_AGE}:",
-        "footer": f"At {round(RATE * 100)}% a year until {END_AGE} · no tax, fees, inflation",
+        # (Becker Rig's mono footer wraps this line, so it breaks between its two clauses instead of leaving
+        # "inflation" alone on line 2; same words, the " · " becomes the break)
+        "footer": f"At {round(RATE * 100)}% a year until {END_AGE}\nno tax, fees, inflation",
         "captions": True,
         "vo": vo,
         "verdict": {"t": verdict_t, "text": f"{gap} years younger?\nIt costs **more than double**."},
@@ -248,9 +263,26 @@ def build_02a():
             "pick": picks,
             "hold": round(duration - last_beat, 2),
         },
-        "lookOpts": {"compare": [{"pick": 2, "from": i25}]},
+        # the bracket from the 35 row up to the 25 row, timed from line 4's start; the shrug acts line 1's excuse; a
+        # "whoa" hop on "≈ $240,000" (line 3), which also taps the 25 row's value (fix pass); the figure at 0.82
+        # (the most that keeps the values at 48 px: at 0.84 the column heads need a third line)
+        "lookOpts": {
+            "compare": [{"pick": 2, "from": i35, "start": vo[3]["t"]}],
+            "beats": [{"t": 0.25, "act": "shrug", "d": 0.9}, {"t": 6.2, "act": "shocked", "d": 0.7}],
+            "figureScale": 0.82,
+        },
         "sfx": [{"t": verdict_t, "kind": "ding"}],
     }
+    # the shrug ("Just $3 a day?") plays inside line 1 and is over before he crouches for row 18 (take-off ~1.2 s)
+    b = exp["lookOpts"]["beats"][0]
+    assert vo[0]["t"] <= b["t"] and b["t"] + b["d"] <= min(vo[0]["t"] + vo[0]["d"], 1.18)
+    # the timed compare: sets off as line 4 starts, the pick lands on "more than double" (= the verdict)
+    assert exp["lookOpts"]["compare"][0]["start"] == vo[3]["t"] and picks[2]["t"] == verdict_t
+    # the hop plays inside line 3, after the VO reaches "≈ $240,000", while the 25 row is pointed at (pick 2 holds
+    # until he sets off for the compare as line 4 starts)
+    b2 = exp["lookOpts"]["beats"][1]
+    assert mention_time(vo[2], rows[i25][2]) <= b2["t"] and b2["t"] + b2["d"] <= vo[2]["t"] + vo[2]["d"]
+    assert picks[1]["t"] <= b2["t"] and b2["t"] + b2["d"] < exp["lookOpts"]["compare"][0]["start"]
     allowed = {float(DAILY), float(DAYS), 12.0, MONTHLY, RATE * 100, float(END_AGE), float(gap),
                ratio18_disp, ratio_disp, younger_disp}
     for r in rows:
@@ -267,7 +299,8 @@ def build_02a():
         ("first payoff", f"VO reaches '{rows[i18][2]}' at {mention_time(vo[1], rows[i18][2]):.2f} s (pointer on row 18 from {vo[1]['t']} s)"),
         ("pick 18", f"{usd(cost(18), 2)} ÷ {usd(spend(18))} = {ratio18:.3f} → ≈ {ratio18_disp:.1f}×"),
         ("pick 25", f"{usd(cost(25), 2)} ÷ {usd(spend(25))} = {ratio:.3f} → ≈ {ratio_disp:.1f}×"),
-        ("bracket 25-35", f"FV(25) ÷ FV(35) = {usd(cost(25), 2)} ÷ {usd(cost(35), 2)} = {younger:.3f} → ≈ {younger_disp:.1f}× (and FV(35) ÷ FV(25) = {1 / younger:.3f} < 1/2)"),
+        ("hop on 25", f"VO reaches '{rows[i25][2]}' at {mention_time(vo[2], rows[i25][2]):.2f} s; beat {exp['lookOpts']['beats'][1]['act']} {exp['lookOpts']['beats'][1]['t']}-{exp['lookOpts']['beats'][1]['t'] + exp['lookOpts']['beats'][1]['d']:.1f} s (line 3 ends {vo[2]['t'] + vo[2]['d']:.1f} s)"),
+        ("bracket 35→25", f"FV(25) ÷ FV(35) = {usd(cost(25), 2)} ÷ {usd(cost(35), 2)} = {younger:.3f} → '≈ {younger_disp:.1f}× the cost at 35' (and FV(35) ÷ FV(25) = {1 / younger:.3f} < 1/2); plate on the 25 row at {verdict_t} s"),
         ("verdict", f"FV(age) ÷ FV(age + 10), ages 18-54: min {min(whole.values()):.3f} (age {min(whole, key=whole.get)}), max {max(whole.values()):.2f} (all > 2)"),
         ("pinned 10%", f"at 10%: age 25 → {usd(at10_25)}, age 18 → {usd(at10_18)}"),
         ("rule of 72", f"72 ÷ 7 = {72 / 7:.1f} yrs to double; a lump sum at 7%/12 for 120 mo = ×{lump_10y:.3f} (the extra deposits push the ratio above 2)"),
@@ -393,7 +426,7 @@ def build_02b():
     return exp, allowed, nums
 
 # --------------------------------------------------------------------------------------
-# 02c  Clean Sheet  "What you actually make per hour, by salary"
+# 02c  Scoreboard (ported from Clean Sheet, 2026-10-08)  "What time your 9-to-5 starts paying you, by salary"
 # --------------------------------------------------------------------------------------
 def fed_tax_2026(salary):
     taxable = max(0, salary - STD_DEDUCTION_2026)
@@ -477,17 +510,21 @@ def build_02c():
         {"t": 4.7, "d": 2.6, "text": f"That's {rows[im][1].replace(' min', ' minutes')} a day."},
         {"t": 7.4, "d": 2.4, "text": f"Six figures? Until **{rows[i100][2][:-3]}**."},
     ]
+    # fix pass after the port: line 3 ("That's ≈ 78 minutes a day.") gets its own label on the $65,000 row, so every
+    # VO line lands with a pick label (as in 02b); it mirrors the $100,000 label
     picks = [
         {"t": vo[1]["t"], "row": im, "label": "≈ US median full-time pay"},
+        {"t": vo[2]["t"], "row": im, "label": f"{rows[im][1]} of tax a day"},
         {"t": vo[3]["t"], "row": i100, "label": f"≈ {h100} hr {mm100} min of tax a day"},
     ]
+    assert picks[1]["label"] == "≈ 78 min of tax a day" and rows[im][1].replace(" min", " minutes") in vo[2]["text"]
     verdict_t = round(vo[-1]["t"] + vo[-1]["d"] + 0.2, 1)
     rows_t, row_every = 0.0, 0.2
     duration = 13.0
     last_beat = max(rows_t + row_every * (len(rows) - 1), picks[-1]["t"])
     exp = {
-        "id": "02c-clean-sheet-salary-per-hour",
-        "look": "clean-sheet",
+        "id": "02c-scoreboard-salary-per-hour",
+        "look": "scoreboard",
         "format": "find-your-row",
         "fps": 30,
         "duration": duration,
@@ -509,7 +546,7 @@ def build_02c():
             "pick": picks,
             "hold": round(duration - last_beat, 2),
         },
-        "lookOpts": {"verdictRow": 0},
+        "lookOpts": {"verdictRow": 0},     # the verdict lights the top row (Scoreboard reads it since the port)
         "sfx": [{"t": verdict_t, "kind": "ding"}],
     }
     allowed = {float(DAY_START_H), float(DAY_END_H - 12), 0.0, float(DAY_MIN), 2026.0, float(h100), float(mm100)}
@@ -520,6 +557,7 @@ def build_02c():
         ("workday", f"9 am-5 pm = {DAY_MIN} min; × 260 workdays = {HOURS_PER_YEAR:,} hrs a year (the slate's ÷ 2,080)"),
         ("median", f"BLS ${BLS_MEDIAN_WEEKLY:,}/wk × {WEEKS_PER_YEAR} = {usd(median_annual)} → ≈ {usd(median_row_salary)} (row {im})"),
         ("$65,000", f"{taxes(65_000) / 65_000:.4%} × 480 = {tax_min(65_000):.2f} min → {rows[im][1]} → {rows[im][2]}; row lit from {picks[0]['t']} s, VO reaches it at {mention_time(vo[1], rows[im][2][:-3]):.2f} s"),
+        ("label 78", f"line 3 at {vo[2]['t']} s: '{picks[1]['label']}' on the {rows[im][0]} row ({tax_min(65_000):.2f} min → {rows[im][1]})"),
         ("$200,000", f"{taxes(200_000) / 200_000:.4%} × 480 = {tax_min(200_000):.2f} min → {rows[0][1]} → {rows[0][2]} (verdict at {verdict_t} s)"),
         ("$100,000", f"{taxes(100_000) / 100_000:.4%} × 480 = {tax_min(100_000):.2f} min = {h100} hr {mm100} min → {rows[i100][2]}"),
         ("spread", f"{rows[-1][2]} at {usd(SALARIES[-1])} … {rows[0][2]} at {usd(SALARIES[0])} ({round_half_up(tax_min(SALARIES[0]), 1) - round_half_up(tax_min(SALARIES[-1]), 1)} min apart)"),
@@ -626,7 +664,12 @@ def check_spec(exp, allowed, path, md_text):
     last_vo_end = max(v["t"] + v["d"] for v in sv) if sv else 0
     check(sid, "VO ends >= 1.5 s before the end", True, last_vo_end + 1.5 <= dur + 1e-9)
     starts = {v["t"] for v in sv}
-    check(sid, "each pick lands as its VO line starts", True, all(p["t"] in starts for p in sd.get("pick", [])))
+    # a timed compare (Becker Rig) sets off as its VO line starts and lands its pick with the verdict, on the word
+    timed = {c["pick"]: c for c in (spec.get("lookOpts") or {}).get("compare", []) if "start" in c}
+    vt0 = spec.get("verdict", {}).get("t", -1)
+    check(sid, "each pick lands as its VO line starts (timed compare: sets off then, lands with the verdict)", True,
+          all((timed[k]["start"] in starts and abs(p["t"] - vt0) < 1e-9) if k in timed else p["t"] in starts
+              for k, p in enumerate(sd.get("pick", []))))
     row_land = [sd.get("rowsT", 0) + sd.get("rowEvery", 0) * i for i in range(len(srows))]
     check(sid, "each pick lands after its row", True, all(p["t"] >= row_land[p["row"]] for p in sd.get("pick", [])))
     last_row_t = row_land[-1] if row_land else 0

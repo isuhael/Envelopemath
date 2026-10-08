@@ -1,0 +1,146 @@
+{
+  "id": "03b-scoreboard-card-minimum",
+  "look": "scoreboard",
+  "format": "what-difference",
+  "fps": 30,
+  "duration": 30.6,
+  "header": "What difference does\npaying the SAME minimum\nevery month make on **$5,000**?",
+  "footer": "22% APR · minimum = 1% + interest, $40 floor",
+  "captions": true,
+  "vo": [
+    {
+      "t": 0.0,
+      "d": 4.4,
+      "text": "Minimum on $5,000: about 15 years. Because it shrinks."
+    },
+    {
+      "t": 4.6,
+      "d": 4.8,
+      "text": "About $7,300 in interest. More than you owed."
+    },
+    {
+      "t": 9.6,
+      "d": 2.4,
+      "text": "Now keep paying the first one."
+    },
+    {
+      "t": 12.2,
+      "d": 3.2,
+      "text": "Not a dollar more than your first minimum."
+    },
+    {
+      "t": 15.6,
+      "d": 5.2,
+      "text": "About 4.8 years. About $3,100 in interest."
+    },
+    {
+      "t": 21.0,
+      "d": 4.4,
+      "text": "A flat $250: about 2.2 years."
+    },
+    {
+      "t": 25.8,
+      "d": 2.6,
+      "text": "Same payment: about 10 years sooner."
+    }
+  ],
+  "verdict": {
+    "t": 25.8,
+    "text": "Same payment, **$0** more:\n**≈ 10 years** sooner"
+  },
+  "data": {
+    "stake": {
+      "label": "Credit card balance",
+      "value": "$5,000",
+      "terms": "22% APR · no new charges"
+    },
+    "metrics": [
+      {
+        "key": "payoff",
+        "label": "Paid off in"
+      },
+      {
+        "key": "interest",
+        "label": "Interest"
+      }
+    ],
+    "options": [
+      {
+        "t": 0.0,
+        "resultT": 0.0,
+        "name": "The card minimum",
+        "detail": "starts at $142.59, then shrinks",
+        "values": {
+          "payoff": "≈ 15.1 years",
+          "interest": "≈ $7,300"
+        },
+        "tone": "bad"
+      },
+      {
+        "t": 9.6,
+        "resultT": 16.0,
+        "name": "Keep paying $142.59",
+        "detail": "$142.59 − $142.59 = $0 more",
+        "values": {
+          "payoff": "≈ 4.8 years",
+          "interest": "≈ $3,100"
+        },
+        "tone": "goal"
+      },
+      {
+        "t": 21.0,
+        "resultT": 23.8,
+        "name": "A flat $250",
+        "detail": "$250 − $142.59 = $107.41 more",
+        "values": {
+          "payoff": "≈ 2.2 years",
+          "interest": "≈ $1,300"
+        },
+        "tone": "good"
+      }
+    ],
+    "winner": 1,
+    "winnerT": 27.1,
+    "hold": 2.2
+  },
+  "lookOpts": {
+    "counter": "payoff",
+    "intro": false,
+    "keepSpeed": true,
+    "heroEnd": "value",
+    "labelSteps": [
+      {
+        "t": 0.0,
+        "option": 0,
+        "text": "$142.59 → $99.66 by year 3",
+        "small": true
+      },
+      {
+        "t": 7.8,
+        "option": 0,
+        "text": "More than the $5,000 owed"
+      },
+      {
+        "t": 13.0,
+        "option": 1,
+        "text": "$0 more than the first minimum"
+      }
+    ],
+    "reads": [
+      {
+        "t": 2.4,
+        "target": "hero"
+      },
+      {
+        "t": 5.0,
+        "option": 0,
+        "metric": "interest"
+      },
+      {
+        "t": 18.0,
+        "option": 1,
+        "metric": "interest"
+      }
+    ]
+  }
+}

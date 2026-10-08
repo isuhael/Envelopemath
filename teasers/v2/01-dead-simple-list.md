@@ -2,20 +2,20 @@
 
 **Prepared for:** *Back of the Envelope* (YouTube Shorts, Instagram Reels, TikTok), US audience, USD
 **Date:** 2026-10-07
-**Writer:** format 1 of 10, round 2 (revised after the verifier and the hook judge; then in the round-2 **hook pass**, which replaced 01c's hook and kept 01b's; then in **hook pass 2**, which replaced 01b's hook and topic; then in the **assembly pass** (2026-10-08), which fixed what the stills and the MP4s showed; then in the **QA fix pass** (2026-10-08), which applied the round-2 QA's must and should issues for 01a and 01b; then in the **01c assembly pass** (2026-10-08), which applied the same caption, footer and climax fixes to 01c and gave its Becker figure acting beats; then in the **01c QA fix pass** (2026-10-08), which applied the round-2 QA's must and should issues for 01c; see the **Review log** at the end)
+**Writer:** format 1 of 10, round 2 (revised after the verifier and the hook judge; then in the round-2 **hook pass**, which replaced 01c's hook and kept 01b's; then in **hook pass 2**, which replaced 01b's hook and topic; then in the **assembly pass** (2026-10-08), which fixed what the stills and the MP4s showed; then in the **QA fix pass** (2026-10-08), which applied the round-2 QA's must and should issues for 01a and 01b; then in the **01c assembly pass** (2026-10-08), which applied the same caption, footer and climax fixes to 01c and gave its Becker figure acting beats; then in the **01c QA fix pass** (2026-10-08), which applied the round-2 QA's must and should issues for 01c; then in the **port** (2026-10-08): the owner kept two looks, Scoreboard and Becker Rig, so 01a moved from Clean Sheet to **Scoreboard** and 01b from Live Sheet to **Becker Rig**, with hooks, numbers, VO words and verdicts kept; then in the **port QA fix pass** (2026-10-08), which applied the port QA's must, should and nit issues for 01a (Scoreboard, 6.5/10) and 01b (Becker Rig, 8/10); see the **Review log** at the end)
 **Deliverables:**
 - Specs:
-  - [`studio/specs/01a-clean-sheet-paid-biweekly.json`](../../studio/specs/01a-clean-sheet-paid-biweekly.json)
-  - [`studio/specs/01b-live-sheet-20-an-hour.json`](../../studio/specs/01b-live-sheet-20-an-hour.json) (file name kept; since hook pass 2 the topic is the Social Security wage cap: you pay 6.2%, what does a $1M salary pay?)
+  - [`studio/specs/01a-scoreboard-paid-biweekly.json`](../../studio/specs/01a-scoreboard-paid-biweekly.json) (ported from Clean Sheet on 2026-10-08; the old spec is [`studio/specs/retired/01a-clean-sheet-paid-biweekly.json`](../../studio/specs/retired/01a-clean-sheet-paid-biweekly.json))
+  - [`studio/specs/01b-becker-rig-20-an-hour.json`](../../studio/specs/01b-becker-rig-20-an-hour.json) (ported from Live Sheet on 2026-10-08; the old spec is [`studio/specs/retired/01b-live-sheet-20-an-hour.json`](../../studio/specs/retired/01b-live-sheet-20-an-hour.json); the slug is kept from round 2: since hook pass 2 the topic is the Social Security wage cap: you pay 6.2%, what does a $1M salary pay?)
   - [`studio/specs/01c-becker-rig-60k-a-year.json`](../../studio/specs/01c-becker-rig-60k-a-year.json) (file name kept; since the hook pass the topic is the bracket myth: will a 3% raise push $65,000 into a higher bracket?)
-- Check: [`teasers/v2/checks/01-dead-simple-list.py`](checks/01-dead-simple-list.py). It passes 342 checks with 0 failures (after the 01c QA fix pass).
-- Mutation test: in the 01c QA fix pass the updated checks caught 8 of 8 broken copies of the 01c spec (the verdict back on one line, the old "taxed at 22%" note, the old "Your new pay" label, a wrong $1,905 raise note, the closing pose back at 24.8 s, a 24.9 s duration, and the 10-points caption with no break or a break after "pay"); in the 01c assembly pass the updated checks caught 8 of 8 broken copies of the new 01c spec (a spoken $45 changed to $54, an unknown act, an act off its VO line, an act pointing at a missing item, the closing pose during the VO, a `resultT` off its VO line, the old footer, and a wrong $450); in the QA fix pass the updated checks caught 7 of 7 broken copies (a wrong "not × 24" total, a wrong check-line total, a late `checkT`, a wrong spoken $65,000, the old "salary's" label, a wrong spoken $11,439, and a wrong guess off its VO line); in the assembly pass the new note and check-line checks caught 6 of 6 broken copies; in hook pass 2 the check caught 7 of 7 broken copies of the new 01b spec, and in the hook pass 4 of 4 broken copies of the new 01c spec (see the Review log). In round 2 it caught 10 of 10 deliberately broken spec copies: a $50-rounded result (`≈ $2,950`), a "≈" on an exact result, a wrong VO number, an off-beat `resultT`, a VO line read too fast, an unsupported `lookOpts.gag`, a VO line after the verdict card, a wrong label digit, a missing "≈", and a verdict that no longer matches the maths.
-- Studio linter (`node src/cli.mjs check`): 3/3 clean, 0 errors, 0 warnings (safe zones, type floor, overlap, contrast, fonts, R1), re-run after every fix, after both hook passes, after the QA fix pass and after the 01c assembly pass (with the 3 becker-rig `dead-simple-list*` kit samples, which share the edited module: 4/4 clean).
+- Check: [`teasers/v2/checks/01-dead-simple-list.py`](checks/01-dead-simple-list.py). It passes 397 checks with 0 failures (after the port QA fix pass; 391 after the port).
+- Mutation test: in the port QA fix pass the updated checks caught 6 of 6 broken copies (01a: the 26.0 s duration back, the verdict's "=" free to end a line again, 3 bill icons, an unknown icon, a note struck off its VO line; 01b: the hook's 6.2% back in green); in the port the updated checks caught 16 of 16 broken copies of the two ported specs (01a: the hero payoff off its VO line, its tag saying "3 extra checks", the echo on ①'s $65,000, the payoff before the goal settles, a spec left in the retired Clean Sheet look, the hero landing on $5,500; 01b: the climax caption line and the guess caption line merged again, the guess landing off its caption line, the guess thrown as a slam, an unknown finale, a $62,500 guess, a 23.0 s duration, a point off "their rate", a Live Sheet option left in, the verdict back on one line); in the 01c QA fix pass the updated checks caught 8 of 8 broken copies of the 01c spec (the verdict back on one line, the old "taxed at 22%" note, the old "Your new pay" label, a wrong $1,905 raise note, the closing pose back at 24.8 s, a 24.9 s duration, and the 10-points caption with no break or a break after "pay"); in the 01c assembly pass the updated checks caught 8 of 8 broken copies of the new 01c spec (a spoken $45 changed to $54, an unknown act, an act off its VO line, an act pointing at a missing item, the closing pose during the VO, a `resultT` off its VO line, the old footer, and a wrong $450); in the QA fix pass the updated checks caught 7 of 7 broken copies (a wrong "not × 24" total, a wrong check-line total, a late `checkT`, a wrong spoken $65,000, the old "salary's" label, a wrong spoken $11,439, and a wrong guess off its VO line); in the assembly pass the new note and check-line checks caught 6 of 6 broken copies; in hook pass 2 the check caught 7 of 7 broken copies of the new 01b spec, and in the hook pass 4 of 4 broken copies of the new 01c spec (see the Review log). In round 2 it caught 10 of 10 deliberately broken spec copies: a $50-rounded result (`≈ $2,950`), a "≈" on an exact result, a wrong VO number, an off-beat `resultT`, a VO line read too fast, an unsupported `lookOpts.gag`, a VO line after the verdict card, a wrong label digit, a missing "≈", and a verdict that no longer matches the maths.
+- Studio linter (`node src/cli.mjs check`): 3/3 clean, 0 errors, 0 warnings (safe zones, type floor, overlap, contrast, fonts, R1), re-run after every fix, after both hook passes, after the QA fix pass, after the 01c assembly pass, after the port and after the port QA fix pass (with the kit samples that share the two edited `dead-simple-list` modules, 3 becker-rig and 2 scoreboard: 8/8 clean; 01a and 01b also clean at `--every 0.05`).
 - Stills checked by eye at frames 0, 2.7-3.2 s, each payoff, the verdict and the last frame.
 
 **Evidence base:**
 - The benchmark only: [`research/v2/02-hook-bank.md`](../../research/v2/02-hook-bank.md), [`research/v2/04-formats.md`](../../research/v2/04-formats.md) (rank 1), and the watch studies of Master Money, Yannick and Jake.
-- The looks come from [`research/v2/03-look-directions.md`](../../research/v2/03-look-directions.md) (Clean Sheet, Live Sheet) and [`research/v2/watch/alan-becker.md`](../../research/v2/watch/alan-becker.md) sections 3, 4 and 6 (Becker rig). Beat sheets describe what each kit's `formats/dead-simple-list.js` actually renders.
+- The looks come from [`research/v2/03-look-directions.md`](../../research/v2/03-look-directions.md) (Scoreboard, Direction 3; Clean Sheet and Live Sheet until the port) and [`research/v2/watch/alan-becker.md`](../../research/v2/watch/alan-becker.md) sections 3, 4 and 6 (Becker rig). Beat sheets describe what each kit's `formats/dead-simple-list.js` actually renders.
 
 ---
 
@@ -65,13 +65,13 @@
   - Line 1 is the series phrase with the slot count: "3/4 DEAD SIMPLE NUMBERS".
   - The rest names the stake and carries one R5 word or mark. 01a uses H84's "That Tell You What / You Actually Make" grammar: "WHAT YOUR BUDGET **MISSES**" (it was "THE PAY YOUR BUDGET FORGETS" until the QA fix pass: at 27 characters it could not sit on one line). Since the hook passes, the other two ask a question (R11, H48's grammar):
     - 01c's R5 word is the feared outcome: "WILL A 3% RAISE PUSH $65,000 INTO A **HIGHER BRACKET**?"
-    - 01b plants the viewer's own rate and leaves the rival's open: "YOU PAY **6.2%** TO SOCIAL SECURITY. A $1M SALARY PAYS…?" The "…?" invites the flat-rate guess ($62,000), which the sheet types and strikes out.
+    - 01b plants the viewer's own rate and leaves the rival's open: "YOU PAY __6.2%__ TO SOCIAL SECURITY. A $1M SALARY PAYS…?" The "…?" invites the flat-rate guess ($62,000), which the sheet types and strikes out.
   - Round 1's "IF YOU …" filter line (Yannick's H57 grammar, 50,206 at 2.8x med) is gone: it was the weaker half of the pattern.
 - **One calendar.** 52 weeks, 12 months, 365 days; work hours = 40 × 52 = 2,080, printed in 01b's footer ("40 hrs × 52 wks") and row 1's formula. 01a counts paydays (364 ÷ 14 = 26). No slot mixes 50 and 52 weeks.
 - **The "≈" and rounding policy.** A result gets "≈" exactly when it is rounded. Every result equals its visible formula rounded to $1 (1¢ when cents are shown, 0.1 point for a percent), so anyone who redoes a formula on screen gets the number on screen. The check script re-evaluates every typed formula to enforce this. Every 01c result is exact, so 01c shows no "≈".
-- **Non-breaking spaces** (` ` in the JSON) keep a highlight or a rule on one rendered line: "13 months" (01a verdict), "≈ 1.1%" (01b verdict), "$45 a year" (01c verdict). The check script expects them.
-- **Captions never run ahead of the sheet** (since the QA fix pass). In 01a and 01b each result starts its own VO line in the spec (`"On $2,500:"` then `"$65,000 a year."`), timed to its `resultT`, so a caption never shows a result before the sheet lands it. The clean-sheet captions show a whole line at once (unspoken words in grey), so this matters most there. The words of the guide VO scripts are unchanged except 01b's first line; only the caption lines are split.
-- **Kit contract.** Each spec uses only `lookOpts` keys its kit reads (clean-sheet: none; live-sheet: `labels` and `wrongGuess`; becker-rig: `hits`), and the last VO line is the verdict line, because every kit's chrome replaces the captions with the verdict card from `verdict.t`. The check script enforces both.
+- **Non-breaking spaces** (` ` in the JSON) keep a highlight or a rule on one rendered line: "13 months" and, since the QA fix pass, "= 13 months" (01a verdict, so "=" never ends a line), "≈ 1.1%" (01b verdict), "$45 a year" (01c verdict). The check script expects them.
+- **Captions never run ahead of the sheet** (since the QA fix pass). Each result starts its own VO line in the spec (`"On $2,500:"` then `"$65,000 a year."`), timed to its `resultT`, so a caption never shows a result before the sheet lands it. Both kept looks show a whole line at once (Scoreboard greys the unspoken words; Becker Rig pops a line's words within ~0.3 s), so this applies to all three. In the port 01b split two more lines for the Becker captions: "A million-dollar salary:" / "$62,000?" (the struck guess) and "That's about" / "1.1% of their pay." (the climax). The words of the guide VO scripts are unchanged except 01b's first line (QA fix pass); only the caption lines are split. The check script fails any line that says a result before it lands.
+- **Kit contract.** Each spec uses only `lookOpts` keys its kit reads (01a, scoreboard: `heroFinal` and `echo`; 01b, becker-rig: `hits`, `wrongGuess`, `finale` and `acts`; 01c, becker-rig: `hits` and `acts`), and the last VO line is the verdict line, because every kit's chrome replaces the captions with the verdict from `verdict.t`. The check script enforces both, and fails a spec in a retired look (Clean Sheet, Live Sheet).
 - **Risk: the series name.** "DEAD SIMPLE NUMBERS" is Master Money's own branded phrase, and `04-formats.md` says to use "a series name of our own".
   - I kept it because it is the seed the owner approved and the format's id.
   - If the owner wants it swapped, "ROUGH-BUT-RIGHT NUMBERS" fits the brand and the header widths. It is a one-line edit in each spec and in `EXPECT` in the check script.
@@ -80,13 +80,15 @@
 
 ## (b) The teasers
 
-### 01a · Clean Sheet · "3 DEAD SIMPLE NUMBERS / PAID EVERY 2 WEEKS? / WHAT YOUR BUDGET MISSES"
+### 01a · Scoreboard · "3 DEAD SIMPLE NUMBERS / PAID EVERY 2 WEEKS? / WHAT YOUR BUDGET MISSES"
 
-- **Spec:** `studio/specs/01a-clean-sheet-paid-biweekly.json`, 26.0 s
-- **Look:** Clean Sheet. Off-white card, typeset formulas in grey mono, results on highlighter boxes, circled step numbers. The formula stays above its result, so the sheet builds into worked maths. At this spec's size the kit's layout engine sets each step as a formula row over a result row, with the step label beside the result (ink) and the step's note stacked under the label (grey): `$65,000 │ Your real yearly pay / not × 24 = $60,000`. Since the QA fix pass every label starts on one column (x ≈ 529, right of the widest box, ③'s), so the finished sheet reads as two clean columns. No note ever sits after a formula's "=", where it would read as the answer. With the one-line footer the sheet sets at full size, check line included (results 66 px, the goal 82 px; checked in stills).
+*Ported from Clean Sheet to Scoreboard on 2026-10-08 (the old spec is in `studio/specs/retired/`). The hook, every number, the VO and the verdict are unchanged; see "Port to Scoreboard (2026-10-08): 01a" in the Review log.*
+
+- **Spec:** `studio/specs/01a-scoreboard-paid-biweekly.json`, 24.5 s (26.0 s until the Scoreboard QA fix pass)
+- **Look:** Scoreboard. A black top bar carries the hook and the hero, a neon-green odometer holding the viewer's own **$2,500** from frame 1 (tagged "YOUR PAYCHECK / EVERY 2 WEEKS"); the dark gridded stage holds three numbered slots and a dashed ✓ check slot, all on the board and empty (skeleton bars) from frame 1; the black bottom bar carries the label stack, which hard-cuts on every VO line (since the QA fix pass): at each cut the working over the slot's label (`$2,500 × 26` / `YOUR REAL YEARLY PAY`, the 03c / 08a grammar), at each landing the working over "= answer" in the answer's colour, at each note "working = answer" over the note in big type (`NOT × 24 = $60,000`, the $60,000 coral and struck as the VO says it), then the payoff's tag and the check line. At this spec's size the kit's solver sets every slot in its "side" shape (`side RS70 LS42`): label (Anton caps, 42 px) with its note under it (Inter, grey, 40 px) on the left, the answer right-aligned at 70 px; the goal slot ③ is taller and its answer 91 px (1.3×). Each slot is a hard cut (thud): it lights in its tone, the pointer jumps to it, its label and working slam in; the working then swaps to the odometer, which rolls and lands exactly on the result at `resultT` (bump, glow flare, floor bloom, ding). Notes rise into the slot at `noteT`. **One focal number at a time** (QA fix pass): the input hero holds $2,500 in green on frame 1 only; it steps back (white, 75%, no glow) as ①'s roll starts at 0.35 s, re-lights green for 0.4 s on ②'s cut (its working takes your number), and stays back until the payoff, so every landing is the one lit green number. ③ is the climax: a riser from its cut, a roll from $65,000 down to $5,000, hit + cash, a big bloom, a neon wash that stays lit; ①'s $65,000 settles to white as it lands. Two port options stage the payoff (`lookOpts`): `heroFinal` {t 15.6, tag "Your 2 extra checks", icon "bill", count 2} rolls the hero from $2,500 to $5,000 (two of your checks) as the VO says it, while two bill icons drop in beside it, one per check (the second as the count lands), and `echo` {t 20.5, items [1]} lights ②'s "A normal month $5,000" green with ③'s at the verdict: the 2 forgotten checks are one more normal month, 13 in all (Clean Sheet's blue re-wipe of ②, rebuilt in this look).
 - **Platform title:** "Paid every 2 weeks? What your budget misses" (8 words, no result)
-- **On-screen hook (header):** `3 DEAD SIMPLE NUMBERS` / `PAID **EVERY 2 WEEKS**?` / `WHAT YOUR BUDGET MISSES` (12 words), written as 3 explicit lines. The kit sets them as written, each on one line at 56 px, at y 252-433. The last line has 23 characters: the round-2 "THE PAY YOUR BUDGET FORGETS" (27) split again at every legal size, which stranded "THE" after the question mark.
-- **Input row at 0.0 s:** `Your paycheck` **`$2,500`** (yellow) `every 2 weeks`
+- **On-screen hook (header):** `3 DEAD SIMPLE NUMBERS` / `PAID **EVERY 2 WEEKS**?` / `WHAT YOUR BUDGET MISSES` (12 words), written as 3 explicit lines. The Scoreboard sets them as written in Anton caps, centred, each on one line (64 px, y ≈ 248-430; "EVERY 2 WEEKS" in neon green). The last line has 23 characters: the round-2 "THE PAY YOUR BUDGET FORGETS" (27) split again at every legal size in Clean Sheet, which stranded "THE" after the question mark.
+- **The input at 0.0 s:** the hero, `YOUR PAYCHECK / EVERY 2 WEEKS` **`$2,500`** (green odometer with its glow), the biggest number on the thumbnail
 
 **The wrong belief it exploits:** "Every 2 weeks" = twice a month = 24 paychecks = **$60,000**, and a monthly budget built on 2 checks. In fact there are 26 paydays (364 ÷ 14). Ten months bring 2 checks and two months bring 3, so the 2 extra checks add up to a whole 13th month of pay that a 2-checks-a-month budget never counts. The header names it ("what your budget misses"); the wrong multiplier and its total show as "not × 24 = $60,000" under ①'s label at 4.5 s, as the VO says "only $60,000"; ②'s note "× 12 = $60,000" shows where ③'s $60,000 comes from; slot ③'s label resolves it ("The 2 checks your budget forgets"), and the check line `10×2 + 2×3 = 26 paydays` puts the calendar on screen as the VO says "from the 2 months with 3 paydays": 10 normal months of 2 checks plus 2 months of 3 make the 26.
 
@@ -99,7 +101,7 @@
 
 | Rule | Met? | How |
 |---|---|---|
-| R1 $ number at 0.0 s | yes | Input "$2,500" on the yellow highlighter; slot ① is the active step, its formula typing from 0.0 s |
+| R1 $ number at 0.0 s | yes | The hero "$2,500" in the top bar; slot ① is already cut at 0.0 s, its working `$2,500 × 26` in the slot and in the label stack |
 | R2 one input, never the result | yes | The header has no $ figure; the only input is $2,500; $65,000 is withheld until 2.7 s, on screen and in the caption (frame 1's caption is "Your paycheck, times 26. On $2,500:") |
 | R3 viewer's own number | yes | "Your paycheck, times 26" works on any biweekly check. Biweekly is the most common US pay period (43.0% of private establishments, BLS CES) |
 | R4 small, round, familiar | yes | $2,500 every 2 weeks ≈ the median full-time US paycheck (BLS Q2 2026 median $1,251 a week × 2 = $2,502) |
@@ -112,29 +114,30 @@
 | R11 question on screen, verdict in caption | yes | "PAID EVERY 2 WEEKS?" on screen; the caption takes a side ("your monthly budget is wrong, in your favor") |
 | R12 a verdict | yes | "13 months of pay a year" can be repeated in a comment |
 
-**Beat sheet** (VO timed at 2.6 words/s; times match the spec and the clean-sheet kit)
+**Beat sheet** (VO timed at 2.6 words/s; times match the spec and the scoreboard kit; since the port QA fix pass, rechecked in the stills listed in its Review log entry; since the port, checked in stills at 0, 1.4, 2.75, 4.6, 7.5, 9.35, 10.5, 12.7, 14.55, 14.6, 15.7, 15.9, 16.6, 17.1, 17.2, 17.6, 18.2, 20.6, 20.7, 21.2, 21.4 and 25.97 s, the contact sheet and frames pulled from the MP4)
 
 | t (s) | On screen | VO |
 |---|---|---|
-| 0.0 | **Frame 1:** header (3 lines, "EVERY 2 WEEKS" on yellow); footer "ASSUMES 26 paydays a year · pay before tax" (one line); input row "Your paycheck **$2,500** every 2 weeks"; ① filled (active) with the caret; ② ③ empty circles; the caption "Your paycheck, times 26. On $2,500:" under the hairline (no result in it) | "Your paycheck, times 26. On $2,500:" |
-| 0.0-0.8 | ① types `$2,500 × 26 =` | (same line) |
-| 2.7 | ① **$65,000** wipes in on the green highlighter with a pop; the caption turns to "$65,000 a year." | "$65,000 a year." |
-| ≈3.0 | Label "Your real yearly pay" beside $65,000 | (same line) |
-| 4.5 | Note "not × 24 = $60,000" fades up under the label | "Not times 24: that's only $60,000." |
-| ≈7.1 / 7.4 | ② fills, then types `$2,500 × 2 =` | "A normal month: 2 checks," |
-| 9.3 | ② **$5,000** on the green highlighter (a `neutral` result lands on green in this kit); ① rests to 42%; label "A normal month" beside it at ≈9.6 | "$5,000." |
-| 10.4 | Note "× 12 = $60,000" fades up under ②'s label | "12 normal months: $60,000." |
-| ≈12.3 / 12.6 | ③ fills, then types `$65,000 − $60,000 =`; the caret waits | "From $65,000, that leaves" |
-| 14.5 | ③ **$5,000** on the blue goal highlighter, larger, with a ding; label "The 2 checks your budget forgets" beside it at ≈14.8 | "$5,000." |
-| 15.6 | The sheet holds on ③ | "It's your 2 extra checks," |
-| 17.5-19.2 | The check line types under ③ in accent mono: `check: 10×2 + 2×3 = 26 paydays` | "from the 2 months with 3 paydays." |
-| 20.5 | Verdict replaces the captions at 64 px: "Every 2 weeks = / **13 months** of pay a year" ("13 months" on blue). At 20.8, with the verdict's blue swipe, ②'s **$5,000** (a normal month) re-wipes from its rested green to the goal blue beside ③'s **$5,000**, and both boxes pulse once: the 2 forgotten checks are one more month, 13 in all; the reveal sting and a ding | "That's a 13th month of pay. Every year." |
-| 23.7-25.3 | Hold on the finished sheet (① rested green; ② and ③ blue) | none |
-| 25.3-26.0 | Results, notes and the check line clear back to the frame-1 state (the kit's loop) | none |
+| 0.0 | **Frame 1:** header (3 lines, "EVERY 2 WEEKS" in green); the hero "YOUR PAYCHECK / EVERY 2 WEEKS **$2,500**" (green odometer, glow); footer "ASSUMES 26 paydays a year · pay before tax" (one line); slot ① already cut: lit green (pointer, solid number cell), label "YOUR REAL YEARLY PAY", its working `$2,500 × 26` in the answer area; ② ③ and the dashed ✓ slot empty (skeleton bars); the label stack `$2,500 × 26` (the $2,500 green) over "YOUR REAL YEARLY PAY"; the caption "Your paycheck, times 26. On $2,500:" (no result in it) | "Your paycheck, times 26. On $2,500:" |
+| 0.35-2.7 | ①'s working swaps to the odometer (a small pop), which rolls $2,500 → $65,000 under a roll sound (the kit starts a frame-1 roll by 0.35 s and stretches it to its `resultT`, so the opening moves at once); as it starts, the hero steps back to white (75%, no glow) | (same line) |
+| 2.7 | ① lands on **$65,000** in green: bump, glow flare, a floor bloom, ding; the label stack cuts to `$2,500 × 26` over "= **$65,000**" (green); the caption turns to "$65,000 a year." | "$65,000 a year." |
+| 4.5 | Note "not × 24 = $60,000" rises under ①'s label (the label steps up for it); the label stack hard-cuts (thud) to `$2,500 × 26 = $65,000` over "NOT × 24 = $60,000" in big type, the $60,000 coral | "Not times 24: that's only $60,000." |
+| 6.5 | As the VO says "$60,000", a coral bar strikes the label stack's $60,000 (buzz) | (same line) |
+| 7.4 | Hard cut (thud): ② lights white (neutral), the pointer jumps to it, "A NORMAL MONTH" and `$2,500 × 2` slam into the slot, and the label stack cuts to `$2,500 × 2` over "A NORMAL MONTH"; the hero re-lights green for 0.4 s with a bump and a flare (the working takes your number), then steps back again | "A normal month: 2 checks," |
+| 8.2-9.3 | ② rolls $2,500 → $5,000 | (same line) |
+| 9.3 | ② lands on **$5,000** (white), with a ding; the label stack: `$2,500 × 2` over "= $5,000" | "$5,000." |
+| 10.4 | Note "× 12 = $60,000" rises under ②'s label; the label stack cuts (thud) to `$2,500 × 2 = $5,000` over "× 12 = $60,000", whose $60,000 pulses at ≈11.6 s as the VO says it | "12 normal months: $60,000." |
+| 12.6 | Hard cut: ③ lights green, "THE 2 CHECKS YOUR BUDGET FORGETS" (two lines) and `$65,000 − $60,000` slam into the slot; the label stack: `$65,000 − $60,000` over "THE 2 CHECKS YOUR BUDGET FORGETS"; a riser starts | "From $65,000, that leaves" |
+| 13.1-14.5 | ③ rolls down from $65,000 to $5,000 | (same line) |
+| 14.5 | ③ lands on **$5,000** at 91 px (1.3× the others): hit + cash, a big floor bloom, a neon wash and a glow that stays lit; ①'s $65,000 settles to white (0.3 s), so ③ is the one green number; the label stack: `$65,000 − $60,000` over "= **$5,000**" | "$5,000." |
+| 15.6 | The hero hard-cuts to the tag "YOUR 2 EXTRA / CHECKS" and rolls $2,500 → $5,000 (two of your checks), green again; a first bill icon drops in beside the number at ≈15.8 s (pop) and the second as the count lands at ≈17.0 s (bump, glow flare, ding): 2 bills, 2 checks; the label stack cuts to "YOUR 2 EXTRA CHECKS" | "It's your 2 extra checks," |
+| 17.5 | The ✓ slot: "10×2 + 2×3 = 26 PAYDAYS" slams in (all white: a count, not money), the ✓ lights green, ding; the label stack cuts to "10×2 + 2×3" over "= 26 PAYDAYS" (white) | "from the 2 months with 3 paydays." |
+| 20.5 | The label stack drops away and the verdict slams in at the foot of the frame under a green rule: "EVERY 2 WEEKS / = **13 MONTHS** OF PAY A YEAR" (reveal; since the QA fix pass a no-break space keeps "=" with "13 MONTHS"). The pointer returns to ③, which flares; **echo:** ②'s **$5,000** (a normal month) lights green beside ③'s (border, number cell, a softer neon wash, a bump and a glow flare): the 2 forgotten checks are one more month, 13 in all | "That's a 13th month of pay. Every year." |
+| 23.7-24.5 | Hold on the finished board for 0.8 s: hero "YOUR 2 EXTRA CHECKS [2 bills] $5,000", ① white, ② and ③ lit green, the check line in white, the verdict (the Scoreboard holds; it does not clear) | none |
 
-Payoffs land at 2.7, 9.3 and 14.5 s, and the verdict at 20.5 s: gaps of 6.6, 5.2 and 6.0 s. The longest still stretch under the VO is now about 2.4 s (≈15.1-17.5 s, after ③'s label lands), down from 3.5 s.
+Payoffs land at 2.7, 9.3 and 14.5 s, the hero's $5,000 at ≈17.0 s and the verdict at 20.5 s: gaps of 6.6, 5.2, 2.5 and 3.5 s. The label stack now has a beat on every VO line (0, 2.7, 4.5, 7.4, 9.3, 10.4, 12.6, 14.5, 15.6, 17.5, then the verdict at 20.5). Measured on the final MP4 (0.1 s steps, above the caption band; since the QA fix pass), the still stretches of 0.9 s or more are 3.2-4.3 s, 4.7-6.4 s (1.7 s, was 4.6-7.3 s), 10.6-11.5 s (was 10.5-12.5 s), 18.2-20.4 s and the verdict hold from 20.9 s, which ends 0.8 s after the last word (it was 2.3 s at 26.0 s); the Scoreboard teasers already in the look hold as long or longer (03c: 3.5 s mid-video and 6.2 s at the end; 05c: 3.1 s and 4.1 s). The ≈2.4 s Clean Sheet stretch after ③ (15.1-17.5 s) is the hero's payoff.
 
-**Full guide VO script (01a, 26 s)** (the spec splits it into 11 caption lines, each result starting its own line; the words are the same)
+**Full guide VO script (01a, 24.5 s)** (the spec splits it into 11 caption lines, each result starting its own line; the words are the same)
 > Your paycheck, times 26. On $2,500: $65,000 a year. Not times 24: that's only $60,000. A normal month: 2 checks, $5,000. 12 normal months: $60,000. From $65,000, that leaves $5,000. It's your 2 extra checks, from the 2 months with 3 paydays. That's a 13th month of pay. Every year.
 
 Read the numbers as: "twenty-five hundred", "sixty-five thousand", "sixty thousand", "five thousand", "thirteenth".
@@ -152,8 +155,9 @@ Read the numbers as: "twenty-five hundred", "sixty-five thousand", "sixty thousa
 | $60,000 (③ formula, VO) | $5,000 × 12 = $2,500 × 24 | 12 normal months = the × 24 figure | 60,000 |
 | **$5,000** (③) | $65,000 − $60,000 | | 5,000 (exact) |
 | "The 2 checks…" (③ label) | 26 − 24 = 2 extra checks; 2 × $2,500 | | 5,000 |
+| YOUR 2 EXTRA CHECKS **$5,000** with 2 bill icons (hero payoff, 15.6-17.0 s) | 2 × $2,500: one bill per extra check (`heroFinal.count` 2; the check asserts count × input = the goal) | | 5,000 (exact) |
 | check: 10×2 + 2×3 = 26 paydays (check line) | 10 two-payday months × 2 + 2 three-payday months × 3 | the calendar behind ①'s × 26; the 2 three-payday months give ③'s 2 extra checks (26 − 24 = 2) | 26 (exact) |
-| 13 months (verdict) | $65,000 ÷ $5,000 | ②'s and ③'s $5,000 are both a month of pay (blue at the verdict) | 13 (exact) |
+| 13 months (verdict) | $65,000 ÷ $5,000 | ②'s and ③'s $5,000 are both a month of pay (lit green together at the verdict) | 13 (exact) |
 
 Calendar check, simulated in the check script over 2000-2099 for both alternate-Friday cycles:
 - Every 26-payday year has exactly 2 months with 3 paydays and 10 with 2 (12 − 2; printed again since the QA fix pass, in the check line `10×2 + 2×3 = 26`).
@@ -175,37 +179,39 @@ Calendar check, simulated in the check script over 2000-2099 for both alternate-
 
 **Per-platform notes**
 - **YouTube Shorts:**
-  - Use the platform title above. Frame 1 is a complete question (header plus input row) and serves as the thumbnail.
+  - Use the platform title above. Frame 1 is a complete question (header plus the $2,500 hero) and serves as the thumbnail.
   - Captions are burned in from the VO.
-  - The clear-to-blank ending lets the Short loop.
+  - The Scoreboard holds the finished board to the last frame (no clear); the loop restarts on frame 1's $2,500.
 - **Instagram Reels:**
   - Set the cover to frame 1, with the empty slots showing. Yannick's reels show that a blank-looking page cover can still work if the header carries the hook.
   - Caption line 1 is the verdict.
   - No keyword CTA: in the benchmark, CTAs lift comments, not views, and none of the 1M+ hooks had one.
 - **TikTok:**
-  - Keep the header inside the band from y 240 to 440 (it renders at y ≈ 255-430).
+  - Keep the header inside the band from y 240 to 440 (it renders at y ≈ 248-430).
   - The search terms "paid every 2 weeks" and "biweekly paycheck" belong in the caption's first line.
   - The 27-payday pinned comment is the reply bait (comments argue about inputs).
 
 ---
 
-### 01b · Live Sheet · "3 DEAD SIMPLE NUMBERS / YOU PAY 6.2% TO SOCIAL SECURITY. A $1M SALARY PAYS…?"
+### 01b · Becker Rig · "3 DEAD SIMPLE NUMBERS / YOU PAY 6.2% TO SOCIAL SECURITY. A $1M SALARY PAYS…?"
 
-- **Spec:** `studio/specs/01b-live-sheet-20-an-hour.json`, 26.0 s. The file name and id are kept from round 2 so links in `teasers.json` and the render paths still work; the id is never shown to viewers. The topic changed in hook pass 2 (see the Review log).
-- **Look:** Live Sheet. A designed spreadsheet on black, a yellow title banner, a "≈" formula bar showing the working, rows that fill one cell at a time. The sheet's row numbers do the job of the empty "1. 2. 3.".
-  - `lookOpts.labels: "always"` labels every row from frame 1 (the kit's open-loop variant).
-  - `lookOpts.wrongGuess` is the kit's built-in wrong-guess beat (live-sheet README, `wrongGuess`): the viewer's likely guess types into row 2, lands with a tick, and is struck out in red with a buzz before the real formula types.
-  - Notes open as dark tooltips under their row, and the table never moves for them (since the QA fix pass). A note's pill floats over the next row's result cell, which is still empty while the note shows; the notch sits on the row's bottom gridline, and the pill takes two balanced lines when one line would cover the next row's label ("6.2% of / every dollar", "taxed only up / to $184,500"). Row 3's note opens in a slot reserved under the table from frame 1, so the card and the assumption line never change height. A pill wipes out of its notch to open and leaves whole (a 0.14 s fade and slight shrink), never by a clip.
-  - A tooltip stays open while the next formula types and leaves just before the next value lands, so each note reads for about 1.7-2 s; row 3's note uses the item field `noteT` (15.1 s) to open on the VO line that says it.
+*Ported from Live Sheet to Becker Rig on 2026-10-08 (the old spec is in `studio/specs/retired/`). The hook, every number, the VO words and the verdict's words are unchanged; two VO lines are split for the Becker captions and the verdict breaks between its sentences; see "Port to Becker Rig (2026-10-08): 01b" in the Review log.*
+
+- **Spec:** `studio/specs/01b-becker-rig-20-an-hour.json`, 24.0 s. The slug (`20-an-hour`) is kept from round 2; the id is never shown to viewers. The topic changed in hook pass 2 (see the Review log).
+- **Look:** Becker Rig, with 01c as the bar. A light void with a floor line; our one-colour green stick figure stands at the far right and does the maths with his hands; maths in ink, the only saturated colours green (the figure), red (your cost: ①'s ≈ $2,579 and, since the QA fix pass, the hook's 6.2% as in the verdict) and coin yellow (the goal's gold plate). The list is a stack of 3 numbered ledges, all labelled from frame 1 ("Yours, a year / A $1M salary pays / Their rate", dim until reached) with dashed empty sockets. At this spec's size the kit sets the rows layout: labels at 44 px on one line, answers at 84 px with their notes beside them, and the goal **≈ 1.1% at 1.45× (≈ 122 px) on its gold plate**, the biggest number on screen. Every formula splits at its first operator: the number drops into the slot as a white glyph block and types itself (`$20`, `$184,500`, `$11,439`), the rest types onto an ink plate that pops into his hands (`× 2,080 × 6.2%`, `× 6.2%`, `÷ $1,000,000`); he winds up and throws it (`lookOpts.hits`: kick, kick, then the goal's two-handed slam over a riser), it slams onto the block, and the pair crunches into the answer (hit lines, chips, shake, thud). Port additions in `becker-rig/formats/dead-simple-list.js` (all opt-in):
+  - `lookOpts.wrongGuess` (new in this kit): the flat-rate guess is worked like an item in row 2 before its turn. The block `$1,000,000` drops and types, the plate `× 6.2%` pops into his hands, he throws it overhand (`hit: "chop"`), and **$62,000** crunches out in pencil grey at 5.35 s. At 6.1 s ("No.") a red bar strikes through it, it turns red, a red burst and a buzz go off, and he wags "no, no". At 6.9 s the real block `$184,500` drops onto the struck guess and crushes it (it splits away with red chips and a thud).
+  - `lookOpts.finale: "shocked"`: when the goal lands he jumps with his arms flung up instead of the "yes!" cheer (their ≈ 1.1% is an outrage, not a win).
+  - `lookOpts.acts`: he points at ①'s ≈ $2,579 on "Yours: 6.2%…", shrugs as the verdict pops, points at the ≈ 1.1% on "their rate", and stands hands on hips after the last line (01c's acting grammar).
+  - The item field `noteT` (now read by this kit too) holds row 3's note "yours: 6.2%" back to 15.1 s, the VO line that says it.
 - **Platform title:** "You pay 6.2% Social Security. What does a $1M salary pay?" (11 words, no result)
 - **Hook pass 2: adopted** (option A, average 7.25 against 4.25 for the old "WHAT $20/HR ACTUALLY LANDS"; scores and reasons in the Review log).
-- **On-screen hook (header):** `3 DEAD SIMPLE NUMBERS` / `YOU PAY **6.2%** TO SOCIAL SECURITY.` / `A $1M SALARY PAYS…?` (14 words, 3 lines, ≈ 44 px; "6.2%" in the black chip)
-- **Input row at 0.0 s:** mint header row `Your pay · 40 hrs a week | $20/hr`, with the dashed "in use" outline
+- **On-screen hook (header):** `3 DEAD SIMPLE NUMBERS` / `YOU PAY __6.2%__ TO SOCIAL SECURITY.` / `A $1M SALARY PAYS…?` (14 words, 3 explicit lines in Inter Tight 900, fitted to the band at y ≈ 252-415; "6.2%" in red, the viewer's cost, the same red as ①'s ≈ $2,579 and the verdict's 6.2%. Until the QA fix pass it was hero green, which in Becker Rig means a good or new number; the words are unchanged)
+- **Input line at 0.0 s:** mono `Your pay **$20/hr** 40 hrs a week` under the footer (the kit shows it because the hook does not contain $20/hr)
 
 **The wrong belief it exploits:** "Social Security is a flat 6.2% for everyone", so a $1M salary must pay $62,000 (or "richer people pay a higher rate").
 - In 2026 the 6.2% applies only to the first **$184,500** of wages (the wage base). A $1M salary pays $184,500 × 6.2% = **$11,439**, about **1.1%** of its pay.
 - A $20/hr worker earns $41,600, all of it under the cap, and pays 6.2% on every dollar: more than five times the rate.
-- The header's "…?" invites the flat-rate guess. The sheet types it (`$1,000,000 × 6.2%`), lands **$62,000** at 5.2 s and strikes it out in red at 6.1 s, on the VO's "No."
+- The header's "…?" invites the flat-rate guess. The figure works it (`$1,000,000` block, `× 6.2%` plate), lands **$62,000** at 5.35 s as the caption "$62,000?" pops, and it is struck out in red at 6.1 s, on the VO's "No.", then crushed by the real `$184,500` block at 6.9 s.
 
 **Modelled on:**
 - **H48, Debt Freedom:** a frame-1 question whose options are named on screen, 1,900,000 (902.5x). R7: her named-option questions drew 290.7K-1.9M, against 90.6K for the label hook H52.
@@ -219,46 +225,45 @@ Calendar check, simulated in the check script over 2000-2099 for both alternate-
 
 | Rule | Met? | How |
 |---|---|---|
-| R1 | yes | "6.2%" in the header chip and "$20/hr" in the input row at 0.0 s; the formula bar is typing `= $20 × 2,080` |
+| R1 | yes | "6.2%" in the header and "$20/hr" in the input line at 0.0 s; row ①'s block `$20` is typed and the figure holds the `× 2,080 × 6.2%` plate (from 0.1 s he flips it up and catches it) |
 | R2 | mostly | One $ figure in the header ($1M), no result in the header or the title. The header carries two figures, the viewer's 6.2% and the rival's $1M (judge 2 counted that against R2) |
 | R3 | yes | 6.2% is the rate on every W-2 paycheck under the cap. Row 1's $20/hr is the example; the 6.2% applies to any wage up to $184,500 |
 | R4 | yes | 6.2%, $20/hr, $1M: small, round, familiar |
-| R5 | yes | "…?" invites the flat-rate guess; $62,000 lands at 5.2 s and is struck in red at 6.1 s |
+| R5 | yes | "…?" invites the flat-rate guess; $62,000 lands at 5.35 s, is struck in red at 6.1 s and crushed by the real block at 6.9 s |
 | R6 | partly | You, 6.2%, ≈ $2,579 a year. The stake is fairness (a rate), not money the viewer keeps |
 | R7 | yes | A named rival: a $1M salary |
 | R8 | yes | 14 words, 3 lines |
-| R9 | yes | 3 labelled empty rows at 0.0 s ("Yours, a year / A $1M salary pays / Their rate"); "Their rate" promises one number |
-| R10 | yes | The viewer's own ≈ $2,579 at 2.6 s ("you pay about $2,579 a year"); the header's question gets its wrong answer at 5.2-6.1 s and its real one at 9.6 s |
+| R9 | yes | 3 numbered, labelled ledges with empty sockets at 0.0 s ("Yours, a year / A $1M salary pays / Their rate"); "Their rate" promises one number |
+| R10 | yes | The viewer's own ≈ $2,579 at 2.6 s ("you pay about $2,579 a year"); the header's question gets its wrong answer at 5.35-6.1 s and its real one at 9.6 s |
 | R11 | yes | A question on screen; the verdict card answers it |
 | R12 | yes | "You pay 6.2%. A $1M salary pays ≈ 1.1%." (5.4x, lopsided and repeatable) |
 
-**Beat sheet** (times match the spec; checked in stills at 0, 2.75, 3.5, 4.95, 5.4, 6.4, 8.8, 10.8, 12.25, 12.3, 12.6, 15.8, 21 s, the contact sheet and frames pulled from the MP4)
+**Beat sheet** (the becker-rig kit's grammar; times match the spec; since the port, checked in stills at 0, 0.6, 2.65, 4.3, 5.2, 5.4, 6.3, 6.95, 9.65, 10.9, 11.4, 11.8, 12.1, 12.3, 12.47, 12.5, 12.6, 12.9, 13.3, 14.0, 15.3, 19.5, 21.8, 22.9 and 23.97 s, the contact sheet and frames pulled from the MP4; throw times marked ≈ follow from the kit's timing rules). Each result starts its own caption line, so its caption pops with the number, never before it.
 
-| t (s) | On screen | VO |
+| t (s) | On screen | VO (caption line) |
 |---|---|---|
-| 0.0 | **Frame 1:** yellow banner header (3 lines, "6.2%" in the black chip); formula bar `≈ │ = $20 × 2,080` mid-typing; mint input row "Your pay / 40 hrs a week │ $20/hr" (dashed outline: the formula is using it); rows 1-3 labelled "Yours, a year / A $1M salary pays / Their rate", results empty; selection on row 1's result cell; the footer on 2 lines under the card "ASSUMES 40 hrs × 52 wks · 2026 rates / employee share, no Medicare" (y 1198-1298, clear of the caption band); captions pop a phrase at a time ("AT $20 AN HOUR,") | "At $20 an hour, you pay about" |
-| ≈0.4-0.6 | The bar finishes `= $20 × 2,080 × 6.2%` | (same line) |
-| 2.6 | Row 1 snaps to **≈ $2,579** in red (a cost) with a tick; the formula drops into the row as the grey working line `$20 × 2,080 × 6.2%`; the caption turns to "$2,579 A YEAR" | "$2,579 a year." |
-| 2.9-5.0 | The tooltip "6.2% of / every dollar" wipes out of its notch over row 2's empty result cell (readable ≈3.2-4.9 s), with a soft pop; the table does not move | (same line) |
-| 4.0 / 4.2 | Selection slides to row 2 (under the floating pill); the bar types `= $1,000,000 × 6.2%`; the pill fades out whole at ≈4.9-5.0 | "A million-dollar salary: $62,000?" |
-| 5.2 | **$62,000** lands in row 2, pencilled in grey (the guess), with a tick | (on "$62,000") |
-| 6.1 | A red strike runs through $62,000 (it turns red); buzz | "No. It stops at $184,500:" |
-| 6.9 | The bar types `= $184,500 × 6.2%` | (on "stops") |
-| 9.6 | The struck guess lifts out; row 2 → **$11,439** (neutral) with a tick; working line `$184,500 × 6.2%`; the caption "$11,439" pops with it | "$11,439." |
-| 9.9-12.3 | The tooltip "taxed only up / to $184,500" floats over row 3's empty result cell (readable ≈10.2-12.2 s) | (same line) |
-| 11.3 | The sheet holds on row 2's tooltip | "That's about 1.1% of their pay." |
-| 11.5 / 11.7 | Selection to row 3 (under the pill); the bar types `= $11,439 ÷ $1,000,000`; the pill fades out whole at ≈12.2-12.3, and row 3 never moves | (same line) |
-| 12.5 | Row 3 → **≈ 1.1%** and the row wipes yellow, with a pop and the reveal sting: the loudest cue of the beat (no count-up: the kit counts only numbers ≥ 10) | (on "1.1%") |
-| 15.1 | The tooltip "yours: 6.2%" opens under ≈ 1.1%, in the slot reserved under the table (`noteT`); it fades out at ≈19.1-19.3 | "Yours: 6.2%, on every dollar, all year." |
-| 19.3 | Verdict card in the caption band: "You pay **6.2%**. A $1M / salary pays **≈ 1.1%**." (6.2% in red, ≈ 1.1% on yellow); the result column flashes top to bottom; ding | "You pay more than five times their rate." |
-| 22.4-25.5 | Hold (the table is the screenshot) | none |
-| 25.5-26.0 | Cells clear back to frame 1 (loop) | none |
+| 0.0 | **Frame 1:** light void; header (3 lines, "6.2%" in red); mono footer on 2 lines "ASSUMES 40 hrs × 52 wks · 2026 rates / employee share, no Medicare"; input line "Your pay **$20/hr** 40 hrs a week"; 3 numbered ledges labelled "Yours, a year / A $1M salary pays / Their rate" (② ③ dim, dashed empty sockets); ① active (green ring), its white block `$20` already typed; the figure in the bottom-right corner holds the ink plate `× 2,080 × 6.2%` at his waist (x ≈ 569-933); ③'s empty socket stops 16 px short of it (x 126-553; since the QA fix pass the kit keeps every empty socket clear of a held plate) | "At $20 an hour, you pay about" |
+| 0.1-1.0 | He dips, flips the plate up (it turns like a card, a swipe), catches it with a knee bend (a tick) and settles | (same line) |
+| ≈1.7-2.6 | Wind-up, then a **kick**: the plate flies up the lane and slams onto the block; **≈ $2,579** crunches out in red (a cost) at 2.6 s (hit lines, chips, shake, thud); its note "6.2% of / every dollar" follows beside it | "$2,579 a year." (2.7 s) |
+| 4.2 | ② lights; the block `$1,000,000` drops in and types; at ≈4.4 the plate `× 6.2%` pops into his hands | "A million-dollar salary:" |
+| ≈4.6-5.35 | Wind-up, an overhand **chop**; the plate slams onto `$1,000,000` and **$62,000** crunches out in pencil grey at 5.35 s (the guess) | "$62,000?" (5.35 s) |
+| 6.1 | A red bar strikes through $62,000 and it turns red; a red burst and a buzz; he wags "no, no" (forearm up, the other hand on his hip) | "No. It stops at $184,500:" |
+| 6.9 | The real block `$184,500` drops onto the struck guess and crushes it (it splits away with red chips, a thud and a small shake) and types itself; at ≈7.2 the plate `× 6.2%` pops into his hands | (on "stops") |
+| ≈8.9-9.6 | Wind-up, a **kick**; **$11,439** crunches out at 9.6 s (ink: a neutral result); ≈ $2,579 stays red; the note "taxed only up / to $184,500" follows | "$11,439." (9.6 s) |
+| 10.85 | ③ lights; the block `$11,439` drops in and types as the VO finishes saying it; at ≈11.1 the plate `÷ $1,000,000` pops into his hands | "That's about" (11.3 s) |
+| ≈11.5-12.45 | The goal's heave: he sinks into a deep squat over a rising riser, then a two-handed **slam** | (same line) |
+| 12.45 | **≈ 1.1%** lands at 1.45× (≈ 122 px) on the gold plate, the biggest number on screen: white flash, camera punch, hit + cash | "1.1% of their pay." (12.45 s) |
+| ≈12.75-13.4 | A **shocked** jump, arms flung up (`finale`), then he stands and points at the gold plate | (same line) |
+| 15.1 | The note "yours: / 6.2%" slides in beside the gold plate, on 2 lines at its mid-line (x ≈ 623-762, clear of the plate's pulse; `noteT`; until the QA fix pass it sat on the label line and read "Their rate yours: 6.2%"); he points up at ①: **≈ $2,579** pulses (a ring of hit lines, a pop) and ①'s tab gets the green ring | "Yours: 6.2%, on every dollar, all year." |
+| 19.3 | The verdict replaces the captions, on 2 lines: "You pay __6.2%__." / "A $1M salary pays **≈ 1.1%**." (6.2% in red, ≈ 1.1% in green with the green swoosh); ding (chrome); he shrugs | "You pay more than five times their rate." |
+| 21.6 | On "their rate" he points at the gold plate: **≈ 1.1%** pulses 1.05× about its left edge, with sparks at both ends, a small camera punch and a pop; ③'s tab rings | (same line) |
+| 22.5-24.0 | Right after the last VO line he puts his hands on his hips, elbows out; the finished sheet and the verdict hold, and the video loops (this kit holds rather than clearing) | none |
 
-Payoffs land at 2.6, 9.6 and 12.5 s, and the verdict at 19.3 s: gaps of 7.0, 2.9 and 6.8 s. The struck $62,000 (5.2-6.1 s) fills the first gap and the "yours: 6.2%" tooltip (15.1 s) the last.
+Payoffs land at 2.6, 9.6 and 12.45 s (the struck guess at 5.35-6.9 s between the first two), and the verdict at 19.3 s: gaps of 7.0, 2.85 and 6.85 s. The figure never stands still for long: measured on the final MP4 (0.1 s steps, above the caption band, since the QA fix pass) the longest still stretch is 0.7 s (17.1-17.8 s, while he points at ①), then 0.6 s (18.6-19.2 s and 22.8-23.4 s).
 
-Sound: each value lands with a tick and the goal with a pop plus the reveal sting (peak ≈ 13k, against ≈ 5.5-6k for the ticks); a tooltip opens with a soft pop (≈ 2.5k), so the notes never outrank the results.
+Sound: the guess is worked with the same cues as an item (a swipe on the throw, a hit and a thud on its landing), then a buzz on the strike and a thud on the crush; the goal's heave rises into hit + cash; the chrome's ding marks the verdict, and the acting adds pops on the pulses.
 
-**Full guide VO script (01b, 26 s)** (the spec splits it into 8 caption lines, each result starting its own line; the words are these)
+**Full guide VO script (01b, 24.0 s)** (the spec splits it into 10 caption lines since the port, each result starting its own line: "At $20 an hour, you pay about" / "$2,579 a year." / "A million-dollar salary:" / "$62,000?" / "No. It stops at $184,500:" / "$11,439." / "That's about" / "1.1% of their pay." / "Yours: 6.2%, on every dollar, all year." / the verdict line; the words are these)
 > At $20 an hour, you pay about $2,579 a year. A million-dollar salary: $62,000? No. It stops at $184,500: $11,439. That's about 1.1% of their pay. Yours: 6.2%, on every dollar, all year. You pay more than five times their rate.
 
 Read the numbers as: "twenty", "twenty-five seventy-nine", "sixty-two thousand", "one eighty-four thousand five hundred", "eleven thousand four thirty-nine", "one point one percent", "six point two percent". Every line's `d` fits at 2.6 words/s with these readings, as the check script counts them.
@@ -289,7 +294,7 @@ Checks behind the words:
   - The 6.2% employee rate (and 1.45% Medicare) is statutory and unchanged.
 - The cap also limits benefits: SSA's own name for the wage base is the "contribution and benefit base", because earnings above it are neither taxed nor counted when benefits are computed. That is used in the pinned comment only, with no number.
 
-**Assumptions (footer, on screen from 0.0 s):** `ASSUMES 40 hrs × 52 wks · 2026 rates` / `employee share, no Medicare` (2 explicit lines since the QA fix pass; the banner already names Social Security). The footer leaves out $184,500 on purpose: printed at frame 1 it would give away row 2. Not modelled: self-employment tax (12.4% to the same cap), the employer's matching share, Medicare and its 0.9% surtax on high wages, and anyone with two jobs (each employer withholds to the cap and the excess is refunded at tax time).
+**Assumptions (footer, on screen from 0.0 s):** `ASSUMES 40 hrs × 52 wks · 2026 rates` / `employee share, no Medicare` (2 explicit lines since the QA fix pass; the header already names Social Security). The footer leaves out $184,500 on purpose: printed at frame 1 it would give away row 2. Not modelled: self-employment tax (12.4% to the same cap), the employer's matching share, Medicare and its 0.9% surtax on high wages, and anyone with two jobs (each employer withholds to the cap and the excess is refunded at tax time).
 
 **Caption / description (verdict in the caption, R11):**
 > Social Security takes 6.2% of every dollar you earn, up to $184,500. A $1M salary pays $11,439: ≈ 1.1%. At $20 an hour ($41,600 a year) you pay 6.2% on all of it, all year: more than five times their rate. 2026 figures, employee share; Medicare not counted.
@@ -299,9 +304,9 @@ Checks behind the words:
 > Medicare (1.45%) has no cap; this is Social Security only. In dollars the $1M salary still pays 4.4x your $2,579, on 24x the pay. And the cap works both ways: pay above $184,500 doesn't count toward their Social Security benefit either.
 
 **Per-platform notes**
-- **YouTube Shorts:** use the title above. Frame 1 is a complete question (header, the 6.2% chip, 3 labelled empty rows) and serves as the thumbnail. The finished sheet works as a screenshot and holds 3 s before the clear.
+- **YouTube Shorts:** use the title above. Frame 1 is a complete question (header with the red 6.2%, the $20/hr input line, 3 labelled ledges with empty sockets, the `$20` block and the plate in his hands) and serves as the thumbnail. The finished sheet with the verdict works as a screenshot; it holds 1.5 s after the last line, then the video loops.
 - **Instagram Reels:**
-  - The cover is frame 1, with "A $1M SALARY PAYS…?" and the 3 empty rows showing.
+  - The cover is frame 1, with "A $1M SALARY PAYS…?" and the 3 empty sockets showing.
   - Caption line 1 is the verdict.
   - Expect fairness comments ("scrap the cap"): the pinned comment gives both sides in numbers, and the series takes no side.
 - **TikTok:**
@@ -438,8 +443,8 @@ Two independent publishers for each tax parameter, because these figures could b
 
 | ID | Look | Header (t = 0) | Runtime | Key numbers | Verdict | Hook score /10 (see below) |
 |---|---|---|---:|---|---|---:|
-| 01a | clean-sheet | 3 DEAD SIMPLE NUMBERS / PAID **EVERY 2 WEEKS**? / WHAT YOUR BUDGET MISSES | 26.0 s | $2,500 · $65,000 · not × 24 = $60,000 · $5,000 · × 12 = $60,000 · $65,000 − $60,000 = $5,000 · 10×2 + 2×3 = 26 · 13 months | Every 2 weeks = 13 months of pay a year | 8 |
-| 01b | live-sheet | 3 DEAD SIMPLE NUMBERS / YOU PAY **6.2%** TO SOCIAL SECURITY. / A $1M SALARY PAYS…? | 26.0 s | $20/hr · ≈ $2,579 · ~~$62,000~~ (struck guess) · $184,500 × 6.2% = $11,439 · ≈ 1.1% | You pay 6.2%. A $1M salary pays ≈ 1.1% | 7.25 (hook pass 2; adopted, was 4.25) |
+| 01a | scoreboard (was clean-sheet) | 3 DEAD SIMPLE NUMBERS / PAID **EVERY 2 WEEKS**? / WHAT YOUR BUDGET MISSES | 24.5 s | $2,500 · $65,000 · not × 24 = $60,000 · $5,000 · × 12 = $60,000 · $65,000 − $60,000 = $5,000 · your 2 extra checks $5,000 (hero) · 10×2 + 2×3 = 26 · 13 months | Every 2 weeks = 13 months of pay a year | 8 |
+| 01b | becker-rig (was live-sheet) | 3 DEAD SIMPLE NUMBERS / YOU PAY __6.2%__ TO SOCIAL SECURITY. / A $1M SALARY PAYS…? | 24.0 s | $20/hr · ≈ $2,579 · ~~$62,000~~ (struck guess) · $184,500 × 6.2% = $11,439 · ≈ 1.1% | You pay 6.2%. / A $1M salary pays ≈ 1.1% | 7.25 (hook pass 2; adopted, was 4.25) |
 | 01c | becker-rig | 4 DEAD SIMPLE NUMBERS / WILL A 3% RAISE PUSH **$65,000** INTO A HIGHER BRACKET? | 25.3 s | $66,950 · $50,400 + $16,100 = $66,500 · $450 · $450 × 10% = $45 | Higher bracket? Yes. It costs you $45 a year | 7.5 (hook pass; adopted, was 3.5) |
 
 **How the hook scores were set.** 01c carries the two judges' average from the round-2 hook pass and 01b from hook pass 2 (details in the Review log); 01a was in neither and keeps my estimate. Before the hook pass, the judge scored the round-1 versions 7, 6 and 6, and these were my estimates for the round-2 revisions:
@@ -454,14 +459,14 @@ Two independent publishers for each tax parameter, because these figures could b
   - Direct fetches of irs.gov, bls.gov, census.gov, energy.gov, taxfoundation.org, imercer.com and hrdive.com were blocked by this session's network proxy, so those pages were read from search extracts only.
   - Every on-screen tax figure has two independent publishers, and every displayed result is robust to the plausible spread of its inputs. No on-screen number in 01a rests on an outside figure. Since the hook passes, 01b's rest only on the 2026 Social Security rate (6.2%) and wage base ($184,500), and 01c's only on the 2026 single bracket line ($50,400) and standard deduction ($16,100).
   - Neither hook pass used new web searches: every new number is arithmetic on figures already sourced here (hook pass 2: SSA and Kiplinger for 6.2% and $184,500).
-- **Untested.** No teaser has been posted. The 01a and 01b MP4s were re-rendered in the QA fix pass (`studio/out/01a-clean-sheet-paid-biweekly.mp4`, `studio/out/01b-live-sheet-20-an-hour.mp4`) and frames pulled from them match the stills.
+- **Untested.** No teaser has been posted. Since the port the MP4s are `studio/out/01a-scoreboard-paid-biweekly.mp4` and `studio/out/01b-becker-rig-20-an-hour.mp4` (the Clean Sheet and Live Sheet renders stay in `renders/v2/` as the retired versions); frames pulled from them match the stills.
 - **Kit dependence.**
-  - The 01a header is written as 3 explicit lines that each fit whole at 56 px (the last has 23 characters). A longer third line would split again in the clean-sheet fitter.
-  - The clean-sheet captions show a whole VO line at once, unspoken words in grey. 01a therefore starts every result on its own VO line in the spec. If the kit later hides unspoken words, or chunks them 2-4 words at a time like the live-sheet kit, the split lines still read correctly.
-  - The 01a climax (②'s $5,000 re-marked blue beside ③'s at the verdict) and the 64 px verdict live in `clean-sheet/formats/dead-simple-list.js`. The format re-fits the chrome's verdict element at mount, because the chrome has no option for a larger verdict.
-  - The 01b tooltips float in `live-sheet/formats/dead-simple-list.js`, a format-local version of the kit's tooltip. Other live-sheet formats still open the kit's slot, which pushes the rows below.
-- **`noteT` is a kit extension, not yet in the contract.** Since the assembly pass, 01a (items ① and ②) and 01b (item 3) set an optional item field `noteT`, the moment a note appears, read by the clean-sheet and live-sheet `dead-simple-list` modules. `studio/FORMATS.md` does not list it yet, so a kit without it shows the note just after its result, about 1.5-3 s before the VO says it. The check script requires it wherever `ANCHORS` names a note.
-- **01b depends on the live-sheet wrong-guess beat** (`lookOpts.wrongGuess`): if a later kit change drops it, the struck $62,000 (the hook's R5) disappears silently. Re-check the 5.4 and 6.4 s stills after any live-sheet change.
+  - Both kept looks show a whole VO line at once (Scoreboard greys the unspoken words; Becker Rig pops a line in ~0.3 s), so every result starts its own VO line in the spec. If a kit later chunks captions 2-4 words at a time, the split lines still read correctly.
+  - The 01a payoff staging lives in `scoreboard/formats/dead-simple-list.js`: `heroFinal` (the kit's hero payoff, timed and tagged by the spec; since the port QA fix pass it also takes `icon` and `count`, the 2 bills) and `echo` (new in the port, opt-in: an earlier slot lights with the goal). Since the port QA fix pass the module also steps the input hero back from the first roll, cuts the label stack on every beat (cut, landing, note, payoff tag, check), strikes a "not … = X" note's X as the VO says it, settles earlier green answers to white when the goal lands and sets a count tie-back ("= 26 PAYDAYS") in white; these are kit defaults, so the two scoreboard samples changed with them (both still lint clean). The Scoreboard README's format list predates the dead-simple-list module; the option reference is the format file's header comment.
+  - The 01b wrong guess, `finale` and `noteT` live in `becker-rig/formats/dead-simple-list.js` (new in the port, all opt-in; documented in the format file's header comment, not yet in `looks/becker-rig/README.md` §5). 01c and the 3 becker-rig samples render as before (stills compared at 19 times each; the only differences were 1-2 px anti-aliasing and the flip pose at 0.6 s, which also differ between two runs of the same code).
+  - Since the port QA fix pass the becker-rig module also keeps an empty socket 16 px clear of a plate held over it, clips a non-goal crunch's hit lines 6 px under the label above, and sets the goal's note beside its gold plate when it fits. In 01c only the clipped burst tops differ (frames 2.3-2.6, 6.2-6.5 and 10.4-10.7 s; its goal note already sat beside the plate and its plates never reach a socket); in the samples the bottom row's socket stops short of his plate.
+- **`noteT` is a kit extension, not yet in the contract.** 01a (items ① and ②) and 01b (item 3) set an optional item field `noteT`, the moment a note appears, read by the scoreboard and (since the port) becker-rig `dead-simple-list` modules. `studio/FORMATS.md` does not list it yet, so a kit without it shows the note just after its result, about 1.5-3 s before the VO says it. The check script requires it wherever `ANCHORS` names a note.
+- **01b depends on the becker-rig wrong-guess beat** (`lookOpts.wrongGuess`): if a later kit change drops it, the struck $62,000 (the hook's R5) disappears silently (the kit also skips a guess, with a console warning, when it does not fit between its neighbours; the check script asserts the kit's timing rule). Re-check the 5.4, 6.25 and 6.95 s stills after any change to that module.
 - **Untested faceless.** Every benchmark winner of this format had a presenter on screen (`04-formats.md`). These are the faceless test.
 
 ---
@@ -730,3 +735,112 @@ The round-2 QA scored 01c 7/10: the maths exact (it re-derived every number by h
 - **Becker-rig header:** line 1 ("4 DEAD SIMPLE NUMBERS") has the same size, weight and ink as the question, so the hook block has no series/topic hierarchy (Master Money sets line 1 in the accent colour, with a bigger topic line). Tracking is very tight ("INTO A HIGHER BRACKET?"), and the 2-line footer sits right under it and reads as part of the hook. QA suggests a smaller or muted line 1 and a little more word spacing.
 - **Becker-rig captions:** `wordTokens` splits on `\s`, which matches U+00A0, so a no-break space never holds a caption phrase together. Only `\n` works, and the becker-rig README should say so.
 - `looks/becker-rig/README.md` §5 does not yet document this pass's format behaviours: the frame-1 flip of a pre-typed plate, the waist-height hold, the goal's clear space (`GOAL_CLR`) and second fitting pass, the goal's 1.05× left-anchored pulse with end sparks, the new `proud` pose and the 28 px figure shift. All of them are described in the format file's header comment.
+
+### Port to Scoreboard (2026-10-08): 01a
+
+The owner kept two looks, Scoreboard and Becker Rig, and retired Clean Sheet and Live Sheet, so 01a moved from Clean Sheet to Scoreboard. The new spec is `studio/specs/01a-scoreboard-paid-biweekly.json`; the old one went to `studio/specs/retired/` (`git mv`). No Scoreboard `dead-simple-list` teaser existed yet (the module was built in the previous kit pass), so the bar was the best Scoreboard teasers in other formats (03c, 05c, 08a): a live score in the top bar, a hard cut and a landed number on every VO beat, the payoff landing last in the hero, the verdict at the foot.
+
+**Kept unchanged:** the header (3 explicit lines), the footer, all 11 VO lines with their words and timings, the verdict ("Every 2 weeks = **13 months** of pay a year", 20.5 s), every number, every item (labels, formulas, results, tones, notes, `t`, `resultT`, `noteT`), `typeDur` 0.8, the check line and `checkT` 17.5, and the 26.0 s duration. The Scoreboard kit reads the same data block, so nothing needed re-timing: each working slams in at its `t`, each roll lands exactly on its `resultT`, each note rises at its `noteT`, and the check slot slams in at `checkT`.
+
+**How the Scoreboard carries each Clean Sheet device:**
+
+| Clean Sheet | Scoreboard |
+|---|---|
+| The input row "Your paycheck **$2,500** every 2 weeks" on the yellow highlighter | The hero: "YOUR PAYCHECK / EVERY 2 WEEKS **$2,500**", the biggest number on the thumbnail; it bumps and flares on ②'s cut (`$2,500 × 2` takes your number) and steps back when ③ lands |
+| Formulas typing, results wiping in on highlighter boxes | Each slot is a hard cut (thud): it lights, the label and the working slam in (also into the label stack, in big type); the working swaps to the odometer, which rolls and lands on the result (bump, glow, bloom, ding) |
+| ③'s blue goal box | ③ at 1.3× (91 px against 70), a riser from its cut, a roll from $65,000 down to $5,000, hit + cash, a neon wash that stays lit |
+| The check line typed in accent mono (17.5-19.2 s) | The dashed ✓ slot under the list: "10×2 + 2×3 = 26 PAYDAYS" slams in at 17.5 s, "= 26 PAYDAYS" in green, the ✓ lights |
+| The verdict re-wipes ②'s $5,000 to the goal blue beside ③'s (both pulse) | `lookOpts.echo` {t 20.5, items [1]}: ② lights green with ③ at the verdict (border, number cell, a softer wash, a bump and a glow flare) |
+| The sheet held still for ≈2.4 s after ③ (15.1-17.5 s) | `lookOpts.heroFinal` {t 15.6, tag "Your 2 extra checks"}: the payoff lands last in the hero. As the VO says "It's your 2 extra checks," the hero hard-cuts to that tag and rolls $2,500 → $5,000 (two of your checks), landing at ≈17.0 s, before the check slot cuts in |
+| The cells cleared back to frame 1 for the loop (25.3-26.0 s) | The Scoreboard holds the finished board to the last frame |
+
+**Kit change** (`looks/scoreboard/formats/dead-simple-list.js` only, opt-in, documented in its header comment): `lookOpts.echo` (`[item, …]` or `{ t, items }`): earlier slots that show the goal's figure light with the goal at t (default the verdict; never before the goal lands): the goal's border colour and number cell, a softer neon wash, the answer in the goal's colour, a slot pop, a bump and a glow flare, then half-lit like the goal; a soft pop unless t is the verdict's. A word answer now also takes its colour from the frame state (no visible change for any existing spec). Both kit samples (`samples/dead-simple-list.json`, `-2.json`) render as before (stills compared at 19 times each: identical).
+
+**Spec changes beyond id and look:** `lookOpts` `{ heroFinal: { t: 15.6, tag: "Your 2 extra checks" }, echo: { t: 20.5, items: [1] } }`. The spec's extra `ding` at 20.5 s is dropped: the Scoreboard chrome cues its own reveal on the verdict.
+
+**Check** (`checks/01-dead-simple-list.py`): `FILES` points at the new spec; `RETIRED` asserts the old spec sits in `studio/specs/retired/` and not in `specs/`; `KIT_LOOKOPTS` lists the scoreboard and becker-rig keys only (a spec in a retired look fails); `EXPECT` adds the hero tag "Your 2 extra checks" (from `A_EXTRA`). New look checks: the hero payoff starts on a VO line, its tag is what that line says, it starts ≥ 0.5 s after the goal lands (the kit's rule) and its roll (≤ 1.4 s) lands before the check slot; it lands on the goal's own result; each echo slot shows the goal's figure; the echo lands with the verdict. The check line's timing now follows the Scoreboard's slam (it lands at `checkT`, 0.3 s in) instead of Clean Sheet typing at 18 characters a second. New for all three teasers: no caption line says a result before that result is on screen (both kept looks show a whole line at once).
+
+**Verified:**
+- `python3 teasers/v2/checks/01-dead-simple-list.py` → **391 checks, 0 failed**. Mutation test on scratch copies (listed at the top): 6 of 6 broken 01a copies caught.
+- `node src/cli.mjs check`: 01a clean (0 errors, 0 warnings), also at `--every 0.05`; both scoreboard `dead-simple-list` samples clean.
+- Contact sheet and stills read by eye at 0, 1.4, 2.75, 4.6, 7.5, 9.35, 10.5, 12.7, 14.55, 14.6, 15.7, 15.9, 16.6, 17.1, 17.2, 17.6, 18.2, 20.6, 20.7, 21.2, 21.4 and 25.97 s. Every number on screen matches the check: $2,500; $2,500 × 26 → $65,000; not × 24 = $60,000; $2,500 × 2 → $5,000; × 12 = $60,000; $65,000 − $60,000 → $5,000; "YOUR 2 EXTRA CHECKS" $5,000; 10×2 + 2×3 = 26 PAYDAYS; 13 MONTHS. Running counts show only between their working and their result.
+- MP4: `studio/out/01a-scoreboard-paid-biweekly.mp4`, 1080 × 1920, 30 fps, 26.0 s, with audio (16 SFX cues). Frames pulled at 0, 15.7 and 20.6 s match the stills (mean pixel difference 0.7-0.9 of 255, codec noise).
+
+**Open (not changed, outside this port's files):** `teasers/v2/teasers.json` and `slate.json` still list the old id; the Scoreboard README's format list does not mention `dead-simple-list` (its option reference is the format file's header comment).
+
+### Port to Becker Rig (2026-10-08): 01b
+
+01b moved from Live Sheet to Becker Rig. The new spec is `studio/specs/01b-becker-rig-20-an-hour.json`; the old one went to `studio/specs/retired/` (`git mv`). The bar was 01c, the Becker Rig `dead-simple-list` teaser already in the look (QA 7/10 before its fix pass): numbers as blocks, operators as plates he throws, a climax by size on the gold plate, acting on every VO line after the goal, no still stretch, a loop-tight ending.
+
+**Kept unchanged:** the header, the footer, the VO words, every number, every item's label, formula, result, tone and note, the wrong guess's formula and result ($1,000,000 × 6.2% = $62,000), its strike on "No." (6.1 s), row 3's `noteT` (15.1 s), `typeDur` 0.6, and the verdict's words.
+
+**Changed because the look needs it:**
+- **Two caption lines split** (words unchanged). The Becker chrome pops a whole VO line in ~0.3 s, so "A million-dollar salary: $62,000?" showed the guess 1.2 s before it landed and "That's about 1.1% of their pay." showed the climax 1.2 s before the slam (01c's C1 in this kit). They are now "A million-dollar salary:" (4.2 s) / "$62,000?" (5.35 s) and "That's about" (11.3 s) / "1.1% of their pay." (12.45 s). Every line still fits at 2.6 words/s.
+- **Re-timed beats, each still on the VO word that names it:** the guess lands at 5.35 s (was 5.2), as its own caption line starts; row 3's block drops at 10.85 s (was 11.7), as the VO finishes "$11,439", the number on that block, and still within 0.5 s of "That's about"; the goal lands at 12.45 s (was 12.5), as "1.1% of their pay." starts. The earlier block gives the goal a real heave (≈0.6 s wind-up over a riser; at 11.7 s the kit would have squeezed it to ≈0.25 s).
+- **The verdict breaks between its sentences:** "You pay __6.2%__.\nA $1M salary pays **≈ 1.1%**." The Becker verdict otherwise wrapped mid-phrase ("A $1M salary / pays ≈ 1.1%"), 01c's Q19 in this kit.
+- **Duration 26.0 → 24.0 s.** The Live Sheet cleared its cells for the loop; the Becker Rig holds, so (as in 01c's Q24) the closing pose plays right after the last VO line (22.4 s) and the video loops 1.6 s later. The check's lane exception for 01b (24-44 s) records the reason; the hold after the VO still meets the series' 1.5 s.
+- **`lookOpts`:** the Live Sheet keys (`labels`, the Live Sheet `wrongGuess`) are gone; Becker Rig shows every label dim from frame 1 anyway. New: `hits` [kick, kick, slam]; `wrongGuess` {item 1, t 4.2, the same formula and result, resultT 5.35, strikeT 6.1, hit "chop"}; `finale` "shocked"; `acts` [point at ① at 15.1 s on "Yours: 6.2%…", shrug at 19.3 s as the verdict pops, point at ③ at 21.6 s on "their rate", proud at 22.5 s after the last line]. The spec's extra `ding` at 19.3 s is dropped (the Becker chrome cues its own).
+
+**How Becker Rig carries each Live Sheet device:**
+
+| Live Sheet | Becker Rig |
+|---|---|
+| The formula bar typing each working | The block (first number) drops into the slot and types; the plate (operator and the rest) types in his hands; he throws it and it slams onto the block |
+| The guess pencilled into row 2, struck in red | The guess is worked like an item: `$1,000,000` block, `× 6.2%` plate thrown overhand, **$62,000** crunches out in pencil grey; at "No." a red bar strikes it, it turns red, a red burst and a buzz, and he wags "no, no"; the real `$184,500` block then drops onto it and crushes it |
+| Row 3 wiping yellow with the reveal sting | ≈ 1.1% at 1.45× on the gold plate after a heave over a riser: white flash, camera punch, hit + cash; a shocked jump (`finale`) |
+| Tooltip notes | Notes beside the answers; "yours: 6.2%" waits for its VO line (`noteT`) |
+| The hold and the cleared cells | Acting on each line after the goal (points, a shrug, hands on hips), then a loop-tight end |
+
+**Kit changes** (`looks/becker-rig/formats/dead-simple-list.js` only; all opt-in, documented in its header comment):
+- `lookOpts.wrongGuess` (or `data.wrongGuess`), as above. The throw choreography (pose keys, the plate's flight, impacts, cues, chips, the hands on the plate) now runs over a list of throws (the items, with the guess before its item) instead of over the items alone; for a spec without a guess the list is the items, in the same order, with the same seeds. The guess's widths join the layout fit. The kit skips a guess (console warning) that starts before 0.35 s, before the previous item lands, or lands later than 0.35 s before its item's `t`.
+- `lookOpts.finale`: `'cheer'` (default) or `'shocked'`.
+- `data.items[].noteT`: a note waits for its VO line (default unchanged: 0.24 s after its answer).
+- The wag is shared by the guess reaction and the `wag` act.
+- 01c and the 3 becker-rig samples render as before: stills at 19 times each compared pixel by pixel; 01c is identical at all 19, and the samples differ only by 1-2 px of anti-aliasing and, in two samples at 0.6 s, by the plate's flip pose, which also differs between two renders of the same code (concurrent renders; reported below).
+
+**Check** (`checks/01-dead-simple-list.py`): `FILES` points at the new spec; `RETIRED` asserts the old one is retired; `VO_NUMBERS` and `ANCHORS` follow the 10 caption lines (item 3 on vo[6]/vo[7], the guess's `resultT` on vo[3]'s start, the strike on vo[4]'s, row 3's note on vo[8], the verdict on vo[9]); `ANCHORS["01b"]["acts"]` adds the acting; `EXPECT` takes the verdict with its break; `LANE_EXCEPT` adds 01b (24-44 s, with the reason); `KIT_LOOKOPTS["becker-rig"]` adds `wrongGuess` and `finale`. New checks: the finale is a kit move; the guess is a non-goal throw (kick or chop) and fits between its neighbours by the kit's own rule; the verdict breaks between its two sentences; no caption says a result (the guess included) before it lands. The anchor helper reports a VO line count that no longer matches `ANCHORS` as failures instead of crashing.
+
+**Verified:**
+- `python3 teasers/v2/checks/01-dead-simple-list.py` → **391 checks, 0 failed** (342 before the port). Mutation test on scratch copies (listed at the top): 10 of 10 broken 01b copies caught; the unmodified copies pass.
+- `node src/cli.mjs check`: 01b clean (0 errors, 0 warnings), also at `--every 0.05`; 01c and the 3 becker-rig samples clean.
+- Contact sheet and stills read by eye (listed in the beat sheet). Every number on screen matches the check: $20/hr; `$20` + `× 2,080 × 6.2%` → ≈ $2,579; `$1,000,000` + `× 6.2%` → $62,000 (struck); `$184,500` + `× 6.2%` → $11,439; `$11,439` + `÷ $1,000,000` → ≈ 1.1%; the notes 6.2% of every dollar, taxed only up to $184,500, yours: 6.2%; the verdict 6.2% / ≈ 1.1%.
+- MP4: `studio/out/01b-becker-rig-20-an-hour.mp4`, 1080 × 1920, 30 fps, 24.0 s, with audio (29 SFX cues). Frames pulled at 6.3, 12.9 and 22.9 s match the stills (mean pixel difference 1.15-1.23 of 255, codec noise).
+
+**Open (not changed, outside this port's files):**
+- `teasers/v2/teasers.json` and `slate.json` still list the old id.
+- `looks/becker-rig/README.md` §5 does not document `wrongGuess`, `finale`, `noteT` or `acts` yet (the format file's header comment does).
+- Becker-rig stills rendered concurrently (6 jobs) are not always pixel-identical to a second run of the same code: the plate's flip at 0.6 s and 1-2 px of anti-aliasing at a tab edge. Two renders of the new module differ the same way (and one of them matches the old module's render exactly), so it is render noise, not the port; it changes no number or text.
+
+### Port QA fix pass (2026-10-08): 01a Scoreboard and 01b Becker Rig
+
+The port QA scored 01a 6.5/10 (clean and correct, not yet as strong as 03c or 08a) and 01b 8/10 (meets 01c's bar). Every must, should and nit is applied. The hook (header and first VO line), every number, every VO word and the verdict's words are unchanged; two markup details changed with their EXPECT entries: 01a's verdict has a no-break space after "=", and 01b's header sets 6.2% with `__x__` (red) instead of `**x**` (green).
+
+**01a (Scoreboard).** Format changes are in `looks/scoreboard/formats/dead-simple-list.js` (documented in its header comment); spec changes are in `specs/01a-scoreboard-paid-biweekly.json`.
+
+| # | Sev. | QA issue | What I did |
+|---|---|---|---|
+| A1 | must | Two focal points at every landing: the input hero $2,500 stayed green, glowing and about 140 px until 14.5 s | Kit default: the input hero steps back (white, 75%, no glow, 0.3 s) once the first answer starts to count (0.35 s here; never on frame 1), re-lights green for 0.4 s on a cut that takes your number (7.4 s), then steps back again; it stays back from the goal's landing, and heroFinal relights it at 15.6 s. Each landing is now the one lit green number (stills 0.5, 2.75, 7.5, 8.0, 9.4) |
+| A2 | should | The first 0.8 s was a still frame | Kit: an item 1 cut at frame 1 swaps its working to the roll by 0.35 s and stretches the roll to its `resultT` (2.35 s here; the existing `PRE`/`ROLL0_MAX` rule). The label stack keeps the working readable |
+| A3 | should | The label stack only repeated the slot working, with no beat from 4.9-7.3 s or 10.9-12.5 s, and the $60,000 contrast was a 40 px grey note | Kit: the label stack cuts on every VO line: a cut shows the working over the item's label (the 03c / 08a grammar); a landing shows the working over "= answer" in the answer's colour; a note shows "working = answer" over the note in big type, "NOT × 24 = $60,000" with $60,000 coral and struck (buzz) at 6.5 s as the VO says it, and "× 12 = $60,000" with $60,000 pulsing at 11.6 s; heroFinal shows its tag; the check shows its sum over its tie-back. The kit finds the spoken moment in the VO line running at `noteT` |
+| A4 | should | Six neon greens after the verdict | Kit: once the goal lands, an earlier green answer (not an echo) settles to white over 0.3 s (①'s $65,000 at 14.5 s); a check tie-back that is not money ("= 26 PAYDAYS") is white on the board and in the label stack. Green after the verdict: the hero's $5,000, ③, ②'s echo (the spec's "13th month" device) and the verdict's "13 MONTHS" |
+| A5 | should | 2.3 s of dead frame after the last word (26.0 s) | `duration` 26.0 → 24.5 s (0.8 s after the VO; the kit default would be 24.1 s). The check's `LANE_EXCEPT`/`HOLD_EXCEPT` record it, and a new `HOLD_MAX` (≤ 1.0 s still tail) catches a long tail |
+| A6 | nit | The verdict broke as "EVERY 2 WEEKS = / 13 MONTHS…" | A no-break space after "=": "Every 2 weeks =\u00a0**13\u00a0months** of pay a year" now breaks "EVERY 2 WEEKS / = 13 MONTHS OF PAY A YEAR". EXPECT updated |
+| A7 | nit | No object beat at the payoff | Kit: `heroFinal.icon` + `count`. The spec sets `icon: "bill", count: 2`: as the hero rolls $2,500 → $5,000 under "YOUR 2 EXTRA / CHECKS", one bill drops in beside the number at 15.8 s (pop) and the second as the count lands at 17.0 s: one bill per extra check. The check asserts count × input = the goal ($5,000) and count = 26 − 24 |
+
+**01b (Becker Rig).** Format changes are in `looks/becker-rig/formats/dead-simple-list.js` (documented in its header comment); the spec change is in `specs/01b-becker-rig-20-an-hour.json`.
+
+| # | Sev. | QA issue | What I did |
+|---|---|---|---|
+| B1 | should | Frame 1: the held plate "× 2,080 × 6.2%" overlapped ③'s empty socket by about 17 px | Kit: when a plate in his hands (from its pop-in to his wind-up) shares an empty socket's band, that socket stops 16 px short of the plate's left edge (sampled per frame at mount, so the socket never moves; it keeps ≥ 120 px). ③'s socket is now x 126-553 against the plate's 569 |
+| B2 | should | The hook's 6.2% was green; ① and the verdict's 6.2% were red | Header markup `**6.2%**` → `__6.2%__` (same words). EXPECT updated; a new check asserts 6.2% is `__x__` in both the header and the verdict |
+| B3 | nit | At the $11,439 crunch the burst touched the "A $1M salary pays" baseline | Kit: a non-goal crunch's burst (the throw's hit, the guess's strike and its crush) is clipped 6 px under the label over its value line, so its sideways and downward lines keep their size. Measured: the burst's top is now ≥ 917 px against the label's bottom at 906 px (it reached 887). The goal's burst (the climax) is not clipped |
+| B4 | nit | "yours: 6.2%" sat on the label line ("Their rate  yours: 6.2%") | Kit: the goal's note goes beside its gold plate when it fits: one line, else two lines at the plate's mid-line, clear of its 1.05× pulse. It is now "yours: / 6.2%" at x ≈ 623-762, right of the plate's sparks and left of his pointing hand. 01c's goal note was already beside its plate and is unchanged |
+
+**Check** (`checks/01-dead-simple-list.py`): EXPECT for 01a's verdict and 01b's header; `LANE_EXCEPT`/`HOLD_EXCEPT` for 01a's 24.5 s; new checks for the ≤ 1.0 s still tail (01a), the hero icons (a kit icon; count × input = the payoff; count = the 2 extra checks), a "not … = X" note whose X is said on the VO line running at its `noteT` (the kit strikes it then), and 01b's red 6.2% in the header and the verdict.
+
+**Verified:**
+- `python3 teasers/v2/checks/01-dead-simple-list.py` → **397 checks, 0 failed**. Mutation test on scratch copies: 6 of 6 broken copies caught (listed at the top); the unmodified copies pass.
+- `node src/cli.mjs check`: 01a and 01b clean (0 errors, 0 warnings), also at `--every 0.05`; 01c, the 3 becker-rig samples and the 2 scoreboard samples clean.
+- Stills read by eye. 01a at 0, 0.3, 0.5, 1.2, 2.75, 3.2, 5, 6.4, 6.6, 6.9, 7.5, 8.0, 9.4, 10.5, 11.7, 12.0, 12.7, 14.6, 15.0, 15.7, 15.9, 16.2, 17.1, 17.2, 17.6, 20.6, 20.7, 21.2 and 24.47 s. 01b at 0, 0.6, 2.65, 5.4, 6.15, 6.3, 6.95, 9.62, 9.65, 9.7, 12.5, 13.3, 15.3, 19.5, 21.8 and 23.97 s. Every number on screen matches the check. 01a: $2,500; $2,500 × 26 = $65,000; NOT × 24 = $60,000 (struck); $2,500 × 2 = $5,000; × 12 = $60,000; $65,000 − $60,000 = $5,000; YOUR 2 EXTRA CHECKS $5,000 with 2 bills; 10×2 + 2×3 = 26 PAYDAYS; 13 MONTHS. 01b: unchanged from the port.
+- 01c and the becker-rig samples were compared with stills rendered before the change at 9 times each: 01c differs only in the clipped tops of its non-goal crunch bursts; the samples differ in the bottom socket's width.
+- MP4s: `studio/out/01a-scoreboard-paid-biweekly.mp4` (1080 × 1920, 30 fps, 24.5 s, 18 SFX cues) and `studio/out/01b-becker-rig-20-an-hour.mp4` (24.0 s, 29 SFX cues). Frames pulled at 6.6, 17.1 and 20.7 s (01a) and 0 and 15.3 s (01b) match the stills (mean pixel difference 0.6-1.2 of 255, codec noise).

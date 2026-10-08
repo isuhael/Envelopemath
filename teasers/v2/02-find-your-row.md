@@ -1,23 +1,23 @@
 # 02 · Find your row: three teasers
 
 **Format:** `find-your-row` (rank 2 in [`../../research/v2/04-formats.md`](../../research/v2/04-formats.md), hook pattern **P7**)
-**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews, then again in the round-2 **hook pass**, which replaced all three hooks; then the round-2 **assembly pass** and the round-2 **fix pass** on 2026-10-08; see the [Review log](#review-log))
+**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews, then again in the round-2 **hook pass**, which replaced all three hooks; then the round-2 **assembly pass** and the round-2 **fix pass** on 2026-10-08; then the **port** of 2026-10-08, when the owner kept two looks: 02a moved from Live Sheet to **Becker Rig** and 02c from Clean Sheet to **Scoreboard**; then the **fix pass on the ports** the same day; see the [Review log](#review-log))
 **Specs:**
-- [`studio/specs/02a-live-sheet-3-a-day-by-age.json`](../../studio/specs/02a-live-sheet-3-a-day-by-age.json)
+- [`studio/specs/02a-becker-rig-3-a-day-by-age.json`](../../studio/specs/02a-becker-rig-3-a-day-by-age.json)
 - [`studio/specs/02b-scoreboard-trillion-at-your-wage.json`](../../studio/specs/02b-scoreboard-trillion-at-your-wage.json)
-- [`studio/specs/02c-clean-sheet-salary-per-hour.json`](../../studio/specs/02c-clean-sheet-salary-per-hour.json)
+- [`studio/specs/02c-scoreboard-salary-per-hour.json`](../../studio/specs/02c-scoreboard-salary-per-hour.json)
 
-(The spec ids and file names are kept from the earlier rounds so the slate index and renders stay linked; the titles and hooks below are the hook-pass versions.)
+(The slugs are kept from the earlier rounds so the slate index stays linked; the titles and hooks below are the hook-pass versions. The retired Live Sheet and Clean Sheet specs are in `studio/specs/retired/` as `02a-live-sheet-3-a-day-by-age.json` and `02c-clean-sheet-salary-per-hour.json`.)
 
 **Maths check:** [`checks/02-find-your-row.py`](checks/02-find-your-row.py). It recomputes every on-screen number from its inputs (including the 2026 federal tax and FICA behind 02c), rebuilds every display string and VO line from those numbers, then compares them with the three specs. It also checks:
-- timing: every VO line must fit **both** 2.6 words/s (hyphenated numbers as one word) **and** 2.8 words/s (hyphenated numbers split, so "twenty-five" is two words); no overlaps; each pointer lands when its VO line starts and after its row has landed; the verdict and its ding land when the VO says it (02a) or 0.2 s after the last VO line ends, so the verdict is alone on screen (02b, 02c);
+- timing: every VO line must fit **both** 2.6 words/s (hyphenated numbers as one word) **and** 2.8 words/s (hyphenated numbers split, so "twenty-five" is two words); no overlaps; each pointer lands when its VO line starts and after its row has landed (02a's measured pick, a timed compare in Becker Rig, sets off when line 4 starts and lands with the verdict on "more than double"); the verdict and its ding land when the VO says it (02a) or 0.2 s after the last VO line ends, so the verdict is alone on screen (02b, 02c);
 - the contract shape and the hook rules;
 - that this write-up quotes every VO line, verdict, footer, formula and platform title exactly as the specs carry them (a `\n` line break is quoted here as " / ");
-- the look options the specs carry (`lookOpts`: 02a's bracket, 02c's verdict row).
+- the look options the specs carry (`lookOpts`: 02a's timed bracket from the 35 row up to the 25 row, its shrug beat inside line 1, its hop on "≈ $240,000" inside line 3 while the 25 row is pointed at, and its figure scale; 02c's verdict row).
 
-Result: **PASSED: all 177 checks** (after the fix pass). A mutation test (one row changed, one VO line shortened) fails with exit 1 (see the Review log).
+Result: **PASSED: all 177 checks** (after the fix pass on the ports). A mutation test (one row changed, one VO line shortened) fails with exit 1 (see the Review log).
 
-**Studio linter:** `node src/cli.mjs check` on the three specs: **3/3 clean, 0 errors, 0 warnings** (after the fix pass, also at a 0.05 s sampling step). Contact sheets and stills at every beat were rendered and inspected, and the final MP4s were rendered and spot-checked frame by frame (see [Assembly pass](#assembly-pass-2026-10-08)): each header and its first number read in frame 1.
+**Studio linter:** `node src/cli.mjs check` on the three specs: **3/3 clean, 0 errors, 0 warnings** (after the fix pass on the ports, also at a 0.05 s sampling step). Contact sheets and stills at every beat were rendered and inspected, and the final MP4s were rendered and spot-checked frame by frame (see [Assembly pass](#assembly-pass-2026-10-08)): each header and its first number read in frame 1.
 
 **Web searches used:** 9 in the first draft; 2 more in the first revision (2026 tax brackets; 2026 Social Security wage base); none in the hook pass (every new number is arithmetic on figures already sourced here).
 
@@ -41,7 +41,7 @@ Result: **PASSED: all 177 checks** (after the fix pass). A mutation test (one ro
 
 | | 02a | 02b | 02c |
 |---|---|---|---|
-| Look | Live Sheet | Scoreboard | Clean Sheet |
+| Look | Becker Rig (from Live Sheet, 2026-10-08) | Scoreboard | Scoreboard (from Clean Sheet, 2026-10-08) |
 | Platform title | "It's Just $3 a Day": What It Costs You by 65, by Age | How Fast Elon's $1 Trillion Pay Plan Earns Your Whole Career's Pay | What Time Your 9-to-5 Starts Paying You, by Salary |
 | On-screen header (t = 0) | “It’s just **$3 a day**.” / What it costs you by 65: | ELON'S **$1 TRILLION** PAY PLAN / EARNS YOUR WHOLE CAREER'S PAY IN… | What time your **9-to-5** / starts paying you, by salary |
 | Words in hook | 11 | 11 | 9 |
@@ -49,15 +49,17 @@ Result: **PASSED: all 177 checks** (after the fix pass). A mutation test (one ro
 | Runtime | 13.4 s | 14.0 s | 13.0 s |
 | VO words (as the check counts them) | 29 | 26 | 23 |
 | First number on screen | 18 · $51,465 (red) · ≈ $400,000 | $7.25/hr · $603,200 · ≈ 3.2 min | $200,000 · ≈ 123 min · ≈ 11:03 am |
-| First spoken payoff | "≈ $400,000" at about 2.8 s, row 18 pointed at from 2.0 s | "≈ 3 minutes" at 2.0 s, the $7.25 row pointed at from 2.0 s | "≈ 10:18" at about 3.4 s, the $65,000 row lit from 1.5 s |
+| First spoken payoff | "≈ $400,000" at about 2.8 s, the figure on row 18 and pointing from 2.0 s | "≈ 3 minutes" at 2.0 s, the $7.25 row pointed at from 2.0 s | "≈ 10:18" at about 3.4 s, the $65,000 row lit from 1.5 s |
 | Verdict | 10 years younger? / It costs **more than double**. | Even **$1,000/hr** / for 40 years: / ≈ 7.3 hours of his. | $200,000: you work for tax till **≈ 11:03**, every workday. |
 | Hook score (two judges' average, hook pass: old hook → adopted) | 6.75 → 7.5 | 5.25 → 7.75 | 5.5 → 7.5 |
 
 ---
 
-## 02a · Live Sheet · "It's just $3 a day": what it costs you by 65
+## 02a · Becker Rig · "It's just $3 a day": what it costs you by 65
 
-**Spec:** `studio/specs/02a-live-sheet-3-a-day-by-age.json` · **13.4 s** · captions on
+**Spec:** `studio/specs/02a-becker-rig-3-a-day-by-age.json` · **13.4 s** · captions on
+
+*Ported from Live Sheet to Becker Rig on 2026-10-08 (the old spec is `studio/specs/retired/02a-live-sheet-3-a-day-by-age.json`). The hook, every number, every VO line and the verdict are unchanged. What changed: the footer breaks between its clauses instead of at "· no tax, fees," (same words), and the measured pick now runs from the 35 row up to the 25 row, landing on "more than double" with the label "≈ 2.2× the cost at 35" (same 2.152 ratio). See "Port to Becker Rig (2026-10-08)" in the Review log. The fix pass on the port (same day) kept every word and number: the figure is bigger (0.82) and stands clear of the shelving post, the 35 row is marked as the reference while the bracket (now the look's prop stroke) is up, the payoff label is 48 px, a silent hop lands on "≈ $240,000", and the line-4 caption breaks after "10 years younger?". See "Fix pass on the ports (2026-10-08)".*
 
 **Platform title:** "It's Just $3 a Day": What It Costs You by 65, by Age
 **On-screen hook (header):** “It’s just **$3 a day**.” / What it costs you by 65:
@@ -83,7 +85,7 @@ Result: **PASSED: all 177 checks** (after the fix pass). A mutation test (one ro
 - **R7:** each row is a named age, so the viewer picks theirs.
 - **R8:** 11 words.
 - **R9:** 10 countable rows.
-- **R10:** the biggest number is first on screen at 0.0 s and spoken first: "Just $3 a day?" (0.0 s), then "At 18: ≈ $400,000." from 2.0 s, with the pointer on the 18 row ("≈ 7.8× what you think") from the same frame; the VO reaches "≈ $400,000" at about 2.8 s.
+- **R10:** the biggest number is first on screen at 0.0 s and spoken first: "Just $3 a day?" (0.0 s), then "At 18: ≈ $400,000." from 2.0 s, with the figure landed on the 18 row's peg and pointing at it ("≈ 7.8× what you think") from the same frame; the VO reaches "≈ $400,000" at about 2.8 s.
 - **R11:** the caption carries the verdict.
 - **R12:** "10 years younger? / It costs more than double." is one direction, one number, and true for every whole age from 18 to 54 (asserted in the check).
 
@@ -95,13 +97,18 @@ Result: **PASSED: all 177 checks** (after the fix pass). A mutation test (one ro
 
 | t (s) | On screen | VO (caption) |
 |---|---|---|
-| 0.0 | Header '“It’s just **$3 a day**.” / What it costs you by 65:'. Formula bar typing "= $3 × 365 ÷ 12 = $91.25 a month" (one line). Columns "Your age" · "What you think it costs" (label and numbers in red) · "What it really costs you" (emphasised, green), the last two on two lines. All 10 age keys in place; row 1 "18 · $51,465 · ≈ $400,000" filled. Rows at a 59 px pitch with 49 / 45 / 52 px figures, filling the sheet down to y 1235. Footer "At 7% a year until 65 · no tax, fees, inflation" (one line, clear of the caption band). | "Just $3 a day?" |
-| 0.5-4.5 | Rows 20 → 60 land, one every 0.5 s, biggest first: each a red number beside a bigger green one (20, 25 and 30 by 1.5 s) | |
-| 2.0 | Pointer to row "18 · $51,465 · ≈ $400,000": the selection fades in on its result, the row lights, and the tooltip "≈ 7.8× what you think" floats over the row under it (that row fades out as the pill wipes in: nothing moves) | "At 18: **≈ $400,000**." ("≈ $400,000" at about 2.8 s) |
-| 4.9 | Pointer to row "25 · $43,800 · ≈ $240,000", tooltip "≈ 5.5× what you think" | "At 25: **≈ $240,000**." |
-| 8.4 | Row "35 · $32,850 · ≈ $111,000" lights and is selected; the 25 row stays tinted; a bracket draws beside the keys from 35 up to 25 (arrowhead on 25) with the label "≈ 2.2×" on it | "10 years younger? It costs you **more than double**." |
-| 10.7 | Verdict card in the caption band, as wide as the sheet (x 60-960): "10 years younger?" / "It costs **more than double**." with "more than double" at about 90 px on the yellow marker + ding; the result column flashes top to bottom | (inside line 4: "more than double") |
-| 10.7-13.4 | The full table holds; the last 0.5 s clears the rows back to the frame-1 state for the loop | (none) |
+| 0.0 | Header '“It’s just **$3 a day**.” / What it costs you by 65:'. Footer on two lines, broken between its clauses: "At 7% a year until 65" / "no tax, fees, inflation" (mono 40 px). The table is a set of shelves: column heads "Your age" · "What you think it costs" (red) · "What it really costs you" (ink, emphasised), each on two lines at 40 px. All 10 age keys in place on their dotted ledges; row 1 "18 · $51,465 · ≈ $400,000" stocked (the $51,465 red, the ≈ $400,000 green on its ink plank). Rows at a ~56 px pitch: keys 44 px, red cells 41 px, results 48 px (Inter Tight 900). The formula "= $3 × 365 ÷ 12 = $91.25 a month" on the note shelf under the last row. The figure (0.82) stands on the floor in the gutter between the shelving post and the keys, hand on chin, looking up the empty shelves; the pencil behind his head clears the post. | "Just $3 a day?" |
+| 0.25-1.15 | He shrugs, palms up (`lookOpts.beats`: the viewer's excuse, acted), while the rows start landing | |
+| 0.5-4.5 | Rows 20 → 60 land top to bottom, one every 0.5 s: each red number drops onto its ledge and the green result lands on its plank with a squash and a soft thud (the newest green, settling to ink; at 2.0 s the 30 row's ≈ $164,000 snaps to ink in the same 0.1 s the 18 row lights, so only one green is on screen); his head follows the rows | |
+| 1.2-1.9 | He crouches and leaps up the pegs to the 18 row (`swipe`, `step` at 1.88) | |
+| 2.0 | He points at row "18 · $51,465 · ≈ $400,000", his hand pinned to its left end: the row lifts and lights green, and the pill "≈ 7.8× what you think" pops on the note shelf (it takes the formula's place) | "At 18: **≈ $400,000**." ("≈ $400,000" at about 2.8 s) |
+| 4.9 | He has hopped down to the 25 row (lands 4.78) and points: "25 · $43,800 · ≈ $240,000" lights, pill "≈ 5.5× what you think" (on the shelf until 8.1 s, then the formula comes back) | "At 25: **≈ $240,000**." |
+| 6.2-6.9 | Once the VO reaches "≈ $240,000" (about 5.7 s) he does a "whoa" hop with his free arm up, still pointing at the row (`lookOpts.beats`, silent), and the 25 row's ≈ $240,000 pulses (5%) as its plank dips | (line 3) |
+| 8.4 | As line 4 starts he hops down to the 35 row (lands 8.82, `step`) and points at it: row "35 · $32,850 · ≈ $111,000" becomes the reference, a soft grey band behind it and its whole ledge in solid ink, so the row reads as underlined | "10 years younger? / It costs you **more than double**." (the caption breaks after "10 years younger?") |
+| 9.07-10.58 | He takes the pencil from behind his head (`tick` 9.23) and steps up the pegs, one leg per peg, from 35 to 25, drawing a thick ink bracket beside the keys as he goes (the look's 10 px prop stroke; `swipe` 9.49-10.58): the "10 years younger" read, under "It costs you" | (line 4) |
+| 10.7 | The payoff, on "more than double": he lands on the 25 row, ≈ $240,000 turns ink on a **gold plate** (its top edge 3 px under the 20 row's plank) with the short's one impact (hit lines fanning into the right margin, a shake, a 2% punch, `hit`); the pill "**≈ 2.2×** the cost at 35" pops on the shelf with the plate, at 48 px; the verdict "10 years younger?" / "It costs **more than double**." (64 px, the green swoosh under "more than double") replaces the captions + ding | (inside line 4: "more than double") |
+| 10.7-12.7 | The finished table holds (the cover frame): the bracket, the plate and the pill stay up, and he keeps pointing at the plate | (none) |
+| 12.7-13.4 | Loop clear: the plate and the pill go, the values tip off their planks, the keys dim, the verdict fades and he hops back down to the floor; the last frame is frame 1 | (none) |
 
 ### Guide VO script (29 spoken words, about 11.2 s of speech)
 
@@ -110,14 +117,14 @@ Result: **PASSED: all 177 checks** (after the fix pass). A mutation test (one ro
 | 0.0 | 1.95 | Just $3 a day? | "Just three dollars a day?" |
 | 2.0 | 2.7 | At 18: **≈ $400,000**. | "At eighteen: about four hundred thousand dollars." |
 | 4.9 | 3.3 | At 25: **≈ $240,000**. | "At twenty-five: about two hundred forty thousand dollars." |
-| 8.4 | 3.5 | 10 years younger? It costs you **more than double**. | "Ten years younger? It costs you more than double." |
+| 8.4 | 3.5 | 10 years younger? / It costs you **more than double**. | "Ten years younger? It costs you more than double." |
 
-Each `d` covers the read at 2.6 words/s with hyphenated numbers as one word, and at 2.8 words/s with them split (1.92 / 1.79 s; 2.69 / 2.50 s; 3.08 / 3.21 s; 3.46 / 3.21 s).
+Each `d` covers the read at 2.6 words/s with hyphenated numbers as one word, and at 2.8 words/s with them split (1.92 / 1.79 s; 2.69 / 2.50 s; 3.08 / 3.21 s; 3.46 / 3.21 s). Line 4's caption carries a line break after "10 years younger?" (a `\n`, quoted here as " / "), so it wraps at the clause and not mid-phrase; the words and the read are unchanged.
 
 ### The maths
 
 Inputs: $3 a day; 365 days; 7% a year, compounded monthly (7% ÷ 12 each month, an effective 7.23% a year); deposits at the end of each month; stopping at 65.
-- $3 × 365 = **$1,095** a year; ÷ 12 = **$91.25** a month (formula bar).
+- $3 × 365 = **$1,095** a year; ÷ 12 = **$91.25** a month (the formula on the note shelf).
 - **What you think it costs** (red) = $1,095 × (65 − age): the $3 a day handed over until 65. This is exact, so it carries no "≈".
 - **What it really costs you** = FV = $91.25 × ((1 + 0.07/12)^n − 1) ÷ (0.07/12), with n = (65 − age) × 12 months: what the same $3 a day would have grown to. It is rounded to the nearest $1,000, or to the nearest $100 below $10,000.
 
@@ -136,7 +143,7 @@ Inputs: $3 a day; 365 days; 7% a year, compounded monthly (7% ÷ 12 each month, 
 
 - **Pointer "≈ 7.8× what you think"** (18 row): $400,261.67 ÷ $51,465 = 7.777, shown as ≈ 7.8.
 - **Pointer "≈ 5.5× what you think"** (25 row): $239,514.22 ÷ $43,800 = 5.468, shown as ≈ 5.5.
-- **Bracket "≈ 2.2×"** (from the 25 row to the 35 row): $239,514.22 ÷ $111,322.35 = 2.152, shown as ≈ 2.2 (the other way round, the 35 row is 0.465 of the 25 row: under half).
+- **Bracket and pill "≈ 2.2× the cost at 35"** (drawn from the 35 row up to the 25 row; the plate lands on 25's ≈ $240,000): $239,514.22 ÷ $111,322.35 = 2.152, shown as ≈ 2.2 (the other way round, the 35 row is 0.465 of the 25 row: under half).
 - **Verdict "10 years younger? / It costs more than double":** FV(age) ÷ FV(age + 10) is above 2 for **every** whole age from 18 to 54 (minimum 2.092 at 18, maximum 15.98 at 54; asserted in the check). In the table's own 10-year pairs: 20 → 30 = 2.11, 25 → 35 = 2.15, 30 → 40 = 2.22, 35 → 45 = 2.34, 40 → 50 = 2.56, 45 → 55 = 3.01, 50 → 60 = 4.43.
 - **Why it is more than double** (pinned comment): at 7% money roughly doubles every decade (72 ÷ 7 ≈ 10.3 years; a lump sum at 7% ÷ 12 grows ×2.01 in 120 months), and starting 10 years younger also adds 10 years of $3 deposits. The two together push the ratio above 2.
 - **Pinned comment, at 10% instead:** age 25 → ≈ $577,000; age 18 → ≈ $1,170,000. This matches the hook bank's 10% table.
@@ -147,7 +154,9 @@ Inputs: $3 a day; 365 days; 7% a year, compounded monthly (7% ÷ 12 each month, 
 
 ### Assumptions (footer, on screen at t = 0)
 
-> At 7% a year until 65 · no tax, fees, inflation
+> At 7% a year until 65 / no tax, fees, inflation
+
+(Two lines in Becker Rig's mono footer, broken between the clauses; in the retired Live Sheet cut it was one line, "At 7% a year until 65 · no tax, fees, inflation".)
 
 ### Caption / description
 
@@ -301,9 +310,11 @@ Fit at 2.6 / 2.8 words/s: 1.92 / 1.79 s; 1.92 / 1.79 s; 2.69 / 2.50 s; 3.46 / 3.
 
 ---
 
-## 02c · Clean Sheet · "What time your 9-to-5 starts paying you, by salary"
+## 02c · Scoreboard · "What time your 9-to-5 starts paying you, by salary"
 
-**Spec:** `studio/specs/02c-clean-sheet-salary-per-hour.json` · **13.0 s** · captions on
+**Spec:** `studio/specs/02c-scoreboard-salary-per-hour.json` · **13.0 s** · captions on
+
+*Ported from Clean Sheet to Scoreboard on 2026-10-08 (the old spec is `studio/specs/retired/02c-clean-sheet-salary-per-hour.json`). The hook, every number, every VO line, the footer and the verdict are unchanged, and so is `data`; only `id` and `look` changed. `lookOpts.verdictRow: 0` is kept, and the Scoreboard's find-your-row format now reads it, so the verdict lights the $200,000 row as in the Clean Sheet cut. See "Port to Scoreboard (2026-10-08)" in the Review log. The fix pass on the port (same day) added one pick label, "≈ 78 min of tax a day" on line 3 (78 is the row's own cell), and the $200,000 row now lights from the end of the VO, just before the verdict lands. See "Fix pass on the ports (2026-10-08)".*
 
 **Platform title:** What Time Your 9-to-5 Starts Paying You, by Salary
 **On-screen hook (header):** What time your **9-to-5** / starts paying you, by salary
@@ -330,7 +341,7 @@ Fit at 2.6 / 2.8 words/s: 1.92 / 1.79 s; 1.92 / 1.79 s; 2.69 / 2.50 s; 3.46 / 3.
 - **R7:** each row is a named salary; the spoken opener is the first calculation.
 - **R8:** 9 words.
 - **R9:** 12 countable rows.
-- **R10:** the biggest bite is first ($200,000: ≈ 11:03 am at 0.0 s); "$65,000?" is spoken at 0.0 s and the $65,000 row is lit from 1.5 s, as "You work for tax till ≈ 10:18." starts ("≈ 10:18" at about 3.4 s).
+- **R10:** the biggest bite is first ($200,000: ≈ 11:03 am at 0.0 s); "$65,000?" is spoken at 0.0 s and the $65,000 row is lit (pointer, glow, the label in the strip) from 1.5 s, as "You work for tax till ≈ 10:18." starts ("≈ 10:18" at about 3.4 s).
 - **R11:** the verdict lands alone, after the last caption, and lights its own row.
 - **R12:** "$200,000: you work for tax till ≈ 11:03, every workday." (the board's top row, so the ending escalates). The comment line it invites: "I work for tax till 10:18."
 
@@ -342,13 +353,14 @@ Fit at 2.6 / 2.8 words/s: 1.92 / 1.79 s; 1.92 / 1.79 s; 2.69 / 2.50 s; 3.46 / 3.
 
 | t (s) | On screen | VO (caption) |
 |---|---|---|
-| 0.0 | Header "What time your **9-to-5** / starts paying you, by salary" ("9-to-5" on the yellow highlighter). Footer "Single · 2026 federal tax + FICA · no state tax". Columns "Salary" · "Tax + FICA, minutes a day" · "Paying you from" (emphasised, green highlighter). All 12 salary keys in place, in ink-grey Inter Tight (the finder); the result column in Archivo Black 5 px larger than the other cells (the answer); row 1 "$200,000 · ≈ 123 min · ≈ 11:03 am" filled. Footnote under the table "= 9:00 am + 480 min × (tax + FICA) ÷ salary" (two lines). | "$65,000?" |
-| 0.2-2.2 | Rows $150,000 → $30,000 type in, one every 0.2 s ($65,000 · ≈ 78 min · ≈ 10:18 am at 1.2 s) | |
-| 1.5 | Yellow highlighter on "$65,000 · ≈ 78 min · ≈ 10:18 am"; legend "[$65,000] ≈ US median full-time pay" (it takes the footnote's line) | "You work for tax till **≈ 10:18**." ("≈ 10:18" at about 3.4 s) |
-| 4.7 | (the $65,000 row stays lit) | "That's ≈ 78 minutes a day." |
-| 7.4 | Highlighter moves to "$100,000 · ≈ 100 min · ≈ 10:40 am"; legend "[$100,000] ≈ 1 hr 40 min of tax a day" | "Six figures? Until **≈ 10:40**." |
-| 10.0 | The VO has ended (9.8 s): the highlighter swipes the top row "$200,000 · ≈ 123 min · ≈ 11:03 am" (the $100,000 row rests to a tint), and the verdict "$200,000: you work for tax till **≈ 11:03**, every workday." lands in the caption band + ding | (none) |
-| 10.0-13.0 | The finished sheet holds (the screenshot), then the values clear back to frame 1 for the loop | (none) |
+| 0.0 | Header "WHAT TIME YOUR **9-TO-5** / STARTS PAYING YOU, BY SALARY" (Anton caps, "9-TO-5" neon green). Footer on one line under it: "Single · 2026 federal tax + FICA · no state tax". A dark leaderboard (no hero row): column heads "SALARY" · "TAX + FICA, / MINUTES A DAY" · "PAYING YOU / FROM" (emphasised, white with a green underline), Inter caps 40 px. All 12 salary keys on the board beside LED-off placeholders; row 1 "$200,000 · ≈ 123 MIN · ≈ 11:03 AM" filled, its clock in neon green. Rows at a ~55 px pitch (49 px bars), each in a rounded slot with a 2 px outline (the board is not in its dense, zebra-striped mode; alternate bars are a shade lighter), Anton 42 px cells with tabular digits. Strip under the board: "= 9:00 am + 480 min × (tax + FICA) ÷ salary" (Inter 40 px). | "$65,000?" |
+| 0.2-2.2 | Rows $150,000 → $30,000 fill top to bottom, one every 0.2 s: the values slide in, the bar wipes in, the clock lands green with a bump; a soft tick per row and a thud when the board is complete ($65,000 · ≈ 78 MIN · ≈ 10:18 AM at 1.2 s) | |
+| 1.5 | The pointer enters on the left margin to "$65,000 · ≈ 78 MIN · ≈ 10:18 AM": the row lights (green border, glow, tint) and the others dim; "≈ US MEDIAN FULL-TIME PAY" slams into the strip in the formula's place (58 px Anton) + swipe, ding | "You work for tax till **≈ 10:18**." ("≈ 10:18" at about 3.4 s) |
+| 4.7 | As line 3 starts, the $65,000 row is picked again: it stays lit, the pointer stays on it, its bar lifts and the others dim again; "≈ 78 MIN OF TAX A DAY" slams into the strip in place of the median label + swipe, ding. The label holds until the next pick, so from 1.5 s the strip runs "≈ US median" → "≈ 78 min" → "≈ 1 hr 40 min" → verdict | "That's ≈ 78 minutes a day." |
+| 7.4 | The pointer glides up to "$100,000 · ≈ 100 MIN · ≈ 10:40 AM", which lights; "≈ 1 HR 40 MIN OF TAX A DAY" slams into the strip + swipe, ding | "Six figures? Until **≈ 10:40**." |
+| 9.8-10.0 | As the VO ends (9.8 s) the pointer glides up to the top row and "$200,000 · ≈ 123 MIN · ≈ 11:03 AM" lights (`lookOpts.verdictRow: 0`, leading the verdict by 0.2 s) as the others dim; its clock's climax bump (1.13) peaks at about 9.95 s, so the row is lit and bumping as the verdict lands | (none) |
+| 10.0 | The strip drops away and the verdict "$200,000: YOU WORK FOR TAX TILL **≈ 11:03**, EVERY WORKDAY." slams into the strip and the caption band together (Anton 72 px, a green rule over it) + reveal, ding | (none) |
+| 10.0-13.0 | The finished board holds (the screenshot) with the $200,000 row lit, then a hard cut back to frame 1 for the loop | (none) |
 
 ### Guide VO script (23 spoken words as the check counts them, about 8.8 s of speech)
 
@@ -424,7 +436,7 @@ The 8-hour day is in the header ("9-to-5") and the footnote "= 9:00 am + 480 min
 
 - **Instagram Reels.**
   - This is Yannick's and Gage's platform. Post the music-only cut first, with captions off: the header and the clock column carry it.
-  - Clean Sheet's white page shows up well in a dark feed.
+  - Scoreboard's dark board and neon clock column read as a leaderboard in the feed; the cover is the finished board with the $200,000 row lit.
   - Caption line 1: "Find your salary."
 - **TikTok.**
   - The VO cut. "You work for tax till ≈ 10:18" on the median row is the line viewers will repeat about themselves.
@@ -451,12 +463,18 @@ The 8-hour day is in the header ("9-to-5") and the footnote "= 9:00 am + 480 min
 
 ## Open items
 
-- **Linter:** all three kits mount and `node src/cli.mjs check` passes 02a, 02b and 02c with 0 errors and 0 warnings (2026-10-08, after the fix pass; also at a 0.05 s sampling step). The kits' own find-your-row samples and the Live Sheet stress specs still lint clean with the fix-pass format files.
+- **Linter:** both kept kits mount and `node src/cli.mjs check` passes 02a (Becker Rig), 02b and 02c (Scoreboard) with 0 errors and 0 warnings (2026-10-08, after the fix pass on the ports; also at a 0.05 s sampling step). The Scoreboard's find-your-row samples and 02b render pixel-identical before and after the port's and the fix pass's format-file changes. The Becker Rig samples change with the fix pass (post, bracket, reference row, shelf formula) and stay lint-clean.
+- **Not changed by the port** (outside its files): `teasers.json`, `slate.json` and `renders/v2/` still list the retired ids and MP4s for 02a and 02c; the new MP4s are in `studio/out/`. The Becker Rig and Scoreboard READMEs do not yet document the new find-your-row options (`compare[].start`, `beats` and its value tap; `verdictRow` and its lead); each format file's header comment does.
 - **Slate overlap to decide (owner):** 02b now uses the same device as **10b** ("40 years of your pay vs 1 minute of new US debt", verdict "40 years of median pay: ≈ 33 seconds"): a whole working life set against a mega-rate clock. Both judges also flagged an echo of **10c** (Amazon's sales per second). 02b is a per-wage lookup table with a named person's plan; 10b is one median career against a national-debt counter. If only one should carry the device, 02b's runner-up ("1 second of the plan at your wage", 7.25) is ready in the Review log.
-- **Kit-side note for the Live Sheet owner** (from the verifier): the sheet could overflow `bandBottom` once its tooltip slots grew the card. Since the fix pass the find-your-row tooltips float over the next row and the card never grows, so the planned card is the card on screen.
-- **Kit behaviour that shaped 02a:** the Live Sheet `style.css` has no colour rule for second emphasis (`__…__`) inside a column label (`.ls-hl u.mark2` / `.ls-hsub u.mark2`), so in the hook pass the label "What you think it costs" read in ink. Since the assembly pass the kit's `formats/find-your-row.js` colours it red itself (a local workaround; the shared rule still belongs in `style.css`), so the label is red like its numbers. In this kit a `\n` in a column label starts a grey sub-label, so 02a's labels are written without one and the kit balances them over two lines in ink.
+- **Kit behaviour that shaped 02a (Becker Rig, since the port):**
+  - The last pick is the payoff: its emphasised value turns ink on a gold plate with the short's one impact. So the measured pick runs from the 35 row up to the 25 row and lands on 25's ≈ $240,000 (the Live Sheet cut selected the 35 row with an arrowhead on 25, and a straight port would have put the gold plate on ≈ $111,000).
+  - A compare normally arrives just in time for its pick (a quick draw). `lookOpts.compare[].start`, added to `formats/find-your-row.js` in the port, times it: he sets off for the 35 row on line 4's first word and the bracket fills the time to the pick, so the plate lands on "more than double".
+  - The pick labels go to the note shelf under the table (they cover no row) and take turns with the formula; the shelf is right-aligned and away from the bracket, so the compare's label names what it compares.
+  - The mono footer wraps at 878 px, so a one-line footer longer than ~36 characters breaks where the width runs out; 02a's breaks between its clauses (`\n`), like the other Becker Rig specs.
+  - `__…__` in a column label is red in this kit, and a `\n` in a label is a forced break, so 02a's labels are unchanged from the Live Sheet cut.
+- **Retired kits** (Live Sheet for 02a, Clean Sheet for 02c, until 2026-10-08): their notes are in the Review log (assembly and fix passes); the old specs are in `studio/specs/retired/`.
 - **Kit behaviour that shaped 02b:** in the Scoreboard kit, a pick at 0.0 s replaces the formula strip for the whole short (tested in round 2), so 02b's first pointer lands at 2.0 s. With 11 rows and a one-line footer the strip runs stacked: each pointer label sits over the formula, so the working "= wage × 2,080 × 40 ÷ $3,169/s" stays on screen until the verdict. A verdict that lands after the last VO line takes the strip and the caption band together (`formats/find-your-row.js`, via the chrome's `verdictSlot`), so it is set at about 84 px against the labels' 58 px.
-- **Kit behaviour that shaped 02c:** with captions on, the Clean Sheet kit drops the formula footnote and the pick legend at 14 rows (tested); at 12 rows with a one-line footer it shows both (the footnote takes two lines, since the assembly pass broken at an operator: "= 9:00 am + 480 min" / "× (tax + FICA) ÷ salary"; the pick legend takes the footnote's place from the first pointer, 1.5 s since the fix pass). The Clean Sheet verdict is the chrome's (56 px, Archivo Black); 02c's ending escalates through its row instead (`lookOpts.verdictRow`).
+- **Kit behaviour that shaped 02c (Scoreboard, since the port):** with 12 rows, two-line column heads and a one-line footer, the board runs at a ~55 px pitch (outlined slots), and the strip is shared (`swap`): the formula first, each pick label as a hard cut in its place (held 2.5 s, after which the formula comes back only when it can stand 1.5 s before the next event; with the line-3 pick added in the fix pass it never can, so the labels run back to back from 1.5 s to the verdict). The verdict lands after the last VO line, so it takes the strip and the caption band together (72 px). Before the port the Scoreboard's find-your-row ignored `verdictRow`; it now reads it (a quiet pick that leads verdict.t by up to 0.25 s, from the end of the VO: the pointer glides to the row, it lights, the others dim and its emphasised cell lands a 1.13 climax bump as the verdict slams in; no label and no sound of its own), so 02c's ending still escalates through its top row.
 - For the music-only A versions, render the same spec with `"captions": false` (no other change).
 
 ---
@@ -582,3 +600,97 @@ QA of the assembled round 2 scored 02a 6.5, 02b 6.5 and 02c 6.0 (lint and the 17
 **Check changes:** 02a, 02b and 02c builders rebuilt for the new VO lines, pointers, verdicts, rows (02b: 11), footer, formula, column labels and `lookOpts`; new recomputed lines (18-row ratio 7.777, the bracket's 2.152 and 0.465, $1,000/hr 7.293 hrs, the $200,000 row 122.58 min); the verdict-timing rule is "when the VO says it" for 02a and "0.2 s after the last VO line" for 02b and 02c; `lookOpts` is compared with the expected value; a `\n` is quoted in this write-up as " / ".
 
 **Checks after the fix pass:** `python3 teasers/v2/checks/02-find-your-row.py` → **PASSED: all 177 checks**. Mutation test on scratch copies (02c's top row "≈ 11:03 am" → "≈ 11:04 am"; 02b `vo[3]` d 3.5 → 3.2): **FAILED: 4 of 178 checks, exit 1** (the row, the `vo[3]` field, its fit test, the VO-fit summary). `node src/cli.mjs check` → 3/3 clean, 0 errors, 0 warnings (also at `--every 0.05`), and the kits' find-your-row samples plus the Live Sheet stress specs are clean. Contact sheets and stills at every beat (and frame by frame across each 02a pick) were inspected; final MP4s re-rendered to `studio/out/`.
+
+### Port to Becker Rig (2026-10-08): 02a
+
+The owner watched the 30 teasers in four looks and kept two, Scoreboard and Becker Rig; Clean Sheet and Live Sheet are retired. 02a moved from Live Sheet to Becker Rig. There is no other Becker Rig find-your-row teaser to match, so the bar was the look's finished teasers (a figure that works the maths, beats on the VO's words, one gold-plate payoff). **The hook, every number, every VO line and the verdict are unchanged**, and so are `columns`, `rows`, `formula`, the first two picks and the timings of rows, VO and verdict.
+
+**Files:**
+- `studio/specs/02a-becker-rig-3-a-day-by-age.json` is new; the Live Sheet spec was moved with `git mv` to `studio/specs/retired/02a-live-sheet-3-a-day-by-age.json`.
+- `studio/looks/becker-rig/formats/find-your-row.js` gained two opt-in options (documented in its header comment): `compare[].start` and `beats`.
+- This write-up and `checks/02-find-your-row.py` were updated to match.
+
+**What a straight port looked like, and the fix:**
+
+| Problem (same spec, `look` changed, Live Sheet `lookOpts`) | Fix |
+|---|---|
+| In Becker Rig the last pick is the payoff: its value goes onto the gold plate with the short's one impact. The Live Sheet pick (row 35, measured from 25) put the plate on **≈ $111,000**, the cheaper row, while the verdict is about 25 costing more than double 35 | The measured pick is turned round: row 25, measured from row 35 (`compare: [{ pick: 2, from: 4 }]`). He goes to the 35 row and steps **up** the pegs to 25 drawing the bracket ("10 years younger"), and the plate lands on 25's **≈ $240,000**. Same ratio, 2.152 |
+| The kit's compare arrives just in time for its pick, so with the turned-round pick at 8.4 s he would leave the 25 row and draw the bracket at about 7-8.3 s, under "At 25: ≈ $240,000" (the kit sample's timing), and the impact landed on "10 years younger?", 2.3 s before "more than double" | New `compare[].start`. `start: 8.4` makes him set off for the 35 row as line 4 starts (lands 8.82; the row takes its grey frame then). He takes the pencil at 9.07 and draws the bracket 9.49-10.58, under "It costs you". The pick moves to **10.7 s**, so the plate, the hit and the label land on "more than double", with the verdict and its ding |
+| The label "≈ 2.2×" made sense on the Live Sheet bracket, but here labels go to the note shelf under the table, away from the bracket | Label "**≈ 2.2×** the cost at 35" (number tokens 2.2 and 35, both already on screen; FV(25) ÷ FV(35) = 2.152) |
+| Becker Rig's mono footer wrapped "At 7% a year until 65 · no tax, fees, / inflation", one word alone on line 2 | Footer "At 7% a year until 65\nno tax, fees, inflation": the same words, broken between the clauses as the other Becker Rig footers are (09a, 09b, 10b) |
+| Nothing acted the hook's excuse: frame 1 to 1.2 s was the figure with a hand on his chin | `beats: [{ t: 0.25, act: "shrug", d: 0.9 }]`. A palms-up shrug on "Just $3 a day?" (new option, no sound), over before he crouches for the leap to row 18 (1.18 s) |
+| `hold` 5.0 no longer matched the last beat | `hold` 2.7 (13.4 − 10.7); `duration` stays 13.4 s, and the loop clear (12.7-13.4 s) brings the last frame back to frame 1 |
+
+**Kit changes** (`looks/becker-rig/formats/find-your-row.js` only; no shared file):
+- `compare[].start`: a timed compare. The hop to row `from` takes off at `start` when it fits (else the default timing), the draw stretches to the pick, and row `from` takes its grey frame when he lands on it.
+- `beats: [{ t, act, d }]`: a POSES (or local) pose blended over his track for d s, easing in 0.2 s and out 0.25 s. The pinned pointing hand still wins.
+- Regression: both kit samples and 02b render **pixel-identical** (89 stills at 18 times) with **identical SFX cue lists**, before and after.
+
+**Check script:** the id, look, footer, pick 3 (row 25, t = the verdict's 10.7, the new label), `lookOpts` (`compare` from row 4 with `start` = line 4's start; the shrug beat) and `hold` are pinned. The pick-timing rule now reads "lands as its VO line starts, or (a timed compare) sets off as it starts and lands with the verdict". New asserts: the shrug sits inside line 1 and ends before the 1.18 s take-off, and the compare starts on line 4 and lands on the verdict. Mutation test on scratch copies: `start` 8.0, the label "≈ 2.3×", pick 3 back at 8.4 and the one-line footer each **FAIL** (2, 2, 3 and 1 checks).
+
+**Verification:**
+- `python3 teasers/v2/checks/02-find-your-row.py`: **PASSED: all 177 checks**.
+- `node src/cli.mjs check`: 0 errors, 0 warnings (also at `--every 0.05`).
+- Contact sheet and stills read at 0, 0.6, 1.0, 1.4, 2.0, 2.9, 4.9, 5.6, 7.0, 8.3, 8.5, 8.9, 9.3, 9.8, 10.3, 10.75, 11.3, 12.5, 12.9, 13.1 and the end. Every cell, pill and the formula on screen were also read from the DOM and compared with the check's recomputed strings: 30 of 30 cells, 3 of 3 labels, the formula, all equal. The last frame equals frame 1.
+- MP4: `studio/out/02a-becker-rig-3-a-day-by-age.mp4` (13.4 s, 402 frames, 21 SFX cues). Frames pulled at 2.0 and 9.8 s and frame 323 (10.77 s, under the impact's shake) match the stills: PSNR 40.4 / 39.3 / 38.0 dB, x264 noise only.
+
+### Port to Scoreboard (2026-10-08): 02c
+
+02c moved from Clean Sheet to Scoreboard. The bar was 02b, the look's finished find-your-row. **The hook, every number, every VO line, the footer, the verdict and the whole `data` block are unchanged.** Only `id` and `look` changed in the spec; `lookOpts.verdictRow: 0` is kept.
+
+**Files:**
+- `studio/specs/02c-scoreboard-salary-per-hour.json` is new; the Clean Sheet spec was moved with `git mv` to `studio/specs/retired/02c-clean-sheet-salary-per-hour.json`.
+- `studio/looks/scoreboard/formats/find-your-row.js` now reads `verdictRow`.
+- This write-up and the check (id, look) were updated.
+
+**What a straight port looked like, and the fix:**
+
+| Problem (plain port) | Fix |
+|---|---|
+| The Scoreboard's find-your-row ignored `verdictRow`, so through the verdict "$200,000: you work for tax till ≈ 11:03, every workday." the pointer and the glow stayed on the **$100,000** row: the verdict named one row while the board lit another | `verdictRow` is the same option the other kits read: a quiet pick at verdict.t. The pointer glides up to the $200,000 row, the row lights and the others dim, and its clock "≈ 11:03 AM" lands the motion grammar's climax bump (1.13, glow flare). It has no label (the verdict takes the strip) and no sound of its own (the verdict's reveal and the spec's ding). The cover frame is the finished board with that row lit |
+| Everything else held up against 02b as it was: frame 1 with the header, the footer and the top row's ≈ 11:03 AM; 12 rows at a ~55 px pitch, each in an outlined slot, with 42 px Anton cells; the pick labels slamming into the strip at 58 px; the late verdict over the strip and the caption band at 72 px | No change. A `prompt` ("Find your salary") was considered and left out: at frame 1 it would compete with the "$65,000?" caption, and 02b runs without one |
+
+**Kit change** (`looks/scoreboard/formats/find-your-row.js` only; no shared file, no README): `verdictRow` as above, documented in the header comment. Regression: both kit samples and 02b render **pixel-identical** with **identical SFX cue lists**, before and after.
+
+**Verification:**
+- The check passes (see above); the mutation "look clean-sheet" **FAILS** (1 check).
+- `node src/cli.mjs check`: 0 errors, 0 warnings (also at `--every 0.05`).
+- Contact sheet and stills read at 0, 0.6, 1.2, 1.55, 1.75, 3.4, 4.7, 4.8, 7.45, 7.6, 7.7, 9.85, 9.9, 10.0, 10.1, 10.25, 10.3, 10.5, 11.0, 12.0 and the end. Every cell and label on screen, read from the DOM, equals the check's strings (36 of 36 cells, 2 of 2 labels, the formula).
+- MP4: `studio/out/02c-scoreboard-salary-per-hour.mp4` (13.0 s, 390 frames, 17 SFX cues). Frames pulled at 1.75, 7.7 and 10.25 s match the stills: PSNR 39.2 / 40.7 / 40.1 dB.
+
+### Fix pass on the ports (2026-10-08)
+
+QA judged the two ports against the finished teasers in their looks: 02a 7.5, 02c 7.0, no must-fixes. Every should and nit is handled below. **The hooks, every number, the VO wording and both verdicts are unchanged.** 02a's line-4 caption gained a line break (same words), 02a's `lookOpts` gained a beat and `figureScale`, and 02c gained one pick label built from a number already on its board.
+
+**02a (Becker Rig):**
+
+| QA item | Fix |
+|---|---|
+| should: the figure (0.72) was boxed into the gutter, small beside the finished Becker Rig teasers (0.84-1.1), and the pencil eraser poked left past the post (x ≈ 28) | `lookOpts.figureScale: 0.82`, the largest scale that keeps the values at 48 px. At 0.84 the narrower table needs a third line for the column heads, and the values drop to 46 px. In the format, the post moves to x 22, and in the poses he holds on screen (hand on chin, looking up or along the shelves, the shrug, pointing) his pencil and limbs stay at least 12 px right of the post's centre. On the cover frame the eraser now clears the post by about 14 px. The formula on the note shelf may reach 40 px left of the keys (it is right-aligned and stops short of the pegs), so it stays on one line beside the wider gutter |
+| should: the 35 → 25 comparison was hard to see at the payoff (thin bracket, faint grey frame on row 35, the "≈ 2.2×" pill small and far below) | While the bracket is up, row `from` is the reference: a soft grey band (#F1F3F6, the lightest that still reads; the red cells keep 3.5:1 on it) and its whole ledge in solid ink, so the 35 row reads as underlined. Its values are ink. The bracket is drawn at the look's prop stroke (10 px, was 6), and its ticks stop at least 13 px short of the keys. The payoff's shelf label is 48 px (was 42) when it fits on one line, popping with the plate and the impact. An ink rim was considered and dropped: at the 56 px pitch it would touch the planks above and below |
+| nit: the line-4 caption wrapped mid-phrase ("It costs / you") | `vo[3].text` is "10 years younger?\nIt costs you **more than double**.": the same words, breaking at the clause (the kit's captions honour `\n`, as 01c's do). The check and this write-up quote it with the break |
+| nit: about 3 s of stillness (5.2-8.1 s) | `beats: [..., { t: 6.2, act: "shocked", d: 0.7 }]`: once the VO reaches "≈ $240,000" (5.67 s) he does a "whoa" hop with his free arm up, still pointing at the row. New in the format: a beat that starts while a pick holds also taps its value, so ≈ $240,000 pulses 5% and its plank dips 3 px. No sound |
+| nit: two greens on screen for about 0.3 s at 2.0 s | A fresh value that settles because a pick lights now snaps to ink in 0.1 s, the same frames as the pick's glow (it was 0.25 s from the same start) |
+| nit: the gold plate's top edge touched the 20 row's plank | The plate's top stays 3 px under the plank of the row above. At this pitch the "$" of ≈ $240,000 reaches a few px past the plate's top edge |
+| nit: the beat sheet put the figure "left of the shelving post" | "In the gutter between the shelving post and the keys" |
+
+**02c (Scoreboard):**
+
+| QA item | Fix |
+|---|---|
+| should: VO line 3, "That's ≈ 78 minutes a day.", had no visual (the strip fell back to the formula and the board sat still for about 3.4 s) | A second pick on the $65,000 row at 4.7 s with the label "≈ 78 min of tax a day". It mirrors the $100,000 label, and 78 is the row's own cell. The row stays lit and the others dim again, with a swipe and a ding. The strip now runs formula → "≈ US median full-time pay" → "≈ 78 min of tax a day" → "≈ 1 hr 40 min of tax a day" → verdict, one label for every VO line, as in 02b |
+| nit: the climax landed out of order (the verdict slammed in while the pointer was still gliding and the $200,000 row was half lit; the 1.13 bump was masked) | In `scoreboard/formats/find-your-row.js` the `verdictRow` pick now leads the verdict by up to 0.25 s, starting no earlier than the end of the VO and at least 0.6 s after the previous pick. Here it starts at 9.8 s. The pointer glides and the row lights from 9.8 s, the clock's bump peaks at about 9.95 s, and the verdict slams in at 10.0 s. Until the verdict lands, the strip keeps the label that was up |
+| nit: the write-up described the dense board (a ~50 px pitch, zebra stripes, no outlines) | The beat sheet, the port table and the open items now give the measured board: a ~55 px pitch (49 px bars), a rounded 2 px slot outline on every row, and Anton 42 px cells |
+
+**Files:** the two specs, `studio/looks/becker-rig/formats/find-your-row.js`, `studio/looks/scoreboard/formats/find-your-row.js` (the header comments document the changes), this write-up and `checks/02-find-your-row.py`. No shared kit file was touched.
+
+**Check script:** 02a's `vo[3]` (with its `\n`) and `lookOpts` (the hop, `figureScale`) are pinned, with new asserts: the hop sits inside line 3, after the VO reaches "≈ $240,000", while pick 2 holds and before the compare sets off. 02c's pick list now has three entries, and a new assert checks that the line-3 label is built from the row's own "≈ 78 min" cell and matches the VO.
+
+**Verification:**
+- `python3 teasers/v2/checks/02-find-your-row.py`: **PASSED: all 177 checks**. A mutation test on scratch copies fails 3 checks with exit 1. It used three changes: 02a's caption without its break, the hop moved to 5.0 s, and 02c without the 4.7 s pick.
+- `node src/cli.mjs check` on both specs: 0 errors and 0 warnings, also at `--every 0.05`. The Becker Rig find-your-row samples lint clean too.
+- Scoreboard regression: 02b and both Scoreboard find-your-row samples render **pixel-identical** before and after (42 stills).
+- 02a timings are unchanged: take-off 1.43, landings 1.88, 4.78 and 8.82, the `tick` at 9.23, the draw from 9.49 to 10.58, and the `hit` and `ding` at 10.70. There are 21 SFX cues. The last frame equals frame 1.
+- Stills were read at 0, 2.0-2.2 (frame by frame), 6.2-6.9, 8.9, 9.8, 10.2, 10.75, 11.2, 12.9 and the end for 02a, and at 0, 1.7, 4.75, 4.9, 7.5, 9.75, 9.85, 9.95, 9.97, 10.05, 10.1, 11 and the end for 02c.
+- MP4s: `studio/out/02a-becker-rig-3-a-day-by-age.mp4` (13.4 s, 402 frames, 21 SFX cues) and `studio/out/02c-scoreboard-salary-per-hour.mp4` (13.0 s, 390 frames, 19 SFX cues: the new pick adds a swipe and a ding). Frames pulled from the MP4s match the stills (02a at 6.45 and 11.2 s: 38.4 / 38.1 dB; 02c frame 180: 40.7 dB).
+

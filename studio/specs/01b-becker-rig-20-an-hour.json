@@ -1,0 +1,51 @@
+{
+  "id": "01b-becker-rig-20-an-hour",
+  "look": "becker-rig",
+  "format": "dead-simple-list",
+  "fps": 30,
+  "duration": 24.0,
+  "header": "3 DEAD SIMPLE NUMBERS\nYOU PAY __6.2%__ TO SOCIAL SECURITY.\nA $1M SALARY PAYS…?",
+  "footer": "ASSUMES 40 hrs × 52 wks · 2026 rates\nemployee share, no Medicare",
+  "captions": true,
+  "vo": [
+    { "t": 0.0, "d": 2.7, "text": "At $20 an hour, you pay about" },
+    { "t": 2.7, "d": 1.5, "text": "$2,579 a year." },
+    { "t": 4.2, "d": 1.15, "text": "A million-dollar salary:" },
+    { "t": 5.35, "d": 0.75, "text": "$62,000?" },
+    { "t": 6.1, "d": 3.5, "text": "No. It stops at $184,500:" },
+    { "t": 9.6, "d": 1.6, "text": "$11,439." },
+    { "t": 11.3, "d": 1.15, "text": "That's about" },
+    { "t": 12.45, "d": 2.65, "text": "1.1% of their pay." },
+    { "t": 15.1, "d": 3.9, "text": "Yours: 6.2%, on every dollar, all year." },
+    { "t": 19.3, "d": 3.1, "text": "You pay more than five times their rate." }
+  ],
+  "verdict": { "t": 19.3, "text": "You pay __6.2%__.\nA $1M salary pays **≈\u00a01.1%**." },
+  "data": {
+    "input": { "label": "Your pay", "value": "$20/hr", "note": "40 hrs a week" },
+    "typeDur": 0.6,
+    "items": [
+      { "t": 0.0, "label": "Yours, a year", "formula": "$20 × 2,080 × 6.2%", "result": "≈ $2,579", "tone": "bad", "note": "6.2% of every dollar", "resultT": 2.6 },
+      { "t": 6.9, "label": "A $1M salary pays", "formula": "$184,500 × 6.2%", "result": "$11,439", "tone": "neutral", "note": "taxed only up to $184,500", "resultT": 9.6 },
+      { "t": 10.85, "label": "Their rate", "formula": "$11,439 ÷ $1,000,000", "result": "≈ 1.1%", "tone": "goal", "note": "yours: 6.2%", "resultT": 12.45, "noteT": 15.1 }
+    ]
+  },
+  "lookOpts": {
+    "hits": ["kick", "kick", "slam"],
+    "wrongGuess": {
+      "item": 1,
+      "t": 4.2,
+      "formula": "$1,000,000 × 6.2%",
+      "result": "$62,000",
+      "resultT": 5.35,
+      "strikeT": 6.1,
+      "hit": "chop"
+    },
+    "finale": "shocked",
+    "acts": [
+      { "t": 15.1, "act": "point", "item": 0 },
+      { "t": 19.3, "act": "shrug" },
+      { "t": 21.6, "act": "point", "item": 2 },
+      { "t": 22.5, "act": "proud" }
+    ]
+  }
+}

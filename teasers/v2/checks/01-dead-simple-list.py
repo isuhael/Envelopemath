@@ -2,6 +2,8 @@
 """Math + timing check for format 1, "dead-simple-list" (teasers 01a, 01b, 01c). Round-2 revision + hook passes
 (01c is the bracket-myth hook since hook pass 1: "Will a 3% raise push $65,000 into a higher bracket?"; 01b is the
 Social Security wage-cap hook since hook pass 2: "You pay 6.2% to Social Security. A $1M salary pays…?").
+Since the port of 2026-10-08 the owner keeps two looks: 01a runs in Scoreboard (was Clean Sheet) and 01b in Becker Rig
+(was Live Sheet); the retired specs are in studio/specs/retired/. 01c was always Becker Rig.
 
 1. Recomputes every on-screen number from its inputs (constants below, sources in
    teasers/v2/01-dead-simple-list.md).
@@ -21,12 +23,15 @@ Social Security wage-cap hook since hook pass 2: "You pay 6.2% to Social Securit
    since the round-2 QA), the verdict on the last VO line (the chrome swaps captions for
    the verdict card, so a line after it would have no on-screen text); for 01c, the 12%
    on screen before "10 points more", ①'s raise beside ③'s $450, and the caption and
-   verdict breaks between phrases.
+   verdict breaks between phrases; no caption shows a result before the sheet lands it (both kept looks show a
+   whole VO line at once).
 5. Contract checks: only lookOpts keys the target look kit actually reads; a wrong guess
    (01b's struck $62,000) types, lands and is struck on the VO words that say it, and its
    typed formula gives its shown result; the Becker figure's acting after the goal (01c's
    lookOpts.acts) uses moves the kit has, points only at real items, and sits on the VO words
-   it plays (or after the last line).
+   it plays (or after the last line); 01a's Scoreboard payoff (lookOpts.heroFinal: the hero rolls $2,500 to the
+   goal's $5,000 under "Your 2 extra checks" as the VO says it; lookOpts.echo: ②'s $5,000 lights with ③'s at the
+   verdict, the same month of pay) and 01b's Becker wrong-guess throw and finale.
 6. Sensitivity checks: the 26/27-payday calendar claims; 01b's Social Security cap maths
    (the $20/hr year is under the $184,500 cap, the $1M salary's real rate, "more than five
    times", the pinned comment's dollar ratios); and 01c's bracket maths (the $45 against the
@@ -44,9 +49,13 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 SPECS = ROOT / "studio" / "specs"
 FILES = {
-    "01a": SPECS / "01a-clean-sheet-paid-biweekly.json",
-    "01b": SPECS / "01b-live-sheet-20-an-hour.json",
+    "01a": SPECS / "01a-scoreboard-paid-biweekly.json",      # ported from Clean Sheet (2026-10-08)
+    "01b": SPECS / "01b-becker-rig-20-an-hour.json",          # ported from Live Sheet (2026-10-08)
     "01c": SPECS / "01c-becker-rig-60k-a-year.json",
+}
+RETIRED = {          # the pre-port specs, moved (git mv) out of the live spec folder
+    "01a": SPECS / "retired" / "01a-clean-sheet-paid-biweekly.json",
+    "01b": SPECS / "retired" / "01b-live-sheet-20-an-hour.json",
 }
 WPS = 2.6            # guide VO read rate, words per second
 ANCHOR_TOL = 0.5     # s: a beat may sit this far from the estimated spoken moment
@@ -54,19 +63,30 @@ LANE = (26.0, 44.0)  # benchmark duration lane for worked lists
 HOLD_MIN = 1.5       # s of hold after the last VO line
 # per-teaser exceptions, each with its reason. 01c (round-2 QA): a loop-tight ending. Its kit holds the finished
 # sheet instead of clearing it, so the old 2.5 s silent tail read as a swipe-away leak; the closing pose now plays
-# right after the last VO line and the video loops 1.2 s later (25.3 s, 0.7 s under the lane's floor)
-LANE_EXCEPT = {"01c": (25.0, 44.0)}
-HOLD_EXCEPT = {"01c": 1.2}
+# right after the last VO line and the video loops 1.2 s later (25.3 s, 0.7 s under the lane's floor).
+# 01b (port to Becker Rig): the same kit and the same reason. The Live Sheet cleared its cells for the last 0.5 s
+# (a loop); the Becker Rig holds, so the closing pose plays right after the last VO line and the video loops 1.5 s
+# after it (24.0 s, 2.0 s under the lane's floor; the hold after the VO keeps the series' 1.5 s)
+# 01a (Scoreboard QA fix pass): the Scoreboard holds the finished board too, and the port's 26.0 s (Clean Sheet's
+# length) left 2.3 s of dead frame after the last word; it now ends 0.8 s after the last VO line (24.5 s; the kit's
+# own default would be 24.1 s), as 08a does (0.9 s)
+LANE_EXCEPT = {"01c": (25.0, 44.0), "01b": (24.0, 44.0), "01a": (24.0, 44.0)}
+HOLD_EXCEPT = {"01c": 1.2, "01a": 0.8}
+HOLD_MAX = {"01a": 1.0}   # s: no dead tail (the Scoreboard holds a still board after the last word)
 MAX_GAP = 7.5        # s between consecutive payoffs (results, then the verdict); format pace is 4-7 s
 
-# lookOpts keys each kit's dead-simple-list module (or its chrome) actually reads
+# lookOpts keys each kit's dead-simple-list module (or its chrome) actually reads. Only the two kept looks are live;
+# a spec in a retired look fails here
 KIT_LOOKOPTS = {
-    "clean-sheet": {"loop", "input", "layout", "check", "checkT"},
-    "live-sheet": {"loop", "labels", "countUp", "verdict", "formulaAt0", "sub", "notes", "columns",
-                   "startRow", "wrongGuess", "check", "checkT"},
-    "becker-rig": {"hits", "actions", "figureScale", "input", "layout", "acts"},
+    "scoreboard": {"hero", "heroTag", "heroFinal", "slotFormula", "labels", "notes", "checkRow", "check", "checkT",
+                   "wrongGuess", "goal", "echo", "intro", "layout", "pointer", "startNum", "stageBottom", "footerSteps"},
+    "becker-rig": {"hits", "actions", "figureScale", "input", "layout", "acts", "finale", "wrongGuess"},
 }
 BECKER_HITS = {"kick", "chop", "slam"}
+BECKER_FINALES = {"cheer", "shocked"}   # becker-rig dead-simple-list lookOpts.finale
+SB_ROLL_MAX = 1.4    # Scoreboard dead-simple-list: the hero's payoff roll (heroFinal) takes 1.0-1.4 s, from t + 0.04
+SB_ICONS = {"cup", "hotdog", "burger", "pizza", "phone", "car", "house", "coin", "bill", "gas", "ticket", "bag", "egg",
+            "hour"}   # Scoreboard unit icons (FORMATS.md §8): heroFinal.icon
 BECKER_ACTS = {"point", "wag", "shrug", "nod", "cheer", "proud"}   # becker-rig dead-simple-list lookOpts.acts
 
 rows = []            # (teaser, check, spec value, expected, ok)
@@ -217,7 +237,8 @@ EXPECT = {
     "01a": {
         "header": "3 DEAD SIMPLE NUMBERS\nPAID **EVERY 2 WEEKS**?\nWHAT YOUR BUDGET MISSES",
         "footer": f"ASSUMES {A_PAYDAYS} paydays a year · pay before tax",
-        "verdict.text": f"Every 2 weeks = **{A_MONTHS_OF_PAY}{NBSP}months** of pay a year",
+        # (Scoreboard QA fix pass: a no-break space after "=", so the verdict never leaves "=" at a line's end)
+        "verdict.text": f"Every 2 weeks ={NBSP}**{A_MONTHS_OF_PAY}{NBSP}months** of pay a year",
         "data.input.value": money(A_PAY),
         "data.input.note": "every 2 weeks",
         "data.items[0].formula": f"{money(A_PAY)} × {A_PAYDAYS}",
@@ -231,12 +252,17 @@ EXPECT = {
         "data.items[2].result": money(A_LEFT),
         "data.items[2].label": f"The {A_EXTRA} checks your budget forgets",
         "data.check": f"{A_NORMAL_MONTHS}×2 + {A_EXTRA}×3 = {A_PAYDAYS} paydays",
+        # Scoreboard: the hero's payoff tag (the VO's "It's your 2 extra checks"), over the goal's $5,000
+        "lookOpts.heroFinal.tag": f"Your {A_EXTRA} extra checks",
     },
     "01b": {
-        "header": (f"3 DEAD SIMPLE NUMBERS\nYOU PAY **{SS_PCT_S}%** TO SOCIAL SECURITY.\n"
+        # (Becker QA fix pass: 6.2% is the viewer's cost, red (__x__) as in ①'s ≈ $2,579 and the verdict; it was
+        # hero green, which in Becker Rig means a good or new number)
+        "header": (f"3 DEAD SIMPLE NUMBERS\nYOU PAY __{SS_PCT_S}%__ TO SOCIAL SECURITY.\n"
                    f"A {B_RIVAL_S} SALARY PAYS…?"),
         "footer": f"ASSUMES {HRS_WEEK} hrs × {WEEKS} wks · {TAX_YEAR} rates\nemployee share, no Medicare",
-        "verdict.text": f"You pay __{SS_PCT_S}%__. A {B_RIVAL_S} salary pays **≈{NBSP}{B_RATE_S}**.",
+        # (Becker port: a break between the two sentences; the kit's verdict otherwise wrapped "A $1M salary / pays")
+        "verdict.text": f"You pay __{SS_PCT_S}%__.\nA {B_RIVAL_S} salary pays **≈{NBSP}{B_RATE_S}**.",
         "data.input.value": f"{money(B_WAGE)}/hr",
         "data.input.note": f"{HRS_WEEK} hrs a week",
         "data.items[0].formula": f"{money(B_WAGE)} × {num(HRS_YEAR)} × {SS_PCT_S}%",
@@ -299,10 +325,12 @@ VO_NUMBERS = {
     "01b": [
         [B_WAGE],                                 # "At $20 an hour, you pay about"
         [B_SS_D],                                 # "$2,579 a year."
-        [B_WRONG],
+        [],                                       # "A million-dollar salary:"   (Becker port: the guess has its own
+        [B_WRONG],                                # "$62,000?"                    caption line, as every result does)
         [SS_WAGE_BASE],                           # "No. It stops at $184,500:"
         [B_CAPPED],                               # "$11,439."
-        [B_RATE_D],
+        [],                                       # "That's about"                (Becker port: the climax ≈ 1.1%
+        [B_RATE_D],                               # "1.1% of their pay."           starts its own caption line)
         [SS_PCT],
         [],                                       # "more than five times": checked in sensitivity()
     ],
@@ -331,12 +359,15 @@ ANCHORS = {
             "notes": {0: (2, None), 1: (5, None)},     # "Not times 24…", "12 normal months: $60,000."
             "check": (9, None)},                        # "from the 2 months with 3 paydays."
     "01b": {"items": [((0, None), (1, None)),
-                      ((3, "stops"), (4, None)),
-                      ((5, None), (5, B_RATE_S))],
-            "verdict": (7, None),
-            "notes": {2: (6, None)},                    # "yours: 6.2%" opens on "Yours: 6.2%, on every dollar…"
-            # the struck flat-rate guess: types on vo[2], lands on "$62,000", is struck on vo[3]'s "No."
-            "wrongGuess": {"t": (2, None), "resultT": (2, money(B_WRONG)), "strikeT": (3, None)}},
+                      ((4, "stops"), (5, None)),
+                      ((6, None), (7, None))],         # ③'s block drops on "That's about", ≈ 1.1% lands on its line
+            "verdict": (9, None),
+            "notes": {2: (8, None)},                    # "yours: 6.2%" opens on "Yours: 6.2%, on every dollar…"
+            # the struck flat-rate guess: types on vo[2], lands as its own line "$62,000?" starts, is struck on "No."
+            "wrongGuess": {"t": (2, None), "resultT": (3, None), "strikeT": (4, None)},
+            # the figure after the goal: points at ① ("Yours: 6.2%…"), shrugs as the verdict pops, points at the
+            # ≈ 1.1% on "their rate", and stands hands on hips once the VO is over
+            "acts": [(8, None), (9, None), (9, "their"), "after"]},
     "01c": {"items": [((0, None), (1, None)),      # each result starts its own VO line (assembly pass 01c)
                       ((2, None), (3, None)),
                       ((4, None), (5, None)),
@@ -397,6 +428,8 @@ def spoken_words(text):
 
 
 def anchor_time(vo, line, token):
+    if not 0 <= line < len(vo):
+        return None  # the VO has fewer lines than ANCHORS expects: reported as a failure by the caller
     t0 = vo[line]["t"]
     if token is None:
         return t0
@@ -522,6 +555,9 @@ def check_spec(key, spec):
     lane, hold = LANE_EXCEPT.get(key, LANE), HOLD_EXCEPT.get(key, HOLD_MIN)
     record(key, f"duration in {lane[0]:g}-{lane[1]:g} s lane", dur, lane, lane[0] <= dur <= lane[1])
     record(key, f"≥ {hold} s hold after last VO", round(dur - last_end, 2), f"≥ {hold}", dur - last_end >= hold - 1e-9)
+    if key in HOLD_MAX:
+        record(key, f"≤ {HOLD_MAX[key]} s still tail after last VO", round(dur - last_end, 2), f"≤ {HOLD_MAX[key]}",
+               dur - last_end <= HOLD_MAX[key] + 1e-9)
 
     # 5. beat timing: matches the VO, types before it resolves, first payoff ≤ 3 s, steady pace
     type_dur = d.get("typeDur", 0.6)
@@ -545,8 +581,8 @@ def check_spec(key, spec):
     record(key, f"payoff gaps ≤ {MAX_GAP} s", gaps, f"all ≤ {MAX_GAP}", max(gaps) <= MAX_GAP)
     vl, vtok = ANCHORS[key]["verdict"]
     vt = anchor_time(vo, vl, vtok)
-    record(key, "verdict.t at VO mention", spec["verdict"]["t"], f"{vt:.2f}±{ANCHOR_TOL}",
-           abs(spec["verdict"]["t"] - vt) <= ANCHOR_TOL)
+    record(key, "verdict.t at VO mention", spec["verdict"]["t"], "(no anchor)" if vt is None else f"{vt:.2f}±{ANCHOR_TOL}",
+           vt is not None and abs(spec["verdict"]["t"] - vt) <= ANCHOR_TOL)
     record(key, "verdict after last result", spec["verdict"]["t"], f"≥ {items[-1]['resultT']}",
            spec["verdict"]["t"] >= items[-1]["resultT"])
     later = [i for i, line in enumerate(vo) if line["t"] > spec["verdict"]["t"] + 1e-9]
@@ -589,20 +625,90 @@ def check_spec(key, spec):
         record(key, "data.checkT at VO mention", d.get("checkT"),
                "(no anchor)" if est is None else f"{est:.2f}±{ANCHOR_TOL}",
                est is not None and abs(d.get("checkT", -99) - est) <= ANCHOR_TOL)
-        typed = d["checkT"] + len("check: " + d["check"]) / 18      # the clean-sheet kit types 18 chars/s
-        record(key, "check line typed after the last result, before the verdict", f"{d['checkT']}-{typed:.1f}",
+        shown = d["checkT"] + 0.3          # the Scoreboard slams the check row in (a hard cut); it is not typed
+        record(key, "check line lands after the last result, before the verdict", f"{d['checkT']}-{shown:.1f}",
                f"{items[-1]['resultT']} … {spec['verdict']['t']}",
-               items[-1]["resultT"] < d["checkT"] and typed < spec["verdict"]["t"])
+               items[-1]["resultT"] < d["checkT"] and shown < spec["verdict"]["t"])
+
+    # 5c. captions never run ahead of the sheet: both kept looks show a whole VO line at once (Becker pops its words
+    # in ~0.3 s; Scoreboard greys the unspoken ones), so no line may say a result before that result is on screen,
+    # unless an earlier item already shows the same figure (01a's ②/③ $5,000)
+    wg = spec.get("lookOpts", {}).get("wrongGuess")
+    shown_at = [(it["result"], it["resultT"]) for it in items] + ([(wg["result"], wg["resultT"])] if wg else [])
+    for res, rt in shown_at:
+        val = display_value(res)[0]
+        early = [i for i, line in enumerate(vo) if line["t"] < rt - 1e-9 and any(abs(n - val) < 1e-9 for n in vo_numbers(line["text"]))
+                 and not any(abs(display_value(r2)[0] - val) < 1e-9 and t2 <= line["t"] + 1e-9 for r2, t2 in shown_at)]
+        record(key, f"no caption says {res} before it lands ({rt} s)", early, "[]", not early)
 
     # 6. contract: only lookOpts the kit reads
     lo = spec.get("lookOpts", {})
-    unknown = sorted(set(lo) - KIT_LOOKOPTS[spec["look"]])
+    record(key, "look is a kept look (Scoreboard or Becker Rig)", spec["look"], sorted(KIT_LOOKOPTS), spec["look"] in KIT_LOOKOPTS)
+    unknown = sorted(set(lo) - KIT_LOOKOPTS.get(spec["look"], set()))
     record(key, f"lookOpts keys read by the {spec['look']} kit", sorted(lo), "no unknown keys", not unknown)
     if spec["look"] == "becker-rig":
         hits = lo.get("hits", [])
         record(key, "becker hits valid, goal slams", hits, f"{sorted(BECKER_HITS)}, slam on goal",
                all(h in BECKER_HITS for h in hits) and all(
                    (items[i]["tone"] == "goal") == (h == "slam") for i, h in enumerate(hits)))
+        if "finale" in lo:
+            record(key, "becker finale is a kit move", lo["finale"], sorted(BECKER_FINALES), lo["finale"] in BECKER_FINALES)
+        if lo.get("wrongGuess"):
+            g = lo["wrongGuess"]
+            record(key, "becker wrong guess: a valid, non-goal throw", g.get("hit", "kick"), "kick or chop",
+                   g.get("hit", "kick") in BECKER_HITS - {"slam"})
+            # the kit's own timing rule: it starts >= 0.35 s, after the previous item lands, lands >= 0.35 s before
+            # its item's t (else the kit skips it silently)
+            r = g["item"]
+            prev_land = items[r - 1]["resultT"] if r > 0 else 0.0
+            record(key, "becker wrong guess fits between its neighbours (kit rule)", (g["t"], g["resultT"]),
+                   f"t ≥ {max(0.35, prev_land + 0.3):.2f}, resultT ≤ {items[r]['t'] - 0.35:.2f}",
+                   g["t"] >= max(0.35, prev_land + 0.3) and g["resultT"] <= items[r]["t"] - 0.35 + 1e-9)
+    if spec["look"] == "scoreboard":
+        goal_i = next((i for i, it in enumerate(items) if it.get("tone") == "goal"), len(items) - 1)
+        hf = lo.get("heroFinal")
+        if isinstance(hf, dict):
+            # the payoff rolls into the hero as the VO names it, after the goal lands (kit: >= 0.5 s), and lands
+            # before the next beat (the check row) cuts in
+            ln = next((i for i, line in enumerate(vo) if abs(line["t"] - hf["t"]) < 1e-9), None)
+            record(key, "heroFinal.t on a VO line start", hf["t"], "a vo t", ln is not None)
+            tag = hf.get("tag", items[goal_i]["label"]).lower()
+            record(key, "heroFinal tag is what that VO line says", tag, vo[ln]["text"] if ln is not None else "-",
+                   ln is not None and tag in vo[ln]["text"].lower())
+            record(key, "heroFinal after the goal lands (+0.5 s)", hf["t"], f"≥ {items[goal_i]['resultT'] + 0.5}",
+                   hf["t"] >= items[goal_i]["resultT"] + 0.5 - 1e-9)
+            nxt = min([x for x in [d.get("checkT"), spec["verdict"]["t"]] if x is not None and x > hf["t"]])
+            record(key, "heroFinal's roll lands before the next beat", f"≤ {hf['t'] + 0.04 + SB_ROLL_MAX:.2f}", f"< {nxt}",
+                   hf["t"] + 0.04 + SB_ROLL_MAX < nxt)
+            record(key, "heroFinal lands on the goal's result (no display override)", hf.get("display", items[goal_i]["result"]),
+                   items[goal_i]["result"], hf.get("display", items[goal_i]["result"]) == items[goal_i]["result"])
+            if "icon" in hf:
+                # (QA fix pass) the payoff's unit icons: each one is one input (a check), so count × input = the payoff
+                cnt = hf.get("count", 1)
+                record(key, "heroFinal icon is a kit icon", hf["icon"], sorted(SB_ICONS), hf["icon"] in SB_ICONS)
+                got = cnt * display_value(d["input"]["value"])[0]
+                record(key, "heroFinal icons: count × input = the payoff", f"{cnt} × {d['input']['value']} = {money(got)}",
+                       items[goal_i]["result"], isinstance(cnt, int) and 1 <= cnt <= 4 and abs(got - display_value(items[goal_i]["result"])[0]) < 1e-9)
+                if key == "01a":
+                    eq(key, "heroFinal icons = the 2 extra checks (26 − 24)", cnt, A_EXTRA)
+        # (QA fix pass) a note "not … = X" is struck in the label stack as the VO line running at its noteT says X
+        for i, it in enumerate(items):
+            m = re.match(r"^not\b.*=\s*(.+)$", it.get("note", ""))
+            if not m:
+                continue
+            nt = it.get("noteT", it["resultT"] + 0.35)
+            line = next((ln for ln in vo if ln["t"] <= nt + 1e-9 < ln["t"] + ln["d"]), None)
+            said = line is not None and any(abs(x - display_value(m.group(1))[0]) < 1e-9 for x in vo_numbers(line["text"]))
+            record(key, f"items[{i}] note's struck {m.group(1).strip()} is said on the VO line at its noteT", nt,
+                   line["text"] if line else "(no VO line)", said)
+        ec = lo.get("echo")
+        if ec:
+            eitems = ec["items"] if isinstance(ec, dict) else ec
+            et = ec.get("t", spec["verdict"]["t"]) if isinstance(ec, dict) else spec["verdict"]["t"]
+            for i in eitems:
+                record(key, f"echo item {i} shows the goal's figure", items[i]["result"], items[goal_i]["result"],
+                       i != goal_i and items[i]["result"] == items[goal_i]["result"])
+            record(key, "echo lands with the verdict line", et, spec["verdict"]["t"], abs(et - spec["verdict"]["t"]) < 1e-9)
     acts, aa = lo.get("acts", []), ANCHORS[key].get("acts")
     if acts or aa:
         record(key, "lookOpts.acts anchored in ANCHORS", len(acts), len(aa or []), len(acts) == len(aa or []))
@@ -640,6 +746,16 @@ def check_spec(key, spec):
                vo[6]["text"].count("\n") == 1 and vo[6]["text"].split("\n")[0].endswith("22%."))
         record(key, "verdict breaks after 'Yes.'", spec["verdict"]["text"].split("\n")[0], "Higher bracket? Yes.",
                spec["verdict"]["text"].split("\n")[0] == "Higher bracket? Yes.")
+    if key == "01b":
+        # Becker QA fix pass: the viewer's 6.2% is one colour everywhere, the cost red (__x__), in the header and the
+        # verdict (①'s ≈ $2,579, tone "bad", is red too)
+        rate = f"__{SS_PCT_S}%__"
+        record(key, "6.2% red (__x__) in the header and the verdict", (rate in spec["header"], rate in spec["verdict"]["text"]),
+               (True, True), rate in spec["header"] and rate in spec["verdict"]["text"] and f"**{SS_PCT_S}%**" not in spec["header"])
+        # Becker port: the verdict breaks between its two sentences (one line each), never inside "A $1M salary pays"
+        record(key, "verdict breaks between its sentences", spec["verdict"]["text"].split("\n"),
+               "['You pay …%__.', 'A $1M salary pays …']", spec["verdict"]["text"].count("\n") == 1
+               and spec["verdict"]["text"].split("\n")[0].endswith("__.") and spec["verdict"]["text"].split("\n")[1].startswith(f"A {B_RIVAL_S} salary pays"))
     wg = lo.get("wrongGuess")
     if wg:
         record(key, "wrongGuess.t on the VO line that voices it", wg["t"],
@@ -746,6 +862,9 @@ def sensitivity():
 
 
 def main():
+    for key, path in RETIRED.items():
+        record(key, "pre-port spec retired (studio/specs/retired/)", path.name, "present",
+               path.exists() and not (SPECS / path.name).exists())
     for key, path in FILES.items():
         try:
             spec = json.loads(path.read_text(encoding="utf-8"))

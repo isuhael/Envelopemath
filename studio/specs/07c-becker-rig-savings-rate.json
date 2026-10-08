@@ -1,0 +1,202 @@
+{
+  "id": "07c-becker-rig-savings-rate",
+  "look": "becker-rig",
+  "format": "ledger-duel",
+  "fps": 30,
+  "duration": 19.1,
+  "header": "You save **$100 a month**\n5 years = $6,000\nA big bank adds: ?",
+  "footer": "Month-end deposits, steady rates\n0.01% = a big bank's standard APY",
+  "captions": true,
+  "vo": [
+    {
+      "t": 0.0,
+      "d": 2.3,
+      "text": "Year 1 at a big bank:"
+    },
+    {
+      "t": 2.45,
+      "d": 1.15,
+      "text": "About 5 cents."
+    },
+    {
+      "t": 3.7,
+      "d": 2.3,
+      "text": "High-yield: about $22."
+    },
+    {
+      "t": 6.3,
+      "d": 2.3,
+      "text": "Year 3: about 53 cents."
+    },
+    {
+      "t": 8.9,
+      "d": 3.05,
+      "text": "Year 5: about $1.48."
+    },
+    {
+      "t": 12.2,
+      "d": 2.65,
+      "text": "High-yield: about $618."
+    },
+    {
+      "t": 15.2,
+      "d": 2.3,
+      "text": "Same $6,000. Different account."
+    }
+  ],
+  "verdict": {
+    "t": 15.2,
+    "text": "Same $6,000, different account:\n__≈ $1.48__ vs **≈ $617.90**"
+  },
+  "data": {
+    "people": [
+      {
+        "name": "You",
+        "plan": "Big bank\n0.01% APY"
+      },
+      {
+        "name": "Leo",
+        "plan": "High-yield\n4.00% APY"
+      }
+    ],
+    "stake": "Interest so far · $100 a month each",
+    "rows": [
+      {
+        "t": 0.0,
+        "label": "Start",
+        "values": [
+          "$0.00",
+          "$0.00"
+        ]
+      },
+      {
+        "t": 1.0,
+        "label": "Year 1",
+        "values": [
+          "≈ $0.05",
+          "≈ $21.84"
+        ]
+      },
+      {
+        "t": 6.0,
+        "label": "Year 2",
+        "values": [
+          "≈ $0.23",
+          "≈ $92.56"
+        ]
+      },
+      {
+        "t": 6.8,
+        "label": "Year 3",
+        "values": [
+          "≈ $0.53",
+          "≈ $214.11"
+        ]
+      },
+      {
+        "t": 8.2,
+        "label": "Year 4",
+        "values": [
+          "≈ $0.94",
+          "≈ $388.52"
+        ]
+      },
+      {
+        "t": 9.5,
+        "label": "Year 5",
+        "values": [
+          "≈ $1.48",
+          "≈ $617.90"
+        ],
+        "tone": "goal"
+      }
+    ],
+    "winner": 1,
+    "hold": 1.6
+  },
+  "lookOpts": {
+    "figures": [
+      {
+        "person": 0,
+        "color": "neutral"
+      },
+      {
+        "person": 1,
+        "color": "hero"
+      }
+    ],
+    "ponder": 0,
+    "minGain": 0.5,
+    "winnerT": 12.9,
+    "marks": [
+      {
+        "t": 2.7,
+        "row": 1,
+        "person": 0,
+        "tone": "bad"
+      },
+      {
+        "t": 3.9,
+        "row": 1,
+        "person": 1,
+        "tone": "good"
+      },
+      {
+        "t": 7.4,
+        "row": 3,
+        "person": 0,
+        "tone": "bad"
+      },
+      {
+        "t": 10.0,
+        "row": 5,
+        "person": 0,
+        "tone": "bad"
+      }
+    ],
+    "beats": [
+      {
+        "t": 2.7,
+        "act": "shrug",
+        "person": 0,
+        "d": 1.0
+      },
+      {
+        "t": 3.9,
+        "act": "point",
+        "person": 1,
+        "d": 1.6
+      },
+      {
+        "t": 7.4,
+        "act": "lookUp",
+        "person": 0,
+        "d": 1.0
+      },
+      {
+        "t": 10.0,
+        "act": "slump",
+        "person": 0,
+        "d": 2.0
+      },
+      {
+        "t": 12.2,
+        "act": "lookUp",
+        "person": 0,
+        "d": 1.0
+      },
+      {
+        "t": 16.7,
+        "act": "peek",
+        "person": 0,
+        "d": 2.4
+      }
+    ]
+  },
+  "sfx": [
+    {
+      "t": 16.7,
+      "kind": "boing"
+    }
+  ]
+}

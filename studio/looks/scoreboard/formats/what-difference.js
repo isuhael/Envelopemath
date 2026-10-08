@@ -43,7 +43,15 @@
 //                a line too long for 960 px at 40 px breaks at its " · " into two lines
 //   stageBottom  y where the stage ends (default: the kit grid)
 //   reads        [{ t } | t]: the VO speaks the number the hero is holding (e.g. the frame-1 score); at each t the hero
-//                bumps (6%) and its glow flares, a smaller cousin of a landing, on a soft tick (ignored at t <= 0.05)
+//                bumps (6%) and its glow flares, a smaller cousin of a landing, on a soft tick (ignored at t <= 0.05).
+//                { t, option, metric? }: the VO speaks a number already posted in that option's row instead: that cell
+//                (metric: default the hero's metric, else the first value column; the bar metric = the bar's label)
+//                bumps 10% and glows in its own colour, on a soft tick
+//   keepSpeed    true: an option.resultT later than its race needs keeps the one shared bar speed (the bar waits, lit
+//                but empty, and starts so it lands on resultT) instead of crawling from the cut to resultT
+//   endTag       the hero's tag for the winner's payoff (default: the hero metric's label; false: no tag). A winner
+//                whose delta is a duration ("≈ 10 years sooner") rolls the hero to it when the hero's metric is a
+//                duration too, as a money delta does on a money hero
 //   labelSteps   [{ t, option, text }]: the label stack slams a line 2 of its own while that option is active (e.g. "40
 //                months sooner" as the VO says it, before the delta slams); line 1 stays the option's detail
 //   firstName    false: the first option, already landed at frame 1 (no intro), shows only its line 1 (the payment) in
@@ -51,6 +59,8 @@
 //   heads        false: no column heads over the board (the hero's tag already names its metric); the rows take the room
 //   heroRoll     'from' (default) | 'zero': the hero rolls each race from the previous option's landed value (≈ $587,200
 //                down to ≈ $508,600: the gap is the motion itself) or, 'zero', up from zero
+// data.winnerT (optional): when the winner's payoff LANDS in the hero; the hero's roll to it and the board's winner beat
+//   start 1.04 s before (not before verdict.t). Default: the winner beat at verdict.t, the payoff 1.04 s later
 // The verdict and the footer are the chrome's (the kit's one verdict slot, at the foot of the frame).
 import { css as style, setHTML, attr, h, s, prog, ease, clamp, lerp, fitText } from '../../../runtime/core.js'
 import { C, SIZE, M, W, layoutFor } from '../theme.js'
@@ -100,6 +110,11 @@ const dateLike = disp => { const x = String(disp || ''); return MONTH_RE.test(x)
 // cumulative interest on an amortising loan is front-loaded: the hero rolls on this concave curve
 const accrue = p => 1 - Math.pow(1 - clamp(p), 1.7)
 const rgba = (hex, a) => { const x = parseInt(hex.slice(1), 16); return `rgba(${x >> 16}, ${(x >> 8) & 255}, ${x & 255}, ${a})` }
+const mixHex = (a, b, p) => {
+  const x = parseInt(a.slice(1), 16), y = parseInt(b.slice(1), 16), q = clamp(p)
+  const ch = sh => Math.round(((x >> sh) & 255) + (((y >> sh) & 255) - ((x >> sh) & 255)) * q)
+  return '#' + ((1 << 24) + (ch(16) << 16) + (ch(8) << 8) + ch(0)).toString(16).slice(1)
+}
 
 export default function whatDifference(spec, ctx) {
   const d = spec.data || {}
@@ -144,18 +159,22 @@ export default function whatDifference(spec, ctx) {
   const beats = opts.map((o, i) => {
     const first = i === 0 && !intro
     const cut = first ? Math.min(times[0], 0) : times[i]
-    const start = first ? cut - 0.45 : cut + CUT_TO_RACE        // no intro: frame 1 is already 0.45 s into the race
+    let start = first ? cut - 0.45 : cut + CUT_TO_RACE          // no intro: frame 1 is already 0.45 s into the race
     let dur = barKey ? clamp(raceMax * (barLen(o) / maxLen), 0.7, raceMax) : Math.min(raceMax, 1.4)
     const next = i + 1 < n ? times[i + 1] : Infinity
     dur = Math.min(dur, Math.max(0.5, next - start - 1.0))
     let land = start + dur
-    if (o.resultT != null && o.resultT > start + 0.2) { land = +o.resultT; dur = land - start }
+    if (o.resultT != null && o.resultT > start + 0.2) {
+      // keepSpeed: a late resultT keeps the shared speed (the race starts late); else the race stretches to it
+      if (lo.keepSpeed === true && +o.resultT - dur > start) start = +o.resultT - dur
+      land = +o.resultT; dur = land - start
+    }
     const deltaT = o.delta ? (o.deltaT != null ? +o.deltaT : land + DELTA_AFTER) : null
     return { cut, start, dur, land, deltaT }
   })
   const lastBeat = Math.max(...beats.map(b => Math.max(b.land, b.deltaT || 0)))
   const vT = spec.verdict && spec.verdict.text && spec.verdict.t != null ? Math.max(0, +spec.verdict.t) : null
-  const winT = winner >= 0 ? (vT != null ? vT : lastBeat + 0.9) : null
+  let winT = winner >= 0 ? (vT != null ? vT : lastBeat + 0.9) : null      // (data.winnerT: see the end roll below)
 
   // ---------- tones ----------
   const toneOf = o => o.tone || 'neutral'
@@ -317,6 +336,17 @@ export default function whatDifference(spec, ctx) {
     c.from = Math.max(1, Math.min(c.from, (base + TOPPAD) / f))
   }))
   if (two) rows.forEach(r => { if (r.blab) { style(r.blab.odo.el, { fontSize: barFs + 'px' }); style(r.blab.q, { fontSize: barFs + 'px' }) } })
+  // two-line rows: the bar label's side is decided once, from the landed bar (inside its end when the landed label
+  // fits there, else just past it) and kept for the whole race: an inside label waits at the track's start until the
+  // bar's end reaches it, then rides it (it never jumps across the bar's end on the landing frames)
+  if (two) rows.forEach(r => {
+    const c = r.blab
+    if (!c || !c.ok) return
+    style(c.cell, { display: 'flex' }); style(c.odo.el, { display: 'inline-flex' }); c.odo.show(c.disp)
+    const lwEnd = c.odo.el.offsetWidth, fullW = barKey ? (barLen(r.o) / maxLen) * trackW : 0
+    c.inside = fullW - 16 - lwEnd >= 16
+    style(c.cell, { display: 'none' })
+  })
 
   // ---------- column heads ----------
   // Every value column has its head right-aligned over it. The bar metric has none on two-line rows: its value
@@ -368,16 +398,36 @@ export default function whatDifference(spec, ctx) {
   const heroBox = L.hero
   // the payoff the hero rolls to when the winner lands (see the header): a winner value the verdict quotes, else the
   // winner's money delta, else nothing (the hero keeps the winner's own value)
-  let endKey = null, endDisp = null, endTag = null
+  let endKey = null, endDisp = null, endTag = null, endFrom = null, endFromCol = null
   if (winner >= 0) {
     const wo = opts[winner]
     const vtext = bare(spec.verdict && spec.verdict.text ? spec.verdict.text : '')
     const quoted = metrics.find(m => { const dv = val(wo, m.key); return dv && isFinite(parseDisplay(dv).value) && vtext.includes(dv) })
-    if (wo.delta && isMoney(wo.delta) && heroMetric && isMoney(val(wo, heroKey)) && isFinite(parseDisplay(wo.delta).value)) { endDisp = String(wo.delta); endTag = heroMetric.label }
+    const deltaOK = wo.delta && heroMetric && isFinite(parseDisplay(wo.delta).value)
+    // a money delta on a money hero, or a duration delta ("≈ 10 years sooner") on a duration hero
+    const sameKind = deltaOK && ((isMoney(wo.delta) && isMoney(val(wo, heroKey))) || (!isMoney(wo.delta) && isFinite(monthsOf(wo.delta)) && isFinite(monthsOf(val(wo, heroKey)))))
+    const own = heroKey ? parseDisplay(val(wo, heroKey)) : null, base0 = heroKey ? parseDisplay(val(opts[0], heroKey)) : null
+    if (lo.heroEnd === 'value' && own && isFinite(own.value) && winner > 0 && isFinite(base0.value)) {
+      // heroEnd 'value': the winner's own value, rolled down (or up) from the first option's: the gap between them is
+      // the motion, and the delta is left to the verdict
+      endDisp = val(wo, heroKey); endTag = heroMetric.label; endFrom = base0.value * base0.scale; endFromCol = moneyCol(opts[0])
+    } else if (sameKind) { endDisp = String(wo.delta); endTag = heroMetric.label }
     else if (quoted) { endKey = quoted.key; endDisp = val(wo, quoted.key); endTag = quoted.label }
+    // lookOpts.endTag: the payoff's own tag (false: none)
+    if (endDisp && lo.endTag === false) endTag = null
+    else if (endDisp && typeof lo.endTag === 'string' && lo.endTag) endTag = lo.endTag
   }
   const END_ROLL = 1.0
-  const tagEnd = endTag && heroMetric && endTag !== heroMetric.label ? mkTag(endTag) : tag0
+  // data.winnerT: the payoff lands on it; the roll (and the board's winner beat) starts END_ROLL + 0.04 s before, not
+  // before verdict.t (a shorter roll then still lands on it)
+  let endRoll = END_ROLL
+  if (winner >= 0 && d.winnerT != null && Number.isFinite(+d.winnerT)) {
+    if (endDisp) {
+      winT = Math.max(vT != null ? vT : -Infinity, +d.winnerT - 0.04 - END_ROLL)
+      endRoll = Math.max(0.4, +d.winnerT - 0.04 - winT)
+    } else winT = +d.winnerT
+  }
+  const tagEnd = !endTag ? null : heroMetric && endTag !== heroMetric.label ? mkTag(endTag) : tag0
   const endTpl = endDisp ? parseDisplay(endDisp) : null
   {
     // measure every display the hero will land on at full size (the metric values carry the tag beside them, the
@@ -419,6 +469,13 @@ export default function whatDifference(spec, ctx) {
     idx.push(at)
   })
   const labels = labelStack(stage, L, items)
+  // labelSteps[].small: that step's line 2 one size down (x 0.88, 54 px at least), so the hero stays the focal number
+  opts.forEach((o, oi) => idx[oi].steps.forEach(st => {
+    const src = labelSteps.find(x => x.option === oi && +x.t === st.t)
+    if (!src || !src.small) return
+    const l2 = labels.groups[st.idx].children[1]
+    style(l2, { fontSize: Math.max(54, Math.round(parseFloat(getComputedStyle(l2).fontSize) * 0.88)) + 'px' })
+  }))
   const flash = stageFlash(stage, L)
 
   // ---------- sound: thud on each cut, a roll while the bar races, ding on landing, pop for the delta ----------
@@ -432,9 +489,29 @@ export default function whatDifference(spec, ctx) {
   for (const st of labelSteps) ctx.cue(+st.t, 'pop', { gain: 0.4 })
   if (winT != null) ctx.cue(winT + 0.3, 'cash', { gain: 0.55 })
   // reads: the hero answers the voice when it speaks the number on screen
-  const heroReads = (Array.isArray(lo.reads) ? lo.reads : []).map(r => +(r && typeof r === 'object' ? r.t : r)).filter(x => Number.isFinite(x) && x > 0.05)
+  const readList = (Array.isArray(lo.reads) ? lo.reads : []).map(r => (r && typeof r === 'object' ? r : { t: r }))
+    .filter(r => Number.isFinite(+r.t) && +r.t > 0.05)
+  const heroReads = readList.filter(r => r.option == null).map(r => +r.t)
+  // cell reads: { t, option, metric }: that row's posted cell (or the bar's label) bumps and glows
+  const cellReads = readList.filter(r => Number.isInteger(r.option) && r.option >= 0 && r.option < n).map(r => {
+    const key = r.metric || (sideMetrics.some(m => m.key === heroKey) ? heroKey : (sideMetrics[0] || barMetric || {}).key)
+    const row = rows[r.option]
+    const c = key === barKey ? row.blab : row.cells.find(x => x.m.key === key)
+    return c ? { t: +r.t, c } : null
+  }).filter(Boolean)
   for (const rt of heroReads) ctx.cue(rt, 'tick', { gain: 0.45 })
-  if (winT != null && endDisp) ctx.cue(winT + 0.04, 'roll', { dur: END_ROLL - 0.1, gain: 0.45 })
+  for (const r of cellReads) ctx.cue(r.t, 'tick', { gain: 0.45 })
+  // (a held peak: up in 0.08 s, held 0.3 s, down in 0.25 s; up to 16%, less where the cell has less room)
+  const readEnv = (t, t0) => (t < t0 ? 0 : t < t0 + 0.08 ? ease.out(prog(t, t0, 0.08)) : t < t0 + 0.38 ? 1 : 1 - ease.inOut(prog(t, t0 + 0.38, 0.25)))
+  const readOf = (c, t) => {
+    let sc = 1, gl = 0
+    for (const r of cellReads) if (r.c === c) { const e = readEnv(t, r.t); sc *= 1 + clamp(c.from - 1, 0.08, 0.16) * e; gl = Math.max(gl, e) }
+    return { sc, gl }
+  }
+  // the label stack steps back (to 55%) while a row cell is read, so the read cell is the one focal number
+  const labelDim = t => { let e = 0; for (const r of cellReads) e = Math.max(e, readEnv(t, r.t)); return 1 - 0.45 * e }
+  const readGlow = (gl, col) => (gl > 0.001 ? `drop-shadow(0 0 ${(4 + 18 * gl).toFixed(1)}px ${rgba(col, (0.85 * gl).toFixed(3))})` : 'none')
+  if (winT != null && endDisp) ctx.cue(winT + 0.04, 'roll', { dur: endRoll - 0.1, gain: 0.45 })
 
   const duration = durationOf(spec, lastBeat, d.hold ?? M.hold)
   const activeAt = t => { let k = -1; for (let j = 0; j < n; j++) if (t >= beats[j].cut) k = j; return k }
@@ -495,7 +572,10 @@ export default function whatDifference(spec, ctx) {
           style(c.odo.el, { display: show && c.ok ? 'inline-flex' : 'none' })
           if (c.txt) style(c.txt, { display: show ? 'inline' : 'none' })
           if (show && c.ok) { if (v != null) c.odo.set(v, c.tpl, true); else c.odo.show(c.disp) }   // "≈" unlit while it runs
-          style(c.cell, { transform: sc !== 1 ? `scale(${sc.toFixed(4)})` : 'none' })
+          // a read: the VO speaks this posted value (bump + glow in its own colour)
+          const rd = show ? readOf(c, t) : { sc: 1, gl: 0 }
+          sc *= rd.sc
+          style(c.cell, { transform: sc !== 1 ? `scale(${sc.toFixed(4)})` : 'none', filter: readGlow(rd.gl, cellCol(r.o, c.disp)) })
         }
         // the bar metric: rolls with the bar; rides inside the bar's end when it fits, else just past it
         if (r.blab) {
@@ -506,11 +586,15 @@ export default function whatDifference(spec, ctx) {
             if (show) { if (t < b.land) c.odo.set(p * c.tpl.value * c.tpl.scale, c.tpl, true); else c.odo.show(c.disp) }
             style(c.q, { display: show || two ? 'none' : 'inline' })
             style(c.odo.el, { display: show ? 'inline-flex' : 'none' })
+            const rd = show ? readOf(c, t) : { sc: 1, gl: 0 }
+            style(c.cell, { transform: rd.sc !== 1 ? `scale(${rd.sc.toFixed(4)})` : 'none', transformOrigin: '0% 50%', filter: readGlow(rd.gl, C.white) })
             if (two) {
               style(c.cell, { display: show ? 'flex' : 'none' })
               const lw = show ? c.odo.el.offsetWidth : 0
-              const inside = fw - 16 - lw >= 16
-              const x = inside ? fw - 16 - lw : Math.min(fw + 14, trackW - lw - 8)
+              const inside = c.inside && fw - 16 - lw >= 16
+              const x = c.inside ? Math.max(16, fw - 16 - lw) : Math.min(fw + 14, trackW - lw - 8)
+              // (while the bar's end passes under the waiting label, its bright edge steps back)
+              if (c.inside && !inside && fw > 1) style(r.edge, { opacity: '0.25' })
               style(c.cell, { left: x.toFixed(1) + 'px' })
               style(c.odo.el, { color: isWin && inside ? C.panel : C.white })
             } else {
@@ -537,10 +621,14 @@ export default function whatDifference(spec, ctx) {
       const ending = won && !!endDisp
       if (ending) {
         // the payoff: rolls up from zero to the winner's delta (or the value the verdict quotes) and lands on it
-        const p = prog(t, winT + 0.04, END_ROLL)
+        const p = prog(t, winT + 0.04, endRoll)
         tagOn = true; hCol = toneOf(opts[winner]) === 'bad' ? C.red : C.green
         if (p >= 1) hDisp = endDisp
-        else { hTpl = endTpl; hv = ease.out(p) * endTpl.value * endTpl.scale; ghost = true }
+        else if (endFrom != null) {
+          // from the baseline's value, in its colour, to the winner's own (it turns as it rolls)
+          hTpl = endTpl; hv = lerp(endFrom, endTpl.value * endTpl.scale, ease.inOut(p)); ghost = true
+          hCol = mixHex(endFromCol, hCol, ease.inOut(prog(p, 0.35, 0.65)))
+        } else { hTpl = endTpl; hv = ease.out(p) * endTpl.value * endTpl.scale; ghost = true }
       } else if (!heroKey) hDisp = stake.value
       else if (won) { hDisp = val(opts[winner], heroKey); hCol = moneyCol(opts[winner]); tagOn = true }
       else if (k < 0) hDisp = stake.value
@@ -583,7 +671,7 @@ export default function whatDifference(spec, ctx) {
         if (t >= rt) glow = Math.max(glow, 0.5 * (1 - ease.out(prog(t, rt, 0.6))))
       }
       if (winT != null) {
-        const hit = endDisp ? winT + 0.04 + END_ROLL : winT
+        const hit = endDisp ? winT + 0.04 + endRoll : winT
         if (endDisp) sc *= 1 - 0.03 * Math.sin(Math.PI * prog(t, winT, 0.28))
         sc *= bump(t, hit, { amp: 0.1, dur: 0.45 })
         if (t >= hit) glow = Math.max(glow, 1 - ease.out(prog(t, hit, 1.1)))
@@ -605,6 +693,8 @@ export default function whatDifference(spec, ctx) {
         for (const st of at.steps) if (t >= st.t) { cur = st.idx; t0 = st.t }
         if (at.delta != null && b.deltaT != null && t >= b.deltaT) { cur = at.delta; t0 = b.deltaT }
         labels.seek(t, cur, t0)
+        const dim = labelDim(t)
+        if (dim < 0.999) style(labels.groups[cur], { opacity: (parseFloat(labels.groups[cur].style.opacity || '1') * dim).toFixed(3) })
       }
       // (the verdict, the label stack's yield and the footer steps are the chrome's)
     },

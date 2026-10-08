@@ -1,10 +1,10 @@
 # 03 · What difference does X make? Three teasers
 
 **Format:** `what-difference` (rank 3 in [`../../research/v2/04-formats.md`](../../research/v2/04-formats.md), hook pattern **P5**)
-**Date:** 2026-10-07 (revision 2, after the verifier and hook-judge reviews), plus the 2026-10-08 hook pass on 03b, the 2026-10-08 assembly pass on all three and the 2026-10-08 fixer pass after the round-2 QA (see "Review log" at the end)
+**Date:** 2026-10-07 (revision 2, after the verifier and hook-judge reviews), plus the 2026-10-08 hook pass on 03b, the 2026-10-08 assembly pass on all three, the 2026-10-08 fixer pass after the round-2 QA, and the 2026-10-08 port: the owner kept Scoreboard and Becker Rig and retired Live Sheet and Clean Sheet, so 03a moved to Becker Rig and 03b to Scoreboard (see "Review log" at the end)
 **Specs:**
-- [`studio/specs/03a-live-sheet-car-loan-weekly.json`](../../studio/specs/03a-live-sheet-car-loan-weekly.json) (37.2 s)
-- [`studio/specs/03b-clean-sheet-card-minimum.json`](../../studio/specs/03b-clean-sheet-card-minimum.json) (30.6 s)
+- [`studio/specs/03a-becker-rig-car-loan-weekly.json`](../../studio/specs/03a-becker-rig-car-loan-weekly.json) (37.2 s; ported from Live Sheet, the old spec is `studio/specs/retired/03a-live-sheet-car-loan-weekly.json`)
+- [`studio/specs/03b-scoreboard-card-minimum.json`](../../studio/specs/03b-scoreboard-card-minimum.json) (30.6 s; ported from Clean Sheet, the old spec is `studio/specs/retired/03b-clean-sheet-card-minimum.json`)
 - [`studio/specs/03c-scoreboard-mortgage-extra-100.json`](../../studio/specs/03c-scoreboard-mortgage-extra-100.json) (29.8 s)
 
 **Maths check:** [`checks/03-what-difference.py`](checks/03-what-difference.py). It rebuilds all three loans payment by payment from the sourced inputs, then checks every display string in the three specs against the computed, formatted value, and every number in every VO line too. It also checks:
@@ -14,14 +14,18 @@
 - the assembly-pass beats: every `lookOpts.reads` entry (03a, 03b, 03c) and every 03c `deltaT` sits within 0.25 s of the VO word that speaks its number, marks a value already on screen, and that word speaks the marked value (or, for 03a's "$1,800 less", the shown difference the marked cell makes);
 - the fixer-pass beats: 03a's bar steps ("≈ $1,100", "≈ $35", "≈ $1,800") are typed by the word that speaks them (and no more than 0.8 s early) and each "a − b ≈ c" step has c = the shown a − b; 03a's pair read marks two equal "≈ $8,900" cells as the VO speaks the exact $35 gap they hide; the 03a scan sits on "Guess" over the three still-empty columns, and the lever's columns are the two 13-payment ones; 03b's ② values and ③'s payoff land on the words that speak them, its "$0 more" working is marked on "dollar", and its winner delta lands on "ten" with the winner beat; 03c's label steps ("40 months sooner", "≈ 11 years sooner") slam within 0.25 s of their words, after their race and before their delta;
 - no spec-level `sfx` (each kit cues its own landings);
+- the port beats (2026-10-08):
+  - 03a (Becker Rig): each lane wakes on the word that names it (`option.t`) and its crate lands on the word that speaks its payoff (`option.resultT`, within 0.25 s); the round-up value's count-down settles on "$1,800" and drops by exactly the shown $1,800; each working-slot line is on screen by its word and no more than 0.8 s early, and holds at least 2 s; the footer is one line;
+  - 03b (Scoreboard): each hard cut on the word that names the option; each race lands on its payoff's word at the shared speed (`keepSpeed`); the hero holds ≈ 15.1 years at frame 1 and bumps on "fifteen"; the row-cell reads on "$7,300" and "$3,100"; the label steps (the shrink note at frame 1, "More than the $5,000 owed" on "More", "$0 more than the first minimum" on "dollar"); the hero lands "≈ 10 years sooner" on "ten" (`data.winnerT` = the delta's time), its 1 s roll starting after the verdict;
 - the sensitivity claims in this file.
 
-Result: **480 checks, 0 failures, exit 0** (after the 2026-10-08 fixer pass; 439 after the assembly pass, 388 after the 03b hook pass). Mutation tests:
+Result: **509 checks, 0 failures, exit 0** (after the 2026-10-08 port; 480 after the fixer pass, 439 after the assembly pass, 388 after the 03b hook pass). Mutation tests:
 - Revision 2: one interest cell changed (03c "≈ $508,600" → "≈ $508,700"), one "about" removed (03b "About $7 more" → "$7 more") and the 03a lever moved off its beat (18.0 → 18.3 s) gave 4 failures and exit 1, as they should; the restored specs pass again.
 - Hook pass, on scratch copies of the new 03b spec: note "$99.66" → "$99.67", verdict "≈ 10" → "≈ 11", ②'s landing moved off "keep" (10.6 → 11.6 s), and one "about" removed ("About 4.8 years" → "4.8 years"). That gave 4 of 4 failures and exit 1.
 - Assembly pass: 03a's "$10,000" read moved off its word (5.8 → 6.3 s), 03b's "4.8" read pointed at the wrong cell (payoff → interest) and 03c's "$78,600" slam moved back to 9.45 s. That gave 3 of 3 failures and exit 1; the specs were restored byte for byte and pass again.
 - Fixer pass, on scratch copies of the specs: 03a's first bar step moved late (9.7 → 10.6 s), 03a's last step said "≈ $1,700", 03b's winner delta moved off "ten" (27.1 → 27.6 s) and 03c's first label step said "41 months sooner". All 4 were caught (9 failing rows, exit 1).
-**Studio linter:** `node src/cli.mjs check specs/03*.json` gives **3/3 clean, 0 errors, 0 warnings**, against the built what-difference modules of all three kits. Since the assembly pass it is also clean at every frame (`--every 0.0333333`, 1/30 s); the default 0.25 s step had missed a one-frame overlap at 03c's +$100 landing (fixed, see the Review log). After the fixer pass all three are clean at every frame again, and so are the kits' own what-difference samples and stress specs (live-sheet 2 + 3 stress, clean-sheet 3, scoreboard 2). The clean-sheet module is the one committed in 7445bcc; the hook-pass 03b spec was re-linted against it on 2026-10-08. Stills and 12-frame contact sheets of all three were inspected too, because the linter does not catch every render bug (it missed "[object Object]" in round 1). For the hook pass, 03b stills at 0, 1.5, 3, 11.5 and 29.5 s were inspected as well.
+- Port, on scratch copies of the new specs: 03a's Biweekly crate landing moved late (9.0 → 9.6 s), 03a's footer put back to the two-line Live Sheet text, 03a's new slot step said "$12.64", 03b's shrink note said "$99.67", 03b's `winnerT` moved off "ten" (27.1 → 27.6 s), 03b's `keepSpeed` dropped, and 03b's "$3,100" read moved off its word (18.0 → 18.5 s). All 7 were caught (10 failing rows, exit 1); the restored specs pass.
+**Studio linter:** `node src/cli.mjs check specs/03*.json` gives **3/3 clean, 0 errors, 0 warnings**, at the default step and at every frame (`--every 0.0333333`, 1/30 s), against the Becker Rig (03a) and Scoreboard (03b, 03c) what-difference modules. The kits' own what-difference samples are clean too (Becker Rig 3, Scoreboard 2). The port's additions to the Scoreboard module are opt-in: 03c and both Scoreboard samples render pixel-identical to before them (26 of 26 frames compared). Stills and 12-frame contact sheets were inspected for every port beat, because the linter does not catch every render bug (it missed "[object Object]" in round 1). (Before the port, 03a was linted against the Live Sheet module and 03b against the Clean Sheet module committed in 7445bcc; see the Review log.)
 **Web searches used:** round 1 used 13 of 14; the verifier used 11 more; revision 2 used 1 search and 2 page fetches (both fetches blocked by the egress proxy). The egress proxy blocks every primary page (Edmunds, the Fed, Freddie Mac, Auto Remarketing, Experian), so each figure below rests on search-result text for the named page, cross-checked by the verifier's own searches. Re-open the primary pages before publishing (see "Open items").
 
 ---
@@ -45,31 +49,33 @@ Result: **480 checks, 0 failures, exit 0** (after the 2026-10-08 fixer pass; 439
 
 | | 03a | 03b | 03c |
 |---|---|---|---|
-| Look | Live Sheet | Clean Sheet | Scoreboard |
+| Look | Becker Rig (ported from Live Sheet) | Scoreboard (ported from Clean Sheet) | Scoreboard |
 | Debt | $44,000 car loan, 7%, 72 months | $5,000 card balance, 22% APR | $400,000 mortgage, 7.3%, 30 years |
 | Options | Monthly · Biweekly · Weekly · Round up (to $200 a week) | The card minimum · Keep paying the first minimum ($142.59) · a flat $250 | Just the payment · +$100 a month · +$500 a month |
 | On-screen hook (t = 0) | What difference do weekly and / biweekly payments really make / on a **$44,000** car loan? | What difference does / paying the SAME minimum / every month make on **$5,000**? | HOW MUCH DIFFERENCE DOES / JUST **$100** EXTRA A MONTH MAKE / ON A 30-YEAR MORTGAGE? |
 | Words in hook | 14 | 12 | 14 |
-| Numbers on screen at 0.0 s | $44,000 · the four payments in the headers · Monthly column filled: 72 (months to pay off), ≈ $10,000 | $5,000 (header) · footer "22% APR · minimum = 1% + interest, $40 floor" · "The card minimum" filled in coral: ≈ 15.1 years, ≈ $7,300, working "starts at $142.59, then shrinks" · note "$142.59 → $99.66 by year 3" already typing ("$14…") | $100 · hero counter ≈ $587,200 of interest in red · lane 1 "30 YEARS" · footer "$400,000 at 7.3%" · label stack "$2,742.29 a month" |
-| The lever lands | 8.0 s (biweekly), 23.0 s (round up) | 9.6 s working; results on their words (16.0 s, 18.0 s); the ≈ 10 years delta on "ten" (27.1 s) | 6.4 s cut, 8.9 s landing, 9.4 s "40 MONTHS SOONER", 10.6 s delta (on the spoken "$78,600") |
-| The sheet answers the VO (reads) | 2.4 s scan of the empty columns ("Guess which one"); 4.2 s, 5.8 s (Monthly's cells); 16.2 s (both ≈ $8,900 cells, "$35"); 18.0 s (the lever's two columns); 27.2 s, 28.4 s (Round up's) | 2.4 s, 5.0 s (①'s boxes), 7.8 s (the header's $5,000 re-swipes), 13.0 s (②'s "$0 more" working) | 1.2 s (the hero) |
-| Differences on screen | bar steps "≈ $1,100 less interest" (10.4 s), "≈ $35 less interest than biweekly" (16.2 s), "≈ $1,800 less interest" (28.4 s) | ② "≈ 10 years sooner", ③ "≈ 13 years sooner" | "40 MONTHS SOONER", "≈ $78,600 LESS", "≈ 11 YEARS SOONER", "≈ $245,000 LESS" |
-| Verdict (screen) | Round up to **$200** a week: **≈ 1 year** sooner | Same payment, **$0** more: **≈ 10 years** sooner | +$100 a month: each $1 saves **≈ $2.46** (the hero holds "≈ $78,600 LESS") |
+| Numbers on screen at 0.0 s | $44,000 (header) · working slot "New-car loan · 7% APR · 72 months" · the four payments under the lane names · Monthly lane already run: its crate at its flag reading 72 (months to pay off), ≈ $10,000 in red, its coin pile full | $5,000 (header) · red hero "PAID OFF IN ≈ 15.1 YEARS" · footer "22% APR · minimum = 1% + interest, $40 floor" · row "THE CARD MINIMUM ≈ $7,300" over a full red bar "≈ 15.1 YEARS" · label stack "starts at $142.59, then shrinks" / "$142.59 → $99.66 BY YEAR 3" (red) | $100 · hero counter ≈ $587,200 of interest in red · lane 1 "30 YEARS" · footer "$400,000 at 7.3%" · label stack "$2,742.29 a month" |
+| The lever lands | lanes wake on their names (8.0, 13.0, 23.0 s); crates land on their numbers: ≈ 65 (9.0 s), ≈ 65 (14.0 s), ≈ 60 (27.2 s, after a strain on "round up"); the 13-payments lever at 18.0 s | 9.6 s cut ("$142.59 − $142.59 = $0 more"); "$0 more than the first minimum" on "dollar" (13.0 s); the race lands on "4.8" (16.0 s); the hero lands "≈ 10 YEARS SOONER" on "ten" (27.1 s) | 6.4 s cut, 8.9 s landing, 9.4 s "40 MONTHS SOONER", 10.6 s delta (on the spoken "$78,600") |
+| The screen answers the VO (reads) | 2.4 s scan (the three waiting figures hop on "Guess which one"); 4.2 s, 5.8 s (Monthly's crate and value); 16.2 s (both ≈ $8,900 values, "$35"); 18.0 s (the lever's two lanes) | 2.4 s (the hero, "fifteen"), 5.0 s (≈ $7,300 in row 1), 7.8 s ("More than the $5,000 owed" slams on "More"), 13.0 s ("$0 more than the first minimum" on "dollar"), 18.0 s (≈ $3,100 in row 2) | 1.2 s (the hero) |
+| Differences on screen | slot steps "≈ $1,100 less interest" (10.2 s), "≈ $35 less interest than biweekly" (16.0 s), "≈ $1,800 less interest" (28.2 s), with ≈ $8,200 counting down from ≈ $10,000 into it; the green time-saved strip on each lane's floor | the hero's "≈ 10 YEARS SOONER" (27.1 s); ③'s "≈ 13 YEARS SOONER" in the label stack (24.35 s) | "40 MONTHS SOONER", "≈ $78,600 LESS", "≈ 11 YEARS SOONER", "≈ $245,000 LESS" |
+| Verdict (screen) | Round up to **$200** a week: **≈ 1 year** sooner (the gold plate on ≈ $8,200) | Same payment, **$0** more: **≈ 10 years** sooner (the hero holds "PAID OFF ≈ 10 YEARS SOONER") | +$100 a month: each $1 saves **≈ $2.46** (the hero holds "≈ $78,600 LESS") |
 | Runtime | 37.2 s | 30.6 s | 29.8 s |
 | Benchmark hook it copies most closely | H48, 1.9M, 902.5x | H31's "NOT EMI" mechanic + H48 frame + H84's one-word cue | H50, 290.7K, 127.3x |
 
 **Winner convention.** `winner` is the option the verdict names, not always the biggest number. In 03b the flat $250 is faster than keeping the first minimum, but the verdict answers the $0 lever the hook asks about. The $250 row is the "biggest number last" bonus, toned `good` rather than `goal`.
 
 **Frame-1 convention.** In all three, the baseline option is already worked out at frame 1 (R1 "the full answer", R10 "shock first"), and the later options sit named but empty (R9). Each kit expresses that differently:
-- Live Sheet: `option.t ≤ 0` means "pre-filled".
-- Clean Sheet: `option.t` is when the working starts typing and `option.resultT` when the results land, so the minimum carries negative times (`t −3.0`, `resultT −2.4`): both results and the highlighter have settled by −1.52 s. Its accent note is already typing at frame 1 (`noteT −0.15`, so frame 1 shows "$14…" rather than a lone caret), and the sheet moves from the first frame.
-- Scoreboard: `option.resultT 0.0` on the first option makes its race land at frame 1, so the counter shows ≈ $587,200 at 0.0 s instead of rolling through unverified intermediate values.
+- Becker Rig (03a): `option.t ≤ 0` means "already run": the crate stands at its flag with its payoff on its face, the money value is in and the coin pile is full. For the later lanes `option.t` is when the lane wakes and `option.resultT` when its crate lands.
+- Scoreboard (03b, 03c): `option.resultT 0.0` on the first option makes its race land at frame 1, so the hero shows ≈ 15.1 years (03b) or ≈ $587,200 (03c) at 0.0 s instead of rolling through unverified intermediate values.
+- (Retired with the port: Live Sheet's pre-filled `t ≤ 0` column, and Clean Sheet's negative `t` / `resultT` with the note typing from `noteT −0.15`.)
 
 ---
 
-## 03a · Live Sheet · Weekly and biweekly vs monthly on a $44,000 car loan
+## 03a · Becker Rig · Weekly and biweekly vs monthly on a $44,000 car loan
 
-**Spec:** `studio/specs/03a-live-sheet-car-loan-weekly.json` · 37.2 s · captions on
+**Spec:** `studio/specs/03a-becker-rig-car-loan-weekly.json` · 37.2 s · captions on
+
+*Ported to Becker Rig on 2026-10-08 (it was built in Live Sheet, now retired; the old spec is in `studio/specs/retired/`). The hook, the VO, every number and the verdict are unchanged. What changed is how the screen carries them: the debt is a crate the stick figure drives down a time lane, so each payoff is a distance. See "Port to Becker Rig (2026-10-08): 03a" in the Review log.*
 **Platform title:** What Difference Do Weekly Car Payments Really Make on $44,000?
 **On-screen hook (header):** What difference do weekly and / biweekly payments really make / on a **$44,000** car loan?
 
@@ -81,16 +87,16 @@ Result: **480 checks, 0 failures, exit 0** (after the 2026-10-08 fixer pass; 439
 3. **H31, FinCalC TV:** "Home Loan Part payment Reduce Tenure NOT EMI", **578,461.** The verdict names the real lever and denies the expected one.
 
 **Rules satisfied:**
-- **R1:** $44,000 is in the header and the stake row, and the Monthly column is filled at 0.0 s (72 under "Months to pay off", ≈ $10,000 under "Interest"; confirmed in the render).
+- **R1:** $44,000 is in the header, the working slot reads "New-car loan · 7% APR · 72 months", and the Monthly lane has already run at 0.0 s: its crate stands at its flag reading 72 (under "Months to pay off") and ≈ $10,000 sits in red under "Interest" (confirmed in the render).
 - **R2:** the hook has one dollar figure, the input, and no result.
 - **R3 (partial):** $44,000 ≈ the average new-car loan (Edmunds Q3 2026: $44,664). It is not the viewer's own loan; the pinned comment asks for theirs, which is the sequel engine of her 290.7K reply video.
 - **R4:** the input is the size of a loan car buyers have actually signed.
 - **R5:** "really" casts doubt on the popular hack, and the first spoken line promises "about a year off" without saying which column earns it.
 - **R6:** the stake is the amount plus 72 months; "your" goes in the caption and the pinned comment.
-- **R7:** weekly and biweekly are named; the Monthly baseline and the "Round up" column are on the sheet from frame 1, each header with its payment.
+- **R7:** weekly and biweekly are named; the Monthly baseline and the "Round up" lane are on screen from frame 1, each name over its payment.
 - **R8:** 14 words.
-- **R9:** 4 columns, 3 of them empty at 0.0 s.
-- **R10:** values on screen at 0.0 s; the first comparison lands at 8.0 s, after a 3.6 s promise line (on "Guess which one" the selection hops across the three empty columns) and the baseline read-out (the selection marks "72" and "≈ $10,000" as they are spoken).
+- **R9:** 4 lanes, 3 of them waiting at 0.0 s ("?" crates on the start line, empty money sockets).
+- **R10:** values on screen at 0.0 s; the first comparison lands at 9.0 s (the Biweekly crate on "sixty-five"), after a 3.6 s promise line (on "Guess which one" the three waiting figures hop in turn) and the baseline read-out (Monthly's crate and its ≈ $10,000 bump as they are spoken).
 - **R11:** the question is on screen, and the verdict leads the caption.
 - **R12:** "Weekly barely beats biweekly. Rounding up is the real trick!"
 
@@ -98,20 +104,20 @@ Result: **480 checks, 0 failures, exit 0** (after the 2026-10-08 fixer pass; 439
 
 ### Beat sheet
 
-Live Sheet timing: `option.t` is when that column's first value lands; just before it the selection springs onto the column and the formula bar retypes its working. The second value lands 0.42 s later, and down a column the selection jumps cell to cell. A "\n" in a working or the lever is a forced break, so each two-line working breaks before its "= result". `lookOpts.reads` are the moments the VO speaks a number that is already on the sheet: the selection steps onto that cell (or spans both cells of a pair), the cell flashes and the value settles from 108% on a soft tick. Fixer pass: `lookOpts.scan` hops the selection across the empty columns; `lookOpts.steps` type the VO's differences into the bar; `lever.options` puts the selection on the two 13-payment columns and washes them; `countCell` counts Round up's interest down from ≈ $10,000; `valueSize: "row"` sets the months row at 80 px. Each header is two lines: the name over the bare payment.
+Becker Rig timing (`looks/becker-rig/formats/what-difference.js`): each option is a lane with a floor line, a stick figure behind a red crate on the start line, the name over its payment at the left, and the money value under the INTEREST head at the right. The lane is a time axis shared by all four: a crate travels as far as its option takes to pay off, so the longest payoff (72 months) reaches the far side, a flag drops where the debt is gone and the floor from that flag to the far side turns green (the time saved). `option.t` is when the lane **wakes** (on the word that names it); `option.resultT` is when its crate **lands** (on the word that speaks its payoff), and the money value lands 0.45 s later. Every run moves at one shared speed (1.8 s for 72 months) unless the lead-in is shorter. The working slot under the footer shows one line at a time, popped in whole: the stake line, then each option's working from its wake (Monthly's from its first read), each `lookOpts.steps` line and the lever. `lookOpts.scan` hops the waiting figures, `reads` bump a crate or a value and turn its figure green, `lever.options` bands two lanes' values and nods their figures, and `countCell` counts Round up's interest down from ≈ $10,000. Figures are slate while they wait, green on their turn.
 
 | t (s) | On screen | VO |
 |---|---|---|
-| 0.0 | Yellow banner (the hook). Formula bar mid-typing Monthly's working "= $750.16 × 72 −"; it finishes "= $750.16 × 72 − $44,000 / ≈ $10,000" by about 0.5 s (the "−" set in Inter, not the mono hyphen). Stake row "New-car loan / **$44,000**", "7% APR / 72 months". Headers, two lines each: Monthly $750.16 · Biweekly $375.08 · Weekly $187.54 · Round up $200. **Monthly column filled:** 72 (row "Months to pay off", 80 px) · ≈ $10,000 (row "Interest"). Selection on Monthly's 72. Footer "ASSUMES daily interest, posted when paid" | "About a year off this loan. Guess which one." |
-| 2.4-3.2 | Scan on "Guess": the selection hops onto the empty Biweekly, Weekly and Round up columns, one tick each | (same line) |
-| 3.8 | Read at 4.2 ("72"): the selection springs back to Monthly's 72, which flashes. Read at 5.8 ("$10,000"): it jumps down onto "≈ $10,000", which flashes | "Monthly: 72 months, about $10,000 in interest." |
-| 8.0 | Selection springs to Biweekly (≈ 6.8); bar retypes "= $375.08 × 26 / = $9,752.08 a year". Biweekly fills: ≈ 65, then ≈ $8,900 (8.4). Bar step at 9.7: "= $10,000 − $8,900 / ≈ $1,100 less interest" ("$1,100" typed by 10.45) | "Biweekly: about 65 months, about $1,100 less." ("$1,100" at about 10.4) |
-| ≈ 11.8-13.4 | Selection springs to Weekly; bar retypes "= $187.54 × 52 / = $9,752.08 a year"; Weekly fills ≈ 65 (13.0), ≈ $8,900 (13.4): the same cells as Biweekly. Bar step at 15.9: "≈ $35 less interest / than biweekly"; pair read at 16.2 ("$35"): the selection spans both ≈ $8,900 cells and they flash together | "Weekly: about 65 months too. Only about $35 better." (13.0; "$35" at about 16.2) |
-| 18.0 | Lever: the bar retypes "= 13 × $750.16 = $9,752.08: / 13 payments, not 12" (the ≈ chip pops); the selection springs onto the Biweekly and Weekly value rows and both columns wash pale yellow until the next working types | "Both add up to 13 monthly payments a year, not 12." |
-| ≈ 21.8-24.2 | Selection to "Round up"; bar "= $187.54 + $12.46 = $200 a week"; the column fills ≈ 60 (23.0, 80 px), then **≈ $8,200** (23.42) counts down from ≈ $10,000 over 0.8 s and settles from 110% | "Now round each weekly payment up to $200." (22.6) |
-| 26.8 | Read at 27.2 ("60"): the selection jumps up onto "≈ 60", which flashes. Bar step at 27.8: "= $10,000 − $8,200 / ≈ $1,800 less interest"; read at 28.4 ("$1,800"): the selection jumps onto "≈ $8,200" | "About 60 months. About $1,800 less." |
-| 31.0 | Winner: the selection springs onto the Round up column (inset from the card's edge, clear of the rounded corner) and it wipes yellow top to bottom; ≈ 60 and ≈ $8,200 pop to 110% as the wash reaches them. Verdict card in the caption band at 56 px: "Round up to **$200** a week: / **≈ 1 year** sooner"; the bar still shows "≈ $1,800 less interest". Ding (kit cue) | "About $12 more a week. About a year sooner." |
-| 35.0-37.2 | Full table holds (2.2 s); the last 0.5 s clears back to frame 1 for the loop (the selection jumps back to Monthly's 72) | (none) |
+| 0.0 | Header (the hook) and footer "Daily interest, posted when paid". Working slot "New-car loan · **7%** APR · **72** months". Heads: a little red crate + "MONTHS TO PAY OFF", and "INTEREST". Four lanes, each name over its payment: Monthly $750.16 · Biweekly $375.08 · Weekly $187.54 · Round up $200. **Monthly already run:** its crate green at its flag, "72"; **≈ $10,000** in red; its coin pile full. The other three: slate figures, a hand on the chin and one on a "?" crate at the start line (a nod in the first second); dashed money sockets | "About a year off this loan. Guess which one." |
+| 2.4-3.2 | Scan on "Guess": the three waiting figures hop in turn (green for the hop), each "?" pops, a tick each | (same line) |
+| 3.8 | Read at 4.2 ("72"): Monthly's crate pulses and its figure turns green; the slot changes to "= $750.16 × 72 − $44,000 ≈ $10,000". Read at 5.8 ("$10,000"): ≈ $10,000 bumps 12% and flashes red | "Monthly: 72 months, about $10,000 in interest." |
+| 8.0 | Biweekly wakes on its name (name to ink, figure green, a step); slot "= $375.08 × 26 / = $9,752.08 a year". He leans in, then drives the crate along the lane (swipe, roll), its face counting the months, coins flying off onto the pile; the flag drops and the crate slams in at **≈ 65** on "sixty-five" (9.0, thud; the crate turns green). **≈ $8,900** drops in green (9.45, pop); a fist. Slot step at 10.2: "= $10,000 − $8,900 / ≈ $1,100 less interest" (on "$1,100", 10.4) | "Biweekly: about 65 months, about $1,100 less." |
+| 13.0 | Weekly wakes; slot "= $187.54 × 52 / = $9,752.08 a year"; its crate lands at **≈ 65** (14.0), right beside Biweekly's, and **≈ $8,900** drops in ink (14.45): the same values as Biweekly, whose green settles to ink. He shrugs (14.75). Slot step at 16.0: "≈ $35 less interest / than biweekly"; pair read at 16.2 ("$35"): both ≈ $8,900 values bump and flash together and both figures turn green | "Weekly: about 65 months too. Only about $35 better." |
+| 18.0 | Lever: slot "= 13 × $750.16 = $9,752.08: / 13 payments, not 12"; the Biweekly and Weekly values get a pale green band and bump, their crates pulse, their figures turn green and nod (swipe), until the next slot line | "Both add up to 13 monthly payments a year, not 12." |
+| 23.0 | Round up wakes on "round"; slot "= $187.54 + $12.46 = $200 a week". He leans in and **strains**: the "?" crate trembles but holds (about 23.45-25.5 s), he crouches, and it gives at 25.7 | "Now round each weekly payment up to $200." (22.6) |
+| 26.8 | The crate lands at **≈ 60** on "sixty" (27.2), the nearest flag of the four. **≈ $8,200** (27.65) counts down from ≈ $10,000 over 0.8 s and settles from 110% on "$1,800" (28.45). Slot step at 28.2: "= $10,000 − $8,200 / ≈ $1,800 less interest" | "About 60 months. About $1,800 less." |
+| 31.0 | Winner: a gold plate opens behind ≈ $8,200, which grows on it; impact (a mostly vertical shake, a light flash, a 1.8% punch, hit + cash, short rays from the plate's ends). Round up's crate and pennant turn gold and its time-saved strip thickens (the verdict claims "≈ 1 year"). He crouches, jumps and lands arms up in a wide V; the others slump, and their values and crate faces settle grey. Verdict in the caption band: "Round up to **$200** a week: / **≈ 1 year** sooner" (its ding is skipped: it lands on the hit). Slot step at 31.2 (on "$12"): "= $187.54 + $12.46 = $200 a week" | "About $12 more a week. About a year sooner." |
+| 35.0-37.2 | The finished board holds 2.2 s (this kit has no loop clear: the loop cuts back to frame 1) | (none) |
 
 ### Guide VO script (66 written words, 84 spoken with numbers read out: ≈ 32 s of speech at 2.6 words/s, spread over 0.0-35.0 s)
 
@@ -167,7 +173,7 @@ In every case weekly beats biweekly by under $50 and rounding up takes about a y
 
 ### Assumptions (footer, on screen from 0.0 s)
 
-"ASSUMES daily interest, posted when paid". 7% APR and 72 months are on the stake row; the caption spells the posting assumption out in full.
+"Daily interest, posted when paid" (port: the Becker Rig footer is one or two mono lines at 40 px, and "ASSUMES daily interest, posted when paid" wrapped with "paid" alone on its second line; the 32-character line fits on one and gives the lanes the height). 7% APR and 72 months are in the working slot's stake line at frame 1; the caption spells the posting assumption out in full.
 
 ### Caption / description (verdict first, R11)
 
@@ -185,14 +191,16 @@ The first sentence starts the argument vidIQ predicted for H48's comments. The s
 ### Per-platform notes
 
 - **TikTok.** Caption line 1 is the verdict, with no numbers. Keep #micropayments: 4 of Debt Freedom's 5 breakouts carried it. Answer the best "now do mine" comment with the native reply sticker, on the same $44,000 running case (her $58,593.13 Jeep loan carried both the 1.9M video and the 290.7K reply).
-- **Instagram Reels.** Make the cover the finished table at about 33 s (all four columns filled, the winner washed yellow). Gage's one A/B favoured a finished-table cover. No comment-keyword CTA: in the benchmark it lifts comments, not views.
-- **YouTube Shorts.** Use the platform title above. Let the loop run: the columns clear back to the frame-1 state at 37.2 s.
+- **Instagram Reels.** Make the cover the finished board at about 33 s (four lanes run, the gold plate on ≈ $8,200, the winner arms up in a V). Gage's one A/B favoured a finished-table cover. No comment-keyword CTA: in the benchmark it lifts comments, not views.
+- **YouTube Shorts.** Use the platform title above. Let the loop run: the finished board holds to 37.2 s and the loop cuts back to frame 1 (three crates on the start line again).
 
 ---
 
-## 03b · Clean Sheet · Paying the same minimum every month on a $5,000 credit card
+## 03b · Scoreboard · Paying the same minimum every month on a $5,000 credit card
 
-**Spec:** `studio/specs/03b-clean-sheet-card-minimum.json` · 30.6 s · captions on
+**Spec:** `studio/specs/03b-scoreboard-card-minimum.json` · 30.6 s · captions on
+
+*Ported to Scoreboard on 2026-10-08 (it was built in Clean Sheet, now retired; the old spec is in `studio/specs/retired/`). The hook, the VO, every number and the verdict are unchanged. What changed is how the screen carries them: the payoff time is the neon hero ("PAID OFF IN ≈ 15.1 YEARS" in red at frame 1, rolling down to ≈ 4.8 and landing "≈ 10 YEARS SOONER" on "ten"), and the three options are a leaderboard of time bars. See "Port to Scoreboard (2026-10-08): 03b" in the Review log.*
 **Platform title:** What Difference Does Paying the Same Card Minimum Every Month Make on $5,000?
 **On-screen hook (header):** What difference does / paying the SAME minimum / every month make on **$5,000**?
 
@@ -204,28 +212,28 @@ The first sentence starts the argument vidIQ predicted for H48's comments. The s
 1. **H31, FinCalC TV:** "Home Loan Part payment Reduce Tenure NOT EMI", **578,461.** It uses the same mechanic: hold the payment and the term collapses. The verdict denies the lever the viewer expects ("pay more").
 2. **H49, The Debt Freedom Project:** "What's the difference between daily payments and one extra lump sum payment each month?" with the caption "Yes, daily payments work!", **382,100, 289.1x**, on a $2.98 answer. A tiny lever plus a verdict. Ours costs $0.
 3. **H48, same channel:** "What difference does monthly, biweekly, and weekly payments make on paying off a car loan?", **1,900,000, 902.5x.** We use its "What difference does … make on …?" frame.
-4. **H84, Master Money:** "4 DEAD SIMPLE NUMBERS / That Tell You What / You Actually Make", **3,000,000, 140x.** We copy two things. One capitalised R5 word: "ACTUALLY" there, "SAME" here. And the formula-then-result typing from frame 1: here the note under ① is already typing at 0.0 s.
-5. **H71, The Market Hustle:** "How Long It Took To Recover After the Worst Crashes:", **190,187 (4.5x med).** Open in the red: ①'s coral "≈ 15.1 years" is on screen at 0.0 s.
+4. **H84, Master Money:** "4 DEAD SIMPLE NUMBERS / That Tell You What / You Actually Make", **3,000,000, 140x.** We copy two things. One capitalised R5 word: "ACTUALLY" there, "SAME" here. And the working beside the result from frame 1: here the label stack already reads "starts at $142.59, then shrinks" over "$142.59 → $99.66 BY YEAR 3" at 0.0 s.
+5. **H71, The Market Hustle:** "How Long It Took To Recover After the Worst Crashes:", **190,187 (4.5x med).** Open in the red: the hero "PAID OFF IN ≈ 15.1 YEARS" is red on screen at 0.0 s, as his "25 YEARS" is.
 
 **Designed against:**
 - **H52, "Credit Card Debt Payoff Strategies":** a topic label, **90,600**, her weakest, on the same subject.
 - **FinCalC's neutral "X vs Y, which is better?" bucket:** median **13,322**. That was the old header's shape.
 
 **Rules satisfied:**
-- **R1:** $5,000 is in the header (fixer pass: the stake row that repeated it is gone; "card" now sits in ①'s name). "The card minimum" is already worked out at frame 1: ≈ 15.1 years and ≈ $7,300 in coral, under its working "starts at $142.59, then shrinks". The note "$142.59 → $99.66 by year 3" is already typing at 0.0 s ("$14…", `noteT −0.15`) and is complete by about 1.3 s, so the shrink is shown in numbers inside the first 1.5 s.
+- **R1:** $5,000 is in the header ("card" sits in ①'s name). "The card minimum" has already run at frame 1: the hero reads "PAID OFF IN ≈ 15.1 YEARS" in red, its row posts ≈ $7,300 in red over a full red bar labelled "≈ 15.1 YEARS", and the label stack reads its working "starts at $142.59, then shrinks" over "$142.59 → $99.66 BY YEAR 3" in red, so the shrink is shown in numbers at frame 1 (the Clean Sheet typed this note from 0.0 to about 1.3 s; the hook pass judged it within the first 1.5 s).
 - **R2:** the hook holds one dollar figure, the stake input, and no result.
 - **R3 (partial):** every cardholder has a minimum payment, and $5,000 is a round balance to map theirs onto. It is not the viewer's own balance; the pinned comment asks for their card's formula.
 - **R4:** $5,000 is round, and the lever costs $0.
 - **R5:** "SAME" in caps implies the wrong belief "paying the same can't change anything; to finish faster I must pay more".
 - **R6 (partial):** $5,000 at 22% (the footer), with the horizon as the payoff. The header has no "you"; "your" comes in VO line 4 and the caption.
-- **R7:** both levers are on the sheet from frame 1: "Keep paying $142.59" and "A flat $250".
+- **R7:** both levers are on the board from frame 1: "KEEP PAYING $142.59" and "A FLAT $250", each with "?" in its score slot.
 - **R8:** 12 words.
-- **R9:** 3 numbered steps, 2 of them empty.
+- **R9:** 3 rows, 2 of them showing "?".
 - **R10:**
-  - The biggest number comes first: ≈ 15.1 years at frame 1, with "fifteen" spoken at about 2.4 s.
-  - The note's numbers move from 0.0 s.
-  - The lever's working types at 9.6 s; it is marked on "dollar" (13.0 s), and its results land on the words that speak them (16.0 s, 18.0 s).
-  - The headline difference, "≈ 10 years sooner", lands on the spoken "ten" (27.1 s) with the winner beat, the verdict on screen.
+  - The biggest number comes first: ≈ 15.1 years is the hero at frame 1, and it bumps as "fifteen" is spoken (2.4 s).
+  - The screen answers each later line: ≈ $7,300 bumps on "$7,300" (5.0 s) and "MORE THAN THE $5,000 OWED" slams on "More" (7.8 s).
+  - The lever is a hard cut at 9.6 s with its working "$142.59 − $142.59 = $0 more"; "$0 MORE THAN THE FIRST MINIMUM" slams on "dollar" (13.0 s); its race lands on "4.8" (16.0 s), the hero rolling down from ≈ 15.1, and ≈ $3,100 bumps on "$3,100" (18.0 s).
+  - The headline difference, "≈ 10 years sooner", lands last, in the hero, on the spoken "ten" (27.1 s), with the verdict on screen.
 - **R11:** the question is on screen, and the verdict leads the caption.
 - **R12:** "Same payment, $0 more: ≈ 10 years sooner", spoken as the last VO line ("Same payment: about 10 years sooner.").
 
@@ -238,25 +246,19 @@ The "$0 more" is measured against the **first** minimum. From month 2 the held p
 
 ### Beat sheet
 
-Clean Sheet timing:
-- `option.t` is when the option's circle fills and its working starts typing.
-- `option.resultT` pins when its first result lands; the second lands `option.valueEvery` later (0.5 s by default; ②: 2.0 s, so each lands on its word), and the delta 0.6 s after that unless `option.deltaT` pins it (② : on "ten" in the last line).
-- `option.noteT` is when its accent note starts typing.
-- `data.winnerT` is the winner beat (②'s delta, the blue re-wipe, the pointer, the ding).
-- `lookOpts.reads` are the moments the VO speaks a number already on the sheet: that highlighter box pops to 108% and settles back in 0.38 s on a soft tick; a stake read re-swipes the header's $5,000 (`lookOpts.stake: "header"`: the stake row that repeated it is gone), and a `detail` read pops ②'s working line and turns it ink.
-- `lookOpts.gap: 40`: at least 40 px between the option blocks.
+Scoreboard timing (`looks/scoreboard/formats/what-difference.js`): the top bar holds the hook, the hero odometer and the footer; the dark stage holds a leaderboard, one row per option (name and interest on top, the time bar below, one shared scale); the bottom bar holds the label stack (line 1 the option's working in green, line 2 its name or a step), then the verdict. `option.t` is the **hard cut** (label stack slam, the row lights, the pointer jumps, thud). With `lookOpts.keepSpeed` the bar then waits, lit but empty, and races at the one shared speed (2.4 s for the longest bar, 0.7 s at the least) so it lands on `option.resultT`: the bar label and the interest cell roll with it, and the hero rolls the payoff (`counter: "payoff"`) down from the previous option's landed value on the same clock, its "≈" an unlit ghost until it lands (bump, glow, bloom, ding). `lookOpts.reads`: the hero bumps 6% and flares, or (with `option`) a row's interest cell bumps 10% and glows in its colour, on a soft tick. `lookOpts.labelSteps` slam a line 2 of their own. `data.winnerT` is when the hero lands the winner's delta ("PAID OFF ≈ 10 YEARS SOONER", `endTag`); its roll and the board's winner beat start 1.04 s before.
 
 | t (s) | On screen | VO |
 |---|---|---|
-| 0.0 | **Page:**<br>- title (the hook, 3 lines), with the one-line assumption footer "22% APR · minimum = 1% + interest, $40 floor" under it;<br>- column heads "Paid off in" / "Interest" (no stake row: the header's $5,000 is the stake).<br>**① The card minimum, already worked out:** working "starts at $142.59, then shrinks", coral "≈ 15.1 years" and "≈ $7,300". Its accent note "$142.59 → $99.66 by year 3" is already typing ("$14…"), complete by about 1.3 s (type tick).<br>**② and ③:** "Keep paying $142.59" and "A flat $250" are named over empty dashed slots, at least 40 px apart.<br>Read at 2.4 ("fifteen"): the coral "≈ 15.1 years" pops. | "Minimum on $5,000: about 15 years. Because it shrinks." ("fifteen" at about 2.4 s) |
-| 4.6 | Read at 5.0 ("$7,300"): the coral "≈ $7,300" pops. Read at 7.8 ("More than you owed"): the header's yellow "$5,000" re-swipes, so the two numbers the line compares both move | "About $7,300 in interest. More than you owed." |
-| 9.6 | ② circle fills; working types "$142.59 − $142.59 = $0 more" (to about 10.7); ① rests (lighter boxes), its note stays | "Now keep paying the first one." |
-| 12.2 | Read at 13.0 ("dollar"): ②'s working pops to 108% and turns ink; the slots below it are still empty, so the $0 working holds the stage alone | "Not a dollar more than your first minimum." |
-| 15.6 | ②'s results land on their words: "≈ 4.8 years" (16.0), "≈ $3,100" (18.0) | "About 4.8 years. About $3,100 in interest." |
-| 21.0 | ② rests; ③ working types "$250 − $142.59 = $107.41 more"; results "≈ 2.2 years" (23.8, on "2.2"), "≈ $1,300" (24.3); delta "≈ 13 years sooner" (24.9), its figure revealed by the highlighter's wipe | "A flat $250: about 2.2 years." |
-| 25.8 | **Verdict** in the caption band at 56 px: "Same payment, **$0** more: / **≈ 10 years** sooner". | "Same payment: about 10 years sooner." ("ten" at about 27.1 s) |
-| 27.1 | **Winner beat on "ten":**<br>- ②'s delta "≈ 10 years sooner" wipes in on the blue final-answer highlighter (its figure riding the wipe);<br>- ②'s results re-wipe blue; every other box rests, ③'s delta too;<br>- the pointer lands beside ②'s delta at about 27.65 and the delta pops (as far as the name beside it allows) with a blue ring;<br>- ding (kit cue). | (same line) |
-| 28.4-30.6 | The finished sheet holds 2.2 s, then the results clear and the loop restarts on frame 1 (① filled, its note at "$14…") | (none) |
+| 0.0 | **Top bar:** header (the hook, 3 lines, "$5,000" green); hero "PAID OFF IN **≈ 15.1 YEARS**" in red; footer "22% APR · minimum = 1% + interest, $40 floor".<br>**Board** (INTEREST head): THE CARD MINIMUM, ≈ $7,300 in red over a full red bar "≈ 15.1 YEARS", lit, the pointer on it; KEEP PAYING $142.59 "?"; A FLAT $250 "?".<br>**Label stack:** "starts at $142.59, then shrinks" (green) / "**$142.59 → $99.66 BY YEAR 3**" (red).<br>Read at 2.4 ("fifteen"): the hero bumps and its glow flares | "Minimum on $5,000: about 15 years. Because it shrinks." ("fifteen" at about 2.4 s) |
+| 4.6 | Read at 5.0 ("$7,300"): row 1's ≈ $7,300 bumps and glows red. At 7.8 ("More") line 2 slams "**MORE THAN THE $5,000 OWED**" (red, pop) | "About $7,300 in interest. More than you owed." |
+| 9.6 | Hard cut: row 2 lights, the pointer jumps to it; label stack "$142.59 − $142.59 = $0 more" / "KEEP PAYING $142.59" (thud). Its bar waits, empty | "Now keep paying the first one." |
+| 12.2 | At 13.0 ("dollar") line 2 slams "**$0 MORE THAN THE FIRST MINIMUM**" (green) | "Not a dollar more than your first minimum." |
+| 15.6 | 15.24-16.0 the bar races (roll); the hero rolls down from ≈ 15.1 to **≈ 4.8 YEARS** (now green) and row 2's interest rolls up; all land together on "4.8" (16.0): the bar a third the length of row 1's, ≈ $3,100 in the row (bump, glow, bloom, ding). Read at 18.0 ("$3,100"): ≈ $3,100 bumps and glows green | "About 4.8 years. About $3,100 in interest." |
+| 21.0 | Hard cut: "$250 − $142.59 = $107.41 more" / "A FLAT $250". 23.1-23.8 the bar races; the hero rolls ≈ 4.8 → **≈ 2.2 YEARS**; lands on "2.2" (23.8): ≈ 2.2 YEARS, ≈ $1,300. Its delta slams at 24.35: "≈ 13 YEARS SOONER" (green) | "A flat $250: about 2.2 years." |
+| 25.8 | **Verdict:** the label stack drops away and "SAME PAYMENT, **$0** MORE: / **≈ 10 YEARS** SOONER" slams into the slot under a green rule (reveal) | "Same payment: about 10 years sooner." ("ten" at about 27.1 s) |
+| 26.06-27.1 | **Winner beat:** row 2 glows green (its bar solid green), the others dim, the pointer jumps to it, the stage blooms (cash). The hero dips and rolls up from zero under the tag "PAID OFF", and lands **≈ 10 YEARS SOONER** on "ten" (27.1): bump, glow, pop | (same line) |
+| 28.4-30.6 | The finished board holds 2.2 s (no loop clear: the loop cuts back to frame 1) | (none) |
 
 ### Guide VO script
 
@@ -317,7 +319,7 @@ Clean Sheet timing:
 
 ### Assumptions (footer, on screen from 0.0 s)
 
-"22% APR · minimum = 1% + interest, $40 floor" (fixer pass: one line at 40 px, so the work area gains a line; "no new charges" moved to the caption).
+"22% APR · minimum = 1% + interest, $40 floor" (fixer pass: one line at 40 px; "no new charges" moved to the caption). On the Scoreboard it sits under the hero for the whole video (no footer steps).
 
 ### Caption / description
 
@@ -339,11 +341,11 @@ Line 1 is now literally the lever. Line 2 gives both pairs of totals, and no int
   - Two comment fights are likely:
     - "Nobody's minimum is 1%." The pinned comment invites people to post their formula, which is cheap sequel material ("now do 2%").
     - "That IS paying more." Answer with the anchor: $0 more than the first minimum, and $42.93 more than the month-36 minimum.
-- **Instagram Reels.** Cover: the finished sheet at about 29 s, with the blue "≈ 10 years sooner" and "≈ 4.8 years" boxes under the coral "≈ 15.1 years" and the "$0 more" working between them. Save-bait is the worked sheet itself, so no keyword CTA.
+- **Instagram Reels.** Cover: the payoff frame at about 28 s: the hero "PAID OFF ≈ 10 YEARS SOONER" in green over the board (the red 15.1-year bar, the glowing green 4.8-year row) and the verdict. Save-bait is the worked board itself, so no keyword CTA.
 - **YouTube Shorts.**
   - Use the title above.
-  - The first 9.6 s hold the worked minimum while two VO lines play. The note types (0-1.3 s), then the sheet answers the VO three times: "≈ 15.1 years" pops at 2.4 s, "≈ $7,300" at 5.0 s and the header's $5,000 re-swipes at 7.8 s.
-  - If retention still dips there, cut "More than you owed." (1.6 s) and pull every later beat 1.6 s earlier. That means re-timing the spec (the reads, `resultT`, `deltaT` and `winnerT` too) and re-running the check.
+  - The first 9.6 s hold the worked minimum while two VO lines play, and the screen answers the VO three times: the hero bumps at 2.4 s, ≈ $7,300 at 5.0 s, and "MORE THAN THE $5,000 OWED" slams at 7.8 s.
+  - If retention still dips there, cut "More than you owed." (1.6 s) and pull every later beat 1.6 s earlier. That means re-timing the spec (the reads, `labelSteps`, `resultT`, `deltaT` and `winnerT` too) and re-running the check.
 
 ---
 
@@ -462,10 +464,17 @@ Model: standard monthly amortisation at 7.3%/12, with interest rounded to the ce
 2. **The MBA citation's exact page** (one of three JM Financial pages) is unconfirmed. Freddie Mac's 7.28% is the figure on screen.
 3. **Kit behaviour the specs work around:**
    - **Scoreboard:** while a race rolls (about 2.1 s for +$100, 1.5 s for +$500), the hero rolls the interest down from the previous landed score and the lane label counts the years, so a paused frame can show an intermediate figure ("$561,174", "9.4 YEARS"). Only the landed values are verified figures. Their "≈" now stays an unlit ghost until they land, which marks them as running. 03c avoids this at frame 1 (`resultT 0.0`). The verdict's count-up to "≈ $78,600 LESS" (22.04-23.04 s) runs the same way.
-   - **Live Sheet:** fixed. The kit now types the pre-filled baseline's working at frame 1, so 03a opens on "= $750.16 × 72 − $44,000 / ≈ $10,000" (typed by about 0.5 s) with the selection on Monthly's "72 months".
-   - **Clean Sheet:** in revision 2, adding the verifier's typed `note` under the minimum pushed the layout into swap mode, which erases every working line. Against the module committed in 7445bcc, the hook-pass 03b carries a short note under ① ("$142.59 → $99.66 by year 3", `noteT 0.0`) with the 3-line hook and stays in split mode: every working line and the note stay on the sheet to the end (stills at 0, 1.5, 3, 11.5 and 29.5 s). A longer note may still tip it into swap mode; re-check stills after any note change. There is still no room for a `check` line.
-4. **03b depends on the current clean-sheet module.** The clean-sheet fixer's edits to `looks/clean-sheet/formats/what-difference.js` are now committed (7445bcc). They include hiding stake terms the footer already states and a new layout search. With them, 03b lays out in split mode and every working line stays on the sheet: re-linted on 2026-10-08, 0 errors and 0 warnings. Against the older module (be5572c), 03b fell back to swap mode, which erased the workings once each option's results landed. If the module changes again, re-run `node src/cli.mjs check specs/03b-clean-sheet-card-minimum.json` and check stills at 0, 1.5, 12 and 29 s.
-5. **Renders (2026-10-08 fixer pass):** all three are re-rendered to `studio/out/`. They are 1080×1920 H.264 at 30 fps with an AAC track of the kits' SFX (no VO yet): `03a-live-sheet-car-loan-weekly.mp4` (37.2 s, 1,116 frames), `03b-clean-sheet-card-minimum.mp4` (30.6 s, 918 frames) and `03c-scoreboard-mortgage-extra-100.mp4` (29.8 s, 894 frames). A frame of each MP4 was extracted with ffmpeg (03a at 33.0 s, 03b at 27.7 s, 03c at 10.8 s) and matches the still at the same time: mean pixel difference 0.8-1.8 of 255, which is codec noise.
+   - **Scoreboard, 03b (port):** the same holds for its races and its payoff roll: the hero passes through running payoff values ("8.2 YEARS" at 15.6 s, "9 YEARS SOONER" at 26.6 s) with an unlit "≈". `keepSpeed` keeps each race short (0.76 s and 0.7 s at the shared speed), and the payoff roll lasts 1.04 s; only the landed values are verified figures.
+   - **Becker Rig, 03a (port):** a running crate's face counts the months up in grey digits without the "≈" (and ≈ $8,200 counts down from ≈ $10,000 over 0.8 s, 27.65-28.45 s), so a paused frame can show an intermediate figure; only the landed strings are verified. The working slot pops whole lines (it does not type), one at a time; every line holds at least 2 s. The kit has no loop clear: the last 2.2 s hold the finished board.
+   - **Live Sheet and Clean Sheet:** retired with the port. Their notes on 03a's pre-filled working and 03b's split/swap layout are in the Review log (revision 2 to the fixer pass).
+4. **The ports depend on two format modules.**
+   - 03a uses `looks/becker-rig/formats/what-difference.js` as it is (no edit in the port): its `scan`, `reads`, `lever.options`, `steps`, `formulas`, `countCell` and `option.resultT` carry the Live Sheet beats over.
+   - 03b uses five opt-in additions to `looks/scoreboard/formats/what-difference.js` made in the port: `lookOpts.keepSpeed`, cell reads (`reads: [{ t, option, metric }]`), `lookOpts.endTag`, `data.winnerT`, and the hero's roll to a duration delta. 03c and both Scoreboard samples render pixel-identical with them (26 of 26 frames).
+   - If either module changes, re-run `node src/cli.mjs check specs/03*.json --every 0.0333333` and the stills at 0, 9.0, 16.2, 27.2 and 31.6 s (03a) and 0, 5.1, 16.1 and 27.5 s (03b).
+5. **Renders:**
+   - Port (2026-10-08): 03a and 03b are rendered to `studio/out/03a-becker-rig-car-loan-weekly.mp4` (37.2 s, 1,116 frames) and `studio/out/03b-scoreboard-card-minimum.mp4` (30.6 s, 918 frames). Both are 1080×1920 H.264 at 30 fps with an AAC track of the kits' SFX (no VO yet). Frames extracted with ffmpeg (03a at 0, 16.3 and 31.6 s; 03b at 0, 16.1 and 27.5 s) match the stills at the same times: mean pixel difference 0.84-1.26 of 255, which is codec noise.
+   - 03c is unchanged since the fixer pass (`studio/out/03c-scoreboard-mortgage-extra-100.mp4`, 29.8 s, 894 frames; its frame at 10.8 s matched the still, mean difference 0.8-1.8 of 255).
+   - The retired looks' renders (`03a-live-sheet-…`, `03b-clean-sheet-…`) are still in `studio/out/` and `renders/v2/`; they are not the current teasers.
 
 ---
 
@@ -626,3 +635,40 @@ The round-2 QA scored 03a 6.5, 03b 6 and 03c 8 (numbers all right: 439 checks, M
 - **03a verdict size.** The QA asked for ≥ 60 px; the Live Sheet verdict card tops out at 56 px in `lib.js`, which this pass may not edit. The verdict was shortened so it reaches that 56 px, and the winner column pops as it lands (the QA's alternative).
 - **03b ③'s delta** ("≈ 13 years sooner", 24.9 s) still lands without its own VO words; line 6 speaks ③'s "2.2 years", and the delta is the bonus row's difference, toned good rather than goal.
 - **03c's verdict-time hero** still counts "≈ $78,600 LESS" up from zero (22.04-23.04 s): it is a new quantity (the saving), not a reset of the interest total.
+
+### Port to Becker Rig (2026-10-08): 03a
+
+The owner kept two looks, Scoreboard and Becker Rig, and retired Clean Sheet and Live Sheet. **03a moved from Live Sheet to Becker Rig**, with the kit's own what-difference samples and the other Becker Rig teasers as the bar.
+
+- **Spec:** `studio/specs/03a-becker-rig-car-loan-weekly.json` (new id `03a-becker-rig-car-loan-weekly`, look `becker-rig`). The old spec was moved with `git mv` to `studio/specs/retired/03a-live-sheet-car-loan-weekly.json`.
+- **Kept exactly:** the header (the hook), all eight VO lines and their times, the verdict, every number, the four options and their wake times (0.0 / 8.0 / 13.0 / 23.0 s, each on the word that names it), the lever (18.0 s, the Biweekly and Weekly lanes), the scan (2.4 s, "Guess"), the reads at 4.2 ("72"), 5.8 ("$10,000") and 16.2 s (the pair, "$35"), the count-down, the 37.2 s runtime, the caption and the pinned comment.
+- **Changed because the look needs it:**
+  - **Footer:** "ASSUMES daily interest, posted when paid" → "Daily interest, posted when paid". The Becker Rig footer is mono 40 px; the old 40-character line wrapped with "paid" alone on its second line and took 48 px from the four lanes. The 32-character line fits on one. (Other Becker Rig footers drop "ASSUMES" too: 02a, 04b, 05a, 06c, 07b, 08b.)
+  - **Payoff landings (`option.resultT`, new):** in this kit `option.t` is when a lane wakes, and at the shared run speed the crates landed 1.2-1.3 s after the VO spoke their numbers (Biweekly's showed "16" months on "sixty-five"). Each crate now lands on its number: ≈ 65 at 9.0 s, ≈ 65 at 14.0 s, ≈ 60 at 27.2 s. Round up wakes on "round" (23.0 s) and lands on "sixty" (27.2 s), so the kit's long lead-in plays as a strain: he leans into the "?" crate, it trembles and holds, then gives at 25.7 s (rounding up is the extra push). Its ≈ $8,200 counts down from ≈ $10,000 and settles on "$1,800" (28.45 s).
+  - **Working-slot steps re-timed:** the Becker slot pops whole lines (Live Sheet typed them), so each step now appears just before the word that speaks its number: 9.7 → 10.2 s ("$1,100"), 15.9 → 16.0 s ("$35"), 27.8 → 28.2 s ("$1,800"). One step is added at 31.2 s, "= $187.54 + $12.46 = $200 a week" (the round-up working, already shown at 23.0 s), on "about $12 more a week".
+  - **Reads:** the two Live Sheet reads on Round up's cells (27.2 s "60", 28.4 s "$1,800") are dropped: the crate's landing and the count-down's settle now fall on those words.
+  - **`lookOpts`:** `valueSize` dropped (the Becker kit does not read it); `formulas`, `lever`, `steps`, `scan`, `reads` and `countCell` carry over (the Becker module reads the Live Sheet keys as they are).
+- **Look notes:** the beat sheet above is rewritten for the kit: the time-axis lanes (the crate's travel is the payoff time, the green strip the time saved), the figure acts (hop on the scan, lean and drive, slam and fist, the shrug on Weekly's equal result, the nod on the lever, the strain on round-up, the jump and the V on the gold plate), and no loop clear.
+- **Format module:** `looks/becker-rig/formats/what-difference.js` is unchanged.
+- **Check script** (`checks/03-what-difference.py`): the new id; Becker Rig landings are `option.resultT` (wake = `option.t`, on its naming word, with at least 0.77 s to the landing so the kit keeps the wake on it); `value_beats` put each crate on its number (within 0.25 s); slot steps are checked as on screen by their word and at most 0.8 s early (no typing model), and every slot line holds at least 2 s; the count-down settles on "$1,800" and drops by exactly the shown $1,800; the footer is one line (36 characters at most); the new step's tokens. **Result: 509 checks, 0 failures** (with 03b's port checks). Mutations on scratch copies: see the top of this file.
+- **Verification:** `node src/cli.mjs check` clean (0 errors, 0 warnings) at the default step and at every frame, and the three Becker Rig what-difference samples clean. A 12-frame contact sheet and stills at 0, 2.6 (scan), 4.3 (read), 8.6, 9.05 (landing), 9.6, 10.4, 14.05, 15.3, 16.3 (pair read), 18.6 (lever), 24.5 (strain), 26.0, 27.25 (landing), 28.5 (count-down settled), 31.1 (impact), 31.5, 31.6 and 37.17 s were read by eye. Every number on screen (the hook's $44,000; 7% APR, 72 months; the four payments; 72, ≈ 65, ≈ 65, ≈ 60; ≈ $10,000, ≈ $8,900 twice, ≈ $8,200; every slot line; the verdict) matches the check. MP4 rendered to `studio/out/03a-becker-rig-car-loan-weekly.mp4`; frames pulled at 0, 16.3 and 31.6 s match the stills (see Open item 5).
+- **Not changed (outside this pass's files):** `teasers/v2/teasers.json` still lists 03a as `03a-live-sheet-car-loan-weekly` (spec, `renders/v2/` MP4, and the 388-check result); `slate.json` has no 03 entry.
+
+### Port to Scoreboard (2026-10-08): 03b
+
+**03b moved from Clean Sheet to Scoreboard**, with 03c (the Scoreboard what-difference teaser) as the bar.
+
+- **Spec:** `studio/specs/03b-scoreboard-card-minimum.json` (new id `03b-scoreboard-card-minimum`, look `scoreboard`). The old spec was moved with `git mv` to `studio/specs/retired/03b-clean-sheet-card-minimum.json`.
+- **Kept exactly:** the header (the hook), all seven VO lines and their times, the verdict, every number, the footer, the three options (names, workings, values, deltas, tones), the cuts (9.6 and 21.0 s), the landings on "4.8" (16.0 s) and "2.2" (23.8 s), the winner's "≈ 10 years sooner" on "ten" (27.1 s), the 30.6 s runtime, the caption and the pinned comment.
+- **Changed because the look needs it:**
+  - **The hero is the payoff time** (`lookOpts.counter: "payoff"`): the Scoreboard's one focal number is the hero, and 03b's shock is time (the hook's first spoken number is "15 years"; the md models it on H71's red "25 YEARS"). So frame 1 opens on "PAID OFF IN ≈ 15.1 YEARS" in red, each race rolls it down (≈ 4.8, ≈ 2.2 years), and the interest values sit in the rows.
+  - **Option 1 (the minimum):** `t −3.0` / `resultT −2.4` → `t 0.0` / `resultT 0.0` (the Scoreboard's frame-1 landing, as 03c). Its typed `note` ("$142.59 → $99.66 by year 3", `noteT −0.15`) becomes the label stack's line 2 at frame 1 (`lookOpts.labelSteps[0]`, t 0.0): the same string, on screen from frame 1 instead of typing in by 1.3 s, so the hook's "shrink in numbers within 1.5 s" holds.
+  - **Option 2:** `valueEvery 2.0` dropped (the Scoreboard posts both values with the race's landing); ≈ $3,100 now lands with ≈ 4.8 years at 16.0 s and bumps on "$3,100" (a cell read at 18.0 s).
+  - **`lookOpts.keepSpeed: true` (new):** with a `resultT` 6.4 s after its cut, the kit stretched option 2's race into a 6 s crawl, so the hero sat on unverified figures ("7.6 YEARS" at 13.2 s) under "Not a dollar more…". Now the bar waits, lit but empty, and races at the shared speed (15.24-16.0 s).
+  - **Reads:** the hero bumps on "fifteen" (2.4 s); row cells bump and glow on "$7,300" (5.0 s) and "$3,100" (18.0 s). The Clean Sheet reads on "dollar" (the "$0 more" working) and on "More than you owed" (the header's $5,000 re-swipe) have no Scoreboard target, so they became label steps: "More than the $5,000 owed" on "More" (7.8 s, red) and "$0 more than the first minimum" on "dollar" (13.0 s, green). Both are new display strings built from shown numbers ($5,000; $0) and are checked.
+  - **The winner's payoff:** `data.winnerT 27.1` (as before) now means the hero lands "≈ 10 YEARS SOONER" on "ten", under the tag "PAID OFF" (`lookOpts.endTag`); its 1 s roll and the board's winner beat start at 26.06 s, after the verdict (25.8 s). Option 2's `deltaT 27.1` stays (its label-stack slot has yielded to the verdict, so the hero carries it; its pop is the landing's sound). Option 3's delta "≈ 13 years sooner" slams into the label stack at the kit default (24.35 s).
+  - **`lookOpts`:** Clean Sheet's `stake`, `gap` and its `reads` are dropped; `intro: false` added (the frame-1 race, as 03c).
+- **Format changes** (`looks/scoreboard/formats/what-difference.js` only; its header comment documents them): `keepSpeed`; cell reads (`reads: [{ t, option, metric }]`, the bar label too); `endTag`; `data.winnerT` (the payoff lands on it, the roll starts 1.04 s before but not before `verdict.t`); and the hero's roll to a duration delta when the hero's metric is a duration (as a money delta on a money hero). All are opt-in: 03c and both samples render pixel-identical (26 of 26 frames at 0, 1.2, 7.5, 9.0, 10.7, 15.5, 18.7, 22.5, 23.2 and 27 s, and the end).
+- **Check script:** the new id; the Scoreboard landing is `option.resultT` and its cut (`option.t`) sits on the naming word ("keep", "flat"); `value_beats` put the races on "4.8" and "2.2"; the hero read accepts the whole-unit rounding ("fifteen" for ≈ 15.1 years); cell reads must mark a value already posted; label steps (frame 1, "More", "dollar", each while its option holds the stack; interest > stake; the "$0 more" working); `keepSpeed` with every race starting after its cut + 0.35 s; the held delta: counter = payoff, a duration delta, `winnerT` = `deltaT`, the roll starting after the verdict; `endTag`. The note's expectation moved from `data.options[0].note` to `lookOpts.labelSteps[0].text` (the same string). **Result: 509 checks, 0 failures.**
+- **Verification:** `node src/cli.mjs check` clean (0 errors, 0 warnings) at the default step and at every frame. A 12-frame contact sheet and stills at 0, 2.5, 4.9, 5.1 (the cell read), 7.9, 9.7, 13.1, 15.6 (mid-race), 16.05, 16.1, 18.1 (the cell read), 23.0, 24.5, 26.0, 26.6 (mid-roll), 27.15, 27.5 and 30.5 s were read by eye. Every number on screen (the hook's $5,000; the footer's 22%, 1% and $40; the hero's ≈ 15.1 / ≈ 4.8 / ≈ 2.2 years and ≈ 10 years sooner; ≈ $7,300, ≈ $3,100, ≈ $1,300 and the three bar labels; $142.59, $250, $107.41, $0 and $99.66 in the label stack; ≈ 13 years sooner; the verdict) matches the check. MP4 rendered to `studio/out/03b-scoreboard-card-minimum.mp4`; frames pulled at 0, 16.1 and 27.5 s match the stills (see Open item 5).
+- **Not changed (outside this pass's files):** `teasers/v2/teasers.json` still lists 03b as `03b-clean-sheet-card-minimum`; the new MP4s are in `studio/out/`, not yet copied to `renders/v2/`.

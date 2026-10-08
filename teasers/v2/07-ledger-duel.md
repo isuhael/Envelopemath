@@ -1,15 +1,16 @@
 # Format 7: "2 people invest" ledger duel, three teasers
 
 **Channel:** Back of the Envelope (YouTube Shorts, Instagram Reels, TikTok), US audience, USD
-**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews; hook pass on 2026-10-08, 07c kept; hook pass 2 on 2026-10-08, 07c rewritten to "You save $100 a month"; assembly pass on 2026-10-08, 07a and 07c fitted, VO-locked marks added, rendered; round-2 fix pass on 2026-10-08, 07a re-paced to 22.8 s with a total line and held marks, 07c's frame-1 caption leak closed; 07b assembly pass on 2026-10-08, 07b fitted to the Becker kit, QA'd and rendered; 07b round-2 fix pass on 2026-10-08, the QA's must and shoulds fixed in the kit and the spec, re-rendered; see the [review log](#review-log))
+**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews; hook pass on 2026-10-08, 07c kept; hook pass 2 on 2026-10-08, 07c rewritten to "You save $100 a month"; assembly pass on 2026-10-08, 07a and 07c fitted, VO-locked marks added, rendered; round-2 fix pass on 2026-10-08, 07a re-paced to 22.8 s with a total line and held marks, 07c's frame-1 caption leak closed; 07b assembly pass on 2026-10-08, 07b fitted to the Becker kit, QA'd and rendered; 07b round-2 fix pass on 2026-10-08, the QA's must and shoulds fixed in the kit and the spec, re-rendered; port on 2026-10-08, 07a moved from the retired Live Sheet to Scoreboard and 07c from the retired Clean Sheet to Becker Rig; fix pass on 2026-10-08, QA's shoulds and nits on both ports fixed in the two `ledger-duel` format files and the specs, no number or VO word changed, re-rendered; see the [review log](#review-log))
 **Format:** `ledger-duel`, hook pattern **P4** ("same money, two choices")
 **Lane:** two people, the same money, two choices, a year-by-year ledger
 **Files:**
 - Specs:
-  - [`studio/specs/07a-live-sheet-start-at-25.json`](../../studio/specs/07a-live-sheet-start-at-25.json)
-  - [`studio/specs/07b-becker-rig-panic-sell-2008.json`](../../studio/specs/07b-becker-rig-panic-sell-2008.json)
-  - [`studio/specs/07c-clean-sheet-savings-rate.json`](../../studio/specs/07c-clean-sheet-savings-rate.json)
-- Check: [`teasers/v2/checks/07-ledger-duel.py`](checks/07-ledger-duel.py). Run `python3 teasers/v2/checks/07-ledger-duel.py`. It reports **416 checks, 0 failures** and exits 0 (the 07b round-2 fix pass split 07b's last VO line in two, +3: its numbers, its length and its gap to the line before; 413 before it; 418 after the round-2 fix pass. The 07b assembly pass took 07b from 152 checks to 147: it dropped the two round-1 prop labels the kit has no prop for, the "−37%" weight and the "≈ −18%" impact, with their coverage lines (−4); the sell label is now the pill text "sold → cash at 0%"; the rig beats went from impact, carry, impact, grow, peek to think, sell, peek, cheer (−1); three spec cues the kit already makes were dropped, whoosh, hit and roll (−3); and three VO-locked pencil marks were added (+3). 410 after the assembly pass, 407 after hook pass 2, 406 before it; the assembly pass added six VO-locked mark checks and dropped 07a's three "sfx on a beat" checks with its three duplicate spec cues; the round-2 fix pass added 07a's two new formula-bar lines and their claims, one 07c VO line and one 07c mark, and dropped 07a's shown-factors product claim). The round-2 fix pass's four corruptions of scratch copies (Ava's bar result "≈ $280,000", Ben's mark moved into Ava's VO line, 07c "About 6 cents", a dropped "≈" in 07c's verdict) gave 6 named failures and exit 1. Two deliberate corruptions (the old "× ≈ 8.1" shortcut in 07a's formula bar, and "$6,600" in a 07b VO line) made it exit 1, each with a named failure. Hook pass 2's four corruptions of a scratch copy of the new 07c spec (a Year 3 cell, "about 6 cents", the Year 5 row off its word, a dropped "≈" in the verdict) gave 5 named failures and exit 1.
+  - [`studio/specs/07a-scoreboard-start-at-25.json`](../../studio/specs/07a-scoreboard-start-at-25.json) (Scoreboard)
+  - [`studio/specs/07b-becker-rig-panic-sell-2008.json`](../../studio/specs/07b-becker-rig-panic-sell-2008.json) (Becker Rig)
+  - [`studio/specs/07c-becker-rig-savings-rate.json`](../../studio/specs/07c-becker-rig-savings-rate.json) (Becker Rig)
+  - Retired (the owner kept Scoreboard and Becker Rig): [`studio/specs/retired/07a-live-sheet-start-at-25.json`](../../studio/specs/retired/07a-live-sheet-start-at-25.json) and [`studio/specs/retired/07c-clean-sheet-savings-rate.json`](../../studio/specs/retired/07c-clean-sheet-savings-rate.json)
+- Check: [`teasers/v2/checks/07-ledger-duel.py`](checks/07-ledger-duel.py). Run `python3 teasers/v2/checks/07-ledger-duel.py`. It reports **461 checks, 0 failures** and exits 0 (the fix pass took it from 453, +8: 07a's resting working line and its coverage line, the table's cut in the VO gap, Ben's working line on that cut, the plan focus on the "3 times" line, and 07c's hero figure split into Leo-is-hero and You-ponders; see [Fix pass](#fix-pass-2026-10-08-07a-and-07c). The port to Scoreboard and Becker Rig took it from 416: see [the port entries](#port-to-scoreboard-2026-10-08-07a) in the review log. Before the port: the 07b round-2 fix pass split 07b's last VO line in two, +3: its numbers, its length and its gap to the line before; 413 before it; 418 after the round-2 fix pass. The 07b assembly pass took 07b from 152 checks to 147: it dropped the two round-1 prop labels the kit has no prop for, the "−37%" weight and the "≈ −18%" impact, with their coverage lines (−4); the sell label is now the pill text "sold → cash at 0%"; the rig beats went from impact, carry, impact, grow, peek to think, sell, peek, cheer (−1); three spec cues the kit already makes were dropped, whoosh, hit and roll (−3); and three VO-locked pencil marks were added (+3). 410 after the assembly pass, 407 after hook pass 2, 406 before it; the assembly pass added six VO-locked mark checks and dropped 07a's three "sfx on a beat" checks with its three duplicate spec cues; the round-2 fix pass added 07a's two new formula-bar lines and their claims, one 07c VO line and one 07c mark, and dropped 07a's shown-factors product claim). The round-2 fix pass's four corruptions of scratch copies (Ava's bar result "≈ $280,000", Ben's mark moved into Ava's VO line, 07c "About 6 cents", a dropped "≈" in 07c's verdict) gave 6 named failures and exit 1. Two deliberate corruptions (the old "× ≈ 8.1" shortcut in 07a's formula bar, and "$6,600" in a 07b VO line) made it exit 1, each with a named failure. Hook pass 2's four corruptions of a scratch copy of the new 07c spec (a Year 3 cell, "about 6 cents", the Year 5 row off its word, a dropped "≈" in the verdict) gave 5 named failures and exit 1.
   - New in the revision: the first payoff row must land by **3.0 s** (R10); a formula that multiplies shown factors must reproduce the shown result (now 07a's "3 × $24,000 = $72,000"); every formula-bar line must stay up long enough to type (24 characters a second) and then be read (1.5 s); headers are capped at 4 lines; 07a's break-even rate and 6% case are asserted.
 
 **How the facts were checked:**
@@ -18,7 +19,7 @@
 - Before posting, someone should open the pages that carry the most weight and confirm them by hand. They are marked **[click-check]** in the sources.
 - 07a needs no real-world data. Its 7% is a stated assumption, and its break-even rate is now disclosed.
 
-**Studio linter** (`node src/cli.mjs check`, re-run after the revision): **3/3 clean, 0 errors, 0 warnings.** The old footer warning on 07b is gone. After the assembly pass, 07a and 07c are lint-clean at every frame (`--every 0.0333333`) and rendered to `studio/out/` (see [Assembly pass](#assembly-pass-2026-10-08)). After the round-2 fix pass they are still 0 errors, 0 warnings at every frame, and re-rendered (see [Round-2 fix pass](#round-2-fix-pass-2026-10-08)).
+**Studio linter** (`node src/cli.mjs check`, re-run after the fix pass): **3/3 clean, 0 errors, 0 warnings**, also at every frame (`--every 0.0333333`). The 07a and 07c bullets below are the pre-port history (Live Sheet and Clean Sheet); the ported renders are described under each teaser and in the [port entries](#port-to-scoreboard-2026-10-08-07a). The old footer warning on 07b is gone. After the assembly pass, 07a and 07c are lint-clean at every frame (`--every 0.0333333`) and rendered to `studio/out/` (see [Assembly pass](#assembly-pass-2026-10-08)). After the round-2 fix pass they are still 0 errors, 0 warnings at every frame, and re-rendered (see [Round-2 fix pass](#round-2-fix-pass-2026-10-08)).
 - **07a (Live Sheet):** the live-sheet `ledger-duel` kit now exists in the working tree, so the ledger body, `lookOpts.formulaBar` and `rowLabelsAtStart` are linted and rendered. Stills and a contact sheet of the final spec checked at 0, 2.6, 4.5, 5.5, 6.6, 8.4, 14.0, 16.5 and 23.5 s; after the assembly pass at 0, 2.8, 4.5, 6.6, 8.0, 9.9, 12.5, 14.6, 15.4, 16.2, 16.5, 19, 21, 22.6, 24, 26.5 and 27.67 s.
 - **07c (Clean Sheet):** the clean-sheet kit is built. Stills and a contact sheet of the round-2 spec checked at 0, 1.6, 2.6, 4.5, 6.6, 8.4, 14.0, 16.5 and 20 s. The hook-pass-2 spec is lint-clean at every frame (`--every 0.0333333`), with stills checked at 0, 1.5, 3.0, 9.8 and 16.5 s; after the assembly pass at 0, 1.5, 2.7, 3.0, 4.4, 5.5, 7.3, 8.7, 10.3, 10.5, 12.5, 12.8, 15.8, 16, 17.5 and 19.07 s.
 - **07b (Becker rig):** after the [07b round-2 fix pass](#07b-round-2-fix-pass-2026-10-08), 07b (27.4 s) is again 0 errors, 0 warnings at every frame (`--every 0.0333333`), as are the kit's two ledger samples and a no-`lookOpts` copy. Before it: the Becker `ledger-duel` kit has landed. 07b (27.0 s) is 0 errors, 0 warnings at the default step and at every frame (`--every 0.0333333`): ledger, `rowLabelsAtStart`, the rig beats (think, sell, peek, cheer) and the pencil marks. A scratch copy with `lookOpts` removed renders a plain ledger (both crashes, pills, gold plate, verdict) and is also lint-clean. Stills and a contact sheet checked at 0, 0.9-1.6 (every 0.05-0.15 s), 2.0, 3.0, 4.2, 5.3-7.5, 9.0, 10.3, 12.8, 14.8, 17.6, 19.5, 22.5, 24.3-25.0 and 26.97 s (see [07b assembly pass](#07b-assembly-pass-2026-10-08)).
@@ -48,7 +49,7 @@
 
    **What we add:**
    - one set of final numbers, the same on screen, in the VO and in the caption (Jake's screen and caption finals differ on all three duels);
-   - a faceless winner cue: the winner's column is highlighted at the verdict, and in 07b the rig's poses do it.
+   - a faceless winner cue: the winner's panel floods neon at the verdict (07a), and in 07b and 07c the rig's poses and the gold plate do it.
 5. **Pitfalls:**
    - n = 3, all from one near-miss account, all in September 2026.
    - Jake's duels are silent and 11 s long. With a voice-over ours run 19.1-22.8 s (07a was 27.7 s before the round-2 fix pass), inside the 12-30 s lane set for this format. The rows still land about a second apart once the bet is set, and a music-only 12-14 s cut is worth testing.
@@ -63,7 +64,7 @@
   - every rounded result shows "≈" on screen and "about" in the VO;
   - exact values carry neither (07b's $6,300 is exact: $10,000 × 0.63);
   - each ledger keeps one precision: 07a to the nearest $1,000, 07b to the nearest $100, 07c to the cent (interest only, from hook pass 2);
-  - a formula that shows rounded factors must reproduce the shown result (07a's formula bar).
+  - a formula that shows rounded factors must reproduce the shown result (07a's working line; the Live Sheet's formula bar before the port).
 
   The checker enforces all of this.
 - **VO text uses numerals.** It doubles as the captions, and the checker reads its numbers. Line lengths assume about 2.6 spoken words a second, with digits expanded the way they would be read ("$66,000" = 4 words).
@@ -71,16 +72,18 @@
 
 ---
 
-## 07a: Live Sheet: "2 people invest $200 a month. 10 years vs 30 years. Who wins at 65?"
+## 07a: Scoreboard: "2 people invest $200 a month. 10 years vs 30 years. Who wins at 65?"
+
+*Ported to Scoreboard on 2026-10-08 (it was built in Live Sheet, now retired; the old spec is `studio/specs/retired/07a-live-sheet-start-at-25.json`). The hook, the VO wording and timings, every number and the verdict are unchanged. What changed is how the screen carries them; see "Port to Scoreboard (2026-10-08): 07a" in the Review log. A fix pass the same day re-staged the 3× line, the payoff and the table (see "Fix pass (2026-10-08): 07a and 07c"): no number or VO word changed; the working line gained a resting step at 9.9 s, and Ben's working line moved from 14.6 to 14.45 s to share the table's cut.*
 
 | | |
 |---|---|
-| Look | `live-sheet` (yellow banner, formula bar, a ledger sheet on black) |
-| Spec | `studio/specs/07a-live-sheet-start-at-25.json` (22.8 s; 27.7 s before the round-2 fix pass) |
+| Look | `scoreboard` (black bars, a dark gridded stage: a big AGE ticker with one pip per row, a mini ledger strip of past rows, two neon team panels with odometers, Ava green and Ben yellow; the label stack in the bottom bar carries the working; the verdict lands at the foot) |
+| Spec | `studio/specs/07a-scoreboard-start-at-25.json` (22.8 s) |
 | Platform title | **2 People Invest $200 a Month. One Stops at 35. Who Has More at 65?** |
-| On-screen hook (header) | **2 people invest $200 a month / 10 years vs 30 years. Who wins at 65?** (15 words, 2 lines; render-checked: fits the banner on 2 lines) |
-| Columns at 0.0 s | **Ava**: "Age 25 → 35 · put in $24,000"; **Ben**: "Age 35 → 65 · put in $72,000" (each plan on 2 lines; "puts in" wrapped to 3 and pushed the captions out of the band). The "put in $X" line is set in ink, the age range in grey. Column A: Age 30 … Age 65, cells empty; a heavy rule above Age 65 marks it as the total line from frame 1. Both columns stay ink until the verdict (`lookOpts.leader: false`) |
-| Formula bar at 0.0 s | "= $200 a month at 7% a year" (frame 1 arrives about 70% typed) |
+| On-screen hook (header) | **2 people invest $200 a month / 10 years vs 30 years. Who wins at 65?** (15 words, 2 lines; render-checked: Anton caps at 64 px, 2 lines in the top bar, "$200 a month" in neon green) |
+| Panels at 0.0 s | **AVA** (green): "Age 25 → 35 / put in $24,000"; **BEN** (yellow): "Age 35 → 65 / put in $72,000". The kit sets each plan one " · " piece per line and the money piece in white. Ava's odometer is already counting up from $0 on frame 1 (its "≈" an unlit ghost); Ben's reads $0. The ticker reads AGE 30 beside 8 row pips (the first lit; the number is white on frame 1 and on each cut, and rests in light grey between cuts, so the odometers lead), and the strip's two slots are LED-off skeletons. Both panel borders stay unlit until the verdict (`lookOpts.leader: false`) |
+| Working line at 0.0 s | "$200 a month at 7% a year" (label stack line 1, green; the kit drops the spec's leading "= "), over the matchup "AVA VS BEN" |
 | Footer | ASSUMES 7% a year, compounded monthly / not a forecast (2 lines, the break forced at the clause) |
 
 **Topic change from the seed, and why**
@@ -95,7 +98,7 @@
 
 | Rule | How |
 |---|---|
-| R1 | "$200", "10", "30", "65", "$24,000" and "$72,000" are on screen at 0.0 s |
+| R1 | "$200", "10", "30", "65", "$24,000" and "$72,000" are on screen at 0.0 s, and Ava's odometer is already counting |
 | R2 | One dollar input in the hook line ($200 a month) and no result |
 | R3 | **Partial.** The ages let a viewer see themselves as an early or late starter, but no viewer can swap in their own number (normal for P4). The caption's break-even line lets a viewer test their own rate assumption |
 | R4 | $200 a month is small, round and familiar |
@@ -103,9 +106,9 @@
 | R6 | Two people, $200 a month, until 65 |
 | R7 | The header names the two options (10 years vs 30 years); the plans add when each starts |
 | R8 | 15 words, 2 lines |
-| R9 | 8 labelled age rows with empty cells at frame 1 (`rowLabelsAtStart`; render-checked) |
-| R10 | First row (Age 30: ≈ $14,000 / $0) at **1.4 s**; biggest numbers on the last row (the total line) |
-| R11 | The question is on screen ("Who wins at 65?"); the caption opens without the answer and points at the Age 65 row |
+| R9 | 8 row pips beside the AGE ticker from frame 1 (the open loop is countable) and two LED-off strip slots (render-checked) |
+| R10 | First row (Age 30: ≈ $14,000 / $0): the count runs from frame 1 and lands at **2.0 s** (row t 1.4 s); biggest numbers on the last row (the climax roll) |
+| R11 | The question is on screen ("Who wins at 65?"); the caption opens without the answer, and the Age 65 count lands as the VO says Ava's final |
 | R12 | A repeatable verdict: "a third of the money, still wins by ≈ $37,000", with its condition disclosed (it holds above ≈ 6.1% a year) |
 
 **Benchmark hooks it is modelled on**
@@ -113,23 +116,27 @@
 - H18, ChartOrbit: "Does investing 100$ monthly in BMW make you rich?", 1,391,731 (5.91x). A small monthly amount, plus a question that waits for a verdict.
 - H64, Gage: "What $1 costs you by age", 1,150,974 (210x med). Ages as the rows.
 
-**Beat sheet**
+**Beat sheet** (as rendered by the Scoreboard `ledger-duel` kit; the scripted parts are `lookOpts.working`, `marks`, `planFocus`, `tableT` and `tableRows`, the rest is the kit's own row choreography)
 
 | t (s) | On screen | VO |
 |---|---|---|
-| 0.0 | Banner "2 people invest **$200 a month** / 10 years vs 30 years. Who wins at 65?". Formula bar typing "= $200 a month at 7% a year". Ava and Ben column heads with their plans ("put in $24,000" / "put in $72,000" in ink). Rows Age 30 … Age 65 labelled, cells empty, a heavy rule above Age 65. Footer on | "Ava invests from 25 to 35, then stops." (0.0-3.85) |
-| 1.4 | Row **Age 30**: ≈ $14,000 / $0, the first payoff | (…from 25…) |
-| 1.9 | Formula bar "Ava: $200 × 120 months = $24,000" (one line) | |
-| 3.2 | Row **Age 35**: ≈ $35,000 / $0. Pop. From 3.4 s a dark pill "Ava stops · Ben starts" sits on the gridline under the row, over the still-empty Age 40 row (`eventStyle: "over"`): nothing reflows, and it holds until Age 40 lands | (…then stops.) |
-| 4.75 | Formula bar "Ben: $200 × 360 months = $72,000" (one line) | "Ben starts at 35 and never stops." (4.0-7.1); the pill is up while "Ben starts at 35" is said |
-| 6.0, 6.7 | Rows 40 and 45: ≈ $49,000 / ≈ $14,000; ≈ $70,000 / ≈ $35,000 (the pill closes just before Age 40 lands, on "and never stops") | |
-| 7.4, 8.2, 9.0 | Rows 50, 55, 60: ≈ $99,000 / ≈ $63,000; ≈ $140,000 / ≈ $104,000; ≈ $198,000 / ≈ $162,000 | "Ben invests 3 times as much." (7.25-9.6; captions "BEN INVESTS" / "3 TIMES AS MUCH") |
-| 7.6 | Formula bar "Ben: $72,000 = 3 × $24,000": the picture for the 3× line | |
-| 9.9 | Row **Age 65**, the total line, counts up in figures 15% larger (lands 10.7): **≈ $281,000 / ≈ $244,000**, then takes a held grey tint. Roll, then pop | "At 65, Ava has about $281,000." (9.75-14.4) |
-| 11.4-11.5 | Formula bar "Ava: $24,000 in → ≈ $281,000". Mark: the selection springs onto Ava's **≈ $281,000**, which takes a pale-yellow fill and pops from 110% to 106%, held while she is the focus. Pop | (…about $281,000.) |
-| 14.6-14.7 | Formula bar "Ben: $72,000 in → ≈ $244,000". Mark: the selection hops to Ben's **≈ $244,000**, which takes the fill and pop; Ava's cell eases back to the total line's tint. Pop | "Ben has about $244,000." (14.5-17.95) |
-| 18.1 | Verdict card in the caption band: "**Ava** wins by ≈ $37,000 / with a third of the money". Ben's fill eases out, the selection springs onto Ava's column, which washes yellow, and her final cell takes the solid yellow. Ding | "A third of the money, and Ava still wins." (18.1-21.6) |
-| 21.6-22.8 | The finished sheet holds, then clears to the frame-1 state, which makes the loop | |
+| 0.0 | Header and footer in the top bar. Stage: the ticker "AGE 30" with 8 pips (the first lit), two LED-off strip slots, the AVA and BEN panels with their plans; Ava's odometer already rolling up from $0 (the "≈" an unlit ghost), Ben's $0. Label stack: "$200 a month at 7% a year" / "AVA VS BEN". Roll | "Ava invests from 25 to 35, then stops." (0.0-3.85) |
+| 1.9 | Working line: "Ava: $200 × 120 months = $24,000" (a hard cut) | |
+| 2.0 | Row **Age 30** lands: ≈ $14,000 / $0 (bump, glow, ding), the first payoff | (…from 25 to 35…) |
+| 3.2 | Row **Age 35** cuts (thud): the ticker rolls 30 → 35, the pips step, Age 30 ships into the strip; Ava rolls to ≈ $35,000 (lands 4.58, ding), Ben stays $0 | (…then stops.) |
+| 4.58 | Event: label line 2 cuts to "AVA STOPS · BEN STARTS" (white) and a white wash wipes across both panels; it holds 2.5 s | "Ben starts at 35 and never stops." (4.0-7.1) |
+| 5.2 | Working line: "Ben: $200 × 360 months = $72,000" | |
+| 6.0, 6.7 | Rows 40 and 45 (thud, roll, ding): ≈ $49,000 / ≈ $14,000, then ≈ $70,000 / ≈ $35,000; Ben's odometer starts to move | (…and never stops.) |
+| 7.08 | Label line 2 back to "AVA VS BEN" | |
+| 7.4, 8.2, 9.0 | Rows 50, 55, 60 (a thud on each cut, no ding while the plan focus holds; the strip ships a row at each cut): ≈ $99,000 / ≈ $63,000; ≈ $140,000 / ≈ $104,000; ≈ $198,000 / ≈ $162,000 | "Ben invests 3 times as much." (7.25-9.6) |
+| 7.6-9.6 | The picture for the 3× line (`lookOpts.planFocus`, 2.0 s): "put in $24,000" lights green and "put in $72,000" yellow, with a glow and a bump; the "Age … → …" lines dim; both odometers step back to 70%. Working line: "Ben: $72,000 = 3 × $24,000". The deposit gap is what the eye lands on | |
+| 9.9 | Row **Age 65** cuts, the climax: the ticker steps back (grey, 60%) and both odometers roll for 2.0 s over a riser. The working line goes back to the resting "$200 a month at 7% a year" (no stale 3× under the climax) | "At 65, Ava has about $281,000." (9.75-14.4) |
+| 12.0 | The count lands **≈ $281,000 / ≈ $244,000** as "$281,000" is said: hit + cash, a 1.1× bump, a green floor bloom; both values then hold at 1.07× (the odometer is sized so a marked value keeps at least 24 px of air inside its lit border at the mark's bump) | (…about $281,000.) |
+| 12.15 | Mark: Ava's panel border lights green, her value bumps and flares, Ben's value steps back to 70%. Working line: "Ava: $24,000 in → ≈ $281,000". Tick. Nothing else cuts: the ticker, the pips and the strip (Age 55, Age 60) hold while her ≈ $281,000 is said | |
+| 14.45 | In the VO gap after Ava's line, one cut (thud): the full table (`lookOpts.tableT`) replaces the ticker, pips and strip with the rows Age 30, 35, 45, 55 and 65 (`lookOpts.tableRows`: the twist row, then every 10 years; the room above the panels holds five lines). The twist row Age 35 keeps a white bar on its left end and a white key. Working line, on the same cut: "Ben: $72,000 in → ≈ $244,000" | "Ben has about $244,000." (14.5-17.95) |
+| 15.55 | Mark: the focus hops to Ben's panel (yellow border, his value bumps), Ava's value steps back. Tick | (…about $244,000.) |
+| 18.1 | Verdict "**AVA** WINS BY ≈ $37,000 / WITH A THIRD OF THE MONEY" slams into the label slot (green rule, reveal). Ava's panel floods neon green with black type; Ben's steps back to 60% | "A third of the money, and Ava still wins." (18.1-21.6) |
+| 21.6-22.8 | Hold on the table, the flooded panel and the verdict | |
 
 **Full guide VO** (about 54 spoken words)
 
@@ -157,9 +164,10 @@
 | Age 60 | B(120)·g^300 / B(300) | 198,196.58 / 162,014.34 | ≈ $198,000 / ≈ $162,000 |
 | Age 65 | B(120)·g^360 / B(360) | 280,968.48 / 243,994.20 | ≈ $281,000 / ≈ $244,000 |
 | Verdict gap | 280,968.48 − 243,994.20 | 36,974.28 | ≈ $37,000 (equal to the gap between the two shown finals) |
-| Formula bar at 7.6 s | 3 × 24,000 | 72,000 | "Ben: $72,000 = 3 × $24,000" (the shown factors multiply exactly) |
-| Formula bar at 11.4 s | money in → Ava's Age 65 cell | 24,000 → 280,968.48 | "Ava: $24,000 in → ≈ $281,000" (the same display string as her Age 65 cell) |
-| Formula bar at 14.6 s | money in → Ben's Age 65 cell | 72,000 → 243,994.20 | "Ben: $72,000 in → ≈ $244,000" (the same display string as his Age 65 cell) |
+| Working line at 7.6 s | 3 × 24,000 | 72,000 | "Ben: $72,000 = 3 × $24,000" (the shown factors multiply exactly) |
+| Working line at 9.9 s | (the resting line, word for word) | | "$200 a month at 7% a year" (no new numbers) |
+| Working line at 12.15 s | money in → Ava's Age 65 cell | 24,000 → 280,968.48 | "Ava: $24,000 in → ≈ $281,000" (the same display string as her Age 65 cell) |
+| Working line at 14.45 s | money in → Ben's Age 65 cell | 72,000 → 243,994.20 | "Ben: $72,000 in → ≈ $244,000" (the same display string as his Age 65 cell) |
 | Pinned: Ava never stops | B(480) | 524,962.68 | ≈ $525,000 |
 
 In the table, g = 1 + 0.07/12.
@@ -186,8 +194,8 @@ In the table, g = 1 + 0.07/12.
 
 **Per-platform notes**
 - **YouTube Shorts:** use the title above. It adds the twist ("One Stops at 35") without the answer. No keyword CTA: in the benchmark, keyword CTAs lifted comments, not views.
-- **Instagram Reels:** this is Jake's home platform. Use **frame 1** as the cover (the plans with $24,000 vs $72,000 and the empty ledger), not the finished ledger, which would answer the question. Jake's covers are pre-number frames. The first caption line poses the bet; the answer is in line 2.
-- **TikTok:** the header stays on screen all the way through. The footer sits above y 1480. Expect "but 7% isn't guaranteed" comments; the caption's break-even line answers them.
+- **Instagram Reels:** this is Jake's home platform. Use the frame at **2.1 s** as the cover: AGE 30 with its first row landed (≈ $14,000 / $0), both panels with $24,000 vs $72,000, the LED-off strip, the question still open. Not frame 1, where Ava's odometer is mid-roll ("$4,671" under AGE 30 reads as a wrong Age 30 value; in motion it is fine), and not the finished table, which would answer the question. Jake's covers are pre-number frames. The first caption line poses the bet; the answer is in line 2.
+- **TikTok:** the header and footer stay in the top bar all the way through; nothing readable sits below y 1480. Expect "but 7% isn't guaranteed" comments; the caption's break-even line answers them.
 - **Silent cut to test:** music only, rows every 1.0 s, 13 s, verdict as the last frame.
 
 ---
@@ -321,17 +329,19 @@ The verifier independently matched the 2007-2025 figures (including 2025 +17.88%
 
 ---
 
-## 07c: Clean Sheet: "You save $100 a month. 5 years = $6,000. A big bank adds: ?"
+## 07c: Becker Rig: "You save $100 a month. 5 years = $6,000. A big bank adds: ?"
+
+*Ported to Becker Rig on 2026-10-08 (it was built in Clean Sheet, now retired; the old spec is `studio/specs/retired/07c-clean-sheet-savings-rate.json`). The hook, the VO wording and timings, every number and the verdict are unchanged. The footer, the stake line and the plans' line breaks were reworded to fit the Becker kit's mono lines (below), and the crown moved onto its spoken number; see "Port to Becker Rig (2026-10-08): 07c" in the Review log. A fix pass the same day swapped the figure colours to the kit default (Leo, the winner, is the green hero; You is slate), reshaped the pencil rings so they clear the "≈", and tidied the acting (see "Fix pass (2026-10-08): 07a and 07c"). No number or VO word changed.*
 
 | | |
 |---|---|
-| Look | `clean-sheet` (white worksheet, a booktabs ledger, highlighter boxes; the Clean Sheet kit ignores badges by design) |
-| Spec | `studio/specs/07c-clean-sheet-savings-rate.json` (19.1 s) |
+| Look | `becker-rig` (a light void; two stick figures, each on a coin stack whose height is his interest on one honest scale; a ledger that builds up from the floor on the right; pencil rings; a gold plate for the winner's final) |
+| Spec | `studio/specs/07c-becker-rig-savings-rate.json` (19.1 s) |
 | Platform title | **You Save $100 a Month for 5 Years. How Much Does a Big Bank Add?** |
-| On-screen hook (header) | **You save $100 a month / 5 years = $6,000 / A big bank adds: ?** (14 words, 3 lines, "$100 a month" on the yellow highlighter; render-checked) |
-| Columns at 0.0 s | **You**: "Big bank / 0.01% APY"; **Leo**: "High-yield / 4.00% APY" (the kit splits each plan at " · "; 2 lines each since the round-2 fix pass, which dropped the plans' repeated "$100 a month"). Row "Start: $0.00 / $0.00" filled; Years 1-5 labelled in grey, cells empty |
-| Stake line | "Interest earned so far · $100 a month each". `lookOpts.stake: "show"` keeps it on screen; by default the kit drops a stake line whose money the header already shows. It is the line that tells the viewer the cells are interest, not balances, and the one place under the header that says $100 a month for both |
-| Footer | ASSUMES month-end deposits, steady rates · 0.01% = a big bank's standard savings APY (2 lines, broken at the "·"). Until Chase's Oct 2, 2026 rate sheet is opened by hand ([click-check]), Chase is named in the caption only |
+| On-screen hook (header) | **You save $100 a month / 5 years = $6,000 / A big bank adds: ?** (14 words, 3 lines, "$100 a month" in green; render-checked in the Becker chrome) |
+| Columns at 0.0 s | **● You** (slate: the viewer's stand-in, in the losing seat): "Big bank / 0.01% APY"; **● Leo** (green, the hero figure: the winner, the kit's default): "High-yield / 4.00% APY". Each plan is set on two lines with "\n" (the kit's greedy wrap broke "Big bank · 0.01% / APY"). Row "Start: $0.00 / $0.00" settled; Years 1-5 dim over empty dotted shelves. Both figures stand on the bare floor (no interest yet, no coins): You ponders, hand on chin (`lookOpts.ponder`); Leo stands ready |
+| Stake line | "Interest so far · $100 a month each" (one mono line under the footer; the Becker kit shows a stake line by default). It tells the viewer the cells and the stacks are interest, not balances, and says $100 a month for both. The Clean Sheet's "Interest earned so far · …" is 42 characters, two lines of the kit's 40 px mono with "each" alone on the second |
+| Footer | Month-end deposits, steady rates / 0.01% = a big bank's standard APY (2 mono lines). The Clean Sheet footer ("ASSUMES month-end deposits, steady rates · 0.01% = a big bank's standard savings APY", 84 characters) needs three lines at the kit's 40 px mono, so the kit shrank it to 36 px (a type-floor warning). The same three facts now fit two 37-character lines; "ASSUMES" and "savings" are gone. Until Chase's Oct 2, 2026 rate sheet is opened by hand ([click-check]), Chase is named in the caption only |
 
 **Hook pass 2 (2026-10-08): rewritten.** The two judges averaged this hook at **7.25**, against **5.00** for the one it replaced ("2 people save **$10,000** / Big bank vs high-yield / Interest after 5 years?", with Mia and Leo each holding a $10,000 lump sum). Two other rewrites also averaged 7.25. This one won the tie on the owner's priority rules: it is the only option with a number the viewer owns and a full stake (you + $100 a month + 5 years). The money changed from a $10,000 lump sum to $100 a month; the lane, the rates, the sources and the two-column ledger did not. The first hook pass's "kept" verdict is superseded; both passes are in the [Review log](#hook-pass-2-2026-10-08).
 
@@ -356,8 +366,8 @@ The verifier independently matched the 2007-2025 figures (including 2025 +17.88%
 | R6 | **Full:** you + $100 a month + 5 years, all in the header |
 | R7 | **Partial.** The header names only the big bank; the high-yield side is in Leo's plan from frame 1. "Big bank" is unnamed on screen; Chase is named in the caption |
 | R8 | 14 words, 3 lines |
-| R9 | One blank ("?") and 5 grey year rows with empty cells (render-checked) |
-| R10 | First payoff (Year 1: ≈ $0.05 / ≈ $21.84) at **1.0 s**; biggest last (Year 5, the ledger's total line) |
+| R9 | One blank ("?"), 5 dim year rows over empty shelves, and two figures with no coins under them (render-checked) |
+| R10 | First payoff (Year 1: ≈ $0.05 / ≈ $21.84) at **1.0 s**, and Leo's stack gets its first coin; biggest last (Year 5, crowned on the gold plate) |
 | R11 | The header asks "A big bank adds: ?"; the verdict answers it in the spoken last line ("Same $6,000, different account: ≈ $1.48 vs ≈ $617.90"). The frame-1 caption is "Year 1 at a big bank:" with no number; "About 5 cents." shows only as it is spoken (2.45 s). The caption's first line repeats the question without a number |
 | R12 | A lopsided, repeatable verdict on the same $6,000: ≈ $1.48 vs ≈ $617.90 (≈ 419×, kept off screen) |
 
@@ -368,23 +378,26 @@ The verifier independently matched the 2007-2025 figures (including 2025 +17.88%
 - H84, Master Money: "Four dead simple ways to figure out what you actually make!", whose frame-1 caption reads "TAKE YOUR SALARY", 3,000,000 (140x). The viewer runs their own number (R3). The single empty slot follows the hook bank's rewrite 4.1B ("= $___ each").
 - H49, The Debt Freedom Project: "Yes, daily payments work!", 382,100 (289.1x). A tiny dollar verdict ($2.98) still breaks out when it is clear.
 
-**Beat sheet** (what the clean-sheet kit renders)
+**Beat sheet** (as rendered by the Becker `ledger-duel` kit; the scripted acting is `lookOpts.beats`, `marks` and `winnerT`, everything else is the kit's own row physics)
 
 | t (s) | On screen | VO |
 |---|---|---|
-| 0.0 | Page title (3 lines, "$100 a month" on the yellow highlighter, "A big bank adds: ?"), the 2-line footer, the stake line, You and Leo with two-line plans, row "Start: $0.00 / $0.00", empty rows Years 1-5. The caption band shows only the line being spoken, "Year 1 at a big bank:", in grey and lights it word by word: no number from the answer is on frame 1 | "Year 1 at a big bank:" (0.0-2.3) |
-| 1.0 | **Year 1** lands, the first payoff: the sand cursor band swipes the row and both values type in, ≈ $0.05 / ≈ $21.84 (each "≈" hugs its figure). Pop | |
-| 2.7 | Mark: You's ≈ $0.05 takes a coral box (`lookOpts.marks`). Pop | "About 5 cents." (2.45-3.6) |
-| 3.9 | Mark: Leo's ≈ $21.84 takes a green box; You's coral rests at 42%. Pop | "High-yield: about $22." (3.7-6.0) |
-| 6.0 | Year 2: ≈ $0.23 / ≈ $92.56 (after "about $22" ends); Leo's green rests as the new row lands | |
-| 6.8 | Year 3: ≈ $0.53 / ≈ $214.11 | "Year 3: about 53 cents." (6.3-8.6) |
-| 7.4 | Mark: You's ≈ $0.53 takes a coral box, the only full-strength box on the sheet. Pop | (…53 cents.) |
-| 8.2 | Year 4: ≈ $0.94 / ≈ $388.52 (the Year 3 box rests at 8.6 s, after its 1.2 s hold) | |
-| 9.5 | **Year 5**, the ledger's total line (rule above, larger figures): ≈ $1.48 / ≈ $617.90. Ding | "Year 5: about $1.48." (8.9-11.95) |
-| 10.0 | Mark: You's ≈ $1.48, the header's "?", takes a coral box. Pop | (…about $1.48.) |
-| 12.2 | Winner beat (`lookOpts.winnerT` 12.2): Leo's ≈ $617.90 takes the blue box and his name the blue highlighter; You's ≈ $1.48 rests. Ding | "High-yield: about $618." (12.2-14.85) |
-| 15.2 | Verdict "Same $6,000, different account: / ≈ $1.48 vs **≈ $617.90**" (≈ $1.48 on coral, ≈ $617.90 on blue, in column order, the same colours as the two cells; render-checked on 2 lines). It carries the spoken last line, so sound-off viewers get it too. Reveal | "Same $6,000. Different account." (15.2-17.5) |
-| 17.5-19.1 | Hold, then the values clear to the frame-1 state (loop) | |
+| 0.0 | Header (3 lines, "$100 a month" in green, "A big bank adds: ?"), the 2-line footer, the stake line, the column heads, row "Start: $0.00 / $0.00" settled, Years 1-5 dim over empty shelves. Left: You (slate) ponders on the bare floor, hand on chin; Leo (green) stands ready beside him. The caption shows only "Year 1 at a big bank:": no number from the answer is on frame 1 | "Year 1 at a big bank:" (0.0-2.3) |
+| 1.0 | **Year 1** drops onto its shelf, the first payoff: ≈ $0.05 in ink (it adds no coin, so it is quiet: `minGain`) / ≈ $21.84 in green. Leo's stack springs up one coin and he rides it, arms up; You's floor stays bare. Thud | |
+| 2.7 | A red pencil ring draws round You's ≈ $0.05, which turns red; You shrugs. Swipe. (You's rings start at the top and run down the 36 px gap between "Year N" and the "≈": at least 8 px clear of the cell's ink, about 11 px clear of the label; the cell pops 2% about its centre, inside its ring) | "About 5 cents." (2.45-3.6) |
+| 3.9 | A green ring round Leo's ≈ $21.84 (You's ring closes); Leo points at it, his arm aimed from his shoulder at the ringed cell. Swipe | "High-yield: about $22." (3.7-6.0) |
+| 6.0 | Year 2: ≈ $0.23 / ≈ $92.56 (thud). Leo's ring closes; he rides up to 5 coins | |
+| 6.8 | Year 3: ≈ $0.53 / ≈ $214.11; Leo's stack is 11 coins | "Year 3: about 53 cents." (6.3-8.6) |
+| 7.4 | A red ring round You's ≈ $0.53, which turns red; You looks up at Leo's stack. Swipe | (…53 cents.) |
+| 8.2 | Year 4: ≈ $0.94 / ≈ $388.52 (the ring closes) | |
+| 9.5 | **Year 5**: ≈ $1.48 / ≈ $617.90, Leo's in green at 1x like any row (the crown waits for its own VO line). Leo rides his tower up beside the top row, plainly: no arms up, his celebration waits for the crown | "Year 5: about $1.48." (8.9-11.95) |
+| 10.0 | A red ring round You's ≈ $1.48, the header's "?": it stays to the end, and the cell stays red. You slumps over his bare floor. Swipe | (…about $1.48.) |
+| 12.2 | You looks up at Leo's tower | "High-yield: about $618." (12.2-14.85) |
+| 12.83-12.9 | **The crown** (`winnerT` 12.9, as "$618" is said): the gold plate opens and Leo's ≈ $617.90 grows onto it at 1.3×; impact, camera punch, a short fan of rays above the plate, hit + cash | (…about $618.) |
+| 13.06-14.35 | Leo bobs, hops and celebrates on his tower (step on landing; the hop is about 28 px, down from 52, so his raised hands stay at least 24 px under the stake line: about 40 px in the render), then points at the ledger. You droops (13.35); his column settles grey; Years 2 and 4 and the Start row, the rows the VO never names, settle to 55% (the Start row's two $0.00 alike, in ink) | |
+| 15.2 | The verdict replaces the captions: "Same $6,000, different account: / ≈ $1.48 vs ≈ $617.90" (≈ $1.48 in red, the colour of its ring; ≈ $617.90 green on the swoosh). Ding. Leo celebrates again, then points | "Same $6,000. Different account." (15.2-17.5) |
+| 16.7 | You peeks up at Leo's tower, hand over his eyes, and holds it to the end. Boing | (…Different account.) |
+| 17.5-19.1 | Hold: the gold plate, the red-ringed ≈ $1.48, Leo on his tower, You on the floor | |
 
 **Full guide VO** (about 42 spoken words, 2.6-2.7 words a second; line 0 is recorded as two lines, "Year 1 at a big bank:" and "About 5 cents.")
 
@@ -449,10 +462,15 @@ The verifier independently matched the 2007-2025 figures (including 2025 +17.88%
 
 **Per-platform notes**
 - **YouTube Shorts:** title above. "$100 a month", "big bank" and "high-yield" are the search words. The title asks the header's question without the answer.
-- **Instagram Reels:** cover on frame 1 (the "?" and both plans, cells empty), not the finished ledger, which answers the question. It is a natural save-and-share for anyone with a branch-bank savings account.
+- **Instagram Reels:** cover on frame 1 (the "?", both plans, the empty rows, You pondering on a bare floor beside Leo), not the end frame (Leo on his gold tower), which answers the question. It is a natural save-and-share for anyone with a branch-bank savings account.
 - **TikTok:** expect "my bank pays more" and "it's only 5 years" comments. The pinned comment answers the first with the FDIC average and asks for rates, which is the duel's "pick a side" in comment form.
-- **Look note:** the Clean Sheet direction is "parked" in `03-look-directions.md` (its step-by-step pages underperformed). Its core rule is that the working stays visible. Here the working is the plans (each column's rate), the stake line ($100 a month each) and the header's own sum ("5 years = $6,000"). The kit shows the stake line only because `lookOpts.stake` is "show".
-- **Known weakness (fixed in the round-2 fix pass):** the Clean Sheet caption showed the whole first VO line in grey from frame 1, so "about 5 cents" was readable before the viewer had made a guess (judge 1 docked the hook for it). VO line 0 is now split into "Year 1 at a big bank:" and "About 5 cents."; the chrome shows only the line being spoken, so frame 1 carries no number from the answer. The hook itself (header, title, first payoff at 1.0 s) is unchanged.
+- **Look note (Becker Rig, since the port):** the Becker rig is a look reference, not a benchmark (`alan-becker.md`). The devices used here:
+  - §4 "results are transformations": interest is coins on one honest scale (one coin ≈ $20 at this height). Leo's ≈ $617.90 is a 31-coin tower; You's ≈ $1.48 never adds up to a coin, so he stands on the bare floor all video, and his cells land in ink, never the fresh green (`lookOpts.minGain`).
+  - §5 "something arrives within 1 s": Year 1 and Leo's first coin at 1.0 s.
+  - §6 idea 10's "punchline, not episode": You peeks up at Leo's tower on "Different account".
+  - Colour means the winner (`lookOpts.figures`, the kit default since the fix pass): Leo is the green hero figure, so the green figure on the gold tower, Leo's green column head, his fresh green cells, his green ring and the verdict's green ≈ $617.90 all name the same person. "You", the viewer's stand-in, is slate and sits in the losing seat, as the hook intends; he still ponders the hook on frame 1 (`lookOpts.ponder: 0`), shrugs, slumps and peeks. (The port had You green, so every green number on screen was Leo's.)
+  - The red rings (`marks[].tone: "bad"`) tint each number the VO names for the big bank red, the colour the verdict gives ≈ $1.48.
+- **Known weakness (fixed in the round-2 fix pass, still fixed):** the Clean Sheet caption showed the whole first VO line in grey from frame 1, so "about 5 cents" was readable before the viewer had made a guess (judge 1 docked the hook for it). VO line 0 is split into "Year 1 at a big bank:" and "About 5 cents.". The Becker chrome pops each line's words in as the line starts, so frame 1 carries no number from the answer either.
 
 ---
 
@@ -774,3 +792,153 @@ QA scored 07b 6/10: the numbers were right, but the frames were not at the owner
 
 **Still open:**
 - The kit README (§9 ledger-duel) still describes right-aligned labels, the old pills, the coin pile that stays and the pencil. The new behaviour is documented in the format file's header comment; the README belongs to the kit owner.
+
+### Port to Scoreboard (2026-10-08): 07a
+
+The owner watched the 30 teasers in four looks and kept two, Scoreboard and Becker Rig; Clean Sheet and Live Sheet are retired. 07a moved from Live Sheet to Scoreboard. The new spec is `studio/specs/07a-scoreboard-start-at-25.json`; the Live Sheet spec went to `studio/specs/retired/07a-live-sheet-start-at-25.json` (`git mv`). No Scoreboard ledger duel existed yet, so the bar was the look's best teasers in other formats (03c, 04a, 04c): one hard cut per beat, a focal number that lands on the word that names it, the payoff landing last and biggest.
+
+**Kept unchanged:** the header, the footer, all six VO lines and their timings, the verdict and its time, all 16 ledger cells and their row times, the event "Ava stops · Ben starts", the six working-line texts (the Live Sheet's formula bar, word for word), `winner`, `hold` and the 22.8 s duration.
+
+**How the Scoreboard carries each Live Sheet device:**
+
+| Live Sheet | Scoreboard |
+|---|---|
+| A ledger sheet with every age label on screen from frame 1 (`rowLabelsAtStart`), cells filling row by row | The AGE ticker (it rolls 30 → 35 → … → 65 at each cut) with 8 row pips (the countable open loop), a two-slot strip of past rows, and the two neon panels whose odometers roll each row's values; Ava's count already runs on frame 1 |
+| The typed formula bar (`formulaBar`) | `lookOpts.working`: label stack line 1, one hard cut per line (the kit drops the leading "= ") |
+| The event pill over the gridline (`eventStyle: "over"`) | Label stack line 2 cuts to "AVA STOPS · BEN STARTS" as the Age 35 count lands (4.58 s), with a white wash across both panels, for 2.5 s |
+| The total line (`total`) and the held pale-yellow marks | The climax roll (2.0 s over a riser, hit + cash, a 1.1× bump, a floor bloom, a 1.07× hold) and `marks` (the panel border lights in the person's colour, the value bumps, the other side steps back) |
+| `leader: false` | `leader: false`, kept: no lit border until the verdict |
+| The yellow wash on Ava's column at the verdict | Ava's panel floods neon green with black type; Ben's steps back to 60% |
+| The sheet clears to frame 1 for the loop | The end frame holds: the table, the flooded panel, the verdict |
+
+**Re-timed (each beat stays on the VO word that names it):**
+- **Ava's mark** 11.5 → 12.15 s, and her working line "Ava: $24,000 in → ≈ $281,000" 11.4 → 12.15 s. The Scoreboard stretches the climax count to land 0.15 s before the first mark on its row. With the mark at 12.15 s, the Age 65 count rolls for 2.0 s and lands at 12.0 s, as "$281,000" is said (estimated at 12.07 s), with hit + cash. At 11.4 s the working line would have printed ≈ $281,000 under a count still rolling.
+- **Ben's mark** 14.7 → 15.55 s, on the spoken "$244,000" (estimated at 15.65 s). His working line stays at 14.6 s, where his VO line starts.
+- **Working line "Ben: $200 × 360 months = $72,000"** 4.75 → 5.2 s. The kit fires the event as the Age 35 count lands (4.58 s), so at 4.75 s the label stack would have slammed twice within 0.2 s.
+
+**Kit change** (`looks/scoreboard/formats/ledger-duel.js`, opt-in, documented in its header comment): `lookOpts.tableRows`, the rows the final table keeps. The room above the panels holds five lines here, and the kit's own drop rule kept Age 30, 35, 40, 45 and 65, a jump from 45 to 65. 07a keeps Age 30, the twist row Age 35, then 45, 55 and 65: every 10 years after the twist. Both kit samples (`samples/ledger-duel.json`, `ledger-duel-2.json`) render pixel-identical at 34 sampled times each, with identical SFX lists.
+
+**Not used:** `summary` (the panels' plans already carry the money put in), `finalRoll` (the mark sets the climax length), the kit's leader border.
+
+**Check** (`checks/07-ledger-duel.py`):
+- The 07a id, and the working-line paths (`lookOpts.working`).
+- A reading rule for the Scoreboard's working line, which is a hard cut, not typed: each line stays up for the 0.22 s slam plus max(1.5 s, characters ÷ 15), or until the label stack yields at the verdict. It replaces the Live Sheet's typing rule.
+- No Live Sheet option left (`formulaBar`, `rowLabelsAtStart`, `eventStyle`, `total`); the leader border off.
+- A model of the kit's climax roll: the Age 65 count lands within 0.9 s of the spoken "$281,000", and both marks sit on their spoken finals after it.
+- The working line with ≈ $281,000 cuts in after the count lands.
+- The table rows (Age 30, 35, 45, 55, 65, the event row among them).
+
+**Verification:**
+- `node src/cli.mjs check`: 0 errors and 0 warnings at the default step and at every frame (`--every 0.0333333`).
+- Contact sheet and stills read at 0, 2.05, 3.4, 4.65, 5.3, 6.6, 7.7, 9.95, 12.05, 12.2, 12.6, 14.7, 15.6, 18.3 and 22.77 s. Every number on them matches the checker: the header's $200, 10, 30 and 65; the footer's 7%; the plans' $24,000 and $72,000; all 16 cells (in the panels, the strip and the table); the six working lines; the event; the verdict's ≈ $37,000. The only other figures on screen are odometers mid-roll (their "≈" unlit) and the ticker rolling between ages (it passes AGE 62 for a frame or two between 60 and 65, like a clock).
+- Render: `studio/out/07a-scoreboard-start-at-25.mp4`, 22.8 s, 684 frames, 1080×1920, 30 fps, h264 + aac, 24 SFX cues. Frames pulled from the MP4 at 0, 12.6 and 18.3 s match the stills (mean difference 0.74-1.01/255, PSNR 37.0-39.4 dB: compression).
+
+### Port to Becker Rig (2026-10-08): 07c
+
+07c moved from Clean Sheet to Becker Rig. The new spec is `studio/specs/07c-becker-rig-savings-rate.json`; the Clean Sheet spec went to `studio/specs/retired/07c-clean-sheet-savings-rate.json` (`git mv`). The bar was 07b, the look's ledger duel: a physical rig whose stacks are the money, the payoff on a gold plate, and a punchline pose at the end.
+
+**Kept unchanged:** the header, all seven VO lines and their timings, the verdict and its time, all 12 cells and their row times, `winner`, `hold`, the 19.1 s duration, and the four VO-locked marks (2.7, 3.9, 7.4 and 10.0 s) with their tones.
+
+**Changed because the Becker kit needs it** (the numbers did not change; the checker follows each one):
+- **Footer:** "ASSUMES month-end deposits, steady rates · 0.01% = a big bank's standard savings APY" became "Month-end deposits, steady rates\n0.01% = a big bank's standard APY". The kit sets its footer in 40 px mono, at most two lines of 37 characters. The 84-character footer was shrunk to 36 px (a type-floor warning). The same three facts now fill two lines.
+- **Stake line:** "Interest earned so far · $100 a month each" became "Interest so far · $100 a month each": one mono line, where the old one put "each" alone on a second line.
+- **Plans:** "Big bank · 0.01% APY" and "High-yield · 4.00% APY" became "Big bank\n0.01% APY" and "High-yield\n4.00% APY". The kit wraps plans greedily and broke the first as "Big bank · 0.01% / APY".
+- **The crown:** the Clean Sheet's `winnerT` 12.2 s (Leo's blue box as "High-yield: about $618" starts) became 12.9 s, on the spoken "$618" (estimated at 13.34 s). In the Becker kit the crown is the video's one big impact (the gold plate, the camera punch, hit + cash), so it lands on the number.
+- **Spec cues:** the pop at 1.0 s and the ding at 9.5 s are gone (the kit thuds each row; the chrome dings the verdict). A boing on You's peek at 16.7 s is new.
+- **Dropped:** `lookOpts.stake: "show"` (the Becker kit shows the stake line by default).
+
+**How the Becker Rig carries each Clean Sheet device:**
+
+| Clean Sheet | Becker Rig |
+|---|---|
+| The sand cursor band over each landing row | Each row's two values drop onto their dotted shelf. Leo's coin stack springs up under him (one honest scale, about one coin per $20); You's floor stays bare, because ≈ $1.48 never makes a coin |
+| Coral and green highlighter boxes (`marks[].tone`) | Pencil rings in the same tones, red and green; a toned ring also tints its cell while it is up. You's ≈ $1.48 ring stays to the end |
+| The total line in larger figures | The gold plate: Leo's ≈ $617.90 grows onto it at 1.3× at the crown |
+| The blue box and the name highlighter at `winnerT` | The crown at `winnerT` (plate, impact, rays, cash), then Leo hops, celebrates and points from his tower |
+| No figures | `figures`: You is the green hero figure (the viewer's stand-in, in the losing seat); Leo is slate. `beats`: You shrugs (2.7 s, "About 5 cents"), Leo points at his ring (3.9 s), You looks up at the stack (7.4 s and 12.2 s), slumps (10.0 s, "$1.48") and peeks up at Leo's tower (16.7 s, "Different account") |
+
+**Kit changes** (`looks/becker-rig/formats/ledger-duel.js`, documented in its header comment; all opt-in except the last two fixes):
+- `lookOpts.winnerT`: crown the winner later than the last row. The last row lands like any other (the winner's value at 1x, in green, a thud); at `winnerT` his value grows onto the gold plate, turning ink as the plate starts to open, with the impact, punch, rays and cash. The end acting, the loser's greying and the rows settling to 55% follow the crown.
+- `lookOpts.minGain` (in coins): a gain that adds less than that much of a coin to its stack is quiet. Its value lands in ink, not the fresh green, and its owner does not ride it. 07c uses 0.5: You's yearly gains (5 to 54 cents) are quiet, and Leo's ($21.84 and up) are not.
+- `marks[].tone`: a red or green ring that tints its cell while it is up.
+- A ring narrows (down to 8 px of padding) so it keeps 9 px clear of the ink on its left. You's rings touched the "Year 1" and "Year 5" labels; 07b's rings are unchanged.
+- A stack thinner than one coin no longer gets a negative corner radius. You's sub-pixel stack logged five page errors (`rx` "-0.22") in the straight port.
+- **Regression:** 07b at 55 sampled times (every 0.5 s) and the kit's two ledger samples at 30 times each render pixel-identical to the committed kit, with identical SFX lists. One sample frame (11.0 s, under the climax's camera punch, 27 pixels by at most 2/255) differs between two runs of the same code as well, so it is render noise.
+
+**Check** (`checks/07-ledger-duel.py`):
+- The 07c id.
+- No Clean Sheet option left (`formulas`, `badge`).
+- "You" is the hero figure, and Leo neutral.
+- You's yearly gains stay under `minGain` at any tower height from 300 to 600 px, and Leo's clear it.
+- The crown lands within 0.9 s of the spoken "$618", after the Year 5 row.
+- The verdict colours ≈ $1.48 red and ≈ $617.90 green, and every ring's tone follows that: red for You, green for Leo.
+- The footer fits two mono lines of 37 characters or fewer, the stake line one, and both plans have their set breaks.
+- New for the whole file: every spec path this write-up names exists, in `specs/` or `specs/retired/`, and the write-up names all three live specs.
+
+**Mutation test** (scratch copies of the three specs, one corruption at a time): all **11 of 11** caught, each with a named failure and exit 1. The corruptions:
+- 07a: Ava's mark at 13.2 s; her working line back at 11.4 s; table rows 40, 50 and 60; `formulaBar` left in; "3 × $25,000" in a working line.
+- 07c: the crown at 12.2 s; the old 84-character footer; You's ring tone "good"; the figures swapped; no `minGain`; the two-line stake line.
+
+**Verification:**
+- `python3 teasers/v2/checks/07-ledger-duel.py`: **453 checks, 0 failures**, ALL OK (416 before the port).
+- `node src/cli.mjs check`: 0 errors and 0 warnings at the default step, at every frame (`--every 0.0333333`) and at a 0.01 s step. An every-frame run first found a 2.79:1 contrast warning at 12.83-12.87 s: green type on the opening plate. The value now turns ink as the plate starts to open.
+- Contact sheet and stills read at 0, 1.1, 2.8, 4.0, 6.1, 6.9, 7.5, 8.3, 9.6, 10.1, 12.3, 12.83, 12.95, 13.0, 13.4, 14.5, 15.3, 16.8 and 19.07 s. Every number on them matches the checker: the header's $100, 5 and $6,000; the footer's and plans' 0.01% and 4.00%; the stake line's $100; all 12 cells; the verdict's $6,000, ≈ $1.48 and ≈ $617.90. Frame 1 is the hook with no number from the answer on it. Each ring, pose and the crown land on their VO words, and nothing overlaps or is cut at the frame edge.
+- Render: `studio/out/07c-becker-rig-savings-rate.mp4`, 19.1 s, 573 frames, 1080×1920, 30 fps, h264 + aac, 14 SFX cues. Frames pulled from the MP4 at 2.8, 12.83, 13.0 and 16.8 s match the stills (mean difference 1.14-1.33/255, PSNR 39.0-41.7 dB: compression).
+
+**Still open (both ports):**
+- `teasers/v2/teasers.json` and `slate.json` still list the old ids `07a-live-sheet-start-at-25` and `07c-clean-sheet-savings-rate`. They are outside this port's files.
+- The new kit options (`tableRows` in the Scoreboard; `winnerT`, `minGain` and `marks[].tone` in the Becker rig) are documented in the two format files' header comments. Neither kit README mentions them yet; the READMEs belong to the kit owners. The Scoreboard README has no ledger-duel section at all yet.
+- The Becker kit's README (§9) still says the default figure colours are "winner hero, other neutral". That is true; 07c overrides it on purpose.
+
+### Fix pass (2026-10-08): 07a and 07c
+
+QA scored the ports 7.5 (07a, Scoreboard) and 8 (07c, Becker Rig), with no musts. Every should and nit was worked through in the two `ledger-duel` format files (`looks/scoreboard/formats/ledger-duel.js`, `looks/becker-rig/formats/ledger-duel.js`, each documented in its header comment) and in the two specs. **No number, VO word or timing, hook or verdict changed.** Two spec times moved (07a's Ben working line, 14.6 → 14.45 s) or were added (07a's resting working line at 9.9 s), and the checker follows them.
+
+**07a (Scoreboard)**
+
+| # | Sev | QA found | What I did |
+|---|---|---|---|
+| A1 | should | Frame 1, the Instagram cover in this write-up, read "AGE 30 · $4,671" (Ava's count mid-roll), a wrong Age 30 value as a still | **md:** the Instagram cover is now the frame at **2.1 s**: AGE 30 with its row landed (≈ $14,000 / $0), both plans, the LED-off strip, the question still open. Frame 1 keeps its running count for the feed, where it reads as a count. A $0 / $0 frame 1 would read "Age 30: $0", just as wrong as a still |
+| A2 | should | The payoff got stepped on: the count lands at 12.0, Ava's mark at 12.15, and the table re-packs at 12.5 as a hard cut | **Format:** `lookOpts.tableT`, when the full table forms. **Spec:** `tableT` 14.45 s, in the VO gap after "At 65, Ava has about $281,000." (ends 14.4). Ben's working line moved from 14.6 to 14.45 s, so the table and his line are one cut (thud). From 12.0 to 14.45 s only the landing and Ava's mark happen; the ticker (grey, 60%), the pips and the strip (Age 55, Age 60) hold |
+| A3 | should | "Ben invests 3 times as much" had no focal point: the 3× was only in the label stack, while rows 50, 55 and 60 cut above it with thuds and dings | **Format:** `lookOpts.planFocus: [{ t, d }]`. The plans' money pieces ("put in $24,000", "put in $72,000") light in each person's colour, with a glow and a 10% bump (never under 1x: the plan type sits on the 40 px floor). The "Age … → …" lines dim to 50%, both odometers step back to 70%, and a row cut inside the focus lands with its thud and no ding. **Spec:** `planFocus` at 7.6 s for 2.0 s; rows 50, 55 and 60 lose their dings. **Not used:** a "3×" tag. Ben's money line ends at x 888 and text below y 820 must end by x 918, too little room for a 40 px tag |
+| A4 | should | Bumped values crowded their lit borders (about 15 px of glow on glow) | **Format:** a value that a mark lights is sized so that at the mark's bump (×1.08, on top of the climax's 1.07 hold) it keeps at least 24 px inside the lit border. The odometer came down about 6%. Measured inside the borders' inner edges (143-527, 553-937): both held values have 38 px of air each side; at the mark's bump peak Ava's ≈ $281,000 has 26 px (12.2 s) and Ben's ≈ $244,000 25 px (15.6 s), against about 15 px before |
+| A5 | nit | The working line still read "Ben: $72,000 = 3 × $24,000" through the climax roll | **Spec:** a working step at 9.9 s back to "= $200 a month at 7% a year" (the resting line, word for word; no new numbers) |
+| A6 | nit | The white AGE ticker was the loudest thing on the stage through the build | **Format:** the ticker number is white on frame 1 and on each cut, then settles 0.5 s later to a light grey (`lookOpts.tickerRest`, on by default), so at each row the odometers lead. Bad rows stay coral; the climax step-back is unchanged |
+| A7 | nit | The twist row Age 35 looked like every other row in the final table | **Format:** an event row that is not a crash keeps a slot edge in its tone's colour (neutral: white) and a white key; in a dense (zebra) table, a 7 px bar of that colour on its left end. In 07a: Age 35 in the strip (6.0-8.2 s) and in the final table |
+
+**07c (Becker Rig)**
+
+| # | Sev | QA found | What I did |
+|---|---|---|---|
+| C1 | should | The red ring ran through the "≈" of ≈ $0.53 (and touched the "≈" of ≈ $1.48): the narrowing that kept it off "Year N" pushed it into the cell's own ink, and the cell's 10% pop grew left into it | **Format:** a ring that would come within 9 px of the ink on its left (the old narrowing case) now starts at the top (its left side is one clean pass with no start stroke in it), is squarer (straighter sides, so it can run down a narrow gap), and sizes each side on its own: never inside 8 px of the cell's ink (the "≈" band included, with room for a 2% pop), then as wide as the label allows. Every marked cell's pop now grows about its centre and is capped so its ink stays outside its ring. Measured on You's three rings: the outer edge is 10.8 px clear of the label's ink, the inner edge 16-19 px clear of the "≈" (about 14 px at the pop's peak), and Year 5's right side 9 px clear of the gold plate. **Not as asked:** You's value column could not move right. In the Year 5 row it already sits 2 px from its limit before the plate (QA's 60 px of slack is in the rows without the plate) |
+| C2 | should | Colour gave mixed signals: "● You" was the green figure, but every green number was Leo's | **Spec:** `figures` is now the kit default, Leo (the winner) hero and You neutral. The green figure on the gold tower, Leo's green column head, his fresh green cells, his green ring and the verdict's green ≈ $617.90 all name Leo. **Format:** `lookOpts.ponder`, the one who ponders on frame 1 (default: the hero). **Spec:** `ponder: 0`, so You (slate) still ponders the hook on frame 1 while Leo stands ready |
+| C3 | nit | At the top of Leo's hop his raised hands came within about 10 px of the stake line | **Format:** the winner's hop is capped so his raised hands stay at least 24 px under the text line above the rig (no hop under 12 px of room). 07c: about 28 px, down from 52; at the top of the hop his hands are about 40 px under the stake line's box |
+| C4 | nit | Leo's arms-up ride on Year 5 (9.5 s) stole the start of "Year 5: about $1.48" | **Format:** under a late crown (`winnerT`), the winner rides his last row plain (no arms up); his celebration waits for the crown at 12.9 s |
+| C5 | nit | Leo's point (3.9 s) was level with the Year 2 label, not his ringed ≈ $21.84 | **Format:** a `point` beat, while one of the pointer's own cells is ringed, aims his arm from the shoulder (at his stack height at that moment) at that cell |
+| C6 | nit | In the end settle, You's Start "$0.00" went grey while Leo's stayed ink | **Format:** a start row of zeros on both sides settles to 55% with the rows the VO never names, both sides alike (in ink, no loser grey) |
+
+**07b regression** (07b shares the Becker format file): 07b at 66 sampled times (every 0.5 s, plus 3.95-4.2, 17.3-17.5 and 22.25-22.45 s) against the committed format file. All frames are identical except two kinds of change, both on purpose:
+- **The pops of the three $6,300 rings (3.95-4.2 s and 22.25-22.5 s).** The cells now grow about their centres (8-10%) and stay inside their rings. Before, each grew 10% to the left, over the ring's start stroke.
+- **Alex's crown hop (17.3-17.5 s).** It is now about 29 px, down from 52, so his raised hands clear the footer by about 45 px (about 20 px before).
+
+07b lints 0 errors, 0 warnings at every frame, and its MP4 was re-rendered.
+
+**Check** (`checks/07-ledger-duel.py`, 453 → **461 checks, 0 failures**):
+- 07a: the resting working line at 9.9 s (`working[4]`, word for word the line at 0 s, as the Age 65 row cuts), and its coverage line. Ava's and Ben's working lines moved to `working[5]` and `working[6]`; the ≈ $281,000 line is now found by its text.
+- 07a: the table forms in the VO gap after Ava's final, after the count lands; Ben's working line cuts with it.
+- 07a: one plan focus inside "Ben invests 3 times as much", off before the climax row cuts; the VO says the 3, and the plans carry $24,000 and $72,000.
+- 07c: Leo (the winner) is the hero figure and You is neutral; You ponders on frame 1. These two replace the port's "You is the hero" claim.
+- **Mutation test** on scratch copies, one corruption at a time: all **6 of 6** caught, each with a named failure and exit 1. The corruptions:
+  - 07a: `tableT` 12.5; no resting line; plan focus at 6.0 s; Ben's working line back at 14.6.
+  - 07c: the figures swapped back; no `ponder`.
+
+**Verification:**
+- `node src/cli.mjs check`: 07a, 07b and 07c have 0 errors and 0 warnings at every frame (`--every 0.0333333`). An every-frame run first found a 39.5 px type-floor warning at 7.80-7.87 s: the plan bump's undershoot. The bump now never goes under 1x. All four kit samples (`ledger-duel.json` and `ledger-duel-2.json` in both kits) lint 0/0.
+- Stills read:
+  - 07a: 0, 1.0, 2.1, 7.75, 8.5, 9.5, 12.2, 12.6, 14.0, 14.6, 15.65 and 22.7 s.
+  - 07c: 0, 1.3, 2.85, 2.95, 3.0, 3.95, 4.08, 7.5, 7.55, 7.8, 9.6, 9.85, 10.1, 10.17, 13.3, 13.45, 16.0 and 19.07 s, plus ring crops at 1.5×.
+  - Every number on them matches the checker. Frame 1 of each carries the same hook and numbers as before; 07c's frame 1 now shows You slate and pondering, Leo green. Nothing overlaps.
+- Renders (`studio/out/`, 1080×1920, 30 fps, h264 + aac):
+  - `07a-scoreboard-start-at-25.mp4`: 22.8 s, 684 frames, 21 SFX cues (24 before: rows 50, 55 and 60 lost their dings).
+  - `07c-becker-rig-savings-rate.mp4`: 19.1 s, 573 frames, 14 SFX cues.
+  - `07b-becker-rig-panic-sell-2008.mp4`: re-rendered for the shared format change, 27.4 s, 822 frames, 20 SFX cues.
