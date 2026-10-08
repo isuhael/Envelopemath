@@ -13,7 +13,7 @@ looks/becker-rig/
   samples/<id>.json sample specs ("sample": true)
 ```
 
-All eight formats are built: `growth-ladder` (§4), `dead-simple-list` (§5), `chart-race` (§6), `split-sheet` (§7), `pov-race` (§8), `ledger-duel` (§9), `unit-ladder` (§10) and `cost-counter` (§11). Each has two samples (`samples/<id>.json` and `samples/<id>-2.json`, or `-15y` for growth-ladder; dead-simple-list has a third, the 6-item stress case), and all 17 lint with 0 errors and 0 warnings. **To change a format, edit only `formats/<id>.js` and its samples.** Everything shared lives in lib.js, theme.js and style.css.
+All ten formats are built: `growth-ladder` (§4), `dead-simple-list` (§5), `find-your-row` (§6), `what-difference` (§7), `chart-race` (§8), `split-sheet` (§9), `pov-race` (§10), `ledger-duel` (§11), `unit-ladder` (§12) and `cost-counter` (§13). After the flagship, the sections follow FORMATS.md order. Each format has two samples (`samples/<id>.json` and `samples/<id>-2.json`, or `-15y` for growth-ladder); dead-simple-list has a third (the 6-item stress case) and what-difference a third (a third metric), 22 in all. The first 17 linted with 0 errors and 0 warnings when they were built. Real shorts in this look are `specs/*-becker-rig-*.json`; each format section cites one that uses its newer lookOpts. **To change a format, edit only `formats/<id>.js` and its samples.** Everything shared lives in lib.js, theme.js and style.css. A format file's header comment is its full spec; this README is the summary.
 
 ```bash
 cd studio
@@ -73,7 +73,7 @@ Floors: primary text is 60-90 px. Anything the viewer must read is at least 40. 
 |---|---|
 | 0-230 | Brand mark at y 120 (decoration: green disc with ≈ + BACK OF THE ENVELOPE) |
 | 248-440 | Header (hook), x 60-1020, fitted to the band |
-| 452 → | Footer / assumption line (mono 40, ≤ 2 lines, x 62-940), visible from t = 0 |
+| 452 → | Footer / assumption line (mono 40, ≤ 2 lines of about 37 characters, x 62-940), visible from t = 0. See the footer budget in §3.6 |
 | `chromeParts().workTop` → 1290 | Working area (`L.workTop` 520 is the typical value) |
 | **1300** | **The floor line** (`L.floorY`). The figure stands on it |
 | 1320-1480 | Caption band. The verdict replaces the captions here from `verdict.t` |
@@ -85,13 +85,13 @@ Readable x is 60-1020, and x ≤ 940 below y 820 (the right button rail). Decora
 
 There is one uniform stroke family with round caps everywhere. The figure's limbs are 13 px (`S.figure`) **at every scale**: a small figure is drawn with the same pen, not a thinner one (`figStroke()`). Props and rails are 10, rungs 8, and the floor and guides 4. A format that zooms the world out can pass a per-frame `stroke` to `fig.draw` to keep the line weight constant on screen (unit-ladder does).
 
-Figure proportions at scale 1: head r 31, torso 88 (arms attach at 80% of it), upper arm 50 / forearm 47, thigh 57 / shin 54. That makes him about 262 px tall, with a head-to-body ratio of about 1 : 4. Default scales per format: growth-ladder, unit-ladder and cost-counter 1.1; pov-race 1; split-sheet 0.92 (bins) / 0.86 (rows); dead-simple-list 0.84; ledger-duel 0.8; chart-race 0.76 (2 series) / 0.56 (3).
+Figure proportions at scale 1: head r 31, torso 88 (arms attach at 80% of it), upper arm 50 / forearm 47, thigh 57 / shin 54. That makes him about 262 px tall, with a head-to-body ratio of about 1 : 4. Default scales per format: growth-ladder 1.3 (throw) / 1.1 (climb); unit-ladder and cost-counter 1.1; pov-race 1; split-sheet 0.92 (bins) / 0.86 (rows; carve fits 0.86 → 0.62); dead-simple-list 0.84; ledger-duel 0.8; chart-race 0.76 (2 series) / 0.56 (3); find-your-row 0.72 (fitted down to 0.5, then 0.42); what-difference whatever the lane allows (0.36-0.8, 0.3 at the least).
 
 **Identifying detail:** a yellow pencil tucked behind the head ("back of the envelope" maths). It is drawn **under** the head: the sharpened end is hidden inside the disc, and only the back ~45% of the yellow body, the grey ferrule and the pink eraser stick out up-and-back, 30° above the backward horizontal (about 1.3 head radii past the head's edge). He has no face. Emotion comes from pose and timing.
 
 **Halo and seams:** the whole figure (limbs and head) is first drawn `outlineWidth` px wider (default 12) in the void colour, as one silhouette under everything, so he stays readable in front of ink props (ladders, gates, rails). The halo stops 2 px above the ground he stands on, so it never chops the floor line (or a ledge) at his feet. Over his own body, the front leg and the front arm get only a thin seam (`seam`, default 4 px), starting 40% out from the hip and the shoulder, so overlaps read as depth, not cuts, and the joints stay one clean shape. Draw order: halo < pencil < back limbs < torso < head < front-leg seam < front leg < front-arm seam < front arm. Pass `outline: null` to turn the halo off, or a small `outlineWidth` (about 5) where figures overlap each other or stand on a line he must not chop (the growth-ladder climber, chart-race).
 
-**In frame:** `fig.extentX(J)` gives the drawn figure's horizontal extent (limbs, head and the pencil's eraser end). Formats that stand him near the left edge shift him in with `shiftJ(J, Math.max(0, 24 - fig.extentX(J)[0]))` (growth-ladder, ledger-duel).
+**In frame:** `fig.extentX(J)` gives the drawn figure's horizontal extent (limbs, head and the pencil's eraser end). Formats that stand him near the left edge shift him in with `shiftJ(J, Math.max(0, M - fig.extentX(J)[0]))`, with a margin M of 24 px or more (growth-ladder throw mode and ledger-duel use 40; find-your-row places his gutter so every pose stays ≥ 26 px in).
 
 ### Motion grammar (`M`)
 
@@ -274,6 +274,11 @@ Typical uses:
 
 **The verdict.** It pops in at `verdict.t` in the caption band (from 0.82 scale, rising at most as far as the band allows, so its ink never leaves y 1480), hides the captions and cues `ding`. It is fitted at line-height 1.08, down to 44 px. The green swoosh is drawn under the first `**…**`, one stroke per line the emphasis covers, hanging from the measured baseline. When the emphasis ends above the last line, the verdict is refitted at line-height 1.3 (then 1.22) so the swoosh has room above the next line's caps, and the swoosh is flattened and lifted to clear them; if neither fits (a 3-line verdict) it keeps the tight fit and the emphasis is green without a swoosh.
 
+**The footer budget.** The footer (`.br-footer`) is JetBrains Mono 700 at 40 px, letter-spacing −0.02em, line-height 1.25 (50 px), in a box 878 px wide (x 62-940). Its top is `max(L.footerTop, header bottom + 12)`. A mono cell is 0.6 em (600 of 1000 units in the vendored font), so one character is 24 − 0.8 = 23.2 px, and a line holds **37 characters** (38 would need 881.6 px). `chromeParts` fits it with `fitText(footer, 880, { maxH: 110, minPx: 34 })`, so it allows two lines. A footer that wraps to a third line, or has one word wider than 880 px, is shrunk in 2 px steps (38, 36, 34 px). Anything under 39.5 px is a `type-floor` lint warning; the 34 px floor means it never becomes an error. Budget:
+- At most about 2 × 37 characters. Word wrap loses a few per line, and characters that fall back to Inter Full (`≈ × ÷ − →`) are not 23.2 px wide.
+- Break it yourself with `\n` (markup turns it into `<br>`), each line ≤ 37 characters, as the real specs do: 02a's `"At 7% a year until 65\nno tax, fees, inflation"`; 09a's first line `"ASSUMES 8% a year, compounded monthly"` is exactly 37.
+- Move detail into the VO or a working line rather than let the footer shrink.
+
 ---
 
 ## 4. growth-ladder (flagship)
@@ -282,11 +287,13 @@ The table **is** a ladder. Rails sit on the left with one rung per row, and each
 
 Modes, chosen automatically:
 
-- **throw** (the ladder fits on one screen, about ≤ 10 rows): the figure stands on clear void left of the rails (root x 80, shifted in further whenever his pencil would come within 24 px of the frame edge; the rails stand at x 140-220), at the foot of the ladder. Frame 1 has him hand on chin, looking up the empty ladder, with a nod in the first second. For each row he takes a coin from nowhere, winds up and throws it in an arc to the row's slot, where it turns into the number. Coins grow with the value and the wind-ups deepen. For the last row he lifts a big coin overhead, wobbles under it (`riser`), dips and heaves it (`whoosh`), then celebrates with a hop and squash and points at the plate. When rows come too fast for a throw (< ~0.5 s apart), numbers just drop in.
+- **throw** (the ladder fits on one screen, about ≤ 10 rows): the figure stands on clear void left of the rails (root x 96, shifted in further whenever his pencil would come within 40 px of the frame edge), at the foot of the ladder. With a figure the ladder is narrower and set further right (rails x 208-272; x 140-220 without a figure and in climb mode). Frame 1 has him hand on chin, looking up the empty ladder, with a nod in the first second. For each row he takes a coin from nowhere, winds up and throws it in an arc to the row's slot, where it turns into the number. Coins grow with the value and the wind-ups deepen. For the last row he lifts a big coin overhead, wobbles under it (`riser`), dips and heaves it (`whoosh`), then celebrates with a hop and squash and points at the plate. With ≥ 2.2 s before the last row, the heave fills that gap as a struggle: the coin drops into his arms (he buckles), he tries to hitch it up and sags, then presses it overhead under the riser and strains, wobbling, until he heaves it. When rows come too fast for a throw (< ~0.5 s apart), numbers just drop in.
 - **climb** (long ladders; 15 yearly rows needs it): the type is sized for legibility and the camera follows. The figure climbs hand over hand, with hands and feet pinned to the rungs by 2-bone IK, and slaps each rung as its row lands (a small burst at the hand); his halo is thin (5 px) so it never chops the rails he holds. The camera keeps the newest rung about 40% down a viewport under fixed column heads, and rows fade out at the viewport edges. The viewport ends at the floor line, which is pinned in screen space: the ground plane never pans away, the ladder rises out of it. On the top rung he lets go with one hand and pumps his fist (the free arm bends away from the rails, and the knees refold so his legs stay between them).
 - **few rows** (5 or fewer, in either mode): values grow to up to 84 px (column heads wrap first rather than shrink), the pitch grows to about 2.6 em, and the table is centred in the work area. The ladder keeps filler rungs down to the floor, so the hook frame is never half empty.
 
-Data: FORMATS.md §9 exactly. `rowT[i]` overrides `rowsT + i·rowEvery`, `highlightLast` (default true) gives the plate and the impact, and `hold` defaults to 3. Column heads are right-aligned and bottom-aligned, single-line at 40 px when possible (house letter-spacing .07em, then tightened to .04em), and otherwise wrap to two lines. If the hook does not already contain `input.amount`, a mono input line ("**$200** a month · 7% a year") is shown above the table.
+Data: FORMATS.md §9 exactly. `rowT[i]` overrides `rowsT + i·rowEvery` (defaults 1.5 and 1.2), `highlightLast` (default true) gives the plate and the impact, and `hold` defaults to 3. Column heads are right-aligned and bottom-aligned, single-line at 40 px when possible (house letter-spacing .07em, then tightened to .04em), and otherwise wrap to two lines. If the hook does not already contain `input.amount`, a mono input line ("**$200** a month · 7% a year") is shown above the table.
+
+Layout: a 1-2 line hook leaves the band above `L.footerTop` empty, so the footer is lifted to 16 px under the hook and the ladder starts under its new bottom (a 3-line hook is unchanged). Throw mode keeps the year head right of the rails; only when that would leave the values under 56 px may it overhang the rails, above the ladder top. The climax keeps clear of the table: its hit lines are clipped to the band between the column heads and the row under the plate and to the right of the plate's left edge − 8, and the coins spill down the right margin (x 940-1000), never over a label. The header gets 0.1em word spacing (the heavy face fuses "invested just" at phone size), and Worth cells set "≈ $X" with 0.14em word spacing.
 
 lookOpts (all optional; it renders fully without them):
 
@@ -294,10 +301,17 @@ lookOpts (all optional; it renders fully without them):
 |---|---|---|
 | `mode` | auto | `'throw'` or `'climb'` |
 | `figure` | `true` | `false`: no figure (numbers drop onto their rungs) |
-| `figureScale` | `1.1` | size of the figure |
+| `figureScale` | `1.3` (throw) / `1.1` (climb) | size of the figure. In throw mode he stands clear of the ladder and his pencil stays ≥ 40 px inside the frame |
 | `bars` | `true` | `false`: no composition meters |
 | `heave` | `true` | throw mode: `false` throws the last row like the others |
 | `establish` | `false` | climb mode: open on a wide shot of the whole ladder towering over him, then push in. Rung labels stay hidden until they are legible, so frame 1 then relies on the header for its number |
+| `cols` | `[0, 1, 2]` | which three data columns the ladder prints, as `[year, second, hero]`. A 4-column spec cannot print four numbers a row beside the figure, so it picks three; the hero column is the one that drops, turns green and gets the gold plate. Ignored unless every row has all three. Columns left out are not drawn |
+| `second` | grey mono | `'bold'`: the second column in the hero face (Inter Tight 800, ink), for a balance rather than a deposit |
+| `target` | none | a display string (`"$100"`): the meters become a target gauge. Under each hero is a 9 px soft track as long as the target, with an upright tick at the column's right edge, filled grey to hero ÷ target (≥ 20 px). On rows that reach it, the fill and tick snap green with a pulse. The gold-plate row has no gauge. Needed whenever `cols` moves the hero off the Worth: without a target, a custom hero gets no meters |
+| `working` | none | `[{ t, text }]`: working lines, one mono 40 px line at a time over the column heads, swapped in at `t` (hold, then snap). They are ink, with `**x**` the result in heroInk. A line at `t ≤ 0` is up at frame 1. A long line shrinks, never below 40 px |
+| `beats` | none | `[{ t, row, act, d, label, tone, impact, relight }]`, throw mode. `act`: a POSES name or a list of them shared out over `d` (default 1.6 s; `'celebrate'` adds a hop), taken 0.14 s after `t`, cut short by his next throw. `label`: a tag on an ink plate over the empty slot above the row's hero, from `t + 0.08` to `t + d` (`tone` `'good'` green, `'bad'` red; `**x**` coin yellow). It must be gone about 0.6 s before the next coin flies. `impact: true`: the hero swells to 1.15× (anchored right, over 0.5 s) under a burst and a shake, with no sound (cue it in `spec.sfx`). `relight: true`: from `t` the row's year and hero turn green again and stay green, behind a green outlined plate, and the gold plate steps back (grey border, paler fill) |
+
+Example: `specs/09a-becker-rig-100-a-month-doubles.json` uses `cols: [0, 2, 3]` (the 4th column, "Earns a month", becomes the hero), `second: 'bold'`, `target: "$100"`, nine `working` lines, and `beats` with labels, an impact and a closing relight on row 3.
 
 Samples:
 - `samples/growth-ladder.json`: $100 a month at 8%, 9 rows (years 1-40), throw mode, 26 s.
