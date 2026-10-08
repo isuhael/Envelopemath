@@ -1,12 +1,12 @@
 [
-  { "n": 1, "format": "dead-simple-list", "name": "N dead simple numbers", "pattern": "P1", "looks": ["clean-sheet", "live-sheet", "becker-rig"] },
-  { "n": 2, "format": "find-your-row", "name": "Find-your-row lookup table", "pattern": "P7", "looks": ["live-sheet", "scoreboard", "clean-sheet"] },
-  { "n": 3, "format": "what-difference", "name": "What difference does X make?", "pattern": "P5", "looks": ["live-sheet", "clean-sheet", "scoreboard"] },
-  { "n": 4, "format": "chart-race", "name": "Same-stake line-chart race", "pattern": "P4", "looks": ["scoreboard", "becker-rig", "live-sheet"] },
-  { "n": 5, "format": "split-sheet", "name": "Split sheet", "pattern": "P9", "looks": ["clean-sheet", "becker-rig", "scoreboard"] },
-  { "n": 6, "format": "pov-race", "name": "POV spend-vs-own race", "pattern": "P6", "looks": ["scoreboard", "live-sheet", "becker-rig"] },
-  { "n": 7, "format": "ledger-duel", "name": "\"2 people invest\" ledger duel", "pattern": "P4", "looks": ["live-sheet", "becker-rig", "clean-sheet"] },
-  { "n": 8, "format": "unit-ladder", "name": "Cost in units of X", "pattern": "P8", "looks": ["scoreboard", "becker-rig", "clean-sheet"] },
-  { "n": 9, "format": "growth-ladder", "name": "Year-by-year growth ladder", "pattern": "P2", "looks": ["live-sheet", "becker-rig", "scoreboard"] },
-  { "n": 10, "format": "cost-counter", "name": "Real-time cost counter", "pattern": "-", "looks": ["scoreboard", "becker-rig", "live-sheet"] }
+  { "n": 1, "format": "dead-simple-list", "name": "N dead simple numbers", "pattern": "P1", "looks": ["scoreboard", "becker-rig", "becker-rig"] },
+  { "n": 2, "format": "find-your-row", "name": "Find-your-row lookup table", "pattern": "P7", "looks": ["becker-rig", "scoreboard", "scoreboard"] },
+  { "n": 3, "format": "what-difference", "name": "What difference does X make?", "pattern": "P5", "looks": ["becker-rig", "scoreboard", "scoreboard"] },
+  { "n": 4, "format": "chart-race", "name": "Same-stake line-chart race", "pattern": "P4", "looks": ["scoreboard", "becker-rig", "scoreboard"] },
+  { "n": 5, "format": "split-sheet", "name": "Split sheet", "pattern": "P9", "looks": ["becker-rig", "becker-rig", "scoreboard"] },
+  { "n": 6, "format": "pov-race", "name": "POV spend-vs-own race", "pattern": "P6", "looks": ["scoreboard", "scoreboard", "becker-rig"] },
+  { "n": 7, "format": "ledger-duel", "name": "\"2 people invest\" ledger duel", "pattern": "P4", "looks": ["scoreboard", "becker-rig", "becker-rig"] },
+  { "n": 8, "format": "unit-ladder", "name": "Cost in units of X", "pattern": "P8", "looks": ["scoreboard", "becker-rig", "becker-rig"] },
+  { "n": 9, "format": "growth-ladder", "name": "Year-by-year growth ladder", "pattern": "P2", "looks": ["becker-rig", "becker-rig", "scoreboard"] },
+  { "n": 10, "format": "cost-counter", "name": "Real-time cost counter", "pattern": "-", "looks": ["scoreboard", "becker-rig", "scoreboard"] }
 ]
