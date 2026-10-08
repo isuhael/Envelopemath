@@ -1,7 +1,7 @@
 # Format 10: real-time cost counter, three teasers
 
 **Channel:** Back of the Envelope (YouTube Shorts, Instagram Reels, TikTok), US audience, USD
-**Date:** 2026-10-07 (round-2 revision), hook pass 2026-10-08 (10b's hook replaced), hook pass 2 2026-10-08 (10a's and 10c's hooks replaced), assembly pass 2 2026-10-08 (10a and 10c re-paced; both counters now stop on their payoff). What changed and why is in the **Review log** at the end.
+**Date:** 2026-10-07 (round-2 revision), hook pass 2026-10-08 (10b's hook replaced), hook pass 2 2026-10-08 (10a's and 10c's hooks replaced), assembly pass 2 2026-10-08 (10a and 10c re-paced; both counters now stop on their payoff), assembly pass 3 2026-10-08 (10b fitted and QA'd in the Becker kit's stack mode). What changed and why is in the **Review log** at the end.
 **Format:** `cost-counter`. No hook pattern of its own in the hook bank ("–"). The hooks borrow the grammar of P4, P5, P6, P8 and P9 winners (quoted under each teaser).
 **Lane:** a real-time dollar counter at a verified rate (interest on the US debt, new US debt, a mega-company's profit per second)
 **Files:**
@@ -26,7 +26,7 @@
 **Studio linter:** `node src/cli.mjs check` passes on all three specs: **3/3 clean, 0 errors, 0 warnings** (rerun after hook pass 2; 10a and 10c rerun after the assembly pass and again after assembly pass 2: 2/2 clean; the four kit samples of the two edited `cost-counter` modules are clean too).
 - The Scoreboard, Live Sheet and Becker Rig `cost-counter` modules are all built (working tree), so all three specs are linted with their real counters.
 - I rendered stills at 0 s, 1.5 s and the verdict for all three (10b again at 0 / 1.5 / 3 / 25.5 / 33.4 s after the hook pass; 10a at 0 / 1.5 / 3 / 33.5 s and 10c at 0 / 1.1 / 1.5 / 3 / 26.6 / 27.5 s after hook pass 2). In each, the header, the footer, the caption band and the verdict fit their zones.
-- The Scoreboard and Live Sheet kits read every `lookOpts` key that 10a and 10c pass; 10b's block-stack, stamp and timer are still proposals for the Becker kit. Each spec still tells its story from the contract fields alone: the header asks, the footer carries the pay figure and the working, the counter runs, the verdict answers.
+- The Scoreboard and Live Sheet kits read every `lookOpts` key that 10a and 10c pass. The Becker kit draws 10b's block-stack, stopwatch, actions, heat keys and gag stamp (stack mode); only its `stamp` is not drawn (10b, Look note). Each spec still tells its story from the contract fields alone: the header asks, the footer carries the pay figure and the working, the counter runs, the verdict answers.
 
 ---
 
@@ -250,7 +250,7 @@ The salary rows ($30,000 to $1 million) are round yardsticks chosen for the ladd
 | Spec | `studio/specs/10b-becker-rig-debt-vs-your-pay.json` (36.6 s) |
 | Platform title | **Which Is Bigger: 40 Years of Your Pay or 1 Minute of New US Debt?** |
 | On-screen hook (header) | **40 years of your pay vs / 1 minute of new US debt. / Which is bigger?** (15 words, 3 lines; "1 minute" in green) |
-| Frame 1 | Header and the 2-line footer. A generic "debt clock" readout panel ("NEW US DEBT SINCE YOU HIT PLAY", no real branding) is **already counting from $0** (≈ $117,302 at 1.5 s). Under it, the kit's NEXT ticker names the first target: "3 years of median pay: $195,156", with that object's dashed ghost on the floor. Proposed for the kit: the figure hugs a tall stack of 40 small **$65,052** blocks ("40 × $65,052 / 40 years of median pay"), and a "1 MINUTE" ring on the panel starts draining |
+| Frame 1 | Header and the 2-line footer. A generic "debt clock" readout board ("New US debt since you hit play", no real branding) is **already counting from $0** (≈ $117,302 at 1.5 s), with the rate line "≈ $78,000 every second". Under it the figure hugs his stack of 40 cash bricks on an ink plinth, **"40 × $65,052 / 40 years of median pay"**, and a "1 MINUTE" stopwatch on the floor reads 0:00. The stack is the target: the board's slot eats one brick every 0.83 s |
 | Footer | New debt ≈ $2.46T ÷ (364 × 86,400 s) / Pay: BLS median $1,251 a week × 52 |
 
 **Topic vs the seed:**
@@ -268,7 +268,7 @@ The salary rows ($30,000 to $1 million) are round yardsticks chosen for the ladd
 
 | Rule | How |
 |---|---|
-| R1 | The running counter ($0 at frame 1), the NEXT ticker ("3 years of median pay: $195,156") and the footer ($2.46T, 364 × 86,400 s, $1,251 × 52) are on screen at 0.0 s. Proposed: the 40-block stack ("40 × $65,052") |
+| R1 | The running counter ($0 at frame 1), the rate line (≈ $78,000), the stack's plinth ("40 × $65,052") and the footer ($2.46T, 364 × 86,400 s, $1,251 × 52) are on screen at 0.0 s |
 | R2 | One input against one input in the hook ("40 years" vs "1 minute"); the result is not given |
 | R3 | "Your pay" is the stake. The blocks show the median, so the pinned comment gives the flip point (≈ $117,000 a year) and the swap-in rule (yearly pay × 40 ÷ 78,000 = your working life in seconds). Partial pass: the on-screen blocks are not the viewer's own |
 | R4 | 40 years and 1 minute are round, familiar units. "$2.6 million" appears only as the working (40 × $65,052) |
@@ -276,8 +276,8 @@ The salary rows ($30,000 to $1 million) are round yardsticks chosen for the ladd
 | R6 | You + 40 years of your pay + 1 minute. The debt is the government's, so this is a partial pass |
 | R7 | Two named sides in the header and in the first VO line ("Your 40 years, or 1 minute?"); the counter answers |
 | R8 | 15 words, 3 lines |
-| R9 | The kit shows the next target at all times (NEXT ticker) and checks off 3, 10, 20 and 40 years. Proposed: the 40 blocks in his arms, one eaten every 0.83 s, a loop the viewer can count down |
-| R10 | The counter moves at 0.0 s. First payoff at 2.50 s (3 years of median pay, VO 2.4 s); proposed earlier beats: the first block eaten at 0.83 s and the "1 SECOND ≈ $78,000" stamp at 1.0 s. The biggest number (a working life, $2.6 million) comes last |
+| R9 | The 40 bricks in his arms are the target from frame 1: one eaten every 0.83 s, a loop the viewer can count down, and the strip checks off 3, 10, 20 and 40 years. The stopwatch counts the minute |
+| R10 | The counter moves at 0.0 s and the first brick goes at 0.83 s. At 1.0 s the counter reads $78,201 beside the stopwatch's 0:01. First payoff at 2.50 s (3 years of median pay, VO 2.4 s). The biggest number (a working life, $2.6 million) comes last |
 | R11 | The question is on screen and in the title; the caption leads with the verdict |
 | R12 | A lopsided pair to repeat: **a working life ≈ 33 seconds; 1 minute ≈ $4.7 million** |
 
@@ -297,28 +297,29 @@ The salary rows ($30,000 to $1 million) are round yardsticks chosen for the ladd
   - Frame 1 is a familiar UI already counting.
   - It escalates, and the counter heats from green to orange to white, cracks and explodes.
 
-**Beat sheet** (milestone pass time = value ÷ $78,201.35 a second, from 0.0 s; gag beats from `lookOpts`)
+**Beat sheet** (milestone pass time = value ÷ $78,201.35 a second, from 0.0 s; gag beats from `lookOpts`; as rendered, assembly pass 3)
 
 | t (s) | On screen (Becker action) | VO |
 |---|---|---|
-| 0.0 | Header, footer. The panel counts from **$0**. NEXT: "3 years of median pay: $195,156", with its ghost on the floor. Proposed: the figure hugs the 40-block stack ("40 × $65,052 / 40 years of median pay"); the "1 MINUTE" ring starts draining | "Your 40 years, or 1 minute?" (0.0-2.4) |
-| 0.83 | Proposed: the panel slurps the top block (1 year of median pay, $65,052) | |
-| 1.0 | Proposed: the counter has run exactly 1 second. A stamp lands under the panel: "1 SECOND ≈ $78,000" | |
+| 0.0 | Header, footer. The board counts from **$0** over "≈ $78,000 every second". The figure hugs his 40-brick stack on its plinth ("40 × $65,052 / 40 years of median pay"); the "1 MINUTE" stopwatch reads 0:00 | "Your 40 years, or 1 minute?" (0.0-2.4) |
+| 0.83 | The board's slot slurps the top brick (1 year of median pay, $65,052); one more every 0.83 s, each with a soft tick | |
+| 1.0 | The counter reads $78,201; the stopwatch 0:01 | |
 | 1.5 | The counter reads ≈ $117,302 (2.5% of the minute gone) | |
-| 2.50 | The counter passes **$195,156**. The strip flashes "✓ 3 years of median pay: $195,156"; the wad of bills drops. **Swallow:** he hugs the rest of his stack tighter | "3 years, gone." (2.4-4.0) |
-| 4.2 | (counter running) | "≈ $78,000 a second." (4.2-6.6) |
-| 8.32 | The counter passes **$650,520**. **Push:** he shoves back against the slot; it keeps eating | "10 years of median pay." (8.2-10.6) |
-| 10.6 | (counter running) | "The debt grew ≈ $2.46 trillion in 364 days." (10.6-16.4) |
-| 16.5 | Heat key "orange": the panel heats up and its last digits blur. Buzz | "Halfway: 20 years." (16.5-18.0) |
-| 16.64 | The counter passes **$1,301,040**. **Shocked:** his stack is half gone | ("20 years" is said at 16.88) |
-| 18.2 | NEXT: "40 years of median pay: $2,602,080" | "40 × $65,052 ≈ $2.6 million." (18.2-22.9) |
-| 23.1 | He looks at the few blocks left | "That's a whole working life." (23.1-25.1) |
-| 25.3 | Proposed: the ring's 60 s mark gets its label, "≈ $4.7 MILLION" | "1 minute: ≈ $4.7 million." (25.3-28.4) |
-| 28.6 | Heat key "white": the panel is near its peak, vibrating, with steam | "How long do 40 years last?" (28.6-31.0) |
-| 31.1-33.3 | No VO: a riser as the panel cracks | |
-| 33.27 | The counter passes **$2,602,080** | |
-| 33.3 | The counter locks on **≈ $2,604,105**. **Burst:** white impact frame, shake, hit; the blast knocks him flat (flattened), arms empty. Gag stamp "≈ 33 SECONDS". Verdict in the caption band: "40 years of median pay: **≈ 33 seconds**. / 1 minute of new US debt ≈ **$4.7 million**." The ring stops at 55% | "A working life: ≈ 33 seconds." (33.3-35.7) |
-| 33.3-36.6 | Hold. He peels himself off the floor and stares at the cracked panel. Hard cut to frame 1: the counter back at $0, the stack back in his arms (loop) | |
+| 2.50 | The counter passes **$195,156**: the board kicks, a pop, and the strip rolls to "✓ 3 years of median pay: $195,156". **Swallow:** he squeezes the rest of his stack | "3 years, gone." (2.4-4.0) |
+| 4.2 | The strip rolls back to "≈ $78,000 every second" as the line starts | "≈ $78,000 a second." (4.2-6.6) |
+| 8.32 | The counter passes **$650,520**: "✓ 10 years of median pay: $650,520". **Push:** he braces against his stack; it keeps eating | "10 years of median pay." (8.2-10.6) |
+| 10.6 | The strip rolls back to the rate | "The debt grew ≈ $2.46 trillion in 364 days." (10.6-16.4) |
+| 16.5 | Heat key "orange": the digits, the rim and the stopwatch's arc snap from ink to red. Buzz | "Halfway: 20 years." (16.5-18.0) |
+| 16.64 | The counter passes **$1,301,040**: "✓ 20 years of median pay: $1,301,040". **Shocked:** he jumps back against the post and lets go; half the stack is gone | ("20 years" is said at 16.88) |
+| 18.2 | The strip rolls back to the rate. He points at what is left of his stack and its plinth (40 × $65,052) | "40 × $65,052 ≈ $2.6 million." (18.2-22.9) |
+| 23.1 | He looks down at the few bricks left | "That's a whole working life." (23.1-25.1) |
+| 25.3 | The stopwatch gets its end label, "≈ $4.7 million" (a red mark on its 60 s point); he looks up at the board | "1 minute: ≈ $4.7 million." (25.3-28.4) |
+| 28.6 | Heat key "white": the board vibrates and steams; he cowers | "How long do 40 years last?" (28.6-31.0) |
+| 31.1-33.3 | No VO: a riser as the last bricks go | |
+| 33.27 | The counter passes **$2,602,080**: "✓ 40 years of median pay: $2,602,080" (it holds to the end) | |
+| 33.3 | The counter locks on **≈ $2,604,105**. **Burst:** white impact frame, shake, side hit lines, hit; the board cracks; the blast knocks him back onto the floor against the post (flattened), arms empty. The stopwatch stops at 0:33, its arc at 55%. Verdict in the caption band: "40 years of median pay: **≈ 33 seconds**. / 1 minute of new US debt ≈ **$4.7 million**." | "A working life: ≈ 33 seconds." (33.3-35.7) |
+| 33.42 | Gag: a red rubber stamp "≈ 33 SECONDS" slams over the emptied plinth, clear of the stopwatch's "≈ $4.7 million" | |
+| 33.3-36.6 | Hold. He sits up, knees up, and stares at the cracked board. Hard cut to frame 1: the counter back at $0, the stack back in his arms (loop) | |
 
 All "≈ N seconds" are counter time, and the counter starts at 0.0 s, so they are also video time.
 
@@ -342,12 +343,12 @@ All "≈ N seconds" are counter time, and the counter starts at 0.0 s, so they a
 | The duel | 1 minute ÷ 40 years of median pay | 1.803 | 1 minute is bigger (1.8x, md only); margin ≈ $2.1 million (md only) |
 | Crossover pay | 1 minute ÷ 40 | 117,302.02 | ≈ $117,000 a year (pinned) |
 | 1 minute in years of median pay | 1 minute ÷ $65,052 | 72.13 | ≈ 72 years of median pay (caption) |
-| Block n eaten | n × $65,052 ÷ r | n × 0.8319 s | proposed block-stack timing |
+| Block n eaten | n × $65,052 ÷ r | n × 0.8319 s | brick n slurped by the board (block-stack) |
 | Pass: 3 years of pay | $195,156 ÷ r | 2.496 s | VO 2.4 |
 | Pass: 10 years of pay | $650,520 ÷ r | 8.319 s | VO 8.2 |
 | Pass: 20 years of pay | $1,301,040 ÷ r | 16.637 s | VO 16.5 ("20 years" said at 16.88) |
 | Pass: 40 years of pay | $2,602,080 ÷ r | 33.274 s | ≈ 33 seconds (VO and verdict at 33.3) |
-| Share of the minute used | 33.274 ÷ 60 | 55.5% | the ring stops at 55% (proposal) |
+| Share of the minute used | 33.274 ÷ 60 | 55.5% | the stopwatch's arc stops at 55% (33.3 ÷ 60 at the lock; no figure printed) |
 | Counter at 1.5 s | r × 1.5 | 117,302.02 | (frame check; equal to the crossover pay because 1.5 = 60 ÷ 40) |
 | Counter final | r × 33.3 | 2,604,104.91 | ≈ $2,604,105 |
 | TikTok reply: the part held by the public | $2.09T ÷ 31,449,600 s | 66,455.5 | ≈ $66,000 a second; × 60 = 3,987,332 ≈ $4.0 million a minute |
@@ -386,9 +387,14 @@ All "≈ N seconds" are counter time, and the counter starts at 0.0 s, so they a
   - Expected question: "why 364 days?" Answer: those are the two official readings either side of the fiscal year we could confirm.
   - Keep "40 years of median pay ≈ 33 seconds" in the first 100 characters.
 - **Look note:**
-  - The Becker Rig `cost-counter` module is built (working tree; another session is restyling it as this is written). It draws the readout panel counting from frame 1, the NEXT ticker with the next target's ghost, a dropping object and a "✓" strip flash at each milestone, the heat ramp and the lock with the impact kit. It reads `lookOpts.heat` (the "orange", "white" and "burst" keys at 16.5, 28.6 and 33.3 s) and maps them onto its own colour ramp. It guesses a wad of bills for every "years of median pay" milestone.
-  - **Proposals for the kit builder** (the module ignores them today; the story renders without them): `opener` with `prop: "block-stack"`, `blocks: 40`, `unit: 65052` (40 blocks in his arms, block n eaten at n × 65,052 ÷ perSecond, so every 0.83 s); `stamp` ("1 SECOND ≈ $78,000" at exactly 1 s of counting); `timer` (a "1 MINUTE" ring that drains from 0.0 s, gets the label "≈ $4.7 million" on its 60 s mark at 25.3 s and stops at 55% on the lock); `actions` (swallow, push, shocked, flattened, all in §7.2's pilot set); `gag` ("≈ 33 seconds" at the burst).
-  - The old `armed`, `queue` and `carry` proposals are gone: the counter runs from frame 1 and the stack is in his arms from the start.
+  - The Becker Rig `cost-counter` module draws 10b in its **stack mode** (`lookOpts.opener.prop: "block-stack"`, documented in the head of `looks/becker-rig/formats/cost-counter.js`; the kit README's §11 does not list it yet):
+    - the readout board counting from frame 1, with the rate line, the ✓ strip at each pass and the lock on `final`;
+    - 40 cash bricks on a plinth carrying `text` / `sub`, slurped one by one into a slot in the board's bottom edge (brick n at n × 65,052 ÷ perSecond, so every 0.83 s, with a soft tick);
+    - the `timer`: a "1 MINUTE" stopwatch on the floor, elapsed m:ss in its face, an arc that fills in the heat colour, the end label "≈ $4.7 million" from 25.3 s, stopped at 0:33 and 55% by the lock;
+    - the `heat` keys (orange at 16.5 s is the kit's red snap; white at 28.6 s adds vibration and steam), the four `actions`, the lock with its impact kit and cracks, and the `gag` stamp over the emptied plinth.
+    - In stack mode there is no NEXT ticker and no dropping object: the stack is the target.
+  - **Not drawn:** `stamp` ("1 second ≈ $78,000" at 1.0 s). The board's rate line shows "≈ $78,000 every second" from frame 1, and at 1.0 s the counter itself reads $78,201 beside the stopwatch's 0:01. A second rate label while the header is still being read would compete with it. The spec keeps the key (the check pins it) for a kit that draws it.
+  - The `becomes` texts in `actions` are directions, not all literal: the kit has no orange (orange maps to its red snap) and does not blur digits, and "knocks him flat" renders as knocked back onto the floor against the post, knees up.
   - One impact kit, at the burst only (README: "one per short").
 
 ---

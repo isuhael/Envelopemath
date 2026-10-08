@@ -651,3 +651,58 @@ Rendered all three in their kits and read the contact sheets, stills, and frames
   - 09c: contact sheet; stills at 0, 1.5, 3.6, 19.5, 20.8, 20.85, 20.9, 21.5, 25.65, 26.5 and 32.0 s.
 - **MP4s:** `studio/out/09a-…mp4` (28.5 s), `09b-…mp4` (27.0 s) and `09c-…mp4` (37.0 s), all 1080 × 1920, 30 fps, H.264 + AAC. Frames pulled with ffmpeg at 0 / 9.0 / 21.0 s (09a), 0 / 5.9 / 23.5 s (09b) and 0 / 21.5 / 26.5 s (09c) match the stills (mean absolute difference 0.6-2.0 per channel: compression only).
 - **Not changed here:** `teasers/v2/teasers.json`'s format-9 check line still says 468 checks; this pass may not edit that file.
+
+### Assembly fix pass (2026-10-08, after QA)
+
+QA scored the three below the round-2 bar: 09b 7.5, 09a 6.5 and 09c 6.5. It found no maths errors (499 checks, 0 failures). This pass applies every must and should issue and the cheap nits. The edits are in the three specs and the three `growth-ladder.js` format files only: no kit `lib.js`, `theme.js`, `kit.js`, `style.css` or README was touched. Every number on screen is still a verified figure. The checker reports **492 checks, 0 failures**: it has fewer checks than before because the cut $5 VO line and beat take their checks with them, and the new claims below add some back. The studio linter gives 3/3 clean (0 errors, 0 warnings), and the scoreboard kit's two growth-ladder samples are still clean.
+
+- **09a (live-sheet):**
+  - **Must, reflow:** each tooltip opened a spacer row, so the lower table and the footer jumped about 65 px four times. Marks are now chips (`markStyle` 'chip', the 'auto' choice when it fits): a dark pill dropped over the gridline under the output cell, laid over the next row's still-empty cells. There is no spacer row and nothing moves. The footer stays at the same y in the stills at 4.8, 4.9, 5.0, 7.7, 7.85, 7.95, 8.2, 8.3, 11.8, 11.9, 12.1 and 12.25 s.
+  - **Must, the exit glitch:** the old tooltip exited by a width clip ("arns $100+" at 18.95 s). Chips fade in and out by opacity only, with a 6 px drop and a 104% settle on the way in. Each is gone before the next row lands, so row 30's landing (19.4 s) has the moment to itself.
+  - **Should, the selection:** it slid through the Worth digits at 20.2-20.7 s, and it grew over every filled row. Now it sits on the newest row's landing cells only and snaps with a 7 px outward pop, so no edge crosses a value.
+  - **Should, the climax:** the crossing is now a moment. At 8.0 s the ≈ $105 cell lands bigger in ink on yellow, the year cell turns yellow, and the chip reads "beats your **$100**". At the verdict, row 9 re-lights full width with a bump and takes the selection, and the summary row's yellow fades. The verdict is a two-line stack (`verdictStyle: "stack"`): "From **year 9**" at 88 px over "it earns more than you add." Year 9 is the one focal point on the last frame.
+  - **Nits:**
+    - The formula-bar lines drop their leading "≈" (the bar's chip is the ≈). A line swaps in whole and types only its result as the row's cell lands, so the bar never blanks to "≈ |".
+    - Each chip shows within 0.2 s of its row landing (4.78 and 8.18 s), so the buzz and pop now belong to it.
+    - The captions keep "about" with the number after it ("ABOUT $393 A MONTH").
+    - The footer is pre-broken at its separator with "\n" (no orphan "·").
+- **09b (becker-rig):**
+  - **Should, dead air:** the figure stood idle from 13.4 to 16.3 s. The heave now fills the 4.4 s after rung 50: the heavy coin drops into his arms at about 14.2 s, he hitches it up and it sags, he presses it overhead at about 15.6 s and strains under a riser, and he heaves it at 17.4 s.
+  - **Should, the impact:** the hit lines are clipped to the band between the column heads and the row under the plate, and the spill drops down the right margin (x 940-1000). Crops at 17.85 and 17.95 s show nothing crossing "WORTH".
+  - **Should, header word spacing:** the format file adds 0.1em word spacing and re-fits the header (a kit workaround, reported to the kit owner). The spec breaks line 1 after "just", which keeps its right edge in to about x 850.
+  - **Nits:**
+    - The footer is pre-broken at its separator.
+    - The Worth cells read "≈ $7,612", with a visible space, as the verdict and captions do.
+    - The figure is scaled 1.3× and stands clear of the rail, which sits 68 px further right. His pencil stays inside x ≥ 40.
+- **09c (scoreboard):**
+  - **Should, the unlabelled hero:** `heroTag` puts a two-line tag left of the hero ("YEAR 1" / "$1 A DAY") and swaps it on every cut.
+  - **Should, the operators:** the format builds the header, so "=" and "×" render at cap height in Inter Full Black, and "× ?" ends on a green boxed blank (a kit workaround, reported).
+  - **Should, the focal conflict:** beat 2 ("$5 A DAY × 75,176" / "≈ $375,880") is cut. The one remaining beat moves the hero itself: at 20.8 s a hard cut to "× 75,176", tagged "YEAR 40 ≈ / DAILY AMOUNT".
+  - **Should, the verdict:** it now leads with the new fact. "A MILLION BY YEAR 40:" sits in white over **"≈ $13.30 A DAY"** in 88 px green, under a green rule (`verdictStyle: "stack"`), and the hero dims to 42%.
+  - **Should, the length:** vo[6] ("$5 a day: about $375,880.", 5.4 s) and its beat are cut, and the verdict moves to 25.6 s. The video is now 31.5 s, with a 2.05 s hold after the last VO line. The $5 example lives in the caption.
+  - **Nits:**
+    - The footer no longer repeats "7% a year": the input strip carries it.
+    - The year column sits 18 px in from the slot edge.
+    - Meter stubs under 6 px are not drawn.
+    - Lined boards meter with the bright underline only, so no translucent fill sits behind the put-in digits.
+  - **Found in this pass:** when the rows scrolled up for the verdict, they left a gap of about 60 px under the column labels, where row 10 had faded out. The scroll now moves by whole row pitches, so row 20 sits right under the labels (stills at 25.35, 25.5, 25.7, 26.2 and 31.47 s).
+- **Checker changes:**
+  - 09a: the verdict expects "9" only. A claim pins the verdict text and its emphasis, and another the two mark labels and tones. The formula-bar lines expect the Worth without "≈", with a claim that no line starts with a second "≈".
+  - 09c:
+    - The footer drops the 7% token, with a claim that the rate is on the input strip from frame 1.
+    - The verdict expects "40" and "≈ $13.30", with a claim that pins its text and `verdictStyle`.
+    - The hero beat is covered ("× 75,176", tag "YEAR 40"), with a claim for its "≈", its single beat and its VO anchor.
+    - A claim checks the hero tag's inputs.
+    - The $5 claims are now caption claims.
+  - Break test: see the header notes (8 failures, all five edits caught).
+- **Read:**
+  - 09a: contact sheet; stills at 0, 4.75, 8.15, 11.95, 14.5, 20.3, 25.0 and 28.47 s, plus the 16-frame grid at 4.8-24.3 s.
+  - 09b: contact sheet; stills at 0, 9.6, 13.6, 14.4, 15.2, 16.0, 16.8, 17.4, 17.85, 17.95, 18.1, 18.3, 18.6 and 26.97 s, plus crops of the impact.
+  - 09c: contact sheet; stills at 0, 13.0, 19.5, 21.2, 25.3, 25.35, 25.5, 25.7, 26.2 and 31.47 s.
+- **MP4s:** `studio/out/09a-…mp4` (28.5 s), `09b-…mp4` (27.0 s) and `09c-…mp4` (31.5 s), all 1080 × 1920, 30 fps, H.264 + AAC. I pulled frames with ffmpeg at 11.95 and 25.0 s (09a), 0 and 17.95 s (09b), and 20.9 s, 26.2 s and the last frame (09c). The ones compared against stills (all but 09c's 20.9 s, which I looked at but had no matching still) match them, with a mean absolute difference of 0.3-1.4%: compression only.
+- **Kit-level issues, worked around in the format files or specs and reported to the kit owners:**
+  - becker-rig: the header's word spacing.
+  - live-sheet and becker-rig chrome: a wrapped footer starts its second line with "·" (worked around with "\n" in the specs).
+  - scoreboard: the `ax` operators "=" and "×" render at about x-height.
+  - The kit READMEs do not yet list the new options: live-sheet `verdictStyle` and chip marks; scoreboard `heroTag`, `verdictStyle`, and `beats[].hero` / `tag`.
+- **Not changed here:** `teasers/v2/teasers.json`'s format-9 check line still says 468 checks; this pass may not edit that file.

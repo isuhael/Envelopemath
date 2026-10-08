@@ -34,7 +34,7 @@
 import {
   h, s, style, attr, setHTML, fitText, prog, clamp, lerp, plain, markup, typed, graphemes,
   C, F, L, M, E, poseTrack, Figure, makeWorld, makeFx, camera, NumObj, pinLimb, blendJ,
-  chromeParts, durationOf, measure, squashAt, popIn, hop, toss, rng, toneOf, mix, smooth, RIG, fk, poseOf,
+  chromeParts, durationOf, measure, squashAt, popIn, hop, toss, rng, toneOf, mix, smooth, bump, RIG, fk, poseOf,
 } from '../lib.js'
 
 const TAB_X = 60, TAB = 58, X0 = TAB_X + TAB + 22   // number tab, then the text column
@@ -80,7 +80,11 @@ const P = {
   heave: { lean: 6, tilt: -16, aF: [164, 6], aB: [156, 10], lF: [24, -20], lB: [-20, -14] },           // two-handed release, arms up
   proud: { lean: -4, tilt: -6, aF: [26, 118], aB: [-26, -118], lF: [12, -4], lB: [-12, -2] },         // hands on hips
   hold: { lean: 4, tilt: 12, aF: [10, 20], aB: [4, 26], lF: [12, -10], lB: [-10, -8] },               // plate held low, below his hips
+  wagA: { lean: -4, tilt: 4, aF: [64, 82], aB: [-14, 16], lF: [10, -4], lB: [-10, -2] },              // "no, no": forearm up, tipped forward
+  wagB: { lean: -4, tilt: 10, aF: [64, 122], aB: [-14, 16], lF: [10, -4], lB: [-10, -2] },            // ... and tipped back
+  nod: { lean: 4, tilt: 26, aF: [16, 16], aB: [-16, 12], lF: [11, -5], lB: [-11, -2] },
 }
+const ACTS = ['point', 'wag', 'shrug', 'nod', 'cheer', 'proud']
 const VERB = { smash: 'chop', chop: 'chop', carve: 'chop', hammer: 'chop', throw: 'chop', kick: 'kick', punch: 'kick',
   push: 'kick', stack: 'kick', drag: 'kick', toss: 'kick', flick: 'kick', slam: 'slam', crush: 'slam', heave: 'slam' }
 const HIT = { kick: 'kick', toss: 'kick', chop: 'chop', throw: 'chop', slam: 'slam', heave: 'slam' }
@@ -529,13 +533,47 @@ export default function deadSimpleList(spec, ctx) {
     const next = TI[i + 1]
     if (!r.goal && next && next.tHold - T0.res > 1.6) K(T0.res + 0.55, i % 2 ? P.proud : 'think', 0.34, 'spring')
   }
-  // finale: a jump for joy, then he points up at the answer
+  // finale: a jump for joy, then he points at the answer (his hand aims at it)
   const lastR = R[N - 1], lastT = TI[N - 1]
   const tCel = lastT.res + 0.3
+  const pointAt = i => (yV(i) > figTop(k) + 70 * k ? 'point' : 'pointUp')
+  // lookOpts.acts: his acting after the goal, keyed to the VO lines that follow it (none may start before he lands)
+  const acts = (Array.isArray(lo.acts) ? lo.acts : [])
+    .filter(a => a && ACTS.includes(a.act) && Number.isFinite(+a.t))
+    .map(a => ({ act: a.act, t: Math.max(+a.t, tCel + 0.4), i: a.item != null && R[+a.item] ? +a.item : null }))
+    .sort((a, b) => a.t - b.t)
+  const tAct0 = acts.length ? acts[0].t : Infinity
+  const aims = []                                  // { t0, t1, i }: his pointing hand aims at answer i
+  const pulses = []                                // { t, i }: answer i pulses (and, if it is not the goal, turns green)
   K(tCel, 'celebrate', 0.14, 'out')
   hops.push({ t0: tCel + 0.04, dur: 0.36, h: 46 })
-  K(tCel + 0.62, 'stand', 0.18, 'spring')
-  K(tCel + 0.9, yV(N - 1) > figTop(k) + 70 * k ? 'point' : 'pointUp', 0.3, 'spring')   // at the last answer
+  if (tCel + 0.62 < tAct0 - 0.1) K(tCel + 0.62, 'stand', 0.18, 'spring')
+  if (tCel + 0.9 < tAct0 - 0.1) { K(tCel + 0.9, pointAt(N - 1), 0.3, 'spring'); aims.push({ t0: tCel + 0.9, t1: tAct0, i: N - 1, fin: true }) }
+  const goalI = R.some(r => r.goal) ? R.findIndex(r => r.goal) : N - 1
+  acts.forEach((a, j) => {
+    const next = j + 1 < acts.length ? acts[j + 1].t : Infinity
+    if (a.act === 'point') {
+      const i = a.i ?? goalI
+      K(a.t, pointAt(i), 0.26, 'spring')
+      aims.push({ t0: a.t, t1: next, i })
+      pulses.push({ t: a.t + 0.12, i })
+    } else if (a.act === 'wag') {                 // "no, no": the forearm up, wagging at the elbow
+      K(a.t, P.wagA, 0.16, 'out')
+      let tt = a.t + 0.2
+      for (let q = 0; q < 6 && tt + 0.14 < next; q++, tt += 0.13) K(tt, q % 2 ? P.wagA : P.wagB, 0.13, 'inOut')
+      if (tt + 0.3 < next) K(tt, 'stand', 0.3, 'spring')
+    } else if (a.act === 'shrug') {
+      K(a.t, 'shrug', 0.2, 'spring')
+      hops.push({ t0: a.t + 0.02, dur: 0.22, h: 10 })
+      if (a.t + 1.1 < next) K(a.t + 1.1, 'stand', 0.3, 'spring')
+    } else if (a.act === 'nod') {
+      for (let q = 0; q < 2; q++) { K(a.t + q * 0.36, P.nod, 0.14, 'out'); K(a.t + q * 0.36 + 0.16, 'stand', 0.18, 'inOut') }
+    } else if (a.act === 'cheer') {
+      K(a.t, 'celebrate', 0.14, 'out')
+      hops.push({ t0: a.t + 0.04, dur: 0.36, h: 40 })
+      if (a.t + 0.7 < next) K(a.t + 0.62, 'stand', 0.18, 'spring')
+    } else if (a.act === 'proud') K(a.t, P.proud, 0.3, 'spring')
+  })
   const tEnd = tCel + 0.9
   const tr = poseTrack(keys)
   const figX = (() => {
@@ -604,6 +642,16 @@ export default function deadSimpleList(spec, ctx) {
     if (r.goal) ctx.cue(T0.res + 0.06, 'cash', { gain: 0.6 })
   })
   ctx.cue(tCel + 0.4, 'step', { gain: 0.4 })
+  // a pointed-at answer pulses with a ring of hit lines (no shake) and a pop
+  for (const pu of pulses) {
+    const r = R[pu.i], hw = r.sw / 2 + (r.goal ? PLATE[0] + 6 : 0)
+    fxk.impact(pu.t, { x: r.home - (r.goal ? PLATE[0] + 6 : 0) + hw, y: yV(pu.i), rx: hw + 14, ry: VhI(pu.i) / 2 + 4, r: 26, lines: 10, shake: 0, punch: r.goal ? 0.015 : 0, cue: 'pop', gain: r.goal ? 0.7 : 0.5 })
+  }
+  // while he points at an answer that is not the goal, it is the focal number again: green until the next point
+  const focusOf = i => pulses.map((pu, j) => (pu.i === i ? { t0: pu.t, t1: (pulses[j + 1] || { t: Infinity }).t } : null)).filter(Boolean)
+  R.forEach((r, i) => { r.pulses = pulses.filter(pu => pu.i === i).map(pu => pu.t); r.focus = r.goal || r.it.tone === 'bad' ? [] : focusOf(i) })
+  const pulseAt = (r, t) => r.pulses.reduce((z, tp) => z * (1 + 0.1 * bump(t, tp, 0.34)), 1)
+  const focusAt = (r, t) => r.focus.reduce((w, f) => Math.max(w, Math.min(prog(t, f.t0, 0.14), 1 - prog(t, f.t1, 0.3))), 0)
 
   // ---- crunch chips: bits of the block and the plate fly off at each hit (decoration)
   const chips = []
@@ -634,7 +682,8 @@ export default function deadSimpleList(spec, ctx) {
     for (let i = 0; i < N; i++) {
       const r = R[i], T0 = TI[i]
       const active = t >= actT(i)
-      const current = active && (i === N - 1 ? t < tEnd + 0.4 : t < actT(i + 1))
+      // (an answer he points at in his acting after the goal gets the ring back while he points)
+      const current = (active && (i === N - 1 ? t < tEnd + 0.4 : t < actT(i + 1))) || aims.some(a => !a.fin && a.i === i && t >= a.t0 && t < a.t1)
       // tab: outlined until reached, ink after; a green ring while it is the current slot
       style(r.tabBg, {
         background: active ? C.ink : C.white,
@@ -699,8 +748,9 @@ export default function deadSimpleList(spec, ctx) {
         const gs = r.goal ? HL : 1
         const next = TI[i + 1]
         const settle = next ? prog(t, next.res, 0.3) : 0
-        const col = r.goal ? C.ink : r.it.tone === 'bad' ? C.red : mix(r.tone.text, C.ink, settle)
-        r.val.set({ x: r.home, y: yV(i), sx: gs * pp.scale * sq.sx, sy: gs * pp.scale * sq.sy, opacity: pp.opacity, color: col })
+        const fw = focusAt(r, t), pz = pulseAt(r, t)
+        const col = r.goal ? C.ink : r.it.tone === 'bad' ? C.red : fw > 0 ? mix(C.ink, C.heroInk, fw) : mix(r.tone.text, C.ink, settle)
+        r.val.set({ x: r.home, y: yV(i), sx: gs * pp.scale * sq.sx * pz, sy: gs * pp.scale * sq.sy * pz, opacity: pp.opacity, color: col })
         if (r.plate) {
           const pw = r.sw + 2 * PLATE[0] + 12, ph = plateH(v)
           const p2 = popIn(t, T0.res, 0.3, 0.5)
@@ -708,7 +758,7 @@ export default function deadSimpleList(spec, ctx) {
           style(r.plate, {
             width: pw.toFixed(0) + 'px', height: ph + 'px',
             // it may overshoot sideways, never upward into the label line
-            transform: `translate(${(r.home - PLATE[0] - 6).toFixed(1)}px,${(yV(i) - ph / 2).toFixed(1)}px) scale(${(p2.scale * sq2.sx).toFixed(3)},${Math.min(1, p2.scale * sq2.sy).toFixed(3)})`,
+            transform: `translate(${(r.home - PLATE[0] - 6).toFixed(1)}px,${(yV(i) - ph / 2).toFixed(1)}px) scale(${(p2.scale * sq2.sx * pz).toFixed(3)},${(Math.min(1, p2.scale * sq2.sy) * pz).toFixed(3)})`,
             opacity: '1',
           })
         }
@@ -735,6 +785,18 @@ export default function deadSimpleList(spec, ctx) {
       const J2 = { ...J }
       pinLimb(J2, 'hF', [clamp(J.hF[0], cx - half + 18, cx + half - 18), by], 1)
       pinLimb(J2, 'hB', [clamp(J.hB[0], cx - half + 18, cx + half - 18), by], -1)
+      Object.assign(J, blendJ(J, J2, w))
+    }
+    // ---------------- pointing: his front hand aims at the answer (arm straight out toward it)
+    for (const a of aims) {
+      const w = smooth(a.t0, a.t0 + 0.22, t) * (1 - smooth(a.t1, a.t1 + 0.18, t))
+      if (w <= 0) continue
+      const r = R[a.i]
+      const tx = r.home + r.sw + (r.goal ? PLATE[0] + 6 : 0), ty = yV(a.i)
+      const dx = tx - J.sh[0], dy = ty - J.sh[1], dd = Math.hypot(dx, dy) || 1
+      const reach = (RIG.upperArm + RIG.foreArm) * J.k * 0.97
+      const J2 = { ...J }
+      pinLimb(J2, 'hF', [J.sh[0] + dx / dd * reach, J.sh[1] + dy / dd * reach], 1)
       Object.assign(J, blendJ(J, J2, w))
     }
     let sq = { sx: 1, sy: 1 }
