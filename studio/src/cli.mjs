@@ -5,22 +5,30 @@
 //   node src/cli.mjs stills specs/a.json --at 0,1.5,end [--out out/stills]
 //   node src/cli.mjs sheet  specs/*.json [--n 12 | --at 0,1.5,3] [--out out/sheets]
 // With no spec arguments, check/stills/sheet use every specs/*.json; render needs --all for that.
+// Brand (studio/brand/brand.json: the logo in the look's mark + the CTA end card) is on by default:
+//   --no-brand          render/lint exactly as before the brand layer (no end card, the look's own mark)
+//   --brand file.json   use another brand config
+//   --logo file.png     use this logo instead of brand.logo (e.g. a test logo; nothing is copied into studio/brand/)
 import fs from 'node:fs'
 import path from 'node:path'
-import { ROOT, readSpec, launch } from './page.mjs'
+import { ROOT, readSpec as readSpecFile, launch, loadBrand, brandSummary } from './page.mjs'
 import { renderSpec, renderStills, contactSheet } from './render.mjs'
 import { checkSpec, formatReport } from './check.mjs'
 
 const [cmd, ...rest] = process.argv.slice(2)
 const files = [], opt = {}
+// flags that never take a value (so "--no-brand specs/a.json" keeps the spec)
+const BOOL = new Set(['all', 'sheet', 'json', 'no-brand', 'help', 'h'])
 for (let i = 0; i < rest.length; i++) {
   const a = rest[i]
   if (a.startsWith('--')) {
     const k = a.slice(2)
-    const v = rest[i + 1] && !rest[i + 1].startsWith('--') ? rest[++i] : true
+    const v = !BOOL.has(k) && rest[i + 1] && !rest[i + 1].startsWith('--') ? rest[++i] : true
     opt[k] = v
   } else files.push(a)
 }
+const brandOpt = opt['no-brand'] ? false : { ...(typeof opt.brand === 'string' ? { config: opt.brand } : {}), ...(typeof opt.logo === 'string' ? { logo: opt.logo } : {}) }
+const readSpec = f => readSpecFile(f, { brand: brandOpt })
 if (opt.help || opt.h) {
   console.log('usage: cli.mjs render|check|stills|sheet <specs...> [--options]   (render needs explicit specs, or --all)')
   process.exit(0)
@@ -47,6 +55,11 @@ async function main() {
     console.error('usage: cli.mjs render|check|stills|sheet [specs...] [--options]')
     process.exit(2)
   }
+  if (brandOpt && typeof opt.logo === 'string' && !fs.existsSync(path.resolve(opt.logo))) {
+    console.error(`--logo ${opt.logo}: no such file`)
+    process.exit(2)
+  }
+  console.error(brandSummary(brandOpt === false ? null : loadBrand(brandOpt)))
   const browser = await launch()
   let failed = 0
   try {

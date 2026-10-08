@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "The Back of the Envelope",
+  "handle": "@envelopemath",
+  "logo": "logo.png",
+  "logoShape": "circle",
+  "logoBackground": null,
+  "cta": {
+    "line": "Follow for the math behind your money",
+    "kicker": "shown, not hand-waved.",
+    "dur": 2.5
+  }
+}

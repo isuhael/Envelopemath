@@ -8,3 +8,7 @@ html, body { margin: 0; padding: 0; width: 1080px; height: 1920px; overflow: hid
 #safe-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 9999; display: none; }
 #safe-overlay.on { display: block; }
 #safe-overlay i { position: absolute; display: block; }
+/* Brand layer (runtime/core.js): the CTA end card is built here, above the stage and outside it (the kits' chrome scans
+   #stage). Same 1080x1920 frame and text rendering as the stage; under the debug overlay. Absent with --no-brand. */
+#brand-layer { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: hidden; z-index: 9000;
+  -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision; }

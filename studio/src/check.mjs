@@ -8,14 +8,18 @@
 //   contrast    text vs. what is painted behind it: < 2.5:1 error, < 3.5:1 warning (while opacity >= 0.6)  error/warn
 //   font        a text run's font family never loaded (it silently fell back)                              error
 //   hook-number R1: a number is on screen at t = 0                                                         error
-//   duration    5-90 s                                                                                       error
+//   duration    5-90 s, the brand end card included                                                          error
 //   page-error  any script error                                                                            error
 // Mark decoration (brand mark, grid labels that repeat) with data-deco: exempt from zone/size/overlap rules.
 // Mark intended overlaps with data-overlap-ok.
+// The brand layer (#brand-layer: the CTA end card, above the stage) is audited with the stage. An element in it marked
+// data-occlude (an opaque cover) hides the stage text under it: stage text whose box is at least half under a cover
+// counts at (1 - cover opacity) of its opacity, so the held frame under an opaque end card is not linted against it.
 import { openSpec } from './page.mjs'
 
 function audit(SAFE) {
   const stage = document.getElementById('stage')
+  const layer = document.getElementById('brand-layer')
   const TOL = 4
   const parse = c => {
     const m = /rgba?\(([^)]+)\)/.exec(c || '')
@@ -55,9 +59,23 @@ function audit(SAFE) {
     return null
   }
 
+  // opaque covers in the brand layer: { r, a (how much they hide), el }
+  const covers = []
+  if (layer) for (const e of layer.querySelectorAll('[data-occlude]')) {
+    let shown = true
+    for (let a = e; a && a !== document.documentElement; a = a.parentElement) { const cs = getComputedStyle(a); if (cs.display === 'none' || cs.visibility === 'hidden') { shown = false; break } }
+    if (!shown) continue
+    const bg = parse(getComputedStyle(e).backgroundColor)
+    const a = (bg ? bg.a : 0) * opacityOf(e)
+    const r = e.getBoundingClientRect()
+    if (a > 0.05 && r.width > 0 && r.height > 0) covers.push({ r: { x0: r.left, y0: r.top, x1: r.right, y1: r.bottom }, a, el: e })
+  }
+
   const items = []
-  const tw = document.createTreeWalker(stage, NodeFilter.SHOW_TEXT)
   const range = document.createRange()
+  const roots = [stage, layer].filter(Boolean)
+  for (const root of roots) {
+  const tw = document.createTreeWalker(root, NodeFilter.SHOW_TEXT)
   while (tw.nextNode()) {
     const n = tw.currentNode
     const text = n.textContent.replace(/\s+/g, ' ').trim()
@@ -86,6 +104,10 @@ function audit(SAFE) {
     const box = rects.reduce((b, r) => ({ x0: Math.min(b.x0, r.left), y0: Math.min(b.y0, r.top), x1: Math.max(b.x1, r.right), y1: Math.max(b.y1, r.bottom) }), { x0: 1e6, y0: 1e6, x1: -1e6, y1: -1e6 })
     const vis = inter(box, clip)
     if (area(vis) <= 1) continue // fully clipped away: not visible
+    if (root === stage && covers.length) {
+      for (const c of covers) if (area(inter(vis, c.r)) >= 0.5 * area(vis)) op *= 1 - c.a
+      if (op < 0.15) continue // under the end card
+    }
     const clipped = area(vis) < 0.92 * area(box)
     const cs = getComputedStyle(el)
     let scale = 1
@@ -97,6 +119,7 @@ function audit(SAFE) {
     const cx = (vis.x0 + vis.x1) / 2, cy = (vis.y0 + vis.y1) / 2
     const bg = bgAt(Math.min(1079, Math.max(0, cx)), Math.min(1919, Math.max(0, cy)), el)
     items.push({ text: text.slice(0, 48), box: vis, px, op, deco, roll, overlapOk, clipped, family, fg, bg, el })
+  }
   }
 
   const issues = []
@@ -141,7 +164,7 @@ export async function checkSpec(browser, spec, { every = 0.25 } = {}) {
   const { page, info, errors: pageErrors } = await openSpec(browser, spec)
   const seen = new Map()
   const SAFE = { top: 240, bottom: 1480, left: 60, right: 1020, railY: 820, railX: 940 }
-  const out = { id: spec.id, duration: info.duration, errors: [], warnings: [] }
+  const out = { id: spec.id, duration: info.duration, base: info.base ?? info.duration, errors: [], warnings: [] }
   try {
     const last = info.duration - 1 / info.fps
     const times = []
@@ -169,7 +192,8 @@ export async function checkSpec(browser, spec, { every = 0.25 } = {}) {
 }
 
 export function formatReport(r) {
-  const lines = [`${r.errors.length ? '✗' : '✓'} ${r.id} (${r.duration.toFixed(1)} s): ${r.errors.length} errors, ${r.warnings.length} warnings`]
+  const card = r.base != null && r.duration - r.base > 0.001 ? ` = ${r.base.toFixed(1)} + ${(r.duration - r.base).toFixed(1)} s end card` : ''
+  const lines = [`${r.errors.length ? '✗' : '✓'} ${r.id} (${r.duration.toFixed(1)} s${card}): ${r.errors.length} errors, ${r.warnings.length} warnings`]
   for (const [lvl, arr] of [['ERR ', r.errors], ['warn', r.warnings]]) for (const i of arr) {
     const when = i.t == null ? '' : i.t1 > i.t ? ` @${i.t.toFixed(2)}-${i.t1.toFixed(2)}s` : ` @${i.t.toFixed(2)}s`
     lines.push(`   ${lvl} ${i.rule}${when}: ${i.text ? `"${i.text}" ` : ''}${i.msg}${i.box ? ` [${i.box.join(',')}]` : ''}`)
