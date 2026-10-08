@@ -539,7 +539,9 @@ EXP["b"] = {
         **{f"lookOpts.unit.holds.{i}.work": fb[j].split(" ≈ ")[0] for i, j in enumerate((1, 3, 4))},
         **{f"lookOpts.unit.holds.{i}.display": B["holds"][y] for i, y in enumerate((2012, 2020, 2022))},
         "lookOpts.unit.final": f"≈ {B['yrs_shown'][NFLX_END]} years",
-        "lookOpts.unit.finalWork": fb[6].split(" ≈ ")[0],
+        # the finish's working is the board's own rounded stake (≈ $17,700), never $17,706 beside it (round-2 port QA
+        # nit); the exact $17,706 waits for the footer step at 26.0 s, when the board has gone
+        "lookOpts.unit.finalWork": f"{approx_usd(B['final'])} ÷ {UNIT}",
         # the payoff lands last in the hero: the board hard-cuts to one number at the verdict
         "lookOpts.payoff.display": f"≈ {B['yrs_shown'][NFLX_END]} years",
         # the footer's working steps: the method (capitalised as a footer line), then the finish's two lines
@@ -689,11 +691,58 @@ def race_pause(spec):
     return mu["x"], tp, tp + hd
 
 
+def unit_knots(spec):
+    """Scoreboard pov-race (06b): the race clock as [t, x] knots, x linear between them. Each answer-row hold
+    (lookOpts.unit.holds, unless unit.pause is false) stops the clock at its x for its own `hold` (else unit.hold), so
+    the board, the tips and the year clock show the held year-end (round-2 port QA should). A hold's `t` pins when the
+    race reaches it; holds without one share their gap's moving time in proportion to x (the kit's rule). None when
+    there are no holds."""
+    d, u = spec["data"], (spec.get("lookOpts") or {}).get("unit")
+    if spec["look"] != "scoreboard" or not u or u.get("pause") is False:
+        return None
+    t0, t1 = d["raceT"]
+    xf, xt = d["x"]["from"], d["x"]["to"]
+    dh = u.get("hold", 1.3)
+    pz = sorted(({"x": q["x"], "t": q.get("t"), "hold": q.get("hold", dh)} for q in u.get("holds", [])
+                 if xf < q["x"] < xt), key=lambda q: q["x"])
+    if not pz:
+        return None
+    ks, i = [(t0, xf)], 0
+    while i <= len(pz):
+        ta, xa = ks[-1]
+        j = i
+        while j < len(pz) and pz[j]["t"] is None:
+            j += 1
+        tb, xb = (pz[j]["t"], pz[j]["x"]) if j < len(pz) else (t1, xt)
+        move = tb - ta - sum(q["hold"] for q in pz[i:j])
+        acc = 0.0
+        for q in pz[i:j]:
+            tk = ta + (q["x"] - xa) / (xb - xa) * move + acc
+            ks += [(tk, q["x"]), (tk + q["hold"], q["x"])]
+            acc += q["hold"]
+        if j < len(pz):
+            ks += [(pz[j]["t"], pz[j]["x"]), (pz[j]["t"] + pz[j]["hold"], pz[j]["x"])]
+        i = j + 1
+    ks.append((t1, xt))
+    return ks
+
+
 def chart_t(spec, x, after=False):
     """the time the race reaches x (after=True: at the pause's x, the time it leaves it)"""
     d = spec["data"]
     t0, t1 = d["raceT"]
     xf, xt = d["x"]["from"], d["x"]["to"]
+    ks = unit_knots(spec)
+    if ks:
+        if after:                                     # at a hold's x: when the race leaves it
+            for (ta, xa), (tb, xb) in zip(ks, ks[1:]):
+                if xb == xa and abs(x - xa) < 1e-9:
+                    return tb
+        if xf < x <= xt:
+            for (ta, xa), (tb, xb) in zip(ks, ks[1:]):
+                if xb > xa and x <= xb + 1e-9:
+                    return ta + (x - xa) / (xb - xa) * (tb - ta)
+        return t0 + (x - xf) / (xt - xf) * (t1 - t0)
     pz = race_pause(spec)
     if not pz:
         return t0 + (x - xf) / (xt - xf) * (t1 - t0)
@@ -826,11 +875,28 @@ def check_spec(key):
         check(sid, "lookOpts.unit.perMonth = $19.99", unit["perMonth"], NFLX_STD_NOW)
         check(sid, "lookOpts.unit.holds x = the spoken year-ends", [hq["x"] for hq in unit["holds"]], [x for x, _ in e["holds"]])
         check(sid, "lookOpts.unit.empty = the hook's open slot (no number)", unit.get("empty"), "? years")
-        hold = unit.get("hold", 1.3)
+        dh = unit.get("hold", 1.3)
+        # round-2 port QA should: the race clock stops on each hold's year-end for the whole hold, so the board's
+        # counters, both tips and the year clock show the year-end the answer row is holding
+        check(sid, "race clock pauses on the answer row's holds (unit.pause not false)", bool(unit_knots(spec)), True)
+        own_x = [px for px, _ in d["own"]["points"]]
         for (x, i), hq in zip(e["holds"], unit["holds"]):
             t = chart_t(spec, x)
+            hd = hq.get("hold", dh)
             lo, hi = vo[i]["t"] - BEAT_TOL, vo[i]["t"] + vo[i]["d"] + BEAT_TOL
             check(sid, f"answer row lands {int(x)} (t {t:.2f}) in vo[{i}]", f"t={t:.2f}", f"{lo:.2f}-{hi:.2f}", ok=lo <= t <= hi)
+            check(sid, f"answer row {int(x)}: holds[].t = when the race reaches it", hq.get("t"), rnd(t, 2),
+                  ok=hq.get("t") is not None and abs(hq["t"] - t) < 1e-9)
+            t_off = chart_t(spec, x, after=True)
+            check(sid, f"answer row {int(x)}: race paused at its x for the hold",
+                  f"t {t:.2f}-{t_off:.2f}", f"t {t:.2f}-{t + hd:.2f}", ok=abs(t_off - t - hd) < 1e-9)
+            # the paused board shows that year-end's own point (2012: $95.88 | $106.98, 2020: $1,095.92 | $9,181,
+            # 2022: $1,449.68 | $5,289), the figures the working quotes
+            check(sid, f"answer row {int(x)}: the board holds the year-end point", f"x {x:.2f} in own points",
+                  "yes", ok=any(abs(px - x) < 1e-9 for px in own_x))
+            # nit: the held figure stays up for as long as its VO line is captioned (the 2020 hold runs to 16.7)
+            check(sid, f"answer row {int(x)}: held through vo[{i}]'s end", f"t={t + hd:.2f}",
+                  f"≥ {vo[i]['t'] + vo[i]['d']:.2f}", ok=t + hd >= vo[i]["t"] + vo[i]["d"] - 1e-9)
             # a hold's working names its year, and its display is what the live count reads at that exact year-end
             check(sid, f"answer row {int(x)}: work names its year", hq["work"].split(":")[0], str(int(x)))
             check(sid, f"answer row {int(x)}: display = the live count at the year-end", hq["display"], answer_cell(B["value"][int(x)]))
@@ -839,19 +905,27 @@ def check_spec(key):
             check(sid, f"answer row {int(x)}: tone bad iff the stake fell", hq.get("tone") == "bad", fell)
         # holds never overlap one another or the finish, so each landing is held whole
         ts = [chart_t(spec, x) for x, _ in e["holds"]] + [d["raceT"][1]]
+        hds = [hq.get("hold", dh) for hq in unit["holds"]]
         check(sid, "answer row holds clear of each other and the finish", [round(b - a, 2) for a, b in zip(ts, ts[1:])],
-              f"each ≥ {hold}", ok=all(b - a >= hold for a, b in zip(ts, ts[1:])))
-        # the live count at the finish rounds to the final, so the landing never jumps; the finish's working divides out
+              f"each ≥ its hold {hds}", ok=all(b - a >= hd for a, b, hd in zip(ts, ts[1:], hds)))
+        # the live count at the finish rounds to the final; the finish's working is the board's own ≈ $17,700 and
+        # divides out to it too (17,700 ÷ 239.88 = 73.79)
         check(sid, "answer row final = the live count at the finish", unit["final"], answer_cell(B["final"]))
-        check(sid, "answer row finalWork divides to the final", f"{rnd(B['final']) / B['unit_y']:.2f}",
-              unit["final"], ok=f"≈ {mult(rnd(B['final']) / B['unit_y'])} years" == unit["final"])
-        # the payoff: the hero rolls onto the verdict's answer as the verdict lands
+        fw = sig(B["final"], 3)
+        check(sid, "answer row finalWork divides to the final", f"{fw / B['unit_y']:.2f}",
+              unit["final"], ok=f"≈ {mult(fw / B['unit_y'])} years" == unit["final"])
+        check(sid, "answer row finalWork's stake = the board's final", unit["finalWork"].split(" ÷ ")[0], d["own"]["final"])
+        # the payoff: the answer row's landed answer cut up into the hero as the verdict lands (round-2 port QA must:
+        # no roll from 0 under a verdict and a footer that already say 74)
         po = lo_["payoff"]
         check(sid, "payoff.t = verdict.t", po["t"], spec["verdict"]["t"])
         check(sid, "payoff = the verdict's emphasised answer", po["display"],
               re.search(r"\*\*(.+?)\*\*", spec["verdict"]["text"]).group(1))
-        check(sid, "payoff lands before the VO says it (roll ends inside vo[8])", f"t={po['t'] + po.get('dur', 1.4):.2f}",
-              f"≤ {vo[8]['t'] + vo[8]['d']:.2f}", ok=po["t"] + po.get("dur", 1.4) <= vo[8]["t"] + vo[8]["d"])
+        check(sid, "payoff = the answer row's final (the same number, promoted)", po["display"], unit["final"])
+        check(sid, "payoff lands whole (dur 0: no roll)", po.get("dur", 1.4), 0)
+        check(sid, "payoff lands with the footer's last step", po["t"], steps[-1]["t"])
+        check(sid, "payoff lands inside vo[8], before it says the 74", f"t={po['t']:.2f}",
+              f"{vo[8]['t']:.2f}-{vo[8]['t'] + vo[8]['d']:.2f}", ok=vo[8]["t"] <= po["t"] <= vo[8]["t"] + vo[8]["d"])
 
     if key == "c":
         # the "2×" mark's line height is k × the spend at x (the format reads both): the 2021 year-end, k = 2

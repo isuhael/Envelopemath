@@ -8,45 +8,147 @@
   "footer": "24% APR · minimum = 1% + interest, $35 floor · no new charges",
   "captions": false,
   "vo": [
-    { "t": 0.0, "d": 1.3, "text": "Six thousand dollars on a card at 24%." },
-    { "t": 1.4, "d": 3.8, "text": "Pay the minimum: about eighteen years, and ten thousand in interest." },
-    { "t": 5.6, "d": 3.4, "text": "A flat $200 a month: under four years. About $7,200 less." },
-    { "t": 9.4, "d": 3.0, "text": "$300 a month: 26 months." },
-    { "t": 12.8, "d": 2.8, "text": "$500 a month: done in 14." },
-    { "t": 16.0, "d": 2.8, "text": "Just $20 more than the first minimum: fourteen years sooner." }
+    {
+      "t": 0.0,
+      "d": 1.3,
+      "text": "Six thousand dollars on a card at 24%."
+    },
+    {
+      "t": 1.4,
+      "d": 3.8,
+      "text": "Pay the minimum: about eighteen years, and ten thousand in interest."
+    },
+    {
+      "t": 5.6,
+      "d": 3.4,
+      "text": "A flat $200 a month: under four years. About $7,200 less."
+    },
+    {
+      "t": 9.4,
+      "d": 3.0,
+      "text": "$300 a month: 26 months."
+    },
+    {
+      "t": 12.8,
+      "d": 2.8,
+      "text": "$500 a month: done in 14."
+    },
+    {
+      "t": 16.0,
+      "d": 2.8,
+      "text": "Just $20 more than the first minimum: fourteen years sooner."
+    }
   ],
-  "verdict": { "t": 16.0, "text": "Just **$20** more than the first minimum:\n**≈ 14 years** sooner" },
+  "verdict": {
+    "t": 16.0,
+    "text": "Just **$20** more than the first minimum:\n**≈ 14 years** sooner"
+  },
   "data": {
-    "stake": { "label": "Credit card balance", "value": "$6,000", "terms": "24% APR" },
+    "stake": {
+      "label": "Credit card balance",
+      "value": "$6,000",
+      "terms": "24% APR"
+    },
     "metrics": [
-      { "key": "payoff", "label": "Paid off in" },
-      { "key": "interest", "label": "Interest paid" }
+      {
+        "key": "payoff",
+        "label": "Paid off in"
+      },
+      {
+        "key": "interest",
+        "label": "Interest paid"
+      }
     ],
     "options": [
-      { "t": 0.0, "name": "The minimum (1% + interest)", "detail": "starts at $180, then shrinks",
-        "values": { "payoff": "≈ 18.3 years", "interest": "≈ $10,442" }, "tone": "bad" },
-      { "t": 4.6, "resultT": 7.0, "deltaT": 7.8, "name": "A flat $200 every month", "detail": "$20 more than the first minimum",
-        "values": { "payoff": "47 months", "interest": "≈ $3,255" }, "delta": "≈ $7,187 less", "tone": "goal" },
-      { "t": 9.4, "name": "A flat $300 every month", "detail": "$300 until it's gone",
-        "values": { "payoff": "26 months", "interest": "≈ $1,739" }, "delta": "≈ $8,703 less", "tone": "good" },
-      { "t": 12.8, "name": "A flat $500 every month", "detail": "$500 until it's gone",
-        "values": { "payoff": "14 months", "interest": "≈ $930" }, "delta": "≈ $9,512 less", "tone": "good" }
+      {
+        "t": 0.0,
+        "name": "The minimum",
+        "detail": "starts at $180, then shrinks",
+        "values": {
+          "payoff": "≈ 18.3 years",
+          "interest": "≈ $10,442"
+        },
+        "tone": "bad"
+      },
+      {
+        "t": 4.6,
+        "resultT": 7.0,
+        "deltaT": 7.8,
+        "name": "Flat $200 a month",
+        "detail": "$20 more than the first minimum",
+        "values": {
+          "payoff": "47 months",
+          "interest": "≈ $3,255"
+        },
+        "delta": "≈ $7,187 less",
+        "tone": "goal"
+      },
+      {
+        "t": 9.4,
+        "name": "Flat $300 a month",
+        "detail": "$300 until it's gone",
+        "values": {
+          "payoff": "26 months",
+          "interest": "≈ $1,739"
+        },
+        "delta": "≈ $8,703 less",
+        "tone": "good"
+      },
+      {
+        "t": 12.8,
+        "name": "Flat $500 a month",
+        "detail": "$500 until it's gone",
+        "values": {
+          "payoff": "14 months",
+          "interest": "≈ $930"
+        },
+        "delta": "≈ $9,512 less",
+        "tone": "good"
+      }
     ],
     "winner": 1,
     "hold": 3.0
   },
   "lookOpts": {
     "reads": [
-      { "t": 2.2, "option": 0, "metric": "payoff" },
-      { "t": 3.4, "option": 0, "metric": "interest" },
-      { "t": 16.4, "option": [2, 3], "metric": "delta" }
+      {
+        "t": 2.2,
+        "option": 0,
+        "metric": "payoff"
+      },
+      {
+        "t": 3.4,
+        "option": 0,
+        "metric": "interest"
+      },
+      {
+        "t": 16.4,
+        "option": [
+          2,
+          3
+        ],
+        "metric": "delta"
+      }
     ],
     "formulas": [
-      { "t": 1.4, "text": "= 1% of $6,000 + $120 interest\n= $180 first, then less" },
+      {
+        "t": 1.4,
+        "text": "= 1% of $6,000 + $120 interest\n= $180 first, then less"
+      },
       "= $180 + $20 = $200, every month"
     ],
-    "lever": { "t": 14.6, "text": "= $200 − $180 = **$20** more a month\n≈ 14 years sooner than the minimum", "options": [0, 1] },
-    "countCell": { "option": 1, "from": "base" }
+    "lever": {
+      "t": 14.6,
+      "text": "= $200 − $180 = **$20** more a month\n≈ 14 years sooner than the minimum",
+      "options": [
+        0,
+        1
+      ]
+    },
+    "countCell": {
+      "option": 1,
+      "from": "base"
+    }
   },
-  "notes": "Stress variant: 4 options, the first already run at frame 1 (t 0), long names that wrap, long behaviours, mixed payoff units (≈ 18.3 years vs 47 / 26 / 14 months on one time axis), a 2-line footer, captions off, resultT (a 2.4 s lead-in: he strains before the crate gives) and deltaT on option 2, a counted money value (from the minimum's), a lever across lanes 0 and 1, reads of a crate, a money value and two deltas. Maths: $6,000 at 24% APR (2% a month), no new charges, simulated month by month (re-checked in Python): minimum = 1% of the balance + that month's interest, $35 floor; first payment $60 + $120 = $180; 219 payments (18.25 years ≈ 18.3), interest $10,441.80. Flat $200: 47 payments, $3,254.63 ($7,187.17 less; 219 − 47 = 172 months ≈ 14.3 years sooner). Flat $300: 26 payments, $1,739.24 ($8,702.56 less). Flat $500: 14 payments, $929.90 ($9,511.90 less)."
+  "notes": "Stress variant: 4 options, the first already run at frame 1 (t 0), medium names with long behaviours (they drop to the working lines when the row is full), mixed payoff units (≈ 18.3 years vs 47 / 26 / 14 months on one time axis), a 2-line footer, captions off, resultT (a 2.4 s lead-in: he strains before the crate gives) and deltaT on option 2, a counted money value (from the minimum's), a lever across lanes 0 and 1, reads of a crate, a money value and two deltas. Maths: $6,000 at 24% APR (2% a month), no new charges, simulated month by month (re-checked in Python): minimum = 1% of the balance + that month's interest, $35 floor; first payment $60 + $120 = $180; 219 payments (18.25 years ≈ 18.3), interest $10,441.80. Flat $200: 47 payments, $3,254.63 ($7,187.17 less; 219 − 47 = 172 months ≈ 14.3 years sooner). Flat $300: 26 payments, $1,739.24 ($8,702.56 less). Flat $500: 14 payments, $929.90 ($9,511.90 less)."
 }

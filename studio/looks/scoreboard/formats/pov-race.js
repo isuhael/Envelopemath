@@ -12,6 +12,7 @@
 //     from there, so frame 1's dots sit mid-plot instead of on the floor of an empty grid.
 //   - the year clock rolls to y + 1 one frame after year y's Dec-31 close, so each close shows under its own year.
 //   - the scoreboard row, the footer and the stage sit 24 px lower than layoutFor's grid (air under the hook).
+//   - the race clock is linear over raceT, except that it pauses on each answer-row hold (lookOpts.unit, below).
 //   - purchases tick on the spend line: the item's icon drops onto the line as the race reaches it (gravity, squash);
 //     one at the point where both lines start stands just left of it, so the own line never runs through it
 //     with a price tag ("$8.99  MAY 2014") that holds until the next purchase; the icons stay on the line as markers
@@ -36,10 +37,17 @@
 // lookOpts (all optional):
 //   spendTag / ownTag   scoreboard labels (default: spend.label, and "in … stock" taken from own.label)
 //   footerSteps         [{ t, text }]: kit-wide: the footer rewrites to a working line at each t (spec.footer before)
-//   tags                false: no price tags on the chart (icons only). A tag takes the best-scored spot around its
-//                       icon (below, above, beside; scored at mount on the lines, tips and icons it would cover); when
-//                       every one of those crosses a line (a late purchase under a dip on a short plot), it parks in
-//                       the plot's top band instead, detached, over the faint corner year (which dims under it)
+//   tags                false: no price tags on the chart (icons only). A tag takes the best-scored spot, at mount, on
+//                       the lines, tips and icons it would cover and the x-tick labels it would hide: around its icon
+//                       (below, above, beside, or out in the empty future right of the tips), or the TOP BAND: the
+//                       stage's strip over the plot (as chart-race's event flags), above the lines and tips, straight
+//                       over its ticket (or ending just left / starting just right of it, to clear a tip right over
+//                       it). Mid-race tags usually land there, which keeps the x-tick strip clear. When every spot
+//                       crosses something, it parks in the plot's top band, detached, over the faint corner year
+//                       (which dims under any tag)
+//   pips                true: only the latest purchase stands on the line as a full icon; once the next purchase
+//                       lands, a ticket shrinks down into a small pip on the spend line (0.25 s). Where the two lines
+//                       run together, a full icon would be cut by the own line on every later frame
 //   spendTip            false: no "$499 / SPENT" tag riding the spend line's right end (it shows only in stretches
 //                       where it is clear of the own line, its tip and the icons, scored at mount)
 //   gapFill             false: no green/coral fill between the lines
@@ -49,21 +57,35 @@
 //   unit                the ANSWER ROW: the stake re-priced in the hook's own unit ("$19.99 Netflix, free for how many
 //                       years?"), in the bottom bar where the label stack sits (HD Guy grammar: line 1 the working,
 //                       line 2 the answer, big and green, the spend item's icon beside it). It yields to the verdict.
-//                       { per, perMonth?, formula, empty = "? years", holds: [{ x, work, display, tone? }],
-//                         final, finalWork, hold = 1.3, icon = spend.item }
+//                       { per, perMonth?, formula, empty = "? years", holds: [{ x, t?, hold?, work, display, tone? }],
+//                         final, finalWork, hold = 1.3, pause = true, icon = spend.item }
 //                       - frame 1: line 1 `formula` ("stock ÷ ($19.99 × 12)"), line 2 `empty` ("? YEARS"): the open
 //                         slot. From raceT[0] line 2 counts the IN STOCK counter ÷ `per` live (its "≈" an unlit ghost):
 //                         under a year in whole months (÷ perMonth), 1-10 years to 1 dp, then whole years.
 //                       - each hold (a spoken year-end x): line 1 cuts to its `work` ("2020: $9,181 ÷ $239.88"),
 //                         line 2 lands on `display` ("≈ 38 years") with a bump, a glow flare, a floor bloom and a ding
-//                         (tone "bad", for a loss: coral, on a thud), holds `hold` s, then catches up with the race (0.35 s).
-//                       - the finish (raceT[1]): line 1 `finalWork`, line 2 lands on `final`.
-//   cover               "clean": frame 1 carries only the hook's own price: the board's counters wait LED-off ("—")
-//                       and a purchase at the clock's start drops in with the race at raceT[0] (no receipt on the cover)
+//                         (tone "bad", for a loss: coral, on a thud), and holds its own `hold` s (else unit.hold).
+//                       - the race PAUSES on each hold (unless pause: false): the clock stops at the hold's x for its
+//                         hold, so the board's counters, both tips, the lines and the year clock all show the year-end
+//                         the row holds (a paused frame never sets "2012: $107" beside a board that moved on into 2013).
+//                         A hold's `t` pins when the race reaches it (sync it to its VO line); holds without one share
+//                         their gap's moving time in proportion to x. The stretches between holds run at their own
+//                         rates and the race still ends at raceT[1]. (pause: false: the race runs on and the row
+//                         catches up with it over 0.35 s after each hold.)
+//                       - the finish (raceT[1]): no landing in the row: the board's dollars own the finish. Line 1
+//                         cuts softly (no slam) to `finalWork` (use the board's own rounded figure, "≈ $17,700 ÷
+//                         $239.88", never a second spelling of it), and line 2 rests on `final` with its "≈" still an
+//                         unlit ghost, dimmed to half. The payoff lights it.
+//   cover               "clean": frame 1 carries only the hook's own price: the board's counters wait LED-off, as
+//                       unlit ghost digits at the counter's size in the shape of its first value ("$–.––", 16% white,
+//                       decoration), and a purchase at the clock's start drops in with the race at raceT[0] (no
+//                       receipt on the cover)
 //   payoff              { t = verdict.t, display, icon = unit icon, dur = 1.4 }: the payoff lands last in the hero.
-//                       At t the split board hard-cuts to ONE hero number (the icon + an odometer at the hero size)
-//                       that rolls from 0 onto `display` ("≈ 74 years"): roll, then a 1.13 bump, glow, a stage bloom
-//                       and a hit. The board does not come back.
+//                       At t the split board hard-cuts to ONE hero number (the icon + an odometer at the hero size).
+//                       dur > 0: it rolls from 0 onto `display` ("≈ 74 years"), then a 1.13 bump, glow, a stage bloom
+//                       and a hit. dur 0: no roll: the answer the row already holds is cut up into the hero whole, and
+//                       the bump, glow, bloom and hit all land at t, so no frame ever shows a part-count under a
+//                       verdict or a footer that already says the answer. The board does not come back.
 import { h, s, css as style, setText, attr, prog, ease, clamp, lerp, fitText, fmtNum } from '../../../runtime/core.js'
 import { C, SIZE, M, layoutFor } from '../theme.js'
 import {

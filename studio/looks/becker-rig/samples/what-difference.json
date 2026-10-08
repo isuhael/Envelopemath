@@ -24,9 +24,9 @@
       { "key": "interest", "label": "Interest" }
     ],
     "options": [
-      { "t": 1.8, "name": "Pay the bill", "detail": "$554.43 a month", "values": { "payoff": "60 months", "interest": "≈ $5,266" }, "tone": "bad" },
-      { "t": 5.4, "name": "Round up to $600", "detail": "+$45.57 a month", "values": { "payoff": "55 months", "interest": "≈ $4,779" }, "delta": "≈ $487 less", "tone": "good" },
-      { "t": 10.6, "name": "Round up to $700", "detail": "+$145.57 a month", "values": { "payoff": "46 months", "interest": "≈ $3,978" }, "delta": "≈ $1,288 less", "tone": "goal" }
+      { "t": 1.8, "name": "Pay the bill", "detail": "$554.43", "values": { "payoff": "60 months", "interest": "≈ $5,266" }, "tone": "bad" },
+      { "t": 5.4, "name": "Round up to $600", "detail": "+$45.57", "values": { "payoff": "55 months", "interest": "≈ $4,779" }, "delta": "−$487", "tone": "good" },
+      { "t": 10.6, "name": "Round up to $700", "detail": "+$145.57", "values": { "payoff": "46 months", "interest": "≈ $3,978" }, "delta": "−$1,288", "tone": "goal" }
     ],
     "winner": 2,
     "hold": 3.0

@@ -106,10 +106,8 @@ export const css = `
 
 // ------------------------------------------------------------------------------------------------- constants
 const XR = 922            // right edge of the money column (x <= 940 below y 820, with room for a shake)
-const NAME_GAP = 28       // between the title (name + behaviour) and the money value
+const NAME_GAP = 24       // between the title (name + behaviour) and the money value
 const FLOOR = 1300        // the last lane's floor = the kit's floor line
-const PUSH_H = 206        // his height bent over the crate at scale 1 (with the stroke and the run's bob)
-const STAND_H = 276       // standing, at scale 1
 const S_MIN = 0.36, S_MAX = 0.8
 const P_MAX = 300         // the most a lane is ever given (2 lanes): the rest stays above, under the slot
 const KMAX = 7            // coins thrown by the most expensive lane
@@ -142,6 +140,18 @@ const PZ = {
   point: { lean: 4, tilt: -14, aF: [128, 6], aB: [-16, 22], lF: [10, -6], lB: [-12, -4] },
 }
 const BODY = ['hip', 'nk', 'sh', 'head', 'eF', 'hF', 'eB', 'hB', 'kF', 'fF', 'kB', 'fB']
+
+// a pose's full height at scale 1, feet planted: limbs (with half the stroke), head, and the pencil's eraser end
+// (it rises as he leans forward: bent over, the pencil is the top of him)
+function poseTop(p) {
+  const J = fk(p, { x: 0, ground: 0, scale: 1 })
+  const a = (J.headRot * Math.PI) / 180, R = J.R
+  const ey = J.head[1] - 2.0 * R * Math.sin(a) - 1.35 * R * Math.cos(a)
+  return -Math.min(J.head[1] - R, J.hF[1] - 6.5, J.hB[1] - 6.5, J.eF[1] - 6.5, J.eB[1] - 6.5, ey - 3)
+}
+// his height under a title row (every pose he takes there) and standing in the start gutter, at scale 1
+const PUSH_H = Math.ceil(Math.max(...['push', 'ready', 'strain', 'crouch', 'recoil', 'knees', 'slump', 'nod', 'punch'].map(k => poseTop(PZ[k]))) + 4)
+const STAND_H = Math.ceil(Math.max(poseTop(PZ.wait), poseTop(PZ.think)) + 2)
 
 // time-unit of a payoff string (months per unit); null = no unit in it
 function unitOf(str) {
@@ -262,7 +272,8 @@ export default function whatDifference(spec, ctx) {
   const hookTxt = plain(spec.header || '')
   const slotIn = []
   const stakeText = lo.stakeLine === false ? null : typeof lo.stakeLine === 'string' ? lo.stakeLine
-    : [stake.label, stake.value && !hookTxt.includes(String(stake.value)) ? stake.value : null, stake.terms].filter(Boolean).join(' · ') || null
+    : [stake.label && !hookTxt.toLowerCase().includes(String(stake.label).toLowerCase()) ? stake.label : null,
+      stake.value && !hookTxt.includes(String(stake.value)) ? stake.value : null, stake.terms].filter(Boolean).join(' · ') || null
   if (stakeText) slotIn.push({ t: -1e9, text: stakeText, kind: 'stake' })
   asList(lo.formulas).forEach((f, i) => {
     if (!f || i >= n) return
@@ -347,7 +358,9 @@ export default function whatDifference(spec, ctx) {
   const HEADS = headsFor()
   const UNITS = lanes.every(l => splitUnit(l.bar).u)
   const unitW = u => mw(u, `800 40px ${F.head}`, { letterSpacing: '-0.01em' })
-  function geometry(mode, VS, NS, two, withDetail, TWc = 0) {
+  // dPop: the deltas get no room of their own (each pops over its title for a while, then gives the row back)
+  function geometry(mode, VS, NS, two, withDetail, TWc = 0, dPop = false) {
+    const dW = l => (dPop ? 0 : deltaW(l)), dL = (l, w) => (dPop ? 0 : deltaLines(l, w))
     const colW = sideM ? Math.max(...lanes.map(l => valW(l.side, VS))) : 0
     const colL = XR - colW
     const P = Math.min(P_MAX, (FLOOR - top - HEADS.headsH) / n)
@@ -360,15 +373,22 @@ export default function whatDifference(spec, ctx) {
       X0c = Math.max(96, Math.round(24 + 84 * sc0 + 13 + 112 * sc0))
       room = (sideM ? colL - NAME_GAP : XR) - X0c
       ok = lanes.every(l => {
-        const det = withDetail ? Math.max(detW(l), deltaW(l)) : deltaW(l)
+        const det = withDetail ? Math.max(detW(l), dW(l)) : dW(l)
         return two ? nameW(l, NS) <= room && det <= room : nameW(l, NS) + (det ? 16 + det : 0) <= room
       })
     } else {
       // the column: as wide as its longest name or behaviour, 150-330 px; wrapping balanced
-      TW = Math.round(clamp(Math.max(...lanes.map(l => Math.max(nameW(l, NS), withDetail ? detW(l) : 0, deltaW(l)))), 150, 330))
+      TW = Math.round(clamp(Math.max(...lanes.map(l => Math.max(nameW(l, NS), withDetail ? detW(l) : 0, dW(l)))), 150, 330))
       if (TWc) TW = Math.min(TW, TWc)
-      titleH = Math.max(...lanes.map(l => 48 * (nameLines(l, NS, TW) + Math.max(withDetail ? detLines(l.detail, TW) : 0, deltaLines(l, TW)))))
-      ok = titleH <= P - 10 && (!sideM || 60 + TW + 30 <= colL)
+      titleH = Math.max(...lanes.map(l => 48 * (nameLines(l, NS, TW) + Math.max(withDetail ? detLines(l.detail, TW) : 0, dL(l, TW)))))
+      // no single word may be wider than the column (it would overflow under the figure, not wrap)
+      const words = l => [
+        ...plain(l.name).split(/\s+/).map(w => mw(esc(w), `800 ${NS}px ${F.head}`, { letterSpacing: '-0.02em', html: true })),
+        ...(withDetail ? l.detail.split(/\s+/).map(w => (w ? mw(w, `700 40px ${F.mono}`, { letterSpacing: '-0.03em' }) : 0)) : []),
+        ...(!dPop && l.delta ? l.delta.split(/\s+/).map(w => (w ? mw(w, `800 40px ${F.head}`, { letterSpacing: '-0.01em' }) : 0)) : []),
+      ]
+      // ... and a delta is one line (a lone "less" or "sooner" on a line of its own reads as a stray word)
+      ok = titleH <= P - 10 && (!sideM || 60 + TW + 30 <= colL) && lanes.every(l => Math.max(0, ...words(l)) <= TW + 0.5 && (dPop || deltaW(l) <= TW + 0.5))
       RH = valB - 6
       figH = P - 12
       const sc0 = Math.min(S_MAX, (figH - 2) / PUSH_H, (P - 12) / STAND_H)
@@ -385,7 +405,7 @@ export default function whatDifference(spec, ctx) {
     let face = 1, CT = Math.round(clamp(Hc * 0.7, 40, 52))
     let crateW = Math.max(Hc * 1.15, ...lanes.map(l => valW(l.bar, CT)), valW('?', CT)) + 38
     if (UNITS && Hc >= 101) {
-      const CT2 = Math.min(56, Hc - 60)
+      const CT2 = Math.min(56, Math.floor((Hc - 8 - 49 + 5) / 1.22))
       const W2 = Math.max(Hc, ...lanes.map(l => Math.max(valW(splitUnit(l.bar).n, CT2), unitW(splitUnit(l.bar).u))), valW('?', CT2)) + 38
       if (W2 < crateW - 16) { face = 2; CT = CT2; crateW = W2 }
     }
@@ -393,29 +413,31 @@ export default function whatDifference(spec, ctx) {
     // the far side: clear of the pile, and the figure behind the longest crate stays left of the money column
     const XF = Math.min(showPile ? PILE_X - PILE_RX - 50 : 880, sideM ? colL - 14 + crateW : 880)
     const RUN = XF - X0c - crateW
-    return { mode, VS, NS, two, withDetail, colW, colL, P, valB, RH, figH, sc, reach: 112 * sc, X0c, TW, titleH, Hc, CT, face, crateW, XF, RUN, room, ok }
+    return { mode, VS, NS, two, withDetail, dPop, colW, colL, P, valB, RH, figH, sc, reach: 112 * sc, X0c, TW, titleH, Hc, CT, face, crateW, XF, RUN, room, ok }
   }
   let G = null, best = -Infinity
   const cands = []
-  // first pass: a figure of 0.36 or more; only when nothing gives that, one down to 0.3
-  for (const sMin of [S_MIN, 0.3]) {
-    for (const mode of ['row', 'col']) for (const withDetail of [true, false]) for (const two of mode === 'row' ? [false, true] : [false])
-      for (const TWc of mode === 'row' ? [0] : [0, 300, 260, 220, 180]) for (const VS of [64, 60, 56, 52, 48, 44]) for (const NS of [44, 40]) {
-        const g = geometry(mode, VS, NS, two, withDetail, TWc)
-        if (!g.ok || g.RUN < (sMin === S_MIN ? 180 : 130) || (showFig && g.sc < sMin) || g.CT < 41) continue
-        const score = 0.5 * VS + 150 * Math.min(g.sc, 0.6) + 0.12 * Math.min(g.RUN, 560) + 0.6 * g.CT - (two ? 4 : 0) - (NS < 44 ? 3 : 0) - (withDetail ? 0 : 40)
-        cands.push([mode, withDetail, two, TWc, VS, NS, +g.sc.toFixed(2), Math.round(g.RUN), g.CT, g.face, +score.toFixed(1)])
+  // every combination, scored: big money, a big figure (0.36 and up; 0.3 at the least), a long run (180 px and up;
+  // 120 at the least), a big crate face; behaviours kept when there are any; deltas with their own room
+  const anyDetail = lanes.some(l => l.detail), anyDelta = lanes.some(l => l.delta)
+  for (const dPop of anyDelta ? [false, true] : [false]) for (const mode of ['row', 'col']) for (const withDetail of anyDetail ? [true, false] : [false])
+    for (const two of mode === 'row' ? [false, true] : [false]) for (const TWc of mode === 'row' ? [0] : [0, 300, 260, 220, 180])
+      for (const VS of [64, 60, 56, 52, 48, 44]) for (const NS of [44, 40]) {
+        const g = geometry(mode, VS, NS, two, withDetail, TWc, dPop)
+        if (!g.ok || g.RUN < 120 || (showFig && g.sc < 0.3) || g.CT < 41) continue
+        const score = 0.5 * VS + 150 * Math.min(g.sc, 0.6) + 0.12 * Math.min(g.RUN, 560) + 0.6 * g.CT
+          - (g.sc < S_MIN && showFig ? 30 : 0) - 0.3 * Math.max(0, 180 - g.RUN)
+          - (two ? 4 : 0) - (NS < 44 ? 3 : 0) - (anyDetail && !withDetail ? 40 : 0) - (dPop ? 25 : 0)
+        cands.push([mode, withDetail, two, TWc, dPop, VS, NS, +g.sc.toFixed(2), Math.round(g.RUN), g.CT, g.face, +score.toFixed(1)])
         if (lo.layout && lo.layout !== mode) continue
         if (score > best) { best = score; G = g }
       }
-    if (G) break
-  }
-  if (!G) G = geometry('row', 44, 40, true, false)        // nothing fits: the smallest layout (the linter will say why)
+  if (!G) G = geometry('row', 44, 40, false, false, 0, true)   // nothing fits: the smallest layout (the linter will say why)
   probe.remove()
   const { VS, NS, two, colL, P, X0c, Hc, CT, crateW, XF } = G
   const FACE2 = G.face === 2
   const COL = G.mode === 'col'
-  if (lo.debug) window.__wd = { G, top, cands }
+  if (lo.debug) { const gr = geometry("row", 44, 40, false, true, 0, false); window.__wd = { G, top, cands, slot: slotE.map(x => [x.text, x.lines]), workTop: parts.workTop, row: { room: gr.room, X0c: gr.X0c, colL: gr.colL, sc: gr.sc, names: lanes.map(l => [nameW(l, 40), detW(l), deltaW(l)]) } } }
   const k = Math.max(0.3, G.sc), reachX = G.reach
   const lanesTop = FLOOR - n * P
   const headsBottom = lanesTop - 10
@@ -500,13 +522,15 @@ export default function whatDifference(spec, ctx) {
     l.crate = s('g')
     l.crateR = s('rect', { x: (-crateW / 2).toFixed(1), y: -Hc, width: crateW, height: Hc, rx: 10, fill: C.redSoft, stroke: C.ink, 'stroke-width': 8, 'stroke-linejoin': 'round' })
     // one line centred, or the number over its unit
-    const gapU = 6, blockH = CT * 0.74 + gapU + 40 * 0.74
-    const yN = FACE2 ? -Hc / 2 - blockH / 2 + CT * 0.37 : -Hc / 2 + 2
+    // (two lines: the number's box and the unit's, 1.22 em each, stacked 5 px into each other, centred)
+    const b1 = 1.22 * CT, b2 = 1.22 * 40, y0 = -Hc / 2 - (b1 + b2 - 5) / 2
+    const yN = FACE2 ? y0 + b1 / 2 + 1 : -Hc / 2 + 2
     l.crateT = s('text', { class: 'wd-crate-t', x: 0, y: yN.toFixed(1), 'text-anchor': 'middle', 'dominant-baseline': 'central', 'font-size': CT, fill: C.ink })
     l.crate.append(l.crateR, l.crateT)
     l.unit = FACE2 ? splitUnit(l.bar) : null
     if (FACE2) {
-      l.crateU = s('text', { class: 'wd-crate-t', x: 0, y: (-Hc / 2 + blockH / 2 - 40 * 0.37).toFixed(1), 'text-anchor': 'middle', 'dominant-baseline': 'central', 'font-size': 40, 'font-weight': 800, fill: C.grey })
+      // (the unit sits tight under its number inside the crate: an intended overlap of their line boxes)
+      l.crateU = s('text', { class: 'wd-crate-t', x: 0, y: (y0 + b1 - 5 + b2 / 2 + 1).toFixed(1), 'text-anchor': 'middle', 'dominant-baseline': 'central', 'font-size': 40, 'font-weight': 800, fill: C.grey, 'data-overlap-ok': '' })
       l.crateU.textContent = l.unit.u
       l.crate.append(l.crateU)
     }
@@ -562,7 +586,7 @@ export default function whatDifference(spec, ctx) {
     }
     // arms up (standing, else knees bent) when that fits under whatever is above him, else the "yes!" pump
     const want = lo.endPose === 'point' ? PZ.point : lo.endPose === 'pump' ? PZ.yes : lo.endPose === 'celebrate' ? PZ.win : null
-    const hWin = 274 * k + 8, hLow = 256 * k + 8, hYes = 267 * k + 8, hPunch = 214 * k + 8
+    const hWin = poseTop(PZ.win) * k + 8, hLow = poseTop(PZ.winLow) * k + 8, hYes = poseTop(PZ.yes) * k + 8, hPunch = poseTop(PZ.punch) * k + 4
     const capH = COL ? roomUp : free ? roomUp : band                    // under the title row he stays bent over
     l.endPose = want || (hWin <= capH ? PZ.win : hLow <= capH ? PZ.winLow : hYes <= capH ? PZ.yes : PZ.punch)
     const hEnd = l.endPose === PZ.win ? hWin : l.endPose === PZ.winLow ? hLow : l.endPose === PZ.yes ? hYes : hPunch
@@ -665,7 +689,7 @@ export default function whatDifference(spec, ctx) {
   if (winner != null) {
     const l = lanes[winner]
     const b = sideM ? valBox(l) : { x0: l.xEnd - crateW, x1: l.xEnd, y0: l.yF - Hc, y1: l.yF }
-    fxk.impact(winT, { x: (b.x0 + b.x1) / 2, y: (b.y0 + b.y1) / 2, shake: 10, punch: 0.02, rx: (b.x1 - b.x0) / 2 + 10, ry: (b.y1 - b.y0) / 2 + 8, r: 34, lines: 14, cue: 'hit', gain: 0.9 })
+    fxk.impact(winT, { x: (b.x0 + b.x1) / 2, y: (b.y0 + b.y1) / 2, shake: 10, punch: 0.018, rx: (b.x1 - b.x0) / 2 + 10, ry: (b.y1 - b.y0) / 2 + 8, r: 34, lines: 14, cue: 'hit', gain: 0.9 })
     ctx.cue(winT + 0.06, 'cash', { gain: 0.8 })
   }
 
@@ -681,16 +705,22 @@ export default function whatDifference(spec, ctx) {
     const isWin = winOn && l.i === winner, loser = winOn && l.i !== winner
     // ---- title row
     const wake = COL || l.pre ? 0 : bump(t, l.actT, 0.3)
-    l.nameO.set({ x: l.nameXY[0], y: l.nameXY[1], color: active ? C.ink : C.dim, sx: 1 + 0.05 * wake, sy: 1 + 0.05 * wake })
     const dT = l.tDelta
+    // a delta with no room of its own (G.dPop) pops over the title for 2.4 s, the title giving way, then gives it back
+    const popW = G.dPop && dT != null ? prog(t, dT, 0.12) * (1 - prog(t, dT + 2.4, 0.15)) : 0
+    l.nameO.set({ x: l.nameXY[0], y: l.nameXY[1], color: active ? C.ink : C.dim, sx: 1 + 0.05 * wake, sy: 1 + 0.05 * wake, opacity: 1 - popW })
+    l.nameO.overlap(popW > 0 && popW < 1)
     if (l.detO) {
-      const out = dT != null ? prog(t, dT, 0.12) : 0
-      l.detO.set({ x: l.detXY[0], y: l.detXY[1], opacity: 1 - out, sx: 1 + 0.12 * out, sy: 1 - 0.3 * out, color: active ? C.grey : C.dim })
+      const out = G.dPop ? popW : dT != null ? prog(t, dT, 0.12) : 0
+      l.detO.set({ x: l.detXY[0], y: l.detXY[1] + 8 * out, opacity: 1 - out, color: active ? C.grey : C.dim })
     }
     if (l.deltaO) {
       const pi = dT != null ? popIn(t, dT + 0.1, 0.22) : { scale: 1, opacity: 0 }
       const rb = readAt(l, 'delta', t)
-      l.deltaO.set({ x: l.detXY[0], y: l.detXY[1], opacity: pi.opacity, sx: pi.scale * (1 + 0.12 * rb), sy: pi.scale * (1 + 0.12 * rb) })
+      const at = G.dPop ? l.nameXY : l.detXY
+      const op = G.dPop ? pi.opacity * (1 - prog(t, dT + 2.4, 0.15)) : pi.opacity
+      l.deltaO.set({ x: at[0], y: at[1], opacity: op, sx: pi.scale * (1 + 0.12 * rb), sy: pi.scale * (1 + 0.12 * rb) })
+      if (G.dPop) l.deltaO.overlap(op > 0 && op < 1)
     }
     // ---- the money value: drops onto the row; newest green, settling to ink (a bad option's to red)
     if (l.val) {
@@ -830,10 +860,13 @@ export default function whatDifference(spec, ctx) {
       })
       for (const l of lanes) seekLane(l, t)
       const { shake, zoom } = fxk.seek(t)
-      if (winner != null && sideM) {
-        const b = valBox(lanes[winner]), cx = (b.x0 + b.x1) / 2, cy = (b.y0 + b.y1) / 2
-        cam.set({ fx: cx, fy: cy, x: cx, y: cy, zoom, shake })
-      } else cam.set({ shake, zoom })
+      // the punch zooms about the titles' left edge (x 60 stays put, x 922 reaches 939), and the shake is mostly
+      // vertical: the titles stand on the safe zone's left edge
+      const sh = [shake[0] * 0.25, shake[1]]
+      if (winner != null) {
+        const cy = sideM ? (valBox(lanes[winner]).y0 + valBox(lanes[winner]).y1) / 2 : lanes[winner].yF - Hc / 2
+        cam.set({ fx: 60, fy: cy, x: 60, y: cy, zoom, shake: sh })
+      } else cam.set({ shake: sh, zoom })
     },
   }
 }
