@@ -734,13 +734,47 @@ earn_ts = [EARN_WIN[0] + k * 0.01 for k in range(int((EARN_WIN[1] - EARN_WIN[0])
 earn_max = max(val_at(B_sv_pts, x_of(tt, B_RACE, B_Y0, B["x1"])) - B_STAKE for tt in earn_ts)
 claim("b", f"sync: 'Under $10 so far' holds on the savings tip {EARN_WIN[0]:.1f}-{EARN_WIN[1]:.1f} s", round(earn_max, 2),
       f"< {B['earn_cap']}", ok=earn_max < B["earn_cap"])
-shown_while_said(Sb, 3, f"≈ {B['drop22']}%", vo_t(Sb, 3), vo_t(Sb, 3) + BECKER_NOTE, "the impact label '≈ −18%'")
+shown_while_said(Sb, 3, f"≈ {B['drop22']}%", vo_t(Sb, 3), vo_t(Sb, 3) + BECKER_NOTE, "the impact label '2022: ≈ −18%'")
 shown_while_said(Sb, 4, int_tok, vo_t(Sb, 4), vo_t(Sb, 4) + BECKER_NOTE, "the shrug label 'under +$30'")
-shown_while_said(Sb, 5, y1_tok, *w_point, "the point label 'year 1: ≈ +$151'")
+# the lens (lookOpts.lens, assembly pass): after the race, a card over the empty top-left of the plot draws both gains
+# to scale, since at the final axis ($5K steps) $151 and $24 are a few pixels each. Its strings are display strings; its
+# bars come from the series' own points (valueAt(to) − valueAt(from)), so they are checked against the model here.
+LENS_T = vo_t(Sb, 4) + BECKER_NOTE                               # 26.2 s: the shrug note "under +$30" hands off to it
+ln = ("lookOpts", "lens")
+claim("b", "lens opens as the shrug note ends", Sb.get(ln + ("t",)), round(LENS_T, 2), ok=abs(Sb.get(ln + ("t",)) - LENS_T) < 0.006)
+claim("b", "lens row count", len(Sb.get(ln + ("rows",))), 2)
+r0, r1 = ln + ("rows", 0), ln + ("rows", 1)
+claim("b", "lens row 0: savings over the whole race (series, from, to)", [Sb.get(r0 + (k,)) for k in ("series", "from", "to")],
+      [1, B_Y0, B["x1"]], ok=[Sb.get(r0 + (k,)) for k in ("series", "from")] == [1, B_Y0] and abs(Sb.get(r0 + ("to",)) - B["x1"]) < 0.006)
+claim("b", "lens row 0 shows from the lens' own t", "t" in Sb.d["lookOpts"]["lens"]["rows"][0], False)
+Sb.s(r0 + ("label",), f"{B['years']} years of savings")
+Sb.s(r0 + ("display",), f"under +{int_tok}")
+lens_g0 = val_at(B_sv_pts, B["x1"]) - val_at(B_sv_pts, B_Y0)
+claim("b", "lens row 0 bar = 16 years of interest, under $30", f"{lens_g0:.2f}", f"{B['int16']:.2f} < {B['int_cap']}",
+      ok=abs(lens_g0 - B["int16"]) < 0.005 and lens_g0 < B["int_cap"])
+x_2010 = B_sp_pts[1][0]                                          # the 2010 close (x 2010.99)
+claim("b", "lens row 1: the S&P 500's first year (t, series, from, to)", [Sb.get(r1 + (k,)) for k in ("t", "series", "from", "to")],
+      [vo_t(Sb, 5), 0, B_Y0, x_2010], ok=abs(Sb.get(r1 + ("t",)) - vo_t(Sb, 5)) < 0.006 and [Sb.get(r1 + (k,)) for k in ("series", "from")] == [0, B_Y0]
+      and abs(Sb.get(r1 + ("to",)) - x_2010) < 0.006)
+Sb.s(r1 + ("label",), f"S&P 500 in {B_Y0}")
+Sb.s(r1 + ("display",), f"≈ +{y1_tok[2:]}")
+lens_g1 = val_at(B_sp_pts, x_2010) - val_at(B_sp_pts, B_Y0)
+claim("b", "lens row 1 bar = the S&P 500's 2010 gain", f"{lens_g1:.2f}", f"{B['y1']:.2f} → {y1_tok}",
+      ok=abs(lens_g1 - B["y1"]) < 0.005 and usd_round(lens_g1) == y1_tok)
+claim("b", "lens bars to scale: the savings bar is under 1/5 of the S&P's (ratio not displayed)", round(lens_g0 / lens_g1, 3), "< 0.2",
+      ok=lens_g0 / lens_g1 < 0.2)
+# chart-race.js: a row's bar starts at its t + 0.1 s and grows for 0.35 + 0.5 × (its gain ÷ the largest) s; its value pops
+# 0.04 s before the bar is full, and the card holds to the end
+lens_val_on = lambda t_row, frac: t_row + 0.1 + 0.35 + 0.5 * frac - 0.04
+t_v0, t_v1 = lens_val_on(LENS_T, lens_g0 / lens_g1), lens_val_on(vo_t(Sb, 5), 1.0)
+claim("b", "lens: 'under +$30' lands after '$30' is said under the shrug note", round(t_v0, 2), f"> {said_at(Sb, 4, int_tok)[0]:.2f}",
+      ok=t_v0 > said_at(Sb, 4, int_tok)[0])
+shown_while_said(Sb, 5, y1_tok, t_v1, DUR["b"], "the lens row 'S&P 500 in 2010: ≈ +$151'")
 claim("b", "the 16-year total is said once the race has ended", vo_t(Sb, 4), f">= {B_RACE[1]}", ok=vo_t(Sb, 4) >= B_RACE[1])
 claim("b", "the finals are said only after the race ends", vo_t(Sb, 6), f">= {B_RACE[1]}", ok=vo_t(Sb, 6) >= B_RACE[1])
 sfx_on(Sb, [(t_y1, "pop"), (vo_t(Sb, 1), "swipe"), (vo_t(Sb, 3), "hit"), (B_RACE[1], "roll"),
-            (round(vo_t(Sb, 4) + 0.1, 2), "boing"), (Sb.d["verdict"]["t"], "thud")])
+            (round(vo_t(Sb, 4) + 0.1, 2), "boing"), (LENS_T, "pop"), (round(vo_t(Sb, 5) + 0.1, 2), "whoosh"),
+            (round(t_v1, 2), "pop"), (Sb.d["verdict"]["t"], "thud")])
 claim("b", "'2022: stocks drop' (S&P 2022 %) on the 2022 close", f"{SP[2022]} @ {B['tl'][2022]:.2f}", "< 0", ok=SP[2022] < 0)
 # what the words claim
 claim("b", "'Year one in the S&P: ≈ $151' = $1,000 × 15.06% (2010)", f"{B['y1']:.2f}", "150.60", ok=abs(B["y1"] - 150.60) < 0.005)
