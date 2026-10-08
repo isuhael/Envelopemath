@@ -2,7 +2,7 @@
 
 **Teasers:** 06a Scoreboard (Apple / first iPhone), 06b Live Sheet (Netflix bill / Netflix stock), 06c Becker Rig (latte / Starbucks stock)
 **Date:** 2026-10-07; hook pass 2026-10-08 (06b and 06c kept); hook pass 2 2026-10-08 (06b's hook replaced) · **Writer:** format 6 (revised after review, see the Review log at the end) · **Specs:** `studio/specs/06a-scoreboard-first-iphone-apple.json`, `06b-live-sheet-netflix-bill.json`, `06c-becker-rig-latte-starbucks.json`
-**Check:** `python3 teasers/v2/checks/06-pov-race.py`. It recomputes every on-screen and spoken number, cross-checks the source tables, and asserts the specs match, including VO pacing in spoken words (numbers read out in full) and the motion/payoff timing of the hook. Current result: 378 checks, 0 failed (after the round-2 assembly fix pass).
+**Check:** `python3 teasers/v2/checks/06-pov-race.py`. It recomputes every on-screen and spoken number, cross-checks the source tables, and asserts the specs match, including VO pacing in spoken words (numbers read out in full) and the motion/payoff timing of the hook. Current result: 385 checks, 0 failed (after the round-2 assembly pass on 06c).
 
 ---
 
@@ -326,7 +326,7 @@ Which plan are you on?
 - **R9:** the year timeline only; the cup heap cannot be counted.
 - **R10:** something changes at 0.5 s (the coin buys the cup, the cup is drunk and flung, a coin lands on the tower), and the first payoff ($1,586 vs $1,460 at the end of 2014) lands at 2.1 s.
 - **R11:** the title asks, the screen says POV, and the caption sets up the test without the answer.
-- **R12:** "≈ 1.4×. Not rich. Not zero." is the repeatable verdict, said and shown word for word. The lopsided frame (cups $0, stock ≈ $24,900) is in the picture: the cup heap and ghost column against the gold tower. The two-line verdict "Cups: $0. Stock: ≈ $24,900." is ready to swap in once the kit's verdict band is fixed (see the Review log).
+- **R12:** "≈ 1.4×. Not rich. Not zero." is the repeatable verdict, said and shown word for word. The lopsided frame (cups $0, stock ≈ $24,900) is in the picture: the cup heap and ghost column against the gold tower, with "≈ $24,900" on the gold plate as the biggest number on screen (it grows to about 90 px as it lands; "$17,532" steps down to 64 px). The two-line verdict "Cups: $0. Stock: ≈ $24,900." is ready to swap in once the kit's verdict band is fixed (see the Review log).
 
 **Wrong belief it exploits (R5):** "Skip the latte and you'll be rich" (the "latte factor"). Invested in the latte company's own stock, 12 years of lattes come to ≈ 1.4×, with almost no growth after 2021. It is an honest "meh", the same move as GoPro's decline, the biggest post in the benchmark set. The flip side is in the picture and the last word of the verdict: the cups are worth $0, the stock is "not zero".
 
@@ -335,15 +335,15 @@ Which plan are you on?
 | t (s) | On screen | VO |
 |---|---|---|
 | 0.0 | Header. The figure holds up the $4 coin. Tips **$4 / $4**. Timeline 2014-2025. Footer. | "Skip the $4 latte, get rich?" |
-| 0.5 | Race starts. Tag "Day 1 · $4" (pop): the coin buys the cup, the figure drinks and flings it onto the heap, and a coin lands on the SBUX tower, all inside the first second. The loop repeats every year. | |
+| 0.5 | Race starts. Tag "Day 1 · $4" (pop, left of the figure, clear of his head and pencil, until 2.3): the coin buys the cup, the figure drinks and flings it onto the heap, and a coin lands on the SBUX tower, all inside the first second. The loop repeats every year. | |
 | 2.14 | End of 2014: spent **$1,460**, owned **$1,586** (first payoff). | |
 | 2.6 | 2015 (t 3.80): $3,997 vs $2,920. | "Since 2014, it buys Starbucks stock instead." |
 | 5.6 | 2016-2017 (t 5.46, 7.12): $5,199 → $6,955 against $4,384 → $5,844. | "That's $1,460 a year." |
 | 8.7 | 2019-2020 (t 10.44, 12.10): owned $14,988 → $20,521 against spent $8,764 → $10,228. The tower outgrows the ghost column; the camera pulls back. | "The stock climbs faster than the cups pile up." |
-| 12.4 | End of 2021 (t 13.76, ding): owned **$24,343**, spent $11,688 (2.08×). | "By 2021, you've doubled your money." |
+| 12.4 | End of 2021 (t 13.76, ding): owned **$24,343**, spent $11,688 (2.08×). On the ding a green dotted line labelled **2×** draws across the piles at 2 × $11,688 = $23,376, just under the tower top; it holds to 15.06 and fades as the 2022 dip takes the tower under it. | "By 2021, you've doubled your money." |
 | 15.0 | 2022 dip to $22,808 (t 15.42): coins tumble off the tower while the ghost column keeps growing. | "Then it stalls. You keep buying." |
-| 17.35 | 2023 $23,942 (t 17.08), 2024 $24,865 (t 18.74). Final at t 20.4 (cash): **$17,532 spent**. | "2025: $17,532 of lattes." |
-| 20.6 | Own **≈ $24,900** on the gold plate. | "Or about $24,900 in stock." |
+| 17.35 | 2023 $23,942 (t 17.08), 2024 $24,865 (t 18.74). Final at t 20.4 (cash): **$17,532 spent**; the stock counter runs onto the exact $24,928. | "2025: $17,532 of lattes." |
+| 20.6 | Own **≈ $24,900** on the gold plate (swapped in at 20.4-20.5, hit + one-sided burst onto the tower). Over 0.4 s the plate grows 1.2× (the number to about 90 px) while "$17,532" steps down to 64 px. | "Or about $24,900 in stock." |
 | 23.7 | Verdict: **≈ 1.4×**. Not rich. Not zero. The figure shrugs at the tower, next to the heap of empty cups. | "About 1.4 times. Not rich. Not zero." |
 | 27.0-28.0 | Hold, then loop. | |
 
@@ -379,6 +379,7 @@ Each year's $4 × days buys shares at that year's average close (adjusted for sp
 | ≈ 1.4× / "about 1.4 times" | 24,928.31 ÷ 17,532 = 1.42 |
 | "climbs faster than the cups" (spoken over 2019-2021) | the stake grew +$5,354, +$5,533 and +$3,822 in those years, against $1,460 of lattes a year |
 | "doubled" by 2021 | $24,343 ÷ $11,688 = 2.08 |
+| the **2×** mark (end of 2021) | a line at 2 × $11,688 = $23,376; the tower ($24,343) is above it, so "2×" is the whole multiple reached |
 | "stalls" | 2022-2025: $5,844 more in, while the stake rose only $585 ($24,343 → $24,928). The 229 shares held at the end of 2021 fell from $106.24 to $84.21. |
 | "Not zero" | the lattes are drunk: $0 left; the stock is not |
 
@@ -672,3 +673,19 @@ The QA judge scored 06a 7/10 and 06b 5.5/10 (lint clean, every number right). Ev
 
 **Not changed:** the data (every chart point, final, purchase and hike tag), raceT, hold and durations; every new on-screen or spoken figure is derived in the check. `teasers/v2/teasers.json` still carries 06b's hook-pass-2 header and the 365-check count; it is outside this pass's files.
 
+### Assembly pass (round 2, 2026-10-08): 06c
+
+Files: `studio/specs/06c-becker-rig-latte-starbucks.json` (one `lookOpts` entry added), `studio/looks/becker-rig/formats/pov-race.js`, this write-up and `checks/06-pov-race.py`. No data point, final, VO line, header, footer, verdict, raceT, hold or duration changed. No kit `lib.js`, `theme.js`, `kit.js`, `style.css` or README was touched.
+
+| Issue seen in the stills | What I did (Becker Rig `formats/pov-race.js` unless noted) |
+|---|---|
+| Coins rose into the counters: at 15.5 s a coin tumbling off the 2022 dip tipped up over "$22,862", and at 17.5 s the deposit coin's arc crossed "$24,175". | A tumbling coin's top now stays under the stage top: it tips and flips open only as far as the room above it allows, more as it falls. The deposit coin's arc is clamped under the counters (on a tall tower it skims in and sinks into the top). |
+| The "Day 1 · $4" tag sat against his head; at 2.2 s the pencil ran through "$4". | Each tag's right edge is held 18 px left of everything the figure draws (head, pencil, limbs) over the tag's whole life. |
+| The running stock counter eased onto 24,900 (the rounded final) in the last 0.5 s, so "$24,900" showed with no "≈" before the swap. | When a final is approximate ("≈ …"), the counter runs to the exact last point and the swap shows the rounding: $24,928 → ≈ $24,900 (both in the maths table). |
+| The plate's hit lines shot up through "Starbucks stock"; "≈" touched the plate's left edge. | The end impact keeps its hit, shake and punch, but its burst is one-sided (right and down onto the tower). The plate is sized from the laid-out final string, so the padding is equal on both sides. |
+| The payoff was no bigger than the spent counter (both 76 px). | As the plate lands it grows 1.2× about its top-right corner (the number to about 90 px) while the spent digits step down to 64 px (" spent" keeps 44 px); the growth is bounded by the gap beside the spent number and the tower top. |
+| "By 2021, you've doubled your money" had only the ding and a one-frame counter reading. | New option `lookOpts.multiple` `{ x: 2021.99, t: 13.76, k: 2, label: "2×", hold: 1.3 }`: on the ding a green dotted line at 2 × the 2021 spend ($23,376) draws from a "2×" label (60 px) across to the tower, whose top sits just above it; it fades from 15.06 as the 2022 dip takes the tower under it ("Then it stalls"). |
+
+**Checks.** `checks/06-pov-race.py`: **385 checks, 0 failed** (was 378). New: the "2×" label string (the whole multiple: $24,343 ÷ $11,688 = 2.08, rounded down to 2), the tower ≥ 2 × the spend at the end of 2021, `multiple.x` = the 2021 year-end, `multiple.k` = 2, its `t` on that beat (13.76) and inside vo[4]. `node src/cli.mjs check`: 06c 0 errors, 0 warnings; the two Becker Rig pov-race samples and the two Live Sheet pov stress specs rendered in the Becker Rig look also 0 errors, 0 warnings.
+
+**Verified in the stills and the MP4:** frame 1 shows the 3-line header with "$4/day", the footer, the $4 coin and $4 spent / $4. Stills on the exact year-ends read $1,460 / $1,586 (2.14 s), $2,920 / $3,997 (3.80), $10,228 / $20,521 (12.10), $11,688 / $24,343 (13.76), $13,148 / $22,808 (15.42) and $17,532 / $24,928 (20.40), as in the maths table; then ≈ $24,900 on the plate, "2×" at 13.8-15.3 s, and the verdict ≈ 1.4× from 23.7 s. Counters between year-ends are interpolated. **Render:** `studio/out/06c-becker-rig-latte-starbucks.mp4` (28.0 s, 1080×1920, 30 fps, with SFX); frames pulled from it at 0, 14.3 and 21.5 s match the stills.

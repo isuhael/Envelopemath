@@ -669,8 +669,9 @@ vo_numbers(Sb, [
 ])
 seen_b = year_sync(Sb, B, B_Y0, B_RACE[1])
 events(Sb, B, B_RACE, B_Y0, B["x1"], [(2020.2, "COVID", False), (2022.5, "2022 bear market", True)], seen_b)
-# the verdict names the year: "1 year of the S&P 500" would read as any year, and 4 of the 16 earned less (judge 2)
-Sb.s(("verdict", "text"), f"{B['years']} years of savings: under **{int_tok}**.\nThe S&P 500 in {B_Y0} alone: {y1_tok}.")
+# the verdict names the year: "1 year of the S&P 500" would read as any year, and 4 of the 16 earned less (judge 2).
+# Assembly pass: the emphasis (green, the S&P's colour all video) moved from the savings figure's "$30" to "≈ $151".
+Sb.s(("verdict", "text"), f"{B['years']} years of savings: under {int_tok}.\nThe S&P 500 in {B_Y0} alone: **{y1_tok}**.")
 # frame 1: the race is already moving (raceT starts at -0.4 s)
 x_f1b = x_of(0.0, B_RACE, B_Y0, B["x1"])
 claim("b", "frame 1: race already moving, year counter still 2010", round(x_f1b, 4), "2010 < x < 2011", ok=B_Y0 < x_f1b < B_Y0 + 1)
@@ -682,10 +683,14 @@ t_y1 = round(B["tl"][B_Y0], 2)                                   # the 2010 clos
 want_beats = [
     (t_y1, "cheer", 0, y1_note, None),
     (vo_t(Sb, 1), "think", 1, goal_note, round(B_RACE[1] - vo_t(Sb, 1), 2)),   # the goal note holds to the race end
-    (vo_t(Sb, 3), "impact", 0, f"≈ −{B['drop22']}%", None),
+    # (assembly pass: the year is on the label, since the counter has moved on to 2024 when "≈ 18%" is said)
+    (vo_t(Sb, 3), "impact", 0, f"2022: ≈ −{B['drop22']}%", None),
     (B_RACE[1], "grow", 0, None, None),
     (vo_t(Sb, 4), "shrug", 1, f"under +{int_tok}", None),
-    (vo_t(Sb, 5), "point", 0, y1_note, Sb.d["vo"][5]["d"]),
+    # assembly pass: the hero points back at the lens card (its S&P row shows "≈ +$151"), so no note of his own
+    (vo_t(Sb, 5), "pointBack", 0, None, Sb.d["vo"][5]["d"]),
+    (vo_t(Sb, 6), "point", 0, None, Sb.d["vo"][6]["d"]),        # at his gold plate as "It ended at ≈ $8,280" is read
+    (Sb.d["verdict"]["t"], "cheer", 0, None, None),               # a hop as the verdict lands
 ]
 claim("b", "figure beat count", len(Sb.get(bt)), len(want_beats))
 for i, (t, act, ser, label, dur) in enumerate(want_beats):
@@ -696,6 +701,11 @@ for i, (t, act, ser, label, dur) in enumerate(want_beats):
           ok=(dur is None and "d" not in Sb.d["lookOpts"]["beats"][i]) or (dur is not None and abs(Sb.get(bt + (i, "d")) - dur) < 0.006))
     if label is not None:
         Sb.s(bt + (i, "label"), label)
+    else:
+        claim("b", f"beat[{i}] {act} has no label", "label" in Sb.d["lookOpts"]["beats"][i], False)
+# figures: the savings walker trails 170 px behind his tip with a thin halo (chart-race.js lookOpts.figures)
+claim("b", "figures", Sb.get(("lookOpts", "figures")),
+      [{"series": 0, "color": "hero"}, {"series": 1, "color": "neutral", "lag": 170, "outline": 6}])
 Sb.n(("lookOpts", "gag"), ["2018", "2022", str(B["years"])])
 claim("b", "'year 1' note pops as the 2010 close lands (not before)", t_y1, f"{B['tl'][B_Y0]:.3f}..+0.05",
       ok=0 <= t_y1 - B["tl"][B_Y0] <= 0.05)
@@ -712,7 +722,7 @@ def note_window(series, k):
     return b["t"], t1
 
 
-w_y1, w_goal, w_point = note_window(0, 0), note_window(1, 0), note_window(0, 2)
+w_y1, w_goal = note_window(0, 0), note_window(1, 0)
 shown_while_said(Sb, 0, y1_tok, *w_y1, "the 'year 1: ≈ +$151' note")
 claim("b", "spoken '≈ $151' (vo[0]) by ~3 s", round(said_at(Sb, 0, y1_tok)[0], 2), "<= 3.0", ok=said_at(Sb, 0, y1_tok)[0] <= 3.0)
 claim("b", "the goal note holds from 'Savings gets 16 years' to the race end", [round(w_goal[0], 2), round(w_goal[1], 2)],

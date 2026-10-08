@@ -46,7 +46,7 @@
   ],
   "verdict": {
     "t": 37.1,
-    "text": "16 years of savings: under **$30**.\nThe S&P 500 in 2010 alone: ≈ $151."
+    "text": "16 years of savings: under $30.\nThe S&P 500 in 2010 alone: **≈ $151**."
   },
   "data": {
     "stake": "$1,000 each · Jan 2010",
@@ -259,7 +259,7 @@
         "t": 19.1,
         "act": "impact",
         "series": 0,
-        "label": "≈ −18%"
+        "label": "2022: ≈ −18%"
       },
       {
         "t": 23.6,
@@ -274,13 +274,43 @@
       },
       {
         "t": 28.1,
+        "act": "pointBack",
+        "series": 0,
+        "d": 4.8
+      },
+      {
+        "t": 33.0,
         "act": "point",
         "series": 0,
-        "d": 4.8,
-        "label": "year 1: ≈ +$151"
+        "d": 4.0
+      },
+      {
+        "t": 37.1,
+        "act": "cheer",
+        "series": 0
       }
     ],
-    "gag": "Each figure climbs its own line. The S&P figure scrambles up a steep, jagged slope (cheers as his first year closes, stumbles in 2018, gets knocked down in 2022, climbs again); the savings figure strolls a ledge so flat it never dips, his chin in his hand, his goal note pinned under a counter that barely moves. At the end he shrugs at his 16-year total; the hero points back at his first year, and the verdict lands once the last line is read."
+    "lens": {
+      "t": 26.2,
+      "rows": [
+        {
+          "series": 1,
+          "from": 2010,
+          "to": 2025.99,
+          "label": "16 years of savings",
+          "display": "under +$30"
+        },
+        {
+          "t": 28.1,
+          "series": 0,
+          "from": 2010,
+          "to": 2010.99,
+          "label": "S&P 500 in 2010",
+          "display": "≈ +$151"
+        }
+      ]
+    },
+    "gag": "Each figure climbs its own line. The S&P figure scrambles up a steep, jagged slope (cheers as his first year closes, stumbles in 2018, gets knocked down in 2022, climbs again); the savings figure strolls a ledge so flat it never dips, a step behind and in front of the hill, his chin in his hand, his goal note pinned under a counter that barely moves. At the end he shrugs at his 16-year total and sits; a lens card drops in over the empty sky and draws both gains to scale: his stub against the full bar the S&P made in its first year, which the hero points back at. Then the hero points at his gold plate, and the verdict lands once the last line is read."
   },
   "sfx": [
     {
@@ -303,6 +333,19 @@
     {
       "t": 23.7,
       "kind": "boing"
+    },
+    {
+      "t": 26.2,
+      "kind": "pop"
+    },
+    {
+      "t": 28.2,
+      "kind": "whoosh",
+      "dur": 0.8
+    },
+    {
+      "t": 29.05,
+      "kind": "pop"
     },
     {
       "t": 37.1,

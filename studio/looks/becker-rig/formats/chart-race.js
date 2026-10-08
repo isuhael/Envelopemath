@@ -51,12 +51,12 @@ export const css = `
 .cr-plate { position: absolute; background: ${C.coin}; border: 6px solid ${C.ink}; border-radius: 16px; transform-origin: 50% 50%; }
 .cr-note { margin-top: 8px; font: 800 40px/42px ${F.head}; letter-spacing: -0.01em; }
 .cr-tide { position: absolute; left: 0; top: 0; padding: 2px 12px; border-radius: 10px; background: ${C.void}; font: 800 40px/42px ${F.head}; letter-spacing: -0.01em; color: ${C.red}; white-space: nowrap; }
-.cr-lens { position: absolute; left: 0; top: 0; box-sizing: border-box; background: ${C.white}; border: 6px solid ${C.ink}; border-radius: 18px; padding: 12px 22px 14px; transform-origin: 100% 40%; }
+.cr-lens { position: absolute; left: 0; top: 0; box-sizing: border-box; background: ${C.white}; border: 6px solid ${C.ink}; border-radius: 18px; padding: 12px 20px 14px; }
 .cr-lrow { position: relative; }
 .cr-lrow + .cr-lrow { margin-top: 10px; }
 .cr-llab { font: 800 40px/44px ${F.head}; letter-spacing: -0.01em; white-space: nowrap; }
-.cr-lbars { position: relative; height: 58px; margin-top: 2px; }
-.cr-lbar { position: absolute; left: 0; top: 13px; height: 32px; border-radius: 16px; }
+.cr-lbars { position: relative; height: 58px; margin-top: 4px; }
+.cr-lbar { position: absolute; left: 0; top: 0; height: 58px; border-radius: 14px; }
 .cr-lval { position: absolute; left: 0; top: 0; font: 900 52px/58px ${F.head}; letter-spacing: -0.03em; white-space: nowrap; transform-origin: 0 60%; }
 `
 
@@ -760,6 +760,99 @@ export default function chartRace(spec, ctx) {
   })
   const evWin = EVENTS.map((ev, k) => [ev.t, Math.min(ev.t + 3.2, EVENTS[k + 1] ? EVENTS[k + 1].t - 0.15 : Infinity)])
 
+  // ============================================================================ lens (lookOpts.lens, optional)
+  // After the race, gains too small for the final axis (a year of interest, one good year) are lost in a line on
+  // the floor. The lens is a card over the empty top-left of the finished plot that draws them to scale: one row per
+  // { series, from, to } with a bar of valueAt(to) - valueAt(from) (numbers drive geometry) and the spec's display
+  // string at its end (never computed). A row waits as a dim label over an empty track (the longest bar's length)
+  // until its t, then its bar shoots out along it and the value pops at the bar's end. The card sits left of the winner's reach (a pointBack beat points
+  // at it), under the HUD row and above every line, flag and figure in its columns.
+  let LENS = null
+  if (lo.lens && Array.isArray(lo.lens.rows)) {
+    const lt = Number.isFinite(+lo.lens.t) ? +lo.lens.t : T1 + 1.5
+    const rows = lo.lens.rows.filter(r => r && r.series != null && +r.series >= 0 && +r.series < N).slice(0, 3).map(r => {
+      const i = +r.series
+      const a = Number.isFinite(+r.from) ? +r.from : xf, b = Number.isFinite(+r.to) ? +r.to : xt
+      return { i, t: Math.max(lt, Number.isFinite(+r.t) ? +r.t : lt), gain: Math.max(0, valueAt(i, b) - valueAt(i, a)), label: String(r.label ?? ''), display: String(r.display ?? '') }
+    })
+    if (rows.length) LENS = { t: lt, rows }
+  }
+  const lensEl = LENS ? h('div', { class: 'cr-lens', style: { display: 'none' } }) : null
+  if (LENS) {
+    const jbox = J => { const xs = ['head', 'hF', 'hB', 'eF', 'eB', 'fF', 'fB', 'hip'].map(k => J[k][0]), ys = ['hF', 'hB', 'fF', 'fB'].map(k => J[k][1]); return { x0: Math.min(...xs) - J.R, x1: Math.max(...xs) + J.R, y0: Math.min(J.head[1] - J.R, ...ys), y1: Math.max(...ys) } }
+    const tE = duration - 1e-3, mE = mapAt(tE), uE = sampleAt(AX, tE)
+    const L0 = 62, top = hudBottom + 14
+    // right edge: clear of the winner's whole body (raised arms, a pointing hand) from the lens' first frame on
+    let R = X_TIP - 60
+    if (showFig) for (let t = LENS.t; t <= duration; t += 0.05) { const m = mapAt(t); R = Math.min(R, jbox(figure(winner, t, m, sampleAt(AX, t)).J).x0 - 18) }
+    R = Math.max(R, L0 + 360)
+    // bottom: above every line, flag and figure under the card's columns (at the end state; nothing moves after)
+    let B = BASE - 20
+    for (let sx = L0; sx <= R; sx += 4) {
+      const x = Xd(sx, mE)
+      if (x < xf || x > mE.xn) continue
+      for (let i = 0; i < N; i++) B = Math.min(B, Ys(valueAt(i, x), uE) - 16)
+    }
+    EVENTS.forEach(ev => {
+      if (ev.flagT == null) return
+      const base = onLine(ev.on, ev.x, mE, uE)
+      if (base[0] + 44 * kk >= L0 && base[0] - 8 <= R) B = Math.min(B, base[1] - 4 - POLE - 14)
+    })
+    if (showFig) for (let i = 0; i < N; i++) if (i !== winner) {
+      const bb = jbox(figure(i, tE, mE, uE).J)
+      if (bb.x1 >= L0 && bb.x0 <= R) B = Math.min(B, bb.y0 - 14)
+    }
+    style(lensEl, { left: L0 + 'px', top: top + 'px', width: (R - L0).toFixed(0) + 'px' })
+    world.html.append(lensEl)
+    const innerW = R - L0 - 12 - 40
+    LENS.rows.forEach(r => {
+      r.row = h('div', { class: 'cr-lrow' })
+      r.lab = h('div', { class: 'cr-llab' }, r.label)
+      r.bars = h('div', { class: 'cr-lbars' })
+      r.track = h('div', { class: 'cr-lbar', style: { background: C.lineSoft } })
+      r.bar = h('div', { class: 'cr-lbar', style: { background: pal[r.i].line, width: '0px' } })
+      r.val = h('div', { class: 'cr-lval', style: { color: pal[r.i].text } }, r.display)
+      r.bars.append(r.track, r.bar, r.val)
+      r.row.append(r.lab, r.bars)
+      lensEl.append(r.row)
+    })
+    style(lensEl, { display: '', visibility: 'hidden' })          // measured while laid out
+    // labels: 40 px, down to 36 for a long one
+    let lpx = 40
+    const labW = () => Math.max(...LENS.rows.map(r => measure(r.label, `800 ${lpx}px ${F.head}`, { letterSpacing: '-0.01em' })))
+    while (lpx > 36 && labW() > innerW) lpx -= 2
+    LENS.rows.forEach(r => style(r.lab, { fontSize: lpx + 'px', lineHeight: Math.round(lpx * 1.1) + 'px' }))
+    // bars: the longest takes the full width. A value rides inside its bar (ink on the fill) where it fits with
+    // room to spare, else it sits just past the bar's end in the series' colour; the scale shrinks until every
+    // outside value fits. Values 52 px (down to 44)
+    const gMax = Math.max(1e-9, ...LENS.rows.map(r => r.gain))
+    const PADV = 18
+    let vpx = 52, W = innerW
+    for (; vpx >= 44; vpx -= 4) {
+      W = innerW
+      for (let it = 0; it < 4; it++) for (const r of LENS.rows) {
+        const vw = measure(r.display, `900 ${vpx}px ${F.head}`, { letterSpacing: '-0.03em' }), f = r.gain / gMax
+        const inside = W * f >= vw + 2 * PADV + 24
+        if (!inside) W = Math.min(W, (innerW - 16 - vw) / Math.max(0.04, f))
+      }
+      if (W >= 0.6 * innerW) break
+    }
+    vpx = Math.max(44, vpx)
+    LENS.rows.forEach(r => {
+      r.w = Math.max(24, W * r.gain / gMax)
+      const vw = measure(r.display, `900 ${vpx}px ${F.head}`, { letterSpacing: '-0.03em' })
+      r.inside = r.w >= vw + 2 * PADV + 24
+      style(r.val, { fontSize: vpx + 'px', lineHeight: '58px', left: (r.inside ? r.w - PADV - vw : r.w + 16).toFixed(0) + 'px', color: r.inside ? C.ink : pal[r.i].text })
+      style(r.track, { width: W.toFixed(0) + 'px' })
+    })
+    const H = lensEl.offsetHeight
+    style(lensEl, { display: 'none', visibility: '' })
+    if (top + H > B) console.warn(`chart-race lens: card ${H.toFixed(0)} px tall, ${(B - top).toFixed(0)} px free`)
+    LENS.geo = { L0, top, R, B, H, W, innerW, lpx }
+    LENS.dur = LENS.rows.map(r => 0.35 + 0.5 * r.gain / gMax)
+    LENS.vpx = vpx
+  }
+
   // ============================================================================ tag layout (pure)
   const restY = (i, t, m, uA) => {
     if (!showFig) return Ys(valueAt(i, m.xn), uA) - 50
@@ -894,7 +987,11 @@ export default function chartRace(spec, ctx) {
     for (let i = 0; i < N; i++) {
       const pd = started ? pathOf(i, m, uA) : ''
       attr(lines[i], 'd', pd)
-      if (i === heroIdx) attr(fill, 'd', started ? `${pd}L${f1(Xs(m.xn, m))},${BASE}L${f1(Xs(xf, m))},${BASE}Z` : '')
+      if (i === heroIdx) {
+        attr(fill, 'd', started ? `${pd}L${f1(Xs(m.xn, m))},${BASE}L${f1(Xs(xf, m))},${BASE}Z` : '')
+        // the hill fades in as the line gains width: a sliver of it at the start line reads as a stray box
+        attr(fill, 'opacity', showFill ? (0.85 * smooth(90, 230, Xs(m.xn, m) - Xs(xf, m))).toFixed(3) : '0')
+      }
       attr(dots[i], 'cx', f1(m.tip)); attr(dots[i], 'cy', f1(Ys(valueAt(i, m.xn), uA)))
       attr(dots[i], 'opacity', started || !showFig ? '1' : '0')
       const lp = ledgeP(t), ly = Ys(valueAt(i, m.xn), uA)
@@ -979,6 +1076,25 @@ export default function chartRace(spec, ctx) {
       const a = on ? clamp(prog(t, TIDE.t, 0.25)) : 0
       attr(tideEl, 'opacity', (0.62 * a).toFixed(3)); attr(tideEdge, 'opacity', a.toFixed(3))
       if (tideLab) style(tideLab, { transform: `translate(${f1(PLOT_L + 6)}px,${f1(lv - 52)}px)`, opacity: a.toFixed(3), display: a > 0.01 ? '' : 'none' })
+    }
+    // ---- lens card
+    if (LENS) {
+      const on = t >= LENS.t
+      style(lensEl, { display: on ? '' : 'none' })
+      if (on) {
+        // it drops in (no scale: its text is never drawn under size), then each row fills in turn
+        const pd = prog(t, LENS.t, 0.32)
+        style(lensEl, { opacity: clamp(pd * 3.5).toFixed(3), transform: `translateY(${(-30 * (1 - E.back(pd, 1.6))).toFixed(1)}px)` })
+        LENS.rows.forEach((r, k) => {
+          const live = t >= r.t, g0 = r.t + 0.1, d1 = LENS.dur[k]
+          const gp = E.out(prog(t, g0, d1))
+          style(r.lab, { color: live ? mix(C.dim, pal[r.i].text, prog(t, r.t, 0.2)) : C.dim })
+          // the track stays: a short bar reads against the full length it did not reach
+          style(r.bar, { width: (r.w * gp).toFixed(1) + 'px' })
+          const pv = popIn(t, g0 + d1 - 0.04, 0.22, Math.max(0.82, 41 / LENS.vpx))
+          style(r.val, { opacity: (t >= g0 + d1 - 0.04 ? pv.opacity : 0).toFixed(3), transform: `scale(${pv.scale.toFixed(3)})` })
+        })
+      }
     }
     // ---- HUD: year, stake, event chip
     const yr = Math.floor(m.xn + 1e-6)

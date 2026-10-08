@@ -5,7 +5,7 @@ Inputs:
   teasers/v2/slate.json      the ten formats and the look each teaser uses
   teasers/v2/teasers.json    teaser metadata (titles, hooks, numbers, review results)
   studio/specs/*.json        the specs (header, footer, vo)
-  studio/out/<id>.mp4        full-res renders (re-encoded to 540x960 previews here)
+  renders/v2/<id>.mp4        final full-res renders (re-encoded to 540x960 previews here)
 
 Usage: python3 playbook/v2/build.py [--no-media]
 """
@@ -54,19 +54,30 @@ def encode(src, mp4, poster):
                         '-q:v', '3', str(poster)], check=True)
 
 
+def duration(p):
+    out = subprocess.run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', str(p)], capture_output=True, text=True).stdout
+    return float(out.strip() or 0)
+
+
+def clean_title(title):
+    # drop A/B alternates the write-ups keep in the title field
+    return re.sub(r'\s*\(A/B:.*$', '', title).strip()
+
+
 def card(t, fmt, with_media):
     spec = json.loads((ROOT / t['spec']).read_text())
     look_name = LOOKS[t['look']][0]
     sid = t['id']
-    src = ROOT / t['mp4']
+    src = ROOT / 'renders' / 'v2' / f'{sid}.mp4'
+    secs = duration(src) if src.exists() else t['runtime_s']
+    title = clean_title(t['title'])
     if with_media and src.exists():
         encode(src, MEDIA / f'{sid}.mp4', MEDIA / f'{sid}.jpg')
     has = (MEDIA / f'{sid}.mp4').exists()
-    video = (f'<video controls playsinline preload="none" poster="media/{sid}.jpg" aria-label="{esc(t["title"])}">'
+    video = (f'<video controls playsinline preload="none" poster="media/{sid}.jpg" aria-label="{esc(title)}">'
              f'<source src="media/{sid}.mp4" type="video/mp4"></video>') if has else '<div class="novideo">Render pending</div>'
     nums = ''.join(f'<li>{esc(n)}</li>' for n in t.get('key_numbers', [])[:4])
     vo = ' '.join(v['text'] for v in spec.get('vo', []))
-    score = t.get('hook_score')
     checks = []
     checks.append('maths checked' if t.get('math_ok') else 'maths: open item')
     checks.append('facts sourced' if t.get('facts_ok') else 'facts: open item')
@@ -74,12 +85,13 @@ def card(t, fmt, with_media):
     <article class="card" data-look="{t['look']}" data-format="{fmt['format']}" id="{sid}">
       <div class="screen look-{t['look']}">{video}</div>
       <div class="meta">
-        <p class="tags"><span class="tag look-tag look-{t['look']}">{look_name}</span><span class="tag">{esc(fmt['name'])}</span><span class="tag mono">{t['runtime_s']:.0f} s</span></p>
-        <h3>{esc(t['title'])}</h3>
+        <p class="tags"><span class="tag look-tag look-{t['look']}">{look_name}</span><span class="tag">{esc(fmt['name'])}</span><span class="tag mono">{secs:.0f} s</span></p>
+        <h3>{esc(title)}</h3>
         <p class="hook" title="On screen at 0.0 s">{marks(spec.get('header', ''))}</p>
         {f'<ul class="nums">{nums}</ul>' if nums else ''}
         <details><summary>Guide voice-over</summary><p>{esc(vo)}</p></details>
-        <p class="foot mono">{' · '.join(checks)}{f' · hook {score:g}/10' if score else ''} ·
+        <p class="foot mono">{' · '.join(checks)} ·
+          <a href="{REPO}renders/v2/{sid}.mp4" target="_blank" rel="noopener">full-size MP4</a> ·
           <a href="{REPO}{t['spec']}" target="_blank" rel="noopener">spec</a></p>
       </div>
     </article>'''
