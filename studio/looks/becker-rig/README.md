@@ -149,6 +149,7 @@ export default function myFormat(spec, ctx) {
 - **Row pitch.** A text run is about 1.21 em tall in Inter Tight and about 1.32 em in JetBrains Mono. Rows packed tighter than that fail the overlap rule.
 - **Measuring.** `measure(text, font, { letterSpacing, upper })` uses the stage's tabular figures. Pass `upper: true` when CSS uppercases the text. Fonts are preloaded before any format mounts, so measuring in the factory is safe.
 - **Mono overhang.** Mono glyphs overhang a 1.2 line box, so `fitText(..., { maxH })` needs about 8 px of slack.
+- **No `will-change: transform` on text.** Chrome keeps a composited layer's raster scale from earlier frames, so a frame under a camera punch rendered after other frames would rasterize its text differently from the same frame rendered directly (`.br-num` has none).
 
 The chrome (brand, header, footer, captions, verdict) is added by `kit.js` for every format. A format can steer it by returning `chrome` options with its body:
 

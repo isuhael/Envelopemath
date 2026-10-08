@@ -3,21 +3,21 @@
   "look": "scoreboard",
   "format": "growth-ladder",
   "fps": 30,
-  "duration": 36.0,
+  "duration": 37.0,
   "header": "TAKE WHAT YOU COULD INVEST **A DAY**.\nYEAR 40 = THAT × ?",
   "footer": "$1 × 365 ÷ 12 ≈ $30.42/mo · 7% a year · not a forecast",
   "captions": true,
   "vo": [
     { "t": 0.0, "d": 3.1, "text": "Year 1: about $377." },
-    { "t": 4.4, "d": 3.1, "text": "Year 10: about $5,203." },
-    { "t": 8.0, "d": 3.5, "text": "Year 20: about $15,438." },
-    { "t": 12.0, "d": 3.85, "text": "Year 30: about $35,571." },
-    { "t": 16.4, "d": 3.85, "text": "Year 40: about $75,176." },
-    { "t": 20.4, "d": 4.25, "text": "Your daily amount, about 75,176 times." },
-    { "t": 24.8, "d": 5.0, "text": "$5 a day: about $375,880." },
-    { "t": 30.0, "d": 3.85, "text": "A million? About $13.30 a day." }
+    { "t": 4.4, "d": 3.5, "text": "Year 10: about $5,203." },
+    { "t": 8.0, "d": 3.85, "text": "Year 20: about $15,438." },
+    { "t": 12.0, "d": 4.25, "text": "Year 30: about $35,571." },
+    { "t": 16.4, "d": 4.25, "text": "Year 40: about $75,176." },
+    { "t": 20.8, "d": 4.65, "text": "Your daily amount, about 75,176 times." },
+    { "t": 25.6, "d": 5.4, "text": "$5 a day: about $375,880." },
+    { "t": 31.1, "d": 3.85, "text": "A million? About $13.30 a day." }
   ],
-  "verdict": { "t": 30.0, "text": "YEAR 40 ≈ YOUR DAILY AMOUNT **× 75,176**.\nA MILLION: ≈ $13.30 A DAY." },
+  "verdict": { "t": 31.1, "text": "YEAR 40 ≈ YOUR DAILY AMOUNT **× 75,176**.\nA MILLION: ≈ $13.30 A DAY." },
   "data": {
     "input": { "amount": "$1", "per": "a day", "rate": "7% a year" },
     "columns": ["Year", "You put in", "Worth"],
@@ -31,7 +31,7 @@
     ],
     "rowT": [0.4, 3.0, 4.6, 8.0, 12.2, 16.6],
     "highlightLast": true,
-    "hold": 19.4
+    "hold": 20.4
   },
   "lookOpts": {
     "icon": "coin",

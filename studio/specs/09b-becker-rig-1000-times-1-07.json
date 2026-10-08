@@ -9,10 +9,10 @@
   "captions": true,
   "vo": [
     { "t": 0.0, "d": 2.35, "text": "Age 1: $1,070." },
-    { "t": 5.0, "d": 3.1, "text": "At 18: about $3,380." },
-    { "t": 9.0, "d": 3.1, "text": "At 30: about $7,612." },
-    { "t": 13.0, "d": 3.85, "text": "At 50: about $29,457." },
-    { "t": 17.4, "d": 4.25, "text": "At 65: about $81,273." },
+    { "t": 5.0, "d": 3.5, "text": "At 18: about $3,380." },
+    { "t": 9.0, "d": 3.5, "text": "At 30: about $7,612." },
+    { "t": 13.0, "d": 4.25, "text": "At 50: about $29,457." },
+    { "t": 17.4, "d": 4.65, "text": "At 65: about $81,273." },
     { "t": 22.3, "d": 2.35, "text": "Over 81 times the gift." }
   ],
   "verdict": { "t": 22.3, "text": "**≈ $81,273** at 65.\nFrom one $1,000, never topped up." },
