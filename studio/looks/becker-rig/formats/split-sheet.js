@@ -30,6 +30,10 @@
 //   actions: [{ t, tool }]                  the first entry without "part": when the cleaver comes out, its label
 //   envelopes: ["NEEDS", ...]               bin names (default: the part labels)
 //   gag: { t, text }                        a closing working line, e.g. "$900 ÷ 30 = $30 a day"
+//   payoff: { t, text, label }              bins mode: the header's answer as a closing gold slab (the bookend of the
+//            take-home slab: the label in caps on its left, the display string at hero size on its right), stamped
+//            into the free air above the sum check at t (impact, hit + cash) while he celebrates. The display string
+//            is shown exactly as written. Skipped (console.warn) when the air above the check is too short for it.
 //   layout: 'bins' | 'rows'                 force a layout
 //   figure: false                           no figure (the pieces just drop on their beats)
 //   figureScale: number                     override the figure size
@@ -558,6 +562,40 @@ export default function splitSheet(spec, ctx) {
     chk = { el, tk, px, end: tk.length ? tk[tk.length - 1].at + 0.2 : checkT }
   }
 
+  // ---- payoff (bins): a gold slab in the free air between the footer and the sum check, centred on the sheet
+  let pay = null
+  const payO = lo.payoff && lo.payoff.text && Number.isFinite(lo.payoff.t) ? lo.payoff : null
+  if (payO && bins) {
+    const bandTop = (parts.footerBottom || parts.headerBottom) + 22
+    const bandBot = +ghost.getAttribute('y') - 22
+    const labTxt = String(payO.label || '').replace(/-/g, '\u2011').toUpperCase()
+    const txt = String(payO.text)
+    let fit = null
+    for (const px of [96, 88, 80, 72]) {
+      const nw = measure(txt, fH(900, px), { letterSpacing: '-0.03em' })
+      const maxLab = W - nw - 3 * 30
+      const ls = labTxt ? lines2(labTxt, fH(800, 40), maxLab, maxLab, { letterSpacing: '.06em' }) : []
+      if (!ls) continue
+      const lw = ls.length ? Math.max(...ls.map(x => measure(x, fH(800, 40), { letterSpacing: '.06em' }))) : 0
+      const PH = Math.max(px + 40, ls.length * 40 + 36)            // room for descenders ("a day")
+      if (PH <= bandBot - bandTop) { fit = { px, nw, ls, lw, PH }; break }
+    }
+    if (!fit) console.warn('split-sheet: lookOpts.payoff does not fit above the check; skipped')
+    else {
+      const PW = Math.round(fit.ls.length ? 30 + fit.lw + 40 + fit.nw + 30 : fit.nw + 60)
+      const px0 = Math.round(X0 + (W - PW) / 2), py0 = Math.round((bandTop + bandBot) / 2 - fit.PH / 2)
+      const pg = s('g')
+      const rect = s('rect', { x: px0, y: py0, width: PW, height: fit.PH, rx: 14, fill: C.coin, stroke: C.ink, 'stroke-width': 10, opacity: 0 })
+      const ring = s('rect', { x: px0 + 12, y: py0 + 12, width: PW - 24, height: fit.PH - 24, rx: 8, fill: 'none', stroke: C.coinDeep, 'stroke-width': 4, opacity: 0 })
+      pg.append(rect, ring)
+      g.mid.append(pg)
+      const lab = fit.ls.length ? new NumObj(html, { cls: 'ss-totl', text: '', ax: 0, ay: 0.5, style: { fontSize: '40px', lineHeight: '40px', hyphens: 'none' } }) : null
+      if (lab) lab.el.innerHTML = fit.ls.map(esc).join('<br>')
+      const num2 = new NumObj(html, { cls: 'ss-tot', text: txt, ax: 1, ay: 0.5, style: { fontSize: fit.px + 'px' } })
+      pay = { t: payO.t, g: pg, rect, ring, lab, num: num2, x0: px0, y0: py0, W: PW, H: fit.PH, cx: px0 + PW / 2, cy: py0 + fit.PH / 2 }
+    }
+  }
+
   // ================================================================== impacts and cues
   units.forEach(u => {
     if (u.k > 1) cue(u.land, 'tick', { gain: 0.32 })
@@ -575,6 +613,12 @@ export default function splitSheet(spec, ctx) {
     cue(chk.end - 0.1, 'pop', { gain: 0.6 })
   }
   if (gag) cue(gag.t, 'pop', { gain: 0.5 })
+  if (pay) {
+    fxk.impact(pay.t, { x: pay.cx, y: pay.cy, rx: pay.W / 2 + 12, ry: pay.H / 2 + 12, r: 46, lines: 14, shake: 14, punch: 0.016, cue: null })
+    cue(pay.t - 0.2, 'whoosh', { dur: 0.2, gain: 0.35 })
+    cue(pay.t, 'hit', { gain: 0.95 })
+    cue(pay.t + 0.1, 'cash', { gain: 0.6 })
+  }
 
   // ================================================================== the figure
   const fig = showFig ? new Figure(g.fig, { scale: k }) : null
@@ -685,7 +729,9 @@ export default function splitSheet(spec, ctx) {
   if (showFig && (hopSeg || !bins)) {
     if (checkT != null) pk.push({ t: checkT, pose: 'pointUp', d: 0.28 })
     if (chk) pk.push({ t: chk.end + 0.1, pose: 'idle', d: 0.4 })
-    if (spec.verdict) { pk.push({ t: spec.verdict.t + 0.05, pose: 'celebrate', d: 0.24 }); pk.push({ t: spec.verdict.t + 1.4, pose: 'idle', d: 0.4 }) }
+    const payLater = pay && spec.verdict && pay.t > spec.verdict.t + 0.5
+    if (spec.verdict) { pk.push({ t: spec.verdict.t + 0.05, pose: payLater ? 'pointUp' : 'celebrate', d: 0.24 }); pk.push({ t: spec.verdict.t + 1.4, pose: 'idle', d: 0.4 }) }
+    if (pay) { pk.push({ t: pay.t - 0.04, pose: 'celebrate', d: 0.2 }); pk.push({ t: pay.t + 1.5, pose: 'idle', d: 0.4 }) }
     if (gag) pk.push({ t: gag.t, pose: 'pointUp', d: 0.28 })
   }
   pk.sort((a, b) => a.t - b.t)
@@ -779,7 +825,7 @@ export default function splitSheet(spec, ctx) {
 
   // ================================================================== seek
   const tipLast = bins && !leftover && !ten
-  const duration = durationOf(spec, Math.max(times[n - 1] + 0.8, chk ? chk.end + 0.6 : 0, gag ? gag.t + 1.2 : 0), d.hold ?? 3)
+  const duration = durationOf(spec, Math.max(times[n - 1] + 0.8, chk ? chk.end + 0.6 : 0, gag ? gag.t + 1.2 : 0, pay ? pay.t + 1.2 : 0), d.hold ?? 3)
   const split = ten ? ten.t : partDrop(0) - 0.04         // the total stays on the slab until the first piece drops
 
   function seek(t) {
@@ -951,6 +997,21 @@ export default function splitSheet(spec, ctx) {
           f.o.overlap(true)
         }
       }
+    }
+
+    // ---- payoff slab: stamped in (1.16 -> 1 about its centre, never under the type floor), lands at pay.t
+    if (pay) {
+      const t0 = pay.t - 0.16
+      const on = t >= t0
+      const p = E.inQuad(prog(t, t0, 0.16))
+      const sc = on ? lerp(1.16, 1, p) : 1
+      const op = on ? clamp((t - t0) / 0.07) : 0
+      attr(pay.g, 'transform', sc !== 1 ? `translate(${pay.cx},${pay.cy}) scale(${sc.toFixed(3)}) translate(${-pay.cx},${-pay.cy})` : '')
+      attr(pay.rect, 'opacity', op.toFixed(3)); attr(pay.ring, 'opacity', (0.75 * op).toFixed(3))
+      const at = (x, y) => [pay.cx + (x - pay.cx) * sc, pay.cy + (y - pay.cy) * sc]
+      if (pay.lab) { const [x, y] = at(pay.x0 + 30, pay.cy); pay.lab.set({ x, y, sx: sc, sy: sc, opacity: op }) }
+      const [nx, ny] = at(pay.x0 + pay.W - 30, pay.cy)
+      pay.num.set({ x: nx, y: ny, sx: sc, sy: sc, opacity: op })
     }
 
     // ---- figure + tool

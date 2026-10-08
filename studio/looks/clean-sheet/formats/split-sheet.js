@@ -66,6 +66,8 @@ export const css = `
 const SCALES = [1.16, 1.08, 1, 0.96, 0.92, 0.88, 0.84]
 const FLOOR = { label: 40, amount: 50, total: 56 }
 const RAISE = 14   // tight (dense) sheets start this much closer to the footer
+const SNUG = 10    // ...and a tight sheet that misses by at most this much starts that much higher still, rather than
+                   // lose a feature (05a: the check line would otherwise go for 7 px; the footer gap stays >= 20 px)
 const LEAD = 0.3   // the row activates (pointer lands, % turns accent, leader traces) this long before typing / landing
 const F_GAP = 16   // gap either side of a formula on the line
 
@@ -208,7 +210,7 @@ export default function splitSheet(spec, ctx) {
   const okFloors = m => m.lpx >= FLOOR.label && m.apx >= FLOOR.amount && m.tpx >= FLOOR.total
 
   // place everything for one candidate c = { sc, tight, formulas: 'line' | 'slot' | false, notes, bar, guessUnder }
-  function place(c, extra = 0) {
+  function place(c, extra = 0, lift = 0) {
     const m = metrics(c.sc, c.tight)
     const why = []
     const lineH = Math.round(m.lpx * 1.12)
@@ -277,7 +279,7 @@ export default function splitSheet(spec, ctx) {
     const tNoteW = tNoteOn ? Math.ceil(W(tot.note)) : 0
 
     // ---- vertical
-    const top0 = P.top - m.raise
+    const top0 = P.top - m.raise - lift
     let y = top0
     let totEnd = y
     {
@@ -413,10 +415,10 @@ export default function splitSheet(spec, ctx) {
       style(guess.strike, { left: x0 - 8 + 'px', top: Math.round(top + guessH / 2 - 2) + 'px', width: bw + fw + 32 + 'px' })
     }
     const height = y - top0
-    const over = Math.max(0, height - (avail + m.raise))
-    if (over > 0) why.push(`height ${Math.round(height)} > ${avail + m.raise} (rows end ${Math.round(rowsEnd)}, total ${Math.round(totEnd)})`)
+    const over = Math.max(0, height - (avail + m.raise + lift))
+    if (over > 0) why.push(`height ${Math.round(height)} > ${avail + m.raise + lift} (rows end ${Math.round(rowsEnd)}, total ${Math.round(totEnd)})`)
     // how bad a failing candidate is: overflow in px, plus a penalty per other failure (squeezed or too wide)
-    return { fits: !why.length, height, raise: m.raise, why, bad: over + 400 * (why.length - (over > 0 ? 1 : 0)) }
+    return { fits: !why.length, height, raise: m.raise + lift, lift, over, why, bad: over + 400 * (why.length - (over > 0 ? 1 : 0)) }
   }
 
   // candidates, cheapest first. Cost: smaller type (4 per 4%), no notes (6), no bar (2), dense spacing (3), the wrong
@@ -441,10 +443,12 @@ export default function splitSheet(spec, ctx) {
   cands.sort((a, b) => a.cost - b.cost || a.k - b.k)
   let chosen = null, best = null
   for (const { c, cost } of cands) {
-    const r = place(c)
+    let r = place(c)
+    // a tight sheet whose only miss is a few px of height starts up to SNUG px higher (closer to the footer)
+    if (!r.fits && c.tight && r.why.length === 1 && r.over > 0 && r.over <= SNUG) r = place(c, 0, Math.ceil(r.over))
     if (debug) console.log('split-sheet', cost, JSON.stringify(c), r.fits ? 'FITS' : r.why.join('; '))
-    if (r.fits) { chosen = { c, height: r.height, raise: r.raise }; break }
-    if (!best || r.bad < best.bad - 0.5 || (Math.abs(r.bad - best.bad) <= 0.5 && cost < best.cost)) best = { c, cost, bad: r.bad, height: r.height, raise: r.raise, why: r.why }
+    if (r.fits) { chosen = { c, height: r.height, raise: r.raise, lift: r.lift }; break }
+    if (!best || r.bad < best.bad - 0.5 || (Math.abs(r.bad - best.bad) <= 0.5 && cost < best.cost)) best = { c, cost, bad: r.bad, height: r.height, raise: r.raise, lift: r.lift, why: r.why }
   }
   if (!chosen) {
     // nothing fits: the failing candidate that misses by the least (then the cheapest), so the check and the bar
@@ -456,7 +460,7 @@ export default function splitSheet(spec, ctx) {
   const LC = chosen.c
   const spare = avail + chosen.raise - chosen.height
   const extra = n > 1 ? Math.max(0, Math.min(LC.tight ? 14 : n <= 4 ? 44 : 26, Math.floor((spare * 0.5) / (n - 1 + 1.6)))) : 0
-  place(LC, extra)
+  place(LC, extra, chosen.lift || 0)
   root.dataset.layout = [LC.notes ? 'notes' : 'bare', LC.bar && 'bar', LC.formulas && 'formulas-' + LC.formulas, LC.tight && 'tight', LC.guessUnder && 'guess-under', checks.length && !LC.check && 'no-check'].filter(Boolean).join(' ')
   root.dataset.scale = String(LC.sc)
 

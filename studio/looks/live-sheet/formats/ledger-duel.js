@@ -262,6 +262,7 @@ export default function ledgerDuel(spec, ctx) {
     tipFit = fitTips([], tipW)
     if (opt(spec, 'verdict', 'auto') === 'auto' && verdict) vMode = 'auto'
   }
+  if (hasCaptions(spec) && !capsOn) console.warn('live-sheet ledger-duel: too tall for captions (a two-line formula bar or three-line plans?); running silent with the verdict in the formula bar')
   const kLater = laterKfs()
   const slotH = slotOf()
   if (summary) sh.rowEls[N].classList.add('ld-sum')

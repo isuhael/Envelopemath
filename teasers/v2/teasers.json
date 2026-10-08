@@ -548,38 +548,38 @@
       "clean-sheet"
     ],
     "file": "teasers/v2/08-unit-ladder.md",
-    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/08-unit-ladder.py",
+    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/08-unit-ladder.py -> PASSED: all 503 checks (exit 0), after hook pass 2 (08a-A, 08b-D and 08c-A adopted). The builders derive every number from the sourced inputs: 08a's ≈ $7.01 verdict as both $1.50 × 393,700/84,300 and $393,700 ÷ 56,200; 08b's '≈ the 20th' on a 30-day month (20.23), the average month (20.51) and a Mon-Fri calendar for all 7 weekdays the 1st can fall on (19th-21st); 08c's ≈ 10.8× (the same in dollars and in Big Macs) and the pinned 42,103 / 115 years / 19,929. All three built kits' timing is replayed on each spec as written (Scoreboard roll and unit intro; Becker Rig coin, punch and fill, replacing the stub's 2.4 s assumption; Clean Sheet pre-fill and VO fit). The voice never says a number >0.5 s before its counter lands, the first count lands <= 3 s, headers are <= 15 words, and lookOpts hold only keys the kit reads. Mutation test on scratch copies (08a verdict $7.01 -> $7.00 and cut 1.5 -> 2.0 s; 08b '20th' -> '18th' and vo[2] 9.1 -> 8.4; 08c ≈ 5,125 -> ≈ 5,126 and row 1 t -1.0 -> 0.0): FAILED 16 of 503, exit 1. Studio linter on all 3 specs: 3/3 clean, 0 errors, 0 warnings; stills at 0, 1.5 and 3 s and each landing/verdict inspected.",
     "teasers": [
       {
         "id": "08a-scoreboard-costco-hot-dogs",
         "look": "scoreboard",
-        "title": "A New House in Costco Hot Dogs: 1985 vs 2026",
-        "header": "A NEW HOUSE, 1985 VS 2026,\nIN **$1.50** COSTCO HOT DOGS",
-        "runtime_s": 27,
+        "title": "What Your $1.50 Costco Hot Dog Would Cost If It Rose Like a House",
+        "header": "WHAT YOUR **$1.50** HOT DOG WOULD\nCOST IF IT ROSE LIKE A HOUSE",
+        "runtime_s": 26,
         "key_numbers": [
-          "Hot dog + soda $1.50 in 1985, still $1.50 (footer + VO 0.0 s)",
-          "$65 membership ÷ $1.50 ≈ 43 (lands 0.61 s)",
+          "Frame 1: unit intro, hero '1', label '$1.50 / YOUR HOT DOG + SODA' (hot dog + soda $1.50 in 1985, still $1.50)",
+          "$65 membership ÷ $1.50 ≈ 43 (cut 1.5 s, lands 2.98 s)",
           "$1,199 iPhone 18 Pro ≈ 799",
           "Median new house 1985 $84,300 = 56,200 hot dogs",
-          "Median new house Aug 2026 $393,700 ≈ 262,467 hot dogs",
-          "Verdict ≈ 4.7× (393,700 ÷ 84,300 = 4.6702)"
+          "Median new house Aug 2026 $393,700 ≈ 262,467 hot dogs (≈ 4.7×, 393,700 ÷ 84,300 = 4.6702)",
+          "Verdict: risen like a house, $1.50 × 4.670225 = $7.0053 ≈ $7.01 (= $393,700 ÷ 56,200)"
         ],
         "spec": "studio/specs/08a-scoreboard-costco-hot-dogs.json",
         "mp4": "studio/out/08a-scoreboard-costco-hot-dogs.mp4",
         "math_ok": true,
         "facts_ok": true,
-        "hook_score": 6
+        "hook_score": 6.0
       },
       {
         "id": "08b-becker-rig-hours-at-15",
         "look": "becker-rig",
-        "title": "Your Rent, a Car, a House: In Hours of Work at $15/hr",
-        "header": "Your rent, a car, a house:\nhours of work at **$15/hr**",
+        "title": "At $15/hr, You Work for Rent From the 1st Until…",
+        "header": "At **$15/hr**, you work for rent\nfrom the 1st to the ___",
         "runtime_s": 27,
         "key_numbers": [
           "$15/hr keeps ≈ $13.10 (2026 fed tax + FICA, single); unit defined as $13.10",
-          "Median rent $1,531 ÷ $13.10 ≈ 117 hours (lands ≈ 2.4 s)",
-          "≈ 2 of every 3 work hours (116.870 ÷ 173.33 = 67.4%)",
+          "Median rent $1,531 ÷ $13.10 ≈ 117 hours (built kit lands 2.10 s, said 2.31 s)",
+          "117 of 173 work hours = 67.4% → from the 1st to ≈ the 20th (20.23 on 30 days, 20.51 on 30.42; Mon-Fri calendar 19th-21st)",
           "Rent year $18,372 ≈ 1,402 h",
           "Avg new car $50,089 ≈ 3,824 h",
           "Median new house $393,700 ≈ 30,053 h ≈ 14 years full-time"
@@ -588,21 +588,21 @@
         "mp4": "studio/out/08b-becker-rig-hours-at-15.mp4",
         "math_ok": true,
         "facts_ok": true,
-        "hook_score": 7
+        "hook_score": 7.0
       },
       {
         "id": "08c-clean-sheet-college-in-big-macs",
         "look": "clean-sheet",
-        "title": "What Your Degree Costs in Big Macs",
-        "header": "Your degree, in **Big Macs**:\nfind your school",
-        "runtime_s": 27,
+        "title": "Community? In-State? Private? Your Year of College in Big Macs",
+        "header": "Community? In-state?\nOut-of-state? Private?\nYour year in **Big Macs**",
+        "runtime_s": 21.5,
         "key_numbers": [
           "1 Big Mac = $6.22 (Economist, Jul 2026)",
-          "Community college $4,150 ≈ 667 (lands 1.63 s)",
+          "Community college $4,150 ≈ 667 (pre-filled at 0.0)",
           "In-state $11,950 ≈ 1,921",
           "Out-of-state $31,880 ≈ 5,125",
           "Private $45,000 ≈ 7,235",
-          "Private 4 yrs with housing & food 4 × $65,470 ≈ 42,103 → a Big Mac a day for ≈ 115 years"
+          "Verdict: $45,000 ÷ $4,150 = 10.843 → ≈ 10.8× (same in Big Macs); pinned: 4 yrs private all-in 4 × $65,470 ≈ 42,103 → a Big Mac a day for ≈ 115 years"
         ],
         "spec": "studio/specs/08c-clean-sheet-college-in-big-macs.json",
         "mp4": "studio/out/08c-clean-sheet-college-in-big-macs.mp4",

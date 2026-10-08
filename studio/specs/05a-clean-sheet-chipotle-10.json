@@ -30,7 +30,7 @@
       { "t": 20.9, "label": "Tax − interest earned", "pct": "3.4%", "amount": "≈ $0.34", "note": "income tax − Chipotle's interest income", "tone": "neutral", "share": 0.034 },
       { "t": 23.4, "label": "Profit", "pct": "12.9%", "amount": "≈ $1.29", "note": "what Chipotle keeps", "tone": "goal", "share": 0.129 }
     ],
-    "check": "$10.00 − $8.71 of costs = $1.29",
+    "check": "$10 − $8.71 of costs = $1.29",
     "checkT": 24.9,
     "hold": 2.3
   },
@@ -38,7 +38,7 @@
     "pointer": true,
     "loop": true,
     "maskPct": [6],
-    "wrongGuess": { "part": 0, "t": 0.0, "formula": "$10 − $2.96", "result": "$7.04 profit?", "strike": true, "strikeT": 5.3 }
+    "wrongGuess": { "part": 0, "t": 0.0, "formula": "$10 − $2.96", "result": "$7.04 profit?", "strike": true, "strikeT": 5.3, "until": 24.5 }
   },
   "sfx": [
     { "t": 5.3, "kind": "buzz", "gain": 0.4 },

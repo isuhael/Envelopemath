@@ -12,13 +12,15 @@ Format 8 "unit-ladder" (P8, "Cost in units of X"): maths and spec check for teas
    - every number token in every display string and VO line is a computed value or a labelled constant;
    - "≈" sits on every rounded result and on no exact one;
    - timing: header + a number on screen at t = 0; every VO line fits 2.6 words/s (d >= words / 2.6) and
-     ends before the next starts; every rung's t equals the start of the VO line that names it, and that
-     line names it in its first words; the verdict lands with its VO line; duration is inside the 20-40 s
-     lane and covers the last VO line (+0.4 s) and the verdict (+2.5 s); hold = duration - last landing;
-   - Scoreboard and Clean Sheet (their kits are built): the counter lands before (or within 0.5 s of) the VO
-     saying the number, using each kit's own timing rules (looks/scoreboard/formats/unit-ladder.js,
-     looks/clean-sheet/formats/unit-ladder.js); the first count lands within 3 s (R10); 08c's check line is
-     fully typed before the verdict; a rung pre-rolled under an opener line (08a) is spoken after it lands;
+     ends before the next starts; each rung's VO line names it in its first words and starts on its cut, or
+     (08b) up to 1.4 s after it, so the voice says the count as the built kit lands it; a rung pre-filled
+     before frame 1 (08c) is read by the line at 0.0; a rung pre-rolled under the opener line (08a) is
+     spoken after it lands; the verdict lands with its VO line; duration is inside the 20-40 s lane and
+     covers the last VO line (+0.4 s) and the verdict (+2.5 s); hold = duration - last landing;
+   - all three kits are built: the counter lands before (or within 0.5 s of) the VO saying the number,
+     replaying each kit's own timing rules on the spec as written (looks/scoreboard, looks/becker-rig and looks/clean-sheet
+     formats/unit-ladder.js); the first count lands within 3 s (R10); 08c's check line is fully typed
+     before the verdict; the header is at most 15 words (R8);
    - contract shape (studio/FORMATS.md, section 8): 4-7 rungs, cheap -> huge, units numeric, known icon,
      captions on, fps 30, id = file stem.
 4. Prints a table and exits 1 on any mismatch.
@@ -75,7 +77,8 @@ HOURS_PER_YEAR = HOURS_PER_WEEK * WEEKS_PER_YEAR          # 2,080
 MONTHS = 12
 DAYS_PER_YEAR = 365
 DEGREE_YEARS = 4
-BIG_UNIT_FROM, BIG_UNIT_PER = 10000, 1000   # 08a lookOpts.bigUnit (a kit request): 1 block = 1,000 hot dogs
+RENT_DAY = 1                     # 08b header: rent is due on the 1st
+WORKDAY_HOURS = 8                # 08b calendar check: 8-hour workdays, Monday to Friday
 
 # ======================================================================================
 # Formatting helpers
@@ -201,7 +204,31 @@ def scoreboard_landings(rungs):
         lands.append(t0 + delay + roll)
     return lands
 
-FINAL_COUNT = 2.4   # stub kit (Becker Rig): each rung's count is assumed to land 2.4 s after its cut
+# ======================================================================================
+# Becker Rig kit timing (mirrors looks/becker-rig/formats/unit-ladder.js, "per-rung schedule")
+# ======================================================================================
+def becker_landings(rungs, hold, verdict_t=None, intro_opt=True):
+    """Each rung: the coin drops, he punches it after a lead, the units fill and the count lands."""
+    Ts = [r["t"] for r in rungs]
+    n = len(rungs)
+    intro = intro_opt and Ts[0] >= 0.9
+    lands = []
+    for i, r in enumerate(rungs):
+        last = i == n - 1
+        gap = Ts[i + 1] - Ts[i] if not last else max(3.4, hold + 1.4)
+        placed = i == 0 and not intro and Ts[i] < 0.9          # the first coin already stands there at t = 0
+        lead = 0.45 if placed else min(max(gap * 0.22, 0.45), 0.92)
+        punch = max(0, Ts[i]) + lead
+        fill0 = punch + 0.05
+        if last:
+            fd = 1.9
+            if verdict_t is not None:
+                fd = min(fd, verdict_t - 0.5 - fill0)
+            fill = min(max(fd, 0.6), 2.2)
+        else:
+            fill = min(max(gap * 0.3, 0.5), 1.6)
+        lands.append(fill0 + fill)
+    return lands
 
 # ======================================================================================
 # Teaser builders: each returns (expected spec dict, rows for the table, allowed numbers,
@@ -213,12 +240,14 @@ def vo_line(t, d, text):
 def build_08a():
     unit = HOT_DOG_COMBO
     items = [
-        ("Your Costco membership", COSTCO_MEMBERSHIP, usd(COSTCO_MEMBERSHIP), "Your Costco membership"),
+        ("Your Costco membership", COSTCO_MEMBERSHIP, usd(COSTCO_MEMBERSHIP), "Your Costco card"),
         ("An iPhone 18 Pro", IPHONE_18_PRO, usd(IPHONE_18_PRO), "An iPhone 18 Pro"),
         (f"A median new house, {HOUSE_YEAR_THEN}", NEW_HOUSE_1985, usd(NEW_HOUSE_1985), f"A new house in {HOUSE_YEAR_THEN}"),
         (f"A median new house, {HOUSE_MONTH_NOW} {HOUSE_YEAR_NOW}", NEW_HOUSE_2026, usd(NEW_HOUSE_2026), f"And a new house in {HOUSE_YEAR_NOW}"),
     ]
-    rung_t = [0.0, 7.9, 11.4, 15.6]
+    # rung 1 cuts at 1.5 s, under the opener line: frame 1 is the kit's unit intro (hero "1", one hot dog,
+    # "$1.50 / YOUR HOT DOG + SODA") for the whole first 1.5 s
+    rung_t = [1.5, 7.4, 11.0, 15.2]
     rows, rungs, qs = [], [], []
     for (item, cost, cost_disp, _), t in zip(items, rung_t):
         q = F(cost) / unit
@@ -233,20 +262,28 @@ def build_08a():
     # in hot dogs the ratio is the same (the unit price never moved)
     assert qs[3] / qs[2] == ratio
     rows.append(("Ratio house 2026 / 1985", f"{usd(NEW_HOUSE_2026)} ÷ {usd(NEW_HOUSE_1985)}", f"{float(ratio):.4f}", ratio_disp))
+    # the hook's question: the $1.50 hot dog, had it risen like a new house (sticker prices, 1985 -> Aug 2026)
+    rose = unit * ratio                                   # 1.50 × 4.670225 = 7.005338
+    assert rose == F(NEW_HOUSE_2026) / qs[2]              # = the 2026 house ÷ 1985's 56,200 hot dogs
+    rose_r = rhu(rose, F(1, 100))
+    rose_disp = ap(rose_r, rose) + usd(rose, 2)
+    assert rose_disp == "≈ $7.01"
+    rows.append(("Hot dog risen like a house", f"{usd(unit, 2)} × {float(ratio):.6f}", f"{float(rose):.6f}", rose_disp))
+    PINNED["08a hot dog risen like a house"] = (rose_disp.replace("≈ ", ""), f"{int(qs[2]):,}")
     v = [vo_round(q)[0] for q in qs]
     u2 = usd(unit, 2)
     vo = [
-        # the opener: the frozen price, while rung 1 (the membership) is already rolling on screen
-        vo_line(0.0, 4.7, f"Costco hot dog, {HOT_DOG_SINCE}: **{u2}**. Today: **{u2}**."),
-        vo_line(4.9, 2.7, f"Your Costco membership? **{count(qs[0])[0]} hot dogs**."),
-        vo_line(7.9, 3.2, f"An iPhone 18 Pro? **{v[1]}**."),
-        vo_line(11.4, 3.9, f"A new house in {HOUSE_YEAR_THEN}? **{v[2]}**."),
-        vo_line(15.6, 4.7, f"And a new house in {HOUSE_YEAR_NOW}? **{v[3]}**."),
-        vo_line(20.6, 4.7, f"Same {u2}. **{ratio_disp}** the hot dogs."),
+        # the opener: the viewer's own $1.50 hot dog (header, hero "1", label and voice on the same item)
+        vo_line(0.0, 3.5, f"Your **{u2}** hot dog, since {HOT_DOG_SINCE}."),
+        vo_line(3.7, 3.0, f"Your Costco card? **{v[0]}** of them."),
+        vo_line(7.4, 3.2, f"An iPhone 18 Pro? **{v[1]}**."),
+        vo_line(11.0, 3.9, f"A new house in {HOUSE_YEAR_THEN}? **{v[2]}**."),
+        vo_line(15.2, 4.7, f"And a new house in {HOUSE_YEAR_NOW}? **{v[3]}**."),
+        vo_line(20.2, 4.7, f"Rose like a house? A **{rose_disp}** hot dog."),
     ]
     for q, (s, n) in zip(qs, map(vo_round, qs)):
         rows.append(("  VO says", f"{float(q):,.2f} rounded for speech", "", s))
-    duration = 27.0
+    duration = 26.0
     lands = scoreboard_landings(rungs)
     hold = round(duration - lands[-1], 2)
     exp = {
@@ -255,35 +292,29 @@ def build_08a():
         "format": "unit-ladder",
         "fps": 30,
         "duration": duration,
-        "header": f"A NEW HOUSE, {HOUSE_YEAR_THEN} VS {HOUSE_YEAR_NOW},\nIN **{u2}** COSTCO HOT DOGS",
+        "header": f"WHAT YOUR **{u2}** HOT DOG WOULD\nCOST IF IT ROSE LIKE A HOUSE",
         "footer": f"Hot dog + soda: {u2} in {HOT_DOG_SINCE}. Still {u2}.",
         "captions": True,
         "vo": vo,
-        "verdict": {"t": 20.6, "text": f"Hot dog: still {u2}.\nThe house: **{ratio_disp}** the hot dogs."},
+        "verdict": {"t": 20.2, "text": f"Rose like a house?\nA **{rose_disp}** hot dog."},
         "data": {
-            "unit": {"name": "Costco hot dog", "price": u2, "icon": "hotdog"},
+            "unit": {"name": "Costco hot dog", "label": "Your hot dog + soda", "price": u2, "icon": "hotdog"},
             "rungs": rungs,
             "hold": hold,
         },
-        "lookOpts": {
-            "climaxFill": 1,
-            "bigUnit": {"from": BIG_UNIT_FROM, "per": BIG_UNIT_PER, "legend": f"1 block = {BIG_UNIT_PER:,} hot dogs"},
-            "slots": [{"rung": 2, "label": f"{HOUSE_YEAR_THEN}: ?"}, {"rung": 3, "label": f"{HOUSE_YEAR_NOW}: ?"}],
-        },
-        "sfx": [{"t": 20.6, "kind": "ding"}],
+        "lookOpts": {"climaxFill": 1},
+        "sfx": [{"t": 20.2, "kind": "ding"}],
     }
     allowed = {F(x) for x in [HOT_DOG_COMBO, COSTCO_MEMBERSHIP, IPHONE_18_PRO, NEW_HOUSE_1985,
                               NEW_HOUSE_2026, HOT_DOG_SINCE, HOUSE_YEAR_THEN, HOUSE_YEAR_NOW]}
-    allowed |= {F(r["units"]) for r in rungs} | {F(vo_round(q)[1]) for q in qs} | {F(ratio_r)}
-    labelled = {F(18): "model name 'iPhone 18 Pro'", F(1): "'1 block' (one unit)", F(BIG_UNIT_PER): "block size"}
-    # with 1 block = 1,000 hot dogs the two house piles keep the ≈ 4.7× area ratio on screen
-    blocks = [rhu(q / BIG_UNIT_PER) for q in qs if q >= BIG_UNIT_FROM]
-    rows.append(("Blocks (1985 / 2026)", f"count ÷ {BIG_UNIT_PER:,}", "", " / ".join(map(str, blocks))))
+    allowed |= {F(r["units"]) for r in rungs} | {F(vo_round(q)[1]) for q in qs} | {F(ratio_r), F(rose_r)}
+    labelled = {F(18): "model name 'iPhone 18 Pro'"}
     mapping = {0: 1, 1: 2, 2: 3, 3: 4}           # rung index -> VO line index
     opens = {i: items[i][3] for i in range(len(items))}
-    say = {i: strip_markup(vo[mapping[i]]["text"]).split("? ")[1].rstrip(".") for i in range(len(items))}
-    # rung 0 is pre-rolled from frame 1 under the opener line (VO 0); its own VO line comes after the count lands
-    timing = {"prerolled": {0}, "lead": {}}
+    say = {i: v[i] for i in range(len(items))}
+    # rung 0 cuts under the opener line (VO 0) and its count lands before its own VO line starts
+    timing = {"prerolled": {0}, "prefilled": set(), "lead": {}, "lag": 0.0,
+              "lands_of": lambda sp: scoreboard_landings(sp["data"]["rungs"])}
     return exp, rows, allowed, labelled, mapping, opens, say, lands, 5, timing
 
 def take_home_per_hour():
@@ -325,7 +356,7 @@ def build_08b():
         ("Kept a year", f"{usd(gross)} − tax − FICA", f"{float(net):,.2f}", usd(net, 2)),
         ("Kept per hour", f"{usd(net, 2)} ÷ {HOURS_PER_YEAR:,}", f"{float(k):.5f}", k_disp),
         ("Unit (defined, rounded)", "kept per hour to the cent", f"{float(U):.2f}", u_disp),
-        ("Tax snip per hour", f"{usd(WAGE)} − {float(k):.4f}", f"{float(cut):.4f}", cut_disp),
+        ("Tax + FICA per hour", f"{usd(WAGE)} − {float(k):.4f}", f"{float(cut):.4f}", cut_disp),
     ]
     items = [
         ("Median rent, 1 month", RENT, usd(RENT), "Median rent"),
@@ -347,95 +378,130 @@ def build_08b():
     weeks = qs[0] / HOURS_PER_WEEK                           # 2.92 work weeks (caption: "isn't a week of work")
     years = qs[3] / HOURS_PER_YEAR                           # 14.45
     y_r = rhu(years)
+    # the hook's blank: "you work for rent from the 1st to the ___". Rent's share of the month's work hours,
+    # laid on the calendar from rent day (the 1st): on a 30-day month and on the average month (365 / 12 days)
+    day30 = share * 30                                       # 20.23
+    day_avg = share * F(DAYS_PER_YEAR, MONTHS)               # 20.51
+    day = rhu(day30)
+    assert day == 20 and abs(day_avg - day) < F(6, 10), (day30, day_avg)
+    # and on a real calendar: 8-hour workdays Monday-Friday from the 1st; the date the 116.87th hour is worked,
+    # for every weekday the 1st can fall on (the same in 28-31-day months, since it comes before the 22nd)
+    workday_no = math.ceil(qs[0] / WORKDAY_HOURS)            # 116.87 / 8 = 14.6 -> during the 15th workday
+    dates = []
+    for first_wd in range(7):                                # 0 = the 1st is a Monday ... 6 = a Sunday
+        n, date = 0, 0
+        while n < workday_no:
+            date += 1
+            if (first_wd + date - 1) % 7 < 5:
+                n += 1
+        dates.append(date)
+    assert min(dates) >= 19 and max(dates) <= 21 and day in dates, dates
     rows += [
         ("Rent share of work hours", f"{float(qs[0]):.3f} ÷ (2,080 ÷ 12 = {float(month_hours):.2f})", f"{float(share):.4f}", "≈ 2 of every 3"),
         ("Rent month in work weeks", f"{float(qs[0]):.3f} ÷ {HOURS_PER_WEEK}", f"{float(weeks):.3f}", "caption: not a week; ≈ 3"),
+        ("Rent hours on the calendar", f"{float(share):.4f} × 30 days (× 30.42)", f"{float(day30):.2f} ({float(day_avg):.2f})", f"≈ the {day}th"),
+        ("  Mon-Fri calendar, 8-h days", f"workday {workday_no} ({float(qs[0] / WORKDAY_HOURS):.1f} of 21.67)", "", f"the {min(dates)}th-{max(dates)}st"),
         ("House in full-time years", f"{float(qs[3]):.3f} ÷ 2,080", f"{float(years):.3f}", f"{ap(y_r, years)}{y_r} years"),
     ]
     PINNED["08b rent share"] = (f"{float(share) * 100:.1f}%",)
+    PINNED["08b rent hours of the month"] = (f"{rhu(qs[0])} of {rhu(month_hours)} work hours",)
     v = [vo_round(q)[0] for q in qs]
     for q in qs:
         rows.append(("  VO says", f"{float(q):,.2f} rounded for speech", "", vo_round(q)[0]))
     vo = [
         vo_line(0.0, 4.3, f"{usd(WAGE)} an hour? Median rent: **{v[0]} hours**."),
-        vo_line(4.6, 3.5, "That's ≈ 2 of every 3 hours you work."),
-        vo_line(8.4, 3.9, f"A year of rent? **{v[1]} hours**."),
-        vo_line(12.6, 3.9, f"An average new car? **{v[2]} hours**."),
-        vo_line(16.8, 3.2, f"A median new house? **{v[3]} hours**."),
-        vo_line(20.3, 4.7, f"That's **{ap(y_r, years)}{y_r} years** of full-time work. Every cent you keep."),
+        vo_line(4.6, 3.7, f"Every hour you work, to **≈ the {day}th**."),
+        # each later line starts 0.7-1.4 s after its cut, so the voice says the count as the built kit lands it
+        vo_line(9.1, 3.9, f"A year of rent? **{v[1]} hours**."),
+        vo_line(13.3, 3.9, f"An average new car? **{v[2]} hours**."),
+        vo_line(18.2, 3.2, f"A median new house? **{v[3]} hours**."),
+        vo_line(21.5, 4.7, f"That's **{ap(y_r, years)}{y_r} years** of full-time work. Every cent you keep."),
     ]
     duration = 27.0
-    lands = [r["t"] + FINAL_COUNT for r in rungs]
+    verdict_t = 21.5
+    # the last landing does not depend on hold here (its lead is capped at 0.92 s), so one pass is exact
+    lands = becker_landings(rungs, 7.33, verdict_t)
     hold = round(duration - lands[-1], 2)
-    opener_land = 1.0
+    assert becker_landings(rungs, hold, verdict_t) == lands
     exp = {
         "id": "08b-becker-rig-hours-at-15",
         "look": "becker-rig",
         "format": "unit-ladder",
         "fps": 30,
         "duration": duration,
-        "header": f"Your rent, a car, a house:\nhours of work at **{usd(WAGE)}/hr**",
+        "header": f"At **{usd(WAGE)}/hr**, you work for rent\nfrom the {RENT_DAY}st to the ___",
         "footer": f"{k_disp} kept: 2026 federal tax + FICA, single, no state tax",
         "captions": True,
         "vo": vo,
-        "verdict": {"t": 20.3, "text": f"**{ap(y_r, years)}{y_r} years** of full-time work.\nEvery cent you keep."},
+        "verdict": {"t": verdict_t, "text": f"**{ap(y_r, years)}{y_r} years** of full-time work.\nEvery cent you keep."},
         "data": {
             "unit": {"name": f"Hour of work at {usd(WAGE)} ({k_disp} kept)", "price": u_disp, "icon": "hour"},
             "rungs": rungs,
             "hold": hold,
         },
-        "lookOpts": {
-            "stage": "white",
-            "inputProp": "block",
-            "opener": {"t": 0.0, "land": opener_land, "verb": "snip", "tool": "TAX", "from": usd(WAGE), "cut": cut_disp,
-                       "becomes": f"{u_disp} = 1 hour block"},
-            "facedown": {"t": 0.0, "items": [2, 3], "note": "the car and house tags lie face-down at stage right until their rung"},
-            "actions": [
-                {"item": 0, "verb": "stack", "tool": f"÷ {u_disp}",
-                 "becomes": f"{rungs[0]['units']} hour blocks beside a month of {rhu(month_hours)} work hours: 2 of every 3 blocks go under the rent tag"},
-                {"item": 1, "verb": "pull back", "tool": f"× {MONTHS}", "becomes": f"{MONTHS} stacks side by side"},
-                {"item": 2, "verb": "fill", "tool": f"÷ {u_disp}", "becomes": "a car outline packed with hour blocks"},
-                {"item": 3, "verb": "topple", "tool": f"÷ {u_disp}", "becomes": "a house-sized pile that flattens the figure"},
-            ],
-            "gag": {"t": 20.3, "text": f"{ap(y_r, years)}{y_r} YEARS"},
-        },
-        "sfx": [{"t": opener_land, "kind": "pop"}, {"t": 20.3, "kind": "thud"}],
+        # the built recap table names each pile; without this both rent piles shorten to "Median rent"
+        "lookOpts": {"pileLabels": ["Median rent, 1 month", "Median rent, 1 year", "Average new car", "Median new house"]},
+        "sfx": [],
     }
     allowed = {F(x) for x in [WAGE, RENT, RENT * MONTHS, KBB_ATP, NEW_HOUSE_2026, MONTHS, 2026]}
-    allowed |= {rhu(k, F(1, 100)), U, rhu(cut, F(1, 100)), F(y_r), F(2), F(3), F(rhu(month_hours))}
+    allowed |= {rhu(k, F(1, 100)), U, F(y_r), F(day)}
     allowed |= {F(r["units"]) for r in rungs} | {F(vo_round(q)[1]) for q in qs}
-    labelled = {F(1): "'1 hour block' (one unit)"}
+    labelled = {F(1): "'1 month' / '1 year' / 'the 1st' (rent day)"}
     mapping = {0: 0, 1: 2, 2: 3, 3: 4}
     opens = {i: items[i][3] for i in range(len(items))}
     say = {i: f"{v[i]} hours" for i in range(len(items))}
-    # the TAX snip (pop) lands before the first hour count lands, and both inside the first 3 s (R10)
-    assert opener_land < lands[0] <= 3.0
     # rung 0's line opens on the wage ("$15 an hour?"), then names the rent
-    timing = {"prerolled": set(), "lead": {0: 4}}
+    timing = {"prerolled": set(), "prefilled": set(), "lead": {0: 4}, "lag": 1.4, "counter_sync": True,
+              "lands_of": lambda sp: becker_landings(sp["data"]["rungs"], sp["data"]["hold"], sp["verdict"]["t"])}
     return exp, rows, allowed, labelled, mapping, opens, say, lands, 5, timing
 
 # Clean Sheet kit timing (mirrors looks/clean-sheet/formats/unit-ladder.js + theme.js MOTION)
-CS = dict(popDelay=0.16, activate=0.3, collapse=0.42, typeCps=18)
+CS = dict(popDelay=0.16, activate=0.3, collapse=0.42, typeCps=18, wipe=0.26, pop=0.22)
 
-def clean_sheet_landings(rungs, unit_price, count_speed=1.0):
+def clean_sheet_landings(rungs, unit_price, count_speed=1.0, vo=None):
     """Landing time of each rung's counter: the formula types 'cost ÷ price =', the highlighter wipes in,
-    the count runs up and lands; a finished rung files into its row just before the next one opens."""
+    the count runs up and lands; a rung whose result starts by frame 1 is pre-filled (already landed at 0.0);
+    a count overlapping a VO line lands by 60% of that line (or just before its own digits); a finished rung
+    files into its row just before the next one opens."""
     op = " ÷ " + unit_price
     type_dur = min(max(len(op + " =") / 16, 0.4), 0.9)
     T = []
-    for r in rungs:
+    for i, r in enumerate(rungs):
         res = r["t"] + type_dur + 0.25
+        act = -1 if i == 0 else r["t"] - CS["activate"]
         cnt0 = res + CS["popDelay"]
         cntD = min(max(0.45 + 0.26 * math.log10(r["units"] + 1), 0.45), 1.7) * count_speed
-        T.append([r["t"], cnt0, cntD, cnt0 + cntD])
+        pre = res <= 0
+        if pre:
+            res = min(res, -(CS["wipe"] + 0.05))
+            cnt0 = min(res + CS["popDelay"], -(CS["pop"] + 0.05))
+            cntD = 0
+        T.append({"act": act, "cnt0": cnt0, "cntD": cntD, "land": cnt0 + cntD, "pre": pre})
+    for i, x in enumerate(T):
+        if x["pre"] or not vo:
+            continue
+        raw = re.search(r"\d[\d,]*(?:\.\d+)?", rungs[i]["unitsDisplay"]).group(0)
+        by = None
+        for v in vo:
+            text = v["text"].replace("**", "").replace("__", "")
+            if v["t"] > x["land"] or v["t"] + v["d"] < x["cnt0"]:
+                continue
+            at = v["t"] + 0.6 * v["d"]
+            k = text.find(raw)
+            if k >= 0:
+                at = min(at, v["t"] + (k / max(1, len(text))) * v["d"] * 0.88 - 0.1)
+            by = at if by is None else min(by, at)
+        if by is not None and by < x["land"]:
+            x["cntD"] = max(0.35, by - x["cnt0"])
+            x["land"] = x["cnt0"] + x["cntD"]
     for i in range(len(T) - 1):
-        act_next = T[i + 1][0] - CS["activate"]
-        colD = min(max(act_next - T[i][3] - 0.1, 0.25), CS["collapse"])
-        col = act_next - colD
-        if T[i][3] > col - 0.1:
-            T[i][2] = max(0.3, col - 0.1 - T[i][1])
-            T[i][3] = T[i][1] + T[i][2]
-    return [x[3] for x in T]
+        x, nx = T[i], T[i + 1]
+        colD = min(max(nx["act"] - x["land"] - 0.1, 0.25), CS["collapse"])
+        col = nx["act"] - colD
+        if x["land"] > col - 0.1:
+            x["cntD"] = max(0.3, col - 0.1 - x["cnt0"])
+            x["land"] = x["cnt0"] + x["cntD"]
+    return [x["land"] for x in T], [x["pre"] for x in T]
 
 def cs_type_time(text):
     return min(max(len(text) / CS["typeCps"], 0.35), 2.2)
@@ -447,10 +513,9 @@ def build_08c():
         ("State school, in-state, 1 year", CB_PUBLIC_4YR_IN, usd(CB_PUBLIC_4YR_IN), "A state school, in-state"),
         ("State school, out-of-state, 1 year", CB_PUBLIC_4YR_OUT, usd(CB_PUBLIC_4YR_OUT), "The same school, out-of-state"),
         ("Private college, 1 year", CB_PRIVATE_4YR, usd(CB_PRIVATE_4YR), "A private college, 1 year"),
-        (f"Private, {DEGREE_YEARS} years, with housing & food", DEGREE_YEARS * CB_PRIVATE_BUDGET,
-         f"{DEGREE_YEARS} × {usd(CB_PRIVATE_BUDGET)}", f"{DEGREE_YEARS} years private, with housing and food"),
     ]
-    rung_t = [0.0, 4.6, 8.4, 12.2, 16.4]
+    # row 1 starts before frame 1, so the built kit shows it already answered at 0.0 (its pre-fill)
+    rung_t = [-1.0, 3.6, 7.6, 11.6]
     rows, rungs, qs = [], [], []
     for (item, cost, cost_disp, _), t in zip(items, rung_t):
         q = F(cost) / unit
@@ -459,35 +524,44 @@ def build_08c():
         rungs.append({"t": t, "item": item, "cost": cost_disp, "units": n, "unitsDisplay": disp})
         rows.append((item, f"{cost_disp} ÷ {usd(unit, 2)}", f"{float(q):,.3f}", disp))
     rungs[-1]["tone"] = "goal"
-    tuition4 = F(DEGREE_YEARS * CB_PRIVATE_4YR) / unit                 # for the write-up: tuition alone, 4 years
+    # the verdict: private vs community college, the same ratio in dollars and in Big Macs
+    ratio = F(CB_PRIVATE_4YR, CB_PUBLIC_2YR)
+    assert qs[3] / qs[0] == ratio
+    ratio_r = rhu(ratio, F(1, 10))
+    ratio_num = ap(ratio_r, ratio) + f"{float(ratio_r):.1f}"
+    assert ratio_num == "≈ 10.8"
+    rows.append(("Private ÷ community", f"{usd(CB_PRIVATE_4YR)} ÷ {usd(CB_PUBLIC_2YR)}", f"{float(ratio):.4f}", ratio_num + "×"))
+    # write-up and pinned-comment numbers (full budgets are not on screen any more)
+    tuition4 = F(DEGREE_YEARS * CB_PRIVATE_4YR) / unit                 # tuition alone, 4 years private
     rows.append(("(tuition only, 4 yrs private)", f"4 × {usd(CB_PRIVATE_4YR)} ÷ {usd(unit, 2)}", f"{float(tuition4):,.3f}", count(tuition4)[0]))
     PINNED["08c 4 yrs private tuition only"] = (count(tuition4)[0],)
     instate4 = F(DEGREE_YEARS * CB_PUBLIC_4YR_IN_BUDGET) / unit
     PINNED["08c 4 yrs in-state all-in"] = (usd(DEGREE_YEARS * CB_PUBLIC_4YR_IN_BUDGET), count(instate4)[0])
-    PINNED["08c private full budget"] = (usd(CB_PRIVATE_BUDGET),)
-    yrs = F(rungs[-1]["units"]) / DAYS_PER_YEAR          # one a day: 42,103 ÷ 365
-    yrs_exact = qs[-1] / DAYS_PER_YEAR
+    private4 = F(DEGREE_YEARS * CB_PRIVATE_BUDGET) / unit
+    yrs = F(count(private4)[1]) / DAYS_PER_YEAR                       # one a day: 42,103 ÷ 365
     y_r = rhu(yrs)
-    assert rhu(yrs_exact) == y_r
-    rows.append(("A Big Mac a day", f"{rungs[-1]['units']:,} ÷ {DAYS_PER_YEAR}", f"{float(yrs):.3f}", f"{ap(y_r, yrs)}{y_r} years"))
+    assert rhu(private4 / DAYS_PER_YEAR) == y_r
+    rows.append(("(pinned) 4 yrs private all-in", f"4 × {usd(CB_PRIVATE_BUDGET)} ÷ {usd(unit, 2)}", f"{float(private4):,.3f}", count(private4)[0]))
+    rows.append(("(pinned) a Big Mac a day", f"{count(private4)[1]:,} ÷ {DAYS_PER_YEAR}", f"{float(yrs):.3f}", f"{ap(y_r, yrs)}{y_r} years"))
+    PINNED["08c private full budget"] = (usd(CB_PRIVATE_BUDGET), usd(DEGREE_YEARS * CB_PRIVATE_BUDGET), count(private4)[0], f"{ap(y_r, yrs)}{y_r} years")
     v = [vo_round(q)[0] for q in qs]
     for q in qs:
         rows.append(("  VO says", f"{float(q):,.2f} rounded for speech", "", vo_round(q)[0]))
     vo = [
-        vo_line(0.0, 4.3, f"Find your school. Community college? **{v[0]} Big Macs**."),
-        vo_line(4.6, 3.5, f"A state school, in-state? **{v[1]}**."),
-        vo_line(8.4, 3.5, f"The same school, out-of-state? **{v[2]}**."),
-        vo_line(12.2, 3.9, f"A private college, 1 year? **{v[3]}**."),
-        vo_line(16.4, 3.9, f"{DEGREE_YEARS} years private, with housing and food? **{v[4]}**."),
-        vo_line(21.0, 4.7, f"That's a Big Mac a day for **{ap(y_r, yrs)}{y_r} years**."),
+        vo_line(0.0, 3.3, f"Community college? **{v[0]} Big Macs**."),
+        vo_line(3.6, 3.7, f"A state school, in-state? **{v[1]}**."),
+        vo_line(7.6, 3.7, f"The same school, out-of-state? **{v[2]}**."),
+        vo_line(11.6, 3.9, f"A private college, 1 year? **{v[3]}**."),
+        vo_line(16.2, 4.3, f"Private vs community: **{ratio_num}×** the Big Macs."),
     ]
-    duration = 27.0
+    duration = 21.5
     count_speed = 0.5
-    lands = clean_sheet_landings(rungs, usd(unit, 2), count_speed)
+    lands, pre = clean_sheet_landings(rungs, usd(unit, 2), count_speed, vo)
+    assert pre == [True, False, False, False], pre       # only row 1 is pre-filled at frame 1
     hold = round(duration - lands[-1], 2)
-    check_text = f"check: {rungs[-1]['unitsDisplay']} ÷ {DAYS_PER_YEAR} days {ap(y_r, yrs)}{y_r} years"
-    check_t = 18.6
-    verdict_t = 21.0
+    check_text = f"check: {usd(CB_PRIVATE_4YR)} ÷ {usd(CB_PUBLIC_2YR)} {ratio_num}"
+    check_t = 14.0
+    verdict_t = 16.2
     # the working before the answer: the check line starts after the final count lands and is fully typed
     # before the verdict appears (the kit types at 18 characters a second)
     assert lands[-1] < check_t and check_t + cs_type_time(check_text) <= verdict_t, (lands[-1], check_t + cs_type_time(check_text))
@@ -498,11 +572,11 @@ def build_08c():
         "format": "unit-ladder",
         "fps": 30,
         "duration": duration,
-        "header": "Your degree, in **Big Macs**:\nfind your school",
-        "footer": f"1 Big Mac = {usd(unit, 2)} (Jul 2026) · College Board 2025-26: tuition & fees; row {len(rungs)} = full budget",
+        "header": "Community? In-state?\nOut-of-state? Private?\nYour year in **Big Macs**",
+        "footer": f"1 Big Mac = {usd(unit, 2)} (Jul 2026) · College Board 2025-26: published tuition & fees",
         "captions": True,
         "vo": vo,
-        "verdict": {"t": verdict_t, "text": f"A Big Mac a day\nfor **{ap(y_r, yrs)}{y_r} years**."},
+        "verdict": {"t": verdict_t, "text": f"Private vs community college:\n**{ratio_num}×** the Big Macs."},
         "data": {
             "unit": {"name": "Big Mac", "price": usd(unit, 2), "icon": "burger"},
             "rungs": rungs,
@@ -513,20 +587,21 @@ def build_08c():
             "countSpeed": count_speed,
             "check": check_text,
             "checkT": check_t,
-            "preview": "labels",
         },
         "sfx": [{"t": verdict_t, "kind": "ding"}],
     }
     allowed = {F(x) for x in [BIG_MAC, CB_PUBLIC_2YR, CB_PUBLIC_4YR_IN, CB_PUBLIC_4YR_OUT, CB_PRIVATE_4YR,
-                              CB_PRIVATE_BUDGET, DEGREE_YEARS, DAYS_PER_YEAR, 2026, 2025, 26, len(rungs)]}
-    allowed |= {F(r["units"]) for r in rungs} | {F(vo_round(q)[1]) for q in qs} | {F(y_r)}
+                              2026, 2025, 26]}
+    allowed |= {F(r["units"]) for r in rungs} | {F(vo_round(q)[1]) for q in qs} | {F(ratio_r)}
     labelled = {F(1): "'1 year' / '1 Big Mac' (one unit)"}
-    mapping = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
+    mapping = {0: 0, 1: 1, 2: 2, 3: 3}
     opens = {i: items[i][3] for i in range(len(items))}
     say = {i: v[i] for i in range(len(items))}
-    # rung 0's line opens on the task ("Find your school."), then names the row
-    timing = {"prerolled": set(), "lead": {0: 3}, "counter_sync": True}
-    return exp, rows, allowed, labelled, mapping, opens, say, lands, 5, timing
+    # row 1 is pre-filled before frame 1 and the opener line reads the answer already on screen
+    timing = {"prerolled": set(), "prefilled": {0}, "lead": {}, "lag": 0.0, "counter_sync": True,
+              "lands_of": lambda sp: clean_sheet_landings(sp["data"]["rungs"], sp["data"]["unit"]["price"],
+                                                          sp.get("lookOpts", {}).get("countSpeed", 1.0), sp["vo"])[0]}
+    return exp, rows, allowed, labelled, mapping, opens, say, lands, 4, timing
 
 # ======================================================================================
 # Checks
@@ -566,7 +641,7 @@ def display_strings(spec):
     out = [("header", spec["header"]), ("footer", spec["footer"]), ("verdict", spec["verdict"]["text"])]
     out += [(f"vo[{i}]", v["text"]) for i, v in enumerate(spec["vo"])]
     u = spec["data"]["unit"]
-    out += [("unit.name", u["name"]), ("unit.price", u["price"])]
+    out += [("unit.name", u["name"]), ("unit.price", u["price"])] + ([("unit.label", u["label"])] if "label" in u else [])
     for i, r in enumerate(spec["data"]["rungs"]):
         out += [(f"rung[{i}].item", r["item"]), (f"rung[{i}].cost", r["cost"]), (f"rung[{i}].unitsDisplay", r["unitsDisplay"])]
 
@@ -600,6 +675,13 @@ def run(name, builder):
     n0 = len(FAILS)
     compare(exp["id"], exp, got)
     spec = got
+    # the timing checks below replay the kit on the spec as written (not on the expected spec)
+    lands_exp = lands
+    try:
+        lands = timing["lands_of"](spec)
+    except Exception as e:  # a malformed spec still reports through the checks above
+        check(False, f"{name}: kit timing replay failed on the spec: {e}")
+    check(all(abs(a - b) < 1e-9 for a, b in zip(lands, lands_exp)), f"{name}: kit landings on the spec differ from the expected ones")
 
     # 2. contract shape
     check(spec["id"] == path.stem, f"{name}: id != file stem")
@@ -624,9 +706,11 @@ def run(name, builder):
 
     # 5. timing
     vo = spec["vo"]
-    t0_numbers = any(r["t"] == 0 for r in rungs) or bool(NUM_RE.search(spec["header"]))
+    t0_numbers = any(r["t"] <= 0 for r in rungs) or bool(NUM_RE.search(spec["header"]))
     check(bool(spec["header"]) and t0_numbers and "$" in spec["footer"] and NUM_RE.search(spec["footer"]),
           f"{name}: frame 1 must show the header and a $ number")
+    hw = len([w for w in strip_markup(spec["header"]).split() if re.search(r"[A-Za-z0-9]", w)])
+    check(hw <= 15, f"{name}: header has {hw} words (R8: at most 15)")
     check(vo[0]["t"] == 0.0, f"{name}: VO must start at 0.0")
     for i, v in enumerate(vo):
         need = spoken_words(v["text"]) / WPS
@@ -634,11 +718,17 @@ def run(name, builder):
         if i + 1 < len(vo):
             check(v["t"] + v["d"] <= vo[i + 1]["t"] + 1e-9, f"{name}: vo[{i}] overlaps vo[{i + 1}]")
     for ri, vi in mapping.items():
-        if ri in timing["prerolled"]:
-            # on screen (counter rolling) from frame 1 under the opener line; its own VO line follows the landing
-            check(rungs[ri]["t"] == 0.0 and vo[vi]["t"] >= lands[ri], f"{name}: pre-rolled rung {ri} must start at 0.0 and its VO line after the count lands")
+        if ri in timing["prefilled"]:
+            # answered before frame 1 (the kit's pre-fill); the opener line reads it from 0.0
+            check(rungs[ri]["t"] < 0 and lands[ri] <= 0 and vo[vi]["t"] == 0.0, f"{name}: pre-filled rung {ri} must be landed by frame 1 and read at 0.0")
+        elif ri in timing["prerolled"]:
+            # cut under the opener line (the count rolls while it plays); its own VO line follows the landing
+            v0 = vo[0]
+            check(v0["t"] <= rungs[ri]["t"] < v0["t"] + v0["d"] and vo[vi]["t"] >= lands[ri],
+                  f"{name}: pre-rolled rung {ri} must cut during the opener line and be spoken after its count lands")
         else:
-            check(rungs[ri]["t"] == vo[vi]["t"], f"{name}: rung {ri} t={rungs[ri]['t']} but its VO line starts at {vo[vi]['t']}")
+            lag = vo[vi]["t"] - rungs[ri]["t"]
+            check(-1e-9 <= lag <= timing["lag"] + 1e-9, f"{name}: rung {ri} t={rungs[ri]['t']} but its VO line starts at {vo[vi]['t']} (allowed lag {timing['lag']} s)")
         wb = words_before(vo[vi]["text"], opens[ri])
         lead = timing["lead"].get(ri, 1)
         check(wb <= lead, f"{name}: rung {ri}: VO line {vi} names the item late ({wb} words in, max {lead})")

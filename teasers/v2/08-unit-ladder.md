@@ -1,11 +1,11 @@
 # 08 · Unit ladder ("Cost in units of X"): three teasers
 
 **Format:** `unit-ladder` (rank 8 in [`../../research/v2/04-formats.md`](../../research/v2/04-formats.md), hook pattern **P8**)
-**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews; see the [Review log](#review-log))
-**Specs:**
-- [`studio/specs/08a-scoreboard-costco-hot-dogs.json`](../../studio/specs/08a-scoreboard-costco-hot-dogs.json) (file name kept; the hook is now "A new house, 1985 vs 2026, in $1.50 Costco hot dogs")
-- [`studio/specs/08b-becker-rig-hours-at-15.json`](../../studio/specs/08b-becker-rig-hours-at-15.json)
-- [`studio/specs/08c-clean-sheet-college-in-big-macs.json`](../../studio/specs/08c-clean-sheet-college-in-big-macs.json)
+**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews). All three hooks were rewritten on 2026-10-08 in hook pass 2; see the [Review log](#review-log).
+**Specs:** the file names are kept from the first draft.
+- [`studio/specs/08a-scoreboard-costco-hot-dogs.json`](../../studio/specs/08a-scoreboard-costco-hot-dogs.json). The hook is now "What your $1.50 hot dog would cost if it rose like a house".
+- [`studio/specs/08b-becker-rig-hours-at-15.json`](../../studio/specs/08b-becker-rig-hours-at-15.json). The hook is now "At $15/hr, you work for rent from the 1st to the ___".
+- [`studio/specs/08c-clean-sheet-college-in-big-macs.json`](../../studio/specs/08c-clean-sheet-college-in-big-macs.json). The hook is now "Community? In-state? Out-of-state? Private? Your year in Big Macs".
 
 **Maths check:** [`checks/08-unit-ladder.py`](checks/08-unit-ladder.py).
 - It recomputes every on-screen number from the sourced inputs, in exact fractions, and rebuilds every display string and VO line from those numbers. Then it compares them with the three specs, leaf by leaf.
@@ -13,19 +13,30 @@
 - Timing:
   - every VO line fits 2.6 words/s;
   - no VO lines overlap;
-  - each rung starts on the VO line that names it;
-  - the first count lands within 3 s (R10).
-- It replays two built kits' own timing rules:
-  - **Scoreboard (08a):** the counter-roll rules in `looks/scoreboard/formats/unit-ladder.js`.
-  - **Clean Sheet (08c):** the type, wipe and count rules in `looks/clean-sheet/formats/unit-ladder.js`.
-  - In both, the voice never says a number more than 0.5 s before its counter lands. 08c's check line is fully typed before the verdict appears.
-- It also checks the contract shape, "≈" on every rounded result, and every pinned-comment number in this file.
-- **Result: PASSED, all 599 checks.**
-- **Mutation test:** a copy with one count changed (≈ 3,823 instead of ≈ 3,824), one VO line shortened to 3.0 s and one footer year changed (1986) fails 7 checks and exits with code 1.
+  - each rung's VO line names it in its first words and starts on its cut. In 08b it starts up to 1.4 s after the cut, so the voice says the count as the built kit lands it. 08c's row 1 is pre-filled before frame 1 and read at 0.0. 08a's rung 1 cuts under the opener line and is spoken after it lands;
+  - the first count lands within 3 s (R10);
+  - the header is at most 15 words (R8).
+- It replays all three built kits' own timing rules from `looks/<look>/formats/unit-ladder.js`:
+  - **Scoreboard (08a):** the counter roll, including the unit intro.
+  - **Becker Rig (08b):** coin drop, punch and fill.
+  - **Clean Sheet (08c):** type, wipe, count, pre-fill, the VO fit and filing.
+  - In all three, the voice never says a number more than 0.5 s before its counter lands. 08c's check line is fully typed before the verdict.
+- It also checks:
+  - the contract shape;
+  - "≈" on every rounded result;
+  - the calendar claim behind 08b's "≈ the 20th", on a 30-day month, on the average month and on a Monday-Friday calendar for all 7 weekdays the 1st can fall on;
+  - every pinned-comment and caption number in this file.
+- **Result: PASSED, all 503 checks.**
+- **Mutation test:** on scratch copies of the three specs, six mutations: in 08a the verdict ≈ $7.01 → ≈ $7.00 and the rung-1 cut back to 2.0 s; in 08b "≈ the 20th" → "≈ the 18th" and vo[2] back on its cut at 8.4 s; in 08c one count ≈ 5,125 → ≈ 5,126 and row 1 moved to t = 0.0, so it is no longer pre-filled. 16 of 503 checks fail, and the script exits with code 1. Every mutation is caught by an independent rule as well as by the leaf-by-leaf comparison: R10 (first count at 3.48 s), the voice 0.69 s ahead of the counter, row 1 not pre-filled, or a number that is not computed.
 
-**Studio linter** (`node src/cli.mjs check`): **3/3 clean, 0 errors, 0 warnings.** That covers safe zones, the type floor, overlap, contrast and the R1 hook number. I rendered stills of 08a (0.0, 0.7, 13.8, 18.5, 22.0 s) and 08c (0.0, 1.8, 18.4, 20.8, 22.0 s) and checked them by eye. 08b's kit format is still a stub, so only its header and footer render.
+**Studio linter** (`node src/cli.mjs check`): **3/3 clean, 0 errors, 0 warnings.** That covers safe zones, the type floor, overlap, contrast and the R1 hook number. I rendered all three in the built kits and checked these stills by eye:
+- 08a at 0.0, 1.5, 2.9, 3.0, 4.9, 9.5, 17.95, 18.05, 18.2, 21.6 and 25.9 s;
+- 08b at 0.0, 1.5, 3.0, 6.5, 10.55, 10.68, 10.8, 19.6, 19.72, 19.8, 23.5 and 26.9 s;
+- 08c at 0.0, 1.5, 3.0, 5.4, 13.5, 15.8, 17.6 and 21.4 s.
 
-**Web searches used:** 14 in the first draft (log at the end) and 1 in this revision (the Costco frank and soda change, for the "same hot dog" fix).
+The counters read as the check predicts on both sides of each tested landing, for example 1,391 → 1,402 across 10.63 s and 29,971 → 30,053 across 19.67 s.
+
+**Web searches used:** 14 in the first draft (log at the end) and 1 in the first revision (the Costco frank and soda change, for the "same hot dog" fix). Hook pass 2 added no new facts: every new number is arithmetic on the sourced inputs.
 - The egress proxy blocks census.gov, fred.stlouisfed.org, huduser.gov, eia.gov, collegeboard.org and most news sites. Those figures were confirmed from search-result text that quotes the source, plus a second source.
 - The Big Mac price was read directly from The Economist's own dataset on GitHub.
 - The verifier independently re-checked every input with 12 searches and a direct download of the Big Mac CSV, and all of them match.
@@ -68,10 +79,10 @@
    - a **header that names the subject and the stake**, not just the unit. HD Guy never needs this, because his footage is the subject. We have no footage, and his own hot-dog title is the benchmark's flop (H13).
    - HD Guy has no voice at all, so an SFX-only cut is worth an A/B test (see the platform notes).
 
-**Hook grammar (P8), adapted:** HD Guy's "Cost in Units of [a cheap, familiar item]" (6 words, no number) works when the footage carries the subject. Without footage, the round-2 judge marked the literal copy weak (08a scored 4/10: its header was H13 word for word). So each header now **names what is being priced and gives one input**:
-- 08a: "A NEW HOUSE, 1985 VS 2026, / IN **$1.50** COSTCO HOT DOGS"
-- 08b: "Your rent, a car, a house: / hours of work at **$15/hr**"
-- 08c: "Your degree, in **Big Macs**: / find your school"
+**Hook grammar (P8), adapted:** HD Guy's "Cost in Units of [a cheap, familiar item]" (6 words, no number) works when the footage carries the subject. Without footage, the judges marked the literal copy weak (08a scored 4/10: its header was H13 word for word). So each header now **names what is being priced, gives one input and leaves one question open**. These are the hook pass 2 headers:
+- 08a: "WHAT YOUR **$1.50** HOT DOG WOULD / COST IF IT ROSE LIKE A HOUSE" (a counterfactual price for the viewer's own purchase)
+- 08b: "At **$15/hr**, you work for rent / from the 1st to the ___" (a blank on the viewer's own calendar)
+- 08c: "Community? In-state? / Out-of-state? Private? / Your year in **Big Macs**" (a row for every kind of student)
 
 All three keep HD Guy's footer device: "Tall Latte ☕ = $4.45" (H04) and "Price of RTX 5090 32GB: ~$4,899" (H01).
 
@@ -82,69 +93,73 @@ All three keep HD Guy's footer device: "Tall Latte ☕ = $4.45" (H04) and "Price
 | | 08a | 08b | 08c |
 |---|---|---|---|
 | Look | Scoreboard | Becker Rig | Clean Sheet |
-| Platform title | A New House in Costco Hot Dogs: 1985 vs 2026 | Your Rent, a Car, a House: In Hours of Work at $15/hr | What Your Degree Costs in Big Macs |
-| On-screen header (t = 0) | A NEW HOUSE, 1985 VS 2026, / IN **$1.50** COSTCO HOT DOGS | Your rent, a car, a house: / hours of work at **$15/hr** | Your degree, in **Big Macs**: / find your school |
-| Words in hook | 11 | 11 | 8 |
+| Platform title | What Your $1.50 Costco Hot Dog Would Cost If It Rose Like a House | At $15/hr, You Work for Rent From the 1st Until… | Community? In-State? Private? Your Year of College in Big Macs |
+| On-screen header (t = 0) | WHAT YOUR **$1.50** HOT DOG WOULD / COST IF IT ROSE LIKE A HOUSE | At **$15/hr**, you work for rent / from the 1st to the ___ | Community? In-state? / Out-of-state? Private? / Your year in **Big Macs** |
+| Words in hook | 13 | 11 | 9 |
 | Unit (footer or unit row) | $1.50 hot dog + soda, the same price since 1985 | $13.10, the ≈ $13.10 you keep per $15 hour | $6.22 Big Mac (The Economist, Jul 2026) |
-| Rungs | 4: membership → iPhone 18 Pro → house 1985 → house Aug 2026 | 4: rent month → rent year → new car → new house | 5: community college → in-state → out-of-state → private → 4 yrs private with housing & food |
-| First count lands | 0.61 s (≈ 43) | ≈ 2.4 s (≈ 117) | 1.63 s (≈ 667) |
-| Twist | The one price that never moved: the house went 56,200 → ≈ 262,467 hot dogs | Rent takes ≈ 2 of every 3 hours you work | A row for every kind of student; the last row adds housing and food |
-| Runtime | 27.0 s | 27.0 s | 27.0 s |
-| VO words (checker estimate) | 61 | 59 | 61 |
-| Verdict | Hot dog: still $1.50. / The house: **≈ 4.7×** the hot dogs. | **≈ 14 years** of full-time work. / Every cent you keep. | A Big Mac a day / for **≈ 115 years**. |
-| Hook score (judge → after revision, my estimate) | 4 → ≈ 6 | 6 → ≈ 7 | 5 → ≈ 6.5 |
+| Frame 1 | Hero "1" and one hot dog landing at 0.2 s, label "$1.50 / YOUR HOT DOG + SODA" | The figure beside the $1,531 rent coin, HUD "$1,531 ÷ $13.10 = / ? hours of work" | Row ① already answered (≈ 667), circles ②③④ waiting |
+| Rungs | 4: membership → iPhone 18 Pro → house 1985 → house Aug 2026 | 4: rent month → rent year → new car → new house | 4: community college → in-state → out-of-state → private (1 year of tuition & fees each) |
+| First count lands | 2.98 s (≈ 43) | 2.10 s (≈ 117) | pre-filled at 0.0 (≈ 667) |
+| Twist | The hot dog never rose. Had it risen like a new house: **≈ $7.01** | Rent takes every hour you work from the 1st to **≈ the 20th** | One private year is **≈ 10.8×** a community-college year |
+| Runtime | 26.0 s | 27.0 s | 21.5 s |
+| VO words (checker estimate) | 57 | 59 | 47 |
+| Verdict | Rose like a house? / A **≈ $7.01** hot dog. | **≈ 14 years** of full-time work. / Every cent you keep. | Private vs community college: / **≈ 10.8×** the Big Macs. |
+| Hook score (two blind judges, hook pass 2: current → adopted) | 4.5 → **6.0** | 5.75 → **7.0** | 5.25 → **6.5** |
 
 **Topic choices, and why**
-- **08a keeps the hot dog, but the frozen price is now the hook, not a footnote.**
+- **08a keeps the hot dog and turns its frozen price into the stake.**
   - HD Guy's hot-dog short flopped (80,139, 1.44x) when the hot dog was just another cheap unit over military footage.
-  - Ours leads with the fact that makes the Costco hot dog famous: **$1.50 in 1985, still $1.50**. That makes it the one ruler that never stretched, so the same house measured in 1985 and in 2026 is promised in the header and paid off at the end.
-  - The new-car rung was dropped because 08b uses the same car.
+  - Ours starts from the fact that makes the Costco hot dog famous: **$1.50 in 1985, still $1.50**. The header asks what the viewer's own $1.50 hot dog would cost had it risen like a new house, and the ladder answers it.
+  - The verdict is one repeatable price: $1.50 × ($393,700 ÷ $84,300) = **≈ $7.01**.
+  - The new-car rung was dropped in the first revision because 08b uses the same car.
 - **08b turns the wage into the ruler for the three biggest bills** (rent, a car, a house).
-  - The take-home calculation now lives in the footer and one TAX snip, not a spoken beat, because take-home pay is lane 1's subject.
-  - The opener goes straight to rent: "≈ 2 of every 3 hours you work".
+  - The hook puts rent on the viewer's own calendar. Rent takes ≈ 117 of a month's ≈ 173 work hours, so you work for rent from the 1st to **≈ the 20th**.
+  - Take-home pay is lane 1's subject, so it lives only in the footer and the "÷ $13.10" working, never in a spoken beat.
 - **08c uses the Big Mac, not the brief's $6 latte.** Three reasons:
   1. No primary source publishes a US latte price. Format 6's writer searched and found only one dataset (FinanceBuzz: grande latte $4.45 in 2024), with no second source, so "$6" could not be verified.
   2. The Big Mac has a primary, dated price: **$6.22**, The Economist's Big Mac index, July 2026.
   3. It is a proven HD Guy unit (1,748,759 views, 56.76x). Lattes and the latte factor also already belong to 06c (Starbucks).
+  - In hook pass 2 the ladder became four like-for-like rows (one year of published tuition & fees each), all named in the header. The full-budget "4 years with housing & food" row moved to the pinned comment.
 - **No rung is shared between the three teasers** except the median new house, which appears in 08a (in hot dogs, 1985 vs 2026) and in 08b (in hours of work), where it is used for different points.
 
 ---
 
-## 08a · Scoreboard · "A New House in Costco Hot Dogs: 1985 vs 2026"
+## 08a · Scoreboard · "What Your $1.50 Costco Hot Dog Would Cost If It Rose Like a House"
 
-**Spec:** `studio/specs/08a-scoreboard-costco-hot-dogs.json` · **27.0 s** · captions on · rendered in the Scoreboard kit (stills at 0.0, 0.7, 13.8, 18.5 and 22.0 s)
+**Spec:** `studio/specs/08a-scoreboard-costco-hot-dogs.json` · **26.0 s** · captions on · lints clean · rendered in the Scoreboard kit (stills listed at the top)
 
-**Platform title:** A New House in Costco Hot Dogs: 1985 vs 2026
-**On-screen hook (header):** A NEW HOUSE, 1985 VS 2026, / IN **$1.50** COSTCO HOT DOGS
+**Platform title:** What Your $1.50 Costco Hot Dog Would Cost If It Rose Like a House
+**On-screen hook (header):** WHAT YOUR **$1.50** HOT DOG WOULD / COST IF IT ROSE LIKE A HOUSE
 **Footer (t = 0):** Hot dog + soda: $1.50 in 1985. Still $1.50.
-**A/B header:** YOUR PARENTS' HOUSE VS YOURS, / IN **$1.50** COSTCO HOT DOGS (same rungs, same labels)
+**Unit intro label (t = 0):** $1.50 / YOUR HOT DOG + SODA
 
 ### Why this hook
 
 **Modelled on:**
-1. **H01, HD Guy, "Cost in Units of RTX 5090"**: 30,617,461 views (62.49x), https://www.youtube.com/shorts/E2oVrAwHDOw. The counter is already running at 0.0 s, and the unit price is in the footer.
-2. **H04, HD Guy, "Cost in Units of Starbucks Lattes"**: 9,858,084 (106.16x), https://www.youtube.com/shorts/NHbMe2F_JXY. A cheap everyday unit, and the footer "Tall Latte ☕ = $4.45", which becomes ours: "Hot dog + soda: $1.50 in 1985. Still $1.50."
-3. **H17, ChartOrbit, "What If You Invested $5,000 in USA and EUROPE?"**: 2,808,307 (345.09x), https://www.youtube.com/shorts/VwfZNjxu6fU. A pair named in the hook with a start year ("POV: In 2008…"). Ours: "1985 VS 2026", two named houses the viewer can pick between before the maths.
-- **Contrast we design against: H13, HD Guy, "Costco Hotdog Combos", 80,139 (1.44x).** The same unit with no reason for it. The round-1 header copied its title word for word. Ours puts the reason (the frozen $1.50) and the payoff pair (1985 vs 2026) into the hook line.
+1. **H45 and H44, @investment_timeline.** "POV: You invested in Monster instead of paying $3/day for a Monster Energy", **1.5M (140.6x)**, https://www.tiktok.com/@investment_timeline/video/7671760671867997473. "…instead of paying $50 for a pair of Crocs", **1.9M (117.9x)**, https://www.tiktok.com/@investment_timeline/video/7676037874105519393. The viewer's own small, repeat purchase is the stake, and the answer is a counterfactual price.
+2. **H48 and H49, The Debt Freedom Project.** A question on screen, answered by a verdict caption: "What difference does…", **1,900,000 (902.5x)**, https://www.tiktok.com/@thedebtfreedomproject/video/7668828789551418637. "Yes, daily payments work!", **382,100 (289.1x)**, https://www.tiktok.com/@thedebtfreedomproject/video/7667419558063525133. A tiny, honest verdict travels (R12). Ours: "Rose like a house? A ≈ $7.01 hot dog."
+3. **H01 and H04, HD Guy.** "Cost in Units of RTX 5090", 30,617,461 (62.49x), https://www.youtube.com/shorts/E2oVrAwHDOw, and "Cost in Units of Starbucks Lattes", 9,858,084 (106.16x), https://www.youtube.com/shorts/NHbMe2F_JXY. The unit-price footer ("Tall Latte ☕ = $4.45") becomes ours: "Hot dog + soda: $1.50 in 1985. Still $1.50."
+- **Contrast we design against: H13, HD Guy, "Costco Hotdog Combos", 80,139 (1.44x).** The same unit with no reason for it. Ours makes the frozen price the stake and asks a question only the ladder can answer.
+
+**Frame 1 is one subject.** For the whole first 1.5 s the header, the hero "1" with its hot-dog icon, the big hot dog dropping in (it lands with a squash and a pop at 0.2 s), the label "$1.50 / YOUR HOT DOG + SODA" and the voice ("Your $1.50 hot dog, since 1985.") are all about the same $1.50 purchase. The kit draws this as its built unit intro, because rung 1 starts after 0.5 s. Round 1's frame 1 was split three ways: house in the header, membership on the counter and frozen price in the voice.
 
 **Rules:**
-- **R1 (pass):** at 0.0 s the counter is rolling ("≈ 35", landing on "≈ 43" at 0.61 s) under "$65 ÷ $1.50 / YOUR COSTCO MEMBERSHIP". "$1.50" is in the header and the footer.
-- **R2 (pass):** one $ figure in the hook line, the input. The two years are the horizon, not results.
-- **R5 (pass):** the header implies the belief that "a house costs what a house costs". Measured in the one price that did not move, the same median new house is **≈ 4.7×** the hot dogs.
-- **R6 (pass):** a horizon (1985 vs 2026) and a stake ("your membership" on rung 1, the house you'd buy).
-- **R7 (pass):** both houses are named in the header, and every rung is a named item.
-- **R8 (pass):** 11 words on 2 lines.
-- **R10 (pass):** the first count lands at 0.61 s. The biggest number is last (≈ 262,467 at 18.42 s).
-- **R12 (pass):** "≈ 4.7× the hot dogs" is one repeatable number.
-- **R3 (partial):** only rung 1 is the viewer's own number, and only for Costco members. The pinned comment gives the swap rule (your price ÷ 1.5).
-- **R4 (partial):** the hot dog is the benchmark's flop unit. Our bet is that the frozen price, not the unit, carries the hook.
-- **R9 (partial):** the kit shows 4 unlabelled rung pips. The labelled "1985: ?" and "2026: ?" slots are requested as `lookOpts.slots` but not drawn yet (kit notes).
-- **R11 (partial):** the header states the comparison. Caption line 1, "The $1.50 never moved. The house did.", takes a side without the number.
+- **R1 (pass):** "$1.50" is in the header, the footer and the label at 0.0 s, and the hero reads "1" (one hot dog).
+- **R2 (pass):** one $ figure in the hook line, the input. The result (≈ $7.01) appears only in the verdict.
+- **R3 (pass):** the $1.50 is a price most viewers have paid, labelled "YOUR HOT DOG + SODA". Rung 1 (the $65 membership) fits members only.
+- **R4 (pass):** $1.50 is small, round and familiar. The unit is still the benchmark's flop (H13), and the judges docked it.
+- **R6 (pass):** you, the $1.50, and 1985 → 2026.
+- **R8 (pass):** 13 words on 2 lines.
+- **R10 (pass):** the unit lands at 0.2 s and the first count (≈ 43) at 2.98 s. The biggest number is last (≈ 262,467 at 18.02 s).
+- **R11 (pass):** the header is a question, and the verdict answers it.
+- **R12 (pass):** "a ≈ $7.01 hot dog" is one repeatable number.
+- **R5 (partial):** the header implies that prices "just rose together". The ladder shows the house rising ≈ 4.7× in the one ruler that never moved. Both judges called this belief weak.
+- **R9 (partial):** one open question, answered only at 20.2 s, and 4 unlabelled rung pips. It is not a countable loop.
 
-**The wrong belief it plays on:** "Prices just went up with everything else, so a house costs what a house costs."
-- Measured in the one price that did not move in 41 years, a median new house went from **56,200 hot dogs in 1985** to **≈ 262,467 in August 2026**.
-- The sticker price went up **≈ 4.7×**, and the hot dog makes that visible without any inflation maths.
-- The caption and the pinned comment say plainly that these are sticker prices.
+**The wrong belief it plays on:** "Everything went up together."
+- Costco never raised the hot dog. A median new house went from **56,200 hot dogs in 1985** to **≈ 262,467 in August 2026**: **≈ 4.7×** the hot dogs.
+- Had the hot dog risen like the house, it would cost **≈ $7.01** today ($1.50 × 4.6702 = $7.0053). Equivalently, the 2026 house divided over 1985's 56,200 hot dogs is $393,700 ÷ 56,200 = $7.0053 each.
+- These are sticker prices, not inflation-adjusted, and the caption and pinned comment say so.
 
 ### Beat sheet
 
@@ -152,30 +167,34 @@ Counter landing times are the Scoreboard kit's own (reproduced by the check). Li
 
 | t (s) | On screen | VO (caption) |
 |---|---|---|
-| 0.0 | Header "A NEW HOUSE, 1985 VS 2026, / IN **$1.50** COSTCO HOT DOGS"; footer; hot-dog icon + hero counter already rolling ("≈ 35"); label "$65 ÷ $1.50 / YOUR COSTCO MEMBERSHIP"; 4 rung pips; dogs falling | "Costco hot dog, 1985: **$1.50**. Today: **$1.50**." |
-| 0.61 | Counter lands **≈ 43** (ding); 43 dogs stacked | |
-| 4.9 | Hold on the pile and "≈ 43" | "Your Costco membership? **≈ 43 hot dogs**." |
-| 7.9 | Cut (thud). Label "$1,199 ÷ $1.50 / AN IPHONE 18 PRO"; the pile re-packs and the counter rolls | "An iPhone 18 Pro? **≈ 799**." |
-| 9.80 | Counter lands **≈ 799** | |
-| 11.4 | Cut. "$84,300 ÷ $1.50 / A MEDIAN NEW HOUSE, 1985" | "A new house in 1985? **56,200**." |
-| 13.72 | Counter lands **56,200** | |
-| 15.6 | Cut + riser. "$393,700 ÷ $1.50 / A MEDIAN NEW HOUSE, AUG 2026" | "And a new house in 2026? **≈ 262,000**." |
-| 18.42 | Counter lands **≈ 262,467** (hit + cash); the stack fills the stage | |
-| 20.6 | Verdict slams in: "Hot dog: still $1.50. / The house: **≈ 4.7×** the hot dogs." (ding) | "Same $1.50. **≈ 4.7×** the hot dogs." |
-| 25.3-27.0 | Hold, then a hard cut back to frame 1 (loop) | (none) |
+| 0.0 | Header "WHAT YOUR **$1.50** HOT DOG WOULD / COST IF IT ROSE LIKE A HOUSE"; footer; hero "1" beside the hot-dog icon; one big hot dog mid-fall; label "$1.50 / YOUR HOT DOG + SODA"; 4 rung pips | "Your **$1.50** hot dog, since 1985." |
+| 0.2 | The hot dog lands (squash + pop) | |
+| 1.5 | Cut (thud). Label "$65 ÷ $1.50 / YOUR COSTCO MEMBERSHIP" slams in; the pile re-packs and the counter rolls from 1 | (same line) |
+| 2.98 | Counter lands **≈ 43** (ding); 43 dogs stacked | |
+| 3.7 | Hold on the pile and "≈ 43" | "Your Costco card? **≈ 43** of them." |
+| 7.4 | Cut. "$1,199 ÷ $1.50 / AN IPHONE 18 PRO"; the pile re-packs and the counter rolls | "An iPhone 18 Pro? **≈ 799**." |
+| 9.30 | Counter lands **≈ 799** | |
+| 11.0 | Cut. "$84,300 ÷ $1.50 / A MEDIAN NEW HOUSE, 1985" | "A new house in 1985? **56,200**." |
+| 13.32 | Counter lands **56,200** | |
+| 15.2 | Cut + riser. "$393,700 ÷ $1.50 / A MEDIAN NEW HOUSE, AUG 2026" | "And a new house in 2026? **≈ 262,000**." |
+| 18.02 | Counter lands **≈ 262,467** (hit + cash); the stack fills the stage | |
+| 20.2 | Verdict slams in, 2 lines: "Rose like a house? / A **≈ $7.01** hot dog." (ding) | "Rose like a house? A **≈ $7.01** hot dog." |
+| 24.9-26.0 | Hold, then a hard cut back to frame 1 (loop) | (none) |
 
-**Why the membership is on screen while the voice says the frozen price.** The judge's rewrite puts the price fact in the first VO line, and HD Guy's frame 1 always has a count running. So rung 1 rolls under the opener and lands at 0.61 s, and its own line ("Your Costco membership? ≈ 43 hot dogs.") follows at 4.9 s, after the count has landed. The label's line 1, "$65 ÷ $1.50", carries the same $1.50 the voice is saying.
+**Why rung 1 cuts at 1.5 s, while the opener line is still playing.**
+- The judged candidate cut at 2.0 s, which lands the first count at 3.48 s. Cutting at 1.5 s lands it at 2.98 s (R10) and leaves the first 1.5 s unchanged.
+- The membership rolls silently under the end of the opener ("…since 1985"). Its own line follows at 3.7 s, after the count has landed, so the voice confirms a number that is already on screen.
 
-### Guide VO script (6 lines, about 61 spoken words, 23.5 s of speech in a 27 s video)
+### Guide VO script (6 lines, about 57 spoken words, 21.9 s of speech in a 26 s video)
 
 | t | d | Caption text (spec) | Read it as |
 |---|---|---|---|
-| 0.0 | 4.7 | Costco hot dog, 1985: **$1.50**. Today: **$1.50**. | "Costco hot dog, nineteen eighty-five: a dollar fifty. Today: a dollar fifty." |
-| 4.9 | 2.7 | Your Costco membership? **≈ 43 hot dogs**. | "Your Costco membership? About forty-three hot dogs." |
-| 7.9 | 3.2 | An iPhone 18 Pro? **≈ 799**. | "An iPhone 18 Pro? About seven hundred ninety-nine." |
-| 11.4 | 3.9 | A new house in 1985? **56,200**. | "A new house in nineteen eighty-five? Fifty-six thousand two hundred." |
-| 15.6 | 4.7 | And a new house in 2026? **≈ 262,000**. | "And a new house in twenty twenty-six? About two hundred sixty-two thousand." |
-| 20.6 | 4.7 | Same $1.50. **≈ 4.7×** the hot dogs. | "Same dollar fifty. About four point seven times the hot dogs." |
+| 0.0 | 3.5 | Your **$1.50** hot dog, since 1985. | "Your dollar-fifty hot dog, since nineteen eighty-five." |
+| 3.7 | 3.0 | Your Costco card? **≈ 43** of them. | "Your Costco card? About forty-three of them." |
+| 7.4 | 3.2 | An iPhone 18 Pro? **≈ 799**. | "An iPhone 18 Pro? About seven hundred ninety-nine." |
+| 11.0 | 3.9 | A new house in 1985? **56,200**. | "A new house in nineteen eighty-five? Fifty-six thousand two hundred." |
+| 15.2 | 4.7 | And a new house in 2026? **≈ 262,000**. | "And a new house in twenty twenty-six? About two hundred sixty-two thousand." |
+| 20.2 | 4.7 | Rose like a house? A **≈ $7.01** hot dog. | "Rose like a house? About a seven-oh-one hot dog." |
 
 ### The maths
 
@@ -187,11 +206,13 @@ Counter landing times are the Scoreboard kit's own (reproduced by the check). Li
 | An iPhone 18 Pro | $1,199 ÷ $1.50 | 799.3333 | ≈ 799 | ≈ 799 |
 | A median new house, 1985 | $84,300 ÷ $1.50 | 56,200 (exact) | 56,200 | 56,200 |
 | A median new house, Aug 2026 | $393,700 ÷ $1.50 | 262,466.6667 | ≈ 262,467 | ≈ 262,000 |
-| Verdict ratio | $393,700 ÷ $84,300 | 4.6702 | ≈ 4.7× | ≈ 4.7× |
+| House ratio (not shown; drives the verdict) | $393,700 ÷ $84,300 | 4.670225 | ≈ 4.7× | (not spoken) |
+| **Verdict: the hot dog risen like a house** | $1.50 × 4.670225 | 7.005338 | **≈ $7.01** | ≈ $7.01 |
 
 - The ratio is the same in hot dogs and in dollars (262,466.67 ÷ 56,200 = 4.6702), because the unit price never moved. The check asserts this.
+- The verdict also equals $393,700 ÷ 56,200 = $7.005338: what each of 1985's 56,200 hot dogs would have to cost to buy the August 2026 house. The check asserts both forms.
 - **Captions are rounded on purpose.** The caption shows the spoken figure (≈ 262,000) while the hero counter shows the exact count (≈ 262,467). The screen is the working and the voice is the takeaway, as the format research recommends: "$143K ÷ ~$4.50 ≈ 32,000 lattes. The screen shows 32,168" (04-formats, rank 8). The same rule holds in 08b and 08c.
-- **Requested kit option (`lookOpts.bigUnit`):** "1 block = 1,000 hot dogs" from 10,000 up. That gives **56 / 262 blocks** for the 1985 and 2026 houses, so the 2026 pile is visibly ≈ 4.7× the 1985 pile. See the kit notes.
+- The 1985 and 2026 house piles both fill the stage (the kit packs icons down to a 5 px cell), so the counters carry the ≈ 4.7× and the verdict carries the ≈ $7.01.
 
 ### Sources (all checked 2026-10-07)
 
@@ -213,31 +234,30 @@ Counter landing times are the Scoreboard kit's own (reproduced by the check). Li
 > Hot dog + soda: $1.50 in 1985. Still $1.50.
 
 Each rung's label gives its basis (median new house, 1985 annual or August 2026).
-- **Not shown on screen:** the house prices are sticker prices, not inflation-adjusted. That is the point of the frozen ruler, and the caption says so.
+- **Not shown on screen:** the house prices are sticker prices, not inflation-adjusted, so the ≈ $7.01 is a sticker-to-sticker counterfactual. That is the point of the frozen ruler, and the caption and pinned comment say so.
 - Only the price is the same. The frank (Kirkland since 2009) and the drink (20 oz) changed, so nothing on screen says "same hot dog".
 
 ### Caption / description
 
-> The $1.50 never moved. The house did.
-> Costco's hot dog + soda: $1.50 in 1985, still $1.50. A median new house: 56,200 hot dogs in 1985. ≈ 262,467 in Aug 2026: ≈ 4.7× the hot dogs.
+> Costco never raised the $1.50. If it had risen like a new house: ≈ $7.01.
+> Costco's hot dog + soda: $1.50 in 1985, still $1.50. A median new house: 56,200 hot dogs in 1985, ≈ 262,467 in Aug 2026: ≈ 4.7× the hot dogs. $1.50 × 4.67 ≈ $7.01.
 > (Costco $65 Gold Star; iPhone 18 Pro $1,199; Census median new house $84,300 in 1985 and $393,700 in Aug 2026. Sticker prices, not inflation-adjusted. Maths, not advice.)
 > #costco #hotdog #housingmarket #moneymath
 
 ### Pinned comment
 
-> Yes, these are sticker prices, not inflation-adjusted. That's the point of the hot dog: Costco never raised the $1.50 (the frank became Kirkland in 2009 and the soda grew to 20 oz, but the price didn't move). In dollars the house went $84,300 → $393,700 (Aug 2026), the same ≈ 4.7×. Any price ÷ 1.5 = your hot dogs. What should we price next?
+> Yes, these are sticker prices, not inflation-adjusted. That's the point of the hot dog: Costco never raised the $1.50 (the frank became Kirkland in 2009 and the soda grew to 20 oz, but the price didn't move). In dollars the house went $84,300 → $393,700 (Aug 2026), ≈ 4.7×. Spread over 1985's 56,200 hot dogs, the 2026 house is $393,700 ÷ 56,200 ≈ $7.01 a hot dog. Any price ÷ 1.5 = your hot dogs. What should we price next?
 
 ### Per-platform notes
 
 - **YouTube Shorts (home of every P8 breakout):**
-  - Title exactly "A New House in Costco Hot Dogs: 1985 vs 2026". This title no longer competes in search with HD Guy's flopped "Costco Hotdog Combos" upload.
+  - Title exactly "What Your $1.50 Costco Hot Dog Would Cost If It Rose Like a House". Like the round-1 title, it does not compete in search with HD Guy's flopped "Costco Hotdog Combos" upload.
   - No CTA, a hard loop.
   - A/B test an SFX-only cut (a thud on each cut, roll ticks, hit + cash on the finale; no VO, captions off so the label stack does the talking) against the VO cut. HD Guy's 30.6M short has no voice at all.
-  - A/B test the header "YOUR PARENTS' HOUSE VS YOURS, / IN $1.50 COSTCO HOT DOGS".
 - **Instagram Reels:**
   - VO cut with captions on.
-  - Cover: the two house counts side by side (56,200 vs ≈ 262,467).
-  - Caption line 1: "The $1.50 never moved. The house did."
+  - Cover: the verdict "Rose like a house? A ≈ $7.01 hot dog." over the full stage.
+  - Caption line 1: "Costco never raised the $1.50. If it had risen like a new house: ≈ $7.01."
 - **TikTok:**
   - VO cut.
   - Caption line 1 is the same, and it asks "what next?" at the end.
@@ -245,71 +265,81 @@ Each rung's label gives its basis (median new house, 1985 annual or August 2026)
 
 ---
 
-## 08b · Becker Rig · "Your Rent, a Car, a House: In Hours of Work at $15/hr"
+## 08b · Becker Rig · "At $15/hr, You Work for Rent From the 1st Until…"
 
-**Spec:** `studio/specs/08b-becker-rig-hours-at-15.json` · **27.0 s** · captions on · lints clean. The Becker Rig `unit-ladder` format is still a stub in the kit, so the staging lives in `lookOpts`.
+**Spec:** `studio/specs/08b-becker-rig-hours-at-15.json` · **27.0 s** · captions on · lints clean · rendered in the built Becker Rig `unit-ladder` (stills listed at the top)
 
-**Platform title:** Your Rent, a Car, a House: In Hours of Work at $15/hr
-**On-screen hook (header):** Your rent, a car, a house: / hours of work at **$15/hr**
+**Platform title:** At $15/hr, You Work for Rent From the 1st Until…
+**On-screen hook (header):** At **$15/hr**, you work for rent / from the 1st to the ___
 **Footer (t = 0):** ≈ $13.10 kept: 2026 federal tax + FICA, single, no state tax
 
 ### Why this hook
 
 **Modelled on:**
-1. **H01 / H04, HD Guy, "Cost in Units of RTX 5090" (30,617,461, 62.49x) and "Cost in Units of Starbucks Lattes" (9,858,084, 106.16x).** The rule in the title, with the unit being an hour of your own work.
-2. **H57, Yannick, "Do all 4 if you make $20/hr and watch your finance change"**: 50,206 (2.8x med), https://www.instagram.com/reel/Dd2QzRzRrGT/. The wage in the hook filters the viewer in. His best wage reel was also his lowest wage and smallest goal ("$20/HR → $10K SAVED"), which is why we use $15.
-3. **H03, HD Guy, "Rifle to Nuclear Weapon Cost (Navy)"**: 16,229,536 (183.76x), https://www.youtube.com/shorts/M2c2F712ywo. It opens on the relatable anchor already counting. Ours opens on a month of rent, the bill everyone pays, with the count already rolling.
-- **Contrast we design against: H15, HD Guy, "Wages Visualized In Real Time", 9,025.** A wage alone as spectacle flopped. Ours turns the wage into the ruler for the three things the viewer pays for.
+1. **H48 and H50, The Debt Freedom Project: answers that travel as a date.** H48, **1,900,000 (902.5x)**, https://www.tiktok.com/@thedebtfreedomproject/video/7668828789551418637. H50, **290,700 (127.3x)**, https://www.tiktok.com/@thedebtfreedomproject/video/7677265948205698318. Ours: "≈ the 20th".
+2. **H73, The Market Hustle, "You've got 93 days left in 2026."**: 46,137, https://www.instagram.com/reel/Dd5KkdPs20G/. A stake stated on the viewer's own calendar.
+3. **H57, Yannick, "Do all 4 if you make $20/hr and watch your finance change"**: 50,206 (2.8x med), https://www.instagram.com/reel/Dd2QzRzRrGT/. The wage in the hook filters the viewer in. His best wage reel was also his lowest wage and smallest goal ("$20/HR → $10K SAVED"), which is why we use $15.
+4. **H01 / H04, HD Guy, "Cost in Units of RTX 5090" (30,617,461, 62.49x) and "Cost in Units of Starbucks Lattes" (9,858,084, 106.16x).** The rule is running at frame 1, and the unit is an hour of your own work.
+- **Contrast we design against: H15, HD Guy, "Wages Visualized In Real Time", 9,025.** A wage alone as spectacle flopped. Ours turns the wage into the ruler for the bills the viewer pays.
 
-**Becker devices used** (from `research/v2/watch/alan-becker.md` §4 and §6):
-- **"Operators are tools":** a TAX snip cuts ≈ $1.90 off the $15 block in the first second. The figure then wields "÷ $13.10" and "× 12" as tools.
-- **"Results are transformations":** hour blocks become a stack beside a month of work slots, then 12 stacks, then a car outline, then a house-sized pile.
-- **"Scale is shown by the camera":** the pull-back on "× 12".
-- **"getFlattened":** the house pile topples onto the figure at the verdict (§7.2 primitives).
-- **§6 idea 9, "the counter that overheats"** ($60,000 ÷ 2,080 = $28.85/h): an earning-rate readout as the frame-1 surface. Ours is the $15 block becoming $13.10 = 1 hour.
+**Becker devices, as the kit builds them** (`looks/becker-rig/formats/unit-ladder.js`):
+- **"Operators are tools":** the figure punches the price coin (a karate chop for small coins), and it bursts into units.
+- **"Results are transformations":** hour icons arc over and stack into a brick pyramid while the counter rolls. The "=" in the working turns into "≈" when the rounded count lands.
+- **"Scale is shown by the camera":** each new pile pushes the camera back until the whole row, cheap to huge, is in frame.
+- **The finale:** the last count lands on a gold plate with the impact kit; he jumps, then slumps. A recap table then names every pile (`pileLabels`, so the two rent piles read "Median rent, 1 month" and "Median rent, 1 year").
 
 **Rules:**
-- **R1 (pass):** "$15/hr" is in the header and "≈ $13.10" in the footer at 0.0 s. The rent tag "$1,531" hangs over the figure, and the count is already rolling.
+- **R1 (pass):** "$15/hr" is in the header and "≈ $13.10" in the footer at 0.0 s. The HUD reads "Median rent, 1 month / $1,531 ÷ $13.10 = / ? hours of work", beside the gold $1,531 coin.
 - **R2 (pass):** one $ figure in the hook line, the input.
 - **R4 (pass):** $15 an hour is small and round, and many viewers earn it.
-- **R5 (pass):** "rent is about a week of work" is wrong, because it is ≈ 2 of every 3 hours you work. The TAX snip also shows that gross pay is not what you keep.
-- **R6 (pass):** your rent, $15 an hour, your hours.
-- **R7 (pass):** rent, a car and a house are named in the header.
+- **R5 (pass):** the blank invites the guess "rent is about a week of work". The answer is ≈ the 20th: ≈ 2 of every 3 hours you work.
+- **R6 (pass):** you, $15 an hour, your rent and this month, starting on the 1st.
 - **R8 (pass):** 11 words on 2 lines.
-- **R10 (pass):** ≈ 117 lands at about 2.4 s and is spoken at about 2.3 s. The biggest number is last.
-- **R12 (pass):** "≈ 2 of every 3 hours you work" and "≈ 14 years of full-time work".
-- **R3 (partial):** one wage. The pinned comment gives the rule and two more wages, and anyone can divide their own rent by $13.10.
-- **R9 (partial):** the header lists 3 things, and the car and house tags lie face-down from frame 1 (`lookOpts.facedown`). The kit is a stub, so none of it renders yet.
-- **R11 (partial):** the header states the rule. Caption line 1 takes a side: "At $15 an hour, rent isn't a week of work. Not close."
+- **R9 (pass):** exactly one visible blank to fill ("___").
+- **R10 (pass):** ≈ 117 lands at 2.10 s and is spoken at 2.31 s. The voice fills the blank at about 6 s. The biggest number is last.
+- **R11 (pass):** one question, the blank.
+- **R12 (pass):** "≈ the 20th" and "≈ 14 years of full-time work".
+- **R3 (partial):** one wage, and the rent is the Census median, not yours. The pinned comment gives the rule for your own rent and wage.
+- **Risk:** the date answer is in the VO and caption only, because the built HUD answers in hours. Frame 1 shows both the "___" and the "? hours".
 
 **The wrong beliefs it plays on:**
-1. "Rent is about a week of work." At the median asking rent it is ≈ 117 hours, which is 67.4% of a full-time month's 173.33 hours (≈ 2 of every 3), or ≈ 2.9 work-weeks.
-2. "At $15 an hour, a thing costs price ÷ 15 hours." You keep ≈ $13.10, so every count is ≈ 14.5% bigger than the gross-wage guess (15 ÷ 13.10 = 1.145). This is shown by the snip and the footer, not spoken.
+1. "Rent is about a week of work." At the median asking rent it is ≈ 117 hours, which is 67.4% of a full-time month's 173.33 hours (≈ 2 of every 3). Laid on the calendar from rent day, that is the 1st to **≈ the 20th**.
+2. "At $15 an hour, a thing costs price ÷ 15 hours." You keep ≈ $13.10, so every count is ≈ 14.5% bigger than the gross-wage guess (15 ÷ 13.10 = 1.145). The footer and the "÷ $13.10" working show this; it is not spoken.
 
 ### Beat sheet
 
+Times are the built Becker Rig kit's own (reproduced by the check). Each rung: a gold coin drops in (thud), he winds up and punches it, the units fill and the count lands.
+
 | t (s) | On screen (Becker Rig) | VO (caption) |
 |---|---|---|
-| 0.0 | White stage, floor line. Header; footer. The figure holds a **$15** block and the **TAX** scissors snip at once. Tag "$1,531 · MEDIAN RENT, 1 MONTH" hangs over him. The car and house tags lie face-down at stage right | "$15 an hour? Median rent: **≈ 117 hours**." |
-| 0.0-1.0 | Snip: a sliver "≈ $1.90" falls off. At 1.0 s (pop) the block reads "$13.10 = 1 HOUR". He grabs "÷ $13.10" and stacks hour blocks; the counter rolls | (same line) |
-| ≈ 2.4 | Counter lands **≈ 117** | |
-| 4.6 | A month of work is drawn as 173 hour slots; 117 of them fill under the rent tag | "That's ≈ 2 of every 3 hours you work." |
-| 8.4 | Rung 2: "$18,372 · MEDIAN RENT, 1 YEAR". He snaps "× 12"; the camera pulls back to 12 stacks; **≈ 1,402** | "A year of rent? **≈ 1,400 hours**." |
-| 12.6 | Rung 3: the car tag flips, "$50,089 · AN AVERAGE NEW CAR". Blocks pour into a car outline; **≈ 3,824** | "An average new car? **≈ 3,800 hours**." |
-| 16.8 | Rung 4: the house tag flips, "$393,700 · A MEDIAN NEW HOUSE". A house-sized pile rises over him; **≈ 30,053** | "A median new house? **≈ 30,000 hours**." |
-| 20.3 | The pile topples and flattens the figure (thud, shake). Gag tag "≈ 14 YEARS". Verdict: "**≈ 14 years** of full-time work. / Every cent you keep." | "That's **≈ 14 years** of full-time work. Every cent you keep." |
-| 25.0-27.0 | Hold. He pops back up holding the $15 block (loop to frame 1) | (none) |
+| 0.0 | Header with the blank; footer; HUD "Median rent, 1 month / $1,531 ÷ $13.10 = / ? hours of work"; the figure beside the gold $1,531 coin | "$15 an hour? Median rent: **≈ 117 hours**." |
+| 0.45 | He punches the coin (hit + shake); hour icons arc into a pyramid and the counter rolls | |
+| 2.10 | Counter lands **117**; "=" turns to "≈" | |
+| 4.6 | Hold on the 117-hour pile | "Every hour you work, to **≈ the 20th**." |
+| 8.4 | Cut: HUD "Median rent, 1 year / $18,372 ÷ $13.10 = / ?"; a new coin drops; punch at 9.32 | |
+| 9.1 | | "A year of rent? **≈ 1,400 hours**." |
+| 10.63 | Counter lands **1,402**; the camera pulls back to show both piles | |
+| 12.6 | Cut: "An average new car / $50,089 ÷ $13.10 ="; punch at 13.52 | |
+| 13.3 | | "An average new car? **≈ 3,800 hours**." |
+| 14.83 | Counter lands **3,824** | |
+| 16.8 | Cut: "A median new house / $393,700 ÷ $13.10 ="; punch at 17.72 | |
+| 18.2 | | "A median new house? **≈ 30,000 hours**." |
+| 19.67 | Counter lands **30,053** on the gold plate (hit, shake, flash); he jumps, then slumps | |
+| 21.5 | Verdict: "**≈ 14 years** of full-time work. / Every cent you keep." Then the recap table: ≈ 30,053 Median new house · ≈ 3,824 Average new car · ≈ 1,402 Median rent, 1 year · ≈ 117 Median rent, 1 month | "That's **≈ 14 years** of full-time work. Every cent you keep." |
+| 26.2-27.0 | Hold (loop) | (none) |
+
+**Why each later VO line starts after its cut.** The built kit punches 0.92 s after a cut and fills for 1.26 s (1.9 s on the house). So each line starts 0.7-1.4 s after its cut, and the voice says the number as the count lands: 10.64 / 14.84 / 19.74 s against landings at 10.63 / 14.83 / 19.67 s. The HUD names the item at the cut, and the voice names it while the coin drops.
 
 ### Guide VO script (6 lines, about 59 spoken words, 22.7 s of speech in a 27 s video)
 
 | t | d | Caption text (spec) | Read it as |
 |---|---|---|---|
 | 0.0 | 4.3 | $15 an hour? Median rent: **≈ 117 hours**. | "Fifteen dollars an hour? Median rent: about a hundred seventeen hours." |
-| 4.6 | 3.5 | That's ≈ 2 of every 3 hours you work. | "That's about two of every three hours you work." |
-| 8.4 | 3.9 | A year of rent? **≈ 1,400 hours**. | "A year of rent? About fourteen hundred hours." |
-| 12.6 | 3.9 | An average new car? **≈ 3,800 hours**. | "An average new car? About thirty-eight hundred hours." |
-| 16.8 | 3.2 | A median new house? **≈ 30,000 hours**. | "A median new house? About thirty thousand hours." |
-| 20.3 | 4.7 | That's **≈ 14 years** of full-time work. Every cent you keep. | "That's about fourteen years of full-time work. Every cent you keep." |
+| 4.6 | 3.7 | Every hour you work, to **≈ the 20th**. | "Every hour you work, to about the twentieth." |
+| 9.1 | 3.9 | A year of rent? **≈ 1,400 hours**. | "A year of rent? About fourteen hundred hours." |
+| 13.3 | 3.9 | An average new car? **≈ 3,800 hours**. | "An average new car? About thirty-eight hundred hours." |
+| 18.2 | 3.2 | A median new house? **≈ 30,000 hours**. | "A median new house? About thirty thousand hours." |
+| 21.5 | 4.7 | That's **≈ 14 years** of full-time work. Every cent you keep. | "That's about fourteen years of full-time work. Every cent you keep." |
 
 ### The maths
 
@@ -324,17 +354,24 @@ Each rung's label gives its basis (median new house, 1985 annual or August 2026)
 | Kept a year | $31,200 − $1,564.00 − $2,386.80 | $27,249.20 |
 | Kept per hour | $27,249.20 ÷ 2,080 | 13.10058 → **≈ $13.10** |
 | **The unit (defined)** | kept per hour, rounded to the cent | **$13.10** |
-| Snip per hour | $15 − 13.10058 | 1.8994 → **≈ $1.90** |
+| Tax + FICA per hour | $15 − 13.10058 | 1.8994 → ≈ $1.90 |
 
 **Rule:** hours = cost ÷ $13.10. We define the unit as the rounded $13.10, so the operand on screen ("÷ $13.10") reproduces every count on a calculator. The footer keeps the "≈" on what you actually keep. Counts are shown to the nearest hour with "≈", and spoken to the 100, or to the 1,000 at 10,000 and up.
 
 | On screen | Formula | Exact | Shown | VO / conversion |
 |---|---|---:|---:|---|
-| Median rent, 1 month | $1,531 ÷ $13.10 | 116.870 | ≈ 117 | ≈ 117 hours; ÷ (2,080 ÷ 12 = 173.33) = 0.6743 → 67.4%, "≈ 2 of every 3 hours" |
+| Median rent, 1 month | $1,531 ÷ $13.10 | 116.870 | ≈ 117 | ≈ 117 hours; ÷ (2,080 ÷ 12 = 173.33) = 0.6743 → 67.4% |
+| (the blank) | 0.6743 of the month, from the 1st | | | **≈ the 20th** (see below) |
 | Median rent, 1 year | ($1,531 × 12 = $18,372) ÷ $13.10 | 1,402.443 | ≈ 1,402 | ≈ 1,400 hours |
 | An average new car | $50,089 ÷ $13.10 | 3,823.588 | ≈ 3,824 | ≈ 3,800 hours |
 | A median new house | $393,700 ÷ $13.10 | 30,053.435 | ≈ 30,053 | ≈ 30,000 hours; ÷ 2,080 = 14.449 → "≈ 14 years" |
 
+**"From the 1st to ≈ the 20th"** (all asserted by the check):
+- Proportionally, rent's share of the month's work hours, 0.6743, is 20.23 days of a 30-day month and 20.51 days of the average month (365 ÷ 12 = 30.42 days). Both round to the 20th within 0.6 of a day.
+- On a real calendar, with 8-hour workdays Monday to Friday from the 1st, 116.870 ÷ 8 = 14.6 workdays, so rent's last hour is worked on the 15th workday of the 21.67 in a month. Depending on the weekday the 1st falls on, that is the 19th, 20th or 21st (the 1st on a Monday → the 19th; on a Saturday → the 21st).
+- In short: 117 of 173 work hours, or 67.4% of the month.
+
+Other notes:
 - "Every cent you keep" is the assumption made explicit: 14 years only if all take-home pay goes to the house, with no interest.
 - The caption's "not a week of work" check: 116.870 ÷ 40 = 2.92 work-weeks.
 - Using the unrounded 13.10058 instead would change no rounded count by more than 1 (≈ 3,823 and ≈ 30,052), and no VO figure at all.
@@ -366,98 +403,100 @@ Each rung's label gives its basis (median new house, 1985 annual or August 2026)
 
 Also assumed:
 - a 40-hour week and 52 weeks (2,080 hours, 173.33 a month);
+- for "≈ the 20th", the month's work hours run from rent day, the 1st;
 - no benefit premiums or 401(k) deferrals;
 - median asking rent (Census), as the rung label says;
 - a car and a house at sticker price, with no loan interest.
 
 ### Caption / description
 
-> At $15 an hour, rent isn't a week of work. Not close.
+> At $15/hr, rent takes every hour you work from the 1st to ≈ the 20th.
 > After 2026 federal tax + FICA (single, no state tax), $15 an hour keeps ≈ $13.10, so every price here is ÷ $13.10. Median rent ($1,531) ≈ 117 hours a month: 67.4% of a full-time month, ≈ 2 of every 3 hours you work. A median new house ($393,700) ≈ 30,053 hours: ≈ 14 years of full-time work, every cent you keep.
 > (Rent: Census median asking rent, Q2 2026. Car: KBB average, Aug 2026. House: Census median new, Aug 2026. Maths, not advice.)
 > #hourlywage #rent #housing #moneymath
 
 ### Pinned comment
 
-> Your wage? Divide the price by what you KEEP per hour, not by your wage. At $15 you keep 87.3% (≈ $13.10). At $20/hr it's ≈ $17.12 (85.6%), at $25/hr ≈ $21.14 (84.5%), before state tax. Your rent ÷ that = your hours. What should we price in your hours next?
+> Rent at $15/hr: 117 of 173 work hours (67.4% of the month), so you work for rent from the 1st to ≈ the 20th. Your wage? Divide the price by what you KEEP per hour, not by your wage. At $15 you keep 87.3% (≈ $13.10). At $20/hr it's ≈ $17.12 (85.6%), at $25/hr ≈ $21.14 (84.5%), before state tax. Your rent ÷ that = your hours. What should we price in your hours next?
 
 ### Per-platform notes
 
 - **TikTok (lead platform):**
   - Wage reels live here.
   - VO cut, captions on.
-  - Caption line 1: "At $15 an hour, rent isn't a week of work. Not close."
+  - Caption line 1: "At $15/hr, rent takes every hour you work from the 1st to ≈ the 20th."
   - Expect "not every state…" comments. The footer pre-empts them, and the pinned comment answers.
 - **Instagram Reels:**
   - Same cut.
-  - Cover: the month of 173 hour slots with 117 under the rent tag.
+  - Cover: the 117-hour pile with the header's blank above it.
   - Caption line 1 is the same.
 - **YouTube Shorts:**
-  - Title "Your Rent, a Car, a House: In Hours of Work at $15/hr".
-  - No CTA; the video loops back to the $15 block.
+  - Title "At $15/hr, You Work for Rent From the 1st Until…". It holds the answer back for the video.
+  - No CTA; the video loops.
 
 ---
 
-## 08c · Clean Sheet · "What Your Degree Costs in Big Macs"
+## 08c · Clean Sheet · "Community? In-State? Private? Your Year of College in Big Macs"
 
-**Spec:** `studio/specs/08c-clean-sheet-college-in-big-macs.json` · **27.0 s** · captions on · lints clean · rendered in the Clean Sheet kit (stills at 0.0, 1.8, 18.4, 20.8 and 22.0 s)
+**Spec:** `studio/specs/08c-clean-sheet-college-in-big-macs.json` · **21.5 s** · captions on · lints clean · rendered in the Clean Sheet kit (stills listed at the top)
 
-**Platform title:** What Your Degree Costs in Big Macs
-**On-screen hook (header):** Your degree, in **Big Macs**: / find your school
-**Footer (t = 0):** 1 Big Mac = $6.22 (Jul 2026) · College Board 2025-26: tuition & fees; row 5 = full budget
+**Platform title:** Community? In-State? Private? Your Year of College in Big Macs
+**On-screen hook (header):** Community? In-state? / Out-of-state? Private? / Your year in **Big Macs**
+**Footer (t = 0):** 1 Big Mac = $6.22 (Jul 2026) · College Board 2025-26: published tuition & fees
 
 ### Why this hook
 
 **Modelled on:**
-1. **H11, HD Guy, "Cost in Units of Big Macs"**: 1,748,759 views (56.76x), https://www.youtube.com/shorts/Hv6aZR4hUEI. The same unit, already proven.
-2. **H64, Gage Heward, "What $1 costs you by age"**: 1,150,974 (210x med), https://www.instagram.com/reel/Da_dukjxB56/. The P7 task in the hook ("Find your age" becomes "find your school") and a row for every viewer (R3).
-3. **H04, HD Guy, "Cost in Units of Starbucks Lattes"**: 9,858,084 (106.16x), https://www.youtube.com/shorts/NHbMe2F_JXY. The unit-price device ("Tall Latte ☕ = $4.45" becomes the unit row "1 Big Mac = $6.22"), and the climb to a screen-filling finale.
+1. **H64, Gage Heward, "What $1 costs you by age"**: 1,150,974 (210x med), https://www.instagram.com/reel/Da_dukjxB56/. A row for every viewer, with the first row landing at 0 s. Ours names every row in the header, because the built kit hides a waiting row's label until it opens.
+2. **H32, FinCalC TV, "Monthly Income using Post Office MIS Scheme…"**: 428,862 (54.46x), https://www.youtube.com/shorts/K2QbxGXa29k. The answer is already on screen at 0.0. Ours pre-fills row ①.
+3. **H11, HD Guy, "Cost in Units of Big Macs"**: 1,748,759 views (56.76x), https://www.youtube.com/shorts/Hv6aZR4hUEI. The same unit, already proven.
 - **Contrast:** HD Guy's "University Degrees" *as the unit* got 64,954. We use college as the subject and a cheap, familiar unit as the ruler.
 
-**Rules:**
-- **R1 (pass):** at 0.0 s the unit row "1 Big Mac = $6.22" is on the sheet, and step ① has "$4,150" written with the caret waiting. "$6.22" is also in the footer.
-- **R2 (pass):** no $ figure in the header. The one input ($6.22) is in the unit row and the footer.
-- **R3 (pass):** "find your school": community college, in-state, out-of-state and private each get a row.
-- **R6 (pass):** "Your degree".
-- **R7 (pass):** each school type is named.
-- **R8 (pass):** 8 words.
-- **R10 (pass):** ≈ 667 lands at 1.63 s (spoken at about 1.9 s). The biggest number is last.
-- **R12 (pass):** "a Big Mac a day for ≈ 115 years".
-- **R4 (partial):** the Big Mac is a proven, familiar unit, but most viewers are not paying for a degree right now.
-- **R5 (partial):** the wrong belief ("a degree costs its tuition") is carried by row 5's label, "with housing & food", at 16.4 s, not by the hook.
-- **R9 (partial):** the kit opens one rung at a time, so at frame 1 only ① shows. Drawing every row's circle and label from frame 1 (empty results) is requested as `lookOpts.preview` (kit notes).
-- **R11 (partial):** the header gives a task, not a question. TikTok caption line 1 gives the hook a side: "Find your school. The last row is not a typo."
+**Frame 1 has a row for every viewer** (checked in the 0.0 s still), all drawn by the built kit:
+- the 3-line header names all four options;
+- the unit row reads "🍔 1 Big Mac = $6.22";
+- row ① is already answered: "Community college, 1 year / $4,150 ÷ $6.22 =" with **≈ 667** in its green box and its icon grid. That is the kit's pre-fill for a rung whose result starts before frame 1;
+- the empty numbered circles ②③④ wait under it, one for each option still to come.
 
-**The wrong beliefs it plays on:**
-1. "A degree costs its tuition." Row 5 prices four years with housing, food, books and transport: ≈ 42,103 Big Macs. Tuition alone for four private years would be ≈ 28,939.
-2. "State school is the cheap option." In-state tuition alone is ≈ 1,921 Big Macs a year.
+**Rules:**
+- **R1 (pass):** at 0.0 s the sheet shows "$4,150 ÷ $6.22 = ≈ 667" and the unit row "1 Big Mac = $6.22". "$6.22" is also in the footer.
+- **R2 (pass):** no $ figure in the header.
+- **R3 (pass):** community college, in-state, out-of-state and private each get a row, named in the header.
+- **R7 (pass):** all four options are named before any maths.
+- **R8 (pass):** 9 words on 3 lines.
+- **R9 (pass):** the circles ②③④ count the three rows to go.
+- **R10 (pass):** the first answer is on screen at 0.0. The biggest number is last (≈ 7,235 at 13.36 s).
+- **R12 (pass):** "≈ 10.8× the Big Macs".
+- **R4 (partial):** the Big Mac is a proven, familiar unit, but most viewers are not paying for a year of college right now ("your year").
+- **R5 (miss):** nothing is attacked. Community < in-state < out-of-state < private is the order viewers expect, and only the size of the gap (≈ 10.8×) surprises. Both judges docked it.
+- **R11 (partial):** four questions stacked in a 3-line header are slower to read than H64's 6 words.
+
+**What it plays on:** the size of the gap, not the order. Viewers know private costs more than community college. Few would guess that one private year of tuition and fees buys ≈ 10.8 community-college years.
 
 ### Beat sheet
 
-Times are the Clean Sheet kit's own (reproduced by the check). Each step types "cost ÷ $6.22 =", wipes a highlighter in, and runs the count up on it (`countSpeed` 0.5). A finished step files into a sheet row when the next one opens.
+Times are the Clean Sheet kit's own (reproduced by the check). Each step types "cost ÷ $6.22 =", wipes a highlighter in and runs the count up on it (`countSpeed` 0.5). A finished step files into a sheet row when the next one opens.
 
 | t (s) | On screen (Clean Sheet) | VO (caption) |
 |---|---|---|
-| 0.0 | Page; title "Your degree, in **Big Macs**: / find your school"; footer under the title; unit row "🍔 1 Big Mac = $6.22"; ① "Community college, 1 year", "$4,150" with the caret | "Find your school. Community college? **≈ 667 Big Macs**." |
-| 0.0-1.63 | "$4,150 ÷ $6.22 =" types; the green box wipes in; the count runs up and lands at **≈ 667** (1.63) with a grid of burger icons | |
-| 4.6 | ① files into its row; ② "State school, in-state, 1 year": "$11,950 ÷ $6.22 =" → **≈ 1,921** (6.29) | "A state school, in-state? **≈ 1,900**." |
-| 8.4 | ③ "State school, out-of-state, 1 year": "$31,880 ÷ $6.22 =" → **≈ 5,125** (10.14) | "The same school, out-of-state? **≈ 5,100**." |
-| 12.2 | ④ "Private college, 1 year": "$45,000 ÷ $6.22 =" → **≈ 7,235** (13.96) | "A private college, 1 year? **≈ 7,200**." |
-| 16.4 | ⑤ "Private, 4 years, with housing & food": "4 × $65,470 ÷ $6.22 =" → blue final box **≈ 42,103** (18.26), a dense burger pile | "4 years private, with housing and food? **≈ 42,000**." |
-| 18.6-20.7 | Check line types under it: "check: ≈ 42,103 ÷ 365 days ≈ 115 years" | |
-| 21.0 | Verdict: "A Big Mac a day / for **≈ 115 years**." (ding) | "That's a Big Mac a day for **≈ 115 years**." |
-| 26.3-27.0 | The finished sheet clears back to the frame-1 state (loop) | (none) |
+| 0.0 | Page; header; footer; unit row "🍔 1 Big Mac = $6.22"; ① "Community college, 1 year / $4,150 ÷ $6.22 =" already answered **≈ 667** with its icon grid; empty circles ②③④ | "Community college? **≈ 667 Big Macs**." |
+| 2.9-3.3 | ① files into its row ("1 year $4,150 ······ ≈ 667"); ② rises into place | |
+| 3.6 | ② "State school, in-state, 1 year": "$11,950 ÷ $6.22 =" → **≈ 1,921** (5.29) | "A state school, in-state? **≈ 1,900**." |
+| 7.6 | ③ "State school, out-of-state, 1 year": "$31,880 ÷ $6.22 =" → **≈ 5,125** (9.34) | "The same school, out-of-state? **≈ 5,100**." |
+| 11.6 | ④ "Private college, 1 year": "$45,000 ÷ $6.22 =" → blue final box **≈ 7,235** (13.36), with its icon field | "A private college, 1 year? **≈ 7,200**." |
+| 14.0-15.67 | The check line types under it: "check: $45,000 ÷ $4,150 ≈ 10.8" | |
+| 16.2 | Verdict: "Private vs community college: / **≈ 10.8×** the Big Macs." (ding) | "Private vs community: **≈ 10.8×** the Big Macs." |
+| 20.8-21.5 | The finished sheet clears back to the frame-1 state (loop) | (none) |
 
-### Guide VO script (6 lines, about 61 spoken words, 23.5 s of speech in a 27 s video)
+### Guide VO script (5 lines, about 47 spoken words, 18.1 s of speech in a 21.5 s video)
 
 | t | d | Caption text (spec) | Read it as |
 |---|---|---|---|
-| 0.0 | 4.3 | Find your school. Community college? **≈ 667 Big Macs**. | "Find your school. Community college? About six hundred sixty-seven Big Macs." |
-| 4.6 | 3.5 | A state school, in-state? **≈ 1,900**. | "A state school, in-state? About nineteen hundred." |
-| 8.4 | 3.5 | The same school, out-of-state? **≈ 5,100**. | "The same school, out-of-state? About fifty-one hundred." |
-| 12.2 | 3.9 | A private college, 1 year? **≈ 7,200**. | "A private college, one year? About seventy-two hundred." |
-| 16.4 | 3.9 | 4 years private, with housing and food? **≈ 42,000**. | "Four years private, with housing and food? About forty-two thousand." |
-| 21.0 | 4.7 | That's a Big Mac a day for **≈ 115 years**. | "That's a Big Mac a day for about a hundred fifteen years." |
+| 0.0 | 3.3 | Community college? **≈ 667 Big Macs**. | "Community college? About six hundred sixty-seven Big Macs." |
+| 3.6 | 3.7 | A state school, in-state? **≈ 1,900**. | "A state school, in-state? About nineteen hundred." |
+| 7.6 | 3.7 | The same school, out-of-state? **≈ 5,100**. | "The same school, out-of-state? About fifty-one hundred." |
+| 11.6 | 3.9 | A private college, 1 year? **≈ 7,200**. | "A private college, one year? About seventy-two hundred." |
+| 16.2 | 4.3 | Private vs community: **≈ 10.8×** the Big Macs. | "Private versus community: about ten point eight times the Big Macs." |
 
 ### The maths
 
@@ -469,12 +508,13 @@ Times are the Clean Sheet kit's own (reproduced by the check). Each step types "
 | State school, in-state, 1 year | $11,950 ÷ $6.22 | 1,921.222 | ≈ 1,921 | ≈ 1,900 |
 | State school, out-of-state, 1 year | $31,880 ÷ $6.22 | 5,125.402 | ≈ 5,125 | ≈ 5,100 |
 | Private college, 1 year | $45,000 ÷ $6.22 | 7,234.727 | ≈ 7,235 | ≈ 7,200 |
-| Private, 4 years, with housing & food | 4 × $65,470 = $261,880; ÷ $6.22 | 42,102.894 | ≈ 42,103 | ≈ 42,000 |
-| Check / verdict | 42,103 ÷ 365 (one a day) | 115.351 | ≈ 115 years | ≈ 115 years |
+| Check / verdict | $45,000 ÷ $4,150 | 10.8434 | ≈ 10.8× | ≈ 10.8× |
 
-- The verdict holds on the unrounded count too: 42,102.894 ÷ 365 = 115.35 → 115 (asserted).
-- **For comparison (write-up only):** four years of private tuition and fees alone, 4 × $45,000 ÷ $6.22 = 28,938.9 → ≈ 28,939 Big Macs. Row 5 is bigger because it is the full budget.
-- **Pinned-comment number** (checked): 4 years in-state with housing and food = 4 × $30,990 = $123,960 → ≈ 19,929 Big Macs.
+- The ratio is the same in Big Macs (7,234.727 ÷ 667.203 = 10.8434), because both rows divide by the same $6.22. The check asserts this.
+- **Pinned-comment numbers** (checked):
+  - College Board's full private budget (tuition, fees, housing, food, books, transport, other) is **$65,470** a year. 4 years is 4 × $65,470 = **$261,880** ÷ $6.22 = 42,102.894, so **≈ 42,103** Big Macs. ÷ 365 = 115.35, so a Big Mac a day for **≈ 115 years**.
+  - 4 years in-state, full budget: 4 × $30,990 = **$123,960**, which is **≈ 19,929** Big Macs.
+  - Write-up only: four years of private tuition and fees alone come to 4 × $45,000 ÷ $6.22 = 28,938.9, so **≈ 28,939** Big Macs.
 - Captions are rounded on purpose (see 08a's maths).
 
 ### Sources (all checked 2026-10-07)
@@ -483,65 +523,64 @@ Times are the Clean Sheet kit's own (reproduced by the check). Each step types "
 |---|---|---|---|
 | US Big Mac price, July 2026 | $6.22 | **The Economist, Big Mac index dataset** (GitHub `TheEconomist/big-mac-data`, `output-data/big-mac-raw-index.csv`, row `2026-07-01, USA, 6.22`; downloaded 2026-10-07). https://github.com/TheEconomist/big-mac-data. The same file has $6.12 for Jan 2026 and $6.01 for Jul 2025. | Econlife, "Big Mac index", **July 2026**. https://econlife.com/2026/07/big-mac-index-3/. Also TrendForce DataTrack, "The Big Mac index: United States". https://datatrack.trendforce.com/Chart/content/4204/the-big-mac-index-united-states |
 | 2025-26 average published tuition & fees: public two-year in-district $4,150; public four-year in-state $11,950; out-of-state $31,880; private nonprofit four-year $45,000 | | College Board, *Trends in College Pricing and Student Aid 2025* (2025-26 prices; exact release date not captured). https://research.collegeboard.org/media/pdf/Trends-in-College-Pricing-and-Student-Aid-2025-final_0.pdf and its newsroom release https://newsroom.collegeboard.org/trends-college-pricing-and-student-aid-report-published-tuition-prices-public-institutions-and | Achievable, "2025 Trends in College Costs and Aid" (an independent summary of the same report). https://achievable.me/exams/sat/resources/2025-trends-in-college-costs-and-aid/ |
-| 2025-26 average total budget, private nonprofit four-year (tuition, fees, housing, food, books, transport, other) | $65,470; public in-state $30,990 (pinned) | as above | as above |
+| 2025-26 average total budget, private nonprofit four-year (tuition, fees, housing, food, books, transport, other) | $65,470; public in-state $30,990 (both in the pinned comment only) | as above | as above |
 
 - **Verification note:** collegeboard.org is blocked by the egress proxy, so the College Board figures come from search-result text that quotes the report, plus one independent summary. The verifier confirmed all six figures independently.
-- The "budget" figures are College Board's estimated full-time undergraduate budgets. Row 5's label ("with housing & food") and the footer ("row 5 = full budget") say which basis it uses.
+- The "budget" figures are College Board's estimated full-time undergraduate budgets. Since hook pass 2 they appear only in the pinned comment, which names the basis ("with housing, food and books"); every on-screen row is published tuition & fees.
 
 ### Assumptions (footer, on screen at t = 0)
 
-> 1 Big Mac = $6.22 (Jul 2026) · College Board 2025-26: tuition & fees; row 5 = full budget
+> 1 Big Mac = $6.22 (Jul 2026) · College Board 2025-26: published tuition & fees
 
-- Rows 1-4 are published tuition and fees. Row 5 is College Board's average total budget for a private nonprofit four-year student, **$65,470 a year**: tuition, fees, housing, food, books, transport and other costs.
+- Every row is one year of College Board's 2025-26 average published tuition and fees, so the rows compare like for like.
 - These are sticker (published) prices, before grants, scholarships or aid.
-- Row 5 is that budget × 4 years at today's prices, with no tuition growth.
+- The full-budget figures (housing, food, books) appear only in the pinned comment, labelled as such.
 
 ### Caption / description
 
-> Your degree, in Big Macs. Find your school.
-> Community college ≈ 667 Big Macs a year. In-state ≈ 1,921. Out-of-state ≈ 5,125. Private ≈ 7,235.
-> Four years private with housing & food: ≈ 42,103. That's a Big Mac a day for ≈ 115 years.
-> (US Big Mac $6.22, The Economist's Big Mac index, Jul 2026. Rows 1-4: College Board 2025-26 average published tuition & fees. Row 5: College Board's average total budget, $65,470 a year: tuition, housing, food, books, transport, other. Sticker prices, before aid. Maths, not advice.)
+> Community, in-state, out-of-state or private: which row is yours?
+> One year of college in Big Macs. Community college ≈ 667. In-state ≈ 1,921. Out-of-state ≈ 5,125. Private ≈ 7,235: ≈ 10.8× community college.
+> (US Big Mac $6.22, The Economist's Big Mac index, Jul 2026. College Board 2025-26 average published tuition & fees, 1 year. Sticker prices, before aid. Maths, not advice.)
 > #college #tuition #bigmac #moneymath
 
 ### Pinned comment
 
-> Rows 1-4 are sticker tuition & fees, before any grants or scholarships. Row 5 is the full budget (with housing, food and books). Four years in-state, full budget ($123,960): ≈ 19,929 Big Macs. What did your school really cost, in Big Macs?
+> These are sticker tuition & fees for 1 year, before grants or scholarships. With housing, food and books (College Board's full budget), private runs $65,470 a year: 4 years = $261,880 ≈ 42,103 Big Macs, a Big Mac a day for ≈ 115 years. 4 years in-state, all-in ($123,960): ≈ 19,929 Big Macs. Which row was yours?
 
 ### Per-platform notes
 
 - **YouTube Shorts:**
-  - Title "What Your Degree Costs in Big Macs".
+  - Title "Community? In-State? Private? Your Year of College in Big Macs".
   - No CTA; the loop clears the sheet back to frame 1.
 - **Instagram Reels:**
-  - Cover: the finished sheet (all five rows filled, blue final box). The sheet is the screenshot people save.
-  - Caption line 1: "Find your school."
+  - Cover: the finished sheet (four rows filed, blue final box). The sheet is the screenshot people save.
+  - Caption line 1: "Community, in-state, out-of-state or private: which row is yours?"
   - Tag the back-to-school and #studentloans crowd.
 - **TikTok:**
   - VO cut, captions on.
-  - Caption line 1: "Find your school. The last row is not a typo."
+  - Caption line 1 is the same.
   - Comments will argue about net price against sticker price, and the pinned comment invites exactly that.
 
 ---
 
 ## Kit notes (for the look builders)
 
-- **Scoreboard (08a), built. Two requests and one observation:**
-  - **`lookOpts.bigUnit` (request, unchanged from the first draft).** The kit packs icons down to a 5 px cell, so any count above about 12,000 fills the stage. In the render, the 1985 house (56,200) and the 2026 house (≈ 262,467) both show the same full green block, which hides the twist. `bigUnit: { from: 10000, per: 1000, legend: "1 block = 1,000 hot dogs" }` gives 56 / 262 blocks, so the 2026 pile is visibly ≈ 4.7× the 1985 pile.
-  - **`lookOpts.slots` (new request, for R9).** `[{ rung: 2, label: "1985: ?" }, { rung: 3, label: "2026: ?" }]` asks for two labelled empty slots, visible from frame 1, that fill with each house's count when it lands. Today the 4 rung pips are unlabelled.
-  - **Observation.** A 3-line verdict ("Hot dog: still $1.50. / The house: ≈ 4.7× / the hot dogs." at 22.0 s) sits with its top line about 10 px into the stage edge, over the climax pile. The linter does not flag it. Shorter verdicts still wrap to 3 lines at the fitted size.
-  - The kit ignores both request keys until they are built, and the spec renders fine without them.
-- **Becker Rig (08b): the `unit-ladder` format is still a stub** ("TODO unit-ladder"). The spec follows the FORMATS.md contract, and the staging lives in `lookOpts`:
-  - `opener`: the TAX snip, now landing at 1.0 s (`land`), with the pop SFX at 1.0;
-  - `facedown`: the car and house tags lie face-down from frame 1, the countable open loop;
-  - `actions` per rung, with "÷ $13.10" as the tool;
-  - `gag`.
-  - Only the shared chrome (header, footer, captions, verdict) renders today, and it lints clean.
-- **Clean Sheet (08c): the `unit-ladder` format is built** (`looks/clean-sheet/formats/unit-ladder.js`). The spec now uses only keys the kit reads, plus one request:
-  - `unitRow: "show"`: the unit row "1 Big Mac = $6.22" is always on the sheet. It replaces the old `badge` string, which the kit never read.
-  - `countSpeed: 0.5`: the counters land before the voice says each number.
-  - `check` + `checkT: 18.6`: the check line types from 18.6 to 20.71 s, before the verdict at 21.0 s.
-  - **`preview: "labels"` (request, for R9 and "find your school").** It asks the kit to draw every rung's circle and label from frame 1, with empty results that fill in turn. The kit ignores it today: frame 1 shows only the unit row and ①.
+As of hook pass 2, all three kits' `unit-ladder` formats are built, and every spec uses only keys its kit reads.
+
+- **Scoreboard (08a), built.**
+  - The spec uses `data.unit.label` ("Your hot dog + soda") for the built unit intro and `lookOpts.climaxFill`.
+  - Round 1's two requests are dropped. `lookOpts.bigUnit` (1 block = 1,000 hot dogs) and `lookOpts.slots` ("1985: ?" / "2026: ?") were never read by the kit.
+  - Without `bigUnit`, the 1985 and 2026 house piles both fill the stage. So the counters carry the ≈ 4.7× and the verdict carries the ≈ $7.01. A per-rung block size would still let the piles show the gap.
+  - The 2-line verdict fits clear of the stage (21.6 s still).
+- **Becker Rig (08b), built.** The format is no longer a stub.
+  - It reads `figure`, `figureScale`, `unitLabel` / `unitLabelOne`, `intro`, `iconSize`, `plate` and `pileLabels`. The spec uses only `pileLabels`, so the recap table tells the two rent piles apart (without it, both shorten to "Median rent").
+  - The first draft's staging keys (`opener` TAX snip, `facedown`, `actions`, `gag`, `stage`, `inputProp`) were never read and are removed. So are the pop and thud SFX cued for them. The kit cues its own hit, pop and roll.
+  - The check replays the kit's per-rung schedule: lead = 0.22 × gap (0.45-0.92 s), punch, then a fill of 0.3 × gap (0.5-1.6 s), or 1.9 s on the last rung.
+- **Clean Sheet (08c), built.**
+  - It reads `unitRow`, `countSpeed`, `check` and `checkT`.
+  - It draws every waiting rung's numbered circle from frame 1, with the labels hidden. The request `preview: "labels"` is dropped (never read), and the header names the rows instead.
+  - A rung whose result would start by frame 1 (here t = −1.0) is pre-filled: on frame 1 it already shows its count and icon grid.
+  - A count that overlaps a VO line lands by 60% of that line. The check replays all three rules.
 
 ## Search log (14 in the first draft + 1 in revision)
 
@@ -567,14 +606,16 @@ Times are the Clean Sheet kit's own (reproduced by the check). Each step types "
 
 ## Caveats
 
-- **P8 has one benchmark channel (HD Guy), and its spectacle is military footage.** Nothing in the benchmark shows that a personal-finance subject works in this format, so all three teasers test that hypothesis. The strongest hedges are 08c's row-per-viewer structure (R3, from the P7 winners) and 08b's rent-share verdict.
+- **P8 has one benchmark channel (HD Guy), and its spectacle is military footage.** Nothing in the benchmark shows that a personal-finance subject works in this format, so all three teasers test that hypothesis. The strongest hedges are 08b's calendar blank (a date answer, R12) and 08c's row-per-viewer frame (R3, from the P7 winners).
 - **08a's unit is the benchmark's own flop (H13).** The bet is that the frozen price makes it a ruler rather than a novelty. If 08a underperforms the other two, the unit is the first suspect.
-- **08a's twist is about sticker prices.** It is honest as stated, and the caption and pinned comment say so. Expect "inflation!" comments; those are engagement, not an error.
+- **08a's twist is about sticker prices.** The ≈ $7.01 is a sticker-to-sticker counterfactual (the house rose ≈ 4.7× in nominal dollars). It is honest as stated, and the caption and pinned comment say so. Expect "inflation!" comments; those are engagement, not an error.
+- **08a's open loop is one question, answered at 20.2 s.** The first count (the membership, ≈ 43 at 2.98 s) is a ladder step, not the answer. Both judges noted this.
+- **08b's blank is filled by the voice and caption only.** The built HUD answers in hours, and the rent is the Census median, not the viewer's.
+- **08c attacks no wrong belief.** The order of the rows is what viewers expect; only the ≈ 10.8× gap surprises.
 - **Single-publisher figures:**
   - The rent ($1,531) is a Census figure, cross-checked only against the same series' previous quarter (and by the verifier).
   - The College Board figures could not be opened at the source. They were read from search text plus one independent summary, then confirmed by the verifier.
-- **The VO word counts are estimates** (2.6 words/s; years read as two words, money with cents as three). The tightest line is 08a's membership line (2.7 s for an estimated 2.69 s); several 3.9 s lines need 3.85 s.
-- **Two of the three R9 open loops depend on kit work** that is requested but not built (08a `slots`, 08c `preview`), and 08b's whole staging waits for the Becker Rig format.
+- **The VO word counts are estimates** (2.6 words/s; years read as two words, money with cents as three). The tightest lines are 08a's opener (3.46 s for 3.5 s), 08c's verdict (4.23 s for 4.3 s) and 08b's opener (4.23 s for 4.3 s).
 
 ---
 
@@ -594,7 +635,7 @@ Round-2 review: the verifier (2 must, 3 should, 4 nits) and the hook judge (08a 
 | V6 | 08a | nit | "A median new house in 2026" is a single month (August, preliminary) | Relabelled the rung "A median new house, Aug 2026" (and "A median new house, 1985" for symmetry). The pinned comment and the caption say "Aug 2026". |
 | V7 | all | nit | Captions show the spoken rounding next to the exact on-screen count | Kept the rounded VO and captions, and added a line to 08a's maths ("Captions are rounded on purpose") citing the format research's "$143K ÷ ~$4.50 ≈ 32,000 lattes. The screen shows 32,168". 08b and 08c point to it. |
 | V8 | 08c | nit | The voice ran up to about 1 s ahead of the counters; the verdict (20.0 s) landed while the check line was still typing | Set `countSpeed: 0.5` and reworded two VO lines so each number comes later in its line ("The same school, out-of-state?", "A private college, 1 year?"). By the kit's timing, the voice now says each number at most 0.20 s before its counter lands, or after it (the check asserts ≤ 0.5 s). The check line types 18.6-20.71 s, and the verdict and its ding moved to 21.0 s. The 20.8 s still shows the check finishing with no verdict yet, and the 22.0 s still shows both. |
-| V9 | 08b | info | The Becker Rig unit-ladder is a stub, so the opener timing can't be checked in a render | Still true. Kit notes list the staging keys, and the check pins the opener land (1.0 s) before the first count (2.4 s). |
+| V9 | 08b | info | The Becker Rig unit-ladder is a stub, so the opener timing can't be checked in a render | Still true at the time. *Superseded in hook pass 2:* the kit is built, the staging keys are removed, and the check replays its real timing (`becker_landings`). |
 
 ### Hook judge
 
@@ -646,3 +687,92 @@ Because the judges scored whole hooks, not titles alone, none of these titles is
 **Files:** no changes to the specs, beats, VO or check script.
 - Re-run of `checks/08-unit-ladder.py`: PASSED, all 599 checks.
 - `node src/cli.mjs check` on all three specs: 0 errors, 0 warnings.
+
+### Hook pass 2 (2026-10-08)
+
+**Round 2's rule:** two new blind judges scored each teaser's current hook, round 1's best rewrite (R1, fixed so the built kit renders it) and four new candidates (A-D), out of 10. A candidate is adopted when its average is at least 1.0 above the current hook, even below 7.5. Both judges marked every key honest.
+- Judge 1 was harsh on hooks with no number the viewer owns.
+- Judge 2 was harsh on unpayable clickbait and on restating a known fact.
+- Judge 2's 08c scores for B, C and D were cut off in the hand-off to this pass. I took them from the judge's own returned output (B 6, C 5.5, D 5).
+
+| Teaser | Current | R1 | A | B | C | D | Decision |
+|---|---|---|---|---|---|---|---|
+| 08a | 4.5 / 4.5 → **4.50** | 5.5 / 4.5 → 5.00 | 6 / 6 → **6.00** | 5 / 4.5 → 4.75 | 6.5 / 5.5 → **6.00** | 5 / 5 → 5.00 | **Adopt A** (+1.50) |
+| 08b | 6 / 5.5 → **5.75** | 6.5 / 6.5 → 6.50 | 6 / 6 → 6.00 | 5 / 5.5 → 5.25 | 6 / 6 → 6.00 | 7 / 7 → **7.00** | **Adopt D** (+1.25) |
+| 08c | 5.5 / 5 → **5.25** | 5.5 / 5 → 5.25 | 6.5 / 6.5 → **6.50** | 6 / 6 → 6.00 | 6.5 / 5.5 → 6.00 | 5.5 / 5 → 5.25 | **Adopt A** (+1.25) |
+
+**08a: adopted A, "WHAT YOUR $1.50 HOT DOG WOULD / COST IF IT ROSE LIKE A HOUSE".**
+- **Why:** it is the only candidate both judges scored 6. They agreed that its frame 1 is one subject: the header, the hero "1", the dropping hot dog, the label "$1.50 / YOUR HOT DOG + SODA" and the voice are all the viewer's own $1.50 purchase. They also agreed that the ≈ $7.01 verdict is a fresh, repeatable number (H45 / H44 grammar; H49's verdict caption).
+- **The tie with C (6.0):** C ("THE HOT DOG STAYED $1.50 SINCE 1985. / YOUR HOUSE DIDN'T.", with a built two-slot footer scoreboard) has the same average but a split verdict (6.5 / 5.5). Judge 2 marked it down for restating two known facts. I broke the tie on agreement: A's lower score is higher.
+- **Kept from the candidate:**
+  - header and title;
+  - `data.unit.label` "Your hot dog + soda";
+  - all six VO lines and the verdict, verbatim;
+  - rung times 7.4 / 11.0 / 15.2;
+  - duration 26.0 and hold 7.98;
+  - `lookOpts` {climaxFill: 1}, with the unbuilt `bigUnit` and `slots` dropped;
+  - the ding at 20.2;
+  - caption line 1 and the pinned-comment addition.
+- **One timing change:** rung 1 (the membership) cuts at **1.5 s instead of 2.0 s**.
+  - The candidate's first count landed at 3.48 s, which both judges flagged and the check's R10 rule (≤ 3 s) fails. At 1.5 s it lands at 2.98 s.
+  - The first 1.5 s is unchanged, so the judged hook frame is the same. The membership's own line still starts after its count lands (3.7 s).
+- **Not fixed (judges' notes, kept as risks):** the loop is one question answered at 20.2 s, R5 is weak, and the unit is H13's flop. Judge 1 suggested "≈ $7" over "≈ $7.01". I kept the cents, which judge 2 credited as the repeatable figure, in the style of H49's exact $2.98.
+
+**08b: adopted D, "At $15/hr, you work for rent / from the 1st to the ___".**
+- **Why:** it is the top score in the format, 7 from both judges. The blank sits on a date every renter owns (rent day). It implies the "about a week" belief without a lecture, leaves exactly one blank, and pays off in a date that travels (H48, H50).
+- **Kept from the candidate:**
+  - header and title;
+  - vo[1] "Every hour you work, to **≈ the 20th**." (4.6 s, 3.7 s);
+  - caption line 1;
+  - the pinned comment's "117 of 173 work hours (67.4% of the month)".
+- **R1's two fixes, which D includes:**
+  1. Every `lookOpts` key the built kit ignores is removed: `opener`, `facedown`, `actions`, `gag`, `stage` and `inputProp`. So are the pop at 1.0 s and the thud at 20.3 s, cued for the unbuilt snip and topple.
+  2. The VO retime to the built kit's landings: vo[2] 8.4 → 9.1, vo[3] 12.6 → 13.3, vo[4] 16.8 → 18.2, and vo[5] and the verdict 20.3 → 21.5. The counts land at 10.63 / 14.83 / 19.67 s and are said at 10.64 / 14.84 / 19.74 s. Before the retime they were said 0.69-1.33 s early.
+- **Two additions of mine:**
+  - **`hold` 7.8 → 7.33:** duration minus the built kit's last landing (19.67 s). It does not move any landing.
+  - **`lookOpts.pileLabels`** (a built option): "Median rent, 1 month", "Median rent, 1 year", "Average new car", "Median new house". The 23.5 s still showed the default recap table printing "Median rent" for both rent piles.
+- **Honesty of "≈ the 20th":** 0.6743 of the month is 20.23 days of a 30-day month and 20.51 of the average month. On a Monday-Friday calendar of 8-hour days from the 1st, rent's last hour falls on the 19th, 20th or 21st, depending on the weekday of the 1st. The check asserts all three.
+
+**08c: adopted A, "Community? In-state? / Out-of-state? Private? / Your year in Big Macs".**
+- **Why:** it is the top score, 6.5 from both judges; judge 2 called it "the most rule-complete 08c frame". The header names a row for every kind of student, and row ① is pre-filled at 0.0 by the built kit. The built empty circles ②③④ count the three rows to go. Round 1's `preview` request is no longer needed.
+- **Kept from the candidate:**
+  - header, title and footer ("published tuition & fees");
+  - the four 1-year rows at t −1.0 / 3.6 / 7.6 / 11.6, with tone "goal" on private;
+  - the five VO lines and the verdict "Private vs community college: / ≈ 10.8× the Big Macs.";
+  - `lookOpts` {unitRow, countSpeed 0.5, check "check: $45,000 ÷ $4,150 ≈ 10.8", checkT 14.0}, with `preview` dropped;
+  - duration 21.5 and the ding at 16.2.
+- **One correction of mine:** `hold` is 8.14 (21.5 − the 13.36 s last landing), not the 8.74 left over in the candidate's scratch spec.
+- **What it gives up:** the private full-budget row (≈ 42,103) and the "a Big Mac a day for ≈ 115 years" verdict. Both move to the pinned comment.
+- **Judges' remaining notes:** no wrong belief, a heavy 3-line header, and "your year" fits few adult viewers.
+
+**Titles:** all three come with their adopted hooks:
+- 08a: "What Your $1.50 Costco Hot Dog Would Cost If It Rose Like a House";
+- 08b: "At $15/hr, You Work for Rent From the 1st Until…";
+- 08c: "Community? In-State? Private? Your Year of College in Big Macs".
+
+**Check-script changes** (`checks/08-unit-ladder.py`):
+- The builders are rewritten for the adopted hooks. New asserted numbers:
+  - 08a: the ≈ $7.01 verdict, as both $1.50 × 393,700/84,300 and $393,700 ÷ 56,200.
+  - 08b: the calendar day "≈ the 20th", on 30 days, the average month and a weekday simulation.
+  - 08c: the ≈ 10.8× ratio, the same in dollars and in Big Macs; the pinned 42,103 / 115 years / 19,929 / 28,939.
+- **Kit replays:**
+  - `becker_landings()` replays the built Becker Rig kit and replaces the stub's assumed `FINAL_COUNT = 2.4`. 08b now has the same voice-vs-counter check as 08a and 08c.
+  - `clean_sheet_landings()` adds the kit's pre-fill and VO-fit rules, and asserts that only row ① is pre-filled.
+- **Timing rules:**
+  - A rung's VO line may start up to `lag` s after its cut (08b: 1.4 s; 0 elsewhere).
+  - A pre-filled rung must be landed by frame 1 and read at 0.0.
+  - A pre-rolled rung must cut during the opener line and be spoken after it lands.
+  - The frame-1 number test accepts a rung that starts before 0.
+  - New check: the header is at most 15 words (R8).
+- **Result: PASSED, all 503 checks.** Mutation test: six mutations on scratch copies (listed at the top of this file) fail 16 of 503 checks, and the script exits with code 1. The first run showed that the timing rules replayed the *expected* rungs, so a moved cut was caught only by the leaf comparison. Each kit is now replayed on the spec as written, and the three new "landings differ" checks bring the total from 500 to 503.
+
+**Files changed:**
+- the three specs;
+- this write-up: hooks, titles, beat sheets, VO, maths, captions, pinned comments, kit notes and caveats;
+- `checks/08-unit-ladder.py`;
+- format 08's entries in `teasers/v2/teasers.json`: title, header, runtime, key numbers, hook score and check note.
+
+**Verification:** `node src/cli.mjs check` gives 3/3 clean, 0 errors and 0 warnings. I checked stills at 0, 1.5 and 3 s by eye. The hook reads in frame 1 for all three:
+- 08a: header, hero "1", hot dog and "$1.50 / YOUR HOT DOG + SODA";
+- 08b: the blank, the HUD "? hours of work" and the $1,531 coin;
+- 08c: four named options, row ① answered, ②③④ waiting.

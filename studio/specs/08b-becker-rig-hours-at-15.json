@@ -26,5 +26,8 @@
     ],
     "hold": 7.33
   },
+  "lookOpts": {
+    "pileLabels": ["Median rent, 1 month", "Median rent, 1 year", "Average new car", "Median new house"]
+  },
   "sfx": []
 }

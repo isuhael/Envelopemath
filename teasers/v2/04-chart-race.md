@@ -677,3 +677,21 @@ Judge 2: viewers on today's 4% high-yield accounts really hold the belief, which
 - The buying-power twist is off screen.
 
 R1's frame-1 tide (6.5) is the fallback if the duel underperforms.
+
+### Assembly pass (round 2, 04a and 04c)
+
+Both specs linted clean before this pass. The stills showed three problems the linter can't see.
+
+**Fixed:**
+1. **04c: the chart ran ahead of the ledger.** The Live Sheet kit's default `preroll` opened the race 0.6 years in and swept 2016.6 → 2025.99 over raceT, so every close landed early. At 3.1 s the ledger's 2016 row (Europe −0.40%) sat beside a Europe tip of $11,473, and frame 1 showed $10,724 / $9,976 instead of the stake. The spec now sets `lookOpts.preroll: 0` (documented in the kit's format header). The race sweeps 2016.0 → 2025.99 over 1.0 → 21.0 s, the clock the check has always used: at 3.1 s the tips read $11,340 / $10,110 beside the 2016 row.
+2. **04a: gold's final took the hero 4.4 s early.** The Scoreboard hero showed "GOLD ≈ $150,000" from 32.05 s, so the giant number contradicted the VO line "End of 2025: stocks ≈ $75,300", and the payoff line at 36.4 s had no visual beat. The kit's chart-race format now reads an optional `lookOpts.finalT`: the hero lands "S&P 500 ≈ $75,300" at the race end and hard-cuts to "GOLD ≈ $150,000" at 36.4 s, with the climax (riser, hit + cash, bump, flares). The spec's own cash cue at 36.4 s was dropped.
+3. **04a: stale flags.** "Gold ≈ −28%" held 11 s (over "2021: still behind"), and "2022 bear market" held to the end of the video. With the new `flagHold: 5.0`, each flag clears after 5 s, and every flag clears as the finals land.
+4. **04c: the payoff lines had no beat.** The finals swap in at 21.0 s, and nothing changed when the VO named them at 24.6 and 28.6 s. With `lookOpts.finalT` (new in the Live Sheet format), each final cell lands again as it is named: re-pop, flash and pop.
+5. **04c polish.** The formula bar's first step has an author line break ("= $10,000" / "× (1 + each year's return)"), so the kit no longer breaks it as "(1" / "+ each…". The footer drops the index names, which the header cells already show, and goes from three lines to two: "Total return in US$ (MSCI Europe net)" / "Jan 2016 → Dec 2025 · no fees or tax". The chart gains about 50 px.
+
+**Check:** `flag_window` honours `flagHold`. There are new claims for 04a's `finalT` (race end, then vo[7]; the winner revealed last) and `flagHold`, and for 04c's `preroll: 0` and `finalT` (vo[5], vo[6]). The 04a sfx list drops the cash cue, and formula step 0 carries its line break. Result: 451 checks, 0 failed.
+
+**Verified:**
+- `node src/cli.mjs check` gives 0 errors and 0 warnings for both specs, and for the chart-race samples of both kits.
+- I read the stills against the VO times: 04a at 0, 3.4, 8.5, 10.8, 17, 22.5, 27, 31.7, 32.2, 34, 36.45, 36.6, 39.5, 43 and the end; 04c at 0, 1.6, 3.1, 7.1, 11.1, 15.5, 19.5, 21.6, 24.75, 28.75, 32, 35.6 and the end.
+- I rendered both MP4s (04a 45.5 s, 04c 38.0 s). Frames I pulled from the MP4s at 0 / 36.6 / 43 s (04a) and 0 / 3.1 / 35.6 s (04c) match the stills, with a mean pixel difference of 0.8-1.6 (compression).

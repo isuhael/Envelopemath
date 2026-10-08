@@ -49,11 +49,19 @@
 //   input:  true | false                the input strip ("$100 A MONTH · 8% A YEAR"); default: only when the header
 //                                       does not already contain data.input.amount and the board has room
 //   meters: true | false                the two-tone meters (default true)
+//   beats:  [{ t, l1, l2 }]             the working after the ladder has landed (e.g. "$5 A DAY × 75,176" /
+//                                       "≈ $375,880"): from the first beat the rows scroll up out of the verdict
+//                                       slot (as they do for the verdict), a black band rises over the stage foot,
+//                                       and each beat slams into the slot as a two-line label stack (line 1 white,
+//                                       line 2 green; spec markup allowed) and holds until the next beat. The
+//                                       verdict replaces the last one (the stack yields to it). Beats at or after
+//                                       verdict.t are ignored. Without beats a long hold after the last row is a
+//                                       static board with only the captions moving.
 import { h, css as style, setHTML, attr, prog, ease, clamp, lerp, fitText } from '../../../runtime/core.js'
 import { C, SIZE, M, W, layoutFor } from '../theme.js'
 import {
   esc, ax, bare, tabHTML as tabLib, heroRow, odometer, stageFlash, flashAt, parseDisplay, displayValue,
-  formatLike, slam, bump, durationOf, ladderPips,
+  formatLike, slam, bump, durationOf, ladderPips, rich, labelStack,
 } from '../lib.js'
 
 const PANEL = '#07090C'
@@ -440,9 +448,38 @@ export default function growthLadder(spec, ctx) {
   // just before verdict.t the rows scroll up under the column labels (the oldest fade out), so the board's foot, with
   // the big last row, ends above the black band the verdict rises on
   const vT = spec.verdict && spec.verdict.text ? Math.max(0, +spec.verdict.t || 0) : null
+  // beats (lookOpts.beats): the working after the ladder, in the verdict's slot, before the verdict
+  const lastLand = steps[N - 1].land
+  const beats = (Array.isArray(lo.beats) ? lo.beats : [])
+    .filter(b => b && (b.l1 || b.l2) && Number.isFinite(+b.t))
+    .map(b => ({ t: Math.max(+b.t, lastLand + 0.3), l1: String(b.l1 || ''), l2: String(b.l2 || '') }))
+    .filter(b => vT == null || b.t < vT - 0.4)
+    .sort((a, b) => a.t - b.t)
+  const roomT = beats.length ? beats[0].t : vT        // when the rows must be out of the slot's way
   const boardBottom = yRows + WIN * P + (big ? bigK * P : 0) - gapR
-  const room = vT != null && L.verdict.boxed ? Math.max(0, boardBottom - (L.verdict.y - 18)) : 0
-  const makeRoom = t => (room > 0 ? room * ease.inOut(prog(t, vT - MAKE_ROOM - 0.05, MAKE_ROOM)) : 0)
+  const room = roomT != null && L.verdict.boxed ? Math.max(0, boardBottom - (L.verdict.y - 18)) : 0
+  const makeRoom = t => (room > 0 ? room * ease.inOut(prog(t, roomT - MAKE_ROOM - 0.05, MAKE_ROOM)) : 0)
+  // the beats' band: the same black band the verdict rises on (the verdict's own band then rises over it unseen)
+  const sbY = L.stage.y + L.stage.h, bandTop = L.verdict.y - 10
+  const beatBand = beats.length && L.verdict.boxed && sbY > bandTop
+    ? h('div', { class: 'sb-vband', 'data-deco': '', style: { top: bandTop + 'px', height: sbY - bandTop + 'px', display: 'none' } }) : null
+  if (beatBand) stage.append(beatBand)
+  const beatStack = beats.length
+    // line 2 (the answer) a size up from the captions-on stack (72 → 88 px): the slot is the verdict's 196 px
+    ? labelStack(stage, { ...L, label: { y: L.verdict.y, h: L.verdict.h, w: L.verdict.w }, type: { ...L.type, l2: Math.max(L.type.l2, 88) } },
+      beats.map(b => ({ l1: rich(b.l1), l2: rich(b.l2), l1Color: C.white, l2Color: C.green })))
+    : null
+  if (beatStack) {
+    style(beatStack.el, { zIndex: 21 })
+    // centred in the slot like the verdict (labelStack top-aligns; a 2-line beat is ~130 px of a 196 px slot). The
+    // slam (<= 1.16 about 40% of the group) still ends above L.limit: the shift is at most half the spare height.
+    beatStack.groups.forEach(g => {
+      style(g, { display: 'flex' })
+      const dy = Math.max(0, Math.floor((L.verdict.h - g.offsetHeight) / 2))
+      style(g, { top: dy + 'px', display: 'none' })
+    })
+  }
+  beats.forEach(b => ctx.cue(b.t, 'reveal', { gain: 0.6 }))
 
   // ---------- sound: a thud per cut, a roll per count, a ding per landing; the last: riser, hit, cash ----------
   steps.forEach((st, i) => {
@@ -458,7 +495,7 @@ export default function growthLadder(spec, ctx) {
     else if (i === goalRow) ctx.cue(st.land + 0.06, 'cash', { gain: 0.5 })
   })
 
-  const duration = durationOf(spec, steps[N - 1].land, d.hold ?? M.hold)
+  const duration = durationOf(spec, Math.max(steps[N - 1].land, ...beats.map(b => b.t + 1.5)), d.hold ?? M.hold)
   const px = v => clamp(v / gmax) * TRACK_W
   const fill = FILL[lined ? 'lined' : 'dense']
   const slotBg = (a, b, base) => (b > 0.5
@@ -562,6 +599,17 @@ export default function growthLadder(spec, ctx) {
       style(hero.el, { transform: `scale(${sc.toFixed(4)})` })
       style(hero.glow, { '--glow': (16 + 30 * glow).toFixed(1) + 'px', '--glowA': (0.38 + 0.45 * glow).toFixed(3) })
       flash.set(fl)
+
+      // beats: the band rises (0.2 s) just before the first; each beat slams into the slot and holds until the next
+      if (beatBand) {
+        const q = ease.out(prog(t, beats[0].t - 0.2, 0.2)), bt = lerp(sbY, bandTop, q)
+        style(beatBand, { display: q > 0 ? 'block' : 'none', top: bt.toFixed(1) + 'px', height: (sbY - bt).toFixed(1) + 'px' })
+      }
+      if (beatStack) {
+        let bi = -1
+        beats.forEach((b, j) => { if (t >= b.t) bi = j })
+        beatStack.seek(t, bi, bi >= 0 ? beats[bi].t : 0)
+      }
 
       // verdict: the answer takes the hook's place
       // (the verdict is the chrome's)

@@ -85,7 +85,9 @@ export default function growthLadder(spec, ctx) {
   }
 
   // which columns are on screen from frame 1, which land on the row's time
-  const preCol = c => !unmaskRows && (c === 0 || (inputsAtStart && c !== outC))
+  // inputsAtStart pre-shows the put-in column only (a 4-column ladder's Worth beside an "earns" output still lands
+  // with its row; on a 3-column ladder this is the same as every non-output column)
+  const preCol = c => !unmaskRows && (c === 0 || (inputsAtStart && (putC >= 0 ? c === putC : c !== outC)))
   const landCols = cols0.map((_, c) => c).filter(c => !preCol(c))
   const sc0 = Math.min(...landCols), sc1 = Math.max(...landCols)
   const order = c => landCols.indexOf(c) // left-to-right landing order
@@ -210,7 +212,8 @@ export default function growthLadder(spec, ctx) {
   const fitPx = (str, want, j, weight) => {
     let px = Math.max(S.cellMin, want)
     const room = sh.cols[j].w - 2 * G.padX - 6
-    while (px > S.cellMin && textW(esc(str), font(weight, px), { letterSpacing: '-0.01em' }) > room) px -= 2
+    // (2 px steps from an odd size must not step under the floor: 41 → 39 tripped the 40 px type floor)
+    while (px > S.cellMin && textW(esc(str), font(weight, px), { letterSpacing: '-0.01em' }) > room) px = Math.max(S.cellMin, px - 2)
     return px
   }
   const lastPx = cols0.map((_, j) => {

@@ -10,8 +10,9 @@
   - [`studio/specs/09b-becker-rig-1000-times-1-07.json`](../../studio/specs/09b-becker-rig-1000-times-1-07.json)
   - [`studio/specs/09c-scoreboard-5-a-day-millionaire.json`](../../studio/specs/09c-scoreboard-5-a-day-millionaire.json)
 - Check: [`teasers/v2/checks/09-growth-ladder.py`](checks/09-growth-ladder.py). Run `python3 teasers/v2/checks/09-growth-ladder.py`.
-  - It reports **468 checks, 0 failures** and exits 0 (after hook pass 2; it was 518 before, on the old ladders).
+  - It reports **499 checks, 0 failures** and exits 0 (after the assembly pass; 468 after hook pass 2, 518 before that on the old ladders).
   - Break test, in a scratch copy: 09a's year-8 formula line "≈ $89/mo" → "≈ $90/mo", 09b's age-40 rung "≈ $14,974" → "≈ $14,975" and 09c's "about 75,176 times" → "75,177". It exited 1 with 4 failures, catching all three. Moving 09b's rung 1 back to 1.6 s also exits 1 (the $1,070 sync and the "lands by 1.0 s" claim).
+  - Assembly-pass break test, in a scratch copy: 09a's year-8 Earns cell "≈ $89" → "≈ $90", 09b's verdict "81×" → "82×" and 09c's second beat "≈ $375,880" → "≈ $375,881". It exited 1 with 4 failures, catching all three.
 
 **How the facts were checked**
 - None of the three teasers puts market data on screen. Every on-screen number comes from one stated assumption (8% or 7% a year), and the footer prints that assumption with "not a forecast". Nothing on screen needs a source.
@@ -25,7 +26,7 @@
 **Studio linter:** `node src/cli.mjs check` on the three specs after hook pass 2: **3/3 clean, 0 errors, 0 warnings.**
 - I rendered stills of all three at 0, 1.5 and 3 s and at their key beats and verdicts and read them (times in the review log).
 - Every 09a formula-bar line is 32 characters or fewer (the longest is 30), so the bar stays one line; the checker enforces that.
-- `lookOpts` in 09a (`inputsAtStart`, `formulaBar`, `marks`) and 09c (`icon`, `input`) are read by the kits and documented in `looks/live-sheet/README.md` and `looks/scoreboard/README.md`. 09b carries no `lookOpts`. 09c no longer uses `goal`.
+- `lookOpts` in 09a (`inputsAtStart`, `formulaBar`, `marks`) and 09c (`icon`, `input`) are read by the kits and documented in `looks/live-sheet/README.md` and `looks/scoreboard/README.md`. 09c's `beats` (assembly pass) is new in `looks/scoreboard/formats/growth-ladder.js` and documented in that file's header comment; the kit README does not list it yet. 09b carries no `lookOpts`. 09c no longer uses `goal`.
 
 ---
 
@@ -90,7 +91,7 @@
 | Spec | `studio/specs/09a-live-sheet-100-a-month-doubles.json` (28.5 s) |
 | Platform title | **You Add $100 a Month. When Does It Earn $100 a Month?** |
 | On-screen hook (header) | **You add $100 a month. / When does it earn $100 a month?** (12 words, 2 lines; "$100 a month" in the black highlight on line 1) |
-| Frame 1 | Banner. Formula bar 70% typed "≈ $1,245 × 8% ÷ 12", complete as "≈ $8/mo" by about 0.5 s: what the filled Year 1 Worth cell earns the next month. Columns Year / You put in / Worth. Row 1 filled: 1 · $1,200 · ≈ $1,245. Rows 5, 8, 9, 15, 20, 25 and 30 show their year and "You put in" (`lookOpts.inputsAtStart`), beside 7 empty Worth cells. Footer on |
+| Frame 1 | Banner. Formula bar 70% typed "≈ $1,245 × 8% ÷ 12", complete as "≈ $8/mo" by about 0.5 s: what the filled Year 1 Worth cell earns the next month. Columns Year / You put in / Worth / Earns a month. Row 1 filled: 1 · $1,200 · ≈ $1,245 · **≈ $8**, right under the question. Rows 5, 8, 9, 15, 20, 25 and 30 show their year and "You put in" (`lookOpts.inputsAtStart`), beside 7 empty Worth and Earns cells. Footer on |
 | Footer | ASSUMES 8% a year, compounded monthly · $100 in at each month-end · not a forecast |
 
 **Topic vs the seed:**
@@ -107,7 +108,7 @@
 
 | Rule | How |
 |---|---|
-| R1 | "$100 a month" in the banner, the Year 1 row ($1,200 → ≈ $1,245) and the formula bar "≈ $1,245 × 8% ÷ 12" at 0.0 s; "≈ $8/mo" completes by 0.5 s |
+| R1 | "$100 a month" in the banner, the Year 1 row ($1,200 → ≈ $1,245, earning ≈ $8 a month) and the formula bar "≈ $1,245 × 8% ÷ 12" at 0.0 s; the bar's "≈ $8/mo" completes by 0.5 s |
 | R2 | One input ($100 a month). The banner asks for a year; no result is printed |
 | R3 | Pass: the answer is everyone's, because the amount cancels. The VO, the verdict and the formula bar ("$50 or $500/mo: still year 9") say so |
 | R4 | $100 a month: small, round and ChartOrbit's stake |
@@ -115,8 +116,8 @@
 | R6 | Partial: "You add" + $100 a month. The banner names no horizon (both judges) |
 | R7 | One target to take a side on: your own $100 a month |
 | R8 | 12 words, 2 lines |
-| R9 | 7 empty Worth cells from 0.0 s, each answered by its formula line. The cells count Worth; the monthly figure the question asks about lives in the bar (both judges' caveat) |
-| R10 | First payoff (≈ $8/mo) by 0.5 s. Biggest number (year 30, ≈ $149,036 earning ≈ $994 a month) last |
+| R9 | 7 empty Worth and Earns-a-month cells from 0.0 s. Since the assembly pass the monthly figure the question asks about has its own column, "Earns a month", so each row answers in the sheet itself; the bar shows the working (Worth × 8% ÷ 12). This closes both judges' caveat that the monthly figure lived only in the bar |
+| R10 | First payoff (≈ $8 a month) at 0.0 s in the Earns cell. Biggest number (year 30, ≈ $149,036 earning ≈ $994 a month) last |
 | R11 | The banner asks; the verdict card answers. Caption line 1 holds the year back ("Sooner than you'd guess.") |
 | R12 | One number to repeat in a comment: **year 9**, for any amount |
 
@@ -131,14 +132,14 @@
 
 | t (s) | On screen | VO |
 |---|---|---|
-| 0.0 | Banner. Formula bar typing "≈ $1,245 × 8% ÷ 12", complete "≈ $8/mo" by about 0.5 s. Row **1**: $1,200 / ≈ $1,245. The other 7 rows show year and put-in only. Footer | "By year 1 it's earning about $8 a month." (0.0-3.85) |
-| 3.2 | Row 5: ≈ $7,348. Bar "≈ $7,348 × 8% ÷ 12 ≈ $49/mo" | |
-| 4.6 | Row **8**: ≈ $13,387. Rose tint, tooltip "under $100". Bar "… ≈ $89/mo". Buzz | "Year 8: about $89. Not yet." (4.4-7.5) |
-| 8.0 | Row **9**: ≈ $15,743. Yellow, tooltip "earns $100+". Bar "≈ $15,743 × 8% ÷ 12 ≈ $105/mo". Pop | "Year 9: about $105. More than you add." (7.7-11.95) |
-| 12.2 | Row 15: ≈ $34,604. Bar "… ≈ $231/mo" | |
-| 13.9 | Row **20**: ≈ $58,902. Bar "… ≈ $393/mo" | "Year 20: about $393 a month." (13.6-17.45) |
-| 17.8 | Row 25: ≈ $95,103. Bar "… ≈ $634/mo" | |
-| 19.4 | Row **30** counts up over 0.8 s to **≈ $149,036** (biggest, last). Bar "≈ $149,036 × 8% ÷ 12 ≈ $994/mo". Roll | "Year 30: about $994 a month. On its own." (19.0-24.0) |
+| 0.0 | Banner. Formula bar typing "≈ $1,245 × 8% ÷ 12", complete "≈ $8/mo" by about 0.5 s. Row **1**: $1,200 / ≈ $1,245 / ≈ $8. The other 7 rows show year and put-in only. Footer | "By year 1 it's earning about $8 a month." (0.0-3.85) |
+| 3.2 | Row 5: ≈ $7,348 / ≈ $49. Bar "≈ $7,348 × 8% ÷ 12 ≈ $49/mo" | |
+| 4.6 | Row **8**: ≈ $13,387 / **≈ $89**. Rose tint, tooltip "under $100" under the ≈ $89. Bar "… ≈ $89/mo". Buzz | "Year 8: about $89. Not yet." (4.4-7.5) |
+| 8.0 | Row **9**: ≈ $15,743 / **≈ $105**. Yellow, tooltip "earns $100+" under the ≈ $105. Bar "≈ $15,743 × 8% ÷ 12 ≈ $105/mo". Pop | "Year 9: about $105. More than you add." (7.7-11.95) |
+| 12.2 | Row 15: ≈ $34,604 / ≈ $231. Bar "… ≈ $231/mo" | |
+| 13.9 | Row **20**: ≈ $58,902 / ≈ $393. Bar "… ≈ $393/mo" | "Year 20: about $393 a month." (13.6-17.45) |
+| 17.8 | Row 25: ≈ $95,103 / ≈ $634. Bar "… ≈ $634/mo" | |
+| 19.4 | Row **30**: ≈ $149,036 lands and its Earns cell counts up over 0.8 s to **≈ $994** (biggest, last; the summary row wipes yellow). Bar "≈ $149,036 × 8% ÷ 12 ≈ $994/mo". Roll | "Year 30: about $994 a month. On its own." (19.0-24.0) |
 | 24.2 | Verdict card "It out-earns your $100 from **year 9**. / Same year for any monthly amount." Bar "$50 or $500/mo: still year 9". Ding (kit) | "Any monthly amount: year 9." (24.2-26.15) |
 | 26.15-28.5 | Hold on the finished sheet, then clear to frame 1 (loop) | |
 
@@ -209,7 +210,7 @@ So the "≈ 10% before inflation" has two confirmed sources (10.09% and 9.94%), 
 - **Instagram Reels:** cover on frame 1 (the question, the "≈ $8/mo" bar and the empty cells) or on row 9 turning yellow (8.0 s).
 - **TikTok:** the comment fights will be the rate ("8% is too high or too low") and "that's compounding, not earning". The pinned comment takes the first (7% → year 11, 10% → year 8); the caption defines "earns" for the second. Keep "year 9" out of the first 100 characters of the caption (it first appears at about character 180).
 - **Not a 6 s card:** FinCalC's 2026 amount-first cards stalled at 9,017-10,445. Keep this voiced.
-- **Look note:** the formula bar carries each row's monthly figure ("Worth × 8% ÷ 12 ≈ $X/mo"), the Live Sheet's "formula bar as proof". Every line is 32 characters or fewer (the longest, year 30's, is 30), so the bar stays one line at 40-42 px. `lookOpts.marks` tints row 8 rose ("under $100") and row 9 yellow ("earns $100+").
+- **Look note:** the sheet's 4th column, "Earns a month" (assembly pass; a no-break space makes it wrap as "Earns / a month"), prints each row's monthly figure, and the formula bar shows the working behind it ("Worth × 8% ÷ 12 ≈ $X/mo"), the Live Sheet's "formula bar as proof". `inputsAtStart` pre-shows only the put-in column, so Worth and Earns both land with their row. Every line is 32 characters or fewer (the longest, year 30's, is 30), so the bar stays one line at 40-42 px. `lookOpts.marks` tints row 8 rose ("under $100") and row 9 yellow ("earns $100+").
 
 ---
 
@@ -246,7 +247,7 @@ So the "≈ 10% before inflation" has two confirmed sources (10.09% and 9.94%), 
 | R9 | 8 dim age rungs with empty shelves from frame 1 |
 | R10 | First payoff at 1.0 s ($1,070). Biggest number last (≈ $81,273, heaved onto the gold plate) |
 | R11 | The header asks; the verdict answers. Caption line 1 holds the number back ("One gift. Never topped up.") |
-| R12 | Lopsided and repeatable: "over 81 times the gift" |
+| R12 | Lopsided and repeatable: "over 81 times the gift" (VO), printed in the verdict's line 2 since the assembly pass ("Over 81× the gift") |
 
 **Benchmark hooks it is modelled on**
 - H16, ChartOrbit: "What If You Invested $5,000 in NETFLIX and DISNEY?", frame 1 "POV: In 2002 You invested $5000 in". 15,876,376 (100.45x), https://www.youtube.com/shorts/KmtLGAPIutg. Borrowed: the POV grammar on a lump sum.
@@ -269,7 +270,7 @@ So the "≈ 10% before inflation" has two confirmed sources (10.09% and 9.94%), 
 | 13.4 | Rung **50**: ≈ $29,457 | "At 50: about $29,457." (13.0-17.25) |
 | ≈ 16.3-17.8 | The figure lifts the last, biggest coin overhead, wobbles and heaves it (riser, whoosh) | |
 | 17.8 | Rung **65**: **≈ $81,273** on the gold plate. Hit, shake, coin spill, celebrate, then he points up | "At 65: about $81,273." (17.4-22.05) |
-| 22.3 | Verdict: "**≈ $81,273** at 65. / From one $1,000, never topped up." Ding (kit) | "Over 81 times the gift." (22.3-24.65) |
+| 22.3 | Verdict: "**≈ $81,273** at 65. / Over 81× the gift, never topped up." Ding (kit) | "Over 81 times the gift." (22.3-24.65) |
 | 24.65-27.0 | Hold, then loop | |
 
 **Full guide VO** (53 spoken words)
@@ -336,7 +337,7 @@ So the "≈ 10% before inflation" has two confirmed sources (10.09% and 9.94%), 
 | Spec | `studio/specs/09c-scoreboard-5-a-day-millionaire.json` (37.0 s; the file name still says "5-a-day-millionaire", but the $5 ladder is now an example inside a $1 ladder) |
 | Platform title | **Take What You Could Invest a Day. Year 40 = That × What?** |
 | On-screen hook (header) | **TAKE WHAT YOU COULD INVEST A DAY. / YEAR 40 = THAT × ?** (10 words plus "= × ?", 2 lines; "A DAY" is the only green phrase) |
-| Frame 1 | Header with the blank multiplier. The hero odometer (coin icon, `lookOpts.icon`) already counting, ≈ $376 at 0.0 s and ≈ $377 by 1.5 s. The footer working "$1 × 365 ÷ 12 ≈ $30.42/mo · 7% a year · not a forecast" under it. The input strip "$1 A DAY · 7% A YEAR" (`lookOpts.input`) over the board: row 1 (1 · $365 · ≈ $377) lit and landing at 0.4 s, above 5 dark slots |
+| Frame 1 | Header with the blank multiplier. The hero odometer (coin icon, `lookOpts.icon`) at **≈ $377**: row 1's count lands just before frame 1 (rowT −0.4 s, assembly pass), so the first frame never shows a count in flight (it used to read $376). The footer working "$1 × 365 ÷ 12 ≈ $30.42/mo · 7% a year · not a forecast" under it. The input strip "$1 A DAY · 7% A YEAR" (`lookOpts.input`) over the board: row 1 (1 · $365 · ≈ $377) lit, its landing glow fading, above 5 dark slots |
 | Footer | $1 × 365 ÷ 12 ≈ $30.42/mo · 7% a year · not a forecast |
 
 **Topic vs the seed:**
@@ -351,7 +352,7 @@ So the "≈ 10% before inflation" has two confirmed sources (10.09% and 9.94%), 
 
 | Rule | How |
 |---|---|
-| R1 | "40" in the header; "$1", "365", "≈ $30.42" and "7%" in the footer; the "$1 A DAY" strip and the odometer at ≈ $376, all at 0.0 s. Row 1 lands at ≈ $377 at 0.4 s |
+| R1 | "40" in the header; "$1", "365", "≈ $30.42" and "7%" in the footer; the "$1 A DAY" strip, the odometer and row 1 at ≈ $377, all at 0.0 s |
 | R2 | One input ($1 a day, as the unit). The multiplier is left blank, not printed |
 | R3 | Pass: "what you could invest a day" is the viewer's own number, and the multiplier makes every row theirs. "Could" includes viewers who don't invest yet |
 | R4 | $1 a day: the smallest round unit (H64's "$1") |
@@ -360,7 +361,7 @@ So the "≈ 10% before inflation" has two confirmed sources (10.09% and 9.94%), 
 | R7 | One named target: year 40 |
 | R8 | 10 words, 2 lines |
 | R9 | The "× ?" blank and 6 board slots (5 dark) from frame 1 |
-| R10 | First payoff ≈ $377 at 0.4 s. Biggest number last (year 40, ≈ $75,176) |
+| R10 | First payoff ≈ $377 at 0.0 s. Biggest number last (year 40, ≈ $75,176) |
 | R11 | The header asks; the verdict answers under the board. Caption line 1 holds the number back ("Multiply by your own number.") |
 | R12 | A personal constant to repeat: "× 75,176", and a meme-buster: "a million ≈ $13.30 a day" |
 
@@ -375,19 +376,18 @@ So the "≈ 10% before inflation" has two confirmed sources (10.09% and 9.94%), 
 
 | t (s) | On screen | VO |
 |---|---|---|
-| 0.0 | Header with "× ?". Hero odometer counting (≈ $376). Footer working. Input strip "$1 A DAY · 7% A YEAR". Row 1 (1 · $365) lit | "Year 1: about $377." (0.0-3.1) |
-| 0.4 | Row **1** lands: ≈ $377 (the hero reads ≈ $377 by 1.5 s) | |
+| 0.0 | Header with "× ?". Hero odometer at ≈ $377 (row 1 landed at −0.05 s). Footer working. Input strip "$1 A DAY · 7% A YEAR". Row **1** (1 · $365 · ≈ $377) lit | "Year 1: about $377." (0.0-3.1) |
 | 3.0 | Cut. Row 5: $1,825 / ≈ $2,166 | |
 | 4.6 | Cut. Row **10**: $3,650 / ≈ $5,203 | "Year 10: about $5,203." (4.4-7.9) |
 | 8.0 | Cut. Row **20**: $7,300 / ≈ $15,438 | "Year 20: about $15,438." (8.0-11.85) |
 | 12.2 | Cut. Row **30**: $10,950 / ≈ $35,571 | "Year 30: about $35,571." (12.0-16.25) |
 | 16.6 | Cut. Row **40**: a taller slot; the row and the hero count to **≈ $75,176** / $14,600 | "Year 40: about $75,176." (16.4-20.65) |
-| 20.8 | (Year 40's Worth for $1 a day is the multiplier) | "Your daily amount, about 75,176 times." (20.8-25.45) |
-| 25.6 | | "$5 a day: about $375,880." (25.6-31.0) |
-| 31.1 | Verdict under the board: "YEAR 40 ≈ YOUR DAILY AMOUNT **× 75,176**. / A MILLION: ≈ $13.30 A DAY." The board compacts to rows 20-40 | "A million? About $13.30 a day." (31.1-34.95) |
+| 20.8 | The rows scroll up to 20-30-40 and a black band rises at the foot; beat 1 slams in: "YEAR 40 ≈ YOUR DAILY AMOUNT" / **"× 75,176"** (88 px green), the header's "× ?" answered. Reveal | "Your daily amount, about 75,176 times." (20.8-25.45) |
+| 25.6 | Beat 2: "$5 A DAY × 75,176" / **"≈ $375,880"**. Reveal | "$5 a day: about $375,880." (25.6-31.0) |
+| 31.1 | Verdict under the board: "YEAR 40 ≈ YOUR DAILY AMOUNT **× 75,176**. / A MILLION: ≈ $13.30 A DAY." It replaces beat 2 in the same slot (the board has shown rows 20-40 since 20.8) | "A million? About $13.30 a day." (31.1-34.95) |
 | 34.95-37.0 | Hold, then a hard cut back to frame 1 (loop) | |
 
-Rung gaps are 2.6, 1.6, 3.4, 4.2 and 4.4 s, inside the Scoreboard's one-cut-every-2.5-4 s rhythm except the quick row 5 → 10. After row 40 nothing new lands for 14.5 s; three VO lines and the verdict carry it. Both judges called 37 s long (see the risk note).
+Rung gaps are 2.6, 1.6, 3.4, 4.2 and 4.4 s, inside the Scoreboard's one-cut-every-2.5-4 s rhythm except the quick row 5 → 10. After row 40 lands (≈ 19.1 s) the screen changes at 20.8 (beat 1), 25.6 (beat 2) and 31.1 (verdict): every VO line after the ladder has its number on screen. Before the assembly pass nothing new landed for 14.5 s. Both judges called 37 s long (see the risk note).
 
 **Full guide VO** (85 spoken words)
 
@@ -443,11 +443,11 @@ Rung gaps are 2.6, 1.6, 3.4, 4.2 and 4.4 s, inside the Scoreboard's one-cut-ever
 - **YouTube Shorts:** the title mirrors the header and asks "× What?".
 - **Instagram Reels:** cover on frame 1 (the "× ?" header, the odometer and the board) or on the year-40 frame (≈ $75,176 on the hero).
 - **TikTok:** the comments should be viewers' own multiplications; the pinned comment asks for them. Expect "S&P does 10%!": the caption answers with the after-inflation framing and the other compounding convention.
-- **Risk:** 37 s, with 14.5 s after the last row, and "× 75,176" is a long number to remember (both judges). If it underperforms, cut vo[6] ("$5 a day…", 5.4 s) and bring the verdict forward.
+- **Risk:** 37 s, with 12 s after the last row (now carried by two on-screen beats and the verdict), and "× 75,176" is a long number to remember (both judges). If it underperforms, cut vo[6] ("$5 a day…", 5.4 s) and bring the verdict forward.
 - **Look note:**
   - `lookOpts.input: true` draws the "$1 A DAY · 7% A YEAR" strip; there is no `goal` (no $1,000,000 strip or halfway notch now).
   - `lookOpts.icon: "coin"` sits beside the hero counter.
-  - The verdict sits under the board, and the board compacts to its last three rows while it shows (stills at 31, 32 and 36.5 s).
+  - `lookOpts.beats` (assembly pass) puts the working into the verdict's slot at 20.8 and 25.6 s: the board compacts to its last three rows from 20.8 s, a black band rises at the foot, and each beat is a two-line stack (line 1 white, line 2 green). The verdict replaces beat 2 in the same slot at 31.1 s (stills at 20.85, 21.5, 25.65, 26.5 and 32 s).
   - In race terms this is one counter climbing with no finish line. It is not a crash race, so there are no crash bands (the look's rule for fixed-rate hypotheticals).
 
 ---

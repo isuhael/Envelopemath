@@ -581,3 +581,34 @@ The owner's "hooks are weak" note was re-run for 01b. The current hook and five 
   - At 5.4 s $62,000 sits in row 2; at 6.4 s it is struck in red under the caption "NO".
   - At 10.6 s $11,439 shows with the tooltip "taxed only up to $184,500". At 13.5 s ≈ 1.1% is on the yellow row with "yours: 6.2%".
   - At 21 s the verdict card reads "You pay 6.2%. A $1M / salary pays ≈ 1.1%.".
+
+### Assembly pass (2026-10-08)
+
+Both teasers were rendered and read beat by beat: contact sheets, stills at 0 s, each beat and the last frame, and frames pulled from the MP4s. The owner rejected round 1 for its look and weak hooks, so the bar was that every frame reads as designed and true. Lint was clean before and after (0 errors, 0 warnings). The hooks, VO and verdicts are unchanged. Every change is in what the sheet shows and when.
+
+| # | Teaser | What the stills showed | What I did |
+|---|---|---|---|
+| A1 | 01a | When a note did not fit beside its result, the layout put it after the formula's "=", so the sheet read `$2,500 × 2 = 10 months a year` (a false equation) and `$2,500 × 26 = not × 24`. | `clean-sheet/formats/dead-simple-list.js`: in the `aside` layout a note now stacks under its label when the pair stays about the box's height. Aside labels are set in ink and notes in grey. The after-the-"=" placement is now only a fallback; no spec or kit sample uses it with an aside label. ②'s label dropped its redundant "(2 checks)" (the formula already shows × 2), so label and note fit on two lines. |
+| A2 | 01a | ③'s formula used $60,000, and nothing on the sheet said where it came from (only the VO did). | ②'s note is now "× 12 = $60,000" (it was "10 months a year"): the budget's 12 normal months, the same $60,000 as the × 24 guess. The check script evaluates "$5,000 × 12" against it. "10 months a year" stays as a sensitivity check but is no longer printed. |
+| A3 | 01a | The sheet held still for 4.0 s (3.1-7.1 s) and 5.7 s (14.8-20.5 s) while the VO talked. ③'s caret blinked for 3.3 s before its result. | A new optional item field, `noteT`, is read by both kits. "not × 24" lands at 4.5 s on "Not times 24"; "× 12 = $60,000" lands at 10.4 s on "12 normal months: $60,000". ③ now types at 12.6 s on "From $65,000, that leaves $5,000" (it was 10.4 s). A check line, `check: 26 − 24 = 2 checks`, types at 15.6-17.0 s on "It's your 2 extra checks". The longest still stretch under the VO is now 3.5 s (17.0-20.5 s). The check line costs 8% of the type size: the sheet sets at 92% (results 61 px, the goal 75 px). |
+| A4 | 01a | The beat sheet said ② lands on the sand highlighter. | Corrected: in this kit a `neutral` result lands on green, as the stills show. |
+| A5 | 01b | The two notes that carry the insight, "6.2% of every dollar" and "taxed only up to $184,500", were fully readable for about 0.5 s each, because each tooltip closed as soon as the formula bar moved on. | `live-sheet/formats/dead-simple-list.js`: a tooltip now stays open while the next formula types and closes 0.15 s before the next value lands (a later result, a wrong guess or a check line), so the rows below settle before anything lands. The notes now read at ≈3.1-4.6 s and ≈10.4-11.9 s. Row 3 moved from 11.3/12.1 s to 11.7/12.5 s, still inside its VO anchors (11.30 ± 0.5 and 12.07 ± 0.5), to give row 2's note its 1.5 s. |
+| A6 | 01b | "yours: 6.2%" opened at 12.4 s, 2.7 s before the VO says "Yours: 6.2%", and the sheet then held for 6.9 s. | Set `noteT: 15.1` on row 3: the tooltip opens on the VO line that says it, which splits the hold into 2.6 s and 3.9 s. |
+
+**Checks after the assembly pass:**
+- `python3 teasers/v2/checks/01-dead-simple-list.py` → **280 checks, 0 failed**. New checks:
+  - every `noteT` sits at its VO line (± 0.5 s) and after its result;
+  - a note that continues its result ("$5,000 × 12 = $60,000") is true;
+  - the check line is true, starts typing at its VO line, and finishes after the last result and before the verdict;
+  - ② × 12 equals ③'s $60,000, which equals the × 24 guess;
+  - 26 − 24 equals the 2 in ③'s label.
+  `EXPECT` and `ANCHORS` follow the new spec: ③ types on vo[4], and notes and the check line have their own anchors.
+- Mutation test on scratch copies: a wrong note total ($65,000), a wrong check line (3 checks), `noteT` off its VO line, `noteT` before its result, a late `checkT`, and 01b without `noteT`. 6 of 6 caught.
+- `node src/cli.mjs check`: 01a and 01b are clean (0 errors, 0 warnings). The kit samples that share the two edited modules (4 clean-sheet, 2 live-sheet and 3 live-sheet stress specs) are also clean, 9/9. No clean-sheet sample changes where its notes sit (they use the stack3, dense and bare layouts).
+- Stills checked: 01a at 0, 3.2, 5.0, 9.8, 11.0, 13.6, 15.0, 17.2, 21.2 s and the last frame. 01b at 0, 2.8, 3.2, 4.4, 5.0, 6.5, 10.6, 11.4, 11.9, 12.3, 12.8, 15.8, 17, 19, 21.5 s and the last frame. Both contact sheets were checked too.
+- MP4s: `studio/out/01a-clean-sheet-paid-biweekly.mp4` and `studio/out/01b-live-sheet-20-an-hour.mp4`, each 1080 × 1920, 30 fps, 26.0 s, with audio. I pulled frames with ffmpeg at 0, 17.2 and 21.2 s (01a) and at 0, 10.6 and 21.5 s (01b). Each matches its still (mean pixel difference about 1.5/255, codec noise), and every number in them matches this write-up.
+
+**Not changed (kit grammar, recorded):**
+- In 01b each tooltip opens a slot that pushes the rows below, and the assumption line, down while it is open. Every live-sheet format shares this.
+- A frame that falls inside a tooltip's 0.22 s close wipe shows a clipped pill. The 12-frame contact sheet catches two such frames (4.73 s and 18.91 s). Neither is held on screen in the video.
+- In 01a, a frame inside the 0.16 s between a highlighter's swipe and its figure's pop shows an empty box (9.45 s on the contact sheet). This is the clean-sheet motion grammar.

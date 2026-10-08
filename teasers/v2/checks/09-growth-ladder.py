@@ -17,6 +17,10 @@
 3. Also checks the numbers quoted in the write-up's captions and pinned comments.
    Hook pass 2 (2026-10-08) rebuilt all three ladders: 09a on "When does it earn $100 a month?" (monthly growth =
    Worth × 8% ÷ 12), 09b on one $1,000 from birth with age rungs, 09c on $1 a day (year 40 = daily amount × 75,176).
+   Assembly pass (2026-10-08): 09a's sheet gained a 4th column, "Earns a month" (each row's Worth × 8% ÷ 12, the
+   number the hook asks about, which until then lived only in the formula bar); 09b's verdict now prints the R12
+   line ("Over 81× the gift"); 09c gained lookOpts.beats (the "× 75,176" and "$5 a day" working on screen) and its
+   row 1 lands before frame 1 (rowT −0.4 s), so frame 1 shows ≈ $377, not a count in flight.
 4. Prints a table and exits 1 on any mismatch.
 
 Run:  python3 teasers/v2/checks/09-growth-ladder.py
@@ -189,9 +193,10 @@ for i, y in enumerate(A_YEARS):
     ea[f"data.rows[{i}][0]"] = E(str(y))
     ea[f"data.rows[{i}][1]"] = E(money(A_IN[y]))
     ea[f"data.rows[{i}][2]"] = E(money(A_W[y]))
+    ea[f"data.rows[{i}][3]"] = E(money(A_EARN[y]))     # "Earns a month": next month's growth on that Worth
     ea[f"lookOpts.formulaBar[{i}].text"] = T(money(A_W[y]), pct(A_RATE * 100), "12", money(A_EARN[y]))
 expect[ida] = ea
-columns[ida] = ["Year", "You put in", "Worth"]
+columns[ida] = ["Year", "You put in", "Worth", "Earns a\u00a0month"]   # no-break space: wraps "Earns / a month"
 # VO: (token, mode) with mode exact | about | over
 vo_expect[ida] = [
     [("1", "exact"), (bare(money(A_EARN[1])), "about")],
@@ -210,7 +215,8 @@ idb = "09b-becker-rig-1000-times-1-07"
 eb = {
     "header": T(money(B_P), str(B_HORIZON)),
     "footer": T(pct(B_RATE * 100)),
-    "verdict.text": T(money(B_V[B_HORIZON]), str(B_HORIZON), money(B_P)),
+    # "≈ $81,273 at 65. / Over 81× the gift, never topped up." (R12's repeatable line, on screen since assembly)
+    "verdict.text": T(money(B_V[B_HORIZON]), str(B_HORIZON), num(flo(B_TIMES, 1))),
     "data.input.amount": E(money(B_P)),
     "data.input.rate": E(pct(B_RATE * 100) + " a year"),
 }
@@ -242,6 +248,12 @@ ec = {
     "verdict.text": T(str(C_HORIZON), bare(num(C_MULT)), money(C_PER_DAY_FOR_GOAL, 0.01)),
     "data.input.amount": E(money(C_DAY)),
     "data.input.rate": E(pct(C_RATE * 100) + " a year"),
+    # lookOpts.beats: the working after the ladder, in the verdict's slot ("YEAR 40 ≈ YOUR DAILY AMOUNT" / "× 75,176",
+    # then "$5 A DAY × 75,176" / "≈ $375,880")
+    "lookOpts.beats[0].l1": T(str(C_HORIZON)),
+    "lookOpts.beats[0].l2": T(bare(num(C_MULT))),
+    "lookOpts.beats[1].l1": T(money(C_EXAMPLE_DAY), bare(num(C_MULT))),
+    "lookOpts.beats[1].l2": T(money(C_EXAMPLE)),
 }
 for i, y in enumerate(C_YEARS):
     ec[f"data.rows[{i}][0]"] = E(str(y))
@@ -369,8 +381,9 @@ def check_spec(sid):
            set(d) == {"input", "columns", "rows", "rowT", "highlightLast", "hold"})
     record(sid, "input keys", sorted(d["input"]), "amount/per/rate", set(d["input"]) == {"amount", "per", "rate"})
     record(sid, "columns", d["columns"], " / ".join(columns[sid]), d["columns"] == columns[sid])
-    record(sid, "rows × 3 strings", len(d["rows"]), "3 per row",
-           all(len(r) == 3 and all(isinstance(c, str) for c in r) for r in d["rows"]))
+    nc = len(columns[sid])
+    record(sid, f"rows × {nc} strings", len(d["rows"]), f"{nc} per row",
+           all(len(r) == nc and all(isinstance(c, str) for c in r) for r in d["rows"]))
     record(sid, "rowT per row", len(d["rowT"]), len(d["rows"]), len(d["rowT"]) == len(d["rows"]))
     record(sid, "highlightLast", d["highlightLast"], True, d["highlightLast"] is True)
     worths = [float(re.sub(r"[^\d.]", "", bare(r[2]))) for r in d["rows"]]
@@ -508,6 +521,14 @@ claim(ida, "pinned: same crossing at 7% → year 11, at 10% → year 8",
 _sa = load(ida)
 _long = [x["text"] for x in _sa["lookOpts"]["formulaBar"] if len(x["text"]) > 32]
 claim(ida, "formula-bar lines fit one line (≤ 32 chars at 40 px mono)", _long or "all ≤ 32", "all ≤ 32", not _long)
+_ecol = [r[3] for r in _sa["data"]["rows"]]
+_ebar = [tokens(x["text"])[-1] for x in _sa["lookOpts"]["formulaBar"][:len(A_YEARS)]]
+claim(ida, "'Earns a month' cells = each row's formula-bar result (same string)", " | ".join(_ecol), " | ".join(_ebar),
+      _ecol == _ebar)
+_ev = [float(re.sub(r"[^\d.]", "", bare(x))) for x in _ecol]
+claim(ida, "'Earns a month' rises row by row; year 8 < $100 ≤ year 9 (the marks' rows 2 and 3)", _ecol[2:4],
+      "≈ $89 / ≈ $105", all(a < b for a, b in zip(_ev, _ev[1:])) and _ev[2] < A_M <= _ev[3]
+      and [m["row"] for m in _sa["lookOpts"]["marks"]] == [2, 3])
 claim(ida, "footer states the compounding convention", "compounded monthly" in _sa["footer"], True,
       "compounded monthly" in _sa["footer"])
 claim(ida, "frame 1: row 1's Worth and its formula line are on screen at 0.0 s",
@@ -516,7 +537,8 @@ claim(ida, "frame 1: row 1's Worth and its formula line are on screen at 0.0 s",
 
 # 09b: "POV: someone invested just $1,000 for you at birth. What's it worth at 65?"
 claim(idb, "age 1 = $1,000 × 1.07 = $1,070 (exact)", money(B_V[1]), "$1,070", money(B_V[1]) == "$1,070")
-claim(idb, "'Over 81 times the gift'", num(B_TIMES, 2), "81 ≤ x < 82", 81 <= B_TIMES < 82)
+claim(idb, "'Over 81 times the gift' (VO) / 'Over 81× the gift' (verdict)", num(B_TIMES, 2), "81 ≤ x < 82",
+      81 <= B_TIMES < 82)
 _sb = load(idb)
 claim(idb, "'never topped up': $1,000 put in on every rung", sorted({r[1] for r in _sb["data"]["rows"]}), ["$1,000"],
       {r[1] for r in _sb["data"]["rows"]} == {money(B_P)})
@@ -550,6 +572,15 @@ _sc = load(idc)
 claim(idc, "verdict carries ≈ before the rounded multiplier", _sc["verdict"]["text"].split("\n")[0][:20],
       "YEAR 40 ≈ …", re.match(r"YEAR 40 ≈ YOUR DAILY AMOUNT \*\*× " + re.escape(bare(num(C_MULT))) + r"\*\*\.",
                                _sc["verdict"]["text"]) is not None)
+_bt = _sc["lookOpts"]["beats"]
+claim(idc, "beat 1 carries ≈ before the rounded multiplier, beats sit on VO lines 6 and 7",
+      f"{_bt[0]['l1']} / {_bt[0]['l2']} @ {_bt[0]['t']}, {_bt[1]['t']}", "YEAR 40 ≈ … × 75,176 @ 20.8, 25.6",
+      "≈" in _bt[0]["l1"] and _bt[0]["t"] == _sc["vo"][5]["t"] and _bt[1]["t"] == _sc["vo"][6]["t"])
+claim(idc, "beat 2: $5 × 75,176 = 375,880, and the exact $5-a-day year 40 rounds to the same dollar",
+      f"{C_EXAMPLE_DAY * round(C_MULT):,} / {money(C_EXAMPLE)}", "375,880 / ≈ $375,880",
+      C_EXAMPLE_DAY * round(C_MULT) == 375_880 and money(C_EXAMPLE) == "≈ $375,880")
+claim(idc, "frame 1 shows row 1 landed (rowT ≤ −0.35 s: cut − 0.45 s + 0.8 s roll ≤ 0), not a count in flight",
+      _sc["data"]["rowT"][0], "≤ −0.35", _sc["data"]["rowT"][0] <= -0.35)
 claim(idc, "header leaves the multiplier blank ('× ?')", strip_markup(_sc["header"]).rstrip().endswith("× ?"), True,
       strip_markup(_sc["header"]).rstrip().endswith("× ?"))
 claim(idc, "'A million: ≈ $13.30 a day' (exact $13.302; $13.31 clears it, $13.30 falls $158 short)",

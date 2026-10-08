@@ -65,6 +65,8 @@ export const css = `
 }
 .pov-tag b { color: #FF6B5B; font-weight: 800; }
 .pov-tag i { position: absolute; width: 20px; height: 20px; background: #101828; border-radius: 3px; transform: rotate(45deg); }
+.pov-tag.two { height: 112px; padding: 12px 20px; align-items: flex-start; }
+.pov-tag.two > span { display: flex; flex-direction: column; gap: 4px; line-height: 42px; }
 `
 
 const esc = str => String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
