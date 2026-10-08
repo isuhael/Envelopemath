@@ -16,9 +16,12 @@ Social Security wage-cap hook since hook pass 2: "You pay 6.2% to Social Securit
 4. Checks the timing contract: VO read at ~2.6 words/s, no overlapping lines, each
    beat's t / resultT (and a held-back note's noteT, 01a's check line) at the moment the VO
    says it, a note that continues its result ("× 12 = $60,000") is true, header + a number at t = 0,
-   first payoff by 3 s, results every ≤ 7.5 s, duration inside the 26-44 s lane, the
-   verdict on the last VO line (the chrome swaps captions for the verdict card, so a
-   line after it would have no on-screen text).
+   first payoff by 3 s, results every ≤ 7.5 s, duration inside the 26-44 s lane with a
+   ≥ 1.5 s hold after the last VO line (01c: 25-44 s and ≥ 1.2 s, its loop-tight ending
+   since the round-2 QA), the verdict on the last VO line (the chrome swaps captions for
+   the verdict card, so a line after it would have no on-screen text); for 01c, the 12%
+   on screen before "10 points more", ①'s raise beside ③'s $450, and the caption and
+   verdict breaks between phrases.
 5. Contract checks: only lookOpts keys the target look kit actually reads; a wrong guess
    (01b's struck $62,000) types, lands and is struck on the VO words that say it, and its
    typed formula gives its shown result; the Becker figure's acting after the goal (01c's
@@ -48,6 +51,12 @@ FILES = {
 WPS = 2.6            # guide VO read rate, words per second
 ANCHOR_TOL = 0.5     # s: a beat may sit this far from the estimated spoken moment
 LANE = (26.0, 44.0)  # benchmark duration lane for worked lists
+HOLD_MIN = 1.5       # s of hold after the last VO line
+# per-teaser exceptions, each with its reason. 01c (round-2 QA): a loop-tight ending. Its kit holds the finished
+# sheet instead of clearing it, so the old 2.5 s silent tail read as a swipe-away leak; the closing pose now plays
+# right after the last VO line and the video loops 1.2 s later (25.3 s, 0.7 s under the lane's floor)
+LANE_EXCEPT = {"01c": (25.0, 44.0)}
+HOLD_EXCEPT = {"01c": 1.2}
 MAX_GAP = 7.5        # s between consecutive payoffs (results, then the verdict); format pace is 4-7 s
 
 # lookOpts keys each kit's dead-simple-list module (or its chrome) actually reads
@@ -246,8 +255,10 @@ EXPECT = {
     "01c": {
         "header": f"4 DEAD SIMPLE NUMBERS\nWILL A {C_PCT}% RAISE PUSH **{money(C_SALARY)}**\nINTO A HIGHER BRACKET?",
         "footer": f"ASSUMES single, standard deduction\n{TAX_YEAR} federal income tax only",
-        "verdict.text": f"Higher bracket? Yes. It costs you **{money(C_COST)}{NBSP}a{NBSP}year**",
+        "verdict.text": f"Higher bracket? Yes.\nIt costs you **{money(C_COST)}{NBSP}a{NBSP}year**",
         "data.input.value": money(C_SALARY),
+        "data.items[0].label": f"Pay after {C_PCT}%",
+        "data.items[0].note": f"+{money(C_RAISE)} raise",
         "data.items[0].formula": f"{money(C_SALARY)} × {1 + C_PCT / 100:.2f}",
         "data.items[0].result": money(C_NEW),
         "data.items[1].label": f"Where {C_HI_PCT}% starts",
@@ -255,7 +266,7 @@ EXPECT = {
         "data.items[1].result": money(C_LINE),
         "data.items[2].formula": f"{money(C_NEW)} − {money(C_LINE)}",
         "data.items[2].result": money(C_OVER),
-        "data.items[2].note": f"taxed at {C_HI_PCT}%",
+        "data.items[2].note": f"{C_HI_PCT}%, not {C_LO_PCT}%",
         "data.items[3].formula": f"{money(C_OVER)} × {C_PTS}%",
         "data.items[3].result": money(C_COST),
         "data.items[3].note": f"{C_HI_PCT}% − {C_LO_PCT}%",
@@ -508,8 +519,9 @@ def check_spec(key, spec):
             record(key, f"vo[{i}] ends before vo[{i + 1}]", end, f"≤ {vo[i + 1]['t']}", end <= vo[i + 1]["t"])
     last_end = vo[-1]["t"] + vo[-1]["d"]
     dur = spec["duration"]
-    record(key, "duration in 26-44 s lane", dur, LANE, LANE[0] <= dur <= LANE[1])
-    record(key, "≥ 1.5 s hold after last VO", round(dur - last_end, 2), "≥ 1.5", dur - last_end >= 1.5)
+    lane, hold = LANE_EXCEPT.get(key, LANE), HOLD_EXCEPT.get(key, HOLD_MIN)
+    record(key, f"duration in {lane[0]:g}-{lane[1]:g} s lane", dur, lane, lane[0] <= dur <= lane[1])
+    record(key, f"≥ {hold} s hold after last VO", round(dur - last_end, 2), f"≥ {hold}", dur - last_end >= hold - 1e-9)
 
     # 5. beat timing: matches the VO, types before it resolves, first payoff ≤ 3 s, steady pace
     type_dur = d.get("typeDur", 0.6)
@@ -605,7 +617,7 @@ def check_spec(key, spec):
                    a["t"] >= goal_t + 0.4 - 1e-9)
             if anc == "after":
                 record(key, f"acts[{j}] after the last VO line, ≥ 1.2 s before the end", a["t"],
-                       f"{last_end:.2f} … {dur - 1.2:.2f}", last_end <= a["t"] <= dur - 1.2)
+                       f"{last_end:.2f} … {dur - 1.2:.2f}", last_end <= a["t"] <= dur - 1.2 + 1e-9)
             else:
                 est = anchor_time(vo, *anc)
                 record(key, f"acts[{j}] '{a.get('act')}' at VO mention", a["t"],
@@ -613,6 +625,21 @@ def check_spec(key, spec):
                        est is not None and abs(a["t"] - est) <= ANCHOR_TOL)
         ts = [a["t"] for a in acts]
         record(key, "acts in time order", ts, "ascending", ts == sorted(ts))
+    if key == "01c":
+        # round-2 QA: the 12% that "10 points more" leans on is on screen (③'s note) before the VO says it
+        note_t = items[2]["resultT"] + 0.24          # the becker-rig kit fades a note in 0.24 s after its result
+        said = anchor_time(vo, 6, str(C_PTS))
+        record(key, f"③ note shows {C_LO_PCT}% before '{C_PTS} points more' is said", f"{note_t:.2f} s",
+               f"< {said:.2f} s", f"{C_LO_PCT}%" in items[2].get("note", "") and note_t < said)
+        # "Not your whole raise": both sides on screen, ①'s note (the whole raise) and ③'s $450 of it
+        record(key, "① note shows the whole raise; ③'s $450 is part of it", items[0].get("note"),
+               f"+{money(C_RAISE)} raise > {money(C_OVER)}", items[0].get("note") == f"+{money(C_RAISE)} raise"
+               and items[2]["result"] == money(C_OVER) and C_OVER < C_RAISE)
+        # caption and verdict breaks fall between phrases (\n), never inside one
+        record(key, "vo[6] caption breaks after '22%.'", vo[6]["text"].split("\n")[0], "…22%.",
+               vo[6]["text"].count("\n") == 1 and vo[6]["text"].split("\n")[0].endswith("22%."))
+        record(key, "verdict breaks after 'Yes.'", spec["verdict"]["text"].split("\n")[0], "Higher bracket? Yes.",
+               spec["verdict"]["text"].split("\n")[0] == "Higher bracket? Yes.")
     wg = lo.get("wrongGuess")
     if wg:
         record(key, "wrongGuess.t on the VO line that voices it", wg["t"],

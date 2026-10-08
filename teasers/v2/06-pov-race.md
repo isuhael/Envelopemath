@@ -2,7 +2,7 @@
 
 **Teasers:** 06a Scoreboard (Apple / first iPhone), 06b Live Sheet (Netflix bill / Netflix stock), 06c Becker Rig (latte / Starbucks stock)
 **Date:** 2026-10-07; hook pass 2026-10-08 (06b and 06c kept); hook pass 2 2026-10-08 (06b's hook replaced) · **Writer:** format 6 (revised after review, see the Review log at the end) · **Specs:** `studio/specs/06a-scoreboard-first-iphone-apple.json`, `06b-live-sheet-netflix-bill.json`, `06c-becker-rig-latte-starbucks.json`
-**Check:** `python3 teasers/v2/checks/06-pov-race.py`. It recomputes every on-screen and spoken number, cross-checks the source tables, and asserts the specs match, including VO pacing in spoken words (numbers read out in full) and the motion/payoff timing of the hook. Current result: 365 checks, 0 failed (after hook pass 2).
+**Check:** `python3 teasers/v2/checks/06-pov-race.py`. It recomputes every on-screen and spoken number, cross-checks the source tables, and asserts the specs match, including VO pacing in spoken words (numbers read out in full) and the motion/payoff timing of the hook. Current result: 378 checks, 0 failed (after the round-2 assembly fix pass).
 
 ---
 
@@ -52,8 +52,8 @@
 - **R2:** one input, no result, in the header, the title and the caption.
 - **R3:** partly. $499 is a price people paid or remember, not one most viewers paid. The pinned comment asks "what was your first iPhone?" so viewers swap in their own.
 - **R4:** small and familiar.
-- **R5:** "launch day" in the first spoken words (see the wrong belief below), and the chart opens in the red: the green tip falls through $499 at 2.15 s.
-- **R6:** you + $499 + 2007, all in the header.
+- **R5:** "Launch day 2007" are the first spoken words (see the wrong belief below), and the chart opens in the red: the green tip falls through $499 at 2.15 s.
+- **R6:** you + $499 + 2007, all in the header, and all in the first spoken line ("Launch day 2007: you skip the $499 iPhone and buy Apple stock.").
 - **R7:** phone vs stock, both named.
 - **R8:** 15 words.
 - **R9:** the year axis to 2025 is the countable loop.
@@ -67,30 +67,34 @@
 
 | t (s) | On screen | VO |
 |---|---|---|
-| 0.0 | Header. Both tips at **$499**. Empty axis 2007-2025. Year counter "2007". Footer. | "$499 on launch day." |
+| 0.0 | Header. Both counters at **$499** (24 px more air under the header than round 1). Empty axis 2007-2025. Year clock "2007". Footer. | "Launch day 2007: you skip the $499 iPhone and buy Apple stock." (0.0-5.8) |
 | 0.3 | The race starts. | |
-| 0.84 | Purchase tick "$499 iPhone 4GB" lands on both lines (pop). The white spend line runs flat at $499. | |
-| 1.40 | End of 2007: green tip **$809**, the first payoff. | |
-| 2.15-2.84 | Open in the red: the green line falls through the white line (t 2.15) to **$348** at the end of 2008 (thud, t 2.51; the counter turns coral), then is back above $499 by t 2.84. | (2.3) "You skip the iPhone line and buy Apple stock." |
-| 6.0 | 2011-2013: $1,655 → $2,372. | "You never add a cent. You just hold." |
-| 9.6 | 2014-2017: $3,336 → $5,403. The axis rescales. | "The phone gets old. The shares keep compounding." |
-| 13.7 | The green tip passes **$10,000** (ding, t 14.78). | "2020: it passes $10,000." |
-| 16.6 | End of 2021 $23,713 → end of 2022 $17,451 (t 16.96 → 18.07). | "2022 knocks off a quarter." |
-| 19.6 | 2023-2024: $26,004, $33,989, then the final **≈ $37,000** at t 21.4 (cash). Spend tip "$499 spent". Footer step: `$499 × 74.3 ≈ $37,000`. | "2025: about $37,000." |
-| 22.0 | The verdict replaces the header: **≈ 74×** your $499. / 2× every **≈ 3 yrs**. | "About 74 times. It doubled about every 3 years." |
+| 0.84 | The phone icon drops onto the white line, just left of the start point (pop; the SPENT counter flushes coral). No chart tag: the header, both counters and the board's phone glyph already say $499 / iPhone. | |
+| 1.40 | End of 2007: green tip **$809**, the first payoff, under the year clock's "2007". | |
+| 2.15-2.84 | Open in the red: the green line falls through the white line (t 2.15) to **$348** at the end of 2008 (thud, t 2.51; the counter turns coral; the clock reads "2008"), then is back above $499 by t 2.84. | |
+| 6.0 | End of 2012 at t 6.96: **$2,196** (tick). | "2012: about $2,200. You just hold." (6.0-9.6) |
+| 9.8 | The axis has rescaled and the white $499 line lies on the floor: from 10.6 s a "$499 / SPENT" tag rides its right end (until 14.7 s, when the 2016-19 closes squeeze under it). End of 2017 at t 12.51: **$5,403**, over 10× (tick). | "2017: over 10 times. The phone's long gone." (9.8-13.2) |
+| 13.7 | The green tip passes **$10,000** (ding, t 14.78; the clock has just rolled to "2020"). | "2020: it passes $10,000." |
+| 16.6 | End of 2021 $23,713 → end of 2022 $17,451 (t 16.96 → 18.07; the clock reads "2022" on the bottom). | "2022 knocks off a quarter." |
+| 19.6 | 2023-2024: $26,004, $33,989; the "$499 / SPENT" tag is back from 20.0 s. Final **≈ $37,000** at t 21.4 (cash; the tag bumps with it). Footer step: `≈ 136.7 shares × $271.12 (12/31/25 close)`. | "2025: about $37,000." (19.6-22.0: the caption covers the plot's squeeze) |
+| 22.0 | The plot squeezes up (21.7-22.0) and the verdict lands under it, in the band over the stage foot; the header keeps the hook: **≈ 74×** your $499. / 2× every **≈ 3 yrs**. | "About 74 times. It doubled about every 3 years." |
 | 25.6-26.5 | Hold on the finished race, then a hard cut to frame 1 (loop). | |
 
-The 2008 dip plays under the premise line on purpose: it is a picture beat (the mute test), not a spoken one, so no VO line has to race it.
+The year clock rolls to the next year one frame after each Dec-31 close (x = y + 0.99), so every close lands under its own year and a beat a few days into the new year (the $10,000 crossing at x 2020.03) is never caught mid-roll.
 
-### Guide VO script (50 words; every line fits 2.6 written and 2.8 spoken words per second)
+The 2008 dip plays under the hook line on purpose: it is a picture beat (the mute test), not a spoken one, so no VO line has to race it.
 
-> $499 on launch day. You skip the iPhone line and buy Apple stock. You never add a cent. You just hold. The phone gets old. The shares keep compounding. 2020: it passes $10,000. 2022 knocks off a quarter. 2025: about $37,000. About 74 times. It doubled about every 3 years.
+### Guide VO script (47 words; every line fits 2.6 written and 2.8 spoken words per second)
+
+> Launch day 2007: you skip the $499 iPhone and buy Apple stock. 2012: about $2,200. You just hold. 2017: over 10 times. The phone's long gone. 2020: it passes $10,000. 2022 knocks off a quarter. 2025: about $37,000. About 74 times. It doubled about every 3 years.
+
+Every middle line now lands a number on a visible close (2012 at 6.96 s, 2017 at 12.51 s, each with a tick), so there is no 7-second stretch without a beat. The JSON glues "about $2,200", "about $37,000", "Apple stock", "just hold" and "long gone" with no-break spaces (`\u00a0`) so the Scoreboard captions never orphan a word or split "about" from its number.
 
 ### The maths (every on-screen number)
 
 | On screen | Formula | Inputs |
 |---|---|---|
-| $499 (header, purchase tick, spend line, "$499 spent") | input | Apple's 4GB price at launch |
+| $499 (header, both counters, the spend line's "$499 / SPENT" tag, VO) | input | Apple's 4GB price at launch (`spend.final` "$499 spent" gives the tag its word) |
 | 2007.49 (purchase x) | 2007 + (day 180 − 1) ÷ 365 | June 29, 2007 |
 | Launch-day buy price $3.65 (adjusted) | 5.92 × 122.04 ÷ 198.08 = 3.6474 → $3.65 | StatMuse's adjusted 2007 close ($5.92) × the raw launch-day close ($122.04) ÷ the raw 2007 close ($198.08). Apple paid no dividend and did no split between those two dates, so this ratio carries the launch day onto any adjusted basis. Working back from the 2012 close less that year's two dividends gives $3.6505 (verifier); both round to $3.65. StatMuse's own launch-day figure, $3.66, is 0.3% off its own $5.92 on the raw ratio (more than the 2-decimal rounding of either), so it is used only as a cross-check. |
 | Shares ≈ 136.71 (adjusted) | $499 ÷ 3.65 | |
@@ -99,11 +103,13 @@ The 2008 dip plays under the premise line on purpose: it is a picture beat (the 
 | $809 / $348 / $862 / $1,319 / $1,655 | year ends 2007-2011 | closes 5.92, 2.5485, 6.3067, 9.6485, 12.1077 (bridged) |
 | $2,196 … $37,065 | year ends 2012-2025 | 16.06, 17.35, 24.40, 23.67, 26.62, 39.52, 37.39, 70.66, 128.82, 173.45, 127.65, 190.21, 248.62, 271.12 |
 | Dips below $499 in 2008 | linear crossing between the 2007 ($809.34) and 2008 ($348.41) points at x 2008.66 (t 2.15) | |
+| "2012: about $2,200" (VO) | 136.71 × $16.06 = $2,195.60, to 2 significant figures | the 2012 close, at t 6.96 |
+| "2017: over 10 times" (VO) | 136.71 × $39.52 = $5,402.87; ÷ $499 = 10.83 (the check asserts 10-11) | the 2017 close, at t 12.51 |
 | Passes $10,000 in 2020 | crossing between $9,660 (2019) and $17,611 (2020) at x 2020.03 (t 14.78) | |
 | "a quarter" (2022) | 1 − 127.65 ÷ 173.45 = 26.4% | |
 | ≈ $37,000 / "about $37,000" | $37,065.45, rounded to the nearest $1,000 (2 significant figures). At 3 significant figures it would read ≈ $37,100; the round thousand is the figure a viewer can say in one breath, and the pinned comment gives $37,062 / $37,065. | Cross-check from StatMuse alone: $499 × 271.36 ÷ 3.66 = $36,997 (0.18% apart) |
 | ≈ 74× | $37,065.45 ÷ $499 = 74.28 | |
-| $499 × 74.3 ≈ $37,000 (footer step) | 499 × 74.3 = 37,076, to the nearest $1,000 | |
+| `≈ 136.7 shares × $271.12 (12/31/25 close)` (footer step at the finish) | 136.7 × 271.12 = $37,062, which rounds to the counter's ≈ $37,000 (the check asserts it). It shows the working the screen does not show elsewhere; round 1's `$499 × 74.3 ≈ $37,000` repeated the counter and the verdict | 499 ÷ 3.65 = 136.712 shares |
 | 2× every ≈ 3 yrs | log₂ 74.28 = 6.21 doublings; 18.51 years (6/29/2007 → 12/31/2025) ÷ 6.21 = 2.98 | |
 
 ### Sources

@@ -4,14 +4,14 @@
   "format": "pov-race",
   "fps": 30,
   "duration": 30.5,
-  "header": "**$19.99** Netflix, free for\nhow many years, if your\n2012-25 bills bought its stock?",
-  "footer": "Standard plan list price, 2012-25 · 12/31/25 value ÷ $19.99 a month",
+  "header": "**$19.99** Netflix, free\nfor how many years?",
+  "footer": "Standard plan list price · 12/31/25 close",
   "captions": true,
   "vo": [
     {
       "t": 0.0,
-      "d": 2.9,
-      "text": "Your $19.99 Netflix, free. For how long?"
+      "d": 2.4,
+      "text": "Your Netflix, free. For how long?"
     },
     {
       "t": 3.0,
@@ -29,12 +29,12 @@
       "text": "Each year's bills buy at that year's average price."
     },
     {
-      "t": 13.4,
-      "d": 2.6,
-      "text": "2020: about 38 years of Netflix."
+      "t": 14.3,
+      "d": 2.4,
+      "text": "2020: about 38 years."
     },
     {
-      "t": 16.9,
+      "t": 17.0,
       "d": 1.6,
       "text": "2022: it halves."
     },
@@ -250,38 +250,51 @@
     "hold": 7.5
   },
   "lookOpts": {
+    "cover": "clean",
+    "startLabel": "2012",
+    "formulaAt0": 1,
+    "typeMax": 0.3,
+    "erase": 0.1,
+    "verdict": "hero",
+    "unit": {
+      "label": "Years of free Netflix",
+      "per": 239.88,
+      "perMonth": 19.99,
+      "final": "≈ 74 years",
+      "holds": [
+        2012.99,
+        2020.99,
+        2022.99
+      ]
+    },
     "formulaBar": [
       {
         "t": 0.0,
-        "text": "≈ stock ÷ ($19.99 × 12) = ? years"
+        "text": "= stock ÷ ($19.99 × 12)"
       },
       {
         "t": 1.93,
-        "text": "≈ $107 ÷ $19.99 ≈ 5 months"
-      },
-      {
-        "t": 3.55,
-        "text": "≈ $568 ÷ $239.88 ≈ 2.4 years"
+        "text": "2012: $107 ÷ $19.99 ≈ 5 months"
       },
       {
         "t": 9.2,
-        "text": "≈ each year's bills ÷ that year's avg price"
+        "text": "each year: bills ÷ avg price"
       },
       {
         "t": 14.91,
-        "text": "≈ $9,181 ÷ $239.88 ≈ 38 years"
+        "text": "2020: $9,181 ÷ $239.88 ≈ 38 yrs"
       },
       {
         "t": 18.15,
-        "text": "≈ $5,289 ÷ $239.88 ≈ 22 years"
+        "text": "2022: $5,289 ÷ $239.88 ≈ 22 yrs"
       },
       {
         "t": 21.2,
-        "text": "≈ 188.8 shares × $93.76 ≈ $17,700"
+        "text": "188.8 shares × $93.76 ≈ $17,700"
       },
       {
         "t": 26.0,
-        "text": "≈ $17,700 ÷ $239.88 ≈ 74 years"
+        "text": "$17,706 ÷ $239.88 ≈ 74 years"
       }
     ]
   },

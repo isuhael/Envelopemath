@@ -83,8 +83,8 @@ export const css = `
 /* the hero verdict (lookOpts.verdict 'hero'): the answer slammed over the dimmed chart */
 .pov-hdim { position: absolute; left: 0; background: #FFFFFF; opacity: 0; z-index: 7; }
 .pov-hero { position: absolute; left: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 10px; z-index: 8; opacity: 0; pointer-events: none; }
-.pov-hbig { font: 900 150px/1.02 'Inter', 'Inter Full', sans-serif; color: #101828; letter-spacing: -0.035em; white-space: nowrap;
+  gap: 0; z-index: 8; opacity: 0; pointer-events: none; }
+.pov-hbig { font: 900 150px/1.2 'Inter', 'Inter Full', sans-serif; color: #101828; letter-spacing: -0.035em; white-space: nowrap;
   padding: 0 0.08em; transform-origin: 50% 55%;
   background-image: linear-gradient(#FFD60A, #FFD60A); background-repeat: no-repeat; background-size: var(--hl, 0%) 0.82em; background-position: 0 62%; }
 .pov-hsub { font: 800 48px/1.1 'Inter', 'Inter Full', sans-serif; color: #344054; letter-spacing: -0.012em; white-space: nowrap; }
@@ -472,7 +472,8 @@ export default function povRace(spec, ctx) {
   const holdWin = []
   if (U) {
     const num = h('div', { class: 'ls-rn', 'data-deco': '', style: { width: gutter + 'px', height: AH + 'px' } })
-    const labA = h('span', { class: 'pov-alab', html: mk(U.label) }), labB = h('span', { class: 'pov-alab' })
+    // the two labels cross-fade in one spot (unit.label ↔ "End of 2020"): an intended overlap
+    const labA = h('span', { class: 'pov-alab', 'data-overlap-ok': '', html: mk(U.label) }), labB = h('span', { class: 'pov-alab', 'data-overlap-ok': '' })
     const vNum = h('span', { class: 'pov-anum' }), vUnit = h('span', { class: 'pov-aunit' })
     const val = h('span', { class: 'pov-aval' }, vNum, vUnit)
     const cell = h('div', { class: 'pov-acell', style: { left: colX[0] + 'px', width: Wd - colX[0] + 'px', height: AH + 'px', padding: `0 ${padX + HANDLE_PAD}px 0 ${padX}px` } },
@@ -552,6 +553,9 @@ export default function povRace(spec, ctx) {
   // purchase markers (rings on the spend line) and the price tag of the latest one
   const markG = s('g', {})
   const marks = purchases.map(() => { const c = s('circle', { r: 9, fill: C.sheet, stroke: C.bad, 'stroke-width': 5, opacity: 0 }); markG.append(c); return c })
+  // a tag's ring rings out as the tag pops (the link when a parked tag has no leader)
+  const pulse = s('circle', { r: 9, fill: 'none', stroke: C.bad, 'stroke-width': 4, opacity: 0 })
+  markG.append(pulse)
   chart.svg.insertBefore(markG, chart.svg.lastChild)
   // a parked tag's leader to its ring (under the rings and tips)
   const leader = s('line', { stroke: '#101828', 'stroke-width': 4, 'stroke-linecap': 'round', opacity: 0, x1: 0, y1: 0, x2: 0, y2: 0 })
@@ -653,7 +657,7 @@ export default function povRace(spec, ctx) {
     const geoms = [0, 0.15, 0.3, 0.5, 0.7, 0.85, 1].map(k => tagGeom(lerp(tA + 0.03, tB, k)))
     let best = null
     for (const c of tagCands(f)) {
-      let cost = c.pref, ok = true
+      let cost = c.pref, ok = true, cross = false, lead = 0
       for (const g of geoms) {
         const mx = chart.X(p.x), my = yAt(valAt(sp, p.x), g.ym)
         const r = placeTag(c, f, mx, my)
@@ -668,11 +672,13 @@ export default function povRace(spec, ctx) {
         })
         if (r.park) {
           const a = leaderOf(r, f, mx, my)
-          cost += 0.04 * Math.hypot(a[2] - a[0], a[3] - a[1])
-          g.lines.forEach(ln => { for (let k = 1; k < ln.length; k++) if (segX([a[0], a[1]], [a[2], a[3]], ln[k - 1], ln[k])) cost += 900 })
+          lead += 0.04 * Math.hypot(a[2] - a[0], a[3] - a[1])
+          g.lines.forEach(ln => { for (let k = 1; k < ln.length; k++) if (segX([a[0], a[1]], [a[2], a[3]], ln[k - 1], ln[k])) cross = true })
         }
       }
-      if (ok && (!best || cost < best.cost)) best = { cost, c, f }
+      // a leader across a line reads as a mistake: such a spot keeps its tag but drops the leader (a flat cost)
+      cost += cross ? 160 : lead
+      if (ok && (!best || cost < best.cost)) best = { cost, c, f, noLeader: cross }
     }
     return best
   }
@@ -713,7 +719,7 @@ export default function povRace(spec, ctx) {
   const entries = []
   for (let k = frozen ? 1 : 0; k <= N - 2; k++) entries.push({ k, t: k === 0 ? r0 : T[k] })
   const scrollAt = t => entries.reduce((a, e) => a + ease.out(prog(t, e.t + 0.04, 0.3)), 0)
-  const finalP = t => prog(t, r1, M.drop)
+  const finalP = t => (t < r1 ? 0 : 0.25 + 0.75 * prog(t, r1, M.drop))   // from 0.25: never a blank frame at the finish
   const wipeT = r1 + 0.16, springT = r1 + 0.34
 
   // ---------- formula bar ----------
@@ -743,6 +749,8 @@ export default function povRace(spec, ctx) {
   let lastTick = -Infinity
   for (let k = 1; k < N - 1; k++) if (T[k] - lastTick >= 0.35) { ctx.cue(T[k], 'tick', { gain: 0.5 }); lastTick = T[k] }
   ctx.cue(r1, 'pop', { gain: 0.9 })
+  for (const w of holdWin) ctx.cue(w.t0 + 0.02, 'pop', { gain: 0.55 })
+  if (vMode === 'hero') ctx.cue(verdict.t + 0.06, 'hit', { gain: 0.75 })
   ctx.cue(springT, 'reveal', { gain: 0.4 })
   const vf = fx.find(e => e.verdict)
   if (vf) ctx.cue(vf.end + 0.05, 'ding')
@@ -761,15 +769,15 @@ export default function povRace(spec, ctx) {
   // the answer row at t → { num, unit, color, fill (yellow 0..1), lab (0: unit.label, 1: "End of <year>"), year, p (entrance) }
   function ansAt(t) {
     if (t < r0) return { num: '?', unit: 'years', color: C.ink, fill: 1, lab: 0, p: 1 }
-    if (t >= r1 && ans.finalSplit) return { num: ans.finalSplit.main, unit: ans.finalSplit.suf, color: C.good, fill: 0, lab: 0, p: prog(t, r1, M.drop), fin: true }
+    if (t >= r1 && ans.finalSplit) return { num: ans.finalSplit.main, unit: ans.finalSplit.suf, color: C.good, fill: 0, lab: 0, p: finalP(t), fin: true }
     const live = valAt(ow, xRace(t))
-    let v = live, fill = 0, lab = 0, year = null
+    let v = live, fill = 0, lab = 0, year = null, land = null, flash = 0
     for (const w of holdWin) {
-      if (t >= w.t0 && t < w.t1) { v = w.v; fill = 1; lab = clamp((t - w.t0) / 0.12); year = w.year }
-      else if (t >= w.t1 && t < w.t1 + 0.3) { v = lerp(w.v, live, ease.inOut(prog(t, w.t1, 0.3))); fill = 1 - prog(t, w.t1, 0.3); lab = 1 - prog(t, w.t1, 0.12); year = w.year }
+      if (t >= w.t0 && t < w.t1) { v = w.v; fill = 1; lab = 1; year = w.year; land = prog(t, w.t0, 0.24); flash = flashAlpha(t, w.t0, 0.45) }
+      else if (t >= w.t1 && t < w.t1 + 0.3) { v = lerp(w.v, live, ease.inOut(prog(t, w.t1, 0.3))); fill = 1 - prog(t, w.t1, 0.3) }
     }
     const [num, unit] = unitText(v)
-    return { num, unit, color: C.good, fill, lab, year, p: clamp((t - r0) / 0.12) }
+    return { num, unit, color: C.good, fill, lab, year, land, flash, p: clamp((t - r0) / 0.12) }
   }
   return {
     duration,
@@ -872,9 +880,28 @@ export default function povRace(spec, ctx) {
         })
       }
 
-      // selection: the live row's B:C range with its fill handle, then (once the race lands) the Owned cell
+      // the answer row: "?" on the cover, live from the race start, a landing at each unit.holds year-end, the final
+      // from r1 (wiping yellow with the race row); the loop clears it back to "?"
+      if (ans) {
+        let a = ansAt(tt), st = { opacity: '1', transform: 'none' }
+        if (!inLoop && t >= r0 && a.p < 1) st = snapIn(a.p)
+        if (!inLoop && a.fin) st = snapIn(a.p)
+        if (!inLoop && a.land != null && a.land < 1) st = { opacity: '1', transform: `scale(${(1 + 0.16 * (1 - ease.out(a.land))).toFixed(4)})` }
+        if (inLoop) { if (outQ < 1) st = liftOut(outQ) || st; else { a = ansAt(-1); st = snapIn(inQ) } }
+        setText(ans.vNum, a.num); setText(ans.vUnit, a.unit)
+        setStyle(ans.val, { ...st, color: a.color })
+        if (a.year != null) setHTML(ans.labB, `End of <b>${a.year}</b>`); else setHTML(ans.labB, '')
+        setStyle(ans.labA, { opacity: String(1 - clamp(a.lab)) }); setStyle(ans.labB, { opacity: String(clamp(a.lab)) })
+        const fin = t >= wipeT && !(inLoop && outQ >= 1) ? (wipe >= 1 ? hiA : wipe * hiA) : 0
+        const fill = Math.max(clamp(a.fill), fin)
+        setStyle(ans.cell, { backgroundColor: fill > 0.001 ? rgba(C.rowHi, fill) : 'transparent', backgroundImage: a.flash > 0.001 ? `linear-gradient(${rgba(C.accent, a.flash)}, ${rgba(C.accent, a.flash)})` : 'none' })
+        setText(ans.num, String(numNow + 1))
+      }
+
+      // selection: the live row's B:C range with its fill handle, then (once the race lands) the Owned cell, or the
+      // answer row when there is one
       const selRange = { x0: colX[1], x1: Wd, y0: liveTop, y1: liveTop + liveH }
-      const selOwn = { x0: colX[2], x1: Wd, y0: liveTop, y1: liveTop + liveH }
+      const selOwn = ans ? { x0: colX[0], x1: Wd, y0: ansY, y1: ansY + AH } : { x0: colX[2], x1: Wd, y0: liveTop, y1: liveTop + liveH }
       let rect = selRange, handle = true
       if (!inLoop && t >= springT) { rect = springRect(selRange, selOwn, prog(t, springT, M.pick), 1.6); handle = false }
       if (inLoop) { rect = lerpRect(t >= springT ? selOwn : selRange, selRange, ease.inOut(prog(t, loopT0, 0.34))); handle = true }
@@ -883,7 +910,9 @@ export default function povRace(spec, ctx) {
       const onOwn = !inLoop && t >= springT + M.pick * 0.5
       const nums = [headNum, fz && fz.num, ...hist.map(r => r.num)].filter(Boolean)
       for (const el of nums) setStyle(el, { backgroundColor: C.head, color: C.headText })
-      setStyle(lv.num, { backgroundColor: C.headSel, color: C.headSelText })
+      const ansSel = !!ans && onOwn
+      setStyle(lv.num, { backgroundColor: ansSel ? C.head : C.headSel, color: ansSel ? C.headText : C.headSelText })
+      if (ans) setStyle(ans.num, { backgroundColor: ansSel ? C.headSel : C.head, color: ansSel ? C.headSelText : C.headText })
       letterEls.forEach((el, j) => { const on = onOwn ? j === 2 : j >= 1; setStyle(el, { backgroundColor: on ? C.headSel : C.head, color: on ? C.headSelText : C.headText }) })
 
       // chart: lines up to xNow, live y rescale, the gap, purchase markers and the latest price tag
@@ -896,9 +925,18 @@ export default function povRace(spec, ctx) {
         attr(marks[i], 'cx', on ? chart.X(p.x).toFixed(1) : '0'); attr(marks[i], 'cy', on ? svgY(chart.Y(valAt(sp, p.x))) : '0')
       })
       let ti = -1, tagA = 0
+      {
+        let pi = -1
+        if (!inLoop) purchases.forEach((p, i) => { if (t >= tagT[i] && tagT[i] > 0) pi = i })
+        const q = pi >= 0 ? prog(t, tagT[pi], 0.55) : 1
+        if (q > 0 && q < 1) {
+          attr(pulse, 'cx', chart.X(purchases[pi].x).toFixed(1)); attr(pulse, 'cy', svgY(chart.Y(valAt(sp, purchases[pi].x))))
+          attr(pulse, 'r', (10 + 26 * ease.out(q)).toFixed(1)); attr(pulse, 'opacity', (0.7 * (1 - q)).toFixed(3))
+        } else { attr(pulse, 'opacity', 0); attr(pulse, 'cx', 0); attr(pulse, 'cy', 0); attr(pulse, 'r', 9) }
+      }
       if (!inLoop) {
         purchases.forEach((p, i) => { if (t >= tagT[i]) ti = i })
-        if (ti >= 0) tagA = (tagT[ti] <= 0 ? 1 : prog(t, tagT[ti], 0.18)) * (1 - prog(t, tagOut(ti), 0.25))
+        if (ti >= 0) tagA = (tagT[ti] <= 0 ? 1 : prog(t, tagT[ti], 0.18)) * (1 - prog(t, tagOut(ti), 0.12))
       } else if (startTag >= 0) {
         // the loop ends on frame 1, start tag included
         ti = startTag; tagA = prog(t, loopT0 + 0.3, 0.14)
@@ -918,7 +956,7 @@ export default function povRace(spec, ctx) {
         let ox, oy
         if (r.park) {
           const a = leaderOf(r, f, mx, my)
-          attr(leader, 'opacity', clamp(tagA).toFixed(3))
+          attr(leader, 'opacity', spot.noLeader ? 0 : clamp(tagA).toFixed(3))
           attr(leader, 'x1', a[0].toFixed(1)); attr(leader, 'y1', svgY(a[1])); attr(leader, 'x2', a[2].toFixed(1)); attr(leader, 'y2', svgY(a[3]))
           setStyle(tagNotch, { left: '0px', top: '0px', display: 'none' })
           ox = a[0] - r.x0; oy = a[1] - r.y0
@@ -959,6 +997,21 @@ export default function povRace(spec, ctx) {
           transformOrigin: `${nx + 10}px ${ny + 10}px`, transform: pop >= 1 ? 'none' : `scale(${Math.max(1, pop).toFixed(4)})`,
         })
         setStyle(tagNotch, { left: Math.round(nx) + 'px', top: Math.round(ny) + 'px' })
+      }
+
+      // the hero verdict: the chart dims, the answer slams in over it, its marker wipes in; the loop fades it away
+      if (hero) {
+        const vt = verdict.t, out = inLoop ? ease.inOut(prog(t, loopT0, 0.25)) : 0
+        setStyle(hero.dim, { opacity: (0.94 * ease.out(prog(t, vt, 0.22)) * (1 - out)).toFixed(3) })
+        const p = prog(t, vt + 0.06, 0.34)
+        if (t < vt + 0.06 || out >= 1) {
+          setStyle(hero.box, { opacity: '0' }); setStyle(hero.big, { transform: 'none', '--hl': '0%' })
+          if (hero.sub) setStyle(hero.sub, { opacity: '0', transform: 'none' })
+        } else {
+          setStyle(hero.box, { opacity: (clamp(p * 4) * (1 - out)).toFixed(3) })
+          setStyle(hero.big, { transform: p >= 1 ? 'none' : `scale(${(1 + 0.22 * (1 - ease.back(p, 1.6))).toFixed(4)})`, '--hl': (ease.inOut(prog(t, vt + 0.3, 0.3)) * 100).toFixed(1) + '%' })
+          if (hero.sub) { const q = ease.out(prog(t, vt + 0.28, 0.26)); setStyle(hero.sub, { opacity: q.toFixed(3), transform: q >= 1 ? 'none' : `translateY(${Math.round(14 * (1 - q))}px)` }) }
+        }
       }
     },
   }

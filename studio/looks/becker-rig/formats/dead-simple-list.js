@@ -5,13 +5,16 @@
 // The figure stands on the floor at the far right, right of the list, and does the maths with his hands, as a tool:
 // every formula is split at its first operator. The number ("$100,000") drops into the slot as a white glyph
 // block and types itself; the operator and the rest ("× 0.25") type onto an ink plate that pops into his hands
-// (he holds it low, below his hips, so it only ever shares the bottom ~100 px of the list).
+// (he holds it in front of him at his waist, its bottom ~60 px off the floor, so his arms and legs show and it only
+// ever shares the bottom ~130 px of the list). An item at t <= 0.3 is pre-typed at frame 1 (the cover), and from
+// 0.1 s he flips that plate up and catches it (it turns like a card) until his wind-up: the opening never freezes.
 // He winds up and throws the plate: it tumbles up the screen and slams down onto the number. Impact (hit lines,
 // chips, shake, sound), and the pair crunches into the answer, which squashes into its socket; its note follows.
 // The goal answer is a two-handed heave (the longest wind-up, up to 1 s over a riser) that lands on a gold plate
 // with the big impact (white flash, camera punch, cash); he celebrates and points at it (his hand aims at it).
-// In the rows layout the goal is the climax by size too: its answer is set 1.45x (else 1.3x, 1.15x) when every
-// other answer still gets 64 px or more; only the goal row is as tall as its plate.
+// In the rows layout the goal is the climax by size too: its answer is set 1.45x (else 1.35x, 1.3x, 1.15x) when
+// every other answer still gets 64 px or more; only the goal row is as tall as its plate, plus clear space above
+// and below it (GOAL_CLR), so the plate is staged rather than squeezed between its label and the floor.
 //
 // Layout (measured with the real fonts at mount; the first that fits wins):
 //   rows   label line(s) + value line. Labels may wrap to 2 lines (3 as a last resort). The block, the answer and
@@ -19,7 +22,7 @@
 //   lines  long lists: one row per item, a label column (wraps to 2 lines, note underneath when there is room)
 //          and every answer right-aligned on ONE edge; a row whose label cannot sit beside a long answer is
 //          stacked (label full width, answer on its own line under it, same edge). A wide block ducks the label.
-// Only the bottom ~100 px under his held plate is shared, normally by the bottom (last) row alone: its label and
+// Only the bottom ~130 px under his held plate is shared, normally by the bottom (last) row alone: its label and
 // block step in left of the plates while they are there; its answer lands after the last plate is gone. With 5
 // items or fewer the rows spread out (pitch up to ~260 px, values up to 84 px) and the list is centred. If nothing
 // fits: notes shrink, the input line is dropped, the figure shrinks (0.84 -> 0.66), 3-line labels are allowed, a
@@ -36,9 +39,10 @@
 //   acts: [{ t, act, item? }]               his acting after the goal, keyed to the VO lines that follow it
 //                                            (an act before he lands from his jump waits for it). act:
 //                                            'point' (at item's answer, default the goal: it pulses with a ring of
-//                                            hit lines and a pop; a non-goal answer turns green again, and its
+//                                            hit lines and a pop (the goal: <= 1.05x about its plate's left edge,
+//                                            sparks at both ends instead of the ring); a non-goal answer turns green again, and its
 //                                            tab gets the ring, until the next point), 'wag' ("no, no"), 'shrug',
-//                                            'nod', 'cheer' (a jump) or 'proud' (hands on hips, held)
+//                                            'nod', 'cheer' (a jump) or 'proud' (hands on hips, elbows out, held)
 import {
   h, s, style, attr, setHTML, fitText, prog, clamp, lerp, plain, markup, typed, graphemes,
   C, F, L, M, E, poseTrack, Figure, makeWorld, makeFx, camera, NumObj, pinLimb, blendJ,
@@ -47,7 +51,8 @@ import {
 
 const TAB_X = 60, TAB = 58, X0 = TAB_X + TAB + 22   // number tab, then the text column
 const CR = 834                                       // right edge for labels, results and notes (every row)
-const FXk = k => Math.round(944 - 52 * k)            // the figure's hip x (he faces left, toward the list): far right
+const FXk = k => Math.round(916 - 52 * k)            // the figure's hip x (he faces left, toward the list): far right, his
+                                                     // back arm and pencil clear of the platform button rail (x > 940)
 const XMAX = 934                                     // nothing he holds passes this x (the right button rail)
 const LANE = 895                                     // the plate flies up this lane edge-on (right of every row)
 const BP = { x: 18, y: 8, b: 6 }                     // glyph block padding + border
@@ -170,7 +175,7 @@ export default function deadSimpleList(spec, ctx) {
   }
 
   // ---- the figure's corner: bottom right, on the floor, right of the list (his body stays right of CR). He holds
-  // each plate LOW, hanging from his hands at hip height, so the corner the plates need is only the bottom ~100 px:
+  // each plate at his waist, hanging from his hands, so the corner the plates need is only the bottom ~130 px:
   // normally only the bottom row shares it, and that row is the last item, whose answer lands after every plate
   // has gone (it keeps the full right edge).
   const figTop = k => L.floorY - 262 * k                            // head top
@@ -534,7 +539,7 @@ export default function deadSimpleList(spec, ctx) {
     for (let q = 0; q < 3; q++) {
       const air = q ? 0.36 : 0.5
       if (a + 0.08 + air + 0.3 > TI[0].tw - 0.04) break
-      flips.push({ r: a + 0.08, c: a + 0.08 + air, h: q ? 30 : 50, spins: q ? 1 : 2 })   // (the apex stays under his head)
+      flips.push({ r: a + 0.08, c: a + 0.08 + air, h: q ? 28 : 40, spins: q ? 1 : 2 })   // (the apex stays under his head)
       a += 0.08 + air + 0.42
     }
   }
@@ -669,12 +674,12 @@ export default function deadSimpleList(spec, ctx) {
   const flipAt = (r, p) => (!r.inCorner && p > 0.14 && p < 0.7 ? 0.35 + 0.65 * Math.abs(Math.cos(Math.PI * 3 * (p - 0.14) / 0.56)) : 1)
   R.forEach((r, i) => { r.from = heldAt(Jat(TI[i].tr), i) })
   for (const f of flips) { f.p0 = heldAt(Jat(f.r), 0); f.p1 = heldAt(Jat(f.c), 0) }
-  // a flipped plate: off his hands at f.r, back in them at f.c -> [x, y, rot, sy] | null
+  // a flipped plate: off his hands at f.r, back in them at f.c -> [x, y, rot, sx] | null
   const tossAt = t => {
     const f = flips.find(q => t >= q.r && t < q.c)
     if (!f) return null
     const p = prog(t, f.r, f.c - f.r)
-    return [lerp(f.p0[0], f.p1[0], p), lerp(f.p0[1], f.p1[1], p) - 4 * f.h * p * (1 - p), -10 * Math.sin(Math.PI * p),
+    return [lerp(f.p0[0], f.p1[0], p), lerp(f.p0[1], f.p1[1], p) - 4 * f.h * p * (1 - p), 7 * Math.sin(Math.PI * p),
       0.3 + 0.7 * Math.abs(Math.cos(Math.PI * f.spins * p))]
   }
   const handsFree = t => flips.reduce((w, f) => Math.max(w, smooth(f.r, f.r + 0.06, t) * (1 - smooth(f.c - 0.07, f.c, t))), 0)
@@ -698,7 +703,14 @@ export default function deadSimpleList(spec, ctx) {
   // left-centre and at most 1.05x, so it stays inside the clear space around it (a plain answer: 1.1x, centred)
   for (const pu of pulses) {
     const r = R[pu.i], hw = r.sw / 2 + (r.goal ? PLATE[0] + 6 : 0)
-    fxk.impact(pu.t, { x: r.home - (r.goal ? PLATE[0] + 6 : 0) + hw, y: yV(pu.i), rx: hw + 14, ry: VhI(pu.i) / 2 + 4, r: 20, lines: 8, shake: 0, punch: r.goal ? 0.015 : 0, cue: 'pop', gain: r.goal ? 0.7 : 0.5 })
+    if (r.goal) {
+      // the goal sparks from both ends of its plate, inside the plate's own height: the burst never reaches into the
+      // clear space above and below it (rays aimed into the plate are hidden under it)
+      const pl = r.home - PLATE[0] - 6, pw = r.sw + 2 * PLATE[0] + 12, ry = Math.max(10, plateH(v) / 2 - 36)
+      for (const [x, first] of [[pl - 4, true], [pl + pw + 4, false]]) {
+        fxk.impact(pu.t, { x, y: yV(pu.i), rx: 6, ry, r: 18, lines: 6, shake: 0, punch: first ? 0.015 : 0, cue: first ? 'pop' : null, gain: 0.7 })
+      }
+    } else fxk.impact(pu.t, { x: r.home + hw, y: yV(pu.i), rx: hw + 14, ry: VhI(pu.i) / 2 + 4, r: 20, lines: 8, shake: 0, punch: 0, cue: 'pop', gain: 0.5 })
   }
   // while he points at an answer that is not the goal, it is the focal number again: green until the next point
   const focusOf = i => pulses.map((pu, j) => (pu.i === i ? { t0: pu.t, t1: (pulses[j + 1] || { t: Infinity }).t } : null)).filter(Boolean)
@@ -776,7 +788,7 @@ export default function deadSimpleList(spec, ctx) {
           sx = sy = pp.scale; op = pp.opacity
           rot = t >= T0.tw ? -8 * Math.sin(Math.PI * prog(t, T0.tw, T0.tr - T0.tw)) : 0
           const fl = i === 0 ? tossAt(t) : null
-          if (fl) { [x, y, rot] = fl; sy = fl[3] }
+          if (fl) { [x, y, rot] = fl; sx = fl[3] }                 // (it spins like a card turning on its axis)
         } else if (t < T0.res) {
           const p = prog(t, T0.tr, T0.flight)
           ;[x, y, rot] = flightAt(r, p)
@@ -868,6 +880,5 @@ export default function deadSimpleList(spec, ctx) {
     } else cam.set({ zoom, shake })
   }
 
-  if (typeof window !== 'undefined') window.__dsl = { lay: { mode: lay.mode, v, l, m, k, HL, Vh, VhA: lay.VhA, gap: lay.gap, Sy: SyA, yV: R.map((_, i) => yV(i)), yLT: rows ? R.map((_, i) => yLT(i)) : null, R: RA, notes: lay.notes, TI, Y0, YB, cz: corner(k, m), PH, BH, ph: plateH(v), nlR, lh: lay.lh }, probe: t => { const J = Jat(t); return { hF: J.hF.map(Math.round), hB: J.hB.map(Math.round), hip: J.hip.map(Math.round), head: J.head.map(Math.round) } } } // DEBUG-01C
   return { duration, seek }
 }

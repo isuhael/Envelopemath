@@ -12,7 +12,7 @@ Format 10 "cost-counter" (real-time cost counter): maths and spec check for teas
    - every number token in every display string and VO line is a computed value or a labelled constant;
    - "≈" sits on every rounded result and on no exact one (rate, counter final, times, rounded VO numbers);
    - numerics: perSecond = exact rate to the cent; the counter final = perSecond × run time (checked with the
-     stored and the exact rate), or, when the counter stops on its last milestone (10a, 10c), that milestone's exact
+     stored and the exact rate), or, when the counter stops on its last milestone (10a, 10b, 10c), that milestone's exact
      amount with no "≈" (the stop is within $0.50 of it at both rates, so the dollar reading is exact); milestones
      ascend and are all passed before the counter stops;
    - frame 1: the header asks a question (R11) and the footer carries the viewer-owned pay number
@@ -176,6 +176,7 @@ PAY = MEDIAN_WEEKLY * WEEKS                                  # 65,052
 PAY3 = PAY * 3                                               # 195,156 (10b)
 PAY10 = PAY * TEN                                            # 650,520
 PAY20 = PAY * 20                                             # 1,301,040 (10b)
+PAY30 = PAY * 30                                             # 1,951,560 (10b, assembly pass 4)
 PAY40 = PAY * WORKING_YEARS                                  # 2,602,080
 
 RATE_A = F(NET_INTEREST_FY2025, SECONDS_PER_YEAR)            # $/s, interest
@@ -321,15 +322,23 @@ B["minute_years"] = rhu(B["minute"] / PAY)                             # 72 (cap
 B["minute_used"] = rhu((B["t_pay40"] - B["t0"]) / MINUTE * 100)        # 55 (% of the minute used at the burst; md only)
 B["public_rate"] = sig(DEBT_HELD_PUBLIC_GROWTH / (DAYS_B * SECONDS_PER_DAY), 2)   # 66,000 (TikTok reply)
 B["public_minute_m"] = rhu(DEBT_HELD_PUBLIC_GROWTH / (DAYS_B * SECONDS_PER_DAY) * MINUTE / 10**6, F(1, 10))   # 4.0
-B["run"] = (B["t0"], F("33.3"))
-B["final_exact"] = RATE_B * (B["run"][1] - B["run"][0])
-B["final"] = f"{ap(rhu(B['final_exact']), B['final_exact'])}{usd(B['final_exact'])}"
+B["t_pay30"] = pass_time(PAY30, RATE_B, B["t0"])
+# the counter stops on the 40-year pass (assembly pass 4; 5 dp: the exact-rate pass is 33.2741064 s, the kit's
+# stored-rate pass 33.2741059 s), so the board and the strip's last ✓ show the same $2,602,080
+B["run"] = (B["t0"], F("33.27411"))
+B["final_exact"] = RATE_B * (B["run"][1] - B["run"][0])                # 2,602,080.28
+B["lands_on"] = PAY40
+B["final"] = usd(B["lands_on"])                                        # $2,602,080 (no ≈: within $0.50 at both rates)
+B["hold"] = F("36.6") - B["run"][1]                                    # 3.32589
 assert B["t_pay"] - B["t0"] < 1, "a year's median pay must pass in under 1 second"
 assert B["growth_t"] == F("2.46"), "the readings must still round to the $2.46T PrimeRates headline"
 assert B["minute"] > PAY40, "1 minute of new debt must beat 40 years of median pay (the header's answer)"
 assert B["t_pay40"] - B["t0"] < MINUTE, "the working life must go inside the minute"
 assert DEBT_HELD_PUBLIC_GROWTH / (DAYS_B * SECONDS_PER_DAY) * MINUTE > PAY40, "the public part alone must still win"
 assert B["t_pay40"] < B["run"][1], "the counter must pass 40 years before it stops"
+assert pass_time(PAY40, F("78201.35")) < B["run"][1], "the kit's (stored-rate) 40-year pass must come before the stop"
+assert abs(B["final_exact"] - B["lands_on"]) < F(1, 2), "the counter must stop on $2,602,080 to the dollar"
+assert int((B["t_pay30"] - B["t0"]) / (F(PAY) / RATE_B)) == 30, "the 30-year pass is the 30th brick (10 left)"
 row("10b", "growth", "$40.097T − $37.638T", DEBT_GROWTH / 10**12, f"≈ ${float(B['growth_t'])}T")
 row("10b", "rate", "Δ ÷ (364 × 86,400 s)", RATE_B, B["rate_disp"] + " every second (stamp at 1.0 s)")
 row("10b", "1 minute", "rate × 60 s", B["minute"], f"≈ ${d1(B['minute_m'])} million")
@@ -341,9 +350,10 @@ row("10b", "t 1 yr (block 1)", "$65,052 ÷ rate", B["t_pay"], "0.83 s (first blo
 row("10b", "t 3 yrs pay", "$195,156 ÷ rate", B["t_pay3"], "VO 2.4")
 row("10b", "t 10 yrs pay", "$650,520 ÷ rate", B["t_pay10"], "VO 8.2")
 row("10b", "t 20 yrs pay", "$1,301,040 ÷ rate", B["t_pay20"], "VO 16.5 ('20 years' at 16.88)")
+row("10b", "t 30 yrs pay", "$1,951,560 ÷ rate", B["t_pay30"], "VO 25.1 ('30 years gone. 10 left.')")
 row("10b", "t 40 yrs pay", "$2,602,080 ÷ rate", B["t_pay40"], f"≈ {B['s_pay40']} seconds (VO 33.3)")
 row("10b", "minute used", "t 40 yrs ÷ 60 s", (B["t_pay40"] - B["t0"]) / MINUTE * 100, f"{B['minute_used']}% (md only)")
-row("10b", "counter final", "rate × 33.3 s", B["final_exact"], B["final"])
+row("10b", "counter final", "rate × 33.27411 s", B["final_exact"], B["final"] + " (stops on the 40-year pass)")
 row("10b", "public part", "$2.09T ÷ (364 × 86,400 s)", DEBT_HELD_PUBLIC_GROWTH / (DAYS_B * SECONDS_PER_DAY), f"≈ ${B['public_rate']:,} a second; ≈ ${d1(B['public_minute_m'])} million a minute (TikTok reply)")
 
 SPEC_B = {
@@ -352,7 +362,8 @@ SPEC_B = {
     "format": "cost-counter",
     "fps": 30,
     "duration": 36.6,
-    "header": f"{WORKING_YEARS} years of your pay vs\n**1 minute** of new US debt.\nWhich is bigger?",
+    # pay green, debt red (the colours the short uses for them); 2 lines, so the hook sets at ≈ 84 px
+    "header": f"Your pay for **{WORKING_YEARS} years** vs\n__1 minute__ of new US debt?",
     "footer": (f"New debt ≈ ${float(B['growth_t'])}T ÷ ({DAYS_B} × {SECONDS_PER_DAY:,} s)"
                f"\nPay: BLS median {usd(MEDIAN_WEEKLY)} a week × {WEEKS}"),
     "captions": True,
@@ -361,11 +372,12 @@ SPEC_B = {
         (2.4, 1.6, "3 years, gone."),
         (4.2, 2.4, f"**{B['rate_disp']}** a second."),
         (8.2, 2.4, f"{TEN} years of median pay."),
-        (10.6, 5.8, f"The debt grew ≈ ${float(B['growth_t'])} trillion in {DAYS_B} days."),
+        # no-break spaces keep "≈ $2.46 trillion" together in the caption
+        (10.6, 5.8, f"The debt grew ≈\u00a0${float(B['growth_t'])}\u00a0trillion in {DAYS_B} days."),
         (16.5, 1.5, "Halfway: 20 years."),
         (18.2, 4.7, f"{WORKING_YEARS} × {usd(PAY)} ≈ **${d1(B['pay40_m'])} million**."),
         (23.1, 2.0, "That's a whole working life."),
-        (25.3, 3.1, f"1 minute: ≈ ${d1(B['minute_m'])} million."),
+        (25.1, 3.3, f"30 years gone. {TEN} left."),
         (28.6, 2.4, f"How long do {WORKING_YEARS} years last?"),
         (33.3, 2.4, f"A working life: **≈ {B['s_pay40']} seconds.**"),
     ],
@@ -381,25 +393,28 @@ SPEC_B = {
             (PAY3, f"3 years of median pay: {usd(PAY3)}"),
             (PAY10, f"{TEN} years of median pay: {usd(PAY10)}"),
             (PAY20, f"20 years of median pay: {usd(PAY20)}"),
+            (PAY30, f"30 years of median pay: {usd(PAY30)}"),
             (PAY40, f"{WORKING_YEARS} years of median pay: {usd(PAY40)}"),
         ],
         "final": B["final"],
-        "hold": 3.3,
+        "hold": float(B["hold"]),
     },
     "lookOpts": {
         "stage": "white",
         "surface": "debt-clock",
         "surfaceLabel": "New US debt since you hit play",
         "opener": {"t": 0.0, "pose": "lift", "prop": "block-stack", "blocks": WORKING_YEARS, "unit": PAY,
-                   "text": f"{WORKING_YEARS} × {usd(PAY)}", "sub": f"{WORKING_YEARS} years of median pay"},
+                   "text": f"{WORKING_YEARS} × {usd(PAY)}", "sub": f"{WORKING_YEARS} years of median pay",
+                   "countdown": "{n} years left"},
         "stamp": {"t": float(B["t0"] + 1), "text": f"1 second {B['rate_disp']}"},
         "timer": {"t0": float(B["t0"]), "label": "1 minute", "total": MINUTE,
-                  "endLabel": {"t": 25.3, "text": f"≈ ${d1(B['minute_m'])} million"}},
+                  "endLabel": {"t": 33.3, "text": f"≈ ${d1(B['minute_m'])} million"}},
         "actions": [
             {"milestone": 0, "verb": "swallow", "becomes": "the panel has been slurping blocks off the top of his stack since frame 1, one per year of pay; he hugs the rest tighter"},
             {"milestone": 1, "verb": "push", "becomes": "he shoves back against the panel's slot; it keeps eating"},
             {"milestone": 2, "verb": "shocked", "becomes": "halfway: his stack is half gone; the counter turns orange and its last digits blur"},
-            {"milestone": 3, "verb": "flattened", "becomes": "white-hot, it cracks and bursts as the last block goes in; the blast knocks him flat, arms empty"},
+            {"milestone": 3, "verb": "flinch", "becomes": "30 years gone, 10 bricks left: he flinches back from the board"},
+            {"milestone": 4, "verb": "flattened", "becomes": "white-hot, it cracks and bursts as the last block goes in; the blast knocks him flat, arms empty"},
         ],
         "heat": [
             {"t": 0.0, "state": "cool"}, {"t": 16.5, "state": "orange"},
@@ -407,11 +422,12 @@ SPEC_B = {
         ],
         "gag": {"t": 33.3, "text": f"≈ {B['s_pay40']} seconds"},
     },
-    "sync": [(PAY3, 1, "3 years"), (PAY10, 3, "10 years"), (PAY20, 5, "20 years"),
+    "sync": [(PAY3, 1, "3 years"), (PAY10, 3, "10 years"), (PAY20, 5, "20 years"), (PAY30, 8, "30 years"),
              (PAY40, 10, "A working life")],
-    "beats": [(16.5, 5), (25.3, 8), (28.6, 9), (33.3, 10)],   # heat orange, timer end label, heat white, burst/gag
+    "beats": [(16.5, 5), (28.6, 9), (33.3, 10)],   # heat orange, heat white, burst/gag/timer end label
     "t0": 0.0,               # the counter runs from frame 1 (no armed pause)
     "rate": RATE_B,
+    "lands_on": B["lands_on"],   # the counter stops on the 40-year pass
 }
 
 # ---------- 10c: 1 second of Amazon's profit, in weeks of median pay (hook pass 2) -------------
@@ -564,8 +580,8 @@ def allowed_numbers(tid):
                 | {F(A["shown"][v]) for v in A["ladder"]})                             # ≈ 1.0 / 2.1 / 3.3 / 8 / 16 / 33 s
     if tid == "10b":
         return common | {F(DAYS_B), F(SECONDS_PER_DAY), B["growth_t"], F(B["rate_shown"]), F(3), F(PAY3), F(TEN),
-                         F(PAY10), F(20), F(PAY20), F(WORKING_YEARS), F(PAY40), F(B["pay40_m"]), F(B["s_pay40"]),
-                         B["minute_m"], F(rhu(B["final_exact"]))}
+                         F(PAY10), F(20), F(PAY20), F(30), F(PAY30), F(WORKING_YEARS), F(PAY40), F(B["pay40_m"]),
+                         F(B["s_pay40"]), B["minute_m"], F(rhu(B["final_exact"]))}
     return common | {F(2025), F("77.7"), F(C["keep_shown"]), F(C["wk1_shown"]), F(5), F(C["five_shown"]),
                      F(C["wk5_shown"]), F(2), F(C["half"]), F(C["s_half"]), F(6), F(C["s_keep_pay"]),
                      F(rhu(C["final_exact"]))}                                   # "÷ 2", "6 months", "1 year"
@@ -679,7 +695,7 @@ def check_spec(want):
     # ---- "≈" on rounded results only: a "≈ X" in VO/verdict must not be exact ----------
     exact_set = {F(MEDIAN_WEEKLY), F(PAY), F(NEW_HOUSE), F(PAY3), F(PAY10), F(PAY20), F(PAY40), F(SECONDS_PER_YEAR), F(10**6)}
     for where, text in display_strings(spec):
-        for m in re.finditer(r"≈ \$?(\d[\d,]*(?:\.\d+)?)", strip_markup(text)):
+        for m in re.finditer(r"≈\s\$?(\d[\d,]*(?:\.\d+)?)", strip_markup(text)):   # \s: a no-break space too
             n = F(m.group(1).replace(",", ""))
             check(n not in exact_set, tid, f"≈ not on an exact value in {where}", text)
 

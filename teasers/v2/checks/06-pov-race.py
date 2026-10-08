@@ -367,13 +367,34 @@ check("06b", "unit: 12 × $19.99 = $239.88 a year", usd(B["unit_y"], 2), "$239.8
 check("06b", "bar 2012: $107 ÷ $19.99 and exact both ≈ 5 months",
       f"{rnd(B['value'][2012]) / NFLX_STD_NOW:.3f} / {B['months'][2012]:.3f}", "both 5",
       ok=rnd(rnd(B["value"][2012]) / NFLX_STD_NOW) == B["months_shown"] == 5)
-for y, want in ((2013, "2.4"), (2020, "38"), (2022, "22")):
+for y, want in ((2020, "38"), (2022, "22")):
     check("06b", f"bar {y}: {usd(B['value'][y])} ÷ $239.88 and exact both ≈ {want} years",
           f"{rnd(B['value'][y]) / B['unit_y']:.3f} / {B['years'][y]:.3f}", f"both {want}",
           ok=mult(rnd(B["value"][y]) / B["unit_y"]) == B["yrs_shown"][y] == want)
-check("06b", "verdict: ≈ $17,700 ÷ $239.88 and exact both ≈ 74 years",
-      f"{sig(B['final'], 3) / B['unit_y']:.3f} / {B['years'][NFLX_END]:.3f}", "both 74",
-      ok=mult(sig(B["final"], 3) / B["unit_y"]) == B["yrs_shown"][NFLX_END] == "74")
+check("06b", "bar verdict: $17,706 ÷ $239.88 and exact both ≈ 74 years",
+      f"{rnd(B['final']) / B['unit_y']:.3f} / {B['years'][NFLX_END]:.3f}", "both 74",
+      ok=mult(rnd(B["final"]) / B["unit_y"]) == B["yrs_shown"][NFLX_END] == "74")
+
+
+# Assembly round 2: the answer row (Live Sheet lookOpts.unit) shows the stake live in years of today's bill. It
+# formats exactly like this (looks/live-sheet/formats/pov-race.js, unitText): under a year, whole months
+# (÷ unit.perMonth); 1-10 years, 1 dp; 10+ years, whole years. At each hold (a spoken year-end) it shows that
+# year-end's exact value, so what it shows there must equal what the VO and the bar say.
+def answer_cell(v):
+    yrs = v / B["unit_y"]
+    if yrs < 1:
+        m = rnd(v / NFLX_STD_NOW)
+        return "< 1 month" if m < 1 else f"≈ {m:.0f} {'month' if m == 1 else 'months'}"
+    r1 = rnd(yrs, 1)
+    return f"≈ {r1:.1f} years" if r1 < 10 else f"≈ {rnd(yrs):.0f} years"
+
+
+B["holds"] = {2012: f"≈ {B['months_shown']:.0f} months", 2020: f"≈ {B['yrs_shown'][2020]} years",
+              2022: f"≈ {B['yrs_shown'][2022]} years"}
+for y, want in B["holds"].items():
+    check("06b", f"answer row lands {y}: {answer_cell(B['value'][y])}", answer_cell(B["value"][y]), want)
+check("06b", "answer row at the finish (live, exact) = unit.final, so the landing never jumps",
+      answer_cell(B["final"]), f"≈ {B['yrs_shown'][NFLX_END]} years")
 check("06b", "2022 'halves' in years too: 2021 peak → 2022 (45-55% down)",
       f"{B['years'][2021]:.2f} → {B['years'][2022]:.2f}", "0.45-0.55",
       ok=0.45 <= 1 - B["years"][2022] / B["years"][2021] <= 0.55)
@@ -482,16 +503,17 @@ check("06a", "pinned: 136.7 shares x $271.12 ≈ $37,062", usd(rnd(A["shares"], 
 # hook's unit at each beat: 2012 (in months), 2013, 2020, the 2022 halving, then the verdict.
 NOW = usd(NFLX_STD_NOW, 2)                                             # "$19.99"
 UNIT = usd(B["unit_y"], 2)                                             # "$239.88"
+# Assembly round 2: one line each (no wrap), no leading "≈" after the bar's ≈ chip, and every landed step names its
+# year (the race row has moved on by the time it shows). The "? years" slot is now the answer row's own cell.
 fb = [
-    f"≈ stock ÷ ({NOW} × 12) = ? years",
-    f"≈ {usd(B['value'][2012])} ÷ {NOW} ≈ {B['months_shown']:.0f} months",
-    f"≈ {usd(B['value'][2013])} ÷ {UNIT} ≈ {B['yrs_shown'][2013]} years",
-    "≈ each year's bills ÷ that year's avg price",
-    f"≈ {usd(B['value'][2020])} ÷ {UNIT} ≈ {B['yrs_shown'][2020]} years",
-    f"≈ {usd(B['value'][2022])} ÷ {UNIT} ≈ {B['yrs_shown'][2022]} years",
-    f"≈ {rnd(B['cum_shares'][NFLX_END], 1)} shares × {usd(MT_NFLX_CLOSE[NFLX_END], 2)} ≈ "
+    f"= stock ÷ ({NOW} × 12)",
+    f"2012: {usd(B['value'][2012])} ÷ {NOW} ≈ {B['months_shown']:.0f} months",
+    "each year: bills ÷ avg price",
+    f"2020: {usd(B['value'][2020])} ÷ {UNIT} ≈ {B['yrs_shown'][2020]} yrs",
+    f"2022: {usd(B['value'][2022])} ÷ {UNIT} ≈ {B['yrs_shown'][2022]} yrs",
+    f"{rnd(B['cum_shares'][NFLX_END], 1)} shares × {usd(MT_NFLX_CLOSE[NFLX_END], 2)} ≈ "
     f"${sig(rnd(B['cum_shares'][NFLX_END], 1) * MT_NFLX_CLOSE[NFLX_END], 3):,.0f}",
-    f"{approx_usd(B['final'])} ÷ {UNIT} ≈ {B['yrs_shown'][NFLX_END]} years",
+    f"{usd(B['final'])} ÷ {UNIT} ≈ {B['yrs_shown'][NFLX_END]} years",
 ]
 # purchase tags: the start bill, then the hikes counted ("Hike 1" ... "Hike 7", R9)
 B["tag_labels"] = [lab if i == 0 else f"Hike {i} · {lab}" for i, (_, lab, _) in enumerate(B["ticks"])]
@@ -499,11 +521,14 @@ EXP["b"] = {
     "raceT": [0.3, 23.0], "x": {"from": NFLX_START, "to": ye(NFLX_END), "tickEvery": 3},
     "first_payoff_x": ye(NFLX_START),
     "strings": {
-        # hook pass 2: today's bill is the hook's only $ figure and the unit of the answer
-        "header": f"**{NOW}** Netflix, free for\nhow many years, if your\n"
-                  f"{NFLX_START}-{NFLX_END % 100} bills bought its stock?",
-        "footer": f"Standard plan list price, {NFLX_START}-{NFLX_END % 100} · {VALUE_DATE.month}/{VALUE_DATE.day}/"
-                  f"{VALUE_DATE:%y} value ÷ {NOW} a month",
+        # hook pass 2: today's bill is the hook's only $ figure and the unit of the answer.
+        # Assembly round 2: two lines broken by sense, set at 64 px (three lines capped the banner at ~46 px); the
+        # mechanism ("Paid to Netflix" vs "Same bills in Netflix stock") and the "? years" slot are the sheet's own
+        # frame-1 cells, and the ÷ $19.99 conversion is the formula bar's frame-1 formula.
+        "header": f"**{NOW}** Netflix, free\nfor how many years?",
+        "footer": f"Standard plan list price · {VALUE_DATE.month}/{VALUE_DATE.day}/{VALUE_DATE:%y} close",
+        "lookOpts.startLabel": str(NFLX_START),
+        "lookOpts.unit.final": f"≈ {B['yrs_shown'][NFLX_END]} years",
         "verdict.text": f"**≈ {B['yrs_shown'][NFLX_END]} years** of Netflix\nat {NOW} a month",
         "data.spend.final": f"{usd(B['total'], 2)} spent",
         "data.own.final": approx_usd(B["final"]),
@@ -514,7 +539,7 @@ EXP["b"] = {
     "points": {"spend": B["spend"], "own": B["own"]},
     "purchases_x": [x for (x, _, _) in B["ticks"]],
     "vo_numbers": [
-        [f"{NFLX_STD_NOW:.2f}"],
+        [],
         [str(NFLX_START)],
         [], [],
         ["2020", B["yrs_shown"][2020]],
@@ -532,10 +557,11 @@ EXP["b"] = {
     "sfx": {0: B["ticks"][1][0], 1: B["ticks"][2][0], 2: B["ticks"][3][0], 3: B["ticks"][4][0],
             4: B["ticks"][5][0], 5: B["ticks"][6][0], 6: ye(2022), 7: B["ticks"][7][0],
             8: ye(NFLX_END)},
-    # bar steps 1, 2, 4, 5 land on their year-ends (within 0.05 s); the rest start with a VO line
-    "lookOpts_t": {"formulaBar.1": ye(2012), "formulaBar.2": ye(2013),
-                   "formulaBar.4": ye(2020), "formulaBar.5": ye(2022)},
-    "formulaBar_vo": {0: 0, 3: 3, 6: 7, 7: 8},          # bar step -> the VO line it starts with
+    # bar steps 1, 3, 4 land on their year-ends (within 0.05 s); the rest start with a VO line
+    "lookOpts_t": {"formulaBar.1": ye(2012), "formulaBar.3": ye(2020), "formulaBar.4": ye(2022)},
+    "formulaBar_vo": {0: 0, 2: 3, 5: 7, 6: 8},          # bar step -> the VO line it starts with
+    # the answer row's landings: (spoken year-end x, the VO line that says it)
+    "holds": [(ye(2012), 0), (ye(2020), 4), (ye(2022), 5)],
 }
 check("06b", "table: 2015 bills = 9 old + 3 new months", m_old_2015, 9)
 check("06b", "pinned: 188.84 shares x $93.76 ≈ $17,706",
@@ -743,6 +769,15 @@ def check_spec(key):
         fb_t = [bar[j]["t"] for j in e["formulaBar_vo"]]
         want = [vo[i]["t"] for i in e["formulaBar_vo"].values()]
         check(sid, "formulaBar t = its VO line t", fb_t, want)
+        # the answer row converts at today's bill, and lands on the spoken year-ends, each inside its VO line
+        unit = spec["lookOpts"]["unit"]
+        check(sid, "lookOpts.unit.per = 12 × $19.99", unit["per"], B["unit_y"])
+        check(sid, "lookOpts.unit.perMonth = $19.99", unit["perMonth"], NFLX_STD_NOW)
+        check(sid, "lookOpts.unit.holds = the spoken year-ends", unit["holds"], [x for x, _ in e["holds"]])
+        for x, i in e["holds"]:
+            t = chart_t(spec, x)
+            lo, hi = vo[i]["t"] - BEAT_TOL, vo[i]["t"] + vo[i]["d"] + BEAT_TOL
+            check(sid, f"answer row lands {int(x)} (t {t:.2f}) in vo[{i}]", f"t={t:.2f}", f"{lo:.2f}-{hi:.2f}", ok=lo <= t <= hi)
 
     # --- coverage: every string with a digit must have been checked
     for p, v in leaves(spec):

@@ -195,9 +195,10 @@ const POSE = {
   squeeze: { lean: 20, tilt: 14, aF: [70, 60], aB: [60, 70], lF: [20, -22], lB: [-18, -10] },
   brace: { lean: 30, tilt: -12, aF: [90, 20], aB: [84, 26], lF: [26, -40], lB: [-34, -6] },
   flatBack: { lean: 0, tilt: -6, aF: [168, 10], aB: [192, -10], lF: [14, -8], lB: [-4, -16], rot: -90 },
-  // knocked onto his butt with his knees up (stack mode: the plinth leaves no room for straight legs)
-  sitUp: { lean: -14, tilt: 10, aF: [-36, 10], aB: [-50, 6], lF: [118, -100], lB: [104, -96] },
-  sitUpLook: { lean: -18, tilt: -20, aF: [-40, 6], aB: [-54, 4], lF: [116, -98], lB: [102, -94] },
+  // knocked onto his butt with his knees up (stack mode: the plinth leaves no room for straight legs), sitting
+  // fairly upright so that he fits between the post and the plinth, clear of both
+  sitUp: { lean: -8, tilt: 8, aF: [-30, 10], aB: [-44, 6], lF: [124, -112], lB: [110, -106] },
+  sitUpLook: { lean: -10, tilt: -14, aF: [-34, 6], aB: [-48, 4], lF: [122, -110], lB: [108, -104] },
 }
 
 export default function costCounter(spec, ctx) {
@@ -358,10 +359,11 @@ export default function costCounter(spec, ctx) {
     let cdN = null
     if (CD) {
       const [pre, post] = CD.split('{n}')
-      const ps = h('div', { class: 'cc-ps cd', html: `${markup(pre)}<span class="n"></span>${markup(post)}` })
+      const ps = h('div', { class: 'cc-ps cd', html: `${markup(pre)}<span class="n"></span><span class="u">${markup(post)}</span>` })
       plate.append(ps)
-      cdN = ps.querySelector('.n')
-      setText(cdN, String(N))                                       // the widest state (tabular figures)
+      // "1 year left", not "1 years left": the first word after the number drops its plural s at 1
+      cdN = { n: ps.querySelector('.n'), u: ps.querySelector('.u'), many: markup(post), one: markup(post.replace(/^(\s*[A-Za-z]+?)s\b/, '$1')) }
+      setText(cdN.n, String(N))                                     // the widest state (tabular figures)
     } else if (OPN.sub) plate.append(h('div', { class: 'cc-ps', html: markup(String(OPN.sub)) }))
     world.html.append(plate)
     const plateW = Math.max(300, Math.ceil(plate.offsetWidth))
@@ -986,9 +988,10 @@ export default function costCounter(spec, ctx) {
       if (SK.cdN) {
         let left = 0, tLast = -Infinity
         for (const b of bricks) { if (t < b.te) left++; else tLast = Math.max(tLast, b.te) }
-        setText(SK.cdN, String(left))
+        setText(SK.cdN.n, String(left))
+        setHTML(SK.cdN.u, left === 1 ? SK.cdN.one : SK.cdN.many)
         const pk = t - tLast < 0.4 ? 0.2 * Math.exp(-11 * (t - tLast)) : 0
-        style(SK.cdN, { transform: pk > 0.002 ? `scale(${(1 + pk).toFixed(3)})` : 'none' })
+        style(SK.cdN.n, { transform: pk > 0.002 ? `scale(${(1 + pk).toFixed(3)})` : 'none' })
       }
       if (watch) {
         const e = clamp(t - watch.tw0, 0, Math.max(0, Math.min(watch.total, t1 - watch.tw0)))
