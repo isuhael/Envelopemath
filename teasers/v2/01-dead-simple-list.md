@@ -2,15 +2,15 @@
 
 **Prepared for:** *Back of the Envelope* (YouTube Shorts, Instagram Reels, TikTok), US audience, USD
 **Date:** 2026-10-07
-**Writer:** format 1 of 10, round 2 (revised after the verifier and the hook judge; then in the round-2 **hook pass**, which replaced 01c's hook and kept 01b's; then in **hook pass 2**, which replaced 01b's hook and topic; then in the **assembly pass** (2026-10-08), which fixed what the stills and the MP4s showed; see the **Review log** at the end)
+**Writer:** format 1 of 10, round 2 (revised after the verifier and the hook judge; then in the round-2 **hook pass**, which replaced 01c's hook and kept 01b's; then in **hook pass 2**, which replaced 01b's hook and topic; then in the **assembly pass** (2026-10-08), which fixed what the stills and the MP4s showed; then in the **QA fix pass** (2026-10-08), which applied the round-2 QA's must and should issues for 01a and 01b; see the **Review log** at the end)
 **Deliverables:**
 - Specs:
   - [`studio/specs/01a-clean-sheet-paid-biweekly.json`](../../studio/specs/01a-clean-sheet-paid-biweekly.json)
   - [`studio/specs/01b-live-sheet-20-an-hour.json`](../../studio/specs/01b-live-sheet-20-an-hour.json) (file name kept; since hook pass 2 the topic is the Social Security wage cap: you pay 6.2%, what does a $1M salary pay?)
   - [`studio/specs/01c-becker-rig-60k-a-year.json`](../../studio/specs/01c-becker-rig-60k-a-year.json) (file name kept; since the hook pass the topic is the bracket myth: will a 3% raise push $65,000 into a higher bracket?)
-- Check: [`teasers/v2/checks/01-dead-simple-list.py`](checks/01-dead-simple-list.py). It passes 280 checks with 0 failures (after the assembly pass).
-- Mutation test: in the assembly pass the new note and check-line checks caught 6 of 6 broken copies; in hook pass 2 the check caught 7 of 7 broken copies of the new 01b spec, and in the hook pass 4 of 4 broken copies of the new 01c spec (see the Review log). In round 2 it caught 10 of 10 deliberately broken spec copies: a $50-rounded result (`≈ $2,950`), a "≈" on an exact result, a wrong VO number, an off-beat `resultT`, a VO line read too fast, an unsupported `lookOpts.gag`, a VO line after the verdict card, a wrong label digit, a missing "≈", and a verdict that no longer matches the maths.
-- Studio linter (`node src/cli.mjs check`): 3/3 clean, 0 errors, 0 warnings (safe zones, type floor, overlap, contrast, fonts, R1), re-run after every fix and after both hook passes.
+- Check: [`teasers/v2/checks/01-dead-simple-list.py`](checks/01-dead-simple-list.py). It passes 302 checks with 0 failures (after the QA fix pass).
+- Mutation test: in the QA fix pass the updated checks caught 7 of 7 broken copies (a wrong "not × 24" total, a wrong check-line total, a late `checkT`, a wrong spoken $65,000, the old "salary's" label, a wrong spoken $11,439, and a wrong guess off its VO line); in the assembly pass the new note and check-line checks caught 6 of 6 broken copies; in hook pass 2 the check caught 7 of 7 broken copies of the new 01b spec, and in the hook pass 4 of 4 broken copies of the new 01c spec (see the Review log). In round 2 it caught 10 of 10 deliberately broken spec copies: a $50-rounded result (`≈ $2,950`), a "≈" on an exact result, a wrong VO number, an off-beat `resultT`, a VO line read too fast, an unsupported `lookOpts.gag`, a VO line after the verdict card, a wrong label digit, a missing "≈", and a verdict that no longer matches the maths.
+- Studio linter (`node src/cli.mjs check`): 3/3 clean, 0 errors, 0 warnings (safe zones, type floor, overlap, contrast, fonts, R1), re-run after every fix, after both hook passes and after the QA fix pass.
 - Stills checked by eye at frames 0, 2.7-3.2 s, each payoff, the verdict and the last frame.
 
 **Evidence base:**
@@ -63,13 +63,14 @@
   - **No pricing in hours of work** (lane 8) and no salary → hourly conversion (lane 2). 01b goes from an hourly wage to a year only ($20 × 2,080), never back. 01c uses no time units at all: one raise, one bracket line.
 - **Series header grammar (the same in all three).**
   - Line 1 is the series phrase with the slot count: "3/4 DEAD SIMPLE NUMBERS".
-  - The rest names the stake and carries one R5 word or mark. 01a uses H84's "That Tell You What / You Actually Make" grammar: "THE PAY YOUR BUDGET **FORGETS**". Since the hook passes, the other two ask a question (R11, H48's grammar):
+  - The rest names the stake and carries one R5 word or mark. 01a uses H84's "That Tell You What / You Actually Make" grammar: "WHAT YOUR BUDGET **MISSES**" (it was "THE PAY YOUR BUDGET FORGETS" until the QA fix pass: at 27 characters it could not sit on one line). Since the hook passes, the other two ask a question (R11, H48's grammar):
     - 01c's R5 word is the feared outcome: "WILL A 3% RAISE PUSH $65,000 INTO A **HIGHER BRACKET**?"
     - 01b plants the viewer's own rate and leaves the rival's open: "YOU PAY **6.2%** TO SOCIAL SECURITY. A $1M SALARY PAYS…?" The "…?" invites the flat-rate guess ($62,000), which the sheet types and strikes out.
   - Round 1's "IF YOU …" filter line (Yannick's H57 grammar, 50,206 at 2.8x med) is gone: it was the weaker half of the pattern.
 - **One calendar.** 52 weeks, 12 months, 365 days; work hours = 40 × 52 = 2,080, printed in 01b's footer ("40 hrs × 52 wks") and row 1's formula. 01a counts paydays (364 ÷ 14 = 26). No slot mixes 50 and 52 weeks.
 - **The "≈" and rounding policy.** A result gets "≈" exactly when it is rounded. Every result equals its visible formula rounded to $1 (1¢ when cents are shown, 0.1 point for a percent), so anyone who redoes a formula on screen gets the number on screen. The check script re-evaluates every typed formula to enforce this. Every 01c result is exact, so 01c shows no "≈".
 - **Non-breaking spaces** (` ` in the JSON) keep a highlight or a rule on one rendered line: "13 months" (01a verdict), "≈ 1.1%" (01b verdict), "$45 a year" (01c verdict). The check script expects them.
+- **Captions never run ahead of the sheet** (since the QA fix pass). In 01a and 01b each result starts its own VO line in the spec (`"On $2,500:"` then `"$65,000 a year."`), timed to its `resultT`, so a caption never shows a result before the sheet lands it. The clean-sheet captions show a whole line at once (unspoken words in grey), so this matters most there. The words of the guide VO scripts are unchanged except 01b's first line; only the caption lines are split.
 - **Kit contract.** Each spec uses only `lookOpts` keys its kit reads (clean-sheet: none; live-sheet: `labels` and `wrongGuess`; becker-rig: `hits`), and the last VO line is the verdict line, because every kit's chrome replaces the captions with the verdict card from `verdict.t`. The check script enforces both.
 - **Risk: the series name.** "DEAD SIMPLE NUMBERS" is Master Money's own branded phrase, and `04-formats.md` says to use "a series name of our own".
   - I kept it because it is the seed the owner approved and the format's id.
@@ -79,15 +80,15 @@
 
 ## (b) The teasers
 
-### 01a · Clean Sheet · "3 DEAD SIMPLE NUMBERS / PAID EVERY 2 WEEKS? THE PAY YOUR BUDGET FORGETS"
+### 01a · Clean Sheet · "3 DEAD SIMPLE NUMBERS / PAID EVERY 2 WEEKS? / WHAT YOUR BUDGET MISSES"
 
 - **Spec:** `studio/specs/01a-clean-sheet-paid-biweekly.json`, 26.0 s
-- **Look:** Clean Sheet. Off-white card, typeset formulas in grey mono, results on highlighter boxes, circled step numbers. The formula stays above its result, so the sheet builds into worked maths. At this spec's size the kit's layout engine sets each step as a formula row over a result row, with the step label beside the result (ink) and the step's note stacked under the label (grey): `$65,000 │ Your real yearly pay / not × 24`. No note ever sits after a formula's "=", where it would read as the answer. The check line under step ③ makes the engine set the sheet at 92% (results 61 px, the goal 75 px; checked in stills).
-- **Platform title:** "Paid every 2 weeks? The pay your budget forgets" (9 words, no result)
-- **On-screen hook (header):** `3 DEAD SIMPLE NUMBERS` / `PAID **EVERY 2 WEEKS**? THE PAY YOUR BUDGET FORGETS` (13 words). The kit renders it on 3 lines: "3 DEAD SIMPLE NUMBERS / PAID EVERY 2 WEEKS? THE / PAY YOUR BUDGET FORGETS", inside the y 252-440 band.
+- **Look:** Clean Sheet. Off-white card, typeset formulas in grey mono, results on highlighter boxes, circled step numbers. The formula stays above its result, so the sheet builds into worked maths. At this spec's size the kit's layout engine sets each step as a formula row over a result row, with the step label beside the result (ink) and the step's note stacked under the label (grey): `$65,000 │ Your real yearly pay / not × 24 = $60,000`. Since the QA fix pass every label starts on one column (x ≈ 529, right of the widest box, ③'s), so the finished sheet reads as two clean columns. No note ever sits after a formula's "=", where it would read as the answer. With the one-line footer the sheet sets at full size, check line included (results 66 px, the goal 82 px; checked in stills).
+- **Platform title:** "Paid every 2 weeks? What your budget misses" (8 words, no result)
+- **On-screen hook (header):** `3 DEAD SIMPLE NUMBERS` / `PAID **EVERY 2 WEEKS**?` / `WHAT YOUR BUDGET MISSES` (12 words), written as 3 explicit lines. The kit sets them as written, each on one line at 56 px, at y 252-433. The last line has 23 characters: the round-2 "THE PAY YOUR BUDGET FORGETS" (27) split again at every legal size, which stranded "THE" after the question mark.
 - **Input row at 0.0 s:** `Your paycheck` **`$2,500`** (yellow) `every 2 weeks`
 
-**The wrong belief it exploits:** "Every 2 weeks" = twice a month = 24 paychecks = **$60,000**, and a monthly budget built on 2 checks. In fact there are 26 paydays (364 ÷ 14). Ten months bring 2 checks and two months bring 3, so the 2 extra checks add up to a whole 13th month of pay that a 2-checks-a-month budget never counts. The header names it ("the pay your budget forgets"); the wrong multiplier shows as "not × 24" under ①'s label at 4.5 s, as the VO says it; ②'s note "× 12 = $60,000" shows where ③'s $60,000 comes from; slot ③'s label resolves it ("The 2 checks your budget forgets") and the check line `26 − 24 = 2 checks` proves the 2.
+**The wrong belief it exploits:** "Every 2 weeks" = twice a month = 24 paychecks = **$60,000**, and a monthly budget built on 2 checks. In fact there are 26 paydays (364 ÷ 14). Ten months bring 2 checks and two months bring 3, so the 2 extra checks add up to a whole 13th month of pay that a 2-checks-a-month budget never counts. The header names it ("what your budget misses"); the wrong multiplier and its total show as "not × 24 = $60,000" under ①'s label at 4.5 s, as the VO says "only $60,000"; ②'s note "× 12 = $60,000" shows where ③'s $60,000 comes from; slot ③'s label resolves it ("The 2 checks your budget forgets"), and the check line `10×2 + 2×3 = 26 paydays` puts the calendar on screen as the VO says "from the 2 months with 3 paydays": 10 normal months of 2 checks plus 2 months of 3 make the 26.
 
 **Modelled on (grammar stolen):**
 - **H84, Master Money:** "4 DEAD SIMPLE NUMBERS / That Tell You What / You Actually Make". 3,000,000 views, 140x; IG mirror 1,700,000, 27.8x. We copy the series line over a payoff-noun line, slot 1 typing at frame 1, and the spoken opener "Take your salary and multiply it by 0.7…", which becomes "Your paycheck, times 26".
@@ -99,13 +100,13 @@
 | Rule | Met? | How |
 |---|---|---|
 | R1 $ number at 0.0 s | yes | Input "$2,500" on the yellow highlighter; slot ① is the active step, its formula typing from 0.0 s |
-| R2 one input, never the result | yes | The header has no $ figure; the only input is $2,500; $65,000 is withheld until 2.7 s |
+| R2 one input, never the result | yes | The header has no $ figure; the only input is $2,500; $65,000 is withheld until 2.7 s, on screen and in the caption (frame 1's caption is "Your paycheck, times 26. On $2,500:") |
 | R3 viewer's own number | yes | "Your paycheck, times 26" works on any biweekly check. Biweekly is the most common US pay period (43.0% of private establishments, BLS CES) |
 | R4 small, round, familiar | yes | $2,500 every 2 weeks ≈ the median full-time US paycheck (BLS Q2 2026 median $1,251 a week × 2 = $2,502) |
-| R5 implies a wrong answer | yes | "THE PAY YOUR BUDGET FORGETS" in the header; "not × 24" under ①'s label at 4.5 s, as the VO says it |
+| R5 implies a wrong answer | yes | "WHAT YOUR BUDGET MISSES" in the header; "not × 24 = $60,000" under ①'s label at 4.5 s, as the VO says it |
 | R6 stake | yes | You, $2,500, a year |
 | R7 named, not a label | yes | "Paid every 2 weeks?" names the viewer's situation |
-| R8 ≤ 15 words | yes | 13 words, 3 rendered lines |
+| R8 ≤ 15 words | yes | 12 words, 3 lines, each set whole |
 | R9 countable loop | yes | ① ② ③ visible and empty at 0.0 s |
 | R10 first payoff ≤ 3 s; biggest number first or last | yes | $65,000 at 2.7 s, and it is the biggest number on screen |
 | R11 question on screen, verdict in caption | yes | "PAID EVERY 2 WEEKS?" on screen; the caption takes a side ("your monthly budget is wrong, in your favor") |
@@ -115,24 +116,25 @@
 
 | t (s) | On screen | VO |
 |---|---|---|
-| 0.0 | **Frame 1:** header (3 lines, "EVERY 2 WEEKS" on yellow); footer "ASSUMES 26 paydays a year (some years have 27) · pay before tax"; input row "Your paycheck **$2,500** every 2 weeks"; ① filled (active) with the caret; ② ③ empty circles; caption band under the hairline | "Your paycheck, times 26. On $2,500: $65,000 a year." |
+| 0.0 | **Frame 1:** header (3 lines, "EVERY 2 WEEKS" on yellow); footer "ASSUMES 26 paydays a year · pay before tax" (one line); input row "Your paycheck **$2,500** every 2 weeks"; ① filled (active) with the caret; ② ③ empty circles; the caption "Your paycheck, times 26. On $2,500:" under the hairline (no result in it) | "Your paycheck, times 26. On $2,500:" |
 | 0.0-0.8 | ① types `$2,500 × 26 =` | (same line) |
-| 2.7 | ① **$65,000** wipes in on the green highlighter with a pop | (same line, on "$65,000") |
+| 2.7 | ① **$65,000** wipes in on the green highlighter with a pop; the caption turns to "$65,000 a year." | "$65,000 a year." |
 | ≈3.0 | Label "Your real yearly pay" beside $65,000 | (same line) |
-| 4.5 | Note "not × 24" fades up under the label | "Not times 24: that's only $60,000." |
-| ≈7.1 / 7.4 | ② fills, then types `$2,500 × 2 =` | "A normal month: 2 checks, $5,000." |
-| 9.3 | ② **$5,000** on the green highlighter (a `neutral` result lands on green in this kit); ① rests to 42%; label "A normal month" beside it at ≈9.6 | (same line, on "$5,000") |
+| 4.5 | Note "not × 24 = $60,000" fades up under the label | "Not times 24: that's only $60,000." |
+| ≈7.1 / 7.4 | ② fills, then types `$2,500 × 2 =` | "A normal month: 2 checks," |
+| 9.3 | ② **$5,000** on the green highlighter (a `neutral` result lands on green in this kit); ① rests to 42%; label "A normal month" beside it at ≈9.6 | "$5,000." |
 | 10.4 | Note "× 12 = $60,000" fades up under ②'s label | "12 normal months: $60,000." |
-| ≈12.3 / 12.6 | ③ fills, then types `$65,000 − $60,000 =`; the caret waits | "From $65,000, that leaves $5,000." |
-| 14.5 | ③ **$5,000** on the blue goal highlighter, larger, with a ding; label "The 2 checks your budget forgets" beside it at ≈14.8 | (same line, on "$5,000") |
-| 15.6-17.0 | The check line types under ③ in accent mono: `check: 26 − 24 = 2 checks` | "It's your 2 extra checks, from the 2 months with 3 paydays." |
-| 20.5 | Verdict replaces the captions: "Every 2 weeks = / **13 months** of pay a year" ("13 months" on blue); ding | "That's a 13th month of pay. Every year." |
-| 23.7-25.3 | Hold on the finished sheet | none |
+| ≈12.3 / 12.6 | ③ fills, then types `$65,000 − $60,000 =`; the caret waits | "From $65,000, that leaves" |
+| 14.5 | ③ **$5,000** on the blue goal highlighter, larger, with a ding; label "The 2 checks your budget forgets" beside it at ≈14.8 | "$5,000." |
+| 15.6 | The sheet holds on ③ | "It's your 2 extra checks," |
+| 17.5-19.2 | The check line types under ③ in accent mono: `check: 10×2 + 2×3 = 26 paydays` | "from the 2 months with 3 paydays." |
+| 20.5 | Verdict replaces the captions at 64 px: "Every 2 weeks = / **13 months** of pay a year" ("13 months" on blue). At 20.8, with the verdict's blue swipe, ②'s **$5,000** (a normal month) re-wipes from its rested green to the goal blue beside ③'s **$5,000**, and both boxes pulse once: the 2 forgotten checks are one more month, 13 in all; the reveal sting and a ding | "That's a 13th month of pay. Every year." |
+| 23.7-25.3 | Hold on the finished sheet (① rested green; ② and ③ blue) | none |
 | 25.3-26.0 | Results, notes and the check line clear back to the frame-1 state (the kit's loop) | none |
 
-Payoffs land at 2.7, 9.3 and 14.5 s, and the verdict at 20.5 s: gaps of 6.6, 5.2 and 6.0 s.
+Payoffs land at 2.7, 9.3 and 14.5 s, and the verdict at 20.5 s: gaps of 6.6, 5.2 and 6.0 s. The longest still stretch under the VO is now about 2.4 s (≈15.1-17.5 s, after ③'s label lands), down from 3.5 s.
 
-**Full guide VO script (01a, 26 s)**
+**Full guide VO script (01a, 26 s)** (the spec splits it into 11 caption lines, each result starting its own line; the words are the same)
 > Your paycheck, times 26. On $2,500: $65,000 a year. Not times 24: that's only $60,000. A normal month: 2 checks, $5,000. 12 normal months: $60,000. From $65,000, that leaves $5,000. It's your 2 extra checks, from the 2 months with 3 paydays. That's a 13th month of pay. Every year.
 
 Read the numbers as: "twenty-five hundred", "sixty-five thousand", "sixty thousand", "five thousand", "thirteenth".
@@ -144,18 +146,17 @@ Read the numbers as: "twenty-five hundred", "sixty-five thousand", "sixty thousa
 | $2,500 (input) | input | example paycheck, gross | 2,500 |
 | 26 | 364 days ÷ 14 | biweekly calendar | 26 |
 | **$65,000** (①) | $2,500 × 26 | | 65,000 (exact) |
-| not × 24 (note) | 2 checks × 12 months | the twice-a-month guess | 24 |
+| not × 24 = $60,000 (① note) | $2,500 × 24 (24 = 2 checks × 12 months) | the twice-a-month guess | 60,000 (exact) |
 | **$5,000** (②) | $2,500 × 2 | 2 paydays in a normal month | 5,000 (exact) |
 | × 12 = $60,000 (② note) | $5,000 × 12 | the budget's 12 normal months (= $2,500 × 24) | 60,000 (exact) |
 | $60,000 (③ formula, VO) | $5,000 × 12 = $2,500 × 24 | 12 normal months = the × 24 figure | 60,000 |
 | **$5,000** (③) | $65,000 − $60,000 | | 5,000 (exact) |
 | "The 2 checks…" (③ label) | 26 − 24 = 2 extra checks; 2 × $2,500 | | 5,000 |
-| check: 26 − 24 = 2 checks (check line) | 26 paydays − 24 | the 2 in ③'s label | 2 (exact) |
-| 13 months (verdict) | $65,000 ÷ $5,000 | | 13 (exact) |
-| 27 (footer) | 26 + 1 | some years fit 27 paydays | 27 |
+| check: 10×2 + 2×3 = 26 paydays (check line) | 10 two-payday months × 2 + 2 three-payday months × 3 | the calendar behind ①'s × 26; the 2 three-payday months give ③'s 2 extra checks (26 − 24 = 2) | 26 (exact) |
+| 13 months (verdict) | $65,000 ÷ $5,000 | ②'s and ③'s $5,000 are both a month of pay (blue at the verdict) | 13 (exact) |
 
 Calendar check, simulated in the check script over 2000-2099 for both alternate-Friday cycles:
-- Every 26-payday year has exactly 2 months with 3 paydays (so a normal 2-payday month happens 10 times a year: 12 − 2; no longer printed on screen since the assembly pass, still checked).
+- Every 26-payday year has exactly 2 months with 3 paydays and 10 with 2 (12 − 2; printed again since the QA fix pass, in the check line `10×2 + 2×3 = 26`).
 - Every 27-payday year has exactly 3 such months.
 - 27-payday years come about 1 year in 11 (11.8 in the sample; 11.3 in theory, since 14 ÷ 1.2425 days of drift a year = 11.3).
 
@@ -163,7 +164,7 @@ Calendar check, simulated in the check script over 2000-2099 for both alternate-
 - BLS, "Usual Weekly Earnings of Wage and Salary Workers, Second Quarter 2026", released 2026-07-21: median full-time earnings $1,251 a week (not seasonally adjusted). https://www.bls.gov/news.release/archives/wkyeng_07212026.htm
 - BLS Current Employment Statistics, "Length of pay periods in the CES survey": biweekly is the most common pay period, 43.0% of private establishments (Feb 2023), against weekly at 27.0%. https://www.bls.gov/ces/publications/length-pay-period.htm
 
-**Assumptions (footer, on screen from 0.0 s):** `ASSUMES 26 paydays a year (some years have 27) · pay before tax`
+**Assumptions (footer, on screen from 0.0 s):** `ASSUMES 26 paydays a year · pay before tax` (one line since the QA fix pass; the 27-payday caveat moved to the pinned comment, which already carried it)
 
 **Caption / description (verdict in the caption, R11):**
 > Paid every 2 weeks? Your monthly budget is wrong, in your favor: 26 paychecks is 13 months of pay. $2,500 a check is $65,000 a year, not $60,000. Run yours: paycheck × 26, minus 12 months of 2 checks. (Gross, before tax.)
@@ -194,7 +195,8 @@ Calendar check, simulated in the check script over 2000-2099 for both alternate-
 - **Look:** Live Sheet. A designed spreadsheet on black, a yellow title banner, a "≈" formula bar showing the working, rows that fill one cell at a time. The sheet's row numbers do the job of the empty "1. 2. 3.".
   - `lookOpts.labels: "always"` labels every row from frame 1 (the kit's open-loop variant).
   - `lookOpts.wrongGuess` is the kit's built-in wrong-guess beat (live-sheet README, `wrongGuess`): the viewer's likely guess types into row 2, lands with a tick, and is struck out in red with a buzz before the real formula types.
-  - Notes open as dark tooltips under their row. Since the assembly pass a tooltip stays open while the next formula types and closes just before the next value lands, so each note reads for about 1.5 s; row 3's note uses the item field `noteT` (15.1 s) to open on the VO line that says it.
+  - Notes open as dark tooltips under their row, and the table never moves for them (since the QA fix pass). A note's pill floats over the next row's result cell, which is still empty while the note shows; the notch sits on the row's bottom gridline, and the pill takes two balanced lines when one line would cover the next row's label ("6.2% of / every dollar", "taxed only up / to $184,500"). Row 3's note opens in a slot reserved under the table from frame 1, so the card and the assumption line never change height. A pill wipes out of its notch to open and leaves whole (a 0.14 s fade and slight shrink), never by a clip.
+  - A tooltip stays open while the next formula types and leaves just before the next value lands, so each note reads for about 1.7-2 s; row 3's note uses the item field `noteT` (15.1 s) to open on the VO line that says it.
 - **Platform title:** "You pay 6.2% Social Security. What does a $1M salary pay?" (11 words, no result)
 - **Hook pass 2: adopted** (option A, average 7.25 against 4.25 for the old "WHAT $20/HR ACTUALLY LANDS"; scores and reasons in the Review log).
 - **On-screen hook (header):** `3 DEAD SIMPLE NUMBERS` / `YOU PAY **6.2%** TO SOCIAL SECURITY.` / `A $1M SALARY PAYS…?` (14 words, 3 lines, ≈ 44 px; "6.2%" in the black chip)
@@ -225,35 +227,39 @@ Calendar check, simulated in the check script over 2000-2099 for both alternate-
 | R6 | partly | You, 6.2%, ≈ $2,579 a year. The stake is fairness (a rate), not money the viewer keeps |
 | R7 | yes | A named rival: a $1M salary |
 | R8 | yes | 14 words, 3 lines |
-| R9 | yes | 3 labelled empty rows at 0.0 s ("Yours, a year / A $1M salary's / Their rate"); "Their rate" promises one number |
-| R10 | yes | The viewer's own ≈ $2,579 at 2.3 s; the header's question gets its wrong answer at 5.2-6.1 s and its real one at 9.6 s |
+| R9 | yes | 3 labelled empty rows at 0.0 s ("Yours, a year / A $1M salary pays / Their rate"); "Their rate" promises one number |
+| R10 | yes | The viewer's own ≈ $2,579 at 2.6 s ("you pay about $2,579 a year"); the header's question gets its wrong answer at 5.2-6.1 s and its real one at 9.6 s |
 | R11 | yes | A question on screen; the verdict card answers it |
 | R12 | yes | "You pay 6.2%. A $1M salary pays ≈ 1.1%." (5.4x, lopsided and repeatable) |
 
-**Beat sheet** (times match the spec; checked in stills at 0, 2.8, 3.2, 4.4, 5.0, 6.5, 10.6, 11.4, 11.9, 12.3, 12.8, 15.8, 17, 19, 21.5 s and the last frame)
+**Beat sheet** (times match the spec; checked in stills at 0, 2.75, 3.5, 4.95, 5.4, 6.4, 8.8, 10.8, 12.25, 12.3, 12.6, 15.8, 21 s, the contact sheet and frames pulled from the MP4)
 
 | t (s) | On screen | VO |
 |---|---|---|
-| 0.0 | **Frame 1:** yellow banner header (3 lines, "6.2%" in the black chip); formula bar `≈ │ = $20 × 2,080` mid-typing; mint input row "Your pay / 40 hrs a week │ $20/hr" (dashed outline: the formula is using it); rows 1-3 labelled "Yours, a year / A $1M salary's / Their rate", results empty; selection on row 1's result cell; footer on 3 lines under the card "ASSUMES 40 hrs × 52 wks · 2026 Social Security tax, employee share · Medicare not counted"; captions pop word by word | "At $20 an hour, that's about $2,579 a year." |
+| 0.0 | **Frame 1:** yellow banner header (3 lines, "6.2%" in the black chip); formula bar `≈ │ = $20 × 2,080` mid-typing; mint input row "Your pay / 40 hrs a week │ $20/hr" (dashed outline: the formula is using it); rows 1-3 labelled "Yours, a year / A $1M salary pays / Their rate", results empty; selection on row 1's result cell; the footer on 2 lines under the card "ASSUMES 40 hrs × 52 wks · 2026 rates / employee share, no Medicare" (y 1198-1298, clear of the caption band); captions pop a phrase at a time ("AT $20 AN HOUR,") | "At $20 an hour, you pay about" |
 | ≈0.4-0.6 | The bar finishes `= $20 × 2,080 × 6.2%` | (same line) |
-| 2.3 | Row 1 snaps to **≈ $2,579** in red (a cost); the formula drops into the row as the grey working line `$20 × 2,080 × 6.2%`; the tooltip "6.2% of every dollar" opens under it (readable ≈3.1-4.6 s) | (same line, on "$2,579") |
-| 4.0 | Selection slides to row 2; the bar types `= $1,000,000 × 6.2%`; row 1's tooltip closes at ≈4.8 | "A million-dollar salary: $62,000?" |
-| 5.2 | **$62,000** lands in row 2 (grey, the guess) with a tick | (on "$62,000") |
-| 6.1 | A red strike runs through $62,000; buzz | "No. It stops at $184,500: $11,439." |
+| 2.6 | Row 1 snaps to **≈ $2,579** in red (a cost) with a tick; the formula drops into the row as the grey working line `$20 × 2,080 × 6.2%`; the caption turns to "$2,579 A YEAR" | "$2,579 a year." |
+| 2.9-5.0 | The tooltip "6.2% of / every dollar" wipes out of its notch over row 2's empty result cell (readable ≈3.2-4.9 s), with a soft pop; the table does not move | (same line) |
+| 4.0 / 4.2 | Selection slides to row 2 (under the floating pill); the bar types `= $1,000,000 × 6.2%`; the pill fades out whole at ≈4.9-5.0 | "A million-dollar salary: $62,000?" |
+| 5.2 | **$62,000** lands in row 2, pencilled in grey (the guess), with a tick | (on "$62,000") |
+| 6.1 | A red strike runs through $62,000 (it turns red); buzz | "No. It stops at $184,500:" |
 | 6.9 | The bar types `= $184,500 × 6.2%` | (on "stops") |
-| 9.6 | The struck guess lifts out; row 2 → **$11,439** (neutral); working line `$184,500 × 6.2%`; the tooltip "taxed only up to $184,500" opens under it (readable ≈10.4-11.9 s) | (on "$11,439") |
+| 9.6 | The struck guess lifts out; row 2 → **$11,439** (neutral) with a tick; working line `$184,500 × 6.2%`; the caption "$11,439" pops with it | "$11,439." |
+| 9.9-12.3 | The tooltip "taxed only up / to $184,500" floats over row 3's empty result cell (readable ≈10.2-12.2 s) | (same line) |
 | 11.3 | The sheet holds on row 2's tooltip | "That's about 1.1% of their pay." |
-| 11.5 / 11.7 | Selection to row 3; the bar types `= $11,439 ÷ $1,000,000`; row 2's tooltip closes at ≈12.1 | (same line) |
-| 12.5 | Row 3 → **≈ 1.1%** and the row wipes yellow (no count-up: the kit counts only numbers ≥ 10) | (on "1.1%") |
-| 15.1 | The tooltip "yours: 6.2%" opens under ≈ 1.1% (`noteT`) | "Yours: 6.2%, on every dollar, all year." |
+| 11.5 / 11.7 | Selection to row 3 (under the pill); the bar types `= $11,439 ÷ $1,000,000`; the pill fades out whole at ≈12.2-12.3, and row 3 never moves | (same line) |
+| 12.5 | Row 3 → **≈ 1.1%** and the row wipes yellow, with a pop and the reveal sting: the loudest cue of the beat (no count-up: the kit counts only numbers ≥ 10) | (on "1.1%") |
+| 15.1 | The tooltip "yours: 6.2%" opens under ≈ 1.1%, in the slot reserved under the table (`noteT`); it fades out at ≈19.1-19.3 | "Yours: 6.2%, on every dollar, all year." |
 | 19.3 | Verdict card in the caption band: "You pay **6.2%**. A $1M / salary pays **≈ 1.1%**." (6.2% in red, ≈ 1.1% on yellow); the result column flashes top to bottom; ding | "You pay more than five times their rate." |
 | 22.4-25.5 | Hold (the table is the screenshot) | none |
 | 25.5-26.0 | Cells clear back to frame 1 (loop) | none |
 
-Payoffs land at 2.3, 9.6 and 12.5 s, and the verdict at 19.3 s: gaps of 7.3, 2.9 and 6.8 s. The struck $62,000 (5.2-6.1 s) fills the first gap and the "yours: 6.2%" tooltip (15.1 s) the last.
+Payoffs land at 2.6, 9.6 and 12.5 s, and the verdict at 19.3 s: gaps of 7.0, 2.9 and 6.8 s. The struck $62,000 (5.2-6.1 s) fills the first gap and the "yours: 6.2%" tooltip (15.1 s) the last.
 
-**Full guide VO script (01b, 26 s)**
-> At $20 an hour, that's about $2,579 a year. A million-dollar salary: $62,000? No. It stops at $184,500: $11,439. That's about 1.1% of their pay. Yours: 6.2%, on every dollar, all year. You pay more than five times their rate.
+Sound: each value lands with a tick and the goal with a pop plus the reveal sting (peak ≈ 13k, against ≈ 5.5-6k for the ticks); a tooltip opens with a soft pop (≈ 2.5k), so the notes never outrank the results.
+
+**Full guide VO script (01b, 26 s)** (the spec splits it into 8 caption lines, each result starting its own line; the words are these)
+> At $20 an hour, you pay about $2,579 a year. A million-dollar salary: $62,000? No. It stops at $184,500: $11,439. That's about 1.1% of their pay. Yours: 6.2%, on every dollar, all year. You pay more than five times their rate.
 
 Read the numbers as: "twenty", "twenty-five seventy-nine", "sixty-two thousand", "one eighty-four thousand five hundred", "eleven thousand four thirty-nine", "one point one percent", "six point two percent". Every line's `d` fits at 2.6 words/s with these readings, as the check script counts them.
 
@@ -283,7 +289,7 @@ Checks behind the words:
   - The 6.2% employee rate (and 1.45% Medicare) is statutory and unchanged.
 - The cap also limits benefits: SSA's own name for the wage base is the "contribution and benefit base", because earnings above it are neither taxed nor counted when benefits are computed. That is used in the pinned comment only, with no number.
 
-**Assumptions (footer, on screen from 0.0 s):** `ASSUMES 40 hrs × 52 wks · 2026 Social Security tax, employee share · Medicare not counted`. The footer leaves out $184,500 on purpose: printed at frame 1 it would give away row 2. Not modelled: self-employment tax (12.4% to the same cap), the employer's matching share, Medicare and its 0.9% surtax on high wages, and anyone with two jobs (each employer withholds to the cap and the excess is refunded at tax time).
+**Assumptions (footer, on screen from 0.0 s):** `ASSUMES 40 hrs × 52 wks · 2026 rates` / `employee share, no Medicare` (2 explicit lines since the QA fix pass; the banner already names Social Security). The footer leaves out $184,500 on purpose: printed at frame 1 it would give away row 2. Not modelled: self-employment tax (12.4% to the same cap), the employer's matching share, Medicare and its 0.9% surtax on high wages, and anyone with two jobs (each employer withholds to the cap and the excess is refunded at tax time).
 
 **Caption / description (verdict in the caption, R11):**
 > Social Security takes 6.2% of every dollar you earn, up to $184,500. A $1M salary pays $11,439: ≈ 1.1%. At $20 an hour ($41,600 a year) you pay 6.2% on all of it, all year: more than five times their rate. 2026 figures, employee share; Medicare not counted.
@@ -424,7 +430,7 @@ Two independent publishers for each tax parameter, because these figures could b
 
 | ID | Look | Header (t = 0) | Runtime | Key numbers | Verdict | Hook score /10 (see below) |
 |---|---|---|---:|---|---|---:|
-| 01a | clean-sheet | 3 DEAD SIMPLE NUMBERS / PAID **EVERY 2 WEEKS**? THE PAY YOUR BUDGET FORGETS | 26.0 s | $2,500 · $65,000 · not × 24 · $5,000 · × 12 = $60,000 · $65,000 − $60,000 = $5,000 · 26 − 24 = 2 · 13 months | Every 2 weeks = 13 months of pay a year | 8 |
+| 01a | clean-sheet | 3 DEAD SIMPLE NUMBERS / PAID **EVERY 2 WEEKS**? / WHAT YOUR BUDGET MISSES | 26.0 s | $2,500 · $65,000 · not × 24 = $60,000 · $5,000 · × 12 = $60,000 · $65,000 − $60,000 = $5,000 · 10×2 + 2×3 = 26 · 13 months | Every 2 weeks = 13 months of pay a year | 8 |
 | 01b | live-sheet | 3 DEAD SIMPLE NUMBERS / YOU PAY **6.2%** TO SOCIAL SECURITY. / A $1M SALARY PAYS…? | 26.0 s | $20/hr · ≈ $2,579 · ~~$62,000~~ (struck guess) · $184,500 × 6.2% = $11,439 · ≈ 1.1% | You pay 6.2%. A $1M salary pays ≈ 1.1% | 7.25 (hook pass 2; adopted, was 4.25) |
 | 01c | becker-rig | 4 DEAD SIMPLE NUMBERS / WILL A 3% RAISE PUSH **$65,000** INTO A HIGHER BRACKET? | 26.5 s | $66,950 · $50,400 + $16,100 = $66,500 · $450 · $450 × 10% = $45 | Higher bracket? Yes. It costs you $45 a year | 7.5 (hook pass; adopted, was 3.5) |
 
@@ -440,8 +446,12 @@ Two independent publishers for each tax parameter, because these figures could b
   - Direct fetches of irs.gov, bls.gov, census.gov, energy.gov, taxfoundation.org, imercer.com and hrdive.com were blocked by this session's network proxy, so those pages were read from search extracts only.
   - Every on-screen tax figure has two independent publishers, and every displayed result is robust to the plausible spread of its inputs. No on-screen number in 01a rests on an outside figure. Since the hook passes, 01b's rest only on the 2026 Social Security rate (6.2%) and wage base ($184,500), and 01c's only on the 2026 single bracket line ($50,400) and standard deduction ($16,100).
   - Neither hook pass used new web searches: every new number is arithmetic on figures already sourced here (hook pass 2: SSA and Kiplinger for 6.2% and $184,500).
-- **Untested.** No teaser has been posted. The 01a and 01b MP4s were rendered in the assembly pass (`studio/out/01a-clean-sheet-paid-biweekly.mp4`, `studio/out/01b-live-sheet-20-an-hour.mp4`) and frames pulled from them match the stills.
-- **Kit dependence.** The clean-sheet chrome (header and verdict fitting) is being reworked by the clean-sheet fixer. The 01a header is written as 2 explicit lines because the current fitter cannot set "THE PAY YOUR BUDGET FORGETS" on a line of its own at ≥ 56 px; it renders as "…EVERY 2 WEEKS? THE / PAY YOUR BUDGET FORGETS". Re-check the break after the fixer lands. The fixer also changed the clean-sheet layout engine during this pass (labels now sit beside the results); the 01a beat sheet describes the final re-render.
+- **Untested.** No teaser has been posted. The 01a and 01b MP4s were re-rendered in the QA fix pass (`studio/out/01a-clean-sheet-paid-biweekly.mp4`, `studio/out/01b-live-sheet-20-an-hour.mp4`) and frames pulled from them match the stills.
+- **Kit dependence.**
+  - The 01a header is written as 3 explicit lines that each fit whole at 56 px (the last has 23 characters). A longer third line would split again in the clean-sheet fitter.
+  - The clean-sheet captions show a whole VO line at once, unspoken words in grey. 01a therefore starts every result on its own VO line in the spec. If the kit later hides unspoken words, or chunks them 2-4 words at a time like the live-sheet kit, the split lines still read correctly.
+  - The 01a climax (②'s $5,000 re-marked blue beside ③'s at the verdict) and the 64 px verdict live in `clean-sheet/formats/dead-simple-list.js`. The format re-fits the chrome's verdict element at mount, because the chrome has no option for a larger verdict.
+  - The 01b tooltips float in `live-sheet/formats/dead-simple-list.js`, a format-local version of the kit's tooltip. Other live-sheet formats still open the kit's slot, which pushes the rows below.
 - **`noteT` is a kit extension, not yet in the contract.** Since the assembly pass, 01a (items ① and ②) and 01b (item 3) set an optional item field `noteT`, the moment a note appears, read by the clean-sheet and live-sheet `dead-simple-list` modules. `studio/FORMATS.md` does not list it yet, so a kit without it shows the note just after its result, about 1.5-3 s before the VO says it. The check script requires it wherever `ANCHORS` names a note.
 - **01b depends on the live-sheet wrong-guess beat** (`lookOpts.wrongGuess`): if a later kit change drops it, the struck $62,000 (the hook's R5) disappears silently. Re-check the 5.4 and 6.4 s stills after any live-sheet change.
 - **Untested faceless.** Every benchmark winner of this format had a presenter on screen (`04-formats.md`). These are the faceless test.
@@ -609,6 +619,52 @@ Both teasers were rendered and read beat by beat: contact sheets, stills at 0 s,
 - MP4s: `studio/out/01a-clean-sheet-paid-biweekly.mp4` and `studio/out/01b-live-sheet-20-an-hour.mp4`, each 1080 × 1920, 30 fps, 26.0 s, with audio. I pulled frames with ffmpeg at 0, 17.2 and 21.2 s (01a) and at 0, 10.6 and 21.5 s (01b). Each matches its still (mean pixel difference about 1.5/255, codec noise), and every number in them matches this write-up.
 
 **Not changed (kit grammar, recorded):**
-- In 01b each tooltip opens a slot that pushes the rows below, and the assumption line, down while it is open. Every live-sheet format shares this.
-- A frame that falls inside a tooltip's 0.22 s close wipe shows a clipped pill. The 12-frame contact sheet catches two such frames (4.73 s and 18.91 s). Neither is held on screen in the video.
+- In 01b each tooltip opens a slot that pushes the rows below, and the assumption line, down while it is open. Every live-sheet format shares this. (Fixed for dead-simple-list in the QA fix pass: the pills float and the table never moves.)
+- A frame that falls inside a tooltip's 0.22 s close wipe shows a clipped pill. The 12-frame contact sheet catches two such frames (4.73 s and 18.91 s). Neither is held on screen in the video. (Fixed for dead-simple-list in the QA fix pass: a pill now leaves whole, by a 0.14 s fade.)
 - In 01a, a frame inside the 0.16 s between a highlighter's swipe and its figure's pop shows an empty box (9.45 s on the contact sheet). This is the clean-sheet motion grammar.
+
+### QA fix pass (2026-10-08)
+
+The round-2 QA scored 01a 6/10 and 01b 6.5/10. It judged from 16-frame contact sheets, full-size stills, frames pulled from the MP4s and a scan of the SFX timing. Every must and should issue is applied below, plus the cheap nits. 01c was not part of this pass.
+
+| # | Teaser | Sev. | QA issue | What I did |
+|---|---|---|---|---|
+| Q1 | 01a | must | The header wrapped as "PAID EVERY 2 WEEKS? THE / PAY YOUR BUDGET FORGETS", stranding "THE" after the question mark | 3 explicit lines: "3 DEAD SIMPLE NUMBERS / PAID **EVERY 2 WEEKS**? / WHAT YOUR BUDGET MISSES" (12 words). The last line has 23 characters; "WHAT YOUR BUDGET FORGETS" (24) still split, as the stills showed. Each line sets whole at 56 px, at y 252-433. The platform title is now "Paid every 2 weeks? What your budget misses". `EXPECT` was updated. |
+| Q2 | 01a | must | The clean-sheet caption shows the whole VO line, so frame 1 already showed "$65,000 a year", and every later result was readable about 2 s early | Each result now starts its own VO line at its `resultT`: "Your paycheck, times 26. On $2,500:" / "$65,000 a year." (2.7 s); "A normal month: 2 checks," / "$5,000." (9.3 s); "From $65,000, that leaves" / "$5,000." (14.5 s). Frame 1's caption has no result. The words are unchanged, and every line's `d` fits at 2.6 words/s. `VO_NUMBERS` and `ANCHORS` were rewritten (11 lines). |
+| Q3 | 01a | should | The key insight ("the 2 months with 3 paydays") was voice-only, with nothing moving from 17.0 to 20.5 s | The check line is now `check: 10×2 + 2×3 = 26 paydays`, typed at 17.5-19.2 s as the VO says "from the 2 months with 3 paydays" (its own caption line since Q2). It shows the calendar behind ①'s × 26. The check script verifies it against the calendar simulation: 10 two-payday months and 2 three-payday months in every 26-payday year. |
+| Q4 | 01a | should | The payoff did not read as the climax: ③'s blue $5,000 repeated ②'s green $5,000, and the verdict sat at about caption size with nothing reacting | `clean-sheet/formats/dead-simple-list.js`, at the verdict (20.8 s, with the verdict's own blue swipe): any earlier result that shows the goal's figure (②'s $5,000) re-wipes from its rested green to the goal blue (`hlBox` retone), and both boxes pulse once (4.5%). The eye reads "a normal month = the forgotten checks = one more month", 13 in all. The verdict is set up to 64 px (it was 56), so its two lines fill the caption band. |
+| Q5 | 01a | should | "Not times 24: that's only $60,000" was spoken, but only "not × 24" showed | ①'s note is "not × 24 = $60,000" at 4.5 s. The check script now evaluates a "not × N = $X" note on the step's input ($2,500 × 24 = $60,000). |
+| Q6 | 01a | should | The 2-line footer crowded the hook and wrapped inside its parenthesis | "ASSUMES 26 paydays a year · pay before tax" (one line). The 27-payday caveat stays in the pinned comment. With the space this freed, the sheet sets at full size, check line included (results 66 px, the goal 82 px). |
+| Q7 | 01a | should | Step labels started at x ≈ 493 / 453 / 505 | In the `aside` layout every label (and its note) starts on one column, right of the widest result box plus 26 px: x ≈ 529 for all three. |
+| Q8 | 01b | must | VO line 1 never said what the $2,579 was ("…that's about $2,579 a year" sounded like a wrong pay claim) | "At $20 an hour, you pay about $2,579 a year." ("you pay" ties it to the banner's "YOU PAY 6.2% TO SOCIAL SECURITY"). It counts 11 words at the series' 2.6 words/s, so the line runs 4.2 s. vo[1] and the wrong guess moved from 4.0 to 4.2 s, still landing at 5.2 s on "$62,000" and struck at 6.1 s on "No.". Row 1 now lands at 2.6 s, on its own caption line "$2,579 a year." Naming "Social Security" as well would have needed 12 words and pushed every later beat. |
+| Q9 | 01b | should | Opening a tooltip inserted a ~70 px slot, so rows and the footer jumped 3 times, and at 15.8 s the footer reached the caption band | `live-sheet/formats/dead-simple-list.js`: a note's pill floats over the next row's still-empty result cell (two balanced lines when one line would cover that row's label), above the selection. The last row's note opens in a slot reserved under the table from frame 1. The card (y 444-1184), the rows (144 px) and the footer (y 1198-1298) never move. The kit's slot remains only as the fallback for a note that cannot float (none in 01b). |
+| Q10 | 01b | should | The tooltip close clipped from the centre, leaving a lone "y" (≈4.75 s) and a cut "$184" (≈12.0 s) | Pills still wipe out of their notch to open, but leave whole: the pill and notch fade and shrink 6% together over 0.14 s, as one composited group, so the notch never shows through a fading pill. Checked at 4.95 and 12.25 s. |
+| Q11 | 01b | should | The caption "AT $184,500: $11,439" ran about 1 s ahead of the cell | Two fixes. The format now gives the chrome a caption hold for every result and the wrong guess, keyed on the number as typed ("$2,579" for "≈ $2,579"), not only the count-up. The spec also starts each result on its own VO line ("No. It stops at $184,500:" / "$11,439."), so the caption pops with the cell at 9.6 s. |
+| Q12 | 01b | should | The 1.1% climax landed with a soft tick, while the tooltip pops were about 3.5× louder | The goal lands with a pop (0.9) plus the reveal sting (0.45) when it cannot count up. Other values tick at 0.8 and tooltip pops drop to 0.18. Measured peaks in the new MP4: goal ≈ 13.3k, ticks ≈ 5.1-6.0k, tooltip pops ≈ 2.5k. |
+| Q13 | 01b | should | The 3-line footer broke mid-phrase ("employee / share") | "ASSUMES 40 hrs × 52 wks · 2026 rates" / "employee share, no Medicare" (2 explicit lines). |
+| Q14 | 01b | should | The label "A $1M salary's" read as cut off | "A $1M salary pays" (one line at 48 px; checked in stills). `EXPECT` was updated. |
+| Q15 | 01b | nit | The $62,000 guess rendered in dark slate, while the write-up said grey | The format now pencils a wrong guess in the sheet's grey (#667085, 4.9:1 on white), then turns it red as the strike runs through. |
+| Q16 | 01b | nit | Frame 1's focal point is split between $20/hr and the $1M question | Not changed: QA called it acceptable as the open loop. |
+| Q17 | 01b | nit | "More than five times" has no number on screen | Not changed: QA called it optional. The verdict card already shows both rates (6.2% against ≈ 1.1%), and adding "5×" would cost the verdict a third line. |
+| Q18 | 01a | nit | The verdict's blue box on "13 months" starts at x ≈ 82, left of the 86 px margin; header line 1 has no hierarchy | Not fixable in a format file (clean-sheet CSS and chrome). Reported to the kit owner (see below). |
+
+**Reported to kit owners (shared files, not edited):**
+- **Clean Sheet captions** show the whole VO line with the unspoken words in grey, so any result in a line is readable before it lands. They should hide unspoken words, or chunk them 2-4 words at a time as Master Money and the live-sheet kit do. 01a works around this by splitting its VO lines.
+- **Clean Sheet verdict:** the chrome has no option for a larger verdict, so the dead-simple-list format re-fits `ctx.page._.verdict`, a private field, at mount (64 px). An option for this would be cleaner. Also, the inline highlight's padding puts the box left of the 86 px text margin at a line start.
+- **Clean Sheet header:** there is no option to set line 1 (the series line) smaller or in the accent colour, so the 3-line hook block has no hierarchy.
+- **Live Sheet tooltips:** every other live-sheet format still uses the kit's slot (rows below jump) and the clip close (stray glyphs mid-close). The floating pill and fade close in `live-sheet/formats/dead-simple-list.js` (`pillFit`, `makePill`, `setPill`) could move into `lib.js`.
+- **Brand mark casing:** it is uppercase in Clean Sheet and lowercase in Live Sheet.
+
+**Checks after the QA fix pass:**
+- `python3 teasers/v2/checks/01-dead-simple-list.py` → **302 checks, 0 failed**. The new and updated checks:
+  - the "not × 24 = $60,000" note against the step's input;
+  - the check line `10×2 + 2×3 = 26 paydays`, against ①'s 26 and against the calendar simulation (every 26-payday year has 10 two-payday months and 2 three-payday months);
+  - ③'s label ties to that check line, ① note = ③'s $60,000, and ② and ③ both equal one month of pay (13 × $5,000 = $65,000);
+  - `VO_NUMBERS` and `ANCHORS` for the split VO lines;
+  - the new header, footers, note, check line and 01b label in `EXPECT`.
+- Mutation test on scratch copies: 7 of 7 caught (listed at the top).
+- `node src/cli.mjs check`: 01a and 01b are clean (0 errors, 0 warnings). So are the kit samples that share the two edited modules: 4 clean-sheet `dead-simple-list*` samples, and 2 live-sheet samples plus 3 stress specs.
+- Stills checked:
+  - 01a at 0, 5, 15, 19.5, 20.75, 21.05, 21.5 s and the contact sheet.
+  - 01b at 0, 2.75, 3.5, 4.95, 5.4, 6.4, 8.8, 10.8, 12.25, 12.3, 12.6, 15.8, 21 s and the contact sheet.
+- MP4s re-rendered: `studio/out/01a-clean-sheet-paid-biweekly.mp4` and `studio/out/01b-live-sheet-20-an-hour.mp4`, each 1080 × 1920, 30 fps, 26.0 s, with audio. Frames pulled at 0 and 21.5 s (01a) and at 10.8 and 15.8 s (01b) match the stills (mean pixel difference 0.6-2.5 of 255, codec noise).

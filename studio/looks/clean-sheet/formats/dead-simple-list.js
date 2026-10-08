@@ -18,8 +18,12 @@
 // `noteT` (optional, seconds) holds a note back to the moment the VO says it (default: just after its result).
 // A step that lands by t <= 0 is pre-filled: part of frame 1, it survives the loop clear (last frame = frame 1). At
 // the clear every other box retracts and its figure fades with it (never a bare figure without its box).
+// In `aside` every label (and its note) starts on one column, right of the widest result box, so the finished sheet
+// reads as two clean columns. The verdict is the payoff: it is set up to 64 px (two lines fill the caption band), and
+// as it lands the goal box and every earlier result that shows the same figure (01a: ②'s "$5,000", a normal month,
+// = ③'s "$5,000", the forgotten checks) wipe to the goal blue and pulse together, so the sheet answers the verdict.
 import { h, css as style, prog, ease, plain } from '../../../runtime/core.js'
-import { C, SIZE, GRID, MOTION, md, hlBox, typeLine, stepCircle, fadeUp, fade, show, blink, landing, durationOf, typeTime, readCheck, breakLine } from '../lib.js'
+import { C, SIZE, GRID, MOTION, md, hlBox, typeLine, stepCircle, fadeUp, fade, show, blink, landing, durationOf, typeTime, readCheck, breakLine, fitMarkup } from '../lib.js'
 
 export const css = `
 .dsl > * { position: absolute; }
@@ -39,6 +43,8 @@ const SCALES = [1, 0.96, 0.92, 0.88, 0.85, 0.82]
 const MIN_SCALE = { stack3: 0.86, aside: 0.84, bare: 0.82, dense: 0.79, swap: 0.8 }
 const RAISE = 14 // a dense sheet starts this much closer to the footer
 const FLOOR = { label: 40, formula: 40, result: 52, final: 60 }
+const VERDICT_PX = 64 // the payoff line: larger than the kit's 56 px (two lines at 64 px fill the 152 px band)
+const ASIDE_GAP = 26 // result box → label column
 
 export default function deadSimpleList(spec, ctx) {
   const P = ctx.page
@@ -65,6 +71,13 @@ export default function deadSimpleList(spec, ctx) {
   T.forEach((x, i) => { x.next = T[i + 1] ? Math.max(T[i + 1].act, x.res + 0.4) : Infinity })
   const last = T[T.length - 1] || { res: 1 }
   const goalIdx = items.findIndex(it => it.tone === 'goal')
+  // the verdict: the climax beat. The goal and every earlier result showing the same figure re-mark blue with it.
+  const vT = spec.verdict && spec.verdict.text && spec.verdict.t != null ? +spec.verdict.t : Infinity
+  const goalPlain = goalIdx >= 0 ? plain(items[goalIdx].result || '').trim() : ''
+  const twin = items.map((it, i) => goalPlain !== '' && i !== goalIdx && plain(it.result || '').trim() === goalPlain && isFinite(vT))
+  const climaxT = vT + 0.3 // with the verdict's own blue highlight (it wipes from verdict.t + 0.28)
+  const vEl = P._ && P._.verdict
+  if (vEl && isFinite(vT)) fitMarkup(vEl, spec.verdict.text, { maxW: GRID.capW, maxH: GRID.capBottom - GRID.capTop, maxPx: VERDICT_PX, minPx: 42, lh: 1.14, linePenalty: 6 })
 
   const chk = readCheck(d, LO) // a string or { t, text }, in data or lookOpts
   const checkText = chk ? chk.text : ''
@@ -105,7 +118,7 @@ export default function deadSimpleList(spec, ctx) {
     const label = it.label ? h('div', { class: 'dsl-label', html: md(it.label) }) : null
     const formula = typeLine({ text: it.formula || '', suffix: ' =' })
     // results land on the green result highlighter (a neutral result too: sand is only ever a rested tint)
-    const box = hlBox({ html: md(it.result || ''), tone: it.tone === 'neutral' ? 'good' : it.tone, px: goal ? SIZE.final : SIZE.result })
+    const box = hlBox({ html: md(it.result || ''), tone: it.tone === 'neutral' ? 'good' : it.tone, px: goal ? SIZE.final : SIZE.result, retone: twin[i] ? 'goal' : null })
     const note = it.note ? h('div', { class: 'dsl-note', html: md(it.note) }) : null
     const aside = h('div', { class: 'dsl-aside' })
     for (const e of [circle.el, formula.el, box.el, aside]) root.append(e)
@@ -153,6 +166,15 @@ export default function deadSimpleList(spec, ctx) {
       style(given.el, { left: GRID.left + 'px', top: y + 'px', height: given.h + 'px' })
       y += given.h + m.gGiven + extraGap
     }
+    // aside: one label column for every step, right of the widest result box (no ragged left edge)
+    let colRight = -Infinity
+    if (mode === 'aside') {
+      for (const r of R) {
+        const resPx = r.goal ? m.final : m.result
+        r.box.setPx(resPx, Math.round(resPx * m.boxK))
+        colRight = Math.max(colRight, textX - 14 * Math.sqrt(resPx / SIZE.result) + r.box.width())
+      }
+    }
     R.forEach((r, i) => {
       const resPx = r.goal ? m.final : m.result
       const boxH = Math.round(resPx * m.boxK)
@@ -191,7 +213,7 @@ export default function deadSimpleList(spec, ctx) {
       r.boxW = bw
       const boxRight = textX - pad + bw
       if (boxRight > right) fits = false
-      const asideLeft = Math.round(boxRight + 26)
+      const asideLeft = Math.round((mode === 'aside' ? colRight : boxRight) + ASIDE_GAP)
       const asideW = right - asideLeft
       // note: beside the result; with an aside label, stacked under it (ink label, grey note) when the pair stays
       // about the box's height; else after the formula
@@ -321,6 +343,10 @@ export default function deadSimpleList(spec, ctx) {
         if (pre[i]) rest = reset ? restAt(r, x, 0) : rest * keep + restAt(r, x, 0) * clearP
         const kr = keepAt(x.res)
         r.box.seek(L.wipe * kr, L.text * kr, rest, kr * kr)
+        // the verdict beat: an earlier result that shows the goal's figure re-wipes to the goal blue, and both pulse
+        if (twin[i]) r.box.seekRetone(ease.out(prog(tt, climaxT, MOTION.wipe)) * kr, 0)
+        const pulse = twin[i] || (r.goal && twin.some(Boolean)) ? prog(tt, climaxT + 0.05, 0.5) : 0
+        style(r.box.el, { transform: pulse > 0 && pulse < 1 ? `scale(${(1 + 0.045 * Math.sin(Math.PI * pulse)).toFixed(4)})` : 'none', transformOrigin: '0% 50%' })
         if (r.note) fadeUp(r.note, prog(tt, x.noteAt, MOTION.fade) * keepAt(x.noteAt))
       })
       if (check) {

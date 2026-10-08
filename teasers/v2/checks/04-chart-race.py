@@ -296,6 +296,7 @@ NAMES = [("S&P 500", "S&P"), ("US$", "US")]
 
 
 def nums(s):
+    s = s.replace("\u00a0", " ")             # a caption may bind "≈ 4 times" with no-break spaces
     for a, b in NAMES:
         s = s.replace(a, b)
     s = s.replace("**", "").replace("__", "")
@@ -388,11 +389,12 @@ def spoken(text):
 def said_at(S, i, token):
     """(start, end) of `token` inside vo[i] as read: line start + spoken words before it / WPS"""
     line = S.d["vo"][i]
-    if token not in line["text"]:                # a wrong figure fails as a claim, not as a crash
+    text = line["text"].replace("\u00a0", " ")
+    if token not in text:                        # a wrong figure fails as a claim, not as a crash
         claim(S.key, f"vo[{i}] says '{token}'", line["text"], token, ok=False)
         return math.inf, math.inf
-    k = line["text"].index(token)
-    t0 = line["t"] + spoken(line["text"][:k]) / WPS
+    k = text.index(token)
+    t0 = line["t"] + spoken(text[:k]) / WPS
     return t0, t0 + spoken(token) / WPS
 
 
@@ -478,7 +480,12 @@ def events(S, M, race, x0, x1, want, seen):
         te = t_of(x, race, x0, x1)
         claim(S.key, f"event '{label}' lands in its {y} segment", round(te, 2), f"{M['ts'][y] - PRE:.2f}..{M['tl'][y] + POST:.2f}",
               ok=M["ts"][y] - PRE <= te <= M["tl"][y] + POST)
-        if narrated:
+        if isinstance(narrated, tuple):
+            # a flag that carries the figures a VO line quotes lands with those figures (vo index, token)
+            s0 = said_at(S, narrated[0], narrated[1])[0]
+            claim(S.key, f"event '{label}' lands as vo[{narrated[0]}] says '{narrated[1]}'", round(te, 2), f"{s0:.2f} ± {EVENT_TOL}",
+                  ok=abs(te - s0) <= EVENT_TOL)
+        elif narrated:
             claim(S.key, f"event '{label}' lands with its VO line", round(te, 2), f"{seen.get(y)} ± {EVENT_TOL}",
                   ok=y in seen and abs(te - seen[y]) <= EVENT_TOL)
 
@@ -519,7 +526,7 @@ Sa.s(("data", "stake"), f"${A_STAKE:,} each · Jan {A_Y0}")
 chart(Sa, A_RACE, A_Y0, A["x1"], [A_sp_pts, A_au_pts], [A["fin_sp"], A["fin_au"]], ["S&P 500", "Gold"])
 claim("a", "x tickEvery", Sa.d["data"]["x"]["tickEvery"], 5)
 vo_numbers(Sa, [
-    [str(A["years"])],
+    [],                                                          # "Stocks should crush gold." (fixer pass: no "26 years")
     [str(2002), f"≈ −{A['dd02']}%", f"≈ +{A['up02']}%"],
     ["2008"],
     ["2013", f"≈ {abs(GOLD[2013]):.0f}%"],
@@ -529,11 +536,10 @@ vo_numbers(Sa, [
     [A["fin_au"]],
     [f"≈ {round(A['dbl_au'])}", f"≈ {round(A['dbl_sp'])}"],
 ])
-claim("a", "'26 years' = Jan 2000 -> Dec 2025", A["years"], 26)
 seen_a = year_sync(Sa, A, A_Y0, A_RACE[1])
 flag02 = f"S&P __≈ −{A['dd02']}%__ · gold **≈ +{A['up02']}%**"
 flag13 = f"Gold ≈ −{abs(GOLD[2013]):.0f}%"
-want_ev_a = [(2001.0, "Dot-com crash", False), (ye(2002), flag02, True), (2008.75, "2008 crash", True),
+want_ev_a = [(2001.0, "Dot-com crash", False), (ye(2002), flag02, (1, f"≈ −{A['dd02']}%")), (2008.75, "2008 crash", True),
              (2013.3, flag13, True), (2022.5, "2022 bear market", False)]
 events(Sa, A, A_RACE, A_Y0, A["x1"], want_ev_a, seen_a)
 claim("a", "flag at the 2002 close is tone neutral (gold's gain not in red)", Sa.d["data"]["events"][1].get("tone"), "neutral")
@@ -564,12 +570,13 @@ for i, tok, lab in ((1, f"≈ −{A['dd02']}%", flag02), (1, f"≈ +{A['up02']}%
         claim("a", f"sync: flag '{lab}' carrying '{tok}' is in the spec", "missing", "present", ok=False)
     else:
         shown_while_said(Sa, i, tok, w[0], w[1], f"the flag '{lab}'")
-Sa.s(("verdict", "text"), f"Gold ended **≈ {round(A['ratio'])}×** the S&P 500.\n≈ one extra doubling.")
+Sa.s(("verdict", "text"), f"Gold ended **≈ {round(A['ratio'])}×** the S&P 500.\nThat's ≈ one extra doubling.")
 fs = ("lookOpts", "footerSteps")
 claim("a", "lookOpts.stakeLine", Sa.d["lookOpts"]["stakeLine"], A_STAKE)
 Sa.s(fs + (0, "text"), f"${A_STAKE:,} grew ≈ ×{sig(A['m_sp']):.2f} → {A['fin_sp']}")
 Sa.s(fs + (1, "text"), f"${A_STAKE:,} grew ≈ ×{sig(A['m_au']):.1f} → {A['fin_au']}")
-Sa.s(fs + (2, "text"), f"≈ ×{sig(A['m_au']):.1f} → ≈ {A['dbl_au']:.1f} doublings · ≈ ×{sig(A['m_sp']):.2f} → ≈ {A['dbl_sp']:.1f}")
+Sa.s(fs + (2, "text"), f"Gold ≈ {A['dbl_au']:.1f} doublings · S&P 500 ≈ {A['dbl_sp']:.1f}")
+claim("a", "doublings: spoken '≈ 4' / '≈ 3' are the footer's 3.9 / 2.9 rounded", [round(A["dbl_au"]), round(A["dbl_sp"])], [4, 3])
 claim("a", "multiples are roundings (so they carry ≈)", f"{A['m_sp']:.4f} / {A['m_au']:.4f}", "not exact",
       ok=abs(A["m_sp"] - sig(A["m_sp"])) > 1e-6 and abs(A["m_au"] - sig(A["m_au"])) > 1e-6)
 for i, j in ((0, 6), (1, 7), (2, 8)):
@@ -583,7 +590,33 @@ sfx_on(Sa, [(A["tl"][2002], "thud"), (A["tl"][2008], "thud"), (A["tl"][2013], "h
 claim("a", "lookOpts.finalT = [race end, vo[7] t]", Sa.d["lookOpts"]["finalT"], [A_RACE[1], vo_t(Sa, 7)])
 claim("a", "the S&P final takes the hero as vo[6] names it", Sa.d["lookOpts"]["finalT"][0], vo_t(Sa, 6))
 claim("a", "the winner (gold) is revealed last", A_au[2025] > A_sp[2025] and Sa.d["lookOpts"]["finalT"][1] > Sa.d["lookOpts"]["finalT"][0], True)
-claim("a", "lookOpts.flagHold (s)", Sa.d["lookOpts"]["flagHold"], 5.0)
+claim("a", "lookOpts.flagHold (s)", Sa.d["lookOpts"]["flagHold"], 3.0)
+# fixer pass: gold's 2025 leg is held back. Gold stops at its 2024 close while the clock runs on (its tip holds
+# $91,094), draws its +64.6% leg over [34.4, 36.4] under the kit's riser, and its final lands as vo[7] names it
+hb = Sa.d["lookOpts"]["holdBack"]
+claim("a", "holdBack series = gold (the winner, revealed last)", hb["series"], 1)
+claim("a", "holdBack leg ends as vo[7] names gold's final (= finalT[1])", hb["t"][1], vo_t(Sa, 7),
+      ok=abs(hb["t"][1] - vo_t(Sa, 7)) < 1e-9 and abs(hb["t"][1] - Sa.d["lookOpts"]["finalT"][1]) < 1e-9)
+t_hold = t_of(ye(2024), A_RACE, A_Y0, A["x1"])
+claim("a", "gold stops at its 2024 close before the race ends", round(t_hold, 2), f"< {A_RACE[1]}", ok=t_hold < A_RACE[1])
+claim("a", "gold's held tip = its 2024 close", usd_round(A_au[2024]), "≈ $91,094")
+s_sp = said_at(Sa, 6, A["fin_sp"])[0]
+claim("a", "gold's leg starts after vo[6] has started saying the S&P final", hb["t"][0], f">= {s_sp:.2f}",
+      ok=s_sp <= hb["t"][0] < hb["t"][1])
+claim("a", "gold's leg runs 2.0 s (the kit's riser covers it)", round(hb["t"][1] - hb["t"][0], 2), 2.0)
+claim("a", "lookOpts.tipLane (labels beside their dots at the finish)", Sa.d["lookOpts"]["tipLane"], True)
+claim("a", "lookOpts.emColor = gold's colour (the verdict's ≈ 2× is gold's win)", Sa.d["lookOpts"]["emColor"], "yellow")
+# the doublings ladder: rungs at the stake × 2, 4, 8, 16 as vo[8] starts
+rg = ("lookOpts", "rungs")
+claim("a", "rungs t = vo[8] t", Sa.get(rg + ("t",)), vo_t(Sa, 8))
+claim("a", "rung count", len(Sa.get(rg + ("items",))), 4)
+for k in range(4):
+    Sa.v(rg + ("items", k, 0), A_STAKE * 2 ** (k + 1), tol=1e-9, what=f"rung {k} value = stake × {2 ** (k + 1)}")
+    Sa.s(rg + ("items", k, 1), f"×{2 ** (k + 1)}")
+claim("a", "gold ends under the ×16 rung, over ×8 (3.9 doublings, said '≈ 4')", f"×{A['m_au']:.2f}", "8 <= × < 16", ok=8 <= A["m_au"] < 16)
+claim("a", "the S&P ends under the ×8 rung, over ×4 (2.9, said '≈ 3')", f"×{A['m_sp']:.2f}", "4 <= × < 8", ok=4 <= A["m_sp"] < 8)
+claim("a", "the ×16 rung is on the end frame's y axis (kit headroom 1.2 × the max)", A_STAKE * 16, f"<= {1.2 * A_au[2025]:,.0f}",
+      ok=A_STAKE * 16 <= 1.2 * A_au[2025])
 claim("a", "final roll on the race end", A_RACE[1], A["tl"][2025], ok=abs(A_RACE[1] - A["tl"][2025]) < 1e-9)
 claim("a", "the finals are said only after the race ends", vo_t(Sa, 6), f">= {A_RACE[1]}", ok=vo_t(Sa, 6) >= A_RACE[1])
 # what the words claim

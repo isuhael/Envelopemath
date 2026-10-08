@@ -71,10 +71,10 @@ export const css = `
 .gl-v { position: absolute; background: #FFFFFF; border-radius: 24px; padding: 18px 34px 20px 116px; box-sizing: border-box;
   opacity: 0; transform-origin: 50% 50%; }
 .gl-v .ls-chip { left: 26px; width: 70px; height: 64px; font-size: 48px; }
-.gl-v1 { font: 900 88px/1.04 'Inter', 'Inter Full', sans-serif; color: #101828; letter-spacing: -0.025em; white-space: nowrap; }
+.gl-v1 { font: 900 88px/1.04 'Inter', 'Inter Full', sans-serif; color: #101828; letter-spacing: -0.025em; white-space: nowrap; width: max-content; }
 .gl-v1 em { font-style: normal; background-image: linear-gradient(#FFD60A, #FFD60A); background-repeat: no-repeat;
   background-size: var(--hl, 100%) 1.0em; background-position: 0 58%; border-radius: 10px; padding: 0 0.08em; }
-.gl-v2 { font: 700 44px/1.2 'Inter', 'Inter Full', sans-serif; color: #344054; letter-spacing: -0.01em; white-space: nowrap; margin-top: 6px; }
+.gl-v2 { font: 700 44px/1.2 'Inter', 'Inter Full', sans-serif; color: #344054; letter-spacing: -0.01em; white-space: nowrap; margin-top: 6px; width: max-content; }
 .gl-v2 em { font-style: normal; color: #101828; font-weight: 800; }
 `
 
@@ -156,7 +156,6 @@ export default function growthLadder(spec, ctx) {
       }
     }
   }
-  const ansOn = ansRow >= 0 && !pre[ansRow] || (ansRow >= 0 && pre[ansRow])
 
   // ---------- formula bar entries ----------
   const rateTxt = String(input.rate || '').replace(/^at\s+/i, '')
@@ -395,7 +394,7 @@ export default function growthLadder(spec, ctx) {
     const land = pre[m.row] ? 0 : landEnd(m.row)
     if (markMode === 'chip') {
       const c = chips[i]
-      return { openAt: c.openAt, closeAt: Math.min(c.closeEnd, loopT0), wipeAt: Math.max(m.t, land - 0.1) }
+      return { openAt: c.openAt, closeAt: Math.min(c.closeEnd, loopT0), wipeAt: c.openAt - 0.1 } // tint and chip arrive together
     }
     const openAt = markAt(m)
     const next = marks[i + 1] ? marks[i + 1].t : Infinity
@@ -477,8 +476,11 @@ export default function growthLadder(spec, ctx) {
     }
     const first = i === 0 && e.t <= 0
     const from = k > 0 ? graphemes(p.slice(0, k)).length : first ? wordCut(e.text, opt(spec, 'formulaAt0', 0.7)) : 0
-    const start = first ? e.t : e.t + (k > 0 ? 0.1 : 0)
-    const want = k > 0 ? 0.3 : 0.7
+    // a result types as its row's output cell lands (a counted last row: as the count lands, never ahead of it)
+    const rowOf = rowT.findIndex(x => Math.abs(x - e.t) < 1e-6)
+    const counted = k > 0 && rowOf === last && countOn
+    const start = first ? e.t : counted ? outT0(last) + M.count - 0.22 : e.t + (k > 0 ? 0.1 : 0)
+    const want = k > 0 ? (counted ? 0.24 : 0.3) : 0.7
     const room = next - start - 0.3
     const cps = Math.max(M.cps, (len - from) / want, isFinite(room) && room > 0.1 ? (len - from) / room : 0)
     return { ...e, erase: 0, start, len, from, cps, end: start + Math.max(0, len - from) / cps }
@@ -570,6 +572,12 @@ export default function growthLadder(spec, ctx) {
   const ansAt = t => (ansRow >= 0 ? ease.inOut(prog(t, vT + 0.04, 0.3)) * loopFade(t) : 0)
   const ansBump = t => (ansRow >= 0 && t >= vT + 0.08 ? 1 + 0.09 * Math.sin(Math.PI * prog(t, vT + 0.08, 0.42)) : 1)
   const vOn = t => !!vStack && t >= vT && t < loopT0 + 0.3
+  const crossAt = (r, t) => {
+    if (markMode !== 'chip') return 0
+    let a = 0
+    marks.forEach((m, i) => { if (m.row === r && goodTone(m.tone) && !pre[r]) a = Math.max(a, chipOn(i, t).o) })
+    return a
+  }
   return {
     duration: D0,
     chrome: {
@@ -601,7 +609,7 @@ export default function growthLadder(spec, ctx) {
         marks.forEach((m, i) => {
           if (m.row !== r) return
           const w = markWin[i]
-          const on = 1 - ease.out(prog(t, Math.min(w.closeAt, loopT0), 0.2))
+          const on = markMode === 'chip' ? 1 - ease.inOut(prog(t, Math.min(w.closeAt, loopT0) - 0.2, 0.2)) : 1 - ease.out(prog(t, Math.min(w.closeAt, loopT0), 0.2))
           const wp = ease.inOut(prog(t, w.wipeAt + 0.04, 0.3))
           if (on * wp > a * wipe) { a = on; wipe = wp; fillC = m.tone === 'bad' ? BAD_TINT : C.rowHi }
         })
@@ -638,20 +646,14 @@ export default function growthLadder(spec, ctx) {
             q = ease.out(k)
             const pp = prog(t, t0 + M.count - 0.02, 0.24)
             scale = pp > 0 && pp < 1 ? 1 + 0.1 * (1 - ease.out(pp)) : rowBump // settles from 110%, never under 100%
-          } else if (isOut) {
-            q = pre[r] ? 1 : ease.out(prog(t, t0, 0.45))
-            // the crossing (a good mark's output cell): it lands bigger, 135% → 100%, as its chip appears
-            if (markMode === 'chip' && !pre[r] && marks.some(m => m.row === r && goodTone(m.tone)) && t >= t0) {
-              const k = prog(t, t0, 0.42)
-              p = 1
-              scale = Math.max(rowBump, k < 1 ? 1 + 0.35 * (1 - ease.out(k)) : 1)
-            }
-          }
+          } else if (isOut) q = pre[r] ? 1 : ease.out(prog(t, t0, 0.45))
+          // the crossing: a good mark's output cell turns into the kit's goal cell (ink on yellow) while its chip shows
+          const cross = isOut ? crossAt(r, t) : 0
           const flash = pre[r] ? 0 : Math.max(flashAlpha(t, t0 + 0.06), isOut ? flashAlpha(t, sweepAt(r), 0.32) : 0)
           sh.setCell(r, c, {
-            text, p, out, flash: lit ? 0 : flash, scale,
-            color: isOut ? emphColor : undefined,
-            fill: fillKey || (isOut && r === last && emphFill !== 'transparent' && p >= 1 && out < 1 ? emphFill : undefined),
+            text, p, out, flash: lit || cross > 0.001 ? 0 : flash, scale,
+            color: isOut ? (cross > 0.001 ? C.ink : emphColor) : undefined,
+            fill: fillKey || (cross > 0.001 ? rgba(C.accent, cross) : undefined) || (isOut && r === last && emphFill !== 'transparent' && p >= 1 && out < 1 ? emphFill : undefined),
           })
           // the bar gives way to a row highlight (it would muddy the yellow)
           if (isOut) setBar(r, p > 0 ? q : 0, Math.min(clamp(p * 4), 1 - out) * (1 - a * wipe))

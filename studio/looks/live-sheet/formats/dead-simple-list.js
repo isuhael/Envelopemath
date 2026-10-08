@@ -74,6 +74,7 @@ export const css = `
 .dsl-ok { color: #058A4F; font-weight: 800; }
 .dsl-per { font-size: max(40px, 0.62em); letter-spacing: -0.005em; }
 .dsl-tips { position: absolute; inset: 0; z-index: 6; }
+.dsl-tip { position: absolute; left: 0; top: 0; width: 0; height: 0; }
 .dsl-tips .ls-tiptxt { white-space: nowrap; }
 `
 
@@ -516,14 +517,16 @@ export default function deadSimpleList(spec, ctx) {
     const rs = [...rg.getClientRects()].filter(b => b.width > 0.5)
     return rs.length ? X + Math.max(...rs.map(b => b.right)) - card.getBoundingClientRect().left : fallback
   }
-  const PILL_PARK = { opacity: '0', left: '0px', top: '0px', width: '0px', height: '0px', transform: 'none' }
+  const PILL_PARK = { opacity: '0', left: '0px', top: '0px', width: '0px', height: '0px' }
+  // pill + notch in one group, so a fading pill composites as one shape (the notch never shows through it)
   function makePill(html, wrap) {
     const txt = h('div', { class: 'ls-tiptxt', html, style: { fontSize: tipPx + 'px', ...(wrap ? { whiteSpace: 'normal', textWrapStyle: 'balance' } : {}) } })
     const inner = h('div', { class: 'ls-tipin' }, txt)
     const el = h('div', { class: 'ls-tip', 'data-roll': '' }, inner)
     const notch = h('i', { class: 'ls-notch' })
-    tipLayer.append(notch, el)
-    return { el, inner, txt, notch }
+    const grp = h('div', { class: 'dsl-tip' }, notch, el)
+    tipLayer.append(grp)
+    return { grp, el, inner, txt, notch }
   }
   const pillX1 = X + W - 12
   const tips = []
@@ -561,20 +564,23 @@ export default function deadSimpleList(spec, ctx) {
   })
   /** a pill's frame: it wipes out of its notch (width, both ways, 0.24 s), then fades and shrinks whole to close */
   function setPill(tp, y, t) {
-    const { el, inner, notch } = tp.pill
+    const { grp, el, inner, notch } = tp.pill
     const rv = ease.out(prog(t, tp.revealAt, 0.24)), go = ease.inOut(prog(t, tp.fadeAt, 0.14))
     if (rv <= 0.001 || go >= 0.999) {
+      setStyle(grp, { opacity: '0', transform: 'none', transformOrigin: '0px 0px' })
       setStyle(el, PILL_PARK); setStyle(inner, { left: '0px', width: '0px', height: '0px' })
-      setStyle(notch, { opacity: '0', left: '0px', top: '0px', transform: 'rotate(45deg)' })
+      setStyle(notch, { opacity: '0', left: '0px', top: '0px' })
       return
     }
     const { x0, x1, notchX } = tp.box
     const nx = clamp(notchX, x0 + 30, x1 - 30)
     const l = Math.round(Math.max(x0, nx - 20 - (nx - 20 - x0) * rv)), rr = Math.round(Math.min(x1, nx + 20 + (x1 - nx - 20) * rv))
-    const top = Math.round(y - bodyTop + 8), a = (1 - go).toFixed(3), sc = 1 - 0.06 * go
-    setStyle(el, { opacity: a, left: l - X + 'px', top: top + 'px', width: rr - l + 'px', height: tp.ht + 'px', transform: go > 0 ? `scale(${sc.toFixed(4)})` : 'none', transformOrigin: `${Math.round(nx - l)}px 0px` })
+    const top = Math.round(y - bodyTop + 8)
+    // closing: the whole group fades and shrinks 6% toward the notch
+    setStyle(grp, { opacity: (1 - go).toFixed(3), transform: go > 0 ? `scale(${(1 - 0.06 * go).toFixed(4)})` : 'none', transformOrigin: `${Math.round(nx - X)}px ${top}px` })
+    setStyle(el, { opacity: '1', left: l - X + 'px', top: top + 'px', width: rr - l + 'px', height: tp.ht + 'px' })
     setStyle(inner, { left: Math.round(x0) - l + 'px', width: Math.round(x1 - x0) + 'px', height: tp.ht + 'px' })
-    setStyle(notch, { opacity: a, left: Math.round(nx - 11 - X) + 'px', top: top - 9 + 'px', transform: go > 0 ? `rotate(45deg) scale(${sc.toFixed(4)})` : 'rotate(45deg)' })
+    setStyle(notch, { opacity: '1', left: Math.round(nx - 11 - X) + 'px', top: top - 9 + 'px' })
   }
   // a row's working suffix rises in when the formula bar moves on (or 0.5 s after the result when nothing follows)
   const sufT = items.map((_, r) => { const nx = E.find(e => e.eraseAt > T[r].res && e.row !== r); return nx ? nx.eraseAt + 0.1 : T[r].res + 0.5 })

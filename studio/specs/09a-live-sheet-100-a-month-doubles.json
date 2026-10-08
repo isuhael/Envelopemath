@@ -5,7 +5,7 @@
   "fps": 30,
   "duration": 28.5,
   "header": "You add **$100 a month**.\nWhen does it earn $100 a month?",
-  "footer": "ASSUMES 8% a year, compounded monthly · $100 in at each month-end · not a forecast",
+  "footer": "ASSUMES 8% a year, compounded monthly\n$100 in at each month-end · not a forecast",
   "captions": true,
   "vo": [
     { "t": 0.0, "d": 3.85, "text": "By year 1 it's earning about $8 a month." },
@@ -15,7 +15,7 @@
     { "t": 19.0, "d": 5.0, "text": "Year 30: about $994 a month. On its own." },
     { "t": 24.2, "d": 1.95, "text": "Any monthly amount: year 9." }
   ],
-  "verdict": { "t": 24.2, "text": "It out-earns your $100 from **year 9**.\nSame year for any monthly amount." },
+  "verdict": { "t": 24.2, "text": "From **year 9**\nit earns more than you add." },
   "data": {
     "input": { "amount": "$100", "per": "a month", "rate": "8% a year" },
     "columns": ["Year", "You put in", "Worth", "Earns a month"],
@@ -35,20 +35,21 @@
   },
   "lookOpts": {
     "inputsAtStart": true,
+    "verdictStyle": "stack",
     "formulaBar": [
-      { "t": 0.0, "text": "≈ $1,245 × 8% ÷ 12 ≈ $8/mo" },
-      { "t": 3.2, "text": "≈ $7,348 × 8% ÷ 12 ≈ $49/mo" },
-      { "t": 4.6, "text": "≈ $13,387 × 8% ÷ 12 ≈ $89/mo" },
-      { "t": 8.0, "text": "≈ $15,743 × 8% ÷ 12 ≈ $105/mo" },
-      { "t": 12.2, "text": "≈ $34,604 × 8% ÷ 12 ≈ $231/mo" },
-      { "t": 13.9, "text": "≈ $58,902 × 8% ÷ 12 ≈ $393/mo" },
-      { "t": 17.8, "text": "≈ $95,103 × 8% ÷ 12 ≈ $634/mo" },
-      { "t": 19.4, "text": "≈ $149,036 × 8% ÷ 12 ≈ $994/mo" },
+      { "t": 0.0, "text": "$1,245 × 8% ÷ 12 ≈ $8/mo" },
+      { "t": 3.2, "text": "$7,348 × 8% ÷ 12 ≈ $49/mo" },
+      { "t": 4.6, "text": "$13,387 × 8% ÷ 12 ≈ $89/mo" },
+      { "t": 8.0, "text": "$15,743 × 8% ÷ 12 ≈ $105/mo" },
+      { "t": 12.2, "text": "$34,604 × 8% ÷ 12 ≈ $231/mo" },
+      { "t": 13.9, "text": "$58,902 × 8% ÷ 12 ≈ $393/mo" },
+      { "t": 17.8, "text": "$95,103 × 8% ÷ 12 ≈ $634/mo" },
+      { "t": 19.4, "text": "$149,036 × 8% ÷ 12 ≈ $994/mo" },
       { "t": 24.2, "text": "$50 or $500/mo: still year 9" }
     ],
     "marks": [
       { "t": 4.6, "row": 2, "tone": "bad", "label": "under $100" },
-      { "t": 8.0, "row": 3, "tone": "good", "label": "earns $100+" }
+      { "t": 8.0, "row": 3, "tone": "good", "label": "beats your **$100**" }
     ]
   },
   "sfx": [

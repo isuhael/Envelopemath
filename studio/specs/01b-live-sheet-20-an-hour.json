@@ -5,7 +5,7 @@
   "fps": 30,
   "duration": 26.0,
   "header": "3 DEAD SIMPLE NUMBERS\nYOU PAY **6.2%** TO SOCIAL SECURITY.\nA $1M SALARY PAYS…?",
-  "footer": "ASSUMES 40 hrs × 52 wks · 2026 rates · employee share, no Medicare",
+  "footer": "ASSUMES 40 hrs × 52 wks · 2026 rates\nemployee share, no Medicare",
   "captions": true,
   "vo": [
     { "t": 0.0,  "d": 2.7, "text": "At $20 an hour, you pay about" },

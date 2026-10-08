@@ -4,16 +4,20 @@
   "format": "dead-simple-list",
   "fps": 30,
   "duration": 26.0,
-  "header": "3 DEAD SIMPLE NUMBERS\nPAID **EVERY 2 WEEKS**? THE PAY YOUR BUDGET FORGETS",
-  "footer": "ASSUMES 26 paydays a year (some years have 27) · pay before tax",
+  "header": "3 DEAD SIMPLE NUMBERS\nPAID **EVERY 2 WEEKS**?\nWHAT YOUR BUDGET MISSES",
+  "footer": "ASSUMES 26 paydays a year · pay before tax",
   "captions": true,
   "vo": [
-    { "t": 0.0,  "d": 4.3, "text": "Your paycheck, times 26. On $2,500: $65,000 a year." },
+    { "t": 0.0,  "d": 2.7, "text": "Your paycheck, times 26. On $2,500:" },
+    { "t": 2.7,  "d": 1.6, "text": "$65,000 a year." },
     { "t": 4.5,  "d": 2.8, "text": "Not times 24: that's only $60,000." },
-    { "t": 7.4,  "d": 2.8, "text": "A normal month: 2 checks, $5,000." },
+    { "t": 7.4,  "d": 1.9, "text": "A normal month: 2 checks," },
+    { "t": 9.3,  "d": 0.9, "text": "$5,000." },
     { "t": 10.4, "d": 2.0, "text": "12 normal months: $60,000." },
-    { "t": 12.6, "d": 2.8, "text": "From $65,000, that leaves $5,000." },
-    { "t": 15.6, "d": 4.7, "text": "It's your 2 extra checks, from the 2 months with 3 paydays." },
+    { "t": 12.6, "d": 1.9, "text": "From $65,000, that leaves" },
+    { "t": 14.5, "d": 0.9, "text": "$5,000." },
+    { "t": 15.6, "d": 1.9, "text": "It's your 2 extra checks," },
+    { "t": 17.5, "d": 2.7, "text": "from the 2 months with 3 paydays." },
     { "t": 20.5, "d": 3.2, "text": "That's a 13th month of pay. Every year." }
   ],
   "verdict": { "t": 20.5, "text": "Every 2 weeks = **13\u00a0months** of pay a year" },
@@ -22,14 +26,14 @@
     "typeDur": 0.8,
     "items": [
       { "t": 0.0, "label": "Your real yearly pay", "formula": "$2,500 × 26", "result": "$65,000",
-        "tone": "good", "note": "not × 24", "resultT": 2.7, "noteT": 4.5 },
+        "tone": "good", "note": "not × 24 = $60,000", "resultT": 2.7, "noteT": 4.5 },
       { "t": 7.4, "label": "A normal month", "formula": "$2,500 × 2", "result": "$5,000",
         "tone": "neutral", "note": "× 12 = $60,000", "resultT": 9.3, "noteT": 10.4 },
       { "t": 12.6, "label": "The 2 checks your budget forgets", "formula": "$65,000 − $60,000", "result": "$5,000",
         "tone": "goal", "resultT": 14.5 }
     ],
-    "check": "26 − 24 = 2 checks",
-    "checkT": 15.6
+    "check": "10×2 + 2×3 = 26 paydays",
+    "checkT": 17.5
   },
   "sfx": [ { "t": 20.5, "kind": "ding" } ]
 }

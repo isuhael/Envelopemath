@@ -38,6 +38,13 @@
 // previous amount has landed + 0.5 s.
 // bumps: [{ t, at }]: a VO-synced nudge (the box scales up ~8% and back over 0.42 s, a resting box re-lights for it, a
 // soft tick) on 'total', 'guess' or a part index: e.g. the hook's "$10" and "$7.04?" as the first VO line says them.
+// activate[0] (a number > 0): the first row activates then instead of being lit at frame 1 (the pointer starts on the
+// total), so frame 1's only loud figures are the total and the wrong guess.
+// goalScale (e.g. 1.3): the goal amount lands this many times the size of the other amounts and stays that size (the
+// payoff is the biggest figure on the sheet); its empty slot matches the other slots until it lands.
+// bigVerdict (true): the verdict is set here as a lockup in the caption band instead of the kit's 56 px line: plain
+// text at 64 px, the **goal** figure on its blue highlighter at ~90 px, a __figure__ in cost red, struck through.
+// One line per "\n" in verdict.text, shrunk together only if a line is wider than the column.
 import { h, css as style, prog, ease, clamp, lerp } from '../../../runtime/core.js'
 import { C, SIZE, GRID, MOTION, md, hlBox, typeLine, pointer, pathAt, fade, show, blink, landing, durationOf, typeTime, toneColor, readCheck, breakLine } from '../lib.js'
 
@@ -50,7 +57,7 @@ export const css = `
 .ss-note { white-space: nowrap; font: 500 40px/1.15 'Inter', 'Inter Full', sans-serif; color: #6B7280; }
 .ss-note em { font-style: normal; color: #15171C; font-weight: 600; }
 .ss-note u.mark2 { text-decoration: none; color: #B42318; }
-.ss-pct { white-space: nowrap; font: 600 44px/1 'IBM Plex Mono', 'Inter Full', monospace; color: #6B7280; text-align: right; letter-spacing: -.02em; }
+.ss-pct { white-space: nowrap; font: 600 44px/1 'Inter', 'Inter Full', sans-serif; font-variant-numeric: tabular-nums; color: #6B7280; text-align: right; letter-spacing: -.01em; }
 .ss-leader, .ss-trace { height: 6px; background-repeat: repeat-x; background-size: 16px 6px; }
 .ss-leader { background-image: radial-gradient(circle at 3px 3px, #9AA1AC 0, #9AA1AC 2.4px, transparent 2.9px); }
 .ss-trace { background-image: radial-gradient(circle at 3px 3px, #2F6FEB 0, #2F6FEB 2.8px, transparent 3.3px); }
@@ -65,6 +72,11 @@ export const css = `
 .ss-check, .ss-guess-f, .ss-f { white-space: pre; }
 .ss-pct .ss-pq { position: absolute; right: 0; top: 0; }
 .ss-check.wrap { white-space: pre-wrap; }
+.ss-vb { z-index: 4; }
+.ss-vb-line { position: absolute; left: 0; display: flex; align-items: center; white-space: pre; }
+.ss-vb-t { font: 400 64px/1.04 'Archivo Black', 'Inter Full', sans-serif; color: #15171C; letter-spacing: -.012em; }
+.ss-vb-x { position: relative; color: #B42318; }
+.ss-vb-x .ss-strike { position: absolute; left: -6px; right: -6px; top: 50%; margin-top: -3px; height: 6px; }
 `
 
 // type clamps at the floors below (labels 40, amounts 50, total 56); a short sheet (3 parts, short labels) may set its
@@ -102,6 +114,8 @@ export default function splitSheet(spec, ctx) {
   const chk = readCheck(d, LO) // a string or { t, text }, in data or lookOpts; always "check: …" (one look kit-wide)
   const ACT = Array.isArray(LO.activate) ? LO.activate : null
   const BUMPS = Array.isArray(LO.bumps) ? LO.bumps.filter(b => b && b.at != null && Number.isFinite(+b.t)) : []
+  const GOALK = Number.isFinite(+LO.goalScale) && +LO.goalScale > 1 ? Math.min(1.6, +LO.goalScale) : null
+  const ACT0 = ACT && ACT[0] != null && Number.isFinite(+ACT[0]) && +ACT[0] > 0 ? +ACT[0] : null
   const checkRaw = chk ? chk.text : ''
 
   // ---------------------------------------------------------------- DOM (built once)
@@ -205,7 +219,7 @@ export default function splitSheet(spec, ctx) {
     const g = tight ? 0.4 : 1
     return {
       lpx: Math.max(FLOOR.label, Math.round(SIZE.label * sc)), apx: Math.max(FLOOR.amount, Math.round(60 * sc)),
-      gpx: Math.max(FLOOR.amount + 4, Math.round(66 * sc)), tpx: Math.max(FLOOR.total, Math.round((tight ? 64 : 72) * sc)),
+      gpx: Math.max(FLOOR.amount + 4, Math.round((GOALK ? 60 * GOALK : 66) * sc)), tpx: Math.max(FLOOR.total, Math.round((tight ? 64 : 72) * sc)),
       boxK: tight ? 1.2 : 1.3, wrapLH: tight ? 1.08 : 1.12, gpxGuess: tight ? 42 : 48,
       raise: tight ? RAISE : 0, // a dense sheet starts a little closer to the footer
       ppx: Math.max(40, Math.round(44 * sc)), fpx: Math.max(40, Math.round(42 * sc)), npx: SIZE.note,
@@ -245,10 +259,19 @@ export default function splitSheet(spec, ctx) {
       r.labNat = Math.ceil(W(r.label))
       if (r.note) { show(r.note, c.notes); if (c.notes) { style(r.note, { fontSize: m.npx + 'px' }); r.noteW = Math.ceil(W(r.note)) } }
     }
+    // the goal's empty slot matches the other slots until its (larger) amount lands over it; the label column still
+    // makes room for the landed box, so the finished row keeps a full leader
+    const others = R.filter(r => !r.goal)
+    const comW = others.length ? Math.max(...others.map(r => r.slotW)) : 0
+    const comH = others.length ? Math.max(...others.map(r => r.boxH)) : 0
+    for (const r of R) {
+      r.slotH = r.boxH
+      if (r.goal && others.length && !(c.formulas === 'slot' && r.f)) { r.slotW = Math.min(r.slotW, comW); r.slotH = Math.min(r.boxH, comH) }
+    }
     const PW = Math.max(0, ...R.map(r => r.pctW))
     const pctBlock = PW ? m.G + PW : 0
     let cap = Infinity
-    for (const r of R) cap = Math.min(cap, width - pctBlock - m.G - m.lead - r.fRes - r.slotW)
+    for (const r of R) cap = Math.min(cap, width - pctBlock - m.G - m.lead - r.fRes - Math.max(r.slotW, r.boxW))
     const labMax = Math.max(...R.map(r => r.labNat))
     const LW = Math.floor(Math.min(labMax, cap))
     // short labels (Live / Invest / Enjoy) are fine at their natural width; fail only when the column is squeezed
@@ -337,7 +360,7 @@ export default function splitSheet(spec, ctx) {
       if (r.pct) style(r.pct, { left: Math.round(pctRight - r.pctW) + 'px', top: Math.round(r.yc - m.ppx / 2 + 1) + 'px' })
       r.slotLeft = xR - r.slotW
       r.boxLeft = xR - r.boxW
-      style(r.slot, { left: r.slotLeft + 'px', top: bt + 'px', width: r.slotW + 'px', height: r.boxH + 'px' })
+      style(r.slot, { left: r.slotLeft + 'px', top: Math.round(r.yc - r.slotH / 2) + 'px', width: r.slotW + 'px', height: r.slotH + 'px' })
       style(r.box.el, { left: r.boxLeft + 'px', top: bt + 'px' })
       // leader: full length (to the slot) on frame 1; a formula on the line retracts it to make room
       // leader: frame 1 runs to the empty slot; finally it runs to the amount (or to the working on the line)
@@ -472,6 +495,75 @@ export default function splitSheet(spec, ctx) {
   root.dataset.layout = [LC.notes ? 'notes' : 'bare', LC.bar && 'bar', LC.formulas && 'formulas-' + LC.formulas, LC.tight && 'tight', LC.guessUnder && 'guess-under', checks.length && !LC.check && 'no-check'].filter(Boolean).join(' ')
   root.dataset.scale = String(LC.sc)
 
+  // ---------------------------------------------------------------- verdict lockup (lookOpts.bigVerdict)
+  // The kit's verdict is one 56 px line that shrinks to fit (05a's long verdict set at ~44 px), so the payoff never
+  // landed big. Here the verdict is a lockup in the caption band: the plain words at 64 px, the **goal** figure on
+  // its blue highlighter at ~90 px, a __figure__ in cost red with a strike drawn through it.
+  let VB = null
+  const vText = spec.verdict && spec.verdict.text ? String(spec.verdict.text) : ''
+  if (LO.bigVerdict && vText && P._ && P._.verdict && Number.isFinite(+spec.verdict.t)) {
+    P._.verdict.style.visibility = 'hidden' // the kit's line stays mounted (its cue, the caption cut-off); the lockup replaces it
+    const wrap = h('div', { class: 'ss-vb' })
+    root.append(wrap)
+    const TXT = 64, BIG = 90
+    const lines = vText.split('\n').map(str => {
+      const el = h('div', { class: 'ss-vb-line' })
+      wrap.append(el)
+      const items = []
+      const plain = s0 => { if (!s0) return; const sp = h('span', { class: 'ss-vb-t', html: md(s0) }); el.append(sp); items.push({ kind: 'text', el: sp }) }
+      const re = /\*\*(.+?)\*\*|__(.+?)__/g
+      let last = 0, mm
+      while ((mm = re.exec(str))) {
+        plain(str.slice(last, mm.index))
+        if (mm[1] != null) {
+          const b = hlBox({ html: md(mm[1]), tone: 'goal', px: BIG })
+          el.append(b.el)
+          items.push({ kind: 'box', box: b, el: b.el })
+        } else {
+          const sp = h('span', { class: 'ss-vb-t ss-vb-x', html: md(mm[2]) })
+          const bar = h('div', { class: 'ss-strike', 'data-deco': '' })
+          sp.append(bar)
+          el.append(sp)
+          items.push({ kind: 'strike', el: sp, bar })
+        }
+        last = re.lastIndex
+      }
+      plain(str.slice(last))
+      return { el, items, hasBox: items.some(x => x.kind === 'box') }
+    })
+    const size = k => {
+      for (const L of lines) for (const it of L.items) {
+        if (it.kind === 'box') it.box.setPx(Math.round(BIG * k), Math.round(BIG * k * 1.1))
+        else style(it.el, { fontSize: Math.round(TXT * k) + 'px' })
+      }
+    }
+    size(1)
+    const widest = Math.max(...lines.map(L => W(L.el)))
+    const k = widest > width ? Math.max(0.84, width / widest) : 1
+    if (k < 1) size(k)
+    const GAP = 4
+    const hs = lines.map(L => Math.ceil(H(L.el)))
+    const tall = hs.reduce((a, b) => a + b, 0) + GAP * (lines.length - 1)
+    let y = Math.max(P.bottom + 12, GRID.capBottom - tall)
+    lines.forEach((L, i) => { style(L.el, { top: y + 'px' }); y += hs[i] + GAP })
+    style(wrap, { left: x0 + 'px', top: '0px', width: width + 'px' })
+    // choreography: the words, then the figure lands on its highlighter, then the struck figure and its strike
+    const vt = +spec.verdict.t
+    const boxT = vt + 0.25
+    let tl = []
+    lines.forEach((L, li) => {
+      let after = false
+      for (const it of L.items) {
+        if (it.kind === 'box') { it.t = boxT; after = true; continue }
+        it.t = after ? boxT + 0.3 : vt + 0.08 * li
+        if (it.kind === 'strike') { it.strikeT = it.t + 0.35; ctx.cue(it.strikeT, 'swipe', { gain: 0.35 }) }
+      }
+      tl.push(L)
+    })
+    ctx.cue(boxT + MOTION.popDelay, 'pop', { gain: 0.45 })
+    VB = { wrap, lines: tl, t: vt }
+  }
+
   // ---------------------------------------------------------------- timing
   // part.t = the moment its amount lands (highlighter starts). Its working types just before (a formula in the
   // slot gets a longer read, since the highlighter erases it), and the row activates LEAD before that.
@@ -488,7 +580,9 @@ export default function splitSheet(spec, ctx) {
       typeStart = Math.max(typeStart, arr + 0.15)
       typeD = Math.max(0.15, Math.min(typeD, t - 0.12 - typeStart))
     }
-    if (i === 0 && arr <= 1.5) arr = -1 // the first row is the active row on frame 1 (the pointer is on it)
+    // the first row is the active row on frame 1 (the pointer is on it), unless activate[0] holds it back a beat
+    if (i === 0 && ACT0 != null) arr = Math.min(ACT0, Math.max(0.05, t - 0.15))
+    else if (i === 0 && arr <= 1.5) arr = -1
     T.push({ t, typeD, typeStart, arr })
   })
   const last = T[n - 1] || { t: 1 }
@@ -565,7 +659,8 @@ export default function splitSheet(spec, ctx) {
       const nudge = (el, b, origin, amp = 0.08) => style(el, { transformOrigin: origin, transform: b > 0 ? `scale(${n3(1 + amp * b)})` : 'none' })
 
       // total: loud on frame 1 (the anchor), rests once the first amount lands, loud again at the check
-      const totRest = n ? prog(t, T[0].t + 0.1, MOTION.restIn) * (1 - sumP) : 0
+      let totRest = n ? prog(t, T[0].t + 0.1, MOTION.restIn) * (1 - sumP) : 0
+      if (VB) totRest = Math.max(totRest, prog(t, VB.t, MOTION.restIn)) // the verdict's figure is the only loud one
       const tb = bumpAt('total')
       tot.box.seek(1, 1, totRest * keep * (1 - tb))
       nudge(tot.box.el, tb, '100% 50%')
@@ -657,6 +752,20 @@ export default function splitSheet(spec, ctx) {
         for (const e of [guess.f.el, guess.box.el]) fade(e, o)
         fade(guess.strike, st > 0 ? gone * keep : 0)
         nudge(guess.box.el, live ? bumpAt('guess') : 0, '0 50%', 0.1)
+      }
+
+      // verdict lockup: words fade in, the figure lands on its highlighter, the struck figure follows and is struck
+      if (VB) {
+        const on = t >= VB.t && !reset
+        show(VB.wrap, on)
+        for (const L of VB.lines) for (const it of L.items) {
+          if (it.kind === 'box') { const Lb = landing(t, it.t); it.box.seek(Lb.wipe * keep, Lb.text * keep, 0, keep) }
+          else {
+            const p = prog(t, it.t, 0.25)
+            style(it.el, { opacity: n3(p * keep), transform: p >= 1 ? 'none' : `translateY(${Math.round((1 - ease.out(p)) * 12)}px)` })
+            if (it.bar) style(it.bar, { transform: `scaleX(${n3(ease.out(prog(t, it.strikeT, 0.25)))})` })
+          }
+        }
       }
 
       // check line (accent mono): types under the sum rule

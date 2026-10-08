@@ -56,12 +56,26 @@
 //                                       line 2 green; spec markup allowed) and holds until the next beat. The
 //                                       verdict replaces the last one (the stack yields to it). Beats at or after
 //                                       verdict.t are ignored. Without beats a long hold after the last row is a
-//                                       static board with only the captions moving.
+//                                       static board with only the captions moving. A beat may also carry
+//                                       hero ("× 75,176") and tag ("YEAR 40 =\nDAILY AMOUNT"): the hero follows it,
+//                                       a hard cut to that display (with heroTag on, the tag swaps too).
+//   heroTag: true                       a two-line tag left of the hero ("YEAR 1" / "$1 A DAY": column 0's label +
+//                                       the row's key, then data.input's amount + per), swapped with each row, so
+//                                       the big number never reads as an unlabelled answer. It replaces the icon.
+//   verdictStyle: 'stack'               the verdict drawn in the beats' style instead of the chrome's one-size
+//                                       text: a green rule, line 1 white, line 2 big green (the verdict's text split
+//                                       at its "\n"), in the same slot; the hero dims to 42% so the verdict is the
+//                                       one focal point on the last frame.
+// Also: the key column sits 18 px in from the slot's edge; a meter segment under 6 px is not drawn (no stub); lined
+// boards (>= 60 px pitch) meter with the bright underline only (no translucent fill behind the put-in digits).
+// Kit workaround kept here (reported to the kit owner): the header is built by this format (chrome header: false)
+// so its operators can be fixed: "=" and "×" render in Inter Full Black at cap height (the kit's .axo sets them at
+// about x-height), and a trailing "?" after "×" is set as a green boxed blank.
 import { h, css as style, setHTML, attr, prog, ease, clamp, lerp, fitText } from '../../../runtime/core.js'
 import { C, SIZE, M, W, layoutFor } from '../theme.js'
 import {
   esc, ax, bare, tabHTML as tabLib, heroRow, odometer, stageFlash, flashAt, parseDisplay, displayValue,
-  formatLike, slam, bump, durationOf, ladderPips, rich, labelStack,
+  formatLike, slam, bump, durationOf, ladderPips, rich, labelStack, header as headerEl,
 } from '../lib.js'
 
 const PANEL = '#07090C'
@@ -105,6 +119,14 @@ export const css = `
 .gl-strip-in .op { color: ${C.grey}; }
 .gl-finish { position: absolute; width: 0; border-left: 3px dashed rgba(43, 255, 136, 0.42); }
 .gl-finish.on { border-left: 4px solid ${C.green}; box-shadow: 0 0 18px rgba(43, 255, 136, 0.8); }
+.gl-htag { position: absolute; display: flex; flex-direction: column; justify-content: center; gap: 2px; font: 800 44px/1.06 'Inter', 'Inter Full', sans-serif;
+  text-transform: uppercase; letter-spacing: 0.02em; white-space: nowrap; color: ${C.white}; text-align: right; }
+.gl-htag b { font-weight: 800; color: ${C.green}; }
+.gl-hero-x .axo { font-size: 0.62em; font-weight: 900; top: -0.06em; }
+.sb-header-text .gl-op { font-family: 'Inter Full', sans-serif; font-weight: 900; font-size: 1.08em; position: relative; top: -0.04em; }
+.sb-header-text .gl-blank { display: inline-block; color: ${C.green}; border: 0.06em solid ${C.green}; border-radius: 0.12em;
+  padding: 0 0.1em; line-height: 0.92; margin-left: 0.04em; box-shadow: 0 0 14px rgba(43, 255, 136, 0.45); }
+.gl-vrule { width: 140px; height: 8px; border-radius: 4px; background: ${C.green}; box-shadow: 0 0 18px rgba(43, 255, 136, 0.5); transform-origin: 50% 50%; margin-bottom: 8px; }
 `
 
 // ---------- local helpers ----------
@@ -138,6 +160,9 @@ const WIPE = 0.26                    // a new row's meter wipes in to where the 
 const PMIN = 50                      // the densest row pitch (42 px cells); more rows than fit scroll through
 const SHIFT = 0.2                    // a scrolling board moves up one row on a cut
 const MAKE_ROOM = 0.3                // s before the verdict: the rows scroll up out of the verdict band's way
+const KPAD = 18                      // the key column (year) sits this far in from the slot's left edge
+const TXK = TX0 + KPAD
+const MSTUB = 6                      // a meter segment narrower than this is not drawn (it read as a stray stub)
 
 export default function growthLadder(spec, ctx) {
   const d = spec.data || {}
@@ -211,18 +236,35 @@ export default function growthLadder(spec, ctx) {
   }
 
 
+  // ---------- the hero's tag (lookOpts.heroTag) and the beats that move the hero ----------
+  const inp0 = d.input || {}
+  const heroTag = !!lo.heroTag
+  const vStack = lo.verdictStyle === 'stack' && !!(spec.verdict && spec.verdict.text)
+  const heroBeats = (Array.isArray(lo.beats) ? lo.beats : []).filter(b => b && b.hero && Number.isFinite(+b.t))
+    .map(b => ({ t: +b.t, hero: String(b.hero), tag: b.tag != null ? String(b.tag) : '' })).sort((a, b) => a.t - b.t)
+  const tagOf = (a, b2) => `${esc(bare(a))}${b2 ? '<b>' + esc(bare(b2)) + '</b>' : ''}`
+  const tagHTML = s0 => { const [a, ...rest] = String(s0).split('\n'); return `<span>${esc(bare(a))}</span>` + (rest.length ? `<b>${esc(bare(rest.join(' ')))}</b>` : '') }
+  const rowTag = i => `<span>${esc(bare(cols[0]))} ${esc(bare(rows[i][0]))}</span>` + (inp0.amount ? `<b>${esc(bare([inp0.amount, inp0.per].filter(Boolean).join(' ')))}</b>` : '')
+  const tagStates = heroTag ? [...rows.map((_, i) => rowTag(i)), ...heroBeats.map(b => tagHTML(b.tag))] : []
+  const tagProbe = heroTag ? h('div', { class: 'gl-htag', style: { left: '-4000px', top: '0px' } }) : null
+  if (tagProbe) stage.append(tagProbe)
+  const tagW = tagStates.map(x => { setHTML(tagProbe, x); return Math.ceil(tagProbe.getBoundingClientRect().width) })
+  if (tagProbe) tagProbe.remove()
+  const TAG_GAP = 22
+  const tagMax = tagW.length ? Math.max(...tagW) : 0
+
   // ---------- hero size: the widest worth display, measured on a probe odometer ----------
-  const icon = lo.icon || null
+  const icon = heroTag ? null : lo.icon || null
   const HS = L.hero.size, HI = L.hero.icon
-  const iconSpace = icon ? HI + 12 : 0
-  const odoProbe = odometer(stage, { size: 100 })
+  const iconSpace = icon ? HI + 12 : heroTag ? tagMax + TAG_GAP : 0
+  const odoProbe = odometer(stage, { size: 100, cls: 'gl-hero-x' })
   let odoW100 = 1
-  for (const r of rows) { odoProbe.show(r[WC]); odoW100 = Math.max(odoW100, odoProbe.el.getBoundingClientRect().width) }
+  for (const x of [...rows.map(r => r[WC]), ...heroBeats.map(b => b.hero)]) { odoProbe.show(x); odoW100 = Math.max(odoW100, odoProbe.el.getBoundingClientRect().width) }
   odoProbe.el.remove()
   const heroSize = Math.floor(Math.min(HS, ((920 - iconSpace) / odoW100) * 100))
   const heroIconSize = Math.round(HI * Math.min(1, heroSize / HS + 0.1))
   // landing bumps scale the whole hero group about x 540: cap them so it never leaves x 62-1018
-  const safeAmp = Math.max(0.03, 956 / ((odoW100 * heroSize) / 100 + (icon ? heroIconSize + 12 : 0)) - 1)
+  const safeAmp = Math.max(0.03, 956 / ((odoW100 * heroSize) / 100 + (icon ? heroIconSize + 12 : heroTag ? tagMax + TAG_GAP : 0)) - 1)
   const flash = stageFlash(stage, L)
 
   // ---------- the board: measure ----------
@@ -261,7 +303,7 @@ export default function growthLadder(spec, ctx) {
   // column's cells (they sit on their own line). slack = what is left before the worth column's right edge.
   const pack = (Fr, lw) => {
     const cw = colW100n.map(w => (w * Fr) / 100)
-    let cellEnd = TX0 + cw[0], labEnd = TX0 + lw[0]
+    let cellEnd = TXK + cw[0], labEnd = TXK + lw[0]
     const R = [cellEnd]
     for (let j = 1; j < nC; j++) {
       const r = Math.max(cellEnd + MIN_GAP + cw[j], labEnd + LGAP + lw[j])
@@ -326,10 +368,10 @@ export default function growthLadder(spec, ctx) {
     if (!big) return { Fb: Fr, Fk: Fr }
     // the big worth lands with a 12% bump (origin right) and the key and put-in slam 12% toward each other:
     // their room is measured at those peak sizes
-    const keyEnd = fk => TX0 + (lastW[0] * fk * 1.12) / 100
+    const keyEnd = fk => TXK + (lastW[0] * fk * 1.12) / 100
     const roomW = fk => TXW - (nC >= 3 ? R[WC - 1] : keyEnd(fk)) - MIN_GAP
     let Fb = Math.floor(Math.min(bigArea / 0.88, (roomW(Fr) / (lastW[WC] * 1.12)) * 100, 112))
-    const roomK = ((nC >= 3 ? R[1] - (lastW[1] * Fr * 1.12) / 100 : TXW - (lastW[WC] * Fb * 1.12) / 100) - MIN_GAP - TX0) / 1.12
+    const roomK = ((nC >= 3 ? R[1] - (lastW[1] * Fr * 1.12) / 100 : TXW - (lastW[WC] * Fb * 1.12) / 100) - MIN_GAP - TXK) / 1.12
     const Fk = Math.floor(Math.max(Fr, Math.min(Fb, bigArea / 0.88, (roomK / lastW[0]) * 100, 96)))
     if (nC < 3) Fb = Math.floor(Math.min(Fb, (roomW(Fk) / (lastW[WC] * 1.12)) * 100))
     return { Fb, Fk }
@@ -375,11 +417,11 @@ export default function growthLadder(spec, ctx) {
     if (labelLines === 2) setHTML(el, split2[j].html)
     const bw = el.getBoundingClientRect().width
     const lb = yLab + hlH - 2 - UL - 6                     // the labels' bottom line
-    style(el, { left: (j ? right[j] - bw : TX0) + 'px', top: lb - el.offsetHeight + 'px' })
+    style(el, { left: (j ? right[j] - bw : TXK) + 'px', top: lb - el.offsetHeight + 'px' })
     if (legend(j)) {
       const iw = inkW(el)
       table.append(h('div', { class: 'gl-ul', 'data-deco': '', style: {
-        left: (j ? right[j] - iw : TX0) + 'px', width: iw + 'px', top: lb + 5 + 'px', height: UL + 'px',
+        left: (j ? right[j] - iw : TXK) + 'px', width: iw + 'px', top: lb + 5 + 'px', height: UL + 'px',
         background: j === WC ? C.green : PUT, boxShadow: j === WC ? '0 0 10px rgba(43, 255, 136, 0.6)' : 'none' } }))
     }
   })
@@ -419,7 +461,7 @@ export default function growthLadder(spec, ctx) {
     const skel = r.map((_, j) => {
       const fs = j === WC ? F : j === 0 ? FK : Fr
       const w = Math.max(fs * 0.9, ((cellW100[i][j] * fs) / 100) * 0.82)
-      const x = j === 0 ? TX0 - SX - 2 : (j === WC ? TXW : right[j]) - SX - 2 - w
+      const x = j === 0 ? TXK - SX - 2 : (j === WC ? TXW : right[j]) - SX - 2 - w
       const hh = Math.max(10, Math.round(fs * 0.3))
       const el = h('div', { class: 'gl-skel', style: { left: x + 'px', width: w + 'px', top: midY - y - 2 - hh / 2 + 'px', height: hh + 'px' } })
       slot.append(el)
@@ -429,7 +471,7 @@ export default function growthLadder(spec, ctx) {
       const fs = j === WC ? F : j === 0 ? FK : Fr
       const cls = j === 0 ? 'gl-k' : j === WC ? 'gl-w' : j === PC ? 'gl-p' : 'gl-g'
       const el = h('div', { class: 'gl-cell ' + cls, html: tabHTML(txt, okAx), style: { fontSize: fs + 'px', top: Math.round(midY - y - 0.455 * fs) + 'px' } })
-      if (j === 0) style(el, { left: TX0 + 'px' })
+      if (j === 0) style(el, { left: TXK + 'px' })
       else style(el, { right: W - (j === WC ? TXW : right[j]) + 'px' })
       row.append(el)
       return el
@@ -443,6 +485,30 @@ export default function growthLadder(spec, ctx) {
 
   // ---------- hero ----------
   const hero = heroRow(stage, L, { icon, size: heroSize, iconSize: heroIconSize })
+  hero.odo.el.classList.add('gl-hero-x')
+  const tag = heroTag ? h('div', { class: 'gl-htag', style: { top: '0px', height: L.hero.h + 'px' } }) : null
+  if (tag) hero.el.append(tag)
+  // the tag sits left of the number as one centred group (like the kit's icon)
+  const placeTag = k => {
+    if (!tag) return
+    setHTML(tag, tagStates[k])
+    const space = tagW[k] + TAG_GAP
+    style(hero.glow, { paddingLeft: space + 'px' })
+    style(tag, { left: (L.hero.w / 2 - (hero.odo.el.offsetWidth + space) / 2).toFixed(1) + 'px' })
+  }
+
+  // ---------- header: built here so its operators read at cap height (kit workaround) ----------
+  const hd = headerEl(stage, spec, L)
+  {
+    let html = hd.inner.innerHTML
+    html = html.replace(/(^|[\s>])=(?=[\s<])/g, '$1<span class="gl-op">=</span>')
+    html = html.replace(/<span class="axo">([×÷])<\/span>/g, '<span class="axo gl-op">$1</span>')
+    // the hook's blank: "× ?" sets the "?" as a green boxed blank
+    html = html.replace(/(<span class="axo gl-op">×<\/span>)(\s|&nbsp;|\u00a0)*\?/g, '$1 <span class="gl-blank">?</span>')
+    setHTML(hd.inner, html)
+    style(hd.inner, { fontSize: (L.header.px || SIZE.header) + 'px' })
+    fitText(hd.inner, L.header.w, { maxH: L.header.h, minPx: SIZE.headerMin })
+  }
 
   // ---------- verdict (the chrome's, in the kit's slot at the foot of the frame): the rows make room first ----------
   // just before verdict.t the rows scroll up under the column labels (the oldest fade out), so the board's foot, with
@@ -451,24 +517,32 @@ export default function growthLadder(spec, ctx) {
   // beats (lookOpts.beats): the working after the ladder, in the verdict's slot, before the verdict
   const lastLand = steps[N - 1].land
   const beats = (Array.isArray(lo.beats) ? lo.beats : [])
-    .filter(b => b && (b.l1 || b.l2) && Number.isFinite(+b.t))
+    .filter(b => b && (b.l1 || b.l2) && Number.isFinite(+b.t))   // (a beat with only hero/tag moves the hero alone)
     .map(b => ({ t: Math.max(+b.t, lastLand + 0.3), l1: String(b.l1 || ''), l2: String(b.l2 || '') }))
     .filter(b => vT == null || b.t < vT - 0.4)
     .sort((a, b) => a.t - b.t)
   const roomT = beats.length ? beats[0].t : vT        // when the rows must be out of the slot's way
+  const bandT = beats.length ? beats[0].t : vStack ? vT : null
   const boardBottom = yRows + WIN * P + (big ? bigK * P : 0) - gapR
   const room = roomT != null && L.verdict.boxed ? Math.max(0, boardBottom - (L.verdict.y - 18)) : 0
   const makeRoom = t => (room > 0 ? room * ease.inOut(prog(t, roomT - MAKE_ROOM - 0.05, MAKE_ROOM)) : 0)
   // the beats' band: the same black band the verdict rises on (the verdict's own band then rises over it unseen)
   const sbY = L.stage.y + L.stage.h, bandTop = L.verdict.y - 10
-  const beatBand = beats.length && L.verdict.boxed && sbY > bandTop
+  const beatBand = bandT != null && L.verdict.boxed && sbY > bandTop
     ? h('div', { class: 'sb-vband', 'data-deco': '', style: { top: bandTop + 'px', height: sbY - bandTop + 'px', display: 'none' } }) : null
   if (beatBand) stage.append(beatBand)
-  const beatStack = beats.length
+  // verdictStyle 'stack': the verdict is the stack's last group (line 1 white, line 2 big green, a rule above)
+  const vParts = vStack ? String(spec.verdict.text).split('\n') : null
+  const stackItems = [...beats.map(b => ({ l1: rich(b.l1), l2: rich(b.l2), l1Color: C.white, l2Color: C.green })),
+    ...(vStack ? [{ l1: vParts.length > 1 ? rich(vParts[0]) : '', l2: rich(vParts.length > 1 ? vParts.slice(1).join(' ') : vParts[0]), l1Color: C.white, l2Color: C.green }] : [])]
+  const beatStack = stackItems.length
     // line 2 (the answer) a size up from the captions-on stack (72 → 88 px): the slot is the verdict's 196 px
     ? labelStack(stage, { ...L, label: { y: L.verdict.y, h: L.verdict.h, w: L.verdict.w }, type: { ...L.type, l2: Math.max(L.type.l2, 88) } },
-      beats.map(b => ({ l1: rich(b.l1), l2: rich(b.l2), l1Color: C.white, l2Color: C.green })))
+      stackItems, { yieldToVerdict: !vStack })
     : null
+  const vRule = vStack && beatStack ? h('div', { class: 'gl-vrule', 'data-deco': '' }) : null
+  if (vRule) beatStack.groups[beatStack.groups.length - 1].prepend(vRule)
+  if (vStack) { ctx.cue(vT, 'reveal', { gain: 0.7 }); ctx.cue(vT + 0.08, 'cash', { gain: 0.45 }) }
   if (beatStack) {
     style(beatStack.el, { zIndex: 21 })
     // centred in the slot like the verdict (labelStack top-aligns; a 2-line beat is ~130 px of a 196 px slot). The
@@ -505,6 +579,8 @@ export default function growthLadder(spec, ctx) {
   return {
     duration,
     layout: L,
+    header: false,                                          // built above (operators at cap height)
+    ...(vStack ? { verdict: false } : {}),                  // drawn as the stack's last group
     seek(t) {
       const c = countAt(t)
       let a = -1                                           // the active row: the latest cut at or before t
@@ -567,11 +643,13 @@ export default function growthLadder(spec, ctx) {
           const wipe = st.cut <= 0 ? 1 : ease.out(prog(t, st.cut, WIPE))
           const vg = shown ? v * wipe : 0
           // gradient stops on whole pixels: sub-pixel hard stops rasterize differently from paint to paint
-          const b = Math.round(px(vg)), a2 = PC >= 0 && isFinite(putV[i]) ? Math.min(Math.round(px(putV[i] * wipe)), b) : 0
+          let b = Math.round(px(vg)), a2 = PC >= 0 && isFinite(putV[i]) ? Math.min(Math.round(px(putV[i] * wipe)), b) : 0
+          if (b < MSTUB) b = 0
+          if (a2 < MSTUB) a2 = 0
           if (o.track) style(o.track, { background: `linear-gradient(90deg, ${PUT} 0 ${a2}px, ${C.green} ${a2}px ${b}px, ${TRACK} ${b}px)` })
           // (a meter only a few px long has no tip: it would sit on the year)
           for (const tp of o.tips) style(tp, { display: shown && active && b > 16 ? 'block' : 'none', left: ((o.track ? 0 : 12) + b).toFixed(1) + 'px' })
-          style(o.slot, { background: shown ? slotBg(a2, b, base) : PANEL })
+          style(o.slot, { background: shown && !lined ? slotBg(a2, b, base) : shown ? base : PANEL })
         } else style(o.slot, { background: base })
       })
 
@@ -582,10 +660,15 @@ export default function growthLadder(spec, ctx) {
         if (stripVal) style(stripVal, { color: hit ? C.green : C.white, '--glow': hit ? (0.6 + 0.4 * flashAt(t, steps[goalRow].land, 0.9)).toFixed(3) : '0' })
       }
 
-      // hero: holds the last landing until a count starts, then rolls with it, landing exactly on the display
-      if (c.k < 0) hero.set(steps[0].from, tpls[0], true)
+      // hero: holds the last landing until a count starts, then rolls with it, landing exactly on the display; a
+      // beat with a hero display takes it over (a hard cut), and the tag names whatever the hero shows
+      let hb = -1
+      heroBeats.forEach((b, j) => { if (t >= b.t) hb = j })
+      if (hb >= 0) hero.show(heroBeats[hb].hero)
+      else if (c.k < 0) hero.set(steps[0].from, tpls[0], true)
       else if (c.p >= 1 || !numeric[c.k]) hero.set(worthV[c.k], lastTpl(c.k))
       else hero.set(c.v, tpls[c.k], true)                // running: the "≈" is an unlit ghost until it lands
+      placeTag(hb >= 0 ? N + hb : Math.max(0, c.k))
 
       // anticipation dip on each cut, a bump + glow flare on each landing (bigger for the last), a floor bloom
       let sc = 1, glow = 0, fl = 0
@@ -596,19 +679,27 @@ export default function growthLadder(spec, ctx) {
         if (t >= st.land) glow = Math.max(glow, (last ? 1 : 0.6) * (1 - ease.out(prog(t, st.land, last ? 1.1 : 0.6))))
         fl = Math.max(fl, (last ? 0.75 : 0.16) * flashAt(t, st.land, last ? 0.9 : 0.45))
       })
-      style(hero.el, { transform: `scale(${sc.toFixed(4)})` })
-      style(hero.glow, { '--glow': (16 + 30 * glow).toFixed(1) + 'px', '--glowA': (0.38 + 0.45 * glow).toFixed(3) })
+      heroBeats.forEach(b => {
+        sc *= bump(t, b.t, { amp: Math.min(0.08, safeAmp), dur: M.bump })
+        if (t >= b.t) glow = Math.max(glow, 0.8 * (1 - ease.out(prog(t, b.t, 0.8))))
+      })
+      // a stacked verdict is the one focal point on the last frame: the hero steps back
+      const dim = vStack ? ease.inOut(prog(t, vT, 0.25)) : 0
+      style(hero.el, { transform: `scale(${sc.toFixed(4)})`, opacity: (1 - 0.58 * dim).toFixed(3) })
+      style(hero.glow, { '--glow': (16 + 30 * glow).toFixed(1) + 'px', '--glowA': ((0.38 + 0.45 * glow) * (1 - 0.8 * dim)).toFixed(3) })
       flash.set(fl)
 
       // beats: the band rises (0.2 s) just before the first; each beat slams into the slot and holds until the next
       if (beatBand) {
-        const q = ease.out(prog(t, beats[0].t - 0.2, 0.2)), bt = lerp(sbY, bandTop, q)
+        const q = ease.out(prog(t, bandT - 0.2, 0.2)), bt = lerp(sbY, bandTop, q)
         style(beatBand, { display: q > 0 ? 'block' : 'none', top: bt.toFixed(1) + 'px', height: (sbY - bt).toFixed(1) + 'px' })
       }
       if (beatStack) {
         let bi = -1
         beats.forEach((b, j) => { if (t >= b.t) bi = j })
-        beatStack.seek(t, bi, bi >= 0 ? beats[bi].t : 0)
+        if (vStack && t >= vT) bi = beats.length
+        beatStack.seek(t, bi, bi >= 0 ? (bi < beats.length ? beats[bi].t : vT) : 0)
+        if (vRule) style(vRule, { transform: `scaleX(${ease.out(prog(t, vT + 0.04, 0.35)).toFixed(4)})` })
       }
 
       // verdict: the answer takes the hook's place

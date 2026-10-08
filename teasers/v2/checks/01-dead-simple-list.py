@@ -203,14 +203,14 @@ assert C_SALARY < C_LINE < C_NEW, "the example must cross the line"
 # ---------------------------------------------------------- expected strings
 EXPECT = {
     "01a": {
-        "header": "3 DEAD SIMPLE NUMBERS\nPAID **EVERY 2 WEEKS**? THE PAY YOUR BUDGET FORGETS",
-        "footer": f"ASSUMES {A_PAYDAYS} paydays a year (some years have {A_PAYDAYS + 1}) · pay before tax",
+        "header": "3 DEAD SIMPLE NUMBERS\nPAID **EVERY 2 WEEKS**?\nWHAT YOUR BUDGET MISSES",
+        "footer": f"ASSUMES {A_PAYDAYS} paydays a year · pay before tax",
         "verdict.text": f"Every 2 weeks = **{A_MONTHS_OF_PAY}{NBSP}months** of pay a year",
         "data.input.value": money(A_PAY),
         "data.input.note": "every 2 weeks",
         "data.items[0].formula": f"{money(A_PAY)} × {A_PAYDAYS}",
         "data.items[0].result": money(A_YEAR),
-        "data.items[0].note": f"not × {A_SEMI}",
+        "data.items[0].note": f"not × {A_SEMI} = {money(A_WRONG)}",
         "data.items[1].label": "A normal month",
         "data.items[1].formula": f"{money(A_PAY)} × 2",
         "data.items[1].result": money(A_MONTH),
@@ -218,20 +218,19 @@ EXPECT = {
         "data.items[2].formula": f"{money(A_YEAR)} − {money(A_WRONG)}",
         "data.items[2].result": money(A_LEFT),
         "data.items[2].label": f"The {A_EXTRA} checks your budget forgets",
-        "data.check": f"{A_PAYDAYS} − {A_SEMI} = {A_EXTRA} checks",
+        "data.check": f"{A_NORMAL_MONTHS}×2 + {A_EXTRA}×3 = {A_PAYDAYS} paydays",
     },
     "01b": {
         "header": (f"3 DEAD SIMPLE NUMBERS\nYOU PAY **{SS_PCT_S}%** TO SOCIAL SECURITY.\n"
                    f"A {B_RIVAL_S} SALARY PAYS…?"),
-        "footer": (f"ASSUMES {HRS_WEEK} hrs × {WEEKS} wks · {TAX_YEAR} Social Security tax, employee share · "
-                   f"Medicare not counted"),
+        "footer": f"ASSUMES {HRS_WEEK} hrs × {WEEKS} wks · {TAX_YEAR} rates\nemployee share, no Medicare",
         "verdict.text": f"You pay __{SS_PCT_S}%__. A {B_RIVAL_S} salary pays **≈{NBSP}{B_RATE_S}**.",
         "data.input.value": f"{money(B_WAGE)}/hr",
         "data.input.note": f"{HRS_WEEK} hrs a week",
         "data.items[0].formula": f"{money(B_WAGE)} × {num(HRS_YEAR)} × {SS_PCT_S}%",
         "data.items[0].result": approx(money(B_SS_D)),
         "data.items[0].note": f"{SS_PCT_S}% of every dollar",
-        "data.items[1].label": f"A {B_RIVAL_S} salary's",
+        "data.items[1].label": f"A {B_RIVAL_S} salary pays",
         "data.items[1].formula": f"{money(SS_WAGE_BASE)} × {SS_PCT_S}%",
         "data.items[1].result": money(B_CAPPED),
         "data.items[1].note": f"taxed only up to {money(SS_WAGE_BASE)}",
@@ -269,19 +268,26 @@ APPROX_RESULTS = {
 
 # numbers spoken in each VO line, in order (cents are expressed in dollars; "3%" is 3; "1.1%" is 1.1)
 VO_NUMBERS = {
+    # (each result starts its own VO line, so the caption never shows it before the sheet lands it)
     "01a": [
-        [A_PAYDAYS, A_PAY, A_YEAR],
+        [A_PAYDAYS, A_PAY],                       # "Your paycheck, times 26. On $2,500:"
+        [A_YEAR],                                 # "$65,000 a year."
         [A_SEMI, A_WRONG],
-        [2, A_MONTH],
+        [2],                                      # "A normal month: 2 checks,"
+        [A_MONTH],                                # "$5,000."
         [MONTHS, A_TWELVE],
-        [A_YEAR, A_LEFT],
-        [A_EXTRA, A_EXTRA, 3],
+        [A_YEAR],                                 # "From $65,000, that leaves"
+        [A_LEFT],                                 # "$5,000."
+        [A_EXTRA],                                # "It's your 2 extra checks,"
+        [A_EXTRA, 3],                             # "from the 2 months with 3 paydays."
         [A_MONTHS_OF_PAY],
     ],
     "01b": [
-        [B_WAGE, B_SS_D],
+        [B_WAGE],                                 # "At $20 an hour, you pay about"
+        [B_SS_D],                                 # "$2,579 a year."
         [B_WRONG],
-        [SS_WAGE_BASE, B_CAPPED],
+        [SS_WAGE_BASE],                           # "No. It stops at $184,500:"
+        [B_CAPPED],                               # "$11,439."
         [B_RATE_D],
         [SS_PCT],
         [],                                       # "more than five times": checked in sensitivity()
@@ -298,20 +304,20 @@ VO_NUMBERS = {
 
 # where each beat should sit: (vo line index, token or None for the line start)
 ANCHORS = {
-    "01a": {"items": [((0, None), (0, money(A_YEAR))),
-                      ((2, None), (2, money(A_MONTH))),
-                      ((4, None), (4, money(A_LEFT)))],
-            "verdict": (6, None),
+    "01a": {"items": [((0, None), (1, None)),      # each result lands on the VO line that starts with it
+                      ((3, None), (4, None)),
+                      ((6, None), (7, None))],
+            "verdict": (10, None),
             # notes held back to the VO line that says them (item.noteT), and the check line (data.checkT)
-            "notes": {0: (1, None), 1: (3, None)},     # "Not times 24…", "12 normal months: $60,000."
-            "check": (5, None)},                        # "It's your 2 extra checks…"
-    "01b": {"items": [((0, None), (0, money(B_SS_D))),
-                      ((2, "stops"), (2, money(B_CAPPED))),
-                      ((3, None), (3, B_RATE_S))],
-            "verdict": (5, None),
-            "notes": {2: (4, None)},                    # "yours: 6.2%" opens on "Yours: 6.2%, on every dollar…"
-            # the struck flat-rate guess: types on vo[1], lands on "$62,000", is struck on vo[2]'s "No."
-            "wrongGuess": {"t": (1, None), "resultT": (1, money(B_WRONG)), "strikeT": (2, None)}},
+            "notes": {0: (2, None), 1: (5, None)},     # "Not times 24…", "12 normal months: $60,000."
+            "check": (9, None)},                        # "from the 2 months with 3 paydays."
+    "01b": {"items": [((0, None), (1, None)),
+                      ((3, "stops"), (4, None)),
+                      ((5, None), (5, B_RATE_S))],
+            "verdict": (7, None),
+            "notes": {2: (6, None)},                    # "yours: 6.2%" opens on "Yours: 6.2%, on every dollar…"
+            # the struck flat-rate guess: types on vo[2], lands on "$62,000", is struck on vo[3]'s "No."
+            "wrongGuess": {"t": (2, None), "resultT": (2, money(B_WRONG)), "strikeT": (3, None)}},
     "01c": {"items": [((0, None), (0, money(C_NEW))),
                       ((1, None), (1, money(C_LINE))),
                       ((2, None), (2, money(C_OVER))),
@@ -537,6 +543,13 @@ def check_spec(key, spec):
             record(key, f"items[{i}].noteT after its result", it.get("noteT"), f"≥ {it['resultT']}",
                    it.get("noteT", -1) >= it["resultT"])
         note = it.get("note", "")
+        wrong = re.match(r"^not\s+([×÷+−][^=]*)=(.*)$", note)
+        if wrong:                                   # "not × 24 = $60,000": the wrong multiplier on the same input
+            base = re.match(r"\s*(\$?[\d,.]+)", it["formula"]).group(1)
+            got = eval_formula(f"{base} {wrong.group(1)}")
+            want, dp, sc = display_value(wrong.group(2))
+            record(key, f"items[{i}] note '{note}' ({base} {wrong.group(1).strip()}) is true", f"{got:,.4f}",
+                   show(want, dp, sc), abs(got * sc - want) < 1e-9)
         if re.match(r"^[×÷+−]", note) and "=" in note:
             lhs, rhs = note.split("=", 1)
             got = eval_formula(f"{it['result']} {lhs}")
@@ -602,8 +615,9 @@ def sensitivity():
             in_year = [x for x in days if x.year == y]
             months3 = sum(1 for m in range(1, 13) if sum(1 for x in in_year if x.month == m) == 3)
             n = len(in_year)
+            months2 = sum(1 for m in range(1, 13) if sum(1 for x in in_year if x.month == m) == 2)
             counts.setdefault(n, []).append(months3)
-            assert months3 == n - 24, (y, n, months3)
+            assert months3 == n - 24 and months2 + months3 == 12, (y, n, months2, months3)
     record("01a", "26-payday years → exactly 2 three-check months", sorted(set(counts[26])), [2], set(counts[26]) == {2})
     record("01a", "27-payday years → exactly 3 three-check months", sorted(set(counts[27])), [3], set(counts[27]) == {3})
     share = len(counts[27]) / (len(counts[26]) + len(counts[27]))
@@ -613,9 +627,14 @@ def sensitivity():
     eq("01a", "13 months = year ÷ a normal month", A_YEAR / A_MONTH, 13.0)
     eq("01a", "② note: a normal month × 12 = ③'s $60,000 = the × 24 guess", (A_MONTH * MONTHS, A_PAY * A_SEMI),
        (A_WRONG, A_WRONG))
-    eq("01a", "check line: 26 − 24 = the 2 checks in ③'s label = ③ ÷ $2,500", (A_PAYDAYS - A_SEMI, A_LEFT // A_PAY),
-       (A_EXTRA, A_EXTRA))
-    eq("01a", "a normal month happens 10 times a year (write-up)", A_NORMAL_MONTHS, 10)
+    eq("01a", "check line: 10 two-payday months × 2 + 2 three-payday months × 3 = the 26 in ①",
+       A_NORMAL_MONTHS * 2 + A_EXTRA * 3, A_PAYDAYS)
+    eq("01a", "③'s label: 26 − 24 = the 2 checks = ③ ÷ $2,500 = the check line's 2 three-payday months",
+       (A_PAYDAYS - A_SEMI, A_LEFT // A_PAY), (A_EXTRA, A_EXTRA))
+    eq("01a", "① note: $2,500 × 24 = $60,000 = ③'s $60,000", A_PAY * A_SEMI, A_WRONG)
+    eq("01a", "a normal month happens 10 times a year (check line)", A_NORMAL_MONTHS, 10)
+    eq("01a", "verdict: ② and ③ both show a month of pay ($65,000 = 13 × $5,000)", (A_MONTH, A_LEFT, A_YEAR // A_MONTH),
+       (A_MONTH, A_MONTH, A_MONTHS_OF_PAY))
 
     # 01b: the Social Security wage cap (2026, employee share)
     close("01b", "Social Security on $41,600 (6.2%)", round(B_SS, 2), 2579.20, 0.005)

@@ -37,10 +37,24 @@
 //   preview: false           no NEXT ticker
 //   heat: [{ t, state }]     explicit heat keys instead of "one notch per milestone"; state: cool | warm | orange |
 //                            hot | white | burst (or a number 0-1)
+//
+// Stack mode (a duel: the counter against a pile of the viewer's money). lookOpts:
+//   opener: { prop: 'block-stack', blocks: 40, unit: 65052, text: '40 × $65,052', sub: '40 years of median pay' }
+//            a stack of `blocks` cash bricks on an ink plinth that carries `text` / `sub`. The figure hugs it. A slot
+//            in the board's bottom edge slurps brick n into the board at counterT[0] + n × unit ÷ perSecond (the
+//            moment the counter has passed n units), top row first; a soft tick per brick. Replaces the dropping
+//            objects, their ghosts and the NEXT ticker (the stack is the target); the last milestone's ✓ holds to the end.
+//   timer:  { t0, label: '1 minute', total: 60, endLabel: { t, text } }   a stopwatch on the floor right of the
+//            stack: the label above it, elapsed m:ss in the face (stops when the counter locks), an arc that fills
+//            in the board's heat colour; endLabel pops under the label at its t (the label slides up for it).
+//   gag:    { t, text }   a rubber stamp slammed over the emptied stack just after the lock ("≈ 33 seconds").
+//   actions: [{ milestone, verb }]  the figure's reaction at each pass: swallow (hugs tighter) | push (braces
+//            against the stack) | shocked (jumps back, lets go) | flattened (knocked flat; at the lock).
+//   The board cracks at the lock. Kit cues that the spec's own sfx already give (riser, hit) are not doubled.
 import {
   h, s, style, attr, setText, setHTML, markup, plain, prog, clamp, lerp, rng, fmtNum,
   C, F, L, S, E, poseTrack, fk, secondary, Figure, makeWorld, makeFx, camera, track, pinLimb, blendJ,
-  chromeParts, durationOf, numLike, measure, squashAt, fall, hop, wobble, icon, mixOk,
+  chromeParts, durationOf, numLike, measure, squashAt, fall, hop, wobble, icon, mixOk, popIn,
 } from '../lib.js'
 
 // ---------------------------------------------------------------- layout constants
@@ -57,6 +71,7 @@ const OVERLAP = 0.84                    // each object advances the pile by this
 const FLOOR = L.floorY
 const REST = FLOOR - S.thin / 2         // where an object's bottom rests
 
+const FLY = 0.34                         // stack mode: a brick's flight from the stack into the board's slot
 const HEAT_STATE = { cool: 0, warm: 0.3, orange: 0.5, hot: 0.72, yellow: 0.74, white: 0.95, burst: 1 }
 
 export const css = `
@@ -79,6 +94,18 @@ export const css = `
 .cc-next { position: absolute; left: ${POST_X + 30}px; display: flex; align-items: flex-start; gap: 16px; }
 .cc-pill { flex: none; font: 800 40px/44px ${F.head}; letter-spacing: .06em; color: ${C.grey}; border: 4px solid ${C.line}; border-radius: 12px; padding: 0 12px; margin-top: 2px; }
 .cc-nt { flex: 1; min-width: 0; font: 800 44px/52px ${F.head}; letter-spacing: -0.012em; color: ${C.grey}; }
+.cc-plate { position: absolute; left: 0; top: 0; box-sizing: border-box; background: ${C.ink}; border-radius: 16px; padding: 9px 22px 11px; text-align: center; white-space: nowrap; }
+.cc-pt { font: 800 44px/52px ${F.mono}; letter-spacing: -0.02em; color: ${C.white}; }
+.cc-ps { font: 800 40px/46px ${F.head}; letter-spacing: -0.01em; color: ${C.heroSoft}; }
+.cc-slot { position: absolute; height: 20px; border-radius: 10px; background: ${C.ink}; transform-origin: 50% 50%; }
+.cc-wl { position: absolute; left: 0; top: 0; font: 900 46px/54px ${F.head}; letter-spacing: .03em; text-transform: uppercase; color: ${C.ink}; white-space: nowrap; }
+.cc-we { position: absolute; left: 0; top: 0; font: 900 44px/52px ${F.head}; letter-spacing: -0.015em; color: ${C.red}; white-space: nowrap; transform-origin: 100% 50%; }
+.cc-wd { position: absolute; left: 0; top: 0; font: 900 50px/60px ${F.head}; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; color: ${C.ink}; white-space: nowrap; text-align: center; }
+.cc-gag { position: absolute; left: 0; top: 0; box-sizing: border-box; background: ${C.white}; border: 9px solid ${C.red}; border-radius: 20px; padding: 2px 30px 10px; text-align: center; white-space: nowrap; color: ${C.red}; transform-origin: 50% 50%; }
+.cc-gag .g1 { display: block; font: 900 108px/118px ${F.head}; letter-spacing: -0.03em; }
+.cc-gag .g1 .ap { font-family: 'Inter Full', sans-serif; font-size: 0.8em; }
+.cc-gag .g2 { display: block; font: 900 50px/54px ${F.head}; letter-spacing: .1em; text-transform: uppercase; }
+.cc-crack { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
 `
 
 // ---------------------------------------------------------------- helpers
@@ -145,6 +172,12 @@ const POSE = {
   cower: { lean: 18, tilt: 26, aF: [150, 110], aB: [140, 120], lF: [64, -118], lB: [40, -110] },
   sit: { lean: -14, tilt: 10, aF: [-36, 10], aB: [-50, 6], lF: [86, -4], lB: [76, -14] },       // knocked onto his butt
   sitLook: { lean: -18, tilt: -20, aF: [-40, 6], aB: [-54, 4], lF: [84, -10], lB: [74, -24] },
+  // stack mode (his arms are pinned to the stack while he holds it; these are the bodies under them)
+  hug: { lean: 12, tilt: -16, aF: [70, 50], aB: [60, 60], lF: [16, -12], lB: [-14, -6] },
+  hugUp: { lean: 6, tilt: -30, aF: [70, 50], aB: [60, 60], lF: [14, -10], lB: [-12, -5] },
+  squeeze: { lean: 20, tilt: 14, aF: [70, 60], aB: [60, 70], lF: [20, -22], lB: [-18, -10] },
+  brace: { lean: 30, tilt: -12, aF: [90, 20], aB: [84, 26], lF: [26, -40], lB: [-34, -6] },
+  flatBack: { lean: 0, tilt: -6, aF: [168, 10], aB: [192, -10], lF: [14, -8], lB: [-4, -16], rot: -90 },
 }
 
 export default function costCounter(spec, ctx) {
@@ -174,6 +207,13 @@ export default function costCounter(spec, ctx) {
     .sort((a, b) => a.tm - b.tm)
   const M = ms.length
   ms.forEach((m, k) => { m.k = k; m.last = k === M - 1; m.lv = M > 1 ? k / (M - 1) : 1 })
+
+  // stack mode: the counter eats a stack of the viewer's money (lookOpts.opener.prop 'block-stack')
+  const OPN = lo.opener && typeof lo.opener === 'object' ? lo.opener : null
+  const STACK = !!(OPN && OPN.prop === 'block-stack' && Number(OPN.blocks) >= 1 && Number(OPN.unit) > 0 && rate > 0)
+  const TIMER = STACK && lo.timer && typeof lo.timer === 'object' ? lo.timer : null
+  const GAG = STACK && lo.gag && lo.gag.text ? lo.gag : null
+  const sfxNear = (kind, t, tol) => (spec.sfx || []).some(x => x.kind === kind && Math.abs(Number(x.t) - t) <= tol)
 
   // ================================================================== layout + DOM
   const parts = chromeParts(spec, ctx)
@@ -225,7 +265,7 @@ export default function costCounter(spec, ctx) {
   const stripH = Math.max(rateState ? STRIP_LH : 0, ...ms.map(m => m.sh))
 
   // NEXT ticker under the panel: the full label on one line if it fits (44 or 40 px), else just its amount
-  const preview = lo.preview !== false && M > 0
+  const preview = lo.preview !== false && M > 0 && !STACK
   const next = h('div', { class: 'cc-next' }, h('span', { class: 'cc-pill' }, 'NEXT'), h('div', { class: 'cc-nt' }))
   const nt = next.lastChild
   let nextH = 0
@@ -243,6 +283,38 @@ export default function costCounter(spec, ctx) {
     setHTML(nt, '')
   }
 
+  // stack mode: the plinth (measured), the brick grid and the stopwatch's labels, sized before the readout so the
+  // board leaves them room on the floor
+  let SK = null
+  if (STACK) {
+    const N = Math.round(Number(OPN.blocks)), unit = Number(OPN.unit)
+    const COLS = N >= 30 ? 5 : N >= 12 ? 4 : Math.min(N, 3)
+    const ROWS = Math.ceil(N / COLS)
+    const plate = h('div', { class: 'cc-plate' })
+    if (OPN.text) plate.append(h('div', { class: 'cc-pt', html: markup(String(OPN.text)) }))
+    if (OPN.sub) plate.append(h('div', { class: 'cc-ps', html: markup(String(OPN.sub)) }))
+    world.html.append(plate)
+    const plateW = Math.max(300, Math.ceil(plate.offsetWidth))
+    const plateH = Math.ceil(plate.offsetHeight)
+    style(plate, { width: plateW + 'px' })
+    const BH = 20, GY = 5, GX = 8, PADX = 12
+    const bricksH = ROWS * BH + (ROWS - 1) * GY
+    SK = { N, unit, COLS, ROWS, plate, plateW, plateH, BH, GY, GX, PADX, bricksH, H: bricksH + 10 + plateH }
+    if (TIMER) {
+      const wl = h('div', { class: 'cc-wl', html: markup(String(TIMER.label || '')) })
+      const wd = h('div', { class: 'cc-wd' })
+      world.html.append(wl, wd)
+      SK.wl = wl; SK.wd = wd
+      SK.wlW = wl.offsetWidth; SK.wlH = wl.offsetHeight
+      const el = TIMER.endLabel && TIMER.endLabel.text ? TIMER.endLabel : null
+      if (el) {
+        const we = h('div', { class: 'cc-we', html: markup(String(el.text)) })
+        world.html.append(we)
+        SK.we = we; SK.weW = we.offsetWidth; SK.weH = we.offsetHeight; SK.weT = Number(el.t)
+      }
+    }
+  }
+
   // readout size: the widest string it will show fits the panel, and the panel + NEXT leave the floor to the
   // figure. The digits are the kit's hero numbers (Inter Tight 900, tabular figures, so they never jitter); their
   // glyph boxes are ~1.21 em tall, so the line box is too (nothing readable may overlap it).
@@ -254,7 +326,9 @@ export default function costCounter(spec, ctx) {
   const roTop = PAD + labH + (labH ? 2 : 0)
   const fixedH = roTop + (stripH ? stripH : 0) + PAD + 2 * BORDER
   const tkGap = 14
-  const fsFor = k => Math.floor((FLOOR - (showFig ? 262 * k + 16 : 230) - (preview ? nextH + tkGap : 0) - 6 - P0 - fixedH) / RO_LH)
+  // stack mode: the stack (bricks + plinth) and a flight gap above it, and the stopwatch's label stack
+  const floorNeed = k => Math.max(showFig ? 262 * k + 16 : 230, SK ? SK.H + 64 : 0, SK && TIMER ? 2 * 98 + 30 + SK.wlH + (SK.we ? SK.weH : 0) + 20 : 0)
+  const fsFor = k => Math.floor((FLOOR - floorNeed(k) - (preview ? nextH + tkGap : 0) - 6 - P0 - fixedH) / RO_LH)
   // a dense top (3-line hook, 2-line footer, long labels): the figure gives up a little height before the counter does
   let FIGK = lo.figureScale ?? 1.1
   if (lo.figureScale == null && showFig) while (FIGK > 0.9 && fsFor(FIGK) < Math.min(104, fsW)) FIGK -= 0.02
@@ -284,6 +358,8 @@ export default function costCounter(spec, ctx) {
     segs.push({ t: m.tm, html: m.html, m, h: m.sh })
     const nextT = k < M - 1 ? ms[k + 1].tm : Infinity
     const back = m.tm + FLASH
+    // stack mode: the last pass is the answer, so its ✓ holds through the lock to the end
+    if (STACK && m.last && t1 - m.tm < 1.5) return
     if (rateState && back < nextT - 0.5) segs.push({ t: back, html: rateState, h: STRIP_LH })
   })
   // the board is as tall as the strip's CURRENT state (a 2-line flash grows it, the 1-line rate shrinks it back)
@@ -295,9 +371,102 @@ export default function costCounter(spec, ctx) {
     return lerp(hOld, hNew, E.out(prog(t, segs[j].t, 0.12)))
   }
   const panelHAt = t => (stripH ? stripTop + stripHAt(t) + PAD : roTop + roH + PAD) + 2 * BORDER
+  // ================================================================== stack mode: plinth, bricks, slot, stopwatch
+  let FX = 172
+  const bricks = []
+  let slot = null, slotX = PCX, watch = null, gag = null, crack = null
+  if (SK) {
+    // right to left: the stopwatch against the rail, the stack, then the figure by the post
+    // the stopwatch hugs the rail (its face digits stay left of x 940; the dial itself is decoration and may
+    // cross it), the stack sits left of it at its measured plinth width, the figure left of the stack
+    const WR = 106
+    const WX = TIMER ? 878 : null
+    const xS1 = TIMER ? WX - WR - 22 : 900
+    const xS0 = Math.max(POST_X + 120, xS1 - SK.plateW)
+    const plateTop = FLOOR - 2 - SK.plateH
+    style(SK.plate, { transform: `translate(${xS0}px,${plateTop}px)`, width: xS1 - xS0 + 'px' })
+    SK.xS0 = xS0; SK.xS1 = xS1; SK.plateTop = plateTop
+    FX = Math.max(POST_X + 50, xS0 - 96)
+    const bw = (xS1 - xS0 - 2 * SK.PADX - (SK.COLS - 1) * SK.GX) / SK.COLS
+    SK.bw = bw
+    SK.top = plateTop - 10 - SK.bricksH
+    // bricks fill bottom-up, left to right; the slot eats the last-placed one first (top row, right to left)
+    for (let j = 0; j < SK.N; j++) {
+      const rb = Math.floor(j / SK.COLS), col = j % SK.COLS
+      const x = xS0 + SK.PADX + col * (bw + SK.GX) + bw / 2
+      const y = plateTop - 10 - rb * (SK.BH + SK.GY) - SK.BH / 2
+      const gB = s('g')
+      gB.append(
+        s('rect', { x: (-bw / 2).toFixed(1), y: -SK.BH / 2, width: bw.toFixed(1), height: SK.BH, rx: 5, fill: C.heroSoft, stroke: C.ink, 'stroke-width': 4 }),
+        s('rect', { x: -7, y: -SK.BH / 2 + 2, width: 14, height: SK.BH - 4, fill: C.hero }),
+      )
+      g.mid.append(gB)
+      const n = SK.N - j                                            // eaten n-th
+      const te = t0 + (n * SK.unit) / rate                           // the counter has passed n units
+      bricks.push({ g: gB, x, y, n, te, side: col < (SK.COLS - 1) / 2 ? 1 : -1 })
+    }
+    slotX = (xS0 + xS1) / 2
+    slot = h('div', { class: 'cc-slot', style: { width: '128px', left: (slotX - PX - BORDER - 64).toFixed(1) + 'px', bottom: -(BORDER + 10) + 'px' } })
+    panel.append(slot)
+    if (TIMER) {
+      const WY = FLOOR - 16 - WR
+      const wg = s('g')
+      const RR = WR - 19, CIRC = 2 * Math.PI * RR
+      // little legs, the crown and a side button, then the face
+      wg.append(
+        s('line', { x1: WX - 46, y1: WY + WR * 0.78, x2: WX - 58, y2: FLOOR - 3, stroke: C.ink, 'stroke-width': S.prop, 'stroke-linecap': 'round' }),
+        s('line', { x1: WX + 46, y1: WY + WR * 0.78, x2: WX + 58, y2: FLOOR - 3, stroke: C.ink, 'stroke-width': S.prop, 'stroke-linecap': 'round' }),
+        s('line', { x1: WX, y1: WY - WR, x2: WX, y2: WY - WR - 16, stroke: C.ink, 'stroke-width': S.prop, 'stroke-linecap': 'round' }),
+        s('rect', { x: WX - 22, y: WY - WR - 32, width: 44, height: 18, rx: 7, fill: C.ink }),
+        s('rect', { x: WX - 9, y: WY - WR - 13, width: 18, height: 18, rx: 4, fill: C.ink, transform: `rotate(45 ${WX} ${WY})` }),
+        s('circle', { cx: WX, cy: WY, r: WR, fill: C.white, stroke: C.ink, 'stroke-width': S.prop }),
+        s('circle', { cx: WX, cy: WY, r: RR, fill: 'none', stroke: C.lineSoft, 'stroke-width': 18 }),
+      )
+      const arcEl = s('circle', { cx: WX, cy: WY, r: RR, fill: 'none', stroke: C.ink, 'stroke-width': 18, 'stroke-linecap': 'butt', transform: `rotate(-90 ${WX} ${WY})`, 'stroke-dasharray': `0 ${CIRC.toFixed(1)}` })
+      wg.append(arcEl)
+      // quarter ticks across the ring (the 60 s mark on top is the big one)
+      for (let q = 0; q < 4; q++) {
+        const a = (q * Math.PI) / 2, c = Math.sin(a), sn = -Math.cos(a)
+        const r0 = RR - (q ? 9 : 13), r1 = RR + (q ? 9 : 13)
+        wg.append(s('line', { x1: (WX + c * r0).toFixed(1), y1: (WY + sn * r0).toFixed(1), x2: (WX + c * r1).toFixed(1), y2: (WY + sn * r1).toFixed(1), stroke: C.ink, 'stroke-width': q ? 5 : 7, 'stroke-linecap': 'round' }))
+      }
+      const mark = s('circle', { cx: WX, cy: WY - RR, r: 0, fill: C.red })
+      wg.append(mark)
+      g.mid.append(wg)
+      const tw0 = Number(TIMER.t0 ?? t0), total = Math.max(1, Number(TIMER.total) || 60)
+      const wdW = measure('0:00', `900 50px ${F.head}`, { letterSpacing: '-0.01em' })
+      style(SK.wd, { transform: `translate(${(WX - wdW / 2 - 4).toFixed(1)}px,${(WY - 30).toFixed(1)}px)`, width: Math.ceil(wdW + 8) + 'px' })
+      // label stack above the crown: the label alone, then (from endLabel.t) the label over the end label
+      const crownTop = WY - WR - 34
+      // the label sits high from frame 1 (clear of the stack's top row); the end label pops into the gap under it
+      const wlY = SK.we ? crownTop - 8 - SK.weH - 2 - SK.wlH : crownTop - 8 - SK.wlH
+      const wlX = Math.min(WX, 938 - SK.wlW / 2) - SK.wlW / 2
+      const weX = Math.min(WX, 938 - SK.weW / 2)                       // centred on the watch if it fits the rail
+      watch = { WX, WY, WR, RR, CIRC, arcEl, mark, tw0, total, wlY, wlX, weX, weY: crownTop - 8 - SK.weH }
+    }
+    if (GAG) {
+      const raw = String(GAG.text)
+      const m2 = /^(.*\d\S*)\s+(\D.*)$/.exec(raw)                       // "≈ 33 seconds" -> "≈ 33" / "seconds"
+      const l1 = m2 ? m2[1] : raw, l2 = m2 ? m2[2] : ''
+      const l1h = /^≈\s+/.test(l1) ? `<span class="ap">≈</span> ${markup(l1.replace(/^≈\s+/, ''))}` : markup(l1)
+      gag = h('div', { class: 'cc-gag', 'data-overlap-ok': '', html: `<span class="g1">${l1h}</span>${l2 ? `<span class="g2">${markup(l2)}</span>` : ''}` })
+      world.html.append(gag)
+      const gw = gag.offsetWidth, gh = gag.offsetHeight
+      const cx = (SK.xS0 + SK.xS1) / 2, cy = Math.min(SK.plateTop - 14 - gh / 2, SK.top + SK.bricksH / 2 + 8)
+      Object.assign(SK, { gx: cx - gw / 2, gy: cy - gh / 2, gw, gh, gT: Number(GAG.t ?? t1) + 0.12 })
+    }
+    // cracks for the lock: ink zigzags in the board's top-right corner (clear of the label and the digits)
+    crack = s('svg', { class: 'cc-crack', width: PW, height: 200, viewBox: `0 0 ${PW} 200`, 'data-deco': '' })
+    for (const dPath of [
+      `M${PW - 196},0 L${PW - 172},26 L${PW - 150},18 L${PW - 118},52 L${PW - 92},44 L${PW - 58},74 L${PW},88`,
+      `M${PW - 150},18 L${PW - 134},-2`, `M${PW - 92},44 L${PW - 70},12 L${PW - 52},4`,
+    ]) crack.append(s('path', { d: dPath, fill: 'none', stroke: C.ink, 'stroke-width': 6, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }))
+    style(crack, { display: 'none' })
+    panel.append(crack)
+  }
+
   // ================================================================== objects
-  const showObj = lo.objects !== false && M > 0
-  const FX = 172
+  const showObj = lo.objects !== false && M > 0 && !STACK
   const lnv = ms.map(m => Math.log(Math.max(1, Math.abs(Number(m.value)))))
   ms.forEach((m, k) => {
     m.icon = (Array.isArray(lo.icons) && lo.icons[m.i]) || m.icon || guessIcon(m.label || '')
@@ -362,7 +531,7 @@ export default function costCounter(spec, ctx) {
   // ================================================================== impacts + cues
   const fxk = makeFx(world, ctx)
   const cam = camera(world)
-  const tLand = M ? ms[M - 1].tl0 : -1
+  const tLand = M && !STACK ? ms[M - 1].tl0 : -1
   const merge = M && Math.abs(tLand - t1) < 0.3            // the last landing IS the lock
   ms.forEach(m => {
     ctx.cue(m.tm, 'pop', { gain: 0.45 })
@@ -376,10 +545,14 @@ export default function costCounter(spec, ctx) {
   const specCueAtStart = (spec.sfx || []).some(x => Math.abs(Number(x.t) - t0) < 0.1)
   if (t0 > 0.05 && !specCueAtStart) ctx.cue(t0, 'tick', { gain: 0.6 })   // the counter starts (unless the spec cues it)
   ctx.cue(t0, 'roll', { dur: Math.min(1.4, dur), gain: 0.22 })
-  if (dur > 4) ctx.cue(Math.max(t0 + 1, t1 - 1.7), 'riser', { dur: Math.min(1.6, dur - 1), gain: 0.28 })
+  // the spec's own riser / hit into the lock replace the kit's (never both)
+  if (dur > 4 && !(spec.sfx || []).some(x => x.kind === 'riser' && Number(x.t) > t1 - 4 && Number(x.t) < t1)) ctx.cue(Math.max(t0 + 1, t1 - 1.7), 'riser', { dur: Math.min(1.6, dur - 1), gain: 0.28 })
   const tLock = merge ? Math.max(t1, tLand) : t1
-  fxk.impact(tLock, { x: PCX, y: PCY, burst: false, shake: 15, flash: 0.55, punch: 0.022, cue: 'hit', gain: 0.95 })
+  fxk.impact(tLock, { x: PCX, y: PCY, burst: false, shake: 15, flash: 0.55, punch: 0.022, cue: sfxNear('hit', tLock, 0.15) ? null : 'hit', gain: 0.95 })
   ctx.cue(tLock + 0.1, 'cash', { gain: 0.5 })
+  // stack mode: a soft tick per brick slurped (not on a pass, which pops), a thud for the stamp
+  for (const b of bricks) if (b.te < tLock - 0.05 && !ms.some(m => Math.abs(m.tm - b.te) < 0.05)) ctx.cue(b.te, 'tick', { gain: 0.2 })
+  if (gag) ctx.cue(SK.gT + 0.1, 'thud', { gain: 0.6 })
   // side hit lines at the lock, in the margins left and right of the panel
   const lockLines = []
   const lockG = s('g', { style: 'display: none' })
@@ -419,15 +592,55 @@ export default function costCounter(spec, ctx) {
 
   // ================================================================== the figure
   const fig = showFig ? new Figure(g.fig, { scale: FIGK }) : null
-  const keys = [{ t: 0, pose: 'thinkUp' }]
+  const keys = [{ t: 0, pose: STACK ? POSE.hug : 'thinkUp' }]
   const hops = [], steps = [], sits = []
-  keys.push({ t: Math.max(0.5, t0), pose: POSE.watch, d: 0.3 })
+  // stack mode: he holds his stack (hands pinned to it) until a pass makes him let go
+  let tLetGo = Infinity
+  if (STACK) {
+    const DEF = ['swallow', 'push', 'shocked', 'flattened']
+    const verbOf = (m, k) => { const a = (Array.isArray(lo.actions) ? lo.actions : []).find(x => Number(x.milestone) === m.i); return a && a.verb ? String(a.verb) : DEF[Math.min(k, 3)] }
+    let free = false, back = 0, lastT = 0
+    // a glance up at the board and back down to the stack, in a calm stretch
+    const glance = (a, b) => { if (b - a > 2.6) keys.push({ t: a + 0.6, pose: free ? POSE.watch : POSE.hugUp, d: 0.4, e: 'inOut' }, { t: Math.min(b - 0.9, a + 2.4), pose: free ? POSE.down : POSE.hug, d: 0.4, e: 'inOut' }) }
+    ms.forEach((m, k) => {
+      const v = verbOf(m, k), tm = m.tm
+      glance(lastT, tm - 0.4)
+      if (v === 'flattened') { lastT = tm; return }                  // at the lock, below
+      if (v === 'swallow') {
+        keys.push({ t: tm - 0.08, pose: POSE.squeeze, d: 0.12, e: 'out' }, { t: tm + 0.75, pose: free ? POSE.watch : POSE.hug, d: 0.32 })
+        lastT = tm + 1.1
+      } else if (v === 'push') {
+        keys.push({ t: tm - 0.3, pose: POSE.squeeze, d: 0.14, e: 'inOut' }, { t: tm - 0.05, pose: POSE.brace, d: 0.12, e: 'out' }, { t: tm + 1.5, pose: free ? POSE.watch : POSE.hug, d: 0.35 })
+        lastT = tm + 1.9
+      } else if (v === 'shocked') {
+        if (!free) tLetGo = tm - 0.06
+        free = true
+        keys.push({ t: tm - 0.04, pose: 'shocked', d: 0.1, e: 'out' }, { t: tm + 0.55, pose: POSE.leanBack, d: 0.3, e: 'out' })
+        back += 26; steps.push({ t: tm - 0.04, v: back })
+        lastT = tm + 1.2
+      } else {
+        keys.push({ t: tm - 0.04, pose: POSE.flinch, d: 0.08, e: 'out' }, { t: tm + 0.6, pose: free ? POSE.watch : POSE.hug, d: 0.3 })
+        lastT = tm + 1.0
+      }
+    })
+    // the long run-up to the lock: look down at what is left, then cower as it goes white-hot
+    const tWhite = (Array.isArray(lo.heat) ? lo.heat : []).filter(x => x.state === 'white' || x.state === 'hot').map(x => Number(x.t)).find(x => x > lastT && x < t1)
+    const tCower = tWhite ?? Math.max(lastT + 1, t1 - 4.5)
+    if (tCower - lastT > 3) keys.push({ t: (lastT + tCower) / 2 - 0.4, pose: POSE.down, d: 0.4, e: 'inOut' })
+    keys.push({ t: tCower, pose: POSE.cower, d: 0.2, e: 'out' }, { t: tCower + 1.6, pose: POSE.leanBack, d: 0.3 }, { t: t1 - 0.9, pose: POSE.cower, d: 0.16, e: 'out' })
+    if (!free) tLetGo = Math.min(tLetGo, tCower - 0.06)
+    // the lock: the blast knocks him flat on his back; he sits up and stares at the board
+    keys.push({ t: t1 + 0.02, pose: 'fall', d: 0.08, e: 'out' }, { t: t1 + 0.2, pose: POSE.sit, d: 0.12, e: 'out' }, { t: t1 + 1.3, pose: POSE.sitLook, d: 0.45, e: 'inOut' })
+    back += 34; steps.push({ t: t1 + 0.02, v: back, d: 0.2 })
+    sits.push(t1 + 0.32)
+    ctx.cue(t1 + 0.34, 'thud', { gain: 0.4 })
+  } else keys.push({ t: Math.max(0.5, t0), pose: POSE.watch, d: 0.3 })
   if (t0 > 0.4) hops.push({ t0, dur: 0.24, h: 12 })
   let prevT = Math.max(0.5, t0)
   let back = 0
   // the knock-down: the last landing when it is (nearly) the lock, otherwise the lock's own white impact
   const tHit = M && tLock - tLand <= 1.2 ? Math.max(tLand, tLock) : tLock
-  for (const m of ms) {
+  if (!STACK) for (const m of ms) {
     const tm = m.tm, tl = m.tl0
     if (tm - prevT > 7) {                                        // a long wait: scratch his chin, then watch again
       const mid = (prevT + tm) / 2
@@ -455,7 +668,7 @@ export default function costCounter(spec, ctx) {
   }
   // finale: knocked onto his butt by the last landing (or the lock), then he stares up at the white-hot counter
   const finale = lo.finale || 'sit'
-  if (finale === 'sit') {
+  if (STACK) { /* the knock-down is above */ } else if (finale === 'sit') {
     keys.push({ t: tHit + 0.36, pose: POSE.sit, d: 0.14, e: 'out' })
     keys.push({ t: tHit + 1.1, pose: POSE.sitLook, d: 0.5, e: 'inOut' })
     back += 16; steps.push({ t: tHit + 0.3, v: back, d: 0.2 })
@@ -465,8 +678,12 @@ export default function costCounter(spec, ctx) {
   const tr = poseTrack(keys)
   // calm stretches (before the first pass, between a reaction and the next anticipation): he leans on the post
   const calm = []
-  calm.push([-1e9, M ? ms[0].tm - 0.7 : t1])
-  for (let k = 0; k < M - 1; k++) calm.push([ms[k].tl0 + 1.4, ms[k + 1].tm - 0.7])
+  if (!STACK) {
+    calm.push([-1e9, M ? ms[0].tm - 0.7 : t1])
+    for (let k = 0; k < M - 1; k++) calm.push([ms[k].tl0 + 1.4, ms[k + 1].tm - 0.7])
+  }
+  // stack mode: how much his hands hold the stack (1 until he lets go, a 0.08 s release)
+  const hugW = t => (STACK ? 1 - smooth(clamp((t - tLetGo) / 0.08)) : 0)
   const leanW = t => Math.max(0, ...calm.filter(([a, b]) => b - a > 0.7).map(([a, b]) => Math.min(a < -1e8 ? 1 : smooth(clamp((t - a) / 0.25)), smooth(clamp((b - t) / 0.25)))))
   const xTr = track([{ t: 0, v: FX }, ...steps.map(st => ({ t: st.t, v: FX - st.v, d: st.d ?? 0.22, e: 'out' }))])
 
@@ -609,6 +826,54 @@ export default function costCounter(spec, ctx) {
       attr(w.el, 'opacity', op < 0.02 ? '0' : op.toFixed(3))
     }
 
+    // ---- stack mode: bricks slurped into the slot, the stopwatch, the stamp, the cracks
+    if (SK) {
+      const pBot = P0 + PHn
+      let gulp = 0
+      for (const b of bricks) {
+        const tl = b.te - FLY
+        if (t < tl) {
+          style(b.g, { display: '' })
+          attr(b.g, 'transform', `translate(${b.x.toFixed(1)},${b.y.toFixed(1)})`)
+        } else if (t >= b.te) {
+          style(b.g, { display: 'none' })
+          if (t - b.te < 0.4) gulp = Math.max(gulp, Math.exp(-12 * (t - b.te)))
+        } else {
+          const p = (t - tl) / FLY
+          const px = lerp(b.x, slotX, E.inOutSine(p))
+          const py = lerp(b.y, pBot - 24, p * p) - 22 * Math.sin(Math.PI * Math.min(1, p * 1.6))
+          const k = 1 - 0.18 * p
+          style(b.g, { display: '' })
+          attr(b.g, 'transform', `translate(${px.toFixed(1)},${py.toFixed(1)}) rotate(${(b.side * 20 * p).toFixed(1)}) scale(${k.toFixed(3)})`)
+        }
+      }
+      style(slot, { transform: `scale(${(1 + 0.3 * gulp).toFixed(3)},${(1 + 0.5 * gulp).toFixed(3)})` })
+      if (watch) {
+        const e = clamp(t - watch.tw0, 0, Math.max(0, Math.min(watch.total, t1 - watch.tw0)))
+        attr(watch.arcEl, 'stroke-dasharray', `${(watch.CIRC * e / watch.total).toFixed(1)} ${watch.CIRC.toFixed(1)}`)
+        attr(watch.arcEl, 'stroke', colS)
+        const sec = Math.floor(e + 1e-6)
+        setText(SK.wd, `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`)
+        style(SK.wd, { color: t >= t1 ? colS : C.ink })
+        style(SK.wl, { transform: `translate(${watch.wlX.toFixed(1)}px,${watch.wlY.toFixed(1)}px)` })
+        if (SK.we) {
+          const pi = popIn(t, SK.weT + 0.08, 0.24)
+          style(SK.we, { display: t >= SK.weT + 0.08 ? '' : 'none', opacity: pi.opacity.toFixed(3), transform: `translate(${(watch.weX - SK.weW / 2).toFixed(1)}px,${watch.weY.toFixed(1)}px) scale(${pi.scale.toFixed(3)})` })
+          attr(watch.mark, 'r', t >= SK.weT ? (12 * E.back(prog(t, SK.weT, 0.2), 2)).toFixed(1) : '0')
+        }
+      }
+      if (gag) {
+        const on = t >= SK.gT
+        style(gag, { display: on ? '' : 'none' })
+        if (on) {
+          const q = prog(t, SK.gT, 0.13)
+          const sc = 1.6 - 0.6 * E.out(q) + 0.04 * Math.exp(-9 * (t - SK.gT - 0.13)) * Math.sin(2 * Math.PI * 5 * Math.max(0, t - SK.gT - 0.13))
+          style(gag, { opacity: clamp((t - SK.gT) / 0.05).toFixed(3), transform: `translate(${SK.gx.toFixed(1)}px,${SK.gy.toFixed(1)}px) rotate(-6deg) scale(${Math.max(1, sc).toFixed(3)})` })
+        }
+      }
+      style(crack, { display: t >= t1 + 0.03 ? '' : 'none' })
+    }
+
     // ---- the figure
     if (fig) {
       let p = tr.at(t)
@@ -616,9 +881,17 @@ export default function costCounter(spec, ctx) {
       p = secondary(p, t, { prev })
       let lift = p.lift || 0
       for (const hp of hops) lift += hop(t, hp.t0, hp.dur, hp.h)
-      let J = fk({ ...p, lift }, { x: xTr.at(t), ground: FLOOR, face: 1, scale: FIGK })
+      let J = fk({ ...p, lift }, { x: xTr.at(t), ground: FLOOR, face: 1, scale: FIGK, plant: Math.abs(p.rot || 0) > 30 ? 'all' : 'feet' })
       const lw = leanW(t)
       if (lw > 0) J = blendJ(J, pinLimb({ ...J }, 'hB', [POST_X + S.prop / 2 + 6, J.sh[1] + 18], 1), lw)
+      // stack mode: both hands on the stack's side while he holds it
+      const hw = hugW(t)
+      if (hw > 0) {
+        const Jp = { ...J }, xL = SK.xS0 + SK.PADX - 3
+        pinLimb(Jp, 'hF', [xL, Math.min(SK.plateTop - 26, J.sh[1] + 8)], 1)
+        pinLimb(Jp, 'hB', [xL - 4, Math.min(SK.plateTop - 14, J.sh[1] + 44)], 1)
+        J = blendJ(J, Jp, hw)
+      }
       let sqf = { sx: 1, sy: 1 }
       for (const hp of hops) { const q = squashAt(t, hp.t0 + hp.dur, 0.14); sqf = { sx: sqf.sx * q.sx, sy: sqf.sy * q.sy } }
       for (const ts of sits) { const q = squashAt(t, ts, 0.2); sqf = { sx: sqf.sx * q.sx, sy: sqf.sy * q.sy } }

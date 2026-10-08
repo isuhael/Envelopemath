@@ -36,11 +36,19 @@
 //   stake: false                      hide the stake line under the footer
 //   keyLabel: 'Year'                  a head over the label column
 //   beats: [{ t, act, person, targets, d }]   extra acting: act = a POSES name (or cheer | peek) for `person`
-//                                     (held d = 1.4 s), or 'impact' on `targets` (skipped where a crash already hits)
+//                                     (held d = 1.4 s), or 'impact' on `targets` (skipped where a crash already hits),
+//                                     or 'sell' (below). A scripted beat near the verdict replaces the default
+//                                     verdict acting for that person.
+//          { t, act: 'sell', person, label }   the person cashes out: a chop on his stack, which turns from coins
+//                                     into a grey brick of cash (it no longer grows), and `label` pops as a pill
+//                                     right-aligned over his column in the slot above the latest row, until the
+//                                     next row lands (an event pill in that slot closes first)
+//   marks: [{ t, row, person }]       a pencil ring is drawn around one landed cell at t (the cell pops; `swipe`);
+//                                     it holds until the next row, sell or later mark, or for good on the last row
 import {
   h, s, style, attr, prog, clamp, lerp, plain, markup, rng,
   C, F, L, E, RIG, POSES, poseTrack, fk, secondary, Figure, makeWorld, makeFx, camera, NumObj,
-  chromeParts, durationOf, num, measure, squashAt, popIn, toss, tossHit, coin, springStep, track, shiftJ,
+  chromeParts, durationOf, num, measure, squashAt, popIn, toss, tossHit, coin, springStep, track, shiftJ, bump,
 } from '../lib.js'
 
 export const css = `
@@ -90,12 +98,15 @@ const PZ = {
   sink:   { lean: 8, tilt: 10, aF: [10, 14], aB: [-12, 12], lF: [24, -40], lB: [-6, -36] },
   look:   { lean: -2, tilt: -18, aF: [130, 96], aB: [-14, 16], lF: [10, -4], lB: [-12, -3] },      // hand over eyes
   glum:   { lean: 8, tilt: 34, aF: [6, 6], aB: [-6, 6], lF: [10, -16], lB: [-6, -12] },           // dejected, upright
+  glumBack: { lean: 1, tilt: 30, aF: [4, 6], aB: [-4, 6], lF: [8, -12], lB: [-6, -10] },         // the same, head over his own stack
+  stamp:  { lean: 14, tilt: 24, aF: [34, 8], aB: [26, 12], lF: [22, -44], lB: [-14, -30] },       // both hands chop down at his feet
 }
 const ACT = { cheer: 'celebrate', peek: PZ.look, look: PZ.look }
 
 const EVENT_PAUSE = 1.2       // default pacing: extra pause after an event row (when rows carry no "t")
 const AIR = 0.42              // crash: time in the air before he lands on what is left
 const SLAB = 15               // coin thickness in a stack (px)
+const CASH = { fill: '#D9DEE5', stroke: C.grey }   // a sold stack: a grey brick of cash (between C.lineSoft and C.line)
 
 export default function ledgerDuel(spec, ctx) {
   const d = spec.data || {}
@@ -119,6 +130,20 @@ export default function ledgerDuel(spec, ctx) {
   const landT = times.map(x => (x <= 0 ? -0.6 : x))
   const lastT = times[last]
   const nextT = i => (i < last ? times[i + 1] : Infinity)
+  const rowAt = t => { let j = 0; for (let i = 0; i < N; i++) if (times[i] <= t + 1e-6) j = i; return j }   // latest landed row
+  // scripted cash-outs (lookOpts.beats act 'sell') and pencil marks (lookOpts.marks)
+  const sells = (lo.beats || []).filter(b => b && b.act === 'sell' && b.t != null && (b.person === 0 || b.person === 1))
+    .map(b => ({ t: +b.t, p: b.person, label: b.label != null ? String(b.label) : '', row: rowAt(+b.t) }))
+  const soldAt = [0, 1].map(p => Math.min(Infinity, ...sells.filter(x => x.p === p).map(x => x.t)))
+  const marks = (Array.isArray(lo.marks) ? lo.marks : [])
+    .filter(m => m && m.t != null && Number.isInteger(m.row) && m.row >= 0 && m.row < N && (m.person === 0 || m.person === 1))
+    .map(m => ({ t: +m.t, i: m.row, p: m.person }))
+  for (const m of marks) {
+    // a mark holds until the next focus: the next row to land, a sell, or a later mark
+    const after = [...times.filter(x => x > m.t + 0.01), ...sells.map(x => x.t).filter(x => x > m.t + 0.01),
+      ...marks.map(x => x.t).filter(x => x > m.t + 0.01)]
+    m.end = after.length ? Math.min(...after) - 0.05 : Infinity
+  }
 
   // ---- numbers (geometry and logic only; every number on screen is a display string from the spec)
   const V = rows.map(r => r.values.slice(0, 2).map(num))
@@ -156,7 +181,7 @@ export default function ledgerDuel(spec, ctx) {
   const parts = chromeParts(spec, ctx)
   const fixed = h('div', { class: 'ld-fixed' })
   const FIGK = lo.figureScale ?? 0.8
-  const PW = 66, PG = 18, PL = 42                       // (the left figure's pencil stays >= 24 px inside the frame)
+  const PW = 60, PG = 30, PL = 42                       // (the left figure's pencil stays >= 24 px inside the frame)
   const PX = [PL + PW / 2, PL + PW + PG + PW / 2]       // stack centres (decoration may sit left of x 60)
   const X0 = PL + 2 * PW + PG + 30                      // left edge of the ledger
   const XR = 922                                        // right edge of the last column (x <= 940 below y 820)
@@ -282,7 +307,7 @@ export default function ledgerDuel(spec, ctx) {
       if (!l) continue
       // a small plan costs less than small values; the legend (names twice) costs a little; a value under 40 px
       // is the last resort; a name without its dot costs a little
-      l.score = vp + (st ? 8 : 0) + (hr ? 4 : 0) - (pl >= 3 ? 5 : 0) - 1.5 * (40 - pp) - (lg ? 6 : 0) - (vp < 40 ? 30 : 0)
+      l.score = vp + (st ? 8 : 0) + (hr ? 4 : 0) - (pl >= 3 ? 5 : 0) - (pp < 40 ? 6 + 1.5 * (40 - pp) : 0) - (lg ? 6 : 0) - (vp < 40 ? 30 : 0)
         - (lg ? 0 : 2 * l.names.filter(n => n.noDot).length)
       if (!lay || l.score > lay.score) lay = l
       break
@@ -356,6 +381,16 @@ export default function ledgerDuel(spec, ctx) {
 
   // event pills: right above their row, in the slot the next row will land in; gone before it lands
   const pills = []
+  // the future labels a pill box actually covers (they dim while it is up)
+  const labelsUnder = (i, box) => {
+    const out = []
+    for (let j = i + 1; j < N; j++) {
+      const ly0 = boxBottom(j, yp) - yp, ly1 = boxBottom(j, yp)
+      const lx0 = xYear - wLab(String(rows[j].label ?? ''), yp)
+      if (ly1 > box.y0 - 2 && ly0 < box.y1 + 2 && box.x0 < xYear + 4 && box.x1 > lx0 - 4) out.push(j)
+    }
+    return out
+  }
   rows.forEach((r, i) => {
     if (!r.event) return
     const tn = r.tone && TONE_C[r.tone] ? r.tone : 'neutral'
@@ -368,20 +403,66 @@ export default function ledgerDuel(spec, ctx) {
     while (px > 36 && el.offsetWidth > maxW) { px -= 2; style(el, { fontSize: px + 'px' }) }
     const w = el.offsetWidth, ph = el.offsetHeight
     const bottom = rowTop(i) - 8
-    const cx = Math.min(XR - w / 2, Math.max(X0 + w / 2, (X0 + XR) / 2))
-    const box = { x0: cx - w / 2, x1: cx + w / 2, y0: bottom - ph, y1: bottom }
-    // dim future labels the pill would sit on
-    const under = []
-    for (let j = i + 1; j < N; j++) {
-      const ly0 = boxBottom(j, yp) - yp, ly1 = boxBottom(j, yp)
-      if (ly1 > box.y0 - 2 && ly0 < box.y1 + 2) under.push(j)
-    }
-    const t0 = times[i] + 0.06
     // the last row's pill stays for good when the layout kept headroom for it; otherwise it sits over the
     // column heads (they dim) for a couple of seconds
     const overHeads = i === last && !lay.cf.hr
-    const t1 = i < last ? Math.max(t0 + 0.3, nextT(i) - 0.32) : overHeads ? t0 + 2.4 : Infinity
-    pills.push({ i, el, box, w, ph, t0, t1, under, overHeads, tone: tn, from: Math.max(0.86, 41 / px) })
+    // centred over the value columns (clear of the labels) when it fits there, else over the whole ledger
+    // (a pill over the column heads keeps the whole-ledger centre)
+    const lo0 = !overHeads && w <= XR - (xYear + 16) ? xYear + 16 : X0
+    const cx = Math.min(XR - w / 2, Math.max(lo0 + w / 2, (lo0 + XR) / 2))
+    const box = { x0: cx - w / 2, x1: cx + w / 2, y0: bottom - ph, y1: bottom }
+    const t0 = times[i] + 0.06
+    let t1 = i < last ? Math.max(t0 + 0.3, nextT(i) - 0.32) : overHeads ? t0 + 2.4 : Infinity
+    // a cash-out in the same slot closes this pill first
+    for (const sl of sells) if (sl.row === i && sl.t > t0 && sl.t < t1) t1 = Math.max(t0 + 0.3, sl.t - 0.12)
+    // ... and so does a pencil mark on this row (one focus at a time; the ring needs the room above the row)
+    for (const m of marks) if (m.i === i && m.t > t0 && m.t < t1) t1 = Math.max(t0 + 0.3, m.t - 0.05)
+    pills.push({ i, el, box, w, ph, t0, t1, under: labelsUnder(i, box), overHeads, tone: tn, from: Math.max(0.86, 41 / px), sq: clamp(1 - 41.5 / px, 0, 0.08) })
+  })
+  // cash-out pills: right-aligned over the seller's column, in the slot above the latest landed row
+  for (const sl of sells) {
+    if (!sl.label) continue
+    const el = h('div', { class: 'ld-pill' })
+    el.innerHTML = markup(sl.label)
+    world.html.append(el)
+    let px = pillPx
+    style(el, { fontSize: px + 'px', lineHeight: '50px', color: C.grey, borderColor: C.grey, background: C.white })
+    while (px > 36 && el.offsetWidth > XR - X0) { px -= 2; style(el, { fontSize: px + 'px' }) }
+    const w = el.offsetWidth, ph = el.offsetHeight, i = sl.row
+    const bottom = rowTop(i) - 8
+    const x1 = sl.p === 1 ? XR : Math.min(XR, xCol[0] + 12)
+    const box = { x0: Math.max(X0, x1 - w), x1: Math.max(X0, x1 - w) + w, y0: bottom - ph, y1: bottom }
+    const t0 = sl.t + 0.04
+    const t1 = i < last ? Math.max(t0 + 0.3, nextT(i) - 0.32) : Infinity
+    pills.push({ i, el, box, w, ph, t0, t1, under: labelsUnder(i, box), overHeads: false, tone: 'neutral', from: Math.max(0.86, 41 / px), sq: clamp(1 - 41.5 / px, 0, 0.08) })
+  }
+
+  // pencil marks: a hand-drawn loop around one cell (red on a loss, ink otherwise), drawn on in ~0.28 s
+  const rings = marks.map((m, k) => {
+    const { i, p } = m
+    const onPlate = i === last && p === winner && plateOn
+    const tw = wVal(rows[i].values[p], vp) * (onPlate ? HLS : 1)
+    const cx = onPlate ? pb.cx : xCol[p] - tw / 2
+    const cy = onPlate ? pb.cy : baseY(i) - 0.38 * vp
+    const rx = onPlate ? pb.w / 2 + 14 : tw / 2 + 22
+    const ry = onPlate ? pb.h / 2 + 10 : 0.42 * vp + 11
+    // one loop and a bit around a squarish oval (a superellipse, so the corners of the figures stay inside), starting
+    // upper-left, with a slight wobble and a widening spiral (a pencil, not a compass)
+    const pts = [], a0 = Math.PI * 1.1, span = Math.PI * 2.14, n = 120
+    const se = v => Math.sign(v) * Math.pow(Math.abs(v), 0.7)
+    for (let q = 0; q <= n; q++) {
+      const u = q / n, a = a0 + span * u
+      const g = 1 + 0.025 * Math.sin(2 * a + 0.7 + k) + 0.05 * u
+      pts.push([cx + rx * g * se(Math.cos(a)), cy + ry * g * se(Math.sin(a)) - 3 * u])
+    }
+    let len = 0
+    for (let q = 1; q < pts.length; q++) len += Math.hypot(pts[q][0] - pts[q - 1][0], pts[q][1] - pts[q - 1][1])
+    const red = SIGN[i][p] < 0                                    // the cell is red (a loss)
+    const el = s('path', { d: 'M' + pts.map(x => x[0].toFixed(1) + ',' + x[1].toFixed(1)).join(' L'), fill: 'none',
+      stroke: red ? C.red : C.ink, 'stroke-width': 6, 'stroke-linecap': 'round', 'stroke-linejoin': 'round',
+      'stroke-dasharray': len.toFixed(1), 'stroke-dashoffset': len.toFixed(1), opacity: 0, 'data-deco': '' })
+    g.top.append(el)
+    return { ...m, el, len }
   })
 
   // ---- coin stacks: edge-on coins, height = money on one shared scale
@@ -412,7 +493,7 @@ export default function ledgerDuel(spec, ctx) {
     g.mid.append(sg)
     return { sg, slabs }
   })
-  function drawStack(p, hh) {
+  function drawStack(p, hh, t) {
     const n = hh < 0.5 ? 0 : Math.ceil(hh / SLAB - 1e-6)
     const sl = stacks[p].slabs
     for (let k = 0; k < sl.length; k++) {
@@ -422,6 +503,13 @@ export default function ledgerDuel(spec, ctx) {
       const top = k < n - 1 ? floorY - (k + 1) * SLAB : floorY - hh
       attr(sl[k], 'y', top.toFixed(1))
       attr(sl[k], 'height', (k === n - 1 ? Math.min(SLAB, hh) : SLAB).toFixed(1))
+      // sold: the coins turn into a grey brick of cash, bottom to top, as the chop lands
+      if (!lessIsBetter) {
+        const cash = t >= soldAt[p] + 0.03 * k
+        attr(sl[k], 'fill', cash ? CASH.fill : C.coin)
+        attr(sl[k], 'stroke', cash ? CASH.stroke : C.ink)
+        attr(sl[k], 'rx', String(cash ? 3 : SLAB / 2 - 0.5))
+      }
     }
   }
 
@@ -483,6 +571,14 @@ export default function ledgerDuel(spec, ctx) {
     const first = Math.min(...debris.filter(x => x.i === i).map(x => tossHit(x.t0, x.p0, x.v, { g: 3200, floor: floorY, r: x.r })))
     ctx.cue(first, 'tick', { gain: 0.5 })
   }
+  // a cash-out: the chop lands on the stack (small grey burst, a thud), the pill pops
+  for (const sl of sells) {
+    fxk.impact(sl.t, { x: PX[sl.p], y: floorY - hStack(sl.p, sl.t), shake: 4, r: 24, lines: 8, color: C.grey, cue: null })
+    ctx.cue(sl.t, 'thud', { gain: 0.5 })
+    if (sl.label) ctx.cue(sl.t + 0.06, 'pop', { gain: 0.45 })
+  }
+  // pencil marks: one swipe per mark time
+  for (const mt of new Set(marks.map(m => m.t))) ctx.cue(mt, 'swipe', { gain: 0.4 })
 
   // ================================================================== figures
   const showFig = lo.figure !== false
@@ -538,19 +634,27 @@ export default function ledgerDuel(spec, ctx) {
       addK(w, TW + 1.45, 'point', 0.3)
       ctx.cue(TW + 0.74, 'step', { gain: 0.55 })
     }
-    // the loser: the right-hand one turns his back on the ledger and slumps; the left-hand one droops in place
-    // (a forward slump would put his head on the ledger labels)
+    // the loser: the right-hand one turns his back on the ledger, the left-hand one stays facing it; both droop
+    // upright (a forward slump would put the left one's head on the ledger labels, and the right one's over the
+    // winner's tall stack)
     const away = l === 1
-    const glum = away ? 'slump' : PZ.glum
+    const glum = away ? PZ.glumBack : PZ.glum
     if (KIND[last][l] !== 'crash') addK(l, TW + 0.45, glum, 0.4)
     faceK[l].push({ t: TW + 0.4, v: away ? -1 : 1 })
     const vt = spec.verdict && spec.verdict.t
+    // a scripted beat for a person close to the verdict replaces his default verdict acting
+    const scripted = p => (lo.beats || []).some(b => b && b.t != null && b.act !== 'impact' && b.person === p && b.t > vt - 0.6 && b.t < vt + 1.6)
     if (vt != null && vt > TW + 1.8) {
-      addK(w, vt, 'celebrate', 0.2)
-      addK(w, vt + 1.1, 'point', 0.3)
-      addK(l, vt + 0.1, 'shrug', 0.25)
-      addK(l, vt + 1.0, glum, 0.4)
+      if (!scripted(w)) { addK(w, vt, 'celebrate', 0.2); addK(w, vt + 1.1, 'point', 0.3) }
+      if (!scripted(l)) { addK(l, vt + 0.1, 'shrug', 0.25); addK(l, vt + 1.0, glum, 0.4) }
     }
+  }
+  // cash-outs: a wind-up, a chop down onto his own stack (it turns to cash), a small squash, then he stands
+  for (const sl of sells) {
+    addK(sl.p, sl.t - 0.3, 'chopUp', 0.14, 'out')
+    addK(sl.p, sl.t - 0.06, PZ.stamp, 0.07, 'out')
+    squashes[sl.p].push({ t: sl.t, amt: 0.12 })
+    addK(sl.p, sl.t + 0.75, 'idle', 0.4)
   }
   // lookOpts.beats: extra acting for scripted moments
   for (const b of lo.beats || []) {
@@ -565,9 +669,9 @@ export default function ledgerDuel(spec, ctx) {
     }
     const pose = ACT[b.act] || (POSES[b.act] ? b.act : null)
     const p = b.person
-    if (!pose || !(p === 0 || p === 1)) continue
+    if (b.act === 'sell' || !pose || !(p === 0 || p === 1)) continue
     addK(p, b.t, pose, 0.25)
-    addK(p, b.t + (b.d ?? 1.4), p === loser && b.t > TW ? (loser === 1 ? 'slump' : PZ.glum) : 'idle', 0.4)
+    addK(p, b.t + (b.d ?? 1.4), p === loser && b.t > TW ? (loser === 1 ? PZ.glumBack : PZ.glum) : 'idle', 0.4)
   }
   const tracks = keys.map(k => poseTrack(k))
   const faces = faceK.map(k => track(k.map(x => ({ t: x.t, v: x.v, d: 0.12, e: 'inOut' }))))
@@ -612,7 +716,7 @@ export default function ledgerDuel(spec, ctx) {
       if (!on) { style(pl.el, { opacity: '0', display: 'none' }); continue }
       const pp = popIn(t, pl.t0, 0.24, pl.from)
       const out = 1 - prog(t, pl.t1, 0.1)
-      const sq = squashAt(t, pl.t0 + 0.12, 0.08)
+      const sq = squashAt(t, pl.t0 + 0.12, pl.sq)
       style(pl.el, {
         display: '',
         transform: `translate(${pl.box.x0.toFixed(1)}px,${(pl.box.y0 - 14 * (1 - out)).toFixed(1)}px) scale(${(pp.scale * sq.sx).toFixed(3)},${(pp.scale * sq.sy).toFixed(3)})`,
@@ -636,7 +740,8 @@ export default function ledgerDuel(spec, ctx) {
       for (let p = 0; p < 2; p++) {
         const plateVal = isPlateRow && p === winner
         const sq = squashAt(t, Ti, (plateVal ? 0.6 : 1) * squashAmt)
-        const sc = plateVal ? HLS : 1
+        let sc = plateVal ? HLS : 1
+        for (const m of rings) if (m.i === i && m.p === p) sc *= 1 + 0.1 * bump(t, m.t, 0.34)   // a marked cell pops
         row.vals[p].set({
           x: xCol[p], y: boxBottom(i, vp) - fy, sx: sc * sq.sx, sy: sc * sq.sy,
           opacity: t >= Ti - dropDur ? clamp((t - (Ti - dropDur)) / 0.03) : 0,
@@ -653,7 +758,12 @@ export default function ledgerDuel(spec, ctx) {
       }
       attr(shelves[i], 'opacity', String(+(1 - 0.55 * prog(t, Ti, 0.4)).toFixed(3)))
     }
-    for (let p = 0; p < 2; p++) drawStack(p, hStack(p, t))
+    for (let p = 0; p < 2; p++) drawStack(p, hStack(p, t), t)
+    for (const m of rings) {
+      const on = t >= m.t && t < m.end + 0.2
+      attr(m.el, 'opacity', on ? (1 - prog(t, m.end, 0.2)).toFixed(3) : '0')
+      attr(m.el, 'stroke-dashoffset', (m.len * (1 - E.out(prog(t, m.t, 0.28)))).toFixed(1))
+    }
     if (showFig) for (let p = 0; p < 2; p++) drawFig(p, t)
     for (const db of debris) {
       if (t < db.t0) { db.c.set({ opacity: 0 }); continue }

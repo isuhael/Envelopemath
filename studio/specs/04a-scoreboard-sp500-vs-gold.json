@@ -10,11 +10,11 @@
   "vo": [
     {
       "t": 0.0,
-      "d": 2.4,
-      "text": "26 years. Stocks should crush gold."
+      "d": 1.6,
+      "text": "Stocks should crush gold."
     },
     {
-      "t": 2.5,
+      "t": 1.76,
       "d": 5.4,
       "text": "By 2002: stocks ≈ −38%. Gold ≈ +21%."
     },
@@ -24,7 +24,7 @@
       "text": "2008: stocks crash again. Gold keeps climbing."
     },
     {
-      "t": 16.8,
+      "t": 16.5,
       "d": 4.3,
       "text": "2013: gold drops ≈ 28% in one year."
     },
@@ -34,7 +34,7 @@
       "text": "Then stocks run for years and close in."
     },
     {
-      "t": 26.7,
+      "t": 26.3,
       "d": 2.0,
       "text": "2021: still behind."
     },
@@ -51,12 +51,12 @@
     {
       "t": 39.3,
       "d": 3.1,
-      "text": "Gold doubled ≈ 4 times. Stocks, ≈ 3."
+      "text": "Gold doubled ≈ 4 times. Stocks, ≈ 3."
     }
   ],
   "verdict": {
     "t": 42.5,
-    "text": "Gold ended **≈ 2×** the S&P 500.\n≈ one extra doubling."
+    "text": "Gold ended **≈ 2×** the S&P 500.\nThat's ≈ one extra doubling."
   },
   "data": {
     "stake": "$10,000 each · Jan 2000",
@@ -344,14 +344,44 @@
       },
       {
         "t": 39.3,
-        "text": "≈ ×15.0 → ≈ 3.9 doublings · ≈ ×7.53 → ≈ 2.9"
+        "text": "Gold ≈ 3.9 doublings · S&P 500 ≈ 2.9"
       }
     ],
     "finalT": [
       31.6,
       36.4
     ],
-    "flagHold": 5.0
+    "flagHold": 3.0,
+    "tipLane": true,
+    "holdBack": {
+      "series": 1,
+      "t": [
+        34.4,
+        36.4
+      ]
+    },
+    "emColor": "yellow",
+    "rungs": {
+      "t": 39.3,
+      "items": [
+        [
+          20000,
+          "×2"
+        ],
+        [
+          40000,
+          "×4"
+        ],
+        [
+          80000,
+          "×8"
+        ],
+        [
+          160000,
+          "×16"
+        ]
+      ]
+    }
   },
   "sfx": [
     {

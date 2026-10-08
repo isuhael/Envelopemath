@@ -253,9 +253,8 @@ eb = {
     "data.rows[1].event": E("crash " + pct(SP_TR[2008], 0, signed=True)),
     "data.rows[3].event": E("back above " + money(B_STAKE)),
     "data.rows[7].event": E("dip " + pct(SP_TR[2022], 0, signed=True)),
-    "lookOpts.beats[0].label": E(pct(SP_TR[2008], 0, signed=True)),
-    "lookOpts.beats[1].label": E(pct(B_CASH_RATE * 100)),
-    "lookOpts.beats[2].label": E(pct(SP_TR[2022], 0, signed=True)),
+    # round-2 assembly: the rig's cash-out pill over Sam's column (lookOpts.beats[1], act "sell")
+    "lookOpts.beats[1].label": E("sold → cash at " + pct(B_CASH_RATE * 100)),
 }
 for i, y in enumerate(B_ROWS):
     if y == "Dec 2007":
