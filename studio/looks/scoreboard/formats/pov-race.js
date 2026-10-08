@@ -10,7 +10,10 @@
 //     (the same spot as chart-race), which dims further while a line or a tag passes through it. When the spend line
 //     starts tiny (under 5% of where it ends: one $7.99 bill), the axis opens at 2× what frame 1 shows and rescales up
 //     from there, so frame 1's dots sit mid-plot instead of on the floor of an empty grid.
-//   - purchases tick on the spend line: the item's icon drops onto the line as the race reaches it (gravity, squash)
+//   - the year clock rolls to y + 1 one frame after year y's Dec-31 close, so each close shows under its own year.
+//   - the scoreboard row, the footer and the stage sit 24 px lower than layoutFor's grid (air under the hook).
+//   - purchases tick on the spend line: the item's icon drops onto the line as the race reaches it (gravity, squash);
+//     one at the point where both lines start stands just left of it, so the own line never runs through it
 //     with a price tag ("$8.99  MAY 2014") that holds until the next purchase; the icons stay on the line as markers
 //     and the SPENT number bumps and flushes coral. Captions off: the tag is a hard cut in the label stack instead
 //     (HD Guy grammar: the label stack is the caption). Between purchases (and with none) the stack rests on the
@@ -34,6 +37,8 @@
 //   spendTag / ownTag   scoreboard labels (default: spend.label, and "in … stock" taken from own.label)
 //   footerSteps         [{ t, text }]: kit-wide: the footer rewrites to a working line at each t (spec.footer before)
 //   tags                false: no price tags on the chart (icons only)
+//   spendTip            false: no "$499 / SPENT" tag riding the spend line's right end (it shows only in stretches
+//                       where it is clear of the own line, its tip and the icons, scored at mount)
 //   gapFill             false: no green/coral fill between the lines
 //   yearClock           false: no big year in the plot corner
 //   stageBottom         y where the stage ends (default 1300 with captions, 1236 without)

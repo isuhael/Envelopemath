@@ -31,11 +31,23 @@
 // spend.item (an icon name in FORMATS) is not drawn in this look: the Spent column's red key line and the price
 // tags carry the purchase.
 //
-// lookOpts: loop (true) · formulaBar ([{ t, text }]) · formulaAt0 (0.7) · verdict ('band' | 'formula'; a verdict
-//           typed into the bar is set in Inter 800 and does not size the bar)
+// lookOpts: loop (true) · formulaBar ([{ t, text }]) · formulaAt0 (0.7; 1 = the whole first step on frame 1)
+//           · typeMax (0: a step types over its room; > 0: in at most that many seconds) · erase (0.16 s)
+//           · verdict ('band' | 'formula' | 'hero'; a verdict typed into the bar is set in Inter 800 and does not size
+//             the bar; 'hero' dims the chart at verdict.t and slams the verdict's **marked** words over it, ~150 px,
+//             with the rest of the verdict as one line under them)
+//           · cover ('filled' | 'clean': frame 1 shows the race row's cells empty and no start tag, so the hook's
+//             own number is the cover's only price; the stake's tag pops as the race starts; the loop clears back)
+//           · unit ({ label, per, perMonth?, final, holds: [x…], hold: 1.3 }): the answer row under the race row,
+//             the Owned value re-priced live in the hook's unit (÷ per a year; whole months ÷ perMonth under a year,
+//             1 dp to 10 years, then whole years): "?" on frame 1, a landing at each holds x (that year-end's exact
+//             figure held `hold` s on a yellow cell, labelled "End of <year>"), the final on `final`, where the
+//             selection springs
 //           · startLabel ('Start' when the start shares its year with the first year-end, else the year)
 //           · yearLabel ('Year') · frozen ('auto' | bool) · history ('auto' | 0-4) · letters ('auto' | bool)
 //           · gap (true: tint the gap between the lines)
+// Price tags: a parked tag whose leader would cross a line keeps its spot without the leader; every mid-race tag's
+// ring rings out as it pops, and tags leave in 0.12 s.
 import {
   h, s, setStyle, setText, setHTML, attr, clamp, lerp, prog, ease, C, G, M, S,
   formulaBar, fitFormula, lineChart, mk, mkLen, typedMk, typedCount, typeDur, wordCut, caretOn,

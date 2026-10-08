@@ -88,7 +88,7 @@ The 2008 dip plays under the hook line on purpose: it is a picture beat (the mut
 
 > Launch day 2007: you skip the $499 iPhone and buy Apple stock. 2012: about $2,200. You just hold. 2017: over 10 times. The phone's long gone. 2020: it passes $10,000. 2022 knocks off a quarter. 2025: about $37,000. About 74 times. It doubled about every 3 years.
 
-Every middle line now lands a number on a visible close (2012 at 6.96 s, 2017 at 12.51 s, each with a tick), so there is no 7-second stretch without a beat. The JSON glues "about $2,200", "about $37,000", "Apple stock", "just hold" and "long gone" with no-break spaces (`\u00a0`) so the Scoreboard captions never orphan a word or split "about" from its number.
+Every middle line now lands a number on a visible close (2012 at 6.96 s, 2017 at 12.51 s, each with a tick), so there is no 7-second stretch without a beat. The JSON glues "Apple stock", "about $2,200", "just hold", "over 10", "long gone" and "about $37,000" with no-break spaces (`\u00a0`) so the Scoreboard captions never orphan a word or split "about" from its number.
 
 ### The maths (every on-screen number)
 
@@ -154,63 +154,66 @@ What was your first iPhone, and what did you pay?
 **Look:** Live Sheet: a white sheet on black, the yellow `#FFD60A` banner, and the formula bar showing the working (`lookOpts.formulaBar`). The race is drawn in the sheet area: the own line green `#039855`, the spend line red `#D92D20`, and the price hikes as rings on the spend line with a dark price tag that pops as the race passes each one.
 **Platform title (YouTube):** "Your 2012-2025 Netflix Bills in Netflix Stock: How Many Years of Free Netflix?"
 **Hook pass 2 (2026-10-08): replaced.** The two judges averaged the old hook ("POV: You invested in Netflix / instead of paying Netflix, / ever since it was $7.99") at 6.0. Rewrite A, below, averaged 7.5 (7.5 and 7.5, both honest), 1.5 above it, so it is adopted under the round-2 rule (at least 1.0 above the current hook). Hook pass 1 had kept the old hook. The race, the data, the hike tags, raceT and the sfx are unchanged. Scores and reasons are in the Review log.
-**On-screen hook (header):** `**$19.99** Netflix, free for / how many years, if your / 2012-25 bills bought its stock?` (14 words, 3 lines, one $ figure).
-- The viewer's own current bill is the first token, in the banner's dark pill. Standard has cost $19.99 since March 2026.
-- It is the **unit of the answer**, not the money invested. The judges' objection to "$19.99" in hook pass 1 (option D) was that a viewer could read it as $19.99 a month invested; here it cannot.
-- The answer slot is visibly empty on frame 1: the formula bar types `≈ stock ÷ ($19.99 × 12) = ? years`.
-- The start year sits in the header ("2012-25"), and the start row, the tag "Jan 2012 $7.99" and the axis show where the bills begin.
+**Assembly fix pass (round 2 QA, 2026-10-08): the header re-set, the sheet carries the rest.** The QA judge scored the hook-pass-2 render 5.5: a 14-word word problem at ~46 px (three lines cap the banner there), broken mid-clause, $7.99 twice as big as the hook's $19.99 on the cover, and a payoff that never became the biggest thing on screen. The header is now the question alone, in two lines by sense at 64 px; the mechanism, the empty answer slot and the conversion are the sheet's own frame-1 cells.
 
-**Footer:** `Standard plan list price, 2012-25 · 12/31/25 value ÷ $19.99 a month`. It dates the race and states the conversion.
+**On-screen hook (header):** `**$19.99** Netflix, free / for how many years?` (7 words, 2 lines, one $ figure, 64 px).
+- The viewer's own current bill is the first token, in the banner's dark pill, and the largest figure on frame 1. Standard has cost $19.99 since March 2026.
+- It is the **unit of the answer**, not the money invested: the column labels right under it say what is invested ("Paid to Netflix" vs "Same bills in Netflix stock").
+- The answer slot is visibly empty on frame 1: the answer row reads **Years of free Netflix · ? years**, and the formula bar shows its whole formula, `= stock ÷ ($19.99 × 12)`, on one line.
+- The cover carries no other price: the race row (2012) waits with empty cells, and the stake's tag "Jan 2012 $7.99" pops only as the race starts (0.3-1.6 s).
+
+**Footer:** `Standard plan list price · 12/31/25 close` (one line). It dates the value; the ÷ $19.99 conversion is the formula bar's frame-1 formula, and the horizon is the race row's 2012 and the 2013-2025 axis.
 
 **Modelled on:**
 - H04 HD Guy "Cost in Units of Starbucks Lattes", footer "Tall Latte ☕ = $4.45": 9,858,084 (106.16x). A big sum re-priced in a unit the viewer pays, with that unit's price on frame 1.
 - H01 HD Guy "Cost in Units of RTX 5090": 30,617,461 (62.49x).
 - H64 Gage Heward "What $1 costs you by age": 1,150,974 (210x median). The viewer's own small number, answered as a span of time.
-- Hook bank §4.1 Rewrite B, "$1,000,000,000,000 ÷ 8.2 billion people = $___ each": an empty answer slot as the open loop (here "= ? years" in the bar).
+- Hook bank §4.1 Rewrite B, "$1,000,000,000,000 ÷ 8.2 billion people = $___ each": an empty answer slot as the open loop (here the answer row's "? years" on frame 1; until the assembly fix pass, "= ? years" in the formula bar).
 - H45 "POV: You invested in Monster instead of paying $3/day for a Monster Energy": 1.5M (140.6x). The same-brand irony is kept.
 
 **Hook rules it satisfies:**
-- **R1:** $19.99 is the header's first token. The start row ($7.99 / $7.99), the start tag and the bar's `($19.99 × 12)` are on frame 1 too.
-- **R2:** one $ figure in the header, and no result in the header, title or caption. The answer slot is empty.
+- **R1:** $19.99 is the header's first token and the biggest figure on frame 1; the bar's `($19.99 × 12)` repeats it. No other price is on the cover.
+- **R2:** one $ figure in the header, and no result in the header, title or caption. The answer slot ("? years") is empty.
 - **R3:** $19.99 is the bill Standard subscribers pay today, the strongest viewer-owned number in this format.
 - **R4:** $19.99, small and familiar.
-- **R5:** see the wrong belief below. The first bar step opens small: at the end of 2012, a whole year of bills in the stock ($107) covers only ≈ 5 months of today's Netflix.
-- **R6:** you ("your 2012-25 bills") + $19.99 + the 2012-25 horizon, all in the header.
+- **R5:** see the wrong belief below. The first landing opens small: at the end of 2012, a whole year of bills in the stock ($107) covers only ≈ 5 months of today's Netflix.
+- **R6:** $19.99 in the header; "you" in the first spoken words and caption ("Your Netflix, free"); the 2012 start in the race row and the 2013-2025 axis. (The header itself no longer carries "your 2012-25 bills": the price for a 64 px hook.)
 - **R7:** bill vs stock, the same brand twice.
-- **R8:** 14 words.
-- **R9:** one countable answer, counted in the bar at each beat: ≈ 5 months (2012), 2.4 years (2013), 38 (2020), 22 (the 2022 halving), then 74. The hike tags still count "Hike 1" to "Hike 7" as the race passes them.
-- **R10:** the race moves at 0.3 s. The 2012 row lands at 1.91 s, and the first payoff in the hook's own unit ("≈ 5 months") is typed by about 2.75 s.
+- **R8:** 7 words.
+- **R9:** one countable answer, counting live in the answer row from "?" through every year, and landing (held 1.3 s on a yellow cell, labelled "End of 2012" etc.) on the spoken year-ends: ≈ 5 months (2012), ≈ 38 years (2020), ≈ 22 years (the 2022 halving), then ≈ 74. The hike tags still count "Hike 1" to "Hike 7" as the race passes them.
+- **R10:** the race moves at 0.3 s and the answer cell counts from it; the first payoff in the hook's own unit, "End of 2012 ≈ 5 months", lands at 1.91 s and holds to 3.2 s.
 - **R11:** the header and the title ask; the caption has no number.
 - **R12:** "≈ 74 years of Netflix" is one lopsided, repeatable number.
 
 **Wrong belief it exploits (R5):** "Old streaming bills are just gone." Every 2012-2025 bill, put in Netflix stock, would now pay for ≈ 74 years of today's $19.99 Netflix. The flat-price assumption is stated on screen ("at $19.99 a month") and in the pinned comment.
 
-**What the judges still flag:** the header reads as a word problem (a conditional clause and the "2012-25" shorthand must be parsed in 1.5 s), it drops P6's "instead of paying", and two prices are in view at once ($19.99 in the banner, $7.99 in the start row). The 74 years holds the price flat after 8 hikes in 14 years, so expect "prices will rise" comments.
+**What the judges still flag:** it drops P6's "instead of paying" (the column labels say it instead). The 74 years holds the price flat after 8 hikes in 14 years, so expect "prices will rise" comments. (Fixed in the assembly pass: the word-problem header, and the two prices in view at once.)
 
 ### Beat sheet (chart clock: x 2012 → 2025.99 over t 0.3 → 23.0 s, ≈ 1.62 s per year)
 
 | t (s) | On screen | VO |
 |---|---|---|
-| 0.0 | Banner header with **$19.99** in the dark pill. The formula bar is mid-typing `≈ stock ÷ ($19.99 × 12)` and finishes `= ? years` by about 0.4 s: the answer slot, empty. Start row **$7.99 / $7.99**, tag "Jan 2012 $7.99", footer. Caption "YOUR $19.99 NETFLIX, FREE". | "Your $19.99 Netflix, free. For how long?" |
-| 0.3 | The race starts. At 1.5 s the live row reads ≈ $74 / $82. | |
-| 1.91 | End of 2012: paid $95.88, owned **$107**. | |
-| 1.93 | The bar erases and types `≈ $107 ÷ $19.99 ≈ 5 months` (done by about 2.75 s, readable until 3.55 s): the first payoff, in the hook's own unit. There are no history rows in this layout and the live row rolls on, so this step is the lasting record of 2012. Caption "FOR HOW LONG?". | |
-| 3.0 | End of 2013 at t 3.53: owned **$568** vs $191.76 paid. At 3.55 the bar types `≈ $568 ÷ $239.88 ≈ 2.4 years`. | "Since 2012, every bill buys Netflix stock." |
-| 4.08 | Tag "Hike 1 · May 2014 $8.99" (tick). | |
+| 0.0 | Banner header **$19.99** Netflix, free / for how many years? (64 px). Formula bar `= stock ÷ ($19.99 × 12)`, whole, one line. Race row "2012" with empty cells. Answer row **Years of free Netflix · ? years** on a yellow cell. Empty chart, footer. Caption "YOUR NETFLIX, FREE". | "Your Netflix, free. For how long?" (0.0-2.4) |
+| 0.3 | The race starts: the race row's cells snap in ($7.99 / $7.99) and count; the answer row counts from "< 1 month"; the stake's tag "Jan 2012 $7.99" pops (to 1.6 s). | |
+| 1.91 | End of 2012: paid $95.88, owned $107. The answer row **lands: "End of 2012 · ≈ 5 months"** (pop, yellow flash), held to 3.21. At 1.93 the bar shows `2012: $107 ÷ $19.99 ≈ 5 months` (typed in 0.3 s), which holds until 9.2. | ("For how long?" is being asked) |
+| 3.0 | End of 2013 at t 3.53: owned $568, ≈ 2.4 years (live). | "Since 2012, every bill buys Netflix stock." |
+| 4.08 | Tag "Hike 1 · May 2014 $8.99" (tick; its ring rings out). | |
 | 6.0 | Tag "Hike 2 · Oct 2015 $9.99" at t 6.38 (tick). | "Price hike? Your investment goes up too." |
-| 9.2 | Formula bar `≈ each year's bills ÷ that year's avg price`. "Hike 3 · Oct 2017 $10.99" (t 9.63) and "Hike 4 · Jan 2019 $12.99" (t 11.66). | "Each year's bills buy at that year's average price." |
-| 13.4 | "Hike 5 · Oct 2020 $13.99" (t 14.50). End of 2020: **$9,181** (t 14.89). At 14.91 the bar types `≈ $9,181 ÷ $239.88 ≈ 38 years`. | "2020: about 38 years of Netflix." |
-| 16.9 | "Hike 6 · Jan 2022 $15.49" (t 16.53). End of 2021 $10,410 (t 16.51, ≈ 43 years, not shown), then **$5,289** (thud, t 18.13). At 18.15 the bar types `≈ $5,289 ÷ $239.88 ≈ 22 years`. | "2022: it halves." |
-| 18.7 | End of 2023 $8,964 (t 19.75), end of 2024 $16,656 (t 21.38). "Hike 7 · Jan 2025 $17.99" (t 21.39). | "You keep paying. It comes back." |
-| 21.2 | Formula bar `≈ 188.8 shares × $93.76 ≈ $17,700`. Final at t 23.0: owned **≈ $17,700**, paid **$2,037.32 spent** (cash). | "About $2,037 in bills. About $17,700 in stock." |
-| 26.0 | Verdict: **≈ 74 years** of Netflix / at $19.99 a month. Formula bar `≈ $17,700 ÷ $239.88 ≈ 74 years`. | "At $19.99 a month: about 74 years of Netflix." |
-| 29.6-30.5 | Hold, then clear back to frame 1. | |
+| 9.2 | Bar `each year: bills ÷ avg price`. "Hike 3 · Oct 2017 $10.99" (t 9.63) and "Hike 4 · Jan 2019 $12.99" (t 11.66); the answer row passes ≈ 12, then ≈ 19 years. | "Each year's bills buy at that year's average price." |
+| 14.3 | "Hike 5 · Oct 2020 $13.99" (t 14.50; parked in the empty top-left with no leader, since any leader would cross the green line; its ring pulses). End of 2020 at t 14.89: **$9,181**; the answer row **lands "End of 2020 · ≈ 38 years"** (held to 16.19). The bar shows `2020: $9,181 ÷ $239.88 ≈ 38 yrs` from 14.91, complete by 15.3, as the VO says the 38. | "2020: about 38 years." (14.3-16.7) |
+| 16.5 | End of 2021 $10,410 (t 16.51, ≈ 43 years live); "Hike 6 · Jan 2022 $15.49" (t 16.53). Through 2022 the answer row falls from 43 toward 22; end of 2022 at t 18.13 (thud): **$5,289**, the answer row **lands "End of 2022 · ≈ 22 years"** (held to 19.43); bar `2022: $5,289 ÷ $239.88 ≈ 22 yrs` from 18.15. | "2022: it halves." (17.0-18.6) |
+| 18.7 | End of 2023 $8,964 (t 19.75, ≈ 37 years), end of 2024 $16,656 (t 21.38, ≈ 69 years). "Hike 7 · Jan 2025 $17.99" (t 21.39). | "You keep paying. It comes back." |
+| 21.2 | Bar `188.8 shares × $93.76 ≈ $17,700`. Final at t 23.0 (cash): **$2,037.32 spent** / **≈ $17,700**, and the answer row **≈ 74 years**; the rows wipe yellow and the selection springs onto the answer row (23.3). | "About $2,037 in bills. About $17,700 in stock." |
+| 26.0 | **The hero verdict:** the chart dims to white and **≈ 74 years** slams in over it at about 150 px with a yellow marker wiping under it, "of Netflix at $19.99 a month" beneath (hit). Bar `$17,706 ÷ $239.88 ≈ 74 years`. | "At $19.99 a month: about 74 years of Netflix." |
+| 30.0-30.5 | The hero fades, the chart rewinds and the rows clear back to frame 1 (empty race row, "? years"): the loop. | |
 
-The VO says each year-count when its year lands. The bar shows the working just after (2020: the VO's "38" at about 14.6 s, the 2020 row at 14.89, the bar's "≈ 38 years" by about 16.3 s).
+The VO says each year count while the answer row holds it: "about 38 years" is spoken around 14.9-15.7 s, inside the 2020 landing (14.89-16.19), with the bar's working complete by 15.3 s. Every bar step names its year, so a paused frame never sets the bar's year-end figure against a race row that has moved on.
 
-### Guide VO script (62 words)
+### Guide VO script (60 words)
 
-> Your $19.99 Netflix, free. For how long? Since 2012, every bill buys Netflix stock. Price hike? Your investment goes up too. Each year's bills buy at that year's average price. 2020: about 38 years of Netflix. 2022: it halves. You keep paying. It comes back. About $2,037 in bills. About $17,700 in stock. At $19.99 a month: about 74 years of Netflix.
+> Your Netflix, free. For how long? Since 2012, every bill buys Netflix stock. Price hike? Your investment goes up too. Each year's bills buy at that year's average price. 2020: about 38 years. 2022: it halves. You keep paying. It comes back. About $2,037 in bills. About $17,700 in stock. At $19.99 a month: about 74 years of Netflix.
+
+The first line drops the spoken "$19.99" so the frame-1 caption carries no price (the header shows it at 64 px). "2020: about 38 years." loses "of Netflix" so the Live Sheet caption keeps "about 38 years" in one chunk (this kit splits captions at any space, no-break spaces included, so gluing cannot do it).
 
 ### The maths
 
@@ -237,15 +240,16 @@ Plan price by month: a new price counts from the month it was announced. Each ye
 |---|---|
 | $2,037.32 spent / "about $2,037" | sum of the 168 monthly list prices |
 | ≈ $17,700 | 188.839 shares × $93.76 = $17,705.59, to 3 significant figures |
-| `≈ 188.8 shares × $93.76 ≈ $17,700` | 188.8 × 93.76 = 17,701.9 |
-| $19.99, `($19.99 × 12)` (header, bar, footer, VO, verdict) | today's Standard bill (from March 2026). It is the unit of the answer, not a race input: the race's 168 bills run Jan 2012-Dec 2025 and end on the $17.99 bill |
+| `188.8 shares × $93.76 ≈ $17,700` | 188.8 × 93.76 = 17,701.9 |
+| $19.99, `($19.99 × 12)` (header, bar, VO, verdict) | today's Standard bill (from March 2026). It is the unit of the answer, not a race input: the race's 168 bills run Jan 2012-Dec 2025 and end on the $17.99 bill |
 | $239.88 (bar) | 12 × $19.99, a year of today's Standard |
-| `≈ $107 ÷ $19.99 ≈ 5 months` (2012) | $106.98 ÷ 19.99 = 5.35 months (shown $107 ÷ 19.99 = 5.35) |
-| `≈ $568 ÷ $239.88 ≈ 2.4 years` (2013) | $568.35 ÷ 239.88 = 2.369 (shown $568 → 2.368) |
-| `≈ $9,181 ÷ $239.88 ≈ 38 years` / "about 38 years" (2020) | $9,181.15 ÷ 239.88 = 38.27 (shown $9,181 → 38.27) |
+| Answer row (live: "Years of free Netflix") | the Owned value ÷ $239.88 a year; under a year in whole months (÷ $19.99); 1-10 years to 1 decimal; then whole years. That is 2 significant figures, the bar's rule, so each landing equals the bar and the VO (the check replicates the cell's rule) |
+| `2012: $107 ÷ $19.99 ≈ 5 months` / "End of 2012 ≈ 5 months" | $106.98 ÷ 19.99 = 5.35 months (shown $107 ÷ 19.99 = 5.35) |
+| (answer row, live) 2013 | $568.35 ÷ 239.88 = 2.37 → ≈ 2.4 years as the race passes 2013 (no longer a bar step) |
+| `2020: $9,181 ÷ $239.88 ≈ 38 yrs` / "End of 2020 ≈ 38 years" / "about 38 years" | $9,181.15 ÷ 239.88 = 38.27 (shown $9,181 → 38.27) |
 | (not shown) 2021 peak | $10,409.99 ÷ 239.88 = 43.40 years |
-| `≈ $5,289 ÷ $239.88 ≈ 22 years` (2022) | $5,288.73 ÷ 239.88 = 22.05 (shown $5,289 → 22.05). 43.4 → 22.0 years is the spoken "it halves" (the stake fell 49.2%) |
-| `≈ $17,700 ÷ $239.88 ≈ 74 years` / "about 74 years" / verdict | $17,705.59 ÷ 239.88 = 73.81 (885.7 months); the bar's ≈ $17,700 ÷ 239.88 = 73.79. Both round to 74 |
+| `2022: $5,289 ÷ $239.88 ≈ 22 yrs` / "End of 2022 ≈ 22 years" | $5,288.73 ÷ 239.88 = 22.05 (shown $5,289 → 22.05). 43.4 → 22.0 years is the spoken "it halves" (the stake fell 49.2%) |
+| `$17,706 ÷ $239.88 ≈ 74 years` / the answer row's "≈ 74 years" (`lookOpts.unit.final`) / "about 74 years" / the hero verdict | $17,705.59 ÷ 239.88 = 73.81 (885.7 months); the bar's whole-dollar $17,706 gives 73.81 too. Both round to 74, and the live answer row reads ≈ 74 at the finish before it lands on the display string |
 | Year-count rounding | months to the whole month; years to 2 significant figures (2.4, 38, 22, 74). The check asserts that each step rounds the same from the exact stake and from the whole-dollar figure the bar shows |
 | (pinned only) ≈ 8.7× | 17,705.59 ÷ 2,037.32 = 8.69, the stake against the bills (the old verdict) |
 | "Hike 1" … "Hike 7" | the 7 Standard-plan price changes after the $7.99 start, to 2025 (the 8th, to $19.99 in March 2026, is after the race) |
@@ -284,7 +288,7 @@ Which plan are you on?
 
 **Per-platform notes:**
 - **YouTube:** the question title, with no CTA card.
-- **Instagram Reels:** the cover is frame 1 (the $19.99 question and the empty "= ? years"). The sheet with the formula bar makes a save-worthy final frame, so hold it for 1+ s before the loop. Captions are Inter ExtraBold uppercase with the keyword in yellow (look spec). The post caption is the numberless line above.
+- **Instagram Reels:** the cover is frame 1 (the 64 px $19.99 question and the empty "? years" answer cell). The sheet with the formula bar makes a save-worthy final frame, so hold it for 1+ s before the loop. Captions are Inter ExtraBold uppercase with the keyword in yellow (look spec). The post caption is the numberless line above.
 - **TikTok:** the caption above (no number) and `#netflix #usa #investment #stocks`. The pinned comment asks "Which plan are you on?", so viewers on Premium or the ad tier can redo the division with their own bill.
 - **All:** "Netflix" in text only, no N logo. The spend icon is the kit's generic `ticket`.
 - **Kit request (Live Sheet):** pre-place the 7 hike rings on the timeline as empty markers at frame 1 and fill each as its tag pops, so the count ("Hike 3 of 7") is visible before it happens (R9). The spec works without it.
@@ -632,3 +636,39 @@ No number, label or spoken word changed. Re-run of `python3 teasers/v2/checks/06
 - **06b, live row.** The row number now sits on the values' line, which is lifted to make room for "spent" at the landing.
 - **Verified in the stills and the MP4s:** every figure on screen matches the maths tables above. 06a: $499 / $499 at 0.0 s, $809 (1.40 s), the coral dip under $499, $10,137 as it passes $10,000 (14.8 s), ≈ $37,000, `$499 × 74.3 ≈ $37,000`, ≈ 74× / ≈ 3 yrs. 06b: $7.99 / $7.99, ≈ 5 months, 2.4 / 38 / 22 / 74 years, `≈ 188.8 shares × $93.76 ≈ $17,700`, $2,037.32 spent, ≈ $17,700, the 7 hike tags. Live counters between year-ends are interpolated (e.g. $349 at 2.51 s, against $348.41 at the 2008 close).
 - **Renders:** `studio/out/06a-scoreboard-first-iphone-apple.mp4` (26.5 s) and `studio/out/06b-live-sheet-netflix-bill.mp4` (30.5 s), 1080×1920, 30 fps, with SFX. Frames pulled from each MP4 at 3 times match the stills.
+
+### Assembly fix pass (round 2 QA, 2026-10-08): 06a and 06b
+
+The QA judge scored 06a 7/10 and 06b 5.5/10 (lint clean, every number right). Every must and should, and the cheap nits, are applied below. Files: the two specs, `studio/looks/scoreboard/formats/pov-race.js`, `studio/looks/live-sheet/formats/pov-race.js`, this write-up and `checks/06-pov-race.py`. No kit `lib.js`, `theme.js`, `kit.js`, `style.css` or README was touched.
+
+**06a (Scoreboard)**
+
+| Sev. | QA issue | What I did |
+|---|---|---|
+| must | The year clock rolled into y+1 over the last ~0.22 yr of year y, so $809 showed "2008", the $349 crash "2009" and the 2022 bottom "2023"; often caught mid-roll ("201/"). | `yearV` now rolls one frame after each Dec-31 close (x = y + 0.992), in ≤ 0.03 yr (one frame here, never more than 0.1 s), with the 2025 clamp kept. Stills: 1.40 s reads 2007, 2.51 s 2008, 18.07 s 2022, and the $10,000 crossing (14.78 s, x 2020.03) reads 2020. |
+| should | Flat spoken hook; 6.0-13.6 s with no number. | vo[0] "Launch day 2007: you skip the $499 iPhone and buy Apple stock." (0.0-5.8, replacing two lines); "2012: about $2,200. You just hold." (6.0-9.6, the 2012 close at 6.96) and "2017: over 10 times. The phone's long gone." (9.8-13.2, the 2017 close at 12.51, 10.83×), each with a tick. The check asserts both numbers. |
+| should | The white $499 line is lost in the axis after the rescale; "spent" never on screen; the phone icon overlaps the green line's start. | A "$499 / SPENT" tag (Anton number over a coral word, from `spend.final`) rides the spend line's right end whenever it has clear room: its stints are scored at mount (no own-line stroke within 7 px, no tip, no icon), here 10.6-14.7 s and 20.0 s to the end, bumping with the finish. A purchase where both lines start now stands just left of that point (icon 42 px), so the green line never runs through it; y-axis labels step aside only under its actual ink. |
+| should | The "$499 IPHONE 4GB" tag floats detached and competes with the first payoff. | Dropped (`lookOpts.tags: false`): the header, both counters and the board's phone glyph already say $499 / iPhone. |
+| should | The top block is cramped (header ~20 px over the counter labels). | The scoreboard row, footer and stage start 24 px lower (the plot gives up 24 px). |
+| nit | The footer step `$499 × 74.3 ≈ $37,000` repeats the counter and the verdict. | `≈ 136.7 shares × $271.12 (12/31/25 close)`: the working not shown elsewhere. The check asserts 136.7 × $271.12 rounds to the ≈ $37,000 counter. |
+| nit | The plot squeezes 0.3 s before the verdict, leaving an empty band. | vo[5] "2025: about $37,000." runs to 22.0 s, so its caption covers the squeeze. |
+| nit | The beat sheet had drifted (header "replaced", "$499 spent" tip). | Beat sheet rewritten from the render (above). |
+
+**06b (Live Sheet)**
+
+| Sev. | QA issue | What I did |
+|---|---|---|
+| must | "≈ 74 years" arrived as a ~56 px card in the caption band, never the biggest thing on screen. | New `lookOpts.verdict: 'hero'`: at 26.0 s the chart dims to white and **≈ 74 years** slams in over it at about 150 px, a yellow marker wiping under it, "of Netflix at $19.99 a month" beneath (hit). And the larger fix too: a new **answer row** (`lookOpts.unit`) under the race row, "Years of free Netflix", shows "? years" on frame 1 and then counts the stake live in the hook's unit all race long (months under a year, then years), ending on `unit.final` "≈ 74 years" with the selection on it. |
+| must | The year counts never landed (grey mono, ≤ 0.8 s complete, typed after the VO said them, quoting dollars the live row had passed). | The answer row **lands** at each spoken year-end (`unit.holds`: 2012, 2020, 2022): it holds that year-end's exact figure for 1.3 s on a yellow cell labelled "End of 2012/2020/2022", with a pop, then catches up. The bar steps now type in ≤ 0.3 s (`typeMax`, `erase` 0.1), name their year (`2020: $9,181 ÷ $239.88 ≈ 38 yrs`) and hold until the next step; "≈ 5 months" holds 1.9-3.2 s in the answer row and until 9.2 s in the bar. vo[4] moved to 14.3 s so "38" is spoken inside the 2020 landing, after the bar has completed it. The check asserts the cell's rounding at each landing equals the bar and the VO, that each hold sits inside its VO line, and that the live value at the finish already reads ≈ 74. |
+| should | Frame 1 lacked "= ? years" and the bar wrapped. | `formulaAt0: 1` now really shows the whole first step (the kit's word cut stopped at the last space, so the format treats 1 as "all"); every bar step fits one line at 40 px; the open slot is the answer row's "? years". |
+| should | $7.99 / $7.99 bigger than the hook's $19.99; six prices on the cover. | `cover: 'clean'`: the race row (labelled 2012) waits with empty cells and the stake's tag pops only at 0.3 s. vo[0] is "Your Netflix, free. For how long?", so the caption carries no price. The footer no longer repeats $19.99. The cover's only price is $19.99, in the 64 px banner (and the bar's formula). |
+| should | 46 px, 14-word header broken mid-clause. | `**$19.99** Netflix, free / for how many years?`: 7 words, two lines by sense, 64 px. The mechanism and horizon are on frame 1 in the sheet (labels, race row, axis). |
+| should | Hike tags faded into grey ghosts; leaders crossed the green line. | Tags exit in 0.12 s (was 0.25). Park spots now span the plot's full height, and a parked tag whose leader would cross a line keeps its spot but drops the leader; the tag's ring rings out as it pops (Hikes 5-7 here). |
+| should | A caption chunk ended on "2020: ABOUT". | This kit's caption chunker splits at any whitespace (no-break spaces too), so the line is now "2020: about 38 years.", one chunk. It runs to 16.7 s, past the bar's completion. |
+| nit | Double "≈" (badge plus a leading ≈ on every step). | No bar step starts with "≈"; the hero has no chip. |
+| nit | Loop rewind: the row reset to $7.99 / $7.99 while the chart still showed the spike. | The rewind clears the race row to empty cells and the answer row to "? years" (the clean cover). |
+
+**Checks.** `checks/06-pov-race.py`: **378 checks, 0 failed** (was 365). New: 06a's 2012 ≈ $2,200 and 2017 10-11× claims, the new footer step's product, the new VO numbers and sync beats, two new ticks; 06b's new header, footer, bar steps, `startLabel`, `unit.final`, `unit.per`/`perMonth`/`holds`, the answer row's rounding at each landing and at the finish, and each landing inside its VO line. The 2013 bar step left with its string. `node src/cli.mjs check`: 06a and 06b 0 errors, 0 warnings; the kits' pov-race samples and stress specs (2 Scoreboard, 4 Live Sheet) also 0 errors, 0 warnings.
+
+**Not changed:** the data (every chart point, final, purchase and hike tag), raceT, hold and durations; every new on-screen or spoken figure is derived in the check. `teasers/v2/teasers.json` still carries 06b's hook-pass-2 header and the 365-check count; it is outside this pass's files.
+

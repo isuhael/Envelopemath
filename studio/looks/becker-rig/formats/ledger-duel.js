@@ -69,9 +69,10 @@ export const css = `
 .ld-key { position: absolute; font: 800 40px/42px ${F.head}; letter-spacing: .07em; text-transform: uppercase; color: ${C.grey}; white-space: nowrap; }
 .ld-label { font-family: ${F.head}; font-weight: 800; letter-spacing: -0.02em; }
 .ld-val { font-family: ${F.head}; font-weight: 900; letter-spacing: -0.03em; }
-.ld-plate { position: absolute; left: 0; top: 0; background: ${C.coin}; border: 6px solid ${C.ink}; border-radius: 18px; transform-origin: 100% 50%; }
+.ld-plate { position: absolute; left: 0; top: 0; background: ${C.coin}; border: 6px solid ${C.ink}; border-radius: 18px; transform-origin: 50% 50%; }
 .ld-pill { position: absolute; left: 0; top: 0; box-sizing: border-box; padding: 0 20px; border-radius: 16px; border: 5px solid; background: ${C.white};
   font-family: ${F.head}; font-weight: 800; letter-spacing: -0.01em; white-space: nowrap; transform-origin: 50% 100%; }
+.ld-caret { position: absolute; top: 100%; margin-top: -5px; width: 30px; height: 26px; overflow: visible; }
 .ld-pill em { color: inherit; text-decoration: underline; text-decoration-thickness: 4px; text-underline-offset: 6px; }
 .ld-pill u.mark2 { color: inherit; }
 `
@@ -107,8 +108,10 @@ const ACT = { cheer: 'celebrate', peek: PZ.look, look: PZ.look }
 
 const EVENT_PAUSE = 1.2       // default pacing: extra pause after an event row (when rows carry no "t")
 const AIR = 0.42              // crash: time in the air before he lands on what is left
-const SLAB = 15               // coin thickness in a stack (px)
+const SLAB = 15               // coin thickness in a stack (px); a stack is always whole coins (thickness 13-17 px)
 const CASH = { fill: '#D9DEE5', stroke: C.grey }   // a sold stack: a grey brick of cash (between C.lineSoft and C.line)
+const PILL_HOLD = 1.6         // an event / cash-out pill holds at most this long (s), then the slot is clear again
+const DEBRIS_HOLD = 1.25      // lost coins lie on the floor this long after the crash, then go (s)
 
 export default function ledgerDuel(spec, ctx) {
   const d = spec.data || {}
@@ -183,13 +186,18 @@ export default function ledgerDuel(spec, ctx) {
   const parts = chromeParts(spec, ctx)
   const fixed = h('div', { class: 'ld-fixed' })
   const FIGK = lo.figureScale ?? 0.8
-  const PW = 60, PG = 30, PL = 42                       // (the left figure's pencil stays >= 24 px inside the frame)
-  const PX = [PL + PW / 2, PL + PW + PG + PW / 2]       // stack centres (decoration may sit left of x 60)
-  const X0 = PL + 2 * PW + PG + 30                      // left edge of the ledger
-  const XR = 922                                        // right edge of the last column (x <= 940 below y 820)
+  // the rig: two stacks PW wide whose centres stand SPACING apart (the figures on top never tangle), the left
+  // figure kept >= EDGE px inside the frame; a sold stack is a cash brick BRICK_W wide. The ledger starts 24 px
+  // right of the right-hand stack.
+  const PW = 76, SPACING = 132, EDGE = 40, BRICK_W = 84
+  const PX = [EDGE + 44, EDGE + 44 + SPACING]           // stack centres: 84, 216 (decoration may sit left of x 60)
+  const X0 = PX[1] + Math.max(PW, BRICK_W) / 2 + 22     // left edge of the ledger (the labels, left-aligned)
+  const XR = 938                                        // right edge of the last column (x <= 940 below y 820)
   const floorY = L.floorY
   const GAP = 13                                        // text baseline sits this far above its shelf
-  const HLS = 1.06, PLATE = [14, 8]
+  // the winner's last value is the climax: 1.3x the other cells, on a gold plate (it may grow into the gap under
+  // the column heads; the fitter reserves its height)
+  const HLS = 1.3, PLATE = [14, 8]
   const fnt = (w, px) => `${w} ${px}px ${F.head}`
   const wVal = (str, px) => measure(str, fnt(900, px), { letterSpacing: '-0.03em' })
   const wLab = (str, px) => measure(str, fnt(800, px), { letterSpacing: '-0.02em' })
@@ -224,16 +232,19 @@ export default function ledgerDuel(spec, ctx) {
   const legLines = legEls.map(el => Math.round(el.offsetHeight / 46))
   const legH = legEls.reduce((a, el) => a + el.offsetHeight, 0) + 6
 
+  // greedy wrap; a "\n" in the text is a forced break (a plan can set its own two balanced lines)
   function wrap(text, font, ls, maxW) {
-    const words = String(text).split(/\s+/).filter(Boolean)
     const lines = []
-    let cur = ''
-    for (const w of words) {
-      const next = cur ? cur + ' ' + w : w
-      if (!cur || mW(next, font, ls) <= maxW + 0.5) cur = next
-      else { lines.push(cur); cur = w }
+    for (const seg of String(text).split('\n')) {
+      const words = seg.split(/\s+/).filter(Boolean)
+      let cur = ''
+      for (const w of words) {
+        const next = cur ? cur + ' ' + w : w
+        if (!cur || mW(next, font, ls) <= maxW + 0.5) cur = next
+        else { lines.push(cur); cur = w }
+      }
+      if (cur) lines.push(cur)
     }
-    if (cur) lines.push(cur)
     const ws = lines.map(l => mW(l, font, ls))
     return { lines, w: Math.max(0, ...ws), over: ws.some(x => x > maxW + 0.5) }
   }
@@ -243,27 +254,38 @@ export default function ledgerDuel(spec, ctx) {
   // one candidate layout: value size vp + config { st: stake line, hr: headroom for a last-row event, pl: plan lines }
   function tryLayout(vp, cf) {
     const yp = Math.min(vp, clamp(Math.round(vp * 0.8), 40, 52))   // vp < 40 only as the last resort (warns)
-    const yW = Math.max(...rows.map(r => wLab(String(r.label ?? ''), yp)), keyLabel ? mW(keyLabel.toUpperCase(), fnt(800, 40), '.07em') : 0)
-    const vW = [0, 1].map(p => Math.max(...rows.map((r, i) => {
-      const w = wVal(r.values[p], vp)
-      return i === last && p === winner && plateOn ? w * HLS + PLATE[0] : w
-    })))
-    const G = 32
-    const need = yW + G + vW[0] + G + vW[1]
-    if (X0 + need > XR) return null
-    const slack = XR - X0 - need
-    const xYear = X0 + yW, xB = XR
-    // where the A column ends inside the slack: the split that wraps the heads into the fewest lines
+    // labels are left-aligned at X0, so a short label leaves its row room (the climax plate uses it)
+    const labW = rows.map(r => wLab(String(r.label ?? ''), yp))
+    const yW = Math.max(...labW, keyLabel ? mW(keyLabel.toUpperCase(), fnt(800, 40), '.07em') : 0)
+    const tw = rows.map(r => [0, 1].map(p => wVal(r.values[p], vp)))
+    const isPlate = (i, p) => i === last && p === winner && plateOn
+    // how far a cell reaches left / right of its column's right edge (a plate: its scaled text + padding)
+    const reachL = (i, p) => (isPlate(i, p) ? tw[i][p] * HLS + PLATE[0] : tw[i][p])
+    const reachR = (i, p) => (isPlate(i, p) ? PLATE[0] : 0)
+    const G = 32, GP = 22                                 // gap between texts; between a label and the plate
+    const xB = XR
+    // A's right edge xA: every row's A cell clears its label, and B's cell clears A's
+    let aLo = -Infinity, aHi = Infinity
+    for (let i = 0; i < N; i++) {
+      aLo = Math.max(aLo, X0 + labW[i] + (isPlate(i, 0) ? GP : G) + reachL(i, 0))
+      aHi = Math.min(aHi, xB - reachL(i, 1) - G - reachR(i, 0))
+    }
+    if (aLo > aHi + 0.01) return null
+    const xYear = X0 + yW                                 // the label column's right edge
+    const vW = [0, 1].map(p => Math.max(...rows.map((_, i) => reachL(i, p))))
+    // the split that wraps the heads into the fewest lines
     let best = null
     // Each column head is "● Name" with the plan under it in grey (no separate legend: every name appears once).
-    // A's head may reach left over the label column to the margin; a name is never dropped (48 -> 40 px, else on
-    // two lines); a plan wraps to as many lines as the config allows at cf.pp px (40, else down to 34).
+    // A head stays over the ledger (it reaches left over the label column, to X0 - 4, and only past it, over the
+    // rig, at a cost: it then caps the stacks); a name is never dropped (48 -> 40 px, else on two lines); a plan
+    // wraps to as many lines as the config allows at cf.pp px (40, else down to 34), "\n" forcing a break.
     // (the split between the two heads may move left over A's values, up to 3/4 of their width: B's head then
     // right-aligns over B's column and A's head ends a little left of its column's edge)
-    for (const f of [0.5, 0.35, 0.65, 0.2, 0.8, 0, 1]) for (const sh of [0, 0.25, 0.5, 0.75]) {
-      const xA = xYear + G + vW[0] + slack * f
-      const aR = xA - sh * vW[0]
-      const headW = [aR - (keyLabel ? xYear + 24 : 62), xB - aR - 26]
+    const xAs = aHi - aLo < 1 ? [aLo] : [0, 0.25, 0.5, 0.75, 1].map(f => aLo + (aHi - aLo) * f)
+    for (const xA of xAs) for (const sh of [0, 0.1, 0.2, 0.3, 0.45, 0.6, 0.75]) for (const far of [false, true]) {
+      const aR = xA - sh * tw.reduce((m, r) => Math.min(m, r[0]), Infinity)
+      const leftLim = keyLabel ? xYear + 24 : far ? 62 : X0 - 4
+      const headW = [aR - leftLim, xB - aR - 24]
       // with the legend on screen the heads are plain names (the legend has the dots); a head too narrow for
       // "● Name" drops its dot (the name keeps its colour), then wraps the name; it never drops the name
       const names = [0, 1].map(p => {
@@ -279,8 +301,11 @@ export default function ledgerDuel(spec, ctx) {
       if (names.some((n, p) => n.w > headW[p] + 0.5) || plans.some(x => x.over)) continue
       const nl = Math.max(...plans.map(x => x.lines.length)), nn = Math.max(...names.map(n => n.lines.length))
       const dots = names.filter(n => !n.noDot).length
-      const cost = 10 * (nl + nn) - 2 * dots + 3 * sh
-      if (!best || cost < best.cost) best = { xA, aR, names, plans, nl, nn, headW, dots, cost }
+      // A's head reaching left past the ledger (over the rig) costs a little, so it only does when it saves a line
+      const overRig = aR - Math.max(names[0].w, plans[0].w) < X0 - 4.5
+      if (far && !overRig) continue                       // (the same layout as the near pass)
+      const cost = 10 * (nl + nn) - 2 * dots + 3 * sh + (overRig ? 6 : 0)
+      if (!best || cost < best.cost - 1e-9) best = { xA, aR, names, plans, nl, nn, headW, dots, cost }
     }
     if (!best || best.nl > cf.pl) return null
     const nameLH = Math.max(...best.names.map(n => n.px)) + 4
@@ -352,7 +377,7 @@ export default function ledgerDuel(spec, ctx) {
     const el = h('div', { class: 'ld-key' }, keyLabel)
     fixed.append(el)
     heads.push(el)
-    style(el, { top: (headTop + lay.headH - 46) + 'px', left: (xYear - el.offsetWidth).toFixed(1) + 'px' })
+    style(el, { top: (headTop + lay.headH - 46) + 'px', left: X0 + 'px' })
   }
 
   // shelves (dotted, like the flagship's rungs)
@@ -366,7 +391,7 @@ export default function ledgerDuel(spec, ctx) {
   let plate = null
   const R = rows.map((r, i) => {
     const row = {
-      label: new NumObj(world.html, { cls: 'ld-label', text: String(r.label ?? ''), ax: 1, ay: 1, style: { fontSize: yp + 'px' } }),
+      label: new NumObj(world.html, { cls: 'ld-label', text: String(r.label ?? ''), ax: 0, ay: 1, style: { fontSize: yp + 'px' } }),
       vals: [0, 1].map(p => {
         if (i === last && p === winner && plateOn) { plate = h('div', { class: 'ld-plate' }); world.html.append(plate) }
         return new NumObj(world.html, { cls: 'ld-val', text: r.values[p], ax: 1, ay: 1, style: { fontSize: vp + 'px' } })
@@ -381,62 +406,83 @@ export default function ledgerDuel(spec, ctx) {
   })()
   if (plate) style(plate, { width: pb.w.toFixed(0) + 'px', height: pb.h.toFixed(0) + 'px' })
 
-  // event pills: right above their row, in the slot the next row will land in; gone before it lands
+  // event pills: right above their row, in the slot the next row will land in, with a caret pointing down into
+  // the row's cells (so the pill reads as that row's note, not the next row's). While a pill is up, the dim label
+  // of the slot it sits in (and any other label it covers) fades out completely, so the eye never pairs the pill
+  // with the next year ("2025 · dip"). A pill holds PILL_HOLD s at most (lookOpts.pillHold), and is gone before
+  // the next row lands.
+  const pillHold = Number.isFinite(+lo.pillHold) && +lo.pillHold > 0.3 ? +lo.pillHold : PILL_HOLD
   const pills = []
-  // the future labels a pill box actually covers (they dim while it is up)
+  const cellCx = (i, p) => (i === last && p === winner && plateOn ? pb.cx : xCol[p] - wVal(rows[i].values[p], vp) / 2)
+  // the labels a pill takes over: its own slot's (always) and any other future label its box covers
   const labelsUnder = (i, box) => {
     const out = []
     for (let j = i + 1; j < N; j++) {
-      const ly0 = boxBottom(j, yp) - yp, ly1 = boxBottom(j, yp)
-      const lx0 = xYear - wLab(String(rows[j].label ?? ''), yp)
-      if (ly1 > box.y0 - 2 && ly0 < box.y1 + 2 && box.x0 < xYear + 4 && box.x1 > lx0 - 4) out.push(j)
+      const ly0 = boxBottom(j, yp) - 0.86 * yp, ly1 = boxBottom(j, yp)
+      const lx0 = X0, lx1 = X0 + wLab(String(rows[j].label ?? ''), yp)
+      const vOver = Math.min(ly1, box.y1) - Math.max(ly0, box.y0)
+      if (j === i + 1 || (vOver > 4 && box.x0 < lx1 + 4 && box.x1 > lx0 - 4)) out.push(j)
     }
     return out
   }
+  // a pill element (tone colours) with its caret; px shrinks (42 -> 36) until it fits maxW
+  function pillEl(html, { color, border, bg, maxW }) {
+    const el = h('div', { class: 'ld-pill' })
+    el.innerHTML = html
+    world.html.append(el)
+    let px = pillPx
+    style(el, { fontSize: px + 'px', lineHeight: '50px', color, borderColor: border, background: bg })
+    while (px > 36 && el.offsetWidth > maxW) { px -= 2; style(el, { fontSize: px + 'px' }) }
+    // caret: the pill's fill over its bottom border, two strokes down to a point 10 px under the pill
+    const caret = s('svg', { class: 'ld-caret', viewBox: '0 0 30 26', 'data-deco': '' })
+    caret.append(
+      s('path', { d: 'M1,0 L15,23 L29,0 Z', fill: bg, stroke: 'none' }),
+      s('path', { d: 'M3.5,7.5 L15,21.5 L26.5,7.5', fill: 'none', stroke: border, 'stroke-width': 5, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }),
+    )
+    el.append(caret)
+    return { el, px, caret }
+  }
+  // place the caret over x (stage px) inside a pill whose box starts at x0
+  const aimCaret = (pl, x) => style(pl.caret, { left: (clamp(x - pl.box.x0, 30, pl.w - 30) - 15 - 5).toFixed(1) + 'px' })
   rows.forEach((r, i) => {
     if (!r.event) return
     const tn = r.tone && TONE_C[r.tone] ? r.tone : 'neutral'
-    const el = h('div', { class: 'ld-pill' })
-    el.innerHTML = markup(String(r.event))
-    world.html.append(el)
-    let px = pillPx
-    const maxW = XR - X0
-    style(el, { fontSize: px + 'px', lineHeight: '50px', color: TONE_C[tn], borderColor: tn === 'goal' ? C.ink : TONE_C[tn], background: tn === 'goal' ? C.coin : C.white })
-    while (px > 36 && el.offsetWidth > maxW) { px -= 2; style(el, { fontSize: px + 'px' }) }
+    const bg = tn === 'goal' ? C.coin : C.white
+    const { el, px, caret } = pillEl(markup(String(r.event)), { color: TONE_C[tn], border: tn === 'goal' ? C.ink : TONE_C[tn], bg, maxW: XR - X0 })
     const w = el.offsetWidth, ph = el.offsetHeight
     const bottom = rowTop(i) - 8
     // the last row's pill stays for good when the layout kept headroom for it; otherwise it sits over the
     // column heads (they dim) for a couple of seconds
     const overHeads = i === last && !lay.cf.hr
-    // centred over the value columns (clear of the labels) when it fits there, else over the whole ledger
-    // (a pill over the column heads keeps the whole-ledger centre)
-    const lo0 = !overHeads && w <= XR - (xYear + 16) ? xYear + 16 : X0
-    const cx = Math.min(XR - w / 2, Math.max(lo0 + w / 2, (lo0 + XR) / 2))
+    // centred over the cells that changed in this row (the caret points at them), kept inside the ledger
+    const moved = [0, 1].filter(p => KIND[i][p] !== 'flat')
+    const aim = moved.length === 1 ? cellCx(i, moved[0]) : (cellCx(i, 0) + cellCx(i, 1)) / 2
+    const cx = overHeads ? (X0 + XR) / 2 : Math.min(XR - w / 2, Math.max(X0 + w / 2, aim))
     const box = { x0: cx - w / 2, x1: cx + w / 2, y0: bottom - ph, y1: bottom }
     const t0 = times[i] + 0.06
-    let t1 = i < last ? Math.max(t0 + 0.3, nextT(i) - 0.32) : overHeads ? t0 + 2.4 : Infinity
+    let t1 = i < last ? Math.max(t0 + 0.3, Math.min(nextT(i) - 0.32, t0 + pillHold)) : overHeads ? t0 + 2.4 : Infinity
     // a cash-out in the same slot closes this pill first
     for (const sl of sells) if (sl.row === i && sl.t > t0 && sl.t < t1) t1 = Math.max(t0 + 0.3, sl.t - 0.12)
     // ... and so does a pencil mark on this row (one focus at a time; the ring needs the room above the row)
     for (const m of marks) if (m.i === i && m.t > t0 && m.t < t1) t1 = Math.max(t0 + 0.3, m.t - 0.05)
-    pills.push({ i, el, box, w, ph, t0, t1, under: labelsUnder(i, box), overHeads, tone: tn, from: Math.max(0.86, 41 / px), sq: clamp(1 - 41.5 / px, 0, 0.08) })
+    const pl = { i, el, caret, box, w, ph, t0, t1, under: labelsUnder(i, box), overHeads, tone: tn, from: Math.max(0.86, 41 / px), sq: clamp(1 - 41.5 / px, 0, 0.08) }
+    aimCaret(pl, aim)
+    pills.push(pl)
   })
-  // cash-out pills: right-aligned over the seller's column, in the slot above the latest landed row
+  // cash-out pills: right-aligned over the seller's column, in the slot above the latest landed row, the caret on
+  // his cell
   for (const sl of sells) {
     if (!sl.label) continue
-    const el = h('div', { class: 'ld-pill' })
-    el.innerHTML = markup(sl.label)
-    world.html.append(el)
-    let px = pillPx
-    style(el, { fontSize: px + 'px', lineHeight: '50px', color: C.grey, borderColor: C.grey, background: C.white })
-    while (px > 36 && el.offsetWidth > XR - X0) { px -= 2; style(el, { fontSize: px + 'px' }) }
+    const { el, px, caret } = pillEl(markup(sl.label), { color: C.grey, border: C.grey, bg: C.white, maxW: XR - X0 })
     const w = el.offsetWidth, ph = el.offsetHeight, i = sl.row
     const bottom = rowTop(i) - 8
     const x1 = sl.p === 1 ? XR : Math.min(XR, xCol[0] + 12)
     const box = { x0: Math.max(X0, x1 - w), x1: Math.max(X0, x1 - w) + w, y0: bottom - ph, y1: bottom }
     const t0 = sl.t + 0.04
-    const t1 = i < last ? Math.max(t0 + 0.3, nextT(i) - 0.32) : Infinity
-    pills.push({ i, el, box, w, ph, t0, t1, under: labelsUnder(i, box), overHeads: false, tone: 'neutral', from: Math.max(0.86, 41 / px), sq: clamp(1 - 41.5 / px, 0, 0.08) })
+    const t1 = i < last ? Math.max(t0 + 0.3, Math.min(nextT(i) - 0.32, t0 + pillHold)) : Infinity
+    const pl = { i, el, caret, box, w, ph, t0, t1, under: labelsUnder(i, box), overHeads: false, tone: 'neutral', from: Math.max(0.86, 41 / px), sq: clamp(1 - 41.5 / px, 0, 0.08) }
+    aimCaret(pl, cellCx(i, sl.p))
+    pills.push(pl)
   }
 
   // pencil marks: a hand-drawn loop around one cell (red on a loss, ink otherwise), drawn on in ~0.28 s
