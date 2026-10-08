@@ -91,6 +91,7 @@
 .sb-verdict.boxed { background: #000; border-top: 2px solid #1E2530; }
 .sb-vband { position: absolute; left: 0; width: 1080px; background: #000; box-shadow: inset 0 2px 0 #1E2530; z-index: 20; }   /* rises over the stage foot */
 #stage [data-under="1"] { visibility: hidden !important; }   /* text the verdict band covers */
+#stage [data-under-all="1"] { opacity: 0 !important; }       /* a [data-band-unit] group it reaches: gone whole */
 .sb-verdict-rule { width: 140px; height: 8px; border-radius: 4px; background: #2BFF88; transform-origin: 50% 50%; box-shadow: 0 0 18px rgba(43, 255, 136, 0.5); }
 .sb-verdict-text { width: 100%; font: 400 92px/1.02 'Anton', 'Inter Full', sans-serif; text-transform: uppercase; text-align: center; color: #FFFFFF; transform-origin: 50% 50%; text-wrap: balance; }
 

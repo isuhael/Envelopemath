@@ -10,7 +10,7 @@
       "becker-rig"
     ],
     "file": "teasers/v2/01-dead-simple-list.md",
-    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/01-dead-simple-list.py (240 checks, 0 failed). New checks: every typed formula is re-evaluated against its displayed result ($1 or 1¢ rounding); ≈ appears only on rounded or rule-based results; payoff gaps are 7.5 s or less; no VO line after the verdict card; lookOpts limited to keys the kit reads; Becker hits are valid; 01b is within ±1% of the exact 2026 take-home; 01c covers the raise maths, a leap year, and the marginal rate in the pinned comment. I also ran a mutation test with 10 broken spec copies and the check caught all 10. The studio linter (node src/cli.mjs check) is clean on all 3 specs, with 0 errors and 0 warnings.",
+    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/01-dead-simple-list.py -> 250 checks, 0 failed (after the round-2 hook pass). For 01c the script derives every number from the 2026 single bracket table (22% line = $50,400 + $16,100 = $66,500 of pay) and checks the $45 against the full federal tax ($5,620 -> $5,899 on the raise; minus the raise all at 12% = $45), the on-screen rule (new pay - $66,500) x 10% to the cent for every salary $64,564-$66,499, and the pinned comment (FICA $149.18, kept ~$1,522, myth $5,085). Earlier checks stand: every typed formula re-evaluated against its displayed result ($1 or 1c rounding), the ≈ rule, payoff gaps <= 7.5 s, no VO after the verdict card, lookOpts limited to keys the kit reads, Becker hits valid, 01b within ±1% of the exact 2026 take-home. Mutation test on scratch copies of the new 01c spec (result $45->$46, VO $45->$54, resultT 6.1->7.2, header $65,000->$64,000): 4 of 4 caught (exit 1). Studio linter on all 3 specs: 3/3 clean, 0 errors, 0 warnings; 01c stills at 0, 1.5, 2.4, 3 s and each payoff inspected.",
     "teasers": [
       {
         "id": "01a-clean-sheet-paid-biweekly",
@@ -49,27 +49,27 @@
         "mp4": "studio/out/01b-live-sheet-20-an-hour.mp4",
         "math_ok": true,
         "facts_ok": true,
-        "hook_score": 7
+        "hook_score": 4.5
       },
       {
         "id": "01c-becker-rig-60k-a-year",
         "look": "becker-rig",
-        "title": "What a 3% raise on $60K actually pays you",
-        "header": "4 DEAD SIMPLE NUMBERS\nWHAT A 3% RAISE ON **$60,000**\nACTUALLY PAYS YOU",
+        "title": "Will a 3% raise push you into a higher tax bracket?",
+        "header": "4 DEAD SIMPLE NUMBERS\nWILL A 3% RAISE PUSH **$65,000**\nINTO A HIGHER BRACKET?",
         "runtime_s": 26.5,
         "key_numbers": [
-          "$60,000 × 3% = $1,800 a year (at 2.7 s)",
-          "$1,800 ÷ 12 = $150 a month",
-          "$1,800 ÷ 52 ≈ $35 a week (exact $34.62)",
-          "$1,800 ÷ 365 ≈ $5 a day (exact $4.93)",
-          "verdict: a 3% raise on $60,000 ≈ $5 a day, before tax",
-          "pinned comment: about $4 a day after the 12% bracket + 7.65% FICA ($3.96)"
+          "$65,000 × 1.03 = $66,950 new pay (at 2.3 s); $65,000 ≈ BLS Q2 2026 median full-time pay ($65,052)",
+          "22% line in pay: $50,400 (top of 12%, 2026 single) + $16,100 standard deduction = $66,500",
+          "$66,950 − $66,500 = $450 over the line",
+          "$450 × 10% (22% − 12%) = $45; full federal tax $5,620 → $5,899 (+$279 vs $234 all at 12%)",
+          "verdict: Higher bracket? Yes. It costs you $45 a year",
+          "pinned: myth 10% × $50,850 = $5,085; FICA on the $1,950 raise $149.18; kept ≈ $1,522"
         ],
         "spec": "studio/specs/01c-becker-rig-60k-a-year.json",
         "mp4": "studio/out/01c-becker-rig-60k-a-year.mp4",
         "math_ok": true,
         "facts_ok": true,
-        "hook_score": 7
+        "hook_score": 7.5
       }
     ]
   },

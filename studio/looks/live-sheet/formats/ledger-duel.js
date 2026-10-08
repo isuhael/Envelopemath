@@ -32,7 +32,7 @@
 //   · eventPause (1.4 s: extra time after an event row when rows have no t)
 //   · leader ('high': in each row the bigger value is ink and the rest grey · 'low' for a cost duel · false: off)
 import {
-  h, setStyle, clamp, prog, ease, fitText, C, G, M, S,
+  h, setStyle, clamp, prog, ease, fitText, plain, C, G, M, S, barScript, springRect,
   sheet, tipStrip, fitTips, tipWindow, mk, mkLen, typedMk, typedCount, typeDur, wordCut, caretOn, parseDisplay, displayValue,
   popScale, flashAlpha, lerpRect, durationOf, hasCaptions, opt, layer, footerHeight, textW, font, toneColor, hasUnits,
 } from '../lib.js'
@@ -160,7 +160,25 @@ export default function ledgerDuel(spec, ctx) {
   const k0 = kfs.filter(k => k.t <= 0).pop()
   const f0 = k0 ? k0.text : flat(d.stake ?? '')
   const vBar = verdict ? flat(verdict.text) : ''
-  const laterKfs = () => [...kfs.filter(k => k.t > 0), ...events.filter(e => !e.tip && e.openAt > 0).map(e => ({ t: e.openAt, text: flat(e.text), event: e }))].sort((x, y) => x.t - y.t)
+  // the bar's later entries: the author's steps, events with no room for a tooltip, and keys too long for column A.
+  // An event or key due within 1.5 s of an author step is folded into it (dropped when the step already states its
+  // numbers), so the bar is never rewritten twice in a beat.
+  const nums = str => (plain(str).match(/\d[\d,.]*/g) || []).map(x => x.replace(/[,.]$/, ''))
+  const laterKfs = () => {
+    const steps = kfs.filter(k => k.t > 0).map(k => ({ ...k }))
+    const extra = [
+      ...events.filter(e => !e.tip && e.openAt > 0).map(e => ({ t: e.openAt, text: flat(e.text), event: e })),
+      ...rows.map((r, i) => (keyShown[i] !== labels[i] && !pre[i] ? { t: rowT[i] + 0.12, text: flat(labels[i]), key: true } : null)).filter(Boolean),
+    ]
+    const out = []
+    for (const x of extra) {
+      const near = steps.find(k => Math.abs(k.t - x.t) <= 1.5)
+      if (!near) { out.push(x); continue }
+      if (!nums(x.text).every(n => nums(near.text).includes(n))) near.text = `${near.text} · ${x.text}`
+      near.t = Math.min(near.t, x.t)
+    }
+    return [...steps, ...out].sort((x, y) => x.t - y.t)
+  }
 
   // ---------- layout ----------
   const fH = footerHeight(spec.footer)
@@ -168,10 +186,19 @@ export default function ledgerDuel(spec, ctx) {
   const fullBottom = G.safeBottom - 4 - (fH ? fH + G.gap : 0)
   const labels = rows.map(r => r.label.trim())
   const firstWords = labels.map(l => l.split(/\s+/)[0])
-  // column A's label: 'Year' for year rows; none when every key already says it ("Age 35"); else 'When'
+  // column A's label: 'Year' for year rows; the keys' shared first word when they all start with it ("Age" over
+  // "Age 35", never an empty mint cell); else 'When'
   const keyLabel = opt(spec, 'keyLabel',
-    labels.filter(l => /^(1[89]|20)\d{2}$/.test(l)).length >= Math.max(1, N - 1) ? 'Year'
-      : firstWords.every(w => w && w === firstWords[0]) && labels.every(l => /\s/.test(l)) && !/\d/.test(firstWords[0]) ? '' : 'When')
+    labels.filter(l => /^(1[89]|20)\d{2}/.test(l)).length >= Math.max(1, N - 1) ? 'Year'
+      : firstWords.every(w => w && w === firstWords[0]) && labels.every(l => /\s/.test(l)) && !/\d/.test(firstWords[0]) ? firstWords[0] : 'When')
+  // Column A takes at most 35% of the width (the values have priority). A key too long for that at 40 px shows its
+  // head in the cell ("2025" of "2025 (so far, year to date)") and the whole key is typed into the bar as its row
+  // lands, so nothing is dropped.
+  const keyMax = Math.round(0.35 * (G.width - G.gutter))
+  const keyFits = str => textW(mk(str), font(800, S.cellMin), { letterSpacing: '-0.01em' }) + 2 * G.padX + 4 <= keyMax
+  const headOf = str => { const m = /^(.+?)(?:\s+\(|\s+·\s+|:\s+|\s+[—–]\s+|,\s+)/.exec(str); return m && keyFits(m[1]) ? m[1] : str.split(/\s+/)[0] }
+  const keyShown = labels.map(l => (keyFits(l) ? l : headOf(l)))
+  const sumKey = summary ? (keyFits(summary.label) ? summary.label : headOf(summary.label)) : ''
   // the person columns are sized alike (a duel is symmetric): every one is measured against the widest value
   const valFont = font(800, S.result)
   const allVals = [...rows.flatMap(r => r.values), ...(summary ? summary.values : [])].filter(Boolean)
@@ -189,8 +216,9 @@ export default function ledgerDuel(spec, ctx) {
   let tipFit = fitTips(events.filter(e => e.tip).map(e => e.text), tipW)
   const slotOf = () => (events.some(e => e.tip) ? tipFit.slotH : 0)
   const build = (bottom, inBar, { minRowH = 52, letters = lettersOpt } = {}) => sheet(L, {
-    columns: [{ label: keyLabel, kind: 'input', align: 'left' }, ...people.map((_, j) => ({ label: sizeLabel, kind: 'output', align: 'right', units: unitsCol(j), group: 'people' }))],
-    values: [...rows.map(r => [r.label, ...r.values]), ...(summary ? [[summary.label, ...summary.values]] : []), ['', ...people.map(() => widest)]],
+    // (word keys, "Age 35", are set a size down from the year keys: the values carry the row)
+    columns: [{ label: keyLabel, kind: 'input', align: 'left', maxW: keyMax, fit: true, ...(keyShown.every(k => /^\d+$/.test(k)) ? {} : { px: fs => Math.min(fs.input, 48) }) }, ...people.map((_, j) => ({ label: sizeLabel, kind: 'output', align: 'right', units: unitsCol(j), group: 'people' }))],
+    values: [...rows.map((r, i) => [keyShown[i], ...r.values]), ...(summary ? [[sumKey, ...summary.values]] : []), ['', ...people.map(() => widest)]],
     rows: NR, bottom, reserve: slotOf(), grow: true, tail: 16,
     formula: { strings: [f0, ...laterKfs().map(k => k.text)], verdict: inBar ? vBar : null },
     letters, minRowH,
@@ -255,11 +283,26 @@ export default function ledgerDuel(spec, ctx) {
   const outC0 = 1, outC1 = nP
   const wc = winner + 1 // the winner's sheet column
 
-  // the final length: a verdict typed into the bar stays readable 2.5 s once it is typed
-  const vTypeEnd = vMode === 'formula' ? verdict.t + 0.3 + mkLen(sh.fbar.vfit.text) / 26 : null
-  const duration = durationOf(spec, { beats, hold: d.hold ?? 3, verdictEnd: vTypeEnd, loop: loopOn })
+  // ---------- formula bar: the stake, later entries, maybe the verdict; every text readable ≥ 1.2 s ----------
+  const cut0 = wordCut(f0, opt(spec, 'formulaAt0', 0.7))
+  const cut = cut0 < 4 ? mkLen(f0) : cut0
+  const barEntries = [
+    { t: 0, text: f0 },
+    // (a verdict typed into the bar is final: nothing types over it)
+    ...kLater.filter(k => vMode !== 'formula' || k.t < verdict.t).map(k => ({ t: k.t, text: k.text, cps: Math.max(M.cps, mkLen(k.text) / 0.9) })),
+    ...(vMode === 'formula' ? [{ t: verdict.t, text: sh.fbar.vfit.text, verdict: true }] : []),
+  ]
+  const BAR_HOLD = 1.2
+  const bar0 = barScript(barEntries, { cut, minHold: BAR_HOLD })
+  const vEntry0 = bar0.fx.find(e => e.verdict)
+  // the final length: a verdict typed into the bar stays readable 2.5 s once it is typed (and every other bar text
+  // its hold)
+  const barNeed = Math.max(0, ...bar0.fx.filter(e => !e.verdict && e.t > 0).map(e => e.end + BAR_HOLD + (loopOn ? M.loopOut : 0)))
+  const duration = Math.max(durationOf(spec, { beats, hold: d.hold ?? 3, verdictEnd: vEntry0 ? vEntry0.end : null, loop: loopOn }), Math.min(90, Math.round(barNeed * 30) / 30))
   const D = spec.duration || duration
   const loopT0 = loopOn ? D - M.loopOut : Infinity
+  const bar = barScript(barEntries, { cut, minHold: BAR_HOLD, loopT0 })
+  const vEntry = bar.fx.find(e => e.verdict)
 
   // ---------- event tooltips: a slot opens under the event row (the rows below make room) ----------
   const spanX0 = sh.cols[outC0].x, spanX1 = sh.cols[outC1].x + sh.cols[outC1].w
@@ -286,44 +329,16 @@ export default function ledgerDuel(spec, ctx) {
   const fillRows = t => { let b = 1; for (let r = 1; r < NR; r++) b += landStep(t, r); return b }
   const dyFn = t => r => shiftAt(r, t)
   const K = [{ t: -Infinity, rect: t => sh.rangeRect(0, fillRows(t), outC0, outC1, dyFn(t)), head: t => [0, Math.floor(fillRows(t) - 0.01), outC0, outC1], handle: true }]
-  if (Number.isFinite(hiT)) K.push({ t: hiT, dur: M.pick, e: x => ease.back(x, 1.4), rect: t => sh.rangeRect(0, NR, wc, wc, dyFn(t)), head: () => [0, NR - 1, wc, wc], handle: false })
+  if (Number.isFinite(hiT)) K.push({ t: hiT, dur: M.pick, spring: 1.4, rect: t => sh.rangeRect(0, NR, wc, wc, dyFn(t)), head: () => [0, NR - 1, wc, wc], handle: false })
   if (loopOn) K.push({ t: loopT0, dur: 0.34, e: ease.inOut, rect: () => sh.rangeRect(0, fillRows(0), outC0, outC1), head: () => [0, Math.floor(fillRows(0) - 0.01), outC0, outC1], handle: true })
-  const rectAt = (k, t) => (k === 0 ? K[0].rect(t) : lerpRect(rectAt(k - 1, t), K[k].rect(t), K[k].e(prog(t, K[k].t, K[k].dur))))
-
-  // ---------- formula bar states ----------
-  const cut0 = wordCut(f0, opt(spec, 'formulaAt0', 0.7))
-  const cut = cut0 < 4 ? mkLen(f0) : cut0
-  const segs = [{ t0: -Infinity, str: f0, start: 0, from: cut, cps: M.cps, erase: 0 }]
-  for (const k of kLater) segs.push({ t0: k.t, str: k.text, from: 0, cps: Math.max(M.cps, mkLen(k.text) / 0.9), erase: 0.16 })
-  if (vMode === 'formula') segs.push({ t0: verdict.t, str: sh.fbar.vfit.text, from: 0, cps: 26, erase: 0.3, verdict: true })
-  segs.sort((a, b) => a.t0 - b.t0)
-  segs.forEach(sg => { if (sg.t0 > -Infinity) sg.start = sg.t0 + sg.erase })
-  const typedAt = (sg, t) => (t < sg.start ? (sg.t0 === -Infinity ? sg.from : 0) : typedCount(t, sg.start, sg.str, { cps: sg.cps, from: sg.from }))
-  function barAt(t) {
-    let k = 0
-    for (let i = 1; i < segs.length; i++) if (t >= segs[i].t0) k = i
-    const sg = segs[k]
-    if (k > 0 && t < sg.start) {
-      // erasing what the previous state showed
-      const pv = segs[k - 1], n0 = typedAt(pv, sg.t0)
-      return { str: pv.str, n: Math.round(n0 * (1 - prog(t, sg.t0, sg.erase))), caret: true, verdict: pv.verdict }
-    }
-    const n = typedAt(sg, t), len = mkLen(sg.str)
-    return { str: sg.str, n, caret: caretOn(t, t >= sg.start && n < len), verdict: sg.verdict }
+  const rectAt = (k, t) => {
+    if (k === 0) return K[0].rect(t)
+    const a = rectAt(k - 1, t), b = K[k].rect(t), p = prog(t, K[k].t, K[k].dur)
+    return K[k].spring ? springRect(a, b, p, K[k].spring) : lerpRect(a, b, K[k].e(p))
   }
-  function formulaState(t) {
-    if (t < loopT0) return barAt(t)
-    // the loop: erase whatever shows, then retype frame 1's prefix
-    const s0 = barAt(loopT0 - 1e-6), e1 = 0.22
-    if (s0.str === f0) return { str: f0, n: Math.max(cut, Math.round(s0.n * (1 - prog(t, loopT0, e1)))), caret: true }
-    if (t < loopT0 + e1) return { str: s0.str, n: Math.round(s0.n * (1 - prog(t, loopT0, e1))), caret: true, verdict: s0.verdict }
-    return { str: f0, n: Math.round(cut * prog(t, loopT0 + e1, 0.2)), caret: true }
-  }
-  const vSeg = segs.find(sg => sg.verdict)
 
   // ---------- sound: one cue per real event ----------
-  ctx.cue(0, 'type', { dur: Math.max(0.2, typeDur(f0, { from: cut })) })
-  for (const sg of segs) if (sg.t0 > 0 && !sg.verdict) ctx.cue(sg.start, 'type', { dur: Math.max(0.2, mkLen(sg.str) / sg.cps) })
+  bar.cue(ctx)
   rows.forEach((r, i) => {
     if (pre[i]) return
     if (i === countRow) { ctx.cue(rowT[i], 'roll', { dur: M.count }); ctx.cue(rowT[i] + M.count, crash[i] && r.event ? 'thud' : 'pop') }
@@ -333,7 +348,7 @@ export default function ledgerDuel(spec, ctx) {
   })
   if (summary && sumT > 0) ctx.cue(sumT, 'pop', { gain: 0.7 })
   if (Number.isFinite(hiT)) ctx.cue(hiT, 'swipe', { gain: 0.45 })
-  if (vSeg) { ctx.cue(vSeg.start, 'type', { dur: mkLen(vSeg.str) / vSeg.cps }); ctx.cue(vSeg.start + mkLen(vSeg.str) / vSeg.cps + 0.05, 'ding') }
+  if (vEntry) ctx.cue(vEntry.end + 0.05, 'ding')
   else if (Number.isFinite(hiT) && vMode !== 'band') ctx.cue(hiT + 0.3, 'ding')
   if (loopOn) ctx.cue(loopT0, 'swipe', { gain: 0.5 })
 
@@ -370,10 +385,10 @@ export default function ledgerDuel(spec, ctx) {
     },
     seek(t) {
       // formula bar (the verdict takes it over: ink, heavier, and the ≈ chip pops)
-      const fs = formulaState(t)
-      sh.fbar.set(typedMk(fs.str, fs.n), { caret: fs.caret })
-      sh.fbar.verdictStyle(!!fs.verdict, vSeg ? prog(t, vSeg.t0, 0.2) : 0)
-      const chipP = vSeg ? prog(t, vSeg.start - 0.1, 0.34) : 0
+      const fs = bar.at(t)
+      sh.fbar.set(bar.html(fs), { caret: fs.caret })
+      sh.fbar.verdictStyle(!!fs.verdict, vEntry ? prog(t, vEntry.t, 0.2) : 0)
+      const chipP = vEntry && t < loopT0 ? prog(t, vEntry.start - 0.1, 0.34) : 0
       setStyle(sh.fbar.chip, { transform: `translateY(-50%) scale(${chipP > 0 && chipP < 1 ? popScale(chipP, 1.3).toFixed(4) : 1})` })
 
       // event tooltips: the slot opens under the row (the rows below make room, the card grows), then the pill
@@ -387,7 +402,7 @@ export default function ledgerDuel(spec, ctx) {
         setStyle(sh.rowEls[r], { backgroundColor: rowBg(r, t), backgroundImage: 'none' })
         const out = outFns[r](t)
         const t0r = tOf(r), preR = isPre(r)
-        const key = r < N ? rows[r].label : summary.label
+        const key = r < N ? keyShown[r] : sumKey
         const keyP = labelsAt0 || preR ? 1 : prog(t, t0r - 0.1, M.drop)
         sh.setCell(r, 0, { text: key, p: keyP, out: labelsAt0 || preR ? 0 : out })
         const vals = lineVals(r)

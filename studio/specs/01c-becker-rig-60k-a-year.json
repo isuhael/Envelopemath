@@ -5,7 +5,7 @@
   "fps": 30,
   "duration": 26.5,
   "header": "4 DEAD SIMPLE NUMBERS\nWILL A 3% RAISE PUSH **$65,000**\nINTO A HIGHER BRACKET?",
-  "footer": "ASSUMES single, 2026, standard deduction · federal income tax only",
+  "footer": "ASSUMES single filer, 2026 · standard deduction · federal income tax only",
   "captions": true,
   "vo": [
     { "t": 0.0,  "d": 3.6, "text": "$65,000, plus 3%: $66,950." },
@@ -15,7 +15,7 @@
     { "t": 16.6, "d": 3.3, "text": "Not your whole raise. Not your whole pay." },
     { "t": 20.4, "d": 3.6, "text": "Higher bracket? Yes. It costs you $45 a year." }
   ],
-  "verdict": { "t": 20.4, "text": "Higher bracket? Yes. It costs you **$45 a year**" },
+  "verdict": { "t": 20.4, "text": "Higher bracket? Yes. It costs you **$45\u00a0a\u00a0year**" },
   "data": {
     "input": { "label": "Salary", "value": "$65,000", "note": "a year" },
     "typeDur": 0.7,
@@ -23,11 +23,11 @@
       { "t": 0.0, "label": "Your new pay", "formula": "$65,000 × 1.03", "result": "$66,950",
         "tone": "good", "resultT": 2.3 },
       { "t": 4.6, "label": "Where 22% starts", "formula": "$50,400 + $16,100", "result": "$66,500",
-        "tone": "neutral", "note": "taxed-pay line + standard deduction", "resultT": 6.1 },
+        "tone": "neutral", "note": "line + deduction", "resultT": 6.1 },
       { "t": 8.8, "label": "Pay over the line", "formula": "$66,950 − $66,500", "result": "$450",
-        "tone": "neutral", "note": "only this is taxed 22%", "resultT": 10.3 },
+        "tone": "neutral", "note": "taxed at 22%", "resultT": 10.3 },
       { "t": 12.0, "label": "What the bracket costs you", "formula": "$450 × 10%", "result": "$45",
-        "tone": "goal", "note": "22% − 12% = 10 points", "resultT": 15.8 }
+        "tone": "goal", "note": "22% − 12%", "resultT": 15.8 }
     ]
   },
   "lookOpts": { "hits": ["kick", "chop", "kick", "slam"] }

@@ -35,7 +35,7 @@
 //   pointer:   true                            the green pointer on the left margin
 import { h, s, css as style, setHTML, attr, prog, ease, clamp, lerp, fitText } from '../../../runtime/core.js'
 import { C, M, W, layoutFor } from '../theme.js'
-import { rich, richUI, esc, bare, keepHyphens, tabHTML as tabLib, slam, wobble, durationOf, inkWidth, slamFromFor, toneColor } from '../lib.js'
+import { rich, richUI, esc, bare, keepHyphens, tabHTML as tabLib, slam, wobble, durationOf, inkWidth, slamFit, toneColor } from '../lib.js'
 
 export const css = `
 .fy-table { position: absolute; left: 0; top: 0; width: ${W}px; }
@@ -169,6 +169,9 @@ export default function findYourRow(spec, ctx) {
   const pickH0 = picks.length || prompt ? 58 : 0
   const stackH = formulaH0 + (formulaH0 && pickH0 ? 12 : 0) + pickH0
   const MIN_GAP = 28, LGAP = 24
+  // the strip height the verdict needs to land in it, not on a band over the board (layoutFor: a slot of
+  // min(150, L.verdictNeed) px is not boxed; the slot is the strip + 8 px)
+  const VNEED = L0.verdictNeed ? Math.min(150, L0.verdictNeed) - 8 : 0
   const PMAX = N <= 6 ? 96 : 80, FCMAX = N <= 6 ? 72 : 64
 
   // horizontal: columns pack from the left. A column's right edge sits where both its cells (28 px after the
@@ -204,15 +207,42 @@ export default function findYourRow(spec, ctx) {
   // the fallback for heads too long for two lines each: every head wraps inside its own column's slot (any number of
   // lines, balanced); each slot holds at least its head's longest word and the spare width goes where it is needed
   const fullW40 = forms.map(f => f[0].w)
+  // the narrowest width (at 40 px) at which head j wraps into at most k balanced lines (binary search on a probe)
+  // (wrapped heads set a tighter letter-spacing, 0.01em: a 3-line head stack instead of 4 on a crowded board)
+  const wrapProbe = h('div', { class: 'fy-hl', style: { left: '0px', top: '0px', fontSize: '40px', lineHeight: '42px', whiteSpace: 'normal', textWrap: 'balance', letterSpacing: '0.01em' } })
+  const wrapW = new Map()
+  const widthFor = (j, k) => {
+    const key = j + '|' + k
+    if (wrapW.has(key)) return wrapW.get(key)
+    if (!wrapProbe.isConnected) table.append(wrapProbe)
+    wrapProbe.innerHTML = keepHyphens(richUI(String(cols[j].label || '').replace(/\n/g, ' ')))
+    const lines = w => { wrapProbe.style.width = w + 'px'; return Math.round(wrapProbe.offsetHeight / 42) }
+    let lo = Math.floor(wordW40[j]), hi = Math.ceil(fullW40[j]) + 2
+    if (lines(lo) <= k) hi = lo
+    while (hi - lo > 2) { const mid = Math.floor((lo + hi) / 2); if (lines(mid) <= k) hi = mid; else lo = mid }
+    wrapW.set(key, hi)
+    return hi
+  }
+  // the fallback for heads too long for two lines each: every head wraps inside its own column's slot, balanced, in
+  // as few lines as the board allows (3 at most when the columns can share the width out: the key column's slack,
+  // 2-digit cells, goes to its head before any head takes a 4th line); the spare width goes where it is needed
   const hwrap = (Fc0, Fl) => {
     const Fc = Math.max(40, Math.min(Fc0, Math.floor(((TW - (nC - 1) * MIN_GAP) / sum(colW100)) * 100)))
     const cw = colW100.map(w => (w * Fc) / 100)
-    let ew = cw.map((c, j) => Math.max(c, (wordW40[j] * Fl) / 40))
-    const free = Math.max(0, TW - sum(ew) - (nC - 1) * MIN_GAP)
+    // the key column's head may overhang left (to x 64) rather than take a 4th line: its cells are short keys
+    let ew = null, ov = 0
+    for (let k = 2; k <= 6; k++) {
+      ew = cw.map((c, j) => Math.max(c, (widthFor(j, k) * Fl) / 40))
+      const total = sum(ew) + (nC - 1) * MIN_GAP
+      if (total <= TW) break
+      if (k <= 3 && total <= TW + (TX0 - 64) && ew[0] > cw[0] + (total - TW)) { ov = Math.ceil(total - TW); break }
+    }
+    const TWh = TW + ov
+    const free = Math.max(0, TWh - sum(ew) - (nC - 1) * MIN_GAP)
     const need = fullW40.map((w, j) => Math.max(0, (w * Fl) / 40 - ew[j]))
     ew = ew.map((e, j) => e + (free * need[j]) / Math.max(1, sum(need)))
-    const R = ew.map((_, j) => TX0 + sum(ew.slice(0, j + 1)) + (j * (TW - sum(ew))) / Math.max(1, nC - 1))
-    return { Fc, Fl, ew, R, slack: TW - sum(ew) - (nC - 1) * MIN_GAP, wrap: true, pick: forms.map(() => 0) }
+    const R = ew.map((_, j) => TX0 - ov + sum(ew.slice(0, j + 1)) + (j * (TWh - sum(ew))) / Math.max(1, nC - 1))
+    return { Fc, Fl, ew, R, ov, slack: TWh - sum(ew) - (nC - 1) * MIN_GAP, wrap: true, pick: forms.map(() => 0) }
   }
   const applyLabels = hp => {
     labels.forEach((el, j) => {
@@ -220,10 +250,10 @@ export default function findYourRow(spec, ctx) {
       el.style.lineHeight = Math.round(hp.Fl * 1.05) + 'px'
       if (hp.wrap) {
         setHTML(el, keepHyphens(richUI(String(cols[j].label || '').replace(/\n/g, ' '))))
-        Object.assign(el.style, { whiteSpace: 'normal', textWrap: 'balance', width: Math.floor(hp.ew[j]) + 'px' })
+        Object.assign(el.style, { whiteSpace: 'normal', textWrap: 'balance', width: Math.ceil(hp.ew[j]) + 'px', letterSpacing: '0.01em' })
       } else {
         setHTML(el, forms[j][hp.pick[j]].lines.map(l => keepHyphens(richUI(l))).join('<br>'))
-        Object.assign(el.style, { whiteSpace: 'nowrap', textWrap: 'nowrap', width: 'auto' })
+        Object.assign(el.style, { whiteSpace: 'nowrap', textWrap: 'nowrap', width: 'auto', letterSpacing: '' })
       }
     })
     return Math.round(Math.max(...labels.map(el => el.offsetHeight)) + 16)   // + the emph underline
@@ -232,30 +262,45 @@ export default function findYourRow(spec, ctx) {
     const rowsTop = tableTop + headH
     const pitchFor = stripH => (limit - stripH - 16 - 10 - rowsTop) / N
     let mode = lo.strip === 'swap' || lo.strip === 'stack' ? lo.strip : 'auto'
-    if (mode === 'auto') mode = !(formulaH0 && pickH0) || pitchFor(stackH) >= 52 ? 'stack' : 'swap'
+    if (mode === 'auto') mode = !(formulaH0 && pickH0) || pitchFor(Math.max(stackH, VNEED)) >= 52 ? 'stack' : 'swap'
     const stripNeed = mode === 'stack' ? stackH : Math.max(formulaH0, pickH0)
+    // the verdict lands in the strip, never on a band over the board: the strip keeps VNEED px (a 150 px verdict
+    // slot) whenever the rows still get a 40 px pitch that way. Only a board too long for that falls back to the band
+    // (and the band then hides whole rows, never a sliver of one)
+    const reserved = VNEED > stripNeed && pitchFor(VNEED) >= 40
     // a short board (<= 6 rows) gets bigger rows (pitch up to 96, cells up to 72 px); room left past the cap goes
     // half above the board, so a small table sits in the middle of the frame instead of hanging under the header
-    const raw = pitchFor(stripNeed)
+    const raw = pitchFor(reserved ? VNEED : stripNeed)
     const P = Math.round(clamp(raw, 40, PMAX) * 10) / 10
     const drop = raw > PMAX ? Math.min(160, Math.round(((raw - PMAX) * N) / 2)) : 0
     const dense = P < 54
     const gapR = dense ? 2 : clamp(Math.round(P * 0.1), 3, 8)
-    return { rowsTop: rowsTop + drop, mode, stripNeed, P, dense, gapR, barH: P - gapR }
+    return { rowsTop: rowsTop + drop, mode, stripNeed, P, dense, gapR, barH: P - gapR, reserved }
   }
   const fcFor = vp => clamp(Math.round(vp.barH * 0.86), 40, FCMAX)
   // heads at 40 px on at most two lines when they pack beside the cells; else wrapped in their slots at 40 px; only
   // then smaller (38 → 34), as long as the head row leaves the rows a pitch of 44 px
   let hp, headH, vp
   const tries = [[hplan, 40], [hwrap, 40], [hplan, 38], [hplan, 36], [hwrap, 38], [hwrap, 36], [hplan, 34], [hwrap, 34]]
+  // a board that keeps the verdict's room may run at a 40 px pitch with 40 px heads, rather than shrink its heads
+  let firstOk = null, good = false
   for (const [plan, Fl] of tries) {
+    if (firstOk && Fl < 40) break
     hp = plan(64, Fl)
     headH = applyLabels(hp)
     vp = vplan(headH)
     const hp2 = plan(fcFor(vp), Fl)
     if (hp2.Fc !== hp.Fc || hp2.pick.join() !== hp.pick.join()) { hp = hp2; headH = applyLabels(hp); vp = vplan(headH) }
-    if (hp.slack >= 0 && vp.P >= 44) break
+    if (hp.slack >= 0 && vp.P >= 44) { good = true; break }
+    if (!firstOk && hp.slack >= 0 && vp.reserved && Fl >= 40) firstOk = [plan, Fl]
   }
+  if (!good && firstOk) {
+    const [plan, Fl] = firstOk
+    hp = plan(64, Fl); headH = applyLabels(hp); vp = vplan(headH)
+    const hp2 = plan(fcFor(vp), Fl)
+    if (hp2.Fc !== hp.Fc || hp2.pick.join() !== hp.pick.join()) { hp = hp2; headH = applyLabels(hp); vp = vplan(headH) }
+  }
+  wrapProbe.remove()
   const { Fc } = hp
   const { rowsTop, mode, P, dense, gapR, barH } = vp
   const right = hp.wrap ? hp.R.slice() : hp.R.map((r, j) => (j ? r + (Math.max(0, hp.slack) * j) / (nC - 1) : r))
@@ -273,13 +318,13 @@ export default function findYourRow(spec, ctx) {
   // ---------- column labels (one size for all), emph underline ----------
   const labelBottom = rowsTop - 15
   labels.forEach((el, j) => {
-    style(el, { top: labelBottom - el.offsetHeight + 'px', left: (j === 0 ? TX0 : right[j] - el.offsetWidth) + 'px' })
+    style(el, { top: labelBottom - el.offsetHeight + 'px', left: (j === 0 ? TX0 - (hp.ov || 0) : right[j] - el.offsetWidth) + 'px' })
   })
   const hbar = h('div', { class: 'fy-hbar', 'data-deco': '' })
   table.append(hbar)
   {
     const w = Math.max(60, labels[emph].offsetWidth)
-    const x0 = emph === 0 ? TX0 : right[emph] - w
+    const x0 = emph === 0 ? TX0 - (hp.ov || 0) : right[emph] - w
     style(hbar, { left: x0 + 'px', width: w + 'px', top: labelBottom + 5 + 'px', background: emphColor, boxShadow: `0 0 12px ${emphColor}` })
   }
 
@@ -287,7 +332,7 @@ export default function findYourRow(spec, ctx) {
   const cellTop = (barH - Fc) / 2 + 0.045 * Fc               // Anton caps sit at 0.02-0.89 em: optically centred
   const skelH = Math.max(8, Math.round(Fc * 0.26))
   const R = rows.map((r, i) => {
-    const el = h('div', { class: 'fy-row', style: { left: BX0 + 'px', width: BW + 'px', top: rowsTop + i * P + 'px', height: barH + 'px' } })
+    const el = h('div', { class: 'fy-row', 'data-band-unit': '', style: { left: BX0 + 'px', width: BW + 'px', top: rowsTop + i * P + 'px', height: barH + 'px' } })
     style(el, { '--emph': emphColor })   // custom properties must go through css(): h() drops them
     const slot = h('div', { class: 'fy-slot' + (dense ? ' dense' : ''), 'data-deco': '' })
     const bar = h('div', { class: 'fy-bar' + (dense ? ' dense' : ''), 'data-deco': '' })
@@ -352,7 +397,8 @@ export default function findYourRow(spec, ctx) {
       style(line, { top: Math.max(0, Math.round((L.label.h - hh) / 2)) + 'px', height: hh + 'px' })
       line.__two = true
     }
-    line.__from = slamFromFor(inkWidth(inner), 792)
+    const y0 = L.label.y + parseFloat(line.style.top), y1 = y0 + parseFloat(line.style.height)
+    line.__from = slamFit(inkWidth(inner), 792, { y0, y1, oy: (y0 + y1) / 2, top: L.label.y - 12, bottom: L.limit })
     style(line, { display: 'none' })
     return line
   }

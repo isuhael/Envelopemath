@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Math + timing check for format 1, "dead-simple-list" (teasers 01a, 01b, 01c). Round-2 revision.
+"""Math + timing check for format 1, "dead-simple-list" (teasers 01a, 01b, 01c). Round-2 revision + hook pass
+(01c is now the bracket-myth hook: "Will a 3% raise push $65,000 into a higher bracket?").
 
 1. Recomputes every on-screen number from its inputs (constants below, sources in
    teasers/v2/01-dead-simple-list.md).
@@ -18,7 +19,8 @@
    line after it would have no on-screen text).
 5. Contract checks: only lookOpts keys the target look kit actually reads.
 6. Sensitivity checks: the x0.85 rule vs the exact 2026 federal + FICA calculation,
-   the 26/27-payday calendar claims, the raise maths and the marginal-rate pinned comment.
+   the 26/27-payday calendar claims, and 01c's bracket maths (the $45 against the full 2026
+   federal tax, the pinned comment's myth / FICA / kept figures, and the salary window).
 
 Prints a table and exits non-zero on any mismatch.
 Run:  python3 teasers/v2/checks/01-dead-simple-list.py
@@ -170,18 +172,21 @@ B_NET = B_YEAR - B_FED - B_FICA                                   # 35,605.60
 B_KEEP_EXACT = B_NET / B_YEAR                                     # 0.8559
 B_KEPT_EXACT = B_NET / MONTHS                                     # 2,967.13
 
-# ------------------------------------------------- 01c inputs and maths
-C_SALARY = 60_000
+# ------------------------------------------------- 01c inputs and maths (hook pass: the bracket myth)
+C_SALARY = 65_000                                # ≈ BLS Q2 2026 median full-time pay ($1,251 × 52 = $65,052)
 C_PCT = 3                                        # the example raise, in percent
-C_RAISE = C_SALARY * C_PCT // 100                # $1,800 a year
-C_MONTH = C_RAISE / MONTHS                       # 150
-C_WEEK = C_RAISE / WEEKS                         # 34.615
-C_DAY = C_RAISE / DAYS                           # 4.9315
-C_MONTH_D, C_WEEK_D, C_DAY_D = rnd(C_MONTH), rnd(C_WEEK), rnd(C_DAY)
-assert C_MONTH == C_MONTH_D                      # exact, so no "≈"
-# pinned comment: a raise is taxed at the marginal rate (12% federal bracket + 7.65% FICA, single, 2026)
-C_MARGINAL = bracket_rate(C_SALARY)[0] + SS_RATE + MED_RATE        # 0.1965
-C_DAY_KEPT = C_RAISE * (1 - C_MARGINAL) / DAYS                     # 3.96
+C_NEW = C_SALARY * (100 + C_PCT) // 100          # $66,950: the new pay
+assert C_SALARY * (100 + C_PCT) % 100 == 0
+C_RAISE = C_NEW - C_SALARY                       # $1,950
+C_TOP12, C_LO = BRACKETS[1]                      # 12% bracket ends at $50,400 of taxed pay
+C_HI = BRACKETS[2][1]                            # 22% above it
+C_LO_PCT, C_HI_PCT = round(C_LO * 100), round(C_HI * 100)
+C_PTS = C_HI_PCT - C_LO_PCT                      # 10 points
+C_LINE = C_TOP12 + STD_DED                       # $66,500 of pay: where 22% starts
+C_OVER = C_NEW - C_LINE                          # $450 over the line
+C_COST = C_OVER * C_PTS // 100                   # $45: what the bracket costs
+assert C_OVER * C_PTS % 100 == 0
+assert C_SALARY < C_LINE < C_NEW, "the example must cross the line"
 
 # ---------------------------------------------------------- expected strings
 EXPECT = {
@@ -218,20 +223,21 @@ EXPECT = {
         "data.items[2].result": approx(money(B_KEPT_D)),
     },
     "01c": {
-        "header": f"4 DEAD SIMPLE NUMBERS\nWHAT A {C_PCT}% RAISE ON **{money(C_SALARY)}**\nACTUALLY PAYS YOU",
-        "footer": f"ASSUMES a {C_PCT}% raise (example) · pay{NBSP}before{NBSP}tax",
-        "verdict.text": f"A {C_PCT}% raise on {money(C_SALARY)} ≈{NBSP}**{money(C_DAY_D)}{NBSP}a{NBSP}day**, before tax",
+        "header": f"4 DEAD SIMPLE NUMBERS\nWILL A {C_PCT}% RAISE PUSH **{money(C_SALARY)}**\nINTO A HIGHER BRACKET?",
+        "footer": f"ASSUMES single filer, {TAX_YEAR} · standard deduction · federal income tax only",
+        "verdict.text": f"Higher bracket? Yes. It costs you **{money(C_COST)}{NBSP}a{NBSP}year**",
         "data.input.value": money(C_SALARY),
-        "data.items[0].formula": f"{money(C_SALARY)} × {C_PCT}%",
-        "data.items[0].result": money(C_RAISE),
-        "data.items[1].formula": f"{money(C_RAISE)} ÷ {MONTHS}",
-        "data.items[1].result": money(C_MONTH_D),
-        "data.items[2].formula": f"{money(C_RAISE)} ÷ {WEEKS}",
-        "data.items[2].result": approx(money(C_WEEK_D)),
-        "data.items[2].note": f"exact {money(C_WEEK, 2)}",
-        "data.items[3].formula": f"{money(C_RAISE)} ÷ {DAYS}",
-        "data.items[3].result": approx(money(C_DAY_D)),
-        "data.items[3].note": f"exact {money(C_DAY, 2)}",
+        "data.items[0].formula": f"{money(C_SALARY)} × {1 + C_PCT / 100:.2f}",
+        "data.items[0].result": money(C_NEW),
+        "data.items[1].label": f"Where {C_HI_PCT}% starts",
+        "data.items[1].formula": f"{money(C_TOP12)} + {money(STD_DED)}",
+        "data.items[1].result": money(C_LINE),
+        "data.items[2].formula": f"{money(C_NEW)} − {money(C_LINE)}",
+        "data.items[2].result": money(C_OVER),
+        "data.items[2].note": f"taxed at {C_HI_PCT}%",
+        "data.items[3].formula": f"{money(C_OVER)} × {C_PTS}%",
+        "data.items[3].result": money(C_COST),
+        "data.items[3].note": f"{C_HI_PCT}% − {C_LO_PCT}%",
     },
 }
 
@@ -239,7 +245,7 @@ EXPECT = {
 APPROX_RESULTS = {
     "01a": [False, False, False],
     "01b": [False, True, True],
-    "01c": [False, False, True, True],
+    "01c": [False, False, False, False],
 }
 
 # numbers spoken in each VO line, in order (cents are expressed in dollars; "3%" is 3)
@@ -262,12 +268,12 @@ VO_NUMBERS = {
         [B_MONTH_D, B_KEPT_D],
     ],
     "01c": [
-        [C_PCT, C_RAISE],
+        [C_SALARY, C_PCT, C_NEW],
+        [C_HI_PCT, C_LINE],
+        [C_OVER],
+        [C_OVER, C_HI_PCT, C_PTS, C_COST],
         [],
-        [MONTHS, C_MONTH_D],
-        [WEEKS, C_WEEK_D],
-        [DAYS, C_DAY_D],
-        [C_RAISE, C_DAY_D],
+        [C_COST],
     ],
 }
 
@@ -281,10 +287,10 @@ ANCHORS = {
                       ((1, "divided"), (1, money(B_MONTH_D))),
                       ((2, f"{round(B_KEEP * 100)}"), (3, money(B_KEPT_D)))],
             "verdict": (5, None)},
-    "01c": {"items": [((0, None), (0, money(C_RAISE))),
-                      ((2, None), (2, money(C_MONTH_D))),
-                      ((3, None), (3, money(C_WEEK_D))),
-                      ((4, None), (4, money(C_DAY_D)))],
+    "01c": {"items": [((0, None), (0, money(C_NEW))),
+                      ((1, None), (1, money(C_LINE))),
+                      ((2, None), (2, money(C_OVER))),
+                      ((3, None), (3, money(C_COST)))],
             "verdict": (5, None)},
 }
 
@@ -535,22 +541,39 @@ def sensitivity():
     eq("01b", "'about $17' of a $20 hour, exact keep → $", rnd(B_WAGE * B_KEEP_EXACT), 17)
     eq("01b", "exact monthly take-home (write-up/pin)", money(rnd(B_KEPT_EXACT)), "$2,967")
 
-    # 01c: the raise maths; the day figure survives a leap year; marginal-rate pinned comment
-    eq("01c", "raise = 3% of $60,000", C_RAISE, 1800)
-    eq("01c", "≈ $5 a day in a 366-day year too", rnd(C_RAISE / 366), C_DAY_D)
-    eq("01c", "week × 52 = year (exact)", round(C_WEEK * WEEKS, 6), float(C_RAISE))
-    rate0, lo0, hi0 = bracket_rate(C_SALARY)
-    rate1, lo1, hi1 = bracket_rate(C_SALARY + C_RAISE)
-    record("01c", "salary before and after raise in the same 12% bracket", (rate0, rate1), (0.12, 0.12),
-           rate0 == rate1 == 0.12)
-    record("01c", "raise below the Social Security wage base", C_SALARY + C_RAISE, f"≤ {SS_WAGE_BASE:,}",
-           C_SALARY + C_RAISE <= SS_WAGE_BASE)
-    close("01c", "exact federal + FICA on the raise = raise × marginal",
-          round(fed_tax(C_SALARY + C_RAISE) - fed_tax(C_SALARY) + fica(C_SALARY + C_RAISE) - fica(C_SALARY), 2),
-          round(C_RAISE * C_MARGINAL, 2), 0.005)
-    eq("01c", "kept a day after federal + FICA → 'about $4' (pinned comment)", rnd(C_DAY_KEPT), 4)
-    record("01c", "'about $4' survives a state tax up to 8%", money(C_RAISE * (1 - C_MARGINAL - 0.08) / DAYS, 2),
-           "≥ $3.50", C_RAISE * (1 - C_MARGINAL - 0.08) / DAYS >= 3.5)
+    # 01c: the bracket maths against the full 2026 federal tax, the pinned comment, the salary window
+    eq("01c", "3% of $65,000 = a $1,950 raise", C_RAISE, 1950)
+    record("01c", "$65,000 sits in the 12% bracket, $66,950 in 22%", (bracket_rate(C_SALARY)[0], bracket_rate(C_NEW)[0]),
+           (0.12, 0.22), bracket_rate(C_SALARY)[0] == 0.12 and bracket_rate(C_NEW)[0] == 0.22)
+    eq("01c", "22% line in pay = $50,400 + $16,100", C_LINE, 66_500)
+    fed0, fed1 = fed_tax(C_SALARY), fed_tax(C_NEW)
+    close("01c", "2026 federal tax on $65,000 (single)", round(fed0, 2), 5620.00, 0.005)
+    close("01c", "2026 federal tax on $66,950 (single)", round(fed1, 2), 5899.00, 0.005)
+    close("01c", "federal tax on the raise = 12% × $1,500 + 22% × $450", round(fed1 - fed0, 2),
+          round(C_LO * (C_LINE - C_SALARY) + C_HI * C_OVER, 2), 0.005)
+    close("01c", "raise's tax − the same raise all at 12% = the $45 shown", round(fed1 - fed0 - C_LO * C_RAISE, 2),
+          float(C_COST), 0.005)
+    # the rule on screen holds for every salary a 3% raise carries across the line
+    lo_s = -(-C_LINE * 100 // (100 + C_PCT))     # smallest whole salary whose 3% raise passes $66,500
+    worst = max(abs((fed_tax(x * 1.03) - fed_tax(x) - C_LO * x * 0.03) - C_PTS / 100 * (x * 1.03 - C_LINE))
+                for x in range(lo_s, C_LINE, 25))
+    record("01c", f"(new pay − $66,500) × 10% = bracket cost, salaries {money(lo_s)}-{money(C_LINE - 1)}",
+           f"max error {money(worst, 2)}", "$0.00", worst < 0.005)
+    eq("01c", "salary window where a 3% raise crosses the line (write-up)", (money(lo_s), money(C_LINE - 1)),
+       ("$64,564", "$66,499"))
+    fica_r = fica(C_NEW) - fica(C_SALARY)
+    record("01c", "raise below the Social Security wage base", C_NEW, f"≤ {SS_WAGE_BASE:,}", C_NEW <= SS_WAGE_BASE)
+    eq("01c", "FICA on the raise, half-up to 1¢ (pinned comment)", money(rnd(fica_r, 2), 2), "$149.18")
+    eq("01c", "federal tax on the raise (pinned comment)", money(fed1 - fed0), "$279")
+    eq("01c", "raise kept after federal + FICA (pinned ≈ $1,522)", money(rnd(C_RAISE - (fed1 - fed0) - fica_r)), "$1,522")
+    myth = (C_NEW - STD_DED) * C_PTS / 100
+    eq("01c", "myth: all taxed pay 10 points more (pinned comment)", money(myth), "$5,085")
+    record("01c", "R12 lopsided: myth ÷ real", f"{myth / C_COST:.0f}×", "≥ 100×", myth / C_COST >= 100)
+    med = 1_251 * WEEKS
+    record("01c", "$65,000 vs BLS Q2 2026 median full-time pay ($1,251 × 52)", f"{money(med)} ({abs(C_SALARY - med) / med:.2%} off)",
+           "within 0.5%", abs(C_SALARY - med) / med <= 0.005)
+    record("01c", "'Not your whole raise': share of the raise taxed 22%", f"{C_OVER / C_RAISE:.0%}", "< 50%",
+           C_OVER / C_RAISE < 0.5)
 
 
 def main():

@@ -2,15 +2,15 @@
 
 **Prepared for:** *Back of the Envelope* (YouTube Shorts, Instagram Reels, TikTok), US audience, USD
 **Date:** 2026-10-07
-**Writer:** format 1 of 10, round 2 (revised after the verifier and the hook judge; see the **Review log** at the end)
+**Writer:** format 1 of 10, round 2 (revised after the verifier and the hook judge, then in the round-2 **hook pass**, which replaced 01c's hook and kept 01b's; see the **Review log** at the end)
 **Deliverables:**
 - Specs:
   - [`studio/specs/01a-clean-sheet-paid-biweekly.json`](../../studio/specs/01a-clean-sheet-paid-biweekly.json)
   - [`studio/specs/01b-live-sheet-20-an-hour.json`](../../studio/specs/01b-live-sheet-20-an-hour.json)
-  - [`studio/specs/01c-becker-rig-60k-a-year.json`](../../studio/specs/01c-becker-rig-60k-a-year.json) (file name kept; the topic is now a 3% raise on $60,000)
-- Check: [`teasers/v2/checks/01-dead-simple-list.py`](checks/01-dead-simple-list.py). It passes 240 checks with 0 failures.
-- Mutation test: the check caught 10 of 10 deliberately broken spec copies: a $50-rounded result (`≈ $2,950`), a "≈" on an exact result, a wrong VO number, an off-beat `resultT`, a VO line read too fast, an unsupported `lookOpts.gag`, a VO line after the verdict card, a wrong label digit, a missing "≈", and a verdict that no longer matches the maths.
-- Studio linter (`node src/cli.mjs check`): 3/3 clean, 0 errors, 0 warnings (safe zones, type floor, overlap, contrast, fonts, R1), re-run after every fix.
+  - [`studio/specs/01c-becker-rig-60k-a-year.json`](../../studio/specs/01c-becker-rig-60k-a-year.json) (file name kept; since the hook pass the topic is the bracket myth: will a 3% raise push $65,000 into a higher bracket?)
+- Check: [`teasers/v2/checks/01-dead-simple-list.py`](checks/01-dead-simple-list.py). It passes 250 checks with 0 failures (after the hook pass).
+- Mutation test: in the hook pass the check caught 4 of 4 broken copies of the new 01c spec (see the Review log). In round 2 it caught 10 of 10 deliberately broken spec copies: a $50-rounded result (`≈ $2,950`), a "≈" on an exact result, a wrong VO number, an off-beat `resultT`, a VO line read too fast, an unsupported `lookOpts.gag`, a VO line after the verdict card, a wrong label digit, a missing "≈", and a verdict that no longer matches the maths.
+- Studio linter (`node src/cli.mjs check`): 3/3 clean, 0 errors, 0 warnings (safe zones, type floor, overlap, contrast, fonts, R1), re-run after every fix and after the hook pass.
 - Stills checked by eye at frames 0, 2.7-3.2 s, each payoff, the verdict and the last frame.
 
 **Evidence base:**
@@ -57,16 +57,16 @@
 ## Decisions that apply to all three
 
 - **Lane discipline (lane 1: paychecks and wages turned into rough numbers).**
-  - **01c moved off "salary → real hourly".** Lane 2 (find-your-row) owns that topic by name, and `02c-clean-sheet-salary-per-hour.json` already shows the $60,000 row as ≈ $28.85 an hour and ≈ $0.48 a minute. 01c is now **what a 3% raise on $60,000 is per month, week and day**. No other format touches raises.
-  - **One insight per teaser.** 01a owns "a year is 52 weeks, not 48" (26 paychecks, not 24). 01b dropped its "a month is 4 weeks, $3,200" trap, which was the same 8.3% insight, and is now purely gross → take-home. 01c is the raise.
-  - **No pricing in hours of work** (lane 8) and no salary → hourly conversion (lane 2). 01c divides by calendar units only (12, 52, 365), never by 2,080 hours.
+  - **01c moved off "salary → real hourly"** in round 2 (lane 2, find-your-row, owns that topic by name), and in the hook pass off "a 3% raise per day" to **the bracket myth on a 3% raise**: will $65,000 + 3% cross into the 22% bracket, and what does that cost? No other format touches raises. Lane 2's hook pass considered and rejected "your bracket is not your tax rate" for 02c, so no other teaser covers brackets.
+  - **One insight per teaser.** 01a owns "a year is 52 weeks, not 48" (26 paychecks, not 24). 01b dropped its "a month is 4 weeks, $3,200" trap, which was the same 8.3% insight, and is purely gross → take-home on the rough ×0.85 rule (the average keep on a whole wage). 01c is the marginal bracket line, worked exactly, with no keep rule.
+  - **No pricing in hours of work** (lane 8) and no salary → hourly conversion (lane 2). 01c uses no time units at all: one raise, one bracket line.
 - **Series header grammar (the same in all three).**
   - Line 1 is the series phrase with the slot count: "3/4 DEAD SIMPLE NUMBERS".
-  - The rest names the stake and carries one R5 word, in H84's "That Tell You What / You Actually Make" grammar: "THE PAY YOUR BUDGET **FORGETS**", "WHAT $20/HR **ACTUALLY** LANDS", "WHAT A 3% RAISE ON $60,000 **ACTUALLY** PAYS YOU".
+  - The rest names the stake and carries one R5 word, in H84's "That Tell You What / You Actually Make" grammar: "THE PAY YOUR BUDGET **FORGETS**", "WHAT $20/HR **ACTUALLY** LANDS". Since the hook pass 01c asks a yes/no question instead (R11, H48's grammar), whose R5 word is the feared outcome: "WILL A 3% RAISE PUSH $65,000 INTO A **HIGHER BRACKET**?"
   - Round 1's "IF YOU …" filter line (Yannick's H57 grammar, 50,206 at 2.8x med) is gone: it was the weaker half of the pattern.
 - **One calendar.** 52 weeks, 12 months, 365 days; work hours = 40 × 52 = 2,080, printed in 01b's footer and slot note. 01a counts paydays (364 ÷ 14 = 26). No slot mixes 50 and 52 weeks.
-- **The "≈" and rounding policy.** A result gets "≈" exactly when it is rounded or rests on the rough ×0.85 tax rule. Every result equals its visible formula rounded to $1 (or 1¢ when cents are shown), so anyone who redoes a formula on screen gets the number on screen. The check script re-evaluates every typed formula to enforce this. 01c also prints the exact value beside its two rounded results ("exact $34.62", "exact $4.93").
-- **Non-breaking spaces** (` ` in the JSON) keep a highlight or a rule on one rendered line: "13 months" (01a verdict), "× 0.85" (01b footer), "≈ $5 a day" and "pay before tax" (01c). The check script expects them.
+- **The "≈" and rounding policy.** A result gets "≈" exactly when it is rounded or rests on the rough ×0.85 tax rule. Every result equals its visible formula rounded to $1 (or 1¢ when cents are shown), so anyone who redoes a formula on screen gets the number on screen. The check script re-evaluates every typed formula to enforce this. Every 01c result is exact, so 01c shows no "≈".
+- **Non-breaking spaces** (` ` in the JSON) keep a highlight or a rule on one rendered line: "13 months" (01a verdict), "× 0.85" (01b footer), "$45 a year" (01c verdict). The check script expects them.
 - **Kit contract.** Each spec uses only `lookOpts` keys its kit reads (clean-sheet: none; live-sheet: `labels`; becker-rig: `hits`), and the last VO line is the verdict line, because every kit's chrome replaces the captions with the verdict card from `verdict.t`. The check script enforces both.
 - **Risk: the series name.** "DEAD SIMPLE NUMBERS" is Master Money's own branded phrase, and `04-formats.md` says to use "a series name of our own".
   - I kept it because it is the seed the owner approved and the format's id.
@@ -189,6 +189,7 @@ Calendar check, simulated in the check script over 2000-2099 for both alternate-
 - **Spec:** `studio/specs/01b-live-sheet-20-an-hour.json`, 27.0 s
 - **Look:** Live Sheet. Designed spreadsheet on black, a yellow title banner, a "≈" formula bar showing the working, rows that fill one cell at a time, and green (earned) against red (the gross figure in the verdict). The sheet's row numbers do the job of the empty "1. 2. 3.". `lookOpts.labels: "always"` labels every row from frame 1 (the kit's open-loop variant).
 - **Platform title:** "What $20 an hour actually lands each month"
+- **Hook pass: kept.** The two judges averaged the current hook at 4.5; the best rewrite (B, "At $20/hr, who takes more: income tax or FICA?") averaged 6.75, under the 7.5 bar, so the hook, title and body stay as they are. The judges' diagnosis of this hook and the four rewrites are in the Review log.
 - **On-screen hook (header):** `3 DEAD SIMPLE NUMBERS` / `WHAT **$20/HR** ACTUALLY LANDS` (9 words)
 - **Input row at 0.0 s:** mint header row `Your pay · 40 hrs a week | $20/hr`
 
@@ -295,132 +296,135 @@ Read the numbers as: "twenty eighty", "forty-one thousand six hundred" (or "fort
 
 ---
 
-### 01c · Becker rig · "4 DEAD SIMPLE NUMBERS / WHAT A 3% RAISE ON $60,000 ACTUALLY PAYS YOU"
+### 01c · Becker rig · "4 DEAD SIMPLE NUMBERS / WILL A 3% RAISE PUSH $65,000 INTO A HIGHER BRACKET?"
 
-- **Spec:** `studio/specs/01c-becker-rig-60k-a-year.json`, 26.5 s
-- **Look:** Becker rig. A light void with a floor gradient; our own one-colour (green) stick figure, the only saturated colour; maths in neutral ink. The list is a stack of numbered ledges, each with a label (dim until reached) and a dashed empty socket. For each slot a white glyph block drops in beside the figure and types its formula in mono; he winds up and hits it (`lookOpts.hits`: kick, chop, kick, then a two-fisted slam for the goal); the block snaps into the result with hit lines, chips, a shake and a thud, and the result is knocked into its socket. He stomps the trapdoor in his ledge and drops to the next slot. The goal lands on a gold plate with the big impact (white flash, camera punch, cash), a "yes!" fist pump, and he points back at it.
-- **Platform title:** "What a 3% raise on $60K actually pays you"
-- **On-screen hook (header):** `4 DEAD SIMPLE NUMBERS` / `WHAT A 3% RAISE ON **$60,000**` / `ACTUALLY PAYS YOU` (13 words; "$60,000" in green)
-- **No separate input line:** the header already carries $60,000 (the kit's default), and slot 1's block is typing `$60,000 × 3%` at 0.0 s.
+- **Spec:** `studio/specs/01c-becker-rig-60k-a-year.json`, 26.5 s (file name and id kept from round 2; the topic changed in the hook pass, see the Review log)
+- **Look:** Becker rig. A light void with a floor gradient; our own one-colour (green) stick figure, the only saturated colour; maths in neutral ink. The list is a stack of 4 numbered ledges. At this spec's size the kit sets each label on one line with its dashed empty socket under it (the kit's "rows" layout, checked in stills). For each slot the number drops in as a white glyph block and types itself, while the operator and the rest of the formula type onto an ink plate that pops into his hands. He winds up and throws the plate (`lookOpts.hits`: kick, chop, kick, then a two-handed slam for the goal); it slams onto the block with hit lines, chips, a shake and a thud, and the pair crunches into the answer, with its note beside it. The goal lands on a gold plate with the big impact (white flash, camera punch, cash), a "yes!" fist pump, and he points back at it.
+- **Platform title:** "Will a 3% raise push you into a higher tax bracket?" (11 words, no result)
+- **On-screen hook (header):** `4 DEAD SIMPLE NUMBERS` / `WILL A 3% RAISE PUSH **$65,000**` / `INTO A HIGHER BRACKET?` (14 words, 3 lines; "$65,000" in green)
+- **No separate input line:** the header already carries $65,000 (the kit hides the input line when the hook shows `input.value`). At 0.0 s slot ①'s block reads `$65,000` and he already holds the `× 1.03` plate.
 
-**The wrong belief it exploits:** "$1,800 is a real raise." It is: $1,800 a year. Re-expressed in the units people spend in, it is $150 a month, about $35 a week and **about $5 a day**, before tax. Nothing is hidden or wrong in the $1,800; the surprise is how small it is per day, which is what "actually pays you" promises. After federal tax and FICA it is about $4 a day (pinned comment).
+**The wrong belief it exploits:** "If a raise pushes me into a higher bracket, my whole pay (or my whole raise) gets taxed at the higher rate." US brackets are marginal: only the dollars above the line pay the higher rate. For a single filer on the 2026 standard deduction, 22% starts at **$66,500 of pay** ($50,400 of taxed pay + the $16,100 deduction). A 3% raise takes $65,000 to $66,950, $450 over the line. Those $450 pay 22% instead of 12%: **$45 a year**. The other $1,500 of the raise and all of the old pay are taxed exactly as before. The honest answer to the header is "Yes", and the cost is tiny next to the myth (all taxed pay 10 points more: $5,085, 113 times as much).
 
 **Modelled on:**
-- **H84, Master Money:** "4 DEAD SIMPLE NUMBERS / That Tell You What / You Actually Make". 3,000,000 views, 140x. We copy the "actually" header and the opener "Take your salary and multiply it by 0.7…", which becomes "Take your salary, times 3%".
-- **H86, Master Money:** "4 DEAD SIMPLE NUMBERS / FOR BUYING A CAR". 554,900 views, 35.6x. We copy the biggest number as the input at 0.0 s, with every later number smaller.
-- **H55, Yannick:** "Do all 5 and watch your finance change". 115,845 views, 67.1x. We copy the countable empty slots and the first formula inside 2 s.
-- **H73, The Market Hustle:** "$10 each day = $930 by the end of the year", 46,137 (1.1x med): the per-day re-expression, here run downward.
-- **Becker devices** (look reference, not benchmark; `alan-becker.md` sections 4 and 6): numbers as objects, operators as hits the figure performs, results as transformations, and one escalation (kick → chop → kick → slam) toward the smallest number.
+- **H31:** "Home Loan Part payment Reduce Tenure NOT EMI", 578,461 views. One fact makes the belief the viewer holds wrong (R5).
+- **H64:** "What $1 COSTS you", 1,150,974 views (210x med). R5 again: one word ("costs") makes the held number wrong; here "Yes. It costs you $45."
+- **H49, Debt Freedom:** "Yes, daily payments work!", a $2.98 difference, 382,100 views (289.1x). A tiny, honest verdict travels (R12).
+- **H48, Debt Freedom:** a frame-1 question with the verdict in the caption, 1,900,000 views (902.5x) (R11).
+- **H86, Master Money:** "4 DEAD SIMPLE NUMBERS / FOR BUYING A CAR", 554,900 views (35.6x), and **H84** (3,000,000, 140x): the biggest number first, every later number smaller. Here $66,950 → $66,500 → $450 → $45.
+- **Becker devices** (look reference, not benchmark; `alan-becker.md` sections 4 and 6): numbers as objects, operators as tools he throws, results as transformations, and one escalation (kick → chop → kick → slam) toward the smallest number.
 
 **Hook rules**
 
 | Rule | Met? | How |
 |---|---|---|
-| R1 | yes | "$60,000" in the header at 0.0 s; slot 1's block typing `$60,000 × 3%` |
-| R2 | yes | One $ figure in the header (the input); 3% is a rate, not a result |
-| R3 | yes | "Take your salary, times 3%" works on any salary and any raise; the caption gives the rule |
-| R4 | yes | $60,000 is a round salary a little under median full-time pay ($1,251 a week × 52 = $65,052, BLS Q2 2026); 3% sits just under 2026 raise budgets (3.4-3.5%) |
-| R5 | yes | "ACTUALLY PAYS YOU" implies the headline $1,800 overstates it; beaten at 16.9 s by ≈ $5 a day |
-| R6 | yes | You, $60,000, a raise, a year down to a day |
-| R7 | yes | Names the viewer's situation (a raise on a salary), not a label |
-| R8 | yes | 13 words, 3 lines |
-| R9 | yes | 4 numbered, labelled ledges with empty sockets at 0.0 s |
-| R10 | yes | $1,800 at 2.7 s; the biggest number ($60,000) is first and the smallest (≈ $5) is last |
-| R11 | partly | A promise header; the verdict is in the caption |
-| R12 | yes | "≈ $5 a day" against "$1,800" is lopsided and repeatable |
+| R1 | yes | "$65,000" in the header at 0.0 s; slot ①'s block reads `$65,000` and the `× 1.03` plate is in his hands |
+| R2 | mostly | One $ figure in the header (the input), no result in the header or the title. The header also carries "3%", the raise the question is about (both judges flagged it as a second input) |
+| R3 | partly | The myth is everyone's, and the caption gives the rule for anyone whose raise crosses the line: (new pay − $66,500) × 10%. But a 3% raise crosses the line only for salaries from $64,564 to $66,499, so for a $50K viewer the honest answer is "no" (judge 2) |
+| R4 | yes | $65,000 ≈ median full-time pay ($1,251 a week × 52 = $65,052, BLS Q2 2026); 3% sits just under 2026 raise budgets (3.1-3.5%) |
+| R5 | yes | "HIGHER BRACKET?" names the outcome the viewer fears; "Yes. It costs you $45 a year" shows the belief behind the fear is wrong |
+| R6 | partly | $65,000, a raise, a year. "You" is in the title and the last ledge label ("What the bracket costs you"), not in the header |
+| R7 | yes | Names the viewer's situation (a raise near a bracket line), not a label |
+| R8 | yes | 14 words, 3 lines |
+| R9 | yes | 4 numbered, labelled ledges with empty sockets at 0.0 s; the last label, "What the bracket costs you", promises one number |
+| R10 | yes | $66,950 at 2.3 s, the biggest number, first; every later number is smaller, down to $45 |
+| R11 | yes | A yes/no question on screen; the verdict answers it ("Higher bracket? Yes.") |
+| R12 | yes | "It costs you $45 a year", against the $5,085 the myth implies (113x) |
 
-**Beat sheet** (the becker-rig kit's grammar)
+**Beat sheet** (the becker-rig kit's grammar; times match the spec and stills at 0, 1.5, 2.4, 3.0, 6.3, 10.5, 16.3, 21.5 and 26.4 s)
 
 | t (s) | On screen | VO |
 |---|---|---|
-| 0.0 | **Frame 1:** light void; header (3 lines, "$60,000" in green); mono footer "ASSUMES a 3% raise (example) · pay before tax"; 4 numbered ledges "Your raise, a year / A month / A week / A day" with dashed empty sockets; slot 1's white block already typing `$60,0…` beside the figure, who stands at the right end of ledge 1 | "Take your salary, times 3%: a $1,800 raise." |
-| ≈2.3-2.7 | Wind-up, then a **kick**: the block snaps to **$1,800** (hit lines, chips, shake, thud) and is knocked into socket 1 | (same line, on "$1,800") |
-| ≈4-6 | He stomps the trapdoor and drops to ledge 2 | "Now watch it shrink." |
-| 6.6 | Block `$1,800 ÷ 12` drops in and types | "A month: divide by 12. $150." |
-| 8.5 | **Chop** → **$150** into socket 2 | (on "$150") |
-| ≈9-10 | Drop to ledge 3 | |
-| 10.2 | Block `$1,800 ÷ 52` | "A week: divide by 52. About $35." |
-| 12.5 | **Kick** → **≈ $35** into socket 3; note "exact $34.62" | (on "$35") |
-| ≈13-14 | Drop to ledge 4 (the floor) | |
-| 14.2 | Block `$1,800 ÷ 365` | "A day: divide by 365. About $5." |
-| 16.9 | Crouched two-fisted **slam** → **≈ $5** on the gold plate: white flash, camera punch, cash; note "exact $4.93"; "yes!" fist pump, then he points back at it | (on "$5") |
-| 18.4 | Verdict replaces the captions: "A 3% raise on $60,000 / ≈ **$5 a day**, before tax" with a green swoosh under "$5 a day"; ding (chrome) | "$1,800 sounded big. It's about $5 a day, before tax." |
-| 22.7-26.5 | Hold on the finished sheet, the figure pointing at the gold plate (this kit holds rather than clearing) | none |
+| 0.0 | **Frame 1:** light void; header (3 lines, "$65,000" in green); mono footer on 2 lines "ASSUMES single filer, 2026 · standard deduction · federal income tax only"; 4 numbered ledges labelled "Your new pay / Where 22% starts / Pay over the line / What the bracket costs you" (② to ④ dim, with dashed empty sockets); ① active, its white block `$65,000` already typed; the figure in the bottom-right corner holds the ink plate `× 1.03` | "$65,000, plus 3%: $66,950." (captions pop word by word) |
+| ≈2.0-2.3 | Wind-up, then a **kick**: the plate slams onto the block and **$66,950** lands in green at 2.3 s (hit lines, chips, shake, thud) | (same line, on "$66,950") |
+| 4.6 | ② block `$50,400` types; the plate `+ $16,100` pops into his hands | "22% starts at $66,500 of pay." |
+| 6.1 | **Chop** → **$66,500**; note "line + deduction" beside it; ① settles to ink | (on "$66,500") |
+| 8.8 | ③ block `$66,950`, plate `− $66,500` | "You crossed it by $450." |
+| 10.3 | **Kick** → **$450**; note "taxed at 22%" | (on "$450") |
+| 12.0 | ④ block `$450`, plate `× 10%` | "Only those $450 pay 22%. 10 points more: $45." |
+| 15.8 | Two-handed **slam** → **$45** on the gold plate: white flash, camera punch, cash; note "22% − 12%"; "yes!" fist pump, then he points at it | (on "$45") |
+| 16.6 | The finished sheet holds | "Not your whole raise. Not your whole pay." |
+| 20.4 | Verdict replaces the captions: "Higher bracket? Yes. It costs / you **$45 a year**" with a green swoosh under "$45 a year"; ding (chrome) | "Higher bracket? Yes. It costs you $45 a year." |
+| 24.0-26.5 | Hold on the finished sheet (this kit holds rather than clearing) | none |
 
-Payoffs land at 2.7, 8.5, 12.5 and 16.9 s, and the verdict at 18.4 s: gaps of 5.8, 4.0, 4.4 and 1.5 s.
+Payoffs land at 2.3, 6.1, 10.3 and 15.8 s, and the verdict at 20.4 s: gaps of 3.8, 4.2, 5.5 and 4.6 s.
 
 **Full guide VO script (01c, 26.5 s)**
-> Take your salary, times 3%: a $1,800 raise. Now watch it shrink. A month: divide by 12. $150. A week: divide by 52. About $35. A day: divide by 365. About $5. $1,800 sounded big. It's about $5 a day, before tax.
+> $65,000, plus 3%: $66,950. 22% starts at $66,500 of pay. You crossed it by $450. Only those $450 pay 22%. 10 points more: $45. Not your whole raise. Not your whole pay. Higher bracket? Yes. It costs you $45 a year.
 
-Read the numbers as: "three percent", "eighteen hundred", "a hundred fifty", "fifty-two", "thirty-five", "three sixty-five", "five".
+Read the numbers as: "sixty-five thousand", "three percent", "sixty-six thousand nine fifty", "twenty-two percent", "sixty-six thousand five hundred", "four fifty", "ten points", "forty-five". Every line's `d` fits at 2.6 words/s with these readings, as the check script counts them.
 
-**The maths**
+**The maths** (every on-screen number; all exact, so no "≈" anywhere in 01c)
 
 | On screen | Formula | Inputs | Value |
 |---|---|---|---|
-| $60,000 | input | example salary | 60,000 |
-| 3% | input | example raise (footer) | 0.03 |
-| **$1,800** | $60,000 × 3% | | 1,800 (exact) |
-| **$150** | $1,800 ÷ 12 | | 150 (exact) |
-| **≈ $35** | $1,800 ÷ 52 | | 34.615 → $35; note "exact $34.62" |
-| **≈ $5** | $1,800 ÷ 365 | | 4.932 → $5; note "exact $4.93" (÷ 366 in a leap year: 4.918 → $5) |
-| about $4 a day (pinned comment only) | $1,800 × (1 − 0.12 − 0.0765) ÷ 365 | 12% federal bracket + 7.65% FICA, single, 2026 | 3.96 → $4 |
+| $65,000 | input | example salary, ≈ the median full-time pay | 65,000 |
+| 3% / × 1.03 | input | example raise | 1.03 |
+| **$66,950** (①) | $65,000 × 1.03 | a $1,950 raise | 66,950 (exact) |
+| $50,400 | top of the 12% bracket, in taxed pay | 2026, single (Rev. Proc. 2025-32) | 50,400 |
+| $16,100 | standard deduction | 2026, single | 16,100 |
+| **$66,500** (②) | $50,400 + $16,100 | the 22% line, in pay | 66,500 (exact) |
+| **$450** (③) | $66,950 − $66,500 | pay over the line | 450 (exact) |
+| 22% − 12% (④ note) | 22 − 12 | the extra rate on those dollars | 10 points |
+| **$45** (④, verdict) | $450 × 10% | | 45 (exact) |
 
-**Marginal-rate check behind the pinned comment** (2026, single filer, standard deduction)
-- Taxable income before the raise = $60,000 − $16,100 = $43,900; after it, $45,700. Both sit inside the 12% bracket ($12,400-$50,400), so every raise dollar is taxed at 12% federal.
-- FICA on the raise = 7.65% × $1,800 = $137.70 ($61,800 is far below the $184,500 wage base). Federal = 12% × $1,800 = $216.00. The check script recomputes both by differencing the full tax on $61,800 and $60,000: $353.70.
-- Kept: $1,446.30 a year = **$3.96 a day**. "About $4" holds even with a state tax of up to 8% on top ($3.57 a day).
+**Cross-check against the full 2026 federal tax** (single filer, standard deduction, wages only; the check script recomputes each line)
+- Before: taxable $65,000 − $16,100 = $48,900; tax = $1,240 + 12% × ($48,900 − $12,400) = $1,240 + $4,380 = **$5,620.00**.
+- After: taxable $66,950 − $16,100 = $50,850; tax = $1,240 + 12% × $38,000 + 22% × $450 = $1,240 + $4,560 + $99 = **$5,899.00**.
+- Tax on the raise = **$279.00** = 12% × $1,500 ($180) + 22% × $450 ($99). The same raise taxed all at 12% would be $234.00. The difference, **$45.00**, is exactly the number on screen.
+- The rule on screen, (new pay − $66,500) × 10%, matches the full calculation to the cent for every salary a 3% raise carries across the line: $64,564 to $66,499 (the check runs it in $25 steps). Below $64,564 a 3% raise does not reach the line; above $66,499 the viewer was already in 22%.
+- Only $450 of the $1,950 raise (23%) pays 22%: "Not your whole raise."
+- Pinned-comment figures: FICA on the raise 7.65% × $1,950 = $149.18 (6.2% Social Security, $66,950 being far below the $184,500 wage base, plus 1.45% Medicare); kept after federal tax and FICA: $1,950 − $279 − $149.18 ≈ **$1,522**. The myth (all taxed pay 10 points more): 10% × $50,850 = **$5,085**, 113 times the real $45.
 
 **Sources**
-- No on-screen number needs an outside figure: the raise is labelled "(example)" in the footer, and the rest is division.
-- **Context for R4 (write-up only): 3% is a slightly-below-average 2026 raise.**
-  - The Conference Board, 40th annual Salary Budget Survey (released 2025-09-03; 460 US compensation leaders, surveyed 2025-05-19 to 06-20): 3.4% average salary increase budgets for 2026, the same as actually paid in 2025. Via WorldatWork Workspan Daily, "Conference Board Projects 3.4% U.S. Pay Increase Budgets for 2026". https://worldatwork.org/publications/workspan-daily/conference-board-projects-3-4-u-s-pay-increase-budgets-for-2026 (search extract; also lists Payscale 3.5%, WorldatWork 3.6% and WTW 3.5% for 2026). Publisher page: https://www.conference-board.org/publications/US-salary-increase-budgets-2025-2026
-  - Mercer, "2026 actual increase budgets (US)": mean merit increase actually paid in 2026 of 3.1% (756 employers, March 2026 survey), against 3.2% projected in October 2025. https://www.imercer.com/articleinsights/2026-actual-increase-budgets-us (read from a search extract; a direct fetch was blocked by this session's proxy).
-- **Tax parameters for the pinned comment:** the same 2026 standard deduction, 12% bracket and FICA sources as 01b.
-- **$60,000 against the median:** BLS Q2 2026 median full-time pay of $1,251 a week; source as in 01a.
+- **2026 standard deduction, single, $16,100, and the single brackets** (10% to $12,400; 12% to $50,400; 22% above it, to $105,700): the same two independent publishers per figure as 01b (IRS newsroom and Rev. Proc. 2025-32, 2025-10-09; CPA Practice Advisor, 2025-10-09, "22% for incomes over $50,400"; Tax Foundation).
+- **FICA** (pinned comment only): SSA 2026 fact sheet and Kiplinger, as in 01b.
+- **$65,000 against the median** (R4, write-up only): BLS Q2 2026 median full-time pay of $1,251 a week (source as in 01a).
+- **3% against 2026 raise budgets** (R4, write-up only): The Conference Board, 40th annual Salary Budget Survey (released 2025-09-03): 3.4% average salary increase budgets for 2026, via WorldatWork Workspan Daily, https://worldatwork.org/publications/workspan-daily/conference-board-projects-3-4-u-s-pay-increase-budgets-for-2026 (search extract; it also lists Payscale 3.5%, WorldatWork 3.6% and WTW 3.5%). Publisher page: https://www.conference-board.org/publications/US-salary-increase-budgets-2025-2026. Mercer, "2026 actual increase budgets (US)": mean merit increase actually paid in 2026 of 3.1% (756 employers, March 2026 survey), https://www.imercer.com/articleinsights/2026-actual-increase-budgets-us (search extract; a direct fetch was blocked by this session's proxy).
 
-**Assumptions (footer):** `ASSUMES a 3% raise (example) · pay before tax`. "A day" is a calendar day (÷ 365), consistent with ÷ 12 months and ÷ 52 weeks; no slot divides by work hours.
+**Assumptions (footer, on screen from 0.0 s):** `ASSUMES single filer, 2026 · standard deduction · federal income tax only`. Not modelled: state income tax; FICA (it is flat, so a bracket never changes it; in the pinned comment); pre-tax 401(k) or HSA deferrals, which move the line up by the amount deferred; credits; other filing statuses, which have their own lines.
 
-**Caption / description:**
-> A 3% raise on $60,000 is $1,800 a year: $150 a month, about $35 a week, about $5 a day. Before tax. Run yours: salary × 0.03 ÷ 365.
-> #raise #salary #moneymath #payraise
+**Caption / description (verdict in the caption, R11):**
+> Higher bracket? Yes. It costs $45, not your raise. At $65,000, a 3% raise ($1,950) takes you to $66,950: $450 past $66,500, where 2026's 22% bracket starts for a single filer on the standard deduction ($50,400 of taxed pay + $16,100). Only those $450 pay 22% instead of 12%: $45 a year. Every other dollar is taxed exactly as before. Crossed the line too? (new pay − $66,500) × 10% is all the bracket costs you. Federal income tax only.
+> #taxbracket #raise #moneymath #taxes
 
 **Pinned comment:**
-> After 2026 federal tax (12% bracket, single) and Social Security + Medicare (7.65%), about $4 of that $5 a day lands, before state tax. What raise did you get this year?
+> If the myth were true (all pay taxed 10 points more): 10% × $50,850 = $5,085. Real extra: $45. Full federal tax on the $1,950 raise: $279; FICA $149.18; you keep ≈ $1,522.
 
 **Per-platform notes**
 - **YouTube Shorts:**
+  - Use the title above. Frame 1 is a complete question (header, 4 labelled ledges, the typed block and the plate in his hands) and serves as the thumbnail.
   - The Becker look is the most "watchable without sound" of the three (Becker's mute test): each number is physically hit smaller.
-  - Frame 1 reads as a complete premise: header, 4 empty ledges, the figure and the typing block.
 - **Instagram Reels:**
   - The cover is frame 1.
-  - Becker's Shorts show high like rates and few comments, so the "what raise did you get" question in the pinned comment carries the comments.
+  - Becker's Shorts show high like rates and few comments. The comment this teaser will draw is "what about my salary?": answer it with the caption's rule and the $64,564-$66,499 window above.
 - **TikTok:**
-  - Put "3% raise" and "$60,000 salary" in the first caption line for search.
-  - The share line is the verdict, "$1,800 sounded big. It's about $5 a day."
-- **Production:** the kit draws everything (poses: stand, wind-up, kick, chop, slam, fall/land, fist pump, point). No extra props are needed.
+  - Put "tax bracket" and "3% raise" in the first caption line for search.
+  - The share line is the verdict: "Higher bracket? Yes. It costs you $45 a year."
+- **Production:** the kit draws everything (poses: stand, wind-up, kick, chop, slam, fist pump, point). No extra props are needed.
 
 ---
 
 ## Summary table
 
-| ID | Look | Header (t = 0) | Runtime | Key numbers | Verdict | Hook score /10 |
+| ID | Look | Header (t = 0) | Runtime | Key numbers | Verdict | Hook score /10 (see below) |
 |---|---|---|---:|---|---|---:|
 | 01a | clean-sheet | 3 DEAD SIMPLE NUMBERS / PAID **EVERY 2 WEEKS**? THE PAY YOUR BUDGET FORGETS | 26.0 s | $2,500 · $65,000 · not × 24 · $5,000 · $65,000 − $60,000 = $5,000 · 13 months | Every 2 weeks = 13 months of pay a year | 8 |
-| 01b | live-sheet | 3 DEAD SIMPLE NUMBERS / WHAT **$20/HR** ACTUALLY LANDS | 27.0 s | $41,600 · ≈ $3,467 · × 0.85 · ≈ $2,947 · $17 of $20 | ≈ $2,947 a month lands of the $3,467 you earn | 7 |
-| 01c | becker-rig | 4 DEAD SIMPLE NUMBERS / WHAT A 3% RAISE ON **$60,000** ACTUALLY PAYS YOU | 26.5 s | $1,800 · $150 · ≈ $35 · ≈ $5 | A 3% raise on $60,000 ≈ $5 a day, before tax | 7 |
+| 01b | live-sheet | 3 DEAD SIMPLE NUMBERS / WHAT **$20/HR** ACTUALLY LANDS | 27.0 s | $41,600 · ≈ $3,467 · × 0.85 · ≈ $2,947 · $17 of $20 | ≈ $2,947 a month lands of the $3,467 you earn | 4.5 (hook pass; kept) |
+| 01c | becker-rig | 4 DEAD SIMPLE NUMBERS / WILL A 3% RAISE PUSH **$65,000** INTO A HIGHER BRACKET? | 26.5 s | $66,950 · $50,400 + $16,100 = $66,500 · $450 · $450 × 10% = $45 | Higher bracket? Yes. It costs you $45 a year | 7.5 (hook pass; adopted, was 3.5) |
 
-**How the hook scores were set.** The judge scored the round-1 versions 7, 6 and 6. These are my estimates for the revised versions, which adopt the judge's rewrites:
+**How the hook scores were set.** 01b and 01c carry the two judges' average from the round-2 hook pass (details in the Review log); 01a was not in the hook pass and keeps my estimate. Before the hook pass, the judge scored the round-1 versions 7, 6 and 6, and these were my estimates for the round-2 revisions:
 - **01a (8):** the header now carries R5 ("the pay your budget forgets") and a question (R11) on top of the most common US pay period, and the verdict is novel. It is not higher because the payoff is the 52-vs-48 fact, which some viewers already know, and the format is untested faceless.
-- **01b (7):** the header moves from H57's filter grammar to H84's payoff grammar, and the shrink runs one way. Take-home pay is familiar ground and the gap (15%) is not lopsided, so it stays below 01a.
-- **01c (7):** in lane now, timely (raise season), viewer-owned and lopsided ($1,800 → $5). The per-day re-framing is a known device, and the verdict is "before tax".
+- **01b (estimated 7; hook pass 4.5):** the header moves from H57's filter grammar to H84's payoff grammar, and the shrink runs one way. Take-home pay is familiar ground and the gap (15%) is not lopsided, so it stays below 01a. The hook-pass judges scored it lower than my estimate: the $20/HR header is a filter (H57), "actually lands" is H87's soft verb, and the first payoff ($41,600 at 2.7 s) is the number the viewer already holds.
+- **01c (estimated 7 for the per-day raise; hook pass 3.5 for that hook, 7.5 for the adopted bracket hook):** the old hook asked the viewer to hold two inputs and promised a wrong answer ("actually pays you") the video never showed. The bracket hook attacks a belief most viewers hold, with a yes/no question and a tiny, exact verdict.
 
 ## Caveats
 
 - **Fact-checking method.**
   - Round 1 used 10 web searches; this revision used 2 more (2026 raise budgets).
   - Direct fetches of irs.gov, bls.gov, census.gov, energy.gov, taxfoundation.org, imercer.com and hrdive.com were blocked by this session's network proxy, so those pages were read from search extracts only.
-  - Every on-screen tax figure has two independent publishers, every displayed result is robust to the plausible spread of its inputs, and no on-screen number in 01a or 01c rests on an outside figure.
+  - Every on-screen tax figure has two independent publishers, and every displayed result is robust to the plausible spread of its inputs. No on-screen number in 01a rests on an outside figure; since the hook pass, 01c's rest only on the 2026 single bracket line ($50,400) and standard deduction ($16,100), the same sourced figures 01b uses.
+  - The hook pass used no new web searches: every new number is arithmetic on figures already sourced here.
 - **Untested.** No teaser has been posted. Stills were rendered and checked; full MP4s were not rendered in this pass.
 - **Kit dependence.** The clean-sheet chrome (header and verdict fitting) is being reworked by the clean-sheet fixer. The 01a header is written as 2 explicit lines because the current fitter cannot set "THE PAY YOUR BUDGET FORGETS" on a line of its own at ≥ 56 px; it renders as "…EVERY 2 WEEKS? THE / PAY YOUR BUDGET FORGETS". Re-check the break after the fixer lands. The fixer also changed the clean-sheet layout engine during this pass (labels now sit beside the results); the 01a beat sheet describes the final re-render.
 - **Untested faceless.** Every benchmark winner of this format had a presenter on screen (`04-formats.md`). These are the faceless test.
@@ -465,3 +469,45 @@ Round-2 review: the verifier (2 must, 6 should, 5 nit) and the hook judge (01a 7
 - Mutation test: 10 of 10 broken copies caught (listed at the top).
 - `node src/cli.mjs check` on the three specs: 3/3 clean.
 - Stills rendered for every beat named in the beat sheets; the frame-1, payoff and verdict descriptions above match them.
+
+### Hook pass (2026-10-07)
+
+The owner rejected round 1 partly because "hooks are weak". For 01b and 01c, four rewritten hooks (A-D, each a header + first VO line + the first 1.5 s + a platform title, built on the hook bank's P1-P9 and R1-R12) were scored against the current hook by two judges. **Rule:** average the two judges' scores per option (an option either judge marks dishonest is out; both judges marked every option honest); adopt the best option only if its average is **≥ 7.5** and **≥ 0.75 above the current hook**, otherwise keep the current hook (a clearly better title may still be taken).
+
+| Teaser | Option | Judge 1 | Judge 2 | Average | Decision |
+|---|---|---:|---:|---:|---|
+| 01b | current: "WHAT $20/HR ACTUALLY LANDS" | 5 | 4 | 4.5 | **kept** |
+| 01b | A: "YOU DON'T ACTUALLY MAKE $20 AN HOUR" | 7 | 5.5 | 6.25 | |
+| 01b | B: "AT $20/HR, WHO TAKES MORE: INCOME TAX OR FICA?" | 6.5 | 7 | 6.75 | best option, under 7.5 |
+| 01b | C: "POV: YOUR FIRST $20/HR PAYCHECK" | 6 | 5 | 5.5 | |
+| 01b | D: "PAID HOURLY? × 147 IS YOUR REAL MONTH" | 5.5 | 6 | 5.75 | |
+| 01c | current: "WHAT A 3% RAISE ON $60,000 ACTUALLY PAYS YOU" | 4 | 3 | 3.5 | |
+| 01c | A: "GOT 3% ON $60,000? WHY YOUR PAYCHECK BARELY MOVED" | 6.5 | 6 | 6.25 | |
+| 01c | **B: "WILL A 3% RAISE PUSH $65,000 INTO A HIGHER BRACKET?"** | 7.5 | 7.5 | **7.5** | **adopted** (+4.0) |
+| 01c | C: "$5 A DAY OR A 3% RAISE: WHICH PAYS MORE?" | 6 | 4 | 5.0 | |
+| 01c | D: "OFFERED 3% ON $60,000? WHAT ASKING FOR 4% IS WORTH" | 5 | 5 | 5.0 | |
+
+**The judges' diagnosis of the old hooks.**
+- **01b:** "$20/HR" in the header filters to $20/hr earners, as Yannick's H57 did (50,206, 2.8x med), instead of H84's universal "your salary" (3,000,000, 140x). "ACTUALLY LANDS" is the soft-verb grammar of H87 (35,520, 3.3x med). The 2.7 s payoff ($41,600) is the number the viewer already holds, and what the header promises is paid only at 15.0 s. Gross against take-home is familiar ground.
+- **01c:** two inputs at once ($60,000 and 3%); "ACTUALLY PAYS YOU" promised a wrong answer the video never showed (every slot was the same $1,800 re-expressed, before tax); after ÷ 12 the ÷ 52 and ÷ 365 slots were predictable; the per-day reframe is a known weak device (H73, 1.1x med).
+
+**What I applied:**
+
+| # | Teaser | Change | Notes |
+|---|---|---|---|
+| HP1 | 01c | **Option B as proposed:** header "4 DEAD SIMPLE NUMBERS / WILL A 3% RAISE PUSH **$65,000** / INTO A HIGHER BRACKET?" (14 words); title "Will a 3% raise push you into a higher tax bracket?"; input $65,000; the six VO lines and their timings; the four items (labels, formulas, results, tones, `t` and `resultT`); verdict "Higher bracket? Yes. It costs you **$45 a year**" at 20.4 s; `typeDur` 0.7; hits kick, chop, kick, slam; duration 26.5 s; caption line 1 and pinned comment. File name and id kept (`01c-becker-rig-60k-a-year`), so links in `teasers.json` and the render paths still work; the id is never shown to viewers. | Both judges re-ran every number ($66,950; $66,500; $450; $45; full tax $5,620 → $5,899; FICA $149.18), and the check script now asserts them. The write-up's 01c section, the shared Decisions, the summary table and the caveats are rewritten for the new topic. |
+| HP2 | 01c | **Footer shortened** to "ASSUMES single filer, 2026 · standard deduction · federal income tax only" | The proposed footer ("ASSUMES single, 2026 · 22% starts at $50,400 of taxed pay · $16,100 standard deduction · federal income tax only", 113 characters) cannot fit the kit's 2-line footer even at the 34 px floor; a first trim rendered at 36 px (a type-floor warning). The new line sets at 40 px on 2 lines. $50,400 and $16,100 are still on screen, in ②'s formula, as the VO reaches the line. |
+| HP3 | 01c | **Notes shortened:** ② "line + deduction", ③ "taxed at 22%", ④ "22% − 12%" | With the proposed notes ("taxed-pay line + standard deduction", "only this is taxed 22%", "22% − 12% = 10 points") the kit fell back to its "lines" layout, which dropped all three notes and wrapped two labels; mid-length notes kept them only at 36 px (3 warnings). The short notes all show at 40 px beside their values, every label sits on one line, 0 warnings (variants rendered and compared in stills). "10 points" is still spoken in vo[3]. |
+| HP4 | 01c | Verdict highlight bound with NBSPs (`$45 a year`) | Series rule: a highlight never breaks across lines; the check script expects it. |
+| HP5 | 01c | Judge 2's honesty point written up | $65,000 was chosen to straddle the line: a 3% raise crosses it only for salaries from $64,564 to $66,499, so a $50K viewer's honest answer is "no". This is now in the maths section, the R3 row and the per-platform notes, and the caption's rule ((new pay − $66,500) × 10%) covers anyone whose raise does cross. The check script verifies that rule to the cent across the whole window. |
+| HP6 | 01b | **Kept** (hook, title and body unchanged) | The best option, B, averaged 6.75, under the 7.5 bar. No candidate title was clearly better for the current body: A's "You don't actually make $20 an hour" is the wording both judges rated the strongest R5 line, but in the current video its answer (about $17 an hour) is only said at 17.9 s, after two monthly figures, so that title would promise a payoff the body buries. |
+
+**Open items from the judges (not applied, recorded for the next pass):**
+- **01c:** "PUSH $65,000 INTO" parses awkwardly in 1.5 s (judge 1); the 14-word header carries both 3% and $65,000, and the 2.3 s payoff ($66,950) is plain arithmetic that does not yet touch the question (judge 2); bracket explainers are a familiar genre outside the benchmark. An unscored variant that fixes the parse and adds "you" within 15 words: "4 DEAD SIMPLE NUMBERS / WILL 3% ON **$65,000** PUSH YOU / INTO A HIGHER BRACKET?" (14 words). It was not applied because it was not scored.
+- **01b, if B is revisited:** judge 2's honesty fix (say "FEDERAL TAX", not "INCOME TAX": federal plus a typical 4% state tax, about $4,276, beats FICA) and judge 1's limit (FICA out-takes federal income tax only up to about $50,000 a year for a single filer on the standard deduction; my check gives $50,115), so the "AT $20/HR" qualifier must stay.
+
+**Checks after the hook pass:**
+- `python3 teasers/v2/checks/01-dead-simple-list.py` → **250 checks, 0 failed**. For 01c the script now derives every number from the 2026 bracket table (the line = $50,400 + $16,100) and rewrites `EXPECT`, `VO_NUMBERS` and `ANCHORS` (item i ↔ VO line i; the $45 sits in vo[3]); `APPROX_RESULTS` is all False. New sensitivity checks: $65,000 in the 12% bracket and $66,950 in 22%; the full federal tax $5,620.00 → $5,899.00; the raise's tax $279 = $180 + $99; minus the same raise all at 12% = the $45 on screen; the on-screen rule against the full calculation for every salary from $64,564 to $66,499 ($25 steps, largest error $0.00); FICA $149.18, kept ≈ $1,522 and the myth's $5,085 (113x) from the pinned comment; $65,000 against the BLS median ($65,052, 0.08% off); 23% of the raise taxed at 22%. The per-month, per-week and per-day raise checks and the old marginal-rate pin check were removed with the topic.
+- Mutation test on scratch copies of the specs: (1) ④'s result "$45" → "$46"; (2) vo[3]'s "$45" → "$54"; (3) ②'s `resultT` 6.1 → 7.2; (4) the header's "$65,000" → "$64,000". Each copy fails (2, 2, 1 and 1 failed checks, exit 1): 4 of 4 caught.
+- `node src/cli.mjs check` on 01a, 01b and 01c → 3/3 clean, 0 errors, 0 warnings.
+- `node src/cli.mjs stills` for 01c at 0, 1.5, 2.4, 3.0, 6.3, 10.5, 16.3, 21.5 and 26.4 s: frame 1 shows the 3-line header with "$65,000" in green, the 2-line footer, 4 labelled ledges, ①'s block `$65,000` typed and the `× 1.03` plate in his hands; at 2.4 s **$66,950** has just landed with the hit burst; at 3.0 s it sits in slot ① under the caption "$65,000, plus 3%: $66,950."; the notes appear beside $66,500, $450 and $45; the verdict card reads "Higher bracket? Yes. It costs / you $45 a year". 01b's spec is unchanged, so its round-2 stills stand.

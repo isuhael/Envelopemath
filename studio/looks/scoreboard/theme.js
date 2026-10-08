@@ -101,6 +101,7 @@ export function footerPlan(text, w = FOOT.w) {
     for (let i = 1; i < parts.length; i++) {
       const a = parts.slice(0, i).join(sep) + keep, b = parts.slice(i).join(sep)
       if (open(a)) continue
+      if (/[≈→]\**_*$/.test(a)) continue          // "≈" / "→" never end a line: they belong to the next number
       const widest = Math.max(wid(a, FOOT.px), wid(b, FOOT.px))
       cands.push({ lines: [a, b], widest, score: Math.abs(wid(a, FOOT.px) - half) + cost })
     }
@@ -131,9 +132,9 @@ export const footerRows = spec => Math.max(0, ...footerTexts(spec).map(t => foot
  * opts.hero = false      no hero counter row: the footer sits under the header and the stage starts under it
  * opts.stageBottom = y   move the stage/label split (e.g. 1300 for a tall table); the label stack takes what is
  *                        left above the caption band (L.label.h can get small; check it)
- * L.verdict is the kit's one verdict slot, at the foot of the frame: the label slot when it has room (>= 150 px),
- * else the bottom 196 px above the caption band, over the foot of the stage (L.verdict.boxed: a black band rises
- * there to carry it). The header band only ever holds the hook.
+ * L.verdict is the kit's one verdict slot, at the foot of the frame: the label slot when it has room (>= 150 px, or
+ * L.verdictNeed for a one-line verdict: about 85 px), else the bottom 196 px above the caption band, over the foot of
+ * the stage (L.verdict.boxed: a black band rises there to carry it). The header band only ever holds the hook.
  * L.hero.size / L.hero.icon: the hero counter and icon sizes; L.type: the label stack sizes for this layout.
  */
 export function layoutFor(spec = {}, opts = {}) {
@@ -175,8 +176,22 @@ export function layoutFor(spec = {}, opts = {}) {
   // inner box where piles, charts and panels live (kept inside x 140-940 so nothing hides under the rail)
   L.inner = { x: 140, y: L.stage.y + 20, w: 800, h: L.stage.h - 36 }
   const vh = Math.min(196, limit - sb - 8)
-  L.verdict = vh >= 150 ? { y: limit - vh, h: vh, w: 800, boxed: false } : { y: limit - 196, h: 196, w: 800, boxed: true }
+  L.verdictNeed = verdictNeed(spec)
+  L.verdict = vh >= Math.min(150, L.verdictNeed) ? { y: limit - vh, h: vh, w: 800, boxed: false } : { y: limit - 196, h: 196, w: 800, boxed: true }
   return L
+}
+
+/**
+ * The smallest verdict slot (px) that carries spec.verdict without the band: its lines at 56 px (balanced in 790 px,
+ * breaking at \n as written) + the rule and gaps. A one-line verdict needs about 85 px, two lines about 142.
+ * 0 when there is no verdict. layoutFor boxes the verdict only when the label slot is smaller than min(150, this).
+ */
+export function verdictNeed(spec = {}) {
+  const v = spec.verdict
+  if (!v || !v.text) return 0
+  const font = "400 56px 'Anton', 'Inter Full', sans-serif"
+  const lines = String(v.text).split('\n').reduce((n, seg) => n + Math.max(1, Math.ceil(measureText(plainOf(seg).toUpperCase(), font) / 760)), 0)
+  return Math.round(lines * 57 + 28)
 }
 
 // ---------- motion grammar (seconds) ----------

@@ -97,6 +97,26 @@ export function textW(html, font, { letterSpacing = 'normal', transform = 'none'
 }
 export const font = (weight, px, fam = F.ui) => `${weight} ${px}px ${fam}`
 
+/**
+ * The fewest lines (at most k, word breaks only, the most balanced split) that set str with every line at most maxW
+ * wide in font fnt. Returns the lines, or null when even k lines will not fit (a word wider than maxW).
+ */
+export function wrapLines(str, maxW, fnt, letterSpacing = 'normal', k = 2) {
+  const words = String(str || '').replace(/\n/g, ' ').split(/\s+/).filter(Boolean)
+  if (!words.length) return ['']
+  const n = words.length
+  const memo = new Map()
+  const W = (a, b) => { const key = a + ',' + b; if (!memo.has(key)) memo.set(key, textW(mk(words.slice(a, b).join(' ')), fnt, { letterSpacing })); return memo.get(key) }
+  const join = cuts => { const b = [0, ...cuts, n]; return b.slice(0, -1).map((a, i) => words.slice(a, b[i + 1]).join(' ')) }
+  if (W(0, n) <= maxW) return [words.join(' ')]
+  let best = null, bw = Infinity
+  if (k >= 2) for (let i = 1; i < n; i++) { const w = Math.max(W(0, i), W(i, n)); if (w < bw) { bw = w; best = [i] } }
+  if (best && bw <= maxW) return join(best)
+  best = null; bw = Infinity
+  if (k >= 3) for (let i = 1; i < n; i++) for (let j = i + 1; j < n; j++) { const w = Math.max(W(0, i), W(i, j), W(j, n)); if (w < bw) { bw = w; best = [i, j] } }
+  if (best && bw <= maxW) return join(best)
+  return null
+}
 /** does a display string read as a number (right-align it)? */
 export const isNumeric = v => /\d/.test(String(v)) && !/[A-Za-z]{2,}/.test(String(v))
 /**
@@ -751,6 +771,9 @@ function narrowest(str, f, k, letterSpacing) {
  *   letters                 column-letter row: true (default) | false | 'auto' (dropped when rows get under 58 px)
  *   startRow                number on the first data row (default 2: row 1 is the label row)
  *   pad                     cell padding (default: 22 px, 12 px when the columns do not fit at 22)
+ *   columns[j].px           a fixed cell size, or fs => px (a size derived from the sheet's cell sizes)
+ *   columns[j].maxW / fit   a cap on the column's width (its values must fit under it: every cell size shrinks
+ *                           together until they do) / the column takes no spare width (it keeps its floor)
  * Column widths: every column gets at least its widest value and its label balanced over two lines at 40 px; when
  * that does not fit, every cell size shrinks together (never under 40 px) before any one column gives way; the
  * spare width goes first to labels that want one line, then in proportion to the values. The card's last column
@@ -781,11 +804,15 @@ export function sheet(parent, o) {
   const labStrs = j => labelParts[j].filter((x, i) => i === 0 || x) // the label, then each sub-label line
   const avail = W - gutter
   const fsFor = rowH => cellSizes(rowH)
-  const cellPx = (j, fs) => cols[j].px ?? (kindOf(j) === 'input' ? fs.input : kindOf(j) === 'output' ? fs.result : fs.mid)
+  const cellPx = (j, fs) => (typeof cols[j].px === 'function' ? cols[j].px(fs) : cols[j].px) ?? (kindOf(j) === 'input' ? fs.input : kindOf(j) === 'output' ? fs.result : fs.mid)
   const cellWeight = j => (kindOf(j) === 'mid' ? 700 : 800)
   const cellHTML = (j, v) => (cols[j].units && hasUnits(v) ? unitHTML(v) : esc(v))
   const valW = fs => cols.map((c, j) => Math.max(40, ...values.map(r => (r[j] ? textW(cellHTML(j, String(r[j])), font(cellWeight(j), cellPx(j, fs)), { letterSpacing: '-0.01em' }) : 0))))
-  const needFor = fs => valW(fs).map((w, j) => w + pad + padR(j) + 4)
+  // maxW caps a column (its values must fit under it: the cell sizes shrink together until they do)
+  const capOf = j => cols[j].maxW ?? Infinity
+  const rawNeed = fs => valW(fs).map((w, j) => w + pad + padR(j) + 4)
+  const needFor = fs => rawNeed(fs).map((x, j) => Math.min(x, capOf(j)))
+  const overCap = fs => rawNeed(fs).some((x, j) => x > capOf(j) + 0.5)
   // a label wants one line at full size; it can go down to two (then three) balanced lines at 40 px, and never
   // below its longest word at 40 px (a word is never clipped)
   const lab1 = cols.map((c, j) => Math.max(...labStrs(j).map((l, i) => textW(mk(l), font(i ? 600 : 800, i ? S.sub : S.label)))))
@@ -829,7 +856,7 @@ export function sheet(parent, o) {
     need = needFor(fs)
     let floor = floorOf(need, lab2w)
     // too wide: every cell size shrinks together (never under 40 px) before any one column gives way
-    for (let k = 0; k < 12 && sum(floor) > avail + 0.5; k++) {
+    for (let k = 0; k < 12 && (sum(floor) > avail + 0.5 || overCap(fs)); k++) {
       if (fs.input <= S.cellMin && fs.mid <= S.cellMin && fs.result <= S.cellMin) break
       const f = Math.max(0.85, Math.min(0.98, avail / sum(floor)))
       fs = { input: Math.max(S.cellMin, Math.floor(fs.input * f)), mid: Math.max(S.cellMin, Math.floor(fs.mid * f)), result: Math.max(S.cellMin, Math.floor(fs.result * f)) }
@@ -865,7 +892,7 @@ export function sheet(parent, o) {
         for (const [j, w] of grow) for (const k of members(j)) { left -= Math.max(0, w - widths[k]); widths[k] = Math.max(widths[k], w) }
       }
       if (p !== pads[pads.length - 1] && Math.max(0, ...free.map(j => labelLinesAt(j, widths[j], pad))) > 3) continue
-      const flex = grouped(cols.map((c, j) => (c.w != null ? 0 : need[j])))
+      const flex = grouped(cols.map((c, j) => (c.w != null || c.fit ? 0 : need[j])))
       const Fx = sum(flex)
       widths = widths.map((x, j) => x + (Fx ? (left * flex[j]) / Fx : 0))
       break
@@ -878,7 +905,7 @@ export function sheet(parent, o) {
       if (want[j] > left) break
       widths[j] += want[j]; left -= want[j]
     }
-    const flex = grouped(cols.map((c, j) => (c.w != null ? 0 : need[j])))
+    const flex = grouped(cols.map((c, j) => (c.w != null || c.fit ? 0 : need[j])))
     const Fx = sum(flex)
     widths = widths.map((x, j) => x + (Fx ? (left * flex[j]) / Fx : 0))
     break

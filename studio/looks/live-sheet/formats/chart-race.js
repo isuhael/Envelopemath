@@ -39,7 +39,7 @@ import {
   h, s, setStyle, setText, attr, clamp, lerp, prog, ease, fmtNum, plain, C, F, S, G, M,
   formulaBar, fitFormula, lineChart, mk, mkLen, typedMk, typedCount, typeDur, wordCut, caretOn, snapIn, liftOut,
   popScale, flashAlpha, rgba, lerpRect, durationOf, hasCaptions, opt, layer, footerHeight, textW, font, toneColor,
-  graphemes, twoLines,
+  graphemes, twoLines, springRect, wrapLines,
 } from '../lib.js'
 
 export const css = `
@@ -53,6 +53,11 @@ export const css = `
    Chromium (both set text-wrap-mode); pin nowrap here so the fit checks below see real overflow */
 .cr-hcell .ls-hl, .cr-hcell .ls-hsub { text-wrap-mode: nowrap; }
 .cr-sw { flex: none; display: block; }
+.cr-hcell .ls-hl.cr-wrap { align-items: flex-start; line-height: 1.1; }
+.cr-hcell .ls-hl.cr-wrap .cr-sw { margin-top: 0.3em; }
+.cr-legend { flex-direction: row; flex-wrap: wrap; align-items: center; align-content: center; justify-content: flex-start; gap: 4px 30px; padding: 10px 22px; }
+.cr-legi { display: flex; align-items: center; gap: 12px; font: 800 40px/1.1 'Inter', 'Inter Full', sans-serif; color: #101828; letter-spacing: -0.012em; max-width: 100%; }
+.cr-legi > span { text-wrap-style: balance; }
 .cr-year { font: 800 56px/1.05 'Inter', 'Inter Full', sans-serif; color: #101828; letter-spacing: -0.02em; white-space: nowrap; display: inline-block; transform-origin: 0 55%; }
 .cr-lrow { position: absolute; left: 0; right: 0; background: #FFFFFF; border-bottom: 2px solid #E4E7EC; }
 .cr-lcell { position: absolute; top: 0; display: flex; align-items: center; justify-content: flex-end; padding: 0 22px; border-left: 2px solid #E4E7EC; white-space: nowrap; line-height: 1; letter-spacing: -0.01em; font-family: 'Inter', 'Inter Full', sans-serif; }
@@ -180,8 +185,12 @@ export default function chartRace(spec, ctx) {
   const yearOf = x => Math.floor(x + 1e-9)
 
   // ---------- time ↔ x ----------
-  const xOfT = t => lerp(x0, x1, prog(t, r0, r1 - r0))
-  const tOfX = x => r0 + ((x - x0) / (x1 - x0 || 1)) * (r1 - r0)
+  // frame 1 is never an empty chart: the race is already lookOpts.preroll years in (default 6% of the span, under a
+  // year, so the year cell still reads the start year), and still lands dead on the finals at raceT[1]
+  const preX = clamp(+opt(spec, 'preroll', Math.min(0.9, 0.06 * (x1 - x0))) || 0, 0, 0.2 * (x1 - x0))
+  const xa = x0 + preX
+  const xOfT = t => lerp(xa, x1, prog(t, r0, r1 - r0))
+  const tOfX = x => r0 + ((x - xa) / (x1 - xa || 1)) * (r1 - r0)
 
   // ---------- formula bar strings (the verdict is placed once the chart's height is known) ----------
   let vMode = opt(spec, 'verdict', 'auto')
@@ -220,15 +229,22 @@ export default function chartRace(spec, ctx) {
   colX.push(W)
   const colW = colX.slice(0, -1).map((cx, j) => colX[j + 1] - cx)
   const swW = nS >= 3 ? 30 : 42, swGap = nS >= 3 ? 10 : 12
-  // a rival's name: one line with its swatch, or "name · detail" split onto a grey sub-label when it won't fit
+  // a rival's name: one line with its swatch; "name · detail" split onto a grey sub-label when it won't fit; else
+  // the name wraps over two balanced lines at 40 px. A name that still cannot fit its column (a long word, three
+  // lines) turns the rivals' header cells into one merged legend cell, where every name has the room it needs.
+  const nameFits = (str, inner, lines) => wrapLines(str, inner, font(800, S.labelMin), '-0.012em', lines)
   const labelOf = (name, j) => {
-    const inner = colW[j + 1] - 2 * G.padX - swW - swGap
+    // (a name may run up to 8 px into its cell's 22 px right padding)
+    const inner = colW[j + 1] - 2 * G.padX - swW - swGap + 8
     const str = String(name || '')
-    if (str.includes('\n') || textW(mk(str), font(800, S.label)) <= inner) return str.split('\n')
+    if (str.includes('\n') || textW(mk(str), font(800, S.label)) <= inner) return { parts: str.split('\n') }
     const m = /^(.+?)\s+(?:·|—|–|-|\()\s*(.+?)\)?$/.exec(str)
-    return m ? [m[1], m[2]] : [str]
+    if (m && textW(mk(m[1]), font(800, S.labelMin)) <= inner) return { parts: [m[1], m[2]] }
+    const two = nameFits(str, inner, 2)
+    return two ? { parts: [two.join('\n')], wrapped: true } : null
   }
-  const labels = series.map((sr, i) => labelOf(sr.name, i))
+  let labels = series.map((sr, i) => labelOf(sr.name, i))
+  const legend = labels.some(x => !x)
 
   // ---------- DOM: the sheet card (the header row is built first, then measured) ----------
   const card = h('div', { class: 'cr-card', style: { left: X + 'px', top: cardTop + 'px', width: W + 'px' } })
@@ -242,17 +258,25 @@ export default function chartRace(spec, ctx) {
   const hcells = [h('div', { class: 'cr-hcell input', style: { left: colX[0] + 'px', width: colW[0] + 'px' } },
     ledger ? h('div', { class: 'ls-hl', html: mk(keyLabel) }) : yearEl)]
   heads.append(hcells[0])
-  series.forEach((sr, i) => {
-    const [name, sub] = labels[i]
-    const hl = h('div', { class: 'ls-hl', style: { gap: swGap + 'px' } }, swatch(colors[i], sr.dash, swW), h('span', { html: mk(name) }))
+  if (legend) {
+    // one merged peach cell over the rivals' columns: swatch + full name per rival, flowing (a name wraps, balanced,
+    // only if it is wider than the whole cell)
+    const items = series.map((sr, i) => h('div', { class: 'cr-legi' }, swatch(colors[i], sr.dash, 42), h('span', { html: mk(String(sr.name || '')) })))
+    const el = h('div', { class: 'cr-hcell cr-legend', style: { left: colX[1] + 'px', width: W - colX[1] + 'px' } }, ...items)
+    heads.append(el)
+    hcells.push(el)
+  } else series.forEach((sr, i) => {
+    const { parts: [name, sub], wrapped } = labels[i]
+    const hl = h('div', { class: 'ls-hl' + (wrapped ? ' cr-wrap' : ''), style: { gap: swGap + 'px' } }, swatch(colors[i], sr.dash, swW), h('span', { html: name.split('\n').map(mk).join('<br>') }))
     const sl = sub ? h('div', { class: 'ls-hsub', html: mk(sub), style: { paddingLeft: swW + swGap + 'px' } }) : null
     const el = h('div', { class: 'cr-hcell', style: { left: colX[i + 1] + 'px', width: colW[i + 1] + 'px' } }, hl, sl)
     heads.append(el)
     hcells.push(el)
     // a long name shrinks to the 40 px label floor rather than spill into the next column; a long sub-label
     // drops its indent, then wraps
-    const inner = colW[i + 1] - 2 * G.padX
-    let px = S.label
+    const inner = colW[i + 1] - 2 * G.padX + 8
+    if (wrapped) setStyle(hl, { fontSize: S.labelMin + 'px' })
+    let px = wrapped ? S.labelMin : S.label
     while (px > S.labelMin && hl.scrollWidth > inner + 0.5) { px -= 1; setStyle(hl, { fontSize: px + 'px' }) }
     if (sl && sl.scrollWidth > inner + 0.5) setStyle(sl, { paddingLeft: '0px' })
     if (sl && sl.scrollWidth > inner + 0.5) setStyle(sl, { textWrapMode: 'wrap', textWrapStyle: 'balance' })
@@ -314,19 +338,59 @@ export default function chartRace(spec, ctx) {
   // ---------- the embedded chart ----------
   // the value cells' lane on the right is as wide as the widest string a cell will show: its rival's short name
   // (in the rival's colour, so the cell says whose value it is without relying on a sliver of colour) over the value
-  const tipFont = font(800, TIP.px)
+  // The lane is kept narrow enough for the plot to keep 55% of the card: the values set at 46 px down to 42 px to
+  // fit it, and a name wider than the lane wraps over two (then three) balanced lines rather than widen it (a name
+  // that still cannot fit is cut to its first word). Every cell then gets the same height.
   const tipNames = series.map((sr, i) => String((opt(spec, 'tipNames', null) || [])[i] ?? sr.short ?? String(sr.name || '').split(/\s+·\s+|\s+\(|\s+[—–]\s+/)[0]))
   const candidates = series.flatMap((sr, i) => [finals[i], ...sr.points.map(p => runFmt(p[1]))])
-  const tipTextW = Math.ceil(Math.max(...candidates.map(c => textW(mk(c), tipFont, { letterSpacing: '-0.015em' })), ...tipNames.map(n => textW(mk(n), font(800, 40), { letterSpacing: '-0.012em' }))))
-  const tipW = tipTextW + TIP.padL + TIP.padR + 6
-  const tagX = G.textRight - tipW // value cells: x tagX … 938 (inside the button rail)
-  const plotRight = tagX - LANE_GAP
-  const startV = Math.max(...series.map(sr => sr.points[0][1]))
+  const startV = Math.max(...series.map(sr => sr.points[0][1])), startV0 = startV
   // the x-axis band holds the year labels, and the event flags when there are events (FLAG.ht + margins); the value
   // axis labels sit on the left, in a gutter as wide as the widest label they can show
   const allVals = series.flatMap(sr => sr.points.map(p => p[1]))
-  const axisW = Math.max(...[Math.max(...allVals) * 1.25, Math.max(...allVals) / 3, Math.min(...allVals)].map(v => textW(esc(axisFmt(v, yo.prefix, yo.suffix)), font(600, 32))))
-  const pad = { l: Math.max(70, Math.ceil(axisW) + 34), r: X + W - plotRight, t: 22, b: events.length ? FLAG.top + FLAG.ht + 12 : 60 }
+  // the value axis gutter: as wide as the widest tick label the rescaling axis will actually show
+  const axisW = (() => {
+    const lin = (pts, x) => { if (x <= pts[0][0]) return pts[0][1]; for (let k = 1; k < pts.length; k++) if (x <= pts[k][0]) return lerp(pts[k - 1][1], pts[k][1], (x - pts[k - 1][0]) / (pts[k][0] - pts[k - 1][0] || 1)); return pts[pts.length - 1][1] }
+    const lo = Math.min(...allVals) * 0.8
+    const nice = raw => { const q = Math.pow(10, Math.floor(Math.log10(raw))), m = raw / q; return (m <= 1 ? 1 : m <= 2 ? 2 : m <= 2.5 ? 2.5 : m <= 5 ? 5 : 10) * q }
+    const labels = new Set()
+    for (let k = 0; k <= 40; k++) {
+      const x = lerp(x0, x1, k / 40)
+      const m = Math.max(...series.map(sr => Math.max(lin(sr.points, x), ...sr.points.filter(p => p[0] <= x).map(p => p[1]))))
+      const ym = yo.log ? Math.max(startV0 * 2, m * Math.max(1.5, Math.pow(Math.max(1.0001, m / lo), 0.138 / 0.862))) : Math.max(startV0 * 1.6, m / 0.862)
+      if (yo.log) { for (let e = Math.floor(Math.log10(lo)); e <= Math.ceil(Math.log10(ym)); e++) for (const f of [1, 2, 5]) { const v = f * 10 ** e; if (v >= lo && v <= ym) labels.add(v) } }
+      else { const st = nice(ym / 4); for (let v = st; v <= ym + 1e-9; v += st) labels.add(+v.toPrecision(12)) }
+    }
+    return Math.max(40, ...[...labels].map(v => textW(esc(axisFmt(v, yo.prefix, yo.suffix)), font(600, 32))))
+  })()
+  const padL0 = Math.max(70, Math.ceil(axisW) + 34)
+  const laneBudget = W - padL0 - LANE_GAP - (X + W - G.textRight) - Math.ceil(0.55 * W) - TIP.padL - TIP.padR - 6
+  const valsW = px => Math.ceil(Math.max(...candidates.map(c => textW(mk(c), font(800, px), { letterSpacing: '-0.015em' }))))
+  let tipPx = TIP.px
+  while (tipPx > 42 && valsW(tipPx) > laneBudget) tipPx -= 2
+  let laneMax = Math.max(valsW(tipPx), laneBudget, 200)
+  const nameFont = font(800, 40)
+  // the cells must stack inside the plot: that caps how many lines a name may take (else it is cut to its first word)
+  const plotH0 = chartH - 22 - (events.length ? FLAG.top + FLAG.ht + 12 : 60)
+  const maxL = clamp(Math.floor(((plotH0 + 14 - (nS - 1) * TIP.gap) / Math.max(1, nS) - (TIP.ht - 46 + tipPx)) / 40) + 1, 1, 3)
+  // a word wider than the lane widens it (up to 300 px of text); past that a name is cut to its longest word
+  const longest = n => Math.max(0, ...plain(n).split(/\s+/).filter(Boolean).map(w => textW(esc(w), nameFont, { letterSpacing: '-0.012em' })))
+  laneMax = Math.max(laneMax, Math.min(300, Math.ceil(Math.max(0, ...tipNames.map(longest)))))
+  const tipLines = tipNames.map(n => {
+    for (let k = 1; k <= maxL; k++) { const ls = wrapLines(n, laneMax, nameFont, '-0.012em', k); if (ls) return ls }
+    // still too long: the longest run of its first words that fits, with an ellipsis (the header has the full name)
+    const ws = plain(n).split(/\s+/).filter(Boolean)
+    for (let m = ws.length - 1; m >= 1; m--) {
+      for (let k = 1; k <= maxL; k++) { const ls = wrapLines(ws.slice(0, m).join(' ') + '…', laneMax, nameFont, '-0.012em', k); if (ls) return ls }
+    }
+    return [ws[0] || n]
+  })
+  const nameLines = Math.max(1, ...tipLines.map(ls => ls.length))
+  const tipTextW = Math.ceil(Math.max(valsW(tipPx), ...tipLines.flat().map(l => textW(mk(l), nameFont, { letterSpacing: '-0.012em' }))))
+  const tipW = tipTextW + TIP.padL + TIP.padR + 6
+  const tipHt = TIP.ht - 46 + tipPx + (nameLines - 1) * 40 // name lines + value + padding
+  const tagX = G.textRight - tipW // value cells: x tagX … 938 (inside the button rail)
+  const plotRight = tagX - LANE_GAP
+  const pad = { l: padL0, r: X + W - plotRight, t: 22, b: events.length ? FLAG.top + FLAG.ht + 12 : 60 }
   // x ticks: the author's step, else whole years (about 5 labels); decimals only for a fractional step
   // (thinned when the plot is too narrow for them: neighbouring labels keep a 24 px gap, and at least two show)
   const plotW0 = W - pad.l - pad.r
@@ -340,11 +404,33 @@ export default function chartRace(spec, ctx) {
   }
   for (const st of [1, 2, 4, 5, 10, 20, 25, 50, 100]) if (st > xEvery && !roomy(xEvery) && tickVals(st).length >= 2) xEvery = st
   const xDp = dpOf(xEvery)
+  // the start and end years are always labelled (when they are whole years); a middle label that would sit closer
+  // than 24 px to a neighbour is dropped (never the first or the last)
+  const xLabel = v => (xDp ? v.toFixed(xDp) : String(Math.round(v)))
+  const xTicks = (() => {
+    const v = tickVals(xEvery)
+    if (Number.isInteger(x0) && (!v.length || v[0] - x0 > 1e-6)) v.unshift(x0)
+    const xEnd = Math.floor(x1 + 1e-9) // a race to 2025.99 ends on the 2025 label
+    if (!v.length || xEnd - v[v.length - 1] > 1e-6) v.push(xEnd)
+    const pos = x => ((x - x0) / (x1 - x0 || 1)) * plotW0
+    const half = x => textW(xLabel(x), font(600, 32)) / 2
+    const kept = [v[0]]
+    for (let k = 1; k < v.length - 1; k++) {
+      const a = kept[kept.length - 1], x = v[k], z = v[v.length - 1]
+      if (pos(x) - half(x) - (pos(a) + half(a)) >= 24 && pos(z) - half(z) - (pos(x) + half(x)) >= 24) kept.push(x)
+    }
+    if (v.length > 1) {
+      const z = v[v.length - 1], a = kept[kept.length - 1]
+      if (pos(z) - half(z) - (pos(a) + half(a)) < 24 && kept.length > 1) kept.pop()
+      kept.push(z)
+    }
+    return kept
+  })()
   // headroom over the running max (the flags live on the x axis, so the lines get the rest of the plot)
   const topFrac = 0.138
   const chart = lineChart(L, {
     x: X, y: chartTop, w: W, ht: chartH, pad,
-    xr: [x0, x1], xEvery, xFmt: v => (xDp ? v.toFixed(xDp) : String(Math.round(v))),
+    xr: [x0, x1], xEvery, xTicks, xFmt: xLabel,
     yFmt: v => axisFmt(v, yo.prefix, yo.suffix), log: !!yo.log, yTicks: 4,
     series: series.map((sr, i) => ({ points: sr.points, color: colors[i], width: 8, area: false, dash: sr.dash })),
     events: events.map(ev => ({ x: ev.x })),
@@ -373,9 +459,9 @@ export default function chartRace(spec, ctx) {
     return p
   })
   const tips = series.map((sr, i) => {
-    const n = h('span', { class: 'cr-tipn', html: mk(tipNames[i]), style: { color: colors[i] } })
-    const v = h('span', { class: 'cr-tipv' })
-    const el = h('div', { class: 'cr-tip', style: { left: tagX + 'px', width: tipW + 'px', height: TIP.ht + 'px' } }, n, v)
+    const n = h('span', { class: 'cr-tipn', html: tipLines[i].map(mk).join('<br>'), style: { color: colors[i], lineHeight: nameLines > 1 ? '1' : '' } })
+    const v = h('span', { class: 'cr-tipv', style: { fontSize: tipPx + 'px' } })
+    const el = h('div', { class: 'cr-tip', style: { left: tagX + 'px', width: tipW + 'px', height: tipHt + 'px' } }, n, v)
     setStyle(el, { '--c': colors[i] })
     over.append(el)
     return { el, n, v }
@@ -436,23 +522,25 @@ export default function chartRace(spec, ctx) {
   }
   // { t, order: series indices, highest first }. Frame 1 already uses the order the race opens with (at the
   // stake every order is true), so the cells don't shuffle as the lines leave the start.
-  const orders = [{ t: -Infinity, order: rankAt(x0 + (x1 - x0) * 1e-6, series.map((_, i) => i)) }]
+  const orders = [{ t: -Infinity, order: rankAt(xa + (x1 - x0) * 1e-6, series.map((_, i) => i)) }]
   let emergeT = Infinity
   if (nS >= 2) {
-    let cur = orders[0].order, cand = null, candT = 0, eCand = -1
+    // a lead that already shows at frame 1 (the preroll) counts from before it
+    const v0 = series.map((_, i) => valueAt(i, xa)).sort((a, b) => b - a)
+    let cur = orders[0].order, cand = null, candT = 0, eCand = preX > 0 && v0[0] - v0[1] > Math.abs(v0[0]) * margin * 3 ? -Infinity : -1
     const N = Math.max(1, Math.ceil((r1 - r0) * 60))
     for (let k = 0; k <= N; k++) {
       const t = r0 + (k / N) * (r1 - r0), x = xOfT(t)
       if (emergeT === Infinity) {
         const vs = series.map((_, i) => valueAt(i, x)).sort((a, b) => b - a)
-        if (vs[0] - vs[1] > Math.abs(vs[0]) * margin) { if (eCand < 0) eCand = t; if (t - eCand >= holdT) emergeT = eCand } else eCand = -1
+        if (vs[0] - vs[1] > Math.abs(vs[0]) * margin) { if (eCand === -1) eCand = t; if (t - eCand >= holdT) emergeT = eCand } else eCand = -1
       }
       const raw = rankAt(x, cur)
       if (same(raw, cur)) { cand = null; continue }
       if (!cand || !same(raw, cand)) { cand = raw; candT = t }
       if (t - candT >= holdT) { orders.push({ t: candT, order: cand }); cur = cand; cand = null }
     }
-    if (emergeT === Infinity && eCand >= 0) emergeT = eCand
+    if (emergeT === Infinity && eCand !== -1) emergeT = eCand
     // the race always ends in the true final order (a photo finish inside the debounce still counts)
     const end = rankAt(x1, cur)
     if (!same(end, cur)) orders.push({ t: cand && same(cand, end) ? candT : r1, order: end })
@@ -469,6 +557,9 @@ export default function chartRace(spec, ctx) {
     }
   }
   const leaderAt = t => { let k = -1; for (let j = 0; j < leads.length; j++) if (leads[j].t <= t) k = j; return k }
+  // the finals settle once the last slide (a photo finish) is over, so numbers never move and change at once
+  const lastOrderT = orders.length > 1 ? orders[orders.length - 1].t : -Infinity
+  const finT = Math.max(r1, lastOrderT + SWAP)
 
   // ---------- formula bar ----------
   const cut = steps[0].t <= 0 ? cutAt(steps[0].text, opt(spec, 'formulaAt0', 0.7)) : 0
@@ -513,7 +604,7 @@ export default function chartRace(spec, ctx) {
     let lastTick = -Infinity
     for (let y = yearOf(x0) + 1; y <= x1 + 1e-9; y++) {
       const t = tOfX(y)
-      if (t - lastTick >= 0.8) { ctx.cue(t, 'tick', { gain: 0.3 }); lastTick = t }
+      if (t > 0.05 && t - lastTick >= 0.8) { ctx.cue(t, 'tick', { gain: 0.3 }); lastTick = t }
     }
   } else ledT.forEach(t => ctx.cue(t, 'tick', { gain: 0.6 }))
   flags.forEach(f => ctx.cue(f.t, 'thud', { gain: 0.7 }))
@@ -522,7 +613,7 @@ export default function chartRace(spec, ctx) {
   if (loopOn) ctx.cue(loopT0, 'swipe', { gain: 0.5 })
 
   // ---------- frame ----------
-  const tipLo = plot.y - 6, tipHi = plot.y + plot.h - TIP.ht + 8
+  const tipLo = plot.y - 6, tipHi = plot.y + plot.h - tipHt + 8
   const yr0 = yearOf(x0), yr1 = yearOf(x1)
   return {
     duration: D0,
@@ -534,7 +625,7 @@ export default function chartRace(spec, ctx) {
     },
     seek(t) {
       const looping = t >= loopT0
-      const xNow = looping ? lerp(x1, x0, ease.inOut(prog(t, loopT0 + 0.02, 0.4))) : xOfT(t)
+      const xNow = looping ? lerp(x1, xa, ease.inOut(prog(t, loopT0 + 0.02, 0.4))) : xOfT(t)
 
       // formula bar (the verdict takes it over in ink, heavier, as the ≈ chip pops)
       const fs = formulaState(t)
@@ -549,7 +640,7 @@ export default function chartRace(spec, ctx) {
       if (!ledger) {
         const yr = clamp(yearOf(xNow), yr0, yr1)
         setText(yearEl, String(yr))
-        const since = (xNow - yr) * ((r1 - r0) / (x1 - x0 || 1))
+        const since = (xNow - yr) * ((r1 - r0) / (x1 - xa || 1))
         const k = !looping && t > r0 && yr > yr0 && since < 0.22 ? 1 + 0.08 * (1 - ease.out(since / 0.22)) : 1
         setStyle(yearEl, { transform: k > 1.0005 ? `scale(${k.toFixed(4)})` : 'none' })
       }
@@ -596,11 +687,12 @@ export default function chartRace(spec, ctx) {
       const swapP = lk >= 0 ? ease.out(prog(t, leads[lk].t, 0.2)) : 1
       const fadeOut = looping ? prog(t, loopT0, 0.2) : 0
       const fin = t >= r1 && !looping
+      const finP = fin ? prog(t, finT, M.drop) : 1
 
       // value cells ride the value axis at their tips' height, stacked in rank order; when the order changes
       // they slide past each other (and the rewind slides them back to frame 1's order)
       const wants = tipPts.map(p => p.y)
-      const packed = order => stackOrd(wants, order, TIP.ht, TIP.gap, tipLo, tipHi)
+      const packed = order => stackOrd(wants, order, tipHt, TIP.gap, tipLo, tipHi)
       let tops, sliding = false
       const nudge = series.map(() => 0) // a rising cell passes in front, nudged left
       if (looping) {
@@ -620,30 +712,32 @@ export default function chartRace(spec, ctx) {
           })
         }
       }
-      const rects = tops.map((y, i) => { const y0 = Math.round(y), x0 = tagX + nudge[i]; return { x0, y0, x1: x0 + tipW, y1: y0 + TIP.ht } })
+      const rects = tops.map((y, i) => { const y0 = Math.round(y), x0 = tagX + nudge[i]; return { x0, y0, x1: x0 + tipW, y1: y0 + tipHt } })
       tipPts.forEach((p, i) => {
         const tp = tips[i], r = rects[i]
         setStyle(tp.el, { top: r.y0 + 'px', left: r.x0 + 'px' })
         // cells passing each other overlap on purpose, for SWAP s
         mark(tp.el, 'data-overlap-ok', sliding)
+        // the running value at r1 already reads the final's number: the text swaps in place (no fade), then the
+        // cell settles from 110% once any last slide has finished
         setText(tp.v, fin ? finals[i] : runFmt(p.v))
-        setStyle(tp.v, snapIn(fin ? prog(t, r1, M.drop) : 1))
+        setStyle(tp.v, { opacity: '1', transform: finP > 0 && finP < 1 ? `scale(${(1 + 0.1 * (1 - ease.out(finP))).toFixed(4)})` : 'none' })
         // yellow for the leader (cross-faded on a change); a pale flash as a final lands
         let a = i === leader ? swapP : i === prevLeader ? 1 - swapP : 0
         a *= 1 - fadeOut
-        const flash = fin && i !== leader ? flashAlpha(t, r1 + 0.04, 0.5) : 0
+        const flash = fin && i !== leader ? flashAlpha(t, finT + 0.04, 0.5) : 0
         const under = flash > 0.001 ? mix(C.rowHi, C.sheet, flash) : C.sheet
         const bg = a >= 0.999 ? C.accent : a > 0.001 ? mix(C.accent, flash > 0.001 ? C.rowHi : C.sheet, a) : under
         setStyle(tp.el, { backgroundColor: bg, zIndex: String(i === leader ? 4 : nudge[i] ? 3 : 2) })
         // on the leader's yellow the name is ink (a coloured name would lose contrast); the edge keeps the colour
         setStyle(tp.n, { color: a > 0.5 ? C.ink : colors[i] })
         // the dotted price line from the tip to its cell (with an elbow when the cell had to move)
-        const cy = r.y0 + TIP.ht / 2, xa = p.x + 16, xb = r.x0 - 2
-        if (xb - xa < 4 && Math.abs(cy - p.y) < 3) { attr(wireEls[i], 'd', ''); return }
-        const xm = Math.max(xa, xb - 12)
+        const cy = r.y0 + tipHt / 2, xw = p.x + 16, xb = r.x0 - 2
+        if (xb - xw < 4 && Math.abs(cy - p.y) < 3) { attr(wireEls[i], 'd', ''); return }
+        const xm = Math.max(xw, xb - 12)
         attr(wireEls[i], 'd', Math.abs(cy - p.y) < 3
-          ? `M${xa.toFixed(1)} ${p.y.toFixed(1)} L${xb} ${p.y.toFixed(1)}`
-          : `M${xa.toFixed(1)} ${p.y.toFixed(1)} L${xm.toFixed(1)} ${p.y.toFixed(1)} L${xb} ${cy.toFixed(1)}`)
+          ? `M${xw.toFixed(1)} ${p.y.toFixed(1)} L${xb} ${p.y.toFixed(1)}`
+          : `M${xw.toFixed(1)} ${p.y.toFixed(1)} L${xm.toFixed(1)} ${p.y.toFixed(1)} L${xb} ${cy.toFixed(1)}`)
       })
 
 
@@ -652,7 +746,7 @@ export default function chartRace(spec, ctx) {
       let selR
       if (looping) selR = lerpRect(leads.length ? rects[orders[orders.length - 1].order[0]] : group, group, ease.inOut(prog(t, loopT0, 0.34)))
       else if (leader < 0) selR = group
-      else selR = lerpRect(prevLeader >= 0 ? rects[prevLeader] : group, rects[leader], ease.back(prog(t, leads[lk].t, M.pick), 1.6))
+      else selR = springRect(prevLeader >= 0 ? rects[prevLeader] : group, rects[leader], prog(t, leads[lk].t, M.pick), 1.6)
       const o = 6
       // whole pixels: crisp borders, and rounded corners rasterise the same however the frame was reached
       const sx0 = Math.round(selR.x0 - o), sy0 = Math.round(selR.y0 - o)

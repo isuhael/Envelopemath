@@ -69,8 +69,9 @@ export default function growthLadder(spec, ctx) {
     fixed.append(el)
     top += 40 + 24
   }
-  const RAIL = [66, 152]
+  const RAIL = [118, 198]           // the ladder stands a little in from the edge: in throw mode he stands left of it
   const CX = (RAIL[0] + RAIL[1]) / 2
+  const FIG_X = 58                 // throw mode: his root x, on clear void left of the rails
   const X0 = RAIL[1] + 40          // left edge of the year column
   const XR = 922                   // right edge of the Worth column (x <= 940 below y 820)
   const GAP = 13                   // text baseline sits this far above its shelf
@@ -92,6 +93,16 @@ export default function growthLadder(spec, ctx) {
       else { lines.push(cur); cur = w }
     }
     if (cur) lines.push(cur)
+    // two lines: balance them ("YOU / PUT IN", not "YOU PUT / IN")
+    if (lines.length === 2) {
+      let best = lines, bw = Math.max(...lines.map(l => measure(l, font, o)))
+      for (let k = 1; k < words.length; k++) {
+        const a = words.slice(0, k).join(' '), b = words.slice(k).join(' ')
+        const w = Math.max(measure(a, font, o), measure(b, font, o))
+        if (w <= A + 0.5 && w < bw - 0.5) { best = [a, b]; bw = w }
+      }
+      return { lines: best, w: bw }
+    }
     return { lines, w: Math.max(...lines.map(l => measure(l, font, o))) }
   }
   // horizontal layout for a given Worth size: column right edges + wrapped heads (null if it does not fit)
@@ -125,15 +136,25 @@ export default function growthLadder(spec, ctx) {
   const bottomThrow = L.floorY - 18
   let mode = lo.mode, lay = null, pitch = 0
   // Prefer single-line column heads at 40 px; only if no reasonable size fits, let heads wrap (and shrink).
+  // A short table (5 rows or fewer) gets bigger values (up to 84 px) and a taller pitch, and the block is centred in
+  // the work area (the ladder keeps filler rungs down to the floor), so the hook frame is never half empty.
+  let lift0 = 0
   if (mode !== 'climb') {
     const minPx = mode === 'throw' ? 34 : 44
-    for (const [wrap, floorPx] of [[false, 50], [true, minPx]]) {
-      for (let px = 76; px >= floorPx && !lay; px -= 2) {
+    const few = N <= 5
+    // (a short table prefers big values over single-line heads: its heads may wrap to reach 60-84 px)
+    for (const [wrap, floorPx, startPx] of [...(few ? [[true, 60, 84]] : []), [false, 50, 76], [true, minPx, 76]]) {
+      for (let px = startPx; px >= floorPx && !lay; px -= 2) {
         const c = columns(px, wrap)
         if (!c) continue
         const topExtra = hl ? 0.97 * px * HLS + PLATE_PAD[1] + 8 : 0.97 * px
-        const avail = N > 1 ? (bottomThrow - GAP - topExtra - (top + c.headH + 20)) / (N - 1) : 999
-        if (avail >= rowNeed(c)) { lay = c; pitch = Math.min(avail, Math.max(rowNeed(c) + 40, 2 * px)); mode = 'throw' }
+        const room = bottomThrow - GAP - topExtra - (top + c.headH + 20)
+        const avail = N > 1 ? room / (N - 1) : 999
+        if (avail >= rowNeed(c)) {
+          lay = c; mode = 'throw'
+          pitch = Math.min(avail, few ? Math.max(rowNeed(c) + 60, 2.6 * px) : Math.max(rowNeed(c) + 40, 2 * px))
+          if (few) lift0 = Math.max(0, (room - (N - 1) * pitch) / 2)
+        }
       }
       if (lay) break
     }
@@ -151,7 +172,7 @@ export default function growthLadder(spec, ctx) {
   // vertical: rung r's y in world coordinates (r may be fractional or negative)
   const legLen = (RIG.thigh + RIG.shin) * FIGK
   const HIP_DROP = 172 * FIGK / 1.1                         // climb: the hip hangs this far below the gripped rung
-  const y0 = climb ? L.floorY - legLen * 0.985 - HIP_DROP : bottomThrow
+  const y0 = climb ? L.floorY - legLen * 0.985 - HIP_DROP : bottomThrow - lift0
   const shelfY = r => y0 - r * pitch
   const baseY = i => shelfY(i) - GAP
   const boxBottom = (i, px) => baseY(i) + 0.14 * px
@@ -171,10 +192,10 @@ export default function growthLadder(spec, ctx) {
 
   // ladder: light structure (plus filler rungs down to the floor in climb mode) + an ink copy that climbs
   const fillers = []
-  if (climb) for (let r = -1; shelfY(r) < L.floorY - pitch * 0.4; r--) fillers.push(shelfY(r))
+  if (climb || lift0 > 0) for (let r = -1; shelfY(r) < L.floorY - pitch * 0.4; r--) fillers.push(shelfY(r))
   const ladTop = topShelf - Math.min(64, pitch * 0.65)
   ladder(g.back, { x0: RAIL[0], x1: RAIL[1], yBottom: L.floorY, yTop: ladTop, rungs: [...fillers, ...rows.map((_, i) => shelfY(i))], color: C.line })
-  const inkFill = climb ? fillers.map(y => { const el = s('line', { x1: RAIL[0], x2: RAIL[1], y1: y, y2: y, stroke: C.ink, 'stroke-width': S.rung, 'stroke-linecap': 'round', opacity: 0 }); g.back.append(el); return { el, y } }) : []
+  const inkFill = fillers.length ? fillers.map(y => { const el = s('line', { x1: RAIL[0], x2: RAIL[1], y1: y, y2: y, stroke: C.ink, 'stroke-width': S.rung, 'stroke-linecap': 'round', opacity: 0 }); g.back.append(el); return { el, y } }) : []
   const inkLad = ladder(g.back, { x0: RAIL[0], x1: RAIL[1], yBottom: L.floorY, yTop: L.floorY, rungs: rows.map((_, i) => shelfY(i)) })
   const guides = rows.map((_, i) => {
     const el = s('line', { x1: RAIL[1] + 18, x2: XR, y1: shelfY(i), y2: shelfY(i), stroke: C.line, 'stroke-width': 5, 'stroke-linecap': 'round', 'stroke-dasharray': '0.1 15' })
@@ -231,10 +252,12 @@ export default function growthLadder(spec, ctx) {
   const spill = []
   if (hl) {
     const Tl = times[N - 1]
-    const vs = [[300, -620, 22], [360, -420, 18], [250, -820, 16], [420, -300, 20], [-640, -760, 18], [-560, -980, 15]]
+    // they spill off the plate's right end into the right margin and down to the floor there, never back over
+    // the table's labels
+    const vs = [[300, -620, 22], [360, -420, 18], [250, -820, 16], [420, -300, 20], [520, -560, 18], [460, -900, 15]]
     vs.forEach(([vx, vy, r], k) => {
       const c = coin(g.top, { r, text: '' })
-      spill.push({ c, t0: Tl + 0.03 + k * 0.025, p0: [pb.cx + (vx > 0 ? pb.w * 0.35 : -pb.w * 0.35), pb.cy - 10], v: [vx, vy], r })
+      spill.push({ c, t0: Tl + 0.03 + k * 0.025, p0: [pb.x + pb.w - 10, pb.cy - 10], v: [vx, vy], r })
     })
   }
 
@@ -297,7 +320,7 @@ export default function growthLadder(spec, ctx) {
       for (const hp of hops) lift += hop(t, hp.t0, hp.dur, hp.h)
       return { ...p, lift }
     }
-    const J = t => fk(figPose(t), { x: CX - 2, ground: L.floorY, face: 1, scale: FIGK })
+    const J = t => fk(figPose(t), { x: FIG_X, ground: L.floorY, face: 1, scale: FIGK })
     const inHand = (Jt, cn) => cn.heavy
       ? [(Jt.hF[0] + Jt.hB[0]) / 2 + 4, Math.min(Jt.hF[1], Jt.hB[1]) - cn.r * 0.82]
       : [Jt.hF[0] + 4, Jt.hF[1] - cn.r * 0.55]
@@ -358,6 +381,9 @@ export default function growthLadder(spec, ctx) {
       const bfr = Math.sin(Math.PI * frac1(fr)), bfl = Math.sin(Math.PI * frac1(fl))
       const fR = [CX + 24 + 16 * bfr, fy(fr) - 14 * bfr], fL = [CX - 24 - 16 * bfl, fy(fl) - 14 * bfl]
       pinLimb(J, 'hF', gR, -1); pinLimb(J, 'hB', gL, 1); pinLimb(J, 'fF', fR, 1); pinLimb(J, 'fB', fL, -1)
+      // a knee never pokes out past a rail: fold it the other way when it would
+      if (J.kB[0] < RAIL[0] - 4) pinLimb(J, 'fB', fL, 1)
+      if (J.kF[0] > RAIL[1] + 4) pinLimb(J, 'fF', fR, -1)
       return J
     }
     const tr0 = poseTrack(intro)
@@ -371,14 +397,13 @@ export default function growthLadder(spec, ctx) {
       else J = climbJ(t)
       if (hl && t > tEnd) {
         // the hand that did not slap the top rung lets go and punches up and out; one leg kicks out
+        // the hand that did not slap the top rung lets go and punches up and OUT (clear of his head, elbow to the
+        // outside); both feet stay on their rungs
         const p = E.snap(prog(t, tEnd, 0.35))
         const freeR = (N - 1) % 2 === 1                  // the right hand is free when the left slapped the top rung
-        const fist = [J.sh[0] + (freeR ? 70 : -70), J.sh[1] - 92 + 6 * Math.sin((t - tEnd) * 6)]
+        const fist = [J.sh[0] + (freeR ? 1 : -1) * (100 * k / 1.1), J.sh[1] - 44 * k / 1.1 + 6 * Math.sin((t - tEnd) * 6)]
         const cur = freeR ? J.hF : J.hB
-        pinLimb(J, freeR ? 'hF' : 'hB', [lerp(cur[0], fist[0], p), lerp(cur[1], fist[1], p)], freeR ? 1 : -1)
-        const kick = [J.hip[0] + (freeR ? 64 : -64), J.hip[1] + 86]
-        const cf = freeR ? J.fF : J.fB
-        pinLimb(J, freeR ? 'fF' : 'fB', [lerp(cf[0], kick[0], p), lerp(cf[1], kick[1], p)], freeR ? 1 : -1)
+        pinLimb(J, freeR ? 'hF' : 'hB', [lerp(cur[0], fist[0], p), lerp(cur[1], fist[1], p)], freeR ? -1 : 1)
       }
       fig.draw(J)
     }

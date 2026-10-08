@@ -146,6 +146,13 @@ export default function chartRace(spec, ctx) {
   P.y = L.stage.y + (flagStrip ? 72 : 30)                       // flag strip above the plot
   P.h = L.stage.y + L.stage.h - 58 - P.y                        // x tick labels below it
   const pxOf = x => ((x - X.from) / span) * P.w
+  // the verdict never covers the chart: when it lands on a band over the stage foot (L.verdict.boxed), the plot box
+  // compresses over the 0.3 s before verdict.t so both lines, the tips and the x ticks end above the band (the y range
+  // is unchanged, only squeezed; nothing reads as a camera move)
+  const vT = spec.verdict && spec.verdict.text ? Math.max(0, +spec.verdict.t || 0) : null
+  const PH0 = P.h
+  const PH1 = vT != null && L.verdict.boxed ? clamp(L.verdict.y - 10 - 54 - P.y, PH0 * 0.45, PH0) : PH0
+  const phAt = t => (PH1 >= PH0 ? PH0 : lerp(PH0, PH1, ease.inOut(prog(t, vT - 0.3, 0.3))))
 
   // ---------- values, y scale (auto-rescaling, smoothed, monotonic) ----------
   const vAt = (sr, x) => valueAt(sr.points, x)
@@ -171,9 +178,9 @@ export default function chartRace(spec, ctx) {
   const pos = allVals.filter(v => v > 0)
   const logMin = Y.min > 0 ? +Y.min : (pos.length ? Math.min(...pos) : 1) * 0.8
   const logMax = Y.max != null ? +Y.max : allMax * 1.3
-  const pyFor = ymax => (Y.log
-    ? v => P.h - ((Math.log10(Math.max(v, logMin)) - Math.log10(logMin)) / (Math.log10(logMax) - Math.log10(logMin))) * P.h
-    : v => P.h - ((v - Y.min) / (ymax - Y.min)) * P.h)
+  const pyFor = (ymax, ph = P.h) => (Y.log
+    ? v => ph - ((Math.log10(Math.max(v, logMin)) - Math.log10(logMin)) / (Math.log10(logMax) - Math.log10(logMin))) * ph
+    : v => ph - ((v - Y.min) / (ymax - Y.min)) * ph)
 
   // running counter templates (the finals are display strings; only running values are formatted here)
   const runTpl = { prefix: Y.prefix, suffix: Y.suffix, dp: Y.dp, group: true, scale: 1, value: 0 }
@@ -251,7 +258,9 @@ export default function chartRace(spec, ctx) {
     root.append(lab)
     return { line, lab }
   })
-  gGrid.append(s('line', { x1: 0, x2: P.w, y1: P.h, y2: P.h, stroke: '#2A3340', 'stroke-width': 3 }))
+  const baseLine = s('line', { x1: 0, x2: P.w, y1: P.h, y2: P.h, stroke: '#2A3340', 'stroke-width': 3 })
+  gGrid.append(baseLine)
+  const logTicks = []
   if (Y.log) {
     // fixed log ticks: 1-2-5 per decade, at least 56 px apart
     const py = pyFor(logMax)
@@ -267,6 +276,7 @@ export default function chartRace(spec, ctx) {
       attr(g.line, 'opacity', '1'); attr(g.line, 'y1', yy.toFixed(1)); attr(g.line, 'y2', yy.toFixed(1))
       setText(g.lab, axisText(v, Y.prefix))
       style(g.lab, { display: 'block', top: (yy - 15).toFixed(1) + 'px' })
+      logTicks.push({ g, v })
     }
   }
   // x ticks under the plot (decoration): passed years bright, future years dim
@@ -447,7 +457,7 @@ export default function chartRace(spec, ctx) {
   // preference, a cost for switching spot), and the chosen offset from the tip is smoothed by a critically damped
   // spring. seek() only reads this table (interpolated between frames), so it stays a pure function of t.
   const sizeCache = new Map()
-  const YB = P.h + 50                    // labels may drop into the x-tick strip (the ticks step aside)
+  // labels stay inside the plot (YB = its height - 4): the x ticks under it always read
   function sizeOf(o, c) {
     const tpl = c.disp ? parseDisplay(c.disp) : c.tpl
     const v = c.disp ? tpl.value * tpl.scale : c.v
@@ -476,7 +486,7 @@ export default function chartRace(spec, ctx) {
   }
   const PL = (() => {
     const fps = spec.fps || 30
-    const t0 = Math.min(0, R0), t1 = TF + 0.25
+    const t0 = Math.min(0, R0), t1 = Math.max(TF + 0.25, PH1 < PH0 ? vT + 0.05 : 0)
     const n = Math.max(2, Math.ceil((t1 - t0) * fps) + 1)
     const xl = 0, xr = Math.min(P.w + 40, 940 - P.x)          // labels may reach x 940 (the rail), never the axis
     const GX = 24, GY = 12, PAD = 7
@@ -497,7 +507,8 @@ export default function chartRace(spec, ctx) {
     for (let f = 0; f < n; f++) {
       const t = t0 + f / fps
       const x = xAt(t)
-      const py = pyFor(Y.log ? logMax : yMaxAt(t))
+      const YB = phAt(t) - 4
+      const py = pyFor(Y.log ? logMax : yMaxAt(t), phAt(t))
       const lines = S.map(o => {
         const a = []
         for (const p of o.sr.points) { if (p[0] > x + 1e-9) break; a.push(pxOf(p[0]), py(p[1])) }
@@ -588,7 +599,7 @@ export default function chartRace(spec, ctx) {
     return { fps, t0, n, off, xl, xr }
   })()
   // labels caught mid-glide may touch: push them apart vertically, inside the plot
-  function separate(items) {
+  function separate(items, YB) {
     items.sort((a, b) => a.y - b.y || a.tp.o.sr.i - b.tp.o.sr.i)
     for (let pass = 0; pass < 4; pass++) {
       let moved = false
@@ -611,8 +622,17 @@ export default function chartRace(spec, ctx) {
     seek(t) {
       const x = xAt(t)
       const ymax = Y.log ? logMax : yMaxAt(t)
-      const py = pyFor(ymax)
+      const ph = phAt(t), YBt = ph - 4
+      const py = pyFor(ymax, ph)
       const done = t >= R1
+      // ---- the plot box (compresses before a boxed verdict) ----
+      attr(baseLine, 'y1', ph.toFixed(1)); attr(baseLine, 'y2', ph.toFixed(1))
+      for (const tk of xTicks) style(tk.lab, { top: (ph + 12).toFixed(1) + 'px' })
+      for (const lt of logTicks) {
+        const yy = py(lt.v)
+        attr(lt.g.line, 'y1', yy.toFixed(1)); attr(lt.g.line, 'y2', yy.toFixed(1))
+        style(lt.g.lab, { top: (yy - 15).toFixed(1) + 'px' })
+      }
 
       // ---- y grid (linear: rescales with the race) ----
       if (!Y.log) {
@@ -636,7 +656,8 @@ export default function chartRace(spec, ctx) {
       for (const ev of evEls) {
         const on = t >= ev.e.t
         const retired = t >= ev.retire
-        attr(ev.rule, 'y2', (P.h * ease.out(prog(t, ev.e.t, 0.22))).toFixed(1))
+        attr(ev.rule, 'y2', (ph * ease.out(prog(t, ev.e.t, 0.22))).toFixed(1))
+        if (ev.band) attr(ev.band, 'height', ph.toFixed(1))
         attr(ev.rule, 'opacity', on ? (retired ? '0.4' : '0.85') : '0')
         if (ev.band) {
           const x1 = Math.min(x, ev.e.until)
@@ -684,9 +705,9 @@ export default function chartRace(spec, ctx) {
         const tab = PL.off[k]
         const dx = lerp(tab[f0 * 2], tab[f1 * 2], fa), dy = lerp(tab[f0 * 2 + 1], tab[f1 * 2 + 1], fa)
         const sz = sizeOf(tp.o, tp.c)
-        items.push({ tp, w: sz.w, h: sz.h, x: clamp(tp.tx + dx, PL.xl, PL.xr - sz.w), y: clamp(tp.ty + dy, 0, YB - sz.h) })
+        items.push({ tp, w: sz.w, h: sz.h, x: clamp(tp.tx + dx, PL.xl, PL.xr - sz.w), y: clamp(tp.ty + dy, 0, YBt - sz.h) })
       })
-      separate(items)
+      separate(items, YBt)
       const rects = []
       const lb = bump(t, TF, { amp: 0.08, dur: 0.4 })
       for (const it of items) {
@@ -699,7 +720,7 @@ export default function chartRace(spec, ctx) {
         rects.push({ x: it.x, y: it.y, w: it.w, h: it.h })
       }
       for (const tk of xTicks) {
-        const r = { x: pxOf(tk.xv) - tk.w / 2 - 6, y: P.h + 8, w: tk.w + 12, h: 38 }
+        const r = { x: pxOf(tk.xv) - tk.w / 2 - 6, y: ph + 8, w: tk.w + 12, h: 38 }
         style(tk.lab, { visibility: rects.some(q => hit(q, r)) ? 'hidden' : 'visible' })
       }
       // the clock dims while a line or a tip label runs through it (a pure function of this frame's geometry)
@@ -724,7 +745,13 @@ export default function chartRace(spec, ctx) {
         if (stakeLab) {
           const sw = stakeLab.offsetWidth
           const r = { x: P.w - 6 - sw, y: sy - 42, w: sw, h: 32 }
-          const hidden = sy < 46 || rects.some(q => hit(q, r)) || hit(yearRect, r)
+          // it also gives way while a line runs within 24 px of it (a line crossing "$10,000" reads as a strike-through)
+          let near = false
+          for (const tp of tips) {
+            const a = tp.poly
+            for (let i = 2; i < a.length && !near; i += 2) near = clipLen(a[i - 2], a[i - 1], a[i], a[i + 1], r.x - 24, r.y - 24, r.x + r.w + 24, r.y + r.h + 24) > 0
+          }
+          const hidden = sy < 46 || near || rects.some(q => hit(q, r)) || hit(yearRect, r)
           style(stakeLab, { left: r.x.toFixed(1) + 'px', top: r.y.toFixed(1) + 'px', display: hidden ? 'none' : 'block' })
         }
       }

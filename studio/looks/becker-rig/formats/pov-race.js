@@ -35,7 +35,7 @@
 import {
   h, s, style, attr, setText, setHTML, markup, fitText, prog, clamp, lerp, rng,
   C, F, L, E, poseTrack, poseOf, blendPose, secondary, fk, Figure, makeWorld, makeFx, camera,
-  chromeParts, durationOf, num, numLike, fmtNum, measure, coin, icon, popIn, swapAt, squashAt, fall, toss, hop, wobble, arc,
+  chromeParts, durationOf, num, numLike, fmtNum, measure, coin, icon, popIn, swapAt, squashAt, fall, toss, hop, wobble, arc, NumObj,
 } from '../lib.js'
 
 export const css = `
@@ -49,6 +49,7 @@ export const css = `
   font: 800 44px/48px ${F.head}; letter-spacing: -0.01em; color: ${C.ink}; white-space: nowrap; transform-origin: 100% 100%; }
 .pr-tag u { text-decoration: none; color: ${C.red}; }
 .pr-jar { font-family: ${F.mono}; font-weight: 800; fill: ${C.white}; letter-spacing: 0.04em; }
+.pr-sl { font: 900 40px/1 ${F.head}; letter-spacing: -0.02em; color: ${C.ink}; }
 `
 
 // ------------------------------------------------------------------------------------------------ helpers
@@ -80,9 +81,10 @@ function runner(final, yo) {
   const prefix = like ? like.prefix : (yo.prefix ?? '$')
   const dp = like ? like.dp : (yo.dp ?? 0)
   return {
+    dp, compact,
     post: sd ? sd.post.trim() : '',
     final: sd ? { big: (sd.pre + sd.num).trim(), small: sd.post.trim() } : (final != null ? { big: String(final), small: '' } : null),
-    text: v => fmtNum(v, { prefix, dp, compact }),
+    text: (v, dpo = dp) => fmtNum(v, { prefix, dp: compact ? dp : dpo, compact }),
   }
 }
 
@@ -190,8 +192,9 @@ export default function povRace(spec, ctx) {
     (small ? 10 + measure(small, `800 ${SMALL}px ${F.head}`, { letterSpacing: '-0.01em' }) : 0)
   const PLATE = [16, 7]
   const fitsAt = px => {
-    const cl = [[runL.text(maxSp), runL.post], runL.final && [runL.final.big, runL.final.small]].filter(Boolean)
-    const cr = [[runR.text(maxOw), runR.post], runR.final && [runR.final.big, runR.final.small]].filter(Boolean)
+    const dpJ = Math.max(runL.dp, runR.dp)
+    const cl = [[runL.text(maxSp), runL.post], [runL.text(99.99, dpJ), runL.post], runL.final && [runL.final.big, runL.final.small]].filter(Boolean)
+    const cr = [[runR.text(maxOw), runR.post], [runR.text(99.99, dpJ), runR.post], runR.final && [runR.final.big, runR.final.small]].filter(Boolean)
     return cl.every(([b, sm]) => wVal(b, sm, px) <= LBW) && cr.every(([b, sm]) => wVal(b, sm, px) <= RBW - 2 * PLATE[0])
   }
   let VPX = 76
@@ -284,6 +287,9 @@ export default function povRace(spec, ctx) {
   const slots = [[SX, SW, slotOutline()], [TX, TW, slotOutline()]]
   for (const sl of slots) g.back.append(sl[2])
   const spRect = s('rect', { fill: C.redSoft, stroke: C.red, 'stroke-width': 4, 'stroke-dasharray': '14 10', rx: 8 })
+  const MINS = 60
+  const spLab = new NumObj(world.html, { cls: 'pr-sl', text: SP.final != null ? String(SP.final) : '', ax: 0.5, ay: 0.5 })
+  const spLabW = spLab.w
   const spLines = s('path', { fill: 'none', stroke: C.red, 'stroke-width': 3, 'stroke-linecap': 'round', opacity: 0.45 })
   g.mid.append(spRect, spLines)
   const paid = s('line', { stroke: C.red, 'stroke-width': 6, 'stroke-linecap': 'round', 'stroke-dasharray': '0.1 15', opacity: 0.9 })
@@ -346,7 +352,11 @@ export default function povRace(spec, ctx) {
     c.cracks = c.long ? [c.t + 0.42 * c.life, c.t + 0.72 * c.life] : [c.t + 0.5 * c.life]
     c.next = nextT
   })
-  // heap slots: a mound behind him
+  // heap slots: a mound behind him. With only one or two items each stays big on screen (>= ~120 px however far
+  // the camera pulls back): the money spent is still a thing you can see, cracked and grey, next to the tower.
+  const few = cycles.length <= 2
+  const heapScale = zf => Math.max(0.66, (few ? 1.2 : 0.6) / Math.max(0.05, zf))
+  const heapY = (c, sc) => (sc > 0.66 + 1e-6 ? FLOOR - 46 * sc - 4 : c.slot.y)
   const heapSlot = j => {
     const rows = [5, 4, 3, 2]
     let r = 0, i = j
@@ -542,11 +552,15 @@ export default function povRace(spec, ctx) {
     const landP = smooth(prog(t, T1 - 0.5, 0.5))
     const vSp = lerp(spV, spEnd, landP), vOw = lerp(owV, owEnd, landP)
     const below = owV < spV - 1e-9
+    // the same stake prints the same way on both sides: before the race and under $100 both counters use the
+    // larger number of decimals of the two finals ("$7.99" twice, not "$7.99" against "$8")
+    const dpJ = Math.max(runL.dp, runR.dp)
+    const dpOf = (run, v) => (t < T0 || Math.abs(v) < 100 ? dpJ : run.dp)
     if (done && runL.final) { setText(vL.big, runL.final.big); setText(vL.sm, runL.final.small) }
-    else { setText(vL.big, runL.text(vSp)); setText(vL.sm, runL.post) }
+    else { setText(vL.big, runL.text(vSp, dpOf(runL, vSp))); setText(vL.sm, runL.post) }
     const sw = swapAt(t, T1, 0.3)
     if (sw.phase && runR.final) { setText(vR.big, runR.final.big); setText(vR.sm, runR.final.small) }
-    else { setText(vR.big, runR.text(vOw)); setText(vR.sm, runR.post) }
+    else { setText(vR.big, runR.text(vOw, dpOf(runR, vOw))); setText(vR.sm, runR.post) }
     style(vL.el, { color: C.red, transform: (() => { const q = squashAt(t, T1, 0.08); return `scale(${q.sx.toFixed(3)},${q.sy.toFixed(3)})` })() })
     const ownCol = done ? (win ? C.ink : C.red) : below ? C.red : C.heroInk
     style(vR.el, { color: ownCol, transform: `scale(${sw.sx.toFixed(3)},${sw.sy.toFixed(3)})`, opacity: sw.opacity.toFixed(3) })
@@ -557,14 +571,22 @@ export default function povRace(spec, ctx) {
 
     // ---- spent column (ghost money) + the paid line
     const spOn = t >= revealSp
-    const hs = spOn ? z * K * spV * squashAt(t, revealSp, 0.35).sy : 0, swd = SW * (0.62 + 0.38 * z), zP = z * PITCH
+    const sqS = squashAt(t, revealSp, 0.35).sy
+    const hs = spOn ? z * K * spV * sqS : 0, swd0 = SW * (0.62 + 0.38 * z), zP = z * PITCH
     const twd = TW * (0.62 + 0.38 * z)
-    attr(spRect, 'x', f1(SX - swd / 2)); attr(spRect, 'width', f1(swd))
-    attr(spRect, 'y', f1(BASE - hs)); attr(spRect, 'height', f1(Math.max(0, hs)))
-    attr(spRect, 'opacity', hs > 1.5 ? '1' : '0')
+    // the spent money never shrinks to a sliver: it is drawn as a slab at least MINS px tall, labelled with
+    // spend.final; the dotted paid line still marks its true height on the shared scale
+    // (a slab at its minimum carries the spend.final label; a taller column needs none: the counter says it)
+    const minMode = spOn && hs < MINS
+    const hsD = spOn ? Math.max(hs, MINS * sqS) : 0, swd = minMode ? Math.max(swd0, spLabW + 28) : swd0
+    const scx = minMode ? Math.max(SX, 66 + swd / 2) : SX
+    attr(spRect, 'x', f1(scx - swd / 2)); attr(spRect, 'width', f1(swd))
+    attr(spRect, 'y', f1(BASE - hsD)); attr(spRect, 'height', f1(Math.max(0, hsD)))
+    attr(spRect, 'opacity', hsD > 1.5 ? '1' : '0')
+    spLab.set({ x: scx, y: BASE - hsD / 2 + 2, opacity: minMode && t >= revealSp + 0.2 ? clamp((t - revealSp - 0.2) / 0.2) : 0 })
     const step = Math.max(1, Math.ceil(7 / zP))
     let dd = ''
-    for (let j = step; j * zP < hs - 4; j += step) dd += `M${f1(SX - swd / 2 + 8)},${f1(BASE - j * zP)}H${f1(SX + swd / 2 - 8)}`
+    for (let j = step; j * zP < hsD - 4; j += step) if (!minMode) dd += `M${f1(SX - swd / 2 + 8)},${f1(BASE - j * zP)}H${f1(SX + swd / 2 - 8)}`
     attr(spLines, 'd', dd || 'M0,0')
     attr(spLines, 'opacity', dd ? '0.45' : '0')
     attr(paid, 'x1', f1(SX + swd / 2 + 12)); attr(paid, 'x2', f1(TX + twd / 2 + 18))
@@ -687,13 +709,15 @@ export default function povRace(spec, ctx) {
       } else if (t < c.land) {
         const p = prog(t, c.rel, c.fl)
         const from = inHand(figJ(c.rel), 'item', c)
-        ;[ix, iy] = arc(E.inOutSine(p), from, [c.slot.x, c.slot.y], 120)
+        const s1 = heapScale(zf)
+        ;[ix, iy] = arc(E.inOutSine(p), from, [c.slot.x, heapY(c, s1)], 120)
         rot = -400 * p
-        sc = lerp(0.92, 0.66, p)
+        sc = lerp(0.92, s1, p)
         grey = 1
       } else {
         const q = squashAt(t, c.land, 0.28)
-        ix = c.slot.x; iy = c.slot.y; rot = c.slot.rot; sc = 0.66; grey = 1
+        sc = heapScale(zf)
+        ix = c.slot.x; iy = heapY(c, sc); rot = few ? c.slot.rot * 0.2 : c.slot.rot; grey = 1
         attr(it.body, 'transform', `scale(${q.sx.toFixed(3)},${q.sy.toFixed(3)})`)
       }
       if (t < c.land) attr(it.body, 'transform', '')

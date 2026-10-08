@@ -69,6 +69,21 @@ export function inkWidth(el) {
 /** the largest slam start scale that keeps content of width w inside maxW (never above M.slamFrom) */
 export const slamFromFor = (w, maxW, from = M.slamFrom) => clamp(maxW / Math.max(1, w), 1, from)
 
+/**
+ * slamFit(w, maxW, box, from) — slamFromFor, also capped vertically: box = { y0, y1, oy, top, bottom } in frame px
+ * (the element's box, its transform-origin y, and the band it must stay inside at its biggest frame). A two-line
+ * label slamming from 1.16 in the captions-off slot would otherwise poke under y 1480 on its first frame.
+ */
+export function slamFit(w, maxW, box, from = M.slamFrom) {
+  let f = slamFromFor(w, maxW, from)
+  if (box) {
+    const { y0, y1, oy = (y0 + y1) / 2, top = -Infinity, bottom = Infinity } = box
+    if (y1 > oy + 0.5) f = Math.min(f, (bottom - oy) / (y1 - oy))
+    if (oy > y0 + 0.5) f = Math.min(f, (oy - top) / (oy - y0))
+  }
+  return Math.max(1, f)
+}
+
 /** tone → colour (good/goal green, bad red, neutral white) */
 export const toneColor = tone => TONE[tone] || C.white
 
@@ -715,7 +730,10 @@ export function labelStack(parent, L, items, { yieldToVerdict = true } = {}) {
     fitText(l1, L.label.w, { minPx: Math.min(44, T.l1) })
     const l1h = it.l1 ? l1.offsetHeight + 6 : 0
     fitText(l2, L.label.w, { maxH: L.label.h - l1h, minPx: T.l2Min })
-    grp.__from = slamFromFor(Math.max(inkWidth(l1), inkWidth(l2)), L.label.w - 8)
+    // the slam stays inside x 140-940 and inside the slot (origin 50% 40%: a two-line rung must not poke past
+    // L.limit on its first frame)
+    const hh = grp.offsetHeight, y0 = L.label.y
+    grp.__from = slamFit(Math.max(inkWidth(l1), inkWidth(l2)), L.label.w - 8, { y0, y1: y0 + hh, oy: y0 + 0.4 * hh, top: y0 - 12, bottom: L.limit })
     css(grp, { display: 'none' })
     return grp
   })
@@ -770,17 +788,24 @@ export function captions(parent, spec, L) {
       box.append(page.el)
       pages.push(page)
     }
-    words.forEach(w => {
+    // "≈" and "→" are glued to the word after them (a no-break space): the honesty mark never ends a line or a page
+    const glue = w => /^[≈→]$/.test(w)
+    words.forEach((w, wi) => {
       const at = acc / total
       acc += w.w.length + 1
       const sp = h('span', { class: 'w' + (w.em ? ' em' : '') + (w.m2 ? ' m2' : '') })
       sp.innerHTML = esc(w.w)
       if (!page) newPage(at)
-      if (page.spans.length) page.el.append(' ')
+      const prevGlue = wi > 0 && glue(words[wi - 1].w)
+      if (page.spans.length) page.el.append(prevGlue ? ' ' : ' ')
       page.el.append(sp)
       if (page.spans.length && page.el.scrollHeight > maxH) {
         sp.remove(); page.el.lastChild.remove()
-        newPage(at)
+        // a glued "≈" moves to the new page with its number
+        const carry = prevGlue && page.spans.length > 1 ? page.spans.pop() : null
+        if (carry) { carry.sp.remove(); page.el.lastChild.remove() }
+        newPage(carry ? carry.at : at)
+        if (carry) { page.el.append(carry.sp, ' '); page.spans.push(carry) }
         page.el.append(sp)
       }
       page.spans.push({ sp, at })
@@ -842,11 +867,12 @@ export function verdict(parent, spec, L, { slot = L.verdict, tone = 'good' } = {
   const cy = txt.offsetTop + txt.offsetHeight / 2
   const from = Math.min(slamFromFor(inkWidth(txt), slot.w - 8, 1.12), Math.max(1, Math.min(slot.h + 8 - cy, cy + 8) / Math.max(1, txt.offsetHeight / 2)))
   css(box, { display: 'none' })
-  // what the band can cover: every element with its own text (a rolling digit column counts as one), outside the
-  // verdict, the captions and decoration
-  let under = null
+  // what the band can cover: every element with its own text (a rolling digit column counts as one; decoration text
+  // such as axis ticks too, so no glyph is ever sliced in half at the band's edge), outside the verdict and the
+  // captions; and every [data-band-unit] group (a board row: outline, fill and text go together, never a sliver)
+  let under = null, units = null
   const coverable = () => [...parent.querySelectorAll('*')].filter(el => {
-    if (el === box || el === band || box.contains(el) || el.closest('.sb-caps, [data-deco]')) return false
+    if (el === box || el === band || box.contains(el) || el.closest('.sb-caps, .sb-bg, .sb-brand')) return false
     if (el.hasAttribute('data-roll')) return true
     if (el.closest('[data-roll]')) return false
     return [...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())
@@ -859,8 +885,13 @@ export function verdict(parent, spec, L, { slot = L.verdict, tone = 'good' } = {
         const q = t0 <= 0.001 ? 1 : ease.out(prog(t, t0 - 0.2, 0.2)), top = lerp(sb, slot.y - 10, q)
         css(band, { display: q > 0 ? 'block' : 'none', top: top.toFixed(1) + 'px', height: (sb - top).toFixed(1) + 'px' })
         if (q > 0 || under) {
-          if (!under) under = coverable()
+          if (!under) { under = coverable(); units = [...parent.querySelectorAll('[data-band-unit]')] }
           const ref = parent.getBoundingClientRect()
+          for (const el of units) {
+            let hide = false
+            if (q > 0) { const r = el.getBoundingClientRect(); hide = r.height > 0 && r.bottom - ref.top > top + 1 && r.top - ref.top < sb }
+            attr(el, 'data-under-all', hide ? '1' : '0')
+          }
           for (const el of under) {
             let hide = false
             if (q > 0) { const r = el.getBoundingClientRect(); hide = r.height > 0 && r.bottom - ref.top > top + 2 && r.top - ref.top < sb }
