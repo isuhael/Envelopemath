@@ -593,14 +593,30 @@ export default function ledgerDuel(spec, ctx) {
     addK(hero, 0.35, { ...POSES.thinkUp, tilt: -4, aF: [40, 142] }, 0.3, 'inOut')
     addK(hero, 0.75, 'thinkUp', 0.35)
   }
+  // the way a figure faces at time tt (1 = toward the ledger), from the face keys added so far
+  const faceAt = (p, tt) => { let v = 1, bt = -Infinity; for (const x of faceK[p]) if (x.t <= tt && x.t >= bt) { v = x.v; bt = x.t } return v }
+  // a shared crash (both blown up off their stacks in the same row): they stand 90 px apart, so each one leans and
+  // flails AWAY from the other (only the outer arm flails; the inner arm stays down, so it never sweeps across his
+  // neighbour; the inner leg tucks in on landing) and the left one keeps his head level, so the frame-edge clamp
+  // does not push him into his neighbour
+  const apart = (p, pose, f, land) => {
+    const P = { ...(typeof pose === 'string' ? POSES[pose] : pose) }
+    const away = p === 0 ? -1 : 1                                   // screen direction away from the other one
+    const inner = away * f < 0                                      // his front limbs point at the other one
+    if (p === 0) { P.lean = f > 0 ? -3 : 3; P.tilt = land ? 10 : 2 } else P.lean = away * f * 14
+    P[inner ? 'aF' : 'aB'] = inner ? [14, 14] : [-14, -14]          // the inner arm stays down (never sweeps across)
+    if (land) P[inner ? 'lF' : 'lB'] = inner ? [24, -96] : [-14, -70]
+    return P
+  }
   for (let i = 1; i < N; i++) {
     const Ti = times[i]
     for (let p = 0; p < 2; p++) {
       const k = KIND[i][p], ko = KIND[i][1 - p], sg = SIGN[i][p]
       const back = (tt, pose = 'idle', dd = 0.4) => { if (tt < nextT(i) - 0.12) addK(p, tt, pose, dd) }
       if (k === 'crash') {
-        addK(p, Ti - 0.02, 'shocked', 0.08, 'out')
-        addK(p, Ti + AIR - 0.04, PZ.squash, 0.07, 'out')
+        const both = ko === 'crash', f = faceAt(p, Ti)
+        addK(p, Ti - 0.02, both ? apart(p, 'shocked', f, false) : 'shocked', 0.08, 'out')
+        addK(p, Ti + AIR - 0.04, both ? apart(p, PZ.squash, f, true) : PZ.squash, 0.07, 'out')
         squashes[p].push({ t: Ti + AIR, amt: 0.32 })
         back(Ti + AIR + 0.22, PZ.down, 0.32)
         back(Ti + AIR + 1.2, 'idle', 0.45)

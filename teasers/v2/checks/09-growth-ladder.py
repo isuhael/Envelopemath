@@ -21,6 +21,12 @@
    number the hook asks about, which until then lived only in the formula bar); 09b's verdict now prints the R12
    line ("Over 81× the gift"); 09c gained lookOpts.beats (the "× 75,176" and "$5 a day" working on screen) and its
    row 1 lands before frame 1 (rowT −0.4 s), so frame 1 shows ≈ $377, not a count in flight.
+   Assembly fix pass (2026-10-08, after QA): 09a's verdict is "From **year 9** / it earns more than you add." (a
+   big two-line stack), its good mark reads "beats your $100", and its formula-bar lines drop the leading "≈" (the
+   bar's chip is the ≈ sign, so "≈ ≈ $1,245" read doubled). 09c lost vo[6] and beat 2 (the $5 example now lives in
+   the caption only), its one beat moves the hero ("× 75,176", tagged "YEAR 40 ≈ / DAILY AMOUNT"), its verdict leads
+   with the million ("A MILLION BY YEAR 40: / ≈ $13.30 A DAY"), and its footer no longer repeats "7% a year" (the
+   input strip "$1 A DAY · 7% A YEAR" carries the rate from frame 1).
 4. Prints a table and exits 1 on any mismatch.
 
 Run:  python3 teasers/v2/checks/09-growth-ladder.py
@@ -65,9 +71,9 @@ C_DAY, C_DAYS, C_RATE = 1, 365, 0.07
 C_M = C_DAY * C_DAYS / 12
 C_YEARS = [1, 5, 10, 20, 30, 40]
 C_HORIZON = 40                     # the header's "YEAR 40"
-C_EXAMPLE_DAY = 5                  # VO: "$5 a day: about $375,880" (round 2's $5 ladder, now an example)
+C_EXAMPLE_DAY = 5                  # caption: "$5 a day ≈ $375,880" (round 2's $5 ladder; on screen until the fix pass)
 C_PINNED_DAY = 10                  # pinned comment: "$10 a day? ≈ $751,761"
-C_GOAL = 1_000_000                 # verdict: "A MILLION: ≈ $13.30 A DAY"
+C_GOAL = 1_000_000                 # verdict: "A MILLION BY YEAR 40: / ≈ $13.30 A DAY"
 
 # Write-up only (captions / pinned comments): S&P 500 long-run averages, with dividends reinvested.
 # Official Data Foundation (officialdata.org), "S&P 500 since 1928": 10.09% a year nominal, 6.81% real (a live
@@ -159,7 +165,7 @@ C_LAST = C_YEARS[-1]
 C_IN = {y: C_DAY * C_DAYS * y for y in C_YEARS}
 C_W = {y: fv_eff(C_M, C_RATE, 12 * y) for y in C_YEARS}
 C_MULT = C_W[C_HORIZON] / C_DAY                               # year 40 = your daily amount × this
-C_EXAMPLE = C_EXAMPLE_DAY * C_MULT                            # VO: $5 a day
+C_EXAMPLE = C_EXAMPLE_DAY * C_MULT                            # caption: $5 a day
 C_PINNED = C_PINNED_DAY * C_MULT                              # pinned: $10 a day
 C_PER_DAY_FOR_GOAL = C_GOAL / C_MULT                          # verdict: ≈ $13.30 a day for a million
 C_NOM_MULT = fv_monthly(C_M, C_RATE, 12 * C_HORIZON) / C_DAY  # caption: the 7% ÷ 12 a month convention
@@ -180,21 +186,22 @@ ida = "09a-live-sheet-100-a-month-doubles"
 ea = {
     "header": T(money(A_M), money(A_M)),
     "footer": T(pct(A_RATE * 100), money(A_M)),
-    "verdict.text": T(money(A_M), str(A_CROSS)),
+    "verdict.text": T(str(A_CROSS)),                # "From **year 9** / it earns more than you add."
     "data.input.amount": E(money(A_M)),
     "data.input.rate": E(pct(A_RATE * 100) + " a year"),
     # one formula-bar line per row: the row's Worth × 8% ÷ 12 = what it earns the next month
     f"lookOpts.formulaBar[{len(A_YEARS)}].text": T(money(A_ALT_AMOUNTS[0]), money(A_ALT_AMOUNTS[1]),
                                                    str(a_cross(A_ALT_AMOUNTS[0]))),
     "lookOpts.marks[0].label": T(money(A_M)),      # "under $100" on row 8
-    "lookOpts.marks[1].label": T(money(A_M)),      # "earns $100+" on row 9
+    "lookOpts.marks[1].label": T(money(A_M)),      # "beats your $100" on row 9
 }
 for i, y in enumerate(A_YEARS):
     ea[f"data.rows[{i}][0]"] = E(str(y))
     ea[f"data.rows[{i}][1]"] = E(money(A_IN[y]))
     ea[f"data.rows[{i}][2]"] = E(money(A_W[y]))
     ea[f"data.rows[{i}][3]"] = E(money(A_EARN[y]))     # "Earns a month": next month's growth on that Worth
-    ea[f"lookOpts.formulaBar[{i}].text"] = T(money(A_W[y]), pct(A_RATE * 100), "12", money(A_EARN[y]))
+    # the line starts on the row's Worth without its "≈": the bar's chip in front of it is the ≈ sign
+    ea[f"lookOpts.formulaBar[{i}].text"] = T(bare(money(A_W[y])), pct(A_RATE * 100), "12", money(A_EARN[y]))
 expect[ida] = ea
 columns[ida] = ["Year", "You put in", "Worth", "Earns a\u00a0month"]   # no-break space: wraps "Earns / a month"
 # VO: (token, mode) with mode exact | about | over
@@ -243,17 +250,16 @@ extra_t[idb] = []
 idc = "09c-scoreboard-5-a-day-millionaire"
 ec = {
     "header": T(str(C_HORIZON)),
-    "footer": T(money(C_DAY), str(C_DAYS), "12", money(C_M, 0.01), pct(C_RATE * 100)),
-    # "YEAR 40 ≈ YOUR DAILY AMOUNT × 75,176. / A MILLION: ≈ $13.30 A DAY." (the ≈ sits before the phrase)
-    "verdict.text": T(str(C_HORIZON), bare(num(C_MULT)), money(C_PER_DAY_FOR_GOAL, 0.01)),
+    # (the rate is on the input strip, "$1 A DAY · 7% A YEAR", from data.input: the footer no longer repeats it)
+    "footer": T(money(C_DAY), str(C_DAYS), "12", money(C_M, 0.01)),
+    # "A MILLION BY YEAR 40: / **≈ $13.30 A DAY**" (the new fact leads; × 75,176 is on the hero by then)
+    "verdict.text": T(str(C_HORIZON), money(C_PER_DAY_FOR_GOAL, 0.01)),
     "data.input.amount": E(money(C_DAY)),
     "data.input.rate": E(pct(C_RATE * 100) + " a year"),
-    # lookOpts.beats: the working after the ladder, in the verdict's slot ("YEAR 40 ≈ YOUR DAILY AMOUNT" / "× 75,176",
-    # then "$5 A DAY × 75,176" / "≈ $375,880")
-    "lookOpts.beats[0].l1": T(str(C_HORIZON)),
-    "lookOpts.beats[0].l2": T(bare(num(C_MULT))),
-    "lookOpts.beats[1].l1": T(money(C_EXAMPLE_DAY), bare(num(C_MULT))),
-    "lookOpts.beats[1].l2": T(money(C_EXAMPLE)),
+    # lookOpts.beats[0]: the hero takes the header's blank, "× 75,176", tagged "YEAR 40 ≈ / DAILY AMOUNT" (the ≈ is
+    # in the tag, before the phrase)
+    "lookOpts.beats[0].hero": T(bare(num(C_MULT))),
+    "lookOpts.beats[0].tag": T(str(C_HORIZON)),
 }
 for i, y in enumerate(C_YEARS):
     ec[f"data.rows[{i}][0]"] = E(str(y))
@@ -268,7 +274,6 @@ vo_expect[idc] = [
     [("30", "exact"), (bare(money(C_W[30])), "about")],
     [("40", "exact"), (bare(money(C_W[40])), "about")],
     [(bare(num(C_MULT)), "about")],
-    [(money(C_EXAMPLE_DAY), "exact"), (bare(money(C_EXAMPLE)), "about")],
     [(bare(money(C_PER_DAY_FOR_GOAL, 0.01)), "about")],
 ]
 beats[idc] = [("1", 0, "Year 1"), ("10", 1, "Year 10"), ("20", 2, "Year 20"), ("30", 3, "Year 30"),
@@ -497,13 +502,14 @@ claim(ida, "'By year 1 it's earning about $8': month 13 grows ≈ $8 (month 12 �
       money(A_GROWTH(13)) == "≈ $8" and money(A_GROWTH(13), 0.01) == "≈ $8.30"
       and money(A_GROWTH(12), 0.01) == "≈ $7.58" and money(A_Y1_AVG, 0.01) == "≈ $3.75")
 claim(ida, "year 8 'Not yet' / mark 'under $100' (earns < $100)", money(A_EARN[8], 0.01), "< $100", A_EARN[8] < A_M)
-claim(ida, "year 9 'More than you add' / mark 'earns $100+'", money(A_EARN[9], 0.01), "> $100", A_EARN[9] > A_M)
+claim(ida, "year 9 'More than you add' / mark 'beats your $100' / verdict 'it earns more than you add'",
+      money(A_EARN[9], 0.01), "> $100", A_EARN[9] > A_M)
 claim(ida, "first month earning ≥ $100 = 106, in year 9 (month 105 earns < $100)",
       f"m{A_CROSS_MONTH} {money(A_GROWTH(A_CROSS_MONTH), 0.01)} / m{A_CROSS_MONTH - 1} "
       f"{money(A_GROWTH(A_CROSS_MONTH - 1), 0.01)} / year {A_CROSS}", "m106 ≈ $100.91 / m105 < $100 / year 9",
       A_CROSS_MONTH == 106 and A_CROSS == 9 and A_GROWTH(105) < A_M <= A_GROWTH(106)
       and money(A_GROWTH(106), 0.01) == "≈ $100.91")
-claim(ida, "'out-earns your $100 from year 9' (year 8's last month < $100, year 9 has a month ≥ $100)",
+claim(ida, "verdict 'From year 9' (year 8's last month < $100, year 9 has a month ≥ $100)",
       A_CROSS, 9, A_GROWTH(96) < A_M and any(A_GROWTH(k) >= A_M for k in range(97, 109)))
 claim(ida, "'Same year for any monthly amount' ($50 / $500 / $1,000 / $5,000)",
       [a_cross(m) for m in (50, 500, 1000, 5000)], [A_CROSS] * 4,
@@ -529,6 +535,15 @@ _ev = [float(re.sub(r"[^\d.]", "", bare(x))) for x in _ecol]
 claim(ida, "'Earns a month' rises row by row; year 8 < $100 ≤ year 9 (the marks' rows 2 and 3)", _ecol[2:4],
       "≈ $89 / ≈ $105", all(a < b for a, b in zip(_ev, _ev[1:])) and _ev[2] < A_M <= _ev[3]
       and [m["row"] for m in _sa["lookOpts"]["marks"]] == [2, 3])
+claim(ida, "verdict names the crossing year in its emphasis ('From **year 9**') and says 'more than you add'",
+      _sa["verdict"]["text"].replace("\n", " / "), "From **year 9** / it earns more than you add.",
+      _sa["verdict"]["text"] == f"From **year {A_CROSS}**\nit earns more than you add.")
+claim(ida, "marks: row 8 'under $100' (bad), row 9 'beats your **$100**' (good)",
+      " / ".join(m["label"] for m in _sa["lookOpts"]["marks"]), "under $100 / beats your **$100**",
+      [(m["label"], m["tone"]) for m in _sa["lookOpts"]["marks"]] == [("under $100", "bad"), ("beats your **$100**", "good")])
+claim(ida, "formula-bar lines don't start with a second '≈' (the bar's chip is the ≈)",
+      [x["text"][:2] for x in _sa["lookOpts"]["formulaBar"] if x["text"].startswith("≈")] or "none", "none",
+      not any(x["text"].startswith("≈") for x in _sa["lookOpts"]["formulaBar"]))
 claim(ida, "footer states the compounding convention", "compounded monthly" in _sa["footer"], True,
       "compounded monthly" in _sa["footer"])
 claim(ida, "frame 1: row 1's Worth and its formula line are on screen at 0.0 s",
@@ -563,20 +578,33 @@ claim(idb, "caption: 7% is close to the S&P 500's ≈ 6.8% a year after inflatio
 claim(idc, "$1 × 365 ÷ 12", money(C_M, 0.01), "≈ $30.42", money(C_M, 0.01) == "≈ $30.42")
 claim(idc, "'7% a year' is the effective annual rate of every row", round(((1 + C_RATE) ** (1 / 12)) ** 12 - 1, 12),
       0.07, abs(((1 + C_RATE) ** (1 / 12)) ** 12 - 1 - C_RATE) < 1e-12)
-claim(idc, "every row scales with the daily amount ($5 a day = 5 × the $1 row; round 2's verified $375,880.35)",
+claim(idc, "caption: every row scales with the daily amount ($5 a day = 5 × the $1 row; round 2's verified $375,880.35)",
       money(fv_eff(C_EXAMPLE_DAY * C_DAYS / 12, C_RATE, 480), 0.01), money(C_EXAMPLE, 0.01),
       abs(fv_eff(C_EXAMPLE_DAY * C_DAYS / 12, C_RATE, 480) - C_EXAMPLE) < 1e-6
       and money(C_EXAMPLE, 0.01) == "≈ $375,880.35")
 claim(idc, "multiplier: year 40 Worth of $1 a day", num(C_MULT, 2), "≈ 75,176.07", num(C_MULT, 2) == "≈ 75,176.07")
 _sc = load(idc)
-claim(idc, "verdict carries ≈ before the rounded multiplier", _sc["verdict"]["text"].split("\n")[0][:20],
-      "YEAR 40 ≈ …", re.match(r"YEAR 40 ≈ YOUR DAILY AMOUNT \*\*× " + re.escape(bare(num(C_MULT))) + r"\*\*\.",
-                               _sc["verdict"]["text"]) is not None)
+claim(idc, "verdict leads with the million at beat size: 'A MILLION BY YEAR 40:' / '**≈ $13.30 A DAY**'",
+      _sc["verdict"]["text"].replace("\n", " / "), "A MILLION BY YEAR 40: / **≈ $13.30 A DAY**",
+      _sc["verdict"]["text"] == f"A MILLION BY YEAR {C_HORIZON}:\n**{money(C_PER_DAY_FOR_GOAL, 0.01)} A DAY**"
+      and _sc["lookOpts"].get("verdictStyle") == "stack")
 _bt = _sc["lookOpts"]["beats"]
-claim(idc, "beat 1 carries ≈ before the rounded multiplier, beats sit on VO lines 6 and 7",
-      f"{_bt[0]['l1']} / {_bt[0]['l2']} @ {_bt[0]['t']}, {_bt[1]['t']}", "YEAR 40 ≈ … × 75,176 @ 20.8, 25.6",
-      "≈" in _bt[0]["l1"] and _bt[0]["t"] == _sc["vo"][5]["t"] and _bt[1]["t"] == _sc["vo"][6]["t"])
-claim(idc, "beat 2: $5 × 75,176 = 375,880, and the exact $5-a-day year 40 rounds to the same dollar",
+claim(idc, "one beat: the hero shows '× 75,176' under a tag carrying ≈ (the rounded multiplier), on VO line 6",
+      f"{_bt[0]['hero']} / {_bt[0]['tag']} @ {_bt[0]['t']}", "× 75,176 / YEAR 40 ≈ … @ 20.8",
+      len(_bt) == 1 and _bt[0]["hero"] == "× " + bare(num(C_MULT)) and "≈" in _bt[0]["tag"]
+      and _bt[0]["tag"].startswith(f"YEAR {C_HORIZON}") and _bt[0]["t"] == _sc["vo"][5]["t"]
+      and not any(k in _bt[0] for k in ("l1", "l2")))
+claim(idc, "the rate is on screen from frame 1 (input strip from data.input), the footer no longer repeats it",
+      f"input {_sc['lookOpts'].get('input')} · {_sc['data']['input']['rate']} · footer has % {'%' in _sc['footer']}",
+      "input True · 7% a year · footer has % False",
+      _sc["lookOpts"].get("input") is True and _sc["data"]["input"]["rate"] == pct(C_RATE * 100) + " a year"
+      and "%" not in _sc["footer"])
+claim(idc, "frame 1's hero is labelled (heroTag: 'YEAR 1' + '$1 A DAY' from column 0, row 1 and data.input)",
+      f"heroTag {_sc['lookOpts'].get('heroTag')} · {_sc['data']['columns'][0]} {_sc['data']['rows'][0][0]} · "
+      f"{_sc['data']['input']['amount']} {_sc['data']['input']['per']}", "heroTag True · Year 1 · $1 a day",
+      _sc["lookOpts"].get("heroTag") is True and _sc["data"]["rows"][0][0] == "1"
+      and _sc["data"]["input"]["amount"] == money(C_DAY) and _sc["data"]["input"]["per"] == "a day")
+claim(idc, "caption: $5 × 75,176 = 375,880, and the exact $5-a-day year 40 rounds to the same dollar",
       f"{C_EXAMPLE_DAY * round(C_MULT):,} / {money(C_EXAMPLE)}", "375,880 / ≈ $375,880",
       C_EXAMPLE_DAY * round(C_MULT) == 375_880 and money(C_EXAMPLE) == "≈ $375,880")
 claim(idc, "frame 1 shows row 1 landed (rowT ≤ −0.35 s: cut − 0.45 s + 0.8 s roll ≤ 0), not a count in flight",
@@ -586,7 +614,7 @@ claim(idc, "header leaves the multiplier blank ('× ?')", strip_markup(_sc["head
 claim(idc, "'A million: ≈ $13.30 a day' (exact $13.302; $13.31 clears it, $13.30 falls $158 short)",
       money(C_PER_DAY_FOR_GOAL, 0.01), "≈ $13.30",
       money(C_PER_DAY_FOR_GOAL, 0.01) == "≈ $13.30" and 13.31 * C_MULT >= C_GOAL > 13.30 * C_MULT)
-claim(idc, "$5 a day at year 40 is still under a million (the meme's horizon)", money(C_EXAMPLE), "< $1,000,000",
+claim(idc, "caption: $5 a day at year 40 is still under a million (the meme's horizon)", money(C_EXAMPLE), "< $1,000,000",
       C_EXAMPLE < C_GOAL)
 claim(idc, "pinned: $10 a day", money(C_PINNED), "≈ $751,761", money(C_PINNED) == "≈ $751,761")
 claim(idc, "caption: at 7% ÷ 12 a month the multiplier would be ≈ 79,838", num(C_NOM_MULT), "≈ 79,838",

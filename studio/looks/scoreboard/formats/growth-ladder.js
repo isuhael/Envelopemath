@@ -66,7 +66,9 @@
 //                                       text: a green rule, line 1 white, line 2 big green (the verdict's text split
 //                                       at its "\n"), in the same slot; the hero dims to 42% so the verdict is the
 //                                       one focal point on the last frame.
-// Also: the key column sits 18 px in from the slot's edge; a meter segment under 6 px is not drawn (no stub); lined
+// Also: the rows that make room for the beats / verdict scroll up by whole row pitches (the first row left sits
+// right under the column labels, no gap); the key column sits 18 px in from the slot's edge; a meter segment under
+// 6 px is not drawn (no stub); lined
 // boards (>= 60 px pitch) meter with the bright underline only (no translucent fill behind the put-in digits).
 // Kit workaround kept here (reported to the kit owner): the header is built by this format (chrome header: false)
 // so its operators can be fixed: "=" and "×" render in Inter Full Black at cap height (the kit's .axo sets them at
@@ -524,7 +526,10 @@ export default function growthLadder(spec, ctx) {
   const roomT = beats.length ? beats[0].t : vT        // when the rows must be out of the slot's way
   const bandT = beats.length ? beats[0].t : vStack ? vT : null
   const boardBottom = yRows + WIN * P + (big ? bigK * P : 0) - gapR
-  const room = roomT != null && L.verdict.boxed ? Math.max(0, boardBottom - (L.verdict.y - 18)) : 0
+  // (in whole row pitches: the first row left on the board then sits right under the column labels, with no gap
+  // where a faded row used to be)
+  const room0 = roomT != null && L.verdict.boxed ? Math.max(0, boardBottom - (L.verdict.y - 18)) : 0
+  const room = room0 > 0 ? Math.ceil(room0 / P - 1e-3) * P : 0
   const makeRoom = t => (room > 0 ? room * ease.inOut(prog(t, roomT - MAKE_ROOM - 0.05, MAKE_ROOM)) : 0)
   // the beats' band: the same black band the verdict rises on (the verdict's own band then rises over it unseen)
   const sbY = L.stage.y + L.stage.h, bandTop = L.verdict.y - 10

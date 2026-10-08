@@ -190,13 +190,15 @@ export default function deadSimpleList(spec, ctx) {
     let m = clamp(Math.round(v * 0.68), 40, 52)
     while (m > 40 && items.some((_, i) => opW(i, m) > 330)) m = Math.max(40, m - 2)
     const cz = corner(k, m)
-    const goal = items.some(isGoal)
-    const Vh = Math.max(Math.round(1.21 * v), blockH(m) + 2, goal ? plateH(v) - 8 : 0)
+    // the value line: a plain row fits its answer and the glyph block; only the goal row is as tall as its gold plate
+    const Vh = Math.max(Math.round(1.21 * v), blockH(m) + 2)
+    const VhA = items.map(it => (isGoal(it) ? Math.max(Vh, plateH(v) - 8) : Vh))
     // label lines at the full width first (a corner row is re-checked below)
     const nl = Math.max(1, ...items.map((_, i) => nLines(i, CR - X0, l, lh)))
     if (nl > nlMax) return null
     const Lh = nl * lh
-    const base = Lh + 6 + Vh + 8
+    const base = Lh + 6 + Vh + 8                       // a plain row
+    const baseA = VhA.map(x => Lh + 6 + x + 8)
     const nlhB = Math.round(1.25 * 40) + 2
     // notes: one size for every row; each note goes after the result, after the label, as a 2-line margin note,
     // or (only that row grows) as 1-2 lines under the value. Of the two preference orders, keep the one that puts
@@ -212,7 +214,7 @@ export default function deadSimpleList(spec, ctx) {
         }
         const x = X0 + rw + 28
         const lines = wrapN(it.note, n, R[i] - x)
-        if (lines && lines.length === 2 && 2 * nlh <= Vh + 10) return { kind: 'block', n, x, lines, lh: nlh }
+        if (lines && lines.length === 2 && 2 * nlh <= VhA[i] + 10) return { kind: 'block', n, x, lines, lh: nlh }
         const bl = wrapN(it.note, n, R[i] - X0)
         if (bl && bl.length <= 2) return { kind: 'below', n, x: X0, lines: bl, lh: nlhB }
         return null
@@ -224,7 +226,7 @@ export default function deadSimpleList(spec, ctx) {
     for (const n of [40, 38, 36].filter(x => x >= nMin)) {
       let below = items.map(() => 0)
       for (let pass = 0; pass < 3; pass++) {
-        const hs = below.map(b => base + b * nlhB)
+        const hs = below.map((b, i) => baseA[i] + b * nlhB)
         const sumH = hs.reduce((a, b) => a + b, 0)
         const gapMax = N > 1 ? (YB - Y0 - sumH) / (N - 1) : Infinity
         if (gapMax < slack || base + gapMax < 120) break
@@ -233,7 +235,7 @@ export default function deadSimpleList(spec, ctx) {
         const top = N <= 5 ? Y0 + Math.max(0, (YB - Y0 - total) / 2) : YB - total
         let acc = top
         const Sy = hs.map((hh, i) => { acc += hh + (i ? gap : 0); return Math.round(acc) })
-        const RR = rightOf(Sy, cz, Sy.map((y, i) => y - below[i] * nlhB - 8 - Vh - 6))
+        const RR = rightOf(Sy, cz, Sy.map((y, i) => y - below[i] * nlhB - 8 - VhA[i] - 6))
         let ok = true
         for (let i = 0; i < N && ok; i++) {
           const it = items[i]
@@ -245,7 +247,7 @@ export default function deadSimpleList(spec, ctx) {
         if (!notes) break
         const need = notes.map(o => (o.kind === 'below' ? o.lines.length : 0))
         if (need.every((x, i) => x === below[i])) {
-          return { mode: 'rows', v, l, lh, nl, m, Lh, Vh, rowH: base, pitch: base + gap, Sy, R: RR, notes, k, belowH: below.map(b => b * nlhB) }
+          return { mode: 'rows', v, l, lh, nl, m, Lh, Vh, VhA, rowH: base, pitch: base + gap, gap, Sy, R: RR, notes, k, belowH: below.map(b => b * nlhB) }
         }
         below = need
       }
@@ -327,9 +329,18 @@ export default function deadSimpleList(spec, ctx) {
   }
   const k0 = clamp(lo.figureScale ?? 0.84, 0.6, 1.1)
   let lay = null
+  // the goal is the visual climax: when the rows layout has room, its answer is set clearly bigger than the rest
+  // (1.45x, then 1.3x, 1.15x) on its gold plate, as long as every other answer stays at 64 px or more
+  if (items.some(isGoal) && lo.layout !== 'lines') {
+    Y0 = parts.workTop + (showInput ? 58 + 18 : 0)
+    big: for (const hl of [1.45, 1.3, 1.15]) {
+      HL = hl; memo.clear()
+      for (let v = 84; v >= 64; v -= 4) for (const slack of [36, 24]) { const x = tryRows(v, slack, k0, 2, 40); if (x) { lay = x; break big } }
+    }
+  }
   const attempts = []
   for (const hl of [1.06, 1]) for (const inpOn of showInput ? [true, false] : [false]) for (const k of [k0, Math.min(k0, 0.74), Math.min(k0, 0.66)]) for (const nl of [2, 3]) attempts.push([hl, inpOn, k, nl])
-  for (const [hl, inpOn, k, nl] of attempts) {
+  if (!lay) for (const [hl, inpOn, k, nl] of attempts) {
     if (HL !== hl) { HL = hl; memo.clear() }
     Y0 = parts.workTop + (inpOn ? 58 + 18 : 0)
     lay = pickLayout(k, nl)
@@ -341,10 +352,11 @@ export default function deadSimpleList(spec, ctx) {
   const FX = FXk(k)
   const SyA = lay.Sy, RA = lay.R
   const Sy = i => SyA[i]
-  const yV = i => Sy(i) - (rows ? 8 : lay.pad / 2 + 1) - (lay.belowH ? lay.belowH[i] : 0) - Vh / 2   // value line centre
+  const VhI = i => (lay.VhA ? lay.VhA[i] : Vh)                       // value line height (rows: the goal's is taller)
+  const yV = i => Sy(i) - (rows ? 8 : lay.pad / 2 + 1) - (lay.belowH ? lay.belowH[i] : 0) - VhI(i) / 2   // value line centre
   // rows: each label sits directly on its own value line (a 1-line label in a list of 2-line ones does not float)
   const nlR = items.map((it, i) => (rows && it.label ? Math.max(1, Math.min(lay.nl, nLines(i, RA[i].L - X0, l, lay.lh))) : rows ? lay.nl : 0))
-  const yLT = i => yV(i) - Vh / 2 - 6 - nlR[i] * lay.lh             // label top (rows)
+  const yLT = i => yV(i) - VhI(i) / 2 - 6 - nlR[i] * lay.lh          // label top (rows)
   const yL = i => yLT(i) + nlR[i] * lay.lh / 2                       // label block centre (rows)
   probe.remove()
   const stk = i => !rows && lay.stack[i]
@@ -446,7 +458,7 @@ export default function deadSimpleList(spec, ctx) {
       if (nt.kind === 'val') { r.noteX = nt.x; r.noteY = base(yV(i), v * (r.goal ? HL : 1)) - 0.86 * nt.n }
       else if (nt.kind === 'label') { r.noteX = nt.x; r.noteY = base(yL(i), l) - 0.86 * nt.n }
       else if (nt.kind === 'block') { r.noteX = nt.x; r.noteY = yV(i) - nt.lh }
-      else if (nt.kind === 'below') { r.noteX = nt.x; r.noteY = Math.round(yV(i) + Vh / 2 + 6) }
+      else if (nt.kind === 'below') { r.noteX = nt.x; r.noteY = Math.round(yV(i) + VhI(i) / 2 + 6) }
       else if (nt.kind === 'vleft') { r.noteX = X0; r.noteY = base(yV(i), v * (r.goal ? HL : 1)) - 0.86 * nt.n }
       else { r.noteX = X0; r.noteY = yRowC(i) - (lay.lines[i] + 1) * lay.lh / 2 + lay.lines[i] * lay.lh + (lay.lh - nt.n) / 2 }
       r.noteY = Math.round(r.noteY)

@@ -53,7 +53,7 @@
 //   The board cracks at the lock. Kit cues that the spec's own sfx already give (riser, hit) are not doubled.
 import {
   h, s, style, attr, setText, setHTML, markup, plain, prog, clamp, lerp, rng, fmtNum,
-  C, F, L, S, E, poseTrack, fk, secondary, Figure, makeWorld, makeFx, camera, track, pinLimb, blendJ,
+  C, F, L, S, E, poseTrack, fk, secondary, Figure, makeWorld, makeFx, camera, track, pinLimb, blendJ, shiftJ,
   chromeParts, durationOf, numLike, measure, squashAt, fall, hop, wobble, icon, mixOk, popIn,
 } from '../lib.js'
 
@@ -178,6 +178,9 @@ const POSE = {
   squeeze: { lean: 20, tilt: 14, aF: [70, 60], aB: [60, 70], lF: [20, -22], lB: [-18, -10] },
   brace: { lean: 30, tilt: -12, aF: [90, 20], aB: [84, 26], lF: [26, -40], lB: [-34, -6] },
   flatBack: { lean: 0, tilt: -6, aF: [168, 10], aB: [192, -10], lF: [14, -8], lB: [-4, -16], rot: -90 },
+  // knocked onto his butt with his knees up (stack mode: the plinth leaves no room for straight legs)
+  sitUp: { lean: -14, tilt: 10, aF: [-36, 10], aB: [-50, 6], lF: [118, -100], lB: [104, -96] },
+  sitUpLook: { lean: -18, tilt: -20, aF: [-40, 6], aB: [-54, 4], lF: [116, -98], lB: [102, -94] },
 }
 
 export default function costCounter(spec, ctx) {
@@ -354,10 +357,13 @@ export default function costCounter(spec, ctx) {
   // ================================================================== strip + NEXT timelines
   // strip: rate -> milestone k (FLASH s, or until the next pass) -> rate ...
   const segs = [{ t: -1e9, html: rateState, h: rateState ? STRIP_LH : 0 }]
+  // a flash rolls back to the rate when the next VO line starts (at least 1 s after the pass, at most FLASH), so the
+  // rate is on the board when a line says it, and a flash never cuts into the line that names its milestone
+  const voStarts = (spec.vo || []).map(v => Number(v.t)).filter(Number.isFinite).sort((a, b) => a - b)
   ms.forEach((m, k) => {
     segs.push({ t: m.tm, html: m.html, m, h: m.sh })
     const nextT = k < M - 1 ? ms[k + 1].tm : Infinity
-    const back = m.tm + FLASH
+    const back = voStarts.find(x => x >= m.tm + 1.0 && x <= m.tm + FLASH) ?? m.tm + FLASH
     // stack mode: the last pass is the answer, so its ✓ holds through the lock to the end
     if (STACK && m.last && t1 - m.tm < 1.5) return
     if (rateState && back < nextT - 0.5) segs.push({ t: back, html: rateState, h: STRIP_LH })
@@ -451,9 +457,25 @@ export default function costCounter(spec, ctx) {
       const l1h = /^≈\s+/.test(l1) ? `<span class="ap">≈</span> ${markup(l1.replace(/^≈\s+/, ''))}` : markup(l1)
       gag = h('div', { class: 'cc-gag', 'data-overlap-ok': '', html: `<span class="g1">${l1h}</span>${l2 ? `<span class="g2">${markup(l2)}</span>` : ''}` })
       world.html.append(gag)
-      const gw = gag.offsetWidth, gh = gag.offsetHeight
-      const cx = (SK.xS0 + SK.xS1) / 2, cy = Math.min(SK.plateTop - 14 - gh / 2, SK.top + SK.bricksH / 2 + 8)
-      Object.assign(SK, { gx: cx - gw / 2, gy: cy - gh / 2, gw, gh, gT: Number(GAG.t ?? t1) + 0.12 })
+      // fit, rotation included: under the board's slot, over the plinth (never on it), and clear of the stopwatch's
+      // end label when they share rows (it carries a "≈" the stamp must not hide); the type steps down until it fits
+      const ROT = (6 * Math.PI) / 180, cs = Math.cos(ROT), sn = Math.sin(ROT)
+      const g1 = gag.querySelector('.g1'), g2 = gag.querySelector('.g2')
+      const yLo = P1 + 24, yHi = SK.plateTop - 10, xLo = SK.xS0 + 4
+      let fit = null
+      for (const [a, b] of [[108, 50], [100, 46], [92, 44], [84, 40]]) {
+        style(g1, { fontSize: a + 'px', lineHeight: Math.round(a * 1.09) + 'px' })
+        if (g2) style(g2, { fontSize: b + 'px', lineHeight: Math.round(b * 1.08) + 'px' })
+        const gw = gag.offsetWidth, gh = gag.offsetHeight
+        const hw = (gw * cs + gh * sn) / 2, hh = (gw * sn + gh * cs) / 2
+        const cy = clamp(SK.top + SK.bricksH / 2 + 8, yLo + hh, yHi - hh)
+        const shares = !!(SK.we && watch) && cy - hh < watch.weY + SK.weH + 8 && cy + hh > watch.weY - 8
+        const xHi = shares ? watch.weX - SK.weW / 2 - 18 : SK.xS1
+        const cx = Math.min((SK.xS0 + SK.xS1) / 2, xHi - hw)
+        fit = { gw, gh, cx, cy }
+        if (cx - hw >= xLo && 2 * hh <= yHi - yLo) break
+      }
+      Object.assign(SK, { gx: fit.cx - fit.gw / 2, gy: fit.cy - fit.gh / 2, gw: fit.gw, gh: fit.gh, gT: Number(GAG.t ?? t1) + 0.12 })
     }
     // cracks for the lock: ink zigzags in the board's top-right corner (clear of the label and the digits)
     crack = s('svg', { class: 'cc-crack', width: PW, height: 200, viewBox: `0 0 ${PW} 200`, 'data-deco': '' })
@@ -604,8 +626,9 @@ export default function costCounter(spec, ctx) {
     const glance = (a, b) => { if (b - a > 2.6) keys.push({ t: a + 0.6, pose: free ? POSE.watch : POSE.hugUp, d: 0.4, e: 'inOut' }, { t: Math.min(b - 0.9, a + 2.4), pose: free ? POSE.down : POSE.hug, d: 0.4, e: 'inOut' }) }
     ms.forEach((m, k) => {
       const v = verbOf(m, k), tm = m.tm
+      // the last pass is the lock's (below): the run-up to it starts from the last reaction, so lastT stays put
+      if (v === 'flattened' && m.last) return
       glance(lastT, tm - 0.4)
-      if (v === 'flattened') { lastT = tm; return }                  // at the lock, below
       if (v === 'swallow') {
         keys.push({ t: tm - 0.08, pose: POSE.squeeze, d: 0.12, e: 'out' }, { t: tm + 0.75, pose: free ? POSE.watch : POSE.hug, d: 0.32 })
         lastT = tm + 1.1
@@ -623,14 +646,22 @@ export default function costCounter(spec, ctx) {
         lastT = tm + 1.0
       }
     })
-    // the long run-up to the lock: look down at what is left, then cower as it goes white-hot
+    // the long run-up to the lock: he acts on the VO's beats (points at his stack, looks down at what is left of
+    // it, looks up at the board), then cowers as it goes white-hot
     const tWhite = (Array.isArray(lo.heat) ? lo.heat : []).filter(x => x.state === 'white' || x.state === 'hot').map(x => Number(x.t)).find(x => x > lastT && x < t1)
     const tCower = tWhite ?? Math.max(lastT + 1, t1 - 4.5)
-    if (tCower - lastT > 3) keys.push({ t: (lastT + tCower) / 2 - 0.4, pose: POSE.down, d: 0.4, e: 'inOut' })
+    const runVo = voStarts.filter(x => x > lastT + 0.2 && x < tCower - 1.2)
+    const RUN = ['point', POSE.down, POSE.watch]
+    runVo.forEach((x, j) => {
+      keys.push({ t: x + 0.1, pose: RUN[j % 3], d: 0.32, e: 'inOut' })
+      // a point is a gesture: the arm comes back down before the next beat
+      if (j % 3 === 0) keys.push({ t: Math.min(x + 1.9, (runVo[j + 1] ?? tCower) - 0.5), pose: free ? POSE.watch : POSE.hug, d: 0.35, e: 'inOut' })
+    })
+    if (!runVo.length && tCower - lastT > 3) keys.push({ t: (lastT + tCower) / 2 - 0.4, pose: POSE.down, d: 0.4, e: 'inOut' })
     keys.push({ t: tCower, pose: POSE.cower, d: 0.2, e: 'out' }, { t: tCower + 1.6, pose: POSE.leanBack, d: 0.3 }, { t: t1 - 0.9, pose: POSE.cower, d: 0.16, e: 'out' })
     if (!free) tLetGo = Math.min(tLetGo, tCower - 0.06)
     // the lock: the blast knocks him flat on his back; he sits up and stares at the board
-    keys.push({ t: t1 + 0.02, pose: 'fall', d: 0.08, e: 'out' }, { t: t1 + 0.2, pose: POSE.sit, d: 0.12, e: 'out' }, { t: t1 + 1.3, pose: POSE.sitLook, d: 0.45, e: 'inOut' })
+    keys.push({ t: t1 + 0.02, pose: 'fall', d: 0.08, e: 'out' }, { t: t1 + 0.2, pose: POSE.sitUp, d: 0.12, e: 'out' }, { t: t1 + 1.3, pose: POSE.sitUpLook, d: 0.45, e: 'inOut' })
     back += 34; steps.push({ t: t1 + 0.02, v: back, d: 0.2 })
     sits.push(t1 + 0.32)
     ctx.cue(t1 + 0.34, 'thud', { gain: 0.4 })
@@ -892,6 +923,7 @@ export default function costCounter(spec, ctx) {
         pinLimb(Jp, 'hB', [xL - 4, Math.min(SK.plateTop - 14, J.sh[1] + 44)], 1)
         J = blendJ(J, Jp, hw)
       }
+      shiftJ(J, Math.max(0, 28 - fig.extentX(J)[0]))               // never clipped by the frame edge (the pencil included)
       let sqf = { sx: 1, sy: 1 }
       for (const hp of hops) { const q = squashAt(t, hp.t0 + hp.dur, 0.14); sqf = { sx: sqf.sx * q.sx, sy: sqf.sy * q.sy } }
       for (const ts of sits) { const q = squashAt(t, ts, 0.2); sqf = { sx: sqf.sx * q.sx, sy: sqf.sy * q.sy } }
