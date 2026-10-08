@@ -19,14 +19,18 @@
 // again and the pointer returns to it.
 // The hero ends on the payoff: with deductions (any part with tone "bad") and a goal part, it counts the total down
 // to the goal's amount as the goal row lands ("$10,000" → "$6,535": what you keep); and at verdict.t it rolls to the
-// money figure the verdict leads with ("**$15,000** a year invested"), so the biggest number lands last up top.
+// money figure the verdict leads with ("**$15,000** a year invested"), tagged with the verdict's words after it
+// ("A YEAR INVESTED", left of the number), so the biggest number lands last up top and its new meaning is named.
 // First part before 0.5 s: no intro, frame 1 is already 0.3 s into the first part's roll.
 //
 // Layout (measured, not guessed): the rows are built first and their label / pct / amount widths measured; the
 // solver then picks ONE label size for the whole sheet (the largest that fits, 58 → 40 px), wraps a label that
-// can't fit one line onto two balanced lines (that row grows; the others stay compact), and puts the notes on the
-// sheet (under each label) when two-line rows still leave the label stack its room; otherwise the notes go to the
-// label stack's third line. Amounts are the biggest text on the sheet (≈ 1.16 × the label size, 46-68 px).
+// can't fit one line onto two balanced lines (that row grows; the others stay compact). Notes always show (they are
+// the napkin working): on the sheet first (under each label, running under the % up to the amounts, two balanced
+// lines if needed; the % then rides on the label's line), else in the label stack's third line when the slot holds
+// three lines, else in the part name's place in the label stack. With a verdict, the sheet leaves
+// min(150, L.verdictNeed) - 8 px under it, so the verdict lands under the sheet, not on a band over its rows.
+// Amounts are the biggest text on the sheet (≈ 1.16 × the label size, 46-68 px).
 // Bar, rows and tracks share x 140-940. Graphics are one canvas (decoration); text is DOM.
 //
 // data (FORMATS.md §5): { total: { label, display, value }, parts: [{ t, label, pct, amount, note, tone, share }],
@@ -37,22 +41,23 @@
 //                number at a time). Default: "remaining" when there are deductions (tone "bad") and a goal part,
 //                with the goal's amount as the one landing; else "total" (the total holds)
 //   remaining    [{ t, display }]: the hero's landings in "remaining" mode
-//   heroFinal    { t, display } | false: the hero's last roll (default: at verdict.t, to the verdict's first
-//                emphasised money figure, when it differs from what the hero shows)
+//   heroFinal    { t, display, tag } | false: the hero's last roll (default: at verdict.t, to the verdict's first
+//                emphasised money figure, when it differs from what the hero shows, tagged with the words after it
+//                up to the line break or punctuation; no tag to be had: no roll, the verdict alone carries it)
 //   icon         a unit icon beside the hero number (theme icon names; e.g. "bag")
 //   footerSteps  [{ t, text }]: kit-wide (the chrome draws it): the footer rewrites to a working line at each t
 //   bonus        { t, label, amount, tone = "good" }: an extra row under the sheet (dashed: it is not part of the
 //                total) that slams in at t; its amount rolls; the label stack shows it. Until then the sheet sits
 //                centred without it, and moves up to make room as it lands
-//   notes        "auto" (default: on the sheet when two-line rows fit, else in the label stack) | "sheet" | "label" | false
+//   notes        "auto" / "sheet" (default: on the sheet when it fits, else the label stack) | "label" | false
 //   intro        true / false forces the total intro on or off (default: on when the first part starts ≥ 0.5 s)
 //   stageBottom  y where the stage ends (overrides the solver; the label stack keeps what is left)
 //   maskPct      [part index, ...]: those percentages read "?" until their part's cut (the goal row's % would
 //                otherwise answer the header at frame 1); without it the whole sheet shows, as the contract asks
 // Dense sheets (6-7 parts with captions on) are budgeted: the solver steps through roomy → tight → compact spacing
 // (40 px labels, wrapped onto two balanced lines where needed), then a one-line label stack (the working only); notes
-// go to the label stack (or off the sheet) before a label goes under 40 px. If the verdict then needs the band over
-// the sheet's foot, the rows it covers are hidden while it is up.
+// go to the label stack before a label goes under 40 px. If the verdict then still needs the band over the sheet's
+// foot, the rows it reaches are hidden whole while it is up (data-band-unit).
 import { h, css as style, prog, ease, clamp, lerp, fitText } from '../../../runtime/core.js'
 import { C, SIZE, M, W, layoutFor } from '../theme.js'
 import {

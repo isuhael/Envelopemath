@@ -15,13 +15,18 @@
 //   pitch (40-80 px; up to 96 px with cells up to 72 px on a board of 6 rows or fewer) is what is left between the
 //   column labels and the strip. Room past the cap goes half above the board, so a short table sits mid-frame. Cells are Anton with every digit in a
 //   0.5em slot (tabular). Column heads are Inter caps at 40 px, on one line or two (as written, or balanced at a word
-//   break); a head may reach left over the previous column's slack; only a board that can't pack them shrinks them.
+//   break); a head may reach left over the previous column's slack. Heads that can't pack on two lines wrap in their
+//   own slots in as few balanced lines as fit (the key column's head may overhang left to x 64 rather than take a
+//   4th line); only a board that still can't pack them shrinks them.
 //   Strip:   the bottom bar carries the formula (the one-line working) under the pick label when the table leaves
 //            room; otherwise they share one slot (formula first, then each pick label as a hard cut, then the formula
 //            again once the pick has held for HOLD s). A two-line pick label also gives the formula's row up while it
 //            holds.
-//   Verdict: the kit's one verdict slot at the foot of the frame (the chrome's): in the strip, or on a black band
-//            rising over the foot of the board when the strip is short. The header keeps the hook.
+//   Verdict: the kit's one verdict slot at the foot of the frame (the chrome's), in the strip: with a verdict the
+//            strip keeps min(150, L.verdictNeed) - 8 px from frame 1 (the rows take a smaller pitch, >= 40, so nothing
+//            moves later and every row stays readable on the pause frame). Only a board too long for that lets the
+//            verdict land on the band; rows are data-band-unit, so the band hides whole rows, never a sliver.
+//            The header keeps the hook.
 // Dense boards (row pitch under 54 px) drop the slot outlines and bar borders and run as black/slate zebra stripes,
 // so 40 px type never crowds a line. Each row's bar wipes in left to right as its values slide in.
 //

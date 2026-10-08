@@ -23,7 +23,10 @@
 // rows (its value rides the bar's end: "60 MONTHS"); every other metric gets its own column, right-aligned and
 // measured, with its head over it (a head may reach left over the next column's slack). At most two value columns
 // (the hero's metric first): a third value metric is left off the board. A metric that can't be a bar (dates, words)
-// is posted, not rolled. Names stay >= 44 px on one line, else two balanced lines (>= 40 px).
+// is posted, not rolled. Names: one size per board: one line at >= 44 px; else the value columns give up a few px;
+// else every row in two-line mode (>= 40 px) when the top line has the height; else "values below": the name gets the
+// whole top line and the value columns move into the bar line (the bar track ends 24 px short of them). Running
+// values (hero, cells, bar labels) show their "≈" as an unlit ghost until they land.
 //
 // data (FORMATS.md §3): { stake: { label, value, terms }, metrics: [{ key, label }], options: [{ t, name, detail,
 //   values: { [key]: display }, delta?, tone?, resultT?, deltaT? }], winner, hold }

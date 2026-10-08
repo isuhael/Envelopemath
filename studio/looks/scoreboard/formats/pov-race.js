@@ -18,8 +18,9 @@
 //   - the finish (raceT[1]): over the last 0.4 s both counters converge on their final values, then land exactly on
 //     the display strings: the winning side bumps and flares, the stage blooms (a riser leads in, hit + cash; a loss
 //     lands on a thud).
-//   - verdict: the chrome's: the kit's one verdict slot at the foot of the frame (captions on: a black band rises
-//     over the foot of the chart and carries it; its rule is coral when owning lost). The header keeps the hook.
+//   - verdict: the chrome's: the kit's one verdict slot at the foot of the frame (its rule is coral when owning lost).
+//     With captions on it lands on the band over the stage foot, so the plot box compresses over the 0.3 s before
+//     verdict.t: both lines (the spend line too), the icons and the x ticks stay above it. The header keeps the hook.
 //   - footer: the chrome's (the assumption line, and lookOpts.footerSteps, the working line that rewrites at each
 //     beat; a line too long for 960 px at 40 px breaks at its " · " into two lines and the grid makes room).
 // Frame 1: the header (POV + the one price), both counters at the starting stake, the axis waiting at the start year,

@@ -717,6 +717,7 @@ export function heroRow(parent, L, { icon = null, size, color = C.green, iconSiz
  * line 2 = Anton uppercase white (the rung). Sizes from L.type (62 / 96 px, or 54 / 72 px with captions on). One group per item, all built at mount; seek shows only the
  * active one with a hard cut + slam-in at t0. items: [{ l1: html, l2: html, l1Color?, l2Color? }]
  * (pass HTML: use rich() on spec strings). The container carries data-yield, so the verdict replaces it.
+ * Each group's slam scale is capped (slamFit) so its biggest frame stays in x 140-940 and above L.limit.
  */
 export function labelStack(parent, L, items, { yieldToVerdict = true } = {}) {
   const T = L.type || { l1: SIZE.label1, l2: SIZE.label2, l2Min: SIZE.label2Min }
@@ -846,8 +847,9 @@ export function captions(parent, spec, L) {
  * the stage reaches into that slot (slot.boxed), a black band rises over the stage foot just before t and carries it.
  * A hard cut: every [data-yield] element (the label stack) drops 14 px and is gone by t (yieldAt), then the text
  * slams in at t with a green rule wiping in above it. The text is fitted while the box is measurable, and the slam
- * scale keeps it inside the slot (x and y). Readable text the band covers (a board's last rows, a chart's foot) is
- * hidden while it is covered (data-under), so nothing reads through or collides with the verdict.
+ * scale keeps it inside the slot (x and y). Formats keep the slot clear (L.verdictNeed); where a band still rises,
+ * every text it reaches is hidden whole while it is up (data-under; decoration text too, so no tick label is ever
+ * sliced at its edge), and every [data-band-unit] group it reaches (a board row: outline, fill and text) goes as one.
  */
 export function verdict(parent, spec, L, { slot = L.verdict, tone = 'good' } = {}) {
   const v = spec.verdict

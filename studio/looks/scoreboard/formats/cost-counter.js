@@ -27,6 +27,8 @@
 //
 // data (FORMATS.md §10): { label, perSecond, rateDisplay, counterT: [t0, t1], startValue = 0, prefix = '$', dp = 0,
 //   milestones: [{ value, label, icon?, display?, name? }], final, hold }
+//   (an icon that repeats gets a multiplier badge from the number its name leads with: "×10", "×40"; else a stacked
+//   twin on the ladder, so rungs never look the same)
 //   A milestone label "Name: $amount" splits into the label stack's two lines (l2 = name, l1 = amount); without a
 //   colon the whole label is line 2. milestone.icon picks its icon (else a keyword guess: house, car, pay → bill …).
 // lookOpts (all optional; README.md has the same list):

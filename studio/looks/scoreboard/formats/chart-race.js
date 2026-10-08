@@ -20,8 +20,12 @@
 //   - the finish: the lines stop at raceT[1]; the counters roll their last digits (running format) and, SETTLE s
 //     later, land exactly on each series' `final` display string: hero bump, glow flare, floor bloom, the winner's
 //     tip flares (a riser leads in, then hit + cash)
-//   - the verdict is the chrome's: the kit's one verdict slot at the foot of the frame (with captions on, a black
-//     band rises over the foot of the chart to carry it)
+//   - the verdict is the chrome's: the kit's one verdict slot at the foot of the frame. With captions on it lands on
+//     the band over the stage foot, so the plot box compresses (same y range, squeezed) over the 0.3 s before
+//     verdict.t: both lines, their tips and the x ticks stay above the band
+//   - long names: a tip label wider than 60% of the plot stacks name over value, the name fitted to
+//     min(plot - 60, 560) px (one line, two balanced lines, else its leading words); the captions-off matchup never
+//     wraps inside a name (NAME VS NAME, broken only at a VS, else NAME / VS / NAME, each fitted on its own line)
 // Frame 1: the header (POV + stake), the stake in the hero, the footer, both tips at the stake with their counters,
 // the clock at the start year. raceT[0] < 0 opens mid-race (already moving at 0.0 s, the hero on the leader).
 //
@@ -296,7 +300,7 @@ export default function chartRace(spec, ctx) {
   if (stakeV != null) {
     stakeLine = s('line', { x1: 0, x2: P.w, stroke: C.grey, 'stroke-width': 3, 'stroke-dasharray': '3 13', 'stroke-linecap': 'round', opacity: 0.6 })
     gStake.append(stakeLine)
-    if (stakeTok) { stakeLab = h('div', { class: 'cr-stake', 'data-deco': '' }, stakeTok); root.append(stakeLab) }
+    if (stakeTok) { stakeLab = h('div', { class: 'cr-stake', 'data-deco': '' }, stakeTok); root.append(stakeLab); stakeLab.__w = stakeLab.offsetWidth }   // measured once: seek may find it hidden
   }
 
   // events: dashed rule (+ band), flag label in the strip above the plot (chart mode)
@@ -797,7 +801,7 @@ export default function chartRace(spec, ctx) {
         const sy = py(stakeV)
         attr(stakeLine, 'y1', sy.toFixed(1)); attr(stakeLine, 'y2', sy.toFixed(1))
         if (stakeLab) {
-          const sw = stakeLab.offsetWidth
+          const sw = stakeLab.__w
           const r = { x: P.w - 6 - sw, y: sy - 42, w: sw, h: 32 }
           // it also gives way while a line runs within 24 px of it (a line crossing "$10,000" reads as a strike-through)
           let near = false
