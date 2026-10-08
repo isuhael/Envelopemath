@@ -236,7 +236,9 @@
       },
       {
         "series": 1,
-        "color": "neutral"
+        "color": "neutral",
+        "lag": 170,
+        "outline": 6
       }
     ],
     "beats": [

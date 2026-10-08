@@ -420,6 +420,7 @@ C["total"] = C["cum_spend"][SBUX_END]
 C["mult"] = C["final"] / C["total"]
 C["per_year"] = LATTE_STAKE * 365
 C["x2021"] = C["value"][2021] / C["cum_spend"][2021]
+C["x2021_k"] = math.floor(C["x2021"])          # the "2×" mark: the whole multiple the tower has reached by then
 C["since2021_in"] = C["total"] - C["cum_spend"][2021]
 C["since2021_gain"] = C["final"] - C["value"][2021]
 C["alt_final"] = C["final"] * ALT_SBUX_YE2025 / MT_SBUX_CLOSE[2025]
@@ -584,6 +585,9 @@ EXP["c"] = {
         "data.own.final": approx_usd(C["final"]),
         "data.purchases.0.label": "Day 1",
         "data.purchases.0.price": usd(LATTE_STAKE),
+        # assembly round 2: the "doubled" beat. A green dotted line at 2 × the 2021 spend, labelled, lands with
+        # the 2021 year-end (the ding) while vo[4] says "doubled"; the tower top is just above it (2.08×)
+        "lookOpts.multiple.label": f"{C['x2021_k']}×",
     },
     "points": {"spend": C["spend"], "own": C["own"]},
     "purchases_x": [float(SBUX_START)],
@@ -603,9 +607,12 @@ EXP["c"] = {
              (4, ye(2021), "2021: doubled"), (5, ye(2022), "2022 dip: the stall"),
              (6, ye(SBUX_END), "spend final"), (7, ye(SBUX_END), "own final")],
     "sfx": {0: float(SBUX_START), 1: ye(2021), 2: ye(SBUX_END)},
-    "lookOpts_t": {},
+    "lookOpts_t": {"multiple": ye(2021)},
 }
 check("06c", "2015 is a 365-day year ($1,460 rung)", C["spend_y"][2015], C["per_year"])
+check("06c", "'2×' mark: tower ≥ 2 × spend at the end of 2021",
+      f"{C['value'][2021]:,.0f} vs 2 × {C['cum_spend'][2021]:,.0f} = {2 * C['cum_spend'][2021]:,.0f}", "tower above",
+      ok=C["x2021_k"] == 2 and C["value"][2021] >= 2 * C["cum_spend"][2021])
 check("06c", "pinned: 296.0 shares x $84.21 ≈ $24,926",
       usd(rnd(C["final"] / MT_SBUX_CLOSE[2025], 1) * MT_SBUX_CLOSE[2025]), "$24,926")
 check("06c", "'climbs faster than the cups' while vo[3] plays (x 2018.9-2021.0)",
@@ -778,6 +785,16 @@ def check_spec(key):
             t = chart_t(spec, x)
             lo, hi = vo[i]["t"] - BEAT_TOL, vo[i]["t"] + vo[i]["d"] + BEAT_TOL
             check(sid, f"answer row lands {int(x)} (t {t:.2f}) in vo[{i}]", f"t={t:.2f}", f"{lo:.2f}-{hi:.2f}", ok=lo <= t <= hi)
+
+    if key == "c":
+        # the "2×" mark's line height is k × the spend at x (the format reads both): the 2021 year-end, k = 2
+        mu = spec["lookOpts"]["multiple"]
+        check(sid, "lookOpts.multiple.x = end of 2021", mu["x"], ye(2021))
+        check(sid, "lookOpts.multiple.k = the label's multiple", mu["k"], C["x2021_k"])
+        t_mu = chart_t(spec, mu["x"])
+        lo, hi = vo[4]["t"], vo[4]["t"] + vo[4]["d"]
+        check(sid, "'2×' mark shown inside vo[4] ('doubled')", f"t={t_mu:.2f}-{t_mu + mu['hold']:.2f}",
+              f"starts {lo:.2f}-{hi:.2f}", ok=lo <= t_mu <= hi)
 
     # --- coverage: every string with a digit must have been checked
     for p, v in leaves(spec):

@@ -51,6 +51,13 @@ export const css = `
 .cr-plate { position: absolute; background: ${C.coin}; border: 6px solid ${C.ink}; border-radius: 16px; transform-origin: 50% 50%; }
 .cr-note { margin-top: 8px; font: 800 40px/42px ${F.head}; letter-spacing: -0.01em; }
 .cr-tide { position: absolute; left: 0; top: 0; padding: 2px 12px; border-radius: 10px; background: ${C.void}; font: 800 40px/42px ${F.head}; letter-spacing: -0.01em; color: ${C.red}; white-space: nowrap; }
+.cr-lens { position: absolute; left: 0; top: 0; box-sizing: border-box; background: ${C.white}; border: 6px solid ${C.ink}; border-radius: 18px; padding: 12px 22px 14px; transform-origin: 100% 40%; }
+.cr-lrow { position: relative; }
+.cr-lrow + .cr-lrow { margin-top: 10px; }
+.cr-llab { font: 800 40px/44px ${F.head}; letter-spacing: -0.01em; white-space: nowrap; }
+.cr-lbars { position: relative; height: 58px; margin-top: 2px; }
+.cr-lbar { position: absolute; left: 0; top: 13px; height: 32px; border-radius: 16px; }
+.cr-lval { position: absolute; left: 0; top: 0; font: 900 52px/58px ${F.head}; letter-spacing: -0.03em; white-space: nowrap; transform-origin: 0 60%; }
 `
 
 // ---------------------------------------------------------------------------------------------- helpers
@@ -77,7 +84,8 @@ const P_SIT = { lean: 20, tilt: 30, aF: [58, 34], aB: [48, 40] }        // sat o
 const P_PEEK = { lean: -4, tilt: -24, aF: [118, 96], aB: [-14, 14] }
 const P_FALL = { lean: -10, tilt: -22, aF: [148, 34], aB: [-150, -30] }  // riding a dropping tip: arms up, "whoa"
 const P_WIN = { lean: -6, tilt: -18, aF: [144, -16], aB: [-144, 16] }    // both arms up in a wide V
-const ACT_POSE = { cheer: 'celebrate', shrug: 'shrug', impact: P_SHOCK, shocked: P_SHOCK, grow: 'pointUp', peek: P_PEEK, celebrate: 'celebrate', slump: P_SLUMP }
+const P_POINTB = { lean: -6, tilt: -8, aF: [26, 34], aB: [-86, 4] }       // points back over his shoulder (at the lens)
+const ACT_POSE = { cheer: 'celebrate', shrug: 'shrug', impact: P_SHOCK, shocked: P_SHOCK, grow: 'pointUp', peek: P_PEEK, celebrate: 'celebrate', slump: P_SLUMP, pointBack: P_POINTB }
 
 export default function chartRace(spec, ctx) {
   const d = spec.data || {}
@@ -247,7 +255,13 @@ export default function chartRace(spec, ctx) {
   const DX = X_TIP - PLOT_L
   // at the start line the figures stand one behind the other; the rearmost must clear the value labels
   const LAG = showFig ? (N > 1 ? Math.min(116 * kk, Math.max(84 * kk, (X_TIP - 60 - PLOT_L - 110 * kk) / (N - 1))) : 0) : 0
-  const S0 = Math.min(X_TIP - 60, PLOT_L + 130 + LAG * (N - 1))  // where the start line sits at t = 0 (the rearmost
+  // lookOpts.figures[].lag: how far (px) that figure walks behind his tip when he has to step back (default LAG)
+  const LAGS = SER.map((_, i) => {
+    const f = (lo.figures || []).find(q => q && +q.series === i && Number.isFinite(+q.lag))
+    return showFig && N > 1 ? (f ? clamp(+f.lag, 0, 260) : LAG) : 0
+  })
+  const LAGMAX = Math.max(0, ...LAGS)
+  const S0 = Math.min(X_TIP - 60, PLOT_L + 130 + LAGMAX * (N - 1))  // where the start line sits at t = 0 (the rearmost
                                                                   // figure stands clear of the value labels)
   const W0 = 0.22 * span                                         // roll-out: the tips travel S0 -> X_TIP over this much x
 
@@ -377,21 +391,23 @@ export default function chartRace(spec, ctx) {
   const BACK = 6 * kk                                            // the body stands just behind his tip
   const LGA = SER.map(() => new Float32Array(NS))
   const VICT = SER.map((_, i) => EVENTS.filter(ev => ev.victim === i).map(ev => [ev.t - 0.5, tOfX(ev.bandEnd) + 0.6]))
+  // "Share a height" means closer than a figure is tall (plus his stride on a slope): a gap any smaller and the
+  // lower figure would stand with his head under the other's feet, so he steps back until the gap clears
   const lagTarget = (i, t, m, uA) => {
     const yi = Ys(valueAt(i, m.xn), uA)
     let acc = 0
     for (let j = 0; j < N; j++) {
       if (j === i) continue
       const yj = Ys(valueAt(j, m.xn), uA)
-      const close = 1 - smooth(0.55 * FIGH, 0.95 * FIGH, Math.abs(yi - yj))
+      const close = 1 - smooth(1.15 * FIGH, 1.45 * FIGH, Math.abs(yi - yj))
       if (close > 0) acc += close * smooth(-1, 1, (yi - yj) / (plotH * 0.03) + (i > j ? 1 : -1))
     }
     if (acc <= 1e-3 || VICT[i].some(([a, b]) => t >= a && t <= b)) return 0
     let dev = 0
-    for (let k = 1; k <= 5; k++) dev = Math.max(dev, Math.abs(Ys(valueAt(i, Math.min(m.xn, Xd(m.tip - BACK - LAG * acc * k / 5, m))), uA) - yi))
-    return LAG * acc * (1 - smooth(30, 70, dev))
+    for (let k = 1; k <= 5; k++) dev = Math.max(dev, Math.abs(Ys(valueAt(i, Math.min(m.xn, Xd(m.tip - BACK - LAGS[i] * acc * k / 5, m))), uA) - yi))
+    return LAGS[i] * acc * (1 - smooth(30, 70, dev))
   }
-  if (showFig && N > 1 && LAG > 0) for (let i = 0; i < N; i++) {
+  if (showFig && N > 1 && LAGMAX > 0) for (let i = 0; i < N; i++) {
     let lag = 0
     for (let k = 0; k < NS; k++) {
       const t = k * DT, m = mapAt(t), tg = lagTarget(i, t, m, AX[k])
@@ -404,7 +420,7 @@ export default function chartRace(spec, ctx) {
       LGA[i][k] = lag
     }
   }
-  const lagOf = (i, t) => (showFig && N > 1 && LAG > 0 ? sampleAt(LGA[i], t) : 0)
+  const lagOf = (i, t) => (showFig && N > 1 && LAGMAX > 0 ? sampleAt(LGA[i], t) : 0)
 
   // ============================================================================ figures: terrain gait (pure)
   const LEG = (RIG.thigh + RIG.shin) * FK
@@ -651,9 +667,14 @@ export default function chartRace(spec, ctx) {
   }
 
   // figures; series 0 drawn last (in front)
+  // (no halo by default: a knockout would chop his line. lookOpts.figures[].outline = px opts a figure into a thin
+  // halo, e.g. a walker on a flat line who trails behind another rival's line: it then reads in front of it; the
+  // halo stops above his own feet, so his own line stays whole)
   const figs = []
+  const haloOf = i => { const f = (lo.figures || []).find(q => q && +q.series === i && Number.isFinite(+q.outline) && +q.outline > 0); return f ? clamp(+f.outline, 2, 12) : 0 }
   if (showFig) for (let i = N - 1; i >= 0; i--) {
-    figs[i] = new Figure(g.fig, { scale: FK, color: pal[i].fig, outline: null })   // a knockout would chop his line
+    const ow = haloOf(i)
+    figs[i] = new Figure(g.fig, { scale: FK, color: pal[i].fig, outline: ow ? C.void : null, outlineWidth: ow || 12 })
   }
 
   // tip counters ("tags"): name over value (+ an optional beat note), all in one column
@@ -836,7 +857,8 @@ export default function chartRace(spec, ctx) {
       if (LOG) a = isDecade(gr.v) ? 1 : smooth(250, 330, plotH * Math.LN10 / uA)
       else {
         const inN = isMult(gr.v, stN), inP = stP > 0 && isMult(gr.v, stP)
-        a = inN && inP ? 1 : inN ? xa : inP ? 1 - xa : 0
+        // in sequence: the old family is out before the new one comes in, so two labels never stack ($4K / $5K)
+        a = inN && inP ? 1 : inN ? smooth(0.45, 1, xa) : inP ? 1 - smooth(0, 0.55, xa) : 0
       }
       const y = Ys(gr.v, uA)
       a *= clamp((y - (hudBottom + 30)) / 30) * clamp((BASE - 30 - y) / 20)
@@ -884,6 +906,14 @@ export default function chartRace(spec, ctx) {
       // a figure behind a better-placed one (lower value) fades OUT while their bodies overlap (his coloured tip dot
       // stays), so figures never stack: the leader of a cluster is the only figure in it
       const Js = SER.map((_, i) => figure(i, t, m, uA).J)
+      // a pumping or reaching arm never crosses into the tag column: the hand stops 12 px short of it (IK re-bends
+      // the elbow), so no limb ever strokes through a name or a live value
+      const handMax = m.tip + LAB_GAP - 12
+      for (const J of Js) for (const hk of ['hF', 'hB']) {
+        if (J[hk][0] > handMax) pinLimb(J, hk, [handMax, J[hk][1]], 1)
+        const ek = 'e' + hk[1]
+        if (J[ek][0] > handMax) J[ek] = [handMax, J[ek][1]]
+      }
       const box = J => { const xs = ['head', 'hF', 'hB', 'fF', 'fB', 'hip'].map(k => J[k][0]), ys = ['hF', 'hB', 'fF', 'fB'].map(k => J[k][1]); return { x0: Math.min(...xs) - J.R, x1: Math.max(...xs) + J.R, y0: Math.min(J.head[1] - J.R, ...ys), y1: Math.max(...ys) } }
       const bx = Js.map(box), vNow = SER.map((_, i) => valueAt(i, m.xn)), figA = SER.map(() => 1)
       for (let i = 0; i < N; i++) {

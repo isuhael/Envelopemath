@@ -274,6 +274,9 @@ vo_expect[idb] = [
     [("2022", False)],
     [("2025", False), (bare(money(HOLD[2025], 100)), True)],
     [(bare(money(SAM[2025], 100)), not is_exact(SAM[2025], rnd(SAM[2025], 100)))],
+    # round-2 fix pass: the last line is split so the verdict (verdict.t = this line's t) lands on
+    # "He dodged the recovery." and "Sam's still at $6,300." stays captioned under its ring
+    [],
 ]
 beats[idb] = [("2008", 0, "takes"), (str(first_back), 3, str(first_back)),
               ("2022", 4, "dips"), ("2025", 5, "2025")]

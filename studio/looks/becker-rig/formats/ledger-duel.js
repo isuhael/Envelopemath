@@ -3,36 +3,51 @@
 //
 // The duel is physical. On the left, two coin stacks stand side by side on the floor, one per person, each with
 // its owner standing on top (green = the hero / winner-to-be, slate = the rival). Stack height is the money, on one
-// honest linear scale shared by both, so the taller stack is always the richer person. On the right, the ledger:
-// a right-aligned table (label | person A | person B) that builds bottom-up from the floor like the flagship's
-// ladder, every label dim from frame 1, each row's two values dropping onto their dotted shelf together.
+// honest linear scale shared by both, so the taller stack is always the richer person; a stack is always whole
+// coins. The rig owns the left of the frame: the stacks stand 130 px apart (so the figures never tangle), the
+// left figure stays >= 40 px inside the frame, and the ledger starts 24 px right of the right-hand stack. When no
+// column head hangs over the rig, the tallest stack may rise to just under the footer. On the right, the ledger:
+// a table (label | person A | person B), labels left-aligned, values right-aligned, that builds bottom-up from the
+// floor like the flagship's ladder, every label dim from frame 1, each row's two values dropping onto their dotted
+// shelf together. Its right edge stays clear of the button rail even under the climax's camera punch.
 //
-//   gain   the stack springs up under its owner (he rides it, knees giving); the value lands green
+//   gain   the stack springs up under its owner (he rides it, arms up); the value lands green and goes straight to
+//          ink when the next row lands (one green on screen: the newest cell)
 //   dip    a small loss: the stack sinks, he bends with it; the value lands red
-//   crash  a big loss (>= 12%, or any loss on a "bad" row): an impact on the stack (red hit lines, shake, `hit`),
-//          the lost coins burst off the top and roll to the floor (they stay there), he is blown up off the stack
-//          and lands squashed on what is left, then slumps; the other one flinches and turns to look. When both
-//          crash in the same row, each leans away from the other with his inner arm kept down (no tangle)
+//   crash  a big loss (>= 12%, or any loss on a "bad" row): an impact on the stack (red hit lines, a mostly vertical
+//          shake, `hit`), the lost coins burst off the top and come to rest beside his stack (inside the frame), lie
+//          there ~1.25 s and go; he is blown up off the stack and lands squashed on what is left, then slumps; the
+//          other one flinches and turns to look. When both crash in the same row, each leans away from the other
+//          with his inner arm kept down and his outer arm flailing up (no tangle, never into the edge or the labels)
 //   lead   when the lead changes, the new leader pumps a fist
-//   event  the row's event text pops as a pill right above the row (tone colour) until the next row lands;
-//          the row label keeps the tone colour
-//   final  the winner's last value lands on a gold plate (impact + camera punch + `cash`); the winner hops and
-//          celebrates on the taller stack, then points at the ledger; the loser slumps (the right-hand one turns his
-//          back on the ledger) and his column settles grey
+//   event  the row's event text pops as a pill in the slot above the row, with a caret pointing down at the
+//          cell(s) that moved; while it is up, the label of the slot it sits in fades out completely (so it never
+//          reads as the next year's note). It holds 1.6 s at most (lookOpts.pillHold) and is gone before the next
+//          row. A loss row's label keeps its red; a good row's label is green while its pill is up, then ink
+//   final  the winner's last value lands at 1.3x on a gold plate (the plate opens from its centre first; impact,
+//          camera punch, a short fan of rays above the plate, `cash`); the winner hops and celebrates on the taller
+//          stack, then points at the ledger; the loser slumps (the right-hand one turns his back on the ledger) and
+//          his column settles grey. Half a second later the rows in between settle to 55% (the first row, the last
+//          row and any row a pencil mark rings stay full), so the plate, the ringed cells and the verdict carry the
+//          end frame
 // "Less is better" duels (debt: the winner ends LOWER) draw the stacks as red debt piles and flip the colours:
-// paying down is green, nothing crashes. Row 0 is the start, never a crash.
+// paying down is green, nothing crashes. Row 0 is the start, never a crash. The figures carry no pencil here
+// (lookOpts.pencil: true brings it back).
 //
 // Layout (all measured at mount): values 64 → 40 px, labels ~0.8 of that, rows 1.15 em apart. Column heads are
-// "● Name" with the plan under it (never a dropped name, never a cut plan). When the rows do not fit, the fitter
-// scores the alternatives and keeps the best: drop the stake line, drop the headroom for a last-row event (its pill
-// then covers the column heads for 2.4 s, which dim), 3-line or smaller (38 -> 34 px) plans, a full-width legend
-// ("● Name  plan", up to 2 lines each) with plain name heads, and as a last resort 36-38 px values (warns).
-// The figures stand left of the ledger, so the tallest stack is capped to keep them under the stake line / legend.
+// "● Name" with the plan under it (never a dropped name, never a cut plan; "\n" in a plan forces a break), and
+// they stay over the ledger unless reaching left over the rig saves a line. When the rows do not fit, the fitter
+// scores the alternatives and keeps the best: a smaller climax (1.2, 1.12, 1.06x), a tighter rig (stacks 112 or
+// 96 px apart), drop the stake line, drop the headroom for a last-row event (its pill then covers the column heads
+// for 2.4 s, which dim), 3-line or smaller (38 -> 34 px) plans, a full-width legend ("● Name  plan", up to 2 lines
+// each) with plain name heads, and as a last resort 36-38 px values (warns).
 //
 // lookOpts (all optional; it renders fully without them):
 //   figure: false                     no figures (the stacks still grow and get knocked down)
 //   figureScale: 0.8                  size of the figures
 //   figures: [{ person, color }]      'hero' | 'neutral' (slate) | 'ink'. Default: winner hero, other neutral
+//   pencil: true                      the pencil behind each figure's head (off by default in this format)
+//   pillHold: 1.6                     the longest an event / cash-out pill stays up (s)
 //   rowLabelsAtStart: false           hide the dim future labels (rows appear as they land)
 //   stake: false                      hide the stake line under the footer
 //   keyLabel: 'Year'                  a head over the label column
@@ -42,9 +57,10 @@
 //                                     verdict acting for that person. A beat whose hold runs into the same
 //                                     person's sell skips its return pose (the sell's wind-up plays in full).
 //          { t, act: 'sell', person, label }   the person cashes out: a chop on his stack, which turns from coins
-//                                     into a grey brick of cash (it no longer grows), and `label` pops as a pill
-//                                     right-aligned over his column in the slot above the latest row, until the
-//                                     next row lands (an event pill in that slot closes first)
+//                                     into a cash brick (84 px wide, as tall as the money, a "$" on its band; it no
+//                                     longer grows) and sweeps his lost coins off the floor; `label` pops as a pill
+//                                     right-aligned over his column in the slot above the latest row, its caret on
+//                                     his cell (an event pill in that slot closes first)
 //   marks: [{ t, row, person }]       a pencil ring is drawn around one landed cell at t (the cell pops; `swipe`);
 //                                     it holds until the next row, sell or later mark, or for good on the last row
 import {
@@ -93,7 +109,8 @@ const TONE_C = { bad: C.red, good: C.heroInk, goal: C.ink, neutral: C.ink }
 const PZ = {
   ready:  { lean: 2, tilt: -8, aF: [24, 40], aB: [-22, 26], lF: [12, -6], lB: [-12, -3] },
   bob:    { lean: 12, tilt: 6, aF: [6, 34], aB: [-28, 28], lF: [30, -54], lB: [-8, -48] },       // knees give
-  lifted: { lean: -4, tilt: -14, aF: [62, 18], aB: [-62, -18], lF: [12, -4], lB: [-12, -4] },    // riding up, arms out
+  lifted: { lean: -4, tilt: -14, aF: [140, 16], aB: [-140, -16], lF: [12, -4], lB: [-12, -4] },  // riding up, arms up in a V
+                                                                                                  // (arms out would reach his neighbour)
   pump:   { lean: 4, tilt: -14, aF: [164, -26], aB: [-52, -22], lF: [12, -6], lB: [-12, -3] },
   flinch: { lean: -14, tilt: -10, aF: [76, 92], aB: [-34, 64], lF: [16, -12], lB: [-16, -8] },
   squash: { lean: 6, tilt: 16, aF: [80, 24], aB: [-80, -24], lF: [62, -122], lB: [-38, -84] },   // landed hard, arms out
@@ -189,19 +206,26 @@ export default function ledgerDuel(spec, ctx) {
   // the rig: two stacks PW wide whose centres stand SPACING apart (the figures on top never tangle), the left
   // figure kept >= EDGE px inside the frame; a sold stack is a cash brick BRICK_W wide. The ledger starts 24 px
   // right of the right-hand stack.
-  const PW = 76, SPACING = 132, EDGE = 40, BRICK_W = 84
-  const PX = [EDGE + 44, EDGE + 44 + SPACING]           // stack centres: 84, 216 (decoration may sit left of x 60)
-  const X0 = PX[1] + Math.max(PW, BRICK_W) / 2 + 22     // left edge of the ledger (the labels, left-aligned)
-  const XR = 938                                        // right edge of the last column (x <= 940 below y 820)
+  // A ledger too wide for the room left (long labels, 6-digit values) tightens the rig (spacing 112, then 96)
+  // before its values drop under 40 px.
+  const PW = 76, EDGE = 40, BRICK_W = 84, SPACINGS = [130, 112, 96]
+  const rigFor = sp => ({ sp, PX: [EDGE + 44, EDGE + 44 + sp], X0: EDGE + 44 + sp + Math.max(PW, BRICK_W) / 2 + 24 })
+  let { PX, X0 } = rigFor(SPACINGS[0])                  // stack centres 84, 214; the ledger (labels) from x 280
+  // right edge of the last column: x <= 940 below y 820, with room for the climax's camera punch and a 3 px
+  // sideways shake (the impacts shake the world mostly up and down)
+  const XR = 934, SHAKE_X = 3
   const floorY = L.floorY
   const GAP = 13                                        // text baseline sits this far above its shelf
   // the winner's last value is the climax: 1.3x the other cells, on a gold plate (it may grow into the gap under
-  // the column heads; the fitter reserves its height)
-  const HLS = 1.3, PLATE = [14, 8]
+  // the column heads; the fitter reserves its height). A ledger too wide or too tall for that steps the climax
+  // down (1.2, 1.12, 1.06) before it shrinks every value.
+  const HLS_TRY = [1.3, 1.2, 1.12, 1.06], PLATE = [14, 8]
+  let HLS = HLS_TRY[0]
   const fnt = (w, px) => `${w} ${px}px ${F.head}`
-  const wVal = (str, px) => measure(str, fnt(900, px), { letterSpacing: '-0.03em' })
-  const wLab = (str, px) => measure(str, fnt(800, px), { letterSpacing: '-0.02em' })
-  const mW = (str, font, ls) => measure(str, font, { letterSpacing: ls })
+  const mCache = new Map()                              // the fitter measures the same strings many times
+  const mW = (str, font, ls) => { const k = font + '|' + ls + '|' + str; let w = mCache.get(k); if (w == null) { w = measure(str, font, { letterSpacing: ls }); mCache.set(k, w) } return w }
+  const wVal = (str, px) => mW(str, fnt(900, px), '-0.03em')
+  const wLab = (str, px) => mW(str, fnt(800, px), '-0.02em')
 
   const nameOf = p => plain(people[p].name || '')
   // stake line (mono, the first amount in ink) under the footer; dropped when the rows need the room
@@ -253,6 +277,7 @@ export default function ledgerDuel(spec, ctx) {
   const keyLabel = lo.keyLabel ? String(lo.keyLabel) : ''
   // one candidate layout: value size vp + config { st: stake line, hr: headroom for a last-row event, pl: plan lines }
   function tryLayout(vp, cf) {
+    const HLS = cf.hls, X0 = cf.rig.X0
     const yp = Math.min(vp, clamp(Math.round(vp * 0.8), 40, 52))   // vp < 40 only as the last resort (warns)
     // labels are left-aligned at X0, so a short label leaves its row room (the climax plate uses it)
     const labW = rows.map(r => wLab(String(r.label ?? ''), yp))
@@ -262,7 +287,7 @@ export default function ledgerDuel(spec, ctx) {
     // how far a cell reaches left / right of its column's right edge (a plate: its scaled text + padding)
     const reachL = (i, p) => (isPlate(i, p) ? tw[i][p] * HLS + PLATE[0] : tw[i][p])
     const reachR = (i, p) => (isPlate(i, p) ? PLATE[0] : 0)
-    const G = 32, GP = 22                                 // gap between texts; between a label and the plate
+    const G = 32, GP = 18                                 // gap between texts; between a label and the plate
     const xB = XR
     // A's right edge xA: every row's A cell clears its label, and B's cell clears A's
     let aLo = -Infinity, aHi = Infinity
@@ -323,24 +348,27 @@ export default function ledgerDuel(spec, ctx) {
     const avail = N > 1 ? (shelf0 - GAP - topExtra - headroom - (top + headH + 20)) / (N - 1) : 999
     if (avail < rowNeed) return null
     const pitch = Math.min(avail, Math.max(rowNeed + 26, 1.9 * vp))
-    return { vp, yp, yW, vW, xYear, xA: best.xA, aR: best.aR, xB, names: best.names, plans: best.plans, nameLH, planLH, headH, pitch, shelf0, topExtra, headroom, top, legTop, cf }
+    return { vp, yp, yW, vW, xYear, xA: best.xA, aR: best.aR, xB, names: best.names, plans: best.plans, nameLH, planLH, headH, pitch, shelf0, topExtra, headroom, top, legTop, cf, hls: HLS, rig: cf.rig }
   }
   // score every config by its best value size; the stake line and the last-row headroom are worth a few px
   let lay = null
+  for (const hls of plateOn ? HLS_TRY : [1]) for (const rig of SPACINGS.map(rigFor))
   for (const st of stakeEl ? [true, false] : [false]) for (const hr of rows[last].event ? [true, false] : [false])
   for (const [pl, pp, lg] of people.some(x => x.plan) ? [[2, 40, false], [3, 40, false], [0, 40, true], [2, 38, false], [3, 38, false], [3, 36, false], [3, 34, false], [4, 34, false]] : [[0, 40, false]]) {
     for (let vp = 64; vp >= 36; vp -= 2) {
-      const l = tryLayout(vp, { st, hr, pl, pp, lg })
+      const l = tryLayout(vp, { st, hr, pl, pp, lg, hls, rig })
       if (!l) continue
       // a small plan costs less than small values; the legend (names twice) costs a little; a value under 40 px
-      // is the last resort; a name without its dot costs a little
+      // is the last resort; a name without its dot costs a little; a smaller climax costs about as much as 4 px
+      // of value size at 1.06x
       l.score = vp + (st ? 8 : 0) + (hr ? 4 : 0) - (pl >= 3 ? 5 : 0) - (pp < 40 ? 6 + 1.5 * (40 - pp) : 0) - (lg ? 6 : 0) - (vp < 40 ? 30 : 0)
-        - (lg ? 0 : 2 * l.names.filter(n => n.noDot).length)
+        - (lg ? 0 : 2 * l.names.filter(n => n.noDot).length) + 20 * (hls - 1.06) - 0.25 * (SPACINGS[0] - rig.sp)
       if (!lay || l.score > lay.score) lay = l
       break
     }
   }
   if (!lay) throw new Error('ledger-duel: the rows do not fit (too many rows, or values/labels too wide)')
+  HLS = lay.hls; ({ PX, X0 } = lay.rig)
   if (stakeEl && !lay.cf.st) { stakeEl.remove(); stakeEl = null }
   if (lay.cf.lg) { let y = lay.legTop; for (const el of legEls) { style(el, { top: y + 'px' }); y += el.offsetHeight + 6 } }
   else for (const el of legEls) el.remove()
@@ -633,22 +661,33 @@ export default function ledgerDuel(spec, ctx) {
     crashed.forEach((p, n) => {
       const a = airs[p].find(x => x.i === i)
       fxk.impact(Ti, { x: PX[p], y: floorY - a.from, shake: crashed.length > 1 ? 8 : 11, r: 34, lines: 9, color: C.red, cue: n ? null : 'hit', gain: 0.85 })
-      // the lost coins burst off the top and roll to the floor in front of the stacks
+      // the lost coins burst off the top and come to rest on the floor beside his own stack (inside the frame,
+      // clear of the ledger), lie there DEBRIS_HOLD s, then go: the floor is clean again, so the stacks read on
+      // their own. A cash-out sweeps the seller's coins at once.
       const rnd = rng(400 + i * 13 + p * 7)
       const cnt = clamp(Math.round((a.from - a.to) / SLAB) + 3, 4, 9)
+      const mid = (PX[0] + PX[1]) / 2
       for (let k = 0; k < cnt; k++) {
         const cr = 14 + rnd() * 6
         const y0 = floorY - lerp(a.to, a.from, (k + 0.5) / cnt)
         const p0 = [PX[p] + (rnd() - 0.5) * 30, y0]
         const vy = -(380 + rnd() * 320)
-        const target = p === 0 ? lerp(-26, PX[0] - PW / 2 - 4, rnd()) : (k % 2 ? lerp(PX[1] - PW / 2 - PG + 2, PX[1] - PW / 2 - 4, rnd()) : lerp(PX[1] + PW / 2 + 6, X0 - 18, rnd()))
-        const tHit = tossHit(Ti, p0, [0, vy], { g: 3200, floor: floorY, r: cr })
-        const vx = (target - p0[0]) / Math.max(0.1, tHit - Ti)
-        debris.push({ c: coin(g.front, { r: cr, text: '' }), t0: Ti + k * 0.012, p0, v: [vx, vy], r: cr, i })
+        const target = p === 0
+          ? (k % 2 ? lerp(8 + cr, PX[0] - PW / 2 + 2, rnd()) : lerp(PX[0] + PW / 2 - 2, mid - cr, rnd()))
+          : (k % 2 ? lerp(mid + cr, PX[1] - PW / 2 + 2, rnd()) : lerp(PX[1] + PW / 2 - 2, X0 - 12 - cr, rnd()))
+        // the resting x is linear in vx (the bounces only scale it), so solve vx for the target
+        const unit = toss(Ti + 3, Ti, [0, p0[1]], [1, vy], { r: cr, g: 3200, e: 0.38, friction: 0.35, n: 3, floor: floorY })[0]
+        const vx = (target - p0[0]) / Math.max(0.05, unit)
+        const t0 = Ti + k * 0.012
+        const sale = sells.find(x => x.p === p && x.t > Ti)
+        const tEnd = Math.min(Ti + DEBRIS_HOLD + 0.03 * k, sale ? sale.t + 0.04 * (k % 3) : Infinity)
+        debris.push({ c: coin(g.front, { r: cr, text: '' }), t0, p0, v: [vx, vy], r: cr, i, tEnd })
       }
     })
     if (i === last && plateOn) {
-      fxk.impact(Ti, { x: pb.cx, y: pb.cy, shake: 13, punch: 0.025, rx: pb.w / 2 + 14, ry: pb.h / 2 + 12, r: 44, lines: 13, cue: 'hit', gain: 0.95 })
+      // the climax: shake, camera punch and a short fan of rays into the free space above the plate (never over
+      // the neighbouring cells or labels)
+      fxk.impact(Ti, { x: pb.cx, y: pb.cy, shake: 13, punch: 0.025, burst: false, cue: 'hit', gain: 0.95 })
       ctx.cue(Ti + 0.12, 'cash', { gain: 0.6 })
     } else if (!crashed.length && Ti > 0) ctx.cue(Ti, 'thud', { gain: 0.42 })
     if (r.event && !crashed.length && !(i === last)) ctx.cue(Ti + 0.08, 'pop', { gain: 0.5 })
@@ -667,10 +706,26 @@ export default function ledgerDuel(spec, ctx) {
   }
   // pencil marks: one swipe per mark time
   for (const mt of new Set(marks.map(m => m.t))) ctx.cue(mt, 'swipe', { gain: 0.4 })
+  // the climax rays: 7 short strokes fanning up from the plate's top edge, as long as the room under the heads
+  // allows (<= 28 px), drawn for 0.26 s
+  const plateRays = []
+  if (plateOn) {
+    const room = pb.y - (headTop + lay.headH)
+    const len = clamp(room - 14, 12, 28)
+    const rnd = rng(733)
+    for (let k = 0; k < 7; k++) {
+      const u = k / 6
+      const el = s('line', { stroke: C.ink, 'stroke-width': 6, 'stroke-linecap': 'round', opacity: 0, 'data-deco': '' })
+      g.fx.append(el)
+      plateRays.push({ el, x: pb.x + pb.w * (0.1 + 0.8 * u), y: pb.y - 7, a: ((-128 + 76 * u + (rnd() - 0.5) * 6) * Math.PI) / 180, len: len * (0.8 + 0.25 * rnd()) })
+    }
+  }
 
   // ================================================================== figures
   const showFig = lo.figure !== false
-  const figs = showFig ? [0, 1].map(p => new Figure(g.fig, { scale: FIGK, color: pal[p].fig })) : []
+  // no pencil behind the head here: nothing in this format draws with it (the rings draw themselves), and at phone
+  // size it reads as an arrow through the head. lookOpts.pencil: true brings it back.
+  const figs = showFig ? [0, 1].map(p => new Figure(g.fig, { scale: FIGK, color: pal[p].fig, detail: lo.pencil === true ? 'pencil' : null })) : []
   const keys = [[], []], faceK = [[{ t: 0, v: 1 }], [{ t: 0, v: 1 }]], hops = [[], []], squashes = [[], []]
   const addK = (p, t, pose, dd = 0.2, e = 'spring') => keys[p].push({ t, pose, d: dd, e })
   // frame 1: the hero ponders the ledger, hand on chin; the rival stands ready. A nod in the first second.
@@ -683,7 +738,7 @@ export default function ledgerDuel(spec, ctx) {
   }
   // the way a figure faces at time tt (1 = toward the ledger), from the face keys added so far
   const faceAt = (p, tt) => { let v = 1, bt = -Infinity; for (const x of faceK[p]) if (x.t <= tt && x.t >= bt) { v = x.v; bt = x.t } return v }
-  // a shared crash (both blown up off their stacks in the same row): they stand 90 px apart, so each one leans and
+  // a shared crash (both blown up off their stacks in the same row): they stand SPACING px apart, so each one leans and
   // flails AWAY from the other (only the outer arm flails; the inner arm stays down, so it never sweeps across his
   // neighbour; the inner leg tucks in on landing) and the left one keeps his head level, so the frame-edge clamp
   // does not push him into his neighbour
@@ -691,8 +746,12 @@ export default function ledgerDuel(spec, ctx) {
     const P = { ...(typeof pose === 'string' ? POSES[pose] : pose) }
     const away = p === 0 ? -1 : 1                                   // screen direction away from the other one
     const inner = away * f < 0                                      // his front limbs point at the other one
-    if (p === 0) { P.lean = f > 0 ? -3 : 3; P.tilt = land ? 10 : 2 } else P.lean = away * f * 14
+    if (p === 0) { P.lean = f > 0 ? -3 : 3; P.tilt = land ? 10 : 2 } else P.lean = away * f * 8
     P[inner ? 'aF' : 'aB'] = inner ? [14, 14] : [-14, -14]          // the inner arm stays down (never sweeps across)
+    // the outer arm flails up, not out: out it would hit the frame edge (left) or the ledger's labels (right), and
+    // the clamps that keep him off those would push him into his neighbour
+    const up = land ? [140, 18] : [162, 8]
+    P[inner ? 'aB' : 'aF'] = inner ? [-up[0], -up[1]] : up
     if (land) P[inner ? 'lF' : 'lB'] = inner ? [24, -96] : [-14, -70]
     return P
   }
@@ -794,7 +853,9 @@ export default function ledgerDuel(spec, ctx) {
     const tr = tracks[p]
     const P0 = secondary(tr.at(t), t, { prev: tr.at(t - 0.07) })
     const J = fk(P0, { x: PX[p], ground: figGround(p, t), face: faces[p].at(t), scale: FIGK })
-    shiftJ(J, Math.max(0, 24 - figs[p].extentX(J)[0]))      // never clipped by the frame edge (the pencil included)
+    // never cut by (or crowding) the frame edge, and never over the ledger's labels
+    const [ex0, ex1] = figs[p].extentX(J)
+    shiftJ(J, Math.max(EDGE - ex0, Math.min(0, X0 - 14 - ex1)))
     let sq = { sx: 1, sy: 1 }
     for (const q of squashes[p]) { const z = squashAt(t, q.t, q.amt); sq = { sx: sq.sx * z.sx, sy: sq.sy * z.sy } }
     figs[p].draw(J, sq)
@@ -808,12 +869,17 @@ export default function ledgerDuel(spec, ctx) {
     const sg = SIGN[i][p]
     const fresh = sg > 0 ? C.heroInk : sg < 0 ? C.red : C.ink
     const settled = sg < 0 ? C.red : C.ink
-    let c = mix(fresh, settled, prog(t, nextT(i), 0.3))
+    let c = mix(fresh, settled, prog(t, nextT(i), 0.08))   // the previous cell goes straight to its settled colour
     if (i === last) c = mix(fresh, settled, prog(t, TW + 0.5, 0.4))
     if (p === loser && sg >= 0) c = mix(c, C.grey, prog(t, TW + 0.5, 0.5))
     return c
   }
   const duration = durationOf(spec, lastT + 1.6, d.hold ?? 3)
+  // the end frame belongs to the payoff: once the winner's value has landed, the rows in between (all but the
+  // first row, the last row and any row a pencil mark rings) settle to 55%
+  const focusRows = new Set([0, last, ...marks.map(m => m.i)])
+  const labelSettle = rows.map((r, i) => { const pl = pills.find(x => x.i === i && x.tone !== 'neutral'); return pl ? pl.t1 : nextT(i) })
+  const endDim = (i, t) => (focusRows.has(i) || N < 4 ? 1 : 1 - 0.45 * E.inOut(prog(t, TW + 0.5, 0.5)))
 
   function seek(t) {
     // pills first: they dim the future labels they sit on
@@ -839,9 +905,13 @@ export default function ledgerDuel(spec, ctx) {
       const row = R[i], Ti = landT[i]
       const reach = prog(t, Ti - 0.2, 0.2)
       const tn = rows[i].tone && rows[i].event ? rows[i].tone : null
-      const lc = tn === 'bad' ? C.red : tn === 'good' ? C.heroInk : C.ink
+      // a loss row's label stays red (its cells do); a good row's label is green only while its pill is up, then
+      // settles to ink like its cells (one green on screen at a time: the newest cell)
+      const lc = tn === 'bad' ? C.red : tn === 'good' ? mix(C.heroInk, C.ink, prog(t, labelSettle[i], 0.25)) : C.ink
       const ghost = rowLabelsAtStart ? 1 : reach
-      row.label.set({ x: xYear, y: boxBottom(i, yp), color: mix(C.dim, lc, reach), opacity: ghost * (1 - 0.9 * clamp(3 * (dimUnder.get(i) || 0))) })
+      // a label under a pill is gone while the pill is up (it comes back as the pill closes)
+      const fade = endDim(i, t)
+      row.label.set({ x: X0, y: boxBottom(i, yp), color: mix(C.dim, lc, reach), opacity: ghost * fade * (1 - clamp(3 * (dimUnder.get(i) || 0))) })
       const isPlateRow = i === last && plateOn
       const f = t >= Ti - dropDur ? Math.max(0, DROP - 0.5 * 5200 * Math.pow(Math.min(t, Ti) - (Ti - dropDur), 2)) : DROP
       const fy = t >= Ti ? 0 : f
@@ -852,16 +922,19 @@ export default function ledgerDuel(spec, ctx) {
         for (const m of rings) if (m.i === i && m.p === p) sc *= 1 + 0.1 * bump(t, m.t, 0.34)   // a marked cell pops
         row.vals[p].set({
           x: xCol[p], y: boxBottom(i, vp) - fy, sx: sc * sq.sx, sy: sc * sq.sy,
-          opacity: t >= Ti - dropDur ? clamp((t - (Ti - dropDur)) / 0.03) : 0,
+          opacity: fade * (t >= Ti - dropDur ? clamp((t - (Ti - dropDur)) / 0.03) : 0),
           color: plateVal ? C.ink : valColor(i, p, t),
         })
       }
       if (isPlateRow && plate) {
-        const pp = popIn(t, Ti - 0.01, 0.3, 0.55)
+        // the plate opens from its centre just before the number lands (>= 90% open by the time the number shows),
+        // so the number lands on a whole plate
+        const t0 = Ti - dropDur - 0.07
+        const pp = popIn(t, t0, 0.24, 0.6)
         const sq = squashAt(t, Ti, 0.6 * squashAmt)
         style(plate, {
-          transform: `translate(${pb.x.toFixed(1)}px,${(pb.y - fy * 0.5).toFixed(1)}px) scale(${(pp.scale * sq.sx).toFixed(3)},${(pp.scale * sq.sy).toFixed(3)})`,
-          opacity: t < Ti - 0.01 ? '0' : '1',
+          transform: `translate(${pb.x.toFixed(1)}px,${pb.y.toFixed(1)}px) scale(${(pp.scale * sq.sx).toFixed(3)},${(pp.scale * sq.sy).toFixed(3)})`,
+          opacity: t < t0 ? '0' : '1',
         })
       }
       attr(shelves[i], 'opacity', String(+(1 - 0.55 * prog(t, Ti, 0.4)).toFixed(3)))
@@ -874,12 +947,25 @@ export default function ledgerDuel(spec, ctx) {
     }
     if (showFig) for (let p = 0; p < 2; p++) drawFig(p, t)
     for (const db of debris) {
-      if (t < db.t0) { db.c.set({ opacity: 0 }); continue }
+      if (t < db.t0 || t >= db.tEnd + 0.3) { db.c.set({ opacity: 0 }); continue }
       const [x, y, rr] = toss(t, db.t0, db.p0, db.v, { r: db.r, g: 3200, e: 0.38, friction: 0.35, n: 3 })
-      db.c.set({ x, y, r: db.r, rot: rr * 57, opacity: x < -db.r ? 0 : 1, spin: 0.2 * Math.abs(Math.sin(rr)) })
+      // gone: a quick shrink and fade where it lies
+      const q = prog(t, db.tEnd, 0.3), r = db.r * (1 - 0.45 * q)
+      db.c.set({ x, y: y + (db.r - r), r, rot: rr * 57, opacity: 1 - q, spin: 0.2 * Math.abs(Math.sin(rr)) })
+    }
+    for (const ry of plateRays) {
+      const dt = t - TW, on = dt >= 0 && dt < 0.26
+      attr(ry.el, 'opacity', on ? String(+(1 - E.inQuad(prog(dt, 0, 0.26))).toFixed(3)) : '0')
+      const pq = on ? E.out(prog(dt, 0, 0.22)) : 0
+      const r0 = ry.len * (0.05 + 0.45 * pq), r1 = ry.len * (0.3 + 0.7 * pq)
+      const c = Math.cos(ry.a), sn = Math.sin(ry.a)
+      attr(ry.el, 'x1', (ry.x + c * r0).toFixed(1)); attr(ry.el, 'y1', (ry.y + sn * r0).toFixed(1))
+      attr(ry.el, 'x2', (ry.x + c * r1).toFixed(1)); attr(ry.el, 'y2', (ry.y + sn * r1).toFixed(1))
     }
     const { shake, zoom } = fxk.seek(t)
-    cam.set({ fx: pb.cx, fy: pb.cy, x: pb.cx, y: pb.cy, zoom, shake })
+    // the punch zooms about the plate's right half, so the ledger's right edge stays clear of the button rail
+    const fx = pb.cx + pb.w / 4
+    cam.set({ fx, fy: pb.cy, x: fx, y: pb.cy, zoom, shake: [clamp(shake[0], -SHAKE_X, SHAKE_X), shake[1]] })
   }
 
   return { duration, seek }

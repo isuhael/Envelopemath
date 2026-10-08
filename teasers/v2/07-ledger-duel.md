@@ -1,7 +1,7 @@
 # Format 7: "2 people invest" ledger duel, three teasers
 
 **Channel:** Back of the Envelope (YouTube Shorts, Instagram Reels, TikTok), US audience, USD
-**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews; hook pass on 2026-10-08, 07c kept; hook pass 2 on 2026-10-08, 07c rewritten to "You save $100 a month"; assembly pass on 2026-10-08, 07a and 07c fitted, VO-locked marks added, rendered; round-2 fix pass on 2026-10-08, 07a re-paced to 22.8 s with a total line and held marks, 07c's frame-1 caption leak closed; 07b assembly pass on 2026-10-08, 07b fitted to the Becker kit, QA'd and rendered; see the [review log](#review-log))
+**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews; hook pass on 2026-10-08, 07c kept; hook pass 2 on 2026-10-08, 07c rewritten to "You save $100 a month"; assembly pass on 2026-10-08, 07a and 07c fitted, VO-locked marks added, rendered; round-2 fix pass on 2026-10-08, 07a re-paced to 22.8 s with a total line and held marks, 07c's frame-1 caption leak closed; 07b assembly pass on 2026-10-08, 07b fitted to the Becker kit, QA'd and rendered; 07b round-2 fix pass on 2026-10-08, the QA's must and shoulds fixed in the kit and the spec, re-rendered; see the [review log](#review-log))
 **Format:** `ledger-duel`, hook pattern **P4** ("same money, two choices")
 **Lane:** two people, the same money, two choices, a year-by-year ledger
 **Files:**
@@ -9,7 +9,7 @@
   - [`studio/specs/07a-live-sheet-start-at-25.json`](../../studio/specs/07a-live-sheet-start-at-25.json)
   - [`studio/specs/07b-becker-rig-panic-sell-2008.json`](../../studio/specs/07b-becker-rig-panic-sell-2008.json)
   - [`studio/specs/07c-clean-sheet-savings-rate.json`](../../studio/specs/07c-clean-sheet-savings-rate.json)
-- Check: [`teasers/v2/checks/07-ledger-duel.py`](checks/07-ledger-duel.py). Run `python3 teasers/v2/checks/07-ledger-duel.py`. It reports **413 checks, 0 failures** and exits 0 (418 after the round-2 fix pass. The 07b assembly pass took 07b from 152 checks to 147: it dropped the two round-1 prop labels the kit has no prop for, the "−37%" weight and the "≈ −18%" impact, with their coverage lines (−4); the sell label is now the pill text "sold → cash at 0%"; the rig beats went from impact, carry, impact, grow, peek to think, sell, peek, cheer (−1); three spec cues the kit already makes were dropped, whoosh, hit and roll (−3); and three VO-locked pencil marks were added (+3). 410 after the assembly pass, 407 after hook pass 2, 406 before it; the assembly pass added six VO-locked mark checks and dropped 07a's three "sfx on a beat" checks with its three duplicate spec cues; the round-2 fix pass added 07a's two new formula-bar lines and their claims, one 07c VO line and one 07c mark, and dropped 07a's shown-factors product claim). The round-2 fix pass's four corruptions of scratch copies (Ava's bar result "≈ $280,000", Ben's mark moved into Ava's VO line, 07c "About 6 cents", a dropped "≈" in 07c's verdict) gave 6 named failures and exit 1. Two deliberate corruptions (the old "× ≈ 8.1" shortcut in 07a's formula bar, and "$6,600" in a 07b VO line) made it exit 1, each with a named failure. Hook pass 2's four corruptions of a scratch copy of the new 07c spec (a Year 3 cell, "about 6 cents", the Year 5 row off its word, a dropped "≈" in the verdict) gave 5 named failures and exit 1.
+- Check: [`teasers/v2/checks/07-ledger-duel.py`](checks/07-ledger-duel.py). Run `python3 teasers/v2/checks/07-ledger-duel.py`. It reports **416 checks, 0 failures** and exits 0 (the 07b round-2 fix pass split 07b's last VO line in two, +3: its numbers, its length and its gap to the line before; 413 before it; 418 after the round-2 fix pass. The 07b assembly pass took 07b from 152 checks to 147: it dropped the two round-1 prop labels the kit has no prop for, the "−37%" weight and the "≈ −18%" impact, with their coverage lines (−4); the sell label is now the pill text "sold → cash at 0%"; the rig beats went from impact, carry, impact, grow, peek to think, sell, peek, cheer (−1); three spec cues the kit already makes were dropped, whoosh, hit and roll (−3); and three VO-locked pencil marks were added (+3). 410 after the assembly pass, 407 after hook pass 2, 406 before it; the assembly pass added six VO-locked mark checks and dropped 07a's three "sfx on a beat" checks with its three duplicate spec cues; the round-2 fix pass added 07a's two new formula-bar lines and their claims, one 07c VO line and one 07c mark, and dropped 07a's shown-factors product claim). The round-2 fix pass's four corruptions of scratch copies (Ava's bar result "≈ $280,000", Ben's mark moved into Ava's VO line, 07c "About 6 cents", a dropped "≈" in 07c's verdict) gave 6 named failures and exit 1. Two deliberate corruptions (the old "× ≈ 8.1" shortcut in 07a's formula bar, and "$6,600" in a 07b VO line) made it exit 1, each with a named failure. Hook pass 2's four corruptions of a scratch copy of the new 07c spec (a Year 3 cell, "about 6 cents", the Year 5 row off its word, a dropped "≈" in the verdict) gave 5 named failures and exit 1.
   - New in the revision: the first payoff row must land by **3.0 s** (R10); a formula that multiplies shown factors must reproduce the shown result (now 07a's "3 × $24,000 = $72,000"); every formula-bar line must stay up long enough to type (24 characters a second) and then be read (1.5 s); headers are capped at 4 lines; 07a's break-even rate and 6% case are asserted.
 
 **How the facts were checked:**
@@ -21,7 +21,7 @@
 **Studio linter** (`node src/cli.mjs check`, re-run after the revision): **3/3 clean, 0 errors, 0 warnings.** The old footer warning on 07b is gone. After the assembly pass, 07a and 07c are lint-clean at every frame (`--every 0.0333333`) and rendered to `studio/out/` (see [Assembly pass](#assembly-pass-2026-10-08)). After the round-2 fix pass they are still 0 errors, 0 warnings at every frame, and re-rendered (see [Round-2 fix pass](#round-2-fix-pass-2026-10-08)).
 - **07a (Live Sheet):** the live-sheet `ledger-duel` kit now exists in the working tree, so the ledger body, `lookOpts.formulaBar` and `rowLabelsAtStart` are linted and rendered. Stills and a contact sheet of the final spec checked at 0, 2.6, 4.5, 5.5, 6.6, 8.4, 14.0, 16.5 and 23.5 s; after the assembly pass at 0, 2.8, 4.5, 6.6, 8.0, 9.9, 12.5, 14.6, 15.4, 16.2, 16.5, 19, 21, 22.6, 24, 26.5 and 27.67 s.
 - **07c (Clean Sheet):** the clean-sheet kit is built. Stills and a contact sheet of the round-2 spec checked at 0, 1.6, 2.6, 4.5, 6.6, 8.4, 14.0, 16.5 and 20 s. The hook-pass-2 spec is lint-clean at every frame (`--every 0.0333333`), with stills checked at 0, 1.5, 3.0, 9.8 and 16.5 s; after the assembly pass at 0, 1.5, 2.7, 3.0, 4.4, 5.5, 7.3, 8.7, 10.3, 10.5, 12.5, 12.8, 15.8, 16, 17.5 and 19.07 s.
-- **07b (Becker rig):** the Becker `ledger-duel` kit has landed. 07b (27.0 s) is 0 errors, 0 warnings at the default step and at every frame (`--every 0.0333333`): ledger, `rowLabelsAtStart`, the rig beats (think, sell, peek, cheer) and the pencil marks. A scratch copy with `lookOpts` removed renders a plain ledger (both crashes, pills, gold plate, verdict) and is also lint-clean. Stills and a contact sheet checked at 0, 0.9-1.6 (every 0.05-0.15 s), 2.0, 3.0, 4.2, 5.3-7.5, 9.0, 10.3, 12.8, 14.8, 17.6, 19.5, 22.5, 24.3-25.0 and 26.97 s (see [07b assembly pass](#07b-assembly-pass-2026-10-08)).
+- **07b (Becker rig):** after the [07b round-2 fix pass](#07b-round-2-fix-pass-2026-10-08), 07b (27.4 s) is again 0 errors, 0 warnings at every frame (`--every 0.0333333`), as are the kit's two ledger samples and a no-`lookOpts` copy. Before it: the Becker `ledger-duel` kit has landed. 07b (27.0 s) is 0 errors, 0 warnings at the default step and at every frame (`--every 0.0333333`): ledger, `rowLabelsAtStart`, the rig beats (think, sell, peek, cheer) and the pencil marks. A scratch copy with `lookOpts` removed renders a plain ledger (both crashes, pills, gold plate, verdict) and is also lint-clean. Stills and a contact sheet checked at 0, 0.9-1.6 (every 0.05-0.15 s), 2.0, 3.0, 4.2, 5.3-7.5, 9.0, 10.3, 12.8, 14.8, 17.6, 19.5, 22.5, 24.3-25.0 and 26.97 s (see [07b assembly pass](#07b-assembly-pass-2026-10-08)).
 
 ---
 
@@ -197,10 +197,10 @@ In the table, g = 1 + 0.07/12.
 | | |
 |---|---|
 | Look | `becker-rig` (a light void, one hero-colour stick figure plus one neutral figure, each on a coin stack whose height is his money, impacts) |
-| Spec | `studio/specs/07b-becker-rig-panic-sell-2008.json` (27.0 s) |
+| Spec | `studio/specs/07b-becker-rig-panic-sell-2008.json` (27.4 s) |
 | Platform title | **2 People Invest $10,000 Right Before 2008. One Sells in the Crash. How Far Apart Now?** |
 | On-screen hook (header) | **2 people invest $10,000 / right before 2008 / One sells to cut his losses** (13 words, 3 lines with set breaks; render-checked in the Becker chrome) |
-| Columns at 0.0 s | **● Alex** (green): "Holds through the crash" (1 line); **● Sam** (slate): "Sells at the / end of 2008" (2 lines). Row "Dec 2007: $10,000 / $10,000" settled; the other eight year labels dim, cells empty. The stake line (`data.stake`, "$10,000 each in the S&P 500 · Dec 31, 2007") is **not shown**: the kit's layout fitter drops it to keep nine rows at full size. The header carries "$10,000" and "right before 2008", the first row "Dec 2007", and the footer "S&P 500" |
+| Columns at 0.0 s | **● Alex** (green): "Holds through / the crash"; **● Sam** (slate): "Sells when / 2008 ends". Both plans are two lines with set breaks (`\n` in `data.people[].plan`), so the heads are the same height and each break falls between phrases. One line does not fit: with the wider rig and the 1.3× climax plate, Sam's column is about 200 px wide, and "Sells end of 2008" is 314 px at the 40 px plan size. Row "Dec 2007: $10,000 / $10,000" settled; the other eight year labels dim, cells empty. The stake line (`data.stake`, "$10,000 each in the S&P 500 · Dec 31, 2007") is **not shown**: the kit's layout fitter drops it to keep nine rows at full size. The header carries "$10,000" and "right before 2008", the first row "Dec 2007", and the footer "S&P 500" |
 | Footer | Year-end S&P 500 total return, dividends in · cash at 0% (the source, S&P DJI, and "no fees" are in the caption) |
 
 **Wrong belief it exploits:** "Selling in a crash cuts your losses." "To cut his losses" in the hook names it (R5). The verdict turns it over: both took the same −37%, and selling only locked the loss in and skipped the recovery. (Revision: the round-1 wording was "to stay safe"; it now avoids 04b's "safe savings account" so the two Becker-rig P4 teasers do not read as the same idea.)
@@ -215,7 +215,7 @@ In the table, g = 1 + 0.07/12.
 | R4 | $10,000 is Jake's stake and the benchmark's round number |
 | R5 | "to cut his losses" names the belief the result then breaks |
 | R6 | Two people, $10,000, at the Dec 31, 2007 close |
-| R7 | Options named: one sells; the plans say holds vs sells at the end of 2008 |
+| R7 | Options named: one sells; the plans say "Holds through the crash" vs "Sells when 2008 ends" |
 | R8 | 13 words, 3 lines |
 | R9 | 9 ledger rows; every year label is on screen (dim) from frame 1 and the cells fill as the VO reaches them (`lookOpts.rowLabelsAtStart`; render-checked) |
 | R10 | The first payoff is the crash itself: row **2008: $6,300 / $6,300** and the −37% impact at **1.0 s**; biggest number last (2025) |
@@ -231,26 +231,31 @@ In the table, g = 1 + 0.07/12.
 
 | t (s) | On screen | VO |
 |---|---|---|
-| 0.0 | Header, footer. Left: two stick figures on short coin stacks (stack height = money, one scale for both), Alex green with a hand on his chin, Sam slate. Right: the ledger with both column heads, the row "Dec 2007: $10,000 / $10,000" settled and the eight later year labels dim over empty dotted shelves | "2008 takes 37%." (0.0-2.7) |
-| 1.0 | **Impact on both stacks:** red hit lines, a shake and a hit; the lost coins burst off and roll to the floor (tick). Both figures are blown up off their stacks, each leaning away from the other, land squashed at 1.4 s, then slump. Row **2008**: $6,300 / $6,300 drops in red, pill "crash −37%" above it | (…takes 37%.) |
-| 2.6 | Both stand up again | "Both drop to $6,300." (2.9-6.0) |
-| 3.9 | Pencil rings drawn round both 2008 cells, $6,300 and $6,300 (they pop; swipe). The crash pill closes | |
+| 0.0 | Header, footer. Left: two stick figures, 130 px apart, on short coin stacks (stack height = money, one scale for both), Alex green with a hand on his chin, Sam slate. Right: the ledger (labels left-aligned from x 280) with both column heads, the row "Dec 2007: $10,000 / $10,000" settled and the eight later year labels dim over empty dotted shelves | "2008 takes 37%." (0.0-2.7) |
+| 1.0 | **Impact on both stacks:** red hit lines, a shake and a hit; the lost coins burst off and land beside the stacks, inside the frame (tick). Both figures are blown up off their stacks, each leaning away from the other with the outer arm flung up, land squashed at 1.4 s, then slump. Row **2008**: $6,300 / $6,300 drops in red. Pill "crash −37%" in the slot above it, its caret pointing down between the two red cells; the dim "2009" label in that slot is hidden while the pill is up | (…takes 37%.) |
+| 2.3-2.9 | The lost coins shrink and go, so the floor is clean and the two short $6,300 stacks read alone. The crash pill closes at 2.7 s and "2009" comes back. Both stand up again (2.6 s) | "Both drop to $6,300." (2.9-6.0) |
+| 3.9 | Pencil rings drawn round both 2008 cells, $6,300 and $6,300 (they pop; swipe) | |
 | 5.4 | Sam thinks, hand on chin | |
-| 6.5 | **Sell:** Sam winds up (6.2 s) and chops down on his own stack, which turns into a grey brick of cash (thud). Pill "sold → cash at 0%" over Sam's column (pop). The rings close | "Sam sells to cut his losses." (6.1-8.5) |
-| 8.8 | Row 2009: ≈ $8,000 (green) / $6,300. Alex's stack springs up and he rides it | "Alex holds. By 2012, he's back above $10,000." (8.7-13.0) |
-| 9.9 | Row **2012**: ≈ $10,900 / $6,300, label green, pill "back above $10,000" (until 11.9 s) | |
-| 12.2, 12.6, 13.0 | Rows 2016, 2019, 2021: ≈ $18,500, ≈ $28,400, ≈ $43,300 against $6,300. Alex's stack climbs with each | |
-| 14.3 | **Impact on Alex's stack only:** coins burst off, he is blown up and lands squashed; Sam flinches and turns to look. Row **2022**: ≈ $35,500 in red / $6,300, pill "dip ≈ −18%" | "2022 dips. Alex holds again." (13.2-15.9) |
-| 16.9 | Row **2025**: Alex's **≈ $66,000** lands on a gold plate (impact, camera punch, cash). His stack towers over Sam's brick; he hops, celebrates, then points at the ledger (18.4 s). Sam turns his back on the ledger and droops; his column settles grey | "End of 2025: Alex has about $66,000." (16.1-20.8) |
-| 19.2 | Sam peeks up at Alex's tower, hand over his eyes. Boing | |
-| 21.0 | The verdict replaces the captions: "Selling didn't dodge the crash. / It dodged the **recovery**." (green swoosh, ding). Alex celebrates, then points (22.1 s); Sam shrugs, then droops | "Sam's still at $6,300. He dodged the recovery." (21.0-25.7) |
+| 6.5 | **Sell:** Sam winds up (6.2 s) and chops down on his own stack, which becomes a cash brick (84 × 45 px, grey notes, a white band with a "$"; thud). Pill "sold → cash at 0%" over Sam's column, its caret on his $6,300 (pop), until 8.1 s. The rings close | "Sam sells to cut his losses." (6.1-8.5) |
+| 8.8 | Row 2009: ≈ $8,000 (green) / $6,300. Alex's stack springs up and he rides it, arms up | "Alex holds. By 2012, he’s back above $10,000." (8.7-13.0) |
+| 9.9 | Row **2012**: ≈ $10,900 / $6,300, label green. Pill "back above $10,000" with its caret on Alex's cell (until 11.6 s; the "2016" label it sits over is hidden meanwhile); the label then settles to ink | |
+| 11.9, 12.45, 13.0 | Rows 2016, 2019, 2021: ≈ $18,500, ≈ $28,400, ≈ $43,300 against $6,300, about 0.55 s apart. Alex's stack climbs with each. Each new cell lands green and the one before turns straight to ink | |
+| 13.8 | **Impact on Alex's tower only** (on "dips"): coins burst off the top, he is blown up and lands squashed; Sam flinches and turns to look. Row **2022**: ≈ $35,500 in red / $6,300. Pill "dip ≈ −18%" with its caret on ≈ $35,500, until 15.5 s; the "2025" label it sits over is hidden while it is up, so the frame never reads "2025 · dip" | "2022 dips. Alex holds again." (13.2-15.9) |
+| 16.1 | No pill on screen when the caption reads "End of 2025:" | "End of 2025: Alex has about $66,000." (16.1-20.8) |
+| 16.9 | Row **2025**: the gold plate opens from its centre, then Alex's **≈ $66,000** lands on it at 1.3× the other cells (impact, camera punch, a short fan of rays into the space above the plate, cash). His tower (about 470 px) dwarfs Sam's brick; he hops, celebrates, then points at the ledger (18.4 s). Sam turns his back on the ledger and droops; his column settles grey | |
+| 17.4-17.9 | The rows in between (2009-2022) settle to 55%. Dec 2007, the ringed 2008 row and the 2025 row stay full | |
+| 21.0 | Caption "Sam’s still at $6,300." | "Sam’s still at $6,300." (21.0-24.1) |
 | 22.2 | A pencil ring round Sam's 2025 cell, $6,300 (it stays) | |
-| 24.4 | Alex throws both arms up on his tower ("…the recovery") and holds | |
-| 25.7-27.0 | Hold on the finished ledger, the verdict and Alex's cheer | |
+| 24.1 | The verdict replaces the captions: "Selling didn’t dodge the crash. / It dodged the **recovery**." (green swoosh, ding). Sam shrugs, then droops | "He dodged the recovery." (24.1-25.7) |
+| 24.4 | Alex throws both arms up on his tower and holds to the end | |
+| 25.7 | Sam peeks up at Alex's tower, hand over his eyes. Boing | |
+| 25.7-27.4 | Hold on the finished ledger, the verdict, Alex's cheer and Sam's peek | |
 
 **Full guide VO** (about 63 spoken words)
 
-> 2008 takes 37%. Both drop to $6,300. Sam sells to cut his losses. Alex holds. By 2012, he's back above $10,000. 2022 dips. Alex holds again. End of 2025: Alex has about $66,000. Sam's still at $6,300. He dodged the recovery.
+> 2008 takes 37%. Both drop to $6,300. Sam sells to cut his losses. Alex holds. By 2012, he’s back above $10,000. 2022 dips. Alex holds again. End of 2025: Alex has about $66,000. Sam’s still at $6,300. He dodged the recovery.
+
+(The words are unchanged by the round-2 fix pass. The last sentence is now its own VO line, so the verdict lands on it, and the captions use typographic apostrophes.)
 
 **The maths**
 
@@ -734,3 +739,38 @@ The Becker `ledger-duel` kit has landed, so 07b was fitted to it, checked frame 
 **Still open:**
 - The two format behaviours added here (the shared-crash separation and the skipped return pose) are documented in `formats/ledger-duel.js`'s header comment. The kit README belongs to other agents.
 - `teasers.json` still quotes 407 checks; it is outside this pass's files.
+
+### 07b round-2 fix pass (2026-10-08)
+
+QA scored 07b 6/10: the numbers were right, but the frames were not at the owner's bar. Every must, should and nit was worked through in `formats/ledger-duel.js` (the Becker kit's ledger-duel format, which only 07b uses among the specs) and in the spec. **No number changed.** Wording changed in three places: the two plans, the typographic apostrophes, and VO line 7, which is split in two with the same words. The checker follows them.
+
+| # | Sev | QA found | What I did |
+|---|---|---|---|
+| Q1 | must | Event pills sat on the next row's dim year label, so the frame read "2009 · crash −37%", "2016 · back above $10,000" and, worst, "2025 · dip ≈ −18%" (wrong: 2025 was +17.9%), still up at "End of 2025" | **Format:** while a pill is up, the label of the slot it sits in fades to 0 (any other label it covers too) and comes back as it closes. Each pill has a down-caret pointing at the cell(s) that moved in its row (both 2008 cells; Alex's cell for 2012 and 2022; Sam's cell for the cash-out pill). Pills hold 1.6 s at most (`lookOpts.pillHold`). The dip pill is now up from 13.86 to 15.5 s, gone before "End of 2025" at 16.1 s. Checked in stills at 1.2, 11.0, 14.2, 15.4 and 16.2 s |
+| Q2 | should | Rig squeezed into a 220 px gutter: coins and hit lines cut at x = 0, figures 90 px apart (arms crossing at 0.0 and 9.0-10.3 s), Sam's coin on the "D" of "Dec 2007"; 158 px empty on the right | **Format:** stacks 130 px apart (figures too), the left figure clamped >= 40 px from the edge, the right figure kept 14 px clear of the labels, and the labels start 24 px right of the right-hand stack (x 280). Lost coins come to rest inside the frame and clear of the ledger. Riding up is now arms up in a V (arms out reached the neighbour), and in a shared crash the outer arm flails up, not out. **Not as asked:** the right edge moved from 922 to 934, not 1010. Rows below y 820 must stay at x <= 940 (the button rail is a lint error), and the climax's camera punch and shake need the last 6 px; impacts now shake mostly up and down (sideways shake capped at 3 px). The 140 px on the right is the platform's button rail |
+| Q3 | should | Coins-to-cash too small: each $6,300 "stack" was two coins on their side among loose coins; Sam's brick about 60 × 25 px with a stray gold coin beside it | **Format:** a stack is always whole coins (round(h / 15) coins of equal thickness). Lost coins lie on the floor about 1.25 s, then go (by 2.9 s here); a cash-out sweeps the seller's coins at once. The heads now stay over the ledger, so the tallest stack may rise to just under the footer (Alex's tower about 470 px, one honest scale). That makes the brick 84 × 45 px: grey notes, a white band with a "$" |
+| Q4 | should | The payoff ≈ $66,000 was the same size as the other 17 cells; 18 full-strength numbers competed with the plate | **Format:** the winner's last value is 1.3× the other cells on a 1.3× plate (60 px on 46 px cells), and the fitter reserves its height. From 17.4 s the rows in between (2009-2022) settle to 55%; Dec 2007, the ringed 2008 row and 2025 stay full. To make room for the plate, the year labels are left-aligned, so the short "2025" leaves its row space. When a ledger cannot fit 1.3× (the kit's 11-row sample), the fitter steps it down (1.2, 1.12, 1.06×) and then tightens the rig, before any value goes under 40 px |
+| Q5 | should | At 16.9 s the burst rays cut "2025", the red ≈ $35,500 and Sam's $6,300; the plate grew in from the right, so only "6,000" was on gold | **Format:** the payoff impact keeps its shake, punch and sound, but its rays are now 7 short strokes (<= 28 px) fanning up from the plate's top edge into the gap under the heads. The plate scales from its centre and opens 0.18 s before the number lands, so the number drops onto a whole plate (stills at 16.86, 16.92, 16.95 and 17.0 s) |
+| Q6 | should | The verdict replaced the captions at 21.0 s, so "Selling didn't dodge the crash" was on screen while the VO said the never-captioned "Sam's still at $6,300." | **Spec:** VO line 7 is split into "Sam’s still at $6,300." (21.0-24.1, captioned, with the ring at 22.2 s) and "He dodged the recovery." (24.1-25.7); `verdict.t` is 24.1. QA suggested 22.9 s, but at 2.6 words a second the $6,300 sentence (8 spoken words) runs to 24.1 s. The duration is 27.4 s (hold 1.7 s), so the verdict stays up 3.3 s. **Checker:** an 8th VO line with no numbers |
+| Q7 | should | The 19.2 s peek and boing stepped on the spoken "$66,000" | **Spec:** the peek and its boing moved to 25.7 s (the end of "He dodged the recovery"), held 1.7 s to the end. Alex's cheer stays at 24.4 s, now held 3.0 s to the end |
+| Q8 | should | Sam's head broke as "Sells at the / end of 2008" (weak break, unbalanced against Alex's one line) | **Spec:** the plans are now "Holds through\nthe crash" and "Sells when\n2008 ends". Each is two lines with a set break (the format honours `\n` in a plan), so the heads are balanced and break between phrases. "2008" stays in Sam's plan. **Not as asked (one line):** Sam's column is about 200 px wide with the wider rig and the 1.3× plate, and "Sells end of 2008" is 314 px at the 40 px plan size. One line would push Alex's head about 120 px off his column |
+| Q9 | nit | The 2022 hit landed about 1 s after "2022 dips" began | **Spec:** rows[7].t 14.3 → 13.8 s. The checker's beat rule still passes (estimated "dips" at 14.36 s ± 0.9) |
+| Q10 | nit | "didn 't" in the 64 px verdict | **Spec:** typographic apostrophes in the verdict ("didn’t") and the captions ("he’s", "Sam’s"). The checker's string and word counts are unaffected |
+| Q11 | nit | Head pencils read like arrows and never draw | **Format:** no pencil in ledger-duel (`lookOpts.pencil: true` brings it back). The rings draw themselves |
+| Q12 | nit | Three greens in Alex's column; 2016-2021 rows 0.4 s apart | **Format:** the previous cell goes straight to ink (0.08 s); a good row's label (2012) is green only while its pill is up, then ink. **Spec:** 2016, 2019 and 2021 at 11.9, 12.45 and 13.0 s (0.55 s apart). The $43,300 peak stands 0.8 s before 2022 falls from it |
+
+**Verification:**
+- **Maths check:** `python3 teasers/v2/checks/07-ledger-duel.py` gives **416 checks, 0 failures**, ALL OK. +3 checks come from the split VO line (its numbers, its length, its gap). The beat, mark, rig-beat and sfx anchors all pass at the new times.
+- **Linter:**
+  - 07b: 0 errors, 0 warnings at every frame (`--every 0.0333333`).
+  - The kit's samples `ledger-duel.json` and `ledger-duel-2.json`: 0 errors, 0 warnings. The 11-row sample now uses a 1.06× plate and stacks 96 px apart.
+  - A no-`lookOpts` copy of 07b: 0 errors, 0 warnings.
+- **Stills:**
+  - Contact sheet, plus stills at 0, 0.5, 0.95-1.6 (every 0.05-0.15 s), 1.8, 2.0, 2.2, 2.6, 2.7, 3.95, 4.5, 6.2-6.8, 9.0, 9.3, 10.3, 10.5, 10.6, 11.0, 12.0, 12.5, 13.1, 13.85-14.4, 15.4, 16.2, 16.86-17.6, 22.4, 24.3, 25.8, 26.0, 26.3 and 26.9 s.
+  - No pill pairs with a wrong year. No figure crosses the other or the labels. Nothing is cut at the frame edge.
+  - The hop at 17.45 s stays about 20 px under the footer.
+  - The end frame reads plate → ringed $6,300 → verdict.
+- **Render:** `studio/out/07b-becker-rig-panic-sell-2008.mp4`, 27.4 s.
+
+**Still open:**
+- The kit README (§9 ledger-duel) still describes right-aligned labels, the old pills, the coin pile that stays and the pencil. The new behaviour is documented in the format file's header comment; the README belongs to the kit owner.

@@ -201,7 +201,14 @@
   "lookOpts": {
     "prop": "cup",
     "jarLabel": "SBUX",
-    "endPose": "shrug"
+    "endPose": "shrug",
+    "multiple": {
+      "x": 2021.99,
+      "t": 13.76,
+      "k": 2,
+      "label": "2×",
+      "hold": 1.3
+    }
   },
   "sfx": [
     {

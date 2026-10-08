@@ -35,6 +35,9 @@
 //   figure: false               no figure (the piles and counters only)
 //   figureScale: 1              figure size at the start of the race
 //   zoom: false                 no camera pull-back (the piles are fitted to the stage from the start)
+//   multiple: { x, t?, k, label, hold? }   a "k × what you spent" mark: when the race reaches x (or at t), a green
+//                               dotted line at k times the spent column's height at x runs across to the tower, its
+//                               label ("2×", display string) at its left end, for `hold` s (default 1.4)
 import {
   h, s, style, attr, setText, setHTML, markup, fitText, prog, clamp, lerp, rng,
   C, F, L, E, poseTrack, poseOf, blendPose, secondary, fk, Figure, makeWorld, makeFx, camera,
@@ -53,6 +56,7 @@ export const css = `
 .pr-tag u { text-decoration: none; color: ${C.red}; }
 .pr-jar { font-family: ${F.mono}; font-weight: 800; fill: ${C.white}; letter-spacing: 0.04em; }
 .pr-sl { font: 900 40px/1 ${F.head}; letter-spacing: -0.02em; color: ${C.ink}; }
+.pr-mu { position: absolute; left: 0; top: 0; font: 900 60px/60px ${F.head}; letter-spacing: -0.03em; color: ${C.heroInk}; white-space: nowrap; transform-origin: 0 50%; }
 `
 
 // ------------------------------------------------------------------------------------------------ helpers
@@ -135,6 +139,12 @@ export default function povRace(spec, ctx) {
   const runL = runner(SP.final, yo), runR = runner(OW.final, yo)
   const spEnd = SP.final != null && Number.isFinite(num(SP.final)) ? num(SP.final) : valueAt(spP, xt)
   const owEnd = OW.final != null && Number.isFinite(num(OW.final)) ? num(OW.final) : valueAt(owP, xt)
+  // a running counter eases onto the number it lands on. An approximate final ("≈ $24,900") is a rounding of the
+  // last point, so the counter runs to the exact last point ($24,928) and the swap shows the rounding; an exact
+  // final is landed on itself (it may differ from the last point by design)
+  const approx = str => /^\s*[≈~]/.test(String(str ?? ''))
+  const spLand = approx(SP.final) ? valueAt(spP, xt) : spEnd
+  const owLand = approx(OW.final) ? valueAt(owP, xt) : owEnd
   const win = owEnd >= spEnd
   const ratio = owEnd / Math.max(1e-9, spEnd)
   const calendar = xf >= 1000
@@ -213,12 +223,25 @@ export default function povRace(spec, ctx) {
   hud.append(plate)
   const vL = mkVal('L'), vR = mkVal('R')
   hud.append(vL.el, vR.el)
-  const finRW = runR.final ? wVal(runR.final.big, runR.final.small, VPX) : wVal(runR.text(valueAt(owP, xt)), runR.post, VPX)
+  let finRW = runR.final ? wVal(runR.final.big, runR.final.small, VPX) : wVal(runR.text(valueAt(owP, xt)), runR.post, VPX)
+  if (runR.final) {
+    // the plate hugs the final string as the browser lays it out ("≈" comes from the fallback font, which the
+    // canvas measure underestimates): equal padding on both sides
+    setText(vR.big, runR.final.big); setText(vR.sm, runR.final.small)
+    finRW = Math.max(finRW, vR.el.offsetWidth)
+  }
   const pb = { w: finRW + 2 * PLATE[0], h: VPX + 2 * PLATE[1] + 4 }
   pb.x = RIGHT + PLATE[0] - pb.w; pb.y = valTop - PLATE[1] - 4; pb.cx = pb.x + pb.w / 2; pb.cy = pb.y + pb.h / 2
   style(plate, { left: f1(pb.x) + 'px', top: f1(pb.y) + 'px', width: f1(pb.w) + 'px', height: f1(pb.h) + 'px', transformOrigin: '100% 50%' })
   const hudBottom = valTop + VPX
   const stageTop = hudBottom + 30
+  // the payoff: as the gold plate lands, the stock's number grows about the plate's top-right corner and the spent
+  // number steps down (its digits only, to >= 60 px; " spent" keeps its size), so the winner is the biggest thing on
+  // screen. The growth is bounded by the gap left beside the spent number and by the tower top under the plate.
+  const LPX_END = win && runL.final ? Math.max(60, Math.round(VPX * 0.84)) : VPX
+  const wLend = runL.final ? wVal(runL.final.big, runL.final.small, LPX_END) : 0
+  const GROW = win && runR.final ? clamp(Math.min(1.2, (pb.x + pb.w - (62 + wLend + 40)) / pb.w, (stageTop + 2 - pb.y) / pb.h), 1, 1.2) : 1
+  style(plate, { transformOrigin: '100% 0' })
 
   // ============================================================================ the stage
   const FLOOR = L.floorY
@@ -300,6 +323,19 @@ export default function povRace(spec, ctx) {
   const paid = s('line', { stroke: C.red, 'stroke-width': 6, 'stroke-linecap': 'round', 'stroke-dasharray': '0.1 15', opacity: 0.9 })
   const towerG = s('g')
   g.mid.append(towerG, paid)                            // the paid line runs across the tower, behind the figure
+  // the "k ×" mark (lookOpts.multiple): pinned to k × the spend at x on the shared scale
+  const MU = lo.multiple && Number.isFinite(+lo.multiple.x) && +lo.multiple.k > 0 ? lo.multiple : null
+  const mu = MU ? { k: +MU.k, x: +MU.x, hold: MU.hold ?? 1.4 } : null
+  if (mu) {
+    mu.t = Number.isFinite(+MU.t) ? +MU.t : tOfX(mu.x)
+    mu.v = mu.k * valueAt(spP, mu.x)
+    mu.line = s('line', { stroke: C.hero, 'stroke-width': 7, 'stroke-linecap': 'round', 'stroke-dasharray': '0.1 16', opacity: 0 })
+    g.mid.append(mu.line)
+    mu.el = h('div', { class: 'pr-mu' })
+    setHTML(mu.el, markup(String(MU.label ?? `${mu.k}×`)))
+    hud.append(mu.el)
+    mu.w = mu.el.offsetWidth; mu.h = mu.el.offsetHeight
+  }
   const sliver = s('rect', { fill: C.coin, stroke: C.ink, 'stroke-width': 3, rx: 3 })   // the tower while it is under one coin
   towerG.append(sliver)
   const coinEls = stack.map((_, k) => {
@@ -478,11 +514,27 @@ export default function povRace(spec, ctx) {
   // the end
   const endPose = lo.endPose || (ratio >= 2.5 ? 'celebrate' : ratio >= 1 ? 'shrug' : 'slump')
   if (win) {
-    fxk.impact(T1, { x: pb.cx, y: pb.cy, rx: pb.w / 2 + 12, ry: pb.h / 2 + 10, r: 44, lines: 14, shake: 12, punch: 0.025, cue: 'hit', gain: 0.9 })
+    fxk.impact(T1, { x: pb.cx, y: pb.cy, burst: false, shake: 12, punch: 0.025, cue: 'hit', gain: 0.9 })
     ctx.cue(T1 + 0.1, 'cash', { gain: 0.6 })
     ctx.cue(T1 - 1.0, 'riser', { dur: 0.95, gain: 0.22 })
   } else {
     fxk.impact(T1, { x: TX, y: towerTop(T1), r: 34, rx: TW * 0.55, ry: 22, lines: 9, shake: 8, cue: 'thud', gain: 0.6, color: C.red })
+  }
+
+  // the plate's burst: hit lines only to the right and down (onto the tower), never up into the labels or left into
+  // the spent number; drawn around the plate at its grown size
+  const burst = { ls: [] }
+  if (win) {
+    const GW = GROW * pb.w, GH = GROW * pb.h
+    Object.assign(burst, { x: pb.x + pb.w - GW / 2, y: pb.y + GH / 2, rx: GW / 2 + 12, ry: GH / 2 + 10, r: 44 })
+    burst.g = s('g', { opacity: 0 })
+    const R = rng(4242)
+    for (const deg of [-2, 16, 34, 52, 70, 88, 106, 124]) {
+      const el = s('line', { stroke: C.ink, 'stroke-width': 7, 'stroke-linecap': 'round', fill: 'none' })
+      burst.ls.push({ el, a: (deg + (R() - 0.5) * 8) * Math.PI / 180, len: 0.75 + R() * 0.5 })
+      burst.g.append(el)
+    }
+    g.fx.append(burst.g)
   }
 
   // ============================================================================ the figure's pose track
@@ -544,6 +596,16 @@ export default function povRace(spec, ctx) {
   const ZF = 0.62                                       // the figure shrinks with the camera, but only this much of it
   const zfOf = z => lerp(1, z, ZF)
   const toScreen = (p, zf) => [FX + (p[0] - FX) * zf, FLOOR + (p[1] - FLOOR) * zf]
+  // a tag never touches him: its right edge stays 18 px left of everything he draws (head tilted back to drink,
+  // the pencil's eraser end) over the tag's whole life
+  for (const tg of tags) {
+    tg.right = Infinity
+    if (!fig) continue
+    for (let tt = tg.t0; tt <= tg.t1 + 1e-9; tt += 1 / 30) {
+      const zf = zfOf(zAt(tt))
+      tg.right = Math.min(tg.right, FX + (fig.extentX(figJ(tt))[0] - FX) * zf - 18)
+    }
+  }
 
   // ============================================================================ seek
   function seek(t) {
@@ -564,7 +626,7 @@ export default function povRace(spec, ctx) {
 
     // ---- counters: running values that land exactly on the spec's final strings
     const landP = smooth(prog(t, T1 - 0.5, 0.5))
-    const vSp = lerp(spV, spEnd, landP), vOw = lerp(owV, owEnd, landP)
+    const vSp = lerp(spV, spLand, landP), vOw = lerp(owV, owLand, landP)
     const below = owV < spV - 1e-9
     // the same stake prints the same way on both sides: before the race and under $100 both counters use the
     // larger number of decimals of the two finals ("$7.99" twice, not "$7.99" against "$8")
@@ -577,12 +639,29 @@ export default function povRace(spec, ctx) {
     if (sw.phase && runR.final) { setText(vR.big, runR.final.big); setText(vR.sm, runR.final.small) }
     else { setText(vR.big, runR.text(vOw, dpOf(runR, vOw))); setText(vR.sm, runR.post) }
     style(vL.el, { color: C.red, transform: (() => { const q = squashAt(t, T1, 0.08); return `scale(${q.sx.toFixed(3)},${q.sy.toFixed(3)})` })() })
+    const gp = E.out(prog(t, T1 + 0.08, 0.4))
+    style(vL.big, { fontSize: f1(lerp(VPX, LPX_END, gp)) + 'px' })
+    const G = 1 + (GROW - 1) * gp
     const ownCol = done ? (win ? C.ink : C.red) : below ? C.red : C.heroInk
-    style(vR.el, { color: ownCol, transform: `scale(${sw.sx.toFixed(3)},${sw.sy.toFixed(3)})`, opacity: sw.opacity.toFixed(3) })
+    // scale about the plate's top-right corner (the element's own origin is 100% 60%)
+    const gx = (1 - G) * PLATE[0], gy = (1 - G) * (-(PLATE[1] + 4) - 0.6 * VPX)
+    style(vR.el, { color: ownCol, transform: `translate(${gx.toFixed(1)}px,${gy.toFixed(1)}px) scale(${(G * sw.sx).toFixed(3)},${(G * sw.sy).toFixed(3)})`, opacity: sw.opacity.toFixed(3) })
     if (win) {
       const pp = popIn(t, T1 + 0.08, 0.3, 0.6)
-      style(plate, { display: t < T1 + 0.08 ? 'none' : '', transform: `scale(${pp.scale.toFixed(3)})`, opacity: pp.opacity.toFixed(3) })
+      style(plate, { display: t < T1 + 0.08 ? 'none' : '', transform: `scale(${(pp.scale * G).toFixed(3)})`, opacity: pp.opacity.toFixed(3) })
     } else style(plate, { display: 'none' })
+    if (burst.g) {
+      const dt = t - T1, on = dt >= 0 && dt < 0.26
+      attr(burst.g, 'opacity', on ? String(1 - E.inQuad(prog(dt, 0, 0.26))) : '0')
+      const p = on ? E.out(prog(dt, 0, 0.22)) : 0
+      for (const L2 of burst.ls) {
+        const c = Math.cos(L2.a), sn = Math.sin(L2.a)
+        const e = 1 / Math.hypot(c / burst.rx, sn / burst.ry)
+        const r0 = on ? e + burst.r * (0.15 + 0.5 * p) : 0, r1 = on ? e + burst.r * (0.45 + 0.75 * p * L2.len) : 0
+        attr(L2.el, 'x1', (burst.x + c * r0).toFixed(1)); attr(L2.el, 'y1', (burst.y + sn * r0).toFixed(1))
+        attr(L2.el, 'x2', (burst.x + c * r1).toFixed(1)); attr(L2.el, 'y2', (burst.y + sn * r1).toFixed(1))
+      }
+    }
 
     // ---- spent column (ghost money) + the paid line
     const spOn = t >= revealSp
@@ -607,6 +686,18 @@ export default function povRace(spec, ctx) {
     attr(paid, 'x1', f1(scx + swd / 2 + 12)); attr(paid, 'x2', f1(TX + twd / 2 + 18))
     attr(paid, 'y1', f1(BASE - hs)); attr(paid, 'y2', f1(BASE - hs))
     attr(paid, 'opacity', (0.9 * clamp((hs - 8) / 10)).toFixed(3))
+    if (mu) {
+      const on = t >= mu.t && t < mu.t + mu.hold + 0.3
+      const a = on ? Math.min(clamp((t - mu.t) / 0.12), 1 - prog(t, mu.t + mu.hold, 0.3)) : 0
+      const my = BASE - z * K * mu.v
+      const lx = scx + swd / 2 + 18, ly = clamp(my - mu.h / 2, stageTop + 2, BASE - mu.h)
+      const pp = popIn(t, mu.t, 0.24, 0.82)
+      style(mu.el, { display: on ? '' : 'none', transform: `translate(${f1(lx)}px,${f1(ly)}px) scale(${pp.scale.toFixed(3)})`, opacity: a.toFixed(3) })
+      const x1 = lx + mu.w + 14, x2 = TX + twd / 2 + 18
+      attr(mu.line, 'x1', f1(x1)); attr(mu.line, 'x2', f1(lerp(x1, x2, E.out(prog(t, mu.t + 0.05, 0.3)))))
+      attr(mu.line, 'y1', f1(my)); attr(mu.line, 'y2', f1(my))
+      attr(mu.line, 'opacity', a.toFixed(3))
+    }
     for (const [cx, w0, el] of slots) {                 // the empty slots shrink with the camera; a pile covers its own
       const w = w0 * (0.62 + 0.38 * z)
       attr(el, 'x', f1(cx - w / 2)); attr(el, 'width', f1(w)); attr(el, 'y', f1(BASE - zP)); attr(el, 'height', f1(zP))
@@ -646,9 +737,23 @@ export default function povRace(spec, ctx) {
       const dt = t - tu.tb
       if (dt < 0 || dt > 1.4) { style(tu.el, { display: 'none' }); continue }
       const fl = Math.abs(Math.sin(tu.flip * Math.min(dt, 0.75)))
-      const rx = (tu.w / 2) * (1 - 0.18 * prog(dt, 0, 0.8)), ry = Math.max(tu.h / 2, rx * 0.42 * fl)
+      const rx = (tu.w / 2) * (1 - 0.18 * prog(dt, 0, 0.8))
+      let ry = Math.max(tu.h / 2, rx * 0.42 * fl)
       let [px, py] = toss(t, tu.tb, tu.p0, tu.v, { g: 3000, floor: FLOOR, r: tu.h / 2 + 2, e: 0.3, friction: 0.5, n: 2 })
-      const tilt = tu.tilt * E.out(prog(dt, 0, 0.3)) * (1 - fl * 0.3)
+      let tilt = tu.tilt * E.out(prog(dt, 0, 0.3)) * (1 - fl * 0.3)
+      // a coin coming off a tall tower never rises into the counters: its top stays under the stage top, so it tips
+      // and flips open only as far as the room above it allows (more and more as it falls)
+      const yTop = stageTop + 4
+      if (py - tu.h / 2 < yTop) py = yTop + tu.h / 2
+      const room = py - yTop
+      ry = Math.min(ry, Math.max(tu.h / 2, room))
+      {
+        const a = tilt * Math.PI / 180
+        if (Math.hypot(rx * Math.sin(a), ry * Math.cos(a)) > room) {
+          const s2 = clamp((room * room - ry * ry) / Math.max(1e-6, rx * rx - ry * ry))
+          tilt = Math.sign(tilt) * Math.asin(Math.sqrt(s2)) * 180 / Math.PI
+        }
+      }
       py = Math.min(py, FLOOR - Math.abs(rx * Math.sin(tilt * Math.PI / 180)) - ry * Math.abs(Math.cos(tilt * Math.PI / 180)) + 2)
       style(tu.el, { display: '' })
       attr(tu.el, 'transform', `translate(${f1(px)},${f1(py)}) rotate(${tilt.toFixed(1)})`)
@@ -687,7 +792,9 @@ export default function povRace(spec, ctx) {
         const [dx, dy] = arc(E.inOutSine(p), from, to, c.big ? 150 : 110)
         const r0 = c.big ? c.coinR * zf0 : 26 * zf0, r1 = 24 * zAt(c.dep1) + 6
         const sink = prog(t, c.dep1, 0.12)
-        c.dep.set({ x: dx, y: dy + 14 * sink, r: lerp(r0, r1, E.out(p)) * (1 - 0.5 * sink), rot: 300 * p, spin: 0.7 * Math.abs(Math.sin(p * Math.PI * 2.5)), opacity: 1 - sink })
+        const rr = lerp(r0, r1, E.out(p)) * (1 - 0.5 * sink)
+        // its arc never rises into the counters (on a tall tower it skims in under them and sinks into the top)
+        c.dep.set({ x: dx, y: Math.max(dy + 14 * sink, stageTop + 4 + rr), r: rr, rot: 300 * p, spin: 0.7 * Math.abs(Math.sin(p * Math.PI * 2.5)), opacity: 1 - sink })
       }
       if (c.ghost) {
         if (!showFig || t < c.dep0 || t > c.gh1 + 0.15) attr(c.ghost, 'opacity', '0')
@@ -755,7 +862,7 @@ export default function povRace(spec, ctx) {
       if (t < tg.t0 || t > tg.t1) { style(tg.el, { display: 'none' }); continue }
       const pp = popIn(t, tg.t0, 0.22, 0.92)
       const out = 1 - prog(t, tg.t1 - 0.18, 0.18)
-      const tx = Math.max(64, hd[0] - 52 * zf - tg.w), ty = clamp(hd[1] + 30 * zf - 0.5 * tg.hh, stageTop + 4, FLOOR - 120 - tg.hh)
+      const tx = Math.max(64, Math.min(hd[0] - 52 * zf, tg.right) - tg.w), ty = clamp(hd[1] + 30 * zf - 0.5 * tg.hh, stageTop + 4, FLOOR - 120 - tg.hh)
       style(tg.el, { display: '', transform: `translate(${f1(tx)}px,${f1(ty)}px) scale(${pp.scale.toFixed(3)})`, opacity: (pp.opacity * out).toFixed(3) })
     }
 
