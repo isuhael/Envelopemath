@@ -38,6 +38,7 @@
       { "part": 2, "verb": "stack", "tool": "3 × $300", "becomes": "the WANTS bin fills" },
       { "part": 3, "verb": "stack", "tool": "2 × $300", "becomes": "the SAVINGS bin fills" }
     ],
-    "envelopes": ["RENT", "FOOD + BILLS", "WANTS", "SAVINGS"]
+    "envelopes": ["RENT", "FOOD + BILLS", "WANTS", "SAVINGS"],
+    "payoff": { "t": 18.4, "label": "Food + every bill", "text": "$10 a day" }
   }
 }

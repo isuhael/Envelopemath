@@ -79,6 +79,24 @@ const LETTERS = 'ABC'
  */
 const glueOps = str => String(str).replace(/(^|\s)([=≈×÷→+−-])[ ]/g, '$1$2 ')
 
+/** length of segment (x0,y0)-(x1,y1) inside rect R = [x0, y0, x1, y1] (Liang-Barsky) */
+function clipLen(x0, y0, x1, y1, R) {
+  if (Math.max(x0, x1) < R[0] || Math.min(x0, x1) > R[2] || Math.max(y0, y1) < R[1] || Math.min(y0, y1) > R[3]) return 0
+  const dx = x1 - x0, dy = y1 - y0
+  let a = 0, b = 1
+  for (const [p, q] of [[-dx, x0 - R[0]], [dx, R[2] - x0], [-dy, y0 - R[1]], [dy, R[3] - y0]]) {
+    if (p === 0) { if (q < 0) return 0; continue }
+    const u = q / p
+    if (p < 0) { if (u > b) return 0; if (u > a) a = u } else { if (u < a) return 0; if (u < b) b = u }
+  }
+  return (b - a) * Math.hypot(dx, dy)
+}
+/** do segments a-b and c-d cross? */
+function segX(a, b, c, d) {
+  const o = (p, q, r) => Math.sign((q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0]))
+  return o(a, b, c) !== o(a, b, d) && o(c, d, a) !== o(c, d, b)
+}
+
 /** linear interpolation through [[x, v]…] (held flat outside the points) */
 function valAt(pts, x) {
   if (!pts.length) return 0

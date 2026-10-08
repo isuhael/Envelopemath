@@ -973,7 +973,7 @@ export default function splitSheet(spec, ctx) {
       attr(ghost, 'fill', t >= chk.end ? C.heroSoft : C.void)
       attr(ghost, 'stroke-dasharray', t >= chk.end ? 'none' : '14 12')
       for (const x of chk.tk) {
-        const pp = popIn(t, x.at, 0.2, 0.84)
+        const pp = popIn(t, x.at, 0.2, Math.max(0.84, 41 / chk.px))   // never under the 40 px floor mid-pop
         style(x.sp, { opacity: t < x.at ? '0' : pp.opacity.toFixed(3), transform: `scale(${pp.scale.toFixed(3)})` })
         if (x.fly) {
           const f = x.fly
