@@ -16,6 +16,8 @@ export const FORMATS = [
   'pov-race',
   'growth-ladder',
   'cost-counter',
+  'dead-simple-list',
+  'ledger-duel',
 ]
 
 const loaded = await Promise.allSettled(FORMATS.map(id => import(`./formats/${id}.js`)))

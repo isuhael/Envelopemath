@@ -17,6 +17,8 @@ const FORMATS = [
   'ledger-duel',
   'unit-ladder',
   'cost-counter',
+  'find-your-row',
+  'what-difference',
 ]
 
 const mods = await Promise.all(FORMATS.map(name =>
