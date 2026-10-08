@@ -772,6 +772,7 @@ function narrowest(str, f, k, letterSpacing) {
  *   startRow                number on the first data row (default 2: row 1 is the label row)
  *   pad                     cell padding (default: 22 px, 12 px when the columns do not fit at 22)
  *   columns[j].px           a fixed cell size, or fs => px (a size derived from the sheet's cell sizes)
+ *   columns[j].headPad      a tighter padding for the header cell only (a long label wraps less)
  *   columns[j].maxW / fit   a cap on the column's width (its values must fit under it: every cell size shrinks
  *                           together until they do) / the column takes no spare width (it keeps its floor)
  * Column widths: every column gets at least its widest value and its label balanced over two lines at 40 px; when
@@ -836,7 +837,9 @@ export function sheet(parent, o) {
   }
   // columns sharing a `group` key (a duel's people) get one width: the widest floor of the group, then equal shares
   const grouped = arr => arr.map((x, j) => (cols[j].group == null ? x : Math.max(...arr.filter((_, k) => cols[k].group === cols[j].group))))
-  const floorOf = (need, labw) => grouped(cols.map((c, j) => c.w ?? Math.max(need[j], labw[j] + 2 * pad + 8, c.minW ?? 0)))
+  // a header cell's padding: the cells' own, or tighter (columns[j].headPad) so a long label keeps to fewer lines
+  const hp = j => Math.min(pad, cols[j].headPad ?? pad)
+  const floorOf = (need, labw) => grouped(cols.map((c, j) => c.w ?? Math.max(need[j], labw[j] + 2 * hp(j) + 8, c.minW ?? 0)))
 
   // row height first guess (label row assumed 1 or 2 lines), refined after the label row is laid out
   const labelLines0 = Math.max(...labelParts.map(p => p.length))
@@ -869,14 +872,14 @@ export function sheet(parent, o) {
       // to the tallest label, a line at a time (the label row is as tall as its tallest label), until every label
       // is down to two lines or the width runs out; what is left goes by values. When a label would still take
       // more than three lines, the tighter padding is tried first.
-      const base = cols.map((c, j) => c.w ?? Math.max(need[j], wordsOnly[j] + 2 * pad + 4, c.minW ?? 0))
+      const base = cols.map((c, j) => c.w ?? Math.max(need[j], wordsOnly[j] + 2 * hp(j) + 4, c.minW ?? 0))
       if (sum(base) > avail + 0.5) { if (p !== pads[pads.length - 1]) continue; widths = base.map(x => (x * avail) / sum(base)); break } // last resort: all give
       widths = base.slice()
       let left = avail - sum(base)
       const members = j => (cols[j].group == null ? [j] : cols.map((c, k) => k).filter(k => cols[k].group === cols[j].group))
       const free = cols.map((c, j) => j).filter(j => cols[j].w == null)
       for (let it = 0; it < 80 && left > 0.5 && free.length; it++) {
-        const lnow = free.map(j => labelLinesAt(j, widths[j], pad))
+        const lnow = free.map(j => labelLinesAt(j, widths[j], hp(j)))
         const top = Math.max(...lnow)
         if (top <= 2) break
         // every label at the top line count must lose a line, or the row does not get shorter
@@ -884,14 +887,14 @@ export function sheet(parent, o) {
         const grow = []
         for (const j of free.filter((j, k) => lnow[k] === top)) {
           let w = widths[j]
-          while (w < widths[j] + left && labelLinesAt(j, w, pad) >= top) w += 4
-          if (labelLinesAt(j, w, pad) >= top) { cost = Infinity; break }
+          while (w < widths[j] + left && labelLinesAt(j, w, hp(j)) >= top) w += 4
+          if (labelLinesAt(j, w, hp(j)) >= top) { cost = Infinity; break }
           grow.push([j, w]); cost += (w - widths[j]) * members(j).length
         }
         if (!(cost <= left)) break
         for (const [j, w] of grow) for (const k of members(j)) { left -= Math.max(0, w - widths[k]); widths[k] = Math.max(widths[k], w) }
       }
-      if (p !== pads[pads.length - 1] && Math.max(0, ...free.map(j => labelLinesAt(j, widths[j], pad))) > 3) continue
+      if (p !== pads[pads.length - 1] && Math.max(0, ...free.map(j => labelLinesAt(j, widths[j], hp(j)))) > 3) continue
       const flex = grouped(cols.map((c, j) => (c.w != null || c.fit ? 0 : need[j])))
       const Fx = sum(flex)
       widths = widths.map((x, j) => x + (Fx ? (left * flex[j]) / Fx : 0))
@@ -899,7 +902,7 @@ export function sheet(parent, o) {
     }
     let left = avail - sum(floor)
     // as many labels as possible go back to one line: the cheapest first, each gets all it needs or nothing
-    const want = cols.map((c, j) => (c.w != null ? 0 : Math.max(0, lab1[j] + 2 * pad + 2 - floor[j])))
+    const want = cols.map((c, j) => (c.w != null ? 0 : Math.max(0, lab1[j] + 2 * hp(j) + 2 - floor[j])))
     widths = floor.slice()
     for (const j of want.map((x, j) => j).filter(j => want[j] > 0).sort((a, b) => want[a] - want[b])) {
       if (want[j] > left) break
@@ -922,7 +925,7 @@ export function sheet(parent, o) {
   // the rows (and their type) get smaller, so the columns are shared out again for the smaller values (the label
   // that needed the room gets it back).
   if (!o.rowH) {
-    const labHt = Math.max(76, Math.ceil(Math.max(...cols.map((c, j) => labelLinesAt(j, widths[j], pad) * S.labelMin * 1.1)) + 24))
+    const labHt = Math.max(76, Math.ceil(Math.max(...cols.map((c, j) => labelLinesAt(j, widths[j], hp(j)) * S.labelMin * 1.1)) + 24))
     const f2 = fsFor(rowHFor(labHt))
     if (f2.input < fs.input || f2.mid < fs.mid || f2.result < fs.result) {
       const fsMin = { input: Math.min(fs.input, f2.input), mid: Math.min(fs.mid, f2.mid), result: Math.min(fs.result, f2.result) }
@@ -953,7 +956,7 @@ export function sheet(parent, o) {
   heads.append(headNum)
   const labelEls = cols.map((c, j) => {
     const parts = labelParts[j]
-    const el = h('div', { class: `ls-hcell ${kindOf(j)}`, style: { left: colX[j] + 'px', width: colW[j] + 'px', ...(pad !== G.padX ? { padding: `0 ${pad}px` } : {}) } },
+    const el = h('div', { class: `ls-hcell ${kindOf(j)}`, style: { left: colX[j] + 'px', width: colW[j] + 'px', ...(hp(j) !== G.padX ? { padding: `0 ${hp(j)}px` } : {}) } },
       h('div', { class: 'ls-hl', html: mk(parts[0]) }),
       parts.length > 1 ? h('div', { class: 'ls-hsub', html: parts.slice(1).map(mk).join('<br>') }) : null)
     heads.append(el)
@@ -963,7 +966,7 @@ export function sheet(parent, o) {
   // fit labels: shrink to 40 px, then wrap (balanced)
   let labelH = 0
   for (const [j, el] of labelEls.entries()) {
-    const inner = colW[j] - 2 * pad
+    const inner = colW[j] - 2 * hp(j)
     for (const part of el.children) {
       if (part.scrollWidth > inner + 0.5) fitText(part, inner, { minPx: part.classList.contains('ls-hsub') ? S.sub : S.labelMin })
       if (part.scrollWidth > inner + 0.5) css(part, { whiteSpace: 'normal' })

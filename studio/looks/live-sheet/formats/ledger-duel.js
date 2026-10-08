@@ -217,7 +217,7 @@ export default function ledgerDuel(spec, ctx) {
   const slotOf = () => (events.some(e => e.tip) ? tipFit.slotH : 0)
   const build = (bottom, inBar, { minRowH = 52, letters = lettersOpt } = {}) => sheet(L, {
     // (word keys, "Age 35", are set a size down from the year keys: the values carry the row)
-    columns: [{ label: keyLabel, kind: 'input', align: 'left', maxW: keyMax, fit: true, ...(keyShown.every(k => /^\d+$/.test(k)) ? {} : { px: fs => Math.min(fs.input, 48) }) }, ...people.map((_, j) => ({ label: sizeLabel, kind: 'output', align: 'right', units: unitsCol(j), group: 'people' }))],
+    columns: [{ label: keyLabel, kind: 'input', align: 'left', maxW: keyMax, fit: true, ...(keyShown.every(k => /^\d+$/.test(k)) ? {} : { px: fs => Math.min(fs.input, 48) }) }, ...people.map((_, j) => ({ label: sizeLabel, kind: 'output', align: 'right', units: unitsCol(j), group: 'people', headPad: 14 }))],
     values: [...rows.map((r, i) => [keyShown[i], ...r.values]), ...(summary ? [[sumKey, ...summary.values]] : []), ['', ...people.map(() => widest)]],
     rows: NR, bottom, reserve: slotOf(), grow: true, tail: 16,
     formula: { strings: [f0, ...laterKfs().map(k => k.text)], verdict: inBar ? vBar : null },
@@ -261,7 +261,7 @@ export default function ledgerDuel(spec, ctx) {
   const slotH = slotOf()
   if (summary) sh.rowEls[N].classList.add('ld-sum')
   people.forEach((p, j) => {
-    const el = sh.labelEls[j + 1], inner = sh.cols[j + 1].w - 2 * sh.cols[j + 1].pad
+    const el = sh.labelEls[j + 1], inner = sh.cols[j + 1].w - 2 * Math.min(14, sh.cols[j + 1].pad)
     const parts = [String(p.name ?? ''), String(p.plan ?? '')]
     ;[...el.children].forEach((part, i) => {
       const fit = html => {
