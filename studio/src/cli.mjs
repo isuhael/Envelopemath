@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 // envelope studio CLI
-//   node src/cli.mjs render specs/a.json [specs/b.json ...] [--out out] [--jobs 2] [--crf 18] [--sheet]
+//   node src/cli.mjs render specs/a.json [specs/b.json ...] [--out out] [--jobs 2] [--crf 18] [--sheet]   (or --all)
 //   node src/cli.mjs check  specs/*.json [--every 0.25] [--json]
 //   node src/cli.mjs stills specs/a.json --at 0,1.5,end [--out out/stills]
 //   node src/cli.mjs sheet  specs/*.json [--n 12 | --at 0,1.5,3] [--out out/sheets]
-// With no spec arguments, every specs/*.json is used.
+// With no spec arguments, check/stills/sheet use every specs/*.json; render needs --all for that.
 import fs from 'node:fs'
 import path from 'node:path'
 import { ROOT, readSpec, launch } from './page.mjs'
@@ -20,6 +20,15 @@ for (let i = 0; i < rest.length; i++) {
     const v = rest[i + 1] && !rest[i + 1].startsWith('--') ? rest[++i] : true
     opt[k] = v
   } else files.push(a)
+}
+if (opt.help || opt.h) {
+  console.log('usage: cli.mjs render|check|stills|sheet <specs...> [--options]   (render needs explicit specs, or --all)')
+  process.exit(0)
+}
+// rendering everything by accident is slow and overwrites finished MP4s, so render needs explicit specs or --all
+if (cmd === 'render' && !files.length && !opt.all) {
+  console.error('render: name the specs to render (or pass --all)')
+  process.exit(2)
 }
 const specFiles = files.length ? files : fs.readdirSync(path.join(ROOT, 'specs')).filter(f => f.endsWith('.json')).sort().map(f => path.join(ROOT, 'specs', f))
 const outDir = path.resolve(opt.out || path.join(ROOT, 'out'))

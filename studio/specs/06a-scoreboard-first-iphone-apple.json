@@ -10,23 +10,18 @@
   "vo": [
     {
       "t": 0.0,
-      "d": 2.2,
-      "text": "$499 on launch day."
-    },
-    {
-      "t": 2.3,
-      "d": 3.5,
-      "text": "You skip the iPhone line and buy Apple stock."
+      "d": 5.8,
+      "text": "Launch day 2007: you skip the $499 iPhone and buy Apple\u00a0stock."
     },
     {
       "t": 6.0,
-      "d": 3.2,
-      "text": "You never add a\u00a0cent. You just hold."
+      "d": 3.6,
+      "text": "2012: about\u00a0$2,200. You just\u00a0hold."
     },
     {
-      "t": 9.6,
-      "d": 3.2,
-      "text": "The phone gets old. The\u00a0shares keep\u00a0compounding."
+      "t": 9.8,
+      "d": 3.4,
+      "text": "2017: over\u00a010 times. The phone's long\u00a0gone."
     },
     {
       "t": 13.7,
@@ -40,8 +35,8 @@
     },
     {
       "t": 19.6,
-      "d": 2.0,
-      "text": "2025: about $37,000."
+      "d": 2.4,
+      "text": "2025: about\u00a0$37,000."
     },
     {
       "t": 22.0,
@@ -179,10 +174,11 @@
   },
   "lookOpts": {
     "stage": "race",
+    "tags": false,
     "footerSteps": [
       {
         "t": 21.4,
-        "text": "$499 × 74.3 ≈ $37,000"
+        "text": "≈ 136.7 shares × $271.12 (12/31/25 close)"
       }
     ]
   },
@@ -194,6 +190,14 @@
     {
       "t": 2.51,
       "kind": "thud"
+    },
+    {
+      "t": 6.96,
+      "kind": "tick"
+    },
+    {
+      "t": 12.51,
+      "kind": "tick"
     },
     {
       "t": 14.78,

@@ -2,15 +2,15 @@
 
 **Prepared for:** *Back of the Envelope* (YouTube Shorts, Instagram Reels, TikTok), US audience, USD
 **Date:** 2026-10-07
-**Writer:** format 1 of 10, round 2 (revised after the verifier and the hook judge; then in the round-2 **hook pass**, which replaced 01c's hook and kept 01b's; then in **hook pass 2**, which replaced 01b's hook and topic; then in the **assembly pass** (2026-10-08), which fixed what the stills and the MP4s showed; then in the **QA fix pass** (2026-10-08), which applied the round-2 QA's must and should issues for 01a and 01b; see the **Review log** at the end)
+**Writer:** format 1 of 10, round 2 (revised after the verifier and the hook judge; then in the round-2 **hook pass**, which replaced 01c's hook and kept 01b's; then in **hook pass 2**, which replaced 01b's hook and topic; then in the **assembly pass** (2026-10-08), which fixed what the stills and the MP4s showed; then in the **QA fix pass** (2026-10-08), which applied the round-2 QA's must and should issues for 01a and 01b; then in the **01c assembly pass** (2026-10-08), which applied the same caption, footer and climax fixes to 01c and gave its Becker figure acting beats; see the **Review log** at the end)
 **Deliverables:**
 - Specs:
   - [`studio/specs/01a-clean-sheet-paid-biweekly.json`](../../studio/specs/01a-clean-sheet-paid-biweekly.json)
   - [`studio/specs/01b-live-sheet-20-an-hour.json`](../../studio/specs/01b-live-sheet-20-an-hour.json) (file name kept; since hook pass 2 the topic is the Social Security wage cap: you pay 6.2%, what does a $1M salary pay?)
   - [`studio/specs/01c-becker-rig-60k-a-year.json`](../../studio/specs/01c-becker-rig-60k-a-year.json) (file name kept; since the hook pass the topic is the bracket myth: will a 3% raise push $65,000 into a higher bracket?)
-- Check: [`teasers/v2/checks/01-dead-simple-list.py`](checks/01-dead-simple-list.py). It passes 302 checks with 0 failures (after the QA fix pass).
-- Mutation test: in the QA fix pass the updated checks caught 7 of 7 broken copies (a wrong "not × 24" total, a wrong check-line total, a late `checkT`, a wrong spoken $65,000, the old "salary's" label, a wrong spoken $11,439, and a wrong guess off its VO line); in the assembly pass the new note and check-line checks caught 6 of 6 broken copies; in hook pass 2 the check caught 7 of 7 broken copies of the new 01b spec, and in the hook pass 4 of 4 broken copies of the new 01c spec (see the Review log). In round 2 it caught 10 of 10 deliberately broken spec copies: a $50-rounded result (`≈ $2,950`), a "≈" on an exact result, a wrong VO number, an off-beat `resultT`, a VO line read too fast, an unsupported `lookOpts.gag`, a VO line after the verdict card, a wrong label digit, a missing "≈", and a verdict that no longer matches the maths.
-- Studio linter (`node src/cli.mjs check`): 3/3 clean, 0 errors, 0 warnings (safe zones, type floor, overlap, contrast, fonts, R1), re-run after every fix, after both hook passes and after the QA fix pass.
+- Check: [`teasers/v2/checks/01-dead-simple-list.py`](checks/01-dead-simple-list.py). It passes 336 checks with 0 failures (after the 01c assembly pass).
+- Mutation test: in the 01c assembly pass the updated checks caught 8 of 8 broken copies of the new 01c spec (a spoken $45 changed to $54, an unknown act, an act off its VO line, an act pointing at a missing item, the closing pose during the VO, a `resultT` off its VO line, the old footer, and a wrong $450); in the QA fix pass the updated checks caught 7 of 7 broken copies (a wrong "not × 24" total, a wrong check-line total, a late `checkT`, a wrong spoken $65,000, the old "salary's" label, a wrong spoken $11,439, and a wrong guess off its VO line); in the assembly pass the new note and check-line checks caught 6 of 6 broken copies; in hook pass 2 the check caught 7 of 7 broken copies of the new 01b spec, and in the hook pass 4 of 4 broken copies of the new 01c spec (see the Review log). In round 2 it caught 10 of 10 deliberately broken spec copies: a $50-rounded result (`≈ $2,950`), a "≈" on an exact result, a wrong VO number, an off-beat `resultT`, a VO line read too fast, an unsupported `lookOpts.gag`, a VO line after the verdict card, a wrong label digit, a missing "≈", and a verdict that no longer matches the maths.
+- Studio linter (`node src/cli.mjs check`): 3/3 clean, 0 errors, 0 warnings (safe zones, type floor, overlap, contrast, fonts, R1), re-run after every fix, after both hook passes, after the QA fix pass and after the 01c assembly pass (with the 3 becker-rig `dead-simple-list*` kit samples, which share the edited module: 4/4 clean).
 - Stills checked by eye at frames 0, 2.7-3.2 s, each payoff, the verdict and the last frame.
 
 **Evidence base:**
@@ -314,7 +314,7 @@ Checks behind the words:
 ### 01c · Becker rig · "4 DEAD SIMPLE NUMBERS / WILL A 3% RAISE PUSH $65,000 INTO A HIGHER BRACKET?"
 
 - **Spec:** `studio/specs/01c-becker-rig-60k-a-year.json`, 26.5 s (file name and id kept from round 2; the topic changed in the hook pass, see the Review log)
-- **Look:** Becker rig. A light void with a floor gradient; our own one-colour (green) stick figure, the only saturated colour; maths in neutral ink. The list is a stack of 4 numbered ledges. At this spec's size the kit sets each label on one line with its dashed empty socket under it (the kit's "rows" layout, checked in stills). For each slot the number drops in as a white glyph block and types itself, while the operator and the rest of the formula type onto an ink plate that pops into his hands. He winds up and throws the plate (`lookOpts.hits`: kick, chop, kick, then a two-handed slam for the goal); it slams onto the block with hit lines, chips, a shake and a thud, and the pair crunches into the answer, with its note beside it. The goal lands on a gold plate with the big impact (white flash, camera punch, cash), a "yes!" fist pump, and he points back at it.
+- **Look:** Becker rig. A light void with a floor gradient; our own one-colour (green) stick figure, the only saturated colour; maths in neutral ink. The list is a stack of 4 numbered ledges. At this spec's size the kit sets each label on one line with its dashed empty socket under it (the kit's "rows" layout, checked in stills): labels at 44 px, answers at 68 px, and the goal **$45 at 1.45× (≈ 99 px) on its gold plate**, the biggest number on screen, so the payoff is the climax by size as well as colour (since the 01c assembly pass; before it every answer, the goal included, was about 60-64 px). For each slot the number drops in as a white glyph block and types itself, while the operator and the rest of the formula type onto an ink plate that pops into his hands. He winds up and throws the plate (`lookOpts.hits`: kick, chop, kick, then a two-handed slam for the goal, whose heave winds up for a full second over a riser); it slams onto the block with hit lines, chips, a shake and a thud, and the pair crunches into the answer, with its note beside it. The goal lands on a gold plate with the big impact (white flash, camera punch, cash) and a "yes!" jump. After that he acts out the last three VO lines (`lookOpts.acts`): he points at ③'s $450, which pulses and turns green again; wags "no, no"; shrugs at "Yes."; points at the $45, which pulses as the verdict says it; and ends with his hands on his hips.
 - **Platform title:** "Will a 3% raise push you into a higher tax bracket?" (11 words, no result)
 - **On-screen hook (header):** `4 DEAD SIMPLE NUMBERS` / `WILL A 3% RAISE PUSH **$65,000**` / `INTO A HIGHER BRACKET?` (14 words, 3 lines; "$65,000" in green)
 - **No separate input line:** the header already carries $65,000 (the kit hides the input line when the hook shows `input.value`). At 0.0 s slot ①'s block reads `$65,000` and he already holds the `× 1.03` plate.
@@ -333,7 +333,7 @@ Checks behind the words:
 
 | Rule | Met? | How |
 |---|---|---|
-| R1 | yes | "$65,000" in the header at 0.0 s; slot ①'s block reads `$65,000` and the `× 1.03` plate is in his hands |
+| R1 | yes | "$65,000" in the header at 0.0 s; slot ①'s block reads `$65,000` and the `× 1.03` plate is in his hands; the first caption, "$65,000, plus 3%:", holds no result |
 | R2 | mostly | One $ figure in the header (the input), no result in the header or the title. The header also carries "3%", the raise the question is about (both judges flagged it as a second input) |
 | R3 | partly | The myth is everyone's, and the caption gives the rule for anyone whose raise crosses the line: (new pay − $66,500) × 10%. But a 3% raise crosses the line only for salaries from $64,564 to $66,499, so for a $50K viewer the honest answer is "no" (judge 2) |
 | R4 | yes | $65,000 ≈ median full-time pay ($1,251 a week × 52 = $65,052, BLS Q2 2026); 3% sits just under 2026 raise budgets (3.1-3.5%) |
@@ -346,26 +346,31 @@ Checks behind the words:
 | R11 | yes | A yes/no question on screen; the verdict answers it ("Higher bracket? Yes.") |
 | R12 | yes | "It costs you $45 a year", against the $5,085 the myth implies (113x) |
 
-**Beat sheet** (the becker-rig kit's grammar; times match the spec and stills at 0, 1.5, 2.4, 3.0, 6.3, 10.5, 16.3, 21.5 and 26.4 s)
+**Beat sheet** (the becker-rig kit's grammar; times match the spec and the stills at 0, 2.4, 3.0, 6.3, 10.5, 12.5, 14.2, 14.9, 15.4, 15.95, 16.3, 16.75, 18.45, 18.6, 20.7, 21.0, 22.85, 25.0 and 26.47 s). Each result starts its own VO line, so its caption pops with the number, never before it.
 
-| t (s) | On screen | VO |
+| t (s) | On screen | VO (caption line) |
 |---|---|---|
-| 0.0 | **Frame 1:** light void; header (3 lines, "$65,000" in green); mono footer on 2 lines "ASSUMES single filer, 2026 · standard deduction · federal income tax only"; 4 numbered ledges labelled "Your new pay / Where 22% starts / Pay over the line / What the bracket costs you" (② to ④ dim, with dashed empty sockets); ① active, its white block `$65,000` already typed; the figure in the bottom-right corner holds the ink plate `× 1.03` | "$65,000, plus 3%: $66,950." (captions pop word by word) |
-| ≈2.0-2.3 | Wind-up, then a **kick**: the plate slams onto the block and **$66,950** lands in green at 2.3 s (hit lines, chips, shake, thud) | (same line, on "$66,950") |
-| 4.6 | ② block `$50,400` types; the plate `+ $16,100` pops into his hands | "22% starts at $66,500 of pay." |
-| 6.1 | **Chop** → **$66,500**; note "line + deduction" beside it; ① settles to ink | (on "$66,500") |
-| 8.8 | ③ block `$66,950`, plate `− $66,500` | "You crossed it by $450." |
-| 10.3 | **Kick** → **$450**; note "taxed at 22%" | (on "$450") |
-| 12.0 | ④ block `$450`, plate `× 10%` | "Only those $450 pay 22%. 10 points more: $45." |
-| 15.8 | Two-handed **slam** → **$45** on the gold plate: white flash, camera punch, cash; note "22% − 12%"; "yes!" fist pump, then he points at it | (on "$45") |
-| 16.6 | The finished sheet holds | "Not your whole raise. Not your whole pay." |
-| 20.4 | Verdict replaces the captions: "Higher bracket? Yes. It costs / you **$45 a year**" with a green swoosh under "$45 a year"; ding (chrome) | "Higher bracket? Yes. It costs you $45 a year." |
-| 24.0-26.5 | Hold on the finished sheet (this kit holds rather than clearing) | none |
+| 0.0 | **Frame 1:** light void; header (3 lines, "$65,000" in green); mono footer on 2 explicit lines "ASSUMES single, standard deduction / 2026 federal income tax only"; 4 numbered ledges labelled "Your new pay / Where 22% starts / Pay over the line / What the bracket costs you" (② to ④ dim, with dashed empty sockets); ① active (green ring), its white block `$65,000` already typed; the figure in the bottom-right corner holds the ink plate `× 1.03` | "$65,000, plus 3%:" |
+| ≈1.6-2.3 | Wind-up, then a **kick**: the plate slams onto the block and **$66,950** lands in green at 2.3 s (hit lines, chips, shake, thud) | "$66,950." (2.3 s) |
+| 4.6 | ② block `$50,400` types; the plate `+ $16,100` pops into his hands | "22% starts at" |
+| 6.2 | **Chop** → **$66,500**; note "line + deduction" beside it; ① settles to ink | "$66,500 of pay." (6.2 s) |
+| 8.8 | ③ block `$66,950`, plate `− $66,500` | "You crossed it by" |
+| 10.4 | **Kick** → **$450**; note "taxed at 22%" | "$450." (10.4 s) |
+| 12.0 | ④ block `$450`, plate `× 10%` | "Only those $450 pay 22%. 10 points more:" |
+| ≈14.5-15.5 | The goal's heave: he sinks into a deep squat for a full second over a rising riser, then heaves | (same line) |
+| 15.9 | Two-handed **slam** → **$45** at 1.45× on the gold plate: white flash, camera punch, cash; note "22% − 12%"; a "yes!" jump | "$45." (15.9 s) |
+| 16.6 | He lands pointing at ③: **$450** pulses (a ring of hit lines, a pop) and turns green again; ③'s tab gets the green ring | "Not your whole raise." |
+| 18.3 | He wags "no, no" (forearm up, six swings); $450 stays green | "Not your whole pay." |
+| 20.4 | Verdict replaces the captions: "Higher bracket? Yes. It costs / you **$45 a year**" with a green swoosh under "$45 a year"; ding (chrome); he shrugs | "Higher bracket? Yes. It costs you $45 a year." |
+| 22.7 | On the spoken "$45" he points at the gold plate: **$45** pulses (hit lines, a small camera punch, a pop), ④'s tab rings; $450 settles back to ink | (same line) |
+| 24.8-26.5 | He stands with his hands on his hips; the finished sheet and the verdict hold (this kit holds rather than clearing) | none |
 
-Payoffs land at 2.3, 6.1, 10.3 and 15.8 s, and the verdict at 20.4 s: gaps of 3.8, 4.2, 5.5 and 4.6 s.
+Payoffs land at 2.3, 6.2, 10.4 and 15.9 s, and the verdict at 20.4 s: gaps of 3.9, 4.2, 5.5 and 4.5 s. The longest still stretch is ≈1.8 s (12.7-14.5 s, while he holds the `× 10%` plate under the VO); the closing hold after his last move is ≈1.4 s.
 
 **Full guide VO script (01c, 26.5 s)**
 > $65,000, plus 3%: $66,950. 22% starts at $66,500 of pay. You crossed it by $450. Only those $450 pay 22%. 10 points more: $45. Not your whole raise. Not your whole pay. Higher bracket? Yes. It costs you $45 a year.
+
+The words are unchanged since the hook pass; in the spec they are 11 caption lines (since the 01c assembly pass), each result opening its own line: "$65,000, plus 3%:" / "$66,950." / "22% starts at" / "$66,500 of pay." / "You crossed it by" / "$450." / "Only those $450 pay 22%. 10 points more:" / "$45." / "Not your whole raise." / "Not your whole pay." / the verdict line.
 
 Read the numbers as: "sixty-five thousand", "three percent", "sixty-six thousand nine fifty", "twenty-two percent", "sixty-six thousand five hundred", "four fifty", "ten points", "forty-five". Every line's `d` fits at 2.6 words/s with these readings, as the check script counts them.
 
@@ -403,7 +408,7 @@ Two independent publishers for each tax parameter, because these figures could b
 - **$65,000 against the median** (R4, write-up only): BLS Q2 2026 median full-time pay of $1,251 a week (source as in 01a).
 - **3% against 2026 raise budgets** (R4, write-up only): The Conference Board, 40th annual Salary Budget Survey (released 2025-09-03): 3.4% average salary increase budgets for 2026, via WorldatWork Workspan Daily, https://worldatwork.org/publications/workspan-daily/conference-board-projects-3-4-u-s-pay-increase-budgets-for-2026 (search extract; it also lists Payscale 3.5%, WorldatWork 3.6% and WTW 3.5%). Publisher page: https://www.conference-board.org/publications/US-salary-increase-budgets-2025-2026. Mercer, "2026 actual increase budgets (US)": mean merit increase actually paid in 2026 of 3.1% (756 employers, March 2026 survey), https://www.imercer.com/articleinsights/2026-actual-increase-budgets-us (search extract; a direct fetch was blocked by this session's proxy).
 
-**Assumptions (footer, on screen from 0.0 s):** `ASSUMES single filer, 2026 · standard deduction · federal income tax only`. Not modelled: state income tax; FICA (it is flat, so a bracket never changes it; in the pinned comment); pre-tax 401(k) or HSA deferrals, which move the line up by the amount deferred; credits; other filing statuses, which have their own lines.
+**Assumptions (footer, on screen from 0.0 s):** `ASSUMES single, standard deduction` / `2026 federal income tax only` (2 explicit lines since the 01c assembly pass; the old single line wrapped mid-phrase, "standard / deduction"). Not modelled: state income tax; FICA (it is flat, so a bracket never changes it; in the pinned comment); pre-tax 401(k) or HSA deferrals, which move the line up by the amount deferred; credits; other filing statuses, which have their own lines.
 
 **Caption / description (verdict in the caption, R11):**
 > Higher bracket? Yes. It costs $45, not your raise. At $65,000, a 3% raise ($1,950) takes you to $66,950: $450 past $66,500, where 2026's 22% bracket starts for a single filer on the standard deduction ($50,400 of taxed pay + $16,100). Only those $450 pay 22% instead of 12%: $45 a year. Every other dollar is taxed exactly as before. Crossed the line too? (new pay − $66,500) × 10% is all the bracket costs you. Federal income tax only.
@@ -422,7 +427,7 @@ Two independent publishers for each tax parameter, because these figures could b
 - **TikTok:**
   - Put "tax bracket" and "3% raise" in the first caption line for search.
   - The share line is the verdict: "Higher bracket? Yes. It costs you $45 a year."
-- **Production:** the kit draws everything (poses: stand, wind-up, kick, chop, slam, fist pump, point). No extra props are needed.
+- **Production:** the kit draws everything (poses: stand, wind-up, kick, chop, slam, jump, point, wag, shrug, hands on hips). No extra props are needed.
 
 ---
 
@@ -668,3 +673,26 @@ The round-2 QA scored 01a 6/10 and 01b 6.5/10. It judged from 16-frame contact s
   - 01a at 0, 5, 15, 19.5, 20.75, 21.05, 21.5 s and the contact sheet.
   - 01b at 0, 2.75, 3.5, 4.95, 5.4, 6.4, 8.8, 10.8, 12.25, 12.3, 12.6, 15.8, 21 s and the contact sheet.
 - MP4s re-rendered: `studio/out/01a-clean-sheet-paid-biweekly.mp4` and `studio/out/01b-live-sheet-20-an-hour.mp4`, each 1080 × 1920, 30 fps, 26.0 s, with audio. Frames pulled at 0 and 21.5 s (01a) and at 10.8 and 15.8 s (01b) match the stills (mean pixel difference 0.6-2.5 of 255, codec noise).
+
+### 01c assembly pass (2026-10-08)
+
+01c was not part of the QA fix pass, so this pass judged it against the same bar from a 12-frame contact sheet, full-size stills at every beat and frames pulled from the MP4. Every number on screen was re-checked against the maths table above and the check script; none changed.
+
+| # | Issue found | What I did |
+|---|---|---|
+| C1 | **Captions spoiled every result.** The becker-rig chrome pops a whole VO line in about 0.3 s, so "$66,950" showed at 0.3 s (it lands at 2.3 s), "$66,500" 1.5 s early, "$450" 1.5 s early, and the climax "$45" at 12.3 s, 3.5 s before the slam (01a's Q2 in this kit). | Each result now starts its own VO line at its `resultT`, as in 01a and 01b: "$65,000, plus 3%:" / "$66,950." (2.3 s); "22% starts at" / "$66,500 of pay." (6.2 s); "You crossed it by" / "$450." (10.4 s); "Only those $450 pay 22%. 10 points more:" / "$45." (15.9 s). The words are unchanged; three results moved by 0.1 s (6.1 → 6.2, 10.3 → 10.4, 15.8 → 15.9) so the line before each still fits at 2.6 words/s. "Not your whole raise." and "Not your whole pay." are now 2 lines too, one per gesture (C4). |
+| C2 | **The footer broke mid-phrase:** "… 2026 · standard / deduction · federal income tax only" (01b's Q13 in this kit). | `ASSUMES single, standard deduction` / `2026 federal income tax only`: 2 explicit lines, each a whole phrase, at 40 px. Every assumption is still there ("single" is the filing status; the caption and pinned comment keep "single filer"). |
+| C3 | **The payoff was not the visual climax.** Every answer, the goal included, set at about 60-64 px; the $45's gold plate was only 1.06× (01a's Q4). | `becker-rig/formats/dead-simple-list.js`: in the rows layout only the goal row is as tall as its gold plate (the other value lines no longer reserve the plate's height), and a new first fitting pass sets the goal at 1.45× (else 1.3×, 1.15×) as long as every other answer keeps 64 px or more. 01c now sets answers at 68 px and the **$45 at ≈ 99 px**, the biggest number on screen. The goal's heave now winds up for up to 1 s over the riser (it was 0.62 s), so the slam is earned. |
+| C4 | **The sheet held still for 3.1 s (17.3-20.4 s) and then 5.4 s (21.1-26.5 s)** while the VO said "Not your whole raise. Not your whole pay." and the verdict (01a's A3). | A new optional `lookOpts.acts` (read by this kit's format file only): the figure's acting after the goal, keyed to the VO. 01c: at 16.6 s he points at ③ and **$450** pulses green ("Not your whole raise."); at 18.3 s he wags "no, no" ("Not your whole pay."); at 20.4 s he shrugs as the verdict pops ("Higher bracket? Yes."); at 22.7 s, on the spoken "$45", he points at the gold plate and **$45** pulses with a ring of hit lines and a small camera punch; at 24.8 s he stands with his hands on his hips. Pointing is now aimed (the arm's IK targets the answer), and the pointed-at row's tab gets the green ring. The longest still stretch is now ≈1.8 s, under the VO; the silent closing hold after his last move is ≈1.4 s. |
+
+**Checks after the 01c assembly pass:**
+- `python3 teasers/v2/checks/01-dead-simple-list.py` → **336 checks, 0 failed**. Updated for 01c: the new footer in `EXPECT`; `VO_NUMBERS` and `ANCHORS` for the 11 VO lines (each `resultT` on its own line's start); `acts` added to the becker-rig `lookOpts` keys. New checks: every act is a move the kit has, a pointed item exists, each act sits on the VO words it plays (± 0.5 s; the closing pose after the last VO line and ≥ 1.2 s before the end), none starts before the figure lands from the goal's jump, and the acts are in time order.
+- Mutation test on scratch copies of the 01c spec: 8 of 8 caught (listed at the top).
+- `node src/cli.mjs check`: 01c is clean (0 errors, 0 warnings), and so are the 3 becker-rig `dead-simple-list*` kit samples that share the edited module (4/4). The first sample's goal ("$37.50 an hour") now also sets big on its plate; the 6-item samples keep the lines layout.
+- Stills checked: 0, 2.4, 3.0, 6.3, 10.5, 12.5, 14.2, 14.9, 15.4, 15.95, 16.3, 16.75, 16.8, 17.0, 18.45, 18.6, 20.7, 21.0, 22.85, 25.0 and 26.47 s, plus the contact sheet. Every caption shows its number only as the sheet lands it; no text overlaps outside the 0.26 s hit bursts; the footer and the 4 labels are whole at frame 1.
+- MP4 re-rendered: `studio/out/01c-becker-rig-60k-a-year.mp4`, 1080 × 1920, 30 fps, 26.5 s, with audio (25 SFX cues). Frames pulled at 0, 6.3 and 22.85 s match the stills (mean pixel difference 0.7-1.9 of 255, codec noise), and every number in them matches this write-up.
+
+**Reported to the kit owner (shared files, not edited):**
+- `looks/becker-rig/README.md` §5 does not yet document `lookOpts.acts` or the big-goal pass (both are documented in the format file's header comment).
+- **Becker-rig captions** pop a whole VO line in about 0.3 s, so any result inside a line is readable before it lands. The kit could hold a line's numbers until a beat time (as the live-sheet kit does). 01c works around it by splitting its VO lines.
+- `teasers/v2/teasers.json` (format 1's `check` field) still describes the check as 266 checks; it is not part of this pass.

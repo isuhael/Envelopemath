@@ -21,7 +21,9 @@ Social Security wage-cap hook since hook pass 2: "You pay 6.2% to Social Securit
    line after it would have no on-screen text).
 5. Contract checks: only lookOpts keys the target look kit actually reads; a wrong guess
    (01b's struck $62,000) types, lands and is struck on the VO words that say it, and its
-   typed formula gives its shown result.
+   typed formula gives its shown result; the Becker figure's acting after the goal (01c's
+   lookOpts.acts) uses moves the kit has, points only at real items, and sits on the VO words
+   it plays (or after the last line).
 6. Sensitivity checks: the 26/27-payday calendar claims; 01b's Social Security cap maths
    (the $20/hr year is under the $184,500 cap, the $1M salary's real rate, "more than five
    times", the pinned comment's dollar ratios); and 01c's bracket maths (the $45 against the
@@ -53,9 +55,10 @@ KIT_LOOKOPTS = {
     "clean-sheet": {"loop", "input", "layout", "check", "checkT"},
     "live-sheet": {"loop", "labels", "countUp", "verdict", "formulaAt0", "sub", "notes", "columns",
                    "startRow", "wrongGuess", "check", "checkT"},
-    "becker-rig": {"hits", "actions", "figureScale", "input", "layout"},
+    "becker-rig": {"hits", "actions", "figureScale", "input", "layout", "acts"},
 }
 BECKER_HITS = {"kick", "chop", "slam"}
+BECKER_ACTS = {"point", "wag", "shrug", "nod", "cheer", "proud"}   # becker-rig dead-simple-list lookOpts.acts
 
 rows = []            # (teaser, check, spec value, expected, ok)
 errors = 0
@@ -242,7 +245,7 @@ EXPECT = {
     },
     "01c": {
         "header": f"4 DEAD SIMPLE NUMBERS\nWILL A {C_PCT}% RAISE PUSH **{money(C_SALARY)}**\nINTO A HIGHER BRACKET?",
-        "footer": f"ASSUMES single filer, {TAX_YEAR} · standard deduction · federal income tax only",
+        "footer": f"ASSUMES single, standard deduction\n{TAX_YEAR} federal income tax only",
         "verdict.text": f"Higher bracket? Yes. It costs you **{money(C_COST)}{NBSP}a{NBSP}year**",
         "data.input.value": money(C_SALARY),
         "data.items[0].formula": f"{money(C_SALARY)} × {1 + C_PCT / 100:.2f}",
@@ -293,12 +296,17 @@ VO_NUMBERS = {
         [],                                       # "more than five times": checked in sensitivity()
     ],
     "01c": [
-        [C_SALARY, C_PCT, C_NEW],
-        [C_HI_PCT, C_LINE],
-        [C_OVER],
-        [C_OVER, C_HI_PCT, C_PTS, C_COST],
-        [],
-        [C_COST],
+        [C_SALARY, C_PCT],                        # "$65,000, plus 3%:"
+        [C_NEW],                                  # "$66,950."
+        [C_HI_PCT],                               # "22% starts at"
+        [C_LINE],                                 # "$66,500 of pay."
+        [],                                       # "You crossed it by"
+        [C_OVER],                                 # "$450."
+        [C_OVER, C_HI_PCT, C_PTS],                # "Only those $450 pay 22%. 10 points more:"
+        [C_COST],                                 # "$45."
+        [],                                       # "Not your whole raise."
+        [],                                       # "Not your whole pay."
+        [C_COST],                                 # the verdict line
     ],
 }
 
@@ -318,11 +326,15 @@ ANCHORS = {
             "notes": {2: (6, None)},                    # "yours: 6.2%" opens on "Yours: 6.2%, on every dollar…"
             # the struck flat-rate guess: types on vo[2], lands on "$62,000", is struck on vo[3]'s "No."
             "wrongGuess": {"t": (2, None), "resultT": (2, money(B_WRONG)), "strikeT": (3, None)}},
-    "01c": {"items": [((0, None), (0, money(C_NEW))),
-                      ((1, None), (1, money(C_LINE))),
-                      ((2, None), (2, money(C_OVER))),
-                      ((3, None), (3, money(C_COST)))],
-            "verdict": (5, None)},
+    "01c": {"items": [((0, None), (1, None)),      # each result starts its own VO line (assembly pass 01c)
+                      ((2, None), (3, None)),
+                      ((4, None), (5, None)),
+                      ((6, None), (7, None))],
+            "verdict": (10, None),
+            # the figure's acting after the goal (lookOpts.acts), in order: points at ③'s $450 on "Not your whole
+            # raise.", wags "no" on "Not your whole pay.", shrugs on "Higher bracket? Yes.", points at the $45 as
+            # the verdict says it, and stands proud once the VO is over ("after")
+            "acts": [(8, None), (9, None), (10, None), (10, money(C_COST)), "after"]},
 }
 
 # ------------------------------------------------------------ VO helpers
@@ -579,6 +591,28 @@ def check_spec(key, spec):
         record(key, "becker hits valid, goal slams", hits, f"{sorted(BECKER_HITS)}, slam on goal",
                all(h in BECKER_HITS for h in hits) and all(
                    (items[i]["tone"] == "goal") == (h == "slam") for i, h in enumerate(hits)))
+    acts, aa = lo.get("acts", []), ANCHORS[key].get("acts")
+    if acts or aa:
+        record(key, "lookOpts.acts anchored in ANCHORS", len(acts), len(aa or []), len(acts) == len(aa or []))
+        goal_t = max(it["resultT"] for it in items)
+        for j, (a, anc) in enumerate(zip(acts, aa or [])):
+            record(key, f"acts[{j}] '{a.get('act')}' is a kit move", a.get("act"), sorted(BECKER_ACTS),
+                   a.get("act") in BECKER_ACTS)
+            if "item" in a:
+                record(key, f"acts[{j}].item is a real item", a["item"], f"0..{len(items) - 1}",
+                       isinstance(a["item"], int) and 0 <= a["item"] < len(items))
+            record(key, f"acts[{j}] after the goal lands (+0.4 s, the figure's jump)", a["t"], f"≥ {goal_t + 0.4:.2f}",
+                   a["t"] >= goal_t + 0.4 - 1e-9)
+            if anc == "after":
+                record(key, f"acts[{j}] after the last VO line, ≥ 1.2 s before the end", a["t"],
+                       f"{last_end:.2f} … {dur - 1.2:.2f}", last_end <= a["t"] <= dur - 1.2)
+            else:
+                est = anchor_time(vo, *anc)
+                record(key, f"acts[{j}] '{a.get('act')}' at VO mention", a["t"],
+                       f"VO never says {anc[1]!r}" if est is None else f"{est:.2f}±{ANCHOR_TOL}",
+                       est is not None and abs(a["t"] - est) <= ANCHOR_TOL)
+        ts = [a["t"] for a in acts]
+        record(key, "acts in time order", ts, "ascending", ts == sorted(ts))
     wg = lo.get("wrongGuess")
     if wg:
         record(key, "wrongGuess.t on the VO line that voices it", wg["t"],

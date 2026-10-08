@@ -8,8 +8,8 @@
   - [`studio/specs/04a-scoreboard-sp500-vs-gold.json`](../../studio/specs/04a-scoreboard-sp500-vs-gold.json)
   - [`studio/specs/04b-becker-rig-savings-vs-sp500.json`](../../studio/specs/04b-becker-rig-savings-vs-sp500.json)
   - [`studio/specs/04c-live-sheet-usa-vs-europe.json`](../../studio/specs/04c-live-sheet-usa-vs-europe.json)
-- Check: [`teasers/v2/checks/04-chart-race.py`](checks/04-chart-race.py). It recomputes every series from the sourced annual returns and passes **451 checks with 0 failures** (445 before the assembly pass, 407 before hook pass 2). New in this revision:
-  - a spoken-number sync check: every figure the VO quotes mid-race must be on screen at the moment it is said (on a tip counter, a flag, a beat label or the ledger row);
+- Check: [`teasers/v2/checks/04-chart-race.py`](checks/04-chart-race.py). It recomputes every series from the sourced annual returns and passes **566 checks with 0 failures** (451 before the QA fixer pass, 445 before the assembly pass, 407 before hook pass 2). New in this revision:
+  - a spoken-number sync check: every figure the VO quotes mid-race must be on screen at the moment it is said (on a tip counter, a flag, a beat label, the ledger row or 04c's value row);
   - a 2,916-table sweep over the uncertain savings-rate inputs (04b);
   - a stale-text check on this write-up (since hook pass 2, also a 04b-section check that no text from the old hook is left).
 - Mutation test: the check caught **12 of 12** deliberately broken spec copies (listed under Caveats), and **8 of 8** more for the new 04b hook in hook pass 2.
@@ -23,8 +23,8 @@
 ## (a) The format in 5 lines
 
 1. **Mechanic.** The same round stake goes into 2 named rivals on the same date. One continuous line chart races year by year, with a live counter at each line tip, a big year counter, crash flags and 0 cuts, and it ends dead on the verified final values.
-2. **Hook.** The title asks ("What If You Invested $5,000 in A and B?"). The frame-1 header says you already did it ("POV: In [year] you invested $[stake] in A VS B"); 04b's header (hook pass 2) is a handicap duel in the same A VS B grammar ("Your $1,000: 16 years of savings VS 1 year of the S&P 500"). The stake is the only accent colour. In ChartOrbit's winners the chart is already moving at 0.0 s, below the stake. 04a and 04b copy that: their race clocks start at −0.4 s, so 04a's frame 1 shows both tips under the stake and 04b's shows the S&P already ahead ($1,041 vs $1,001). 04c holds both tips on the stake for 1.0 s while the hook line plays, then races.
-3. **Pace.** About 2-2.7 s per year in the benchmark (61 s). Ours run 1.2-2.0 s per year, 38.0-45.5 s, to stay inside this round's 25-50 s lane. The biggest number lands last, then the verdict.
+2. **Hook.** The title asks ("What If You Invested $5,000 in A and B?"). The frame-1 header says you already did it ("POV: In [year] you invested $[stake] in A VS B"); 04b's header (hook pass 2) is a handicap duel in the same A VS B grammar ("Your $1,000: 16 years of savings VS 1 year of the S&P 500"). The stake is the only accent colour. In ChartOrbit's winners the chart is already moving at 0.0 s, below the stake. 04a and 04b copy that: their race clocks start at −0.4 s, so 04a's frame 1 shows both tips under the stake and 04b's shows the S&P already ahead ($1,041 vs $1,001). 04c opens on its claim instead: the 2025 ledger row, large, with Europe's +35.41% lit, over the parked race; at 4.8 s it rewinds into the race.
+3. **Pace.** About 2-2.7 s per year in the benchmark (61 s). Ours run 1.2-1.7 s per year, 36.5-45.5 s, to stay inside this round's 25-50 s lane. The biggest number lands last, then the verdict.
 4. **Evidence.**
 
    | Account | Video | Views | Multiple | URL |
@@ -50,9 +50,9 @@
 - **Real yearly data points only.** Each series is the stake × (1 + that year's sourced return), compounded. A Dec-31 close sits at x = year + 0.99 (the same convention as 06a/06c), so a year counter that floors x reads the right year. Between two closes, the kits draw a straight line, so a tip counter between closes is an interpolation (this includes 04a's frame 1).
 - **Every rounded figure carries "≈", and so does every rounded multiple.**
   - Finals are given to 3 significant figures, the savings balance included. (Round 1 showed it to the nearest dollar; the 04b sweep showed that the dollar digit rests on unsourced midpoint years, so it is no longer shown.)
-  - Scoreboard footer: "$10,000 grew ≈ ×7.53 → ≈ $75,300". Live Sheet formula bar: "≈ $10,000 × 3.98", where the "≈" chip replaces "=" because the cell's result is a rounded final. Pinned comments: "≈ ×15.0", "≈ ×3.98".
+  - Scoreboard footer: "$10,000 grew ≈ ×7.53 → ≈ $75,300". Live Sheet formula bar: "≈ ×3.98 ≈ 2 doublings"; a year's step whose dollar-rounded inputs miss the shown close by $1 starts with "≈" instead of "=" ("≈ $16,145 × (1 − 15.06%)"). Pinned comments: "≈ ×15.0", "≈ ×3.98".
   - VO text uses "≈" too, because captions show it. The owner reads "≈" as "about".
-- **A figure the VO quotes mid-race is on screen when it is said.** The race moves 1.2-2.0 s per year, while a spoken figure takes 1-3 s to reach. So each mid-race figure is either pinned (a flag, a beat label or the ledger row that carries it), or it is a bound that holds on the live tip for the whole line ("still under $17,000", "under $10 so far"). The check computes when each figure is said (the line's start plus its spoken words ÷ 2.6) and tests what is showing then.
+- **A figure the VO quotes mid-race is on screen when it is said.** The race moves 1.2-1.7 s per year, while a spoken figure takes 1-3 s to reach. So each mid-race figure is either pinned (a flag, a beat label, or the ledger or value row that carries it), or it is a bound that holds on the live tip (and 04c's value row) for the whole line ("still under $17,000", "under $10 so far"). The check computes when each figure is said (the line's start plus its spoken words ÷ 2.6) and tests what is showing then.
 - **The verdict lands after the last VO line ends.** The Becker rig and Live Sheet chrome hide captions while the verdict shows.
 - **The first VO line plants the wrong answer (R5); it never reads the header aloud.** (04b: the first line gives the target, ≈ $151, and the second plants the belief, "Savings gets 16 years to match it.")
 - **Captions: line 1 on IG and TikTok is a curiosity line, and the verdict goes after the fold.** TikTok shows line 1 over the video from 0 s, so a verdict there gives the twist away.
@@ -72,7 +72,7 @@
 - **Look:** Scoreboard (black bars, stage `#0E1116`, money green `#2BFF88` for the S&P 500, second-contender yellow `#FFD23F` for gold, Anton header, footer working line).
 - **Platform title:** "What If You Invested $10,000 in the S&P 500 and GOLD in 2000?" (A/B: "$10,000 in 2000: Stocks or Gold?")
 - **On-screen hook (header, 12 words):** `POV: In 2000 you put **$10,000** in` / `the S&P 500 VS gold` (kept: it is ChartOrbit's 345x grammar).
-- **First VO line (0.0 s):** "26 years. Stocks should crush gold."
+- **First VO line (0.0 s):** "Stocks should crush gold." (QA fixer pass: "26 years." was cut so the 2002 beat lands with the race)
 - **Hook rules it satisfies:**
   - **R1:** "$10,000" in the header and the dashed $10,000 stake line at 0.0 s, with both tip counters already under it ($9,701 / $9,823).
   - **R2:** one input, no result.
@@ -82,7 +82,7 @@
   - **R7:** both options are named.
   - **R8:** 12 words.
   - **R9:** a fixed 2000-2025 x-axis, so the remaining years are countable.
-  - **R10:** frame 1 is already in the red (hook-bank 2.10, ChartOrbit H16/H17); the 2000 close lands at 0.82 s; the first spoken payoff starts at 2.5 s and its figures are on a flag from 3.28 s.
+  - **R10:** frame 1 is already in the red (hook-bank 2.10, ChartOrbit H16/H17); the 2000 close lands at 0.82 s; the first spoken payoff starts at 1.76 s, and its figures are on a flag from 3.28 s ("≈ −38%" is said at 3.68 s, "≈ +21%" at 5.61 s, both while the flag shows).
   - **R11:** the title asks, the screen says "you did it", the caption gives the verdict after the fold.
   - **R12:** a lopsided verdict, "≈ 2×".
 - **Modelled on:**
@@ -95,21 +95,23 @@
 
 | t (s) | On screen | VO |
 |---|---|---|
-| 0.0 | Header. The race is already moving: S&P 500 tip $9,701, gold tip $9,823, both under the dashed $10,000 stake line; the top counter shows the leader, "GOLD $9,823". Big year "2000". Fixed x-axis 2000-2025. Footer "S&P + dividends · gold · year-ends 2000–2025" | "26 years. Stocks should crush gold." (0.0-2.4) |
+| 0.0 | Header. The race is already moving: S&P 500 tip $9,701, gold tip $9,823, both under the dashed $10,000 stake line, their labels stacked by value (gold on top); the top counter shows the leader, "GOLD $9,823". Corner year clock "2000" (34% white). Fixed x-axis 2000-2025. Footer "S&P + dividends · gold · year-ends 2000–2025" | "Stocks should crush gold." (0.0-1.6) |
 | 0.82-0.83 | 2000 close lands (S&P $9,090, gold $9,460). "Dot-com crash" flag | — |
-| 2.5 | Both lines run down and apart | "By 2002: stocks ≈ −38%. Gold ≈ +21%." (2.5-7.9; the two figures are said at 4.4 s and 6.4 s) |
-| 3.28 | 2002 close: S&P $6,239 vs gold $12,089. Flag "S&P ≈ −38% · gold ≈ +21%" (white, with −38% in red) holds 5 s (`flagHold`), to 8.28 s. Thud | (continues) |
+| 1.76 | Both lines run down and apart | "By 2002: stocks ≈ −38%. Gold ≈ +21%." (1.76-7.16; the two figures are said at 3.68 s and 5.61 s) |
+| 3.28 | 2002 close: S&P $6,239 vs gold $12,089. Flag "S&P ≈ −38% · gold ≈ +21%" (white, with −38% in red and +21% in gold yellow, upright) holds 3 s (`flagHold`), to 6.28 s; its dashed rule fades with it. Thud | (continues) |
 | 10.37-10.67 | "2008 crash" flag. 2008 close: S&P $7,187 vs gold $30,567. Thud | "2008: stocks crash again. Gold keeps climbing." (10.4) |
-| 15.98-16.83 | "Gold ≈ −28%" flag (holds 5 s, to 20.98 s). Gold falls $58,204 → $41,907 at 16.83 s. Hit | "2013: gold drops ≈ 28% in one year." (16.8; "≈ 28%" said at 18.7 s) |
-| 16.8-26.7 | The S&P climbs from $16,398 (2013) to $49,395 (2021); gold reaches $63,518 | "Then stocks run for years and close in." (21.2) · "2021: still behind." (26.7) |
-| 27.30 | "2022 bear market" flag (clears at 32.05 s, as the finals land) | — |
-| 31.6-32.05 | Race ends. Both tips roll their last digits and land at 32.05 s on "≈ $75,300" / "≈ $150,000"; the flag strip clears. The hero cuts from gold to the S&P 500 (`finalT[0]`) and lands "S&P 500 ≈ $75,300" (bump, pop). Roll. Footer step "$10,000 grew ≈ ×7.53 → ≈ $75,300" | "End of 2025: stocks ≈ $75,300." |
-| 36.4 | The climax (`finalT[1]`): the hero hard-cuts to "GOLD ≈ $150,000" with the 1.13 bump, glow and floor flare and a flare on the gold tip. Riser from 34.0 s, then hit + cash (the kit's cues). Footer step "$10,000 grew ≈ ×15.0 → ≈ $150,000" | "Gold ≈ $150,000." |
-| 39.3 | Footer step "≈ ×15.0 → ≈ 3.9 doublings · ≈ ×7.53 → ≈ 2.9" | "Gold doubled ≈ 4 times. Stocks, ≈ 3." |
-| 42.5-45.5 | Verdict slams into the caption band: "Gold ended **≈ 2×** the S&P 500. / ≈ one extra doubling." Ding. Hold, then hard cut to frame 1 (loop) | — |
+| 15.98-16.83 | "Gold ≈ −28%" flag (holds 3 s, to 18.98 s). Gold falls $58,204 → $41,907 at 16.83 s. Hit | "2013: gold drops ≈ 28% in one year." (16.5, 0.3 s before the 2013 close; "≈ 28%" said at 18.42 s) |
+| 16.5-26.3 | The S&P climbs from $16,398 (2013) to $49,395 (2021); gold reaches $63,518 | "Then stocks run for years and close in." (21.2) · "2021: still behind." (26.3) |
+| 27.30 | "2022 bear market" flag (clears at 30.3 s, before the 2025 leg) | — |
+| 30.37 | Gold stops at its 2024 close (`holdBack`): its tip label holds "$91,094" while the clock runs on. The hero cuts to the S&P 500, the one still racing | — |
+| 31.6-32.05 | Race ends. The S&P tip rolls its last digits and lands at 32.05 s on "≈ $75,300"; the hero lands "S&P 500 ≈ $75,300" (bump, pop). Every tip label sits right of its own dot, in the lane past the data (`tipLane`). Roll. Footer step "$10,000 grew ≈ ×7.53 → ≈ $75,300" | "End of 2025: stocks ≈ $75,300." (31.6; said at 33.91 s) |
+| 34.4-36.4 | Gold draws its 2025 leg (+64.57%) under the riser: the spike, the climax | (continues) |
+| 36.4 | The climax (`finalT[1]`): gold's tip lands "≈ $150,000" and the hero hard-cuts to "GOLD ≈ $150,000" with the 1.13 bump, glow and floor flare. Hit + cash (the kit's cues). Footer step "$10,000 grew ≈ ×15.0 → ≈ $150,000" | "Gold ≈ $150,000." (36.4; said at 36.78 s) |
+| 39.3 | The y grid gives way to dashed doubling rungs ×2, ×4, ×8, ×16 (`rungs`): gold ends between ×8 and ×16, the S&P between ×4 and ×8. Footer step "Gold ≈ 3.9 doublings · S&P 500 ≈ 2.9", each name in its line colour | "Gold doubled ≈ 4 times. Stocks, ≈ 3." (caption kept whole as "≈ 4 times") |
+| 42.5-45.5 | Verdict slams into the caption band: "Gold ended **≈ 2×** the S&P 500. / That's ≈ one extra doubling." The emphasis and the accent rule are gold yellow (`emColor`). Ding. Hold, then hard cut to frame 1 (loop) | — |
 
 **Guide VO script (as read, 9 lines):**
-> Twenty-six years. Stocks should crush gold.
+> Stocks should crush gold.
 > By 2002: stocks, about minus thirty-eight percent. Gold, about plus twenty-one percent.
 > 2008: stocks crash again. Gold keeps climbing.
 > 2013: gold drops about twenty-eight percent in one year.
@@ -156,7 +158,7 @@
   | 2024 | 30.37 | $63,865.46 | $91,093.80 |
   | 2025 | 31.60 | $75,284.61 | $149,915.35 |
 
-- **"26 years":** Jan 2000 → Dec 2025 = 26 calendar years (exact).
+- **"26 year-ends" (caption):** Jan 2000 → Dec 2025 = 26 calendar years (exact). (The VO no longer says "26 years".)
 - **Frame 1:** x = 2000 + 0.4 ÷ 1.2312 = 2000.32. S&P $10,000 − $910 × 0.328 = $9,701; gold $10,000 − $540 × 0.328 = $9,823.
 - **"By 2002: ≈ −38%":** 1 − $6,239.17 ÷ $10,000 = 37.6% down since Jan 2000. **"≈ +21%":** $12,089.43 ÷ $10,000 − 1 = 20.9% up. Both are cumulative, which is why the VO says "By 2002" (the S&P 500's 2002 return alone was −22.10%, gold's +24.8%). The flag carries the same two figures.
 - **"≈ 28%":** gold's 2013 change, −28.0% in the table. It is a rounded 1-decimal table value, and other price bases give −27.3% to −28.3%, so the VO and the flag ("Gold ≈ −28%") both carry "≈".
@@ -165,7 +167,9 @@
   - $75,284.61 ÷ $10,000 = 7.5285 → "≈ ×7.53"; $10,000 × 7.53 = $75,300 → "≈ $75,300".
   - $149,915.35 ÷ $10,000 = 14.9915 → "≈ ×15.0"; $10,000 × 15.0 = $150,000 → "≈ $150,000".
   - Doublings: log₂ 7.5285 = 2.91 → "≈ 2.9", spoken "≈ 3"; log₂ 14.9915 = 3.91 → "≈ 3.9", spoken "≈ 4".
-- **Verdict "≈ 2×":** 14.9915 ÷ 7.5285 = 1.99. "≈ one extra doubling" = 3.906 − 2.912 = 0.994 (a rounding, so it carries "≈").
+- **Verdict "≈ 2×":** 14.9915 ÷ 7.5285 = 1.99. "That's ≈ one extra doubling" = 3.906 − 2.912 = 0.994 (a rounding, so it carries "≈").
+- **Gold's held tip:** $91,093.80 (the 2024 close) shows as "$91,094" from 30.37 s until gold's last leg starts at 34.4 s.
+- **Rungs:** $20,000, $40,000, $80,000, $160,000 = the stake × 2, 4, 8, 16. Gold ×14.99 sits between ×8 and ×16; the S&P ×7.53 between ×4 and ×8.
 - **Claims in words, checked against the data:**
   - Gold is ahead at every year-end 2000-2025.
   - 2008: S&P −37.00%, gold +5.6% ("keeps climbing").
@@ -204,11 +208,15 @@
 **lookOpts (Scoreboard):**
 - `stage: "race"`.
 - `stakeLine: 10000`: a dashed line at the stake, so "below the stake" reads at a glance.
-- `footerSteps`: the working line rewrites at 31.6, 36.4 and 39.3 s, as in 06a.
-- `finalT: [31.6, 36.4]` (assembly pass): a staggered finish that follows the VO. Both tips still land at the race end, but the hero shows the S&P 500's final as "End of 2025: stocks ≈ $75,300" is said, and cuts to gold's (the climax: riser, hit + cash, bump, flare) on "Gold ≈ $150,000". Before this, the hero showed GOLD ≈ $150,000 from 32.05 s, under the S&P line, and the gold line had no beat of its own. The spec's own cash cue at 36.4 s was dropped (the kit cues hit + cash there).
-- `flagHold: 5.0` (assembly pass): a flag label clears after 5 s, so "Gold ≈ −28%" no longer sits over "2021: still behind". Each spoken figure is still said while its flag shows (the check uses the shorter window). All flag labels clear as the finals land.
+- `footerSteps`: the working line rewrites at 31.6, 36.4 and 39.3 s, as in 06a. The last step names the racers ("Gold ≈ 3.9 doublings · S&P 500 ≈ 2.9"), each in its line colour.
+- `finalT: [31.6, 36.4]` (assembly pass): a staggered finish that follows the VO. The hero shows the S&P 500's final as "End of 2025: stocks ≈ $75,300" is said, and cuts to gold's (the climax: riser, hit + cash, bump, flare) on "Gold ≈ $150,000". The spec's own cash cue at 36.4 s was dropped (the kit cues hit + cash there).
+- `holdBack: { series: 1, t: [34.4, 36.4] }` (QA fixer pass): gold stops at its 2024 close while the clock runs on, its label holding $91,094; it draws its last leg over 34.4-36.4 s under the riser, and its final lands at 36.4 s with the hero slam and the spoken line. Before this, the hero counted GOLD up to $145,138 in the VO silence and the gold tip landed "≈ $150,000" 4.4 s before it was said.
+- `tipLane: true` (QA fixer pass): every tip label stacks name over value, and the lines end short of the plot's right edge, so both labels sit beside their own dots at the finish and never on a line (before, "S&P 500 ≈ $75,300" sat on gold's 2025 spike through the verdict).
+- `flagHold: 3.0`: a flag label clears after 3 s (5 s in the assembly pass, which left "2022 bear market" over the 2025 leg), and its dashed rule fades with it. Each spoken figure is still said while its flag shows.
+- `emColor: "yellow"` (QA fixer pass): the verdict's "≈ 2×" and its accent rule are in gold's colour, the winner's.
+- `rungs` (QA fixer pass): at 39.3 s the y grid gives way to dashed rungs at ×2, ×4, ×8, ×16, so "doubled ≈ 4 times / ≈ 3" has a picture.
 - `data.raceT[0] = −0.4`: the Scoreboard kit opens mid-race when raceT starts below 0 ("already moving at 0.0 s").
-- The 2002 flag uses `tone: "neutral"` (white text), with `__≈ −38%__` (red) and `**≈ +21%**` (emphasis) inside it, so gold's gain is not drawn in crash red.
+- The 2002 flag uses `tone: "neutral"` (white text), with `__≈ −38%__` (red) and `**≈ +21%**` (gold yellow, upright) inside it, so gold's gain is not drawn in crash red.
 
 ---
 

@@ -3,28 +3,28 @@
   "look": "becker-rig",
   "format": "split-sheet",
   "fps": 30,
-  "duration": 22.5,
+  "duration": 22.1,
   "header": "Rent **$1,200** on 50/30/20?\nFood and every bill get\nthis much a day:",
   "footer": "ASSUMES $3,000 a month after tax · $1,200 rent · 30-day month",
   "captions": true,
   "vo": [
     { "t": 0.0,  "d": 3.5, "text": "Ten bricks of $300. Rent eats four." },
-    { "t": 3.7,  "d": 5.0, "text": "Needs get five. Food and every bill get one: $10 a day." },
-    { "t": 8.9,  "d": 4.3, "text": "Wants get three: $900. Savings, two: $600." },
-    { "t": 13.4, "d": 1.6, "text": "Check: $3,000." },
-    { "t": 15.2, "d": 5.0, "text": "$1,200 rent leaves food and every bill $10 a day." }
+    { "t": 3.6,  "d": 5.0, "text": "Needs get five. Food and every bill get one: $10 a day." },
+    { "t": 8.7,  "d": 4.3, "text": "Wants get three: $900. Savings, two: $600." },
+    { "t": 13.1, "d": 1.6, "text": "Check: $3,000." },
+    { "t": 14.8, "d": 5.0, "text": "$1,200 rent leaves food and every bill $10 a day." }
   ],
-  "verdict": { "t": 15.2, "text": "$1,200 rent leaves food and\nevery bill **$10 a day**." },
+  "verdict": { "t": 14.8, "text": "$1,200 rent leaves food and\nevery bill **$10 a day**." },
   "data": {
     "total": { "label": "Take-home, a month", "display": "$3,000", "value": 3000 },
     "parts": [
-      { "t": 3.2,  "label": "Rent", "pct": "40%", "amount": "$1,200", "note": "4 × $300 · needs get 5", "tone": "neutral", "share": 0.4 },
-      { "t": 6.9,  "label": "Food + every bill", "pct": "10%", "amount": "$300", "note": "$300 ÷ 30 = **$10 a day**", "tone": "goal", "share": 0.1 },
-      { "t": 10.0, "label": "Wants", "pct": "30%", "amount": "$900", "note": "3 × $300 · fun money", "tone": "neutral", "share": 0.3 },
-      { "t": 11.9, "label": "Savings", "pct": "20%", "amount": "$600", "note": "2 × $300 · saving, extra debt", "tone": "good", "share": 0.2 }
+      { "t": 3.2,  "label": "Rent", "pct": "40%", "amount": "$1,200", "note": "4 × $300", "tone": "neutral", "share": 0.4 },
+      { "t": 6.8,  "label": "Food + every bill", "pct": "10%", "amount": "$300", "note": "$300 ÷ 30 = **$10**", "tone": "goal", "share": 0.1 },
+      { "t": 9.9,  "label": "Wants", "pct": "30%", "amount": "$900", "note": "3 × $300 · fun money", "tone": "neutral", "share": 0.3 },
+      { "t": 11.8, "label": "Savings", "pct": "20%", "amount": "$600", "note": "2 × $300 · savings", "tone": "good", "share": 0.2 }
     ],
     "check": "$1,200 + $300 + $900 + $600 = $3,000",
-    "checkT": 13.4,
+    "checkT": 12.6,
     "hold": 2.3
   },
   "lookOpts": {
@@ -34,11 +34,12 @@
     "actions": [
       { "t": 0.15, "verb": "saw", "tool": "÷ 10", "becomes": "10 bricks of $300" },
       { "part": 0, "verb": "stack", "tool": "4 × $300", "becomes": "the RENT bin fills" },
-      { "part": 1, "verb": "stack", "tool": "1 × $300", "becomes": "one brick for food + every bill" },
+      { "part": 1, "verb": "stack", "tool": "1 × $300", "after": "÷ 30", "becomes": "one brick for food + every bill" },
       { "part": 2, "verb": "stack", "tool": "3 × $300", "becomes": "the WANTS bin fills" },
       { "part": 3, "verb": "stack", "tool": "2 × $300", "becomes": "the SAVINGS bin fills" }
     ],
     "envelopes": ["RENT", "FOOD + BILLS", "WANTS", "SAVINGS"],
-    "payoff": { "t": 18.4, "label": "Food + every bill", "text": "$10 a day" }
+    "needs": { "t": 3.7, "parts": [0, 1], "text": "NEEDS 50% = 5 bricks" },
+    "payoff": { "t": 18.2, "label": "Food + every bill", "text": "$10 a day", "slot": { "t": 7.1, "text": "$10", "ghost": "$?" } }
   }
 }

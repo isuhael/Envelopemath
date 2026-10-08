@@ -48,7 +48,7 @@ import {
   h, s, setStyle, setText, attr, clamp, lerp, prog, ease, fmtNum, plain, C, F, S, G, M,
   formulaBar, fitFormula, lineChart, mk, mkLen, typedMk, typedCount, typeDur, wordCut, caretOn, snapIn, liftOut,
   popScale, flashAlpha, rgba, lerpRect, durationOf, hasCaptions, opt, layer, footerHeight, textW, font, toneColor,
-  graphemes, twoLines, springRect, wrapLines,
+  graphemes, twoLines, springRect, wrapLines, verdictCard, parseDisplay, displayValue, setHTML,
 } from '../lib.js'
 
 export const css = `
@@ -87,6 +87,31 @@ export const css = `
 .cr-flagt u.mark2 { color: #FF6B5B; }
 .cr-flag > b { position: absolute; top: -8px; width: 18px; height: 18px; background: #101828; transform: rotate(45deg); border-radius: 2px; }
 .cr-money { position: absolute; font: 600 30px/1 'Inter', 'Inter Full', sans-serif; color: #7B8496; white-space: nowrap; text-align: right; }
+/* ---- the sheet race (lookOpts.valueRow) ---- */
+.crv-row { position: absolute; left: 0; right: 0; background: #FFFFFF; border-bottom: 2px solid #E4E7EC; }
+.crv-hook { position: absolute; left: 0; right: 0; background: #FFFFFF; border-bottom: 2px solid #E4E7EC; overflow: hidden; z-index: 3; }
+.crv-hcell { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; justify-content: flex-end; padding: 0 22px; border-left: 2px solid #E4E7EC; white-space: nowrap; font: 800 72px/1 'Inter', 'Inter Full', sans-serif; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.crv-hcell.key { justify-content: flex-start; border-left: 0; color: #101828; }
+.crv-hcell .ls-v { display: inline-block; transform-origin: 100% 55%; }
+.crv-hcell.key .ls-v { transform-origin: 0 55%; }
+.crv-hero { position: absolute; left: 0; right: 0; overflow: hidden; z-index: 4; }
+.crv-hrow { position: absolute; left: 0; right: 0; background: #FFFFFF; border-bottom: 2px solid #E4E7EC; }
+.crv-hrow:last-child { border-bottom: 3px solid #D0D5DD; }
+.crv-hname { position: absolute; display: flex; align-items: center; gap: 14px; font: 800 48px/1 'Inter', 'Inter Full', sans-serif; letter-spacing: -0.015em; white-space: nowrap; }
+.crv-hname .cr-sw { flex: none; }
+.crv-hnote { position: absolute; font: 700 40px/1.1 'Inter', 'Inter Full', sans-serif; white-space: nowrap; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; border-radius: 8px; padding: 0 8px; margin-left: -8px; }
+.crv-hval { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; justify-content: flex-end; padding-right: 40px; font: 800 94px/1 'Inter', 'Inter Full', sans-serif; letter-spacing: -0.02em; color: #101828; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.crv-hval > .ls-v { display: inline-block; transform-origin: 100% 55%; }
+.crv-odo { display: inline-flex; align-items: flex-start; height: 1em; line-height: 1; white-space: nowrap; font-weight: 800; font-family: 'Inter', 'Inter Full', sans-serif; font-variant-numeric: tabular-nums; }
+.crv-odo > span { display: inline-block; height: 1em; line-height: 1; white-space: pre; }
+.crv-dc { position: relative; overflow: hidden; text-align: center; }
+.crv-ds { display: block; white-space: pre; line-height: 1em; text-align: center; }
+.crv-flag { position: absolute; height: 58px; padding: 0 20px; background: #101828; border-radius: 12px; display: flex; align-items: center; opacity: 0; transform-origin: 50% 100%; box-sizing: border-box; }
+.crv-flag > b { position: absolute; bottom: -8px; width: 18px; height: 18px; background: #101828; transform: rotate(45deg); border-radius: 2px; }
+.crv-rung { position: absolute; font: 800 40px/1 'Inter', 'Inter Full', sans-serif; color: #101828; white-space: nowrap; text-align: right; letter-spacing: -0.01em; }
+.crv-ask { position: absolute; height: 76px; padding: 0 28px; background: #101828; color: #FFFFFF; border-radius: 16px; display: flex; align-items: center; justify-content: center; box-sizing: border-box; font: 800 46px/1 'Inter', 'Inter Full', sans-serif; letter-spacing: -0.012em; white-space: nowrap; transform-origin: 50% 50%; }
+.crv-ask em { color: #FFD60A; }
+.crv-tag { position: absolute; font: 800 40px/1 'Inter', 'Inter Full', sans-serif; white-space: nowrap; letter-spacing: -0.012em; }
 `
 
 const esc = str => String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -160,6 +185,8 @@ function cutAt(str, f) {
 }
 
 export default function chartRace(spec, ctx) {
+  // lookOpts.valueRow: the values live in the sheet (no lane beside the plot), see sheetRace below
+  if (opt(spec, 'valueRow', null)) return sheetRace(spec, ctx)
   const d = spec.data || {}
   const series = (d.series || []).filter(sr => sr && Array.isArray(sr.points) && sr.points.length).slice(0, 3)
   const nS = series.length
@@ -792,6 +819,664 @@ export default function chartRace(spec, ctx) {
         for (const lb of f.hides) { const j = xLabs.indexOf(lb); labA[j] = Math.min(labA[j], 1 - clamp(a * 1.5)) }
       })
       xLabs.forEach((lb, j) => setStyle(lb.el, { opacity: String(+labA[j].toFixed(3)) }))
+    },
+  }
+}
+
+// =====================================================================================================
+// The sheet race (lookOpts.valueRow). The values live in the sheet, so the chart gets the card's full width:
+//   formula bar   one line: the selected cell's working, retyped as each year lands (lookOpts.formulaSteps)
+//   row 1         header: the year key (mint), one peach cell per rival (swatch, name, grey sub-label)
+//   row 2         ledger: the latest closed year and each rival's return that year (lookOpts.ledger)
+//   row 3         value: each rival's money at that close (in its line colour). It steps with the ledger row
+//                 (a 0.35 s roll from the last close), so the value and the ledger always name the same year
+//   chart         full width under the sheet: the lines race with a live y rescale; event flags slam into a strip
+//                 at the top of the plot (never on the year labels) and their dashed rules fade with them;
+//                 doubling rungs (lookOpts.rungs) wipe in at their values, labelled in the axis margin
+// Opening (lookOpts.hook): frame 1 shows one ledger row (the hook's year) as a tall row with large values, the
+// hooked rival's cell yellow under the selection; at hook.until it rewinds (its year counts back to the first
+// row's, its values lift out, the row splits back into the ledger and value rows) and the race starts.
+// Finale (lookOpts.finale + finalT): the value row holds the last close it showed while the last ledger row
+// lands; at finale.t the header and both rows give way to one hero row per rival (name, its last-year return,
+// its value at ~94 px). Each hero value rolls as an odometer from that held close to its `final` display string,
+// landing at finalT[i] (when the VO names it), with the selection on the cell being named. At the verdict the
+// decade winner's value turns yellow and the best last-year return gets a yellow marker.
+// lookOpts (this mode): valueRow ({ label: 'Value' }) · hook ({ row, until, series }) · finale ({ t, roll: s or
+// [s per series] }) · finalT · focus ([{ t, series }]: the selection's cell over time) · rungs ([{ t, value, label }])
+// · flagHold (3.6) · xEven (even year ticks only; the end year is not forced) · formulaSteps · formulaAt0 (1 = the
+// first step fully typed at frame 1) · ledger · colors · tipNames · preroll (0) · loop · stakeLine.
+// The verdict card spans the sheet's width (x 60-960) in the caption band.
+// =====================================================================================================
+function sheetRace(spec, ctx) {
+  const d = spec.data || {}
+  const series = (d.series || []).filter(sr => sr && Array.isArray(sr.points) && sr.points.length).slice(0, 3)
+  const nS = series.length
+  const allX = series.flatMap(sr => sr.points.map(p => p[0]))
+  const x0 = d.x?.from ?? Math.min(...allX), x1 = d.x?.to ?? Math.max(...allX)
+  const yo = { prefix: '$', suffix: '', dp: 0, ...(d.y || {}) }
+  const numOpts = { prefix: yo.prefix, suffix: yo.suffix, dp: yo.dp, compact: false }
+  const [r0, r1] = Array.isArray(d.raceT) && d.raceT.length === 2 ? d.raceT : [1, 1 + Math.max(8, (x1 - x0) * 1.6)]
+  const events = (d.events || []).filter(ev => ev && ev.x >= x0 && ev.x <= x1).slice().sort((a, b) => a.x - b.x)
+  const verdict = spec.verdict && spec.verdict.text ? spec.verdict : null
+  const caps = hasCaptions(spec)
+  const loopOn = opt(spec, 'loop', true)
+  const ledger = opt(spec, 'ledger', null)
+  const ledRows = ledger && Array.isArray(ledger.rows) ? ledger.rows : []
+  const ledT = ledRows.map((_, i) => (ledger.rowT && ledger.rowT[i] != null ? +ledger.rowT[i] : r0 + ((i + 1) / ledRows.length) * (r1 - r0)))
+  const finals = series.map(sr => (sr.final != null ? String(sr.final) : fmtNum(sr.points[sr.points.length - 1][1], numOpts)))
+  const colOpt = opt(spec, 'colors', null)
+  const colors = series.map((sr, i) => sr.color
+    || (Array.isArray(colOpt) ? colOpt[i] : colOpt && typeof colOpt === 'object' ? colOpt[sr.name] ?? colOpt[String(sr.name || '').split(/\s+·\s+/)[0]] : null)
+    || (sr.tone ? toneColor(sr.tone) : C.series[i % C.series.length]))
+  const runFmt = v => fmtNum(v, numOpts)
+  const shortName = (sr, i) => String((opt(spec, 'tipNames', null) || [])[i] ?? sr.short ?? String(sr.name || '').split(/\s+·\s+|\s+\(|\s+[—–]\s+/)[0])
+
+  // ---------- clock ----------
+  const preX = clamp(+opt(spec, 'preroll', 0) || 0, 0, 0.2 * (x1 - x0))
+  const xa = x0 + preX
+  const xOfT = t => lerp(xa, x1, prog(t, r0, r1 - r0))
+  const tOfX = x => r0 + ((x - xa) / (x1 - xa || 1)) * (r1 - r0)
+
+  // ---------- options ----------
+  const VR = opt(spec, 'valueRow', {})
+  const valueLabel = String((VR && VR.label) || 'Value')
+  const HK = opt(spec, 'hook', null)
+  const hookRow = HK && ledRows[HK.row] ? ledRows[HK.row] : null
+  const hookEnd = hookRow ? (isFinite(+HK.until) ? +HK.until : r0) : -Infinity
+  const hookSer = hookRow ? clamp(Math.round(+HK.series || 0), 0, nS - 1) : -1
+  const RW = 0.5 // the rewind
+  const FN = opt(spec, 'finale', null)
+  const finaleT = FN && isFinite(+FN.t) ? +FN.t : Infinity
+  const FIN_IN = 0.45 // old rows clear (0.15 s), then the hero rows wipe in
+  const landOpt = opt(spec, 'finalT', null)
+  const landT = series.map((_, i) => {
+    const v = Array.isArray(landOpt) ? +landOpt[i] : NaN
+    return finaleT === Infinity ? Infinity : isFinite(v) ? Math.max(v, finaleT + FIN_IN + 0.3) : finaleT + 1.2 + i * 1.6
+  })
+  const rollOf = i => { const r = FN && FN.roll; const v = Array.isArray(r) ? +r[i] : +r; return isFinite(v) && v > 0 ? v : 1.2 }
+  const rollT0 = series.map((_, i) => Math.max(finaleT + FIN_IN, landT[i] - rollOf(i)))
+  const focus = (opt(spec, 'focus', []) || []).filter(f => f && isFinite(+f.t))
+    .map(f => ({ t: +f.t, i: clamp(Math.round(+f.series || 0), 0, nS - 1) })).sort((a, b) => a.t - b.t)
+  const rungs = (opt(spec, 'rungs', []) || []).filter(r => r && isFinite(+r.t) && isFinite(+r.value) && r.label != null)
+    .map(r => ({ t: +r.t, v: +r.value, label: String(r.label) }))
+  const flagHold = Math.max(0.8, +opt(spec, 'flagHold', 3.6) || 3.6)
+  const xEven = !!opt(spec, 'xEven', false)
+
+  // ---------- formula bar strings ----------
+  const stake = d.stake ? String(d.stake) : ''
+  const flow = str => String(str).replace(/\s*\n\s*/g, ' ').replace(/≈ /g, '≈ ')
+  const steps = (opt(spec, 'formulaSteps', null) || [{ t: 0, text: d.formula || (stake ? (/^[=≈]/.test(stake) ? stake : '= ' + stake) : '') }])
+    .filter(x => x && x.text).map(x => ({ t: x.t ?? 0, raw: String(x.text), text: flow(x.text) })).sort((a, b) => a.t - b.t)
+  if (!steps.length) steps.push({ t: 0, raw: ' ', text: ' ' })
+  const stepCps = 40, ERASE = 0.15
+
+  // ---------- layout ----------
+  const L = layer(ctx, 'cr')
+  const fH = footerHeight(spec.footer)
+  const cardTop = G.cardTop, X = G.left, W = G.width
+  const fFit = fitFormula(steps.map(x => x.text), W)
+  const fbarH = fFit.ht
+  if (fFit.lines > 1) {
+    const avail = W - 102 - 22 - 8
+    const wOf = str => textW(mk(str), font(700, fFit.px, F.mono))
+    for (const st of steps) if (wOf(st.text) > avail) st.text = twoLines(st.raw, wOf, avail) || st.text
+  }
+  const gutter = G.gutter
+  const keyLabel = ledger ? String((ledger.columns && ledger.columns[0]) || 'Year') : 'Year'
+  const KEYPX = 44
+  const keyW = Math.ceil(Math.max(90,
+    ...[keyLabel, ...ledRows.map(r => String(r[0] ?? ''))].map(k => textW(mk(k), font(800, KEYPX), { letterSpacing: '-0.02em' })),
+    textW(mk(valueLabel), font(700, 40))) + 2 * G.padX + 6)
+  const serW = Math.floor((W - gutter - keyW) / Math.max(1, nS))
+  const colX = [gutter, gutter + keyW]
+  for (let i = 1; i < nS; i++) colX.push(gutter + keyW + i * serW)
+  colX.push(W)
+  const colW = colX.slice(0, -1).map((cx, j) => colX[j + 1] - cx)
+  const swW = nS >= 3 ? 30 : 42, swGap = nS >= 3 ? 10 : 12
+
+  // ---------- DOM: card, formula bar, header ----------
+  const card = h('div', { class: 'cr-card', style: { left: X + 'px', top: cardTop + 'px', width: W + 'px' } })
+  L.append(card)
+  const fbar = formulaBar(card, { x: 0, y: 0, w: W, ht: fbarH, px: fFit.px, lines: fFit.lines })
+  const fline = fbar.txt.parentElement
+  const headNum = h('div', { class: 'ls-rn', 'data-deco': '', text: '1', style: { width: gutter + 'px' } })
+  const heads = h('div', { class: 'cr-heads' }, headNum)
+  card.append(heads)
+  const hcells = [h('div', { class: 'cr-hcell input', style: { left: colX[0] + 'px', width: colW[0] + 'px' } }, h('div', { class: 'ls-hl', html: mk(keyLabel) }))]
+  heads.append(hcells[0])
+  series.forEach((sr, i) => {
+    const str = String(sr.name || '')
+    const inner = colW[i + 1] - 2 * G.padX - swW - swGap + 8
+    const m = /^(.+?)\s+(?:·|—|–|-|\()\s*(.+?)\)?$/.exec(str)
+    const parts = textW(mk(str), font(800, S.label)) <= inner || !m ? [str] : [m[1], m[2]]
+    const hl = h('div', { class: 'ls-hl', style: { gap: swGap + 'px' } }, swatch(colors[i], sr.dash, swW), h('span', { html: mk(parts[0]) }))
+    const sl = parts[1] ? h('div', { class: 'ls-hsub', html: mk(parts[1]), style: { paddingLeft: swW + swGap + 'px' } }) : null
+    const el = h('div', { class: 'cr-hcell', style: { left: colX[i + 1] + 'px', width: colW[i + 1] + 'px' } }, hl, sl)
+    heads.append(el)
+    hcells.push(el)
+    let px = S.label
+    while (px > S.labelMin && hl.scrollWidth > colW[i + 1] - 2 * G.padX + 8.5) { px -= 1; setStyle(hl, { fontSize: px + 'px' }) }
+    if (sl && sl.scrollWidth > colW[i + 1] - 2 * G.padX + 8.5) setStyle(sl, { paddingLeft: '0px' })
+  })
+  const headH = Math.max(84, Math.ceil(Math.max(...hcells.map(el => el.scrollHeight)) + 20))
+  for (const el of [headNum, ...hcells]) setStyle(el, { height: headH + 'px' })
+
+  const ledH = ledger ? 66 : 0, valH = 74
+  const headTop = fbarH, ledTop = headTop + headH, valTop = ledTop + ledH
+  const cardH = valTop + valH
+  const chartTop = cardTop + cardH
+  setStyle(card, { height: cardH + 'px' })
+  setStyle(heads, { top: headTop + 'px', height: headH + 'px' })
+  const bottom = (caps || verdict ? G.workBottom : G.safeBottom - 4) - (fH ? fH + G.gap : 0)
+  const chartH = bottom - chartTop
+
+  // a sheet row: row number, key cell, one cell per rival
+  const sheetRow = (top, ht, num, keyPx, valPx) => {
+    const row = h('div', { class: 'cr-lrow', style: { top: top + 'px', height: ht + 'px' } },
+      h('div', { class: 'ls-rn', 'data-deco': '', text: String(num), style: { width: gutter + 'px', height: ht + 'px' } }))
+    const cells = colW.map((w, j) => {
+      const v = h('span', { class: 'ls-v' })
+      const el = h('div', { class: `cr-lcell ${j ? 'val' : 'key'}`, style: { left: colX[j] + 'px', width: w + 'px', height: ht + 'px', fontSize: (j ? valPx : keyPx) + 'px' } }, v)
+      row.append(el)
+      return { el, v }
+    })
+    card.append(row)
+    return { row, cells }
+  }
+  const led = ledger ? sheetRow(ledTop, ledH, 2, KEYPX, 46) : null
+  const vrow = sheetRow(valTop, valH, ledger ? 3 : 2, 40, 52)
+  setStyle(vrow.cells[0].el, { fontWeight: '700', color: C.slate })
+  setText(vrow.cells[0].v, valueLabel)
+
+  // ---------- the opening hook row (one ledger row, tall, large) ----------
+  let hook = null
+  if (hookRow) {
+    const ht = ledH + valH
+    const el = h('div', { class: 'crv-hook', style: { top: ledTop + 'px', height: ht + 'px' } })
+    const num = h('div', { class: 'ls-rn', 'data-deco': '', text: '2', style: { width: gutter + 'px', height: '100%' } })
+    el.append(num)
+    const vals = hookRow.slice(1, nS + 1).map(String)
+    let px = 76
+    while (px > 46 && vals.some((v, j) => textW(mk(v), font(800, px), { letterSpacing: '-0.02em' }) > colW[j + 1] - 2 * G.padX - 4)) px -= 2
+    const keyPx = Math.min(60, Math.floor((colW[0] - 2 * G.padX - 4) / Math.max(1, textW(mk(String(hookRow[0])), font(800, 1), { letterSpacing: '-0.02em' }))))
+    const cells = colW.map((w, j) => {
+      const v = h('span', { class: 'ls-v' })
+      const c = h('div', { class: 'crv-hcell' + (j ? '' : ' key'), style: { left: colX[j] + 'px', width: w + 'px', fontSize: (j ? px : keyPx) + 'px' } }, v)
+      el.append(c)
+      return { el: c, v }
+    })
+    card.append(el)
+    hook = { el, ht, cells, px, vals }
+  }
+
+  // ---------- the finale: one hero row per rival ----------
+  let hero = null
+  if (FN && finaleT < Infinity) {
+    const ht = headH + ledH + valH
+    const rowH = Math.floor(ht / Math.max(1, nS))
+    const el = h('div', { class: 'crv-hero', style: { top: headTop + 'px', height: ht + 'px' } })
+    card.append(el)
+    const last = ledRows[ledRows.length - 1]
+    const nameX = gutter + 22
+    const rows = series.map((sr, i) => {
+      const top = i * rowH, rh = i === nS - 1 ? ht - top : rowH
+      const r = h('div', { class: 'crv-hrow', style: { top: top + 'px', height: rh + 'px' } })
+      r.append(h('div', { class: 'ls-rn', 'data-deco': '', text: String(i + 1), style: { width: gutter + 'px', height: rh + 'px' } }))
+      const nm = h('div', { class: 'crv-hname', style: { left: nameX + 'px', color: colors[i] } }, swatch(colors[i], sr.dash, 42), h('span', { html: mk(shortName(sr, i)) }))
+      const noteTxt = last ? `${last[0]}: ${last[i + 1]}` : ''
+      const note = noteTxt ? h('div', { class: 'crv-hnote', html: mk(noteTxt), style: { left: nameX + 'px' } }) : null
+      const val = h('div', { class: 'crv-hval', style: { left: '0px', right: '0px' } })
+      const vtxt = h('span', { class: 'ls-v' })
+      val.append(vtxt)
+      r.append(nm)
+      if (note) r.append(note)
+      r.append(val)
+      el.append(r)
+      // name over note, centred as a block
+      const blockH = 48 + (note ? 12 + 44 : 0)
+      const y0 = Math.round((rh - blockH) / 2)
+      setStyle(nm, { top: y0 + 'px', height: '48px' })
+      if (note) setStyle(note, { top: y0 + 48 + 12 + 'px' })
+      const ret = last ? displayValue(String(last[i + 1])) : NaN
+      return { el: r, top, rh, nm, note, val, vtxt, ret, leftW: Math.max(textW(mk(shortName(sr, i)), font(800, 48)) + 56, note ? textW(mk(noteTxt), font(700, 40)) : 0) }
+    })
+    // the values: as large as fits right of the widest name block (94 px, at most 104)
+    const avail = W - 40 - (nameX + Math.max(...rows.map(r => r.leftW)) + 36)
+    const widest = px => Math.max(...finals.map(f => textW(mk(f), font(800, px), { letterSpacing: '-0.02em' })), ...series.map(sr => textW(mk(runFmt(Math.max(...sr.points.map(p => p[1])))), font(800, px), { letterSpacing: '-0.02em' })))
+    let vpx = 104
+    while (vpx > 60 && widest(vpx) > avail) vpx -= 2
+    rows.forEach(r => setStyle(r.val, { fontSize: vpx + 'px' }))
+    // odometers (integer finals): one rolling column per digit of the final, clipped (data-roll)
+    const odos = series.map((sr, i) => {
+      const tpl = parseDisplay(finals[i])
+      if (!tpl || tpl.dp > 0) return null
+      const pre = String(tpl.pre).replace(/^≈\s*/, '')
+      const nd = String(Math.round(tpl.n)).length
+      const dw = textW('0', font(800, vpx), { letterSpacing: '-0.02em' }), cw = textW(',', font(800, vpx), { letterSpacing: '-0.02em' })
+      const root = h('span', { class: 'crv-odo', style: { letterSpacing: '-0.02em', color: C.ink } })
+      root.append(h('span', { text: pre }))
+      const cols = []
+      for (let k = nd - 1; k >= 0; k--) {
+        const strip = h('span', { class: 'crv-ds', text: '0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n0' })
+        const col = h('span', { class: 'crv-dc', 'data-roll': '', style: { width: dw.toFixed(2) + 'px' } }, strip)
+        root.append(col)
+        cols.push({ k, col, strip })
+        if (tpl.grouped && k > 0 && k % 3 === 0) root.append(h('span', { text: ',', style: { width: cw.toFixed(2) + 'px' } }))
+      }
+      if (tpl.post) root.append(h('span', { text: tpl.post }))
+      rows[i].val.append(root)
+      return { root, cols, n: tpl.n }
+    })
+    hero = { el, ht, rows, odos, vpx }
+  }
+
+  // ---------- the chart ----------
+  const allVals = series.flatMap(sr => sr.points.map(p => p[1]))
+  const startV = Math.max(...series.map(sr => sr.points[0][1]))
+  const STRIP = events.length ? FLAG.ht + 22 : 0
+  const nice = raw => { const q = Math.pow(10, Math.floor(Math.log10(raw))), m = raw / q; return (m <= 1 ? 1 : m <= 2 ? 2 : m <= 2.5 ? 2.5 : m <= 5 ? 5 : 10) * q }
+  const axisW = Math.max(40, ...(() => {
+    const out = [], ymax = Math.max(...allVals) * 1.4
+    const st = nice(ymax / 4)
+    for (let v = st; v <= ymax * 1.2; v += st) out.push(textW(esc(axisFmt(v, yo.prefix, yo.suffix)), font(600, 32)))
+    return out
+  })(), ...rungs.map(r => textW(esc(r.label), font(800, 40)) - 8))
+  const pad = { l: Math.max(70, Math.ceil(axisW) + 34), r: 30, t: 14, b: 56 }
+  const plotW0 = W - pad.l - pad.r
+  const plotH0 = chartH - pad.t - pad.b
+  const topFrac = clamp((STRIP + 22) / Math.max(1, plotH0), 0.12, 0.3)
+  let xEvery = d.x?.tickEvery || Math.max(1, [1, 2, 5, 10, 20, 25, 50].find(st => (x1 - x0) / st <= 5.5) || 50)
+  const tickVals = st => { const v = []; for (let x = Math.ceil(x0 / st - 1e-9) * st; x <= x1 + 1e-9; x += st) v.push(x); return v }
+  const roomy = st => (plotW0 * st) / (x1 - x0 || 1) >= Math.max(...tickVals(st).map(v => textW(String(Math.round(v)), font(600, 32)))) + 24
+  for (const st of [1, 2, 4, 5, 10, 20, 25, 50, 100]) if (st > xEvery && !roomy(xEvery) && tickVals(st).length >= 2) xEvery = st
+  let xTicks = tickVals(xEvery)
+  if (!xEven) {
+    const xEnd = Math.floor(x1 + 1e-9)
+    if (Number.isInteger(x0) && (!xTicks.length || xTicks[0] - x0 > 1e-6)) xTicks.unshift(x0)
+    if (!xTicks.length || xEnd - xTicks[xTicks.length - 1] > 1e-6) xTicks.push(xEnd)
+  }
+  const chart = lineChart(L, {
+    x: X, y: chartTop, w: W, ht: chartH, pad,
+    xr: [x0, x1], xEvery, xTicks, xFmt: v => String(Math.round(v)),
+    yFmt: v => axisFmt(v, yo.prefix, yo.suffix), yTicks: 4,
+    series: series.map((sr, i) => ({ points: sr.points, color: colors[i], width: 8, area: false, dash: sr.dash })),
+    events: [],
+  })
+  chart.el.classList.add('cr-chart')
+  const plot = chart.plot, box = chart.box
+  const lx = x => x - box.x, ly = y => y - box.y
+  const yLabEls = [...chart.el.querySelectorAll('.ls-axis.y')]
+  const valueAt = (i, x) => chart.valueAt(i, x)
+  // a ledger row's values are the data points at that close (rowT is rounded to 0.01 s: never read the line there)
+  const closeVal = (i, x) => {
+    let best = null
+    for (const p of series[i].points) if (Math.abs(p[0] - x) < 0.05 && (!best || Math.abs(p[0] - x) < Math.abs(best[0] - x))) best = p
+    return best ? best[1] : valueAt(i, x)
+  }
+  const rowVal = ledT.map(t => series.map((_, i) => closeVal(i, xOfT(t))))
+  const start = series.map(sr => sr.points[0][1])
+  // with a finale, the value row holds the close before the race end (the finals are the finale's)
+  const steps2 = ledT.map(t => !(FN && finaleT < Infinity && t >= r1 - 0.05))
+  const heldIdx = (() => { let k = -1; ledT.forEach((t, j) => { if (steps2[j]) k = j }); return k })()
+  const held = series.map((_, i) => (heldIdx >= 0 ? rowVal[heldIdx][i] : start[i]))
+
+  // the "money in" line at the stake
+  const sameStart = series.every(sr => Math.abs(sr.points[0][1] - series[0].points[0][1]) < 1e-9)
+  const stakeLine = sameStart && opt(spec, 'stakeLine', true) ? s('line', { stroke: '#98A2B3', 'stroke-width': 3, 'stroke-dasharray': '3 11', 'stroke-linecap': 'round' }) : null
+  if (stakeLine) chart.svg.insertBefore(stakeLine, chart.svg.children[1])
+  const moneyLbl = stakeLine ? h('div', { class: 'cr-money', 'data-deco': '', text: 'money in' }) : null
+  if (moneyLbl) chart.el.append(moneyLbl)
+  // event rules (drawn here, from the flag strip down to the axis) and doubling rungs
+  const gRules = s('g', {})
+  chart.svg.insertBefore(gRules, chart.svg.children[2] || null)
+  const ruleEls = events.map(ev => { const l = s('line', { stroke: '#98A2B3', 'stroke-width': 3, 'stroke-dasharray': '10 10' }); gRules.append(l); return l })
+  const rungEls = rungs.map(() => { const l = s('line', { stroke: '#475467', 'stroke-width': 3, 'stroke-dasharray': '14 10', 'stroke-linecap': 'round' }); gRules.append(l); return l })
+
+  // ---------- overlay: selection, flags, rung labels, start tags ----------
+  const over = h('div', { class: 'cr-over' })
+  L.append(over)
+  const sel = h('div', { class: 'cr-sel' }, h('i'))
+  over.append(sel)
+  const flags = events.map((ev, k) => {
+    const txt = h('span', { class: 'cr-flagt', html: mk(ev.label || '') })
+    const notch = h('b')
+    const el = h('div', { class: 'crv-flag' }, notch, txt)
+    over.append(el)
+    const w = Math.ceil(textW(mk(ev.label || ''), font(700, 40), { letterSpacing: '-0.01em' }) + 42)
+    const cx = chart.X(ev.x)
+    const top = Math.round(plot.y + 8)
+    const left = Math.round(clamp(cx - w / 2, plot.x + 8, Math.min(plot.x + plot.w, G.railX) - 4 - w))
+    const nx = Math.round(clamp(cx - left - 9, 12, w - 30))
+    setStyle(el, { left: left + 'px', top: top + 'px', width: w + 'px', transformOrigin: `${nx + 9}px 100%` })
+    setStyle(notch, { left: nx + 'px' })
+    attr(ruleEls[k], 'x1', lx(cx).toFixed(1)); attr(ruleEls[k], 'x2', lx(cx).toFixed(1))
+    attr(ruleEls[k], 'y1', ly(top + FLAG.ht + 4).toFixed(1)); attr(ruleEls[k], 'y2', ly(plot.y + plot.h).toFixed(1))
+    return { el, t: tOfX(ev.x), cx }
+  })
+  const runMax0 = Math.max(...series.map(sr => sr.points[0][1]))
+  // the hook's question (lookOpts.hook.ask) waits over the empty race until the rewind
+  const askTxt = hookRow && HK.ask ? String(HK.ask) : ''
+  let ask = null
+  if (askTxt) {
+    const w = Math.ceil(textW(mk(askTxt), font(800, 46), { letterSpacing: '-0.012em' }) + 56)
+    const el = h('div', { class: 'crv-ask', html: mk(askTxt) })
+    over.append(el)
+    const cx = plot.x + plot.w / 2
+    // under the stake line, clear of the start tags (the lines have not left the line yet)
+    const stakeY = plot.y + plot.h * (1 - startV / Math.max(startV * 1.6, runMax0 / (1 - topFrac)))
+    setStyle(el, { left: Math.round(clamp(cx - w / 2, plot.x + 8, Math.min(plot.x + plot.w, G.railX) - w)) + 'px', top: Math.round(clamp(stakeY + 70, stakeY + 56, plot.y + plot.h - 90)) + 'px', width: w + 'px' })
+    ask = { el }
+  }
+  const rungLbls = rungs.map(r => { const el = h('div', { class: 'crv-rung', text: r.label, style: { width: pad.l - 14 + 'px', left: box.x + 'px' } }); over.append(el); return el })
+  // the start: each rival's name beside its dot while the race has not begun (frame 1: two runners at the line)
+  const tags = series.map((sr, i) => { const el = h('div', { class: 'crv-tag', text: shortName(sr, i), style: { color: colors[i] } }); over.append(el); return el })
+
+  // ---------- timing + duration ----------
+  const D0 = durationOf(spec, { beats: [r1 + 0.6, ...landT.filter(isFinite).map(x => x + 0.6), ...ledT.map(x => x + 0.4)], hold: d.hold ?? 4, loop: loopOn })
+  const D = spec.duration || D0
+  const loopT0 = loopOn ? D - M.loopOut : Infinity
+  const flagWin = flags.map((f, k) => ({ t0: f.t, t1: Math.min(f.t + flagHold, flags[k + 1] ? flags[k + 1].t - 0.02 : Infinity, loopT0) }))
+  // once the last flag has gone, the strip's headroom goes back to the lines (over 1 s, so the rescale reads as one)
+  const stripFree = flagWin.length ? flagWin[flagWin.length - 1].t1 : -Infinity
+  const topAt = t => (t >= loopT0 ? topFrac : lerp(topFrac, Math.min(topFrac, 0.1), ease.inOut(prog(t, stripFree, 1.0))))
+
+  // ---------- y scale: a running max (and any rung on show), under the flag strip ----------
+  const runMax = x => {
+    let m = -Infinity
+    series.forEach((sr, i) => { for (const p of sr.points) if (p[0] <= x) m = Math.max(m, p[1]); m = Math.max(m, valueAt(i, x)) })
+    return m
+  }
+  const yMaxAt = (x, t) => {
+    let m = runMax(x)
+    for (const r of rungs) { const w = t < loopT0 ? ease.inOut(prog(t, r.t, 0.4)) : 0; if (w > 0) m = Math.max(m, lerp(m, r.v * 1.04, w)) }
+    return Math.max(startV * 1.6, m / (1 - topAt(t)))
+  }
+
+  // ---------- formula bar ----------
+  const f0 = +opt(spec, 'formulaAt0', 0.7)
+  const cut = steps[0].t <= 0 ? (f0 >= 1 ? mkLen(steps[0].text) : cutAt(steps[0].text, f0)) : 0
+  function formulaState(t) {
+    const first = steps[0]
+    if (t >= loopT0) {
+      let k = 0
+      for (let j = 1; j < steps.length; j++) if (steps[j].t <= loopT0) k = j
+      const showing = steps[k].text
+      const len = k === 0 ? Math.max(cut, typedCount(loopT0, first.t, first.text, { from: cut })) : mkLen(showing)
+      const e1 = 0.18
+      if (t < loopT0 + e1) return { html: typedMk(showing, Math.round(len * (1 - prog(t, loopT0, e1)))), caret: true, src: showing }
+      return { html: typedMk(first.text, Math.round(cut * prog(t, loopT0 + e1, 0.22))), caret: true, src: first.text }
+    }
+    let k = 0
+    for (let j = 1; j < steps.length; j++) if (t >= steps[j].t) k = j
+    if (k === 0) {
+      const n = typedCount(t, Math.max(0, first.t), first.text, { from: cut })
+      return { html: typedMk(first.text, n), caret: caretOn(t, t >= first.t && n < mkLen(first.text)), src: first.text }
+    }
+    const st = steps[k], prev = steps[k - 1]
+    if (t < st.t + ERASE) return { html: typedMk(prev.text, Math.round(mkLen(prev.text) * (1 - prog(t, st.t, ERASE)))), caret: true, src: prev.text }
+    const n = typedCount(t, st.t + ERASE, st.text, { cps: stepCps })
+    return { html: typedMk(st.text, n), caret: caretOn(t, n < mkLen(st.text)), src: st.text }
+  }
+
+  // ---------- the selection: which cell, over time ----------
+  const valRect = i => ({ x0: X + colX[i + 1], y0: cardTop + valTop, x1: X + colX[i + 2], y1: cardTop + valTop + valH })
+  const hookRect = i => ({ x0: X + colX[i + 1], y0: cardTop + ledTop, x1: X + colX[i + 2], y1: cardTop + ledTop + ledH + valH })
+  const heroRect = i => {
+    const r = hero.rows[i], vw = widthOfHero(i)
+    return { x0: Math.round(X + W - 40 - vw - 26), y0: cardTop + headTop + r.top, x1: X + W, y1: cardTop + headTop + r.top + r.rh }
+  }
+  const widthOfHero = i => Math.max(textW(mk(finals[i]), font(800, hero.vpx), { letterSpacing: '-0.02em' }), textW(mk(runFmt(held[i])), font(800, hero.vpx), { letterSpacing: '-0.02em' }))
+  const focusAt = t => { let f = hookSer >= 0 ? hookSer : 0; for (const x of focus) if (x.t <= t) f = x.i; return f }
+  const heroOn = t => hero && t >= finaleT + 0.15 && t < loopT0
+  const selTarget = t => {
+    if (t >= loopT0 + 0.2 || (hook && t < hookEnd)) return hook ? hookRect(hookSer) : valRect(focusAt(t))
+    if (heroOn(t)) return heroRect(focusAt(t))
+    return valRect(focusAt(t))
+  }
+  const selChanges = [hookEnd, ...focus.map(f => f.t), finaleT + 0.15, loopT0 + 0.2].filter(isFinite).sort((a, b) => a - b)
+
+  // ---------- sound ----------
+  steps.slice(1).forEach(st => { if (st.t < loopT0) ctx.cue(st.t + ERASE, 'type', { dur: Math.max(0.15, typeDur(st.text, { cps: stepCps })) }) })
+  if (hook) { ctx.cue(hookEnd, 'whoosh', { dur: 0.45, gain: 0.45 }); ctx.cue(hookEnd + 0.05, 'swipe', { gain: 0.4 }) }
+  ledT.forEach(t => { if (t < loopT0) ctx.cue(t, 'tick', { gain: 0.6 }) })
+  flags.forEach(f => ctx.cue(f.t, 'thud', { gain: 0.7 }))
+  rungs.forEach(r => ctx.cue(r.t, 'pop', { gain: 0.55 }))
+  if (hero) {
+    ctx.cue(finaleT, 'swipe', { gain: 0.5 })
+    series.forEach((_, i) => { ctx.cue(rollT0[i], 'roll', { dur: Math.max(0.3, landT[i] - rollT0[i]) }); ctx.cue(landT[i], 'pop', { gain: 0.95 }) })
+  }
+  if (verdict) ctx.cue(verdict.t, 'ding')
+  if (loopOn) ctx.cue(loopT0, 'swipe', { gain: 0.5 })
+
+  // ---------- the verdict card: the sheet's width, in the caption band ----------
+  let vcard = null
+  if (verdict) {
+    vcard = verdictCard(L, verdict, { top: G.bandTop, bottom: G.bandBottom, x: X, w: W })
+    setStyle(vcard.el, { left: X + 'px', width: W + 'px', justifyContent: 'center', zIndex: '6' })
+  }
+
+  const tipLo = plot.y
+  const odoSet = (o, v) => {
+    for (const { k, col, strip } of o.cols) {
+      const unit = Math.pow(10, k)
+      const on = k === 0 || v >= unit - 0.5
+      setStyle(col, { display: on ? 'inline-block' : 'none' })
+      let pos
+      if (k === 0) { const f = v - Math.floor(v); pos = (Math.floor(v) % 10) + ease.inOut(f) }
+      else {
+        const q = Math.floor(v / unit + 1e-9) % 10
+        const lower = v - Math.floor(v / unit + 1e-9) * unit
+        pos = q + (lower > unit - 1 ? ease.inOut(lower - (unit - 1)) : 0)
+      }
+      setStyle(strip, { transform: `translateY(${(-Math.round(pos * 1000) / 1000)}em)` })
+    }
+  }
+
+  return {
+    duration: D0,
+    chrome: {
+      footer: { top: chartTop + chartH + G.gap },
+      captions: caps,
+      verdict: 'self',
+      captionHidden: t => !!verdict && t >= verdict.t && t < loopT0 + 0.3,
+      captionHolds: hero ? finals.map((f, i) => ({ text: f, t: landT[i] })) : [],
+      loop: loopOn ? { t0: loopT0, dur: 0.3 } : null,
+    },
+    seek(t) {
+      const looping = t >= loopT0
+      const xNow = looping ? lerp(x1, xa, ease.inOut(prog(t, loopT0 + 0.02, 0.4))) : xOfT(t)
+
+      // ---- formula bar ----
+      const fs = formulaState(t)
+      fbar.set(fs.html, { caret: fs.caret })
+      setStyle(fline, { minHeight: fs.src.includes('\n') ? '2.4em' : '0px' })
+      fbar.verdictStyle(false, 0)
+
+      // ---- the hook row (frame 1) and its rewind; the loop brings it back ----
+      const hookIn = hook ? (looping ? prog(t, loopT0 + 0.22, 0.24) : t < hookEnd ? 1 : 0) : 0
+      const rw = hook && !looping ? prog(t, hookEnd, RW) : 1 // 0..1 through the rewind
+      const hookShown = hook && (looping ? hookIn > 0 : t < hookEnd + RW)
+      if (hook) {
+        if (!hookShown) {
+          setStyle(hook.el, { opacity: '0', height: hook.ht + 'px' })
+          hook.cells.forEach(c => { setText(c.v, ''); setStyle(c.v, { opacity: '0', transform: 'none' }); setStyle(c.el, { backgroundColor: 'transparent' }) })
+        } else {
+          const rewinding = !looping && t >= hookEnd
+          // the row shrinks back to a ledger row in the rewind's second half, uncovering the value row
+          const shrink = rewinding ? ease.inOut(prog(t, hookEnd + 0.22, RW - 0.22)) : 0
+          setStyle(hook.el, { opacity: '1', height: Math.round(lerp(hook.ht, ledH, shrink)) + 'px' })
+          // the key counts back from the hook's year to the first row's
+          const ya = parseInt(hookRow[0], 10), yb = parseInt((ledRows[0] || [])[0], 10)
+          const keyTxt = rewinding && isFinite(ya) && isFinite(yb) ? String(Math.round(lerp(ya, yb, ease.inOut(prog(t, hookEnd, 0.4))))) : String(hookRow[0])
+          setText(hook.cells[0].v, keyTxt)
+          setStyle(hook.cells[0].el, { backgroundColor: 'transparent' })
+          const kp = rewinding ? Math.round(lerp(hook.cells[0].el.style.fontSize ? parseFloat(hook.cells[0].el.style.fontSize) : KEYPX, KEYPX, shrink)) : null
+          setStyle(hook.cells[0].v, { opacity: String(looping ? hookIn : 1), transform: kp ? `scale(${(kp / parseFloat(hook.cells[0].el.style.fontSize)).toFixed(4)})` : 'none' })
+          for (let j = 1; j < hook.cells.length; j++) {
+            const c = hook.cells[j], val = hook.vals[j - 1] ?? ''
+            setText(c.v, val)
+            const out = rewinding ? prog(t, hookEnd, 0.2) : 0
+            const st = looping ? snapIn(hookIn) : { opacity: String(1 - ease.out(out)), transform: 'none' }
+            const lit = j - 1 === hookSer
+            setStyle(c.v, { ...st, color: lit ? C.ink : signColor(val) })
+            const fillA = lit ? (looping ? hookIn : 1 - ease.out(prog(t, hookEnd, 0.25))) : 0
+            setStyle(c.el, { backgroundColor: fillA > 0.001 ? (fillA >= 0.999 ? C.accent : mix(C.accent, C.sheet, fillA)) : 'transparent' })
+          }
+        }
+      }
+      // the rows under the hook row stay blank while it covers them
+      // (through the loop clear they stay blank: the hero rows clear, then the hook row is back over them)
+      const rowsHidden = looping || (!!hook && t < hookEnd + RW)
+      const valHidden = looping || (!!hook && t < hookEnd + RW)
+      const valIn = hook && !looping ? snapIn(prog(t, hookEnd + RW, M.drop)) : { opacity: '1', transform: 'none' }
+
+      // ---- the finale's hero rows (they cover the header and both rows) ----
+      const heroIn = hero ? (looping ? 0 : t < finaleT ? 0 : prog(t, finaleT + 0.15, FIN_IN - 0.15)) : 0
+      const heroOut = hero && looping ? prog(t, loopT0, 0.2) : 0
+      const sheetOut = hero && !looping && t >= finaleT ? 1 - prog(t, finaleT, 0.15) : 1 // the old rows clear first
+      const heroVis = hero && !looping ? t >= finaleT + 0.15 : hero && looping && heroOut < 1 && t >= finaleT
+      if (hero) {
+        if (!heroVis) {
+          setStyle(hero.el, { opacity: '0', clipPath: 'inset(0 0 100% 0)' })
+        } else {
+          const p = looping ? 1 : ease.inOut(heroIn)
+          setStyle(hero.el, { opacity: String(looping ? 1 - heroOut : 1), clipPath: p >= 1 ? 'none' : `inset(0 0 ${((1 - p) * 100).toFixed(2)}% 0)` })
+        }
+        const win = verdict ? finals.map(displayValue).reduce((b, v, i, a) => (v > a[b] ? i : b), 0) : -1
+        const best = verdict ? hero.rows.map(r => r.ret).reduce((b, v, i, a) => (isFinite(v) && (!isFinite(a[b]) || v > a[b]) ? i : b), 0) : -1
+        const vOn = verdict && !looping && t >= verdict.t ? ease.out(prog(t, verdict.t, 0.3)) : 0
+        hero.rows.forEach((r, i) => {
+          const o = hero.odos[i]
+          const rolling = heroVis && o && t >= rollT0[i] && t < landT[i]
+          const landed = t >= landT[i]
+          if (o) setStyle(o.root, { opacity: rolling ? '1' : '0', display: rolling ? 'inline-flex' : 'none' })
+          if (rolling) odoSet(o, lerp(held[i], o.n, ease.inOut(prog(t, rollT0[i], landT[i] - rollT0[i]))))
+          setText(r.vtxt, rolling ? '' : landed ? finals[i] : runFmt(held[i]))
+          const sn = landed && !looping ? snapIn(prog(t, landT[i], 0.3), 1.12) : { opacity: '1', transform: 'none' }
+          setStyle(r.vtxt, { ...sn, color: landed ? C.ink : C.mute })
+          // a pale flash as it lands; the decade winner turns yellow at the verdict
+          const fl = landed && !looping ? flashAlpha(t, landT[i], 0.6) : 0
+          const y = i === win ? vOn : 0
+          const vw = widthOfHero(i)
+          setStyle(r.val, {
+            left: Math.round(W - 40 - vw - 26) + 'px',
+            backgroundColor: y > 0.001 ? (y >= 0.999 ? C.accent : mix(C.accent, fl > 0.001 ? C.rowHi : C.sheet, y)) : fl > 0.001 ? mix(C.rowHi, C.sheet, fl) : 'transparent',
+          })
+          if (r.note) {
+            const m = i === best ? vOn : 0
+            setStyle(r.note, { backgroundColor: m > 0.001 ? (m >= 0.999 ? C.accent : mix(C.accent, C.sheet, m)) : 'transparent', color: m > 0.5 ? C.ink : signColor(r.note.textContent.split(': ').pop()) })
+          }
+        })
+      }
+
+      // ---- header, ledger row, value row ----
+      const sheetA = hero && t >= finaleT && !looping ? sheetOut : hero && looping ? prog(t, loopT0 + 0.2, 0.2) : 1
+      heads.querySelectorAll('.ls-hl, .ls-hsub').forEach(el => setStyle(el, { opacity: String(sheetA) }))
+      if (led) {
+        let k = -1
+        if (!looping) for (let j = 0; j < ledRows.length; j++) if (ledT[j] <= t) k = j
+        const row = ledRows[Math.max(0, k)] || []
+        const keyOn = rowsHidden || sheetA < 0.15 ? 0 : sheetA
+        setText(led.cells[0].v, String(row[0] ?? ''))
+        setStyle(led.cells[0].v, { ...(k <= 0 ? { opacity: String(keyOn), transform: 'none' } : { ...snapIn(prog(t, ledT[k], M.drop)), opacity: String(Math.min(keyOn, +snapIn(prog(t, ledT[k], M.drop)).opacity)) }) })
+        setStyle(led.cells[0].el, { color: k < 0 ? C.mute : C.ink })
+        for (let j = 1; j < led.cells.length; j++) {
+          const c = led.cells[j]
+          if (k < 0 || rowsHidden) { setText(c.v, ''); setStyle(c.v, { opacity: '0', transform: 'none', color: C.ink }); setStyle(c.el, { backgroundColor: 'transparent' }); continue }
+          const t0 = ledT[k] + 0.08 * (j - 1)
+          const val = String(row[j] ?? '')
+          setText(c.v, val)
+          const st = snapIn(prog(t, t0, M.drop))
+          setStyle(c.v, { ...st, opacity: String(Math.min(+st.opacity, sheetA)), color: signColor(val) })
+          const fl = flashAlpha(t, t0 + 0.06)
+          setStyle(c.el, { backgroundColor: fl > 0.001 && sheetA > 0.5 ? rgba(C.rowHi, fl) : 'transparent' })
+        }
+      }
+      {
+        let k = -1
+        if (!looping) for (let j = 0; j < ledT.length; j++) if (ledT[j] <= t && steps2[j]) k = j
+        const heldNow = !looping && FN && finaleT < Infinity && ledT.some((x, j) => !steps2[j] && x <= t)
+        const keyA = valHidden ? 0 : sheetA
+        setStyle(vrow.cells[0].v, { opacity: String(keyA) })
+        for (let i = 0; i < nS; i++) {
+          const c = vrow.cells[i + 1]
+          const from = k >= 1 ? rowVal[k - 1][i] : start[i], to = k >= 0 ? rowVal[k][i] : start[i]
+          const p = k >= 0 ? ease.out(prog(t, ledT[k], 0.35)) : 1
+          setText(c.v, runFmt(lerp(from, to, p)))
+          let accN = 0
+          for (const r of rungs) if (!looping && t >= r.t && k >= 0 && to >= r.v && from < r.v) accN = Math.max(accN, 1 - ease.inOut(prog(t, r.t + 0.6, 0.9)))
+          setStyle(c.v, { opacity: String(Math.min(keyA, +valIn.opacity)), transform: valIn.transform, color: heldNow ? C.mute : accN > 0.25 ? C.ink : colors[i] })
+          // a pale flash as each close lands; a rung the value just crossed flashes it yellow
+          let fl = k >= 0 && !looping ? flashAlpha(t, ledT[k] + 0.05, 0.5) : 0
+          let acc = 0
+          for (const r of rungs) if (!looping && t >= r.t && k >= 0 && to >= r.v && from < r.v) acc = Math.max(acc, 1 - ease.inOut(prog(t, r.t + 0.6, 0.9)))
+          const bg = acc > 0.001 ? (acc >= 0.999 ? C.accent : mix(C.accent, C.sheet, acc)) : fl > 0.001 ? mix(C.rowHi, C.sheet, fl) : 'transparent'
+          setStyle(c.el, { backgroundColor: keyA > 0.5 ? bg : 'transparent' })
+        }
+      }
+
+      // ---- chart ----
+      const tipPts = chart.draw(xNow, { yMax: yMaxAt(xNow, t) })
+      if (stakeLine) {
+        const yy = chart.Y(startV) - box.y
+        attr(stakeLine, 'x1', lx(plot.x).toFixed(1)); attr(stakeLine, 'x2', lx(plot.x + plot.w).toFixed(1))
+        attr(stakeLine, 'y1', yy.toFixed(1)); attr(stakeLine, 'y2', yy.toFixed(1))
+        const mo = looping ? prog(t, loopT0 + 0.2, 0.25) : 1 - prog(t, Math.max(r0, hookEnd) + 2.0, 0.4)
+        setStyle(moneyLbl, { left: Math.round(lx(plot.x + plot.w) - 130) + 'px', top: Math.round(yy + 12) + 'px', opacity: String(mo) })
+      }
+      // start tags: the rivals' names beside their dots until the race leaves the line
+      const tagA = looping ? prog(t, loopT0 + 0.25, 0.2) : 1 - prog(t, Math.max(r0, hookEnd), 0.3)
+      const tagOrder = series.map((_, i) => i).sort((a, b) => start[b] - start[a] || a - b)
+      tags.forEach((el, i) => {
+        const p = tipPts[i], kk = tagOrder.indexOf(i)
+        setStyle(el, { left: Math.round(p.x + 24) + 'px', top: Math.round(p.y - 50 + kk * 52) + 'px', opacity: String(tagA > 0.01 ? tagA : 0) })
+      })
+      if (ask) {
+        const a = looping ? prog(t, loopT0 + 0.25, 0.2) : 1 - prog(t, hookEnd, 0.25)
+        setStyle(ask.el, { opacity: String(+a.toFixed(3)), transform: !looping && t >= hookEnd && a > 0 ? `translateY(${-Math.round(16 * (1 - a))}px)` : 'none' })
+      }
+      // rungs: dashed lines wipe in left to right at their values; labels in the axis margin
+      const rungY = []
+      rungs.forEach((r, k) => {
+        const on = !looping && t >= r.t
+        const yy = chart.Y(r.v)
+        const p = on ? ease.out(prog(t, r.t, 0.45)) : 0
+        attr(rungEls[k], 'x1', lx(plot.x).toFixed(1)); attr(rungEls[k], 'x2', lx(plot.x + plot.w * p).toFixed(1))
+        attr(rungEls[k], 'y1', ly(yy).toFixed(1)); attr(rungEls[k], 'y2', ly(yy).toFixed(1))
+        attr(rungEls[k], 'opacity', on ? 1 : 0)
+        const st = on ? snapIn(prog(t, r.t, 0.24), 1.14) : { opacity: '0', transform: 'none' }
+        setStyle(rungLbls[k], { ...st, top: Math.round(yy - 20) + 'px' })
+        if (on && yy >= plot.y - 4) rungY.push(yy)
+      })
+      // axis labels give way to a rung label beside them
+      yLabEls.forEach(el => {
+        const yy = box.y + parseFloat(el.style.top || '0')
+        if (rungY.some(ry => Math.abs(ry - yy) < 34)) setStyle(el, { opacity: '0' })
+      })
+
+      // ---- event flags in the strip at the plot's top; each rule fades with its flag ----
+      flags.forEach((f, k) => {
+        const w = flagWin[k]
+        if (looping || t < w.t0 || t >= w.t1) { setStyle(f.el, { opacity: '0', transform: 'none' }); attr(ruleEls[k], 'opacity', 0); return }
+        const st = snapIn(prog(t, w.t0, 0.22), 1.12)
+        const a = Math.min(+st.opacity, 1 - prog(t, w.t1 - 0.25, 0.25))
+        setStyle(f.el, { opacity: String(a), transform: st.transform })
+        attr(ruleEls[k], 'opacity', +a.toFixed(3))
+      })
+
+      // ---- the selection ----
+      let tc = -Infinity
+      for (const c of selChanges) if (c <= t) tc = c
+      const target = selTarget(t)
+      let selR = target
+      if (tc > -Infinity) selR = springRect(selTarget(tc - 1e-3), target, prog(t, tc, M.pick), 1.4)
+      const o = 6
+      const sx0 = Math.round(selR.x0 - o), sy0 = Math.round(selR.y0 - o)
+      setStyle(sel, { opacity: hero && looping && t < loopT0 + 0.2 ? '0' : '1', left: sx0 + 'px', top: sy0 + 'px', width: Math.round(selR.x1 + o) - sx0 + 'px', height: Math.round(selR.y1 + o) - sy0 + 'px' })
+
+      // ---- verdict ----
+      if (vcard) vcard.seek(t, { out: loopOn ? ease.inOut(prog(t, loopT0, 0.3)) : 0 })
+      void tipLo
     },
   }
 }

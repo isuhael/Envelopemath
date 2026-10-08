@@ -3,54 +3,59 @@
   "look": "live-sheet",
   "format": "chart-race",
   "fps": 30,
-  "duration": 38.0,
+  "duration": 36.5,
   "header": "POV: In 2016 you invested **$10,000** in\nUSA vs EUROPE",
-  "footer": "Total return in US$ (MSCI Europe net)\nJan 2016 → Dec 2025 · no fees or tax",
+  "footer": "Total return in US$ · no fees or tax",
   "captions": true,
   "vo": [
     {
       "t": 0.0,
-      "d": 6.6,
-      "text": "2025: Europe beat the USA ≈ 2 to 1. Who won the decade?"
+      "d": 5.0,
+      "text": "2025: Europe beat the USA ≈ 2 to 1."
     },
     {
-      "t": 6.8,
+      "t": 5.05,
+      "d": 1.6,
+      "text": "Who won the decade?"
+    },
+    {
+      "t": 7.97,
       "d": 3.1,
       "text": "2018: Europe drops ≈ 15%."
     },
     {
-      "t": 11.0,
+      "t": 13.3,
       "d": 4.3,
       "text": "2020: the USA has doubled your money."
     },
     {
-      "t": 15.4,
+      "t": 17.65,
       "d": 2.4,
       "text": "Europe? Still under $17,000."
     },
     {
-      "t": 19.2,
-      "d": 5.4,
-      "text": "2025: Europe jumps ≈ 35%. USA, ≈ 18%."
+      "t": 20.1,
+      "d": 3.1,
+      "text": "2025: Europe jumps ≈ 35%."
     },
     {
-      "t": 24.6,
+      "t": 23.25,
       "d": 3.9,
       "text": "Final: USA ≈ $39,800."
     },
     {
-      "t": 28.6,
+      "t": 27.2,
       "d": 2.7,
       "text": "Europe ≈ $22,700."
     },
     {
-      "t": 31.4,
+      "t": 29.95,
       "d": 3.5,
       "text": "The USA ≈ doubled twice. Europe, once."
     }
   ],
   "verdict": {
-    "t": 35.0,
+    "t": 33.5,
     "text": "Europe won **2025**.\nThe USA won the **decade**."
   },
   "data": {
@@ -169,8 +174,8 @@
       "log": false
     },
     "raceT": [
-      1.0,
-      21.0
+      4.8,
+      21.8
     ],
     "events": [
       {
@@ -186,25 +191,113 @@
         "label": "2022 bear market"
       }
     ],
-    "hold": 17.0
+    "hold": 14.7
   },
   "lookOpts": {
+    "valueRow": {
+      "label": "Value"
+    },
+    "hook": {
+      "row": 9,
+      "until": 4.8,
+      "series": 1,
+      "ask": "2016 → 2025: who won?"
+    },
+    "formulaAt0": 1,
     "formulaSteps": [
       {
         "t": 0.0,
-        "text": "= $10,000\n× (1 + each year's return)"
+        "text": "= last year × (1 + return)"
       },
       {
-        "t": 2.98,
-        "text": "= $10,000 × 1.1196 · = $10,000 × 0.9960"
+        "t": 6.48,
+        "text": "= $10,000 × (1 − 0.40%)"
       },
       {
-        "t": 21.0,
-        "text": "≈ $10,000 × 3.98 · ≈ $10,000 × 2.27"
+        "t": 8.19,
+        "text": "= $9,960 × (1 + 25.51%)"
       },
       {
-        "t": 31.4,
-        "text": "≈ 14.8% a year vs ≈ 8.5% a year"
+        "t": 9.89,
+        "text": "= $12,501 × (1 − 14.86%)"
+      },
+      {
+        "t": 11.59,
+        "text": "= $13,043 × (1 + 31.49%)"
+      },
+      {
+        "t": 13.29,
+        "text": "≈ $10,000 × 2.03"
+      },
+      {
+        "t": 14.99,
+        "text": "= $20,305 × (1 + 28.71%)"
+      },
+      {
+        "t": 16.69,
+        "text": "≈ $16,145 × (1 − 15.06%)"
+      },
+      {
+        "t": 18.4,
+        "text": "= $13,713 × (1 + 19.89%)"
+      },
+      {
+        "t": 20.1,
+        "text": "= $16,441 × (1 + 1.79%)"
+      },
+      {
+        "t": 21.8,
+        "text": "= $16,735 × (1 + 35.41%)"
+      },
+      {
+        "t": 23.79,
+        "text": "= $33,791 × (1 + 17.88%)"
+      },
+      {
+        "t": 26.6,
+        "text": "= $16,735 × (1 + 35.41%)"
+      },
+      {
+        "t": 29.95,
+        "text": "≈ ×3.98 ≈ 2 doublings"
+      },
+      {
+        "t": 32.64,
+        "text": "≈ ×2.27 ≈ 1 doubling"
+      }
+    ],
+    "focus": [
+      {
+        "t": 4.8,
+        "series": 1
+      },
+      {
+        "t": 11.59,
+        "series": 0
+      },
+      {
+        "t": 16.69,
+        "series": 1
+      },
+      {
+        "t": 23.79,
+        "series": 0
+      },
+      {
+        "t": 26.6,
+        "series": 1
+      },
+      {
+        "t": 29.95,
+        "series": 0
+      },
+      {
+        "t": 32.64,
+        "series": 1
+      },
+      {
+        "t": 33.5,
+        "series": 0
       }
     ],
     "ledger": {
@@ -266,45 +359,61 @@
         ]
       ],
       "rowT": [
-        2.98,
-        4.98,
-        6.99,
-        8.99,
-        10.99,
-        12.99,
+        6.48,
+        8.19,
+        9.89,
+        11.59,
+        13.29,
         14.99,
-        17.0,
-        19.0,
-        21.0
+        16.69,
+        18.4,
+        20.1,
+        21.8
       ]
     },
     "preroll": 0,
+    "flagHold": 3.0,
+    "rungs": [
+      {
+        "t": 13.29,
+        "value": 20000,
+        "label": "×2"
+      },
+      {
+        "t": 29.95,
+        "value": 40000,
+        "label": "×4"
+      }
+    ],
+    "finale": {
+      "t": 23.25,
+      "roll": [
+        1.0,
+        1.0
+      ]
+    },
     "finalT": [
-      24.6,
-      28.6
-    ]
+      24.79,
+      27.6
+    ],
+    "xEven": true
   },
   "sfx": [
     {
-      "t": 6.99,
+      "t": 9.89,
       "kind": "thud"
     },
     {
-      "t": 10.99,
+      "t": 13.29,
       "kind": "ding"
     },
     {
-      "t": 19.1,
+      "t": 19.9,
       "kind": "riser",
       "dur": 1.9
     },
     {
-      "t": 21.0,
-      "kind": "roll",
-      "dur": 1.0
-    },
-    {
-      "t": 35.0,
+      "t": 33.5,
       "kind": "ding"
     }
   ]

@@ -42,7 +42,7 @@
       { "t": 18.3, "act": "wag" },
       { "t": 20.4, "act": "shrug" },
       { "t": 22.7, "act": "point", "item": 3 },
-      { "t": 24.4, "act": "proud" }
+      { "t": 24.8, "act": "proud" }
     ]
   }
 }

@@ -849,7 +849,8 @@ export default function chartRace(spec, ctx) {
           const on = v < ymax * 0.97 && rg < 1
           attr(g.line, 'opacity', on ? (1 - rg).toFixed(3) : '0')
           style(g.lab, { display: on ? 'block' : 'none', opacity: (1 - rg).toFixed(3) })
-          if (!on) return
+          // a hidden grid line parks at one fixed state (the DOM at t never depends on the frame before)
+          if (!on) { attr(g.line, 'y1', '0'); attr(g.line, 'y2', '0'); setText(g.lab, ''); style(g.lab, { top: '0px' }); return }
           const yy = py(v)
           attr(g.line, 'y1', yy.toFixed(1)); attr(g.line, 'y2', yy.toFixed(1))
           setText(g.lab, axisText(v, Y.prefix))

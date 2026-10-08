@@ -15,6 +15,9 @@
    to the total, the hook rules R1/R2/R8/R10, and the timing contract: VO read at
    ~2.6 words/s, no overlapping lines, every beat's t at the moment the VO says it,
    header + a number at t = 0, duration inside the 20-40 s lane for this format.
+   05c's rows and hero roll in after their cut, so for 05c the check also recomputes each
+   LANDING the way the scoreboard kit does (cut + 0.18 s + roll) and holds it to the spoken
+   number, not just the cut (fix pass 2026-10-08: the payoff landed 1.4 s after it was said).
 4. Fact-consistency checks on the sourced inputs (identities and reported percentages)
    and the robustness of each verdict.
 
@@ -138,6 +141,7 @@ C_AMT = [r2(s * C_CART) for s in C_SHARE]
 C_FEES = r2(C_MEMBER / C_SALES * C_CART)                      # membership fees per $100 of sales
 C_REMAIN1 = r2(C_CART - C_AMT[0])                             # hero after the goods row
 C_REMAIN2 = r2(C_REMAIN1 - C_AMT[1])                          # hero after the staff row
+C_OPS = r2(C_OPINC / C_SALES * C_CART)                        # operating profit per $100 of sales (hero at the verdict)
 
 
 def millions(v):
@@ -149,8 +153,10 @@ A_LABELS_NODIGIT = True   # labels/notes in 05a carry no digits (checked by the 
 EXPECT = {
     "05a": {
         "header": f"What You're Really Paying For\nWhen You Spend **{money(A_ORDER)}**\nat Chipotle:",
-        "footer": f"ASSUMES {money(A_ORDER)} splits like Chipotle's FY2025 revenue (10-K) · an average, not your order",
-        "verdict.text": f"Chipotle keeps **{approx(money(A_AMT[6], 2))}** of your {money(A_ORDER)}.\nNot __{money(A_WRONG, 2)}__.",
+        # fix pass: one footer line (the 2-line footer sat between the hook and the sheet at ~40 px)
+        "footer": "Chipotle FY2025 10-K average · not your order",
+        # fix pass: the verdict is a lockup (64 px words, the goal on its blue highlighter at ~90 px, the guess struck)
+        "verdict.text": f"Chipotle keeps\n**{approx(money(A_AMT[6], 2))}**, not __{money(A_WRONG, 2)}__.",
         "data.total.display": money(A_ORDER, 2),
         **{f"data.parts[{i}].pct": A_PCT[i] for i in range(7)},
         **{f"data.parts[{i}].amount": approx(money(A_AMT[i], 2)) for i in range(7)},
@@ -167,17 +173,24 @@ EXPECT = {
         "data.total.display": money(B_PAY),
         **{f"data.parts[{i}].pct": B_PARTS_PCT[i] for i in range(4)},
         **{f"data.parts[{i}].amount": money(B_PARTS[i]) for i in range(4)},
-        "data.parts[0].note": f"{B_RENT_N} × {money(B_TENTH)} · needs get {B_COUNT[0]}",
-        "data.parts[1].note": f"{money(B_FOOD)} ÷ {B_DAYS} = **{money(B_FOOD_DAY)} a day**",
+        # fix pass: "needs get 5" moved to the needs bracket; the day working ends on the header slot's figure
+        "data.parts[0].note": f"{B_RENT_N} × {money(B_TENTH)}",
+        "data.parts[1].note": f"{money(B_FOOD)} ÷ {B_DAYS} = **{money(B_FOOD_DAY)}**",
         "data.parts[2].note": f"{B_COUNT[1]} × {money(B_TENTH)} · fun money",
-        "data.parts[3].note": f"{B_COUNT[2]} × {money(B_TENTH)} · saving, extra debt",
+        "data.parts[3].note": f"{B_COUNT[2]} × {money(B_TENTH)} · savings",
         "data.check": " + ".join(money(a) for a in B_PARTS) + f" = {money(sum(B_PARTS))}",
         "lookOpts.tenth.formula": f"{money(B_PAY)} ÷ {B_PIECES}",
         "lookOpts.tenth.display": money(B_TENTH),
         "lookOpts.actions[0].tool": f"÷ {B_PIECES}",
         "lookOpts.actions[0].becomes": f"{B_PIECES} bricks of {money(B_TENTH)}",
         **{f"lookOpts.actions[{i + 1}].tool": f"{B_PARTS_N[i]} × {money(B_TENTH)}" for i in range(4)},
+        # the cleaver's label after the food brick lands (the per-day beat), until the next raise
+        "lookOpts.actions[2].after": f"÷ {B_DAYS}",
         "lookOpts.payoff.text": f"{money(B_FOOD_DAY)} a day",
+        # the header's answer slot ("this much a day: [$10]"), a dashed "$?" from frame 1
+        "lookOpts.payoff.slot.text": money(B_FOOD_DAY),
+        # the bracket over RENT + FOOD + BILLS: needs = half = 5 bricks
+        "lookOpts.needs.text": f"NEEDS {pct(B_RULE[0], 0)} = {B_COUNT[0]} bricks",
     },
     "05c": {
         "header": f"IS COSTCO'S PROFIT\nALL MEMBERSHIP FEES?\nFOLLOW YOUR **{money(C_CART)}** CART:",
@@ -192,8 +205,13 @@ EXPECT = {
         "lookOpts.footerSteps[0].text": f"{millions(C_MERCH)} ÷ {millions(C_SALES)} × {money(C_CART)} ≈ {money(C_AMT[0], 2)}",
         "lookOpts.footerSteps[1].text": f"{millions(C_SGA)} ÷ {millions(C_SALES)} × {money(C_CART)} ≈ {money(C_AMT[1], 2)}",
         "lookOpts.footerSteps[2].text": f"{money(C_CART)} − {money(C_AMT[0], 2)} − {money(C_AMT[1], 2)} = {money(C_AMT[2], 2)} before tax",
-        "lookOpts.footerSteps[3].text": f"{millions(C_MEMBER)} ÷ {millions(C_SALES)} × {money(C_CART)} ≈ {money(C_FEES, 2)}",
-        "lookOpts.footerSteps[4].text": f"cart {millions(C_LEFT_M)} + fees {millions(C_MEMBER)} = {millions(C_OPINC)}",
+        # at the check the footer goes back to the assumption line (one working on screen per beat)
+        "lookOpts.footerSteps[3].text": "Costco FY2026 · company-wide · before tax",
+        "lookOpts.footerSteps[4].text": f"{millions(C_MEMBER)} ÷ {millions(C_SALES)} × {money(C_CART)} ≈ {money(C_FEES, 2)}",
+        "lookOpts.footerSteps[5].text": f"cart {millions(C_LEFT_M)} + fees {millions(C_MEMBER)} = {millions(C_OPINC)}",
+        # the verdict's climax: the hero rolls ≈ $1.94 -> ≈ $3.93, cart + fees per $100 (half each)
+        "lookOpts.heroFinal.display": approx(money(C_OPS, 2)),
+        "lookOpts.heroFinal.tag": f"PROFIT PER {money(C_CART)}",
         "lookOpts.bonus.label": f"Membership fees, per {money(C_CART)} of sales",
         "lookOpts.bonus.amount": approx(money(C_FEES, 2)),
     },
@@ -202,15 +220,14 @@ EXPECT = {
 # numbers spoken in each VO line, in order ("N cents" -> N/100 dollars; number words count too)
 VO_NUMBERS = {
     "05a": [
-        [A_AMT[0], A_ORDER, A_WRONG], [A_AMT[1]], [A_AMT[2]], [A_AMT[3]], [A_AMT[4]], [A_AMT[5]], [A_AMT[6]],
-        [A_ORDER, A_COSTS], [A_WRONG, A_AMT[6]],
+        [A_AMT[0], A_ORDER, A_WRONG], [A_AMT[1]], [A_AMT[2]], [A_AMT[3]], [A_AMT[4]], [A_AMT[5]], [A_AMT[6], A_WRONG],
     ],
     "05b": [
         [B_PIECES, B_TENTH, B_RENT_N], [B_COUNT[0], B_FOOD_N, B_FOOD_DAY],
         [B_COUNT[1], B_AMT[1], B_COUNT[2], B_AMT[2]], [B_PAY], [B_RENT, B_FOOD_DAY],
     ],
     "05c": [
-        [C_AMT[0], C_CART], [C_AMT[1]], [C_AMT[2], 0], [C_CART], [C_FEES, C_CART], [],
+        [C_AMT[0], C_CART], [C_AMT[1]], [C_AMT[2], 0], [C_CART], [C_FEES, C_CART], [C_OPS],
     ],
 }
 
@@ -221,19 +238,25 @@ VO_NUMBERS = {
 VO_ROUNDED = {
     "05a": set(A_AMT),
     "05b": set(),
-    "05c": set(C_AMT) | {C_FEES},
+    "05c": set(C_AMT) | {C_FEES, C_OPS},
 }
 
 # where each beat should sit: (vo line, token) -> t lands EARLY..LATE around that spoken token;
-# (vo line, None) -> t on the line start
+# (vo line, None) -> t on the line start; "frame1" -> on the sheet at t <= 0; "silent" -> a beat no VO line voices
+# (05a's check line types between the goal landing and the verdict); (vo line, token, "land") -> 05c: the cut sits
+# between the line start and the spoken token, and the kit's LANDING (see landing_05c) on the spoken token
 ANCHORS = {
     "05a": {
         "data.parts[0].t": (0, "$2.96"), "data.parts[1].t": (1, "$2.51"), "data.parts[2].t": (2, "52"),
         "data.parts[3].t": (3, "$1.47"), "data.parts[4].t": (4, "91"), "data.parts[5].t": (5, "34"),
-        "data.parts[6].t": (6, "$1.29"), "data.checkT": (7, None), "verdict.t": (8, None),
+        "data.parts[6].t": (6, "$1.29"),
+        # fix pass: the spoken "Check: ..." line is cut; the check types silently once profit has landed
+        "data.checkT": "silent",
+        # the verdict lockup lands on "Not $7.04" (≈ $1.29 on its highlighter, the guess struck)
+        "verdict.t": (6, "Not"),
         # the wrong guess is on the sheet at frame 1 (R5: the hook); vo[0] voices it, inside its first line
         "lookOpts.wrongGuess.t": "frame1", "lookOpts.wrongGuess.strikeT": (1, None),
-        "sfx[0].t": (1, None), "sfx[1].t": (7, None),
+        "sfx[0].t": (1, None),
         # assembly pass: the hook's two numbers nudge as vo[0] says them, and each row activates (pointer, accent %,
         # the profit row's % unmasks) as its VO line names it; its amount still lands on the spoken number
         "lookOpts.bumps[0].t": (0, "$10"), "lookOpts.bumps[1].t": (0, "$7.04"),
@@ -242,25 +265,56 @@ ANCHORS = {
     },
     "05b": {
         # the cleaver comes out on "Ten", the slab slams into 10 bricks on "$300", 4 tumble into RENT on "four",
-        # the lone brick lands in FOOD + BILLS on "one" (its note "$300 ÷ 30 = $10 a day" lands with it)
+        # the lone brick lands in FOOD + BILLS on "one"
         "lookOpts.actions[0].t": (0, "Ten"), "lookOpts.tenth.t": (0, "$300"), "data.parts[0].t": (0, "four"),
         "data.parts[1].t": (1, "one"), "data.parts[2].t": (2, "$900"), "data.parts[3].t": (2, "$600"),
-        "data.checkT": (3, None), "verdict.t": (4, None),
-        # the closing gold slab "FOOD + EVERY BILL · $10 a day" lands on the spoken "$10" of the verdict line
+        # fix pass: the check line leads its VO line by up to 0.6 s (the stage above it had emptied after the hop)
+        "data.checkT": (3, None, "lead"), "verdict.t": (4, None),
+        # fix pass: the needs bracket draws on "Needs"; "$10" stamps into the header's answer slot on the spoken "$10"
+        "lookOpts.needs.t": (1, "Needs"), "lookOpts.payoff.slot.t": (1, "$10"),
+        # the closing gold slab "FOOD + EVERY BILL · $10 a day" re-slams on the spoken "$10" of the verdict line
         "lookOpts.payoff.t": (4, "$10"),
     },
     "05c": {
-        "data.parts[0].t": (0, "$88.91"), "data.parts[1].t": (1, "$9.15"), "data.parts[2].t": (2, "$1.94"),
-        "lookOpts.remaining[0].t": (0, "$88.91"), "lookOpts.remaining[1].t": (2, "$1.94"),
-        "lookOpts.footerSteps[0].t": (0, "$88.91"), "lookOpts.footerSteps[1].t": (1, "$9.15"),
-        "lookOpts.footerSteps[2].t": (2, "$1.94"), "data.checkT": (3, None), "lookOpts.footerSteps[3].t": (4, "$1.99"),
-        "lookOpts.footerSteps[4].t": (5, None), "verdict.t": (5, None),
+        "data.parts[0].t": (0, "$88.91", "land"), "data.parts[1].t": (1, "$9.15", "land"), "data.parts[2].t": (2, "$1.94", "land"),
+        "data.checkT": (3, None), "verdict.t": (5, None),
+        # each footer working lands with its row (not at the cut, so it never prints the figure first)
+        "lookOpts.footerSteps[0].t": "land0", "lookOpts.footerSteps[1].t": "land1", "lookOpts.footerSteps[2].t": "land2",
+        "lookOpts.footerSteps[3].t": (3, None), "lookOpts.footerSteps[4].t": (4, "$1.99"), "lookOpts.footerSteps[5].t": (5, None),
+        # the hero's LEFT counter rolls with the row it subtracts: ≈ $11.09 with row 1, ≈ $1.94 as ≈ $9.15 lands
+        "lookOpts.remaining[0].t": "sync0", "lookOpts.remaining[1].t": "sync1",
+        # the verdict's climax: the hero rolls to ≈ $3.93 PROFIT PER $100 from the line start, landing on "$3.93"
+        "lookOpts.heroFinal.t": (5, "$3.93", "hero"),
         # the membership row is the header's contender: on the sheet, landed, at frame 1; vo[4] voices it
         "lookOpts.bonus.t": "frame1",
         # ...and the pointer and the label stack return to it when vo[4] names it ("Membership fees: ...")
         "lookOpts.bonus.focusT": (4, None),
     },
 }
+
+# the scoreboard kit's timing (formats/split-sheet.js): a part's cut, then CUT, then its roll; lookOpts.rolls
+# overrides a roll; heroFinal starts 0.04 s after its t and rolls 1.1 s
+SB_CUT, SB_HERO_ROLL = 0.18, 1.1
+
+
+def landing_05c(spec):
+    parts = spec["data"]["parts"]
+    lo = spec.get("lookOpts", {})
+    times = [p["t"] for p in parts]
+    intro = lo.get("intro") is True or (lo.get("intro") is not False and times[0] >= 0.5)
+    rolls = lo.get("rolls") or []
+    out = []
+    for i, p in enumerate(parts):
+        first = i == 0 and not intro
+        cut = min(times[0], 0) if first else times[i]
+        big = p.get("tone") == "goal" or i == len(parts) - 1
+        nxt = times[i + 1] if i + 1 < len(parts) else float("inf")
+        given = rolls[i] if i < len(rolls) and rolls[i] else None
+        roll = given if given else max(0.45, min(1.35 if big else 1.0, nxt - cut - SB_CUT - 0.35))
+        start = -0.3 if first else cut + SB_CUT
+        out.append(round(start + roll, 4))
+    return out
+
 
 # lookOpts.maskPct: the goal row's % reads "?" until its beat (else it answers the header at frame 1).
 # 05c masks every row: on a $100 base each % IS its dollar amount, so no cart dollar is printed at frame 1.
@@ -467,20 +521,49 @@ def check_spec(key, spec):
     record(key, "≥ 2 s hold on the finished sheet", round(dur - last_end, 2), "≥ 2.0", dur - last_end >= 2.0 - 1e-9)
 
     # 7. beat timing: every beat at the moment the VO says it
+    lands = landing_05c(spec) if key == "05c" else None
+    tok_dur = lambda tok: token_words(tok) / WPS
     for path, anchor in ANCHORS[key].items():
-        beat = get(spec, path)
+        try:
+            beat = get(spec, path)
+        except (KeyError, IndexError, TypeError):
+            record(key, f"{path} present (anchored beat)", "(absent)", "a time", False)
+            continue
         if anchor == "frame1":
             record(key, f"{path} on the sheet at frame 1", beat, "≤ 0 (kit: typed + landed at t = 0)", beat <= 0)
             continue
-        line, tok = anchor
+        if anchor == "silent":
+            lo_, hi_ = d["parts"][-1]["t"], spec["verdict"]["t"]
+            record(key, f"{path} silent: after the goal lands, before the verdict", beat, f"{lo_}..{hi_}", lo_ < beat < hi_)
+            continue
+        if isinstance(anchor, str) and anchor.startswith("land"):
+            i = int(anchor[4:])
+            record(key, f"{path} = row {i}'s landing (kit)", beat, f"{lands[i]:.2f}", abs(beat - lands[i]) <= 0.02)
+            continue
+        if isinstance(anchor, str) and anchor.startswith("sync"):
+            i = int(anchor[4:])
+            record(key, f"{path} rolls with row {i} (same t)", beat, d["parts"][i]["t"], abs(beat - d["parts"][i]["t"]) < 1e-9)
+            continue
+        line, tok = anchor[0], anchor[1]
+        kind = anchor[2] if len(anchor) > 2 else None
         est = anchor_time(vo, line, tok)
         if est is None:
             record(key, f"{path} at VO mention", beat, f"VO line {line} never says {tok!r}", False)
+        elif kind in ("land", "hero"):
+            # the cut (or the hero's roll start) sits between the line start and the spoken number...
+            lo_, hi_ = vo[line]["t"] - START_TOL, est
+            record(key, f"{path} cut between vo[{line}] start and '{tok}'", beat, f"{lo_:.2f}..{hi_:.2f}", lo_ - 1e-9 <= beat <= hi_ + 1e-9)
+            # ...and the number LANDS while it is being said (kit roll included), never after
+            land = lands[int(re.search(r"\[(\d+)\]", path).group(1))] if kind == "land" else round(beat + 0.04 + SB_HERO_ROLL, 4)
+            lo2, hi2 = est - 0.15, est + tok_dur(tok) + 0.15
+            record(key, f"{path} lands on the spoken '{tok}' (vo[{line}])", land, f"{lo2:.2f}..{hi2:.2f}", lo2 - 1e-9 <= land <= hi2 + 1e-9)
+        elif tok is None and kind == "lead":
+            record(key, f"{path} leads vo[{line}] by ≤ 0.6 s", beat, f"{est - 0.6:.2f}..{est:.2f}", est - 0.6 - 1e-9 <= beat <= est + START_TOL)
         elif tok is None:
             record(key, f"{path} on vo[{line}] start", beat, f"{est:.2f}", abs(beat - est) <= START_TOL)
         else:
-            lo, hi = max(vo[line]["t"], est - EARLY), est + LATE
-            record(key, f"{path} at '{tok}' (vo[{line}])", beat, f"{lo:.2f}..{hi:.2f}", lo - 1e-9 <= beat <= hi + 1e-9)
+            lo_, hi_ = max(vo[line]["t"], est - EARLY), est + LATE
+            record(key, f"{path} at '{tok}' (vo[{line}])", beat, f"{lo_:.2f}..{hi_:.2f}", lo_ - 1e-9 <= beat <= hi_ + 1e-9)
     timed = [p for p, _ in walk(spec) if re.search(r"(^|\.)(t|checkT|strikeT)$", p) and not p.startswith("vo[")]
     for p in timed:
         record(key, f"{p} anchored", p, "in ANCHORS", p in ANCHORS[key])
@@ -514,7 +597,15 @@ def check_spec(key, spec):
         act = spec["lookOpts"]["activate"]
         record(key, "each row activates before its amount lands, after the previous one landed",
                act, "parts[i-1].t < activate[i] ≤ parts[i].t",
-               act[0] is None and all(parts[i - 1]["t"] < act[i] <= parts[i]["t"] for i in range(1, len(parts))))
+               all(parts[i - 1]["t"] < act[i] <= parts[i]["t"] for i in range(1, len(parts))))
+        # fix pass: row 1 lights a beat after frame 1, so frame 1's only loud figures are the $10.00 and the guess
+        record(key, "row 1 activates after frame 1, before its amount (0 < activate[0] < parts[0].t)", act[0],
+               f"0..{parts[0]['t']}", act[0] is not None and 0 < act[0] < parts[0]["t"])
+        lo5a = spec["lookOpts"]
+        record(key, "the payoff is the biggest figure: goal amount scaled ≥ 1.2x, verdict lockup on", (lo5a.get("goalScale"), lo5a.get("bigVerdict")),
+               "(≥ 1.2, True)", (lo5a.get("goalScale") or 0) >= 1.2 and lo5a.get("bigVerdict") is True)
+        record(key, "check line types after profit lands and before the verdict", d["checkT"],
+               f"{parts[6]['t']}..{spec['verdict']['t']}", parts[6]["t"] < d["checkT"] < spec["verdict"]["t"])
         record(key, "bumps hit the frame-1 hook figures ($10 total, the $7.04 guess)",
                [b["at"] for b in spec["lookOpts"]["bumps"]], ["total", "guess"],
                [b["at"] for b in spec["lookOpts"]["bumps"]] == ["total", "guess"])
@@ -532,8 +623,16 @@ def check_spec(key, spec):
                "whole numbers", all(abs(w - round(w)) < 1e-9 for w in whole))
         eq(key, "bricks per bin = share × count", [round(w) for w in whole], B_PARTS_N)
         eq(key, "envelopes (bin names)", spec["lookOpts"]["envelopes"], ["RENT", "FOOD + BILLS", "WANTS", "SAVINGS"])
-        record(key, "header asks 'a day'; the goal row's note answers per day", parts[1]["note"], "contains 'a day'",
-               "a day" in parts[1]["note"] and "a day" in spec["header"])
+        slot = spec["lookOpts"]["payoff"]["slot"]
+        record(key, "header ends on 'a day:' and its answer slot holds the per-day figure", (spec["header"][-6:], slot["text"]),
+               ("a day:", money(B_FOOD_DAY)), spec["header"].endswith("a day:") and slot["text"] == money(B_FOOD_DAY))
+        record(key, "the slot fills on the beat the lone brick lands (after it, before vo[2])", slot["t"],
+               f"{parts[1]['t']}..{vo[2]['t']}", parts[1]["t"] <= slot["t"] < vo[2]["t"])
+        record(key, "the goal row's working answers the slot ($300 ÷ 30 = $10)", parts[1]["note"],
+               f"ends '= **{money(B_FOOD_DAY)}**'", parts[1]["note"].endswith(f"= **{money(B_FOOD_DAY)}**"))
+        nd = spec["lookOpts"]["needs"]
+        record(key, "needs bracket spans RENT + FOOD + BILLS = 5 bricks = 50%", (nd["parts"], B_PARTS_N[0] + B_PARTS_N[1]),
+               "([0, 1], 5)", nd["parts"] == [0, 1] and B_PARTS_N[0] + B_PARTS_N[1] == B_COUNT[0] and B_RULE[0] == 0.5)
         pay = spec["lookOpts"]["payoff"]
         record(key, "payoff slab = the header's answer in its unit, after the verdict", (pay["text"], pay["t"]),
                f"'a day', ≥ {spec['verdict']['t']}", "a day" in pay["text"] and pay["t"] >= spec["verdict"]["t"])
@@ -543,8 +642,20 @@ def check_spec(key, spec):
                spec["verdict"]["text"], "no 'keep'", "keep" not in txt)
         record(key, "header does not say 'keep' either (the body shows what the cart leaves)", spec["header"],
                "no 'keep'", "keep" not in spec["header"].lower())
-        steps = " ".join(x["text"] for x in spec["lookOpts"]["footerSteps"] if x["t"] <= parts[2]["t"] + 1e-9)
-        record(key, "'before tax' is on screen when ≈ $1.94 lands", "before tax" in steps, True, "before tax" in steps)
+        land2 = landing_05c(spec)[2]
+        cur = [x["text"] for x in spec["lookOpts"]["footerSteps"] if x["t"] <= land2 + 0.02]
+        record(key, "'before tax' is on screen when ≈ $1.94 lands", cur[-1] if cur else "", "contains 'before tax'",
+               bool(cur) and "before tax" in cur[-1])
+        rems = spec["lookOpts"]["remaining"]
+        record(key, "hero LEFT = $100 − the rows landed so far", [r["display"] for r in rems],
+               [approx(money(C_REMAIN1, 2)), approx(money(C_REMAIN2, 2))], [r["t"] for r in rems] == [parts[0]["t"], parts[1]["t"]])
+        hf = spec["lookOpts"].get("heroFinal") or {"display": "(absent)"}
+        record(key, "verdict hero = cart + fees per $100, on the shown rows too (1.94 + 1.99)", hf["display"],
+               approx(money(r2(C_AMT[2] + C_FEES), 2)), hf["display"] == approx(money(r2(C_AMT[2] + C_FEES), 2)) == approx(money(C_OPS, 2)))
+        record(key, "the hero carries a tag in remaining mode (never unlabelled)", spec["lookOpts"].get("heroTag"), "LEFT",
+               spec["lookOpts"].get("heroTag") == "LEFT")
+        record(key, "one working per beat: the label stack drops its formula (labelWorking false)", spec["lookOpts"].get("labelWorking"),
+               False, spec["lookOpts"].get("labelWorking") is False)
         record(key, "membership row on the sheet at frame 1 = the header's contender", spec["lookOpts"]["bonus"]["t"],
                "≤ 0", spec["lookOpts"]["bonus"]["t"] <= 0)
 
@@ -606,12 +717,15 @@ def facts():
            0.45 <= C_MEMBER / C_OPINC <= 0.55)
     record("05c", "header 'all membership fees?' → no: the cart leaves more than zero (VO 'Not zero.')",
            (C_LEFT_M, C_AMT[2]), "> 0", C_LEFT_M > 0 and C_AMT[2] > 0)
-    record("05c", "'about half each' (VO): cart and fees both 45-55% of operating income",
+    record("05c", "'about half each' (caption): cart and fees both 45-55% of operating income",
            (round(C_LEFT_M / C_OPINC, 3), round(C_MEMBER / C_OPINC, 3)), "0.45..0.55 each",
            all(0.45 <= x / C_OPINC <= 0.55 for x in (C_LEFT_M, C_MEMBER)))
     record("05c", "not all fees after tax either: fees < net income (md: 64%)", round(C_MEMBER / C_NI, 3), "< 1 (0.640)",
            C_MEMBER < C_NI and round(C_MEMBER / C_NI, 3) == 0.640)
-    record("05c", "'your cart makes almost as much' (VO): cart / fees 95-100%, exact and shown",
+    record("05c", "'your cart makes almost half' (VO): cart share of operating profit 45-50%, exact and shown",
+           (round(C_LEFT_M / C_OPINC, 3), round(C_AMT[2] / C_OPS, 3)), "0.45..0.50",
+           all(0.45 <= x < 0.50 for x in (C_LEFT_M / C_OPINC, C_AMT[2] / C_OPS)))
+    record("05c", "'your cart makes almost as much' (caption): cart / fees 95-100%, exact and shown",
            (round(C_LEFT_M / C_MEMBER, 3), round(C_AMT[2] / C_FEES, 3)), "0.95..1.0",
            all(0.95 <= x < 1.0 for x in (C_LEFT_M / C_MEMBER, C_AMT[2] / C_FEES)))
     record("05c", "per-$100 fees beat per-$100 leftover after rounding", (C_FEES, C_AMT[2]), "fees bigger", C_FEES > C_AMT[2])
@@ -619,8 +733,9 @@ def facts():
     lo, hi = 269_850 - 239_886 - 24_966, 269_950 - 239_886 - 24_966
     record("05c", "FY2025 too: fees $5,323M > cart's leftover", f"{lo:,}..{hi:,}", "< 5,323", hi < 5_323)
     eq("05c", "net income per $100 of sales (pinned comment)", money(r2(C_NI / C_SALES * 100), 2), "$3.10")
-    eq("05c", "operating income per $100 of sales, cart + fees (why the verdict avoids 'keeps')",
+    eq("05c", "operating income per $100 of sales, cart + fees (the verdict's hero; why the verdict avoids 'keeps')",
        money(r2(C_OPINC / C_SALES * 100), 2), "$3.93")
+    eq("05c", "≈ $3.93 = ≈ $1.94 + ≈ $1.99 on the shown rows (no plug)", round(C_AMT[2] + C_FEES, 2), C_OPS)
     # footer working uses the exact millions; the rounded inputs still give the same cents
     for v, a in ((C_MERCH, C_AMT[0]), (C_SGA, C_AMT[1]), (C_MEMBER, C_FEES)):
         eq("05c", f"{millions(v)} in $B (2 dp) gives the same cents", r2(round(v / 1000, 2) / round(C_SALES / 1000, 2) * 100), a)

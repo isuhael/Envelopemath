@@ -4,7 +4,7 @@
   "format": "cost-counter",
   "fps": 30,
   "duration": 36.6,
-  "header": "40 years of your pay vs\n**1 minute** of new US debt.\nWhich is bigger?",
+  "header": "Your pay for **40 years** vs\n__1 minute__ of new US debt?",
   "footer": "New debt ≈ $2.46T ÷ (364 × 86,400 s)\nPay: BLS median $1,251 a week × 52",
   "captions": true,
   "vo": [
@@ -12,11 +12,11 @@
     { "t": 2.4,  "d": 1.6, "text": "3 years, gone." },
     { "t": 4.2,  "d": 2.4, "text": "**≈ $78,000** a second." },
     { "t": 8.2,  "d": 2.4, "text": "10 years of median pay." },
-    { "t": 10.6, "d": 5.8, "text": "The debt grew ≈ $2.46 trillion in 364 days." },
+    { "t": 10.6, "d": 5.8, "text": "The debt grew ≈\u00a0$2.46\u00a0trillion in 364 days." },
     { "t": 16.5, "d": 1.5, "text": "Halfway: 20 years." },
     { "t": 18.2, "d": 4.7, "text": "40 × $65,052 ≈ **$2.6 million**." },
     { "t": 23.1, "d": 2.0, "text": "That's a whole working life." },
-    { "t": 25.3, "d": 3.1, "text": "1 minute: ≈ $4.7 million." },
+    { "t": 25.1, "d": 3.3, "text": "30 years gone. 10 left." },
     { "t": 28.6, "d": 2.4, "text": "How long do 40 years last?" },
     { "t": 33.3, "d": 2.4, "text": "A working life: **≈ 33 seconds.**" }
   ],
@@ -25,7 +25,7 @@
     "label": "New US debt since you hit play",
     "perSecond": 78201.35,
     "rateDisplay": "≈ $78,000 every second",
-    "counterT": [0.0, 33.3],
+    "counterT": [0.0, 33.27411],
     "startValue": 0,
     "prefix": "$",
     "dp": 0,
@@ -33,23 +33,25 @@
       { "value": 195156, "label": "3 years of median pay: $195,156" },
       { "value": 650520, "label": "10 years of median pay: $650,520" },
       { "value": 1301040, "label": "20 years of median pay: $1,301,040" },
+      { "value": 1951560, "label": "30 years of median pay: $1,951,560" },
       { "value": 2602080, "label": "40 years of median pay: $2,602,080" }
     ],
-    "final": "≈ $2,604,105",
-    "hold": 3.3
+    "final": "$2,602,080",
+    "hold": 3.32589
   },
   "lookOpts": {
     "stage": "white",
     "surface": "debt-clock",
     "surfaceLabel": "New US debt since you hit play",
-    "opener": { "t": 0.0, "pose": "lift", "prop": "block-stack", "blocks": 40, "unit": 65052, "text": "40 × $65,052", "sub": "40 years of median pay" },
+    "opener": { "t": 0.0, "pose": "lift", "prop": "block-stack", "blocks": 40, "unit": 65052, "text": "40 × $65,052", "sub": "40 years of median pay", "countdown": "{n} years left" },
     "stamp": { "t": 1.0, "text": "1 second ≈ $78,000" },
-    "timer": { "t0": 0.0, "label": "1 minute", "total": 60, "endLabel": { "t": 25.3, "text": "≈ $4.7 million" } },
+    "timer": { "t0": 0.0, "label": "1 minute", "total": 60, "endLabel": { "t": 33.3, "text": "≈ $4.7 million" } },
     "actions": [
       { "milestone": 0, "verb": "swallow", "becomes": "the panel has been slurping blocks off the top of his stack since frame 1, one per year of pay; he hugs the rest tighter" },
       { "milestone": 1, "verb": "push", "becomes": "he shoves back against the panel's slot; it keeps eating" },
       { "milestone": 2, "verb": "shocked", "becomes": "halfway: his stack is half gone; the counter turns orange and its last digits blur" },
-      { "milestone": 3, "verb": "flattened", "becomes": "white-hot, it cracks and bursts as the last block goes in; the blast knocks him flat, arms empty" }
+      { "milestone": 3, "verb": "flinch", "becomes": "30 years gone, 10 bricks left: he flinches back from the board" },
+      { "milestone": 4, "verb": "flattened", "becomes": "white-hot, it cracks and bursts as the last block goes in; the blast knocks him flat, arms empty" }
     ],
     "heat": [
       { "t": 0.0, "state": "cool" },

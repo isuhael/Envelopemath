@@ -32,11 +32,23 @@
 // (the waiting circles included); spare height opens the gaps. Only a ladder too long for the page at any legal size
 // scrolls (the sheet moves up during the filings, starting at the work area's top, so no gap shows).
 //
+// Payoff (lookOpts.payoff, optional): one more step after the ladder that divides two of its costs, e.g. "Private vs
+// community / $45,000 ÷ $4,150 = [≈ 10.8×]". It opens like a rung (its circle shows "=", it waits under the ladder
+// from frame 1), the last rung files into its row as it opens, and its result lands on the biggest box on the sheet
+// (payoffScale × the final size): the payoff is the climax, not a check line. It draws no icons.
+// Shared icon scale (lookOpts.iconScale = k): every rung's icon strip draws one icon per k units, at one icon size and
+// one row count for the whole ladder, so the strips grow rung by rung (7 → 19 → 51 → 72 icons for k = 100); the unit
+// row carries the key "[icon] = k". The last rung then draws a strip like the others (no free-page field).
+//
 // data: { unit: { name, price, icon }, rungs: [{ t, item, cost, units, unitsDisplay, tone?, resultT? }],
 //         typeDur?, hold?, check?, checkT? }
 // lookOpts: loop (true) · unitRow ('auto' | 'show' | 'hide'; badge: false = 'hide') · grid (true) · field (true: the
 //           final icon field) · slots (true: waiting circles) · check / checkT (same as data.check / data.checkT;
-//           a string or { t, text }) · countSpeed (1; > 1 = slower counters) · debug
+//           a string or { t, text }) · countSpeed (1; > 1 = slower counters) · debug ·
+//           payoff ({ t, label, cost, by, display, tone = 'goal' }) · payoffScale (1.3) · iconScale (1) · openScale (1) ·
+//           filedScale (1: a filed row's result size; smaller leaves its cost room on one line) ·
+//           oneLine (false: true = a layout fits only when every label is one line and every filed row keeps its cost) ·
+//           maxScale (1: type scales above 1 tried first, down to 1, before the usual ones)
 import { h, css as style, prog, ease, clamp, lerp, plain } from '../../../runtime/core.js'
 import { C, SIZE, GRID, MOTION, md, hlBox, typeLine, stepCircle, fadeUp, fade, show, blink, durationOf, typeTime, unitIcon, iconDefs, iconUse, ICON_NAMES, readCheck, breakLine } from '../lib.js'
 
@@ -61,6 +73,8 @@ export const css = `
 .ul-grid.ul-pile { -webkit-mask-image: linear-gradient(to right, #000 62%, transparent 100%); mask-image: linear-gradient(to right, #000 62%, transparent 100%); }
 .ul-field > svg { position: absolute; left: 0; top: 0; transform-origin: 50% 50%; }
 .ul-check { white-space: pre; line-height: 1.2; }
+.ul-key { display: flex; align-items: center; gap: 10px; margin-left: 14px; }
+.ul-key .cs-icon { display: block; flex: none; }
 .ul-cost { white-space: nowrap; font: 600 40px/1 'IBM Plex Mono', 'Inter Full', monospace; color: #6B7280; letter-spacing: -.01em; }
 `
 
@@ -68,13 +82,14 @@ const SCALES = [1, 0.96, 0.92, 0.88, 0.85, 0.82]
 const FLOOR = { label: 40, formula: 40, result: 54, final: 62, cond: 44 }
 const LEAD_GAP = 16      // gap between a label / result and the dotted leader
 const LEAD_MIN = 32      // shortest leader worth drawing (the label column leaves room for it)
+const LEAD_COST = 16     // a filed row keeps its cost with a leader down to this (every row keeps its working)
 const COLLAPSE = 0.42    // a finished rung files into its row over this long
 const CLEAR_A = 0.32     // loop: everything fades out...
 const CLEAR_B = 0.26     // ...then rung 1 comes back in its frame-1 state
 const EDGE = 40          // scroll mode: rows fade out over the last 40 px above the work area
 const PEND_GAP = 12      // waiting circles: gap under the open rung
 const FIELD_OP = 0.62    // the final icon field's opacity (a lighter pile, so the number stays the focus)
-const COST_GAP = 18      // a filed row: gap between its label and its cost
+const COST_GAP = 14      // a filed row: gap between its label and its cost
 
 const n3 = v => (Math.round(v * 1000) / 1000).toString()
 
@@ -112,19 +127,26 @@ export default function unitLadder(spec, ctx) {
   const loop = LO.loop !== false
   const unit = { name: 'unit', price: '', icon: 'token', ...(d.unit || {}) }
   const iconName = ICON_NAMES.includes(unit.icon) ? unit.icon : 'token'
-  const rungs = (d.rungs || []).slice(0, 9) // single-digit step circles; FORMATS asks for 4-7
+  const PO = LO.payoff && LO.payoff.display != null ? LO.payoff : null
+  const rungs0 = (d.rungs || []).slice(0, PO ? 8 : 9) // single-digit step circles; FORMATS asks for 4-7
+  const rungs = PO ? [...rungs0, {
+    t: PO.t, item: PO.label || '', cost: PO.cost || '', op: PO.by ? ' ÷ ' + PO.by : '', unitsDisplay: String(PO.display),
+    units: parseFloat(String(PO.display).replace(/[^\d.]/g, '')) || 0, tone: PO.tone || 'goal', resultT: PO.resultT, payoff: true,
+  }] : rungs0
   const N = rungs.length
+  const scaleU = LO.iconScale > 1 ? +LO.iconScale : 1
   const right = P.right
   const textX = GRID.textX
   const log = (...a) => { if (LO.debug) console.log('unit-ladder', ...a) }
 
   // ---------------------------------------------------------------- timing
   const op = unit.price ? ' ÷ ' + unit.price : ''
+  const opOf = r => (r.payoff ? r.op : op)
   const T = []
   rungs.forEach((r, i) => {
     const prev = T[i - 1]
     const t0 = r.t != null ? +r.t : prev ? prev.land + 2.4 : 0.6
-    const typeDur = d.typeDur != null ? +d.typeDur : clamp((op + ' =').length / 16, 0.4, 0.9)
+    const typeDur = d.typeDur != null ? +d.typeDur : clamp((opOf(r) + ' =').length / 16, 0.4, 0.9)
     let res = r.resultT != null ? +r.resultT : t0 + typeDur + 0.25
     if (res < t0 + 0.15) res = t0 + 0.15
     const typeD = Math.max(0.12, Math.min(typeDur, res - t0 - 0.08))
@@ -193,20 +215,27 @@ export default function unitLadder(spec, ctx) {
     const eq = h('div', { class: 'ul-unit-eq', text: '=' })
     const box = hlBox({ html: md(unit.price), tone: 'input', px: 58 })
     const iconWrap = h('div', { class: 'ul-unit-icon', 'data-deco': '' }, icon)
-    const el = h('div', { class: 'ul-unit' }, name, eq, box.el)
+    // the shared icon scale's key: "[icon] = 100"
+    const keyIcon = scaleU > 1 ? unitIcon(iconName, { size: 44 }) : null
+    const keyTxt = scaleU > 1 ? h('div', { class: 'ul-unit-eq ul-key-txt', text: '= ' + scaleU.toLocaleString('en-US') }) : null
+    const key = scaleU > 1 ? h('div', { class: 'ul-key' }, keyIcon, keyTxt) : null
+    const el = h('div', { class: 'ul-unit' }, name, eq, box.el, ...(key ? [key] : []))
     sheet.append(iconWrap, el)
-    return { el, iconWrap, icon, name, eq, box }
+    return { el, iconWrap, icon, name, eq, box, key, keyIcon, keyTxt }
   })()
 
+  const payoffK = LO.payoffScale > 0 ? +LO.payoffScale : 1.3
+  const openK = LO.openScale > 0 ? +LO.openScale : 1        // the open (and pre-filled) result box; filed rows keep their size
+  const filedK = LO.filedScale > 0 ? +LO.filedScale : 1     // a filed row's result (never under the 44 px floor)
   const R = rungs.map((r, i) => {
     const last = i === N - 1
     const wrap = h('div', { class: 'ul-rung' })
-    const circle = stepCircle(i + 1)
+    const circle = stepCircle(r.payoff ? '=' : i + 1)
     const label = h('div', { class: 'ul-label', html: keepHyphens(md(r.item || '')) })
     const cost = String(r.cost || '')
-    const formula = typeLine({ text: cost + op, suffix: ' =' })
+    const formula = typeLine({ text: cost + opOf(r), suffix: ' =' })
     const disp = r.unitsDisplay != null ? String(r.unitsDisplay) : String(r.units ?? '')
-    const box = hlBox({ html: md(disp), tone: r.tone, px: last ? SIZE.final : SIZE.result })
+    const box = hlBox({ html: md(disp), tone: r.tone, px: r.payoff ? Math.round(SIZE.final * payoffK) : last ? SIZE.final : Math.round(SIZE.result * openK) })
     style(box.el, { position: 'absolute', transformOrigin: '0 0' })
     const leader = h('div', { class: 'ul-leader', 'data-deco': '' })
     const grid = h('div', { class: 'ul-grid', 'data-deco': '' })
@@ -216,7 +245,7 @@ export default function unitLadder(spec, ctx) {
     if (costEl) wrap.append(costEl)
     sheet.append(wrap)
     return {
-      i, last, wrap, circle, label, formula, box, leader, grid, costEl, disp, finalHTML: md(disp), count: parseCount(disp),
+      i, last, payoff: !!r.payoff, wrap, circle, label, formula, box, leader, grid, costEl, disp, finalHTML: md(disp), count: parseCount(disp),
       costLen: [...cost].length, fullLen: [...formula.full].length, icons: [],
     }
   })
@@ -236,9 +265,10 @@ export default function unitLadder(spec, ctx) {
   const metrics = (sc, tight = false) => ({
     label: Math.max(FLOOR.label, Math.round(SIZE.label * sc)),
     formula: Math.max(FLOOR.formula, Math.round(SIZE.formula * sc)),
-    result: Math.round(SIZE.result * sc),
+    result: Math.round(SIZE.result * sc * openK),
     final: Math.round(SIZE.final * sc),
-    cond: Math.max(FLOOR.cond, Math.round(52 * sc)),
+    payoff: Math.round(SIZE.final * payoffK * sc),
+    cond: Math.max(FLOOR.cond, Math.round(52 * sc * filedK)),
     circle: Math.round(SIZE.circle * Math.max(0.88, sc)) - (tight ? 6 : 0), // tight rows: slimmer rings that never touch
     unitPx: Math.max(FLOOR.label, Math.round(46 * sc)), unitBox: Math.round(58 * sc), unitIcon: Math.round(64 * sc),
     gF: Math.round(4 * sc), gR: Math.round(10 * sc), gap: Math.round((tight ? 6 : 16) * sc), unitGap: Math.round((tight ? 18 : 30) * sc),
@@ -283,17 +313,21 @@ export default function unitLadder(spec, ctx) {
     if (withUnit) {
       U.box.setPx(m.unitBox)
       style(U.name, { fontSize: m.unitPx + 'px', maxWidth: '', width: '' }); style(U.eq, { fontSize: m.unitPx + 'px' })
+      if (U.key) {
+        style(U.keyTxt, { fontSize: m.unitPx + 'px' })
+        U.keyIcon.setAttribute('width', Math.round(m.unitPx * 1.05)); U.keyIcon.setAttribute('height', Math.round(m.unitPx * 1.05))
+      }
       U.icon.setAttribute('width', m.unitIcon); U.icon.setAttribute('height', m.unitIcon)
       // the key row sits on the sheet's grid: icon centred in the step-circle column, text on the text column
       style(U.el, { left: textX + 'px', top: y + 'px', height: '', width: (right - textX) + 'px' })
       // a long unit name wraps (balanced, 2 lines at most) instead of running into the rail
-      const over = U.box.el.getBoundingClientRect().right - right
+      const over = (U.key || U.box.el).getBoundingClientRect().right - right
       if (over > 0) {
         style(U.name, { maxWidth: Math.floor(U.name.getBoundingClientRect().width - over) + 'px' })
         const nl = lineRects(U.name)
         if (nl.length) style(U.name, { width: Math.ceil(Math.max(...nl.map(l => l.right)) - Math.min(...nl.map(l => l.left))) + 1 + 'px' })
       }
-      if (U.box.el.getBoundingClientRect().right > right + 0.5 || lineRects(U.name).length > 2) fits = no('unit-width')
+      if ((U.key || U.box.el).getBoundingClientRect().right > right + 0.5 || lineRects(U.name).length > 2) fits = no('unit-width')
       const uh = Math.round(Math.max(U.el.getBoundingClientRect().height, m.unitBox * 1.3))
       style(U.iconWrap, { left: Math.round(GRID.stepX + SIZE.circle / 2 - m.unitIcon / 2) + 'px', top: Math.round(y + uh / 2 - m.unitIcon / 2) + 'px' })
       y += uh + m.unitGap + extra
@@ -302,7 +336,7 @@ export default function unitLadder(spec, ctx) {
     const needs = []
     cPitch = m.circle + m.cGap
     R.forEach((r, i) => {
-      const px = r.last ? m.final : m.result
+      const px = r.payoff ? m.payoff : r.last ? m.final : m.result
       r.box.setPx(px)
       style(r.box.el, { minWidth: '' })
       r.box.setHTML(r.finalHTML)
@@ -321,7 +355,7 @@ export default function unitLadder(spec, ctx) {
       const costW = r.costEl ? Math.ceil(r.costEl.getBoundingClientRect().width) : 0
       if (costW && !r.last) {
         // where the cost fits after the label's last line (and a leader after it)
-        const room = ls => ls[ls.length - 1].right + COST_GAP + costW + LEAD_GAP + LEAD_MIN + LEAD_GAP <= right - cW + 0.5
+        const room = ls => ls[ls.length - 1].right + COST_GAP + costW + LEAD_GAP + LEAD_COST + LEAD_GAP <= right - cW + 0.5
         const n0 = lines.length
         style(r.label, { width: Math.max(120, labW - costW - COST_GAP) + 'px' })
         const l2 = lineRects(r.label)
@@ -345,6 +379,8 @@ export default function unitLadder(spec, ctx) {
       }
       const lh = r.label.getBoundingClientRect().height
       if (lines.length > 3 || labW < 220) fits = no(`label${i}`)
+      // lookOpts.oneLine: every label on one line (a set sheet, no ragged stacks)
+      if (LO.oneLine && lines.length > 1) fits = no(`lines${i}`)
       const lastLine = lines[lines.length - 1] || { right: textX }
       const lastMid = y + lh - lineH / 2
       // circle on the first line (the circles live on the sheet itself: they wait, empty, before their rung opens)
@@ -374,17 +410,18 @@ export default function unitLadder(spec, ctx) {
       r.costOn = false
       if (r.costEl) {
         const cl = Math.round(lastLine.right + COST_GAP)
-        r.costOn = cl + costW + LEAD_GAP + LEAD_MIN + LEAD_GAP <= cx
+        r.costOn = cl + costW + LEAD_GAP + LEAD_COST + LEAD_GAP <= cx
         style(r.costEl, { display: r.costOn ? '' : 'none', left: cl + 'px', top: Math.round(lastMid - 20) + 'px' })
         if (r.costOn) costRight = cl + costW
-        else log(`  rung${i}: no room for the cost on its filed row`)
+        else if (LO.oneLine) fits = no(`cost${i}`)            // ... and every filed row keeps its cost
+        else log(`  rung${i}: no room for the cost on its filed row (cost ${cl}+${costW}, result at ${Math.round(cx)}, label lines ${lines.length})`)
         // after a wrapped label's last line the cost sits inside the label's bounding box (the linter measures a text
         // run as one box); it is placed clear of every line, so that overlap is intended
         if (lines.length > 1) r.costEl.setAttribute('data-overlap-ok', '')
         else r.costEl.removeAttribute('data-overlap-ok')
       }
       const lx0 = Math.round(costRight + LEAD_GAP), lx1 = Math.round(cx - LEAD_GAP)
-      r.leaderOn = lx1 - lx0 >= 24
+      r.leaderOn = lx1 - lx0 >= LEAD_COST - 2
       style(r.leader, { left: lx0 + 'px', top: Math.round(lastMid - 3) + 'px', width: Math.max(0, lx1 - lx0) + 'px' })
       // icon grid area: right of the open result box
       const gx = bx + boxW + 26
@@ -423,9 +460,13 @@ export default function unitLadder(spec, ctx) {
   const unitChoices = !unit.price || uMode === 'hide' ? [false] : uMode === 'show' ? [true] : priceShown ? [true, false] : [true]
   // candidates in order of preference: the unit row (the given) is worth a little type size, not a lot; every scale
   // with normal row gaps before tight ones; the check line goes before anything scrolls
+  // lookOpts.maxScale: bigger type first (in 0.04 steps down to 1), then the usual scales
+  const up = []
+  for (let sc = Math.min(1.5, +LO.maxScale || 1); sc > 1.001; sc = Math.round((sc - 0.04) * 100) / 100) up.push(sc)
+  const SC = [...up, ...SCALES]
   const base = unitChoices.length > 1
-    ? [...SCALES.filter(sc => sc >= 0.88).map(sc => [sc, true]), ...SCALES.map(sc => [sc, false])]
-    : SCALES.map(sc => [sc, unitChoices[0]])
+    ? [...SC.filter(sc => sc >= 0.88).map(sc => [sc, true]), ...SCALES.map(sc => [sc, false])]
+    : SC.map(sc => [sc, unitChoices[0]])
   const cands = []
   // (cw: a label may wrap once more so its filed row keeps its cost: the working outranks type size and the check)
   const hasCost = R.some(r => r.costEl)
@@ -513,12 +554,29 @@ export default function unitLadder(spec, ctx) {
     probe.remove()
     return x1 > x0 ? { x0: x0 / 48, x1: x1 / 48 } : { x0: 0.1, x1: 0.9 }
   })()
+  // the shared icon scale: one icon size and one row count for every rung, the biggest that holds every strip
+  let shared = null
+  if (gridOn && scaleU > 1) {
+    const ladder = R.filter(r => !r.payoff)
+    for (let sz = 46; sz >= 18 && !shared; sz -= 2) {
+      for (let rows = 1; rows <= 5 && !shared; rows++) {
+        if (ladder.every((r, j) => {
+          const A = r.area, need = Math.ceil(T[r.i].units / scaleU - 1e-6)
+          const rr = Math.min(rows, need)
+          return A.w >= 60 && rr * sz + (rr - 1) * GAP <= A.h && Math.ceil(need / rows) * (sz + GAP) - GAP <= A.w
+        })) shared = { s: sz, rows }
+      }
+    }
+    log('shared icon scale', scaleU, JSON.stringify(shared))
+  }
   R.forEach((r, i) => {
     const A = r.area
-    const units = T[i].units
+    const units = T[i].units / scaleU                   // in icons (one icon = scaleU units)
     const need = Math.ceil(units - 1e-6)
     let plan = null
-    if (gridOn && A.w >= 60 && need > 0) {
+    if (r.payoff) { show(r.grid, false); r.plan = null; return }
+    if (shared && need > 0) plan = { exact: true, rows: Math.min(shared.rows, need), s: shared.s, n: need, g: GAP }
+    else if (gridOn && scaleU === 1 && A.w >= 60 && need > 0) {
       // exact: one icon per unit, the biggest icons that hold them all (fewest rows); a few units get big icons
       for (let rows = 1; rows <= 4 && !plan; rows++) {
         const sz = Math.min(rows === 1 ? A.h : 46, Math.floor((A.h - (rows - 1) * GAP) / rows))

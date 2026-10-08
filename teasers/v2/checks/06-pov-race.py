@@ -293,6 +293,8 @@ A["yrs_per_doubling"] = A["years"] / A["doublings"]
 A["x_below"] = cross_x(A["own"], IPHONE_PRICE, below=True)               # 2008 dip under $499
 A["x_10k"] = cross_x(A["own"], 10_000, below=False)                      # passes $10,000
 A["drop_2022"] = 1 - AAPL_CLOSE[2022] / AAPL_CLOSE[2021]
+A["v2012"] = A["shares"] * AAPL_CLOSE[2012]                              # spoken "2012: about $2,200"
+A["mult_2017"] = A["shares"] * AAPL_CLOSE[2017] / IPHONE_PRICE           # spoken "2017: over 10 times"
 A["statmuse_only"] = IPHONE_PRICE * SM_AAPL_YE2025 / SM_AAPL_LAUNCH     # cross-check
 check("06a", "launch-day close: 5.92 x 122.04 / 198.08, to 2 dp = the input",
       f"{A['adj_buy_exact']:.4f} -> {rnd(A['adj_buy_exact'], 2):.2f}", f"{AAPL_LAUNCH_ADJ:.2f}",
@@ -311,6 +313,8 @@ check("06a", "2022 drop is 'a quarter' (20-30%)", f"{A['drop_2022']:.3f}", "0.20
       ok=0.20 <= A["drop_2022"] <= 0.30)
 check("06a", "2008 dip under $499 happens in 2008", int(A["x_below"]), 2008)
 check("06a", "passes $10,000 in 2020", int(A["x_10k"]), 2020)
+check("06a", "vo: 2012 close ≈ $2,200 (2 s.f.)", f"{A['v2012']:,.2f}", "2,200", ok=f"{sig(A['v2012'], 2):,.0f}" == "2,200")
+check("06a", "vo: 2017 'over 10 times' (10-11×)", f"{A['mult_2017']:.2f}", "10-11", ok=10 < A["mult_2017"] < 11)
 
 # ---------------------------------------------------------------- 06b
 
@@ -438,34 +442,39 @@ EXP["a"] = {
         "data.own.final": A["final_disp"],
         "data.purchases.0.label": f"iPhone {IPHONE_GB}GB",
         "data.purchases.0.price": usd(IPHONE_PRICE),
-        "lookOpts.footerSteps.0.text": f"{usd(IPHONE_PRICE)} × {rnd(A['mult'], 1)} ≈ "
-                                        f"${sig(IPHONE_PRICE * rnd(A['mult'], 1), 2):,.0f}",
+        # assembly round 2: the finish's working line shows what is not on screen elsewhere (shares × close),
+        # not a third copy of ≈ $37,000
+        "lookOpts.footerSteps.0.text": f"≈ {rnd(A['shares'], 1)} shares × {usd(MT_AAPL_CLOSE[2025], 2)} "
+                                        f"({VALUE_DATE.month}/{VALUE_DATE.day}/{VALUE_DATE:%y} close)",
     },
     "points": {"spend": A["spend"], "own": A["own"]},
     "purchases_x": [A["buy_x"]],
     # VO: numbers in order per line; 'about' required before rounded figures
+    # assembly round 2: the hook line carries the POV and the stake; the middle lines each land a number
     "vo_numbers": [
-        [str(IPHONE_PRICE)],
-        [],
-        [], [],
+        [str(LAUNCH.year), str(IPHONE_PRICE)],
+        ["2012", f"{sig(A['v2012'], 2):,.0f}"],
+        ["2017", "10"],
         [str(int(A["x_10k"])), "10,000"],
         ["2022"],
         [str(VALUE_DATE.year), A["final_say"]],
         [mult(A["mult"]), f"{rnd(A['yrs_per_doubling']):.0f}"],
     ],
-    "vo_about": {6: [A["final_say"]], 7: [mult(A["mult"]), f"{rnd(A['yrs_per_doubling']):.0f}"]},
-    # beat sync: (vo line, x on the chart). The 2008 dip (t 2.1-2.8) plays under vo[1] on purpose:
+    "vo_about": {1: [f"{sig(A['v2012'], 2):,.0f}"], 5: [A["final_say"]],
+                 6: [mult(A["mult"]), f"{rnd(A['yrs_per_doubling']):.0f}"]},
+    # beat sync: (vo line, x on the chart). The 2008 dip (t 2.1-2.8) plays under vo[0] on purpose:
     # the chart opens in the red while the premise is spoken (ChartOrbit's open-in-the-red device).
     "sync": [(0, A["buy_x"], "purchase tick"), (0, ye(2007), "first payoff (end of 2007)"),
-             (4, A["x_10k"], "passes $10,000"), (5, ye(2022) - 0.5, "2022 drop"),
-             (6, ye(2025), "final value")],
-    "sfx": {0: A["buy_x"], 1: ye(2008), 2: A["x_10k"], 3: ye(2025)},
+             (1, ye(2012), "2012 close ≈ $2,200"), (2, ye(2017), "2017 close, over 10×"),
+             (3, A["x_10k"], "passes $10,000"), (4, ye(2022) - 0.5, "2022 drop"),
+             (5, ye(2025), "final value")],
+    "sfx": {0: A["buy_x"], 1: ye(2008), 2: ye(2012), 3: ye(2017), 4: A["x_10k"], 5: ye(2025)},
     "lookOpts_t": {"footerSteps.0": ye(2025)},
 }
 
 # sanity on the claims baked into the strings above
-check("06a", "footer step result = final display", EXP["a"]["strings"]["lookOpts.footerSteps.0.text"].split("≈ ")[1],
-      A["final_disp"].split("≈ ")[1])
+check("06a", "footer step: 136.7 × $271.12 to the nearest $1,000 = the final display",
+      f"≈ ${sig(rnd(A['shares'], 1) * MT_AAPL_CLOSE[2025], 2):,.0f}", A["final_disp"])
 check("06a", "pinned: 136.7 shares x $271.12 ≈ $37,062", usd(rnd(A["shares"], 1) * MT_AAPL_CLOSE[2025]), "$37,062")
 
 # ---- 06b

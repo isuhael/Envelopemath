@@ -34,12 +34,26 @@
 //            take-home slab: the label in caps on its left, the display string at hero size on its right), stamped
 //            into the free air above the sum check at t (impact, hit + cash) while he celebrates. The display string
 //            is shown exactly as written. Skipped (console.warn) when the air above the check is too short for it.
+//   payoff.slot: { t, text, ghost = '$?' }  the header's answer slot (bins mode): a dashed gold box hung after the
+//            header's last line (a dotted leader runs from its colon), on screen from frame 1 with the ghost text,
+//            so the hook's "this much a day:" points at something. At t the text stamps in on a gold plate (impact,
+//            hit + cash) and stays to the end; it bumps again when the payoff slab re-slams.
+//   needs: { t, parts: [i, j], text }       a bracket over those bins' amounts, its label on the working-line row
+//            ("NEEDS 50% = 5 bricks"), drawn at t and kept to the end. With it the part notes leave the working
+//            row for the air the slab has freed above the bins (each over its own bin where it fits).
+//   actions[i].tool (a part's action)       the cleaver's label for that part's cut ('4 × $300'); the cleaver is
+//            relabelled at each raise (it no longer keeps '÷ 10' after the chop). actions[i].after: a label shown
+//            after that part lands, until the next raise (e.g. '÷ 30' on the per-day beat).
+//   headerSpacing: false                    keep the kit's header tracking (by default the header gets 0.2em word
+//            spacing and -0.01em letter spacing: the kit's tight setting ran words together at phone size)
 //   layout: 'bins' | 'rows'                 force a layout
 //   figure: false                           no figure (the pieces just drop on their beats)
 //   figureScale: number                     override the figure size
+// Bins mode details: amounts are capped at 85% of a bin's width (else the old fit), the fill targets are a solid
+// line over a pale tint, tenth bricks carry their value ("$300") and the slab is scored at every brick seam.
 import {
-  h, s, style, attr, setHTML, markup, plain, prog, clamp, lerp, typed,
-  C, F, L, S, E, track, poseTrack, poseOf, runPose, blendPose, secondary, fk, pinLimb, blendJ, Figure,
+  h, s, style, attr, setHTML, markup, plain, prog, clamp, lerp, typed, fitText,
+  C, F, T, L, S, E, track, poseTrack, poseOf, runPose, blendPose, secondary, fk, pinLimb, blendJ, Figure,
   makeWorld, makeFx, camera, NumObj, chromeParts, durationOf, num, measure, arc, hop, squashAt, popIn, toneOf, rng, wobble,
 } from '../lib.js'
 
@@ -74,6 +88,13 @@ export const css = `
 .ss-rl { font-family: ${F.head}; font-weight: 800; letter-spacing: -0.01em; color: ${C.ink}; }
 .ss-rl .p { font-family: ${F.mono}; font-weight: 800; letter-spacing: -0.03em; color: ${C.grey}; }
 .ss-rl.wrap { white-space: normal; }
+.ss-wls { position: absolute; white-space: nowrap; font: 700 40px/${WL_LH}px ${F.mono}; letter-spacing: -0.02em; color: ${C.grey}; }
+.ss-wls b { color: ${C.ink}; font-weight: 800; }
+.ss-wls em { color: ${C.heroInk}; font-weight: 800; }
+.ss-needs { position: absolute; white-space: nowrap; font: 800 40px/${WL_LH}px ${F.head}; letter-spacing: 0; color: ${C.ink}; transform-origin: 0 50%; }
+.ss-slot { position: absolute; box-sizing: border-box; border-radius: 16px; transform-origin: 50% 50%; display: flex; align-items: center; justify-content: center; }
+.ss-slot span { font-family: ${F.head}; font-weight: 900; letter-spacing: -0.03em; line-height: 1; white-space: nowrap; }
+.ss-slot-lead { position: absolute; height: 8px; background-repeat: repeat-x; background-size: 18px 8px; background-image: radial-gradient(circle at 4px 4px, ${C.dim} 0, ${C.dim} 3.2px, transparent 3.8px); }
 `
 
 const hex = c => [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16))
@@ -149,23 +170,24 @@ function sawProp(parent) {
 // Cleaver with an operator on it (green mono on ink, like the kit's operator gate). Local frame for a figure
 // facing left: grip at the origin, the handle runs back (+x), the blade sticks out in front (-x), edge down (+y).
 const CLV = { bw: 158, top: -30, edge: 46, gap: 14 }
-function cleaverProp(parent, label) {
+// bw: the blade's width (wider when a label such as "4 × $300" needs it); px: the first label's size
+function cleaverProp(parent, label, bw = CLV.bw, px = 42) {
   const g = s('g', { class: 'ss-cleaver', 'data-deco': '' })
   const shape = s('g')
-  const bx = -CLV.gap - CLV.bw
+  const bx = -CLV.gap - bw
   shape.append(
     s('rect', { x: -8, y: -10, width: 58, height: 20, rx: 10, fill: C.ink }),
-    s('rect', { x: bx, y: CLV.top, width: CLV.bw, height: CLV.edge - CLV.top, rx: 10, fill: C.ink }),
-    s('rect', { x: bx + 7, y: CLV.edge - 15, width: CLV.bw - 14, height: 9, rx: 4, fill: '#DCE1E7' }),
+    s('rect', { x: bx, y: CLV.top, width: bw, height: CLV.edge - CLV.top, rx: 10, fill: C.ink }),
+    s('rect', { x: bx + 7, y: CLV.edge - 15, width: bw - 14, height: 9, rx: 4, fill: '#DCE1E7' }),
   )
-  const cx = bx + CLV.bw / 2, cy = (CLV.top + CLV.edge - 15) / 2
+  const cx = bx + bw / 2, cy = (CLV.top + CLV.edge - 15) / 2
   const tg = s('g')
-  const tx = s('text', { x: cx, y: cy, 'text-anchor': 'middle', 'dominant-baseline': 'central', class: 'br-gate-t', 'font-size': 42 })
+  const tx = s('text', { x: cx, y: cy, 'text-anchor': 'middle', 'dominant-baseline': 'central', class: 'br-gate-t', 'font-size': px, style: 'letter-spacing:-0.04em' })
   tx.textContent = label
   tg.append(tx)
   g.append(shape, tg)
   parent.append(g)
-  return { g, shape, tg, cx }
+  return { g, shape, tg, tx, cx, label, px }
 }
 
 export default function splitSheet(spec, ctx) {
@@ -208,6 +230,14 @@ export default function splitSheet(spec, ctx) {
   const act0 = (lo.actions || []).find(a => a && a.part == null && Number.isFinite(a.t))
   const toolT = ten ? clamp(act0 ? act0.t : ten.t - 1.4, 0.15, ten.t - 0.5) : 0
   const toolLabel = ten ? String((act0 && act0.tool) || ('÷ ' + ten.cnt)) : ''
+  const actOf = i => (lo.actions || []).find(a => a && a.part === i) || null
+  // the cleaver's labels: the chop's operator, then each cut's own action ('4 × $300') and an optional `after`
+  const clvLabels = ten ? [toolLabel, ...PP.flatMap((p, i) => { const a = actOf(i); return a ? [a.tool, a.after] : [] }).filter(Boolean).map(String)] : []
+  const clvW42 = x => measure(x, fM(800, 42), { letterSpacing: '-0.04em' })
+  const CBW = ten ? clamp(Math.ceil(Math.max(...clvLabels.map(x => clvW42(x) * 36 / 42)) + 30), CLV.bw, 196) : CLV.bw
+  const clvPx = x => clamp(Math.floor(42 * (CBW - 26) / Math.max(1, clvW42(x))), 30, 42)
+  const needsO = lo.needs && lo.needs.text && Number.isFinite(lo.needs.t) && Array.isArray(lo.needs.parts) && lo.needs.parts.length ? lo.needs : null
+  const slotO = lo.payoff && lo.payoff.slot && lo.payoff.slot.text != null && Number.isFinite(lo.payoff.slot.t) ? lo.payoff.slot : null
 
   // units: the pieces that fall (one per part, or `count` bricks)
   const units = []
@@ -228,6 +258,12 @@ export default function splitSheet(spec, ctx) {
 
   // ================================================================== layout
   const parts = chromeParts(spec, ctx)
+  // the kit's header tracking (-0.025em, no extra word space) runs words together at phone size ("thismuch a day");
+  // this format opens its own header up (refitted: it can only get smaller, so the band below never moves)
+  if (lo.headerSpacing !== false && parts.header) {
+    style(parts.header, { wordSpacing: '0.2em', letterSpacing: '-0.01em' })
+    fitText(parts.header, L.right - L.left, { maxH: L.headerBottom - L.headerTop, minPx: T.headerMin })
+  }
   const top = parts.workTop
   const showFig = lo.figure !== false
   const figHgt = k => { const J = fk(poseOf('stand'), { x: 0, ground: 1000, scale: k }); return 1000 - (J.head[1] - J.R) + 8 }
@@ -264,9 +300,15 @@ export default function splitSheet(spec, ctx) {
     }
     if (!lab) return null
     let apx = 0
-    // an amount may overhang its bin into the gutters (its landing squash is limited so it never touches a neighbour)
+    // amounts sit centred on their bins: none is wider than 88% of its bin, a plate included (else a wide "$1,200"
+    // fills the bin and crowds the next plate), and neighbours keep >= 32 px of air between their painted edges;
+    // only when nothing fits that (down to 44 px) may an amount overhang into the gutters, as before
+    const amtW = (i, px) => measure(String(PP[i].amount), fH(900, px), { letterSpacing: '-0.03em' }) + (tones[i] === 'goal' ? 2 * PLATE[0] + 14 : 0)
+    const paintW = (i, px) => measure(String(PP[i].amount), fH(900, px), { letterSpacing: '-0.03em' }) + (tones[i] === 'goal' ? 2 * PLATE[0] : 0)
+    const airy = px => PP.every((p, i) => paintW(i, px) <= 0.88 * bw && (i === 0 || (paintW(i - 1, px) + paintW(i, px)) / 2 <= bw + gap - 32))
+    for (let px = 72; px >= 44 && !apx; px -= 2) if (airy(px)) apx = px
     for (let px = 72; px >= (n > 3 ? 48 : 52) && !apx; px -= 2) {
-      if (PP.every((p, i) => measure(String(p.amount), fH(900, px), { letterSpacing: '-0.03em' }) + (tones[i] === 'goal' ? 2 * PLATE[0] + 14 : 0) <= bw + gap - 12)) apx = px
+      if (PP.every((p, i) => amtW(i, px) <= bw + gap - 12)) apx = px
     }
     if (!apx) return null
     const plinthH = lab.nl * lab.lh + 18
@@ -384,7 +426,13 @@ export default function splitSheet(spec, ctx) {
   if (bins) {
     PP.forEach((p, i) => {
       const b = B[i]
-      const ph = s('rect', { x: b.ix0, y: lay.binFloor - 5 - b.fillH, width: b.ix1 - b.ix0, height: b.fillH, rx: 8, fill: 'none', stroke: C.line, 'stroke-width': 4, 'stroke-dasharray': '10 10' })
+      // the fill target: a pale tint up to a solid fill line (a dashed grey outline did not read at phone size)
+      const ph = s('g')
+      const fy = lay.binFloor - 5 - b.fillH
+      ph.append(
+        s('rect', { x: b.ix0, y: fy, width: b.ix1 - b.ix0, height: b.fillH, rx: 8, fill: '#E4E8EE' }),
+        s('line', { x1: b.ix0 + 3, x2: b.ix1 - 3, y1: fy + 2, y2: fy + 2, stroke: C.dim, 'stroke-width': 5, 'stroke-linecap': 'round' }),
+      )
       g.back.append(ph)
       const bodyG = s('g')
       const lip = 9
@@ -462,11 +510,15 @@ export default function splitSheet(spec, ctx) {
     s('line', { x1: POST_X - 34, x2: POST_X + 34, y1: FLOOR - 4, y2: FLOOR - 4, stroke: C.ink, 'stroke-width': S.prop, 'stroke-linecap': 'round' }),
   )
   // cut notches on the top and bottom edge at every part boundary (the plan, visible from frame 1)
+  // (tenth bricks: the slab is scored at every brick seam, with shallow notches that stay in the slab's rim, clear
+  // of the label and the total)
   const notchG = s('g')
   const notches = []
-  for (let i = 1; i < n + (leftover ? 1 : 0); i++) {
-    const x = ux(cum[i])
-    const el = s('path', { d: `M${x - 11},${ys - 3}L${x},${ys + 13}L${x + 11},${ys - 3}ZM${x - 11},${ys + slabH + 3}L${x},${ys + slabH - 13}L${x + 11},${ys + slabH + 3}Z`, fill: C.ink })
+  const seams = ten ? Array.from({ length: ten.cnt - 1 }, (_, k) => (k + 1) / ten.cnt) : cum.slice(1, n + (leftover ? 1 : 0))
+  const nw = ten ? 9 : 11, nd = ten ? 7 : 13
+  for (const fr of seams) {
+    const x = ux(fr)
+    const el = s('path', { d: `M${x - nw},${ys - 3}L${x},${ys + nd}L${x + nw},${ys - 3}ZM${x - nw},${ys + slabH + 3}L${x},${ys + slabH - nd}L${x + nw},${ys + slabH + 3}Z`, fill: C.ink })
     notchG.append(el)
     notches.push({ el, x })
   }
@@ -488,11 +540,15 @@ export default function splitSheet(spec, ctx) {
   const totPx = TF.totPx
   const tot = new NumObj(html, { cls: 'ss-tot', text: totDisp, ax: 1, ay: 0.5, style: { fontSize: totPx + 'px' } })
   const totLabX = X0 + 26, totX = SX1 - 26
+  // a brick carries its value ("$300"), sized to fit the brick (34 -> 26 px; it repeats the working line, so it is
+  // decoration for the lint)
+  let brickPx = 34
+  if (ten) { const bw0 = ux(1 / ten.cnt) - ux(0); while (brickPx > 26 && measure(ten.display, fH(900, brickPx), { letterSpacing: '-0.04em' }) + 12 > bw0) brickPx -= 2 }
   const segs = units.map(u => {
     const txt = ten ? ten.display : String(PP[u.part].pct || '')
-    const o = new NumObj(html, { cls: ten ? 'ss-brick' : 'ss-seg', text: txt, ax: 0.5, ay: 0.5 })
+    const o = new NumObj(html, { cls: ten ? 'ss-brick' : 'ss-seg', text: txt, ax: 0.5, ay: 0.5, style: ten ? { fontSize: brickPx + 'px' } : {} })
     if (ten) o.el.setAttribute('data-deco', '')
-    return { o, fits: o.w + (ten ? 22 : 36) <= ux(u.b) - ux(u.a) }
+    return { o, fits: o.w + (ten ? 12 : 36) <= ux(u.b) - ux(u.a) }
   })
   // percentages on the slab: every piece at least ~60 px wide carries its own, all at one size (40 -> 34 px);
   // narrower pieces carry none, so no piece is labelled while a wider neighbour is not
@@ -509,6 +565,74 @@ export default function splitSheet(spec, ctx) {
   // ---- working line
   const wl = h('div', { class: 'ss-wl', style: { top: (bins ? lay.wlTop : lay.wlTop) + 'px', height: wlH + 'px' } })
   if (wlH) html.append(wl)
+
+  // ---- needs bracket (bins): over the named bins' amounts, its label on the working row; the notes then go to the
+  // air the slab has freed above the bins (wlS), each centred over its own bin where it fits
+  let needs = null
+  if (needsO && bins && wlH) {
+    const ids = needsO.parts.map(Number).filter(i => i >= 0 && i < n).sort((a, b) => a - b)
+    if (ids.length) {
+      const xa = B[ids[0]].x0 + 4, xb = B[ids[ids.length - 1]].x1 - 4
+      const yl = lay.wlTop + wlH + 5
+      const path = s('path', { d: `M${xa},${yl + 9}L${xa},${yl}L${xb},${yl}L${xb},${yl + 9}`, fill: 'none', stroke: C.ink, 'stroke-width': 6, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', opacity: 0 })
+      g.front.append(path)
+      const len = 2 * 9 + (xb - xa)
+      attr(path, 'stroke-dasharray', `${len} ${len}`)
+      const lab = h('div', { class: 'ss-needs', html: markup(String(needsO.text)) })
+      html.append(lab)
+      const lw = lab.offsetWidth
+      const lx = clamp((xa + xb) / 2 - lw / 2, X0, X1 - lw)
+      style(lab, { left: lx.toFixed(0) + 'px', top: lay.wlTop + 'px', opacity: '0' })
+      needs = { t: needsO.t, path, len, lab, x0: lx, x1: lx + lw }
+      cue(needs.t + 0.05, 'pop', { gain: 0.45 })
+    }
+  }
+  const wlS = h('div', { class: 'ss-wls', style: { top: (ys + slabH / 2 - WL_LH / 2).toFixed(0) + 'px', height: WL_LH + 'px' } })
+  if (needs) html.append(wlS)
+
+  // ---- the header's answer slot (payoff.slot): hung after the header's last line, on screen from frame 1
+  let slot = null
+  if (slotO && bins) {
+    const rg = document.createRange()
+    rg.selectNodeContents(parts.header)
+    const sr0 = ctx.stage.getBoundingClientRect()
+    const lines = []
+    for (const b of rg.getClientRects()) {
+      if (b.width < 2) continue
+      const top = b.top - sr0.top, bot = b.bottom - sr0.top, right = b.right - sr0.left
+      const ln = lines.find(x => Math.abs(x.top - top) < 8)
+      if (ln) ln.right = Math.max(ln.right, right); else lines.push({ top, bot, right })
+    }
+    lines.sort((a, b) => a.top - b.top)
+    const last = lines[lines.length - 1]
+    const above = lines.slice(0, -1)
+    const ghostTxt = String(slotO.ghost ?? '$?'), txt = String(slotO.text)
+    const footTop = parts.footer ? parts.footer.offsetTop : L.headerBottom + 12
+    let fit = null
+    for (let px = 88; px >= 56 && !fit; px -= 4) {
+      const tw = Math.max(measure(txt, fH(900, px), { letterSpacing: '-0.03em' }), measure(ghostTxt, fH(900, px), { letterSpacing: '-0.03em' }))
+      const SW2 = Math.ceil(tw + 2 * 22), SH2 = px + 22
+      const y1 = Math.min((last.top + last.bot) / 2 + SH2 / 2, footTop - 6), y0 = y1 - SH2
+      // clear of every header line it shares height with (and of the last line's colon by a leader's length)
+      const x0 = Math.max(last.right + 90, ...above.filter(l => l.bot - 6 > y0).map(l => l.right + 30))
+      if (x0 + SW2 <= L.right - 8) fit = { px, SW: SW2, SH: SH2, x0: Math.round(x0), y0: Math.round(y0) }
+    }
+    if (!fit) console.warn('split-sheet: lookOpts.payoff.slot does not fit beside the header; skipped')
+    else {
+      const box = h('div', { class: 'ss-slot', style: { left: fit.x0 + 'px', top: fit.y0 + 'px', width: fit.SW + 'px', height: fit.SH + 'px' } })
+      const span = h('span', { style: { fontSize: fit.px + 'px' } })
+      box.append(span)
+      const ly = Math.round((last.top + last.bot) / 2 - 4)
+      const lead = h('div', { class: 'ss-slot-lead', 'data-deco': '', style: { left: Math.round(last.right + 18) + 'px', top: ly + 'px', width: Math.max(0, Math.round(fit.x0 - 16 - (last.right + 18))) + 'px' } })
+      ctx.stage.append(lead, box)
+      slot = { t: slotO.t, box, span, txt, ghostTxt, cx: fit.x0 + fit.SW / 2, cy: fit.y0 + fit.SH / 2, W: fit.SW, H: fit.SH, state: null }
+      // (no burst lines: under the slot sits the footer; the stamp is a gold ring instead, and the world shakes)
+      fxk.impact(slot.t, { x: slot.cx, y: slot.cy, burst: false, shake: 9, punch: 0, cue: null })
+      cue(slot.t - 0.18, 'whoosh', { dur: 0.18, gain: 0.3 })
+      cue(slot.t, 'hit', { gain: 0.9 })
+      cue(slot.t + 0.1, 'cash', { gain: 0.6 })
+    }
+  }
 
   // ---- sum check: assembles where the slab was
   // (a stub left on the slab by shares that do not add up keeps its place: the check takes the free part)
@@ -623,7 +747,7 @@ export default function splitSheet(spec, ctx) {
   // ================================================================== the figure
   const fig = showFig ? new Figure(g.fig, { scale: k }) : null
   const saw = showFig && !ten && bins ? sawProp(toolLayer) : null
-  const clv = showFig && ten && bins ? cleaverProp(toolLayer, toolLabel) : null
+  const clv = showFig && ten && bins ? cleaverProp(toolLayer, toolLabel, CBW, clvPx(toolLabel)) : null
   const P = {
     sawing: { lean: 30, tilt: 18, aF: [70, 20], aB: [52, 40], lF: [34, -56], lB: [-22, -14] },
     carry: { lean: 4, tilt: 12, aF: [46, 60], aB: [36, 70], lF: [8, -6], lB: [-8, -4] },
@@ -634,7 +758,7 @@ export default function splitSheet(spec, ctx) {
     jump: { lean: -4, tilt: -10, aF: [124, 36], aB: [-116, -30], lF: [42, -84], lB: [-8, -66] },
     land: { lean: 22, tilt: 10, aF: [40, 40], aB: [-50, 30], lF: [62, -118], lB: [44, -108] },
   }
-  const toolXOf = c => c + CLV.gap + CLV.bw / 2          // cleaver grip x when its blade is centred on the cut
+  const toolXOf = c => c + CLV.gap + CBW / 2             // cleaver grip x when its blade is centred on the cut
   const lerpP = (a, b, p) => [lerp(a[0], b[0], p), lerp(a[1], b[1], p)]
   // figure state: x track, ground, face, pose keys, and the special segments that drive the hands by IK
   const pk = [], xk = []
@@ -677,7 +801,7 @@ export default function splitSheet(spec, ctx) {
         // early and holds it up over the cut, straining (the big slam's grammar), then brings it down on the beat
         const raiseT = tEnd - free > 2.2 ? Math.max(free + 0.3, tEnd - 1.8) : tEnd - 0.38
         walkTo(xs, raiseT - 0.04, free)
-        segs2.tool.push({ kind: 'tap', t0: raiseT, th: tEnd, c: ct.c, held: raiseT < tEnd - 0.5 })
+        segs2.tool.push({ kind: 'tap', t0: raiseT, th: tEnd, c: ct.c, held: raiseT < tEnd - 0.5, i: ct.i })
         pk.push({ t: raiseT - 0.02, pose: 'raise', d: 0.2 })
         pk.push({ t: tEnd - 0.09, pose: 'slam', d: 0.08, e: 'out' })
         pk.push({ t: tEnd + 0.2, pose: 'carry', d: 0.35 })
@@ -826,6 +950,20 @@ export default function splitSheet(spec, ctx) {
   // the gag's result (after its last "=") is green, like the ten formula's
   const gagHtml = () => { const m = gag.text.lastIndexOf(' = '); return m < 0 || /\*\*|__/.test(gag.text) ? `<b>${markup(gag.text)}</b>` : `<b>${esc(gag.text.slice(0, m))}</b> = <em>${esc(gag.text.slice(m + 3))}</em>` }
   for (const x of WS) x.full = x.kind === 'ten' ? `<b>${esc(ten.formula)}</b> = <em>${esc(ten.display)}</em>` : x.kind === 'gag' ? gagHtml() : markup(PP[x.i].note)
+  // with the needs bracket on the working row, a part's note goes up into the air the slab has freed: over its own
+  // bin where it fits, else as close as the remaining slab allows (left of it)
+  if (needs) {
+    for (const x of WS) {
+      if (x.kind !== 'note') continue
+      const nextU = units.find(u => u.part > x.i)
+      const right = nextU ? ux(nextU.a) - 20 : X1 - 10
+      const w = measure(plain(PP[x.i].note), wlFont, wlMo) + 8
+      const lo2 = X0 + 4, hi2 = Math.max(lo2 + w, right)
+      if (w > right - lo2) console.warn(`split-sheet: note ${x.i} is wider than the freed slab (${Math.round(w)} > ${Math.round(right - lo2)} px)`)
+      x.zone = 'slab'
+      x.left = Math.round(clamp(B[x.i].cx - w / 2, lo2, hi2 - w))
+    }
+  }
 
   // ================================================================== seek
   const tipLast = bins && !leftover && !ten
@@ -954,6 +1092,8 @@ export default function splitSheet(spec, ctx) {
     if (wlH) {
       let act = null
       for (const x of WS) if (t >= x.t0 && t < x.t1) act = x
+      const el = act && act.zone === 'slab' ? wlS : wl, other = el === wl ? wlS : wl
+      style(other, { opacity: '0' }); setHTML(other, '')
       if (!act) { style(wl, { opacity: '0' }); setHTML(wl, '') }
       else {
         let str = act.full
@@ -962,12 +1102,44 @@ export default function splitSheet(spec, ctx) {
           const typedS = typed(ten.formula, tf)
           str = t < ten.t ? `<b>${esc(typedS)}</b>` : act.full
         }
-        setHTML(wl, str)
+        setHTML(el, str)
+        if (act.zone === 'slab') style(el, { left: act.left + 'px' })
         const pin = prog(t, act.t0, 0.2), pout = act.t1 === Infinity ? 0 : prog(t, act.t1 - 0.12, 0.12)
         const bmp = act.kind === 'ten' ? 1 + 0.1 * Math.sin(Math.PI * prog(t, ten.t, 0.25)) : 1
         const pop = { sx: bmp, sy: bmp }
-        style(wl, { opacity: (clamp(pin * 2) * (1 - pout)).toFixed(3), transform: `translateY(${((1 - E.out(pin)) * 14).toFixed(1)}px) scale(${pop.sx.toFixed(3)},${pop.sy.toFixed(3)})` })
+        style(el, { opacity: (clamp(pin * 2) * (1 - pout)).toFixed(3), transform: `translateY(${((1 - E.out(pin)) * 14).toFixed(1)}px) scale(${pop.sx.toFixed(3)},${pop.sy.toFixed(3)})` })
       }
+    }
+
+    // ---- needs bracket: the line draws out from its middle, the label pops in; both stay
+    if (needs) {
+      const p = E.out(prog(t, needs.t, 0.3))
+      attr(needs.path, 'opacity', t >= needs.t ? '1' : '0')
+      attr(needs.path, 'stroke-dashoffset', (needs.len * (1 - p)).toFixed(1))
+      const pp = popIn(t, needs.t + 0.05, 0.22, 0.86)
+      style(needs.lab, { opacity: (t < needs.t + 0.05 ? 0 : pp.opacity).toFixed(3), transform: `scale(${pp.scale.toFixed(3)})` })
+    }
+
+    // ---- header slot: the ghost from frame 1; the answer stamps in at slot.t (1.25 -> 1), bumps with the payoff
+    if (slot) {
+      const t0 = slot.t - 0.16
+      const on = t >= t0
+      const state = on ? 'on' : 'ghost'
+      if (slot.state !== state) {
+        slot.state = state
+        slot.span.textContent = on ? slot.txt : slot.ghostTxt
+        style(slot.box, on
+          ? { background: C.coin, border: `6px solid ${C.ink}` }
+          : { background: '#FFF8E0', border: `5px dashed ${C.coinDeep}` })
+        style(slot.span, { color: on ? C.ink : C.dim })
+      }
+      let sc = on ? lerp(1.25, 1, E.inQuad(prog(t, t0, 0.16))) : 1
+      if (pay) sc *= 1 + 0.12 * Math.sin(Math.PI * prog(t, pay.t, 0.3))
+      style(slot.box, { transform: sc !== 1 ? `scale(${sc.toFixed(3)})` : 'none' })
+      // the stamp's ring: a gold halo that opens and fades (at the answer, and again with the payoff's re-slam)
+      let ring = 0, ra = 0
+      for (const t1 of [slot.t, ...(pay ? [pay.t] : [])]) { const q = prog(t, t1, 0.4); if (t >= t1 && q < 1) { ring = 4 + 16 * E.out(q); ra = 0.85 * (1 - q) } }
+      style(slot.box, { boxShadow: ra > 0.01 ? `0 0 0 ${ring.toFixed(1)}px rgba(255, 211, 77, ${ra.toFixed(3)})` : 'none' })
     }
 
     // ---- check: ghost slab, tokens pop in, amounts fly up from the bins into their slots
@@ -1053,6 +1225,16 @@ export default function splitSheet(spec, ctx) {
         }
       }
       if (clv) {
+        // the cleaver's label: the chop's operator, then each cut's own action from its raise, and an action's
+        // `after` from just after its piece lands (never a stale "÷ 10" over a later beat)
+        let lbl = toolLabel
+        for (const sg of segs2.tool) {
+          if (sg.kind !== 'tap') continue
+          const a = actOf(sg.i)
+          if (t >= sg.t0 && a && a.tool) lbl = String(a.tool)
+          if (t >= sg.th + 0.12 && a && a.after) lbl = String(a.after)
+        }
+        if (clv.label !== lbl) { clv.label = lbl; clv.tx.textContent = lbl; attr(clv.tx, 'font-size', String(clvPx(lbl))) }
         if (t < toolT) style(clv.g, { display: 'none' })
         else {
           const cg = clvGrip(t, J)
@@ -1098,7 +1280,7 @@ export default function splitSheet(spec, ctx) {
   // ten: the slab cracks with an impact where the cleaver lands
   if (ten && bins) {
     const c0 = segs2.tool[0] ? segs2.tool[0].c : ux(0.5)
-    fxk.impact(ten.t, { x: c0, y: ys + slabH / 2, rx: CLV.bw / 2 + 20, ry: slabH / 2 + 18, r: 44, lines: 12, shake: 14, flash: 0.35, punch: 0.015, cue: null })
+    fxk.impact(ten.t, { x: c0, y: ys + slabH / 2, rx: CBW / 2 + 20, ry: slabH / 2 + 18, r: 44, lines: 12, shake: 14, flash: 0.35, punch: 0.015, cue: null })
     cue(ten.t, 'hit', { gain: 0.95 })
     cue(toolT, 'whoosh', { dur: 0.3, gain: 0.4 })
     if (ten.formula) cue(toolT + 0.12, 'type', { dur: Math.max(0.3, ten.t - 0.35 - toolT), gain: 0.35 })

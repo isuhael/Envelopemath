@@ -41,7 +41,7 @@ import { h, s, css as style, setText, attr, prog, ease, clamp, lerp, fitText, fm
 import { C, SIZE, M, layoutFor } from '../theme.js'
 import {
   rich, richUI, esc, ax, labelStack, stageFlash, flashAt, parseDisplay, odometer, bump, slam,
-  wobble, durationOf, valueAt, iconSVG, iconName, slamFromFor,
+  wobble, durationOf, valueAt, iconSVG, iconName, slamFromFor, formatLike,
 } from '../lib.js'
 
 export const css = `
@@ -64,6 +64,11 @@ export const css = `
 .pr-tagtext { display: block; font: 700 42px/1 'Inter', 'Inter Full', sans-serif; text-transform: uppercase; letter-spacing: 0.03em; white-space: nowrap; }
 .pr-num { position: absolute; left: 0; width: 480px; display: flex; justify-content: center; align-items: flex-start; transform-origin: 50% 55%; }
 .pr-div { position: absolute; left: 539px; width: 2px; background: #232B36; }
+.pr-stag { position: absolute; left: 0; top: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 4px;
+  padding: 7px 10px 5px; border-radius: 10px; background: rgba(14, 17, 22, 0.9); box-shadow: 0 0 10px 6px rgba(14, 17, 22, 0.7);
+  white-space: nowrap; transform-origin: 100% 100%; }
+.pr-stag-num { font: 400 44px/1 'Anton', 'Inter Full', sans-serif; letter-spacing: 0.01em; color: #FFFFFF; }
+.pr-stag-word { font: 700 40px/1 'Inter', 'Inter Full', sans-serif; text-transform: uppercase; letter-spacing: 0.02em; }
 `
 
 const SPEND_COL = C.iconBody    // the spend line / number: white (money that is gone)
@@ -157,6 +162,16 @@ export default function povRace(spec, ctx) {
   const L0 = layoutFor(spec)
   const capsOn = L0.captionsOn
   const L = layoutFor(spec, { stageBottom: lo.stageBottom ?? (capsOn ? 1300 : 1236) })
+  // breathing room under the hook: the header is bottom-aligned in its band, so its last line sat ~20 px over the
+  // scoreboard's labels. The scoreboard row, the footer and the stage top move TOP_GAP down (the plot gives it up).
+  const TOP_GAP = L.hero ? 24 : 0
+  if (TOP_GAP) {
+    L.hero.y += TOP_GAP
+    L.footer.y += TOP_GAP
+    L.stage.y += TOP_GAP; L.stage.h -= TOP_GAP
+    L.topBar.y1 += TOP_GAP
+    L.inner.y += TOP_GAP; L.inner.h -= TOP_GAP
+  }
 
   // the footer (and lookOpts.footerSteps) is the chrome's; layoutFor already made room for a two-line one
   const footSteps = (Array.isArray(lo.footerSteps) ? lo.footerSteps : []).filter(x => x && x.text).map(x => ({ t: +x.t || 0 }))
@@ -273,13 +288,16 @@ export default function povRace(spec, ctx) {
     root.append(yearBox)
     yearOdo = odometer(yearBox, { size: YS, color: 'rgba(255, 255, 255, 0.14)', maxInt: calendar ? 4 : 3, maxDp: 0 })
   }
-  const rollF = clamp(0.24 / Math.max(1e-6, secPerYear), 0.04, 0.4)    // the year digits roll in ~0.24 s
-  // the year rolls into y + 1 over the last rollF of year y, and never past the clock's last year (x.to = 2025 holds
-  // "2025"; x.to = 2025.99 holds "2025" too)
+  // the year rolls into y + 1 just AFTER year y's close (a Dec-31 close sits at x = y + 0.99), so every year-end
+  // value lands under its own year; the roll takes one frame or so (≤ 0.1 s), so a beat early in the new year (a
+  // crossing a few days after New Year) never catches it half-rolled. Never past the clock's last year (x.to = 2025
+  // or 2025.99 holds "2025").
+  const ROLL_AT = 0.992
+  const rollF = clamp(0.1 / Math.max(1e-6, secPerYear), 0.004, 0.03)
   const yearEnd = Math.floor(X.to + 1e-6)
   const yearV = x => {
-    const y = Math.floor(x + 1e-6)
-    return Math.max(Math.floor(X.from + 1e-6), Math.min(yearEnd, y + clamp((x - (y + 1 - rollF)) / rollF)))
+    const y = Math.floor(x - ROLL_AT)
+    return Math.max(Math.floor(X.from + 1e-6), Math.min(yearEnd, y + clamp((x - (y + ROLL_AT)) / rollF)))
   }
 
   const svg = s('svg', { class: 'pr-svg', width: P.w, height: P.h, viewBox: `0 0 ${P.w} ${P.h}`, 'data-deco': '' })
@@ -351,11 +369,15 @@ export default function povRace(spec, ctx) {
   const lines = [lineOf(SP, 7, 0.14), lineOf(OW, 9, 0.3)]
 
   // purchases: the item's icon standing on the spend line, with a price tag (chart mode)
-  const ICON = Math.round(clamp((P.w / Math.max(1, purchases.length)) * 0.9, 34, 54))
+  const ICON = Math.round(clamp((P.w / Math.max(1, purchases.length)) * 0.9, 34, 42))
   const [ibTop, ibBot] = (ICON_BOX[SP.item] || [6, 94]).map(v => v / 100)   // the glyph's ink inside its 100 box
+  // a purchase where both lines start (the stake itself) stands just LEFT of that point, level with the line, so
+  // the own line leaving the point is never drawn through it; every other purchase stands on its point
+  const xLead = Math.max(SP.x0, OW.x0)
+  for (const p of purchases) p.lead = p.x <= xLead + 1e-6
   const iconAt = (p, py) => {                                                 // the line point the icon stands on
     const lx = pxOf(p.x), ly = py(vAt(SP, p.x)) + 2
-    return { lx, ly, top: ly - ICON * (ibBot - ibTop) }
+    return { lx, ly, cx: p.lead ? lx - ICON / 2 - 10 : lx, top: ly - ICON * (ibBot - ibTop) }
   }
   for (const p of purchases) {
     p.icon = iconSVG(SP.item, ICON, { cls: 'pr-icon' })
@@ -419,16 +441,77 @@ export default function povRace(spec, ctx) {
         c += 0.3 * r.drag
         g.segs.forEach((sg, m) => { for (let i = 2; i < sg.length; i += 2) c += (m ? 1.4 : 0.6) * clipLen(sg[i - 2], sg[i - 1], sg[i], sg[i + 1], R) })
         for (const tp of g.tips) if (tp[0] > R[0] - 14 && tp[0] < R[2] + 14 && tp[1] > R[1] - 14 && tp[1] < R[3] + 14) c += 400
-        if (hit(R, [a.lx - ICON / 2, a.top, a.lx + ICON / 2, a.ly])) c += 600
+        if (hit(R, [a.cx - ICON / 2, a.top, a.cx + ICON / 2, a.ly])) c += 600
         for (const q of purchases) {
           if (q === p || q.t > tA + 0.01) continue
           const b = iconAt(q, g.py)
-          if (hit(R, [b.lx - ICON / 2, b.top, b.lx + ICON / 2, b.ly])) c += 40
+          if (hit(R, [b.cx - ICON / 2, b.top, b.cx + ICON / 2, b.ly])) c += 40
         }
       }
       if (c < bestC) { bestC = c; best = sp }
     }
     p.spot = best
+  }
+
+  // ---------- the spend tip's tag ("$499" over "SPENT") ----------
+  // Once the axis has rescaled past it, a flat or slow spend line lies on the x axis and reads as the baseline; this
+  // tag names it. It rides just above the spend line, its right edge left of the spend tip, while it stays clear of
+  // the own line (no ink within 4 px), the own tip and the icons, scored at mount on this race's own
+  // geometry, so seek stays a pure function of t (a steep late climb can squeeze older years under it: then it bows
+  // out and returns once there is room again). Its number is the spend counter's (the final display string's number
+  // from the finish on); its word is the final's trailing word ("$499 spent" → SPENT).
+  let sTag = null
+  if (lo.spendTip !== false && SP.finalTpl) {
+    const wm = /\d[\d,.]*[KMBT]?\s+([A-Za-z][\s\S]*)$/.exec(SP.final || '')
+    const num = h('span', { class: 'pr-stag-num' })
+    const el = h('div', { class: 'pr-stag' }, num, h('span', { class: 'pr-stag-word', text: wm ? wm[1] : 'spent', style: { color: C.red } }))
+    tagLayer.append(el)
+    let w = 0
+    for (const v of [SP.first, SP.endV, Math.max(...SP.points.map(q => q[1]))]) {
+      const tpl = runTpl(SP, v)
+      setText(num, formatLike(snap(v, tpl), tpl)); w = Math.max(w, el.offsetWidth)
+    }
+    setText(num, formatLike(SP.endV, SP.finalTpl)); w = Math.max(w, el.offsetWidth)
+    sTag = { el, num, w, h: el.offsetHeight, runs: [] }
+    style(el, { display: 'none' })
+  }
+  const sTagAt = (t, py) => {                       // [left, top, right, bottom] in plot px
+    const xx = clamp(xAt(t), SP.x0, X.to)
+    const right = pxOf(xx) - 30, bottom = py(t >= TF ? SP.endV : vAt(SP, xx)) - 10
+    return [right - sTag.w, bottom - sTag.h, right, bottom]
+  }
+  if (sTag) {
+    const clearAt = t => {
+      const x = xAt(t), ph = phAt(t), py = pyFor(Y.log ? logMax : yMaxAt(t), ph)
+      const R = sTagAt(t, py), Rp = [R[0] - 8, R[1] - 8, R[2] + 8, R[3] + 8]
+      if (R[0] + P.x < 70 || R[1] < 0) return false
+      if (x >= OW.x0) {
+        // no own-line stroke on the tag (the line's centre stays 7 px off it: half its 9 px stroke, plus air)
+        const R4 = [R[0] - 7, R[1] - 7, R[2] + 7, R[3] + 7]
+        let ink = 0
+        const segs = []
+        for (const q of OW.points) { if (q[0] > x + 1e-9) break; segs.push([pxOf(q[0]), py(q[1])]) }
+        segs.push([pxOf(x), py(vAt(OW, x))])
+        for (let k = 1; k < segs.length; k++) {
+          ink += clipLen(segs[k - 1][0], segs[k - 1][1], segs[k][0], segs[k][1], R4)
+        }
+        if (ink > 0) return false
+        const tx = pxOf(x), ty = py(vAt(OW, x))
+        if (tx > Rp[0] - 24 && tx < Rp[2] + 24 && ty > Rp[1] - 24 && ty < Rp[3] + 24) return false
+      }
+      for (const p of purchases) { const a = iconAt(p, py); if (hit(Rp, [a.cx - ICON / 2, a.top, a.cx + ICON / 2, a.ly])) return false }
+      return true
+    }
+    // the tag's stints: every clear stretch of the race (0.05 s grid) at least 1.5 s long, or one running to the
+    // end; each fades in over 0.25 s and out over the 0.25 s before its room closes
+    const tEnd = Math.max(TF + 1, durationOf(spec, TF, d.hold ?? M.hold))
+    let run = null
+    for (let k = 0, t0 = Math.max(R0, 0); t0 + k * 0.05 <= tEnd + 1e-9; k++) {
+      const t = t0 + k * 0.05
+      if (clearAt(t)) { if (!run) run = { on: t, off: t }; run.off = t }
+      else if (run) { if (run.off - run.on >= 1.5) sTag.runs.push(run); run = null }
+    }
+    if (run && run.off - run.on >= 0.6) { run.off = Infinity; sTag.runs.push(run) }
   }
 
   // ---------- the scoreboard (top bar): SPENT | IN STOCK ----------
@@ -608,7 +691,7 @@ export default function povRace(spec, ctx) {
 
       // ---- purchases: icon drops onto the spend line, tag holds until the next purchase ----
       let spendHit = 0
-      const tagRects = []
+      const tagRects = [], iconRects = []
       for (const p of purchases) {
         const a = iconAt(p, py)
         const t0 = p.t - FALL
@@ -624,8 +707,9 @@ export default function povRace(spec, ctx) {
         }
         style(p.icon, {
           display: 'block', opacity: op.toFixed(3),
-          transform: `translate(${(a.lx - ICON / 2).toFixed(1)}px, ${(a.ly - ICON * ibBot + dy).toFixed(1)}px) scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`,
+          transform: `translate(${(a.cx - ICON / 2).toFixed(1)}px, ${(a.ly - ICON * ibBot + dy).toFixed(1)}px) scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`,
         })
+        if (t >= t0 || p.t <= 0.001) iconRects.push([a.cx - ICON / 2, a.top, a.cx + ICON / 2, a.ly])
         if (!p.tag) continue
         const on = t >= p.t && t < p.end
         if (!on) { style(p.tag, { display: 'none' }); continue }
@@ -638,6 +722,25 @@ export default function povRace(spec, ctx) {
         })
         tagRects.push([r.left - 8, r.top - 8, r.left + p.tw + 8, r.top + p.th + 8])
       }
+      // the spend tip's tag: fades in once it stays clear, bumps with the finish (and bows out before a squeeze)
+      if (sTag) {
+        let a = 0
+        for (const r of sTag.runs) if (t >= r.on && t <= r.off) a = Math.max(a, Math.min(ease.out(prog(t, r.on, 0.25)), 1 - prog(t, r.off - 0.25, 0.25)))
+        if (a <= 0.001) style(sTag.el, { display: 'none' })
+        else {
+          const c = counter(SP, t)
+          setText(sTag.num, formatLike(c.v, c.tpl))
+          style(sTag.el, { display: 'flex' })
+          const R = sTagAt(t, py), w = sTag.el.offsetWidth
+          const k = bump(t, TF, { amp: 0.1, dur: 0.45 })
+          style(sTag.el, {
+            left: (R[2] - w).toFixed(1) + 'px', top: R[1].toFixed(1) + 'px', opacity: a.toFixed(3),
+            transform: `translateY(${(10 * (1 - a)).toFixed(1)}px) scale(${k.toFixed(4)})`,
+          })
+          tagRects.push([R[2] - w - 8, R[1] - 8, R[2] + 8, R[3] + 8])
+        }
+      }
+
       // the year clock dims while a line or a tag runs through it (a pure function of this frame's geometry)
       if (yearBox) {
         const yr = [12, 0, 12 + yearBox.offsetWidth, YS * 0.88]
@@ -661,11 +764,12 @@ export default function povRace(spec, ctx) {
         style(yearBox, { opacity: (1 - 0.6 * clamp(ink / 160)).toFixed(3) })
       }
 
-      // axis labels step aside under a tag
+      // axis labels step aside under a tag (or a lead purchase's icon standing in the margin)
       if (!Y.log) grid.forEach(g => {
         if (g.lab.style.display === 'none') return
         const yy = parseFloat(g.lab.style.top), w = g.lab.textContent.length * 18
-        style(g.lab, { visibility: tagRects.some(R => hit(R, [-16 - w, yy, -16, yy + 32])) ? 'hidden' : 'visible' })
+        const box = [-16 - w, yy + 4, -16, yy + 28]
+        style(g.lab, { visibility: tagRects.some(R => hit(R, box)) || iconRects.some(R => hit(R, box)) ? 'hidden' : 'visible' })
       })
       for (const tk of xTicks) {
         const cx = pxOf(tk.xv), w = String(tk.xv).length * 18

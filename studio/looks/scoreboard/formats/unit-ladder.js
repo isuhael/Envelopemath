@@ -15,15 +15,32 @@
 // dots, and the next rung re-packs it into exactly units_prev / units_next of the stage before its own dots rain in
 // (the area ratio on screen is the real ratio).
 // Payoff (lookOpts.payoff, optional): after the ladder the hero cuts to `from` (default: the unit price) and rolls up
-// to `display` (a display string, printed exactly), landing with the climax impact while the wall dims behind it:
-// "what the unit would cost" lands last in the hero.
+// to `display` (a display string, printed exactly), landing with the climax impact: "what the unit would cost" lands
+// last in the hero. With `label`, the label stack cuts to it at the payoff (line 2, e.g. "ROSE LIKE A HOUSE?"; line 1
+// `working`, optional), so the question sits under the rolling hero and the verdict (timed on the landing) answers it.
+// Without a split the wall dims behind the payoff.
+// Split (lookOpts.split, optional): once the last rung cuts, the previous rung's dots (re-packed into the last wall)
+// turn a second tint (white), so the earlier share stays readable inside the climax wall; `tags` [prev, last] name the
+// two parts with small pills (prev on its mound, last on the new dots). The wall then stays lit behind the payoff.
+// Captions hide from verdict.t (the verdict carries that line; no copy of it under itself), or from the payoff cut
+// when the payoff has a label (the label stack carries the question from there).
+// introHero: 'price' shows the unit price in the hero on the unit intro (frame 1 reads "$1.50", not a bare "1").
 //
 // data: { unit: { name, price, icon }, rungs: [{ t, item, cost, units, unitsDisplay, tone? }], hold }
 // lookOpts: { heroIcon = true, density = 0.62, climaxFill = 1, intro = 'auto' | true | false, pips = true,
-//             payoff: { t = verdict.t, from = unit.price, display, roll = 1.4 } }
-import { css as style, prog, ease, clamp, lerp } from '../../../runtime/core.js'
+//             introHero = 'count' | 'price',
+//             payoff: { t = verdict.t, from = unit.price, display, roll = 1.4, label, working },
+//             split: true | { tags: [prevTag, lastTag], tint } }
+import { css as style, attr, h, prog, ease, clamp, lerp } from '../../../runtime/core.js'
 import { C, SIZE, M, W, layoutFor } from '../theme.js'
-import { rich, esc, ax, heroRow, labelStack, unitStack, stageFlash, flashAt, ladderPips, parseDisplay, bump, durationOf, beatTimes, toneColor } from '../lib.js'
+import { rich, esc, ax, heroRow, labelStack, unitStack, stageFlash, flashAt, ladderPips, parseDisplay, bump, slam, durationOf, beatTimes, toneColor } from '../lib.js'
+
+export const css = `
+#stage[data-ul-caps="off"] .sb-caps { visibility: hidden !important; }
+.ul-tag { position: absolute; transform-origin: 50% 50%; padding: 2px 18px 4px; border-radius: 10px; background: #07090C;
+  border: 2px solid #232B36; font: 400 46px/1.08 'Anton', 'Inter Full', sans-serif; letter-spacing: 0.02em; text-transform: uppercase;
+  white-space: nowrap; z-index: 6; }
+`
 
 export default function unitLadder(spec, ctx) {
   const d = spec.data || {}
@@ -43,7 +60,9 @@ export default function unitLadder(spec, ctx) {
     const val = isFinite(tpl.value) ? tpl.value * tpl.scale : +r.units
     return { disp, tpl, val }
   })
-  const introTpl = parseDisplay('1')
+  const priceHero = lo.introHero === 'price' && unit.price && isFinite(parseDisplay(String(unit.price)).value)
+  const introTpl = priceHero ? parseDisplay(String(unit.price)) : parseDisplay('1')
+  const introVal = introTpl.value * introTpl.scale
 
   // ---------- stack plan (one step per rung; the intro is a single icon already landed) ----------
   const steps = []
@@ -87,7 +106,7 @@ export default function unitLadder(spec, ctx) {
   // ---------- DOM ----------
   const po = lo.payoff && lo.payoff.display != null ? lo.payoff : null
   const payDisp = po ? [String(po.display), String(po.from ?? unit.price ?? '')] : []
-  const widest = [...targets.map(x => x.disp), '1', ...payDisp].reduce((a, b) => (b.length > a.length ? b : a), '')
+  const widest = [...targets.map(x => x.disp), priceHero ? String(unit.price) : '1', ...payDisp].reduce((a, b) => (b.length > a.length ? b : a), '')
   const estEm = widest.replace(/[^\d]/g, '').length * 0.5 + (widest.match(/,/g) || []).length * 0.22 + widest.replace(/[\d,.\s]/g, '').length * 0.5 + 0.3
   const showIcon = lo.heroIcon !== false
   const HS = L.hero.size, HI = L.hero.icon
@@ -101,12 +120,15 @@ export default function unitLadder(spec, ctx) {
 
   const price = ax(esc(unit.price))
   const items = []
-  if (intro) items.push({ l1: price, l2: rich(unit.label || unit.name) })
+  // (a price hero already says the price: the intro label is just the unit's name)
+  if (intro) items.push({ l1: priceHero ? '' : price, l2: rich(unit.label || unit.name) })
   rungs.forEach(r => items.push({
     l1: `${ax(esc(r.cost))}${unit.price ? `<span class="op"> ÷ ${price}</span>` : ''}`,
     l1Color: r.tone && r.tone !== 'neutral' ? toneColor(r.tone) : C.green,
     l2: rich(r.item),
   }))
+  const payIdx = po && (po.label || po.working) ? items.length : -1
+  if (payIdx >= 0) items.push({ l1: po.working ? ax(esc(String(po.working))) : '', l2: rich(String(po.label || '')) })
   const labels = labelStack(stage, L, items)
   const pips = lo.pips === false ? null : ladderPips(stage, { x: 76, bottom: L.stage.y + L.stage.h - 22, n: rungs.length, gap: Math.min(30, (L.stage.h - 60) / rungs.length) })
 
@@ -140,19 +162,78 @@ export default function unitLadder(spec, ctx) {
     ctx.cue(pay.land + 0.06, 'cash', { gain: 0.7 })
   }
   const duration = durationOf(spec, pay ? Math.max(lastLand, pay.land + 1.5 - (d.hold ?? M.hold)) : lastLand, d.hold ?? M.hold)
+  const vT = spec.verdict && spec.verdict.text && spec.verdict.t != null ? Math.max(0, +spec.verdict.t) : null
+  const capsOff = pay && payIdx >= 0 ? (vT != null ? Math.min(vT, pay.t) : pay.t) : vT
+
+  // ---------- split: the previous rung's share of the last wall in a second tint, tagged (see the header) ----------
+  const lastK = steps.length - 1
+  const SPLIT_GAP = 0.12                                  // unitStack's default cell gap
+  let split = null
+  if (lo.split && rungs.length >= 2) {
+    const so = lo.split === true ? {} : lo.split
+    const st = stack.steps()[lastK], prev = st && st.prev
+    const keep = prev ? Math.min(st.prevCount, st.lay.count) : 0
+    // only where both walls are LED dots (cells under 10 px): the tint redraws the same dots, nothing else
+    if (keep > 0 && prev.lay.sz < 10 && st.lay.sz < 10) {
+      let top = Infinity
+      for (let j = 0; j < keep; j++) top = Math.min(top, st.lay.pos[j * 2 + 1])
+      const bottom = box.h
+      const tags = (Array.isArray(so.tags) ? so.tags : []).map((tx, k) => {
+        if (tx == null || tx === '') return null
+        const el = h('div', { class: 'ul-tag', html: ax(esc(String(tx))) })
+        style(el, { color: k === 0 ? C.white : C.green })
+        stage.append(el)
+        const w = el.offsetWidth, hh = el.offsetHeight
+        // prev: in the middle of its mound; last: centred in the new dots above it
+        const cy = k === 0 ? box.y + top + (bottom - top) * 0.52 : box.y + top * 0.5
+        style(el, { left: (540 - w / 2).toFixed(1) + 'px', top: (cy - hh / 2).toFixed(1) + 'px', display: 'none' })
+        return { el, t0: k === 0 ? st.t + M.regrid + 0.05 : landAt(lastK) }
+      }).filter(Boolean)
+      split = { st, prev, keep, tint: so.tint || '#E4E9EF', tags, g: stack.el.getContext('2d') }
+    }
+  }
+  function drawSplit(t) {
+    const { st, prev, keep, g } = split
+    if (t < st.t) return
+    const rp = ease.inOut(prog(t, st.t, M.regrid))
+    const cell = lerp(prev.lay.sz, st.lay.sz, rp)
+    const dd = Math.max(2, cell * 0.64)
+    g.globalAlpha = 0.96 * rp
+    g.fillStyle = split.tint
+    for (let j = 0; j < keep; j++) {
+      const x = lerp(prev.lay.pos[j * 2] + prev.lay.sz / 2, st.lay.pos[j * 2] + st.lay.sz / 2, rp)
+      const yb = lerp(prev.lay.pos[j * 2 + 1] + prev.lay.sz, st.lay.pos[j * 2 + 1] + st.lay.sz, rp) - (cell * SPLIT_GAP) / 2
+      g.fillRect(x - dd / 2, yb - dd - cell * 0.06, dd, dd)
+    }
+    g.globalAlpha = 1
+  }
 
   return {
     duration,
     layout: L,
     seek(t) {
       stack.seek(t)
+      if (split) {
+        drawSplit(t)
+        for (const tg of split.tags) {
+          const on = t >= tg.t0
+          style(tg.el, { display: on ? 'block' : 'none' })
+          if (on) {
+            const k = slam(t, tg.t0, { from: 1.25 })
+            style(tg.el, { opacity: String(k.o), transform: `scale(${k.s.toFixed(4)})` })
+          }
+        }
+      }
+      // the payoff label, then the verdict, carry the last lines: no caption copy under them
+      if (capsOff != null) attr(stage, 'data-ul-caps', t >= capsOff ? 'off' : 'on')
 
       // active rung (label + hero)
       let i = -1
       for (let j = 0; j < rungs.length; j++) if (t >= times[j]) i = j
       if (!intro && i < 0) i = 0
-      const labelIndex = i < 0 ? 0 : i + off
-      const labelT0 = i < 0 || (i === 0 && !intro) ? 0 : times[i]
+      let labelIndex = i < 0 ? 0 : i + off
+      let labelT0 = i < 0 || (i === 0 && !intro) ? 0 : times[i]
+      if (pay && payIdx >= 0 && t >= pay.t) { labelIndex = payIdx; labelT0 = pay.t }
       labels.seek(t, labelIndex, labelT0)
       if (pips) pips.seek(t, i, labelT0)
 
@@ -164,7 +245,7 @@ export default function unitLadder(spec, ctx) {
         const p = prog(t, pay.t + pay.delay, pay.roll)
         if (p >= 1) hero.set(pay.to, pay.toTpl)
         else hero.set(lerp(pay.from, pay.to, ease.out(p)), pay.toTpl, true)
-      } else if (k < 0 || (intro && k === 0)) hero.set(1, introTpl)
+      } else if (k < 0 || (intro && k === 0)) hero.set(introVal, introTpl)
       else {
         const ri = k - off, st = steps[k], tg = targets[ri]
         const from = ri > 0 ? targets[ri - 1].val : intro ? 1 : 0
@@ -173,7 +254,8 @@ export default function unitLadder(spec, ctx) {
         else if (p <= 0) {
           // between the cut and the first landing the hero holds the previous rung's exact display
           if (ri > 0) hero.set(targets[ri - 1].val, targets[ri - 1].tpl)
-          else hero.set(intro ? 1 : 0, introTpl)
+          else if (intro) hero.set(introVal, introTpl)
+          else hero.set(0, introTpl)
         } else hero.set(lerp(from, tg.val, ease.out(p)), tg.tpl)
       }
 
@@ -199,7 +281,7 @@ export default function unitLadder(spec, ctx) {
       if (pay) fl = Math.max(fl, 0.75 * flashAt(t, pay.land, 0.9))
       flash.set(fl)
       // the wall steps back behind the payoff
-      if (pay) style(stack.el, { opacity: (1 - 0.62 * ease.inOut(prog(t, pay.t, 0.45))).toFixed(3) })
+      if (pay && !split) style(stack.el, { opacity: (1 - 0.62 * ease.inOut(prog(t, pay.t, 0.45))).toFixed(3) })
       style(hero.glow, { '--glow': (16 + 30 * glow).toFixed(1) + 'px', '--glowA': (0.38 + 0.45 * glow).toFixed(3) })
     },
   }

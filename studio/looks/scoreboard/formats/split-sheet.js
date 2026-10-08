@@ -57,6 +57,16 @@
 //   stageBottom  y where the stage ends (overrides the solver; the label stack keeps what is left)
 //   maskPct      [part index, ...]: those percentages read "?" until their part's cut (the goal row's % would
 //                otherwise answer the header at frame 1); without it the whole sheet shows, as the contract asks
+//   rolls        [seconds | null, ...] per part: that part's roll (cut + 0.18 s + roll = the landing), so a number
+//                can land on the word that says it (the default roll is 1.0 s, 1.35 s for the goal / last part)
+//   heroTag      "LEFT": in remaining mode the hero carries this tag (the payoff tag's slot, left of the number,
+//                in place of the icon) from its first roll until heroFinal, so the big number is never unlabelled
+//   labelWorking false: the label stack drops its working line ("$100.00 × 88.91%") for parts and the bonus, so a
+//                beat's working is shown once (the footer's); the check keeps its sum line
+//   introTag     true: the intro's total label sits in the label stack at tag size (Inter 42 grey), not as a
+//                second headline
+//   solidBar     true: until the first cut the bar is one solid green bar with the total on it (no faint split
+//                notches at frame 1); after it, the pool is the dim remainder without notches
 // Dense sheets (6-7 parts with captions on) are budgeted: the solver steps through roomy → tight → compact spacing
 // (40 px labels, wrapped onto two balanced lines where needed), then a one-line label stack (the working only); notes
 // go to the label stack before a label goes under 40 px. If the verdict then still needs the band over the sheet's
@@ -168,7 +178,8 @@ export default function splitSheet(spec, ctx) {
     const cut = first ? Math.min(times[0], 0) : times[i]
     const big = tone(p) === 'goal' || i === n - 1
     const next = i + 1 < n ? times[i + 1] : Infinity
-    const roll = Math.max(0.45, Math.min(big ? 1.35 : 1.0, next - cut - CUT - 0.35))
+    const given = Array.isArray(lo.rolls) && lo.rolls[i] != null && isFinite(+lo.rolls[i]) && +lo.rolls[i] > 0 ? +lo.rolls[i] : null
+    const roll = given ?? Math.max(0.45, Math.min(big ? 1.35 : 1.0, next - cut - CUT - 0.35))
     const start = first ? -0.3 : cut + CUT
     return { cut, start, roll, land: start + roll }
   })
@@ -417,16 +428,17 @@ export default function splitSheet(spec, ctx) {
   const heroIconSize = Math.round(HI * Math.min(1, heroSize / HS + 0.1))
   const hero = heroRow(stage, L, { icon, size: heroSize, iconSize: heroIconSize })
   const totalTpl = parseDisplay(total.display)
-  // the hero tag for the payoff figure (Inter 700 caps, 42 px; two balanced lines past 260 px), left of the number
+  // hero tags (Inter 700 caps, 42 px; two balanced lines past 260 px), left of the number, in the icon's place:
+  // lookOpts.heroTag in remaining mode ("LEFT", from the first roll), then the payoff figure's tag (heroFinal)
   const TAGGAP = 26
-  let ftag = null
-  if (heroFinal && heroFinal.tag) {
-    const el = h('div', { class: 'ss-tag', html: `<span>${richUI(heroFinal.tag)}</span>` })
+  const tags = []
+  const makeTag = (text, from, to, displays) => {
+    const el = h('div', { class: 'ss-tag', html: `<span>${richUI(text)}</span>` })
     stage.append(el)
     const wOf = html => { el.innerHTML = `<span>${html}</span>`; return Math.ceil(el.offsetWidth) + 2 }
-    let w = wOf(richUI(heroFinal.tag)), html = richUI(heroFinal.tag)
+    let w = wOf(richUI(text)), html = richUI(text)
     if (w > 260) {
-      const words = bare(heroFinal.tag).split(/\s+/).filter(Boolean)
+      const words = bare(text).split(/\s+/).filter(Boolean)
       for (let k = 1; k < words.length; k++) {
         const a = esc(words.slice(0, k).join(' ')), b = esc(words.slice(k).join(' '))
         const ww = Math.max(wOf(a), wOf(b))
@@ -439,21 +451,27 @@ export default function splitSheet(spec, ctx) {
     style(el, { height: L.hero.h + 'px', width: w + 'px' })
     fitText(el, w, { maxH: L.hero.h - 8, minPx: 42 })   // 42: the hero's 3% dip keeps it >= 40
     style(el, { display: 'none' })
-    ftag = { el, w }
-    // the tagged figure fits the 960 px row at its landing bump
-    hero.show(heroFinal.display)
-    const room = L.hero.w / 1.12, ow = hero.odo.el.offsetWidth, sp = w + TAGGAP
-    if (ow + sp > room) style(hero.odo.el, { fontSize: Math.floor(parseFloat(hero.odo.el.style.fontSize || heroSize) * (room - sp) / ow) + 'px' })
+    // each tagged figure fits the 960 px row at its landing bump
+    for (const dsp of displays) {
+      hero.show(dsp)
+      const room = L.hero.w / 1.12, ow = hero.odo.el.offsetWidth, sp = w + TAGGAP
+      if (ow + sp > room) style(hero.odo.el, { fontSize: Math.floor(parseFloat(hero.odo.el.style.fontSize || heroSize) * (room - sp) / ow) + 'px' })
+    }
+    tags.push({ el, w, from, to })
   }
+  if (heroMode === 'remaining' && lo.heroTag && rem.length) makeTag(String(lo.heroTag), rem[0].start, heroFinal ? heroFinal.start : Infinity, rem.map(r => r.display))
+  if (heroFinal && heroFinal.tag) makeTag(heroFinal.tag, heroFinal.start, Infinity, [heroFinal.display])
+  hero.show(total.display)
 
   // ---------- label stack (bottom bar): working · part · note ----------
   const items = []
   const idx = { intro: -1, parts: [], check: -1, bonus: -1 }
-  if (intro) { idx.intro = items.length; items.push(total.label ? { l2: richG(total.label) } : { l2: workHTML(total.display), l2Color: C.green }) }
+  if (intro) { idx.intro = items.length; items.push(total.label ? (lo.introTag ? { l3: richUIG(total.label), noteFirst: true } : { l2: richG(total.label) }) : { l2: workHTML(total.display), l2Color: C.green }) }
+  const working = lo.labelWorking !== false
   parts.forEach((p, i) => {
     idx.parts.push(items.length)
     items.push({
-      l1: total.display && p.pct ? workHTML(`${total.display} × ${p.pct}`) : null,
+      l1: working && total.display && p.pct ? workHTML(`${total.display} × ${p.pct}`) : null,
       l2: richG(p.label || ''),
       l2Color: tone(p) === 'goal' ? C.green : C.white,
       l3: (notesIn === 'l3' || notesIn === 'l2') && p.note ? richUIG(p.note) : null,
@@ -462,7 +480,7 @@ export default function splitSheet(spec, ctx) {
     })
   })
   if (d.check) { idx.check = items.length; items.push({ l1: workHTML(d.check), l1Lines: workLines(d.check), l2: total.label ? richG(total.label) : '', l2Optional: true, prefer: 'l1' }) }
-  if (bonus) { idx.bonus = items.length; items.push({ l1: workHTML(bonus.amount), l2: richG(bonus.label || ''), prefer: 'l1' }) }
+  if (bonus) { idx.bonus = items.length; items.push(working ? { l1: workHTML(bonus.amount), l2: richG(bonus.label || ''), prefer: 'l1' } : { l3: richUIG(bonus.label || ''), noteFirst: true }) }
   const labels = labelBox(stage, slot, items, T)
   // every note shows somewhere (FORMATS.md parts[].note): on its row, or in its part's label group
   parts.forEach((p, i) => {
@@ -537,7 +555,21 @@ export default function splitSheet(spec, ctx) {
     // the pool: money not yet split off (dim green, neon rim, notches where the next splits will come)
     const px0 = k > 0 ? xAt(cum[k]) + gapAt(k) / 2 : RX
     const px1 = RX + RW
-    if (px1 - px0 > 1.5 && (k < n || restShare >= 0.002)) {
+    if (lo.solidBar && k === 0) {
+      // frame 1: one solid bar = the whole total, its figure on it (it splits at the first cut)
+      g.save()
+      rrect(px0, y, px1 - px0, bh, R)
+      g.fillStyle = C.green
+      g.shadowColor = rgba(C.green, 0.55)
+      g.shadowBlur = 22
+      g.fill()
+      g.shadowBlur = 0
+      g.fillStyle = '#04120A'
+      g.font = `400 ${Math.round(Math.min(44, bh * 0.68))}px Anton, 'Inter Full', sans-serif`
+      g.textBaseline = 'middle'
+      g.fillText(String(total.display || ''), px0 + 20, y + bh / 2 + 1)
+      g.restore()
+    } else if (px1 - px0 > 1.5 && (k < n || restShare >= 0.002)) {
       g.save()
       rrect(px0, y, px1 - px0, bh, R)
       g.fillStyle = C.greenDeep
@@ -550,7 +582,7 @@ export default function splitSheet(spec, ctx) {
       rrect(px0 + 1.5, y + 1.5, px1 - px0 - 3, bh - 3, R - 1.5)
       g.stroke()
       g.fillStyle = rgba(C.green, 0.32)
-      for (let j = k + 1; j <= n; j++) {
+      for (let j = k + 1; j <= n && !lo.solidBar; j++) {
         if (j === n && restShare < 0.002) continue
         const x = xAt(cum[j])
         if (x > px0 + 6 && x < px1 - 6) g.fillRect(x - 1, y + 12, 2, bh - 24)
@@ -761,14 +793,14 @@ export default function splitSheet(spec, ctx) {
       }
       // the check sums back to the total: the hero bumps only when it is the total
       if (checkT != null && heroMode === 'total' && !(heroFinal && t >= heroFinal.start)) { const L1 = checkT + 0.36; heroScale *= bump(t, L1, { amp: 0.1, dur: 0.45 }); if (t >= L1) glow = Math.max(glow, 1 - ease.out(prog(t, L1, 1.0))) }
-      // the payoff's tag: a hard cut with the roll (the number now means something else); it takes the icon's place
-      if (ftag) {
-        const on = t >= heroFinal.start
-        const space = on ? ftag.w + TAGGAP : hero.icon ? heroIconSize + 12 : 0
-        style(ftag.el, { display: on ? 'flex' : 'none' })
+      // the hero's tag: a hard cut with the roll that changes what the number means; it takes the icon's place
+      if (tags.length) {
+        const on = tags.find(x => t >= x.from && t < x.to) || null
+        const space = on ? on.w + TAGGAP : hero.icon ? heroIconSize + 12 : 0
+        for (const x of tags) style(x.el, { display: x === on ? 'flex' : 'none' })
         if (hero.icon) style(hero.icon, { display: on ? 'none' : 'block' })
         style(hero.glow, { paddingLeft: space + 'px' })
-        if (on) style(ftag.el, { left: (L.hero.w / 2 - (hero.odo.el.offsetWidth + space) / 2).toFixed(1) + 'px' })
+        if (on) style(on.el, { left: (L.hero.w / 2 - (hero.odo.el.offsetWidth + space) / 2).toFixed(1) + 'px' })
       }
       style(hero.el, { transform: `scale(${heroScale.toFixed(4)})` })
       style(hero.glow, { '--glow': (16 + 30 * glow).toFixed(1) + 'px', '--glowA': (0.38 + 0.45 * glow).toFixed(3) })

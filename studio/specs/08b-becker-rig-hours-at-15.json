@@ -8,27 +8,33 @@
   "footer": "≈ $13.10 kept: 2026 federal tax + FICA, single, no state tax",
   "captions": true,
   "vo": [
-    { "t": 0.0,  "d": 4.3, "text": "$15 an hour? Median rent: **≈ 117 hours**." },
-    { "t": 4.6,  "d": 3.7, "text": "Every hour you work, to **≈ the 20th**." },
-    { "t": 9.1,  "d": 3.9, "text": "A year of rent? **≈ 1,400 hours**." },
-    { "t": 13.3, "d": 3.9, "text": "An average new car? **≈ 3,800 hours**." },
-    { "t": 18.2, "d": 3.2, "text": "A median new house? **≈ 30,000 hours**." },
-    { "t": 21.5, "d": 4.7, "text": "That's **≈ 14 years** of full-time work. Every cent you keep." }
+    { "t": 0.0,  "d": 2.35, "text": "$15 an hour? Median rent:" },
+    { "t": 2.4,  "d": 1.95, "text": "**≈ 117 hours**." },
+    { "t": 4.4,  "d": 1.95, "text": "Every hour you work, to…" },
+    { "t": 6.4,  "d": 1.55, "text": "**≈ the 20th**." },
+    { "t": 8.5,  "d": 1.55, "text": "A year of rent?" },
+    { "t": 10.75, "d": 1.95, "text": "**≈ 1,400**." },
+    { "t": 12.95, "d": 1.55, "text": "An average new car?" },
+    { "t": 15.2, "d": 1.95, "text": "**≈ 3,800**." },
+    { "t": 17.4, "d": 1.55, "text": "A median new house?" },
+    { "t": 20.2, "d": 1.55, "text": "**≈ 30,000 hours**." },
+    { "t": 21.8, "d": 4.25, "text": "That's **≈ 14 years** of full-time work. Every cent you keep." }
   ],
-  "verdict": { "t": 21.5, "text": "**≈ 14 years** of full-time work.\nEvery cent you keep." },
+  "verdict": { "t": 21.8, "text": "**≈ 14 years** of full-time work.\nEvery cent you keep." },
   "data": {
     "unit": { "name": "Hour of work at $15 (≈ $13.10 kept)", "price": "$13.10", "icon": "hour" },
     "rungs": [
-      { "t": 0.0,  "item": "Median rent, 1 month", "cost": "$1,531",   "units": 117,   "unitsDisplay": "≈ 117" },
-      { "t": 8.4,  "item": "Median rent, 1 year",  "cost": "$18,372",  "units": 1402,  "unitsDisplay": "≈ 1,402" },
-      { "t": 12.6, "item": "An average new car",   "cost": "$50,089",  "units": 3824,  "unitsDisplay": "≈ 3,824" },
-      { "t": 16.8, "item": "A median new house",   "cost": "$393,700", "units": 30053, "unitsDisplay": "≈ 30,053" }
+      { "t": 0.0,   "item": "Median rent, 1 month", "cost": "$1,531",   "units": 117,   "unitsDisplay": "≈ 117" },
+      { "t": 8.4,   "item": "Median rent, 1 year",  "cost": "$18,372",  "units": 1402,  "unitsDisplay": "≈ 1,402" },
+      { "t": 12.85, "item": "An average new car",   "cost": "$50,089",  "units": 3824,  "unitsDisplay": "≈ 3,824" },
+      { "t": 17.3,  "item": "A median new house",   "cost": "$393,700", "units": 30053, "unitsDisplay": "≈ 30,053" }
     ],
-    "hold": 7.33
+    "hold": 6.83
   },
   "lookOpts": {
-    "pileLabels": ["Median rent, 1 month", "Median rent, 1 year", "Average new car", "Median new house"],
-    "blank": { "t": 4.7, "d": 1.7, "text": "≈ 20th" }
+    "pileLabels": false,
+    "blank": { "t": 4.7, "d": 1.7, "text": "≈ 20th", "calendar": 30 },
+    "morph": { "t": 21.8, "working": "30,053 hours ÷ 2,080 a year", "display": "14", "label": "years of full-time work" }
   },
   "sfx": []
 }

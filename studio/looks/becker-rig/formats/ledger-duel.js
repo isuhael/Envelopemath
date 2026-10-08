@@ -11,7 +11,8 @@
 //   dip    a small loss: the stack sinks, he bends with it; the value lands red
 //   crash  a big loss (>= 12%, or any loss on a "bad" row): an impact on the stack (red hit lines, shake, `hit`),
 //          the lost coins burst off the top and roll to the floor (they stay there), he is blown up off the stack
-//          and lands squashed on what is left, then slumps; the other one flinches and turns to look
+//          and lands squashed on what is left, then slumps; the other one flinches and turns to look. When both
+//          crash in the same row, each leans away from the other with his inner arm kept down (no tangle)
 //   lead   when the lead changes, the new leader pumps a fist
 //   event  the row's event text pops as a pill right above the row (tone colour) until the next row lands;
 //          the row label keeps the tone colour
@@ -38,7 +39,8 @@
 //   beats: [{ t, act, person, targets, d }]   extra acting: act = a POSES name (or cheer | peek) for `person`
 //                                     (held d = 1.4 s), or 'impact' on `targets` (skipped where a crash already hits),
 //                                     or 'sell' (below). A scripted beat near the verdict replaces the default
-//                                     verdict acting for that person.
+//                                     verdict acting for that person. A beat whose hold runs into the same
+//                                     person's sell skips its return pose (the sell's wind-up plays in full).
 //          { t, act: 'sell', person, label }   the person cashes out: a chop on his stack, which turns from coins
 //                                     into a grey brick of cash (it no longer grows), and `label` pops as a pill
 //                                     right-aligned over his column in the slot above the latest row, until the
@@ -687,7 +689,11 @@ export default function ledgerDuel(spec, ctx) {
     const p = b.person
     if (b.act === 'sell' || !pose || !(p === 0 || p === 1)) continue
     addK(p, b.t, pose, 0.25)
-    addK(p, b.t + (b.d ?? 1.4), p === loser && b.t > TW ? (loser === 1 ? PZ.glumBack : PZ.glum) : 'idle', 0.4)
+    // the beat's return pose is skipped when his own cash-out follows (it would land on the sell's wind-up and
+    // swallow it; the sell returns him to idle itself)
+    const rt = b.t + (b.d ?? 1.4)
+    if (sells.some(sl => sl.p === p && sl.t > b.t && sl.t - 0.3 < rt + 0.45)) continue
+    addK(p, rt, p === loser && b.t > TW ? (loser === 1 ? PZ.glumBack : PZ.glum) : 'idle', 0.4)
   }
   const tracks = keys.map(k => poseTrack(k))
   const faces = faceK.map(k => track(k.map(x => ({ t: x.t, v: x.v, d: 0.12, e: 'inOut' }))))

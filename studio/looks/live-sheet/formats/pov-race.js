@@ -69,6 +69,25 @@ export const css = `
 .pov-tag i { position: absolute; width: 20px; height: 20px; background: #101828; border-radius: 3px; transform: rotate(45deg); }
 .pov-tag.two { height: 112px; padding: 12px 20px; align-items: flex-start; }
 .pov-tag.two > span { display: flex; flex-direction: column; gap: 4px; line-height: 42px; }
+/* the answer row (lookOpts.unit): one merged cell set like a sheet's total row */
+.ls-row.pov-ans { border-top: 3px solid #D0D5DD; z-index: 2; }
+.pov-acell { position: absolute; top: 0; display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  box-sizing: border-box; }
+.pov-alabs { display: grid; align-items: center; min-width: 0; }
+.pov-alabs > span { grid-area: 1 / 1; }
+.pov-alab { font: 800 40px/1.1 'Inter', 'Inter Full', sans-serif; color: #344054; letter-spacing: -0.01em; text-wrap: balance; }
+.pov-alab b { color: #101828; font-weight: 800; }
+.pov-aval { display: inline-flex; align-items: baseline; gap: 12px; white-space: nowrap; transform-origin: 100% 60%; }
+.pov-anum { font: 900 84px/1 'Inter', 'Inter Full', sans-serif; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; }
+.pov-aunit { font: 800 44px/1 'Inter', 'Inter Full', sans-serif; letter-spacing: -0.01em; }
+/* the hero verdict (lookOpts.verdict 'hero'): the answer slammed over the dimmed chart */
+.pov-hdim { position: absolute; left: 0; background: #FFFFFF; opacity: 0; z-index: 7; }
+.pov-hero { position: absolute; left: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 10px; z-index: 8; opacity: 0; pointer-events: none; }
+.pov-hbig { font: 900 150px/1.02 'Inter', 'Inter Full', sans-serif; color: #101828; letter-spacing: -0.035em; white-space: nowrap;
+  padding: 0 0.08em; transform-origin: 50% 55%;
+  background-image: linear-gradient(#FFD60A, #FFD60A); background-repeat: no-repeat; background-size: var(--hl, 0%) 0.82em; background-position: 0 62%; }
+.pov-hsub { font: 800 48px/1.1 'Inter', 'Inter Full', sans-serif; color: #344054; letter-spacing: -0.012em; white-space: nowrap; }
 `
 
 const esc = str => String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -148,8 +167,22 @@ export default function povRace(spec, ctx) {
   const fmtV = v => fmtNum(v, { prefix: yo.prefix ?? '$', suffix: yo.suffix ?? '', dp: yo.dp ?? 0 })
   const caps = hasCaptions(spec)
   const verdict = spec.verdict && spec.verdict.text ? spec.verdict : null
-  const vMode = verdict ? (opt(spec, 'verdict', 'band') === 'formula' ? 'formula' : 'band') : 'none'
+  const vOpt = opt(spec, 'verdict', 'band')
+  const vMode = verdict ? (vOpt === 'formula' ? 'formula' : vOpt === 'hero' ? 'hero' : 'band') : 'none'
   const loopOn = opt(spec, 'loop', true)
+  // cover 'clean': frame 1 shows the start row's cells empty and no start tag (the hook's own number is the only
+  // price on the cover); the values and the stake's tag arrive as the race starts
+  const coverClean = opt(spec, 'cover', 'filled') === 'clean'
+  // unit: the answer row, the stake re-priced live in the hook's own unit (years of a $19.99 bill)
+  const U = (() => {
+    const u = opt(spec, 'unit', null)
+    if (!u || !(+u.per > 0)) return null
+    return {
+      label: String(u.label || ''), per: +u.per, perMonth: +u.perMonth > 0 ? +u.perMonth : +u.per / 12,
+      final: u.final != null ? String(u.final) : null, hold: +u.hold > 0 ? +u.hold : 1.3,
+      holds: (Array.isArray(u.holds) ? u.holds : []).map(Number).filter(Number.isFinite).sort((a, b) => a - b),
+    }
+  })()
 
   // ---------- the ledger rows: the start, then every point (year-end) the race passes ----------
   let X = [...new Set([...sp, ...ow].map(p => p[0]))].filter(x => x > xs + 0.02 && x <= xe + 1e-9).sort((a, b) => a - b)
@@ -195,16 +228,21 @@ export default function povRace(spec, ctx) {
   if (!fe.length) fe.push({ t: 0, text: glueOps(`= ${spStart} → ?`) })
 
   // ---------- duration ----------
-  const cut = fe[0].t <= 0 ? wordCut(fe[0].text, opt(spec, 'formulaAt0', 0.7)) : 0
+  const at0 = +opt(spec, 'formulaAt0', 0.7)
+  const cut = fe[0].t <= 0 ? (at0 >= 1 ? mkLen(fe[0].text) : wordCut(fe[0].text, at0)) : 0
+  const typeMax = +opt(spec, 'typeMax', 0) || 0          // a step types in at most this many seconds (0: fill its room)
+  const ERASE = Math.max(0, +opt(spec, 'erase', 0.16))
   const fx = fe.map((e, i) => {
-    const erase = i > 0 ? 0.16 : 0
+    const erase = i > 0 ? ERASE : 0
     const start = e.t + erase
     const len = mkLen(e.text)
     const next = fe[i + 1] ? fe[i + 1].t : Infinity
     const from = i === 0 ? cut : 0
     const room = next - start - 0.8
-    const cps = isFinite(room) && room > 0.3 ? Math.max(M.cps, (len - from) / room) : M.cps
-    return { ...e, erase, start, len, from, cps: e.verdict ? Math.max(26, cps) : cps, end: start + Math.max(0, len - from) / cps }
+    let cps = isFinite(room) && room > 0.3 ? Math.max(M.cps, (len - from) / room) : M.cps
+    if (typeMax > 0) cps = Math.max(cps, (len - from) / typeMax)
+    if (e.verdict) cps = Math.max(26, cps)
+    return { ...e, erase, start, len, from, cps, end: start + Math.max(0, len - from) / cps }
   })
   const beats = [r1 + 0.6, ...fx.map(e => e.end)]
   const vfx = fx.find(e => e.verdict)
@@ -323,7 +361,8 @@ export default function povRace(spec, ctx) {
   // what fits: the chart keeps its room first, then the frozen start row, history rows (content: the last
   // landed years) and, last, the column letters (decoration)
   const chartMin = 360, chartHist = 380, chartIdeal = 420
-  let rest = cardH - fbarH - labelH - liveH
+  const AH = U ? 112 : 0                                   // the answer row (unit)
+  let rest = cardH - fbarH - labelH - liveH - AH
   const fOpt = opt(spec, 'frozen', 'auto')
   const frozen = fOpt === true || (fOpt === 'auto' && rest - histH >= chartMin)
   if (frozen) rest -= histH
@@ -342,7 +381,8 @@ export default function povRace(spec, ctx) {
   const frozenY = headY + labelH
   const histY = frozenY + (frozen ? histH : 0)
   const liveY = histY + H * histH
-  const chartY = liveY + liveH
+  const ansY = liveY + liveH
+  const chartY = ansY + AH
   setStyle(heads, { top: headY + 'px', height: labelH + 'px' })
   labelEls.forEach(el => setStyle(el, { height: labelH + 'px' }))
   setStyle(headNum, { height: labelH + 'px' })
@@ -416,6 +456,70 @@ export default function povRace(spec, ctx) {
   const sel = h('div', { class: 'ls-sel' }, h('i', { class: 'ls-handle' }))
   card.append(sel)
 
+  // ---------- the answer row (lookOpts.unit) ----------
+  // One merged cell under the race row, set like a sheet's total: the label left, the answer right and big. Frame 1
+  // shows "?" (the hook's empty answer slot); from the race start it counts with the Owned value (÷ unit.per a year;
+  // in months, ÷ unit.perMonth, under a year); at each unit.holds year-end it lands: it holds that year-end's exact
+  // figure for unit.hold s on a yellow cell, the label reading "End of 2020", then catches up with the race. The
+  // finish lands on unit.final and the selection springs onto it.
+  const unitText = v => {                              // → [number, unit] ("≈ 38", "years"; "≈ 5", "months")
+    const yrs = v / U.per
+    if (yrs < 1) { const m = Math.round(v / U.perMonth); return m < 1 ? ['< 1', 'month'] : ['≈ ' + m, m === 1 ? 'month' : 'months'] }
+    const r1 = Math.round(yrs * 10) / 10
+    return [r1 < 10 ? '≈ ' + r1.toFixed(1) : '≈ ' + Math.round(yrs), 'years']
+  }
+  let ans = null
+  const holdWin = []
+  if (U) {
+    const num = h('div', { class: 'ls-rn', 'data-deco': '', style: { width: gutter + 'px', height: AH + 'px' } })
+    const labA = h('span', { class: 'pov-alab', html: mk(U.label) }), labB = h('span', { class: 'pov-alab' })
+    const vNum = h('span', { class: 'pov-anum' }), vUnit = h('span', { class: 'pov-aunit' })
+    const val = h('span', { class: 'pov-aval' }, vNum, vUnit)
+    const cell = h('div', { class: 'pov-acell', style: { left: colX[0] + 'px', width: Wd - colX[0] + 'px', height: AH + 'px', padding: `0 ${padX + HANDLE_PAD}px 0 ${padX}px` } },
+      h('span', { class: 'pov-alabs' }, labA, labB), val)
+    const row = h('div', { class: 'ls-row pov-ans', style: { top: ansY + 'px', height: AH + 'px' } }, num, cell)
+    card.append(row)
+    // one size for every value it will show: the number from 84 px down until the widest fits beside the label
+    const finalSplit = U.final ? splitValue(U.final) : null
+    const samples = [['?', 'years'], ['< 1', 'month'], ['≈ 11', 'months'], ['≈ 9.9', 'years'], ['≈ ' + Math.round(Math.max(...ow.map(q => q[1])) / U.per), 'years'], ...(finalSplit ? [[finalSplit.main, finalSplit.suf]] : [])]
+    const inner = Wd - colX[0] - 2 * padX - HANDLE_PAD
+    const labW = textW(mk(U.label), font(800, 40), { letterSpacing: '-0.01em' })
+    let nPx = 84
+    const valW = px => Math.max(...samples.map(([a, b]) => textW(esc(a), font(900, px), { letterSpacing: '-0.025em' }) + (b ? 12 + textW(esc(b), font(800, Math.max(40, Math.round(px * 0.52)))) : 0)))
+    while (nPx > 64 && valW(nPx) + 24 + Math.min(labW, inner * 0.42) > inner) nPx -= 2
+    const uPx = Math.max(40, Math.round(nPx * 0.52))
+    setStyle(vNum, { fontSize: nPx + 'px' }); setStyle(vUnit, { fontSize: uPx + 'px' })
+    // the label wraps (balanced) into what the widest value leaves
+    setStyle(cell.firstChild, { maxWidth: Math.floor(inner - valW(nPx) - 24) + 'px' })
+    ans = { row, num, cell, labA, labB, val, vNum, vUnit, finalSplit }
+    // the landings: each hold runs from its year-end until unit.hold later (never into the next one or the finish)
+    U.holds.forEach(x => { if (x > xs && x < xe) holdWin.push({ x, t0: tOfX(x), v: valAt(ow, x), year: Math.floor(x + 1e-6) }) })
+    holdWin.forEach((w, i) => { w.t1 = Math.min(w.t0 + U.hold, holdWin[i + 1] ? holdWin[i + 1].t0 - 0.05 : Infinity, r1 - 0.2) })
+  }
+
+  // ---------- the hero verdict (lookOpts.verdict 'hero') ----------
+  // At verdict.t the chart dims to white and the verdict's **marked** words slam in over it, huge, a yellow marker
+  // wiping in under them; the rest of the verdict sits under it as one smaller line. The loop fades it away.
+  let hero = null
+  if (vMode === 'hero') {
+    const raw = String(verdict.text)
+    const m = /\*\*([\s\S]+?)\*\*/.exec(raw)
+    const bigTxt = m ? m[1] : plain(raw.split('\n')[0])
+    const subTxt = (m ? raw.replace(m[0], ' ') : raw.split('\n').slice(1).join(' ')).replace(/\s+/g, ' ').trim()
+    const dim = h('div', { class: 'pov-hdim', 'data-deco': '', style: { top: chartY + 'px', height: chartH + 'px', width: Wd + 'px' } })
+    const big = h('div', { class: 'pov-hbig', text: bigTxt })
+    const sub = subTxt ? h('div', { class: 'pov-hsub', html: mk(subTxt) }) : null
+    const box = h('div', { class: 'pov-hero', style: { top: chartY + 'px', height: chartH + 'px', width: Wd + 'px' } }, big, sub)
+    card.append(dim, box)
+    // centred on the card, inside the right rail (stage x ≤ 934)
+    const maxW = 2 * (G.railX - 6 - G.left - Wd / 2)
+    let bPx = 150
+    while (bPx > 96 && textW(esc(bigTxt), font(900, bPx), { letterSpacing: '-0.035em' }) + bPx * 0.16 > maxW) bPx -= 2
+    setStyle(big, { fontSize: bPx + 'px' })
+    if (sub) { let sPx = 48; while (sPx > 40 && textW(mk(subTxt), font(800, sPx), { letterSpacing: '-0.012em' }) > maxW) sPx -= 2; setStyle(sub, { fontSize: sPx + 'px' }) }
+    hero = { dim, box, big, sub }
+  }
+
   // ---------- chart ----------
   const pad = { l: 128, r: 48, t: 34, b: 66 }
   const startMax = Math.max(spV[0], owV[0])
@@ -458,12 +562,13 @@ export default function povRace(spec, ctx) {
   card.append(tag)
   const tagHTML = purchases.map(p => `${p.label ? esc(p.label) + ' ' : ''}<b>${esc(p.price || '')}</b>`)
   const tagW = tagHTML.map(x => textW(x, font(600, 40), ls) + 40)
-  const tagT = purchases.map(p => (p.x <= xs + 0.02 ? 0 : tOfX(p.x)))
+  const tagT = purchases.map(p => (p.x <= xs + 0.02 && !coverClean ? 0 : tOfX(p.x)))
   const startTag = tagT.lastIndexOf(0)
   // a tag shows for ~1.7 s, but is gone before the final values land (one focal number at a time)
   // (the frame-1 tag names the stake, and leaves as the race starts drawing into it)
   const tagOut = i => {
     if (tagT[i] <= 0) return r0 + 0.3
+    if (coverClean && purchases[i].x <= xs + 0.02) return r0 + 1.3
     const t0 = Math.max(tagT[i], r0)
     return Math.max(t0 + 0.8, Math.min(t0 + 1.7, r1 - 0.3))
   }
@@ -495,7 +600,7 @@ export default function povRace(spec, ctx) {
   const tagCands = f => {
     const out = [{ kind: 'above', hz: 'r', pref: 0 }, { kind: 'above', hz: 'c', pref: 3 }, { kind: 'above', hz: 'l', pref: 6 },
       { kind: 'right', pref: 4 }, { kind: 'left', pref: 6 }]
-    for (let y0 = PT + 4; y0 + f.h <= PB - 8 && y0 <= PT + 84; y0 += 40) {
+    for (let y0 = PT + 4; y0 + f.h <= PB - 8; y0 += 40) {
       const xs0 = []
       for (let x0 = PL + 12; x0 + f.w <= PR; x0 += 32) xs0.push(x0)
       if (PR - f.w >= PL + 12) xs0.push(PR - f.w)                     // flush right too
@@ -564,7 +669,7 @@ export default function povRace(spec, ctx) {
         if (r.park) {
           const a = leaderOf(r, f, mx, my)
           cost += 0.04 * Math.hypot(a[2] - a[0], a[3] - a[1])
-          g.lines.forEach(ln => { for (let k = 1; k < ln.length; k++) if (segX([a[0], a[1]], [a[2], a[3]], ln[k - 1], ln[k])) cost += 25 })
+          g.lines.forEach(ln => { for (let k = 1; k < ln.length; k++) if (segX([a[0], a[1]], [a[2], a[3]], ln[k - 1], ln[k])) cost += 900 })
         }
       }
       if (ok && (!best || cost < best.cost)) best = { cost, c, f }

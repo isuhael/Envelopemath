@@ -33,10 +33,20 @@
 //   pileLabels: false | [..]  the recap table after the last landing (one row per rung: count + name): false =
 //                             none; an array = the name per rung (default: the item name, shortened: no article,
 //                             no ", at ..." qualifier)
-//   blank: { t, d = 1.6, text }  fills the hook's blank: the header's "___" ticks up through the ordinals (1st, 2nd,
-//                             ... in grey, on a rule sized for the answer) from t and lands at t + d on `text` (a
-//                             display string, printed exactly; it counts to the number in it) in hero green with a
-//                             pop and a ding, while the figure points up at it. Ignored when the header has no "___".
+//   blank: { t, d = 1.6, text, calendar }  fills the hook's blank: the header's "___" ticks up through the ordinals
+//                             (1st, 2nd, ... in grey, on a rule sized for the answer) from t and lands at t + d on
+//                             `text` (a display string, printed exactly; it counts to the number in it) in hero green
+//                             with a pop and a ding, while the figure points up at it. Ignored when the header has no
+//                             "___". calendar: N (days) draws a month grid beside the counter whose days fill in step
+//                             with the ordinals (1st .. the answer) and stays while that rung's pile is on (decoration).
+//   morph: { t, working, display, label, approx = true }  at t (usually verdict.t) the HUD's last answer turns into
+//                             the takeaway: the working line becomes `working` + "≈", the gold plate shrinks round
+//                             `display` and the label beside it becomes `label` (one swap, like a rung's).
+//
+// Cuts: when the camera pushes back in on the figure for a new rung, the piles already standing would be sliced by the
+// top of the stage and the right frame edge; each earlier pile fades out as it leaves the frame and back in as the
+// pull-back brings it home, so no pile is ever drawn cut flat. While a count rolls its digits are right-aligned in the
+// final number's slot and the label sits where it lands (nothing slides when the count lands or the plate arrives).
 import {
   h, s, style, attr, setText, setHTML, prog, clamp, lerp, rng,
   C, F, T, L, S, E, RIG, poseTrack, fk, secondary, pinLimb, blendJ, Figure, makeWorld, makeFx, camera, NumObj,
@@ -253,6 +263,10 @@ export default function unitLadder(spec, ctx) {
   const numColor = r => (r.plate ? C.ink : r.tone === 'bad' ? C.red : r.tone === 'neutral' ? C.ink : C.heroInk)
 
   // ================================================================== HUD layout (fixed, never zoomed)
+  const mo = lo.morph && lo.morph.t != null && lo.morph.display != null ? lo.morph : null
+  const moT = mo ? +mo.t : Infinity
+  const moWork = mo ? String(mo.working || '') : ''
+  const moOp = mo && mo.approx === false ? '=' : '≈'
   const parts = chromeParts(spec, ctx)
   const introItem = String(U.name || '')
   const itemTexts = [...(intro ? [introItem] : []), ...R.map(r => r.item)]
@@ -267,13 +281,13 @@ export default function unitLadder(spec, ctx) {
   // the intro states the unit's definition ("1 hot dog = $1.50"), not a division the spec never made
   const introDiv = `<i>1</i> ${esc(labelOne)} <i>=</i> <b>${esc(price)}</b>`
   const divHTML = (cost, op = '=', ap = false) => `<b>${esc(cost)}</b> ÷ ${esc(price)} <i class="${ap ? 'ap' : ''}">${op}</i>`
-  const divTexts = [...(intro ? [`1 ${labelOne} = ${price}`] : []), ...R.map(r => `${r.cost} ÷ ${price} ≈`)]
+  const divTexts = [...(intro ? [`1 ${labelOne} = ${price}`] : []), ...R.map(r => `${r.cost} ÷ ${price} ≈`), ...(mo && moWork ? [`${moWork} ${moOp}`] : [])]
   let divPx = 46
   for (; divPx > 40; divPx -= 2) if (divTexts.every(tx => measure(tx, `800 ${divPx}px ${F.mono}`, { letterSpacing: '-0.03em' }) <= HW)) break
   const lhD = Math.round(divPx * 1.3)
   const digW = (str, px) => measure(str, `900 ${px}px ${F.head}`, { letterSpacing: '-0.035em' })
   const labW = str => measure(str, `800 ${LABPX}px ${F.head}`, { letterSpacing: '-0.01em' })
-  const counters = [...(intro ? [{ digits: '1', label: labelOne, plate: false }] : []), ...R]
+  const counters = [...(intro ? [{ digits: '1', label: labelOne, plate: false }] : []), ...R, ...(mo ? [{ digits: String(mo.display), label: String(mo.label || ''), plate: true }] : [])]
   const besideFits = px => counters.every(a => (a.plate ? 2 * PLATE[0] + 24 : 0) + digW(a.digits, px) + 28 + labW(a.label) <= HW)
   let cPx = 136
   while (cPx > 104 && !besideFits(cPx)) cPx -= 4
@@ -378,7 +392,8 @@ export default function unitLadder(spec, ctx) {
       r.fillDur = clamp(fd, 0.6, 2.2)
     } else r.fillDur = clamp(gap * 0.3, 0.5, 1.6)
     r.land = r.fill0 + r.fillDur
-    r.pull = clamp(r.fillDur * 0.62, 0.35, r.last ? 1.1 : 0.8)
+    // the pull-back follows the growing pile closely, so the new pile never hangs off the right edge for long
+    r.pull = clamp(r.fillDur * 0.32, 0.3, r.last ? 0.6 : 0.45)
     r.whole = Math.floor(r.units + 1e-9)
     r.frac = r.units - r.whole
     r.hasPart = r.frac > 0.04 && r.whole < 1000
@@ -491,6 +506,7 @@ export default function unitLadder(spec, ctx) {
   for (let k = 0; k <= KMAX; k++) lodPat(k)
   for (const r of R) {
     const gp = s('g', { transform: `translate(${r.px.toFixed(1)},${FLOOR})` })
+    r.gp = gp
     r.flat = s('path', { fill: flatOf(iconName) })
     r.fills = [s('path', { fill: 'url(#ul-pat0)' }), s('path', { fill: 'url(#ul-pat1)', opacity: 0 })]
     r.edge = s('path', { fill: 'none', stroke: C.ink, 'stroke-linejoin': 'round' })
@@ -525,6 +541,14 @@ export default function unitLadder(spec, ctx) {
 
   // ================================================================== figure, held unit
   const fig = showFig ? new Figure(g.fig, { scale: FIGK }) : null
+  // the pencil sits tucked behind the ear here (54 deg above the backward horizontal, not 30): at the presenting
+  // pose on frame 1 the library angle read as an arrow through the back of his head
+  // pose (he looks up a lot here) only partly tilts it: it counter-rotates against 60% of the head's rotation
+  let pin = null
+  if (fig && fig.pencil && fig.pencil.firstChild) {
+    const el = fig.pencil.firstChild, m = /translate\(([-\d.]+),0\)\s*rotate\(210\)/.exec(el.getAttribute('transform') || '')
+    if (m) pin = { el, x: m[1] }
+  }
   const held = intro && showFig ? use({ opacity: 0 }) : null
   if (held) g.front.append(held)
 
@@ -568,11 +592,47 @@ export default function unitLadder(spec, ctx) {
     style(plate, { width: plBox.w.toFixed(0) + 'px', height: plBox.h.toFixed(0) + 'px' })
     hudFx.impact(plR.land, { x: plBox.x + plBox.w / 2, y: plBox.y + plBox.h / 2, rx: plBox.w / 2 + 8, ry: plBox.h / 2 + 2, r: 17, lines: 12, shake: 0, cue: null })
   }
+  // the morph: the plate shrinks round the takeaway (a second burst of hit lines round it as it lands)
+  const moDigits = mo ? String(mo.display) : ''
+  const moBox = mo && plBox ? { ...plBox, w: digW(moDigits, cPx) + 2 * padOf(plR) } : null
+  const moDiv = mo ? (() => {
+    const k = moWork.indexOf(' ÷ ')
+    const body = k > 0 ? `<b>${esc(moWork.slice(0, k))}</b> ÷ ${esc(moWork.slice(k + 3))}` : `<b>${esc(moWork)}</b>`
+    return `${body} <i class="${moOp === '≈' ? 'ap' : ''}">${moOp}</i>`
+  })() : ''
+  if (moBox) {
+    hudFx.impact(moT + 0.16, { x: moBox.x + moBox.w / 2, y: moBox.y + moBox.h / 2, rx: moBox.w / 2 + 8, ry: moBox.h / 2 + 2, r: 17, lines: 12, shake: 0, cue: null })
+    ctx.cue(moT + 0.1, 'pop', { gain: 0.5 })
+  }
+
+  // the hook's month: a calendar grid beside the first count, its days filling in step with the header's ordinals
+  let cal = null
+  if (bk && bk.calendar) {
+    const days = clamp(Math.round(+bk.calendar) || 30, 28, 31), COLS = 7, rows = Math.ceil(days / COLS)
+    const cs = 26, cg = 6, pitch = cs + cg, bind = 14
+    const w = COLS * pitch - cg, hh = rows * pitch - cg + bind
+    const x0 = 934 - w, y0 = Math.round(base - hh)
+    const gC = s('g', { 'data-deco': '', opacity: 0 })
+    gC.append(s('rect', { x: x0, y: y0, width: w, height: 8, rx: 4, fill: C.ink }))
+    const cells = []
+    for (let k = 0; k < days; k++) {
+      const c = s('rect', { x: x0 + (k % COLS) * pitch, y: y0 + bind + Math.floor(k / COLS) * pitch, width: cs, height: cs, rx: 6, fill: C.lineSoft, stroke: C.line, 'stroke-width': 2 })
+      gC.append(c)
+      cells.push(c)
+    }
+    hudSvg.append(gC)
+    const target = Math.max(1, Math.min(days, Math.round(num(String(bk.text).replace(/[^\d.,]/g, '')) || 1)))
+    const end = R[1] ? R[1].T : Infinity
+    // the calendar clears the first count's label (else it stays off)
+    const labEnd = labXFor(R[0], R[0].digits) + labW(R[0].label)
+    cal = labEnd + 24 <= x0 ? { g: gC, cells, target, t0: +bk.t, d: Math.max(0.3, bkLand - +bk.t), end } : null
+    if (!cal) gC.remove()
+  }
 
   const duration = durationOf(spec, R[N - 1].land + 0.6, hold)
 
   // the figure never shrinks to a speck (see seekFigure)
-  const FIG_MIN = 96, figPx = 262 * FIGK
+  const FIG_MIN = 150, figPx = 262 * FIGK
   const figKAt = z => FIGK * Math.max(1, FIG_MIN / (figPx * z))
   const figXAt = z => XF - (1 - clamp(figPx * z / FIG_MIN)) * 48 / z
 
@@ -756,7 +816,7 @@ export default function unitLadder(spec, ctx) {
     return z
   }
 
-  function seekPiles(t, z) {
+  function seekPiles(t, z, cur) {
     // level of detail: the smallest level whose icon is >= 22 px on screen; just past a threshold the next level
     // cross-fades in (over 0.2 of a level, a fraction of a second of camera pull)
     const kf = Math.max(0, Math.log2(22 / (cw * z)))
@@ -773,6 +833,14 @@ export default function unitLadder(spec, ctx) {
       attr(r.edge, 'opacity', (0.9 * far).toFixed(3))
       attr(r.edge, 'stroke-width', (3 / z).toFixed(2))
       if (r.part) attr(r.part, 'opacity', t >= r.land + SETTLE ? '1' : '0')
+      // an earlier pile fades out as the camera's push-in takes it past the top of the stage or the right edge, and
+      // back in as the pull-back brings it home (never sliced flat by the frame)
+      let fa = 1
+      if (r.i < cur && n > 0) {
+        const top = FLOOR - pileH(n) * z, right = FXS + (r.px + pileW(n) - XF) * z
+        fa = Math.min(smooth(VPtop - 8, VPtop + 44, top), smooth(1112, 1046, right))
+      }
+      attr(r.gp, 'opacity', fa.toFixed(3))
     }
   }
 
@@ -829,6 +897,7 @@ export default function unitLadder(spec, ctx) {
       J = blendJ(J, pinLimb({ ...J }, 'hF', r.contact, 1), w)
     }
     fig.draw(J, { stroke: Math.max(S.figure, S.figure / z) })
+    if (pin) attr(pin.el, 'transform', `translate(${pin.x},0) rotate(${(234 - 0.6 * J.headRot).toFixed(1)})`)
     if (held) {
       const rel = R[0].T - 0.02
       if (t < rel) {
@@ -882,20 +951,51 @@ export default function unitLadder(spec, ctx) {
           numTxt = t >= r.land ? r.digits : rollTo(nAt(r, t) / Math.max(1e-9, r.units), 0, r.digits)
           const bump = 1 + wobble(t, r.land, r.last ? 0.08 : 0.06, 2.4, 7)
           numOp = b.op; nsx = b.sx * bump; nsy = b.sy * bump; ncol = r.plate && t < r.land ? C.heroInk : numColor(r)
-          labTxt = r.label; labOp = 1; lx = labXFor(r, numTxt)
+          labTxt = r.label; labOp = 1; lx = labXFor(r, r.digits)     // where it lands (the digits roll in its slot)
         }
       }
     }
-    numO.set({ x: HX + padOf(nr), y: base, sx: nsx, sy: nsy, opacity: numOp, text: numTxt, color: ncol })
-    qO.set({ x: HX, y: base, sx: qs, sy: qs, opacity: qOp })
+    // a rolling count is right-aligned in its final slot, so neither it nor its label slides when it lands
+    let nx = HX + padOf(nr)
+    if (nr && cur >= 0 && nr === R[cur] && t < nr.land && numTxt) nx += digW(nr.digits, cPx) - digW(numTxt, cPx)
+    let qx = HX + (cur >= 0 ? padOf(R[cur]) : 0)
+    // the morph: one swap from the last answer to the takeaway (working line, plate, label)
+    let mw = 0
+    if (mo && t >= moT) {
+      const m = swapK(t, moT, cPx)
+      const md = swapK(t, moT, divPx)
+      if (md.phase) setHTML(divEl, moDiv)
+      style(divEl, { opacity: md.op.toFixed(3), transform: `scale(${md.sx.toFixed(3)},${md.sy.toFixed(3)})` })
+      if (m.phase) {
+        numTxt = moDigits; ncol = C.ink; nx = HX + padOf(plR); labTxt = String(mo.label || ''); labOp = m.op
+        lx = labXFor(plR, moDigits)
+      }
+      numOp = m.op; nsx = m.sx; nsy = m.sy; labOp = m.op
+      mw = E.inOut(prog(t, moT + 0.06, 0.26))
+    }
+    numO.set({ x: nx, y: base, sx: nsx, sy: nsy, opacity: numOp, text: numTxt, color: ncol })
+    qO.set({ x: qx, y: base, sx: qs, sy: qs, opacity: qOp })
     labO.set({ x: lx, y: yLabBase, opacity: labOp, text: labTxt })
     if (plBox) {
       const pp = popIn(t, plR.land - 0.01, 0.3, 0.6)
-      const bump = 1 + wobble(t, plR.land, 0.06, 2.4, 7)
+      const bump = (1 + wobble(t, plR.land, 0.06, 2.4, 7)) * (moBox ? 1 + wobble(t, moT + 0.14, 0.07, 2.4, 7) : 1)
+      if (moBox) style(plate, { width: lerp(plBox.w, moBox.w, mw).toFixed(1) + 'px' })
       style(plate, {
         opacity: t >= plR.land - 0.01 ? '1' : '0',
         transform: `translate(${plBox.x.toFixed(1)}px,${plBox.y.toFixed(1)}px) scale(${(pp.scale * bump).toFixed(3)})`,
       })
+    }
+    if (cal) {
+      const vis = t < cal.t0 - 0.12 ? 0 : t < cal.end ? clamp((t - cal.t0 + 0.12) / 0.2) : 1 - clamp((t - cal.end) / 0.22)
+      attr(cal.g, 'opacity', vis.toFixed(3))
+      if (vis > 0) {
+        const day = t < cal.t0 ? 0 : t >= cal.t0 + cal.d ? cal.target : 1 + Math.min(cal.target - 1, Math.floor((cal.target - 1) * prog(t, cal.t0, cal.d * 0.94)))
+        cal.cells.forEach((c, k) => {
+          const on = k < day
+          attr(c, 'fill', on ? C.hero : C.lineSoft)
+          attr(c, 'stroke', on ? C.hero : C.line)
+        })
+      }
     }
   }
 
@@ -908,7 +1008,7 @@ export default function unitLadder(spec, ctx) {
     // the floor spans the screen at any zoom, 4 px thick on screen
     attr(floorLn, 'x1', (XF + (-40 - FXS) / z).toFixed(1)); attr(floorLn, 'x2', (XF + (1120 - FXS) / z).toFixed(1))
     attr(floorLn, 'stroke-width', (S.thin / z).toFixed(2))
-    seekPiles(t, z)
+    seekPiles(t, z, cur)
     seekFlights(t, cur)
     seekCoins(t, z)
     seekFigure(t, z)
