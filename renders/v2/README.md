@@ -1,4 +1,6 @@
-# Round-2 teaser renders
+# Round-2 teaser renders (four looks, archived)
+
+**Superseded by [`renders/v3/`](../v3/README.md)**, where all 30 teasers are in the two kept looks, Scoreboard and Becker Rig. This folder keeps the four-look set (Clean Sheet, Live Sheet, Scoreboard, Becker Rig) for comparison. The specs have moved on since these files were made (the retired looks' specs are in `studio/specs/retired/`), so a rebuild now produces the v3 versions.
 
 Final MP4s of the round-2 teasers, copied here from `studio/out/` (which is not in git) once each teaser has passed assembly: lint clean, every on-screen number checked against its math script, fresh-eyes QA, fixes applied.
 

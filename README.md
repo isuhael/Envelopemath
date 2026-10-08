@@ -6,15 +6,17 @@ Research, formats, teasers and a renderer for **Back of the Envelope**, a facele
 
 Round 1's kraft-envelope look and its hooks were rejected, and its research sampled the wrong channels. Round 2 starts from channels whose shorts are finance maths at the core.
 
+The teasers were first built in four looks. Two were kept, **Scoreboard** and **Becker Rig**, and the 14 teasers made in Clean Sheet or Live Sheet were rebuilt in them, so every format now has both looks (15 teasers each).
+
 | Path | What it is |
 |---|---|
-| [`renders/v2/`](renders/v2) | **The 30 finished teasers as MP4s** (1080×1920, 13-46 s). Open a file on GitHub and use *Download raw file*. Audio is the sound-effect track only; captions show the guide voice-over |
+| [`renders/v3/`](renders/v3) | **The 30 finished teasers as MP4s, in Scoreboard and Becker Rig** (1080×1920, 13-46 s). Open a file on GitHub and use *Download raw file*. Audio is the sound-effect track only; captions show the guide voice-over. [`renders/v2/`](renders/v2) keeps the earlier four-look set |
 | [`research/v2/`](research/v2) | Channel-first research: the finance-maths-core channel list (`01`), the hook bank with rules R1-R12 and patterns P1-P9 (`02`), the look directions (`03`), the ten formats ranked by benchmark evidence (`04`), and scene-by-scene watch notes per benchmark channel plus Alan Becker |
 | [`teasers/v2/`](teasers/v2) | One write-up per format: three teasers each, with hook, beat sheet, guide VO, every number's maths, sources, captions and the review logs (verification, blind hook judging, assembly QA). `checks/` holds a Python math check per format that recomputes every on-screen number and compares it with the specs. `teasers.json` is the index |
-| [`studio/`](studio) | The round-2 renderer: four HTML/CSS look kits (Clean Sheet, Live Sheet, Scoreboard, Becker Rig) driven by JSON specs, seeked frame by frame in Chromium and encoded with ffmpeg, plus a linter for safe zones, type size, overlaps, contrast and the frame-1 number rule. See [`studio/README.md`](studio/README.md) and the spec contract [`studio/FORMATS.md`](studio/FORMATS.md) |
+| [`studio/`](studio) | The round-2 renderer: HTML/CSS look kits driven by JSON specs (Scoreboard and Becker Rig in use, each with all ten formats; Clean Sheet and Live Sheet kept but retired, their old specs in `specs/retired/`), seeked frame by frame in Chromium and encoded with ffmpeg, plus a linter for safe zones, type size, overlaps, contrast and the frame-1 number rule. See [`studio/README.md`](studio/README.md) and the spec contract [`studio/FORMATS.md`](studio/FORMATS.md) |
 | [`playbook/v2/`](playbook/v2) | Builds the review page (every teaser, filterable by look and format): `python3 playbook/v2/build.py` |
 
-The ten formats, each built in three looks: N dead simple numbers · find-your-row table · "what difference does X make?" · same-stake chart race · split sheet · POV spend-vs-own race · "2 people invest" ledger duel · cost in units of X · year-by-year growth ladder · real-time cost counter.
+The ten formats, three teasers each, every format in both looks: N dead simple numbers · find-your-row table · "what difference does X make?" · same-stake chart race · split sheet · POV spend-vs-own race · "2 people invest" ledger duel · cost in units of X · year-by-year growth ladder · real-time cost counter.
 
 ```bash
 cd studio && npm install && npm test

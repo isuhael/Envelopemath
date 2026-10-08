@@ -5,7 +5,7 @@ Inputs:
   teasers/v2/slate.json      the ten formats and the look each teaser uses
   teasers/v2/teasers.json    teaser metadata (titles, hooks, numbers, review results)
   studio/specs/*.json        the specs (header, footer, vo)
-  renders/v2/<id>.mp4        final full-res renders (re-encoded to 540x960 previews here)
+  renders/v3/<id>.mp4        final full-res renders in the two kept looks (re-encoded to 540x960 previews here)
 
 Usage: python3 playbook/v2/build.py [--no-media]
 """
@@ -23,8 +23,6 @@ MEDIA = DIST / 'media'
 REPO = 'https://github.com/isuhael/envelopemath/blob/claude/viral-finance-shorts-research-q9az4u/'
 
 LOOKS = {
-    'clean-sheet': ('Clean Sheet', 'A typeset worked page. The formula types in grey, then the answer lands on a highlighter. From Yannick\'s worked sheets.'),
-    'live-sheet': ('Live Sheet', 'A designed spreadsheet on black with one yellow accent. The formula bar shows the rough maths while the rows fill. From FinCalC, Debt Freedom and Gage.'),
     'scoreboard': ('Scoreboard', 'Black stage, neon counters, unit stacks and race lines. From HD Guy and ChartOrbit.'),
     'becker-rig': ('Becker Rig', 'A faceless stick figure works the maths: numbers are objects, operators are tools. After Alan Becker.'),
 }
@@ -68,7 +66,7 @@ def card(t, fmt, with_media):
     spec = json.loads((ROOT / t['spec']).read_text())
     look_name = LOOKS[t['look']][0]
     sid = t['id']
-    src = ROOT / 'renders' / 'v2' / f'{sid}.mp4'
+    src = ROOT / t['mp4']
     secs = duration(src) if src.exists() else t['runtime_s']
     title = clean_title(t['title'])
     if with_media and src.exists():
@@ -91,7 +89,7 @@ def card(t, fmt, with_media):
         {f'<ul class="nums">{nums}</ul>' if nums else ''}
         <details><summary>Guide voice-over</summary><p>{esc(vo)}</p></details>
         <p class="foot mono">{' · '.join(checks)} ·
-          <a href="{REPO}renders/v2/{sid}.mp4" target="_blank" rel="noopener">full-size MP4</a> ·
+          <a href="{REPO}{t['mp4']}" target="_blank" rel="noopener">full-size MP4</a> ·
           <a href="{REPO}{t['spec']}" target="_blank" rel="noopener">spec</a></p>
       </div>
     </article>'''
