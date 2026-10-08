@@ -5,7 +5,7 @@ Inputs:
   teasers/v2/slate.json      the ten formats and the look each teaser uses
   teasers/v2/teasers.json    teaser metadata (titles, hooks, numbers, review results)
   studio/specs/*.json        the specs (header, footer, vo)
-  renders/v3/<id>.mp4        final full-res renders in the two kept looks (re-encoded to 540x960 previews here)
+  renders/channel/<id>.mp4   final full-res branded renders (the path is each teaser's mp4 field; re-encoded to 540x960 previews here)
 
 Usage: python3 playbook/v2/build.py [--no-media]
 """

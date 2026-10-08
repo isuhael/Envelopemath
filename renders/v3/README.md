@@ -1,6 +1,6 @@
 # Teaser renders: Scoreboard and Becker Rig
 
-The 30 round-2 teasers in the two kept looks, 15 in **Scoreboard** and 15 in **Becker Rig**. These are the current finals. `renders/v2/` keeps the earlier four-look set for comparison.
+The 30 round-2 teasers in the two kept looks, 15 in **Scoreboard** and 15 in **Becker Rig**, without channel branding. The versions to post, with the em badge and the CTA end card, are in [`renders/channel/`](../channel/README.md). `renders/v2/` keeps the earlier four-look set for comparison.
 
 Fourteen teasers were first made in Clean Sheet or Live Sheet and were rebuilt in one of the kept looks. Their hook, numbers, voice-over and verdict are the same, and the rebuilds went through lint, the math check, a fresh-eyes QA and a fix pass. The other 16 were already in Scoreboard or Becker Rig and were re-rendered from the current kits.
 
