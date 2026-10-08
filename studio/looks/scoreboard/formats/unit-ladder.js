@@ -5,7 +5,8 @@
 //   2. the pile re-packs into smaller cells (the camera "pulls back" without a camera move)
 //   3. new unit icons rain onto the pile while the hero odometer rolls in sync (same ease.out curve)
 //   4. the count lands exactly on rung.unitsDisplay with a bump + glow flash (the biggest rung fills the stage)
-// Frame 1 shows the rule (header), the unit itself (hero "1", one icon, "$5 / LATTE") and the footer.
+// Frame 1 shows the rule (header), the unit itself (hero "1", one icon dropping in: it lands at 0.2 s, "$5 / LATTE")
+// and the footer.
 // If the first rung starts before 0.5 s there is no unit intro: frame 1 is already mid-roll on rung 1.
 //
 // data: { unit: { name, price, icon }, rungs: [{ t, item, cost, units, unitsDisplay, tone? }], hold }
@@ -36,7 +37,10 @@ export default function unitLadder(spec, ctx) {
 
   // ---------- stack plan (one step per rung; the intro is a single icon already landed) ----------
   const steps = []
-  if (intro) steps.push({ t: -1, n: 1, roll: 0.05, delay: 0, max: 230 })   // the lone unit is a big hero object
+  // the lone unit is a big hero object; it drops in across frame 1 (mid-fall at 0.0 s, lands at INTRO_LAND with its
+  // squash): the thumbnail is already in motion, and the hero reads "1" (the unit) throughout
+  const INTRO_LAND = 0.2
+  if (intro) steps.push({ t: INTRO_LAND - 0.7, n: 1, roll: 0.7, delay: 0, max: 230, fall: 0.45, drop: 300 })
   rungs.forEach((r, i) => {
     const prevN = i ? +rungs[i - 1].units : intro ? 1 : 0
     const last = i === rungs.length - 1
@@ -80,6 +84,7 @@ export default function unitLadder(spec, ctx) {
   const pips = lo.pips === false ? null : ladderPips(stage, { x: 76, bottom: L.stage.y + L.stage.h - 22, n: rungs.length, gap: Math.min(30, (L.stage.h - 60) / rungs.length) })
 
   // ---------- sound: a thud on each cut, ticks while the count rolls, a ding when it lands ----------
+  if (intro) ctx.cue(INTRO_LAND, 'pop', { gain: 0.35 })
   rungs.forEach((r, i) => {
     const k = i + off, st = steps[k], last = i === rungs.length - 1
     if (st.t > 0.05) ctx.cue(st.t, 'thud', { gain: 0.65 })

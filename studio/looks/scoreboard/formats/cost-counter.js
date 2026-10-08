@@ -70,6 +70,9 @@ export const css = `
 .cc-big svg { display: block; overflow: visible; }
 .cc-lad { position: absolute; transform-origin: 50% 50%; }
 .cc-lad svg { display: block; }
+.cc-lad .cc-twin { position: absolute; left: 10px; top: -10px; opacity: 0.5; }
+.cc-badge { position: absolute; left: 2px; top: calc(100% - 24px); font: 400 40px/1 'Anton', 'Inter Full', sans-serif; letter-spacing: 0.01em; color: #FFFFFF; background: #000000; padding: 3px 7px 1px; border-radius: 8px; white-space: nowrap; }
+.cc-bbadge { position: absolute; font: 400 92px/1 'Anton', 'Inter Full', sans-serif; letter-spacing: 0.01em; color: ${C.white}; background: ${C.bar}; padding: 6px 14px 2px; border-radius: 16px; white-space: nowrap; box-shadow: 0 0 0 3px ${C.panelLine}; }
 .cc-stream { position: absolute; }
 .cc-lad-pip { position: absolute; width: 8px; border-radius: 4px; background: ${C.green}; box-shadow: 0 0 12px rgba(43, 255, 136, 0.8); }
 .cc-pl { position: absolute; font: 400 40px/1 'Anton', 'Inter Full', sans-serif; white-space: nowrap; letter-spacing: 0.01em; transform-origin: 0 50%; }
@@ -161,6 +164,19 @@ export default function costCounter(spec, ctx) {
       tp: rate > 0 ? T0 + (value - start) / rate : Infinity,   // when the counter passes it
     }
   }).sort((a, b) => a.value - b.value)
+  // a repeated icon is told apart: a multiplier badge from the number its name leads with ("10 years of median pay"
+  // → "×10"), else a stacked twin behind it on the ladder
+  {
+    const seen = new Map()
+    ms.forEach(m => {
+      const n = seen.get(m.icon) || 0
+      seen.set(m.icon, n + 1)
+      if (!n) return
+      const num = /(?:^|[^$\d.,])(\d[\d,]*(?:\.\d+)?)(?!\s*%)/.exec(m.name)
+      if (num) m.badge = '×' + num[1]
+      else m.twin = true
+    })
+  }
   // no milestones: the stage fills one coin toward the final value (no label beat)
   const silent = !ms.length
   if (silent) ms.push({ value: finalV, name: '', amount: '', icon: iconName(lo.icon || 'coin'), l1: '', l2: '', tp: T1 })
@@ -197,7 +213,9 @@ export default function costCounter(spec, ctx) {
   // so it lives outside the decorative stage box)
   const plLeft = ladX + lsz / 2 + 26
   const ladder = ms.map((m, i) => {
-    const el = h('div', { class: 'cc-lad', style: { left: ladX - lsz / 2 + 'px', top: slotY(i) - lsz / 2 + 'px', width: lsz + 'px', height: lsz + 'px' } }, iconSVG(m.icon, lsz))
+    const twin = m.twin ? iconSVG(m.icon, lsz, { cls: 'cc-twin' }) : null
+    const badge = m.badge ? h('div', { class: 'cc-badge', html: ax(esc(m.badge)) }) : null
+    const el = h('div', { class: 'cc-lad', style: { left: ladX - lsz / 2 + 'px', top: slotY(i) - lsz / 2 + 'px', width: lsz + 'px', height: lsz + 'px' } }, twin, iconSVG(m.icon, lsz), badge)
     const pip = h('div', { class: 'cc-lad-pip', style: { left: ladX + lsz / 2 + 10 + 'px', top: slotY(i) - lsz * 0.3 + 'px', height: lsz * 0.6 + 'px' } })
     const pl = showLadder && m.pip ? h('div', { class: 'cc-pl', html: ax(esc(m.pip)), style: { left: plLeft + 'px', top: L.stage.y + slotY(i) - 20 + 'px', color: C.grey } }) : null
     if (showLadder) box.append(el, pip)
@@ -254,6 +272,8 @@ export default function costCounter(spec, ctx) {
     const svg = s('svg', { viewBox: '0 0 100 100', width: 100, height: 100 },
       s('defs', {}, shape, s('clipPath', { id: fillId }, fillRect)), ghost, full, glowLine, level)
     const el = h('div', { class: 'cc-big', 'data-deco': '' }, svg)
+    const bigBadge = m.badge ? h('div', { class: 'cc-bbadge', html: ax(esc(m.badge)) }) : null
+    if (bigBadge) el.append(bigBadge)
     box.append(el)
     let bb = { x: 5, y: 5, width: 90, height: 90 }
     try { const b = ghost.getBBox(); if (b.height > 1 && b.width > 1) bb = { x: b.x, y: b.y, width: b.width, height: b.height } } catch (e) { /* keep default */ }
@@ -261,9 +281,14 @@ export default function costCounter(spec, ctx) {
     const size = 100 * k, acx = (bb.x + bb.width / 2) * k, acy = (bb.y + bb.height / 2) * k
     attr(svg, 'width', size.toFixed(1)); attr(svg, 'height', size.toFixed(1))
     style(el, { width: size + 'px', height: size + 'px', left: bigCX - acx + 'px', top: bigCY - acy + 'px', transformOrigin: `${acx}px ${acy}px` })
+    // the badge sits on the art's bottom-right corner, kept left of the rail (x <= 930)
+    if (bigBadge) {
+      const bw = bigBadge.offsetWidth, bh = bigBadge.offsetHeight
+      style(bigBadge, { left: Math.min((bb.x + bb.width) * k - bw * 0.6, 930 - (bigCX - acx) - bw) + 'px', top: Math.min((bb.y + bb.height) * k - bh * 0.55, SH - 10 - (bigCY - acy) - bh) + 'px' })
+    }
     // where its art sits in the ladder slot (an iconSVG of lsz px), and the scale that matches it
     const to = { x: ladX + ((bb.x + bb.width / 2) / 100 - 0.5) * lsz, y: (i2 => slotY(i2))(i) + ((bb.y + bb.height / 2) / 100 - 0.5) * lsz, s: lsz / size }
-    return { el, svg, ghost, full, fillRect, level, glowLine, top: bb.y, hgt: bb.height, size, to, artH: bb.height * k, artW: bb.width * k, kpx: k, elTop: bigCY - acy }
+    return { el, svg, ghost, full, fillRect, level, glowLine, top: bb.y, hgt: bb.height, size, to, artH: bb.height * k, artW: bb.width * k, kpx: k, elTop: bigCY - acy, badge: bigBadge }
   })
 
   // money stream: green LED dots pour into the icon that is filling (decoration; a pure function of t).
@@ -511,6 +536,12 @@ export default function costCounter(spec, ctx) {
         attr(b.level, 'y', (ly - 1.2).toFixed(2)); attr(b.level, 'opacity', showLine ? '1' : '0')
         attr(b.glowLine, 'y', (ly - 3.5).toFixed(2)); attr(b.glowLine, 'opacity', showLine ? '0.22' : '0')
         let tx = 0, ty = 0, sx = 1, sy = 1, f = ''
+        // the badge pops on once the icon stands in place (never clipped mid-drop)
+        if (b.badge) {
+          const tl = enterAt > 0.001 && isFinite(enterAt) ? enterAt + m.fall : -1
+          const k2 = slam(t, tl, { from: 1.3 })
+          style(b.badge, { display: t >= tl ? 'block' : 'none', opacity: String(k2.o), transform: `scale(${k2.s.toFixed(4)})` })
+        }
         if (t < m.ta || !m.reached) {
           // dropping in (the previous milestone just passed), then squash on landing
           if (enterAt > 0.001 && isFinite(enterAt)) {

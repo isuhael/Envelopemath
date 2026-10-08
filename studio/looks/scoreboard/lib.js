@@ -393,11 +393,12 @@ export function iconSprite(name, size) {
 
 /**
  * unitStack(parent, { box: {x, y, w, h}, icon, maxCell = 150, minCell = 5, gap = 0.12, seed = 11, dot = green })
- *   .plan([{ t, n, roll, delay = M.regrid, occ = 0.62, max }, ...])   targets in time order. n may be fractional
+ *   .plan([{ t, n, roll, delay = M.regrid, occ = 0.62, max, fall = M.fall, drop }, ...])   targets in time order. n may be fractional
  *        (the last icon fills partly: a ghost with the filled share solid). occ = share of the box the pile covers
  *        (1 = edge to edge, use it for the climax). max = this step's largest cell (e.g. a big hero icon for a lone
  *        unit). Step k: at t the pile re-packs into the new cells (M.regrid, ease.inOut), new icons land from
  *        t + delay to t + delay + roll on an ease.out schedule: the same curve a counter uses, so a counter
+ *        (fall / drop: this step's drop time and height, e.g. a slow lone unit dropping in across frame 1)
  *        driven by ease.out(progressAt(t).p) stays in sync with the pile.
  *   .progressAt(t)   { k, p }: the active step and its raw landing progress 0..1 (apply ease.out for counts)
  *   .seek(t)         draw the frame
@@ -453,7 +454,7 @@ export function unitStack(parent, { box, icon = 'token', maxCell = 150, minCell 
     for (const st of list) {
       const lay = layout(st.n, st.occ ?? 0.62, st.max ?? maxCell)
       const frac = Math.ceil(st.n - 1e-9) <= lay.cap ? st.n - Math.floor(st.n + 1e-9) : 0
-      const step = { t: st.t, n: st.n, roll: Math.max(0.05, st.roll ?? 1), delay: st.delay ?? (prev ? M.regrid : 0), lay, frac, prev }
+      const step = { t: st.t, n: st.n, roll: Math.max(0.05, st.roll ?? 1), delay: st.delay ?? (prev ? M.regrid : 0), lay, frac, prev, fall: st.fall ?? M.fall, drop: st.drop }
       step.prevCount = prev ? prev.lay.count : 0
       const add = lay.count - step.prevCount
       step.land = new Float32Array(Math.max(0, add))
@@ -526,17 +527,17 @@ export function unitStack(parent, { box, icon = 'token', maxCell = 150, minCell 
     }
     // new icons drop in: big ones from above the box with weight, small ones from just above their spot, fading in
     const cell = lay.sz
-    const fallH = clamp(cell * 9, 110, box.h + cell)
+    const fallH = st.drop ?? clamp(cell * 9, 110, box.h + cell)
     const squash = cell >= 18
     for (let j = st.prevCount; j < lay.count; j++) {
       const L = st.land[j - st.prevCount]
-      const t0 = L - M.fall
+      const t0 = L - st.fall
       if (t < t0) continue
       const cx = lay.pos[j * 2] + cell / 2
       const yl = lay.pos[j * 2 + 1] + cell - (cell * gap) / 2
       let y = yl, sx = 1, sy = 1, a = 1
       if (t < L) {
-        const p = prog(t, t0, M.fall)
+        const p = prog(t, t0, st.fall)
         const top = yl - fallH
         y = lerp(top, yl, ease.in(p))
         if (top > -cell) a = clamp(p / 0.35)

@@ -559,3 +559,23 @@ Round-2 reviews: a verifier (9 must, 1 should, 3 nits) and a hook judge (scores 
 | R5 | 04a, 04c | Caption chunking can strand "≈" at a chunk end | Kit-level; reported under Caveats and queued as a separate task, not patched in the specs |
 
 **Scores after the revision (my estimate):** 04a 8 (the judge's rewrite plus a frame 1 in the red), 04b 7 (the full rewrite, without the optional CPI line), 04c 8 (the judge's rewrite; the stranded "≈" in its captions is the open risk).
+
+**Hook pass (2026-10-07): 04b**
+
+Two judges scored four rewrites of the 04b hook against the current one, using the hook bank (/research/v2/02-hook-bank.md). Rule: a candidate either judge marks dishonest is out. A candidate is adopted only if its average is at least 7.5 and at least 0.75 above the current hook's.
+
+| Key | Lever | Judge 1 | Judge 2 | Average | Result |
+|---|---|---|---|---|---|
+| current | "never had a down year, guess which one lost" riddle | 6 | 5 | 5.5 | kept |
+| A | open underwater: race moving from frame 1, a red 2025-prices tide over both figures, "Can 'safe' savings get above water?" | 6 | 6.5 | 6.25 | below 7.5 |
+| B | "Guess the interest by 2025", year 1 ≈ +$2 at 1.09 s | 5 | 4.5 (not honest) | out | "Under $25 in 16 years" is 3 cents above the sweep max, and the January-rate model understates 2022-2023 |
+| C | verdict first: "Still lost ≈ 32%" at 2.7 s | 4 | 6 | 5.0 | gives the result away (R2) |
+| D | "you lent your bank $1,000" | 6.5 | 5.5 (not honest) | out | "under $1 a year for nine years" includes 2022, which the January-rate model understates by about a dollar |
+
+**Adopted: nothing.** Header, VO, beats, title, caption and timings are unchanged. A, the best candidate, averaged 6.25 and missed the 7.5 bar. I kept the title too: neither judge preferred another title, and the current one carries the open loop ("Which One Lost Value?") without giving away the verdict.
+
+Notes for any later pass on this teaser:
+
+- **Agreed weakness of the current hook.** Frame 1 is static for 1.0 s, there is no spoken figure until 8.2 s (R10), and the quotes around "safe" half-answer the riddle.
+- **A's frame-1 device was the judges' favourite part.** That is raceT −0.4 (the race already moving) plus the tide from frame 1. Its yes/no question is answered by the frame itself, though, and "above water" in 2013 is measured against 2025 prices. It would need "covers 2025 prices" wording.
+- **Open data caveat.** The same January-rate caveat lowers the base savings final to about $1,025.85 if 2022-2023 are corrected. That is still under 0.5% a year and still ≈ 32% lost. But "≈ $1,020" sits close to the 3-significant-figure boundary. Re-check it if the mid-year rates are sourced.

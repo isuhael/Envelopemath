@@ -160,7 +160,7 @@
       "scoreboard"
     ],
     "file": "teasers/v2/03-what-difference.md",
-    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/03-what-difference.py: 387 checks, 0 failures, exit 0. The script rebuilds every loan payment by payment from the sourced inputs. It then asserts that every display string and VO number matches the computed, formatted value, and that each shown delta equals the difference of the shown totals. It checks that ≈ and \"about\" appear only on rounded numbers, the contract shape, and R1, R2, R8 and R10, including that the baseline option's results are already on screen at frame 1. Each later option must land within 0.9 s of the word that names it, using resultT as the landing where the kit reads one. Lever and footer steps must sit on beats, every footer step must start after t = 0 and stay at or under 45 characters, and specs must carry no sfx. It also asserts that hold = duration minus the last VO end, and the sensitivity claims (Edmunds' exact $44,664, 6% and 8% what-ifs, 19.56% and 22.15% card rates, 7.28% mortgage rate). Mutation test: one interest cell changed, one \"about\" removed and the lever moved off its beat gave 4 failures and exit 1; the restored specs pass again. Studio linter (node src/cli.mjs check specs/03*.json): 3/3 clean, 0 errors, 0 warnings, against the built modules. 03a and 03c are also clean against the committed kits in a clean HEAD export. Stills and 12-frame contact sheets of all three were inspected.",
+    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/03-what-difference.py: 388 checks, 0 failures, exit 0 (after the 2026-10-08 hook pass on 03b). The script rebuilds every loan payment by payment from the sourced inputs. It then asserts that every display string and VO number matches the computed, formatted value, and that each shown delta equals the difference of the shown totals. It checks that ≈ and \"about\" appear only on rounded numbers, the contract shape, and R1, R2, R8 and R10, including that the baseline option's results are already on screen at frame 1. Each later option must land within 0.9 s of the word that names it, using resultT as the landing where the kit reads one. Lever and footer steps must sit on beats, every footer step must start after t = 0 and stay at or under 45 characters, and specs must carry no sfx. It also asserts that hold = duration minus the last VO end, and the sensitivity claims (Edmunds' exact $44,664, 6% and 8% what-ifs, 19.56% and 22.15% card rates, 7.28% mortgage rate). Mutation test: one interest cell changed, one \"about\" removed and the lever moved off its beat gave 4 failures and exit 1; the restored specs pass again. Hook-pass mutation test on a scratch copy of the new 03b spec (note $99.67, verdict ≈ 11, the landing of option 2 moved off \"keep\", one \"about\" removed): 4 of 4 caught. Studio linter (node src/cli.mjs check specs/03*.json): 3/3 clean, 0 errors, 0 warnings, against the built modules. 03a and 03c are also clean against the committed kits in a clean HEAD export. Stills and 12-frame contact sheets of all three were inspected.",
     "teasers": [
       {
         "id": "03a-live-sheet-car-loan-weekly",
@@ -185,21 +185,22 @@
       {
         "id": "03b-clean-sheet-card-minimum",
         "look": "clean-sheet",
-        "title": "Minimum vs a Flat Payment on a $5,000 Card: What Difference Does It Make?",
-        "header": "Minimum vs a flat payment\non a **$5,000** credit card:\nwhat difference does it make?",
-        "runtime_s": 30.2,
+        "title": "What Difference Does Paying the Same Card Minimum Every Month Make on $5,000?",
+        "header": "What difference does\npaying the SAME minimum\nevery month make on **$5,000**?",
+        "runtime_s": 31.4,
         "key_numbers": [
           "$5,000 at 22% APR, minimum = 1% + interest with a $40 floor (Chase): first minimum $142.59",
+          "The minimum shrinks: $142.59 → $127.40 (month 12) → $99.66 (month 36, the first under $100; on screen at 0.0 s)",
           "Minimum: 181 payments ≈ 15.1 years, ≈ $7,300 interest ($7,340.79, more than the $5,000 owed)",
-          "$150 − $142.59 = $7.41 more: ≈ 4.3 years, ≈ $2,800 ($2,798.09), ≈ 11 years sooner",
+          "Keep paying $142.59 ($0 more than the first minimum): 57 payments ≈ 4.8 years, ≈ $3,100 ($3,081.74), ≈ 10 years sooner (10.33)",
           "$250 − $142.59 = $107.41 more: ≈ 2.2 years, ≈ $1,300 ($1,285.71), ≈ 13 years sooner",
-          "≈ $4,500 less interest with a flat $150 (caption)"
+          "Pinned: rounding up to $150 ($7.41 above) only takes it from 57 months to 52. No interest saving stated (shown 7,300 − 3,100 would drift from ≈ $4,300)"
         ],
         "spec": "studio/specs/03b-clean-sheet-card-minimum.json",
         "mp4": "studio/out/03b-clean-sheet-card-minimum.mp4",
         "math_ok": true,
         "facts_ok": true,
-        "hook_score": 7
+        "hook_score": 7.5
       },
       {
         "id": "03c-scoreboard-mortgage-extra-100",
