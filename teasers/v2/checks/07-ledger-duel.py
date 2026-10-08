@@ -133,8 +133,6 @@ A_FINAL, B_FINAL = ava(END_AGE), ben(END_AGE)
 A_GAP = A_FINAL - B_FINAL
 A_GROW30 = (1 + r) ** ((END_AGE - A_STOP) * 12)
 A_FULL40 = fv_annuity((END_AGE - A_START) * 12)          # pinned comment: if Ava never stopped
-A_AVA35_SHOWN = rnd(ava(A_STOP), 1)                        # formula bar: Ava's balance at 35, to the dollar
-A_GROW_SHOWN = rnd(A_GROW30, 0.01)                         # formula bar: growth factor, 2 dp
 
 def duel_at(rate):
     """(Ava, Ben) at 65 for a nominal annual rate, monthly compounding (sensitivity)."""
@@ -221,9 +219,11 @@ ea = {
     "lookOpts.formulaBar[0].text": T(money(A_DEPOSIT), pct(A_RATE * 100)),
     "lookOpts.formulaBar[1].text": T(money(A_DEPOSIT), str((A_STOP - A_START) * 12), money(A_IN)),
     "lookOpts.formulaBar[2].text": T(money(A_DEPOSIT), str((END_AGE - B_START) * 12), money(B_IN)),
-    # assembly (2026-10-08): one line, "Ava's ≈ $34,617 grows × ≈ 8.12", typed as the Age 65 row counts up to the
-    # product (≈ $281,000), so the bar stays one line and the caption band stays free
-    "lookOpts.formulaBar[3].text": T(money(ava(A_STOP)), num(A_GROW30, 2)),
+    # round-2 fix pass (2026-10-08): the bar carries the twist. "Ben: $72,000 = 3 × $24,000" on "Ben invests 3 times
+    # as much", then each person's money in → their Age 65 cell, as the marks land on those cells
+    "lookOpts.formulaBar[3].text": T(money(B_IN), num(B_IN / A_IN), money(A_IN)),
+    "lookOpts.formulaBar[4].text": T(money(A_IN), money_k(A_FINAL)),
+    "lookOpts.formulaBar[5].text": T(money(B_IN), money_k(B_FINAL)),
 }
 for i, age in enumerate(A_ROWS):
     ea[f"data.rows[{i}].label"] = E(f"Age {age}")
@@ -232,7 +232,6 @@ for i, age in enumerate(A_ROWS):
 ea["data.rows[1].event"] = E("Ava stops · Ben starts")
 expect[ida] = ea
 vo_expect[ida] = [
-    [(str(A_STOP - A_START), False), (str(END_AGE - B_START), False)],
     [(str(A_START), False), (str(A_STOP), False)],
     [(str(B_START), False)],
     [(num(B_IN / A_IN), False)],
@@ -240,8 +239,8 @@ vo_expect[ida] = [
     [(bare(money_k(B_FINAL)), True)],
     [],
 ]
-# "Age 30" lands at 2.4 s as the first payoff (R10) while line 0 sets up the contest; it is not a spoken beat
-beats[ida] = [("Age 35", 1, "stops"), ("Age 65", 4, "65")]
+# "Age 30" lands at 1.4 s as the first payoff (R10) while line 0 sets up Ava's plan; it is not a spoken beat
+beats[ida] = [("Age 35", 0, "stops"), ("Age 65", 3, "65")]
 first_payoff[ida] = R10_MAX
 
 # ---- 07b
@@ -285,12 +284,16 @@ first_payoff[idb] = R10_MAX
 idc = "07c-clean-sheet-savings-rate"
 ec = {
     "header": T(money(C_DEPOSIT), str(C_YEARS), money(C_IN)),
-    "footer": T(money(C_DEPOSIT), str(C_YEARS), pct(C_APY_BIG * 100, 2)),
+    # round-2 fix pass: the footer no longer names Chase (its Oct 2 rate sheet is still unopened, [click-check]);
+    # the caption keeps the Chase citation
+    "footer": T(pct(C_APY_BIG * 100, 2)),
     "data.stake": T(money(C_DEPOSIT)),
-    "data.people[0].plan": T(pct(C_APY_BIG * 100, 2), money(C_DEPOSIT)),
-    "data.people[1].plan": T(pct(C_APY_HY * 100, 2), money(C_DEPOSIT)),
-    # column order: You (big bank) left, Leo (high-yield) right; same cent precision as the ledger
-    "verdict.text": T(money(C_IN), str(C_YEARS), money(C_INT_BIG, 0.01), money(C_INT_HY, 0.01)),
+    # round-2 fix pass: the plans drop "$100 a month" (the stake line says it once for both)
+    "data.people[0].plan": T(pct(C_APY_BIG * 100, 2)),
+    "data.people[1].plan": T(pct(C_APY_HY * 100, 2)),
+    # column order: You (big bank) left, Leo (high-yield) right; same cent precision as the ledger. The verdict
+    # carries the spoken last line ("Same $6,000, different account:")
+    "verdict.text": T(money(C_IN), money(C_INT_BIG, 0.01), money(C_INT_HY, 0.01)),
 }
 c_rows = [("Start", 0.0, 0.0)]
 for y in range(1, C_YEARS + 1):
@@ -301,7 +304,9 @@ for i, (lab, vb, vh) in enumerate(c_rows):
     ec[f"data.rows[{i}].values[1]"] = E(money(vh, 0.01))
 expect[idc] = ec
 vo_expect[idc] = [
-    [("1", False), (bare(num(C_Y1_BIG_CENTS)), True)],
+    # round-2 fix pass: line 0 is split, so the frame-1 caption ("Year 1 at a big bank:") shows no number
+    [("1", False)],
+    [(bare(num(C_Y1_BIG_CENTS)), True)],
     [(bare(money(c_interest(C_APY_HY, 12))), True)],
     [("3", False), (bare(num(C_Y3_BIG_CENTS)), True)],
     [(str(C_YEARS), False), (bare(money(C_INT_BIG, 0.01)), True)],
@@ -309,7 +314,7 @@ vo_expect[idc] = [
     [(money(C_IN), False)],
 ]
 # "Year 1" lands at 1.0 s as the first payoff, just after VO line 0 says "Year 1" (R10)
-beats[idc] = [("Year 1", 0, "1"), ("Year 3", 2, "3"), ("Year 5", 3, "5")]
+beats[idc] = [("Year 1", 0, "1"), ("Year 3", 3, "3"), ("Year 5", 4, "5")]
 first_payoff[idc] = R10_MAX
 
 # ============================================================== text helpers
@@ -526,8 +531,12 @@ claim(ida, "Ava never behind at any row", min(ava(a) - ben(a) for a in A_ROWS) >
       all(ava(a) > ben(a) for a in A_ROWS))
 claim(ida, "gap from display finals", money_k(A_FINAL), "≈ $281,000 − ≈ $244,000 = ≈ $37,000",
       rnd(A_FINAL, 1000) - rnd(B_FINAL, 1000) == rnd(A_GAP, 1000))
-claim(ida, "formula bar: shown $34,617 × 8.12 → Age 65 cell", round(A_AVA35_SHOWN * A_GROW_SHOWN, 2),
-      money_k(A_FINAL), money_k(A_AVA35_SHOWN * A_GROW_SHOWN) == money_k(A_FINAL))
+claim(ida, "formula bar: 3 × $24,000 = $72,000 (shown factors)", 3 * A_IN, B_IN, 3 * A_IN == B_IN)
+claim(ida, "formula bar: Ava's money in → her Age 65 cell", f"{money(A_IN)} → {money_k(A_FINAL)}",
+      f"$24,000 → {money_k(ava(A_ROWS[-1]))}", A_IN == 24_000 and money_k(A_FINAL) == money_k(ava(A_ROWS[-1])) == "≈ $281,000")
+claim(ida, "formula bar: Ben's money in → his Age 65 cell", f"{money(B_IN)} → {money_k(B_FINAL)}",
+      f"$72,000 → {money_k(ben(A_ROWS[-1]))}", B_IN == 72_000 and money_k(B_FINAL) == money_k(ben(A_ROWS[-1])) == "≈ $244,000")
+claim(ida, "the twist: less in, more out", (A_IN < B_IN, A_FINAL > B_FINAL), (True, True), A_IN < B_IN and A_FINAL > B_FINAL)
 claim(ida, "pinned: Ava never stops", money_k(A_FULL40), "≈ $525,000", money_k(A_FULL40) == "≈ $525,000")
 claim(ida, "caption: break-even rate", f"{A_BREAKEVEN * 100:.3f}%", "≈ 6.1%", pct(A_BREAKEVEN * 100, 1) == "≈ 6.1%")
 claim(ida, "caption: at 6% Ben edges ahead", f"{money_k(A6_AVA)} vs {money_k(A6_BEN)}", "≈ $197,000 vs ≈ $201,000",

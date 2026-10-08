@@ -12,7 +12,9 @@ Format 10 "cost-counter" (real-time cost counter): maths and spec check for teas
    - every number token in every display string and VO line is a computed value or a labelled constant;
    - "≈" sits on every rounded result and on no exact one (rate, counter final, times, rounded VO numbers);
    - numerics: perSecond = exact rate to the cent; the counter final = perSecond × run time (checked with the
-     stored and the exact rate); milestones ascend and are all passed before the counter stops;
+     stored and the exact rate), or, when the counter stops on its last milestone (10a, 10c), that milestone's exact
+     amount with no "≈" (the stop is within $0.50 of it at both rates, so the dollar reading is exact); milestones
+     ascend and are all passed before the counter stops;
    - frame 1: the header asks a question (R11) and the footer carries the viewer-owned pay number
      ("$1,251 ... × 52") at t = 0 (R1, R3); the counter starts where the write-up says (0.0 s in all three:
      10b's armed pause is gone since the hook pass);
@@ -69,7 +71,7 @@ DEBT_GROWTH = DEBT_2026_09_29 - DEBT_2025_09_30   # 2,459,401,138,631.07
 WORKING_YEARS = 40
 TEN = 10
 MINUTE = 60                             # seconds in the header's minute
-SALARIES_A = [30000, 50000, 100000, 250000, 10**6]   # 10a's salary ladder (round, familiar yearly salaries)
+SALARIES_A = [30000, 100000, 250000, 500000, 10**6]  # 10a's salary ladder (round, familiar yearly salaries)
 
 # ======================================================================================
 # Formatting helpers
@@ -207,27 +209,34 @@ def secs_text(q):
     return f"{txt} second" if txt == "1.0" else f"{txt} seconds"
 
 def k_label(v):
-    """$30K / $250K / $1M (the pip labels)."""
-    return "$1M" if v == 10**6 else f"${v // 1000}K"
+    """$30K / $250K / $1M (the pip labels); the median row is "Median $65K"."""
+    return "$1M" if v == 10**6 else f"Median ${round(v / 1000)}K" if v == PAY else f"${v // 1000}K"
 
-A["salaries"] = SALARIES_A
-A["t"] = {v: pass_time(v, RATE_A) for v in SALARIES_A}
-A["shown"] = {v: secs_shown(A["t"][v]) for v in SALARIES_A}         # 1.0 / 1.6 / 3.3 / 8 / 33
+# the ladder: the salaries plus the median (assembly pass 2: the footer's $1,251 × 52 becomes a row of its own)
+A["ladder"] = sorted(SALARIES_A + [PAY])                               # 30,000 / 65,052 / 100,000 / 250,000 / 500,000 / 1,000,000
+A["t"] = {v: pass_time(v, RATE_A) for v in A["ladder"]}
+A["shown"] = {v: secs_shown(A["t"][v]) for v in A["ladder"]}          # 1.0 / 2.1 / 3.3 / 8 / 16 / 33
 A["s_1m"] = A["shown"][10**6]                                          # 33
-A["run"] = (F("0.0"), F("32.6"))
-A["final_exact"] = RATE_A * (A["run"][1] - A["run"][0])
-A["final"] = f"{ap(rhu(A['final_exact']), A['final_exact'])}{usd(A['final_exact'])}"
+A["s_fx_pay"] = rhu(F(PAY, A["rate_shown"]), F(1, 10))                 # 2.1 (label: $65,052 ÷ 30,800, the swap-in rule)
+# the counter stops on the $1 million pass (5 dp: the exact-rate pass is 32.5113402 s, the kit's 32.5113383 s)
+A["run"] = (F("0.0"), F("32.51135"))
+A["final_exact"] = RATE_A * (A["run"][1] - A["run"][0])                # 1,000,000.30
+A["lands_on"] = 10**6
+A["final"] = usd(A["lands_on"])                                        # $1,000,000 (no ≈: within $0.50 at both rates)
 A["fy"] = 25                                                           # "FY25" in the footer
-assert [A["shown"][v] for v in SALARIES_A] == [1, F("1.6"), F("3.3"), 8, 33], A["shown"]
+assert [A["shown"][v] for v in A["ladder"]] == [1, F("2.1"), F("3.3"), 8, 16, 33], A["shown"]
+assert A["shown"][PAY] == A["s_pay"] == A["s_fx_pay"], "the median's time must round alike exactly and by the swap-in rule"
 assert A["t"][10**6] < A["run"][1], "the $1 million row must pass before the counter stops"
-assert all(A["t"][v] < 5 for v in SALARIES_A[:3]), "the three everyday rows close inside 5 s"
+assert pass_time(10**6, F("30758.5")) < A["run"][1], "the kit's (stored-rate) $1 million pass must come before the stop"
+assert abs(A["final_exact"] - A["lands_on"]) < F(1, 2), "the counter must stop on $1,000,000 to the dollar"
+assert all(A["t"][v] < 5 for v in A["ladder"][:3]), "the three everyday rows close inside 5 s"
 row("10a", "rate", "$970B ÷ 31,536,000 s", RATE_A, A["rate_disp"] + " every second")
-row("10a", "per hour", "rate × 3,600 ÷ 1e6", RATE_A * 3600 / 10**6, f"≈ ${A['hour_m']} million")
-for v in SALARIES_A:
-    row("10a", f"t {k_label(v)} salary", f"{usd(v)} ÷ rate", A["t"][v], f"≈ {secs_text(A['shown'][v])}")
-row("10a", "t median pay", "$65,052 ÷ rate", A["t_pay"], f"≈ {d1(A['s_pay'])} seconds (caption)")
-row("10a", "counter final", "rate × 32.6 s", A["final_exact"], A["final"])
-row("10a", "at 1.5 s", "rate × 1.5 ÷ $50,000", RATE_A * F(3, 2) / 50000 * 100, "the $50K bill ≈ 92% full (frame check)")
+row("10a", "per hour", "rate × 3,600 ÷ 1e6", RATE_A * 3600 / 10**6, f"≈ ${A['hour_m']} million (label ≈ ${A['hour_m'] * 10**6:,})")
+for v in A["ladder"]:
+    row("10a", f"t {k_label(v)}", f"{usd(v)} ÷ rate", A["t"][v], f"≈ {secs_text(A['shown'][v])}")
+row("10a", "swap-in: median", "$65,052 ÷ 30,800", F(PAY, A["rate_shown"]), f"≈ {d1(A['s_fx_pay'])} seconds (label at 12.45 s)")
+row("10a", "counter final", "rate × 32.51135 s", A["final_exact"], A["final"] + " (stops on the $1M pass)")
+row("10a", "at 1.5 s", "rate × 1.5 ÷ $65,052", RATE_A * F(3, 2) / PAY * 100, "the median bill ≈ 71% full (frame check)")
 
 SPEC_A = {
     "id": "10a-scoreboard-debt-interest-live",
@@ -237,53 +246,59 @@ SPEC_A = {
     "duration": 36.5,
     "header": "US debt interest since you hit **play**:\nwhen does it pass **your salary**?",
     "footer": (f"FY{A['fy']}: ${NET_INTEREST_FY2025 // 10**9}B ÷ {SECONDS_PER_YEAR:,} s"
-               f" · pay {usd(MEDIAN_WEEKLY)} × {WEEKS}"),
+               f" · median {usd(MEDIAN_WEEKLY)} × {WEEKS}"),
     "captions": True,
     "vo": [
         (0.0, 1.4, "Find your salary."),
-        (1.6, 1.6, f"{usd(50000)}: passed."),
+        (2.1, 1.15, "Median pay: passed."),
         (3.25, 2.0, f"{usd(100000)}: passed."),
         (5.4, 3.1, f"**{A['rate_disp']}** a second."),
         (8.5, 3.9, f"{usd(250000)} a year: ≈ {secs_text(A['shown'][250000])}."),
-        (12.7, 4.3, f"Yearly pay ÷ {A['rate_shown']:,} = your seconds."),
-        (17.2, 3.5, f"That's **≈ ${A['hour_m']} million** an hour."),
-        (21.0, 4.7, f"At fiscal 2025's rate: ${NET_INTEREST_FY2025 // 10**9} billion a year."),
-        (28.0, 2.7, "Last row: $1 million a year."),
-        (32.5, 2.7, f"**$1 million**: ≈ {secs_text(A['s_1m'])}."),
+        (12.45, 3.85, f"Your seconds: yearly pay ÷ {A['rate_shown']:,}."),
+        (16.3, 2.7, f"{usd(500000)}: ≈ {secs_text(A['shown'][500000])}."),
+        (19.1, 3.5, f"That's **≈ ${A['hour_m']} million** an hour."),
+        (22.7, 4.7, f"At fiscal 2025's rate: ${NET_INTEREST_FY2025 // 10**9} billion a year."),
+        (28.0, 1.6, "And the last row?"),
+        (32.5, 1.6, "**$1 million**: passed."),
     ],
-    "verdict": (32.5, f"**$1 million** a year: ≈ {secs_text(A['s_1m'])}."
-                      f"\n{usd(100000)} a year: ≈ {secs_text(A['shown'][100000])}."),
+    # one line, so the kit's verdict slot sets it larger than the label slams ($100,000 ≈ 3.3 s moved to the caption)
+    "verdict": (32.5, f"**$1M** a year: ≈ {secs_text(A['s_1m'])}."),
     "data": {
         "label": "Net interest on the US debt, since you hit play",
         "perSecond": float(rhu(RATE_A, F(1, 100))),
         "rateDisplay": f"{A['rate_disp']} every second",
         "counterT": [float(A["run"][0]), float(A["run"][1])],
         "startValue": 0, "prefix": "$", "dp": 0,
-        "milestones": [(v, f"A {usd(v)} salary: {usd(v)}") for v in SALARIES_A],
+        "milestones": [(v, f"Median pay: {usd(v)}" if v == PAY else f"A {usd(v)} salary: {usd(v)}") for v in A["ladder"]],
         "final": A["final"],
-        "hold": 3.9,
+        "hold": 3.98865,
     },
     "lookOpts": {
         "intro": {"l1": A["rate_disp"], "l2": "every second"},
-        "labels": [{"l1": f"{usd(v)} a year", "l2": f"≈ {secs_text(A['shown'][v])}"} for v in SALARIES_A],
-        "rateSteps": [   # each VO beat gets its label-stack beat (assembly pass): the swap-in rule, the hourly rate,
-                         # the source figure and the last row; d holds a beat to the next one (no flash of the rate)
-            {"t": 12.7, "l1": f"Yearly pay ÷ {A['rate_shown']:,}", "l2": "= your seconds", "d": 4.5},
-            {"t": 17.2, "l1": f"{A['rate_disp']} × 3,600 s", "l2": f"≈ ${A['hour_m']} million an hour"},
-            {"t": 21.0, "l1": "Fiscal 2025 net interest", "l2": f"${NET_INTEREST_FY2025 // 10**9} billion a year"},
-            {"t": 28.0, "l1": "Last row", "l2": f"{usd(10**6)} a year", "d": 4.6},
+        "labels": [{"l1": f"Median pay: {usd(v)}" if v == PAY else f"{usd(v)} a year", "l2": f"≈ {secs_text(A['shown'][v])}"}
+                   for v in A["ladder"]],
+        "flash": 4.6,    # a milestone holds the label stack to the next beat (the $250K row to the rule at 12.45 s)
+        "rateSteps": [   # each VO beat gets its label-stack beat. The labels carry the working, the captions the
+                         # sentence (assembly pass 2: no line sits twice on screen); d holds a beat to the next one
+            {"t": 5.4, "l1": A["rate_disp"], "l2": "every second", "d": 3.0},
+            {"t": 12.45, "l1": f"{usd(PAY)} ÷ {A['rate_shown']:,}", "l2": f"≈ {d1(A['s_fx_pay'])} seconds (median)", "d": 4.0},
+            {"t": 19.1, "l1": f"{A['rate_disp']} × 3,600 s", "l2": f"≈ ${A['hour_m'] * 10**6:,}", "d": 3.6},
+            {"t": 22.7, "l1": f"${NET_INTEREST_FY2025 // 10**9}B ÷ {SECONDS_PER_YEAR:,} s", "l2": f"{A['rate_disp']} every second", "d": 5.3},
+            {"t": 28.0, "l1": "Next", "l2": f"{usd(10**6)} a year", "d": 4.6},
         ],
         "pips": True,
-        "pipLabels": [k_label(v) for v in SALARIES_A],
-        "icons": ["bill", "bill", "bill", "bill", "coin"],
+        "pipLabels": [k_label(v) for v in A["ladder"]],
+        "icons": ["bill", "bill", "bill", "bill", "bill", "coin"],
         "heroIcon": False,
     },
     # (milestone value, VO line index, phrase in that line that names it). $30K is not spoken: it lights at
     # 0.975 s, during "Find your salary.", and the label stack names it on screen.
-    "sync": [(50000, 1, "$50,000"), (100000, 2, "$100,000"), (250000, 4, "$250,000"), (10**6, 9, "$1 million")],
-    "beats": [(12.7, 5), (17.2, 6), (21.0, 7), (28.0, 8)],    # lookOpts.rateSteps: (t, VO line index that starts with it)
+    "sync": [(PAY, 1, "Median pay"), (100000, 2, "$100,000"), (250000, 4, "$250,000"), (500000, 6, "$500,000"),
+             (10**6, 10, "$1 million")],
+    "beats": [(5.4, 3), (12.45, 5), (19.1, 7), (22.7, 8), (28.0, 9)],   # lookOpts.rateSteps: (t, VO line it starts)
     "t0": 0.0,               # the counter runs from frame 1
     "rate": RATE_A,
+    "lands_on": A["lands_on"],   # the counter stops on the $1 million pass
 }
 
 # ---------- 10b: 40 years of your pay vs 1 minute of new US debt -------------------------
@@ -418,15 +433,19 @@ C["s_half"] = rhu(C["t_half"])                                         # 13
 C["t_keep_pay"] = F(PAY) / KEEP_C                                      # 26.40 s
 C["s_keep_pay"] = rhu(C["t_keep_pay"])                                 # 26
 C["fx_keep_pay"] = rhu(F(PAY) / C["keep_shown"])                       # 26 (with the shown $2,464)
-C["run"] = (F("0.0"), F("26.5"))
+# the counter stops on the year-of-median-pay pass (exact 26.40257 s; the kit times row 4 on 65,052 ÷ the stop)
+C["run"] = (F("0.0"), F("26.4026"))
 C["fx_rate"] = f"= ${float(AMZN_NET_INCOME_2025 / 10**9)}B ÷ {SECONDS_PER_YEAR:,} s ≈ ${C['keep_shown']:,}"
-C["final_exact"] = KEEP_C * (C["run"][1] - C["run"][0])
-C["final"] = f"{ap(rhu(C['final_exact']), C['final_exact'])}{usd(C['final_exact'])}"
+C["final_exact"] = KEEP_C * (C["run"][1] - C["run"][0])                # 65,052.07
+C["lands_on"] = PAY
+C["final"] = usd(C["lands_on"])                                        # $65,052 (no ≈: within $0.50 at both rates)
 # the Live Sheet kit times its rows on the rate start -> final over counterT (preroll 0): the rows must still pass
 # at 1.000 / 5.000 / 13.201 / 26.403 s
 C["kit_rate"] = F(rhu(C["final_exact"])) / (C["run"][1] - C["run"][0])
 C["kit_t"] = [F(v) / C["kit_rate"] for v in (C["keep_cents"], C["five_cents"], C["half"], PAY)]
 assert C["final_exact"] > PAY, "the counter must pass a year of median pay before it stops"
+assert abs(C["final_exact"] - PAY) < F(1, 2) and abs(F("2463.85") * C["run"][1] - PAY) < F(1, 2), \
+    "the counter must stop on $65,052 to the dollar (exact and stored rate)"
 assert C["fx_keep_pay"] == C["s_keep_pay"], "the formula-bar time must equal the exact time's rounding"
 assert C["fx_wk1"] == C["wk1_shown"], "the formula-bar weeks must equal the exact weeks' rounding"
 assert C["fx_wk5"] == C["wk5_shown"], "the formula-bar weeks (5 s) must equal the exact weeks' rounding"
@@ -439,7 +458,7 @@ row("10c", "5 s in weeks", "rate × 5 ÷ $1,251", C["wk5"], f"≈ {C['wk5_shown'
 row("10c", "half a year", "$65,052 ÷ 2", C["half"], f"{usd(C['half'])} (6 months, exact)")
 row("10c", "t half a year", "$32,526 ÷ rate", C["t_half"], f"≈ {C['s_half']} seconds")
 row("10c", "t a year", "$65,052 ÷ rate", C["t_keep_pay"], f"≈ {C['s_keep_pay']} seconds (also $65,052 ÷ $2,464)")
-row("10c", "counter final", "rate × 26.5 s", C["final_exact"], C["final"])
+row("10c", "counter final", "rate × 26.4026 s", C["final_exact"], C["final"] + " (stops on the 1-year pass)")
 row("10c", "at 1.5 s", "rate × 1.5", KEEP_C * F(3, 2), "$3,696 on the counter (frame check)")
 
 SPEC_C = {
@@ -459,10 +478,11 @@ SPEC_C = {
         (7.4, 4.3, f"Amazon's 2025 profit: ${float(AMZN_NET_INCOME_2025 / 10**9)} billion."),
         (13.2, 2.4, f"≈ {C['s_half']} seconds: half a year."),
         (15.8, 5.0, f"{C['keep_shown']:,} ÷ your weekly pay = your weeks."),
-        (22.4, 1.6, "And a whole year?"),
+        (21.0, 1.6, "And a whole year?"),
         (26.4, 1.6, f"≈ {C['s_keep_pay']} seconds."),
     ],
-    "verdict": (26.4, f"1 second ≈ **{C['wk1_shown']} weeks** of median pay.\nA year: ≈ {C['s_keep_pay']} s."),
+    # the climax first (assembly pass 2), then the 1-second answer
+    "verdict": (26.4, f"A year of median pay: **≈ {C['s_keep_pay']} seconds**.\n1 second ≈ {C['wk1_shown']} weeks."),
     "data": {
         "label": "Amazon's profit since you hit play",
         "perSecond": float(C["keep_cents"]),
@@ -476,7 +496,7 @@ SPEC_C = {
             (PAY, f"≈ {C['s_keep_pay']} seconds: {usd(PAY)}"),
         ],
         "final": C["final"],
-        "hold": 4.5,
+        "hold": 4.5974,
     },
     "lookOpts": {
         "preroll": 0,
@@ -485,12 +505,11 @@ SPEC_C = {
             {"t": 0.0, "text": C["fx_rate"]},
             {"t": 2.8, "text": f"= ${C['keep_shown']:,} ÷ {usd(MEDIAN_WEEKLY)} ≈ {C['fx_wk1']} weeks"},
             {"t": 5.2, "text": f"= ${C['five_shown']:,} ÷ {usd(MEDIAN_WEEKLY)} ≈ {C['fx_wk5']} weeks"},
-            {"t": 7.4, "text": C["fx_rate"]},
             {"t": 13.2, "text": f"= {usd(PAY)} ÷ 2 = {usd(C['half'])}"},
             {"t": 15.8, "text": f"= ${C['keep_shown']:,} ÷ your weekly pay"},
             {"t": 26.4, "text": f"= {usd(PAY)} ÷ ${C['keep_shown']:,} ≈ {C['fx_keep_pay']} s"},
         ],
-        "columns": ["Since play", "Profit", "Median pay"],
+        "columns": ["Since play", "Profit", "You work"],
         "rows": [
             {"label": "1 second", "amount": f"≈ ${C['keep_shown']:,}", "at": f"≈ {C['wk1_shown']} weeks"},
             {"label": "5 seconds", "amount": f"≈ ${C['five_shown']:,}", "at": f"≈ {C['wk5_shown']} weeks"},
@@ -502,9 +521,10 @@ SPEC_C = {
     # The 1-second row snaps "≈ 2 weeks" on screen at its pass (1.000 s) while vo[0] asks the question; vo[1] reads
     # it back at 2.8 s with the formula bar's working, so it is not in the 0.5 s VO sync list.
     "sync": [(C["five_cents"], 2, "5 seconds"), (C["half"], 4, "≈ 13"), (PAY, 7, "≈ 26")],
-    "beats": [(0.0, 0), (2.8, 1), (5.2, 2), (7.4, 3), (13.2, 4), (15.8, 5), (26.4, 7)],    # the formula-bar steps start their VO lines
+    "beats": [(0.0, 0), (2.8, 1), (5.2, 2), (13.2, 4), (15.8, 5), (26.4, 7)],    # the formula-bar steps start their VO lines
     "t0": 0.0,
     "rate": KEEP_C,
+    "lands_on": C["lands_on"],   # the counter stops on the year-of-median-pay pass
 }
 
 EXPECTED = [SPEC_A, SPEC_B, SPEC_C]
@@ -513,7 +533,7 @@ EXPECTED = [SPEC_A, SPEC_B, SPEC_C]
 QUANTITIES = {
     "10a": [("rate", RATE_A, A["rate_shown"]), ("per hour, millions", RATE_A * 3600 / 10**6, A["hour_m"]),
             ("pass: median pay", A["t_pay"], A["s_pay"])]
-           + [(f"pass: {k_label(v)}", A["t"][v], A["shown"][v]) for v in SALARIES_A],
+           + [(f"pass: {k_label(v)}", A["t"][v], A["shown"][v]) for v in A["ladder"]],
     "10b": [("growth, $T", DEBT_GROWTH / 10**12, B["growth_t"]), ("rate", RATE_B, B["rate_shown"]),
             ("pass: 40 years", B["t_pay40"] - B["t0"], B["s_pay40"]), ("40 years, $M", F(PAY40, 10**6), B["pay40_m"]),
             ("1 minute, $M", B["minute"] / 10**6, B["minute_m"]), ("crossover pay", B["minute"] / WORKING_YEARS, B["cross_pay"]),
@@ -537,10 +557,11 @@ FORBIDDEN = {
 def allowed_numbers(tid):
     common = {F(MEDIAN_WEEKLY), F(WEEKS), F(PAY), F(NEW_HOUSE), F(SECONDS_PER_YEAR), F(1), F(10**6)}
     if tid == "10a":
-        return (common | {F(A["fy"]), F(2025), F(970), F(A["rate_shown"]), F(A["hour_m"]), F(rhu(A["final_exact"])),
+        return (common | {F(A["fy"]), F(2025), F(970), F(A["rate_shown"]), F(A["hour_m"]), F(A["hour_m"] * 10**6),
                           F(3600)}
                 | {F(v) for v in SALARIES_A} | {F(v // 1000) for v in SALARIES_A}      # $30,000 / $30K pip labels
-                | {F(A["shown"][v]) for v in SALARIES_A})                              # ≈ 1.0 / 1.6 / 3.3 / 8 / 33 s
+                | {F(round(PAY / 1000))}                                               # "Median $65K" pip label
+                | {F(A["shown"][v]) for v in A["ladder"]})                             # ≈ 1.0 / 2.1 / 3.3 / 8 / 16 / 33 s
     if tid == "10b":
         return common | {F(DAYS_B), F(SECONDS_PER_DAY), B["growth_t"], F(B["rate_shown"]), F(3), F(PAY3), F(TEN),
                          F(PAY10), F(20), F(PAY20), F(WORKING_YEARS), F(PAY40), F(B["pay40_m"]), F(B["s_pay40"]),
@@ -632,9 +653,17 @@ def check_spec(want):
     check(abs(F(d["perSecond"]) - rate) <= F(1, 200), tid, "perSecond = exact rate to the cent",
           f"{d['perSecond']} vs {float(rate):.4f}")
     t0, t1 = F(str(d["counterT"][0])), F(str(d["counterT"][1]))
+    lands = want.get("lands_on")
     for r, name in ((rate, "exact"), (F(str(d["perSecond"])), "stored")):
         fin = r * (t1 - t0) + F(d["startValue"])
-        eq(tid, f"final = {name} perSecond × run", d["final"], f"{ap(rhu(fin), fin)}{usd(fin)}")
+        if lands is None:
+            eq(tid, f"final = {name} perSecond × run", d["final"], f"{ap(rhu(fin), fin)}{usd(fin)}")
+        else:   # the counter stops on its last milestone: the dollar reading is that milestone, exactly
+            check(abs(fin - lands) < F(1, 2), tid, f"counter stops on {usd(lands)} ({name} rate)", f"{float(fin):,.2f}")
+            eq(tid, f"final = the milestone it stops on ({name} rate)", d["final"], usd(rhu(fin)))
+    if lands is not None:
+        eq(tid, "the stop is the last milestone", F(d["milestones"][-1]["value"]), F(lands))
+        check("≈" not in d["final"], tid, "no ≈ on a final that is the milestone exactly", d["final"])
     vals = [F(m["value"]) for m in d["milestones"]]
     check(vals == sorted(vals), tid, "milestones ascend")
     check(all(pass_time(v, rate, t0) < t1 for v in vals), tid, "every milestone passes before the counter stops")
@@ -644,7 +673,7 @@ def check_spec(want):
     for where, text in display_strings(spec):
         for n in number_tokens(text):
             check(n in allowed, tid, f"number {n} in {where} is computed/sourced", text)
-        if where in APPROX_NEEDED:
+        if where in APPROX_NEEDED and not (where == "data.final" and want.get("lands_on") is not None):
             check("≈" in text, tid, f"≈ on rounded {where}", text)
 
     # ---- "≈" on rounded results only: a "≈ X" in VO/verdict must not be exact ----------

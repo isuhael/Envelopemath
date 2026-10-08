@@ -48,7 +48,10 @@
 //   footerSteps  [{ t, text }]: kit-wide (the chrome draws it): the footer rewrites to a working line at each t
 //   bonus        { t, label, amount, tone = "good" }: an extra row under the sheet (dashed: it is not part of the
 //                total) that slams in at t; its amount rolls; the label stack shows it. Until then the sheet sits
-//                centred without it, and moves up to make room as it lands
+//                centred without it, and moves up to make room as it lands.
+//                bonus.focusT (optional): when the VO names the row (a frame-1 bonus has no beat of its own), the
+//                pointer and the label stack return to it there (thud, the amount bumps), and from verdict.t it stays
+//                lit beside the goal row, so the verdict's two figures are both marked on the sheet
 //   notes        "auto" / "sheet" (default: on the sheet when it fits, else the label stack) | "label" | false
 //   intro        true / false forces the total intro on or off (default: on when the first part starts ≥ 0.5 s)
 //   stageBottom  y where the stage ends (overrides the solver; the label stack keeps what is left)
@@ -177,6 +180,7 @@ export default function splitSheet(spec, ctx) {
     bonus.start = bonus.t + CUT
     bonus.roll = 0.8
     bonus.land = bonus.start + bonus.roll
+    bonus.focusT = lo.bonus.focusT != null && isFinite(+lo.bonus.focusT) ? +lo.bonus.focusT : null
   }
   // hero landings in remaining mode, each synced to the part that starts at (about) the same time
   const rem = remList.map(r => {
@@ -473,12 +477,14 @@ export default function splitSheet(spec, ctx) {
   beats.forEach((b, i) => labelEvents.push({ t: Math.max(0, b.cut), i: idx.parts[i] }))
   if (idx.check >= 0) labelEvents.push({ t: checkT, i: idx.check })
   if (idx.bonus >= 0) labelEvents.push({ t: bonus.t, i: idx.bonus })
+  if (idx.bonus >= 0 && bonus.focusT != null) labelEvents.push({ t: bonus.focusT, i: idx.bonus })
   labelEvents.sort((a, b) => a.t - b.t)
 
   // the focus timeline: which row the pointer is on (-1: none)
   const focusEvents = beats.map((b, i) => ({ t: Math.max(0, b.cut), row: i }))
   if (checkT != null) focusEvents.push({ t: checkT, row: -1 })
   if (bonus) focusEvents.push({ t: bonus.t, row: n })
+  if (bonus && bonus.focusT != null) focusEvents.push({ t: bonus.focusT, row: n })
   if (vT != null) focusEvents.push({ t: vT, row: goalIdx })
   focusEvents.sort((a, b) => a.t - b.t)
   const focusAt = t => { let f = { t: 0, row: -1 }; for (const e of focusEvents) if (t >= e.t) f = e; return f }
@@ -499,6 +505,7 @@ export default function splitSheet(spec, ctx) {
   })
   if (checkT != null) { cue(checkT, 'thud', { gain: 0.55 }); cue(checkT + 0.36, 'cash', { gain: 0.5 }) }
   if (bonus) { cue(bonus.t, 'thud', { gain: 0.6 }); cue(bonus.start, 'roll', { dur: bonus.roll - 0.05, gain: 0.5 }); cue(bonus.land, 'ding', { gain: 0.5 }) }
+  if (bonus && bonus.focusT != null) cue(bonus.focusT, 'thud', { gain: 0.5 })
   if (heroFinal) { cue(heroFinal.start, 'roll', { dur: heroFinal.roll - 0.05, gain: 0.5 }); cue(heroFinal.land, 'ding', { gain: 0.5 }) }
 
   const footT = Array.isArray(lo.footerSteps) ? lo.footerSteps.map(x => +(x && x.t) || 0) : []
@@ -610,7 +617,8 @@ export default function splitSheet(spec, ctx) {
       let alpha = 1
       if (isBonus) alpha = t < bonus.t ? 0 : slam(t, bonus.t).o
       if (alpha <= 0.001) return
-      const lit = focus.row === i ? 1 : 0
+      // a bonus the VO names (focusT) stays lit from the verdict on, beside the goal row the pointer is on
+      const lit = focus.row === i || (isBonus && bonus.focusT != null && vT != null && t >= vT) ? 1 : 0
       const col = r.color
       g.save()
       g.globalAlpha = alpha
@@ -715,6 +723,10 @@ export default function splitSheet(spec, ctx) {
           sc *= bump(t, b.land, { amp: Math.min(!isBonus && tone(parts[i]) === 'goal' ? 0.16 : 0.11, ampCap), dur: 0.4 })
         }
         if (vT != null && !isBonus && i === goalIdx) sc *= bump(t, vT + 0.06, { amp: Math.min(0.12, ampCap), dur: 0.45 })
+        if (isBonus && bonus.focusT != null) {
+          sc *= bump(t, bonus.focusT + 0.06, { amp: Math.min(0.12, ampCap), dur: 0.45 })
+          if (vT != null) sc *= bump(t, vT + 0.06, { amp: Math.min(0.12, ampCap), dur: 0.45 })
+        }
         style(r.amt, { transform: `scale(${Math.min(sc, 1 + ampCap).toFixed(4)})` })
       })
 

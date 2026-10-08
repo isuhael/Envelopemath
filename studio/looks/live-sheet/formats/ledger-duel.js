@@ -11,7 +11,9 @@
 // ("crash −37%"); it closes before the next row lands. An event with no time to show that way (the last row, a
 // summary right after it) or no room for the slot is typed into the formula bar instead. Other tones get a green
 // (good) or plain (neutral) flash. The final row counts both values up from the
-// row above, landing exactly on the display strings. An optional summary row (lookOpts.summary: the multiples)
+// row above, landing exactly on the display strings. That answer row (the goal row, else the last) is the ledger's
+// total line: a heavy rule above it from frame 1, figures set 15% larger, and a held grey tint once it lands
+// (lookOpts.total, default true). An optional summary row (lookOpts.summary: the multiples)
 // lands next. At verdict.t (or after the last row) the selection springs onto the winner's column, its header
 // wipes yellow, the column washes yellow top to bottom and the winner's final cell takes the solid yellow (the
 // answer); the verdict lands as a card in the caption band or is retyped into the formula bar. The last 0.5 s
@@ -29,13 +31,19 @@
 //   · formulaAt0 (0.7) · rowLabelsAtStart (true: every row key visible at frame 1)
 //   · formulaBar ([{ t, text }]: the bar's working over time; default: data.stake) · keyLabel (column A label;
 //     default 'Year' for year rows, the keys' shared first word ("Age" over "Age 35"), else 'When')
-//   · eventStyle ('auto' | 'tip' | 'bar': events as tooltips under their row, or typed into the formula bar)
+//   · eventStyle ('auto' | 'tip' | 'bar' | 'over': events as tooltips under their row, typed into the formula bar,
+//     or 'over': the pill sits on the gridline under its row, over the still-empty row below, with no slot, so
+//     nothing reflows; it holds until the next row lands, and falls back to the bar when there is no next row)
 //   · summary ({ label, values: [display strings], t, tone }: a totals row under the ledger, e.g. the multiples;
 //     a tone colours it instead of the leader rule)
 //   · eventPause (1.4 s: extra time after an event row when rows have no t)
 //   · leader ('high': in each row the bigger value is ink and the rest grey · 'low' for a cost duel · false: off)
-//   · marks ([{ t, row, person }]: after its row has landed, the selection springs onto that one value at t and it
-//     flashes, so the picture follows a voice-over that names the finished values; ignored after the winner beat)
+//   · marks ([{ t, row, person }]: after its row has landed, the selection springs onto that one value at t; while
+//     it is the focus (until the next mark or the winner beat) the cell holds a pale-yellow fill and sits at 106%
+//     (it pops from 110%), so the picture follows a voice-over that names the finished values; ignored after the
+//     winner beat)
+//   · total (true: the answer row is the total line, see above)
+// A plan's " · " piece that names money ("put in $24,000") is set in ink: it is the stake the duel turns on.
 import {
   h, setStyle, clamp, prog, ease, fitText, plain, C, G, M, S, barScript, springRect,
   sheet, tipStrip, fitTips, tipWindow, mk, mkLen, typedMk, typedCount, typeDur, wordCut, caretOn, parseDisplay, displayValue,
@@ -45,7 +53,11 @@ import {
 export const css = `
 .ls-row.ld-sum { box-shadow: inset 0 3px 0 #D0D5DD; }
 .ls-row.ld-sum .ls-cell.left .ls-v { color: #344054; }
+.ld-rule { position: absolute; right: 0; top: -2px; height: 4px; background: #344054; z-index: 2; pointer-events: none; }
+.ls-hsub .ld-pin { color: #101828; }
 `
+// the total line's held tint (a spreadsheet's total row: grey, so the yellow keeps meaning "this is the point")
+const TOTAL_TINT = '#EDEFF3'
 
 const esc = str => String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 const rgbOf = c => { const n = parseInt(c.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255] }
@@ -153,8 +165,15 @@ export default function ledgerDuel(spec, ctx) {
     const openAt = pre[i] ? -Infinity : rowT[i] + (i === countRow ? M.count : 0) + STAG * (nP - 1) + 0.16
     // it closes (and its slot with it) before the next row or the summary lands
     const nextT = i + 1 < N ? rowT[i + 1] : summary ? sumT : Infinity
-    const closeAt = Math.min(nextT - 0.34, Number.isFinite(hiT) ? hiT - 0.05 : Infinity, verdict ? verdict.t - 0.05 : Infinity, loop0)
-    return { row: i, text: String(rows[i].event), openAt, closeAt, tip: evStyle !== 'bar' && (evStyle === 'tip' || closeAt - Math.max(0, openAt) >= 1.0) }
+    const hard = Math.min(Number.isFinite(hiT) ? hiT - 0.05 : Infinity, verdict ? verdict.t - 0.05 : Infinity, loop0)
+    const closeAt = Math.min(nextT - 0.34, hard)
+    // 'over': the pill holds over the empty row below until that row lands (no slot to close first)
+    const overClose = Math.min(nextT - 0.04, hard)
+    const over = evStyle === 'over' && i + 1 < N && !pre[i] && overClose - Math.max(0, openAt) >= 0.8
+    return {
+      row: i, text: String(rows[i].event), openAt, closeAt: over ? overClose : closeAt, over,
+      tip: !over && evStyle !== 'bar' && evStyle !== 'over' && (evStyle === 'tip' || closeAt - Math.max(0, openAt) >= 1.0),
+    }
   })
 
   // ---------- formula bar: the stake, optional working keyframes, bar events, maybe the verdict ----------
@@ -172,7 +191,7 @@ export default function ledgerDuel(spec, ctx) {
   const laterKfs = () => {
     const steps = kfs.filter(k => k.t > 0).map(k => ({ ...k }))
     const extra = [
-      ...events.filter(e => !e.tip && e.openAt > 0).map(e => ({ t: e.openAt, text: flat(e.text), event: e })),
+      ...events.filter(e => !e.tip && !e.over && e.openAt > 0).map(e => ({ t: e.openAt, text: flat(e.text), event: e })),
       ...rows.map((r, i) => (keyShown[i] !== labels[i] && !pre[i] ? { t: rowT[i] + 0.12, text: flat(labels[i]), key: true } : null)).filter(Boolean),
     ]
     const out = []
@@ -266,6 +285,8 @@ export default function ledgerDuel(spec, ctx) {
   const kLater = laterKfs()
   const slotH = slotOf()
   if (summary) sh.rowEls[N].classList.add('ld-sum')
+  // a plan's money piece ("put in $24,000") in ink, the rest grey (same face and weight, so nothing re-wraps)
+  const planHTML = (plan, sep) => plan.split(' · ').map(s => (/[$€£]\s?\d/.test(plain(s)) ? `<span class="ld-pin">${mk(s)}</span>` : mk(s))).join(sep)
   people.forEach((p, j) => {
     const el = sh.labelEls[j + 1], inner = sh.cols[j + 1].w - 2 * Math.min(14, sh.cols[j + 1].pad)
     const parts = [String(p.name ?? ''), String(p.plan ?? '')]
@@ -276,16 +297,31 @@ export default function ledgerDuel(spec, ctx) {
         if (part.scrollWidth > inner + 0.5) fitText(part, inner, { minPx: i ? S.sub : S.labelMin })
         if (part.scrollWidth > inner + 0.5) setStyle(part, { whiteSpace: 'normal' })
       }
-      fit(mk(parts[i] ?? ''))
+      fit(i ? planHTML(parts[1], ' · ') : mk(parts[0] ?? ''))
       // a plan that has to wrap breaks at its " · " first ("DIY index fund" / "0.05% a year"), unless that
       // needs more lines than the label row has
       if (i === 1 && part.style.whiteSpace === 'normal' && parts[1].includes(' · ')) {
         const room = sh.labelH - 24 - el.children[0].offsetHeight + 1
-        fit(parts[1].split(' · ').map(mk).join('<br>'))
-        if (part.scrollHeight > room) fit(mk(parts[1]))
+        fit(planHTML(parts[1], '<br>'))
+        if (part.scrollHeight > room) fit(planHTML(parts[1], ' · '))
       }
     })
   })
+  // the total line: a heavy rule above the answer row (from frame 1) and its figures 15% larger (less when a
+  // column has no room for that)
+  const totalOn = opt(spec, 'total', true) !== false && N > 1
+  let totalPx = 0
+  if (totalOn) {
+    const rule = h('i', { class: 'ld-rule', 'data-deco': '', style: { left: sh.gutter + 'px' } })
+    sh.rowEls[answerRow].append(rule)
+    const base = parseFloat(sh.cells[answerRow][1].el.style.fontSize) || sh.fs.result
+    let f = 1.15
+    const room = j => sh.cols[j + 1].w - sh.cols[j + 1].pad - (sh.cols[j + 1].padR ?? sh.cols[j + 1].pad) - 4
+    const need = (px, j) => Math.max(...[rows[answerRow].values[j], rows[Math.max(0, answerRow - 1)].values[j]].map(v => textW(esc(v), font(800, px), { letterSpacing: '-0.01em' })))
+    while (f > 1.001 && people.some((_, j) => need(Math.round(base * f), j) * 1.06 > room(j))) f -= 0.01
+    totalPx = Math.round(base * f)
+    if (totalPx > base) for (let j = 0; j < nP; j++) setStyle(sh.cells[answerRow][j + 1].el, { fontSize: totalPx + 'px' })
+  }
   const outC0 = 1, outC1 = nP
   const wc = winner + 1 // the winner's sheet column
 
@@ -329,6 +365,26 @@ export default function ledgerDuel(spec, ctx) {
     strips.push({ row: i, strip, box: { x0, x1: x0 + w, notchX }, win: tipWindow(e.openAt, Math.min(e.closeAt, loopT0)) })
   })
   const shiftAt = (r, t) => { let dy = 0; for (const st of strips) if (r > st.row) dy += slotH * st.win.open(t); return dy }
+  // 'over' events: the same dark pill, sitting on the gridline under its row and over the empty row below (its
+  // slot is removed, so the card never grows and nothing moves); it wipes out of its notch and holds until the next
+  // row lands. Its notch sits between the value columns (or on the cell the event is about), clear of the values.
+  const overEvs = events.filter(e => e.over)
+  const overFit = fitTips(overEvs.map(e => e.text), tipW)
+  const overStrips = overEvs.map((e, k) => {
+    const i = e.row
+    const fj = tone[i] === 'bad' ? fell[i].indexOf(true) : tone[i] === 'good' ? lead[i] ?? -1 : -1
+    const tc = fj >= 0 ? sh.cols[fj + 1] : null
+    const notchX = Math.round(tc ? tc.x + tc.w / 2 : (spanX0 + spanX1) / 2)
+    const w = overFit.w[k]
+    const lo = Math.max(sh.x + sh.gutter + 12, spanX0 + 8), hi = sh.x + sh.w - 12
+    const x0 = Math.round(clamp(notchX - w / 2, lo, hi - w))
+    const html = toneTxt[tone[i]] ? `<span style="color:${toneTxt[tone[i]]}">${overFit.html[k]}</span>` : overFit.html[k]
+    const strip = tipStrip(sh, { px: overFit.px, html, wrap: overFit.wrap })
+    strip.slot.remove()
+    strip.el.setAttribute('data-overlap-ok', '')
+    // (the pill's reveal starts as it opens: no slot to open first)
+    return { row: i, strip, box: { x0, x1: x0 + w, notchX }, ht: overFit.slotH, win: tipWindow(e.openAt - 0.26, Math.min(e.closeAt, loopT0)) }
+  })
 
   // ---------- marks (lookOpts.marks): the selection springs onto the one cell the voice is naming ----------
   // [{ t, row, person }]: a landed value (row index into data.rows, person index) is selected at t and pops with a
@@ -340,7 +396,11 @@ export default function ledgerDuel(spec, ctx) {
     .filter(m => Number.isFinite(m.t) && m.row >= 0 && m.row < NR && m.j >= 0 && m.j < nP
       && m.t >= tOf(m.row) && m.t < Math.min(hiT, loopT0) - 0.3)
     .sort((a, b) => a.t - b.t)
+  // a mark is the focus until the next mark, the winner beat or the loop clear
+  marks.forEach((m, k) => { m.end = Math.min(k + 1 < marks.length ? marks[k + 1].t : Infinity, hiT, loopT0) })
   const markOf = (r, j, t) => { let x = null; for (const m of marks) if (m.row === r && m.j === j && t >= m.t) x = m; return x }
+  // 0..1: how much the mark holds its cell (fill in after the spring, out over 0.25 s when the focus moves on)
+  const focusOf = (m, t) => ease.out(prog(t, m.t + 0.08, 0.2)) * (1 - ease.inOut(prog(t, m.end, 0.25)))
 
   // ---------- selection keyframes: the fill handle drags down, then any marks, then the winner's column ----------
   const landStep = (t, r) => (isPre(r) ? 1 : ease.out(prog(t, tOf(r) - 0.07, 0.16)))
@@ -382,12 +442,14 @@ export default function ledgerDuel(spec, ctx) {
   const outFns = Array.from({ length: NR }, (_, r) => outAt(r))
   // a row's own background: the crash row's coral flash settles into a tint; a good row flashes green
   function rowBg(r, t) {
-    if (r >= N || isPre(r) && !crash[r]) return C.sheet
+    if (r >= N || isPre(r) && !crash[r] && !(totalOn && r === answerRow)) return C.sheet
     const t0 = rowT[r] + (r === countRow ? M.count : 0)
     if (t < t0 && !isPre(r)) return C.sheet
     const live = 1 - outFns[r](t)
     if (crash[r]) return mix(C.sheet, C.badDark, (isPre(r) ? 0.18 : 0.18 + 0.3 * (1 - ease.out(prog(t, t0, 0.75)))) * live)
     if (tone[r] === 'good' && rows[r].event) return mix(C.sheet, C.goodDark, 0.3 * (1 - ease.out(prog(t, t0, 0.8))) * live)
+    // the total line keeps a grey tint once its values land
+    if (totalOn && r === answerRow) return mix(C.sheet, TOTAL_TINT, (isPre(r) ? 1 : ease.out(prog(t, t0, 0.3))) * live)
     return C.sheet
   }
   const winHead = winner >= 0 ? sh.labelEls[wc] : null
@@ -416,6 +478,8 @@ export default function ledgerDuel(spec, ctx) {
       for (let r = 0; r < NR; r++) sh.rowShift(r, shiftAt(r, t))
       sh.setGrow(shiftAt(NR, t))
       for (const st of strips) st.strip.set({ ...st.box, y: sh.rowTop(st.row, shiftAt(st.row, t)) + sh.rowH, ht: slotH, open: st.win.open(t), reveal: st.win.reveal(t) })
+      // 'over' pills: top 4 px under the gridline below their row (clear of the selection's edge), no slot
+      for (const st of overStrips) st.strip.set({ ...st.box, y: sh.rowTop(st.row + 1, shiftAt(st.row + 1, t)) - 4, ht: st.ht, open: 1, reveal: st.win.reveal(t) })
 
       // rows
       for (let r = 0; r < NR; r++) {
@@ -462,12 +526,16 @@ export default function ledgerDuel(spec, ctx) {
             }
           }
           let flash = preR || (crash[r] && r < N) || (r < N && tone[r] === 'good' && rows[r].event) ? 0 : flashAlpha(t, flashT)
-          // a mark: the selection lands on this cell, which flashes and settles from 108%
+          // a mark: the selection lands on this cell, which takes a pale-yellow fill and pops from 110% to 106%,
+          // and holds both while it is the focus (then eases back as the next mark or the winner takes over)
           const mOn = markOf(r, j, t)
           if (mOn && out <= 0) {
-            flash = Math.max(flash, flashAlpha(t, mOn.t + 0.12, 0.6))
-            const mp = prog(t, mOn.t + 0.1, 0.3)
-            if (mp > 0 && mp < 1) scale = Math.max(scale, 1 + 0.08 * (1 - ease.out(mp)))
+            const f = focusOf(mOn, t)
+            if (f > 0.001 && !fill) fill = mix(rowBg(r, t), C.rowHi, f)
+            else flash = Math.max(flash, flashAlpha(t, mOn.t + 0.12, 0.6))
+            const rise = ease.out(prog(t, mOn.t + 0.08, 0.14)), settle = ease.out(prog(t, mOn.t + 0.22, 0.3))
+            const held = 1 - ease.inOut(prog(t, mOn.end, 0.25))
+            scale = Math.max(scale, 1 + (0.1 * rise - 0.04 * settle) * held)
           }
           sh.setCell(r, c, { text, p, out, flash, color, fill, scale, enter: isFell && crash[r] ? 'drop' : 'snap' })
         }

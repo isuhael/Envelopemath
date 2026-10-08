@@ -21,18 +21,21 @@
   - **Becker Rig (08b):** coin drop, punch and fill.
   - **Clean Sheet (08c):** type, wipe, count, pre-fill, the VO fit and filing.
   - In all three, the voice never says a number more than 0.5 s before its counter lands. 08c's check line is fully typed before the verdict.
+  - **08a's payoff roll** (`lookOpts.payoff`): it starts on the verdict, rolls from the unit price to the verdict's number, and lands (21.80 s) before the voice says "≈ $7.01" (22.12 s).
+  - **08b's blank** (`lookOpts.blank`): it starts ticking inside vo[1], prints the same day the voice says, lands (6.40 s) at most 0.5 s before the voice says "≈ the 20th" (6.52 s), and sits between rung 0's landing and rung 1's cut.
 - It also checks:
   - the contract shape;
   - "≈" on every rounded result;
   - the calendar claim behind 08b's "≈ the 20th", on a 30-day month, on the average month and on a Monday-Friday calendar for all 7 weekdays the 1st can fall on;
   - every pinned-comment and caption number in this file.
-- **Result: PASSED, all 503 checks.**
+- **Result: PASSED, all 524 checks** (503 before the assembly pass; see the [Review log](#review-log)).
 - **Mutation test:** on scratch copies of the three specs, six mutations: in 08a the verdict ≈ $7.01 → ≈ $7.00 and the rung-1 cut back to 2.0 s; in 08b "≈ the 20th" → "≈ the 18th" and vo[2] back on its cut at 8.4 s; in 08c one count ≈ 5,125 → ≈ 5,126 and row 1 moved to t = 0.0, so it is no longer pre-filled. 16 of 503 checks fail, and the script exits with code 1. Every mutation is caught by an independent rule as well as by the leaf-by-leaf comparison: R10 (first count at 3.48 s), the voice 0.69 s ahead of the counter, row 1 not pre-filled, or a number that is not computed.
+- **Assembly-pass mutations:** 08b's blank "≈ 20th" → "≈ 18th", 08b's blank start 4.7 → 6.0 s, and 08a's payoff start 20.2 → 21.5 s. Each fails 3 checks (the leaf comparison plus two independent rules: a number that is not computed or a day the voice does not say; the blank landing after the voice; the payoff landing 0.98 s after the voice), and the script exits with code 1.
 
 **Studio linter** (`node src/cli.mjs check`): **3/3 clean, 0 errors, 0 warnings.** That covers safe zones, the type floor, overlap, contrast and the R1 hook number. I rendered all three in the built kits and checked these stills by eye:
-- 08a at 0.0, 1.5, 2.9, 3.0, 4.9, 9.5, 17.95, 18.05, 18.2, 21.6 and 25.9 s;
-- 08b at 0.0, 1.5, 3.0, 6.5, 10.55, 10.68, 10.8, 19.6, 19.72, 19.8, 23.5 and 26.9 s;
-- 08c at 0.0, 1.5, 3.0, 5.4, 13.5, 15.8, 17.6 and 21.4 s.
+- 08a at 0.0, 1.5, 2.9, 3.0, 4.9, 9.5, 17.95, 18.05, 18.2, 21.6 and 25.9 s; in the assembly pass at 0, 3, 9.5, 13.5, 15.9, 18.2, 20.9, 22.5 and 25.97 s;
+- 08b at 0.0, 1.5, 3.0, 6.5, 10.55, 10.68, 10.8, 19.6, 19.72, 19.8, 23.5 and 26.9 s; in the assembly pass at 0, 4.6, 5.5, 6.45, 6.8, 8.0, 15, 19.8, 22.5 and 26.97 s;
+- 08c at 0.0, 1.5, 3.0, 5.4, 13.5, 15.8, 17.6 and 21.4 s; in the assembly pass at 0, 2, 5.5, 9.5, 13.5, 15.8, 18, 20.7 and 21.47 s.
 
 The counters read as the check predicts on both sides of each tested landing, for example 1,391 → 1,402 across 10.63 s and 29,971 → 30,053 across 19.67 s.
 
@@ -145,12 +148,12 @@ All three keep HD Guy's footer device: "Tall Latte ☕ = $4.45" (H04) and "Price
 
 **Rules:**
 - **R1 (pass):** "$1.50" is in the header, the footer and the label at 0.0 s, and the hero reads "1" (one hot dog).
-- **R2 (pass):** one $ figure in the hook line, the input. The result (≈ $7.01) appears only in the verdict.
+- **R2 (pass):** one $ figure in the hook line, the input. The result (≈ $7.01) appears only at the payoff (20.2 s): the hero rolls up to it and the verdict states it.
 - **R3 (pass):** the $1.50 is a price most viewers have paid, labelled "YOUR HOT DOG + SODA". Rung 1 (the $65 membership) fits members only.
 - **R4 (pass):** $1.50 is small, round and familiar. The unit is still the benchmark's flop (H13), and the judges docked it.
 - **R6 (pass):** you, the $1.50, and 1985 → 2026.
 - **R8 (pass):** 13 words on 2 lines.
-- **R10 (pass):** the unit lands at 0.2 s and the first count (≈ 43) at 2.98 s. The biggest number is last (≈ 262,467 at 18.02 s).
+- **R10 (pass):** the unit lands at 0.2 s and the first count (≈ 43) at 2.98 s. The biggest count is the last rung (≈ 262,467 at 18.02 s), and the answer (≈ $7.01) is the last number the hero lands on (21.80 s).
 - **R11 (pass):** the header is a question, and the verdict answers it.
 - **R12 (pass):** "a ≈ $7.01 hot dog" is one repeatable number.
 - **R5 (partial):** the header implies that prices "just rose together". The ladder shows the house rising ≈ 4.7× in the one ruler that never moved. Both judges called this belief weak.
@@ -174,11 +177,12 @@ Counter landing times are the Scoreboard kit's own (reproduced by the check). Li
 | 3.7 | Hold on the pile and "≈ 43" | "Your Costco card? **≈ 43** of them." |
 | 7.4 | Cut. "$1,199 ÷ $1.50 / AN IPHONE 18 PRO"; the pile re-packs and the counter rolls | "An iPhone 18 Pro? **≈ 799**." |
 | 9.30 | Counter lands **≈ 799** | |
-| 11.0 | Cut. "$84,300 ÷ $1.50 / A MEDIAN NEW HOUSE, 1985" | "A new house in 1985? **56,200**." |
-| 13.32 | Counter lands **56,200** | |
-| 15.2 | Cut + riser. "$393,700 ÷ $1.50 / A MEDIAN NEW HOUSE, AUG 2026" | "And a new house in 2026? **≈ 262,000**." |
-| 18.02 | Counter lands **≈ 262,467** (hit + cash); the stack fills the stage | |
-| 20.2 | Verdict slams in, 2 lines: "Rose like a house? / A **≈ $7.01** hot dog." (ding) | "Rose like a house? A **≈ $7.01** hot dog." |
+| 11.0 | Cut. "$84,300 ÷ $1.50 / A MEDIAN NEW HOUSE, 1985"; the pile turns into an LED-dot wall | "A new house in 1985? **56,200**." |
+| 13.32 | Counter lands **56,200**; the dot wall fills the stage (one dot ≈ 12 hot dogs) | |
+| 15.2 | Cut + riser. "$393,700 ÷ $1.50 / A MEDIAN NEW HOUSE, AUG 2026". The 1985 wall pulls back into a mound of ≈ 21% of the stage (the real ratio: 56,200 ÷ 262,467 = 21.4%), then the new dots rain in around it at the same scale | "And a new house in 2026? **≈ 262,000**." |
+| 18.02 | Counter lands **≈ 262,467** (hit + cash); the dot wall fills the stage edge to edge | |
+| 20.2 | Verdict slams in, 2 lines: "Rose like a house? / A **≈ $7.01** hot dog." (ding). The hero cuts to "$1.50" and rolls up; the wall dims behind it | "Rose like a house? A **≈ $7.01** hot dog." |
+| 21.80 | The hero lands **≈ $7.01** beside the hot-dog icon (hit + cash, glow, floor bloom) | |
 | 24.9-26.0 | Hold, then a hard cut back to frame 1 (loop) | (none) |
 
 **Why rung 1 cuts at 1.5 s, while the opener line is still playing.**
@@ -296,11 +300,11 @@ Each rung's label gives its basis (median new house, 1985 annual or August 2026)
 - **R6 (pass):** you, $15 an hour, your rent and this month, starting on the 1st.
 - **R8 (pass):** 11 words on 2 lines.
 - **R9 (pass):** exactly one visible blank to fill ("___").
-- **R10 (pass):** ≈ 117 lands at 2.10 s and is spoken at 2.31 s. The voice fills the blank at about 6 s. The biggest number is last.
+- **R10 (pass):** ≈ 117 lands at 2.10 s and is spoken at 2.31 s. The header's blank fills on screen at 6.40 s, as the voice says it (6.52 s). The biggest number is last.
 - **R11 (pass):** one question, the blank.
 - **R12 (pass):** "≈ the 20th" and "≈ 14 years of full-time work".
 - **R3 (partial):** one wage, and the rent is the Census median, not yours. The pinned comment gives the rule for your own rent and wage.
-- **Risk:** the date answer is in the VO and caption only, because the built HUD answers in hours. Frame 1 shows both the "___" and the "? hours".
+- **The blank is answered on screen:** from 4.7 s the header's "___" ticks up through the days (1st, 2nd, … in grey), and at 6.40 s it lands on **≈ 20th** in green with a green rule and a ding, while the figure points up at it (`lookOpts.blank`). The header then reads "from the 1st to the ≈ 20th" for the rest of the video. Frame 1 shows both the "___" and the "? hours".
 
 **The wrong beliefs it plays on:**
 1. "Rent is about a week of work." At the median asking rent it is ≈ 117 hours, which is 67.4% of a full-time month's 173.33 hours (≈ 2 of every 3). Laid on the calendar from rent day, that is the 1st to **≈ the 20th**.
@@ -316,6 +320,8 @@ Times are the built Becker Rig kit's own (reproduced by the check). Each rung: a
 | 0.45 | He punches the coin (hit + shake); hour icons arc into a pyramid and the counter rolls | |
 | 2.10 | Counter lands **117**; "=" turns to "≈" | |
 | 4.6 | Hold on the 117-hour pile | "Every hour you work, to **≈ the 20th**." |
+| 4.7 | The header's blank hands over to a rule sized for the answer, and the days tick up on it: 1st, 2nd, 3rd, … (grey) | |
+| 6.40 | It lands on **≈ 20th** (green, pop, ding); the rule turns green and he points up at it | |
 | 8.4 | Cut: HUD "Median rent, 1 year / $18,372 ÷ $13.10 = / ?"; a new coin drops; punch at 9.32 | |
 | 9.1 | | "A year of rent? **≈ 1,400 hours**." |
 | 10.63 | Counter lands **1,402**; the camera pulls back to show both piles | |
@@ -568,12 +574,12 @@ Times are the Clean Sheet kit's own (reproduced by the check). Each step types "
 As of hook pass 2, all three kits' `unit-ladder` formats are built, and every spec uses only keys its kit reads.
 
 - **Scoreboard (08a), built.**
-  - The spec uses `data.unit.label` ("Your hot dog + soda") for the built unit intro and `lookOpts.climaxFill`.
+  - The spec uses `data.unit.label` ("Your hot dog + soda") for the built unit intro, `lookOpts.climaxFill` and `lookOpts.payoff` {t 20.2, from "$1.50", display "≈ $7.01"} (added in the assembly pass: at the verdict the hero cuts to the unit price and rolls up to the answer, so the payoff lands last in the hero, the kit's rule).
   - Round 1's two requests are dropped. `lookOpts.bigUnit` (1 block = 1,000 hot dogs) and `lookOpts.slots` ("1985: ?" / "2026: ?") were never read by the kit.
-  - Without `bigUnit`, the 1985 and 2026 house piles both fill the stage. So the counters carry the ≈ 4.7× and the verdict carries the ≈ $7.01. A per-rung block size would still let the piles show the gap.
+  - Overflow rungs (assembly pass, in the format): a rung too big for the pile at its density used to fill the stage just like the climax, so the 1985 and 2026 houses looked the same. Now, from the first such rung on, every LED dot stands for the same number of units as in the climax wall (≈ 12.2 hot dogs a dot here). The 1985 wall fills the stage with 9.6 px dots, and the 2026 rung re-packs it into 21.3% of the stage (4,590 of 21,528 cells; the real ratio is 21.4%) before its own dots rain in. The pile now shows the ≈ 4.7× gap.
   - The 2-line verdict fits clear of the stage (21.6 s still).
 - **Becker Rig (08b), built.** The format is no longer a stub.
-  - It reads `figure`, `figureScale`, `unitLabel` / `unitLabelOne`, `intro`, `iconSize`, `plate` and `pileLabels`. The spec uses only `pileLabels`, so the recap table tells the two rent piles apart (without it, both shorten to "Median rent").
+  - It reads `figure`, `figureScale`, `unitLabel` / `unitLabelOne`, `intro`, `iconSize`, `plate`, `pileLabels` and `blank`. The spec uses `pileLabels`, so the recap table tells the two rent piles apart (without it, both shorten to "Median rent"), and `blank` {t 4.7, d 1.7, text "≈ 20th"} (added in the assembly pass), which writes the hook's answer into the header's "___".
   - The first draft's staging keys (`opener` TAX snip, `facedown`, `actions`, `gag`, `stage`, `inputProp`) were never read and are removed. So are the pop and thud SFX cued for them. The kit cues its own hit, pop and roll.
   - The check replays the kit's per-rung schedule: lead = 0.22 × gap (0.45-0.92 s), punch, then a fill of 0.3 × gap (0.5-1.6 s), or 1.9 s on the last rung.
 - **Clean Sheet (08c), built.**
@@ -610,7 +616,7 @@ As of hook pass 2, all three kits' `unit-ladder` formats are built, and every sp
 - **08a's unit is the benchmark's own flop (H13).** The bet is that the frozen price makes it a ruler rather than a novelty. If 08a underperforms the other two, the unit is the first suspect.
 - **08a's twist is about sticker prices.** The ≈ $7.01 is a sticker-to-sticker counterfactual (the house rose ≈ 4.7× in nominal dollars). It is honest as stated, and the caption and pinned comment say so. Expect "inflation!" comments; those are engagement, not an error.
 - **08a's open loop is one question, answered at 20.2 s.** The first count (the membership, ≈ 43 at 2.98 s) is a ladder step, not the answer. Both judges noted this.
-- **08b's blank is filled by the voice and caption only.** The built HUD answers in hours, and the rent is the Census median, not the viewer's.
+- **08b's blank is filled with the median, not the viewer's rent.** Since the assembly pass the header's "___" fills in on screen (≈ 20th at 6.40 s), but the rent is the Census median, not the viewer's.
 - **08c attacks no wrong belief.** The order of the rows is what viewers expect; only the ≈ 10.8× gap surprises.
 - **Single-publisher figures:**
   - The rent ($1,531) is a Census figure, cross-checked only against the same series' previous quarter (and by the verifier).
@@ -776,3 +782,18 @@ Because the judges scored whole hooks, not titles alone, none of these titles is
 - 08a: header, hero "1", hot dog and "$1.50 / YOUR HOT DOG + SODA";
 - 08b: the blank, the HUD "? hours of work" and the $1,531 coin;
 - 08c: four named options, row ① answered, ②③④ waiting.
+
+### Assembly pass (2026-10-08)
+
+Round 1 was rejected for its look and weak hooks, so each teaser was linted, read frame by frame (contact sheet + stills at every beat), rendered and re-checked against the MP4. No number, VO line, header or footer changed. Two payoff problems were fixed in the built kits' `unit-ladder` format files, each through a new `lookOpts` key.
+
+- **08a, the climax and the payoff did not read on screen.**
+  - The 1985 house (56,200) and the 2026 house (≈ 262,467) both overflowed the pile and drew the same full LED wall, so the ≈ 4.7× jump was invisible. The answer ≈ $7.01 lived only in the 2-line verdict, while the hero still showed ≈ 262,467.
+  - **Format fix (`looks/scoreboard/formats/unit-ladder.js`):** overflow rungs share the climax wall's dot scale. The 1985 wall fills the stage at 9.6 px dots, and at the 2026 cut it pulls back into 21.3% of the stage (the real ratio is 21.4%) before the new dots rain in. One dot is ≈ 12.2 hot dogs in both walls. The kit's samples have no overflow rung and render as before.
+  - **New option `lookOpts.payoff`** {t 20.2, from "$1.50", display "≈ $7.01"}: at the verdict the hero cuts to the unit price and rolls up to the answer (lands 21.80 s, hit + cash, glow, floor bloom) while the wall dims. The voice says "≈ $7.01" at 22.12 s. This is the Scoreboard README's rule "the payoff lands last in the hero".
+- **08b, the hook's blank was never filled on screen** (the write-up listed this as a risk), and 2.1-8.4 s held a static pile.
+  - **New option `lookOpts.blank`** {t 4.7, d 1.7, text "≈ 20th"} (`looks/becker-rig/formats/unit-ladder.js`): the header's "___" hands over to a rule sized for the answer, the days tick up on it (1st, 2nd, … in grey) while the voice says "Every hour you work", and at 6.40 s it lands on **≈ 20th** in green with a ding, the rule turns green, and the figure points up at it. The voice says "≈ the 20th" at 6.52 s. The header then reads "from the 1st to the ≈ 20th" for the rest of the video.
+- **08c: no change.** It lints clean and reads well at every beat. The last 0.7 s clears back to the frame-1 state by design (the kit's loop), so the end still is frame 1.
+- **Check script:** the expected 08a and 08b specs carry the new keys, and two kit replays check them: 08a's payoff starts on the verdict, rolls from the unit price to the verdict's number and lands before the voice says it; 08b's blank prints the day the voice says, starts inside vo[1], lands at most 0.5 s before the voice and sits between rung 0's landing and rung 1's cut. **Result: PASSED, all 524 checks.** Three new mutations (listed at the top) each fail 3 checks and exit 1.
+- **Verification:** `node src/cli.mjs check` 3/3 clean (0 errors, 0 warnings), plus the kits' four `unit-ladder` samples, still clean. MP4s rendered to `studio/out/` (26.0 / 27.0 / 21.5 s, 1080×1920, 30 fps), and frames pulled from each MP4 (08a at 0, 15.9 and 22.5 s; 08b at 0, 6.8 and 22.5 s; 08c at 0, 9.5 and 18 s) match the stills.
+- **Not changed (outside this format's files):** `teasers/v2/teasers.json` still quotes "PASSED: all 503 checks" in format 08's check note.

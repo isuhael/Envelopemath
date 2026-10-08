@@ -2,7 +2,8 @@
 //
 // One continuous stretch, 0 cuts on the stage. A dollar counter ticks at a fixed real rate; milestones pop as
 // they pass.
-//   Top bar   the hook, the hero counter and the footer (the rate's working, spec.footer). The hero is a debt-clock
+//   Top bar   the hook, the hero counter (set about 8% under its full fit: air under the header and above the
+//             footer) and the footer (the rate's working, spec.footer). The hero is a debt-clock
 //             counter: only the digits the count has reached are on the board (HD Guy's "$0.30", no leading zeros),
 //             and the "$" hugs the leading digit, so the number grows a digit at a time and stays centred. The
 //             counter is linear in real time (crisp digital ticks when it moves more than one unit a frame; a
@@ -42,7 +43,10 @@
 //   heroIcon:  false | '<icon>'              a unit icon beside the hero counter
 //   tone:      'good' | 'bad' | 'neutral'    hero colour (default green: money)
 //   pipLabels: ['$65,052', ...]              a price beside each ladder icon (display strings; grey ahead, white next,
-//                                            green passed); the big icon then sits right of that column
+//                                            green passed); the big icon then sits right of that column, a flying icon
+//                                            ducks the labels it crosses, and the big icon carries its own as a tag
+//   tags:      true                          with pipLabels: the big icon's target ("$250K") under its art, white
+//                                            while it fills, green on the pass, gone when it flies (false: off)
 //   slot:      { label, empty, t, fill, tone }   an answer readout in the stage's top-right corner: `empty` ("$___")
 //                                            from frame 1, `fill` slams in at t in the tone colour (buzz when bad)
 //   stream:    14 | false                    dots a second in the money stream (false: off)
@@ -57,6 +61,9 @@ import {
 
 const GHOST_A = 0.1                         // the unlit "≈": the counter's colour at this alpha (not text to read)
 const GHOST_ICON = 0.2                      // opacity of an unfilled milestone icon
+const TAG_PX = 52                           // the big icon's target tag (its pip label, under the art)
+const TAG_ROOM = 64                         // stage height the tag takes from the big icon's art box
+const HERO_K = 0.92                         // the hero's cap height vs the board's fit (air above and below it)
 
 export const css = `
 .cc-hero { position: absolute; transform-origin: 50% 55%; }
@@ -78,6 +85,8 @@ export const css = `
 .cc-stream { position: absolute; }
 .cc-lad-pip { position: absolute; width: 8px; border-radius: 4px; background: ${C.green}; box-shadow: 0 0 12px rgba(43, 255, 136, 0.8); }
 .cc-pl { position: absolute; font: 400 40px/1 'Anton', 'Inter Full', sans-serif; white-space: nowrap; letter-spacing: 0.01em; transform-origin: 0 50%; }
+.cc-tag { position: absolute; font: 400 ${TAG_PX}px/1 'Anton', 'Inter Full', sans-serif; white-space: nowrap; letter-spacing: 0.01em; transform-origin: 50% 50%;
+  text-shadow: 0 0 10px #000, 0 2px 4px #000; }
 .cc-slot { position: absolute; box-sizing: border-box; height: 96px; display: flex; align-items: center; justify-content: space-between; gap: 20px;
   padding: 0 24px; background: ${C.panel}; border-radius: 14px; --lit: 0; --tone: ${C.red};
   border: 3px solid color-mix(in srgb, var(--tone) calc(var(--lit) * 100%), ${C.panelLine});
@@ -252,8 +261,11 @@ export default function costCounter(spec, ctx) {
   const hasPL = ladder.some(l => l.pl)
   const regL = hasPL ? Math.max(140, colRight + 28) : 140, regR = hasPL ? 920 : 940
   const regT = sl ? sl.bottom + 10 : 0
-  const ART_W = Math.min(560, regR - regL - 16), ART_H = Math.min(400, SH - regT - (sl ? 44 : 80))
-  const bigCX = (regL + regR) / 2, bigCY = regT + (SH - regT) / 2 + 2
+  // a target tag under the big icon (its pip label: "$250K", "$1M") when the ladder is labelled; the art gives it room
+  const tagged = hasPL && lo.tags !== false && !silent
+  const tagRoom = tagged ? TAG_ROOM : 0
+  const ART_W = Math.min(560, regR - regL - 16), ART_H = Math.min(400, SH - regT - (sl ? 44 : 80)) - tagRoom
+  const bigCX = (regL + regR) / 2, bigCY = regT + (SH - regT) / 2 + 2 - tagRoom / 2
 
   const parts = name => ICONS[name]
   const draw = (g, name) => {
@@ -290,7 +302,14 @@ export default function costCounter(spec, ctx) {
     }
     // where its art sits in the ladder slot (an iconSVG of lsz px), and the scale that matches it
     const to = { x: ladX + ((bb.x + bb.width / 2) / 100 - 0.5) * lsz, y: (i2 => slotY(i2))(i) + ((bb.y + bb.height / 2) / 100 - 0.5) * lsz, s: lsz / size }
-    return { el, svg, ghost, full, fillRect, level, glowLine, top: bb.y, hgt: bb.height, size, to, artH: bb.height * k, artW: bb.width * k, kpx: k, elTop: bigCY - acy, badge: bigBadge }
+    // the target tag: readable text, so it lives on the stage (outside the clipped decorative box), centred under the art
+    let tag = null
+    if (tagged && m.pip) {
+      tag = h('div', { class: 'cc-tag', html: ax(esc(m.pip)), style: { color: C.white } })
+      stage.append(tag)
+      style(tag, { left: (bigCX - tag.offsetWidth / 2).toFixed(1) + 'px', top: (L.stage.y + bigCY + (bb.height * k) / 2 + 12).toFixed(1) + 'px', display: 'none' })
+    }
+    return { el, svg, ghost, full, fillRect, level, glowLine, top: bb.y, hgt: bb.height, size, to, artH: bb.height * k, artW: bb.width * k, kpx: k, elTop: bigCY - acy, badge: bigBadge, tag }
   })
 
   // money stream: green LED dots pour into the icon that is filling (decoration; a pure function of t).
@@ -371,7 +390,8 @@ export default function costCounter(spec, ctx) {
   // fit: the whole board (all slots) inside 920 px, next to the icon if any
   const iconW = heroIcon ? HI + 14 : 0
   const w168 = odo.offsetWidth || 1
-  const heroSize = Math.round(Math.min(HS, (HS * (920 - iconW)) / w168))
+  // (HERO_K: about 8% under the full fit, so the board keeps air under the header and above the footer)
+  const heroSize = Math.round(Math.min(HS, (HS * (920 - iconW)) / w168) * HERO_K)
   style(odo, { fontSize: heroSize + 'px' })
   if (finalEl) {
     style(finalEl, { fontSize: heroSize + 'px', display: 'flex', width: 'auto' })
@@ -523,8 +543,24 @@ export default function costCounter(spec, ctx) {
       style(glow, { '--glow': (16 + 30 * gl).toFixed(1) + 'px', '--glowA': (0.38 + 0.45 * gl).toFixed(3) })
 
       // stage: big icons
+      const flying = []
       ms.forEach((m, i) => {
         const b = bigs[i]
+        // the target tag: stands under the art once it has landed (never mid-drop), white while it fills, green on the
+        // pass (with the icon's bump), and gone when the icon flies to the ladder (the last one stays, lit)
+        if (b.tag) {
+          const tl = isFinite(m.enter) && m.enter > 0.001 ? m.enter + m.fall : -Infinity
+          const flyAt = m.last || !m.reached ? Infinity : m.tp + m.pop
+          if (t < tl || t >= flyAt) style(b.tag, { display: 'none' })
+          else {
+            const k2 = isFinite(tl) ? slam(t, tl, { from: 1.3 }) : { o: 1, s: 1 }
+            const passed = m.reached && t >= m.tp
+            const kb = passed ? bump(t, m.tp, { amp: m.last ? 0.16 : 0.12, dur: m.last ? 0.55 : 0.4 }) : 1
+            // it rides the art's bottom edge down as the icon bumps (the same bump), so the pop never covers it
+            const dy = (kb - 1) * (b.artH / 2 + 12)
+            style(b.tag, { display: 'block', color: passed ? C.green : C.white, opacity: String(k2.o), transform: `translateY(${dy.toFixed(1)}px) scale(${(k2.s * kb).toFixed(4)})` })
+          }
+        }
         const enterAt = m.enter
         let vis = t >= enterAt || i === 0
         if (!m.last && t >= m.arrive) vis = false
@@ -570,6 +606,19 @@ export default function costCounter(spec, ctx) {
         }
         style(b.el, { display: 'block', transform: `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px) scale(${sx.toFixed(4)}, ${sy.toFixed(4)})`, filter: f || 'none' })
         if (showLadder || m.last || t < m.tp + m.pop) style(b.el, { opacity: '1' })
+        // a flying icon: its art rect (box coords) dims the ladder labels it crosses
+        if (!m.last && m.reached && t >= m.tp + m.pop && t < m.arrive) {
+          const hw = (b.artW * Math.abs(sx)) / 2, hh = (b.artH * Math.abs(sy)) / 2, cx = bigCX + tx, cy = bigCY + ty
+          flying.push([cx - hw, cy - hh, cx + hw, cy + hh])
+        }
+      })
+      // ladder labels under a flying icon duck (a light bill passing over grey text would be unreadable)
+      ladder.forEach((l, i) => {
+        if (!l.pl) return
+        if (l.plw == null) l.plw = l.pl.offsetWidth
+        const x0 = plLeft - 6, x1 = plLeft + l.plw + 6, y0 = slotY(i) - 26, y1 = slotY(i) + 26
+        const hit = flying.some(r => r[0] < x1 && r[2] > x0 && r[1] < y1 && r[3] > y0)
+        l.duck = hit
       })
 
       // ladder: passed = lit, next = glowing ghost + pip, later = unlit
@@ -587,7 +636,7 @@ export default function costCounter(spec, ctx) {
             filter: done || !cur ? 'none' : 'drop-shadow(0 0 8px rgba(43, 255, 136, 0.55))',
           })
           style(pip, { display: i === active ? 'block' : 'none' })
-          if (pl) style(pl, { color: done ? C.green : cur ? C.white : C.grey, transform: `scale(${(1 + Math.max(0, k - 1) * 0.5).toFixed(4)})` })
+          if (pl) style(pl, { color: done ? C.green : cur ? C.white : C.grey, opacity: ladder[i].duck ? '0.25' : '1', transform: `scale(${(1 + Math.max(0, k - 1) * 0.5).toFixed(4)})` })
         })
       }
 

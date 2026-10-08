@@ -33,9 +33,13 @@
 //   pileLabels: false | [..]  the recap table after the last landing (one row per rung: count + name): false =
 //                             none; an array = the name per rung (default: the item name, shortened: no article,
 //                             no ", at ..." qualifier)
+//   blank: { t, d = 1.6, text }  fills the hook's blank: the header's "___" ticks up through the ordinals (1st, 2nd,
+//                             ... in grey, on a rule sized for the answer) from t and lands at t + d on `text` (a
+//                             display string, printed exactly; it counts to the number in it) in hero green with a
+//                             pop and a ding, while the figure points up at it. Ignored when the header has no "___".
 import {
   h, s, style, attr, setText, setHTML, prog, clamp, lerp, rng,
-  C, F, L, S, E, RIG, poseTrack, fk, secondary, pinLimb, blendJ, Figure, makeWorld, makeFx, camera, NumObj,
+  C, F, T, L, S, E, RIG, poseTrack, fk, secondary, pinLimb, blendJ, Figure, makeWorld, makeFx, camera, NumObj,
   chromeParts, durationOf, num, rollTo, measure, arc, squashAt, fall, popIn, wobble, coin, icon, lerp2, smooth,
 } from '../lib.js'
 
@@ -139,6 +143,80 @@ function swapK(t, t0, px, dur = 0.24) {
   return { phase: 1, sx: sc, sy: sc, op: clamp(q * 3) }
 }
 const STILL = { phase: 1, sx: 1, sy: 1, op: 1 }
+
+const ordinal = n => n + (n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] || 'th')
+/**
+ * The hook's blank: the header's "___" fills in. The underscores stay as they are until bk.t; then they hand over to
+ * a rule of the same weight, sized for the answer, while the ordinals tick up on it (grey), and at `land` the answer
+ * pops in (hero green, the rule turns green). Lives inside the header (same font, same baseline), marked
+ * data-overlap-ok: it is written on the blank on purpose.
+ */
+function hookBlank(header, bk, land, ctx) {
+  const tw = document.createTreeWalker(header, NodeFilter.SHOW_TEXT)
+  let node = null, at = -1
+  while (tw.nextNode()) { const i = tw.currentNode.textContent.search(/_{3,}/); if (i >= 0) { node = tw.currentNode; at = i; break } }
+  if (!node) return null
+  const len = /_+/.exec(node.textContent.slice(at))[0].length
+  const run = node.splitText(at)
+  run.splitText(len)
+  const us = h('span', {}, run.textContent)
+  run.replaceWith(us)
+  const text = String(bk.text)
+  const target = Math.max(1, Math.round(num(text.replace(/[^\d.,]/g, '')) || 1))
+  const t0 = +bk.t, d = Math.max(0.3, land - t0)
+  const hr = header.getBoundingClientRect(), ur = us.getBoundingClientRect()
+  const probe = () => h('span', { style: { display: 'inline-block', width: '0px', height: '0px' } })
+  const pb = probe()
+  us.append(pb)
+  const base = pb.getBoundingClientRect().top
+  pb.remove()
+  const cs = getComputedStyle(header)
+  const px = parseFloat(cs.fontSize)
+  // the rule: the underscore's own ink band (below the baseline), as one bar
+  const g2 = document.createElement('canvas').getContext('2d')
+  g2.font = `${cs.fontWeight} ${px}px ${cs.fontFamily}`
+  const mU = g2.measureText('_')
+  const uTop = base - hr.top - mU.actualBoundingBoxAscent, uH = Math.max(4, mU.actualBoundingBoxAscent + mU.actualBoundingBoxDescent)
+  const fill = h('div', { 'data-overlap-ok': '', style: { position: 'absolute', left: (ur.left - hr.left).toFixed(1) + 'px', top: '0px', whiteSpace: 'nowrap', lineHeight: '1', transformOrigin: '0 100%', color: C.grey } })
+  header.append(fill)
+  // the answer must end inside x 1016: shrink it (never under the type floor) if the blank sits far right
+  setText(fill, text)
+  const room = 1016 - ur.left
+  let fs = px
+  if (fill.offsetWidth > room) { fs = Math.max(T.small, px * room / fill.offsetWidth); style(fill, { fontSize: fs.toFixed(1) + 'px' }) }
+  const pf = probe()
+  fill.append(pf)
+  const asc = pf.getBoundingClientRect().top - fill.getBoundingClientRect().top
+  pf.remove()
+  style(fill, { top: (base - hr.top - asc).toFixed(1) + 'px' })
+  const wFinal = fill.offsetWidth
+  const w0 = ur.width, w1 = Math.max(w0, wFinal + 0.06 * fs)
+  const bar = h('div', { 'data-deco': '', style: { position: 'absolute', left: (ur.left - hr.left).toFixed(1) + 'px', top: uTop.toFixed(1) + 'px', height: uH.toFixed(1) + 'px', width: w0.toFixed(1) + 'px', background: C.ink, borderRadius: '2px', opacity: '0' } })
+  header.append(bar)
+  ctx.cue(t0, 'roll', { dur: d - 0.05, gain: 0.25 })
+  ctx.cue(land, 'ding', { gain: 0.55 })
+  return {
+    seek(t) {
+      if (t < t0) {
+        style(us, { color: '' }); style(fill, { opacity: '0' }); style(bar, { opacity: '0' })
+        return
+      }
+      style(us, { color: 'transparent' })
+      const done = t >= land
+      const grow = E.out(prog(t, t0, 0.22))
+      style(bar, { opacity: '1', width: lerp(w0, w1, grow).toFixed(1) + 'px', background: done ? C.hero : C.ink })
+      if (!done) {
+        const day = 1 + Math.min(target - 1, Math.floor((target - 1) * prog(t, t0, d * 0.94)))
+        setText(fill, ordinal(day))
+        style(fill, { opacity: '1', color: C.grey, transform: 'none' })
+      } else {
+        const k = popIn(t, land, 0.26, 0.7).scale * (1 + wobble(t, land + 0.2, 0.04, 2.4, 6))
+        setText(fill, text)
+        style(fill, { opacity: '1', color: C.heroInk, transform: `scale(${k.toFixed(3)})` })
+      }
+    },
+  }
+}
 
 export default function unitLadder(spec, ctx) {
   const d = spec.data || {}
@@ -338,6 +416,17 @@ export default function unitLadder(spec, ctx) {
     if (r.last) keys.push({ t: r.land + 0.8, pose: 'slump', d: 0.4, e: 'spring' })
     else keys.push({ t: r.land + 1.0, pose: 'idle', d: 0.45, e: 'inOut' })
   }
+  // the hook's blank fills in (lookOpts.blank): he points up at it as it lands, between two rungs
+  const bk = lo.blank && lo.blank.text != null && lo.blank.t != null && /_{3,}/.test(String(spec.header || '')) ? lo.blank : null
+  const bkLand = bk ? +bk.t + (bk.d != null ? +bk.d : 1.6) : 0
+  if (bk) {
+    const nextT = Math.min(...R.filter(r => r.T > bkLand - 0.3).map(r => r.T), Infinity)
+    const prevLand = Math.max(...R.filter(r => r.land < bkLand).map(r => r.land), -Infinity)
+    if (nextT - bkLand > 0.9 && bkLand - prevLand > 0.6) {
+      keys.push({ t: bkLand - 0.14, pose: 'pointUp', d: 0.24, e: 'spring' })
+      keys.push({ t: Math.min(bkLand + 1.3, nextT - 0.5), pose: 'idle', d: 0.45, e: 'inOut' })
+    }
+  }
   const tr = poseTrack(keys)
 
   // coins stand in front of him, placed so the punch (or the chop) lands on the rim
@@ -468,6 +557,7 @@ export default function unitLadder(spec, ctx) {
   const labO = new NumObj(hud, { cls: 'ul-lab', text: '', ax: 0, ay: 0.837 })
   hud.append(itemEl, divEl, hudSvg)
   ctx.stage.append(hud)
+  const blank = bk ? hookBlank(parts.header, bk, bkLand, ctx) : null
   const itemTop = tx => yItem + (itemLines - itemLinesOf(tx)) * lhI
   const padOf = r => (r && r.plate ? PLATE[0] + 6 : 0)
   const labXFor = (r, txt) => (labelBelow ? HX : HX + 2 * padOf(r) + digW(txt, cPx) + (r && r.plate ? 40 : 28))
@@ -823,6 +913,7 @@ export default function unitLadder(spec, ctx) {
     seekCoins(t, z)
     seekFigure(t, z)
     seekHud(t, cur)
+    if (blank) blank.seek(t)
     hudFx.seek(t)
     for (const tg of tags) {
       const p = prog(t, tg.t0, 0.22)

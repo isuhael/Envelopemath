@@ -14,15 +14,15 @@
     { "t": 7.4,  "d": 4.3, "text": "Amazon's 2025 profit: $77.7 billion." },
     { "t": 13.2, "d": 2.4, "text": "≈ 13 seconds: half a year." },
     { "t": 15.8, "d": 5.0, "text": "2,464 ÷ your weekly pay = your weeks." },
-    { "t": 22.4, "d": 1.6, "text": "And a whole year?" },
+    { "t": 21.0, "d": 1.6, "text": "And a whole year?" },
     { "t": 26.4, "d": 1.6, "text": "≈ 26 seconds." }
   ],
-  "verdict": { "t": 26.4, "text": "1 second ≈ **2 weeks** of median pay.\nA year: ≈ 26 s." },
+  "verdict": { "t": 26.4, "text": "A year of median pay: **≈ 26 seconds**.\n1 second ≈ 2 weeks." },
   "data": {
     "label": "Amazon's profit since you hit play",
     "perSecond": 2463.85,
     "rateDisplay": "≈ $2,464 every second",
-    "counterT": [0.0, 26.5],
+    "counterT": [0.0, 26.4026],
     "startValue": 0,
     "prefix": "$",
     "dp": 0,
@@ -32,8 +32,8 @@
       { "value": 32526, "label": "≈ 13 seconds: $32,526" },
       { "value": 65052, "label": "≈ 26 seconds: $65,052" }
     ],
-    "final": "≈ $65,292",
-    "hold": 4.5
+    "final": "$65,052",
+    "hold": 4.5974
   },
   "lookOpts": {
     "preroll": 0,
@@ -41,12 +41,11 @@
       { "t": 0.0,  "text": "= $77.7B ÷ 31,536,000 s ≈ $2,464" },
       { "t": 2.8,  "text": "= $2,464 ÷ $1,251 ≈ 2 weeks" },
       { "t": 5.2,  "text": "= $12,319 ÷ $1,251 ≈ 10 weeks" },
-      { "t": 7.4,  "text": "= $77.7B ÷ 31,536,000 s ≈ $2,464" },
       { "t": 13.2, "text": "= $65,052 ÷ 2 = $32,526" },
       { "t": 15.8, "text": "= $2,464 ÷ your weekly pay" },
       { "t": 26.4, "text": "= $65,052 ÷ $2,464 ≈ 26 s" }
     ],
-    "columns": ["Since play", "Profit", "Median pay"],
+    "columns": ["Since play", "Profit", "You work"],
     "rows": [
       { "label": "1 second", "amount": "≈ $2,464", "at": "≈ 2 weeks" },
       { "label": "5 seconds", "amount": "≈ $12,319", "at": "≈ 10 weeks" },

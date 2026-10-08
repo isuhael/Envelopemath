@@ -27,7 +27,8 @@
     "hold": 7.98
   },
   "lookOpts": {
-    "climaxFill": 1
+    "climaxFill": 1,
+    "payoff": { "t": 20.2, "from": "$1.50", "display": "≈ $7.01" }
   },
   "sfx": [ { "t": 20.2, "kind": "ding" } ]
 }

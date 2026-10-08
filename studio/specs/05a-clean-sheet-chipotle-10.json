@@ -38,6 +38,8 @@
     "pointer": true,
     "loop": true,
     "maskPct": [6],
+    "activate": [null, 6.3, 8.7, 10.5, 14.7, 18.9, 21.9],
+    "bumps": [ { "t": 2.15, "at": "total" }, { "t": 4.05, "at": "guess" } ],
     "wrongGuess": { "part": 0, "t": 0.0, "formula": "$10 − $2.96", "result": "$7.04 profit?", "strike": true, "strikeT": 5.3, "until": 24.5 }
   },
   "sfx": [

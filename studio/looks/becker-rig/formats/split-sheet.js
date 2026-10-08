@@ -673,9 +673,12 @@ export default function splitSheet(spec, ctx) {
       const tEnd = ct.end
       if (ten) {
         const xs = standClv(ct.c)
-        walkTo(xs, tEnd - 0.42, free)
-        segs2.tool.push({ kind: 'tap', t0: tEnd - 0.38, th: tEnd, c: ct.c })
-        pk.push({ t: tEnd - 0.4, pose: 'raise', d: 0.2 })
+        // a long wait before a cut (the VO is still talking the part in) is not dead air: he raises the cleaver
+        // early and holds it up over the cut, straining (the big slam's grammar), then brings it down on the beat
+        const raiseT = tEnd - free > 2.2 ? Math.max(free + 0.3, tEnd - 1.8) : tEnd - 0.38
+        walkTo(xs, raiseT - 0.04, free)
+        segs2.tool.push({ kind: 'tap', t0: raiseT, th: tEnd, c: ct.c, held: raiseT < tEnd - 0.5 })
+        pk.push({ t: raiseT - 0.02, pose: 'raise', d: 0.2 })
         pk.push({ t: tEnd - 0.09, pose: 'slam', d: 0.08, e: 'out' })
         pk.push({ t: tEnd + 0.2, pose: 'carry', d: 0.35 })
         cue(tEnd, 'hit', { gain: 0.45 })
@@ -790,6 +793,7 @@ export default function splitSheet(spec, ctx) {
         const up = [toolXOf(sg.c) + 16, ys - 150 * k]
         const hit = [toolXOf(sg.c), ys - CLV.edge + 14]
         let G
+        if (sg.held) { up[0] += wobble(t, sg.t0 + 0.22, 2.5, 6, 0.2); up[1] += wobble(t, sg.t0 + 0.32, 3, 7, 0.1) - 8 * E.inOut(prog(t, sg.t0 + 0.22, sg.th - sg.t0 - 0.3)) }
         if (t < sg.th - 0.08) G = lerpP(rest, up, E.out(prog(t, sg.t0, 0.22)))
         else if (t < sg.th) G = lerpP(up, hit, E.in(prog(t, sg.th - 0.08, 0.08)))
         else if (t < sg.th + 0.2) G = [hit[0], hit[1] - 16 * Math.sin(Math.PI * prog(t, sg.th, 0.2))]

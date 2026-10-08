@@ -3,49 +3,44 @@
   "look": "live-sheet",
   "format": "ledger-duel",
   "fps": 30,
-  "duration": 27.7,
+  "duration": 22.8,
   "header": "2 people invest **$200 a month**\n10 years vs 30 years. Who wins at 65?",
-  "footer": "ASSUMES 7% a year, compounded monthly · not a forecast",
+  "footer": "ASSUMES 7% a year, compounded monthly\nnot a forecast",
   "captions": true,
   "vo": [
     {
       "t": 0.0,
-      "d": 3.5,
-      "text": "Ava invests for 10 years. Ben invests for 30."
+      "d": 3.85,
+      "text": "Ava invests from 25 to 35, then stops."
     },
     {
-      "t": 3.6,
-      "d": 3.9,
-      "text": "Ava starts at 25 and stops at 35."
-    },
-    {
-      "t": 7.6,
+      "t": 4.0,
       "d": 3.1,
       "text": "Ben starts at 35 and never stops."
     },
     {
-      "t": 10.9,
-      "d": 2.7,
+      "t": 7.25,
+      "d": 2.35,
       "text": "Ben invests 3 times as much."
     },
     {
-      "t": 13.8,
-      "d": 4.7,
+      "t": 9.75,
+      "d": 4.65,
       "text": "At 65, Ava has about $281,000."
     },
     {
-      "t": 18.7,
-      "d": 3.5,
+      "t": 14.5,
+      "d": 3.45,
       "text": "Ben has about $244,000."
     },
     {
-      "t": 22.4,
+      "t": 18.1,
       "d": 3.5,
       "text": "A third of the money, and Ava still wins."
     }
   ],
   "verdict": {
-    "t": 22.4,
+    "t": 18.1,
     "text": "**Ava** wins by ≈ $37,000\nwith a third of the money"
   },
   "data": {
@@ -62,7 +57,7 @@
     "stake": "$200 a month each · 7% a year",
     "rows": [
       {
-        "t": 2.4,
+        "t": 1.4,
         "label": "Age 30",
         "values": [
           "≈ $14,000",
@@ -70,7 +65,7 @@
         ]
       },
       {
-        "t": 6.0,
+        "t": 3.2,
         "label": "Age 35",
         "values": [
           "≈ $35,000",
@@ -80,7 +75,7 @@
         "tone": "neutral"
       },
       {
-        "t": 8.6,
+        "t": 6.0,
         "label": "Age 40",
         "values": [
           "≈ $49,000",
@@ -88,7 +83,7 @@
         ]
       },
       {
-        "t": 9.6,
+        "t": 6.7,
         "label": "Age 45",
         "values": [
           "≈ $70,000",
@@ -96,7 +91,7 @@
         ]
       },
       {
-        "t": 11.1,
+        "t": 7.4,
         "label": "Age 50",
         "values": [
           "≈ $99,000",
@@ -104,7 +99,7 @@
         ]
       },
       {
-        "t": 12.0,
+        "t": 8.2,
         "label": "Age 55",
         "values": [
           "≈ $140,000",
@@ -112,7 +107,7 @@
         ]
       },
       {
-        "t": 12.9,
+        "t": 9.0,
         "label": "Age 60",
         "values": [
           "≈ $198,000",
@@ -120,7 +115,7 @@
         ]
       },
       {
-        "t": 14.2,
+        "t": 9.9,
         "label": "Age 65",
         "values": [
           "≈ $281,000",
@@ -130,18 +125,20 @@
       }
     ],
     "winner": 0,
-    "hold": 1.8
+    "hold": 1.2
   },
   "lookOpts": {
     "rowLabelsAtStart": true,
+    "leader": false,
+    "eventStyle": "over",
     "marks": [
       {
-        "t": 16.0,
+        "t": 11.5,
         "row": 7,
         "person": 0
       },
       {
-        "t": 19.6,
+        "t": 14.7,
         "row": 7,
         "person": 1
       }
@@ -152,16 +149,24 @@
         "text": "= $200 a month at 7% a year"
       },
       {
-        "t": 3.6,
+        "t": 1.9,
         "text": "Ava: $200 × 120 months = $24,000"
       },
       {
-        "t": 7.6,
+        "t": 4.75,
         "text": "Ben: $200 × 360 months = $72,000"
       },
       {
-        "t": 14.2,
-        "text": "Ava's ≈\u00a0$34,617 grows ×\u00a0≈\u00a08.12"
+        "t": 7.6,
+        "text": "Ben: $72,000 = 3 × $24,000"
+      },
+      {
+        "t": 11.4,
+        "text": "Ava: $24,000 in → ≈ $281,000"
+      },
+      {
+        "t": 14.6,
+        "text": "Ben: $72,000 in → ≈ $244,000"
       }
     ]
   }

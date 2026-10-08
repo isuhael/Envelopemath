@@ -1,7 +1,7 @@
 # Format 10: real-time cost counter, three teasers
 
 **Channel:** Back of the Envelope (YouTube Shorts, Instagram Reels, TikTok), US audience, USD
-**Date:** 2026-10-07 (round-2 revision), hook pass 2026-10-08 (10b's hook replaced), hook pass 2 2026-10-08 (10a's and 10c's hooks replaced). What changed and why is in the **Review log** at the end.
+**Date:** 2026-10-07 (round-2 revision), hook pass 2026-10-08 (10b's hook replaced), hook pass 2 2026-10-08 (10a's and 10c's hooks replaced), assembly pass 2 2026-10-08 (10a and 10c re-paced; both counters now stop on their payoff). What changed and why is in the **Review log** at the end.
 **Format:** `cost-counter`. No hook pattern of its own in the hook bank ("–"). The hooks borrow the grammar of P4, P5, P6, P8 and P9 winners (quoted under each teaser).
 **Lane:** a real-time dollar counter at a verified rate (interest on the US debt, new US debt, a mega-company's profit per second)
 **Files:**
@@ -10,10 +10,11 @@
   - [`studio/specs/10b-becker-rig-debt-vs-your-pay.json`](../../studio/specs/10b-becker-rig-debt-vs-your-pay.json)
   - [`studio/specs/10c-live-sheet-amazon-makes.json`](../../studio/specs/10c-live-sheet-amazon-makes.json)
 - Check: [`teasers/v2/checks/10-cost-counter.py`](checks/10-cost-counter.py). Run `python3 teasers/v2/checks/10-cost-counter.py`. It recomputes every number from the sourced inputs, rebuilds every display string, compares them with the three specs and with the caption and pinned-comment numbers in this file, prints a table and exits 1 on any mismatch.
-  - It reports **949 checks, 0 failures** and exits 0 (after the assembly pass; 915 after hook pass 2, 853 after the first hook pass). Hook pass 2 rebuilt 10a on a salary ladder (5 pass times) and 10c on Amazon's profit in weeks of median pay (4 rows), and dropped Amazon's sales from the check.
+  - It reports **981 checks, 0 failures** and exits 0 (after assembly pass 2; 949 after the assembly pass, 915 after hook pass 2, 853 after the first hook pass). Hook pass 2 rebuilt 10a on a salary ladder and 10c on Amazon's profit in weeks of median pay (4 rows), and dropped Amazon's sales from the check. Assembly pass 2 added the median and $500,000 rows to 10a's ladder (6 pass times) and a "lands on" rule: a counter that stops on its last milestone must be within $0.50 of it at both the exact and the stored rate, and then shows it with no "≈".
   - New in round 2: every footer must carry the viewer-owned pay figure ("$1,251 … × 52") at 0.0 s; every header must ask a question; **one rounding per quantity** (any number within 5% of a computed quantity, in a spec string, a VO line, a caption or a pinned comment, must be that quantity's one shown rounding); and a list of banned overclaims ("live", "in real time", "fiscal 2026" for a 364-day window, "Under 1 second" as a universal claim). Hook pass 2 added one exemption: 10a's $30,000 salary row is an exact input that happens to sit 2.5% under the ≈ $30,800 rate, so it is not read as a second rounding of the rate.
   - As a test I broke one thing per teaser in a scratch copy: the 10a footer without the pay figure, 10b's caption back to "≈ $78,006", and 10c's vo[6] back to "≈ $2,500". It exited 1 with 7 failures, naming all three. Run against the round-1 captions, the new guards flagged "$30,758", "$78,006", "$22,733" and "fiscal 2026".
   - Hook pass 2 test, in a scratch copy: 10a's $100K label as "≈ 3.2 seconds", 10a's vo[4] moved to 9.0 s, 10c's first row as "≈ 3 weeks" and 10c's pinned comment as "≈ 1.97". It exited 1 with 10 failures, catching all four (the wrong rounding, the VO overlap and the 0.87 s sync miss, the unsourced 3, and the second rounding of 1.97 weeks).
+  - Assembly pass 2 test: 10a stopped at 32.5113 s (0.04 ms before its own $1 million pass) with final "≈ $1,000,000", the median label as "≈ 2.2 seconds", and 10c stopped at 26.5 s. It exited 1 with 20 failures, catching all four (the stop before the pass, the "≈" on an exact final, the second rounding of 2.115 s, and a $65,292 stop under a $65,052 final).
 
 **How the facts were checked**
 - **Searches:** this round used **8 of the 10** web searches allowed (round 1 used 13 of 14).
@@ -22,7 +23,7 @@
 - **Nothing unverifiable on screen.** 10b no longer claims a fiscal-year figure, because the 2026-09-30 reading could not be confirmed (Review log, item V4).
 - **No market data.** No teaser uses a market price or a forecast on screen.
 
-**Studio linter:** `node src/cli.mjs check` passes on all three specs: **3/3 clean, 0 errors, 0 warnings** (rerun after hook pass 2; 10a and 10c rerun after the assembly pass: 2/2 clean).
+**Studio linter:** `node src/cli.mjs check` passes on all three specs: **3/3 clean, 0 errors, 0 warnings** (rerun after hook pass 2; 10a and 10c rerun after the assembly pass and again after assembly pass 2: 2/2 clean; the four kit samples of the two edited `cost-counter` modules are clean too).
 - The Scoreboard, Live Sheet and Becker Rig `cost-counter` modules are all built (working tree), so all three specs are linted with their real counters.
 - I rendered stills at 0 s, 1.5 s and the verdict for all three (10b again at 0 / 1.5 / 3 / 25.5 / 33.4 s after the hook pass; 10a at 0 / 1.5 / 3 / 33.5 s and 10c at 0 / 1.1 / 1.5 / 3 / 26.6 / 27.5 s after hook pass 2). In each, the header, the footer, the caption band and the verdict fit their zones.
 - The Scoreboard and Live Sheet kits read every `lookOpts` key that 10a and 10c pass; 10b's block-stack, stamp and timer are still proposals for the Becker kit. Each spec still tells its story from the contract fields alone: the header asks, the footer carries the pay figure and the working, the counter runs, the verdict answers.
@@ -59,28 +60,28 @@
 ### Decisions shared by all three
 
 - **The counter is the answer machine; the header is the question.**
-  - 10a: "When does it pass your salary?" The counter lights a ladder of salaries: $30,000 at ≈ 1.0 second, $100,000 at ≈ 3.3 seconds, $1 million at ≈ 33 seconds.
+  - 10a: "When does it pass your salary?" The counter lights a ladder of salaries: $30,000 at ≈ 1.0 second, median pay at ≈ 2.1 seconds, $100,000 at ≈ 3.3 seconds, $1 million at ≈ 33 seconds, where it stops on exactly $1,000,000.
   - 10b: "40 years of your pay vs 1 minute of new US debt. Which is bigger?" The counter eats the 40 years in ≈ 33 seconds, 55% of the minute.
-  - 10c: "How long do you work for 1 second of Amazon's profit?" The answer cells fill as the counter passes them: ≈ 2 weeks of median pay at 1.0 s, a year of it at ≈ 26 s.
+  - 10c: "How long do you work for 1 second of Amazon's profit?" The answer cells fill as the counter passes them: ≈ 2 weeks of median pay at 1.0 s, a year of it at ≈ 26 s, where it stops on exactly $65,052.
 - **The counter starts at frame 1, at $0** in all three, so "since you hit play" is literal: the number on screen is what passed while this viewer watched. The loop restarts the count, which is honest on every replay.
   - 10b's 2.4 s armed pause and its ding were dropped in the hook pass (2026-10-08): nothing moved in its first 1.5 s.
   - 10c needs `lookOpts.preroll: 0`: without it the Live Sheet kit starts its counter 1 s in, which made the old 10c's frame 1 read $22,733 (found by the hook-pass-2 judges).
-- **The viewer's own number is on screen at 0.0 s in every teaser:** the footer carries the pay basis ($1,251 a week × 52 = **$65,052**, BLS Q2 2026), and the checker enforces it. 10a also prints its salary ladder ($30K to $1M) beside the pips from frame 1, so every viewer has a row.
-  - The milestones are pay yardsticks: round yearly salaries in 10a; years of median pay in 10b (3, 10, 20 and 40); weeks, months and a year of median pay in 10c. The median new house left the series in hook pass 2.
+- **The viewer's own number is on screen at 0.0 s in every teaser:** the footer carries the pay basis ($1,251 a week × 52 = **$65,052**, BLS Q2 2026), and the checker enforces it. 10a also prints its salary ladder ($30K to $1M, with the median as its own "Median $65K" row, so the footer's pay figure pays off at 2.1 s) beside the pips from frame 1, so every viewer has a row.
+  - The milestones are pay yardsticks: round yearly salaries plus the median in 10a; years of median pay in 10b (3, 10, 20 and 40); weeks, months and a year of median pay in 10c. The median new house left the series in hook pass 2.
   - The first payoff lands by 2.5 s in every teaser: the $30,000 row at 0.98 s (10a), ≈ 2 weeks of median pay at 1.0 s (10c), 3 years of median pay at 2.5 s (10b; its first $65,052 block goes at 0.83 s in the proposed block-stack).
-  - The swap-in rule for the viewer's own pay (R3): the VO says it in 10a ("Yearly pay ÷ 30,800 = your seconds.") and 10c ("2,464 ÷ your weekly pay = your weeks."); the pinned comments repeat it, and 10b's gives it.
+  - The swap-in rule for the viewer's own pay (R3): the VO says it in 10a ("Your seconds: yearly pay ÷ 30,800.", with the label stack working it for the median: "$65,052 ÷ 30,800 / ≈ 2.1 seconds") and 10c ("2,464 ÷ your weekly pay = your weeks."); the pinned comments repeat it, and 10b's gives it.
 - **Rounding: one rounding per quantity.** A quantity shows one rounded figure everywhere it appears: spec strings, captions (the VO), formula bar, caption text and pinned comment. The checker enforces it.
-  - Every rounded number shows "≈" on screen and in the captions, including the counters' final readings.
+  - Every rounded number shows "≈" on screen and in the captions, including 10b's counter final (≈ $2,604,105). 10a and 10c stop on their last milestone, within $0.50 of it, so their finals ($1,000,000 and $65,052) are exact dollar readings and carry no "≈" (assembly pass 2; the checker holds both rates to the $0.50).
   - Rates: 3 significant figures for 10a (≈ $30,800), 2 for 10b (≈ $78,000 a second, ≈ $4.7 million a minute), and Amazon's profit rate to the dollar (≈ $2,464) because the formula bar divides by it.
-  - Times: whole seconds from 5 s up (≈ 8, ≈ 13, ≈ 26, ≈ 33 s). Under 5 s, 10a's salary rows show tenths (≈ 1.0 / 1.6 / 3.3 s), and so does the 10a caption's "≈ 2.1 seconds" for a year of median pay: whole seconds would put $30,000 and $50,000 both at "≈ 1-2 s" and lose the ladder's point. Each time still has one rounding everywhere it appears.
+  - Times: whole seconds from 5 s up (≈ 8, ≈ 13, ≈ 16, ≈ 26, ≈ 33 s). Under 5 s, 10a's rows show tenths (≈ 1.0 / 2.1 / 3.3 s): whole seconds would put $30,000 and the median both at "≈ 1-2 s" and lose the ladder's point. Each time still has one rounding everywhere it appears; the median's 2.1 s is the same by the exact rate (2.115 s) and by the swap-in rule ($65,052 ÷ 30,800 = 2.112).
 - **VO text uses numerals.** It doubles as the captions, and the checker reads its numbers. Line lengths assume 2.6 spoken words a second, with digits expanded the way they are read ("$65,052" = 4 words, "2025" = 2, "US" = 2).
 - **Sync:** the on-screen beat (label, thud, row) lands on the pass itself, and each milestone the VO names passes within 0.5 s of the moment it is said (the checker's limit).
-  - 10a: $50K said at 1.6 s (pass 1.63), $100K at 3.25 (3.25), $250K at 8.5 (8.13, the widest gap at 0.37 s), $1 million at 32.5 (32.51). The $30K row is not spoken: it lights at 0.98 s, during "Find your salary.", and the label stack names it.
+  - 10a: median pay said at 2.1 s (pass 2.11), $100K at 3.25 (3.25), $250K at 8.5 (8.13, the widest gap at 0.37 s), $500K at 16.3 (16.26), $1 million at 32.5 (32.51). The $30K row is not spoken: it lights at 0.98 s, during "Find your salary.", and the label stack names it. Every label-stack beat starts with its VO line (5.4, 12.45, 19.1, 22.7, 28.0 s) and holds to the next beat, so the resting rate never shows over a line it does not match.
   - 10b: gaps of 0.03-0.14 s (3, 10, 20 and 40 years).
   - 10c: 5 seconds said at 5.2 (pass 5.0), ≈ 13 at 13.2 (13.20), ≈ 26 at 26.4 (26.40). The 1-second row snaps on screen at 1.0 s while the opening question is still spoken, and vo[1] reads it back at 2.8 s with the formula bar's working: the one accepted gap (1.8 s), so the hook keeps its spoken question.
 - **Lane check:**
   - These are counters at a real rate, over one continuous stretch.
-  - No find-your-row table. 10a's salary ladder has a row for every kind of viewer, but it is the counter's own milestone ladder (5 pips the counter lights), with no per-row computation shown and the counter still the mechanic. 10c's 4 rows are time slices of one counter (1, 5, ≈ 13 and ≈ 26 s).
+  - No find-your-row table. 10a's salary ladder has a row for every kind of viewer, but it is the counter's own milestone ladder (6 pips the counter lights), with no per-row computation shown and the counter still the mechanic. 10c's 4 rows are time slices of one counter (1, 5, ≈ 13 and ≈ 26 s).
   - No unit stacks (that is `unit-ladder`). 10b's proposed 40-block stack is a prop the counter eats, not a ladder of units.
   - No race between two assets (`chart-race`): every teaser has one counter.
   - No "instead of paying" (`pov-race`).
@@ -103,35 +104,35 @@
 | Spec | `studio/specs/10a-scoreboard-debt-interest-live.json` (36.5 s) |
 | Platform title | **US Debt Interest Since You Hit Play: When Does It Pass Your Salary?** |
 | On-screen hook (header) | **US DEBT INTEREST SINCE YOU HIT PLAY: / WHEN DOES IT PASS YOUR SALARY?** (13 words, 2 lines; "PLAY" and "YOUR SALARY" in green) |
-| Frame 1 | Header. The odometer reads **$0** and rolls from frame 1 ($46,137 at 1.5 s). On the stage, a 5-pip salary ladder labelled **$30K · $50K · $100K · $250K · $1M** (bottom to top), with $30K lit as the next target, and the big bill ghost of the $30K row starting to fill. Label stack "≈ $30,800 / EVERY SECOND". Footer "FY25: $970B ÷ 31,536,000 s · pay $1,251 × 52". Caption "Find your salary." |
-| Footer | FY25: $970B ÷ 31,536,000 s · pay $1,251 × 52 |
+| Frame 1 | Header. The odometer reads **$0**, centred, and rolls from frame 1 ($46,137 at 1.5 s). On the stage, a 6-pip salary ladder labelled **$30K · Median $65K · $100K · $250K · $500K · $1M** (bottom to top), with $30K lit as the next target, and the big bill ghost of the $30K row starting to fill, tagged "$30K" under it. Label stack "≈ $30,800 / EVERY SECOND". Footer "FY25: $970B ÷ 31,536,000 s · median $1,251 × 52". Caption "Find your salary." |
+| Footer | FY25: $970B ÷ 31,536,000 s · median $1,251 × 52 |
 
 **Topic vs the seed:**
 - Kept: interest on the US national debt per second, from the latest full-year Treasury net-interest figure (FY2025: $970 billion).
-- Changed in hook pass 2: **the yardstick is a ladder of round yearly salaries** ($30,000, $50,000, $100,000, $250,000, $1 million), and the viewer finds their own row. Pay is the yardstick, not the subject: HD Guy's one pay-as-subject counter, "Wages Visualized In Real Time", got 9,025 views.
+- Changed in hook pass 2: **the yardstick is a ladder of round yearly salaries** ($30,000, $50,000, $100,000, $250,000, $1 million; since assembly pass 2: $30,000, median pay $65,052, $100,000, $250,000, $500,000, $1 million), and the viewer finds their own row. Pay is the yardstick, not the subject: HD Guy's one pay-as-subject counter, "Wages Visualized In Real Time", got 9,025 views.
 - Dropped in hook pass 2: the question "How much comes off the debt?", its red "$0" slot, the median new house and the 10-year milestone. Both judges scored that hook 5: a gotcha whose answer ($0) many viewers can guess, with no number they own on screen. The $0 fact stays in the caption.
 - Why not FY2026: Treasury's final statement for FY2026 (which ended 2026-09-30) is due about 2026-10-13 (the 8th business day of October; 2026-10-12 is a federal holiday). It is not out today. FY2026 interest is running higher, so this counter runs slow, and the caption says so in the past tense with the latest actual (CBO, through August). See the posting plan under the per-platform notes.
 
 **Wrong belief it exploits**
-1. **"My year's salary is a lot of money, even next to the government."** The counter passes $30,000 in ≈ 1.0 second, $50,000 in ≈ 1.6 seconds and $100,000 in ≈ 3.3 seconds. Most viewers' whole year is gone before they finish reading the header.
+1. **"My year's salary is a lot of money, even next to the government."** The counter passes $30,000 in ≈ 1.0 second, a year of median pay ($65,052) in ≈ 2.1 seconds and $100,000 in ≈ 3.3 seconds. Most viewers' whole year is gone before they finish reading the header.
 2. "$1 million a year is out of reach." The counter gets there in **≈ 33 seconds**.
 
 **Hook rules satisfied**
 
 | Rule | How |
 |---|---|
-| R1 | The counter ($0, rolling), the five salary pips ($30K to $1M), "≈ $30,800 every second" and the footer's working are on screen at 0.0 s |
+| R1 | The counter ($0, rolling), the six salary pips ($30K to $1M, the median among them), "≈ $30,800 every second" and the footer's working are on screen at 0.0 s |
 | R2 | The hook line holds one input, the viewer's own salary, and no result. The rate sits in the label stack and the footer |
-| R3 | Full pass: every viewer's salary sits on or between the pips, and the first spoken words are "Find your salary." The swap-in rule for salaries between rows is spoken at 12.7 s ("Yearly pay ÷ 30,800 = your seconds.") and pinned |
-| R4 | Round, familiar salaries ($30K, $50K, $100K). "$970 billion" appears only as the footer's working and once in the VO |
+| R3 | Full pass: every viewer's salary sits on or between the pips, and the first spoken words are "Find your salary." The footer's median pay is a row of its own (passed at 2.1 s, "Median pay: passed."). The swap-in rule for salaries between rows is spoken at 12.45 s ("Your seconds: yearly pay ÷ 30,800."), worked on screen for the median ("$65,052 ÷ 30,800 / ≈ 2.1 seconds") and pinned |
+| R4 | Round, familiar salaries ($30K, $100K) and the median ($65K). "$970B" appears only as the footer's working, its label beat at 22.7 s and once in the VO |
 | R5 | The implied wrong answer is "a while". The everyday rows go in ≈ 1.0 to 3.3 seconds, with no "most people think" |
 | R6 | You (your salary) + an amount (the counter) + a horizon ("since you hit play"). The money is the government's, so this is a partial pass |
 | R7 | The VO opens on an instruction ("Find your salary."), not a topic label |
 | R8 | 13 words, 2 lines |
-| R9 | 5 labelled pips from 0.0 s, each lit with a thud and a ding as it is passed; the $1M coin is the long pull |
-| R10 | First payoff at 0.98 s: the $30K pip lights and the label stack slams "$30,000 A YEAR / ≈ 1.0 SECOND". Three rows are gone by 3.3 s; the biggest ($1 million) comes last |
-| R11 | The question is on screen and in the title; the verdict answers with two rows |
-| R12 | A lopsided pair to repeat: **$1 million a year: ≈ 33 seconds. $100,000 a year: ≈ 3.3 seconds.** |
+| R9 | 6 labelled pips from 0.0 s, each lit with a thud and a ding as it is passed (1.0, 2.1, 3.3, 8, 16 s); the $1M coin is the long pull, and the big icon on the stage carries its target ("$500K", "$1M") as a tag |
+| R10 | First payoff at 0.98 s: the $30K pip lights and the label stack slams "$30,000 A YEAR / ≈ 1.0 SECOND". Three rows are gone by 3.3 s; the biggest ($1 million) comes last, where the counter stops on exactly $1,000,000 |
+| R11 | The question is on screen and in the title; the one-line verdict answers it |
+| R12 | A line to repeat: **$1M a year: ≈ 33 seconds.** The caption and pinned comment pair it with $100,000 ≈ 3.3 seconds |
 
 **Benchmark hooks it is modelled on**
 - **H64, Gage Heward, "What $1 costs you by age"** (48 blank rows, "Find your age"). **1,150,974 views, 210x the creator's median.** https://www.instagram.com/reel/Da_dukjxB56/
@@ -150,47 +151,50 @@
 
 | t (s) | On screen | VO |
 |---|---|---|
-| 0.0 | Header. Odometer **$0**, rolling. 5 pips "$30K · $50K · $100K · $250K · $1M"; $30K lit as the next target. Bill ghost filling. Label "≈ $30,800 / EVERY SECOND". Footer | "Find your salary." (0.0-1.2) |
-| 0.98 | The counter passes **$30,000**. Pip 1 lights (thud + ding); label slams "$30,000 A YEAR / ≈ 1.0 SECOND"; the bill flies to the ladder and the $50K ghost starts | |
-| 1.5 | The counter reads $46,137; the $50K bill is 92% full | |
-| 1.63 | The counter passes **$50,000**. Pip 2. Label "$50,000 A YEAR / ≈ 1.6 SECONDS" | "$50,000: passed." (1.6-3.1) |
-| 3.25 | The counter passes **$100,000**. Pip 3. Label "$100,000 A YEAR / ≈ 3.3 SECONDS" | "$100,000: passed." (3.25-5.2) |
-| 5.4 | (counter running; the label stack returns to the rate) | "≈ $30,800 a second." (5.4-8.5) |
-| 8.13 | The counter passes **$250,000**. Pip 4. Label "$250,000 A YEAR / ≈ 8 SECONDS" | "$250,000 a year: ≈ 8 seconds." (8.5-12.4) |
-| 12.7 | Label "YEARLY PAY ÷ 30,800 / = YOUR SECONDS" (held to 17.2; the $1M coin ghost filling) | "Yearly pay ÷ 30,800 = your seconds." (12.7-16.9) |
-| 17.2 | Label "≈ $30,800 × 3,600 s / ≈ $111 MILLION AN HOUR" | "That's ≈ $111 million an hour." (17.2-20.7) |
-| 21.0 | Label "FISCAL 2025 NET INTEREST / $970 BILLION A YEAR" (to 25.0, then the rate returns) | "At fiscal 2025's rate: $970 billion a year." (21.0-25.6) |
-| 28.0 | Label "LAST ROW / $1,000,000 A YEAR" (held until the verdict replaces it) | "Last row: $1 million a year." (28.0-30.7) |
-| 30.7-32.5 | No VO: the kit's riser as the counter closes on $1,000,000 | |
-| 32.51 | The counter passes **$1,000,000**. Pip 5 (coin). Hit + cash (the kit's last-milestone cue) | "$1 million: ≈ 33 seconds." (32.5-34.8) |
-| 32.5 | Verdict replaces the label stack: "**$1 MILLION** A YEAR: ≈ 33 SECONDS. / $100,000 A YEAR: ≈ 3.3 SECONDS." | |
-| 32.6 | The counter stops at **≈ $1,002,727** | |
-| 32.6-36.5 | Hold, then a hard cut back to frame 1 (loop) | |
+| 0.0 | Header. Odometer **$0**, rolling. 6 pips "$30K · Median $65K · $100K · $250K · $500K · $1M"; $30K lit as the next target. Bill ghost filling, tagged "$30K". Label "≈ $30,800 / EVERY SECOND". Footer | "Find your salary." (0.0-1.4) |
+| 0.98 | The counter passes **$30,000**. Pip 1 lights (thud + ding); label slams "$30,000 A YEAR / ≈ 1.0 SECOND" (held to the next pass); the bill flies to the ladder (the labels it crosses duck) and the median's bill drops in | |
+| 1.5 | The counter reads $46,137; the median bill is 71% full | |
+| 2.11 | The counter passes **$65,052** (median pay, the footer's $1,251 × 52). Pip 2; tag "MEDIAN $65K" turns green. Label "MEDIAN PAY: $65,052 / ≈ 2.1 SECONDS" | "Median pay: passed." (2.1-3.25) |
+| 3.25 | The counter passes **$100,000**. Pip 3. Label "$100,000 A YEAR / ≈ 3.3 SECONDS" (to 5.4) | "$100,000: passed." (3.25-5.25) |
+| 5.4 | Label slams the rate "≈ $30,800 / EVERY SECOND" (to the $250K pass) | "≈ $30,800 a second." (5.4-8.5) |
+| 8.13 | The counter passes **$250,000**. Pip 4. Label "$250,000 A YEAR / ≈ 8 SECONDS" (held to 12.45) | "$250,000 a year: ≈ 8 seconds." (8.5-12.4) |
+| 12.45 | Label "$65,052 ÷ 30,800 / ≈ 2.1 SECONDS (MEDIAN)": the rule, worked for the footer's pay | "Your seconds: yearly pay ÷ 30,800." (12.45-16.3) |
+| 16.26 | The counter passes **$500,000**. Pip 5. Label "$500,000 A YEAR / ≈ 16 SECONDS"; the $1M coin drops in | "$500,000: ≈ 16 seconds." (16.3-19.0) |
+| 19.1 | Label "≈ $30,800 × 3,600 s / ≈ $111,000,000" (the working; the caption says the sentence) | "That's ≈ $111 million an hour." (19.1-22.6) |
+| 22.7 | Label "$970B ÷ 31,536,000 s / ≈ $30,800 EVERY SECOND" (held to 28.0) | "At fiscal 2025's rate: $970 billion a year." (22.7-27.4) |
+| 28.0 | Label "NEXT / $1,000,000 A YEAR" (held until the verdict replaces it) | "And the last row?" (28.0-29.6) |
+| 30.1-32.5 | No VO: the kit's riser as the counter closes on $1,000,000 | |
+| 32.5 | Verdict replaces the label stack, one line: "**$1M** A YEAR: ≈ 33 SECONDS." | "$1 million: passed." (32.5-34.1) |
+| 32.51 | The counter passes **$1,000,000** and stops on it exactly (counterT ends 32.51135 s). Pip 6 (coin); the coin pops with its "$1M" tag; hit + cash | |
+| 32.5-36.5 | Hold, then a hard cut back to frame 1 (loop) | |
 
 **Full guide VO** (75 spoken words, digits expanded)
 
-> Find your salary. $50,000: passed. $100,000: passed. About $30,800 a second. $250,000 a year: about 8 seconds. Yearly pay divided by 30,800 equals your seconds. That's about $111 million an hour. At fiscal 2025's rate: $970 billion a year. Last row: $1 million a year. $1 million: about 33 seconds.
+> Find your salary. Median pay: passed. $100,000: passed. About $30,800 a second. $250,000 a year: about 8 seconds. Your seconds: yearly pay divided by 30,800. $500,000: about 16 seconds. That's about $111 million an hour. At fiscal 2025's rate: $970 billion a year. And the last row? $1 million: passed.
 
 **The maths**
 
 - **Basis:** FY2025 net interest of $970,000,000,000, spread evenly over a 365-day year of 31,536,000 seconds.
 - **Rate:** r = $970B ÷ 31,536,000 = $30,758.498… a second (spec `perSecond` 30,758.50).
 - **Counter:** value(t) = r × t, with t in seconds from 0.0.
-- **Salary rows:** pass time = salary ÷ r. Rows that pass under 5 s show tenths (whole seconds would put $30,000 and $50,000 both at "≈ 1-2 s"); from 5 s up, whole seconds. Each time has one rounding everywhere it appears.
+- **Salary rows:** pass time = salary ÷ r. Rows that pass under 5 s show tenths (whole seconds would put $30,000 and the median both at "≈ 1-2 s"); from 5 s up, whole seconds. Each time has one rounding everywhere it appears.
+- **The stop:** the counter stops on the $1,000,000 pass: counterT ends at 32.51135 s, just after the exact pass (32.5113402 s) and the kit's stored-rate pass (32.5113383 s). r × 32.51135 = $1,000,000.30, so the board's dollar reading is exactly $1,000,000.
 
 | On screen | Formula | Exact | Shown |
 |---|---|---:|---|
 | Rate | 970,000,000,000 ÷ 31,536,000 | 30,758.498 | ≈ $30,800 every second (label, VO, caption, pinned) |
 | Per hour | r × 3,600 | 110,730,594 | ≈ $111 million an hour |
 | Pass: $30,000 | 30,000 ÷ r | 0.975 s | ≈ 1.0 second (label) |
-| Pass: $50,000 | 50,000 ÷ r | 1.626 s | ≈ 1.6 seconds (label); VO at 1.6 |
-| Pass: $100,000 | 100,000 ÷ r | 3.251 s | ≈ 3.3 seconds (label, verdict, caption); VO at 3.25 |
+| Pass: median pay | $1,251 × 52 = $65,052; ÷ r | 2.115 s | ≈ 2.1 seconds (label, caption); VO at 2.1 |
+| Pass: $100,000 | 100,000 ÷ r | 3.251 s | ≈ 3.3 seconds (label, caption, pinned); VO at 3.25 |
 | Pass: $250,000 | 250,000 ÷ r | 8.128 s | ≈ 8 seconds (label, VO at 8.5) |
-| Pass: $1,000,000 | 1,000,000 ÷ r | 32.511 s | ≈ 33 seconds (label, VO, verdict, caption) |
-| Median pay (caption only) | $1,251 × 52 = $65,052; ÷ r | 2.115 s | ≈ 2.1 seconds |
-| Counter at 1.5 s | r × 1.5 | 46,137.75 | $46,137 (92.3% of the $50K bill) |
-| Counter final | r × 32.6 | 1,002,727.04 | ≈ $1,002,727 |
-| Swap-in rule | your yearly pay ÷ 30,800 | e.g. 100,000 ÷ 30,800 = 3.247 | approximate by design; the labels use the exact rate (3.251 → ≈ 3.3) |
+| Pass: $500,000 | 500,000 ÷ r | 16.256 s | ≈ 16 seconds (label, VO at 16.3) |
+| Pass: $1,000,000 | 1,000,000 ÷ r | 32.511 s | ≈ 33 seconds (label, verdict, caption); VO "$1 million: passed." at 32.5 |
+| Per hour, in digits (label) | r × 3,600 | 110,730,594 | ≈ $111,000,000 (the same 3-figure rounding as ≈ $111 million) |
+| Swap-in label | $65,052 ÷ 30,800 | 2.112 | ≈ 2.1 seconds (median), the same as the exact 2.115 |
+| Counter at 1.5 s | r × 1.5 | 46,137.75 | $46,137 (70.9% of the median bill) |
+| Counter final | r × 32.51135 | 1,000,000.30 | $1,000,000 (stops on the $1M pass; no ≈: the dollar reading is exact) |
+| Swap-in rule | your yearly pay ÷ 30,800 | e.g. 100,000 ÷ 30,800 = 3.247 | approximate by design; the labels use the exact rate (3.251 → ≈ 3.3). The on-screen worked example is the median, where both round to 2.1 |
 
 **Sources (real-world inputs)**
 
@@ -210,29 +214,31 @@ The salary rows ($30,000 to $1 million) are round yardsticks chosen for the ladd
 **Assumptions** (the footer carries the rate's working and the pay basis)
 - FY2025 net interest ($970B) is spread evenly over a 365-day year. Real payments are lumpy (coupon dates), so this is the average rate.
 - The salary rows are yearly gross salaries.
-- "Median pay" (footer and caption) means BLS median usual weekly earnings of full-time wage and salary workers × 52.
+- "Median pay" (footer, the median row and caption) means BLS median usual weekly earnings of full-time wage and salary workers × 52.
 
 **Caption (IG / TikTok; also the YouTube description)**
 > $100,000 a year of pay ≈ 3.3 seconds of US debt interest. $1 million ≈ 33 seconds. In fiscal 2025 the US paid $970 billion in net interest (Treasury; CBO). Divide by the 31,536,000 seconds in a year: ≈ $30,800 a second. A year of median full-time pay ($1,251 a week × 52 = $65,052, BLS) lasts ≈ 2.1 seconds. Yours: divide your yearly pay by 30,800. And $0 of it pays the debt down: interest is the cost of carrying the debt, not a repayment. Fiscal 2026 ran hotter: CBO's August review put net interest on the public debt 12% above the same 11 months of fiscal 2025, so this counter runs slow. Educational maths, not advice.
 > #nationaldebt #interest #moneymath
 
 **Pinned comment**
-> Yearly pay ÷ 30,800 = your seconds. Which row are you?
+> Yearly pay ÷ 30,800 = your seconds ($100,000 ≈ 3.3). Which row are you?
 
 **Per-platform notes**
-- **Posting plan (preferred):** post after Treasury's September 2026 Monthly Treasury Statement (about 2026-10-13) and rebuild on FY2026 net interest. Set `NET_INTEREST_FY2025` in the check to the FY2026 figure and rerun it; it will list every string to change: perSecond, rateDisplay, intro, rateSteps, vo[3], vo[5], vo[6], vo[7] ("fiscal 2026's rate"), every row's label time, the VO times that must stay in sync, the verdict, counterT, final, hold, the footer ("FY26"), the caption (drop the "ran hotter" sentence) and the pinned comment. At $1.0-1.1 trillion the $1 million row moves from ≈ 33 s to ≈ 29-32 s and the $100,000 row from ≈ 3.3 s to ≈ 2.9-3.2 s. If it posts before then, it goes out as written: FY2025, with the past-tense caption.
+- **Posting plan (preferred):** post after Treasury's September 2026 Monthly Treasury Statement (about 2026-10-13) and rebuild on FY2026 net interest. Set `NET_INTEREST_FY2025` in the check to the FY2026 figure and rerun it; it will list every string to change: perSecond, rateDisplay, intro, rateSteps (all five), vo[3], vo[5], vo[6], vo[7], vo[8] ("fiscal 2026's rate"), every row's label time, the VO times that must stay in sync, the verdict, counterT (the new $1 million pass, to 5 decimals, so the stop still lands on $1,000,000), hold, the footer ("FY26"), the caption (drop the "ran hotter" sentence) and the pinned comment. At $1.0-1.1 trillion the $1 million row moves from ≈ 33 s to ≈ 29-32 s and the $100,000 row from ≈ 3.3 s to ≈ 2.9-3.2 s. If it posts before then, it goes out as written: FY2025, with the past-tense caption.
 - **YouTube Shorts:** the title asks the question and keeps HD Guy's "since you hit play" premise. No CTA; hard-cut back to frame 1 so the replay restarts the count (and the viewer can watch their own row again).
-- **Instagram Reels:** caption line 1 is the verdict. Use the verdict frame (32.5 s) as the cover.
+- **Instagram Reels:** caption line 1 pairs the $100,000 row with the verdict's $1 million. Use the verdict frame (33 s on: the board at $1,000,000, the lit coin, "$1M A YEAR: ≈ 33 SECONDS.") as the cover.
 - **TikTok:**
   - Expected comment fights: "net vs gross interest", "that's last year's number", "my salary is before tax" (the rows are gross salaries) and "does any of it pay the debt down?". The caption pre-empts all four: $970B is the net figure (a gross figure is bigger), FY2026 ran higher, and $0 of it repays principal.
   - Reply with the CBO line rather than a new number.
   - Put "$100,000 a year of pay ≈ 3.3 seconds" in the first 100 characters.
 - **Look note:**
   - The Scoreboard's real-time mode is "0 cuts" (03-look-directions, Direction 3), so the stage stays a dark grid.
-  - The kit reads everything this spec passes: `intro` (the resting label stack), `labels` (one per salary row: "$30,000 a year" in green over "≈ 1.0 SECOND" in white caps), `rateSteps` (four label-stack beats, each starting with its VO line: the swap-in rule at 12.7 s, held 4.5 s to the $111 million an hour beat at 17.2 s, the $970 billion source at 21.0 s and "Last row: $1,000,000 a year" at 28.0 s, held 4.6 s into the verdict, so the rate never flashes back for half a second between beats), `pipLabels` ("$30K" … "$1M" beside the ladder icons from frame 1) and `icons` (four bills and a coin for the $1 million row).
-  - The milestone labels start with "A" ("A $30,000 salary: $30,000"), so the kit stacks a twin icon for the repeated bills instead of a "×N" badge.
+  - The kit reads everything this spec passes: `intro` (the resting label stack), `labels` (one per row: "$30,000 a year" in green over "≈ 1.0 SECOND" in white caps; "Median pay: $65,052" for the median), `flash: 4.6` (a milestone holds the label stack to the next beat), `rateSteps` (five label-stack beats, each starting with its VO line and held to the next beat: the rate at 5.4 s, the median's worked swap-in at 12.45 s, the hourly working at 19.1 s, the $970B working at 22.7 s and "Next / $1,000,000 a year" at 28.0 s, held into the verdict), `pipLabels` ("$30K", "Median $65K" … "$1M" beside the ladder icons from frame 1) and `icons` (five bills and a coin for the $1 million row).
+  - The labels carry the working and the captions the sentence, so no line sits on screen twice; the milestone beats (label "$250,000 A YEAR / ≈ 8 SECONDS" over the caption "$250,000 a year: ≈ 8 seconds.") are the format's call-and-response and stay.
+  - The milestone labels start with "A" or "Median", so the kit stacks a twin icon for the repeated bills instead of a "×N" badge.
+  - `final` is "$1,000,000" with no "≈", so the kit draws no unlit "≈" ghost beside the hero, and the number stays centred.
+  - Kit changes in the Scoreboard `cost-counter` module (assembly pass 2): the big stage icon carries its pip label as a tag under the art (white while it fills, green on the pass, riding the icon's bump); ladder labels duck while a flying icon crosses them (this is what makes six labelled pips lint-clean: a $75K pip was dropped in hook pass 2 for exactly that contrast error); the hero is set 8% under its full fit, for air under the header and above the footer.
   - No `slot` (frame 1 holds one task), `heroIcon: false`, no spec sfx: the kit cues the riser, hit and cash on the last milestone.
-  - A $75K pip was tried by the candidate's author and dropped: its fly-in crossed its own pip label at 3.0 s (a lint contrast error).
 
 ---
 
@@ -395,7 +401,7 @@ All "≈ N seconds" are counter time, and the counter starts at 0.0 s, so they a
 | Spec | `studio/specs/10c-live-sheet-amazon-makes.json` (31.0 s) |
 | Platform title | **How Long Do You Work for 1 Second of Amazon's Profit?** |
 | On-screen hook (header) | **How long do you work for / 1 second of Amazon's profit?** (11 words, 2 lines; "you" highlighted) |
-| Frame 1 | Banner. The formula bar starts typing "= $77.7B ÷ 31,536,000 s ≈ $2,464" (one line). The counter row "Amazon's profit since you hit play / ≈ $2,464 every second" and the big cell at **$0**, counting ($3,696 at 1.5 s). Under it, the table "Since play · Profit · Median pay" with four rows, "1 second · ≈ $2,464", "5 seconds · ≈ $12,319", "≈ 13 seconds · $32,526" and "≈ 26 seconds · $65,052", and their four "Median pay" cells empty (the countable loop). 2-line footer with the pay basis. Caption "How long do you work for this?" |
+| Frame 1 | Banner. The formula bar starts typing "= $77.7B ÷ 31,536,000 s ≈ $2,464" (one line). The counter row "Amazon's profit since you hit play / ≈ $2,464 every second" and the big cell at **$0**, counting ($3,696 at 1.5 s). Under it, the table "Since play · Profit · You work" with four rows, "1 second · ≈ $2,464", "5 seconds · ≈ $12,319", "≈ 13 seconds · $32,526" and "≈ 26 seconds · $65,052", and their four "You work" cells empty (the countable loop). 2-line footer with the pay basis. Caption "How long do you work for this?" |
 | Footer | Amazon 2025 net income: $77.7B / Pay: BLS median $1,251 a week × 52 |
 
 **Topic vs the seed:**
@@ -414,16 +420,16 @@ All "≈ N seconds" are counter time, and the counter starts at 0.0 s, so they a
 |---|---|
 | R1 | The counter ($0, counting), the formula bar ($77.7B ÷ 31,536,000 s), the four time rows with their profit amounts and the footer's pay basis are on screen at 0.0 s |
 | R2 | The hook line has one input (1 second) and no result: the four answer cells are empty |
-| R3 | The answer unit is the viewer's: weeks of work. The rows use the median ($1,251 a week, in the footer and the column head "Median pay"); the swap-in rule is spoken at 15.8 s ("2,464 ÷ your weekly pay = your weeks.") and pinned. Partial pass: the cells are the median's, not the viewer's own |
+| R3 | The answer unit is the viewer's: weeks of work, under the column head "You work" (the header's "you"). The rows use the median ($1,251 a week, in the footer and the verdict); the swap-in rule is spoken at 15.8 s ("2,464 ÷ your weekly pay = your weeks.") and pinned. Partial pass: the cells are the median's, not the viewer's own |
 | R4 | Small, round inputs (1 second, 5 seconds) and a familiar unit (weeks, months, a year of pay). "$77.7 billion" appears only in the formula bar, the footer and once in the VO |
 | R5 | The implied wrong answer is "a few minutes of my work". The first cell says ≈ 2 weeks |
 | R6 | You ("do you work") + an amount (a second of profit) + a horizon ("since you hit play"). The money is Amazon's, so this is a partial pass |
 | R7 | The VO opens on the question, not a label |
 | R8 | 11 words, 2 lines |
-| R9 | 4 empty answer cells, filled at 1.0, 5.0, 13.2 and 26.4 s, with a yellow progress line under the next row |
-| R10 | First payoff at 1.000 s: row 1's cell snaps "≈ 2 weeks". The biggest answer (a year of pay) comes last |
-| R11 | The question is on screen and in the title; the verdict answers it |
-| R12 | A line to repeat: **1 second ≈ 2 weeks of median pay. A year: ≈ 26 s.** |
+| R9 | 4 empty answer cells, filled at 1.0, 5.0, 13.2 and 26.4 s (each pops 1.2× on a solid yellow fill for 0.6 s), with a yellow progress line under the next row and a riser into the last |
+| R10 | First payoff at 1.000 s: row 1's cell pops "≈ 2 weeks". The biggest answer (a year of pay) comes last, as the big cell lands on exactly $65,052 |
+| R11 | The question is on screen and in the title; the verdict answers it, climax first |
+| R12 | A line to repeat: **A year of median pay: ≈ 26 seconds. 1 second ≈ 2 weeks.** |
 
 **Benchmark hooks it is modelled on**
 - **H04 and H01, HD Guy, "Cost in Units of Starbucks Lattes" and "Cost in Units of RTX 5090"**. **9,858,084 (106.16x) and 30,617,461 (62.49x).** https://www.youtube.com/shorts/NHbMe2F_JXY, https://www.youtube.com/shorts/E2oVrAwHDOw
@@ -442,21 +448,19 @@ All "≈ N seconds" are counter time, and the counter starts at 0.0 s, so they a
 
 | t (s) | On screen | VO |
 |---|---|---|
-| 0.0 | Banner. The formula bar types "= $77.7B ÷ 31,536,000 s ≈ $2,464". Big cell **$0**, counting. Table with 4 empty "Median pay" cells. Footer | "How long do you work for this?" (0.0-2.7) |
-| 1.00 | The counter passes ≈ $2,464 (1 second). Row 1's cell snaps **≈ 2 weeks**; yellow wipe; pop. The progress line moves under "5 seconds" | |
+| 0.0 | Banner. The formula bar types "= $77.7B ÷ 31,536,000 s ≈ $2,464". Big cell **$0**, counting. Table with 4 empty "You work" cells. Footer | "How long do you work for this?" (0.0-2.7) |
+| 1.00 | The counter passes ≈ $2,464 (1 second). Row 1's cell pops **≈ 2 weeks** (1.2×, solid yellow, 0.6 s); yellow wipe; pop sound. The progress line moves under "5 seconds" | |
 | 1.5 | The counter reads $3,696 | |
-| 2.8 | The formula bar retypes "= $2,464 ÷ $1,251 ≈ 2 weeks" | "≈ 2 weeks, at median pay." (2.8-5.1) |
-| 5.00 | The counter passes ≈ $12,319. Row 2 snaps **≈ 10 weeks**. Pop | |
-| 5.2 | The formula bar retypes "= $12,319 ÷ $1,251 ≈ 10 weeks" | "5 seconds: ≈ 10 weeks." (5.2-7.1) |
-| 7.4 | The formula bar retypes the source working "= $77.7B ÷ 31,536,000 s ≈ $2,464" | "Amazon's 2025 profit: $77.7 billion." (7.4-10.9) |
-| 13.20 | The counter passes **$32,526**. Row 3 snaps **6 months**. Formula bar "= $65,052 ÷ 2 = $32,526". Pop | "≈ 13 seconds: half a year." (13.2-15.5) |
+| 2.8 | The formula bar retypes "= $2,464 ÷ $1,251 ≈ 2 weeks" | "≈ 2 weeks, at median pay." (2.8-5.2) |
+| 5.00 | The counter passes ≈ $12,319. Row 2 pops **≈ 10 weeks** (its scale capped so it stays 14 px clear of "≈ $12,319") | |
+| 5.2 | The formula bar retypes "= $12,319 ÷ $1,251 ≈ 10 weeks" (held to 13.2) | "5 seconds: ≈ 10 weeks." (5.2-7.2) |
+| 7.4 | (the footer carries "$77.7B") | "Amazon's 2025 profit: $77.7 billion." (7.4-11.7) |
+| 13.20 | The counter passes **$32,526**. Row 3 pops **6 months**. Formula bar "= $65,052 ÷ 2 = $32,526" | "≈ 13 seconds: half a year." (13.2-15.6) |
 | 15.8 | The formula bar retypes "= $2,464 ÷ your weekly pay" (the swap-in rule, held to 26.4) | "2,464 ÷ your weekly pay = your weeks." (15.8-20.8) |
-| 22.4 | (the progress line runs under the last row) | "And a whole year?" (22.4-23.9) |
-| 23.9-26.4 | No VO: the counter closes on $65,052 | |
-| 26.40 | The counter passes **$65,052**. Row 4 snaps **1 year**. Formula bar "= $65,052 ÷ $2,464 ≈ 26 s". Pop | "≈ 26 seconds." (26.4-27.6) |
-| 26.4 | Verdict card in the caption band: "1 second ≈ **2 weeks** of median pay. / A year: ≈ 26 s." | |
-| 26.5 | The counter stops at **≈ $65,292** | |
-| 26.5-31.0 | Hold the finished sheet, then clear to frame 1 (loop) | |
+| 21.0 | (the progress line runs under the last row) | "And a whole year?" (21.0-22.6) |
+| 24.0-26.4 | No VO: a 2.4 s riser as the counter closes on $65,052 | |
+| 26.40 | The counter passes **$65,052** and stops on it exactly (counterT ends 26.4026 s). Row 4 pops **1 year**; hit. Formula bar "= $65,052 ÷ $2,464 ≈ 26 s". Verdict card in the caption band: "A year of median pay: **≈ 26 seconds**. / 1 second ≈ 2 weeks." | "≈ 26 seconds." (26.4-28.0) |
+| 26.4-31.0 | Hold the finished sheet, then clear to frame 1 (loop) | |
 
 The one VO gap over 0.5 s: row 1 snaps on screen at its pass (1.0 s) while the opening question is still spoken, and vo[1] reads it back at 2.8 s, with the formula bar's working typed at the same moment. Every other row is said within 0.2 s of its pass.
 
@@ -480,8 +484,8 @@ The one VO gap over 0.5 s: row 1 snaps on screen at its pass (1.0 s) while the o
 | Pass: half a year | 32,526 ÷ k | 13.201 s | ≈ 13 seconds (row, VO) |
 | Pass: a year of median pay | 65,052 ÷ k | 26.403 s | ≈ 26 seconds (row, formula bar, VO, verdict, caption); 65,052 ÷ 2,464 = 26.401 rounds the same |
 | Counter at 1.5 s | k × 1.5 | 3,695.78 | $3,696 (frame check) |
-| Counter final | k × 26.5 | 65,292.05 | ≈ $65,292 |
-| Kit row timing | value ÷ (65,292 ÷ 26.5) | 1.000 / 5.000 / 13.201 / 26.403 s | the rows snap on the pass |
+| Counter final | k × 26.4026 | 65,052.07 | $65,052 (stops on the 1-year pass; no ≈: the dollar reading is exact) |
+| Kit row timing | value ÷ (65,052 ÷ 26.4026) | 1.000 / 5.000 / 13.201 / 26.403 s | the rows snap on the pass; row 4 at the stop itself |
 
 **Sources (real-world inputs)**
 
@@ -492,7 +496,7 @@ The one VO gap over 0.5 s: row 1 snaps on screen at its pass (1.0 s) while the o
 | Same figures, independent report | exchange4media, "Amazon Q4 sales and marketing expense rises 8.7% to $14bn as net sales climb 14%" | February 2026 | https://www.exchange4media.com/digital-news/amazon-q4-sales-and-marketing-expense-rises-87-to-14bn-as-net-sales-climb-14-151740.html |
 | Median full-time pay $1,251 a week | BLS (2026-07-21) and DWM Magazine (2026-07-24) | | see 10a |
 
-**Assumptions** (in the 2-line footer and the column head)
+**Assumptions** (in the 2-line footer and the verdict)
 - 2025 net income is spread evenly over 365 days. Profit is seasonal and lumpy, so this is the year's average rate.
 - "Profit" means GAAP net income for the full year, as Amazon reports it.
 - "Median pay" means BLS median usual weekly earnings of full-time wage and salary workers ($1,251 a week); a year of it is × 52 ($65,052) and 6 months is half of that.
@@ -506,15 +510,17 @@ The one VO gap over 0.5 s: row 1 snaps on screen at its pass (1.0 s) while the o
 
 **Per-platform notes**
 - **YouTube Shorts:** the title is the header's question. Keep the 4.5 s hold on the finished sheet: that is the screenshot frame.
-- **Instagram Reels:** use the finished sheet with the verdict (26.4 s on) as the cover. Caption line 1 is the verdict.
+- **Instagram Reels:** use the finished sheet with the verdict (27 s on: the big cell at $65,052, row 4 "1 year", the verdict card) as the cover. Caption line 1 is the verdict's second line (1 second ≈ 2 weeks).
 - **TikTok:**
   - Expected fights: "that's before tax" (the weeks are gross median pay, as the footer says), "net income includes one-off gains" (answer: the video uses the net income Amazon reports; other lines are not used on screen) and "AWS makes all the profit" (answer with the release's own segment figures only if asked).
   - Keep "1 second ≈ 2 weeks of median full-time pay" in the first 100 characters.
 - **Look note:**
   - The Live Sheet `cost-counter` module reads everything this spec passes: `preroll`, `formulaSteps`, `columns`, `rows` (the display strings for each row) and `loop`. There is no `kept` row any more.
-  - The 7 formula steps are one line each (32 characters at most). The kit sizes the bar for its longest string, and the round-2 steps ("… ≈ $2,464 a second", "… $1,251 a week ≈ 2 weeks") forced a 2-line, 128 px bar with a one-word orphan ("a second", "weeks") on the second line. One line gives the table and the counter that 52 px back, and every VO beat (2.8, 5.2, 7.4, 13.2, 15.8, 26.4 s) now types its own working.
+  - `final` is "$65,052" with no "≈", so the big cell lands on the row-4 amount with no ≈ chip, at the moment row 4 pops.
+  - The 6 formula steps are one line each (32 characters at most). The kit sizes the bar for its longest string, and the round-2 steps ("… ≈ $2,464 a second", "… $1,251 a week ≈ 2 weeks") forced a 2-line, 128 px bar with a one-word orphan ("a second", "weeks") on the second line. One line gives the table and the counter that 52 px back. Assembly pass 2 dropped the 7.4 s retype of the frame-1 rate (it read as a loop glitch), so "= $12,319 ÷ $1,251 ≈ 10 weeks" holds to 13.2 s.
+  - Kit changes in the Live Sheet `cost-counter` module (assembly pass 2): each answer cell pops on its pass (`pop`, default 1.2×, capped 14 px clear of the amount column, on a solid yellow fill for 0.6 s), and a riser (with a hit) carries a quiet run-up into the last pass (`riser`, default on).
   - `preroll: 0` is required: the kit's default 1 s preroll would put $2,464 in frame 1 and snap the 1-second row before the first frame.
-  - The column head is "Median pay", not "Median pay for": the longer head narrowed the label column, "≈ 13 seconds" and "≈ 26 seconds" wrapped to two lines, the table grew and the footer's second line ran into the caption band under the verdict card. With "Median pay" every label holds one line.
+  - The column head is "You work" (assembly pass 2; it was "Median pay", which put a pay label over durations). It is shorter, so no label wraps: "Median pay for" had narrowed the label column until "≈ 13 seconds" wrapped and the footer ran into the caption band.
   - No Amazon logo or brand colours: the name is text in the banner.
 
 ---
@@ -718,3 +724,32 @@ The round-2 assembly QA of 10a and 10c in their kits: lint, contact sheets, stil
   - Every counter reading in them equals the rate × t: 10a $30,758 (1.0 s), $50,751 (1.65 s), $101,503 (3.3 s), $252,219 (8.2 s), $532,122 (17.3 s), ≈ $1,002,727 (32.6 s); 10c $2,710 (1.1 s), $6,652 (2.7 s), $12,812 (5.2 s), $32,769 (13.3 s), ≈ $65,292 (26.5 s on). Every label, row, pip, formula and verdict string matches this file.
   - MP4s rendered to `studio/out/` (10a 36.5 s, 10c 31.0 s, 1080×1920, 30 fps, h264 + aac). Frames pulled from the MP4s at 0 / 1.5 / 32.6 s (10a: $0, $46,137 with the $50K bill 92% full, ≈ $1,002,727 under the verdict) and 0 / 1.5 / 27.6 s (10c: $0, $3,696 with row 1 at ≈ 2 weeks, ≈ $65,292 with all four cells and the verdict card) match the stills.
 - **Left as is:** the Scoreboard's unlit "≈" ghost before the running counter (the kit's design: it lights when the clock stops on `final`); the label stack repeating the caption word for word at 12.7 and 17.2 s (the kit shows both).
+
+### Assembly pass 2 (2026-10-08)
+
+The round-2 assembly QA scored 10a 6.5 and 10c 7.0: every number right, frame 1 working, the weak spots pacing and the payoff. Every must and should issue is fixed below, and so are the cheap nits. Check: **981 checks, 0 failures**. Lint: 2/2 clean, 0 warnings (and the four `cost-counter` kit samples).
+
+| # | Teaser | Severity | Issue | What I did |
+|---|---|---|---|---|
+| A1 | 10a | should | The label stack drifted off the VO at 5.4-6.3, 11.1-12.4 and 25.0-25.7 s | **Fixed.** A rate beat at 5.4 s ("≈ $30,800 / every second", held to the $250K pass); `flash: 4.6`, so each milestone label holds to the next beat (the $250K label to 12.45 s, as its VO ends at 12.4); every rate step is held to the next beat (the $970B working to 28.0 s). The resting rate now shows only 0-0.98 s. The beat sheet's 5.4 s row is rewritten |
+| A2 | 10a | should | Nothing passed for 24 s after 8.1 s | **Fixed.** A $500,000 pip passes at 16.26 s ("$500,000 a year / ≈ 16 seconds"; VO "$500,000: ≈ 16 seconds." at 16.3 s). The rule line is 10 words and ends at 16.3 s; the $111 million beat moved 17.2 → 19.1 s and the $970 billion beat 21.0 → 22.7 s; both end before 28.0 s |
+| A3 | 10a | should | The "≈" ghost beside the hero; the counter stopped at ≈ $1,002,727 | **Fixed.** counterT ends at **32.51135** s and `final` is "$1,000,000" (no ≈). The suggested 32.5113 s would stop 0.04 ms before the kit's own $1M pass (32.5113383 s), so the last milestone would never pop: the stop is set to 5 decimals, after both the exact and the stored-rate pass, and r × 32.51135 = $1,000,000.30. No ghost, the hero centres, and the board, the coin and the verdict peak together. hold 3.98865 |
+| A4 | 10a | should | The footer's "pay $1,251 × 52" was never used | **Fixed (option 1).** The $50K pip became the median: "Median $65K" on the ladder, passed at 2.11 s, label "Median pay: $65,052 / ≈ 2.1 seconds", VO "Median pay: passed." (2.1-3.25 s). The footer says "median $1,251 × 52" (one line, 40 px). $50K left the ladder; it was 1.6 s, between $30K and the median |
+| A5 | 10a | should | Four label beats repeated the caption word for word | **Fixed.** Labels carry the working, captions the sentence: 12.45 s "$65,052 ÷ 30,800 / ≈ 2.1 seconds (median)" under "Your seconds: yearly pay ÷ 30,800."; 19.1 s "≈ $30,800 × 3,600 s / ≈ $111,000,000" under "That's ≈ $111 million an hour."; 22.7 s "$970B ÷ 31,536,000 s / ≈ $30,800 every second" under the source line; 28.0 s "Next / $1,000,000 a year" under "And the last row?". The last VO is "$1 million: passed.", so the caption no longer repeats the verdict. **Not adopted:** "Next: $1,000,000 / ≈ 33 seconds" at 28.0 s, which would give the answer away 4.5 s early, and a "$1,000,000 ÷ 30,800 = ? seconds" teaser, because by the rounded rule that is 32.47 (≈ 32), against the verdict's ≈ 33 |
+| A6 | 10a | should | The 2-line verdict was smaller than the label slams | **Fixed.** One line, **"$1M a year: ≈ 33 seconds."**, set at about 80 px: bigger than the 72 px label line 2. QA's "$1 million a year: ≈ 33 seconds." still breaks into two balanced lines in the kit's 170 px slot (about 70 px), so the ladder's own "$1M" spelling is used. "$100,000 a year ≈ 3.3 seconds" is in the caption (line 1) and the pinned comment |
+| A7 | 10a | nit | The big stage icon had no amount on it | **Fixed in the format file.** The big icon carries its pip label as a tag under the art (Anton 52 px): white while it fills, green on the pass, riding the icon's bump; gone when it flies to the ladder (the $1M tag stays). The art gives up 64 px of height for it |
+| A8 | 10a | nit | The top bar was cramped | **Fixed in the format file.** The hero is set 8% under its full fit (HERO_K 0.92), so it clears the header and the footer |
+| A9 | 10a | nit | FY2025 rate; FY2026 runs about 12% higher | **Not done here.** Treasury's FY2026 statement is due about 2026-10-13. The posting plan (10a, per-platform notes) lists every string to rebuild, now including the 5-decimal stop |
+| C1 | 10c | should | The big cell stopped at ≈ $65,292; the verdict led with the 1 s answer and ended "A year: ≈ 26 s." | **Fixed.** counterT ends at **26.4026** s and `final` is "$65,052", so the big cell lands on exactly a year of median pay as row 4 pops (k × 26.4026 = $65,052.07; 26.4026 s is after the exact pass, 26.40257 s). Verdict: **"A year of median pay: ≈ 26 seconds. / 1 second ≈ 2 weeks."** It fits the card in two lines. hold 4.5974 |
+| C2 | 10c | should | The answers were the smallest type on screen | **Fixed in the format file.** Each answer cell pops on its pass: 1.2× (capped to stay 14 px clear of the amount column, so "≈ 10 weeks" pops a little less) on a solid yellow fill, held 0.6 s, then settles |
+| C3 | 10c | should | "Median pay" sat over durations | **Fixed.** The column is "You work". It is shorter, so no label wraps; the footer and the verdict say median |
+| C4 | 10c | nit | The 7.4 s formula step retyped frame 1's working | **Fixed.** Dropped; "= $12,319 ÷ $1,251 ≈ 10 weeks" holds 5.2-13.2 s. The checker's formula-step list is updated |
+| C5 | 10c | nit | 10.6 s with no new cell | **Fixed.** "And a whole year?" moved 22.4 → 21.0 s; the format file adds a 2.4 s riser (24.0-26.4 s) and a hit on the last pass, over the running progress line |
+| C6 | 10c | nit | Rows 3-4 print $32,526 and $65,052 from frame 1 | **Accepted.** "≈ $32.5K" and "≈ $65K" would be second roundings of two exact amounts that the formula bar ($65,052 ÷ 2 = $32,526) and now the landed counter ($65,052) show in full, which breaks the one-rounding rule. With the counter landing on the row's own $65,052, the printed amount is the target the viewer watches it reach |
+
+**Files:**
+- `studio/specs/10a-scoreboard-debt-interest-live.json`, `studio/specs/10c-live-sheet-amazon-makes.json`: as above.
+- `studio/looks/scoreboard/formats/cost-counter.js`: the target tag (`tags`, on with `pipLabels`), ladder labels that duck under a flying icon, and the hero at 92% of its fit.
+- `studio/looks/live-sheet/formats/cost-counter.js`: the answer-cell pop (`pop`) and the riser into the last pass (`riser`).
+- `checks/10-cost-counter.py`: 10a's ladder (with the median and $500K), its VO, label beats and verdict; 10c's stop, verdict, column, VO time and formula steps; and the "lands on" rule for a counter that stops on its last milestone. Result: **981 checks, 0 failures**; the break test is in the header notes.
+- `teasers/v2/teasers.json` still carries the pre-pass key numbers for 10a and 10c (ladder, finals, verdicts); it was outside this pass's files.

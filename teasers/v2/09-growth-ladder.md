@@ -619,3 +619,32 @@ The owner rejected round 1 partly because the hooks were weak. Two judges scored
   - result: **468 checks, 0 failures** (518 before). The break test is in the header notes.
 - This write-up: the header notes, the shared decisions (beliefs, captions, rounding, lane check) and all three teaser sections (hook, title, frame 1, topic, belief, rules, benchmarks, beat sheet, VO, maths, sources, assumptions, caption, pinned comment and notes) were rewritten. The search log is unchanged: this pass needed no new real-world figure.
 - `teasers/v2/teasers.json`: the three 09 entries' titles, headers, runtimes, key numbers and hook scores (7.0, 6.75 and 6.75, the judges' averages), and the format's check line, were updated. `slate.json` lists formats only, so it needed no change.
+
+### Assembly pass (2026-10-08)
+
+Rendered all three in their kits and read the contact sheets, stills, and frames pulled from the MP4s. Three fixes, one per teaser, plus a type-floor fix in the live-sheet format. Every number on screen is still a verified figure: the checker now reports **499 checks, 0 failures** (468 before). The studio linter gives 3/3 clean (0 errors, 0 warnings), and the kits' growth-ladder samples and stress specs (live-sheet 5, scoreboard 2) are still clean.
+
+- **09a: the monthly figure now sits in the sheet.** Before, the sheet showed Year / You put in / Worth, and the hook's unit ("earn $100 **a month**") appeared only in the formula bar. The bar finished typing "≈ $89/mo" about 0.9 s after the VO said it, and at year 30 the VO said "$994 a month" while the sheet's climax was ≈ $149,036. Both judges had flagged this (R9 caveat).
+  - Now: a 4th column, "Earns a month" (`data.columns[3]`, with a no-break space so it wraps "Earns / a month"). Its cells are ≈ $8, $49, $89, $105, $231, $393, $634 and $994, the same strings as each formula line's result; the checker asserts that.
+  - Frame 1 shows ≈ $8 right under "When does it earn $100 a month?". Both mark tooltips ("under $100", "earns $100+") open under the Earns cell they describe. The summary row counts up to ≈ $994 as the VO says it.
+  - Format fix (`looks/live-sheet/formats/growth-ladder.js`): `inputsAtStart` now pre-shows only the put-in column, as the kit README says, so a 4-column ladder's Worth still lands with its row. Also, the summary row's font fit stepped from 41 to 39 px under the 40 px floor; it is now clamped. No other spec uses the live-sheet growth-ladder; the 5 kit specs are unchanged and clean.
+- **09b: R12's line is now on screen.** "Over 81 times the gift" was voiced at 22.3 s, but the verdict card covers the caption band from that moment, so it never showed. The verdict is now "**≈ $81,273** at 65. / Over 81× the gift, never topped up." (81,272.86 ÷ 1,000 = 81.27, floored to "over 81"). "$1,000" is still in the header.
+- **09c: the screen was static from 19 s to 31 s, and frame 1 showed a count in flight.**
+  - After row 40 landed, nothing changed on screen for 12 s while three VO lines carried the answer to the header's "× ?" and the $5 example. New `lookOpts.beats` in `looks/scoreboard/formats/growth-ladder.js`:
+    - from the first beat the rows scroll up (as they did for the verdict) and a black band rises at the foot;
+    - each beat slams a two-line stack into the verdict's slot: 20.8 s "YEAR 40 ≈ YOUR DAILY AMOUNT" / "× 75,176" (88 px green), and 25.6 s "$5 A DAY × 75,176" / "≈ $375,880";
+    - the verdict replaces beat 2 at 31.1 s, and each beat cues a reveal.
+    - The option is documented in the format file's header comment. The kit README, which this pass may not edit, does not list it yet.
+  - Frame 1 read "$376" (hero and row 1, the ≈ an unlit ghost) under a caption saying "about $377". Row 1 is now at rowT −0.4 s, so its count lands at −0.05 s and frame 1 shows ≈ $377 everywhere. The checker asserts rowT ≤ −0.35, and the VO sync rule still holds (|−0.4 − 0.0| ≤ 0.5).
+- **Checker changes:**
+  - the row width is now per spec, so 09a has 4 columns;
+  - 09a's Earns cells are expected exactly, equal the formula-bar results, rise row by row, and cross $100 between the marked rows;
+  - 09b's verdict tokens now end on "81" (not "$1,000");
+  - 09c's two beats are covered (40; 75,176; $5 × 75,176; ≈ $375,880), and there are claims for the beats' ≈, their VO anchors, 5 × 75,176 = 375,880, and the frame-1 landing.
+  - Break test: see the header notes (4 failures, all three caught).
+- **Read:**
+  - 09a: contact sheet; stills at 0, 5.4, 9.0, 21.0 and 25.2 s.
+  - 09b: contact sheet; stills at 0, 1.6, 5.9, 9.9, 14.0, 16.2-18.0 (the heave, 6 frames), 19.0, 21.0, 23.5 and 27.0 s.
+  - 09c: contact sheet; stills at 0, 1.5, 3.6, 19.5, 20.8, 20.85, 20.9, 21.5, 25.65, 26.5 and 32.0 s.
+- **MP4s:** `studio/out/09a-…mp4` (28.5 s), `09b-…mp4` (27.0 s) and `09c-…mp4` (37.0 s), all 1080 × 1920, 30 fps, H.264 + AAC. Frames pulled with ffmpeg at 0 / 9.0 / 21.0 s (09a), 0 / 5.9 / 23.5 s (09b) and 0 / 21.5 / 26.5 s (09c) match the stills (mean absolute difference 0.6-2.0 per channel: compression only).
+- **Not changed here:** `teasers/v2/teasers.json`'s format-9 check line still says 468 checks; this pass may not edit that file.

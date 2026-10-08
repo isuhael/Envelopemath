@@ -616,3 +616,13 @@ Unchanged: data (points, finals, column labels, purchases and hike tags), raceT 
   - Result: **365 checks, 0 failed** (was 352). In a scratch copy, a 2.3-year bar step, a vo[4] without "about" and a 2020 bar step moved to 15.5 s each failed.
 - This write-up: the 06b header block, hook rules, wrong belief, beat sheet, VO script, maths rows, the $19.99 source row, assumptions, caption, pinned comment and platform notes, plus a row in the "depart from the seeds" table.
 - `teasers/v2/teasers.json`: the 06b entry's title, header, key numbers and hook score (7.5, the judges' average).
+
+### Assembly pass (round 2, 2026-10-08): 06a and 06b
+
+No number, label or spoken word changed. Re-run of `python3 teasers/v2/checks/06-pov-race.py`: **365 checks, 0 failed**. `node src/cli.mjs check`: 06a and 06b 0 errors, 0 warnings (also the four Live Sheet pov-race samples and stress specs).
+
+- **06a, captions.** The kit balances caption lines by width, so it broke "You never add a / cent." and "The phone gets old. The / shares keep compounding.". `vo[2]` and `vo[3]` now carry no-break spaces (` ` in the JSON: "a cent.", "The shares", "keep compounding.") so the lines read "You never add / a cent. You just hold." and "The phone gets old. / The shares keep compounding.". The words and the timing are unchanged (the check counts ` ` as a space). Keep the escapes if these lines are edited.
+- **06b, price tags (Live Sheet `formats/pov-race.js`).** Every mid-race hike tag used to be clamped left over the green line; "Hike 7" hid the 2022 dip while the VO says "It comes back". Each tag's spot is now scored over its whole time on screen. It attaches to its ring when that spot is clear, or parks in the empty top of the plot with a thin leader to its ring. All mid-race tags are set as label over price ("Hike 5 · Oct 2020" / "$13.99"). The frame-1 tag "Jan 2012 $7.99" is unchanged.
+- **06b, live row.** The row number now sits on the values' line, which is lifted to make room for "spent" at the landing.
+- **Verified in the stills and the MP4s:** every figure on screen matches the maths tables above. 06a: $499 / $499 at 0.0 s, $809 (1.40 s), the coral dip under $499, $10,137 as it passes $10,000 (14.8 s), ≈ $37,000, `$499 × 74.3 ≈ $37,000`, ≈ 74× / ≈ 3 yrs. 06b: $7.99 / $7.99, ≈ 5 months, 2.4 / 38 / 22 / 74 years, `≈ 188.8 shares × $93.76 ≈ $17,700`, $2,037.32 spent, ≈ $17,700, the 7 hike tags. Live counters between year-ends are interpolated (e.g. $349 at 2.51 s, against $348.41 at the 2008 close).
+- **Renders:** `studio/out/06a-scoreboard-first-iphone-apple.mp4` (26.5 s) and `studio/out/06b-live-sheet-netflix-bill.mp4` (30.5 s), 1080×1920, 30 fps, with SFX. Frames pulled from each MP4 at 3 times match the stills.

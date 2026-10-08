@@ -32,6 +32,9 @@
 //     the output column shows "✓" when the milestone is passed (no computed times are ever printed)
 //   · kept { t, label, final, startValue, tone ('good') }: a second live row, counting over the same
 //     counterT from startValue (0) to its own display string `final`; it lands at t
+//   · pop (1.2): on its pass, a milestone's answer cell pops: the value scales up to `pop` (capped so it never
+//     comes within 14 px of the amount column's text) on a solid yellow fill, holds 0.6 s, then settles (false: off)
+//   · riser (true): a riser carries a quiet run-up into the last milestone's pass, which lands with a hit
 import {
   h, setStyle, setText, clamp, prog, ease, C, G, M, S,
   formulaBar, fitFormula, mk, mkLen, typedMk, typedCount, typeDur, wordCut, caretOn,
@@ -117,6 +120,9 @@ export default function costCounter(spec, ctx) {
   const bodyOf = (str, p, from) => (p >= 1 ? str : countText(str, p, { from })).replace(/^\s*≈\s*/, '')
   const tone = opt(spec, 'tone', 'neutral')
   const numColor = toneColor(tone)
+  // the answer cell's pop on its pass: up in 0.1 s, held to 0.6 s, back down over 0.25 s
+  const POP = opt(spec, 'pop', 1.2)
+  const popK = (t, ta) => (t < ta ? 0 : t < ta + 0.1 ? ease.out((t - ta) / 0.1) : t < ta + 0.6 ? 1 : 1 - ease.inOut(prog(t, ta + 0.6, 0.25)))
 
   // ---------- milestones (+ the optional kept row) ----------
   const loRows = Array.isArray(lo.rows) ? lo.rows : []
@@ -349,6 +355,13 @@ export default function costCounter(spec, ctx) {
     keys.forEach((k, j) => sp.append(h('div', { class: 'ls-cell', style: { left: colX[j] + 'px', width: colW[j] + 'px', height: reserve + 'px' } })))
     body.append(sp)
   }
+  // how far each answer can pop: up to POP, but its left edge stays 14 px clear of the amount column's text
+  const popMax = rows.map((r, i) => {
+    if (!POP || r.type !== 'm' || cO < 0 || !textOf(r, 'out')) return 1
+    const w = tw(esc(textOf(r, 'out')), weightOf(r, 'out'), fs.num) || 1
+    const gap = cA >= 0 ? colW[cO] - padRt(cO) - w + PADX : colW[cO] - padRt(cO) - w
+    return Math.max(1, Math.min(+POP, 1 + (gap - 14) / w))
+  })
   const cardH = y + nR * rowH + reserve
   setStyle(card, { height: cardH + 'px' })
   // a lone counter (no milestone table) sits centred in the working area rather than over a void
@@ -420,6 +433,16 @@ export default function costCounter(spec, ctx) {
     for (let i = 1; i < marks.length; i++) ctx.cue(marks[i - 1], 'roll', { dur: marks[i] - marks[i - 1], rate: 12, gain: 0.5 })
   }
   ms.forEach(m => { if (m.passes) ctx.cue(m.tp, 'pop', { gain: 0.9 }) })
+  {
+    // a riser into the last pass, when the stretch before it is quiet (no pass or formula step for 1.6 s or more)
+    const passT = ms.filter(m => m.passes).map(m => m.tp)
+    const lastP = passT.length > 1 ? passT[passT.length - 1] : null
+    if (opt(spec, 'riser', true) && lastP != null) {
+      const prev = Math.max(t0, ...passT.filter(x => x < lastP - 1e-6), ...fItems.filter(it => it.t < lastP - 0.05).map(it => it.t))
+      const rd = Math.min(2.4, lastP - prev - 0.6)
+      if (rd >= 1.0) { ctx.cue(lastP - rd, 'riser', { dur: rd, gain: 0.5 }); ctx.cue(lastP, 'hit', { gain: 0.7 }) }
+    }
+  }
   if (K && K.t > 0) { ctx.cue(K.t, 'pop', { gain: 0.8 }); ctx.cue(K.t + 0.1, 'tick', { gain: 0.6 }) }
   if (t1 > 0 && !(Math.abs(t1 - verdictT) < 0.35)) ctx.cue(t1, 'thud', { gain: 0.55 })
   if (loopOn) ctx.cue(loopT0, 'swipe', { gain: 0.5 })
@@ -516,10 +539,16 @@ export default function costCounter(spec, ctx) {
           if (hi > 0.5) fl = 0
           setText(c.v, text)
           let st = snapIn(pp)
+          // the answer pops on its pass: scaled up (towards the left: the value is right-aligned) on a solid yellow fill
+          const pk = k === 'out' && r.type === 'm' && r.passes && popMax[i] > 1 && t < loopT0 ? popK(t, r.tp + 0.04) : 0
+          if (pk > 0.001) {
+            const sIn = st.transform && st.transform.startsWith('scale(') ? parseFloat(st.transform.slice(6)) : 1
+            st = { opacity: st.opacity, transform: `scale(${Math.max(sIn, 1 + (popMax[i] - 1) * pk).toFixed(4)})` }
+          }
           const lq2 = liftOut(o)
           if (lq2) st = { opacity: String(Math.min(+st.opacity, +lq2.opacity)), transform: lq2.transform }
           setStyle(c.v, st)
-          setStyle(c.el, { backgroundColor: fl > 0.001 ? rgba(C.rowHi, fl) : 'transparent' })
+          setStyle(c.el, { backgroundColor: pk > 0.001 ? rgba(C.accent, pk) : fl > 0.001 ? rgba(C.rowHi, fl) : 'transparent' })
         })
 
         // progress line: how close the counter is to the next milestone

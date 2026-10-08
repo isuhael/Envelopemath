@@ -7,9 +7,14 @@
 // Each item: the selection slides down to the row's result cell and its label drops in; the formula bar types the
 // formula (each cell it references gets a dashed outline as its number is typed); the result snaps in (116% to
 // 100%) with a yellow flash and a tick, and the formula rises into the row as its grey working line. The note
-// opens as a dark tooltip under the row (the rows below make room) and stays while the next formula types, closing
-// just before the next value lands. Item field `noteT` (optional, seconds) holds a note back to the moment the VO
-// says it (default: just after its result). The goal item (or the last) counts up and its row wipes yellow.
+// opens as a dark tooltip under the row and stays while the next formula types, closing just before the next value
+// lands. The table never reflows for a note: the pill floats over the next row's still-empty result cell (one line
+// when it clears that row's label, else two), and the last row's note opens in a slot reserved under the table
+// from frame 1, so the card and the assumption line never move. Only a note that cannot float (the next cell is
+// not empty while it shows) falls back to the kit's slot, which pushes the rows below. A pill wipes out of its
+// notch and closes as a whole (a 0.14 s fade and slight shrink), never by a clip. Item field `noteT` (optional,
+// seconds) holds a note back to the moment the VO says it (default: just after its result). The goal item (or the
+// last) counts up and its row wipes yellow; a goal that cannot count up lands with a pop and the reveal sting.
 // Optional beats: a wrong guess (lookOpts.wrongGuess) lands first and is struck out before the real formula;
 // a check line (data.check) types into the bar with the result column selected; the verdict retypes the bar or
 // lands as a card in the caption band while the result column flashes top to bottom. The last 0.5 s clear back
@@ -45,7 +50,7 @@ import {
   h, setStyle, setText, setHTML, clamp, prog, ease, plain, C, G, M, S,
   formulaBar, fitFormula, tipStrip, fitTips, tipWindow, mk, mkLen, typedMk, wordCut, caretOn, countText, parseDisplay,
   snapIn, dropIn, liftOut, popScale, flashAlpha, lerpRect, rgba, durationOf, hasCaptions, opt, layer,
-  textW, font, toneColor, toneFill, footerHeight, HANDLE_PAD, fitBarVerdict, F, unitHTML,
+  textW, font, toneColor, toneFill, footerHeight, HANDLE_PAD, fitBarVerdict, F, unitHTML, twoLines,
 } from '../lib.js'
 
 export const css = `
@@ -68,6 +73,8 @@ export const css = `
 .dsl-tail { position: absolute; left: 0; right: 0; }
 .dsl-ok { color: #058A4F; font-weight: 800; }
 .dsl-per { font-size: max(40px, 0.62em); letter-spacing: -0.005em; }
+.dsl-tips { position: absolute; inset: 0; z-index: 6; }
+.dsl-tips .ls-tiptxt { white-space: nowrap; }
 `
 
 // [label px, result px], largest first
@@ -357,6 +364,22 @@ export default function deadSimpleList(spec, ctx) {
   meas.remove()
   const rowH = P.rowH
 
+  // ---------------------------------------------------------------- tooltip pills (fit)
+  const PILL_PAD = 2 * 26 + 6 // the pill's side padding (as fitTips)
+  const tipWOf = (str, px) => textW(mk(str), font(800, px), { letterSpacing: '-0.01em' })
+  /** a note on one line within maxW at the tooltips' size, else two balanced lines; null when neither fits */
+  function pillFit(note, maxW) {
+    const s = String(note || ''), inner = Math.min(maxW, tipW) - PILL_PAD
+    if (!s || inner <= 0) return null
+    if (tipWOf(s, tipPx) <= inner) return { lines: 1, html: mk(s), w: Math.ceil(tipWOf(s, tipPx)) + PILL_PAD }
+    const two = twoLines(s, x => tipWOf(x, tipPx), inner)
+    return two ? { lines: 2, html: mk(two), w: Math.ceil(Math.max(...two.split('\n').map(x => tipWOf(x, tipPx)))) + PILL_PAD } : null
+  }
+  const pillH = lines => Math.round(lines * tipPx * 1.12 + 14) // its slot is 16 px taller (8 px of air above and below)
+  // the last row's note opens in a slot reserved under the table from frame 1, so the card never grows
+  const tailFit = tipNote(N - 1) ? pillFit(items[N - 1].note, tipW) : null
+  const tailH = tailFit ? Math.max(TAIL, pillH(tailFit.lines) + 16) : TAIL
+
   // ---------------------------------------------------------------- events (formula bar, selection)
   const vType0 = verdict ? verdict.t + 0.32 : Infinity
   const vfit = vMode === 'formula' ? fitBarVerdict(verdict.text, G.width) : null
@@ -423,16 +446,17 @@ export default function deadSimpleList(spec, ctx) {
   card.append(heads)
 
   const bodyY = headY + headH
-  // the tooltip slot is planned for (P.bottom) but not drawn: the card grows while a tooltip is open
-  const bodyH = N * rowH + TAIL
+  // the tooltip slot is planned for (P.bottom): the last row's note takes it from frame 1 (tailH); otherwise it is not
+  // drawn, and only a note that falls back to the kit's slot grows the card while it is open
+  const bodyH = N * rowH + tailH
   const body = h('div', { class: 'ls-body', style: { top: bodyY + 'px', height: bodyH + 'px' } })
   card.append(body)
   setStyle(card, { height: bodyY + bodyH + 'px' })
   const bodyTop = Y + bodyY
   // un-numbered sheet under the last row (and the room a tooltip opens into)
-  const tailEl = h('div', { class: 'dsl-tail', style: { top: N * rowH + 'px', height: TAIL + 'px', backgroundImage: `linear-gradient(90deg, ${C.head} ${gut - 2}px, ${C.grid} ${gut - 2}px, ${C.grid} ${gut}px, ${C.sheet} ${gut}px)` } })
+  const tailEl = h('div', { class: 'dsl-tail', style: { top: N * rowH + 'px', height: tailH + 'px', backgroundImage: `linear-gradient(90deg, ${C.head} ${gut - 2}px, ${C.grid} ${gut - 2}px, ${C.grid} ${gut}px, ${C.sheet} ${gut}px)` } })
   body.append(tailEl)
-  const setGrow = px => { const g = Math.round(px); setStyle(card, { height: bodyY + bodyH + g + 'px' }); setStyle(body, { height: bodyH + g + 'px' }); setStyle(tailEl, { height: TAIL + g + 'px' }) }
+  const setGrow = px => { const g = Math.round(px); setStyle(card, { height: bodyY + bodyH + g + 'px' }); setStyle(body, { height: bodyH + g + 'px' }); setStyle(tailEl, { height: tailH + g + 'px' }) }
 
   const rowEls = [], numEls = [], labEls = [], subEls = [], sufEls = [], res = []
   items.forEach((it, r) => {
@@ -471,25 +495,91 @@ export default function deadSimpleList(spec, ctx) {
   const inputRect = { x0: X + colX[1], y0: Y + headY, x1: X + W, y1: Y + headY + headH }
 
   // ---------------------------------------------------------------- tooltips (notes)
+  // Where a note's pill goes (the table never reflows for it when it can float):
+  //   over  in the next row's result cell, which stays empty while the note shows; the notch sits on the row's
+  //         bottom gridline; one line when the pill clears the next row's label, else two balanced lines
+  //   tail  the last row's note, in the slot reserved under the table from frame 1 (tailH)
+  //   slot  fallback, when a note cannot float: the kit's slot opens under the row and the rows below make room
+  // Pills sit above the selection (a tooltip is always on top). Each label is written once, so a hidden pill's DOM
+  // never depends on what was shown before.
   const shApi = { over, w: W, gutter: gut, x: X, bodyTop }
+  const tipLayer = h('div', { class: 'dsl-tips' })
+  body.append(tipLayer)
+  /** right edge (stage px) of a row's label text as set (its working suffix, hidden until later, left out) */
+  function labRight(r) {
+    const lab = labEls[r], suf = sufEls[r], fallback = X + colX[0] + PAD
+    if (!lab || !lab.textContent.trim()) return fallback
+    const rg = document.createRange()
+    rg.setStart(lab, 0)
+    if (suf && suf.parentNode === lab) rg.setEndBefore(suf)
+    else rg.setEnd(lab, lab.childNodes.length)
+    const rs = [...rg.getClientRects()].filter(b => b.width > 0.5)
+    return rs.length ? X + Math.max(...rs.map(b => b.right)) - card.getBoundingClientRect().left : fallback
+  }
+  const PILL_PARK = { opacity: '0', left: '0px', top: '0px', width: '0px', height: '0px', transform: 'none' }
+  function makePill(html, wrap) {
+    const txt = h('div', { class: 'ls-tiptxt', html, style: { fontSize: tipPx + 'px', ...(wrap ? { whiteSpace: 'normal', textWrapStyle: 'balance' } : {}) } })
+    const inner = h('div', { class: 'ls-tipin' }, txt)
+    const el = h('div', { class: 'ls-tip', 'data-roll': '' }, inner)
+    const notch = h('i', { class: 'ls-notch' })
+    tipLayer.append(notch, el)
+    return { el, inner, txt, notch }
+  }
+  const pillX1 = X + W - 12
   const tips = []
   items.forEach((it, r) => {
     if (!tipNote(r)) return
     const openAt = tipOpenAt(r) // after a count-up, clear of its landing pop (or at item.noteT)
     const leave = Math.min(tipLeave(r), verdict ? verdict.t : Infinity, loopT0)
-    const closeAt = leave - 0.28
     const cell = cellRect(r, 1)
-    const wpx = tipFit.w[r]
-    const x1 = Math.min(X + W - 12, Math.max(cell.x1 - 10, X + gut + 12 + wpx))
-    const x0 = Math.max(X + gut + 12, x1 - wpx)
-    // the label is written once, so a hidden pill's DOM never depends on what was shown before
-    const strip = tipStrip(shApi, { px: tipPx, html: tipFit.html[r], wrap: tipFit.wrap })
-    tips.push({ r, openAt, closeAt, strip, win: tipWindow(openAt, closeAt), box: { x0, x1, notchX: clamp((cell.x0 + cell.x1) / 2, x0 + 34, x1 - 34) } })
+    let mode = 'slot', fit = null
+    if (r === N - 1) { if (tailFit) { mode = 'tail'; fit = tailFit } }
+    else {
+      const nx = r + 1, w = wrongOf[nx]
+      const empty = !T[nx].pre && T[nx].res >= leave && !(w && w.res < leave)
+      const f = empty ? pillFit(it.note, pillX1 - Math.max(X + gut + 12, labRight(nx) + 24)) : null
+      if (f && pillH(f.lines) + 16 <= rowH) { mode = 'over'; fit = f }
+    }
+    let x0, x1, html, ht, wrap = false
+    if (fit) { x1 = pillX1; x0 = x1 - fit.w; html = fit.html; ht = pillH(fit.lines) }
+    else {
+      const wpx = tipFit.w[r]
+      x1 = Math.min(pillX1, Math.max(cell.x1 - 10, X + gut + 12 + wpx)); x0 = Math.max(X + gut + 12, x1 - wpx)
+      html = tipFit.html[r]; ht = slotH - 16; wrap = tipFit.wrap
+    }
+    // slot: the kit's window (the slot opens, the pill reveals; the pill goes, then the slot closes). A floating pill
+    // reveals at once and goes just before the next value lands. Either way it leaves whole: a 0.14 s fade + shrink.
+    const closeAt = leave - 0.28
+    const revealAt = mode === 'slot' ? openAt + 0.26 : openAt + 0.04
+    const fadeAt = mode === 'slot' ? closeAt - 0.14 : leave - 0.17
+    tips.push({
+      r, mode, openAt, revealAt, fadeAt, goneAt: fadeAt + 0.14, ht, pill: makePill(html, wrap),
+      win: mode === 'slot' ? tipWindow(openAt, closeAt) : null,
+      strip: mode === 'slot' ? tipStrip(shApi, { px: tipPx, html: '' }) : null, // only its slot is used
+      box: { x0, x1, notchX: clamp((cell.x0 + cell.x1) / 2, x0 + 34, x1 - 34) },
+    })
   })
-  const openOf = (tp, t) => tp.win.open(t)
+  /** a pill's frame: it wipes out of its notch (width, both ways, 0.24 s), then fades and shrinks whole to close */
+  function setPill(tp, y, t) {
+    const { el, inner, notch } = tp.pill
+    const rv = ease.out(prog(t, tp.revealAt, 0.24)), go = ease.inOut(prog(t, tp.fadeAt, 0.14))
+    if (rv <= 0.001 || go >= 0.999) {
+      setStyle(el, PILL_PARK); setStyle(inner, { left: '0px', width: '0px', height: '0px' })
+      setStyle(notch, { opacity: '0', left: '0px', top: '0px', transform: 'rotate(45deg)' })
+      return
+    }
+    const { x0, x1, notchX } = tp.box
+    const nx = clamp(notchX, x0 + 30, x1 - 30)
+    const l = Math.round(Math.max(x0, nx - 20 - (nx - 20 - x0) * rv)), rr = Math.round(Math.min(x1, nx + 20 + (x1 - nx - 20) * rv))
+    const top = Math.round(y - bodyTop + 8), a = (1 - go).toFixed(3), sc = 1 - 0.06 * go
+    setStyle(el, { opacity: a, left: l - X + 'px', top: top + 'px', width: rr - l + 'px', height: tp.ht + 'px', transform: go > 0 ? `scale(${sc.toFixed(4)})` : 'none', transformOrigin: `${Math.round(nx - l)}px 0px` })
+    setStyle(inner, { left: Math.round(x0) - l + 'px', width: Math.round(x1 - x0) + 'px', height: tp.ht + 'px' })
+    setStyle(notch, { opacity: a, left: Math.round(nx - 11 - X) + 'px', top: top - 9 + 'px', transform: go > 0 ? `rotate(45deg) scale(${sc.toFixed(4)})` : 'rotate(45deg)' })
+  }
   // a row's working suffix rises in when the formula bar moves on (or 0.5 s after the result when nothing follows)
   const sufT = items.map((_, r) => { const nx = E.find(e => e.eraseAt > T[r].res && e.row !== r); return nx ? nx.eraseAt + 0.1 : T[r].res + 0.5 })
-  const shiftAt = (r, t) => { let dy = 0; for (const tp of tips) if (r > tp.r) dy += slotH * openOf(tp, t); return dy }
+  // only a note in the kit's slot moves the rows below it (and the card's bottom edge, and the assumption line)
+  const shiftAt = (r, t) => { let dy = 0; for (const tp of tips) if (tp.mode === 'slot' && r > tp.r) dy += slotH * tp.win.open(t); return dy }
 
   // ---------------------------------------------------------------- notes a later row's working relies on
   // A note that carries a number no cell shows ("so you borrow $16,800") but a later formula uses ("$16,800 × 0.024")
@@ -515,7 +605,7 @@ export default function deadSimpleList(spec, ctx) {
     const tp = tips.find(x => x.r === r)
     const bn = barNotes.find(x => x.row === r)
     const nextE = bn ? E.find(e => e.eraseAt > bn.t + 0.05) : null
-    const at = tp ? tp.closeAt + 0.3 : nextE ? nextE.eraseAt + 0.1 : sufT[r] + 0.6
+    const at = tp ? tp.goneAt + (tp.mode === 'slot' ? 0.3 : 0.1) : nextE ? nextE.eraseAt + 0.1 : sufT[r] + 0.6
     return { el, html0: el.innerHTML, html1: mk(pick), at }
   })
 
@@ -591,13 +681,16 @@ export default function deadSimpleList(spec, ctx) {
     if (e.kind === 'check') ctx.cue(typeEnd(e) + 0.08, 'pop', { gain: 0.6 })
     if (e.kind === 'verdict') ctx.cue(typeEnd(e) + 0.05, 'ding')
   })
+  // results outrank notes: a value lands with a tick, the goal with the loudest cue of its beat (its count-up's pop,
+  // or a pop and the reveal sting when it cannot count up); a note's pill opens with a soft pop
   items.forEach((_, r) => {
     if (T[r].pre) return
     if (r === countIdx) { ctx.cue(T[r].res, 'roll', { dur: M.count }); ctx.cue(T[r].res + M.count, 'pop') }
-    else ctx.cue(T[r].res, 'tick', { gain: 0.6 })
+    else if (r === goalIdx) { ctx.cue(T[r].res, 'pop', { gain: 0.9 }); ctx.cue(T[r].res + 0.04, 'reveal', { gain: 0.45 }) }
+    else ctx.cue(T[r].res, 'tick', { gain: 0.8 })
   })
-  wrongs.forEach(w => { ctx.cue(w.res, 'tick', { gain: 0.5 }); if (Number.isFinite(w.strikeT)) ctx.cue(w.strikeT, 'buzz', { gain: 0.5 }) })
-  tips.forEach(tp => ctx.cue(tp.openAt + 0.12, 'pop', { gain: 0.45 }))
+  wrongs.forEach(w => { ctx.cue(w.res, 'tick', { gain: 0.6 }); if (Number.isFinite(w.strikeT)) ctx.cue(w.strikeT, 'buzz', { gain: 0.5 }) })
+  tips.forEach(tp => ctx.cue(tp.revealAt, 'pop', { gain: 0.18 }))
   if (loopOn) ctx.cue(loopT0, 'swipe', { gain: 0.5 })
 
   // ---------------------------------------------------------------- frame
@@ -610,12 +703,21 @@ export default function deadSimpleList(spec, ctx) {
     setStyle(rowEls[r], { backgroundColor: C.sheet, backgroundImage: `linear-gradient(90deg, ${rgba(C.rowHi, a)} ${x}%, ${C.sheet} ${x}%)` })
   }
 
+  // a caption chunk that names a result (its number, as typed: "$2,579" for "≈ $2,579") waits until the value lands
+  // on the sheet (a count-up: until it ends), so the captions never run ahead of the cells; a wrong guess too
+  const holds = []
+  items.forEach((it, r) => {
+    const tok = T[r].pre ? null : numToken(it.result)
+    if (tok) holds.push({ text: tok, t: r === countIdx ? T[r].res + M.count : T[r].res })
+  })
+  wrongs.forEach(w => { const tok = numToken(String(w.result)); if (tok) holds.push({ text: tok, t: w.res }) })
+
   return {
     duration,
     chrome: {
       footer: { top: Y + bodyY + bodyH + G.gap },
       footerShift: t => shiftAt(N, t),
-      captionHolds: countIdx >= 0 ? [{ text: items[countIdx].result, t: T[countIdx].res + M.count }] : [],
+      captionHolds: holds,
       captions: capsOn,
       verdict: vMode === 'band' ? 'band' : 'self',
       loop: loopOn ? { t0: loopT0, dur: 0.3 } : null,
@@ -657,7 +759,7 @@ export default function deadSimpleList(spec, ctx) {
           text = String(w.result)
           p = prog(t, w.res, M.drop)
           strike = Number.isFinite(w.strikeT) ? ease.out(prog(t, w.strikeT, 0.26)) : 0
-          color = strike > 0 ? C.bad : C.slate
+          color = strike > 0 ? C.bad : C.mute // a guess is pencilled in grey, then struck in red
           flash = flashAlpha(t, w.res + 0.06)
           gone = Math.max(out, prog(t, tm.res - 0.14, 0.14)) // it lifts out just before the real answer lands
         } else if (tm.pre || t >= tm.res) {
@@ -683,9 +785,14 @@ export default function deadSimpleList(spec, ctx) {
         setStyle(c.strike, { opacity: strike > 0 ? '1' : '0', transform: `scaleX(${strike.toFixed(3)})` })
       }
 
-      // note tooltips: the slot opens (the card grows), then the pill wipes out of its notch with its text in place
+      // note tooltips: a floating pill wipes out of its notch with its text in place (a fallback slot opens first and
+      // grows the card); every pill leaves whole
       setGrow(shiftAt(N, t))
-      for (const tp of tips) tp.strip.set({ ...tp.box, y: rowTop(tp.r, shiftAt(tp.r, t)) + rowH, ht: slotH, open: tp.win.open(t), reveal: tp.win.reveal(t) })
+      for (const tp of tips) {
+        const y = tp.mode === 'over' ? rowTop(tp.r + 1) : tp.mode === 'tail' ? rowTop(N) : rowTop(tp.r, shiftAt(tp.r, t)) + rowH
+        if (tp.strip) tp.strip.set({ ...tp.box, y, ht: slotH, open: tp.win.open(t), reveal: 0 })
+        setPill(tp, y, t)
+      }
 
       // reference outlines
       for (const rf of refs) {

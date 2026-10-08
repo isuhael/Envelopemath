@@ -154,7 +154,9 @@ EXPECT = {
         "data.total.display": money(A_ORDER, 2),
         **{f"data.parts[{i}].pct": A_PCT[i] for i in range(7)},
         **{f"data.parts[{i}].amount": approx(money(A_AMT[i], 2)) for i in range(7)},
-        "data.check": f"{money(A_ORDER, 2)} − {money(A_COSTS, 2)} of costs = {money(r2(A_ORDER - A_COSTS), 2)}",
+        # one 40 px mono line under the sheet ("check: " + 28 characters fits the 856 px column; "$10.00" broke it
+        # onto two lines and the kit dropped the check), worded as the VO says it: "$10 minus $8.71 of costs"
+        "data.check": f"{money(A_ORDER)} − {money(A_COSTS, 2)} of costs = {money(r2(A_ORDER - A_COSTS), 2)}",
         "lookOpts.wrongGuess.formula": f"{money(A_ORDER)} − {money(A_AMT[0], 2)}",
         "lookOpts.wrongGuess.result": f"{money(A_WRONG, 2)} profit?",
     },
@@ -175,6 +177,7 @@ EXPECT = {
         "lookOpts.actions[0].tool": f"÷ {B_PIECES}",
         "lookOpts.actions[0].becomes": f"{B_PIECES} bricks of {money(B_TENTH)}",
         **{f"lookOpts.actions[{i + 1}].tool": f"{B_PARTS_N[i]} × {money(B_TENTH)}" for i in range(4)},
+        "lookOpts.payoff.text": f"{money(B_FOOD_DAY)} a day",
     },
     "05c": {
         "header": f"IS COSTCO'S PROFIT\nALL MEMBERSHIP FEES?\nFOLLOW YOUR **{money(C_CART)}** CART:",
@@ -231,6 +234,11 @@ ANCHORS = {
         # the wrong guess is on the sheet at frame 1 (R5: the hook); vo[0] voices it, inside its first line
         "lookOpts.wrongGuess.t": "frame1", "lookOpts.wrongGuess.strikeT": (1, None),
         "sfx[0].t": (1, None), "sfx[1].t": (7, None),
+        # assembly pass: the hook's two numbers nudge as vo[0] says them, and each row activates (pointer, accent %,
+        # the profit row's % unmasks) as its VO line names it; its amount still lands on the spoken number
+        "lookOpts.bumps[0].t": (0, "$10"), "lookOpts.bumps[1].t": (0, "$7.04"),
+        "lookOpts.activate[1]": (1, "Crew"), "lookOpts.activate[2]": (2, None), "lookOpts.activate[3]": (3, None),
+        "lookOpts.activate[4]": (4, None), "lookOpts.activate[5]": (5, None), "lookOpts.activate[6]": (6, None),
     },
     "05b": {
         # the cleaver comes out on "Ten", the slab slams into 10 bricks on "$300", 4 tumble into RENT on "four",
@@ -238,6 +246,8 @@ ANCHORS = {
         "lookOpts.actions[0].t": (0, "Ten"), "lookOpts.tenth.t": (0, "$300"), "data.parts[0].t": (0, "four"),
         "data.parts[1].t": (1, "one"), "data.parts[2].t": (2, "$900"), "data.parts[3].t": (2, "$600"),
         "data.checkT": (3, None), "verdict.t": (4, None),
+        # the closing gold slab "FOOD + EVERY BILL · $10 a day" lands on the spoken "$10" of the verdict line
+        "lookOpts.payoff.t": (4, "$10"),
     },
     "05c": {
         "data.parts[0].t": (0, "$88.91"), "data.parts[1].t": (1, "$9.15"), "data.parts[2].t": (2, "$1.94"),
@@ -247,6 +257,8 @@ ANCHORS = {
         "lookOpts.footerSteps[4].t": (5, None), "verdict.t": (5, None),
         # the membership row is the header's contender: on the sheet, landed, at frame 1; vo[4] voices it
         "lookOpts.bonus.t": "frame1",
+        # ...and the pointer and the label stack return to it when vo[4] names it ("Membership fees: ...")
+        "lookOpts.bonus.focusT": (4, None),
     },
 }
 
@@ -498,6 +510,16 @@ def check_spec(key, spec):
 
     # labels that carry a fact (notes can be hidden by a kit's layout solver, so the label must be right alone)
     if key == "05a":
+        wg = spec["lookOpts"]["wrongGuess"]
+        act = spec["lookOpts"]["activate"]
+        record(key, "each row activates before its amount lands, after the previous one landed",
+               act, "parts[i-1].t < activate[i] ≤ parts[i].t",
+               act[0] is None and all(parts[i - 1]["t"] < act[i] <= parts[i]["t"] for i in range(1, len(parts))))
+        record(key, "bumps hit the frame-1 hook figures ($10 total, the $7.04 guess)",
+               [b["at"] for b in spec["lookOpts"]["bumps"]], ["total", "guess"],
+               [b["at"] for b in spec["lookOpts"]["bumps"]] == ["total", "guess"])
+        record(key, "struck guess stays until the check line replaces it (strikeT < until ≤ checkT)",
+               wg.get("until"), f"{wg['strikeT']}..{d['checkT']}", wg["strikeT"] < wg.get("until", -1) <= d["checkT"])
         lab = parts[5]["label"].lower()
         record(key, "row 6 label says the tax is net of interest (3.4% is not the provision, 4.0%)", parts[5]["label"],
                "mentions tax and interest", "tax" in lab and "interest" in lab)
@@ -512,6 +534,9 @@ def check_spec(key, spec):
         eq(key, "envelopes (bin names)", spec["lookOpts"]["envelopes"], ["RENT", "FOOD + BILLS", "WANTS", "SAVINGS"])
         record(key, "header asks 'a day'; the goal row's note answers per day", parts[1]["note"], "contains 'a day'",
                "a day" in parts[1]["note"] and "a day" in spec["header"])
+        pay = spec["lookOpts"]["payoff"]
+        record(key, "payoff slab = the header's answer in its unit, after the verdict", (pay["text"], pay["t"]),
+               f"'a day', ≥ {spec['verdict']['t']}", "a day" in pay["text"] and pay["t"] >= spec["verdict"]["t"])
     if key == "05c":
         txt = spec["verdict"]["text"].lower()
         record(key, "verdict does not say Costco 'keeps' ≈ $1.94 (it keeps ≈ $3.93 before tax incl. fees)",

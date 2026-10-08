@@ -32,6 +32,12 @@
 // the guess on the sheet already typed at frame 1 (the wrong answer as the hook); the loop restores it.
 // maskPct: [part index, ...]: those percentages read "?" until their row activates (the goal row's % would otherwise
 // answer the header at frame 1); a kit that ignores it simply shows the full sheet.
+// activate: [t | null, ...] per part: the row activates (pointer lands, % turns accent, a masked % unmasks, the
+// previous amount rests) at this t instead of just before its amount lands, so the walk follows the VO naming the row
+// ("Crew pay: ... ≈ $2.51": the pointer is on the row from "Crew", the amount lands on "$2.51"). Never before the
+// previous amount has landed + 0.5 s.
+// bumps: [{ t, at }]: a VO-synced nudge (the box scales up ~8% and back over 0.42 s, a resting box re-lights for it, a
+// soft tick) on 'total', 'guess' or a part index: e.g. the hook's "$10" and "$7.04?" as the first VO line says them.
 import { h, css as style, prog, ease, clamp, lerp } from '../../../runtime/core.js'
 import { C, SIZE, GRID, MOTION, md, hlBox, typeLine, pointer, pathAt, fade, show, blink, landing, durationOf, typeTime, toneColor, readCheck, breakLine } from '../lib.js'
 
@@ -94,6 +100,8 @@ export default function splitSheet(spec, ctx) {
   const goalIdx = parts.findIndex(p => p.tone === 'goal')
   const wgSpec = LO.wrongGuess || d.wrongGuess || null
   const chk = readCheck(d, LO) // a string or { t, text }, in data or lookOpts; always "check: …" (one look kit-wide)
+  const ACT = Array.isArray(LO.activate) ? LO.activate : null
+  const BUMPS = Array.isArray(LO.bumps) ? LO.bumps.filter(b => b && b.at != null && Number.isFinite(+b.t)) : []
   const checkRaw = chk ? chk.text : ''
 
   // ---------------------------------------------------------------- DOM (built once)
@@ -474,6 +482,7 @@ export default function splitSheet(spec, ctx) {
     let typeD = r.f ? clamp(typeTime(r.f.full), 0.35, 0.85) : 0
     let typeStart = t - (LC.formulas === 'slot' ? 0.65 : 0.3) - typeD
     let arr = (r.f ? typeStart : t) - LEAD
+    if (ACT && ACT[i] != null && Number.isFinite(+ACT[i])) arr = Math.min(arr, +ACT[i]) // as the VO names the row
     if (prev) arr = Math.max(arr, prev.t + 0.5)
     if (r.f) {
       typeStart = Math.max(typeStart, arr + 0.15)
@@ -535,6 +544,7 @@ export default function splitSheet(spec, ctx) {
     if (G.strike) ctx.cue(G.strikeT, 'swipe', { gain: 0.35 })
   }
   if (check) ctx.cue(checkT, 'type', { dur: checkD, gain: 0.4 })
+  for (const b of BUMPS) ctx.cue(+b.t, 'tick', { gain: 0.35 })
   if (loop) ctx.cue(clearT0, 'swipe', { gain: 0.3 })
 
   // ---------------------------------------------------------------- seek
@@ -550,9 +560,15 @@ export default function splitSheet(spec, ctx) {
       const restore = goalIdx < 0 ? prog(t, restoreT, 0.45) : 0
       const sumP = check ? prog(t, restoreT, 0.45) : 0
 
+      // VO-synced nudges (lookOpts.bumps): 0 -> 1 -> 0 over 0.42 s
+      const bumpAt = target => { let b = 0; for (const x of BUMPS) if (String(x.at) === String(target)) b = Math.max(b, Math.sin(Math.PI * prog(t, +x.t, 0.42))); return b }
+      const nudge = (el, b, origin, amp = 0.08) => style(el, { transformOrigin: origin, transform: b > 0 ? `scale(${n3(1 + amp * b)})` : 'none' })
+
       // total: loud on frame 1 (the anchor), rests once the first amount lands, loud again at the check
       const totRest = n ? prog(t, T[0].t + 0.1, MOTION.restIn) * (1 - sumP) : 0
-      tot.box.seek(1, 1, totRest * keep)
+      const tb = bumpAt('total')
+      tot.box.seek(1, 1, totRest * keep * (1 - tb))
+      nudge(tot.box.el, tb, '100% 50%')
 
       R.forEach((r, i) => {
         const x = T[i]
@@ -608,7 +624,9 @@ export default function splitSheet(spec, ctx) {
           if (goalIdx >= 0) rest = Math.max(rest, prog(t, restoreT, MOTION.restIn))
           rest *= 1 - restore
         }
-        r.box.seek(L.wipe * keep, L.text * keep, rest, keep * keep) // the figure fades out with its box at the clear
+        const rb = bumpAt(i)
+        r.box.seek(L.wipe * keep, L.text * keep, rest * (1 - rb), keep * keep) // the figure fades out with its box at the clear
+        nudge(r.box.el, rb, '100% 50%')
         fade(r.slot, Math.max(1 - L.wipe, reset ? 1 : clearP))
         // its bar segment fills in the same tone
         const sg = segs[i]
@@ -638,6 +656,7 @@ export default function splitSheet(spec, ctx) {
         const o = back ? 1 : (1 - (G.strike ? 0.45 * prog(t, G.strikeT + 0.25, 0.2) : 0)) * gone * keep
         for (const e of [guess.f.el, guess.box.el]) fade(e, o)
         fade(guess.strike, st > 0 ? gone * keep : 0)
+        nudge(guess.box.el, live ? bumpAt('guess') : 0, '0 50%', 0.1)
       }
 
       // check line (accent mono): types under the sum rule

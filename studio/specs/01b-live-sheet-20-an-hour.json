@@ -5,12 +5,14 @@
   "fps": 30,
   "duration": 26.0,
   "header": "3 DEAD SIMPLE NUMBERS\nYOU PAY **6.2%** TO SOCIAL SECURITY.\nA $1M SALARY PAYS…?",
-  "footer": "ASSUMES 40 hrs × 52 wks · 2026 Social Security tax, employee share · Medicare not counted",
+  "footer": "ASSUMES 40 hrs × 52 wks · 2026 rates · employee share, no Medicare",
   "captions": true,
   "vo": [
-    { "t": 0.0,  "d": 3.9, "text": "At $20 an hour, that's about $2,579 a year." },
-    { "t": 4.0,  "d": 2.0, "text": "A million-dollar salary: $62,000?" },
-    { "t": 6.1,  "d": 5.0, "text": "No. It stops at $184,500: $11,439." },
+    { "t": 0.0,  "d": 2.7, "text": "At $20 an hour, you pay about" },
+    { "t": 2.7,  "d": 1.5, "text": "$2,579 a year." },
+    { "t": 4.2,  "d": 1.9, "text": "A million-dollar salary: $62,000?" },
+    { "t": 6.1,  "d": 3.5, "text": "No. It stops at $184,500:" },
+    { "t": 9.6,  "d": 1.6, "text": "$11,439." },
     { "t": 11.3, "d": 3.5, "text": "That's about 1.1% of their pay." },
     { "t": 15.1, "d": 3.9, "text": "Yours: 6.2%, on every dollar, all year." },
     { "t": 19.3, "d": 3.1, "text": "You pay more than five times their rate." }
@@ -21,8 +23,8 @@
     "typeDur": 0.6,
     "items": [
       { "t": 0.0, "label": "Yours, a year", "formula": "$20 × 2,080 × 6.2%", "result": "≈ $2,579",
-        "tone": "bad", "note": "6.2% of every dollar", "resultT": 2.3 },
-      { "t": 6.9, "label": "A $1M salary's", "formula": "$184,500 × 6.2%", "result": "$11,439",
+        "tone": "bad", "note": "6.2% of every dollar", "resultT": 2.6 },
+      { "t": 6.9, "label": "A $1M salary pays", "formula": "$184,500 × 6.2%", "result": "$11,439",
         "tone": "neutral", "note": "taxed only up to $184,500", "resultT": 9.6 },
       { "t": 11.7, "label": "Their rate", "formula": "$11,439 ÷ $1,000,000", "result": "≈ 1.1%",
         "tone": "goal", "note": "yours: 6.2%", "resultT": 12.5, "noteT": 15.1 }
@@ -30,7 +32,7 @@
   },
   "lookOpts": {
     "labels": "always",
-    "wrongGuess": { "item": 1, "t": 4.0, "formula": "$1,000,000 × 6.2%", "result": "$62,000", "resultT": 5.2, "strikeT": 6.1 }
+    "wrongGuess": { "item": 1, "t": 4.2, "formula": "$1,000,000 × 6.2%", "result": "$62,000", "resultT": 5.2, "strikeT": 6.1 }
   },
   "sfx": [ { "t": 19.3, "kind": "ding" } ]
 }

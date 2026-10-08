@@ -7,7 +7,7 @@
 // Frame 1 is the empty ledger: names, plans and every year label (in grey) are on the page, so the viewer sees the
 // bet and the time span before anything fills (rows with t <= 0, usually the starting stake, are already filled).
 // Each row then lands in both columns at once: its year turns ink, a sand cursor band swipes across it and both
-// values type in place (right-aligned, so nothing shifts while they type; every "≈" in a column on one vertical line). The cursor moves down with every row.
+// values type in place (right-aligned, so nothing shifts while they type; each "≈" hugs its figure). The cursor moves down with every row.
 // An event row (a crash, a recovery) swipes its tone instead (crash = coral) and opens a note line under its year
 // (the empty rows below ease down to make room, so the frame-1 grid is even and gives nothing away); that tint stays
 // (rested) as a record. The goal row is the ledger's total line: a rule above it and larger figures. At the winner
@@ -31,10 +31,10 @@
 // lookOpts: loop (true) · stake ('auto' | 'show' | 'hide') · labels ('ahead' | 'with-row') ·
 //           formulas ([colA, colB]: grey mono footnote "Name: formula") · winnerT (seconds) · badge (ignored:
 //           the Clean Sheet dropped the badge because it repeats the title) · marks ([{ t, row, person, tone }]: a
-//           landed value's own highlighter swipes in as the voice names it, resting at 42% when the next mark or
-//           the winner lands)
+//           landed value's own highlighter swipes in as the voice names it, resting at 42% when the next mark, the
+//           winner or a later row lands, after at least 1.2 s at full strength)
 import { h, css as style, prog, ease, clamp, lerp, plain } from '../../../runtime/core.js'
-import { C, GRID, MOTION, md, hlBox, toneColor, fadeUp, fade, landing, durationOf, fitMarkup, alignApprox } from '../lib.js'
+import { C, GRID, MOTION, md, hlBox, toneColor, fadeUp, fade, landing, durationOf, fitMarkup } from '../lib.js'
 
 export const css = `
 .ld > * { position: absolute; }
@@ -145,7 +145,13 @@ export default function ledgerDuel(spec, ctx) {
     .filter(m => isFinite(m.t) && m.row >= 0 && m.row < N && (m.j === 0 || m.j === 1) && m.t >= T[m.row]
       && !(isFinite(winT) && m.row === finalIdx && m.j === W0))
     .sort((a, b) => a.t - b.t)
-  marks.forEach((m, k) => { m.next = Math.min(k + 1 < marks.length ? marks[k + 1].t : Infinity, winT > m.t ? winT : Infinity) })
+  // a mark rests when the next mark or the winner lands, or when a later row lands (that row is the new focus),
+  // but not before it has held MARK_HOLD s at full strength (the voice is usually still naming it)
+  const MARK_HOLD = 1.2
+  marks.forEach((m, k) => {
+    const rowAfter = Math.min(Infinity, ...T.filter(x => x > m.t + 1e-6))
+    m.next = Math.min(k + 1 < marks.length ? marks[k + 1].t : Infinity, winT > m.t ? winT : Infinity, Math.max(rowAfter, m.t + MARK_HOLD))
+  })
   const lastBeat = Math.max(lastLand + 0.3, isFinite(winT) ? winT + 0.6 : 0, ...marks.map(m => m.t + 0.6))
   const clearLen = MOTION.clear + 0.2
   const computed = durationOf(spec, lastBeat, { hold: d.hold != null ? +d.hold : 3.0, tail: loop ? clearLen : 0 })
@@ -236,11 +242,9 @@ export default function ledgerDuel(spec, ctx) {
   // ---------------------------------------------------------------- measuring (real fonts, reference size)
   const range = document.createRange()
   const textW = el => { range.selectNodeContents(el); return range.getBoundingClientRect().width }
-  // each money column: every "≈" in one vertical line (a slot left of the widest figure; plain values leave it empty)
-  for (const j of [0, 1]) {
-    const html = alignApprox(R.map(row => row.cells[j].hl), rows.map(r => r.values[j]), REF)
-    R.forEach((row, i) => { row.cells[j].full = html[i] })
-  }
+  // each "≈" hugs its own figure (md binds it with a no-break space) and the figures right-align: a column-wide
+  // "≈" slot left a gap in short values ("≈    $21.84") that read as a mis-padded box once a highlighter was on it
+  for (const row of R) for (const c of row.cells) c.hl.setHTML(c.full)
   for (const row of R) for (const c of row.cells) { c.hl.setPx(REF); c.tw = c.hl.txt.getBoundingClientRect().width - 2 * padOf(REF) }
   const valW = [0, 1].map(j => Math.max(0, ...R.filter((_, i) => i !== finalIdx).map(row => row.cells[j].tw)))
   const finW = [0, 1].map(j => (finalIdx >= 0 ? R[finalIdx].cells[j].tw : 0))

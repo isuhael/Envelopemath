@@ -302,7 +302,9 @@ def build_08a():
             "rungs": rungs,
             "hold": hold,
         },
-        "lookOpts": {"climaxFill": 1},
+        # the hero's payoff (built kit, lookOpts.payoff): at the verdict the hero cuts to the unit price and rolls
+        # up to the answer, so "what it would cost" is the last number the hero lands on
+        "lookOpts": {"climaxFill": 1, "payoff": {"t": 20.2, "from": u2, "display": rose_disp}},
         "sfx": [{"t": 20.2, "kind": "ding"}],
     }
     allowed = {F(x) for x in [HOT_DOG_COMBO, COSTCO_MEMBERSHIP, IPHONE_18_PRO, NEW_HOUSE_1985,
@@ -314,8 +316,29 @@ def build_08a():
     say = {i: v[i] for i in range(len(items))}
     # rung 0 cuts under the opener line (VO 0) and its count lands before its own VO line starts
     timing = {"prerolled": {0}, "prefilled": set(), "lead": {}, "lag": 0.0,
-              "lands_of": lambda sp: scoreboard_landings(sp["data"]["rungs"])}
+              "lands_of": lambda sp: scoreboard_landings(sp["data"]["rungs"]),
+              "extras": scoreboard_payoff}
     return exp, rows, allowed, labelled, mapping, opens, say, lands, 5, timing
+
+def scoreboard_payoff(sp, lands):
+    """The hero's payoff roll (mirrors lookOpts.payoff in looks/scoreboard/formats/unit-ladder.js: it cuts at
+    max(t, last landing + 0.3), holds 0.2 s, rolls 1.4 s). It must land on the verdict's beat, before the voice
+    says the number (or within 0.5 s after)."""
+    po = sp.get("lookOpts", {}).get("payoff")
+    if not po:
+        return [(False, "08a: lookOpts.payoff missing", None)]
+    t0 = max(po.get("t", sp["verdict"]["t"]), lands[-1] + 0.3)
+    land = t0 + 0.2 + po.get("roll", 1.4)
+    line = next((v for v in sp["vo"] if po["display"] in strip_markup(v["text"])), None)
+    if line is None:
+        return [(False, f"08a: no VO line says the payoff {po['display']}", None)]
+    said = line["t"] + words_before(line["text"], po["display"]) / WPS
+    return [
+        (po.get("t") == sp["verdict"]["t"], "08a: the payoff roll must start on the verdict", None),
+        (po["from"] == sp["data"]["unit"]["price"] and po["display"] in sp["verdict"]["text"], "08a: payoff must roll from the unit price to the verdict's number", None),
+        (said >= land - 0.5 and land >= t0, f"08a: VO says {po['display']} at {said:.2f} s, the hero lands it at {land:.2f} s",
+         f"  payoff: cut {t0:5.2f}  hero {po['from']} -> {po['display']} lands {land:5.2f}  VO says '{po['display']}' at {said:5.2f}"),
+    ]
 
 def take_home_per_hour():
     gross = WAGE * HOURS_PER_YEAR
@@ -440,7 +463,10 @@ def build_08b():
             "hold": hold,
         },
         # the built recap table names each pile; without this both rent piles shorten to "Median rent"
-        "lookOpts": {"pileLabels": ["Median rent, 1 month", "Median rent, 1 year", "Average new car", "Median new house"]},
+        # blank: the built kit writes the hook's answer into the header's "___" (lookOpts.blank): the days tick up
+        # from the 1st while vo[1] says "every hour you work" and land on the answer as the voice says it
+        "lookOpts": {"pileLabels": ["Median rent, 1 month", "Median rent, 1 year", "Average new car", "Median new house"],
+                     "blank": {"t": 4.7, "d": 1.7, "text": f"≈ {day}th"}},
         "sfx": [],
     }
     allowed = {F(x) for x in [WAGE, RENT, RENT * MONTHS, KBB_ATP, NEW_HOUSE_2026, MONTHS, 2026]}
@@ -452,8 +478,33 @@ def build_08b():
     say = {i: f"{v[i]} hours" for i in range(len(items))}
     # rung 0's line opens on the wage ("$15 an hour?"), then names the rent
     timing = {"prerolled": set(), "prefilled": set(), "lead": {0: 4}, "lag": 1.4, "counter_sync": True,
-              "lands_of": lambda sp: becker_landings(sp["data"]["rungs"], sp["data"]["hold"], sp["verdict"]["t"])}
+              "lands_of": lambda sp: becker_landings(sp["data"]["rungs"], sp["data"]["hold"], sp["verdict"]["t"]),
+              "extras": lambda sp, lands: becker_blank(sp, lands, f"≈ the {day}th")}
     return exp, rows, allowed, labelled, mapping, opens, say, lands, 5, timing
+
+def becker_blank(sp, lands, phrase):
+    """The header's blank fills in (mirrors lookOpts.blank in looks/becker-rig/formats/unit-ladder.js: the ordinals
+    tick from t, the answer lands at t + d). It must start inside its VO line, land before the voice says the date
+    (by at most 0.5 s), stay clear of rung 0's landing and of rung 1's cut, and count to the number it prints."""
+    bl = sp.get("lookOpts", {}).get("blank")
+    if not bl:
+        return [(False, "08b: lookOpts.blank missing", None)]
+    land = bl["t"] + bl.get("d", 1.6)
+    line = next((v for v in sp["vo"] if phrase in strip_markup(v["text"])), None)
+    if line is None:
+        return [(False, f"08b: no VO line says {phrase!r}", None)]
+    said = line["t"] + words_before(line["text"], phrase) / WPS
+    rungs = sp["data"]["rungs"]
+    n_text = int(re.sub(r"\D", "", bl["text"]))
+    n_vo = int(re.sub(r"\D", "", phrase))
+    return [
+        ("___" in sp["header"], "08b: the header has no blank to fill", None),
+        (n_text == n_vo, f"08b: the blank prints {bl['text']!r} but the voice says {phrase!r}", None),
+        (line["t"] <= bl["t"] < said, "08b: the blank must start ticking inside its VO line, before the date is said", None),
+        (land <= said + 1e-9 and said - land <= 0.5, f"08b: the blank lands at {land:.2f} s, the voice says the date at {said:.2f} s", None),
+        (lands[0] + 0.6 <= land <= rungs[1]["t"] - 0.9, "08b: the blank must land between rung 0's count and rung 1's cut", 
+         f"  blank: ticks 1st -> {bl['text']} from {bl['t']:5.2f}, lands {land:5.2f}  VO says '{phrase}' at {said:5.2f}"),
+    ]
 
 # Clean Sheet kit timing (mirrors looks/clean-sheet/formats/unit-ladder.js + theme.js MOTION)
 CS = dict(popDelay=0.16, activate=0.3, collapse=0.42, typeCps=18, wipe=0.26, pop=0.22)
@@ -746,6 +797,10 @@ def run(name, builder):
             said = vo[vi]["t"] + words_before(vo[vi]["text"], say[ri]) / WPS
             check(said >= lands[ri] - 0.5, f"{name}: rung {ri}: VO says the number at {said:.2f} s, counter lands at {lands[ri]:.2f} s")
             print(f"  rung {ri}: cut {rungs[ri]['t']:5.2f}  counter lands {lands[ri]:5.2f}  VO says '{say[ri]}' at {said:5.2f}")
+    for ok, msg, line in (timing.get("extras") or (lambda sp, ld: []))(spec, lands):
+        check(ok, msg)
+        if line:
+            print(line)
     print("  VO timing (words at 2.6/s):")
     for i, v in enumerate(vo):
         w = spoken_words(v["text"])

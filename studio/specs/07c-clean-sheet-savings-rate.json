@@ -5,13 +5,18 @@
   "fps": 30,
   "duration": 19.1,
   "header": "You save **$100 a month**\n5 years = $6,000\nA big bank adds: ?",
-  "footer": "ASSUMES $100 at each month-end, rates held 5 years · 0.01% = Chase Savings APY",
+  "footer": "ASSUMES month-end deposits, steady rates · 0.01% = a big bank's standard savings APY",
   "captions": true,
   "vo": [
     {
       "t": 0.0,
-      "d": 3.45,
-      "text": "Year 1 at a big bank: about 5 cents."
+      "d": 2.3,
+      "text": "Year 1 at a big bank:"
+    },
+    {
+      "t": 2.45,
+      "d": 1.15,
+      "text": "About 5 cents."
     },
     {
       "t": 3.7,
@@ -41,17 +46,17 @@
   ],
   "verdict": {
     "t": 15.2,
-    "text": "$6,000 saved, 5 years:\n__≈ $1.48__ vs **≈ $617.90**"
+    "text": "Same $6,000, different account:\n__≈ $1.48__ vs **≈ $617.90**"
   },
   "data": {
     "people": [
       {
         "name": "You",
-        "plan": "Big bank · 0.01% APY · $100 a month"
+        "plan": "Big bank · 0.01% APY"
       },
       {
         "name": "Leo",
-        "plan": "High-yield · 4.00% APY · $100 a month"
+        "plan": "High-yield · 4.00% APY"
       }
     ],
     "stake": "Interest earned so far · $100 a month each",
@@ -73,7 +78,7 @@
         ]
       },
       {
-        "t": 5.0,
+        "t": 6.0,
         "label": "Year 2",
         "values": [
           "≈ $0.23",
@@ -123,7 +128,7 @@
     "stake": "show",
     "marks": [
       {
-        "t": 2.3,
+        "t": 2.7,
         "row": 1,
         "person": 0,
         "tone": "bad"
@@ -133,6 +138,12 @@
         "row": 1,
         "person": 1,
         "tone": "good"
+      },
+      {
+        "t": 7.4,
+        "row": 3,
+        "person": 0,
+        "tone": "bad"
       },
       {
         "t": 10.0,

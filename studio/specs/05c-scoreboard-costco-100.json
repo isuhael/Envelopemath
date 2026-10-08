@@ -41,7 +41,7 @@
       { "t": 13.6, "text": "$5,907M ÷ $297,247M × $100 ≈ $1.99" },
       { "t": 17.0, "text": "cart $5,778M + fees $5,907M = $11,685M" }
     ],
-    "bonus": { "t": -1.2, "label": "Membership fees, per $100 of sales", "amount": "≈ $1.99", "tone": "good" },
+    "bonus": { "t": -1.2, "focusT": 12.5, "label": "Membership fees, per $100 of sales", "amount": "≈ $1.99", "tone": "good" },
     "icon": "bag"
   }
 }

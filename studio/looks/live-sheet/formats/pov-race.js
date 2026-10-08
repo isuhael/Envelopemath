@@ -17,8 +17,10 @@
 //                 it, or on the live row when there is no history) and the year rolls on.
 //   chart         the spend line against the owned line, the gap between them tinted green or red, a y axis that
 //                 rescales with the running maximum, purchase rings, and a dark price tag that pops when the race
-//                 passes a purchase. Tags hang over the side the race has not drawn yet, and are gone before
-//                 the final values land.
+//                 passes a purchase. Each mid-race tag's spot is scored at mount over its whole time on screen
+//                 (line ink under it, tips, rings): attached to its ring by the notch when that is clear, else
+//                 parked in the empty part of the plot with a thin leader to its ring; all mid-race tags share
+//                 one format (one line, or label over price). Tags are gone before the final values land.
 // Frame 1: the question card, the formula bar mid-typing, the start row filled (a money number at 0.0 s), the
 // empty row being raced, and the chart waiting with the stake's tag. At raceT[1] the live row lands on the spec's
 // final display strings (a word after the number, "spent", drops to a smaller second line when it will not fit),
@@ -55,7 +57,7 @@ export const css = `
 .ls-cell.right.pov-yc { justify-items: end; }
 .pov-u { font-size: 40px; font-weight: 700; letter-spacing: -0.005em; }
 .pov-two .pov-u { display: block; line-height: 1; margin-top: 6px; }
-.ls-cell.pov-lift { padding-bottom: 46px; }
+.ls-cell.pov-lift, .ls-rn.pov-lift { padding-bottom: 46px; box-sizing: border-box; }
 .pov-card .ls-cell.mid { font-weight: 800; }
 .pov-key { position: absolute; left: 0; right: 0; bottom: 0; height: 7px; }
 .pov-tag {
@@ -447,6 +449,9 @@ export default function povRace(spec, ctx) {
   const markG = s('g', {})
   const marks = purchases.map(() => { const c = s('circle', { r: 9, fill: C.sheet, stroke: C.bad, 'stroke-width': 5, opacity: 0 }); markG.append(c); return c })
   chart.svg.insertBefore(markG, chart.svg.lastChild)
+  // a parked tag's leader to its ring (under the rings and tips)
+  const leader = s('line', { stroke: '#101828', 'stroke-width': 4, 'stroke-linecap': 'round', opacity: 0, x1: 0, y1: 0, x2: 0, y2: 0 })
+  chart.svg.insertBefore(leader, markG)
   const tagNotch = h('i')
   const tagTxt = h('span')
   const tag = h('div', { class: 'pov-tag' }, tagNotch, tagTxt)
@@ -470,6 +475,109 @@ export default function povRace(spec, ctx) {
     return m
   }
   const yMaxAt = x => Math.max(runMax(x) * 1.18, yFloor)
+
+  // ---------- where each price tag sits (scored once at mount; seek stays a pure function of t) ----------
+  // A tag that pops mid-race never covers the lines it annotates. Each spot is scored on the geometry of the tag's
+  // own moments (pop, middle, fade): line ink under it, either tip, a ring. First choice: attached to its ring by the
+  // notch (above it, hanging right / centred / left; or beside it). When every attached spot lands on the lines (a
+  // late hike, the ring at the foot of a steep climb), the tag parks in the empty part of the plot (the top-left, over
+  // a growth curve) with a thin leader to its ring. One line, or label over price (narrower) when that fits better.
+  // The stake's frame-1 tag keeps its own spot (below).
+  const PL = chart.plot.x, PR = Math.min(chart.plot.x + chart.plot.w, G.railX - G.left - 6)
+  const PT = chart.plot.y, PB = chart.plot.y + chart.plot.h
+  const yAt = (v, ym) => PB - (v / ym) * chart.plot.h
+  const TAG2H = 112
+  const tagFmt = purchases.map((p, i) => {
+    const lab = p.label ? esc(p.label) : '', pr = esc(p.price || '')
+    const w2 = lab && pr ? Math.ceil(Math.max(textW(lab, font(600, 40), ls), textW(`<b>${pr}</b>`, font(600, 40), ls)) + 40) : 0
+    return [{ w: tagW[i], h: 60, two: false }, ...(w2 ? [{ w: w2, h: TAG2H, two: true }] : [])]
+  })
+  const tagCands = f => {
+    const out = [{ kind: 'above', hz: 'r', pref: 0 }, { kind: 'above', hz: 'c', pref: 3 }, { kind: 'above', hz: 'l', pref: 6 },
+      { kind: 'right', pref: 4 }, { kind: 'left', pref: 6 }]
+    for (let y0 = PT + 4; y0 + f.h <= PB - 8 && y0 <= PT + 84; y0 += 40) {
+      const xs0 = []
+      for (let x0 = PL + 12; x0 + f.w <= PR; x0 += 32) xs0.push(x0)
+      if (PR - f.w >= PL + 12) xs0.push(PR - f.w)                     // flush right too
+      for (const x0 of xs0) out.push({ kind: 'park', x0, y0, pref: 22 + 0.02 * (x0 - PL) + 0.05 * (y0 - PT) })
+    }
+    return out
+  }
+  // a spot's rect for a ring at (mx, my): { x0, y0, nx, ny } (the notch inside the tag; none when parked), or null
+  // when the spot does not exist there (force: clamp it into the plot instead)
+  function placeTag(c, f, mx, my, force = false) {
+    const w = f.w, th = f.h, gap = 20
+    if (c.kind === 'park') return { x0: c.x0, y0: c.y0, park: true }
+    if (c.kind === 'right' || c.kind === 'left') {
+      let x0 = c.kind === 'right' ? mx + gap : mx - gap - w
+      if (x0 < PL || x0 + w > PR) { if (!force) return null; x0 = clamp(x0, PL, PR - w) }
+      const y0 = clamp(my - th / 2, PT, PB - th)
+      return { x0, y0, nx: c.kind === 'right' ? -9 : w - 11, ny: clamp(my - y0 - 10, 10, th - 30) }
+    }
+    let x0 = c.hz === 'r' ? mx - 34 : c.hz === 'c' ? mx - w / 2 : mx - w + 34
+    x0 = clamp(x0, PL, PR - w)
+    let y0 = my - gap - th
+    if (y0 < PT) { if (!force) return null; y0 = PT }
+    return { x0, y0, nx: clamp(mx - x0 - 10, 14, w - 34), ny: th - 11 }
+  }
+  // a parked tag's leader: from the tag edge facing its ring to the ring's rim
+  function leaderOf(r, f, mx, my) {
+    const cx = clamp(mx, r.x0 + 18, r.x0 + f.w - 18), cy = clamp(my, r.y0 + 14, r.y0 + f.h - 14)
+    let sx = cx, sy = r.y0
+    if (my > r.y0 + f.h) sy = r.y0 + f.h
+    else if (mx > r.x0 + f.w) { sx = r.x0 + f.w; sy = cy }
+    else if (mx < r.x0) { sx = r.x0; sy = cy }
+    const dd = Math.hypot(mx - sx, my - sy) || 1, rim = 15
+    return [sx, sy, mx - ((mx - sx) / dd) * rim, my - ((my - sy) / dd) * rim]
+  }
+  function tagGeom(t) {
+    const xN = xRace(t), ym = yMaxAt(xN)
+    const poly = pts => {
+      const a = []
+      for (const q of pts) { if (q[0] > xN + 1e-9) break; a.push([chart.X(q[0]), yAt(q[1], ym)]) }
+      a.push([chart.X(xN), yAt(valAt(pts, xN), ym)])
+      return a
+    }
+    return { xN, ym, lines: [poly(ow), poly(sp)], tips: [[chart.X(xN), yAt(valAt(ow, xN), ym)], [chart.X(xN), yAt(valAt(sp, xN), ym)]] }
+  }
+  // the best spot for tag i in one format (f: 0 one line, 1 label over price)
+  const bestSpot = (i, fi) => {
+    const p = purchases[i], f = tagFmt[i][fi]
+    if (!f) return null
+    const tA = Math.max(tagT[i], r0), tB = tagOut(i) + 0.2
+    const geoms = [0, 0.15, 0.3, 0.5, 0.7, 0.85, 1].map(k => tagGeom(lerp(tA + 0.03, tB, k)))
+    let best = null
+    for (const c of tagCands(f)) {
+      let cost = c.pref, ok = true
+      for (const g of geoms) {
+        const mx = chart.X(p.x), my = yAt(valAt(sp, p.x), g.ym)
+        const r = placeTag(c, f, mx, my)
+        if (!r) { ok = false; break }
+        const R = [r.x0 - 10, r.y0 - 10, r.x0 + f.w + 10, r.y0 + f.h + 10]
+        g.lines.forEach((ln, m) => { for (let k = 1; k < ln.length; k++) cost += (m ? 1 : 1.6) * clipLen(ln[k - 1][0], ln[k - 1][1], ln[k][0], ln[k][1], R) })
+        for (const tp of g.tips) if (tp[0] > R[0] - 10 && tp[0] < R[2] + 10 && tp[1] > R[1] - 10 && tp[1] < R[3] + 10) cost += 500
+        purchases.forEach((q, j) => {
+          if (q.x > g.xN + 1e-6) return
+          const qx = chart.X(q.x), qy = yAt(valAt(sp, q.x), g.ym)
+          if (qx > R[0] && qx < R[2] && qy > R[1] && qy < R[3]) cost += j === i ? 500 : 40
+        })
+        if (r.park) {
+          const a = leaderOf(r, f, mx, my)
+          cost += 0.04 * Math.hypot(a[2] - a[0], a[3] - a[1])
+          g.lines.forEach(ln => { for (let k = 1; k < ln.length; k++) if (segX([a[0], a[1]], [a[2], a[3]], ln[k - 1], ln[k])) cost += 25 })
+        }
+      }
+      if (ok && (!best || cost < best.cost)) best = { cost, c, f }
+    }
+    return best
+  }
+  // every mid-race tag takes the same format (one line, else label over price): the one that covers less overall
+  const midTags = purchases.map((p, i) => i).filter(i => tagT[i] > 0)
+  const byFmt = [0, 1].map(fi => midTags.map(i => bestSpot(i, fi) || (fi ? bestSpot(i, 0) : null)))
+  const total = sp2 => sp2.reduce((a, b) => a + (b ? b.cost : 1e6), 0) + (sp2 === byFmt[1] ? 5 * midTags.length : 0)
+  const pick = midTags.length && total(byFmt[1]) < total(byFmt[0]) ? byFmt[1] : byFmt[0]
+  const tagSpot = purchases.map(() => null)            // the stake's tag at frame 1 keeps its own spot (seek)
+  midTags.forEach((i, k) => { tagSpot[i] = pick[k] })
   function gapPaths(xEnd) {
     if (!gapOn || xEnd <= xs + 1e-6) return ['', '']
     const xsS = [xs, ...xAll.filter(x => x > xs && x < xEnd), xEnd]
@@ -578,6 +686,7 @@ export default function povRace(spec, ctx) {
       const numNow = 2 + (inLoop && outQ >= 1 ? idx0 : idx)
       setText(lv.cells[0].v, yearNow)
       lv.cells[0].el.classList.toggle('pov-lift', twoSp || twoOw)
+      lv.num.classList.toggle('pov-lift', twoSp || twoOw)   // the row number sits on the values' line too
       setText(lv.num, String(numNow))
       // where the live row sits: it fills down through the H history slots, and climbs back for the loop
       const fPlay = Math.min(H, scrollAt(tt))
@@ -676,8 +785,39 @@ export default function povRace(spec, ctx) {
         // the loop ends on frame 1, start tag included
         ti = startTag; tagA = prog(t, loopT0 + 0.3, 0.14)
       }
-      if (tagA <= 0.001) { setStyle(tag, { opacity: '0', left: '0px', top: '0px', transformOrigin: '0px 0px', transform: 'none' }); setStyle(tagNotch, { left: '0px', top: '0px' }); setHTML(tagTxt, '') }
-      else {
+      const spot = ti >= 0 && !inLoop ? tagSpot[ti] : null
+      if (tagA <= 0.001) {
+        setStyle(tag, { opacity: '0', left: '0px', top: '0px', transformOrigin: '0px 0px', transform: 'none' }); setStyle(tagNotch, { left: '0px', top: '0px', display: 'block' }); setHTML(tagTxt, '')
+        tag.classList.remove('two')
+        attr(leader, 'opacity', 0); for (const a of ['x1', 'y1', 'x2', 'y2']) attr(leader, a, 0)
+      } else if (spot) {
+        // a mid-race tag on its scored spot (attached by the notch, or parked with a leader)
+        const p = purchases[ti], f = spot.f
+        const mx = chart.X(p.x), my = chart.Y(valAt(sp, p.x))
+        const r = placeTag(spot.c, f, mx, my, true)
+        tag.classList.toggle('two', f.two)
+        setHTML(tagTxt, f.two ? `<span>${esc(p.label || '')}</span><b>${esc(p.price || '')}</b>` : tagHTML[ti])
+        let ox, oy
+        if (r.park) {
+          const a = leaderOf(r, f, mx, my)
+          attr(leader, 'opacity', clamp(tagA).toFixed(3))
+          attr(leader, 'x1', a[0].toFixed(1)); attr(leader, 'y1', svgY(a[1])); attr(leader, 'x2', a[2].toFixed(1)); attr(leader, 'y2', svgY(a[3]))
+          setStyle(tagNotch, { left: '0px', top: '0px', display: 'none' })
+          ox = a[0] - r.x0; oy = a[1] - r.y0
+        } else {
+          attr(leader, 'opacity', 0); for (const a of ['x1', 'y1', 'x2', 'y2']) attr(leader, a, 0)
+          setStyle(tagNotch, { left: Math.round(r.nx) + 'px', top: Math.round(r.ny) + 'px', display: 'block' })
+          ox = r.nx + 10; oy = r.ny + 10
+        }
+        const pop = ease.back(prog(t, tagT[ti], 0.26), 1.8)
+        setStyle(tag, {
+          opacity: String(clamp(tagA)), left: Math.round(r.x0) + 'px', top: Math.round(r.y0) + 'px',
+          transformOrigin: `${Math.round(ox)}px ${Math.round(oy)}px`, transform: pop >= 1 ? 'none' : `scale(${Math.max(1, pop).toFixed(4)})`,
+        })
+      } else {
+        tag.classList.remove('two')
+        attr(leader, 'opacity', 0); for (const a of ['x1', 'y1', 'x2', 'y2']) attr(leader, a, 0)
+        setStyle(tagNotch, { display: 'block' })
         const p = purchases[ti]
         const mx = chart.X(p.x), my = chart.Y(valAt(sp, p.x))
         const plotL = chart.plot.x, plotR = Math.min(chart.plot.x + chart.plot.w, G.railX - G.left - 6)
