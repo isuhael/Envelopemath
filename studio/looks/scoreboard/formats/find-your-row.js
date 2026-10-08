@@ -12,7 +12,8 @@
 //            balanced lines).
 // Layout: no hero row (layoutFor({ hero: false })); the stage starts under the footer (the kit footer: a long
 //   assumption line breaks at its " · " into two lines and the grid makes room) and ends under the last row; the row
-//   pitch (40-80 px) is what is left between the column labels and the strip. Cells are Anton with every digit in a
+//   pitch (40-80 px; up to 96 px with cells up to 72 px on a board of 6 rows or fewer) is what is left between the
+//   column labels and the strip. Room past the cap goes half above the board, so a short table sits mid-frame. Cells are Anton with every digit in a
 //   0.5em slot (tabular). Column heads are Inter caps at 40 px, on one line or two (as written, or balanced at a word
 //   break); a head may reach left over the previous column's slack; only a board that can't pack them shrinks them.
 //   Strip:   the bottom bar carries the formula (the one-line working) under the pick label when the table leaves
@@ -168,6 +169,7 @@ export default function findYourRow(spec, ctx) {
   const pickH0 = picks.length || prompt ? 58 : 0
   const stackH = formulaH0 + (formulaH0 && pickH0 ? 12 : 0) + pickH0
   const MIN_GAP = 28, LGAP = 24
+  const PMAX = N <= 6 ? 96 : 80, FCMAX = N <= 6 ? 72 : 64
 
   // horizontal: columns pack from the left. A column's right edge sits where both its cells (28 px after the
   // previous column's cells) and its head (24 px after the previous head) fit, so a long head reaches left over the
@@ -232,12 +234,16 @@ export default function findYourRow(spec, ctx) {
     let mode = lo.strip === 'swap' || lo.strip === 'stack' ? lo.strip : 'auto'
     if (mode === 'auto') mode = !(formulaH0 && pickH0) || pitchFor(stackH) >= 52 ? 'stack' : 'swap'
     const stripNeed = mode === 'stack' ? stackH : Math.max(formulaH0, pickH0)
-    const P = Math.round(clamp(pitchFor(stripNeed), 40, 80) * 10) / 10
+    // a short board (<= 6 rows) gets bigger rows (pitch up to 96, cells up to 72 px); room left past the cap goes
+    // half above the board, so a small table sits in the middle of the frame instead of hanging under the header
+    const raw = pitchFor(stripNeed)
+    const P = Math.round(clamp(raw, 40, PMAX) * 10) / 10
+    const drop = raw > PMAX ? Math.min(160, Math.round(((raw - PMAX) * N) / 2)) : 0
     const dense = P < 54
     const gapR = dense ? 2 : clamp(Math.round(P * 0.1), 3, 8)
-    return { rowsTop, mode, stripNeed, P, dense, gapR, barH: P - gapR }
+    return { rowsTop: rowsTop + drop, mode, stripNeed, P, dense, gapR, barH: P - gapR }
   }
-  const fcFor = vp => clamp(Math.round(vp.barH * 0.86), 40, 64)
+  const fcFor = vp => clamp(Math.round(vp.barH * 0.86), 40, FCMAX)
   // heads at 40 px on at most two lines when they pack beside the cells; else wrapped in their slots at 40 px; only
   // then smaller (38 → 34), as long as the head row leaves the rows a pitch of 44 px
   let hp, headH, vp

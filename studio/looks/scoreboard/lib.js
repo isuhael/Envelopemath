@@ -1012,7 +1012,7 @@ export function raceChart(parent, opts) {
     if (Y.max != null) return Y.max
     let acc = 0
     for (let i = 0; i < 6; i++) acc += runMax(xAt(t - i * 0.07))
-    return Math.max(yFloor, (acc / 6) * 1.18)
+    return Math.max(yFloor, (acc / 6) * 1.18, runMax(xAt(t)) * 1.06)   // the smoothing lags a steep climb: never let a line run off the top
   }
   const fmtV = v => fmtNum(v, { prefix: Y.prefix, dp: Y.dp, compact: Y.compact })
   const logMin = Math.max(1e-9, Y.min || Math.min(...ser.flatMap(sr => sr.points.map(p => p[1]))) * 0.8)

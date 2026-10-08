@@ -17,7 +17,7 @@ export { TONE } from './theme.js'
 // Core helpers re-exported so a format imports everything from '../lib.js'. NOTE: core's css() setter is
 // re-exported as `style` because a format module exports its own `css` string.
 export { h, s, setText, setHTML, attr, markup, plain, fitText, captionAt, prog, clamp, lerp, rng }
-export { css as style, tween, typed, window01, money, fmtNum, beat, SAFE } from '../../runtime/core.js'
+export { css as style, tween, typed, graphemes, window01, money, fmtNum, beat, SAFE } from '../../runtime/core.js'
 const RAD = Math.PI / 180
 
 // =====================================================================================================
@@ -177,6 +177,16 @@ export function popIn(t, t0, dur = 0.22, from = 0.82) {
   return { scale: from + (1 - from) * E.back(p, 2.2), opacity: clamp(p * 3) }
 }
 
+/** Smoothstep of x between a and b (0 below a, 1 above b). */
+export const smooth = (a, b, x) => { const p = clamp((x - a) / (b - a)); return p * p * (3 - 2 * p) }
+/** Lerp two points [x, y]. */
+export const lerp2 = (a, b, p) => [a[0] + (b[0] - a[0]) * p, a[1] + (b[1] - a[1]) * p]
+/** Sine pulse: 0 outside [t0, t0 + d], 1 at the middle. */
+export const bump = (t, t0, d) => (t <= t0 || t >= t0 + d ? 0 : Math.sin(Math.PI * (t - t0) / d))
+const hexRGB = c => [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16))
+/** Blend two '#RRGGBB' colours (p clamped 0..1) -> 'rgb(r,g,b)'. */
+export const mix = (a, b, p) => { const x = hexRGB(a), y = hexRGB(b); return `rgb(${x.map((v, i) => Math.round(v + (y[i] - v) * clamp(p))).join(',')})` }
+
 // =====================================================================================================
 // 2. THE RIG
 // =====================================================================================================
@@ -218,6 +228,9 @@ export const POSES = {
   celebrate: { lean: -8, tilt: -18, aF: [158, -20], aB: [-158, 20], lF: [14, -4], lB: [-14, -4] },
   slump:     { lean: 22, tilt: 34, aF: [14, 6], aB: [6, 4], lF: [8, -16], lB: [-4, -12] },
   flat:      { lean: 0, tilt: 0, aF: [166, 0], aB: [194, 0], lF: [12, 0], lB: [-12, 0], rot: 90, sy: 0.5, sx: 1.1 },
+  fall:      { lean: -10, tilt: -22, aF: [148, 34], aB: [-150, -30], lF: [20, -30], lB: [-16, -24] },   // "whoa": arms up, riding a drop
+  win:       { lean: -6, tilt: -18, aF: [144, -16], aB: [-144, 16], lF: [16, -4], lB: [-16, -4] },     // both arms up in a wide V
+  sit:       { lean: 20, tilt: 30, aF: [58, 34], aB: [48, 40], lF: [92, -96], lB: [84, -88] },        // seated on a ledge, hands on his knees
   // run cycle (4 poses): contact, passing, contact (other leg), passing
   run1: { lean: 14, tilt: 2, aF: [-50, 80], aB: [46, 86], lF: [34, -10], lB: [-30, -36] },
   run2: { lean: 16, tilt: 4, aF: [-6, 90], aB: [10, 84], lF: [4, -14], lB: [-14, -110], lift: 8 },
@@ -276,7 +289,7 @@ const dir = a => [Math.sin(a * RAD), Math.cos(a * RAD)]
  *         plant: 'feet' (lowest foot on the ground) | 'all' (lowest point of anything) | false }
  * Returns J = { hip, nk (neck), sh (arm root), head, eF, hF, eB, hB, kF, fF, kB, fB, R, k, sw, face, headRot, sx, sy, ground }.
  */
-export function fk(pose, { x = 540, ground = L.floorY, y = null, face = 1, scale = 1, plant = 'feet' } = {}) {
+export function fk(pose, { x = 540, ground = L.floorY, y = null, face = 1, scale = 1, plant = 'feet', stroke = figStroke(scale) } = {}) {
   const P = poseOf(pose)
   const k = scale, R = RIG.headR * k
   const lean = P.lean || 0, tilt = P.tilt || 0
@@ -293,7 +306,7 @@ export function fk(pose, { x = 540, ground = L.floorY, y = null, face = 1, scale
     const c = Math.cos(P.rot * RAD), sn = Math.sin(P.rot * RAD)
     for (const key in pts) { const [px, py] = pts[key]; pts[key] = [px * c - py * sn, px * sn + py * c] }
   }
-  const sw = (S.figure * k) / 2
+  const sw = stroke / 2
   let hipY
   if (y != null) hipY = y
   else {
@@ -350,23 +363,37 @@ export function blendJ(a, b, p) {
 }
 
 /**
+ * Limb stroke of the figure in px. Constant in screen px whatever the scale (one uniform line weight across the
+ * kit: a small figure is not drawn with a thinner pen). fk() plants feet with the same value.
+ */
+export const figStroke = () => S.figure
+
+/**
  * The figure: filled round head, one-line torso, 2-bone limbs, uniform stroke with round caps, no face.
  * Identifying detail: a pencil tucked behind the head ("back of the envelope" maths).
  *   const fig = new Figure(world.g.fig, { scale: 1, color: C.hero })
  *   fig.pose(t, track, { x, ground, face })      // FK + secondary motion + draw; returns joints
  *   fig.draw(J)                                   // draw joints you solved yourself (IK, blends)
+ * opts: scale, color, detail ('pencil' | null), opacity,
+ *       outline (knockout colour drawn under the limbs so he reads in front of ink props; null = none),
+ *       outlineWidth (px added to the limb width by the knockout, default 12; ~5 keeps overlapping figures apart
+ *       without chopping a line he stands on), stroke (limb width in px, default figStroke()).
+ * Draw order: back limbs < torso < front-limb knockout < head knockout < head < pencil < front limbs. The front
+ * arm's knockout sits under the head, so an arm crossing the head never cuts a notch out of it.
  */
 export class Figure {
-  constructor(parent, { scale = 1, color = C.hero, detail = 'pencil', opacity = 1, outline = C.void } = {}) {
+  constructor(parent, { scale = 1, color = C.hero, detail = 'pencil', opacity = 1, outline = C.void, outlineWidth = 12, stroke = figStroke(scale) } = {}) {
     this.k = scale
+    this.sw = stroke
+    this.ow = outlineWidth
     this.g = s('g', { class: 'br-fig', 'data-deco': '' })
-    const st = { fill: 'none', stroke: color, 'stroke-width': S.figure * scale, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }
+    const st = { fill: 'none', stroke: color, 'stroke-width': stroke, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }
     this.inner = s('g')
-    // knockout outline: the same limbs, wider, in the void colour, drawn first, so the figure stays readable
-    // in front of ink props (ladders, gates, rails). outline: null turns it off.
+    // knockout outline: the same limbs, wider, in the void colour, drawn under each limb group, so the figure
+    // stays readable in front of ink props (ladders, gates, rails). outline: null turns it off.
     this.ko = null
-    if (outline) {
-      const ko = { ...st, stroke: outline, 'stroke-width': S.figure * scale + 12 }
+    if (outline && outlineWidth > 0) {
+      const ko = { ...st, stroke: outline, 'stroke-width': stroke + outlineWidth }
       this.ko = { lB: s('path', ko), aB: s('path', ko), torso: s('path', ko), lF: s('path', ko), aF: s('path', ko), head: s('ellipse', { fill: outline }) }
     }
     this.limbs = { lB: s('path', st), aB: s('path', st), torso: s('path', st), lF: s('path', st), aF: s('path', st) }
@@ -375,8 +402,9 @@ export class Figure {
     const K = this.ko
     this.inner.append(
       ...(K ? [K.lB, K.aB, K.torso] : []), this.limbs.lB, this.limbs.aB, this.limbs.torso,
-      ...(this.pencil ? [this.pencil] : []), ...(K ? [K.head] : []), this.head,
-      ...(K ? [K.lF, K.aF] : []), this.limbs.lF, this.limbs.aF,
+      ...(K ? [K.lF, K.aF, K.head] : []),
+      this.head, ...(this.pencil ? [this.pencil] : []),
+      this.limbs.lF, this.limbs.aF,
     )
     this.g.append(this.inner)
     parent.append(this.g)
@@ -391,7 +419,7 @@ export class Figure {
       torso: `M${f('hip')}L${f('nk')}`,
     }
     for (const k in D) { attr(this.limbs[k], 'd', D[k]); if (this.ko) attr(this.ko[k], 'd', D[k]) }
-    for (const [el, r] of [[this.head, J.R], ...(this.ko ? [[this.ko.head, J.R + 6]] : [])]) {
+    for (const [el, r] of [[this.head, J.R], ...(this.ko ? [[this.ko.head, J.R + this.ow / 2]] : [])]) {
       attr(el, 'cx', J.head[0].toFixed(1)); attr(el, 'cy', J.head[1].toFixed(1))
       attr(el, 'rx', r.toFixed(1)); attr(el, 'ry', r.toFixed(1))
     }
@@ -409,20 +437,33 @@ export class Figure {
   pose(t, tr, o = {}) {
     const p = o.pose || tr.at(t)
     const prev = o.pose ? null : tr.at(t - 0.07)
-    const J = fk(secondary(p, t, { breathe: o.breathe ?? 1, prev }), { scale: this.k, ...o })
+    const J = fk(secondary(p, t, { breathe: o.breathe ?? 1, prev }), { scale: this.k, stroke: this.sw, ...o })
     return o.noDraw ? J : this.draw(J, o)
   }
 }
 
-// pencil behind the head (local frame: head centre at 0,0, facing +x, upright)
+// pencil tucked behind the ear, seen in profile: it lies across the back of the head (drawn over the head fill)
+// with the sharpened tip forward-down inside the head and the ferrule + pink eraser sticking out up-and-back
+// (~1.5 head radii past the head's edge). Local frame: head centre at 0,0, facing +x, upright.
+const ERASER = '#F29497'   // pink eraser (red mixed toward white; the pencil's only non-palette tint)
 function pencil(k) {
   const g = s('g', { class: 'br-pencil' })
-  const inner = s('g', { transform: `translate(${-22 * k},${-12 * k}) rotate(24)` })
-  const Lp = 58 * k, w = 12 * k, sw = 3 * k
+  const R = RIG.headR * k
+  const Lt = 2.7 * R, w = 0.36 * R, sw = Math.max(2.2, 3 * k)
+  const cone = 0.56, body = 2.08, ferr = 2.36            // section ends along the axis, in head radii from the tip
+  // axis: from the tip (0,0) toward the eraser along +x, rotated 30 deg up-and-back, tip resting at the "ear"
+  const inner = s('g', { transform: `translate(${(0.16 * R).toFixed(2)},${(0.14 * R).toFixed(2)}) rotate(210)` })
+  const yb = w / 2
+  const at = f => (f * R).toFixed(2)
   inner.append(
-    s('rect', { x: -Lp / 2, y: -w / 2, width: Lp - 12 * k, height: w, rx: 2 * k, fill: C.coin, stroke: C.ink, 'stroke-width': sw }),
-    s('rect', { x: -Lp / 2 - 1 * k, y: -w / 2, width: 9 * k, height: w, rx: 3 * k, fill: C.ink }),
-    s('path', { d: `M${Lp / 2 - 12 * k},${-w / 2}L${Lp / 2},0L${Lp / 2 - 12 * k},${w / 2}Z`, fill: '#F2E2C0', stroke: C.ink, 'stroke-width': sw, 'stroke-linejoin': 'round' }),
+    // body (yellow, faceted), ferrule (grey band), eraser (pink, rounded)
+    s('path', { d: `M${at(cone)},${-yb}L${at(body)},${-yb}L${at(body)},${yb}L${at(cone)},${yb}Z`, fill: C.coin, stroke: C.ink, 'stroke-width': sw, 'stroke-linejoin': 'round' }),
+    s('line', { x1: at(cone + 0.05), y1: 0, x2: at(body - 0.04), y2: 0, stroke: C.coinDeep, 'stroke-width': Math.max(1.5, 2.2 * k), 'stroke-linecap': 'round' }),
+    s('path', { d: `M${at(ferr)},${-yb}Q${(Lt + 0.04 * R).toFixed(2)},${-yb} ${Lt.toFixed(2)},0Q${(Lt + 0.04 * R).toFixed(2)},${yb} ${at(ferr)},${yb}Z`, fill: ERASER, stroke: C.ink, 'stroke-width': sw, 'stroke-linejoin': 'round' }),
+    s('rect', { x: at(body), y: (-yb).toFixed(2), width: at(ferr - body), height: w.toFixed(2), fill: C.line, stroke: C.ink, 'stroke-width': sw, 'stroke-linejoin': 'round' }),
+    // sharpened wood cone + graphite point
+    s('path', { d: `M${at(cone)},${-yb}L0,0L${at(cone)},${yb}Z`, fill: C.white, stroke: C.ink, 'stroke-width': sw, 'stroke-linejoin': 'round' }),
+    s('path', { d: `M${at(0.2)},${(-yb * 0.36).toFixed(2)}L0,0L${at(0.2)},${(yb * 0.36).toFixed(2)}Z`, fill: C.ink, stroke: C.ink, 'stroke-width': sw * 0.6, 'stroke-linejoin': 'round' }),
   )
   g.append(inner)
   return g
@@ -500,7 +541,7 @@ export function makeFx(world, ctx) {
         for (let k = 0; k < lines; k++) {
           const a = (k / lines) * 2 * Math.PI + rand() * 0.35
           const len = 0.75 + rand() * 0.5
-          const el = s('line', { stroke: color, 'stroke-width': 7, 'stroke-linecap': 'round' })
+          const el = s('line', { stroke: color, 'stroke-width': 7, 'stroke-linecap': 'round', fill: 'none' })
           ls.push({ el, a, len })
           g.append(el)
         }
@@ -518,7 +559,11 @@ export function makeFx(world, ctx) {
         if (hit.burst) {
           const on = dt >= 0 && dt < 0.26
           attr(hit.burst.g, 'opacity', on ? String(1 - E.inQuad(prog(dt, 0, 0.26))) : '0')
-          if (on) {
+          if (!on) {
+            // hidden: park every line on the impact point, so the DOM is the same whichever frame came before
+            const px = hit.x.toFixed(1), py = hit.y.toFixed(1)
+            for (const L2 of hit.burst.ls) { attr(L2.el, 'x1', px); attr(L2.el, 'y1', py); attr(L2.el, 'x2', px); attr(L2.el, 'y2', py) }
+          } else {
             const p = E.out(prog(dt, 0, 0.22))
             for (const L2 of hit.burst.ls) {
               // lines start just outside the (elliptical) impact zone and shoot outward
@@ -731,13 +776,13 @@ const IC = {
   bill: () => [s('rect', { x: -46, y: -27, width: 92, height: 54, rx: 7, fill: C.heroSoft, ...strokeAttrs(6) }), s('circle', { r: 13, fill: 'none', ...strokeAttrs(5) }),
     s('path', { d: 'M-33,-14v28M33,-14v28', fill: 'none', ...strokeAttrs(5) })],
   cup: () => [s('path', { d: 'M-30,-30L-22,42L22,42L30,-30Z', fill: C.white, ...strokeAttrs(6) }), s('path', { d: 'M-36,-30H36V-42H-36Z', fill: C.ink, ...strokeAttrs(6) }),
-    s('path', { d: 'M-27,0H27L25,18H-25Z', fill: C.hero, ...strokeAttrs(5) })],
-  hotdog: () => [s('path', { d: 'M-46,6Q-46,30 -20,30H20Q46,30 46,6Z', fill: '#F4D19B', ...strokeAttrs(6) }),
-    s('rect', { x: -48, y: -12, width: 96, height: 22, rx: 11, fill: C.red, ...strokeAttrs(6) }), s('path', { d: 'M-34,-1L-24,-7L-14,-1L-4,-7L6,-1L16,-7L26,-1', fill: 'none', stroke: C.coin, 'stroke-width': 5, 'stroke-linecap': 'round' })],
-  burger: () => [s('path', { d: 'M-42,-6Q-42,-40 0,-40Q42,-40 42,-6Z', fill: '#F4D19B', ...strokeAttrs(6) }), s('rect', { x: -44, y: -2, width: 88, height: 16, rx: 8, fill: '#6B3B22', ...strokeAttrs(6) }),
-    s('path', { d: 'M-42,20H42Q42,38 26,38H-26Q-42,38 -42,20Z', fill: '#F4D19B', ...strokeAttrs(6) })],
-  pizza: () => [s('path', { d: 'M-38,-34Q0,-48 38,-34L0,44Z', fill: C.coin, ...strokeAttrs(6) }), s('path', { d: 'M-38,-34Q0,-48 38,-34', fill: 'none', stroke: '#E2AE1C', 'stroke-width': 10, 'stroke-linecap': 'round' }),
-    s('circle', { cx: -8, cy: -14, r: 7, fill: C.red }), s('circle', { cx: 12, cy: -8, r: 6, fill: C.red }), s('circle', { cx: 0, cy: 14, r: 6, fill: C.red })],
+    s('path', { d: 'M-27,0H27L25,18H-25Z', fill: C.lineSoft, ...strokeAttrs(5) })],
+  hotdog: () => [s('rect', { x: -48, y: -12, width: 96, height: 22, rx: 11, fill: C.white, ...strokeAttrs(6) }),
+    s('path', { d: 'M-42,2Q-42,30 -18,30H18Q42,30 42,2Z', fill: C.coin, ...strokeAttrs(6) }), s('path', { d: 'M-30,-1L-20,-6L-10,-1L0,-6L10,-1L20,-6L30,-1', fill: 'none', ...strokeAttrs(4) })],
+  burger: () => [s('path', { d: 'M-42,-6Q-42,-40 0,-40Q42,-40 42,-6Z', fill: C.coin, ...strokeAttrs(6) }), s('rect', { x: -44, y: -2, width: 88, height: 16, rx: 8, fill: C.ink, ...strokeAttrs(6) }),
+    s('path', { d: 'M-42,20H42Q42,38 26,38H-26Q-42,38 -42,20Z', fill: C.coin, ...strokeAttrs(6) })],
+  pizza: () => [s('path', { d: 'M-38,-34Q0,-48 38,-34L0,44Z', fill: C.coin, ...strokeAttrs(6) }), s('path', { d: 'M-38,-34Q0,-48 38,-34', fill: 'none', ...strokeAttrs(10) }),
+    s('circle', { cx: -8, cy: -14, r: 7, fill: C.ink }), s('circle', { cx: 12, cy: -8, r: 6, fill: C.ink }), s('circle', { cx: 0, cy: 14, r: 6, fill: C.ink })],
   phone: () => [s('rect', { x: -26, y: -46, width: 52, height: 92, rx: 10, fill: C.white, ...strokeAttrs(6) }), s('rect', { x: -16, y: -34, width: 32, height: 58, rx: 3, fill: C.lineSoft }),
     s('circle', { cy: 35, r: 4, fill: C.ink })],
   car: () => [s('path', { d: 'M-46,12V-2L-30,-6L-18,-26H18L32,-6L46,-2V12Z', fill: C.white, ...strokeAttrs(6) }), s('path', { d: 'M-14,-20H14L22,-8H-22Z', fill: C.lineSoft, ...strokeAttrs(4) }),
@@ -904,17 +949,33 @@ export function brandMark() {
   return h('div', { class: 'br-brand', 'data-deco': '' }, h('b', {}, h('span', {}, '≈')), h('span', {}, 'BACK OF THE ENVELOPE'))
 }
 
-// split markup into word tokens that keep their emphasis class
-function wordTokens(text) {
-  const out = []
-  const re = /\*\*(.+?)\*\*|__(.+?)__|([^*_\s]+(?:[*_](?![*_])[^*_\s]*)*)|(\n)/g
-  let m
+// split markup into words. A word is a whitespace-delimited chunk; it can hold several runs with their own
+// emphasis ("**$2,450**." is ONE word: the green number plus a plain full stop), so punctuation never wraps alone.
+// -> [{ parts: [{ s, cls: '' | 'em' | 'mark2' }] } | { br: true }]
+export function wordTokens(text) {
   const src = String(text)
+  const runs = []
+  const re = /\*\*(.+?)\*\*|__(.+?)__/g
+  let last = 0, m
   while ((m = re.exec(src))) {
-    if (m[1] != null) for (const w of m[1].split(/\s+/).filter(Boolean)) out.push({ w, cls: 'em' })
-    else if (m[2] != null) for (const w of m[2].split(/\s+/).filter(Boolean)) out.push({ w, cls: 'mark2' })
-    else if (m[4]) out.push({ br: true })
-    else if (m[3]) out.push({ w: m[3], cls: '' })
+    if (m.index > last) runs.push({ s: src.slice(last, m.index), cls: '' })
+    runs.push({ s: m[1] != null ? m[1] : m[2], cls: m[1] != null ? 'em' : 'mark2' })
+    last = re.lastIndex
+  }
+  if (last < src.length) runs.push({ s: src.slice(last), cls: '' })
+  const out = []
+  let cur = null
+  for (const r of runs) {
+    for (const piece of r.s.split(/(\s+)/)) {
+      if (!piece) continue
+      if (/^\s+$/.test(piece)) {
+        cur = null
+        for (let i = 0; i < (piece.match(/\n/g) || []).length; i++) out.push({ br: true })
+        continue
+      }
+      if (!cur) { cur = { parts: [] }; out.push(cur) }
+      cur.parts.push({ s: piece, cls: r.cls })
+    }
   }
   return out
 }
@@ -944,7 +1005,7 @@ export function chrome(spec, ctx, body = {}) {
       const words = []
       for (const tk of wordTokens(v.text)) {
         if (tk.br) { el.append(h('br')); continue }
-        const sp = h('span', { class: 'w ' + tk.cls }, tk.w)
+        const sp = h('span', { class: 'w' }, ...tk.parts.map(pt => (pt.cls ? h('span', { class: pt.cls }, pt.s) : pt.s)))
         words.push(sp)
         el.append(sp, ' ')
       }
@@ -957,24 +1018,61 @@ export function chrome(spec, ctx, body = {}) {
 
   // ---- verdict ----
   const vd = spec.verdict && o.verdict !== false ? spec.verdict : null
-  let vEl = null, vSwoosh = null, vLen = 0
+  let vEl = null, vRise = 26
+  const swooshes = []
   if (vd) {
-    vEl = h('div', { class: 'br-verdict', style: { top: (o.verdictTop ?? L.capTop) + 'px' } })
+    const vTop = o.verdictTop ?? L.capTop, maxH = L.capBottom - L.capTop - 4
+    vEl = h('div', { class: 'br-verdict', style: { top: vTop + 'px' } })
     setHTML(vEl, markup(vd.text))
     stage.append(vEl)
-    fitText(vEl, L.capW, { maxH: L.capBottom - L.capTop - 4, minPx: 44 })
-    css(vEl, { top: ((o.verdictTop ?? L.capTop) + Math.max(0, (L.capBottom - L.capTop - vEl.offsetHeight) / 2)).toFixed(0) + 'px' })
-    // a hand-drawn-free swoosh under the first emphasised run
+    let lh = 1.08
+    const fitV = x => { lh = x; vEl.style.lineHeight = String(x); vEl.style.fontSize = T.verdict + 'px'; return fitText(vEl, L.capW, { maxH, minPx: 44 }) }
+    let fs = fitV(1.08)
     const em = vEl.querySelector('em')
-    if (em) {
-      const r0 = vEl.getBoundingClientRect(), r = em.getBoundingClientRect()
-      const x0 = r.left - r0.left, x1 = r.right - r0.left, y = r.bottom - r0.top - 2
+    // the swoosh goes under the emphasis. When the emphasis ends above the last line, a swoosh at the normal
+    // line-height would strike through the next line's caps: open the leading (1.3, else 1.22) and clamp it.
+    const onLast = () => { const rs = [...em.getClientRects()], vb = vEl.getBoundingClientRect(); return vb.bottom - rs[rs.length - 1].bottom < 0.5 * fs * lh }
+    let swoosh = !!em
+    if (em && !onLast()) {
+      swoosh = false
+      for (const x of [1.3, 1.22]) { fs = fitV(x); if (vEl.offsetHeight <= maxH + 0.5 && fs >= 44) { swoosh = true; break } }
+      if (!swoosh) fs = fitV(1.08)          // a 3-line verdict: keep it tight, green emphasis without a swoosh
+    }
+    css(vEl, { top: (vTop + Math.max(0, (L.capBottom - L.capTop - vEl.offsetHeight) / 2)).toFixed(0) + 'px' })
+    {
+      // the pop rises into place: never from below the caption band's bottom edge
+      const rg = document.createRange(); rg.selectNodeContents(vEl)
+      const inkBottom = Math.max(...[...rg.getClientRects()].map(r => r.bottom))
+      vRise = clamp(L.capBottom - 3 - inkBottom, 0, 26)
+    }
+    if (em && swoosh) {
+      const r0 = vEl.getBoundingClientRect()
+      // baseline of the emphasis' last line: a zero-size inline-block sits on it
+      const probe = h('span', { style: { display: 'inline-block', width: '0px', height: '0px' } })
+      em.append(probe)
+      const rects = [...em.getClientRects()].filter(r => r.width > 2)
+      const descent = rects[rects.length - 1].bottom - probe.getBoundingClientRect().top
+      probe.remove()
       const svg = s('svg', { class: 'br-vsw', width: r0.width, height: r0.height + 30, 'data-deco': '' })
-      vSwoosh = s('path', { d: `M${x0 + 4},${y + 6} Q${(x0 + x1) / 2},${y + 16} ${x1 - 4},${y + 2}`, fill: 'none', stroke: C.hero, 'stroke-width': 9, 'stroke-linecap': 'round' })
-      svg.append(vSwoosh)
+      const lhPx = lh * fs, SW = 9
+      for (const r of rects) {
+        const x0 = r.left - r0.left, x1 = r.right - r0.left, b = r.bottom - r0.top - descent
+        let yl = b + 0.30 * fs, yr = b + 0.24 * fs, yc = b + 0.46 * fs
+        if (r0.bottom - r.bottom >= 0.5 * lhPx) {
+          // not the last line: the path's lowest point + half the stroke stays 3 px above the next line's caps
+          const limit = b + lhPx - 0.76 * fs - SW / 2 - 3
+          const sag = Math.min(8, yc - (yl + yr) / 2)
+          yc = (yl + yr) / 2 + sag
+          const lowest = 0.25 * yl + 0.5 * yc + 0.25 * yr
+          if (lowest > limit) { const d = lowest - limit; yl -= d; yr -= d; yc -= d }
+        }
+        const path = s('path', { d: `M${(x0 + 4).toFixed(1)},${yl.toFixed(1)} Q${((x0 + x1) / 2).toFixed(1)},${yc.toFixed(1)} ${(x1 - 4).toFixed(1)},${yr.toFixed(1)}`, fill: 'none', stroke: C.hero, 'stroke-width': SW, 'stroke-linecap': 'round' })
+        svg.append(path)
+        const len = Math.hypot(x1 - x0, 14) * 1.05
+        attr(path, 'stroke-dasharray', len.toFixed(1))
+        swooshes.push({ path, len })
+      }
       vEl.append(svg)
-      vLen = Math.hypot(x1 - x0, 14) * 1.05
-      attr(vSwoosh, 'stroke-dasharray', vLen.toFixed(1))
     }
     css(vEl, { display: 'none' })
     if (o.verdictCue !== null) ctx.cue(vd.t, o.verdictCue || 'ding', { gain: 0.7 })
@@ -990,7 +1088,11 @@ export function chrome(spec, ctx, body = {}) {
           const ln = lines[i]
           const on = c && c.index === i
           css(ln.el, { display: on ? '' : 'none' })
-          if (!on) continue
+          if (!on) {
+            // hidden lines keep one canonical state (not whatever the last visited frame left behind)
+            for (const w of ln.words) css(w, { opacity: '0', transform: 'translateY(16px)' })
+            continue
+          }
           const end = ln.v.d != null ? ln.v.t + ln.v.d : (spec.vo[i + 1] ? spec.vo[i + 1].t : ln.v.t + 3)
           const out = 1 - prog(t, end, 0.15)
           const n = ln.words.length
@@ -1007,8 +1109,8 @@ export function chrome(spec, ctx, body = {}) {
         if (vOn) {
           const p = prog(t, vd.t, 0.42)
           const sc = 0.86 + 0.14 * E.back(p, 2.4)
-          css(vEl, { opacity: clamp(p * 4).toFixed(3), transform: `translateY(${((1 - E.out(p)) * 26).toFixed(1)}px) scale(${sc.toFixed(3)})` })
-          if (vSwoosh) attr(vSwoosh, 'stroke-dashoffset', (vLen * (1 - E.inOut(prog(t, vd.t + 0.3, 0.38)))).toFixed(1))
+          css(vEl, { opacity: clamp(p * 4).toFixed(3), transform: `translateY(${((1 - E.out(p)) * vRise).toFixed(1)}px) scale(${sc.toFixed(3)})` })
+          for (const sw of swooshes) attr(sw.path, 'stroke-dashoffset', (sw.len * (1 - E.inOut(prog(t, vd.t + 0.3, 0.38)))).toFixed(1))
         }
       }
     },

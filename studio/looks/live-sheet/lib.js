@@ -177,6 +177,24 @@ export function rgba(hex, a) {
 export const step = (t, t0, dur, e = ease.out) => e(prog(t, t0, dur))
 /** interpolate two rects {x0,y0,x1,y1} */
 export const lerpRect = (a, b, p) => ({ x0: lerp(a.x0, b.x0, p), y0: lerp(a.y0, b.y0, p), x1: lerp(a.x1, b.x1, p), y1: lerp(a.y1, b.y1, p) })
+/**
+ * The selection springing from rect a to rect b (p = linear progress 0..1). A same-size hop (cell to cell) keeps the
+ * spring's overshoot (ease.back, s); a selection collapsing onto a cell inside it eases out with no overshoot (an
+ * overshooting edge would strike through the value it lands on); anything else overshoots outward only: no edge
+ * ever crosses into the target cell.
+ */
+export function springRect(a, b, p, s = 1.6) {
+  const sameSize = Math.abs((a.x1 - a.x0) - (b.x1 - b.x0)) < 1 && Math.abs((a.y1 - a.y0) - (b.y1 - b.y0)) < 1
+  if (sameSize) return lerpRect(a, b, ease.back(clamp(p), s))
+  const inside = b.x0 >= a.x0 - 0.5 && b.x1 <= a.x1 + 0.5 && b.y0 >= a.y0 - 0.5 && b.y1 <= a.y1 + 0.5
+  if (inside) return lerpRect(a, b, ease.out(clamp(p)))
+  const r = lerpRect(a, b, ease.back(clamp(p), s))
+  if (a.x0 <= b.x0) r.x0 = Math.min(r.x0, b.x0)
+  if (a.y0 <= b.y0) r.y0 = Math.min(r.y0, b.y0)
+  if (a.x1 >= b.x1) r.x1 = Math.max(r.x1, b.x1)
+  if (a.y1 >= b.y1) r.y1 = Math.max(r.y1, b.y1)
+  return r
+}
 
 // =====================================================================================================
 // spec helpers
@@ -299,30 +317,41 @@ const UNIT_WORDS = new Set(('a an per every each day days week weeks month month
   + 'minute minutes second seconds sec percent % times k thousand million billion trillion dollars bucks cents shares '
   + 'paychecks checks payments people more less').split(' '))
 const wordText = w => (w && w.parts ? w.parts.map(p => p.text).join('') : String(w))
-/** a word that ends a sentence or clause: "$21,000." "weeks?" "2008:" (a decimal like "2.5" is not) */
-const endsHard = str => /[A-Za-z0-9)%"'’][.?!:;]["'’)\]]*$/.test(str) && !/^(?:[A-Z]\.){1,3}$/.test(str)
+/** a word that ends a sentence: "$21,000." "weeks?" (a decimal like "2.5" is not; a colon is a clause seam, below) */
+const endsHard = str => /[A-Za-z0-9)%"'’][.?!;]["'’)\]]*$/.test(str) && !/^(?:[A-Z]\.){1,3}$/.test(str)
+const endsColon = str => /[A-Za-z0-9)%"'’]:["'’)\]]*$/.test(str)
 const endsSoft = str => /[,—–]["'’)]*$/.test(str)
+// spelled-out numbers keep their unit like digits do ("two | weeks" is as bad a break as "2 | weeks")
+const NUM_WORDS = new Set(('one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen '
+  + 'sixteen seventeen eighteen nineteen twenty thirty forty fifty sixty seventy eighty ninety hundred thousand million '
+  + 'billion trillion grand half quarter dozen').split(' '))
+/** a caption chunk may be set down to this size (from S.caption) to keep a short phrase whole rather than orphan a word */
+const CAP_SQUEEZE = 58
 
 /**
  * Split caption words into chunks (≤ maxWords each, each ≤ maxW wide) that read as phrases. Lowest total cost:
- * every chunk costs 1 (fewer is better); a break after a full stop, "?", "!" or ":" is free and one is forced there
- * (a chunk never runs on past a sentence end); a break after a comma is cheap; any other break costs more, and a
- * lot more after a function word ("the", "your", "that's") or between a number and its unit ("$5" | "a day").
- * A one-word chunk and an underfilled chunk cost a little.
+ * every chunk costs 1 (fewer is better); a break after a full stop, "?" or "!" is free and one is forced there
+ * (a chunk never runs on past a sentence end); a break after a comma or a colon is cheap (a chunk that is only
+ * "Year 15:" costs extra, so the colon's phrase keeps a word of what follows); any other break costs more, and a lot
+ * more after a function word ("the", "your", "that's") or between a number (digits or words: "two") and its unit
+ * ("$5" | "a day", "two" | "weeks"). A one-word chunk costs a lot (2 + 2 beats 3 + 1), an underfilled chunk a
+ * little. A phrase up to 68/58 of maxW wide may stay whole (the caller sets it smaller, down to 58 px) at a small
+ * cost, when that saves an orphaned word.
  */
-export function chunkWords(words, widthOf, maxW, maxWords = 4) {
+export function chunkWords(words, widthOf, maxW, maxWords = 4, squeeze = S.caption / CAP_SQUEEZE) {
   const n = words.length
   if (!n) return []
   const txt = words.map(wordText)
   const bare = txt.map(x => x.toLowerCase().replace(/^[^\p{L}\p{N}$%≈×÷−+=]+|[^\p{L}\p{N}%]+$/gu, ''))
+  const isNum = i => /\d/.test(txt[i]) || NUM_WORDS.has(bare[i])
   const memo = new Map()
   const wd = (i, j) => { const k = i + ',' + j; if (!memo.has(k)) memo.set(k, widthOf(words.slice(i, j))); return memo.get(k) }
   const breakCost = i => { // a break after word i (more words follow)
     if (endsHard(txt[i])) return 0
-    if (endsSoft(txt[i]) || /^[—–]$/.test(txt[i + 1] || '')) return 0.25
+    if (endsSoft(txt[i]) || endsColon(txt[i]) || /^[—–]$/.test(txt[i + 1] || '')) return 0.25
     let c = 0.7
     if (FUNC_WORDS.has(bare[i])) c += 2
-    if (/\d/.test(txt[i]) && UNIT_WORDS.has(bare[i + 1])) c += 1.5
+    if (isNum(i) && UNIT_WORDS.has(bare[i + 1])) c += 1.5
     if (/^[×÷=≈+−→-]$/.test(txt[i])) c += 2 // never end a chunk on an operator
     return c
   }
@@ -332,9 +361,11 @@ export function chunkWords(words, widthOf, maxW, maxWords = 4) {
     for (let j = i + 1; j <= Math.min(n, i + maxWords); j++) {
       if (j - 2 >= i && endsHard(txt[j - 2])) break // a sentence end inside the chunk
       const w = wd(i, j)
-      if (w > maxW && j - i > 1) break
+      if (w > maxW * squeeze && j - i > 1) break
       const fill = Math.min(1, w / maxW)
-      const c = 1 + (j < n ? breakCost(j - 1) : 0) + (j - i === 1 && n > 1 ? 0.35 : 0) + 0.3 * (1 - fill) * (1 - fill)
+      let c = 1 + (j < n ? breakCost(j - 1) : 0) + (j - i === 1 && n > 1 ? 1.2 : 0) + 0.3 * (1 - fill) * (1 - fill)
+      if (w > maxW && j - i > 1) c += 0.5 + 2 * (w / maxW - 1) // set smaller to stay whole
+      if (j < n && j - i <= 2 && endsColon(txt[j - 1])) c += 1.5 // a lone "Year 15:" or "Check:"
       if (c + best[j] < best[i] - 1e-9) { best[i] = c + best[j]; cut[i] = j }
     }
     if (!Number.isFinite(best[i])) { best[i] = 1 + best[i + 1]; cut[i] = i + 1 } // a word wider than maxW alone
@@ -632,6 +663,7 @@ function narrowest(str, f, k, letterSpacing) {
  *                           verdict when it is retyped there (fitBarVerdict; it does not size the bar)
  *   letters                 column-letter row: true (default) | false | 'auto' (dropped when rows get under 58 px)
  *   startRow                number on the first data row (default 2: row 1 is the label row)
+ *   pad                     cell padding (default: 22 px, 12 px when the columns do not fit at 22)
  * Column widths: every column gets at least its widest value and its label balanced over two lines at 40 px; when
  * that does not fit, every cell size shrinks together (never under 40 px) before any one column gives way; the
  * spare width goes first to labels that want one line, then in proportion to the values. The card's last column
@@ -688,7 +720,8 @@ export function sheet(parent, o) {
   if (o.letters === 'auto' && rowH < 58) { lettersH = 0; rowH = rowHFor(labelH0) }
   const fs0 = fsFor(rowH)
   let fs = fs0, need, widths = null
-  for (const p of [G.padX, 12]) {
+  const pads = o.pad != null ? [o.pad] : [G.padX, 12]
+  for (const p of pads) {
     pad = p
     fs = fs0
     need = needFor(fs)
@@ -706,7 +739,7 @@ export function sheet(parent, o) {
       // values first: every column keeps its widest value and its label's longest word; the labels share what is
       // left (they wrap further)
       const base = cols.map((c, j) => c.w ?? Math.max(need[j], wordsOnly[j] + 2 * pad + 4, c.minW ?? 0))
-      if (sum(base) > avail + 0.5) { if (p !== 12) continue; widths = base.map(x => (x * avail) / sum(base)); break } // last resort: all give
+      if (sum(base) > avail + 0.5) { if (p !== pads[pads.length - 1]) continue; widths = base.map(x => (x * avail) / sum(base)); break } // last resort: all give
       const left = avail - sum(base)
       const ex = cols.map((c, j) => (c.w != null ? 0 : Math.max(0, floor[j] - base[j])))
       widths = base.map((b, j) => b + (sum(ex) ? (left * ex[j]) / sum(ex) : 0))
@@ -910,7 +943,7 @@ export function fitTips(labels, maxW) {
   const strs = labels.map(x => String(x || ''))
   const out = (px, lines, ls, wrap = false) => ({
     px, lines, wrap, labels: ls, html: ls.map(mk),
-    slotH: lines > 1 ? Math.round(2 * px * 1.12 + 30) : Math.round(px * 1.12 + 30),
+    slotH: Math.round(lines * px * 1.12 + 30),
     w: ls.map(x => Math.min(maxW, Math.ceil(Math.max(...x.split('\n').map(l => wOf(l, px)))) + PAD)),
   })
   if (!strs.length) return out(S.tip, 1, [])
@@ -919,7 +952,20 @@ export function fitTips(labels, maxW) {
     const two = strs.map(x => (wOf(x, px) <= inner ? x : twoLines(x, y => wOf(y, px), inner)))
     if (two.every(Boolean)) return out(px, 2, two)
   }
-  return { ...out(S.cellMin, 2, strs, true), w: strs.map(() => maxW) } // wraps wherever it must, never past the pill
+  // no seam gives two lines: the label wraps (balanced) at the pill's inner width, and the slot is sized to the
+  // real line count, so no line is ever cut by the pill (a label over ~70 characters is too long for a tooltip)
+  const px = S.cellMin
+  const linesOf = str => {
+    const el = h('div', { class: 'ls-tiptxt', html: mk(str), style: { position: 'absolute', left: '-6000px', top: '0px', width: inner + 'px', fontSize: px + 'px', whiteSpace: 'normal', textWrapStyle: 'balance', visibility: 'hidden' } })
+    ;(document.getElementById('stage') || document.body).append(el)
+    const n = Math.max(1, Math.round(el.offsetHeight / (px * 1.12)))
+    el.remove()
+    return n
+  }
+  const lines = Math.max(2, ...strs.map(linesOf))
+  const long = strs.filter(x => plain(x).length > 70)
+  if (long.length) console.warn(`live-sheet: tooltip label over 70 characters (${lines} lines at 40 px): "${plain(long[0]).slice(0, 60)}…"`)
+  return { ...out(px, lines, strs, true), w: strs.map(() => maxW) } // wraps wherever it must, never past the pill
 }
 
 /** a tooltip's choreography: the slot opens (rows below make room), then the pill wipes out of its notch; reversed to close */

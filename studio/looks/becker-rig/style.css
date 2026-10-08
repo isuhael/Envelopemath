@@ -29,8 +29,8 @@
 .br-caps { position: absolute; left: 70px; width: 860px; height: 160px; display: flex; align-items: center; justify-content: center; }
 .br-cap { width: 860px; text-align: center; font: 800 54px/1.12 'Inter Tight', 'Inter Full', sans-serif; letter-spacing: -0.015em; color: #3A414B; }
 .br-cap .w { display: inline-block; }
-.br-cap .w.em { color: #0A9254; }
-.br-cap .w.mark2 { color: #E5484D; }
+.br-cap .w .em { color: #0A9254; }
+.br-cap .w .mark2 { color: #E5484D; }
 .br-verdict { position: absolute; left: 70px; width: 860px; text-align: center;
   font: 900 64px/1.08 'Inter Tight', 'Inter Full', sans-serif; letter-spacing: -0.025em; color: #111418; transform-origin: 50% 50%; }
 .br-vsw { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }

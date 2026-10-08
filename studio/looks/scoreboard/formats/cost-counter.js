@@ -134,7 +134,7 @@ export default function costCounter(spec, ctx) {
   const stripAx = p => p.replace(/≈\s*/g, '')
   const run = {
     prefix: d.prefix != null ? String(d.prefix) : finalOk ? stripAx(finalTpl.prefix) : '$',
-    dp: d.dp != null ? Math.max(0, Math.min(2, +d.dp)) : finalOk ? Math.min(2, finalTpl.dp) : 0,
+    dp: d.dp != null ? Math.max(0, Math.min(4, +d.dp)) : finalOk ? Math.min(4, finalTpl.dp) : 0,   // sub-cent rates keep their digits
     suffix: d.suffix != null ? String(d.suffix) : '',
   }
   // the board can land on `final` in place when final = [≈ ]prefix + grouped digits (same dp) + suffix

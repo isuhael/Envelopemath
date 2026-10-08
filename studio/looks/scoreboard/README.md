@@ -47,7 +47,7 @@ Sources: `research/v2/03-look-directions.md` (Direction 3, and §3.0 for the sha
 | Footer (assumption line) | Inter 600, grey | 40: one line, or two lines broken at the " · " nearest the middle (else after a comma, else at a space). Never under 40 unless a half is still too wide (34 floor) |
 | Captions | Inter Tight 800 | 50 |
 | Race tip labels | Anton, uppercase | 48 |
-| Verdict | Anton, uppercase | 92, fitted down to 50 (two balanced lines at most) |
+| Verdict | Anton, uppercase | 92, fitted to the slot down to 50 in balanced lines (two, or three for a long line in the 196 px slot) |
 | Panel label / value, hero tags | Inter 700 caps, 40-42 / Anton 120 | |
 | Axis ticks, year clocks (decoration only) | Inter 600 30 / Anton 160 at 14% white | |
 
@@ -189,7 +189,7 @@ All `parent` arguments are DOM elements (usually `ctx.stage`). Every builder app
   - One group per beat is built at mount and fitted. `seek` shows only `index`, slamming at `t0`.
   - Inside `l1`, wrap a dim operator part in `<span class="op">`, e.g. `$799<span class="op"> ÷ $5</span>`.
 - `captions(parent, spec, L) → { seek }`
-- `verdict(parent, spec, L, { slot = L.verdict, tone = 'good' }) → { t, seek, yieldAt, box, txt, band }`: fitted while measurable (two balanced lines at most, ≥ 50 px), slam scale kept inside the slot; `slot.boxed` raises the black band and hides the text it covers (`data-under`). `tone: 'bad'` makes the rule coral.
+- `verdict(parent, spec, L, { slot = L.verdict, tone = 'good' }) → { t, seek, yieldAt, box, txt, band }`: fitted while measurable (balanced lines that fill the slot, ≥ 50 px), slam scale kept inside the slot; `slot.boxed` raises the black band and hides the text it covers (`data-under`). `tone: 'bad'` makes the rule coral.
 - `stageFlash(parent, L) → { set(a) }`
 - `ladderPips(parent, { x, bottom, n, gap, w }) → { seek(t, index, t0) }`: a vertical progress ladder on the stage's left margin, decoration.
 
@@ -204,7 +204,7 @@ All `parent` arguments are DOM elements (usually `ctx.stage`). Every builder app
   - `series`: `[{ name, points: [[x, v]...], final, color?, label?, width?, dashed? }]`. Colours default to green, yellow, white.
   - `x`: `{ from, to, tickEvery, tickLabel? }`
   - `y`: `{ prefix, dp, compact = true, log, min, max? }`. Setting `max` disables auto-rescale.
-- Lines draw left to right, linear in x over `raceT`, with a neon glow and a glowing tip; the y axis auto-rescales; tip labels never collide; `events` draw dashed flags (bands with `until`), labels 50 px above the box.
+- Lines draw left to right, linear in x over `raceT`, with a neon glow and a glowing tip; the y axis auto-rescales (smoothed, and never below 1.06× the current running max, so a steep climb never runs off the top of the plot); tip labels never collide; `events` draw dashed flags (bands with `until`), labels 50 px above the box.
 
 **Timing**
 - `durationOf(spec, lastBeat, hold = 3)`: the latest of lastBeat + hold, the last VO end + 0.4 s, and verdict.t + 2.5 s, clamped to 5-90 s. `spec.duration` still wins in defineKit.
@@ -327,6 +327,7 @@ The lookup table (P7) as a dark leaderboard; no hero row. Every row's key is on 
 - **Column heads**: Inter caps at 40 px on one line or two (as written with `\n`, or balanced at the best word break). Columns pack from the left, so a long head reaches over the previous column's slack; heads wrap in their own slots (any number of lines) only when two lines can't pack, and shrink below 40 px only after that. Keep heads short: the footer carries the assumptions ("Rate", "Monthly", "Interest", "Total paid").
 - **Strip**: the formula (the one-line working, Inter 40 px) under the pick label when the board leaves room (`stack`), else they share one slot (`swap`: the formula first, each pick label as a hard cut held 2.5 s, then the formula again). A pick label fits one line down to 52 px, else two balanced lines (≥ 42 px), and then the formula gives its row up while the pick holds.
 - **Verdict**: the chrome's, in the strip, or on the black band over the board's foot when the strip is short.
+- **Rows**: the row pitch is what the stage leaves between the heads and the strip, 40-80 px (cells 40-64 px, Anton, tabular digits); a board of 6 rows or fewer may go to 96 px with 72 px cells, and room left past that cap goes half above the board, so a short table sits mid-frame instead of hanging under the header. Pitches under 54 px run as zebra stripes without slot outlines.
 
 | lookOpts | Default | Effect |
 |---|---|---|
@@ -416,7 +417,7 @@ Samples: `growth-ladder.json` ($100 a month for 40 years, captions on); `growth-
 
 ## cost-counter
 
-A real-time cost counter (HD Guy's "X cost in real time"): one continuous stretch, linear in real time, already running at frame 1 (start `counterT` at -0.4 s; the kit warns in the console when it starts at 0). The hero shows only the digits the count has reached (no leading zeros, the "$" hugs the leading digit) and lands exactly on `final` (its "≈" a ghost until then). The stage fills the next milestone's icon from the bottom as the count climbs; a pass pops it (bump, glow, thud + ding), slams the milestone into the label stack and flies the icon into the milestone ladder on the left margin. The label stack rests on the rate and what is counted: line 1 `rateDisplay` (its words grey), line 2 `data.label`.
+A real-time cost counter (HD Guy's "X cost in real time"): one continuous stretch, linear in real time, already running at frame 1 (start `counterT` at -0.4 s; the kit warns in the console when it starts at 0). The hero shows only the digits the count has reached (no leading zeros, the "$" hugs the leading digit) and lands exactly on `final` (its "≈" a ghost until then). The stage fills the next milestone's icon from the bottom as the count climbs; a pass pops it (bump, glow, thud + ding), slams the milestone into the label stack and flies the icon into the milestone ladder on the left margin. The label stack rests on the rate and what is counted: line 1 `rateDisplay` (its words grey), line 2 `data.label`. The running count uses `data.dp` (or the dp of `final`), up to 4 places, so a sub-cent rate (`"final": "$0.007"`) counts in the same format it lands on.
 
 | lookOpts | Default | Effect |
 |---|---|---|

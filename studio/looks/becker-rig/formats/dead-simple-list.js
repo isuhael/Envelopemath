@@ -2,50 +2,49 @@
 //
 // The list is a stack of ledges on the void, one numbered slot per item, all on screen and empty from frame 1:
 // an outlined number tab, the label (dim until reached) and a dashed socket where the answer will go.
-// The figure works the list from the top. He stands on the active slot's ledge at its right end. The formula
-// drops in beside him as a white glyph block and types itself (mono, with the rule's operator in green). He
-// winds up and hits it: a kick, a chop, or, for the goal, a crouching two-fisted slam. The block snaps into the
-// result glyph with the impact kit (hit lines, chips, shake, sound), and the hit knocks the result home into its
-// socket, where it lands with a thud and its note follows. Then he stomps the trapdoor in his ledge and drops to
-// the next slot. A goal answer lands on a gold plate with the big impact (white flash, camera punch, cash), he
-// gives a "yes!" fist pump (low, so it fits under the ledge above; with a hop when there is room) and points
-// back at it.
+// The figure stands on the floor in his own corner (bottom right) and does the maths with his hands, as a tool:
+// every formula is split at its first operator. The number ("$100,000") drops into the slot as a white glyph
+// block and types itself; the operator and the rest ("× 0.25") type onto an ink plate that pops into his hands.
+// He winds up and throws the plate: it tumbles up the screen and slams down onto the number. Impact (hit lines,
+// chips, shake, sound), and the pair crunches into the answer, which squashes into its socket; its note follows.
+// The goal answer is a two-handed heave that lands on a gold plate with the big impact (white flash, camera
+// punch, cash); he celebrates and points up at it.
 //
 // Layout (measured with the real fonts at mount; the first that fits wins):
-//   rows   two-line rows: label line + value line. The block types at the right, next to the figure; the result
-//          slides (kick) or pops (chop, slam) home under its label. Notes sit after the result, after the label,
-//          or as a 2-line margin note, whichever fits left of the figure's lane.
-//   lines  long lists (5-6 items): one-line rows, a label column (wraps to 2 lines, note underneath when there is
-//          room) and a right-aligned value column. The block types over the value column; the result snaps in place,
-//          ending a little short of the block's struck end so the hit's burst and chips stay off it. The layout is
-//          fitted for the figure's reach and refitted once for the size he actually gets.
-// If nothing fits, the input line is dropped (the hook should carry the number) and the layouts are tried again.
-//
-// The figure lives in a lane at the right (x ≈ 840-930) under the ledge above: every hop and raised hand is
-// capped so he never pokes through the ledge over his head.
+//   rows   label line(s) + value line. Labels may wrap to 2 lines (3 as a last resort). The block, the answer and
+//          its note are left-aligned under the label.
+//   lines  long lists: one row per item, a label column (wraps to 2 lines, note underneath when there is room)
+//          and the value right-aligned at the row's right edge. A block wider than the answer ducks the label.
+// Rows that come down beside the figure end left of his corner (their right edge steps in; content is measured
+// against it), so nothing he holds ever covers the list. With 5 items or fewer the rows spread out (pitch up to
+// ~260 px, values up to 84 px) and the list is centred in the work area. If nothing fits, the input line is
+// dropped, then the figure shrinks (0.84 -> 0.66), then 3-line labels are allowed; only then does it throw.
 //
 // lookOpts (all optional):
-//   hits: ['kick' | 'chop' | 'slam', ...]   the hit per item (default: kick and chop alternate; the goal slams)
-//   actions: [{ item, verb }]                verbs from a spec brief map onto hits (smash/chop -> chop, ...)
-//   figureScale: number                      override the figure size picked from the ledge pitch
+//   hits: ['kick' | 'chop' | 'slam', ...]   the throw per item: kick = underhand flick, chop = overhand throw,
+//                                            slam = two-handed overhead heave (default: chop and kick alternate;
+//                                            the goal is always a slam). 'toss' / 'throw' / 'heave' are aliases.
+//   actions: [{ item, verb }]                verbs from a spec brief map onto throws (smash/chop -> chop, ...)
+//   figureScale: number                      the figure's size (default 0.84, about 220 px; 0.6-1.1)
 //   input: 'show' | 'hide'                   the input line (default: shown only if the header lacks input.value)
 //   layout: 'rows' | 'lines'                 force a layout
 import {
-  h, s, style, attr, setHTML, fitText, prog, clamp, lerp, plain, markup, typed,
-  C, F, L, M, E, poseTrack, fk, Figure, makeWorld, makeFx, camera, NumObj, pinLimb, blendJ,
-  chromeParts, durationOf, measure, squashAt, popIn, hop, toss, springStep, rng, toneOf,
+  h, s, style, attr, setHTML, fitText, prog, clamp, lerp, plain, markup, typed, graphemes,
+  C, F, L, M, E, poseTrack, Figure, makeWorld, makeFx, camera, NumObj, pinLimb, blendJ,
+  chromeParts, durationOf, measure, squashAt, popIn, hop, toss, rng, toneOf, mix, smooth, RIG,
 } from '../lib.js'
 
 const TAB_X = 60, TAB = 58, X0 = TAB_X + TAB + 22   // number tab, then the text column
-const FX = 884                                       // the figure's lane (his hip x); readable text stays left of it
-const CR = FX - 50                                   // right edge for labels, results and notes
-const HATCH = 46                                     // half-width of the trapdoor in each ledge
-const BP = { x: 20, y: 8, b: 6 }                     // glyph block padding + border
+const CR = 834                                       // right edge for labels, results and notes (above his corner)
+const FX = 872                                       // the figure's hip x (he faces left, toward the list)
+const XMAX = 934                                     // nothing he holds passes this x (the right button rail)
+const LANE = 895                                     // the plate flies up this lane edge-on (right of every row)
+const BP = { x: 18, y: 8, b: 6 }                     // glyph block padding + border
+const OP = { x: 16, y: 8 }                           // operator plate padding
 const HL = 1.06                                      // the goal result is a little bigger, on a gold plate
 const PLATE = [18, 8]
 const LEDGE_X0 = 60
-const VAL_GAP = 22                                   // lines layout: the value column ends this far short of the block's
-                                                     // struck end, which keeps the hit's burst and chips off the answer
+const WIND = 0.28                                    // wind-up before a throw (s)
 
 export const css = `
 .ds-tabbg { position: absolute; left: 0; top: 0; box-sizing: border-box; border-radius: 14px; }
@@ -55,9 +54,10 @@ export const css = `
 .ds-val { font-family: ${F.head}; font-weight: 900; letter-spacing: -0.03em; }
 .ds-val .u { font-weight: 800; letter-spacing: -0.01em; }
 .ds-block { box-sizing: border-box; background: ${C.white}; border: ${BP.b}px solid ${C.ink}; border-radius: 14px; padding: 0 ${BP.x}px;
-  font-family: ${F.mono}; font-weight: 800; letter-spacing: -0.02em; color: ${C.ink}; white-space: pre; }
-.ds-block i { font-style: normal; color: ${C.heroInk}; }
-.ds-caret { display: inline-block; width: 0.14em; height: 0.9em; margin-left: 0.05em; background: ${C.ink}; vertical-align: -0.1em; }
+  font-family: ${F.mono}; font-weight: 800; letter-spacing: -0.02em; color: ${C.ink}; white-space: pre; text-align: left; }
+.ds-op { box-sizing: border-box; background: ${C.ink}; border-radius: 14px; padding: 0 ${OP.x}px;
+  font-family: ${F.mono}; font-weight: 800; letter-spacing: -0.02em; color: ${C.hero}; white-space: pre; text-align: left; }
+.ds-caret { display: inline-block; width: 0.14em; height: 0.9em; margin-left: 0.05em; background: currentColor; vertical-align: -0.1em; }
 .ds-note { position: absolute; left: 0; top: 0; font-family: ${F.mono}; font-weight: 700; letter-spacing: -0.02em; color: ${C.grey}; white-space: nowrap; }
 .ds-note em { color: ${C.ink}; }
 .ds-plate { position: absolute; left: 0; top: 0; box-sizing: border-box; background: ${C.coin}; border: 6px solid ${C.ink}; border-radius: 16px; transform-origin: 50% 50%; }
@@ -67,35 +67,27 @@ export const css = `
 
 // ---------------------------------------------------------------------------------------------- poses (facing-relative)
 const P = {
-  dip: { lean: 10, tilt: 6, aF: [20, 40], aB: [-24, 30], lF: [30, -60], lB: [16, -56] },
-  kick0: { lean: -8, tilt: 2, aF: [38, 76], aB: [-56, 40], lF: [64, -118], lB: [-6, -10] },          // chamber
-  kick: { lean: -20, tilt: 4, aF: [-36, 34], aB: [66, 50], lF: [82, -4], lB: [-10, -6] },           // side kick
-  chop0: { lean: -8, tilt: -4, aF: [132, 58], aB: [-34, 30], lF: [16, -12], lB: [-14, -8] },        // hand cocked by the ear
-  chop: { lean: 30, tilt: 10, aF: [78, 6], aB: [70, 10], lF: [30, -44], lB: [-26, -12] },
-  slam0: { lean: -16, tilt: -8, aF: [-128, 36], aB: [-116, 46], lF: [44, -84], lB: [-18, -56] },     // back-swing, crouched
-  // the contact pose stays fairly tall: the fists come DOWN onto the block, so the arms never cross the head
-  // (the front arm's knockout outline is drawn over the head and would cut it)
-  slam: { lean: 26, tilt: 8, aF: [52, 4], aB: [44, 8], lF: [30, -46], lB: [-8, -34] },
-  fall: { lean: -4, tilt: -16, aF: [152, 26], aB: [-150, -24], lF: [22, -46], lB: [-18, -34] },
-  land: { lean: 16, tilt: 8, aF: [34, 30], aB: [-34, 24], lF: [46, -86], lB: [28, -80] },
-  proud: { lean: -4, tilt: -6, aF: [26, 118], aB: [-26, -118], lF: [12, -4], lB: [-12, -2] },     // hands on hips
-  pump: { lean: -6, tilt: -12, aF: [84, 104], aB: [-26, 34], lF: [14, -6], lB: [-14, -4] },       // fist pump
-  // "yes!": the low fist pump that fits under the ledge above (fist cocked at chin height, yanked down to the
-  // waist with a knee lift)
-  yes0: { lean: -6, tilt: -10, aF: [96, 70], aB: [-20, 22], lF: [12, -6], lB: [-12, -4] },
-  yes: { lean: 8, tilt: 16, aF: [-16, 112], aB: [-34, 28], lF: [66, -104], lB: [-4, -8] },
+  // while he holds the plate his hands stay at or below his shoulders (the plate hangs from them and never hides
+  // his head); the throw itself is a fling from low to high
+  dip: { lean: 18, tilt: 8, aF: [30, 70], aB: [20, 76], lF: [40, -72], lB: [20, -64] },                 // crouch, plate held low
+  deep: { lean: 30, tilt: 14, aF: [12, 30], aB: [4, 36], lF: [74, -124], lB: [54, -116] },             // deep squat, plate at the knees
+  back: { lean: -14, tilt: -4, aF: [-64, 44], aB: [-44, 36], lF: [28, -22], lB: [-20, -32] },          // swung back low (a fling)
+  flick: { lean: -10, tilt: -16, aF: [150, 8], aB: [140, 12], lF: [16, -10], lB: [-14, -8] },          // underhand fling, arms up
+  fling: { lean: 20, tilt: -8, aF: [156, 4], aB: [-30, 24], lF: [30, -34], lB: [-34, -6] },             // one-arm fling up and out
+  heave: { lean: 6, tilt: -16, aF: [164, 6], aB: [156, 10], lF: [24, -20], lB: [-20, -14] },           // two-handed release, arms up
+  proud: { lean: -4, tilt: -6, aF: [26, 118], aB: [-26, -118], lF: [12, -4], lB: [-12, -2] },         // hands on hips
 }
-const VERB = { smash: 'chop', chop: 'chop', carve: 'chop', hammer: 'chop', kick: 'kick', punch: 'kick', push: 'kick',
-  stack: 'kick', drag: 'kick', slam: 'slam', crush: 'slam' }
+const VERB = { smash: 'chop', chop: 'chop', carve: 'chop', hammer: 'chop', throw: 'chop', kick: 'kick', punch: 'kick',
+  push: 'kick', stack: 'kick', drag: 'kick', toss: 'kick', flick: 'kick', slam: 'slam', crush: 'slam', heave: 'slam' }
+const HIT = { kick: 'kick', toss: 'kick', chop: 'chop', throw: 'chop', slam: 'slam', heave: 'slam' }
 
 const esc = x => String(x).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-const hex = c => [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16))
-const mix = (a, b, p) => { const x = hex(a), y = hex(b); return `rgb(${x.map((v, i) => Math.round(v + (y[i] - v) * clamp(p))).join(',')})` }
-const smooth = p => p * p * (3 - 2 * p)
 // "$1,300 a month" -> ["$1,300", " a month"]: trailing unit words are set smaller (same string, same order).
 // Only words without digits split off, so "$10K in ≈ 2.4 yrs" stays whole.
 const splitResult = str => { const m = /^((?:≈\s*)?[−+-]?[$€£]?\d[\d,]*(?:\.\d+)?[KMBkmb%]?)(\s+[^\d]+)$/.exec(String(str)); return m ? [m[1], m[2]] : [String(str), ''] }
 const unitPx = v => Math.max(46, Math.round(0.6 * v))
+// "$100,000 × 0.25" -> ["$100,000", "× 0.25"]: the number goes in the block, the operator and the rest on the plate
+const splitFormula = f => { const m = /\s([×÷−+=*/x])\s/.exec(f); return m ? [f.slice(0, m.index).trim(), f.slice(m.index + 1).trim()] : [f.trim(), ''] }
 
 export default function deadSimpleList(spec, ctx) {
   const d = spec.data || {}
@@ -105,26 +97,7 @@ export default function deadSimpleList(spec, ctx) {
   if (!N) throw new Error('dead-simple-list: data.items is empty')
   const typeDur = d.typeDur != null ? Math.max(0.1, +d.typeDur) : 0.6
   const isGoal = it => it.tone === 'goal'
-
-  // ============================================================================================ timing
-  // ts: the block lands and starts typing; res: the hit (the result appears). Slot 1 is already typing at frame 1.
-  const TI = []
-  items.forEach((it, i) => {
-    const prev = TI[i - 1]
-    const t0 = it.t != null ? +it.t : prev ? prev.res + 2.6 : 0.4
-    const res = Math.max(it.resultT != null ? +it.resultT : t0 + typeDur + 0.3, t0 + 0.25)
-    const typeD = clamp(typeDur, 0.12, Math.max(0.12, res - t0 - 0.14))
-    const ts = i === 0 && t0 <= 0.3 ? -0.45 * typeD : t0
-    TI.push({ t0, res, typeD, ts })
-  })
-  const styleOf = i => {
-    const it = items[i]
-    if (lo.hits && lo.hits[i]) return lo.hits[i]
-    if (isGoal(it)) return 'slam'
-    const a = (lo.actions || []).find(x => x && x.item === i)
-    if (a && VERB[a.verb]) return VERB[a.verb]
-    return i % 2 ? 'chop' : 'kick'
-  }
+  const F2 = items.map(it => { const [a, b] = splitFormula(String(it.formula || '')); return { num: a, op: b || '=' } })
 
   // ============================================================================================ measure
   const parts = chromeParts(spec, ctx)
@@ -138,9 +111,20 @@ export default function deadSimpleList(spec, ctx) {
   const wU = (str, u) => mm(`u|${u}|${str}`, () => measure(str, `800 ${u}px ${F.head}`, { letterSpacing: '-0.01em' }))
   const glyphW = (i, v) => { const [a, b] = splitResult(items[i].result || ''); return wV(a, v) + (b ? wU(b, unitPx(v)) : 0) }
   const resW = (i, v) => { const it = items[i]; const w = glyphW(i, v); return isGoal(it) ? w * HL + 2 * PLATE[0] + 12 : w }
-  const blockW = (i, m) => Math.ceil(wM(items[i].formula || '', m) + 0.2 * m + 2 * (BP.x + BP.b))
+  const blockW = (i, m) => Math.ceil(wM(F2[i].num, m) + 0.2 * m + 2 * (BP.x + BP.b))
+  const opW = (i, m) => Math.ceil(wM(F2[i].op, m) + 0.2 * m + 2 * OP.x)
   const blockH = m => Math.round(1.2 * m) + 2 * BP.y + 2 * BP.b
+  const opH = m => Math.round(1.2 * m) + 2 * OP.y
   const plateH = v => Math.round(v * HL) + 2 * PLATE[1] + 12
+  // label line count at a width (probe with the real wrapping)
+  const probe = h('div', { class: 'ds-label wrap', style: { visibility: 'hidden' } })
+  ctx.stage.append(probe)
+  const nLines = (i, w, l, lh) => mm(`nl|${i}|${w}|${l}`, () => {
+    if (!items[i].label) return 0
+    style(probe, { width: w + 'px', fontSize: l + 'px', lineHeight: lh + 'px' })
+    probe.innerHTML = markup(items[i].label)
+    return Math.round(probe.offsetHeight / lh)
+  })
   // greedy word wrap of a note into lines no wider than A (null if one word is wider)
   function wrapN(text, n, A) {
     const words = String(text).split(/\s+/).filter(Boolean), lines = []
@@ -152,149 +136,205 @@ export default function deadSimpleList(spec, ctx) {
       else { lines.push(cur); cur = w }
     }
     if (cur) lines.push(cur)
+    // two lines: balance them (the narrowest longest line), so the second line is never a lone orphan word
+    if (lines.length === 2) {
+      let best = lines
+      for (let s2 = 1; s2 < words.length; s2++) {
+        const a = words.slice(0, s2).join(' '), b = words.slice(s2).join(' ')
+        if (wN(a, n) <= A && wN(b, n) <= A && Math.max(wN(a, n), wN(b, n)) < Math.max(...best.map(x => wN(x, n)))) best = [a, b]
+      }
+      return best
+    }
     return lines
   }
-  // the figure's kick reach decides where the block's right edge sits
-  const footTip = k => { const J = fk(P.kick, { x: FX, ground: 1000, face: -1, scale: k }); return J.fF[0] - J.sw }
+
+  // ---- the figure's corner: bottom right, on the floor. Rows that come down beside him end left of it. The plate
+  // he holds never rises above his head (capY), so the corner is as tall as he is.
+  const figTop = k => L.floorY - 262 * k                            // head top
+  // The corner's left edge depends on WHEN: a row's label is there from frame 1 (every plate he will hold), its
+  // block and dock from its own turn (plates i..N-1), its answer and note after its hit (plates i+1..N-1).
+  const corner = (k, m) => {
+    const handX = FX - 58 * (k / 0.84)
+    const left = items.map((_, j) => { const pw = opW(j, m); return Math.min(handX, XMAX - pw / 2) - pw / 2 })
+    const body = FX - 80 * k
+    const cx = from => Math.round(Math.min(body, ...left.slice(from)) - 18)
+    return { y: Math.round(figTop(k) - 16), all: cx(0), from: i => cx(i), after: i => cx(i + 1) }
+  }
 
   // ---- input line (the viewer-owned number), only if the hook does not already show it
   const inp = d.input
   let showInput = !!(inp && inp.value) && lo.input !== 'hide' &&
     (lo.input === 'show' || !plain(spec.header || '').includes(plain(inp.value)))
-  const YB = L.floorY                         // the last slot stands on the floor
+  const YB = L.floorY - 4                     // the lowest ledge sits just above the floor line
   let Y0 = parts.workTop
 
+  // vertical arrangement: rows bottom-anchored on the floor; 5 items or fewer spread out and centre
+  function arrange(rowH, pMax, wantPitch) {
+    const pitch = N > 1 ? Math.min(pMax, wantPitch) : rowH
+    const total = (N - 1) * pitch + rowH
+    const top = N <= 5 ? Y0 + Math.max(0, (YB - Y0 - total) / 2) : YB - total
+    const Sy = items.map((_, i) => Math.round(top + i * pitch + rowH))
+    return { pitch, Sy }
+  }
+  // right edges per row: { L: label (static), B: block + dock (its turn), V: answer + note (after its hit) }
+  const rightOf = (Sy, cz) => Sy.map((y, i) => (y > cz.y + 4 ? { L: cz.all, B: cz.from(i), V: cz.after(i) } : { L: CR, B: CR, V: CR }))
+
   // ---- layout candidates
-  function tryRows(v, slack) {
+  function tryRows(v, slack, k, nlMax, nMin) {
     const l = v >= 64 ? 44 : v >= 58 ? 42 : 40
-    const Lh = Math.round(1.21 * l)
-    const room = footTip(0.74) + 2 - X0
-    let m = Math.min(56, Math.round(v * 0.74))
-    while (m > 40 && items.some((_, i) => blockW(i, m) > room)) m -= 2     // formulas stay at 40 px or more
-    if (items.some((_, i) => blockW(i, m) > room)) return null
-    if (items.some((it, i) => X0 + resW(i, v) > CR || (it.label && X0 + wL(it.label, l) > CR))) return null
+    const lh = Math.round(1.2 * l)
+    let m = clamp(Math.round(v * 0.68), 40, 52)
+    while (m > 40 && items.some((_, i) => opW(i, m) > 330)) m = Math.max(40, m - 2)
+    const cz = corner(k, m)
     const goal = items.some(isGoal)
-    // the gold plate may overhang the value line a little (it is decoration)
     const Vh = Math.max(Math.round(1.21 * v), blockH(m) + 2, goal ? plateH(v) - 8 : 0)
-    const rowH = Lh + 6 + Vh + 8
-    const pMax = N > 1 ? (YB - Y0 - rowH) / (N - 1) : Infinity
-    if (pMax < rowH + slack || pMax < 136) return null
-    // notes: one size for every row; each note goes after the result, after the label, or as a 2-line margin note.
-    // Of the two preference orders, keep the one that puts the most notes in the same place (a calmer sheet).
-    let notes = null
-    for (const n of [40, 38, 36]) {
-      const lh = Math.round(1.25 * n)
+    // label lines at the full width first (a corner row is re-checked below)
+    const nl = Math.max(1, ...items.map((_, i) => nLines(i, CR - X0, l, lh)))
+    if (nl > nlMax) return null
+    const Lh = nl * lh
+    const base = Lh + 6 + Vh + 8
+    const nlhB = Math.round(1.25 * 40) + 2
+    // notes: one size for every row; each note goes after the result, after the label, as a 2-line margin note,
+    // or (only that row grows) as 1-2 lines under the value. Of the two preference orders, keep the one that puts
+    // the most notes in the same place (a calmer sheet).
+    const placeNotes = (R, n) => {
+      const nlh = Math.round(1.25 * n)
       const place = order => items.map((it, i) => {
         if (!it.note) return { kind: 'none' }
-        const nw = wN(it.note, n), rw = resW(i, v), lw = it.label ? wL(it.label, l) : 0
+        const nw = wN(it.note, n), rw = resW(i, v), lw = it.label && nl === 1 ? wL(it.label, l) : Infinity
         for (const kind of order) {
-          if (kind === 'val' && X0 + rw + 26 + nw <= CR) return { kind, n, x: X0 + rw + 26 }
-          if (kind === 'label' && it.label && X0 + lw + 26 + nw <= CR) return { kind, n, x: X0 + lw + 26 }
+          if (kind === 'val' && X0 + rw + 26 + nw <= R[i]) return { kind, n, x: X0 + rw + 26 }
+          if (kind === 'label' && it.label && X0 + lw + 26 + nw <= R[i]) return { kind, n, x: X0 + lw + 26 }
         }
-        const x = X0 + Math.max(rw, lw) + 28
-        const lines = wrapN(it.note, n, CR - x)
-        if (lines && lines.length === 2 && 2 * lh <= Lh + 6 + Vh) return { kind: 'block', n, x, lines, lh }
+        const x = X0 + rw + 28
+        const lines = wrapN(it.note, n, R[i] - x)
+        if (lines && lines.length === 2 && 2 * nlh <= Vh + 10) return { kind: 'block', n, x, lines, lh: nlh }
+        const bl = wrapN(it.note, n, R[i] - X0)
+        if (bl && bl.length <= 2) return { kind: 'below', n, x: X0, lines: bl, lh: nlhB }
         return null
       })
       const calm = out => { const c = {}; for (const o of out) if (o.kind !== 'none') c[o.kind] = (c[o.kind] || 0) + 1; return Math.max(0, ...Object.values(c)) }
       const opts = [place(['val', 'label']), place(['label', 'val'])].filter(o => o.every(Boolean))
-      if (opts.length) { notes = opts.reduce((a, b) => (calm(b) > calm(a) ? b : a)); break }
+      return opts.length ? opts.reduce((a, b) => (calm(b) > calm(a) ? b : a)) : null
     }
-    if (!notes) return null
-    const pitch = N > 1 ? Math.min(pMax, rowH + 92) : rowH
-    return { mode: 'rows', v, l, m, Lh, Vh, rowH, pitch, notes }
-  }
-
-  // kFit: the figure scale the layout is fitted for. His kick reach sets the block's struck end (vR); a bigger
-  // figure reaches further left, so the build caps the figure at the scale the layout was fitted for.
-  function tryLines(v, allowDrop, kFit = 0.45) {
-    const l = 40, lh = 48
-    const vR = footTip(kFit) + 2, cR = vR - VAL_GAP
-    let m = Math.min(48, Math.max(40, Math.round(v * 0.76)))     // formulas never below the 40 px must-read floor
-    while (m > 40 && items.some((_, i) => blockW(i, m) > vR - X0 - 240)) m -= 2
-    if (items.some((_, i) => blockW(i, m) > vR - X0)) return null
-    // each row's label column ends where its own result begins, and where its block begins when that leaves room
-    // (the label then stays readable while the formula types; otherwise it ducks under the block)
-    const probe = h('div', { class: 'ds-label wrap', style: { fontSize: l + 'px', lineHeight: lh + 'px', visibility: 'hidden' } })
-    ctx.stage.append(probe)
-    const nLines = (i, w) => { if (!items[i].label) return 0; probe.style.width = w + 'px'; probe.innerHTML = markup(items[i].label); return Math.round(probe.offsetHeight / lh) }
-    const resCol = items.map((_, i) => Math.floor(cR - resW(i, v) - 30 - X0))   // room left of the answer
-    const colW = items.map((_, i) => {
-      const rc = resCol[i], bc = Math.floor(vR - blockW(i, m) - 22 - X0)
-      return bc >= 220 && bc < rc && nLines(i, bc) <= 2 ? bc : rc
-    })
-    const lines = items.map((_, i) => nLines(i, colW[i]))
-    probe.remove()
-    if (colW.some(w => w < 200)) return null
-    if (lines.some(n => n > 2)) return null
-    // one note size for every row; with allowDrop, the size that drops the fewest notes (the larger on a tie)
-    let notes = null, best = null
-    const drops = o => o.filter(x => x.kind === 'drop').length
-    for (const n of [40, 38, 36]) {
-      const cur = items.map((it, i) => {
-        if (!it.note) return { kind: 'none' }
-        // the note shows once the answer has landed (the block is gone by then): only the answer limits it
-        if (lines[i] <= 1 && wN(it.note, n) <= resCol[i]) return { kind: 'under', n }
-        return { kind: 'drop', n }
-      })
-      if (!drops(cur)) { notes = cur; break }
-      if (!best || drops(cur) < drops(best)) best = cur
+    for (const n of [40, 38, 36].filter(x => x >= nMin)) {
+      let below = items.map(() => 0)
+      for (let pass = 0; pass < 3; pass++) {
+        const hs = below.map(b => base + b * nlhB)
+        const sumH = hs.reduce((a, b) => a + b, 0)
+        const gapMax = N > 1 ? (YB - Y0 - sumH) / (N - 1) : Infinity
+        if (gapMax < slack || base + gapMax < 120) break
+        const gap = N > 1 ? Math.min(gapMax, N <= 5 ? Math.max(slack, 260 - base) : 92) : 0
+        const total = sumH + (N - 1) * gap
+        const top = N <= 5 ? Y0 + Math.max(0, (YB - Y0 - total) / 2) : YB - total
+        let acc = top
+        const Sy = hs.map((hh, i) => { acc += hh + (i ? gap : 0); return Math.round(acc) })
+        const RR = rightOf(Sy, cz)
+        let ok = true
+        for (let i = 0; i < N && ok; i++) {
+          const it = items[i]
+          if (X0 + resW(i, v) > RR[i].V || X0 + blockW(i, m) + 6 + opW(i, m) > RR[i].B + 0.4 * opW(i, m)) ok = false
+          else if (it.label && nLines(i, RR[i].L - X0, l, lh) > nl) ok = false
+        }
+        if (!ok) return null
+        const notes = placeNotes(RR.map(x => x.V), n)
+        if (!notes) break
+        const need = notes.map(o => (o.kind === 'below' ? o.lines.length : 0))
+        if (need.every((x, i) => x === below[i])) {
+          return { mode: 'rows', v, l, lh, nl, m, Lh, Vh, rowH: base, pitch: base + gap, Sy, R: RR, notes, k, belowH: below.map(b => b * nlhB) }
+        }
+        below = need
+      }
     }
-    if (!notes) { if (!allowDrop) return null; notes = best }
-    const goal = items.some(isGoal)
-    const Vh = Math.max(Math.round(1.21 * v), blockH(m) + 2, goal ? plateH(v) - 8 : 0)
-    const textH = Math.max(...items.map((it, i) => (lines[i] + (notes[i].kind === 'under' ? 1 : 0)) * lh))
-    const rowH = Math.max(textH, Vh) + 12
-    const pMax = N > 1 ? (YB - Y0 - rowH) / (N - 1) : Infinity
-    if (pMax < rowH + 6 || pMax < 104) return null
-    const pitch = N > 1 ? Math.min(pMax, rowH + 60) : rowH
-    return { mode: 'lines', v, l, lh, m, Vh, rowH, pitch, notes, lines, colW, vR, kFit }
-  }
-  // the figure's natural size for a layout: it follows the ledge pitch, and his head stays under the ledge above
-  const kOf = x => lo.figureScale ?? clamp(Math.min((x.pitch - 18) / 262, (x.rowH + 22) / 262), 0.38, 0.74)
-  // fit the lines layout, then refit it for the figure size it actually gets (when that is bigger)
-  function fitLines(v, allowDrop) {
-    const x = tryLines(v, allowDrop)
-    if (!x || kOf(x) <= x.kFit + 0.005) return x
-    return tryLines(v, allowDrop, kOf(x)) || x
-  }
-
-  function pickLayout() {
-    if (lo.layout !== 'lines') {
-      for (const slack of [36, 12]) for (let v = 84; v >= 56; v -= 4) { const x = tryRows(v, slack); if (x) return x }
-    }
-    // keep every note if that works at a decent value size; otherwise drop the notes that have no room
-    if (lo.layout !== 'rows') for (const [drop, vMin] of [[false, 56], [true, 48]]) for (let v = 68; v >= vMin; v -= 4) { const x = fitLines(v, drop); if (x) return x }
-    for (let v = 60; v >= 52; v -= 4) { const x = tryRows(v, 0); if (x) return x }
     return null
   }
-  let lay = null
-  if (showInput) { Y0 = parts.workTop + 58 + 18; lay = pickLayout() }
-  if (!lay) {
-    if (showInput) console.warn('dead-simple-list: no room for the input line; the hook has to carry the number')
-    showInput = false; Y0 = parts.workTop
-    lay = pickLayout()
+
+  function tryLines(v, allowDrop, k) {
+    const l = 40, lh = 48
+    let m = Math.min(48, Math.max(40, Math.round(v * 0.72)))     // formulas never below the 40 px must-read floor
+    while (m > 40 && items.some((_, i) => opW(i, m) > 300)) m = Math.max(40, m - 2)
+    const cz = corner(k, m)
+    const goal = items.some(isGoal)
+    const Vh = Math.max(Math.round(1.21 * v), blockH(m) + 2, goal ? plateH(v) - 8 : 0)
+    // each row's label column ends where its own result begins; its block may duck the label while it is shown
+    const solve = RR => {
+      const R = RR.map(x => x.B)
+      const colW = items.map((_, i) => Math.floor(Math.min(R[i] - resW(i, v) - 30, RR[i].L) - X0))
+      if (colW.some(w => w < 180)) return null
+      const lines = items.map((_, i) => nLines(i, colW[i], l, lh))
+      if (lines.some(n => n > 2)) return null
+      let notes = null, best = null
+      const drops = o => o.filter(x => x.kind === 'drop').length
+      for (const n of [40, 38, 36]) {
+        const cur = items.map((it, i) => {
+          if (!it.note) return { kind: 'none' }
+          if (lines[i] <= 1 && wN(it.note, n) <= colW[i]) return { kind: 'under', n }
+          return { kind: 'drop', n }
+        })
+        if (!drops(cur)) { notes = cur; break }
+        if (!best || drops(cur) < drops(best)) best = cur
+      }
+      if (!notes) { if (!allowDrop) return null; notes = best }
+      const textH = Math.max(...items.map((it, i) => (lines[i] + (notes[i].kind === 'under' ? 1 : 0)) * lh))
+      return { colW, lines, notes, rowH: Math.max(textH, Vh) + 14 }
+    }
+    let R = items.map(() => ({ L: CR, B: CR, V: CR })), sol = null, pos = null
+    for (let pass = 0; pass < 3; pass++) {
+      sol = solve(R)
+      if (!sol) return null
+      const pMax = N > 1 ? (YB - Y0 - sol.rowH) / (N - 1) : Infinity
+      if (pMax < sol.rowH + 6 || pMax < 100) return null
+      pos = arrange(sol.rowH, pMax, N <= 5 ? 240 : sol.rowH + 60)
+      const R2 = rightOf(pos.Sy, cz)
+      if (R2.every((x, i) => x.B === R[i].B && x.L === R[i].L)) break
+      R = R2
+      if (pass === 2) return null
+    }
+    for (let i = 0; i < N; i++) if (X0 + blockW(i, m) > R[i].B) return null
+    return { mode: 'lines', v, l, lh, m, Vh, rowH: sol.rowH, pitch: pos.pitch, Sy: pos.Sy, R, notes: sol.notes, lines: sol.lines, colW: sol.colW, k }
   }
+
+  function pickLayout(k, nlMax) {
+    // notes at the 40 px must-read size first (a smaller value beats a smaller note), then down to 36
+    if (lo.layout !== 'lines') {
+      for (const nMin of [40, 36]) for (const slack of [36, 12]) for (let v = 84; v >= 56; v -= 4) { const x = tryRows(v, slack, k, Math.min(2, nlMax), nMin); if (x) return x }
+    }
+    // keep every note if that works at a decent value size; otherwise drop the notes that have no room
+    if (lo.layout !== 'rows') for (const [drop, vMin] of [[false, 56], [true, 48]]) for (let v = 68; v >= vMin; v -= 4) { const x = tryLines(v, drop, k); if (x) return x }
+    for (let v = 60; v >= 52; v -= 4) { const x = tryRows(v, 0, k, nlMax, 36); if (x) return x }
+    return null
+  }
+  const k0 = clamp(lo.figureScale ?? 0.84, 0.6, 1.1)
+  let lay = null
+  const attempts = []
+  for (const inpOn of showInput ? [true, false] : [false]) for (const k of [k0, Math.min(k0, 0.74), Math.min(k0, 0.66)]) for (const nl of [2, 3]) attempts.push([inpOn, k, nl])
+  for (const [inpOn, k, nl] of attempts) {
+    Y0 = parts.workTop + (inpOn ? 58 + 18 : 0)
+    lay = pickLayout(k, nl)
+    if (lay) { if (showInput && !inpOn) console.warn('dead-simple-list: no room for the input line; the hook has to carry the number'); showInput = inpOn; break }
+  }
+  probe.remove()
   if (!lay) throw new Error('dead-simple-list: the items do not fit the work area (shorten labels or formulas, or use fewer items)')
   const rows = lay.mode === 'rows'
-  const { v, l, m, Vh, rowH, pitch } = lay
+  const { v, l, m, Vh, rowH, k } = lay
+  const SyA = lay.Sy, RA = lay.R
+  const Sy = i => SyA[i]
+  const yV = i => Sy(i) - 8 - (lay.belowH ? lay.belowH[i] : 0) - Vh / 2   // value line centre
+  const yL = i => yV(i) - Vh / 2 - 6 - lay.Lh / 2                   // label block centre (rows)
+  const yRowC = i => Sy(i) - 7 - (rowH - 14) / 2                    // row centre (lines)
+  const yTab = i => (rows ? yV(i) - Vh / 2 - 6 - lay.Lh + lay.lh / 2 : yRowC(i))
+  const BH = blockH(m), PH = opH(m)
 
-  // ---- the figure's size follows the ledge pitch; his head stays under the ledge above (and under the footer).
-  // In the lines layout his reach must not pass the struck end the layout was fitted for.
-  let k = kOf(lay)
-  if (!rows) while (k > 0.3 && footTip(k) + 2 < lay.vR - 0.5) k -= 0.01
-  const hitX = Math.round(footTip(k) + 2)
-  const Sy = i => YB - (N - 1 - i) * pitch                        // ledge (shelf) y of row i
-  const yV = i => Sy(i) - 8 - Vh / 2                               // value line centre
-  const yL = i => yV(i) - Vh / 2 - 6 - lay.Lh / 2                   // label line centre (rows)
-  const vR = rows ? null : Math.round(lay.vR) - VAL_GAP            // value column right edge (lines)
-  const yRowC = i => Sy(i) - 6 - (rowH - 12) / 2                    // row centre (lines)
-  const yTab = i => (rows ? yL(i) : yRowC(i))
-  const BH = blockH(m)
-  const J0 = fk('stand', { x: FX, ground: 1000, face: -1, scale: k })
-  const figH = 1000 - (J0.head[1] - J0.R)
-  const ceil = i => (i > 0 ? Sy(i - 1) + 3 : Y0 - 16)              // what is over his head on row i
-  const hopCap = i => Math.max(0, Sy(i) - ceil(i) - figH - 8)
+  // ============================================================================================ timing
+  // ts: the block lands and starts typing; res: the plate slams down (the result appears). An item at t <= 0.3
+  // is fully typed at frame 1 (the hook shows the number and the operator in his hands).
+  const TI = []
+  items.forEach((it, i) => {
+    const prev = TI[i - 1]
+    const t0 = it.t != null ? +it.t : prev ? prev.res + 2.6 : 0.4
+    const res = Math.max(it.resultT != null ? +it.resultT : t0 + typeDur + 0.3, t0 + 0.3)
+    TI.push({ t0, res })
+  })
 
   // ============================================================================================ build
   const world = makeWorld(ctx)
@@ -307,28 +347,16 @@ export default function deadSimpleList(spec, ctx) {
     fitText(el, L.railX - 62, { minPx: 40 })
   }
 
-  // ledges with a trapdoor at the figure's lane (the last row stands on the floor)
+  // ledges: one under each row, out to the row's right edge (the lowest row stands on the floor)
   const ledges = items.map((_, i) => {
-    if (i === N - 1 && Sy(i) >= L.floorY - 1) return null
-    const st = { stroke: C.line, 'stroke-width': 6, 'stroke-linecap': 'round' }
-    const left = s('line', { x1: LEDGE_X0, x2: FX - HATCH - 4, y1: Sy(i), y2: Sy(i), ...st })
-    const flap = s('line', { x1: FX - HATCH, x2: FX + HATCH, y1: Sy(i), y2: Sy(i), ...st })
-    const hinge = s('circle', { cx: FX - HATCH, cy: Sy(i), r: 5, fill: C.line })
-    g.back.append(left, flap, hinge)
-    return { left, flap, hinge }
-  })
-  // empty sockets (dashed): where each answer will land
-  const sockW = Math.max(...items.map((_, i) => resW(i, v))) + 28
-  const sockets = items.map((_, i) => {
-    const hh = Math.round(1.21 * v) + 6
-    const x = rows ? X0 - 14 : vR - sockW + 14
-    const el = s('rect', { x, y: yV(i) - hh / 2, width: sockW, height: hh, rx: 14, fill: 'none', stroke: C.line, 'stroke-width': 4, 'stroke-dasharray': '14 12' })
+    if (Sy(i) >= L.floorY - 6) return null
+    const el = s('line', { x1: LEDGE_X0, x2: RA[i].L + 14, y1: Sy(i), y2: Sy(i), stroke: C.line, 'stroke-width': 6, 'stroke-linecap': 'round' })
     g.back.append(el)
     return el
   })
 
   const R = items.map((it, i) => {
-    const r = { it, i, goal: isGoal(it), tone: toneOf(it.tone), style: styleOf(i) }
+    const r = { it, i, goal: isGoal(it), tone: toneOf(it.tone), style: styleOf(i), right: RA[i].B, rightL: RA[i].L }
     // number tab: a box behind the digit (the linter reads the digit against what is painted behind it)
     r.tabBg = h('div', { class: 'ds-tabbg' })
     r.tabN = h('div', { class: 'ds-tabn' }, String(i + 1))
@@ -337,192 +365,220 @@ export default function deadSimpleList(spec, ctx) {
     world.html.append(r.tabBg, r.tabN)
     // label
     if (it.label) {
-      r.label = h('div', { class: 'ds-label' + (rows ? '' : ' wrap') })
+      r.label = h('div', { class: 'ds-label wrap' })
       setHTML(r.label, markup(it.label))
-      if (rows) style(r.label, { fontSize: l + 'px', lineHeight: l + 'px', transform: `translate(${X0}px,${Math.round(yL(i) - l / 2)}px)` })
+      if (rows) style(r.label, { width: (r.rightL - X0) + 'px', fontSize: l + 'px', lineHeight: lay.lh + 'px', transform: `translate(${X0}px,${Math.round(yV(i) - Vh / 2 - 6 - lay.Lh)}px)` })
       else {
         const nl = lay.lines[i] + (lay.notes[i].kind === 'under' ? 1 : 0)
         style(r.label, { width: lay.colW[i] + 'px', fontSize: l + 'px', lineHeight: lay.lh + 'px', transform: `translate(${X0}px,${Math.round(yRowC(i) - nl * lay.lh / 2)}px)` })
       }
       world.html.append(r.label)
-      if (!rows) {
-        // the block will cover the label's text? then the label ducks while the formula types
-        const rg = document.createRange(); rg.selectNodeContents(r.label)
-        const textR = Math.max(0, ...[...rg.getClientRects()].map(q => q.right))
-        r.duck = hitX - blockW(i, m) < textR + 14
-      }
     }
-    // the glyph block (formula), right edge at the figure's kick reach
+    // result geometry: left-aligned under the label (rows) or right-aligned at the row's edge (lines)
+    r.rw = glyphW(i, v)
+    r.sw = r.rw * (r.goal ? HL : 1)
+    r.home = rows ? X0 + (r.goal ? PLATE[0] + 6 : 0) : r.right - (r.goal ? PLATE[0] + 6 : 0) - r.sw
+    // the glyph block (the number) sits where the answer will land
     r.bw = blockW(i, m)
-    r.bx = hitX - r.bw
+    r.bx = rows ? X0 : r.right - r.bw
+    // where the plate docks: flush against the block's right end when the row has room, else over its right end
+    r.pw = opW(i, m)
+    r.dockX = Math.min(r.bx + r.bw + 6 + r.pw / 2, r.right - r.pw / 2)
+    if (!rows && r.label) {
+      const rg = document.createRange(); rg.selectNodeContents(r.label)
+      const textR = Math.max(0, ...[...rg.getClientRects()].map(q => q.right))
+      r.duck = Math.min(r.bx, r.dockX - r.pw / 2) < textR + 14     // the block or plate covers the label: it ducks
+    }
     r.block = new NumObj(world.html, { cls: 'ds-block', ax: 0.5, ay: 0.5 })
     style(r.block.el, { width: r.bw + 'px', height: BH + 'px', fontSize: m + 'px', lineHeight: (BH - 2 * BP.b) + 'px', opacity: '0' })
-    const f = String(it.formula || '')
-    const mt = /\s[×÷−+=*/x]\s/.exec(f)
-    r.formula = f; r.opAt = mt ? mt.index + 1 : -1                  // the operator and its constant type in green
-    // plate (goal)
+    // the operator plate (the tool he throws)
+    r.op = new NumObj(world.html, { cls: 'ds-op', ax: 0.5, ay: 0.5 })
+    style(r.op.el, { width: r.pw + 'px', height: PH + 'px', fontSize: m + 'px', lineHeight: PH + 'px', opacity: '0' })
+    // gold plate (goal)
     if (r.goal) { r.plate = h('div', { class: 'ds-plate', style: { opacity: '0' } }); world.html.append(r.plate) }
     // result
-    r.rw = glyphW(i, v)
     const [numS, unitS] = splitResult(it.result || '')
     r.hasUnit = !!unitS
     r.val = new NumObj(world.html, { cls: 'ds-val', ax: 0, ay: 0.5, style: { fontSize: v + 'px', opacity: '0' } })
     r.val.el.innerHTML = esc(numS) + (unitS ? `<span class="u" style="font-size:${unitPx(v)}px">${esc(unitS)}</span>` : '')
-    // left edge of the (scaled) glyph at home, and where it snaps out of the block
-    r.sw = r.rw * (r.goal ? HL : 1)
-    r.home = rows ? X0 + (r.goal ? PLATE[0] + 6 : 0) : vR - (r.goal ? PLATE[0] + 6 : 0) - r.sw
-    r.snapX = rows ? clamp(r.bx + r.bw / 2 - r.sw / 2, X0, hitX - r.sw) : r.home
+    // empty socket (dashed), sized for this row's own answer
+    const hh = Math.round(1.21 * v) + 6, sw = resW(i, v) + 28
+    r.socket = s('rect', { x: rows ? X0 - 14 : r.right - sw + 14, y: yV(i) - hh / 2, width: sw, height: hh, rx: 14, fill: 'none', stroke: C.line, 'stroke-width': 4, 'stroke-dasharray': '14 12' })
+    g.back.append(r.socket)
     // note
     const nt = lay.notes[i]
     if (it.note && nt.kind !== 'drop' && nt.kind !== 'none') {
       r.note = h('div', { class: 'ds-note', style: { opacity: '0' } })
-      if (nt.kind === 'block') { r.note.innerHTML = nt.lines.map(x => markup(x)).join('<br>'); style(r.note, { fontSize: nt.n + 'px', lineHeight: nt.lh + 'px' }) }
+      if (nt.kind === 'block' || nt.kind === 'below') { r.note.innerHTML = nt.lines.map(x => markup(x)).join('<br>'); style(r.note, { fontSize: nt.n + 'px', lineHeight: nt.lh + 'px' }) }
       else { setHTML(r.note, markup(it.note)); style(r.note, { fontSize: nt.n + 'px', lineHeight: nt.n + 'px' }) }
       world.html.append(r.note)
       const base = (yc, px) => yc + 0.363 * px                       // baseline of a line-height:1 box centred at yc
       if (nt.kind === 'val') { r.noteX = nt.x; r.noteY = base(yV(i), v * (r.goal ? HL : 1)) - 0.86 * nt.n }
       else if (nt.kind === 'label') { r.noteX = nt.x; r.noteY = base(yL(i), l) - 0.86 * nt.n }
-      else if (nt.kind === 'block') { r.noteX = nt.x; r.noteY = (yL(i) - lay.Lh / 2 + yV(i) + Vh / 2) / 2 - nt.lh }
+      else if (nt.kind === 'block') { r.noteX = nt.x; r.noteY = yV(i) - nt.lh }
+      else if (nt.kind === 'below') { r.noteX = nt.x; r.noteY = Math.round(yV(i) + Vh / 2 + 6) }
       else { r.noteX = X0; r.noteY = yRowC(i) - (lay.lines[i] + 1) * lay.lh / 2 + lay.lines[i] * lay.lh + (lay.lh - nt.n) / 2 }
       r.noteY = Math.round(r.noteY)
     } else if (it.note && nt.kind === 'drop') console.warn(`dead-simple-list: no room for the note of item ${i + 1} ("${it.note}")`)
     return r
   })
+  function styleOf(i) {
+    const it = items[i]
+    if (lo.hits && lo.hits[i] && HIT[lo.hits[i]]) return HIT[lo.hits[i]]
+    if (isGoal(it)) return 'slam'
+    const a = (lo.actions || []).find(x => x && x.item === i)
+    if (a && VERB[a.verb]) return VERB[a.verb]
+    return i % 2 ? 'kick' : 'chop'
+  }
 
   // ============================================================================================ choreography
-  const fxk = makeFx(world, ctx)
-  const cam = camera(world)
-  const G = 3600, V0 = 330
-  const fallDur = Math.max(0.12, (-V0 + Math.sqrt(V0 * V0 + 2 * G * pitch)) / G)
-  // travel of each result from the block to its socket
+  const fig = new Figure(g.fig, { scale: k })
   R.forEach((r, i) => {
-    const dist = Math.abs(r.snapX - r.home)
-    r.t0 = TI[i].res + 0.07
-    r.dur = dist < 4 ? 0 : r.style === 'slam' ? clamp(0.24 + dist / 2400, 0.24, 0.4) : clamp(0.16 + dist / 2400, 0.16, 0.34)
-    r.arrive = r.t0 + r.dur
+    const T0 = TI[i]
+    const g0 = graphemes(F2[i].num).length, g1 = graphemes(F2[i].op).length
+    r.split = g0 / Math.max(1, g0 + g1)                            // share of the typing that goes on the block
+    // the plate's flight: up the lane right of every row, edge-on (a row in his corner: straight across the corner),
+    // then it whips left along the row's value line and docks against the number. It never crosses the list.
+    r.land = [r.dockX, yV(i)]
+    r.inCorner = r.right < CR
+    r.via = [r.inCorner ? Math.min(r.right + r.pw / 2 + 12, XMAX - r.pw / 2) : LANE, yV(i)]
+    const rise = Math.max(0, (L.floorY - 150 * k) - yV(i))
+    let flight = clamp(0.3 + rise / 2400 + (r.via[0] - r.land[0]) / 4000, 0.32, 0.6)
+    const pre = i === 0 && T0.t0 <= 0.3
+    let typeD = clamp(typeDur, 0.12, 2)
+    let ts = pre ? -typeD - 0.05 : T0.t0
+    // typing ends before the wind-up; when the slot is short, the typing then the flight give way
+    const room = T0.res - ts - flight - WIND - 0.06
+    if (!pre && typeD > room) typeD = Math.max(0.12, room)
+    if (ts + typeD + WIND + flight > T0.res - 0.04) flight = Math.max(0.2, T0.res - 0.04 - ts - typeD - WIND)
+    Object.assign(T0, { ts, typeD, flight, tr: T0.res - flight })
+    T0.tw = Math.max(ts + typeD + 0.04, T0.tr - (r.style === 'slam' ? 0.62 : WIND))
+    T0.tHold = ts + typeD * r.split                                 // the plate pops into his hands here
   })
-  // moves between rows: stomp, the trapdoor opens, he drops to the next ledge
-  const MV = []
-  for (let i = 0; i < N - 1; i++) {
-    const earliest = R[i].arrive + 0.3
-    const want = TI[i + 1].ts - 0.5 - fallDur
-    const latest = TI[i + 1].res - 0.62 - fallDur
-    const tm = Math.max(earliest, Math.min(want, latest))
-    MV.push({ from: i, to: i + 1, tm, tl: tm + fallDur })
-  }
-  const arriveRow = i => (i ? MV[i - 1].tl : -10)
-  const rowAt = t => { let r = 0; for (const mv of MV) if (t >= mv.tm) r = mv.to; return r }
-  const falling = t => MV.some(mv => t >= mv.tm && t < mv.tl)
-  const hops = []
+
   const keys = [{ t: -10, pose: 'think' }]
   const K = (t, pose, d = M.move, e = 'spring') => keys.push({ t, pose, d, e })
+  const hops = []
+  const xKeys = [{ t: -10, v: FX }]
   for (let i = 0; i < N; i++) {
-    const r = R[i], res = TI[i].res
-    if (i) {
-      const mv = MV[i - 1]
-      K(mv.tm - 0.3, P.dip, 0.1, 'out')
-      K(mv.tm - 0.19, 'stand', 0.08, 'out')
-      hops.push({ t0: mv.tm - 0.17, dur: 0.17, h: Math.min(14, hopCap(i - 1)), soft: true })
-      K(mv.tm, P.fall, 0.1, 'out')
-      K(mv.tl, P.land, 0.06, 'out')
-      K(mv.tl + 0.12, 'idle', 0.3, 'spring')
-    }
-    const wind = res - (r.style === 'slam' ? 0.7 : 0.4)
-    const tThink = Math.max(TI[i].ts + 0.05, arriveRow(i) + 0.45)
-    if (tThink < wind - 0.3) {
-      K(tThink, 'think', 0.3)
-      let alt = 0
-      for (let tt = tThink + 2.6; tt < wind - 1.0; tt += 2.6) K(tt, alt++ % 2 ? 'think' : 'idle', 0.45, 'inOut')
-    }
-    if (r.style === 'kick') {
-      K(res - 0.36, P.kick0, 0.22, 'inOut')
-      K(res - 0.08, P.kick, 0.08, 'out')
-      K(res + 0.2, 'idle', 0.34, 'spring')
-    } else if (r.style === 'chop') {
-      K(res - 0.4, P.chop0, 0.24, 'inOut')
-      K(res - 0.08, P.chop, 0.08, 'in')
-      K(res + 0.22, 'idle', 0.34, 'spring')
+    const r = R[i], T0 = TI[i]
+    K(T0.tHold - 0.12, 'carry', 0.16, 'spring')
+    if (r.style === 'chop') {
+      K(T0.tw, P.back, T0.tr - T0.tw - 0.02, 'inOut')
+      K(T0.tr - 0.04, P.fling, 0.08, 'out')
+      K(T0.tr + 0.12, 'follow', 0.14, 'out')
+      xKeys.push({ t: T0.tw, v: FX + 10, d: 0.2 }, { t: T0.tr - 0.06, v: FX - 22, d: 0.12, e: 'out' })
+    } else if (r.style === 'kick') {
+      K(T0.tw, P.dip, T0.tr - T0.tw - 0.02, 'inOut')
+      K(T0.tr - 0.04, P.flick, 0.09, 'out')
+      hops.push({ t0: T0.tr - 0.02, dur: 0.26, h: 18 })
+      xKeys.push({ t: T0.tr - 0.06, v: FX - 12, d: 0.14, e: 'out' })
     } else {
-      K(res - 0.7, P.dip, 0.16, 'out')
-      K(res - 0.46, P.slam0, 0.2, 'inOut')
-      hops.push({ t0: res - 0.24, dur: 0.24, h: Math.min(40, hopCap(i)) })
-      K(res - 0.1, P.slam, 0.1, 'in')
-      K(res + 0.32, 'stand', 0.26, 'spring')
-      ctx.cue(res - 0.5, 'riser', { dur: 0.4, gain: 0.3 })
+      K(T0.tw, P.dip, 0.16, 'out')
+      K(T0.tw + 0.18, P.deep, Math.max(0.12, T0.tr - T0.tw - 0.26), 'inOut')
+      K(T0.tr - 0.05, P.heave, 0.08, 'out')
+      hops.push({ t0: T0.tr - 0.04, dur: 0.3, h: 30 })
+      xKeys.push({ t: T0.tr - 0.08, v: FX - 26, d: 0.14, e: 'out' })
+      ctx.cue(T0.tw, 'riser', { dur: Math.max(0.2, T0.tr - T0.tw), gain: 0.3 })
     }
-    if (i < N - 1 && MV[i].tm - (res + 0.6) > 0.9) K(res + 0.62, P.proud, 0.3, 'spring')
+    xKeys.push({ t: T0.res + 0.3, v: FX, d: 0.4, e: 'inOut' })
+    K(T0.res + 0.14, 'idle', 0.34, 'spring')
+    const next = TI[i + 1]
+    if (!r.goal && next && next.tHold - T0.res > 1.6) K(T0.res + 0.55, i % 2 ? P.proud : 'think', 0.34, 'spring')
   }
-  // finale: a "yes!" fist pump (fist cocked, yanked down to the waist, knee up; it fits under the ledge above),
-  // with a little hop when the ledge leaves room, then he points back at the answer
-  const last = R[N - 1]
-  const tCel = last.arrive + 0.3
-  K(tCel, P.yes0, 0.16, 'out')
-  K(tCel + 0.24, P.yes, 0.08, 'out')
-  const celHop = Math.min(30, hopCap(N - 1))
-  if (celHop >= 10) hops.push({ t0: tCel + 0.22, dur: 0.3, h: celHop })
-  K(tCel + 0.72, 'stand', 0.22, 'spring')
-  K(tCel + 1.05, 'point', 0.3, 'spring')
-  const tEnd = tCel + 1.05
-  const tCelStep = celHop >= 10 ? tCel + 0.52 : tCel + 0.8
+  // finale: a jump for joy, then he points up at the answer
+  const lastR = R[N - 1], lastT = TI[N - 1]
+  const tCel = lastT.res + 0.3
+  K(tCel, 'celebrate', 0.14, 'out')
+  hops.push({ t0: tCel + 0.04, dur: 0.36, h: 46 })
+  K(tCel + 0.62, 'stand', 0.18, 'spring')
+  K(tCel + 0.9, 'pointUp', 0.3, 'spring')
+  const tEnd = tCel + 0.9
   const tr = poseTrack(keys)
-  const fig = new Figure(g.fig, { scale: k })
-
-  // ground under his feet (ledge, falling through a trapdoor, or a hop)
-  function groundAt(t) {
-    let y = Sy(0)
-    for (const mv of MV) {
-      if (t < mv.tm) break
-      if (t < mv.tl) { const dt = t - mv.tm; return Math.min(Sy(mv.to), Sy(mv.from) + V0 * dt + 0.5 * G * dt * dt) }
-      y = Sy(mv.to)
+  const figX = (() => {
+    const ks = [...xKeys].sort((a, b) => a.t - b.t)
+    const starts = [ks[0].v]
+    const at = (t, upto) => {
+      let i = -1
+      for (let j = 0; j <= upto; j++) if (ks[j].t <= t) i = j
+      if (i < 0) return ks[0].v
+      const kk = ks[i]
+      return lerp(starts[i], kk.v, (E[kk.e || 'inOut'] || E.inOut)(prog(t, kk.t, kk.d ?? 0.3)))
     }
-    for (const hp of hops) y -= hop(t, hp.t0, hp.dur, hp.h)
-    return y
+    for (let i = 1; i < ks.length; i++) starts[i] = at(ks[i].t, i - 1)
+    return t => at(t, ks.length - 1)
+  })()
+  const lift = t => { let y = 0; for (const hp of hops) y += hop(t, hp.t0, hp.dur, hp.h); return y }
+  const landTimes = hops.map(hp => hp.t0 + hp.dur)
+  const Jat = t => fig.pose(t, tr, { x: figX(t), ground: L.floorY - lift(t), face: -1, noDraw: true })
+
+  // where the plate sits while he holds it: it hangs from his hands (top edge in his grip), left of the rail,
+  // never over his head and never through the floor
+  const capY = figTop(k) + 2 * RIG.headR * k + PH / 2 - 2
+  function heldAt(J, i) {
+    const r = R[i]
+    const hx = (J.hF[0] + J.hB[0]) / 2, hy = Math.min(J.hF[1], J.hB[1])
+    return [Math.min(hx, XMAX - r.pw / 2), clamp(hy + PH / 2 - 8, capY, L.floorY - 4 - PH / 2)]
   }
-  const landTimes = [...MV.map(mv => mv.tl), ...hops.filter(hp => !hp.soft && hp.h > 4).map(hp => hp.t0 + hp.dur)]
+  // the flight: snap into the lane edge-on (inside his corner), fly up it, whip left and dock. -> [x, y, rot]
+  function flightAt(r, p) {
+    const [x0, y0] = r.from, [xv, yv] = r.via, [x1, y1] = r.land
+    let x, y, rot
+    if (r.inCorner) {
+      if (p < 0.55) { const q = E.outQuad(p / 0.55); x = lerp(x0, xv, q); y = lerp(y0, yv, q) - 40 * Math.sin(Math.PI * q); rot = -14 * Math.sin(Math.PI * q) }
+      else { const q = E.inQuad((p - 0.55) / 0.45); x = lerp(xv, x1, q); y = y1; rot = 0 }
+    } else if (p < 0.14) { const q = E.out(p / 0.14); x = lerp(x0, xv, q); y = y0; rot = -90 * q }
+    else if (p < 0.7) { const q = E.outQuad((p - 0.14) / 0.56); x = xv; y = lerp(y0, yv, q); rot = -90 }   // edge-on up the lane
+    else { const q = (p - 0.7) / 0.3; x = lerp(xv, x1, E.inQuad(q)); y = y1; rot = -90 + 90 * E.inOut(q) }
+    // never past the rail: the rotated plate's half-width keeps it left of x 938
+    const a = rot * Math.PI / 180, hw = (r.pw * Math.abs(Math.cos(a)) + PH * Math.abs(Math.sin(a))) / 2
+    return [Math.min(x, 938 - hw), y, rot]
+  }
+  // the frisbee flip while it flies up the lane edge-on (a 3D spin faked with a squash)
+  const flipAt = (r, p) => (!r.inCorner && p > 0.14 && p < 0.7 ? 0.35 + 0.65 * Math.abs(Math.cos(Math.PI * 3 * (p - 0.14) / 0.56)) : 1)
+  R.forEach((r, i) => { r.from = heldAt(Jat(TI[i].tr), i) })
 
   // ---- impacts, cues
+  const fxk = makeFx(world, ctx)
+  const cam = camera(world)
   R.forEach((r, i) => {
     const T0 = TI[i]
     ctx.cue(Math.max(0, T0.ts), 'type', { dur: T0.typeD, gain: 0.45 })
-    if (r.goal) fxk.impact(T0.res, { x: r.bx + r.bw / 2, y: yV(i), rx: r.bw / 2 + 10, ry: BH / 2 + 8, r: 34, lines: 14, shake: 12, flash: 0.45, punch: 0.03, cue: 'hit', gain: 0.95 })
-    else if (r.style === 'kick') fxk.impact(T0.res, { x: hitX, y: yV(i), rx: 16, ry: BH / 2 - 6, r: 34, lines: 9, shake: 5 + Math.min(4, i), cue: 'hit', gain: 0.5 })
-    else fxk.impact(T0.res, { x: hitX - (rows ? 30 : 12), y: yV(i) - BH / 2, rx: 30, ry: 12, r: 32, lines: 9, shake: 5 + Math.min(4, i), cue: 'hit', gain: 0.5 })
-    if (r.dur > 0) ctx.cue(r.arrive, 'thud', { gain: 0.4 })
-    if (r.goal) ctx.cue(r.arrive + 0.02, 'cash', { gain: 0.6 })
+    if (T0.tHold > 0.05) ctx.cue(T0.tHold, 'pop', { gain: 0.3 })
+    ctx.cue(T0.tr, 'swipe', { gain: 0.45 })
+    const cx = (r.bx + r.dockX + r.pw / 2) / 2, rx = (r.dockX + r.pw / 2 - r.bx) / 2
+    if (r.goal) fxk.impact(T0.res, { x: cx, y: yV(i), rx: rx + 8, ry: BH / 2 + 12, r: 34, lines: 14, shake: 12, flash: 0.45, punch: 0.03, cue: 'hit', gain: 0.95 })
+    else fxk.impact(T0.res, { x: cx, y: yV(i), rx: rx + 6, ry: BH / 2 + 8, r: 30, lines: 10, shake: 5 + Math.min(4, i), cue: 'hit', gain: 0.55 })
+    ctx.cue(T0.res + 0.03, 'thud', { gain: 0.35 })
+    if (r.goal) ctx.cue(T0.res + 0.06, 'cash', { gain: 0.6 })
   })
-  MV.forEach(mv => { ctx.cue(mv.tm, 'tick', { gain: 0.3 }); ctx.cue(mv.tl, 'step', { gain: 0.5 }) })
-  ctx.cue(tCelStep, 'step', { gain: 0.4 })
+  ctx.cue(tCel + 0.4, 'step', { gain: 0.4 })
 
-  // ---- carving chips: a few bits of the block fly off at each hit (decoration)
+  // ---- crunch chips: bits of the block and the plate fly off at each hit (decoration)
   const chips = []
   R.forEach((r, i) => {
     const rnd = rng(31 + i * 17)
-    const n = r.goal ? 9 : 5
+    const n = r.goal ? 10 : 6
     for (let c = 0; c < n; c++) {
       const el = s('rect', { width: 10 + rnd() * 8, height: 7 + rnd() * 6, rx: 2, fill: c % 3 ? C.ink : C.white, stroke: C.ink, 'stroke-width': 2.5, opacity: 0 })
       g.front.append(el)
-      const spin = (rnd() - 0.5) * 900
-      if (!rows && !r.goal) {
-        // lines layout: the answer appears right where the block was struck, so the chips spray up and away
-        // from it (to the right, round his feet) instead of across it
-        const p0 = [hitX - 6 - rnd() * 14, yV(i) - BH / 2 + rnd() * 10]
-        chips.push({ el, t0: TI[i].res, p0, v: [40 + rnd() * 220, -(220 + rnd() * 200)], floor: Sy(i), spin })
-        continue
-      }
-      const side = r.style === 'kick' ? -1 : (c % 2 ? 1 : -1)
-      const p0 = r.style === 'kick' ? [hitX - 10, yV(i) + (rnd() - 0.5) * BH * 0.6] : [r.bx + r.bw * (0.35 + 0.5 * rnd()), yV(i) - BH / 2]
-      const up = r.style === 'kick' ? 260 + rnd() * 300 : 240 + rnd() * 300
-      chips.push({ el, t0: TI[i].res, p0, v: [side * (200 + rnd() * 360), -up], floor: Sy(i), spin })
+      const side = c % 2 ? 1 : -1
+      const p0 = [r.dockX - r.pw / 2 + side * (20 + 40 * rnd()), yV(i) - BH / 2]
+      // they spray sideways and barely rise: they fall onto the row's ledge without crossing the label above
+      chips.push({ el, t0: TI[i].res, p0, v: [side * (220 + rnd() * 360), -(40 + rnd() * 120)], floor: Sy(i) - 2, spin: (rnd() - 0.5) * 900 })
     }
   })
 
   // ============================================================================================ seek
-  const lastBeat = Math.max(tEnd + 0.6, last.arrive + 0.8)
+  const lastBeat = Math.max(tEnd + 0.6, lastT.res + 1.2)
   const duration = durationOf(spec, lastBeat, d.hold ?? 3)
-  const actT = i => Math.min(TI[i].ts, i ? MV[i - 1].tl : -10) - 0.15
+  const actT = i => TI[i].ts - 0.15
   const goalHit = R.find(r => r.goal)
 
   function seek(t) {
+    const J = Jat(t)
+    let held = -1                                                  // the item whose plate is in his hands
+    for (let i = 0; i < N; i++) if (t >= TI[i].tHold - 0.12 && t < TI[i].tr) held = i
     // ---------------- rows
     for (let i = 0; i < N; i++) {
       const r = R[i], T0 = TI[i]
@@ -535,122 +591,107 @@ export default function deadSimpleList(spec, ctx) {
         boxShadow: current ? `0 0 0 5px ${C.void}, 0 0 0 10px ${C.hero}` : 'none',
       })
       style(r.tabN, { color: active ? C.white : C.dim })
-      // label: dim until reached; in the lines layout it ducks while a wide block covers it
       if (r.label) {
         let op = 1
         if (r.duck) op = 1 - clamp(prog(t, T0.ts - 0.2, 0.12)) + clamp(prog(t, T0.res, 0.2))
         style(r.label, { color: active ? C.ink : C.dim, opacity: clamp(op).toFixed(3) })
       }
-      // ledge colour: light until he has stood on it; the trapdoor swings down under him, springs back after
-      if (ledges[i]) {
-        const col = t >= arriveRow(i) ? C.ink : C.line
-        attr(ledges[i].left, 'stroke', col); attr(ledges[i].flap, 'stroke', col); attr(ledges[i].hinge, 'fill', col)
-        let a = 0
-        const mv = MV[i]
-        if (mv && t >= mv.tm - 0.01) {
-          if (t < mv.tl + 0.14) a = 84 * E.in(prog(t, mv.tm - 0.01, 0.09))
-          else a = Math.max(-10, springStep(t, mv.tl + 0.14, 84, 0, { freq: 2.2, damp: 0.42 }))
-        }
-        const hx = FX - HATCH, ca = Math.cos(a * Math.PI / 180), sa = Math.sin(a * Math.PI / 180)
-        attr(ledges[i].flap, 'x2', (hx + 2 * HATCH * ca).toFixed(1)); attr(ledges[i].flap, 'y2', (Sy(i) + 2 * HATCH * sa).toFixed(1))
-      }
-      // block: drops in, types, blinks, gets hit (its text clears on the hit; the empty box squashes away)
+      if (ledges[i]) attr(ledges[i], 'stroke', t >= T0.res ? C.ink : C.line)
+      // block: drops in, types the number, waits; the plate lands on it and both crunch away
       const tDrop = T0.ts - 0.11
-      if (t < tDrop || t >= T0.res + 0.1) r.block.set({ opacity: 0 })
+      if (t < tDrop || t >= T0.res + 0.07) { r.block.set({ opacity: 0 }); setHTML(r.block.el, '') }
       else {
         const fy = t < T0.ts ? 40 * (1 - E.inQuad(prog(t, tDrop, 0.11))) : 0
         let sx = 1, sy = 1, op = clamp((t - tDrop) / 0.05)
-        if (t >= T0.res) { const q = prog(t, T0.res, 0.1); sx = 1 + 0.18 * q; sy = 1 - 0.55 * q; op = 1 - q }
+        if (t >= T0.res) { const q = prog(t, T0.res, 0.07); sx = 1 + 0.16 * q; sy = 1 - 0.5 * q; op = 1 - q }
         else { const sq = squashAt(t, T0.ts, Math.min(0.1, Math.max(0, 1 - 41 / m))); sx = sq.sx; sy = sq.sy }
         r.block.set({ x: r.bx + r.bw / 2, y: yV(i) - fy, sx, sy, opacity: op })
         if (t >= T0.res) setHTML(r.block.el, '')
         else {
-          const p = prog(t, T0.ts, T0.typeD)
-          const tx = typed(r.formula, p)
-          const a1 = r.opAt < 0 ? tx : tx.slice(0, r.opAt), a2 = r.opAt < 0 ? '' : tx.slice(r.opAt)
-          const caretOn = p < 1 || Math.floor((t - T0.ts - T0.typeD) * 2.6) % 2 === 0
-          setHTML(r.block.el, esc(a1) + (a2 ? `<i>${esc(a2)}</i>` : '') + (caretOn ? '<span class="ds-caret"></span>' : ''))
+          const p = prog(t, T0.ts, T0.typeD * r.split)
+          const caretOn = p < 1
+          setHTML(r.block.el, esc(typed(F2[i].num, p)) + (caretOn ? '<span class="ds-caret"></span>' : ''))
         }
       }
-      // result: pops out of the block, is knocked home, squashes on arrival; newest = tone colour, then settles
+      // operator plate: pops into his hands, types, rides his hands through the wind-up, flies, slams down
+      if (t < T0.tHold - 0.12 || t >= T0.res + 0.07) { r.op.set({ opacity: 0 }); r.op.overlap(false); setHTML(r.op.el, '') }
+      else {
+        let x, y, rot = 0, sx = 1, sy = 1, op = 1
+        if (t < T0.tr) {
+          ;[x, y] = heldAt(J, i)
+          const pp = popIn(t, T0.tHold - 0.12, 0.2, 0.84)
+          sx = sy = pp.scale; op = pp.opacity
+          rot = t >= T0.tw ? -8 * Math.sin(Math.PI * prog(t, T0.tw, T0.tr - T0.tw)) : 0
+        } else if (t < T0.res) {
+          const p = prog(t, T0.tr, T0.flight)
+          ;[x, y, rot] = flightAt(r, p)
+          sy = flipAt(r, p)
+        } else {
+          ;[x, y] = r.land
+          const q = prog(t, T0.res, 0.07)
+          sx = 1 - 0.3 * q; sy = 1 + 0.1 * q; op = 1 - q            // rammed into the number: squashes sideways
+        }
+        r.op.set({ x, y, rot, sx, sy, opacity: op })
+        r.op.overlap(t >= T0.tw)                                     // in motion over the list: an intended overlap
+        const p = prog(t, T0.tHold, T0.typeD * (1 - r.split))
+        const typing = t < T0.tr && p < 1 && T0.ts >= 0
+        setHTML(r.op.el, t >= T0.res ? '' : esc(typed(F2[i].op, T0.ts < 0 ? 1 : p)) + (typing ? '<span class="ds-caret"></span>' : ''))
+      }
+      // result: crunches out of the block and plate, squashes into the socket; newest = tone colour, then settles
       if (t < T0.res) {
-        r.val.set({ opacity: 0 }); r.val.overlap(false)
+        r.val.set({ opacity: 0 })
         if (r.plate) style(r.plate, { opacity: '0' })
       } else {
-        const pp = popIn(t, T0.res, 0.14, 0.9)
-        let x = r.home, y = yV(i), sx = 1, sy = 1
-        const flying = r.dur > 0 && t < r.arrive
-        if (r.dur > 0 && t < r.t0) x = r.snapX
-        else if (flying) x = lerp(r.snapX, r.home, (r.style === 'slam' ? E.inOutQuad : E.outQuad)(prog(t, r.t0, r.dur)))
-        if (!flying && t >= r.arrive && r.dur > 0) {
-          const amt = Math.min(0.18, Math.max(0, 1 - 41 / ((r.hasUnit ? unitPx(v) : v) * (r.goal ? HL : 1))))
-          const sq = squashAt(t, r.arrive, amt)
-          sx = sq.sy; sy = sq.sx                                     // it hits the socket's end: squash sideways
-        }
+        const pp = popIn(t, T0.res + 0.02, 0.16, 0.86)
+        const amt = Math.min(0.18, Math.max(0, 1 - 41 / ((r.hasUnit ? unitPx(v) : v) * (r.goal ? HL : 1))))
+        const sq = squashAt(t, T0.res + 0.04, amt)
         const gs = r.goal ? HL : 1
-        const next = R[i + 1]
-        const settle = next ? prog(t, next.arrive, 0.3) : 0
+        const next = TI[i + 1]
+        const settle = next ? prog(t, next.res, 0.3) : 0
         const col = r.goal ? C.ink : r.it.tone === 'bad' ? C.red : mix(r.tone.text, C.ink, settle)
-        r.val.set({ x, y, sx: gs * pp.scale * sx, sy: gs * pp.scale * sy, opacity: pp.opacity, color: col })
-        r.val.overlap(false)
+        r.val.set({ x: r.home, y: yV(i), sx: gs * pp.scale * sq.sx, sy: gs * pp.scale * sq.sy, opacity: pp.opacity, color: col })
         if (r.plate) {
           const pw = r.sw + 2 * PLATE[0] + 12, ph = plateH(v)
-          const p2 = popIn(t, r.arrive - 0.02, 0.3, 0.5)
-          const sq = squashAt(t, r.arrive, 0.12)
+          const p2 = popIn(t, T0.res, 0.3, 0.5)
+          const sq2 = squashAt(t, T0.res + 0.02, 0.12)
           style(r.plate, {
             width: pw.toFixed(0) + 'px', height: ph + 'px',
-            transform: `translate(${(r.home - PLATE[0] - 6).toFixed(1)}px,${(yV(i) - ph / 2).toFixed(1)}px) scale(${(p2.scale * sq.sx).toFixed(3)},${(p2.scale * sq.sy).toFixed(3)})`,
-            opacity: t >= r.arrive - 0.02 ? '1' : '0',
+            // it may overshoot sideways, never upward into the label line
+            transform: `translate(${(r.home - PLATE[0] - 6).toFixed(1)}px,${(yV(i) - ph / 2).toFixed(1)}px) scale(${(p2.scale * sq2.sx).toFixed(3)},${Math.min(1, p2.scale * sq2.sy).toFixed(3)})`,
+            opacity: '1',
           })
         }
       }
       // socket: gives way to the block when it lands
-      attr(sockets[i], 'opacity', String(+(1 - prog(t, T0.ts - 0.12, 0.1)).toFixed(3)))
-      // note: after the answer has landed
+      attr(r.socket, 'opacity', String(+(1 - prog(t, T0.ts - 0.12, 0.1)).toFixed(3)))
       if (r.note) {
-        const p = prog(t, r.arrive + 0.14, 0.22)
+        const p = prog(t, T0.res + 0.24, 0.22)
         style(r.note, { opacity: (p <= 0 ? 0 : clamp(p * 1.4)).toFixed(3), transform: `translate(${(r.noteX + 14 * (1 - E.out(p))).toFixed(1)}px,${r.noteY}px)` })
       }
     }
     // ---------------- chips
     for (const c of chips) {
-      if (t < c.t0 || t > c.t0 + 0.9) { attr(c.el, 'opacity', '0'); continue }
+      if (t < c.t0 || t > c.t0 + 0.9) { attr(c.el, 'opacity', '0'); attr(c.el, 'transform', ''); continue }
       const [x, y] = toss(t, c.t0, c.p0, c.v, { g: 3000, floor: c.floor - 4, e: 0.35, friction: 0.5, n: 2 })
       attr(c.el, 'opacity', String(+(1 - prog(t, c.t0 + 0.55, 0.3)).toFixed(3)))
       attr(c.el, 'transform', `translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${(c.spin * Math.min(t - c.t0, 0.4)).toFixed(1)})`)
     }
-    // ---------------- the figure
-    const J = fig.pose(t, tr, { x: FX, ground: groundAt(t), face: -1, noDraw: true })
-    // contact: the striking foot or fists are pinned to the block for the instant of the hit
-    for (let i = 0; i < N; i++) {
-      const res = TI[i].res
-      if (t < res - 0.1 || t > res + 0.2) continue
-      const r = R[i]
-      const w = smooth(prog(t, res - 0.09, 0.07)) * (1 - smooth(prog(t, res + 0.06, 0.12)))
-      if (w <= 0) continue
+    // ---------------- the figure: hands on the plate while he holds it
+    if (held >= 0) {
+      const [cx, cy] = heldAt(J, held)
+      const by = cy - PH / 2 + 8, half = R[held].pw / 2
+      const w = smooth(TI[held].tHold - 0.12, TI[held].tHold + 0.06, t)
       const J2 = { ...J }
-      if (r.style === 'kick') pinLimb(J2, 'fF', [hitX + J.sw * 0.6, yV(i)], 1)
-      else {
-        const hx = r.style === 'slam' ? Math.max(r.bx + 30, hitX - 50) : hitX - (rows ? 26 : 18)
-        pinLimb(J2, 'hF', [hx, yV(i) - BH / 2 - J.sw * 0.6], 1)
-        pinLimb(J2, 'hB', [hx + 16, yV(i) - BH / 2 - J.sw * 0.6], 1)
-      }
+      pinLimb(J2, 'hF', [clamp(J.hF[0], cx - half + 18, cx + half - 18), by], 1)
+      pinLimb(J2, 'hB', [clamp(J.hB[0], cx - half + 18, cx + half - 18), by], -1)
       Object.assign(J, blendJ(J, J2, w))
     }
-    // the ledge over his head: hands that would poke through it press against it instead
-    if (!falling(t)) {
-      const top = ceil(rowAt(t)) + J.sw + 3
-      for (const [hand, bend] of [['hF', 1], ['hB', -1]]) if (J[hand][1] < top) pinLimb(J, hand, [J[hand][0], top], bend)
-    }
     let sq = { sx: 1, sy: 1 }
-    for (const tl of landTimes) { const s2 = squashAt(t, tl, 0.16); sq = { sx: sq.sx * s2.sx, sy: sq.sy * s2.sy } }
+    for (const tl of landTimes) { const s2 = squashAt(t, tl, 0.14); sq = { sx: sq.sx * s2.sx, sy: sq.sy * s2.sy } }
     fig.draw(J, sq)
     // ---------------- camera (the punch zooms about the goal row, left of centre so the tabs stay in the safe zone)
     const fxs = fxk.seek(t), zoom = fxs.zoom
     const shake = fxs.shake.map(Math.round)                       // whole-pixel shake keeps 40 px text at 40 px
-    // spent bursts keep their last line coordinates under a transparent <g>: take them out of the render tree so
-    // nothing (hit tests, the linter's background probe) sees them, whatever order frames are sought in
-    for (const b of world.g.fx.children) style(b, { display: b.getAttribute('opacity') === '0' ? 'none' : '' })
     if (goalHit) {
       const cx = 300, cy = yV(goalHit.i)
       cam.set({ fx: cx, fy: cy, x: cx, y: cy, zoom, shake })

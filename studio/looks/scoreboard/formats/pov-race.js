@@ -222,7 +222,7 @@ export default function povRace(spec, ctx) {
     if (Y.max != null) return +Y.max
     let acc = 0
     for (let k = 0; k < 6; k++) acc += runMax(xAt(t - k * 0.07))
-    return Math.max(yFloor, (acc / 6) * K)
+    return Math.max(yFloor, (acc / 6) * K, runMax(xAt(t)) * 1.06)   // the smoothing lags a steep climb: never let a line run off the top
   }
   const pos = allVals.filter(v => v > 0)
   const logMin = Y.min > 0 ? +Y.min : (pos.length ? Math.min(...pos) : 1) * 0.8

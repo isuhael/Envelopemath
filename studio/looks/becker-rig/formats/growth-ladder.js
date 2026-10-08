@@ -27,7 +27,7 @@
 import {
   h, s, style, attr, prog, clamp, lerp, plain,
   C, F, T, L, S, E, poseTrack, poseOf, fk, secondary, Figure, makeWorld, makeFx, camera, NumObj, pinLimb, blendJ,
-  chromeParts, durationOf, num, measure, arc, squashAt, fall, toss, popIn, hop, wobble, hbar, ladder, coin, RIG,
+  chromeParts, durationOf, num, measure, arc, squashAt, fall, toss, popIn, hop, wobble, hbar, ladder, coin, RIG, figStroke,
 } from '../lib.js'
 
 export const css = `
@@ -346,7 +346,7 @@ export default function growthLadder(spec, ctx) {
       const nk = [hip[0] + 2, hip[1] - RIG.torso * k], sh = [hip[0] + 1.6, hip[1] - RIG.torso * k * RIG.shoulder]
       const head = [nk[0] + 2, nk[1] - (RIG.headR + RIG.neck) * k]
       const J = { hip, nk, sh, head, eF: sh, hF: sh, eB: sh, hB: sh, kF: hip, fF: hip, kB: hip, fB: hip,
-        R: RIG.headR * k, k, sw: (S.figure * k) / 2, face: 1, headRot: -14 + 6 * Math.sin(lv * Math.PI * 2), sx: 1, sy: 1, ground: L.floorY }
+        R: RIG.headR * k, k, sw: figStroke(k) / 2, face: 1, headRot: -14 + 6 * Math.sin(lv * Math.PI * 2), sx: 1, sy: 1, ground: L.floorY }
       // hands: right on even rungs, left on odd ones; they bulge outward while travelling
       const hr = stair(lv, 0), hlv = stair(lv, 1)
       const bR = Math.sin(Math.PI * frac1(hr)), bL = Math.sin(Math.PI * frac1(hlv))

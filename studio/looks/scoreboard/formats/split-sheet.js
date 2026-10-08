@@ -221,7 +221,7 @@ export default function splitSheet(spec, ctx) {
     const note = rd.note ? h('div', { class: 'ss-note', html: richUIG(rd.note) }) : null
     const name = h('div', { class: 'ss-name' }, label, note)
     const masked = !rd.bonus && !!rd.pct && maskSet.has(rd.part)
-    const pct = h('div', { class: 'ss-pct', html: masked ? `<span class="ss-pv">${ax(esc(rd.pct))}</span><span class="ss-pq">?</span>` : ax(esc(rd.pct)), style: { fontSize: REF + 'px' } })
+    const pct = h('div', { class: 'ss-pct', html: masked ? `<span class="ss-pv">${ax(esc(rd.pct))}</span><span class="ss-pq">?</span>` : `<span>${ax(esc(rd.pct))}</span>`, style: { fontSize: REF + 'px' } })   // one flex child: a space after ≈ survives
     const pv = masked ? pct.querySelector('.ss-pv') : null, pq = masked ? pct.querySelector('.ss-pq') : null
     const amt = h('div', { class: 'ss-amt' })
     const q = h('span', { class: 'ss-q' }, '?')

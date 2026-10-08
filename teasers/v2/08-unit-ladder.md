@@ -615,3 +615,34 @@ Round-2 review: the verifier (2 must, 3 should, 4 nits) and the hook judge (08a 
   - an opener line may name rung 1 a few words in (08b: 4 words, 08c: 3).
 - New write-up numbers checked: 67.4%, ≈ 28,939 and $65,470.
 - **Result: PASSED, all 599 checks.** The mutation test is in the header of this file.
+
+### Hook pass (2026-10-08)
+
+Two judges scored each teaser's current hook and four candidate rewrites (A-D) out of 10. The rule: adopt the best candidate only if its average is at least 7.5 and at least 0.75 above the current hook. Both judges marked every scored key honest. Judge 2's 08c scores for B, C and D were cut off in transit, after its A score.
+
+| Teaser | Current | A | B | C | D | Decision |
+|---|---|---|---|---|---|---|
+| 08a | 5 / 4.5 → **4.75** | 6 / 5.5 → 5.75 | 5 / 5 → 5.00 | 6.5 / 6 → **6.25** | 4.5 / 4.5 → 4.50 | **Keep current** |
+| 08b | 6 / 5.5 → **5.75** | 7 / 6.5 → **6.75** | 6.5 / 6 → 6.25 | 6 / 6 → 6.00 | 7 / 6.5 → **6.75** | **Keep current** |
+| 08c | 5.5 / 5 → **5.25** | 6 / 6 → **6.00** | 4.5 / cut off | 5 / cut off | 4.5 / cut off | **Keep current** |
+
+**Why nothing was adopted:**
+- No candidate reached 7.5. The best were 08b-A and 08b-D at 6.75; both clear the +0.75 margin but miss the floor.
+- On 08c, judge 2's missing scores cannot change the result. For B or D to reach 7.5, judge 2 would need more than 10. For C, judge 2 would need a perfect 10, against a 5 from judge 1.
+
+**Titles:** all three are kept. Each candidate title depends on its own header or ladder change:
+- 08a-A's "Your Parents' House vs Yours" brings an affordability framing that both judges say needs a CPI caveat.
+- 08a-C's title needs the Big Mac rung.
+- 08b-A's "Rent Isn't a Week of Work" is already caption line 1, so it is not lost.
+- 08b-D's title needs the split bar.
+- 08c-A's title needs the tuition / real-bill ladder.
+Because the judges scored whole hooks, not titles alone, none of these titles is clearly better on its own.
+
+**What the judges agreed on, for the next round:**
+- **08a:** frame 1 is a three-way split. The header says house, the counter shows the membership (≈ 43), and the voice says the frozen price. 08a-C is the only candidate that lines up eye, ear and number in the first 1.5 s, but it borrows 08c's Big Mac.
+- **08b:** the two strongest levers are the one-word denial of a belief (08b-A, "isn't") and the you-vs-landlord split (08b-D, ≈ 117 vs ≈ 56 hours). Both lose points because their visible loop (the split bar, or a countable list) is a kit request, not something the kit draws today.
+- **08c:** the "find your school" rows are not drawn at frame 1 (`lookOpts.preview` is not built). That is still the main cap on this hook.
+
+**Files:** no changes to the specs, beats, VO or check script.
+- Re-run of `checks/08-unit-ladder.py`: PASSED, all 599 checks.
+- `node src/cli.mjs check` on all three specs: 0 errors, 0 warnings.
