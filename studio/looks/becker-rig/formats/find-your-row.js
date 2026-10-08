@@ -49,7 +49,8 @@
 //   Loop     (lookOpts.loop, default on) the finished table holds (the cover frame), then in the last 0.7 s it
 //            clears back to frame 1: the plate and the labels go, the values tip off their planks and fall (pre-stocked
 //            rows stay), the keys dim, the verdict fades, and he hops back down to the floor (`swipe`, `step`). The
-//            last frame is frame 1. Without spec.duration the clear is added after the hold.
+//            last frame is frame 1. Without spec.duration the clear is added after the hold. With the channel's
+//            end card (ctx.brand.cta) there is no clear: the table and the verdict hold to the end, under the card.
 //
 // Layout (measured at mount; the best score wins). Keys are left-aligned at the table's left edge; value columns
 // are right-aligned, the last at x 922; the slack goes evenly into the gaps, or more of it into one gap when that
@@ -246,6 +247,10 @@ export default function findYourRow(spec, ctx) {
   let loopOn = lo.loop !== false
   const D = spec.duration ? spec.duration : Math.round((durationOf(spec, lastBeat, hold) + (loopOn ? LOOP : 0)) * FPS) / FPS
   const loopT0 = D - LOOP
+  // with the channel's end card after the teaser (ctx.brand.cta) the short no longer loops into frame 1: the card
+  // holds the last teaser frame under it. So the clear is skipped (D stays the same: the finished table and the verdict
+  // hold to the end, as with loop: false). The one deliberate difference from --no-brand (see README, "Brand")
+  if (ctx.brand && ctx.brand.cta) loopOn = false
   if (loopOn && (loopT0 < lastBeat + 0.3 || (vt != null && loopT0 < vt + 1.2))) {
     console.warn('find-your-row: the duration leaves no room for the loop clear; lookOpts.loop ignored')
     loopOn = false

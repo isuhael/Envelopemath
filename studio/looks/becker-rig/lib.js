@@ -5,11 +5,12 @@
 //   3. world ................... makeWorld(), camera(), makeFx() (impact kit: shake + flash + burst + cue)
 //   4. props ................... coin(), block(), gate(), ladder(), ramp(), balance(), bar(), floorLine(), icon()
 //   5. kinetic numbers ......... num(), numLike(), fmtLike(), rollTo(), NumObj (an HTML number with mass)
-//   6. chrome .................. chromeParts(), chrome(), durationOf(), toneOf(), brand mark, captions, verdict
+//   6. chrome .................. chromeParts(), chrome(), durationOf(), toneOf(), brand mark, captions, verdict,
+//                                the channel logo (channelLogo(), brandMarkLogo(), logoEdge(); the end card is cta.js)
 //   7. kit plumbing ............ preloadFonts(), stubFormat()
 //
 // Every function here is pure in t (or builds DOM once). Nothing reads the clock, nothing keeps per-frame state.
-import { h, s, css, setText, setHTML, attr, markup, plain, fitText, captionAt, prog, clamp, lerp, ease, rng } from '../../runtime/core.js'
+import { h, s, css, setText, setHTML, attr, markup, plain, fitText, captionAt, prog, clamp, lerp, ease, rng, brandLogo } from '../../runtime/core.js'
 import { C, F, T, L, S, RIG, M, tone } from './theme.js'
 
 export { C, F, T, L, S, RIG, M }
@@ -605,12 +606,14 @@ export function camera(world, { fx: fx0 = 540, fy: fy0 = 960 } = {}) {
  *   - sound: ctx.cue(t, cue) ('hit' default; pass cue: null for silence)
  *   - screen shake: per-frame deterministic jitter, `shake` px, decaying over ~0.28 s
  *   - flash: white frame over the world, opacity `flash` (0..1) for ~2 frames
- *   - burst: radial hit lines just outside an ellipse rx × ry around (x, y) (default circle r), length ~r
+ *   - burst: radial hit lines just outside an ellipse rx × ry around (x, y) (default circle r), length ~r. x and y
+ *     may be functions () => px, read on every seek (a centre known only once an image has decoded)
  *   - punch: camera zoom kick (e.g. 0.03), read back from fx.seek(t).zoom
  * In seek(t): const { shake, zoom } = fx.seek(t); cam.set({ shake, zoom })
  */
 export function makeFx(world, ctx) {
   const hits = []
+  const at = v => (typeof v === 'function' ? v() : v)
   const self = {
     impact(t, { x = 540, y = 900, shake = 12, flash = 0, burst = true, cue = 'hit', gain, r = 70, rx = null, ry = null, lines = 10, punch = 0, color = C.ink } = {}) {
       const i = hits.length
@@ -638,11 +641,12 @@ export function makeFx(world, ctx) {
       for (const hit of hits) {
         const dt = t - hit.t
         if (hit.burst) {
+          const hx = at(hit.x), hy = at(hit.y)
           const on = dt >= 0 && dt < 0.26
           attr(hit.burst.g, 'opacity', on ? String(1 - E.inQuad(prog(dt, 0, 0.26))) : '0')
           if (!on) {
             // hidden: park every line on the impact point, so the DOM is the same whichever frame came before
-            const px = hit.x.toFixed(1), py = hit.y.toFixed(1)
+            const px = hx.toFixed(1), py = hy.toFixed(1)
             for (const L2 of hit.burst.ls) { attr(L2.el, 'x1', px); attr(L2.el, 'y1', py); attr(L2.el, 'x2', px); attr(L2.el, 'y2', py) }
           } else {
             const p = E.out(prog(dt, 0, 0.22))
@@ -651,8 +655,8 @@ export function makeFx(world, ctx) {
               const c = Math.cos(L2.a), sn = Math.sin(L2.a)
               const e = 1 / Math.hypot(c / hit.rx, sn / hit.ry)          // radius of the ellipse in this direction
               const r0 = e + hit.r * (0.15 + 0.5 * p), r1 = e + hit.r * (0.45 + 0.75 * p * L2.len)
-              attr(L2.el, 'x1', (hit.x + c * r0).toFixed(1)); attr(L2.el, 'y1', (hit.y + sn * r0).toFixed(1))
-              attr(L2.el, 'x2', (hit.x + c * r1).toFixed(1)); attr(L2.el, 'y2', (hit.y + sn * r1).toFixed(1))
+              attr(L2.el, 'x1', (hx + c * r0).toFixed(1)); attr(L2.el, 'y1', (hy + sn * r0).toFixed(1))
+              attr(L2.el, 'x2', (hx + c * r1).toFixed(1)); attr(L2.el, 'y2', (hy + sn * r1).toFixed(1))
             }
           }
         }
@@ -1028,6 +1032,76 @@ export function chromeParts(spec, ctx, opts = {}) {
 /** Brand mark (decoration, y < 230): green disc with "≈" + BACK OF THE ENVELOPE. */
 export function brandMark() {
   return h('div', { class: 'br-brand', 'data-deco': '' }, h('b', {}, h('span', {}, '≈')), h('span', {}, 'BACK OF THE ENVELOPE'))
+}
+
+// ---------- the channel logo (brand layer; see cta.js) ----------
+// The logo is an unknown square image. Two kinds are handled:
+//   a finished badge: transparent corners around its own circle (the real "em" badge: gold ring on navy, 3% clear margin)
+//     -> no ring of ours (it has its own edge), and it stands on its badge's lowest opaque pixel, not the square's edge
+//   a full-bleed square (any background colour, cropped to brand.logoShape by brandLogo)
+//     -> a thin hero-green ring over the crop edge, so a white or a dark square both read on the light void
+// The edge is read from the decoded pixels. The runtime decodes every <img> before the first seek, so it is read on the
+// first seek (logo.edge()) and memoised per url: every frame sees the same answer, whichever frame comes first.
+const EDGES = new Map()
+const EDGE_GUESS = { ring: true, inset: 0, known: false }
+export const MARK_LOGO = 66      // the logo in the brand mark (px): the old disc was 46; the name's line stays put
+
+/** { ring, inset } for a decoded logo <img>: inset = clear margin under its lowest opaque pixel, as a fraction of size */
+export function logoEdge(img, brand) {
+  const key = (img.currentSrc || img.src) + '|' + (brand.logoBackground || '')
+  if (EDGES.has(key)) return EDGES.get(key)
+  if (!img.complete || !img.naturalWidth) return EDGE_GUESS      // (not decoded yet: never memoised)
+  let out = EDGE_GUESS
+  try {
+    const n = 256, cv = document.createElement('canvas')
+    cv.width = cv.height = n
+    const g = cv.getContext('2d', { willReadFrequently: true })
+    const w = img.naturalWidth, hh = img.naturalHeight, m = Math.min(w, hh)
+    g.drawImage(img, (w - m) / 2, (hh - m) / 2, m, m, 0, 0, n, n)        // centre-cropped, like object-fit: cover
+    const a = g.getImageData(0, 0, n, n).data
+    const A = (x, y) => a[(y * n + x) * 4 + 3]
+    const clear = [[1, 1], [n - 2, 1], [1, n - 2], [n - 2, n - 2]].every(([x, y]) => A(x, y) < 16) && !brand.logoBackground
+    let bottom = n - 1
+    if (clear) { const opaque = y => { for (let x = n * 0.3; x < n * 0.7; x++) if (A(x | 0, y) > 128) return true; return false }; while (bottom > n / 2 && !opaque(bottom)) bottom-- }
+    out = { ring: !clear, inset: clear ? clamp((n - 1 - bottom) / n, 0, 0.2) : 0, known: true }
+  } catch (e) {
+    console.warn(`becker-rig: could not read the logo's edge (${e.message}); drawing it as a full-bleed square`)
+  }
+  EDGES.set(key, out)
+  return out
+}
+
+/**
+ * The channel logo at size x size px (brandLogo from the runtime: cropped to brand.logoShape, data-deco), with the
+ * hero ring only when the logo has no edge of its own. null without a logo. -> { el, size, edge() -> { ring, inset } }
+ * Call edge() from seek: it settles the ring and returns where the visible logo ends.
+ */
+export function channelLogo(brand, size) {
+  const el = brandLogo(brand, size, { ring: C.hero })
+  if (!el) return null
+  const img = el.querySelector('img'), ring = el.querySelector('.brand-logo-ring')
+  return {
+    el, size,
+    edge() {
+      const e = logoEdge(img, brand)
+      if (ring) css(ring, { display: e.ring ? '' : 'none' })
+      return e
+    },
+  }
+}
+
+/**
+ * kit.brand.mark: the logo replaces the green "≈" disc of the brand mark, next to the name, at MARK_LOGO px, centred on
+ * the name's line (the row moves up by half the extra height, so "BACK OF THE ENVELOPE" does not move). Called only
+ * when the brand has a logo: without one the row is brandMark(), untouched. -> { seek } (settles the ring) | undefined
+ */
+export function brandMarkLogo(stage, brand) {
+  const row = stage.querySelector('.br-brand'), disc = row && row.querySelector(':scope > b')
+  const logo = disc && channelLogo(brand, MARK_LOGO)
+  if (!logo) return
+  disc.replaceWith(logo.el)
+  row.classList.add('br-brand-logo')
+  return { seek() { logo.edge() } }
 }
 
 // split markup into words. A word is a whitespace-delimited chunk; it can hold several runs with their own

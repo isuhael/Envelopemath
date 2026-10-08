@@ -7,6 +7,7 @@
 // the other formats keep working, so formats can be developed in parallel.
 import { defineKit } from '../../runtime/core.js'
 import { chrome, preloadFonts } from './lib.js'
+import { brand } from './cta.js'      // the channel brand: the logo in the mark + the CTA end card
 
 const FORMATS = [
   'growth-ladder',
@@ -42,4 +43,5 @@ defineKit({
   name: 'becker-rig',
   formats: Object.fromEntries(mods.map(([name, m]) => [name, m.default])),
   chrome,
+  brand,
 })

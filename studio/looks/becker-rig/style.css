@@ -21,6 +21,8 @@
   font: 800 30px/1 'Inter Tight', 'Inter Full', sans-serif; letter-spacing: .5px; color: #5B6470; }
 .br-brand b { width: 46px; height: 46px; border-radius: 50%; background: #12B76A; color: #fff; display: grid; place-items: center;
   font: 800 32px/1 'Inter Full', sans-serif; padding-bottom: 3px; }
+/* with the channel logo (lib.js brandMarkLogo): a 66 px logo in place of the disc, the name's line unmoved (centre y 143) */
+.br-brand.br-brand-logo { top: 110px; gap: 16px; }
 .br-header { position: absolute; left: 60px; top: 248px; width: 960px;
   font: 900 84px/1.02 'Inter Tight', 'Inter Full', sans-serif; letter-spacing: -0.025em; color: #111418; }
 .br-footer { position: absolute; left: 62px; top: 452px; width: 878px;
@@ -42,3 +44,16 @@
 .br-todo { font: 900 64px/1 'Inter Tight', 'Inter Full', sans-serif; color: #111418; padding: 26px 34px; border: 8px solid #111418; border-radius: 18px; background: #fff; }
 
 #br-probe { position: absolute; left: -9999px; top: -9999px; white-space: nowrap; visibility: hidden; }
+
+/* ---------- brand end card (cta.js), built in #brand-layer above the stage (#stage rules do not reach it) ---------- */
+#brand-layer[data-look=becker-rig] { color: #111418; font-family: 'Inter Tight', 'Inter Full', sans-serif; font-variant-numeric: tabular-nums; }
+.br-cta-veil { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px;
+  background-color: #F7F8FA; background-image: radial-gradient(120% 60% at 50% 100%, #DFE3E9 0%, #F7F8FA 55%); }
+.br-cta-text { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+.br-cta-line { position: absolute; left: 60px; top: 248px; width: 960px; font-weight: 900; letter-spacing: -0.025em; color: #111418; white-space: nowrap; }
+.br-cta-line .w, .br-cta-kicker .w { display: inline-block; }
+.br-cta-kicker { position: absolute; left: 62px; width: 958px; font: 700 46px/56px 'JetBrains Mono', 'Inter Full', monospace; letter-spacing: -0.02em; color: #5B6470; white-space: nowrap; }
+.br-cta-handle { position: absolute; left: 0; top: 0; font-weight: 900; letter-spacing: -0.02em; color: #0A9254; white-space: nowrap; transform-origin: 50% 50%; }
+.br-cta-prop { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+.br-cta-mark { width: 100%; height: 100%; border-radius: 50%; background: #12B76A; color: #fff; display: grid; place-items: center; }
+.br-cta-mark span { font-family: 'Inter Full', sans-serif; font-weight: 800; line-height: 1; position: relative; }

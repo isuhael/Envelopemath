@@ -128,3 +128,23 @@
 
 /* ---------- stub ---------- */
 .sb-todo { position: absolute; left: 140px; width: 800px; text-align: center; font: 400 96px/1.1 'Anton', 'Inter Full', sans-serif; color: #6B7584; }
+
+/* ---------- brand (cta.js): the logo in the brand row, the CTA end card in #brand-layer ---------- */
+.sb-brand.has-logo { gap: 20px; }                     /* the logo replaces the envelope; the row keeps its centre line */
+#brand-layer[data-look="scoreboard"] > * { position: absolute; }
+.sbc-veil { left: 0; top: 0; width: 1080px; height: 1920px; background: #000; opacity: 0; }
+.sbc-col { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.sbc-logo { position: relative; flex: none; transform-origin: 50% 50%; }
+.sbc-logo > .brand-logo { position: absolute !important; left: 0; top: 0; }
+.sbc-glow, .sbc-shock { position: absolute; border-radius: 50%; }   /* cta.js sets the logo's own silhouette (disc / crop / badge corner) */
+.sbc-glow { background: #000; }
+.sbc-shock { box-shadow: 0 0 0 4px #2BFF88, 0 0 22px 4px rgba(43, 255, 136, 0.55); }
+.sbc-badge { position: absolute; left: 0; top: 0; border-radius: 50%; background: #07090C; display: flex; align-items: center; justify-content: center; }
+.sbc-rule { flex: none; margin-top: 54px; width: 140px; height: 8px; border-radius: 4px; background: #2BFF88; box-shadow: 0 0 18px rgba(43, 255, 136, 0.5); transform-origin: 50% 50%; }
+.sbc-line { margin-top: 30px; width: 800px; font-family: 'Anton', 'Inter Full', sans-serif; font-weight: 400; text-transform: uppercase; letter-spacing: 0.01em; color: #FFFFFF; transform-origin: 50% 50%; }
+.sbc-line > div { white-space: nowrap; }
+.sbc-kicker { margin-top: 26px; width: 800px; font: 700 48px/58px 'Inter', 'Inter Full', sans-serif; color: #9AA4B2; }
+.sbc-panel { flex: none; margin-top: 44px; padding: 12px 36px; background: #07090C; border: 3px solid #2BFF88; border-radius: 18px; }
+.sbc-handle { display: flex; font-family: 'JetBrains Mono', 'Inter Full', monospace; font-weight: 700; color: #2BFF88; }
+.sbc-ch { display: inline-block; position: relative; overflow: hidden; }
+.sbc-strip { display: block; white-space: pre; text-align: center; }

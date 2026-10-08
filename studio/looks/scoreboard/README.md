@@ -10,7 +10,8 @@ Sources: `research/v2/03-look-directions.md` (Direction 3, and §3.0 for the sha
 | `theme.js` | Design tokens: `C` palette, `TONE`, `F` font stacks, `SIZE`, `layoutFor()` grid, `footerPlan()`, `measureText()`, `M` motion timings |
 | `lib.js` | Shared components: odometer, unit icons and pile, header, footer and footer steps, label stack, captions, verdict, score panel, race chart, ladder pips, `tabHTML`, timing helpers, `chrome()`, `stub()` |
 | `style.css` | Classes used by `lib.js`, plus Anton re-declared with tight vertical metrics (see Type) |
-| `kit.js` | `defineKit({ name: 'scoreboard', formats, chrome })`. It imports every `formats/<id>.js` one at a time, so a broken format only breaks itself |
+| `kit.js` | `defineKit({ name: 'scoreboard', formats, chrome, brand })`. It imports every `formats/<id>.js` one at a time, so a broken format only breaks itself |
+| `cta.js` | The channel brand: `brand.mark` (the logo in the brand row) and `brand.cta` (the end card). See Brand: logo + CTA |
 | `formats/<id>.js` | One module per format, all built: `unit-ladder` (the flagship), `dead-simple-list`, `find-your-row`, `what-difference`, `chart-race`, `split-sheet`, `pov-race`, `ledger-duel`, `growth-ladder`, `cost-counter`. Each file's header comment is the full reference for its choreography |
 | `samples/*.json` | Sample specs (`"sample": true`), two per format |
 
@@ -240,6 +241,39 @@ The format steers the chrome through fields on the object it returns:
 | `verdictSlot: { y, h, w, boxed }` | another verdict slot (default `L.verdict`; keep it at the foot of the frame) |
 | `verdictTone: 'bad'` | a coral verdict rule (a loss) |
 | `verdictCue: 'pop'` / `null` | the verdict SFX (default `reveal`) |
+
+## Brand: logo + CTA
+
+The channel brand comes from `studio/brand/brand.json` and `studio/brand/logo.png` (contract: `studio/README.md`, "Brand layer"). `cta.js` gives the runtime two hooks, `mark` and `cta`; the look itself is unchanged.
+
+**Logo mark** (`mark`, called only when a logo file exists). The logo takes the line envelope's place in the top-left brand row, at avatar size: **64 px visible**, centred on the row's line (y 173, so it spans about y 141-205 in the decoration zone), 20 px from the grey wordmark. That reads as avatar plus channel name without swamping the small grey wordmark (72 px was tried: about 4.8 times the wordmark's cap height, against 2.3 for the old envelope), and it stays quieter than the 64-72 px header. Without a logo file the hook never runs, and every teaser frame is pixel-identical to `--no-brand`.
+
+**The logo's edge** (`probeLogo`, read once from the decoded pixels at the first seek):
+- **Transparent corners** (a finished badge, like the channel's gold-ringed navy "em" disc): no ring is drawn, because the badge brings its own edge and a second ring would double it. The transparent margin around the badge (3% for the "em" badge) is measured and the element is drawn that much larger, so the badge itself is exactly 64 / 250 px. The probe also reads the badge's silhouette (how much further in the art starts along the diagonal than at the side): a disc for the "em" badge, a corner radius for a rounded-square badge.
+- **An opaque square**, whatever its background colour: it is cropped to `brand.logoShape` (circle by default) with a thin money-green ring (1.6% of the size, at least 2 px), so a black or navy avatar still has an edge on the black bars.
+- **A transparent logo with `logoBackground` set**: treated as a square (ring on).
+
+**End card** (`cta`, 2.5 s, built in `#brand-layer`). It is the final board, one focal point at a time:
+
+| u = t - t0 | Beat | SFX |
+|---|---|---|
+| 0-0.16 | The held verdict frame dims to a 7% ghost under a black veil (`data-occlude`), then keeps fading to 2.5% by 1.3 | |
+| 0.06-0.36 | The logo pops in at 250 px (scale 0.5 → 1, back ease) on a green glow that flares as it lands | `pop` 0.5 |
+| 0.22-0.62 | A green ring flares off the logo's edge: it fades in over 0.05 s just off the edge (scale 1.06, so it never sits on the badge's own gold ring) and spreads to 1.42, fading | |
+| 0.46-0.68 | The verdict's green rule wipes in, and the CTA line **slams** in under it, like a label-stack rung: Anton caps, white, balanced on 2 lines, 90 px (fitted down to 60, 3 lines if needed) | `thud` 0.65 |
+| 0.74-0.92 | The kicker rises in: Inter 700, 48 px, the footer's grey. Nothing else moves | |
+| 0.90-1.44 | Once the kicker has landed, the handle's score panel lights (`C.panel` fill, 3 px green border, glow; fades in from 0.90) and the handle rolls in from 0.94: JetBrains Mono 700, 60 px, money green. Each letter is an odometer column (`data-roll`) rolling up through an ordered run that ends on it, like a flip board ("abcde" lands on e; "6789" before "@"), left to right | `roll` 0.4 (0.5 s long), then `ding` 0.5 as the last letter lands (1.44) |
+| 1.44-2.50 | The panel's glow flares on the landing and settles by 1.64; the handle holds for over a second | |
+
+- The glow and the flare ring take the logo's visible silhouette: a disc for the envelope badge, a round badge or a circle crop; the crop's own corner for an opaque logo under `logoShape` `rounded` or `square`; the badge's own corner for a rounded-square badge that is not circle-cropped.
+- At rest the glow is gone behind a badge with its own edge (the "em" badge's gold ring sits clean on black: the two palettes never touch), and settles to a soft green halo (0.22) behind the envelope badge and a ringed square, which need it for their edge.
+- The column is x 140-940, centred on y 820 (y 240-1400), so nothing reaches the right rail or the platform UI under y 1480. Lines break only between words; the wording is `brand.cta` exactly (the caps are CSS).
+- A card shorter than 2.5 s plays its beats faster (down to 60% at `dur` 1.5: the handle lands at 0.86 and holds 0.6 s); a longer one holds longer.
+- **No logo file:** the card shows the look's own mark instead, the line envelope on a panel disc in a green ring, with the same pop, ring and resting halo.
+- Green stays money: the rule, the glow and the handle are the look's green. The gold of the "em" badge appears only in the badge itself.
+- The handle is the look's only monospace text (`F.mono`). It is kept because fixed-width columns are what let each letter roll like the odometer, and it reads as the board's LED readout. For strictly in-look type, set it in Inter 800 (the UI face) and slam it in with the ding instead of rolling it per letter.
+
+Testing: `node src/cli.mjs stills specs/08a-*.json --at 1,end` (the real logo), `--logo /path/to/square.png` (a test square), `--brand other.json` with `"logoShape": "square"` or `"rounded"` (the glow and ring follow the crop), and `--brand other.json` with `"logo"` pointing at a missing file (the fallback: the teaser frames are pixel-identical to `--no-brand`). Every Scoreboard spec and sample lints at 0 errors and 0 warnings in each of these modes and with `--no-brand`.
 
 ## Writing a format module
 

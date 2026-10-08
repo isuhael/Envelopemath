@@ -5,7 +5,8 @@ One look kit for the *Back of the Envelope* shorts. A faceless stick figure work
 ```
 looks/becker-rig/
   index.html        loads fonts, base.css, style.css, kit.js
-  kit.js            defineKit({ name: 'becker-rig', formats, chrome }) — imports every formats/<id>.js
+  kit.js            defineKit({ name: 'becker-rig', formats, chrome, brand }) — imports every formats/<id>.js
+  cta.js            the channel brand: the logo in the brand mark + the CTA end card (see "Brand: logo + CTA" at the end)
   theme.js          design tokens (C, F, T, L, S, RIG, M, TONE)
   lib.js            the shared rig, props, physics, camera, impact kit, numbers, chrome
   style.css         shared CSS for lib.js classes
@@ -233,7 +234,7 @@ Typical uses:
 | `makeWorld(ctx, { floor = true, floorY = 1300, clip = null })` | `{ root, svg, g: { back, mid, fig, front, fx, top }, html, flash, viewport }`. Z-order: `back < mid < fig < front < fx` (SVG) `< html` (text) `< top` (SVG over the text). World coordinates are stage coordinates. `clip: [top, bottom]` shows the world only inside that band (a scrolling viewport, `overflow: hidden`, which the linter understands) |
 | `floorLine(y)` | the floor line (already added by `makeWorld`) |
 | `camera(world, { fx, fy })` → `cam.set({ fx, fy, x, y, zoom, shake })` | puts world point (x, y) at screen (fx, fy). With no arguments it is the identity |
-| `makeFx(world, ctx)` → `fx.impact(t, { x, y, shake = 12, flash = 0, burst = true, r = 70, rx, ry, lines = 10, punch = 0, cue = 'hit', gain, color })` | registers an impact at mount: the cue, a per-frame shake, a white flash, radial hit lines outside an ellipse `rx × ry`, and a camera punch. Hit lines are unfilled strokes, and a burst that is not playing parks its lines at the hit point, so an idle burst never sits over text |
+| `makeFx(world, ctx)` → `fx.impact(t, { x, y, shake = 12, flash = 0, burst = true, r = 70, rx, ry, lines = 10, punch = 0, cue = 'hit', gain, color })` | registers an impact at mount: the cue, a per-frame shake, a white flash, radial hit lines outside an ellipse `rx × ry`, and a camera punch. `x` and `y` may be functions `() => px`, read on every seek (a centre known only once an image has decoded). Hit lines are unfilled strokes, and a burst that is not playing parks its lines at the hit point, so an idle burst never sits over text |
 | `fx.seek(t)` | animates the bursts and flash and returns `{ shake: [dx, dy], zoom }`, which you pass to `cam.set` |
 
 ### 3.4 Props (SVG, ink, round caps; each returns `{ g, set(...) }`)
@@ -270,6 +271,7 @@ Typical uses:
 | `durationOf(spec, lastBeat, hold = 3)` | `spec.duration` or the latest of: last beat + hold, last VO end + 0.4, `verdict.t` + 2.5 |
 | `toneOf(tone)` | `{ text, fill, soft }` |
 | `brandMark()`, `preloadFonts()` | used by kit.js |
+| `channelLogo(brand, size)`, `brandMarkLogo(stage, brand)`, `logoEdge(img, brand)` | the channel logo (cta.js; see "Brand: logo + CTA") |
 | `stubFormat(name)` | a placeholder body (figure + "TODO name") for starting a new format; no format uses it now |
 
 **The verdict.** It pops in at `verdict.t` in the caption band (from 0.82 scale, rising at most as far as the band allows, so its ink never leaves y 1480), hides the captions and cues `ding`. It is fitted at line-height 1.08, down to 44 px. The green swoosh is drawn under the first `**…**`, one stroke per line the emphasis covers, hanging from the measured baseline. When the emphasis ends above the last line, the verdict is refitted at line-height 1.3 (then 1.22) so the swoosh has room above the next line's caps, and the swoosh is flattened and lifted to clear them; if neither fits (a 3-line verdict) it keeps the tight fit and the emphasis is green without a swoosh.
@@ -377,7 +379,7 @@ The table is a set of shelves. Every row has its own ledge (a dotted guide, as i
 - **Compare** (`lookOpts.compare`): he gets to row `from`'s peg, takes the pencil from behind his head, sets it on row `from` and steps down (or up) the pegs to the picked row, one leg per peg, drawing a bracket beside the keys at the prop stroke (10 px). Row `from` is the reference while the bracket is up: a soft grey band behind it and its ledge in solid ink, so it reads as underlined. The compare's label is an ink-rimmed pill, between the two rows when the gap holds it.
 - **Payoff**: the last pick (the last labelled one, or the `verdictRow` pick when that comes later) is the climax. Its emphasised value turns ink on a gold plate, whatever the column's tone (with an ink rim when the pitch allows), with the impact kit: hit lines fanning only into the margin right of the values, a shake, a 2% punch. It is the only impact in the short. On the note shelf its label is 48 px when that fits on one line. The label, the glow and the plate hold through the verdict.
 - **Verdict**: the chrome's verdict in the caption band. He nods and keeps pointing at the last pick (`endPose`).
-- **Loop** (`loop`, default on): the finished table holds (the cover frame), then in the last 0.7 s it clears back to frame 1. The plate and labels go, the values tip off their planks and fall (pre-stocked rows stay), the keys dim, the verdict fades, and he hops back down to the floor. The last frame is frame 1. Without `spec.duration` the clear is added after the hold; when the duration leaves no room for it, the loop is dropped with a console warning.
+- **Loop** (`loop`, default on): the finished table holds (the cover frame), then in the last 0.7 s it clears back to frame 1. The plate and labels go, the values tip off their planks and fall (pre-stocked rows stay), the keys dim, the verdict fades, and he hops back down to the floor. The last frame is frame 1. Without `spec.duration` the clear is added after the hold; when the duration leaves no room for it, the loop is dropped with a console warning. **With the channel's end card** (`ctx.brand.cta`, the default) there is no clear: the duration stays the same, and the finished table and the verdict hold to the end, as with `loop: false`, so the card opens on the payoff (see "Brand: logo + CTA").
 
 Layout (measured at mount; the best score wins):
 - Keys are left-aligned; value columns are right-aligned, the last at x 922. Slack goes evenly into the gaps, or more into one gap when that saves a head line.
@@ -401,7 +403,7 @@ lookOpts (all optional; `compare` and `verdictRow` mean the same as in the live-
 | `labels` | `'auto'` | `'shelf'` (always on the note shelf) or `'table'` (always in the table) |
 | `formula` | `'auto'` | `true` (or `'show'`): always shown, on the shelf or under the footer, and the rows give way. `false` (or `'hide'`): never. `'top'` (under the footer) or `'foot'` (on the note shelf) pins it. Only `'auto'` may fall back to the caption band or drop it |
 | `plate` | `true` | `false`: no gold plate and no impact on the payoff. A payoff at `t < 0.5` never gets one |
-| `loop` | `true` | `false`: no clear at the end (the last frame is the full table) |
+| `loop` | `true` | `false`: no clear at the end (the last frame is the full table). Ignored (no clear) when the brand's end card follows |
 | `heads` | `'auto'` | `'upper'` (house caps) or `'sentence'` (as written) |
 | `figure` | `true` | `false`: no figure. The table takes the full width; picks still lift and glow, and the bracket draws itself |
 | `figureScale` | `0.72` | size of the figure (clamped to 0.4-0.9; the gutter widens with it). Setting it turns off the 0.42 fallback |
@@ -413,7 +415,7 @@ Sound:
 - Compare: `tick` as he takes the pencil and a `swipe` while he draws.
 - `pop` per label (the payoff's label comes with its `hit`). An unlabelled pick gets a `tick`, unless it lands on the verdict.
 - The payoff: `hit`, then `cash`. There is no `cash` when the emphasised column is a cost (`tone: 'bad'`) or the verdict lands on the payoff.
-- The loop: a `swipe`, and a quiet `step` when he hops back down. The verdict's `ding` is skipped when `spec.sfx` already has one at `verdict.t`.
+- The loop: a `swipe`, and a quiet `step` when he hops back down (not with the end card: no clear, no sound). The verdict's `ding` is skipped when `spec.sfx` already has one at `verdict.t`.
 
 Limits: 3 columns × 14 rows, or 4 columns of values up to about 8 characters. Throws when the table does not fit, or when `data.rows` is empty.
 
@@ -793,3 +795,35 @@ Example: `specs/10b-becker-rig-debt-vs-your-pay.json` is stack mode: a 40-brick 
 Samples:
 - `cost-counter.json`: US debt interest per second, 4 milestones, 37 s.
 - `cost-counter-2.json`: new US debt per second, 7 milestones up to a working life of pay, `finale: 'shrug'`, 40 s.
+
+---
+
+## Brand: logo + CTA
+
+The channel brand comes from `studio/brand/brand.json` (see `studio/README.md`, "Brand layer"). `cta.js` gives the runtime this look's three hooks; no spec or format knows about it.
+
+**The mark.** With a logo, `brandMarkLogo` puts it in place of the green "≈" disc in the top-left mark, at 66 px (`MARK_LOGO`; the disc was 46), next to "BACK OF THE ENVELOPE". The row moves up 10 px, so the name stays on its line (centre y 143). Without a logo file, the hook is not called and the mark, like every teaser frame (except find-your-row's skipped loop clear, below), is pixel-identical to a `--no-brand` render.
+
+**The logo's edge.** `channelLogo` reads the decoded pixels once, on the first seek, and memoises the result per URL:
+- **A finished badge** (transparent corners, like the real "em" badge: a gold ring on a navy disc, with a 3% clear margin) gets **no ring of ours**, because it has its own edge. On the card it stands on its lowest opaque pixel, not on the square's edge.
+- **A full-bleed square** (any background colour, or a transparent logo with `logoBackground`) is cropped to `logoShape` and gets a thin `hero` ring, so a white or a black square both read on the light void.
+
+**The end card** is one more shot of the same show, laid out like a teaser frame: the main line in the hook's slot, the working area on the floor line, the handle in the verdict band. Times are from the card's start, `t0`:
+
+| u (s) | Beat | Sound |
+|---|---|---|
+| 0-0.14 | The held verdict frame dims to a 10% ghost under a veil in the stage's own background (`data-occlude`). The floor line stays | `whoosh` |
+| 0.04-0.44 | The figure (scale 1.2) dashes in from off-shot left and skids to a stop at x 190. The dash starts once the ghost is faint: the held frame is under 12% by the time he is in shot, so he never runs through a held figure that still reads | |
+| ~0.06-0.50 | The logo (a 540 px square, centred on x 600) drops from above the frame under gravity (`fall`, g 13500) and **slams** onto the floor line at 0.50. The landing is snapped to a frame, so the disc sits on the floor, squashed, for exactly that frame: `fx.impact` with shake 12, a burst ringing the visible disc and a 2% camera punch. One small bounce follows, and the squash relaxes as soon as the disc leaves the floor (gone 12 px up), so it is round in the air. The figure startles (a hop, arms up), then points at it and holds the point | `hit` |
+| 0.24-0.52 | The ghost clears to the empty void | |
+| 0.58 | The main line pops in word by word (0.03 s apart) in the header slot: Inter Tight 900, the hook's 84 px (fitted down to 60), balanced into 2 lines that only break between words, line pitch 1.14 em (2 lines fill y 248-440) | `pop` |
+| 0.82 | The kicker rises in under it, in the footer's voice: JetBrains Mono 700, 46 px, grey | |
+| 0.92 | The handle pops into the verdict band under the logo (Inter Tight 900, 72 px, `heroInk`), and the verdict's green swoosh draws under it (1.02-1.32) | `ding` |
+| 1.32-2.50 | Everything settled; only the figure breathes. About 1.18 s of full hold | |
+
+- **Layout:** the prop's left edge is at x 330, about 30 px clear of his pointing hand (tip x ~313), and its right edge at x 870 (inside the rail at 940). The real badge stands on its lowest opaque pixel, so its top is at about y 776. The handle is centred under it (about x 322-878, y 1365-1445).
+- **No logo:** the prop is the look's own mark at card size (the green disc with "≈"). Its glyph is `data-roll`, because the frame edge clips it while it drops in.
+- **A shorter `cta.dur`** (down to 1.5 s) compresses every beat, every pose move and the fall itself by `dur / 2.5`. A longer one only holds longer (or set `cta.dur` to 3.0 in `brand.json` for a longer read).
+- **Where it lives:** the card is built in `#brand-layer`, never in the stage. The text sits on its own layer, which the camera shake does not move. `seek(t)` is pure in `t`. The burst's centre is read on each seek (`fx.impact` takes `x`/`y` as functions), because the badge's edge is known only once its `<img>` has decoded.
+- **The one deliberate change to a teaser frame: find-your-row's loop clear.** With the card, find-your-row skips the clear (its last 0.7 s; see the format's "Loop"), so the card dims the finished table and the verdict like every other format, instead of opening on the emptied frame-1 table after a swipe and a step. So with the brand on, 02a's last 0.7 s differ from `--no-brand`: the payoff holds instead of clearing. Every other frame of every teaser, and all of 02a before `base - 0.7`, is still pixel-identical to `--no-brand` when there is no logo. To keep the clear (and open the card on the cleared table), delete the `ctx.brand.cta` line in `formats/find-your-row.js`.
+- **Lint:** all 15 `specs/*-becker-rig-*.json` and all 22 samples lint with 0 errors and 0 warnings with the real logo, with no logo, with the test squares (orange "BE", white, dark, transparent), with a 1.5 s card, with a rounded crop, and with `--no-brand`. Sampled at every frame (30 fps), 02a (2.5 s and 1.5 s cards) and 07c are clean, and so is the card window of 06c (2.5 s card) and 10b (2.5 s and 1.5 s cards); the only every-frame findings there are one-frame transients mid-teaser that `--no-brand` shows identically.

@@ -6,6 +6,7 @@
 // Modules are imported one by one, so a broken format only breaks itself (its mount throws the import error).
 import { defineKit, h } from '../../runtime/core.js'
 import { chrome, loadFonts } from './lib.js'
+import { brand } from './cta.js'
 
 export const FORMATS = [
   'unit-ladder',
@@ -36,4 +37,5 @@ FORMATS.forEach((id, i) => {
 
 await loadFonts()
 
-defineKit({ name: 'scoreboard', formats, chrome })
+// brand: the channel logo in the brand row and the CTA end card (cta.js; studio/README.md "Brand layer")
+defineKit({ name: 'scoreboard', formats, chrome, brand })
