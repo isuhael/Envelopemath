@@ -16,8 +16,8 @@
         "id": "01a-clean-sheet-paid-biweekly",
         "look": "clean-sheet",
         "title": "Paid every 2 weeks? The pay your budget forgets",
-        "header": "3 DEAD SIMPLE NUMBERS\nPAID **EVERY 2 WEEKS**? THE PAY YOUR BUDGET FORGETS",
-        "runtime_s": 26,
+        "header": "3 DEAD SIMPLE NUMBERS\nPAID **EVERY 2 WEEKS**?\nWHAT YOUR BUDGET MISSES",
+        "runtime_s": 26.0,
         "key_numbers": [
           "$2,500 every 2 weeks (input)",
           "$2,500 × 26 = $65,000 (at 2.7 s)",
@@ -27,7 +27,7 @@
           "verdict: every 2 weeks = 13 months of pay a year"
         ],
         "spec": "studio/specs/01a-clean-sheet-paid-biweekly.json",
-        "mp4": "studio/out/01a-clean-sheet-paid-biweekly.mp4",
+        "mp4": "renders/v2/01a-clean-sheet-paid-biweekly.mp4",
         "math_ok": true,
         "facts_ok": true,
         "hook_score": 8
@@ -37,7 +37,7 @@
         "look": "live-sheet",
         "title": "You pay 6.2% Social Security. What does a $1M salary pay?",
         "header": "3 DEAD SIMPLE NUMBERS\nYOU PAY **6.2%** TO SOCIAL SECURITY.\nA $1M SALARY PAYS…?",
-        "runtime_s": 26,
+        "runtime_s": 26.0,
         "key_numbers": [
           "$20 × 2,080 × 6.2% ≈ $2,579 a year, yours (at 2.3 s); $41,600 is all under the cap",
           "wrong guess: $1,000,000 × 6.2% = $62,000, typed at 4.0 s, landed 5.2 s, struck in red 6.1 s",
@@ -47,7 +47,7 @@
           "pinned: in dollars 4.4x your $2,579 on 24x the pay; pay above the cap does not count toward benefits either"
         ],
         "spec": "studio/specs/01b-live-sheet-20-an-hour.json",
-        "mp4": "studio/out/01b-live-sheet-20-an-hour.mp4",
+        "mp4": "renders/v2/01b-live-sheet-20-an-hour.mp4",
         "math_ok": true,
         "facts_ok": true,
         "hook_score": 7.25
@@ -57,7 +57,7 @@
         "look": "becker-rig",
         "title": "Will a 3% raise push you into a higher tax bracket?",
         "header": "4 DEAD SIMPLE NUMBERS\nWILL A 3% RAISE PUSH **$65,000**\nINTO A HIGHER BRACKET?",
-        "runtime_s": 26.5,
+        "runtime_s": 25.3,
         "key_numbers": [
           "$65,000 × 1.03 = $66,950 new pay (at 2.3 s); $65,000 ≈ BLS Q2 2026 median full-time pay ($65,052)",
           "22% line in pay: $50,400 (top of 12%, 2026 single) + $16,100 standard deduction = $66,500",
@@ -67,7 +67,7 @@
           "pinned: myth 10% × $50,850 = $5,085; FICA on the $1,950 raise $149.18; kept ≈ $1,522"
         ],
         "spec": "studio/specs/01c-becker-rig-60k-a-year.json",
-        "mp4": "studio/out/01c-becker-rig-60k-a-year.mp4",
+        "mp4": "renders/v2/01c-becker-rig-60k-a-year.mp4",
         "math_ok": true,
         "facts_ok": true,
         "hook_score": 7.5
@@ -91,7 +91,7 @@
         "id": "02a-live-sheet-3-a-day-by-age",
         "look": "live-sheet",
         "title": "\"It's Just $3 a Day\": What It Costs You by 65, by Age",
-        "header": "\"It's just **$3 a day**.\"\nWhat it costs you by 65:",
+        "header": "“It’s just **$3 a day**.”\nWhat it costs you by 65:",
         "runtime_s": 13.4,
         "key_numbers": [
           "$3 × 365 ÷ 12 = $91.25 a month at 7%/12 to 65",
@@ -103,7 +103,7 @@
           "pinned: at 10%, 25 → ≈ $577,000, 18 → ≈ $1,170,000; 7%/12 = 7.23% effective"
         ],
         "spec": "studio/specs/02a-live-sheet-3-a-day-by-age.json",
-        "mp4": "studio/out/02a-live-sheet-3-a-day-by-age.mp4",
+        "mp4": "renders/v2/02a-live-sheet-3-a-day-by-age.mp4",
         "math_ok": true,
         "facts_ok": true,
         "hook_score": 7.5
@@ -113,7 +113,7 @@
         "look": "scoreboard",
         "title": "How Fast Elon's $1 Trillion Pay Plan Earns Your Whole Career's Pay",
         "header": "ELON'S **$1 TRILLION** PAY PLAN\nEARNS YOUR WHOLE CAREER'S PAY IN…",
-        "runtime_s": 14,
+        "runtime_s": 14.0,
         "key_numbers": [
           "plan clock: $1T ÷ (10 × 365.25 × 24 × 3,600 = 315,576,000 s) = $3,168.81/s → ≈ $3,169 a second",
           "career = wage × 2,080 × 40 = wage × 83,200 (exact)",
@@ -123,7 +123,7 @@
           "pinned: ≈ $11.4 million an hour; plan = stock, paid only if targets are hit"
         ],
         "spec": "studio/specs/02b-scoreboard-trillion-at-your-wage.json",
-        "mp4": "studio/out/02b-scoreboard-trillion-at-your-wage.mp4",
+        "mp4": "renders/v2/02b-scoreboard-trillion-at-your-wage.mp4",
         "math_ok": true,
         "facts_ok": true,
         "hook_score": 7.75
@@ -132,8 +132,8 @@
         "id": "02c-clean-sheet-salary-per-hour",
         "look": "clean-sheet",
         "title": "What Time Your 9-to-5 Starts Paying You, by Salary",
-        "header": "What time your 9-to-5\nstarts paying **you**, by salary",
-        "runtime_s": 13,
+        "header": "What time your **9-to-5**\nstarts paying you, by salary",
+        "runtime_s": 13.0,
         "key_numbers": [
           "min a day = 480 × (2026 fed tax + FICA) ÷ salary; clock = 9:00 am + min",
           "$65,000: $10,592.50 (16.30%) → 78.22 min → ≈ 10:18 am (VO at ≈ 3.1 s)",
@@ -143,7 +143,7 @@
           "BLS median $1,251 × 52 = $65,052 → ≈ $65,000 row"
         ],
         "spec": "studio/specs/02c-clean-sheet-salary-per-hour.json",
-        "mp4": "studio/out/02c-clean-sheet-salary-per-hour.mp4",
+        "mp4": "renders/v2/02c-clean-sheet-salary-per-hour.mp4",
         "math_ok": true,
         "facts_ok": true,
         "hook_score": 7.5
@@ -178,7 +178,7 @@
           "Rounded up to $200 a week (+$12.46): ≈ 60 months, ≈ $8,200, ≈ $1,800 less, ≈ 1 year sooner (0.99)"
         ],
         "spec": "studio/specs/03a-live-sheet-car-loan-weekly.json",
-        "mp4": "studio/out/03a-live-sheet-car-loan-weekly.mp4",
+        "mp4": "renders/v2/03a-live-sheet-car-loan-weekly.mp4",
         "math_ok": true,
         "facts_ok": true,
         "hook_score": 8
@@ -188,7 +188,7 @@
         "look": "clean-sheet",
         "title": "What Difference Does Paying the Same Card Minimum Every Month Make on $5,000?",
         "header": "What difference does\npaying the SAME minimum\nevery month make on **$5,000**?",
-        "runtime_s": 31.4,
+        "runtime_s": 30.6,
         "key_numbers": [
           "$5,000 at 22% APR, minimum = 1% + interest with a $40 floor (Chase): first minimum $142.59",
           "The minimum shrinks: $142.59 → $127.40 (month 12) → $99.66 (month 36, the first under $100; on screen at 0.0 s)",
@@ -198,7 +198,7 @@
           "Pinned: rounding up to $150 ($7.41 above) only takes it from 57 months to 52. No interest saving stated (shown 7,300 − 3,100 would drift from ≈ $4,300)"
         ],
         "spec": "studio/specs/03b-clean-sheet-card-minimum.json",
-        "mp4": "studio/out/03b-clean-sheet-card-minimum.mp4",
+        "mp4": "renders/v2/03b-clean-sheet-card-minimum.mp4",
         "math_ok": true,
         "facts_ok": true,
         "hook_score": 7.5
@@ -217,7 +217,7 @@
           "≈ $78,600 ÷ ($100 × 319) ≈ $2.46 saved per extra dollar"
         ],
         "spec": "studio/specs/03c-scoreboard-mortgage-extra-100.json",
-        "mp4": "studio/out/03c-scoreboard-mortgage-extra-100.mp4",
+        "mp4": "renders/v2/03c-scoreboard-mortgage-extra-100.mp4",
         "math_ok": true,
         "facts_ok": true,
         "hook_score": 8
@@ -253,7 +253,7 @@
           "≈ 8.1% vs ≈ 11.0% a year; from 2010: ≈ ×8.3 vs ≈ ×3.9"
         ],
         "spec": "studio/specs/04a-scoreboard-sp500-vs-gold.json",
-        "mp4": "studio/out/04a-scoreboard-sp500-vs-gold.mp4",
+        "mp4": "renders/v2/04a-scoreboard-sp500-vs-gold.mp4",
         "math_ok": true,
         "facts_ok": true,
         "hook_score": 8
@@ -262,8 +262,8 @@
         "id": "04b-becker-rig-savings-vs-sp500",
         "look": "becker-rig",
         "title": "$1,000 in Savings vs the S&P 500 Since 2010: Which One Lost Value?",
-        "header": "POV: In 2010 you put **$1,000** in\n\"safe\" savings VS the S&P 500",
-        "runtime_s": 44.5,
+        "header": "Your **$1,000**: 16 years of savings\nVS 1 year of the S&P 500",
+        "runtime_s": 36.0,
         "key_numbers": [
           "first VO: 'One of these never had a down year. Guess which one lost.'",
           "2014: the S&P doubled it (tip crosses $2,000 at 8.18 s)",
@@ -275,7 +275,7 @@
           "max-rate case: 1,000 × 1.0047^16 = $1,077.91 ≈ $1,078"
         ],
         "spec": "studio/specs/04b-becker-rig-savings-vs-sp500.json",
-        "mp4": "studio/out/04b-becker-rig-savings-vs-sp500.mp4",
+        "mp4": "renders/v2/04b-becker-rig-savings-vs-sp500.mp4",
         "math_ok": true,
         "facts_ok": true,
         "hook_score": 7
@@ -285,7 +285,7 @@
         "look": "live-sheet",
         "title": "What If You Invested $10,000 in the USA and EUROPE in 2016? (A/B: \"Europe Won 2025. Who Won the Decade?\")",
         "header": "POV: In 2016 you invested **$10,000** in\nUSA vs EUROPE",
-        "runtime_s": 38,
+        "runtime_s": 36.5,
         "key_numbers": [
           "hook: 2025: Europe beat the USA ≈ 2 to 1 (35.41% ÷ 17.88% = 1.98)",
           "2018: Europe ≈ −15% (said while the 2018 row is up)",
@@ -296,7 +296,7 @@
           "≈ 14.8% vs ≈ 8.5% a year; USA ≈ doubled twice (log2 1.994), Europe once (1.18)"
         ],
         "spec": "studio/specs/04c-live-sheet-usa-vs-europe.json",
-        "mp4": "studio/out/04c-live-sheet-usa-vs-europe.mp4",
+        "mp4": "renders/v2/04c-live-sheet-usa-vs-europe.mp4",
         "math_ok": true,
         "facts_ok": true,
         "hook_score": 8
@@ -321,7 +321,7 @@
         "look": "clean-sheet",
         "title": "Chipotle Keeps How Much of Your $10?",
         "header": "What You're Really Paying For\nWhen You Spend **$10**\nat Chipotle:",
-        "runtime_s": 33.6,
+        "runtime_s": 24.7,
         "key_numbers": [
           "$10.00 order",
           "≈ $2.96 food, drinks & packaging (29.6%)",
@@ -335,7 +335,7 @@
           "check $10.00 − $8.71 of costs = $1.29"
         ],
         "spec": "studio/specs/05a-clean-sheet-chipotle-10.json",
-        "mp4": "studio/out/05a-clean-sheet-chipotle-10.mp4",
+        "mp4": "renders/v2/05a-clean-sheet-chipotle-10.mp4",
         "math_ok": true,
         "facts_ok": true,
         "hook_score": 8
@@ -345,7 +345,7 @@
         "look": "becker-rig",
         "title": "Pay $1,200 Rent? 50/30/20 Leaves Food and Bills How Much a Day?",
         "header": "Rent **$1,200** on 50/30/20?\nFood and every bill get\nthis much a day:",
-        "runtime_s": 22.5,
+        "runtime_s": 22.1,
         "key_numbers": [
           "$3,000 a month after tax (slab) · $1,200 rent (header)",
           "$3,000 ÷ 10 = $300, 10 bricks (first payoff at 1.2 s)",
@@ -356,7 +356,7 @@
           "check $1,200 + $300 + $900 + $600 = $3,000"
         ],
         "spec": "studio/specs/05b-becker-rig-3000-paycheck.json",
-        "mp4": "studio/out/05b-becker-rig-3000-paycheck.mp4",
+        "mp4": "renders/v2/05b-becker-rig-3000-paycheck.mp4",
         "math_ok": true,
         "facts_ok": true,
         "hook_score": 7.25
@@ -378,7 +378,7 @@
           "cart $5,778M + fees $5,907M = $11,685M operating income (49.4% / 50.6%)"
         ],
         "spec": "studio/specs/05c-scoreboard-costco-100.json",
-        "mp4": "studio/out/05c-scoreboard-costco-100.mp4",
+        "mp4": "renders/v2/05c-scoreboard-costco-100.mp4",
         "math_ok": true,
         "facts_ok": true,
         "hook_score": 7.0
@@ -413,7 +413,7 @@
           "pinned: 136.7 x $271.12 (adjusted 12/31/2025 close) ≈ $37,062"
         ],
         "spec": "studio/specs/06a-scoreboard-first-iphone-apple.json",
-        "mp4": "studio/out/06a-scoreboard-first-iphone-apple.mp4",
+        "mp4": "renders/v2/06a-scoreboard-first-iphone-apple.mp4",
         "math_ok": true,
         "facts_ok": true,
         "hook_score": 8
@@ -422,7 +422,7 @@
         "id": "06b-live-sheet-netflix-bill",
         "look": "live-sheet",
         "title": "Your 2012-2025 Netflix Bills in Netflix Stock: How Many Years of Free Netflix?",
-        "header": "**$19.99** Netflix, free for\nhow many years, if your\n2012-25 bills bought its stock?",
+        "header": "**$19.99** Netflix, free\nfor how many years?",
         "runtime_s": 30.5,
         "key_numbers": [
           "hook unit: today's Standard bill $19.99 (from March 2026, CNBC 2026-03-26); 12 x $19.99 = $239.88 a year; not a race input",
@@ -433,7 +433,7 @@
           "verdict ≈ 74 years of Netflix at $19.99 a month (17,705.59 ÷ 239.88 = 73.81); pinned ≈ 73.8 years and ≈ 8.7x the bills"
         ],
         "spec": "studio/specs/06b-live-sheet-netflix-bill.json",
-        "mp4": "studio/out/06b-live-sheet-netflix-bill.mp4",
+        "mp4": "renders/v2/06b-live-sheet-netflix-bill.mp4",
         "math_ok": true,
         "facts_ok": true,
         "hook_score": 7.5
@@ -443,7 +443,7 @@
         "look": "becker-rig",
         "title": "What If Every $4 Starbucks Latte Bought Starbucks Stock Instead?",
         "header": "POV: Since 2014 you invested\nin Starbucks instead of paying\n**$4/day** for a Starbucks latte",
-        "runtime_s": 28,
+        "runtime_s": 28.0,
         "key_numbers": [
           "$4/day (inside the FinanceBuzz grande-latte bracket $3.65 in 2014 to $4.45 in 2024); $1,460 a year",
           "end of 2014 $1,586 vs $1,460 (first payoff at 2.14 s)",
@@ -453,7 +453,7 @@
           "≈ 1.4x (1.42); verdict '≈ 1.4×. Not rich. Not zero.'"
         ],
         "spec": "studio/specs/06c-becker-rig-latte-starbucks.json",
-        "mp4": "studio/out/06c-becker-rig-latte-starbucks.mp4",
+        "mp4": "renders/v2/06c-becker-rig-latte-starbucks.mp4",
         "math_ok": true,
         "facts_ok": true,
         "hook_score": 7.5
@@ -478,7 +478,7 @@
         "look": "live-sheet",
         "title": "2 People Invest $200 a Month. One Stops at 35. Who Has More at 65?",
         "header": "2 people invest **$200 a month**\n10 years vs 30 years. Who wins at 65?",
-        "runtime_s": 27.7,
+        "runtime_s": 22.8,
         "key_numbers": [
           "$200 a month at 7%, compounded monthly",
           "Ava puts in $24,000 (age 25-35), Ben puts in $72,000 (age 35-65)",
@@ -489,7 +489,7 @@
           "Pinned comment: if Ava never stopped, ≈ $525,000"
         ],
         "spec": "studio/specs/07a-live-sheet-start-at-25.json",
-        "mp4": "studio/out/07a-live-sheet-start-at-25.mp4",
+        "mp4": "renders/v2/07a-live-sheet-start-at-25.mp4",
         "math_ok": true,
         "facts_ok": true,
         "hook_score": 8
@@ -499,7 +499,7 @@
         "look": "becker-rig",
         "title": "2 People Invest $10,000 Right Before 2008. One Sells in the Crash. How Far Apart Now?",
         "header": "2 people invest **$10,000**\nright before 2008\nOne sells to cut his losses",
-        "runtime_s": 27,
+        "runtime_s": 27.4,
         "key_numbers": [
           "$10,000 each, bought at the Dec 31, 2007 close",
           "2008: −37.00% → $6,300 exactly, crash impact at 1.0 s",
@@ -510,7 +510,7 @@
           "Pinned comment: Sam's cash at 5% a year 2009-2025 → ≈ $14,400, under a quarter of Alex's"
         ],
         "spec": "studio/specs/07b-becker-rig-panic-sell-2008.json",
-        "mp4": "studio/out/07b-becker-rig-panic-sell-2008.mp4",
+        "mp4": "renders/v2/07b-becker-rig-panic-sell-2008.mp4",
         "math_ok": true,
         "facts_ok": true,
         "hook_score": 8
@@ -530,7 +530,7 @@
           "$200 a month doubles both (caption); FDIC national average 0.37% → ≈ $55 over the same 5 years (pinned comment)"
         ],
         "spec": "studio/specs/07c-clean-sheet-savings-rate.json",
-        "mp4": "studio/out/07c-clean-sheet-savings-rate.mp4",
+        "mp4": "renders/v2/07c-clean-sheet-savings-rate.mp4",
         "math_ok": true,
         "facts_ok": true,
         "hook_score": 7.25
@@ -555,7 +555,7 @@
         "look": "scoreboard",
         "title": "What Your $1.50 Costco Hot Dog Would Cost If It Rose Like a House",
         "header": "WHAT YOUR **$1.50** HOT DOG WOULD\nCOST IF IT ROSE LIKE A HOUSE",
-        "runtime_s": 26,
+        "runtime_s": 22.0,
         "key_numbers": [
           "Frame 1: unit intro, hero '1', label '$1.50 / YOUR HOT DOG + SODA' (hot dog + soda $1.50 in 1985, still $1.50)",
           "$65 membership ÷ $1.50 ≈ 43 (cut 1.5 s, lands 2.98 s)",
@@ -565,7 +565,7 @@
           "Verdict: risen like a house, $1.50 × 4.670225 = $7.0053 ≈ $7.01 (= $393,700 ÷ 56,200)"
         ],
         "spec": "studio/specs/08a-scoreboard-costco-hot-dogs.json",
-        "mp4": "studio/out/08a-scoreboard-costco-hot-dogs.mp4",
+        "mp4": "renders/v2/08a-scoreboard-costco-hot-dogs.mp4",
         "math_ok": true,
         "facts_ok": true,
         "hook_score": 6.0
@@ -575,7 +575,7 @@
         "look": "becker-rig",
         "title": "At $15/hr, You Work for Rent From the 1st Until…",
         "header": "At **$15/hr**, you work for rent\nfrom the 1st to the ___",
-        "runtime_s": 27,
+        "runtime_s": 27.0,
         "key_numbers": [
           "$15/hr keeps ≈ $13.10 (2026 fed tax + FICA, single); unit defined as $13.10",
           "Median rent $1,531 ÷ $13.10 ≈ 117 hours (built kit lands 2.10 s, said 2.31 s)",
@@ -585,7 +585,7 @@
           "Median new house $393,700 ≈ 30,053 h ≈ 14 years full-time"
         ],
         "spec": "studio/specs/08b-becker-rig-hours-at-15.json",
-        "mp4": "studio/out/08b-becker-rig-hours-at-15.mp4",
+        "mp4": "renders/v2/08b-becker-rig-hours-at-15.mp4",
         "math_ok": true,
         "facts_ok": true,
         "hook_score": 7.0
@@ -595,7 +595,7 @@
         "look": "clean-sheet",
         "title": "Community? In-State? Private? Your Year of College in Big Macs",
         "header": "Community? In-state?\nOut-of-state? Private?\nYour year in **Big Macs**",
-        "runtime_s": 21.5,
+        "runtime_s": 22.0,
         "key_numbers": [
           "1 Big Mac = $6.22 (Economist, Jul 2026)",
           "Community college $4,150 ≈ 667 (pre-filled at 0.0)",
@@ -605,7 +605,7 @@
           "Verdict: $45,000 ÷ $4,150 = 10.843 → ≈ 10.8× (same in Big Macs); pinned: 4 yrs private all-in 4 × $65,470 ≈ 42,103 → a Big Mac a day for ≈ 115 years"
         ],
         "spec": "studio/specs/08c-clean-sheet-college-in-big-macs.json",
-        "mp4": "studio/out/08c-clean-sheet-college-in-big-macs.mp4",
+        "mp4": "renders/v2/08c-clean-sheet-college-in-big-macs.mp4",
         "math_ok": true,
         "facts_ok": true,
         "hook_score": 6.5
@@ -642,7 +642,7 @@
           "pinned: 72 ÷ 8 = 9; (1 + 8%/12)^n = 2 at ≈ 8.7 years; 7% → year 11, 10% → year 8"
         ],
         "spec": "studio/specs/09a-live-sheet-100-a-month-doubles.json",
-        "mp4": "studio/out/09a-live-sheet-100-a-month-doubles.mp4",
+        "mp4": "renders/v2/09a-live-sheet-100-a-month-doubles.mp4",
         "math_ok": true,
         "facts_ok": true,
         "hook_score": 7.0
@@ -651,7 +651,7 @@
         "id": "09b-becker-rig-1000-times-1-07",
         "look": "becker-rig",
         "title": "POV: Someone Invested Just $1,000 for You at Birth. What's It Worth at 65?",
-        "header": "POV: someone invested just **$1,000**\nfor you at birth.\nWhat's it worth at 65?",
+        "header": "POV: someone invested just\n**$1,000** for you at birth.\nWhat's it worth at 65?",
         "runtime_s": 27.0,
         "key_numbers": [
           "$1,000 once at birth × 1.07 a year, never topped up; rungs are ages",
@@ -662,7 +662,7 @@
           "pinned: $1,000 at 25 → ≈ $14,974 at 65 (× 5.4 less)"
         ],
         "spec": "studio/specs/09b-becker-rig-1000-times-1-07.json",
-        "mp4": "studio/out/09b-becker-rig-1000-times-1-07.mp4",
+        "mp4": "renders/v2/09b-becker-rig-1000-times-1-07.mp4",
         "math_ok": true,
         "facts_ok": true,
         "hook_score": 6.75
@@ -672,7 +672,7 @@
         "look": "scoreboard",
         "title": "Take What You Could Invest a Day. Year 40 = That × What?",
         "header": "TAKE WHAT YOU COULD INVEST **A DAY**.\nYEAR 40 = THAT × ?",
-        "runtime_s": 37.0,
+        "runtime_s": 31.5,
         "key_numbers": [
           "$1 × 365 ÷ 12 ≈ $30.42/mo at an effective 7% a year",
           "year 1 ≈ $377 (lands at 0.4 s); year 10 ≈ $5,203; year 20 ≈ $15,438; year 30 ≈ $35,571",
@@ -683,7 +683,7 @@
           "caption: at 7% ÷ 12 a month the multiplier is ≈ 79,838"
         ],
         "spec": "studio/specs/09c-scoreboard-5-a-day-millionaire.json",
-        "mp4": "studio/out/09c-scoreboard-5-a-day-millionaire.mp4",
+        "mp4": "renders/v2/09c-scoreboard-5-a-day-millionaire.mp4",
         "math_ok": true,
         "facts_ok": true,
         "hook_score": 6.75
@@ -720,7 +720,7 @@
           "counter final ≈ $1,002,727"
         ],
         "spec": "studio/specs/10a-scoreboard-debt-interest-live.json",
-        "mp4": "studio/out/10a-scoreboard-debt-interest-live.mp4",
+        "mp4": "renders/v2/10a-scoreboard-debt-interest-live.mp4",
         "math_ok": true,
         "facts_ok": true,
         "hook_score": 7.25
@@ -729,7 +729,7 @@
         "id": "10b-becker-rig-debt-vs-your-pay",
         "look": "becker-rig",
         "title": "Which Is Bigger: 40 Years of Your Pay or 1 Minute of New US Debt?",
-        "header": "40 years of your pay vs\n**1 minute** of new US debt.\nWhich is bigger?",
+        "header": "Your pay for **40 years** vs\n__1 minute__ of new US debt?",
         "runtime_s": 36.6,
         "key_numbers": [
           "Debt to the Penny: $37,637,553,494,935.61 (2025-09-30) to $40,096,954,633,566.68 (2026-09-29) = ≈ $2.46T in 364 days",
@@ -742,7 +742,7 @@
           "pinned: earn more than ≈ $117,000 a year and your 40 years beat 1 minute; yearly pay × 40 ÷ 78,000 = your working life in seconds"
         ],
         "spec": "studio/specs/10b-becker-rig-debt-vs-your-pay.json",
-        "mp4": "studio/out/10b-becker-rig-debt-vs-your-pay.mp4",
+        "mp4": "renders/v2/10b-becker-rig-debt-vs-your-pay.mp4",
         "math_ok": true,
         "facts_ok": true,
         "hook_score": 7.5
@@ -752,7 +752,7 @@
         "look": "live-sheet",
         "title": "How Long Do You Work for 1 Second of Amazon's Profit?",
         "header": "How long do **you** work for\n1 second of Amazon's profit?",
-        "runtime_s": 31,
+        "runtime_s": 31.0,
         "key_numbers": [
           "Amazon 2025 net income $77.7B; footer pay BLS median $1,251 a week × 52",
           "profit ≈ $2,464 a second (exact $2,463.85); counter from $0 at frame 1 (preroll 0)",
@@ -764,7 +764,7 @@
           "verdict: 1 second ≈ 2 weeks of median pay; a year ≈ 26 s"
         ],
         "spec": "studio/specs/10c-live-sheet-amazon-makes.json",
-        "mp4": "studio/out/10c-live-sheet-amazon-makes.mp4",
+        "mp4": "renders/v2/10c-live-sheet-amazon-makes.mp4",
         "math_ok": true,
         "facts_ok": true,
         "hook_score": 7.0

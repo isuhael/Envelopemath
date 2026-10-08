@@ -21,15 +21,42 @@
 // lookOpts (all optional; it renders fully without them):
 //   figure: false                 no figures (tip dots + counters only)
 //   figureScale                   figure size (default 0.76 with 2 series, 0.56 with 3)
-//   fill: false                   no pale hill under the hero line
-//   figures: [{ series, color }]  colour per series: 'hero' (green) | 'neutral' (slate) | 'ink'. Default: the series
-//                                 that finishes highest (the one that gets the gold plate) is the hero, the others
-//                                 neutral then ink, in series order
-//   beats: [{ t, act, series, label, to, d }]   scripted reactions on top of the race:
-//          act = cheer | shrug | impact | grow | peek | flood | any POSES name; label = a note under that figure's
-//          counter (or on the tide for flood); flood = a red "prices" tide rising from the stake to value `to`.
-//          An impact beat near an event on the same figure replaces that event's automatic hit.
-//          Beats add no sound of their own (put cues in spec.sfx).
+//   fill: false | 'gap'           false: no pale hill under the hero line; 'gap': fill only BETWEEN the hero line and
+//                                 the lowest other line (the green area is the gap, not the money nobody gained)
+//   figures: [{ series, color, lag, outline }]  colour per series: 'hero' (green) | 'neutral' (slate) | 'ink'.
+//                                 Default: the series that finishes highest (the one that gets the gold plate) is the
+//                                 hero, the others neutral then ink, in series order. lag = px he walks behind his tip
+//                                 when he has to step back (default about 130 at 2 series); outline = px of a thin halo
+//                                 (off by default), for a walker on a flat line who trails in front of another line
+//   beats: [{ t, act, series, label, to, d, pulse, chip }]   scripted reactions on top of the race:
+//          act = cheer | shrug | impact | grow | peek | pump | flood | pointBack | any POSES name; label = a note under
+//          that figure's counter (or on the tide for flood); flood = a red "prices" tide rising from the stake to value
+//          `to`; pointBack = points back up over his shoulder (at the lens); pump = a fist pump. pulse: true = that
+//          figure's counter pops (scale bump, ink) as the beat lands (the counter the VO is talking about). chip: true
+//          = the note is an ink chip (outlined, up to 44 px: a goal or target that must read at phone size). An impact
+//          beat near an event on the same figure replaces that event's automatic hit. Beats add no sound of their
+//          own (put cues in spec.sfx).
+//   hitStop: { x, until, rejoin }  a hit-stop on the race clock: it freezes the moment the race reaches data x (a
+//          close), holds to real t `until` (the counters, the year and the treadmill stand still: the beat can be
+//          checked on screen), then runs faster and rejoins the linear clock at `rejoin` (C1, no jump in speed), so
+//          every beat after `rejoin` keeps the spec's linear raceT clock
+//   lens: { t, rows: [{ t, series, from, to, label, display }] }   the payoff card. After the race, gains too small
+//          for the final axis to scale (a year of interest, one good year) are drawn to scale in a card over the
+//          top-left of the finished plot: bar = valueAt(to) - valueAt(from) of that series (from/to default to the
+//          race's x range), value = the display string (never computed). It drops in over the HUD's stake legend
+//          (the legend and the year fade), and it is the biggest thing on screen: labels 44 px, values 64 px (72 for
+//          the largest gain, the answer), thin 36 px bars on one scale, every row over a dashed track the length of
+//          the largest bar (for the short rows, the goal they never reached). Rows wait dim until their t (default
+//          the card's t), then the bar grows and the value pops (the largest one lands with a punch and a shake).
+//          The winner's gold plate dims (ink on soft, 0.88) while the card is up; the gridlines under it and every
+//          crash band fade. Placed left of the winner's reach and above every line, flag and figure in its columns:
+//          when it does not fit, the finished chart pulls back (the value axis rescales) until it does.
+//
+// Also: two tips "share a height" when closer than about 1.45 figure heights (the lower figure steps back); a hand
+// stays 24 px clear of the tag column; the hero hill fades in with the line's width; axis label families swap in
+// sequence (the old ones leave before the new ones arrive). A race that opens mid-way (raceT[0] < 0) rolls out fast
+// enough that at frame 1 every trailing figure already stands on his own line, never left of its start. A crash band
+// is clipped to the line's local high (+20 px), at least 40 px wide, and it fades when its HUD label snaps out.
 import {
   h, s, style, attr, setText, setHTML, markup, prog, clamp, lerp,
   C, F, L, E, RIG, POSES, blendPose, secondary, fk, pinLimb, Figure, makeWorld, makeFx, camera,
@@ -50,14 +77,17 @@ export const css = `
 .cr-val { position: relative; font-family: ${F.head}; font-weight: 900; letter-spacing: -0.03em; white-space: nowrap; }
 .cr-plate { position: absolute; background: ${C.coin}; border: 6px solid ${C.ink}; border-radius: 16px; transform-origin: 50% 50%; }
 .cr-note { margin-top: 8px; font: 800 40px/42px ${F.head}; letter-spacing: -0.01em; }
+.cr-note.cr-chip { display: inline-block; padding-bottom: 3px; border-bottom: 4px dashed ${C.grey}; white-space: nowrap; }
+.cr-vrow { transform-origin: 0 50%; }
 .cr-tide { position: absolute; left: 0; top: 0; padding: 2px 12px; border-radius: 10px; background: ${C.void}; font: 800 40px/42px ${F.head}; letter-spacing: -0.01em; color: ${C.red}; white-space: nowrap; }
-.cr-lens { position: absolute; left: 0; top: 0; box-sizing: border-box; background: ${C.white}; border: 6px solid ${C.ink}; border-radius: 18px; padding: 12px 20px 14px; }
+.cr-lens { position: absolute; left: 0; top: 0; box-sizing: border-box; background: ${C.white}; border: 6px solid ${C.ink}; border-radius: 22px; padding: 10px 22px 20px; transform-origin: 0 0; }
 .cr-lrow { position: relative; }
-.cr-lrow + .cr-lrow { margin-top: 10px; }
-.cr-llab { font: 800 40px/44px ${F.head}; letter-spacing: -0.01em; white-space: nowrap; }
-.cr-lbars { position: relative; height: 58px; margin-top: 4px; }
-.cr-lbar { position: absolute; left: 0; top: 0; height: 58px; border-radius: 14px; }
-.cr-lval { position: absolute; left: 0; top: 0; font: 900 52px/58px ${F.head}; letter-spacing: -0.03em; white-space: nowrap; transform-origin: 0 60%; }
+.cr-lrow + .cr-lrow { margin-top: 16px; }
+.cr-llab { font: 800 44px/48px ${F.head}; letter-spacing: -0.01em; white-space: nowrap; }
+.cr-lval { font: 900 64px/72px ${F.head}; letter-spacing: -0.03em; white-space: nowrap; transform-origin: 0 60%; }
+.cr-lbars { position: relative; height: 36px; margin-top: 4px; }
+.cr-ltrack { position: absolute; left: 0; top: 0; height: 36px; box-sizing: border-box; border: 4px dashed ${C.dim}; border-radius: 12px; }
+.cr-lbar { position: absolute; left: 0; top: 0; height: 36px; border-radius: 12px; }
 `
 
 // ---------------------------------------------------------------------------------------------- helpers
@@ -84,8 +114,9 @@ const P_SIT = { lean: 20, tilt: 30, aF: [58, 34], aB: [48, 40] }        // sat o
 const P_PEEK = { lean: -4, tilt: -24, aF: [118, 96], aB: [-14, 14] }
 const P_FALL = { lean: -10, tilt: -22, aF: [148, 34], aB: [-150, -30] }  // riding a dropping tip: arms up, "whoa"
 const P_WIN = { lean: -6, tilt: -18, aF: [144, -16], aB: [-144, 16] }    // both arms up in a wide V
-const P_POINTB = { lean: -6, tilt: -8, aF: [26, 34], aB: [-86, 4] }       // points back over his shoulder (at the lens)
-const ACT_POSE = { cheer: 'celebrate', shrug: 'shrug', impact: P_SHOCK, shocked: P_SHOCK, grow: 'pointUp', peek: P_PEEK, celebrate: 'celebrate', slump: P_SLUMP, pointBack: P_POINTB }
+const P_POINTB = { lean: -8, tilt: -18, aF: [26, 34], aB: [-138, 6] }     // points back UP over his shoulder (the lens
+                                                                          // card sits above and behind him)
+const ACT_POSE = { cheer: 'celebrate', shrug: 'shrug', impact: P_SHOCK, shocked: P_SHOCK, grow: 'pointUp', peek: P_PEEK, celebrate: 'celebrate', slump: P_SLUMP, pointBack: P_POINTB, pump: P_PUMP }
 
 export default function chartRace(spec, ctx) {
   const d = spec.data || {}
@@ -119,8 +150,28 @@ export default function chartRace(spec, ctx) {
     while (b - a > 1) { const m = (a + b) >> 1; if (p[m][0] <= x) a = m; else b = m }
     return p[a][1] + (p[b][1] - p[a][1]) * (x - p[a][0]) / (p[b][0] - p[a][0])
   }
-  const xNow = t => xf + span * clamp((t - T0) / (T1 - T0))
-  const tOfX = x => T0 + (x - xf) / span * (T1 - T0)
+  // lookOpts.hitStop: the race clock freezes as it reaches data x (real t a), holds to b, then runs faster and rejoins
+  // the linear clock at c. The catch-up is a cubic Hermite with zero speed at b and unit speed at c (C1 at both ends).
+  const HS = (() => {
+    const q = lo.hitStop
+    if (!q || ![q.x, q.until, q.rejoin].every(v => Number.isFinite(+v))) return null
+    const a = T0 + (+q.x - xf) / span * (T1 - T0), b = +q.until, c = +q.rejoin
+    return a < b && b < c ? { a, b, c } : null
+  })()
+  const warp = t => {
+    if (!HS || t <= HS.a || t >= HS.c) return t
+    if (t <= HS.b) return HS.a
+    const C_ = HS.c - HS.b, u = (t - HS.b) / C_
+    return HS.a + (HS.c - HS.a) * (3 * u * u - 2 * u * u * u) + C_ * (u * u * u - u * u)
+  }
+  const unwarp = tt => {                                  // the earliest real t whose race clock reads tt
+    if (!HS || tt <= HS.a || tt >= HS.c) return tt
+    let a = HS.b, b = HS.c
+    for (let k = 0; k < 48; k++) { const m = (a + b) / 2; if (warp(m) < tt) a = m; else b = m }
+    return b
+  }
+  const xNow = t => xf + span * clamp((warp(t) - T0) / (T1 - T0))
+  const tOfX = x => unwarp(T0 + (x - xf) / span * (T1 - T0))
   const stakeV = SER[0].pts[0][1]
   const finals = SER.map((q, i) => q.final ?? tipText(valueAt(i, xt)))
   const endV = SER.map((_, i) => valueAt(i, xt))
@@ -219,36 +270,41 @@ export default function chartRace(spec, ctx) {
     return idx
   }
   const isMult = (v, st) => Math.abs(v / st - Math.round(v / st)) < 1e-6
-  const FAMS = []                                            // [{ t, idx }]: the family switched in at t
-  const GRIDV = new Set()
-  if (LOG) {
-    for (let k = 0; k < NS; k += 6) {
-      const uA = AX[k], A = axisVal(uA)
-      const e0 = Math.floor(Math.log10(Math.max(A, 1e-9))) - 2
-      for (let e = e0; e <= e0 + 3; e++) for (const m of [1, 2, 5]) {
-        const st = m * Math.pow(10, e)
-        if (st < vmin * 1.15 || st > A) continue
-        if (m !== 1 && plotH * Math.LN10 / uA < 250) continue
-        GRIDV.add(+st.toPrecision(6))
+  // (built from the FINAL axis follower: the lens may pull the finished chart back, which rescales AX after the race)
+  let FAMS = []                                              // [{ t, idx }]: the family switched in at t
+  let gridVals = []
+  const buildGrid = () => {
+    FAMS = []
+    const GRIDV = new Set()
+    if (LOG) {
+      for (let k = 0; k < NS; k += 6) {
+        const uA = AX[k], A = axisVal(uA)
+        const e0 = Math.floor(Math.log10(Math.max(A, 1e-9))) - 2
+        for (let e = e0; e <= e0 + 3; e++) for (const m of [1, 2, 5]) {
+          const st = m * Math.pow(10, e)
+          if (st < vmin * 1.15 || st > A) continue
+          if (m !== 1 && plotH * Math.LN10 / uA < 250) continue
+          GRIDV.add(+st.toPrecision(6))
+        }
       }
-    }
-  } else {
-    let cur = idealIdx(AX[0]), top = AX[0]
-    FAMS.push({ t: -1, idx: cur })
-    const addFam = (idx, uMax) => { const st = ladder(idx); for (let v = st; v <= axisVal(uMax) * 1.0001; v += st) GRIDV.add(+v.toPrecision(6)) }
-    for (let k = 0; k < NS; k += 4) {
-      const uA = AX[k]
-      top = Math.max(top, uA)
-      if (plotH * ladder(cur) / uA < 0.94 * GSP || plotH * ladder(cur - 1) / uA >= 1.08 * GSP) {
-        addFam(cur, top)
-        cur = idealIdx(uA); top = uA
-        FAMS.push({ t: k * DT, idx: cur })
+    } else {
+      let cur = idealIdx(AX[0]), top = AX[0]
+      FAMS.push({ t: -1, idx: cur })
+      const addFam = (idx, uMax) => { const st = ladder(idx); for (let v = st; v <= axisVal(uMax) * 1.0001; v += st) GRIDV.add(+v.toPrecision(6)) }
+      for (let k = 0; k < NS; k += 4) {
+        const uA = AX[k]
+        top = Math.max(top, uA)
+        if (plotH * ladder(cur) / uA < 0.94 * GSP || plotH * ladder(cur - 1) / uA >= 1.08 * GSP) {
+          addFam(cur, top)
+          cur = idealIdx(uA); top = uA
+          FAMS.push({ t: k * DT, idx: cur })
+        }
       }
+      addFam(cur, Math.max(top, AX[NS - 1]))
     }
-    addFam(cur, Math.max(top, AX[NS - 1]))
+    gridVals = [...GRIDV].filter(v => v > 0).sort((a, b) => a - b)
   }
   const famAt = t => { let k = FAMS.length - 1; while (k > 0 && FAMS[k].t > t) k--; return k }
-  const gridVals = [...GRIDV].filter(v => v > 0).sort((a, b) => a - b)
   const isDecade = v => Math.abs(Math.log10(v) - Math.round(Math.log10(v))) < 1e-6
   // the value labels sit on their gridlines at the left edge (decoration), so the plot starts near the margin
   const PLOT_L = 104
@@ -263,7 +319,17 @@ export default function chartRace(spec, ctx) {
   const LAGMAX = Math.max(0, ...LAGS)
   const S0 = Math.min(X_TIP - 60, PLOT_L + 130 + LAGMAX * (N - 1))  // where the start line sits at t = 0 (the rearmost
                                                                   // figure stands clear of the value labels)
-  const W0 = 0.22 * span                                         // roll-out: the tips travel S0 -> X_TIP over this much x
+  const BACK = 6 * kk                                            // the body stands just behind his tip
+  // roll-out: the tips travel S0 -> X_TIP over this much x. A race that opens mid-way (raceT[0] < 0) rolls out fast
+  // enough that at frame 1 the line is already long enough for the rearmost figure to stand ON it (not on the
+  // dotted guide left of the start line): the line is DX * (1 - (1 - e/W0)^2) px long at x = xf + e
+  let W0 = 0.22 * span
+  const OPEN_MID = showFig && N > 1 && LAGMAX > 0 && T0 < 0
+  if (OPEN_MID) {
+    const e0 = xNow(0) - xf, need = Math.min(0.85 * DX, LAGMAX * (N - 1) + BACK + 30)
+    const p1 = 1 - Math.sqrt(1 - need / DX)
+    if (e0 > 0 && p1 > 0) W0 = Math.min(W0, e0 / p1)
+  }
 
   // ============================================================================ x mapping (treadmill)
   const mapAt = t => {
@@ -336,7 +402,7 @@ export default function chartRace(spec, ctx) {
   // per-figure scripted motion: pose acts, hops, crouches, landings, sit-down
   const ACTS = SER.map(() => []), HOPS = SER.map(() => []), CROUCH = SER.map(() => [])
   const LANDS = SER.map(() => []), SIT = SER.map(() => null), STAND = SER.map(() => [])
-  const NOTES = SER.map(() => [])
+  const NOTES = SER.map(() => []), PULSES = SER.map(() => [])
   const BEATS = (lo.beats || []).filter(b => b && Number.isFinite(+b.t)).map(b => ({ ...b, t: +b.t, act: String(b.act || ''), i: b.series != null && +b.series < N ? +b.series : null }))
   for (let i = 0; i < N; i++) {
     ACTS[i].push({ t0: -1, t1: T0 + 0.3, fin: 0.01, fout: 0.3, pose: P_READY })
@@ -380,7 +446,8 @@ export default function chartRace(spec, ctx) {
     if (b.act === 'cheer') { HOPS[i].push({ t0: b.t + 0.04, d: 0.4, h: 34 * kk }); LANDS[i].push({ t: b.t + 0.44, amt: 0.1 }) }
     if (b.act === 'impact') { HOPS[i].push({ t0: b.t + 0.02, d: 0.36, h: 26 * kk }); LANDS[i].push({ t: b.t + 0.38, amt: 0.12 }) }
     if (b.act === 'peek') STAND[i].push({ t0: b.t, d: dur })
-    if (b.label) NOTES[i].push({ t: b.t, t1: b.t + Math.max(2.6, Number.isFinite(dur) ? dur : 99), text: b.label, tone: b.act === 'impact' ? 'bad' : (b.act === 'cheer' || b.act === 'grow') ? 'good' : null, grow: b.act === 'grow' })
+    if (b.pulse) PULSES[i].push(b.t)
+    if (b.label) NOTES[i].push({ t: b.t, t1: b.t + Math.max(2.6, Number.isFinite(dur) ? dur : 99), text: b.label, tone: b.act === 'impact' ? 'bad' : (b.act === 'cheer' || b.act === 'grow') ? 'good' : null, grow: b.act === 'grow', chip: !!b.chip })
   }
   for (const ns of NOTES) { ns.sort((a, b) => a.t - b.t); ns.forEach((n, k) => { if (ns[k + 1]) n.t1 = Math.min(n.t1, ns[k + 1].t) }) }
 
@@ -388,7 +455,6 @@ export default function chartRace(spec, ctx) {
   // the terrain behind his tip is flat: otherwise he would stand on a value that is not his (a crash victim stays on
   // his falling tip). The lag shrinks fast (a dash forward) and grows no faster than the ground under him slides
   // back, so a figure that loses the lead slows down instead of moonwalking. Precomputed per frame: pure in t.
-  const BACK = 6 * kk                                            // the body stands just behind his tip
   const LGA = SER.map(() => new Float32Array(NS))
   const VICT = SER.map((_, i) => EVENTS.filter(ev => ev.victim === i).map(ev => [ev.t - 0.5, tOfX(ev.bandEnd) + 0.6]))
   // "Share a height" means closer than a figure is tall (plus his stride on a slope): a gap any smaller and the
@@ -420,7 +486,14 @@ export default function chartRace(spec, ctx) {
       LGA[i][k] = lag
     }
   }
-  const lagOf = (i, t) => (showFig && N > 1 && LAGMAX > 0 ? sampleAt(LGA[i], t) : 0)
+  // (a race that opens mid-way: once it is on screen, a trailing figure never stands left of his line's start)
+  const lagOf = (i, t) => {
+    if (!(showFig && N > 1 && LAGMAX > 0)) return 0
+    const lag = sampleAt(LGA[i], t)
+    if (!OPEN_MID || t < 0) return lag
+    const m = mapAt(t)
+    return Math.min(lag, Math.max(0, m.tip - BACK - Xs(xf, m) - 16 * kk))
+  }
 
   // ============================================================================ figures: terrain gait (pure)
   const LEG = (RIG.thigh + RIG.shin) * FK
@@ -600,6 +673,114 @@ export default function chartRace(spec, ctx) {
   const fixed = h('div', { class: 'cr-fixed' })
   ctx.stage.append(fixed)
 
+  // a flag drops onto the terrain where the event happened once the walker is clear of the spot (it never lands
+  // under his feet); an event too close to the finish keeps only its HUD chip and band
+  const POLE = 62 * kk
+  for (const ev of EVENTS) {
+    ev.flagT = showFig ? null : ev.t - 0.16
+    if (showFig) for (let k = Math.floor(Math.max(0, ev.t) / DT); k < NS; k += 4) {
+      const t = k * DT, m = mapAt(t)
+      if (t > T1) break
+      if (Xs(ev.x, m) <= m.tip - lagOf(ev.on, t) - 44 * kk) { ev.flagT = t; break }
+    }
+  }
+
+  // ============================================================================ lens (lookOpts.lens, optional)
+  // The payoff card. After the race, gains too small for the final axis (a year of interest, one good year) are lost
+  // in a line on the floor. The lens draws them to scale: one row per { series, from, to }, stacked label (44 px) /
+  // value (64 px; 72 for the largest gain, the answer) / a thin bar of valueAt(to) - valueAt(from) (numbers drive
+  // geometry; the value is the spec's display string, never computed). Every bar runs on one scale over a dashed
+  // track the length of the largest bar, so a short bar reads against the full length it did not reach (the goal).
+  // A row waits as a dim label over its empty track until its t, then its bar grows and the value pops. The card
+  // drops in over the HUD's stake legend, left of the winner's reach (a pointBack beat points up at it), above every
+  // line, flag and figure in its columns; when it does not fit there, the finished chart pulls back (the value axis
+  // rescales after the race) until it does. Built here, before the gridlines, because it can rescale the axis.
+  let LENS = null
+  if (lo.lens && Array.isArray(lo.lens.rows)) {
+    const lt = Number.isFinite(+lo.lens.t) ? +lo.lens.t : T1 + 1.5
+    const rows = lo.lens.rows.filter(r => r && r.series != null && +r.series >= 0 && +r.series < N).slice(0, 3).map(r => {
+      const i = +r.series
+      const a = Number.isFinite(+r.from) ? +r.from : xf, b = Number.isFinite(+r.to) ? +r.to : xt
+      return { i, t: Math.max(lt, Number.isFinite(+r.t) ? +r.t : lt), gain: Math.max(0, valueAt(i, b) - valueAt(i, a)), label: String(r.label ?? ''), display: String(r.display ?? '') }
+    })
+    if (rows.length) LENS = { t: lt, rows }
+  }
+  const lensEl = LENS ? h('div', { class: 'cr-lens', style: { visibility: 'hidden' } }) : null
+  let pullG = 1
+  if (LENS) {
+    // a figure's drawn box (limbs, head, and the pencil that sticks out up-and-back past the head)
+    const jbox = J => { const xs = ['head', 'hF', 'hB', 'eF', 'eB', 'fF', 'fB', 'hip'].map(k => J[k][0]), ys = ['hF', 'hB', 'fF', 'fB'].map(k => J[k][1]); return { x0: Math.min(Math.min(...xs) - J.R, J.head[0] - 2.4 * J.R), x1: Math.max(...xs) + J.R, y0: Math.min(J.head[1] - 1.8 * J.R, ...ys), y1: Math.max(...ys) } }
+    const L0 = 62, top = hudTop
+    // right edge: clear of the winner's whole body (raised arms, a pointing hand, his pencil) from the pull-back on
+    let R = X_TIP - 60
+    if (showFig) for (let t = LENS.t - 0.6; t <= duration; t += 0.05) { const m = mapAt(t); R = Math.min(R, jbox(figure(winner, t, m, sampleAt(AX, t)).J).x0 - 18) }
+    R = Math.max(R, L0 + 380)
+    style(lensEl, { left: L0 + 'px', top: top + 'px', width: (R - L0).toFixed(0) + 'px' })
+    world.html.append(lensEl)
+    const IW = R - L0 - 12 - 44                                     // inner width: 6 px border + 22 px padding a side
+    const gMax = Math.max(1e-9, ...LENS.rows.map(r => r.gain))
+    LENS.rows.forEach(r => {
+      r.big = r.gain >= gMax * (1 - 1e-9)
+      r.row = h('div', { class: 'cr-lrow' })
+      r.lab = h('div', { class: 'cr-llab' }, r.label)
+      r.val = h('div', { class: 'cr-lval', style: { color: pal[r.i].text } }, r.display)
+      r.bars = h('div', { class: 'cr-lbars' })
+      r.track = h('div', { class: 'cr-ltrack', style: { width: IW.toFixed(0) + 'px' } })
+      r.bar = h('div', { class: 'cr-lbar', style: { background: pal[r.i].line, width: '0px' } })
+      r.bars.append(r.track, r.bar)
+      r.row.append(r.lab, r.val, r.bars)
+      lensEl.append(r.row)
+    })
+    // labels 44 px (down to 36 for a long one); values 64 px and 72 for the answer, smaller only if they cannot fit
+    let lpx = 44
+    const labW = px => Math.max(...LENS.rows.map(r => measure(r.label, `800 ${px}px ${F.head}`, { letterSpacing: '-0.01em' })))
+    while (lpx > 36 && labW(lpx) > IW) lpx -= 2
+    LENS.rows.forEach(r => {
+      style(r.lab, { fontSize: lpx + 'px', lineHeight: Math.round(lpx * 1.1) + 'px' })
+      let vpx = r.big ? 72 : 64
+      while (vpx > 48 && measure(r.display, `900 ${vpx}px ${F.head}`, { letterSpacing: '-0.03em' }) > IW) vpx -= 4
+      r.vpx = vpx
+      style(r.val, { fontSize: vpx + 'px', lineHeight: Math.round(vpx * 1.125) + 'px' })
+      r.w = Math.max(28, IW * r.gain / gMax)                        // to scale; a stub never shrinks to a dot
+    })
+    const H = lensEl.offsetHeight
+    Object.assign(LENS, { L0, top, R, H, IW })
+    // bottom: the card sits above every line, flag and trailing figure under its columns at the end state
+    const tE = duration - 1e-3, mE = mapAt(tE), uE = sampleAt(AX, tE)
+    const bottomAt = gS => {
+      const uG = uE * gS
+      let B = BASE - 20
+      for (let sx = L0; sx <= R; sx += 4) {
+        const x = Xd(sx, mE)
+        if (x < xf || x > mE.xn) continue
+        for (let i = 0; i < N; i++) B = Math.min(B, Ys(valueAt(i, x), uG) - 16)
+      }
+      EVENTS.forEach(ev => {
+        if (ev.flagT == null) return
+        const base = onLine(ev.on, ev.x, mE, uG)
+        if (base[0] + 44 * kk >= L0 && base[0] - 8 <= R) B = Math.min(B, base[1] - 4 - POLE - 14)
+      })
+      if (showFig) for (let i = 0; i < N; i++) if (i !== winner) {
+        const bb = jbox(figure(i, tE, mE, uG).J)
+        if (bb.x1 >= L0 && bb.x0 <= R) B = Math.min(B, bb.y0 - 14)
+      }
+      return B
+    }
+    while (pullG < 2.5 && top + H + 6 > bottomAt(pullG)) pullG += 0.02
+    if (pullG > 1) {
+      // the finished chart pulls back as the card comes in: the axis rescales by pullG over 0.55 s, ending as it lands
+      const tp0 = LENS.t - 0.45, tpd = 0.55
+      for (let k = Math.max(0, Math.floor(tp0 / DT)); k < NS; k++) AX[k] *= 1 + (pullG - 1) * E.inOut(prog(k * DT, tp0, tpd))
+    }
+    if (top + H + 6 > bottomAt(pullG)) console.warn(`chart-race lens: card ${H.toFixed(0)} px tall does not clear the chart`)
+    LENS.dur = LENS.rows.map(r => 0.35 + 0.5 * r.gain / gMax)
+    // the answer (the largest gain) lands with a punch: card scale bump, a shake (no cue: put it in spec.sfx)
+    const kA = LENS.rows.findIndex(r => r.big)
+    LENS.tPunch = LENS.rows[kA].t + 0.1 + LENS.dur[kA] - 0.04
+    LENS.cx = (L0 + R) / 2; LENS.cy = top + H / 2
+  }
+  buildGrid()
+
   // crash bands, gridlines, stake line, event flags (back)
   const bands = EVENTS.map(() => { const el = s('rect', { y: f1(BASE - plotH * 0.95), height: f1(plotH * 0.95), fill: C.redSoft, opacity: 0 }); g.back.append(el); return el })
   const grids = gridVals.map(v => {
@@ -613,17 +794,6 @@ export default function chartRace(spec, ctx) {
   g.back.append(stakeLine)
   // the value axis' base (value 0 / the log floor): the year labels hang under it, in their own band
   g.back.append(s('line', { x1: 62, x2: 1018, y1: BASE, y2: BASE, stroke: C.line, 'stroke-width': 4, 'stroke-linecap': 'round' }))
-  // a flag drops onto the terrain where the event happened once the walker is clear of the spot (it never lands
-  // under his feet); an event too close to the finish keeps only its HUD chip and band
-  const POLE = 62 * kk
-  for (const ev of EVENTS) {
-    ev.flagT = showFig ? null : ev.t - 0.16
-    if (showFig) for (let k = Math.floor(Math.max(0, ev.t) / DT); k < NS; k += 4) {
-      const t = k * DT, m = mapAt(t)
-      if (t > T1) break
-      if (Xs(ev.x, m) <= m.tip - lagOf(ev.on, t) - 44 * kk) { ev.flagT = t; break }
-    }
-  }
   const flags = EVENTS.map(ev => {
     const gg = s('g', { opacity: 0 })
     gg.append(
@@ -648,8 +818,11 @@ export default function chartRace(spec, ctx) {
     ticks.push({ x, lab, mark, w: measure(txt, `700 34px ${F.mono}`, { letterSpacing: '-0.03em' }), fams: [1, 2, 5, 10, 20].filter(f => n % f === 0) })
   }
 
-  // series: pale hill under the hero line only, the lines, tip dots (the "pen")
+  // series: pale hill under the hero line only (or, fill: 'gap', the area between it and the lowest other line), the
+  // lines, tip dots (the "pen")
   const heroIdx = colKey.indexOf('hero')
+  const gapIdx = lo.fill === 'gap' && heroIdx >= 0 && N > 1
+    ? SER.map((_, i) => i).filter(i => i !== heroIdx).sort((a, b) => endV[a] - endV[b])[0] : -1
   const fill = s('path', { fill: heroIdx >= 0 ? pal[heroIdx].fill : 'none', opacity: showFill && heroIdx >= 0 ? 0.85 : 0 })
   g.back.append(fill)
   const lines = SER.map((_, i) => s('path', { fill: 'none', stroke: pal[i].line, 'stroke-width': 9, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }))
@@ -719,13 +892,21 @@ export default function chartRace(spec, ctx) {
     const fw = wVal(finals[i], VAL_PX)
     const PADX = 18, PADY = 9
     style(plate, { left: -PADX + 'px', top: -PADY + 'px', width: (fw + 2 * PADX).toFixed(0) + 'px', height: (VAL_PX + 2 * PADY).toFixed(0) + 'px' })
-    const noteLines = NOTES[i].map(n => wrapLines(n.text, `800 40px ${F.head}`))
+    // a note's height: 42 px a line; a chip note (an ink target that must read at phone size) is one line, as big
+    // as fits the column (44 -> 40 px), over a dashed underline (the dashed goal track the lens card shows later)
+    const noteH = NOTES[i].map(n => {
+      if (!n.chip) return 42 * wrapLines(n.text, `800 40px ${F.head}`)
+      let px = 44
+      while (px > 40 && measure(n.text, `800 ${px}px ${F.head}`, { letterSpacing: '-0.01em' }) + 2 > colW) px -= 2
+      n.px = px; n.lh = px + 4
+      return n.lh + 3 + 4
+    })
     const wMax = Math.max(fw, wVal(tipText(peak[i]), VAL_PX), Math.min(colW, measure(nf.text, nFont, nO)))
     const nameH = Math.max(nf.lines * nameLH, name.offsetHeight)              // measured: the stack never overlaps
-    return { tag, name, val, plate, note, baseH: nameH + 8 + VAL_PX, nameH, noteLines, fw, wMax, PADX, PADY }
+    return { tag, name, vrow, val, plate, note, baseH: nameH + 8 + VAL_PX, nameH, noteH, fw, wMax, PADX, PADY }
   })
   const noteAt = (i, t) => { for (let k = NOTES[i].length - 1; k >= 0; k--) { const n = NOTES[i][k]; if (t >= n.t && t < n.t1) return k } return -1 }
-  const tagH = (i, t) => { const k = noteAt(i, t); return tags[i].baseH + (k >= 0 ? 8 + 42 * tags[i].noteLines[k] : 0) }
+  const tagH = (i, t) => { const k = noteAt(i, t); return tags[i].baseH + (k >= 0 ? 8 + tags[i].noteH[k] : 0) }
 
   // HUD row: stake (left; an event chip replaces it while the event is fresh) / big year (right)
   const yearEl = h('div', { class: 'cr-year', style: { top: hudTop + 'px' } })
@@ -759,99 +940,6 @@ export default function chartRace(spec, ctx) {
     return el
   })
   const evWin = EVENTS.map((ev, k) => [ev.t, Math.min(ev.t + 3.2, EVENTS[k + 1] ? EVENTS[k + 1].t - 0.15 : Infinity)])
-
-  // ============================================================================ lens (lookOpts.lens, optional)
-  // After the race, gains too small for the final axis (a year of interest, one good year) are lost in a line on
-  // the floor. The lens is a card over the empty top-left of the finished plot that draws them to scale: one row per
-  // { series, from, to } with a bar of valueAt(to) - valueAt(from) (numbers drive geometry) and the spec's display
-  // string at its end (never computed). A row waits as a dim label over an empty track (the longest bar's length)
-  // until its t, then its bar shoots out along it and the value pops at the bar's end. The card sits left of the winner's reach (a pointBack beat points
-  // at it), under the HUD row and above every line, flag and figure in its columns.
-  let LENS = null
-  if (lo.lens && Array.isArray(lo.lens.rows)) {
-    const lt = Number.isFinite(+lo.lens.t) ? +lo.lens.t : T1 + 1.5
-    const rows = lo.lens.rows.filter(r => r && r.series != null && +r.series >= 0 && +r.series < N).slice(0, 3).map(r => {
-      const i = +r.series
-      const a = Number.isFinite(+r.from) ? +r.from : xf, b = Number.isFinite(+r.to) ? +r.to : xt
-      return { i, t: Math.max(lt, Number.isFinite(+r.t) ? +r.t : lt), gain: Math.max(0, valueAt(i, b) - valueAt(i, a)), label: String(r.label ?? ''), display: String(r.display ?? '') }
-    })
-    if (rows.length) LENS = { t: lt, rows }
-  }
-  const lensEl = LENS ? h('div', { class: 'cr-lens', style: { display: 'none' } }) : null
-  if (LENS) {
-    const jbox = J => { const xs = ['head', 'hF', 'hB', 'eF', 'eB', 'fF', 'fB', 'hip'].map(k => J[k][0]), ys = ['hF', 'hB', 'fF', 'fB'].map(k => J[k][1]); return { x0: Math.min(...xs) - J.R, x1: Math.max(...xs) + J.R, y0: Math.min(J.head[1] - J.R, ...ys), y1: Math.max(...ys) } }
-    const tE = duration - 1e-3, mE = mapAt(tE), uE = sampleAt(AX, tE)
-    const L0 = 62, top = hudBottom + 14
-    // right edge: clear of the winner's whole body (raised arms, a pointing hand) from the lens' first frame on
-    let R = X_TIP - 60
-    if (showFig) for (let t = LENS.t; t <= duration; t += 0.05) { const m = mapAt(t); R = Math.min(R, jbox(figure(winner, t, m, sampleAt(AX, t)).J).x0 - 18) }
-    R = Math.max(R, L0 + 360)
-    // bottom: above every line, flag and figure under the card's columns (at the end state; nothing moves after)
-    let B = BASE - 20
-    for (let sx = L0; sx <= R; sx += 4) {
-      const x = Xd(sx, mE)
-      if (x < xf || x > mE.xn) continue
-      for (let i = 0; i < N; i++) B = Math.min(B, Ys(valueAt(i, x), uE) - 16)
-    }
-    EVENTS.forEach(ev => {
-      if (ev.flagT == null) return
-      const base = onLine(ev.on, ev.x, mE, uE)
-      if (base[0] + 44 * kk >= L0 && base[0] - 8 <= R) B = Math.min(B, base[1] - 4 - POLE - 14)
-    })
-    if (showFig) for (let i = 0; i < N; i++) if (i !== winner) {
-      const bb = jbox(figure(i, tE, mE, uE).J)
-      if (bb.x1 >= L0 && bb.x0 <= R) B = Math.min(B, bb.y0 - 14)
-    }
-    style(lensEl, { left: L0 + 'px', top: top + 'px', width: (R - L0).toFixed(0) + 'px' })
-    world.html.append(lensEl)
-    const innerW = R - L0 - 12 - 40
-    LENS.rows.forEach(r => {
-      r.row = h('div', { class: 'cr-lrow' })
-      r.lab = h('div', { class: 'cr-llab' }, r.label)
-      r.bars = h('div', { class: 'cr-lbars' })
-      r.track = h('div', { class: 'cr-lbar', style: { background: C.lineSoft } })
-      r.bar = h('div', { class: 'cr-lbar', style: { background: pal[r.i].line, width: '0px' } })
-      r.val = h('div', { class: 'cr-lval', style: { color: pal[r.i].text } }, r.display)
-      r.bars.append(r.track, r.bar, r.val)
-      r.row.append(r.lab, r.bars)
-      lensEl.append(r.row)
-    })
-    style(lensEl, { display: '', visibility: 'hidden' })          // measured while laid out
-    // labels: 40 px, down to 36 for a long one
-    let lpx = 40
-    const labW = () => Math.max(...LENS.rows.map(r => measure(r.label, `800 ${lpx}px ${F.head}`, { letterSpacing: '-0.01em' })))
-    while (lpx > 36 && labW() > innerW) lpx -= 2
-    LENS.rows.forEach(r => style(r.lab, { fontSize: lpx + 'px', lineHeight: Math.round(lpx * 1.1) + 'px' }))
-    // bars: the longest takes the full width. A value rides inside its bar (ink on the fill) where it fits with
-    // room to spare, else it sits just past the bar's end in the series' colour; the scale shrinks until every
-    // outside value fits. Values 52 px (down to 44)
-    const gMax = Math.max(1e-9, ...LENS.rows.map(r => r.gain))
-    const PADV = 18
-    let vpx = 52, W = innerW
-    for (; vpx >= 44; vpx -= 4) {
-      W = innerW
-      for (let it = 0; it < 4; it++) for (const r of LENS.rows) {
-        const vw = measure(r.display, `900 ${vpx}px ${F.head}`, { letterSpacing: '-0.03em' }), f = r.gain / gMax
-        const inside = W * f >= vw + 2 * PADV + 24
-        if (!inside) W = Math.min(W, (innerW - 16 - vw) / Math.max(0.04, f))
-      }
-      if (W >= 0.6 * innerW) break
-    }
-    vpx = Math.max(44, vpx)
-    LENS.rows.forEach(r => {
-      r.w = Math.max(24, W * r.gain / gMax)
-      const vw = measure(r.display, `900 ${vpx}px ${F.head}`, { letterSpacing: '-0.03em' })
-      r.inside = r.w >= vw + 2 * PADV + 24
-      style(r.val, { fontSize: vpx + 'px', lineHeight: '58px', left: (r.inside ? r.w - PADV - vw : r.w + 16).toFixed(0) + 'px', color: r.inside ? C.ink : pal[r.i].text })
-      style(r.track, { width: W.toFixed(0) + 'px' })
-    })
-    const H = lensEl.offsetHeight
-    style(lensEl, { display: 'none', visibility: '' })
-    if (top + H > B) console.warn(`chart-race lens: card ${H.toFixed(0)} px tall, ${(B - top).toFixed(0)} px free`)
-    LENS.geo = { L0, top, R, B, H, W, innerW, lpx }
-    LENS.dur = LENS.rows.map(r => 0.35 + 0.5 * r.gain / gMax)
-    LENS.vpx = vpx
-  }
 
   // ============================================================================ tag layout (pure)
   const restY = (i, t, m, uA) => {
@@ -929,6 +1017,14 @@ export default function chartRace(spec, ctx) {
   if (showFig) ctx.cue(tJump, 'swipe', { gain: 0.45, dur: 0.2 })
   fxk.impact(tLand, { x: plateAt.x, y: plateAt.y, shake: 12, punch: 0.025, rx: plateAt.w / 2 + 12, ry: plateAt.hh / 2 + 10, r: 40, lines: 12, cue: 'hit', gain: 0.9 })
   ctx.cue(tLand + 0.1, 'cash', { gain: 0.6 })
+  // the lens' answer lands with a shake and a small camera punch about the card (the cue is the spec's)
+  if (LENS) {
+    fxk.impact(LENS.tPunch, { x: LENS.cx, y: LENS.cy, shake: 6, punch: 0.012, burst: false, cue: null })
+    world.html.append(lensEl)                                      // on top of the grid labels and ticks
+  }
+  // the camera's punch centre: the gold plate, then the lens card once it is up (zoom is 1 between punches)
+  const camAt = t => (LENS && t >= LENS.t ? { x: LENS.cx, y: LENS.cy } : { x: plateAt.x, y: plateAt.y })
+  const lensA = t => (LENS ? E.inOut(prog(t, LENS.t - 0.15, 0.3)) : 0)          // the card coming in (0..1)
 
   // ============================================================================ seek
   const pathOf = (i, m, uA) => {
@@ -940,6 +1036,7 @@ export default function chartRace(spec, ctx) {
   function seek(t) {
     const m = mapAt(t), uA = sampleAt(AX, t)
     const started = m.xn > xf + 1e-9
+    const la = lensA(t)
     // ---- gridlines + labels (deco)
     const gx1 = m.tip + 22
     const fam = LOG ? 0 : famAt(t)
@@ -955,7 +1052,9 @@ export default function chartRace(spec, ctx) {
       }
       const y = Ys(gr.v, uA)
       a *= clamp((y - (hudBottom + 30)) / 30) * clamp((BASE - 30 - y) / 20)
-      if (!started) a = a >= 0.5 ? 1 : 0                     // the hook frame: every label fully in or fully out
+      // the lens card covers its label: the line fades too, so no stub pokes out between the card and the figures
+      if (la > 0 && y > LENS.top - 24 && y < LENS.top + LENS.H + 24) a *= 1 - la
+      if (!started || t <= 0) a = a >= 0.5 ? 1 : 0           // the hook frame: every label fully in or fully out
       attr(gr.line, 'y1', f1(y)); attr(gr.line, 'y2', f1(y)); attr(gr.line, 'x2', f1(gx1))
       attr(gr.line, 'opacity', (a * 0.9).toFixed(3))
       style(gr.lab, { transform: `translate(66px,${f1(y - 41)}px)`, opacity: a.toFixed(3), display: a > 0.01 ? '' : 'none' })
@@ -975,9 +1074,20 @@ export default function chartRace(spec, ctx) {
     // ---- events: crash bands grow with the tip; flags drop onto the terrain where the event happens
     EVENTS.forEach((ev, k) => {
       const on = t >= ev.t
-      const x0 = Xs(ev.x, m), x1 = Xs(Math.min(m.xn, ev.bandEnd), m)
+      // the band frames the fall itself: at least 40 px wide (it widens back from the drop's end), from the line's
+      // local high + 20 px down to just under its low (never a tall ghost slab over empty sky, never a sliver on the
+      // floor under another line), and gone when its HUD label snaps out
+      const x1 = Xs(Math.min(m.xn, ev.bandEnd), m), x0 = Math.min(Xs(ev.x, m), x1 - 40)
+      let vTop = 0, vLow = Infinity
+      for (let q = 0; q <= 12; q++) for (let i = 0; i < N; i++) if (ev.victim < 0 || i === ev.victim) {
+        const v = valueAt(i, Math.min(m.xn, Xd(lerp(x0, x1, q / 12), m)))
+        vTop = Math.max(vTop, v); vLow = Math.min(vLow, v)
+      }
+      const yTop = Ys(vTop, uA) - 20, yLow = Math.min(BASE, Ys(vLow, uA) + 24)
       attr(bands[k], 'x', f1(x0)); attr(bands[k], 'width', f1(Math.max(0, x1 - x0)))
-      attr(bands[k], 'opacity', on && ev.tone === 'bad' ? (0.7 * prog(t, ev.t, 0.2)).toFixed(3) : '0')
+      attr(bands[k], 'y', f1(yTop)); attr(bands[k], 'height', f1(Math.max(0, yLow - yTop)))
+      const bandA = on && ev.tone === 'bad' && x1 > x0 + 1 ? 0.7 * prog(t, ev.t, 0.2) * (1 - prog(t, evWin[k][1] - 0.15, 0.3)) * (1 - la) : 0
+      attr(bands[k], 'opacity', bandA.toFixed(3))
       const base = onLine(ev.on, ev.x, m, uA)
       const fl = ev.flagT != null ? fall(t, ev.flagT, 120, { e: 0.25, n: 1 }) : { y: 0 }
       attr(flags[k], 'transform', `translate(${f1(base[0])},${f1(base[1] - 4 - fl.y)})`)
@@ -988,7 +1098,14 @@ export default function chartRace(spec, ctx) {
       const pd = started ? pathOf(i, m, uA) : ''
       attr(lines[i], 'd', pd)
       if (i === heroIdx) {
-        attr(fill, 'd', started ? `${pd}L${f1(Xs(m.xn, m))},${BASE}L${f1(Xs(xf, m))},${BASE}Z` : '')
+        let back = `L${f1(Xs(m.xn, m))},${BASE}L${f1(Xs(xf, m))},${BASE}Z`
+        if (gapIdx >= 0) {                                         // fill: 'gap': back along the lowest other line
+          const q = gapIdx, pts = [[Xs(m.xn, m), Ys(valueAt(q, m.xn), uA)]]
+          for (let n = SER[q].pts.length - 1; n >= 0; n--) { const p = SER[q].pts[n]; if (p[0] > xf && p[0] < m.xn) pts.push([Xs(p[0], m), Ys(p[1], uA)]) }
+          pts.push([Xs(xf, m), Ys(valueAt(q, xf), uA)])
+          back = pts.map(p => `L${f1(p[0])},${f1(p[1])}`).join('') + 'Z'
+        }
+        attr(fill, 'd', started ? pd + back : '')
         // the hill fades in as the line gains width: a sliver of it at the start line reads as a stray box
         attr(fill, 'opacity', showFill ? (0.85 * smooth(90, 230, Xs(m.xn, m) - Xs(xf, m))).toFixed(3) : '0')
       }
@@ -1003,9 +1120,9 @@ export default function chartRace(spec, ctx) {
       // a figure behind a better-placed one (lower value) fades OUT while their bodies overlap (his coloured tip dot
       // stays), so figures never stack: the leader of a cluster is the only figure in it
       const Js = SER.map((_, i) => figure(i, t, m, uA).J)
-      // a pumping or reaching arm never crosses into the tag column: the hand stops 12 px short of it (IK re-bends
-      // the elbow), so no limb ever strokes through a name or a live value
-      const handMax = m.tip + LAB_GAP - 12
+      // a pumping or reaching arm never crosses into the tag column: the hand stops 24 px short of it (IK re-bends
+      // the elbow), so no limb ever strokes through (or crowds) a name or a live value
+      const handMax = m.tip + LAB_GAP - 24
       for (const J of Js) for (const hk of ['hF', 'hB']) {
         if (J[hk][0] > handMax) pinLimb(J, hk, [handMax, J[hk][1]], 1)
         const ek = 'e' + hk[1]
@@ -1051,13 +1168,23 @@ export default function chartRace(spec, ctx) {
       const red = fin ? (num(finals[i]) < stakeV ? 1 : 0) : smooth(0.0, 0.006, (stakeV - v) / stakeV)
       const gold = i === winner && N > 1 ? popIn(t, tLand - 0.02, 0.3, 0.5) : null
       const goldOn = gold && t >= tLand - 0.02
-      style(tg.val, { color: goldOn ? C.ink : mix(pal[i].text, C.red, red), transform: `scale(${Math.min(1, swp.sx).toFixed(3)},${swp.sy.toFixed(3)})`, transformOrigin: '0 100%', opacity: swp.opacity.toFixed(3) })
-      if (gold) style(tg.plate, { opacity: goldOn ? '1' : '0', transform: `scale(${gold.scale.toFixed(3)})` })
+      // a pulse beat: the counter the VO is talking about pops (scale bump) and darkens to ink
+      let pz = 0
+      for (const p of PULSES[i]) pz = Math.max(pz, bump(t, p, 0.45))
+      const col = goldOn ? C.ink : mix(pal[i].text, C.red, red)
+      style(tg.val, { color: pz > 0 ? mix(col, C.ink, pz) : col, transform: `scale(${Math.min(1, swp.sx).toFixed(3)},${swp.sy.toFixed(3)})`, transformOrigin: '0 100%', opacity: swp.opacity.toFixed(3) })
+      // while the lens card is up, the gold plate steps back (ink on soft, 0.88): the card is the payoff
+      const dim = i === winner ? la : 0
+      if (gold) style(tg.plate, { opacity: goldOn ? '1' : '0', transform: `scale(${gold.scale.toFixed(3)})`, background: dim > 0 ? mix(C.coin, '#FBF1CF', dim) : C.coin, borderColor: dim > 0 ? mix(C.ink, C.line, dim) : C.ink })
+      style(tg.vrow, { transform: `scale(${((1 + 0.1 * pz) * (1 - 0.12 * dim)).toFixed(3)})` })
       const nk = noteAt(i, t)
       if (nk >= 0) {
         const n = NOTES[i][nk]
         setText(tg.note, n.text)
-        style(tg.note, { display: '', color: n.tone === 'bad' ? C.red : n.tone === 'good' ? C.heroInk : pal[i].text, opacity: popIn(t, n.t, 0.22).opacity.toFixed(3) })
+        style(tg.note, n.chip
+          ? { display: '', color: C.ink, fontSize: n.px + 'px', lineHeight: n.lh + 'px', width: 'auto', opacity: popIn(t, n.t, 0.22).opacity.toFixed(3) }
+          : { display: '', color: n.tone === 'bad' ? C.red : n.tone === 'good' ? C.heroInk : pal[i].text, fontSize: '40px', lineHeight: '42px', width: colW + 'px', opacity: popIn(t, n.t, 0.22).opacity.toFixed(3) })
+        tg.note.classList.toggle('cr-chip', !!n.chip)
       } else style(tg.note, { display: 'none' })
       let sc = 1
       for (const n of NOTES[i]) if (n.grow) sc += 0.12 * bump(t, n.t, 0.6)
@@ -1080,19 +1207,22 @@ export default function chartRace(spec, ctx) {
     // ---- lens card
     if (LENS) {
       const on = t >= LENS.t
-      style(lensEl, { display: on ? '' : 'none' })
+      style(lensEl, { display: on ? '' : 'none', visibility: '' })
       if (on) {
-        // it drops in (no scale: its text is never drawn under size), then each row fills in turn
+        // it drops in (no shrink: its text is never drawn under size), then each row fills in turn; the answer's
+        // landing punches the whole card up 2.5%
         const pd = prog(t, LENS.t, 0.32)
-        style(lensEl, { opacity: clamp(pd * 3.5).toFixed(3), transform: `translateY(${(-30 * (1 - E.back(pd, 1.6))).toFixed(1)}px)` })
+        const sc = 1 + 0.025 * bump(t, LENS.tPunch, 0.3)
+        style(lensEl, { opacity: clamp(pd * 3.5).toFixed(3), transform: `translateY(${(-30 * (1 - E.back(pd, 1.6))).toFixed(1)}px) scale(${sc.toFixed(4)})` })
         LENS.rows.forEach((r, k) => {
           const live = t >= r.t, g0 = r.t + 0.1, d1 = LENS.dur[k]
           const gp = E.out(prog(t, g0, d1))
           style(r.lab, { color: live ? mix(C.dim, pal[r.i].text, prog(t, r.t, 0.2)) : C.dim })
-          // the track stays: a short bar reads against the full length it did not reach
+          // the dashed track stays: a short bar reads against the full length it did not reach
           style(r.bar, { width: (r.w * gp).toFixed(1) + 'px' })
-          const pv = popIn(t, g0 + d1 - 0.04, 0.22, Math.max(0.82, 41 / LENS.vpx))
-          style(r.val, { opacity: (t >= g0 + d1 - 0.04 ? pv.opacity : 0).toFixed(3), transform: `scale(${pv.scale.toFixed(3)})` })
+          const tv = g0 + d1 - 0.04
+          const pv = popIn(t, tv, 0.22, Math.max(0.82, 41 / r.vpx))
+          style(r.val, { opacity: (t >= tv ? pv.opacity : 0).toFixed(3), transform: `scale(${pv.scale.toFixed(3)})` })
         })
       }
     }
@@ -1100,7 +1230,7 @@ export default function chartRace(spec, ctx) {
     const yr = Math.floor(m.xn + 1e-6)
     setText(yearEl, yearText(m.xn))
     const yp = started && yr > Math.floor(xf + 1e-6) ? 1 + 0.07 * (1 - E.out(prog(t, tOfX(yr), 0.2))) : 1
-    style(yearEl, { transform: `scale(${yp.toFixed(3)})` })
+    style(yearEl, { transform: `scale(${yp.toFixed(3)})`, opacity: (1 - la).toFixed(3), display: la > 0.999 ? 'none' : '' })
     let evA = 0
     EVENTS.forEach((ev, k) => {
       const [a0, a1] = evWin[k]
@@ -1109,10 +1239,12 @@ export default function chartRace(spec, ctx) {
       evA = Math.max(evA, a)
       style(chips[k], { opacity: a.toFixed(3), display: a > 0.01 ? '' : 'none', transform: `scale(${(t < a1 - 0.15 ? pp.scale : 1).toFixed(3)})` })
     })
-    style(stakeEl, { opacity: clamp(1 - 3.4 * evA).toFixed(3) })        // never both readable at once
+    // never both readable at once; the lens card drops in over the stake legend (it fades as the card comes)
+    style(stakeEl, { opacity: (clamp(1 - 3.4 * evA) * (1 - la)).toFixed(3) })
     // ---- impacts + camera
     const { shake, zoom } = fxk.seek(t)
-    cam.set({ fx: plateAt.x, fy: plateAt.y, x: plateAt.x, y: plateAt.y, zoom, shake })
+    const ca = camAt(t)
+    cam.set({ fx: ca.x, fy: ca.y, x: ca.x, y: ca.y, zoom, shake })
   }
 
   return { duration, seek }

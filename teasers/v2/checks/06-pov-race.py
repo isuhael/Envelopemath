@@ -576,24 +576,32 @@ EXP["c"] = {
     "strings": {
         "header": f"POV: Since {SBUX_START} you invested\nin Starbucks instead of paying\n"
                   f"**{usd(LATTE_STAKE)}/day** for a Starbucks latte",
-        "footer": f"{usd(LATTE_STAKE)} ≈ a grande latte · each year at its avg price · dividends reinvested",
+        # one line (round-2 QA: the 2-line mono footer crowded the hook); "each year at its avg price" and
+        # "reinvested" are in the pinned comment and the assumptions
+        "footer": f"{usd(LATTE_STAKE)} ≈ a grande latte · with dividends",
         # one line: the Becker Rig verdict band overflows by 6 px on any 2-line verdict (kit issue,
         # logged); the judge's 2-line "Cups: $0. Stock: ≈ $24,900." version swaps in once it is fixed
         "verdict.text": f"**≈ {mult(C['mult'])}×**. Not rich. Not zero.",
         "data.spend.final": f"{usd(C['total'])} spent",
-        "data.own.label": f"Same {usd(LATTE_STAKE)}/day in Starbucks stock",
+        # one line, like "Spent on lattes" (round-2 QA: the 2-line label wedged the payoff plate)
+        "data.own.label": "In Starbucks stock",
         "data.own.final": approx_usd(C["final"]),
         "data.purchases.0.label": "Day 1",
         "data.purchases.0.price": usd(LATTE_STAKE),
         # assembly round 2: the "doubled" beat. A green dotted line at 2 × the 2021 spend, labelled, lands with
         # the 2021 year-end (the ding) while vo[4] says "doubled"; the tower top is just above it (2.08×)
         "lookOpts.multiple.label": f"{C['x2021_k']}×",
+        # round-2 QA fixes: the year's lattes as a chip on the spent column at the 2017 close (a 365-day year),
+        # what is left of the lattes at the verdict, and the verdict's ratio drawn on the piles
+        "lookOpts.chip.text": f"+{usd(C['spend_y'][2017])}",
+        "lookOpts.spentLeft": "$0 left",
+        "lookOpts.endMark.label": f"≈ {mult(C['mult'])}×",
     },
     "points": {"spend": C["spend"], "own": C["own"]},
     "purchases_x": [float(SBUX_START)],
     "vo_numbers": [
         [f"{LATTE_STAKE:.0f}"],
-        [str(SBUX_START)],
+        [str(SBUX_START), f"{LATTE_STAKE:.0f}"],
         [f"{C['per_year']:,.0f}"],
         [],
         ["2021"],
@@ -615,7 +623,7 @@ check("06c", "'2×' mark: tower ≥ 2 × spend at the end of 2021",
       ok=C["x2021_k"] == 2 and C["value"][2021] >= 2 * C["cum_spend"][2021])
 check("06c", "pinned: 296.0 shares x $84.21 ≈ $24,926",
       usd(rnd(C["final"] / MT_SBUX_CLOSE[2025], 1) * MT_SBUX_CLOSE[2025]), "$24,926")
-check("06c", "'climbs faster than the cups' while vo[3] plays (x 2018.9-2021.0)",
+check("06c", "'climbs faster than the cups' while vo[3] plays (x 2019.0-2021.1)",
       ", ".join(f"{y}: +{C['value'][y] - C['value'][y - 1]:,.0f}" for y in (2019, 2020, 2021)),
       f"each > +{C['per_year']:,.0f}", ok=all(C["value"][y] - C["value"][y - 1] > C["per_year"] for y in (2019, 2020, 2021)))
 
@@ -650,10 +658,33 @@ def leaves(obj, path=""):
         yield path, obj
 
 
-def chart_t(spec, x):
+def race_pause(spec):
+    """(x, t_start, t_end) of the race clock's pause at the "k ×" mark (Becker Rig pov-race: lookOpts.multiple
+    with a hold pauses the clock at its x; the rest of the race is re-timed to still end at raceT[1]), or None"""
+    d, mu = spec["data"], (spec.get("lookOpts") or {}).get("multiple")
+    if spec["look"] != "becker-rig" or not mu or mu.get("pause") is False:
+        return None
+    xf, xt = d["x"]["from"], d["x"]["to"]
+    t0, t1 = d["raceT"]
+    tp = mu.get("t", t0 + (mu["x"] - xf) / (xt - xf) * (t1 - t0))
+    hd = mu.get("hold", 1.4)
+    if not (hd > 0 and xf < mu["x"] < xt and tp > t0 and tp + hd < t1 - 0.5):
+        return None
+    return mu["x"], tp, tp + hd
+
+
+def chart_t(spec, x, after=False):
+    """the time the race reaches x (after=True: at the pause's x, the time it leaves it)"""
     d = spec["data"]
     t0, t1 = d["raceT"]
-    return t0 + (x - d["x"]["from"]) / (d["x"]["to"] - d["x"]["from"]) * (t1 - t0)
+    xf, xt = d["x"]["from"], d["x"]["to"]
+    pz = race_pause(spec)
+    if not pz:
+        return t0 + (x - xf) / (xt - xf) * (t1 - t0)
+    px, pt0, pt1 = pz
+    if x < px - 1e-9 or (not after and x <= px + 1e-9):
+        return t0 + (x - xf) / (px - xf) * (pt0 - t0)
+    return pt1 + (x - px) / (xt - px) * (t1 - pt1)
 
 
 def check_spec(key):
@@ -795,6 +826,30 @@ def check_spec(key):
         lo, hi = vo[4]["t"], vo[4]["t"] + vo[4]["d"]
         check(sid, "'2×' mark shown inside vo[4] ('doubled')", f"t={t_mu:.2f}-{t_mu + mu['hold']:.2f}",
               f"starts {lo:.2f}-{hi:.2f}", ok=lo <= t_mu <= hi)
+        # round-2 QA must: the race clock pauses on the 2021 close for the whole 2× hold (year 2021, $11,688 /
+        # $24,343 on the counters), and the hold ends within BEAT_TOL of vo[4] (then "it stalls")
+        pz = race_pause(spec)
+        check(sid, "race clock pauses at the 2021 close for the 2× hold",
+              f"x {pz[0]:.2f}, t {pz[1]:.2f}-{pz[2]:.2f}" if pz else "no pause",
+              f"x {ye(2021):.2f}, t {t_mu:.2f}-{t_mu + mu['hold']:.2f}",
+              ok=bool(pz) and pz[0] == ye(2021) and abs(pz[1] - t_mu) < 1e-9 and abs(pz[2] - t_mu - mu["hold"]) < 1e-9)
+        check(sid, "2× hold ends by vo[4]'s end + tolerance", f"t={t_mu + mu['hold']:.2f}", f"≤ {hi + BEAT_TOL:.2f}",
+              ok=t_mu + mu["hold"] <= hi + BEAT_TOL)
+        check(sid, "counters held during the 2× pause", f"{usd(C['cum_spend'][2021])} / {usd(C['value'][2021])}",
+              "$11,688 / $24,343")
+        # the "+$1,460" chip: on the 2017 close, a 365-day year, while vo[2] says "$1,460 a year"
+        ch = spec["lookOpts"]["chip"]
+        check(sid, "lookOpts.chip.x = end of 2017", ch["x"], ye(2017))
+        check(sid, "2017 lattes = $4 × 365 (not a leap year)", C["spend_y"][2017], C["per_year"],
+              ok=C["spend_y"][2017] == C["per_year"] and not calendar.isleap(2017))
+        t_ch = chart_t(spec, ch["x"])
+        check(sid, "chip shown inside vo[2] ('$1,460 a year')", f"t={t_ch:.2f}-{t_ch + ch.get('hold', 1.4):.2f}",
+              f"{vo[2]['t']:.2f}-{vo[2]['t'] + vo[2]['d']:.2f}",
+              ok=vo[2]["t"] <= t_ch and t_ch + ch.get("hold", 1.4) <= vo[2]["t"] + vo[2]["d"] + BEAT_TOL)
+        # "$0 left" and the "≈ 1.4×" mark land with the verdict ("Not zero")
+        check(sid, "spentLeft / endMark land at verdict.t", spec["verdict"]["t"], vo[8]["t"])
+        check(sid, "endMark label = the verdict's multiple", spec["lookOpts"]["endMark"]["label"],
+              re.search(r"≈ [\d.]+×", strip_markup(spec["verdict"]["text"])).group(0))
 
     # --- coverage: every string with a digit must have been checked
     for p, v in leaves(spec):

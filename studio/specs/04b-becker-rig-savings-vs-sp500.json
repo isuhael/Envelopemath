@@ -3,9 +3,9 @@
   "look": "becker-rig",
   "format": "chart-race",
   "fps": 30,
-  "duration": 40.1,
+  "duration": 36.0,
   "header": "Your **$1,000**: 16 years of savings\nVS 1 year of the S&P 500",
-  "footer": "Savings: FDIC avg rate, under 0.5% · S&P 500 with dividends · 2010–2025",
+  "footer": "Savings: FDIC avg · S&P w/ dividends",
   "captions": true,
   "vo": [
     {
@@ -15,13 +15,23 @@
     },
     {
       "t": 4.8,
-      "d": 2.9,
+      "d": 2.7,
       "text": "Savings gets 16 years to match it."
+    },
+    {
+      "t": 7.5,
+      "d": 1.7,
+      "text": "Stocks have already doubled."
     },
     {
       "t": 10.8,
       "d": 2.5,
       "text": "Savings? Under $10 so far."
+    },
+    {
+      "t": 14.35,
+      "d": 3.1,
+      "text": "2020: stocks top $4,000."
     },
     {
       "t": 19.1,
@@ -30,23 +40,18 @@
     },
     {
       "t": 23.6,
-      "d": 4.4,
+      "d": 4.3,
       "text": "2025: savings made under $30 in 16 years."
     },
     {
-      "t": 28.1,
-      "d": 4.8,
+      "t": 27.95,
+      "d": 4.7,
       "text": "The S&P's first year alone: ≈ $151."
-    },
-    {
-      "t": 33.0,
-      "d": 4.0,
-      "text": "It ended at ≈ $8,280."
     }
   ],
   "verdict": {
-    "t": 37.1,
-    "text": "16 years of savings: under $30.\nThe S&P 500 in 2010 alone: **≈ $151**."
+    "t": 32.7,
+    "text": "The S&P 500's **2010 alone**\nbeat 16 years of savings."
   },
   "data": {
     "stake": "$1,000 each · Jan 2010",
@@ -217,15 +222,11 @@
     ],
     "events": [
       {
-        "x": 2020.2,
-        "label": "COVID"
-      },
-      {
         "x": 2022.5,
-        "label": "2022 bear market"
+        "label": "Bear market"
       }
     ],
-    "hold": 16.5
+    "hold": 12.4
   },
   "lookOpts": {
     "stage": "light",
@@ -253,7 +254,34 @@
         "act": "think",
         "series": 1,
         "d": 18.8,
-        "label": "goal: ≈ +$151"
+        "label": "goal: ≈ +$151",
+        "chip": true
+      },
+      {
+        "t": 8.65,
+        "act": "cheer",
+        "series": 0,
+        "pulse": true
+      },
+      {
+        "t": 10.8,
+        "act": "peek",
+        "series": 1,
+        "d": 2.5,
+        "pulse": true
+      },
+      {
+        "t": 16.27,
+        "act": "pump",
+        "series": 0,
+        "d": 1.0,
+        "pulse": true
+      },
+      {
+        "t": 16.27,
+        "act": "shocked",
+        "series": 1,
+        "d": 1.0
       },
       {
         "t": 19.1,
@@ -273,19 +301,13 @@
         "label": "under +$30"
       },
       {
-        "t": 28.1,
+        "t": 27.95,
         "act": "pointBack",
         "series": 0,
-        "d": 4.8
+        "d": 4.7
       },
       {
-        "t": 33.0,
-        "act": "point",
-        "series": 0,
-        "d": 4.0
-      },
-      {
-        "t": 37.1,
+        "t": 32.7,
         "act": "cheer",
         "series": 0
       }
@@ -301,16 +323,22 @@
           "display": "under +$30"
         },
         {
-          "t": 28.1,
+          "t": 27.95,
           "series": 0,
           "from": 2010,
           "to": 2010.99,
           "label": "S&P 500 in 2010",
-          "display": "≈ +$151"
+          "display": "≈ +$151"
         }
       ]
     },
-    "gag": "Each figure climbs its own line. The S&P figure scrambles up a steep, jagged slope (cheers as his first year closes, stumbles in 2018, gets knocked down in 2022, climbs again); the savings figure strolls a ledge so flat it never dips, a step behind and in front of the hill, his chin in his hand, his goal note pinned under a counter that barely moves. At the end he shrugs at his 16-year total and sits; a lens card drops in over the empty sky and draws both gains to scale: his stub against the full bar the S&P made in its first year, which the hero points back at. Then the hero points at his gold plate, and the verdict lands once the last line is read."
+    "gag": "Each figure climbs its own line. The S&P figure scrambles up a steep, jagged slope: the race freezes as his first year closes (he cheers over \"year 1: ≈ +$151\"), then sprints to catch up; he cheers as stocks double, pumps a fist as they top $4,000, stumbles in 2018 and gets knocked down in 2022. The savings figure strolls a ledge so flat it never dips, a step behind him, chin in hand, his goal pinned under a counter that barely moves: he peeks at it, and gapes as the S&P tops $4,000. At the end he shrugs at his 16-year total and sits; a big card drops in over the sky: his grey stub on a dashed track (the goal he never reached) against the full green bar the S&P made in its first year, which the hero points back up at while his gold plate steps back. The verdict lands as the last line ends.",
+    "fill": "gap",
+    "hitStop": {
+      "x": 2010.99,
+      "until": 2.95,
+      "rejoin": 6.6
+    }
   },
   "sfx": [
     {
@@ -318,8 +346,28 @@
       "kind": "pop"
     },
     {
+      "t": 2.95,
+      "kind": "whoosh",
+      "dur": 0.6,
+      "gain": 0.4
+    },
+    {
       "t": 4.8,
       "kind": "swipe"
+    },
+    {
+      "t": 8.65,
+      "kind": "ding",
+      "gain": 0.5
+    },
+    {
+      "t": 10.8,
+      "kind": "tick"
+    },
+    {
+      "t": 16.27,
+      "kind": "pop",
+      "gain": 0.45
     },
     {
       "t": 19.1,
@@ -339,16 +387,16 @@
       "kind": "pop"
     },
     {
-      "t": 28.2,
+      "t": 28.05,
       "kind": "whoosh",
       "dur": 0.8
     },
     {
-      "t": 29.01,
+      "t": 28.86,
       "kind": "pop"
     },
     {
-      "t": 37.1,
+      "t": 32.7,
       "kind": "thud"
     }
   ]

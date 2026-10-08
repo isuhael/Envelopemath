@@ -115,7 +115,7 @@ DWS_EU = {2016: -1.32, 2017: 24.97, 2018: -14.67, 2019: 24.41, 2020: 5.51, 2021:
 A_STAKE, A_Y0, A_Y1, A_RACE = 10_000, 2000, 2025, (-0.4, 31.6)
 B_STAKE, B_Y0, B_Y1, B_RACE = 1_000, 2010, 2025, (-0.4, 23.6)
 C_STAKE, C_Y0, C_Y1, C_RACE = 10_000, 2016, 2025, (4.8, 21.8)
-DUR = {"a": 45.5, "b": 40.1, "c": 36.5}
+DUR = {"a": 45.5, "b": 36.0, "c": 36.5}
 
 # ============================================================== formatting (rules used on screen)
 
@@ -641,76 +641,146 @@ for u in Sa.uncovered():
 
 # ============================================================== 04b
 # Hook pass 2 (2026-10-07): the handicap duel "Your $1,000: 16 years of savings VS 1 year of the S&P 500".
+# Fixer pass (QA round 2, 2026-10-08): hit-stop on the 2010 close, two mid-race VO lines, the lens as the payoff,
+# the $8,280 VO line dropped (the gold plate and the caption carry it), the verdict at 32.7 s, 36.0 s in all.
 Sb = Spec("b")
 common(Sb)
 y1_tok = B["y1_disp"]                                            # "≈ $151"
-y1_note = f"year 1: ≈ +{y1_tok[2:]}"                        # U+00A0: the label never splits "≈" from its number
-goal_note = f"goal: ≈ +{y1_tok[2:]}"
+y1_note = f"year 1: ≈\u00a0+{y1_tok[2:]}"                        # U+00A0: the label never splits "≈" from its number
+goal_note = f"goal: ≈\u00a0+{y1_tok[2:]}"
 int_tok = f"${B['int_cap']}"                                     # "$30"
+SP_TOP = 4_000                                                   # "2020: stocks top $4,000."
+top_tok = f"${SP_TOP:,}"
 Sb.n(("header",), [f"${B_STAKE:,}", str(B["years"]), "1"])
 claim("b", "header '16 years of savings' = Jan 2010 -> Dec 2025", B["years"], 16)
 claim("b", "header: the viewer's stake ('Your $1,000') and both rivals named (R6, R7)",
       all(w in Sb.d["header"] for w in ("Your", "savings", "S&P 500")), True)
-Sb.n(("footer",), ["0.5%", str(B_Y0), str(B_Y1)])
-claim("b", "footer 'under 0.5%': every savings rate used", max(FDIC.values()), "< 0.5", ok=max(FDIC.values()) < 0.5)
+# fixer pass: the footer is one line (it was the second-heaviest text block on frame 1); the "under 0.5%" bound moved
+# to the description, and the years to the stake legend / year counter
+Sb.s(("footer",), "Savings: FDIC avg · S&P w/ dividends")
+Sb.n(("footer",), [])
+claim("b", "footer fits one line at 40 px mono (36 chars <= 37 at 23.2 px a char in 878 px)", len(Sb.d["footer"]), "<= 37",
+      ok=len(Sb.d["footer"]) <= 37 and "\n" not in Sb.d["footer"])
+claim("b", "'under 0.5%' (description): every savings rate used", max(FDIC.values()), "< 0.5", ok=max(FDIC.values()) < 0.5)
 Sb.s(("data", "stake"), f"${B_STAKE:,} each · Jan {B_Y0}")
 chart(Sb, B_RACE, B_Y0, B["x1"], [B_sp_pts, B_sv_pts], [B["fin_sp"], B["fin_sv"]], ["S&P 500", "Savings account"])
 claim("b", "x tickEvery", Sb.d["data"]["x"]["tickEvery"], 5)
-i_earn = 2                                                       # "Savings? Under $10 so far."
 earn_tok = f"${B['earn_cap']}"
 vo_numbers(Sb, [
     [y1_tok],                                                    # "Year one in the S&P: ≈ $151."
     [str(B["years"])],                                           # "Savings gets 16 years to match it."
+    [],                                                          # "Stocks have already doubled."
     [earn_tok],                                                  # "Savings? Under $10 so far."
-    ["2022", f"≈ {B['drop22']}%"],
+    ["2020", top_tok],                                           # "2020: stocks top $4,000."
+    ["2022", f"≈ {B['drop22']}%"],                               # "2022: stocks drop ≈ 18%."
     ["2025", int_tok, str(B["years"])],                          # "2025: savings made under $30 in 16 years."
     [y1_tok],                                                    # "The S&P's first year alone: ≈ $151."
-    [B["fin_sp"]],                                               # "It ended at ≈ $8,280."
 ])
 seen_b = year_sync(Sb, B, B_Y0, B_RACE[1])
-events(Sb, B, B_RACE, B_Y0, B["x1"], [(2020.2, "COVID", False), (2022.5, "2022 bear market", True)], seen_b)
-# the verdict names the year: "1 year of the S&P 500" would read as any year, and 4 of the 16 earned less (judge 2).
-# Assembly pass: the emphasis (green, the S&P's colour all video) moved from the savings figure's "$30" to "≈ $151".
-Sb.s(("verdict", "text"), f"{B['years']} years of savings: under {int_tok}.\nThe S&P 500 in {B_Y0} alone: **{y1_tok}**.")
-# frame 1: the race is already moving (raceT starts at -0.4 s)
-x_f1b = x_of(0.0, B_RACE, B_Y0, B["x1"])
+# fixer pass: the COVID flag is gone (2020 closed +18.4%: it marked nothing), and the bear-market chip no longer
+# repeats the year the impact note "2022: ≈ −18%" carries
+events(Sb, B, B_RACE, B_Y0, B["x1"], [(2022.5, "Bear market", True)], seen_b)
+# the verdict takes a side (R12) and names the year: "1 year of the S&P 500" would read as any year, and 4 of the 16
+# earned less (judge 2). Fixer pass: it no longer repeats the lens card word for word.
+Sb.s(("verdict", "text"), f"The S&P 500's **{B_Y0} alone**\nbeat {B['years']} years of savings.")
+claim("b", "verdict 'beat': the S&P's 2010 gain > 16 years of savings interest (worst table + understatement)",
+      f"{B['y1']:.2f} > {B['int16']:.2f}", "", ok=B["y1"] > B["int16"])
+
+# ---- the hit-stop (lookOpts.hitStop): the race clock freezes at the 2010 close, holds while "≈ $151" is said, then
+# catches up (cubic Hermite, zero speed at `until`, unit speed at `rejoin`) and runs on the linear raceT clock again
+x_2010 = B_sp_pts[1][0]                                          # the 2010 close (x 2010.99)
+HS = Sb.get(("lookOpts", "hitStop"))
+claim("b", "hitStop = { x: the 2010 close, until 2.95, rejoin 6.6 }", HS, {"x": x_2010, "until": 2.95, "rejoin": 6.6})
+HS_A, HS_B, HS_C = t_of(x_2010, B_RACE, B_Y0, B["x1"]), HS["until"], HS["rejoin"]
+
+
+def warp_b(t):
+    """chart-race.js warp(): real t -> race-clock t"""
+    if t <= HS_A or t >= HS_C:
+        return t
+    if t <= HS_B:
+        return HS_A
+    c = HS_C - HS_B
+    u = (t - HS_B) / c
+    return HS_A + (HS_C - HS_A) * (3 * u * u - 2 * u ** 3) + c * (u ** 3 - u * u)
+
+
+def xb_of(t):
+    """04b's race clock with the hit-stop"""
+    return x_of(warp_b(t), B_RACE, B_Y0, B["x1"])
+
+
+t_y1 = round(B["tl"][B_Y0], 2)                                   # the 2010 close lands at 1.086 s
+s_y1 = said_at(Sb, 0, y1_tok)[0]
+claim("b", "hit-stop freezes as the 2010 close lands (≈ the year-1 beat)", round(HS_A, 3), f"{t_y1} ± 0.01", ok=abs(HS_A - t_y1) < 0.01)
+claim("b", "hit-stop holds while '≈ $151' (vo[0]) is said", round(s_y1, 2), f"{HS_A:.2f}..{HS_B}", ok=HS_A <= s_y1 < HS_B)
+hold_ts = [HS_A + k * (HS_B - HS_A) / 50 for k in range(51)]
+claim("b", "during the hold the S&P tip reads $1,151 (the 2010 close) and the year 2010",
+      sorted({usd_round(val_at(B_sp_pts, xb_of(t))) for t in hold_ts} | {str(math.floor(xb_of(t) + 1e-6)) for t in hold_ts}),
+      ["2010", "≈ $1,151"])
+claim("b", "during the hold the savings tip reads $1,002", sorted({usd_round(val_at(B_sv_pts, xb_of(t))) for t in hold_ts}), ["≈ $1,002"])
+claim("b", "... so on screen $1,151 − $1,000 = $151 checks (the 'year 1: ≈ +$151' note)", round(1151 - B_STAKE), 151)
+wts = [HS_B + k * (HS_C - HS_B) / 400 for k in range(401)]
+mono = all(warp_b(b) >= warp_b(a) - 1e-12 for a, b in zip(wts, wts[1:]))
+sp0 = (warp_b(HS_B + 1e-4) - warp_b(HS_B)) / 1e-4
+sp1 = (warp_b(HS_C) - warp_b(HS_C - 1e-4)) / 1e-4
+peak = max((warp_b(b) - warp_b(a)) / (b - a) for a, b in zip(wts, wts[1:]))
+claim("b", "catch-up is monotone, starts at speed 0 and rejoins at speed 1 (C1)", f"{sp0:.3f} / {sp1:.3f} / mono {mono}",
+      "0 / 1 / True", ok=mono and abs(sp0) < 0.01 and abs(sp1 - 1) < 0.01)
+claim("b", "catch-up peak speed (a sprint, not a jump cut)", round(peak, 2), "<= 2.5", ok=peak <= 2.5)
+yr_lines = [vo_t(Sb, i) for i, v in enumerate(Sb.d["vo"]) if re.search(r"\b20[0-3]\d\b", v["text"]) and i > 0]
+claim("b", "the clock is linear again before any year-synced VO line, flag or beat after the hold", HS_C,
+      f"<= {min(yr_lines + [vo_t(Sb, 2)])}", ok=HS_C <= min(yr_lines + [vo_t(Sb, 2)]))
+
+# frame 1: the race is already moving (raceT starts at -0.4 s), before the hit-stop
+x_f1b = xb_of(0.0)
 claim("b", "frame 1: race already moving, year counter still 2010", round(x_f1b, 4), "2010 < x < 2011", ok=B_Y0 < x_f1b < B_Y0 + 1)
 claim("b", "frame 1: S&P tip reads $1,041", usd_round(val_at(B_sp_pts, x_f1b)), "≈ $1,041")
 claim("b", "frame 1: savings tip reads $1,001", usd_round(val_at(B_sv_pts, x_f1b)), "≈ $1,001")
 # figure beats
 bt = ("lookOpts", "beats")
-t_y1 = round(B["tl"][B_Y0], 2)                                   # the 2010 close lands at 1.086 s
+s_dbl = round(said_at(Sb, 2, "doubled")[0], 2)
+s_top = round(said_at(Sb, 4, top_tok)[0], 2)
 want_beats = [
-    (t_y1, "cheer", 0, y1_note, None),
-    (vo_t(Sb, 1), "think", 1, goal_note, round(B_RACE[1] - vo_t(Sb, 1), 2)),   # the goal note holds to the race end
-    # (assembly pass: the year is on the label, since the counter has moved on to 2024 when "≈ 18%" is said)
-    (vo_t(Sb, 3), "impact", 0, f"2022: ≈ −{B['drop22']}%", None),
-    (B_RACE[1], "grow", 0, None, None),
-    (vo_t(Sb, 4), "shrug", 1, f"under +{int_tok}", None),
-    # assembly pass: the hero points back at the lens card (its S&P row shows "≈ +$151"), so no note of his own
-    (vo_t(Sb, 5), "pointBack", 0, None, Sb.d["vo"][5]["d"]),
-    (vo_t(Sb, 6), "point", 0, None, Sb.d["vo"][6]["d"]),        # at his gold plate as "It ended at ≈ $8,280" is read
-    (Sb.d["verdict"]["t"], "cheer", 0, None, None),               # a hop as the verdict lands
+    (t_y1, "cheer", 0, y1_note, None, {}),
+    # the goal holds to the race end, an ink note over a dashed rule (fixer pass: it was the dimmest text in the column)
+    (vo_t(Sb, 1), "think", 1, goal_note, round(B_RACE[1] - vo_t(Sb, 1), 2), {"chip": True}),
+    (s_dbl, "cheer", 0, None, None, {"pulse": True}),            # as "doubled" is said: his counter pops
+    (vo_t(Sb, 3), "peek", 1, None, 2.5, {"pulse": True}),       # "Savings? Under $10 so far.": he peeks, his counter pops
+    (s_top, "pump", 0, None, 1.0, {"pulse": True}),             # as "$4,000" is said: fist pump, his counter pops
+    (s_top, "shocked", 1, None, 1.0, {}),                        # ... and the savings walker gapes
+    # (the year is on the label, since the counter has moved on to 2024 when "≈ 18%" is said)
+    (vo_t(Sb, 5), "impact", 0, f"2022: ≈\u00a0−{B['drop22']}%", None, {}),
+    (B_RACE[1], "grow", 0, None, None, {}),
+    (vo_t(Sb, 6), "shrug", 1, f"under +{int_tok}", None, {}),
+    # the hero points back up at the lens card (its S&P row shows "≈ +$151"), so no note of his own
+    (vo_t(Sb, 7), "pointBack", 0, None, Sb.d["vo"][7]["d"], {}),
+    (Sb.d["verdict"]["t"], "cheer", 0, None, None, {}),          # a hop as the verdict lands
 ]
 claim("b", "figure beat count", len(Sb.get(bt)), len(want_beats))
-for i, (t, act, ser, label, dur) in enumerate(want_beats):
+for i, (t, act, ser, label, dur, flags) in enumerate(want_beats):
+    if i >= len(Sb.get(bt)):
+        break
+    bi = Sb.d["lookOpts"]["beats"][i]
     claim("b", f"beat[{i}] {act} t", Sb.get(bt + (i, "t")), t, ok=abs(Sb.get(bt + (i, "t")) - t) < 0.006)
     claim("b", f"beat[{i}] act", Sb.get(bt + (i, "act")), act)
     claim("b", f"beat[{i}] series", Sb.get(bt + (i, "series")), ser)
-    claim("b", f"beat[{i}] d", Sb.d["lookOpts"]["beats"][i].get("d"), dur,
-          ok=(dur is None and "d" not in Sb.d["lookOpts"]["beats"][i]) or (dur is not None and abs(Sb.get(bt + (i, "d")) - dur) < 0.006))
+    claim("b", f"beat[{i}] d", bi.get("d"), dur,
+          ok=(dur is None and "d" not in bi) or (dur is not None and abs(Sb.get(bt + (i, "d")) - dur) < 0.006))
+    claim("b", f"beat[{i}] flags (pulse / chip)", {k: bi[k] for k in ("pulse", "chip") if k in bi}, flags)
     if label is not None:
         Sb.s(bt + (i, "label"), label)
     else:
-        claim("b", f"beat[{i}] {act} has no label", "label" in Sb.d["lookOpts"]["beats"][i], False)
+        claim("b", f"beat[{i}] {act} has no label", "label" in bi, False)
 # figures: the savings walker trails 170 px behind his tip with a thin halo (chart-race.js lookOpts.figures)
 claim("b", "figures", Sb.get(("lookOpts", "figures")),
       [{"series": 0, "color": "hero"}, {"series": 1, "color": "neutral", "lag": 170, "outline": 6}])
-Sb.n(("lookOpts", "gag"), ["2018", "2022", str(B["years"])])
+claim("b", "fill: 'gap' (the green area is the gap between the lines, not the $0-$1K band)", Sb.d["lookOpts"]["fill"], "gap")
+Sb.n(("lookOpts", "gag"), ["1", f"≈ +{y1_tok[2:]}", top_tok, "2018", "2022", top_tok, str(B["years"])])
 claim("b", "'year 1' note pops as the 2010 close lands (not before)", t_y1, f"{B['tl'][B_Y0]:.3f}..+0.05",
       ok=0 <= t_y1 - B["tl"][B_Y0] <= 0.05)
-claim("b", "the S&P tip shows the 2010 close when 'year 1' pops", round(val_at(B_sp_pts, x_of(t_y1, B_RACE, B_Y0, B["x1"])), 2),
-      f">= {B_sp[B_Y0]:,.2f}", ok=val_at(B_sp_pts, x_of(t_y1, B_RACE, B_Y0, B["x1"])) >= round(B_sp[B_Y0], 2))
+claim("b", "the S&P tip shows the 2010 close when 'year 1' pops", round(val_at(B_sp_pts, xb_of(t_y1)), 2),
+      f">= {B_sp[B_Y0]:,.2f}", ok=val_at(B_sp_pts, xb_of(t_y1)) >= round(B_sp[B_Y0], 2) - 0.005)
 claim("b", "first payoff by ~3 s: '≈ +$151' on screen at", t_y1, "<= 3.0", ok=t_y1 <= 3.0)
 # a beat note shows for max(2.6 s, d), cut by the next note on the same figure (chart-race.js)
 def note_window(series, k):
@@ -723,23 +793,37 @@ def note_window(series, k):
 
 
 w_y1, w_goal = note_window(0, 0), note_window(1, 0)
-shown_while_said(Sb, 0, y1_tok, *w_y1, "the 'year 1: ≈ +$151' note")
-claim("b", "spoken '≈ $151' (vo[0]) by ~3 s", round(said_at(Sb, 0, y1_tok)[0], 2), "<= 3.0", ok=said_at(Sb, 0, y1_tok)[0] <= 3.0)
+shown_while_said(Sb, 0, y1_tok, *w_y1, "the 'year 1: ≈ +$151' note (and the held $1,151 tip)")
+claim("b", "spoken '≈ $151' (vo[0]) by ~3 s", round(s_y1, 2), "<= 3.0", ok=s_y1 <= 3.0)
 claim("b", "the goal note holds from 'Savings gets 16 years' to the race end", [round(w_goal[0], 2), round(w_goal[1], 2)],
       [vo_t(Sb, 1), B_RACE[1]], ok=abs(w_goal[0] - vo_t(Sb, 1)) < 0.006 and abs(w_goal[1] - B_RACE[1]) < 0.006)
 claim("b", "'16 years' (vo[1]) is the race window", Sb.d["vo"][1]["text"], "16 years", ok=f"{B['years']} years" in Sb.d["vo"][1]["text"])
 # spoken-number sync
-EARN_WIN = (vo_t(Sb, 2), max(vo_end(Sb, 2), vo_t(Sb, 2) + BECKER_NOTE))  # conservative: the line, or 2.6 s if longer
+dbl_ts = [vo_t(Sb, 2) + k * 0.01 for k in range(int(Sb.d["vo"][2]["d"] * 100) + 1)]
+dbl_min = min(val_at(B_sp_pts, xb_of(tt)) for tt in dbl_ts)
+claim("b", "sync: 'Stocks have already doubled' holds on the S&P tip for the whole line", round(dbl_min, 2), f">= {2 * B_STAKE:,}",
+      ok=dbl_min >= 2 * B_STAKE)
+claim("b", "'doubled': the 2014 close is the first year-end at 2× ($2,051.29)", min(y for y in range(B_Y0, B_Y1 + 1) if B_sp[y] >= 2 * B_STAKE), 2014)
+EARN_WIN = (vo_t(Sb, 3), max(vo_end(Sb, 3), vo_t(Sb, 3) + BECKER_NOTE))  # conservative: the line, or 2.6 s if longer
 earn_ts = [EARN_WIN[0] + k * 0.01 for k in range(int((EARN_WIN[1] - EARN_WIN[0]) * 100) + 1)]
-earn_max = max(val_at(B_sv_pts, x_of(tt, B_RACE, B_Y0, B["x1"])) - B_STAKE for tt in earn_ts)
+earn_max = max(val_at(B_sv_pts, xb_of(tt)) - B_STAKE for tt in earn_ts)
 claim("b", f"sync: 'Under $10 so far' holds on the savings tip {EARN_WIN[0]:.1f}-{EARN_WIN[1]:.1f} s", round(earn_max, 2),
       f"< {B['earn_cap']}", ok=earn_max < B["earn_cap"])
-shown_while_said(Sb, 3, f"≈ {B['drop22']}%", vo_t(Sb, 3), vo_t(Sb, 3) + BECKER_NOTE, "the impact label '2022: ≈ −18%'")
-shown_while_said(Sb, 4, int_tok, vo_t(Sb, 4), vo_t(Sb, 4) + BECKER_NOTE, "the shrug label 'under +$30'")
-# the lens (lookOpts.lens, assembly pass): after the race, a card over the empty top-left of the plot draws both gains
-# to scale, since at the final axis ($5K steps) $151 and $24 are a few pixels each. Its strings are display strings; its
+top_ts = [s_top + k * 0.01 for k in range(int((vo_end(Sb, 4) - s_top) * 100) + 1)]
+top_min = min(val_at(B_sp_pts, xb_of(tt)) for tt in top_ts)
+claim("b", "sync: 'top $4,000' holds on the S&P tip from the moment it is said to the line's end", round(top_min, 2),
+      f">= {SP_TOP:,}", ok=top_min >= SP_TOP)
+x_cross = B_sp_pts[10][0] + (SP_TOP - B_sp_pts[10][1]) / (B_sp_pts[11][1] - B_sp_pts[10][1])
+claim("b", "'2020: stocks top $4,000': the S&P passes $4,000 during 2020 (2019 close $3,566.47 → 2020 close $4,222.70)",
+      round(x_cross, 3), "2020 <= x < 2021", ok=2020 <= x_cross < 2021 and B_sp[2019] < SP_TOP <= B_sp[2020])
+claim("b", "... and no year-end from 2020 on is under $4,000 (lowest: the 2020 close itself)", round(min(B_sp[y] for y in range(2020, 2026)), 2),
+      f">= {SP_TOP:,}", ok=min(B_sp[y] for y in range(2020, 2026)) >= SP_TOP)
+shown_while_said(Sb, 5, f"≈ {B['drop22']}%", vo_t(Sb, 5), vo_t(Sb, 5) + BECKER_NOTE, "the impact label '2022: ≈ −18%'")
+shown_while_said(Sb, 6, int_tok, vo_t(Sb, 6), vo_t(Sb, 6) + BECKER_NOTE, "the shrug label 'under +$30'")
+# the lens (lookOpts.lens): the payoff card. After the race, a card over the top-left of the plot draws both gains to
+# scale, since at the final axis ($5K steps) $151 and $24 are a few pixels each. Its strings are display strings; its
 # bars come from the series' own points (valueAt(to) − valueAt(from)), so they are checked against the model here.
-LENS_T = vo_t(Sb, 4) + BECKER_NOTE                               # 26.2 s: the shrug note "under +$30" hands off to it
+LENS_T = vo_t(Sb, 6) + BECKER_NOTE                               # 26.2 s: the shrug note "under +$30" hands off to it
 ln = ("lookOpts", "lens")
 claim("b", "lens opens as the shrug note ends", Sb.get(ln + ("t",)), round(LENS_T, 2), ok=abs(Sb.get(ln + ("t",)) - LENS_T) < 0.006)
 claim("b", "lens row count", len(Sb.get(ln + ("rows",))), 2)
@@ -752,29 +836,31 @@ Sb.s(r0 + ("display",), f"under +{int_tok}")
 lens_g0 = val_at(B_sv_pts, B["x1"]) - val_at(B_sv_pts, B_Y0)
 claim("b", "lens row 0 bar = 16 years of interest, under $30", f"{lens_g0:.2f}", f"{B['int16']:.2f} < {B['int_cap']}",
       ok=abs(lens_g0 - B["int16"]) < 0.005 and lens_g0 < B["int_cap"])
-x_2010 = B_sp_pts[1][0]                                          # the 2010 close (x 2010.99)
 claim("b", "lens row 1: the S&P 500's first year (t, series, from, to)", [Sb.get(r1 + (k,)) for k in ("t", "series", "from", "to")],
-      [vo_t(Sb, 5), 0, B_Y0, x_2010], ok=abs(Sb.get(r1 + ("t",)) - vo_t(Sb, 5)) < 0.006 and [Sb.get(r1 + (k,)) for k in ("series", "from")] == [0, B_Y0]
+      [vo_t(Sb, 7), 0, B_Y0, x_2010], ok=abs(Sb.get(r1 + ("t",)) - vo_t(Sb, 7)) < 0.006 and [Sb.get(r1 + (k,)) for k in ("series", "from")] == [0, B_Y0]
       and abs(Sb.get(r1 + ("to",)) - x_2010) < 0.006)
 Sb.s(r1 + ("label",), f"S&P 500 in {B_Y0}")
-Sb.s(r1 + ("display",), f"≈ +{y1_tok[2:]}")
+Sb.s(r1 + ("display",), f"≈ +{y1_tok[2:]}")
 lens_g1 = val_at(B_sp_pts, x_2010) - val_at(B_sp_pts, B_Y0)
 claim("b", "lens row 1 bar = the S&P 500's 2010 gain", f"{lens_g1:.2f}", f"{B['y1']:.2f} → {y1_tok}",
       ok=abs(lens_g1 - B["y1"]) < 0.005 and usd_round(lens_g1) == y1_tok)
 claim("b", "lens bars to scale: the savings bar is under 1/5 of the S&P's (ratio not displayed)", round(lens_g0 / lens_g1, 3), "< 0.2",
       ok=lens_g0 / lens_g1 < 0.2)
 # chart-race.js: a row's bar starts at its t + 0.1 s and grows for 0.35 + 0.5 × (its gain ÷ the largest) s; its value pops
-# 0.04 s before the bar is full, and the card holds to the end
+# 0.04 s before the bar is full (the largest with a punch), and the card holds to the end
 lens_val_on = lambda t_row, frac: t_row + 0.1 + 0.35 + 0.5 * frac - 0.04
-t_v0, t_v1 = lens_val_on(LENS_T, lens_g0 / lens_g1), lens_val_on(vo_t(Sb, 5), 1.0)
-claim("b", "lens: 'under +$30' lands after '$30' is said under the shrug note", round(t_v0, 2), f"> {said_at(Sb, 4, int_tok)[0]:.2f}",
-      ok=t_v0 > said_at(Sb, 4, int_tok)[0])
-shown_while_said(Sb, 5, y1_tok, t_v1, DUR["b"], "the lens row 'S&P 500 in 2010: ≈ +$151'")
-claim("b", "the 16-year total is said once the race has ended", vo_t(Sb, 4), f">= {B_RACE[1]}", ok=vo_t(Sb, 4) >= B_RACE[1])
-claim("b", "the finals are said only after the race ends", vo_t(Sb, 6), f">= {B_RACE[1]}", ok=vo_t(Sb, 6) >= B_RACE[1])
-sfx_on(Sb, [(t_y1, "pop"), (vo_t(Sb, 1), "swipe"), (vo_t(Sb, 3), "hit"), (B_RACE[1], "roll"),
-            (round(vo_t(Sb, 4) + 0.1, 2), "boing"), (LENS_T, "pop"), (round(vo_t(Sb, 5) + 0.1, 2), "whoosh"),
-            (round(t_v1, 2), "pop"), (Sb.d["verdict"]["t"], "thud")])
+t_v0, t_v1 = lens_val_on(LENS_T, lens_g0 / lens_g1), lens_val_on(vo_t(Sb, 7), 1.0)
+claim("b", "lens: 'under +$30' lands after '$30' is said under the shrug note", round(t_v0, 2), f"> {said_at(Sb, 6, int_tok)[0]:.2f}",
+      ok=t_v0 > said_at(Sb, 6, int_tok)[0])
+shown_while_said(Sb, 7, y1_tok, t_v1, DUR["b"], "the lens row 'S&P 500 in 2010: ≈ +$151'")
+claim("b", "the 16-year total is said once the race has ended", vo_t(Sb, 6), f">= {B_RACE[1]}", ok=vo_t(Sb, 6) >= B_RACE[1])
+claim("b", "the payoff lands, then the verdict follows within 4 s (no static restatement)", round(Sb.d["verdict"]["t"] - t_v1, 2), "<= 4.0",
+      ok=0 < Sb.d["verdict"]["t"] - t_v1 <= 4.0)
+claim("b", "no VO line restates the final (≈ $8,280 is on the gold plate and in the description)",
+      any(B["fin_sp"] in v["text"] for v in Sb.d["vo"]), False)
+sfx_on(Sb, [(t_y1, "pop"), (HS_B, "whoosh"), (vo_t(Sb, 1), "swipe"), (s_dbl, "ding"), (vo_t(Sb, 3), "tick"), (s_top, "pop"),
+            (vo_t(Sb, 5), "hit"), (B_RACE[1], "roll"), (round(vo_t(Sb, 6) + 0.1, 2), "boing"), (LENS_T, "pop"),
+            (round(vo_t(Sb, 7) + 0.1, 2), "whoosh"), (round(t_v1, 2), "pop"), (Sb.d["verdict"]["t"], "thud")])
 claim("b", "'2022: stocks drop' (S&P 2022 %) on the 2022 close", f"{SP[2022]} @ {B['tl'][2022]:.2f}", "< 0", ok=SP[2022] < 0)
 # what the words claim
 claim("b", "'Year one in the S&P: ≈ $151' = $1,000 × 15.06% (2010)", f"{B['y1']:.2f}", "150.60", ok=abs(B["y1"] - 150.60) < 0.005)
@@ -806,7 +892,7 @@ for combo in itertools.product(*[FDIC_ALT[k] for k in alt_keys]):
         vals, pts = grow(table, B_Y0, B_Y1, B_STAKE)
         sweep += 1
         i16 = vals[B_Y1] - B_STAKE
-        e_max = max(val_at(pts, x_of(tt, B_RACE, B_Y0, B["x1"])) - B_STAKE for tt in earn_ts)
+        e_max = max(val_at(pts, xb_of(tt)) - B_STAKE for tt in earn_ts)
         int_lo, int_hi, earn_hi = min(int_lo, i16), max(int_hi, i16), max(earn_hi, e_max)
         shown = (usd_sig(vals[2025]), usd_sig(vals[2025] / B["infl"], 2), int_round((1 - vals[2025] / B["infl"] / B_STAKE) * 100),
                  e_max < B["earn_cap"], i16 + B["understate"] < B["int_cap"], i16 + B["understate"] < B["y1"],

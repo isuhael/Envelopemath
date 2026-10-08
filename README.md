@@ -1,4 +1,33 @@
-# Back of the Envelope: Envelope Math
+# Back of the Envelope
+
+Research, formats, teasers and a renderer for **Back of the Envelope**, a faceless finance-maths short-form channel (YouTube Shorts, Instagram Reels, TikTok).
+
+## Round 2 (current)
+
+Round 1's kraft-envelope look and its hooks were rejected, and its research sampled the wrong channels. Round 2 starts from channels whose shorts are finance maths at the core.
+
+| Path | What it is |
+|---|---|
+| [`renders/v2/`](renders/v2) | **The 30 finished teasers as MP4s** (1080×1920, 13-46 s). Open a file on GitHub and use *Download raw file*. Audio is the sound-effect track only; captions show the guide voice-over |
+| [`research/v2/`](research/v2) | Channel-first research: the finance-maths-core channel list (`01`), the hook bank with rules R1-R12 and patterns P1-P9 (`02`), the look directions (`03`), the ten formats ranked by benchmark evidence (`04`), and scene-by-scene watch notes per benchmark channel plus Alan Becker |
+| [`teasers/v2/`](teasers/v2) | One write-up per format: three teasers each, with hook, beat sheet, guide VO, every number's maths, sources, captions and the review logs (verification, blind hook judging, assembly QA). `checks/` holds a Python math check per format that recomputes every on-screen number and compares it with the specs. `teasers.json` is the index |
+| [`studio/`](studio) | The round-2 renderer: four HTML/CSS look kits (Clean Sheet, Live Sheet, Scoreboard, Becker Rig) driven by JSON specs, seeked frame by frame in Chromium and encoded with ffmpeg, plus a linter for safe zones, type size, overlaps, contrast and the frame-1 number rule. See [`studio/README.md`](studio/README.md) and the spec contract [`studio/FORMATS.md`](studio/FORMATS.md) |
+| [`playbook/v2/`](playbook/v2) | Builds the review page (every teaser, filterable by look and format): `python3 playbook/v2/build.py` |
+
+The ten formats, each built in three looks: N dead simple numbers · find-your-row table · "what difference does X make?" · same-stake chart race · split sheet · POV spend-vs-own race · "2 people invest" ledger duel · cost in units of X · year-by-year growth ladder · real-time cost counter.
+
+```bash
+cd studio && npm install && npm test
+node src/cli.mjs check specs/*.json                 # lint every teaser
+node src/cli.mjs render specs/01a-*.json            # one MP4 → studio/out/ (or --all)
+for f in ../teasers/v2/checks/*.py; do python3 $f; done   # every math check
+```
+
+Real-world figures are sourced and dated (October 2026) in each write-up. Re-run a format's math check with fresh inputs before posting. Educational maths, not financial advice.
+
+---
+
+## Round 1 (archived)
 
 Research, formats, teasers and a renderer for **Back of the Envelope**, a faceless finance
 short-form channel (YouTube Shorts, Instagram Reels, TikTok). Its format brand is **Envelope Math**:
