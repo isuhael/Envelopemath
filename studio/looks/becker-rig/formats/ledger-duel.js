@@ -515,23 +515,26 @@ export default function ledgerDuel(spec, ctx) {
 
   // ---- coin stacks: edge-on coins, height = money on one shared scale
   const figH = (2 * RIG.headR + RIG.neck + RIG.torso + RIG.thigh + RIG.shin) * FIGK
-  // the figures stand left of the ledger, under everything that starts at the left margin (stake line, legend)
-  // (a column head that reaches left over the stacks also caps them)
+  // the figures stand left of the ledger, under everything that starts at the left margin (stake line, legend,
+  // footer). A column head that reaches left over the rig caps only the figure it actually hangs over, so the
+  // taller stack can use the full height when the heads stay over the ledger.
   const headLeft = Math.min(...heads.filter(el => el.classList.contains('ld-head')).map(el => el.offsetLeft))
-  const leftBottom = headLeft < X0 - 8 ? headTop + lay.headH : lay.cf.lg ? lay.top - 18 : stakeEl ? stakeBottom : parts.workTop - 28
-  const topClear = leftBottom + 16
-  const H_MAX = Math.max(160, floorY - topClear - figH * 1.12 - 26)
-  const maxV = Math.max(1, ...V.flat(), ...startV)
-  const scale = H_MAX / maxV
+  const baseBottom = lay.cf.lg ? lay.top - 18 : stakeEl ? stakeBottom : parts.workTop - 28
+  const reachX = (RIG.upperArm + RIG.foreArm) * FIGK + 14
+  const capBottom = p => (headLeft < PX[p] + reachX ? Math.max(baseBottom, headTop + lay.headH) : baseBottom)
+  const roomFor = p => Math.max(160, floorY - (capBottom(p) + 16) - figH * 1.12 - 26)
+  const maxVp = [0, 1].map(p => Math.max(1, ...V.map(r => r[p]), startV[p]))
+  const scale = Math.min(...[0, 1].map(p => roomFor(p) / maxVp[p]))   // one honest scale for both
+  const H_MAX = scale * Math.max(...maxVp)
   const HV = V.map(r => r.map(v => Math.max(0, v) * scale))
   const h0 = startV.map(v => Math.max(0, v) * scale)
-  const nSlab = Math.ceil(H_MAX / SLAB) + 3
+  const nSlab = Math.ceil(H_MAX / (SLAB - 2)) + 3
   const stacks = [0, 1].map(p => {
     const sg = s('g', { 'data-deco': '' })
     const rnd = rng(31 + p * 17)
     const slabs = []
     for (let k = 0; k < nSlab; k++) {
-      const jx = (rnd() - 0.5) * 6
+      const jx = (rnd() - 0.5) * 5
       // money is a coin stack; in a "less is better" duel the stack is debt: a red pile
       const el = s('rect', { x: (PX[p] - PW / 2 + jx).toFixed(1), width: PW, height: SLAB, rx: SLAB / 2 - 0.5,
         fill: lessIsBetter ? C.redSoft : C.coin, stroke: lessIsBetter ? C.red : C.ink, 'stroke-width': 3.5 })
@@ -541,23 +544,60 @@ export default function ledgerDuel(spec, ctx) {
     g.mid.append(sg)
     return { sg, slabs }
   })
+  // a sold stack becomes a cash brick, as tall as the money it holds and BRICK_W wide: a bundle of grey notes
+  // (their edges drawn on both ends) with a white paper band and a "$" on it. It never grows again.
+  const bricks = [0, 1].map(p => {
+    if (lessIsBetter || !Number.isFinite(soldAt[p])) return null
+    const bg = s('g', { 'data-deco': '', style: 'display:none' })
+    const body = s('rect', { x: -BRICK_W / 2, width: BRICK_W, rx: 7, fill: CASH.fill, stroke: C.ink, 'stroke-width': 3.5 })
+    const edges = [0, 1, 2, 3].map(() => s('line', { stroke: C.grey, 'stroke-width': 2.5, 'stroke-linecap': 'round', opacity: 0.6 }))
+    const band = s('rect', { x: -16, width: 32, fill: C.white, stroke: C.grey, 'stroke-width': 2.5 })
+    const mark = s('text', { x: 0, 'text-anchor': 'middle', 'dominant-baseline': 'central', fill: C.grey, 'font-family': F.head, 'font-weight': 900 })
+    mark.textContent = '$'
+    bg.append(body, ...edges, band, mark)
+    g.mid.append(bg)
+    let hk = null
+    return {
+      g: bg,
+      draw(hh, sx, sy, on) {
+        style(bg, { display: on && hh > 1 ? '' : 'none' })
+        if (!on) return
+        attr(bg, 'transform', `translate(${PX[p]},${floorY}) scale(${sx.toFixed(3)},${sy.toFixed(3)})`)
+        const k = hh.toFixed(1)
+        if (k === hk) return
+        hk = k
+        attr(body, 'y', (-hh).toFixed(1)); attr(body, 'height', hh.toFixed(1))
+        attr(band, 'y', (-hh + 1.75).toFixed(1)); attr(band, 'height', Math.max(0, hh - 3.5).toFixed(1))
+        // note edges: two thin lines on each side of the band, at a third and two thirds of the height
+        const xs = [[-BRICK_W / 2 + 9, -16 - 7], [16 + 7, BRICK_W / 2 - 9]]
+        edges.forEach((el, j) => {
+          const [x1, x2] = xs[j >> 1], y = -hh * ((j & 1) ? 2 / 3 : 1 / 3)
+          attr(el, 'x1', x1); attr(el, 'x2', x2); attr(el, 'y1', y.toFixed(1)); attr(el, 'y2', y.toFixed(1))
+          attr(el, 'opacity', hh >= 26 ? '0.6' : '0')
+        })
+        attr(mark, 'y', (-hh / 2 + 1).toFixed(1)); attr(mark, 'font-size', Math.min(34, hh * 0.74).toFixed(1))
+      },
+    }
+  })
   function drawStack(p, hh, t) {
-    const n = hh < 0.5 ? 0 : Math.ceil(hh / SLAB - 1e-6)
+    // whole coins only: the stack's height is the money, split into round(h / SLAB) coins of equal thickness
+    const n = hh < 0.5 ? 0 : Math.max(1, Math.round(hh / SLAB))
+    const th = n ? hh / n : SLAB
+    const sold = bricks[p] && t >= soldAt[p]
     const sl = stacks[p].slabs
     for (let k = 0; k < sl.length; k++) {
-      const on = k < n
+      const on = k < n && !sold
       style(sl[k], { display: on ? '' : 'none' })
       if (!on) continue
-      const top = k < n - 1 ? floorY - (k + 1) * SLAB : floorY - hh
-      attr(sl[k], 'y', top.toFixed(1))
-      attr(sl[k], 'height', (k === n - 1 ? Math.min(SLAB, hh) : SLAB).toFixed(1))
-      // sold: the coins turn into a grey brick of cash, bottom to top, as the chop lands
-      if (!lessIsBetter) {
-        const cash = t >= soldAt[p] + 0.03 * k
-        attr(sl[k], 'fill', cash ? CASH.fill : C.coin)
-        attr(sl[k], 'stroke', cash ? CASH.stroke : C.ink)
-        attr(sl[k], 'rx', String(cash ? 3 : SLAB / 2 - 0.5))
-      }
+      attr(sl[k], 'y', (floorY - (k + 1) * th).toFixed(1))
+      attr(sl[k], 'height', th.toFixed(2))
+      attr(sl[k], 'rx', (th / 2 - 0.5).toFixed(2))
+    }
+    // the cash brick pops in as the chop lands (from the floor up) and gives a little under his landing
+    if (bricks[p]) {
+      const pp = popIn(t, soldAt[p], 0.22, 0.7)
+      const sq = squashAt(t, soldAt[p] + 0.02, 0.1)
+      bricks[p].draw(hh, pp.scale * sq.sx, pp.scale * sq.sy, sold)
     }
   }
 
