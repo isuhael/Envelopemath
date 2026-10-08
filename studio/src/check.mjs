@@ -75,51 +75,51 @@ function audit(SAFE) {
   const range = document.createRange()
   const roots = [stage, layer].filter(Boolean)
   for (const root of roots) {
-  const tw = document.createTreeWalker(root, NodeFilter.SHOW_TEXT)
-  while (tw.nextNode()) {
-    const n = tw.currentNode
-    const text = n.textContent.replace(/\s+/g, ' ').trim()
-    if (!text) continue
-    const el = n.parentElement
-    if (!el || el.closest('#safe-overlay')) continue
-    let op = 1, hidden = false, deco = false, roll = false, overlapOk = false
-    let clip = { x0: -1e6, y0: -1e6, x1: 1e6, y1: 1e6 }
-    for (let e = el; e && e !== document.documentElement; e = e.parentElement) {
-      const cs = getComputedStyle(e)
-      if (cs.display === 'none' || cs.visibility === 'hidden') { hidden = true; break }
-      op *= parseFloat(cs.opacity)
-      if (e.hasAttribute('data-deco')) deco = true
-      if (e.hasAttribute('data-roll')) roll = true
-      if (e.hasAttribute('data-overlap-ok')) overlapOk = true
-      if (e !== el && (cs.overflowX !== 'visible' || cs.overflowY !== 'visible' || (cs.clipPath && cs.clipPath !== 'none'))) {
-        const r = e.getBoundingClientRect()
-        clip = inter(clip, { x0: r.left, y0: r.top, x1: r.right, y1: r.bottom })
+    const tw = document.createTreeWalker(root, NodeFilter.SHOW_TEXT)
+    while (tw.nextNode()) {
+      const n = tw.currentNode
+      const text = n.textContent.replace(/\s+/g, ' ').trim()
+      if (!text) continue
+      const el = n.parentElement
+      if (!el || el.closest('#safe-overlay')) continue
+      let op = 1, hidden = false, deco = false, roll = false, overlapOk = false
+      let clip = { x0: -1e6, y0: -1e6, x1: 1e6, y1: 1e6 }
+      for (let e = el; e && e !== document.documentElement; e = e.parentElement) {
+        const cs = getComputedStyle(e)
+        if (cs.display === 'none' || cs.visibility === 'hidden') { hidden = true; break }
+        op *= parseFloat(cs.opacity)
+        if (e.hasAttribute('data-deco')) deco = true
+        if (e.hasAttribute('data-roll')) roll = true
+        if (e.hasAttribute('data-overlap-ok')) overlapOk = true
+        if (e !== el && (cs.overflowX !== 'visible' || cs.overflowY !== 'visible' || (cs.clipPath && cs.clipPath !== 'none'))) {
+          const r = e.getBoundingClientRect()
+          clip = inter(clip, { x0: r.left, y0: r.top, x1: r.right, y1: r.bottom })
+        }
       }
+      clip = inter(clip, { x0: 0, y0: 0, x1: 1080, y1: 1920 })
+      if (hidden || op < 0.15) continue
+      range.selectNodeContents(n)
+      const rects = [...range.getClientRects()].filter(r => r.width > 0.5 && r.height > 0.5)
+      if (!rects.length) continue
+      const box = rects.reduce((b, r) => ({ x0: Math.min(b.x0, r.left), y0: Math.min(b.y0, r.top), x1: Math.max(b.x1, r.right), y1: Math.max(b.y1, r.bottom) }), { x0: 1e6, y0: 1e6, x1: -1e6, y1: -1e6 })
+      const vis = inter(box, clip)
+      if (area(vis) <= 1) continue // fully clipped away: not visible
+      if (root === stage && covers.length) {
+        for (const c of covers) if (area(inter(vis, c.r)) >= 0.5 * area(vis)) op *= 1 - c.a
+        if (op < 0.15) continue // under the end card
+      }
+      const clipped = area(vis) < 0.92 * area(box)
+      const cs = getComputedStyle(el)
+      let scale = 1
+      if (el instanceof SVGElement) { const m = el.getScreenCTM(); if (m) scale = Math.hypot(m.a, m.b) }
+      else { const r = el.getBoundingClientRect(); if (el.offsetHeight > 0) scale = r.height / el.offsetHeight }
+      const px = parseFloat(cs.fontSize) * scale
+      const family = cs.fontFamily.split(',')[0].trim().replace(/["']/g, '')
+      const fg = parse(el instanceof SVGElement ? cs.fill : cs.color)
+      const cx = (vis.x0 + vis.x1) / 2, cy = (vis.y0 + vis.y1) / 2
+      const bg = bgAt(Math.min(1079, Math.max(0, cx)), Math.min(1919, Math.max(0, cy)), el)
+      items.push({ text: text.slice(0, 48), box: vis, px, op, deco, roll, overlapOk, clipped, family, fg, bg, el })
     }
-    clip = inter(clip, { x0: 0, y0: 0, x1: 1080, y1: 1920 })
-    if (hidden || op < 0.15) continue
-    range.selectNodeContents(n)
-    const rects = [...range.getClientRects()].filter(r => r.width > 0.5 && r.height > 0.5)
-    if (!rects.length) continue
-    const box = rects.reduce((b, r) => ({ x0: Math.min(b.x0, r.left), y0: Math.min(b.y0, r.top), x1: Math.max(b.x1, r.right), y1: Math.max(b.y1, r.bottom) }), { x0: 1e6, y0: 1e6, x1: -1e6, y1: -1e6 })
-    const vis = inter(box, clip)
-    if (area(vis) <= 1) continue // fully clipped away: not visible
-    if (root === stage && covers.length) {
-      for (const c of covers) if (area(inter(vis, c.r)) >= 0.5 * area(vis)) op *= 1 - c.a
-      if (op < 0.15) continue // under the end card
-    }
-    const clipped = area(vis) < 0.92 * area(box)
-    const cs = getComputedStyle(el)
-    let scale = 1
-    if (el instanceof SVGElement) { const m = el.getScreenCTM(); if (m) scale = Math.hypot(m.a, m.b) }
-    else { const r = el.getBoundingClientRect(); if (el.offsetHeight > 0) scale = r.height / el.offsetHeight }
-    const px = parseFloat(cs.fontSize) * scale
-    const family = cs.fontFamily.split(',')[0].trim().replace(/["']/g, '')
-    const fg = parse(el instanceof SVGElement ? cs.fill : cs.color)
-    const cx = (vis.x0 + vis.x1) / 2, cy = (vis.y0 + vis.y1) / 2
-    const bg = bgAt(Math.min(1079, Math.max(0, cx)), Math.min(1919, Math.max(0, cy)), el)
-    items.push({ text: text.slice(0, 48), box: vis, px, op, deco, roll, overlapOk, clipped, family, fg, bg, el })
-  }
   }
 
   const issues = []

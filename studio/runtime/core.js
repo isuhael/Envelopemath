@@ -460,7 +460,6 @@ export function defineKit(kit) {
           brandInfo = { logo: !!brand.logoUrl, card: generic ? 'generic' : 'kit', t0: base, dur }
         }
       }
-      if (!(duration > 0)) throw new Error('format did not report a duration')
       for (const x of spec.sfx || []) sfx.push(x)
       sfx.sort((a, b) => a.t - b.t)
       // safe-zone overlay for debugging
