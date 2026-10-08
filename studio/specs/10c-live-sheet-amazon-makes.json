@@ -4,52 +4,53 @@
   "format": "cost-counter",
   "fps": 30,
   "duration": 31.0,
-  "header": "How much does Amazon **really** make\nwhile you watch this?",
-  "footer": "Amazon 2025: net sales $716.9B, net income $77.7B\nPay: BLS median $1,251 a week × 52",
+  "header": "How long do **you** work for\n1 second of Amazon's profit?",
+  "footer": "Amazon 2025 net income: $77.7B\nPay: BLS median $1,251 a week × 52",
   "captions": true,
   "vo": [
-    { "t": 0.0,  "d": 2.4, "text": "Top: sales. Bottom: what it keeps." },
-    { "t": 2.9,  "d": 3.1, "text": "Sales just passed a year of median pay." },
-    { "t": 6.1,  "d": 4.3, "text": "Amazon's 2025 sales: $716.9 billion." },
-    { "t": 10.5, "d": 5.1, "text": "Divided by every second in a year: **≈ $22,700**." },
-    { "t": 17.3, "d": 2.8, "text": "Sales just passed a median new house." },
-    { "t": 20.2, "d": 2.4, "text": "But it **keeps** ≈ 11%." },
-    { "t": 22.9, "d": 3.5, "text": "**≈ $2,464** a second." },
-    { "t": 26.4, "d": 3.9, "text": "Kept: a year of median pay every **≈ 26 seconds**." }
+    { "t": 0.0,  "d": 2.7, "text": "How long do you work for this?" },
+    { "t": 2.8,  "d": 2.4, "text": "≈ 2 weeks, at median pay." },
+    { "t": 5.2,  "d": 2.0, "text": "5 seconds: ≈ 10 weeks." },
+    { "t": 7.4,  "d": 4.3, "text": "Amazon's 2025 profit: $77.7 billion." },
+    { "t": 13.2, "d": 2.4, "text": "≈ 13 seconds: half a year." },
+    { "t": 15.8, "d": 5.0, "text": "2,464 ÷ your weekly pay = your weeks." },
+    { "t": 22.4, "d": 1.6, "text": "And a whole year?" },
+    { "t": 26.4, "d": 1.6, "text": "≈ 26 seconds." }
   ],
-  "verdict": { "t": 26.4, "text": "Sells a year of median pay in ≈ 3 s.\nKeeps one every **≈ 26 s**." },
+  "verdict": { "t": 26.4, "text": "1 second ≈ **2 weeks** of median pay.\nA year: ≈ 26 s." },
   "data": {
-    "label": "Amazon's sales since you hit play",
-    "perSecond": 22732.75,
-    "rateDisplay": "≈ $22,700 every second",
+    "label": "Amazon's profit since you hit play",
+    "perSecond": 2463.85,
+    "rateDisplay": "≈ $2,464 every second",
     "counterT": [0.0, 26.5],
     "startValue": 0,
     "prefix": "$",
     "dp": 0,
     "milestones": [
-      { "value": 65052, "label": "A year of median pay: $65,052" },
-      { "value": 393700, "label": "A median new house: $393,700" }
+      { "value": 2463.85, "label": "1 second: ≈ $2,464" },
+      { "value": 12319.25, "label": "5 seconds: ≈ $12,319" },
+      { "value": 32526, "label": "≈ 13 seconds: $32,526" },
+      { "value": 65052, "label": "≈ 26 seconds: $65,052" }
     ],
-    "final": "≈ $602,418",
+    "final": "≈ $65,292",
     "hold": 4.5
   },
   "lookOpts": {
+    "preroll": 0,
     "formulaSteps": [
-      { "t": 0.0,  "text": "= $716.9B ÷ 31,536,000 s ≈ $22,700 a second" },
-      { "t": 20.2, "text": "= $77.7B ÷ $716.9B ≈ 11% kept" },
-      { "t": 22.9, "text": "= $77.7B ÷ 31,536,000 s ≈ $2,464 a second" },
+      { "t": 0.0,  "text": "= $77.7B ÷ 31,536,000 s ≈ $2,464 a second" },
+      { "t": 2.8,  "text": "= $2,464 ÷ $1,251 a week ≈ 2 weeks" },
+      { "t": 13.2, "text": "= $65,052 ÷ 2 = $32,526" },
       { "t": 26.4, "text": "= $65,052 ÷ $2,464 ≈ 26 s" }
     ],
-    "columns": ["Since you hit play", "Amount", "Passed at"],
+    "columns": ["Since play", "Profit", "Median pay"],
     "rows": [
-      { "label": "A year of median pay", "amount": "$65,052", "at": "≈ 3 s" },
-      { "label": "A median new house", "amount": "$393,700", "at": "≈ 17 s" }
+      { "label": "1 second", "amount": "≈ $2,464", "at": "≈ 2 weeks" },
+      { "label": "5 seconds", "amount": "≈ $12,319", "at": "≈ 10 weeks" },
+      { "label": "≈ 13 seconds", "amount": "$32,526", "at": "6 months" },
+      { "label": "≈ 26 seconds", "amount": "$65,052", "at": "1 year" }
     ],
-    "kept": { "t": 0.0, "label": "Kept as profit (≈ 11%)", "perSecond": 2463.85, "final": "≈ $65,292" },
     "loop": true
   },
-  "sfx": [
-    { "t": 20.2, "kind": "swipe" },
-    { "t": 26.4, "kind": "ding" }
-  ]
+  "sfx": []
 }

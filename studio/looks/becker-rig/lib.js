@@ -184,6 +184,33 @@ export const lerp2 = (a, b, p) => [a[0] + (b[0] - a[0]) * p, a[1] + (b[1] - a[1]
 /** Sine pulse: 0 outside [t0, t0 + d], 1 at the middle. */
 export const bump = (t, t0, d) => (t <= t0 || t >= t0 + d ? 0 : Math.sin(Math.PI * (t - t0) / d))
 const hexRGB = c => [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16))
+// OKLCH blend: lightness and chroma move together and the hue comes from the more saturated end, so a ramp from
+// ink to a hue never passes through a muddy grey-brown (ink -> red goes through a deep red, not maroon mud)
+const s2l = c => (c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4))
+const l2s = c => (c <= 0.0031308 ? 12.92 * c : 1.055 * Math.pow(c, 1 / 2.4) - 0.055)
+function toLch(hex) {
+  const [r, g, b] = hexRGB(hex).map(v => s2l(v / 255))
+  const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b)
+  const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b)
+  const s3 = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b)
+  const L = 0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s3
+  const A = 1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s3, B = 0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s3
+  return [L, Math.hypot(A, B), Math.atan2(B, A)]
+}
+function fromLch([L, Cc, hh]) {
+  const A = Cc * Math.cos(hh), B = Cc * Math.sin(hh)
+  const l = (L + 0.3963377774 * A + 0.2158037573 * B) ** 3, m = (L - 0.1055613458 * A - 0.0638541728 * B) ** 3, s3 = (L - 0.0894841775 * A - 1.2914855480 * B) ** 3
+  const rgb = [4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s3, -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s3, -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s3]
+  return rgb.map(v => Math.round(255 * clamp(l2s(clamp(v)))))
+}
+/** Blend two '#RRGGBB' colours in OKLCH (p clamped 0..1) -> 'rgb(r,g,b)'. */
+export const mixOk = (a, b, p) => {
+  const x = toLch(a), y = toLch(b), q = clamp(p)
+  if (q <= 0) return `rgb(${hexRGB(a).join(',')})`
+  if (q >= 1) return `rgb(${hexRGB(b).join(',')})`
+  const hh = x[1] < 0.03 ? y[2] : y[1] < 0.03 ? x[2] : x[2] + (((y[2] - x[2] + 3 * Math.PI) % (2 * Math.PI)) - Math.PI) * q
+  return `rgb(${fromLch([lerp(x[0], y[0], q), lerp(x[1], y[1], q), hh]).join(',')})`
+}
 /** Blend two '#RRGGBB' colours (p clamped 0..1) -> 'rgb(r,g,b)'. */
 export const mix = (a, b, p) => { const x = hexRGB(a), y = hexRGB(b); return `rgb(${x.map((v, i) => Math.round(v + (y[i] - v) * clamp(p))).join(',')})` }
 
@@ -351,6 +378,12 @@ export function pinLimb(J, limb, target, bend = 1) {
   return J
 }
 
+/** Shift a joint set horizontally by dx (mutates and returns J). */
+export function shiftJ(J, dx) {
+  if (dx) for (const key of ['hip', 'nk', 'sh', 'head', 'eF', 'hF', 'eB', 'hB', 'kF', 'fF', 'kB', 'fB']) J[key] = [J[key][0] + dx, J[key][1]]
+  return J
+}
+
 /** Blend two joint sets (position-wise). Good for 0.2-0.4 s transitions between an FK pose and an IK solve. */
 export function blendJ(a, b, p) {
   if (p <= 0) return a
@@ -375,36 +408,56 @@ export const figStroke = () => S.figure
  *   fig.pose(t, track, { x, ground, face })      // FK + secondary motion + draw; returns joints
  *   fig.draw(J)                                   // draw joints you solved yourself (IK, blends)
  * opts: scale, color, detail ('pencil' | null), opacity,
- *       outline (knockout colour drawn under the limbs so he reads in front of ink props; null = none),
- *       outlineWidth (px added to the limb width by the knockout, default 12; ~5 keeps overlapping figures apart
- *       without chopping a line he stands on), stroke (limb width in px, default figStroke()).
- * Draw order: back limbs < torso < front-limb knockout < head knockout < head < pencil < front limbs. The front
- * arm's knockout sits under the head, so an arm crossing the head never cuts a notch out of it.
+ *       outline (knockout colour: a halo drawn under the WHOLE figure so he reads in front of ink props; null =
+ *       none), outlineWidth (px the halo adds to the limb width, default 12; ~5 keeps overlapping figures apart
+ *       without chopping a line he stands on), seam (px a front limb's thin knockout adds over his own body,
+ *       default 4: overlaps read as depth, not cuts; 0 = none), stroke (limb width in px, default figStroke()).
+ * Draw order: halo (every part, one silhouette) < pencil < back limbs < torso < head < front-leg seam < front leg
+ * < front-arm seam < front arm. The pencil is under the head, so it reads as tucked behind it; the head has no
+ * knockout of its own over the torso (no gap at the neck); the seams start a little way out from the hip and the
+ * shoulder, so the joints stay one clean silhouette.
  */
+let FIG_N = 0
 export class Figure {
-  constructor(parent, { scale = 1, color = C.hero, detail = 'pencil', opacity = 1, outline = C.void, outlineWidth = 12, stroke = figStroke(scale) } = {}) {
+  constructor(parent, { scale = 1, color = C.hero, detail = 'pencil', opacity = 1, outline = C.void, outlineWidth = 12, seam = 4, stroke = figStroke(scale) } = {}) {
     this.k = scale
     this.sw = stroke
     this.ow = outlineWidth
+    this.sm = seam
     this.g = s('g', { class: 'br-fig', 'data-deco': '' })
     const st = { fill: 'none', stroke: color, 'stroke-width': stroke, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }
     this.inner = s('g')
-    // knockout outline: the same limbs, wider, in the void colour, drawn under each limb group, so the figure
-    // stays readable in front of ink props (ladders, gates, rails). outline: null turns it off.
+    // halo: the same limbs and head, wider, in the void colour, drawn under the whole figure, so he stays readable
+    // in front of ink props (ladders, gates, rails). outline: null turns it off.
     this.ko = null
     if (outline && outlineWidth > 0) {
       const ko = { ...st, stroke: outline, 'stroke-width': stroke + outlineWidth }
       this.ko = { lB: s('path', ko), aB: s('path', ko), torso: s('path', ko), lF: s('path', ko), aF: s('path', ko), head: s('ellipse', { fill: outline }) }
     }
+    // seams: a thin knockout under each front limb (from a little way out of its joint), over his own body
+    this.seam = null
+    if (seam > 0) {
+      const sc = { ...st, stroke: outline || C.void, 'stroke-width': stroke + seam }
+      this.seam = { lF: s('path', sc), aF: s('path', sc) }
+    }
     this.limbs = { lB: s('path', st), aB: s('path', st), torso: s('path', st), lF: s('path', st), aF: s('path', st) }
     this.pencil = detail === 'pencil' ? pencil(scale) : null
     this.head = s('ellipse', { fill: color })
-    const K = this.ko
+    const K = this.ko, SM = this.seam
+    // the halo stops 2 px above the ground he stands on, so it never chops the floor line (or a ledge) at his feet
+    if (K) {
+      const id = 'br-fig-clip-' + (++FIG_N)
+      this.clipR = s('rect', { x: -20000, y: -20000, width: 40000, height: 0 })
+      const cp = s('clipPath', { id, clipPathUnits: 'userSpaceOnUse' }, this.clipR)
+      this.halo = s('g', { 'clip-path': `url(#${id})` }, K.lB, K.aB, K.torso, K.lF, K.aF, K.head)
+      this.g.append(cp)
+    }
     this.inner.append(
-      ...(K ? [K.lB, K.aB, K.torso] : []), this.limbs.lB, this.limbs.aB, this.limbs.torso,
-      ...(K ? [K.lF, K.aF, K.head] : []),
-      this.head, ...(this.pencil ? [this.pencil] : []),
-      this.limbs.lF, this.limbs.aF,
+      ...(K ? [this.halo] : []),
+      ...(this.pencil ? [this.pencil] : []),
+      this.limbs.lB, this.limbs.aB, this.limbs.torso, this.head,
+      ...(SM ? [SM.lF] : []), this.limbs.lF,
+      ...(SM ? [SM.aF] : []), this.limbs.aF,
     )
     this.g.append(this.inner)
     parent.append(this.g)
@@ -414,7 +467,7 @@ export class Figure {
    *  frame, e.g. counter-scaled under a camera zoom) }. Joints solved at another scale (J.k) scale the pencil too. */
   draw(J, o = {}) {
     const f = n => J[n][0].toFixed(1) + ',' + J[n][1].toFixed(1)
-    const sw = o.stroke ?? this.sw, ow = this.ow * (sw / this.sw)
+    const sw = o.stroke ?? this.sw, ow = this.ow * (sw / this.sw), sm = this.sm * (sw / this.sw)
     for (const k in this.limbs) { attr(this.limbs[k], 'stroke-width', sw.toFixed(2)); if (this.ko) attr(this.ko[k], 'stroke-width', (sw + ow).toFixed(2)) }
     const D = {
       lB: `M${f('hip')}L${f('kB')}L${f('fB')}`, lF: `M${f('hip')}L${f('kF')}L${f('fF')}`,
@@ -422,6 +475,14 @@ export class Figure {
       torso: `M${f('hip')}L${f('nk')}`,
     }
     for (const k in D) { attr(this.limbs[k], 'd', D[k]); if (this.ko) attr(this.ko[k], 'd', D[k]) }
+    if (this.clipR) attr(this.clipR, 'height', ((J.ground ?? L.floorY) - 2 + 20000).toFixed(1))
+    if (this.seam) {
+      // the seam starts 40% out along the upper segment, so the hip and the shoulder stay seamless
+      const out = (a, b) => { const x = J[a][0] + 0.4 * (J[b][0] - J[a][0]), y = J[a][1] + 0.4 * (J[b][1] - J[a][1]); return x.toFixed(1) + ',' + y.toFixed(1) }
+      attr(this.seam.lF, 'd', `M${out('hip', 'kF')}L${f('kF')}L${f('fF')}`)
+      attr(this.seam.aF, 'd', `M${out('sh', 'eF')}L${f('eF')}L${f('hF')}`)
+      attr(this.seam.lF, 'stroke-width', (sw + sm).toFixed(2)); attr(this.seam.aF, 'stroke-width', (sw + sm).toFixed(2))
+    }
     for (const [el, r] of [[this.head, J.R], ...(this.ko ? [[this.ko.head, J.R + ow / 2]] : [])]) {
       attr(el, 'cx', J.head[0].toFixed(1)); attr(el, 'cy', J.head[1].toFixed(1))
       attr(el, 'rx', r.toFixed(1)); attr(el, 'ry', r.toFixed(1))
@@ -436,6 +497,20 @@ export class Figure {
     attr(this.g, 'opacity', String(o.opacity ?? this.opacity))
     return J
   }
+  /** Horizontal extent [x0, x1] of the figure drawn for joints J: limbs (with their halo), head and the pencil's
+   *  eraser end. Use it to keep him inside the frame: if (x0 < 24) shift his x by 24 - x0. */
+  extentX(J) {
+    const hw = this.sw / 2 + (this.ko ? this.ow / 2 : 0)
+    let x0 = Infinity, x1 = -Infinity
+    for (const k of ['hip', 'nk', 'sh', 'eF', 'hF', 'eB', 'hB', 'kF', 'fF', 'kB', 'fB']) { x0 = Math.min(x0, J[k][0] - hw); x1 = Math.max(x1, J[k][0] + hw) }
+    x0 = Math.min(x0, J.head[0] - J.R); x1 = Math.max(x1, J.head[0] + J.R)
+    if (this.pencil) {
+      const a = J.headRot * RAD, px = -2.0 * J.R, py = -1.35 * J.R          // the eraser end, head-local (facing +x)
+      const ex = J.head[0] + J.face * (px * Math.cos(a) - py * Math.sin(a))
+      x0 = Math.min(x0, ex); x1 = Math.max(x1, ex)
+    }
+    return [x0, x1]
+  }
   /** Evaluate a pose track at t with secondary motion, solve FK (at this figure's scale), draw. o: fk opts +
    *  { breathe, sx, sy, opacity, pose (use this pose instead of the track), noDraw (return J without drawing) } */
   pose(t, tr, o = {}) {
@@ -446,17 +521,19 @@ export class Figure {
   }
 }
 
-// pencil tucked behind the ear, seen in profile: it lies across the back of the head (drawn over the head fill)
-// with the sharpened tip forward-down inside the head and the ferrule + pink eraser sticking out up-and-back
-// (~1.5 head radii past the head's edge). Local frame: head centre at 0,0, facing +x, upright.
+// pencil tucked behind the ear, seen in profile. It is drawn UNDER the head: the sharpened end is hidden inside
+// the disc, and only the back ~45% of the yellow body, the ferrule and the pink eraser stick out up-and-back
+// (30 deg above the backward horizontal, ~1.3 head radii past the head's edge). Local frame: head centre at 0,0,
+// facing +x, upright.
 const ERASER = '#F29497'   // pink eraser (red mixed toward white; the pencil's only non-palette tint)
 function pencil(k) {
   const g = s('g', { class: 'br-pencil' })
   const R = RIG.headR * k
   const Lt = 2.7 * R, w = 0.36 * R, sw = Math.max(2.2, 3 * k)
   const cone = 0.56, body = 2.08, ferr = 2.36            // section ends along the axis, in head radii from the tip
-  // axis: from the tip (0,0) toward the eraser along +x, rotated 30 deg up-and-back, tip resting at the "ear"
-  const inner = s('g', { transform: `translate(${(0.16 * R).toFixed(2)},${(0.14 * R).toFixed(2)}) rotate(210)` })
+  // axis: from the tip toward the eraser along +x, rotated 30 deg up-and-back. The tip sits half a radius in front
+  // of the centre, a quarter radius above the axis through it, so the axis leaves the disc 1.4 radii from the tip
+  const inner = s('g', { transform: `translate(${(0.5 * R).toFixed(2)},0) rotate(210)` })
   const yb = w / 2
   const at = f => (f * R).toFixed(2)
   inner.append(
@@ -1014,7 +1091,11 @@ export function chrome(spec, ctx, body = {}) {
         el.append(sp, ' ')
       }
       capBox.append(el)
-      fitText(el, L.capW, { maxH: L.capBottom - L.capTop - 6, minPx: 40 })
+      // integer line box (the linter reads px from the rendered height); balanced lines (no one-word orphans)
+      for (let px = T.caption; px >= 40; px -= 2) {
+        css(el, { fontSize: px + 'px', lineHeight: Math.round(px * 1.12) + 'px' })
+        if (el.scrollWidth <= L.capW + 0.5 && el.scrollHeight <= L.capBottom - L.capTop - 6 + 0.5) break
+      }
       css(el, { display: 'none' })
       lines.push({ v, el, words })
     }

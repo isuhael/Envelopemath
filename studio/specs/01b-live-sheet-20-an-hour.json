@@ -3,31 +3,34 @@
   "look": "live-sheet",
   "format": "dead-simple-list",
   "fps": 30,
-  "duration": 27.0,
-  "header": "3 DEAD SIMPLE NUMBERS\nWHAT **$20/HR** ACTUALLY LANDS",
-  "footer": "ASSUMES 40 hrs × 52 wks · ×\u00a00.85 ≈ left after 2026 federal tax + FICA, single, before state tax",
+  "duration": 26.0,
+  "header": "3 DEAD SIMPLE NUMBERS\nYOU PAY **6.2%** TO SOCIAL SECURITY.\nA $1M SALARY PAYS…?",
+  "footer": "ASSUMES 40 hrs × 52 wks · 2026 Social Security tax, employee share · Medicare not counted",
   "captions": true,
   "vo": [
-    { "t": 0.0,  "d": 5.8, "text": "Take your hourly pay, times 2,080: $41,600 a year. On paper." },
-    { "t": 6.0,  "d": 4.3, "text": "A month is a year divided by 12. About $3,467." },
-    { "t": 10.5, "d": 3.5, "text": "Now tax: you keep about 85 cents a dollar." },
-    { "t": 14.2, "d": 3.5, "text": "That's about $2,947 a month, before state tax." },
-    { "t": 17.9, "d": 2.8, "text": "Every $20 hour lands as about $17." },
-    { "t": 20.9, "d": 3.9, "text": "Of the $3,467 you earn, about $2,947 lands." }
+    { "t": 0.0,  "d": 3.9, "text": "At $20 an hour, that's about $2,579 a year." },
+    { "t": 4.0,  "d": 2.0, "text": "A million-dollar salary: $62,000?" },
+    { "t": 6.1,  "d": 5.0, "text": "No. It stops at $184,500: $11,439." },
+    { "t": 11.3, "d": 3.5, "text": "That's about 1.1% of their pay." },
+    { "t": 15.1, "d": 3.9, "text": "Yours: 6.2%, on every dollar, all year." },
+    { "t": 19.3, "d": 3.1, "text": "You pay more than five times their rate." }
   ],
-  "verdict": { "t": 20.9, "text": "**≈ $2,947** a month lands of the __$3,467__ you earn" },
+  "verdict": { "t": 19.3, "text": "You pay __6.2%__. A $1M salary pays **≈ 1.1%**." },
   "data": {
     "input": { "label": "Your pay", "value": "$20/hr", "note": "40 hrs a week" },
     "typeDur": 0.6,
     "items": [
-      { "t": 0.0, "label": "A year, on paper", "formula": "$20 × 2,080 hrs", "result": "$41,600",
-        "tone": "good", "note": "2,080 hrs = 40 × 52", "resultT": 2.7 },
-      { "t": 7.9, "label": "A month, on paper", "formula": "$41,600 ÷ 12", "result": "≈ $3,467",
-        "tone": "neutral", "note": "before any tax", "resultT": 9.5 },
-      { "t": 12.4, "label": "A month, kept", "formula": "$3,467 × 0.85", "result": "≈ $2,947",
-        "tone": "goal", "note": "after federal tax + FICA", "resultT": 15.0 }
+      { "t": 0.0, "label": "Yours, a year", "formula": "$20 × 2,080 × 6.2%", "result": "≈ $2,579",
+        "tone": "bad", "note": "6.2% of every dollar", "resultT": 2.3 },
+      { "t": 6.9, "label": "A $1M salary's", "formula": "$184,500 × 6.2%", "result": "$11,439",
+        "tone": "neutral", "note": "taxed only up to $184,500", "resultT": 9.6 },
+      { "t": 11.3, "label": "Their rate", "formula": "$11,439 ÷ $1,000,000", "result": "≈ 1.1%",
+        "tone": "goal", "note": "yours: 6.2%", "resultT": 12.1 }
     ]
   },
-  "lookOpts": { "labels": "always" },
-  "sfx": [ { "t": 20.9, "kind": "ding" } ]
+  "lookOpts": {
+    "labels": "always",
+    "wrongGuess": { "item": 1, "t": 4.0, "formula": "$1,000,000 × 6.2%", "result": "$62,000", "resultT": 5.2, "strikeT": 6.1 }
+  },
+  "sfx": [ { "t": 19.3, "kind": "ding" } ]
 }

@@ -2,15 +2,15 @@
 
 **Prepared for:** *Back of the Envelope* (YouTube Shorts, Instagram Reels, TikTok), US audience, USD
 **Date:** 2026-10-07
-**Writer:** format 1 of 10, round 2 (revised after the verifier and the hook judge, then in the round-2 **hook pass**, which replaced 01c's hook and kept 01b's; see the **Review log** at the end)
+**Writer:** format 1 of 10, round 2 (revised after the verifier and the hook judge; then in the round-2 **hook pass**, which replaced 01c's hook and kept 01b's; then in **hook pass 2**, which replaced 01b's hook and topic; see the **Review log** at the end)
 **Deliverables:**
 - Specs:
   - [`studio/specs/01a-clean-sheet-paid-biweekly.json`](../../studio/specs/01a-clean-sheet-paid-biweekly.json)
-  - [`studio/specs/01b-live-sheet-20-an-hour.json`](../../studio/specs/01b-live-sheet-20-an-hour.json)
+  - [`studio/specs/01b-live-sheet-20-an-hour.json`](../../studio/specs/01b-live-sheet-20-an-hour.json) (file name kept; since hook pass 2 the topic is the Social Security wage cap: you pay 6.2%, what does a $1M salary pay?)
   - [`studio/specs/01c-becker-rig-60k-a-year.json`](../../studio/specs/01c-becker-rig-60k-a-year.json) (file name kept; since the hook pass the topic is the bracket myth: will a 3% raise push $65,000 into a higher bracket?)
-- Check: [`teasers/v2/checks/01-dead-simple-list.py`](checks/01-dead-simple-list.py). It passes 250 checks with 0 failures (after the hook pass).
-- Mutation test: in the hook pass the check caught 4 of 4 broken copies of the new 01c spec (see the Review log). In round 2 it caught 10 of 10 deliberately broken spec copies: a $50-rounded result (`≈ $2,950`), a "≈" on an exact result, a wrong VO number, an off-beat `resultT`, a VO line read too fast, an unsupported `lookOpts.gag`, a VO line after the verdict card, a wrong label digit, a missing "≈", and a verdict that no longer matches the maths.
-- Studio linter (`node src/cli.mjs check`): 3/3 clean, 0 errors, 0 warnings (safe zones, type floor, overlap, contrast, fonts, R1), re-run after every fix and after the hook pass.
+- Check: [`teasers/v2/checks/01-dead-simple-list.py`](checks/01-dead-simple-list.py). It passes 266 checks with 0 failures (after hook pass 2).
+- Mutation test: in hook pass 2 the check caught 7 of 7 broken copies of the new 01b spec, and in the hook pass 4 of 4 broken copies of the new 01c spec (see the Review log). In round 2 it caught 10 of 10 deliberately broken spec copies: a $50-rounded result (`≈ $2,950`), a "≈" on an exact result, a wrong VO number, an off-beat `resultT`, a VO line read too fast, an unsupported `lookOpts.gag`, a VO line after the verdict card, a wrong label digit, a missing "≈", and a verdict that no longer matches the maths.
+- Studio linter (`node src/cli.mjs check`): 3/3 clean, 0 errors, 0 warnings (safe zones, type floor, overlap, contrast, fonts, R1), re-run after every fix and after both hook passes.
 - Stills checked by eye at frames 0, 2.7-3.2 s, each payoff, the verdict and the last frame.
 
 **Evidence base:**
@@ -58,16 +58,19 @@
 
 - **Lane discipline (lane 1: paychecks and wages turned into rough numbers).**
   - **01c moved off "salary → real hourly"** in round 2 (lane 2, find-your-row, owns that topic by name), and in the hook pass off "a 3% raise per day" to **the bracket myth on a 3% raise**: will $65,000 + 3% cross into the 22% bracket, and what does that cost? No other format touches raises. Lane 2's hook pass considered and rejected "your bracket is not your tax rate" for 02c, so no other teaser covers brackets.
-  - **One insight per teaser.** 01a owns "a year is 52 weeks, not 48" (26 paychecks, not 24). 01b dropped its "a month is 4 weeks, $3,200" trap, which was the same 8.3% insight, and is purely gross → take-home on the rough ×0.85 rule (the average keep on a whole wage). 01c is the marginal bracket line, worked exactly, with no keep rule.
-  - **No pricing in hours of work** (lane 8) and no salary → hourly conversion (lane 2). 01c uses no time units at all: one raise, one bracket line.
+  - **01b moved off gross → take-home** in hook pass 2 (the judges called it familiar ground) to **the Social Security wage cap**: the 6.2% on every paycheck stops at $184,500, so a $1M salary pays ≈ 1.1%. It is still a paycheck deduction turned into rough numbers, and no other teaser in the slate covers the cap.
+  - **One insight per teaser.** 01a owns "a year is 52 weeks, not 48" (26 paychecks, not 24). 01b owns "the 6.2% is not flat: it stops at $184,500". 01c is the marginal bracket line, worked exactly. Since hook pass 2 the series has no rough keep rule (the old ×0.85 is gone).
+  - **No pricing in hours of work** (lane 8) and no salary → hourly conversion (lane 2). 01b goes from an hourly wage to a year only ($20 × 2,080), never back. 01c uses no time units at all: one raise, one bracket line.
 - **Series header grammar (the same in all three).**
   - Line 1 is the series phrase with the slot count: "3/4 DEAD SIMPLE NUMBERS".
-  - The rest names the stake and carries one R5 word, in H84's "That Tell You What / You Actually Make" grammar: "THE PAY YOUR BUDGET **FORGETS**", "WHAT $20/HR **ACTUALLY** LANDS". Since the hook pass 01c asks a yes/no question instead (R11, H48's grammar), whose R5 word is the feared outcome: "WILL A 3% RAISE PUSH $65,000 INTO A **HIGHER BRACKET**?"
+  - The rest names the stake and carries one R5 word or mark. 01a uses H84's "That Tell You What / You Actually Make" grammar: "THE PAY YOUR BUDGET **FORGETS**". Since the hook passes, the other two ask a question (R11, H48's grammar):
+    - 01c's R5 word is the feared outcome: "WILL A 3% RAISE PUSH $65,000 INTO A **HIGHER BRACKET**?"
+    - 01b plants the viewer's own rate and leaves the rival's open: "YOU PAY **6.2%** TO SOCIAL SECURITY. A $1M SALARY PAYS…?" The "…?" invites the flat-rate guess ($62,000), which the sheet types and strikes out.
   - Round 1's "IF YOU …" filter line (Yannick's H57 grammar, 50,206 at 2.8x med) is gone: it was the weaker half of the pattern.
-- **One calendar.** 52 weeks, 12 months, 365 days; work hours = 40 × 52 = 2,080, printed in 01b's footer and slot note. 01a counts paydays (364 ÷ 14 = 26). No slot mixes 50 and 52 weeks.
-- **The "≈" and rounding policy.** A result gets "≈" exactly when it is rounded or rests on the rough ×0.85 tax rule. Every result equals its visible formula rounded to $1 (or 1¢ when cents are shown), so anyone who redoes a formula on screen gets the number on screen. The check script re-evaluates every typed formula to enforce this. Every 01c result is exact, so 01c shows no "≈".
-- **Non-breaking spaces** (` ` in the JSON) keep a highlight or a rule on one rendered line: "13 months" (01a verdict), "× 0.85" (01b footer), "$45 a year" (01c verdict). The check script expects them.
-- **Kit contract.** Each spec uses only `lookOpts` keys its kit reads (clean-sheet: none; live-sheet: `labels`; becker-rig: `hits`), and the last VO line is the verdict line, because every kit's chrome replaces the captions with the verdict card from `verdict.t`. The check script enforces both.
+- **One calendar.** 52 weeks, 12 months, 365 days; work hours = 40 × 52 = 2,080, printed in 01b's footer ("40 hrs × 52 wks") and row 1's formula. 01a counts paydays (364 ÷ 14 = 26). No slot mixes 50 and 52 weeks.
+- **The "≈" and rounding policy.** A result gets "≈" exactly when it is rounded. Every result equals its visible formula rounded to $1 (1¢ when cents are shown, 0.1 point for a percent), so anyone who redoes a formula on screen gets the number on screen. The check script re-evaluates every typed formula to enforce this. Every 01c result is exact, so 01c shows no "≈".
+- **Non-breaking spaces** (` ` in the JSON) keep a highlight or a rule on one rendered line: "13 months" (01a verdict), "≈ 1.1%" (01b verdict), "$45 a year" (01c verdict). The check script expects them.
+- **Kit contract.** Each spec uses only `lookOpts` keys its kit reads (clean-sheet: none; live-sheet: `labels` and `wrongGuess`; becker-rig: `hits`), and the last VO line is the verdict line, because every kit's chrome replaces the captions with the verdict card from `verdict.t`. The check script enforces both.
 - **Risk: the series name.** "DEAD SIMPLE NUMBERS" is Master Money's own branded phrase, and `04-formats.md` says to use "a series name of our own".
   - I kept it because it is the seed the owner approved and the format's id.
   - If the owner wants it swapped, "ROUGH-BUT-RIGHT NUMBERS" fits the brand and the header widths. It is a one-line edit in each spec and in `EXPECT` in the check script.
@@ -184,115 +187,118 @@ Calendar check, simulated in the check script over 2000-2099 for both alternate-
 
 ---
 
-### 01b · Live Sheet · "3 DEAD SIMPLE NUMBERS / WHAT $20/HR ACTUALLY LANDS"
+### 01b · Live Sheet · "3 DEAD SIMPLE NUMBERS / YOU PAY 6.2% TO SOCIAL SECURITY. A $1M SALARY PAYS…?"
 
-- **Spec:** `studio/specs/01b-live-sheet-20-an-hour.json`, 27.0 s
-- **Look:** Live Sheet. Designed spreadsheet on black, a yellow title banner, a "≈" formula bar showing the working, rows that fill one cell at a time, and green (earned) against red (the gross figure in the verdict). The sheet's row numbers do the job of the empty "1. 2. 3.". `lookOpts.labels: "always"` labels every row from frame 1 (the kit's open-loop variant).
-- **Platform title:** "What $20 an hour actually lands each month"
-- **Hook pass: kept.** The two judges averaged the current hook at 4.5; the best rewrite (B, "At $20/hr, who takes more: income tax or FICA?") averaged 6.75, under the 7.5 bar, so the hook, title and body stay as they are. The judges' diagnosis of this hook and the four rewrites are in the Review log.
-- **On-screen hook (header):** `3 DEAD SIMPLE NUMBERS` / `WHAT **$20/HR** ACTUALLY LANDS` (9 words)
-- **Input row at 0.0 s:** mint header row `Your pay · 40 hrs a week | $20/hr`
+- **Spec:** `studio/specs/01b-live-sheet-20-an-hour.json`, 26.0 s. The file name and id are kept from round 2 so links in `teasers.json` and the render paths still work; the id is never shown to viewers. The topic changed in hook pass 2 (see the Review log).
+- **Look:** Live Sheet. A designed spreadsheet on black, a yellow title banner, a "≈" formula bar showing the working, rows that fill one cell at a time. The sheet's row numbers do the job of the empty "1. 2. 3.".
+  - `lookOpts.labels: "always"` labels every row from frame 1 (the kit's open-loop variant).
+  - `lookOpts.wrongGuess` is the kit's built-in wrong-guess beat (live-sheet README, `wrongGuess`): the viewer's likely guess types into row 2, lands with a tick, and is struck out in red with a buzz before the real formula types.
+- **Platform title:** "You pay 6.2% Social Security. What does a $1M salary pay?" (11 words, no result)
+- **Hook pass 2: adopted** (option A, average 7.25 against 4.25 for the old "WHAT $20/HR ACTUALLY LANDS"; scores and reasons in the Review log).
+- **On-screen hook (header):** `3 DEAD SIMPLE NUMBERS` / `YOU PAY **6.2%** TO SOCIAL SECURITY.` / `A $1M SALARY PAYS…?` (14 words, 3 lines, ≈ 44 px; "6.2%" in the black chip)
+- **Input row at 0.0 s:** mint header row `Your pay · 40 hrs a week | $20/hr`, with the dashed "in use" outline
 
-**The wrong belief it exploits:** "$20 an hour is $41,600 a year, so about $3,467 a month." That is the pay on paper. After 2026 federal income tax and Social Security + Medicare (single filer, before state tax), about 85 cents of each dollar lands: **≈ $2,947 a month**, or about $17 of every $20 hour. The correction runs one way only, from the gross figure down to the take-home figure.
+**The wrong belief it exploits:** "Social Security is a flat 6.2% for everyone", so a $1M salary must pay $62,000 (or "richer people pay a higher rate").
+- In 2026 the 6.2% applies only to the first **$184,500** of wages (the wage base). A $1M salary pays $184,500 × 6.2% = **$11,439**, about **1.1%** of its pay.
+- A $20/hr worker earns $41,600, all of it under the cap, and pays 6.2% on every dollar: more than five times the rate.
+- The header's "…?" invites the flat-rate guess. The sheet types it (`$1,000,000 × 6.2%`), lands **$62,000** at 5.2 s and strikes it out in red at 6.1 s, on the VO's "No."
 
 **Modelled on:**
-- **H84, Master Money:** "4 DEAD SIMPLE NUMBERS / That Tell You What / You Actually Make". 3,000,000 views, 140x. We copy the payoff-noun header with "actually", the "Take your … times …" opener, and the shrink-to-the-truth path (the biggest number first, then a smaller true figure). His step 1 is the same idea (`$72,000 * 0.7` for tax).
-- **H57, Yannick:** "Do all 4 if you make $20/hr and watch your finance change". 50,206 views, 2.8x med; the best of his wage reels. We copy the wage, as the stake inside the header rather than as a filter line.
-- **H87, Master Money:** "5 Dead Simple Numbers That Tell You / WHAT YOU CAN ACTUALLY SPEND", 35,520 (3.3x med). The caution: "actually" alone does not carry a hook, so our header puts the viewer's wage in it and the first VO line ends on "On paper."
-- **Live Sheet's formula bar as proof** (Debt Freedom, H48, 902.5x): every result is typed as a formula first.
+- **H48, Debt Freedom:** a frame-1 question whose options are named on screen, 1,900,000 (902.5x). R7: her named-option questions drew 290.7K-1.9M, against 90.6K for the label hook H52.
+- **H71, The Market Hustle:** the wrong number shown in red at the start ("25 YEARS"), 190,187 (4.5x med). Here it is the struck red $62,000.
+- **P4, a named rival with a lopsided end:** H17 ChartOrbit "USA and EUROPE", 2,808,307 (345.09x, about 4x the comment rate of the NETFLIX/DISNEY sibling), and H16, 15,876,376 (100.45x). Here 6.2% against ≈ 1.1% is 5.4x.
+- **R5 by one number:** H64 "What $1 COSTS you", 1,150,974 (210x med). "YOU PAY 6.2%" plants the rate the viewer assumes the rival pays too.
+- **The list body:** H84 Master Money, 3,000,000 (140x): formula, then result, in each slot; first answer under 3 s.
+- **Comments:** Jake's twist duels (H78/H79, 322,339 and 301,112 views) drew 136 and 44 comments, against 23 for the plain H80.
 
 **Hook rules**
 
 | Rule | Met? | How |
 |---|---|---|
-| R1 | yes | "$20/HR" in the header and the input row; the formula bar is typing `= $20 × 2,080 hrs` at 0.0 s |
-| R2 | yes | One $ figure in the header, and it is the input |
-| R3 | yes | "Take your hourly pay, times 2,080" applies to any wage; the caption gives the whole rule |
-| R4 | yes | $20/hr is Yannick's best-performing wage input |
-| R5 | yes | "ACTUALLY LANDS" in the header; the first VO line ends "On paper." at ≈5.4 s |
-| R6 | yes | You, $20 an hour, a month and a year |
-| R7 | yes | The wage names the viewer |
-| R8 | yes | 9 words |
-| R9 | yes | 3 labelled empty rows at 0.0 s: "A year, on paper / A month, on paper / A month, kept" |
-| R10 | yes | $41,600 at 2.7 s, and it is the biggest number, first |
-| R11 | partly | A promise header; the verdict is in the caption |
-| R12 | yes | "≈ $2,947 a month lands of the $3,467 you earn"; "every $20 hour lands as about $17" |
+| R1 | yes | "6.2%" in the header chip and "$20/hr" in the input row at 0.0 s; the formula bar is typing `= $20 × 2,080` |
+| R2 | mostly | One $ figure in the header ($1M), no result in the header or the title. The header carries two figures, the viewer's 6.2% and the rival's $1M (judge 2 counted that against R2) |
+| R3 | yes | 6.2% is the rate on every W-2 paycheck under the cap. Row 1's $20/hr is the example; the 6.2% applies to any wage up to $184,500 |
+| R4 | yes | 6.2%, $20/hr, $1M: small, round, familiar |
+| R5 | yes | "…?" invites the flat-rate guess; $62,000 lands at 5.2 s and is struck in red at 6.1 s |
+| R6 | partly | You, 6.2%, ≈ $2,579 a year. The stake is fairness (a rate), not money the viewer keeps |
+| R7 | yes | A named rival: a $1M salary |
+| R8 | yes | 14 words, 3 lines |
+| R9 | yes | 3 labelled empty rows at 0.0 s ("Yours, a year / A $1M salary's / Their rate"); "Their rate" promises one number |
+| R10 | yes | The viewer's own ≈ $2,579 at 2.3 s; the header's question gets its wrong answer at 5.2-6.1 s and its real one at 9.6 s |
+| R11 | yes | A question on screen; the verdict card answers it |
+| R12 | yes | "You pay 6.2%. A $1M salary pays ≈ 1.1%." (5.4x, lopsided and repeatable) |
 
-**Beat sheet**
+**Beat sheet** (times match the spec; checked in stills at 0, 1.5, 3, 5.4, 6.4, 10, 10.6, 13.5, 17 and 21 s)
 
 | t (s) | On screen | VO |
 |---|---|---|
-| 0.0 | **Frame 1:** yellow banner header (2 lines; "$20/HR" in a black chip); formula bar `≈ │ = $20 ×` mid-typing; mint input row "Your pay / 40 hrs a week │ $20/hr" (dashed outline: the formula is using it); rows 1-3 labelled, results empty; selection on row 1's result cell; footer "ASSUMES 40 hrs × 52 wks · × 0.85 ≈ left after 2026 federal tax + FICA, single, before state tax" under the card; captions pop word by word | "Take your hourly pay, times 2,080: $41,600 a year. On paper." |
-| 2.7 | Row 1 snaps to **$41,600** (green) with a flash and a tick; the formula drops into the row as the grey working line `$20 × 2,080 hrs`; tooltip "2,080 hrs = 40 × 52" | (same line, on "$41,600") |
-| 6.0 | Tooltip open | "A month is a year divided by 12. About $3,467." |
-| 7.9 | Selection slides to row 2; the bar types `= $41,600 ÷ 12` | (on "divided by 12") |
-| 9.5 | Row 2 → **≈ $3,467**; tooltip "before any tax" | (on "About $3,467") |
-| 10.5 | | "Now tax: you keep about 85 cents a dollar." |
-| 12.4 | Selection to row 3; the bar types `= $3,467 × 0.85` | (on "85 cents") |
-| 14.2 | | "That's about $2,947 a month, before state tax." |
-| 15.0 | Row 3 **counts up** to **≈ $2,947** over ≈0.8 s and the row wipes yellow; tooltip "after federal tax + FICA" | (on "$2,947") |
-| 17.9 | The finished sheet holds | "Every $20 hour lands as about $17." |
-| 20.9 | Verdict card in the caption band: "**≈ $2,947** a month lands / of the __$3,467__ you earn" ($3,467 in red); the result column flashes top to bottom; ding | "Of the $3,467 you earn, about $2,947 lands." |
-| 24.8-26.5 | Hold (the table is the screenshot) | none |
-| 26.5-27.0 | Cells clear back to frame 1 (loop) | none |
+| 0.0 | **Frame 1:** yellow banner header (3 lines, "6.2%" in the black chip); formula bar `≈ │ = $20 × 2,080` mid-typing; mint input row "Your pay / 40 hrs a week │ $20/hr" (dashed outline: the formula is using it); rows 1-3 labelled "Yours, a year / A $1M salary's / Their rate", results empty; selection on row 1's result cell; footer on 3 lines under the card "ASSUMES 40 hrs × 52 wks · 2026 Social Security tax, employee share · Medicare not counted"; captions pop word by word | "At $20 an hour, that's about $2,579 a year." |
+| ≈0.4-0.6 | The bar finishes `= $20 × 2,080 × 6.2%` | (same line) |
+| 2.3 | Row 1 snaps to **≈ $2,579** in red (a cost); the formula drops into the row as the grey working line `$20 × 2,080 × 6.2%`; tooltip "6.2% of every dollar" | (same line, on "$2,579") |
+| 4.0 | Selection slides to row 2; the bar types `= $1,000,000 × 6.2%` | "A million-dollar salary: $62,000?" |
+| 5.2 | **$62,000** lands in row 2 (grey, the guess) with a tick | (on "$62,000") |
+| 6.1 | A red strike runs through $62,000; buzz | "No. It stops at $184,500: $11,439." |
+| 6.9 | The bar types `= $184,500 × 6.2%` | (on "stops") |
+| 9.6 | The struck guess lifts out; row 2 → **$11,439** (neutral); working line `$184,500 × 6.2%`; tooltip "taxed only up to $184,500" | (on "$11,439") |
+| 11.3 | Selection to row 3; the bar types `= $11,439 ÷ $1,000,000` | "That's about 1.1% of their pay." |
+| 12.1 | Row 3 → **≈ 1.1%** and the row wipes yellow (no count-up: the kit counts only numbers ≥ 10); tooltip "yours: 6.2%" | (on "1.1%") |
+| 15.1 | The finished sheet holds | "Yours: 6.2%, on every dollar, all year." |
+| 19.3 | Verdict card in the caption band: "You pay **6.2%**. A $1M / salary pays **≈ 1.1%**." (6.2% in red, ≈ 1.1% on yellow); the result column flashes top to bottom; ding | "You pay more than five times their rate." |
+| 22.4-25.5 | Hold (the table is the screenshot) | none |
+| 25.5-26.0 | Cells clear back to frame 1 (loop) | none |
 
-Payoffs land at 2.7, 9.5 and 15.0 s, and the verdict at 20.9 s: gaps of 6.8, 5.5 and 5.9 s.
+Payoffs land at 2.3, 9.6 and 12.1 s, and the verdict at 19.3 s: gaps of 7.3, 2.5 and 7.2 s. The struck $62,000 (5.2-6.1 s) fills the first gap.
 
-**Full guide VO script (01b, 27 s)**
-> Take your hourly pay, times 2,080: $41,600 a year. On paper. A month is a year divided by 12. About $3,467. Now tax: you keep about 85 cents a dollar. That's about $2,947 a month, before state tax. Every $20 hour lands as about $17. Of the $3,467 you earn, about $2,947 lands.
+**Full guide VO script (01b, 26 s)**
+> At $20 an hour, that's about $2,579 a year. A million-dollar salary: $62,000? No. It stops at $184,500: $11,439. That's about 1.1% of their pay. Yours: 6.2%, on every dollar, all year. You pay more than five times their rate.
 
-Read the numbers as: "twenty eighty", "forty-one thousand six hundred" (or "forty-one six"), "thirty-four sixty-seven", "eighty-five cents", "twenty-nine forty-seven", "twenty", "seventeen". The timings assume these short readings; "three thousand four hundred sixty-seven" in full would need about 0.6 s more per line.
+Read the numbers as: "twenty", "twenty-five seventy-nine", "sixty-two thousand", "one eighty-four thousand five hundred", "eleven thousand four thirty-nine", "one point one percent", "six point two percent". Every line's `d` fits at 2.6 words/s with these readings, as the check script counts them.
 
-**The maths**
+**The maths** (every on-screen number)
 
 | On screen | Formula | Inputs | Value |
 |---|---|---|---|
 | $20/hr | input | example wage | 20 |
-| 2,080 hrs | 40 × 52 | full-time hours a year (series constant) | 2,080 |
-| **$41,600** | $20 × 2,080 | | 41,600 (exact) |
-| **≈ $3,467** | $41,600 ÷ 12 | | 3,466.67 → $3,467 |
-| × 0.85 | rough keep rate | see the tax check below | 0.85 |
-| **≈ $2,947** | $3,467 × 0.85 | | 2,946.95 → $2,947 (on the unrounded month: 2,946.67 → $2,947) |
-| about $17 (VO) | $20 × 0.85 | | 17 (exact keep: $17.12) |
+| 2,080 | 40 × 52 | full-time hours a year (series constant) | 2,080 |
+| 6.2% | Social Security tax, employee share | 2026 (SSA) | 0.062 |
+| **≈ $2,579** (row 1) | $20 × 2,080 × 6.2% | $41,600 a year, all under the cap | 2,579.20 → $2,579 |
+| $62,000 (struck guess) | $1,000,000 × 6.2% | what a flat 6.2% would charge | 62,000 (exact) |
+| $184,500 | 2026 Social Security wage base | SSA, Kiplinger | 184,500 |
+| **$11,439** (row 2) | $184,500 × 6.2% | the most anyone's wages pay in 2026 | 11,439 (exact) |
+| **≈ 1.1%** (row 3, verdict) | $11,439 ÷ $1,000,000 | | 1.1439% → 1.1% |
+| "more than five times" (VO) | 6.2 ÷ 1.1439 | | 5.42 (5.64 on the shown 1.1%) |
 
-**Tax check behind ×0.85** (2026, single filer, standard deduction, wages only)
-- Taxable income = $41,600 − $16,100 = $25,500.
-- Federal income tax = 10% × $12,400 + 12% × ($25,500 − $12,400) = $1,240 + $1,572 = **$2,812.00**.
-- FICA = 7.65% × $41,600 = **$3,182.40** (6.2% Social Security, below the $184,500 wage base, plus 1.45% Medicare).
-- Net = $35,605.60 a year, a keep rate of **85.6%**.
-  - So "about 85 cents a dollar" is within 1 cent, and the ×0.85 rule is within 0.6 points of the exact rate.
-  - The exact net is **$2,967.13** a month. The on-screen rule gives ≈ $2,947, 0.68% low; the "≈" covers it, and the check script holds it to ±1%.
+Checks behind the words:
+- "On every dollar, all year": $41,600 < $184,500, so all of a $20/hr full-timer's pay is taxed at 6.2%.
+- "Their rate" is Social Security tax over total pay. The footer says it is the employee share only (employers pay a matching 6.2% to the same cap) and that Medicare (1.45%, no cap) is not counted.
+- Pinned-comment figures: the $1M salary is 24x the $20/hr pay ($1,000,000 ÷ $41,600 = 24.04) but pays only 4.4x the Social Security in dollars ($11,439 ÷ $2,579.20 = 4.44).
 
-**Sources** (two independent sources for each tax parameter, because these figures could be wrong)
-- **2026 standard deduction, single, $16,100.**
-  - IRS newsroom, "IRS releases tax inflation adjustments for tax year 2026, including amendments from the One, Big, Beautiful Bill", 2025-10-09. https://www.irs.gov/newsroom/irs-releases-tax-inflation-adjustments-for-tax-year-2026-including-amendments-from-the-one-big-beautiful-bill
-  - CPA Practice Advisor, "IRS Adjusts Tax Brackets, Standard Deduction for 2026", 2025-10-09. https://www.cpapracticeadvisor.com/2025/10/09/irs-adjusts-tax-brackets-standard-deduction-for-2026/170661/
-- **2026 single brackets:** 10% to $12,400; 12% from $12,400 to $50,400 ("$1,240 plus 12% of the excess over $12,400").
-  - IRS, Rev. Proc. 2025-32 (2025-10-09). https://www.irs.gov/pub/irs-drop/rp-25-32.pdf
-  - Tax Foundation, "2026 Tax Brackets and Federal Income Tax Rates" (publication date not captured). https://taxfoundation.org/data/all/federal/2026-tax-brackets/
-- **FICA:** 6.2% Social Security on earnings up to $184,500, and 1.45% Medicare on all earnings, for 2026.
+**Sources**
+- **The 6.2% employee rate and the 2026 wage base of $184,500:**
   - SSA, "2026 Social Security Changes" fact sheet (released with the 2026 COLA, October 2025). https://www.ssa.gov/cola/factsheets/2026.html
   - Kiplinger, "Six Changes to Social Security in 2026": the $184,500 wage base (date not captured). https://www.kiplinger.com/retirement/social-security/changes-coming-to-social-security-in-2026
-  - The 7.65% employee rate is statutory and unchanged.
+  - The 6.2% employee rate (and 1.45% Medicare) is statutory and unchanged.
+- The cap also limits benefits: SSA's own name for the wage base is the "contribution and benefit base", because earnings above it are neither taxed nor counted when benefits are computed. That is used in the pinned comment only, with no number.
 
-**Assumptions (footer):** `ASSUMES 40 hrs × 52 wks · × 0.85 ≈ left after 2026 federal tax + FICA, single, before state tax`. The maths ignores state tax, benefit premiums and 401(k) deferrals; the VO says "before state tax" and the pinned comment invites the rest.
+**Assumptions (footer, on screen from 0.0 s):** `ASSUMES 40 hrs × 52 wks · 2026 Social Security tax, employee share · Medicare not counted`. The footer leaves out $184,500 on purpose: printed at frame 1 it would give away row 2. Not modelled: self-employment tax (12.4% to the same cap), the employer's matching share, Medicare and its 0.9% surtax on high wages, and anyone with two jobs (each employer withholds to the cap and the excess is refunded at tax time).
 
-**Caption / description:**
-> $20 an hour is $41,600 a year on paper, about $3,467 a month. After 2026 federal tax + Social Security & Medicare (single, before state tax), about $2,947 a month lands: roughly $17 of every $20 hour. Run yours: hourly × 2,080 ÷ 12 × 0.85.
-> #hourlywage #paycheck #moneymath #takehomepay
+**Caption / description (verdict in the caption, R11):**
+> Social Security takes 6.2% of every dollar you earn, up to $184,500. A $1M salary pays $11,439: ≈ 1.1%. At $20 an hour ($41,600 a year) you pay 6.2% on all of it, all year: more than five times their rate. 2026 figures, employee share; Medicare not counted.
+> #socialsecurity #paycheck #moneymath #taxes
 
 **Pinned comment:**
-> The 0.85 is federal income tax + FICA for a single filer at $41,600 in 2026 (exactly 85.6%, so $2,967 a month). Your state takes its own slice, or none. What does your state do to the $2,947?
+> Medicare (1.45%) has no cap; this is Social Security only. In dollars the $1M salary still pays 4.4x your $2,579, on 24x the pay. And the cap works both ways: pay above $184,500 doesn't count toward their Social Security benefit either.
 
 **Per-platform notes**
-- **YouTube Shorts:** use the title above. Thanks to the formula bar and the grey working lines, the finished sheet works as a screenshot: it holds for 2 s before the clear.
+- **YouTube Shorts:** use the title above. Frame 1 is a complete question (header, the 6.2% chip, 3 labelled empty rows) and serves as the thumbnail. The finished sheet works as a screenshot and holds 3 s before the clear.
 - **Instagram Reels:**
-  - The cover is frame 1, with the 3 labelled empty rows showing ("A month, kept" is the tease).
-  - The wage reels in our benchmark live on IG (Yannick).
-  - The caption leads with the verdict.
+  - The cover is frame 1, with "A $1M SALARY PAYS…?" and the 3 empty rows showing.
+  - Caption line 1 is the verdict.
+  - Expect fairness comments ("scrap the cap"): the pinned comment gives both sides in numbers, and the series takes no side.
 - **TikTok:**
-  - "$20 an hour" is a heavily searched phrase, so put it in the first caption line.
-  - If the owner wants a series, the same spec re-runs at $15, $25 and $30 (re-check the keep rate per wage: it moves with the bracket).
+  - Put "Social Security" and "$1 million salary" in the first caption line for search.
+  - The share line is the verdict: "You pay 6.2%. A $1M salary pays ≈ 1.1%."
+  - If the owner wants a series, the same spec re-runs at any wage under $184,500: only row 1 changes ($15/hr ≈ $1,934; $30/hr ≈ $3,869), and rows 2-3 and the verdict stay as they are.
 
 ---
 
@@ -377,8 +383,14 @@ Read the numbers as: "sixty-five thousand", "three percent", "sixty-six thousand
 - Pinned-comment figures: FICA on the raise 7.65% × $1,950 = $149.18 (6.2% Social Security, $66,950 being far below the $184,500 wage base, plus 1.45% Medicare); kept after federal tax and FICA: $1,950 − $279 − $149.18 ≈ **$1,522**. The myth (all taxed pay 10 points more): 10% × $50,850 = **$5,085**, 113 times the real $45.
 
 **Sources**
-- **2026 standard deduction, single, $16,100, and the single brackets** (10% to $12,400; 12% to $50,400; 22% above it, to $105,700): the same two independent publishers per figure as 01b (IRS newsroom and Rev. Proc. 2025-32, 2025-10-09; CPA Practice Advisor, 2025-10-09, "22% for incomes over $50,400"; Tax Foundation).
-- **FICA** (pinned comment only): SSA 2026 fact sheet and Kiplinger, as in 01b.
+Two independent publishers for each tax parameter, because these figures could be wrong. (Until hook pass 2 these citations sat in 01b's section; they moved here when 01b changed topic.)
+- **2026 standard deduction, single, $16,100.**
+  - IRS newsroom, "IRS releases tax inflation adjustments for tax year 2026, including amendments from the One, Big, Beautiful Bill", 2025-10-09. https://www.irs.gov/newsroom/irs-releases-tax-inflation-adjustments-for-tax-year-2026-including-amendments-from-the-one-big-beautiful-bill
+  - CPA Practice Advisor, "IRS Adjusts Tax Brackets, Standard Deduction for 2026", 2025-10-09 ("22% for incomes over $50,400"). https://www.cpapracticeadvisor.com/2025/10/09/irs-adjusts-tax-brackets-standard-deduction-for-2026/170661/
+- **2026 single brackets:** 10% to $12,400; 12% from $12,400 to $50,400 ("$1,240 plus 12% of the excess over $12,400"); 22% above it, to $105,700.
+  - IRS, Rev. Proc. 2025-32 (2025-10-09). https://www.irs.gov/pub/irs-drop/rp-25-32.pdf
+  - Tax Foundation, "2026 Tax Brackets and Federal Income Tax Rates" (publication date not captured). https://taxfoundation.org/data/all/federal/2026-tax-brackets/
+- **FICA** (pinned comment only): 6.2% Social Security up to $184,500 plus 1.45% Medicare; SSA 2026 fact sheet and Kiplinger, as in 01b.
 - **$65,000 against the median** (R4, write-up only): BLS Q2 2026 median full-time pay of $1,251 a week (source as in 01a).
 - **3% against 2026 raise budgets** (R4, write-up only): The Conference Board, 40th annual Salary Budget Survey (released 2025-09-03): 3.4% average salary increase budgets for 2026, via WorldatWork Workspan Daily, https://worldatwork.org/publications/workspan-daily/conference-board-projects-3-4-u-s-pay-increase-budgets-for-2026 (search extract; it also lists Payscale 3.5%, WorldatWork 3.6% and WTW 3.5%). Publisher page: https://www.conference-board.org/publications/US-salary-increase-budgets-2025-2026. Mercer, "2026 actual increase budgets (US)": mean merit increase actually paid in 2026 of 3.1% (756 employers, March 2026 survey), https://www.imercer.com/articleinsights/2026-actual-increase-budgets-us (search extract; a direct fetch was blocked by this session's proxy).
 
@@ -410,12 +422,12 @@ Read the numbers as: "sixty-five thousand", "three percent", "sixty-six thousand
 | ID | Look | Header (t = 0) | Runtime | Key numbers | Verdict | Hook score /10 (see below) |
 |---|---|---|---:|---|---|---:|
 | 01a | clean-sheet | 3 DEAD SIMPLE NUMBERS / PAID **EVERY 2 WEEKS**? THE PAY YOUR BUDGET FORGETS | 26.0 s | $2,500 · $65,000 · not × 24 · $5,000 · $65,000 − $60,000 = $5,000 · 13 months | Every 2 weeks = 13 months of pay a year | 8 |
-| 01b | live-sheet | 3 DEAD SIMPLE NUMBERS / WHAT **$20/HR** ACTUALLY LANDS | 27.0 s | $41,600 · ≈ $3,467 · × 0.85 · ≈ $2,947 · $17 of $20 | ≈ $2,947 a month lands of the $3,467 you earn | 4.5 (hook pass; kept) |
+| 01b | live-sheet | 3 DEAD SIMPLE NUMBERS / YOU PAY **6.2%** TO SOCIAL SECURITY. / A $1M SALARY PAYS…? | 26.0 s | $20/hr · ≈ $2,579 · ~~$62,000~~ (struck guess) · $184,500 × 6.2% = $11,439 · ≈ 1.1% | You pay 6.2%. A $1M salary pays ≈ 1.1% | 7.25 (hook pass 2; adopted, was 4.25) |
 | 01c | becker-rig | 4 DEAD SIMPLE NUMBERS / WILL A 3% RAISE PUSH **$65,000** INTO A HIGHER BRACKET? | 26.5 s | $66,950 · $50,400 + $16,100 = $66,500 · $450 · $450 × 10% = $45 | Higher bracket? Yes. It costs you $45 a year | 7.5 (hook pass; adopted, was 3.5) |
 
-**How the hook scores were set.** 01b and 01c carry the two judges' average from the round-2 hook pass (details in the Review log); 01a was not in the hook pass and keeps my estimate. Before the hook pass, the judge scored the round-1 versions 7, 6 and 6, and these were my estimates for the round-2 revisions:
+**How the hook scores were set.** 01c carries the two judges' average from the round-2 hook pass and 01b from hook pass 2 (details in the Review log); 01a was in neither and keeps my estimate. Before the hook pass, the judge scored the round-1 versions 7, 6 and 6, and these were my estimates for the round-2 revisions:
 - **01a (8):** the header now carries R5 ("the pay your budget forgets") and a question (R11) on top of the most common US pay period, and the verdict is novel. It is not higher because the payoff is the 52-vs-48 fact, which some viewers already know, and the format is untested faceless.
-- **01b (estimated 7; hook pass 4.5):** the header moves from H57's filter grammar to H84's payoff grammar, and the shrink runs one way. Take-home pay is familiar ground and the gap (15%) is not lopsided, so it stays below 01a. The hook-pass judges scored it lower than my estimate: the $20/HR header is a filter (H57), "actually lands" is H87's soft verb, and the first payoff ($41,600 at 2.7 s) is the number the viewer already holds.
+- **01b (estimated 7 for the take-home version; hook pass 4.5 and hook pass 2 4.25 for it; 7.25 for the adopted Social Security cap hook):** the judges scored the take-home version lower than my estimate: the $20/HR header is a filter (H57), "actually lands" is H87's soft verb, the first payoff ($41,600 at 2.7 s) is the number the viewer already holds, and take-home pay is familiar ground. The adopted hook plants the viewer's own rate (6.2%), lets the viewer's flat-rate guess ($62,000) be typed and struck, and ends lopsided (6.2% against ≈ 1.1%). It is not higher because the rival's $1M is not the viewer's number, the cap is known to some viewers, and the stake is fairness, not money the viewer keeps.
 - **01c (estimated 7 for the per-day raise; hook pass 3.5 for that hook, 7.5 for the adopted bracket hook):** the old hook asked the viewer to hold two inputs and promised a wrong answer ("actually pays you") the video never showed. The bracket hook attacks a belief most viewers hold, with a yes/no question and a tiny, exact verdict.
 
 ## Caveats
@@ -423,10 +435,11 @@ Read the numbers as: "sixty-five thousand", "three percent", "sixty-six thousand
 - **Fact-checking method.**
   - Round 1 used 10 web searches; this revision used 2 more (2026 raise budgets).
   - Direct fetches of irs.gov, bls.gov, census.gov, energy.gov, taxfoundation.org, imercer.com and hrdive.com were blocked by this session's network proxy, so those pages were read from search extracts only.
-  - Every on-screen tax figure has two independent publishers, and every displayed result is robust to the plausible spread of its inputs. No on-screen number in 01a rests on an outside figure; since the hook pass, 01c's rest only on the 2026 single bracket line ($50,400) and standard deduction ($16,100), the same sourced figures 01b uses.
-  - The hook pass used no new web searches: every new number is arithmetic on figures already sourced here.
+  - Every on-screen tax figure has two independent publishers, and every displayed result is robust to the plausible spread of its inputs. No on-screen number in 01a rests on an outside figure. Since the hook passes, 01b's rest only on the 2026 Social Security rate (6.2%) and wage base ($184,500), and 01c's only on the 2026 single bracket line ($50,400) and standard deduction ($16,100).
+  - Neither hook pass used new web searches: every new number is arithmetic on figures already sourced here (hook pass 2: SSA and Kiplinger for 6.2% and $184,500).
 - **Untested.** No teaser has been posted. Stills were rendered and checked; full MP4s were not rendered in this pass.
 - **Kit dependence.** The clean-sheet chrome (header and verdict fitting) is being reworked by the clean-sheet fixer. The 01a header is written as 2 explicit lines because the current fitter cannot set "THE PAY YOUR BUDGET FORGETS" on a line of its own at ≥ 56 px; it renders as "…EVERY 2 WEEKS? THE / PAY YOUR BUDGET FORGETS". Re-check the break after the fixer lands. The fixer also changed the clean-sheet layout engine during this pass (labels now sit beside the results); the 01a beat sheet describes the final re-render.
+- **01b depends on the live-sheet wrong-guess beat** (`lookOpts.wrongGuess`): if a later kit change drops it, the struck $62,000 (the hook's R5) disappears silently. Re-check the 5.4 and 6.4 s stills after any live-sheet change.
 - **Untested faceless.** Every benchmark winner of this format had a presenter on screen (`04-formats.md`). These are the faceless test.
 
 ---
@@ -511,3 +524,56 @@ The owner rejected round 1 partly because "hooks are weak". For 01b and 01c, fou
 - Mutation test on scratch copies of the specs: (1) ④'s result "$45" → "$46"; (2) vo[3]'s "$45" → "$54"; (3) ②'s `resultT` 6.1 → 7.2; (4) the header's "$65,000" → "$64,000". Each copy fails (2, 2, 1 and 1 failed checks, exit 1): 4 of 4 caught.
 - `node src/cli.mjs check` on 01a, 01b and 01c → 3/3 clean, 0 errors, 0 warnings.
 - `node src/cli.mjs stills` for 01c at 0, 1.5, 2.4, 3.0, 6.3, 10.5, 16.3, 21.5 and 26.4 s: frame 1 shows the 3-line header with "$65,000" in green, the 2-line footer, 4 labelled ledges, ①'s block `$65,000` typed and the `× 1.03` plate in his hands; at 2.4 s **$66,950** has just landed with the hit burst; at 3.0 s it sits in slot ① under the caption "$65,000, plus 3%: $66,950."; the notes appear beside $66,500, $450 and $45; the verdict card reads "Higher bracket? Yes. It costs / you $45 a year". 01b's spec is unchanged, so its round-2 stills stand.
+
+### Hook pass 2 (2026-10-07)
+
+The owner's "hooks are weak" note was re-run for 01b. The current hook and five rewrites were scored by two judges: R1, the round-1 best option B with the honesty fixes from the open items above, and four new options, A-D. **Round-2 rule:** average the two judges' scores per option (an option either judge marks dishonest is out; both judges marked every option honest). Adopt the best option if its average is **at least 1.0 above the current hook**, even below 7.5; otherwise keep the current hook (a clearly better title may still be taken).
+
+| Option | Hook (header / title) | Judge 1 | Judge 2 | Average | Decision |
+|---|---|---:|---:|---:|---|
+| current | "WHAT **$20/HR** ACTUALLY LANDS" / "What $20 an hour actually lands each month" | 4.5 | 4 | 4.25 | replaced |
+| R1 | "4 DEAD SIMPLE NUMBERS / AT **$20/HR**, WHO TAKES MORE: FEDERAL INCOME TAX OR FICA?" | 6.5 | 6.5 | 6.5 | |
+| **A** | **"3 DEAD SIMPLE NUMBERS / YOU PAY 6.2% TO SOCIAL SECURITY. / A $1M SALARY PAYS…?"** / "You pay 6.2% Social Security. What does a $1M salary pay?" | 7.5 | 7 | **7.25** | **adopted** (+3.0) |
+| B | "POV: YOU MAKE **$1M** A YEAR. / SOCIAL SECURITY STOPS ON…?" (a date reveal, ≈ Mar 9) | 5 | 5 | 5.0 | |
+| C | "DOES **$20/HR** TAKE HOME / 3 GRAND A MONTH?" (yes on paper, no kept) | 6 | 5 | 5.5 | |
+| D | "**$20/HR**: TOP OR BOTTOM HALF / OF US FULL-TIME PAY?" (BLS median) | 5 | 5 | 5.0 | |
+
+**Why A won (the judges' reasons, both re-ran every number).**
+- 6.2% is a number nearly every W-2 viewer owns, not a wage filter (R3), and it is small and familiar (R4).
+- The "…?" plants a wrong answer the viewer works out in their head ($62,000). The sheet then types it and strikes it in red: H71's red wrong number (190,187, 4.5x med), done with numbers rather than a lecture (R5).
+- The named rival ends lopsided and repeatable: 6.2% against ≈ 1.1%, the P4/R12 shape of H17 "USA and EUROPE" (2.8M, 345.09x, about 4x the comment rate). The fairness grievance should drive comments, as Jake's twist duels did (136 and 44 comments, against 23).
+- The viewer's own figure lands at 2.3 s (R10). There are 3 countable rows and 14 words.
+
+**Why it is not an 8 (open items, recorded for the next pass).**
+- The header carries two figures, 6.2% and $1M (judge 2: R2 asks for one input).
+- The rival's $1M is not the viewer's number. The stake is fairness, not money the viewer keeps.
+- The Social Security cap is semi-known (a recurring "millionaires stop paying" item and "scrap the cap"), so some viewers already hold the right answer, and the "…?" telegraphs "less".
+- In dollars the $1M earner still pays 4.4x more, so expect pedant comments. The pinned comment now answers that in numbers (see HP2-4).
+
+**The other options, in brief.** R1 fixed its honesty hole ("FEDERAL income tax", since any state income tax over $370.40 would flip it) but stays a $370 near-tie behind the jargon "FICA", with the known $41,600 as its first payoff. B breaks R3/R4 at frame 1 (the only $ figure is a $1M the viewer has never earned), and "SOCIAL SECURITY STOPS" can be misread as benefits stopping. C's fake-out "yes" is a real R5 move, but it is still gross against take-home and its "no" depends on the single-filer footer. D gives its answer away at 2.7 s ($65,052) to anyone who knows $20/hr ≈ $41k.
+
+**What I applied:**
+
+| # | Change | Notes |
+|---|---|---|
+| HP2-1 | **Option A as proposed:** header, footer, the six VO lines and their timings, the three items (labels, formulas, results, tones, notes, `t`, `resultT`), `lookOpts.wrongGuess` ($1,000,000 × 6.2% = $62,000 typed at 4.0 s, landing at 5.2 s, struck at 6.1 s), verdict "You pay __6.2%__. A $1M salary pays **≈ 1.1%**." at 19.3 s with the ding, duration 26.0 s, `typeDur` 0.6. The input row ($20/hr, 40 hrs a week) is unchanged. File name and id kept (`01b-live-sheet-20-an-hour`). | The 01b section of this write-up is rewritten for the new topic: wrong belief, modelled-on, hook rules, beat sheet (checked against stills), VO script, maths, sources, footer, caption, pinned comment and platform notes. The shared Decisions, the summary table, the scores note and the caveats follow. |
+| HP2-2 | Verdict highlight bound with an NBSP (`≈ 1.1%`) | Series rule: a highlight never breaks across lines. The proposal had a plain space; the check script now expects the NBSP. The 21 s still shows "≈ 1.1%" whole on the card's second line. |
+| HP2-3 | **Title in the series' sentence case:** "You pay 6.2% Social Security. What does a $1M salary pay?" | Option A's words, unchanged; only the capitals follow 01a and 01c. |
+| HP2-4 | **Pinned comment extended** past the proposal's Medicare line with two true counterweights: "In dollars the $1M salary still pays 4.4x your $2,579, on 24x the pay. And the cap works both ways: pay above $184,500 doesn't count toward their Social Security benefit either." | It answers the judges' pedant nit (4.4x in dollars) and keeps the fairness framing honest. SSA's own name for the wage base, "contribution and benefit base", states the second fact; it carries no number. The check script verifies 24x and 4.4x. |
+| HP2-5 | **Tax citations moved** (standard deduction and brackets) from 01b's old section to 01c's Sources | 01c relies on them; 01b now cites only SSA and Kiplinger (6.2%, $184,500). |
+| HP2-6 | **Dropped from the series:** the ×0.85 keep rule, the "≈ for a rough rule" exception, and the $3,467 / $2,947 / $17 figures | They belonged to the old 01b body. No other teaser used them. |
+
+**Checks after hook pass 2:**
+- `python3 teasers/v2/checks/01-dead-simple-list.py` → **266 checks, 0 failed**. For 01b the script now derives every number from the 2026 Social Security rate and wage base and rewrites `EXPECT` (including `lookOpts.wrongGuess.formula/result`), `VO_NUMBERS` and `ANCHORS` (item i ↔ VO line i; item 2 types on vo[2]'s "stops"). `APPROX_RESULTS` = [True, False, True].
+  - `display_value` now reads a percent result ("≈ 1.1%" = the typed ratio × 100, rounded to 0.1 point).
+  - New wrong-guess checks: it types on vo[1], lands on "$62,000", and is struck on vo[2]'s "No."; it types before row 2's real formula and is struck before the real result lands; its typed formula gives its shown result exactly.
+  - New sensitivity checks: $41,600 × 6.2% = $2,579.20; $41,600 < $184,500 ("on every dollar, all year"); the cap binds at $1M; $62,000 and $11,439 exact; 1.1439% → 1.1; "more than five times" holds on both 1.1439% (5.42x) and the shown 1.1% (5.64x); the pinned comment's 24x and 4.4x.
+  - The ×0.85, take-home and FICA-vs-tax checks for 01b were removed with the topic. `fed_tax` and `fica` stay for 01c.
+- Mutation test on scratch copies of the new 01b spec: (1) ③ "≈ 1.1%" → "≈ 1.2%"; (2) the guess "$62,000" → "$62,500"; (3) vo[2]'s "$11,439" → "$11,349"; (4) `strikeT` 6.1 → 7.0; (5) the header's "6.2%" → "6.5%"; (6) ① "≈ $2,579" → "≈ $2,580"; (7) a "≈" added to the exact "$11,439". Each copy fails (2, 2, 2, 1, 1, 2 and 3 failed checks, exit 1): 7 of 7 caught.
+- `node src/cli.mjs check studio/specs/01b-live-sheet-20-an-hour.json` → 0 errors, 0 warnings.
+- `node src/cli.mjs stills` for 01b at 0, 1.5, 3, 5.4, 6.4, 10, 10.6, 13.5, 17 and 21 s:
+  - Frame 1 shows the 3-line yellow banner with "6.2%" in the black chip, the bar typing `= $20 × 2,080`, the dashed $20/hr cell, 3 labelled empty rows, the 3-line footer, and the caption "AT $20 AN HOUR,".
+  - At 1.5 s the bar reads `= $20 × 2,080 × 6.2%`. At 3 s **≈ $2,579** sits in red in row 1 with its working line and the tooltip "6.2% of every dollar".
+  - At 5.4 s $62,000 sits in row 2; at 6.4 s it is struck in red under the caption "NO".
+  - At 10.6 s $11,439 shows with the tooltip "taxed only up to $184,500". At 13.5 s ≈ 1.1% is on the yellow row with "yours: 6.2%".
+  - At 21 s the verdict card reads "You pay 6.2%. A $1M / salary pays ≈ 1.1%.".

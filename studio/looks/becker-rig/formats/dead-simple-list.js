@@ -2,9 +2,10 @@
 //
 // The list is a stack of ledges on the void, one numbered slot per item, all on screen and empty from frame 1:
 // an outlined number tab, the label (dim until reached) and a dashed socket where the answer will go.
-// The figure stands on the floor in his own corner (bottom right) and does the maths with his hands, as a tool:
+// The figure stands on the floor at the far right, right of the list, and does the maths with his hands, as a tool:
 // every formula is split at its first operator. The number ("$100,000") drops into the slot as a white glyph
-// block and types itself; the operator and the rest ("× 0.25") type onto an ink plate that pops into his hands.
+// block and types itself; the operator and the rest ("× 0.25") type onto an ink plate that pops into his hands
+// (he holds it low, below his hips, so it only ever shares the bottom ~100 px of the list).
 // He winds up and throws the plate: it tumbles up the screen and slams down onto the number. Impact (hit lines,
 // chips, shake, sound), and the pair crunches into the answer, which squashes into its socket; its note follows.
 // The goal answer is a two-handed heave that lands on a gold plate with the big impact (white flash, camera
@@ -14,11 +15,13 @@
 //   rows   label line(s) + value line. Labels may wrap to 2 lines (3 as a last resort). The block, the answer and
 //          its note are left-aligned under the label.
 //   lines  long lists: one row per item, a label column (wraps to 2 lines, note underneath when there is room)
-//          and the value right-aligned at the row's right edge. A block wider than the answer ducks the label.
-// Rows that come down beside the figure end left of his corner (their right edge steps in; content is measured
-// against it), so nothing he holds ever covers the list. With 5 items or fewer the rows spread out (pitch up to
-// ~260 px, values up to 84 px) and the list is centred in the work area. If nothing fits, the input line is
-// dropped, then the figure shrinks (0.84 -> 0.66), then 3-line labels are allowed; only then does it throw.
+//          and every answer right-aligned on ONE edge; a row whose label cannot sit beside a long answer is
+//          stacked (label full width, answer on its own line under it, same edge). A wide block ducks the label.
+// Only the bottom ~100 px under his held plate is shared, normally by the bottom (last) row alone: its label and
+// block step in left of the plates while they are there; its answer lands after the last plate is gone. With 5
+// items or fewer the rows spread out (pitch up to ~260 px, values up to 84 px) and the list is centred. If nothing
+// fits: notes shrink, the input line is dropped, the figure shrinks (0.84 -> 0.66), 3-line labels are allowed, a
+// tight lines pass, then the goal plate steps down to 1x; only then does it throw.
 //
 // lookOpts (all optional):
 //   hits: ['kick' | 'chop' | 'slam', ...]   the throw per item: kick = underhand flick, chop = overhand throw,
@@ -31,17 +34,17 @@
 import {
   h, s, style, attr, setHTML, fitText, prog, clamp, lerp, plain, markup, typed, graphemes,
   C, F, L, M, E, poseTrack, Figure, makeWorld, makeFx, camera, NumObj, pinLimb, blendJ,
-  chromeParts, durationOf, measure, squashAt, popIn, hop, toss, rng, toneOf, mix, smooth, RIG,
+  chromeParts, durationOf, measure, squashAt, popIn, hop, toss, rng, toneOf, mix, smooth, RIG, fk, poseOf,
 } from '../lib.js'
 
 const TAB_X = 60, TAB = 58, X0 = TAB_X + TAB + 22   // number tab, then the text column
-const CR = 834                                       // right edge for labels, results and notes (above his corner)
-const FX = 872                                       // the figure's hip x (he faces left, toward the list)
+const CR = 834                                       // right edge for labels, results and notes (every row)
+const FXk = k => Math.round(944 - 52 * k)            // the figure's hip x (he faces left, toward the list): far right
 const XMAX = 934                                     // nothing he holds passes this x (the right button rail)
 const LANE = 895                                     // the plate flies up this lane edge-on (right of every row)
 const BP = { x: 18, y: 8, b: 6 }                     // glyph block padding + border
 const OP = { x: 16, y: 8 }                           // operator plate padding
-const HL = 1.06                                      // the goal result is a little bigger, on a gold plate
+let HL = 1.06                                        // the goal result is a little bigger, on a gold plate (1.0 as a fallback)
 const PLATE = [18, 8]
 const LEDGE_X0 = 60
 const WIND = 0.28                                    // wind-up before a throw (s)
@@ -76,6 +79,7 @@ const P = {
   fling: { lean: 20, tilt: -8, aF: [156, 4], aB: [-30, 24], lF: [30, -34], lB: [-34, -6] },             // one-arm fling up and out
   heave: { lean: 6, tilt: -16, aF: [164, 6], aB: [156, 10], lF: [24, -20], lB: [-20, -14] },           // two-handed release, arms up
   proud: { lean: -4, tilt: -6, aF: [26, 118], aB: [-26, -118], lF: [12, -4], lB: [-12, -2] },         // hands on hips
+  hold: { lean: 4, tilt: 12, aF: [10, 20], aB: [4, 26], lF: [12, -10], lB: [-10, -8] },               // plate held low, below his hips
 }
 const VERB = { smash: 'chop', chop: 'chop', carve: 'chop', hammer: 'chop', throw: 'chop', kick: 'kick', punch: 'kick',
   push: 'kick', stack: 'kick', drag: 'kick', toss: 'kick', flick: 'kick', slam: 'slam', crush: 'slam', heave: 'slam' }
@@ -148,17 +152,20 @@ export default function deadSimpleList(spec, ctx) {
     return lines
   }
 
-  // ---- the figure's corner: bottom right, on the floor. Rows that come down beside him end left of it. The plate
-  // he holds never rises above his head (capY), so the corner is as tall as he is.
+  // ---- the figure's corner: bottom right, on the floor, right of the list (his body stays right of CR). He holds
+  // each plate LOW, hanging from his hands at hip height, so the corner the plates need is only the bottom ~100 px:
+  // normally only the bottom row shares it, and that row is the last item, whose answer lands after every plate
+  // has gone (it keeps the full right edge).
   const figTop = k => L.floorY - 262 * k                            // head top
+  const holdJ = k => fk(poseOf(P.hold), { x: FXk(k), face: -1, scale: k })
   // The corner's left edge depends on WHEN: a row's label is there from frame 1 (every plate he will hold), its
   // block and dock from its own turn (plates i..N-1), its answer and note after its hit (plates i+1..N-1).
   const corner = (k, m) => {
-    const handX = FX - 58 * (k / 0.84)
+    const J = holdJ(k), handX = (J.hF[0] + J.hB[0]) / 2, hy = Math.min(J.hF[1], J.hB[1])
     const left = items.map((_, j) => { const pw = opW(j, m); return Math.min(handX, XMAX - pw / 2) - pw / 2 })
-    const body = FX - 80 * k
-    const cx = from => Math.round(Math.min(body, ...left.slice(from)) - 18)
-    return { y: Math.round(figTop(k) - 16), all: cx(0), from: i => cx(i), after: i => cx(i + 1) }
+    const body = FXk(k) - 70 * k
+    const cx = from => Math.round(Math.min(CR, body - 6, ...left.slice(from).map(x => x - 18)))
+    return { y: Math.round(hy - 8 - 4), all: cx(0), from: i => cx(i), after: i => cx(i + 1) }
   }
 
   // ---- input line (the viewer-owned number), only if the hook does not already show it
@@ -168,16 +175,13 @@ export default function deadSimpleList(spec, ctx) {
   const YB = L.floorY - 4                     // the lowest ledge sits just above the floor line
   let Y0 = parts.workTop
 
-  // vertical arrangement: rows bottom-anchored on the floor; 5 items or fewer spread out and centre
-  function arrange(rowH, pMax, wantPitch) {
-    const pitch = N > 1 ? Math.min(pMax, wantPitch) : rowH
-    const total = (N - 1) * pitch + rowH
-    const top = N <= 5 ? Y0 + Math.max(0, (YB - Y0 - total) / 2) : YB - total
-    const Sy = items.map((_, i) => Math.round(top + i * pitch + rowH))
-    return { pitch, Sy }
-  }
-  // right edges per row: { L: label (static), B: block + dock (its turn), V: answer + note (after its hit) }
-  const rightOf = (Sy, cz) => Sy.map((y, i) => (y > cz.y + 4 ? { L: cz.all, B: cz.from(i), V: cz.after(i) } : { L: CR, B: CR, V: CR }))
+  // right edges per row: { L: label (static), B: block + dock (its turn), V: answer + note (after its hit) }. A part
+  // of a row is in the corner when its bottom (labB: the label's, Sy: the value line's) comes down into it
+  const rightOf = (Sy, cz, labB = Sy) => Sy.map((y, i) => ({
+    L: labB[i] > cz.y + 4 ? cz.all : CR,
+    B: y > cz.y + 4 ? cz.from(i) : CR,
+    V: y > cz.y + 4 ? cz.after(i) : CR,
+  }))
 
   // ---- layout candidates
   function tryRows(v, slack, k, nlMax, nMin) {
@@ -229,7 +233,7 @@ export default function deadSimpleList(spec, ctx) {
         const top = N <= 5 ? Y0 + Math.max(0, (YB - Y0 - total) / 2) : YB - total
         let acc = top
         const Sy = hs.map((hh, i) => { acc += hh + (i ? gap : 0); return Math.round(acc) })
-        const RR = rightOf(Sy, cz)
+        const RR = rightOf(Sy, cz, Sy.map((y, i) => y - below[i] * nlhB - 8 - Vh - 6))
         let ok = true
         for (let i = 0; i < N && ok; i++) {
           const it = items[i]
@@ -249,49 +253,65 @@ export default function deadSimpleList(spec, ctx) {
     return null
   }
 
-  function tryLines(v, allowDrop, k) {
-    const l = 40, lh = 48
+  function tryLines(v, allowDrop, k, tight = false) {
+    const l = 40, lh = tight ? 46 : 48, pad = tight ? 8 : 14       // tight: the last resort before giving up
     let m = Math.min(48, Math.max(40, Math.round(v * 0.72)))     // formulas never below the 40 px must-read floor
     while (m > 40 && items.some((_, i) => opW(i, m) > 300)) m = Math.max(40, m - 2)
     const cz = corner(k, m)
     const goal = items.some(isGoal)
     const Vh = Math.max(Math.round(1.21 * v), blockH(m) + 2, goal ? plateH(v) - 8 : 0)
-    // each row's label column ends where its own result begins; its block may duck the label while it is shown
+    // Every answer is right-aligned on ONE edge (the value column never steps in). A row is "side by side" (its
+    // label column ends where its own answer begins, and left of the corner) or, when the label cannot sit beside
+    // a long answer in 2 lines, "stacked": the label runs the full width and the answer sits on its own line under
+    // it, still on the value edge. A block wider than the answer ducks the label while it is shown.
     const solve = RR => {
-      const R = RR.map(x => x.B)
-      const colW = items.map((_, i) => Math.floor(Math.min(R[i] - resW(i, v) - 30, RR[i].L) - X0))
-      if (colW.some(w => w < 180)) return null
-      const lines = items.map((_, i) => nLines(i, colW[i], l, lh))
-      if (lines.some(n => n > 2)) return null
+      const VE = Math.min(...RR.map(x => x.V))
+      const rw = items.map((_, i) => {
+        const colW = Math.floor(Math.min(VE - resW(i, v) - 30, RR[i].L) - X0)
+        const nS = colW >= 180 ? nLines(i, colW, l, lh) : 99
+        if (nS <= 2) return { stack: false, colW, lines: nS }
+        const fw = Math.floor(RR[i].L - X0), nT = nLines(i, fw, l, lh)
+        return nT <= 2 ? { stack: true, colW: fw, lines: nT } : null
+      })
+      if (rw.some(x => !x)) return null
       let notes = null, best = null
       const drops = o => o.filter(x => x.kind === 'drop').length
       for (const n of [40, 38, 36]) {
         const cur = items.map((it, i) => {
           if (!it.note) return { kind: 'none' }
-          if (lines[i] <= 1 && wN(it.note, n) <= colW[i]) return { kind: 'under', n }
+          if (!rw[i].stack && rw[i].lines <= 1 && wN(it.note, n) <= rw[i].colW) return { kind: 'under', n }
+          if (rw[i].stack && X0 + wN(it.note, n) + 26 <= VE - resW(i, v)) return { kind: 'vleft', n }
           return { kind: 'drop', n }
         })
         if (!drops(cur)) { notes = cur; break }
         if (!best || drops(cur) < drops(best)) best = cur
       }
       if (!notes) { if (!allowDrop) return null; notes = best }
-      const textH = Math.max(...items.map((it, i) => (lines[i] + (notes[i].kind === 'under' ? 1 : 0)) * lh))
-      return { colW, lines, notes, rowH: Math.max(textH, Vh) + 14 }
+      const hs = rw.map((x, i) => (x.stack ? x.lines * lh + (tight ? 0 : 4) + Vh + pad : Math.max((x.lines + (notes[i].kind === 'under' ? 1 : 0)) * lh, Vh) + pad))
+      return { rw, notes, hs, VE }
     }
-    let R = items.map(() => ({ L: CR, B: CR, V: CR })), sol = null, pos = null
-    for (let pass = 0; pass < 3; pass++) {
+    let R = items.map(() => ({ L: CR, B: CR, V: CR })), sol = null, Sy = null
+    for (let pass = 0; pass < 4; pass++) {
       sol = solve(R)
       if (!sol) return null
-      const pMax = N > 1 ? (YB - Y0 - sol.rowH) / (N - 1) : Infinity
-      if (pMax < sol.rowH + 6 || pMax < 100) return null
-      pos = arrange(sol.rowH, pMax, N <= 5 ? 240 : sol.rowH + 60)
-      const R2 = rightOf(pos.Sy, cz)
-      if (R2.every((x, i) => x.B === R[i].B && x.L === R[i].L)) break
+      const sumH = sol.hs.reduce((x, y) => x + y, 0)
+      const gapMax = N > 1 ? (YB - Y0 - sumH) / (N - 1) : 0
+      if (gapMax < (tight ? 0 : 6)) return null
+      const gap = N > 1 ? Math.min(gapMax, N <= 5 ? Math.max(6, 240 - Math.max(...sol.hs)) : 60) : 0
+      const total = sumH + (N - 1) * gap
+      const top = N <= 5 ? Y0 + Math.max(0, (YB - Y0 - total) / 2) : YB - total
+      let acc = top
+      Sy = sol.hs.map((hh, i) => { acc += hh + (i ? gap : 0); return Math.round(acc) })
+      // the label's bottom: a side row's label sits on the answer's line; a stacked row's ends above its answer
+      const labB = Sy.map((y, i) => (sol.rw[i].stack ? y - pad / 2 - Vh - (tight ? 0 : 4) : y - pad / 2))
+      const R2 = rightOf(Sy, cz, labB)
+      if (R2.every((x, i) => x.B === R[i].B && x.L === R[i].L && x.V === R[i].V)) break
       R = R2
-      if (pass === 2) return null
+      if (pass === 3) return null
     }
     for (let i = 0; i < N; i++) if (X0 + blockW(i, m) > R[i].B) return null
-    return { mode: 'lines', v, l, lh, m, Vh, rowH: sol.rowH, pitch: pos.pitch, Sy: pos.Sy, R, notes: sol.notes, lines: sol.lines, colW: sol.colW, k }
+    R = R.map(x => ({ ...x, V: sol.VE }))
+    return { mode: 'lines', v, l, lh, m, Vh, pad, sgap: tight ? 0 : 4, hs: sol.hs, Sy, R, notes: sol.notes, lines: sol.rw.map(x => x.lines), colW: sol.rw.map(x => x.colW), stack: sol.rw.map(x => x.stack), k }
   }
 
   function pickLayout(k, nlMax) {
@@ -302,27 +322,35 @@ export default function deadSimpleList(spec, ctx) {
     // keep every note if that works at a decent value size; otherwise drop the notes that have no room
     if (lo.layout !== 'rows') for (const [drop, vMin] of [[false, 56], [true, 48]]) for (let v = 68; v >= vMin; v -= 4) { const x = tryLines(v, drop, k); if (x) return x }
     for (let v = 60; v >= 52; v -= 4) { const x = tryRows(v, 0, k, nlMax, 36); if (x) return x }
+    if (lo.layout !== 'rows') for (let v = 56; v >= 48; v -= 4) { const x = tryLines(v, true, k, true); if (x) return x }
     return null
   }
   const k0 = clamp(lo.figureScale ?? 0.84, 0.6, 1.1)
   let lay = null
   const attempts = []
-  for (const inpOn of showInput ? [true, false] : [false]) for (const k of [k0, Math.min(k0, 0.74), Math.min(k0, 0.66)]) for (const nl of [2, 3]) attempts.push([inpOn, k, nl])
-  for (const [inpOn, k, nl] of attempts) {
+  for (const hl of [1.06, 1]) for (const inpOn of showInput ? [true, false] : [false]) for (const k of [k0, Math.min(k0, 0.74), Math.min(k0, 0.66)]) for (const nl of [2, 3]) attempts.push([hl, inpOn, k, nl])
+  for (const [hl, inpOn, k, nl] of attempts) {
+    if (HL !== hl) { HL = hl; memo.clear() }
     Y0 = parts.workTop + (inpOn ? 58 + 18 : 0)
     lay = pickLayout(k, nl)
     if (lay) { if (showInput && !inpOn) console.warn('dead-simple-list: no room for the input line; the hook has to carry the number'); showInput = inpOn; break }
   }
-  probe.remove()
-  if (!lay) throw new Error('dead-simple-list: the items do not fit the work area (shorten labels or formulas, or use fewer items)')
+  if (!lay) { probe.remove(); throw new Error('dead-simple-list: the items do not fit the work area (shorten labels or formulas, or use fewer items)') }
   const rows = lay.mode === 'rows'
-  const { v, l, m, Vh, rowH, k } = lay
+  const { v, l, m, Vh, k } = lay
+  const FX = FXk(k)
   const SyA = lay.Sy, RA = lay.R
   const Sy = i => SyA[i]
-  const yV = i => Sy(i) - 8 - (lay.belowH ? lay.belowH[i] : 0) - Vh / 2   // value line centre
-  const yL = i => yV(i) - Vh / 2 - 6 - lay.Lh / 2                   // label block centre (rows)
-  const yRowC = i => Sy(i) - 7 - (rowH - 14) / 2                    // row centre (lines)
-  const yTab = i => (rows ? yV(i) - Vh / 2 - 6 - lay.Lh + lay.lh / 2 : yRowC(i))
+  const yV = i => Sy(i) - (rows ? 8 : lay.pad / 2 + 1) - (lay.belowH ? lay.belowH[i] : 0) - Vh / 2   // value line centre
+  // rows: each label sits directly on its own value line (a 1-line label in a list of 2-line ones does not float)
+  const nlR = items.map((it, i) => (rows && it.label ? Math.max(1, Math.min(lay.nl, nLines(i, RA[i].L - X0, l, lay.lh))) : rows ? lay.nl : 0))
+  const yLT = i => yV(i) - Vh / 2 - 6 - nlR[i] * lay.lh             // label top (rows)
+  const yL = i => yLT(i) + nlR[i] * lay.lh / 2                       // label block centre (rows)
+  probe.remove()
+  const stk = i => !rows && lay.stack[i]
+  const yRowC = i => Sy(i) - lay.pad / 2 - (lay.hs[i] - lay.pad) / 2   // row centre (lines, side by side)
+  const yLabTop = i => (stk(i) ? yV(i) - Vh / 2 - lay.sgap - lay.lines[i] * lay.lh : null)   // a stacked row's label
+  const yTab = i => (rows ? yLT(i) + lay.lh / 2 : stk(i) ? yLabTop(i) + lay.lh / 2 : yRowC(i))
   const BH = blockH(m), PH = opH(m)
 
   // ============================================================================================ timing
@@ -347,10 +375,11 @@ export default function deadSimpleList(spec, ctx) {
     fitText(el, L.railX - 62, { minPx: 40 })
   }
 
-  // ledges: one under each row, out to the row's right edge (the lowest row stands on the floor)
+  // ledges: one under each row, all out to one right edge (the lowest row stands on the floor)
+  const ledgeX = Math.min(...items.map((_, i) => (Sy(i) >= L.floorY - 6 ? Infinity : RA[i].L + 14)))
   const ledges = items.map((_, i) => {
     if (Sy(i) >= L.floorY - 6) return null
-    const el = s('line', { x1: LEDGE_X0, x2: RA[i].L + 14, y1: Sy(i), y2: Sy(i), stroke: C.line, 'stroke-width': 6, 'stroke-linecap': 'round' })
+    const el = s('line', { x1: LEDGE_X0, x2: ledgeX, y1: Sy(i), y2: Sy(i), stroke: C.line, 'stroke-width': 6, 'stroke-linecap': 'round' })
     g.back.append(el)
     return el
   })
@@ -367,24 +396,25 @@ export default function deadSimpleList(spec, ctx) {
     if (it.label) {
       r.label = h('div', { class: 'ds-label wrap' })
       setHTML(r.label, markup(it.label))
-      if (rows) style(r.label, { width: (r.rightL - X0) + 'px', fontSize: l + 'px', lineHeight: lay.lh + 'px', transform: `translate(${X0}px,${Math.round(yV(i) - Vh / 2 - 6 - lay.Lh)}px)` })
+      if (rows) style(r.label, { width: (r.rightL - X0) + 'px', fontSize: l + 'px', lineHeight: lay.lh + 'px', transform: `translate(${X0}px,${Math.round(yLT(i))}px)` })
       else {
         const nl = lay.lines[i] + (lay.notes[i].kind === 'under' ? 1 : 0)
-        style(r.label, { width: lay.colW[i] + 'px', fontSize: l + 'px', lineHeight: lay.lh + 'px', transform: `translate(${X0}px,${Math.round(yRowC(i) - nl * lay.lh / 2)}px)` })
+        const top = stk(i) ? yLabTop(i) : yRowC(i) - nl * lay.lh / 2
+        style(r.label, { width: lay.colW[i] + 'px', fontSize: l + 'px', lineHeight: lay.lh + 'px', transform: `translate(${X0}px,${Math.round(top)}px)` })
       }
       world.html.append(r.label)
     }
     // result geometry: left-aligned under the label (rows) or right-aligned at the row's edge (lines)
     r.rw = glyphW(i, v)
     r.sw = r.rw * (r.goal ? HL : 1)
-    r.home = rows ? X0 + (r.goal ? PLATE[0] + 6 : 0) : r.right - (r.goal ? PLATE[0] + 6 : 0) - r.sw
+    r.home = rows ? X0 + (r.goal ? PLATE[0] + 6 : 0) : RA[i].V - (r.goal ? PLATE[0] + 6 : 0) - r.sw
     // the glyph block (the number) sits where the answer will land
     r.bw = blockW(i, m)
     r.bx = rows ? X0 : r.right - r.bw
     // where the plate docks: flush against the block's right end when the row has room, else over its right end
     r.pw = opW(i, m)
     r.dockX = Math.min(r.bx + r.bw + 6 + r.pw / 2, r.right - r.pw / 2)
-    if (!rows && r.label) {
+    if (!rows && r.label && !lay.stack[i]) {          // (a stacked row's block is on its own line, under the label)
       const rg = document.createRange(); rg.selectNodeContents(r.label)
       const textR = Math.max(0, ...[...rg.getClientRects()].map(q => q.right))
       r.duck = Math.min(r.bx, r.dockX - r.pw / 2) < textR + 14     // the block or plate covers the label: it ducks
@@ -403,7 +433,7 @@ export default function deadSimpleList(spec, ctx) {
     r.val.el.innerHTML = esc(numS) + (unitS ? `<span class="u" style="font-size:${unitPx(v)}px">${esc(unitS)}</span>` : '')
     // empty socket (dashed), sized for this row's own answer
     const hh = Math.round(1.21 * v) + 6, sw = resW(i, v) + 28
-    r.socket = s('rect', { x: rows ? X0 - 14 : r.right - sw + 14, y: yV(i) - hh / 2, width: sw, height: hh, rx: 14, fill: 'none', stroke: C.line, 'stroke-width': 4, 'stroke-dasharray': '14 12' })
+    r.socket = s('rect', { x: rows ? X0 - 14 : RA[i].V - sw + 14, y: yV(i) - hh / 2, width: sw, height: hh, rx: 14, fill: 'none', stroke: C.line, 'stroke-width': 4, 'stroke-dasharray': '14 12' })
     g.back.append(r.socket)
     // note
     const nt = lay.notes[i]
@@ -417,6 +447,7 @@ export default function deadSimpleList(spec, ctx) {
       else if (nt.kind === 'label') { r.noteX = nt.x; r.noteY = base(yL(i), l) - 0.86 * nt.n }
       else if (nt.kind === 'block') { r.noteX = nt.x; r.noteY = yV(i) - nt.lh }
       else if (nt.kind === 'below') { r.noteX = nt.x; r.noteY = Math.round(yV(i) + Vh / 2 + 6) }
+      else if (nt.kind === 'vleft') { r.noteX = X0; r.noteY = base(yV(i), v * (r.goal ? HL : 1)) - 0.86 * nt.n }
       else { r.noteX = X0; r.noteY = yRowC(i) - (lay.lines[i] + 1) * lay.lh / 2 + lay.lines[i] * lay.lh + (lay.lh - nt.n) / 2 }
       r.noteY = Math.round(r.noteY)
     } else if (it.note && nt.kind === 'drop') console.warn(`dead-simple-list: no room for the note of item ${i + 1} ("${it.note}")`)
@@ -462,7 +493,7 @@ export default function deadSimpleList(spec, ctx) {
   const xKeys = [{ t: -10, v: FX }]
   for (let i = 0; i < N; i++) {
     const r = R[i], T0 = TI[i]
-    K(T0.tHold - 0.12, 'carry', 0.16, 'spring')
+    K(T0.tHold - 0.12, P.hold, 0.16, 'spring')
     if (r.style === 'chop') {
       K(T0.tw, P.back, T0.tr - T0.tw - 0.02, 'inOut')
       K(T0.tr - 0.04, P.fling, 0.08, 'out')
@@ -492,7 +523,7 @@ export default function deadSimpleList(spec, ctx) {
   K(tCel, 'celebrate', 0.14, 'out')
   hops.push({ t0: tCel + 0.04, dur: 0.36, h: 46 })
   K(tCel + 0.62, 'stand', 0.18, 'spring')
-  K(tCel + 0.9, 'pointUp', 0.3, 'spring')
+  K(tCel + 0.9, yV(N - 1) > figTop(k) + 70 * k ? 'point' : 'pointUp', 0.3, 'spring')   // at the last answer
   const tEnd = tCel + 0.9
   const tr = poseTrack(keys)
   const figX = (() => {
@@ -510,7 +541,15 @@ export default function deadSimpleList(spec, ctx) {
   })()
   const lift = t => { let y = 0; for (const hp of hops) y += hop(t, hp.t0, hp.dur, hp.h); return y }
   const landTimes = hops.map(hp => hp.t0 + hp.dur)
-  const Jat = t => fig.pose(t, tr, { x: figX(t), ground: L.floorY - lift(t), face: -1, noDraw: true })
+  // he never leans his head into the list: when a lunge or a squat would bring it within 10 px of the value
+  // column, his whole body shifts right by the difference
+  const JKEYS = ['hip', 'nk', 'sh', 'head', 'eF', 'hF', 'eB', 'hB', 'kF', 'fF', 'kB', 'fB']
+  const Jat = t => {
+    const J = fig.pose(t, tr, { x: figX(t), ground: L.floorY - lift(t), face: -1, noDraw: true })
+    const dx = CR + 10 - (J.head[0] - J.R)
+    if (dx > 0) for (const key of JKEYS) J[key] = [J[key][0] + dx, J[key][1]]
+    return J
+  }
 
   // where the plate sits while he holds it: it hangs from his hands (top edge in his grip), left of the rail,
   // never over his head and never through the floor

@@ -4,19 +4,19 @@
   "format": "pov-race",
   "fps": 30,
   "duration": 30.5,
-  "header": "POV: You invested in Netflix\ninstead of paying Netflix,\never since it was **$7.99**",
-  "footer": "Standard plan list price · each year at its avg price · split-adjusted",
+  "header": "**$19.99** Netflix, free for\nhow many years, if your\n2012-25 bills bought its stock?",
+  "footer": "Standard plan list price, 2012-25 · 12/31/25 value ÷ $19.99 a month",
   "captions": true,
   "vo": [
     {
       "t": 0.0,
-      "d": 2.5,
-      "text": "Netflix was $7.99 in 2012."
+      "d": 2.9,
+      "text": "Your $19.99 Netflix, free. For how long?"
     },
     {
-      "t": 2.6,
-      "d": 3.1,
-      "text": "Every bill since, you buy Netflix stock instead."
+      "t": 3.0,
+      "d": 2.9,
+      "text": "Since 2012, every bill buys Netflix stock."
     },
     {
       "t": 6.0,
@@ -31,7 +31,7 @@
     {
       "t": 13.4,
       "d": 2.6,
-      "text": "2020: your stake tops $9,000."
+      "text": "2020: about 38 years of Netflix."
     },
     {
       "t": 16.9,
@@ -50,13 +50,13 @@
     },
     {
       "t": 26.0,
-      "d": 3.3,
-      "text": "About 8.7 times what Netflix charged you."
+      "d": 3.6,
+      "text": "At $19.99 a month: about 74 years of Netflix."
     }
   ],
   "verdict": {
     "t": 26.0,
-    "text": "**≈ 8.7×** what Netflix\ncharged you"
+    "text": "**≈ 74 years** of Netflix\nat $19.99 a month"
   },
   "data": {
     "spend": {
@@ -253,19 +253,27 @@
     "formulaBar": [
       {
         "t": 0.0,
-        "text": "= $7.99 × 12 = $95.88"
+        "text": "≈ stock ÷ ($19.99 × 12) = ? years"
       },
       {
-        "t": 2.6,
-        "text": "≈ $95.88 ÷ $1.19 ≈ 81 shares"
+        "t": 1.93,
+        "text": "≈ $107 ÷ $19.99 ≈ 5 months"
       },
       {
-        "t": 6.0,
-        "text": "= 9 × $8.99 + 3 × $9.99 = $110.88"
+        "t": 3.55,
+        "text": "≈ $568 ÷ $239.88 ≈ 2.4 years"
       },
       {
         "t": 9.2,
         "text": "≈ each year's bills ÷ that year's avg price"
+      },
+      {
+        "t": 14.91,
+        "text": "≈ $9,181 ÷ $239.88 ≈ 38 years"
+      },
+      {
+        "t": 18.15,
+        "text": "≈ $5,289 ÷ $239.88 ≈ 22 years"
       },
       {
         "t": 21.2,
@@ -273,7 +281,7 @@
       },
       {
         "t": 26.0,
-        "text": "≈ $17,700 ÷ $2,037.32 ≈ 8.7×"
+        "text": "≈ $17,700 ÷ $239.88 ≈ 74 years"
       }
     ]
   },

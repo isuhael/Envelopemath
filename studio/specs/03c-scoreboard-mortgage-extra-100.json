@@ -46,7 +46,7 @@
   ],
   "verdict": {
     "t": 22.0,
-    "text": "+$100 a month: **≈ $78,600** less"
+    "text": "+$100 a month:\neach $1 saves **≈ $2.46**"
   },
   "data": {
     "stake": {
@@ -85,6 +85,7 @@
           "interest": "≈ $508,600"
         },
         "delta": "≈ $78,600 less",
+        "deltaT": 10.6,
         "tone": "goal"
       },
       {
@@ -96,6 +97,7 @@
           "interest": "≈ $342,200"
         },
         "delta": "≈ $245,000 less",
+        "deltaT": 18.6,
         "tone": "good"
       }
     ],
@@ -105,6 +107,8 @@
   "lookOpts": {
     "counter": "interest",
     "intro": false,
+    "firstName": false,
+    "heads": false,
     "footerSteps": [
       {
         "t": 4.6,
@@ -121,6 +125,24 @@
       {
         "t": 22.0,
         "text": "≈ $78,600 ÷ ($100 × 319) ≈ $2.46"
+      }
+    ],
+    "labelSteps": [
+      {
+        "t": 9.4,
+        "option": 1,
+        "text": "40 months sooner"
+      },
+      {
+        "t": 17.4,
+        "option": 2,
+        "text": "≈ 11 years sooner"
+      }
+    ],
+    "reads": [
+      {
+        "t": 1.2,
+        "target": "hero"
       }
     ]
   }

@@ -7,8 +7,9 @@
 //     the row lights and a pointer jumps to it
 //   - the row's time bar then races left to right at one shared speed and scale (a shorter bar is a sooner payoff),
 //     the payoff rides the bar's end on a rolling odometer, and the hero odometer in the top bar rolls the money
-//     metric (interest) up from zero on the same clock. All three stop together: bump, glow flare, a ding, and the
-//     money value is posted into the row
+//     metric (interest) on the same clock, from the previous option's landed score (so ≈ $587,200 rolls down to
+//     ≈ $508,600 and the gap is the motion itself; up from zero for the first race). All three stop together: bump,
+//     glow flare, a ding, and the money value is posted into the row
 //   - the option's delta then slams into the label stack ("≈ $487 LESS") in the option's tone
 //   - at verdict.t the winning row flashes neon (its bar turns solid green), the others dim, and the hero rolls to
 //     the winner's money delta ("≈ $1,288 LESS", tagged with the hero metric's label): the payoff is the last number
@@ -41,6 +42,15 @@
 //   footerSteps  [{ t, text }]: kit-wide (the chrome draws it): the footer rewrites to a working line at each t;
 //                a line too long for 960 px at 40 px breaks at its " · " into two lines
 //   stageBottom  y where the stage ends (default: the kit grid)
+//   reads        [{ t } | t]: the VO speaks the number the hero is holding (e.g. the frame-1 score); at each t the hero
+//                bumps (6%) and its glow flares, a smaller cousin of a landing, on a soft tick (ignored at t <= 0.05)
+//   labelSteps   [{ t, option, text }]: the label stack slams a line 2 of its own while that option is active (e.g. "40
+//                months sooner" as the VO says it, before the delta slams); line 1 stays the option's detail
+//   firstName    false: the first option, already landed at frame 1 (no intro), shows only its line 1 (the payment) in
+//                the label stack, so the frame-1 stack doesn't repeat lane 1's name under the hero
+//   heads        false: no column heads over the board (the hero's tag already names its metric); the rows take the room
+//   heroRoll     'from' (default) | 'zero': the hero rolls each race from the previous option's landed value (≈ $587,200
+//                down to ≈ $508,600: the gap is the motion itself) or, 'zero', up from zero
 // The verdict and the footer are the chrome's (the kit's one verdict slot, at the foot of the frame).
 import { css as style, setHTML, attr, h, s, prog, ease, clamp, lerp, fitText } from '../../../runtime/core.js'
 import { C, SIZE, M, W, layoutFor } from '../theme.js'
@@ -156,7 +166,8 @@ export default function whatDifference(spec, ctx) {
 
   // ---------- stage geometry ----------
   const box = { x: L.inner.x, y: L.stage.y + 12, w: L.inner.w, h: L.stage.h - 24 }
-  const headH = 44, headGap = 6
+  const showHeads = lo.heads !== false
+  const headH = showHeads ? 44 : 0, headGap = showHeads ? 6 : 0
   const gap = n >= 4 ? 10 : 12
   const rowsY = box.y + headH + headGap
   const fitH = Math.floor((box.y + box.h - rowsY - gap * (n - 1)) / n)
@@ -297,6 +308,14 @@ export default function whatDifference(spec, ctx) {
       c.from = clamp(1 + (colRight[k] - ink - leftWall - 8) / ink, 1.04, 1.35)
     })
   })
+  // two-line rows: the money cell sits right on the bar line, so its slam grows up and left from the figure's
+  // baseline (never down into the bar label riding the bar's end) and starts no bigger than the room above it
+  // inside the row allows (about 1.15×)
+  if (two && !below) rows.forEach(r => r.cells.forEach(c => {
+    const cellH = topH - TOPPAD, f = cellFs(), base = Math.min(cellH, (cellH + f) / 2)
+    style(c.cell, { transformOrigin: `100% ${((base / cellH) * 100).toFixed(1)}%` })
+    c.from = Math.max(1, Math.min(c.from, (base + TOPPAD) / f))
+  }))
   if (two) rows.forEach(r => { if (r.blab) { style(r.blab.odo.el, { fontSize: barFs + 'px' }); style(r.blab.q, { fontSize: barFs + 'px' }) } })
 
   // ---------- column heads ----------
@@ -304,7 +323,7 @@ export default function whatDifference(spec, ctx) {
   // rides the bar's end ("60 MONTHS"), so a "PAID OFF IN" head over the names would label the wrong thing.
   const headEl = m => { const el = h('div', { class: 'wd-head', html: richUI(m.label || m.key), style: { top: rowsTop - headH - headGap + 'px' } }); stage.append(el); return el }
   const X0 = box.x + BORDER
-  const colHeads = lineCols.map(m => headEl(m))
+  const colHeads = showHeads ? lineCols.map(m => headEl(m)) : []
   const leftLimit = X0 + PAD
   // right-to-left: each head right-aligned over its column, pushed left of its right-hand neighbour (24 px apart,
   // so a long head reaches over the next column's slack); if the leftmost one then runs past the names' edge,
@@ -387,9 +406,15 @@ export default function whatDifference(spec, ctx) {
   // ---------- label stack: [intro], then per option [payment / NAME] and [payment / DELTA] ----------
   const items = [], idx = []
   if (intro) items.push({ l1: ax(esc(stake.terms || '')), l2: rich(stake.label || '') })
-  opts.forEach(o => {
-    const at = { name: items.length }
-    items.push({ l1: o.detail ? rich(o.detail) : '', l2: rich(o.name) })
+  const labelSteps = (Array.isArray(lo.labelSteps) ? lo.labelSteps : []).filter(x => x && Number.isFinite(+x.t) && Number.isInteger(x.option) && x.option >= 0 && x.option < n && x.text)
+  opts.forEach((o, oi) => {
+    const at = { name: items.length, steps: [] }
+    const bare1 = oi === 0 && !intro && lo.firstName === false && !!o.detail
+    items.push({ l1: o.detail ? rich(o.detail) : '', l2: bare1 ? '' : rich(o.name) })
+    for (const st of labelSteps.filter(x => x.option === oi).sort((a, b) => a.t - b.t)) {
+      at.steps.push({ t: +st.t, idx: items.length })
+      items.push({ l1: o.detail ? rich(o.detail) : '', l2: rich(String(st.text)), l2Color: toneOf(o) === 'neutral' ? C.white : toneColor(toneOf(o)) })
+    }
     if (o.delta) { at.delta = items.length; items.push({ l1: o.detail ? rich(o.detail) : '', l2: rich(o.delta), l2Color: toneOf(o) === 'neutral' ? C.white : toneColor(toneOf(o)) }) }
     idx.push(at)
   })
@@ -404,7 +429,11 @@ export default function whatDifference(spec, ctx) {
     ctx.cue(b.land, 'ding', { gain: 0.5 })
     if (b.deltaT != null) ctx.cue(b.deltaT, 'pop', { gain: 0.45 })
   })
+  for (const st of labelSteps) ctx.cue(+st.t, 'pop', { gain: 0.4 })
   if (winT != null) ctx.cue(winT + 0.3, 'cash', { gain: 0.55 })
+  // reads: the hero answers the voice when it speaks the number on screen
+  const heroReads = (Array.isArray(lo.reads) ? lo.reads : []).map(r => +(r && typeof r === 'object' ? r.t : r)).filter(x => Number.isFinite(x) && x > 0.05)
+  for (const rt of heroReads) ctx.cue(rt, 'tick', { gain: 0.45 })
   if (winT != null && endDisp) ctx.cue(winT + 0.04, 'roll', { dur: END_ROLL - 0.1, gain: 0.45 })
 
   const duration = durationOf(spec, lastBeat, d.hold ?? M.hold)
@@ -523,7 +552,12 @@ export default function whatDifference(spec, ctx) {
         else if (t < b.start) {
           // cut → race start: the hero holds the previous option's exact score (or the stake)
           if (k > 0) { hDisp = val(opts[k - 1], heroKey); hCol = moneyCol(opts[k - 1]) } else { hDisp = stake.value; tagOn = false; hCol = C.green }
-        } else { hTpl = tpl; hv = accrue(prog(t, b.start, b.dur)) * tpl.value * tpl.scale; ghost = true }
+        } else {
+          // the race: from the previous option's landed score (or zero) to this one's, on the race clock
+          const pv = k > 0 && lo.heroRoll !== 'zero' ? parseDisplay(val(opts[k - 1], heroKey)) : null
+          const from = pv && isFinite(pv.value) ? pv.value * pv.scale : 0
+          hTpl = tpl; hv = lerp(from, tpl.value * tpl.scale, accrue(prog(t, b.start, b.dur))); ghost = true
+        }
       }
       if (hTpl) hero.set(hv, hTpl, ghost)
       else if (hDisp && isFinite(parseDisplay(hDisp).value)) hero.show(hDisp)
@@ -544,6 +578,10 @@ export default function whatDifference(spec, ctx) {
         sc *= bump(t, b.land, { amp: 0.08, dur: M.bump })
         if (t >= b.land) glow = Math.max(glow, 0.6 * (1 - ease.out(prog(t, b.land, 0.6))))
       }
+      for (const rt of heroReads) {
+        sc *= bump(t, rt, { amp: 0.06, dur: M.bump })
+        if (t >= rt) glow = Math.max(glow, 0.5 * (1 - ease.out(prog(t, rt, 0.6))))
+      }
       if (winT != null) {
         const hit = endDisp ? winT + 0.04 + END_ROLL : winT
         if (endDisp) sc *= 1 - 0.03 * Math.sin(Math.PI * prog(t, winT, 0.28))
@@ -563,8 +601,10 @@ export default function whatDifference(spec, ctx) {
       if (k < 0) labels.seek(t, intro ? 0 : idx[0].name, 0)
       else {
         const at = idx[k], b = beats[k]
-        if (at.delta != null && b.deltaT != null && t >= b.deltaT) labels.seek(t, at.delta, b.deltaT)
-        else labels.seek(t, at.name, k === 0 && !intro ? 0 : b.cut)
+        let cur = at.name, t0 = k === 0 && !intro ? 0 : b.cut
+        for (const st of at.steps) if (t >= st.t) { cur = st.idx; t0 = st.t }
+        if (at.delta != null && b.deltaT != null && t >= b.deltaT) { cur = at.delta; t0 = b.deltaT }
+        labels.seek(t, cur, t0)
       }
       // (the verdict, the label stack's yield and the footer steps are the chrome's)
     },

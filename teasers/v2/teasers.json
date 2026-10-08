@@ -10,7 +10,7 @@
       "becker-rig"
     ],
     "file": "teasers/v2/01-dead-simple-list.md",
-    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/01-dead-simple-list.py -> 250 checks, 0 failed (after the round-2 hook pass). For 01c the script derives every number from the 2026 single bracket table (22% line = $50,400 + $16,100 = $66,500 of pay) and checks the $45 against the full federal tax ($5,620 -> $5,899 on the raise; minus the raise all at 12% = $45), the on-screen rule (new pay - $66,500) x 10% to the cent for every salary $64,564-$66,499, and the pinned comment (FICA $149.18, kept ~$1,522, myth $5,085). Earlier checks stand: every typed formula re-evaluated against its displayed result ($1 or 1c rounding), the ≈ rule, payoff gaps <= 7.5 s, no VO after the verdict card, lookOpts limited to keys the kit reads, Becker hits valid, 01b within ±1% of the exact 2026 take-home. Mutation test on scratch copies of the new 01c spec (result $45->$46, VO $45->$54, resultT 6.1->7.2, header $65,000->$64,000): 4 of 4 caught (exit 1). Studio linter on all 3 specs: 3/3 clean, 0 errors, 0 warnings; 01c stills at 0, 1.5, 2.4, 3 s and each payoff inspected.",
+    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/01-dead-simple-list.py -> 266 checks, 0 failed (after hook pass 2). Since hook pass 2, 01b is the Social Security wage cap: every number derives from the 2026 6.2% rate and $184,500 wage base; the struck $62,000 wrong guess is anchored to the VO (typed on vo[1], landed on '$62,000', struck on 'No.') and its formula checked; '≈ 1.1%' is checked as the typed ratio × 100 to 0.1 point; 'more than five times' holds on 1.1439% and on the shown 1.1%. Mutation test on the new 01b spec: 7 of 7 caught. For 01c the script derives every number from the 2026 single bracket table (22% line = $50,400 + $16,100 = $66,500 of pay) and checks the $45 against the full federal tax ($5,620 -> $5,899 on the raise; minus the raise all at 12% = $45), the on-screen rule (new pay - $66,500) x 10% to the cent for every salary $64,564-$66,499, and the pinned comment (FICA $149.18, kept ~$1,522, myth $5,085). Earlier checks stand: every typed formula re-evaluated against its displayed result ($1 or 1c rounding), the ≈ rule, payoff gaps <= 7.5 s, no VO after the verdict card, lookOpts limited to keys the kit reads, Becker hits valid, 01b within ±1% of the exact 2026 take-home. Mutation test on scratch copies of the new 01c spec (result $45->$46, VO $45->$54, resultT 6.1->7.2, header $65,000->$64,000): 4 of 4 caught (exit 1). Studio linter on all 3 specs: 3/3 clean, 0 errors, 0 warnings; 01c stills at 0, 1.5, 2.4, 3 s and each payoff inspected.",
     "teasers": [
       {
         "id": "01a-clean-sheet-paid-biweekly",
@@ -35,21 +35,22 @@
       {
         "id": "01b-live-sheet-20-an-hour",
         "look": "live-sheet",
-        "title": "What $20 an hour actually lands each month",
-        "header": "3 DEAD SIMPLE NUMBERS\nWHAT **$20/HR** ACTUALLY LANDS",
-        "runtime_s": 27,
+        "title": "You pay 6.2% Social Security. What does a $1M salary pay?",
+        "header": "3 DEAD SIMPLE NUMBERS\nYOU PAY **6.2%** TO SOCIAL SECURITY.\nA $1M SALARY PAYS…?",
+        "runtime_s": 26,
         "key_numbers": [
-          "$20 × 2,080 hrs = $41,600 a year, on paper (at 2.7 s)",
-          "$41,600 ÷ 12 ≈ $3,467 a month",
-          "$3,467 × 0.85 ≈ $2,947 a month kept (2026 federal tax + FICA, single, before state tax; exact $2,967.13, 0.68% off)",
-          "about $17 of every $20 hour",
-          "verdict: ≈ $2,947 a month lands of the $3,467 you earn"
+          "$20 × 2,080 × 6.2% ≈ $2,579 a year, yours (at 2.3 s); $41,600 is all under the cap",
+          "wrong guess: $1,000,000 × 6.2% = $62,000, typed at 4.0 s, landed 5.2 s, struck in red 6.1 s",
+          "$184,500 (2026 Social Security wage base) × 6.2% = $11,439, what a $1M salary pays",
+          "$11,439 ÷ $1,000,000 ≈ 1.1% of their pay; 6.2 ÷ 1.1439 = 5.42 ('more than five times')",
+          "verdict: You pay 6.2%. A $1M salary pays ≈ 1.1%",
+          "pinned: in dollars 4.4x your $2,579 on 24x the pay; pay above the cap does not count toward benefits either"
         ],
         "spec": "studio/specs/01b-live-sheet-20-an-hour.json",
         "mp4": "studio/out/01b-live-sheet-20-an-hour.mp4",
         "math_ok": true,
         "facts_ok": true,
-        "hook_score": 4.5
+        "hook_score": 7.25
       },
       {
         "id": "01c-becker-rig-60k-a-year",
@@ -395,7 +396,7 @@
       "becker-rig"
     ],
     "file": "teasers/v2/06-pov-race.md",
-    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/06-pov-race.py -> 352 checks, 0 failed, ALL PASS (exit 0). It used to be 313 checks. New checks cover: VO pacing in spoken words at 2.8 per second, counting numbers as they are read aloud; race moving by 1.0 s; first payoff by 3.0 s; raw-close derivation of the $3.65 launch price; every pinned-comment product multiplying out. Studio linter (node src/cli.mjs check): 06a, 06b and 06c each 0 errors, 0 warnings (3/3 clean).",
+    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/06-pov-race.py -> 365 checks, 0 failed, ALL PASS (exit 0) after hook pass 2 (06b's years-of-Netflix steps; was 352, and 313 before that). New checks cover: VO pacing in spoken words at 2.8 per second, counting numbers as they are read aloud; race moving by 1.0 s; first payoff by 3.0 s; raw-close derivation of the $3.65 launch price; every pinned-comment product multiplying out. Studio linter (node src/cli.mjs check): 06a, 06b and 06c each 0 errors, 0 warnings (3/3 clean).",
     "teasers": [
       {
         "id": "06a-scoreboard-first-iphone-apple",
@@ -420,16 +421,16 @@
       {
         "id": "06b-live-sheet-netflix-bill",
         "look": "live-sheet",
-        "title": "What If Your Netflix Bill Bought Netflix Stock Since 2012?",
-        "header": "POV: You invested in Netflix\ninstead of paying Netflix,\never since it was **$7.99**",
+        "title": "Your 2012-2025 Netflix Bills in Netflix Stock: How Many Years of Free Netflix?",
+        "header": "**$19.99** Netflix, free for\nhow many years, if your\n2012-25 bills bought its stock?",
         "runtime_s": 30.5,
         "key_numbers": [
-          "$7.99 Standard plan from Jan 2012, 7 hikes to $17.99 (tags 'Hike 1 · May 2014' ... 'Hike 7 · Jan 2025')",
-          "NFLX 2012-2014 at Macrotrends' 4 dp (1.1855/1.3227, 3.5272/5.2596, 5.7495/4.8801)",
-          "end of 2012 $107 vs $95.88 (first payoff at 1.91 s); formula bar ≈ $95.88 ÷ $1.19 ≈ 81 shares",
-          "2020 stake tops $9,000 ($9,181); 2022 halves ($10,410 -> $5,289, -49.2%)",
+          "hook unit: today's Standard bill $19.99 (from March 2026, CNBC 2026-03-26); 12 x $19.99 = $239.88 a year; not a race input",
+          "$7.99 Standard plan from Jan 2012, 7 hikes to $17.99 (tags 'Hike 1 · May 2014' ... 'Hike 7 · Jan 2025'); NFLX 2012-2014 at Macrotrends' 4 dp",
+          "end of 2012 $107 vs $95.88 (row at 1.91 s); bar ≈ $107 ÷ $19.99 ≈ 5 months (first payoff in the hook's unit, typed by ~2.75 s)",
+          "bar year-counts: 2013 ≈ 2.4 years ($568), 2020 ≈ 38 ($9,181), 2022 ≈ 22 ($5,289, the stake halves from $10,410)",
           "$2,037.32 paid over 168 months; 188.84 shares x $93.76 = $17,705.59 shown as ≈ $17,700",
-          "≈ 8.7x (8.69); 2012's bills ≈ $7,600 of the final (≈ 43%)"
+          "verdict ≈ 74 years of Netflix at $19.99 a month (17,705.59 ÷ 239.88 = 73.81); pinned ≈ 73.8 years and ≈ 8.7x the bills"
         ],
         "spec": "studio/specs/06b-live-sheet-netflix-bill.json",
         "mp4": "studio/out/06b-live-sheet-netflix-bill.mp4",
@@ -470,7 +471,7 @@
       "clean-sheet"
     ],
     "file": "teasers/v2/07-ledger-duel.md",
-    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/07-ledger-duel.py → 406 checks, 0 failures, exit 0. Two planted errors, the old \"× ≈ 8.1\" in 07a's formula bar and \"$6,600\" in a 07b voice-over line, each made it exit 1 with a named failure; both specs were then restored. New checks: the first payoff row must land by 3.0 s (it previously allowed 3.5-3.6 s). A formula that multiplies shown factors must reproduce the shown result. Each formula-bar line must stay on screen long enough to type at 24 characters a second plus 1.5 s to read. Headers are capped at 4 lines. 07a's break-even rate (≈ 6.1%) and its 6% case are asserted. The studio linter (node src/cli.mjs check) gives 3/3 clean, 0 errors, 0 warnings. 07a and 07c were rendered as stills and contact sheets in their built kits.",
+    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/07-ledger-duel.py → 407 checks, 0 failures, exit 0 (after the 2026-10-08 hook pass 2 on 07c, which rewrote it to \"You save $100 a month\"; a 4-corruption mutation test on a scratch copy of the new 07c spec gave 5 named failures and exit 1). Two planted errors, the old \"× ≈ 8.1\" in 07a's formula bar and \"$6,600\" in a 07b voice-over line, each made it exit 1 with a named failure; both specs were then restored. New checks: the first payoff row must land by 3.0 s (it previously allowed 3.5-3.6 s). A formula that multiplies shown factors must reproduce the shown result. Each formula-bar line must stay on screen long enough to type at 24 characters a second plus 1.5 s to read. Headers are capped at 4 lines. 07a's break-even rate (≈ 6.1%) and its 6% case are asserted. The studio linter (node src/cli.mjs check) gives 3/3 clean, 0 errors, 0 warnings. 07a and 07c were rendered as stills and contact sheets in their built kits.",
     "teasers": [
       {
         "id": "07a-live-sheet-start-at-25",
@@ -517,23 +518,22 @@
       {
         "id": "07c-clean-sheet-savings-rate",
         "look": "clean-sheet",
-        "title": "2 People Save $10,000: Big Bank vs High-Yield. How Far Apart in 5 Years?",
-        "header": "2 people save **$10,000**\nBig bank vs high-yield\nInterest after 5 years?",
-        "runtime_s": 22.1,
+        "title": "You Save $100 a Month for 5 Years. How Much Does a Big Bank Add?",
+        "header": "You save **$100 a month**\n5 years = $6,000\nA big bank adds: ?",
+        "runtime_s": 19.1,
         "key_numbers": [
-          "Chase Savings 0.01% APY (Oct 2, 2026 rate sheet) vs 4.00% APY high-yield",
-          "Plans show the working: × 1.0001 a year vs × 1.04 a year",
-          "Month 1 at 1.0 s: ≈ $10,000.08 (about 8 cents) vs ≈ $10,032.74 (about $33)",
-          "Year 1: $10,001 vs $10,400",
-          "Year 5: ≈ $10,005 vs ≈ $12,167",
-          "Interest after 5 years: ≈ $5 vs ≈ $2,167 (≈ 433×)",
-          "FDIC national average 0.37% → $37 a year on $10,000 (pinned comment)"
+          "Chase Savings 0.01% APY (Oct 2, 2026 rate sheet) vs 4.00% APY high-yield, both held 5 years",
+          "$100 deposited at each month-end for 60 months = $6,000; monthly rate = (1 + APY)^(1/12) − 1",
+          "Year 1 at 1.0 s: ≈ $0.05 (about 5 cents) vs ≈ $21.84 (about $22) of interest",
+          "Year 3: ≈ $0.53 (about 53 cents) vs ≈ $214.11",
+          "Year 5 (the header's '?'): ≈ $1.48 vs ≈ $617.90 of interest on the same $6,000 (≈ 419×, off screen)",
+          "$200 a month doubles both (caption); FDIC national average 0.37% → ≈ $55 over the same 5 years (pinned comment)"
         ],
         "spec": "studio/specs/07c-clean-sheet-savings-rate.json",
         "mp4": "studio/out/07c-clean-sheet-savings-rate.mp4",
         "math_ok": true,
         "facts_ok": true,
-        "hook_score": 7
+        "hook_score": 7.25
       }
     ]
   },
@@ -711,24 +711,24 @@
       {
         "id": "10a-scoreboard-debt-interest-live",
         "look": "scoreboard",
-        "title": "US Debt Interest Since You Hit Play: How Much Comes Off the Debt?",
-        "header": "US debt interest since you hit **play**.\nHow much comes __off the debt__?",
+        "title": "US Debt Interest Since You Hit Play: When Does It Pass Your Salary?",
+        "header": "US debt interest since you hit **play**:\nwhen does it pass **your salary**?",
         "runtime_s": 36.5,
         "key_numbers": [
-          "Footer at 0.0 s: FY25: $970B ÷ 31,536,000 s · pay $1,251 × 52",
+          "Frame 1: odometer at $0, salary ladder $30K · $50K · $100K · $250K · $1M; footer FY25: $970B ÷ 31,536,000 s · pay $1,251 × 52",
           "≈ $30,800 a second (exact $30,758.50)",
-          "a year of median pay ($65,052) passes at 2.11 s",
-          "Yearly pay ÷ 30,800 = your seconds (VO at 8.5 s)",
+          "salary rows pass at 0.975 / 1.626 / 3.251 / 8.128 / 32.511 s: ≈ 1.0 / 1.6 / 3.3 / 8 / 33 seconds",
+          "Yearly pay ÷ 30,800 = your seconds (VO at 12.7 s)",
           "≈ $111 million an hour",
-          "$1 million passes at 32.51 s (≈ 33 seconds)",
-          "$0 of it pays the debt down",
+          "verdict: $1 million a year ≈ 33 seconds; $100,000 a year ≈ 3.3 seconds",
+          "caption: median pay ($65,052) ≈ 2.1 seconds; $0 of it pays the debt down",
           "counter final ≈ $1,002,727"
         ],
         "spec": "studio/specs/10a-scoreboard-debt-interest-live.json",
         "mp4": "studio/out/10a-scoreboard-debt-interest-live.mp4",
         "math_ok": true,
         "facts_ok": true,
-        "hook_score": 7
+        "hook_score": 7.25
       },
       {
         "id": "10b-becker-rig-debt-vs-your-pay",
@@ -755,24 +755,24 @@
       {
         "id": "10c-live-sheet-amazon-makes",
         "look": "live-sheet",
-        "title": "What Amazon Really Keeps While You Watch This",
-        "header": "How much does Amazon **really** make\nwhile you watch this?",
+        "title": "How Long Do You Work for 1 Second of Amazon's Profit?",
+        "header": "How long do **you** work for\n1 second of Amazon's profit?",
         "runtime_s": 31,
         "key_numbers": [
-          "Amazon 2025 net sales $716.9B, net income $77.7B; footer pay $1,251 a week × 52",
-          "sales ≈ $22,700 a second (exact $22,732.75), the one rounding everywhere",
-          "kept ≈ $2,464 a second, ≈ 11% (exact 10.84%), the one rounding everywhere",
-          "both counters run from frame 1",
-          "sales passes a year of median pay ≈ 3 s (2.86 s), a median new house ≈ 17 s (17.32 s)",
-          "kept passes a year of median pay ≈ 26 s (26.40 s; $65,052 ÷ $2,464 = 26.40)",
-          "finals: sales ≈ $602,418, kept ≈ $65,292",
-          "verdict: sells a year of median pay in ≈ 3 s, keeps one every ≈ 26 s"
+          "Amazon 2025 net income $77.7B; footer pay BLS median $1,251 a week × 52",
+          "profit ≈ $2,464 a second (exact $2,463.85); counter from $0 at frame 1 (preroll 0)",
+          "1 second ≈ 2 weeks of median pay (1.97); 5 seconds ≈ $12,319 ≈ 10 weeks (9.85)",
+          "half a year of median pay ($32,526) passes at ≈ 13 s (13.20 s)",
+          "a year of median pay ($65,052) passes at ≈ 26 s (26.40 s; $65,052 ÷ $2,464 = 26.40)",
+          "rows snap at 1.000 / 5.000 / 13.201 / 26.403 s",
+          "counter final ≈ $65,292",
+          "verdict: 1 second ≈ 2 weeks of median pay; a year ≈ 26 s"
         ],
         "spec": "studio/specs/10c-live-sheet-amazon-makes.json",
         "mp4": "studio/out/10c-live-sheet-amazon-makes.mp4",
         "math_ok": true,
         "facts_ok": true,
-        "hook_score": 6.5
+        "hook_score": 7.0
       }
     ]
   }

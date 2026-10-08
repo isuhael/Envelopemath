@@ -1,18 +1,19 @@
 # Format 10: real-time cost counter, three teasers
 
 **Channel:** Back of the Envelope (YouTube Shorts, Instagram Reels, TikTok), US audience, USD
-**Date:** 2026-10-07 (round-2 revision), hook pass 2026-10-08 (10b's hook replaced). What changed and why is in the **Review log** at the end.
+**Date:** 2026-10-07 (round-2 revision), hook pass 2026-10-08 (10b's hook replaced), hook pass 2 2026-10-08 (10a's and 10c's hooks replaced). What changed and why is in the **Review log** at the end.
 **Format:** `cost-counter`. No hook pattern of its own in the hook bank ("–"). The hooks borrow the grammar of P4, P5, P6, P8 and P9 winners (quoted under each teaser).
-**Lane:** a real-time dollar counter at a verified rate (interest on the US debt, new US debt, a mega-company's sales and profit per second)
+**Lane:** a real-time dollar counter at a verified rate (interest on the US debt, new US debt, a mega-company's profit per second)
 **Files:**
 - Specs:
   - [`studio/specs/10a-scoreboard-debt-interest-live.json`](../../studio/specs/10a-scoreboard-debt-interest-live.json)
   - [`studio/specs/10b-becker-rig-debt-vs-your-pay.json`](../../studio/specs/10b-becker-rig-debt-vs-your-pay.json)
   - [`studio/specs/10c-live-sheet-amazon-makes.json`](../../studio/specs/10c-live-sheet-amazon-makes.json)
 - Check: [`teasers/v2/checks/10-cost-counter.py`](checks/10-cost-counter.py). Run `python3 teasers/v2/checks/10-cost-counter.py`. It recomputes every number from the sourced inputs, rebuilds every display string, compares them with the three specs and with the caption and pinned-comment numbers in this file, prints a table and exits 1 on any mismatch.
-  - It reports **853 checks, 0 failures** and exits 0 (after the 2026-10-08 hook pass; it was 861 before 10b's new hook replaced the house, $1 million and car checks with the minute, crossover and 3/10/20-year checks).
-  - New in this round: every footer must carry the viewer-owned pay figure ("$1,251 … × 52") at 0.0 s; every header must ask a question; **one rounding per quantity** (any number within 5% of a computed quantity, in a spec string, a VO line, a caption or a pinned comment, must be that quantity's one shown rounding); and a list of banned overclaims ("live", "in real time", "fiscal 2026" for a 364-day window, "Under 1 second" as a universal claim).
+  - It reports **915 checks, 0 failures** and exits 0 (after hook pass 2; it was 853 after the first hook pass). Hook pass 2 rebuilt 10a on a salary ladder (5 pass times) and 10c on Amazon's profit in weeks of median pay (4 rows), and dropped Amazon's sales from the check.
+  - New in round 2: every footer must carry the viewer-owned pay figure ("$1,251 … × 52") at 0.0 s; every header must ask a question; **one rounding per quantity** (any number within 5% of a computed quantity, in a spec string, a VO line, a caption or a pinned comment, must be that quantity's one shown rounding); and a list of banned overclaims ("live", "in real time", "fiscal 2026" for a 364-day window, "Under 1 second" as a universal claim). Hook pass 2 added one exemption: 10a's $30,000 salary row is an exact input that happens to sit 2.5% under the ≈ $30,800 rate, so it is not read as a second rounding of the rate.
   - As a test I broke one thing per teaser in a scratch copy: the 10a footer without the pay figure, 10b's caption back to "≈ $78,006", and 10c's vo[6] back to "≈ $2,500". It exited 1 with 7 failures, naming all three. Run against the round-1 captions, the new guards flagged "$30,758", "$78,006", "$22,733" and "fiscal 2026".
+  - Hook pass 2 test, in a scratch copy: 10a's $100K label as "≈ 3.2 seconds", 10a's vo[4] moved to 9.0 s, 10c's first row as "≈ 3 weeks" and 10c's pinned comment as "≈ 1.97". It exited 1 with 10 failures, catching all four (the wrong rounding, the VO overlap and the 0.87 s sync miss, the unsourced 3, and the second rounding of 1.97 weeks).
 
 **How the facts were checked**
 - **Searches:** this round used **8 of the 10** web searches allowed (round 1 used 13 of 14).
@@ -21,10 +22,10 @@
 - **Nothing unverifiable on screen.** 10b no longer claims a fiscal-year figure, because the 2026-09-30 reading could not be confirmed (Review log, item V4).
 - **No market data.** No teaser uses a market price or a forecast on screen.
 
-**Studio linter:** `node src/cli.mjs check` passes on all three specs: **3/3 clean, 0 errors, 0 warnings**.
+**Studio linter:** `node src/cli.mjs check` passes on all three specs: **3/3 clean, 0 errors, 0 warnings** (rerun after hook pass 2).
 - The Scoreboard, Live Sheet and Becker Rig `cost-counter` modules are all built (working tree), so all three specs are linted with their real counters.
-- I rendered stills at 0 s, 1.5 s and the verdict for all three (10b again at 0 / 1.5 / 3 / 25.5 / 33.4 s after the hook pass). In each, the header, the two-part footer, the caption band and the verdict fit their zones.
-- Everything in `lookOpts` is a proposal for the kit builder. Each spec tells its story from the contract fields alone: the header asks, the footer carries the pay figure and the working, the counter runs, the verdict answers.
+- I rendered stills at 0 s, 1.5 s and the verdict for all three (10b again at 0 / 1.5 / 3 / 25.5 / 33.4 s after the hook pass; 10a at 0 / 1.5 / 3 / 33.5 s and 10c at 0 / 1.1 / 1.5 / 3 / 26.6 / 27.5 s after hook pass 2). In each, the header, the footer, the caption band and the verdict fit their zones.
+- The Scoreboard and Live Sheet kits read every `lookOpts` key that 10a and 10c pass; 10b's block-stack, stamp and timer are still proposals for the Becker kit. Each spec still tells its story from the contract fields alone: the header asks, the footer carries the pay figure and the working, the counter runs, the verdict answers.
 
 ---
 
@@ -48,7 +49,7 @@
    - round milestones are the open loop ($100, $200);
    - 0 cuts;
    - it ends on the biggest number, and comments argue about the input ("JP-8 price vs full cost per flight hour").
-4. **What we add** (04-formats twist): the working in a footer, milestones the viewer owns (their year of pay, a house), **a question the counter answers** (R5, R11), and a verdict a viewer can repeat (R12). HD Guy's counter never says what the number means.
+4. **What we add** (04-formats twist): the working in a footer, milestones the viewer owns (a ladder of round salaries, years or weeks of their pay), **a question the counter answers** (R5, R11), and a verdict a viewer can repeat (R12). HD Guy's counter never says what the number means.
 5. **Pitfall, and why it is a 3:**
    - The format lives on spectacle footage we will not have.
    - Its civilian money topics flopped: "Wages Visualized In Real Time" got **9,025** and "Cost Of Data Centers In Real Time" got **8,288** (URLs unknown). HD Guy's government-money titles flopped too: "Real-Time Cost Of Alaska Summit 2025" 44,045 and "The $1Trillion US Defense Budget in Action" 12,051.
@@ -58,30 +59,33 @@
 ### Decisions shared by all three
 
 - **The counter is the answer machine; the header is the question.**
-  - 10a: "How much comes off the debt?" The counter shows $1 million of interest; the answer is $0.
+  - 10a: "When does it pass your salary?" The counter lights a ladder of salaries: $30,000 at ≈ 1.0 second, $100,000 at ≈ 3.3 seconds, $1 million at ≈ 33 seconds.
   - 10b: "40 years of your pay vs 1 minute of new US debt. Which is bigger?" The counter eats the 40 years in ≈ 33 seconds, 55% of the minute.
-  - 10c: "How much does Amazon really make?" Two counters (sales and kept) answer it from frame 1.
+  - 10c: "How long do you work for 1 second of Amazon's profit?" The answer cells fill as the counter passes them: ≈ 2 weeks of median pay at 1.0 s, a year of it at ≈ 26 s.
 - **The counter starts at frame 1, at $0** in all three, so "since you hit play" is literal: the number on screen is what passed while this viewer watched. The loop restarts the count, which is honest on every replay.
   - 10b's 2.4 s armed pause and its ding were dropped in the hook pass (2026-10-08): nothing moved in its first 1.5 s.
-- **The viewer's own number is on screen at 0.0 s in every teaser:** the footer carries the pay basis ($1,251 a week × 52 = **$65,052**, BLS Q2 2026). The checker enforces it.
-  - The milestones are the viewer's yardsticks and repeat across the series: a year of median full-time pay ($65,052) and a median new house (**$393,700**, Census, Aug 2026). 10b counts in years of that pay (3, 10, 20 and 40).
-  - Pay is the first payoff in every teaser: a year of median pay at 2.1 s (10a) and 2.9 s (10c); 3 years of median pay at 2.5 s in 10b (its first $65,052 block goes at 0.83 s in the proposed block-stack).
-  - The swap-in rule for the viewer's own pay (R3): the VO says it in 10a ("Yearly pay ÷ 30,800 = your seconds."); the pinned comments say it in 10b and 10c.
+  - 10c needs `lookOpts.preroll: 0`: without it the Live Sheet kit starts its counter 1 s in, which made the old 10c's frame 1 read $22,733 (found by the hook-pass-2 judges).
+- **The viewer's own number is on screen at 0.0 s in every teaser:** the footer carries the pay basis ($1,251 a week × 52 = **$65,052**, BLS Q2 2026), and the checker enforces it. 10a also prints its salary ladder ($30K to $1M) beside the pips from frame 1, so every viewer has a row.
+  - The milestones are pay yardsticks: round yearly salaries in 10a; years of median pay in 10b (3, 10, 20 and 40); weeks, months and a year of median pay in 10c. The median new house left the series in hook pass 2.
+  - The first payoff lands by 2.5 s in every teaser: the $30,000 row at 0.98 s (10a), ≈ 2 weeks of median pay at 1.0 s (10c), 3 years of median pay at 2.5 s (10b; its first $65,052 block goes at 0.83 s in the proposed block-stack).
+  - The swap-in rule for the viewer's own pay (R3): the VO says it in 10a ("Yearly pay ÷ 30,800 = your seconds.") and 10c ("2,464 ÷ your weekly pay = your weeks."); the pinned comments repeat it, and 10b's gives it.
 - **Rounding: one rounding per quantity.** A quantity shows one rounded figure everywhere it appears: spec strings, captions (the VO), formula bar, caption text and pinned comment. The checker enforces it.
   - Every rounded number shows "≈" on screen and in the captions, including the counters' final readings.
-  - Rates: 3 significant figures (≈ $30,800, ≈ $22,700), 2 for 10b (≈ $78,000 a second, ≈ $4.7 million a minute), and Amazon's kept rate to the dollar (≈ $2,464) because the formula bar divides by it.
-  - Times: whole seconds everywhere, the Live Sheet included (≈ 3 s, ≈ 17 s, ≈ 26 s). The rates are year averages, so tenths of a second would be false precision. The one exception is the 10a caption's "≈ 2.1 seconds" for a year of median pay, which is never shown beside a different rounding.
+  - Rates: 3 significant figures for 10a (≈ $30,800), 2 for 10b (≈ $78,000 a second, ≈ $4.7 million a minute), and Amazon's profit rate to the dollar (≈ $2,464) because the formula bar divides by it.
+  - Times: whole seconds from 5 s up (≈ 8, ≈ 13, ≈ 26, ≈ 33 s). Under 5 s, 10a's salary rows show tenths (≈ 1.0 / 1.6 / 3.3 s), and so does the 10a caption's "≈ 2.1 seconds" for a year of median pay: whole seconds would put $30,000 and $50,000 both at "≈ 1-2 s" and lose the ladder's point. Each time still has one rounding everywhere it appears.
 - **VO text uses numerals.** It doubles as the captions, and the checker reads its numbers. Line lengths assume 2.6 spoken words a second, with digits expanded the way they are read ("$65,052" = 4 words, "2025" = 2, "US" = 2).
-- **Sync:** each milestone passes within 0.29 s of the start of the VO line that names it, and the on-screen beat (label, thud, row) lands on the pass itself. The 0.29 s case is 10a's first pass: the opening question runs to 2.4 s and the pay passes at 2.11 s. 10b's gaps are 0.03-0.14 s (3, 10, 20 and 40 years). Every other gap is 0.07 s or less.
+- **Sync:** the on-screen beat (label, thud, row) lands on the pass itself, and each milestone the VO names passes within 0.5 s of the moment it is said (the checker's limit).
+  - 10a: $50K said at 1.6 s (pass 1.63), $100K at 3.25 (3.25), $250K at 8.5 (8.13, the widest gap at 0.37 s), $1 million at 32.5 (32.51). The $30K row is not spoken: it lights at 0.98 s, during "Find your salary.", and the label stack names it.
+  - 10b: gaps of 0.03-0.14 s (3, 10, 20 and 40 years).
+  - 10c: 5 seconds said at 5.2 (pass 5.0), ≈ 13 at 13.2 (13.20), ≈ 26 at 26.4 (26.40). The 1-second row snaps on screen at 1.0 s while the opening question is still spoken, and vo[1] reads it back at 2.8 s with the formula bar's working: the one accepted gap (1.8 s), so the hook keeps its spoken question.
 - **Lane check:**
   - These are counters at a real rate, over one continuous stretch.
-  - No find-your-row table: 10c has 2 milestone rows and 1 kept row, not one per viewer.
+  - No find-your-row table. 10a's salary ladder has a row for every kind of viewer, but it is the counter's own milestone ladder (5 pips the counter lights), with no per-row computation shown and the counter still the mechanic. 10c's 4 rows are time slices of one counter (1, 5, ≈ 13 and ≈ 26 s).
   - No unit stacks (that is `unit-ladder`). 10b's proposed 40-block stack is a prop the counter eats, not a ladder of units.
-  - No race between two assets (`chart-race`); 10c's two counters are one company's sales and profit, not rival assets.
+  - No race between two assets (`chart-race`): every teaser has one counter.
   - No "instead of paying" (`pov-race`).
-  - 10c's makes-vs-keeps is a **per-second rate** comparison, not a split of one sum into shares (that is `split-sheet`).
 - **10a and 10b are both about the federal debt, but they ask different questions:**
-  - 10a is the interest, and what it does to the debt (nothing: "$0 off the debt");
+  - 10a is the interest, against a ladder of yearly salaries (and, in the caption, what it does to the debt: nothing);
   - 10b is the growth of the debt itself, against the viewer's working life (40 years of pay vs 1 minute).
   - Post them at least a week apart, or as a labelled pair ("Part 2: the debt itself").
 - **Tone:**
@@ -91,96 +95,102 @@
 
 ---
 
-## 10a: Scoreboard: "US debt interest since you hit play. How much comes off the debt?"
+## 10a: Scoreboard: "US debt interest since you hit play: when does it pass your salary?"
 
 | | |
 |---|---|
-| Look | `scoreboard` (black bars, neon-green odometer in the top bar, label stack in the bottom bar, footer working) |
+| Look | `scoreboard` (black bars, neon-green odometer in the top bar, milestone ladder on the stage, label stack in the bottom bar, footer working) |
 | Spec | `studio/specs/10a-scoreboard-debt-interest-live.json` (36.5 s) |
-| Platform title | **US Debt Interest Since You Hit Play: How Much Comes Off the Debt?** |
-| On-screen hook (header) | **US DEBT INTEREST SINCE YOU HIT PLAY. / HOW MUCH COMES OFF THE DEBT?** (13 words, 2 lines; "PLAY" in green, "OFF THE DEBT" in red) |
-| Frame 1 | Header. The odometer reads **$0** and starts rolling at once. The label stack shows "≈ $30,800 / EVERY SECOND". Footer: "FY25: $970B ÷ 31,536,000 s · pay $1,251 × 52". Four ladder pips show the countable loop, and the first milestone's ghost icon (a year of pay) starts filling. Proposed for the kit: the pips labelled with their amounts, and a red "OFF THE DEBT  $___" cell that stays empty until the verdict |
+| Platform title | **US Debt Interest Since You Hit Play: When Does It Pass Your Salary?** |
+| On-screen hook (header) | **US DEBT INTEREST SINCE YOU HIT PLAY: / WHEN DOES IT PASS YOUR SALARY?** (13 words, 2 lines; "PLAY" and "YOUR SALARY" in green) |
+| Frame 1 | Header. The odometer reads **$0** and rolls from frame 1 ($46,137 at 1.5 s). On the stage, a 5-pip salary ladder labelled **$30K · $50K · $100K · $250K · $1M** (bottom to top), with $30K lit as the next target, and the big bill ghost of the $30K row starting to fill. Label stack "≈ $30,800 / EVERY SECOND". Footer "FY25: $970B ÷ 31,536,000 s · pay $1,251 × 52". Caption "Find your salary." |
 | Footer | FY25: $970B ÷ 31,536,000 s · pay $1,251 × 52 |
 
 **Topic vs the seed:**
 - Kept: interest on the US national debt per second, from the latest full-year Treasury net-interest figure (FY2025: $970 billion).
-- Added: **the question "how much comes off the debt?"** and its answer, **$0**. Net interest is the cost of carrying the debt; none of it repays principal. That gives 10a an angle 10b cannot share.
+- Changed in hook pass 2: **the yardstick is a ladder of round yearly salaries** ($30,000, $50,000, $100,000, $250,000, $1 million), and the viewer finds their own row. Pay is the yardstick, not the subject: HD Guy's one pay-as-subject counter, "Wages Visualized In Real Time", got 9,025 views.
+- Dropped in hook pass 2: the question "How much comes off the debt?", its red "$0" slot, the median new house and the 10-year milestone. Both judges scored that hook 5: a gotcha whose answer ($0) many viewers can guess, with no number they own on screen. The $0 fact stays in the caption.
 - Why not FY2026: Treasury's final statement for FY2026 (which ended 2026-09-30) is due about 2026-10-13 (the 8th business day of October; 2026-10-12 is a federal holiday). It is not out today. FY2026 interest is running higher, so this counter runs slow, and the caption says so in the past tense with the latest actual (CBO, through August). See the posting plan under the per-platform notes.
 
 **Wrong belief it exploits**
-1. **"Some of the interest must pay the debt down."** The header asks, and the verdict answers: **$0** of it does. Interest is not principal; the counter is pure carrying cost.
-2. "A few seconds of a government budget line is small change." In fact a year of median pay goes in **2.1 s**.
-3. "$1 million is a lot of money." In fact it takes **≈ 33 seconds**.
+1. **"My year's salary is a lot of money, even next to the government."** The counter passes $30,000 in ≈ 1.0 second, $50,000 in ≈ 1.6 seconds and $100,000 in ≈ 3.3 seconds. Most viewers' whole year is gone before they finish reading the header.
+2. "$1 million a year is out of reach." The counter gets there in **≈ 33 seconds**.
 
 **Hook rules satisfied**
 
 | Rule | How |
 |---|---|
-| R1 | The counter ($0, rolling), "≈ $30,800 every second" and the footer's "$970B ÷ 31,536,000 s · pay $1,251 × 52" are on screen at 0.0 s |
-| R2 | The hook line holds no number and no result (HD Guy's titles carry none: "the number is the payoff"). The inputs sit in the footer |
-| R3 | The viewer's pay basis ($1,251 × 52) is in the footer at 0.0 s and passes at 2.1 s. The swap-in rule is spoken at 8.5 s ("Yearly pay ÷ 30,800 = your seconds.") and repeated in the pinned comment |
-| R4 | The yardsticks are a year of pay and a house. "$970 billion" appears only as the footer's working and once in the VO |
-| R5 | The question implies the wrong answer "some of it" and the verdict breaks it ($0), with no "most people think" |
-| R6 | You ("since you hit play") + an amount (the counter) + a horizon (this video). The money is the government's, so this is a partial pass |
-| R7 | The VO opens on the question, not on a topic label ("US debt interest. Live." is gone). The milestones are named; the proposed pip labels name them at frame 1 |
+| R1 | The counter ($0, rolling), the five salary pips ($30K to $1M), "≈ $30,800 every second" and the footer's working are on screen at 0.0 s |
+| R2 | The hook line holds one input, the viewer's own salary, and no result. The rate sits in the label stack and the footer |
+| R3 | Full pass: every viewer's salary sits on or between the pips, and the first spoken words are "Find your salary." The swap-in rule for salaries between rows is spoken at 12.7 s ("Yearly pay ÷ 30,800 = your seconds.") and pinned |
+| R4 | Round, familiar salaries ($30K, $50K, $100K). "$970 billion" appears only as the footer's working and once in the VO |
+| R5 | The implied wrong answer is "a while". The everyday rows go in ≈ 1.0 to 3.3 seconds, with no "most people think" |
+| R6 | You (your salary) + an amount (the counter) + a horizon ("since you hit play"). The money is the government's, so this is a partial pass |
+| R7 | The VO opens on an instruction ("Find your salary."), not a topic label |
 | R8 | 13 words, 2 lines |
-| R9 | 4 milestone pips are visible from 0.0 s and light as they are passed; the proposed "OFF THE DEBT $___" cell stays open to the end |
-| R10 | First payoff at 2.1 s (a year of median pay). The biggest number ($1 million) comes last, with the $0 |
-| R11 | The question is on screen and in the title; the caption leads with the verdict |
-| R12 | A lopsided pair to repeat: **$1 million in ≈ 33 seconds, $0 of it off the debt** |
+| R9 | 5 labelled pips from 0.0 s, each lit with a thud and a ding as it is passed; the $1M coin is the long pull |
+| R10 | First payoff at 0.98 s: the $30K pip lights and the label stack slams "$30,000 A YEAR / ≈ 1.0 SECOND". Three rows are gone by 3.3 s; the biggest ($1 million) comes last |
+| R11 | The question is on screen and in the title; the verdict answers with two rows |
+| R12 | A lopsided pair to repeat: **$1 million a year: ≈ 33 seconds. $100,000 a year: ≈ 3.3 seconds.** |
 
 **Benchmark hooks it is modelled on**
+- **H64, Gage Heward, "What $1 costs you by age"** (48 blank rows, "Find your age"). **1,150,974 views, 210x the creator's median.** https://www.instagram.com/reel/Da_dukjxB56/
+  - Borrowed: one row per kind of viewer, and the viewer finds theirs.
 - **H02, HD Guy, "F-16 Afterburner Fuel Cost in Real Time"**, frame 1 "$0.30". **28,289,823 views, 110.85x.** https://www.youtube.com/shorts/2DtXV2uxM_E
   - Borrowed: a counter already rolling at 0.0 s, round milestones as the open loop, 0 cuts, and an ending on the peak with no CTA.
-- **H49, The Debt Freedom Project, "What's the difference between daily payments and one extra lump sum payment each month?"** (frame 1), caption "Yes, daily payments work!". **382,100, 289.1x.** https://www.tiktok.com/@thedebtfreedomproject/video/7667419558063525133
-  - Borrowed: a question about how a debt is paid on screen at frame 1, and a verdict that takes a side (P5, R11).
+- **H57, Yannick, "Do all 4 if you make $20/hr…"**. **50,206 (2.8x median).** https://www.instagram.com/reel/Dd2QzRzRrGT/
+  - Borrowed: a wage in the hook that filters the viewer in.
+- **H32 and H35, FinCalC TV, 16-row Post Office tables**. **428,862 (54.46x) and 264,377 (51.68x).** https://www.youtube.com/shorts/K2QbxGXa29k, https://www.youtube.com/shorts/0Gc_IRi9RbU
+  - Borrowed: a ladder of round inputs on screen at frame 1.
 - **H84, Master Money, "Take your salary and multiply it by 0.7…"** (spoken). **3,000,000, 140x.** https://www.tiktok.com/@mastermoneyco/video/7680913784143105310
   - Borrowed: the spoken swap-in instruction ("Yearly pay ÷ 30,800").
-- **Contrast, H52, "Credit Card Debt Payoff Strategies"** (a topic label at frame 1 and in the first line): **90,600**, that creator's lowest. The round-1 opener "US debt interest. Live." made the same move.
+- **Contrast, H15, HD Guy, "Wages Visualized In Real Time"**: **9,025**. Pay as the subject of the counter flopped; here pay is only the yardstick.
 
 **Beat sheet** (milestone pass time = value ÷ $30,758.50 a second)
 
 | t (s) | On screen | VO |
 |---|---|---|
-| 0.0 | Header. Odometer **$0**, rolling. Label "≈ $30,800 / EVERY SECOND". Footer with the pay figure. 4 pips (proposed: labelled). Proposed: red "OFF THE DEBT  $___" cell | "How much comes off the debt?" (0.0-2.4) |
-| 2.11 | The counter passes **$65,052**. Pip 1 lights. Label slams: "$1,251 × 52 = $65,052 / A YEAR OF MEDIAN PAY". Thud | "There goes a year of median pay." (2.4-5.2) |
-| 5.3 | Label back to the rate: "≈ $30,800 / EVERY SECOND" | "≈ $30,800 a second." (5.3-8.4) |
-| 8.5 | (counter running, about $261,000 at this point) | "Yearly pay ÷ 30,800 = your seconds." (8.5-12.8) |
-| 12.80 | The counter passes **$393,700**. Pip 2. Label "$393,700 / A MEDIAN NEW HOUSE". Thud | "A median new house. Gone." (12.8-14.8) |
-| 15.2 | Label "≈ $30,800 × 3,600 s / ≈ $111 MILLION AN HOUR" | "That's ≈ $111 million an hour." (15.2-18.7) |
-| 21.15 | The counter passes **$650,520**. Pip 3. Label "$65,052 × 10 = $650,520 / 10 YEARS OF MEDIAN PAY". Thud | "10 years of median pay." (21.1-23.1) |
-| 23.4 | (counter running) | "At fiscal 2025's rate: $970 billion a year." (23.4-28.1) |
-| 28.4 | (counter running; proposed: the empty red cell pulses) | "So, how much came off the debt?" (28.4-31.2) |
-| 31.2-32.5 | No VO: the counter closes on $1,000,000 | |
-| 32.51 | The counter passes **$1,000,000**. Pip 4. Hit + cash | "$1 million. And $0 off the debt." (32.5-36.0) |
-| 32.5 | Verdict replaces the label stack: "**$1 MILLION** IN ≈ 33 SECONDS. / **$0** OF IT PAYS THE DEBT DOWN." ("$0" in red). Proposed: the red cell fills "$0" | |
+| 0.0 | Header. Odometer **$0**, rolling. 5 pips "$30K · $50K · $100K · $250K · $1M"; $30K lit as the next target. Bill ghost filling. Label "≈ $30,800 / EVERY SECOND". Footer | "Find your salary." (0.0-1.2) |
+| 0.98 | The counter passes **$30,000**. Pip 1 lights (thud + ding); label slams "$30,000 A YEAR / ≈ 1.0 SECOND"; the bill flies to the ladder and the $50K ghost starts | |
+| 1.5 | The counter reads $46,137; the $50K bill is 92% full | |
+| 1.63 | The counter passes **$50,000**. Pip 2. Label "$50,000 A YEAR / ≈ 1.6 SECONDS" | "$50,000: passed." (1.6-3.1) |
+| 3.25 | The counter passes **$100,000**. Pip 3. Label "$100,000 A YEAR / ≈ 3.3 SECONDS" | "$100,000: passed." (3.25-5.2) |
+| 5.4 | (counter running; the label stack returns to the rate) | "≈ $30,800 a second." (5.4-8.5) |
+| 8.13 | The counter passes **$250,000**. Pip 4. Label "$250,000 A YEAR / ≈ 8 SECONDS" | "$250,000 a year: ≈ 8 seconds." (8.5-12.4) |
+| 12.7 | (counter running; the $1M coin ghost filling) | "Yearly pay ÷ 30,800 = your seconds." (12.7-16.9) |
+| 17.2 | Label "≈ $30,800 × 3,600 s / ≈ $111 MILLION AN HOUR" | "That's ≈ $111 million an hour." (17.2-20.7) |
+| 21.0 | (counter running) | "At fiscal 2025's rate: $970 billion a year." (21.0-25.6) |
+| 28.0 | (counter running) | "Last row: $1 million a year." (28.0-30.7) |
+| 30.7-32.5 | No VO: the kit's riser as the counter closes on $1,000,000 | |
+| 32.51 | The counter passes **$1,000,000**. Pip 5 (coin). Hit + cash (the kit's last-milestone cue) | "$1 million: ≈ 33 seconds." (32.5-34.8) |
+| 32.5 | Verdict replaces the label stack: "**$1 MILLION** A YEAR: ≈ 33 SECONDS. / $100,000 A YEAR: ≈ 3.3 SECONDS." | |
 | 32.6 | The counter stops at **≈ $1,002,727** | |
 | 32.6-36.5 | Hold, then a hard cut back to frame 1 (loop) | |
 
-**Full guide VO** (79 spoken words, digits expanded)
+**Full guide VO** (75 spoken words, digits expanded)
 
-> How much comes off the debt? There goes a year of median pay. About $30,800 a second. Yearly pay divided by 30,800 equals your seconds. A median new house. Gone. That's about $111 million an hour. 10 years of median pay. At fiscal 2025's rate: $970 billion a year. So, how much came off the debt? $1 million. And $0 off the debt.
+> Find your salary. $50,000: passed. $100,000: passed. About $30,800 a second. $250,000 a year: about 8 seconds. Yearly pay divided by 30,800 equals your seconds. That's about $111 million an hour. At fiscal 2025's rate: $970 billion a year. Last row: $1 million a year. $1 million: about 33 seconds.
 
 **The maths**
 
 - **Basis:** FY2025 net interest of $970,000,000,000, spread evenly over a 365-day year of 31,536,000 seconds.
 - **Rate:** r = $970B ÷ 31,536,000 = $30,758.498… a second (spec `perSecond` 30,758.50).
 - **Counter:** value(t) = r × t, with t in seconds from 0.0.
-- **Off the debt:** $0. Interest payments are the cost of the debt; they repay no principal.
+- **Salary rows:** pass time = salary ÷ r. Rows that pass under 5 s show tenths (whole seconds would put $30,000 and $50,000 both at "≈ 1-2 s"); from 5 s up, whole seconds. Each time has one rounding everywhere it appears.
 
 | On screen | Formula | Exact | Shown |
 |---|---|---:|---|
-| Rate | 970,000,000,000 ÷ 31,536,000 | 30,758.498 | ≈ $30,800 every second (screen, VO, caption, pinned) |
+| Rate | 970,000,000,000 ÷ 31,536,000 | 30,758.498 | ≈ $30,800 every second (label, VO, caption, pinned) |
 | Per hour | r × 3,600 | 110,730,594 | ≈ $111 million an hour |
-| A year of median pay | $1,251 × 52 | 65,052 | $65,052 (exact) |
-| 10 years of median pay | $65,052 × 10 | 650,520 | $650,520 (exact) |
-| Pass: a year of pay | 65,052 ÷ r | 2.115 s | label at 2.11 s; "≈ 2.1 seconds" (caption, pinned) |
-| Pass: a median new house | 393,700 ÷ r | 12.800 s | VO at 12.8 s |
-| Pass: 10 years of pay | 650,520 ÷ r | 21.149 s | VO at 21.1 s |
-| Pass: $1 million | 1,000,000 ÷ r | 32.511 s | "≈ 33 seconds" (verdict) |
+| Pass: $30,000 | 30,000 ÷ r | 0.975 s | ≈ 1.0 second (label) |
+| Pass: $50,000 | 50,000 ÷ r | 1.626 s | ≈ 1.6 seconds (label); VO at 1.6 |
+| Pass: $100,000 | 100,000 ÷ r | 3.251 s | ≈ 3.3 seconds (label, verdict, caption); VO at 3.25 |
+| Pass: $250,000 | 250,000 ÷ r | 8.128 s | ≈ 8 seconds (label, VO at 8.5) |
+| Pass: $1,000,000 | 1,000,000 ÷ r | 32.511 s | ≈ 33 seconds (label, VO, verdict, caption) |
+| Median pay (caption only) | $1,251 × 52 = $65,052; ÷ r | 2.115 s | ≈ 2.1 seconds |
+| Counter at 1.5 s | r × 1.5 | 46,137.75 | $46,137 (92.3% of the $50K bill) |
 | Counter final | r × 32.6 | 1,002,727.04 | ≈ $1,002,727 |
-| Off the debt | principal repaid by interest | 0 | $0 |
-| Swap-in rule | your yearly pay ÷ 30,800 | e.g. 65,052 ÷ 30,758.50 = 2.115 | "≈ 2.1 seconds" (caption, pinned) |
+| Swap-in rule | your yearly pay ÷ 30,800 | e.g. 100,000 ÷ 30,800 = 3.247 | approximate by design; the labels use the exact rate (3.251 → ≈ 3.3) |
 
 **Sources (real-world inputs)**
 
@@ -192,38 +202,37 @@
 | **FY2026 ran higher (caption only):** net interest *on the public debt* was $1,052 billion in the first 11 months of FY2026, up $111 billion (12%) from $941 billion a year earlier **[click-check]** | The Money Overview, "Interest on the national debt jumped $111 billion this fiscal year, CBO says" (citing CBO's *Monthly Budget Review: August 2026*, 2026-09-09; cbo.gov fetch blocked) | September 2026 | https://themoneyoverview.com/48-interest-on-the-national-debt-jumped-111-billion-this-fiscal-year-cbo-says/ |
 | Direction confirmed, not quoted: FY2026 "interest costs reached an estimated $1.1 trillion, a record 3.4% of GDP" (search-result quote) | Committee for a Responsible Federal Budget, "U.S. Ran a $2 Trillion Deficit Last Year, We Estimate" | 2026-10-01 | https://www.crfb.org/blogs/us-ran-2-trillion-deficit-last-year-we-estimate |
 | Context, not used for the rate: CBO's FY2025 summary says net interest *on the public debt* passed $1 trillion. That line is wider than the $970B net-interest total, so using $970B keeps the counter conservative, and the caption names which line its 12% is for | CBO, "Monthly Budget Review: Summary for Fiscal Year 2025" | November 2025 | https://cbo.gov/publication/61307 |
-| **Median full-time pay: $1,251 a week** (120.9 million full-time wage and salary workers, not seasonally adjusted, +4.6% a year) | U.S. Bureau of Labor Statistics, "Usual Weekly Earnings of Wage and Salary Workers, Second Quarter 2026" (USDL-26-1257) | 2026-07-21 | https://www.bls.gov/news.release/archives/wkyeng_07212026.htm |
+| **Median full-time pay: $1,251 a week** (footer and caption; 120.9 million full-time wage and salary workers, not seasonally adjusted, +4.6% a year) | U.S. Bureau of Labor Statistics, "Usual Weekly Earnings of Wage and Salary Workers, Second Quarter 2026" (USDL-26-1257) | 2026-07-21 | https://www.bls.gov/news.release/archives/wkyeng_07212026.htm |
 | Same, second source | DWM Magazine, "USBLS announces unemployment and wage rates" | 2026-07-24 | https://www.dwmmag.com/2026/07/24/usbls-announces-unemployment-and-wage-rates/ |
-| **Median sales price of new houses sold, August 2026: $393,700** (down 5.8% from $417,900 a year earlier) | U.S. Census Bureau and HUD, New Residential Sales, August 2026 | 2026-09-24 | https://www.census.gov/construction/nrs/pdf/newressales_202608.pdf |
-| Same, second source | First Trust, "New single-family home sales increased 6.4% in August" | 2026-09-24 | https://www.ftportfolios.com/Commentary/EconomicResearch/2026/9/24/new-single-family-home-sales-increased-6.4percent-in-august |
+
+The salary rows ($30,000 to $1 million) are round yardsticks chosen for the ladder, not statistics, so they need no source.
 
 **Assumptions** (the footer carries the rate's working and the pay basis)
 - FY2025 net interest ($970B) is spread evenly over a 365-day year. Real payments are lumpy (coupon dates), so this is the average rate.
-- "Median pay" means BLS median usual weekly earnings of full-time wage and salary workers × 52.
-- "Median new house" means the Census median sales price of new houses sold.
+- The salary rows are yearly gross salaries.
+- "Median pay" (footer and caption) means BLS median usual weekly earnings of full-time wage and salary workers × 52.
 
 **Caption (IG / TikTok; also the YouTube description)**
-> $1 million of US debt interest in ≈ 33 seconds, and $0 of it pays the debt down: interest is the cost of carrying the debt, not a repayment. In fiscal 2025 the US paid $970 billion in net interest (Treasury; CBO). Divide by the 31,536,000 seconds in a year: ≈ $30,800 a second. A year of median full-time pay ($1,251 a week × 52 = $65,052, BLS) lasts ≈ 2.1 seconds. Yours: divide your yearly pay by 30,800. Fiscal 2026 ran hotter: CBO's August review put net interest on the public debt 12% above the same 11 months of fiscal 2025, so this counter runs slow. Educational maths, not advice.
+> $100,000 a year of pay ≈ 3.3 seconds of US debt interest. $1 million ≈ 33 seconds. In fiscal 2025 the US paid $970 billion in net interest (Treasury; CBO). Divide by the 31,536,000 seconds in a year: ≈ $30,800 a second. A year of median full-time pay ($1,251 a week × 52 = $65,052, BLS) lasts ≈ 2.1 seconds. Yours: divide your yearly pay by 30,800. And $0 of it pays the debt down: interest is the cost of carrying the debt, not a repayment. Fiscal 2026 ran hotter: CBO's August review put net interest on the public debt 12% above the same 11 months of fiscal 2025, so this counter runs slow. Educational maths, not advice.
 > #nationaldebt #interest #moneymath
 
 **Pinned comment**
-> Yearly pay ÷ 30,800 = the seconds of US debt interest it covers. Median full-time pay: ≈ 2.1 seconds. What did you get?
+> Yearly pay ÷ 30,800 = your seconds. Which row are you?
 
 **Per-platform notes**
-- **Posting plan (preferred):** post after Treasury's September 2026 Monthly Treasury Statement (about 2026-10-13) and rebuild on FY2026 net interest. Set `NET_INTEREST_FY2025` in the check to the FY2026 figure and rerun it; it will list every string to change: perSecond, rateDisplay, intro, rateSteps, vo[2], vo[3], vo[5], vo[7] ("fiscal 2026's rate"), the milestone pass times and VO times, the "≈ 33 seconds" (it becomes ≈ 31-32 s at about $1.07T), counterT, final, hold, the footer ("FY26"), the caption (drop the "ran hotter" sentence) and the pinned comment. If it posts before then, it goes out as written: FY2025, with the past-tense caption.
-- **YouTube Shorts:** the title asks the question and keeps HD Guy's "since you hit play" premise. No CTA; hard-cut back to frame 1 so the replay restarts the count.
+- **Posting plan (preferred):** post after Treasury's September 2026 Monthly Treasury Statement (about 2026-10-13) and rebuild on FY2026 net interest. Set `NET_INTEREST_FY2025` in the check to the FY2026 figure and rerun it; it will list every string to change: perSecond, rateDisplay, intro, rateSteps, vo[3], vo[5], vo[6], vo[7] ("fiscal 2026's rate"), every row's label time, the VO times that must stay in sync, the verdict, counterT, final, hold, the footer ("FY26"), the caption (drop the "ran hotter" sentence) and the pinned comment. At $1.0-1.1 trillion the $1 million row moves from ≈ 33 s to ≈ 29-32 s and the $100,000 row from ≈ 3.3 s to ≈ 2.9-3.2 s. If it posts before then, it goes out as written: FY2025, with the past-tense caption.
+- **YouTube Shorts:** the title asks the question and keeps HD Guy's "since you hit play" premise. No CTA; hard-cut back to frame 1 so the replay restarts the count (and the viewer can watch their own row again).
 - **Instagram Reels:** caption line 1 is the verdict. Use the verdict frame (32.5 s) as the cover.
 - **TikTok:**
-  - Expected comment fights: "net vs gross interest", "that's last year's number" and "some of it must go to principal". The caption pre-empts all three: $970B is the net figure (a gross figure is bigger), FY2026 ran higher, and interest is not principal.
+  - Expected comment fights: "net vs gross interest", "that's last year's number", "my salary is before tax" (the rows are gross salaries) and "does any of it pay the debt down?". The caption pre-empts all four: $970B is the net figure (a gross figure is bigger), FY2026 ran higher, and $0 of it repays principal.
   - Reply with the CBO line rather than a new number.
-  - Put "$1 million … $0 of it pays the debt down" in the first 100 characters.
+  - Put "$100,000 a year of pay ≈ 3.3 seconds" in the first 100 characters.
 - **Look note:**
   - The Scoreboard's real-time mode is "0 cuts" (03-look-directions, Direction 3), so the stage stays a dark grid.
-  - `lookOpts.labels` gives each milestone a label stack: line 1 holds the working in green ("$1,251 × 52 = $65,052"), line 2 the name in white caps.
-  - **Proposals for the kit builder** (the current Scoreboard `cost-counter` module ignores them, and the story renders without them):
-    - `pipLabels`: print each pip's amount beside its icon on the ladder from frame 1, so the four targets are named at 0.0 s (R7, R9).
-    - `slot`: a red "OFF THE DEBT  $___" cell under the hero, empty from frame 1, filling with "$0" at 32.5 s with a thud. It keeps the question visibly open for the whole short.
-  - `heroIcon: false`, because there is no unit object.
+  - The kit reads everything this spec passes: `intro` (the resting label stack), `labels` (one per salary row: "$30,000 a year" in green over "≈ 1.0 SECOND" in white caps), `rateSteps` (the $111 million an hour beat at 17.2 s), `pipLabels` ("$30K" … "$1M" beside the ladder icons from frame 1) and `icons` (four bills and a coin for the $1 million row).
+  - The milestone labels start with "A" ("A $30,000 salary: $30,000"), so the kit stacks a twin icon for the repeated bills instead of a "×N" badge.
+  - No `slot` (frame 1 holds one task), `heroIcon: false`, no spec sfx: the kit cues the riser, hit and cash on the last milestone.
+  - A $75K pip was tried by the candidate's author and dropped: its fly-in crossed its own pip label at 3.0 s (a lint contrast error).
 
 ---
 
@@ -378,121 +387,132 @@ All "≈ N seconds" are counter time, and the counter starts at 0.0 s, so they a
 
 ---
 
-## 10c: Live Sheet: "How much does Amazon really make while you watch this?"
+## 10c: Live Sheet: "How long do you work for 1 second of Amazon's profit?"
 
 | | |
 |---|---|
 | Look | `live-sheet` (yellow banner, "≈" formula bar, white sheet on black, mint input and peach output headers) |
 | Spec | `studio/specs/10c-live-sheet-amazon-makes.json` (31.0 s) |
-| Platform title | **What Amazon Really Keeps While You Watch This** |
-| On-screen hook (header) | **How much does Amazon really make / while you watch this?** (10 words, 2 lines; "really" highlighted) |
-| Frame 1 | Banner. The formula bar starts typing "= $716.9B ÷ 31,536,000 s ≈ $22,700 a second" (complete by about 1.5 s). The big cell "Amazon's sales since you hit play" reads **$0** and counts. Under it, the rows "A year of median pay · $65,052 · ___" and "A median new house · $393,700 · ___", with their "Passed at" cells empty. The bottom row, **"Kept as profit (≈ 11%)"**, counts from $0 at its own, slower rate. 2-line footer with the pay basis |
-| Footer | Amazon 2025: net sales $716.9B, net income $77.7B / Pay: BLS median $1,251 a week × 52 |
+| Platform title | **How Long Do You Work for 1 Second of Amazon's Profit?** |
+| On-screen hook (header) | **How long do you work for / 1 second of Amazon's profit?** (11 words, 2 lines; "you" highlighted) |
+| Frame 1 | Banner. The formula bar starts typing "= $77.7B ÷ 31,536,000 s ≈ $2,464 a second". The counter row "Amazon's profit since you hit play / ≈ $2,464 every second" and the big cell at **$0**, counting ($3,696 at 1.5 s). Under it, the table "Since play · Profit · Median pay" with four rows, "1 second · ≈ $2,464", "5 seconds · ≈ $12,319", "≈ 13 seconds · $32,526" and "≈ 26 seconds · $65,052", and their four "Median pay" cells empty (the countable loop). 2-line footer with the pay basis. Caption "How long do you work for this?" |
+| Footer | Amazon 2025 net income: $77.7B / Pay: BLS median $1,251 a week × 52 |
 
 **Topic vs the seed:**
-- Kept: Amazon's latest annual revenue (2025 net sales, $716.9B) turned into a per-second counter, with milestones the viewer knows.
-- Changed: the **"makes" vs "keeps" gap is on screen from frame 1** as two counters, sales (≈ $22,700 a second) and kept (net income, ≈ $2,464 a second). In round 1 the kept row slid in at 19.9 s.
-- Why the twist: the Live Sheet's job is to show the working, and the formula bar is where revenue becomes profit.
-- Why Amazon over Apple:
-  - its revenue is the bigger counter (≈ $22,700 a second against Apple's smaller one);
-  - "what Amazon really makes" carries the wrong belief in one word.
+- Kept: Amazon's latest annual results (2025) turned into a per-second counter.
+- Changed in hook pass 2: the counter is **profit** (2025 net income, $77.7B, ≈ $2,464 a second), and the answer is in the viewer's own unit, **weeks of median pay**, not dollars. The sales counter, the house row and the "makes vs keeps" twist are gone.
+  - Both judges scored the old hook 4 and marked it dishonest as rendered: without `preroll`, the Live Sheet kit starts its counter 1 s in, so frame 1 read $22,733 under "since you hit play" and every pass landed ≈ 1 s early.
+  - "Revenue isn't profit" is a correction most viewers already hold.
+- Fixed: `lookOpts.preroll: 0`, so frame 1 is $0 and "since you hit play" is literal.
+- Why Amazon: a household brand, and its profit per second (≈ $2,464) is the size of a couple of weeks' pay, so the comparison lands in a unit the viewer lives in.
 
-**Wrong belief it exploits:** "What Amazon makes" is what it keeps (revenue = profit). The header's "really" puts that belief in doubt, and the two counters break it: Amazon keeps ≈ 11 cents of each dollar. The verdict then refuses to let the correction become a shrug: the kept part is still a year of median pay every ≈ 26 s.
+**Wrong belief it exploits:** "A second of a company's profit is pocket change." 1 second of Amazon's 2025 profit (≈ $2,464) is **≈ 2 weeks** of median full-time pay; 5 seconds is ≈ 10 weeks; half a year of pay goes in ≈ 13 seconds and a whole year in ≈ 26.
 
 **Hook rules satisfied**
 
 | Rule | How |
 |---|---|
-| R1 | The sales cell ($0, counting), the kept row ($0, counting), the formula bar ($716.9B ÷ 31,536,000 s), the milestone amounts and the footer's pay basis are on screen at 0.0 s |
-| R2 | The hook line has no number and no result. The inputs sit in the formula bar and the footer |
-| R3 | A year of median pay is the first row and the footer's pay basis; the pinned comment gives the swap-in rule ("Your yearly pay ÷ 22,700"). No row is the viewer's own, so this is a partial pass |
-| R4 | A year of pay and a house, not "$716.9 billion" |
-| R5 | One word does it: "really". The same device as "What You **Actually** Make" (3.0M) |
-| R6 | You ("while you watch this") + an amount (the counters) + a horizon. The money is Amazon's, so this is a partial pass |
-| R7 | Two named counters, and the first VO line names them: "Top: sales. Bottom: what it keeps." |
-| R8 | 10 words, 2 lines |
-| R9 | 2 empty "Passed at" cells, plus the kept counter visibly crawling toward a year of pay |
-| R10 | First payoff at 2.9 s (sales passes a year of median pay). The last and biggest answer, the kept counter passing a year of pay, lands at 26.4 s |
-| R11 | The question is on screen; the caption gives the verdict ("'Makes' isn't 'keeps'") |
-| R12 | A lopsided pair to repeat: **sells a year of median pay in ≈ 3 s, keeps one every ≈ 26 s** (9.2x apart) |
+| R1 | The counter ($0, counting), the formula bar ($77.7B ÷ 31,536,000 s), the four time rows with their profit amounts and the footer's pay basis are on screen at 0.0 s |
+| R2 | The hook line has one input (1 second) and no result: the four answer cells are empty |
+| R3 | The answer unit is the viewer's: weeks of work. The rows use the median ($1,251 a week, in the footer and the column head "Median pay"); the swap-in rule is spoken at 15.8 s ("2,464 ÷ your weekly pay = your weeks.") and pinned. Partial pass: the cells are the median's, not the viewer's own |
+| R4 | Small, round inputs (1 second, 5 seconds) and a familiar unit (weeks, months, a year of pay). "$77.7 billion" appears only in the formula bar, the footer and once in the VO |
+| R5 | The implied wrong answer is "a few minutes of my work". The first cell says ≈ 2 weeks |
+| R6 | You ("do you work") + an amount (a second of profit) + a horizon ("since you hit play"). The money is Amazon's, so this is a partial pass |
+| R7 | The VO opens on the question, not a label |
+| R8 | 11 words, 2 lines |
+| R9 | 4 empty answer cells, filled at 1.0, 5.0, 13.2 and 26.4 s, with a yellow progress line under the next row |
+| R10 | First payoff at 1.000 s: row 1's cell snaps "≈ 2 weeks". The biggest answer (a year of pay) comes last |
+| R11 | The question is on screen and in the title; the verdict answers it |
+| R12 | A line to repeat: **1 second ≈ 2 weeks of median pay. A year: ≈ 26 s.** |
 
 **Benchmark hooks it is modelled on**
+- **H04 and H01, HD Guy, "Cost in Units of Starbucks Lattes" and "Cost in Units of RTX 5090"**. **9,858,084 (106.16x) and 30,617,461 (62.49x).** https://www.youtube.com/shorts/NHbMe2F_JXY, https://www.youtube.com/shorts/E2oVrAwHDOw
+  - Borrowed: a big sum re-priced in a unit the viewer lives in (here a week of work).
 - **H84, Master Money, "4 DEAD SIMPLE NUMBERS / That Tell You What / You Actually Make"**. **3,000,000, 140x.** https://www.tiktok.com/@mastermoneyco/video/7680913784143105310
-  - Borrowed: the single word that implies the viewer's wrong number ("actually" → "really").
-- **H70, The Market Hustle, "What You're Buying / When You Invest / $10,000 in These ETFs"**. **221,830** (pinned; 617 comments). https://www.instagram.com/reel/DMwLzi8PhdK/
-  - Borrowed: the whole sheet on screen at 0.0 s, every number in dollars.
+  - Borrowed: a "you" question about pay.
+- **H64, Gage Heward, "What $1 costs you by age"**. **1,150,974, 210x median.** https://www.instagram.com/reel/Da_dukjxB56/
+  - Borrowed: a personal cost, with every answer cell empty until it fills.
+- **H32, FinCalC TV, 16-row Post Office MIS table**. **428,862, 54.46x.** https://www.youtube.com/shorts/K2QbxGXa29k
+  - Borrowed: a sheet whose output cells fill row by row.
 - **H02, HD Guy, "F-16 Afterburner Fuel Cost in Real Time"**. **28,289,823, 110.85x.** https://www.youtube.com/shorts/2DtXV2uxM_E
-  - Borrowed: the counters are running at 0.0 s, and milestones pull the viewer through.
+  - Borrowed: the counter is running at 0.0 s, and round milestones pull the viewer through.
 - **Look evidence:** Debt Freedom's formula bar as proof ("What difference…", **1,900,000, 902.5x**, https://www.tiktok.com/@thedebtfreedomproject/video/7668828789551418637).
 
-**Beat sheet** (milestone pass time = value ÷ $22,732.75 a second; kept pass = value ÷ $2,463.85; formula-bar steps from `lookOpts.formulaSteps`)
+**Beat sheet** (row pass time = value ÷ $2,463.85 a second, with `preroll: 0`; formula-bar steps from `lookOpts.formulaSteps`)
 
 | t (s) | On screen | VO |
 |---|---|---|
-| 0.0 | Banner. The formula bar types "= $716.9B ÷ 31,536,000 s ≈ $22,700 a second". Sales cell **$0**, counting. Rows with empty "Passed at". Kept row "Kept as profit (≈ 11%)" counting. Footer | "Top: sales. Bottom: what it keeps." (0.0-2.4) |
-| 2.86 | Sales passes **$65,052**. Row 1's "Passed at" snaps to **≈ 3 s** and the row flashes yellow. Pop | "Sales just passed a year of median pay." (2.9-6.0) |
-| 6.1 | (both counters running) | "Amazon's 2025 sales: $716.9 billion." (6.1-10.4) |
-| 10.5 | The formula bar's "≈ $22,700 a second" flashes | "Divided by every second in a year: ≈ $22,700." (10.5-15.6) |
-| 17.32 | Sales passes **$393,700**. Row 2's "Passed at" snaps to **≈ 17 s**. Pop | "Sales just passed a median new house." (17.3-20.1) |
-| 20.2 | Formula bar rewrites "= $77.7B ÷ $716.9B ≈ 11% kept". Swipe | "But it keeps ≈ 11%." (20.2-22.6) |
-| 22.9 | Formula bar "= $77.7B ÷ 31,536,000 s ≈ $2,464 a second" | "≈ $2,464 a second." (22.9-26.4) |
-| 26.40 | The kept counter passes **$65,052**. Formula bar "= $65,052 ÷ $2,464 ≈ 26 s". Ding | "Kept: a year of median pay every ≈ 26 seconds." (26.4-30.3) |
-| 26.4 | Verdict: "Sells a year of median pay in ≈ 3 s. / Keeps one every **≈ 26 s**." | |
-| 26.5 | The counters stop: sales **≈ $602,418**, kept **≈ $65,292** | |
+| 0.0 | Banner. The formula bar types "= $77.7B ÷ 31,536,000 s ≈ $2,464 a second". Big cell **$0**, counting. Table with 4 empty "Median pay" cells. Footer | "How long do you work for this?" (0.0-2.7) |
+| 1.00 | The counter passes ≈ $2,464 (1 second). Row 1's cell snaps **≈ 2 weeks**; yellow wipe; pop. The progress line moves under "5 seconds" | |
+| 1.5 | The counter reads $3,696 | |
+| 2.8 | The formula bar retypes "= $2,464 ÷ $1,251 a week ≈ 2 weeks" | "≈ 2 weeks, at median pay." (2.8-5.1) |
+| 5.00 | The counter passes ≈ $12,319. Row 2 snaps **≈ 10 weeks**. Pop | "5 seconds: ≈ 10 weeks." (5.2-7.1) |
+| 7.4 | (counter running) | "Amazon's 2025 profit: $77.7 billion." (7.4-10.9) |
+| 13.20 | The counter passes **$32,526**. Row 3 snaps **6 months**. Formula bar "= $65,052 ÷ 2 = $32,526". Pop | "≈ 13 seconds: half a year." (13.2-15.5) |
+| 15.8 | (counter running) | "2,464 ÷ your weekly pay = your weeks." (15.8-20.8) |
+| 22.4 | (the progress line runs under the last row) | "And a whole year?" (22.4-23.9) |
+| 23.9-26.4 | No VO: the counter closes on $65,052 | |
+| 26.40 | The counter passes **$65,052**. Row 4 snaps **1 year**. Formula bar "= $65,052 ÷ $2,464 ≈ 26 s". Pop | "≈ 26 seconds." (26.4-27.6) |
+| 26.4 | Verdict card in the caption band: "1 second ≈ **2 weeks** of median pay. / A year: ≈ 26 s." | |
+| 26.5 | The counter stops at **≈ $65,292** | |
 | 26.5-31.0 | Hold the finished sheet, then clear to frame 1 (loop) | |
 
-**Full guide VO** (70 spoken words, digits expanded)
+The one VO gap over 0.5 s: row 1 snaps on screen at its pass (1.0 s) while the opening question is still spoken, and vo[1] reads it back at 2.8 s, with the formula bar's working typed at the same moment. Every other row is said within 0.2 s of its pass.
 
-> Top: sales. Bottom: what it keeps. Sales just passed a year of median pay. Amazon's 2025 sales: $716.9 billion. Divided by every second in a year: about $22,700. Sales just passed a median new house. But it keeps about 11%. About $2,464 a second. Kept: a year of median pay every 26 seconds or so.
+**Full guide VO** (53 spoken words, digits expanded)
 
-(Read the last line as "...every 26 seconds or so"; the caption shows "≈ 26 seconds".)
+> How long do you work for this? About 2 weeks, at median pay. 5 seconds: about 10 weeks. Amazon's 2025 profit: $77.7 billion. About 13 seconds: half a year. 2,464 divided by your weekly pay equals your weeks. And a whole year? About 26 seconds.
 
 **The maths**
 
-- **Basis:** Amazon's 2025 net sales of $716,900,000,000 and net income of $77,700,000,000, each spread evenly over a 365-day year.
-- **Rates:** sales r = $22,732.749… a second (`perSecond` 22,732.75); kept k = $2,463.851… a second (`lookOpts.kept.perSecond` 2,463.85).
+- **Basis:** Amazon's 2025 net income of $77,700,000,000, spread evenly over a 365-day year.
+- **Rate:** k = $77.7B ÷ 31,536,000 = $2,463.851… a second (`perSecond` 2,463.85).
+- **Counter:** value(t) = k × t, from 0.0 s (`preroll: 0`).
 
 | On screen | Formula | Exact | Shown (everywhere) |
 |---|---|---:|---|
-| Sales rate | 716.9e9 ÷ 31,536,000 | 22,732.750 | ≈ $22,700 a second (formula bar, rate label, VO, caption, pinned) |
-| Kept share | 77.7 ÷ 716.9 | 10.838% | ≈ 11% (formula bar, kept label, VO); ≈ 11 cents of each dollar (caption) |
-| Kept rate | 77.7e9 ÷ 31,536,000 | 2,463.851 | ≈ $2,464 a second (formula bar, VO, caption, pinned) |
-| Passed: a year of pay (sales) | 65,052 ÷ r | 2.862 s | ≈ 3 s (row, verdict, caption) |
-| Passed: a median new house (sales) | 393,700 ÷ r | 17.319 s | ≈ 17 s (row) |
-| Kept passes a year of pay | 65,052 ÷ k | 26.403 s | ≈ 26 s (formula bar, VO, verdict, caption); 65,052 ÷ 2,464 = 26.401 rounds the same |
-| Sales counter final | r × 26.5 | 602,417.87 | ≈ $602,418 |
-| Kept counter final | k × 26.5 | 65,292.05 | ≈ $65,292 |
-| Verdict ratio (md only) | 26.403 ÷ 2.862 | 9.23 | "9.2x apart" |
+| Profit rate | 77.7e9 ÷ 31,536,000 | 2,463.851 | ≈ $2,464 a second (formula bar, rate label, row 1, VO, caption, pinned) |
+| 1 second in weeks of median pay | 2,463.851 ÷ 1,251 | 1.970 | ≈ 2 weeks (row, VO, verdict, caption); the formula bar's $2,464 ÷ $1,251 = 1.970 rounds the same |
+| 5 seconds of profit | k × 5 | 12,319.25 | ≈ $12,319 |
+| 5 seconds in weeks | 12,319.25 ÷ 1,251 | 9.848 | ≈ 10 weeks (row, VO, caption) |
+| Half a year of median pay | $65,052 ÷ 2 | 32,526 | $32,526 = 6 months (exact) |
+| Pass: half a year | 32,526 ÷ k | 13.201 s | ≈ 13 seconds (row, VO) |
+| Pass: a year of median pay | 65,052 ÷ k | 26.403 s | ≈ 26 seconds (row, formula bar, VO, verdict, caption); 65,052 ÷ 2,464 = 26.401 rounds the same |
+| Counter at 1.5 s | k × 1.5 | 3,695.78 | $3,696 (frame check) |
+| Counter final | k × 26.5 | 65,292.05 | ≈ $65,292 |
+| Kit row timing | value ÷ (65,292 ÷ 26.5) | 1.000 / 5.000 / 13.201 / 26.403 s | the rows snap on the pass |
 
 **Sources (real-world inputs)**
 
 | Figure | Publisher, page | Date | URL |
 |---|---|---|---|
-| **Amazon 2025 net sales $716.9B (+12% from $638.0B); net income $77.7B ($7.17 a diluted share)** | Amazon, "Amazon earnings Q4 2025 report" (company newsroom; the Q4 2025 results release) | February 2026 | https://aboutamazon.com/news/company-news/amazon-earnings-q4-2025-report |
+| **Amazon 2025 net income $77.7B ($7.17 a diluted share)**; net sales $716.9B (+12% from $638.0B; not used on screen since hook pass 2) | Amazon, "Amazon earnings Q4 2025 report" (company newsroom; the Q4 2025 results release) | February 2026 | https://aboutamazon.com/news/company-news/amazon-earnings-q4-2025-report |
 | Same release, as distributed | "Amazon.com Announces Fourth Quarter Results" (press-release copy on Seeking Alpha) | February 2026 | https://seekingalpha.com/pr/20390462 |
 | Same figures, independent report | exchange4media, "Amazon Q4 sales and marketing expense rises 8.7% to $14bn as net sales climb 14%" | February 2026 | https://www.exchange4media.com/digital-news/amazon-q4-sales-and-marketing-expense-rises-87-to-14bn-as-net-sales-climb-14-151740.html |
-| Median full-time pay $1,251 a week; median new house $393,700 | BLS (2026-07-21) and DWM Magazine (2026-07-24); Census/HUD (2026-09-24) and First Trust (2026-09-24) | | see 10a |
+| Median full-time pay $1,251 a week | BLS (2026-07-21) and DWM Magazine (2026-07-24) | | see 10a |
 
-**Assumptions** (in the 2-line footer)
-- 2025 net sales and net income are spread evenly over 365 days. Sales are seasonal (Q4 is the biggest quarter), so this is the year's average rate.
-- "Kept" means GAAP net income ÷ net sales for the full year.
+**Assumptions** (in the 2-line footer and the column head)
+- 2025 net income is spread evenly over 365 days. Profit is seasonal and lumpy, so this is the year's average rate.
+- "Profit" means GAAP net income for the full year, as Amazon reports it.
+- "Median pay" means BLS median usual weekly earnings of full-time wage and salary workers ($1,251 a week); a year of it is × 52 ($65,052) and 6 months is half of that.
 
 **Caption (IG / TikTok; also the YouTube description)**
-> "Makes" isn't "keeps". Amazon sells a year of median pay ($65,052) in ≈ 3 seconds and keeps one every ≈ 26 seconds. In 2025 it took in $716.9 billion (net sales) and kept $77.7 billion (net income): ≈ 11 cents of each dollar. Per second: ≈ $22,700 in, ≈ $2,464 kept. Source: Amazon's Q4 2025 results (February 2026); pay: BLS. Educational maths, not advice.
-> #amazon #moneymath #revenue #profit
+> 1 second of Amazon's profit ≈ 2 weeks of median full-time pay. Amazon kept $77.7 billion in 2025 (net income). Divide by the 31,536,000 seconds in a year: ≈ $2,464 a second. Median full-time pay is $1,251 a week (BLS), so 5 seconds ≈ 10 weeks of it, and a year of it ($65,052) goes by every ≈ 26 seconds. Yours: 2,464 ÷ your weekly pay. Source: Amazon's Q4 2025 results (February 2026); pay: BLS. Educational maths, not advice.
+> #amazon #moneymath #profit
 
 **Pinned comment**
-> Your yearly pay ÷ 22,700 = seconds of Amazon sales. ÷ 2,464 = seconds of Amazon profit. Post yours.
+> 2,464 ÷ your weekly pay = weeks of your work per second of Amazon's profit. Median ($1,251): ≈ 2. Yours?
 
 **Per-platform notes**
-- **YouTube Shorts:** the title promises the twist ("really keeps"). If it underperforms, A/B it with the header's question ("How Much Does Amazon Really Make While You Watch This?"). Keep the 4.5 s hold on the finished sheet: that is the screenshot frame.
-- **Instagram Reels:** use the finished sheet with the verdict as the cover. Caption line 1, "'Makes' isn't 'keeps'", is the verdict.
+- **YouTube Shorts:** the title is the header's question. Keep the 4.5 s hold on the finished sheet: that is the screenshot frame.
+- **Instagram Reels:** use the finished sheet with the verdict (26.4 s on) as the cover. Caption line 1 is the verdict.
 - **TikTok:**
-  - Expected fights: "revenue isn't profit" (the video agrees, which disarms it) and "AWS makes all the profit". Answer with the release's own segment figures only if asked; they are not used on screen.
-  - Keep "≈ 3 seconds … ≈ 26 seconds" early in the caption.
+  - Expected fights: "that's before tax" (the weeks are gross median pay, as the footer says), "net income includes one-off gains" (answer: the video uses the net income Amazon reports; other lines are not used on screen) and "AWS makes all the profit" (answer with the release's own segment figures only if asked).
+  - Keep "1 second ≈ 2 weeks of median full-time pay" in the first 100 characters.
 - **Look note:**
-  - The Live Sheet `cost-counter` module is built (working tree) and reads everything this spec passes: `formulaSteps`, `columns`, `rows` (with the "≈ 3 s" and "≈ 17 s" display strings) and `kept`.
-  - `kept.t: 0.0` puts the kept row on the sheet, counting, from frame 1. The kit then starts its selection box on the kept row (its rule for a kept row that is present at frame 1).
+  - The Live Sheet `cost-counter` module reads everything this spec passes: `preroll`, `formulaSteps`, `columns`, `rows` (the display strings for each row) and `loop`. There is no `kept` row any more.
+  - `preroll: 0` is required: the kit's default 1 s preroll would put $2,464 in frame 1 and snap the 1-second row before the first frame.
+  - The column head is "Median pay", not "Median pay for": the longer head narrowed the label column, "≈ 13 seconds" and "≈ 26 seconds" wrapped to two lines, the table grew and the footer's second line ran into the caption band under the verdict card. With "Median pay" every label holds one line.
   - No Amazon logo or brand colours: the name is text in the banner.
 
 ---
@@ -594,3 +614,88 @@ Two judges scored each teaser's current hook and four candidate rewrites (A-D) o
   - The house, $1 million and car checks were dropped from 10b.
   - Result: **853 checks, 0 failures**.
 - `teasers/v2/teasers.json`: the 10b entry's title, header, runtime (36.6 s) and key numbers were updated.
+
+### Hook pass 2 (2026-10-08)
+
+The owner rejected round 1 partly because the hooks were weak. Two judges scored the current hooks of 10a and 10c, each one's round-1 best (R1, with renderability fixes) and four new rewrites (A-D), out of 10. The round-2 rule: adopt the best candidate when its average is at least 1.0 above the current hook, even below 7.5. A key that either judge marks dishonest is out. 10b was not in this pass. Judge 2's 10c scores for C and D were cut off in transit, and so was the end of the 10c candidate list.
+
+| Teaser | Current | R1 | A | B | C | D | Decision |
+|---|---|---|---|---|---|---|---|
+| 10a | 5 / 5 → **5.00** | 6.5 / 6.5 → 6.50 | 7.5 / 7 → **7.25** | 6 / 6 → 6.00 | 6.5 / 6 → 6.25 | 5.5 / 4.5 → 5.00 | **Adopt A** (+2.25) |
+| 10c | 4 / 4, both dishonest → out (4.00) | 6 / 6 → 6.00 | 7 / 7 → **7.00** | 7 / 6.5 → 6.75 | 6 / 5 → 5.50 | dishonest (judge 1) / cut off → out | **Adopt A** (+3.00) |
+
+The two winners do not collide: 10c-A shares its lever (your work time per second) with 10a-C, which was not adopted.
+
+**10a: adopted A, "US debt interest since you hit play: when does it pass your salary?"**
+- **Why it won:** the best first 1.5 s of the set (both judges).
+  - It puts H64's find-your-row ("What $1 costs you by age", 1.15M, 210x median) inside H02's running counter (28.3M, 110.85x).
+  - Every viewer has a round, familiar salary row at 0.0 s (R3 and R4 in full, not a median standing in for "you").
+  - The $30K pip lights with a thud at 0.98 s, and the $50K bill is 92% full at 1.5 s: the viewer's year is gone before the header is read.
+  - The old hook ("How much comes off the debt?") was a gotcha with no number the viewer owns, about government money.
+- **Applied as written:**
+  - header, title and vo[0] ("Find your salary.");
+  - all 10 VO lines at the candidate's times;
+  - verdict line 1;
+  - the milestones $30,000 / $50,000 / $100,000 / $250,000 / $1,000,000 ("A $N salary: $N");
+  - counterT [0.0, 32.6], final ≈ $1,002,727, hold 3.9, duration 36.5;
+  - `intro`, `labels` (tenths under 5 s), `rateSteps` at 17.2 s, `pipLabels` "$30K" … "$1M", `icons` (four bills, a coin), `heroIcon: false`;
+  - no `slot`, no spec sfx;
+  - the footer, unchanged;
+  - the pinned comment.
+- **Deviations, with reasons:**
+  1. **Verdict line 2 is "$100,000 a year: ≈ 3.3 seconds."**, not "…≈ 3.3." Judge 2: "The verdict '$100,000 a year: ≈ 3.3.' has no unit." It fits the verdict slot in the still at 33.5 s, and the lint stays at 0/0.
+  2. **The caption keeps "$0 of it pays the debt down".** Judge 2 said A "loses the format's best twist". It goes in the caption only, so frame 1 still holds one task.
+- **What the judges still flag (not fixed here):**
+  - The money is the government's (R6 partial).
+  - Most viewers' rows close by 3.3 s; the long pull is the $250K and $1M rows, which few viewers own.
+  - The pinned rule (÷ 30,800) gives 3.2 s for $100,000, while the label uses the exact rate (3.251 s → ≈ 3.3). Both are "≈", and the write-up's maths table says so.
+- **Today's render, checked in stills at 0, 1.5, 3 and 33.5 s:**
+  - At 0.0 s, frame 1 shows the header, the odometer at $0, the 5 labelled pips with $30K lit, the bill ghost, "≈ $30,800 / EVERY SECOND", the footer and the caption "Find your salary.".
+  - At 1.5 s the hero reads $46,137, the label stack reads "$30,000 A YEAR / ≈ 1.0 SECOND" and the $50K bill is nearly full.
+  - At 3.0 s: $92,275 and "$50,000 A YEAR / ≈ 1.6 SECONDS", with the $100K bill nearly full.
+  - At 33.5 s the 2-line verdict fits the slot, and all five pips are lit.
+
+**10c: adopted A, "How long do you work for 1 second of Amazon's profit?"**
+- **Why it won:** both judges gave it 7, against a current hook both judges scored 4 and marked dishonest as rendered (the kit's default 1 s preroll put $22,733 in frame 1 under "since you hit play").
+  - A tiny input (1 second) re-priced in the viewer's own unit, a week of work, against a household brand: the H04 and H01 move (9.86M, 106.16x; 30.6M, 62.49x).
+  - It attacks a belief viewers hold ("a second of a company's profit is pocket change"), where the old hook restated "revenue isn't profit".
+  - 4 empty answer cells make a countable loop spread over the video (1, 5, ≈ 13 and ≈ 26 s), and the first payoff lands at exactly 1.0 s.
+  - The verdict is repeatable: "1 second ≈ 2 weeks of median pay."
+- **Applied as written:**
+  - header, title, footer and vo[0] ("How long do you work for this?");
+  - the VO lines at the candidate's times;
+  - the verdict;
+  - data: the profit label, perSecond 2,463.85, "≈ $2,464 every second", counterT [0, 26.5], final ≈ $65,292, hold 4.5, and the 4 milestones ($2,463.85, $12,319.25, $32,526, $65,052);
+  - `preroll: 0`, the `rows`, the other formula steps and `loop`;
+  - no `kept` row, no spec sfx;
+  - the pinned comment, with the median's answer added ("Median ($1,251): ≈ 2").
+- **Deviations, with reasons:**
+  1. **vo[5] runs 5.0 s, not 4.7.** The checker reads "2,464" as 5 spoken words, so "2,464 ÷ your weekly pay = your weeks." is 13 words, which needs 5.0 s at 2.6 words a second. It now ends at 20.8 s, still before vo[6] at 22.4 s.
+  2. **The formula step "= $2,464 ÷ $1,251 a week ≈ 2 weeks" moved from 1.0 s to 2.8 s**, so it types as the VO says "≈ 2 weeks" (beats land when the VO says them).
+     - Row 1's "≈ 2 weeks" still snaps on the pass at 1.000 s, so the first payoff is unchanged.
+     - The VO reads it back 1.8 s after the snap, because the opening question runs to 2.7 s. It is the one VO gap over 0.5 s in this teaser, kept so the hook keeps its spoken "you" question. The checker's sync list leaves row 1 out and says why.
+  3. **The column head is "Median pay", not "Median pay for".**
+     - With the longer head, the label column was too narrow: "≈ 13 seconds" and "≈ 26 seconds" wrapped to two lines and the rows grew.
+     - The footer's second line then ran into the caption band, and the verdict card clipped it at 27.5 s. The lint passed, but the still showed it.
+     - With "Median pay", every label holds one line, the counter cell grows, and the footer clears the band.
+- **What the judges still flag (not fixed here):**
+  - "You" is the median weekly pay; the swap-in rule comes at 15.8 s.
+  - "Amazon makes your salary in seconds" is a familiar internet trope.
+  - The bottom rows print "≈ 26 seconds · $65,052" from frame 1, which a sharp viewer can decode as a year of pay.
+  - The money is Amazon's (R6 partial).
+- **Today's render, checked in stills at 0, 1.1, 1.5, 3, 26.6 and 27.5 s:**
+  - At 0.0 s, frame 1 shows the banner question, the formula bar typing the rate, the big cell at **$0**, the 4 rows with empty "Median pay" cells, the footer clear of the band and the caption "How long".
+  - At 1.1 s row 1 reads "≈ 2 weeks" in yellow, with the counter at $2,710. At 1.5 s the counter reads $3,696 and the progress line runs under "5 seconds".
+  - At 3.0 s the formula bar is retyping its second step, under the caption "≈ 2 weeks,".
+  - At 26.6 s all four cells are filled, the counter shows ≈ $65,292 and the verdict card sits under the footer.
+
+**Files:**
+- `studio/specs/10a-scoreboard-debt-interest-live.json` and `studio/specs/10c-live-sheet-amazon-makes.json`: the new hooks (the ids and file names are unchanged, so links and the slate still resolve). `node src/cli.mjs check` on all three format-10 specs: 3/3 clean, 0 errors, 0 warnings.
+- `checks/10-cost-counter.py`:
+  - 10a was rebuilt on the salary ladder: `SALARIES_A`, the tenths-under-5 s rule (`secs_shown`), the pip labels, and asserts that the rows round to 1.0 / 1.6 / 3.3 / 8 / 33 s and that $1 million passes before the stop.
+  - 10c was rebuilt on profit in weeks of median pay. New asserts: the formula bar's weeks and seconds round like the exact values; half a year is a whole dollar amount; with `preroll: 0` the kit's rows pass at 1.000 / 5.000 / 13.201 / 26.403 s.
+  - Amazon's sales, the house and the 10-year milestone left the check.
+  - The one-rounding guard gained `EXACT_INPUTS`, for 10a's $30,000 row.
+  - Result: **915 checks, 0 failures**. The break test is in the header notes.
+- This write-up: the 10a and 10c sections were rewritten (hook, title, frame 1, topic, wrong belief, rules, benchmarks, beat sheet, VO, maths, sources, caption, pinned comment and notes), and so were the shared decisions (questions, payoffs, rounding, sync, lane check). The house's source rows are gone: no teaser shows the house now.
+- `teasers/v2/teasers.json`: the 10a and 10c entries' titles, headers, key numbers and hook scores (7.25 and 7.0, the judges' averages) were updated. `slate.json` lists formats only, so it needed no change.

@@ -20,7 +20,8 @@
 //   4th line); only a board that still can't pack them shrinks them.
 //   Strip:   the bottom bar carries the formula (the one-line working) under the pick label when the table leaves
 //            room; otherwise they share one slot (formula first, then each pick label as a hard cut, then the formula
-//            again once the pick has held for HOLD s). A two-line pick label also gives the formula's row up while it
+//            again once the pick has held for HOLD s, but only if it can stand BACK_MIN s before the next pick or the
+//            verdict; else the label holds until then). A two-line pick label also gives the formula's row up while it
 //            holds.
 //   Verdict: the kit's one verdict slot at the foot of the frame (the chrome's), in the strip: with a verdict the
 //            strip keeps min(150, L.verdictNeed) - 8 px from frame 1 (the rows take a smaller pitch, >= 40, so nothing
@@ -93,6 +94,7 @@ const T_LIT = 0.22      // a pick lighting its row
 const FOCUS = 1.6       // seconds the other rows stay dimmed after a pick, before they recover
 const SLIDE = 44        // px the values travel (from the left, so nothing ever crosses the right rail)
 const HOLD = 2.5        // s a pick label holds before the formula comes back (swap strip, or a two-line pick)
+const BACK_MIN = 1.5    // s the formula must be able to stand before the next pick / the verdict, or it stays away
 
 export default function findYourRow(spec, ctx) {
   const d = spec.data || {}
@@ -176,7 +178,13 @@ export default function findYourRow(spec, ctx) {
   const MIN_GAP = 28, LGAP = 24
   // the strip height the verdict needs to land in it, not on a band over the board (layoutFor: a slot of
   // min(150, L.verdictNeed) px is not boxed; the slot is the strip + 8 px)
-  const VNEED = L0.verdictNeed ? Math.min(150, L0.verdictNeed) - 8 : 0
+  // A verdict that lands after the last VO line has left the caption band (a closing slam, alone on screen) takes the
+  // strip and the caption band together (y strip → 1476): it is set larger than any pick label, and the strip needs
+  // no verdict room of its own (the rows keep it)
+  const vT0 = spec.verdict && spec.verdict.text && Number.isFinite(+spec.verdict.t) ? +spec.verdict.t : Infinity
+  const voEnd = Math.max(-Infinity, ...(spec.vo || []).map((v, i, a) => (v.d != null ? v.t + v.d : a[i + 1] ? a[i + 1].t : v.t + 2.5)))
+  const lateVerdict = L0.captionsOn && Number.isFinite(vT0) && Number.isFinite(voEnd) && vT0 >= voEnd + 0.15 - 1e-6
+  const VNEED = lateVerdict ? 0 : L0.verdictNeed ? Math.min(150, L0.verdictNeed) - 8 : 0
   const PMAX = N <= 6 ? 96 : 80, FCMAX = N <= 6 ? 72 : 64
 
   // horizontal: columns pack from the left. A column's right edge sits where both its cells (28 px after the
@@ -410,10 +418,15 @@ export default function findYourRow(spec, ctx) {
   const pickEls = picks.map(p => pickLine(p.label))
   const promptEl = prompt && mode === 'stack' ? pickLine(prompt) : null
   // until when pick j's label shows: the next pick; in a shared slot (swap) or as two lines, HOLD s at most, then the
-  // formula comes back (the row stays lit and the pointer stays on it)
+  // formula comes back (the row stays lit and the pointer stays on it). The formula only comes back when it can stand
+  // BACK_MIN s before the next thing in the strip (the next pick, or the verdict that takes the strip over); a
+  // shorter return reads as a flicker (label → formula for 0.5 s → label), so the label holds until then instead.
+  const vT = spec.verdict && spec.verdict.text && Number.isFinite(+spec.verdict.t) ? +spec.verdict.t : Infinity
   const pickEnd = picks.map((p, j) => {
     const next = j + 1 < picks.length ? picks[j + 1].t : Infinity
-    return formula && (mode === 'swap' || pickEls[j].__two) ? Math.min(next, p.t + HOLD) : next
+    if (!(formula && (mode === 'swap' || pickEls[j].__two))) return next
+    const until = Math.min(next, vT > p.t ? vT : Infinity)   // the strip's next event
+    return until - (p.t + HOLD) < BACK_MIN ? next : Math.min(next, p.t + HOLD)
   })
 
   // ---------- sound: a soft tick per row, a thud when the board is complete, swipe + ding per pick ----------
@@ -442,9 +455,14 @@ export default function findYourRow(spec, ctx) {
     return t <= pj.t + FOCUS ? lv : lerp(dimTo, dimRest, ease.inOut(prog(t, pj.t + FOCUS, 0.8)))
   }
 
+  // the late verdict's slot: the strip plus the caption band (the captions are over by then)
+  // (it ends 12 px above y 1480: the slam's first frame may overshoot the slot by 8 px)
+  const verdictSlot = lateVerdict ? { y: L.label.y, h: L0.caption ? L0.caption.y + L0.caption.h - 10 - L.label.y : L.label.h, w: 800, boxed: false } : undefined
+
   return {
     duration,
     layout: L,
+    ...(verdictSlot ? { verdictSlot } : {}),
     seek(t) {
       // active pick, how lit each row is, how dim the others are
       let k = -1

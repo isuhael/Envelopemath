@@ -4,19 +4,20 @@
   "format": "find-your-row",
   "fps": 30,
   "duration": 13.0,
-  "header": "What time your 9-to-5\nstarts paying **you**, by salary",
+  "header": "What time your **9-to-5**\nstarts paying you, by salary",
   "footer": "Single · 2026 federal tax + FICA · no state tax",
   "captions": true,
   "vo": [
-    { "t": 0.0, "d": 4.3, "text": "$65,000? You work for tax till **≈ 10:18**." },
-    { "t": 4.5, "d": 2.6, "text": "That's ≈ 78 minutes, every workday." },
+    { "t": 0.0, "d": 1.45, "text": "$65,000?" },
+    { "t": 1.5, "d": 3.1, "text": "You work for tax till **≈ 10:18**." },
+    { "t": 4.7, "d": 2.6, "text": "That's ≈ 78 minutes a day." },
     { "t": 7.4, "d": 2.4, "text": "Six figures? Until **≈ 10:40**." }
   ],
-  "verdict": { "t": 8.6, "text": "$100,000: you work for tax till **≈ 10:40**, every workday." },
+  "verdict": { "t": 10.0, "text": "$200,000: you work for tax till **≈ 11:03**, every workday." },
   "data": {
     "columns": [
       { "label": "Salary" },
-      { "label": "Tax + FICA,\nmin a day" },
+      { "label": "Tax + FICA,\nminutes a day" },
       { "label": "Paying you\nfrom", "emph": true }
     ],
     "rows": [
@@ -37,10 +38,11 @@
     "rowsT": 0.0,
     "rowEvery": 0.2,
     "pick": [
-      { "t": 4.5, "row": 6, "label": "≈ US median full-time pay" },
-      { "t": 7.4, "row": 2, "label": "≈ 1 hr 40 min, every workday" }
+      { "t": 1.5, "row": 6, "label": "≈ US median full-time pay" },
+      { "t": 7.4, "row": 2, "label": "≈ 1 hr 40 min of tax a day" }
     ],
     "hold": 5.6
   },
-  "sfx": [ { "t": 8.6, "kind": "ding" } ]
+  "lookOpts": { "verdictRow": 0 },
+  "sfx": [ { "t": 10.0, "kind": "ding" } ]
 }

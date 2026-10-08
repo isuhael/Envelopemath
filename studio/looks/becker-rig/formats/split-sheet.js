@@ -14,9 +14,12 @@
 //   bins  up to 5 parts whose labels (<= 2 lines) and amounts fit a bin: the carve described above. The bins
 //         leave the floor corner at the right free: the slab's post stands there and he hops down there at the end.
 //   rows  more parts or long labels: a sheet of rows (label and percentage, a long label on 2 lines with the
-//         percentage after it; the amount on the right) with a tray under each; the slab stands on its post above
-//         the sheet, every piece drops straight down into its own tray (so the trays read as a waterfall of the
-//         total), and the figure stands on the floor in the corner at the right and points.
+//         percentage after it, or the percentage in the value column when space is short; the amount on the
+//         right) with a thin track under each; the slab stands on its post above the sheet, every piece drops
+//         straight down onto its own track (a waterfall of the total), and the figure stands on the floor in the
+//         corner at the right and points. It degrades step by step (see rowsLayout) and throws only when 7
+//         one-line rows cannot fit.
+// The total's label is fitted to the slab (<= 2 lines, a non-breaking hyphen, 40 -> 34 px).
 // A working line under the slab (mono, one at a time) carries each part's note, the "÷ 10" formula and the gag.
 //
 // lookOpts (all optional; it renders fully without them):
@@ -90,6 +93,38 @@ function wrap(text, font, maxW, maxLines, mo = {}) {
   if (!lines.length) lines.push('')
   if (lines.length > maxLines || lines.some(l => measure(l, font, mo) > maxW + 0.5)) return null
   return lines
+}
+
+// a label in at most 2 lines: line 1 <= w1, line 2 <= w2 (balanced: the first line the longer one). With cut, a
+// second line that still does not fit is cut at a word with an ellipsis. -> [lines] | null
+function lines2(text, font, w1, w2, mo = {}, cut = false) {
+  const words = String(text).split(/\s+/).filter(Boolean)
+  const W = s2 => measure(s2, font, mo)
+  const whole = words.join(' ')
+  if (W(whole) <= Math.min(w1, w2) + 0.5) return [whole]
+  if (cut === 'one') {                                  // one line, cut at a word with an ellipsis
+    for (let b = words.length - 1; b >= 1; b--) { const l = words.slice(0, b).join(' ').replace(/[,;:.\-–]+$/, '') + '…'; if (W(l) <= Math.min(w1, w2) + 0.5) return [l] }
+    return null
+  }
+  let best = null
+  for (let a = 1; a < words.length; a++) {
+    const l1 = words.slice(0, a).join(' '), l2 = words.slice(a).join(' ')
+    if (W(l1) > w1 + 0.5 || W(l2) > w2 + 0.5) continue
+    const cost = Math.max(W(l1), W(l2)) + (W(l2) > W(l1) ? 30 : 0)
+    if (!best || cost < best.c) best = { l: [l1, l2], c: cost }
+  }
+  if (best) return best.l
+  if (!cut) return null
+  for (let a = words.length - 1; a >= 1; a--) {
+    const l1 = words.slice(0, a).join(' ')
+    if (W(l1) > w1 + 0.5) continue
+    const rest = words.slice(a)
+    for (let b = rest.length; b >= 1; b--) {
+      const l2 = rest.slice(0, b).join(' ').replace(/[,;:.\-–]+$/, '') + (b < rest.length ? '…' : '')
+      if (W(l2) <= w2 + 0.5) return [l1, l2]
+    }
+  }
+  return null
 }
 
 // ------------------------------------------------------------------ props (SVG, ink, round caps)
@@ -192,6 +227,27 @@ export default function splitSheet(spec, ctx) {
   const top = parts.workTop
   const showFig = lo.figure !== false
   const figHgt = k => { const J = fk(poseOf('stand'), { x: 0, ground: 1000, scale: k }); return 1000 - (J.head[1] - J.R) + 8 }
+  // The slab carries the total's label and the total. The label is fitted to the slab: at most 2 lines, never
+  // broken at a hyphen ("TAKE-HOME" uses a non-breaking hyphen), 40 -> 34 px, inside the slab's inner height; the
+  // total gives way first (96 -> 64 px), then to 56. null when nothing fits that slab.
+  const totDisp = String(total.display || '')
+  const totLabTxt = String(total.label || '').replace(/-/g, '\u2011')
+  const totW = px => measure(totDisp, fH(900, px), { letterSpacing: '-0.03em' })
+  const totFit = (sw, slabH) => {
+    // (capitals have no descenders: two lines set solid, line-height 1)
+    for (const range of [[96, 64], [60, 56]]) {
+      for (let lp = 40; lp >= 34; lp -= 2) {
+        for (let tp = range[0]; tp >= range[1]; tp -= 4) {
+          if (tp > slabH - 12) continue
+          if (!totLabTxt) return { totPx: tp, labPx: 40, lines: [], lh: 40 }
+          const maxW = sw - totW(tp) - 3 * 26
+          const ls = lines2(totLabTxt.toUpperCase(), fH(800, lp), maxW, maxW, { letterSpacing: '.06em' })
+          if (ls && ls.length * lp <= slabH - 16) return { totPx: tp, labPx: lp, lines: ls, lh: lp }
+        }
+      }
+    }
+    return null
+  }
 
   function binsLayout() {
     if (n > 5) return null
@@ -211,7 +267,9 @@ export default function splitSheet(spec, ctx) {
     if (!apx) return null
     const plinthH = lab.nl * lab.lh + 18
     const binFloor = FLOOR - plinthH
-    const slabH = 108
+    const slabH = totFit(W, 108) ? 108 : 124
+    const tf = totFit(W, slabH)
+    if (!tf) return null
     const amtH = apx + 2 * PLATE[1] + 4
     const below = slabH + 14 + (wlH ? wlH + 10 : 0) + amtH + 14         // slab top -> rim
     let k = lo.figureScale ?? 0.92, D = 0
@@ -233,46 +291,66 @@ export default function splitSheet(spec, ctx) {
       const fillH = Math.max(14, (shares[i] / maxS) * (D - 22))
       return { x0, x1, cx: (x0 + x1) / 2, ix0: x0 + 12, ix1: x1 - 12, fillH }
     })
-    return { mode: 'bins', gap, bw, lab, apx, plinthH, binFloor, D, rim, amtBot, wlTop, slabTop, slabH, k, bins }
+    return { mode: 'bins', gap, bw, lab, apx, plinthH, binFloor, D, rim, amtBot, wlTop, slabTop, slabH, k, bins, tf }
   }
 
   function rowsLayout() {
-    // densest content first gives way on: type size, tray height, slab height, and last of all the working line.
-    // A label too long for one line wraps to 2 (its percentage follows on the second line); only that row grows.
+    // The sheet gives way step by step, densest content first, and throws only when 7 one-line rows cannot fit:
+    //   1. labels 44 -> 40 px with the percentage after them (a long label on 2 lines), amounts 64 -> 44 px, a
+    //      tray under each row, the slab 100 -> 88 px tall;
+    //   2. the percentage moves into the value column ("28%  $1,680") so a label gets the full width, labels at
+    //      40 px on a tighter 2-line leading, thin trays (the rows' pitch ~ 1.05 em x lines + 19), the slab down
+    //      to 72 px, and the working line (the notes) goes;
+    //   3. a label that still needs a third line is cut at a word on its second line, with an ellipsis.
     const RW = XR - X0
-    const pctW = px => Math.max(...PP.map(p => measure(String(p.pct || ''), fM(800, px), { letterSpacing: '-0.03em' })))
+    const pctW = Math.max(...PP.map(p => measure(String(p.pct || ''), fM(800, 40), { letterSpacing: '-0.03em' })))
     const hasGoal = tones.includes('goal')
-    for (const useWL of wlH ? [true, false] : [false]) {
-      for (const slabH of [100, 88]) {
-        const slabTop = top + 4
-        const wlTop = slabTop + slabH + 14
-        const rowsTop = wlTop + (useWL ? wlH + 12 : 0)
-        const rowsBot = FLOOR - 12
-        const avail = rowsBot - rowsTop
-        for (const lpx of [44, 40]) {
-          for (let apx = 64; apx >= 44; apx -= 4) {
-            const aw = Math.max(...PP.map((p, i) => measure(String(p.amount), fH(900, apx), { letterSpacing: '-0.03em' }) * 1.1 + (tones[i] === 'goal' ? 2 * PLATE[0] + 8 : 0)))
-            const room = RW - aw - 28 - pctW(40) - 16
-            const lh = Math.round(lpx * 1.16)
-            const mo = { letterSpacing: '-0.01em' }
-            const lines = labs.map(x => (measure(x, fH(800, lpx), mo) <= room ? 1 : wrap(x, fH(800, lpx), room + pctW(40) + 16, 2, mo) ? 2 : 0))
-            if (lines.some(l => !l)) continue
-            const textH = lines.map(l => Math.max(l * lh, apx + (hasGoal ? PLATE[1] + 2 : 0)))
-            const sumT = textH.reduce((a, b) => a + b, 0)
-            const trackH = clamp((avail - sumT) / n - 22, 12, 44)
-            const rowH = textH.map(x => x + 5 + trackH + 8)
-            const used = rowH.reduce((a, b) => a + b, 0)
-            if (used > avail + 0.5) continue
-            const pad = Math.min((avail - used) / n, 60)
-            let y = rowsTop + (avail - used - pad * n) / 2
-            const rows = PP.map((p, i) => {
-              const y0 = y + pad / 2
-              y += rowH[i] + pad
-              return { textTop: y0, textBot: y0 + textH[i], trackTop: y0 + textH[i] + 5, trackH, lines: lines[i] }
-            })
-            return { mode: 'rows', slabTop, slabH, wlTop, rowsTop, lpx, lh, lines: Math.max(...lines), apx, aw, rows, room, useWL, k: lo.figureScale ?? 0.86 }
-          }
-        }
+    const mo = { letterSpacing: '-0.01em' }
+    let minLab = 40
+    const tryOne = ({ useWL, slabH, lpx, lhK, apx, right, trackMin, cut, dense = false }) => {
+      const tf0 = totFit(RW, slabH)
+      if (!tf0 || tf0.labPx < minLab) return null
+      const slabTop = top + 4
+      const wlTop = slabTop + slabH + 14
+      const rowsTop = wlTop + (useWL ? wlH + 12 : 0)
+      const avail = FLOOR - 12 - rowsTop
+      const aw = Math.max(...PP.map((p, i) => measure(String(p.amount), fH(900, apx), { letterSpacing: '-0.03em' }) * 1.1 + (tones[i] === 'goal' ? 2 * PLATE[0] + 8 : 0)))
+      const room = right ? RW - aw - 28 - pctW - 24 : RW - aw - 28 - pctW - 16
+      if (room < 200) return null
+      const lh = Math.round(lpx * lhK)
+      // after: the percentage follows the label's last line, so that line keeps room for it; right: full width
+      const ls = labs.map(x => lines2(x, fH(800, lpx), right ? room : room + pctW + 16, room, mo, cut))
+      if (ls.some(l => !l)) return null
+      const textH = ls.map(l => Math.max(l.length * lh, apx + (hasGoal ? PLATE[1] + 2 : 0)))
+      const sumT = textH.reduce((x, y) => x + y, 0)
+      // dense: the track is a thin line right under the text (the piece lands on it as a slim bar)
+      const trackH = dense ? 8 : clamp((avail - sumT) / n - 22, trackMin, 44)
+      const g1 = dense ? 2 : 5, g2 = dense ? 4 : 8
+      const rowH = textH.map(x => x + g1 + trackH + g2)
+      const used = rowH.reduce((x, y) => x + y, 0)
+      if (used > avail + 0.5) return null
+      const pad = Math.min((avail - used) / n, 60)
+      let y = rowsTop + (avail - used - pad * n) / 2
+      const rows = PP.map((p, i) => {
+        const y0 = y + pad / 2
+        y += rowH[i] + pad
+        return { textTop: y0, textBot: y0 + textH[i], trackTop: y0 + textH[i] + g1, trackH, lines: ls[i].length, ls: ls[i] }
+      })
+      return { mode: 'rows', slabTop, slabH, wlTop, rowsTop, lpx, lh, lines: Math.max(...ls.map(l => l.length)), apx, aw, rows, room, useWL, right, k: lo.figureScale ?? 0.86, tf: totFit(RW, slabH) }
+    }
+    const WLs = wlH ? [true, false] : [false]
+    // (the total's label keeps 40 px if any rung of the ladder allows it; only then may it go down to 34)
+    for (const ml of [40, 34]) {
+      minLab = ml
+      for (const useWL of WLs) for (const slabH of [100, 88]) for (const lpx of [44, 40]) for (let apx = 64; apx >= 44; apx -= 4) {
+        const x = tryOne({ useWL, slabH, lpx, lhK: 1.16, apx, right: false, trackMin: 12, cut: false }); if (x) return x
+      }
+      for (const cut of [false, true]) for (const dense of [false, true]) for (const useWL of WLs) for (const slabH of [100, 88, 72, 116]) for (const lhK of [1.16, 1.05, 1]) for (let apx = 52; apx >= 40; apx -= 4) {
+        const x = tryOne({ useWL, slabH, lpx: 40, lhK, apx, right: true, trackMin: 6, cut, dense }); if (x) return x
+      }
+      // last resort: every label on one line, cut at a word with an ellipsis
+      for (const slabH of [100, 88, 72, 116]) for (let apx = 52; apx >= 40; apx -= 4) {
+        const x = tryOne({ useWL: false, slabH, lpx: 40, lhK: 1.16, apx, right: true, trackMin: 6, cut: 'one', dense: true }); if (x) return x
       }
     }
     throw new Error('split-sheet: the parts do not fit the sheet (too many parts or labels too long)')
@@ -314,10 +392,10 @@ export default function splitSheet(spec, ctx) {
       const lab = h('div', { class: 'ss-lab', style: { left: (b.x0 - 5) + 'px', width: (b.x1 - b.x0 + 10) + 'px', top: (lay.binFloor + 9 + (lay.lab.nl - lay.lab.lines[i].length) * lay.lab.lh / 2) + 'px', fontSize: lay.lab.px + 'px', lineHeight: lay.lab.lh + 'px' } })
       lab.innerHTML = lay.lab.lines[i].map(esc).join('<br>')
       html.append(lab)
-      // the percentage is a tag: centred on the fill when the fill is tall enough, else sitting just above it
-      const inside = b.fillH >= 70
-      const pct = new NumObj(html, { cls: 'ss-pct tag', text: String(p.pct || ''), ax: 0.5, ay: inside ? 0.5 : 1 })
-      const pctY = inside ? lay.binFloor - 5 - b.fillH / 2 : Math.max(lay.rim + 4 + pct.hgt, lay.binFloor - 5 - b.fillH - 8)
+      // the percentage is a tag, every bin's on one line: the bins' mid-height (whatever their fill level)
+      const inside = true
+      const pct = new NumObj(html, { cls: 'ss-pct tag', text: String(p.pct || ''), ax: 0.5, ay: 0.5 })
+      const pctY = Math.round((lay.rim + lay.binFloor - 5) / 2)
       binEls.push({ ph, bodyG, lab, pct, pctY, inside })
     })
   }
@@ -328,15 +406,22 @@ export default function splitSheet(spec, ctx) {
   if (!bins) {
     PP.forEach((p, i) => {
       const r = R[i]
-      const tray = s('rect', { x: X0, y: r.trackTop, width: SW, height: r.trackH, rx: Math.min(12, r.trackH / 2), fill: C.lineSoft, stroke: C.line, 'stroke-width': 3 })
-      const ph = s('rect', { x: ux(cum[i]) + 2, y: r.trackTop + 4, width: Math.max(4, ux(cum[i + 1]) - ux(cum[i]) - 4), height: r.trackH - 8, rx: 5, fill: 'none', stroke: C.grey, 'stroke-width': 3, 'stroke-dasharray': '8 7', opacity: 0.55 })
-      g.back.append(tray, ph)
-      const pw = measure(String(p.pct || ''), fM(800, 40), { letterSpacing: '-0.03em' })
-      const el = h('div', { class: 'ss-rl' + (r.lines > 1 ? ' wrap' : ''), style: { position: 'absolute', left: X0 + 'px', fontSize: lay.lpx + 'px', lineHeight: lay.lh + 'px', width: Math.ceil(lay.room + pw + 24) + 'px', whiteSpace: r.lines > 1 ? 'normal' : 'nowrap' } })
-      el.innerHTML = `${esc(labs[i])} <span class="p" style="font-size:40px">${esc(p.pct || '')}</span>`
+      // the tray: one soft track the row's piece drops onto (no hatching: a clean line at phone size)
+      const tray = s('rect', { x: X0, y: r.trackTop + r.trackH / 2 - 2, width: SW, height: 4, rx: 2, fill: C.lineSoft })
+      g.back.append(tray)
+      const el = h('div', { class: 'ss-rl', style: { position: 'absolute', left: X0 + 'px', fontSize: lay.lpx + 'px', lineHeight: lay.lh + 'px', whiteSpace: 'nowrap' } })
+      const pctHtml = `<span class="p" style="font-size:40px">${esc(p.pct || '')}</span>`
+      el.innerHTML = r.ls.map(esc).join('<br>') + (lay.right ? '' : ' ' + pctHtml)
       html.append(el)
       style(el, { top: (r.textBot - el.offsetHeight + 4).toFixed(0) + 'px' })
-      rowEls.push({ tray, ph, el })
+      let pel = null
+      if (lay.right && p.pct) {
+        // in the value column, left of where the amount lands (it is there from frame 1)
+        pel = new NumObj(html, { cls: 'ss-rl', html: true, text: '', ax: 1, ay: 1, style: { fontSize: '40px' } })
+        pel.el.innerHTML = pctHtml
+        pel.set({ x: SX1 - lay.aw - 20, y: r.textBot - (lay.apx - 40) * 0.12 })
+      }
+      rowEls.push({ tray, el, pel })
     })
   }
 
@@ -393,18 +478,10 @@ export default function splitSheet(spec, ctx) {
     return { g: gg, r, ring }
   })
   // slab text: total label + total, then (once carving starts) each segment's percentage or each brick's value
-  const totLab = total.label ? new NumObj(html, { cls: 'ss-totl', text: String(total.label), ax: 0, ay: 0.5 }) : null
-  let totPx = 96
-  const totDisp = String(total.display || '')
-  {
-    const lw = totLab ? totLab.w : 0
-    while (totPx > 56 && measure(totDisp, fH(900, totPx), { letterSpacing: '-0.03em' }) + lw + 3 * 26 > SW) totPx -= 4
-    if (totLab && measure(totDisp, fH(900, totPx), { letterSpacing: '-0.03em' }) + lw + 3 * 26 > SW) {
-      // label on two lines
-      totLab.el.style.whiteSpace = 'normal'
-      totLab.el.style.width = Math.max(200, SW - measure(totDisp, fH(900, totPx), { letterSpacing: '-0.03em' }) - 3 * 26) + 'px'
-    }
-  }
+  const TF = lay.tf
+  const totLab = totLabTxt ? new NumObj(html, { cls: 'ss-totl', text: '', ax: 0, ay: 0.5, style: { fontSize: TF.labPx + 'px', lineHeight: TF.lh + 'px', hyphens: 'none' } }) : null
+  if (totLab) totLab.el.innerHTML = TF.lines.map(esc).join('<br>')
+  const totPx = TF.totPx
   const tot = new NumObj(html, { cls: 'ss-tot', text: totDisp, ax: 1, ay: 0.5, style: { fontSize: totPx + 'px' } })
   const totLabX = X0 + 26, totX = SX1 - 26
   const segs = units.map(u => {
@@ -472,7 +549,8 @@ export default function splitSheet(spec, ctx) {
       const pi = PP.findIndex((p, i) => !used.has(i) && String(p.amount) === toks[m])
       if (pi >= 0) {
         used.add(pi)
-        const o = new NumObj(html, { cls: 'ss-amt', text: toks[m], ax: 0.5, ay: 1, style: { fontSize: apx + 'px', color: C.ink } })
+        // (rows: it swings out over the slab's post, so it flies as a chip with its own void backing)
+        const o = new NumObj(html, { cls: 'ss-amt', text: toks[m], ax: 0.5, ay: 1, style: { fontSize: apx + 'px', color: C.ink, ...(bins ? {} : { background: C.void, borderRadius: '10px', padding: '0 8px' }) } })
         fly = { o, from: [amts[pi].cx, amts[pi].y], to: [r.left - sr.left + r.width / 2, r.bottom - sr.top - (r.height - px) / 2 + px * 0.02], s1: px / apx, t0: at - 0.42, pi }
       }
       return { sp, at, fly }
@@ -736,7 +814,7 @@ export default function splitSheet(spec, ctx) {
         tx = b.ix0; tw = b.ix1 - b.ix0; th = lh; ty = lay.binFloor - 5 - (u.j + 1) * lh
       } else {
         const r = R[i]
-        tx = sx0 + 2; tw = Math.max(4, sx1 - sx0 - 4); th = r.trackH - 6; ty = r.trackTop + 3
+        tx = sx0 + 2; tw = Math.max(4, sx1 - sx0 - 4); th = Math.max(8, r.trackH - 6); ty = r.trackTop + r.trackH / 2 - th / 2
       }
       if (t < u.drop) {
         if (!cracked) { attr(e.g, 'opacity', '0'); return }
@@ -805,8 +883,6 @@ export default function splitSheet(spec, ctx) {
         // a small squash of the whole bin on landing
         const sq = squashAt(t, lastLand, 0.05)
         attr(be.bodyG, 'transform', sq.sy !== 1 ? `translate(${b.cx},${FLOOR}) scale(${sq.sx.toFixed(3)},${sq.sy.toFixed(3)}) translate(${-b.cx},${-FLOOR})` : '')
-      } else {
-        attr(rowEls[i].ph, 'opacity', String(0.55 * (1 - prog(t, lastLand - 0.05, 0.12))))
       }
       const a = amts[i]
       const dropY = t < lastLand ? 0 : 22 * (1 - E.out(prog(t, lastLand, 0.14)))   // drops the last few px onto the rim
@@ -858,7 +934,18 @@ export default function splitSheet(spec, ctx) {
           const on = t >= f.t0 && t < x.at
           if (!on) { f.o.set({ opacity: 0 }); f.o.overlap(false); continue }
           const p = E.inOutSine(prog(t, f.t0, x.at - f.t0))
-          const [px, py] = arc(p, f.from, f.to, 90)
+          let [px, py] = arc(p, f.from, f.to, 90)
+          if (!bins) {
+            // rows: first it slides out right of the value column along its own row (never across another row's
+            // amount), then it rises in the margin and curves in to its slot
+            const xm = 936 - f.o.w / 2
+            if (p < 0.28) { px = lerp(f.from[0], xm, E.out(p / 0.28)); py = f.from[1] - 8 * Math.sin(Math.PI * p / 0.28) }
+            else {
+              const q = (p - 0.28) / 0.72, r = 1 - q
+              px = r * r * xm + 2 * r * q * xm + q * q * f.to[0]
+              py = r * r * f.from[1] + 2 * r * q * f.to[1] + q * q * f.to[1]
+            }
+          }
           const sc = lerp(1, f.s1, p)
           f.o.set({ x: px, y: py, sx: sc, sy: sc, opacity: 1, rot: 6 * Math.sin(Math.PI * p) })
           f.o.overlap(true)

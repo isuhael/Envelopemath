@@ -111,6 +111,11 @@ MT_NFLX_CHG = {2012: 33.62, 2013: 297.64, 2014: -7.22, 2015: 134.38, 2016: 8.24,
                2018: 39.44, 2019: 20.89, 2020: 67.11, 2021: 11.41, 2022: -51.05, 2023: 65.11,
                2024: 83.07, 2025: 5.19}
 SM_NFLX_YE2025 = 93.76           # StatMuse, 2025-12-31 close (second source)
+# Hook pass 2 (2026-10-08): the hook's unit is today's Standard bill. CNBC, "Netflix raises prices
+# across all streaming plans", 2026-03-26 (Standard $17.99 -> $19.99 from March 2026); subkept.com and
+# keepingupwithinflation.com, accessed 2026-10-07. It is NOT a race input (the race stops at the
+# 12/31/2025 close with the Jan 2025 $17.99 bill): it only converts the stake into years of Netflix.
+NFLX_STD_NOW = 19.99
 
 # ---- 06c: a $4 latte a day vs Starbucks stock ---------------------------------------
 # FinanceBuzz menu-price analysis (archived menus via the Wayback Machine), charted by Visual
@@ -345,13 +350,32 @@ check("06b", "2013 'quadruples' (stock x3.5-4.5)", f"{B['x2013_ratio']:.3f}", "3
       ok=3.5 <= B["x2013_ratio"] <= 4.5)
 check("06b", "2022 'halves' (stake down 45-55%)", f"{B['drop_2022']:.3f}", "0.45-0.55",
       ok=0.45 <= B["drop_2022"] <= 0.55)
-check("06b", "2020 stake 'over $9,000' (9,000-9,999)", f"{B['value'][2020]:,.2f}", "9,000-9,999",
-      ok=9000 < B["value"][2020] < 10000)
-check("06b", "pinned: 2012's bills are ≈ 43% of the final", f"{B['share_2012']:.4f}", "≈ 43%",
-      ok=rnd(B["share_2012"] * 100) == 43)
-check("06b", "pinned: 2012's shares worth ≈ $7,583", usd(B["shares_y"][2012] * MT_NFLX_CLOSE[NFLX_END]), "$7,583")
-B["x_9000"] = cross_x(B["own"], 9_000, below=False)
-check("06b", "'tops $9,000' in 2020", int(B["x_9000"]), 2020)
+# Hook pass 2: the stake re-priced in years of today's $19.99 Standard bill ("free for how many years").
+# Shown rounding: months to the whole month; years to 2 significant figures (2.4, 38, 22, 74), the
+# same rule as mult(). Each step must round the same from the exact stake and from the whole-dollar
+# figure the formula bar shows ($107, $568, $9,181, $5,289, ≈ $17,700).
+B["unit_y"] = rnd(12 * NFLX_STD_NOW, 2)                                # $239.88 a year
+B["months"] = {y: B["value"][y] / NFLX_STD_NOW for y in B["value"]}
+B["years"] = {y: B["value"][y] / B["unit_y"] for y in B["value"]}
+B["months_shown"] = rnd(B["months"][2012])                             # ≈ 5 months
+B["yrs_shown"] = {y: mult(B["years"][y]) for y in (2013, 2020, 2022, NFLX_END)}
+check("06b", "unit: 12 × $19.99 = $239.88 a year", usd(B["unit_y"], 2), "$239.88")
+check("06b", "bar 2012: $107 ÷ $19.99 and exact both ≈ 5 months",
+      f"{rnd(B['value'][2012]) / NFLX_STD_NOW:.3f} / {B['months'][2012]:.3f}", "both 5",
+      ok=rnd(rnd(B["value"][2012]) / NFLX_STD_NOW) == B["months_shown"] == 5)
+for y, want in ((2013, "2.4"), (2020, "38"), (2022, "22")):
+    check("06b", f"bar {y}: {usd(B['value'][y])} ÷ $239.88 and exact both ≈ {want} years",
+          f"{rnd(B['value'][y]) / B['unit_y']:.3f} / {B['years'][y]:.3f}", f"both {want}",
+          ok=mult(rnd(B["value"][y]) / B["unit_y"]) == B["yrs_shown"][y] == want)
+check("06b", "verdict: ≈ $17,700 ÷ $239.88 and exact both ≈ 74 years",
+      f"{sig(B['final'], 3) / B['unit_y']:.3f} / {B['years'][NFLX_END]:.3f}", "both 74",
+      ok=mult(sig(B["final"], 3) / B["unit_y"]) == B["yrs_shown"][NFLX_END] == "74")
+check("06b", "2022 'halves' in years too: 2021 peak → 2022 (45-55% down)",
+      f"{B['years'][2021]:.2f} → {B['years'][2022]:.2f}", "0.45-0.55",
+      ok=0.45 <= 1 - B["years"][2022] / B["years"][2021] <= 0.55)
+check("06b", "pinned: $17,706 ÷ $239.88 ≈ 73.8 years", f"{rnd(rnd(B['final']) / B['unit_y'], 1):.1f}", "73.8")
+check("06b", "pinned: ≈ 8.7× the $2,037.32 of bills", mult(B["mult"]), "8.7")
+check("06b", "md: ≈ 885.7 months of Netflix", f"{rnd(B['months'][NFLX_END], 1):.1f}", "885.7")
 check("06b", "second source: 2025 close", SM_NFLX_YE2025, MT_NFLX_CLOSE[2025])
 
 # ---------------------------------------------------------------- 06c
@@ -445,22 +469,20 @@ check("06a", "footer step result = final display", EXP["a"]["strings"]["lookOpts
 check("06a", "pinned: 136.7 shares x $271.12 ≈ $37,062", usd(rnd(A["shares"], 1) * MT_AAPL_CLOSE[2025]), "$37,062")
 
 # ---- 06b
-SHARES_2012_SHOWN = rnd(B["shares_y"][2012])                        # "≈ 81 shares"
-check("06b", "formula bar 2012: $95.88 ÷ $1.19 and ÷ $1.1855 both ≈ 81 shares",
-      f"{B['spend_y'][2012] / rnd(MT_NFLX_AVG[2012], 2):.2f} / {B['shares_y'][2012]:.2f}", "both round to 81",
-      ok=rnd(B["spend_y"][2012] / rnd(MT_NFLX_AVG[2012], 2)) == SHARES_2012_SHOWN == 81)
-check("06b", "formula bar: ≈ $17,700 ÷ $2,037.32 and the exact final both ≈ 8.7×",
-      f"{sig(B['final'], 3) / B['total']:.3f} / {B['mult']:.3f}", "both 8.7",
-      ok=mult(sig(B["final"], 3) / B["total"]) == mult(B["mult"]) == "8.7")
+# Hook pass 2: the bar asks the hook's question on frame 1 ("= ? years") and answers it in the
+# hook's unit at each beat: 2012 (in months), 2013, 2020, the 2022 halving, then the verdict.
+NOW = usd(NFLX_STD_NOW, 2)                                             # "$19.99"
+UNIT = usd(B["unit_y"], 2)                                             # "$239.88"
 fb = [
-    f"= {usd(P0, 2)} × 12 = {usd(B['spend_y'][2012], 2)}",
-    f"≈ {usd(B['spend_y'][2012], 2)} ÷ {usd(MT_NFLX_AVG[2012], 2)} ≈ {SHARES_2012_SHOWN:.0f} shares",
-    f"= {m_old_2015} × {usd(plan_price(2015, 1), 2)} + {12 - m_old_2015} × {usd(plan_price(2015, 12), 2)}"
-    f" = {usd(B['spend_2015'], 2)}",
+    f"≈ stock ÷ ({NOW} × 12) = ? years",
+    f"≈ {usd(B['value'][2012])} ÷ {NOW} ≈ {B['months_shown']:.0f} months",
+    f"≈ {usd(B['value'][2013])} ÷ {UNIT} ≈ {B['yrs_shown'][2013]} years",
     "≈ each year's bills ÷ that year's avg price",
+    f"≈ {usd(B['value'][2020])} ÷ {UNIT} ≈ {B['yrs_shown'][2020]} years",
+    f"≈ {usd(B['value'][2022])} ÷ {UNIT} ≈ {B['yrs_shown'][2022]} years",
     f"≈ {rnd(B['cum_shares'][NFLX_END], 1)} shares × {usd(MT_NFLX_CLOSE[NFLX_END], 2)} ≈ "
     f"${sig(rnd(B['cum_shares'][NFLX_END], 1) * MT_NFLX_CLOSE[NFLX_END], 3):,.0f}",
-    f"{approx_usd(B['final'])} ÷ {usd(B['total'], 2)} ≈ {mult(B['mult'])}×",
+    f"{approx_usd(B['final'])} ÷ {UNIT} ≈ {B['yrs_shown'][NFLX_END]} years",
 ]
 # purchase tags: the start bill, then the hikes counted ("Hike 1" ... "Hike 7", R9)
 B["tag_labels"] = [lab if i == 0 else f"Hike {i} · {lab}" for i, (_, lab, _) in enumerate(B["ticks"])]
@@ -468,9 +490,12 @@ EXP["b"] = {
     "raceT": [0.3, 23.0], "x": {"from": NFLX_START, "to": ye(NFLX_END), "tickEvery": 3},
     "first_payoff_x": ye(NFLX_START),
     "strings": {
-        "header": f"POV: You invested in Netflix\ninstead of paying Netflix,\never since it was **{usd(P0, 2)}**",
-        "footer": "Standard plan list price · each year at its avg price · split-adjusted",
-        "verdict.text": f"**≈ {mult(B['mult'])}×** what Netflix\ncharged you",
+        # hook pass 2: today's bill is the hook's only $ figure and the unit of the answer
+        "header": f"**{NOW}** Netflix, free for\nhow many years, if your\n"
+                  f"{NFLX_START}-{NFLX_END % 100} bills bought its stock?",
+        "footer": f"Standard plan list price, {NFLX_START}-{NFLX_END % 100} · {VALUE_DATE.month}/{VALUE_DATE.day}/"
+                  f"{VALUE_DATE:%y} value ÷ {NOW} a month",
+        "verdict.text": f"**≈ {B['yrs_shown'][NFLX_END]} years** of Netflix\nat {NOW} a month",
         "data.spend.final": f"{usd(B['total'], 2)} spent",
         "data.own.final": approx_usd(B["final"]),
         **{f"data.purchases.{i}.label": lab for i, lab in enumerate(B["tag_labels"])},
@@ -480,32 +505,32 @@ EXP["b"] = {
     "points": {"spend": B["spend"], "own": B["own"]},
     "purchases_x": [x for (x, _, _) in B["ticks"]],
     "vo_numbers": [
-        [f"{P0:.2f}", str(NFLX_START)],
-        [],
+        [f"{NFLX_STD_NOW:.2f}"],
+        [str(NFLX_START)],
         [], [],
-        [str(int(B["x_9000"])), "9,000"],
+        ["2020", B["yrs_shown"][2020]],
         ["2022"],
         [],
         [f"{rnd(B['total']):,.0f}", f"{sig(B['final'], 3):,.0f}"],
-        [mult(B["mult"])],
+        [f"{NFLX_STD_NOW:.2f}", B["yrs_shown"][NFLX_END]],
     ],
-    "vo_about": {7: [f"{rnd(B['total']):,.0f}", f"{sig(B['final'], 3):,.0f}"], 8: [mult(B["mult"])]},
+    "vo_about": {4: [B["yrs_shown"][2020]], 7: [f"{rnd(B['total']):,.0f}", f"{sig(B['final'], 3):,.0f}"],
+                 8: [B["yrs_shown"][NFLX_END]]},
     "sync": [(0, float(NFLX_START), "first bill"), (0, ye(NFLX_START), "first payoff (end of 2012)"),
              (2, B["ticks"][2][0], "Oct 2015 hike"), (3, B["ticks"][3][0], "Oct 2017 hike"),
-             (4, B["ticks"][5][0], "Oct 2020 hike"), (4, B["x_9000"], "stake tops $9,000"),
-             (4, ye(2020), "2020 stake"), (5, ye(2022) - 0.5, "2022 drop"), (7, ye(NFLX_END), "final value")],
+             (4, B["ticks"][5][0], "Oct 2020 hike"), (4, ye(2020), "2020: ≈ 38 years"),
+             (5, ye(2022) - 0.5, "2022 drop"), (7, ye(NFLX_END), "final value")],
     "sfx": {0: B["ticks"][1][0], 1: B["ticks"][2][0], 2: B["ticks"][3][0], 3: B["ticks"][4][0],
             4: B["ticks"][5][0], 5: B["ticks"][6][0], 6: ye(2022), 7: B["ticks"][7][0],
             8: ye(NFLX_END)},
-    "lookOpts_t": {"formulaBar.0": None, "formulaBar.1": None, "formulaBar.2": None,
-                   "formulaBar.3": None, "formulaBar.4": None, "formulaBar.5": None},
-    "formulaBar_vo": [0, 1, 2, 3, 7, 8],
+    # bar steps 1, 2, 4, 5 land on their year-ends (within 0.05 s); the rest start with a VO line
+    "lookOpts_t": {"formulaBar.1": ye(2012), "formulaBar.2": ye(2013),
+                   "formulaBar.4": ye(2020), "formulaBar.5": ye(2022)},
+    "formulaBar_vo": {0: 0, 3: 3, 6: 7, 7: 8},          # bar step -> the VO line it starts with
 }
-check("06b", "check line: 2015 bills = 9 old + 3 new months", m_old_2015, 9)
+check("06b", "table: 2015 bills = 9 old + 3 new months", m_old_2015, 9)
 check("06b", "pinned: 188.84 shares x $93.76 ≈ $17,706",
       usd(rnd(B["cum_shares"][NFLX_END], 2) * MT_NFLX_CLOSE[NFLX_END]), "$17,706")
-check("06b", "pinned: 2012's 80.9 shares ≈ $7,600 of it",
-      f"${sig(rnd(B['shares_y'][2012], 1) * MT_NFLX_CLOSE[NFLX_END], 2):,.0f}", "$7,600")
 check("06b", "7 hikes after the $7.99 start", len(B["ticks"]) - 1, 7)
 
 # ---- 06c
@@ -700,9 +725,14 @@ def check_spec(key):
         want_t = rnd(chart_t(spec, x), 2)
         check(sid, f"lookOpts.{p}.t on beat", node["t"], want_t, ok=abs(node["t"] - want_t) <= 0.05)
     if key == "b":
-        # formula bar steps line up with the VO lines they illustrate
-        fb_t = [s["t"] for s in spec["lookOpts"]["formulaBar"]]
-        want = [vo[i]["t"] for i in e["formulaBar_vo"]]
+        # formula bar steps line up with the VO lines they illustrate, or sit on a beat (above);
+        # every step is one or the other
+        bar = spec["lookOpts"]["formulaBar"]
+        on_beat = {int(p.split(".")[1]) for p, x in e["lookOpts_t"].items() if p.startswith("formulaBar.") and x}
+        check(sid, "every formulaBar step is on a beat or a VO line", sorted(on_beat | set(e["formulaBar_vo"])),
+              list(range(len(bar))))
+        fb_t = [bar[j]["t"] for j in e["formulaBar_vo"]]
+        want = [vo[i]["t"] for i in e["formulaBar_vo"].values()]
         check(sid, "formulaBar t = its VO line t", fb_t, want)
 
     # --- coverage: every string with a digit must have been checked

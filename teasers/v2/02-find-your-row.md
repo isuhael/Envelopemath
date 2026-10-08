@@ -1,7 +1,7 @@
 # 02 · Find your row: three teasers
 
 **Format:** `find-your-row` (rank 2 in [`../../research/v2/04-formats.md`](../../research/v2/04-formats.md), hook pattern **P7**)
-**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews, then again in the round-2 **hook pass**, which replaced all three hooks; see the [Review log](#review-log))
+**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews, then again in the round-2 **hook pass**, which replaced all three hooks; then the round-2 **assembly pass** and the round-2 **fix pass** on 2026-10-08; see the [Review log](#review-log))
 **Specs:**
 - [`studio/specs/02a-live-sheet-3-a-day-by-age.json`](../../studio/specs/02a-live-sheet-3-a-day-by-age.json)
 - [`studio/specs/02b-scoreboard-trillion-at-your-wage.json`](../../studio/specs/02b-scoreboard-trillion-at-your-wage.json)
@@ -10,13 +10,14 @@
 (The spec ids and file names are kept from the earlier rounds so the slate index and renders stay linked; the titles and hooks below are the hook-pass versions.)
 
 **Maths check:** [`checks/02-find-your-row.py`](checks/02-find-your-row.py). It recomputes every on-screen number from its inputs (including the 2026 federal tax and FICA behind 02c), rebuilds every display string and VO line from those numbers, then compares them with the three specs. It also checks:
-- timing: every VO line must fit **both** 2.6 words/s (hyphenated numbers as one word) **and** 2.8 words/s (hyphenated numbers split, so "twenty-five" is two words); no overlaps; each pointer lands when its VO line starts and after its row has landed; the verdict and its ding land when the VO says it;
+- timing: every VO line must fit **both** 2.6 words/s (hyphenated numbers as one word) **and** 2.8 words/s (hyphenated numbers split, so "twenty-five" is two words); no overlaps; each pointer lands when its VO line starts and after its row has landed; the verdict and its ding land when the VO says it (02a) or 0.2 s after the last VO line ends, so the verdict is alone on screen (02b, 02c);
 - the contract shape and the hook rules;
-- that this write-up quotes every VO line, verdict, footer, formula and platform title exactly as the specs carry them.
+- that this write-up quotes every VO line, verdict, footer, formula and platform title exactly as the specs carry them (a `\n` line break is quoted here as " / ");
+- the look options the specs carry (`lookOpts`: 02a's bracket, 02c's verdict row).
 
-Result: **PASSED: all 170 checks** (after the hook pass). A mutation test (one row changed, one VO line shortened) fails with exit 1 (see the Review log).
+Result: **PASSED: all 177 checks** (after the fix pass). A mutation test (one row changed, one VO line shortened) fails with exit 1 (see the Review log).
 
-**Studio linter:** `node src/cli.mjs check` on the three specs: **3/3 clean, 0 errors, 0 warnings** (after the hook pass). Stills were rendered at 0.0, 1.5 and 3.0 s and at the verdict of each teaser and inspected: each header and its first number read in frame 1.
+**Studio linter:** `node src/cli.mjs check` on the three specs: **3/3 clean, 0 errors, 0 warnings** (after the fix pass, also at a 0.05 s sampling step). Contact sheets and stills at every beat were rendered and inspected, and the final MP4s were rendered and spot-checked frame by frame (see [Assembly pass](#assembly-pass-2026-10-08)): each header and its first number read in frame 1.
 
 **Web searches used:** 9 in the first draft; 2 more in the first revision (2026 tax brackets; 2026 Social Security wage base); none in the hook pass (every new number is arithmetic on figures already sourced here).
 
@@ -29,7 +30,7 @@ Result: **PASSED: all 170 checks** (after the hook pass). A mutation test (one r
    - Gage Heward, "What $1 costs you by age": **1,150,974 plays (210x his median)**, 14 s, no voice, 48 rows. https://www.instagram.com/reel/Da_dukjxB56/
    - FinCalC TV's 16-row 6 s cards: "Monthly Income using Post Office MIS Scheme at 7.4% Interest Rate", **428,862 (54.46x)**, https://www.youtube.com/shorts/K2QbxGXa29k, and "Income for Senior Citizens using Post Office SCSS Scheme at 8.2% Interest Rate", **264,377 (51.68x)**, https://www.youtube.com/shorts/0Gc_IRi9RbU
 3. **It is replicated beyond those two.** Yannick's "⚡️ 3 PAYCHECK RULES ⚡️" did 142,827 (7.9x med), https://www.instagram.com/reel/DeDdp-IRg5E/. FinCalC's "Rs. 5000 SIP Returns … 5 Years to 30 Years" did 137,201 (7.26x). Jake's "HOW MUCH YOU NEED INVESTED TO NEVER WORK AGAIN" did 64,190. The Market Hustle's "You've got 93 days left in 2026." did 46,137, https://www.instagram.com/reel/Dd5KkdPs20G/. Five benchmark accounts run it, and three of them are faceless.
-4. **What kills it.** A voice walking the rows: Gage's talked tables get 1,456-6,616, and Master Money's talked-through "WHAT YOUR $15 LUNCH is really costing you (BY AGE!)" got **11,745** in 58 s (https://www.instagram.com/reel/DeH6RvuJNXi/). Cutting it to 5-6 rows, and goal-first titles, also hurt. All three teasers below keep the VO to 3 short lines (23-29 words) and let the table do the work.
+4. **What kills it.** A voice walking the rows: Gage's talked tables get 1,456-6,616, and Master Money's talked-through "WHAT YOUR $15 LUNCH is really costing you (BY AGE!)" got **11,745** in 58 s (https://www.instagram.com/reel/DeH6RvuJNXi/). Cutting it to 5-6 rows, and goal-first titles, also hurt. All three teasers below keep the VO to 4 short lines (23-29 words) and let the table do the work.
 5. **What it buys.** Reach, not community. Like rates run 0.11-0.70% (FinCalC 0.15% and 0.11%, Gage 0.70%), and FinCalC's keyword CTAs drew 8 and 4 comments on 428,862 and 264,377 views. So: no keyword CTA, a cover that shows the completed table (Gage's one A/B: 4,348 vs 2,844, n = 1), and a pinned comment that invites an argument about the inputs.
 
 **Hook grammar we are stealing (P7):** "What $[tiny amount] costs you by [age / wage]", or "[payout noun] … at [rate]". A payout or cost noun matters: FinCalC's payout-first titles have a median of 100,740 (n=11), against 12,314 for its goal-first titles. The hook pass adds two levers on top of it: **the wrong answer the viewer already holds, shown beside the right one** (The Market Hustle's red-beside-cyan, hook bank §4.5 rewrite B), and **re-pricing in a unit the viewer owns** (HD Guy's P8: here a whole career's pay, and the clock on a workday).
@@ -42,14 +43,14 @@ Result: **PASSED: all 170 checks** (after the hook pass). A mutation test (one r
 |---|---|---|---|
 | Look | Live Sheet | Scoreboard | Clean Sheet |
 | Platform title | "It's Just $3 a Day": What It Costs You by 65, by Age | How Fast Elon's $1 Trillion Pay Plan Earns Your Whole Career's Pay | What Time Your 9-to-5 Starts Paying You, by Salary |
-| On-screen header (t = 0) | "It's just **$3 a day**." / What it costs you by 65: | ELON'S **$1 TRILLION** PAY PLAN / EARNS YOUR WHOLE CAREER'S PAY IN… | What time your 9-to-5 / starts paying **you**, by salary |
+| On-screen header (t = 0) | “It’s just **$3 a day**.” / What it costs you by 65: | ELON'S **$1 TRILLION** PAY PLAN / EARNS YOUR WHOLE CAREER'S PAY IN… | What time your **9-to-5** / starts paying you, by salary |
 | Words in hook | 11 | 11 | 9 |
-| Rows × columns | 10 × 3 (age, what you think it costs (red), what it really costs) | 13 × 3 (wage, 40 years of your pay, his plan earns it in) | 12 × 3 (salary, tax + FICA min a day, paying you from) |
+| Rows × columns | 10 × 3 (age, what you think it costs (red), what it really costs) | 11 × 3 (wage, 40 years of your pay, his plan earns it in) | 12 × 3 (salary, tax + FICA minutes a day, paying you from) |
 | Runtime | 13.4 s | 14.0 s | 13.0 s |
-| VO words (as the check counts them) | 29 | 29 | 23 |
+| VO words (as the check counts them) | 29 | 26 | 23 |
 | First number on screen | 18 · $51,465 (red) · ≈ $400,000 | $7.25/hr · $603,200 · ≈ 3.2 min | $200,000 · ≈ 123 min · ≈ 11:03 am |
-| First spoken payoff | "≈ $400,000" at about 2.7 s | "≈ 3 minutes" at about 1.9 s | "≈ 10:18" at about 3.1 s |
-| Verdict | 10 years younger: it costs **more than double**. | Even **$100/hr** for 40 years: ≈ 44 minutes of his. | $100,000: you work for tax till **≈ 10:40**, every workday. |
+| First spoken payoff | "≈ $400,000" at about 2.8 s, row 18 pointed at from 2.0 s | "≈ 3 minutes" at 2.0 s, the $7.25 row pointed at from 2.0 s | "≈ 10:18" at about 3.4 s, the $65,000 row lit from 1.5 s |
+| Verdict | 10 years younger? / It costs **more than double**. | Even **$1,000/hr** / for 40 years: / ≈ 7.3 hours of his. | $200,000: you work for tax till **≈ 11:03**, every workday. |
 | Hook score (two judges' average, hook pass: old hook → adopted) | 6.75 → 7.5 | 5.25 → 7.75 | 5.5 → 7.5 |
 
 ---
@@ -59,7 +60,7 @@ Result: **PASSED: all 170 checks** (after the hook pass). A mutation test (one r
 **Spec:** `studio/specs/02a-live-sheet-3-a-day-by-age.json` · **13.4 s** · captions on
 
 **Platform title:** "It's Just $3 a Day": What It Costs You by 65, by Age
-**On-screen hook (header):** "It's just **$3 a day**." / What it costs you by 65:
+**On-screen hook (header):** “It’s just **$3 a day**.” / What it costs you by 65:
 
 ### Why this hook
 
@@ -82,9 +83,9 @@ Result: **PASSED: all 170 checks** (after the hook pass). A mutation test (one r
 - **R7:** each row is a named age, so the viewer picks theirs.
 - **R8:** 11 words.
 - **R9:** 10 countable rows.
-- **R10:** the biggest number is first on screen at 0.0 s and spoken first: "Just $3 a day? At 18: ≈ $400,000." reaches "≈ $400,000" at about 2.7 s.
+- **R10:** the biggest number is first on screen at 0.0 s and spoken first: "Just $3 a day?" (0.0 s), then "At 18: ≈ $400,000." from 2.0 s, with the pointer on the 18 row ("≈ 7.8× what you think") from the same frame; the VO reaches "≈ $400,000" at about 2.8 s.
 - **R11:** the caption carries the verdict.
-- **R12:** "10 years younger: it costs more than double" is one direction, one number, and true for every whole age from 18 to 54 (asserted in the check).
+- **R12:** "10 years younger? / It costs more than double." is one direction, one number, and true for every whole age from 18 to 54 (asserted in the check).
 
 **The wrong beliefs it plays on:**
 1. "It's just $3 a day. At most it costs me $3 × the days." That is the red column; the green one beside it is 5.5× it at 25 and 7.8× it at 18.
@@ -94,22 +95,24 @@ Result: **PASSED: all 170 checks** (after the hook pass). A mutation test (one r
 
 | t (s) | On screen | VO (caption) |
 |---|---|---|
-| 0.0 | Header '"It's just **$3 a day**." / What it costs you by 65:'. Formula bar typing "= $3 × 365 ÷ 12 = $91.25 a month" (one line). Columns "Your age" · "What you think it costs" (numbers in red) · "What it really costs you" (emphasised, green). All 10 age keys in place; row 1 "18 · $51,465 · ≈ $400,000" filled. Footer "At 7% a year until 65 · no tax, fees, inflation" (one line, clear of the caption band). | "Just $3 a day? At 18: **≈ $400,000**." |
-| 0.5-4.5 | Rows 20 → 60 land, one every 0.5 s, biggest first: each a red number beside a bigger green one (20, 25 and 30 by 1.5 s) | (line 1 continues to 4.7; "≈ $400,000" at about 2.7 s) |
+| 0.0 | Header '“It’s just **$3 a day**.” / What it costs you by 65:'. Formula bar typing "= $3 × 365 ÷ 12 = $91.25 a month" (one line). Columns "Your age" · "What you think it costs" (label and numbers in red) · "What it really costs you" (emphasised, green), the last two on two lines. All 10 age keys in place; row 1 "18 · $51,465 · ≈ $400,000" filled. Rows at a 59 px pitch with 49 / 45 / 52 px figures, filling the sheet down to y 1235. Footer "At 7% a year until 65 · no tax, fees, inflation" (one line, clear of the caption band). | "Just $3 a day?" |
+| 0.5-4.5 | Rows 20 → 60 land, one every 0.5 s, biggest first: each a red number beside a bigger green one (20, 25 and 30 by 1.5 s) | |
+| 2.0 | Pointer to row "18 · $51,465 · ≈ $400,000": the selection fades in on its result, the row lights, and the tooltip "≈ 7.8× what you think" floats over the row under it (that row fades out as the pill wipes in: nothing moves) | "At 18: **≈ $400,000**." ("≈ $400,000" at about 2.8 s) |
 | 4.9 | Pointer to row "25 · $43,800 · ≈ $240,000", tooltip "≈ 5.5× what you think" | "At 25: **≈ $240,000**." |
-| 8.4 | Pointer to row "35 · $32,850 · ≈ $111,000", tooltip "At 25: ≈ 2.2× this" | "10 years younger? It costs you **more than double**." |
-| 10.7 | Verdict card "10 years younger: it costs **more than double**." in the caption band + ding; the result column flashes top to bottom | (inside line 3: "more than double") |
+| 8.4 | Row "35 · $32,850 · ≈ $111,000" lights and is selected; the 25 row stays tinted; a bracket draws beside the keys from 35 up to 25 (arrowhead on 25) with the label "≈ 2.2×" on it | "10 years younger? It costs you **more than double**." |
+| 10.7 | Verdict card in the caption band, as wide as the sheet (x 60-960): "10 years younger?" / "It costs **more than double**." with "more than double" at about 90 px on the yellow marker + ding; the result column flashes top to bottom | (inside line 4: "more than double") |
 | 10.7-13.4 | The full table holds; the last 0.5 s clears the rows back to the frame-1 state for the loop | (none) |
 
 ### Guide VO script (29 spoken words, about 11.2 s of speech)
 
 | t | d | Caption text (spec) | Read it as |
 |---|---|---|---|
-| 0.0 | 4.7 | Just $3 a day? At 18: **≈ $400,000**. | "Just three dollars a day? At eighteen: about four hundred thousand dollars." |
+| 0.0 | 1.95 | Just $3 a day? | "Just three dollars a day?" |
+| 2.0 | 2.7 | At 18: **≈ $400,000**. | "At eighteen: about four hundred thousand dollars." |
 | 4.9 | 3.3 | At 25: **≈ $240,000**. | "At twenty-five: about two hundred forty thousand dollars." |
 | 8.4 | 3.5 | 10 years younger? It costs you **more than double**. | "Ten years younger? It costs you more than double." |
 
-Each `d` covers the read at 2.6 words/s with hyphenated numbers as one word, and at 2.8 words/s with them split (4.62 / 4.29 s; 3.08 / 3.21 s; 3.46 / 3.21 s).
+Each `d` covers the read at 2.6 words/s with hyphenated numbers as one word, and at 2.8 words/s with them split (1.92 / 1.79 s; 2.69 / 2.50 s; 3.08 / 3.21 s; 3.46 / 3.21 s).
 
 ### The maths
 
@@ -131,9 +134,10 @@ Inputs: $3 a day; 365 days; 7% a year, compounded monthly (7% ÷ 12 each month, 
 | 55 | $10,950 (10) | 120 | $15,793.99 | ≈ $16,000 | 1.44 |
 | 60 | $5,475 (5) | 60 | $6,532.85 | ≈ $6,500 | 1.19 |
 
-- **Pointer "≈ 5.5× what you think":** $239,514.22 ÷ $43,800 = 5.468, shown as ≈ 5.5.
-- **Pointer "At 25: ≈ 2.2× this"** (on the 35 row): $239,514.22 ÷ $111,322.35 = 2.152, shown as ≈ 2.2.
-- **Verdict "10 years younger: it costs more than double":** FV(age) ÷ FV(age + 10) is above 2 for **every** whole age from 18 to 54 (minimum 2.092 at 18, maximum 15.98 at 54; asserted in the check). In the table's own 10-year pairs: 20 → 30 = 2.11, 25 → 35 = 2.15, 30 → 40 = 2.22, 35 → 45 = 2.34, 40 → 50 = 2.56, 45 → 55 = 3.01, 50 → 60 = 4.43.
+- **Pointer "≈ 7.8× what you think"** (18 row): $400,261.67 ÷ $51,465 = 7.777, shown as ≈ 7.8.
+- **Pointer "≈ 5.5× what you think"** (25 row): $239,514.22 ÷ $43,800 = 5.468, shown as ≈ 5.5.
+- **Bracket "≈ 2.2×"** (from the 25 row to the 35 row): $239,514.22 ÷ $111,322.35 = 2.152, shown as ≈ 2.2 (the other way round, the 35 row is 0.465 of the 25 row: under half).
+- **Verdict "10 years younger? / It costs more than double":** FV(age) ÷ FV(age + 10) is above 2 for **every** whole age from 18 to 54 (minimum 2.092 at 18, maximum 15.98 at 54; asserted in the check). In the table's own 10-year pairs: 20 → 30 = 2.11, 25 → 35 = 2.15, 30 → 40 = 2.22, 35 → 45 = 2.34, 40 → 50 = 2.56, 45 → 55 = 3.01, 50 → 60 = 4.43.
 - **Why it is more than double** (pinned comment): at 7% money roughly doubles every decade (72 ÷ 7 ≈ 10.3 years; a lump sum at 7% ÷ 12 grows ×2.01 in 120 months), and starting 10 years younger also adds 10 years of $3 deposits. The two together push the ratio above 2.
 - **Pinned comment, at 10% instead:** age 25 → ≈ $577,000; age 18 → ≈ $1,170,000. This matches the hook bank's 10% table.
 
@@ -183,10 +187,10 @@ Inputs: $3 a day; 365 days; 7% a year, compounded monthly (7% ÷ 12 each month, 
 **Modelled on:**
 1. **H01, HD Guy, "Cost in Units of RTX 5090"**: 30,617,461 (62.49x), https://www.youtube.com/shorts/E2oVrAwHDOw. A huge sum re-priced in a unit the viewer knows; here the unit is the viewer's own 40-year career pay.
    - The title states the rule and never the result.
-   - The assumptions sit in the footer ("Price of RTX 5090 32GB: ~$4,899"); ours is "Plan's max, if every target is hit, ÷ 10 years, 24/7 · you: 40 years × 2,080 hrs".
+   - The assumptions sit in the footer ("Price of RTX 5090 32GB: ~$4,899"); ours is "Plan max ÷ 10 yrs, 24/7 · you: 40 yrs × 2,080 hrs".
    - Scoreboard is HD Guy's look family.
-2. **H02, HD Guy, "F-16 Afterburner Fuel Cost in Real Time"**: 28,289,823 (110.85x), https://www.youtube.com/shorts/2DtXV2uxM_E. A per-second rate as the spectacle: the plan's ≈ $3,169 a second is the working in the strip.
-3. **H64, Gage Heward, "What $1 costs you by age"**: 1,150,974 (210x med). A row for every viewer: 13 wage rows, each with its own career pay and its own answer.
+2. **H02, HD Guy, "F-16 Afterburner Fuel Cost in Real Time"**: 28,289,823 (110.85x), https://www.youtube.com/shorts/2DtXV2uxM_E. A per-second rate as the spectacle: the plan's ≈ $3,169 a second is the working in the strip ("÷ $3,169/s").
+3. **H64, Gage Heward, "What $1 costs you by age"**: 1,150,974 (210x med). A row for every viewer: 11 wage rows, each with its own career pay and its own answer.
 4. **H57, Yannick, "Do all 4 if you make $20/hr and watch your finance change"**: 50,206, the best of his wage reels, https://www.instagram.com/reel/Dd2QzRzRrGT/. The hourly wage works as the filter that pulls the viewer in, never as the goal.
 - **Contrasts:**
   - HD Guy's "Wages Visualized In Real Time" got **9,025**. The wage as a running counter flopped, so here the wage stays a row and the plan is the clock.
@@ -195,18 +199,18 @@ Inputs: $3 a day; 365 days; 7% a year, compounded monthly (7% ÷ 12 each month, 
 - **Rejected in the hook pass** (scores in the Review log): "1 second of the plan at your wage" (7.25, a close second: the output is your work weeks, but the sum is still someone else's); "split with every US full-time worker" (the share is the same on every row, so the find-your-row loop closes at once); a question header over the old table (the topic and the years output stay).
 
 **Rules satisfied:**
-- **R1:** "$1 TRILLION" in the header plus row 1 "$7.25/hr · $603,200 · ≈ 3.2 min" at 0.0 s, with the strip "= wage × 2,080 × 40 ÷ ≈ $3,169 a second".
+- **R1:** "$1 TRILLION" in the header plus row 1 "$7.25/hr · $603,200 · ≈ 3.2 min" at 0.0 s, with the strip "= wage × 2,080 × 40 ÷ $3,169/s".
 - **R2:** one input in the hook ($1 trillion). The header ends on an open "IN…": no result.
-- **R3:** 13 wage rows from the federal minimum to $1,000/hr.
+- **R3:** 11 wage rows from the federal minimum to $1,000/hr.
 - **R4:** the career pay is the viewer's own number (exact: $603,200 at the federal minimum); the trillion is a named, argued-about object (Elon's pay plan), which the footer qualifies as the plan's maximum.
-- **R5:** the belief "a whole working life is a lot of money". At the federal minimum, the plan's average earns it in ≈ 3 minutes; even $100/hr for 40 years, in ≈ 44 minutes.
+- **R5:** the belief "a whole working life is a lot of money". At the federal minimum, the plan's average earns it in ≈ 3 minutes; even $1,000/hr for 40 years, in ≈ 7.3 hours.
 - **R6:** you + your whole career's pay (an amount on every row) + 40 years.
 - **R7:** each row is a named wage.
 - **R8:** 11 words.
-- **R9:** 13 countable rows under a header that ends on "IN…".
-- **R10:** row 1 is on screen at 0.0 s and the first spoken payoff ("≈ 3 minutes") lands at about 1.9 s.
-- **R11:** the caption carries the verdict.
-- **R12:** a single repeatable line: "$100/hr for 40 years: ≈ 44 minutes of his".
+- **R9:** 11 countable rows under a header that ends on "IN…".
+- **R10:** row 1 is on screen at 0.0 s; the first spoken payoff ("≈ 3 minutes of his.") starts at 2.0 s, the moment the pointer lands on the $7.25 row.
+- **R11:** the verdict lands alone, after the last caption, as the biggest type on the screen.
+- **R12:** a single repeatable line, on the board's last row: "$1,000/hr for 40 years: ≈ 7.3 hours of his".
 
 **The wrong belief it plays on:** "40 years of work adds up to a fortune." At $20 an hour it is $1,664,000, and the plan's average earns that in under 9 minutes; even $1,000 an hour for 40 years ($83,200,000) takes it ≈ 7.3 hours.
 
@@ -214,22 +218,24 @@ Inputs: $3 a day; 365 days; 7% a year, compounded monthly (7% ÷ 12 each month, 
 
 | t (s) | On screen | VO (caption) |
 |---|---|---|
-| 0.0 | Header "ELON'S **$1 TRILLION** PAY PLAN / EARNS YOUR WHOLE CAREER'S PAY IN…". Footer on 2 lines: "Plan's max, if every target is hit, ÷ 10 years, 24/7 / you: 40 years × 2,080 hrs". Columns "Your wage" · "40 years of your pay" · "His plan earns it in" (emphasised). All 13 wage keys in place; row 1 "$7.25/hr · $603,200 · ≈ 3.2 min" lit. Strip: "= wage × 2,080 × 40 ÷ ≈ $3,169 a second". | "40 years at minimum wage? **≈ 3 minutes** of his." |
-| 0.35-4.2 | Rows $10/hr → $1,000/hr land, one every 0.35 s ($20/hr · $1,664,000 · ≈ 8.8 min at 1.05 s) | (line 1 continues to 3.9; "≈ 3 minutes" at about 1.9 s) |
-| 4.2 | Pointer to row "$20/hr · $1,664,000 · ≈ 8.8 min"; strip label "$1,664,000 in under 9 min" | "$20 an hour? Under 9 minutes." |
-| 7.2 | Pointer to row "$100/hr · $8,320,000 · ≈ 43.8 min"; label "$8,320,000 in ≈ 44 min" | "Even **$100 an hour**, for 40 years? ≈ 44 minutes." |
-| 10.7 | Verdict "Even **$100/hr** for 40 years: ≈ 44 minutes of his." slams into the strip + ding | (inside line 3: "≈ 44 minutes") |
+| 0.0 | Header "ELON'S **$1 TRILLION** PAY PLAN / EARNS YOUR WHOLE CAREER'S PAY IN…". Footer on one line: "Plan max ÷ 10 yrs, 24/7 · you: 40 yrs × 2,080 hrs". Columns "Your wage" · "40 years / of your pay" · "His plan / earns it in" (emphasised). All 11 wage keys in place; row 1 "$7.25/hr · $603,200 · ≈ 3.2 min" lit. Rows at a ~54 px pitch. Strip: "= wage × 2,080 × 40 ÷ $3,169/s". | "40 years at minimum wage?" |
+| 0.35-3.5 | Rows $15/hr → $1,000/hr land, one every 0.35 s ($20/hr · $1,664,000 · ≈ 8.8 min at 0.7 s) | |
+| 2.0 | Pointer to row "$7.25/hr · $603,200 · ≈ 3.2 min"; strip label "$7.25/HR × 83,200 HRS = $603,200" over the formula | "**≈ 3 minutes** of his." |
+| 4.2 | Pointer to row "$20/hr · $1,664,000 · ≈ 8.8 min"; label "$20/HR × 83,200 HRS = $1,664,000" | "$20 an hour? Under 9 minutes." |
+| 7.0 | Pointer to the last row "$1,000/hr · $83,200,000 · ≈ 7.3 hrs"; label "$1,000/HR × 83,200 HRS = $83,200,000" | "Even **$1,000 an hour**? ≈ 7 hours." |
+| 10.7 | The VO has ended (10.5 s): the verdict "Even **$1,000/hr** / for 40 years: / ≈ 7.3 hours of his." slams over the strip and the caption band at about 84 px (the pick labels are 58 px) + ding | (none) |
 | 10.7-14.0 | Hold, then a hard cut back to frame 1 for the loop | (none) |
 
-### Guide VO script (29 spoken words, about 11.2 s of speech)
+### Guide VO script (26 spoken words, about 10.0 s of speech)
 
 | t | d | Caption text (spec) | Read it as |
 |---|---|---|---|
-| 0.0 | 3.9 | 40 years at minimum wage? **≈ 3 minutes** of his. | "Forty years at minimum wage? About three minutes of his." |
+| 0.0 | 2.0 | 40 years at minimum wage? | "Forty years at minimum wage?" |
+| 2.0 | 2.0 | **≈ 3 minutes** of his. | "About three minutes of his." |
 | 4.2 | 2.7 | $20 an hour? Under 9 minutes. | "Twenty dollars an hour? Under nine minutes." |
-| 7.2 | 4.7 | Even **$100 an hour**, for 40 years? ≈ 44 minutes. | "Even a hundred dollars an hour, for forty years? About forty-four minutes." |
+| 7.0 | 3.5 | Even **$1,000 an hour**? ≈ 7 hours. | "Even a thousand dollars an hour? About seven hours." |
 
-Fit at 2.6 / 2.8 words/s: 3.85 / 3.57 s; 2.69 / 2.50 s; 4.62 / 4.64 s.
+Fit at 2.6 / 2.8 words/s: 1.92 / 1.79 s; 1.92 / 1.79 s; 2.69 / 2.50 s; 3.46 / 3.21 s. The VO rounds to the whole minute or hour ("≈ 3 minutes", "≈ 7 hours"); everything else on screen carries one rounding, the row's ("≈ 3.2 min", "≈ 7.3 hrs").
 
 ### The maths
 
@@ -240,7 +246,6 @@ Fit at 2.6 / 2.8 words/s: 3.85 / 3.57 s; 2.69 / 2.50 s; 4.62 / 4.64 s.
 | Wage | 40 years of your pay | Seconds | Exact | On screen |
 |---:|---:|---:|---:|---:|
 | $7.25 | $603,200 | 190.4 | 3.173 min | ≈ 3.2 min |
-| $10 | $832,000 | 262.6 | 4.376 min | ≈ 4.4 min |
 | $15 | $1,248,000 | 393.8 | 6.564 min | ≈ 6.6 min |
 | $20 | $1,664,000 | 525.1 | 8.752 min | ≈ 8.8 min |
 | $25 | $2,080,000 | 656.4 | 10.940 min | ≈ 10.9 min |
@@ -249,12 +254,12 @@ Fit at 2.6 / 2.8 words/s: 3.85 / 3.57 s; 2.69 / 2.50 s; 4.62 / 4.64 s.
 | $50 | $4,160,000 | 1,312.8 | 21.880 min | ≈ 21.9 min |
 | $75 | $6,240,000 | 1,969.2 | 32.820 min | ≈ 32.8 min |
 | $100 | $8,320,000 | 2,625.6 | 43.760 min | ≈ 43.8 min |
-| $250 | $20,800,000 | 6,564.0 | 1.823 hrs | ≈ 1.8 hrs |
 | $500 | $41,600,000 | 13,128.0 | 3.647 hrs | ≈ 3.6 hrs |
 | $1,000 | $83,200,000 | 26,255.9 | 7.293 hrs | ≈ 7.3 hrs |
 
-- **VO "≈ 3 minutes":** 3.173 min. **"Under 9 minutes":** 8.752 min. **"≈ 44 minutes"** (VO, pointer and verdict): 43.760 min.
-- **Pointers:** "$1,664,000 in under 9 min" ($20/hr row) and "$8,320,000 in ≈ 44 min" ($100/hr row) repeat the row's own exact career pay.
+(The fix pass dropped the $10/hr and $250/hr rows so the board runs at a ~54 px pitch: $10/hr → $832,000 → ≈ 4.4 min and $250/hr → $20,800,000 → ≈ 1.8 hrs are still true, just not on screen.)
+- **VO "≈ 3 minutes":** 3.173 min. **"Under 9 minutes":** 8.752 min. **VO "≈ 7 hours"**, row and verdict "≈ 7.3 hours": 7.293 hrs.
+- **Pointer labels** (the working the captions don't say, exact): "$7.25/hr × 83,200 hrs = $603,200", "$20/hr × 83,200 hrs = $1,664,000", "$1,000/hr × 83,200 hrs = $83,200,000" (83,200 = 2,080 hrs × 40 years).
 
 ### Sources
 
@@ -267,7 +272,9 @@ Fit at 2.6 / 2.8 words/s: 3.85 / 3.57 s; 2.69 / 2.50 s; 4.62 / 4.64 s.
 
 ### Assumptions (footer, on screen at t = 0)
 
-> Plan's max, if every target is hit, ÷ 10 years, 24/7 · you: 40 years × 2,080 hrs
+> Plan max ÷ 10 yrs, 24/7 · you: 40 yrs × 2,080 hrs
+
+"Max" carries the plan's "if every target is hit"; the caption and the pinned comment say it in full, and give the rate as ≈ $3,169 a second (the strip shows "÷ $3,169/s", rounded to the dollar).
 
 ### Caption / description
 
@@ -286,11 +293,11 @@ Fit at 2.6 / 2.8 words/s: 3.85 / 3.57 s; 2.69 / 2.50 s; 4.62 / 4.64 s.
   - Music-only plus the on-screen pointer labels works, the way HD Guy runs on no voice. The VO cut is optional.
   - No end card; hard-cut back to frame 1.
 - **TikTok.**
-  - The VO cut: "40 years at minimum wage? ≈ 3 minutes of his." is a payoff spoken inside 2 s.
+  - The VO cut: "40 years at minimum wage? ≈ 3 minutes of his." puts the payoff at 2.0 s, with the pointer on its row.
   - The Musk context line stays in the caption; on screen, the plan is named in the header and qualified in the footer.
 - **Instagram Reels.**
   - Caption line 1: "Find your wage."
-  - Cover: the completed table, with the $100/hr row lit.
+  - Cover: the completed table, with the $1,000/hr row lit.
 
 ---
 
@@ -299,7 +306,7 @@ Fit at 2.6 / 2.8 words/s: 3.85 / 3.57 s; 2.69 / 2.50 s; 4.62 / 4.64 s.
 **Spec:** `studio/specs/02c-clean-sheet-salary-per-hour.json` · **13.0 s** · captions on
 
 **Platform title:** What Time Your 9-to-5 Starts Paying You, by Salary
-**On-screen hook (header):** What time your 9-to-5 / starts paying **you**, by salary
+**On-screen hook (header):** What time your **9-to-5** / starts paying you, by salary
 
 ### Why this hook
 
@@ -323,9 +330,9 @@ Fit at 2.6 / 2.8 words/s: 3.85 / 3.57 s; 2.69 / 2.50 s; 4.62 / 4.64 s.
 - **R7:** each row is a named salary; the spoken opener is the first calculation.
 - **R8:** 9 words.
 - **R9:** 12 countable rows.
-- **R10:** the biggest bite is first ($200,000: ≈ 11:03 am at 0.0 s); the first spoken payoff ("≈ 10:18") lands at about 3.1 s (the round-2 version spoke its payoff at about 5.7 s).
-- **R11:** the caption carries the verdict.
-- **R12:** "$100,000: you work for tax till ≈ 10:40, every workday." The comment line it invites: "I work for tax till 10:18."
+- **R10:** the biggest bite is first ($200,000: ≈ 11:03 am at 0.0 s); "$65,000?" is spoken at 0.0 s and the $65,000 row is lit from 1.5 s, as "You work for tax till ≈ 10:18." starts ("≈ 10:18" at about 3.4 s).
+- **R11:** the verdict lands alone, after the last caption, and lights its own row.
+- **R12:** "$200,000: you work for tax till ≈ 11:03, every workday." (the board's top row, so the ending escalates). The comment line it invites: "I work for tax till 10:18."
 
 **The wrong beliefs it plays on:**
 1. "My day pays me from 9 am." On average, 2026 federal tax + FICA take 16.3% of a $65,000 salary, which is ≈ 78 minutes of every 8-hour day: your day starts paying you at ≈ 10:18.
@@ -335,29 +342,31 @@ Fit at 2.6 / 2.8 words/s: 3.85 / 3.57 s; 2.69 / 2.50 s; 4.62 / 4.64 s.
 
 | t (s) | On screen | VO (caption) |
 |---|---|---|
-| 0.0 | Header "What time your 9-to-5 / starts paying **you**, by salary". Footer "Single · 2026 federal tax + FICA · no state tax". Columns "Salary" · "Tax + FICA, min a day" · "Paying you from" (emphasised, green highlighter). All 12 salary keys in place; row 1 "$200,000 · ≈ 123 min · ≈ 11:03 am" filled. Footnote under the table "= 9:00 am + 480 min × (tax + FICA) ÷ salary" (two lines). | "$65,000? You work for tax till **≈ 10:18**." |
-| 0.2-2.2 | Rows $150,000 → $30,000 type in, one every 0.2 s ($65,000 · ≈ 78 min · ≈ 10:18 am at 1.2 s) | (line 1 continues to 4.3; "≈ 10:18" at about 3.1 s) |
-| 4.5 | Yellow highlighter on "$65,000 · ≈ 78 min · ≈ 10:18 am"; legend "[$65,000] ≈ US median full-time pay" | "That's ≈ 78 minutes, every workday." |
-| 7.4 | Highlighter moves to "$100,000 · ≈ 100 min · ≈ 10:40 am"; legend "[$100,000] ≈ 1 hr 40 min, every workday" | "Six figures? Until **≈ 10:40**." |
-| 8.6 | Verdict "$100,000: you work for tax till **≈ 10:40**, every workday." + ding | (inside line 3: "≈ 10:40") |
-| 8.6-13.0 | The finished sheet holds (over 4 s: the screenshot), then the values clear back to frame 1 for the loop | (none) |
+| 0.0 | Header "What time your **9-to-5** / starts paying you, by salary" ("9-to-5" on the yellow highlighter). Footer "Single · 2026 federal tax + FICA · no state tax". Columns "Salary" · "Tax + FICA, minutes a day" · "Paying you from" (emphasised, green highlighter). All 12 salary keys in place, in ink-grey Inter Tight (the finder); the result column in Archivo Black 5 px larger than the other cells (the answer); row 1 "$200,000 · ≈ 123 min · ≈ 11:03 am" filled. Footnote under the table "= 9:00 am + 480 min × (tax + FICA) ÷ salary" (two lines). | "$65,000?" |
+| 0.2-2.2 | Rows $150,000 → $30,000 type in, one every 0.2 s ($65,000 · ≈ 78 min · ≈ 10:18 am at 1.2 s) | |
+| 1.5 | Yellow highlighter on "$65,000 · ≈ 78 min · ≈ 10:18 am"; legend "[$65,000] ≈ US median full-time pay" (it takes the footnote's line) | "You work for tax till **≈ 10:18**." ("≈ 10:18" at about 3.4 s) |
+| 4.7 | (the $65,000 row stays lit) | "That's ≈ 78 minutes a day." |
+| 7.4 | Highlighter moves to "$100,000 · ≈ 100 min · ≈ 10:40 am"; legend "[$100,000] ≈ 1 hr 40 min of tax a day" | "Six figures? Until **≈ 10:40**." |
+| 10.0 | The VO has ended (9.8 s): the highlighter swipes the top row "$200,000 · ≈ 123 min · ≈ 11:03 am" (the $100,000 row rests to a tint), and the verdict "$200,000: you work for tax till **≈ 11:03**, every workday." lands in the caption band + ding | (none) |
+| 10.0-13.0 | The finished sheet holds (the screenshot), then the values clear back to frame 1 for the loop | (none) |
 
 ### Guide VO script (23 spoken words as the check counts them, about 8.8 s of speech)
 
 | t | d | Caption text (spec) | Read it as |
 |---|---|---|---|
-| 0.0 | 4.3 | $65,000? You work for tax till **≈ 10:18**. | "Sixty-five thousand? You work for tax till about ten eighteen." |
-| 4.5 | 2.6 | That's ≈ 78 minutes, every workday. | "That's about seventy-eight minutes, every workday." |
+| 0.0 | 1.45 | $65,000? | "Sixty-five thousand?" |
+| 1.5 | 3.1 | You work for tax till **≈ 10:18**. | "You work for tax till about ten eighteen." |
+| 4.7 | 2.6 | That's ≈ 78 minutes a day. | "That's about seventy-eight minutes a day." |
 | 7.4 | 2.4 | Six figures? Until **≈ 10:40**. | "Six figures? Until about ten forty." |
 
-Fit at 2.6 / 2.8 words/s (the check also counts a spoken "dollars" after every $ figure and reads a clock time as two numbers, so it is stricter than the read): 4.23 / 4.29 s; 2.31 / 2.50 s; 2.31 / 2.14 s.
+Fit at 2.6 / 2.8 words/s (the check also counts a spoken "dollars" after every $ figure and reads a clock time as two numbers, so it is stricter than the read): 1.15 / 1.43 s; 3.08 / 2.86 s; 2.31 / 2.50 s; 2.31 / 2.14 s. "Every workday" is said once, by the verdict.
 
 ### The maths
 
 For each salary S (2026, single filer, standard deduction, wages only, no state or local tax):
 - **Federal income tax** on S − $16,100: 10% to $12,400; 12% to $50,400; 22% to $105,700; 24% to $201,775.
 - **FICA** = 6.2% Social Security on wages up to $184,500 + 1.45% Medicare on all wages (the extra 0.9% Medicare starts above $200,000, so no row reaches it).
-- **Tax + FICA, min a day** = 480 min × (tax + FICA) ÷ S. A 9-to-5 is 8 hours = 480 minutes, and 8 hours × 260 workdays = the 2,080 hours a year the rest of the slate uses. Rounded to the minute, with "≈".
+- **Tax + FICA, minutes a day** = 480 min × (tax + FICA) ÷ S. A 9-to-5 is 8 hours = 480 minutes, and 8 hours × 260 workdays = the 2,080 hours a year the rest of the slate uses. Rounded to the minute, with "≈".
 - **Paying you from** = 9:00 am + those minutes (from the exact minutes, to the minute, with "≈").
 - **It is an average.** Tax is withheld from every paycheck, not taken in the first hour of each morning; the clock is your tax share of the year read as the same share of each workday (the Tax Freedom Day idea). The pinned comment says so.
 
@@ -378,10 +387,11 @@ For each salary S (2026, single filer, standard deduction, wages only, no state 
 
 Worked example, $65,000: taxable $48,900; tax = $1,240 + 12% × $36,500 ($4,380) = $5,620; FICA = 7.65% × $65,000 = $4,972.50; together $10,592.50 = 16.30% of pay; × 480 min = 78.22 min; 9:00 am + 78 min = **10:18 am**.
 
-- **VO "You work for tax till ≈ 10:18"** and **"That's ≈ 78 minutes, every workday"**: the $65,000 row (78.22 min).
-- **VO "Six figures? Until ≈ 10:40"** and the verdict: the $100,000 row (99.94 min → 100 min → 10:40 am).
+- **VO "You work for tax till ≈ 10:18"** and **"That's ≈ 78 minutes a day"**: the $65,000 row (78.22 min).
+- **VO "Six figures? Until ≈ 10:40"**: the $100,000 row (99.94 min → 100 min → 10:40 am).
+- **Verdict "$200,000: you work for tax till ≈ 11:03, every workday."**: the top row (122.58 min → 123 min → 11:03 am; worked: $36,734 tax + $14,339 FICA = $51,073 = 25.54% of pay).
 - **Pointer "≈ US median full-time pay"** on the $65,000 row: BLS median weekly earnings of $1,251 × 52 = $65,052, which rounds to ≈ $65,000 (0.08% off; asserted to be under 1%).
-- **Pointer "≈ 1 hr 40 min, every workday"** on the $100,000 row: 99.94 min → 100 min = 1 hr 40 min.
+- **Pointer "≈ 1 hr 40 min of tax a day"** on the $100,000 row: 99.94 min → 100 min = 1 hr 40 min.
 - **Spread:** 64 minutes from the $30,000 row to the $200,000 row. The rows sit close; the stake is that the same bite repeats every workday.
 - **Cross-check with the rest of the slate** (same tax model, asserted in the check): $41,600 keeps 85.6%, which is 01b's "× 0.85"; $15/hr keeps $13.10 an hour, which is 08b's figure. The round-2 numbers still hold on this model: $65,000 ÷ 2,080 = $31.25 an hour, of which ≈ $26 is kept.
 
@@ -421,7 +431,7 @@ The 8-hour day is in the header ("9-to-5") and the footnote "= 9:00 am + 480 min
   - Expect "FICA isn't income tax", state tax and married-filing comments. That is the argument we want; the footer states the basis and the pinned comment answers it.
 - **YouTube Shorts.**
   - Title = the hook.
-  - Keep the 4-second hold on the finished sheet: it is the screenshot.
+  - Keep the hold on the finished sheet after the verdict (about 2.5 s before the loop clear): it is the screenshot.
 
 ---
 
@@ -430,7 +440,7 @@ The 8-hour day is in the header ("9-to-5") and the footnote "= 9:00 am + 480 min
 - **02a:**
   - The seed's 7% is kept (the hook bank's rewrite used 10%; 10% is in the pinned comment).
   - A **"You'd spend" column** sat beside the cost, so the answer the viewer already holds was on screen (R5). The hook pass relabels it "What you think it costs" and turns it red.
-  - The verdict is cost-framed ("10 years younger: it costs more than double") and checked for every whole age 18-54.
+  - The verdict is cost-framed ("10 years younger? / It costs more than double.", since the fix pass) and checked for every whole age 18-54.
 - **02b:**
   - The **federal minimum wage** ($7.25) is the first row: a wage some viewers earn.
   - The hook bank's "$50,000/hr" row is dropped (nobody's wage, R4).
@@ -441,12 +451,12 @@ The 8-hour day is in the header ("9-to-5") and the footnote "= 9:00 am + 480 min
 
 ## Open items
 
-- **Linter:** all three kits mount and `node src/cli.mjs check` passes 02a, 02b and 02c with 0 errors and 0 warnings (2026-10-07, after the hook pass).
+- **Linter:** all three kits mount and `node src/cli.mjs check` passes 02a, 02b and 02c with 0 errors and 0 warnings (2026-10-08, after the fix pass; also at a 0.05 s sampling step). The kits' own find-your-row samples and the Live Sheet stress specs still lint clean with the fix-pass format files.
 - **Slate overlap to decide (owner):** 02b now uses the same device as **10b** ("40 years of your pay vs 1 minute of new US debt", verdict "40 years of median pay: ≈ 33 seconds"): a whole working life set against a mega-rate clock. Both judges also flagged an echo of **10c** (Amazon's sales per second). 02b is a per-wage lookup table with a named person's plan; 10b is one median career against a national-debt counter. If only one should carry the device, 02b's runner-up ("1 second of the plan at your wage", 7.25) is ready in the Review log.
-- **Kit-side note for the Live Sheet owner** (from the verifier, not fixed here because it is kit code): in `looks/live-sheet/formats/find-your-row.js`, once rows hit the minimum height with captions or the verdict band on, the sheet can overflow `bandBottom`. It should shrink rows or reserve the footer height above `G.workBottom`. 02a avoids it with a one-line formula and a one-line footer.
-- **Kit behaviour that shaped 02a (hook pass):** the Live Sheet kit does not colour second emphasis (`__…__`) inside a column label (`.ls-hl u.mark2` has no colour rule), so the label "What you think it costs" reads in ink; the red comes from the column's documented `tone: "bad"`, which colours its numbers. The spec keeps the `__…__` markup, so a kit that colours it will show a red label too.
-- **Kit behaviour that shaped 02b:** in the Scoreboard kit, a pick at 0.0 s replaces the formula strip for the whole short (tested in round 2), so 02b's first pointer lands at 4.2 s and the formula is on screen from 0.0 to 4.2 s. The 3-column × 13-row board is now tested (stills at 0.0, 1.5, 3.0 and 11.2 s): the labels take two lines, the 2-line footer breaks at its " · ", and nothing overlaps.
-- **Kit behaviour that shaped 02c:** with captions on, the Clean Sheet kit drops the formula footnote and the pick legend at 14 rows (tested); at 12 rows with a one-line footer it shows both (the footnote takes two lines; stills at 0.0, 3.0 and 9.5 s).
+- **Kit-side note for the Live Sheet owner** (from the verifier): the sheet could overflow `bandBottom` once its tooltip slots grew the card. Since the fix pass the find-your-row tooltips float over the next row and the card never grows, so the planned card is the card on screen.
+- **Kit behaviour that shaped 02a:** the Live Sheet `style.css` has no colour rule for second emphasis (`__…__`) inside a column label (`.ls-hl u.mark2` / `.ls-hsub u.mark2`), so in the hook pass the label "What you think it costs" read in ink. Since the assembly pass the kit's `formats/find-your-row.js` colours it red itself (a local workaround; the shared rule still belongs in `style.css`), so the label is red like its numbers. In this kit a `\n` in a column label starts a grey sub-label, so 02a's labels are written without one and the kit balances them over two lines in ink.
+- **Kit behaviour that shaped 02b:** in the Scoreboard kit, a pick at 0.0 s replaces the formula strip for the whole short (tested in round 2), so 02b's first pointer lands at 2.0 s. With 11 rows and a one-line footer the strip runs stacked: each pointer label sits over the formula, so the working "= wage × 2,080 × 40 ÷ $3,169/s" stays on screen until the verdict. A verdict that lands after the last VO line takes the strip and the caption band together (`formats/find-your-row.js`, via the chrome's `verdictSlot`), so it is set at about 84 px against the labels' 58 px.
+- **Kit behaviour that shaped 02c:** with captions on, the Clean Sheet kit drops the formula footnote and the pick legend at 14 rows (tested); at 12 rows with a one-line footer it shows both (the footnote takes two lines, since the assembly pass broken at an operator: "= 9:00 am + 480 min" / "× (tax + FICA) ÷ salary"; the pick legend takes the footnote's place from the first pointer, 1.5 s since the fix pass). The Clean Sheet verdict is the chrome's (56 px, Archivo Black); 02c's ending escalates through its row instead (`lookOpts.verdictRow`).
 - For the music-only A versions, render the same spec with `"captions": false` (no other change).
 
 ---
@@ -521,3 +531,54 @@ The owner rejected round 1 partly because "hooks are weak". For each teaser, fou
 - Mutation test on scratch copies: (1) one 02c row changed ("≈ 10:40 am" → "≈ 10:41 am"); (2) 02b `vo[2]` shortened (d 4.7 → 4.4). Result: **FAILED: 5 of 171 checks, exit 1**: the changed row, its stray number token (41 is not a computed minute), the `vo[2]` field, the `vo[2]` fit test (4.64 s needed) and the VO-fit summary.
 - `node src/cli.mjs check` on the three specs → 3/3 clean, 0 errors, 0 warnings.
 - `node src/cli.mjs stills … --at 0,1.5,3` (plus one still at each verdict): in frame 1, 02a shows the quoted header over "18 · $51,465 (red) · ≈ $400,000"; 02b shows the header ending "IN…" over "$7.25/HR · $603,200 · ≈ 3.2 MIN" and the strip; 02c shows the header over "$200,000 · ≈ 123 min · ≈ 11:03 am". At 3.0 s each caption carries the first payoff ("At 18: ≈ $400,000"; "≈ 3 minutes of his"; "≈ 10:18").
+
+### Assembly pass (2026-10-08)
+
+Round-2 assembly of the three teasers in their kits (lint, contact sheets, stills at every beat, every on-screen number re-checked, final MP4s).
+
+| # | Teaser | What I saw | What I changed |
+|---|---|---|---|
+| A1 | 02a | The middle column label read "What / you think / it costs" on three lines, in ink with a grey last line, beside red numbers: the "what you think (red) vs what it really costs (green)" contrast was only half on screen, and the result label's "costs you" was grey too. | Labels are now one phrase each, `__What you think it costs__` (red) and `What it really costs you` (the Live Sheet treats a `\n` as a grey sub-label, so the `\n`s are gone and the kit balances each over two lines). The kit's `formats/find-your-row.js` now colours `__…__` in a column label red. The header row is a line shorter, so the rows get more height. Wording, numbers and timings unchanged; the check's expected columns updated to match. |
+| A2 | 02b | The strip went pointer label → formula (0.5 s, 6.7-7.2 s) → pointer label → formula (1.0 s, 9.7-10.7 s) → verdict: two flickers right before the payoff. | `looks/scoreboard/formats/find-your-row.js`: the formula only comes back when it can stand 1.5 s before the next pointer or the verdict; otherwise the label holds. 02b now runs formula (0-4.2 s) → "$1,664,000 in under 9 min" (4.2-7.2 s) → "$8,320,000 in ≈ 44 min" (7.2-10.7 s) → verdict. |
+| A3 | 02c | The two-line footnote broke as "= 9:00 am + 480 min ×" / "(tax + FICA) ÷ salary": an operator left hanging at a line end. | `looks/clean-sheet/formats/find-your-row.js`: a two-line footnote breaks at an operator seam (the second line starts with its operator, no bracket split): "= 9:00 am + 480 min" / "× (tax + FICA) ÷ salary". |
+
+Checks after the assembly pass: `python3 teasers/v2/checks/02-find-your-row.py` → **PASSED: all 170 checks**; `node src/cli.mjs check` on the three specs → 3/3 clean, 0 errors, 0 warnings. Every number in the stills was also recomputed by a separate script (FV at 7% ÷ 12, the plan's $3,168.81 a second, 2026 tax + FICA): no mismatches. VO beats land with their pointers (02a 4.9 / 8.4 s, 02b 4.2 / 7.2 s, 02c 4.5 / 7.4 s) and each verdict lands when its VO line says it (10.7 / 10.7 / 8.6 s).
+
+### Fix pass (2026-10-08)
+
+QA of the assembled round 2 scored 02a 6.5, 02b 6.5 and 02c 6.0 (lint and the 170 maths checks were already clean). Every must and should, and the cheap nits, are handled below. Edited: the three specs, this write-up, the check, and the three kits' `formats/find-your-row.js` (no shared kit file).
+
+| # | Teaser | Severity | QA issue | What I did |
+|---|---|---|---|---|
+| F1 | 02a | must | Verdict wrapped "10 years younger: it / costs more than double."; card narrower than the table. | Verdict "10 years younger?\nIt costs **more than double**." (a break between the clauses). The Live Sheet format now draws the card itself (`verdict: 'self'`), x 60-960 like the sheet. |
+| F2 | 02a | should | Pick 2 pointed at 35 but said "At 25: ≈ 2.2× this" with row 25 unlit. | `lookOpts.compare`: the 35-row pick is a bracket drawn beside the keys from 35 up to 25 (arrowhead on 25), labelled "≈ 2.2×"; the 25 row stays tinted. The pick label is now "≈ 2.2×" (2.152). |
+| F3 | 02a | should | The selection slid across the sheet; the tooltip's spacer row opened empty and the table jumped ~78 px twice per pick. | Selections cross-fade (the old one fades where it is, the new one lands on its cell). Tooltips float over the row under the pick: that row fades out in the same frames the pill wipes in; no row moves, no empty strip. Checked frame by frame at 4.90-5.17 and 8.40-8.70 s, and linted at a 0.05 s step. |
+| F4 | 02a | should | The first payoff (spoken at 2.7 s) had no visual. | VO split: "Just $3 a day?" (0.0) / "At 18: **≈ $400,000**." (2.0, d 2.7). A pick on row 18 at 2.0 s: "≈ 7.8× what you think" (400,261.67 ÷ 51,465 = 7.777). Later lines unchanged (4.9, 8.4). QA suggested 1.6 s; the check's 2.6 words/s read of "Just three dollars a day?" needs 1.92 s. |
+| F5 | 02a | should | The verdict was no bigger than the captions. | The punch line's emphasis is set at about 90 px ("more than double", 84 px minimum on this card) against the 68 px captions, on the yellow marker, as the result column flashes; the kicker "10 years younger?" at 48 px with the ≈ chip. |
+| F6 | 02a | should | ~42 px cells on a 50 px pitch; dead band under the footer. | No tooltip slot to plan for, the A B C row dropped, and the cells sized to the row: 59 px pitch with 49 / 45 / 52 px figures; the sheet now ends at y 1235 and the footer at about 1300. |
+| F7 | 02a | nit | Straight quotes in the header. | “It’s just **$3 a day**.” |
+| F8 | 02b | should | Column head "HIS PLAN EARNS / IT IN". | "His plan\nearns it in". |
+| F9 | 02b | should | Two-line footer under the hook; 13 cramped rows (~42 px pitch). | Footer "Plan max ÷ 10 yrs, 24/7 · you: 40 yrs × 2,080 hrs" (one line); the $10/hr and $250/hr rows dropped: 11 rows at a ~54 px pitch. |
+| F10 | 02b | should | Pick labels repeated the captions; verdict on top of the caption saying the same thing. | Labels show the career-pay working: "$7.25/hr × 83,200 hrs = $603,200", "$20/hr × 83,200 hrs = $1,664,000", "$1,000/hr × 83,200 hrs = $83,200,000". VO line 4 ends at 10.5 s and the verdict lands at 10.7 s, alone. |
+| F11 | 02b | should | The payoff reused the $100/hr pick and was weaker than the opener; the $1,000/hr row was never featured. | The last pick is the last row ($1,000/hr, 7.0 s): VO "Even **$1,000 an hour**? ≈ 7 hours." and verdict "Even **$1,000/hr** / for 40 years: / ≈ 7.3 hours of his." (7.293 hrs), set in the strip and caption band at about 84 px against the labels' 58 px. |
+| F12 | 02b | should | "≈ 3 minutes" spoken at 1.9 s with no pointer; caption broke "minimum / wage". | VO split: "40 years at minimum wage?" (0.0) / "**≈ 3 minutes** of his." (2.0); a pick on the $7.25 row at 2.0 s. Each caption is one line. |
+| F13 | 02b | nit | Strip "÷ ≈ $3,169 a second" (two operators). | "= wage × 2,080 × 40 ÷ $3,169/s"; the ≈ and the exact $3,168.81 stay in the caption and the pinned comment. |
+| F14 | 02b | nit | "≈ 43.8 MIN" in the row vs "≈ 44 MIN" in the label and verdict. | Moot: the $100/hr pick is gone. On screen each figure has the row's rounding (≈ 7.3); the VO alone rounds ("≈ 7 hours"). |
+| F15 | 02b | nit | Caption "Even $100 an hour, for / 40 years?". | Line 4 is now "Even **$1,000 an hour**? ≈ 7 hours." (one line). |
+| F16 | 02c | must | The hook beat had no visual: "≈ 10:18" spoken at 3.1 s, the $65,000 row unmarked until 4.5 s. | VO split: "$65,000?" (0.0, d 1.45) / "You work for tax till **≈ 10:18**." (1.5); pick 1 moved to 1.5 s on the $65,000 row (it lands at 1.2 s). Line 3 "That's ≈ 78 minutes a day." plays over the lit row (4.7 s). |
+| F17 | 02c | should | First caption wrapped at half width. | Fixed by the split (each caption on one line). |
+| F18 | 02c | should | The verdict repeated pick 2 ($100,000) and the strongest row was never pointed at. | Verdict "$200,000: you work for tax till **≈ 11:03**, every workday." at 10.0 s, after the VO; the yellow highlighter swipes the $200,000 row with it (`lookOpts.verdictRow: 0`, a Clean Sheet format option added in this pass), and the $100,000 band rests to a tint. |
+| F19 | 02c | should | Salary keys in heavy Archivo Black as large as the results: inverted hierarchy. | Keys in Inter Tight 700, ink-grey (#3B404C); the result column stays Archivo Black and is set 5 px larger than the other cells (`EMPH_UP`), so "≈ 11:03 am" is the loudest cell on frame 1. |
+| F20 | 02c | should | Legend "[$100,000] ≈ 1 hr 40 min, every workday" read as money ≈ time and repeated the verdict. | "≈ 1 hr 40 min of tax a day"; "every workday" is said once, in the verdict (VO line 3 is now "…a day."). |
+| F21 | 02c | nit | "MIN A DAY" could read as "minimum". | "Tax + FICA,\nminutes a day" (it fits on two lines). |
+| F22 | 02c | nit | A ~4 s static hold after the verdict. | The verdict moved to 10.0 s, with its row swipe: about 2.5 s of hold before the loop clear (duration 13.0 s kept). |
+| F23 | 02c | nit | No number in the header. | "What time your **9-to-5** / starts paying you, by salary": the clock is the highlighted phrase. |
+
+**Format-file changes** (each kit's `formats/find-your-row.js` only):
+- **Live Sheet:** floating tooltips (no slot, no reflow; a label too long for the rows beside it falls back to the formula bar); cross-faded selections; cells sized to their row (a search for the largest size that keeps every label on as few lines and every value inside its column, cell padding 22 or 12 px; a smaller landing snap for those cells); `lookOpts.compare` brackets; a sheet-wide verdict card with a large punch line (falls back to the kit's card when a verdict is too long for it).
+- **Scoreboard:** a verdict that lands after the VO takes the strip and the caption band (`verdictSlot`), and the strip then reserves no verdict room.
+- **Clean Sheet:** key column in Inter Tight 700 ink-grey; the emphasised column `EMPH_UP` (5 px) larger; `lookOpts.verdictRow`.
+
+**Check changes:** 02a, 02b and 02c builders rebuilt for the new VO lines, pointers, verdicts, rows (02b: 11), footer, formula, column labels and `lookOpts`; new recomputed lines (18-row ratio 7.777, the bracket's 2.152 and 0.465, $1,000/hr 7.293 hrs, the $200,000 row 122.58 min); the verdict-timing rule is "when the VO says it" for 02a and "0.2 s after the last VO line" for 02b and 02c; `lookOpts` is compared with the expected value; a `\n` is quoted in this write-up as " / ".
+
+**Checks after the fix pass:** `python3 teasers/v2/checks/02-find-your-row.py` → **PASSED: all 177 checks**. Mutation test on scratch copies (02c's top row "≈ 11:03 am" → "≈ 11:04 am"; 02b `vo[3]` d 3.5 → 3.2): **FAILED: 4 of 178 checks, exit 1** (the row, the `vo[3]` field, its fit test, the VO-fit summary). `node src/cli.mjs check` → 3/3 clean, 0 errors, 0 warnings (also at `--every 0.05`), and the kits' find-your-row samples plus the Live Sheet stress specs are clean. Contact sheets and stills at every beat (and frame by frame across each 02a pick) were inspected; final MP4s re-rendered to `studio/out/`.

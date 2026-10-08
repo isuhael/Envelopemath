@@ -29,8 +29,29 @@
 // empty.
 //
 // lookOpts: loop (true) · countUp (true) · letters ('auto' | true | false) · verdict ('auto' | 'band' | 'formula')
-//           · formulas ([per option], default "= <detail>") · lever (string or { t, text }) · deltaLabel
-//           ("vs <baseline name>") · formulaAt0 (0.7)
+//           · formulas ([per option], default "= <detail>"; a "\n" in a working or the lever is a forced line break,
+//           so a two-line working breaks where the author says, e.g. before its "= result") · lever (string or
+//           { t, text }) · deltaLabel ("vs <baseline name>") · formulaAt0 (0.7)
+//           · reads ([{ t, option, metric }]: the VO reads a value that is already on the sheet, e.g. the pre-filled
+//           baseline; at t the selection steps onto that cell (metric = a metric key, or "delta") and it flashes
+//           and settles from 108%, so the sheet answers the voice instead of sitting still; option may be a list of
+//           adjacent options, [1, 2]: the selection spans their cells and they flash together, "same result")
+//           · scan ({ t, every = 0.4, options }: "guess which one": from t the selection hops across the columns still
+//           empty then (or the listed options), one per `every` s, on a tick each)
+//           · steps ([{ t, text }]: extra working typed into the bar at t, e.g. the difference the VO speaks,
+//           "= $10,000 − $8,900\n≈ $1,100 less"; folded into the bar's timeline like an option's working)
+//           · lever.options ([i, j]: at lever.t the selection springs onto those columns' value rows and they wash
+//           rowHi while the lever line holds the bar: the columns the lever explains)
+//           · countCell ({ option, metric, from: 'base' | number }: that cell counts from the baseline's value (or
+//           `from`) to its display over 0.8 s when it lands, then settles from 110%: the "biggest result" treatment
+//           for a winner with no delta row)
+//           · valueSize ('table' | 'row': 'row' sizes each value row on its own, so a row of short numbers ("72",
+//           "≈ 65") is set large while a row of money keeps the size its widest value allows)
+// Always: header names and behaviours stay on one line each when any column shape allows it (then one name size
+// and one behaviour size for the row); an un-numbered tail under the last row keeps the selection off the card's
+// rounded corner, and a last-column selection is inset from the card edge; the selection steps within a column
+// in one jump (it never sweeps across a label row); at the verdict the winner's values pop (110%) as the wash
+// reaches them; a "−" in the bar is set in Inter (the mono minus reads as a hyphen).
 import {
   h, setStyle, setText, setHTML, clamp, prog, ease, plain, C, G, M, S,
   formulaBar, fitFormula, mk, mkLen, typedMk, typeDur, caretOn, countText, displayValue, snapIn, liftOut, popScale,
@@ -60,9 +81,12 @@ export const css = `
 .wd-card .ls-sel { z-index: 5; }
 .wd-tight .ls-v { letter-spacing: -0.02em; }
 .wd-tight .wd-num .ls-v { word-spacing: -0.12em; }
+.wd-card .ls-fline .wd-op { font-family: 'Inter Full', 'Inter', sans-serif; }
 `
 
 const esc = str => String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+/** the bar's "−" in Inter: JetBrains Mono's minus reads as a hyphen ("72 - $44,000") */
+const opHTML = html => String(html).replace(/−/g, '<span class="wd-op">−</span>')
 const LETTERS = 'ABCDEFGHIJ'
 /** a sign or "≈" never parts from its number: "≈ −$540" breaks nowhere, "≈ 54 mo" only before "mo" */
 const glue = str => String(str).replace(/(^|\s)([≈~±+−=×÷-])[ ]+(?=[\d$€£−(-])/g, '$1$2 ').replace(/(^|\s)([≈~±+−=×÷-])[ ]+(?=[\d$€£−(-])/g, '$1$2 ')
@@ -92,6 +116,12 @@ export default function whatDifference(spec, ctx) {
   }
   const leverOpt = opt(spec, 'lever', null)
   const lever = leverOpt ? (typeof leverOpt === 'string' ? { text: leverOpt } : leverOpt) : null
+  const leverCols = lever && Array.isArray(lever.options) ? lever.options.filter(i => Number.isInteger(i) && i >= 0 && i < nO).sort((a, b) => a - b) : []
+  const stepsOpt = opt(spec, 'steps', null)
+  const steps = (Array.isArray(stepsOpt) ? stepsOpt : []).filter(x => x && Number.isFinite(+x.t) && +x.t > 0 && x.text).map(x => ({ t: +x.t, text: String(x.text) })).sort((a, b) => a.t - b.t)
+  const valueSize = opt(spec, 'valueSize', 'table')
+  const TAIL = 20     // the un-numbered strip under the last row: the selection never sits on the rounded corner
+  const SEL_INSET = 4 // a last-column selection stays this far inside the card's right edge
   const baseIdx = Math.max(0, options.findIndex(o => !o.delta))
   const baseName = options[baseIdx] ? String(options[baseIdx].name || '') : ''
   const deltaLabel = opt(spec, 'deltaLabel', baseName ? `vs ${baseName}` : 'Difference')
@@ -124,6 +154,30 @@ export default function whatDifference(spec, ctx) {
   const done = {}                       // time an option's last cell has settled
   const cpsFor = str => Math.max(M.cps, mkLen(str) / 0.9)
   let prevDone = 0, prevTyped = typeDur(fStr(cur0), { from: cut })
+  // a counted cell (lookOpts.countCell): counts from the baseline's value (or a number) to its display
+  const ccOpt = opt(spec, 'countCell', null)
+  let cc = null
+  if (ccOpt && Number.isInteger(ccOpt.option) && ccOpt.option >= 0 && ccOpt.option < nO) {
+    const k = ccOpt.metric === 'delta' ? (hasDelta ? nM : -1) : metrics.findIndex(m => m.key === ccOpt.metric)
+    const from = ccOpt.from === 'base' ? displayValue(valueOf(baseIdx, Math.max(0, k))) : +ccOpt.from
+    if (k >= 0 && valueOf(ccOpt.option, k) && !pre(ccOpt.option) && !(k === nM && ccOpt.option === countI)) cc = { i: ccOpt.option, k, from: Number.isFinite(from) ? Math.abs(from) : 0 }
+  }
+  const counts = (i, k) => (k === nM && i === countI) || (cc && cc.i === i && cc.k === k)
+  // extra working (lookOpts.steps) takes the bar at its own time, between the options' workings
+  // (a timed lever line takes its place in the same timeline, so the working after it waits until it is readable)
+  const leverTimed = !!(lever && Number.isFinite(lever.t))
+  const extra = [...steps.map(x => ({ t: x.t, str: x.text, cps: cpsFor(x.text), erase: ERASE, step: true })),
+    ...(leverTimed ? [{ t: +lever.t, str: lever.text, cps: 26, erase: 0.22, chip: true, lever: true }] : [])].sort((a, b) => a.t - b.t)
+  let si = 0
+  const flushSteps = until => {
+    for (; si < extra.length && extra[si].t <= until; si++) {
+      const sp = extra[si], str = sp.str
+      const start = sp.lever ? sp.t : Math.max(sp.t, prevTyped + 0.5)
+      if (start > sp.t + 0.01) console.warn(`live-sheet what-difference: step "${str.slice(0, 24)}" pushed back to ${start.toFixed(2)} s`)
+      segs.push({ t0: start, str, from: 0, cps: sp.cps, erase: sp.erase, step: !!sp.step, chip: !!sp.chip, lever: !!sp.lever })
+      prevTyped = start + sp.erase + mkLen(str) / sp.cps
+    }
+  }
   for (const i of order) {
     const cells = cellsOf(i)
     const str = fStr(i)
@@ -132,6 +186,7 @@ export default function whatDifference(spec, ctx) {
     else if (i === cur0) t0 = Math.max(T[i], prevTyped + 0.1)
     else {
       const td = mkLen(str) / cpsFor(str)
+      flushSteps(T[i] - 0.12 - td - ERASE)
       const start = Math.max(prevDone + 0.2, prevTyped + HOLD, T[i] - 0.12 - td - ERASE)
       segs.push({ t0: start, str, from: 0, cps: cpsFor(str), erase: ERASE, i })
       prevTyped = start + ERASE + td
@@ -140,11 +195,34 @@ export default function whatDifference(spec, ctx) {
     for (let k = 0; k < nG; k++) land[i][k] = Infinity
     cells.forEach((k, n) => { land[i][k] = t0 + n * GAP })
     const lastK = cells.length ? cells[cells.length - 1] : null
-    done[i] = pre(i) ? 0 : lastK == null ? t0 : land[i][lastK] + (i === countI && lastK === nM ? M.count : M.drop)
+    done[i] = pre(i) ? 0 : lastK == null ? t0 : land[i][lastK] + (counts(i, lastK) ? M.count : M.drop)
     if (!pre(i)) prevDone = Math.max(prevDone, done[i])
   }
-  const lastDone = Math.max(0, ...Object.values(done))
-  const leverT = lever ? (Number.isFinite(lever.t) ? lever.t : verdict ? verdict.t : lastDone + 0.6) : Infinity
+  flushSteps(Infinity)
+  const lastDone = Math.max(0, ...Object.values(done), ...segs.filter(x => x.step).map(x => x.t0 + x.erase + mkLen(x.str) / x.cps))
+  // reads: the VO reads a value already on the sheet (it must have landed by then)
+  const metricIdx = key => (key === 'delta' ? (hasDelta ? nM : -1) : metrics.findIndex(m => m.key === key))
+  const readsOpt = opt(spec, 'reads', null)
+  // (option may be a list of adjacent options: the selection spans their cells and they flash together)
+  const reads = (Array.isArray(readsOpt) ? readsOpt : [])
+    .map(r => {
+      const is = (Array.isArray(r.option) ? r.option : [r.option]).filter(Number.isInteger).sort((a, b) => a - b)
+      return { t: +r.t, is, i: is.length ? is[0] : -1, k: metricIdx(r.metric) }
+    })
+    .filter(r => Number.isFinite(r.t) && r.t > 0 && r.is.length && r.k >= 0
+      && r.is.every((i, n) => i >= 0 && i < nO && valueOf(i, r.k) && land[i][r.k] + 0.2 <= r.t && (n === 0 || i === r.is[n - 1] + 1)))
+    .sort((a, b) => a.t - b.t)
+  const readsOf = (i, k) => reads.filter(r => r.is.includes(i) && r.k === k)
+  // scan ("guess which one"): the selection hops across the columns still empty at scan.t
+  const scanOpt = opt(spec, 'scan', null)
+  let scan = null
+  if (scanOpt && Number.isFinite(+scanOpt.t) && +scanOpt.t > 0) {
+    const st = +scanOpt.t
+    const cols = (Array.isArray(scanOpt.options) ? scanOpt.options : options.map((_, i) => i).filter(i => !pre(i) && land[i][cellsOf(i)[0] ?? 0] > st + 0.5))
+      .filter(i => Number.isInteger(i) && i >= 0 && i < nO)
+    if (cols.length) scan = { t: st, every: Math.max(0.2, +scanOpt.every || 0.4), cols }
+  }
+  const leverT = lever ? (leverTimed ? +lever.t : verdict ? verdict.t : lastDone + 0.6) : Infinity
   const hiT = winner >= 0 ? (verdict ? verdict.t : Math.max(lastDone + 0.8, Number.isFinite(leverT) ? leverT + 1.5 : 0)) : Infinity
   const beats = [lastDone, verdict ? verdict.t + 0.5 : 0, Number.isFinite(hiT) ? hiT + 0.5 : 0, Number.isFinite(leverT) ? leverT + 1.2 : 0]
 
@@ -153,8 +231,10 @@ export default function whatDifference(spec, ctx) {
   const fH = footerHeight(spec.footer)
   let vMode = opt(spec, 'verdict', 'auto')
   if (!verdict) vMode = 'none'
-  const formulaStrings = [...options.map((_, i) => fStr(i)), lever ? lever.text : '']
+  const formulaStrings = [...options.map((_, i) => fStr(i)), lever ? lever.text : '', ...steps.map(x => x.text)]
   let fFit = fitFormula(formulaStrings, W)
+  // an author line break ("\n") needs the two-line bar even when every line would fit on one
+  if (fFit.lines < 2 && formulaStrings.some(x => /\n/.test(x))) fFit = { px: S.formulaMin, lines: 2, ht: 128 }
   const valFont = (k, px) => font(k === nM ? 900 : 800, px)
   // tight: the tracking closes up, and a value with no words closes its "≈ " gap a little too
   const hasWords = v => /[A-Za-z]/.test(v)
@@ -176,9 +256,14 @@ export default function whatDifference(spec, ctx) {
   const valMin = (i, px, tight) => Math.max(0, ...[...Array(nG).keys()].map(k => vMin(i, k, px, tight)))
   const wordsW = (str, f, ls) => Math.max(0, ...plain(String(str || '')).split(/\s+/).filter(Boolean).map(w => textW(esc(w), f, { letterSpacing: ls })))
   const nameWord = options.map(o => wordsW(o.name, font(800, S.labelMin), '-0.012em'))
-  // candidates, roomiest first: [gutter, pad, tight tracking, content-sized columns]
+  // a header's name and behaviour, each on one line at 40 px (an author "\n" in a behaviour keeps its break)
+  const headOneW = options.map(o => Math.max(textW(mk(o.name || ''), font(800, S.labelMin), { letterSpacing: '-0.012em' }),
+    o.detail && !/\n/.test(String(o.detail)) ? textW(mk(o.detail), font(600, S.sub), { letterSpacing: '-0.01em' }) : 0))
+  // candidates, roomiest first: [gutter, pad, tight tracking, content-sized columns]; a first pass also wants every
+  // header on one line per part (a name broken "Rounded / up" reads as amateur), the second takes what fits
   const shapes = [[64, null, false, false], [64, null, true, false], [46, 10, true, false], [46, 10, true, true]]
   let cols = null
+  for (const wantOne of [true, false]) {
   for (const [gut, pad0, tight, content] of shapes) {
     const avail = W - gut
     const padsOf = ws => ws.map((w, i) => [pad0 ?? (w < 240 ? 14 : G.padX), i === nO - 1 ? G.padX : pad0 ?? (w < 240 ? 14 : G.padX)])
@@ -202,8 +287,12 @@ export default function whatDifference(spec, ctx) {
     // at the 40 px floor a value with words may take two lines ("11 yrs" / "5 mo"); a number never breaks
     // (a header cell may tighten its own padding to 12 px for a long name)
     const ok = (fitsAt(px) || options.every((o, i) => valMin(i, px, tight) <= inner(i) - 4)) && options.every((o, i) => nameWord[i] <= Math.max(inner(i), ws[i] - 24) + 0.5)
+    const one = options.every((o, i) => headOneW[i] <= ws[i] - 24 - 1)
+    if (wantOne && !(ok && one)) continue
     cols = { gutter: gut, w: ws, pads: ps, tight, px, ok }
     if (ok) break
+  }
+  if (cols && cols.ok) break
   }
   if (!cols.ok) console.warn('live-sheet what-difference: values or names too wide for their columns at 40 px')
   const gutter = cols.gutter, colW = cols.w, tight = cols.tight
@@ -213,14 +302,17 @@ export default function whatDifference(spec, ctx) {
   const inner = i => colW[i] - padL[i] - padR[i]
   const valW = i => inner(i) - 4
   let fitPx = cols.px
+  // valueSize 'row': each value row takes the largest size its own values allow (80 → 40 px); 'table': one size
+  const pxOfK = k => { let px = 80; while (px > S.cellMin && !options.every((o, i) => vW(i, k, px, tight) <= valW(i))) px -= 2; return px }
+  const groupPx = [...Array(nG).keys()].map(k => (valueSize === 'row' ? pxOfK(k) : fitPx))
   // a value still too wide at 40 px wraps at its most balanced break (never after a sign: glued above)
   const wrapAt = {}
   options.forEach((o, i) => { for (let k = 0; k < nG; k++) {
     const v = valueOf(i, k)
-    if (!v || vW(i, k, fitPx, tight) <= valW(i)) continue
+    if (!v || vW(i, k, groupPx[k], tight) <= valW(i)) continue
     const g = glue(v)
     let best = null, bw = Infinity
-    for (const b of breaks(v)) { const w = Math.max(strW(g.slice(0, b), k, fitPx, tight), strW(g.slice(b + 1), k, fitPx, tight)); if (w < bw) { bw = w; best = b } }
+    for (const b of breaks(v)) { const w = Math.max(strW(g.slice(0, b), k, groupPx[k], tight), strW(g.slice(b + 1), k, groupPx[k], tight)); if (w < bw) { bw = w; best = b } }
     if (best != null) wrapAt[i + ',' + k] = best
   } })
   const wrapRows = new Set(Object.keys(wrapAt).map(x => +x.split(',')[1]))
@@ -264,6 +356,13 @@ export default function whatDifference(spec, ctx) {
       else setStyle(part, { whiteSpace: 'normal' })
     }
   })
+  // one name size and one behaviour size across the row: a column that had to fit at 40 px sets the others
+  for (const sel of ['.ls-hl', '.ls-hsub']) {
+    const els = headEls.map(el => el.querySelector(sel)).filter(Boolean)
+    if (!els.length) continue
+    const px = Math.min(...els.map(e => parseFloat(getComputedStyle(e).fontSize)))
+    for (const e of els) setStyle(e, { fontSize: px + 'px' })
+  }
   const measureHead = () => Math.max(76, Math.ceil(Math.max(0, ...headEls.map(el => el.scrollHeight)) + 24))
   const headWith = measureHead()
   hSub.forEach(sb => sb && setStyle(sb, { display: 'none' }))
@@ -292,7 +391,7 @@ export default function whatDifference(spec, ctx) {
     // a sparse table (one or two value groups) lets its rows grow past 116 px and its values past 64 px
     const maxRow = nG <= 2 ? 150 : 116
     const rowFor = () => {
-      const avail = bottom - G.cardTop - fbarH - lp.lettersH - stakeHFor(lp.skPx) - headH - nG * lp.labH - labExtra.reduce((a, b) => a + b, 0)
+      const avail = bottom - G.cardTop - fbarH - lp.lettersH - stakeHFor(lp.skPx) - headH - nG * lp.labH - labExtra.reduce((a, b) => a + b, 0) - TAIL
       let rh = maxRow
       for (let it = 0; it < 4; it++) {
         const px = Math.max(S.cellMin, Math.min(fitPx, rh - 22))
@@ -329,9 +428,8 @@ export default function whatDifference(spec, ctx) {
   const { lettersH, skPx, labH, rowH } = LP
   const headH = LP.headH
   const stakeH = stakeHFor(skPx)
-  const valPx = Math.max(S.cellMin, Math.min(fitPx, rowH - 22, rowH > 116 ? 80 : 64))
-  const wrapH = 2 * wrapLineH(valPx) + 16
-  const rowHk = k => (wrapRows.has(k) ? Math.max(rowH, wrapH) : rowH)
+  const valPxK = k => Math.max(S.cellMin, Math.min(groupPx[k], rowH - 22, rowH > 116 ? 80 : 64))
+  const rowHk = k => (wrapRows.has(k) ? Math.max(rowH, 2 * wrapLineH(valPxK(k)) + 16) : rowH)
 
   // ---------- DOM ----------
   const fbar = formulaBar(card, { x: 0, y: 0, w: W, ht: fbarH, px: fFit.px, lines: fFit.lines, verdict: vMode === 'formula' ? verdict.text : null })
@@ -376,6 +474,9 @@ export default function whatDifference(spec, ctx) {
   const cells = options.map(() => [])
   const washes = [] // { el, top, ht }: the winner's column, one segment per body row (under the text)
   const wash = (top, ht) => { const el = h('i', { class: 'wd-wash' }); washes.push({ el, top, ht }); return el }
+  const leverWashes = [] // the lever's columns, one segment per value row
+  const lwash = ht => { const el = h('i', { class: 'wd-wash' }); leverWashes.push({ el, ht }); return el }
+  const leverW = leverCols.reduce((a, i) => a + colW[i], 0)
   for (let k = 0; k < nG; k++) {
     const isDelta = k === nM
     // (the label sits in a span: a flex container would drop the space after an inline element)
@@ -386,18 +487,23 @@ export default function whatDifference(spec, ctx) {
     body.append(h('div', { class: 'ls-row wd-lab', style: { top: groupTop[k] + 'px', height: labHk(k) + 'px' } }, ln, lab))
     const rh = rowHk(k)
     const vn = h('div', { class: 'ls-rn', 'data-deco': '', text: String(4 + 2 * k), style: { width: gutter + 'px', height: rh + 'px' } })
-    const row = h('div', { class: 'ls-row' + (isDelta ? ' wd-delta' : ''), style: { top: groupTop[k] + labHk(k) + 'px', height: rh + 'px' } }, vn, wash(groupTop[k] + labHk(k), rh))
+    const row = h('div', { class: 'ls-row' + (isDelta ? ' wd-delta' : ''), style: { top: groupTop[k] + labHk(k) + 'px', height: rh + 'px' } }, vn, wash(groupTop[k] + labHk(k), rh),
+      ...(leverCols.length ? [lwash(rh)] : []))
     numEls.push(ln, vn)
     options.forEach((o, i) => {
       const wrapped = wrapAt[i + ',' + k] != null
-      const v = h('span', { class: 'ls-v', style: { lineHeight: (wrapped ? wrapLineH(valPx) : lineH(valPx)) + 'px' } })
-      const el = h('div', { class: 'ls-cell right wd-val' + (hasWords(valueOf(i, k)) ? '' : ' wd-num'), style: { left: colX[i] + 'px', width: colW[i] + 'px', height: rh + 'px', fontSize: valPx + 'px', padding: `0 ${padR[i]}px 0 ${padL[i]}px` } }, v)
+      const vpx = valPxK(k)
+      const v = h('span', { class: 'ls-v', style: { lineHeight: (wrapped ? wrapLineH(vpx) : lineH(vpx)) + 'px' } })
+      const el = h('div', { class: 'ls-cell right wd-val' + (hasWords(valueOf(i, k)) ? '' : ' wd-num'), style: { left: colX[i] + 'px', width: colW[i] + 'px', height: rh + 'px', fontSize: vpx + 'px', padding: `0 ${padR[i]}px 0 ${padL[i]}px` } }, v)
       row.append(el)
       cells[i][k] = { el, v }
     })
     body.append(row)
   }
-  const cardH = bodyTop + bodyH
+  // the un-numbered tail under the last row (the gutter strip, no gridlines): the selection never meets the corner
+  card.append(h('div', { class: 'ls-tail', style: { top: bodyTop + bodyH + 'px', height: TAIL + 'px' } },
+    h('div', { class: 'ls-rn', 'data-deco': '', style: { width: gutter + 'px', height: TAIL + 'px', borderRight: '2px solid #E4E7EC' } })))
+  const cardH = bodyTop + bodyH + TAIL
   setStyle(card, { height: cardH + 'px' })
   fitWarn('what-difference', G.cardTop + cardH + (fH ? G.gap + fH : 0), band ? G.workBottom : G.safeBottom - 4)
   const sel = h('div', { class: 'ls-sel' }, h('i', { class: 'ls-handle' }))
@@ -407,29 +513,50 @@ export default function whatDifference(spec, ctx) {
   const X0 = G.left, Y0 = G.cardTop
   const cellRect = (i, k) => {
     const x0 = X0 + colX[i], y0 = Y0 + bodyTop + groupTop[k] + labHk(k)
-    return { x0, y0, x1: x0 + colW[i], y1: y0 + rowHk(k) }
+    return { x0, y0, x1: x0 + colW[i] - (i === nO - 1 ? SEL_INSET : 0), y1: y0 + rowHk(k) }
   }
-  const colRect = i => ({ x0: X0 + colX[i], y0: Y0 + headTop, x1: X0 + colX[i] + colW[i], y1: Y0 + cardH })
+  const colRect = i => ({ x0: X0 + colX[i], y0: Y0 + headTop, x1: X0 + colX[i] + colW[i] - (i === nO - 1 ? SEL_INSET : 0), y1: Y0 + bodyTop + bodyH })
+  // a range of adjacent columns over the value rows (a pair read, the lever's columns)
+  const rangeRect = (is, k0, k1) => { const a = cellRect(is[0], k0), b = cellRect(is[is.length - 1], k1); return { x0: a.x0, y0: a.y0, x1: b.x1, y1: b.y1 } }
 
   // ---------- selection keyframes ----------
   const firstEmpty = i => cellsOf(i).find(k => land[i][k] > 0) ?? cellsOf(i)[cellsOf(i).length - 1] ?? 0
   const f1k = pre(cur0) ? cellsOf(cur0)[0] ?? 0 : firstEmpty(cur0)
-  const K = [{ t: -Infinity, rect: cellRect(cur0, f1k), head: { rows: [valNumIdx(f1k)], col: cur0 } }]
+  const K = [{ t: -Infinity, rect: cellRect(cur0, f1k), head: { rows: [valNumIdx(f1k)], cols: [cur0] } }]
   function valNumIdx(k) { return 3 + 2 * k } // index into numEls of group k's value row
+  const allRows = numEls.map((_, r) => r).slice(1)
+  const valueRows = [...Array(nG).keys()].map(valNumIdx)
   for (const i of order) {
     if (pre(i)) continue
     const cs = cellsOf(i)
     if (i !== cur0) {
       const sg = segs.find(x => x.i === i)
-      K.push({ t: sg.t0, dur: 0.3, spring: 1.4, rect: cellRect(i, cs[0]), head: { rows: [valNumIdx(cs[0])], col: i } })
+      K.push({ t: sg.t0, dur: 0.3, spring: 1.4, rect: cellRect(i, cs[0]), head: { rows: [valNumIdx(cs[0])], cols: [i] } })
     }
+    // down a column the selection jumps cell to cell (a sweep would strike through the label row between them)
     cs.forEach((k, n) => {
       if (n === 0) return
-      K.push({ t: land[i][k] - 0.24, dur: 0.2, e: ease.inOut, rect: cellRect(i, k), head: { rows: [valNumIdx(k)], col: i } })
+      K.push({ t: land[i][k] - 0.1, dur: 0, e: ease.inOut, rect: cellRect(i, k), head: { rows: [valNumIdx(k)], cols: [i] } })
     })
   }
-  if (winner >= 0) K.push({ t: hiT, dur: M.pick, spring: 1.6, rect: colRect(winner), head: { rows: numEls.map((_, r) => r).slice(1), col: winner } })
-  if (loopOn) K.push({ t: loopT0, dur: 0.34, e: ease.inOut, rect: K[0].rect, head: K[0].head })
+  // scan ("guess which one"): one hop per empty column
+  if (scan) scan.cols.forEach((c, j) => K.push({ t: scan.t + j * scan.every - 0.15, dur: 0.3, spring: 1.4, rect: colRect(c), head: { rows: allRows, cols: [c] } }))
+  // the lever's columns: the selection springs onto their value rows (they wash rowHi while the lever holds the bar)
+  if (leverCols.length && Number.isFinite(leverT)) K.push({ t: leverT, dur: M.pick, spring: 1.6, rect: rangeRect(leverCols, 0, nG - 1), head: { rows: valueRows, cols: leverCols } })
+  // a read steps the selection onto its cell (a same-column step jumps; a hop to another column springs); a pair
+  // read spans both cells
+  {
+    const colsAt = tq => { let best = K[0]; for (const kf of K) if (kf.t <= tq && kf.t >= best.t) best = kf; return best.head.cols }
+    for (const r of reads) {
+      const rect = r.is.length > 1 ? rangeRect(r.is, r.k, r.k) : cellRect(r.i, r.k), head = { rows: [valNumIdx(r.k)], cols: r.is }
+      const at = colsAt(r.t - 0.31)
+      K.push(r.is.length === 1 && at.length === 1 && at[0] === r.i ? { t: r.t - 0.1, dur: 0, e: ease.inOut, rect, head } : { t: r.t - 0.3, dur: 0.3, spring: 1.4, rect, head })
+    }
+  }
+  if (winner >= 0) K.push({ t: hiT, dur: M.pick, spring: 1.6, rect: colRect(winner), head: { rows: allRows, cols: [winner] } })
+  // the loop clear: the selection jumps back to its frame-1 cell (a sweep from the winner's column would cross the
+  // label rows and strike through the values)
+  if (loopOn) K.push({ t: loopT0 + 0.12, dur: 0, e: ease.inOut, rect: K[0].rect, head: K[0].head })
   K.sort((a, b) => a.t - b.t)
   const rectAt = (k, t) => {
     if (k === 0) return K[0].rect
@@ -438,7 +565,7 @@ export default function whatDifference(spec, ctx) {
   }
 
   // ---------- formula bar ----------
-  if (lever) segs.push({ t0: leverT, str: lever.text, from: 0, cps: 26, erase: 0.22, chip: true })
+  if (lever && !leverTimed) segs.push({ t0: leverT, str: lever.text, from: 0, cps: 26, erase: 0.22, chip: true, lever: true })
   if (vMode === 'formula') segs.push({ t0: verdict.t, str: vText, from: 0, cps: 26, erase: 0.3, style: 'verdict', chip: true })
   else if (winner >= 0 && !lever) {
     // the bar follows the selection onto the winner's column (unless its working is already showing)
@@ -464,6 +591,15 @@ export default function whatDifference(spec, ctx) {
     return { html: typedMk(sg.str, n), caret: sg.loop || caretOn(t, typing), style: sg.style }
   }
   const chipSeg = segs.filter(sg => sg.chip)
+  // the lever's wash holds until the bar moves on (the next working), else until the verdict
+  const leverEnd = Number.isFinite(leverT) ? Math.min(hiT, loopT0, ...segs.filter(x => x.t0 > leverT + 0.01 && !x.loop).map(x => x.t0)) : Infinity
+  // the winner's values pop as the wash front (ease.inOut over 0.42 s from hiT + 0.14) reaches the middle of each row
+  const popAt = [...Array(nG).keys()].map(k => {
+    const f = clamp((groupTop[k] + labHk(k) + rowHk(k) / 2) / bodyH)
+    let lo = 0, hi = 1
+    for (let it = 0; it < 24; it++) { const m = (lo + hi) / 2; if (ease.inOut(m) < f) lo = m; else hi = m }
+    return hiT + 0.14 + 0.42 * lo
+  })
 
   // ---------- sound ----------
   if (segs[0] && segs[0].t0 === 0 && mkLen(segs[0].str) > cut) ctx.cue(0, 'type', { dur: Math.max(0.2, (mkLen(segs[0].str) - cut) / M.cps) })
@@ -475,12 +611,15 @@ export default function whatDifference(spec, ctx) {
     if (pre(i)) continue
     cellsOf(i).forEach(k => {
       const t0 = land[i][k]
-      if (k === nM && i === countI) { ctx.cue(t0, 'roll', { dur: M.count }); ctx.cue(t0 + M.count, 'pop') }
+      if (counts(i, k)) { ctx.cue(t0, 'roll', { dur: M.count }); ctx.cue(t0 + M.count, 'pop') }
       else if (k === nM) ctx.cue(t0, 'pop', { gain: 0.8 })
       else ctx.cue(t0, 'tick', { gain: 0.6 })
     })
   }
   if (vMode === 'formula') ctx.cue(verdict.t + 0.3 + mkLen(vText) / 26 + 0.05, 'ding')
+  for (const r of reads) ctx.cue(r.t, 'tick', { gain: 0.5 })
+  if (scan) scan.cols.forEach((c, j) => ctx.cue(scan.t + j * scan.every, 'tick', { gain: 0.55 }))
+  if (leverCols.length && Number.isFinite(leverT)) ctx.cue(leverT + 0.1, 'pop', { gain: 0.4 })
   if (winner >= 0 && vMode !== 'band') ctx.cue(hiT + 0.12, 'reveal', { gain: 0.6 })
   if (loopOn) ctx.cue(loopT0, 'swipe', { gain: 0.5 })
 
@@ -496,7 +635,7 @@ export default function whatDifference(spec, ctx) {
     seek(t) {
       // formula bar
       const fs = formulaState(t)
-      fbar.set(fs.html, { caret: fs.caret })
+      fbar.set(opHTML(fs.html), { caret: fs.caret })
       fbar.verdictStyle(fs.style === 'verdict', vMode === 'formula' ? prog(t, verdict.t, 0.2) : 0)
       let chipP = 0
       for (const s of chipSeg) if (t >= s.t0 + s.erase - 0.1) chipP = prog(t, s.t0 + s.erase - 0.1, 0.34)
@@ -517,6 +656,9 @@ export default function whatDifference(spec, ctx) {
         const ht = winner >= 0 && loopFade > 0.001 ? Math.round(clamp(front - w.top, 0, w.ht)) : 0
         setStyle(w.el, ht > 0 ? { opacity: loopFade.toFixed(3), left: colX[winner] + 'px', width: colW[winner] + 'px', height: ht + 'px' } : { opacity: '0', left: '0px', width: '0px', height: '0px' })
       }
+      // the lever's columns wash rowHi while the lever line holds the bar
+      const la = leverWashes.length ? ease.out(prog(t, leverT + 0.12, 0.25)) * (1 - ease.inOut(prog(t, leverEnd, 0.3))) : 0
+      for (const w of leverWashes) setStyle(w.el, la > 0.001 ? { opacity: la.toFixed(3), left: colX[leverCols[0]] + 'px', width: leverW + 'px', height: w.ht + 'px' } : { opacity: '0', left: '0px', width: '0px', height: '0px' })
       // values
       options.forEach((o, i) => {
         for (let k = 0; k < nG; k++) {
@@ -525,9 +667,9 @@ export default function whatDifference(spec, ctx) {
           const t0 = land[i][k]
           if (!raw || t0 === Infinity) { setText(v, ''); setStyle(v, { opacity: '0', transform: 'none' }); setStyle(el, { backgroundColor: 'transparent' }); continue }
           const isDelta = k === nM
-          const counting = isDelta && i === countI
+          const counting = counts(i, k)
           let text = raw, p = pre(i) ? 1 : prog(t, t0, M.drop)
-          if (counting) { text = countText(raw, ease.out(prog(t, t0, M.count))); p = prog(t, t0, 0.16) }
+          if (counting) { text = countText(raw, ease.out(prog(t, t0, M.count)), { from: isDelta && i === countI ? 0 : cc.from }); p = prog(t, t0, 0.16) }
           setHTML(v, valueHTML(text, text === raw ? wrapAt[i + ',' + k] ?? null : null))
           let st = snapIn(p)
           const out = pre(i) || !loopOn ? 0 : prog(t, loopT0 + 0.02 + ((nG - 1 - k) / Math.max(1, nG)) * 0.1 + ((nO - 1 - i) / Math.max(1, nO)) * 0.06, 0.2)
@@ -535,12 +677,18 @@ export default function whatDifference(spec, ctx) {
           if (lo) st = { opacity: String(Math.min(+st.opacity, +lo.opacity)), transform: lo.transform }
           // a counted delta settles from 110% once it lands (never under 100%)
           const pp = counting ? prog(t, t0 + M.count - 0.02, 0.24) : isDelta ? prog(t, t0 + 0.02, 0.3) : 0
-          const sc = pp > 0 && pp < 1 ? 1 + (counting ? 0.1 : 0.06) * (1 - ease.out(pp)) : 1
-          if (st.transform === 'none' && sc !== 1) st.transform = `scale(${sc.toFixed(4)})`
+          let sc = pp > 0 && pp < 1 ? 1 + (counting ? 0.1 : 0.06) * (1 - ease.out(pp)) : 1
+          // a read: the value rises to 108% (0.08 s) and settles back (0.26 s) as its cell flashes
+          const rds = readsOf(i, k)
+          for (const r of rds) sc *= 1 + 0.08 * ease.out(prog(t, r.t, 0.08)) * (1 - ease.out(prog(t, r.t + 0.08, 0.26)))
+          // the verdict: the winner's values pop (110%) as the wash reaches them
+          if (i === winner && t < loopT0) { const tp = popAt[k]; sc *= 1 + 0.1 * ease.out(prog(t, tp, 0.08)) * (1 - ease.out(prog(t, tp + 0.08, 0.32))) }
+          if (st.transform === 'none' && Math.abs(sc - 1) > 1e-4) st.transform = `scale(${sc.toFixed(4)})`
           const color = isDelta ? toneColor(o.tone) : C.ink
           setStyle(v, { ...st, color })
           const fill = isDelta && toneFill(o.tone) !== 'transparent' && p >= 1 && out < 1 ? toneFill(o.tone) : null
-          const flash = pre(i) ? 0 : flashAlpha(t, (counting ? t0 + M.count : t0) + 0.06, isDelta ? 0.5 : M.flash)
+          let flash = pre(i) ? 0 : flashAlpha(t, (counting ? t0 + M.count : t0) + 0.06, isDelta ? 0.5 : M.flash)
+          for (const r of rds) if (t < loopT0) flash = Math.max(flash, flashAlpha(t, r.t + 0.02, M.flash))
           setStyle(el, { backgroundColor: fill || (flash > 0.001 ? rgba(C.rowHi, flash) : 'transparent') })
         }
       })
@@ -560,7 +708,7 @@ export default function whatDifference(spec, ctx) {
       setStyle(sel.firstChild, { opacity: '0' })
       const hd = K[k].head
       numEls.forEach((el, n) => { const on = hd.rows.includes(n); setStyle(el, { backgroundColor: on ? C.headSel : C.head, color: on ? C.headSelText : C.headText }) })
-      letterEls.forEach((el, j) => { const on = j === hd.col; setStyle(el, { backgroundColor: on ? C.headSel : C.head, color: on ? C.headSelText : C.headText }) })
+      letterEls.forEach((el, j) => { const on = hd.cols.includes(j); setStyle(el, { backgroundColor: on ? C.headSel : C.head, color: on ? C.headSelText : C.headText }) })
     },
   }
 }

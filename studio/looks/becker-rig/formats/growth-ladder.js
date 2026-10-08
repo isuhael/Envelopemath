@@ -26,7 +26,7 @@
 //                             appear as the push-in makes them legible)
 import {
   h, s, style, attr, prog, clamp, lerp, plain,
-  C, F, T, L, S, E, poseTrack, poseOf, fk, secondary, Figure, makeWorld, makeFx, camera, NumObj, pinLimb, blendJ,
+  C, F, T, L, S, E, poseTrack, poseOf, fk, secondary, Figure, makeWorld, makeFx, camera, NumObj, pinLimb, blendJ, shiftJ, floorLine,
   chromeParts, durationOf, num, measure, arc, squashAt, fall, toss, popIn, hop, wobble, hbar, ladder, coin, RIG, figStroke,
 } from '../lib.js'
 
@@ -69,9 +69,9 @@ export default function growthLadder(spec, ctx) {
     fixed.append(el)
     top += 40 + 24
   }
-  const RAIL = [118, 198]           // the ladder stands a little in from the edge: in throw mode he stands left of it
+  const RAIL = [140, 220]           // the ladder stands in from the edge: in throw mode he stands left of it
   const CX = (RAIL[0] + RAIL[1]) / 2
-  const FIG_X = 58                 // throw mode: his root x, on clear void left of the rails
+  const FIG_X = 80                 // throw mode: his root x, on clear void left of the rails (his pencil >= 24 px in)
   const X0 = RAIL[1] + 40          // left edge of the year column
   const XR = 922                   // right edge of the Worth column (x <= 940 below y 820)
   const GAP = 13                   // text baseline sits this far above its shelf
@@ -81,8 +81,9 @@ export default function growthLadder(spec, ctx) {
   const mW = (str, px) => measure(str, fontStr(900, px, F.head), { letterSpacing: '-0.03em' })
 
   // greedy word-wrap of a column head into lines no wider than A (null if a single word is wider)
+  let HLS_ = '.07em'                // column-head letter-spacing (tightened to .04em to keep heads on one line)
   function wrapHead(text, px, A) {
-    const font = fontStr(800, px, F.head), o = { letterSpacing: '.07em', upper: true }
+    const font = fontStr(800, px, F.head), o = { letterSpacing: HLS_, upper: true }
     const words = String(text).split(/\s+/).filter(Boolean)
     const lines = []
     let cur = ''
@@ -115,17 +116,17 @@ export default function growthLadder(spec, ctx) {
     const wLast = wv[N - 1]
     const vW = Math.max(...wv.slice(0, hl ? -1 : undefined), hl ? wLast * HLS + PLATE_PAD[0] : 0)
     for (let headPx = T.small; headPx >= (allowWrap ? 34 : T.small); headPx -= 2) {
-      const yearWord = Math.max(...String(cols[0]).split(/\s+/).map(w => measure(w, fontStr(800, headPx, F.head), { letterSpacing: '.07em', upper: true })))
+      const yearWord = Math.max(...String(cols[0]).split(/\s+/).map(w => measure(w, fontStr(800, headPx, F.head), { letterSpacing: HLS_, upper: true })))
       const xYear = Math.max(X0 + vY, RAIL[1] + 18 + yearWord)
       // single-line heads must fit beside each other too; wrapped heads only need their longest word to fit
-      const hw = c => (allowWrap ? 0 : measure(c, fontStr(800, headPx, F.head), { letterSpacing: '.07em', upper: true }))
+      const hw = c => (allowWrap ? 0 : measure(c, fontStr(800, headPx, F.head), { letterSpacing: HLS_, upper: true }))
       const loI = Math.max(xYear + 44 + vI, xYear + 36 + hw(cols[1])), hiI = Math.min(XR - vW - 44, XR - 36 - hw(cols[2]))
       if (loI > hiI) return null
       const xIn = clamp((xYear + vI + XR - vW) / 2, loI, hiI)
       const hs = [wrapHead(cols[0], headPx, xYear - RAIL[1] - 18), wrapHead(cols[1], headPx, xIn - xYear - 36), wrapHead(cols[2], headPx, XR - xIn - 36)]
       if (hs.every(Boolean) && (allowWrap || hs.every(x => x.lines.length === 1))) {
         const nl = Math.max(...hs.map(x => x.lines.length))
-        return { worthPx, yearPx, inPx, wLast, xYear, xIn, headPx, heads: hs, headH: nl * headPx * 1.04 }
+        return { worthPx, yearPx, inPx, wLast, xYear, xIn, headPx, heads: hs, headH: nl * headPx * 1.04, hls: HLS_ }
       }
     }
     return null
@@ -143,7 +144,9 @@ export default function growthLadder(spec, ctx) {
     const minPx = mode === 'throw' ? 34 : 44
     const few = N <= 5
     // (a short table prefers big values over single-line heads: its heads may wrap to reach 60-84 px)
-    for (const [wrap, floorPx, startPx] of [...(few ? [[true, 60, 84]] : []), [false, 50, 76], [true, minPx, 76]]) {
+    // (one-line heads first: at the house letter-spacing, then tightened to .04em; only then may they wrap)
+    for (const [wrap, floorPx, startPx, hls] of [...(few ? [[false, 60, 84, '.07em'], [false, 60, 84, '.04em'], [true, 60, 84, '.07em']] : []), [false, 50, 76, '.07em'], [false, 50, 76, '.04em'], [true, minPx, 76, '.07em']]) {
+      HLS_ = hls
       for (let px = startPx; px >= floorPx && !lay; px -= 2) {
         const c = columns(px, wrap)
         if (!c) continue
@@ -162,7 +165,7 @@ export default function growthLadder(spec, ctx) {
   // ---- climb mode: fixed pitch, the camera scrolls
   if (!lay) {
     mode = 'climb'
-    for (const [wrap, floorPx] of [[false, 46], [true, 34]]) for (let px = 60; px >= floorPx && !lay; px -= 2) lay = columns(px, wrap)
+    for (const [wrap, floorPx, hls] of [[false, 46, '.07em'], [false, 46, '.04em'], [true, 34, '.07em']]) { HLS_ = hls; for (let px = 60; px >= floorPx && !lay; px -= 2) lay = columns(px, wrap) }
     if (!lay) throw new Error('growth-ladder: the row values are too wide for the column layout')
     pitch = Math.ceil(rowNeed(lay) + 6)
   }
@@ -181,10 +184,16 @@ export default function growthLadder(spec, ctx) {
   const topRowTop = topShelf - GAP - (hl ? 0.97 * worthPx * HLS + PLATE_PAD[1] + 8 : 0.97 * worthPx)
   const headTop = climb ? top : Math.max(top, topRowTop - 20 - lay.headH)
   const headBottom = headTop + lay.headH
-  const VP = climb ? [Math.round(headBottom + 14), L.floorY + 14] : null
+  // (climb: the viewport ends at the floor line, and the floor line is pinned in screen space, so the ground plane
+  // never pans away: the ladder rises out of it as the camera follows him up)
+  const VP = climb ? [Math.round(headBottom + 14), L.floorY - 2] : null
 
   // ================================================================== build
   const world = makeWorld(ctx, { clip: VP })
+  if (climb) {
+    const fl = s('svg', { class: 'br-svg', width: 1080, height: 1920, viewBox: '0 0 1080 1920', 'data-deco': '' }, floorLine(L.floorY))
+    ctx.stage.append(fl)
+  }
   ctx.stage.append(fixed)
   const g = world.g
   const showBars = lo.bars !== false && pitch >= 56
@@ -213,7 +222,7 @@ export default function growthLadder(spec, ctx) {
     const el = h('div', { class: 'gl-head' })
     el.innerHTML = hd.lines.map(esc).join('<br>')
     const lh = Math.round(headPx * 1.04)               // integer line box: the linter reads px from rendered height
-    style(el, { fontSize: headPx + 'px', lineHeight: lh + 'px', top: (headBottom - hd.lines.length * lh).toFixed(1) + 'px', width: Math.ceil(hd.w + 2) + 'px' })
+    style(el, { fontSize: headPx + 'px', lineHeight: lh + 'px', letterSpacing: lay.hls, top: (headBottom - hd.lines.length * lh).toFixed(1) + 'px', width: Math.ceil(hd.w + 2) + 'px' })
     fixed.append(el)
     style(el, { left: ([xYear, xIn, xWorth][k] - el.offsetWidth).toFixed(1) + 'px' })
   })
@@ -263,7 +272,7 @@ export default function growthLadder(spec, ctx) {
 
   // ================================================================== the figure
   const showFig = lo.figure !== false
-  const fig = showFig ? new Figure(g.fig, { scale: FIGK }) : null
+  const fig = showFig ? new Figure(g.fig, { scale: FIGK, outlineWidth: climb ? 5 : 12 }) : null
   const lastT = times[N - 1]
   const maxW = Math.max(...vals.map(v => v.worthN).filter(Number.isFinite), 1)
   const intro = [{ t: 0, pose: 'thinkUp' }, { t: 0.35, pose: { ...poseOf('thinkUp'), tilt: -6, aF: [40, 140] }, d: 0.3, e: 'inOut' },
@@ -320,7 +329,7 @@ export default function growthLadder(spec, ctx) {
       for (const hp of hops) lift += hop(t, hp.t0, hp.dur, hp.h)
       return { ...p, lift }
     }
-    const J = t => fk(figPose(t), { x: FIG_X, ground: L.floorY, face: 1, scale: FIGK })
+    const J = t => { const Jt = fk(figPose(t), { x: FIG_X, ground: L.floorY, face: 1, scale: FIGK }); return fig ? shiftJ(Jt, Math.max(0, 24 - fig.extentX(Jt)[0])) : Jt }
     const inHand = (Jt, cn) => cn.heavy
       ? [(Jt.hF[0] + Jt.hB[0]) / 2 + 4, Math.min(Jt.hF[1], Jt.hB[1]) - cn.r * 0.82]
       : [Jt.hF[0] + 4, Jt.hF[1] - cn.r * 0.55]

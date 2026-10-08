@@ -18,8 +18,8 @@
      reads it then, or a flag / beat label / ledger row carrying it is showing then;
    - the verdict lands after the last VO line ends (the kits hide captions under the verdict);
    - header <= 15 words with a $ number at t = 0, captions on, duration in the 25-50 s lane;
-   - the claims the VO makes in words ("still behind", "doubled", "never had a down year", "≈ 2 to 1",
-     "still under $17,000") hold in the data;
+   - the claims the VO makes in words ("still behind", "doubled", "16 years to match it", "under $30 in 16 years",
+     "≈ 2 to 1", "still under $17,000") hold in the data;
    - robustness: the verdicts survive the second gold source, and every on-screen savings figure in 04b
      survives every plausible value of the uncertain FDIC inputs.
 3. Checks that the write-up quotes the same numbers (captions, pinned comments) and no stale ones.
@@ -108,12 +108,13 @@ YCHARTS_EU = {2019: 23.77, 2020: 5.38, 2021: 16.30, 2022: -15.06, 2023: 19.89, 2
 DWS_EU = {2016: -1.32, 2017: 24.97, 2018: -14.67, 2019: 24.41, 2020: 5.51, 2021: 16.58, 2022: -14.85,
           2023: 20.18, 2024: 2.02, 2025: 35.77}
 
-# The teasers' own settings. 04a opens mid-race: raceT starts at -0.4 s, so frame 1 already shows both
-# tips under the stake (ChartOrbit's "open in the red"); 04b and 04c hold the stake for 1.0 s.
+# The teasers' own settings. 04a and 04b open mid-race: raceT starts at -0.4 s, so frame 1 already shows the
+# race moving (04a: both tips under the stake, ChartOrbit's "open in the red"; 04b: S&P $1,041 vs savings
+# $1,001, hook pass 2); 04c holds the stake for 1.0 s.
 A_STAKE, A_Y0, A_Y1, A_RACE = 10_000, 2000, 2025, (-0.4, 31.6)
-B_STAKE, B_Y0, B_Y1, B_RACE = 1_000, 2010, 2025, (1.0, 25.0)
+B_STAKE, B_Y0, B_Y1, B_RACE = 1_000, 2010, 2025, (-0.4, 23.6)
 C_STAKE, C_Y0, C_Y1, C_RACE = 10_000, 2016, 2025, (1.0, 21.0)
-DUR = {"a": 45.5, "b": 44.5, "c": 38.0}
+DUR = {"a": 45.5, "b": 40.1, "c": 38.0}
 
 # ============================================================== formatting (rules used on screen)
 
@@ -238,7 +239,16 @@ B["infl_pct"] = int_round((B["infl"] - 1) * 100)
 B["need"] = B_STAKE * B["infl"]                                 # $1,000 of Dec-2009 prices, in Dec-2025 $
 B["real_sv"] = B_sv[2025] / B["infl"]                          # savings balance in Dec-2009 dollars
 B["real_disp"] = usd_sig(B["real_sv"], 2)                       # "≈ $680" (2 s.f.: robust to every FDIC scenario)
-B["earn_cap"] = 10                                              # "Savings? Under $10 of interest."
+B["earn_cap"] = 10                                              # "Savings? Under $10 so far."
+B["years"] = B_Y1 - B_Y0 + 1                                    # "16 years of savings": Jan 2010 -> Dec 2025
+B["y1"] = B_sp[B_Y0] - B_STAKE                                  # the S&P 500's first year (2010) on $1,000: $150.60
+B["y1_disp"] = usd_round(B["y1"])                               # "≈ $151"
+B["int16"] = B_sv[B_Y1] - B_STAKE                               # 16 years of savings interest: $23.85
+B["int_cap"] = 30                                               # "savings made under $30 in 16 years"
+B["understate"] = 2.0                                           # January-rate model: 2022-2023 understated ≈ $1 each
+B["cagr_sp"] = B_sp[B_Y1] / B_STAKE                             # (multiple; CAGR below)
+B["cagr_sp"] = B["cagr_sp"] ** (1 / B["years"]) - 1             # 14.13% a year: 2010's 15.06% is a typical year
+B["mean_sp"] = sum(SP[y] for y in range(B_Y0, B_Y1 + 1)) / B["years"]
 B["real_sp"] = B_sp[2025] / B["infl"]
 B["lost"] = int_round((1 - B["real_sv"] / B_STAKE) * 100)
 B["x1"], B["tl"], B["ts"] = clock(B_RACE, B_Y0, B_Y1)
@@ -349,7 +359,7 @@ def n_words(n):
     return n_words(n // 1_000_000) + 1 + (n_words(n % 1_000_000) if n % 1_000_000 else 0)
 
 
-ACRONYMS = {"S&P": 3, "USA": 3, "USA's": 3, "FDIC": 4}
+ACRONYMS = {"S&P": 3, "S&P's": 3, "USA": 3, "USA's": 3, "FDIC": 4}
 
 
 def spoken(text):
@@ -378,6 +388,9 @@ def spoken(text):
 def said_at(S, i, token):
     """(start, end) of `token` inside vo[i] as read: line start + spoken words before it / WPS"""
     line = S.d["vo"][i]
+    if token not in line["text"]:                # a wrong figure fails as a claim, not as a crash
+        claim(S.key, f"vo[{i}] says '{token}'", line["text"], token, ok=False)
+        return math.inf, math.inf
     k = line["text"].index(token)
     t0 = line["t"] + spoken(line["text"][:k]) / WPS
     return t0, t0 + spoken(token) / WPS
@@ -585,70 +598,108 @@ for u in Sa.uncovered():
     claim("a", "uncovered string with a digit", u, "covered", ok=False)
 
 # ============================================================== 04b
+# Hook pass 2 (2026-10-07): the handicap duel "Your $1,000: 16 years of savings VS 1 year of the S&P 500".
 Sb = Spec("b")
 common(Sb)
-Sb.n(("header",), [str(B_Y0), f"${B_STAKE:,}"])
-claim("b", "header puts \"safe\" in quotes (the belief the verdict breaks)", '"safe"' in Sb.d["header"], True)
-claim("b", "header uses the chart-race POV grammar, not lane 7's '2 people'", Sb.d["header"].startswith("POV:"), True)
+y1_tok = B["y1_disp"]                                            # "≈ $151"
+y1_note = f"year 1: ≈ +{y1_tok[2:]}"                        # U+00A0: the label never splits "≈" from its number
+goal_note = f"goal: ≈ +{y1_tok[2:]}"
+int_tok = f"${B['int_cap']}"                                     # "$30"
+Sb.n(("header",), [f"${B_STAKE:,}", str(B["years"]), "1"])
+claim("b", "header '16 years of savings' = Jan 2010 -> Dec 2025", B["years"], 16)
+claim("b", "header: the viewer's stake ('Your $1,000') and both rivals named (R6, R7)",
+      all(w in Sb.d["header"] for w in ("Your", "savings", "S&P 500")), True)
 Sb.n(("footer",), ["0.5%", str(B_Y0), str(B_Y1)])
 claim("b", "footer 'under 0.5%': every savings rate used", max(FDIC.values()), "< 0.5", ok=max(FDIC.values()) < 0.5)
 Sb.s(("data", "stake"), f"${B_STAKE:,} each · Jan {B_Y0}")
 chart(Sb, B_RACE, B_Y0, B["x1"], [B_sp_pts, B_sv_pts], [B["fin_sp"], B["fin_sv"]], ["S&P 500", "Savings account"])
 claim("b", "x tickEvery", Sb.d["data"]["x"]["tickEvery"], 5)
-i_earn = 2                                                       # "Savings? Under $10 of interest."
+i_earn = 2                                                       # "Savings? Under $10 so far."
 earn_tok = f"${B['earn_cap']}"
 vo_numbers(Sb, [
-    [],
-    ["2014"],
-    [earn_tok],
+    [y1_tok],                                                    # "Year one in the S&P: ≈ $151."
+    [str(B["years"])],                                           # "Savings gets 16 years to match it."
+    [earn_tok],                                                  # "Savings? Under $10 so far."
     ["2022", f"≈ {B['drop22']}%"],
-    ["2025", B["fin_sp"]],
-    [B["fin_sv"]],
-    [f"≈ {B['infl_pct']}%"],
-    [B["fin_sv"], B["real_disp"], str(B_Y0)],
+    ["2025", int_tok, str(B["years"])],                          # "2025: savings made under $30 in 16 years."
+    [y1_tok],                                                    # "The S&P's first year alone: ≈ $151."
+    [B["fin_sp"]],                                               # "It ended at ≈ $8,280."
 ])
 seen_b = year_sync(Sb, B, B_Y0, B_RACE[1])
 events(Sb, B, B_RACE, B_Y0, B["x1"], [(2020.2, "COVID", False), (2022.5, "2022 bear market", True)], seen_b)
-Sb.s(("verdict", "text"), f"The \"safe\" choice lost **≈ {B['lost']}%**\nof its buying power.")
+# the verdict names the year: "1 year of the S&P 500" would read as any year, and 4 of the 16 earned less (judge 2)
+Sb.s(("verdict", "text"), f"{B['years']} years of savings: under **{int_tok}**.\nThe S&P 500 in {B_Y0} alone: {y1_tok}.")
+# frame 1: the race is already moving (raceT starts at -0.4 s)
+x_f1b = x_of(0.0, B_RACE, B_Y0, B["x1"])
+claim("b", "frame 1: race already moving, year counter still 2010", round(x_f1b, 4), "2010 < x < 2011", ok=B_Y0 < x_f1b < B_Y0 + 1)
+claim("b", "frame 1: S&P tip reads $1,041", usd_round(val_at(B_sp_pts, x_f1b)), "≈ $1,041")
+claim("b", "frame 1: savings tip reads $1,001", usd_round(val_at(B_sv_pts, x_f1b)), "≈ $1,001")
+# figure beats
 bt = ("lookOpts", "beats")
+t_y1 = round(B["tl"][B_Y0], 2)                                   # the 2010 close lands at 1.086 s
 want_beats = [
-    (vo_t(Sb, 1), "cheer", "doubled", 1), (vo_t(Sb, 2), "shrug", f"under +${B['earn_cap']}", 2),
-    (vo_t(Sb, 3), "impact", f"≈ −{B['drop22']}%", 3), (B_RACE[1], "grow", None, 4),
-    (vo_t(Sb, 6), "flood", f"prices ≈ +{B['infl_pct']}%", 6),
-    (vo_t(Sb, 7), "peek", f"{usd_round(B['need'])} in {B_Y1} = ${B_STAKE:,} in {B_Y0}", 7),
+    (t_y1, "cheer", 0, y1_note, None),
+    (vo_t(Sb, 1), "think", 1, goal_note, round(B_RACE[1] - vo_t(Sb, 1), 2)),   # the goal note holds to the race end
+    (vo_t(Sb, 3), "impact", 0, f"≈ −{B['drop22']}%", None),
+    (B_RACE[1], "grow", 0, None, None),
+    (vo_t(Sb, 4), "shrug", 1, f"under +{int_tok}", None),
+    (vo_t(Sb, 5), "point", 0, y1_note, Sb.d["vo"][5]["d"]),
 ]
 claim("b", "figure beat count", len(Sb.get(bt)), len(want_beats))
-for i, (t, act, label, j) in enumerate(want_beats):
-    claim("b", f"beat[{i}] {act} t = vo[{j}] t", Sb.get(bt + (i, "t")), vo_t(Sb, j), ok=Sb.get(bt + (i, "t")) == t == vo_t(Sb, j))
+for i, (t, act, ser, label, dur) in enumerate(want_beats):
+    claim("b", f"beat[{i}] {act} t", Sb.get(bt + (i, "t")), t, ok=abs(Sb.get(bt + (i, "t")) - t) < 0.006)
     claim("b", f"beat[{i}] act", Sb.get(bt + (i, "act")), act)
+    claim("b", f"beat[{i}] series", Sb.get(bt + (i, "series")), ser)
+    claim("b", f"beat[{i}] d", Sb.d["lookOpts"]["beats"][i].get("d"), dur,
+          ok=(dur is None and "d" not in Sb.d["lookOpts"]["beats"][i]) or (dur is not None and abs(Sb.get(bt + (i, "d")) - dur) < 0.006))
     if label is not None:
         Sb.s(bt + (i, "label"), label)
-Sb.v(bt + (4, "to"), B["need"], tol=0.006, what="flood rises to $1,000 × CPI ratio")
-Sb.n(("lookOpts", "gag"), ["2018", "2022", f"${B_STAKE:,}"])
-b_cheer = Sb.get(bt + (0, "t"))
-claim("b", "beat 'doubled' lands as 2014 closes", b_cheer, f"{B['tl'][2014]:.2f} ± {POST}", ok=abs(b_cheer - B["tl"][2014]) <= POST)
-claim("b", "the S&P tip is at or above $2,000 when 'doubled' pops", round(val_at(B_sp_pts, x_of(b_cheer, B_RACE, B_Y0, B["x1"])), 2),
-      ">= 2000", ok=val_at(B_sp_pts, x_of(b_cheer, B_RACE, B_Y0, B["x1"])) >= 2 * B_STAKE)
+Sb.n(("lookOpts", "gag"), ["2018", "2022", str(B["years"])])
+claim("b", "'year 1' note pops as the 2010 close lands (not before)", t_y1, f"{B['tl'][B_Y0]:.3f}..+0.05",
+      ok=0 <= t_y1 - B["tl"][B_Y0] <= 0.05)
+claim("b", "the S&P tip shows the 2010 close when 'year 1' pops", round(val_at(B_sp_pts, x_of(t_y1, B_RACE, B_Y0, B["x1"])), 2),
+      f">= {B_sp[B_Y0]:,.2f}", ok=val_at(B_sp_pts, x_of(t_y1, B_RACE, B_Y0, B["x1"])) >= round(B_sp[B_Y0], 2))
+claim("b", "first payoff by ~3 s: '≈ +$151' on screen at", t_y1, "<= 3.0", ok=t_y1 <= 3.0)
+# a beat note shows for max(2.6 s, d), cut by the next note on the same figure (chart-race.js)
+def note_window(series, k):
+    beats = [b for b in Sb.d["lookOpts"]["beats"] if b.get("series") == series and b.get("label")]
+    b = beats[k]
+    t1 = b["t"] + max(BECKER_NOTE, b.get("d", 1.4))
+    if k + 1 < len(beats):
+        t1 = min(t1, beats[k + 1]["t"])
+    return b["t"], t1
+
+
+w_y1, w_goal, w_point = note_window(0, 0), note_window(1, 0), note_window(0, 2)
+shown_while_said(Sb, 0, y1_tok, *w_y1, "the 'year 1: ≈ +$151' note")
+claim("b", "spoken '≈ $151' (vo[0]) by ~3 s", round(said_at(Sb, 0, y1_tok)[0], 2), "<= 3.0", ok=said_at(Sb, 0, y1_tok)[0] <= 3.0)
+claim("b", "the goal note holds from 'Savings gets 16 years' to the race end", [round(w_goal[0], 2), round(w_goal[1], 2)],
+      [vo_t(Sb, 1), B_RACE[1]], ok=abs(w_goal[0] - vo_t(Sb, 1)) < 0.006 and abs(w_goal[1] - B_RACE[1]) < 0.006)
+claim("b", "'16 years' (vo[1]) is the race window", Sb.d["vo"][1]["text"], "16 years", ok=f"{B['years']} years" in Sb.d["vo"][1]["text"])
 # spoken-number sync
-s0, s1 = said_at(Sb, i_earn, earn_tok)
-EARN_WIN = (vo_t(Sb, 2), max(vo_end(Sb, 2), vo_t(Sb, 2) + BECKER_NOTE))  # the line and its label are showing
+EARN_WIN = (vo_t(Sb, 2), max(vo_end(Sb, 2), vo_t(Sb, 2) + BECKER_NOTE))  # conservative: the line, or 2.6 s if longer
 earn_ts = [EARN_WIN[0] + k * 0.01 for k in range(int((EARN_WIN[1] - EARN_WIN[0]) * 100) + 1)]
 earn_max = max(val_at(B_sv_pts, x_of(tt, B_RACE, B_Y0, B["x1"])) - B_STAKE for tt in earn_ts)
-claim("b", f"sync: 'Under $10 of interest' holds on the savings tip {EARN_WIN[0]:.1f}-{EARN_WIN[1]:.1f} s", round(earn_max, 2),
+claim("b", f"sync: 'Under $10 so far' holds on the savings tip {EARN_WIN[0]:.1f}-{EARN_WIN[1]:.1f} s", round(earn_max, 2),
       f"< {B['earn_cap']}", ok=earn_max < B["earn_cap"])
-shown_while_said(Sb, i_earn, earn_tok, vo_t(Sb, 2), vo_t(Sb, 2) + BECKER_NOTE, "the shrug label")
 shown_while_said(Sb, 3, f"≈ {B['drop22']}%", vo_t(Sb, 3), vo_t(Sb, 3) + BECKER_NOTE, "the impact label '≈ −18%'")
-claim("b", "the finals are said only after the race ends", vo_t(Sb, 4), f">= {B_RACE[1]}", ok=vo_t(Sb, 4) >= B_RACE[1])
-sfx_on(Sb, [(vo_t(Sb, 1), "pop"), (vo_t(Sb, 2), "boing"), (vo_t(Sb, 3), "hit"), (B_RACE[1], "roll"),
-            (vo_t(Sb, 6), "whoosh"), (vo_t(Sb, 7), "buzz"), (Sb.d["verdict"]["t"], "thud")])
+shown_while_said(Sb, 4, int_tok, vo_t(Sb, 4), vo_t(Sb, 4) + BECKER_NOTE, "the shrug label 'under +$30'")
+shown_while_said(Sb, 5, y1_tok, *w_point, "the point label 'year 1: ≈ +$151'")
+claim("b", "the 16-year total is said once the race has ended", vo_t(Sb, 4), f">= {B_RACE[1]}", ok=vo_t(Sb, 4) >= B_RACE[1])
+claim("b", "the finals are said only after the race ends", vo_t(Sb, 6), f">= {B_RACE[1]}", ok=vo_t(Sb, 6) >= B_RACE[1])
+sfx_on(Sb, [(t_y1, "pop"), (vo_t(Sb, 1), "swipe"), (vo_t(Sb, 3), "hit"), (B_RACE[1], "roll"),
+            (round(vo_t(Sb, 4) + 0.1, 2), "boing"), (Sb.d["verdict"]["t"], "thud")])
 claim("b", "'2022: stocks drop' (S&P 2022 %) on the 2022 close", f"{SP[2022]} @ {B['tl'][2022]:.2f}", "< 0", ok=SP[2022] < 0)
 # what the words claim
-claim("b", "'One of these never had a down year': savings rises every year", all(FDIC[y] > 0 for y in range(2010, 2026)), True)
-claim("b", "... and the S&P had down years", [y for y in range(2010, 2026) if SP[y] < 0], "2018, 2022",
-      ok=[y for y in range(2010, 2026) if SP[y] < 0] == [2018, 2022])
-claim("b", "'Guess which one lost': savings ends below $1,000 of buying power", round(B["real_sv"], 2), f"< {B_STAKE}", ok=B["real_sv"] < B_STAKE)
-claim("b", "... and the S&P ends far above it", round(B["real_sp"], 2), f"> {B_STAKE}", ok=B["real_sp"] > B_STAKE)
-claim("b", "'2014: the S&P has doubled it' (first year-end >= $2,000)", min(y for y in range(2010, 2026) if B_sp[y] >= 2 * B_STAKE), 2014)
+claim("b", "'Year one in the S&P: ≈ $151' = $1,000 × 15.06% (2010)", f"{B['y1']:.2f}", "150.60", ok=abs(B["y1"] - 150.60) < 0.005)
+claim("b", "'16 years to match it' fails: 16 years of interest < year 1", f"{B['int16']:.2f} < {B['y1']:.2f}", "", ok=B["int16"] < B["y1"])
+claim("b", "'under $30 in 16 years'", f"{B['int16']:.2f}", f"< {B['int_cap']}", ok=B["int16"] < B["int_cap"])
+claim("b", "2010 is a typical S&P year, not a cherry-pick: within 1 pt of the 16-year CAGR",
+      f"{SP[B_Y0]:.2f}% vs {B['cagr_sp'] * 100:.2f}%", "|gap| < 1", ok=abs(SP[B_Y0] - B["cagr_sp"] * 100) < 1)
+best = max(range(B_Y0, B_Y1 + 1), key=lambda y: SP[y])
+claim("b", "... and not the best year in the window", f"best {best} {SP[best]}%", "not 2010", ok=best != B_Y0)
+claim("b", "savings line never dips (gag): every rate positive", all(FDIC[y] > 0 for y in range(2010, 2026)), True)
+claim("b", "savings ends below $1,000 of buying power (pinned comment)", round(B["real_sv"], 2), f"< {B_STAKE}", ok=B["real_sv"] < B_STAKE)
 claim("b", "CPI ratio Dec-09 -> Dec-25", round(B["infl"], 4), 1.5006, ok=abs(B["infl"] - 1.5006) < 0.0001)
 claim("b", "robust: savings at the max rate every year (S&P still ≥ 7×)", usd_round(B["sv_hi"]), "S&P still ≥ 7×", ok=B_sp[2025] / B["sv_hi"] >= 7)
 claim("b", "robust: savings at the max rate every year still below prices", usd_round(B["sv_hi"]), f"< {usd_round(B['need'])}", ok=B["sv_hi"] < B["need"])
@@ -656,7 +707,7 @@ for y in FDIC_INTERP:
     claim("b", f"FDIC {y} = midpoint of its neighbours (assumption)", round(FDIC[y], 4),
           f"({FDIC_KNOWN[y - 1]}+{FDIC_KNOWN[y + 1]})/2", ok=abs(FDIC[y] - (FDIC_KNOWN[y - 1] + FDIC_KNOWN[y + 1]) / 2) < 1e-12)
 # robustness sweep: every plausible value of every uncertain FDIC input leaves every on-screen savings figure unchanged
-sweep, worst = 0, []
+sweep, worst, int_lo, int_hi, earn_hi = 0, [], 1e9, 0.0, 0.0
 alt_keys = sorted(FDIC_ALT)
 for combo in itertools.product(*[FDIC_ALT[k] for k in alt_keys]):
     known = dict(FDIC_KNOWN)
@@ -668,13 +719,24 @@ for combo in itertools.product(*[FDIC_ALT[k] for k in alt_keys]):
             table[y] = (lo_hi[0], (lo_hi[0] + lo_hi[1]) / 2, lo_hi[1])[p]
         vals, pts = grow(table, B_Y0, B_Y1, B_STAKE)
         sweep += 1
+        i16 = vals[B_Y1] - B_STAKE
+        e_max = max(val_at(pts, x_of(tt, B_RACE, B_Y0, B["x1"])) - B_STAKE for tt in earn_ts)
+        int_lo, int_hi, earn_hi = min(int_lo, i16), max(int_hi, i16), max(earn_hi, e_max)
         shown = (usd_sig(vals[2025]), usd_sig(vals[2025] / B["infl"], 2), int_round((1 - vals[2025] / B["infl"] / B_STAKE) * 100),
-                 max(val_at(pts, x_of(tt, B_RACE, B_Y0, B["x1"])) - B_STAKE for tt in earn_ts) < B["earn_cap"],
+                 e_max < B["earn_cap"], i16 + B["understate"] < B["int_cap"], i16 + B["understate"] < B["y1"],
                  all(r > 0 for r in table.values()))
-        if shown != (B["fin_sv"], B["real_disp"], B["lost"], True, True):
+        if shown != (B["fin_sv"], B["real_disp"], B["lost"], True, True, True, True):
             worst.append((combo, pick, shown))
-claim("b", f"robust: FDIC sweep ({sweep} input tables) leaves ≈ $1,020 / ≈ $680 / ≈ 32% / under $10 / never down",
+claim("b", f"robust: FDIC sweep ({sweep} input tables) leaves ≈ $1,020 / ≈ $680 / ≈ 32% / under $10 / under $30 (+$2) / never down",
       len(worst), 0, ok=not worst)
+claim("b", "robust: 16-year interest range over the sweep", f"{int_lo:.2f}-{int_hi:.2f}", f"< {B['int_cap']} even + ${B['understate']:.0f}",
+      ok=int_hi + B["understate"] < B["int_cap"])
+claim("b", "robust: verdict ratio year 1 ÷ worst 16-year interest", round(B["y1"] / (int_hi + B["understate"]), 2), ">= 5",
+      ok=B["y1"] / (int_hi + B["understate"]) >= 5)
+# pinned comment: the S&P years that earned less on $1,000 than 16 years of savings did (in every table)
+slow = [y for y in range(B_Y0, B_Y1 + 1) if B_STAKE * SP[y] / 100 < int_lo]
+claim("b", "pinned: S&P years that made less on $1,000 than 16 years of savings (every table)", slow, [2011, 2015, 2018, 2022])
+claim("b", "pinned: 2011 ≈ $21, 2015 ≈ $14", [usd_round(B_STAKE * SP[2011] / 100), usd_round(B_STAKE * SP[2015] / 100)], ["≈ $21", "≈ $14"])
 for u in Sb.uncovered():
     claim("b", "uncovered string with a digit", u, "covered", ok=False)
 
@@ -758,6 +820,8 @@ if os.path.exists(WRITEUP):
         ("b", B["fin_sp"]), ("b", B["fin_sv"]), ("b", usd_round(B["need"])), ("b", B["real_disp"]), ("b", f"{B_sv[2025]:,.2f}"),
         ("b", usd_round(B["sv_hi"])), ("b", f"≈ {B['lost']}%"), ("b", f"{B['sv_hi']:,.2f}"),
         ("b", f"≈ ×{sig(B['m_sp']):.2f}"), ("b", f"≈ ×{sig(B['m_sv']):.2f}"), ("b", f"≈ {B['cum_rate']:.1f}%"),
+        ("b", B["y1_disp"]), ("b", f"${B['y1']:,.2f}"), ("b", f"${B['int16']:,.2f}"), ("b", f"under ${B['int_cap']}"),
+        ("b", f"{B['cagr_sp'] * 100:.2f}%"), ("b", f"${int_lo:,.2f}-${int_hi:,.2f}"),
         ("c", C["fin_us"]), ("c", C["fin_eu"]), ("c", f"≈ {C['cagr_us'] * 100:.1f}%"), ("c", f"≈ {C['cagr_eu'] * 100:.1f}%"),
         ("c", f"≈ ×{sig(C['m_us']):.2f} vs ≈ ×{sig(C['m_eu']):.2f}"),
         ("-", "## Review log"),
@@ -769,6 +833,13 @@ if os.path.exists(WRITEUP):
              "10 ledger rows", "One extra doubling.", "≈ $1,024", "≈ $682", "≈ +$8", "× 1.024"]
     for s in stale:
         claim("-", f"write-up has no stale '{s}'", s in md, False)
+    # the 04b section itself (the review log may quote the old hooks): no text left from the pre-pass-2 hook
+    sec_b = md[md.find("### 04b"):md.find("### 04c")]
+    claim("b", "write-up has a 04b section", len(sec_b) > 0, True)
+    for s in ["never had a down year", "Which One Lost", '"safe" savings', "Under $10 of interest", "doubled it",
+              "t 1.0 → 25.0", "1.0-6.99", "41.5-44.5"]:
+        claim("b", f"04b section has no stale '{s}'", s in sec_b, False)
+    claim("b", "04b section quotes the new header", "Your **$1,000**: 16 years of savings" in sec_b, True)
 else:
     claim("-", "write-up exists", WRITEUP, "exists", ok=False)
 
@@ -782,7 +853,8 @@ print()
 print("04a  S&P 500", A["fin_sp"], f"(×{A['m_sp']:.4f})", "| gold", A["fin_au"], f"(×{A['m_au']:.4f})",
       f"| ratio {A['ratio']:.3f} | 2010 start: S&P ×{A['m_sp10']:.2f}, gold ×{A['m_au10']:.2f}",
       f"| frame 1 x {x_f1:.3f}: S&P {val_at(A_sp_pts, x_f1):,.0f}, gold {val_at(A_au_pts, x_f1):,.0f}")
-print("04b  S&P 500", B["fin_sp"], "| savings", B["fin_sv"], f"({B_sv[2025]:.2f})", f"| prices ×{B['infl']:.5f}",
+print("04b  S&P 500", B["fin_sp"], "| savings", B["fin_sv"], f"({B_sv[2025]:.2f})", f"| year 1 {B['y1']:.2f} vs 16-yr interest",
+      f"{B['int16']:.2f} (sweep {int_lo:.2f}-{int_hi:.2f}) | frame 1 x {x_f1b:.4f}", f"| prices ×{B['infl']:.5f}",
       f"| real savings {B['real_sv']:.2f} | lost {(1 - B['real_sv'] / B_STAKE) * 100:.2f}% | max-rate {B['sv_hi']:.2f}",
       f"| interest by {EARN_WIN[1]:.1f} s: {earn_max:.2f} | FDIC sweep {sweep} tables")
 print("04c  USA", C["fin_us"], "| Europe", C["fin_eu"], f"| {C['cagr_us'] * 100:.2f}% vs {C['cagr_eu'] * 100:.2f}% a year",

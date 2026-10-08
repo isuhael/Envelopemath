@@ -8,8 +8,8 @@
 //          lines). Its counter (green, red while it is under what you paid) lands on own.final on a gold plate.
 //   a dotted red "paid" line runs from the top of the spent column across the tower, so you see at a glance
 //   whether the tower is above or below what the product cost you.
-//   The spent column never shrinks to a sliver: below 60 px it is drawn as a 60 px slab labelled with the number of
-//   spend.final (inside it, or on top of it like a tag when the junk heap would touch it); the paid line keeps the
+//   The spent column never shrinks to a sliver: below 60 px it is drawn as a 60 px slab labelled with the counter's
+//   running number (inside it, or on top of it like a tag when the junk heap would touch it); the paid line keeps the
 //   true height.
 // The figure buys the product: a coin (the first one a big coin with the price on it, held out at frame 1) squashes
 // into the item while a gold copy of it arcs onto the tower ("the same money, invested"; on the first purchase a red
@@ -291,7 +291,9 @@ export default function povRace(spec, ctx) {
   for (const sl of slots) g.back.append(sl[2])
   const spRect = s('rect', { fill: C.redSoft, stroke: C.red, 'stroke-width': 4, 'stroke-dasharray': '14 10', rx: 8 })
   const MINS = 60
-  const spLab = new NumObj(world.html, { cls: 'pr-sl', text: runL.final ? runL.final.big : '', ax: 0.5, ay: 0.5 })   // the number only ("$2,037.32"): the counter above carries " spent"
+  // the slab label: the number only ("$2,037.32"; the counter above carries " spent"). It always shows the counter's
+  // running number, so it is sized for the widest string the counter will show
+  const spLab = new NumObj(world.html, { cls: 'pr-sl', text: runL.final ? runL.final.big : '', ax: 0.5, ay: 0.5 })
   const spLabW = spLab.w
   const spLines = s('path', { fill: 'none', stroke: C.red, 'stroke-width': 3, 'stroke-linecap': 'round', opacity: 0.45 })
   g.mid.append(spRect, spLines)
@@ -568,8 +570,9 @@ export default function povRace(spec, ctx) {
     // larger number of decimals of the two finals ("$7.99" twice, not "$7.99" against "$8")
     const dpJ = Math.max(runL.dp, runR.dp)
     const dpOf = (run, v) => (t < T0 || Math.abs(v) < 100 ? dpJ : run.dp)
-    if (done && runL.final) { setText(vL.big, runL.final.big); setText(vL.sm, runL.final.small) }
-    else { setText(vL.big, runL.text(vSp, dpOf(runL, vSp))); setText(vL.sm, runL.post) }
+    // the spent counter's number: the slab label below always shows this same string (never the final early)
+    const bigL = done && runL.final ? runL.final.big : runL.text(vSp, dpOf(runL, vSp))
+    setText(vL.big, bigL); setText(vL.sm, done && runL.final ? runL.final.small : runL.post)
     const sw = swapAt(t, T1, 0.3)
     if (sw.phase && runR.final) { setText(vR.big, runR.final.big); setText(vR.sm, runR.final.small) }
     else { setText(vR.big, runR.text(vOw, dpOf(runR, vOw))); setText(vR.sm, runR.post) }
@@ -586,16 +589,16 @@ export default function povRace(spec, ctx) {
     const sqS = squashAt(t, revealSp, 0.35).sy
     const hs = spOn ? z * K * spV * sqS : 0, swd0 = SW * (0.62 + 0.38 * z), zP = z * PITCH
     const twd = TW * (0.62 + 0.38 * z)
-    // the spent money never shrinks to a sliver: it is drawn as a slab at least MINS px tall, labelled with
-    // spend.final; the dotted paid line still marks its true height on the shared scale
-    // (a slab at its minimum carries the spend.final label; a taller column needs none: the counter says it)
+    // the spent money never shrinks to a sliver: it is drawn as a slab at least MINS px tall, labelled with the
+    // counter's own running number (spend.final only once the counter lands on it); the dotted paid line still
+    // marks its true height on the shared scale. A taller column needs no label: the counter says it.
     const minMode = spOn && hs < MINS
     const hsD = spOn ? Math.max(hs, MINS * sqS) : 0, swd = minMode && labIn ? Math.max(swd0, spLabW + 28) : swd0
     const scx = minMode && labIn ? Math.max(SX, 66 + swd / 2) : SX
     attr(spRect, 'x', f1(scx - swd / 2)); attr(spRect, 'width', f1(swd))
     attr(spRect, 'y', f1(BASE - hsD)); attr(spRect, 'height', f1(Math.max(0, hsD)))
     attr(spRect, 'opacity', hsD > 1.5 ? '1' : '0')
-    spLab.set({ x: labIn ? scx : Math.max(scx, 64 + spLabW / 2), y: labIn ? BASE - hsD / 2 + 2 : BASE - hsD - 28, opacity: minMode && t >= revealSp + 0.2 ? clamp((t - revealSp - 0.2) / 0.2) : 0 })
+    spLab.set({ text: bigL, x: labIn ? scx : Math.max(scx, 64 + spLabW / 2), y: labIn ? BASE - hsD / 2 + 2 : BASE - hsD - 28, opacity: minMode && t >= revealSp + 0.2 ? clamp((t - revealSp - 0.2) / 0.2) : 0 })
     const step = Math.max(1, Math.ceil(7 / zP))
     let dd = ''
     for (let j = step; j * zP < hsD - 4; j += step) if (!minMode) dd += `M${f1(SX - swd / 2 + 8)},${f1(BASE - j * zP)}H${f1(SX + swd / 2 - 8)}`

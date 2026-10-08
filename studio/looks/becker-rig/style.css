@@ -14,7 +14,7 @@
 .br-svg { position: absolute; left: 0; top: 0; overflow: visible; }
 .br-html { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
 .br-flash { position: absolute; left: -200px; top: -200px; width: 1480px; height: 2320px; background: #fff; opacity: 0; pointer-events: none; }
-.br-num { position: absolute; left: 0; top: 0; white-space: nowrap; transform-origin: 0 0; line-height: 1; will-change: transform; }
+.br-num { position: absolute; left: 0; top: 0; white-space: nowrap; transform-origin: 0 0; line-height: 1; }
 
 /* ---------- chrome ---------- */
 .br-brand { position: absolute; left: 70px; top: 120px; display: flex; gap: 14px; align-items: center;
@@ -27,7 +27,7 @@
   font: 700 40px/1.25 'JetBrains Mono', 'Inter Full', monospace; letter-spacing: -0.02em; color: #5B6470; }
 .br-footer em { color: #0A9254; }
 .br-caps { position: absolute; left: 70px; width: 860px; height: 160px; display: flex; align-items: center; justify-content: center; }
-.br-cap { width: 860px; text-align: center; font: 800 54px/1.12 'Inter Tight', 'Inter Full', sans-serif; letter-spacing: -0.015em; color: #3A414B; }
+.br-cap { width: 860px; text-align: center; font: 800 54px/60px 'Inter Tight', 'Inter Full', sans-serif; letter-spacing: -0.015em; color: #3A414B; text-wrap: balance; }
 .br-cap .w { display: inline-block; }
 .br-cap .w .em { color: #0A9254; }
 .br-cap .w .mark2 { color: #E5484D; }

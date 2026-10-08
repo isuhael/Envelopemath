@@ -62,11 +62,17 @@ B_ROWS = ["Dec 2007", 2008, 2009, 2012, 2016, 2019, 2021, 2022, 2025]
 # pages). 4.00% = a round high-yield APY, below every top rate found (The College Investor
 # Sep 28, 2026: 4.01-4.15% named offers; Bankrate Oct 2026 "up to 4.21%"; Yahoo Finance Oct 2,
 # 2026 up to 4.25%; Fortune Sep 24, 2026 up to 4.50%). Assumed to hold for 5 years.
-C_STAKE = 10_000
+# Hook pass 2 (2026-10-08): $100 deposited at each month-end for 5 years (60 deposits) instead
+# of a $10,000 lump sum. The monthly rate is the APY's monthly equivalent, (1 + APY)^(1/12) − 1,
+# so 12 months of compounding give exactly the APY.
+C_DEPOSIT = 100
+C_YEARS = 5
+C_MONTHS = 12 * C_YEARS
 C_APY_BIG = 0.0001
 C_APY_HY = 0.04
-C_YEARS = 5
 FDIC_NATIONAL_SAVINGS = 0.0037   # Sep 2026, Motley Fool / NerdWallet citing FDIC (pinned comment)
+C_APY_WELLS = 0.0015             # write-up only: Wells Fargo Way2Save, one search summary (unverified)
+C_APY_CHASE_REL = 0.0002         # write-up only: Chase Savings relationship rate (Oct 2, 2026 sheet)
 
 # ============================================================== formatting
 
@@ -167,13 +173,24 @@ mixed = dict(SP_TR); mixed.update(DAMODARAN)
 DAMO = sp_path(after_buy(mixed))                                # sensitivity only (write-up)
 
 # ---- 07c
-def bal(apy, years):
-    return C_STAKE * (1 + apy) ** years
+def c_monthly(apy):
+    return (1 + apy) ** (1 / 12) - 1
 
-C_M1_BIG, C_M1_HY = bal(C_APY_BIG, 1 / 12), bal(C_APY_HY, 1 / 12)
-C_INT_BIG = bal(C_APY_BIG, C_YEARS) - C_STAKE
-C_INT_HY = bal(C_APY_HY, C_YEARS) - C_STAKE
-C_ALT_015 = C_STAKE * ((1.0015) ** C_YEARS - 1)                  # write-up: Wells 0.15% case
+def c_interest(apy, n, deposit=C_DEPOSIT):
+    """Interest earned after n month-end deposits: future value of the deposits minus the deposits."""
+    q = c_monthly(apy)
+    return deposit * ((1 + q) ** n - 1) / q - deposit * n
+
+C_IN = C_DEPOSIT * C_MONTHS                                     # "5 years = $6,000"
+C_INT_BIG = c_interest(C_APY_BIG, C_MONTHS)
+C_INT_HY = c_interest(C_APY_HY, C_MONTHS)
+C_Y1_BIG_CENTS = c_interest(C_APY_BIG, 12) * 100                  # VO: "about 5 cents"
+C_Y3_BIG_CENTS = c_interest(C_APY_BIG, 36) * 100                  # VO: "about 53 cents"
+C_FDIC = c_interest(FDIC_NATIONAL_SAVINGS, C_MONTHS)              # pinned comment
+C_WELLS = c_interest(C_APY_WELLS, C_MONTHS)                       # write-up only
+C_CHASE_REL = c_interest(C_APY_CHASE_REL, C_MONTHS)               # write-up only
+C_BEGIN_BIG = c_interest(C_APY_BIG, C_MONTHS) * (1 + c_monthly(C_APY_BIG)) + C_IN * c_monthly(C_APY_BIG)
+C_BEGIN_HY = c_interest(C_APY_HY, C_MONTHS) * (1 + c_monthly(C_APY_HY)) + C_IN * c_monthly(C_APY_HY)
 
 # ============================================================== expectations
 # path -> ("exact", "string")  or  ("tokens", ["tok", ...])
@@ -262,35 +279,35 @@ beats[idb] = [("2008", 0, "takes"), (str(first_back), 3, str(first_back)),
               ("2022", 4, "dips"), ("2025", 5, "2025")]
 first_payoff[idb] = R10_MAX
 
-# ---- 07c
+# ---- 07c (hook pass 2: "You save $100 a month / 5 years = $6,000 / A big bank adds: ?")
 idc = "07c-clean-sheet-savings-rate"
 ec = {
-    "header": T("2", money(C_STAKE), str(C_YEARS)),
-    "footer": T(str(C_YEARS), pct(C_APY_BIG * 100, 2), "2026"),
-    "data.stake": T(money(C_STAKE), str(C_YEARS)),
-    "data.people[0].plan": T(pct(C_APY_BIG * 100, 2), f"{1 + C_APY_BIG:.4f}"),
-    "data.people[1].plan": T(pct(C_APY_HY * 100, 2), f"{1 + C_APY_HY:.2f}"),
-    # column order: Mia (big bank) left, Leo (high-yield) right
-    "verdict.text": T(str(C_YEARS), money(C_INT_BIG), money(C_INT_HY)),
+    "header": T(money(C_DEPOSIT), str(C_YEARS), money(C_IN)),
+    "footer": T(money(C_DEPOSIT), str(C_YEARS), pct(C_APY_BIG * 100, 2)),
+    "data.stake": T(money(C_DEPOSIT)),
+    "data.people[0].plan": T(pct(C_APY_BIG * 100, 2), money(C_DEPOSIT)),
+    "data.people[1].plan": T(pct(C_APY_HY * 100, 2), money(C_DEPOSIT)),
+    # column order: You (big bank) left, Leo (high-yield) right; same cent precision as the ledger
+    "verdict.text": T(money(C_IN), str(C_YEARS), money(C_INT_BIG, 0.01), money(C_INT_HY, 0.01)),
 }
-c_rows = [("Day 1", C_STAKE, C_STAKE, 1), ("Month 1", C_M1_BIG, C_M1_HY, 0.01)]
+c_rows = [("Start", 0.0, 0.0)]
 for y in range(1, C_YEARS + 1):
-    c_rows.append((f"Year {y}", bal(C_APY_BIG, y), bal(C_APY_HY, y), 1))
-for i, (lab, vb, vh, step) in enumerate(c_rows):
+    c_rows.append((f"Year {y}", c_interest(C_APY_BIG, 12 * y), c_interest(C_APY_HY, 12 * y)))
+for i, (lab, vb, vh) in enumerate(c_rows):
     ec[f"data.rows[{i}].label"] = E(lab)
-    ec[f"data.rows[{i}].values[0]"] = E(money(vb, step))
-    ec[f"data.rows[{i}].values[1]"] = E(money(vh, step))
+    ec[f"data.rows[{i}].values[0]"] = E(money(vb, 0.01))
+    ec[f"data.rows[{i}].values[1]"] = E(money(vh, 0.01))
 expect[idc] = ec
-cents_m1 = (C_M1_BIG - C_STAKE) * 100
 vo_expect[idc] = [
-    [(bare(num(cents_m1)), True)],
-    [(bare(money(C_M1_HY - C_STAKE)), True)],
-    [(money(bal(C_APY_BIG, 1) - C_STAKE), False), (money(bal(C_APY_HY, 1) - C_STAKE), False)],
-    [(str(C_YEARS), False), (bare(money(C_INT_HY)), True)],
-    [(bare(money(C_INT_BIG)), True)],
-    [(money(C_STAKE), False)],
+    [("1", False), (bare(num(C_Y1_BIG_CENTS)), True)],
+    [(bare(money(c_interest(C_APY_HY, 12))), True)],
+    [("3", False), (bare(num(C_Y3_BIG_CENTS)), True)],
+    [(str(C_YEARS), False), (bare(money(C_INT_BIG, 0.01)), True)],
+    [(bare(money(C_INT_HY)), True)],
+    [(money(C_IN), False)],
 ]
-beats[idc] = [("Month 1", 0, "month"), ("Year 1", 2, "year"), ("Year 5", 3, "5")]
+# "Year 1" lands at 1.0 s as the first payoff, just after VO line 0 says "Year 1" (R10)
+beats[idc] = [("Year 1", 0, "1"), ("Year 3", 2, "3"), ("Year 5", 3, "5")]
 first_payoff[idc] = R10_MAX
 
 # ============================================================== text helpers
@@ -510,10 +527,23 @@ B_FEE10 = sp_path({y: v - 0.10 for y, v in after_buy(SP_TR).items()})[2025]   # 
 claim(idb, "write-up: 0.10% a year fee drag", money(B_FEE10, 100), "≈ $64,900", money(B_FEE10, 100) == "≈ $64,900")
 claim(idb, "write-up: Damodaran swap", f"{money(DAMO[2025], 100)} / {money(DAMO[2008], 100)}", "≈ $65,900 / ≈ $6,300",
       (money(DAMO[2025], 100), money(DAMO[2008], 100)) == ("≈ $65,900", "≈ $6,300"))
-claim(idc, "1 yr interest, big bank", money(C_STAKE * C_APY_BIG), "$1", money(C_STAKE * C_APY_BIG) == "$1")
-claim(idc, "HY interest ÷ big-bank interest", num(C_INT_HY / C_INT_BIG), "≈ 433", num(C_INT_HY / C_INT_BIG) == "≈ 433")
-claim(idc, "pinned: FDIC avg 0.37% → per year", money(C_STAKE * FDIC_NATIONAL_SAVINGS), "$37", money(C_STAKE * FDIC_NATIONAL_SAVINGS) == "$37")
-claim(idc, "write-up: 0.15% for 5 yrs", money(C_ALT_015), "≈ $75", money(C_ALT_015) == "≈ $75")
+claim(idc, "header: 5 years of $100 a month", C_IN, 6000, C_IN == 6000 and C_MONTHS == 60)
+claim(idc, "monthly rate compounds to the APY", round((1 + c_monthly(C_APY_HY)) ** 12 - 1, 12), C_APY_HY,
+      abs((1 + c_monthly(C_APY_HY)) ** 12 - 1 - C_APY_HY) < 1e-12)
+claim(idc, "year 1 at the big bank, in cents", f"{C_Y1_BIG_CENTS:.4f}", "≈ 5", num(C_Y1_BIG_CENTS) == "≈ 5")
+claim(idc, "year 3 at the big bank, in cents", f"{C_Y3_BIG_CENTS:.4f}", "≈ 53", num(C_Y3_BIG_CENTS) == "≈ 53")
+claim(idc, "the big bank adds under $2 on $6,000", round(C_INT_BIG, 4), "< 2", C_INT_BIG < 2)
+claim(idc, "caption: $200 a month doubles both", (round(c_interest(C_APY_BIG, C_MONTHS, 200), 4),
+      round(c_interest(C_APY_HY, C_MONTHS, 200), 4)), "2 × each",
+      abs(c_interest(C_APY_BIG, C_MONTHS, 200) - 2 * C_INT_BIG) < 1e-9
+      and abs(c_interest(C_APY_HY, C_MONTHS, 200) - 2 * C_INT_HY) < 1e-9)
+claim(idc, "write-up: high-yield ÷ big bank at year 5", num(C_INT_HY / C_INT_BIG), "≈ 419", num(C_INT_HY / C_INT_BIG) == "≈ 419")
+claim(idc, "pinned: FDIC avg 0.37% on the same deposits", money(C_FDIC), "≈ $55", money(C_FDIC) == "≈ $55")
+claim(idc, "pinned: FDIC case under a tenth of 4.00%", round(C_FDIC / C_INT_HY, 4), "< 0.1", C_FDIC < C_INT_HY / 10)
+claim(idc, "write-up: Wells 0.15% case", money(C_WELLS, 0.01), "≈ $22.16", money(C_WELLS, 0.01) == "≈ $22.16")
+claim(idc, "write-up: Chase 0.02% relationship rate", money(C_CHASE_REL, 0.01), "≈ $2.95", money(C_CHASE_REL, 0.01) == "≈ $2.95")
+claim(idc, "write-up: deposits at month-start instead", f"{money(C_BEGIN_BIG, 0.01)} / {money(C_BEGIN_HY, 0.01)}",
+      "≈ $1.53 / ≈ $639.57", (money(C_BEGIN_BIG, 0.01), money(C_BEGIN_HY, 0.01)) == ("≈ $1.53", "≈ $639.57"))
 
 for sid in (ida, idb, idc):
     check_spec(sid)

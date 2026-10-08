@@ -51,7 +51,7 @@
   ],
   "verdict": {
     "t": 31.0,
-    "text": "Round up to **$200** a week:\n**≈ 1 year** sooner, **≈ $1,800** less"
+    "text": "Round up to **$200** a week:\n**≈ 1 year** sooner"
   },
   "data": {
     "stake": {
@@ -62,7 +62,7 @@
     "metrics": [
       {
         "key": "payoff",
-        "label": "Paid off in"
+        "label": "Months to pay off"
       },
       {
         "key": "interest",
@@ -73,9 +73,9 @@
       {
         "t": 0.0,
         "name": "Monthly",
-        "detail": "$750.16 a month",
+        "detail": "$750.16",
         "values": {
-          "payoff": "72 months",
+          "payoff": "72",
           "interest": "≈ $10,000"
         },
         "tone": "bad"
@@ -83,9 +83,9 @@
       {
         "t": 8.0,
         "name": "Biweekly",
-        "detail": "$375.08 every 2 wks",
+        "detail": "$375.08",
         "values": {
-          "payoff": "≈ 65 months",
+          "payoff": "≈ 65",
           "interest": "≈ $8,900"
         },
         "tone": "good"
@@ -93,19 +93,19 @@
       {
         "t": 13.0,
         "name": "Weekly",
-        "detail": "$187.54 a week",
+        "detail": "$187.54",
         "values": {
-          "payoff": "≈ 65 months",
+          "payoff": "≈ 65",
           "interest": "≈ $8,900"
         },
         "tone": "neutral"
       },
       {
         "t": 23.0,
-        "name": "Rounded up",
-        "detail": "$200 a week",
+        "name": "Round up",
+        "detail": "$200",
         "values": {
-          "payoff": "≈ 60 months",
+          "payoff": "≈ 60",
           "interest": "≈ $8,200"
         },
         "tone": "goal"
@@ -117,13 +117,71 @@
   "lookOpts": {
     "formulas": [
       "= $750.16 × 72 − $44,000 ≈ $10,000",
-      "= $375.08 × 26 = $9,752.08 a year",
-      "= $187.54 × 52 = $9,752.08 a year",
+      "= $375.08 × 26\n= $9,752.08 a year",
+      "= $187.54 × 52\n= $9,752.08 a year",
       "= $187.54 + $12.46 = $200 a week"
     ],
     "lever": {
       "t": 18.0,
-      "text": "= 13 × $750.16 = $9,752.08: 13 payments, not 12"
-    }
+      "text": "= 13 × $750.16 = $9,752.08:\n13 payments, not 12",
+      "options": [
+        1,
+        2
+      ]
+    },
+    "steps": [
+      {
+        "t": 9.7,
+        "text": "= $10,000 − $8,900\n≈ $1,100 less interest"
+      },
+      {
+        "t": 15.9,
+        "text": "≈ $35 less interest\nthan biweekly"
+      },
+      {
+        "t": 27.8,
+        "text": "= $10,000 − $8,200\n≈ $1,800 less interest"
+      }
+    ],
+    "scan": {
+      "t": 2.4,
+      "every": 0.4
+    },
+    "reads": [
+      {
+        "t": 4.2,
+        "option": 0,
+        "metric": "payoff"
+      },
+      {
+        "t": 5.8,
+        "option": 0,
+        "metric": "interest"
+      },
+      {
+        "t": 16.2,
+        "option": [
+          1,
+          2
+        ],
+        "metric": "interest"
+      },
+      {
+        "t": 27.2,
+        "option": 3,
+        "metric": "payoff"
+      },
+      {
+        "t": 28.4,
+        "option": 3,
+        "metric": "interest"
+      }
+    ],
+    "countCell": {
+      "option": 3,
+      "metric": "interest",
+      "from": "base"
+    },
+    "valueSize": "row"
   }
 }

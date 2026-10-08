@@ -21,10 +21,11 @@
 // "Less is better" duels (debt: the winner ends LOWER) draw the stacks as red debt piles and flip the colours:
 // paying down is green, nothing crashes. Row 0 is the start, never a crash.
 //
-// Layout (all measured at mount): values 64 → 40 px, labels ~0.8 of that, names 48 px, plans 40 px. When the rows
-// do not fit, the fitter scores the alternatives and keeps the best: drop the stake line, drop the headroom for a
-// last-row event (its pill then covers the column heads for 2.4 s, which dim), move long plans into a full-width
-// legend ("● Name  plan", one line each, heads keep "● Name"), and as a last resort 36-38 px values (warns).
+// Layout (all measured at mount): values 64 → 40 px, labels ~0.8 of that, rows 1.15 em apart. Column heads are
+// "● Name" with the plan under it (never a dropped name, never a cut plan). When the rows do not fit, the fitter
+// scores the alternatives and keeps the best: drop the stake line, drop the headroom for a last-row event (its pill
+// then covers the column heads for 2.4 s, which dim), 3-line or smaller (38 -> 34 px) plans, a full-width legend
+// ("● Name  plan", up to 2 lines each) with plain name heads, and as a last resort 36-38 px values (warns).
 // The figures stand left of the ledger, so the tallest stack is capped to keep them under the stake line / legend.
 //
 // lookOpts (all optional; it renders fully without them):
@@ -39,7 +40,7 @@
 import {
   h, s, style, attr, prog, clamp, lerp, plain, markup, rng,
   C, F, L, E, RIG, POSES, poseTrack, fk, secondary, Figure, makeWorld, makeFx, camera, NumObj,
-  chromeParts, durationOf, num, measure, squashAt, popIn, toss, tossHit, coin, springStep, track,
+  chromeParts, durationOf, num, measure, squashAt, popIn, toss, tossHit, coin, springStep, track, shiftJ,
 } from '../lib.js'
 
 export const css = `
@@ -155,7 +156,7 @@ export default function ledgerDuel(spec, ctx) {
   const parts = chromeParts(spec, ctx)
   const fixed = h('div', { class: 'ld-fixed' })
   const FIGK = lo.figureScale ?? 0.8
-  const PW = 66, PG = 18, PL = 36
+  const PW = 66, PG = 18, PL = 42                       // (the left figure's pencil stays >= 24 px inside the frame)
   const PX = [PL + PW / 2, PL + PW + PG + PW / 2]       // stack centres (decoration may sit left of x 60)
   const X0 = PL + 2 * PW + PG + 30                      // left edge of the ledger
   const XR = 922                                        // right edge of the last column (x <= 940 below y 820)
@@ -181,8 +182,9 @@ export default function ledgerDuel(spec, ctx) {
     stakeH = stakeEl.offsetHeight
   }
 
-  // legend (fallback for long plans): one line per person, "● Name  plan", full width under the stake line
-  let legEls = [], legH = 0, legH1 = 0
+  // legend (when it gives the rows more room): one block per person, "● Name  plan", full width under the stake
+  // line, wrapping to 2 lines (never cut). The column heads then show the plain names only, no dots.
+  let legEls = []
   if (people.some(x => x.plan)) {
     legEls = [0, 1].map(p => {
       const el = h('div', { class: 'ld-leg' })
@@ -191,9 +193,9 @@ export default function ledgerDuel(spec, ctx) {
       return el
     })
     if (!fixed.parentNode) ctx.stage.append(fixed)
-    legH = legEls.reduce((a, el) => a + el.offsetHeight, 0) + 6
-    legH1 = legEls.length * 46 + 6                       // one line each, the plan cut with an ellipsis (last resort)
   }
+  const legLines = legEls.map(el => Math.round(el.offsetHeight / 46))
+  const legH = legEls.reduce((a, el) => a + el.offsetHeight, 0) + 6
 
   function wrap(text, font, ls, maxW) {
     const words = String(text).split(/\s+/).filter(Boolean)
@@ -226,64 +228,69 @@ export default function ledgerDuel(spec, ctx) {
     const xYear = X0 + yW, xB = XR
     // where the A column ends inside the slack: the split that wraps the heads into the fewest lines
     let best = null
-    for (const f of [0.5, 0.35, 0.65, 0.2, 0.8, 0, 1]) {
+    // Each column head is "● Name" with the plan under it in grey (no separate legend: every name appears once).
+    // A's head may reach left over the label column to the margin; a name is never dropped (48 -> 40 px, else on
+    // two lines); a plan wraps to as many lines as the config allows at cf.pp px (40, else down to 34).
+    // (the split between the two heads may move left over A's values, up to 3/4 of their width: B's head then
+    // right-aligns over B's column and A's head ends a little left of its column's edge)
+    for (const f of [0.5, 0.35, 0.65, 0.2, 0.8, 0, 1]) for (const sh of [0, 0.25, 0.5, 0.75]) {
       const xA = xYear + G + vW[0] + slack * f
-      const headW = [xA - (keyLabel ? xYear + 24 : X0), xB - xA - 26]
+      const aR = xA - sh * vW[0]
+      const headW = [aR - (keyLabel ? xYear + 24 : 62), xB - aR - 26]
+      // with the legend on screen the heads are plain names (the legend has the dots); a head too narrow for
+      // "● Name" drops its dot (the name keeps its colour), then wraps the name; it never drops the name
       const names = [0, 1].map(p => {
-        for (let px = 48; px >= 40; px -= 2) { const w = mW(nameOf(p), fnt(900, px), '-0.02em') + px * 0.6 + 12; if (w <= headW[p]) return { px, w } }
-        // with the legend on screen (it names both people), a head too narrow for the name keeps only its dot
-        if (cf.lg) return { px: 40, w: 30, dotOnly: true }
-        return { px: 40, w: Infinity }
+        if (!cf.lg) for (let px = 48; px >= 40; px -= 2) { const w = mW(nameOf(p), fnt(900, px), '-0.02em') + px * 0.6 + 12; if (w <= headW[p]) return { px, w, lines: [nameOf(p)] } }
+        for (let px = 48; px >= 40; px -= 2) { const w = mW(nameOf(p), fnt(900, px), '-0.02em'); if (w <= headW[p]) return { px, w, lines: [nameOf(p)], noDot: true } }
+        const wr = wrap(nameOf(p), fnt(900, 40), '-0.02em', headW[p])
+        return wr.lines.length <= 2 && !wr.over ? { px: 40, w: wr.w, lines: wr.lines, noDot: true } : { px: 40, w: Infinity, lines: [] }
       })
-      const plans = [0, 1].map(p => (people[p].plan && !cf.lg ? wrap(plain(people[p].plan), fnt(700, 40), '-0.01em', headW[p]) : { lines: [], w: 0, over: false }))
+      // both names at one size (the smaller of the two fits)
+      const npx = Math.min(...names.map(n => n.px))
+      for (const n of names) if (n.px > npx && n.w < Infinity) { n.w *= npx / n.px; n.px = npx }
+      const plans = [0, 1].map(p => (people[p].plan && !cf.lg ? wrap(plain(people[p].plan), fnt(700, cf.pp), '-0.01em', headW[p]) : { lines: [], w: 0, over: false }))
       if (names.some((n, p) => n.w > headW[p] + 0.5) || plans.some(x => x.over)) continue
-      const nl = Math.max(...plans.map(x => x.lines.length))
-      if (!best || nl < best.nl) best = { xA, names, plans, nl }
+      const nl = Math.max(...plans.map(x => x.lines.length)), nn = Math.max(...names.map(n => n.lines.length))
+      const dots = names.filter(n => !n.noDot).length
+      const cost = 10 * (nl + nn) - 2 * dots + 3 * sh
+      if (!best || cost < best.cost) best = { xA, aR, names, plans, nl, nn, headW, dots, cost }
     }
     if (!best || best.nl > cf.pl) return null
-    // heads that kept only their dot need just the dot's height
-    const nameLH = best.names.every(n => n.dotOnly) ? 30 : Math.max(...best.names.map(n => n.px)) + 4
-    const headH = nameLH + best.nl * 46
+    const nameLH = Math.max(...best.names.map(n => n.px)) + 4
+    const planLH = Math.round(cf.pp * 1.15)
+    const headH = best.nn * nameLH + best.nl * planLH
     // vertical: rows from the floor up; heads just above the top row (and the stake line above them)
     const legTop = top0 + (cf.st ? stakeH + 18 : 0)
-    const top = legTop + (cf.lg ? (cf.lg === 1 ? legH1 : legH) + 18 : cf.st ? 4 : 0)
-    const rowNeed = 1.2 * Math.max(vp, yp) + 1
+    if (cf.lg && legLines.some(n => n > 2)) return null
+    const top = legTop + (cf.lg ? legH + 18 : cf.st ? 4 : 0)
+    // (rows may sit 1.15 em apart: the text runs' boxes then touch by ~3 px of empty line box, no ink)
+    const rowNeed = Math.ceil(1.15 * Math.max(vp, yp))
     const topExtra = plateOn ? 0.97 * vp * HLS + PLATE[1] + 8 : 0.97 * vp
     const headroom = cf.hr ? pillH + 14 : 0
     const shelf0 = floorY - 16
     const avail = N > 1 ? (shelf0 - GAP - topExtra - headroom - (top + headH + 20)) / (N - 1) : 999
     if (avail < rowNeed) return null
     const pitch = Math.min(avail, Math.max(rowNeed + 26, 1.9 * vp))
-    return { vp, yp, yW, vW, xYear, xA: best.xA, xB, names: best.names, plans: best.plans, nameLH, headH, pitch, shelf0, topExtra, headroom, top, legTop, cf }
+    return { vp, yp, yW, vW, xYear, xA: best.xA, aR: best.aR, xB, names: best.names, plans: best.plans, nameLH, planLH, headH, pitch, shelf0, topExtra, headroom, top, legTop, cf }
   }
   // score every config by its best value size; the stake line and the last-row headroom are worth a few px
   let lay = null
   for (const st of stakeEl ? [true, false] : [false]) for (const hr of rows[last].event ? [true, false] : [false])
-  for (const [pl, lg] of legEls.length ? [[2, false], [3, false], [0, true], [0, 1]] : [[2, false]]) {
+  for (const [pl, pp, lg] of people.some(x => x.plan) ? [[2, 40, false], [3, 40, false], [0, 40, true], [2, 38, false], [3, 38, false], [3, 36, false], [3, 34, false], [4, 34, false]] : [[0, 40, false]]) {
     for (let vp = 64; vp >= 36; vp -= 2) {
-      const l = tryLayout(vp, { st, hr, pl, lg })
+      const l = tryLayout(vp, { st, hr, pl, pp, lg })
       if (!l) continue
-      l.score = vp + (st ? 8 : 0) + (hr ? 4 : 0) - (pl === 3 ? 5 : 0) - (lg ? 4 : 0) - (lg === 1 ? 10 : 0) - (vp < 40 ? 12 : 0)
+      // a small plan costs less than small values; the legend (names twice) costs a little; a value under 40 px
+      // is the last resort; a name without its dot costs a little
+      l.score = vp + (st ? 8 : 0) + (hr ? 4 : 0) - (pl >= 3 ? 5 : 0) - 1.5 * (40 - pp) - (lg ? 6 : 0) - (vp < 40 ? 30 : 0)
+        - (lg ? 0 : 2 * l.names.filter(n => n.noDot).length)
       if (!lay || l.score > lay.score) lay = l
       break
     }
   }
   if (!lay) throw new Error('ledger-duel: the rows do not fit (too many rows, or values/labels too wide)')
   if (stakeEl && !lay.cf.st) { stakeEl.remove(); stakeEl = null }
-  if (lay.cf.lg) {
-    let y = lay.legTop
-    legEls.forEach((el, p) => {
-      if (lay.cf.lg === 1) {
-        // one line: the plan is cut at a word (or a letter) and ends with an ellipsis, measured, never CSS-clipped
-        el.classList.add('one')
-        const head = `<i style="background:${pal[p].fig}"></i><b style="color:${pal[p].text}">${esc(nameOf(p))}</b>`
-        let plan = plain(people[p].plan || '')
-        el.innerHTML = head + esc(plan)
-        while (plan.length > 1 && el.scrollWidth > 878) { plan = plan.slice(0, -1).trimEnd(); el.innerHTML = head + esc(plan) + '…' }
-      }
-      style(el, { top: y + 'px' }); y += el.offsetHeight + 6
-    })
-  }
+  if (lay.cf.lg) { let y = lay.legTop; for (const el of legEls) { style(el, { top: y + 'px' }); y += el.offsetHeight + 6 } }
   else for (const el of legEls) el.remove()
   const top = lay.top
   const stakeBottom = stakeEl ? top0 + stakeH : top0 - 28
@@ -308,10 +315,10 @@ export default function ledgerDuel(spec, ctx) {
     const el = h('div', { class: 'ld-head' })
     const nm = lay.names[p], dot = Math.round(nm.px * 0.6)
     el.innerHTML = `<div class="ld-name" style="font-size:${nm.px}px;line-height:${lay.nameLH}px;color:${pal[p].text}">`
-      + `<i style="width:${dot}px;height:${dot}px;margin-right:${nm.dotOnly ? 0 : 12}px;vertical-align:${Math.round(nm.px * 0.02)}px;background:${pal[p].fig}"></i>${nm.dotOnly ? '' : esc(plain(people[p].name || ''))}</div>`
-      + lay.plans[p].lines.map(l => `<div class="ld-plan">${esc(l)}</div>`).join('')
+      + (nm.noDot ? '' : `<i style="width:${dot}px;height:${dot}px;margin-right:12px;vertical-align:${Math.round(nm.px * 0.02)}px;background:${pal[p].fig}"></i>`) + `${nm.lines.map(esc).join('<br>')}</div>`
+      + lay.plans[p].lines.map(l => `<div class="ld-plan" style="font-size:${lay.cf.pp}px;line-height:${lay.planLH}px">${esc(l)}</div>`).join('')
     fixed.append(el)
-    style(el, { top: headTop + 'px', left: (xCol[p] - el.offsetWidth).toFixed(1) + 'px' })
+    style(el, { top: headTop + 'px', left: ((p ? xCol[p] : lay.aR) - el.offsetWidth).toFixed(1) + 'px' })
     heads.push(el)
   }
   if (keyLabel) {
@@ -380,7 +387,9 @@ export default function ledgerDuel(spec, ctx) {
   // ---- coin stacks: edge-on coins, height = money on one shared scale
   const figH = (2 * RIG.headR + RIG.neck + RIG.torso + RIG.thigh + RIG.shin) * FIGK
   // the figures stand left of the ledger, under everything that starts at the left margin (stake line, legend)
-  const leftBottom = lay.cf.lg ? lay.top - 18 : stakeEl ? stakeBottom : parts.workTop - 28
+  // (a column head that reaches left over the stacks also caps them)
+  const headLeft = Math.min(...heads.filter(el => el.classList.contains('ld-head')).map(el => el.offsetLeft))
+  const leftBottom = headLeft < X0 - 8 ? headTop + lay.headH : lay.cf.lg ? lay.top - 18 : stakeEl ? stakeBottom : parts.workTop - 28
   const topClear = leftBottom + 16
   const H_MAX = Math.max(160, floorY - topClear - figH * 1.12 - 26)
   const maxV = Math.max(1, ...V.flat(), ...startV)
@@ -573,6 +582,7 @@ export default function ledgerDuel(spec, ctx) {
     const tr = tracks[p]
     const P0 = secondary(tr.at(t), t, { prev: tr.at(t - 0.07) })
     const J = fk(P0, { x: PX[p], ground: figGround(p, t), face: faces[p].at(t), scale: FIGK })
+    shiftJ(J, Math.max(0, 24 - figs[p].extentX(J)[0]))      // never clipped by the frame edge (the pencil included)
     let sq = { sx: 1, sy: 1 }
     for (const q of squashes[p]) { const z = squashAt(t, q.t, q.amt); sq = { sx: sq.sx * z.sx, sy: sq.sy * z.sy } }
     figs[p].draw(J, sq)

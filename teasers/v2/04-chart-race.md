@@ -2,17 +2,17 @@
 
 **Prepared for:** *Back of the Envelope* (YouTube Shorts, Instagram Reels, TikTok), US audience, USD
 **Date:** 2026-10-07
-**Writer:** format 4 of 10, round 2 (revised after the verifier and hook-judge reviews; see the Review log at the end)
+**Writer:** format 4 of 10, round 2 (revised after the verifier and hook-judge reviews, then two hook passes; 04b's hook was rewritten in hook pass 2. See the Review log at the end)
 **Deliverables:**
 - Specs (all three pass the studio linter, `node src/cli.mjs check`: 0 errors, 0 warnings; contact sheets rendered in all three kits):
   - [`studio/specs/04a-scoreboard-sp500-vs-gold.json`](../../studio/specs/04a-scoreboard-sp500-vs-gold.json)
   - [`studio/specs/04b-becker-rig-savings-vs-sp500.json`](../../studio/specs/04b-becker-rig-savings-vs-sp500.json)
   - [`studio/specs/04c-live-sheet-usa-vs-europe.json`](../../studio/specs/04c-live-sheet-usa-vs-europe.json)
-- Check: [`teasers/v2/checks/04-chart-race.py`](checks/04-chart-race.py). It recomputes every series from the sourced annual returns and passes **407 checks with 0 failures**. New in this revision:
+- Check: [`teasers/v2/checks/04-chart-race.py`](checks/04-chart-race.py). It recomputes every series from the sourced annual returns and passes **445 checks with 0 failures** (407 before hook pass 2). New in this revision:
   - a spoken-number sync check: every figure the VO quotes mid-race must be on screen at the moment it is said (on a tip counter, a flag, a beat label or the ledger row);
   - a 2,916-table sweep over the uncertain savings-rate inputs (04b);
-  - a stale-text check on this write-up.
-- Mutation test: the check caught **12 of 12** deliberately broken spec copies (listed under Caveats).
+  - a stale-text check on this write-up (since hook pass 2, also a 04b-section check that no text from the old hook is left).
+- Mutation test: the check caught **12 of 12** deliberately broken spec copies (listed under Caveats), and **8 of 8** more for the new 04b hook in hook pass 2.
 
 **Evidence base:**
 - The benchmark only: [`research/v2/02-hook-bank.md`](../../research/v2/02-hook-bank.md) (P4, R1-R12, section 2.10 "open in the red"), [`research/v2/04-formats.md`](../../research/v2/04-formats.md) (rank 4), and the watch studies [`chartorbit.md`](../../research/v2/watch/chartorbit.md) and [`jake-jacobdoesmoney.md`](../../research/v2/watch/jake-jacobdoesmoney.md).
@@ -23,7 +23,7 @@
 ## (a) The format in 5 lines
 
 1. **Mechanic.** The same round stake goes into 2 named rivals on the same date. One continuous line chart races year by year, with a live counter at each line tip, a big year counter, crash flags and 0 cuts, and it ends dead on the verified final values.
-2. **Hook.** The title asks ("What If You Invested $5,000 in A and B?"). The frame-1 header says you already did it ("POV: In [year] you invested $[stake] in A VS B"). The stake is the only accent colour. In ChartOrbit's winners the chart is already moving at 0.0 s, below the stake. 04a copies that exactly (its race clock starts at −0.4 s, so frame 1 shows both tips under the stake). 04b and 04c hold both tips on the stake for 1.0 s while the hook line plays, then race.
+2. **Hook.** The title asks ("What If You Invested $5,000 in A and B?"). The frame-1 header says you already did it ("POV: In [year] you invested $[stake] in A VS B"); 04b's header (hook pass 2) is a handicap duel in the same A VS B grammar ("Your $1,000: 16 years of savings VS 1 year of the S&P 500"). The stake is the only accent colour. In ChartOrbit's winners the chart is already moving at 0.0 s, below the stake. 04a and 04b copy that: their race clocks start at −0.4 s, so 04a's frame 1 shows both tips under the stake and 04b's shows the S&P already ahead ($1,041 vs $1,001). 04c holds both tips on the stake for 1.0 s while the hook line plays, then races.
 3. **Pace.** About 2-2.7 s per year in the benchmark (61 s). Ours run 1.2-2.0 s per year, 38.0-45.5 s, to stay inside this round's 25-50 s lane. The biggest number lands last, then the verdict.
 4. **Evidence.**
 
@@ -52,9 +52,9 @@
   - Finals are given to 3 significant figures, the savings balance included. (Round 1 showed it to the nearest dollar; the 04b sweep showed that the dollar digit rests on unsourced midpoint years, so it is no longer shown.)
   - Scoreboard footer: "$10,000 grew ≈ ×7.53 → ≈ $75,300". Live Sheet formula bar: "≈ $10,000 × 3.98", where the "≈" chip replaces "=" because the cell's result is a rounded final. Pinned comments: "≈ ×15.0", "≈ ×3.98".
   - VO text uses "≈" too, because captions show it. The owner reads "≈" as "about".
-- **A figure the VO quotes mid-race is on screen when it is said.** The race moves 1.2-2.0 s per year, while a spoken figure takes 1-3 s to reach. So each mid-race figure is either pinned (a flag, a beat label or the ledger row that carries it), or it is a bound that holds on the live tip for the whole line ("still under $17,000", "under $10 of interest"). The check computes when each figure is said (the line's start plus its spoken words ÷ 2.6) and tests what is showing then.
+- **A figure the VO quotes mid-race is on screen when it is said.** The race moves 1.2-2.0 s per year, while a spoken figure takes 1-3 s to reach. So each mid-race figure is either pinned (a flag, a beat label or the ledger row that carries it), or it is a bound that holds on the live tip for the whole line ("still under $17,000", "under $10 so far"). The check computes when each figure is said (the line's start plus its spoken words ÷ 2.6) and tests what is showing then.
 - **The verdict lands after the last VO line ends.** The Becker rig and Live Sheet chrome hide captions while the verdict shows.
-- **The first VO line plants the wrong answer (R5); it never reads the header aloud.**
+- **The first VO line plants the wrong answer (R5); it never reads the header aloud.** (04b: the first line gives the target, ≈ $151, and the second plants the belief, "Savings gets 16 years to match it.")
 - **Captions: line 1 on IG and TikTok is a curiosity line, and the verdict goes after the fold.** TikTok shows line 1 over the video from 0 s, so a verdict there gives the twist away.
 - **Rule-of-thumb line (the format's "envelope twist" from 04-formats).** Each teaser converts its ending into doublings, or into "% a year", so the result is a number you can carry.
 - **Swap-in for R3.** The multiple is printed in the footer or formula bar, so viewers can multiply their own amount. The pinned comments say so.
@@ -210,58 +210,63 @@
 
 ---
 
-### 04b · Becker rig · "POV: In 2010 you put $1,000 in "safe" savings VS the S&P 500"
+### 04b · Becker rig · "Your $1,000: 16 years of savings VS 1 year of the S&P 500"
+
+*Hook pass 2 (2026-10-07) rewrote this teaser's hook: the handicap duel below replaced the round-2 riddle hook (savings vs the S&P 500, "which one lost?"). Scores and reasons are in the Review log.*
 
 - **Look:** Becker rig, light stage. Two faceless stick figures, each climbing its own line: the hero colour on the S&P 500, neutral grey on the savings line. Maths is in neutral ink; each result is a change in the world.
-- **Platform title:** "$1,000 in Savings vs the S&P 500 Since 2010: Which One Lost Value?"
-- **On-screen hook (header, 13 words):** `POV: In 2010 you put **$1,000** in` / `"safe" savings VS the S&P 500`
-- **First VO line (0.0 s):** "One of these never had a down year. Guess which one lost."
+- **Platform title:** "Can 16 Years in a Savings Account Beat 1 Year in the S&P 500?" (A/B: "16 Years of Savings Interest vs 1 Year of the S&P 500")
+- **On-screen hook (header, 13 words):** `Your **$1,000**: 16 years of savings` / `VS 1 year of the S&P 500`
+- **First VO lines:** "Year one in the S&P: ≈ $151." (0.0-4.7 s), then "Savings gets 16 years to match it." (4.8-7.7 s)
+- **First 1.5 s:**
+  - Frame 1 shows the 2-line header with "$1,000" as the only accent. The race is already moving (the race clock starts at −0.4 s): S&P tip "$1,041", savings tip "$1,001", year "2010", stake legend "$1,000 each · Jan 2010", and the 2-line footer.
+  - At 1.09 s the 2010 close lands ($1,150.60 vs $1,002.10). The green figure cheers (pop), and the note "year 1: ≈ +$151" sits under his counter (1.09-3.69 s). "≈ $151" is spoken at 2.69 s.
+  - At 4.8 s the grey figure strikes a "think" pose. The note "goal: ≈ +$151" sits under his counter until the race ends (23.6 s), while his own counter crawls from $1,005 to ≈ $1,020 and the year counter runs to 2025. That is the visible open loop: a target against a counter.
 - **Hook rules it satisfies:**
-  - **R1:** "$1,000" plus two $1,000 tip counters at 0.0 s.
-  - **R2:** one input.
-  - **R3, R4:** everyone has a savings account, and $1,000 is an amount most viewers have actually parked in one.
-  - **R5:** the quotes around "safe" and the first line ("never had a down year … which one lost") make the obvious answer look wrong, and the loop is no longer "who wins" (obvious) but "which one lost" (not obvious).
-  - **R6:** POV "you" + $1,000 + 2010 (the chart-race's own grammar, not the ledger-duel lane's "2 people").
-  - **R7:** both options are named.
+  - **R1:** "$1,000" in the header and two live tip counters at 0.0 s, already moving.
+  - **R2:** one input, $1,000. The "16" and the "1" are the handicap, not inputs (judge 1 counted them against it: three numbers in the header).
+  - **R3, R4:** everyone has a savings account, and $1,000 is an amount most viewers have parked in one.
+  - **R5:** the header plants the belief that interest adds up: 16 years of savings ought to catch 1 year of stocks. Viewers on today's 4% high-yield accounts hold it. Savings earned under $30 in 16 years; the S&P 500 made ≈ $151 in its first year alone.
+  - **R6:** "Your $1,000" (the stake legend adds Jan 2010).
+  - **R7:** both rivals are named in the header.
   - **R8:** 13 words.
-  - **R9:** a fixed 2010-2025 axis.
-  - **R10:** weak: the 2010 close lands at 2.49 s ($1,150.60 vs $1,002.10), but the first spoken figure comes at 8.2 s and the real payoff at 31.9-41.5 s. The hook line carries the first 4.7 s instead.
+  - **R9:** the goal note against the crawling counter, with the year counter running to 2025.
+  - **R10:** the first payoff, "year 1: ≈ +$151", is on screen at 1.09 s and spoken at 2.69 s.
   - **R11:** the hook line asks; the verdict is on screen and in the caption after the fold.
-  - **R12:** the verdict is a single number, "lost ≈ 32%".
+  - **R12:** a lopsided verdict you can repeat: "under $30" vs "≈ $151", about 6 to 1.
 - **Modelled on:**
-  - ChartOrbit H17 (2,808,307, 345.09x) for the "POV … A VS B" race and "you + amount + year".
-  - Jake's duels H78-H80 (276,471-322,339 plays) for two figures, same money, both values moving at once; H78's risk twist drew 136 comments against 23 for the plain pair, which is why this one sells a twist (dollars vs buying power), not a winner.
-  - Becker devices from alan-becker.md §4 and §6:
-    - "results are transformations": the prices tide rises over the savings figure;
-    - "one number going up is a complete story";
-    - impact frames on the 2022 drop.
-- **Wrong belief it exploits:** "A savings account is the safe place for money; it never goes down." In dollars it never did: every year's rate is positive, $1,000 → ≈ $1,020. In buying power it lost ≈ 32%, because prices rose ≈ 50% while it earned ≈ 2.4% in total. The ledger-duel lane owns "2 people" headers and high-yield vs big-bank savings (07c), and 07b runs the "sold in the crash to stay safe" twist; this teaser races savings against an index and its twist is dollars vs buying power.
+  - HD Guy H07 "Which is cheaper? 1 Missile or 75 Rounds/Second" (11,957,600, 3.81x): a lopsided duel between units of different size.
+  - Debt Freedom H49 (382,100, 289.1x): two options of different shape and a one-number verdict.
+  - Master Money H84 (3.0M, 140x): the first answer lands before 3 s.
+  - ChartOrbit H17 (2,808,307, 345.09x): the race is already moving at frame 1.
+  - Becker devices from alan-becker.md §4 and §6: "one number going up is a complete story" (the hero's counter against the crawl), and impact frames on the 2022 drop.
+- **Wrong belief it exploits:** "Interest adds up: give a savings account long enough and it earns what stocks make in a year." At the FDIC national average it did not come close: $1,000 earned $23.85 in 16 years, while the S&P 500 made $150.60 in 2010, its first year. The ledger-duel lane owns "2 people" headers and high-yield vs big-bank savings (07c), and 07b runs the "sold in the crash" twist; this teaser is a handicap race. The buying-power twist (savings lost ≈ 32% of its buying power) moved to the pinned comment.
 
-**Beat sheet** (race: x 2010.0 → 2025.99 over t 1.0 → 25.0 s, 1.50 s per year)
+**Beat sheet** (race: x 2010.0 → 2025.99 over t −0.4 → 23.6 s, 1.50 s per year)
 
 | t (s) | On screen (Becker actions from `lookOpts.beats`) | VO |
 |---|---|---|
-| 0.0 | Header. Two figures at the foot of their lines; tip counters "$1,000" / "$1,000". Year "2010". Footer "Savings: FDIC avg rate, under 0.5% · S&P 500 with dividends · 2010–2025" | "One of these never had a down year. Guess which one lost." (0.0-4.7) |
-| 1.0-6.99 | Race starts. The hero scrambles up (2010 $1,150.60 at 2.49 s; 2012 $1,362.86; 2013 $1,804.29); the grey figure strolls a flat ledge ($1,002.10 … $1,005.66) | — |
-| 8.2 | The S&P tip crosses $2,000 (the 2014 close, $2,051.29, lands at 8.49 s). Hero **cheers**, label "doubled". Pop | "2014: the S&P has doubled it." |
-| 12.2 | Grey figure **shrugs**, label "under +$10" (shown 2.6 s); savings tip $1,008 | "Savings? Under $10 of interest." |
-| 13.0-14.49 | 2018 stumble ($2,836.60 → $2,712.35). "COVID" flag at 16.31 s | — |
-| 19.76-20.5 | "2022 bear market" flag. 2022 close $4,450.76: hero takes an **impact** (hit, shake, white frame), label "≈ −18%" (shown to 23.1 s) | "2022: stocks drop ≈ 18%." (20.5; "≈ 18%" said at 22.4 s) |
-| 25.0 | Race ends. Hero **grows**, tip pinned "≈ $8,280". Savings tip "≈ $1,020". Roll | "2025: stocks ≈ $8,280." |
-| 29.4 | Camera holds on the grey figure's ledge | "Savings: ≈ $1,020." |
-| 31.9 | **Flood:** a "prices" tide rises from $1,000 to $1,500.60, past the savings ledge to his chin; label "prices ≈ +50%". Whoosh | "But prices rose ≈ 50%." |
-| 34.4 | Grey figure **peeks** over the tide; label "≈ $1,501 in 2025 = $1,000 in 2010" (stays). Buzz | "That ≈ $1,020 buys what ≈ $680 did in 2010." (34.4-41.4) |
-| 41.5-44.5 | Verdict: "The "safe" choice lost **≈ 32%** / of its buying power." Thud. Hold; loop back to frame 1 | — |
+| 0.0 | Header. Race already moving: S&P tip "$1,041", savings tip "$1,001", year "2010", stake legend "$1,000 each · Jan 2010". Footer "Savings: FDIC avg rate, under 0.5% · S&P 500 with dividends · 2010–2025" | "Year one in the S&P: ≈ $151." (0.0-4.7; "≈ $151" said at 2.69 s) |
+| 1.09 | The 2010 close lands ($1,150.60 vs $1,002.10). Hero **cheers**, note "year 1: ≈ +$151" (1.09-3.69). Pop | — |
+| 3.0 | S&P tip $1,227, savings tip $1,004 | — |
+| 4.8 | Grey figure **thinks**, note "goal: ≈ +$151" held to 23.6 s while his counter crawls ($1,005 → ≈ $1,020). Swipe | "Savings gets 16 years to match it." (4.8-7.7) |
+| 7.09 | The 2014 close ($2,051.29): the S&P has doubled the stake (not narrated) | — |
+| 10.8 | Savings tip $1,007.76 → $1,008.78 while the line shows | "Savings? Under $10 so far." (10.8-13.3) |
+| 11.59-13.09 | 2018 stumble ($2,836.60 → $2,712.35). "COVID" flag at 14.91 s | — |
+| 18.36-19.1 | "2022 bear market" flag. The 2022 close ($4,450.76) lands at 19.10 s: hero takes an **impact** (hit, shake, white frame), label "≈ −18%" (19.1-21.7) | "2022: stocks drop ≈ 18%." (19.1; "≈ 18%" said at 21.02 s) |
+| 23.6 | Race ends. Hero **grows**, tip pinned "≈ $8,280" on the gold plate. Roll. Savings tip "≈ $1,020"; grey figure **shrugs**, label "under +$30" (23.6-26.2), then sits on his ledge. Boing at 23.7 | "2025: savings made under $30 in 16 years." (23.6-28.0; "$30" said at 25.91 s) |
+| 28.1 | Hero **points** back down his line; label "year 1: ≈ +$151" (28.1-32.9) | "The S&P's first year alone: ≈ $151." (28.1-32.9; "≈ $151" said at 30.79 s) |
+| 33.0 | Hold on the gold plate | "It ended at ≈ $8,280." (33.0-37.0) |
+| 37.1-40.1 | Verdict: "16 years of savings: under **$30**. / The S&P 500 in 2010 alone: ≈ $151." Thud. Hold; loop back to frame 1 | — |
 
-**Guide VO script (as read, 8 lines):**
-> One of these never had a down year. Guess which one lost.
-> 2014: the S&P has doubled it.
-> Savings? Under ten dollars of interest.
+**Guide VO script (as read, 7 lines):**
+> Year one in the S&P: about a hundred fifty-one dollars.
+> Savings gets sixteen years to match it.
+> Savings? Under ten dollars so far.
 > 2022: stocks drop about eighteen percent.
-> 2025: stocks, about eight thousand two hundred eighty.
-> Savings: about one thousand twenty.
-> But prices rose about fifty percent.
-> That thousand and twenty buys what about six hundred eighty did in 2010.
+> 2025: savings made under thirty dollars in sixteen years.
+> The S&P's first year alone: about a hundred fifty-one dollars.
+> It ended at about eight thousand two hundred eighty.
 
 **The maths**
 
@@ -277,68 +282,79 @@
 
   | Year-end | t (s) | S&P 500 | Savings |
   |---|---:|---:|---:|
-  | start (Dec 31, 2009 close) | 1.00 | $1,000.00 | $1,000.00 |
-  | 2010 | 2.49 | $1,150.60 | $1,002.10 |
-  | 2011 | 3.99 | $1,174.88 | $1,003.70 |
-  | 2012 | 5.49 | $1,362.86 | $1,004.81 |
-  | 2013 | 6.99 | $1,804.29 | $1,005.66 |
-  | 2014 | 8.49 | $2,051.29 | $1,006.26 |
-  | 2015 | 9.99 | $2,079.60 | $1,006.87 |
-  | 2016 | 11.49 | $2,328.32 | $1,007.47 |
-  | 2017 | 12.99 | $2,836.60 | $1,008.08 |
-  | 2018 | 14.49 | $2,712.35 | $1,008.68 |
-  | 2019 | 15.99 | $3,566.47 | $1,009.44 |
-  | 2020 | 17.50 | $4,222.70 | $1,010.35 |
-  | 2021 | 19.00 | $5,435.04 | $1,010.95 |
-  | 2022 | 20.50 | $4,450.76 | $1,011.56 |
-  | 2023 | 22.00 | $5,620.86 | $1,014.90 |
-  | 2024 | 23.50 | $7,027.20 | $1,019.67 |
-  | 2025 | 25.00 | $8,283.66 | $1,023.85 |
+  | start (Dec 31, 2009 close) | −0.40 | $1,000.00 | $1,000.00 |
+  | frame 1 (x 2010.27) | 0.00 | $1,040.54 | $1,000.57 |
+  | 2010 | 1.09 | $1,150.60 | $1,002.10 |
+  | 2011 | 2.59 | $1,174.88 | $1,003.70 |
+  | 2012 | 4.09 | $1,362.86 | $1,004.81 |
+  | 2013 | 5.59 | $1,804.29 | $1,005.66 |
+  | 2014 | 7.09 | $2,051.29 | $1,006.26 |
+  | 2015 | 8.59 | $2,079.60 | $1,006.87 |
+  | 2016 | 10.09 | $2,328.32 | $1,007.47 |
+  | 2017 | 11.59 | $2,836.60 | $1,008.08 |
+  | 2018 | 13.09 | $2,712.35 | $1,008.68 |
+  | 2019 | 14.59 | $3,566.47 | $1,009.44 |
+  | 2020 | 16.10 | $4,222.70 | $1,010.35 |
+  | 2021 | 17.60 | $5,435.04 | $1,010.95 |
+  | 2022 | 19.10 | $4,450.76 | $1,011.56 |
+  | 2023 | 20.60 | $5,620.86 | $1,014.90 |
+  | 2024 | 22.10 | $7,027.20 | $1,019.67 |
+  | 2025 | 23.60 | $8,283.66 | $1,023.85 |
 
-- **"never had a down year":** every rate in the table is positive, so the savings balance rises every year. The S&P 500 had two down years in the window: 2018 (−4.38%) and 2022 (−18.11%).
-- **"which one lost":** savings ends at $682.29 of Jan-2010 buying power (below $1,000); the S&P 500 ends at $8,283.66 ÷ 1.50060 = $5,520.22 (far above).
-- **"doubled" (2014):** the S&P tip crosses $2,000 at x ≈ 2014.79 (t 8.18 s), and the first year-end at or above $2,000 is 2014 ($2,051.29; 2013 was $1,804.29).
-- **"Under $10 of interest":** while the line and its label show (12.2-14.8 s), the savings tip reads $1,007.76 → $1,008.83, so interest so far is $7.76-$8.83. In the worst case of the input sweep below, it reaches $9.82, still under $10.
-- **"≈ 18%":** the S&P 500's 2022 return, −18.11%.
+- **Race clock:** 24.0 s for 15.99 years = 1.50094 s per year. Frame 1 is x = 2010 + 0.4 ÷ 1.50094 = 2010.2665, so the tips read $1,040.54 → "$1,041" and $1,000.57 → "$1,001".
+- **"Year one in the S&P: ≈ $151":** the S&P 500's 2010 total return was +15.06%, so $1,000 × 0.1506 = **$150.60 → ≈ $151** (the notes read "≈ +$151"). The 2010 close lands at 1.086 s, and the note pops at 1.09 s. "≈ $151" is said at 7 spoken words ÷ 2.6 = 2.69 s, while the note shows (1.09-3.69 s).
+- **Not a cherry-picked year:** over the 16 years the S&P 500 grew ×8.28366, a CAGR of 8.28366^(1/16) − 1 = **14.13%** a year (arithmetic mean 14.98%). 2010's 15.06% sits next to it. The best year was 2013 (+32.39%).
+- **"Savings gets 16 years to match it" / "under $30 in 16 years":** 16 years of interest is $1,023.85 − $1,000 = **$23.85**, under $30, and far short of the ≈ $151 goal. In the input sweep below it runs **$22.62-$24.97**. The January-rate model understates 2022-2023 by about a dollar each, so the worst case is about $26.97: still under $30 in every table. Year 1 ÷ 16 years of interest = 6.3× (5.6× in the worst case); the ratio is not displayed.
+- **"Under $10 so far":** while the line shows (10.8-13.3 s; the check tests to 13.4 s), the savings tip reads $1,007.76 → $1,008.84, so interest so far is $7.76-$8.84. In the worst case of the sweep it reaches $9.82, still under $10. It is a bound the live tip holds, so it carries no label; the goal note stays up.
+- **"≈ 18%":** the S&P 500's 2022 return, −18.11%. It is said at 21.02 s while the impact label shows (19.1-21.7 s).
+- **"$30"** is said at 23.6 + 6 ÷ 2.6 = 25.91 s while the shrug label "under +$30" shows (23.6-26.2 s). The 2025 line starts at 23.6 s, inside 2025's year-sync window (21.80-24.20 s).
+- **"The S&P's first year alone: ≈ $151"** is said at 30.79 s while the point label shows (28.1-32.9 s).
 - **Finals:** $8,283.66 → **≈ $8,280**; $1,023.85 → **≈ $1,020** (3 significant figures each).
-- **Prices:**
-  - CPI-U Dec 2025 ÷ Dec 2009 = 324.054 ÷ 215.949 = 1.50060 → "≈ 50%".
-  - $1,000 × 1.50060 = $1,500.60 → **≈ $1,501** (the tide's target, `to: 1500.6`; the peek label "≈ $1,501 in 2025 = $1,000 in 2010").
-- **Buying power:**
-  - $1,023.85 ÷ 1.50060 = $682.29 → **≈ $680** (2 significant figures; with the rounded figures, $1,020 ÷ 1.5006 = $679.7, also ≈ $680).
-  - Lost: 1 − 682.29 ÷ 1,000 = 31.77% → **≈ 32%** (verdict).
+- **Verdict:** "16 years of savings: under $30. The S&P 500 in 2010 alone: ≈ $151." It names 2010 because "1 year of the S&P 500" on its own would read as any year, and some years earned less (see the pinned comment).
+- **Prices and buying power (pinned comment):**
+  - CPI-U Dec 2025 ÷ Dec 2009 = 324.054 ÷ 215.949 = 1.50060 → "≈ 50%". $1,000 × 1.50060 = $1,500.60 → **≈ $1,501**.
+  - $1,023.85 ÷ 1.50060 = $682.29 → **≈ $680**. Lost: 1 − 682.29 ÷ 1,000 = 31.77% → **≈ 32%**.
   - Total interest over 16 years: $1,023.85 ÷ $1,000 − 1 = 2.385%, **≈ 2.4%**, while prices rose 50.06%.
+- **Years that earned less (pinned comment):** on $1,000, the S&P 500 made $21.10 in 2011 (+2.11%) → ≈ $21 and $13.80 in 2015 (+1.38%) → ≈ $14, and lost money in 2018 (−4.38%) and 2022 (−18.11%). All four are below the sweep's lowest 16-year interest ($22.62).
 - **Robustness (the check's sweep):**
   - Inputs varied: Jan 2010 at 0.21 or 0.22 (the verifier found 0.22 for early 2010); 2021 at 0.04, 0.05 or 0.06; Jan 2024 at 0.46 or 0.47; and each of the five midpoint years at its left neighbour, the midpoint or its right neighbour. That is 2,916 input tables.
-  - Across all of them the savings final runs $1,022.62-$1,024.97, the real value $681.47-$683.04, and the loss 31.70-31.85%. So **≈ $1,020, ≈ $680 and ≈ 32% hold in every table**, and the dollar digit does not (which is why it is no longer shown).
+  - Across all of them the savings final runs $1,022.62-$1,024.97, the real value $681.47-$683.04, and the loss 31.70-31.85%. So **≈ $1,020, ≈ $680, ≈ 32%, "under $10 so far" and "under $30" hold in every table**, and the dollar digit does not (which is why it is not shown).
   - Even at the highest January rate in the table, 0.47%, every year: $1,000 × 1.0047¹⁶ = $1,077.91 → **≈ $1,078**. That is still below prices ($1,500.60), and the S&P 500 is still more than 7× it. At 0.06% every year: $1,009.64.
 
 **Assumptions** (footer: "Savings: FDIC avg rate, under 0.5% · S&P 500 with dividends · 2010–2025"):
-- Interest is compounded once a year at that year's January national average (the footer gives the bound; "set each January" is said here). The real rate moved during the year: 2022-2023 rose mid-year, so this understates those two years by about a dollar each.
+- Interest is compounded once a year at that year's January national average (the footer gives the bound; "set each January" is said here). The real rate moved during the year: 2022-2023 rose mid-year, so this understates those two years by about a dollar each (covered by the "under $30" margin above).
 - Five Januaries are midpoints, and 2021 uses its April reading; the sweep shows none of this moves an on-screen figure.
 - FDIC changed the national-rate method in April 2021 (deposit-weighted, credit unions included); readings before and after are each FDIC's published national rate at the time.
 - S&P 500 total return; no fees or tax.
 - Prices are measured by CPI-U, Dec 2009 → Dec 2025.
 
 **Caption / description (line 1 is the curiosity line; the verdict follows):**
-> One of these never had a down year.
+> Can 16 years of savings beat 1 year of stocks?
 >
-> It's the one that lost. $1,000 in a savings account at the FDIC national average: ≈ $1,020 after 16 years. Prices rose ≈ 50% (CPI-U), so it buys what ≈ $680 did in 2010, ≈ 32% less. The same $1,000 in the S&P 500 (dividends reinvested): ≈ $8,280. Jan 2010 → Dec 2025, no fees or tax. Educational maths, not advice.
+> $1,000 in a savings account at the FDIC national average earned under $30 of interest in 16 years (Jan 2010 → Dec 2025): ≈ $1,020 in total. The same $1,000 in the S&P 500 (dividends reinvested) made ≈ $151 in 2010 alone and ≈ $8,280 by the end. No fees or tax. Educational maths, not advice.
 
 **Pinned comment:**
-> Even at the highest January rate since 2010 in our table (0.47%) every single year, $1,000 would be ≈ $1,078 by Dec 2025, still under the ≈ $1,501 it takes to keep up with prices. What does your savings account pay? (Swap in your own amount: ≈ ×8.28 for the S&P 500, ≈ ×1.02 for average savings.)
+> 2010 wasn't a lucky pick: the S&P 500 averaged ≈ 14.1% a year over these 16 years, and 2010 was +15.06%. But not every year wins: on $1,000, 2011 made ≈ $21, 2015 ≈ $14, and 2018 and 2022 lost money. And prices rose ≈ 50% (CPI-U), so the savings account's ≈ $1,020 buys what ≈ $680 did in 2010. Even at the highest January rate since 2010 in our table (0.47%) every single year, $1,000 would be ≈ $1,078. What does your savings account pay? (Swap in your own amount: ≈ ×8.28 for the S&P 500, ≈ ×1.02 for average savings.)
 
 **Per-platform notes:**
-- **YouTube Shorts:** the title asks which one lost value; the figure gag (the flat-ledge stroll, the tide) is the share moment, so the verdict waits until the last line has been read and stays off the figure's head.
-- **Instagram Reels:** caption line 1 is "One of these never had a down year."; the verdict comes after the fold. Cover = the 34.4 s frame (the tide at his chin) as an A/B against frame 1. The benchmark gives no Becker-style precedent (no character breakouts, X3 in the looks file), so this is the test of the look.
-- **TikTok:** caption "One of these never had a down year. Guess which one lost. $1,000 in savings vs the S&P 500 since 2010. Not advice."
+- **YouTube Shorts:** the title asks the handicap question; the A/B title states the duel. The goal note against the crawling counter is the reason to stay; the verdict waits until the last line has been read.
+- **Instagram Reels:** caption line 1 is "Can 16 years of savings beat 1 year of stocks?"; the verdict comes after the fold. Cover = the 24.8 s frame (the grey figure's shrug and "under +$30" beside the gold "≈ $8,280") as an A/B against frame 1. The benchmark gives no Becker-style precedent (no character breakouts, X3 in the looks file), so this is the test of the look.
+- **TikTok:** caption "16 years of savings vs 1 year of the S&P 500. $1,000 each, since 2010. Not advice." (no verdict in line 1).
 
 **lookOpts (Becker rig):**
 - `stage: "light"`.
 - `figures`: series 0 hero, series 1 neutral.
-- `beats`: cheer, shrug, impact, grow, flood (`to: 1500.6`) and peek, each on its VO line. Labels show for 2.6 s (peek: until the end).
+- `beats`, each on its VO line or close:
+  - cheer (1.09 s, the 2010 close, note "year 1: ≈ +$151");
+  - think (4.8 s, `d` 18.8, note "goal: ≈ +$151" held to the race end);
+  - impact (19.1 s, "≈ −18%");
+  - grow (23.6 s);
+  - shrug (23.6 s, "under +$30");
+  - point (28.1 s, `d` 4.8, "year 1: ≈ +$151" again).
+  
+  A note shows for max(2.6 s, `d`), cut by the next note on the same figure. Each "≈" before a "+$" figure in a note is followed by a no-break space so the note never splits "≈" from its number.
 - `gag`: a one-paragraph staging note.
-- Not used: a dashed CPI "prices" line from frame 1 (the hook judge's optional idea). It needs 14 more sourced December CPI-U values and a non-racing reference series in the Becker kit, which the chart-race module does not have (a third series would get its own figure). The tide gag pays the same idea off at the end.
+- Not used any more: the round-2 flood and peek beats (the "prices" tide). The buying-power fact now sits in the pinned comment. Both judges noted that cutting it drops the strongest twist; it is the first thing to restore if the duel underperforms.
 
 ---
 
@@ -501,7 +517,7 @@ All were verified by web search: round 1 on 2026-10-07 (14 searches), plus 7 mor
 | Spec | Look | Header (words) | First VO line | Stake / window | Finals | Verdict | Length |
 |---|---|---|---|---|---|---|---|
 | 04a | Scoreboard | "POV: In 2000 you put $10,000 in / the S&P 500 VS gold" (12) | "26 years. Stocks should crush gold." | $10,000 each, Jan 2000 → Dec 2025 | ≈ $75,300 vs ≈ $150,000 | Gold ≈ 2× the S&P 500 | 45.5 s |
-| 04b | Becker rig | "POV: In 2010 you put $1,000 in / "safe" savings VS the S&P 500" (13) | "One of these never had a down year. Guess which one lost." | $1,000 each, Jan 2010 → Dec 2025 | ≈ $8,280 vs ≈ $1,020 | the "safe" choice lost ≈ 32% of its buying power | 44.5 s |
+| 04b | Becker rig | "Your $1,000: 16 years of savings / VS 1 year of the S&P 500" (13) | "Year one in the S&P: ≈ $151." then "Savings gets 16 years to match it." | $1,000 each, Jan 2010 → Dec 2025 | ≈ $8,280 vs ≈ $1,020 | 16 years of savings: under $30; the S&P 500 in 2010 alone: ≈ $151 | 40.1 s |
 | 04c | Live Sheet | "POV: In 2016 you invested $10,000 in / USA vs EUROPE" (10) | "2025: Europe beat the USA ≈ 2 to 1. Who won the decade?" | $10,000 each, Jan 2016 → Dec 2025 | ≈ $39,800 vs ≈ $22,700 | Europe won 2025; the USA won the decade | 38.0 s |
 
 ## Caveats
@@ -511,7 +527,15 @@ All were verified by web search: round 1 on 2026-10-07 (14 searches), plus 7 mor
 - **Search-summary provenance.** Every figure was seen only in search summaries, never on the page itself. The **[click-check]** rows need one human click before posting. The weakest inputs are the FDIC readings for 2010, 2021 and 2024 and the five midpoint years; the 04b sweep shows that none of them can change an on-screen figure.
 - **Benchmark caveats carry over.** The format's only benchmark channel (ChartOrbit) has collapsed to a ~1,557 median since leaving its formula. Our lengths (38.0-45.5 s) sit between its 61 s winners and its 31 s decline, by brief.
 - **Kit nit, not fixed here:** the Live Sheet caption chunker (and the Scoreboard caption wrap) can split "≈" from its number ("BEAT THE USA ≈" / "2 TO 1"). The chunker splits on any whitespace, so a no-break space does not help; the fix belongs in the kits (glue "≈" to the next word). Queued as a separate task.
-- **Mutation test (12 of 12 caught):** a wrong final; a missing "≈" in the VO; an off-beat VO line; VO read too fast; a wrong ledger cell; an unchecked string containing a digit; a wrong chart point; a header over 15 words; a verdict that lands while the last VO line is still running; the 04c "2018" line moved 0.4 s later (its "≈ 15%" is then said after the ledger row has moved on); the 04a 2002 flag deleted (the spoken figures lose their anchor); the 04b savings final shown to the dollar.
+- **Mutation test (12 of 12 caught):** a wrong final; a missing "≈" in the VO; an off-beat VO line; VO read too fast; a wrong ledger cell; an unchecked string containing a digit; a wrong chart point; a header over 15 words; a verdict that lands while the last VO line is still running; the 04c "2018" line moved 0.4 s later (its "≈ 15%" is then said after the ledger row has moved on); the 04a 2002 flag deleted (the spoken figures lose their anchor); the 04b savings final shown to the dollar. Hook pass 2 added 8 for the new 04b, all caught as failed claims, not crashes:
+  - a verdict without "2010";
+  - the year-1 cheer before the 2010 close;
+  - the goal note cut short;
+  - the "S&P's" line read too fast;
+  - "under $20";
+  - the point label late;
+  - a static frame 1;
+  - "≈ $152".
 
 ---
 
@@ -579,3 +603,73 @@ Notes for any later pass on this teaser:
 - **Agreed weakness of the current hook.** Frame 1 is static for 1.0 s, there is no spoken figure until 8.2 s (R10), and the quotes around "safe" half-answer the riddle.
 - **A's frame-1 device was the judges' favourite part.** That is raceT −0.4 (the race already moving) plus the tide from frame 1. Its yes/no question is answered by the frame itself, though, and "above water" in 2013 is measured against 2025 prices. It would need "covers 2025 prices" wording.
 - **Open data caveat.** The same January-rate caveat lowers the base savings final to about $1,025.85 if 2022-2023 are corrected. That is still under 0.5% a year and still ≈ 32% lost. But "≈ $1,020" sits close to the 3-significant-figure boundary. Re-check it if the mid-year rates are sourced.
+
+**Hook pass 2 (2026-10-07): 04b**
+
+Two judges scored five new rewrites of the 04b hook against the current one (the round-2 riddle header `POV: In 2010 you put **$1,000** in` / `"safe" savings VS the S&P 500`), using the hook bank (/research/v2/02-hook-bank.md). Round-2 rule: average the two judges per candidate; a candidate either judge marks dishonest is out; adopt the best candidate if its average is at least 1.0 above the current hook's (no 7.5 floor this round).
+
+| Key | Lever | Judge 1 | Judge 2 | Average | Δ vs current | Result |
+|---|---|---|---|---|---|---|
+| current | "which one lost?" riddle; frame 1 static for 1.0 s | 5 | 5 | 5.0 | — | replaced |
+| R1 | open underwater: race moving from frame 1, a red 2025-prices tide over both figures, "Can 'safe' savings get above water?" | 6.5 | 6.5 | 6.5 | +1.5 | runner-up |
+| A | "Grandma put $1,000 in savings for you", year 1 ≈ +$2 at 1.09 s | 6 | 6 | 6.0 | +1.0 | — |
+| B | savings vs a mattress (dotted stake line), "≈ 33% vs ≈ 32%" verdict | 5 | 5.5 | 5.25 | +0.25 | — |
+| C | "count the doublings": 3 vs 0, savings doubles after the year 2300 | 5 | 5 | 5.0 | 0 | — |
+| **D** | **handicap duel: "Your $1,000: 16 years of savings VS 1 year of the S&P 500"** | **6.5** | **7** | **6.75** | **+1.75** | **adopted** |
+
+All six were marked honest by both judges. Both recomputed D's maths and found it holds: $1,000 × 15.06% = $150.60 → ≈ $151; 16 years of interest $23.85 (sweep $22.62-$24.97, about $27 with the 2022-2023 understatement) → under $30; "under $10 so far" $7.76-$8.79 (sweep max $9.76 over the line). 2010 is not cherry-picked: it sits next to the 16-year CAGR (14.13%), and 2013 (+32.39%) was the best year.
+
+**Why D.**
+- It has the clearest R5 attack in the set: the header itself is the wrong belief ("interest adds up over time") and the open loop. It uses HD Guy H07's lopsided duel of mismatched units (11.96M).
+- "Your $1,000" is on screen at 0.0 s and the race is already moving.
+- The first payoff ("year 1: ≈ +$151") is on screen at 1.09 s and spoken at 2.69 s (R10).
+- The goal note against the crawling counter is a gap you can see (R9).
+- The verdict is lopsided and repeatable (R12).
+
+Judge 2: viewers on today's 4% high-yield accounts really hold the belief, which should also drive comments.
+
+**Adopted (spec, write-up, check):**
+1. Header `Your **$1,000**: 16 years of savings` / `VS 1 year of the S&P 500` (13 words, 2 lines in the kit). The title is now "Can 16 Years in a Savings Account Beat 1 Year in the S&P 500?", with the A/B title "16 Years of Savings Interest vs 1 Year of the S&P 500".
+2. The race clock is [−0.4, 23.6] (was [1.0, 25.0]), so frame 1 shows S&P $1,041 vs savings $1,001 already moving.
+3. VO, 7 lines:
+   - "Year one in the S&P: ≈ $151." (0.0, d 4.7)
+   - "Savings gets 16 years to match it." (4.8, d 2.9)
+   - "Savings? Under $10 so far." (10.8, d 2.5)
+   - "2022: stocks drop ≈ 18%." (19.1)
+   - "2025: savings made under $30 in 16 years." (23.6, d 4.4)
+   - "The S&P's first year alone: ≈ $151." (28.1, d 4.8)
+   - "It ended at ≈ $8,280." (33.0, d 4.0)
+   
+   Every line fits 2.6 spoken words/s. Lines do not overlap. The verdict at 37.1 s comes after the last line ends (37.0). Duration 40.1 s (was 44.5), hold 16.5.
+4. Beats:
+   - cheer 1.09 s (the 2010 close, note "year 1: ≈ +$151");
+   - think 4.8 s, d 18.8 (note "goal: ≈ +$151" held to the race end);
+   - impact 19.1;
+   - grow 23.6;
+   - shrug 23.6 ("under +$30");
+   - point 28.1, d 4.8 ("year 1: ≈ +$151").
+   
+   The sfx are pop 1.09, swipe 4.8, hit 19.1, roll 23.6, boing 23.7 and thud 37.1. The flood/peek tide beats, whoosh, buzz and the two prices lines are gone. The buying-power fact (≈ $680, ≈ 32% lost) moved to the pinned comment.
+5. **Honesty fix from judge 2 (applied on top of D).** D's verdict line "1 year of the S&P 500: ≈ $151" reads as any year, and in 4 of the 16 years (2011 $21.10, 2015 $13.80, 2018 and 2022 negative) one S&P year made less than 16 years of savings. The verdict now names the year: "16 years of savings: under **$30**. / The S&P 500 in 2010 alone: ≈ $151." The pinned comment names the four weaker years, and the check asserts them against the sweep's lowest 16-year interest ($22.62).
+6. The gag note is rewritten (no tide).
+7. Caption line 1 is "Can 16 years of savings beat 1 year of stocks?".
+8. Check changes:
+   - `spoken()` counts "S&P's" as 3 words (it counted 1);
+   - new claims: frame-1 tips, year-1 note timing and sync, goal-note window, the "$30" and second "≈ $151" sync, "16 years to match it" fails in every table, "under $30" holds with the +$2 understatement, 2010 within 1 point of the CAGR and not the best year, the four weaker years, and the verdict naming 2010;
+   - a 04b-section stale-text check.
+   
+   Result: 445 checks, 0 failed.
+
+**Verified:**
+- `node src/cli.mjs check specs/04b-becker-rig-savings-vs-sp500.json` gives 0 errors and 0 warnings.
+- Stills at 0, 1.5 and 3 s: frame 1 shows the 2-line header, "$1,000" in accent, tips $1,041 / $1,001, year 2010 and the stake legend. At 1.5 s: "year 1: ≈ +$151" under the green counter, with the caption "Year one in the S&P: ≈ $151.". At 3 s: S&P $1,227 vs savings $1,004.
+- Later stills: 5.5 s (goal note under the grey counter), 12 s ("Under $10 so far", savings $1,008), 24.8 s (shrug and "under +$30" beside the gold "≈ $8,280") and 38.5 s (the verdict names 2010) all read cleanly.
+
+**Not fixed (the judges' notes):**
+- The header carries three numbers ($1,000, 16, 1), where R2 asks for one input.
+- The first figure is the rival's gain, not the viewer's balance.
+- The race still draws 15 more S&P years that the "1 year" frame does not use.
+- The crawl gives the answer away by about 10 s.
+- The buying-power twist is off screen.
+
+R1's frame-1 tide (6.5) is the fallback if the duel underperforms.

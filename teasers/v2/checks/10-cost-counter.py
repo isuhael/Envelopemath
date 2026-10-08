@@ -56,8 +56,7 @@ NI_PUBLIC_11M_FY2025 = 941 * 10**9
 DEBT_2025_09_30 = F("37637553494935.61")  # Debt to the Penny, 2025-09-30 (via primerates.com; GAO-26-107908: "near $37.6 trillion")
 DEBT_2026_09_29 = F("40096954633566.68")  # Debt to the Penny, 2026-09-29, the last reading found before FY2026 closed
 DEBT_HELD_PUBLIC_GROWTH = F("2.09") * 10**12   # same source: the part held by the public (pinned-reply note only)
-AMZN_SALES_2025 = F("716.9") * 10**9    # Amazon Q4 2025 release (Feb 2026): net sales FY2025
-AMZN_NET_INCOME_2025 = F("77.7") * 10**9  # same release: net income FY2025
+AMZN_NET_INCOME_2025 = F("77.7") * 10**9  # Amazon Q4 2025 release (Feb 2026): net income FY2025 (net sales $716.9B: md only)
 MEDIAN_WEEKLY = 1251                    # BLS, Usual Weekly Earnings Q2 2026 (2026-07-21): median full-time, NSA
 NEW_HOUSE = 393700                      # Census/HUD New Residential Sales, Aug 2026 (2026-09-24): median new house
 
@@ -70,6 +69,7 @@ DEBT_GROWTH = DEBT_2026_09_29 - DEBT_2025_09_30   # 2,459,401,138,631.07
 WORKING_YEARS = 40
 TEN = 10
 MINUTE = 60                             # seconds in the header's minute
+SALARIES_A = [30000, 50000, 100000, 250000, 10**6]   # 10a's salary ladder (round, familiar yearly salaries)
 
 # ======================================================================================
 # Formatting helpers
@@ -178,9 +178,7 @@ PAY40 = PAY * WORKING_YEARS                                  # 2,602,080
 
 RATE_A = F(NET_INTEREST_FY2025, SECONDS_PER_YEAR)            # $/s, interest
 RATE_B = DEBT_GROWTH / (DAYS_B * SECONDS_PER_DAY)            # $/s, new debt (364-day window)
-RATE_C = F(AMZN_SALES_2025) / SECONDS_PER_YEAR               # $/s, Amazon sales
 KEEP_C = F(AMZN_NET_INCOME_2025) / SECONDS_PER_YEAR          # $/s, Amazon net income
-MARGIN = F(AMZN_NET_INCOME_2025) / F(AMZN_SALES_2025)        # 0.1084
 
 def pass_time(value, rate, t0=0):
     return F(t0) + F(value) / rate
@@ -191,31 +189,45 @@ def row(tid, what, formula, exact, shown):
     VALUES.append((tid, what, formula, exact, shown))
     return shown
 
-# ---------- 10a: interest on the US debt ----------------------------------------------
+# ---------- 10a: interest on the US debt, against a ladder of salaries (hook pass 2) -----------
 A = {}
 A["rate_shown"] = sig(RATE_A, 3)                                       # 30,800
 A["rate_disp"] = f"{ap(A['rate_shown'], RATE_A)}${A['rate_shown']:,}"   # ≈ $30,800
 A["hour_m"] = sig(RATE_A * 3600 / 10**6, 3)                            # 111 (million)
-A["t_pay"] = pass_time(PAY, RATE_A)
-A["t_house"] = pass_time(NEW_HOUSE, RATE_A)
-A["t_pay10"] = pass_time(PAY10, RATE_A)
-A["t_1m"] = pass_time(10**6, RATE_A)
-A["s_1m"] = rhu(A["t_1m"])                                             # 33
-A["s_pay"] = rhu(A["t_pay"], F(1, 10))                                 # 2.1 (caption, pinned)
+A["t_pay"] = pass_time(PAY, RATE_A)                                    # median pay (caption only now)
+A["s_pay"] = rhu(A["t_pay"], F(1, 10))                                 # 2.1 (caption)
+
+def secs_shown(t):
+    """A pass time as shown: tenths under 5 s (the first rows close fast), whole seconds from 5 s."""
+    return rhu(t, F(1, 10)) if t < 5 else rhu(t)
+
+def secs_text(q):
+    """'1.0 second' / '1.6 seconds' / '8 seconds' (q already rounded)."""
+    txt = d1(q) if F(q).denominator != 1 or q < 5 else f"{q}"
+    return f"{txt} second" if txt == "1.0" else f"{txt} seconds"
+
+def k_label(v):
+    """$30K / $250K / $1M (the pip labels)."""
+    return "$1M" if v == 10**6 else f"${v // 1000}K"
+
+A["salaries"] = SALARIES_A
+A["t"] = {v: pass_time(v, RATE_A) for v in SALARIES_A}
+A["shown"] = {v: secs_shown(A["t"][v]) for v in SALARIES_A}         # 1.0 / 1.6 / 3.3 / 8 / 33
+A["s_1m"] = A["shown"][10**6]                                          # 33
 A["run"] = (F("0.0"), F("32.6"))
 A["final_exact"] = RATE_A * (A["run"][1] - A["run"][0])
 A["final"] = f"{ap(rhu(A['final_exact']), A['final_exact'])}{usd(A['final_exact'])}"
 A["fy"] = 25                                                           # "FY25" in the footer
+assert [A["shown"][v] for v in SALARIES_A] == [1, F("1.6"), F("3.3"), 8, 33], A["shown"]
+assert A["t"][10**6] < A["run"][1], "the $1 million row must pass before the counter stops"
+assert all(A["t"][v] < 5 for v in SALARIES_A[:3]), "the three everyday rows close inside 5 s"
 row("10a", "rate", "$970B ÷ 31,536,000 s", RATE_A, A["rate_disp"] + " every second")
 row("10a", "per hour", "rate × 3,600 ÷ 1e6", RATE_A * 3600 / 10**6, f"≈ ${A['hour_m']} million")
-row("10a", "median pay", "$1,251 × 52", PAY, usd(PAY))
-row("10a", "10 years of pay", "$65,052 × 10", PAY10, usd(PAY10))
-row("10a", "t pay", "$65,052 ÷ rate", A["t_pay"], f"VO 2.4 / ≈ {d1(A['s_pay'])} seconds (caption)")
-row("10a", "t house", "$393,700 ÷ rate", A["t_house"], "12.8 s (VO 12.8)")
-row("10a", "t 10 yrs pay", "$650,520 ÷ rate", A["t_pay10"], "21.1 s (VO 21.1)")
-row("10a", "t $1M", "$1,000,000 ÷ rate", A["t_1m"], f"≈ {A['s_1m']} seconds")
+for v in SALARIES_A:
+    row("10a", f"t {k_label(v)} salary", f"{usd(v)} ÷ rate", A["t"][v], f"≈ {secs_text(A['shown'][v])}")
+row("10a", "t median pay", "$65,052 ÷ rate", A["t_pay"], f"≈ {d1(A['s_pay'])} seconds (caption)")
 row("10a", "counter final", "rate × 32.6 s", A["final_exact"], A["final"])
-row("10a", "off the debt", "net interest repays no principal", 0, "$0")
+row("10a", "at 1.5 s", "rate × 1.5 ÷ $50,000", RATE_A * F(3, 2) / 50000 * 100, "the $50K bill ≈ 92% full (frame check)")
 
 SPEC_A = {
     "id": "10a-scoreboard-debt-interest-live",
@@ -223,57 +235,47 @@ SPEC_A = {
     "format": "cost-counter",
     "fps": 30,
     "duration": 36.5,
-    "header": "US debt interest since you hit **play**.\nHow much comes __off the debt__?",
+    "header": "US debt interest since you hit **play**:\nwhen does it pass **your salary**?",
     "footer": (f"FY{A['fy']}: ${NET_INTEREST_FY2025 // 10**9}B ÷ {SECONDS_PER_YEAR:,} s"
                f" · pay {usd(MEDIAN_WEEKLY)} × {WEEKS}"),
     "captions": True,
     "vo": [
-        (0.0, 2.4, "How much comes off the debt?"),
-        (2.4, 2.8, "There goes a year of median pay."),
-        (5.3, 3.1, f"**{A['rate_disp']}** a second."),
-        (8.5, 4.3, f"Yearly pay ÷ {A['rate_shown']:,} = your seconds."),
-        (12.8, 2.0, "A median new house. Gone."),
-        (15.2, 3.5, f"That's **≈ ${A['hour_m']} million** an hour."),
-        (21.1, 2.0, f"{TEN} years of median pay."),
-        (23.4, 4.7, f"At fiscal 2025's rate: ${NET_INTEREST_FY2025 // 10**9} billion a year."),
-        (28.4, 2.8, "So, how much came off the debt?"),
-        (32.5, 3.5, "**$1 million.** And __$0__ off the debt."),
+        (0.0, 1.4, "Find your salary."),
+        (1.6, 1.6, f"{usd(50000)}: passed."),
+        (3.25, 2.0, f"{usd(100000)}: passed."),
+        (5.4, 3.1, f"**{A['rate_disp']}** a second."),
+        (8.5, 3.9, f"{usd(250000)} a year: ≈ {secs_text(A['shown'][250000])}."),
+        (12.7, 4.3, f"Yearly pay ÷ {A['rate_shown']:,} = your seconds."),
+        (17.2, 3.5, f"That's **≈ ${A['hour_m']} million** an hour."),
+        (21.0, 4.7, f"At fiscal 2025's rate: ${NET_INTEREST_FY2025 // 10**9} billion a year."),
+        (28.0, 2.7, "Last row: $1 million a year."),
+        (32.5, 2.7, f"**$1 million**: ≈ {secs_text(A['s_1m'])}."),
     ],
-    "verdict": (32.5, f"**$1 million** in ≈ {A['s_1m']} seconds.\n__$0__ of it pays the debt down."),
+    "verdict": (32.5, f"**$1 million** a year: ≈ {secs_text(A['s_1m'])}."
+                      f"\n{usd(100000)} a year: ≈ {secs_text(A['shown'][100000])}."),
     "data": {
         "label": "Net interest on the US debt, since you hit play",
         "perSecond": float(rhu(RATE_A, F(1, 100))),
         "rateDisplay": f"{A['rate_disp']} every second",
         "counterT": [float(A["run"][0]), float(A["run"][1])],
         "startValue": 0, "prefix": "$", "dp": 0,
-        "milestones": [
-            (PAY, f"A year of median pay: {usd(PAY)}"),
-            (NEW_HOUSE, f"A median new house: {usd(NEW_HOUSE)}"),
-            (PAY10, f"{TEN} years of median pay: {usd(PAY10)}"),
-            (10**6, "$1 million"),
-        ],
+        "milestones": [(v, f"A {usd(v)} salary: {usd(v)}") for v in SALARIES_A],
         "final": A["final"],
         "hold": 3.9,
     },
     "lookOpts": {
         "intro": {"l1": A["rate_disp"], "l2": "every second"},
-        "labels": [
-            {"l1": f"{usd(MEDIAN_WEEKLY)} × {WEEKS} = {usd(PAY)}", "l2": "A year of median pay"},
-            {"l1": usd(NEW_HOUSE), "l2": "A median new house"},
-            {"l1": f"{usd(PAY)} × {TEN} = {usd(PAY10)}", "l2": f"{TEN} years of median pay"},
-            {"l1": usd(10**6), "l2": "$1 million"},
-        ],
-        "rateSteps": [{"t": 15.2, "l1": f"{A['rate_disp']} × 3,600 s", "l2": f"≈ ${A['hour_m']} million an hour"}],
+        "labels": [{"l1": f"{usd(v)} a year", "l2": f"≈ {secs_text(A['shown'][v])}"} for v in SALARIES_A],
+        "rateSteps": [{"t": 17.2, "l1": f"{A['rate_disp']} × 3,600 s", "l2": f"≈ ${A['hour_m']} million an hour"}],
         "pips": True,
-        "pipLabels": [usd(PAY), usd(NEW_HOUSE), usd(PAY10), "$1 million"],
-        "slot": {"label": "Off the debt", "empty": "$___", "t": 32.5, "fill": "$0", "tone": "bad"},
+        "pipLabels": [k_label(v) for v in SALARIES_A],
+        "icons": ["bill", "bill", "bill", "bill", "coin"],
         "heroIcon": False,
     },
-    "sync": [  # (milestone value, VO line index, phrase in that line that names it)
-        (PAY, 1, "There goes"), (NEW_HOUSE, 4, "A median new house"),
-        (PAY10, 6, "10 years"), (10**6, 9, "$1 million"),
-    ],
-    "beats": [(15.2, 5)],    # lookOpts beats: (t, VO line index that starts with it)
+    # (milestone value, VO line index, phrase in that line that names it). $30K is not spoken: it lights at
+    # 0.975 s, during "Find your salary.", and the label stack names it on screen.
+    "sync": [(50000, 1, "$50,000"), (100000, 2, "$100,000"), (250000, 4, "$250,000"), (10**6, 9, "$1 million")],
+    "beats": [(17.2, 6)],    # lookOpts beats: (t, VO line index that starts with it)
     "t0": 0.0,               # the counter runs from frame 1
     "rate": RATE_A,
 }
@@ -391,34 +393,45 @@ SPEC_B = {
     "rate": RATE_B,
 }
 
-# ---------- 10c: what Amazon really makes ----------------------------------------------
+# ---------- 10c: 1 second of Amazon's profit, in weeks of median pay (hook pass 2) -------------
 C = {}
-C["rate_shown"] = sig(RATE_C, 3)                                       # 22,700 (VO, rate label, formula bar)
-C["rate_disp"] = f"{ap(C['rate_shown'], RATE_C)}${C['rate_shown']:,}"
-C["keep_shown"] = rhu(KEEP_C)                                          # 2,464 (VO, formula bar, caption)
-C["margin_pct"] = rhu(MARGIN * 100)                                    # 11 (VO, formula bar, kept label)
-C["t_pay"] = pass_time(PAY, RATE_C)
-C["t_house"] = pass_time(NEW_HOUSE, RATE_C)
+C["keep_shown"] = rhu(KEEP_C)                                          # 2,464 (rate label, formula bar, VO, caption)
+C["keep_cents"] = rhu(KEEP_C, F(1, 100))                               # 2,463.85 (perSecond; the 1-second row's value)
+C["wk1"] = KEEP_C / MEDIAN_WEEKLY                                      # 1.97 weeks of median pay per second
+C["wk1_shown"] = rhu(C["wk1"])                                         # 2
+C["fx_wk1"] = rhu(F(C["keep_shown"]) / MEDIAN_WEEKLY)                  # 2 (formula bar: $2,464 ÷ $1,251)
+C["five"] = KEEP_C * 5                                                 # 12,319.25 (5 seconds of profit)
+C["five_cents"] = rhu(C["five"], F(1, 100))                            # 12,319.25 (the 5-second row's value)
+C["five_shown"] = rhu(C["five"])                                       # 12,319
+C["wk5"] = C["five"] / MEDIAN_WEEKLY                                   # 9.85 weeks
+C["wk5_shown"] = rhu(C["wk5"])                                         # 10
+C["half"] = F(PAY, 2)                                                  # 32,526 (6 months of median pay, exact)
+C["t_half"] = C["half"] / KEEP_C                                       # 13.20 s
+C["s_half"] = rhu(C["t_half"])                                         # 13
 C["t_keep_pay"] = F(PAY) / KEEP_C                                      # 26.40 s
 C["s_keep_pay"] = rhu(C["t_keep_pay"])                                 # 26
 C["fx_keep_pay"] = rhu(F(PAY) / C["keep_shown"])                       # 26 (with the shown $2,464)
-C["at_pay"] = rhu(C["t_pay"])                                          # 3
-C["at_house"] = rhu(C["t_house"])                                      # 17
 C["run"] = (F("0.0"), F("26.5"))
-C["final_exact"] = RATE_C * (C["run"][1] - C["run"][0])
+C["final_exact"] = KEEP_C * (C["run"][1] - C["run"][0])
 C["final"] = f"{ap(rhu(C['final_exact']), C['final_exact'])}{usd(C['final_exact'])}"
-C["kept_exact"] = KEEP_C * (C["run"][1] - C["run"][0])
-C["kept_final"] = f"{ap(rhu(C['kept_exact']), C['kept_exact'])}{usd(C['kept_exact'])}"
-assert C["kept_exact"] > PAY, "the kept counter must pass a year of median pay before it stops"
+# the Live Sheet kit times its rows on the rate start -> final over counterT (preroll 0): the rows must still pass
+# at 1.000 / 5.000 / 13.201 / 26.403 s
+C["kit_rate"] = F(rhu(C["final_exact"])) / (C["run"][1] - C["run"][0])
+C["kit_t"] = [F(v) / C["kit_rate"] for v in (C["keep_cents"], C["five_cents"], C["half"], PAY)]
+assert C["final_exact"] > PAY, "the counter must pass a year of median pay before it stops"
 assert C["fx_keep_pay"] == C["s_keep_pay"], "the formula-bar time must equal the exact time's rounding"
-row("10c", "rate", "$716.9B ÷ 31,536,000 s", RATE_C, f"{C['rate_disp']} (everywhere)")
-row("10c", "margin", "$77.7B ÷ $716.9B", MARGIN * 100, f"≈ {C['margin_pct']}% (everywhere)")
+assert C["fx_wk1"] == C["wk1_shown"], "the formula-bar weeks must equal the exact weeks' rounding"
+assert C["half"].denominator == 1, "half a year of median pay must be a whole dollar amount"
+assert all(abs(a - b) < F(1, 100) for a, b in zip(C["kit_t"], (1, 5, C["t_half"], C["t_keep_pay"]))), C["kit_t"]
 row("10c", "kept per second", "$77.7B ÷ 31,536,000 s", KEEP_C, f"≈ ${C['keep_shown']:,} (everywhere)")
-row("10c", "t pay (sales)", "$65,052 ÷ rate", C["t_pay"], f"≈ {C['at_pay']} s")
-row("10c", "t house (sales)", "$393,700 ÷ rate", C["t_house"], f"≈ {C['at_house']} s")
-row("10c", "t pay (kept)", "$65,052 ÷ kept rate", C["t_keep_pay"], f"≈ {C['s_keep_pay']} s (also $65,052 ÷ $2,464)")
+row("10c", "1 s in weeks", "rate ÷ $1,251", C["wk1"], f"≈ {C['wk1_shown']} weeks (row, VO, verdict)")
+row("10c", "5 s of profit", "rate × 5", C["five"], f"≈ ${C['five_shown']:,}")
+row("10c", "5 s in weeks", "rate × 5 ÷ $1,251", C["wk5"], f"≈ {C['wk5_shown']} weeks")
+row("10c", "half a year", "$65,052 ÷ 2", C["half"], f"{usd(C['half'])} (6 months, exact)")
+row("10c", "t half a year", "$32,526 ÷ rate", C["t_half"], f"≈ {C['s_half']} seconds")
+row("10c", "t a year", "$65,052 ÷ rate", C["t_keep_pay"], f"≈ {C['s_keep_pay']} seconds (also $65,052 ÷ $2,464)")
 row("10c", "counter final", "rate × 26.5 s", C["final_exact"], C["final"])
-row("10c", "kept final", "kept rate × 26.5 s", C["kept_exact"], C["kept_final"])
+row("10c", "at 1.5 s", "rate × 1.5", KEEP_C * F(3, 2), "$3,696 on the counter (frame check)")
 
 SPEC_C = {
     "id": "10c-live-sheet-amazon-makes",
@@ -426,55 +439,59 @@ SPEC_C = {
     "format": "cost-counter",
     "fps": 30,
     "duration": 31.0,
-    "header": "How much does Amazon **really** make\nwhile you watch this?",
-    "footer": (f"Amazon 2025: net sales ${float(AMZN_SALES_2025 / 10**9)}B, net income ${float(AMZN_NET_INCOME_2025 / 10**9)}B"
+    "header": "How long do **you** work for\n1 second of Amazon's profit?",
+    "footer": (f"Amazon 2025 net income: ${float(AMZN_NET_INCOME_2025 / 10**9)}B"
                f"\nPay: BLS median {usd(MEDIAN_WEEKLY)} a week × {WEEKS}"),
     "captions": True,
     "vo": [
-        (0.0, 2.4, "Top: sales. Bottom: what it keeps."),
-        (2.9, 3.1, "Sales just passed a year of median pay."),
-        (6.1, 4.3, f"Amazon's 2025 sales: ${float(AMZN_SALES_2025 / 10**9)} billion."),
-        (10.5, 5.1, f"Divided by every second in a year: **{C['rate_disp']}**."),
-        (17.3, 2.8, "Sales just passed a median new house."),
-        (20.2, 2.4, f"But it **keeps** ≈ {C['margin_pct']}%."),
-        (22.9, 3.5, f"**≈ ${C['keep_shown']:,}** a second."),
-        (26.4, 3.9, f"Kept: a year of median pay every **≈ {C['s_keep_pay']} seconds**."),
+        (0.0, 2.7, "How long do you work for this?"),
+        (2.8, 2.4, f"≈ {C['wk1_shown']} weeks, at median pay."),
+        (5.2, 2.0, f"5 seconds: ≈ {C['wk5_shown']} weeks."),
+        (7.4, 4.3, f"Amazon's 2025 profit: ${float(AMZN_NET_INCOME_2025 / 10**9)} billion."),
+        (13.2, 2.4, f"≈ {C['s_half']} seconds: half a year."),
+        (15.8, 5.0, f"{C['keep_shown']:,} ÷ your weekly pay = your weeks."),
+        (22.4, 1.6, "And a whole year?"),
+        (26.4, 1.6, f"≈ {C['s_keep_pay']} seconds."),
     ],
-    "verdict": (26.4, f"Sells a year of median pay in ≈ {C['at_pay']} s.\nKeeps one every **≈ {C['s_keep_pay']} s**."),
+    "verdict": (26.4, f"1 second ≈ **{C['wk1_shown']} weeks** of median pay.\nA year: ≈ {C['s_keep_pay']} s."),
     "data": {
-        "label": "Amazon's sales since you hit play",
-        "perSecond": float(rhu(RATE_C, F(1, 100))),
-        "rateDisplay": f"{C['rate_disp']} every second",
+        "label": "Amazon's profit since you hit play",
+        "perSecond": float(C["keep_cents"]),
+        "rateDisplay": f"≈ ${C['keep_shown']:,} every second",
         "counterT": [float(C["run"][0]), float(C["run"][1])],
         "startValue": 0, "prefix": "$", "dp": 0,
         "milestones": [
-            (PAY, f"A year of median pay: {usd(PAY)}"),
-            (NEW_HOUSE, f"A median new house: {usd(NEW_HOUSE)}"),
+            (float(C["keep_cents"]), f"1 second: ≈ ${C['keep_shown']:,}"),
+            (float(C["five_cents"]), f"5 seconds: ≈ ${C['five_shown']:,}"),
+            (int(C["half"]), f"≈ {C['s_half']} seconds: {usd(C['half'])}"),
+            (PAY, f"≈ {C['s_keep_pay']} seconds: {usd(PAY)}"),
         ],
         "final": C["final"],
         "hold": 4.5,
     },
     "lookOpts": {
+        "preroll": 0,
         "formulaSteps": [
-            {"t": 0.0, "text": f"= ${float(AMZN_SALES_2025 / 10**9)}B ÷ {SECONDS_PER_YEAR:,} s {C['rate_disp']} a second"},
-            {"t": 20.2, "text": f"= ${float(AMZN_NET_INCOME_2025 / 10**9)}B ÷ ${float(AMZN_SALES_2025 / 10**9)}B ≈ {C['margin_pct']}% kept"},
-            {"t": 22.9, "text": f"= ${float(AMZN_NET_INCOME_2025 / 10**9)}B ÷ {SECONDS_PER_YEAR:,} s ≈ ${C['keep_shown']:,} a second"},
+            {"t": 0.0, "text": f"= ${float(AMZN_NET_INCOME_2025 / 10**9)}B ÷ {SECONDS_PER_YEAR:,} s ≈ ${C['keep_shown']:,} a second"},
+            {"t": 2.8, "text": f"= ${C['keep_shown']:,} ÷ {usd(MEDIAN_WEEKLY)} a week ≈ {C['fx_wk1']} weeks"},
+            {"t": 13.2, "text": f"= {usd(PAY)} ÷ 2 = {usd(C['half'])}"},
             {"t": 26.4, "text": f"= {usd(PAY)} ÷ ${C['keep_shown']:,} ≈ {C['fx_keep_pay']} s"},
         ],
-        "columns": ["Since you hit play", "Amount", "Passed at"],
+        "columns": ["Since play", "Profit", "Median pay"],
         "rows": [
-            {"label": "A year of median pay", "amount": usd(PAY), "at": f"≈ {C['at_pay']} s"},
-            {"label": "A median new house", "amount": usd(NEW_HOUSE), "at": f"≈ {C['at_house']} s"},
+            {"label": "1 second", "amount": f"≈ ${C['keep_shown']:,}", "at": f"≈ {C['wk1_shown']} weeks"},
+            {"label": "5 seconds", "amount": f"≈ ${C['five_shown']:,}", "at": f"≈ {C['wk5_shown']} weeks"},
+            {"label": f"≈ {C['s_half']} seconds", "amount": usd(C["half"]), "at": "6 months"},
+            {"label": f"≈ {C['s_keep_pay']} seconds", "amount": usd(PAY), "at": "1 year"},
         ],
-        "kept": {"t": 0.0, "label": f"Kept as profit (≈ {C['margin_pct']}%)",
-                 "perSecond": float(rhu(KEEP_C, F(1, 100))), "final": C["kept_final"]},
         "loop": True,
     },
-    "sync": [(PAY, 1, "Sales just passed"), (NEW_HOUSE, 4, "Sales just passed")],
-    "beats": [(0.0, 0), (20.2, 5), (22.9, 6), (26.4, 7)],
+    # The 1-second row snaps "≈ 2 weeks" on screen at its pass (1.000 s) while vo[0] asks the question; vo[1] reads
+    # it back at 2.8 s with the formula bar's working, so it is not in the 0.5 s VO sync list.
+    "sync": [(C["five_cents"], 2, "5 seconds"), (C["half"], 4, "≈ 13"), (PAY, 7, "≈ 26")],
+    "beats": [(0.0, 0), (2.8, 1), (13.2, 4), (26.4, 7)],    # the formula-bar steps start their VO lines
     "t0": 0.0,
-    "rate": RATE_C,
-    "extra_sync": [(C["t_keep_pay"], 7)],   # the kept counter passes a year of pay as line 8 starts
+    "rate": KEEP_C,
 }
 
 EXPECTED = [SPEC_A, SPEC_B, SPEC_C]
@@ -482,15 +499,19 @@ EXPECTED = [SPEC_A, SPEC_B, SPEC_C]
 # One shown rounding per quantity: (name, exact value, the one display allowed within ±5% of it)
 QUANTITIES = {
     "10a": [("rate", RATE_A, A["rate_shown"]), ("per hour, millions", RATE_A * 3600 / 10**6, A["hour_m"]),
-            ("pass: pay", A["t_pay"], A["s_pay"]), ("pass: $1M", A["t_1m"], A["s_1m"])],
+            ("pass: median pay", A["t_pay"], A["s_pay"])]
+           + [(f"pass: {k_label(v)}", A["t"][v], A["shown"][v]) for v in SALARIES_A],
     "10b": [("growth, $T", DEBT_GROWTH / 10**12, B["growth_t"]), ("rate", RATE_B, B["rate_shown"]),
             ("pass: 40 years", B["t_pay40"] - B["t0"], B["s_pay40"]), ("40 years, $M", F(PAY40, 10**6), B["pay40_m"]),
             ("1 minute, $M", B["minute"] / 10**6, B["minute_m"]), ("crossover pay", B["minute"] / WORKING_YEARS, B["cross_pay"]),
             ("1 minute in years of pay", B["minute"] / PAY, B["minute_years"])],   # (≈ $66,000 public part: TikTok note only)
-    "10c": [("rate", RATE_C, C["rate_shown"]), ("kept rate", KEEP_C, C["keep_shown"]),
-            ("margin %", MARGIN * 100, C["margin_pct"]), ("pass: pay", C["t_pay"], C["at_pay"]),
-            ("pass: house", C["t_house"], C["at_house"]), ("kept pass: pay", C["t_keep_pay"], C["s_keep_pay"])],
+    "10c": [("profit rate", KEEP_C, C["keep_shown"]), ("weeks per second", C["wk1"], C["wk1_shown"]),
+            ("5 s of profit", C["five"], C["five_shown"]), ("weeks in 5 s", C["wk5"], C["wk5_shown"]),
+            ("pass: half a year", C["t_half"], C["s_half"]), ("pass: a year", C["t_keep_pay"], C["s_keep_pay"])],
 }
+# Exact inputs shown verbatim that happen to sit within 5% of a computed quantity (not roundings of it):
+# 10a's $30,000 salary row is 2.5% under the ≈ $30,800 rate.
+EXACT_INPUTS = {"10a": {F(30000)}, "10b": set(), "10c": set()}
 # Phrases that overclaim (a fixed average shown as "live", fiscal-year wording for a 364-day window, a universal
 # claim that holds only for the median)
 FORBIDDEN = {
@@ -503,15 +524,17 @@ FORBIDDEN = {
 def allowed_numbers(tid):
     common = {F(MEDIAN_WEEKLY), F(WEEKS), F(PAY), F(NEW_HOUSE), F(SECONDS_PER_YEAR), F(1), F(10**6)}
     if tid == "10a":
-        return common | {F(A["fy"]), F(2025), F(970), F(A["rate_shown"]), F(A["hour_m"]), F(TEN), F(PAY10),
-                         F(A["s_1m"]), F(rhu(A["final_exact"])), F(3600), F(0)}
+        return (common | {F(A["fy"]), F(2025), F(970), F(A["rate_shown"]), F(A["hour_m"]), F(rhu(A["final_exact"])),
+                          F(3600)}
+                | {F(v) for v in SALARIES_A} | {F(v // 1000) for v in SALARIES_A}      # $30,000 / $30K pip labels
+                | {F(A["shown"][v]) for v in SALARIES_A})                              # ≈ 1.0 / 1.6 / 3.3 / 8 / 33 s
     if tid == "10b":
         return common | {F(DAYS_B), F(SECONDS_PER_DAY), B["growth_t"], F(B["rate_shown"]), F(3), F(PAY3), F(TEN),
                          F(PAY10), F(20), F(PAY20), F(WORKING_YEARS), F(PAY40), F(B["pay40_m"]), F(B["s_pay40"]),
                          B["minute_m"], F(rhu(B["final_exact"]))}
-    return common | {F(2025), F("716.9"), F("77.7"), F(C["rate_shown"]), F(C["keep_shown"]), F(C["margin_pct"]),
-                     F(C["s_keep_pay"]), F(C["at_pay"]), F(C["at_house"]), F(rhu(C["final_exact"])),
-                     F(rhu(C["kept_exact"]))}
+    return common | {F(2025), F("77.7"), F(C["keep_shown"]), F(C["wk1_shown"]), F(5), F(C["five_shown"]),
+                     F(C["wk5_shown"]), F(2), F(C["half"]), F(C["s_half"]), F(6), F(C["s_keep_pay"]),
+                     F(rhu(C["final_exact"]))}                                   # "÷ 2", "6 months", "1 year"
 
 # ======================================================================================
 # Checks
@@ -669,6 +692,8 @@ def check_quantities(tid, texts):
     """Any number within 5% of a computed quantity must be that quantity's one shown rounding."""
     for where, text in texts:
         for n in number_tokens(text):
+            if n in EXACT_INPUTS[tid]:
+                continue
             for name, exact, shown in QUANTITIES[tid]:
                 if n != F(shown) and abs(n - exact) <= abs(F(exact)) / 20:
                     check(False, tid, f"one rounding for {name}: {float(n):g} in {where} (shown is {float(shown):g})", text)
@@ -686,13 +711,13 @@ def check_md():
     text = MD.read_text()
     cbo_pct = rhu(F(NI_PUBLIC_11M_FY2026 - NI_PUBLIC_11M_FY2025, NI_PUBLIC_11M_FY2025) * 100)   # 12 (%)
     extra = {   # caption / pinned-comment numbers: computed here, or a labelled sourced constant
-        "10a": {F(2026), A["s_pay"], F(cbo_pct), F(11)},                         # 2.1 s; CBO: 12%, 11 months
+        "10a": {F(2026), A["s_pay"], F(cbo_pct), F(11), F(0)},                   # 2.1 s; CBO: 12%, 11 months; $0 off the debt
         "10b": {rhu(DEBT_2025_09_30 / 10**12, F(1, 1000)), rhu(DEBT_2026_09_29 / 10**12, F(1, 1000)),
                 F(30), F(29), F(2025), F(2026),                                  # Sept. 30, 2025 / Sept. 29, 2026
                 F(B["minute_years"]), F(B["cross_pay"])},                        # caption: ≈ 72 years; pinned: ≈ $117,000
-        "10c": {F(11), F(4), F(2026)},                                           # 11 cents; "Q4 2025"; Feb 2026
+        "10c": {F(4), F(2026)},                                                  # "Q4 2025"; Feb 2026
     }
-    assert rhu(MARGIN * 100) == 11 and cbo_pct == 12
+    assert cbo_pct == 12
     for tid in ("10a", "10b", "10c"):
         m = re.search(rf"^## {tid}\b.*?(?=^## |\Z)", text, re.S | re.M)
         check(bool(m), "md", f"section {tid} in write-up")

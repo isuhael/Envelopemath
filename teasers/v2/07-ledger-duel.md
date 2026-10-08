@@ -1,7 +1,7 @@
 # Format 7: "2 people invest" ledger duel, three teasers
 
 **Channel:** Back of the Envelope (YouTube Shorts, Instagram Reels, TikTok), US audience, USD
-**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews; hook pass on 2026-10-08, 07c kept; see the [review log](#review-log))
+**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews; hook pass on 2026-10-08, 07c kept; hook pass 2 on 2026-10-08, 07c rewritten to "You save $100 a month"; see the [review log](#review-log))
 **Format:** `ledger-duel`, hook pattern **P4** ("same money, two choices")
 **Lane:** two people, the same money, two choices, a year-by-year ledger
 **Files:**
@@ -9,7 +9,7 @@
   - [`studio/specs/07a-live-sheet-start-at-25.json`](../../studio/specs/07a-live-sheet-start-at-25.json)
   - [`studio/specs/07b-becker-rig-panic-sell-2008.json`](../../studio/specs/07b-becker-rig-panic-sell-2008.json)
   - [`studio/specs/07c-clean-sheet-savings-rate.json`](../../studio/specs/07c-clean-sheet-savings-rate.json)
-- Check: [`teasers/v2/checks/07-ledger-duel.py`](checks/07-ledger-duel.py). Run `python3 teasers/v2/checks/07-ledger-duel.py`. It reports **406 checks, 0 failures** and exits 0. Two deliberate corruptions (the old "× ≈ 8.1" shortcut in 07a's formula bar, and "$6,600" in a 07b VO line) made it exit 1, each with a named failure.
+- Check: [`teasers/v2/checks/07-ledger-duel.py`](checks/07-ledger-duel.py). Run `python3 teasers/v2/checks/07-ledger-duel.py`. It reports **407 checks, 0 failures** and exits 0 (406 before hook pass 2). Two deliberate corruptions (the old "× ≈ 8.1" shortcut in 07a's formula bar, and "$6,600" in a 07b VO line) made it exit 1, each with a named failure. Hook pass 2's four corruptions of a scratch copy of the new 07c spec (a Year 3 cell, "about 6 cents", the Year 5 row off its word, a dropped "≈" in the verdict) gave 5 named failures and exit 1.
   - New in the revision: the first payoff row must land by **3.0 s** (R10); a formula that multiplies shown factors must reproduce the shown result; every formula-bar line must stay up long enough to type (24 characters a second) and then be read (1.5 s); headers are capped at 4 lines; 07a's break-even rate and 6% case are asserted.
 
 **How the facts were checked:**
@@ -20,7 +20,7 @@
 
 **Studio linter** (`node src/cli.mjs check`, re-run after the revision): **3/3 clean, 0 errors, 0 warnings.** The old footer warning on 07b is gone.
 - **07a (Live Sheet):** the live-sheet `ledger-duel` kit now exists in the working tree, so the ledger body, `lookOpts.formulaBar` and `rowLabelsAtStart` are linted and rendered. Stills and a contact sheet of the final spec checked at 0, 2.6, 4.5, 5.5, 6.6, 8.4, 14.0, 16.5 and 23.5 s.
-- **07c (Clean Sheet):** the clean-sheet kit is built. Stills and a contact sheet of the final spec checked at 0, 1.6, 2.6, 4.5, 6.6, 8.4, 14.0, 16.5 and 20 s.
+- **07c (Clean Sheet):** the clean-sheet kit is built. Stills and a contact sheet of the round-2 spec checked at 0, 1.6, 2.6, 4.5, 6.6, 8.4, 14.0, 16.5 and 20 s. The hook-pass-2 spec is lint-clean at every frame (`--every 0.0333333`), with stills checked at 0, 1.5, 3.0, 9.8 and 16.5 s.
 - **07b (Becker rig):** `looks/becker-rig/formats/ledger-duel.js` is **still a stub** (it draws "TODO ledger-duel"). So only 07b's header, footer, verdict and captions are linted; its ledger, `lookOpts.beats` (impact, mattress carry, peek) and `rowLabelsAtStart` are unverified. Re-run `check` and `stills` once the kit lands, and confirm it renders a plain ledger with `lookOpts.beats` removed (FORMATS.md: kits must render sensibly without `lookOpts`).
 
 ---
@@ -51,18 +51,18 @@
    - a faceless winner cue: the winner's column is highlighted at the verdict, and in 07b the rig's poses do it.
 5. **Pitfalls:**
    - n = 3, all from one near-miss account, all in September 2026.
-   - Jake's duels are silent and 11 s long. With a voice-over ours run 22.1-27.7 s, inside the 12-30 s lane set for this format. The rows still land about a second apart once the bet is set, and a music-only 12-14 s cut is worth testing.
+   - Jake's duels are silent and 11 s long. With a voice-over ours run 19.1-27.7 s, inside the 12-30 s lane set for this format. The rows still land about a second apart once the bet is set, and a music-only 12-14 s cut is worth testing.
    - The lecture version of the panic-sell idea flopped. Master Money's "MISSING THE BEST 10 DAYS CAN DESTROY YOUR RETURNS" got 2,916 (0.3x med), https://www.instagram.com/reel/DeKyDoNxKhx/. That is why 07b is a duel, not a warning.
 
 ### Decisions shared by all three
 
-- **The "2 people" have names** (Ava/Ben, Alex/Sam, Mia/Leo), so comments can take sides. Jake used tickers; we have no person on camera, so names do the work his costumes did.
-- **The bet is in the hook line, not only in the column sub-labels** (revision): "10 years vs 30 years", "right before 2008 / One sells", "Big bank vs high-yield". The viewer can pick a side from the header alone (R7).
+- **The "2 people" have names** (Ava/Ben, Alex/Sam), so comments can take sides. Jake used tickers; we have no person on camera, so names do the work his costumes did. Since hook pass 2, 07c's pair is You/Leo: the viewer sits in the losing column.
+- **The bet is in the hook line, not only in the column sub-labels** (revision): "10 years vs 30 years", "right before 2008 / One sells". The viewer can pick a side from the header alone (R7). Since hook pass 2, 07c's header names only the losing side ("A big bank adds: ?") and asks for one number; the high-yield side is in Leo's plan from frame 1 (R7 partial).
 - **The first payoff lands by 3 s:** 2.4 s (07a), 1.0 s (07b), 1.0 s (07c).
 - **Rounding:**
   - every rounded result shows "≈" on screen and "about" in the VO;
   - exact values carry neither (07b's $6,300 is exact: $10,000 × 0.63);
-  - each ledger keeps one precision: 07a to the nearest $1,000, 07b to the nearest $100, 07c to the dollar (to the cent for month 1);
+  - each ledger keeps one precision: 07a to the nearest $1,000, 07b to the nearest $100, 07c to the cent (interest only, from hook pass 2);
   - a formula that shows rounded factors must reproduce the shown result (07a's formula bar).
 
   The checker enforces all of this.
@@ -307,89 +307,97 @@ The verifier independently matched the 2007-2025 figures (including 2025 +17.88%
 
 ---
 
-## 07c: Clean Sheet: "2 people save $10,000. Big bank vs high-yield. Interest after 5 years?"
+## 07c: Clean Sheet: "You save $100 a month. 5 years = $6,000. A big bank adds: ?"
 
 | | |
 |---|---|
 | Look | `clean-sheet` (white worksheet, a booktabs ledger, highlighter boxes; the Clean Sheet kit ignores badges by design) |
-| Spec | `studio/specs/07c-clean-sheet-savings-rate.json` (22.1 s) |
-| Platform title | **2 People Save $10,000: Big Bank vs High-Yield. How Far Apart in 5 Years?** |
-| On-screen hook (header) | **2 people save $10,000 / Big bank vs high-yield / Interest after 5 years?** (12 words, 3 lines; render-checked) |
-| Columns at 0.0 s | **Mia**: "Big bank / 0.01% APY / × 1.0001 a year"; **Leo**: "High-yield / 4.00% APY / × 1.04 a year" (the kit splits each plan at " · "). Row "Day 1: $10,000 / $10,000" filled; Month 1 and Years 1-5 labelled in grey, cells empty |
-| Stake line | "$10,000 each · 5 years · nothing added" is in the spec; the kit's layout engine drops it because the header already shows the money. The horizon is on screen in header line 3 and the footer |
-| Footer | ASSUMES both rates hold 5 years · 0.01% = Chase Savings APY, Oct 2026 |
+| Spec | `studio/specs/07c-clean-sheet-savings-rate.json` (19.1 s) |
+| Platform title | **You Save $100 a Month for 5 Years. How Much Does a Big Bank Add?** |
+| On-screen hook (header) | **You save $100 a month / 5 years = $6,000 / A big bank adds: ?** (14 words, 3 lines, "$100 a month" on the yellow highlighter; render-checked) |
+| Columns at 0.0 s | **You**: "Big bank / 0.01% APY / $100 a month"; **Leo**: "High-yield / 4.00% APY / $100 a month" (the kit splits each plan at " · "). Row "Start: $0.00 / $0.00" filled; Years 1-5 labelled in grey, cells empty |
+| Stake line | "Interest earned so far · $100 a month each". `lookOpts.stake: "show"` keeps it on screen; by default the kit drops a stake line whose money the header already shows. It is the line that tells the viewer the cells are interest, not balances |
+| Footer | ASSUMES $100 at each month-end, rates held 5 years · 0.01% = Chase Savings APY (2 lines; the rate sheet's date is in the caption) |
 
-**Hook pass (2026-10-08): kept.** The two judges averaged this hook at 5.50. The best eligible rewrite, D ("Same **$10,000** / 1 month at high-yield / = ? years at a big bank"), averaged 7.25: 1.75 above the current hook, but under the 7.5 floor. C was ruled out because judge 2 marked it dishonest. The hook, title and body stay as they are. Scores, the judges' notes and the levers for the next round are in the [Review log](#hook-pass-2026-10-08).
+**Hook pass 2 (2026-10-08): rewritten.** The two judges averaged this hook at **7.25**, against **5.00** for the one it replaced ("2 people save **$10,000** / Big bank vs high-yield / Interest after 5 years?", with Mia and Leo each holding a $10,000 lump sum). Two other rewrites also averaged 7.25. This one won the tie on the owner's priority rules: it is the only option with a number the viewer owns and a full stake (you + $100 a month + 5 years). The money changed from a $10,000 lump sum to $100 a month; the lane, the rates, the sources and the two-column ledger did not. The first hook pass's "kept" verdict is superseded; both passes are in the [Review log](#hook-pass-2-2026-10-08).
 
 **Topic change from the seed, and why**
 - The seed asked for "sourced average rates over recent years".
 - Round-1 searches found today's verified rates (Chase 0.01%; top high-yield offers in the 4.0-4.5% range) and the FDIC national average (0.37%). They found **no year-by-year high-yield average that I could confirm from two sources**.
 - Following the brief ("if a figure can't be verified, choose a topic that doesn't need it"), 07c uses **today's verified rates held for 5 years**, and the footer says so.
 - **0.01%** is Chase's posted standard savings rate (Oct 2, 2026 sheet). **4.00%** is a round high-yield rate below every top rate found.
+- Hook pass 2 swapped the $10,000 lump sum for **$100 a month**, a habit the viewer can own, and put "You" in the big-bank seat.
 
-**Wrong belief it exploits:** "A savings account is a savings account, and my bank pays something." The VO opens on the number almost everyone guesses too high: one month at a big bank pays about 8 cents.
+**Wrong belief it exploits:** "My savings at the bank earn something worth counting." The header asks for one number, what a big bank adds to $6,000 over 5 years, and most guesses land in the tens or hundreds of dollars. The answer is ≈ $1.48. Leo's column shows what the same deposits earn at 4.00%: ≈ $617.90. Both judges noted the limit: "a big bank pays almost nothing" is a familiar fact, so a savvy viewer's "basically nothing" is right.
 
 **Hook rules**
 
 | Rule | How |
 |---|---|
-| R1 | "$10,000", "5 years", "0.01%", "4.00%", "× 1.0001", "× 1.04" and the Day 1 row are on screen at 0.0 s |
-| R2 | One dollar input ($10,000) and no result |
-| R3 | **Partial.** The working on screen (× 1.0001 / × 1.04 a year) works for any balance, and the pinned comment spells out the swap (a year's interest = balance × 0.04 at 4.00% APY) |
-| R4 | $10,000 of savings is round and familiar |
-| R5 | "Big bank" sounds safe and normal; the first VO line and the Month 1 row show 8 cents |
-| R6 | Two people, $10,000, 5 years, all in the header |
-| R7 | Options named in the header: big bank vs high-yield, with both rates in the plans |
-| R8 | 12 words, 3 lines |
-| R9 | 7 rows visible (Day 1, Month 1, Years 1-5), labels in grey ahead of their values |
-| R10 | First payoff (Month 1: ≈ $10,000.08 vs ≈ $10,032.74) at **1.0 s**; biggest last |
-| R11 | The header asks "Interest after 5 years?", and the verdict answers in the same words. The caption's first line takes a side without the numbers |
-| R12 | A tiny honest verdict, "≈ $5 vs ≈ $2,167", in the spirit of Debt Freedom's "$2.98" verdict |
+| R1 | "$100 a month", "5 years", "$6,000", "0.01%", "4.00%" and the Start row ($0.00 / $0.00) are on screen at 0.0 s |
+| R2 | **Partial.** One input ($100 a month) and an empty result slot ("?"). The header also shows the deposit total, $6,000; both judges counted it as a second dollar figure under a strict reading |
+| R3 | $100 a month is a habit the viewer can own, and "You" heads the left column. The maths is linear, so the caption tells $200-a-month savers to double both columns |
+| R4 | $100 a month: small, round, familiar |
+| R5 | The "?" invites a guess in tens or hundreds of dollars; the answer is ≈ $1.48 |
+| R6 | **Full:** you + $100 a month + 5 years, all in the header |
+| R7 | **Partial.** The header names only the big bank; the high-yield side is in Leo's plan from frame 1. "Big bank" is unnamed in the header; Chase is in the footer |
+| R8 | 14 words, 3 lines |
+| R9 | One blank ("?") and 5 grey year rows with empty cells (render-checked) |
+| R10 | First payoff (Year 1: ≈ $0.05 / ≈ $21.84) at **1.0 s**; biggest last (Year 5, the ledger's total line) |
+| R11 | The header asks "A big bank adds: ?"; the verdict answers it ("$6,000 saved, 5 years: ≈ $1.48 vs ≈ $617.90"). The caption's first line repeats the question without a number |
+| R12 | A lopsided, repeatable verdict on the same $6,000: ≈ $1.48 vs ≈ $617.90 (≈ 419×, kept off screen) |
 
 **Benchmark hooks it is modelled on**
-- H80, Jake: "2 people invest $10,000 / 10 years ago" (QQQ vs SPY), 276,471 (5.66x med). The same stake in two places, with plain-English labels under the names.
-- H49, The Debt Freedom Project: "What's the difference between daily payments and one extra lump sum payment each month?", with the caption "Yes, daily payments work!", 382,100 (289.1x). A tiny dollar difference still breaks out when it is a clear verdict.
-- H07, HD Guy: "Which is cheaper? 1 Missile or 75 Rounds/Second", 11,957,600 (3.81x). Two named options, one forced pick.
-- **Avoided on purpose:** FinCalC's "SIP vs RD Which is Better…", 7,665 (contrast H42). That is the generic "which is better?" form; the header asks a countable question instead.
+- H27, FinCalC: "₹2000 SIP Returns for 1-15 Years", with the Year 1 row on screen at 0 s, 3,771,667. A small monthly amount and one row per year.
+- H18, ChartOrbit: "Does investing 100$ monthly in BMW make you rich?", 1,391,731 (5.91x). A small monthly amount and a verdict to wait for (P2).
+- H45, @investment_timeline: "POV: You invested in Monster instead of paying $3/day for a Monster Energy", 1.5M (140.6x). "You" and a small habit, in the losing seat.
+- H84, Master Money: "Four dead simple ways to figure out what you actually make!", whose frame-1 caption reads "TAKE YOUR SALARY", 3,000,000 (140x). The viewer runs their own number (R3). The single empty slot follows the hook bank's rewrite 4.1B ("= $___ each").
+- H49, The Debt Freedom Project: "Yes, daily payments work!", 382,100 (289.1x). A tiny dollar verdict ($2.98) still breaks out when it is clear.
 
 **Beat sheet** (what the clean-sheet kit renders)
 
 | t (s) | On screen | VO |
 |---|---|---|
-| 0.0 | Page title (3 lines, $10,000 on the yellow highlighter), footer, two columns with names and three-line plans (APY and the yearly multiplier), row "Day 1: $10,000 / $10,000", empty rows Month 1 and Years 1-5 | "One month at a big bank: about 8 cents." (0.0-3.5) |
-| 1.0 | **Month 1** lands: the sand cursor band swipes the row and both values type in, ≈ $10,000.08 / ≈ $10,032.74. Tick | |
-| 3.6 | (Month 1 holds) | "High-yield: about $33." (3.6-6.0) |
-| 7.0 | **Year 1**: $10,001 / $10,400. Pop | "After a year: $1 versus $400." (6.2-9.7) |
-| 7.9, 8.8, 9.7 | Years 2-4: ≈ $10,002 / $10,816; ≈ $10,003 / ≈ $11,249; ≈ $10,004 / ≈ $11,699 | |
-| 10.7 | **Year 5**, the ledger's total line (rule above, larger figures): ≈ $10,005 / ≈ $12,167. Ding | "By year 5, Leo is up about $2,167." (9.9-15.3) |
-| 15.5 | (The finished ledger holds) | "Mia is up about $5." (15.5-17.9) |
-| 18.1 | Winner beat: Leo's ≈ $12,167 takes the blue box and his name the blue highlighter. Verdict "Interest after 5 years: / ≈ $5 vs **≈ $2,167**" (≈ $5 on coral, ≈ $2,167 on blue, in column order) | "Same $10,000. Different account." (18.1-20.5) |
-| 20.5-22.1 | Hold, then the values clear to the frame-1 state (loop) | |
+| 0.0 | Page title (3 lines, "$100 a month" on the yellow highlighter, "A big bank adds: ?"), the 2-line footer, the stake line, You and Leo with three-line plans, row "Start: $0.00 / $0.00", empty rows Years 1-5. The caption band shows the whole first line in grey and lights it word by word | "Year 1 at a big bank: about 5 cents." (0.0-3.45) |
+| 1.0 | **Year 1** lands, the first payoff: the sand cursor band swipes the row and both values type in, ≈ $0.05 / ≈ $21.84. Pop | |
+| 3.7 | (Year 1 holds) | "High-yield: about $22." (3.7-6.0) |
+| 5.0 | Year 2: ≈ $0.23 / ≈ $92.56 | |
+| 6.8 | Year 3: ≈ $0.53 / ≈ $214.11 | "Year 3: about 53 cents." (6.3-8.6) |
+| 8.2 | Year 4: ≈ $0.94 / ≈ $388.52 | |
+| 9.5 | **Year 5**, the ledger's total line (rule above, larger figures): ≈ $1.48 / ≈ $617.90. Ding | "Year 5: about $1.48." (8.9-11.95) |
+| 12.2 | (The finished ledger holds) | "High-yield: about $618." (12.2-14.85) |
+| 15.2 | Winner beat: Leo's ≈ $617.90 takes the blue box and his name the blue highlighter. Verdict "$6,000 saved, 5 years: / ≈ $1.48 vs **≈ $617.90**" (≈ $1.48 on coral, ≈ $617.90 on blue, in column order; render-checked on 2 lines) | "Same $6,000. Different account." (15.2-17.5) |
+| 17.5-19.1 | Hold, then the values clear to the frame-1 state (loop) | |
 
-**Full guide VO** (about 50 spoken words)
+**Full guide VO** (about 42 spoken words, 2.6-2.7 words a second)
 
-> One month at a big bank: about 8 cents. High-yield: about $33. After a year: $1 versus $400. By year 5, Leo is up about $2,167. Mia is up about $5. Same $10,000. Different account.
+> Year 1 at a big bank: about 5 cents. High-yield: about $22. Year 3: about 53 cents. Year 5: about $1.48. High-yield: about $618. Same $6,000. Different account.
 
 **The maths**
 
-- **Basis:** balance after t years = $10,000 × (1 + APY)^t. APY is the effective annual rate, so month 1 uses t = 1/12. Interest stays in the account, and nothing is added or withdrawn.
+- **Basis:** $100 is deposited at the end of each month for 60 months. Each account compounds monthly at the APY's monthly equivalent, q = (1 + APY)^(1/12) − 1, so 12 months of compounding give exactly the APY. Interest is left in, and nothing is withdrawn.
+- **Formula:** interest after n deposits = 100 × ((1 + q)^n − 1) ÷ q − 100n.
+- **Monthly rates:** big bank q = 1.0001^(1/12) − 1 = 0.0000083330; high-yield q = 1.04^(1/12) − 1 = 0.0032737.
 
-| On screen | Formula | Exact | Shown |
-|---|---|---:|---|
-| Month 1, Mia | 10,000 × 1.0001^(1/12) | 10,000.0833 | ≈ $10,000.08 (VO: about 8 cents) |
-| Month 1, Leo | 10,000 × 1.04^(1/12) | 10,032.7374 | ≈ $10,032.74 (VO: about $33) |
-| Year 1 | 10,000 × 1.0001 / 10,000 × 1.04 | 10,001.00 / 10,400.00 | $10,001 / $10,400 (VO: $1 vs $400) |
-| Year 2 | ^2 | 10,002.0001 / 10,816.00 | ≈ $10,002 / $10,816 |
-| Year 3 | ^3 | 10,003.0003 / 11,248.64 | ≈ $10,003 / ≈ $11,249 |
-| Year 4 | ^4 | 10,004.0006 / 11,698.59 | ≈ $10,004 / ≈ $11,699 |
-| Year 5 | ^5 | 10,005.0010 / 12,166.53 | ≈ $10,005 / ≈ $12,167 |
-| Verdict | balance − 10,000 at year 5 | 5.0010 / 2,166.53 | ≈ $5 / ≈ $2,167 |
-| Plan multipliers | 1 + APY | 1.0001 / 1.04 | "× 1.0001 a year" / "× 1.04 a year" |
+| On screen | n | Big bank, exact | Shown | High-yield, exact | Shown |
+|---|---:|---:|---|---:|---|
+| Start | 0 | 0 | $0.00 | 0 | $0.00 |
+| Year 1 | 12 | 0.05499 | ≈ $0.05 (VO: about 5 cents) | 21.8442 | ≈ $21.84 (VO: about $22) |
+| Year 2 | 24 | 0.23000 | ≈ $0.23 | 92.5622 | ≈ $92.56 |
+| Year 3 | 36 | 0.52503 | ≈ $0.53 (VO: about 53 cents) | 214.1089 | ≈ $214.11 |
+| Year 4 | 48 | 0.94008 | ≈ $0.94 | 388.5175 | ≈ $388.52 |
+| Year 5 | 60 | 1.47517 | ≈ $1.48 (VO: about $1.48) | 617.9024 | ≈ $617.90 (VO: about $618) |
+| Deposits ("5 years = $6,000") | | 60 × $100 = 6,000 | $6,000 | | |
+| Verdict | | 1.47517 | ≈ $1.48 | 617.9024 | ≈ $617.90 |
 
-- **Extras for the write-up and comments:**
-  - 2,166.53 ÷ 5.001 = ≈ 433×.
-  - The FDIC national average of 0.37% on $10,000 is $37 a year.
-  - At 0.15% (a Wells Fargo figure from one search summary, unverified), Mia would earn ≈ $75 in 5 years. That is still under 4% of Leo's.
+- **Rounding edges:** Year 1 at the big bank is 5.4999 cents, so ≈ $0.05 (just under the half cent); Year 3 is 52.503 cents, so ≈ $0.53. The checker asserts both.
+- **Extras for the write-up and comments (all asserted by the checker):**
+  - ≈ $617.90 ÷ ≈ $1.48 → 617.9024 ÷ 1.47517 = ≈ 419×. Kept off screen and out of the caption.
+  - $200 a month doubles both columns exactly (≈ $2.95 and ≈ $1,235.80), because the interest is linear in the deposit.
+  - The FDIC national average of 0.37% on the same deposits: ≈ $55 (54.81), under a tenth of 4.00%'s ≈ $617.90 (pinned comment).
+  - Chase's 0.02% relationship rate: ≈ $2.95.
+  - At 0.15% (a Wells Fargo figure from one search summary, unverified): ≈ $22.16, under 4% of Leo's.
+  - Deposits at the start of each month instead: ≈ $1.53 vs ≈ $639.57. The footer states month-end.
 
 **Sources (real-world inputs)**
 
@@ -406,26 +414,28 @@ The verifier independently matched the 2007-2025 figures (including 2025 +17.88%
 | FDIC national average savings rate 0.37% APY (pinned comment only; the verifier confirmed the Sep 21, 2026 release, Aug 0.38%) | FDIC, "National Rates and Rate Caps"; The Motley Fool, "Average Savings Account Interest Rate in September 2026"; NerdWallet (above) | September 2026 | https://www.fdic.gov/national-rates-and-rate-caps · https://www.fool.com/money/research/average-savings-account-interest-rate/ |
 | Not used on screen: Bank of America Advantage Savings 0.04%, Wells Fargo Way2Save 0.15% (one search summary; unverified) | U.S. News, "Do You Keep Your Savings at Chase or Wells Fargo? Here's How Much You're Losing" | searched 2026-10-07 | https://www.usnews.com/banking/articles/do-you-keep-your-savings-at-chase-or-wells-fargo-heres-how-much-youre-losing |
 
-**Assumptions (in the footer):**
-- both APYs hold for 5 years (they will move);
-- interest is left in, and nothing is added;
+**Assumptions (in the footer and caption):**
+- $100 deposited at each month-end for 60 months, $6,000 in all;
+- both APYs hold for 5 years (they will move), applied as their monthly equivalents;
+- interest is left in, and nothing is withdrawn;
 - 0.01% is Chase Savings' standard APY on its Oct 2, 2026 rate sheet (unchanged from Sep 11);
 - 4.00% is a round high-yield rate below every named top offer (4.01-4.15%) and every "up to" headline (4.21-4.50%);
 - no taxes, no fees (Chase Savings' $5 monthly fee is waivable and is ignored here).
 
 **Caption**
-> A savings account is not just a savings account.
-> Same $10,000 for 5 years: ≈ $5 of interest at 0.01% APY (Chase Savings' standard rate on its Oct 2, 2026 rate sheet) vs ≈ $2,167 at 4.00% APY. Rates move; this holds both still for 5 years. Top high-yield offers in late Sep/early Oct 2026 ran about 4.15-4.50%. Educational maths, not advice.
+> $100 a month for 5 years = $6,000 saved. What does a big bank add?
+> At 0.01% APY (Chase Savings' standard rate on its Oct 2, 2026 rate sheet): ≈ $1.48. At 4.00% APY: ≈ $617.90. Save $200 a month? Double both. Deposits at each month-end, both rates held for 5 years; rates move. Top high-yield offers in late Sep/early Oct 2026 ran about 4.15-4.50%. Educational maths, not advice.
 > #savings #highyieldsavings #personalfinance #moneymath
 
 **Pinned comment**
-> Swap in your own balance: a year's interest is balance × 0.04 at 4.00% APY, and balance × 0.0001 at 0.01%. The FDIC's national average is 0.37% (Sep 2026): $37 a year on $10,000. What does yours pay?
+> Not at Chase? The FDIC's national average is 0.37% APY (Sep 2026): ≈ $55 on the same $100 a month over 5 years, still under a tenth of 4.00%'s ≈ $618. What does yours pay?
 
 **Per-platform notes**
-- **YouTube Shorts:** title above. "Big bank" and "high-yield" are the search words.
-- **Instagram Reels:** cover on frame 1 (the question plus both rates and multipliers) or the Month 1 row. It is a natural save-and-share for anyone who keeps savings at a branch bank.
-- **TikTok:** expect comments naming banks and rates. The pinned comment asks for them, which is the duel's "pick a side" in comment form.
-- **Look note:** the Clean Sheet direction is "parked" in `03-look-directions.md` (its step-by-step pages underperformed). Its core rule is that the working stays visible. In the revision the working lives in the column plans ("× 1.0001 a year" / "× 1.04 a year"), which the kit always draws; the round-1 badge and formula footnotes never rendered (the kit ignores badges and drops the footnotes first to keep figures at 48 px or more).
+- **YouTube Shorts:** title above. "$100 a month", "big bank" and "high-yield" are the search words. The title asks the header's question without the answer.
+- **Instagram Reels:** cover on frame 1 (the "?" and both plans, cells empty), not the finished ledger, which answers the question. It is a natural save-and-share for anyone with a branch-bank savings account.
+- **TikTok:** expect "my bank pays more" and "it's only 5 years" comments. The pinned comment answers the first with the FDIC average and asks for rates, which is the duel's "pick a side" in comment form.
+- **Look note:** the Clean Sheet direction is "parked" in `03-look-directions.md` (its step-by-step pages underperformed). Its core rule is that the working stays visible. Here the working is the plans (rate and deposit for each column) and the header's own sum ("5 years = $6,000"). The kit shows the stake line only because `lookOpts.stake` is "show".
+- **Known weakness (open):** the Clean Sheet caption shows the whole first VO line in grey from frame 1, so "about 5 cents" for year 1 is readable before the viewer has made a guess. Judge 1 docked the hook for it. Fixing it means a kit change (hide unspoken words) or a first line without a number; neither was scored.
 
 ---
 
@@ -529,3 +539,84 @@ The owner rejected round 1 partly because "hooks are weak". For 07c, two judges 
   - **0.0 s.** The 3-line header with $10,000 on the yellow highlighter, the 2-line footer ("ASSUMES both rates hold 5 years / 0.01% = Chase Savings APY, Oct 2026"), Mia and Leo with their 3-line plans (0.01% APY, × 1.0001 a year; 4.00% APY, × 1.04 a year), the Day 1 row $10,000 / $10,000 filled, Month 1 and Years 1-5 labelled in grey with empty cells, and the caption "One month at a big bank: about 8 cents." with "One" lit.
   - **1.5 s.** Month 1 is filled in the sand band: ≈ $10,000.08 / ≈ $10,032.74. The caption is lit through "bank:".
   - **3.0 s.** The same rows; the caption is fully lit. Year 1 lands at 7.0 s.
+
+### Hook pass 2 (2026-10-08)
+
+The owner rejected round 1 partly because "hooks are weak". In round 2 the hook bank ([`02-hook-bank.md`](../../research/v2/02-hook-bank.md): 91 benchmark hooks, P1-P9, R1-R12, and §4 on why the old hooks were weak) was the yardstick. Two judges scored the current 07c hook and five rewrites (R1, A, B, C, D) out of 10. A hook here is the header at t = 0, the first VO line, what moves in the first 1.5 s, and the platform title.
+
+**Rule (round 2):**
+- Average the two judges' scores for each option.
+- An option that either judge marks dishonest is out.
+- Adopt the best option if its average is **at least 1.0 above the current hook**, even below 7.5. Otherwise keep the current hook; a clearly better title may still be taken.
+
+| Option | Judge 1 | Judge 2 | Average | vs current | Decision |
+|---|---:|---:|---:|---:|---|
+| current: "2 people save **$10,000** / Big bank vs high-yield / Interest after 5 years?" | 5 | 5 | 5.00 | | replaced |
+| R1: "Same **$10,000** / 1 month at high-yield / = ? years at a big bank" (pass 1's D with the footer fixed to "today's rates, held"; verdict "1 month = ≈ 33 years") | 7.5 | 7 | 7.25 | +2.25 | tied, not taken |
+| A: "Your **$10,000** / Chase vs high-yield: / who pays you $1 first?" | 5.5 (dishonest) | 6 | out | | out (judge 1: honesty) |
+| B: "Same **$10,000** / 30 years at a big bank / or 1 month at high-yield?" | 7 | 7.5 | 7.25 | +2.25 | tied, not taken |
+| **C: "You save $100 a month / 5 years = $6,000 / A big bank adds: ?"** | 7.5 | 7 | **7.25** | **+2.25** | **adopted** |
+| D: "Same **$10,000** / All of it at Chase, / or just $25 at high-yield?" | 6 | 6.5 | 6.25 | +1.25 | under the tie |
+
+**Why A is out.** Judge 1 marked it dishonest. Its caption said "The race is the same for any balance", but the hook is a fixed $1 finish line, and how fast each account reaches $1 depends on the balance. I recomputed the judge's figures. On $1,000, high-yield takes 9.3 days and Chase 10.0 years. On $2,000, high-yield takes 4.7 days. Only A's verdict ("a day at high-yield beats a year at Chase") holds for every balance. Both judges also found that A's header question, "who pays you $1 first?", is answered on frame 1: the plans show 0.01% vs 4.00%, and the vo0 caption reads "Day 1: high-yield passes $1."
+
+**Why C won a three-way tie.** R1, B and C all averaged 7.25. Each judge gave each of them 7 or 7.5 (R1 and C got 7.5 and 7; B got 7 and 7.5), so the scores alone cannot separate them. The tie-break is the owner's own list of the hook rules that matter most:
+
+| Rule that matters most | R1 | B | C |
+|---|---|---|---|
+| A number the viewer owns (or a row for every viewer) at 0.0 s | no: a $10,000 that belongs to no one, and the screen never says the result holds for any balance (judge 1) | no: two strangers' $10,000 | **yes**: $100 a month and a "You" column |
+| One input, never the result | yes | yes | partial: $6,000 is a second dollar figure (a sum, not the result) |
+| Small, round, familiar inputs | yes | yes | yes |
+| Implies a wrong answer the viewer already holds | yes, the strongest ("a year or two") | yes, but the trick-question form signals the twist (judge 1) | yes, but "big banks pay almost nothing" is a familiar fact (both judges) |
+| Stake: you + amount + horizon | no "you" | no "you" | **yes, all three** |
+| A countable open loop | one blank, but the rows stop at Year 5 and never reach 33 (judge 2) | 6 rows climbing to a close finish | one blank that is Year 5's own cell, plus 5 rows |
+| First payoff by about 3 s | 1.0 s | 1.0 s | 1.0 s |
+| ≤ 15 words on screen | 13 | 13 | 14 |
+
+- **C is the only option that meets both stake rules.** It has a number the viewer owns, and the stake is complete (you + $100 a month + 5 years). Both judges named that as the gap in R1 and B ("no 'you' (R6)"), and pass 1 named it as the route up: judge 1 called "you" plus a named bank "the route to an 8". Judge 1 called C "the only candidate with a number the viewer actually owns"; judge 2 called its stake "the strongest of any option".
+- **C's ledger builds to its own answer.** The "?" is filled by the Year 5 row, while R1's 33-year answer appears only on the verdict card. Judge 2 raised that in both passes. R1 is also unchanged from pass 1 apart from the footer, and it scored the same 7.25.
+- **C's verdict is lopsided (≈ $1.48 vs ≈ $617.90).** B's is a close finish (≈ $30.04 vs ≈ $32.74), and B's "Leo at 0% after month 1" is a contrivance judge 2 expects commenters to attack.
+- **What C gives up:**
+  - It plays more like a P2 single-number guess inside a P4 duel, because the header names only one side (judge 2).
+  - "Big bank" is unnamed in the header (R7).
+  - The $6,000 is a second dollar figure (R2, read strictly).
+  - Its wrong belief is a familiar one.
+  - Judge 1's main deduction, the frame-1 caption, is under "Open" below.
+
+**Maths re-checked.** Both judges recomputed C with month-end deposits and q = (1 + APY)^(1/12) − 1, and so did I:
+- big bank $0.05499, $0.23000, $0.52503, $0.94008 and $1.47517 over years 1-5;
+- high-yield $21.84, $92.56, $214.11, $388.52 and $617.90;
+- deposits $6,000 exactly;
+- "double both" for $200 a month is exact, because the interest is linear in the deposit.
+
+The two half-cent edges (5.4999 cents → ≈ $0.05, and 52.503 cents → ≈ $0.53) round correctly, and the checker asserts both. For the other options I re-ran R1's equivalence (ln(1.0032737) ÷ ln(1.0001) = 32.69 years) and A's balance figures (above).
+
+**What I applied:**
+
+| # | Change | Notes |
+|---|---|---|
+| HP2-1 | **Hook as scored.**<br>- Header "You save **$100 a month** / 5 years = $6,000 / A big bank adds: ?" (14 words, 3 lines).<br>- Title "You Save $100 a Month for 5 Years. How Much Does a Big Bank Add?".<br>- VO line 0 "Year 1 at a big bank: about 5 cents.".<br>- Footer "ASSUMES $100 at each month-end, rates held 5 years · 0.01% = Chase Savings APY".<br>- Stake line "Interest earned so far · $100 a month each" with `lookOpts.stake: "show"`.<br>- People: You ("Big bank · 0.01% APY · $100 a month") vs Leo ("High-yield · 4.00% APY · $100 a month").<br>- The Start row ($0.00 / $0.00) is filled at frame 1; Year 1 lands at 1.0 s. | Same as the scratch spec the judges scored, apart from HP2-3. |
+| HP2-2 | **Body as scored.**<br>- Rows (interest so far, to the cent): Year 2 at 5.0 s, Year 3 at 6.8 s, Year 4 at 8.2 s, Year 5 at 9.5 s (tone `goal`).<br>- VO lines 1-5 at 3.7, 6.3, 8.9, 12.2 and 15.2 s.<br>- Verdict "$6,000 saved, 5 years: / __≈ $1.48__ vs **≈ $617.90**" at 15.2 s.<br>- sfx: pop at 1.0 s, ding at 9.5 s.<br>- Winner: Leo. | The old Day 1 / Month 1 rows and the "× 1.0001 / × 1.04 a year" plan lines are gone with the lump sum. |
+| HP2-3 | **Adapted: VO slot lengths.**<br>- 3.5 / 2.4 / 2.4 / 3.1 / 2.8 / 2.5 s became 3.45 / 2.3 / 2.3 / 3.05 / 2.65 / 2.3 s, so every line runs at 2.6-2.7 spoken words a second (the brief's 2.6-2.8). In the scratch spec they ran at 2.4-2.6.<br>- Start times are unchanged. The last line ends at 17.5 s, so with the 1.6 s hold the duration is 19.1 s (was 19.3).<br>- The Year 1 beat is keyed to the spoken "Year 1" (estimated 0.38 s against the row at 1.0 s), not to "big". | Every beat is still within 0.9 s of its word: Year 1 at 1.0 s vs 0.38 s, Year 3 at 6.8 s vs 6.68 s, Year 5 at 9.5 s vs 9.28 s. |
+| HP2-4 | **Caption and pinned comment.**<br>- Caption: the scored text, with the question moved up to line 1 and no number in it (R11): "$100 a month for 5 years = $6,000 saved. What does a big bank add?". Line 2 gives ≈ $1.48 vs ≈ $617.90, the Chase sheet date, "double both" and the high-yield range.<br>- Pinned comment: rewritten for monthly deposits. "Not at Chase? The FDIC's national average is 0.37% APY (Sep 2026): ≈ $55 on the same $100 a month over 5 years, still under a tenth of 4.00%'s ≈ $618." | FDIC case 54.81 → ≈ $55; 54.81 ÷ 617.90 = 0.089. |
+| HP2-5 | **Checker** (`checks/07-ledger-duel.py`).<br>- New 07c model: interest after n month-end deposits = 100 × ((1 + q)^n − 1) ÷ q − 100n.<br>- New expectations for the header, footer, stake, plans, verdict, the six row labels and cells, and the six VO lines (with "about" on rounded numbers only).<br>- Beats: Year 1 / "1", Year 3 / "3", Year 5 / "5".<br>- New claims: $6,000 = 60 × $100; the monthly rate compounds to the APY; 5 cents and 53 cents; under $2 at the big bank; $200 a month doubles both; ≈ 419×; the FDIC ≈ $55 is under a tenth of 4.00%; Wells ≈ $22.16; Chase 0.02% ≈ $2.95; deposits at month-start ≈ $1.53 / ≈ $639.57. | The lump-sum claims ($1 a year, ≈ 433×, $37 a year, ≈ $75 at 0.15%) were removed with the lump-sum body. 406 → 407 checks. |
+| HP2-6 | **Kept as scored, though a judge flagged it.**<br>- VO line 0 still carries "about 5 cents". The Clean Sheet caption shows the whole line in grey from frame 1, so the scale of the answer is readable before the viewer guesses (judge 1).<br>- The header still says "big bank", not "Chase" (R7). | Changing either would ship a hook the judges did not score. Both are listed as open below. |
+| HP2-7 | **`teasers.json`:** the 07c entry now has the new title, header, runtime 19.1 s, key numbers and hook score 7.25 (the judges' average); the format's check line says 407 checks. | |
+
+**Verification:**
+- **Maths check:** `python3 teasers/v2/checks/07-ledger-duel.py` gives **407 checks, 0 failures**, ALL OK, exit 0.
+- **Mutation test:** I ran the checker against scratch copies of all three specs, with four corruptions to the new 07c: Year 3 "≈ $0.52", VO "about 6 cents", the Year 5 row moved to 10.5 s, and the verdict's "≈" dropped from $617.90. It reported 5 named failures and exit 1. The real specs were never touched.
+- **Studio linter:** `node src/cli.mjs check specs/07c-clean-sheet-savings-rate.json` gives 0 errors and 0 warnings (19.1 s), at the default step and at every frame (`--every 0.0333333`). 07a and 07b are unchanged.
+- **Stills** (`node src/cli.mjs stills … --at 0,1.5,3,9.8,16.5`):
+  - **0.0 s.** The 3-line header, with "$100 a month" on the yellow highlighter and "A big bank adds: ?" on line 3. The 2-line footer, then the stake line with $100 in ink. You and Leo with their 3-line plans (0.01% APY / $100 a month; 4.00% APY / $100 a month). The Start row $0.00 / $0.00 in the sand band, and Years 1-5 labelled in grey with empty cells. The caption shows "Year 1 at a big bank: about 5 cents." with "Year" lit. The hook reads in frame 1.
+  - **1.5 s.** Year 1 is filled in the sand band: ≈ $0.05 / ≈ $21.84. The caption is lit through "bank:".
+  - **3.0 s.** The same rows, with the caption fully lit.
+  - **9.8 s.** All five years are filled. Year 5, the total line, reads ≈ $1.48 / ≈ $617.90 in larger figures.
+  - **16.5 s.** Leo's name is on the blue highlighter and his ≈ $617.90 in the blue box. The verdict sits on 2 lines: "$6,000 saved, 5 years:" over "≈ $1.48" on coral vs "≈ $617.90" on blue.
+
+**Open:**
+- **The frame-1 caption leak.** "About 5 cents" is readable before the guess. A kit option that hides unspoken caption words, or a first VO line without a number (for example "Year 1 at a big bank:" with the figure moved to line 2), would fix it. Either needs rescoring.
+- **R7.** Putting "Chase" in the header (pass 1's A lever) would name the bank, but it moves the [click-check] rate into the most-read line. Not scored with this body.
+- **Click-check.** The posting-day [click-check] of Chase's Oct 2, 2026 rate sheet stands, as before.
+
+**Score after:** 7.25 (the judges' average for C), up from 5.00.

@@ -24,9 +24,15 @@
 // head (only those the footnote or the footer already carries: "÷ 2,080"; any other is the column's only working
 // and stays, the head taking a third line); one shared line (the formula, which the pick label replaces from the first
 // pick); a dense 40 px pitch; and only then drops content (the formula first). Head labels, cells, the footnote
-// and the legend never go below 40 px (labels wrap to two lines instead; the footnote takes two lines).
+// and the legend never go below 40 px (labels wrap to two lines instead; the footnote takes two lines, broken at an
+// operator seam so no line ends on "×").
 //
-// lookOpts: loop (true) · legend (true; false hides pick labels) · formula (true; false hides the footnote).
+// Hierarchy: the row keys are the finder, not the answer: Inter Tight 700 in ink-grey; the emphasised column is the
+// heaviest and largest type on the table (Archivo Black, EMPH_UP px over the other cells).
+//
+// lookOpts: loop (true) · legend (true; false hides pick labels) · formula (true; false hides the footnote)
+//           · verdictRow (a row index: at verdict.t the yellow highlighter swipes that row too, unlabelled, so the
+//             closing line points at its row; the last pick's band rests).
 // columns[j].tone sets the emphasised column's highlighter (good green by default, bad coral, goal blue, neutral sand).
 import { h, css as style, prog, ease, clamp, lerp, plain } from '../../../runtime/core.js'
 import { F, SIZE, GRID, MOTION, md, hlBox, toneColor, fadeUp, fade, landing, durationOf, fitMarkup, alignApprox } from '../lib.js'
@@ -45,6 +51,7 @@ export const css = `
 .fyr .cs-th em { font-style: normal; color: #15171C; }
 .fyr .cs-tr-band { top: var(--inset, 6px); bottom: var(--inset, 6px); left: -14px; right: -14px; }
 .fyr .cs-td .cs-hl { color: #15171C; }
+.fyr .cs-td.key .cs-hl { color: #3B404C; }
 .fyr .cs-td.plain .cs-hl { color: #3B404C; }
 .fyr .cs-td .cs-hl-txt { padding-top: .04em; }
 .fyr-colband { position: absolute; border-radius: 10px; opacity: 0; }
@@ -61,6 +68,7 @@ export const css = `
 const PAD = 12                // cell inset from the column edge: columns sit >= 24 px apart
 const HEAD = { px: 40, sub: 40, min: 40 }
 const CELL = { max: 56, min: 40 }
+const EMPH_UP = 5             // the emphasised column's figures: this many px over the other cells
 // head sub-labels: "÷ 2,080" is pure working (grey mono; may be dropped when the footnote formula carries it),
 // "$1 trillion" / "30% of gross" is a figure (grey mono, always kept), anything else continues the label (caps)
 const OP = /^[÷×*\/+−\-=≈]/
@@ -102,12 +110,16 @@ export default function findYourRow(spec, ctx) {
     .filter(p => p && p.row != null && +p.row >= 0 && +p.row < N)
     .map(p => ({ t: p.t != null ? +p.t : lastLand + 0.8, row: +p.row, label: p.label || '' }))
     .sort((a, b) => a.t - b.t)
+  // the closing line's own row (lookOpts.verdictRow): an unlabelled pick at verdict.t
+  const vRow = LO.verdictRow != null && +LO.verdictRow >= 0 && +LO.verdictRow < N ? +LO.verdictRow : null
+  if (vRow != null && spec.verdict && Number.isFinite(+spec.verdict.t)) picks.push({ t: +spec.verdict.t, row: vRow, label: '', verdict: true })
+  picks.sort((a, b) => a.t - b.t)
   picks.forEach((p, k) => { p.next = picks[k + 1] ? picks[k + 1].t : Infinity })
   const labelled = LO.legend === false ? [] : picks.filter(p => p.label)
   labelled.forEach((p, k) => { p.lnext = labelled[k + 1] ? labelled[k + 1].t : Infinity })
   const formulaText = LO.formula === false ? '' : d.formula || ''
 
-  const lastPick = picks.length ? picks[picks.length - 1].t : 0
+  const lastPick = picks.filter(p => !p.verdict).length ? Math.max(...picks.filter(p => !p.verdict).map(p => p.t)) : 0
   const lastBeat = Math.max(lastLand + 0.4, picks.length ? lastPick + 0.9 : 0)
   const clearLen = MOTION.clear + 0.2
   const computed = durationOf(spec, lastBeat, { hold: d.hold != null ? +d.hold : 3.0, tail: loop ? clearLen : 0 })
@@ -157,7 +169,7 @@ export default function findYourRow(spec, ctx) {
     for (let j = 0; j < NC; j++) {
       const v = r[j] != null ? r[j] : ''
       const kind = j === E ? 'emph' : j === KEY ? 'key' : 'plain'
-      const hb = hlBox({ html: md(v), tone: emphTone, px: CELL.max, family: kind === 'plain' ? F.tight : F.display, weight: kind === 'plain' ? 600 : 400, padX: 12 })
+      const hb = hlBox({ html: md(v), tone: emphTone, px: CELL.max, family: kind === 'emph' ? F.display : F.tight, weight: kind === 'plain' ? 600 : kind === 'key' ? 700 : 400, padX: 12 })
       hb.seek(0, 1, 0)
       const wrap = h('div', { class: 'cs-td ' + kind }, hb.el)
       style(wrap, { justifyContent: align(j) === 'right' ? 'flex-end' : 'flex-start' })
@@ -186,6 +198,7 @@ export default function findYourRow(spec, ctx) {
   const REF = 40
   const tableW = P.right - GRID.left // 856: x 84 -> 940
   const padOf = px => 12 * Math.sqrt(px / SIZE.result) // hlBox's horizontal padding at px
+  const pxOf = (j, cellPx) => (j === E ? cellPx + EMPH_UP : cellPx)
   const range = document.createRange()
   const textW = el => { range.selectNodeContents(el); return range.getBoundingClientRect().width } // ink width, not box
   // right-aligned columns with some "≈ " values: every "≈" in one vertical line (a slot left of the widest figure)
@@ -210,6 +223,24 @@ export default function findYourRow(spec, ctx) {
     th.a.innerHTML = th.html1
   }
   const formulaW = formula ? (style(formula, { fontSize: REF + 'px' }), textW(formula)) : 0
+  // a footnote too long for one line breaks at an operator seam: the next line starts with its operator and no
+  // bracket is split ("= 9:00 am + 480 min" / "× (tax + FICA) ÷ salary"). CSS balance alone broke it anywhere, which
+  // left a dangling "×" at a line end. Most even seam that fits wins; null keeps the balanced CSS wrap.
+  let formula2 = null
+  if (formula && formulaW > tableW - PAD) {
+    const toks = formulaText.split(/ +/).filter(Boolean)
+    const opStart = /^[×÷+−\-=*\/]/
+    const lineW = str => { formula.innerHTML = md(str); return textW(formula) }
+    let best = Infinity
+    for (let k = 1; k < toks.length; k++) {
+      const left = toks.slice(0, k).join(' '), right = toks.slice(k).join(' ')
+      const open = (left.match(/\(/g) || []).length - (left.match(/\)/g) || []).length
+      if (!opStart.test(right) || open !== 0) continue
+      const w = Math.max(lineW(left), lineW(right))
+      if (w <= tableW - PAD && w < best) { best = w; formula2 = md(left) + '<br>' + md(right) }
+    }
+    formula.innerHTML = md(formulaText)
+  }
   const legendW = legends.map(g => { g.key.setPx(REF); style(g.txt, { fontSize: REF + 'px' }); return { key: g.key.width(), txt: textW(g.txt) } })
   const hasFormulaSubs = TH.some(th => th.subDrop)
   const hasLegend = legends.length > 0
@@ -221,7 +252,7 @@ export default function findYourRow(spec, ctx) {
   function colsFor(cellPx, hp, sp, headMode) {
     const wrap = new Set()
     const needOf = j => {
-      const cw = (cellTW[j] * cellPx) / REF + 2 * padOf(cellPx) - 2 * (PAD - 4) // the box may use 4 px of the gutter
+      const cw = (cellTW[j] * pxOf(j, cellPx)) / REF + 2 * padOf(pxOf(j, cellPx)) - 2 * (PAD - 4) // the box may use 4 px of the gutter
       const sw = subOn(TH[j], headMode) ? (headTW[j].b * (TH[j].sub === 'cont' ? hp : sp)) / REF : 0
       const aw = ((wrap.has(j) ? TH[j].wrapW : headTW[j].a) * hp) / REF
       return Math.max(cw, aw, sw) + 2 * PAD
@@ -340,7 +371,7 @@ export default function findYourRow(spec, ctx) {
     // last resort (more columns or longer labels than the measure holds): columns sized by their cells, labels
     // wrapping freely inside them at 40 px, pure-working sub-labels dropped. The linter reports the rest.
     const hp = HEAD.min, sp = HEAD.min
-    const need = [...Array(NC).keys()].map(j => (cellTW[j] * CELL.min) / REF + 2 * padOf(CELL.min) - 2 * (PAD - 4) + 2 * PAD)
+    const need = [...Array(NC).keys()].map(j => (cellTW[j] * pxOf(j, CELL.min)) / REF + 2 * padOf(pxOf(j, CELL.min)) - 2 * (PAD - 4) + 2 * PAD)
     const extra = (tableW - need.reduce((a, b) => a + b, 0)) / NC
     let x = 0
     const cols = need.map(w => { const c = { x, w: Math.max(2 * PAD + 40, w + extra) }; x += c.w; return c })
@@ -375,7 +406,7 @@ export default function findYourRow(spec, ctx) {
     if (th.b) style(th.b, { display: subOn(th, L.headMode) ? '' : 'none', fontSize: (th.sub === 'cont' ? L.hp : L.sp) + 'px' })
   })
   // text runs of neighbouring rows share a few px of line box when the grid is this tight (the glyphs do not touch)
-  const tight = pitch < Math.ceil(cellPx * 1.22)
+  const tight = pitch < Math.ceil(pxOf(E, cellPx) * 1.22)
   const inset = Math.max(0, Math.round((pitch - Math.min(pitch, boxH + 10)) / 2))
   R.forEach((row, i) => {
     style(row.el, { top: hh + i * pitch + 'px', height: pitch + 'px', '--inset': inset + 'px' })
@@ -385,9 +416,9 @@ export default function findYourRow(spec, ctx) {
     if (hair) style(hair, { bottom: pitch < 48 ? '-2px' : '0px' })
     row.cells.forEach((c, j) => {
       const col = L.cols[j]
-      c.hl.setPx(cellPx, boxH)
+      c.hl.setPx(pxOf(j, cellPx), boxH)
       c.hl.setHTML(c.full)
-      c.pad = padOf(cellPx)
+      c.pad = padOf(pxOf(j, cellPx))
       // the text inside the box lines up with the column label (x + PAD)
       style(c.el, { left: Math.round(col.x + PAD - c.pad) + 'px', width: Math.round(col.w - 2 * PAD + 2 * c.pad) + 'px' })
     })
@@ -397,14 +428,16 @@ export default function findYourRow(spec, ctx) {
   const bandIn = Math.max(2, inset)
   {
     const col = L.cols[E]
-    const wl = Math.round(col.x + PAD - padOf(cellPx)), ww = Math.round(col.w - 2 * PAD + 2 * padOf(cellPx))
+    const wl = Math.round(col.x + PAD - padOf(pxOf(E, cellPx))), ww = Math.round(col.w - 2 * PAD + 2 * padOf(pxOf(E, cellPx)))
     const bw = Math.ceil(Math.max(0, ...R.map(row => row.cells[E].hl.width())))
     style(colBand, { left: (align(E) === 'right' ? wl + ww - bw : wl) + 'px', width: bw + 'px', top: hh + bandIn + 'px', height: '0px' })
   }
   const textLeft = GRID.left + PAD // the key column's text edge: lines under the table hang from it
   let y = top + tableH
   if (L.showFormula) {
-    formula.classList.toggle('two', L.fv.lines === 2)
+    const seam = L.fv.lines === 2 && formula2
+    formula.innerHTML = seam ? formula2 : md(formulaText)
+    formula.classList.toggle('two', L.fv.lines === 2 && !seam)
     style(formula, { left: textLeft + 'px', top: Math.round(y + GAP_T) + 'px', fontSize: L.fv.px + 'px', width: L.fv.lines === 2 ? tableW - PAD + 'px' : '' })
     if (L.mode !== 'shared') y += GAP_T + L.fv.h
   } else if (formula) style(formula, { display: 'none' })

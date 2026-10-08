@@ -1,0 +1,97 @@
+{
+  "id": "becker-rig-dead-simple-list-3",
+  "look": "becker-rig",
+  "format": "dead-simple-list",
+  "sample": true,
+  "fps": 30,
+  "header": "6 DEAD SIMPLE NUMBERS\nFOR A **$250,000** HOUSE",
+  "footer": "ASSUMES 6.5% fixed, 30 years, 20% down, before tax and insurance",
+  "captions": true,
+  "vo": [
+    {
+      "t": 0.0,
+      "d": 3.2,
+      "text": "A quarter-million house. Twenty percent down."
+    },
+    {
+      "t": 4.0,
+      "d": 3.4,
+      "text": "You borrow the other **$200,000**."
+    },
+    {
+      "t": 8.0,
+      "d": 3.6,
+      "text": "At six and a half percent: **$1,264** a month."
+    },
+    {
+      "t": 12.0,
+      "d": 3.6,
+      "text": "Three hundred and sixty of them."
+    },
+    {
+      "t": 16.0,
+      "d": 3.6,
+      "text": "__$255,000__ of that is interest."
+    },
+    {
+      "t": 20.0,
+      "d": 4.4,
+      "text": "And the bank wants to see **$54,000** a year."
+    }
+  ],
+  "verdict": {
+    "t": 25.6,
+    "text": "**≈ $455,000** paid\nfor a $200,000 loan."
+  },
+  "data": {
+    "input": {
+      "label": "Price",
+      "value": "$250,000"
+    },
+    "items": [
+      {
+        "t": 0.2,
+        "label": "Down payment",
+        "formula": "$250,000 × 0.20",
+        "result": "$50,000",
+        "tone": "neutral"
+      },
+      {
+        "t": 4.2,
+        "label": "Loan",
+        "formula": "$250,000 − $50,000",
+        "result": "$200,000",
+        "tone": "neutral"
+      },
+      {
+        "t": 8.2,
+        "label": "Monthly payment",
+        "formula": "$200,000 × 0.00632",
+        "result": "≈ $1,264 a month",
+        "tone": "bad"
+      },
+      {
+        "t": 12.2,
+        "label": "All 360 payments",
+        "formula": "$1,264 × 360",
+        "result": "≈ $455,000",
+        "tone": "bad"
+      },
+      {
+        "t": 16.2,
+        "label": "Interest alone",
+        "formula": "$455,000 − $200,000",
+        "result": "≈ $255,000",
+        "tone": "bad"
+      },
+      {
+        "t": 20.2,
+        "label": "Income the bank wants to see",
+        "formula": "$1,264 × 12 ÷ 0.28",
+        "result": "≈ $54,000 a year",
+        "tone": "goal"
+      }
+    ],
+    "hold": 3
+  }
+}

@@ -189,6 +189,8 @@ def build_02a():
         nums.append((f"row {a}", f"{usd(ANNUAL)} × {END_AGE - a} yrs = {usd(spend(a))};  FV({usd(MONTHLY, 2)}/mo, 7%/12, {(END_AGE - a) * 12} mo) = {usd(c, 2)} → {approx(rc, c)}{usd(rc)}"))
 
     i18, i25, i35 = AGES.index(18), AGES.index(25), AGES.index(35)
+    ratio18 = cost(18) / spend(18)
+    ratio18_disp = round(ratio18, 1)                              # 7.777 → 7.8
     ratio = cost(25) / spend(25)
     ratio_disp = round(ratio, 1)                                  # 5.468 → 5.5
     gap = 35 - 25
@@ -205,16 +207,20 @@ def build_02a():
 
     # hook pass: the excuse the viewer already holds ("it's just $3 a day") is the header, and the spend
     # column is relabelled as that wrong answer, in red, beside the real cost
+    # round-2 fix pass (2026-10-08): the opener is split so the first payoff gets its own pointer (row 18) as it is
+    # spoken; the 35-row pick is a bracket from the 25 row (live-sheet lookOpts.compare), the 25 row stays tinted
     vo = [
-        {"t": 0.0, "d": 4.7, "text": f"Just {usd(DAILY)} a day? At {AGES[i18]}: **{rows[i18][2]}**."},
+        {"t": 0.0, "d": 1.95, "text": f"Just {usd(DAILY)} a day?"},
+        {"t": 2.0, "d": 2.7, "text": f"At {AGES[i18]}: **{rows[i18][2]}**."},
         {"t": 4.9, "d": 3.3, "text": f"At {AGES[i25]}: **{rows[i25][2]}**."},
         {"t": 8.4, "d": 3.5, "text": f"{gap} years younger? It costs you **more than double**."},
     ]
     picks = [
-        {"t": vo[1]["t"], "row": i25, "label": f"≈ {ratio_disp:.1f}× what you think"},
-        {"t": vo[2]["t"], "row": i35, "label": f"At {AGES[i25]}: ≈ {younger_disp:.1f}× this"},
+        {"t": vo[1]["t"], "row": i18, "label": f"≈ {ratio18_disp:.1f}× what you think"},
+        {"t": vo[2]["t"], "row": i25, "label": f"≈ {ratio_disp:.1f}× what you think"},
+        {"t": vo[3]["t"], "row": i35, "label": f"≈ {younger_disp:.1f}×"},
     ]
-    verdict_t = round(mention_time(vo[2], "more than double"), 1)
+    verdict_t = round(mention_time(vo[3], "more than double"), 1)
     rows_t, row_every = 0.0, 0.5
     duration = round(vo[-1]["t"] + vo[-1]["d"] + 1.5, 1)          # 11.9 + 1.5 = 13.4
     last_beat = max(rows_t + row_every * (len(rows) - 1), picks[-1]["t"])
@@ -224,16 +230,16 @@ def build_02a():
         "format": "find-your-row",
         "fps": 30,
         "duration": duration,
-        "header": f"\"It's just **{usd(DAILY)} a day**.\"\nWhat it costs you by {END_AGE}:",
+        "header": f"“It’s just **{usd(DAILY)} a day**.”\nWhat it costs you by {END_AGE}:",
         "footer": f"At {round(RATE * 100)}% a year until {END_AGE} · no tax, fees, inflation",
         "captions": True,
         "vo": vo,
-        "verdict": {"t": verdict_t, "text": f"{gap} years younger: it costs **more than double**."},
+        "verdict": {"t": verdict_t, "text": f"{gap} years younger?\nIt costs **more than double**."},
         "data": {
             "columns": [
                 {"label": "Your age"},
-                {"label": "__What you think__\n__it costs__", "tone": "bad"},   # the held (wrong) answer, in red
-                {"label": "What it really\ncosts you", "emph": True},
+                {"label": "__What you think it costs__", "tone": "bad"},   # the held (wrong) answer, in red
+                {"label": "What it really costs you", "emph": True},
             ],
             "rows": rows,
             "formula": f"= {usd(DAILY)} × {DAYS} ÷ 12 = {usd(MONTHLY, 2)} a month",
@@ -242,10 +248,11 @@ def build_02a():
             "pick": picks,
             "hold": round(duration - last_beat, 2),
         },
+        "lookOpts": {"compare": [{"pick": 2, "from": i25}]},
         "sfx": [{"t": verdict_t, "kind": "ding"}],
     }
     allowed = {float(DAILY), float(DAYS), 12.0, MONTHLY, RATE * 100, float(END_AGE), float(gap),
-               ratio_disp, younger_disp}
+               ratio18_disp, ratio_disp, younger_disp}
     for r in rows:
         for cell in r:
             allowed.update(number_tokens(cell))
@@ -257,9 +264,10 @@ def build_02a():
     nums += [
         ("$3 a day", f"{usd(DAILY)} × {DAYS} = {usd(ANNUAL)} a year; ÷ 12 = {usd(MONTHLY, 2)} a month"),
         ("red vs real", "rows landing by 1.5 s: " + ", ".join(f"{a}: ×{r:.2f}" for a, r in first)),
-        ("first payoff", f"VO reaches '{rows[i18][2]}' at {mention_time(vo[0], rows[i18][2]):.2f} s"),
+        ("first payoff", f"VO reaches '{rows[i18][2]}' at {mention_time(vo[1], rows[i18][2]):.2f} s (pointer on row 18 from {vo[1]['t']} s)"),
+        ("pick 18", f"{usd(cost(18), 2)} ÷ {usd(spend(18))} = {ratio18:.3f} → ≈ {ratio18_disp:.1f}×"),
         ("pick 25", f"{usd(cost(25), 2)} ÷ {usd(spend(25))} = {ratio:.3f} → ≈ {ratio_disp:.1f}×"),
-        ("pick 35", f"FV(25) ÷ FV(35) = {usd(cost(25), 2)} ÷ {usd(cost(35), 2)} = {younger:.3f} → ≈ {younger_disp:.1f}×"),
+        ("bracket 25-35", f"FV(25) ÷ FV(35) = {usd(cost(25), 2)} ÷ {usd(cost(35), 2)} = {younger:.3f} → ≈ {younger_disp:.1f}× (and FV(35) ÷ FV(25) = {1 / younger:.3f} < 1/2)"),
         ("verdict", f"FV(age) ÷ FV(age + 10), ages 18-54: min {min(whole.values()):.3f} (age {min(whole, key=whole.get)}), max {max(whole.values()):.2f} (all > 2)"),
         ("pinned 10%", f"at 10%: age 25 → {usd(at10_25)}, age 18 → {usd(at10_18)}"),
         ("rule of 72", f"72 ÷ 7 = {72 / 7:.1f} yrs to double; a lump sum at 7%/12 for 120 mo = ×{lump_10y:.3f} (the extra deposits push the ratio above 2)"),
@@ -272,7 +280,7 @@ def build_02a():
 # --------------------------------------------------------------------------------------
 def build_02b():
     TARGET = MUSK_PLAN_MAX
-    WAGES = [FED_MIN_WAGE, 10, 15, 20, 25, 30, 40, 50, 75, 100, 250, 500, 1000]
+    WAGES = [FED_MIN_WAGE, 15, 20, 25, 30, 40, 50, 75, 100, 500, 1000]   # fix pass: $10 and $250 dropped (row pitch)
     PLAN_YEARS = 10                                           # "over the next decade" (Reuters)
     SECS = int(PLAN_YEARS * DAYS_PER_YEAR_AVG * 24 * 3600)    # 315,576,000 s (365.25-day years, 24/7)
     RATE = TARGET / SECS                                      # $3,168.81 a second
@@ -311,24 +319,33 @@ def build_02b():
     assert WAGES[0] == FED_MIN_WAGE
     assert SECS == 315_576_000
     rate_disp = round(RATE)                                   # ≈ $3,169 a second
-    i20, i100 = WAGES.index(20), WAGES.index(100)
+    i20, i100, i1000 = WAGES.index(20), WAGES.index(100), WAGES.index(1000)
     min_min = secs(FED_MIN_WAGE) / 60                         # 3.17 → "≈ 3 minutes"
     m20 = secs(20) / 60                                       # 8.75 → "under 9 minutes"
     under20 = 9
     assert m20 < under20 and m20 > under20 - 1
-    m100 = secs(100) / 60                                     # 43.76 → "≈ 44 minutes"
-    m100_disp = round(m100)
+    m100 = secs(100) / 60                                     # 43.76 (row ≈ 43.8 min; no longer picked)
+    h1000 = secs(1000) / 3600                                 # 7.293 → VO "≈ 7 hours", row and verdict "≈ 7.3"
+    h1000_vo = round(h1000)
+    h1000_disp, _ = fmt_time(secs(1000))                      # "≈ 7.3 hrs"
+    h1000_r = round(h1000, 1)
     min_disp = round(min_min)
+    # fix pass (2026-10-08): the opener is split so the first payoff gets its pointer (minimum-wage row) as it is
+    # spoken; the ending is the last row ($1,000/hr); pointer labels show the career-pay working the captions don't say
     vo = [
-        {"t": 0.0, "d": 3.9, "text": f"{CAREER_YEARS} years at minimum wage? **≈ {min_disp} minutes** of his."},
+        {"t": 0.0, "d": 2.0, "text": f"{CAREER_YEARS} years at minimum wage?"},
+        {"t": 2.0, "d": 2.0, "text": f"**≈ {min_disp} minutes** of his."},
         {"t": 4.2, "d": 2.7, "text": f"{usd(WAGES[i20])} an hour? Under {under20} minutes."},
-        {"t": 7.2, "d": 4.7, "text": f"Even **{usd(WAGES[i100])} an hour**, for {CAREER_YEARS} years? ≈ {m100_disp} minutes."},
+        {"t": 7.0, "d": 3.5, "text": f"Even **{usd(WAGES[i1000])} an hour**? ≈ {h1000_vo} hours."},
     ]
+    work = lambda w: f"{fmt_wage(w)} × {CAREER_HOURS:,} hrs = {fmt_career(w)}"
     picks = [
-        {"t": vo[1]["t"], "row": i20, "label": f"{fmt_career(20)} in under {under20} min"},
-        {"t": vo[2]["t"], "row": i100, "label": f"{fmt_career(100)} in ≈ {m100_disp} min"},
+        {"t": vo[1]["t"], "row": 0, "label": work(FED_MIN_WAGE)},
+        {"t": vo[2]["t"], "row": i20, "label": work(20)},
+        {"t": vo[3]["t"], "row": i1000, "label": work(1000)},
     ]
-    verdict_t = round(mention_time(vo[2], f"≈ {m100_disp} minutes"), 1)
+    # the verdict lands alone, once the last VO line (and its caption) has ended
+    verdict_t = round(vo[-1]["t"] + vo[-1]["d"] + 0.2, 1)
     rows_t, row_every = 0.0, 0.35
     duration = 14.0
     last_beat = max(rows_t + row_every * (len(rows) - 1), picks[-1]["t"])
@@ -339,18 +356,18 @@ def build_02b():
         "fps": 30,
         "duration": duration,
         "header": "ELON'S **$1 TRILLION** PAY PLAN\nEARNS YOUR WHOLE CAREER'S PAY IN…",
-        "footer": f"Plan's max, if every target is hit, ÷ {PLAN_YEARS} years, 24/7 · you: {CAREER_YEARS} years × {HOURS_PER_YEAR:,} hrs",
+        "footer": f"Plan max ÷ {PLAN_YEARS} yrs, 24/7 · you: {CAREER_YEARS} yrs × {HOURS_PER_YEAR:,} hrs",
         "captions": True,
         "vo": vo,
-        "verdict": {"t": verdict_t, "text": f"Even **{usd(WAGES[i100])}/hr** for {CAREER_YEARS} years: ≈ {m100_disp} minutes of his."},
+        "verdict": {"t": verdict_t, "text": f"Even **{fmt_wage(1000)}**\nfor {CAREER_YEARS} years:\n≈ {h1000_r:.1f} hours of his."},
         "data": {
             "columns": [
                 {"label": "Your wage"},
                 {"label": f"{CAREER_YEARS} years\nof your pay"},
-                {"label": "His plan earns\nit in", "emph": True},
+                {"label": "His plan\nearns it in", "emph": True},
             ],
             "rows": rows,
-            "formula": f"= wage × {HOURS_PER_YEAR:,} × {CAREER_YEARS} ÷ ≈ {usd(rate_disp)} a second",
+            "formula": f"= wage × {HOURS_PER_YEAR:,} × {CAREER_YEARS} ÷ {usd(rate_disp)}/s",
             "rowsT": rows_t,
             "rowEvery": row_every,
             "pick": picks,
@@ -360,17 +377,18 @@ def build_02b():
     }
     allowed = {1.0, float(TARGET), float(HOURS_PER_YEAR), float(CAREER_YEARS), float(PLAN_YEARS),
                24.0, 7.0,                                     # "24/7" in the footer (24 hrs, 7 days)
-               float(rate_disp), float(min_disp), float(under20), float(m100_disp)}
+               float(rate_disp), float(min_disp), float(under20), float(h1000_vo), float(CAREER_HOURS)}
     for r in rows:
         for cell in r:
             allowed.update(number_tokens(cell))
     nums += [
         ("plan clock", f"{PLAN_YEARS} × {DAYS_PER_YEAR_AVG} × 24 × 3,600 = {SECS:,} s; $1,000,000,000,000 ÷ {SECS:,} = {usd(RATE, 2)}/s → ≈ {usd(rate_disp)}"),
         ("career", f"{CAREER_YEARS} yrs × {HOURS_PER_YEAR:,} hrs = {CAREER_HOURS:,} hrs; wage × {CAREER_HOURS:,} is exact (no ≈)"),
-        ("VO min wage", f"{secs(FED_MIN_WAGE):.2f} s = {min_min:.3f} min → '≈ {min_disp} minutes' (at {mention_time(vo[0], f'≈ {min_disp} minutes'):.2f} s)"),
+        ("VO min wage", f"{secs(FED_MIN_WAGE):.2f} s = {min_min:.3f} min → '≈ {min_disp} minutes' (at {mention_time(vo[1], f'≈ {min_disp} minutes'):.2f} s, pointer on the $7.25 row from {vo[1]['t']} s)"),
         ("VO $20", f"{m20:.3f} min → 'under {under20} minutes'"),
-        ("VO $100", f"{m100:.3f} min → '≈ {m100_disp} minutes'; verdict at {mention_time(vo[2], f'≈ {m100_disp} minutes'):.2f} s"),
-        ("$1,000/hr", f"{secs(1000) / 3600:.3f} hrs; plan per hour = {usd(RATE * 3600)} (pinned)"),
+        ("VO $1,000", f"{h1000:.3f} hrs → VO '≈ {h1000_vo} hours', row and verdict '≈ {h1000_r:.1f}' ({h1000_disp}); VO ends {vo[-1]['t'] + vo[-1]['d']:.1f} s, verdict {verdict_t} s"),
+        ("labels", "; ".join(p["label"] for p in picks) + f" (exact: wage × {CAREER_HOURS:,})"),
+        ("$100/hr", f"{m100:.3f} min → row ≈ {round(m100, 1)} min; plan per hour = {usd(RATE * 3600)} (pinned)"),
     ]
     return exp, allowed, nums
 
@@ -450,16 +468,20 @@ def build_02c():
     assert abs(kept(41_600) / 41_600 - 0.85) < 0.01
     assert cents(kept(15 * HOURS_PER_YEAR) / HOURS_PER_YEAR) == 13.10
 
+    # fix pass (2026-10-08): the opener is split so the median row is lit as its clock time is spoken; the verdict
+    # escalates to the top row ($200,000, lit with it: clean-sheet lookOpts.verdictRow) and lands once the VO has ended;
+    # "every workday" is said once, in the verdict
     vo = [
-        {"t": 0.0, "d": 4.3, "text": f"{rows[im][0]}? You work for tax till **{rows[im][2][:-3]}**."},
-        {"t": 4.5, "d": 2.6, "text": f"That's {rows[im][1].replace(' min', ' minutes')}, every workday."},
+        {"t": 0.0, "d": 1.45, "text": f"{rows[im][0]}?"},
+        {"t": 1.5, "d": 3.1, "text": f"You work for tax till **{rows[im][2][:-3]}**."},
+        {"t": 4.7, "d": 2.6, "text": f"That's {rows[im][1].replace(' min', ' minutes')} a day."},
         {"t": 7.4, "d": 2.4, "text": f"Six figures? Until **{rows[i100][2][:-3]}**."},
     ]
     picks = [
         {"t": vo[1]["t"], "row": im, "label": "≈ US median full-time pay"},
-        {"t": vo[2]["t"], "row": i100, "label": f"≈ {h100} hr {mm100} min, every workday"},
+        {"t": vo[3]["t"], "row": i100, "label": f"≈ {h100} hr {mm100} min of tax a day"},
     ]
-    verdict_t = round(mention_time(vo[2], rows[i100][2][:-3]), 1)
+    verdict_t = round(vo[-1]["t"] + vo[-1]["d"] + 0.2, 1)
     rows_t, row_every = 0.0, 0.2
     duration = 13.0
     last_beat = max(rows_t + row_every * (len(rows) - 1), picks[-1]["t"])
@@ -469,15 +491,15 @@ def build_02c():
         "format": "find-your-row",
         "fps": 30,
         "duration": duration,
-        "header": f"What time your {DAY_START_H}-to-{DAY_END_H - 12}\nstarts paying **you**, by salary",
+        "header": f"What time your **{DAY_START_H}-to-{DAY_END_H - 12}**\nstarts paying you, by salary",
         "footer": "Single · 2026 federal tax + FICA · no state tax",
         "captions": True,
         "vo": vo,
-        "verdict": {"t": verdict_t, "text": f"{usd(100_000)}: you work for tax till **{rows[i100][2][:-3]}**, every workday."},
+        "verdict": {"t": verdict_t, "text": f"{usd(SALARIES[0])}: you work for tax till **{rows[0][2][:-3]}**, every workday."},
         "data": {
             "columns": [
                 {"label": "Salary"},
-                {"label": "Tax + FICA,\nmin a day"},
+                {"label": "Tax + FICA,\nminutes a day"},
                 {"label": "Paying you\nfrom", "emph": True},
             ],
             "rows": rows,
@@ -487,6 +509,7 @@ def build_02c():
             "pick": picks,
             "hold": round(duration - last_beat, 2),
         },
+        "lookOpts": {"verdictRow": 0},
         "sfx": [{"t": verdict_t, "kind": "ding"}],
     }
     allowed = {float(DAY_START_H), float(DAY_END_H - 12), 0.0, float(DAY_MIN), 2026.0, float(h100), float(mm100)}
@@ -496,7 +519,8 @@ def build_02c():
     nums += [
         ("workday", f"9 am-5 pm = {DAY_MIN} min; × 260 workdays = {HOURS_PER_YEAR:,} hrs a year (the slate's ÷ 2,080)"),
         ("median", f"BLS ${BLS_MEDIAN_WEEKLY:,}/wk × {WEEKS_PER_YEAR} = {usd(median_annual)} → ≈ {usd(median_row_salary)} (row {im})"),
-        ("$65,000", f"{taxes(65_000) / 65_000:.4%} × 480 = {tax_min(65_000):.2f} min → {rows[im][1]} → {rows[im][2]}; VO reaches it at {mention_time(vo[0], rows[im][2][:-3]):.2f} s"),
+        ("$65,000", f"{taxes(65_000) / 65_000:.4%} × 480 = {tax_min(65_000):.2f} min → {rows[im][1]} → {rows[im][2]}; row lit from {picks[0]['t']} s, VO reaches it at {mention_time(vo[1], rows[im][2][:-3]):.2f} s"),
+        ("$200,000", f"{taxes(200_000) / 200_000:.4%} × 480 = {tax_min(200_000):.2f} min → {rows[0][1]} → {rows[0][2]} (verdict at {verdict_t} s)"),
         ("$100,000", f"{taxes(100_000) / 100_000:.4%} × 480 = {tax_min(100_000):.2f} min = {h100} hr {mm100} min → {rows[i100][2]}"),
         ("spread", f"{rows[-1][2]} at {usd(SALARIES[-1])} … {rows[0][2]} at {usd(SALARIES[0])} ({round_half_up(tax_min(SALARIES[0]), 1) - round_half_up(tax_min(SALARIES[-1]), 1)} min apart)"),
         ("pinned $65,000", f"{usd(65_000)} ÷ 2,080 = $31.25 an hour; kept {kept_hour(65_000):.4f} → ≈ $26"),
@@ -549,7 +573,8 @@ def check_spec(exp, allowed, path, md_text):
         check(sid, f"row[{i}]", e, a)
     extra = set(sd) - {"columns", "rows", "formula", "rowsT", "rowEvery", "rowT", "pick", "hold"}
     check(sid, "data: no fields outside the contract", set(), extra)
-    top_extra = set(spec) - {"id", "look", "format", "fps", "duration", "header", "footer", "captions", "vo", "verdict", "data", "sfx"}
+    top_extra = set(spec) - {"id", "look", "format", "fps", "duration", "header", "footer", "captions", "vo", "verdict", "data", "sfx", "lookOpts"}
+    check(sid, "lookOpts", exp.get("lookOpts"), spec.get("lookOpts"))
     check(sid, "spec: no top-level fields outside the contract", set(), top_extra)
 
     # --- every number token in every display string is a computed value
@@ -557,6 +582,7 @@ def check_spec(exp, allowed, path, md_text):
                sd.get("formula", "")]
     strings += [c["label"] for c in sd.get("columns", [])]
     strings += [p["label"] for p in sd.get("pick", [])]
+    strings += [p.get("label", "") for p in (spec.get("lookOpts") or {}).get("compare", [])]
     strings += [cell for r in srows for cell in r]
     strings += [v["text"] for v in sv]
     stray = []
@@ -611,8 +637,10 @@ def check_spec(exp, allowed, path, md_text):
     check(sid, "ding on the verdict", True, any(abs(x.get("t", -1) - vt) < 1e-9 and x.get("kind") == "ding" for x in spec.get("sfx", [])))
 
     # --- the write-up quotes the specs exactly
-    md_missing = [v["text"] for v in sv if v["text"] not in md_text]
-    md_missing += [x for x in (spec.get("verdict", {}).get("text", ""), spec.get("footer", ""), sd.get("formula", ""), TITLES[sid]) if x not in md_text]
+    # (a "\n" line break is quoted in the write-up as " / ")
+    q = lambda x: x.replace("\n", " / ")
+    md_missing = [v["text"] for v in sv if q(v["text"]) not in md_text]
+    md_missing += [x for x in (spec.get("verdict", {}).get("text", ""), spec.get("footer", ""), sd.get("formula", ""), TITLES[sid]) if q(x) not in md_text]
     check(sid, "md quotes VO, verdict, footer, formula, title", [], md_missing)
 
     # word-count / time report

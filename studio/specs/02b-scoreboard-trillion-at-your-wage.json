@@ -5,23 +5,23 @@
   "fps": 30,
   "duration": 14.0,
   "header": "ELON'S **$1 TRILLION** PAY PLAN\nEARNS YOUR WHOLE CAREER'S PAY IN…",
-  "footer": "Plan's max, if every target is hit, ÷ 10 years, 24/7 · you: 40 years × 2,080 hrs",
+  "footer": "Plan max ÷ 10 yrs, 24/7 · you: 40 yrs × 2,080 hrs",
   "captions": true,
   "vo": [
-    { "t": 0.0, "d": 3.9, "text": "40 years at minimum wage? **≈ 3 minutes** of his." },
+    { "t": 0.0, "d": 2.0, "text": "40 years at minimum wage?" },
+    { "t": 2.0, "d": 2.0, "text": "**≈ 3 minutes** of his." },
     { "t": 4.2, "d": 2.7, "text": "$20 an hour? Under 9 minutes." },
-    { "t": 7.2, "d": 4.7, "text": "Even **$100 an hour**, for 40 years? ≈ 44 minutes." }
+    { "t": 7.0, "d": 3.5, "text": "Even **$1,000 an hour**? ≈ 7 hours." }
   ],
-  "verdict": { "t": 10.7, "text": "Even **$100/hr** for 40 years: ≈ 44 minutes of his." },
+  "verdict": { "t": 10.7, "text": "Even **$1,000/hr**\nfor 40 years:\n≈ 7.3 hours of his." },
   "data": {
     "columns": [
       { "label": "Your wage" },
       { "label": "40 years\nof your pay" },
-      { "label": "His plan earns\nit in", "emph": true }
+      { "label": "His plan\nearns it in", "emph": true }
     ],
     "rows": [
       ["$7.25/hr", "$603,200", "≈ 3.2 min"],
-      ["$10/hr", "$832,000", "≈ 4.4 min"],
       ["$15/hr", "$1,248,000", "≈ 6.6 min"],
       ["$20/hr", "$1,664,000", "≈ 8.8 min"],
       ["$25/hr", "$2,080,000", "≈ 10.9 min"],
@@ -30,18 +30,18 @@
       ["$50/hr", "$4,160,000", "≈ 21.9 min"],
       ["$75/hr", "$6,240,000", "≈ 32.8 min"],
       ["$100/hr", "$8,320,000", "≈ 43.8 min"],
-      ["$250/hr", "$20,800,000", "≈ 1.8 hrs"],
       ["$500/hr", "$41,600,000", "≈ 3.6 hrs"],
       ["$1,000/hr", "$83,200,000", "≈ 7.3 hrs"]
     ],
-    "formula": "= wage × 2,080 × 40 ÷ ≈ $3,169 a second",
+    "formula": "= wage × 2,080 × 40 ÷ $3,169/s",
     "rowsT": 0.0,
     "rowEvery": 0.35,
     "pick": [
-      { "t": 4.2, "row": 3, "label": "$1,664,000 in under 9 min" },
-      { "t": 7.2, "row": 9, "label": "$8,320,000 in ≈ 44 min" }
+      { "t": 2.0, "row": 0, "label": "$7.25/hr × 83,200 hrs = $603,200" },
+      { "t": 4.2, "row": 2, "label": "$20/hr × 83,200 hrs = $1,664,000" },
+      { "t": 7.0, "row": 10, "label": "$1,000/hr × 83,200 hrs = $83,200,000" }
     ],
-    "hold": 6.8
+    "hold": 7.0
   },
   "sfx": [ { "t": 10.7, "kind": "ding" } ]
 }

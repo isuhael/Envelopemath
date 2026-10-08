@@ -1,8 +1,8 @@
 # Format 6: POV spend-vs-own race (pattern P6)
 
 **Teasers:** 06a Scoreboard (Apple / first iPhone), 06b Live Sheet (Netflix bill / Netflix stock), 06c Becker Rig (latte / Starbucks stock)
-**Date:** 2026-10-07 · **Writer:** format 6 (revised after review, see the Review log at the end) · **Specs:** `studio/specs/06a-scoreboard-first-iphone-apple.json`, `06b-live-sheet-netflix-bill.json`, `06c-becker-rig-latte-starbucks.json`
-**Check:** `python3 teasers/v2/checks/06-pov-race.py`. It recomputes every on-screen and spoken number, cross-checks the source tables, and asserts the specs match, including VO pacing in spoken words (numbers read out in full) and the motion/payoff timing of the hook. Current result: 352 checks, 0 failed.
+**Date:** 2026-10-07; hook pass 2026-10-08 (06b and 06c kept); hook pass 2 2026-10-08 (06b's hook replaced) · **Writer:** format 6 (revised after review, see the Review log at the end) · **Specs:** `studio/specs/06a-scoreboard-first-iphone-apple.json`, `06b-live-sheet-netflix-bill.json`, `06c-becker-rig-latte-starbucks.json`
+**Check:** `python3 teasers/v2/checks/06-pov-race.py`. It recomputes every on-screen and spoken number, cross-checks the source tables, and asserts the specs match, including VO pacing in spoken words (numbers read out in full) and the motion/payoff timing of the hook. Current result: 365 checks, 0 failed (after hook pass 2).
 
 ---
 
@@ -27,6 +27,7 @@
 |---|---|---|
 | 06a "every new base iPhone since 2007" | **One purchase: the $499 first iPhone, on launch day** | **Pricing.** From 2008 to 2015 Apple quoted US prices as "$199 with a two-year contract". A per-year spend line would need an unsubsidised price for every model, and that ran past the search budget. Using $199 would understate spend.<br>**Evidence.** The one-off-purchase variant (GoPro, Crocs, GeForce 256) carries 3 of @investment_timeline's 5 posts and 7.65M of its 9.53M views. "$499 for the first iPhone" is one famous, primary-sourced number. |
 | 06b "Netflix plan since a sourced year" | **Since 2012** (the plan is $7.99 in every source) | **Price.** One source lists the standalone $7.99 streaming plan from July 2011.<br>**Stock data.** NFLX fell about 60% in late 2011, so half a year bought at the 2011 average price would be wrong. 2012 is the first clean full year. |
+| 06b hook (hook pass 2) | **The header asks a question in today's bill:** "$19.99 Netflix, free for how many years, if your 2012-25 bills bought its stock?" | The old P6 header ("…instead of paying Netflix, ever since it was $7.99") averaged 6.0 with both judges. Its only $ figure was a 2012 price nobody pays now. The question, in the viewer's own current bill, averaged 7.5. The race, its maths and the same-brand pairing are unchanged; only the unit of the answer is new (P8 re-pricing on top of P6). The P6 verb "instead of paying" is dropped, and the judges docked it for that. |
 | 06c "a sourced latte price, since a sourced year" | **A round $4/day since 2014** | Only one dataset for Starbucks latte prices turned up: FinanceBuzz, republished by Visual Capitalist (grande latte $3.65 in 2014, $4.45 in 2024). A second, independent source for a precise price was not found (2 searches). The stake is therefore a round $4 inside that bracket, and the claim on screen is "$4 ≈ a grande latte", not a precise menu price. |
 
 **One end date for all three: the 12/31/2025 close.** The search's 2026 Netflix row was a stale January snapshot, and Apple's 2026 close had no date. Rather than mix dates, every race ends on a historically exact year-end. Each pinned comment states that date and the closing price used, because all three stocks have moved since (today is 2026-10-07). 06a's footer also carries it.
@@ -145,54 +146,65 @@ What was your first iPhone, and what did you pay?
 ## (b) 06b: Live Sheet, "your Netflix bill into Netflix stock"
 
 **Look:** Live Sheet: a white sheet on black, the yellow `#FFD60A` banner, and the formula bar showing the working (`lookOpts.formulaBar`). The race is drawn in the sheet area: the own line green `#039855`, the spend line red `#D92D20`, and the price hikes as rings on the spend line with a dark price tag that pops as the race passes each one.
-**Platform title (YouTube):** "What If Your Netflix Bill Bought Netflix Stock Since 2012?"
-**Hook pass (2026-10-08): kept.** The two judges averaged the current hook at 6.5. The only candidate at 7.5 (A, "from $7.99 through 7 hikes") was marked dishonest by judge 2, so it is out. The best remaining candidate (D, "Netflix is $19.99 now") averaged 7.0, under the 7.5 floor and only 0.5 above the current hook. The hook, title and body stay as they are. Scores, the judges' notes and the open items are in the Review log.
-**On-screen hook (header):** `POV: You invested in Netflix / instead of paying Netflix, / ever since it was **$7.99**` (14 words, 3 lines). "Instead of paying" is P6's operative verb (all 5 @investment_timeline titles), and "ever since it was $7.99" is honest about the hikes (the bill did not stay at $7.99) while stirring the grievance without a second number. The year is on frame 1 in the start tag "Jan 2012 $7.99", the start row and the axis, and in the first spoken line.
-**Footer:** `Standard plan list price · each year at its avg price · split-adjusted`
+**Platform title (YouTube):** "Your 2012-2025 Netflix Bills in Netflix Stock: How Many Years of Free Netflix?"
+**Hook pass 2 (2026-10-08): replaced.** The two judges averaged the old hook ("POV: You invested in Netflix / instead of paying Netflix, / ever since it was $7.99") at 6.0. Rewrite A, below, averaged 7.5 (7.5 and 7.5, both honest), 1.5 above it, so it is adopted under the round-2 rule (at least 1.0 above the current hook). Hook pass 1 had kept the old hook. The race, the data, the hike tags, raceT and the sfx are unchanged. Scores and reasons are in the Review log.
+**On-screen hook (header):** `**$19.99** Netflix, free for / how many years, if your / 2012-25 bills bought its stock?` (14 words, 3 lines, one $ figure).
+- The viewer's own current bill is the first token, in the banner's dark pill. Standard has cost $19.99 since March 2026.
+- It is the **unit of the answer**, not the money invested. The judges' objection to "$19.99" in hook pass 1 (option D) was that a viewer could read it as $19.99 a month invested; here it cannot.
+- The answer slot is visibly empty on frame 1: the formula bar types `≈ stock ÷ ($19.99 × 12) = ? years`.
+- The start year sits in the header ("2012-25"), and the start row, the tag "Jan 2012 $7.99" and the axis show where the bills begin.
+
+**Footer:** `Standard plan list price, 2012-25 · 12/31/25 value ÷ $19.99 a month`. It dates the race and states the conversion.
 
 **Modelled on:**
-- H45 "POV: You invested in Monster instead of paying $3/day for a Monster Energy": 1.5M (140.6x). The recurring-habit variant, with a same-brand pairing.
-- H18 ChartOrbit frame 1, "POV: Since 1996 you / invested $100/month in / and never sold": 1,391,731 (5.91x). A money-in line beside the value line.
-- H16 "POV: In 2002 You invested $5000 in" NETFLIX VS Disney: 15,876,376 (100.45x). Netflix as a household name in a POV race.
-- Contrast: ChartOrbit's own "Does investing 100$ monthly in NETFLIX make you rich?" got 36,657 (watch/chartorbit.md, Pattern B), which is why the header leads with "instead of paying Netflix", not "monthly into Netflix".
+- H04 HD Guy "Cost in Units of Starbucks Lattes", footer "Tall Latte ☕ = $4.45": 9,858,084 (106.16x). A big sum re-priced in a unit the viewer pays, with that unit's price on frame 1.
+- H01 HD Guy "Cost in Units of RTX 5090": 30,617,461 (62.49x).
+- H64 Gage Heward "What $1 costs you by age": 1,150,974 (210x median). The viewer's own small number, answered as a span of time.
+- Hook bank §4.1 Rewrite B, "$1,000,000,000,000 ÷ 8.2 billion people = $___ each": an empty answer slot as the open loop (here "= ? years" in the bar).
+- H45 "POV: You invested in Monster instead of paying $3/day for a Monster Energy": 1.5M (140.6x). The same-brand irony is kept.
 
 **Hook rules it satisfies:**
-- **R1:** $7.99 is in the header; the start row ($7.99 / $7.99), the start tag and the formula bar `= $7.99 × 12 = $95.88` are on frame 1.
-- **R2:** one dollar input, no result, in the header, title and caption.
-- **R3:** a bill most viewers pay now (the strongest of the three). The pinned comment asks about their plan.
-- **R4:** $7.99.
-- **R5:** "ever since it was $7.99" makes the viewer compare it with what they pay now, and the first VO line ("Netflix was $7.99") does the same; see the wrong belief below.
-- **R6:** you + $7.99 + 2012 (frame 1 and VO).
+- **R1:** $19.99 is the header's first token. The start row ($7.99 / $7.99), the start tag and the bar's `($19.99 × 12)` are on frame 1 too.
+- **R2:** one $ figure in the header, and no result in the header, title or caption. The answer slot is empty.
+- **R3:** $19.99 is the bill Standard subscribers pay today, the strongest viewer-owned number in this format.
+- **R4:** $19.99, small and familiar.
+- **R5:** see the wrong belief below. The first bar step opens small: at the end of 2012, a whole year of bills in the stock ($107) covers only ≈ 5 months of today's Netflix.
+- **R6:** you ("your 2012-25 bills") + $19.99 + the 2012-25 horizon, all in the header.
 - **R7:** bill vs stock, the same brand twice.
 - **R8:** 14 words.
-- **R9:** the year axis, and the hikes are counted as they land: "Hike 1 · May 2014" to "Hike 7 · Jan 2025".
-- **R10:** the race moves at 0.3 s; the first payoff ($107 vs $95.88 at the end of 2012) lands at 1.9 s.
-- **R11:** the title asks, the screen says POV, the caption takes a side without a number.
-- **R12:** "≈ 8.7×".
+- **R9:** one countable answer, counted in the bar at each beat: ≈ 5 months (2012), 2.4 years (2013), 38 (2020), 22 (the 2022 halving), then 74. The hike tags still count "Hike 1" to "Hike 7" as the race passes them.
+- **R10:** the race moves at 0.3 s. The 2012 row lands at 1.91 s, and the first payoff in the hook's own unit ("≈ 5 months") is typed by about 2.75 s.
+- **R11:** the header and the title ask; the caption has no number.
+- **R12:** "≈ 74 years of Netflix" is one lopsided, repeatable number.
 
-**Wrong belief it exploits (R5):** "A streaming bill is too small to matter, and every price hike is pure loss." On the sheet each hike simply buys more, and $2,037 of bills becomes ≈ $17,700.
+**Wrong belief it exploits (R5):** "Old streaming bills are just gone." Every 2012-2025 bill, put in Netflix stock, would now pay for ≈ 74 years of today's $19.99 Netflix. The flat-price assumption is stated on screen ("at $19.99 a month") and in the pinned comment.
+
+**What the judges still flag:** the header reads as a word problem (a conditional clause and the "2012-25" shorthand must be parsed in 1.5 s), it drops P6's "instead of paying", and two prices are in view at once ($19.99 in the banner, $7.99 in the start row). The 74 years holds the price flat after 8 hikes in 14 years, so expect "prices will rise" comments.
 
 ### Beat sheet (chart clock: x 2012 → 2025.99 over t 0.3 → 23.0 s, ≈ 1.62 s per year)
 
 | t (s) | On screen | VO |
 |---|---|---|
-| 0.0 | Banner header. Start row **$7.99 / $7.99**. Tag "Jan 2012 $7.99". Formula bar types `= $7.99 × 12 = $95.88`. Footer. | "Netflix was $7.99 in 2012." |
-| 0.3 | The race starts. | |
-| 1.91 | End of 2012: paid $95.88, owned **$107** (first payoff). | |
-| 2.6 | Formula bar `≈ $95.88 ÷ $1.19 ≈ 81 shares`. End of 2013 at t 3.53: owned $568 vs $191.76 paid (the stock ×3.98 that year). | "Every bill since, you buy Netflix stock instead." |
+| 0.0 | Banner header with **$19.99** in the dark pill. The formula bar is mid-typing `≈ stock ÷ ($19.99 × 12)` and finishes `= ? years` by about 0.4 s: the answer slot, empty. Start row **$7.99 / $7.99**, tag "Jan 2012 $7.99", footer. Caption "YOUR $19.99 NETFLIX, FREE". | "Your $19.99 Netflix, free. For how long?" |
+| 0.3 | The race starts. At 1.5 s the live row reads ≈ $74 / $82. | |
+| 1.91 | End of 2012: paid $95.88, owned **$107**. | |
+| 1.93 | The bar erases and types `≈ $107 ÷ $19.99 ≈ 5 months` (done by about 2.75 s, readable until 3.55 s): the first payoff, in the hook's own unit. There are no history rows in this layout and the live row rolls on, so this step is the lasting record of 2012. Caption "FOR HOW LONG?". | |
+| 3.0 | End of 2013 at t 3.53: owned **$568** vs $191.76 paid. At 3.55 the bar types `≈ $568 ÷ $239.88 ≈ 2.4 years`. | "Since 2012, every bill buys Netflix stock." |
 | 4.08 | Tag "Hike 1 · May 2014 $8.99" (tick). | |
-| 6.0 | Formula bar `= 9 × $8.99 + 3 × $9.99 = $110.88`. Tag "Hike 2 · Oct 2015 $9.99" at t 6.38 (tick). | "Price hike? Your investment goes up too." |
+| 6.0 | Tag "Hike 2 · Oct 2015 $9.99" at t 6.38 (tick). | "Price hike? Your investment goes up too." |
 | 9.2 | Formula bar `≈ each year's bills ÷ that year's avg price`. "Hike 3 · Oct 2017 $10.99" (t 9.63) and "Hike 4 · Jan 2019 $12.99" (t 11.66). | "Each year's bills buy at that year's average price." |
-| 13.4 | "Hike 5 · Oct 2020 $13.99" (t 14.50). Owned passes $9,000 (t 14.81); end of 2020 **$9,181** (t 14.89). | "2020: your stake tops $9,000." |
-| 16.9 | "Hike 6 · Jan 2022 $15.49" (t 16.53). Owned $10,410 → **$5,289** (thud, t 18.13). | "2022: it halves." |
+| 13.4 | "Hike 5 · Oct 2020 $13.99" (t 14.50). End of 2020: **$9,181** (t 14.89). At 14.91 the bar types `≈ $9,181 ÷ $239.88 ≈ 38 years`. | "2020: about 38 years of Netflix." |
+| 16.9 | "Hike 6 · Jan 2022 $15.49" (t 16.53). End of 2021 $10,410 (t 16.51, ≈ 43 years, not shown), then **$5,289** (thud, t 18.13). At 18.15 the bar types `≈ $5,289 ÷ $239.88 ≈ 22 years`. | "2022: it halves." |
 | 18.7 | End of 2023 $8,964 (t 19.75), end of 2024 $16,656 (t 21.38). "Hike 7 · Jan 2025 $17.99" (t 21.39). | "You keep paying. It comes back." |
 | 21.2 | Formula bar `≈ 188.8 shares × $93.76 ≈ $17,700`. Final at t 23.0: owned **≈ $17,700**, paid **$2,037.32 spent** (cash). | "About $2,037 in bills. About $17,700 in stock." |
-| 26.0 | Verdict: **≈ 8.7×** what Netflix / charged you. Formula bar `≈ $17,700 ÷ $2,037.32 ≈ 8.7×`. | "About 8.7 times what Netflix charged you." |
-| 29.3-30.5 | Hold, then clear back to frame 1. | |
+| 26.0 | Verdict: **≈ 74 years** of Netflix / at $19.99 a month. Formula bar `≈ $17,700 ÷ $239.88 ≈ 74 years`. | "At $19.99 a month: about 74 years of Netflix." |
+| 29.6-30.5 | Hold, then clear back to frame 1. | |
 
-### Guide VO script (58 words)
+The VO says each year-count when its year lands. The bar shows the working just after (2020: the VO's "38" at about 14.6 s, the 2020 row at 14.89, the bar's "≈ 38 years" by about 16.3 s).
 
-> Netflix was $7.99 in 2012. Every bill since, you buy Netflix stock instead. Price hike? Your investment goes up too. Each year's bills buy at that year's average price. 2020: your stake tops $9,000. 2022: it halves. You keep paying. It comes back. About $2,037 in bills. About $17,700 in stock. About 8.7 times what Netflix charged you.
+### Guide VO script (62 words)
+
+> Your $19.99 Netflix, free. For how long? Since 2012, every bill buys Netflix stock. Price hike? Your investment goes up too. Each year's bills buy at that year's average price. 2020: about 38 years of Netflix. 2022: it halves. You keep paying. It comes back. About $2,037 in bills. About $17,700 in stock. At $19.99 a month: about 74 years of Netflix.
 
 ### The maths
 
@@ -219,14 +231,21 @@ Plan price by month: a new price counts from the month it was announced. Each ye
 |---|---|
 | $2,037.32 spent / "about $2,037" | sum of the 168 monthly list prices |
 | ≈ $17,700 | 188.839 shares × $93.76 = $17,705.59, to 3 significant figures |
-| `≈ $95.88 ÷ $1.19 ≈ 81 shares` | 2012 bills ÷ 2012 average, shown at 2 decimals: 95.88 ÷ 1.19 = 80.57 and 95.88 ÷ 1.1855 = 80.88, both ≈ 81 |
-| `= 9 × $8.99 + 3 × $9.99 = $110.88` | 2015's bills (the Oct 2015 hike) |
 | `≈ 188.8 shares × $93.76 ≈ $17,700` | 188.8 × 93.76 = 17,701.9 |
-| `≈ $17,700 ÷ $2,037.32 ≈ 8.7×` / "about 8.7 times" | 17,705.59 ÷ 2,037.32 = 8.69 (and 17,700 ÷ 2,037.32 = 8.69): the formula bar keeps the same ≈ $17,700 the tip shows |
-| "Hike 1" … "Hike 7" | the 7 Standard-plan price changes after the $7.99 start |
-| "tops $9,000" (2020) | the stake crosses $9,000 at x 2020.94; $9,181 at the end of 2020 |
+| $19.99, `($19.99 × 12)` (header, bar, footer, VO, verdict) | today's Standard bill (from March 2026). It is the unit of the answer, not a race input: the race's 168 bills run Jan 2012-Dec 2025 and end on the $17.99 bill |
+| $239.88 (bar) | 12 × $19.99, a year of today's Standard |
+| `≈ $107 ÷ $19.99 ≈ 5 months` (2012) | $106.98 ÷ 19.99 = 5.35 months (shown $107 ÷ 19.99 = 5.35) |
+| `≈ $568 ÷ $239.88 ≈ 2.4 years` (2013) | $568.35 ÷ 239.88 = 2.369 (shown $568 → 2.368) |
+| `≈ $9,181 ÷ $239.88 ≈ 38 years` / "about 38 years" (2020) | $9,181.15 ÷ 239.88 = 38.27 (shown $9,181 → 38.27) |
+| (not shown) 2021 peak | $10,409.99 ÷ 239.88 = 43.40 years |
+| `≈ $5,289 ÷ $239.88 ≈ 22 years` (2022) | $5,288.73 ÷ 239.88 = 22.05 (shown $5,289 → 22.05). 43.4 → 22.0 years is the spoken "it halves" (the stake fell 49.2%) |
+| `≈ $17,700 ÷ $239.88 ≈ 74 years` / "about 74 years" / verdict | $17,705.59 ÷ 239.88 = 73.81 (885.7 months); the bar's ≈ $17,700 ÷ 239.88 = 73.79. Both round to 74 |
+| Year-count rounding | months to the whole month; years to 2 significant figures (2.4, 38, 22, 74). The check asserts that each step rounds the same from the exact stake and from the whole-dollar figure the bar shows |
+| (pinned only) ≈ 8.7× | 17,705.59 ÷ 2,037.32 = 8.69, the stake against the bills (the old verdict) |
+| "Hike 1" … "Hike 7" | the 7 Standard-plan price changes after the $7.99 start, to 2025 (the 8th, to $19.99 in March 2026, is after the race) |
 | "halves" (2022) | stake $10,410 → $5,289, −49.2% (the stock fell 51.05%) |
-| (no longer on screen) 2013 | the stock ×3.98 (5.2596 ÷ 1.3227); the line that said "quadruples" was cut for time |
+| (not on screen) 2013 | the stock ×3.98 (5.2596 ÷ 1.3227) |
+| (not on screen since hook pass 2) 2012 shares, 2015 bills | 95.88 ÷ 1.1855 = 80.88 shares; 2015's bills = 9 × $8.99 + 3 × $9.99 = $110.88 (the table above) |
 | Tick x positions | year + (month − 1) ÷ 12: 2014.33, 2015.75, 2017.75, 2019.0, 2020.75, 2022.0, 2025.0 |
 
 ### Sources
@@ -234,7 +253,7 @@ Plan price by month: a new price counts from the month it was announced. Each ye
 | Input | Source 1 | Source 2 |
 |---|---|---|
 | Standard plan price history: $7.99 (from Jul 2011), $8.99 May 2014, $9.99 Oct 2015, $10.99 Oct 2017, $12.99 Jan 2019, $13.99 Oct 2020, $15.49 Jan 2022, $17.99 Jan 2025 | Android Authority, "A 94% increase: A timeline of Netflix price hikes", accessed 2026-10-07, https://www.androidauthority.com/timeline-netflix-price-hikes-3463376/ | Variety, "Netflix Hikes Price of U.S. Streaming Service: Standard Plan Jumps to $13 per Month", 2019-01-15, https://variety.com/2019/digital/news/netflix-us-streaming-price-increases-2019-1203108254 ($10.99 → $12.99) · CNBC, "Netflix to hike prices on standard and ad-supported streaming plans", 2025-01-21, https://www.cnbc.com/2025/01/21/netflix-raises-prices.html ($15.49 → $17.99) · Android Police, https://www.androidpolice.com/netflix-prices-increase-over-last-10-years/ · flixed.io, https://flixed.io/netflix-price-hikes · MovieWeb, https://movieweb.com/netflix-subscription-changes-guide/ |
-| After our window: Standard $19.99 from March 2026 (used in the pinned comment only) | CNBC, "Netflix raises prices across all streaming plans", 2026-03-26, https://www.cnbc.com/2026/03/26/netflix-raises-prices-across-all-streaming-plans.html | subkept.com and keepingupwithinflation.com, accessed 2026-10-07 |
+| Today's bill, the hook's unit (hook pass 2): Standard $19.99 from March 2026. It is after the race window, so it converts the stake into years and is never a race input | CNBC, "Netflix raises prices across all streaming plans", 2026-03-26, https://www.cnbc.com/2026/03/26/netflix-raises-prices-across-all-streaming-plans.html | subkept.com and keepingupwithinflation.com, accessed 2026-10-07 |
 | NFLX annual average, year close and % change, 2011-2025 (split-adjusted; Netflix pays no dividend). 2012-2014 at 4 decimals: 1.1855 / 1.3227, 3.5272 / 5.2596, 5.7495 / 4.8801 | Macrotrends, "Netflix - 24 Year Stock Price History", accessed 2026-10-07, https://www.macrotrends.net/stocks/charts/NFLX/netflix/stock-price-history (re-searched 2026-10-07 by the writer and, independently, by the verifier) | StatMuse Money, NFLX 12/31/2025 close $93.76 (equal to Macrotrends), https://www.statmuse.com/money/ask/netflix-stock-price-december-2025. Internal check: every % change reproduces from the closes; at 4 decimals 1.3227 → 5.2596 gives the listed +297.64% exactly. |
 
 **Assumptions (footer):**
@@ -243,22 +262,24 @@ Plan price by month: a new price counts from the month it was announced. Each ye
 - Netflix pays no dividends.
 - The value is taken at the 12/31/2025 close ($93.76).
 - No fees or taxes.
+- Years of Netflix: the 12/31/2025 value ÷ $19.99 a month, held flat. Future hikes and the stock's moves since 12/31/2025 are ignored.
+- Members who were grandfathered in 2014-2016 paid a little under the list price that the spend line uses.
 
-**Caption:** POV: You invested in Netflix instead of paying Netflix, ever since it was $7.99. Every price hike was a buy order. #netflix #usa #investment #stocks
+**Caption:** Every Netflix bill from 2012 to 2025, into Netflix stock. Your old bills, paying for your new ones. #netflix #usa #investment #stocks (no number: the caption sits over the video, and a result in it would close the loop at 0.0 s)
 
 **Pinned comment:**
 The working:
 - Each year's 12 bills at the Standard plan's list price buy shares at that year's average price (split-adjusted).
-- 2012: $95.88 ÷ $1.1855 ≈ 80.9 shares. 2012's $95.88 alone is ≈ $7,600 of the final (≈ 43%).
-- Total: 188.84 shares × $93.76 ≈ $17,706, against $2,037.32 paid: ≈ 8.7×.
-- Valued at the 12/31/2025 close ($93.76). Standard went to $19.99 in March 2026.
+- 188.84 shares × $93.76 (12/31/2025 close) ≈ $17,706, against $2,037.32 of bills (≈ 8.7×).
+- Standard is $19.99 since March 2026: × 12 = $239.88 a year. $17,706 ÷ $239.88 ≈ 73.8 years.
+- Ignores taxes, future hikes and the stock's moves since 12/31/2025; members grandfathered in 2014-16 paid a little under list.
 
 Which plan are you on?
 
 **Per-platform notes:**
 - **YouTube:** the question title, with no CTA card.
-- **Instagram Reels:** the sheet with the formula bar makes a save-worthy final frame, so hold it for 1+ s before the loop. Captions are Inter ExtraBold uppercase with the keyword in yellow (look spec). The post caption is the POV line + a numberless verdict, as above.
-- **TikTok:** the caption above: the POV line, a verdict with no number, and `#netflix #usa #investment #stocks`.
+- **Instagram Reels:** the cover is frame 1 (the $19.99 question and the empty "= ? years"). The sheet with the formula bar makes a save-worthy final frame, so hold it for 1+ s before the loop. Captions are Inter ExtraBold uppercase with the keyword in yellow (look spec). The post caption is the numberless line above.
+- **TikTok:** the caption above (no number) and `#netflix #usa #investment #stocks`. The pinned comment asks "Which plan are you on?", so viewers on Premium or the ad tier can redo the division with their own bill.
 - **All:** "Netflix" in text only, no N logo. The spend icon is the kit's generic `ticket`.
 - **Kit request (Live Sheet):** pre-place the 7 hike rings on the timeline as empty markers at frame 1 and fill each as its tag pops, so the count ("Hike 3 of 7") is visible before it happens (R9). The spec works without it.
 
@@ -527,3 +548,71 @@ The owner rejected round 1 partly because "hooks are weak". For 06b and 06c, two
 - `node src/cli.mjs stills` at 0, 1.5 and 3.0 s:
   - **06b.** At 0.0 s: the yellow banner header with "$7.99" highlighted as its last token, the formula bar typing "= $7.99 × 12", the start row $7.99 / $7.99, the tag "Jan 2012 $7.99", the footer, and the caption "NETFLIX WAS $7.99". At 1.5 s: row 2012 reads $74 / $82, and the formula bar is complete (= $95.88). At 3.0 s: row 2013 reads $161 / $418.
   - **06c.** At 0.0 s: the 3-line header with "$4/day" in green, the figure holding the $4 coin, tips $4 spent / $4, and the 2014 timeline. At 1.5 s: "Day 1 · $4", the cup in hand, $890 spent / $967, and the caption "Skip the $4 latte, get rich?". At 3.0 s: 2015, $2,214 spent / $2,830.
+
+### Hook pass 2 (2026-10-08)
+
+The owner rejected round 1 partly because the hooks were weak. Two judges scored 06b's current hook, its hook-pass-1 best (R1, the old option D with its "cancelled" wording fixed) and four new rewrites (A-D), out of 10. **Round-2 rule:** average the two judges' scores for each option; an option that either judge marks dishonest is out; adopt the best option when its average is **at least 1.0 above the current hook**, even below 7.5. 06a and 06c were not in this pass.
+
+| Option | Judge 1 | Judge 2 | Average | Decision |
+|---|---:|---:|---:|---|
+| current: "POV: You invested in Netflix / instead of paying Netflix, / ever since it was $7.99" | 6 | 6 | **6.00** | replaced |
+| R1: "POV: Netflix is $19.99 now. / You cancelled in 2012 and / invested every bill to 2025" | 7 | 6.5 | 6.75 | +0.75, under the 1.0 margin |
+| **A: "$19.99 Netflix, free for / how many years, if your / 2012-25 bills bought its stock?"** | 7.5 | 7.5 | **7.50** | **adopted (+1.50)** |
+| B: "Missed Netflix in 2002? / POV: your bills, from $7.99 / in 2012, bought it instead" | 5.5 | 6 | 5.75 | |
+| C: "POV: From $7.99 in 2012, / Netflix bills buy its stock. / Year 1 alone became…" | 6.5 | 6.5 | 6.50 | |
+| D: "$7.99 Netflix in 2012. / Your bills → Netflix stock. / Over or under 10× by 2025?" | 6.5 (dishonest) | 6 (dishonest) | (6.25) | out (both judges: honesty) |
+
+**Why A won (both judges called it the strongest lever in the set):**
+- The viewer's own current bill, $19.99, is the first token, and it becomes the **unit of the answer** (P8 re-pricing on top of P6): H04 "Cost in Units of Starbucks Lattes" (9.86M, 106.16x), H64 "What $1 costs you by age" (1.15M, 210x median).
+- It cannot be read as the amount invested, which was the judges' objection to $19.99 in hook pass 1.
+- The answer slot is empty on frame 1 ("= ? years", the hook bank's §4.1 Rewrite B).
+- The first payoff comes in the hook's own unit by about 2.75 s ("≈ 5 months"), and it starts small: a year of 2012 bills covers only 5 months of today's bill.
+- The count moves on the beat (5 months, then 2.4, 38, 22 and 74 years), and the verdict is one lopsided, repeatable number (R12).
+- Both judges recomputed every step and marked it honest: the flat price, taxes and grandfathering are disclosed, and "at $19.99 a month" qualifies the verdict.
+
+**Why the others lost:**
+- **R1:** a real R3 upgrade, but $19.99 is not a race input, so a busy viewer may read it as $19.99 a month invested. Frame 1 has no countable loop, and the first payoff is still the faint +$11 at 1.91 s.
+- **B:** 2002 is someone else's regret (ChartOrbit H16's). It puts three figures in the header, and "Your bill didn't." is cryptic.
+- **C:** a good open slot ("Year 1 alone became…", filled at 2.6 s with ≈ $7,600). But it has no "you" and no viewer-owned number, and the belief it names ("later bills matter more") is not one viewers hold.
+- **D, dishonest:** "Over or under 10× by 2025?" answered "Under" holds only at year-end closes. NFLX's 2025 average was $109.71, and the 186.87 shares held through 2025 need only $109.02 to pass 10× the $2,037.32 of bills. The stake was about 13× at the June 2025 high.
+
+**Applied as written:**
+- header, title, footer;
+- vo[0] "Your $19.99 Netflix, free. For how long?" (0.0-2.9), vo[1] "Since 2012, every bill buys Netflix stock." (3.0-5.9) and vo[8] "At $19.99 a month: about 74 years of Netflix." (26.0-29.6), with vo[4] at 13.4-16.0;
+- the verdict `**≈ 74 years** of Netflix\nat $19.99 a month`;
+- the 8 formula-bar steps. Steps 1, 2, 4 and 5 land 0.02 s after their year-ends (1.93, 3.55, 14.91, 18.15). The old "≈ 81 shares" step (2.6 s) and "2015 bills" step (6.0 s) are gone;
+- the numberless caption and the pinned comment.
+
+Unchanged: data (points, finals, column labels, purchases and hike tags), raceT [0.3, 23.0], hold 7.5, sfx and the 30.5 s duration.
+
+**Deviations, with reasons:**
+1. **vo[4] is "2020: about 38 years of Netflix."**, not "2020: 38 years of Netflix.". 38 is a rounding of 38.27, and the house rule, which the check enforces, puts "about" before every rounded figure in the VO (as in vo[7] and vo[8]). It is 7 spoken words, 2.50 s, so it still fits d 2.6.
+2. **The pinned comment keeps two extra lines.** The method line stays ("Each year's 12 bills … buy shares at that year's average price"), and "against $2,037.32 of bills (≈ 8.7×)" is added to the candidate's product line. The 8.7× multiple left the screen with the old verdict, so the pinned comment is now the only place a viewer can check the stake against the bills.
+
+**What the judges still flag (not fixed here):**
+- The header reads as a word problem. Its conditional clause, broken mid-line ("free for / how many years, if your / 2012-25 bills…"), and the "2012-25" shorthand are slower to parse than a single clause like H45's.
+- It drops P6's "instead of paying", which all 5 @investment_timeline winners carry.
+- Two prices are in view at once: $19.99 in the banner and $7.99 in the start row.
+- The wrong belief ("old bills are just gone") is implied, not attacked.
+- The 74 years holds $19.99 flat after 8 hikes in 14 years. That is disclosed, but expect "prices will rise" comments.
+
+**Today's render.** `node src/cli.mjs check` gives 0 errors and 0 warnings. Stills at 0, 1.5, 2.2, 3.0, 15.6 and 27.5 s:
+- **0.0 s.** The 3-line banner fits, with "$19.99" in the dark pill as its first token. The bar is mid-typing "≈ stock ÷ ($19.99 × 12)" with the caret, above the start row Start $7.99 / $7.99, the tag "Jan 2012 $7.99" and the 2-line footer. Caption: "YOUR $19.99 NETFLIX, FREE". The hook reads in frame 1.
+- **1.5 s.** The bar is complete: "≈ stock ÷ ($19.99 × 12) = ? years" ("years" wraps to the bar's second line). The live row reads 2012, $74 / $82.
+- **2.2 s.** The bar is retyping ("≈ $1…"), the row has rolled to 2013 ($113 / $190), and the caption reads "FOR HOW LONG?".
+- **3.0 s.** The bar reads "≈ $107 ÷ $19.99 ≈ 5 months", over row 2013 at $161 / $418.
+- **15.6 s.** The bar is typing "≈ $9,181 ÷ $…", the tag "Hike 5 · Oct 2020 $13.99" is up, and the caption reads "38 YEARS OF NETFLIX".
+- **27.5 s.** The final row reads 2025, "$2,037.32 spent" / "≈ $17,700", and the bar reads "≈ $17,700 ÷ $239.88 ≈ 74 years". The 2-line verdict card "≈ 74 years of Netflix / at $19.99 a month" fits under the footer.
+
+**Files:**
+- `studio/specs/06b-live-sheet-netflix-bill.json`: the header, footer, vo[0], vo[1], vo[4], vo[8], verdict and `lookOpts.formulaBar`. The id and file name are unchanged.
+- `checks/06-pov-race.py`:
+  - New input `NFLX_STD_NOW = 19.99` (CNBC 2026-03-26), used only as the unit.
+  - It computes the stake in months and years of today's bill and asserts that each bar step rounds the same from the exact stake and from the whole-dollar figure shown (5 months; 2.4, 38, 22 and 74 years).
+  - It also asserts the pinned 73.8 years and ≈ 8.7×, and that the halving shows in years (43.4 → 22.0).
+  - The bar steps on beats are checked against their year-ends (within 0.05 s), the others against their VO lines, and every step must be one or the other.
+  - It now requires "about" before the 38.
+  - The "tops $9,000", "≈ 81 shares", bar "8.7×" and pinned "43%" checks left with their strings.
+  - Result: **365 checks, 0 failed** (was 352). In a scratch copy, a 2.3-year bar step, a vo[4] without "about" and a 2020 bar step moved to 15.5 s each failed.
+- This write-up: the 06b header block, hook rules, wrong belief, beat sheet, VO script, maths rows, the $19.99 source row, assumptions, caption, pinned comment and platform notes, plus a row in the "depart from the seeds" table.
+- `teasers/v2/teasers.json`: the 06b entry's title, header, key numbers and hook score (7.5, the judges' average).

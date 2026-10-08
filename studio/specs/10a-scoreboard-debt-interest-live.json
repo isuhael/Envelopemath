@@ -4,22 +4,22 @@
   "format": "cost-counter",
   "fps": 30,
   "duration": 36.5,
-  "header": "US debt interest since you hit **play**.\nHow much comes __off the debt__?",
+  "header": "US debt interest since you hit **play**:\nwhen does it pass **your salary**?",
   "footer": "FY25: $970B ÷ 31,536,000 s · pay $1,251 × 52",
   "captions": true,
   "vo": [
-    { "t": 0.0,  "d": 2.4, "text": "How much comes off the debt?" },
-    { "t": 2.4,  "d": 2.8, "text": "There goes a year of median pay." },
-    { "t": 5.3,  "d": 3.1, "text": "**≈ $30,800** a second." },
-    { "t": 8.5,  "d": 4.3, "text": "Yearly pay ÷ 30,800 = your seconds." },
-    { "t": 12.8, "d": 2.0, "text": "A median new house. Gone." },
-    { "t": 15.2, "d": 3.5, "text": "That's **≈ $111 million** an hour." },
-    { "t": 21.1, "d": 2.0, "text": "10 years of median pay." },
-    { "t": 23.4, "d": 4.7, "text": "At fiscal 2025's rate: $970 billion a year." },
-    { "t": 28.4, "d": 2.8, "text": "So, how much came off the debt?" },
-    { "t": 32.5, "d": 3.5, "text": "**$1 million.** And __$0__ off the debt." }
+    { "t": 0.0,  "d": 1.4, "text": "Find your salary." },
+    { "t": 1.6,  "d": 1.6, "text": "$50,000: passed." },
+    { "t": 3.25, "d": 2.0, "text": "$100,000: passed." },
+    { "t": 5.4,  "d": 3.1, "text": "**≈ $30,800** a second." },
+    { "t": 8.5,  "d": 3.9, "text": "$250,000 a year: ≈ 8 seconds." },
+    { "t": 12.7, "d": 4.3, "text": "Yearly pay ÷ 30,800 = your seconds." },
+    { "t": 17.2, "d": 3.5, "text": "That's **≈ $111 million** an hour." },
+    { "t": 21.0, "d": 4.7, "text": "At fiscal 2025's rate: $970 billion a year." },
+    { "t": 28.0, "d": 2.7, "text": "Last row: $1 million a year." },
+    { "t": 32.5, "d": 2.7, "text": "**$1 million**: ≈ 33 seconds." }
   ],
-  "verdict": { "t": 32.5, "text": "**$1 million** in ≈ 33 seconds.\n__$0__ of it pays the debt down." },
+  "verdict": { "t": 32.5, "text": "**$1 million** a year: ≈ 33 seconds.\n$100,000 a year: ≈ 3.3 seconds." },
   "data": {
     "label": "Net interest on the US debt, since you hit play",
     "perSecond": 30758.5,
@@ -29,10 +29,11 @@
     "prefix": "$",
     "dp": 0,
     "milestones": [
-      { "value": 65052, "label": "A year of median pay: $65,052" },
-      { "value": 393700, "label": "A median new house: $393,700" },
-      { "value": 650520, "label": "10 years of median pay: $650,520" },
-      { "value": 1000000, "label": "$1 million" }
+      { "value": 30000, "label": "A $30,000 salary: $30,000" },
+      { "value": 50000, "label": "A $50,000 salary: $50,000" },
+      { "value": 100000, "label": "A $100,000 salary: $100,000" },
+      { "value": 250000, "label": "A $250,000 salary: $250,000" },
+      { "value": 1000000, "label": "A $1,000,000 salary: $1,000,000" }
     ],
     "final": "≈ $1,002,727",
     "hold": 3.9
@@ -40,16 +41,17 @@
   "lookOpts": {
     "intro": { "l1": "≈ $30,800", "l2": "every second" },
     "labels": [
-      { "l1": "$1,251 × 52 = $65,052", "l2": "A year of median pay" },
-      { "l1": "$393,700", "l2": "A median new house" },
-      { "l1": "$65,052 × 10 = $650,520", "l2": "10 years of median pay" },
-      { "l1": "$1,000,000", "l2": "$1 million" }
+      { "l1": "$30,000 a year", "l2": "≈ 1.0 second" },
+      { "l1": "$50,000 a year", "l2": "≈ 1.6 seconds" },
+      { "l1": "$100,000 a year", "l2": "≈ 3.3 seconds" },
+      { "l1": "$250,000 a year", "l2": "≈ 8 seconds" },
+      { "l1": "$1,000,000 a year", "l2": "≈ 33 seconds" }
     ],
-    "rateSteps": [ { "t": 15.2, "l1": "≈ $30,800 × 3,600 s", "l2": "≈ $111 million an hour" } ],
+    "rateSteps": [ { "t": 17.2, "l1": "≈ $30,800 × 3,600 s", "l2": "≈ $111 million an hour" } ],
     "pips": true,
-    "pipLabels": ["$65,052", "$393,700", "$650,520", "$1 million"],
-    "slot": { "label": "Off the debt", "empty": "$___", "t": 32.5, "fill": "$0", "tone": "bad" },
+    "pipLabels": ["$30K", "$50K", "$100K", "$250K", "$1M"],
+    "icons": ["bill", "bill", "bill", "bill", "coin"],
     "heroIcon": false
   },
-  "sfx": [ { "t": 32.5, "kind": "cash" } ]
+  "sfx": []
 }

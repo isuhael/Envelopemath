@@ -4,8 +4,9 @@
 // The overheating counter (Alan Becker's "Clicks Per Second", research/v2/watch/alan-becker.md §4 and §6 idea 9).
 //   panel     a flat vector prop on the void: a white readout board with a 10 px ink border and round corners, held
 //             up by one ink post that stands on the floor at its left end (he leans on it). The label on top (with a
-//             live dot that blinks once a real second), the counter in big mono ink digits, and a strip that shows
-//             the rate. The counter runs linearly over data.counterT and locks on the spec's `final` display string.
+//             live dot that blinks once a real second), the counter in big ink digits (Inter Tight 900, tabular, like
+//             every hero number in the kit), and a strip that shows the rate; the board is as tall as the strip's
+//             current state. The counter runs linearly over data.counterT and locks on the spec's `final` string.
 //   NEXT      a ticker under the panel previews the milestone the counter is chasing ("NEXT  A median new house:
 //             $393,700"; just the amount when the label will not fit one line), and that object's dashed ghost
 //             waits on the floor, so frame 1 already has a target. The ticker ducks out while an object drops past it.
@@ -13,9 +14,9 @@
 //             milestone's object (house, car, coin, a wad of bills...) drops out from under the panel onto its ghost:
 //             squash, dust lines, shake. Objects heap up right to left, each bigger than the last, creeping toward
 //             the figure, who escalates: flinch + point, shocked jump, duck + step back.
-//   heat      every pass heats the board one notch: the digits, the live dot and the rim go from ink to red (a cost
-//             is a loss; lookOpts.heatColor: 'hero' heats to green instead), the rim thickens, then vibration and
-//             steam. No glow: it stays a flat prop. The lock is the peak: white impact frame, shake, side hit lines,
+//   heat      hold, then snap: ink until the first pass, then a 0.15 s snap (OKLCH, no mud) to red (a cost is a
+//             loss; lookOpts.heatColor: 'hero' heats to green instead); each further pass thickens the rim, then
+//             vibration and steam. No glow: it stays a flat prop. The lock is the peak: white impact frame, shake, side hit lines,
 //             camera punch, and the last landing (or the lock itself) knocks him onto his butt, staring up at it.
 //             The verdict lands in the caption band (chrome).
 //   layout    the readout is sized to the widest string it will show and to the room left under the hook, footer
@@ -39,7 +40,7 @@
 import {
   h, s, style, attr, setText, setHTML, markup, plain, prog, clamp, lerp, rng, fmtNum,
   C, F, L, S, E, poseTrack, fk, secondary, Figure, makeWorld, makeFx, camera, track, pinLimb, blendJ,
-  chromeParts, durationOf, numLike, measure, squashAt, fall, hop, wobble, icon,
+  chromeParts, durationOf, numLike, measure, squashAt, fall, hop, wobble, icon, mixOk,
 } from '../lib.js'
 
 // ---------------------------------------------------------------- layout constants
@@ -56,8 +57,6 @@ const OVERLAP = 0.84                    // each object advances the pile by this
 const FLOOR = L.floorY
 const REST = FLOOR - S.thin / 2         // where an object's bottom rests
 
-// heat ramp (on the white board): ink -> the heat colour (red for a cost; hero green on request)
-const heatRamp = hot => [[0, C.ink], [0.22, C.ink], [0.62, hot], [1, hot]]
 const HEAT_STATE = { cool: 0, warm: 0.3, orange: 0.5, hot: 0.72, yellow: 0.74, white: 0.95, burst: 1 }
 
 export const css = `
@@ -66,8 +65,8 @@ export const css = `
 .cc-lab { position: absolute; font: 800 42px/50px ${F.head}; letter-spacing: -0.01em; color: ${C.grey}; }
 .cc-lab em { color: ${C.heroInk}; }
 .cc-lab u.mark2 { color: ${C.red}; }
-.cc-ro { position: absolute; left: 0; text-align: center; white-space: nowrap; font-family: ${F.mono}; font-weight: 800; letter-spacing: -0.02em; transform-origin: 50% 70%; }
-.cc-ro .ap { font-family: 'Inter Full', sans-serif; font-weight: 800; font-size: 0.8em; }
+.cc-ro { position: absolute; left: 0; text-align: center; white-space: nowrap; font-family: ${F.head}; font-weight: 900; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; transform-origin: 50% 70%; }
+.cc-ro .ap { font-family: 'Inter Full', sans-serif; font-weight: 900; font-size: 0.8em; }
 .cc-ro .sp { font-size: 0.3em; }
 .cc-strip { position: absolute; overflow: hidden; }
 .cc-sl { position: absolute; left: 0; top: 0; width: 100%; display: flex; align-items: flex-start; gap: 14px; }
@@ -89,15 +88,6 @@ const hex = c => [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16))
 // a readout string with its leading "≈ " tucked against the number (Inter Full ≈, a narrow space): the text is
 // unchanged, only the mono gap goes
 const roHTML = str => { const m = /^≈\s+(.*)$/.exec(str); return m ? `<span class="ap">≈</span><span class="sp"> </span>${esc(m[1])}` : esc(str) }
-const mixRGB = (a, b, p) => a.map((v, i) => Math.round(v + (b[i] - v) * clamp(p)))
-const rgb = (c, a = 1) => (a >= 1 ? `rgb(${c.join(',')})` : `rgba(${c.join(',')},${clamp(a).toFixed(3)})`)
-let HEAT = heatRamp(C.red)
-function heatRGB(x) {
-  for (let i = 1; i < HEAT.length; i++) {
-    if (x <= HEAT[i][0]) return mixRGB(hex(HEAT[i - 1][1]), hex(HEAT[i][1]), (x - HEAT[i - 1][0]) / (HEAT[i][0] - HEAT[i - 1][0]))
-  }
-  return hex(HEAT[HEAT.length - 1][1])
-}
 
 // "Name: $393,700" -> ["Name", "$393,700"]; labels without a trailing number stay whole
 function splitLabel(lab) {
@@ -160,7 +150,6 @@ const POSE = {
 export default function costCounter(spec, ctx) {
   const d = spec.data || {}
   const lo = spec.lookOpts || {}
-  HEAT = heatRamp(lo.heatColor === 'hero' ? C.hero : C.red)
   const rate = Number(d.perSecond) || 0
   const [t0, t1] = Array.isArray(d.counterT) && d.counterT.length === 2 ? d.counterT.map(Number) : [0.5, 20.5]
   const dur = Math.max(0.01, t1 - t0)
@@ -255,10 +244,11 @@ export default function costCounter(spec, ctx) {
   }
 
   // readout size: the widest string it will show fits the panel, and the panel + NEXT leave the floor to the
-  // figure. Mono glyph boxes are ~1.32 em tall, so the line box is too (nothing readable may overlap it).
-  const RO_LH = 1.32
+  // figure. The digits are the kit's hero numbers (Inter Tight 900, tabular figures, so they never jitter); their
+  // glyph boxes are ~1.21 em tall, so the line box is too (nothing readable may overlap it).
+  const RO_LH = 1.22
   const roStrs = [textAt(t0 - 1), textAt(t1 - 1e-4), finalStr].filter(Boolean)
-  const wpp = Math.max(...roStrs.map(x => measure(x, `800 100px ${F.mono}`, { letterSpacing: '-0.02em' }))) / 100
+  const wpp = Math.max(...roStrs.map(x => measure(x, `900 100px ${F.head}`, { letterSpacing: '-0.03em' }))) / 100
   const fsW = Math.floor((PW - 2 * BORDER - 2 * 42) / wpp)
   const showFig = lo.figure !== false
   const roTop = PAD + labH + (labH ? 2 : 0)
@@ -289,13 +279,22 @@ export default function costCounter(spec, ctx) {
 
   // ================================================================== strip + NEXT timelines
   // strip: rate -> milestone k (FLASH s, or until the next pass) -> rate ...
-  const segs = [{ t: -1e9, html: rateState }]
+  const segs = [{ t: -1e9, html: rateState, h: rateState ? STRIP_LH : 0 }]
   ms.forEach((m, k) => {
-    segs.push({ t: m.tm, html: m.html, m })
+    segs.push({ t: m.tm, html: m.html, m, h: m.sh })
     const nextT = k < M - 1 ? ms[k + 1].tm : Infinity
     const back = m.tm + FLASH
-    if (rateState && back < nextT - 0.5) segs.push({ t: back, html: rateState })
+    if (rateState && back < nextT - 0.5) segs.push({ t: back, html: rateState, h: STRIP_LH })
   })
+  // the board is as tall as the strip's CURRENT state (a 2-line flash grows it, the 1-line rate shrinks it back)
+  // with a 0.12 s snap; the NEXT ticker rides under its bottom edge
+  const segAt = t => { let j = 0; for (let i = 0; i < segs.length; i++) if (segs[i].t <= t) j = i; return j }
+  const stripHAt = t => {
+    if (!stripH) return 0
+    const j = segAt(t), hNew = segs[j].h || stripH, hOld = j ? (segs[j - 1].h || stripH) : hNew
+    return lerp(hOld, hNew, E.out(prog(t, segs[j].t, 0.12)))
+  }
+  const panelHAt = t => (stripH ? stripTop + stripHAt(t) + PAD : roTop + roH + PAD) + 2 * BORDER
   // ================================================================== objects
   const showObj = lo.objects !== false && M > 0
   const FX = 172
@@ -404,13 +403,19 @@ export default function costCounter(spec, ctx) {
     const keys = lo.heat.map(k => ({ t: Number(k.t), v: typeof k.state === 'number' ? k.state : (HEAT_STATE[k.state] ?? 0), d: 0.45, e: 'inOut' }))
     heatTr = track(keys)
   }
-  const wTime = M ? 0.14 : 0.94
+  // hold, then snap: the heat steps up a notch at each pass (0.15 s), nothing creeps in between
   const heatAt = t => {
     if (heatTr) return clamp(heatTr.at(t))
-    let x = wTime * clamp((t - t0) / dur)
-    for (const m of ms) x += (0.8 / M) * E.out(prog(t, m.tm, 0.4))
+    if (!M) return clamp(0.94 * clamp((t - t0) / dur) + 0.06 * E.out(prog(t, tLock, 0.3)))
+    let x = 0.14
+    for (const m of ms) x += (0.8 / M) * E.out(prog(t, m.tm, 0.15))
     return clamp(x + 0.06 * E.out(prog(t, tLock, 0.3)))
   }
+  // the colour does not ramp with the heat: it is ink until the first pass, then snaps (0.15 s, in OKLCH, so it
+  // never goes through maroon mud) to the heat colour; further passes thicken the rim and shake the board
+  const HOT = lo.heatColor === 'hero' ? C.hero : C.red
+  const tSnap = heatTr ? null : M ? ms[0].tm : t0 + 0.5 * dur
+  const colAt = t => mixOk(C.ink, HOT, heatTr ? clamp((heatAt(t) - 0.22) / 0.12) : E.out(prog(t, tSnap, 0.15)))
 
   // ================================================================== the figure
   const fig = showFig ? new Figure(g.fig, { scale: FIGK }) : null
@@ -469,10 +474,10 @@ export default function costCounter(spec, ctx) {
   const lastBeat = Math.max(tLock, tLand) + 0.6
   const duration = durationOf(spec, lastBeat, d.hold ?? 3)
 
-  function stripAt(t) {
-    let j = 0
-    for (let i = 0; i < segs.length; i++) if (segs[i].t <= t) j = i
+  function stripAt(t, sh) {
+    const j = segAt(t)
     const p = j ? prog(t, segs[j].t, 0.24) : 1
+    style(strip, { height: sh.toFixed(1) + 'px' })
     const A = slots[j % 2], B = slots[(j + 1) % 2]
     setHTML(A, segs[j].html)
     // a split-flap roll: both move in lockstep, so the outgoing line clears the incoming one
@@ -480,7 +485,7 @@ export default function costCounter(spec, ctx) {
     const e = E.inOut(p)
     style(B, { display: 'none' })
     setHTML(B, '')
-    style(A, { display: '', opacity: clamp(e * 1.4).toFixed(3), transform: `translateY(${(stripH * (1 - e)).toFixed(1)}px)` })
+    style(A, { display: '', opacity: clamp(e * 1.4).toFixed(3), transform: `translateY(${(sh * (1 - e)).toFixed(1)}px)` })
     // the check disc pops when a milestone flips in
     const ck = A.querySelector('.cc-chk')
     if (ck) { const q = prog(t, segs[j].t + 0.06, 0.24); style(ck, { transform: `scale(${(0.5 + 0.5 * E.back(q, 2.6)).toFixed(3)})` }) }
@@ -498,7 +503,7 @@ export default function costCounter(spec, ctx) {
 
   function seek(t) {
     const hh = heatAt(t)
-    const col = heatRGB(hh)
+    const colS = colAt(t)
     // ---- panel: vibration once hot (stops after the lock), a kick per pass, a bigger one at the lock
     const amp = 3.4 * smooth(clamp((hh - 0.55) / 0.35)) * (1 - prog(t, tLock + 0.3, 0.5))
     const r = rng(911 + Math.floor(t * 30 + 1e-6))
@@ -510,20 +515,22 @@ export default function costCounter(spec, ctx) {
     const ring = 5 * smooth(clamp((hh - 0.3) / 0.4)) + 6 * fl
     style(panel, {
       transform: `translate(${(PX + jx).toFixed(1)}px,${(P0 + jy).toFixed(1)}px) scale(${kick.toFixed(4)})`,
-      borderColor: rgb(col),
-      boxShadow: ring > 0.05 ? `0 0 0 ${ring.toFixed(1)}px ${rgb(col)}` : 'none',
+      borderColor: colS,
+      boxShadow: ring > 0.05 ? `0 0 0 ${ring.toFixed(1)}px ${colS}` : 'none',
     })
     // ---- readout: the running counter, then the spec's final display string with a stamp
     setHTML(ro, roHTML(textAt(t)))
     const sq = squashAt(t, tLock, 0.14)
-    style(ro, { color: rgb(col), transform: `scale(${sq.sx.toFixed(3)},${sq.sy.toFixed(3)})` })
+    style(ro, { color: colS, transform: `scale(${sq.sx.toFixed(3)},${sq.sy.toFixed(3)})` })
     // ---- live dot: blinks once per real second while the counter runs
     const live = t >= t0 && t < t1
     const ph = ((t - t0) % 1 + 1) % 1
-    style(dot, { background: rgb(t < t0 ? hex(C.grey) : col), opacity: (live ? (ph < 0.5 ? 1 : 0.3) : t < t0 ? 0.6 : 1).toFixed(2) })
+    style(dot, { background: t < t0 ? C.grey : colS, opacity: (live ? (ph < 0.5 ? 1 : 0.3) : t < t0 ? 0.6 : 1).toFixed(2) })
 
-    if (stripH) stripAt(t)
-    if (preview) nextAt(t)
+    const PHn = panelHAt(t)
+    style(panel, { height: PHn.toFixed(1) + 'px' })
+    if (stripH) stripAt(t, stripHAt(t))
+    if (preview) { nextAt(t); style(next, { top: (P0 + PHn + tkGap).toFixed(1) + 'px' }) }
 
     // ---- ghost of the next target: from just after the previous landing until its own object lands on it
     for (const gh of ghosts) {
@@ -542,7 +549,10 @@ export default function costCounter(spec, ctx) {
       const rot = f.landed ? wobble(t, m.tl0, 4 * side, 3, 6) : side * 9 * (1 - prog(t, m.tm, m.tl0 - m.tm))
       const pop = 0.86 + 0.14 * E.out(prog(t, m.tm, 0.12))
       const k2 = (m.size / 100) * pop
-      style(og, { display: '' })
+      // it comes out from behind the board: nothing shows until a third of it is below the board's bottom edge
+      const emerged = f.landed ? 1 : clamp((REST - f.y - (P0 + PHn)) / Math.max(1, 0.35 * m.hgt * k2 * 100 / m.size))
+      style(og, { display: emerged > 0.001 ? '' : 'none' })
+      attr(og, 'opacity', emerged.toFixed(3))
       const ox = f.landed ? m.cx : lerp(m.sx0, m.cx, E.inOutSine(prog(t, m.tm, m.tl0 - m.tm)))
       attr(og, 'transform', `translate(${ox.toFixed(1)},${(REST - f.y).toFixed(1)}) rotate(${rot.toFixed(2)}) scale(${(k2 * sq2.sx).toFixed(4)},${(k2 * sq2.sy).toFixed(4)})`)
       // dust: hit lines up and out from the base, and two puffs sliding along the floor

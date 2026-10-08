@@ -33,7 +33,17 @@
 // (a string or { t, text }: an accent "check:" line under the sheet, hung under its sum when long); metrics[j].tone (that
 // column's highlighter; default the green result, a "bad" option uses coral).
 // lookOpts: loop (true) · layout ('split' | 'mixed' | 'swap'; 'inline' = 'mixed') · pointer (true) · slots (true) ·
-// terms ('auto' | 'show' | 'hide') · debug (logs every layout candidate and why it failed) · badge (ignored).
+// terms ('auto' | 'show' | 'hide') · debug (logs every layout candidate and why it failed) · badge (ignored) ·
+// reads ([{ t, option, metric } | { t, target: 'stake' }]: the VO reads a number already on the sheet, e.g. the
+// pre-filled option's results or the stake; at t that box pops to 108% and settles back (0.38 s) on a soft tick, so
+// the sheet answers the voice; metric is a metric key or 'delta'. Ignored before the box has landed and in the clear;
+// { t, option, target: 'detail' }: the option's working line pops to 108% from its left edge and turns ink, so a
+// spoken working ("not a dollar more": "$142.59 − $142.59 = $0 more") is marked too) · stake ('row' | 'header':
+// 'header' drops the stake row when the header already shows its value, and a stake read re-swipes the header's
+// highlight instead) · gap (px: the least gap between option blocks, so the options read as separate blocks).
+// Deltas reveal their figure with the highlighter's wipe (the text is clipped by the bar, never an empty pill); at
+// the winner beat the winner's delta re-wipes blue (it is the number the verdict names) and pops to 115% as the
+// pointer lands; a winner delta that lands at or after the winner beat lands blue with that pop.
 import { h, css as style, prog, ease, lerp, clamp, plain } from '../../../runtime/core.js'
 import { C, SIZE, GRID, MOTION, md, hlBox, typeLine, stepCircle, pointer, fade, blink, landing, durationOf, typeTime, readCheck, breakLine } from '../lib.js'
 
@@ -62,6 +72,7 @@ const COMPACT = [54, 50, 46, 44]
 const DELTA = 0.86 // delta box size relative to the results
 const COL_GAP = 28 // between result columns (never under 24)
 const RAISE = 14   // tight layouts start this much closer to the footer
+const n3 = x => String(Math.round(x * 1000) / 1000)
 
 export default function whatDifference(spec, ctx) {
   const P = ctx.page
@@ -96,7 +107,13 @@ export default function whatDifference(spec, ctx) {
     if (i === 0 && t0 <= 0.9) act = -1 // option 1 is already the active one on frame 1
     T.push({ t0, typeD, valT, deltaT, noteT, noteD, act, end: o.note ? Math.max(land, noteT + noteD) : land })
   })
-  T.forEach((x, i) => { x.next = T[i + 1] ? Math.max(T[i + 1].act, x.end + 0.4) : Infinity })
+  // an option rests when the next one activates; a delta held back past that (spoken later, e.g. with the verdict)
+  // does not keep it loud meanwhile
+  T.forEach((x, i) => {
+    const nx = T[i + 1]
+    const endR = nx && x.deltaT != null && x.deltaT > nx.act ? Math.max(x.valT[x.valT.length - 1], x.noteT != null ? x.noteT + x.noteD : -Infinity) : x.end
+    x.next = nx ? Math.max(nx.act, endR + 0.4) : Infinity
+  })
   const lastEnd = T.length ? Math.max(...T.map(x => x.end)) : 1
   const hasVerdict = !!(spec.verdict && spec.verdict.text && spec.verdict.t != null)
   const wT = winner < 0 ? Infinity : d.winnerT != null ? +d.winnerT : hasVerdict ? +spec.verdict.t + 0.28 : lastEnd + 1.2
@@ -113,7 +130,10 @@ export default function whatDifference(spec, ctx) {
   // leave altogether when the footer already states them)
   const st = d.stake || {}
   let stake = null
-  if (st.value || st.label) {
+  // lookOpts.stake 'header': the header already shows the stake's value, so the row would only repeat it
+  const plainOf = x => plain(String(x || '')).replace(/\s+/g, ' ').trim()
+  const headerEm = LO.stake === 'header' && st.value && P.header ? [...P.header.querySelectorAll('em')].find(e => plainOf(e.textContent) === plainOf(st.value)) || null : null
+  if ((st.value || st.label) && !headerEm) {
     const box = st.value ? hlBox({ html: md(st.value), tone: 'input', px: 58 }) : null
     const label = st.label ? h('div', { class: 'wd-stake-label', html: md(st.label) }) : null
     const el = h('div', { class: 'wd-stake' }, label, box && box.el)
@@ -160,14 +180,16 @@ export default function whatDifference(spec, ctx) {
       root.append(el)
       return el
     })
-    const delta = o.delta ? hlBox({ html: md(o.delta), tone: o.tone === 'bad' ? 'bad' : 'good', px: SIZE.result }) : null
+    // the winner's delta is the verdict's number: it re-wipes blue at the winner beat, or lands blue when it lands then
+    const winLate = i === winner && o.delta && T[i].deltaT != null && T[i].deltaT >= wT - 0.01
+    const delta = o.delta ? hlBox({ html: md(o.delta), tone: winLate ? 'goal' : o.tone === 'bad' ? 'bad' : 'good', px: SIZE.result, retone: i === winner && !winLate ? 'goal' : null }) : null
     const note = o.note ? typeLine({ text: o.note, px: SIZE.check, color: C.accent, weight: 500, cls: 'wd-note' }) : null
     root.append(circle.el, name)
     if (detail) root.append(detail.el)
     for (const v of vals) if (v) root.append(v.box.el)
     if (delta) root.append(delta.el)
     if (note) root.append(note.el)
-    return { o, circle, name, detail, vals, slots, mlabels, delta, note, place: 'split' }
+    return { o, circle, name, detail, vals, slots, mlabels, delta, note, place: 'split', winLate }
   })
   const hasDelta = R.some(r => r.delta)
 
@@ -187,6 +209,8 @@ export default function whatDifference(spec, ctx) {
   // ---------------------------------------------------------------- layout engine
   const right = P.right
   const textX = GRID.textX
+  // lookOpts.gap: the least gap between option blocks (the candidates pay for it in type size, never in the working)
+  const MIN_GAP = Number.isFinite(+LO.gap) ? Math.max(0, +LO.gap) : 0
   const W = el => el.getBoundingClientRect().width
   const padOf = px => 14 * Math.sqrt(px / SIZE.result)
 
@@ -199,7 +223,7 @@ export default function whatDifference(spec, ctx) {
         name: FLOOR.name, nameLH: 1.1, detail: FLOOR.detail, detLH: 1.12,
         result: cr, boxK: 1.16, delta: Math.max(40, Math.round(cr * 0.84)),
         circle: 56, stake: 52, stakeK: 1.25, headH: 46, stakePx: 42, checkGap: 16,
-        gDetail: 1, gRes: 4, gap: 10, gNote: 4, gStake: 12, gHead: 6, gStack: 6,
+        gDetail: 1, gRes: 4, gap: Math.max(MIN_GAP, 10), gNote: 4, gStake: 12, gHead: 6, gStack: 6,
       }
     }
     const result = Math.max(FLOOR.result, Math.round(SIZE.result * sc))
@@ -211,10 +235,11 @@ export default function whatDifference(spec, ctx) {
       circle: Math.round(SIZE.circle * Math.max(0.86, sc)),
       stake: Math.round(58 * Math.max(0.9, sc)), stakeK: 1.3, headH: 52,
       stakePx: Math.max(40, Math.round(46 * Math.max(0.9, sc))), checkGap: Math.round(26 * sc),
-      gDetail: Math.round(4 * sc), gRes: Math.round(12 * sc * (tight ? 0.7 : 1)), gap: Math.round(30 * sc * g), gNote: Math.round(8 * sc),
+      gDetail: Math.round(4 * sc), gRes: Math.round(12 * sc * (tight ? 0.7 : 1)), gap: Math.max(MIN_GAP, Math.round(30 * sc * g)), gNote: Math.round(8 * sc),
       gStake: Math.round(30 * sc * g), gHead: Math.round(14 * sc * g), gStack: Math.round(10 * sc * g),
     }
   }
+
 
   // place everything for one candidate c = { mode, sc, cr (compact result px), slot ('head' | 'tail'), tight, k1
   // (metrics on the first results line), check }; returns { fits, fitsW, height, why }
@@ -366,7 +391,7 @@ export default function whatDifference(spec, ctx) {
         let top = rowTop
         if (j >= k1) top = rowTop + (j - k1 + 1) * (boxH + m.gStack) // a stacked metric's own line
         r.rowTops[j] = top
-        if (v) { v.left = boxLeft(j, v.w); style(v.box.el, { position: 'absolute', left: v.left + 'px', top: top + 'px' }) }
+        if (v) { v.left = boxLeft(j, v.w); v.origin = alignR(j) ? '100% 50%' : '0% 50%'; style(v.box.el, { position: 'absolute', left: v.left + 'px', top: top + 'px' }) }
         const sl = alignR(j) ? Rt[j] - colW[j] : L[j]
         style(r.slots[j], { left: Math.round(sl) + 'px', top: top + 4 + 'px', width: colW[j] + 'px', height: boxH - 8 + 'px', display: v ? '' : 'none' })
         // stacked: the metric's label sits on the text column of its line
@@ -498,6 +523,37 @@ export default function whatDifference(spec, ctx) {
   if (checkOn) ctx.cue(checkT, 'type', { dur: checkD, gain: 0.4 })
   if (loop) ctx.cue(clearT0, 'swipe', { gain: 0.3 })
 
+  // ---------------------------------------------------------------- reads (lookOpts.reads)
+  // the box the VO is reading pops to 108% and settles back; only a box that has landed, never in the clear
+  const reads = (Array.isArray(LO.reads) ? LO.reads : []).map(r => {
+    const t = +r.t
+    if (!Number.isFinite(t) || t <= 0 || t >= clearT0) return null
+    if (r.target === 'stake') return stake && stake.box ? { t, box: stake.box, origin: '0% 50%' } : headerEm ? { t, header: headerEm } : null
+    const i = Number.isInteger(r.option) ? r.option : -1
+    const rr = R[i]
+    if (!rr) return null
+    if (r.target === 'detail') return rr.detail && T[i].t0 + T[i].typeD <= t ? { t, detail: rr.detail } : null
+    if (r.metric === 'delta') return rr.delta && T[i].deltaT + MOTION.wipe <= t ? { t, box: rr.delta, origin: '100% 50%' } : null
+    const j = metrics.findIndex(m => m.key === r.metric)
+    const v = j >= 0 ? rr.vals[j] : null
+    return v && T[i].valT[j] + MOTION.wipe <= t ? { t, box: v.box, origin: v.origin || '50% 50%' } : null
+  }).filter(Boolean)
+  for (const r of reads) ctx.cue(r.t, 'tick', { gain: 0.35 })
+  const readBoxes = [...new Set(reads.filter(r => r.box).map(r => r.box))].map(box => ({ box, rs: reads.filter(r => r.box === box) }))
+  const headerReads = reads.filter(r => r.header)
+  const readDetails = [...new Set(reads.filter(r => r.detail).map(r => r.detail))].map(dl => ({ dl, rs: reads.filter(r => r.detail === dl) }))
+  // the winner's delta pops (115%) as the pointer lands beside it (or as its own wipe completes, if later)
+  const winPopT = winner >= 0 && R[winner].delta && isFinite(wT) ? Math.max(T[winner].deltaT + MOTION.wipe, wT + 0.1 + MOTION.glide) : Infinity
+  // the pop grows the box up and left from its bottom-right corner: up to 115%, never into the name beside it
+  let winPop = 1
+  if (isFinite(winPopT)) {
+    const r = R[winner], db = r.deltaBox
+    const rg = document.createRange()
+    rg.selectNodeContents(r.name)
+    const inkRight = Math.max(textX, ...[...rg.getClientRects()].filter(q => q.width > 0 && q.bottom > db.y && q.top < db.y + db.h).map(q => q.right))
+    winPop = clamp(1 + (db.x - inkRight - 12) / db.w, 1, 1.15)
+  }
+
   // ---------------------------------------------------------------- seek
   // A beat at t <= 0 is part of frame 1 (an option pre-filled as the hook): it is kept through the loop clear, so the
   // last frame equals frame 1. At the reset everything is evaluated at t = 0 (the frame-1 state).
@@ -570,13 +626,39 @@ export default function whatDifference(spec, ctx) {
         if (r.delta) {
           const L = landing(tt, x.deltaT)
           const kd = keepAt(x.deltaT)
-          r.delta.seek(L.wipe * kd, L.text * kd, isWin ? rest : Math.max(rest, pre[i] ? lerp(wP, 0, reset ? 1 : clearP) : wP), kd * kd)
+          const w = L.wipe * kd
+          // the figure rides in with the bar: the whole box is clipped by the wipe (never an empty pill)
+          r.delta.seek(w > 0 ? 1 : 0, w > 0 ? 1 : 0, isWin ? (r.winLate ? 0 : rest) : Math.max(rest, pre[i] ? lerp(wP, 0, reset ? 1 : clearP) : wP), kd * kd)
+          if (isWin) r.delta.seekRetone(ease.out(prog(tt, wT, MOTION.wipe)) * kd, 0)
+          // the winner's delta: a pop (as far as the name beside it allows) and a blue ring pulsing off the box
+          const pk = isWin && t < clearT0 ? ease.out(prog(t, winPopT, 0.1)) * (1 - ease.out(prog(t, winPopT + 0.1, 0.42))) : 0
+          const ring = isWin && t < clearT0 ? prog(t, winPopT, 0.6) : 0
+          const ps = 1 + (winPop - 1) * pk
+          style(r.delta.el, { clipPath: w > 0 && w < 1 ? `inset(0 ${n3((1 - w) * 100)}% 0 0)` : 'none', transform: ps > 1.0001 ? `scale(${n3(ps)})` : 'none', transformOrigin: '100% 100%' })
+          style(r.delta.bg, { boxShadow: ring > 0 && ring < 1 ? `0 0 0 ${n3(4 + 14 * ease.out(ring))}px rgba(47, 111, 235, ${n3(0.45 * (1 - ring))})` : 'none' })
         }
         if (r.note) {
           r.note.seek(prog(tt, x.noteT, x.noteD), t >= x.noteT && t < x.noteT + x.noteD + 0.15 && t < clearT0)
           fade(r.note.el, reset ? 1 : keepAt(x.noteT))
         }
       })
+      for (const { box, rs } of readBoxes) {
+        let sc = 1
+        for (const r of rs) sc *= 1 + 0.08 * ease.out(prog(t, r.t, 0.08)) * (1 - ease.out(prog(t, r.t + 0.08, 0.3)))
+        style(box.el, Math.abs(sc - 1) > 1e-4 ? { transform: `scale(${sc.toFixed(4)})`, transformOrigin: rs[0].origin } : { transform: 'none' })
+      }
+      // a spoken working: the line pops to 108% from its left edge and turns ink while the VO says it
+      for (const { dl, rs } of readDetails) {
+        let sc = 1, on = false
+        for (const r of rs) { sc *= 1 + 0.08 * ease.out(prog(t, r.t, 0.08)) * (1 - ease.out(prog(t, r.t + 0.08, 0.3))); on = on || (t >= r.t && t < r.t + 1.6 && t < clearT0) }
+        style(dl.el, { transform: Math.abs(sc - 1) > 1e-4 ? `scale(${n3(sc)})` : 'none', transformOrigin: '0% 50%', color: on ? C.ink : C.grey })
+      }
+      // the stake lives in the header: a stake read re-swipes the header's highlight
+      if (headerEm) {
+        let hw = 1
+        for (const r of headerReads) if (t >= r.t && t < clearT0) hw = Math.min(hw, ease.out(prog(t, r.t, MOTION.wipe + 0.06)))
+        style(headerEm, { '--hw': n3(hw * 100) + '%' })
+      }
       if (checkOn) {
         check.seek(t >= cleared ? 0 : prog(t, checkT, checkD), t >= checkT && t < checkT + checkD + 0.15 && t < clearT0)
         fade(check.el, t >= cleared ? 1 : keep)

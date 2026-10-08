@@ -3,9 +3,9 @@
   "look": "clean-sheet",
   "format": "what-difference",
   "fps": 30,
-  "duration": 31.4,
+  "duration": 30.6,
   "header": "What difference does\npaying the SAME minimum\nevery month make on **$5,000**?",
-  "footer": "ASSUMES 22% APR, no new charges · minimum = 1% of balance + interest, $40 floor",
+  "footer": "22% APR · minimum = 1% + interest, $40 floor",
   "captions": true,
   "vo": [
     {
@@ -24,29 +24,29 @@
       "text": "Now keep paying the first one."
     },
     {
-      "t": 12.6,
+      "t": 12.2,
       "d": 3.2,
       "text": "Not a dollar more than your first minimum."
     },
     {
-      "t": 16.0,
+      "t": 15.6,
       "d": 5.2,
       "text": "About 4.8 years. About $3,100 in interest."
     },
     {
-      "t": 21.4,
+      "t": 21.0,
       "d": 4.4,
       "text": "A flat $250: about 2.2 years."
     },
     {
-      "t": 26.0,
-      "d": 3.2,
-      "text": "The minimum shrinks. Your payment doesn't have to."
+      "t": 25.8,
+      "d": 2.6,
+      "text": "Same payment: about 10 years sooner."
     }
   ],
   "verdict": {
-    "t": 26.0,
-    "text": "**$0** more than the first minimum:\n**≈ 10 years** sooner"
+    "t": 25.8,
+    "text": "Same payment, **$0** more:\n**≈ 10 years** sooner"
   },
   "data": {
     "stake": {
@@ -68,7 +68,7 @@
       {
         "t": -3.0,
         "resultT": -2.4,
-        "name": "The minimum",
+        "name": "The card minimum",
         "detail": "starts at $142.59, then shrinks",
         "values": {
           "payoff": "≈ 15.1 years",
@@ -76,11 +76,13 @@
         },
         "tone": "bad",
         "note": "$142.59 → $99.66 by year 3",
-        "noteT": 0.0
+        "noteT": -0.15
       },
       {
         "t": 9.6,
-        "resultT": 10.6,
+        "resultT": 16.0,
+        "valueEvery": 2.0,
+        "deltaT": 27.1,
         "name": "Keep paying $142.59",
         "detail": "$142.59 − $142.59 = $0 more",
         "values": {
@@ -91,8 +93,8 @@
         "tone": "goal"
       },
       {
-        "t": 21.4,
-        "resultT": 22.0,
+        "t": 21.0,
+        "resultT": 23.8,
         "name": "A flat $250",
         "detail": "$250 − $142.59 = $107.41 more",
         "values": {
@@ -104,6 +106,32 @@
       }
     ],
     "winner": 1,
+    "winnerT": 27.1,
     "hold": 2.2
+  },
+  "lookOpts": {
+    "stake": "header",
+    "gap": 40,
+    "reads": [
+      {
+        "t": 2.4,
+        "option": 0,
+        "metric": "payoff"
+      },
+      {
+        "t": 5.0,
+        "option": 0,
+        "metric": "interest"
+      },
+      {
+        "t": 7.8,
+        "target": "stake"
+      },
+      {
+        "t": 13.0,
+        "option": 1,
+        "target": "detail"
+      }
+    ]
   }
 }

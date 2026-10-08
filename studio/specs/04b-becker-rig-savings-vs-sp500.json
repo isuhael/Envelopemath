@@ -3,55 +3,50 @@
   "look": "becker-rig",
   "format": "chart-race",
   "fps": 30,
-  "duration": 44.5,
-  "header": "POV: In 2010 you put **$1,000** in\n\"safe\" savings VS the S&P 500",
+  "duration": 40.1,
+  "header": "Your **$1,000**: 16 years of savings\nVS 1 year of the S&P 500",
   "footer": "Savings: FDIC avg rate, under 0.5% · S&P 500 with dividends · 2010–2025",
   "captions": true,
   "vo": [
     {
       "t": 0.0,
       "d": 4.7,
-      "text": "One of these never had a down year. Guess which one lost."
+      "text": "Year one in the S&P: ≈ $151."
     },
     {
-      "t": 8.2,
-      "d": 3.9,
-      "text": "2014: the S&P has doubled it."
+      "t": 4.8,
+      "d": 2.9,
+      "text": "Savings gets 16 years to match it."
     },
     {
-      "t": 12.2,
-      "d": 2.4,
-      "text": "Savings? Under $10 of interest."
+      "t": 10.8,
+      "d": 2.5,
+      "text": "Savings? Under $10 so far."
     },
     {
-      "t": 20.5,
+      "t": 19.1,
       "d": 3.1,
       "text": "2022: stocks drop ≈ 18%."
     },
     {
-      "t": 25.0,
-      "d": 4.3,
-      "text": "2025: stocks ≈ $8,280."
+      "t": 23.6,
+      "d": 4.4,
+      "text": "2025: savings made under $30 in 16 years."
     },
     {
-      "t": 29.4,
-      "d": 2.4,
-      "text": "Savings: ≈ $1,020."
+      "t": 28.1,
+      "d": 4.8,
+      "text": "The S&P's first year alone: ≈ $151."
     },
     {
-      "t": 31.9,
-      "d": 2.4,
-      "text": "But prices rose ≈ 50%."
-    },
-    {
-      "t": 34.4,
-      "d": 7.0,
-      "text": "That ≈ $1,020 buys what ≈ $680 did in 2010."
+      "t": 33.0,
+      "d": 4.0,
+      "text": "It ended at ≈ $8,280."
     }
   ],
   "verdict": {
-    "t": 41.5,
-    "text": "The \"safe\" choice lost **≈ 32%**\nof its buying power."
+    "t": 37.1,
+    "text": "16 years of savings: under **$30**.\nThe S&P 500 in 2010 alone: ≈ $151."
   },
   "data": {
     "stake": "$1,000 each · Jan 2010",
@@ -217,8 +212,8 @@
       "log": false
     },
     "raceT": [
-      1.0,
-      25.0
+      -0.4,
+      23.6
     ],
     "events": [
       {
@@ -230,7 +225,7 @@
         "label": "2022 bear market"
       }
     ],
-    "hold": 19.5
+    "hold": 16.5
   },
   "lookOpts": {
     "stage": "light",
@@ -246,72 +241,69 @@
     ],
     "beats": [
       {
-        "t": 8.2,
+        "t": 1.09,
         "act": "cheer",
         "series": 0,
-        "label": "doubled"
+        "label": "year 1: ≈ +$151"
       },
       {
-        "t": 12.2,
-        "act": "shrug",
+        "t": 4.8,
+        "act": "think",
         "series": 1,
-        "label": "under +$10"
+        "d": 18.8,
+        "label": "goal: ≈ +$151"
       },
       {
-        "t": 20.5,
+        "t": 19.1,
         "act": "impact",
         "series": 0,
         "label": "≈ −18%"
       },
       {
-        "t": 25.0,
+        "t": 23.6,
         "act": "grow",
         "series": 0
       },
       {
-        "t": 31.9,
-        "act": "flood",
-        "to": 1500.6,
-        "label": "prices ≈ +50%"
+        "t": 23.6,
+        "act": "shrug",
+        "series": 1,
+        "label": "under +$30"
       },
       {
-        "t": 34.4,
-        "act": "peek",
-        "series": 1,
-        "label": "≈ $1,501 in 2025 = $1,000 in 2010"
+        "t": 28.1,
+        "act": "point",
+        "series": 0,
+        "d": 4.8,
+        "label": "year 1: ≈ +$151"
       }
     ],
-    "gag": "Each figure climbs its own line. The S&P figure scrambles up a steep, jagged slope (stumbles in 2018, gets knocked down in 2022, climbs again); the savings figure strolls a ledge so flat he sits down halfway and checks his watch: his line never dips once. At the end a 'prices' tide rises from $1,000 to its level, past the savings ledge to his chin; he peeks over it, and the verdict lands once the last line is read."
+    "gag": "Each figure climbs its own line. The S&P figure scrambles up a steep, jagged slope (cheers as his first year closes, stumbles in 2018, gets knocked down in 2022, climbs again); the savings figure strolls a ledge so flat it never dips, his chin in his hand, his goal note pinned under a counter that barely moves. At the end he shrugs at his 16-year total; the hero points back at his first year, and the verdict lands once the last line is read."
   },
   "sfx": [
     {
-      "t": 8.2,
+      "t": 1.09,
       "kind": "pop"
     },
     {
-      "t": 12.2,
-      "kind": "boing"
+      "t": 4.8,
+      "kind": "swipe"
     },
     {
-      "t": 20.5,
+      "t": 19.1,
       "kind": "hit"
     },
     {
-      "t": 25.0,
+      "t": 23.6,
       "kind": "roll",
       "dur": 1.0
     },
     {
-      "t": 31.9,
-      "kind": "whoosh",
-      "dur": 0.6
+      "t": 23.7,
+      "kind": "boing"
     },
     {
-      "t": 34.4,
-      "kind": "buzz"
-    },
-    {
-      "t": 41.5,
+      "t": 37.1,
       "kind": "thud"
     }
   ]

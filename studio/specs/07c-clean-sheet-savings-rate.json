@@ -3,113 +3,105 @@
   "look": "clean-sheet",
   "format": "ledger-duel",
   "fps": 30,
-  "duration": 22.1,
-  "header": "2 people save **$10,000**\nBig bank vs high-yield\nInterest after 5 years?",
-  "footer": "ASSUMES both rates hold 5 years · 0.01% = Chase Savings APY, Oct 2026",
+  "duration": 19.1,
+  "header": "You save **$100 a month**\n5 years = $6,000\nA big bank adds: ?",
+  "footer": "ASSUMES $100 at each month-end, rates held 5 years · 0.01% = Chase Savings APY",
   "captions": true,
   "vo": [
     {
       "t": 0.0,
-      "d": 3.5,
-      "text": "One month at a big bank: about 8 cents."
+      "d": 3.45,
+      "text": "Year 1 at a big bank: about 5 cents."
     },
     {
-      "t": 3.6,
-      "d": 2.4,
-      "text": "High-yield: about $33."
+      "t": 3.7,
+      "d": 2.3,
+      "text": "High-yield: about $22."
     },
     {
-      "t": 6.2,
-      "d": 3.5,
-      "text": "After a year: $1 versus $400."
+      "t": 6.3,
+      "d": 2.3,
+      "text": "Year 3: about 53 cents."
     },
     {
-      "t": 9.9,
-      "d": 5.4,
-      "text": "By year 5, Leo is up about $2,167."
+      "t": 8.9,
+      "d": 3.05,
+      "text": "Year 5: about $1.48."
     },
     {
-      "t": 15.5,
-      "d": 2.4,
-      "text": "Mia is up about $5."
+      "t": 12.2,
+      "d": 2.65,
+      "text": "High-yield: about $618."
     },
     {
-      "t": 18.1,
-      "d": 2.4,
-      "text": "Same $10,000. Different account."
+      "t": 15.2,
+      "d": 2.3,
+      "text": "Same $6,000. Different account."
     }
   ],
   "verdict": {
-    "t": 18.1,
-    "text": "Interest after 5 years:\n__≈ $5__ vs **≈ $2,167**"
+    "t": 15.2,
+    "text": "$6,000 saved, 5 years:\n__≈ $1.48__ vs **≈ $617.90**"
   },
   "data": {
     "people": [
       {
-        "name": "Mia",
-        "plan": "Big bank · 0.01% APY · × 1.0001 a year"
+        "name": "You",
+        "plan": "Big bank · 0.01% APY · $100 a month"
       },
       {
         "name": "Leo",
-        "plan": "High-yield · 4.00% APY · × 1.04 a year"
+        "plan": "High-yield · 4.00% APY · $100 a month"
       }
     ],
-    "stake": "$10,000 each · 5 years · nothing added",
+    "stake": "Interest earned so far · $100 a month each",
     "rows": [
       {
         "t": 0.0,
-        "label": "Day 1",
+        "label": "Start",
         "values": [
-          "$10,000",
-          "$10,000"
+          "$0.00",
+          "$0.00"
         ]
       },
       {
         "t": 1.0,
-        "label": "Month 1",
-        "values": [
-          "≈ $10,000.08",
-          "≈ $10,032.74"
-        ]
-      },
-      {
-        "t": 7.0,
         "label": "Year 1",
         "values": [
-          "$10,001",
-          "$10,400"
+          "≈ $0.05",
+          "≈ $21.84"
         ]
       },
       {
-        "t": 7.9,
+        "t": 5.0,
         "label": "Year 2",
         "values": [
-          "≈ $10,002",
-          "$10,816"
+          "≈ $0.23",
+          "≈ $92.56"
         ]
       },
       {
-        "t": 8.8,
+        "t": 6.8,
         "label": "Year 3",
         "values": [
-          "≈ $10,003",
-          "≈ $11,249"
+          "≈ $0.53",
+          "≈ $214.11"
         ]
       },
       {
-        "t": 9.7,
+        "t": 8.2,
         "label": "Year 4",
         "values": [
-          "≈ $10,004",
-          "≈ $11,699"
+          "≈ $0.94",
+          "≈ $388.52"
         ]
       },
       {
-        "t": 10.7,
+        "t": 9.5,
         "label": "Year 5",
         "values": [
-          "≈ $10,005",
-          "≈ $12,167"
+          "≈ $1.48",
+          "≈ $617.90"
         ],
         "tone": "goal"
       }
@@ -120,15 +112,14 @@
   "sfx": [
     {
       "t": 1.0,
-      "kind": "tick"
-    },
-    {
-      "t": 7.0,
       "kind": "pop"
     },
     {
-      "t": 10.7,
+      "t": 9.5,
       "kind": "ding"
     }
-  ]
+  ],
+  "lookOpts": {
+    "stake": "show"
+  }
 }

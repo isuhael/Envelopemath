@@ -146,10 +146,11 @@ export default function chartRace(spec, ctx) {
   const wVal = (str, px) => measure(str, valFont(px), { letterSpacing: '-0.03em' })
   const peak = SER.map((q, i) => Math.max(...q.pts.map(p => p[1]), valueAt(i, xt)))
   const strs = SER.flatMap((_, i) => [finals[i], tipText(peak[i]), tipText(stakeV)])
-  let VAL_PX = 60
-  while (VAL_PX > 52 && Math.max(...strs.map(x => wVal(x, VAL_PX))) > 940 - (566 + 46)) VAL_PX -= 2
+  // (56 px values give the plot, the star of a race, as much width as the tags allow)
+  let VAL_PX = 56
+  while (VAL_PX > 52 && Math.max(...strs.map(x => wVal(x, VAL_PX))) > 940 - (600 + 58)) VAL_PX -= 2
   const valW = Math.max(...strs.map(x => wVal(x, VAL_PX)))
-  const LAB_GAP = 58
+  const LAB_GAP = 58                                             // (his forward hand on the run stays clear of the tags)
   // the column also widens (down to x 520) for long names, so they fit 2 lines at 40 px without an ellipsis
   const nameNeed = Math.max(...SER.map(q => measure(q.name, `800 40px ${F.head}`, { letterSpacing: '-0.01em' }) / 2 + 30))
   const X_TIP = clamp(Math.min(940 - valW - 10 - LAB_GAP, 940 - LAB_GAP - nameNeed), 520, 700)
@@ -673,9 +674,13 @@ export default function chartRace(spec, ctx) {
     if (cur) lines.push(cur)
     if (lines.length <= 2 && lines.every(l => measure(l, nFont, nO) <= colW)) return { px: NAME_PX, lines: lines.length, text: name }
     // ellipsize: line 1 as wrapped, line 2 cut to fit with "…"
+    // (cut at the last word boundary that fits, never mid-word: "Vanguard Total World Stock…")
     const l1 = measure(lines[0], nFont, nO) <= colW ? lines[0] : ''
-    let rest = name.slice(l1.length).trim()
-    while (rest.length > 1 && measure(rest + '…', nFont, nO) > colW) rest = rest.slice(0, -1)
+    const restW = name.slice(l1.length).trim().split(/ +/)
+    let n2 = restW.length - 1
+    while (n2 > 1 && measure(restW.slice(0, n2).join(' ').replace(/[,;:.\-–]+$/, '') + '…', nFont, nO) > colW) n2--
+    let rest = restW.slice(0, Math.max(1, n2)).join(' ').replace(/[,;:.\-–]+$/, '')
+    while (rest.length > 1 && measure(rest + '…', nFont, nO) > colW) rest = rest.slice(0, -1)   // (one long word)
     return { px: NAME_PX, lines: l1 ? 2 : 1, text: (l1 ? l1 + ' ' : '') + rest.trimEnd() + '…' }
   }
   const tags = SER.map((q, i) => {
@@ -835,6 +840,7 @@ export default function chartRace(spec, ctx) {
       }
       const y = Ys(gr.v, uA)
       a *= clamp((y - (hudBottom + 30)) / 30) * clamp((BASE - 30 - y) / 20)
+      if (!started) a = a >= 0.5 ? 1 : 0                     // the hook frame: every label fully in or fully out
       attr(gr.line, 'y1', f1(y)); attr(gr.line, 'y2', f1(y)); attr(gr.line, 'x2', f1(gx1))
       attr(gr.line, 'opacity', (a * 0.9).toFixed(3))
       style(gr.lab, { transform: `translate(66px,${f1(y - 41)}px)`, opacity: a.toFixed(3), display: a > 0.01 ? '' : 'none' })
@@ -875,22 +881,36 @@ export default function chartRace(spec, ctx) {
     }
     // ---- figures
     if (showFig) {
-      // a figure behind a better-placed one (lower value) fades to 0.6 while their bodies overlap, so the leader
-      // and his tip always read
+      // a figure behind a better-placed one (lower value) fades OUT while their bodies overlap (his coloured tip dot
+      // stays), so figures never stack: the leader of a cluster is the only figure in it
       const Js = SER.map((_, i) => figure(i, t, m, uA).J)
       const box = J => { const xs = ['head', 'hF', 'hB', 'fF', 'fB', 'hip'].map(k => J[k][0]), ys = ['hF', 'hB', 'fF', 'fB'].map(k => J[k][1]); return { x0: Math.min(...xs) - J.R, x1: Math.max(...xs) + J.R, y0: Math.min(J.head[1] - J.R, ...ys), y1: Math.max(...ys) } }
-      const bx = Js.map(box), vNow = SER.map((_, i) => valueAt(i, m.xn))
+      const bx = Js.map(box), vNow = SER.map((_, i) => valueAt(i, m.xn)), figA = SER.map(() => 1)
       for (let i = 0; i < N; i++) {
         let fade = 0
         for (let j = 0; j < N; j++) {
           if (j === i || vNow[j] < vNow[i] || (vNow[j] === vNow[i] && j > i)) continue
           const ox = Math.min(bx[i].x1, bx[j].x1) - Math.max(bx[i].x0, bx[j].x0), oy = Math.min(bx[i].y1, bx[j].y1) - Math.max(bx[i].y0, bx[j].y0)
-          if (ox > 0 && oy > 0) fade = Math.max(fade, smooth(0, 24, Math.min(ox, oy)))
+          if (ox > 0 && oy > 0) fade = Math.max(fade, smooth(10, 40, Math.min(ox, oy)))
         }
         let sx = 1, sy = 1
         for (const ld of LANDS[i]) if (t >= ld.t && t < ld.t + 0.6) { const q = squashAt(t, ld.t, ld.amt); sx *= q.sx; sy *= q.sy }
-        figs[i].draw(Js[i], { sx, sy, opacity: +(1 - 0.4 * fade).toFixed(3) })
+        figs[i].draw(Js[i], { sx, sy, opacity: +(1 - fade).toFixed(3) })
+        figA[i] = 1 - fade
       }
+      // a flag gives way to a figure: it fades out while any visible figure comes within 40 px of it
+      EVENTS.forEach((ev, k) => {
+        if (ev.flagT == null || t < ev.flagT) return
+        const base = onLine(ev.on, ev.x, m, uA)
+        const fb = { x0: base[0] - 6, x1: base[0] + 40 * kk + 4, y0: base[1] - POLE - 6, y1: base[1] }
+        let near = 0
+        for (let i = 0; i < N; i++) {
+          if (figA[i] < 0.05) continue
+          const dx = Math.max(fb.x0 - bx[i].x1, bx[i].x0 - fb.x1, 0), dy = Math.max(fb.y0 - bx[i].y1, bx[i].y0 - fb.y1, 0)
+          near = Math.max(near, figA[i] * (1 - smooth(8, 40, Math.hypot(dx, dy))))
+        }
+        attr(flags[k], 'opacity', (1 - near).toFixed(3))
+      })
     }
     // ---- tags (tip counters)
     const lay = layoutTags(t, m, uA)
@@ -939,9 +959,9 @@ export default function chartRace(spec, ctx) {
     EVENTS.forEach((ev, k) => {
       const [a0, a1] = evWin[k]
       const pp = popIn(t, a0, 0.24)
-      const a = t < a0 ? 0 : Math.min(pp.opacity, 1 - prog(t, a1 - 0.3, 0.3))
+      const a = t < a0 ? 0 : Math.min(pp.opacity, 1 - prog(t, a1 - 0.15, 0.15))     // hold, then snap out
       evA = Math.max(evA, a)
-      style(chips[k], { opacity: a.toFixed(3), display: a > 0.01 ? '' : 'none', transform: `scale(${(t < a1 - 0.3 ? pp.scale : 1).toFixed(3)})` })
+      style(chips[k], { opacity: a.toFixed(3), display: a > 0.01 ? '' : 'none', transform: `scale(${(t < a1 - 0.15 ? pp.scale : 1).toFixed(3)})` })
     })
     style(stakeEl, { opacity: clamp(1 - 3.4 * evA).toFixed(3) })        // never both readable at once
     // ---- impacts + camera

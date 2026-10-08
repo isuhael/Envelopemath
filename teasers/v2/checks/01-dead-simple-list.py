@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""Math + timing check for format 1, "dead-simple-list" (teasers 01a, 01b, 01c). Round-2 revision + hook pass
-(01c is now the bracket-myth hook: "Will a 3% raise push $65,000 into a higher bracket?").
+"""Math + timing check for format 1, "dead-simple-list" (teasers 01a, 01b, 01c). Round-2 revision + hook passes
+(01c is the bracket-myth hook since hook pass 1: "Will a 3% raise push $65,000 into a higher bracket?"; 01b is the
+Social Security wage-cap hook since hook pass 2: "You pay 6.2% to Social Security. A $1M salary pays…?").
 
 1. Recomputes every on-screen number from its inputs (constants below, sources in
    teasers/v2/01-dead-simple-list.md).
@@ -9,18 +10,21 @@
    not know about is an error too), and that every number spoken in the vo text equals
    the computed value, line by line.
 3. Re-evaluates every formula exactly as it is typed on screen and checks that the
-   displayed result is that value rounded to the shown precision ($1, or 1¢ when cents
-   are shown): one rounding rule for the whole series, so anyone who redoes a visible
-   formula gets the visible answer.
+   displayed result is that value rounded to the shown precision ($1, 1¢ when cents
+   are shown, or 0.1 point for a percent): one rounding rule for the whole series, so
+   anyone who redoes a visible formula gets the visible answer.
 4. Checks the timing contract: VO read at ~2.6 words/s, no overlapping lines, each
    beat's t / resultT at the moment the VO says it, header + a number at t = 0,
    first payoff by 3 s, results every ≤ 7.5 s, duration inside the 26-44 s lane, the
    verdict on the last VO line (the chrome swaps captions for the verdict card, so a
    line after it would have no on-screen text).
-5. Contract checks: only lookOpts keys the target look kit actually reads.
-6. Sensitivity checks: the x0.85 rule vs the exact 2026 federal + FICA calculation,
-   the 26/27-payday calendar claims, and 01c's bracket maths (the $45 against the full 2026
-   federal tax, the pinned comment's myth / FICA / kept figures, and the salary window).
+5. Contract checks: only lookOpts keys the target look kit actually reads; a wrong guess
+   (01b's struck $62,000) types, lands and is struck on the VO words that say it, and its
+   typed formula gives its shown result.
+6. Sensitivity checks: the 26/27-payday calendar claims; 01b's Social Security cap maths
+   (the $20/hr year is under the $184,500 cap, the $1M salary's real rate, "more than five
+   times", the pinned comment's dollar ratios); and 01c's bracket maths (the $45 against the
+   full 2026 federal tax, the pinned comment's myth / FICA / kept figures, and the salary window).
 
 Prints a table and exits non-zero on any mismatch.
 Run:  python3 teasers/v2/checks/01-dead-simple-list.py
@@ -123,18 +127,8 @@ A_MONTHS_OF_PAY = A_YEAR // A_MONTH              # 13
 assert A_TWELVE == A_WRONG and A_YEAR % A_MONTH == 0 and A_LEFT == A_MONTH == A_PAY * A_EXTRA
 A_27 = A_PAY * (A_PAYDAYS + 1)                   # $67,500 in a 27-payday year (pinned comment)
 
-# ------------------------------------------------- 01b inputs and maths
-B_WAGE = 20
-B_YEAR = B_WAGE * HRS_YEAR                       # $41,600
-B_MONTH = B_YEAR / MONTHS                        # 3,466.67
-B_MONTH_D = rnd(B_MONTH)                         # shown as ≈ $3,467
-B_KEEP = 0.85                                    # rough keep rule shown on screen
-B_KEPT_RULE = B_MONTH_D * B_KEEP                 # 2,946.95 (what the formula on screen gives)
-B_KEPT_D = rnd(B_KEPT_RULE)                      # shown as ≈ $2,947 ($1 rounding, like every result)
-B_HOUR_KEPT = B_WAGE * B_KEEP                    # $17 of every $20 hour (VO)
-assert abs(B_HOUR_KEPT - 17) < 1e-9
-
-# exact 2026 federal income tax + FICA, single filer (IRS Rev. Proc. 2025-32; SSA 2026 fact sheet)
+# ------------------------------------------------- 2026 federal tax + FICA, single filer (01c; 01b uses FICA's 6.2%)
+# (IRS Rev. Proc. 2025-32; SSA 2026 fact sheet; second publishers in the write-up)
 TAX_YEAR = 2026
 STD_DED = 16_100
 BRACKETS = [(12_400, 0.10), (50_400, 0.12), (105_700, 0.22)]   # top of bracket, rate
@@ -166,11 +160,28 @@ def bracket_rate(gross):
     raise ValueError(gross)
 
 
-B_FED = fed_tax(B_YEAR)                                           # 2,812.00
-B_FICA = fica(B_YEAR)                                             # 3,182.40
-B_NET = B_YEAR - B_FED - B_FICA                                   # 35,605.60
-B_KEEP_EXACT = B_NET / B_YEAR                                     # 0.8559
-B_KEPT_EXACT = B_NET / MONTHS                                     # 2,967.13
+def ss_tax(gross):
+    """2026 Social Security tax, employee share: 6.2% of wages up to the $184,500 wage base."""
+    return min(gross, SS_WAGE_BASE) * SS_RATE
+
+
+# ------------------------------------------------- 01b inputs and maths (hook pass 2: the Social Security wage cap)
+B_WAGE = 20
+B_YEAR = B_WAGE * HRS_YEAR                       # $41,600
+SS_PCT = round(SS_RATE * 100, 1)                 # 6.2, as shown and spoken
+SS_PCT_S = f"{SS_PCT:.1f}"                       # "6.2"
+B_SS = ss_tax(B_YEAR)                            # 2,579.20: yours, a year
+B_SS_D = rnd(B_SS)                               # shown as ≈ $2,579
+B_RIVAL = 1_000_000                              # the named rival: a $1M salary
+assert B_RIVAL % 1_000_000 == 0
+B_RIVAL_S = f"${B_RIVAL // 1_000_000}M"          # "$1M" (header, label, verdict)
+B_WRONG = B_RIVAL * SS_RATE                      # $62,000: the flat-6.2% guess, typed and struck
+B_CAPPED = ss_tax(B_RIVAL)                       # $11,439: what the $1M salary really pays
+B_RATE = B_CAPPED / B_RIVAL * 100                # 1.1439 (% of their pay)
+B_RATE_D = rnd(B_RATE, 1)                        # shown as ≈ 1.1%
+B_RATE_S = f"{B_RATE_D:.1f}%"                    # "1.1%"
+B_TIMES = SS_PCT / B_RATE                        # 5.42: "more than five times their rate"
+assert abs(B_WRONG - 62_000) < 1e-6 and abs(B_CAPPED - 11_439) < 1e-6
 
 # ------------------------------------------------- 01c inputs and maths (hook pass: the bracket myth)
 C_SALARY = 65_000                                # ≈ BLS Q2 2026 median full-time pay ($1,251 × 52 = $65,052)
@@ -208,19 +219,25 @@ EXPECT = {
         "data.items[2].label": f"The {A_EXTRA} checks your budget forgets",
     },
     "01b": {
-        "header": f"3 DEAD SIMPLE NUMBERS\nWHAT **{money(B_WAGE)}/HR** ACTUALLY LANDS",
-        "footer": (f"ASSUMES {HRS_WEEK} hrs × {WEEKS} wks · ×{NBSP}{B_KEEP:.2f} ≈ left after {TAX_YEAR} "
-                   f"federal tax + FICA, single, before state tax"),
-        "verdict.text": f"**≈ {money(B_KEPT_D)}** a month lands of the __{money(B_MONTH_D)}__ you earn",
+        "header": (f"3 DEAD SIMPLE NUMBERS\nYOU PAY **{SS_PCT_S}%** TO SOCIAL SECURITY.\n"
+                   f"A {B_RIVAL_S} SALARY PAYS…?"),
+        "footer": (f"ASSUMES {HRS_WEEK} hrs × {WEEKS} wks · {TAX_YEAR} Social Security tax, employee share · "
+                   f"Medicare not counted"),
+        "verdict.text": f"You pay __{SS_PCT_S}%__. A {B_RIVAL_S} salary pays **≈{NBSP}{B_RATE_S}**.",
         "data.input.value": f"{money(B_WAGE)}/hr",
         "data.input.note": f"{HRS_WEEK} hrs a week",
-        "data.items[0].formula": f"{money(B_WAGE)} × {num(HRS_YEAR)} hrs",
-        "data.items[0].result": money(B_YEAR),
-        "data.items[0].note": f"{num(HRS_YEAR)} hrs = {HRS_WEEK} × {WEEKS}",
-        "data.items[1].formula": f"{money(B_YEAR)} ÷ {MONTHS}",
-        "data.items[1].result": approx(money(B_MONTH_D)),
-        "data.items[2].formula": f"{money(B_MONTH_D)} × {B_KEEP:.2f}",
-        "data.items[2].result": approx(money(B_KEPT_D)),
+        "data.items[0].formula": f"{money(B_WAGE)} × {num(HRS_YEAR)} × {SS_PCT_S}%",
+        "data.items[0].result": approx(money(B_SS_D)),
+        "data.items[0].note": f"{SS_PCT_S}% of every dollar",
+        "data.items[1].label": f"A {B_RIVAL_S} salary's",
+        "data.items[1].formula": f"{money(SS_WAGE_BASE)} × {SS_PCT_S}%",
+        "data.items[1].result": money(B_CAPPED),
+        "data.items[1].note": f"taxed only up to {money(SS_WAGE_BASE)}",
+        "data.items[2].formula": f"{money(B_CAPPED)} ÷ {money(B_RIVAL)}",
+        "data.items[2].result": approx(B_RATE_S),
+        "data.items[2].note": f"yours: {SS_PCT_S}%",
+        "lookOpts.wrongGuess.formula": f"{money(B_RIVAL)} × {SS_PCT_S}%",
+        "lookOpts.wrongGuess.result": money(B_WRONG),
     },
     "01c": {
         "header": f"4 DEAD SIMPLE NUMBERS\nWILL A {C_PCT}% RAISE PUSH **{money(C_SALARY)}**\nINTO A HIGHER BRACKET?",
@@ -244,11 +261,11 @@ EXPECT = {
 # results that must carry "≈" (rounded, or resting on a rough constant) vs exact ones
 APPROX_RESULTS = {
     "01a": [False, False, False],
-    "01b": [False, True, True],
+    "01b": [True, False, True],
     "01c": [False, False, False, False],
 }
 
-# numbers spoken in each VO line, in order (cents are expressed in dollars; "3%" is 3)
+# numbers spoken in each VO line, in order (cents are expressed in dollars; "3%" is 3; "1.1%" is 1.1)
 VO_NUMBERS = {
     "01a": [
         [A_PAYDAYS, A_PAY, A_YEAR],
@@ -260,12 +277,12 @@ VO_NUMBERS = {
         [A_MONTHS_OF_PAY],
     ],
     "01b": [
-        [HRS_YEAR, B_YEAR],
-        [MONTHS, B_MONTH_D],
-        [B_KEEP],
-        [B_KEPT_D],
-        [B_WAGE, B_HOUR_KEPT],
-        [B_MONTH_D, B_KEPT_D],
+        [B_WAGE, B_SS_D],
+        [B_WRONG],
+        [SS_WAGE_BASE, B_CAPPED],
+        [B_RATE_D],
+        [SS_PCT],
+        [],                                       # "more than five times": checked in sensitivity()
     ],
     "01c": [
         [C_SALARY, C_PCT, C_NEW],
@@ -283,10 +300,12 @@ ANCHORS = {
                       ((2, None), (2, money(A_MONTH))),
                       ((3, None), (4, money(A_LEFT)))],
             "verdict": (6, None)},
-    "01b": {"items": [((0, None), (0, money(B_YEAR))),
-                      ((1, "divided"), (1, money(B_MONTH_D))),
-                      ((2, f"{round(B_KEEP * 100)}"), (3, money(B_KEPT_D)))],
-            "verdict": (5, None)},
+    "01b": {"items": [((0, None), (0, money(B_SS_D))),
+                      ((2, "stops"), (2, money(B_CAPPED))),
+                      ((3, None), (3, B_RATE_S))],
+            "verdict": (5, None),
+            # the struck flat-rate guess: types on vo[1], lands on "$62,000", is struck on vo[2]'s "No."
+            "wrongGuess": {"t": (1, None), "resultT": (1, money(B_WRONG)), "strikeT": (2, None)}},
     "01c": {"items": [((0, None), (0, money(C_NEW))),
                       ((1, None), (1, money(C_LINE))),
                       ((2, None), (2, money(C_OVER))),
@@ -370,11 +389,20 @@ def eval_formula(formula):
 
 
 def display_value(result):
-    """'≈ $2,947' -> (2947.0, 0 dp); '≈ $0.48' -> (0.48, 2 dp)."""
+    """'≈ $2,947' -> (2947.0, 0 dp, 1); '≈ $0.48' -> (0.48, 2 dp, 1); '≈ 1.1%' -> (1.1, 1 dp, 100).
+    The last value scales the typed formula to the shown unit (a percent shows the ratio × 100)."""
     m = re.search(r"\$(\d[\d,]*)(?:\.(\d+))?", result)
+    scale = 1
+    if not m:
+        m = re.search(r"(\d[\d,]*)(?:\.(\d+))?%", result)
+        scale = 100
     whole = m.group(1).replace(",", "")
     dp = len(m.group(2)) if m.group(2) else 0
-    return float(whole + ("." + m.group(2) if dp else "")), dp
+    return float(whole + ("." + m.group(2) if dp else "")), dp, scale
+
+
+def show(x, dp, scale):
+    return money(x, dp) if scale == 1 else f"{x:.{dp}f}%"
 
 
 # ------------------------------------------------------------ spec walking
@@ -425,18 +453,18 @@ def check_spec(key, spec):
     eq(key, "format", spec["format"], "dead-simple-list")
     eq(key, "id = file stem", spec["id"], FILES[key].stem)
 
-    # 2. "≈" on every rounded / rough result, never on exact ones; the visible formula gives the visible result
+    # 2. "≈" on every rounded result, never on exact ones; the visible formula gives the visible result
     for i, it in enumerate(items):
         want = APPROX_RESULTS[key][i]
         record(key, f"items[{i}] ≈ marker", it["result"][:1] == "≈", want, (it["result"][:1] == "≈") == want)
-        val = eval_formula(it["formula"])
-        shown, dp = display_value(it["result"])
+        shown, dp, scale = display_value(it["result"])
+        val = eval_formula(it["formula"]) * scale
+        unit = ("1¢" if dp else "$1") if scale == 1 else f"{10 ** -dp:g} point"
         record(key, f"items[{i}] '{it['formula']}' = {val:,.4f} → shown", it["result"],
-               f"{money(rnd(val, dp), dp)} (round to {'1¢' if dp else '$1'})", abs(rnd(val, dp) - shown) < 1e-9)
+               f"{show(rnd(val, dp), dp, scale)} (round to {unit})", abs(rnd(val, dp) - shown) < 1e-9)
         exact = abs(val - round(val, dp)) < 1e-9
-        rough_rule = "0.85" in it["formula"]
-        record(key, f"items[{i}] ≈ iff rounded or rough rule", it["result"][:1] == "≈", (not exact) or rough_rule,
-               (it["result"][:1] == "≈") == ((not exact) or rough_rule))
+        record(key, f"items[{i}] ≈ iff rounded", it["result"][:1] == "≈", not exact,
+               (it["result"][:1] == "≈") == (not exact))
 
     # 3. VO numbers, line by line
     vo = spec["vo"]
@@ -503,6 +531,22 @@ def check_spec(key, spec):
     if wg:
         record(key, "wrongGuess.t on the VO line that voices it", wg["t"],
                "a vo t", any(abs(wg["t"] - line["t"]) < 1e-9 for line in vo))
+        wa = ANCHORS[key].get("wrongGuess")
+        record(key, "wrongGuess anchored in ANCHORS", bool(wa), True, bool(wa))
+        for what, (ln, tok) in (wa or {}).items():
+            est = anchor_time(vo, ln, tok)
+            ok = est is not None and abs(wg[what] - est) <= (1e-9 if tok is None else ANCHOR_TOL)
+            record(key, f"wrongGuess.{what} at VO mention", wg[what],
+                   f"VO never says {tok!r}" if est is None else f"{est:.2f}" + ("" if tok is None else f"±{ANCHOR_TOL}"), ok)
+        r = wg["item"]
+        record(key, "wrongGuess types before its row's real formula", wg["t"], f"< {items[r]['t']}", wg["t"] < items[r]["t"])
+        record(key, "wrongGuess lands, then is struck", (wg["resultT"], wg["strikeT"]), "t + typeDur ≤ resultT < strikeT",
+               wg["t"] + type_dur <= wg["resultT"] < wg["strikeT"])
+        record(key, "wrongGuess struck before the real result lands", wg["strikeT"], f"< {items[r]['resultT']}",
+               wg["strikeT"] < items[r]["resultT"])
+        gv, (gs, gdp, gsc) = eval_formula(wg["formula"]), display_value(wg["result"])
+        record(key, f"wrongGuess '{wg['formula']}' = shown, exact", wg["result"], show(gv * gsc, gdp, gsc),
+               abs(gv * gsc - gs) < 1e-9)
 
 
 # ------------------------------------------------------------ sensitivity / facts
@@ -529,17 +573,18 @@ def sensitivity():
     eq("01a", "27-payday year pay (pinned comment)", money(A_27), "$67,500")
     eq("01a", "13 months = year ÷ a normal month", A_YEAR / A_MONTH, 13.0)
 
-    # 01b: x0.85 is within 1 point of the exact keep rate; the shown monthly figure is within 1% of the exact one
-    close("01b", "2026 federal tax on $41,600 (single)", round(B_FED, 2), 2812.00, 0.005)
-    close("01b", "FICA on $41,600", round(B_FICA, 2), 3182.40, 0.005)
-    record("01b", "exact keep rate vs x0.85", f"{B_KEEP_EXACT:.4f}", "0.85 ± 0.01", abs(B_KEEP_EXACT - B_KEEP) <= 0.01)
-    rel = abs(B_KEPT_EXACT - B_KEPT_D) / B_KEPT_EXACT
-    record("01b", "≈ $2,947 vs exact 2026 take-home", f"{money(B_KEPT_EXACT, 2)} ({rel:.2%} off)", "within 1%", rel <= 0.01)
-    eq("01b", "x0.85 on the unrounded month → $1", money(rnd(B_MONTH * B_KEEP)), money(B_KEPT_D))
-    record("01b", "'about 85 cents a dollar' vs exact keep", f"{B_KEEP_EXACT * 100:.1f}¢", "85¢ ± 1¢",
-           abs(B_KEEP_EXACT * 100 - B_KEEP * 100) <= 1.0)
-    eq("01b", "'about $17' of a $20 hour, exact keep → $", rnd(B_WAGE * B_KEEP_EXACT), 17)
-    eq("01b", "exact monthly take-home (write-up/pin)", money(rnd(B_KEPT_EXACT)), "$2,967")
+    # 01b: the Social Security wage cap (2026, employee share)
+    close("01b", "Social Security on $41,600 (6.2%)", round(B_SS, 2), 2579.20, 0.005)
+    record("01b", "'on every dollar, all year': $41,600 under the cap", B_YEAR, f"< {SS_WAGE_BASE:,}", B_YEAR < SS_WAGE_BASE)
+    record("01b", "the cap binds for the $1M salary", B_RIVAL, f"> {SS_WAGE_BASE:,}", B_RIVAL > SS_WAGE_BASE)
+    close("01b", "flat-rate guess: $1,000,000 × 6.2% (struck)", round(B_WRONG, 2), 62_000.00, 0.005)
+    close("01b", "real: $184,500 × 6.2%", round(B_CAPPED, 2), 11_439.00, 0.005)
+    close("01b", "their rate: $11,439 ÷ $1,000,000 (%)", round(B_RATE, 4), 1.1439, 1e-9)
+    record("01b", "'more than five times their rate'", f"{B_TIMES:.2f}×", "5 < x < 6", 5 < B_TIMES < 6)
+    record("01b", "'more than five times' also on the shown ≈ 1.1%", f"{SS_PCT / B_RATE_D:.2f}×", "> 5",
+           SS_PCT / B_RATE_D > 5)
+    eq("01b", "pinned: pay ratio $1M ÷ $41,600", f"{B_RIVAL / B_YEAR:.0f}×", "24×")
+    eq("01b", "pinned: Social Security dollars ratio $11,439 ÷ $2,579.20", f"{B_CAPPED / B_SS:.1f}×", "4.4×")
 
     # 01c: the bracket maths against the full 2026 federal tax, the pinned comment, the salary window
     eq("01c", "3% of $65,000 = a $1,950 raise", C_RAISE, 1950)
