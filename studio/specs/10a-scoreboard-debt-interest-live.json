@@ -47,7 +47,12 @@
       { "l1": "$250,000 a year", "l2": "≈ 8 seconds" },
       { "l1": "$1,000,000 a year", "l2": "≈ 33 seconds" }
     ],
-    "rateSteps": [ { "t": 17.2, "l1": "≈ $30,800 × 3,600 s", "l2": "≈ $111 million an hour" } ],
+    "rateSteps": [
+      { "t": 12.7, "l1": "Yearly pay ÷ 30,800", "l2": "= your seconds", "d": 4.5 },
+      { "t": 17.2, "l1": "≈ $30,800 × 3,600 s", "l2": "≈ $111 million an hour" },
+      { "t": 21.0, "l1": "Fiscal 2025 net interest", "l2": "$970 billion a year" },
+      { "t": 28.0, "l1": "Last row", "l2": "$1,000,000 a year", "d": 4.6 }
+    ],
     "pips": true,
     "pipLabels": ["$30K", "$50K", "$100K", "$250K", "$1M"],
     "icons": ["bill", "bill", "bill", "bill", "coin"],

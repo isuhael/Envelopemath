@@ -266,7 +266,13 @@ SPEC_A = {
     "lookOpts": {
         "intro": {"l1": A["rate_disp"], "l2": "every second"},
         "labels": [{"l1": f"{usd(v)} a year", "l2": f"≈ {secs_text(A['shown'][v])}"} for v in SALARIES_A],
-        "rateSteps": [{"t": 17.2, "l1": f"{A['rate_disp']} × 3,600 s", "l2": f"≈ ${A['hour_m']} million an hour"}],
+        "rateSteps": [   # each VO beat gets its label-stack beat (assembly pass): the swap-in rule, the hourly rate,
+                         # the source figure and the last row; d holds a beat to the next one (no flash of the rate)
+            {"t": 12.7, "l1": f"Yearly pay ÷ {A['rate_shown']:,}", "l2": "= your seconds", "d": 4.5},
+            {"t": 17.2, "l1": f"{A['rate_disp']} × 3,600 s", "l2": f"≈ ${A['hour_m']} million an hour"},
+            {"t": 21.0, "l1": "Fiscal 2025 net interest", "l2": f"${NET_INTEREST_FY2025 // 10**9} billion a year"},
+            {"t": 28.0, "l1": "Last row", "l2": f"{usd(10**6)} a year", "d": 4.6},
+        ],
         "pips": True,
         "pipLabels": [k_label(v) for v in SALARIES_A],
         "icons": ["bill", "bill", "bill", "bill", "coin"],
@@ -275,7 +281,7 @@ SPEC_A = {
     # (milestone value, VO line index, phrase in that line that names it). $30K is not spoken: it lights at
     # 0.975 s, during "Find your salary.", and the label stack names it on screen.
     "sync": [(50000, 1, "$50,000"), (100000, 2, "$100,000"), (250000, 4, "$250,000"), (10**6, 9, "$1 million")],
-    "beats": [(17.2, 6)],    # lookOpts beats: (t, VO line index that starts with it)
+    "beats": [(12.7, 5), (17.2, 6), (21.0, 7), (28.0, 8)],    # lookOpts.rateSteps: (t, VO line index that starts with it)
     "t0": 0.0,               # the counter runs from frame 1
     "rate": RATE_A,
 }
@@ -405,6 +411,7 @@ C["five_cents"] = rhu(C["five"], F(1, 100))                            # 12,319.
 C["five_shown"] = rhu(C["five"])                                       # 12,319
 C["wk5"] = C["five"] / MEDIAN_WEEKLY                                   # 9.85 weeks
 C["wk5_shown"] = rhu(C["wk5"])                                         # 10
+C["fx_wk5"] = rhu(F(C["five_shown"]) / MEDIAN_WEEKLY)                  # 10 (formula bar: $12,319 ÷ $1,251)
 C["half"] = F(PAY, 2)                                                  # 32,526 (6 months of median pay, exact)
 C["t_half"] = C["half"] / KEEP_C                                       # 13.20 s
 C["s_half"] = rhu(C["t_half"])                                         # 13
@@ -412,6 +419,7 @@ C["t_keep_pay"] = F(PAY) / KEEP_C                                      # 26.40 s
 C["s_keep_pay"] = rhu(C["t_keep_pay"])                                 # 26
 C["fx_keep_pay"] = rhu(F(PAY) / C["keep_shown"])                       # 26 (with the shown $2,464)
 C["run"] = (F("0.0"), F("26.5"))
+C["fx_rate"] = f"= ${float(AMZN_NET_INCOME_2025 / 10**9)}B ÷ {SECONDS_PER_YEAR:,} s ≈ ${C['keep_shown']:,}"
 C["final_exact"] = KEEP_C * (C["run"][1] - C["run"][0])
 C["final"] = f"{ap(rhu(C['final_exact']), C['final_exact'])}{usd(C['final_exact'])}"
 # the Live Sheet kit times its rows on the rate start -> final over counterT (preroll 0): the rows must still pass
@@ -421,6 +429,7 @@ C["kit_t"] = [F(v) / C["kit_rate"] for v in (C["keep_cents"], C["five_cents"], C
 assert C["final_exact"] > PAY, "the counter must pass a year of median pay before it stops"
 assert C["fx_keep_pay"] == C["s_keep_pay"], "the formula-bar time must equal the exact time's rounding"
 assert C["fx_wk1"] == C["wk1_shown"], "the formula-bar weeks must equal the exact weeks' rounding"
+assert C["fx_wk5"] == C["wk5_shown"], "the formula-bar weeks (5 s) must equal the exact weeks' rounding"
 assert C["half"].denominator == 1, "half a year of median pay must be a whole dollar amount"
 assert all(abs(a - b) < F(1, 100) for a, b in zip(C["kit_t"], (1, 5, C["t_half"], C["t_keep_pay"]))), C["kit_t"]
 row("10c", "kept per second", "$77.7B ÷ 31,536,000 s", KEEP_C, f"≈ ${C['keep_shown']:,} (everywhere)")
@@ -471,10 +480,14 @@ SPEC_C = {
     },
     "lookOpts": {
         "preroll": 0,
+        # one line each (<= 32 characters: the kit's bar keeps one 76 px line at 40-42 px), one working per VO beat
         "formulaSteps": [
-            {"t": 0.0, "text": f"= ${float(AMZN_NET_INCOME_2025 / 10**9)}B ÷ {SECONDS_PER_YEAR:,} s ≈ ${C['keep_shown']:,} a second"},
-            {"t": 2.8, "text": f"= ${C['keep_shown']:,} ÷ {usd(MEDIAN_WEEKLY)} a week ≈ {C['fx_wk1']} weeks"},
+            {"t": 0.0, "text": C["fx_rate"]},
+            {"t": 2.8, "text": f"= ${C['keep_shown']:,} ÷ {usd(MEDIAN_WEEKLY)} ≈ {C['fx_wk1']} weeks"},
+            {"t": 5.2, "text": f"= ${C['five_shown']:,} ÷ {usd(MEDIAN_WEEKLY)} ≈ {C['fx_wk5']} weeks"},
+            {"t": 7.4, "text": C["fx_rate"]},
             {"t": 13.2, "text": f"= {usd(PAY)} ÷ 2 = {usd(C['half'])}"},
+            {"t": 15.8, "text": f"= ${C['keep_shown']:,} ÷ your weekly pay"},
             {"t": 26.4, "text": f"= {usd(PAY)} ÷ ${C['keep_shown']:,} ≈ {C['fx_keep_pay']} s"},
         ],
         "columns": ["Since play", "Profit", "Median pay"],
@@ -489,7 +502,7 @@ SPEC_C = {
     # The 1-second row snaps "≈ 2 weeks" on screen at its pass (1.000 s) while vo[0] asks the question; vo[1] reads
     # it back at 2.8 s with the formula bar's working, so it is not in the 0.5 s VO sync list.
     "sync": [(C["five_cents"], 2, "5 seconds"), (C["half"], 4, "≈ 13"), (PAY, 7, "≈ 26")],
-    "beats": [(0.0, 0), (2.8, 1), (13.2, 4), (26.4, 7)],    # the formula-bar steps start their VO lines
+    "beats": [(0.0, 0), (2.8, 1), (5.2, 2), (7.4, 3), (13.2, 4), (15.8, 5), (26.4, 7)],    # the formula-bar steps start their VO lines
     "t0": 0.0,
     "rate": KEEP_C,
 }

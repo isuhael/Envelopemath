@@ -52,11 +52,11 @@
     "people": [
       {
         "name": "Ava",
-        "plan": "Age 25 → 35 · puts in $24,000"
+        "plan": "Age 25 → 35 · put in $24,000"
       },
       {
         "name": "Ben",
-        "plan": "Age 35 → 65 · puts in $72,000"
+        "plan": "Age 35 → 65 · put in $72,000"
       }
     ],
     "stake": "$200 a month each · 7% a year",
@@ -149,7 +149,7 @@
       },
       {
         "t": 14.2,
-        "text": "Ava's ≈\u00a0$34,617, untouched: ×\u00a0≈\u00a08.12 ≈\u00a0$281,000 at 65"
+        "text": "Ava's ≈\u00a0$34,617 grows ×\u00a0≈\u00a08.12"
       }
     ]
   },

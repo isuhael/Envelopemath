@@ -41,6 +41,14 @@
 //   flags        'chart' (labels above the plot) | 'labels' (label stack); default: chart with captions, else labels
 //   yearSize     px of the corner clock (default 160); yearPrefix for a non-calendar x (default "YEAR ")
 //   stageBottom  y where the stage ends (default 1300 with captions, 1240 without)
+//   finalT       [t per series, in data.series order]: a staggered finish that follows the VO ("stocks ≈ $75,300"
+//                … "gold ≈ $150,000"). The tips still land together at the finish; the hero shows the latest series
+//                whose finalT has passed: a time at or before raceT[1] lands with the tips, a later one is a hard
+//                cut. The winner's reveal is the climax (riser → hit + cash, the 1.13 bump, glow and floor flare,
+//                the winner's tip flare); an earlier reveal lands with a pop and a smaller bump. Default: the
+//                winner takes the hero at the finish.
+//   flagHold     s a chart-strip flag label holds before it clears (default: until a newer label needs its spot).
+//                In chart mode every flag label clears as the finals land: the finish gets a clean strip.
 import { h, s, css as style, setText, setHTML, attr, prog, ease, clamp, lerp, fitText, fmtNum } from '../../../runtime/core.js'
 import { C, SIZE, M, layoutFor } from '../theme.js'
 import {
@@ -135,6 +143,14 @@ export default function chartRace(spec, ctx) {
   const rt = Array.isArray(d.raceT) && d.raceT.length === 2 && +d.raceT[1] > +d.raceT[0] ? d.raceT.map(Number) : [0.6, 0.6 + clamp(span * 1.6, 8, 48)]
   const [R0, R1] = rt
   const TF = R1 + SETTLE                // the finish: counters land on the final display strings
+  // staggered finish (lookOpts.finalT): when each racer's final takes the hero, and when it lands there
+  const finTs = Array.isArray(lo.finalT) ? lo.finalT : null
+  const revealT = sr => { const v = finTs ? +finTs[sr.i] : NaN; return isFinite(v) ? Math.max(R1, v) : R1 }
+  const landT = sr => (revealT(sr) <= R1 + 1e-6 ? TF : revealT(sr))
+  // the hero after the finish: the racer revealed last so far (ties: the winner, so without finalT it is the winner)
+  const heroOrder = racers.slice().sort((a, b) => revealT(a) - revealT(b) || (a === winner) - (b === winner))
+  const heroAfter = t => { let sr = null; for (const r of heroOrder) if (t >= revealT(r)) sr = r; return sr }
+  const TW = landT(winner)                // the climax: the winner's final lands in the hero
   const xAt = t => lerp(X.from, X.to, prog(t, R0, R1 - R0))
   const tAtX = x => R0 + ((x - X.from) / span) * (R1 - R0)
   const secPerYear = (R1 - R0) / span
@@ -324,12 +340,15 @@ export default function chartRace(spec, ctx) {
       ev.left = clamp(P.x + pxOf(ev.e.x) - ev.w / 2, 80, 1004 - ev.w)
       style(ev.lab, { left: ev.left.toFixed(1) + 'px', display: 'none' })
     }
+    const hold = +lo.flagHold > 0 ? +lo.flagHold : Infinity
     evEls.forEach((ev, k) => {
       if (!ev.lab) return
       for (let j = k + 1; j < evEls.length; j++) {
         const o = evEls[j]
         if (o.lab && o.left < ev.left + ev.w + 28 && o.left + o.w + 28 > ev.left) { ev.retire = o.e.t; break }
       }
+      // a label holds at most flagHold s, and the strip clears as the finals land (the finish owns the frame)
+      ev.retire = Math.min(ev.retire, ev.e.t + hold, Math.max(TF, ev.e.t + 1.5))
     })
   }
 
@@ -480,11 +499,12 @@ export default function chartRace(spec, ctx) {
   for (const e of events) cue(e.t, stackMode && e.label ? 'thud' : 'tick', { gain: stackMode && e.label ? 0.65 : 0.55 })
   for (const sg of changes) cue(sg.t, 'swipe', { gain: 0.5 })   // a lead change: the hero cuts to the new leader
   const riseDur = Math.min(2.4, (R1 - R0) * 0.2)
-  if (riseDur > 0.6) cue(TF - riseDur, 'riser', { dur: riseDur, gain: 0.4 })
-  cue(TF, 'hit', { gain: 0.85 })
-  cue(TF + 0.06, 'cash', { gain: 0.5 })
+  if (riseDur > 0.6) cue(TW - riseDur, 'riser', { dur: riseDur, gain: 0.4 })
+  cue(TW, 'hit', { gain: 0.85 })
+  cue(TW + 0.06, 'cash', { gain: 0.5 })
+  if (TW > TF + 0.05) cue(TF, 'pop', { gain: 0.6 })            // staggered: the tips (and the first reveal) land
 
-  const duration = durationOf(spec, TF, d.hold ?? M.hold)
+  const duration = durationOf(spec, TW, d.hold ?? M.hold)
   const yearRect = { x: 0, y: 0, w: 0, h: 0 }
   {
     yearOdo.set(Math.floor(X.to + 1e-6), yearTpl)
@@ -744,7 +764,7 @@ export default function chartRace(spec, ctx) {
         dd += (pts.length ? 'L' : 'M') + tx.toFixed(1) + ' ' + ty.toFixed(1)
         attr(o.path, 'd', started ? dd : 'M0 0')
         attr(o.glow, 'd', started ? dd : 'M0 0')
-        const win = o.sr === winner ? flashAt(t, TF, 0.9) : 0
+        const win = o.sr === winner ? flashAt(t, TW, 0.9) : 0
         for (const c of [o.halo, o.dot, o.core]) { attr(c, 'cx', tx.toFixed(1)); attr(c, 'cy', ty.toFixed(1)); attr(c, 'visibility', started ? 'visible' : 'hidden') }
         attr(o.halo, 'r', (26 + 48 * win).toFixed(1))
         attr(o.halo, 'opacity', (0.28 + 0.18 * win).toFixed(3))
@@ -816,7 +836,7 @@ export default function chartRace(spec, ctx) {
 
       // ---- hero: stake → leader (hard cut on a pass) → the winner's final ----
       let hsr = null, c
-      if (done) { hsr = winner; c = counter(winner, t, x) }
+      if (done) { hsr = heroAfter(t) || leaderAt(t); c = counter(hsr, t, x) }
       else if (stakeMode && t <= R0) c = stakeTok ? { disp: stakeTok } : { v: starts[0], tpl: tplAt(starts[0]) }
       else { hsr = leaderAt(t); c = counter(hsr, t, x) }
       showOn(hero, c)
@@ -834,9 +854,14 @@ export default function chartRace(spec, ctx) {
         if (t >= sg.t) glow = Math.max(glow, 0.5 * (1 - ease.out(prog(t, sg.t, 0.5))))
         fl = Math.max(fl, 0.14 * flashAt(t, sg.t, 0.45))
       }
-      sc *= bump(t, TF, { amp: 0.13, dur: 0.5 })
-      if (t >= TF) glow = Math.max(glow, 1 - ease.out(prog(t, TF, 1.1)))
-      fl = Math.max(fl, 0.5 * flashAt(t, TF, 0.9))
+      // each final lands in the hero: the winner's is the climax, an earlier (staggered) reveal a smaller land
+      for (const r of heroOrder) {
+        const tl = landT(r), top = r === winner
+        if (!top && Math.abs(tl - TW) < 1e-6) continue        // lands with the winner: one land, the climax
+        sc *= bump(t, tl, { amp: top ? 0.13 : 0.08, dur: 0.5 })
+        if (t >= tl) glow = Math.max(glow, (top ? 1 : 0.5) * (1 - ease.out(prog(t, tl, top ? 1.1 : 0.6))))
+        fl = Math.max(fl, (top ? 0.5 : 0.18) * flashAt(t, tl, top ? 0.9 : 0.5))
+      }
       style(hero.el, { transform: `scale(${sc.toFixed(4)})` })
       style(hero.glow, { '--glow': (16 + 30 * glow).toFixed(1) + 'px', '--glowA': (0.38 + 0.45 * glow).toFixed(3) })
       flash.set(fl)

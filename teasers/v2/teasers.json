@@ -623,75 +623,70 @@
       "scoreboard"
     ],
     "file": "teasers/v2/09-growth-ladder.md",
-    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/09-growth-ladder.py: 518 checks, 0 failures, exit 0. I mutated one ladder cell in 09b (≈ $3,870 → ≈ $3,871) and one VO number in 09c ($765,400 → $765,500); the checker exited 1 on each, and the specs were restored. Studio linter (node src/cli.mjs check): 3/3 specs clean, 0 errors, 1 warning (the 09c footer renders at 37.7 px, under the 40 px recommendation and above the 34 px floor). The Live Sheet and Scoreboard growth-ladder modules have now landed, so this lint covers the 09a and 09c ladders for the first time. I read rendered stills of all three at their beats.",
+    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/09-growth-ladder.py: 468 checks, 0 failures, exit 0 (hook pass 2, 2026-10-08; rebuilt for the three new ladders). Break test in a scratch copy: 09a's year-8 bar ≈ $89/mo → ≈ $90/mo, 09b's age-40 rung ≈ $14,974 → ≈ $14,975 and 09c's 'about 75,176 times' → 75,177 exited 1 (4 failures); moving 09b's rung 1 back to 1.6 s also exits 1. Studio linter (node src/cli.mjs check): 3/3 specs clean, 0 errors, 0 warnings. Stills read at 0, 1.5 and 3 s and at the key beats and verdicts of all three.",
     "teasers": [
       {
         "id": "09a-live-sheet-100-a-month-doubles",
         "look": "live-sheet",
-        "title": "$100 a Month at 8%: Doubled by Year 9?",
-        "header": "**$100 a month** at 8%.\nDoubled by year 9?",
-        "runtime_s": 29.5,
+        "title": "You Add $100 a Month. When Does It Earn $100 a Month?",
+        "header": "You add **$100 a month**.\nWhen does it earn $100 a month?",
+        "runtime_s": 28.5,
         "key_numbers": [
-          "$100 a month at 8% compounded monthly",
-          "frame 1: Year 9: 2 × $10,800 = $21,600?",
-          "Rule of 72: 72 ÷ 8 = 9",
-          "year 9 ≈ $15,743 (1.46×)",
-          "year 15 ≈ $34,604 (1.92×)",
-          "year 16: $19,200 in, ≈ $38,721 (2.02×)",
-          "Yr 16: 1st $100 ≈ $356",
-          "year 30 ≈ $149,036 (4.1×)",
-          "same year 16 for $50/$500/$1,000 a month"
+          "$100 a month at 8% compounded monthly; 'earns' = balance × 8% ÷ 12 (growth, not a payout)",
+          "frame 1: ≈ $1,245 × 8% ÷ 12 ≈ $8/mo (complete by 0.5 s)",
+          "year 8 ≈ $13,387 → ≈ $89/mo (under $100)",
+          "year 9 ≈ $15,743 → ≈ $105/mo; first month ≥ $100 is month 106 ($100.91)",
+          "year 20 ≈ $58,902 → ≈ $393/mo",
+          "year 30 ≈ $149,036 → ≈ $994/mo (almost 10× the $100)",
+          "same year 9 for $50/$500/$1,000/$5,000 a month",
+          "pinned: 72 ÷ 8 = 9; (1 + 8%/12)^n = 2 at ≈ 8.7 years; 7% → year 11, 10% → year 8"
         ],
         "spec": "studio/specs/09a-live-sheet-100-a-month-doubles.json",
         "mp4": "studio/out/09a-live-sheet-100-a-month-doubles.mp4",
         "math_ok": true,
         "facts_ok": true,
-        "hook_score": 7
+        "hook_score": 7.0
       },
       {
         "id": "09b-becker-rig-1000-times-1-07",
         "look": "becker-rig",
-        "title": "Leave $1,000 at 7% for 30 Years. Is It Really Just $3,100?",
-        "header": "Leave **$1,000** at 7% for 30 years.\n$1,000 + 30 × $70 = __$3,100?__",
-        "runtime_s": 32.5,
+        "title": "POV: Someone Invested Just $1,000 for You at Birth. What's It Worth at 65?",
+        "header": "POV: someone invested just **$1,000**\nfor you at birth.\nWhat's it worth at 65?",
+        "runtime_s": 27.0,
         "key_numbers": [
-          "$1,000 × 1.07 once a year",
-          "year 1 $1,070 (lands at 1.6 s)",
-          "year 2 ≈ $1,145 (adds $74.90)",
-          "year 10 ≈ $1,967",
-          "year 20 ≈ $3,870 (past $3,100; first past in year 17)",
-          "year 30 ≈ $7,612",
-          "simple guess $3,100; ≈ 2.46 times",
-          "got $5,000? × 5"
+          "$1,000 once at birth × 1.07 a year, never topped up; rungs are ages",
+          "age 1 $1,070 (lands at 1.0 s)",
+          "age 10 ≈ $1,967; age 18 ≈ $3,380; age 30 ≈ $7,612",
+          "age 40 ≈ $14,974; age 50 ≈ $29,457",
+          "age 65 ≈ $81,273 (over 81 times the gift)",
+          "pinned: $1,000 at 25 → ≈ $14,974 at 65 (× 5.4 less)"
         ],
         "spec": "studio/specs/09b-becker-rig-1000-times-1-07.json",
         "mp4": "studio/out/09b-becker-rig-1000-times-1-07.mp4",
         "math_ok": true,
         "facts_ok": true,
-        "hook_score": 7
+        "hook_score": 6.75
       },
       {
         "id": "09c-scoreboard-5-a-day-millionaire",
         "look": "scoreboard",
-        "title": "Does $5 a Day Make You a Millionaire in 40 Years?",
-        "header": "**$5 A DAY**, INVESTED.\nA MILLIONAIRE IN 40 YEARS?",
-        "runtime_s": 35.2,
+        "title": "Take What You Could Invest a Day. Year 40 = That × What?",
+        "header": "TAKE WHAT YOU COULD INVEST **A DAY**.\nYEAR 40 = THAT × ?",
+        "runtime_s": 37.0,
         "key_numbers": [
-          "$5 × 365 ÷ 12 ≈ $152/mo at an effective 7% a year",
-          "year 10 ≈ $26,000",
-          "year 20 ≈ $77,200",
-          "year 30 ≈ $177,900",
-          "year 40 ≈ $375,900 (not even halfway)",
-          "year 50 ≈ $765,400",
-          "year 54 ≈ $1,011,700 (crosses $1M in month 646)",
-          "put in $98,550 (9.7%)",
-          "pinned: 10% a year → year 40 ≈ $844,100; 10%/12 → ≈ $961,800; needs ≈ 10.6%"
+          "$1 × 365 ÷ 12 ≈ $30.42/mo at an effective 7% a year",
+          "year 1 ≈ $377 (lands at 0.4 s); year 10 ≈ $5,203; year 20 ≈ $15,438; year 30 ≈ $35,571",
+          "year 40 ≈ $75,176: year 40 ≈ your daily amount × 75,176",
+          "$5 a day ≈ $375,880 (not a million)",
+          "a million ≈ $13.30 a day (exact 13.302)",
+          "pinned: $10 a day ≈ $751,761",
+          "caption: at 7% ÷ 12 a month the multiplier is ≈ 79,838"
         ],
         "spec": "studio/specs/09c-scoreboard-5-a-day-millionaire.json",
         "mp4": "studio/out/09c-scoreboard-5-a-day-millionaire.mp4",
         "math_ok": true,
         "facts_ok": true,
-        "hook_score": 7.5
+        "hook_score": 6.75
       }
     ]
   },

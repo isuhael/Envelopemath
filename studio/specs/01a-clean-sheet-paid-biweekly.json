@@ -22,12 +22,14 @@
     "typeDur": 0.8,
     "items": [
       { "t": 0.0, "label": "Your real yearly pay", "formula": "$2,500 × 26", "result": "$65,000",
-        "tone": "good", "note": "not × 24", "resultT": 2.7 },
-      { "t": 7.4, "label": "A normal month (2 checks)", "formula": "$2,500 × 2", "result": "$5,000",
-        "tone": "neutral", "note": "10 months a year", "resultT": 9.3 },
-      { "t": 10.4, "label": "The 2 checks your budget forgets", "formula": "$65,000 − $60,000", "result": "$5,000",
+        "tone": "good", "note": "not × 24", "resultT": 2.7, "noteT": 4.5 },
+      { "t": 7.4, "label": "A normal month", "formula": "$2,500 × 2", "result": "$5,000",
+        "tone": "neutral", "note": "× 12 = $60,000", "resultT": 9.3, "noteT": 10.4 },
+      { "t": 12.6, "label": "The 2 checks your budget forgets", "formula": "$65,000 − $60,000", "result": "$5,000",
         "tone": "goal", "resultT": 14.5 }
-    ]
+    ],
+    "check": "26 − 24 = 2 checks",
+    "checkT": 15.6
   },
   "sfx": [ { "t": 20.5, "kind": "ding" } ]
 }

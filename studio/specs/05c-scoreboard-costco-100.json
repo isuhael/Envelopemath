@@ -3,48 +3,45 @@
   "look": "scoreboard",
   "format": "split-sheet",
   "fps": 30,
-  "duration": 26.0,
-  "header": "HOW MUCH OF YOUR **$100**\nDOES COSTCO ACTUALLY KEEP?",
+  "duration": 22.8,
+  "header": "IS COSTCO'S PROFIT\nALL MEMBERSHIP FEES?\nFOLLOW YOUR **$100** CART:",
   "footer": "Costco FY2026 · company-wide · before tax",
   "captions": true,
   "vo": [
-    { "t": 0.0,  "d": 4.7, "text": "≈ $88.91 of your $100 just buys the stuff." },
-    { "t": 4.9,  "d": 3.9, "text": "≈ $9.15 pays the staff and runs the warehouses." },
-    { "t": 9.0,  "d": 2.4, "text": "That leaves Costco ≈ $1.94." },
-    { "t": 11.6, "d": 2.8, "text": "Less than 2% of your cart." },
-    { "t": 14.6, "d": 5.4, "text": "Now add membership fees: ≈ $1.99 for every $100 shoppers spend." },
-    { "t": 20.1, "d": 3.6, "text": "Your card brings in more than your cart leaves." }
+    { "t": 0.0,  "d": 4.3, "text": "≈ $88.91 of your $100 buys the stuff." },
+    { "t": 4.5,  "d": 3.1, "text": "≈ $9.15 runs the staff and warehouses." },
+    { "t": 7.8,  "d": 2.7, "text": "That leaves ≈ $1.94. Not zero." },
+    { "t": 10.7, "d": 1.6, "text": "Check: $100." },
+    { "t": 12.5, "d": 4.3, "text": "Membership fees: ≈ $1.99 per $100 rung up." },
+    { "t": 17.0, "d": 3.5, "text": "Your cart makes almost as much. About half each." }
   ],
-  "verdict": { "t": 20.1, "text": "Your cart leaves Costco **≈ $1.94**.\nYour card brings in **≈ $1.99**." },
+  "verdict": { "t": 17.0, "text": "Not all fees: your cart leaves **≈ $1.94**.\nMembership fees: **≈ $1.99**." },
   "data": {
     "total": { "label": "Your Costco run", "display": "$100.00", "value": 100 },
     "parts": [
-      { "t": 0.5,  "label": "The stuff itself", "pct": "88.91%", "amount": "≈ $88.91", "note": "what Costco paid + freight + fresh-food prep", "tone": "neutral", "share": 0.8891 },
-      { "t": 5.3,  "label": "Staff & warehouses", "pct": "9.15%", "amount": "≈ $9.15", "note": "wages, buildings, running costs", "tone": "neutral", "share": 0.0915 },
-      { "t": 10.2, "label": "Left for Costco", "pct": "1.94%", "amount": "≈ $1.94", "note": "before tax", "tone": "goal", "share": 0.0194 }
+      { "t": 0.5, "label": "The stuff itself", "pct": "88.91%", "amount": "≈ $88.91", "note": "what Costco paid + freight + fresh-food prep", "tone": "neutral", "share": 0.8891 },
+      { "t": 4.8, "label": "Staff & warehouses", "pct": "9.15%", "amount": "≈ $9.15", "note": "wages, buildings, running costs", "tone": "neutral", "share": 0.0915 },
+      { "t": 8.9, "label": "Left from your cart", "pct": "1.94%", "amount": "≈ $1.94", "note": "before tax", "tone": "goal", "share": 0.0194 }
     ],
     "check": "$88.91 + $9.15 + $1.94 = $100.00",
-    "checkT": 11.6,
+    "checkT": 10.7,
     "hold": 2.3
   },
   "lookOpts": {
     "hero": "remaining",
     "remaining": [
       { "t": 0.5, "display": "≈ $11.09" },
-      { "t": 10.2, "display": "≈ $1.94" }
+      { "t": 8.9, "display": "≈ $1.94" }
     ],
-    "maskPct": [2],
+    "maskPct": [0, 1, 2],
     "footerSteps": [
       { "t": 0.5,  "text": "$264,279M ÷ $297,247M × $100 ≈ $88.91" },
-      { "t": 5.3,  "text": "$27,190M ÷ $297,247M × $100 ≈ $9.15" },
-      { "t": 10.2, "text": "$100 − $88.91 − $9.15 = $1.94 before tax" },
-      { "t": 16.0, "text": "$5,907M ÷ $297,247M × $100 ≈ $1.99" },
-      { "t": 20.1, "text": "fees $5,907M > what the cart leaves, $5,778M" }
+      { "t": 4.8,  "text": "$27,190M ÷ $297,247M × $100 ≈ $9.15" },
+      { "t": 8.9,  "text": "$100 − $88.91 − $9.15 = $1.94 before tax" },
+      { "t": 13.6, "text": "$5,907M ÷ $297,247M × $100 ≈ $1.99" },
+      { "t": 17.0, "text": "cart $5,778M + fees $5,907M = $11,685M" }
     ],
-    "bonus": { "t": 16.0, "label": "Membership fees, per $100 of sales", "amount": "≈ $1.99", "tone": "good" },
+    "bonus": { "t": -1.2, "label": "Membership fees, per $100 of sales", "amount": "≈ $1.99", "tone": "good" },
     "icon": "bag"
-  },
-  "sfx": [
-    { "t": 16.0, "kind": "cash" }
-  ]
+  }
 }

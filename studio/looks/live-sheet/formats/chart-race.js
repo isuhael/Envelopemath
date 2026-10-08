@@ -38,6 +38,12 @@
 //             latest yearly return per rival; with a ledger the header's first cell is a static label)
 //           · leadMargin (0.004: the first leader must lead by this share) · leadHold (0.45 s: a new ranking
 //             must hold this long to count; it is then dated back to the crossing)
+//           · preroll (years the race is already in at frame 1; default 6% of the span, under a year). Note: the
+//             race then sweeps x.from + preroll → x.to over raceT, so a spec whose beats are timed on x.from →
+//             x.to over raceT (ledger rowT, flags, VO) sets preroll: 0
+//           · finalT ([t per series, in data.series order]: when the VO names each final; that value cell lands
+//             again: its value re-pops from 118%, the cell flashes and a pop sounds. The finals still swap in at
+//             raceT[1]; a time at or before it is ignored)
 import {
   h, s, setStyle, setText, attr, clamp, lerp, prog, ease, fmtNum, plain, C, F, S, G, M,
   formulaBar, fitFormula, lineChart, mk, mkLen, typedMk, typedCount, typeDur, wordCut, caretOn, snapIn, liftOut,
@@ -563,6 +569,9 @@ export default function chartRace(spec, ctx) {
   // the finals settle once the last slide (a photo finish) is over, so numbers never move and change at once
   const lastOrderT = orders.length > 1 ? orders[orders.length - 1].t : -Infinity
   const finT = Math.max(r1, lastOrderT + SWAP)
+  // lookOpts.finalT: each final lands again when the VO names it (after the swap-in at finT)
+  const emOpt = opt(spec, 'finalT', null)
+  const emT = series.map((_, i) => { const v = Array.isArray(emOpt) ? +emOpt[i] : NaN; return isFinite(v) && v > finT + 0.3 ? v : null })
 
   // ---------- formula bar ----------
   const cut = steps[0].t <= 0 ? cutAt(steps[0].text, opt(spec, 'formulaAt0', 0.7)) : 0
@@ -613,6 +622,7 @@ export default function chartRace(spec, ctx) {
   flags.forEach(f => ctx.cue(f.t, 'thud', { gain: 0.7 }))
   leads.forEach((ld, k) => { if (k > 0) { ctx.cue(ld.t, 'pop', { gain: 0.8 }); ctx.cue(ld.t + 0.02, 'swipe', { gain: 0.35 }) } })
   ctx.cue(r1 + 0.02, 'pop', { gain: 0.9 })
+  emT.forEach(t => { if (t != null && t < loopT0) ctx.cue(t, 'pop', { gain: 0.75 }) })
   if (loopOn) ctx.cue(loopT0, 'swipe', { gain: 0.5 })
 
   // ---------- frame ----------
@@ -724,16 +734,22 @@ export default function chartRace(spec, ctx) {
         // the running value at r1 already reads the final's number: the text swaps in place (no fade), then the
         // cell settles from 110% once any last slide has finished
         setText(tp.v, fin ? finals[i] : runFmt(p.v))
-        setStyle(tp.v, { opacity: '1', transform: finP > 0 && finP < 1 ? `scale(${(1 + 0.1 * (1 - ease.out(finP))).toFixed(4)})` : 'none' })
+        // the final lands again when the VO names it (lookOpts.finalT): a bigger re-pop and a flash, leader or not
+        const emP = fin && emT[i] != null && t >= emT[i] ? prog(t, emT[i], 0.5) : 1
+        const sc = (finP > 0 && finP < 1 ? 1 + 0.1 * (1 - ease.out(finP)) : 1) * (emP < 1 ? 1 + 0.18 * (1 - ease.out(emP)) : 1)
+        setStyle(tp.v, { opacity: '1', transform: sc > 1.0005 ? `scale(${sc.toFixed(4)})` : 'none' })
         // yellow for the leader (cross-faded on a change); a pale flash as a final lands
         let a = i === leader ? swapP : i === prevLeader ? 1 - swapP : 0
         a *= 1 - fadeOut
-        const flash = fin && i !== leader ? flashAlpha(t, finT + 0.04, 0.5) : 0
+        const emF = fin && emT[i] != null ? flashAlpha(t, emT[i], 0.6) : 0
+        const aName = a
+        if (emF > 0.001) a *= 1 - emF
+        const flash = Math.max(fin && i !== leader ? flashAlpha(t, finT + 0.04, 0.5) : 0, emF)
         const under = flash > 0.001 ? mix(C.rowHi, C.sheet, flash) : C.sheet
         const bg = a >= 0.999 ? C.accent : a > 0.001 ? mix(C.accent, flash > 0.001 ? C.rowHi : C.sheet, a) : under
         setStyle(tp.el, { backgroundColor: bg, zIndex: String(i === leader ? 4 : nudge[i] ? 3 : 2) })
         // on the leader's yellow the name is ink (a coloured name would lose contrast); the edge keeps the colour
-        setStyle(tp.n, { color: a > 0.5 ? C.ink : colors[i] })
+        setStyle(tp.n, { color: aName > 0.5 ? C.ink : colors[i] })
         // the dotted price line from the tip to its cell (with an elbow when the cell had to move)
         const cy = r.y0 + tipHt / 2, xw = p.x + 16, xb = r.x0 - 2
         if (xb - xw < 4 && Math.abs(cy - p.y) < 3) { attr(wireEls[i], 'd', ''); return }

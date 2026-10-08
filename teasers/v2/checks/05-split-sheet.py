@@ -4,7 +4,7 @@
 1. Recomputes every on-screen number from its inputs (constants below; sources in
    teasers/v2/05-split-sheet.md):
      05a  Chipotle FY2025 10-K / Q4 release lines ($ thousands) -> each line's share of $10
-     05b  the 50/30/20 rule on a $3,000 take-home paycheck (pure arithmetic)
+     05b  the 50/30/20 rule on a $3,000 take-home with $1,200 rent (pure arithmetic)
      05c  Costco FY2026 results ($ millions) -> each line's share of a $100 cart
 2. Loads the three spec JSONs and asserts that every digit-bearing display string equals
    the computed, formatted value (a digit-bearing string the script does not know is an
@@ -109,8 +109,14 @@ B_TENTH = B_PAY // B_PIECES                                  # $300
 B_COUNT = [round(s * B_PIECES) for s in B_RULE]              # 5, 3, 2 pieces
 B_AMT = [n * B_TENTH for n in B_COUNT]                       # 1,500 / 900 / 600
 B_DAYS = 30                                                   # a 30-day month (footer)
-B_PER_DAY = B_AMT[1] // B_DAYS                               # $30 a day of wants
-B_GAP = B_AMT[1] - B_AMT[2]                                  # wants beat savings by $300
+B_RENT = 1_200                                                # example rent (header input, footer; hook pass 2)
+B_RENT_N = B_RENT // B_TENTH                                 # rent eats 4 bricks
+B_FOOD = B_AMT[0] - B_RENT                                   # needs left for food + every bill: $300
+B_FOOD_N = B_COUNT[0] - B_RENT_N                             # 1 brick
+B_FOOD_DAY = B_FOOD // B_DAYS                                # $10 a day
+B_PARTS = [B_RENT, B_FOOD, B_AMT[1], B_AMT[2]]              # the four bins, in walk order
+B_PARTS_N = [B_RENT_N, B_FOOD_N, B_COUNT[1], B_COUNT[2]]    # bricks per bin: 4 / 1 / 3 / 2
+B_PARTS_PCT = [pct(a / B_PAY, 0) for a in B_PARTS]          # 40% / 10% / 30% / 20%
 
 # ================================================================ 05c inputs
 # Costco Wholesale, fiscal 2026 = 52 weeks ended Aug 30, 2026 ($ millions). Q4/FY2026 release
@@ -153,28 +159,27 @@ EXPECT = {
         "lookOpts.wrongGuess.result": f"{money(A_WRONG, 2)} profit?",
     },
     "05b": {
-        "header": f"Could you live on 50/30/20\nwith **{money(B_PAY)}** a month take-home?",
-        "footer": f"ASSUMES {money(B_PAY)} a month take-home (after tax) · {B_DAYS}-day month",
-        "verdict.text": f"Needs get **{money(B_AMT[0])}**: rent, food, every bill.",
+        "header": f"Rent **{money(B_RENT)}** on 50/30/20?\nFood and every bill get\nthis much a day:",
+        "footer": f"ASSUMES {money(B_PAY)} a month after tax · {money(B_RENT)} rent · {B_DAYS}-day month",
+        "verdict.text": f"{money(B_RENT)} rent leaves food and\nevery bill **{money(B_FOOD_DAY)} a day**.",
         "data.total.display": money(B_PAY),
-        "data.total.note": f"{100 // B_PIECES}% = {money(B_TENTH)}",
-        **{f"data.parts[{i}].pct": pct(B_RULE[i], 0) for i in range(3)},
-        **{f"data.parts[{i}].amount": money(B_AMT[i]) for i in range(3)},
-        "data.parts[0].note": f"{B_COUNT[0]} × {money(B_TENTH)} · rent, food, bills",
-        "data.parts[1].note": f"{B_COUNT[1]} × {money(B_TENTH)} · fun money",
-        "data.parts[2].note": f"{B_COUNT[2]} × {money(B_TENTH)} · saving, extra debt",
-        "data.check": f"{money(B_AMT[0])} + {money(B_AMT[1])} + {money(B_AMT[2])} = {money(sum(B_AMT))}",
+        **{f"data.parts[{i}].pct": B_PARTS_PCT[i] for i in range(4)},
+        **{f"data.parts[{i}].amount": money(B_PARTS[i]) for i in range(4)},
+        "data.parts[0].note": f"{B_RENT_N} × {money(B_TENTH)} · needs get {B_COUNT[0]}",
+        "data.parts[1].note": f"{money(B_FOOD)} ÷ {B_DAYS} = **{money(B_FOOD_DAY)} a day**",
+        "data.parts[2].note": f"{B_COUNT[1]} × {money(B_TENTH)} · fun money",
+        "data.parts[3].note": f"{B_COUNT[2]} × {money(B_TENTH)} · saving, extra debt",
+        "data.check": " + ".join(money(a) for a in B_PARTS) + f" = {money(sum(B_PARTS))}",
         "lookOpts.tenth.formula": f"{money(B_PAY)} ÷ {B_PIECES}",
         "lookOpts.tenth.display": money(B_TENTH),
         "lookOpts.actions[0].tool": f"÷ {B_PIECES}",
-        "lookOpts.actions[0].becomes": f"{B_PIECES} blocks of {money(B_TENTH)}",
-        **{f"lookOpts.actions[{i + 1}].tool": f"{B_COUNT[i]} × {money(B_TENTH)}" for i in range(3)},
-        "lookOpts.gag.text": f"{money(B_AMT[1])} ÷ {B_DAYS} = {money(B_PER_DAY)} a day",
+        "lookOpts.actions[0].becomes": f"{B_PIECES} bricks of {money(B_TENTH)}",
+        **{f"lookOpts.actions[{i + 1}].tool": f"{B_PARTS_N[i]} × {money(B_TENTH)}" for i in range(4)},
     },
     "05c": {
-        "header": f"HOW MUCH OF YOUR **{money(C_CART)}**\nDOES COSTCO ACTUALLY KEEP?",
+        "header": f"IS COSTCO'S PROFIT\nALL MEMBERSHIP FEES?\nFOLLOW YOUR **{money(C_CART)}** CART:",
         "footer": "Costco FY2026 · company-wide · before tax",
-        "verdict.text": f"Your cart leaves Costco **{approx(money(C_AMT[2], 2))}**.\nYour card brings in **{approx(money(C_FEES, 2))}**.",
+        "verdict.text": f"Not all fees: your cart leaves **{approx(money(C_AMT[2], 2))}**.\nMembership fees: **{approx(money(C_FEES, 2))}**.",
         "data.total.display": money(C_CART, 2),
         "data.check": f"{money(C_AMT[0], 2)} + {money(C_AMT[1], 2)} + {money(C_AMT[2], 2)} = {money(r2(sum(C_AMT)), 2)}",
         **{f"data.parts[{i}].pct": C_PCT[i] for i in range(3)},
@@ -185,7 +190,7 @@ EXPECT = {
         "lookOpts.footerSteps[1].text": f"{millions(C_SGA)} ÷ {millions(C_SALES)} × {money(C_CART)} ≈ {money(C_AMT[1], 2)}",
         "lookOpts.footerSteps[2].text": f"{money(C_CART)} − {money(C_AMT[0], 2)} − {money(C_AMT[1], 2)} = {money(C_AMT[2], 2)} before tax",
         "lookOpts.footerSteps[3].text": f"{millions(C_MEMBER)} ÷ {millions(C_SALES)} × {money(C_CART)} ≈ {money(C_FEES, 2)}",
-        "lookOpts.footerSteps[4].text": f"fees {millions(C_MEMBER)} > what the cart leaves, {millions(C_LEFT_M)}",
+        "lookOpts.footerSteps[4].text": f"cart {millions(C_LEFT_M)} + fees {millions(C_MEMBER)} = {millions(C_OPINC)}",
         "lookOpts.bonus.label": f"Membership fees, per {money(C_CART)} of sales",
         "lookOpts.bonus.amount": approx(money(C_FEES, 2)),
     },
@@ -198,17 +203,18 @@ VO_NUMBERS = {
         [A_ORDER, A_COSTS], [A_WRONG, A_AMT[6]],
     ],
     "05b": [
-        [B_PAY, B_PIECES, B_TENTH], [B_COUNT[0], B_AMT[0]], [B_COUNT[1], B_AMT[1]], [B_COUNT[2], B_AMT[2]],
-        [*B_COUNT, B_PIECES, sum(B_AMT)], [B_AMT[1], B_PER_DAY], [B_AMT[0]],
+        [B_PIECES, B_TENTH, B_RENT_N], [B_COUNT[0], B_FOOD_N, B_FOOD_DAY],
+        [B_COUNT[1], B_AMT[1], B_COUNT[2], B_AMT[2]], [B_PAY], [B_RENT, B_FOOD_DAY],
     ],
     "05c": [
-        [C_AMT[0], C_CART], [C_AMT[1]], [C_AMT[2]], [2], [C_FEES, C_CART], [],
+        [C_AMT[0], C_CART], [C_AMT[1]], [C_AMT[2], 0], [C_CART], [C_FEES, C_CART], [],
     ],
 }
 
 # captions are on, so the VO text is on screen: a spoken number carries "≈" exactly when it is a rounded result.
-# Rounded: every per-row amount in 05a and 05c and the membership-fee figure. Exact: the inputs ($10, $100, 2%),
-# the wrong guess $10 − $2.96 = $7.04 and the costs $8.71 (both exact on the shown numbers), and all of 05b.
+# Rounded: every per-row amount in 05a and 05c and the membership-fee figure. Exact: the inputs ($10, $100),
+# the wrong guess $10 − $2.96 = $7.04 and the costs $8.71 (both exact on the shown numbers), and all of 05b
+# ($300 ÷ 30 = $10 a day is exact in the footer's 30-day month).
 VO_ROUNDED = {
     "05a": set(A_AMT),
     "05b": set(),
@@ -227,23 +233,31 @@ ANCHORS = {
         "sfx[0].t": (1, None), "sfx[1].t": (7, None),
     },
     "05b": {
-        "lookOpts.tenth.t": (0, "$300"), "lookOpts.actions[0].t": (0, "Saw"),
-        "data.parts[0].t": (1, "$1,500"), "data.parts[1].t": (2, "$900"), "data.parts[2].t": (3, "$600"),
-        "data.checkT": (4, None), "lookOpts.gag.t": (5, "$30"), "verdict.t": (6, None),
-        "sfx[0].t": (0, "Saw"), "sfx[1].t": (0, "$300"),
+        # the cleaver comes out on "Ten", the slab slams into 10 bricks on "$300", 4 tumble into RENT on "four",
+        # the lone brick lands in FOOD + BILLS on "one" (its note "$300 ÷ 30 = $10 a day" lands with it)
+        "lookOpts.actions[0].t": (0, "Ten"), "lookOpts.tenth.t": (0, "$300"), "data.parts[0].t": (0, "four"),
+        "data.parts[1].t": (1, "one"), "data.parts[2].t": (2, "$900"), "data.parts[3].t": (2, "$600"),
+        "data.checkT": (3, None), "verdict.t": (4, None),
     },
     "05c": {
         "data.parts[0].t": (0, "$88.91"), "data.parts[1].t": (1, "$9.15"), "data.parts[2].t": (2, "$1.94"),
         "lookOpts.remaining[0].t": (0, "$88.91"), "lookOpts.remaining[1].t": (2, "$1.94"),
         "lookOpts.footerSteps[0].t": (0, "$88.91"), "lookOpts.footerSteps[1].t": (1, "$9.15"),
         "lookOpts.footerSteps[2].t": (2, "$1.94"), "data.checkT": (3, None), "lookOpts.footerSteps[3].t": (4, "$1.99"),
-        "lookOpts.footerSteps[4].t": (5, None), "lookOpts.bonus.t": (4, "$1.99"), "verdict.t": (5, None),
-        "sfx[0].t": (4, "$1.99"),
+        "lookOpts.footerSteps[4].t": (5, None), "verdict.t": (5, None),
+        # the membership row is the header's contender: on the sheet, landed, at frame 1; vo[4] voices it
+        "lookOpts.bonus.t": "frame1",
     },
 }
 
-# lookOpts.maskPct: the goal row's % reads "?" until its beat (else it answers the header at frame 1)
-MASK = {"05a": [6], "05b": None, "05c": [2]}
+# lookOpts.maskPct: the goal row's % reads "?" until its beat (else it answers the header at frame 1).
+# 05c masks every row: on a $100 base each % IS its dollar amount, so no cart dollar is printed at frame 1.
+MASK = {"05a": [6], "05b": None, "05c": [0, 1, 2]}
+
+# the header's one $ figure (R2): the input the viewer holds up against their own. Default: data.total.display.
+# 05b's is the rent; its Rent row repeats that input, so it is exempt from "no result in the header".
+HEADER_INPUT = {"05b": money(B_RENT)}
+INPUT_ROWS = {"05b": [0]}
 
 # the first payoff (a computed dollar figure on screen): path of the beat that carries it
 FIRST_PAYOFF = {"05a": "data.parts[0].t", "05b": "lookOpts.tenth.t", "05c": "data.parts[0].t"}
@@ -252,7 +266,7 @@ FIRST_PAYOFF = {"05a": "data.parts[0].t", "05b": "lookOpts.tenth.t", "05c": "dat
 APPROX_AMOUNTS = {"05a": True, "05b": False, "05c": True}
 
 # ------------------------------------------------------------ VO helpers
-NUM_WORDS = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7,
+NUM_WORDS = {"zero": 0, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7,
              "eight": 8, "nine": 9, "ten": 10}
 NUM_TOKEN = re.compile(r"(\$?)(\d[\d,]*)(?:\.(\d+))?(%)?")
 
@@ -397,10 +411,16 @@ def check_spec(key, spec):
     plain = spec["header"].replace("**", "").replace("__", "")
     words = len(plain.split())
     record(key, "R8 header ≤ 15 words", words, "≤ 15", words <= 15)
-    dollars = re.findall(r"\$[\d,.]+", plain)
-    record(key, "R2 one $ figure in header (the input)", dollars, [d["total"]["display"].split(".")[0]],
-           len(dollars) == 1 and dollars[0] == d["total"]["display"].split(".")[0])
-    results = {p["amount"].lstrip("≈ ") for p in parts}
+    dollars = [x.rstrip(".,") for x in re.findall(r"\$[\d,.]+", plain)]
+    h_in = HEADER_INPUT.get(key, d["total"]["display"].split(".")[0])
+    record(key, "R2 one $ figure in header (the input)", dollars, [h_in], dollars == [h_in])
+    inputs = INPUT_ROWS.get(key, [])
+    for j in inputs:
+        eq(key, f"parts[{j}] is the header's input", parts[j]["amount"], h_in)
+    results = {p["amount"].lstrip("≈ ") for j, p in enumerate(parts) if j not in inputs}
+    bonus = spec.get("lookOpts", {}).get("bonus")
+    if bonus:
+        results.add(bonus["amount"].lstrip("≈ "))
     record(key, "R2 no result in header", [r for r in results if r in plain], [], not any(r in plain for r in results))
     record(key, "R1 header + $ number at t = 0", bool(dollars) and bool(re.search(r"\d", d["total"]["display"])),
            True, bool(dollars))
@@ -455,8 +475,14 @@ def check_spec(key, spec):
     # masked goal %: only goal rows, and the header's answer is not printed at frame 1 otherwise
     mask = spec.get("lookOpts", {}).get("maskPct")
     eq(key, "lookOpts.maskPct", mask, MASK[key])
-    for j in mask or []:
-        record(key, f"maskPct[{j}] is the goal row", parts[j].get("tone"), "goal", parts[j].get("tone") == "goal")
+    if mask and sorted(mask) == list(range(len(parts))):
+        record(key, "maskPct masks every row (no row's dollars printed at frame 1)", mask, "all rows", True)
+    else:
+        for j in mask or []:
+            record(key, f"maskPct[{j}] is the goal row", parts[j].get("tone"), "goal", parts[j].get("tone") == "goal")
+    goal = [j for j, p in enumerate(parts) if p.get("tone") == "goal"]
+    if mask:
+        record(key, "the goal row is masked", goal, f"⊂ {mask}", all(j in mask for j in goal))
     wg = spec.get("lookOpts", {}).get("wrongGuess")
     if wg:
         res = float(re.search(r"[\d.]+", wg["result"]).group())
@@ -476,13 +502,26 @@ def check_spec(key, spec):
         record(key, "row 6 label says the tax is net of interest (3.4% is not the provision, 4.0%)", parts[5]["label"],
                "mentions tax and interest", "tax" in lab and "interest" in lab)
         record(key, "VO for row 6 says it is net of interest", vo[5]["text"], "mentions interest", "interest" in vo[5]["text"].lower())
+    if key == "05b":
+        ten = spec["lookOpts"]["tenth"]
+        eq(key, "tenth.count = pieces", ten["count"], B_PIECES)
+        whole = [p["share"] * ten["count"] for p in parts]
+        record(key, "every share × count is whole (else the kit drops the bricks)", [round(w, 6) for w in whole],
+               "whole numbers", all(abs(w - round(w)) < 1e-9 for w in whole))
+        eq(key, "bricks per bin = share × count", [round(w) for w in whole], B_PARTS_N)
+        eq(key, "envelopes (bin names)", spec["lookOpts"]["envelopes"], ["RENT", "FOOD + BILLS", "WANTS", "SAVINGS"])
+        record(key, "header asks 'a day'; the goal row's note answers per day", parts[1]["note"], "contains 'a day'",
+               "a day" in parts[1]["note"] and "a day" in spec["header"])
     if key == "05c":
         txt = spec["verdict"]["text"].lower()
         record(key, "verdict does not say Costco 'keeps' ≈ $1.94 (it keeps ≈ $3.93 before tax incl. fees)",
                spec["verdict"]["text"], "no 'keep'", "keep" not in txt)
+        record(key, "header does not say 'keep' either (the body shows what the cart leaves)", spec["header"],
+               "no 'keep'", "keep" not in spec["header"].lower())
         steps = " ".join(x["text"] for x in spec["lookOpts"]["footerSteps"] if x["t"] <= parts[2]["t"] + 1e-9)
-        record(key, "'before tax' is on screen when ≈ $1.94 lands (header says 'keep')", "before tax" in steps, True,
-               "before tax" in steps)
+        record(key, "'before tax' is on screen when ≈ $1.94 lands", "before tax" in steps, True, "before tax" in steps)
+        record(key, "membership row on the sheet at frame 1 = the header's contender", spec["lookOpts"]["bonus"]["t"],
+               "≤ 0", spec["lookOpts"]["bonus"]["t"] <= 0)
 
 
 # ------------------------------------------------------------ facts and claims
@@ -513,15 +552,22 @@ def facts():
     eq("05b", "pieces add to 10", sum(B_COUNT), B_PIECES)
     eq("05b", "amounts add to the paycheck", sum(B_AMT), B_PAY)
     eq("05b", "every amount exact (no rounding)", [s * B_PAY for s in B_RULE], [float(a) for a in B_AMT])
-    eq("05b", "wants − savings", B_GAP, 300)
-    eq("05b", "needs = half the take-home (VO 'rent, food and bills must fit in $1,500')", B_AMT[0], B_PAY // 2)
-    eq("05b", "wants per day vs the gap per day (md: $900 = $30 a day; the $300 gap = $10 a day)",
-       (B_AMT[1] // B_DAYS, B_GAP // B_DAYS), (30, 10))
-    eq("05b", "$900 ÷ 30 exact", B_AMT[1] % B_DAYS, 0)
-    for pay, want in ((2_400, [1_200, 720, 480]), (4_000, [2_000, 1_200, 800])):   # pinned comment
-        eq("05b", f"pinned: ${pay:,} → tenths × 5/3/2", [pay // B_PIECES * n for n in B_COUNT], want)
-    record("05b", "≈ $30 a day still true in an average 30.44-day month", round(B_AMT[1] / (365.25 / 12), 2),
-           "rounds to $30", round(B_AMT[1] / (365.25 / 12)) == B_PER_DAY)
+    eq("05b", "rent is a whole number of bricks", B_RENT % B_TENTH, 0)
+    eq("05b", "needs = half = 5 bricks (VO 'Needs get five')", (B_AMT[0], B_COUNT[0]), (B_PAY // 2, 5))
+    eq("05b", "food + every bill = needs − rent = 0.5 × 3,000 − 1,200", B_FOOD, 300)
+    eq("05b", "$300 ÷ 30 exact", B_FOOD % B_DAYS, 0)
+    eq("05b", "food + every bill a day", B_FOOD_DAY, 10)
+    eq("05b", "bins add to the paycheck (4 + 1 + 3 + 2 bricks)", (sum(B_PARTS), sum(B_PARTS_N)), (B_PAY, B_PIECES))
+    eq("05b", "shown % add to 100 (40 + 10 + 30 + 20)", sum(int(x[:-1]) for x in B_PARTS_PCT), 100)
+    record("05b", "rent under half the take-home (the belief: 'under half is fine')", B_RENT, f"< {B_PAY // 2}",
+           B_RENT < B_PAY // 2)
+    record("05b", "≈ $10 a day still true in an average 30.44-day month", round(B_FOOD / (365.25 / 12), 2),
+           "rounds to $10", round(B_FOOD / (365.25 / 12)) == B_FOOD_DAY)
+    # pinned comment: other rents on the same $3,000, and the same $1,200 rent on $4,000
+    for rent, want in ((1_000, "$16.67"), (1_400, "$3.33"), (1_500, "$0.00")):
+        eq("05b", f"pinned: ${rent:,} rent → food + bills a day", money((B_AMT[0] - rent) / B_DAYS, 2), want)
+    eq("05b", "pinned: $4,000 take-home, $1,200 rent → $800 = $26.67 a day",
+       (4_000 // 2 - B_RENT, money((4_000 // 2 - B_RENT) / B_DAYS, 2)), (800, "$26.67"))
 
     # 05c: Costco identities and claims
     eq("05c", "net sales = total revenue − membership ($M)", C_SALES, 297_247)
@@ -533,6 +579,14 @@ def facts():
     record("05c", "membership fees > what the cart leaves", (C_MEMBER, C_LEFT_M), "fees bigger", C_MEMBER > C_LEFT_M)
     record("05c", "fees ≈ half of operating income (caption)", round(C_MEMBER / C_OPINC, 3), "0.45..0.55",
            0.45 <= C_MEMBER / C_OPINC <= 0.55)
+    record("05c", "header 'all membership fees?' → no: the cart leaves more than zero (VO 'Not zero.')",
+           (C_LEFT_M, C_AMT[2]), "> 0", C_LEFT_M > 0 and C_AMT[2] > 0)
+    record("05c", "'about half each' (VO): cart and fees both 45-55% of operating income",
+           (round(C_LEFT_M / C_OPINC, 3), round(C_MEMBER / C_OPINC, 3)), "0.45..0.55 each",
+           all(0.45 <= x / C_OPINC <= 0.55 for x in (C_LEFT_M, C_MEMBER)))
+    record("05c", "'your cart makes almost as much' (VO): cart / fees 95-100%, exact and shown",
+           (round(C_LEFT_M / C_MEMBER, 3), round(C_AMT[2] / C_FEES, 3)), "0.95..1.0",
+           all(0.95 <= x < 1.0 for x in (C_LEFT_M / C_MEMBER, C_AMT[2] / C_FEES)))
     record("05c", "per-$100 fees beat per-$100 leftover after rounding", (C_FEES, C_AMT[2]), "fees bigger", C_FEES > C_AMT[2])
     # FY2025 robustness (release: net sales $269.9B, membership $5.323B, merch $239.886B, SG&A $24.966B)
     lo, hi = 269_850 - 239_886 - 24_966, 269_950 - 239_886 - 24_966
@@ -563,11 +617,13 @@ def main():
     for n, v, s, p, a in zip(names, A_LINES, A_SHARE, A_PCT, A_AMT):
         print(f"       {n:30s} {v:>11,}  {s * 100:8.4f}%  -> {p:>6}  ${s * 10:.4f} -> ≈ ${a:.2f}")
     print(f"       costs shown ${A_COSTS:.2f}; guess $10 − ${A_AMT[0]:.2f} = ${A_WRONG:.2f}")
-    print(f"  05b  ${B_PAY:,} ÷ {B_PIECES} = ${B_TENTH}; pieces {B_COUNT} -> {B_AMT}; wants/day ${B_PER_DAY}; gap ${B_GAP}")
+    print(f"  05b  ${B_PAY:,} ÷ {B_PIECES} = ${B_TENTH}; rule pieces {B_COUNT} -> {B_AMT}; rent ${B_RENT:,} = {B_RENT_N} bricks; "
+          f"food + bills ${B_FOOD} = {B_FOOD_N} brick = ${B_FOOD_DAY} a day; bins {B_PARTS} ({B_PARTS_PCT})")
     print("  05c  $100 at Costco (FY2026, $M)")
     for n, v, s, p, a in zip(["merchandise costs", "SG&A", "left (op. margin on sales)"], C_LINES, C_SHARE, C_PCT, C_AMT):
         print(f"       {n:30s} {v:>11,}  {s * 100:8.4f}%  -> {p:>7}  ≈ ${a:.2f}")
     print(f"       membership fees {C_MEMBER:,} -> ≈ ${C_FEES:.2f} per $100; remaining hero ${C_REMAIN1:.2f} -> ${C_REMAIN2:.2f}")
+    print(f"       operating income {C_OPINC:,} = cart {C_LEFT_M:,} ({C_LEFT_M / C_OPINC:.1%}) + fees {C_MEMBER:,} ({C_MEMBER / C_OPINC:.1%})")
     print()
 
     w = [5, 56, 44, 44]

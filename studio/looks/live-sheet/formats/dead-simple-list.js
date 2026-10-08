@@ -7,8 +7,9 @@
 // Each item: the selection slides down to the row's result cell and its label drops in; the formula bar types the
 // formula (each cell it references gets a dashed outline as its number is typed); the result snaps in (116% to
 // 100%) with a yellow flash and a tick, and the formula rises into the row as its grey working line. The note
-// opens as a dark tooltip under the row (the rows below make room) until the next item starts. The goal item
-// (or the last) counts up and its row wipes yellow.
+// opens as a dark tooltip under the row (the rows below make room) and stays while the next formula types, closing
+// just before the next value lands. Item field `noteT` (optional, seconds) holds a note back to the moment the VO
+// says it (default: just after its result). The goal item (or the last) counts up and its row wipes yellow.
 // Optional beats: a wrong guess (lookOpts.wrongGuess) lands first and is struck out before the real formula;
 // a check line (data.check) types into the bar with the result column selected; the verdict retypes the bar or
 // lands as a card in the caption band while the result column flashes top to bottom. The last 0.5 s clear back
@@ -313,12 +314,25 @@ export default function deadSimpleList(spec, ctx) {
   // note is typed into the formula bar right after its result lands, continuing the working when that fits one
   // line ("= $2,500 × 26 = $65,000 · not $60,000"), else on its own.
   const itemStr = r => (items[r].formula ? (isEq(items[r].formula) ? items[r].formula : '= ' + items[r].formula) : '')
-  const noteT = r => T[r].res + (r === countIdx ? M.count + 0.12 : 0.3)
+  const noteT = r => Math.max(T[r].res + (r === countIdx ? M.count + 0.12 : 0.3), items[r].noteT != null ? +items[r].noteT : -Infinity)
+  // A note's tooltip opens after its result (item.noteT holds it back to the moment the VO says it) and stays open
+  // while the next formula types: it closes just before the next value lands on the sheet (a later result, a wrong
+  // guess, a check line), so the rows below settle before anything lands and the note gets time to be read.
+  const tipOpenAt = r => Math.max(T[r].res + (r === countIdx ? M.count + 0.36 : 0.28), items[r].noteT != null ? +items[r].noteT : -Infinity)
+  const tipLeave = r => {
+    const after = T[r].res + 0.05
+    const lands = [
+      ...items.map((_, q) => (q !== r && !T[q].pre && T[q].res > after ? T[q].res : Infinity)),
+      ...wrongs.map(w => (w.res > after ? w.res : Infinity)),
+      check && checkT > after ? checkT : Infinity,
+    ]
+    return Math.min(...lands) - 0.15
+  }
   const fAvail = () => G.width - 102 - 22 - 6
   const fitsBar = str => textW(mk(str), font(700, fFit.px, F.mono)) <= fAvail()
   const tipWin = r => {
-    const openAt = T[r].res + (r === countIdx ? M.count + 0.36 : 0.28)
-    const leave = Math.min(...base.filter(e => e.t - 0.22 > T[r].res + 0.05).map(e => e.t - 0.22), verdict ? verdict.t : Infinity)
+    const openAt = tipOpenAt(r)
+    const leave = Math.min(tipLeave(r), verdict ? verdict.t : Infinity)
     return { openAt, closeAt: leave - 0.28 }
   }
   const tipNote = r => P.tips && !!items[r].note && !T[r].pre && tipWin(r).closeAt - tipWin(r).openAt >= 0.8
@@ -461,8 +475,8 @@ export default function deadSimpleList(spec, ctx) {
   const tips = []
   items.forEach((it, r) => {
     if (!tipNote(r)) return
-    const openAt = T[r].res + (r === countIdx ? M.count + 0.36 : 0.28) // after a count-up, clear of its landing pop
-    const leave = Math.min(...E.filter(e => e.eraseAt > T[r].res + 0.05).map(e => e.eraseAt), verdict ? verdict.t : Infinity, loopT0)
+    const openAt = tipOpenAt(r) // after a count-up, clear of its landing pop (or at item.noteT)
+    const leave = Math.min(tipLeave(r), verdict ? verdict.t : Infinity, loopT0)
     const closeAt = leave - 0.28
     const cell = cellRect(r, 1)
     const wpx = tipFit.w[r]

@@ -24,8 +24,8 @@
         "tone": "bad", "note": "6.2% of every dollar", "resultT": 2.3 },
       { "t": 6.9, "label": "A $1M salary's", "formula": "$184,500 × 6.2%", "result": "$11,439",
         "tone": "neutral", "note": "taxed only up to $184,500", "resultT": 9.6 },
-      { "t": 11.3, "label": "Their rate", "formula": "$11,439 ÷ $1,000,000", "result": "≈ 1.1%",
-        "tone": "goal", "note": "yours: 6.2%", "resultT": 12.1 }
+      { "t": 11.7, "label": "Their rate", "formula": "$11,439 ÷ $1,000,000", "result": "≈ 1.1%",
+        "tone": "goal", "note": "yours: 6.2%", "resultT": 12.5, "noteT": 15.1 }
     ]
   },
   "lookOpts": {

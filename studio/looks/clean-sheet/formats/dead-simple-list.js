@@ -12,8 +12,10 @@
 //   dense   bare, packed: 40 px formulas set solid above results on slimmer boxes, tight gaps (5-6 steps); the
 //           working still stays on the sheet. Notes that do not fit beside their result are dropped first.
 //   swap    one row per step: the result replaces its formula (last resort: 6+ steps under a long header)
-// and takes the first that fits the work area with type above the floors. Notes sit beside the result, or after
-// the formula ("$65,000 ÷ 12 =  not $5,000") when the result is too wide. lookOpts.layout forces a mode.
+// and takes the first that fits the work area with type above the floors. Notes sit beside the result; in `aside`
+// they stack under the label (ink label, grey note) when the pair stays about the box's height; else after the
+// formula ("$65,000 ÷ 12 =  not $5,000") when the result is too wide. lookOpts.layout forces a mode. Item field
+// `noteT` (optional, seconds) holds a note back to the moment the VO says it (default: just after its result).
 // A step that lands by t <= 0 is pre-filled: part of frame 1, it survives the loop clear (last frame = frame 1). At
 // the clear every other box retracts and its figure fades with it (never a bare figure without its box).
 import { h, css as style, prog, ease, plain } from '../../../runtime/core.js'
@@ -23,7 +25,7 @@ export const css = `
 .dsl > * { position: absolute; }
 .dsl-label { white-space: nowrap; font: 700 46px/1.15 'Inter', 'Inter Full', sans-serif; color: #15171C; letter-spacing: -.01em; }
 .dsl-aside { display: flex; flex-direction: column; justify-content: center; gap: 2px; }
-.dsl-aside .dsl-label { white-space: normal; font-weight: 600; color: #6B7280; line-height: 1.12; letter-spacing: 0; text-wrap: balance; }
+.dsl-aside .dsl-label { white-space: normal; font-weight: 600; color: #15171C; line-height: 1.12; letter-spacing: 0; text-wrap: balance; }
 .dsl-note { white-space: nowrap; font: 600 40px/1.15 'Inter', 'Inter Full', sans-serif; color: #6B7280; }
 .dsl-note em { font-style: normal; color: #15171C; }
 .dsl-note u.mark2 { text-decoration: none; color: #B42318; }
@@ -56,7 +58,9 @@ export default function deadSimpleList(spec, ctx) {
     const typeD = Math.max(0.12, Math.min(typeDur, res - t0 - 0.1))
     let act = t0 - MOTION.activate
     if (i === 0 && t0 <= 0.9) act = -1 // step 1 is already the active step on frame 1
-    T.push({ t0, res, typeD, act })
+    // item.noteT (optional) holds the note back to the moment the VO says it; default just after the result
+    const noteAt = Math.max(res + 0.38, it.noteT != null ? +it.noteT : -Infinity)
+    T.push({ t0, res, typeD, act, noteAt })
   })
   T.forEach((x, i) => { x.next = T[i + 1] ? Math.max(T[i + 1].act, x.res + 0.4) : Infinity })
   const last = T[T.length - 1] || { res: 1 }
@@ -189,13 +193,23 @@ export default function deadSimpleList(spec, ctx) {
       if (boxRight > right) fits = false
       const asideLeft = Math.round(boxRight + 26)
       const asideW = right - asideLeft
-      // note: beside the result (unless an aside label owns that slot), else after the formula
+      // note: beside the result; with an aside label, stacked under it (ink label, grey note) when the pair stays
+      // about the box's height; else after the formula
       r.notePlace = 'none'
       if (r.note) {
         root.append(r.note)
         style(r.note, { fontSize: m.note + 'px', left: '0px', top: '0px', height: '', lineHeight: '' })
         const nw = r.note.getBoundingClientRect().width
+        const stacks = () => {
+          style(r.aside, { width: Math.max(0, asideW) + 'px', height: '', display: 'flex' })
+          r.aside.append(r.note)
+          style(r.note, { left: '', top: '' })
+          const ok = r.label.scrollWidth <= asideW + 1 && r.label.offsetHeight + 2 + r.note.offsetHeight <= boxH + 14
+          if (!ok) root.append(r.note)
+          return ok
+        }
         if (!labelInAside && asideW >= nw + 2) r.notePlace = 'aside'
+        else if (labelInAside && asideW >= nw + 2 && stacks()) r.notePlace = 'aside'
         else if (mode !== 'swap' && textX + fw + 34 + nw <= right) r.notePlace = 'formula'
         else if (mode !== 'dense' && mode !== 'swap') fits = false // dense lists drop a note before the working
         if (r.notePlace === 'aside') { r.aside.append(r.note); style(r.note, { left: '', top: '' }) }
@@ -307,7 +321,7 @@ export default function deadSimpleList(spec, ctx) {
         if (pre[i]) rest = reset ? restAt(r, x, 0) : rest * keep + restAt(r, x, 0) * clearP
         const kr = keepAt(x.res)
         r.box.seek(L.wipe * kr, L.text * kr, rest, kr * kr)
-        if (r.note) fadeUp(r.note, prog(tt, x.res + 0.38, MOTION.fade) * keepAt(x.res + 0.38))
+        if (r.note) fadeUp(r.note, prog(tt, x.noteAt, MOTION.fade) * keepAt(x.noteAt))
       })
       if (check) {
         check.seek(prog(tt, checkT, checkD), t >= checkT && t < checkT + checkD + 0.15 && t < clearT0)

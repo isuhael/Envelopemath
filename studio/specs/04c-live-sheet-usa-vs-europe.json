@@ -5,7 +5,7 @@
   "fps": 30,
   "duration": 38.0,
   "header": "POV: In 2016 you invested **$10,000** in\nUSA vs EUROPE",
-  "footer": "USA = S&P 500, Europe = MSCI Europe (net) · total return in US$ · Jan 2016 → Dec 2025 · no fees or tax",
+  "footer": "Total return in US$ (MSCI Europe net) · Jan 2016 → Dec 2025 · no fees or tax",
   "captions": true,
   "vo": [
     {
@@ -192,7 +192,7 @@
     "formulaSteps": [
       {
         "t": 0.0,
-        "text": "= $10,000 × (1 + each year's return)"
+        "text": "= $10,000 ×\n(1 + each year's return)"
       },
       {
         "t": 2.98,
@@ -277,7 +277,12 @@
         19.0,
         21.0
       ]
-    }
+    },
+    "preroll": 0,
+    "finalT": [
+      24.6,
+      28.6
+    ]
   },
   "sfx": [
     {
