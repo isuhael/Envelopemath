@@ -3,7 +3,7 @@
   "look": "becker-rig",
   "format": "dead-simple-list",
   "fps": 30,
-  "duration": 26.5,
+  "duration": 25.3,
   "header": "4 DEAD SIMPLE NUMBERS\nWILL A 3% RAISE PUSH **$65,000**\nINTO A HIGHER BRACKET?",
   "footer": "ASSUMES single, standard deduction\n2026 federal income tax only",
   "captions": true,
@@ -14,23 +14,23 @@
     { "t": 6.2,  "d": 2.4,  "text": "$66,500 of pay." },
     { "t": 8.8,  "d": 1.55, "text": "You crossed it by" },
     { "t": 10.4, "d": 0.9,  "text": "$450." },
-    { "t": 12.0, "d": 3.85, "text": "Only those $450 pay 22%. 10 points more:" },
+    { "t": 12.0, "d": 3.85, "text": "Only those $450 pay 22%.\n10 points more:" },
     { "t": 15.9, "d": 0.6,  "text": "$45." },
     { "t": 16.6, "d": 1.6,  "text": "Not your whole raise." },
     { "t": 18.3, "d": 1.6,  "text": "Not your whole pay." },
     { "t": 20.4, "d": 3.6,  "text": "Higher bracket? Yes. It costs you $45 a year." }
   ],
-  "verdict": { "t": 20.4, "text": "Higher bracket? Yes. It costs you **$45 a year**" },
+  "verdict": { "t": 20.4, "text": "Higher bracket? Yes.\nIt costs you **$45 a year**" },
   "data": {
     "input": { "label": "Salary", "value": "$65,000", "note": "a year" },
     "typeDur": 0.7,
     "items": [
-      { "t": 0.0, "label": "Your new pay", "formula": "$65,000 × 1.03", "result": "$66,950",
-        "tone": "good", "resultT": 2.3 },
+      { "t": 0.0, "label": "Pay after 3%", "formula": "$65,000 × 1.03", "result": "$66,950",
+        "tone": "good", "note": "+$1,950 raise", "resultT": 2.3 },
       { "t": 4.6, "label": "Where 22% starts", "formula": "$50,400 + $16,100", "result": "$66,500",
         "tone": "neutral", "note": "line + deduction", "resultT": 6.2 },
       { "t": 8.8, "label": "Pay over the line", "formula": "$66,950 − $66,500", "result": "$450",
-        "tone": "neutral", "note": "taxed at 22%", "resultT": 10.4 },
+        "tone": "neutral", "note": "22%, not 12%", "resultT": 10.4 },
       { "t": 12.0, "label": "What the bracket costs you", "formula": "$450 × 10%", "result": "$45",
         "tone": "goal", "note": "22% − 12%", "resultT": 15.9 }
     ]
@@ -42,7 +42,7 @@
       { "t": 18.3, "act": "wag" },
       { "t": 20.4, "act": "shrug" },
       { "t": 22.7, "act": "point", "item": 3 },
-      { "t": 24.8, "act": "proud" }
+      { "t": 24.1, "act": "proud" }
     ]
   }
 }

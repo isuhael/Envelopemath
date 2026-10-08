@@ -752,11 +752,24 @@ export default function povRace(spec, ctx) {
   const landedN = t => entries.reduce((a, e) => a + (t >= e.t ? 1 : 0), 0)
   function liveValues(t, idx) {
     // → [spend text, own text, own colour, entrance p, two-line?]
-    if (idx === 0) return [spStart, owStart, ownColor(owV[0], spV[0]), 1]
+    if (idx === 0) return coverClean ? ['', '', C.good, 0] : [spStart, owStart, ownColor(owV[0], spV[0]), 1]
     if (t < r0) return ['', '', C.good, 0]
     if (t >= r1) return [spFinal, owFinal, ownColor(owV[N - 1], spV[N - 1]), finalP(t), true]
     const x = xRace(t), a = valAt(sp, x), b = valAt(ow, x)
-    return [fmtV(a), fmtV(b), ownColor(b, a), frozen ? clamp((t - r0) / 0.12) : 1]
+    return [fmtV(a), fmtV(b), ownColor(b, a), frozen || coverClean ? clamp((t - r0) / 0.12) : 1]
+  }
+  // the answer row at t → { num, unit, color, fill (yellow 0..1), lab (0: unit.label, 1: "End of <year>"), year, p (entrance) }
+  function ansAt(t) {
+    if (t < r0) return { num: '?', unit: 'years', color: C.ink, fill: 1, lab: 0, p: 1 }
+    if (t >= r1 && ans.finalSplit) return { num: ans.finalSplit.main, unit: ans.finalSplit.suf, color: C.good, fill: 0, lab: 0, p: prog(t, r1, M.drop), fin: true }
+    const live = valAt(ow, xRace(t))
+    let v = live, fill = 0, lab = 0, year = null
+    for (const w of holdWin) {
+      if (t >= w.t0 && t < w.t1) { v = w.v; fill = 1; lab = clamp((t - w.t0) / 0.12); year = w.year }
+      else if (t >= w.t1 && t < w.t1 + 0.3) { v = lerp(w.v, live, ease.inOut(prog(t, w.t1, 0.3))); fill = 1 - prog(t, w.t1, 0.3); lab = 1 - prog(t, w.t1, 0.12); year = w.year }
+    }
+    const [num, unit] = unitText(v)
+    return { num, unit, color: C.good, fill, lab, year, p: clamp((t - r0) / 0.12) }
   }
   return {
     duration,
