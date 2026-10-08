@@ -1,0 +1,97 @@
+{
+ "id": "x-wd-4x3",
+ "stress": true,
+ "look": "live-sheet",
+ "format": "what-difference",
+ "fps": 30,
+ "header": "What difference does paying\n**weekly** make on a car loan?",
+ "footer": "Assumes 6.5% APR, extra goes to principal",
+ "captions": true,
+ "vo": [
+  {
+   "t": 0.0,
+   "d": 2.5,
+   "text": "A **$30,000** car loan, four ways."
+  },
+  {
+   "t": 18.0,
+   "d": 3.0,
+   "text": "Extra cash wins."
+  }
+ ],
+ "verdict": {
+  "t": 18.0,
+  "text": "**+$100 a month** wins."
+ },
+ "data": {
+  "stake": {
+   "label": "Car loan",
+   "value": "$30,000",
+   "terms": "6.5% APR · 60 months"
+  },
+  "metrics": [
+   {
+    "key": "payoff",
+    "label": "Paid off"
+   },
+   {
+    "key": "interest",
+    "label": "Interest"
+   },
+   {
+    "key": "total",
+    "label": "Total paid"
+   }
+  ],
+  "options": [
+   {
+    "t": 2.0,
+    "name": "Monthly payments as scheduled",
+    "detail": "$587 × 12 = $7,044 a year",
+    "values": {
+     "payoff": "60 mo",
+     "interest": "≈ $5,220",
+     "total": "≈ $35,220"
+    }
+   },
+   {
+    "t": 6.0,
+    "name": "Every 2 weeks",
+    "detail": "$294 × 26 = $7,644",
+    "values": {
+     "payoff": "≈ 54 mo",
+     "interest": "≈ $4,680",
+     "total": "≈ $34,680"
+    },
+    "delta": "≈ −$540",
+    "tone": "good"
+   },
+   {
+    "t": 10.0,
+    "name": "Weekly",
+    "detail": "$147 × 52 = $7,644",
+    "values": {
+     "payoff": "≈ 54 mo",
+     "interest": "≈ $4,670",
+     "total": "≈ $34,670"
+    },
+    "delta": "≈ −$550",
+    "tone": "good"
+   },
+   {
+    "t": 14.0,
+    "name": "Monthly + $100",
+    "detail": "$687 × 12 = $8,244",
+    "values": {
+     "payoff": "50 mo",
+     "interest": "≈ $4,320",
+     "total": "≈ $34,320"
+    },
+    "delta": "≈ −$900",
+    "tone": "good"
+   }
+  ],
+  "winner": 3,
+  "hold": 3.0
+ }
+}

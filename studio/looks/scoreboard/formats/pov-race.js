@@ -163,6 +163,13 @@ export default function povRace(spec, ctx) {
   P.y = L.stage.y + 44
   P.h = L.stage.y + L.stage.h - 58 - P.y          // x tick labels below it
   const pxOf = x => ((x - X.from) / span) * P.w
+  // the verdict never covers the race: when it lands on a band over the stage foot (L.verdict.boxed), the plot box
+  // compresses over the 0.3 s before verdict.t so both lines (the spend line too), the icons and the x ticks end above
+  // the band (the y range is unchanged, only squeezed)
+  const vT0 = spec.verdict && spec.verdict.text ? Math.max(0, +spec.verdict.t || 0) : null
+  const PH0 = P.h
+  const PH1 = vT0 != null && L.verdict.boxed ? clamp(L.verdict.y - 10 - 54 - P.y, PH0 * 0.45, PH0) : PH0
+  const phAt = t => (PH1 >= PH0 ? PH0 : lerp(PH0, PH1, ease.inOut(prog(t, vT0 - 0.3, 0.3))))
 
   // ---------- purchases ----------
   const purchases = (d.purchases || []).filter(p => p && isFinite(+p.x))
@@ -227,9 +234,9 @@ export default function povRace(spec, ctx) {
   const pos = allVals.filter(v => v > 0)
   const logMin = Y.min > 0 ? +Y.min : (pos.length ? Math.min(...pos) : 1) * 0.8
   const logMax = Y.max != null ? +Y.max : allMax * 1.3
-  const pyFor = ymax => (Y.log
-    ? v => P.h - ((Math.log10(Math.max(v, logMin)) - Math.log10(logMin)) / (Math.log10(logMax) - Math.log10(logMin))) * P.h
-    : v => P.h - ((v - Y.min) / (ymax - Y.min)) * P.h)
+  const pyFor = (ymax, ph = P.h) => (Y.log
+    ? v => ph - ((Math.log10(Math.max(v, logMin)) - Math.log10(logMin)) / (Math.log10(logMax) - Math.log10(logMin))) * ph
+    : v => ph - ((v - Y.min) / (ymax - Y.min)) * ph)
 
   // ---------- running counter templates (finals are display strings; only running values are formatted) ----------
   function runTpl(sr, v) {
@@ -295,7 +302,9 @@ export default function povRace(spec, ctx) {
     root.append(lab)
     return { line, lab }
   })
-  gGrid.append(s('line', { x1: 0, x2: P.w, y1: P.h, y2: P.h, stroke: '#2A3340', 'stroke-width': 3 }))
+  const baseLine = s('line', { x1: 0, x2: P.w, y1: P.h, y2: P.h, stroke: '#2A3340', 'stroke-width': 3 })
+  gGrid.append(baseLine)
+  const logTicks = []
   if (Y.log) {
     const py = pyFor(logMax)
     const vals = []
@@ -310,6 +319,7 @@ export default function povRace(spec, ctx) {
       attr(g.line, 'opacity', '1'); attr(g.line, 'y1', yy.toFixed(1)); attr(g.line, 'y2', yy.toFixed(1))
       setText(g.lab, axisText(v, Y.prefix))
       style(g.lab, { display: 'block', top: (yy - 15).toFixed(1) + 'px' })
+      logTicks.push({ g, v })
     }
   }
   // x ticks under the plot (decoration): passed years bright, future years dim
@@ -447,7 +457,9 @@ export default function povRace(spec, ctx) {
       return false
     }
     let done = false
-    for (const alt of [tagText, String(tagText).replace(/^\s*in\s+/i, ''), fallback]) {
+    // ("SPENT ON GAMING PCS" → "GAMING PCS": the coral colour and the SPENT side already say it was spent)
+    const alts = [tagText, String(tagText).replace(/^\s*in\s+/i, ''), String(tagText).replace(/^\s*(spent|paid|money)\s+(on|to|for)\s+/i, ''), fallback]
+    for (const alt of alts.filter((a, i) => a && alts.indexOf(a) === i)) {
       text.innerHTML = richUI(alt)
       for (const g of [true, false]) if (!done && fits(g)) { done = true; if (!g) glyph.remove() }
       if (done) break
@@ -545,7 +557,16 @@ export default function povRace(spec, ctx) {
     seek(t) {
       const x = xAt(t)
       const ymax = Y.log ? logMax : yMaxAt(t)
-      const py = pyFor(ymax)
+      const ph = phAt(t)
+      const py = pyFor(ymax, ph)
+      // ---- the plot box (compresses before a boxed verdict) ----
+      attr(baseLine, 'y1', ph.toFixed(1)); attr(baseLine, 'y2', ph.toFixed(1))
+      for (const tk of xTicks) style(tk.lab, { top: (ph + 12).toFixed(1) + 'px' })
+      for (const lt of logTicks) {
+        const yy = py(lt.v)
+        attr(lt.g.line, 'y1', yy.toFixed(1)); attr(lt.g.line, 'y2', yy.toFixed(1))
+        style(lt.g.lab, { top: (yy - 15).toFixed(1) + 'px' })
+      }
 
       // ---- y grid (linear: rescales with the race) ----
       if (!Y.log) {
@@ -647,7 +668,7 @@ export default function povRace(spec, ctx) {
       })
       for (const tk of xTicks) {
         const cx = pxOf(tk.xv), w = String(tk.xv).length * 18
-        style(tk.lab, { visibility: tagRects.some(R => hit(R, [cx - w / 2, P.h + 10, cx + w / 2, P.h + 44])) ? 'hidden' : 'visible' })
+        style(tk.lab, { visibility: tagRects.some(R => hit(R, [cx - w / 2, ph + 10, cx + w / 2, ph + 44])) ? 'hidden' : 'visible' })
       }
 
       // ---- the scoreboard: both counters, live; the stock number goes coral while under water ----

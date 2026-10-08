@@ -1,0 +1,47 @@
+{
+ "id": "x-st-dsl-3long",
+ "stress": true,
+ "look": "live-sheet",
+ "format": "dead-simple-list",
+ "fps": 30,
+ "header": "3 DEAD SIMPLE NUMBERS\nIF YOU EARN **$48,000**",
+ "captions": true,
+ "data": {
+  "items": [
+   {
+    "t": 0.5,
+    "label": "What lands in your bank account every single month after tax",
+    "formula": "$48,000 × 0.78 ÷ 12",
+    "result": "≈ $3,120 a month",
+    "tone": "good"
+   },
+   {
+    "t": 4.0,
+    "label": "Emergency fund",
+    "formula": "$3,120 × 6",
+    "result": "$18,720",
+    "tone": "goal",
+    "note": "six months of everything you spend"
+   },
+   {
+    "t": 8.0,
+    "label": "Per hour",
+    "formula": "$48,000 ÷ 2,080",
+    "result": "≈ $23",
+    "tone": "neutral"
+   }
+  ]
+ },
+ "footer": "ASSUMES ≈ 22% total tax",
+ "vo": [
+  {
+   "t": 0,
+   "d": 3,
+   "text": "Three numbers."
+  }
+ ],
+ "verdict": {
+  "t": 11,
+  "text": "**$18,720** is your cushion."
+ }
+}

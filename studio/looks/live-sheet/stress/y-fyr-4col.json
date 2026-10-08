@@ -1,0 +1,80 @@
+{
+ "id": "y-fyr-4col",
+ "stress": true,
+ "look": "live-sheet",
+ "format": "find-your-row",
+ "fps": 30,
+ "header": "What your **coffee habit** costs\nby the time you retire",
+ "footer": "ASSUMES 7% a year, 30 years, before tax",
+ "captions": true,
+ "vo": [
+  {
+   "t": 0,
+   "d": 2.0,
+   "text": "Find your daily coffee spend."
+  },
+  {
+   "t": 3.0,
+   "d": 2.4,
+   "text": "Five dollars a day is **$173,000**."
+  }
+ ],
+ "verdict": {
+  "t": 6.6,
+  "text": "Every **$1 a day** ≈ **$34,500** at retirement"
+ },
+ "data": {
+  "columns": [
+   {
+    "label": "Daily spend on coffee drinks"
+   },
+   {
+    "label": "Per year\n× 365 days"
+   },
+   {
+    "label": "Over 30 years\nno growth"
+   },
+   {
+    "label": "Invested at 7% instead",
+    "emph": true
+   }
+  ],
+  "rows": [
+   [
+    "$3",
+    "$1,095",
+    "$32,850",
+    "≈ $103,400"
+   ],
+   [
+    "$5",
+    "$1,825",
+    "$54,750",
+    "≈ $172,400"
+   ],
+   [
+    "$7",
+    "$2,555",
+    "$76,650",
+    "≈ $241,400"
+   ],
+   [
+    "$10",
+    "$3,650",
+    "$109,500",
+    "≈ $344,800"
+   ]
+  ],
+  "formula": "= daily × 365 × 30 years, growing 7%",
+  "rowsT": 0.4,
+  "rowEvery": 0.4,
+  "pick": [
+   {
+    "t": 4.0,
+    "row": 1,
+    "label": "The average American coffee drinker spends about this much every single day"
+   }
+  ],
+  "hold": 3.0
+ }
+}

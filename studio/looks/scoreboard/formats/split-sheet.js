@@ -76,6 +76,8 @@ export const css = `
 .ss-q { display: inline-block; font-family: 'Anton', 'Inter Full', sans-serif; line-height: 1; color: #6B7584; }
 .ss-lab .sb-label { height: 100%; justify-content: center; }
 .ss-lab .sb-l1.wrap { width: 100%; white-space: normal; text-wrap: balance; line-height: 1.06; }
+.ss-tag { position: absolute; top: 0; display: flex; align-items: center; justify-content: flex-end; text-align: right; font: 700 42px/1.08 'Inter', 'Inter Full', sans-serif; text-transform: uppercase; letter-spacing: 0.04em; color: #9AA4B2; white-space: nowrap; }
+.ss-tag > span { display: block; }
 .ss-l3 { max-width: 100%; font: 600 42px/1.15 'Inter', 'Inter Full', sans-serif; color: #9AA4B2; text-align: center; white-space: nowrap; }
 `
 
@@ -187,20 +189,30 @@ export default function splitSheet(spec, ctx) {
   // a row whose part the hero rolls with slams its amount in on landing (one focal number at a time); the rest roll
   const rowRolls = i => !rem.some(r => r.part === i)
   // the hero's last roll: lookOpts.heroFinal, or at verdict.t to the verdict's first emphasised money figure
+  // the number's meaning changes there (a paycheck becomes "a year invested"), so it carries a tag: lookOpts
+  // heroFinal.tag, else the verdict's words after the figure up to the line break or the first punctuation
+  // ("**$15,000** a year invested" → "A YEAR INVESTED"). No tag to be had: the hero keeps the total and only the
+  // verdict carries the new figure
   let heroFinal = null
   if (lo.heroFinal !== false) {
-    let hf = lo.heroFinal && lo.heroFinal.display != null ? { t: lo.heroFinal.t != null ? +lo.heroFinal.t : vT, display: String(lo.heroFinal.display) } : null
+    let hf = lo.heroFinal && lo.heroFinal.display != null ? { t: lo.heroFinal.t != null ? +lo.heroFinal.t : vT, display: String(lo.heroFinal.display), tag: lo.heroFinal.tag != null ? String(lo.heroFinal.tag) : '' } : null
     if (!hf && vT != null) {
       const vt = String(spec.verdict.text)
       const ems = [...vt.matchAll(/\*\*(.+?)\*\*/g)].map(m => m[1])
       const money = str => { const m = /≈?\s?\$\s?\d[\d,]*(?:\.\d+)?(?:\s?[KMBT](?![a-z]))?/.exec(str); return m ? m[0] : null }
       const pick = ems.map(money).find(Boolean) || money(bare(vt))
-      if (pick) hf = { t: vT, display: pick }
+      if (pick) {
+        const plainV = bare(vt), at = plainV.indexOf(pick)
+        const after = at >= 0 ? plainV.slice(at + pick.length).split(/[\n.,;:!?(]/)[0].trim() : ''
+        const words = after.split(/\s+/).filter(Boolean)
+        const tag = words.length && words.length <= 5 && after.length <= 30 ? after : ''
+        if (tag) hf = { t: vT, display: pick, tag }
+      }
     }
     const lastShown = rem.length ? rem[rem.length - 1].display : total.display
     if (hf && hf.t != null && isFinite(displayValue(hf.display)) && displayValue(hf.display) !== displayValue(lastShown)) {
       const tpl = parseDisplay(hf.display)
-      heroFinal = { t: hf.t, display: hf.display, tpl, val: tpl.value * tpl.scale, start: hf.t + 0.04, roll: 1.1 }
+      heroFinal = { t: hf.t, display: hf.display, tag: hf.tag || '', tpl, val: tpl.value * tpl.scale, start: hf.t + 0.04, roll: 1.1 }
       heroFinal.land = heroFinal.start + heroFinal.roll
     }
   }
@@ -216,7 +228,7 @@ export default function splitSheet(spec, ctx) {
   if (bonus) rowDefs.push({ label: bonus.label || '', note: '', pct: '', amount: String(bonus.amount || ''), color: toneColor(bonus.tone), bonus: true })
   const maskSet = new Set(Array.isArray(lo.maskPct) ? lo.maskPct.map(Number) : [])
   const rows = rowDefs.map(rd => {
-    const el = h('div', { class: 'ss-row', style: { left: RX + 'px', top: '0px', width: RW + 'px' } })
+    const el = h('div', { class: 'ss-row', 'data-band-unit': '', style: { left: RX + 'px', top: '0px', width: RW + 'px' } })
     const label = h('div', { class: 'ss-label', html: richG(rd.label), style: { fontSize: REF + 'px' } })
     const note = rd.note ? h('div', { class: 'ss-note', html: richUIG(rd.note) }) : null
     const name = h('div', { class: 'ss-name' }, label, note)
@@ -247,7 +259,8 @@ export default function splitSheet(spec, ctx) {
   const span = limit - TOP                       // stage + 16 + label slot
   // label slot heights: two lines (working + part), three (+ the note), what a squeezed stack can still use, one line
   const T = L0.type
-  const LABEL_TWO = T.l1 + 6 + T.l2, LABEL_THREE = LABEL_TWO + 32, labelMin = capsOn ? 112 : 150, LABEL_ONE = T.l1 + 8
+  // (LABEL_THREE: working + part at its smallest + a 42 px note line; the captions-on slot, 162 px, can't hold it)
+  const LABEL_TWO = T.l1 + 6 + T.l2, LABEL_THREE = T.l1 + 6 + Math.min(58, T.l2Min + 4) + 6 + 50, labelMin = capsOn ? 112 : 150, LABEL_ONE = T.l1 + 8
   // sheet spacing: roomy by default; tight (a slimmer bar, smaller gaps) when a dense sheet needs the room; compact
   // (thin tracks, minimal padding) as the last resort, e.g. 7 rows with captions on
   const spacing = mode => {
@@ -268,25 +281,36 @@ export default function splitSheet(spec, ctx) {
     const amtW = (maxAW * A) / REF, pctW = (maxPW * P) / REF
     const pctRight = 22 + amtW + (pctW ? 28 : 0)
     const nameW = Math.floor(RW - 24 - pctRight - (pctW ? pctW + 24 : 8))
-    const nameWide = Math.floor(RW - 24 - 22 - amtW - 26)     // a row with no pct (the bonus row)
+    const nameWide = Math.floor(RW - 24 - 22 - amtW - 26)     // a row with no pct (the bonus row); a note's width
     let ok = nameW >= 160, sum = 0
     const per = rows.map(r => {
       const nw = r.pw ? nameW : nameWide
       const w = (r.w * S) / REF
       const lines = w <= nw ? 1 : w <= nw * 1.85 ? 2 : 3
       if (lines > 2) ok = false
-      const note = notesOn && r.note ? 1 : 0
-      if (note && r.nw > nw) ok = false
-      const text = (lines === 1 ? S : lines * S * 1.02) + note * NOTE_H
+      // a note sits under its label and may run under the % (which then rides on the label's line), up to the
+      // amounts; too long for one line: two balanced lines
+      const note = notesOn && r.note ? (r.nw <= nameWide ? 1 : r.nw <= nameWide * 1.8 ? 2 : 3) : 0
+      if (note > 2) ok = false
+      const labelH = lines === 1 ? S : lines * S * 1.02
+      const text = labelH + (note ? NOTE_H + (note - 1) * 44 : 0)
       const hh = Math.round(Math.max(A, text) + sp.pad + 9 + sp.trk)  // text band (+ padding) + rims + track
       sum += hh
-      return { lines, note, h: hh, nw }
+      return { lines, note, h: hh, nw, labelH, textH: text }
     })
-    return { S, A, P, amtW, pctW, pctRight, nameW, per, sp, sheetH: sp.fixed + sum, ok }
+    return { S, A, P, amtW, pctW, pctRight, nameW, nameWide, per, sp, sheetH: sp.fixed + sum, ok }
   }
   const hasNotes = parts.some(p => p.note)
   const notesOpt = lo.notes === false ? 'off' : lo.notes || 'auto'
-  const fits = (gm, want) => gm.ok && span - 16 - gm.sheetH >= want
+  // the label slot a sheet leaves: the stage never ends above the kit grid's stage bottom
+  const sbGrid = L0.stage.y + L0.stage.h
+  const slotOf = gm => Math.min(span - 16 - gm.sheetH, limit - 16 - sbGrid)
+  // with a verdict, the slot also keeps the verdict's room (layoutFor: min(150, L.verdictNeed), the slot + 8), so the
+  // verdict lands under the sheet and never on a band over its last rows; only a sheet that can't have that falls
+  // back to the band
+  const VSLOT = L0.verdictNeed ? Math.min(150, L0.verdictNeed) - 8 : 0
+  let vRoom = VSLOT > 0
+  const fits = (gm, want) => gm.ok && slotOf(gm) >= (vRoom ? Math.max(want, VSLOT) : want)
   // the label size S in [hi, lo] for this pass: among the sizes that fit and are within 4 px of the largest that
   // fits, the one that wraps the fewest labels onto two lines (then the largest)
   const search = (sHi, sLo, notesOn, mode, want) => {
@@ -296,19 +320,30 @@ export default function splitSheet(spec, ctx) {
     const wraps = x => x.per.filter(p => p.lines > 1).length
     return ok.filter(x => x.S >= ok[0].S - 4).reduce((a, b) => (wraps(b) < wraps(a) ? b : a))
   }
-  let gm = null, notesOnSheet = false
-  if (hasNotes && (notesOpt === 'auto' || notesOpt === 'sheet')) {
-    // notes under the labels: the label stack then needs two lines only (working + part)
-    gm = search(58, 44, true, 'roomy', notesOpt === 'sheet' ? labelMin : LABEL_TWO)
-    notesOnSheet = !!gm
+  // the notes are the napkin working: they always show. On the sheet (under each label) first; in the label stack's
+  // third line only when the slot can hold three lines; else the note takes the part name's place in the label
+  // stack (the lit row already names the part)
+  let gm = null, notesOnSheet = false, notesIn = 'off'
+  const solve = () => {
+    gm = null; notesOnSheet = false; notesIn = 'off'
+    if (hasNotes && notesOpt !== 'off') {
+      if (notesOpt !== 'label') {
+        gm = search(58, 44, true, 'roomy', LABEL_TWO) || search(58, 40, true, 'roomy', labelMin) || search(56, 40, true, 'tight', labelMin)
+        notesOnSheet = !!gm
+        if (gm) notesIn = 'sheet'
+      }
+      if (!gm) { gm = search(58, 44, false, 'roomy', LABEL_THREE) || search(56, 40, false, 'tight', LABEL_THREE); if (gm) notesIn = 'l3' }
+    }
+    gm = gm || search(58, 44, false, 'roomy', LABEL_TWO)
+    // dense: tight spacing, keeping two label lines (working + part), then whatever the label stack can still have
+    gm = gm || search(56, 40, false, 'tight', LABEL_TWO) || search(56, 40, false, 'tight', labelMin)
+    // last resort (6-7 rows with captions on): compact rows; the label stack may shrink to its one working line
+    gm = gm || search(48, 40, false, 'compact', labelMin) || search(48, 40, false, 'compact', LABEL_ONE)
   }
-  const labelWant = hasNotes && notesOpt !== 'off' ? LABEL_THREE : LABEL_TWO   // three lines (working, part, note) or two
-  gm = gm || search(58, 44, false, 'roomy', labelWant)
-  // dense: tight spacing, keeping two label lines (working + part), then whatever the label stack can still have
-  gm = gm || search(56, 40, false, 'tight', Math.min(labelWant, LABEL_TWO)) || search(56, 40, false, 'tight', labelMin)
-  // last resort (6-7 rows with captions on): compact rows; the label stack may shrink to its one working line
-  gm = gm || search(48, 40, false, 'compact', labelMin) || search(48, 40, false, 'compact', LABEL_ONE)
+  solve()
+  if (!gm && vRoom) { vRoom = false; solve() }
   if (!gm) gm = geom(40, false, 'compact')                        // overflow: the linter will say where
+  if (hasNotes && notesOpt !== 'off' && notesIn === 'off') notesIn = 'l2'
   const G = gm.sp, barH = G.barH, trackH = G.trk
 
   const sbDefault = L0.stage.y + L0.stage.h
@@ -330,18 +365,23 @@ export default function splitSheet(spec, ctx) {
     const band = r.h - 9 - trackH                                  // text band inside a row (above its track)
     r.band = band
     style(r.el, { top: L.stage.y + r.y + 'px', height: r.h + 'px' })
-    style(r.name, { top: '3px', height: band + 'px', width: geo.nw + 'px' })
-    style(r.label, { fontSize: gm.S + 'px' })
+    const noteW = gm.nameWide
+    style(r.name, { top: '3px', height: band + 'px', width: (geo.note ? noteW : geo.nw) + 'px' })
+    style(r.label, { fontSize: gm.S + 'px', maxWidth: geo.nw + 'px' })
     if (geo.lines > 1) { r.label.classList.add('wrap'); style(r.label, { width: geo.nw + 'px' }) }
     if (r.note && !geo.note) { r.note.remove(); r.note = null }
-    style(r.pct, { top: '3px', height: band + 'px', fontSize: gm.P + 'px', right: gm.pctRight + 'px' })
+    if (r.note && geo.note > 1) style(r.note, { whiteSpace: 'normal', textWrap: 'balance', width: noteW + 'px' })
+    // with a note under the label, the % rides on the label's line (the note may run under it)
+    const labTop = 3 + Math.max(0, (band - geo.textH) / 2)
+    if (geo.note) style(r.pct, { top: labTop + 'px', height: geo.labelH + 'px', fontSize: gm.P + 'px', right: gm.pctRight + 'px' })
+    else style(r.pct, { top: '3px', height: band + 'px', fontSize: gm.P + 'px', right: gm.pctRight + 'px' })
     style(r.amt, { top: '3px', height: band + 'px', right: '22px' })
     style(r.q, { fontSize: gm.A + 'px' })
     if (r.odo) r.odo.el.style.fontSize = gm.A + 'px'
     if (r.plain) style(r.plain, { fontSize: gm.A + 'px' })
     // safety net: anything the estimate missed shrinks (never below the 40 px floor)
-    fitText(r.label, geo.nw, { maxH: band - (r.note ? NOTE_H : 0), minPx: 40 })
-    if (r.note) fitText(r.note, geo.nw, { minPx: 40 })
+    fitText(r.label, geo.nw, { maxH: Math.ceil(geo.labelH) + 2, minPx: 40 })
+    if (r.note) fitText(r.note, noteW, { maxH: geo.note * 46 + 2, minPx: 40 })
     style(r.q, { display: 'inline-block' })
     if (r.odo) style(r.odo.el, { display: 'none' })
     if (r.plain) style(r.plain, { display: 'none' })
@@ -365,8 +405,37 @@ export default function splitSheet(spec, ctx) {
   const icon = lo.icon || null
   const HS = L.hero.size, HI = L.hero.icon
   const heroSize = Math.round(Math.min(HS, (920 - (icon ? HI + 12 : 0)) / Math.max(1, estEm)))
-  const hero = heroRow(stage, L, { icon, size: heroSize, iconSize: Math.round(HI * Math.min(1, heroSize / HS + 0.1)) })
+  const heroIconSize = Math.round(HI * Math.min(1, heroSize / HS + 0.1))
+  const hero = heroRow(stage, L, { icon, size: heroSize, iconSize: heroIconSize })
   const totalTpl = parseDisplay(total.display)
+  // the hero tag for the payoff figure (Inter 700 caps, 42 px; two balanced lines past 260 px), left of the number
+  const TAGGAP = 26
+  let ftag = null
+  if (heroFinal && heroFinal.tag) {
+    const el = h('div', { class: 'ss-tag', html: `<span>${richUI(heroFinal.tag)}</span>` })
+    stage.append(el)
+    const wOf = html => { el.innerHTML = `<span>${html}</span>`; return Math.ceil(el.offsetWidth) + 2 }
+    let w = wOf(richUI(heroFinal.tag)), html = richUI(heroFinal.tag)
+    if (w > 260) {
+      const words = bare(heroFinal.tag).split(/\s+/).filter(Boolean)
+      for (let k = 1; k < words.length; k++) {
+        const a = esc(words.slice(0, k).join(' ')), b = esc(words.slice(k).join(' '))
+        const ww = Math.max(wOf(a), wOf(b))
+        if (ww < w) { w = ww; html = a + '<br>' + b }
+      }
+    }
+    el.innerHTML = `<span>${html}</span>`
+    w = Math.min(330, w)
+    hero.el.append(el)
+    style(el, { height: L.hero.h + 'px', width: w + 'px' })
+    fitText(el, w, { maxH: L.hero.h - 8, minPx: 42 })   // 42: the hero's 3% dip keeps it >= 40
+    style(el, { display: 'none' })
+    ftag = { el, w }
+    // the tagged figure fits the 960 px row at its landing bump
+    hero.show(heroFinal.display)
+    const room = L.hero.w / 1.12, ow = hero.odo.el.offsetWidth, sp = w + TAGGAP
+    if (ow + sp > room) style(hero.odo.el, { fontSize: Math.floor(parseFloat(hero.odo.el.style.fontSize || heroSize) * (room - sp) / ow) + 'px' })
+  }
 
   // ---------- label stack (bottom bar): working · part · note ----------
   const items = []
@@ -378,13 +447,20 @@ export default function splitSheet(spec, ctx) {
       l1: total.display && p.pct ? workHTML(`${total.display} × ${p.pct}`) : null,
       l2: richG(p.label || ''),
       l2Color: tone(p) === 'goal' ? C.green : C.white,
-      l3: !notesOnSheet && notesOpt !== 'off' && p.note ? richUIG(p.note) : null,
+      l3: (notesIn === 'l3' || notesIn === 'l2') && p.note ? richUIG(p.note) : null,
+      noteFirst: notesIn === 'l2',                                // the note takes the part name's place
       prefer: 'l1',                                               // short slot: the note goes before the working
     })
   })
   if (d.check) { idx.check = items.length; items.push({ l1: workHTML(d.check), l1Lines: workLines(d.check), l2: total.label ? richG(total.label) : '', l2Optional: true, prefer: 'l1' }) }
   if (bonus) { idx.bonus = items.length; items.push({ l1: workHTML(bonus.amount), l2: richG(bonus.label || ''), prefer: 'l1' }) }
   const labels = labelBox(stage, slot, items, T)
+  // every note shows somewhere (FORMATS.md parts[].note): on its row, or in its part's label group
+  parts.forEach((p, i) => {
+    if (!p.note) return
+    const g2 = labels.groups[idx.parts[i]]
+    if (!rows[i].note && !(g2 && g2.querySelector('.ss-l3'))) console.warn(`split-sheet: part ${i}'s note "${p.note}" has no room on the sheet or in the label stack`)
+  })
 
   // the label timeline: intro, each part, the check, the bonus (in time order)
   const labelEvents = []
@@ -668,6 +744,15 @@ export default function splitSheet(spec, ctx) {
       }
       // the check sums back to the total: the hero bumps only when it is the total
       if (checkT != null && heroMode === 'total' && !(heroFinal && t >= heroFinal.start)) { const L1 = checkT + 0.36; heroScale *= bump(t, L1, { amp: 0.1, dur: 0.45 }); if (t >= L1) glow = Math.max(glow, 1 - ease.out(prog(t, L1, 1.0))) }
+      // the payoff's tag: a hard cut with the roll (the number now means something else); it takes the icon's place
+      if (ftag) {
+        const on = t >= heroFinal.start
+        const space = on ? ftag.w + TAGGAP : hero.icon ? heroIconSize + 12 : 0
+        style(ftag.el, { display: on ? 'flex' : 'none' })
+        if (hero.icon) style(hero.icon, { display: on ? 'none' : 'block' })
+        style(hero.glow, { paddingLeft: space + 'px' })
+        if (on) style(ftag.el, { left: (L.hero.w / 2 - (hero.odo.el.offsetWidth + space) / 2).toFixed(1) + 'px' })
+      }
       style(hero.el, { transform: `scale(${heroScale.toFixed(4)})` })
       style(hero.glow, { '--glow': (16 + 30 * glow).toFixed(1) + 'px', '--glowA': (0.38 + 0.45 * glow).toFixed(3) })
 
@@ -703,11 +788,13 @@ function labelBox(parent, slot, items, T) {
     el.append(grp)
     const line = (cls, html, color) => { const e = h('div', { class: cls, html }); if (color) e.style.color = color; grp.append(e); return e }
     let l1 = it.l1 ? line('sb-l1', it.l1, it.l1Color || C.green) : null
-    let l2 = line('sb-l2', it.l2 || '', it.l2Color || C.white)
+    // noteFirst: the note takes the part name's place (the lit row already names the part)
+    let l2 = it.noteFirst && it.l3 ? null : line('sb-l2', it.l2 || '', it.l2Color || C.white)
     if (l1) l1.style.fontSize = T.l1 + 'px'
-    l2.style.fontSize = T.l2 + 'px'
+    if (l2) l2.style.fontSize = T.l2 + 'px'
     let l3 = it.l3 ? line('ss-l3', it.l3) : null
-    if (l1 && slot.h < T.l1 + GAP + L2MIN) {
+    if (l3 && it.noteFirst && l1 && slot.h < T.l1 + GAP + 50) { l1.remove(); l1 = null }   // one line: the note
+    if (l1 && l2 && slot.h < T.l1 + GAP + L2MIN) {
       // a one-line slot (the densest sheets): the working only; the lit row already names the part
       l2.remove(); l2 = null
       if (l3) { l3.remove(); l3 = null }
@@ -729,15 +816,19 @@ function labelBox(parent, slot, items, T) {
       }
     }
     if (l3) fitText(l3, slot.w, { minPx: 40 })
-    if (l3 && l3.scrollWidth > slot.w + 0.5) { l3.remove(); l3 = null }
+    if (l3 && l3.scrollWidth > slot.w + 0.5) style(l3, { whiteSpace: 'normal', textWrap: 'balance', width: slot.w + 'px' })   // two lines
     const room = () => slot.h - (l1 ? l1.offsetHeight + GAP : 0) - (l3 ? l3.offsetHeight + GAP : 0)
     if (l2 && it.l2Optional && (!it.l2 || room() < L2MIN)) { l2.remove(); l2 = null }
     if (l2) {
       // fit line 2 to what is left; if it still can't fit (a long name at the 44 px floor), drop a line and refit
       const fitL2 = () => { l2.style.fontSize = T.l2 + 'px'; fitText(l2, slot.w, { maxH: Math.max(1, room()), minPx: 44 }) }
       fitL2()
-      for (const k of it.prefer === 'l3' ? ['l1', 'l3'] : ['l3', 'l1']) {
-        if (room() >= L2MIN && l2.scrollHeight <= room() + 0.5) break
+      // short of room: a note (the napkin working) stays and the part name goes (its row is lit); otherwise the line
+      // not preferred goes first
+      const fitsL2 = () => room() >= L2MIN && l2.scrollHeight <= room() + 0.5
+      if (!fitsL2() && l3) { l2.remove(); l2 = null }
+      else for (const k of it.prefer === 'l3' ? ['l1', 'l3'] : ['l3', 'l1']) {
+        if (fitsL2()) break
         if (k === 'l1' && l1) { l1.remove(); l1 = null; fitL2() }
         if (k === 'l3' && l3) { l3.remove(); l3 = null; fitL2() }
       }
@@ -746,7 +837,7 @@ function labelBox(parent, slot, items, T) {
     const kids = [l1, l2, l3].filter(Boolean)
     const top = kids[0].offsetTop, bot = kids[kids.length - 1].offsetTop + kids[kids.length - 1].offsetHeight
     const cy = (top + bot) / 2
-    grp.__from = Math.min(slamFromFor(Math.max(1, ...kids.map(inkWidth)), slot.w - 8), Math.max(1, Math.min(slot.h + 8 - cy, cy + 8) / Math.max(1, (bot - top) / 2)))
+    grp.__from = Math.min(slamFromFor(Math.max(1, ...kids.map(inkWidth)), slot.w - 8), Math.max(1, Math.min(slot.h + 2 - cy, cy + 8) / Math.max(1, (bot - top) / 2)))
     style(grp, { transformOrigin: `50% ${cy.toFixed(1)}px`, display: 'none' })
     return grp
   })

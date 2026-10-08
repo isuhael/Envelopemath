@@ -215,54 +215,78 @@ export default function whatDifference(spec, ctx) {
   })
 
   // ---------- column widths: from the widest landed display; names get what is left ----------
+  // Names: one size for the board. One line at >= 44 px when every name fits; else every row in two-line mode
+  // (balanced; a short name stays on one line) at one size >= 40 px when the top line has the height. Two-line rows
+  // whose names still don't fit move the value columns down into the bar line ("values below"): the name gets the
+  // whole top line and the bar track ends before the columns. Only then (cramped one-line rows) a name may go
+  // under 44 px on one line (40 px floor).
   const lineCols = two ? sideMetrics : [...(barMetric ? [barMetric] : []), ...sideMetrics]
   const cellsOf = r => (two ? r.cells : [...(r.blab ? [r.blab] : []), ...r.cells])
-  let colW = [], nameW = 0
+  let colW = [], nameW = 0, below = false
+  const cellFs = () => (below ? Math.min(fs, barFs) : fs)
   const measure = () => {
+    const cf = cellFs()
     for (const r of rows) for (const c of cellsOf(r)) {
-      style(c.odo.el, { fontSize: fs + 'px' }); style(c.q, { fontSize: fs + 'px' })
-      if (c.txt) style(c.txt, { fontSize: fs + 'px' })
+      style(c.odo.el, { fontSize: cf + 'px' }); style(c.q, { fontSize: cf + 'px' })
+      if (c.txt) style(c.txt, { fontSize: cf + 'px' })
       if (c.ok) c.odo.show(c.disp)
     }
     const wOf = c => (c.ok ? c.odo.el.offsetWidth : c.txt ? c.txt.offsetWidth : 0)
-    colW = lineCols.map((m, k) => Math.ceil(Math.max(fs * 0.5, ...rows.map(r => wOf(cellsOf(r)[k])))))
-    nameW = innerW - 2 * PAD - colW.reduce((a, b) => a + b, 0) - COLGAP * lineCols.length
+    colW = lineCols.map((m, k) => Math.ceil(Math.max(cf * 0.5, ...rows.map(r => wOf(cellsOf(r)[k])))))
+    nameW = below ? innerW - 2 * PAD : innerW - 2 * PAD - colW.reduce((a, b) => a + b, 0) - COLGAP * lineCols.length
   }
   measure()
   while (nameW < 260 && fs > 40) { fs -= 2; measure() }
   const nameFs = two ? clamp(Math.round(fs * 0.92), 44, 60) : clamp(Math.round(fs * 0.88), 44, 56)
-  // one name size for the board: the smallest one-line fit (>= 44 px) among the names that fit on one line; a name
-  // that doesn't goes onto two balanced lines at that size or smaller
-  let boardFs = nameFs
-  rows.forEach(r => {
-    style(r.name, { fontSize: nameFs + 'px', width: nameW + 'px' })
-    const px = fitText(r.name, nameW, { minPx: 44, step: 1 })
-    if (r.name.scrollWidth <= nameW + 0.5) boardFs = Math.min(boardFs, px)
-  })
-  rows.forEach(r => {
-    style(r.name, { fontSize: boardFs + 'px', width: nameW + 'px' })
-    let px = fitText(r.name, nameW, { minPx: 44, step: 1 })
-    if (r.name.scrollWidth > nameW + 0.5) {
-      // too long for one line at 44 px: two balanced lines if the row has the height (>= 40 px), else (cramped
-      // one-line rows only) one line down to the 40 px floor
-      const h2 = topH - TOPPAD - 2
-      if (h2 >= 2 * 40) {
-        r.name.classList.add('two')
-        style(r.name, { fontSize: boardFs + 'px', height: 'auto' })      // measure the wrapped text, not the box
-        px = fitText(r.name, nameW, { maxH: h2, minPx: 40, step: 1 })
-        style(r.name, { height: topH - TOPPAD + 'px' })
-      } else px = fitText(r.name, nameW, { minPx: 40, step: 1 })
+  const h2 = () => (below ? topH : topH - TOPPAD) - 2
+  // the largest size (step 1) at which a name fits nameW on one line (>= 44), or on two lines in h2 (>= 40)
+  const fitOne = r => { r.name.classList.remove('two'); style(r.name, { fontSize: nameFs + 'px', width: nameW + 'px', height: 'auto' }); const px = fitText(r.name, nameW, { minPx: 44, step: 1 }); return r.name.scrollWidth <= nameW + 0.5 ? px : 0 }
+  const fitTwo = r => {
+    if (h2() < 2 * 40) return 0
+    r.name.classList.add('two')
+    style(r.name, { fontSize: nameFs + 'px', width: nameW + 'px', height: 'auto' })
+    const px = fitText(r.name, nameW, { maxH: h2(), minPx: 40, step: 1 })
+    return r.name.scrollWidth <= nameW + 0.5 && r.name.scrollHeight <= h2() + 0.5 ? px : 0
+  }
+  const plan = () => {
+    const one = rows.map(fitOne)
+    if (one.every(px => px > 0)) return { mode: 'one', px: Math.min(...one) }
+    // the value columns give up a few px (12 at most, never under 46) before any name goes onto two lines
+    if (!below) {
+      const fs0 = fs
+      for (fs = fs0 - 2; fs >= Math.max(46, fs0 - 12); fs -= 2) {
+        measure()
+        const o2 = rows.map(fitOne)
+        if (o2.every(px => px > 0)) return { mode: 'one', px: Math.min(...o2) }
+      }
+      fs = fs0
+      measure()
     }
-    r.nameFs = px
+    const tw = rows.map(fitTwo)
+    if (tw.every(px => px > 0)) return { mode: 'two', px: Math.min(...tw) }
+    return null
+  }
+  let np = plan()
+  if (!np && two && lineCols.length) { below = true; measure(); np = plan() }
+  if (!np) np = { mode: 'one', px: 40, squeeze: true }              // cramped one-line rows: the 40 px floor
+  rows.forEach(r => {
+    r.name.classList.toggle('two', np.mode === 'two')
+    style(r.name, { fontSize: np.px + 'px', width: nameW + 'px', height: (below ? topH : topH - TOPPAD) + 'px', top: (below ? 0 : TOPPAD) + 'px' })
+    if (np.squeeze) fitText(r.name, nameW, { minPx: 40, step: 1 })
+    r.nameFs = parseFloat(r.name.style.fontSize)
   })
+  if (below) rows.forEach(r => r.cells.forEach(c => style(c.cell, { top: topH + 'px', height: barH + 'px' })))
   const colRight = []
   let xr = innerW - PAD
   for (let k = lineCols.length - 1; k >= 0; k--) { colRight[k] = xr; xr -= colW[k] + COLGAP }
   rows.forEach(r => cellsOf(r).forEach((c, k) => style(c.cell, { right: (innerW - colRight[k]) + 'px', width: colW[k] + 'px' })))
+  // the bar's track: the full row, or (values below) up to 24 px short of the first value column
+  const trackW = below ? Math.max(120, colRight[0] - colW[0] - 24) : innerW
+  if (below) rows.forEach(r => style(r.track, { right: (innerW - trackW) + 'px', borderRadius: '0 0 0 11px' }))
   // a posted value slams in from up to 1.35×, scaled about its right edge: cap it so it never grows into the name
   // (or the column to its left)
   rows.forEach(r => {
-    const nameRight = PAD + Math.min(nameW, inkWidth(r.name))
+    const nameRight = below ? trackW : PAD + Math.min(nameW, inkWidth(r.name))
     cellsOf(r).forEach((c, k) => {
       const ink = c.ok ? c.odo.el.offsetWidth : c.txt ? c.txt.offsetWidth : 0
       if (!ink) return
@@ -399,7 +423,7 @@ export default function whatDifference(spec, ctx) {
         const p = clamp((t - b.start) / Math.max(0.05, b.dur))
         const running = t >= b.start
         // fill: honest length on one shared scale; races linearly (a clock) and stops dead at the payoff
-        const fullW = barKey ? (barLen(r.o) / maxLen) * innerW : 0
+        const fullW = barKey ? (barLen(r.o) / maxLen) * trackW : 0
         const fw = running ? fullW * p : 0
         const racing = running && t < b.land
         const edgeA = racing ? 1 : running ? 0.55 + 0.45 * flashAt(t, b.land, 0.5) : 0
@@ -430,7 +454,7 @@ export default function whatDifference(spec, ctx) {
           if (c.posted || !c.roll) {
             show = t >= b.land
             // the slam lands with an undershoot; keep it off rows whose text would dip under the 40 px floor
-            if (show) { sc = slam(t, b.land, { from: c.from }).s; if (fs * 0.94 < 40) sc = Math.max(1, sc) }
+            if (show) { sc = slam(t, b.land, { from: c.from }).s; if (cellFs() * 0.94 < 40) sc = Math.max(1, sc) }
           } else if (running) {
             show = true
             if (t < b.land) v = p * c.tpl.value * c.tpl.scale
@@ -438,7 +462,7 @@ export default function whatDifference(spec, ctx) {
           style(c.q, { display: show ? 'none' : 'inline' })
           style(c.odo.el, { display: show && c.ok ? 'inline-flex' : 'none' })
           if (c.txt) style(c.txt, { display: show ? 'inline' : 'none' })
-          if (show && c.ok) { if (v != null) c.odo.set(v, c.tpl); else c.odo.show(c.disp) }
+          if (show && c.ok) { if (v != null) c.odo.set(v, c.tpl, true); else c.odo.show(c.disp) }   // "≈" unlit while it runs
           style(c.cell, { transform: sc !== 1 ? `scale(${sc.toFixed(4)})` : 'none' })
         }
         // the bar metric: rolls with the bar; rides inside the bar's end when it fits, else just past it
@@ -447,14 +471,14 @@ export default function whatDifference(spec, ctx) {
           if (!c.ok) { style(c.cell, { display: 'none' }) }
           else {
             const show = running
-            if (show) { if (t < b.land) c.odo.set(p * c.tpl.value * c.tpl.scale, c.tpl); else c.odo.show(c.disp) }
+            if (show) { if (t < b.land) c.odo.set(p * c.tpl.value * c.tpl.scale, c.tpl, true); else c.odo.show(c.disp) }
             style(c.q, { display: show || two ? 'none' : 'inline' })
             style(c.odo.el, { display: show ? 'inline-flex' : 'none' })
             if (two) {
               style(c.cell, { display: show ? 'flex' : 'none' })
               const lw = show ? c.odo.el.offsetWidth : 0
               const inside = fw - 16 - lw >= 16
-              const x = inside ? fw - 16 - lw : fw + 14
+              const x = inside ? fw - 16 - lw : Math.min(fw + 14, trackW - lw - 8)
               style(c.cell, { left: x.toFixed(1) + 'px' })
               style(c.odo.el, { color: isWin && inside ? C.panel : C.white })
             } else {
@@ -496,7 +520,7 @@ export default function whatDifference(spec, ctx) {
         else if (t < b.start) {
           // cut → race start: the hero holds the previous option's exact score (or the stake)
           if (k > 0) { hDisp = val(opts[k - 1], heroKey); hCol = moneyCol(opts[k - 1]) } else { hDisp = stake.value; tagOn = false; hCol = C.green }
-        } else { hTpl = tpl; hv = accrue(prog(t, b.start, b.dur)) * tpl.value * tpl.scale }
+        } else { hTpl = tpl; hv = accrue(prog(t, b.start, b.dur)) * tpl.value * tpl.scale; ghost = true }
       }
       if (hTpl) hero.set(hv, hTpl, ghost)
       else if (hDisp && isFinite(parseDisplay(hDisp).value)) hero.show(hDisp)

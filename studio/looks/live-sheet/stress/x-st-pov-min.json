@@ -1,0 +1,65 @@
+{
+ "id": "x-st-pov-min",
+ "stress": true,
+ "look": "live-sheet",
+ "format": "pov-race",
+ "fps": 30,
+ "header": "POV: you bought **stock** instead",
+ "captions": true,
+ "data": {
+  "spend": {
+   "label": "Spent",
+   "points": [
+    [
+     2015,
+     100
+    ],
+    [
+     2025,
+     1100
+    ]
+   ],
+   "final": "$1,100 spent",
+   "item": "bag"
+  },
+  "own": {
+   "label": "In stock",
+   "points": [
+    [
+     2015,
+     100
+    ],
+    [
+     2020,
+     900
+    ],
+    [
+     2025,
+     2600
+    ]
+   ],
+   "final": "≈ $2,600"
+  },
+  "x": {
+   "from": 2015,
+   "to": 2025,
+   "tickEvery": 2
+  },
+  "y": {
+   "prefix": "$",
+   "dp": 0
+  },
+  "raceT": [
+   1.5,
+   12
+  ],
+  "hold": 3
+ },
+ "vo": [
+  {
+   "t": 0,
+   "d": 2,
+   "text": "POV."
+  }
+ ]
+}

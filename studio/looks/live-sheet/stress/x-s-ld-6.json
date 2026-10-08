@@ -1,0 +1,76 @@
+{
+ "id": "x-s-ld-6",
+ "stress": true,
+ "look": "live-sheet",
+ "format": "ledger-duel",
+ "fps": 30,
+ "header": "2 people save **$500 a month**\nOne starts 10 years later",
+ "captions": false,
+ "verdict": {
+  "t": 7,
+  "text": "Starting at 25 ≈ **2× the money** at 65"
+ },
+ "data": {
+  "people": [
+   {
+    "name": "Alexandra Montgomery",
+    "plan": "Starts at 25, stops at 35, never adds another dollar"
+   },
+   {
+    "name": "Christopher",
+    "plan": "Starts at 35 and keeps going to 65"
+   }
+  ],
+  "stake": "$500 a month at 7%",
+  "rows": [
+   {
+    "label": "Age 25",
+    "values": [
+     "$0",
+     "$0"
+    ]
+   },
+   {
+    "label": "Age 35",
+    "values": [
+     "≈ $87,000",
+     "$0"
+    ]
+   },
+   {
+    "label": "Age 45",
+    "values": [
+     "≈ $171,000",
+     "≈ $87,000"
+    ]
+   },
+   {
+    "label": "Age 55",
+    "values": [
+     "≈ $336,000",
+     "≈ $258,000"
+    ]
+   },
+   {
+    "label": "Age 60",
+    "values": [
+     "≈ $471,000",
+     "≈ $397,000"
+    ]
+   },
+   {
+    "label": "Age 65",
+    "values": [
+     "≈ $661,000",
+     "≈ $596,000"
+    ],
+    "event": "Alexandra still ahead after putting in a third as much",
+    "tone": "goal"
+   }
+  ],
+  "rowsT": 0.3,
+  "rowEvery": 0.8,
+  "winner": 0,
+  "hold": 3
+ }
+}

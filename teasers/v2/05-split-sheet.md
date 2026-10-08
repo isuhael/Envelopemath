@@ -1,7 +1,7 @@
 # 05 · Split sheet: three teasers
 
 **Format:** `split-sheet` (rank 5 in [`../../research/v2/04-formats.md`](../../research/v2/04-formats.md), hook pattern **P9**)
-**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews; see "Review log" at the end)
+**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews), hook pass 2026-10-08 (05b and 05c hooks kept; 05a was not in this pass). What changed and why is in the "Review log" at the end.
 **Specs:**
 - [`studio/specs/05a-clean-sheet-chipotle-10.json`](../../studio/specs/05a-clean-sheet-chipotle-10.json) (33.6 s)
 - [`studio/specs/05b-becker-rig-3000-paycheck.json`](../../studio/specs/05b-becker-rig-3000-paycheck.json) (29.3 s)
@@ -204,6 +204,7 @@ FY2025 is the latest 10-K as of Oct 7, 2026: Chipotle's fiscal year is the calen
 **Spec:** `studio/specs/05b-becker-rig-3000-paycheck.json` · 29.3 s · captions on
 **Platform title:** Could You Live on 50/30/20 With $3,000 a Month Take-Home?
 **On-screen hook (header):** Could you live on 50/30/20 / with **$3,000** a month take-home?
+**Hook pass (2026-10-08): kept.** The two judges averaged this hook at 5.00. The best rewrite, A ("Rent is half your $3,000? / Then 50/30/20 leaves food and bills:"), averaged 6.00, under the 7.5 bar, so the hook, title and body stay as they are. The judges' diagnosis and the four rewrites are in the Review log.
 
 ### Why this hook
 
@@ -310,6 +311,7 @@ The book is the primary source. The page couldn't be opened here, so the definit
 **Spec:** `studio/specs/05c-scoreboard-costco-100.json` · 26.0 s · captions on
 **Platform title:** How Much of Your $100 Does Costco Actually Keep?
 **On-screen hook (header):** HOW MUCH OF YOUR **$100** / DOES COSTCO ACTUALLY KEEP?
+**Hook pass (2026-10-08): kept.** The two judges averaged this hook at 6.25. The best eligible rewrite, A ("WHAT YOUR $100 AT COSTCO / REALLY PAYS FOR:" with $11.09 as the struck guess), averaged 6.75, under both bars (7.5, and +0.75 over the current hook). B and C were ruled out because one judge marked each dishonest. The hook, title and body stay as they are; details are in the Review log.
 
 ### Why this hook
 
@@ -493,3 +495,53 @@ Every issue from the verifier (V) and the hook judge (J), and what was done. Aft
 | J4 | 05a + 05c | should: frame 1 prints the goal row's %, which answers the header | `lookOpts.maskPct` added to the clean-sheet and scoreboard `split-sheet` modules (a right-aligned "?" over the measured real %, so the layout does not move; it unmasks as the row activates or at the part's cut). 05a masks row 6 (Profit), 05c row 2 (Left for Costco). Kits that ignore the flag still show the full sheet. |
 | J5 | 05a | should: the wrong answer arrives after the scroll window | See J1: it is on screen at 0.0 s and voiced inside the first line. |
 | J6 | 05c | should: VO1 restates the header; the twist is missing from the verdict | See J3: the opener is the first calculation, and the verdict carries both the cart and the card. |
+
+### Hook pass (2026-10-08)
+
+The owner rejected round 1 partly because "hooks are weak". For 05b and 05c, two judges scored the current hook and four rewrites (A-D) out of 10. A hook here is the header at t = 0, the first VO line, what happens in the first 1.5 s, and the platform title. The rule: average the two judges' scores per option; an option either judge marks dishonest is out; adopt the best option only if its average is at least 7.5 and at least 0.75 above the current hook. Otherwise keep the current hook (a clearly better title may still be taken). 05a was not in this pass. 05c-D's text was cut off in transit after its first VO line, but both judges' scores for it arrived.
+
+| Teaser | Current | A | B | C | D | Decision |
+|---|---|---|---|---|---|---|
+| 05b | 5 / 5 → **5.00** | 6 / 6 → **6.00** | 4.5 / 4.5 → 4.50 | 5.5 / 4.5 → 5.00 | 5.5 / 5.5 → 5.50 | **Keep current** |
+| 05c | 6.5 / 6 → **6.25** | 7 / 6.5 → **6.75** | 5.5 / 5.5, **out** (judge 1: dishonest) | 6 / 7, **out** (judge 1: dishonest) | 4.5 / 4.5 → 4.50 | **Keep current** |
+
+The options:
+- **05b.** A: "Rent is half your **$3,000**? / Then 50/30/20 leaves food and bills:" (verdict: food and bills get $0). B: "**$100** a day take-home. / 50/30/20 gives rent, / food and every bill:". C: "POV: you take home **$3,000** / and try 50/30/20 for a month" ($1,500 spoken and landed at 0.5 s). D: "Just 20% of **$3,000** a month. / After 5 years, that's:" ($36,000 = a full year of take-home).
+- **05c.** A: "WHAT YOUR **$100** AT COSTCO / REALLY PAYS FOR:" (the hero's ≈ $11.09 voiced as the guess "So Costco pockets $11.09?", then struck). B: "YOUR **$100** CART / OR YOUR MEMBERSHIP: / WHICH MAKES COSTCO MORE?". C: "52 RUNS OF **$100** AT COSTCO. / HOW MANY ARE LEFT FOR COSTCO?" (≈ $101 a year, about one run). D: "POV: YOU'RE COSTCO. / A **$100** CART JUST RANG UP."
+
+**Why nothing was adopted:**
+- No eligible option reached 7.5. 05b-A cleared the +0.75 margin (+1.00) but not the floor. 05c-A missed both (+0.50).
+- 05c's B and C are out on honesty. Even if they had been counted, neither would pass: C would average 6.50 and B 5.50.
+- Both judges re-ran the maths of every option and found it correct. The two honesty failures are about framing, not arithmetic.
+
+**Judge 1's honesty findings on 05c (recorded for any future per-member framing):**
+- **B.** The header sets one $100 cart against one membership. A membership ($65 Gold Star or $130 Executive a year) brings in about 33-67x the ≈ $1.94 one cart leaves, so "The card. By a hair." holds only per $100 of company-wide sales (1.987 against 1.944, a $129M gap). That is not the question on screen. Judge 1's fix: "EVERY $100 COSTCO RINGS UP: CARTS OR MEMBERSHIP FEES?". Judge 2 marked B honest under the "company-wide" footer and the per-$100 row, but expected "that's wrong" replies.
+- **C.** After telling the viewer their 52 runs leave Costco ≈ $101, the verdict "Your card brings in more" is false for that viewer. A $65 card brings in less than $101, and a $130 Executive card nets $26 after its 2% reward on $5,200. At $65, the break-even spend is about $3,344 a year ($65 ÷ 1.944%). Judge 1's fix: drop the line from this cut, or say "All members' fees bring in more than all carts leave".
+- **The current verdict**, "Your card brings in **≈ $1.99**", uses the same "your card" wording. Judge 1 found it acceptable in the current cut, because the bonus row says "per $100 of sales" and the footer says "company-wide". It stays. But any recut that makes the stake one member's year has to change it.
+
+**Titles:** both kept. No candidate title is clearly better for the current body.
+- **05b.** A's title ("Rent Is Half Your $3,000? What 50/30/20 Leaves for Food and Bills") asks a question only A's $0 body answers; the current video never sets rent at half. B's title needs the $100-a-day body, and D's the 5-year body. C's ("POV: You Take Home $3,000 and Try 50/30/20 for a Month") fits the current split, but both judges said "for a month" promises a month-long story the video never tells.
+- **05c.** A's "Does Costco Really Make $11.09 on Your $100?" names a number the current hero does show (≈ $11.09, settled by about 2.0 s). But the current VO never voices it as a guess or strikes it, so the title would ask a question the body does not frame. Judge 2 also called $11.09 a strawman (Costco is known for thin markups) and docked a title with cents (R4). B's title carries the framing judge 1 ruled dishonest, C's needs the 52-run body, and D's (4.50) takes the $100 away from the viewer.
+
+**What the judges agreed on, for the next round:**
+- **05b.**
+  - The current hook is solved at frame 1: NEEDS 50% beside $3,000 gives $1,500 before the VO says it. The wrong belief (the viewer's own rent) is never on screen. Nothing lands in the first 1.5 s (the cleaver is only raised). The first payoff is the $300 method step at 2.4 s, NEEDS $1,500 lands at 5.4 s, and vo[0] is a method step.
+  - Every option that splits a stated sum by 50/30/20 shares that flaw: the result can be worked out from the two frame-1 numbers. Both judges contrasted it with Chipotle's $7.04 (05a) and H16's unknown result.
+  - A (6 / 6) named the strongest belief ("rent at half is fine") and had the most repeatable verdict ($0, R12). But "Rent is half" in the header plus the bin "RENT + FOOD + BILLS 50%" gives $0 by definition at frame 1, so the next 20 s confirm a tautology. Rent at half is also an assumption, not the viewer's own number.
+  - D (5.5 / 5.5) was the only payoff that is not half the input. But a linear, no-interest P2 is the benchmark's weak end (H73, 46,137; H72, 67,160), the header has no "you", and the needs and wants bins become filler.
+  - C fixed the dead first 1.5 s, but its $1,500 is still the product of the frame-1 numbers. B's "$100 a day take-home" is not how anyone is paid.
+- **05c.**
+  - The current hook has no wrong number on screen; the belief lives in one word, "ACTUALLY". On a $100 base, 88.91% and 9.15% print rows 1-2's dollars at frame 1. The header asks what Costco "keeps", while the verdict says what the cart "leaves", before tax. The brand's pull is unproven (H13, 80,139, 1.44x). Judge 2 adds that the membership twist is a well-known factoid.
+  - A (7 / 6.5) puts 05a's device on the hero. It was held back because the guess gets its "?" only at 3.4 s (frame 1 is unchanged), rows 1-2 still print their dollars, and it repeats 05a's header grammar (two siblings in one slate). Judge 2 also found the guess to be one nobody holds.
+  - C had the best open loop: a countable "how many of 52?", the viewer's own run as the unit, and "about one" as a verdict viewers can repeat. Judge 2's 7 for C ties judge 1's 7 for A as the highest single score in this pass. If C is revisited, it needs judge 1's honesty fix first, a shorter header than 12 words, and a shorter cut (31.5 s, with the header's payoff at 17.1 s).
+  - D breaks R3/R6: every benchmark POV makes the viewer the buyer or investor, not the business.
+- **Open items (not applied, because they were not scored):**
+  - 05c: a header and title without "keep", so the question matches the verdict. Both judges named the mismatch.
+  - 05b: a first number the viewer cannot work out from the frame-1 numbers. No option managed it inside the 50/30/20 topic, so this may need a different question about the same sheet.
+
+**Files:** no changes to the specs, beats, VO, captions, check script or `teasers.json`. Only this write-up changed: this section, the date line, and one "Hook pass: kept" line under each of 05b and 05c. `teasers.json` still carries round 2's writer estimates (05b 7, 05c 7.5). The judges' averages for the kept hooks are 5.00 and 6.25.
+- Re-run of `checks/05-split-sheet.py`: **481 checks, 0 failures**, exit 0.
+- `node src/cli.mjs check` on 05a, 05b and 05c: 3/3 clean, 0 errors, 0 warnings.
+- Stills at 0, 1.5 and 3 s for 05b and 05c, with today's kits (05c also at 0.5, 1.0, 2.0 and 2.5 s):
+  - **05b.** At 0.0 s: the 2-line header with $3,000 in green, the 2-line footer, the gold slab "TAKE-HOME, A MONTH $3,000" with the figure on it, and three bins with 50% / 30% / 20% tags and empty slots. At 1.5 s the figure holds up the "÷ 10" cleaver, "$3,0" is typing under the slab, and the caption reads "$3,000. Saw it into ten: $300 each." At 3.0 s the slab is 10 gold bricks over "$3,000 ÷ 10 = $300". No dollar result appears before 2.4 s, as both judges said.
+  - **05c.** At 0.0 s: the 2-line header with $100 in green, the hero $100.00 with the bag icon, the footer, the full bar, and three rows (88.91% · ? / 9.15% · ? / ? · ?), with "YOUR COSTCO RUN" and the first caption already up. The pointer is on row 1 at 0.5 s. The hero counts down through ≈ $39.05 (1.0 s) and ≈ $11.61 (1.5 s) under the footer working "$264,279M ÷ $297,247M × $100 ≈ $88.91". Row 1's ≈ $88.91 slams in and the hero settles on ≈ $11.09 at about 2.0 s: the kit's 0.18 s cut plus a 1.35 s roll after the 0.5 s beat. That is inside the ~3 s target, but about 1.6 s after the VO says "$88.91". The beat sheet's "0.5" is the start of the cut.

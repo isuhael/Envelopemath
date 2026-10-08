@@ -8,10 +8,10 @@
   "footer": "Each year's bills buy NFLX at its avg price",
   "captions": true,
   "vo": [
-    { "t": 0.0, "d": 2.0, "text": "Netflix, 2012: **$7.99** a month." },
-    { "t": 2.1, "d": 2.6, "text": "Every bill buys Netflix stock instead." },
-    { "t": 4.95, "d": 1.7, "text": "2013: the stock **quadruples**." },
-    { "t": 6.8, "d": 2.8, "text": "Price hike? Your investment goes up too." },
+    { "t": 0.0, "d": 1.9, "text": "Netflix, 2012: **$7.99** a month." },
+    { "t": 2.0, "d": 1.6, "text": "2013: the stock **quadruples**." },
+    { "t": 3.75, "d": 2.3, "text": "Every bill buys Netflix stock instead." },
+    { "t": 6.15, "d": 2.6, "text": "Price hike? Your investment goes up too." },
     { "t": 9.8, "d": 3.6, "text": "Each year's bills buy at that year's average price." },
     { "t": 13.8, "d": 3.2, "text": "2020: the bill's $13.99. Your stake: over **$9,000**." },
     { "t": 17.2, "d": 1.4, "text": "2022: it __halves__." },
@@ -25,7 +25,7 @@
     "spendTag": "Paid to Netflix",
     "ownTag": "In Netflix stock",
     "footerSteps": [
-      { "t": 6.8, "text": "2015: 9 × $8.99 + 3 × $9.99 = $110.88" },
+      { "t": 4.7, "text": "2015: 9 × $8.99 + 3 × $9.99 = $110.88" },
       { "t": 9.8, "text": "Each year's bills buy NFLX at its avg price" },
       { "t": 21.4, "text": "≈ 188.5 shares × $93.76 ≈ $17,700" },
       { "t": 24.9, "text": "≈ $17,675 ÷ $2,037.32 ≈ 8.7×" }
@@ -55,7 +55,7 @@
     ],
     "x": { "from": 2012, "to": 2025.99, "tickEvery": 3 },
     "y": { "prefix": "$", "dp": 0 },
-    "raceT": [2.0, 23.0],
+    "raceT": [-0.4, 23.0],
     "hold": 3.0
   },
   "notes": "Same inputs as teasers/v2/checks/06-pov-race.py (06b), recomputed: US Standard plan list price by month (Jul 2011 $7.99, May 2014 $8.99, Oct 2015 $9.99, Oct 2017 $10.99, Jan 2019 $12.99, Oct 2020 $13.99, Jan 2022 $15.49, Jan 2025 $17.99; Android Authority timeline, Variety 2019-01-15, CNBC 2025-01-21). Each year's 12 bills buy NFLX at that year's average split-adjusted close (Macrotrends); value = shares held × year-end close; a point at y + 0.99 is the Dec 31 close of year y. Bills 2012: 12 × $7.99 = $95.88 (÷ $1.19 avg = 80.6 shares); 2015: 9 × $8.99 + 3 × $9.99 = $110.88; total 2012-2025 $2,037.32. Shares 188.511 × $93.76 (12/31/2025 close, = StatMuse) = $17,674.75 → ≈ $17,700 (3 s.f.); footer step 188.5 × 93.76 = 17,673.76 ≈ $17,700. Multiple 17,674.75 ÷ 2,037.32 = 8.68 → ≈ 8.7×. 2013: NFLX close 5.26 ÷ 1.33 = 3.95 (quadruples). End 2020 $9,163.36 (passes $9,000 at x ≈ 2020.95, t ≈ 15.43). 2022: $10,390.18 → $5,279.03 (−49%, halves). Race clock: x 2012.0 → 2025.99 over t 2.0 → 23.0 s (1.50 s a year); purchase ticks land at t 2.0, 5.50, 7.63, 10.63, 12.51, 15.13, 17.01, 21.51. Netflix pays no dividend, so price-only is the total return. No fees or taxes."

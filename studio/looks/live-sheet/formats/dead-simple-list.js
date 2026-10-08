@@ -44,7 +44,7 @@ import {
   h, setStyle, setText, setHTML, clamp, prog, ease, plain, C, G, M, S,
   formulaBar, fitFormula, tipStrip, fitTips, tipWindow, mk, mkLen, typedMk, wordCut, caretOn, countText, parseDisplay,
   snapIn, dropIn, liftOut, popScale, flashAlpha, lerpRect, rgba, durationOf, hasCaptions, opt, layer,
-  textW, font, toneColor, toneFill, footerHeight, HANDLE_PAD, fitBarVerdict, F,
+  textW, font, toneColor, toneFill, footerHeight, HANDLE_PAD, fitBarVerdict, F, unitHTML,
 } from '../lib.js'
 
 export const css = `
@@ -66,6 +66,7 @@ export const css = `
 .dsl-suf em { color: #101828; }
 .dsl-tail { position: absolute; left: 0; right: 0; }
 .dsl-ok { color: #058A4F; font-weight: 800; }
+.dsl-per { font-size: max(40px, 0.62em); letter-spacing: -0.005em; }
 `
 
 // [label px, result px], largest first
@@ -80,6 +81,13 @@ const DENS = [
 ]
 const TAIL = 30           // un-numbered sheet under the last row: keeps the selection off the card's rounded corner
 
+/** a result's HTML: a per-unit tail ("/mo", "/hr") and the words after its number ("a year") are set small
+ * (40 px floor), so the number carries the size; the text itself is the display string */
+function resHTML(str) {
+  const m = /^(.*\d)(\s*\/\s*[A-Za-z]+\.?)$/.exec(String(str))
+  if (m) return `${unitHTML(m[1])}<span class="dsl-per">${m[2].replace(/&/g, '&amp;').replace(/</g, '&lt;')}</span>`
+  return unitHTML(String(str))
+}
 /** a quiet entrance from below: fade + whole-pixel rise, no overshoot */
 function riseIn(p, dist = 10) {
   if (p <= 0) return { opacity: '0', transform: `translateY(${dist}px)` }
@@ -212,10 +220,15 @@ export default function deadSimpleList(spec, ctx) {
   const tipPx = tipFit.px
   const slotH = tipFit.slotH
 
+  // notes a later row's working relies on (a number no cell shows: "so you borrow $16,800" → "$16,800 × 0.024"):
+  // they stay on the sheet as the row's grey line (see keep, below), so a formula tier must leave room for them
+  const amounts = str => (plain(str || '').match(/[−-]?\$\d[\d,]*(?:\.\d+)?|\d{1,3}(?:,\d{3})+(?:\.\d+)?/g) || [])
+  const shownNums = new Set([...items.flatMap(it => amounts(it.result)), ...(input ? amounts(input.value) : [])])
+  const keepNeed = items.map((it, r) => !!it.note && amounts(it.note).some(n => !shownNums.has(n) && items.some((x, k) => k > r && amounts(x.formula).includes(n))))
   function plan(cfg, bottom, fFit, force = false) {
     const { sub, tips, letters, lab, res, density = 0 } = cfg
     const { lh, padY, subH, headPad, headMin } = DENS[density]
-    const wRes = Math.max(0, ...resultStrs.map(r => tw(mk(r), font(800, res), '-0.01em')))
+    const wRes = Math.max(0, ...resultStrs.map(r => tw(resHTML(r), font(800, res), '-0.01em')))
     const wHead = input ? tw(mk(input.value), font(900, res), '-0.02em') : tw(mk(hLabelB), font(800, S.label), '-0.012em')
     const wB = Math.max(230, Math.ceil(Math.max(wRes, wHead)) + 2 * PAD + 10)
     const wA = innerW - wB, inA = wA - 2 * PAD
@@ -464,6 +477,34 @@ export default function deadSimpleList(spec, ctx) {
   const sufT = items.map((_, r) => { const nx = E.find(e => e.eraseAt > T[r].res && e.row !== r); return nx ? nx.eraseAt + 0.1 : T[r].res + 0.5 })
   const shiftAt = (r, t) => { let dy = 0; for (const tp of tips) if (r > tp.r) dy += slotH * openOf(tp, t); return dy }
 
+  // ---------------------------------------------------------------- notes a later row's working relies on
+  // A note that carries a number no cell shows ("so you borrow $16,800") but a later formula uses ("$16,800 × 0.024")
+  // stays on the sheet once its tooltip (or the bar) moves on: the row's grey working line becomes "working · note"
+  // when that fits, else the note alone, so the finished table explains itself.
+  const keep = items.map((it, r) => {
+    const el = subEls[r] && P.sub === 'formula' ? subEls[r] : sufEls[r]
+    if (!it.note || !el || (P.hasSub && P.sub === 'note')) return null
+    if (!keepNeed[r]) return null
+    const isSuf = el === sufEls[r] && el.classList.contains('dsl-suf')
+    const room = isSuf ? P.inA - tw(mk(it.label || ''), font(800, P.lab), '-0.014em') - 40 : P.inA
+    // the working and the note; else the note; else the note without its lead-in words ("so you borrow $16,800"
+    // → "borrow $16,800"), as long as its number stays
+    const note = String(it.note), cands = [`${itemStr(r).replace(/^=\s*/, '')} · ${note}`, note]
+    let rest = note
+    for (let k = 0; k < 2; k++) {
+      const m = /^(?:so|and|then|which|that's|thats|you|we|i)\s+(.+)$/i.exec(rest)
+      if (!m || !amounts(m[1]).length) break
+      rest = m[1]; cands.push(rest)
+    }
+    const pick = cands.find(x => tw(mk(x), font(600, 40), '-0.01em') <= room)
+    if (!pick) return null
+    const tp = tips.find(x => x.r === r)
+    const bn = barNotes.find(x => x.row === r)
+    const nextE = bn ? E.find(e => e.eraseAt > bn.t + 0.05) : null
+    const at = tp ? tp.closeAt + 0.3 : nextE ? nextE.eraseAt + 0.1 : sufT[r] + 0.6
+    return { el, html0: el.innerHTML, html1: mk(pick), at }
+  })
+
   // ---------------------------------------------------------------- reference outlines
   // while a formula types, every cell whose number it uses gets a dashed outline (from the moment the number is typed)
   const inTok = input ? numToken(input.value) : null
@@ -584,9 +625,12 @@ export default function deadSimpleList(spec, ctx) {
         const keepLab = labelsAlways || r === firstRow
         setStyle(labEls[r], keepLab ? { opacity: '1', transform: 'none' } : withOut(dropIn(prog(t, rowStart[r], 0.24), 14), out))
         // the working line rises in under the label as the result lands (from below: it never crosses the label)
-        if (subEls[r]) setStyle(subEls[r], withOut(riseIn(tm.pre ? 1 : prog(t, tm.res + 0.12, 0.26), 10), out))
+        const kp = keep[r]
+        const swapped = kp && t >= kp.at && t < loopT0
+        if (kp) setHTML(kp.el, swapped ? kp.html1 : kp.html0)
+        if (subEls[r]) setStyle(subEls[r], withOut(riseIn(tm.pre ? 1 : prog(t, swapped && kp.el === subEls[r] ? kp.at : tm.res + 0.12, 0.26), 10), out))
         // the working suffix arrives once the formula bar moves on from this row (it keeps the maths visible)
-        if (sufEls[r]) setStyle(sufEls[r], withOut(riseIn(tm.pre ? 1 : prog(t, sufT[r], 0.26), 8), out))
+        if (sufEls[r]) setStyle(sufEls[r], withOut(riseIn(tm.pre ? 1 : prog(t, swapped && kp.el === sufEls[r] ? kp.at : sufT[r], 0.26), 8), out))
         // goal row: yellow wipes in once its answer is in
         const goalT = tm.res + (r === countIdx ? M.count : 0.1)
         if (r === goalIdx) hiRow(r, 1 - (loopOn ? ease.out(prog(t, loopT0, 0.2)) : 0), tm.pre ? 1 : ease.inOut(prog(t, goalT, 0.3)))
@@ -616,7 +660,7 @@ export default function deadSimpleList(spec, ctx) {
           if (toneFill(it.tone) !== 'transparent' && p >= 1 && out < 1) fill = out > 0 ? rgba(toneFill(it.tone), 1 - ease.out(out)) : toneFill(it.tone)
         }
         const c = res[r]
-        setText(c.rt, text)
+        setHTML(c.rt, resHTML(text))
         // an empty or hidden value parks at its rest transform (no scaled, invisible layer under the selection tint)
         let st = p <= 0 || !text ? { opacity: '0', transform: 'none' } : withOut(snapIn(p), gone)
         if (scale !== 1 && st.transform === 'none') st = { ...st, transform: `scale(${scale.toFixed(4)})` }

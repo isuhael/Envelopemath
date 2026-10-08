@@ -26,7 +26,9 @@
 // top to bottom. A caption that names the counted total waits for the count to land. The last 0.5 s clear back to
 // frame 1 so the short loops.
 // Layout is automatic: the A B C row goes first when rows get under 64 px, then the summary row's extra height;
-// dense silent cards may go down to 48 px rows (text stays at 40 px).
+// dense silent cards may go down to 48 px rows (text stays at 40 px). The sheet is built and measured: when it does
+// not end above its budget it tries 12 px padding, then 46 px rows, then marks in the bar, and last runs silent
+// (captions off, the verdict in the bar) down to y 1476.
 //
 // lookOpts: loop (true) · countUp (true) · letters ('auto' | true | false) · verdict ('auto' | 'band' | 'formula')
 //           · emphTone ('good') · formulaAt0 (0.7) · formulaBar ([{ t, text }]) · marks ([{ t, row, tone, label }])

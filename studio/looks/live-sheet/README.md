@@ -16,6 +16,7 @@ mockups `research/v2/look-mockups/d2-frame1.png` and `d2-payoff.png`. Spec contr
 | `style.css` | The classes `lib.js` uses (`ls-*`). Formats add their own CSS through their `css` export |
 | `formats/<id>.js` | One module per format |
 | `samples/<id>*.json` | Sample specs (`"sample": true`) |
+| `stress/*.json` | Stress specs (`"stress": true`): dense tables with captions, 4 × 3 comparisons, long names and keys, long tooltips. They must lint clean too (§8) |
 
 All eight formats are **built**: `find-your-row`, `dead-simple-list`, `what-difference`, `chart-race`, `pov-race`,
 `ledger-duel`, `growth-ladder` and `cost-counter` (§7). `split-sheet` and `unit-ladder` are not part of this kit.
@@ -70,16 +71,17 @@ to the number after them, so no line ends on a lone "≈".
 | Use | Face | Size (px) |
 |---|---|---|
 | Question card (header) | Inter 900, `-0.018em`, line-height 1.16 | 64, fitted down to 44; author line breaks kept. `**x**` is an inline-block dark pill sized to the glyph band (it clears the descenders of the line above by ≥ 4 px) |
-| Formula bar (the working) | JetBrains Mono 700 | 42; down to 40; else 2 lines at 40 |
+| Formula bar (the working) | JetBrains Mono 700 | 42; down to 40; else 2 lines at 40. A lone operator in emphasis ("growth **>** put in") is set bold in ink, with no marker box |
 | Formula bar (a verdict typed into it) | Inter 800, ink | 52 → 40 on one line; else 2 lines (48 → 40) broken at a seam, and the bar grows to hold them from the verdict on (`fitBarVerdict`) |
 | Column label / sub-label (`"Label\nsub"`) | Inter 800 / Inter 600 mute | 42 → 40 / 40, then wrap (balanced) |
 | Cells at a 102 px row: input / middle / result | Inter 800 / 700 / 800 | 56 / 52 / 60, scaled with row height by `cellSizes(rowH)`, never below 40 |
 | A value's trailing words ("55 **months**") | Inter 700 | 40 (`unitHTML`, sheet `units`), so the number keeps the size |
-| Captions | Inter 800 uppercase | 68 (48 minimum for one long word) |
+| Captions | Inter 800 uppercase | 68; a short phrase may be set down to 58 to stay whole rather than orphan a word (48 minimum for one long word) |
 | Verdict card | Inter 800 | 56, fitted down to 42; the card hugs its (balanced) lines and centres on the column |
 | Footer (assumption line) | Inter 600 | 40 (wraps balanced rather than shrinking; `footerHeight` measures the real height, 3 lines included) |
-| Tooltip strip | Inter 800 | 42 → 40 on one line, else two lines at a seam (`fitTips`) |
+| Tooltip strip | Inter 800 | 42 → 40 on one line, else two lines at a seam, else wrapped (balanced) to as many lines as it needs, and the slot is sized to the real line count (`fitTips`; a label over ~70 characters warns) |
 | Big counter cell | Inter 900, `-0.02em` | 150 (190 for a lone counter), shrunk to fit its widest value |
+| Chart value cells (chart-race) | Inter 800 | name 40 over value 46 (down to 42 so the plot keeps 55% of the card) |
 | Row numbers, column letters, chart axes | Inter 600, `data-deco` | 30 / 32 |
 
 **Rule:** nothing a viewer reads is under 40 px. The linter computes size from `rect.height / offsetHeight`, so
@@ -100,7 +102,7 @@ in a sheet's last column they end at x 920 (`HANDLE_PAD`, 18 px), clear of the f
 | 444-520 | Formula bar (`G.fbarH` 76): ≈ chip at x 76-142, text from x 162 |
 | +40 | Column letters A B C (`G.lettersH`) |
 | +76 or more | Label row (1-4 lines, measured) |
-| ... | Data rows, 102 px max (`maxRowH`), 52 px min (`minRowH`; 48-50 in dense silent cards); gutter of row numbers 64 px (`G.gutter`); cell padding 22 px (12 px in a card too dense for 22) |
+| ... | Data rows, 102 px max (`maxRowH`), 52 px min (`minRowH`; 48-50 in dense silent cards, 46 in the last fallback); gutter of row numbers 64 px (`G.gutter`); cell padding 22 px (12 px in a card too dense for 22) |
 | card bottom + 14 | Footer (assumption line) |
 | ≤ 1300 | Bottom of the working area when the caption band is in use (`G.workBottom`) |
 | 1320-1480 | Caption band: captions, or the verdict card (`G.bandTop`, `G.bandBottom`) |
@@ -110,6 +112,13 @@ in a sheet's last column they end at x 920 (`HANDLE_PAD`, 18 px), clear of the f
 band (G.workBottom minus the footer) and the verdict lands there as a card. Only when that would push the rows under
 about 50 px (a 14-row table, a duel of 12 years) does the card run down to y 1476 and the verdict get retyped into
 the formula bar instead, in Inter 800 (§2). Charts use the same rule with a 420 px chart; a lone counter with 150 px.
+
+**Fitting before keeping (find-your-row, growth-ladder, ledger-duel, what-difference).** A layout is built and
+measured, and when it does not end above its budget (y 1300 minus the footer with the caption band in use, else
+y 1476 minus the footer) it gives way in a fixed order: the A B C row and the 22 px padding (to 12); then rows down to
+46 px (the cell text is already at the 40 px floor by then) and a summary row's extra height; then tooltips (their
+labels are typed into the formula bar); last the band itself: captions off, the verdict retyped into the bar, a
+`console.warn` saying so. The linter never sees white captions on the white sheet.
 
 **Tooltip slots.** A pick, mark, note or event opens a slot under its row: the rows below move down and **the card
 grows by the slot** while it is open (sheet `grow` + `setGrow`), pushing the assumption line with it (chrome
@@ -129,18 +138,20 @@ tooltip strips move (and a card's bottom edge while a slot is open).
 
 | Beat | How | Token |
 |---|---|---|
-| Formula types | 24 characters a second, blue caret solid while typing, blinking (1.1 s) when idle. Frame 1 is already mid-formula (a word boundary near 70%) | `M.cps`, `M.blink` |
+| Formula types | 24 characters a second, blue caret solid while typing, blinking (1.1 s) when idle. Frame 1 is already mid-formula (a word boundary near 70%). A finished text stays readable before the next types over it (ledger-duel: 1.2 s, later steps pushed back; what-difference: 1 s) | `M.cps`, `M.blink`, `barScript` |
 | A value lands | **Snap**: it appears at 116% and settles to 100% (ease out, 0.24 s), with a 0.35 s `rowHi` flash on its cell. Within a row, cells land 0.08 s apart, left to right | `snapIn`, `M.drop`, `M.flash` |
 | Rows fill | The selection is a range with a fill handle that drags down as each row lands, and its row numbers and column letters turn blue | `sheet.select`, `headSel` |
 | The biggest result | Counts up over 0.8 s (ease out), lands exactly on its display string, then settles from 110%. A caption that names that number waits for the count to land (chrome `captionHolds`) | `countText`, `M.count` |
-| A pick / mark / note / event | The selection springs onto one cell (ease back, 0.36 s). The row's yellow wipes in from the left; the slot opens under the row (0.3 s); then the dark pill **wipes out of its notch** (its width grows both ways, 0.24 s) with its label already in place at full size and full opacity. It closes the same way back into the notch, then the slot closes | `M.pick`, `tipWindow`, `tipStrip` |
+| A pick / mark / note / event | The selection springs onto one cell (0.36 s, `springRect`: a same-size hop overshoots; a range collapsing onto a cell inside it eases out with no overshoot; anything else overshoots outward only, so no edge ever strikes through the value it lands on). The row's yellow wipes in from the left; the slot opens under the row (0.3 s); then the dark pill **wipes out of its notch** (its width grows both ways, 0.24 s) with its label already in place at full size and full opacity. It closes the same way back into the notch, then the slot closes | `M.pick`, `tipWindow`, `tipStrip` |
 | Payoff | A verdict card lands in the caption band with its marker wiping in, or the formula bar erases and retypes the verdict (Inter 800, ink) as the ≈ chip pops. Meanwhile the result column flashes top to bottom | `verdictCard`, `fitBarVerdict` |
 | Loop | The last 0.5 s clear back to the frame-1 state (bottom rows first), so the last frame matches the first | `M.loopOut` |
 
 **Captions** (`chunkWords`): each vo line is cut into 1-4 word chunks that read as phrases. A chunk never runs on
-past a full stop, "?", "!" or ":" (a break there is forced); a break after a comma is cheap; a chunk never ends on a
-function word ("the", "your", "that's") or splits a number from its unit ("$5 a day"); fewer, fuller chunks win.
-A chunk's closing full stop is dropped. Hidden captions park empty.
+past a full stop, "?" or "!" (a break there is forced); a break after a comma or a colon is cheap, but a chunk that
+is only "Year 15:" costs extra (the colon keeps a word of what follows); a chunk never ends on a function word ("the",
+"your", "that's") or splits a number, in digits or words, from its unit ("$5 a day", "two weeks"); a one-word chunk
+costs a lot (2 + 2 beats 3 + 1), and a phrase slightly too wide at 68 px is set smaller (down to 58) rather than
+split. A chunk's closing full stop is dropped. Hidden captions park empty.
 
 **Sound** (`ctx.cue`, one cue per real event): `type` while the formula types (with `dur`), `tick` (gain ~0.6) per
 row landing, `roll` (with `dur`) under a count-up and `pop` when it lands, `pop` + `reveal` on a pick, `ding` on the
@@ -212,9 +223,12 @@ are stage px unless noted.
 - `parseMarkup(str)` returns `[{ text, k }]` (k 0 plain, 1 primary, 2 second). `markupWords(str)` returns styled words.
 - `mkLen(str)`, `typedMk(str, n)` (first n graphemes as HTML, emphasis kept), `typedCount(t, t0, str, { cps, from })`,
   `typeDur(str, { cps, from })`, `wordCut(str, f)` (a word boundary near fraction f), `caretOn(t, typing)`.
-- `textW(html, font, { letterSpacing, transform })` gives the rendered width; `font(weight, px, family = F.ui)` builds the shorthand.
+- `textW(html, font, { letterSpacing, wordSpacing, transform })` gives the rendered width; `font(weight, px, family = F.ui)` builds the shorthand.
+- `wrapLines(str, maxW, font, letterSpacing, k)`: the fewest lines (at most k, the most balanced word breaks) that keep
+  every line under maxW, or null.
 - `isNumeric(str)`: should this cell right-align? `hasUnits(str)`: does a value carry words after its number?
-- `unitHTML(str, brAt)`: a value's HTML with its trailing words at 40 px (`.ls-u`).
+- `unitHTML(str, brAt)`: a value's HTML with its trailing words at 40 px (`.ls-u`). A no-break space is part of its
+  token (a "≈ " glued to its number never breaks).
 - `twoLines(str, wOf, avail)`: break a string onto two lines at its best seam (author break, " · ", ": ", " vs ",
   " = ", " → ", ", ", then any space; never splitting markup or leaving an operator at a line end).
 - `parseDisplay(str)` returns `{ pre, n, dp, post, grouped }`; `countText(display, p, { from })`; `displayValue(str)` (for
@@ -224,10 +238,15 @@ are stage px unless noted.
 - `snapIn(p, from = 1.16)` / `dropIn(p, dist)` / `liftOut(q)` return `{ opacity, transform }` for a value entering or leaving.
 - `popScale(p, from)` (ease back; can undershoot, so do not use it on text that has to stay ≥ 40 px), `flashAlpha(t, t0, dur)`,
   `step(t, t0, dur, e)`, `lerpRect(a, b, p)`, `rgba(hex, a)`.
+- `springRect(a, b, p, s = 1.6)`: the selection springing from rect a to b (p linear). Same size: ease back (the
+  overshoot); b inside a (a range collapsing onto a cell): ease out, no overshoot; else the overshoot only goes
+  outward. Use it for every selection spring, never `lerpRect` with `ease.back`.
 
 ### Spec helpers
 - `durationOf(spec, { beats, hold, min = 5, max = 90, verdictEnd, loop = true })` (§4).
 - `hasCaptions(spec)`, `voEnd(spec, i)`, `opt(spec, key, default)` (reads `spec.lookOpts`), `layer(ctx, cls)`.
+- `shortcutOf(verdictText)`: the verdict's formula-like part ("Max rent ≈ **hourly × 52**" → "≈ hourly × 52"), or null.
+- `fitWarn(name, bottom, limit)`: `console.warn` when a planned layout still ends past its budget.
 
 ### Chrome pieces (used by `chrome()`; call them yourself only when you opt out of the chrome's copy)
 - `brandMark(parent)`, `banner(parent, header)` (returns `{ el, txt, px }`), `footerHeight(text, w)` (measured),
@@ -244,6 +263,14 @@ out of `strings`). Pass `verdict` when the verdict is retyped into this bar: `vf
 `verdictStyle(on, grow)` switches the bar between the working (mono 700, slate) and the verdict (Inter 800, ink;
 `grow` 0..1 opens a two-line verdict's extra height over the rows below). `sheet()` and `bigCell()` build their own.
 
+### `barScript(entries, { cut, loopT0, minHold, erase, vCps })`, a formula bar's text over time
+`entries`: `[{ t, text, verdict?, cps? }]` (markup). The first (t ≤ 0) is mid-typing at frame 1 with `cut` graphemes
+shown; each later one erases what shows (0.16 s) and types fast enough to finish 0.8 s before the next is due (never
+under 24 cps; a verdict never under 26). `minHold` pushes an entry back until the one before has been readable that
+long after its typing ended. From `loopT0` it erases and retypes frame 1's prefix. Returns `{ fx` (the timed entries:
+`t, start, end, len, cps…`), `at(t)` → `{ str, n, caret, verdict }`, `html(state)`, `end`, `cue(ctx) }`. Used by
+find-your-row and ledger-duel (compute the duration from a first pass without `loopT0`, then build it again with it).
+
 ### `sheet(parent, opts)`, the spreadsheet card
 Options: `x, y, w`; `columns: [{ label, kind: 'input'|'mid'|'output', tone, align, emph, w, minW, px, units, group }]`
 (kind defaults: column 0 input, `emph` output, others mid; a label's first `\n` starts the grey sub-label and each
@@ -252,13 +279,19 @@ trailing words at 40 px, `group` gives columns with the same key the same width)
 strings, used to size columns and choose alignment); `rows`; `bottom` (the card's lowest edge; rows get what fits,
 clamped to `minRowH`-`maxRowH`, 52-102) or `rowH`; `reserve` (px of slot room under the data); `grow` (the reserve is
 not drawn: the card grows into it with `setGrow`); `spare` (extra room in rows, drawn as tail); `tail` (px of tail);
-`formula: false | { strings, verdict }`; `letters: true | false | 'auto'`; `startRow` (2).
+`formula: false | { strings, verdict }`; `letters: true | false | 'auto'`; `startRow` (2); `pad` (force the cell
+padding, e.g. 12). More column options: `px` may be a function of the sheet's cell sizes (`fs => Math.min(fs.input,
+48)`); `maxW` caps a column (its values must fit under it: every cell size shrinks together until they do); `fit`
+gives a column no spare width; `headPad` tightens one header cell's padding (a long label wraps less).
 
 **Column widths**: every column gets at least its widest value and its label balanced over two lines at 40 px (never
 less than its longest word); when that does not fit, every cell size shrinks together (never under 40 px) before any
-one column gives way, then labels may take three lines, then the padding tightens to 12 px; the spare width first
-puts as many labels as it can back on one line (cheapest first), then goes to the columns in proportion to their
-values. The last column keeps `HANDLE_PAD`.
+one column gives way, then labels may take three lines; when even that does not fit, the values come first and the
+spare width goes to the tallest label a line at a time (the label row is as tall as its tallest label) until every
+label is down to two lines, trying the 12 px padding first when a label would still take more than three. With room,
+the spare width first puts as many labels as it can back on one line (cheapest first), then goes to the columns in
+proportion to their values. The cell sizes come from a guessed label row: when the widths imply a taller one (smaller
+rows, smaller type), the columns are shared out again for the smaller values. The last column keeps `HANDLE_PAD`.
 
 Returns:
 - Geometry: `x, y, w, h, bottom, maxBottom` (bottom once grown), `rowH, fs { input, mid, result }, nR, tail, gutter,
@@ -280,13 +313,14 @@ and metric-label rows), a column wash (its winner), and two-line cells with a gr
 
 ### Tooltips: `fitTips(labels, maxW)`, `tipWindow(openAt, closeAt)`, `tipStrip(sheet, { px, html, wrap })`
 `fitTips` gives one type size for a set of labels (raw markup): one line from 42 down to 40 px, else two lines at a
-seam; it returns `{ px, lines, slotH, labels, html, w }` (pill widths). `tipWindow` returns `{ open(t), reveal(t) }`,
+seam, else a balanced wrap at 40 px with the slot sized to the real line count (`lines × px × 1.12 + 30`), so a pill
+never cuts a line; it returns `{ px, lines, slotH, labels, html, w }` (pill widths). `tipWindow` returns `{ open(t), reveal(t) }`,
 the shared choreography (§4). `tipStrip` writes its label once; per frame call
 `set({ x0, x1, y, ht, open, reveal, notchX })`: `open` opens the slot (shift the rows below by `ht × open` and grow
 the card yourself), `reveal` wipes the pill out of its notch. Keep `x1` ≤ 948 so the text stays left of x 940.
 
 ### `lineChart(parent, opts)`, a spreadsheet chart (for chart-race and pov-race)
-Options: `x, y, w, ht`; `surface: 'sheet' | 'dark'`; `pad { l, r, t, b }`; `xr`, `xEvery`, `xFmt`; `yr`, `yTicks`,
+Options: `x, y, w, ht`; `surface: 'sheet' | 'dark'`; `pad { l, r, t, b }`; `xr`, `xEvery` or `xTicks` (explicit values), `xFmt`; `yr`, `yTicks`,
 `yFmt`, `log`; `series [{ points, color | tone, width, area, dash }]` (area fill on the first series only, unless
 set); `events [{ x }]`. Returns `{ el, svg, plot, box, X(v), Y(v), valueAt(i, x), events, paths, yRange,
 draw(xNow, { yMax, yMin }) → tips [{ x, y, v, color }] }`. `draw` reveals every series up to `xNow` (interpolating
@@ -319,11 +353,15 @@ selection onto its result, wipes the row yellow and opens a tooltip under it.
 |---|---|---|
 | `prefill` | `1` | Rows already filled at frame 1, whatever `rowsT` says (the look's "row 2 is filled" rule) |
 | `emphTone` | `'good'` | Tone of the result column |
+| `pickStyle` | `'auto'` | `'tip'` or `'bar'` (the pick's label typed into the formula bar; the row still lights up) |
+| `formulaBar` | `data.formula` from 0 | `[{ t, text }]`: the bar's working over time |
+| `shortcut` | the verdict's formula part | String or `{ t, text }`: the bar's rewrite at the verdict ("≈ your hourly wage × 52") while the result column flashes; `false` for none. With the verdict in the bar, the verdict itself is the rewrite |
 | `loop`, `countUp`, `letters`, `verdict`, `formulaAt0` | | as above |
 
-Limits: captions plus more than about 8 rows will not fit at 40 px: dense tables (9-14 rows) run with
-`"captions": false` (the format's own lane), and their verdict is retyped into the formula bar. A pick label over
-about 40 characters takes two lines (a taller slot).
+Fitting (§3): a table that cannot keep rows of 46 px above the caption band drops the A B C row and the padding,
+then takes 46 px rows, then types its picks into the bar, and last runs silent (captions off, verdict in the bar)
+down to y 1476: a 14-row, 4-column table with captions and two picks ends that way. A pick label over about 40
+characters takes two lines, over ~70 it wraps to three (a taller slot); keep picks short.
 
 ### dead-simple-list (`samples/dead-simple-list*.json`)
 The example number (`data.input`) sits in the mint header row; every item is a numbered row. Each item: the selection
@@ -331,6 +369,11 @@ slides to the row's result cell and its label drops in; the bar types the formul
 dashed outline as its number is typed); the result snaps in; the working stays on the sheet (a grey line under the
 label, or a grey suffix on a one-line label) and the note opens as a tooltip. The goal item (or the last) counts up
 and wipes yellow. Optional: a wrong guess struck out first, a check line typed into the bar.
+
+A note whose number a later row's working uses ("so you borrow $16,800" → "$16,800 × 0.024") stays on the sheet once
+its tooltip closes: the row's grey working line becomes "working · note" when that fits, else the note, else the note
+without its lead-in words ("you borrow $16,800"). A result's per-unit tail ("/mo", "/hr") and its words ("2 a year")
+are set small (40 px floor) so the number carries the size.
 
 **Layout tiers**, measured with the real fonts, richest first (the first that fits wins): `formula + tips` (label,
 the formula as a grey line, notes as tooltips) · `formula` · `note` (the note as the grey line) · `bare + tips` ·
@@ -354,8 +397,9 @@ $65,000 · not $60,000", or the note alone); the working shows as a grey line or
 A comparison card, **one column per option**: row 1 is the stake as a merged mint row ("Car loan / $30,000" and its
 terms); row 2 one peach header per option (its name over its behaviour); then per metric a merged grey label row
 over a value row, and a last "vs <baseline>" group for the deltas. Frame 1 is the whole question (every option named,
-the baseline filled); each option's working is retyped into the bar as the selection steps down its column; the
-biggest delta counts up. At `verdict.t` the selection springs onto the winner's column, its header goes yellow and
+the baseline filled, the selection on it and **its** working finishing in the bar by ~0.5 s); each later option's
+working types just before its values land (it completes as they land; the working before it stays readable at least
+1 s), then the selection steps down its column; the biggest delta counts up. At `verdict.t` the selection springs onto the winner's column, its header goes yellow and
 its value cells wash `rowHi` top to bottom (the grey label rows stay grey). Option names and behaviours fit their
 column down to 40 px (then 12 px padding) and only then wrap, a behaviour after its amount ("$293.50" / "every 2
 wks"). A sparse table (1-2 metrics) sets its values up to 80 px.
@@ -367,18 +411,28 @@ wks"). A sparse table (1-2 metrics) sets its values up to 80 px.
 | `deltaLabel` | `"vs <baseline name>"` | The delta group's label |
 | `loop`, `countUp`, `letters`, `verdict`, `formulaAt0` | | as above |
 
-Limits: 4 options give ~209 px columns: keep names short ("$150/mo") and behaviours to 2-3 words; a value wider
-than its column at 40 px ("≈ $10,000") wraps after its first space.
+Fitting, densest last: values take one size for the table (80 → 40 px); a value with words may then take two lines
+("11 yrs" / "5 mo"); then the value tracking tightens, then the padding (10 px) and the row-number gutter (46 px), then
+the columns are sized to their content instead of equal shares. "≈ " and a sign are glued to their number (no-break
+space), so "≈ −$540" never breaks. When the card is too tall, the behaviours leave the header (each option's working
+in the bar carries it), then the band goes (captions off, verdict in the bar). Limits: 4 options give ~210 px
+columns; a name word wider than that at 40 px ("scheduled" is 204 px) leaves no room for "≈ $34,680" beside it: keep
+names short ("$150/mo"), and a 4 × 3 table with captions runs silent.
 
 ### chart-race (`samples/chart-race*.json`)
-A sheet card with an embedded chart: the year counter (mint) and one peach header per rival with its line swatch; an
-optional ledger row; the chart (left value axis, dashed "money in" line, event flags on the x axis; year labels
-every `data.x.tickEvery`, thinned to a coarser step when neighbours would sit closer than 24 px, never fewer than
-two). On the right,
-one value cell per rival rides at its tip's height: **its short name in its colour over the live value**, so a cell
-never depends on a colour sliver. The cells keep the ranking (debounced) and slide past each other at a real
-crossing; the leader's cell is yellow (its name turns ink) and holds the selection. Running values follow the final's
-format (compact finals run at 3 significant digits) and land on the `final` strings.
+A sheet card with an embedded chart: the year counter (mint) and one peach header per rival with its line swatch (a
+long name wraps over two lines at 40 px; when a name cannot fit its column even so, the rivals' cells merge into one
+legend cell listing every full name); an optional ledger row; the chart (left value axis as wide as its real labels,
+dashed "money in" line, event flags on the x axis; year labels every `data.x.tickEvery`, thinned to a coarser step
+when neighbours would sit closer than 24 px; the first and last years are always labelled, a middle label is dropped
+instead). On the right, one value cell per rival rides at its tip's height: **its short name in its colour over the
+live value**, so a cell never depends on a colour sliver. The lane keeps the plot at 55% of the card: values go
+46 → 42 px, a long name wraps over 2-3 balanced lines (the cells grow, all alike) or is cut with an ellipsis (the
+header has it whole). The cells keep the ranking (debounced) and slide past each other at a real crossing; the
+leader's cell is yellow (its name turns ink) and holds the selection. Frame 1 is already `preroll` years into the race
+(the lines have parted, the leader is yellow). Running values follow the final's format (compact finals run at 3
+significant digits) and land on the `final` strings: the text swaps in place at `raceT[1]` (never a fade) and settles
+from 110% once any last slide has finished.
 
 | lookOpts | Default | Effect |
 |---|---|---|
@@ -386,13 +440,16 @@ format (compact finals run at 3 significant digits) and land on the `final` stri
 | `tipNames` | name before " · " | Short names for the value cells (also `series[].short`) |
 | `formulaSteps` | `"= <stake>"` | `[{ t, text }]`: the bar's working over time |
 | `ledger` | none | `{ columns, rows: [[label, v1, v2…]], rowT }`: a row of yearly returns under the header |
+| `preroll` | 6% of the span, < 0.9 yr | Years already raced at frame 1 (0 for an empty start) |
 | `stakeLine` | `true` | The dashed "money in" line |
 | `leadMargin`, `leadHold` | `0.004`, `0.45` | When a lead counts (share; seconds held, dated back to the crossing) |
 | `loop`, `letters`, `verdict`, `formulaAt0` | | as above (auto verdict: the band unless the chart falls under 420 px) |
 
 ### pov-race (`samples/pov-race*.json`)
 Year · Spent (red key line) · Owned (green key line) columns over a chart of the spend line against the owned line
-(the gap tinted green or red). The live row races with the chart and lands on the final display strings; up to 3
+(the gap tinted green or red). The live row races with the chart and lands on the final display strings (when a
+final needs a second line, "$1,545" over "spent", every number in the live row sits on that first line's baseline
+all race long, so nothing jumps at the landing); up to 3
 landed years scroll up under a frozen start row; purchase rings and a price tag mark each purchase. `spend.item`
 (an icon name) is not drawn in this look.
 
@@ -407,7 +464,10 @@ landed years scroll up under a frozen start row; purchase rings and a price tag 
 
 ### ledger-duel (`samples/ledger-duel*.json`)
 Column A holds the row keys, then one peach column per person (name, and the plan as a grey sub-label broken at its
-" · "). The people's columns always have the same width. Both columns fill row by row; a value that fell is red; in
+" · "). The people's columns always have the same width and come first: column A takes at most 35% and no spare
+width (word keys, "Age 35", are set a size down); a key too long for it at 40 px shows its head ("2025" of "2025 (so
+far, year to date)") and the whole key is typed into the bar as its row lands. If the values still do not fit, every
+cell size shrinks together before a column gives way. Both columns fill row by row; a value that fell is red; in
 each row the leader is ink and the trailer grey. An event row flashes (coral on a crash), and its event opens as a
 tooltip under the row and closes before the next row lands; an event with no time for that (the last row, a summary
 right after it) or no room for the slot is typed into the formula bar. The final row counts up. At the verdict the
@@ -416,8 +476,8 @@ winner's column washes yellow and its final cell takes the solid yellow.
 | lookOpts | Default | Effect |
 |---|---|---|
 | `summary` | none | `{ label, values, t, tone }`: a totals row under the ledger |
-| `formulaBar` | `data.stake` | `[{ t, text }]`: the bar's working |
-| `keyLabel` | `'Year'` / none / `'When'` | Column A's label (none when every key already names it: "Age 35") |
+| `formulaBar` | `data.stake` | `[{ t, text }]`: the bar's working. Every bar text stays readable 1.2 s after it is typed (later ones are pushed back, the duration grows); an event or key due within 1.5 s of a step is folded into it (dropped when the step already states its numbers); nothing types over a verdict in the bar |
+| `keyLabel` | `'Year'` / shared first word / `'When'` | Column A's label ("Age" over "Age 35": never an empty mint cell) |
 | `eventStyle` | `'auto'` | `'tip'` or `'bar'` |
 | `eventPause` | `1.4` | Extra seconds after an event row when rows have no `t` |
 | `leader` | `'high'` | Who is ink in each row: `'high'`, `'low'` (a cost duel) or `false` |
@@ -428,7 +488,8 @@ Limits: 12 rows plus a three-line plan run silent with a formula-bar verdict.
 
 ### growth-ladder (`samples/growth-ladder*.json`)
 The spec's columns (Year · You put in · Worth by default); rows unmask at `rowT`; the last row is taller, counts up
-and wipes yellow (`highlightLast`); a caption naming the total waits for the count. Marks tint their row and open a
+and wipes yellow (`highlightLast`); a caption naming the total waits for the count. Fitting (§3): a 16-row ladder
+with captions runs silent rather than under the captions. Marks tint their row and open a
 tooltip (or are typed into the bar when the slot does not fit).
 
 | lookOpts | Default | Effect |
@@ -446,7 +507,8 @@ tooltip (or are typed into the bar when the slot does not fit).
 Row 1 is the counter's label with the rate in ink under it (the hook's number); row 2 one giant live cell; under it a
 milestone table (key, amount, "passed at"). **Frame 1 is never "$0"**: the counter starts `preroll` seconds in and
 still lands exactly on `final` at `counterT[1]`; the bar's live formula ("≈ $30,800 × 1.0 s") reads the same clock.
-Passing a milestone flashes and pulses the cell and wipes its row yellow. A lone counter (no milestones) gets a
+Passing a milestone flashes and pulses the cell and wipes its row yellow. A milestone with no amount of its own
+("Half a million dollars") merges its label across the Amount column. A lone counter (no milestones) gets a
 taller cell and sits centred in the working area.
 
 | lookOpts | Default | Effect |
@@ -466,6 +528,7 @@ taller cell and sits centred in the working area.
 ```bash
 cd studio
 node src/cli.mjs check looks/live-sheet/samples/<id>.json            # 0 errors, 0 warnings
+node src/cli.mjs check looks/live-sheet/stress/*.json                # the stress set: 0 errors too
 node src/cli.mjs sheet looks/live-sheet/samples/<id>.json --out /tmp/x
 node src/cli.mjs stills looks/live-sheet/samples/<id>.json --at 0,<beats>,end --out /tmp/x
 ```
@@ -476,3 +539,5 @@ node src/cli.mjs stills looks/live-sheet/samples/<id>.json --at 0,<beats>,end --
 - Text never scales below 100%.
 - A dark element never passes over sheet text while that text is visible: the contrast rule fails it.
 - Hidden elements park: seek t, seek elsewhere, seek t again, and the DOM is the same.
+- The linter does not see text cut by a pill or card (`data-roll` marks tooltips, so a clipped line is silent): check
+  tooltips with a long label at full size.

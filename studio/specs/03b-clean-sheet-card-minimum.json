@@ -3,50 +3,50 @@
   "look": "clean-sheet",
   "format": "what-difference",
   "fps": 30,
-  "duration": 30.2,
-  "header": "Minimum vs a flat payment\non a **$5,000** credit card:\nwhat difference does it make?",
+  "duration": 31.4,
+  "header": "What difference does\npaying the SAME minimum\nevery month make on **$5,000**?",
   "footer": "ASSUMES 22% APR, no new charges · minimum = 1% of balance + interest, $40 floor",
   "captions": true,
   "vo": [
     {
       "t": 0.0,
-      "d": 4.0,
-      "text": "Only the minimum on $5,000? About 15 years."
+      "d": 4.4,
+      "text": "Minimum on $5,000: about 15 years. Because it shrinks."
     },
     {
-      "t": 4.2,
+      "t": 4.6,
       "d": 4.8,
       "text": "About $7,300 in interest. More than you owed."
     },
     {
-      "t": 9.2,
-      "d": 2.8,
-      "text": "Now a flat $150."
-    },
-    {
-      "t": 12.2,
+      "t": 9.6,
       "d": 2.4,
-      "text": "About $7 more, at first."
+      "text": "Now keep paying the first one."
     },
     {
-      "t": 14.8,
+      "t": 12.6,
+      "d": 3.2,
+      "text": "Not a dollar more than your first minimum."
+    },
+    {
+      "t": 16.0,
       "d": 5.2,
-      "text": "About 4.3 years. About $2,800 in interest."
+      "text": "About 4.8 years. About $3,100 in interest."
     },
     {
-      "t": 20.2,
+      "t": 21.4,
       "d": 4.4,
       "text": "A flat $250: about 2.2 years."
     },
     {
-      "t": 24.8,
+      "t": 26.0,
       "d": 3.2,
       "text": "The minimum shrinks. Your payment doesn't have to."
     }
   ],
   "verdict": {
-    "t": 24.8,
-    "text": "Just **≈ $7** more than the first minimum:\n**≈ 11 years** sooner"
+    "t": 26.0,
+    "text": "**$0** more than the first minimum:\n**≈ 10 years** sooner"
   },
   "data": {
     "stake": {
@@ -74,23 +74,25 @@
           "payoff": "≈ 15.1 years",
           "interest": "≈ $7,300"
         },
-        "tone": "bad"
+        "tone": "bad",
+        "note": "$142.59 → $99.66 by year 3",
+        "noteT": 0.0
       },
       {
-        "t": 9.2,
-        "resultT": 10.2,
-        "name": "A flat $150",
-        "detail": "$150 − $142.59 = $7.41 more",
+        "t": 9.6,
+        "resultT": 10.6,
+        "name": "Keep paying $142.59",
+        "detail": "$142.59 − $142.59 = $0 more",
         "values": {
-          "payoff": "≈ 4.3 years",
-          "interest": "≈ $2,800"
+          "payoff": "≈ 4.8 years",
+          "interest": "≈ $3,100"
         },
-        "delta": "≈ 11 years sooner",
+        "delta": "≈ 10 years sooner",
         "tone": "goal"
       },
       {
-        "t": 20.2,
-        "resultT": 20.8,
+        "t": 21.4,
+        "resultT": 22.0,
         "name": "A flat $250",
         "detail": "$250 − $142.59 = $107.41 more",
         "values": {

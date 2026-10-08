@@ -1,0 +1,120 @@
+{
+ "id": "x-st-ld-12",
+ "stress": true,
+ "look": "live-sheet",
+ "format": "ledger-duel",
+ "fps": 30,
+ "header": "2 people invest **$10,000**",
+ "captions": true,
+ "data": {
+  "people": [
+   {
+    "name": "Alexandria",
+    "plan": "A total-world index fund with dividends reinvested"
+   },
+   {
+    "name": "Maximilian",
+    "plan": "High-yield savings account at 4% a year"
+   }
+  ],
+  "stake": "$10,000 each in 2000",
+  "rows": [
+   {
+    "label": "2000",
+    "values": [
+     "≈ $10,000",
+     "≈ $10,000"
+    ]
+   },
+   {
+    "label": "2002",
+    "values": [
+     "≈ $13,100",
+     "≈ $10,900"
+    ]
+   },
+   {
+    "label": "2004",
+    "values": [
+     "≈ $16,200",
+     "≈ $11,800"
+    ]
+   },
+   {
+    "label": "2006",
+    "values": [
+     "≈ $19,300",
+     "≈ $12,700"
+    ]
+   },
+   {
+    "label": "2008",
+    "values": [
+     "≈ $22,400",
+     "≈ $13,600"
+    ]
+   },
+   {
+    "label": "2010",
+    "values": [
+     "≈ $25,500",
+     "≈ $14,500"
+    ]
+   },
+   {
+    "label": "2012",
+    "values": [
+     "≈ $28,600",
+     "≈ $15,400"
+    ]
+   },
+   {
+    "label": "2014",
+    "values": [
+     "≈ $31,700",
+     "≈ $16,300"
+    ]
+   },
+   {
+    "label": "2016",
+    "values": [
+     "≈ $34,800",
+     "≈ $17,200"
+    ]
+   },
+   {
+    "label": "2018",
+    "values": [
+     "≈ $37,900",
+     "≈ $18,100"
+    ]
+   },
+   {
+    "label": "2020",
+    "values": [
+     "≈ $41,000",
+     "≈ $19,000"
+    ]
+   },
+   {
+    "label": "2022",
+    "values": [
+     "≈ $44,100",
+     "≈ $19,900"
+    ]
+   }
+  ],
+  "rowsT": 0.8,
+  "rowEvery": 0.5,
+  "winner": 0,
+  "hold": 3
+ },
+ "footer": "Illustrative",
+ "vo": [
+  {
+   "t": 0,
+   "d": 2,
+   "text": "Two people."
+  }
+ ]
+}

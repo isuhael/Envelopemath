@@ -1,0 +1,70 @@
+{
+ "id": "x-fyr-min",
+ "stress": true,
+ "look": "live-sheet",
+ "format": "find-your-row",
+ "fps": 30,
+ "header": "What a **$5 coffee** habit\ncosts you by retirement",
+ "footer": "Assumes 7% a year, every workday",
+ "captions": true,
+ "vo": [
+  {
+   "t": 0.0,
+   "d": 2.5,
+   "text": "Find your age."
+  },
+  {
+   "t": 3.0,
+   "d": 3.0,
+   "text": "At 25? About **$340,000**."
+  }
+ ],
+ "verdict": {
+  "t": 7.0,
+  "text": "Start early: **≈ $340K** at 25."
+ },
+ "data": {
+  "columns": [
+   {
+    "label": "If you start the habit at age"
+   },
+   {
+    "label": "Cost by 65 including growth",
+    "emph": true
+   }
+  ],
+  "rows": [
+   [
+    "25",
+    "≈ $340,000"
+   ],
+   [
+    "35",
+    "≈ $160,000"
+   ],
+   [
+    "45",
+    "≈ $70,000"
+   ],
+   [
+    "55",
+    "≈ $24,000"
+   ],
+   [
+    "60",
+    "≈ $9,000"
+   ]
+  ],
+  "formula": "= $5 × 260 workdays × years, at 7%",
+  "rowsT": 0.3,
+  "rowEvery": 0.4,
+  "pick": [
+   {
+    "t": 3.0,
+    "row": 0,
+    "label": "That is a house deposit, a car and a wedding, all at once"
+   }
+  ],
+  "hold": 3.0
+ }
+}

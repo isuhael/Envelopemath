@@ -1,0 +1,37 @@
+{
+ "id": "x-st-cc-tiny",
+ "stress": true,
+ "format": "cost-counter",
+ "header": "What your **phone charger**\ncosts while plugged in",
+ "footer": "0.3 W idle at $0.17 per kWh",
+ "captions": true,
+ "vo": [
+  {
+   "t": 0,
+   "d": 2,
+   "text": "Leave it plugged in."
+  },
+  {
+   "t": 10,
+   "d": 3,
+   "text": "Basically nothing."
+  }
+ ],
+ "data": {
+  "label": "Idle charger",
+  "perSecond": 0.0005,
+  "rateDisplay": "≈ $0.0005 every second",
+  "counterT": [
+   0,
+   12
+  ],
+  "startValue": 0,
+  "prefix": "$",
+  "dp": 2,
+  "milestones": [],
+  "final": "$0.01",
+  "hold": 3
+ },
+ "look": "live-sheet",
+ "fps": 30
+}

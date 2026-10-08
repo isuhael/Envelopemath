@@ -1,0 +1,92 @@
+{
+ "id": "x-s-fyr-12cap",
+ "stress": true,
+ "look": "live-sheet",
+ "format": "find-your-row",
+ "fps": 30,
+ "header": "What's your hourly wage\nreally worth a year?",
+ "footer": "ASSUMES 40-hr weeks, 52 weeks",
+ "captions": true,
+ "vo": [
+  {
+   "t": 0,
+   "d": 2,
+   "text": "Find your **wage**."
+  },
+  {
+   "t": 2.2,
+   "d": 2.5,
+   "text": "Multiply by 2,080."
+  },
+  {
+   "t": 5,
+   "d": 2.5,
+   "text": "That's your yearly pay."
+  }
+ ],
+ "data": {
+  "columns": [
+   {
+    "label": "Hourly"
+   },
+   {
+    "label": "Per year",
+    "emph": true
+   }
+  ],
+  "rows": [
+   [
+    "$10",
+    "$20,800"
+   ],
+   [
+    "$12",
+    "$24,960"
+   ],
+   [
+    "$15",
+    "$31,200"
+   ],
+   [
+    "$18",
+    "$37,440"
+   ],
+   [
+    "$20",
+    "$41,600"
+   ],
+   [
+    "$22",
+    "$45,760"
+   ],
+   [
+    "$25",
+    "$52,000"
+   ],
+   [
+    "$28",
+    "$58,240"
+   ],
+   [
+    "$30",
+    "$62,400"
+   ],
+   [
+    "$35",
+    "$72,800"
+   ],
+   [
+    "$40",
+    "$83,200"
+   ],
+   [
+    "$50",
+    "$104,000"
+   ]
+  ],
+  "formula": "= hourly × 2,080",
+  "rowsT": 0,
+  "rowEvery": 0.3,
+  "hold": 3
+ }
+}

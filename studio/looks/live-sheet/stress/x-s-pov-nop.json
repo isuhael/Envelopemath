@@ -1,0 +1,93 @@
+{
+ "id": "x-s-pov-nop",
+ "stress": true,
+ "look": "live-sheet",
+ "format": "pov-race",
+ "fps": 30,
+ "header": "POV: You invested in Netflix\ninstead of paying for **Netflix**",
+ "captions": false,
+ "data": {
+  "spend": {
+   "label": "Paid for Netflix",
+   "points": [
+    [
+     2012,
+     96
+    ],
+    [
+     2014,
+     192
+    ],
+    [
+     2016,
+     300
+    ],
+    [
+     2018,
+     432
+    ],
+    [
+     2020,
+     588
+    ],
+    [
+     2022,
+     768
+    ],
+    [
+     2024,
+     960
+    ]
+   ],
+   "final": "$960 spent"
+  },
+  "own": {
+   "label": "Same money in Netflix stock",
+   "points": [
+    [
+     2012,
+     96
+    ],
+    [
+     2014,
+     520
+    ],
+    [
+     2016,
+     1200
+    ],
+    [
+     2018,
+     3100
+    ],
+    [
+     2020,
+     5600
+    ],
+    [
+     2022,
+     2600
+    ],
+    [
+     2024,
+     9800
+    ]
+   ],
+   "final": "≈ $9,800"
+  },
+  "x": {
+   "from": 2012,
+   "to": 2024,
+   "tickEvery": 4
+  },
+  "y": {
+   "prefix": "$",
+   "dp": 0
+  },
+  "raceT": [
+   1,
+   10
+  ],
+  "hold": 3
+ }
+}

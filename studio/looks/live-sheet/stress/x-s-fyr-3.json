@@ -1,0 +1,74 @@
+{
+ "id": "x-s-fyr-3",
+ "stress": true,
+ "look": "live-sheet",
+ "format": "find-your-row",
+ "fps": 30,
+ "header": "How much is a **daily coffee** habit\nreally costing you over a lifetime?",
+ "footer": "ASSUMES $5 a day, 365 days, 7% a year invested instead",
+ "captions": true,
+ "vo": [
+  {
+   "t": 0,
+   "d": 2.4,
+   "text": "Find your daily coffee spend."
+  },
+  {
+   "t": 2.6,
+   "d": 2.6,
+   "text": "Five dollars a day is a lot of money over forty years."
+  }
+ ],
+ "verdict": {
+  "t": 6.0,
+  "text": "**$5 a day** ≈ **$390,000** by retirement"
+ },
+ "data": {
+  "columns": [
+   {
+    "label": "Daily spend on coffee drinks"
+   },
+   {
+    "label": "Spent each year"
+   },
+   {
+    "label": "Spent over 40 years"
+   },
+   {
+    "label": "Invested at 7% instead",
+    "emph": true
+   }
+  ],
+  "rows": [
+   [
+    "$3",
+    "$1,095",
+    "$43,800",
+    "≈ $234,000"
+   ],
+   [
+    "$5",
+    "$1,825",
+    "$73,000",
+    "≈ $390,000"
+   ],
+   [
+    "$7",
+    "$2,555",
+    "$102,200",
+    "≈ $546,000"
+   ]
+  ],
+  "formula": "= daily × 365 × 40, or invested at 7% a year",
+  "rowsT": 0.5,
+  "rowEvery": 0.6,
+  "pick": [
+   {
+    "t": 4.0,
+    "row": 1,
+    "label": "The **$5** latte habit adds up to a house deposit and then some"
+   }
+  ],
+  "hold": 3
+ }
+}

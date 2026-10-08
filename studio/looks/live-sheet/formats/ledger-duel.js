@@ -17,7 +17,10 @@
 // answer); the verdict lands as a card in the caption band or is retyped into the formula bar. The last 0.5 s
 // clear back to frame 1 so the short loops.
 //
-// Layout is automatic: the sheet first tries to end above the caption band (captions, or a verdict card when rows
+// Column A (the keys) takes at most 35% of the width and no spare: the people's values come first. A key too long
+// for it shows its head ("2025") and the whole key is typed into the bar as its row lands. Every bar text stays
+// readable 1.2 s after typing (later texts are pushed back); an event or key due within 1.5 s of a formulaBar step
+// is folded into it. Layout is automatic: the sheet first tries to end above the caption band (captions, or a verdict card when rows
 // stay >= 62 px), dropping the decorative A B C row and then going to 50 px rows before it gives up captions (a
 // ledger that dense runs silent, the format's own lane); otherwise it runs down to y 1476 (48 px rows at worst) and
 // the verdict is retyped into the formula bar. Text never goes under 40 px.
@@ -25,7 +28,7 @@
 // lookOpts: loop (true) · countUp (true) · letters ('auto' | true | false) · verdict ('auto' | 'band' | 'formula')
 //   · formulaAt0 (0.7) · rowLabelsAtStart (true: every row key visible at frame 1)
 //   · formulaBar ([{ t, text }]: the bar's working over time; default: data.stake) · keyLabel (column A label;
-//     default 'Year' for year rows, none when every key already names it ("Age 35"), else 'When')
+//     default 'Year' for year rows, the keys' shared first word ("Age" over "Age 35"), else 'When')
 //   · eventStyle ('auto' | 'tip' | 'bar': events as tooltips under their row, or typed into the formula bar)
 //   · summary ({ label, values: [display strings], t, tone }: a totals row under the ledger, e.g. the multiples;
 //     a tone colours it instead of the leader rule)

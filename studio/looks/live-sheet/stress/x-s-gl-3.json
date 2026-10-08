@@ -1,0 +1,54 @@
+{
+ "id": "x-s-gl-3",
+ "stress": true,
+ "look": "live-sheet",
+ "format": "growth-ladder",
+ "fps": 30,
+ "header": "**$50 a month** at 8%",
+ "captions": true,
+ "vo": [
+  {
+   "t": 0,
+   "d": 2,
+   "text": "Fifty a month."
+  },
+  {
+   "t": 3,
+   "d": 2,
+   "text": "Thirty years later."
+  }
+ ],
+ "data": {
+  "input": {
+   "amount": "$50",
+   "per": "a month",
+   "rate": "8% a year"
+  },
+  "columns": [
+   "Year",
+   "You put in",
+   "Worth"
+  ],
+  "rows": [
+   [
+    "1",
+    "$600",
+    "≈ $627"
+   ],
+   [
+    "10",
+    "$6,000",
+    "≈ $9,208"
+   ],
+   [
+    "30",
+    "$18,000",
+    "≈ $74,518"
+   ]
+  ],
+  "rowsT": 1,
+  "rowEvery": 2,
+  "highlightLast": true,
+  "hold": 3
+ }
+}

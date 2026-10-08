@@ -1,7 +1,7 @@
 # Format 7: "2 people invest" ledger duel, three teasers
 
 **Channel:** Back of the Envelope (YouTube Shorts, Instagram Reels, TikTok), US audience, USD
-**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews; see the [review log](#review-log))
+**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews; hook pass on 2026-10-08, 07c kept; see the [review log](#review-log))
 **Format:** `ledger-duel`, hook pattern **P4** ("same money, two choices")
 **Lane:** two people, the same money, two choices, a year-by-year ledger
 **Files:**
@@ -319,6 +319,8 @@ The verifier independently matched the 2007-2025 figures (including 2025 +17.88%
 | Stake line | "$10,000 each · 5 years · nothing added" is in the spec; the kit's layout engine drops it because the header already shows the money. The horizon is on screen in header line 3 and the footer |
 | Footer | ASSUMES both rates hold 5 years · 0.01% = Chase Savings APY, Oct 2026 |
 
+**Hook pass (2026-10-08): kept.** The two judges averaged this hook at 5.50. The best eligible rewrite, D ("Same **$10,000** / 1 month at high-yield / = ? years at a big bank"), averaged 7.25: 1.75 above the current hook, but under the 7.5 floor. C was ruled out because judge 2 marked it dishonest. The hook, title and body stay as they are. Scores, the judges' notes and the levers for the next round are in the [Review log](#hook-pass-2026-10-08).
+
 **Topic change from the seed, and why**
 - The seed asked for "sourced average rates over recent years".
 - Round-1 searches found today's verified rates (Chase 0.01%; top high-yield offers in the 4.0-4.5% range) and the FDIC national average (0.37%). They found **no year-by-year high-yield average that I could confirm from two sources**.
@@ -481,3 +483,49 @@ Round-2 review: the verifier (1 must, 5 shoulds, 5 nits) and the hook judge (07a
 ### Still open
 - The Becker `ledger-duel` kit is a stub: 07b's ledger body, rig beats, `rowLabelsAtStart` and the no-`lookOpts` fallback need `check` and `stills` once it lands.
 - The [click-check] pages (Slickcharts, the Chase Oct 2 rate sheet, The College Investor's Sep 28 list) should be opened by hand before posting; the proxy blocks fetching them.
+
+### Hook pass (2026-10-08)
+
+The owner rejected round 1 partly because "hooks are weak". For 07c, two judges scored the current hook and four rewrites (A-D) out of 10. A hook here is the header at t = 0, the first VO line, what is visible in the first 1.5 s, and the platform title, built on the hook bank's P1-P9 and R1-R12. **Rule:** average the two judges' scores for each option. An option that either judge marks dishonest is out. Adopt the best option only if its average is **≥ 7.5** and **≥ 0.75 above the current hook**. Otherwise keep the current hook; a clearly better title may still be taken. 07a and 07b were not in this pass.
+
+| Option | Judge 1 | Judge 2 | Average | Decision |
+|---|---:|---:|---:|---|
+| current: "2 people save **$10,000** / Big bank vs high-yield / Interest after 5 years?" | 6 | 5 | **5.50** | **kept** |
+| A: "2 people save **$10,000** / Chase vs high-yield / Interest after 5 years?" (vo0 "One month at Chase: about 8 cents.") | 7 | 6 | 6.50 | |
+| B: "POV: your **$10,000** / sits at a big bank / for 5 years" (a "You" column; verdict "cost you ≈ $2,162") | 7.5 | 6.5 | 7.00 | +1.50, under 7.5 |
+| C: "2 people save **$10,000** / 0.01% vs 4.00% interest / How many times more?" (Year 1 at 1.0 s; verdict ≈ 433×) | 5 | 4 (dishonest) | (4.50) | out (judge 2: honesty) |
+| D: "Same **$10,000** / 1 month at high-yield / = ? years at a big bank" (verdict "1 month = ≈ 33 years") | 7.5 | 7 | **7.25** | best eligible: +1.75, under 7.5 |
+
+**Why nothing was adopted:**
+- D (7.25) and B (7.00) both cleared the +0.75 margin but not the 7.5 floor. A (6.50) missed the floor by a full point.
+- C is out. Judge 2 marked it dishonest because its stated mechanism, "400× every year", is false. The yearly interest ratio is 400 × (1.04 / 1.0001)^(n−1): 400, 416, 433, 450 and 468 in years 1-5, which is why the 5-year total comes to ≈ 433× (2,166.53 ÷ 5.0010 = 433.2). Judge 1 flagged the same phrase as loose and scored C 5. The on-screen numbers were right; the line must not reach any VO, caption or pinned comment. Both judges also found that C gives itself away: with "0.01% vs 4.00%" in the hook line, "How many times more?" is answered by dividing in the first second (R2).
+- Both judges re-ran the maths of every option and found it correct: 8.33 cents and $32.74 in month 1; ≈ $5 vs ≈ $2,167 after 5 years; B's $12,166.53 − $10,005.00 = $2,161.53 → ≈ $2,162; D's ln(1.0032737) ÷ ln(1.0001) = 32.69 → ≈ 33 years, bracketed by $32.05 (32 years) and $33.05 (33 years); A's pinned 0.02% line, 10,000 × (1.0002^5 − 1) = $10.00. I recomputed the same figures.
+
+**Title: kept** ("2 People Save $10,000: Big Bank vs High-Yield. How Far Apart in 5 Years?"). The judges scored whole hooks, not titles, and no candidate title is clearly better for the current body:
+- **A** ("…Chase vs High-Yield…") would name Chase in the title while the header says "Big bank" and Chase sits only in the footer. It also moves the [click-check] rate into the most-read line and invites the 0.02% relationship-rate replies, for a gain both judges put at one point for the whole hook.
+- **B** ("What If Your $10,000 Sat in High-Yield Instead of a Big Bank?") is R11's second form, which needs the screen to say "you did it": a POV header and a "You" column. Over the current Mia and Leo body, the title and the screen would not match.
+- **D** ("1 Month at High-Yield = How Many Years at a Big Bank?") asks a question the current body never answers; there is no 33-year verdict in this cut.
+- **C** is out on honesty.
+- The current title already carries both options, the $10,000 and the 5-year horizon, and the verdict answers its question.
+
+**What the judges agreed on, for the next round:**
+- **The current hook:**
+  - The plans print 0.01% vs 4.00% at frame 1, so the winner is known in second 1 and only the size is left open. Nothing reverses. Judge 2 adds that "a big bank pays almost nothing" is the most familiar fact in personal-finance shorts.
+  - "Big bank" is an unnamed category (R7), and the $10,000 belongs to two strangers (R3/R6).
+  - The first payoff at 1.0 s sits in the last digits of "≈ $10,000.08 / ≈ $10,032.74", and the spoken "8 cents" lands at about 2.7-3.5 s.
+  - Both rank it under Jake's plain duel without a twist (H80, 276,471, 5.66x med) and far under ChartOrbit's P4 winners (H16 100.45x, H17 345.09x), whose outcome is not known at frame 1.
+- **Levers:**
+  - **B + A.** Judge 1 called combining them ("POV: your $10,000 / sits at Chase…") "the route to an 8": B has the clearest stake in the set (you + $10,000 + 5 years, R6) and puts the viewer in the losing seat (H45, H43), and A names a bank many viewers use (R7). Before rescoring it needs: judge 2's wording fix, "One month at that bank", not "at your bank" (many viewers' banks pay more; the FDIC national average is 0.37%); the posting-day [click-check] of Chase's rate sheet; and B's checker changes (header tokens without "2"; a verdict claim on $12,167 − $10,005 = $2,162).
+  - **D.** The most novel option and the best open loop: one countable blank that cannot be solved in 1.5 s, money re-priced as time (P5/P8; H71's "25 YEARS" vs "~6.7 YEARS"), and a verdict viewers can repeat (R12, "1 month = 33 years"). Both judges noted that the ratio does not depend on the balance, so it holds for every viewer's savings (a hidden R3 strength the caption should state). It needs a "you" (R6) and a named bank (R7). Judge 1: the footer must change too, because "both rates hold 5 years" contradicts a 33-year equivalence. Judge 2: the 5-year dollar ledger does not itself build to the 33-year answer, so the verdict card has to fill the blank.
+  - **C's first number.** Judge 1 rated the exact "$1 a year" row ($10,001 / $10,400, no ≈) at 1.0 s the cleanest first number of the five. A future cut could land Year 1 first without C's header.
+- **Open items (not applied, because they were not scored):**
+  - A B + A (or D + "you" + Chase) rewrite, rescored by both judges before it goes into the spec.
+  - Seen in today's stills: the Clean Sheet caption shows the whole first VO line from 0.0 s, in grey ahead of the karaoke highlight, so "about 8 cents" is readable on frame 1 before it is spoken. Any rewrite whose vo0 carries the answer to the header's question (D's "about $33" or C's "$1") puts that answer on frame 1 too.
+
+**Files:** no changes to the spec, beats, VO, captions, check script or `teasers.json` (which still carries round 2's writer estimate for 07c, 7; the judges' average for the kept hook is 5.50). The only changes to this write-up are the date line, the "Hook pass" line under 07c, and this log.
+- Re-run of `python3 teasers/v2/checks/07-ledger-duel.py`: **406 checks, 0 failures**, ALL OK, exit 0.
+- `node src/cli.mjs check` on 07a, 07b and 07c with today's kits: 0 errors, 0 warnings each.
+- `node src/cli.mjs stills` on 07c at 0, 1.5 and 3.0 s:
+  - **0.0 s.** The 3-line header with $10,000 on the yellow highlighter, the 2-line footer ("ASSUMES both rates hold 5 years / 0.01% = Chase Savings APY, Oct 2026"), Mia and Leo with their 3-line plans (0.01% APY, × 1.0001 a year; 4.00% APY, × 1.04 a year), the Day 1 row $10,000 / $10,000 filled, Month 1 and Years 1-5 labelled in grey with empty cells, and the caption "One month at a big bank: about 8 cents." with "One" lit.
+  - **1.5 s.** Month 1 is filled in the sand band: ≈ $10,000.08 / ≈ $10,032.74. The caption is lit through "bank:".
+  - **3.0 s.** The same rows; the caption is fully lit. Year 1 lands at 7.0 s.

@@ -29,6 +29,8 @@
 //   intro: false              never open on the "1 unit" state, even when the first rung starts late
 //   iconSize: 68              world size (px) of one unit icon's longer side
 //   plate: false              no gold plate on the last count (a rung with tone "goal" always gets one)
+//   pileLabels: false | [..]  the recap tags on the piles after the last landing: false = none; an array = the
+//                             name per rung (default: the item name, shortened: no article, no ", at ..." qualifier)
 import {
   h, s, style, attr, setText, setHTML, prog, clamp, lerp, rng,
   C, F, L, S, E, RIG, poseTrack, fk, secondary, pinLimb, blendJ, Figure, makeWorld, makeFx, camera, NumObj,
@@ -472,7 +474,8 @@ export default function unitLadder(spec, ctx) {
   // Once the last pile has landed the camera steps back a little and each pile gets a tag: its name and count
   // (screen-fixed, 40 / 44 px), or the count alone where the name does not fit. A tag sits on its own pile when the
   // pile is big enough, otherwise in the sky nearest its apex without touching another tag, a pile or the figure,
-  // with a thin leader to the apex. The step back is the smallest one (of 0.8 / 0.7 / 0.6 / 0.5) that tags every pile.
+  // with a thin leader to the apex. The step back (0.8 / 0.7 / 0.6) is the one that tags the most piles; a pile with no
+  // room for any tag goes untagged.
   const tags = []
   let tagStep = 1
   if (lo.pileLabels !== false && N >= 2) {

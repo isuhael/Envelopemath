@@ -37,7 +37,7 @@
 import {
   h, s, setStyle, setText, setHTML, attr, clamp, lerp, prog, ease, C, G, M, S,
   formulaBar, fitFormula, lineChart, mk, mkLen, typedMk, typedCount, typeDur, wordCut, caretOn,
-  snapIn, liftOut, popScale, flashAlpha, lerpRect, rgba, durationOf, hasCaptions, opt, layer, footerHeight,
+  snapIn, liftOut, popScale, flashAlpha, lerpRect, springRect, rgba, durationOf, hasCaptions, opt, layer, footerHeight,
   textW, font, fmtNum, plain, displayValue, fitBarVerdict, HANDLE_PAD,
 } from '../lib.js'
 
@@ -557,6 +557,7 @@ export default function povRace(spec, ctx) {
       const yearNow = inLoop && outQ >= 1 ? labels[idx0] : labels[idx]
       const numNow = 2 + (inLoop && outQ >= 1 ? idx0 : idx)
       setText(lv.cells[0].v, yearNow)
+      lv.cells[0].el.classList.toggle('pov-lift', twoSp || twoOw)
       setText(lv.num, String(numNow))
       // where the live row sits: it fills down through the H history slots, and climbs back for the loop
       const fPlay = Math.min(H, scrollAt(tt))
@@ -582,8 +583,9 @@ export default function povRace(spec, ctx) {
         const c = lv.cells[j]
         setHTML(c.v, fin ? valueHTML(txt) : esc(txt))
         c.el.classList.toggle('pov-two', !!two)
-        // a one-line final beside a two-line one lifts so the two numbers share a baseline
-        c.el.classList.toggle('pov-lift', !!fin && !two && (twoSp || twoOw))
+        // when a final takes two lines ("$1,545" over "spent"), every number in the live row sits on that first
+        // line's baseline all race long, so nothing jumps at the landing and the answer never floats
+        c.el.classList.toggle('pov-lift', !two && (twoSp || twoOw))
         let st = snapIn(pV)
         if (inLoop && outQ < 1) { const q = liftOut(outQ); st = q ? { opacity: String(Math.min(+st.opacity, +q.opacity)), transform: q.transform } : st }
         setStyle(c.v, { ...st, color: col })
@@ -627,7 +629,7 @@ export default function povRace(spec, ctx) {
       const selRange = { x0: colX[1], x1: Wd, y0: liveTop, y1: liveTop + liveH }
       const selOwn = { x0: colX[2], x1: Wd, y0: liveTop, y1: liveTop + liveH }
       let rect = selRange, handle = true
-      if (!inLoop && t >= springT) { rect = lerpRect(selRange, selOwn, ease.back(prog(t, springT, M.pick), 1.6)); handle = false }
+      if (!inLoop && t >= springT) { rect = springRect(selRange, selOwn, prog(t, springT, M.pick), 1.6); handle = false }
       if (inLoop) { rect = lerpRect(t >= springT ? selOwn : selRange, selRange, ease.inOut(prog(t, loopT0, 0.34))); handle = true }
       setStyle(sel, { opacity: '1', left: rect.x0.toFixed(2) + 'px', top: rect.y0.toFixed(2) + 'px', width: (rect.x1 - rect.x0).toFixed(2) + 'px', height: (rect.y1 - rect.y0).toFixed(2) + 'px' })
       setStyle(sel.firstChild, { opacity: handle ? '1' : '0', right: '3px', bottom: '-9px' }) // straddles the bottom gridline

@@ -20,9 +20,9 @@
 //   Verdict   the chrome's: the kit's one verdict slot at the foot of the frame, on the black band that rises over
 //             the foot of the board. Just before it, the rows scroll up under the column labels (the oldest drop
 //             off), so the big last row stays in view above the band. The header keeps the hook.
-// Frame 1: row 1 at t < 0.5 s → row 1 is on the board and the hero is 0.45 s into its count (FinCalC: row 1 on
-//   screen at 0.0 s). Otherwise the hero is already counting up toward row 1 (from what row 1 puts in) and lands just
-//   after row 1 unmasks (HD Guy: the counter is running at 0.0 s).
+// Frame 1: row 1 is on the board (its year and what went in) and the hero and its Worth cell are already counting
+//   (FinCalC: row 1 on screen at 0.0 s; HD Guy: the counter is running at 0.0 s). Row 1 at t < 0.5 s: 0.45 s into
+//   its count; otherwise the count runs from what row 1 puts in and lands 0.6 s after rowsT.
 // Layout: the stage runs to y 1300 (captions on) or 1460 (captions off: the board is the caption); no label stack,
 //   the board is the label. The board is centred in the stage; the row pitch is what the stage leaves (capped at
 //   96 px); the last row takes 1.55 pitches (1.3 on dense boards). Cells are Anton with every digit in a 0.5em slot,
@@ -183,7 +183,9 @@ export default function growthLadder(spec, ctx) {
     const from = numeric[i] ? Math.min(worthV[i], Math.max(prev, put)) : prev
     const to = worthV[i], last = i === N - 1
     let cut, start, roll, curve = ease.out
-    if (i === 0 && intro) { cut = cutT[0]; start = -LEAD; roll = cutT[0] + AFTER + LEAD; curve = quadOut }
+    // intro: row 1's year and put-in are on the board from frame 1 (the running count has its context: no number
+    // tied to nothing on the thumbnail); its Worth counts with the hero and lands AFTER s past rowsT
+    if (i === 0 && intro) { cut = 0; start = -LEAD; roll = cutT[0] + AFTER + LEAD; curve = quadOut }
     else if (i === 0) { cut = Math.min(cutT[0], 0); start = cut - LEAD; roll = rollFor(from, to) }
     else { cut = cutT[i]; start = cut + DIP; roll = rollFor(from, to) }
     if (last && big) roll = Math.max(roll, M.rollFinal)
@@ -530,7 +532,8 @@ export default function growthLadder(spec, ctx) {
           // gradient stops on whole pixels: sub-pixel hard stops rasterize differently from paint to paint
           const b = Math.round(px(vg)), a2 = PC >= 0 && isFinite(putV[i]) ? Math.min(Math.round(px(putV[i] * wipe)), b) : 0
           if (o.track) style(o.track, { background: `linear-gradient(90deg, ${PUT} 0 ${a2}px, ${C.green} ${a2}px ${b}px, ${TRACK} ${b}px)` })
-          for (const tp of o.tips) style(tp, { display: shown && active && b > 0.5 ? 'block' : 'none', left: ((o.track ? 0 : 12) + b).toFixed(1) + 'px' })
+          // (a meter only a few px long has no tip: it would sit on the year)
+          for (const tp of o.tips) style(tp, { display: shown && active && b > 16 ? 'block' : 'none', left: ((o.track ? 0 : 12) + b).toFixed(1) + 'px' })
           style(o.slot, { background: shown ? slotBg(a2, b, base) : PANEL })
         } else style(o.slot, { background: base })
       })

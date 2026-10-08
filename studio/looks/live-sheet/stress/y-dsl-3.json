@@ -1,0 +1,65 @@
+{
+ "id": "y-dsl-3",
+ "stress": true,
+ "look": "live-sheet",
+ "format": "dead-simple-list",
+ "fps": 30,
+ "header": "3 dead simple numbers\nfor your **first apartment**",
+ "footer": "ASSUMES $3,500 a month take-home",
+ "captions": true,
+ "vo": [
+  {
+   "t": 0,
+   "d": 2.0,
+   "text": "Take-home pay: $3,500."
+  },
+  {
+   "t": 2.4,
+   "d": 2.0,
+   "text": "Rent: under $1,050."
+  },
+  {
+   "t": 5.4,
+   "d": 2.0,
+   "text": "Deposit plus first month."
+  },
+  {
+   "t": 9.4,
+   "d": 2.2,
+   "text": "Keep an emergency month too."
+  }
+ ],
+ "data": {
+  "input": {
+   "label": "Take-home pay",
+   "value": "$3,500",
+   "note": "a month"
+  },
+  "items": [
+   {
+    "t": 0.4,
+    "label": "Max rent you can carry comfortably every month",
+    "formula": "$3,500 × 0.30",
+    "result": "$1,050",
+    "tone": "good",
+    "note": "the 30% rule"
+   },
+   {
+    "t": 4.4,
+    "label": "Cash to move in (deposit + first month)",
+    "formula": "$1,050 × 2",
+    "result": "$2,100",
+    "tone": "neutral"
+   },
+   {
+    "t": 8.4,
+    "label": "Emergency fund before signing",
+    "formula": "$3,500 × 1",
+    "result": "$3,500",
+    "tone": "goal",
+    "note": "one month of pay"
+   }
+  ],
+  "hold": 3.0
+ }
+}

@@ -1,0 +1,58 @@
+{
+ "id": "x-s-dsl-3",
+ "stress": true,
+ "look": "live-sheet",
+ "format": "dead-simple-list",
+ "fps": 30,
+ "header": "3 dead simple numbers\nfor your **emergency fund**",
+ "captions": true,
+ "vo": [
+  {
+   "t": 0,
+   "d": 2,
+   "text": "Three numbers."
+  },
+  {
+   "t": 2.5,
+   "d": 2,
+   "text": "Monthly costs times three."
+  },
+  {
+   "t": 6,
+   "d": 2,
+   "text": "Times six if your job is shaky."
+  },
+  {
+   "t": 10,
+   "d": 2,
+   "text": "Save a tenth a month."
+  }
+ ],
+ "data": {
+  "items": [
+   {
+    "t": 0.5,
+    "label": "Bare-minimum monthly costs for rent, food, insurance and transport",
+    "formula": "$1,200 + $600 + $300 + $400",
+    "result": "$2,500",
+    "tone": "neutral",
+    "note": "what you can't skip"
+   },
+   {
+    "t": 5,
+    "label": "Three-month fund",
+    "formula": "$2,500 × 3",
+    "result": "$7,500",
+    "tone": "good"
+   },
+   {
+    "t": 9.5,
+    "label": "Six-month fund for freelancers and anyone in a shaky industry",
+    "formula": "$2,500 × 6",
+    "result": "$15,000",
+    "tone": "goal",
+    "note": "the safe target"
+   }
+  ]
+ }
+}

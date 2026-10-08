@@ -1,0 +1,47 @@
+{
+ "id": "x-s-wd-2",
+ "stress": true,
+ "look": "live-sheet",
+ "format": "what-difference",
+ "fps": 30,
+ "header": "What difference does a **15-year**\nmortgage make?",
+ "footer": "ASSUMES $300,000 at 6.5% vs 5.9%",
+ "captions": false,
+ "verdict": {
+  "t": 8,
+  "text": "15 years saves **≈ $230,000** in interest"
+ },
+ "data": {
+  "stake": {
+   "label": "Home loan",
+   "value": "$300,000"
+  },
+  "metrics": [
+   {
+    "key": "interest",
+    "label": "Total interest paid over the life of the loan"
+   }
+  ],
+  "options": [
+   {
+    "t": 0,
+    "name": "30-year fixed at 6.5% APR",
+    "detail": "$1,896 a month",
+    "values": {
+     "interest": "≈ $383,000"
+    }
+   },
+   {
+    "t": 3,
+    "name": "15-year fixed at 5.9% APR",
+    "detail": "$2,515 a month",
+    "values": {
+     "interest": "≈ $153,000"
+    },
+    "tone": "good"
+   }
+  ],
+  "winner": 1,
+  "hold": 3
+ }
+}

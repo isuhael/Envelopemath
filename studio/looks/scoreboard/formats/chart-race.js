@@ -41,7 +41,7 @@ import { h, s, css as style, setText, setHTML, attr, prog, ease, clamp, lerp, fi
 import { C, SIZE, M, layoutFor } from '../theme.js'
 import {
   rich, richUI, esc, bare, heroRow, labelStack, stageFlash, flashAt, parseDisplay, displayValue, odometer, bump, slam,
-  durationOf, toneColor, valueAt,
+  durationOf, toneColor, valueAt, measureText,
 } from '../lib.js'
 
 export const css = `
@@ -62,6 +62,9 @@ export const css = `
 .cr-tag { position: absolute; top: 0; display: flex; align-items: center; justify-content: flex-end; text-align: right; font: 700 42px/1.08 'Inter', 'Inter Full', sans-serif; text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; }
 .cr-tag > span { display: block; }   /* one flex child: spaces around markup survive */
 .cr-vs { color: #9AA4B2; }
+.cr-mline { display: block; white-space: nowrap; line-height: 1; }
+.cr-mline.two { white-space: normal; text-wrap: balance; }
+.cr-mvs { display: block; font-family: 'Inter', 'Inter Full', sans-serif; font-weight: 700; line-height: 1; letter-spacing: 0.06em; color: #9AA4B2; }
 `
 
 const SETTLE = 0.45    // s: once the lines stop, tips and hero roll their last digits, then land on `final`
@@ -343,16 +346,36 @@ export default function chartRace(spec, ctx) {
     root.append(lab)
     return { sr, glow, path, halo, dot, core, lab, odo }
   })
-  // a label wider than 60% of the plot (long names) stacks its name over its value
+  // a label wider than 60% of the plot (long names) stacks its name over its value; the name then fits TIPMAX on
+  // one line at 42 px, else on two balanced lines, else (no series.label given) as its leading words that fit
+  const TIPMAX = Math.min(P.w - 60, 560)
   for (const o of S) {
-    let wmax = 0
     const mx = Math.max(...o.sr.points.map(p => p[1]))
-    for (const show of [() => o.odo.set(snapT(mx, tplAt(mx)), tplAt(mx)), () => o.sr.final && o.odo.show(o.sr.final)]) {
-      show()
-      wmax = Math.max(wmax, o.lab.offsetWidth)
+    const widest = () => {
+      let w = 0
+      for (const show of [() => o.odo.set(snapT(mx, tplAt(mx)), tplAt(mx)), () => o.sr.final && o.odo.show(o.sr.final)]) { show(); w = Math.max(w, o.lab.offsetWidth) }
+      return w
     }
-    o.two = wmax > P.w * 0.6
-    if (o.two) o.lab.classList.add('two')
+    o.two = widest() > P.w * 0.6
+    if (!o.two) continue
+    o.lab.classList.add('two')
+    const nameEl = o.lab.firstChild
+    const wOf = html => { nameEl.innerHTML = html; return nameEl.offsetWidth }
+    if (wOf(rich(nameOf(o.sr))) <= TIPMAX) continue
+    const words = bare(nameOf(o.sr)).split(/\s+/).filter(Boolean)
+    let best = null
+    for (let n = words.length; n >= 1 && !best; n--) {
+      const ws = words.slice(0, n)
+      if (wOf(rich(ws.join(' '))) <= TIPMAX) { best = rich(ws.join(' ')); break }
+      let cand = null
+      for (let k = 1; k < ws.length; k++) {
+        const a = rich(ws.slice(0, k).join(' ')), b = rich(ws.slice(k).join(' '))
+        const w = Math.max(wOf(a), wOf(b))
+        if (w <= TIPMAX && (!cand || w < cand.w)) cand = { w, html: a + '<br>' + b }
+      }
+      if (cand) best = cand.html
+    }
+    nameEl.innerHTML = best || rich(words[0] || '')
   }
 
   // ---------- hero: the stake on frame 1, then the leader's live value with the leader's name ----------
@@ -402,8 +425,39 @@ export default function chartRace(spec, ctx) {
   const chapters = []
   if (stackMode) {
     const l1 = d.stake ? rich(d.stake) : ''
-    const vs = racers.map(sr => `<span style="color:${sr.color}">${rich(nameOf(sr))}</span>`).join(' <span class="cr-vs">VS</span> ')
-    const items = [{ l1, l2: vs }]
+    // the matchup never wraps inside a name: "NAME VS NAME" on one line, or broken only at a VS; names too long for
+    // that stack as NAME / VS / NAME, each name fitted to the 800 px slot on its own line (>= 40 px)
+    const T = L.type
+    const avail = L.label.h - (l1 ? T.l1 + 6 : 0)
+    const W1 = str => measureText(bare(str).toUpperCase(), "400 100px 'Anton', 'Inter Full', sans-serif") * 1.01 / 100
+    const names = racers.map(nameOf)
+    const vsW = W1(' VS ')
+    const sizeOf2 = lines => Math.min(T.l2, 780 / Math.max(...lines.map(l => l.reduce((a, n, k) => a + W1(n) + (k ? vsW : 0), 0))), avail / lines.length)
+    let fitsInline = sizeOf2([names]) >= T.l2Min
+    for (let k = 1; k < names.length && !fitsInline; k++) fitsInline = sizeOf2([names.slice(0, k), names.slice(k)]) >= T.l2Min
+    let vs, l1m = l1
+    if (fitsInline) vs = racers.map(sr => `<span class="nb" style="color:${sr.color}">${rich(nameOf(sr))}</span>`).join(' <span class="cr-vs">VS</span> ')
+    else {
+      // a name too wide for 780 px even at 40 px takes two balanced lines of its own; the stake line (it is in the
+      // header and the footer too) gives its row up when the stack needs it
+      const VSPX = 40
+      const nl = names.map(n => (W1(n) * 40 > 780 ? 2 : 1))
+      const minH = nl.reduce((a, k) => a + 40 * k, 0) + VSPX * (names.length - 1) + 4
+      const room0 = (l1 && minH <= avail ? avail : L.label.h) - VSPX * (names.length - 1) - 4
+      if (!(l1 && minH <= avail)) l1m = ''
+      let px = names.map((n, k) => Math.min(T.l2, nl[k] === 1 ? 780 / W1(n) : (780 * 1.8) / W1(n)))
+      const hOf = v => v.reduce((a, x, k) => a + x * nl[k], 0)
+      if (hOf(px) > room0) px = px.map(v => Math.max(40, (v * room0) / hOf(px)))
+      for (let it = 0; it < 4; it++) {                 // names held at the 40 px floor: the others give up the rest
+        const over = hOf(px) - room0, free = px.map((v, k) => (v > 40.5 ? (v - 40) * nl[k] : 0))
+        const fs = free.reduce((a, b) => a + b, 0)
+        if (over <= 0.5 || !fs) break
+        px = px.map((v, k) => (v > 40.5 ? Math.max(40, v - (over * (v - 40)) / fs) : v))
+      }
+      vs = racers.map((sr, k) => `<span class="cr-mline${nl[k] > 1 ? ' two' : ''}" style="color:${sr.color}; font-size:${(px[k] / T.l2).toFixed(4)}em">${rich(nameOf(sr))}</span>`)
+        .join(`<span class="cr-mvs" style="font-size:${(VSPX / T.l2).toFixed(4)}em">VS</span>`)
+    }
+    const items = [{ l1: l1m, l2: vs }]
     chapters.push({ t: 0, idx: 0 })
     const flagged = events.filter(e => e.label)
     flagged.forEach((e, k) => {
@@ -705,7 +759,7 @@ export default function chartRace(spec, ctx) {
         const tab = PL.off[k]
         const dx = lerp(tab[f0 * 2], tab[f1 * 2], fa), dy = lerp(tab[f0 * 2 + 1], tab[f1 * 2 + 1], fa)
         const sz = sizeOf(tp.o, tp.c)
-        items.push({ tp, w: sz.w, h: sz.h, x: clamp(tp.tx + dx, PL.xl, PL.xr - sz.w), y: clamp(tp.ty + dy, 0, YBt - sz.h) })
+        items.push({ tp, w: sz.w, h: sz.h, x: Math.max(68 - P.x, clamp(tp.tx + dx, PL.xl, PL.xr - sz.w)), y: clamp(tp.ty + dy, 0, YBt - sz.h) })
       })
       separate(items, YBt)
       const rects = []
@@ -714,7 +768,7 @@ export default function chartRace(spec, ctx) {
         const right = it.x + it.w / 2 > it.tp.tx            // scale away from the tip, never over it
         style(it.tp.o.lab, {
           left: it.x.toFixed(1) + 'px', top: it.y.toFixed(1) + 'px',
-          transformOrigin: right ? '0% 60%' : '100% 60%', ...(it.tp.o.two ? { alignItems: right ? 'flex-start' : 'flex-end' } : {}),
+          transformOrigin: right ? '0% 60%' : '100% 60%', ...(it.tp.o.two ? { alignItems: right ? 'flex-start' : 'flex-end', textAlign: right ? 'left' : 'right' } : {}),
           transform: lb !== 1 ? `scale(${lb.toFixed(4)})` : 'none',
         })
         rects.push({ x: it.x, y: it.y, w: it.w, h: it.h })

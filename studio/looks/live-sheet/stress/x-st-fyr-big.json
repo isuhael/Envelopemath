@@ -1,0 +1,118 @@
+{
+ "id": "x-st-fyr-big",
+ "stress": true,
+ "format": "find-your-row",
+ "header": "What a **$250,000** house\nreally costs at every age you could buy it",
+ "footer": "30-year fixed at 6.5%, 10% down, before tax and insurance",
+ "captions": true,
+ "vo": [
+  {
+   "t": 0,
+   "d": 3,
+   "text": "A quarter-million house."
+  },
+  {
+   "t": 3.2,
+   "d": 3,
+   "text": "Find your age."
+  },
+  {
+   "t": 6.4,
+   "d": 3,
+   "text": "Most people buy around thirty-five."
+  }
+ ],
+ "verdict": {
+  "t": 9.5,
+  "text": "Buy at **35**: ≈ $1,234 a month"
+ },
+ "data": {
+  "columns": [
+   {
+    "label": "Age when you buy the house"
+   },
+   {
+    "label": "Monthly payment with taxes"
+   },
+   {
+    "label": "Total paid by retirement age",
+    "emph": true
+   }
+  ],
+  "rows": [
+   [
+    "20",
+    "≈ $60,140",
+    "≈ $180,220"
+   ],
+   [
+    "25",
+    "≈ $75,175",
+    "≈ $225,275"
+   ],
+   [
+    "30",
+    "≈ $90,210",
+    "≈ $270,330"
+   ],
+   [
+    "35",
+    "≈ $105,245",
+    "≈ $315,385"
+   ],
+   [
+    "40",
+    "≈ $120,280",
+    "≈ $360,440"
+   ],
+   [
+    "45",
+    "≈ $135,315",
+    "≈ $405,495"
+   ],
+   [
+    "50",
+    "≈ $150,350",
+    "≈ $450,550"
+   ],
+   [
+    "55",
+    "≈ $165,385",
+    "≈ $495,605"
+   ],
+   [
+    "60",
+    "≈ $180,420",
+    "≈ $540,660"
+   ],
+   [
+    "65",
+    "≈ $195,455",
+    "≈ $585,715"
+   ],
+   [
+    "70",
+    "≈ $210,490",
+    "≈ $630,770"
+   ],
+   [
+    "75",
+    "≈ $225,525",
+    "≈ $675,825"
+   ]
+  ],
+  "formula": "= price × rate ÷ (1 − (1 + rate)^−360)",
+  "rowsT": 0.4,
+  "rowEvery": 0.25,
+  "pick": [
+   {
+    "t": 6.4,
+    "row": 3,
+    "label": "Most people buy here, at the median first-time buyer age"
+   }
+  ],
+  "hold": 3
+ },
+ "look": "live-sheet",
+ "fps": 30
+}

@@ -5,7 +5,8 @@
    - 03a: a $44,000 car loan at 7% APR over 72 months, simple interest charged daily,
      paid monthly / biweekly / weekly / weekly rounded up to $200;
    - 03b: a $5,000 card balance at 22% APR, no new charges, paid with the issuer minimum
-     (Chase formula) / a flat $150 / a flat $250;
+     (Chase formula) / the first minimum ($142.59) held flat / a flat $250 (a flat $150 is
+     checked for the pinned comment);
    - 03c: a $400,000 30-year mortgage at 7.3%, with $0 / $100 / $500 extra a month.
 2. Loads the three spec JSONs and asserts that
    - every display string the maths produces (option details, payoff, interest, deltas,
@@ -29,6 +30,10 @@
 Revision 2 (2026-10-07, after the verifier and hook-judge reviews): specs rebuilt against the
 shipped kit APIs (live-sheet lookOpts.formulas/lever, clean-sheet option.resultT, scoreboard
 option.resultT + footerSteps), new hooks and VO, Experian figures dropped (not verifiable).
+Hook pass (2026-10-08): 03b adopts hook B ("paying the SAME minimum every month"): option 2 is
+now the first minimum held flat (57 payments), option 1 carries the typed note "$142.59 → $99.66
+by year 3" (the month-36 minimum), the verdict is "$0 more ... ≈ 10 years sooner", and the
+caption states no interest saving (shown 7,300 − 3,100 = 4,200 would drift from the exact ≈ 4,300).
 
 Run:  python3 teasers/v2/checks/03-what-difference.py
 """
@@ -183,28 +188,36 @@ def card_min(nb, i):
     return max(MIN_FLOOR, c2(MIN_PCT * nb + i))
 
 def card_run(B, apr, rule):
-    b, n, interest, first = float(B), 0, 0.0, None
+    b, n, interest, first, pays = float(B), 0, 0.0, None, []
     while b > 0.004:
         i = c2(b * apr / 12)
         nb = c2(b + i)
         p = min(rule(nb, i), nb)
         first = p if first is None else first
+        pays.append(p)
         b = c2(nb - p)
         interest += i
         n += 1
-    return {"n": n, "interest": interest, "years": n / 12, "first": first}
+    return {"n": n, "interest": interest, "years": n / 12, "first": first, "pays": pays}
 
 def card_case(apr):
-    return {"min": card_run(CARD_B, apr, card_min),
-            150: card_run(CARD_B, apr, lambda nb, i: 150),
-            250: card_run(CARD_B, apr, lambda nb, i: 250)}
+    out = {"min": card_run(CARD_B, apr, card_min),
+           150: card_run(CARD_B, apr, lambda nb, i: 150),
+           250: card_run(CARD_B, apr, lambda nb, i: 250)}
+    first = out["min"]["first"]
+    out["flat1"] = card_run(CARD_B, apr, lambda nb, i: first)   # the first minimum held flat
+    return out
 
 CARD = card_case(CARD_APR)
 CARD_FIRST_MIN = CARD["min"]["first"]
 CARD_150_OVER_MIN = 150 - CARD_FIRST_MIN
 CARD_SOONER = {k: CARD["min"]["years"] - CARD[k]["years"] for k in CARD_FLATS}
 CARD_SAVE_150 = CARD["min"]["interest"] - CARD[150]["interest"]
-CARD_FLAT_FIRST = card_run(CARD_B, CARD_APR, lambda nb, i: CARD_FIRST_MIN)   # pinned comment
+CARD_FLAT_FIRST = CARD["flat1"]                     # option 2: keep paying the first minimum ($0 more)
+CARD_SOONER_F1 = CARD["min"]["years"] - CARD_FLAT_FIRST["years"]
+CARD_SAVE_F1 = CARD["min"]["interest"] - CARD_FLAT_FIRST["interest"]
+CARD_NOTE_MONTH = 36                                # option 1's note: the minimum at the end of year 3
+CARD_MIN_AT_NOTE = CARD["min"]["pays"][CARD_NOTE_MONTH - 1]
 
 # ---- 03c: mortgage, standard monthly amortisation at APR/12, interest rounded to the cent,
 # scheduled payment rounded up to the cent (so 360 payments clear it), extra goes to principal.
@@ -306,35 +319,41 @@ year_lines = {ida: [0, 7]}
 
 # ---- 03b
 idb = "03b-clean-sheet-card-minimum"
+FIRST_S = money(CARD_FIRST_MIN, 0.01)
 eb = {
     "header": T(money(CARD_B)),
     "footer": T(pct(CARD_APR), pct(MIN_PCT), money(MIN_FLOOR)),
     "data.stake.value": E(money(CARD_B)),
     "data.stake.terms": E(f"{pct(CARD_APR)} APR · no new charges"),
-    "data.options[0].detail": E(f"starts at {money(CARD_FIRST_MIN, 0.01)}, then shrinks"),
-    "data.options[1].name": E(f"A flat {money(150)}"),
-    "data.options[2].name": E(f"A flat {money(250)}"),
+    "data.options[0].detail": E(f"starts at {FIRST_S}, then shrinks"),
+    # hook pass: the shrink proved in numbers in the first 1.5 s (the minimum at the end of year 3)
+    "data.options[0].note": E(f"{FIRST_S} → {money(CARD_MIN_AT_NOTE, 0.01)} by year {CARD_NOTE_MONTH // 12}"),
     "data.options[0].values.payoff": E(years_disp(CARD["min"]["years"])),
     "data.options[0].values.interest": E(money(CARD["min"]["interest"], 100)),
-    "verdict.text": T(money(CARD_150_OVER_MIN), num(CARD_SOONER[150])),
+    # option 2 = the lever the hook asks about: the first minimum held flat, $0 more
+    "data.options[1].name": E(f"Keep paying {FIRST_S}"),
+    "data.options[1].detail": E(f"{FIRST_S} − {FIRST_S} = {money(0)} more"),
+    "data.options[1].values.payoff": E(years_disp(CARD_FLAT_FIRST["years"])),
+    "data.options[1].values.interest": E(money(CARD_FLAT_FIRST["interest"], 100)),
+    "data.options[1].delta": E(f"{num(CARD_SOONER_F1)} years sooner"),
+    "data.options[2].name": E(f"A flat {money(250)}"),
+    "data.options[2].detail": E(f"{money(250)} − {FIRST_S} = {money(250 - CARD_FIRST_MIN, 0.01)} more"),
+    "data.options[2].values.payoff": E(years_disp(CARD[250]["years"])),
+    "data.options[2].values.interest": E(money(CARD[250]["interest"], 100)),
+    "data.options[2].delta": E(f"{num(CARD_SOONER[250])} years sooner"),
+    "verdict.text": T(money(0), num(CARD_SOONER_F1)),
 }
-for i, k in ((1, 150), (2, 250)):
-    # each flat payment's working: how far above the FIRST minimum it is (the lever, sized honestly)
-    eb[f"data.options[{i}].detail"] = E(f"{money(k)} − {money(CARD_FIRST_MIN, 0.01)} = {money(k - CARD_FIRST_MIN, 0.01)} more")
-    eb[f"data.options[{i}].values.payoff"] = E(years_disp(CARD[k]["years"]))
-    eb[f"data.options[{i}].values.interest"] = E(money(CARD[k]["interest"], 100))
-    eb[f"data.options[{i}].delta"] = E(f"{num(CARD_SOONER[k])} years sooner")
 expect[idb] = eb
 vo_expect[idb] = [
-    [(money(CARD_B), False), (bare(num(CARD["min"]["years"])), True)],
+    [(money(CARD_B), False), (bare(num(CARD["min"]["years"])), True)],   # "Minimum on $5,000: about 15 years. Because it shrinks."
     [(bare(money(CARD["min"]["interest"], 100)), True)],
-    [(money(150), False)],
-    [(bare(money(CARD_150_OVER_MIN)), True)],
-    [(bare(num(CARD[150]["years"], 1)), True), (bare(money(CARD[150]["interest"], 100)), True)],
+    [],                                                                    # "Now keep paying the first one."
+    [],                                                                    # "Not a dollar more than your first minimum."
+    [(bare(num(CARD_FLAT_FIRST["years"], 1)), True), (bare(money(CARD_FLAT_FIRST["interest"], 100)), True)],
     [(money(250), False), (bare(num(CARD[250]["years"], 1)), True)],
     [],
 ]
-beats[idb] = [(1, 2, "flat"), (2, 5, "flat")]
+beats[idb] = [(1, 2, "keep"), (2, 5, "flat")]
 
 # ---- 03c
 idc = "03c-scoreboard-mortgage-extra-100"
@@ -621,17 +640,27 @@ claim(idb, "minimum interest is more than the $5,000 owed", money(CARD["min"]["i
 claim(idb, "first minimum = 1% of new balance + interest", money(CARD_FIRST_MIN, 0.01),
       money(c2(MIN_PCT * c2(CARD_B * (1 + CARD_APR / 12)) + c2(CARD_B * CARD_APR / 12)), 0.01),
       abs(CARD_FIRST_MIN - c2(MIN_PCT * c2(CARD_B * (1 + CARD_APR / 12)) + c2(CARD_B * CARD_APR / 12))) < 0.005)
-claim(idb, "VO: about $4,500 less interest with a flat $150", money(CARD_SAVE_150, 100), "≈ $4,500",
-      money(CARD_SAVE_150, 100) == "≈ $4,500")
-claim(idb, "$4,500 = shown $7,300 − shown $2,800", rnd(CARD["min"]["interest"], 100) - rnd(CARD[150]["interest"], 100),
-      rnd(CARD_SAVE_150, 100), rnd(CARD["min"]["interest"], 100) - rnd(CARD[150]["interest"], 100) == rnd(CARD_SAVE_150, 100))
-claim(idb, "pinned: hold the first minimum flat", f"{CARD_FLAT_FIRST['n']} months, {money(CARD_FLAT_FIRST['interest'], 100)}",
-      "≈ 57 months, ≈ $3,100", CARD_FLAT_FIRST["n"] == 57 and money(CARD_FLAT_FIRST["interest"], 100) == "≈ $3,100")
+mp = CARD["min"]["pays"]
+claim(idb, "VO 'because it shrinks' / 'then shrinks': the minimum never rises", f"{FIRST_S} → {money(mp[-2], 0.01)}",
+      "non-increasing", all(a >= b - 1e-9 for a, b in zip(mp[:-1], mp[1:-1])))
+claim(idb, f"note: month {CARD_NOTE_MONTH} (end of year 3) is the first minimum under $100",
+      (money(mp[CARD_NOTE_MONTH - 2], 0.01), money(CARD_MIN_AT_NOTE, 0.01)), "≥ $100 then < $100",
+      mp[CARD_NOTE_MONTH - 2] >= 100 > CARD_MIN_AT_NOTE)
+claim(idb, "option 2 holds the first minimum flat: 57 payments", (CARD_FLAT_FIRST["n"], round(CARD_FLAT_FIRST["years"], 2)),
+      "(57, 4.75 → ≈ 4.8)", CARD_FLAT_FIRST["n"] == 57 and years_disp(CARD_FLAT_FIRST["years"]) == "≈ 4.8 years")
+claim(idb, "verdict '≈ 10 years sooner' = exact (181 − 57) ÷ 12 rounded", num(CARD_SOONER_F1, 2), "≈ 10",
+      num(CARD_SOONER_F1) == "≈ 10")
+claim(idb, "caption states no interest saving: shown 7,300 − 3,100 drifts from the exact one",
+      (rnd(CARD["min"]["interest"], 100) - rnd(CARD_FLAT_FIRST["interest"], 100), money(CARD_SAVE_F1, 100)),
+      "4,200 ≠ ≈ $4,300", rnd(CARD["min"]["interest"], 100) - rnd(CARD_FLAT_FIRST["interest"], 100) != rnd(CARD_SAVE_F1, 100))
+claim(idb, "pinned: rounding up to $150 ($7.41 above) only takes it from 57 months to 52",
+      (money(CARD_150_OVER_MIN, 0.01), CARD_FLAT_FIRST["n"], CARD[150]["n"]), "($7.41, 57, 52)",
+      money(CARD_150_OVER_MIN, 0.01) == "$7.41" and CARD_FLAT_FIRST["n"] == 57 and CARD[150]["n"] == 52)
 lo_card = card_case(BANKRATE_AUG_2026)
 hi_card = card_case(FED_G19_Q2_2026)
-claim(idb, "verdict holds at 19.56% and 22.15%: flat $150 ≥ 10 yrs sooner",
-      (num(lo_card["min"]["years"] - lo_card[150]["years"], 1), num(hi_card["min"]["years"] - hi_card[150]["years"], 1)),
-      "≥ 10", min(lo_card["min"]["years"] - lo_card[150]["years"], hi_card["min"]["years"] - hi_card[150]["years"]) >= 10)
+claim(idb, "verdict holds at 19.56% and 22.15%: the first minimum held flat ≈ 10 yrs sooner",
+      (num(lo_card["min"]["years"] - lo_card["flat1"]["years"], 2), num(hi_card["min"]["years"] - hi_card["flat1"]["years"], 2)),
+      "both ≈ 10", num(lo_card["min"]["years"] - lo_card["flat1"]["years"]) == num(hi_card["min"]["years"] - hi_card["flat1"]["years"]) == "≈ 10")
 claim(idc, "baseline clears in 360 payments", MORT[0]["n"], MORT_N, MORT[0]["n"] == MORT_N)
 claim(idc, "VO: interest is more than the loan", money(MORT[0]["interest"], 100), f"> {money(MORT_P)}",
       MORT[0]["interest"] > MORT_P)
@@ -654,12 +683,12 @@ claim(idc, "verdict holds at 7.28%: +$100 saves > $75,000", money(m728[1][0][1] 
 
 specs = [check_spec(s) for s in (ida, idb, idc)]
 
-# ---- winner = the option the verdict names (03a rounding, 03b flat $150, 03c +$100)
-for sid, spec, kw in ((ida, specs[0], money(CAR_ROUND_UP)), (idb, specs[1], "≈ $7"), (idc, specs[2], money(100))):
+# ---- winner = the option the verdict names (03a rounding, 03b the first minimum kept, 03c +$100)
+for sid, spec, kw in ((ida, specs[0], money(CAR_ROUND_UP)), (idb, specs[1], money(0)), (idc, specs[2], money(100))):
     w = spec["data"]["options"][spec["data"]["winner"]]
     named = kw in strip_markup(spec["verdict"]["text"]) and (kw in (w["name"] + " " + w["detail"]) or sid == idb)
     if sid == idb:
-        named = named and w["name"] == f"A flat {money(150)}"
+        named = named and w["name"] == f"Keep paying {FIRST_S}"
     record(sid, "winner = option the verdict names", w["name"], kw, named)
 
 # ============================================================== report
@@ -673,11 +702,12 @@ for lab, (pm_, s_) in [(f"{pct(a)} (what-if)", v) for a, v in car_whatif.items()
           "; ".join(f"{k} {s_[k]['months']:.2f} mo {money(s_[k]['interest'], 100)}" for k in car_keys) +
           f"; weekly beats biweekly by {money(s_['biweekly']['interest'] - s_['weekly']['interest'], 0.01)}")
 print(f"  03b card: first minimum {money(CARD_FIRST_MIN, 0.01)}")
-for k in ("min",) + CARD_FLATS:
+for k in ("min", "flat1") + CARD_FLATS:
     r_ = CARD[k]
-    print(f"     {str(k):4} n={r_['n']:4d}  years={r_['years']:5.2f}  interest={money(r_['interest'], 0.01):>11}")
+    print(f"     {str(k):5} n={r_['n']:4d}  years={r_['years']:5.2f}  interest={money(r_['interest'], 0.01):>11}")
+print(f"     minimum: month 12 {money(CARD['min']['pays'][11], 0.01)}, month {CARD_NOTE_MONTH} {money(CARD_MIN_AT_NOTE, 0.01)}")
 for lab, cs in (("19.56% (Bankrate)", lo_card), ("22.15% (Fed G.19)", hi_card)):
-    print(f"     sensitivity {lab}: " + "; ".join(f"{k} {cs[k]['years']:.1f} yrs {money(cs[k]['interest'], 100)}" for k in ("min",) + CARD_FLATS)
+    print(f"     sensitivity {lab}: " + "; ".join(f"{k} {cs[k]['n']} pmts {cs[k]['years']:.2f} yrs {money(cs[k]['interest'], 100)}" for k in ("min", "flat1") + CARD_FLATS)
           + f"; first min {money(cs['min']['first'], 0.01)}")
 print(f"  03c mortgage: payment {money(MORT_PMT, 0.01)}")
 for x in MORT_EXTRAS:

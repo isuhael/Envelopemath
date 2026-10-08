@@ -1,0 +1,103 @@
+{
+ "id": "y-ld-lastevent",
+ "stress": true,
+ "look": "live-sheet",
+ "format": "ledger-duel",
+ "fps": 30,
+ "header": "2 people invest **$5,000**\nOne panics in the crash",
+ "footer": "ASSUMES S&P 500 with dividends",
+ "captions": true,
+ "vo": [
+  {
+   "t": 0,
+   "d": 2.2,
+   "text": "Same money, same day."
+  },
+  {
+   "t": 3.0,
+   "d": 2.4,
+   "text": "One sells in the crash."
+  },
+  {
+   "t": 7.5,
+   "d": 2.4,
+   "text": "The other just waits."
+  }
+ ],
+ "verdict": {
+  "t": 10.5,
+  "text": "Waiting won by **≈ $9,000**"
+ },
+ "data": {
+  "people": [
+   {
+    "name": "Alexandra",
+    "plan": "Holds through everything"
+   },
+   {
+    "name": "Bartholomew",
+    "plan": "Sells in the crash, buys back later"
+   }
+  ],
+  "stake": "= $5,000 each in Jan 2007",
+  "rows": [
+   {
+    "label": "2007",
+    "values": [
+     "$5,000",
+     "$5,000"
+    ]
+   },
+   {
+    "label": "2008",
+    "values": [
+     "≈ $3,150",
+     "≈ $3,150"
+    ],
+    "event": "Bartholomew sells everything at the very bottom of the crash",
+    "tone": "bad"
+   },
+   {
+    "label": "2010",
+    "values": [
+     "≈ $4,100",
+     "≈ $3,300"
+    ]
+   },
+   {
+    "label": "2013",
+    "values": [
+     "≈ $6,800",
+     "≈ $4,900"
+    ]
+   },
+   {
+    "label": "2016",
+    "values": [
+     "≈ $8,400",
+     "≈ $6,000"
+    ]
+   },
+   {
+    "label": "2020",
+    "values": [
+     "≈ $13,600",
+     "≈ $9,700"
+    ]
+   },
+   {
+    "label": "2025",
+    "values": [
+     "≈ $25,800",
+     "≈ $16,800"
+    ],
+    "event": "Alexandra still ahead after putting in exactly the same money",
+    "tone": "goal"
+   }
+  ],
+  "rowsT": 1.0,
+  "rowEvery": 0.9,
+  "winner": 0,
+  "hold": 3.0
+ }
+}

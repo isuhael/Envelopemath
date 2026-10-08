@@ -35,7 +35,7 @@
 import {
   h, setStyle, setText, clamp, prog, ease, C, G, M, S,
   formulaBar, fitFormula, mk, mkLen, typedMk, typedCount, typeDur, wordCut, caretOn,
-  countText, parseDisplay, snapIn, liftOut, popScale, flashAlpha, lerpRect, rgba, fitText,
+  countText, parseDisplay, snapIn, liftOut, popScale, flashAlpha, lerpRect, springRect, rgba, fitText,
   durationOf, hasCaptions, opt, layer, font, toneColor, isNumeric, fmtNum, footerHeight, HANDLE_PAD,
 } from '../lib.js'
 
@@ -324,13 +324,17 @@ export default function costCounter(spec, ctx) {
   rows.forEach((r, i) => {
     const n = h('div', { class: 'ls-rn', 'data-deco': '', text: String(4 + i), style: { width: gut + 'px', height: rowH + 'px' } })
     const row = h('div', { class: 'ls-row', style: { top: i * rowH + 'px', height: rowH + 'px' } }, n)
+    // a milestone with no amount of its own ("Half a million dollars") merges its label across the amount column,
+    // rather than leave one lone empty cell in a filled table
+    const merged = cA >= 0 && !r.amount && r.type !== 'k'
     const rc = keys.map((k, j) => {
       const v = h('span', { class: 'ls-v' })
       const align = k === 'label' ? 'left' : k === 'out' && !hasAt ? 'center' : 'right'
-      const el = h('div', { class: `ls-cell ${kinds[j]} ${align}${k === 'label' ? ' words' : ''}`, style: { left: colX[j] + 'px', width: colW[j] + 'px', height: rowH + 'px', padding: `0 ${padRt(j)}px 0 ${PADX}px`, fontSize: (k === 'label' ? fs.label : fs.num) + 'px', fontWeight: String(weightOf(r, k)) } }, v)
+      const wj = k === 'label' && merged ? colW[j] + colW[cA] : colW[j]
+      const el = h('div', { class: `ls-cell ${kinds[j]} ${align}${k === 'label' ? ' words' : ''}`, style: { left: colX[j] + 'px', width: wj + 'px', height: rowH + 'px', padding: `0 ${padRt(j)}px 0 ${PADX}px`, fontSize: (k === 'label' ? fs.label : fs.num) + 'px', fontWeight: String(weightOf(r, k)), ...(k === 'amount' && merged ? { display: 'none' } : {}) } }, v)
       const color = k === 'label' ? C.ink : k === 'amount' ? (r.type === 'k' ? K.color : C.slate) : C.ink
       setStyle(v, { color })
-      if (k === 'label' && wrap) { el.classList.add('cc-wrap'); setStyle(v, { maxWidth: colW[j] - 2 * PADX + 'px' }) }
+      if (k === 'label' && wrap) { el.classList.add('cc-wrap'); setStyle(v, { maxWidth: wj - 2 * PADX + 'px' }) }
       row.append(el)
       return { el, v, color }
     })
@@ -424,10 +428,14 @@ export default function costCounter(spec, ctx) {
   const bigRect = { x0: gut, y0: yBig, x1: W, y1: yBig + valueH }
   const keptRect = K ? { x0: colX[cA >= 0 ? cA : cO], y0: yRows + kIdx * rowH, x1: colX[cA >= 0 ? cA : cO] + colW[cA >= 0 ? cA : cO], y1: yRows + (kIdx + 1) * rowH } : null
   const SK = [{ t: -Infinity, rect: bigRect, on: 'big' }]
-  if (K && K.t > 0) SK.push({ t: K.t, dur: M.pick, e: x => ease.back(x, 1.6), rect: keptRect, on: 'kept' })
+  if (K && K.t > 0) SK.push({ t: K.t, dur: M.pick, spring: 1.6, rect: keptRect, on: 'kept' })
   else if (K) SK[0] = { t: -Infinity, rect: keptRect, on: 'kept' }
   if (loopOn && K && K.t > 0) SK.push({ t: loopT0, dur: 0.34, e: ease.inOut, rect: bigRect, on: 'big' })
-  const rectAt = (k, t) => (k === 0 ? SK[0].rect : lerpRect(rectAt(k - 1, t), SK[k].rect, SK[k].e(prog(t, SK[k].t, SK[k].dur))))
+  const rectAt = (k, t) => {
+    if (k === 0) return SK[0].rect
+    const a = rectAt(k - 1, t), p = prog(t, SK[k].t, SK[k].dur)
+    return SK[k].spring ? springRect(a, SK[k].rect, p, SK[k].spring) : lerpRect(a, SK[k].rect, SK[k].e(p))
+  }
   const tint = (el, on) => setStyle(el, { backgroundColor: on ? C.headSel : C.head, color: on ? C.headSelText : C.headText })
 
   const sweepAt = i => (verdict ? verdictT + 0.18 + i * Math.min(0.08, 0.6 / Math.max(1, nR)) : Infinity)

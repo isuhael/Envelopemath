@@ -1,0 +1,133 @@
+{
+ "id": "x-ld-real",
+ "stress": true,
+ "look": "live-sheet",
+ "format": "ledger-duel",
+ "fps": 30,
+ "header": "2 people invest **$10,000**\n10 years ago",
+ "footer": "Total returns, dividends reinvested, no fees",
+ "captions": true,
+ "vo": [
+  {
+   "t": 0.0,
+   "d": 2.5,
+   "text": "Two people, ten grand each."
+  },
+  {
+   "t": 7.0,
+   "d": 2.5,
+   "text": "Then 2022 hits."
+  },
+  {
+   "t": 10.0,
+   "d": 2.5,
+   "text": "Still ahead."
+  }
+ ],
+ "verdict": {
+  "t": 12.0,
+  "text": "3× leverage: **≈ ×18.6** vs ≈ ×5.2"
+ },
+ "data": {
+  "people": [
+   {
+    "name": "QQQ",
+    "plan": "Nasdaq-100"
+   },
+   {
+    "name": "TQQQ",
+    "plan": "3× daily"
+   }
+  ],
+  "stake": "$10,000 each in 2015",
+  "rows": [
+   {
+    "label": "2015",
+    "values": [
+     "$10,000",
+     "$10,000"
+    ]
+   },
+   {
+    "label": "2016",
+    "values": [
+     "≈ $10,700",
+     "≈ $11,000"
+    ]
+   },
+   {
+    "label": "2017",
+    "values": [
+     "≈ $14,100",
+     "≈ $21,300"
+    ]
+   },
+   {
+    "label": "2018",
+    "values": [
+     "≈ $13,900",
+     "≈ $17,900"
+    ]
+   },
+   {
+    "label": "2019",
+    "values": [
+     "≈ $19,000",
+     "≈ $37,000"
+    ]
+   },
+   {
+    "label": "2020",
+    "values": [
+     "≈ $27,600",
+     "≈ $81,000"
+    ]
+   },
+   {
+    "label": "2021",
+    "values": [
+     "≈ $35,600",
+     "≈ $147,300"
+    ],
+    "event": "TQQQ peaks",
+    "tone": "good"
+   },
+   {
+    "label": "2022",
+    "values": [
+     "≈ $24,000",
+     "≈ $51,900"
+    ],
+    "event": "crash −65%",
+    "tone": "bad"
+   },
+   {
+    "label": "2023",
+    "values": [
+     "≈ $37,000",
+     "≈ $87,000"
+    ]
+   },
+   {
+    "label": "2024",
+    "values": [
+     "≈ $46,000",
+     "≈ $133,000"
+    ]
+   },
+   {
+    "label": "2025",
+    "values": [
+     "≈ $52,458",
+     "≈ $185,551"
+    ],
+    "event": "TQQQ ≈ 3.5× QQQ",
+    "tone": "goal"
+   }
+  ],
+  "rowsT": 1.0,
+  "rowEvery": 0.6,
+  "winner": 1,
+  "hold": 3.0
+ }
+}

@@ -1,0 +1,49 @@
+{
+ "id": "x-st-gl-3",
+ "stress": true,
+ "look": "live-sheet",
+ "format": "growth-ladder",
+ "fps": 30,
+ "header": "**$50 a month** at 6%",
+ "captions": true,
+ "data": {
+  "input": {
+   "amount": "$50",
+   "per": "a month",
+   "rate": "6% a year"
+  },
+  "columns": [
+   "Year",
+   "You put in",
+   "Worth"
+  ],
+  "rows": [
+   [
+    "10",
+    "$6,000",
+    "$8,194"
+   ],
+   [
+    "20",
+    "$12,000",
+    "$23,102"
+   ],
+   [
+    "30",
+    "$18,000",
+    "$50,226"
+   ]
+  ],
+  "rowsT": 1.0,
+  "rowEvery": 2.0,
+  "hold": 3
+ },
+ "footer": "Assumes 6% a year, compounded monthly",
+ "vo": [
+  {
+   "t": 0,
+   "d": 2,
+   "text": "Fifty bucks."
+  }
+ ]
+}

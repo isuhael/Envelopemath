@@ -1,0 +1,23 @@
+{
+ "id": "x-s-cc-bare",
+ "stress": true,
+ "look": "live-sheet",
+ "format": "cost-counter",
+ "fps": 30,
+ "header": "What Americans spend on **coffee**\nwhile you watch this",
+ "captions": false,
+ "data": {
+  "label": "US coffee spending since you hit play",
+  "perSecond": 3170,
+  "rateDisplay": "≈ $3,170 every second",
+  "counterT": [
+   0.5,
+   10.5
+  ],
+  "startValue": 0,
+  "prefix": "$",
+  "dp": 0,
+  "final": "≈ $31,700",
+  "hold": 3
+ }
+}

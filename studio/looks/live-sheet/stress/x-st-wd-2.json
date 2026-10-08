@@ -1,0 +1,77 @@
+{
+ "id": "x-st-wd-2",
+ "stress": true,
+ "format": "what-difference",
+ "header": "Does a **15-year** mortgage\nbeat a 30-year?",
+ "footer": "$300,000 at 6% vs 5.5%",
+ "captions": true,
+ "vo": [
+  {
+   "t": 0,
+   "d": 2.5,
+   "text": "Thirty years or fifteen?"
+  },
+  {
+   "t": 3,
+   "d": 3,
+   "text": "Thirty: lower payment."
+  },
+  {
+   "t": 7,
+   "d": 3,
+   "text": "Fifteen: half the interest."
+  }
+ ],
+ "verdict": {
+  "t": 11,
+  "text": "15 years saves **≈ $206,000**"
+ },
+ "data": {
+  "stake": {
+   "label": "Mortgage",
+   "value": "$300,000",
+   "terms": "6% vs 5.5%"
+  },
+  "metrics": [
+   {
+    "key": "pay",
+    "label": "Monthly"
+   },
+   {
+    "key": "payoff",
+    "label": "Paid off in"
+   },
+   {
+    "key": "interest",
+    "label": "Total interest"
+   }
+  ],
+  "options": [
+   {
+    "name": "30-year at 6%",
+    "detail": "the default",
+    "values": {
+     "pay": "$1,799",
+     "payoff": "30 years",
+     "interest": "≈ $347,515"
+    },
+    "tone": "bad"
+   },
+   {
+    "name": "15-year at 5.5%",
+    "detail": "a bigger bill",
+    "values": {
+     "pay": "$2,451",
+     "payoff": "15 years",
+     "interest": "≈ $141,234"
+    },
+    "delta": "≈ $206,281 less",
+    "tone": "good"
+   }
+  ],
+  "winner": 1,
+  "hold": 3
+ },
+ "look": "live-sheet",
+ "fps": 30
+}

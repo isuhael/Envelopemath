@@ -1,7 +1,7 @@
 # Format 9: year-by-year growth ladder, three teasers
 
 **Channel:** Back of the Envelope (YouTube Shorts, Instagram Reels, TikTok), US audience, USD
-**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews; see "Review log" at the end)
+**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews), hook pass 2026-10-08 (all three hooks kept). What changed and why is in the **Review log** at the end.
 **Format:** `growth-ladder`, hook pattern **P2** ("small amount × time =")
 **Lane:** one small regular amount (or one small lump), year by year
 **Files:**
@@ -500,3 +500,47 @@ The checker went from 504 to **518 checks, 0 failures**. The studio linter: 3/3 
 | all | — | should: caption line 1 gives the payoff away in the feed | Line 1 of every caption now names the bust without the number; the answer comes after the first 100 characters | — |
 
 The hook judge's output reached me truncated after the caption-giveaway issue, so any later items in it were not visible to me and are not addressed here.
+
+### Hook pass (2026-10-08)
+
+Two judges scored each teaser's current hook and four candidate rewrites (A-D) out of 10. The rule: adopt the best candidate only if its average is at least 7.5 and at least 0.75 above the current hook. A key that either judge marks dishonest is out; both judges marked every visible key honest. Two things were cut off in transit: judge 2's 09c scores for C and D, and the 09c candidate text after A's change list.
+
+| Teaser | Current | A | B | C | D | Decision |
+|---|---|---|---|---|---|---|
+| 09a | 5.5 / 5 → **5.25** | 7 / 7 → **7.00** | 7 / 6.5 → 6.75 | 6 / 5 → 5.50 | 6 / 6 → 6.00 | **Keep current** |
+| 09b | 6 / 5 → **5.50** | 7 / 6 → 6.50 | 7.5 / 7 → **7.25** | 6.5 / 6 → 6.25 | 5.5 / 4.5 → 5.00 | **Keep current** |
+| 09c | 6 / 5.5 → **5.75** | 5.5 / 6 → 5.75 | 6.5 / 5.5 → **6.00** | 5 / cut off | 5.5 / cut off | **Keep current** |
+
+**Why nothing was adopted:**
+- No candidate reached 7.5. The best were 09b-B (POV, "$1,000 for you at birth", 7.25) and 09a-A ("When does it earn $100 a month?", 7.00). Both clear the +0.75 margin but miss the floor.
+- On 09c, judge 2's missing scores cannot change the result. For C to reach 7.5, judge 2 would need a 10; for D, a 9.5. Judge 2's highest score in this format was 7. B-D's specs were also cut off, so none of them could have been applied as written.
+
+**Titles:** all three are kept. The judges scored whole hooks, not titles alone, and no candidate title is clearly better for the current body:
+- **09a.** A's and B's titles ask questions the current video does not answer: when growth passes $100 a month (year 9, not on screen), and halfway (year 23, which has no row). C's "The Rule of 72 Says 9 Years. Not for $100 a Month." fits the current numbers. But both judges docked C for giving the verdict away, and a title that does so in the feed has the same flaw. C averaged 5.50, against 5.25 for the current hook. D's title needs the share-of-balance framing.
+- **09b.** Both judges flagged that the current title's "Is It Really Just" gives away the direction of the answer. No candidate title fixes that for the current body. A's needs each year's earnings (≈ $498 is not on any rung). B's needs the age ladder. D's needs the "Really cost" column. C's "Double? Triple? More?" fits (≈ 7.6× is "more"), but both judges found that "More?" gives the answer away in the same way.
+- **09c.** A's "$5 a Day Won't Make You a Millionaire in 40 Years. So When Does It?" fits the body (year 54). But it is A's verdict-first hook moved into the title, and both judges docked exactly that (R2/R11) and the P3 "so when?" loop. A averaged 5.75, level with the current hook. B-D's titles were cut off.
+
+**What the judges agreed on, for the next round:**
+- **09a.**
+  - The current wrong answer (year 9) only lands for viewers who already know the Rule of 72, and the rule is not named until 3.4 s. vo[0] repeats the banner word for word. Nothing new moves from 0.5 to 3.4 s. There is no "you".
+  - A was the strongest lever (7 / 7): a payout noun, and the ≈ $8-vs-$100 gap on screen by 0.5 s. It was held back by its P3 time-to-goal shape, and because the empty cells count Worth, not the monthly earnings the question asks about. It also has no horizon.
+  - If A is revisited, both judges ask for the same wording fix. "Year 1 earns about $8 a month" is the year-end rate: month 12 grows $7.58, month 13 grows $8.30, and the year-1 average is $3.75. Say "By year 1 it's earning about $8 a month."
+  - B (6.75) attacks a belief everyone holds. But "halfway there" is measured against a total not seen until 12 s, and "half the money" is literally true of the put-in ($18,000 of $36,000).
+- **09b.**
+  - The current header carries 7 numbers and a sum in 14 words, and nothing lands until $1,070 at 1.6 s.
+  - B came closest. It was held back by a passive, hypothetical stake ("someone invested for you"), by the generic "what's it worth at 65?" question, and by its 3 lines. Its age rungs also drift toward 02's find-your-row lane: judge 2 asks for that lane question to be settled before it ships.
+  - A (6.50) asks about each year's earnings, but the rungs show balances. Its ≈ $498 answer cannot be read off the ladder.
+- **09c.**
+  - The current vo[0] spends 3.2 s repeating the header. There is no "you" on screen. "Millionaire" is the benchmark's weak spot (H75 34,225; H88 15,274).
+  - A answers the yes/no on frame 1. B's "your age + 54" is cosmetic, because every viewer's row is the same 54 years.
+- **Open items (not applied, because they were not scored):**
+  - 09a and 09c: give vo[0] new information instead of the banner. Both judges named the banner echo on each.
+  - 09b: a title that mirrors the header without "Is It Really Just", e.g. "Leave $1,000 at 7% for 30 Years: $3,100?".
+
+**Files:** no changes to the specs, beats, VO, captions, check script or `teasers.json`.
+- Re-run of `checks/09-growth-ladder.py`: **518 checks, 0 failures**, exit 0.
+- `node src/cli.mjs check` on all three specs: 0 errors, 0 warnings. With today's Scoreboard kit, the round-2 warning on the 09c footer (37.7 px) no longer fires.
+- Stills at 0, 1.5 and 3 s for all three, with today's kits:
+  - **09a.** At 0.0 s: the banner, the formula bar typing "Year 9: 2 × $10,800", row 1 at ≈ $1,245, and seven put-in rows with empty Worth cells. The bar reads "= $21,600?" by 1.5 s. Nothing else changes by 3.0 s, as both judges said.
+  - **09b.** At 0.0 s: the 2-line header with "$3,100?" in red, the footer, and 8 dim rungs. The figure stands at the left edge, with its pencil just past the frame. The coin is in the air at 1.5 s, and $1,070 sits on rung 1 at 3.0 s.
+  - **09c.** At 0.0 s: the header, the odometer already rolling (≈ $1,84x), the footer working, and the goal strip over 7 dark slots. YEAR 1 is lit (≈ $1,900) by 3.0 s.

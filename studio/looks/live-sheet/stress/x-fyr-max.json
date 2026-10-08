@@ -1,0 +1,145 @@
+{
+ "id": "x-fyr-max",
+ "stress": true,
+ "look": "live-sheet",
+ "format": "find-your-row",
+ "fps": 30,
+ "header": "What your **$1** really costs\nby the age you spend it",
+ "footer": "Assumes 10% a year until 65, before inflation",
+ "captions": true,
+ "vo": [
+  {
+   "t": 0.0,
+   "d": 2.5,
+   "text": "Find your age."
+  },
+  {
+   "t": 3.0,
+   "d": 3.0,
+   "text": "At 18, a dollar is **$88**."
+  }
+ ],
+ "verdict": {
+  "t": 8.0,
+  "text": "Every $1 at 18 ≈ **$88 at 65**."
+ },
+ "data": {
+  "columns": [
+   {
+    "label": "Age"
+   },
+   {
+    "label": "Years\nto 65"
+   },
+   {
+    "label": "Worth\nat 65",
+    "emph": true
+   },
+   {
+    "label": "Times\nbigger"
+   }
+  ],
+  "rows": [
+   [
+    "18",
+    "47",
+    "≈ $88.20",
+    "≈ ×88"
+   ],
+   [
+    "20",
+    "45",
+    "≈ $72.89",
+    "≈ ×73"
+   ],
+   [
+    "22",
+    "43",
+    "≈ $60.24",
+    "≈ ×60"
+   ],
+   [
+    "25",
+    "40",
+    "≈ $45.26",
+    "≈ ×45"
+   ],
+   [
+    "28",
+    "37",
+    "≈ $34.00",
+    "≈ ×34"
+   ],
+   [
+    "30",
+    "35",
+    "≈ $28.10",
+    "≈ ×28"
+   ],
+   [
+    "33",
+    "32",
+    "≈ $21.11",
+    "≈ ×21"
+   ],
+   [
+    "35",
+    "30",
+    "≈ $17.45",
+    "≈ ×17"
+   ],
+   [
+    "38",
+    "27",
+    "≈ $13.11",
+    "≈ ×13"
+   ],
+   [
+    "40",
+    "25",
+    "≈ $10.83",
+    "≈ ×11"
+   ],
+   [
+    "45",
+    "20",
+    "≈ $6.73",
+    "≈ ×7"
+   ],
+   [
+    "50",
+    "15",
+    "≈ $4.18",
+    "≈ ×4"
+   ],
+   [
+    "55",
+    "10",
+    "≈ $2.59",
+    "≈ ×2.6"
+   ],
+   [
+    "60",
+    "5",
+    "≈ $1.61",
+    "≈ ×1.6"
+   ]
+  ],
+  "formula": "= $1 × 1.1^years ≈ doubles every 7 years",
+  "rowsT": 0.0,
+  "rowEvery": 0.25,
+  "pick": [
+   {
+    "t": 3.0,
+    "row": 0,
+    "label": "Your first paycheck"
+   },
+   {
+    "t": 6.0,
+    "row": 13,
+    "label": "Almost no growth left"
+   }
+  ],
+  "hold": 3.0
+ }
+}

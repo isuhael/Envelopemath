@@ -20,8 +20,11 @@
 // The formula bar types one string per step; a string too long for one line breaks at its best seam (an author
 // line break, " · ", " vs ", " = ", else the most balanced space) rather than wherever the text overflows.
 //
-// Frame 1: the question card, the formula bar mid-typing, the start year, every rival named, and one value cell per
-// rival already showing the stake (R1).
+// Frame 1: the question card, the formula bar mid-typing, the start year, every rival named, and the race already
+// lookOpts.preroll years in (the lines have parted, the leader's cell is yellow), one value cell per rival (R1).
+// Names: a header name wraps over two lines at 40 px, else the rivals' header cells merge into one legend; a value
+// cell's name wraps over 2-3 lines in a lane that keeps the plot at 55% of the card, else is cut with an ellipsis.
+// At raceT[1] each cell's text swaps in place to its final (no fade) and settles from 110% after any last slide.
 //
 // Colours: series[].color, else lookOpts.colors (a list by series, or { name: colour }), else a tone, else the
 // palette C.series (blue, ink, orange, purple). Yellow is the accent: a gold series wants an amber such as C.amber.
