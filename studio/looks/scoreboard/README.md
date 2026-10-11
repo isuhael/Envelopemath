@@ -116,7 +116,195 @@ Each cue marks a real event, and none repeats per frame.
 - `tick` (gain ≈ 0.45-0.55): a soft beat on a number already on screen (what-difference `reads`, ledger-duel `marks`, chart-race `rungs`).
 - In races: `whoosh` for the start (a soft one at 0 s when the race opens mid-way), `tick` for event flags, `swipe` (0.5) on a lead change.
 
-There is no music bed. The look runs on diegetic UI sound, as HD Guy does.
+The cues drive a music bed and the sonic logo as well; both are described in the next section.
+
+## Sound (music + SFX pack)
+
+`sound.mjs` is the look's sound pack for the shared engine (`studio/src/sound/`; the contract is in `studio/sound/README.md`, the design rules in `studio/sound/BIBLE.md` §3-§5 and §8-§9). Everything is synthesised from seeded oscillators and noise, so the same spec renders a bit-identical master. The pack's modules live in this kit's `sound/` folder:
+
+| File | What it holds |
+|---|---|
+| `harmony.mjs` | The chord plan per section (§4.2) |
+| `voicing.mjs` | The pad voicings: 4 voices in MIDI 57-76, voice-led by a Viterbi pass (every voice moves ≤ 5 st, no adjacent minor 2nd, colour tones kept) |
+| `compose.mjs` | The arrangement: drums, 808, arp, pad, lead, stabs, crashes, fills, the TENSION roll and gap, the clock-train rules, the opening lift, and the clearance automation |
+| `energy.mjs` | The music bus energy curve (`automation.musicDb`) |
+| `instruments.mjs` | SB-Kick, SB-Clap, SB-Snare, SB-Hat, SB-Crash, the reverse crash, SB-808 and its sub, SB-Arp, SB-Glass, SB-Laser, SB-Stab, the music riser, and the logo's voices (with the ring-flare shimmer) |
+| `sfx.mjs` | The 15 SFX kinds (§5), the broadband part of the B3 clearance, and the SFX fader wrapper |
+| `clearance.mjs` | The B3 clearance: the bed rendered at every cue window, the lever solver, the anchor-stab budget |
+| `balance.mjs` | The per-teaser SFX fader and bed offset (B1) |
+| `logo.mjs` | The em sting, "LED fanfare" (§3.2) |
+| `mix.mjs` | Levels, sends, ducks, the kick sidechain, the bus dynamics |
+| `cal.mjs`, `calibration.json`, `calibrate.mjs` | The measured values the fader, the opening lift and the logo level use, and the tool that measures them |
+| `verify.mjs`, `units.mjs` | The acceptance checks the engine's `audit` does not run, plus the pack's own rules (TRAIN, DUCK, LOGO), and the §9.5 DSP unit checks |
+
+### The music
+
+- **Key and tempo.** D minor (Aeolian). A and A7 appear only in the TENSION, before an anchor and in the CADENCE. The card resolves to D major for the sting. Tempo 136-152 BPM (target 144), solved by the engine so P, V and base land on downbeats.
+- **Progression.**
+  - HOOK: Dm.
+  - BUILD: phrase 1 is | Dm | Bb | F | C |. Later phrases are a seeded pick of that, | Dm | C | Bb | Bb | and | Dm | F | C | Bb |, never the same one 3 phrases in a row.
+  - Bars with a roll ≥ 1.5 s or ≥ 6 cues go to a D pedal (Bb/D, Cadd9/D, F6/D).
+  - TENSION Bb · C · Asus4 · A. DROP | Dm | Bb | (| Gm | A | when 4 bars). HOLD | Dm(add9) | Bbmaj7 | Gm9 | A7sus4 · A7 |. BREAK A7, VERDICT Dm(add9), CADENCE Gm9 · A7sus4 · A7 into the sting.
+- **Instruments.**
+  - A half-time trap kit. The kick is three layers: the bible's sine 160 → 48 Hz, a punch sine 180 → 90 Hz (−4.5 dB) for the 90-180 Hz thump phones reproduce, and a 3 kHz knock (−14 dB). The clap is on beat 3. Hats run 8ths or 16ths with trap rolls and open-hat chokes; in E5 they get a −2 dB shelf above 10 kHz. The snare plays only in fills and the TENSION roll.
+  - The SB-808: a sine plus a phase-locked octave (0.58), `tanh` 2.5, LP 1.2 kHz, pitch dives. A glide is legato: the run's first note renders the whole run as one voice (no new dive, no phase reset), and the score keeps every note.
+  - The SB-Arp "ticker": 2 saws ±6 cents and a square an octave down (−10 dB in E3, −16 dB in E4, none in E5), 24 dB LP enveloped from 3x the energy's cutoff.
+  - The SB-Glass pad (5-saw supersaw, LP 2.2 kHz, the low voice weighted up and the top voice down) and the SB-Laser lead (the em motif in sparse bars, portamento, delayed vibrato).
+  - SB-Stab, the arena chord on t = 0, P and V, HP'd at 250 Hz. Crashes and reverse crashes sit on the anchors.
+- **Arrangement vs timeline.**
+  - Energy tiers per bar from the engine (E2-E5) set the groove, the arp, the hat rate and the bus level (`energy.mjs`). E3 is −6 dB, E4 −3, E5 0, and the hook bar −2.5.
+  - The BUILD starts at its tier's nominal level and crescendos +2 dB. Its range comes from the arrangement: in E3 the ticker is gated 3+3+2 (16ths 1, 4 and 7 of each half bar); E4 opens to straight 16ths with 16th hats and the lead.
+  - The ticker rests on the last beat of a phrase (the fill's beat) and in the beat before a heavy cue (weight ≥ 1, gain ≥ 0.5), unless another heavy cue came within 2 beats. The count lands in the space.
+  - The TENSION ramps −7 → +1 dB. Its snare roll accelerates 8ths → 32nds with the body pitch rising 7 st. A music riser plays only when no SFX riser covers it. Everything stops for the eighth before P, and a 12 dB event duck over that gap takes the reverb tails down 6 dB, so the gap is a hard cut. The duck lets go 40 ms before P: a near-silent hole right before the full-band drop is where the AAC encoder overshoots (02c measured +4.6 dB over the ceiling with the duck held to P).
+  - The DROP sits at +2 dB. The half-time HOLD after it releases from −5 to −8 dB over its first bar. The VERDICT bar is −3 dB, and HOLD 2 eases back to −8 over 2 beats.
+  - **Opening lift.** A teaser whose first 3 s would measure under −14.5 LUFS short-term lifts its music from 0.3 s to 3 s by up to 2.5 dB. The prediction comes from the actual events and cues plus `CAL.OPEN_FIT`. A hot opening is left alone.
+- **Clock trains** (§4.6.6). A train whose ticks sit off the 16th grid (by > 12 ms) gets these rules:
+  - No music kick, clap, snare, hat, arp or lead onset lands 12-60 ms from a tick (anchors excepted).
+  - A fast train (period under 1.5 beats: 02b's 0.35 s, 02c's 0.2 s) is the hats while it runs: the music hats rest, the ticker plays quarter notes, and no lead phrase starts in a bar with an off-grid tick.
+  - 10c's 1.000 s train is 10 16ths at 150 BPM, so nothing changes there.
+- **Reactions to the cues.**
+  - Kicks, claps and snares yield to big cues and to dings and pops.
+  - Rolls replace the hats, and dense bars thin out.
+  - At V, a verdict cue that brings its own body (reveal, hit, thud) is the kick: the music answers with the stab, the crash and the 808.
+- **Payoff.**
+  - P lands on a downbeat with kick, clap, the D1 sub, an 808 diving 12 st, the stab and a reverse crash into it.
+  - When a hit owns P, the music's crash stays out (the hit brings its own), so P is not three crashes in one wash. A payoff without a hit keeps a crash with τ 1.0 s.
+  - The engine's payoff duck clears the first 150 ms (B2).
+  - The stab at P and V plays on the unducked path (the logo bus), budgeted against the anchor's cues as the fader leaves them: its 50 ms power sits 7.5 dB under the cues', and its peak 9 dB under theirs, so the limiter does not eat the payoff.
+- **End card.** The sting (§3.1, §3.2):
+  - The motif's A4 D5 E5 on the SB-Laser lead, with the pluck an octave down.
+  - A5 on neon brass with A4 under it. It leads: its first 85 ms sit 4.5 dB over the loudest pickup (`units.mjs` LOGO).
+  - Two ping-pong echoes, a D add9 pad held to the end, the 808 on D2 and the D1 sub, crash and reverse crash, hall sends.
+  - A bright shimmer (BP noise 7 / 11 kHz and a D7 + A7 glint) on the ring flare, t0 + 0.22·k, where the badge visibly lands.
+  - The card's own cues use constant seeds, so the card sounds the same in every teaser. The sting's sustained layers dip 9 dB under the handle ding.
+  - The sting's level is set per teaser from the predicted master gain, so it lands at about −12 LUFS momentary (B8).
+
+### The SFX
+
+| Kind | Sound |
+|---|---|
+| tick | BP 6.5 kHz click and a 9 ms sine ping on a chord tone in D6-A6 (trains alternate 5th / root) |
+| thud | noise click, a sine diving to the chord root (MIDI 38-45) with drive, a BP 1.2 kHz slap |
+| ding | FM bell pair (ratio 3.5, index falling), the two highest chord tones in MIDI 84-93, note 2 at +70 ms |
+| roll | an odometer click train peaking at 22/s, tri blips walking the chord, the last click +4 dB |
+| pop | click plus a sine gliding up an octave in 60 ms |
+| cash | a bright FM bell strike on the root (MIDI 94-105) at +0 ms carrying the first 50 ms, 5 ratchet clicks with a metal ring, the "ching" FM bells on root and 5th at +100 / +130 ms, 12 coin pings in MIDI 98-105 |
+| hit | 4 ms burst, a body diving to the root with drive, the D1 sub, a wide crash |
+| reveal | a 180 ms reversed-noise pre-roll, a thud body, the chord's root, 3rd and 5th as FM bells at 0 / 40 / 80 ms, a 9 kHz light-up shimmer |
+| riser | BP noise 300 Hz → 9 kHz plus Shepard saws ending on the dominant A, width 10 → 80% |
+| swipe, whoosh | band-passed noise sweeps (2 → 7 kHz; 500 Hz → 4 kHz → 800 Hz plus air) |
+| buzz | D3 and Eb3 squares beating at 8.7 Hz, LP 1.8 kHz |
+| step, boing, type | the bible's variants of thud, pop and tick |
+
+Consecutive cues of a kind vary in pitch, cutoff, seed and pan (U4). In a cluster the pitched layers form a chord (`ctx.claim`) and lower-ranked members drop their body.
+
+**Balance.** Two models keep every teaser inside the §9.3 windows without hand tuning.
+
+*The B3 clearance* (`clearance.mjs`) makes every cue of gain ≥ 0.4 of kind thud, hit, ding, cash, reveal or pop sit 3 dB (plus a 1.5 dB margin) over the music in its first 50 ms.
+- **The inputs are rendered, not estimated.**
+  - `compose()` hands the clearance its final events. The bed is rendered at every cue window by instrument: the engine's own voices, noise streams, levels, pans, kick sidechain and bus level.
+  - The cues ringing in the window are rendered with the engine's cluster cap.
+  - Both are kept as cross matrices, so correlated layers sum correctly. On frame 1, the kick, the 808 and the stab start in phase.
+- **The levers, in order.** Each lever is used only as far as it is needed:
+  1. The §5 table's broadband duck.
+  2. A selective dip (≤ 15 dB) of the layers that mask a cue: pad, arp, lead, hats, clap, snare and music riser. This is gain automation.
+  3. An 808 and kick-tail dip (≤ 8 dB). An anchor kick never dips.
+  4. The cue's own lift: +6 dB for the hook's frame-1 count, the verdict and soft cues (gain ≤ 0.5), +3 dB otherwise, never past gain 1.
+  5. Broadband up to 1.5x the table, or 6 dB at the hook and V.
+  6. Then the lift up to +6 dB.
+  7. Only then broadband past the cap. On the 15 teasers this never happens (`verify.mjs` DUCK).
+- **What is given back.** Once the later levers are set, the dips they made unnecessary are given back.
+- **A hit at P** keeps the payoff design: its table duck plus the engine's payoff duck.
+- **The result on the 15** (see Measured): every cue clears B3 by at least 3.9 dB, and no broadband duck goes past its cap. The hook's frame-1 counts take 2.6-3.5 dB, where the previous pass used 11.4-13.5 dB. Cash at P + 0.06 s and at V takes its table duck, where the previous pass used 13-15 dB: the SFX stem in its window holds the hit or the reveal too.
+
+*The SFX fader* (`balance.mjs`) sets each teaser's cue level.
+- It renders the teaser's cues once, applies the engine's cluster cap and measures the SFX stem (BS.1770, with the K-weighting done once per class).
+- It models the music stem from `CAL.BEDS` plus the energy curve under the clearance's broadband ducks.
+- A busy teaser cuts its cues until S − M = −1.35 LU. The soft cues and the payoff are spared.
+- A sparse one lifts its event cues and payoff, never the ticks or dings, by up to 4 dB until S − M = −2.1 LU. If that is still short, the arp, pad, hats, clap, snare, lead, stab and crashes give way by up to 3.5 dB.
+
+### Tools
+
+```bash
+cd studio
+# the cue records (mounts the kits once; every later step reads the dump)
+node src/cli.mjs cues specs/*-scoreboard-*.json --out /tmp/snd-scoreboard/cues.json
+# the audio, with stems, from a cue dump
+node src/cli.mjs audio specs/*-scoreboard-*.json --cues /tmp/snd-scoreboard/cues.json --out /tmp/snd-scoreboard/run --stems --no-check
+# re-measure the pack's values after a change to the arrangement or the levels (BEDS, M_FIT, GM, GM_PLAN, LOGO_PRE,
+# OPEN_FIT; run it after two renders: each calibration moves the next render a little)
+node looks/scoreboard/sound/calibrate.mjs /tmp/snd-scoreboard/run --cues=/tmp/snd-scoreboard/cues.json --write
+# B1, B3, B5-B9, A3, A4, A7, A11, the §9.2 bands, harshness, S8 stats, TRAIN, DUCK
+node looks/scoreboard/sound/verify.mjs /tmp/snd-scoreboard/run --stems /tmp/snd-scoreboard/run/stems [--detail|--json]
+# U1-U4 and LOGO
+node looks/scoreboard/sound/units.mjs
+# the delivery pass: the audio muxed onto the finished MP4s (into /tmp; nothing reaches renders/ without --final), then the audit
+node src/cli.mjs sound specs/*-scoreboard-*.json --video ../renders/channel --out /tmp/snd-scoreboard/mp4 --score --wav --stems --cues /tmp/snd-scoreboard/cues.json
+node src/cli.mjs audit /tmp/snd-scoreboard/mp4 --reports /tmp/snd-scoreboard/mp4/sound --out /tmp/snd-scoreboard/audit
+node looks/scoreboard/sound/verify.mjs /tmp/snd-scoreboard/mp4/sound --stems /tmp/snd-scoreboard/mp4/stems
+```
+
+### Deviations from the bible
+
+- **SB-808:** a phase-locked octave partial (0.58) is added before the drive. The bible's symmetric `tanh` only makes odd harmonics, so the 116-220 Hz octave that carries the 808 on phones would be missing.
+- **SB-Kick and the 31.5 Hz band:**
+  - The kick keeps the bible's 48 Hz tail and adds a punch layer (180 → 90 Hz) and a 3 kHz knock.
+  - The previous pass tuned the tail to D1 (36.7 Hz) only to reach the §9.2 31.5 Hz window (−8..+3 dB re 1 kHz). With a 48 Hz kick and the 808 on 58-110 Hz, that band measures about −15 to −18.5 dB.
+  - `verify.mjs` applies −20..+3 for that band only. **This is a requested bible change** (§9.2, Scoreboard 31.5 Hz: −20..+3), made on the critic's instruction not to tune the kick to a meter.
+- **The returns at +2.5 dB.** B1 needs the returns stem at about −6 LU re the mix (see `mix.mjs`): with the returns at 0 dB the music stem measured −1.2 to −1.8 LU re the mix, outside its window. The ticker's ping-pong delay is gone and the pad hall is back at −14 dB, so the wetness is the stab's hall, the clap plate and the lead's delay.
+- **The anchor stab at P and V** plays on the logo bus (not ducked, not glued), level-budgeted per anchor. The reverse crash into P rides the same path, so the 12 dB gap duck does not touch it.
+- **No music kick at V** when the verdict cue brings its own body (§8.4.1 one low body, over §4.5's VERDICT kick).
+- **No music crash at P** when a hit owns P (the hit brings its own). Otherwise the music crash rings with τ 1.0 s, not 1.3 s.
+- **The B3 clearance** may lift a cue above its kit gain: up to +6 dB, never past gain 1.
+- **Pad voicings:** computed rather than looked up. Some of the bible's sample voicings fall outside its own 57-76 register or move a voice 7 st. Gm9 may be voiced rootless, with the 808 holding G: four voices in 57-76 with no adjacent minor 2nd cannot lead out of a Dm(add9) topped by E5 within 5 st otherwise (S12).
+- **The pedal chords:** written Cadd9/D and F6/D rather than C/D and F/D. The pad takes the pedal's D into the chord, so the D is a tone of the sounding chord. The engine's S2 counts a chord's tones, not its slash bass.
+- **Note gates:** every gate ends 1.5 ms early. The score rounds t and dur separately, so a note ending exactly at its successor's onset would count as two notes sounding at once (S14).
+- **Levels:** tuned against B1 and §9.2. The stab is at −11 dB (bible −8), the arp at −13.5 (bible −16; it carries the look), and the pad, clap and snare sit near the bible's starting levels.
+- **Envelopes:** the arp's amplitude decays exponentially (τ 70 ms). The engine's ADSR reaches 99% at `d`, which would make a 39 ms blip. Onsets are quadratic or cubic over 3-4 ms where a linear 1-2 ms ramp would click (U2).
+- **B3 at the end card:** the card's pop and thud sit under the held sting by design (§3.2), so `verify.mjs` reports them but does not fail on them.
+
+### Measured (2026-10-11, the 15 Scoreboard teasers muxed onto `renders/channel`, written to /tmp/fix-snd-scoreboard)
+
+All 15 pass:
+- `verify.mjs`: 255/255 checks (17 per teaser, TRAIN and DUCK included);
+- the audit's symbolic checks S1-S14, B2 and B10: 15/15 each;
+- `units.mjs`: 69/69 (LOGO included);
+- `node src/cli.mjs check`: 30/30 clean;
+- `npm test`: 16/16.
+
+Every mux kept the picture bit-identical (video md5). Two renders of a spec give the same master WAV (sha256, checked on 02c and 09c).
+
+| Teaser | LUFS | dBTP (AAC) | LRA | PLR | Silence % | Corr. mean / min | Cue onset max (ms) | Music / SFX / returns re mix (LU) | Logo / payoff (LUFS M) | B3 min (dB) | First 3 s (LUFS S) | Limiter max (dB) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 01a-scoreboard-paid-biweekly | -14.08 | -1.16 | 4.66 | 12.92 | 0 | 0.75 / 0.40 | 0.17 | -2.27 / -3.66 / -5.43 | -12.01 / -10.07 | 4.2 | -13.8 | 3.4 |
+| 02b-scoreboard-trillion-at-your-wage | -14.09 | -1.27 | 4.84 | 12.82 | 0 | 0.76 / 0.45 | 0.31 | -2.11 / -3.30 / -5.90 | -12.56 / -10.45 | 4.3 | -14.8 | 2.7 |
+| 02c-scoreboard-salary-per-hour | -14.08 | -1.25 | 4.95 | 12.83 | 0 | 0.80 / 0.57 | 0.44 | -2.03 / -3.03 / -6.42 | -12.42 / -9.85 | 4.1 | -14.9 | 2.1 |
+| 03b-scoreboard-card-minimum | -14.12 | -1.13 | 6.69 | 12.99 | 0 | 0.77 / 0.48 | 0.04 | -1.81 / -3.28 / -6.15 | -11.86 / -10.96 | 4.1 | -13.8 | 2.3 |
+| 03c-scoreboard-mortgage-extra-100 | -14.15 | -1.35 | 6.11 | 12.80 | 0 | 0.76 / 0.36 | 0.02 | -1.98 / -3.23 / -5.74 | -12.04 / -10.77 | 4.4 | -12.6 | 2.3 |
+| 04a-scoreboard-sp500-vs-gold | -14.13 | -1.18 | 5.70 | 12.94 | 0 | 0.77 / 0.32 | 1.94 | -1.69 / -3.31 / -6.00 | -11.68 / -10.30 | 5.1 | -14.2 | 2.4 |
+| 04c-scoreboard-usa-vs-europe | -14.16 | -1.03 | 6.35 | 13.12 | 0 | 0.78 / 0.43 | 0.63 | -1.77 / -3.40 / -6.21 | -11.90 / -9.90 | 4.9 | -13.9 | 2.1 |
+| 05c-scoreboard-costco-100 | -14.09 | -1.40 | 5.23 | 12.69 | 0 | 0.73 / 0.33 | 0.02 | -2.29 / -3.48 / -5.58 | -12.07 / -10.42 | 4.5 | -14.4 | 2.5 |
+| 06a-scoreboard-first-iphone-apple | -14.17 | -1.26 | 6.67 | 12.91 | 0 | 0.75 / 0.46 | 0.75 | -1.76 / -2.99 / -6.18 | -12.04 / -10.38 | 4.6 | -14.4 | 3.1 |
+| 06b-scoreboard-netflix-bill | -14.09 | -1.11 | 6.07 | 12.98 | 0 | 0.79 / 0.52 | 0.75 | -1.98 / -3.40 / -6.09 | -12.03 / -10.22 | 4.3 | -13.8 | 4.2 |
+| 07a-scoreboard-start-at-25 | -14.08 | -1.05 | 5.82 | 13.03 | 0 | 0.74 / 0.35 | 0.1 | -2.62 / -3.90 / -5.69 | -12.52 / -10.22 | 3.9 | -13.9 | 4.2 |
+| 08a-scoreboard-costco-hot-dogs | -14.10 | -1.12 | 5.65 | 12.97 | 0 | 0.76 / 0.37 | 0.19 | -2.31 / -3.79 / -5.79 | -12.25 / -9.93 | 4.1 | -13.9 | 2.8 |
+| 09c-scoreboard-5-a-day-millionaire | -14.08 | -1.24 | 5.50 | 12.84 | 0 | 0.75 / 0.52 | 0.08 | -2.22 / -3.21 / -5.73 | -12.14 / -10.17 | 4.3 | -12.9 | 3.1 |
+| 10a-scoreboard-debt-interest-live | -14.07 | -1.17 | 5.76 | 12.90 | 0 | 0.78 / 0.44 | 0.06 | -1.87 / -3.41 / -6.36 | -11.92 / -10.17 | 4.3 | -12.6 | 4.1 |
+| 10c-scoreboard-amazon-makes | -14.08 | -1.11 | 6.33 | 12.97 | 0 | 0.78 / 0.53 | 0.08 | -1.77 / -3.30 / -6.26 | -11.75 / -10.13 | 4.9 | -13.7 | 3.1 |
+
+- **B3 min:** the closest B3 cue in each teaser: its first 50 ms over the music, in dB, against a floor of 3.
+- **Clearance levers.** Across the 164 B3 cues:
+  - 84 use the selective dip and 70 the 808 or kick-tail dip.
+  - 10 lift: the three frame-1 counts by +6 dB, plus five pops, a cash and a thud by 0.2-3.7 dB.
+  - 5 take a broadband duck past their table, all within the cap; none goes past it.
+  - The frame-1 counts take 2.6-3.5 dB of broadband duck.
+- **The opening lift** raises 02b, 02c, 03b and 04a by 0.1-0.8 dB. Every opening sits at −12.6 to −14.9 LUFS short-term.
+- **The anchor stab** plays unducked at P with velocity 0.17-0.53, and at V with 0.12-0.42.
+  - Over the first 150 ms it sits 2-12 dB (at P) and 5-16 dB (at V) over where the previous pass's stab sat under its 9-15 dB ducks.
+  - Its 0.4 s tail rings at full level.
+- **Clock trains:** the music has no onset 12-60 ms from a tick in 02b, 02c, 10a and 10c (TRAIN).
+- **PLR.** 04c and 07a measure 13.12 and 13.03, just over A5's 13. The master puts the delivered true peak at −1.0 to −1.1 dBTP after AAC, and the delivered integrated loudness lands at −14.07 to −14.16 (AAC takes about 0.07 LU off the master's −14.0). That is the engine's master, not the pack: see the notes for the engine.
+- **Tightest §9.2 margins:** 02c at 250 Hz (+0.7 against a floor of 0) and at 2 kHz (−4.7 against −5). The 31.5 Hz band measures −14.6 to −18.5 (see the deviations).
 
 ---
 

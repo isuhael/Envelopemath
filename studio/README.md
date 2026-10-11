@@ -1,6 +1,6 @@
 # envelope studio
 
-The renderer for the v2 **Back of the Envelope** shorts. Each look is a small HTML/CSS/SVG kit. A teaser is a JSON spec. The studio loads the kit in headless Chromium, seeks it frame by frame, and pipes the frames to ffmpeg with a synthesised SFX track. The voice-over is recorded separately, and the spec's `vo` lines are shown as captions in the meantime.
+The renderer for the v2 **Back of the Envelope** shorts. Each look is a small HTML/CSS/SVG kit. A teaser is a JSON spec. The studio loads the kit in headless Chromium, seeks it frame by frame, and pipes the frames to ffmpeg with a synthesised soundtrack: music plus sound effects, mastered to −14 LUFS (see [Sound](#sound)). The shorts are posted with no narration, and the spec's `vo` lines are shown as captions.
 
 ```bash
 cd studio
@@ -12,6 +12,8 @@ node src/cli.mjs stills specs/01a-*.json --at 0,3.5,end
 node src/cli.mjs render specs/*.json --jobs 2 --sheet   # MP4s → out/
 node src/cli.mjs render specs/01a-*.json --no-brand     # without the brand layer (no end card, the look's own mark)
 node src/cli.mjs stills specs/01a-*.json --at end --logo /tmp/test-logo.png   # try a logo without copying it in
+node src/cli.mjs sound specs/*.json --video ../renders/channel --out /tmp/sound/mp4   # new audio on finished MP4s (picture copied)
+node src/cli.mjs audit /tmp/sound/mp4 --reports /tmp/sound/mp4/sound   # loudness, peaks, stereo, bands, spectrograms
 ```
 
 ## Layout
@@ -22,7 +24,8 @@ node src/cli.mjs stills specs/01a-*.json --at end --logo /tmp/test-logo.png   # 
 | `runtime/base.css` | 1080×1920 stage, all CSS transitions and animations disabled (every frame is set by `seek(t)`) |
 | `fonts/` | Vendored Google Fonts (OFL): Archivo Black, IBM Plex Mono, Inter, Inter Tight, JetBrains Mono and Anton, plus a full-glyph Inter for `≈ → × ÷ −` |
 | `looks/<look>/` | One kit per look: `index.html`, `kit.js`, `formats/<format>.js`, `README.md`, `samples/` |
-| `src/` | Node side: `page.mjs` (Chromium + routed origin), `render.mjs` (MP4, stills, contact sheets), `check.mjs` (linter), `audio.mjs` (SFX synth), `cli.mjs` |
+| `src/` | Node side: `page.mjs` (Chromium + routed origin), `render.mjs` (MP4, stills, contact sheets), `check.mjs` (linter), `sound/` (the sound engine), `audio.mjs` (the legacy mono SFX synth), `cli.mjs` |
+| `sound/` | The sound bible (`BIBLE.md`), the engine and pack contract (`README.md`), and the look packs (`packs/<look>.mjs`) |
 | `specs/` | One teaser per file (contract: [`FORMATS.md`](FORMATS.md)) |
 | `brand/` | The channel brand: `brand.json` (handle, CTA, logo crop) and `logo.png` (dropped in by the owner). See [`brand/README.md`](brand/README.md) |
 | `out/` | Renders (not in git) |
@@ -88,3 +91,28 @@ Rules for a kit's card:
 **The generic card.** An opaque panel in the stage colour, with a thin accent rule on its leading edge, slides up over the held frame in 0.3 s (whoosh). The logo, or the "≈" ring, pops in at 230 px (pop). The CTA line rises in at 60-88 px in the look's font, at most 2 lines. The kicker follows at 40-50 px, then the handle in an accent pill. Everything is set by about `t0 + 1` and holds to the end. Text sits in x 140-940, centred in y 240-1480.
 
 **Linter.** `check` audits `#brand-layer` together with the stage: safe zone, type floor, overlap, contrast and fonts. Stage text whose box is at least half under a visible `[data-occlude]` cover counts at `(1 - cover opacity)` of its opacity, so the held frame under an opaque card drops out of the audit. Stage text under a translucent card is still linted. The duration rule (5-90 s) uses the total. The report shows `(27.0 s = 24.5 + 2.5 s end card)`.
+
+## Sound
+
+The teasers carry no narration, so the music and sound effects carry the video. The design rules are in [`sound/BIBLE.md`](sound/BIBLE.md); the engine and the pack contract are in [`sound/README.md`](sound/README.md).
+
+**How the soundtrack is made.**
+- `src/sound/` turns a mounted spec's cue list (`info.sfx`, plus the spec's verdict and the brand card's timing) into a timeline. The timeline holds the payoff P, a tempo map that puts P, the verdict and the card on bar lines, sections and energy.
+- A look's **sound pack** composes music on that timeline and renders every SFX kind. A pack lives in `sound/packs/<look>.mjs`; until it exists, the default pack in `src/sound/packs/default.mjs` is used.
+- The engine mixes music, SFX and reverbs, ducks the music under the cues, and masters to −14 LUFS with a −1.5 dBTP true-peak limiter.
+- It encodes AAC-LC 192k stereo and checks the decoded true peak (≤ −1.0 dBTP).
+- Everything is synthesised and seeded: the same spec always gives the same master WAV.
+
+**Commands.**
+- `render` uses the engine by default; `--legacy-audio` keeps the old mono SFX-only track.
+- `sound` puts new audio on finished MP4s without re-encoding the picture (the video-stream md5 is checked).
+- `audio` renders the audio, score and report only.
+- `audit` measures any MP4.
+- `cues` and `score` dump the engine's input and plan.
+- Nothing is written into `renders/channel/` unless `--final` is passed.
+
+```bash
+node src/cli.mjs audio specs/09c-*.json --out /tmp/sound/audio --stems
+node src/cli.mjs sound specs/*.json --video ../renders/channel --out /tmp/sound/mp4 --score --jobs 4
+node src/cli.mjs audit /tmp/sound/mp4 --reports /tmp/sound/mp4/sound --out /tmp/sound/audit
+```

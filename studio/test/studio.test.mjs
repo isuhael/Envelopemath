@@ -59,17 +59,19 @@ test('linter: clean spec passes, bad spec fails with the right rules', async () 
   } finally { await b.close() }
 })
 
-test('render: mp4 with video + audio of the spec duration', async () => {
+test('render: mp4 with video + the sound engine stereo audio of the spec duration', async () => {
   const b = await launch()
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-'))
   try {
     const r = await renderSpec(b, readSpec(path.join(here, 'specs/counter.json'), { brand: false }), { outDir: dir, preset: 'ultrafast' })
-    const probe = execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'stream=codec_type,width,height,duration', '-of', 'json', r.mp4]).toString()
+    const probe = execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'stream=codec_type,width,height,duration,channels,sample_rate', '-of', 'json', r.mp4]).toString()
     const streams = JSON.parse(probe).streams
     const v = streams.find(s => s.codec_type === 'video'), a = streams.find(s => s.codec_type === 'audio')
     assert.equal(v.width, 1080); assert.equal(v.height, 1920)
     assert.ok(Math.abs(+v.duration - 6) < 0.05)
     assert.ok(a && Math.abs(+a.duration - 6) < 0.06)
+    assert.equal(a.channels, 2); assert.equal(+a.sample_rate, 48000)
+    assert.ok(r.sound && Math.abs(r.sound.loudness.integrated + 14) <= 0.3 && r.sound.loudness.postEncode.truePeak <= -1.0)
     assert.ok(!fs.existsSync(path.join(dir, 't-counter.sfx.wav')))
   } finally { await b.close(); fs.rmSync(dir, { recursive: true, force: true }) }
 })

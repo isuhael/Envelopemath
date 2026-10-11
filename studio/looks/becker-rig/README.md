@@ -827,3 +827,150 @@ The channel brand comes from `studio/brand/brand.json` (see `studio/README.md`, 
 - **Where it lives:** the card is built in `#brand-layer`, never in the stage. The text sits on its own layer, which the camera shake does not move. `seek(t)` is pure in `t`. The burst's centre is read on each seek (`fx.impact` takes `x`/`y` as functions), because the badge's edge is known only once its `<img>` has decoded.
 - **The one deliberate change to a teaser frame: find-your-row's loop clear.** With the card, find-your-row skips the clear (its last 0.7 s; see the format's "Loop"), so the card dims the finished table and the verdict like every other format, instead of opening on the emptied frame-1 table after a swipe and a step. So with the brand on, 02a's last 0.7 s differ from `--no-brand`: the payoff holds instead of clearing. Every other frame of every teaser, and all of 02a before `base - 0.7`, is still pixel-identical to `--no-brand` when there is no logo. To keep the clear (and open the card on the cleared table), delete the `ctx.brand.cta` line in `formats/find-your-row.js`.
 - **Lint:** all 15 `specs/*-becker-rig-*.json` and all 22 samples lint with 0 errors and 0 warnings with the real logo, with no logo, with the test squares (orange "BE", white, dark, transparent), with a 1.5 s card, with a rounded crop, and with `--no-brand`. Sampled at every frame (30 fps), 02a (2.5 s and 1.5 s cards) and 07c are clean, and so is the card window of 06c (2.5 s card) and 10b (2.5 s and 1.5 s cards); the only every-frame findings there are one-frame transients mid-teaser that `--no-brand` shows identically.
+
+## Sound
+
+The Becker Rig sound pack is "toy-box funk": a synthesised band under cartoon foley (`studio/sound/BIBLE.md` §3, §6, §7, §9; engine contract in `studio/sound/README.md`). Everything is synthesised. The only randomness is the engine's seeded streams, so a spec always renders to the same WAV.
+
+| File | What it holds |
+|---|---|
+| `sound.mjs` | The pack entry: key D major, tempo 112-128 (target 120, absolute 104-136, sync grid 2 beats), 4 tension beats |
+| `sound/harmony.mjs` | The chord plan per section |
+| `sound/compose.mjs` | The score (notes, drums, automation) and the em-sting logo orchestration |
+| `sound/instruments.mjs` | One function per voice (BR-Bounce, BR-Mallet, BR-Glock, BR-Pizz, BR-Honk, strings, pad, slide whistle, drums) |
+| `sound/sfx.mjs` | The 15 SFX kinds, plus the wrapper that applies the per-cue trims |
+| `sound/balance.mjs` | The SFX leveller, the band tilt and the music-level solver (B1, B8, §9.2) |
+| `sound/mix.mjs` | Levels, sends, ducks, sidechain, glue and SFX-bus settings |
+
+### The music
+
+**Tempo.** The engine's tempo map, with bars snapped to the anchors. Swing is 58% on the 16ths, everywhere except TENSION.
+
+**Harmony** (D major):
+
+| Section | Chords |
+|---|---|
+| HOOK | D |
+| BUILD | 4-bar phrases. The first is `D G Bm A`; later ones are seeded `D G Bm A` / `D Bm G A`, or `D C G D` (bVII) when the phrase is sparse and quiet. No progression plays three times running |
+| TENSION | The climb `D/F# G G#°7 A7`, scaled to its length |
+| DROP | `D │ G A │ D │ Bm A` |
+| HOLD | `G F#m Bm A`, end-aligned before BREAK or VERDICT (HOLD2 starts on F#m) |
+| BREAK | A7 |
+| VERDICT | D |
+| CADENCE | Em7, then A7sus4 (last 4 beats), then A7 (last 2 beats). The card then resolves to D add9 |
+
+A `buzz` cue deflates the band. It inserts Gm at the cue, the bass bends down 3 semitones, drums and marimba drop out for a beat, and the bar line restates the chord.
+
+**Voices:**
+- **BR-Bounce bass:** square + saw through a resonant 24 dB LP whose cutoff sweeps from about 2.4 kHz down to 350 Hz (τ 90 ms, Q 2), with a tanh drive of 2.5. A sine sub an octave down sits under roots below B2. It slides into tied notes.
+- **Marimba ostinato:** two seeded patterns, with the em motif as a turnaround in steps 13-16.
+- **Glock call-and-answer phrases** in sparse bars, and two composed glock lines over the DROP. A5 lands on P.
+- **Pizz chops** on 3, 7, 11 and 15.
+- **BR-Honk brass:** 3 detuned saws with a 25-cent scoop and a filter envelope. It plays the hook "ta-da", the fanfare and the stabs.
+- **Tremolo strings** on the TENSION climb.
+- **Warm pad:** 2 triangles + 2 saws, voice-led and sidechained 1.5 dB to the kick.
+- **Slide whistle** into P, only when no SFX `riser` covers TENSION.
+- **Drums:** kick, snare, ghost and roll, clap, shaker, tambourine, block, tom, timpani, crash and reverse crash. Kick, snare and clap are soft-clipped at their own peak (tanh 1.5), for 2-4 dB less crest at the same weight. Snare, shaker and tambourine are rolled off above 10-12 kHz.
+
+**The arrangement against the timeline:**
+
+| Section | What plays |
+|---|---|
+| HOOK | Brass "ta-da", timpani, crash and kick at t = 0 |
+| BUILD | E3, rising to E4 at the midpoint: kick on 4/7, ghost snares, pizz, bass slides |
+| TENSION | Heartbeat kick on every beat. The snare roll goes from 16ths to 32nds with a gain ramp from -6 to 0 dB, the strings climb and the bass walks F# G G# A. The last 8th before P is silent, apart from the reverse crash ending exactly on P |
+| P | **On the downbeat:** the fanfare (brass D major doubled at the octave), timpani D2, crash (τ 1.4 s), glock A5, and kick + snare + clap |
+| DROP | E5: four on the floor, claps, tambourine, brass stabs on 1 and the and-of-2, ostinato up an octave. A one-bar DROP hands its level to the first CADENCE bar, so the payoff holds two bars |
+| HOLD | E3 "victory lap", changing something every 2 bars |
+| BREAK | Pizz tremolo, dominant pad, reverse crash into V |
+| VERDICT | Brass button, crash |
+| CADENCE | Ends with a snare + tom fill and stops dead at `base` |
+
+Section levels come from `musicDb`:
+
+| Bars | Level |
+|---|---|
+| E5 | +1.1 dB |
+| E4 | 0 |
+| E3 | -1.7 |
+| HOLD | -5.5 |
+| BREAK | -2 |
+| TENSION | ramps from -1 to +1 |
+| All | plus the solver's trim |
+
+The band also reacts to the cues:
+- It yields to strong cues.
+- It "catches" big non-anchor hits with a brass stab, at most one per 8 beats.
+- Clock trains (tick or thud with a period of 1 s or less) silence the shaker and block.
+
+**The logo** (card, n1-n4 = A4 D5 E5 A5):
+- n1-n3 are dead-stroke marimba with a pizz an octave down at -8 dB.
+- n4 is a glock A5 with a brass stab D4 F#4 A4 D5, timpani D2, crash and swell.
+- Low-passed glock echoes follow n4.
+- A D add9 pad is held to the end of the file.
+- The whole logo is trimmed against the predicted master gain, so the sting lands at the same loudness in every teaser (B8).
+
+### The SFX
+
+Pitched layers follow the chord. A cue with gain ≥ 0.4 of an audible kind (thud, hit, ding, cash, reveal, pop) sets its own duck depth, so it stands 3 dB over the band (B3). Every buffer ends in a 6 ms fade.
+
+| Kind | Sound | Peak (dBFS, gain 1) |
+|---|---|---|
+| thud | Sine dive 2.2f → f on the root or 5th (43-50, never the previous thud's pitch), LP'd click, wood BP 600 | -8 to -9.5 |
+| tick | Woodblock partials 1 and 2.71 on a chord tone, knock, click. Trains go tick-tock A5/D5 | -16 (-17 in trains) |
+| swipe | Band-passed noise sweep 1.2 → 5 kHz, plus a whistle a 5th up on long swipes | -14 (longer: lower) |
+| pop | Bloop on a chord tone (72-83, rising 7 semitones in 40 ms), thock, click | -11.5 |
+| hit | Punch (sine dive 4f → f on the root, the 5th under it if the last hit had that root), LP 7 kHz burst at -9 dB, 1.8 kHz smack; big hits add timpani and crash. Tanh 1.5 over the whole impact. No timpani on P or V (the band has one); levelled by loudness in the card | -7.5 (-8 at P) |
+| ding | Glock on the chord's 3rd, then its 5th at +60 ms. The card plays F#6 + A6 | -10 |
+| whoosh | Noise sweep 700 → 3.5 kHz → 900 Hz with 28 Hz flutter | -14 |
+| cash | 8-14 clinks (3 partials) on chord tones, plus a glock "ka-ching" root and octave | -9 |
+| step | LP noise + 95 Hz sine + click, alternating pan | -17 ± 1 |
+| roll | Click train BP 2.2 kHz + woodblock walk | -16 |
+| type | 14 clicks per second + scratch | -18 |
+| riser | Slide-whistle A4 → A5 with growing vibrato, noise swell BP 500 Hz → 3 kHz, width from 20 to 60% | -10 at the end |
+| buzz | Saws D3 + Eb3 bending down 3 semitones under a falling LP | -12 |
+| boing | Triangle up an octave over 0.25 s with 11 Hz vibrato | -12 |
+| reveal | thud + ding | -8 |
+
+### The mix
+
+**Levels** live in `mix.mjs`, and the music bus fader stays at 0. The engine takes music sends after the voice level and before the bus fader, so a fader below 0 would make every send hotter than written.
+
+**Sends** are true wet/dry ratios and wetter than the bible's §8.5 starting values:
+
+| Voice | Send |
+|---|---|
+| snare | room -4.5 |
+| clap | room -5.5 |
+| pad | hall -3 |
+| strings | hall -3 |
+| brass | hall -4 |
+| glock | hall -4 |
+| fanfare | hall -10 |
+| timpani | hall -9 |
+| crash | hall -9 |
+
+B1 reads the SFX stem's gated loudness, which sits 3.5-7 LU over the cues' real share because the cues bunch. For both stems to land in their bands, the mix needs loudness that is in neither stem, and the returns carry it at -3.5 to -6 LU re the mix. The fanfare, timpani and crash send little: the band is ducked 9 dB on P but its returns only half that, so their hall would bloom over the DROP.
+
+**`balance.mjs`**, run by `compose()`:
+1. **The leveller** renders every body cue as the engine will. It models the cluster cap and the SFX-bus compressor. It then trims only the loudest moments (at most 3 dB for audible cues, 8 dB for the rest), so the SFX stem lands on -22.9 LUFS gated before mastering. Payoff cues are trimmed only by how far they tower over the card. A trimmed audible cue deepens its duck by the same amount.
+2. **The tilt** measures the SFX stem's 2 kHz octave against its 1 kHz octave and tilts the band to suit (-3.5 to +2.5 dB). Dull SFX lift the drums' and brass's presence and the bass. Bright SFX ease the presence and lift the marimba, glock and pizz.
+3. **The music trim** picks the music level that puts both stems nearest the middle of their B1 bands. It uses a fitted mix model, `mix = (1 + a)·M + b·U` (a 0.44, b 1.76). It also predicts the master gain, which the card is trimmed against.
+
+### Verifying
+
+```
+node src/cli.mjs sound specs/*-becker-rig-*.json --video ../renders/channel --out /tmp/snd-becker-rig/mp4 --score --stems --jobs 4
+node src/cli.mjs audit /tmp/snd-becker-rig/mp4 --reports /tmp/snd-becker-rig/mp4/sound --out /tmp/snd-becker-rig/audit
+```
+
+Results:
+- **Engine audit:** score 15/15 for every spec.
+- **Loudness:** I -14.08 to -14.15 LUFS, decoded true peak -1.12 to -1.46 dBTP, LRA 3.3-4.9 LU.
+- **Silence and stereo:** silence 0%, correlation 0.63-0.71, mono fold within 1.0 LU.
+- **Bands and timing:** the §9.2 bands are inside the Becker ranges. Cue onsets land within 0.6 ms.
+- **B and S checks:** B1-B10 and S1-S14 pass on all 15.
+- **DSP unit checks:** U1 aliasing at D6 and A6 is ≤ -66 dB for every pitched voice. U2 has no edge steps. U3 peaks are within +0.4 dB of nominal. U4 NCC is ≤ 0.97.
+
+Known limit:
+- **A5 (PLR on the decoded AAC):** 03a reads 13.01 against the 13.0 limit. The cause is the engine's ceiling of -1.5 dBTP plus a target of -14 ± 0.1 LUFS. AAC adds up to about 0.5 dB of true peak and takes about 0.08 LU of loudness, so the decoded PLR sits at 12.7-13.0 whatever the mix. Every master WAV reads 12.5.

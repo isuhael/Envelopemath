@@ -2,12 +2,15 @@
   "name": "envelope-studio",
   "version": "0.1.0",
   "private": true,
-  "description": "Renders Back of the Envelope shorts from JSON specs: HTML/CSS look kits, seeked frame by frame in Chromium, encoded with ffmpeg.",
+  "description": "Renders Back of the Envelope shorts from JSON specs: HTML/CSS look kits, seeked frame by frame in Chromium, encoded with ffmpeg, with a synthesised music + SFX soundtrack (src/sound).",
   "type": "module",
   "scripts": {
     "render": "node src/cli.mjs render",
     "check": "node src/cli.mjs check",
     "stills": "node src/cli.mjs stills",
+    "audio": "node src/cli.mjs audio",
+    "sound": "node src/cli.mjs sound",
+    "audit": "node src/cli.mjs audit",
     "test": "node --test test/*.test.mjs"
   },
   "engines": { "node": ">=20" },

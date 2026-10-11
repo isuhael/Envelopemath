@@ -3,8 +3,11 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { spawn } from 'node:child_process'
 import { once } from 'node:events'
+import os from 'node:os'
 import { openSpec, grabber } from './page.mjs'
 import { mix, writeWav } from './audio.mjs'
+import { cueRecord } from './sound/cues.mjs'
+import { renderSound } from './sound/engine.mjs'
 
 function ffmpeg(args) {
   const p = spawn('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', ...args], { stdio: ['pipe', 'inherit', 'pipe'] })
@@ -15,23 +18,35 @@ function ffmpeg(args) {
 }
 
 /**
- * Render one spec. Returns { mp4, duration, frames, sfx }.
- * opts: { outDir, crf = 18, preset = 'medium', onProgress(f, N) }
+ * Render one spec. Returns { mp4, duration, frames, sfx, sound }.
+ * opts: { outDir, crf = 18, preset = 'medium', onProgress(f, N), legacyAudio = false, sound = {} }
+ * The soundtrack comes from the sound engine (src/sound: music + SFX, mastered to -14 LUFS, AAC 192k stereo, copied into
+ * the MP4 as verified). legacyAudio: the old mono SFX-only track (src/audio.mjs mix(), AAC 160k).
+ * opts.sound: extra renderSound options (e.g. { outDir } to keep the WAV/score/report, { pack } to force a pack).
  */
-export async function renderSpec(browser, spec, { outDir, crf = 18, preset = 'medium', onProgress } = {}) {
+export async function renderSpec(browser, spec, { outDir, crf = 18, preset = 'medium', onProgress, legacyAudio = false, sound = {} } = {}) {
   fs.mkdirSync(outDir, { recursive: true })
   const { page, info, errors } = await openSpec(browser, spec)
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-sound-'))
   try {
     const fps = info.fps, N = Math.round(info.duration * fps)
-    const wav = path.join(outDir, `${spec.id}.sfx.wav`)
-    writeWav(wav, mix(info.sfx, info.duration))
+    let audio, audioArgs, snd = null
+    if (legacyAudio) {
+      audio = path.join(outDir, `${spec.id}.sfx.wav`)
+      writeWav(audio, mix(info.sfx, info.duration))
+      audioArgs = ['-c:a', 'aac', '-b:a', '160k']
+    } else {
+      snd = await renderSound(cueRecord(spec, info), { outDir: sound.outDir || tmp, score: !!sound.outDir, report: !!sound.outDir, ...sound })
+      audio = snd.m4a
+      audioArgs = ['-c:a', 'copy']
+    }
     const mp4 = path.join(outDir, `${spec.id}.mp4`)
     const { p, done } = ffmpeg([
       '-f', 'image2pipe', '-framerate', String(fps), '-c:v', 'mjpeg', '-i', '-',
-      '-i', wav,
+      '-i', audio,
       '-map', '0:v', '-map', '1:a',
       '-c:v', 'libx264', '-preset', preset, '-tune', 'animation', '-crf', String(crf), '-pix_fmt', 'yuv420p', '-r', String(fps),
-      '-c:a', 'aac', '-b:a', '160k', '-movflags', '+faststart', '-shortest', mp4,
+      ...audioArgs, '-movflags', '+faststart', '-t', String(info.duration), mp4,
     ])
     const grab = await grabber(page)
     for (let f = 0; f < N; f++) {
@@ -42,10 +57,11 @@ export async function renderSpec(browser, spec, { outDir, crf = 18, preset = 'me
     }
     p.stdin.end()
     await done
-    fs.rmSync(wav, { force: true })
+    if (legacyAudio) fs.rmSync(audio, { force: true })
     if (errors.length) throw new Error(`${spec.id}: page errors during render:\n${errors.join('\n')}`)
-    return { mp4, duration: info.duration, frames: N, sfx: info.sfx.length }
+    return { mp4, duration: info.duration, frames: N, sfx: info.sfx.length, sound: snd ? snd.report : null }
   } finally {
+    fs.rmSync(tmp, { recursive: true, force: true })
     await page.close()
   }
 }

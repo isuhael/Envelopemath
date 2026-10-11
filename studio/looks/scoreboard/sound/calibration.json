@@ -1,0 +1,48 @@
+{
+ "BEDS": {
+  "HOOK": {
+   "3": -19.3,
+   "4": -17.5
+  },
+  "BUILD": {
+   "3": -19.5,
+   "4": -18.3
+  },
+  "TENSION": {
+   "4": -18.6
+  },
+  "DROP": {
+   "5": -18.9
+  },
+  "HOLD": {
+   "3": -18
+  },
+  "BREAK": {
+   "2": -18.1
+  },
+  "VERDICT": {
+   "4": -18.2
+  },
+  "CADENCE": {
+   "3": -18.6
+  },
+  "HOLD2": {
+   "3": -18.3
+  }
+ },
+ "OFF_EFF": 0.65,
+ "OPEN_FIT": 2,
+ "M_FIT": 1.68,
+ "GM": -16.07,
+ "GM_PLAN": -16.02,
+ "LOGO_PRE": -16.25,
+ "stats": {
+  "M_FIT_sd": 0.19,
+  "GM_sd": 0.25,
+  "GM_PLAN_sd": 0.25,
+  "LOGO_PRE_sd": 0.03,
+  "OPEN_FIT_sd": 0.56,
+  "specs": 15,
+  "from": "/tmp/fix-snd-scoreboard/run5"
+ }
+}
