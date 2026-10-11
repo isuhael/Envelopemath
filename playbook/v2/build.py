@@ -87,7 +87,7 @@ def card(t, fmt, with_media):
         <h3>{esc(title)}</h3>
         <p class="hook" title="On screen at 0.0 s">{marks(spec.get('header', ''))}</p>
         {f'<ul class="nums">{nums}</ul>' if nums else ''}
-        <details><summary>Guide voice-over</summary><p>{esc(vo)}</p></details>
+        <details><summary>On-screen captions</summary><p>{esc(vo)}</p></details>
         <p class="foot mono">{' · '.join(checks)} ·
           <a href="{REPO}{t['mp4']}" target="_blank" rel="noopener">full-size MP4</a> ·
           <a href="{REPO}{t['spec']}" target="_blank" rel="noopener">spec</a></p>
