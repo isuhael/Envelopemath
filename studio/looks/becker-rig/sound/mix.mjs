@@ -9,6 +9,8 @@ export const mix = {
     // the react voices (compose.mjs): the band's own answers to the cues ("catch the hit", the verdict button, the
     // fanfare's sustained "TA"), routed to the un-ducked bus so the cue they answer does not duck them away
     honkR: -23.9, honkFR: -26.4, crashR: -22.9,
+    // the hook's t = 0 brass, 2 dB under the fanfare: the file's first frame is where the AAC encoder overshoots most
+    honkH: -22.9,
     logoMallet: -11.5, logoPizz: -16.5, logoGlock: -25.5, logoEcho: -25.5, logoHonk: -34, logoPad: -29, logoTimp: -25, logoCrash: -30, logoSwell: -24, logoAir: -40,
   },
   // music sends (dB re each voice; the engine takes them post-level and pre-bus-fader, so the music bus fader stays at 0):
@@ -18,7 +20,7 @@ export const mix = {
   sends: {
     snare: { room: -11.5 }, ghost: { room: -15.5 }, roll: { room: -15.5 }, clap: { room: -13.5 }, tom: { room: -13.5 }, tamb: { room: -17.5 },
     mallet: { room: -17.5 }, glock: { hall: -13.5 }, pizz: { room: -15.5 }, honk: { hall: -15.5 }, honkF: { hall: -15.5 }, strings: { hall: -13.5 },
-    timp: { hall: -11.5 }, crash: { hall: -13.5 }, pad: { hall: -15.5 }, whistle: { room: -15.5 },
+    timp: { hall: -11.5 }, crash: { hall: -13.5 }, pad: { hall: -15.5 }, whistle: { room: -15.5 }, honkH: { hall: -15.5 },
     honkR: { hall: -15.5 }, honkFR: { hall: -15.5 }, crashR: { hall: -13.5 },
     logoMallet: { hall: -10 }, logoPizz: { hall: -10 }, logoGlock: { hall: -10 }, logoEcho: { hall: -10 }, logoHonk: { hall: -10 },
     logoPad: { hall: -10 }, logoTimp: { hall: -10 }, logoCrash: { hall: -10 },

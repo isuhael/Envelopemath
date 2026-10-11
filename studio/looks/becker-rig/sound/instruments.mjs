@@ -15,7 +15,7 @@ const st = (L, R) => ({ L, R })
  * ev.glideTo: slide into that MIDI note over the last 50 ms (legato into the next bar); ev.bend: semitones of pitch
  * bend over ev.bendTime from ev.bendAt (the buzz "deflate"); ev.bright scales the filter peak (octave pops).
  * The drive sits BEFORE the resonant LP (tanh 1.8 on the oscillators), so the filter cleans what the drive adds; a
- * gentle tanh 1.3 after it rounds the resonant onset spike, and a 12 dB LP at 1.4 kHz after that keeps the bass out of
+ * gentle tanh 1.3 after it rounds the resonant onset spike, and a 12 dB LP at 1.2 kHz after that keeps the bass out of
  * the marimba's octave (0.5-3 kHz belongs to the toys). A sine at the fundamental (-9 dB) gives the note a round
  * floor; there is no sub-octave (37-58 Hz costs headroom and no phone plays it), and a 40 Hz HP clears the rest.
  */
@@ -32,6 +32,9 @@ export function bounce(ev) {
   }
   const sq = osc('square', n, fq), sw = osc('saw', n, fq), x = mono(n)
   for (let i = 0; i < n; i++) x[i] = 0.5 * sq[i] + 0.5 * sw[i]
+  // (a 4 kHz pre-filter keeps the drive's products under Nyquist at any pitch: the resonant LP below never opens past
+  // 2.4 kHz, so it changes nothing the ear gets, and a D6 test note no longer aliases, U1)
+  svf(x, 'lp', 4000)
   saturate(x, 1.8)
   const peak = 2400 * (0.55 + 0.45 * vel) * (ev.bright ?? 1), floorHz = 350
   const tau = 0.09 * SR
@@ -42,7 +45,7 @@ export function bounce(ev) {
   dcBlock(x, 25)
   unit(x, 1)
   saturate(x, 1.3)
-  svf(x, 'lp', 1400 * (ev.bright ?? 1))
+  svf(x, 'lp', 1200 * (ev.bright ?? 1))
   unit(x, 1)
   const fund = osc('sine', n, fq), es = adsr(n, { a: 0.004, d: 0.25, s: 0.7, r: 0.05, gate: dur }), gF = Math.pow(10, -9 / 20)
   for (let i = 0; i < n; i++) x[i] += fund[i] * es[i] * gF
@@ -51,9 +54,13 @@ export function bounce(ev) {
 }
 
 /** BR-Mallet (marimba): partials 1, 3.9, 9.2 with τ 0.35 s·√(440/f), plus a 2 ms LP'd click. ev.gate: a dead stroke,
- *  damped over 40 ms after ev.dur (the logo's 85 ms pickups) */
+ *  damped over 40 ms after ev.dur (the logo's 85 ms pickups). ev.hard: harder mallets (0..1.2), the bar's overtones
+ *  above 1.5 kHz brought up by that much (compose uses them when the cues crowd the fundamentals' octave) */
 export function mallet(ev, c) {
-  const x = unit(K.mallet(c.rng, ev.midi, { vel: 1 }), ev.vel ?? 1)
+  const x = unit(K.mallet(c.rng, ev.midi, { vel: 1 }), 1)
+  // (added on top of the normalised stroke, so the fundamental keeps its level)
+  if (ev.hard > 0) { const h = Float32Array.from(x); svf(h, 'hp', 1500); for (let i = 0; i < x.length; i++) x[i] += ev.hard * h[i] }
+  scale(x, ev.vel ?? 1)
   if (ev.gate) { const G = sec(ev.dur), R = sec(0.04); for (let i = G; i < x.length; i++) x[i] *= Math.max(0, 1 - (i - G) / R) }
   return x
 }
@@ -178,7 +185,7 @@ export const instruments = {
   bass: bounce, mallet, glock, pizz, honk, honkF: honk, strings, pad: warm, whistle,
   kick, snare, ghost, roll: ghost, clap, shaker, tamb, block, tom, timp, crash, revcrash,
   // the react voices (on the un-ducked bus): catch stabs, the verdict button, the fanfare's "TA"
-  honkR: honk, honkFR: honk, crashR: crash,
+  honkR: honk, honkFR: honk, crashR: crash, honkH: honk,
   // the logo (its own bus: not gated at base, not ducked)
   logoMallet: mallet, logoPizz: pizz, logoGlock: glock, logoEcho: glock, logoHonk: (ev, c) => honk({ ...ev, logo: true }, c),
   logoPad: warm, logoTimp: timp, logoCrash: crash, logoSwell: revcrash, logoAir: air,

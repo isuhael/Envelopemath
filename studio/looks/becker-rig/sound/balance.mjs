@@ -119,7 +119,7 @@ export function sfxLevels(tl, rendered = renderCues(tl)) {
 
 /**
  * The music trim (B1). The music stem is placed against the SFX stem's GATED loudness I (the cues' level while they
- * sound): M = I - dIS (+ up to 1.5 dB for a strongly tilted SFX spectrum, see below), so in every teaser a hit sits about
+ * sound): M = I - dIS (+ up to 2 dB for a strongly tilted SFX spectrum, see below), so in every teaser a hit sits about
  * the same 1 LU over the band, whether the teaser has three hits or
  * forty taps (the ungated share of the SFX swings 3-8 LU with cue density and is not a perceptual anchor). With the
  * bible's dry sends that lands the music about -2 LU, the gated SFX about -1 LU and the returns about -10 LU re the
@@ -131,7 +131,7 @@ export function sfxLevels(tl, rendered = renderCues(tl)) {
  * C and tiltUp fitted on the 15 teasers at trim 0; refit after any level change). MODEL.fixedTrim (a calibration
  * hook) overrides the trim.
  */
-export const MODEL = { C: -23.46, a: 0.007, b: 1.288, tiltUp: 0.88, iBias: -0.35, dIS: 1.0, dISTilt: 0.5, dISTiltMax: 1.5, trimLo: -3, trimHi: 3, gRef: 5.7, fixedTrim: null }
+export const MODEL = { C: -23.46, a: 0.007, b: 1.288, tiltUp: 0.88, iBias: -0.35, dIS: 1.0, dISTilt: 0.8, dISTiltMax: 2.0, trimLo: -3, trimHi: 3, gRef: 5.7, fixedTrim: null }
 export function duckCost(tl, rendered, trims = new Map()) {
   const N = Math.round(tl.base * SR), P = tl.anchors.P.t
   const DEF = { tick: [1, 0.04, 0.08], roll: [2.5, 0, 0.15], riser: [0, 0, 0] }
@@ -158,7 +158,8 @@ export function musicTrim(tl, rendered, lv, tilt) {
   const { C, a, b, tiltUp, dIS, dISTilt, dISTiltMax, trimLo, trimHi } = MODEL
   const Mfree = C + cost + tiltUp * Math.max(0, tilt)
   // cues bunched in one octave (|tilt| large: all bloops and dings, or all swishes and bursts) cut through on their own:
-  // they sit up to 1.5 dB nearer the band, which keeps that octave from swamping the long-term spectrum (§9.2)
+  // they sit up to 2 dB nearer the band (0.8 dB per tilt unit), which keeps that octave from swamping the long-term
+  // spectrum (§9.2)
   // (iBias: the engine's SFX stem reads about 0.35 LU under this render of it: merges drop transients and low bodies)
   const M = lv.I + MODEL.iBias - dIS + Math.min(dISTiltMax, dISTilt * Math.abs(tilt))
   let trim = Math.max(trimLo, Math.min(trimHi, Math.round((M - Mfree) * 100) / 100))

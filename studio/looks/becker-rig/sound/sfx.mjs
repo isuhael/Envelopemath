@@ -241,9 +241,9 @@ const kinds = {
     const meta = { pitches: ctx.dropBody ? [] : [m], pan: 0 }
     // on P the hit ducks the band exactly as deep and as long as the payoff duck (9 dB, hold 150 ms, release 0.3 s):
     // impact first, then the fanfare's "TA" and the DROP bloom back. A big hit elsewhere: the §7 big duck (10 dB); an
-    // ordinary strong hit: at most the §7 6 dB, whatever its gain
+    // ordinary strong hit: at most the §7 6 dB, whatever its gain (the big one exactly its 10 dB, not scaled up to 12)
     if (ctx.atP) meta.duck = duckFor(cue, 9, 0.15, 0.3)
-    else if (big) meta.duck = [10, 0.15, 0.5]
+    else if (big) meta.duck = duckFor(cue, 10, 0.15, 0.5)
     else if (cue.gain >= 0.4 && !cue.inCard) meta.duck = duckFor(cue, 6 * Math.min(1, clamp(cue.gain / 0.7, 0.3, 1.2)), 0.1, 0.3)
     if (cue.inCard && ctx.dropBody) {
       // the card's slam (§3.2): the logo owns the low end, so the hit keeps transient, slap and air, at a level of its own
@@ -326,7 +326,9 @@ const kinds = {
     const c = tick0(r, 3, { bp: 2500, q: 0.8 })                 // a 3 ms heel tap: a click with some body in its band
     const pan = cue.n % 2 ? 0.1 : -0.1
     const parts = [{ buf: unit(x), pan }, { buf: unit(sc), pan, gain: 0.55, body: true }, { buf: unit(s), pan, gain: 0.6, body: true }, { buf: unit(c), pan, gain: 0.55, transient: true }]
-    return outLayers(parts, n, -15.6 + 0.5 * r.bi(), ctx, { pan })
+    // a footstep the spec marks as heard (gain >= 0.4): 2.5 dB broadband for 30 ms + 70 ms (the §7 1 dB is for a run
+    // of light steps), with compose's dip of the mids and the bass's choke around it
+    return outLayers(parts, n, -15.6 + 0.5 * r.bi(), ctx, { pan, ...(cue.gain >= 0.4 && !cue.inCard ? { duck: duckFor(cue, 2.5, 0.03, 0.07) } : {}) })
   },
 
   /** roll (a ratchet / flip counter): a click train (rate accelerates, then settles; peak 22/s) BP 2.2 kHz, each click

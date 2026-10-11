@@ -103,14 +103,16 @@ export function compose(tl, rng) {
   const drum = (t, inst, vel, extra = {}) => {
     if (!(t >= 0) || t >= base - 1e-6 || inGap(t)) return false
     if (!extra.force && deflated(t)) return false
-    if (/^(kick|snare|clap|tom)$/.test(inst)) {
-      const y = tl.drumYield(t, { minGain: 0.35, kinds: BODY })
-      // a cue B3 listens to (gain >= 0.4) owns its first 50 ms: no kick merges with it or lands up to 70 ms before it,
-      // and a backbeat drops rather than snapping onto it
-      const strong = y.cue && AUD.has(y.cue.kind) && y.cue.gain >= 0.4
-      if (y.action === 'merge' && strong && !tl.isAnchor(t)) return false
-      if (y.action === 'drop') {
-        if (extra.snap && !strong && Math.abs(y.cue.t - t) <= 0.035 && !inGap(y.cue.t) && y.cue.t < base - 1e-6) t = y.cue.t
+    if (/^(kick|snare|clap|tom)$/.test(inst) && !tl.isAnchor(t)) {
+      // every body cue within 70 ms counts (drumYield reports only the nearest): a cue B3 listens to (gain >= 0.4) owns
+      // its first 50 ms, so no kick merges with it or lands up to 70 ms before it, and a backbeat drops rather than
+      // snapping onto it; a backbeat may snap onto a lighter cue within 35 ms if no other body cue is then 15-70 ms off
+      const near = tl.cues.filter(c => BODY.includes(c.kind) && c.gain >= 0.35 && Math.abs(c.t - t) < 0.07)
+      const flamAt = x => near.some(c => { const d = Math.abs(c.t - x); return d > 0.015 && d < 0.07 })
+      if (near.some(c => Math.abs(c.t - t) <= 0.015 && AUD.has(c.kind) && c.gain >= 0.4)) return false
+      if (flamAt(t)) {
+        const to = near.filter(c => !(AUD.has(c.kind) && c.gain >= 0.4) && Math.abs(c.t - t) <= 0.035).sort((a, b) => Math.abs(a.t - t) - Math.abs(b.t - t))[0]
+        if (extra.snap && to && !inGap(to.t) && to.t < base - 1e-6 && !flamAt(to.t)) t = to.t
         else return false
       }
       if (inst === 'kick' && !tl.isAnchor(t) && tl.cues.some(c => AUD.has(c.kind) && c.gain >= 0.4 && c.t - t > -0.015 && c.t - t < 0.08)) return false
@@ -161,6 +163,10 @@ export function compose(tl, rng) {
   const glockNotes = glockPhrases(tl, { secAt, base, V, hum: hum('glock:pick'), isDense, fixed: dropLine })
   const glockBars = new Set(glockNotes.map(n => n.bar))
   for (const n of glockNotes) note(n.t, n.dur, n.midi, n.vel + g('glock', 0.04), 'glock', 'glock', { pan: clamp(0.12 + (n.midi - 81) / 40, -0.1, 0.35) })
+
+  // ---- harder marimba mallets when the cues crowd the 1 kHz octave (tilt > 0): the bars' overtones carry the toy
+  // into 2 kHz, where the cues leave room (the balance plan's tilt; at most +1.2 on the overtones above 1.5 kHz)
+  const hard = Math.min(1.2, 0.6 * Math.max(0, tl.becker.tilt.tilt))
 
   // ---- the groove, bar by bar
   const fanfareEnd = tl.step(tl.barAt(P + 1e-6), 7, SWING) - 1e-3
@@ -256,7 +262,7 @@ export function compose(tl, rng) {
       const nextS = j + 1 < ost.length ? ost[j + 1][0] : 17
       const dur = Math.min(4 * bar16(t), (nextS <= steps ? st(nextS) : b.t1) - t) * 0.94
       // the marimba spreads by pitch like a real instrument seen from the front (low bars left, high bars right, ±30%)
-      note(t, dur, m, (vel0 + g('mallet', 0.04)) * (isDense(t) ? 0.71 : 1), 'mallet', 'mallet', { pan: clamp((m - 71) / 24, -0.3, 0.3) })
+      note(t, dur, m, (vel0 + g('mallet', 0.04)) * (isDense(t) ? 0.71 : 1), 'mallet', 'mallet', { pan: clamp((m - 71) / 24, -0.3, 0.3), ...(hard ? { hard } : {}) })
     }
     if (turn) [69, 74, 76, 81].forEach((m, k) => note(st(13 + k), (k === 3 ? 2 * bar16(b.t) : st(14 + k) - st(13 + k)) * 0.94, m, [0.72, 0.78, 0.84, 0.95][k] + g('mallet', 0.03), 'mallet', 'mallet', { motif: true, pan: clamp((m - 71) / 24, -0.3, 0.3) }))
     // pizz chops on 3, 7, 11, 15 (E4, the HOLD's victory lap, or an evolving long hold)
@@ -290,7 +296,10 @@ export function compose(tl, rng) {
   // to the restatement; whatever bass note was still ringing stops at the buzz
   for (const d of deflates) {
     for (const n of notes) if (n.inst === 'bass' && n.t < d.t - 1e-6 && n.t + n.dur > d.t - 0.005) n.dur = Math.max(0.02, d.t - 0.005 - n.t)
-    note(d.t, (d.t1 - d.t) * 0.92, T.placePc(7, 38), 0.86 + g('bass', 0.02), 'bass', 'bass', { bend: -3, bendAt: 0, bendTime: 0.25, chromatic: 'strain' })
+    // (a bloop or ding the bass must make room for, right after the buzz, chokes the note: the slide then completes
+    // before it, so the "wah" is never cut mid-bend)
+    const nx = tl.cues.find(c => ['pop', 'ding', 'thud', 'step'].includes(c.kind) && c.gain >= 0.4 && !c.inCard && c.t > d.t + 0.02 && c.t < d.t + 0.3)
+    note(d.t, (d.t1 - d.t) * 0.92, T.placePc(7, 38), 0.86 + g('bass', 0.02), 'bass', 'bass', { bend: -3, bendAt: 0, bendTime: nx ? Math.max(0.08, nx.t - d.t - 0.03) : 0.25, chromatic: 'strain' })
   }
 
   // ---- the pad: one voicing per harmony span (TENSION has the strings instead), voice-led, 3 voices in 55-74
@@ -328,13 +337,13 @@ export function compose(tl, rng) {
   {
     const b0 = tl.bars[0], st0 = s => tl.step(b0, s, SWING)
     if (hookV === 1) {
-      for (const m of [62, 66, 69, 74]) note(0, bar16(0) * 0.9, m, 0.92, 'honkF', 'brass')
+      for (const m of [62, 66, 69, 74]) note(0, bar16(0) * 0.9, m, 0.92, 'honkH', 'brass')
       for (const m of [66, 69, 74, 78]) note(st0(3), tl.beatLen(0) * 0.62, m, 1.0, 'honkF', 'brass')
-      drum(0, 'timp', 0.8, { midi: 33 })
+      drum(0, 'timp', 0.8, { midi: 38 })
       drum(st0(3), 'timp', 0.9, { midi: 38 })
       drum(st0(3), 'crash', 0.7)
     } else {
-      for (const m of [62, 66, 69, 74]) note(0, tl.beatLen(0) * 0.5, m, 1.0, 'honkF', 'brass')
+      for (const m of [62, 66, 69, 74]) note(0, tl.beatLen(0) * 0.5, m, 1.0, 'honkH', 'brass')
       drum(0, 'timp', 0.9, { midi: 38 })
       drum(0, 'crash', 0.7)
       if (hookV === 2) [74, 78, 81, 86].forEach((m, k) => note(st0(2 + k), bar16(0) * (k === 3 ? 3 : 0.95), m, [0.66, 0.72, 0.8, 0.9][k], 'glock', 'glock'))
@@ -451,17 +460,17 @@ export function compose(tl, rng) {
     }
   }
 
-  // ---- the bass makes room for a bloop, a ding or a landing B3 listens to (gain >= 0.4): a note ringing into it is
+  // ---- the bass makes room for a bloop, a ding, a landing or a footstep (gain >= 0.4): a note ringing into it is
   // choked 5 ms before it; a note starting within 60 ms of a bloop or ding is left out (the bounce is staccato; a missing
-  // 16th reads as a rest), one starting with a landing answers it 70 ms later (the thud is the downbeat, the bass bounces
-  // off it)
+  // 16th reads as a rest), one starting with a landing or a step answers it 70 ms later (the thud is the downbeat, the
+  // bass bounces off it)
   for (const c of tl.cues) {
-    if (!['pop', 'ding', 'thud'].includes(c.kind) || c.gain < 0.4 || c.inCard || c.t >= base - 1e-6 || Math.abs(c.t - P) < 0.02 || (V != null && Math.abs(c.t - V) < 0.02)) continue
+    if (!['pop', 'ding', 'thud', 'step'].includes(c.kind) || c.gain < 0.4 || c.inCard || c.t >= base - 1e-6 || Math.abs(c.t - P) < 0.02 || (V != null && Math.abs(c.t - V) < 0.02)) continue
     for (let j = notes.length - 1; j >= 0; j--) {
       const n = notes[j]
       if (n.inst !== 'bass' || n.t + n.dur < c.t - 0.01 || n.t > c.t + 0.06 || tl.isAnchor(n.t)) continue
       if (n.t < c.t - 0.06) n.dur = Math.max(0.03, c.t - 0.005 - n.t)
-      else if (c.kind !== 'thud' || n.t > c.t + 0.015) notes.splice(j, 1)
+      else if ((c.kind !== 'thud' && c.kind !== 'step') || n.t > c.t + 0.015) notes.splice(j, 1)
       else { const d = n.t + n.dur - (c.t + 0.07); if (d < 0.04) notes.splice(j, 1); else { n.t = c.t + 0.07; n.dur = d } }
     }
   }
@@ -475,13 +484,15 @@ export function compose(tl, rng) {
   // dull SFX (tilt > 0, the cues crowd the 1 kHz octave: bloops, dings, taps): the drums' and brass's presence up, and
   // the low-mids (bass, kick, the pad) up, so the band frames the cues' octave from both sides; bright SFX (tilt < 0):
   // presence eased. The toys (marimba, glock, pizz) are never moved: they are the look
-  // (presence: +0.9 dB per tilt unit when dull, -1 when bright; bass +1.7 and pad +1 when dull; toys +0.7 when bright)
-  const TILT = { snare: 1, clap: 1, ghost: 1, roll: 1, shaker: 1, tamb: 1, honk: 1, honkF: 1, honkR: 1, honkFR: 1 }
+  // (presence: +1.6 dB per tilt unit when dull (not the shaker and tambourine: 8 kHz is not where dull cues leave a
+  // hole), -1 when bright; bass and pad +1 when dull; toys +1 when bright;
+  // the glock, the one toy that sings in the cues' own octave, steps back 1 dB per unit when the cues crowd it)
+  const TILT = { snare: 1, clap: 1, ghost: 1, roll: 1, shaker: 1, tamb: 1, honk: 1, honkF: 1, honkH: 1, honkR: 1, honkFR: 1 }
   const TOYS = { mallet: 1, glock: 1, pizz: 1 }
   for (const inst of new Set([...notes, ...dd].map(e => e.inst))) {
     const w = TILT[inst] || 0
-    const off = inst === 'bass' ? Math.max(0, tilt) * 1.7 : inst === 'pad' ? Math.max(0, tilt) : TOYS[inst] ? 0.7 * Math.max(0, -tilt)
-      : w * (tilt > 0 ? 0.9 : 1) * tilt
+    const off = inst === 'bass' ? Math.max(0, tilt) : inst === 'pad' ? Math.max(0, tilt) : inst === 'glock' && tilt > 0 ? -1.0 * tilt : TOYS[inst] ? 1.0 * Math.max(0, -tilt)
+      : w * (tilt > 0 ? (inst === 'shaker' || inst === 'tamb' ? 0 : 1.6) : 1) * tilt
     if (inst === 'revcrash') { if (off) gain[inst] = [{ t: 0, db: off }]; continue }
     gain[inst] = [{ t: gap - 0.0005, db: off }, { t: gap + 0.010, db: -90 }, { t: P - 0.0002, db: -90 }, { t: P, db: off }]
   }
