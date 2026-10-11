@@ -6,7 +6,7 @@ The cloud session that built this cannot reach your computer, so the last step h
 
 ## 1. Just the videos
 
-The branded MP4s are in [`renders/channel/`](renders/channel) (1080×1920, 30 fps). Open one on GitHub and use **Download raw file**, or download the branch as a ZIP (**Code → Download ZIP**) and copy `renders/channel/` into the Finance Channel folder.
+The branded MP4s are in [`renders/channel/`](renders/channel) (1080×1920, 30 fps). Open one on GitHub and use **Download raw file**. (**Code → Download ZIP** also works but is about 500 MB, because the branch keeps the older unbranded and four-look sets too; copy just `renders/channel/` out of it.)
 
 ## 2. The whole studio, in the Finance Channel folder
 
@@ -14,13 +14,21 @@ You need Node 20 or later, ffmpeg on your PATH, and git. In a terminal:
 
 ```bash
 cd "path/to/Finance Channel (1)"
-git clone --branch claude/viral-finance-shorts-research-q9az4u https://github.com/isuhael/Envelopemath.git back-of-the-envelope
-cd back-of-the-envelope/studio
+# a slim clone: only the studio, the branded MP4s and the write-ups (about 220 MB instead of 520 MB)
+git clone --filter=blob:none --sparse --depth 1 --branch claude/viral-finance-shorts-research-q9az4u https://github.com/isuhael/Envelopemath.git back-of-the-envelope
+cd back-of-the-envelope
+git sparse-checkout set studio renders/channel teasers/v2
+cd studio
 npm install
 npx playwright install chromium          # the headless browser the renderer drives
+npm test                                 # expect 8/8 pass
 node src/cli.mjs check                   # lint all 30 teasers (expect 30/30 clean)
-node src/cli.mjs render --all --out ../renders/local
+node src/cli.mjs render specs/02c-scoreboard-salary-per-hour.json --out ../renders/local   # one teaser, about a minute
 ```
+
+The finished MP4s are already in `renders/channel/`, so rendering is only needed after you change a spec or the brand. `node src/cli.mjs render --all --out ../renders/local` re-renders all 30 (about 20 minutes on 4 cores).
+
+These exact steps were checked from a fresh clone on 2026-10-11: 8/8 tests, 30/30 specs clean, and the re-rendered teasers matched the committed `renders/channel/` files frame for frame.
 
 If the Finance Channel folder is itself a git repository, either add `back-of-the-envelope/` to its `.gitignore`, or use `git submodule add -b claude/viral-finance-shorts-research-q9az4u https://github.com/isuhael/Envelopemath.git back-of-the-envelope` instead of `git clone`, so the two histories stay separate.
 
@@ -30,7 +38,7 @@ The fonts are bundled in `studio/fonts/`, so local renders match the cloud rende
 
 Open the Finance Channel (1) folder in the Claude desktop app (Code), or run `claude` in a terminal there, and paste:
 
-> Clone https://github.com/isuhael/Envelopemath.git (branch `claude/viral-finance-shorts-research-q9az4u`) into `./back-of-the-envelope`. If this folder is a git repo, add it as a submodule instead. Then read `back-of-the-envelope/HANDOFF-finance-channel.md` and `back-of-the-envelope/studio/brand/README.md`, install the studio (`npm install`, `npx playwright install chromium`, check ffmpeg is on PATH), lint all 30 specs and render them to `back-of-the-envelope/renders/local`. Tell me where the MP4s are.
+> Clone https://github.com/isuhael/Envelopemath.git (branch `claude/viral-finance-shorts-research-q9az4u`) into `./back-of-the-envelope` as a slim sparse clone (`--filter=blob:none --sparse --depth 1`, then `git sparse-checkout set studio renders/channel teasers/v2`). If this folder is a git repo, add `back-of-the-envelope/` to its .gitignore. Then read `back-of-the-envelope/HANDOFF-finance-channel.md` and `back-of-the-envelope/studio/brand/README.md`, install the studio (`npm install`, `npx playwright install chromium`, check ffmpeg is on PATH), run `npm test` and lint all 30 specs, render one teaser to `back-of-the-envelope/renders/local` to prove the setup works, and tell me where the branded MP4s are (`back-of-the-envelope/renders/channel/`).
 
 ## Changing the brand
 
