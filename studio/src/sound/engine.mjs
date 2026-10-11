@@ -29,6 +29,8 @@ export const KINDS = ['tick', 'type', 'pop', 'ding', 'reveal', 'thud', 'whoosh',
 export const TARGET_LUFS = -14.0
 export const CEILING_DBTP = -1.5
 export const DELIVERY_TP = -1.0
+// bible A5: decoded PLR (true peak − integrated) ≤ 13 dB; the encode loop aims 0.05 dB inside it
+export const PLR_MAX = 13.0
 /** engine defaults for the music duck under each cue kind: [depth dB, hold s, release τ s] (bible §5, Scoreboard column) */
 export const DEFAULT_DUCK = {
   tick: [1, 0.04, 0.08], thud: [4, 0.06, 0.16], ding: [3, 0.08, 0.22], roll: [2.5, 0, 0.15], pop: [1.5, 0.03, 0.08],
@@ -465,9 +467,12 @@ export async function renderSound(rec, opts = {}) {
       post = { tp: truePeakDb(dec), ...(opts.ffmpegCheck !== false ? { ffmpeg: FF.ebur128(m4a) } : {}) }
       post.integrated = loudness(dec).integrated
       const worst = Math.max(post.tp, post.ffmpeg && post.ffmpeg.TP != null ? post.ffmpeg.TP : -Infinity)
-      const spots = worst > DELIVERY_TP ? overSpots(dec, DELIVERY_TP - 0.1, m.out.L.length) : []
+      // the decoded peak must clear both the delivery ceiling and the PLR limit (AAC lands 0.05-0.2 LU under the master's target,
+      // so a peak that is fine at -14.0 LUFS can break PLR 13 after encode)
+      const limit = Math.min(DELIVERY_TP, post.integrated + PLR_MAX - 0.05)
+      const spots = worst > limit ? overSpots(dec, limit - 0.1, m.out.L.length) : []
       trials.push({ ceiling, local: local, masterTp: round(m.tp, 2), aacTp: round(post.tp, 2), ...(post.ffmpeg ? { ffmpegTp: post.ffmpeg.TP } : {}), limiterMaxGr: round(m.limiter.maxGr, 2), limiterPctOver1dB: round(m.limiter.pctOver1dB, 3), spots: spots.map(x => ({ t: round(x.t, 4), overDb: round(x.over, 2) })) })
-      if (worst <= DELIVERY_TP) break
+      if (worst <= limit) break
       if (local < 3 && spots.length) {
         local++
         curve = curve || new Float32Array(m.out.L.length)

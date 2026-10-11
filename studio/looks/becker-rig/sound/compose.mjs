@@ -1,20 +1,25 @@
 // Becker Rig score (sound bible §6.4-6.6): "toy-box funk" laid on the timeline, and the em sting's "toy fanfare" (§3.2).
 //
-// The band: BR-Bounce bass, marimba ostinato, glock answers, pizz chops, brass stabs, tremolo strings, the warm pad,
-// dry punchy drums with swung 16ths (58%). The arrangement follows the engine's sections and energies:
-//   HOOK   "ta-da" at t = 0 (brass D major 8th, timpani D2, crash, kick, bass), the ostinato from step 1; E4 then E3
+// The band: BR-Bounce bass, marimba ostinato (D4-F#5: see OST_LO), glock calls and answers, pizz chops, brass stabs,
+// tremolo strings, the warm pad (a two-voice halo in the BUILD), dry punchy drums with swung 16ths (58%). The arrangement
+// follows the engine's sections and energies:
+//   HOOK   one of three seeded openings at t = 0 ("ta-da", "ba-DA", "ta-da-ling"), brass D major always on t = 0 (S10)
 //   BUILD  E3 (bounce, ostinato, shaker 16ths) -> E4 at the midpoint (kick 4/7, ghost snares, pizz chops, slides)
 //   TENSION "strain": heartbeat kick on every beat, snare roll 16ths -> 32nds, tremolo strings on the climb, bass
 //          F# G G# A, no marimba; the slide whistle when no SFX riser covers it; the last 8th before P is silent
-//   P      fanfare: brass D major doubled at the octave, timpani D2, crash (τ 1.4), glock A5, kick + snare + clap
-//   DROP   E5: four on the floor, clap, tambourine, brass stabs on 1 and the and-of-2, ostinato up an octave, glock line
+//   P      "ka-TA": a short brass "ka" with timpani, crash, kick, snare and clap on the downbeat (inside the payoff duck),
+//          the sustained fanfare "TA" on the react bus from the next free swung 16th; glock A5
+//   DROP   E5: four on the floor, clap, tambourine, brass stabs on 1 and the and-of-2, ostinato in its home octave, glock line
 //   HOLD   "victory lap" E3 (bounce, pizz chops, ostinato), glock only in sparse bars and never in the 2 bars after V
 //   BREAK  drums out, dominant pad, pizz tremolo on A3, a reverse crash into V
-//   VERDICT a brass button (-3 dB re P), crash -6 dB, kick; 1 bar at E4
-//   CADENCE Em7 -> A7sus4 -> A7, a snare + tom fill on the last beat, stop dead at base
-// Reactions (§6.6): drums yield to strong cues (drumYield), "catch the hit" brass stabs, clock trains silence the
-// shaker, the buzz deflate (Gm, bass slides -3 st, drums and marimba out for a beat), dense beats lose the glock and
-// thin the marimba, long cue-free holds change something every 2 bars.
+//   VERDICT "ding! ba-DAM": the ding owns V's downbeat, the band (kick, bass, brass button, crash) answers a 16th later
+//   CADENCE Em7 -> A7sus4 -> A7, a swung snare + tom fill on the last beat, stop dead at base
+// Reactions (§6.6): drums yield to body cues (>= 0.35, footsteps too) and to the cues B3 listens to; "catch the hit"
+// brass stabs on the react bus (the engine's un-ducked bus: the cue they answer does not duck them); clock trains
+// silence the shaker and block and keep the kit, ghosts, pizz chops and marimba off their ticks; the buzz deflate (Gm,
+// the bass bends down 3 st, drums and marimba out for a beat); the bass chokes for bloops, dings, landings and steps;
+// band-selective dips of the mid voices under the cues (a dynamic EQ in automation); dense beats lose the glock and thin
+// the marimba; long cue-free holds change something every 2 bars.
 import * as T from '../../../src/sound/theory.mjs'
 import { climb, deflateEnd } from './harmony.mjs'
 import { balancePlan } from './balance.mjs'
@@ -331,7 +336,7 @@ export function compose(tl, rng) {
   }
 
   // ---- the hook at t = 0, one of three seeded variants (brass D major always at t = 0, S10), so 15 Becker shorts in a
-  // feed do not open identically: "ta-da!" (an 8th), "ba-DA!" (a 16th, then the octave-up chord and the crash on the
+  // feed do not open identically: "ta-da!" (an 8th), "ba-DA!" (a 16th, then a higher voicing F#4 A4 D5 F#5 and the crash on the
   // and-of-1), or "ta-da-ling!" (the 8th and a glock run up the chord on the swung 16ths)
   const hookV = tl.stream('hook').int(3)
   {

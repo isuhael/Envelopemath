@@ -5,7 +5,6 @@
 // rest (§8.4.1, §4.6.1). Variation between consecutive cues of a kind comes from the seeded stream, the pitch rotation
 // by `n` and the pan (U4).
 import * as K from '../../../src/sound/kit.mjs'
-import { mix } from './mix.mjs'
 import * as T from '../../../src/sound/theory.mjs'
 import { loudness } from '../../../src/sound/loudness.mjs'
 import {
@@ -14,8 +13,6 @@ import {
 } from '../../../src/sound/dsp.mjs'
 
 // ---------------------------------------------------------------- helpers
-/** kinds the B3 audibility check listens for (gain >= 0.4) */
-export const AUDIBLE = new Set(['thud', 'hit', 'ding', 'cash', 'reveal', 'pop'])
 const unit = b => { const p = peakOf(b); if (p > 0) scale(b, 1 / p); return b }
 const env = (x, e) => { for (let i = 0; i < x.length; i++) x[i] *= e[i] ?? 0; return x }
 const rot = (arr, n) => arr[((n % arr.length) + arr.length) % arr.length]

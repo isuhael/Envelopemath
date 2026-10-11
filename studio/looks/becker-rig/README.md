@@ -830,21 +830,21 @@ The channel brand comes from `studio/brand/brand.json` (see `studio/README.md`, 
 
 ## Sound
 
-The Becker Rig sound pack is "toy-box funk": a synthesised band under cartoon foley (`studio/sound/BIBLE.md` §3, §6, §7, §9; engine contract in `studio/sound/README.md`). Everything is synthesised. The only randomness is the engine's seeded streams, so a spec always renders to the same WAV.
+The Becker Rig sound pack is "toy-box funk": a synthesised band under cartoon foley (`studio/sound/BIBLE.md` §3, §6, §7, §9; engine contract in `studio/sound/README.md`). The Shorts carry no narration, so the music and the SFX tell the whole story. Everything is synthesised, and the only randomness is the engine's seeded streams, so a spec always renders to the same WAV.
 
 | File | What it holds |
 |---|---|
 | `sound.mjs` | The pack entry: key D major, tempo 112-128 (target 120, absolute 104-136, sync grid 2 beats), 4 tension beats |
-| `sound/harmony.mjs` | The chord plan per section |
-| `sound/compose.mjs` | The score (notes, drums, automation) and the em-sting logo orchestration |
+| `sound/harmony.mjs` | The chord plan per section, and the buzz deflate's span (`deflateEnd`) |
+| `sound/compose.mjs` | The score (notes, drums, automation: section levels, the band's tilt, the band-selective dips), the reactions to the cues, and the em-sting logo orchestration |
 | `sound/instruments.mjs` | One function per voice (BR-Bounce, BR-Mallet, BR-Glock, BR-Pizz, BR-Honk, strings, pad, slide whistle, drums) |
 | `sound/sfx.mjs` | The 15 SFX kinds, plus the wrapper that applies the per-cue trims |
-| `sound/balance.mjs` | The SFX leveller, the band tilt and the music-level solver (B1, B8, §9.2) |
-| `sound/mix.mjs` | Levels, sends, ducks, sidechain, glue and SFX-bus settings |
+| `sound/balance.mjs` | The SFX leveller, the band tilt, the music-level solver (B1, B8, §9.2) |
+| `sound/mix.mjs` | Levels, sends, ducks, payoff duck, sidechain, glue and SFX-bus settings |
 
 ### The music
 
-**Tempo.** The engine's tempo map, with bars snapped to the anchors. Swing is 58% on the 16ths, everywhere except TENSION.
+**Tempo.** The engine's tempo map, with bars snapped to the anchors. Swing is 58% on the 16ths everywhere except TENSION, fills included.
 
 **Harmony** (D major):
 
@@ -859,38 +859,43 @@ The Becker Rig sound pack is "toy-box funk": a synthesised band under cartoon fo
 | VERDICT | D |
 | CADENCE | Em7, then A7sus4 (last 4 beats), then A7 (last 2 beats). The card then resolves to D add9 |
 
-A `buzz` cue deflates the band. It inserts Gm at the cue, the bass bends down 3 semitones, drums and marimba drop out for a beat, and the bar line restates the chord.
+**The buzz deflate.** A `buzz` turns the chord to Gm (borrowed iv) and the band sags: drums and marimba stop for a beat, and the bass plays the Gm root (G2) at the buzz, bending down 3 semitones over 250 ms (flagged `strain`). When less than a beat of the bar is left, the Gm carries through the next downbeat and the chord comes back one beat into that bar, so a buzz just before a bar line is a deflate rather than a 125 ms flicker. If a bloop or a landing follows within 300 ms, the bend completes before it.
 
 **Voices:**
-- **BR-Bounce bass:** square + saw through a resonant 24 dB LP whose cutoff sweeps from about 2.4 kHz down to 350 Hz (τ 90 ms, Q 2), with a tanh drive of 2.5. A sine sub an octave down sits under roots below B2. It slides into tied notes.
-- **Marimba ostinato:** two seeded patterns, with the em motif as a turnaround in steps 13-16.
-- **Glock call-and-answer phrases** in sparse bars, and two composed glock lines over the DROP. A5 lands on P.
-- **Pizz chops** on 3, 7, 11 and 15.
-- **BR-Honk brass:** 3 detuned saws with a 25-cent scoop and a filter envelope. It plays the hook "ta-da", the fanfare and the stabs.
+- **BR-Bounce bass:** square + saw, a light drive (tanh 1.8, after a 4 kHz pre-filter so no pitch aliases), then the resonant 24 dB LP sweep (about 2.4 kHz down to 350 Hz, τ 90 ms, Q 2), a gentle tanh 1.3 that rounds the onset spike, and a 12 dB LP at 1.2 kHz. The drive sits in front of the filter, so the bass no longer owns 0.5-3 kHz. A sine at the fundamental (-9 dB) gives it a round floor. There is no sub-octave (37-58 Hz cost headroom and no phone plays it); a 40 Hz HP clears the rest.
+- **Marimba ostinato:** two seeded patterns, with the em motif as a turnaround in steps 13-16. **Deviation from §6.4:** the root sits in MIDI 67-78, not 74-85, so the ostinato plays D4-F#5. That is a warm mid marimba under the glock's octave: the two toys stop masking each other, and the marimba can be the loudest voice in the band's mids without piling the long-term spectrum into the 1 kHz octave (§9.2). An evolving long hold lifts it an octave only when the whole bar fits under MIDI 86. The DROP keeps it in its home octave, leaving the octave above to the glock line and the fanfare's top voices. Strokes pan by pitch (±30%). When the cues crowd the 1 kHz octave, the marimba is played with harder mallets (its overtones above 1.5 kHz up by as much as 1.2).
+- **Glock call-and-answer:** em-motif calls with stepwise answers, plus two composed lines over the DROP, with A5 landing on P. They weave between the cues: no coins, hits, rolls or buzz in the two bars, and no bell-like cue (pop, ding, tick, boing, cash) within 120 ms of a glock onset. Throws and steps may pass under the tune. 11 of the 15 teasers now have glock before P.
+- **Pizz chops** on 3, 7, 11 and 15 in E4 bars and the HOLD. A pizz tremolo plays in the BREAK.
+- **BR-Honk brass:** 3 detuned saws with a 25-cent scoop and a filter blat. It plays the hook, the "ka" at P, the DROP stabs, and the react voices described below.
 - **Tremolo strings** on the TENSION climb.
-- **Warm pad:** 2 triangles + 2 saws, voice-led and sidechained 1.5 dB to the kick.
+- **Warm pad:** a halo, not a wall. HP 250 Hz, and only two guide tones (3rd + 7th, or 3rd + 5th) in the BUILD, voice-led, sidechained 1.5 dB to the kick. The logo's D add9 keeps HP 150.
 - **Slide whistle** into P, only when no SFX `riser` covers TENSION.
-- **Drums:** kick, snare, ghost and roll, clap, shaker, tambourine, block, tom, timpani, crash and reverse crash. Kick, snare and clap are soft-clipped at their own peak (tanh 1.5), for 2-4 dB less crest at the same weight. Snare, shaker and tambourine are rolled off above 10-12 kHz.
+- **Drums:** a dry kit. The kick is a sine 130 → 46 Hz (it carries the 31.5 Hz octave now that the bass has no sub), plus snare, ghost and roll, clap, shaker, tambourine, block, tom, timpani, crash and reverse crash. Kick, snare and clap are soft-clipped at their own peak (tanh 1.5).
+
+**The react bus.** The band's answers to the cues play on the engine's un-ducked bus (`bus: 'logo'`; the score keeps role `brass`), with their own sends, so the cue they answer does not duck them away:
+- `honkR`: the "catch the hit" stab, at most one per 2 bars, on a hit ≥ 0.85 at the hit time.
+- `honkR` + `crashR`: the verdict button.
+- `honkFR`: the fanfare's sustained "TA".
 
 **The arrangement against the timeline:**
 
 | Section | What plays |
 |---|---|
-| HOOK | Brass "ta-da", timpani, crash and kick at t = 0 |
+| HOOK | One of three seeded variants. All three have brass D major at t = 0, with kick and bass (S10). "ta-da" is an 8th with timpani and crash. "ba-DA" is a 16th, then a higher voicing (F#4 A4 D5 F#5) on the and-of-1 with timpani and crash. "ta-da-ling" is the 8th plus a glock run D5 F#5 A5 D6. The t = 0 brass (`honkH`) sits 2 dB under the P fanfare. The file's first frame is where the AAC encoder overshoots most, and the payoff should be the bigger "ta-da" anyway |
 | BUILD | E3, rising to E4 at the midpoint: kick on 4/7, ghost snares, pizz, bass slides |
 | TENSION | Heartbeat kick on every beat. The snare roll goes from 16ths to 32nds with a gain ramp from -6 to 0 dB, the strings climb and the bass walks F# G G# A. The last 8th before P is silent, apart from the reverse crash ending exactly on P |
-| P | **On the downbeat:** the fanfare (brass D major doubled at the octave), timpani D2, crash (τ 1.4 s), glock A5, and kick + snare + clap |
-| DROP | E5: four on the floor, claps, tambourine, brass stabs on 1 and the and-of-2, ostinato up an octave. A one-bar DROP hands its level to the first CADENCE bar, so the payoff holds two bars |
+| P | **"ka-TA":** a short brass "ka" (16th) on the downbeat with kick, snare, clap, timpani D2 and crash, inside the payoff duck. Then the sustained "TA" (D major doubled at the octave) on the react bus, from the first swung 16th that leaves the payoff's other cues their first 50 ms, until the and-of-2. A payoff marked by a ding or a pop keeps its first 50 ms, so the "ka" is left out there |
+| DROP | E5: four on the floor, claps, tambourine, brass stabs on 1 and the and-of-2, the glock line. A one-bar DROP stands 0.5 dB higher (B7 on short specs) |
 | HOLD | E3 "victory lap", changing something every 2 bars |
 | BREAK | Pizz tremolo, dominant pad, reverse crash into V |
-| VERDICT | Brass button, crash |
-| CADENCE | Ends with a snare + tom fill and stops dead at `base` |
+| VERDICT | **"ding! ba-DAM":** the verdict ding owns V's downbeat. The band answers one swung 16th later with kick, bass, the brass button (react bus) and crash |
+| CADENCE | Em7 → A7sus4 → A7, then a swung snare + tom fill. It stops dead at `base` |
 
 Section levels come from `musicDb`:
 
 | Bars | Level |
 |---|---|
-| E5 | +1.1 dB |
+| E5 | +1.1 dB (+1.6 for a one-bar DROP) |
 | E4 | 0 |
 | E3 | -1.7 |
 | HOLD | -5.5 |
@@ -898,79 +903,128 @@ Section levels come from `musicDb`:
 | TENSION | ramps from -1 to +1 |
 | All | plus the solver's trim |
 
-The band also reacts to the cues:
-- It yields to strong cues.
-- It "catches" big non-anchor hits with a brass stab, at most one per 8 beats.
-- Clock trains (tick or thud with a period of 1 s or less) silence the shaker and block.
+**How the band reacts:**
+- **Drums yield** to every body cue (thud, hit, cash, reveal, step) at gain ≥ 0.35 within 70 ms. Every nearby cue is checked, not only the nearest one. A cue that B3 listens to (gain ≥ 0.4) owns its first 50 ms: no kick merges with it or lands up to 80 ms before it, and a backbeat drops rather than snapping onto it. A backbeat may snap onto a lighter cue within 35 ms if nothing else is then 15-70 ms off.
+- **Clock trains:** no kick, snare, clap or tom 15-70 ms off a train's tick, no ghost snare or pizz chop within 70 ms of one, no marimba stroke within 50 ms of one, and no shaker or block while the train runs.
+- **The bass makes room:**
+  - It is choked 5 ms before a bloop, ding, landing or step with gain ≥ 0.4.
+  - A note starting within 60 ms of a bloop or ding is left out.
+  - A note starting with a landing or a step answers it 70 ms later.
+- **Band-selective dips** (a dynamic EQ on the band's 400 Hz-4 kHz voices: marimba, glock, pizz, brass, strings, pad, snare family, whistle). They play under each pop (6 dB), ding (6), cash (6), thud (4), step (4), roll (5, held over the roll), tick (3) and whoosh (2.5), at full depth down to gain 0.4. Bass, kick, shaker and the react bus keep the groove. The fanfare's "TA" dips 8 dB under the payoff's own coins, dings and landings that follow the hit.
 
 **The logo** (card, n1-n4 = A4 D5 E5 A5):
-- n1-n3 are dead-stroke marimba with a pizz an octave down at -8 dB.
-- n4 is a glock A5 with a brass stab D4 F#4 A4 D5, timpani D2, crash and swell.
+- n1-n3 are dead-stroke marimba, with a pizz an octave down at -8 dB.
+- n4 is a glock A5 with a brass stab D4 F#4 A4 D5, timpani D2, crash and a reverse swell.
 - Low-passed glock echoes follow n4.
 - A D add9 pad is held to the end of the file.
-- The whole logo is trimmed against the predicted master gain, so the sting lands at the same loudness in every teaser (B8).
+- The whole logo is trimmed against the predicted master gain (B8).
 
 ### The SFX
 
-Pitched layers follow the chord. A cue with gain ≥ 0.4 of an audible kind (thud, hit, ding, cash, reveal, pop) sets its own duck depth, so it stands 3 dB over the band (B3). Every buffer ends in a 6 ms fade.
+Pitched layers follow the chord. Every buffer ends in a 6 ms fade. Peaks are dBFS at gain 1. The ducks are the music's broadband duck (depth, hold, release τ); the clearance a cue needs over the band's mids comes from the dips above.
 
-| Kind | Sound | Peak (dBFS, gain 1) |
-|---|---|---|
-| thud | Sine dive 2.2f → f on the root or 5th (43-50, never the previous thud's pitch), LP'd click, wood BP 600 | -8 to -9.5 |
-| tick | Woodblock partials 1 and 2.71 on a chord tone, knock, click. Trains go tick-tock A5/D5 | -16 (-17 in trains) |
-| swipe | Band-passed noise sweep 1.2 → 5 kHz, plus a whistle a 5th up on long swipes | -14 (longer: lower) |
-| pop | Bloop on a chord tone (72-83, rising 7 semitones in 40 ms), thock, click | -11.5 |
-| hit | Punch (sine dive 4f → f on the root, the 5th under it if the last hit had that root), LP 7 kHz burst at -9 dB, 1.8 kHz smack; big hits add timpani and crash. Tanh 1.5 over the whole impact. No timpani on P or V (the band has one); levelled by loudness in the card | -7.5 (-8 at P) |
-| ding | Glock on the chord's 3rd, then its 5th at +60 ms. The card plays F#6 + A6 | -10 |
-| whoosh | Noise sweep 700 → 3.5 kHz → 900 Hz with 28 Hz flutter | -14 |
-| cash | 8-14 clinks (3 partials) on chord tones, plus a glock "ka-ching" root and octave | -9 |
-| step | LP noise + 95 Hz sine + click, alternating pan | -17 ± 1 |
-| roll | Click train BP 2.2 kHz + woodblock walk | -16 |
-| type | 14 clicks per second + scratch | -18 |
-| riser | Slide-whistle A4 → A5 with growing vibrato, noise swell BP 500 Hz → 3 kHz, width from 20 to 60% | -10 at the end |
-| buzz | Saws D3 + Eb3 bending down 3 semitones under a falling LP | -12 |
-| boing | Triangle up an octave over 0.25 s with 11 Hz vibrato | -12 |
-| reveal | thud + ding | -8 |
+| Kind | Sound | Peak | Duck |
+|---|---|---|---|
+| thud | Sine dive 2.2f → f on the root or 5th (43-50, never the previous thud's pitch), LP'd click, wood BP 600 | -8 to -9.5 | §7 3 dB (scaled by gain); 4.5 dB for gain ≥ 0.4 |
+| tick | Woodblock partials 1 and 2.71, plus a presence partial at 1.8 kHz on a chord tone, knock, click. Trains go tick-tock A5/D5 | -15.2 | §7 1 dB |
+| swipe | Band-passed noise sweep 1.2 → 5 kHz, plus a whistle a 5th up on long swipes | -14 (longer: lower) | §7 1.5 dB |
+| pop | Bloop on a chord tone (72-83, rising 7 st in 40 ms), thock, click | -11.1 (card -11.5) | §7 1.5 dB; 4.5 dB (30 + 80 ms) for gain ≥ 0.4 |
+| hit | Punch (sine dive 4f → f on the root), burst LP 6 kHz at -9 dB, 1.8 kHz smack. Big hits add timpani and a crash (LP 7.5 kHz). Tanh 1.5 over the impact | -7.5 (-8 at P) | 6 dB at most; big 10 dB; at P 9 dB, 150 ms + 0.3 s |
+| ding | Glock on the chord's 3rd, then its 5th at +60 ms. The card plays F#6 + A6 | -10 | §7 3 dB; at V 4 dB; at P 10 dB |
+| whoosh | Noise sweep 700 → 3.5 kHz → 900 Hz with 28 Hz flutter | -13.3 | §7 2 dB |
+| cash | 8-14 clinks on chord tones, plus a glock "ka-ching" root and octave | -9 | §7 4 dB |
+| step | LP noise + 95 Hz sine, a 200 Hz heel scuff, and a 3 ms tap at 2.5 kHz (+5 dB) | -15.6 ± 0.5 | §7 1 dB; 2.5 dB for gain ≥ 0.4 |
+| roll | Click train BP 2.2 kHz + woodblock blips (τ 20 ms) walking the chord, last click +1.5 dB | -15.5 | §7 2 dB over the roll |
+| type | 14 clicks per second + scratch | -18 | §7 1 dB |
+| riser | Slide whistle A4 → A5 with growing vibrato, noise swell BP 500 Hz → 3 kHz, width 20 → 60% | -10 at the end | none |
+| buzz | Saws D3 + Eb3 bending down 3 st under a falling LP | -12 | §7 4 dB |
+| boing | Triangle up an octave over 0.25 s with 11 Hz vibrato | -12 | §7 2 dB |
+| reveal | thud + ding | -8 | §7 6 dB |
+
+Peaks stay within the bible's §7 peak + 1 dB (U3). No duck gets extra depth for a cue the leveller trimmed or for one merged with a music hit.
 
 ### The mix
 
-**Levels** live in `mix.mjs`, and the music bus fader stays at 0. The engine takes music sends after the voice level and before the bus fader, so a fader below 0 would make every send hotter than written.
+**Levels** live in `mix.mjs`. The music bus fader stays at 0. The toys carry the look:
 
-**Sends** are true wet/dry ratios and wetter than the bible's §8.5 starting values:
-
-| Voice | Send |
+| Voice | Level (dB) |
 |---|---|
-| snare | room -4.5 |
-| clap | room -5.5 |
-| pad | hall -3 |
-| strings | hall -3 |
-| brass | hall -4 |
-| glock | hall -4 |
-| fanfare | hall -10 |
-| timpani | hall -9 |
-| crash | hall -9 |
+| marimba | -19.4 |
+| pizz | -20.4 |
+| glock | -24.4 |
+| bass | -10.8 |
+| pad | -23.1 |
+| kick | -17.6 |
+| snare | -13.9 |
+| shaker | -23.9 |
+| tom | -19.9 |
 
-B1 reads the SFX stem's gated loudness, which sits 3.5-7 LU over the cues' real share because the cues bunch. For both stems to land in their bands, the mix needs loudness that is in neither stem, and the returns carry it at -3.5 to -6 LU re the mix. The fanfare, timpani and crash send little: the band is ducked 9 dB on P but its returns only half that, so their hall would bloom over the DROP.
+**Sends** are the bible's §8.5 values less 1.5 dB:
+
+| Voice | Send (dB) |
+|---|---|
+| snare | room -11.5 |
+| clap | room -13.5 |
+| marimba | room -17.5 |
+| glock | hall -13.5 |
+| pizz | room -15.5 |
+| brass | hall -15.5 |
+| strings | hall -13.5 |
+| timpani | hall -11.5 |
+| crash | hall -13.5 |
+| pad | hall -15.5 |
+| kick, bass | none |
+
+SFX sends are the §7 table less 1.5 dB. There is no extra payoff send. The returns stem reads 9.4-12.3 LU under the mix (it was 3.9-5.2).
+
+**Payoff duck:** 9 dB, hold 150 ms, release 0.3 s (B2). **Sidechain:** pad and strings duck 1.5 dB on each kick.
 
 **`balance.mjs`**, run by `compose()`:
-1. **The leveller** renders every body cue as the engine will. It models the cluster cap and the SFX-bus compressor. It then trims only the loudest moments (at most 3 dB for audible cues, 8 dB for the rest), so the SFX stem lands on -22.9 LUFS gated before mastering. Payoff cues are trimmed only by how far they tower over the card. A trimmed audible cue deepens its duck by the same amount.
-2. **The tilt** measures the SFX stem's 2 kHz octave against its 1 kHz octave and tilts the band to suit (-3.5 to +2.5 dB). Dull SFX lift the drums' and brass's presence and the bass. Bright SFX ease the presence and lift the marimba, glock and pizz.
-3. **The music trim** picks the music level that puts both stems nearest the middle of their B1 bands. It uses a fitted mix model, `mix = (1 + a)·M + b·U` (a 0.44, b 1.76). It also predicts the master gain, which the card is trimmed against.
+1. **The leveller** renders the body cues as the engine will (cluster cap, SFX-bus compressor). It rides down only pile-ups of big cues: at most 6 dB, 3 dB for a cue B3 listens to, and payoff cues only by how far they tower over the card. The small foley (tick, step, roll, type, pop, swipe, whoosh) is never trimmed.
+2. **The tilt** measures the SFX stem's 2 kHz octave against its 1 kHz octave and leans the band to frame the cues' octave (§9.2):
+   - **Dull cues** (bloops, dings, taps crowd 1 kHz): presence +1.6 dB per tilt unit (not the shaker or tambourine), bass and pad +1, glock -1, and harder marimba mallets.
+   - **Bright cues:** presence -1 per unit, and the toys +1.
+   - The marimba and pizz are never moved down.
+3. **The music trim** sets the music stem against the SFX stem's gated loudness, M = I - 1 LU (+ up to 2 dB for a strongly tilted SFX spectrum). That puts a hit the same 1 LU over the band whether the teaser has three hits or forty taps. A bias (-0.35 LU) covers what the engine's merges take off the SFX. The master gain is predicted from `mix = (1 + a)·M + b·U` (a 0.007, b 1.288, C -23.46, tiltUp 0.88, fitted on the 15 teasers at trim 0), and the card is trimmed against it. **Refit `MODEL` after any level change:** render at `MODEL.fixedTrim = 0`, then least-squares fit.
+
+### B1: a bible change request
+
+As written, §8.1/§9.3 B1 asks for the music stem at -2.5..-4.5 LU and the SFX stem at -2..-4 LU re the mix, both gated. With sparse cues (gated SFX minus ungated SFX = 3-7 LU), the two bands only hold together when about a third of the mix is in neither stem. The previous version of this pack met B1 that way: returns 4-5 LU under the mix, as loud as the dry band. With the §8.5 sends, B1 as written fails on all 15 teasers (music -1.1..-2.0, SFX -0.3..-2.8 LU). The harness reports that as **B1w (waived)**.
+
+**Proposed B1** (Becker; what `check.mjs` gates on):
+- music stem -0.5..-4.5 LU re the mix;
+- SFX stem (gated) minus music stem (gated) in [-2, +2] LU, so the cues sit within 2 LU of the band while they sound;
+- returns ≤ -8 LU re the mix (no reverb fill).
+
+The ungated SFX share (-5..-7.6 LU) and the SFX's own contribution (mix minus mix-without-SFX, +0.8..+1.6 LU) are printed for information. This needs the bible owner's decision in `sound/BIBLE.md` §8.1/§9.3.
 
 ### Verifying
 
 ```
-node src/cli.mjs sound specs/*-becker-rig-*.json --video ../renders/channel --out /tmp/snd-becker-rig/mp4 --score --stems --jobs 4
-node src/cli.mjs audit /tmp/snd-becker-rig/mp4 --reports /tmp/snd-becker-rig/mp4/sound --out /tmp/snd-becker-rig/audit
+node src/cli.mjs sound specs/*-becker-rig-*.json --video ../renders/channel --out /tmp/fix-snd-becker-rig/mp4 --score --stems --jobs 4
+node src/cli.mjs audit /tmp/fix-snd-becker-rig/mp4 --reports /tmp/fix-snd-becker-rig/mp4/sound --out /tmp/fix-snd-becker-rig/audit
 ```
 
 Results:
 - **Engine audit:** score 15/15 for every spec.
-- **Loudness:** I -14.08 to -14.15 LUFS, decoded true peak -1.12 to -1.46 dBTP, LRA 3.3-4.9 LU.
-- **Silence and stereo:** silence 0%, correlation 0.63-0.71, mono fold within 1.0 LU.
-- **Bands and timing:** the §9.2 bands are inside the Becker ranges. Cue onsets land within 0.6 ms.
-- **B and S checks:** B1-B10 and S1-S14 pass on all 15.
-- **DSP unit checks:** U1 aliasing at D6 and A6 is ≤ -66 dB for every pitched voice. U2 has no edge steps. U3 peaks are within +0.4 dB of nominal. U4 NCC is ≤ 0.97.
+- **Loudness:** I -14.07 to -14.14 LUFS, decoded true peak -1.04 to -1.59 dBTP, LRA 4.3-5.6 LU, silence 0%.
+- **Stereo:** correlation 0.87-0.92 (minimum ≥ 0.42), mono fold within 0.45 LU, phone proxy 1.8-2.8 LU.
+- **Bands and timing:** every §9.2 band is inside the Becker windows, with harshness ≤ 1.0 dB. Cue onsets land within 0.42 ms.
+- **B and S checks:** B1 (proposed), B2-B10 and S1-S14 pass on all 15.
+- **The critic's measurements:**
 
-Known limit:
-- **A5 (PLR on the decoded AAC):** 03a reads 13.01 against the 13.0 limit. The cause is the engine's ceiling of -1.5 dBTP plus a target of -14 ± 0.1 LUFS. AAC adds up to about 0.5 dB of true peak and takes about 0.08 LU of loudness, so the decoded PLR sits at 12.7-13.0 whatever the mix. Every master WAV reads 12.5.
+| Measure | Before | Now |
+|---|---|---|
+| Marimba in the BUILD, re the band | -16..-21 LU | -5.4..-9.4 LU, the loudest voice in 500-1200 Hz on all 15 |
+| Body ≥ 6 dB down | 3-13% | 0.8-5.0% (0-3.7% outside the payoff) |
+| Dips deeper than 6 dB | 6-30 per minute | 1.6-8.2 per minute |
+| P duck | 15 dB | 9-10 dB, back to -2 dB at P + 0.6 s |
+| ding at V | 15-18 dB | 4 dB |
+| Flams (incl. steps ≥ 0.35 and clock ticks) | — | none |
+| Deterministic | — | yes: a re-render gives the same WAV sha256 |
+
+- **DSP unit checks:** U1-U4 pass, 77/77.
+
+Known limits (engine):
+- **A5 (PLR on the decoded AAC)** reads 13.02-13.10 on 01c, 03a and 08b. The engine's -1.5 dBTP ceiling plus 0.3-0.5 dB of AAC overshoot puts the decoded PLR at 12.5-13.1 whatever the mix (pack-side changes moved it chaotically). The fix is in the engine: a -1.6 dBTP ceiling, or a decoded-PLR retry in the encode loop.
+- **The AAC first frame:** a hard t = 0 hit can decode up to +3 dB over its master peak at about 12 ms. The engine's local ceiling dips do not always clear it, and it then lowers the whole ceiling, which means more limiting for that teaser. The hook brass at -2 dB keeps all 15 teasers clear today.
