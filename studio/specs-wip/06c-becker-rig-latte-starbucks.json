@@ -1,0 +1,237 @@
+{
+  "id": "06c-becker-rig-latte-starbucks",
+  "look": "becker-rig",
+  "format": "pov-race",
+  "fps": 30,
+  "duration": 16.0,
+  "header": "POV: Since 2014 you invested\nin Starbucks instead of paying\n**$4/day** for a Starbucks latte",
+  "footer": "$4 ≈ a grande latte · with dividends",
+  "captions": true,
+  "vo": [
+    {
+      "t": 0.0,
+      "d": 1.7,
+      "text": "Skip the $4 latte, get rich?"
+    },
+    {
+      "t": 1.8,
+      "d": 1.8,
+      "text": "That's $1,460 a year."
+    },
+    {
+      "t": 3.75,
+      "d": 4.65,
+      "text": "The stock outruns the cups."
+    },
+    {
+      "t": 8.5,
+      "d": 1.75,
+      "text": "By 2021, your money doubled."
+    },
+    {
+      "t": 10.3,
+      "d": 1.5,
+      "text": "Then it stalls. You keep buying."
+    },
+    {
+      "t": 11.85,
+      "d": 1.3,
+      "text": "2025: $17,532 of lattes."
+    },
+    {
+      "t": 13.2,
+      "d": 1.2,
+      "text": "Or about $24,900 in stock."
+    },
+    {
+      "t": 14.4,
+      "d": 1.2,
+      "text": "About 1.4 times. Not rich. Not zero."
+    }
+  ],
+  "verdict": {
+    "t": 14.4,
+    "text": "**≈ 1.4×**. Not rich. Not zero."
+  },
+  "data": {
+    "spend": {
+      "label": "Spent on lattes",
+      "points": [
+        [
+          2014.0,
+          4.0
+        ],
+        [
+          2014.99,
+          1460.0
+        ],
+        [
+          2015.99,
+          2920.0
+        ],
+        [
+          2016.99,
+          4384.0
+        ],
+        [
+          2017.99,
+          5844.0
+        ],
+        [
+          2018.99,
+          7304.0
+        ],
+        [
+          2019.99,
+          8764.0
+        ],
+        [
+          2020.99,
+          10228.0
+        ],
+        [
+          2021.99,
+          11688.0
+        ],
+        [
+          2022.99,
+          13148.0
+        ],
+        [
+          2023.99,
+          14608.0
+        ],
+        [
+          2024.99,
+          16072.0
+        ],
+        [
+          2025.99,
+          17532.0
+        ]
+      ],
+      "final": "$17,532 spent",
+      "item": "cup"
+    },
+    "own": {
+      "label": "In Starbucks stock",
+      "points": [
+        [
+          2014.0,
+          4.0
+        ],
+        [
+          2014.99,
+          1585.83
+        ],
+        [
+          2015.99,
+          3996.62
+        ],
+        [
+          2016.99,
+          5198.84
+        ],
+        [
+          2017.99,
+          6954.83
+        ],
+        [
+          2018.99,
+          9633.4
+        ],
+        [
+          2019.99,
+          14987.7
+        ],
+        [
+          2020.99,
+          20521.04
+        ],
+        [
+          2021.99,
+          24343.41
+        ],
+        [
+          2022.99,
+          22807.68
+        ],
+        [
+          2023.99,
+          23942.32
+        ],
+        [
+          2024.99,
+          24864.51
+        ],
+        [
+          2025.99,
+          24928.31
+        ]
+      ],
+      "final": "≈ $24,900"
+    },
+    "purchases": [
+      {
+        "x": 2014.0,
+        "label": "Day 1",
+        "price": "$4"
+      }
+    ],
+    "x": {
+      "from": 2014,
+      "to": 2025.99,
+      "tickEvery": 4
+    },
+    "y": {
+      "prefix": "$",
+      "dp": 0
+    },
+    "raceT": [
+      0.5,
+      13.3
+    ],
+    "hold": 2.7
+  },
+  "lookOpts": {
+    "prop": "cup",
+    "jarLabel": "SBUX",
+    "endPose": "shrug",
+    "multiple": {
+      "x": 2021.99,
+      "t": 9.03,
+      "k": 2,
+      "label": "2×",
+      "hold": 0.9
+    },
+    "land": 0.12,
+    "chip": {
+      "x": 2015.99,
+      "text": "+$1,460",
+      "hold": 0.9
+    },
+    "spentLeft": {
+      "text": "$0 left",
+      "t": 13.85
+    },
+    "endMark": {
+      "label": "≈ 1.4×"
+    },
+    "rail": "plain",
+    "tagLife": 0.8
+  },
+  "sfx": [
+    {
+      "t": 0.5,
+      "kind": "pop"
+    },
+    {
+      "t": 9.03,
+      "kind": "ding"
+    },
+    {
+      "t": 13.3,
+      "kind": "cash"
+    }
+  ]
+}

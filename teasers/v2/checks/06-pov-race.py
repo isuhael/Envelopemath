@@ -14,17 +14,26 @@ Looks: 06a and 06b Scoreboard (06b ported from Live Sheet on 2026-10-08), 06c Be
      and every rounded figure in the VO is preceded by "about",
    - every string in the spec that contains a digit is covered by one of those checks,
    - the hook rules the linter can't see: header <= 15 words with exactly one $ figure,
-     a number in the header at t = 0, duration inside the 18-35 s lane for this format,
+     a number in the header at t = 0, duration inside the 18-35 s lane for this format
+     (06c's condensed cut: a 16-19 s body, the owner's 2026-10-12 note),
    - VO timing: each line's d >= written words / 2.6 AND >= spoken words / 2.8 (numbers
      counted as read aloud: "$17,532" = 5 words, "2025" = 2, "$7.99" = 2, "8.7" = 3),
-     no overlaps, last line ends at least 0.4 s before the end,
+     no overlaps, last line ends at least 0.4 s before the end. The posted shorts have no
+     narration, so 06c's condensed cut is paced as on-screen captions instead: each line's
+     d >= max(1.2 s, 0.12 s per word) at phone size,
    - beat sync: each beat a VO line mentions lands (on the chart's x -> t clock) inside
      that line's window, +/- 0.3 s; every sfx cue sits on its beat,
    - motion and payoff timing: the race starts by 1.0 s and the first year-end payoff
-     lands by 3.0 s (R10).
+     lands by 3.0 s (R10); for 06c's condensed cut also the race's moving pace (0.8-1.0 s a
+     year), the "2×" mark on the linear clock position of the 2021 close, "$0 left" between
+     the final reveal and the verdict, the verdict <= 1.5 s after the reveal and held 1.2-1.6 s.
 4. Prints a table and exits 1 on any mismatch.
 
-Run:  python3 teasers/v2/checks/06-pov-race.py
+Run:  python3 teasers/v2/checks/06-pov-race.py                    (the specs in studio/specs/)
+      python3 teasers/v2/checks/06-pov-race.py --spec studio/specs-wip/06c-becker-rig-latte-starbucks.json
+      --spec [KEY=]PATH (repeatable) checks PATH in place of studio/specs/<id>.json. KEY is a, b or c
+      (or 06a/06b/06c); without it the file's stem must be one of the three ids. 06c is checked against
+      the expectations of the cut it is: the 28.0 s round-2 cut or the condensed cut (body <= 19 s).
 """
 import calendar
 import datetime as dt
@@ -47,6 +56,45 @@ IDS = {
     "b": "06b-scoreboard-netflix-bill",    # ported from 06b-live-sheet-netflix-bill (2026-10-08)
     "c": "06c-becker-rig-latte-starbucks",
 }
+
+
+def parse_spec_args(argv):
+    """--spec [KEY=]PATH (repeatable) -> {key: abs path}; see the module docstring"""
+    out, i = {}, 0
+    while i < len(argv):
+        a = argv[i]
+        if a in ("-h", "--help"):
+            print(__doc__)
+            sys.exit(0)
+        if a == "--spec" or a.startswith("--spec="):
+            if a == "--spec":
+                i += 1
+                v = argv[i] if i < len(argv) else ""
+            else:
+                v = a.split("=", 1)[1]
+            if not v:
+                sys.exit("--spec needs a path")
+            m = re.fullmatch(r"(?:06)?([abc])=(.+)", v)
+            if m:
+                key, path = m.group(1), m.group(2)
+            else:
+                path = v
+                stem = os.path.splitext(os.path.basename(v))[0]
+                key = next((k for k, sid in IDS.items() if sid == stem), None)
+                if key is None:
+                    sys.exit(f"--spec {v}: the file stem is not one of {sorted(IDS.values())}; pass KEY=PATH")
+            if not os.path.isfile(path):
+                sys.exit(f"--spec {v}: no such file")
+            out[key] = os.path.abspath(path)
+        else:
+            sys.exit(f"unknown argument {a!r}; usage: 06-pov-race.py [--spec [KEY=]PATH ...]")
+        i += 1
+    return out
+
+
+SPEC_PATHS = {k: os.path.join(SPECS, sid + ".json") for k, sid in IDS.items()}
+SPEC_PATHS.update(parse_spec_args(sys.argv[1:]))
+CAP_MIN, CAP_SPW = 1.2, 0.12   # caption pacing (no narration): >= 1.2 s a line, >= 0.12 s a word at phone size
 
 # =====================================================================================
 # INPUTS (all verified by web search on 2026-10-07; publisher + URL in the write-up)
@@ -588,35 +636,50 @@ check("06b", "pinned: 188.84 shares x $93.76 ≈ $17,706",
 check("06b", "7 hikes after the $7.99 start", len(B["ticks"]) - 1, 7)
 
 # ---- 06c
-EXP["c"] = {
-    "raceT": [0.5, 20.4], "x": {"from": SBUX_START, "to": ye(SBUX_END), "tickEvery": 4},
+# Two cuts exist. The 28.0 s cut (round 2, narration-paced captions) is what studio/specs/ and renders/channel/ hold
+# until the condensed cut is promoted; the condensed cut (2026-10-12, the owner's "too many still moments, condense
+# it") is studio/specs-wip/06c-becker-rig-latte-starbucks.json. check_spec picks the set by the spec's duration
+# (body <= 19 s: condensed), so the default run keeps checking whatever studio/specs/ holds.
+_C_STRINGS = {
+    "header": f"POV: Since {SBUX_START} you invested\nin Starbucks instead of paying\n"
+              f"**{usd(LATTE_STAKE)}/day** for a Starbucks latte",
+    # one line (round-2 QA: the 2-line mono footer crowded the hook); "each year at its avg price" and
+    # "reinvested" are in the pinned comment and the assumptions
+    "footer": f"{usd(LATTE_STAKE)} ≈ a grande latte · with dividends",
+    # one line: the Becker Rig verdict band overflows by 6 px on any 2-line verdict (kit issue,
+    # logged); the judge's 2-line "Cups: $0. Stock: ≈ $24,900." version swaps in once it is fixed
+    "verdict.text": f"**≈ {mult(C['mult'])}×**. Not rich. Not zero.",
+    "data.spend.final": f"{usd(C['total'])} spent",
+    # one line, like "Spent on lattes" (round-2 QA: the 2-line label wedged the payoff plate)
+    "data.own.label": "In Starbucks stock",
+    "data.own.final": approx_usd(C["final"]),
+    "data.purchases.0.label": "Day 1",
+    "data.purchases.0.price": usd(LATTE_STAKE),
+    # assembly round 2: the "doubled" beat. A green dotted line at 2 × the 2021 spend, labelled, lands with
+    # the 2021 year-end (the ding) while the "doubled" line is up; the tower top is just above it (2.08×)
+    "lookOpts.multiple.label": f"{C['x2021_k']}×",
+    # round-2 QA fixes: what is left of the lattes, and the verdict's ratio drawn on the piles
+    "lookOpts.endMark.label": f"≈ {mult(C['mult'])}×",
+}
+_C_COMMON = {
+    "x": {"from": SBUX_START, "to": ye(SBUX_END), "tickEvery": 4},
     "first_payoff_x": ye(SBUX_START),
-    "strings": {
-        "header": f"POV: Since {SBUX_START} you invested\nin Starbucks instead of paying\n"
-                  f"**{usd(LATTE_STAKE)}/day** for a Starbucks latte",
-        # one line (round-2 QA: the 2-line mono footer crowded the hook); "each year at its avg price" and
-        # "reinvested" are in the pinned comment and the assumptions
-        "footer": f"{usd(LATTE_STAKE)} ≈ a grande latte · with dividends",
-        # one line: the Becker Rig verdict band overflows by 6 px on any 2-line verdict (kit issue,
-        # logged); the judge's 2-line "Cups: $0. Stock: ≈ $24,900." version swaps in once it is fixed
-        "verdict.text": f"**≈ {mult(C['mult'])}×**. Not rich. Not zero.",
-        "data.spend.final": f"{usd(C['total'])} spent",
-        # one line, like "Spent on lattes" (round-2 QA: the 2-line label wedged the payoff plate)
-        "data.own.label": "In Starbucks stock",
-        "data.own.final": approx_usd(C["final"]),
-        "data.purchases.0.label": "Day 1",
-        "data.purchases.0.price": usd(LATTE_STAKE),
-        # assembly round 2: the "doubled" beat. A green dotted line at 2 × the 2021 spend, labelled, lands with
-        # the 2021 year-end (the ding) while vo[4] says "doubled"; the tower top is just above it (2.08×)
-        "lookOpts.multiple.label": f"{C['x2021_k']}×",
-        # round-2 QA fixes: the year's lattes as a chip on the spent column at the 2017 close (a 365-day year),
-        # what is left of the lattes at the verdict, and the verdict's ratio drawn on the piles
-        "lookOpts.chip.text": f"+{usd(C['spend_y'][2017])}",
-        "lookOpts.spentLeft": "$0 left",
-        "lookOpts.endMark.label": f"≈ {mult(C['mult'])}×",
-    },
     "points": {"spend": C["spend"], "own": C["own"]},
     "purchases_x": [float(SBUX_START)],
+    "sfx": {0: float(SBUX_START), 1: ye(2021), 2: ye(SBUX_END)},
+    "lookOpts_t": {"multiple": ye(2021)},
+}
+# the 28.0 s cut (round 2): 9 narration-paced lines, the chip on the 2017 close, "$0 left" at the verdict
+EXP["c_28s"] = {
+    **_C_COMMON,
+    "cut": "28.0 s (round 2)",
+    "raceT": [0.5, 20.4],
+    "pace": "narration",
+    "lane": LANE,
+    "strings": {**_C_STRINGS,
+                # the year's lattes as a chip on the spent column at the 2017 close (a 365-day year)
+                "lookOpts.chip.text": f"+{usd(C['spend_y'][2017])}",
+                "lookOpts.spentLeft": "$0 left"},
     "vo_numbers": [
         [f"{LATTE_STAKE:.0f}"],
         [str(SBUX_START), f"{LATTE_STAKE:.0f}"],
@@ -632,8 +695,47 @@ EXP["c"] = {
     "sync": [(0, float(SBUX_START), "day-1 tick"), (0, ye(SBUX_START), "first payoff (end of 2014)"),
              (4, ye(2021), "2021: doubled"), (5, ye(2022), "2022 dip: the stall"),
              (6, ye(SBUX_END), "spend final"), (7, ye(SBUX_END), "own final")],
-    "sfx": {0: float(SBUX_START), 1: ye(2021), 2: ye(SBUX_END)},
-    "lookOpts_t": {"multiple": ye(2021)},
+    "chip": {"year": 2017, "vo": 2},
+    "mu_vo": 4,
+    "faster_vo": 3,
+    "own_vo": 7,
+}
+# the condensed cut (2026-10-12): 8 caption lines (7 shown; the verdict replaces the last), a race of about 1 s a
+# year, the chip on the 2015 close, "$0 left" after the own final and before the verdict, the verdict <= 1.5 s
+# after the final reveal and held 1.2-1.6 s, then the 2.5 s end card
+EXP["c"] = {
+    **_C_COMMON,
+    "cut": "condensed (2026-10-12)",
+    "raceT": [0.5, 13.3],
+    "pace": "captions",
+    "lane": (16.0, 19.0),       # the owner's condense note: body about 16-19 s (+ the 2.5 s card)
+    "strings": {**_C_STRINGS,
+                # "That's $1,460 a year." as a chip on the spent column at the 2015 close (a 365-day year): the
+                # first year-end after the 2014 payoff, while the counter already reads $2,920
+                "lookOpts.chip.text": f"+{usd(C['spend_y'][2015])}",
+                "lookOpts.spentLeft.text": "$0 left"},
+    "vo_numbers": [
+        [f"{LATTE_STAKE:.0f}"],                       # Skip the $4 latte, get rich?
+        [f"{C['per_year']:,.0f}"],                    # That's $1,460 a year.
+        [],                                           # The stock outruns the cups.
+        ["2021"],                                     # By 2021, your money doubled.
+        [],                                           # Then it stalls. You keep buying.
+        [str(SBUX_END), f"{C['total']:,.0f}"],        # 2025: $17,532 of lattes.
+        [f"{sig(C['final'], 3):,.0f}"],               # Or about $24,900 in stock.
+        [mult(C["mult"])],                            # (under the verdict) About 1.4 times. Not rich. Not zero.
+    ],
+    "vo_about": {6: [f"{sig(C['final'], 3):,.0f}"], 7: [mult(C["mult"])]},
+    "sync": [(0, float(SBUX_START), "day-1 tick"), (0, ye(SBUX_START), "first payoff (end of 2014)"),
+             (3, ye(2021), "2021: doubled"), (4, ye(2022), "2022 dip: the stall"),
+             (5, ye(SBUX_END), "spend final"), (6, ye(SBUX_END), "own final")],
+    "chip": {"year": 2015, "vo": 1},
+    "mu_vo": 3,
+    "faster_vo": 2,
+    "own_vo": 6,
+    # the condensed cut's timing targets (the editor's brief for the owner's note)
+    "moving_s_per_year": (0.8, 1.0),   # the race's moving time per year (the 2× pause excluded)
+    "verdict_after_final": 1.5,        # the verdict lands within this long after the final reveal (raceT[1])
+    "verdict_hold": (1.2, 1.6),        # and holds this long before the end card
 }
 check("06c", "2015 is a 365-day year ($1,460 rung)", C["spend_y"][2015], C["per_year"])
 check("06c", "'2×' mark: tower ≥ 2 × spend at the end of 2021",
@@ -641,9 +743,12 @@ check("06c", "'2×' mark: tower ≥ 2 × spend at the end of 2021",
       ok=C["x2021_k"] == 2 and C["value"][2021] >= 2 * C["cum_spend"][2021])
 check("06c", "pinned: 296.0 shares x $84.21 ≈ $24,926",
       usd(rnd(C["final"] / MT_SBUX_CLOSE[2025], 1) * MT_SBUX_CLOSE[2025]), "$24,926")
-check("06c", "'climbs faster than the cups' while vo[3] plays (x 2019.0-2021.1)",
-      ", ".join(f"{y}: +{C['value'][y] - C['value'][y - 1]:,.0f}" for y in (2019, 2020, 2021)),
-      f"each > +{C['per_year']:,.0f}", ok=all(C["value"][y] - C["value"][y - 1] > C["per_year"] for y in (2019, 2020, 2021)))
+# "climbs faster than the cups" / "the stock outruns the cups": each year's gain beats that year's $1,460 of
+# lattes in 2017-2021 (2016 does not: +$1,202). check_spec ties the caption's window on the race clock to these years.
+C["gain"] = {y: C["value"][y] - C["value"][y - 1] for y in range(SBUX_START + 1, SBUX_END + 1)}
+check("06c", "'outruns the cups': stake gain > lattes, 2017-2021",
+      ", ".join(f"{y}: +{C['gain'][y]:,.0f}" for y in range(2017, 2022)),
+      f"each > +{C['per_year']:,.0f}", ok=all(C["gain"][y] > C["spend_y"][y] for y in range(2017, 2022)))
 
 # =====================================================================================
 # SPEC CHECKS
@@ -752,12 +857,36 @@ def chart_t(spec, x, after=False):
     return pt1 + (x - px) / (xt - px) * (t1 - pt1)
 
 
+def x_at(spec, t):
+    """the race's x at time t (the inverse of chart_t; constant through a pause)"""
+    d = spec["data"]
+    t0, t1 = d["raceT"]
+    xf, xt = d["x"]["from"], d["x"]["to"]
+    if t <= t0:
+        return xf
+    if t >= t1:
+        return xt
+    pz = race_pause(spec)
+    if not pz:
+        return xf + (t - t0) / (t1 - t0) * (xt - xf)
+    px, pt0, pt1 = pz
+    if t <= pt0:
+        return xf + (t - t0) / (pt0 - t0) * (px - xf)
+    if t <= pt1:
+        return px
+    return px + (t - pt1) / (t1 - pt1) * (xt - px)
+
+
 def check_spec(key):
     sid = IDS[key]
-    path = os.path.join(SPECS, sid + ".json")
+    path = SPEC_PATHS[key]
     with open(path, encoding="utf-8") as f:
         spec = json.load(f)
     e = EXP[key]
+    if key == "c" and spec.get("duration", 0) > EXP["c"]["lane"][1]:
+        e = EXP["c_28s"]                              # the round-2 cut, until the condensed one is promoted
+    if key == "c":
+        check(sid, f"cut recognised ({os.path.relpath(path, ROOT)})", e["cut"], e["cut"])
     d = spec["data"]
 
     # --- common fields
@@ -767,7 +896,8 @@ def check_spec(key):
     check(sid, "fps", spec.get("fps"), 30)
     check(sid, "captions", spec.get("captions"), True)
     dur = spec["duration"]
-    check(sid, "duration in lane", dur, f"{LANE[0]}-{LANE[1]} s", ok=LANE[0] <= dur <= LANE[1])
+    lane = e.get("lane", LANE)
+    check(sid, "duration in lane", dur, f"{lane[0]}-{lane[1]} s", ok=lane[0] <= dur <= lane[1])
 
     # --- hook rules on the header
     hw = words(spec["header"])
@@ -809,12 +939,18 @@ def check_spec(key):
     end_prev = 0.0
     for i, line in enumerate(vo):
         n = len(words(line["text"]))
-        need = n / WPS
-        check(sid, f"vo[{i}] d ≥ {n} words / {WPS}", line["d"], f"≥ {need:.2f}", ok=line["d"] + 1e-9 >= need)
-        ns = len(spoken_words(line["text"]))
-        need_s = ns / SPOKEN_WPS
-        check(sid, f"vo[{i}] d ≥ {ns} spoken words / {SPOKEN_WPS}", line["d"], f"≥ {need_s:.2f}",
-              ok=line["d"] + 1e-9 >= need_s)
+        if e.get("pace") == "captions":
+            # no narration: the line is on-screen text, read at phone size
+            need = max(CAP_MIN, CAP_SPW * n)
+            check(sid, f"vo[{i}] caption d ≥ max({CAP_MIN}, {n} words × {CAP_SPW})", line["d"], f"≥ {need:.2f}",
+                  ok=line["d"] + 1e-9 >= need)
+        else:
+            need = n / WPS
+            check(sid, f"vo[{i}] d ≥ {n} words / {WPS}", line["d"], f"≥ {need:.2f}", ok=line["d"] + 1e-9 >= need)
+            ns = len(spoken_words(line["text"]))
+            need_s = ns / SPOKEN_WPS
+            check(sid, f"vo[{i}] d ≥ {ns} spoken words / {SPOKEN_WPS}", line["d"], f"≥ {need_s:.2f}",
+                  ok=line["d"] + 1e-9 >= need_s)
         check(sid, f"vo[{i}] starts after vo[{i - 1}]", line["t"], f"≥ {end_prev:.2f}",
               ok=line["t"] + 1e-9 >= end_prev)
         end_prev = line["t"] + line["d"]
@@ -928,38 +1064,88 @@ def check_spec(key):
               f"{vo[8]['t']:.2f}-{vo[8]['t'] + vo[8]['d']:.2f}", ok=vo[8]["t"] <= po["t"] <= vo[8]["t"] + vo[8]["d"])
 
     if key == "c":
+        t0, t1 = d["raceT"]
         # the "2×" mark's line height is k × the spend at x (the format reads both): the 2021 year-end, k = 2
         mu = spec["lookOpts"]["multiple"]
+        mv = e["mu_vo"]
         check(sid, "lookOpts.multiple.x = end of 2021", mu["x"], ye(2021))
         check(sid, "lookOpts.multiple.k = the label's multiple", mu["k"], C["x2021_k"])
         t_mu = chart_t(spec, mu["x"])
-        lo, hi = vo[4]["t"], vo[4]["t"] + vo[4]["d"]
-        check(sid, "'2×' mark shown inside vo[4] ('doubled')", f"t={t_mu:.2f}-{t_mu + mu['hold']:.2f}",
+        lo, hi = vo[mv]["t"], vo[mv]["t"] + vo[mv]["d"]
+        check(sid, f"'2×' mark shown inside vo[{mv}] ('doubled')", f"t={t_mu:.2f}-{t_mu + mu['hold']:.2f}",
               f"starts {lo:.2f}-{hi:.2f}", ok=lo <= t_mu <= hi)
+        # its t is where the 2021 close lands on the linear race clock (raceT), so the race before the pause runs
+        # at the race's own pace; the pause re-times only the years after it
+        t_lin = t0 + (mu["x"] - d["x"]["from"]) / (d["x"]["to"] - d["x"]["from"]) * (t1 - t0)
+        check(sid, "multiple.t = the 2021 close on the linear raceT clock", mu["t"], rnd(t_lin, 2),
+              ok=abs(mu["t"] - t_lin) <= 0.005 + 1e-9)
         # round-2 QA must: the race clock pauses on the 2021 close for the whole 2× hold (year 2021, $11,688 /
-        # $24,343 on the counters), and the hold ends within BEAT_TOL of vo[4] (then "it stalls")
+        # $24,343 on the counters), and the hold ends within BEAT_TOL of the "doubled" line (then "it stalls")
         pz = race_pause(spec)
         check(sid, "race clock pauses at the 2021 close for the 2× hold",
               f"x {pz[0]:.2f}, t {pz[1]:.2f}-{pz[2]:.2f}" if pz else "no pause",
               f"x {ye(2021):.2f}, t {t_mu:.2f}-{t_mu + mu['hold']:.2f}",
               ok=bool(pz) and pz[0] == ye(2021) and abs(pz[1] - t_mu) < 1e-9 and abs(pz[2] - t_mu - mu["hold"]) < 1e-9)
-        check(sid, "2× hold ends by vo[4]'s end + tolerance", f"t={t_mu + mu['hold']:.2f}", f"≤ {hi + BEAT_TOL:.2f}",
+        check(sid, f"2× hold ends by vo[{mv}]'s end + tolerance", f"t={t_mu + mu['hold']:.2f}", f"≤ {hi + BEAT_TOL:.2f}",
               ok=t_mu + mu["hold"] <= hi + BEAT_TOL)
         check(sid, "counters held during the 2× pause", f"{usd(C['cum_spend'][2021])} / {usd(C['value'][2021])}",
               "$11,688 / $24,343")
-        # the "+$1,460" chip: on the 2017 close, a 365-day year, while vo[2] says "$1,460 a year"
-        ch = spec["lookOpts"]["chip"]
-        check(sid, "lookOpts.chip.x = end of 2017", ch["x"], ye(2017))
-        check(sid, "2017 lattes = $4 × 365 (not a leap year)", C["spend_y"][2017], C["per_year"],
-              ok=C["spend_y"][2017] == C["per_year"] and not calendar.isleap(2017))
+        # the "+$1,460" chip: on a 365-day year's close, while a line says "$1,460 a year"
+        ch, cy, cv = spec["lookOpts"]["chip"], e["chip"]["year"], e["chip"]["vo"]
+        check(sid, f"lookOpts.chip.x = end of {cy}", ch["x"], ye(cy))
+        check(sid, f"{cy} lattes = $4 × 365 (not a leap year)", C["spend_y"][cy], C["per_year"],
+              ok=C["spend_y"][cy] == C["per_year"] and not calendar.isleap(cy))
+        check(sid, f"vo[{cv}] says the chip's figure", vo_numbers(vo[cv]["text"]), [f"{C['per_year']:,.0f}"])
         t_ch = chart_t(spec, ch["x"])
-        check(sid, "chip shown inside vo[2] ('$1,460 a year')", f"t={t_ch:.2f}-{t_ch + ch.get('hold', 1.4):.2f}",
-              f"{vo[2]['t']:.2f}-{vo[2]['t'] + vo[2]['d']:.2f}",
-              ok=vo[2]["t"] <= t_ch and t_ch + ch.get("hold", 1.4) <= vo[2]["t"] + vo[2]["d"] + BEAT_TOL)
-        # "$0 left" and the "≈ 1.4×" mark land with the verdict ("Not zero")
-        check(sid, "spentLeft / endMark land at verdict.t", spec["verdict"]["t"], vo[8]["t"])
-        check(sid, "endMark label = the verdict's multiple", spec["lookOpts"]["endMark"]["label"],
+        check(sid, f"chip shown inside vo[{cv}] ('$1,460 a year')", f"t={t_ch:.2f}-{t_ch + ch.get('hold', 1.4):.2f}",
+              f"{vo[cv]['t']:.2f}-{vo[cv]['t'] + vo[cv]['d']:.2f}",
+              ok=vo[cv]["t"] <= t_ch and t_ch + ch.get("hold", 1.4) <= vo[cv]["t"] + vo[cv]["d"] + BEAT_TOL)
+        # "climbs faster than the cups" / "outruns the cups": every year whose growth runs under that line (>= 0.25
+        # of the year on the race clock) beat its own lattes
+        fv = e["faster_vo"]
+        xa, xb = x_at(spec, vo[fv]["t"]), x_at(spec, vo[fv]["t"] + vo[fv]["d"])
+        yrs = [y for y in range(SBUX_START + 1, SBUX_END + 1)
+               if min(xb, ye(y)) - max(xa, ye(y - 1)) >= 0.25]
+        check(sid, f"vo[{fv}] '{strip_markup(vo[fv]['text'])}': stake gain > lattes in every year under it",
+              f"x {xa:.2f}-{xb:.2f}: " + ", ".join(f"{y} +{C['gain'][y]:,.0f}" for y in yrs),
+              f"each > +{C['per_year']:,.0f}", ok=bool(yrs) and all(C["gain"][y] > C["spend_y"][y] for y in yrs))
+        # the verdict's ratio is drawn on the piles with the verdict (endMark, no own t); "$0 left" ("Not zero")
+        em = spec["lookOpts"]["endMark"]
+        check(sid, "endMark lands with the verdict", em.get("t", spec["verdict"]["t"]), spec["verdict"]["t"])
+        check(sid, "endMark label = the verdict's multiple", em["label"],
               re.search(r"≈ [\d.]+×", strip_markup(spec["verdict"]["text"])).group(0))
+        sl = spec["lookOpts"]["spentLeft"]
+        t_sl = sl.get("t", spec["verdict"]["t"]) if isinstance(sl, dict) else spec["verdict"]["t"]
+        if e["pace"] == "captions":
+            # condensed cut: the column empties to "$0 left" right after the own final lands (and the figure has
+            # shrugged), under "Or about $24,900 in stock.", so something lands between the reveal and the verdict
+            ov = e["own_vo"]
+            check(sid, "'$0 left' after the final reveal (+0.3 s) and before the verdict",
+                  f"t={t_sl:.2f}", f"{t1 + 0.3:.2f}-{spec['verdict']['t'] - 0.3:.2f}",
+                  ok=t1 + 0.3 <= t_sl <= spec["verdict"]["t"] - 0.3)
+            check(sid, f"'$0 left' lands inside vo[{ov}] ('in stock')", f"t={t_sl:.2f}",
+                  f"{vo[ov]['t']:.2f}-{vo[ov]['t'] + vo[ov]['d']:.2f}",
+                  ok=vo[ov]["t"] <= t_sl <= vo[ov]["t"] + vo[ov]["d"])
+            # the editor's brief for the owner's note
+            lo_s, hi_s = e["moving_s_per_year"]
+            span = d["x"]["to"] - d["x"]["from"]
+            moving = (t1 - t0 - (pz[2] - pz[1] if pz else 0)) / span
+            pre = (pz[1] - t0) / (pz[0] - d["x"]["from"]) if pz else moving
+            post = (t1 - pz[2]) / (d["x"]["to"] - pz[0]) if pz else moving
+            check(sid, "race pace: moving s per year (2× pause excluded)",
+                  f"{moving:.3f} (to 2021 {pre:.3f}, after {post:.3f})", f"{lo_s}-{hi_s}",
+                  ok=lo_s <= moving <= hi_s + 1e-9)
+            va = spec["verdict"]["t"] - t1
+            check(sid, "verdict lands soon after the final reveal", f"{va:.2f} s after raceT[1]",
+                  f"≤ {e['verdict_after_final']}", ok=0 < va <= e["verdict_after_final"] + 1e-9)
+            vh = dur - spec["verdict"]["t"]
+            check(sid, "verdict hold before the end card", f"{vh:.2f} s", f"{e['verdict_hold'][0]}-{e['verdict_hold'][1]}",
+                  ok=e["verdict_hold"][0] - 1e-9 <= vh <= e["verdict_hold"][1] + 1e-9)
+            # captions run back to back from frame 1 to the verdict (each gap < 0.2 s), so no beat is unlabelled
+            gaps = [round(b["t"] - (a["t"] + a["d"]), 2) for a, b in zip(vo, vo[1:])]
+            check(sid, "caption gaps < 0.2 s", gaps, "each < 0.2", ok=all(g < 0.2 for g in gaps))
+        else:
+            check(sid, "spentLeft lands at verdict.t", t_sl, spec["verdict"]["t"])
 
     # --- coverage: every string with a digit must have been checked
     for p, v in leaves(spec):
@@ -985,6 +1171,9 @@ print(f"  06b  bills {B['total']:,.2f} -> {B['final']:,.2f} ({B['cum_shares'][NF
 print(f"  06c  lattes {C['total']:,.2f} -> {C['final']:,.2f}  = x{C['mult']:.3f}; "
       f"x{C['x2021']:.2f} at 2021; since 2021: +{C['since2021_in']:,.0f} in, "
       f"+{C['since2021_gain']:,.0f} stake; alt close {C['alt_final']:,.0f}")
+print("\nSpecs checked")
+for k, sid in IDS.items():
+    print(f"  {sid}: {os.path.relpath(SPEC_PATHS[k], ROOT)}")
 print("\nYear-end series (spend | own)")
 for key, S in (("06a", A), ("06b", B), ("06c", C)):
     sp = dict((round(x, 2), y) for x, y in S["spend"])

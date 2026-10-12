@@ -1,0 +1,506 @@
+{
+  "id": "06c-becker-rig-latte-starbucks",
+  "teaser": "06c Becker Rig, pov-race: \"What if every $4 Starbucks latte bought Starbucks stock instead?\"",
+  "prepared": "2026-10-12",
+  "for_video": {
+    "current_render": "renders/channel/06c-becker-rig-latte-starbucks.mp4",
+    "current_duration_s": 30.5,
+    "current_sha256": "ca342ff6b8a4f50284e25808fb52fb906e65dcc589e2dc77218523a0e3af718b",
+    "note": "Metadata is cut-independent: it names no timestamps. A condensed cut is in progress; re-export the cover from the final render by content (see instagram.cover)."
+  },
+  "facts": {
+    "source": "teasers/v2/06-pov-race.md section (b) 06c; teasers/v2/checks/06-pov-race.py: 436 checks, 0 failed (run 2026-10-12)",
+    "stake": "$4/day, every day 1/1/2014-12/31/2025, held flat ($4 ≈ a grande latte: $3.65 in 2014, $4.45 in 2024, FinanceBuzz via Visual Capitalist)",
+    "per_year": "$1,460 ($4 × 365; $1,464 in 2016, 2020, 2024)",
+    "spent_total": "$17,532 ($4 × 4,383 days)",
+    "end_2021": "$11,688 in, $24,343 in stock (2.08×, 'doubled')",
+    "stall_2022_2025": "another $5,844 in, stake +$585 ($24,343 → $24,928); the 229 shares held at end-2021 fell $106.24 → $84.21 (dividend-adjusted prices, which sit below the prices quoted at the time)",
+    "final": "296.025 shares × $84.21 (12/31/2025 dividend-adjusted close) = $24,928.31 ≈ $24,900 (pinned: 296.0 × $84.21 ≈ $24,926)",
+    "multiple": "24,928.31 ÷ 17,532 = 1.42 ≈ 1.4×",
+    "method": "each year buys at that year's average SBUX close, adjusted for splits and dividends (Macrotrends), so dividends are reinvested; no fees or taxes",
+    "verdict": "≈ 1.4×. Not rich. Not zero."
+  },
+  "youtube": {
+    "titles_ranked": [
+      {
+        "rank": 1,
+        "title": "What If You Bought Starbucks Stock Instead of a $4 Latte Every Day? #Starbucks #LatteFactor #stocks",
+        "vidiq_score": 97,
+        "chars": 99,
+        "note": "PICK. The core title alone also scores 97 (67 chars). House template: 3 hashtags in the title. Fallback if YouTube Studio counts it over 100: drop '#stocks' (91 chars)."
+      },
+      {
+        "rank": 2,
+        "title": "What If You Invested in Starbucks Instead of Buying a $4 Latte Every Day Since 2014?",
+        "vidiq_score": 96,
+        "chars": 84,
+        "note": "Carries the start year and the 'what if you invested' phrase; at 84 chars there is no room for the house hashtags."
+      },
+      {
+        "rank": 3,
+        "title": "What If Every $4 Starbucks Latte Bought Starbucks Stock Instead?",
+        "vidiq_score": 89,
+        "chars": 64,
+        "note": "The write-up's title. Same idea, 8 points lower, and 'Starbucks Stock' sits at the end."
+      }
+    ],
+    "titles_also_scored": [
+      {
+        "title": "What If You Bought Starbucks Stock Instead of a $4 Latte Every Day Since 2014?",
+        "vidiq_score": 97,
+        "chars": 78,
+        "note": "78 chars, no room for hashtags"
+      },
+      {
+        "title": "What If You Bought Starbucks Stock Instead of a $4 Latte Every Day? #starbucks #lattefactor #investing",
+        "vidiq_score": 97,
+        "chars": 102,
+        "note": "102 chars: over the 100 limit"
+      },
+      {
+        "title": "What If You Invested in Starbucks Instead of Buying a $4 Latte?",
+        "vidiq_score": 94,
+        "chars": 63,
+        "note": ""
+      },
+      {
+        "title": "What If You Invested in Starbucks Instead of Buying a $4 Latte? #starbucks #lattefactor #investing",
+        "vidiq_score": 94,
+        "chars": 98,
+        "note": ""
+      },
+      {
+        "title": "The Latte Factor, Tested on Starbucks Stock: $4 a Day Since 2014",
+        "vidiq_score": 84,
+        "chars": 64,
+        "note": ""
+      },
+      {
+        "title": "$4 Latte Every Day Since 2014 vs Starbucks Stock: The Latte Factor Tested",
+        "vidiq_score": 84,
+        "chars": 73,
+        "note": ""
+      },
+      {
+        "title": "Skip the $4 Latte, Buy Starbucks Stock? 12 Years of Math",
+        "vidiq_score": 82,
+        "chars": 56,
+        "note": ""
+      },
+      {
+        "title": "The Latte Factor, Tested on Starbucks Itself",
+        "vidiq_score": 82,
+        "chars": 44,
+        "note": ""
+      }
+    ],
+    "title_pick": "What If You Bought Starbucks Stock Instead of a $4 Latte Every Day? #Starbucks #LatteFactor #stocks",
+    "title_pick_chars": 99,
+    "description": "What if every $4 Starbucks latte since 2014 had bought Starbucks stock instead? The latte factor, tested on Starbucks itself: $17,532 of lattes vs about $24,900 in stock. About 1.4×. Not rich. Not zero.\n\nThe math, shown:\n• $4 × 365 = $1,460 a year, each year's money buying SBUX at that year's average price (dividends reinvested).\n• By the end of 2021: $11,688 in, $24,343 in stock. Doubled (2.08×).\n• Then it stalls. 2022–2025: another $5,844 in, but the stake grew just $585. The 229 shares held at the end of 2021 fell from $106.24 to $84.21 (dividend-adjusted prices).\n• End (12/31/2025 close): 296.0 shares × $84.21 ≈ $24,926, vs $17,532 of lattes. ≈ 1.4×.\n• The cups are worth $0. The stock is not zero.\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\n\nAnimation and original sound: The Back of the Envelope. $4 ≈ a grande latte ($3.65 in 2014, $4.45 in 2024; FinanceBuzz via Visual Capitalist), held flat every day from 1/1/2014 to 12/31/2025. Each year buys at that year's average SBUX price, adjusted for splits and dividends (Macrotrends); valued at the 12/31/2025 adjusted close; no fees or taxes. Not financial advice. Not affiliated with or endorsed by Starbucks.\n#Starbucks #LatteFactor #stocks",
+    "description_chars": 1239,
+    "hashtags_in_order": [
+      "#Starbucks",
+      "#LatteFactor",
+      "#stocks"
+    ],
+    "hashtag_rules": "Title hashtags show as links in the title; with none in the title, the first 3 description hashtags show above it. Over 60 hashtags and YouTube ignores all of them. #Shorts is not needed (vertical, under 3 min).",
+    "tags": [
+      "starbucks stock",
+      "latte factor",
+      "the latte factor",
+      "what if you invested",
+      "buying starbucks coffee stock",
+      "starbucks stock vs coffee",
+      "what is the latte factor",
+      "skip coffee and invest",
+      "latte factor myth",
+      "the latte factor investing",
+      "$4 a day invested",
+      "sbux",
+      "starbucks stock dividends reinvested",
+      "what happened to starbucks stock",
+      "dollar cost averaging",
+      "opportunity cost",
+      "money math",
+      "math animation",
+      "the back of the envelope",
+      "envelope math"
+    ],
+    "tags_chars_as_youtube_counts": 450,
+    "pinned_comment": "A grande latte was $3.65 in 2014 and $4.45 in 2024 (FinanceBuzz). What does your daily coffee cost now?\n\nCheck the end: 296.0 shares × $84.21 (12/31/2025 close, dividend-adjusted) ≈ $24,926, vs $17,532 of lattes. ≈ 1.4×.",
+    "related_video": {
+      "pick": {
+        "id": "EqFQCJheCMU",
+        "title": "Start Investing 10 Years Late? You Get Half.",
+        "url": "https://www.youtube.com/shorts/EqFQCJheCMU",
+        "why": "Same viewer intent: a small amount invested over years. It pairs this Short's stall with the cost of waiting, without repeating it."
+      },
+      "swap_when_live": "06a (first iPhone vs Apple stock) or 06b (Netflix bill vs Netflix stock): the same POV-race series, once published.",
+      "end_screen": "Shorts have no end screens or cards. The Related video link is the Shorts equivalent."
+    },
+    "thumbnail_frame": "In the YouTube app, pick the verdict-hold frame (the same content as the IG cover).",
+    "settings": {
+      "category": "Education",
+      "audience": "Not made for kids",
+      "altered_or_synthetic_content": "No (animated chart, not realistic footage)",
+      "remixing": "Allow",
+      "captions": "None needed (no narration; all text is on screen)"
+    },
+    "posting_window": {
+      "when": "First Tue-Thu evening after the condensed render passes QA; earliest Wed 14 Oct 2026, 21:30-22:30 ET (Thu 01:30-02:30 UTC). Sunday 06:00-08:00 ET is the alternative.",
+      "spacing": "Keep it at least 6 h from any other upload on the channel.",
+      "why": "The channel's own October Shorts, median views by posting slot: Sunday 05:00-08:00 ET 1,178 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 262 (n = 2). The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. Search demand: 'starbucks' runs +55.4% over its 30-day baseline (fall menu season). Starbucks' next quarterly report is due in late October, per a third-party Short's description (not verified). Posting about two weeks earlier gives the Short time to be indexed if 'starbucks stock' interest rises then. The copy mentions neither."
+    },
+    "description_utf8_bytes": 1264
+  },
+  "instagram": {
+    "caption": "What if every $4 Starbucks latte since 2014 had bought Starbucks stock instead? The latte factor, tested on Starbucks itself.\n\nPOV: since 2014 you invested in Starbucks instead of paying $4/day for a Starbucks latte. Each year's latte money buys SBUX at that year's average price, dividends reinvested.\n\nThe math, shown:\n• $4 × 365 = $1,460 a year of lattes.\n• By the end of 2021: $11,688 in, $24,343 in stock. Doubled.\n• 2022–2025: another $5,844 in, but the stake grew just $585.\n• End of 2025: $17,532 of lattes vs ≈ $24,900 in stock. ≈ 1.4×.\n\nNot rich. Not zero. The cups are worth $0; the stock isn't.\n\nIs the latte factor real? On Starbucks itself, 12 years of lattes came to about 1.4 times the money, with almost no growth after 2021.\n\n$4 ≈ a grande latte ($3.65 in 2014, $4.45 in 2024; FinanceBuzz), held flat. Valued at the 12/31/2025 dividend-adjusted close ($84.21); no fees or taxes. Not financial advice. Not affiliated with or endorsed by Starbucks.\n\nWhat do you pay for your latte now?\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\nAnimation and original sound: The Back of the Envelope.\n\n#thelattefactor #starbucks #SBUX #investing #personalfinance",
+    "caption_chars": 1197,
+    "caption_first_125": "What if every $4 Starbucks latte since 2014 had bought Starbucks stock instead? The latte factor, tested on Starbucks itself.",
+    "caption_rule": "The first 125 characters are the question and the 'latte factor' keyword, no result: the caption overlays the Reel from frame 1, so the result sits below 'more'.",
+    "hashtags_in_order": [
+      "#thelattefactor",
+      "#starbucks",
+      "#SBUX",
+      "#investing",
+      "#personalfinance"
+    ],
+    "hashtag_rule": "Instagram caps a post at 5 hashtags (since Dec 2025).",
+    "alt_text_short": "Animation: $17,532 of $4-a-day Starbucks lattes, 2014 to 2025, vs about $24,900 in Starbucks stock.",
+    "alt_text_long": "Animation on a white background. A green stick figure pays $4 for a latte every day from 2014 to 2025, drinks it and tosses the cup onto a growing pile, while a coin lands on a tower of gold coins labelled SBUX. Counters: $17,532 spent on lattes vs about $24,900 in Starbucks stock. The stock doubles the money by 2021, then stalls. Verdict: about 1.4 times. Not rich. Not zero.",
+    "alt_text_where": "Advanced settings → Accessibility → Alt text, if your app shows it for Reels.",
+    "cover": {
+      "files": {
+        "3x4": "publishing/06c-becker-rig-latte-starbucks-cover-3x4.jpg",
+        "9x16": "publishing/06c-becker-rig-latte-starbucks-cover-9x16.jpg"
+      },
+      "frame_in_current_render_s": 24.5,
+      "frame_by_content": "The verdict hold: '$0 left' in the empty spent column, the '≈ 1.4×' mark on the tower top, '$17,532 spent' vs '≈ $24,900', and the line '≈ 1.4×. Not rich. Not zero.' fully drawn. Use the first settled frame of that hold, before the em end card.",
+      "crop": "3:4 = 1080×1440 from y 60 to 1500 of the 1080×1920 frame (badge, header, both numbers, both piles and the verdict line; drops the empty floor). A centred grid crop (y 240-1680) cuts the badge.",
+      "how_to_set": "In 'Edit cover', pick the verdict frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts both numbers.",
+      "re_export": "ffmpeg -ss <T> -i <condensed.mp4> -frames:v 1 -vf \"crop=1080:1440:0:60\" -q:v 2 publishing/06c-becker-rig-latte-starbucks-cover-3x4.jpg"
+    },
+    "first_comment": "Cups: $0. Stock: ≈ $24,900, on $17,532 of lattes. A grande latte was $3.65 in 2014 and $4.45 in 2024 (FinanceBuzz). What does yours cost now?",
+    "first_comment_action": "Post it right after publishing and pin it.",
+    "trial_reels": {
+      "recommendation": "Post as a regular Reel, not a Trial.",
+      "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut (for example the 30.5 s render against the condensed one) as a Trial with MANUAL graduation 48-72 h later. Compare skip rate (October Reels ran 27.0-65.1%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+    },
+    "settings": {
+      "audio": "Rename the original audio to 'Latte vs Starbucks stock — The Back of the Envelope' if the app allows; it is the score, with no voice.",
+      "share_to_feed": "On",
+      "google_indexing": "Public professional-account posts can appear in Google/Bing since 10 Jul 2025, so the caption is written as a searchable question."
+    },
+    "posting_window": {
+      "when": "Same evening as YouTube: earliest Wed 14 Oct 2026, 21:45-22:45 ET, about 15 min after the Short.",
+      "why": "October Reels, median plays by posting slot: weekday 22:00-00:30 ET 5,431 (n = 3, including the two best: 7,251 and 5,431), weekday midday 1,178 (n = 2), Sunday 05:00-08:00 ET 1,042 (n = 2). Skip rate tracks plays more closely than the hour does: 27.0-27.5% for the top two, 56.9-65.1% for the bottom two. The condense matters more than the hour."
+    },
+    "alt_text_rule": "Paste the short version into Instagram: it is kept at or under 100 characters so it fits the field however short it is, and it writes 'a day', 'to' and 'about' instead of '/', '-' and '≈' so screen readers read it cleanly. The long version is for anywhere with room (a website embed, a newsletter)."
+  },
+  "research": {
+    "keywords_youtube": [
+      {
+        "keyword": "what if you invested",
+        "est_monthly_searches": 9302,
+        "volume": 59.2,
+        "competition": 37.5,
+        "overall": 60.5,
+        "note": "+79.6% vs its 30-day baseline (5,178)",
+        "metrics_as_of": "2026-10-11"
+      },
+      {
+        "keyword": "starbucks stock",
+        "est_monthly_searches": 7441,
+        "volume": 57.8,
+        "competition": 39.5,
+        "overall": 58.9,
+        "note": "seed; 'is starbucks stock a buy now' (4,548) is advice intent, not used",
+        "metrics_as_of": "2026-10-11"
+      },
+      {
+        "keyword": "the latte factor",
+        "est_monthly_searches": 5052,
+        "volume": 55.3,
+        "competition": 27.8,
+        "overall": 62.1,
+        "note": "flat (0% growth)",
+        "metrics_as_of": "2026-09-08"
+      },
+      {
+        "keyword": "if you invested $2 a day in coca-cola stock instead of drinking coca-cola",
+        "est_monthly_searches": 5237,
+        "volume": 55.5,
+        "competition": 21.2,
+        "overall": 64.8,
+        "note": "same format, other brand",
+        "metrics_as_of": "2026-10-11"
+      },
+      {
+        "keyword": "the latte factor is a lie",
+        "est_monthly_searches": 4511,
+        "volume": 54.5,
+        "competition": 23.0,
+        "overall": 63.5,
+        "note": "demand for the sceptical angle; our answer is 'not rich, not zero', so it is not in the copy",
+        "metrics_as_of": "2026-10-11"
+      },
+      {
+        "keyword": "latte factor",
+        "est_monthly_searches": 4455,
+        "volume": 54.5,
+        "competition": 29.2,
+        "overall": 61.0,
+        "note": "low competition",
+        "metrics_as_of": "2026-09-14"
+      },
+      {
+        "keyword": "buying starbucks coffee stock",
+        "est_monthly_searches": 3577,
+        "volume": 53.0,
+        "competition": 28.1,
+        "overall": 60.6,
+        "note": "",
+        "metrics_as_of": "2026-04-13"
+      },
+      {
+        "keyword": "the latte factor investing",
+        "est_monthly_searches": 3465,
+        "volume": 52.8,
+        "competition": 13.3,
+        "overall": 66.4,
+        "note": "competition 13.3; only 'latte factor dave ramsey show' (10.3) and 'the latte factor how small expenses add up' (12.0) are lower in vidIQ's matching terms",
+        "metrics_as_of": "2026-06-17"
+      },
+      {
+        "keyword": "starbucks (topic)",
+        "est_monthly_searches": 156350,
+        "volume": 77.5,
+        "competition": 69.4,
+        "overall": 58.8,
+        "note": "+55.4% vs 30-day baseline (100,602): seasonal tailwind",
+        "metrics_as_of": "2026-10-11"
+      },
+      {
+        "keyword": "invest instead of buying coffee",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": 32.4,
+        "overall": 27.0,
+        "note": "<750/month (overall 27.0): too small to target; dropped from the tags",
+        "metrics_as_of": null
+      }
+    ],
+    "keywords_source": "vidIQ keyword research (research and matching_terms modes), pulled 2026-10-11 and re-queried 2026-10-12 (same values). vidIQ refreshes each keyword on its own schedule, so each row carries its snapshot date in metrics_as_of; four rows are older snapshots (2026-04-13 to 2026-09-14).",
+    "same_idea_youtube_shorts": [
+      {
+        "title": "The REAL Investment In STARBUCKS!! #shorts",
+        "channel": "Madhur Agarwal",
+        "subscribers": 187000,
+        "views": 40278,
+        "published": "2022-12-04",
+        "note": "India-facing; the description pitches investing in a brand instead of buying its products, with a broker referral. Found on the 2026-10-12 re-check (vidIQ YouTube search 'starbucks stock instead of coffee', short, by views)."
+      },
+      {
+        "title": "How Much Would YOU Make Buying STARBUCKS instead of STARBUCKS?",
+        "channel": "Weekly Theta",
+        "subscribers": 1160,
+        "views": 9575,
+        "published": "2024-01-17"
+      },
+      {
+        "title": "$6 Starbucks a Day Since 2010: Coffee vs $SBUX Stock",
+        "channel": "Stocks with Josh",
+        "subscribers": 196000,
+        "views": 5636,
+        "published": "2026-06-23"
+      },
+      {
+        "title": "What If You Bought Starbucks Stock Instead of their Coffee? World's most expensive coffee! #stock",
+        "channel": "TickerTimeMachine",
+        "subscribers": 6,
+        "views": 1901,
+        "published": "2025-05-08"
+      },
+      {
+        "title": "If you invested your Starbucks order instead…",
+        "channel": "Patrick Kenney",
+        "subscribers": 41400,
+        "views": 1256,
+        "published": "2025-09-16"
+      },
+      {
+        "title": "☕ What if you invested $2 a day in Starbucks instead of buying coffee? 🤯💰",
+        "channel": "Market Data Daily",
+        "subscribers": 4,
+        "views": 570,
+        "published": "2025-03-12"
+      },
+      {
+        "title": "Skip the $5 latte, buy Starbucks stock? 10 years of data.",
+        "channel": "Assetly - Invest Smarter",
+        "subscribers": 29,
+        "views": 71,
+        "published": "2026-10-08"
+      },
+      {
+        "title": "Skip your $5 latte and become a millionaire? #shorts",
+        "channel": "Money, Drawn",
+        "subscribers": 2,
+        "views": 32,
+        "published": "2026-09-28"
+      }
+    ],
+    "same_idea_note": "vidIQ YouTube search, short, by view count: the biggest same-idea Short found has 40,278 views (Madhur Agarwal, India-facing, 2022); the biggest US-facing one has 9,575 (Weekly Theta). The niche is thin; no channel owns it. Assetly's 2026-10-08 Short reaches the same 'meh' verdict on 10 years at $5/day (≈ $21,277 on $18,265, price only).",
+    "instagram_tiktok_outliers": [
+      {
+        "handle": "@davidlbach",
+        "platform": "Instagram",
+        "id": "Dc_YjEkKJg2",
+        "on_screen": "The Latte Factor! DRINKING A STARBUCKS COFFEE A DAY VS BUYING THE STOCK INSTEAD (SBUX)",
+        "caption_opens": "#thelattefactor math is real.",
+        "views": "1.9M in vidIQ's outlier index (201.5x the account median of 9.7K); the profile endpoint shows 16.7K plays for the same reel",
+        "span": "1992-2026, the IPO-era run"
+      },
+      {
+        "handle": "@investment_timeline",
+        "platform": "TikTok",
+        "id": "7671760671867997473",
+        "on_screen": "POV: You invested in Monster instead of paying $3/day for a Monster Energy",
+        "caption": "the POV line + #monster #energydrink #usa #investment #stocks",
+        "views": "1.5M (140.6x)"
+      }
+    ],
+    "own_channel_youtube_october_shorts": [
+      {
+        "id": "hJBvmGA6sZ0",
+        "title": "You Can Lean on $1 Million. Not on $1 Billion.",
+        "posted_et": "Thu 00:25",
+        "views": 1221
+      },
+      {
+        "id": "LjHDFzVxRyM",
+        "title": "Can You Find the Missing Dollar?",
+        "posted_et": "Sun 07:04",
+        "views": 1215
+      },
+      {
+        "id": "XVUeMcTg9OQ",
+        "title": "Your Interest Has a Speed Limit",
+        "posted_et": "Sun 05:49",
+        "views": 1141
+      },
+      {
+        "id": "8__HTUa2PoU",
+        "title": "Pay the Minimum on $5,000? 238 Months.",
+        "posted_et": "Mon 22:09",
+        "views": 642
+      },
+      {
+        "id": "FW_oxA3kbsM",
+        "title": "A $2 Lottery Ticket Was Worth $6.98. Until the Fine Print.",
+        "posted_et": "Wed 12:03",
+        "views": 348
+      },
+      {
+        "id": "mXbKY_R63h4",
+        "title": "You Can Carry $1 Million. Not in Pennies.",
+        "posted_et": "Thu 13:38",
+        "views": 175
+      },
+      {
+        "id": "EqFQCJheCMU",
+        "title": "Start Investing 10 Years Late? You Get Half.",
+        "posted_et": "Tue 22:27",
+        "views": 160
+      }
+    ],
+    "own_channel_instagram_october_reels": [
+      {
+        "shortcode": "DeIvYk7I4Qr",
+        "topic": "$5,000 on the minimum",
+        "posted_et": "Mon 22:46",
+        "plays": 7251,
+        "skip_rate_pct": 27.5,
+        "avg_watched_pct": 56.5
+      },
+      {
+        "shortcode": "DeOEthJJ1TG",
+        "topic": "$1M stack vs Burj Khalifa",
+        "posted_et": "Thu 00:28",
+        "plays": 5431,
+        "skip_rate_pct": 27.0,
+        "avg_watched_pct": 83.1
+      },
+      {
+        "shortcode": "DeWgFZRoR_S",
+        "topic": "Missing dollar",
+        "posted_et": "Sun 07:05",
+        "plays": 1907,
+        "skip_rate_pct": 32.4,
+        "avg_watched_pct": 80.4
+      },
+      {
+        "shortcode": "DeMvZv9IqRw",
+        "topic": "Powerball $6.98",
+        "posted_et": "Wed 12:05",
+        "plays": 1759,
+        "skip_rate_pct": 59.7,
+        "avg_watched_pct": 58.0
+      },
+      {
+        "shortcode": "DePe11HIHwn",
+        "topic": "$1M in pennies",
+        "posted_et": "Thu 13:37",
+        "plays": 596,
+        "skip_rate_pct": 41.7,
+        "avg_watched_pct": 67.2
+      },
+      {
+        "shortcode": "DeLSd9io8UK",
+        "topic": "10 years late",
+        "posted_et": "Tue 22:30",
+        "plays": 219,
+        "skip_rate_pct": 65.1,
+        "avg_watched_pct": 30.6
+      },
+      {
+        "shortcode": "DeEW2ZMIiYd",
+        "topic": "Speed limit (e)",
+        "posted_et": "Sun 05:54",
+        "plays": 177,
+        "skip_rate_pct": 56.9,
+        "avg_watched_pct": 31.2
+      }
+    ],
+    "channel_stats": {
+      "youtube_subscribers": 53,
+      "youtube_views": 8995,
+      "youtube_videos": 39,
+      "youtube_30d": "+27 subscribers, +3,901 views, 9 videos",
+      "instagram_followers": 8,
+      "instagram_30d_views": 18600
+    },
+    "limits": [
+      "vidIQ's YouTube authorization is a different channel (UCRC5v_El2fibbkqsZs6uFjA), so @envelopemath's YouTube Analytics (audience hours, geography) were not readable. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
+      "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and on the outliers' own tags.",
+      "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views."
+    ]
+  },
+  "checked": {
+    "date": "2026-10-12",
+    "by": "adversarial check of this sheet",
+    "math": "python3 teasers/v2/checks/06-pov-race.py: 436 checks, 0 failed; every public figure traced to the 06c maths table",
+    "limits": {
+      "youtube_title_chars": 99,
+      "youtube_description_chars": 1239,
+      "youtube_description_utf8_bytes": 1264,
+      "youtube_tags_chars_as_youtube_counts": 450,
+      "youtube_hashtags": 3,
+      "instagram_caption_chars": 1197,
+      "instagram_hashtags": 5,
+      "instagram_alt_text_short_chars": 99
+    },
+    "vidiq_requeried": "starbucks stock 7,441 / 39.5; what if you invested 9,302 (+79.6% on 5,178); latte factor 4,455; the latte factor 5,052; buying starbucks coffee stock 3,577; coca-cola phrase 5,237; starbucks 156,350 (+55.4%); title scores 97 (pick) and 89 (write-up title); channel 53 subs / 8,995 views / 39 videos. All match."
+  }
+}
