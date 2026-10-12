@@ -14,7 +14,12 @@
 //        loudness, true peak, LRA, crest, silence, stereo, phone proxy, bands, onsets + a spectrogram PNG per file
 //   node src/cli.mjs cues   specs/*.json --out cues.json          the cue records (what the engine reads) as JSON
 //   node src/cli.mjs score  specs/*.json --out dir [--cues cues.json]   timeline + harmony + notes only (no audio)
-// With no spec arguments, check/stills/sheet/audio/sound/cues/score use every specs/*.json; render needs --all for that.
+//   node src/cli.mjs verify specs/*.json [--from dir] [--json] [--detail] [--jobs 4] [--cues cues.json] [--video dir | --no-video]
+//        [--out dir] [--keep] [--twice] [--no-units | --units-only] [--expect-identical] [--baseline file] [--write-baseline file] [--pending]
+//        the acceptance harness (sound/checks/, thresholds in sound/acceptance.json): builds the audio + stems into a temp
+//        dir unless --from names prebuilt outputs, muxes onto the finished MP4s (read only) for A12/A13, runs every check,
+//        prints the pass table and the failures, exits 1 on any failure
+// With no spec arguments, check/stills/sheet/audio/sound/cues/score/verify use every specs/*.json; render needs --all for that.
 // Nothing is written into renders/channel/ unless --final is passed.
 // Brand (studio/brand/brand.json: the logo in the look's mark + the CTA end card) is on by default:
 //   --no-brand          render/lint exactly as before the brand layer (no end card, the look's own mark)
@@ -29,7 +34,8 @@ import { checkSpec, formatReport } from './check.mjs'
 const [cmd, ...rest] = process.argv.slice(2)
 const files = [], opt = {}
 // flags that never take a value (so "--no-brand specs/a.json" keeps the spec)
-const BOOL = new Set(['all', 'sheet', 'json', 'no-brand', 'help', 'h', 'legacy-audio', 'score', 'wav', 'no-encode', 'no-check', 'final', 'no-spectrogram'])
+const BOOL = new Set(['all', 'sheet', 'json', 'no-brand', 'help', 'h', 'legacy-audio', 'score', 'wav', 'no-encode', 'no-check', 'final', 'no-spectrogram',
+  'detail', 'keep', 'twice', 'no-units', 'units-only', 'no-video', 'expect-identical', 'pending'])
 // flags whose value is optional: taken only when the next token is not a flag and not a spec/media file
 const OPTIONAL = new Set(['stems'])
 for (let i = 0; i < rest.length; i++) {
@@ -43,7 +49,7 @@ for (let i = 0; i < rest.length; i++) {
 }
 const brandOpt = opt['no-brand'] ? false : { ...(typeof opt.brand === 'string' ? { config: opt.brand } : {}), ...(typeof opt.logo === 'string' ? { logo: opt.logo } : {}) }
 const readSpec = f => readSpecFile(f, { brand: brandOpt })
-const COMMANDS = ['render', 'check', 'stills', 'sheet', 'audio', 'sound', 'remux', 'audit', 'cues', 'score']
+const COMMANDS = ['render', 'check', 'stills', 'sheet', 'audio', 'sound', 'remux', 'audit', 'cues', 'score', 'verify']
 if (opt.help || opt.h) {
   console.log(`usage: cli.mjs ${COMMANDS.join('|')} <specs...> [--options]   (render needs explicit specs, or --all)`)
   process.exit(0)
@@ -151,6 +157,35 @@ async function soundCommands() {
   return failed ? 1 : 0
 }
 
+// the acceptance harness (sound/checks/run.mjs): every check of sound/acceptance.json on every spec
+async function verifyCommand() {
+  const V = await import('../sound/checks/run.mjs')
+  if (opt.pending) {
+    const { pending } = await import('../sound/checks/acceptance.mjs')
+    for (const p of pending()) console.log(`${p.id}${p.look ? ` [${p.look}]` : ''}\n  bible says:  ${p.bibleSays}\n  passes now: ${p.passesNow}\n  why:        ${p.reason}${p.sync ? `\n  sync:       ${p.sync}` : ''}${p.see ? `\n  see:        ${p.see}` : ''}\n`)
+    return 0
+  }
+  const S = await import('./sound/batch.mjs')
+  const jobs = +(opt.jobs || S.defaultJobs())
+  const from = typeof opt.from === 'string' ? path.resolve(opt.from) : null
+  if (from && !fs.existsSync(from)) { console.error(`verify: --from ${opt.from}: no such directory`); return 2 }
+  const specs = specFiles.map(readSpec)
+  console.error(brandSummary(brandOpt === false ? null : loadBrand(brandOpt)))
+  // the cue records: --cues, else the build's own dump (<from>/cues.json), else mounted in Chromium
+  const cuesFile = typeof opt.cues === 'string' ? opt.cues : from && fs.existsSync(path.join(from, 'cues.json')) ? path.join(from, 'cues.json') : null
+  const recs = await S.gatherRecords(specs, { cuesFile, launch, log: m => console.error(m) })
+  const video = opt['no-video'] ? null : typeof opt.video === 'string' ? path.resolve(opt.video) : fs.existsSync(S.CHANNEL_DIR) ? S.CHANNEL_DIR : null
+  const buildDir = !from && typeof opt.out === 'string' ? S.guardOut(path.resolve(opt.out), opt.final) : null
+  const { code } = await V.verify({
+    recs, dir: from, buildDir, jobs, video, units: !opt['no-units'], unitsOnly: !!opt['units-only'], twice: !!opt.twice,
+    baseline: typeof opt.baseline === 'string' ? path.resolve(opt.baseline) : null, expectIdentical: !!opt['expect-identical'],
+    writeBaseline: typeof opt['write-baseline'] === 'string' ? path.resolve(opt['write-baseline']) : null,
+    json: !!opt.json, detail: !!opt.detail, keep: !!opt.keep,
+    renderAudio: (items, n, onDone) => S.runPool(items, n, onDone),
+  })
+  return code
+}
+
 async function main() {
   if (!COMMANDS.includes(cmd)) {
     console.error(`usage: cli.mjs ${COMMANDS.join('|')} [specs...] [--options]`)
@@ -159,6 +194,11 @@ async function main() {
   if (brandOpt && typeof opt.logo === 'string' && !fs.existsSync(path.resolve(opt.logo))) {
     console.error(`--logo ${opt.logo}: no such file`)
     process.exit(2)
+  }
+  if (cmd === 'verify') {
+    let code
+    try { code = await verifyCommand() } catch (e) { console.error(`✗ ${e.stack || e.message}`); code = 1 }
+    process.exit(code)
   }
   if (['audio', 'sound', 'remux', 'audit', 'cues', 'score'].includes(cmd)) {
     let code

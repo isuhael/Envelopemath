@@ -3,7 +3,8 @@
 // from a full render of the 15 Scoreboard teasers with stems (the B3 clearance needs no table: clearance.mjs renders
 // the bed at every cue):
 //   node src/cli.mjs audio specs/*-scoreboard-*.json --out <dir> --stems --no-check
-//   node looks/scoreboard/sound/calibrate.mjs <dir> --cues=<cues.json> [--write]   (run it twice: GM_PLAN uses the tables)
+//   node looks/scoreboard/sound/tools/calibrate.mjs <dir> --cues=<cues.json> [--write]   (run it twice: GM_PLAN uses the tables)
+// See tools/README.md for what each value is, when it goes stale and the whole refit procedure.
 // It prints (and with --write stores in calibration.json, which the pack reads at load time):
 //   BEDS      the music's power over whole sections, from music.dry (before the event duck), pre-master, by section and
 //             energy, at the bus's 0 dB (the energy curve of energy.mjs taken out); teasers whose bed gave way (a plan
@@ -18,19 +19,19 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { readWav } from '../../../src/sound/wav.mjs'
-import { decodeAudio } from '../../../src/sound/ffmpeg.mjs'
-import { loudness } from '../../../src/sound/loudness.mjs'
-import * as D from '../../../src/sound/dsp.mjs'
-import * as Th from '../../../src/sound/theory.mjs'
-import { buildTimeline } from '../../../src/sound/timeline.mjs'
-import { normalizePack } from '../../../src/sound/engine.mjs'
-import * as PACK from '../sound.mjs'
-import { planFor } from './sfx.mjs'
-import { curveFor, evalDb } from './energy.mjs'
-import { OFF_EFF } from './balance.mjs'
-import { OPENING } from './compose.mjs'
-import { CAL } from './cal.mjs'
+import { readWav } from '../../../../src/sound/wav.mjs'
+import { decodeAudio } from '../../../../src/sound/ffmpeg.mjs'
+import { loudness } from '../../../../src/sound/loudness.mjs'
+import * as D from '../../../../src/sound/dsp.mjs'
+import * as Th from '../../../../src/sound/theory.mjs'
+import { buildTimeline } from '../../../../src/sound/timeline.mjs'
+import { normalizePack } from '../../../../src/sound/engine.mjs'
+import * as PACK from '../../sound.mjs'
+import { planFor } from '../sfx.mjs'
+import { curveFor, evalDb } from '../energy.mjs'
+import { OFF_EFF } from '../balance.mjs'
+import { OPENING } from '../compose.mjs'
+import { CAL } from '../cal.mjs'
 
 const HERE = path.dirname(fileURLToPath(import.meta.url))
 const dir = path.resolve(process.argv[2] || '.')
@@ -107,7 +108,7 @@ const cal = { BEDS, OFF_EFF, OPEN_FIT: opens.length ? +((CAL.OPEN_FIT ?? 0) + me
 console.log(JSON.stringify(cal, null, 1))
 if (process.argv.includes('--write')) {
   // keep any table entry this render had no data for
-  const f = path.join(HERE, 'calibration.json')
+  const f = path.join(HERE, '..', 'calibration.json')
   const old = fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, 'utf8')) : {}
   for (const k of ['BEDS']) for (const [s, o] of Object.entries(old[k] || {})) for (const [E, v] of Object.entries(o)) if (!(cal[k][s] && cal[k][s][E] != null)) (cal[k][s] = cal[k][s] || {})[E] = v
   fs.writeFileSync(f, JSON.stringify(cal, null, 1) + '\n')
