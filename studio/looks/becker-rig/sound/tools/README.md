@@ -2,7 +2,7 @@
 
 The pack levels its cues and sets its music against values fitted on the 15 Becker teasers' cue lists. When a kit or a spec moves a cue, those values describe a teaser that no longer exists. `test/cues.test.mjs` then fails with `cue list changed for <id>: refit the sound pack, see looks/becker-rig/sound/tools/README.md`, which points here.
 
-Run everything from `studio/`. The tools read the cue records from `test/fixtures/cues.json`, or from `--cues <file>` (written by `node src/cli.mjs cues specs/*.json --out <file>`). Id prefixes on the command line (`09b 10b`) limit a run to those teasers.
+Run everything from `studio/`. The tools read the cue records from `--cues <file>` (or `--cues=<file>`; written by `node src/cli.mjs cues specs/*.json --out <file>`). Without `--cues` they read `test/fixtures/cues.json`, the records `MODEL` was fitted on, and say so on stderr. After a kit or spec change that fixture still holds the old cue lists until step 3 of BIBLE.md §11.1, so a refit must pass a fresh dump. An unknown flag stops the tool. Id prefixes on the command line (`09b 10b`) limit a run to those teasers.
 
 ## What is fitted, and what is designed
 
@@ -19,16 +19,24 @@ Run everything from `studio/`. The tools read the cue records from `test/fixture
 
 ## Refit `MODEL` (after any change to levels, sends, ducks, the arrangement, the SFX renderers, or a cue list)
 
+The same commands as BIBLE.md §11.2:
+
 ```bash
-node looks/becker-rig/sound/tools/fit.mjs > /tmp/fit.jsonl          # every Becker teaser at trim 0 (about 5 min; split by prefixes to run in parallel)
-python3 looks/becker-rig/sound/tools/fitsolve.py /tmp/fit.jsonl     # needs numpy: prints a, b, C, tiltUp, iBias and the residuals
+node src/cli.mjs cues specs/*-becker-rig-*.json --out /tmp/snd-br/cues.json                 # today's records: the fixture may hold the old ones
+node looks/becker-rig/sound/tools/fit.mjs --cues /tmp/snd-br/cues.json > /tmp/fit.jsonl     # every Becker teaser at trim 0 (about 5 min; split by id prefixes to run in parallel)
+python3 looks/becker-rig/sound/tools/fitsolve.py /tmp/fit.jsonl                              # needs numpy: prints a, b, C, tiltUp, iBias and the residuals
 ```
 
 1. Copy the printed `a`, `b`, `C`, `tiltUp` (and `iBias`) into `MODEL` in `balance.mjs`. This changes the audio of every Becker teaser.
-2. Check the prediction: `node looks/becker-rig/sound/tools/trims.mjs` prints each plan's predicted master gain (`gain`); compare it with `master.gainDb` in the build's `<id>.report.json`.
-3. Run `npm run sound:verify`. When everything passes, rewrite the baseline with `npm run sound:baseline`, and the cue fixture if a cue list moved (`node src/cli.mjs cues specs/*.json --out test/fixtures/cues.json`). Say in the commit which masters changed.
+2. Check the prediction: `node looks/becker-rig/sound/tools/trims.mjs --cues /tmp/snd-br/cues.json` prints each plan's predicted master gain (`gain`); compare it with `master.gainDb` in the build's `<id>.report.json`.
+3. Run `npm run sound:verify`. It prints a `CUE DRIFT` block until the fixture is updated; that is expected here.
+4. When everything passes, finish with BIBLE.md §11.1 steps 3-7: store the records (`node src/cli.mjs cues specs/*.json --out test/fixtures/cues.json`), regenerate the tempo table (`node sound/tools/tempo-table.mjs --write`), update Appendix A's pins if 09b, 02a or 10b moved, `npm test`, record the change, then ship (§11.5, which rewrites the baseline). Say in the commit which masters changed.
 
-**State on 2026-10-12** (today's 15 cue lists, current pack). The refit gives C -23.33, a 0.042, b 1.215, tiltUp 0.63, iBias -0.37. `MODEL` holds -23.46, 0.007, 1.288, 0.88, -0.35: it was fitted before the last pack fixes. With it, the predicted master gain is off by -0.54 to +0.43 dB (mean -0.19), and every teaser passes B8. The refit was not applied, because it would change the delivered audio.
+**State on 2026-10-12** (today's 15 cue lists, current pack). The refit gives C -23.33, a 0.042, b 1.215, tiltUp 0.63, iBias -0.37. `MODEL` holds -23.46, 0.007, 1.288, 0.88, -0.35: it was fitted before the last pack fixes. With it, the predicted master gain is off by -0.54 to +0.43 dB (mean -0.19), and every teaser passes B8.
+
+Later the same day the hook's t = 0 brass went back from `honkH` (2 dB under) to `honkF`, and the engine started encoding behind a trimmed silent pre-roll (`studio/sound/README.md`, "The AAC first frame"). The master gains moved by at most 0.07 dB (04b), and `trims.mjs` against the new reports gives the same error, -0.54 to +0.43 dB (mean -0.18). `MODEL` was not refit.
+
+**Owner decision before the next ship.** The refit was held back because it would change the delivered audio. That reason is gone: the build waiting to ship already changes all 15 Becker masters (BIBLE.md §11.4). Either refit now (above), verify and ship both changes together, or keep the stored `MODEL` and write the reason here. BIBLE.md §11.2 says the same.
 
 ## Levels: the optimiser
 

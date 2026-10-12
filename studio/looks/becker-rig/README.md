@@ -872,16 +872,20 @@ The Becker Rig sound pack is "toy-box funk": a synthesised band under cartoon fo
 - **Slide whistle** into P, only when no SFX `riser` covers TENSION.
 - **Drums:** a dry kit. The kick is a sine 130 → 46 Hz (it carries the 31.5 Hz octave now that the bass has no sub), plus snare, ghost and roll, clap, shaker, tambourine, block, tom, timpani, crash and reverse crash. Kick, snare and clap are soft-clipped at their own peak (tanh 1.5).
 
-**The react bus.** The band's answers to the cues play on the engine's un-ducked bus (`bus: 'logo'`; the score keeps role `brass`), with their own sends, so the cue they answer does not duck them away. That path also skips `musicDb`, the glue and the body gate, and sends to the un-ducked returns; the voices stay in the music stems the checks read (see `studio/sound/README.md`, "Pack conventions the checks see"):
+**The react bus.** The band's answers to the cues are events with `bus: 'react'`, the engine's duck-exempt bus (`studio/src/sound/routing.mjs`; contract in `studio/sound/README.md`, "The react bus"), so the cue they answer does not duck them away. The score keeps role `brass` and marks them `bus: 'react'`:
 - `honkR`: the "catch the hit" stab, at most one per 2 bars, on a hit ≥ 0.85 at the hit time.
 - `honkR` + `crashR`: the verdict button.
 - `honkFR`: the fanfare's sustained "TA".
+
+`mix.mjs` sets `react: { via: 'logo' }`: besides skipping the duck, these voices skip `musicDb`, the glue, the kick sidechain and the body gate, take `mix.logo`, and send to the un-ducked returns. That is the path their levels were set on, and the one the MALLET check and the calibration tools model (`instrumentBuses` leaves `musicDb` off the `…R` voices). They stay in the music stems the checks read.
+- Until 2026-10-12 the pack put these events on `bus: 'logo'` to get the same thing. `via: 'logo'` sums them into the logo bus, so the masters stayed bit-identical (`verify --expect-identical`, 30/30).
+- The engine's default (`via: 'music'`: `musicDb`, the glue and the music returns, only the duck skipped) was tried at the same levels on both looks (21 of the 30 teasers built). It was not better: 03a failed A11 (the limiter above 1 dB on 3.5% of samples, limit 3%), the limiter worked harder on 01c (0.7% → 2.7%), B3's closest cue moved −0.3 to +0.3 dB, and no check improved. Switching means re-levelling `honkR`, `honkFR` and `crashR` against `musicDb` and the solver's trim, then refitting (`sound/tools/README.md`).
 
 **The arrangement against the timeline:**
 
 | Section | What plays |
 |---|---|
-| HOOK | One of three seeded variants. All three have brass D major at t = 0, with kick and bass (S10). "ta-da" is an 8th with timpani and crash. "ba-DA" is a 16th, then a higher voicing (F#4 A4 D5 F#5) on the and-of-1 with timpani and crash. "ta-da-ling" is the 8th plus a glock run D5 F#5 A5 D6. The t = 0 brass (`honkH`) sits 2 dB under the P fanfare. The file's first frame is where the AAC encoder overshoots most, and the payoff should be the bigger "ta-da" anyway |
+| HOOK | One of three seeded variants. All three have brass D major at t = 0, with kick and bass (S10). "ta-da" is an 8th with timpani and crash. "ba-DA" is a 16th, then a higher voicing (F#4 A4 D5 F#5) on the and-of-1 with timpani and crash. "ta-da-ling" is the 8th plus a glock run D5 F#5 A5 D6. The t = 0 brass is the fanfare's own voice (`honkF`), at its level. (It was a separate `honkH` 2 dB under it, to keep the AAC encoder's first frame from overshooting. The engine's encode pre-roll fixed that for every pack, so the workaround is gone: see `studio/sound/README.md`, "The AAC first frame") |
 | BUILD | E3, rising to E4 at the midpoint: kick on 4/7, ghost snares, pizz, bass slides |
 | TENSION | Heartbeat kick on every beat. The snare roll goes from 16ths to 32nds with a gain ramp from -6 to 0 dB, the strings climb and the bass walks F# G G# A. The last 8th before P is silent, apart from the reverse crash ending exactly on P |
 | P | **"ka-TA":** a short brass "ka" (16th) on the downbeat with kick, snare, clap, timpani D2 and crash, inside the payoff duck. Then the sustained "TA" (D major doubled at the octave) on the react bus, from the first swung 16th that leaves the payoff's other cues their first 50 ms, until the and-of-2. A payoff marked by a ding or a pop keeps its first 50 ms, so the "ka" is left out there |
@@ -985,18 +989,18 @@ SFX sends are the §7 table less 1.5 dB. There is no extra payoff send. The retu
    - **Dull cues** (bloops, dings, taps crowd 1 kHz): presence +1.6 dB per tilt unit (not the shaker or tambourine), bass and pad +1, glock -1, and harder marimba mallets.
    - **Bright cues:** presence -1 per unit, and the toys +1.
    - The marimba and pizz are never moved down.
-3. **The music trim** sets the music stem against the SFX stem's gated loudness, M = I - 1 LU (+ up to 2 dB for a strongly tilted SFX spectrum). That puts a hit the same 1 LU over the band whether the teaser has three hits or forty taps. A bias (-0.35 LU) covers what the engine's merges take off the SFX. The master gain is predicted from `mix = (1 + a)·M + b·U` (a 0.007, b 1.288, C -23.46, tiltUp 0.88, fitted on the 15 teasers at trim 0), and the card is trimmed against it. **Refit `MODEL` after any level change or cue-list change:** `sound/tools/fit.mjs` renders at trim 0, `sound/tools/fitsolve.py` does the least-squares fit. See `sound/tools/README.md`, which also lists which balance constants are fitted and which are designed, and the state of the fit on 2026-10-12.
+3. **The music trim** sets the music stem against the SFX stem's gated loudness, M = I - 1 LU (+ up to 2 dB for a strongly tilted SFX spectrum). That puts a hit the same 1 LU over the band whether the teaser has three hits or forty taps. A bias (-0.35 LU) covers what the engine's merges take off the SFX. The master gain is predicted from `mix = (1 + a)·M + b·U` (a 0.007, b 1.288, C -23.46, tiltUp 0.88, fitted on the 15 teasers at trim 0), and the card is trimmed against it. **Refit `MODEL` after any level change or cue-list change**, on a fresh dump of the cue records (`--cues`): `sound/tools/fit.mjs` renders at trim 0, `sound/tools/fitsolve.py` does the least-squares fit. See `sound/tools/README.md`, which also lists which balance constants are fitted and which are designed, the state of the fit on 2026-10-12 (stale: an owner decision before the next ship), and BIBLE §11.1 for the steps after a refit.
 
-### B1: a bible change request
+### B1 (bible v2)
 
-As written, §8.1/§9.3 B1 asks for the music stem at -2.5..-4.5 LU and the SFX stem at -2..-4 LU re the mix, both gated. With sparse cues (gated SFX minus ungated SFX = 3-7 LU), the two bands only hold together when about a third of the mix is in neither stem. The previous version of this pack met B1 that way: returns 4-5 LU under the mix, as loud as the dry band. With the §8.5 sends, B1 as written fails on all 15 teasers (music -1.1..-2.0, SFX -0.3..-2.8 LU). The harness reports that as **B1w (waived)**.
+Bible v1's §8.1/§9.3 B1 asked for the music stem at -2.5..-4.5 LU and the SFX stem at -2..-4 LU re the mix, both gated. With sparse cues (gated SFX minus ungated SFX = 3-7 LU), the two bands only hold together when about a third of the mix is in neither stem. The previous version of this pack met B1 that way: returns 4-5 LU under the mix, as loud as the dry band. With the §8.5 sends, v1's B1 fails on all 15 teasers (music -1.1..-2.0, SFX -0.3..-2.8 LU). The harness reports it as **B1w (waived)**.
 
-**Proposed B1** (Becker; what `studio/sound/acceptance.json` B1 gates on, marked pending bible sync; B1 as written is reported as B1w, never gated):
+**B1 as synced in bible v2** (2026-10-12, BIBLE §8.1 and §9.3; what `studio/sound/acceptance.json` B1 gates on; v1's two bands are reported as B1w, never gated):
 - music stem -0.5..-4.5 LU re the mix;
 - SFX stem (gated) minus music stem (gated) in [-2, +2] LU, so the cues sit within 2 LU of the band while they sound;
 - returns ≤ -8 LU re the mix (no reverb fill).
 
-The ungated SFX share (-5..-7.6 LU) and the SFX's own contribution (mix minus mix-without-SFX, +0.8..+1.6 LU) are printed for information. This needs the bible owner's decision in `sound/BIBLE.md` §8.1/§9.3.
+The ungated SFX share (-5..-7.6 LU) and the SFX's own contribution (mix minus mix-without-SFX, +0.8..+1.6 LU) are printed for information.
 
 ### Verifying
 
@@ -1038,5 +1042,12 @@ Results on the delivered build (2026-10-12; the AAC streams are identical to `re
 | Deterministic | — | yes: the masters match `test/fixtures/sound-baseline.sha256` |
 
 Known limits (engine):
-- **A5 (PLR on the decoded AAC)** read 13.02-13.10 on 01c, 03a and 08b in the fixer's run. This is fixed in the engine: its encode loop now treats a decoded PLR over 12.95 like a true-peak failure (`PLR_MAX`; `acceptance.json` A5, pending bible sync). It reads 12.40-12.91 now.
-- **The AAC first frame:** a hard t = 0 hit can decode up to +3 dB over its master peak at about 12 ms. The engine's local ceiling dips do not always clear it, and it then lowers the whole ceiling, which means more limiting for that teaser. The hook brass at -2 dB keeps all 15 teasers clear today: 05b's first frame needed a local dip, and 04b fell back to a -2.0 dBTP ceiling for other spots. The INFO row's AAC0 shows it per teaser.
+- **A5 (PLR on the decoded AAC)** read 13.02-13.10 on 01c, 03a and 08b in the fixer's run. This is fixed in the engine: its encode loop now treats a decoded PLR over 12.95 like a true-peak failure (`PLR_MAX`; `acceptance.json` A5). Synced in bible v2 (2026-10-12), see BIBLE §8.6 step 9. It reads 12.40-12.91 now.
+- **The AAC first frame:** a hard t = 0 hit used to decode up to +3 dB over its master peak at about 12 ms, because the encoder started the file with an empty bit reservoir. The pack kept its hook brass on a separate `honkH` voice 2 dB down for it; 05b's first frame still needed a local dip, and 04b fell back to a −2.0 dBTP ceiling. The engine now encodes behind a trimmed silent pre-roll and measures its local dips from the master's own peak, so the hook brass is back on `honkF` at full level. The INFO row's AAC0 shows the first frame per teaser.
+
+**Since then (2026-10-12, the hook brass back on `honkF` and the engine's AAC pre-roll).** All 15 Becker masters changed: the t = 0 chord is 2 dB louder, and the encode loop's dips moved with the new AAC streams.
+- `node src/cli.mjs verify`: every Becker teaser passes 42/42 and the units 77/77.
+- I −14.08 to −14.16 LUFS, decoded true peak −1.19 to −1.40 dBTP, PLR 12.68-12.90, LRA 4.3-5.6 LU.
+- Every teaser ends at ceiling −1.5 dBTP; none needed a global step. Over the first 30 ms the decode sits at most 0.0 dB over the master (05b: +1.3 before).
+- The opening (A7, M over the first 0.4 s) moved −0.5 to +1.3 LU, to −10.7..−12.4 LUFS. B3's closest cue still sits 3.8 dB over the band; only 08b's closest moved (4.6 → 4.0 dB). B8's logo lands at −10.4 to −12.6 LUFS.
+- `renders/channel` still carries the earlier audio until it is remuxed (see `studio/sound/README.md`, "Determinism and the baseline").

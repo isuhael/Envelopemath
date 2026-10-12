@@ -22,8 +22,23 @@ test('acceptance.json: every check is described, every pending value says why', 
       for (const k of ['bibleSays', 'passesNow', 'reason']) assert.ok(typeof p[k] === 'string' && p[k].length > 10, `${where}: pending.${k}`)
     }
   }
-  assert.ok(pending().length >= 1)
   assert.ok(META.has('pending') && !META.has('min'))
+})
+
+test('acceptance.json: pending() finds markers at the top level and per look (works with zero live markers)', () => {
+  // a synthetic file, so that removing the last live marker (today A8, an owner decision) needs no change here
+  const p = { bibleSays: 'the bible says x', passesNow: 'it passes with y', reason: 'because of a measured z' }
+  const a = { checks: {
+    X1: { bible: '§0', name: 'top', max: 1, pending: p },
+    X2: { bible: '§0', name: 'per look', looks: { scoreboard: { max: 2, pending: { ...p, sync: 'sync it' } }, 'becker-rig': { max: 3 } } },
+    X3: { bible: '§0', name: 'none', max: 4 },
+  } }
+  assert.deepEqual(pending(a).map(x => [x.id, x.look]), [['X1', null], ['X2', 'scoreboard']])
+  assert.equal(pending(a)[1].sync, 'sync it')
+  assert.deepEqual(limits('X2', 'scoreboard', a), { max: 2 }, 'a pending marker is not a threshold')
+  assert.deepEqual(pending({ checks: { X3: a.checks.X3 } }), [])
+  // the live file: whatever is still pending is well formed (checked above); the count is the owner's business
+  for (const x of pending()) assert.ok(load().checks[x.id], `${x.id}: pending marker on a known check`)
 })
 
 test('acceptance.json: thresholds resolve per look (top level, then looks.<look>, then looks["*"])', () => {

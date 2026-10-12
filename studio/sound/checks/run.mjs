@@ -11,6 +11,7 @@ import { fileURLToPath } from 'node:url'
 import { truePeakEnvelope } from '../../src/sound/loudness.mjs'
 import { loadPack, CEILING_DBTP } from '../../src/sound/engine.mjs'
 import { muxVerified } from '../../src/sound/batch.mjs'
+import { cueDrift, CUE_FIXTURE, STORE_CUES } from '../../src/sound/cues.mjs'
 import { videoMd5 } from '../../src/sound/ffmpeg.mjs'
 import { load, limits, gated, pending, ids as allIds, FILE as ACCEPTANCE } from './acceptance.mjs'
 import { SpecContext, locate } from './context.mjs'
@@ -149,7 +150,9 @@ const sym = r => (r.pass === null ? (r.gate ? '-' : 'i') : r.pass ? '✓' : r.ga
 /**
  * opts: { recs (cue records), dir (prebuilt outputs) | null, buildDir (where to build; null = a temp dir), jobs,
  *   video (dir of finished MP4s | null), units = true, twice = false, baseline (sha256 file), expectIdentical,
- *   writeBaseline (file), json, detail, keep, log, renderAudio (async (items, jobs) -> results: the CLI's batch runner) }
+ *   writeBaseline (file), json, detail, keep, log, renderAudio (async (items, jobs) -> results: the CLI's batch runner),
+ *   cuesFrom (the file the records came from; null = mounted in Chromium), strictCues (cue drift is a failure),
+ *   cueCheck (false: skip the comparison with test/fixtures/cues.json, for a non-default brand) }
  * Resolves to { code, report }.
  */
 export async function verify(opts) {
@@ -210,14 +213,18 @@ export async function verify(opts) {
     const mod = await lookModule(u.look)
     if (mod && mod.aggregateUnits) u.results.push(...mod.aggregateUnits(specs.filter(s => s.look === u.look && s.partial && !s.partial.error).map(s => s.partial).sort((a, b) => (a.id < b.id ? -1 : 1))))
   }
-  // 4. the baseline
+  // 4. the baseline, and the cue records against the ones the packs were fitted on (BIBLE.md §11.1)
   const baseCmp = ids.map(id => ({ id, sha: shas[id], base: base[id] || null })).filter(x => x.base)
   const changed = baseCmp.filter(x => x.sha !== x.base)
+  const cuesFrom = opts.cuesFrom ? path.resolve(opts.cuesFrom) : null
+  // a non-default brand (--no-brand, --brand, --logo) changes every record by design: no comparison then
+  const drift = opts.cueCheck === false ? [] : cueDrift(recs)
+  const cueReport = opts.cueCheck === false ? null : { fixture: CUE_FIXTURE, from: cuesFrom || 'mounted', live: !cuesFrom || cuesFrom !== CUE_FIXTURE, changed: drift.map(d => d.line), strict: !!opts.strictCues }
   // 5. report
   const failing = s => s.results.filter(r => r.gate && r.pass === false)
   const unitFails = units.flatMap(u => u.results.filter(r => r.pass === false && gated(r.id, u.look)).map(r => ({ look: u.look, ...r })))
   const baselineFail = !!opts.expectIdentical && (changed.length > 0 || baseCmp.length < ids.length)
-  const code = specs.some(s => failing(s).length) || unitFails.length || buildFailures.length || baselineFail ? 1 : 0
+  const code = specs.some(s => failing(s).length) || unitFails.length || buildFailures.length || baselineFail || (cueReport && cueReport.strict && drift.length) ? 1 : 0
   if (opts.writeBaseline) {
     if (code === 0) { writeBaseline(opts.writeBaseline, { ...readBaselineIf(opts.writeBaseline), ...Object.fromEntries(ids.filter(id => shas[id]).map(id => [id, shas[id]])) }); log(`wrote ${opts.writeBaseline}`) }
     else log(`not writing ${opts.writeBaseline}: the run failed`)
@@ -225,6 +232,7 @@ export async function verify(opts) {
   const report = {
     acceptance: path.relative(process.cwd(), ACCEPTANCE), dir, specs, units,
     baseline: { file: baselineFile, compared: baseCmp.length, changed: changed.map(x => x.id), missing: ids.filter(id => !base[id]), expectIdentical: !!opts.expectIdentical, failed: baselineFail },
+    cues: cueReport,
     pending: pending().map(p => `${p.id}${p.look ? `[${p.look}]` : ''}`), seconds: +((Date.now() - t0) / 1000).toFixed(1), code,
   }
   if (opts.json) console.log(JSON.stringify(report, null, 1))
@@ -306,12 +314,22 @@ export function formatReport(rep, { detail = false } = {}) {
     for (const u of rep.units) { L.push('', `units ${u.look}`); for (const r of u.results) L.push(`  ${r.pass === null ? '-' : r.pass ? '✓' : '✗'} ${pad(r.id, 5)}${pad(r.name, 18)}${r.detail}`) }
   }
   L.push('')
-  L.push(`pending bible sync: ${rep.pending.length} values (${rep.pending.join(', ')}); see ${rep.acceptance} or \`node src/cli.mjs verify --pending\``)
+  L.push(rep.pending.length ? `pending bible sync: ${rep.pending.length} values (${rep.pending.join(', ')}); see ${rep.acceptance} or \`node src/cli.mjs verify --pending\`` : 'pending bible sync: none')
   const b = rep.baseline
   if (b.compared) L.push(`baseline: ${b.compared - b.changed.length}/${b.compared} master WAVs identical to ${path.relative(process.cwd(), b.file)}${b.changed.length ? `; changed: ${b.changed.join(', ')}` : ''}${b.missing && b.missing.length ? `; not in it: ${b.missing.join(', ')}` : ''}`)
   if (b.failed) L.push('--expect-identical: the audio differs from the baseline (a failure)')
+  const c = rep.cues
+  if (c) {
+    const rel = f => path.relative(process.cwd(), f) || f
+    if (c.changed.length) {
+      L.push(`CUE DRIFT (${c.changed.length}${c.strict ? ', a failure with --strict-cues' : ''}): these records differ from ${rel(c.fixture)}, the records the packs' fitted values (calibration.json, MODEL) were fitted on. Every check above can pass with stale fitted values: refit, verify, then store the records (${STORE_CUES}) and regenerate the tempo table (BIBLE.md §11.1).`)
+      for (const line of c.changed) L.push(`  ${line}`)
+    } else if (!c.live) L.push(`cue records: read from ${rel(c.fixture)} itself, so no drift check (mount the specs, or run node --test test/cues.test.mjs)`)
+    else L.push(`cue records: all ${rep.specs.length} match ${rel(c.fixture)}${c.from === 'mounted' ? ' (mounted now)' : ` (from ${rel(c.from)})`}`)
+  }
   const nSpec = rep.specs.filter(s => !s.results.some(r => r.gate && r.pass === false)).length
   const nUnit = rep.units.filter(u => !u.results.some(r => r.pass === false)).length
-  L.push(`${rep.code ? 'FAIL' : 'PASS'}: ${rep.specs.length ? `${nSpec}/${rep.specs.length} teasers pass` : 'unit checks only'}${rep.units.length ? `, units ${nUnit}/${rep.units.length} looks` : ''} (${rep.seconds} s)`)
+  const also = [b.failed && 'the baseline (--expect-identical)', c && c.strict && c.changed.length && 'cue drift (--strict-cues)'].filter(Boolean)
+  L.push(`${rep.code ? 'FAIL' : 'PASS'}: ${rep.specs.length ? `${nSpec}/${rep.specs.length} teasers pass` : 'unit checks only'}${rep.units.length ? `, units ${nUnit}/${rep.units.length} looks` : ''}${also.length ? `; failed on ${also.join(' and ')}` : ''} (${rep.seconds} s)`)
   return L.join('\n')
 }

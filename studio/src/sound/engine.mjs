@@ -133,6 +133,8 @@ export function renderMix(rec, pack, { overrides, fallback = null } = {}) {
     .map(e => ({ ...e, bus: busOf(e) }))
     .sort((a, b) => a.t - b.t || BUS_RANK[a.bus] - BUS_RANK[b.bus] || (a.inst < b.inst ? -1 : a.inst > b.inst ? 1 : 0) || (a.midi ?? -1) - (b.midi ?? -1) || a.j - b.j)
 
+  // bus 'logo' is the sting's: a music event there is the old way of escaping the duck, which bus 'react' replaces
+  for (const inst of new Set(events.filter(e => e.bus === 'logo' && e.role !== 'logo').map(e => e.inst))) warnings.push(`"${inst}" events on bus 'logo' without role 'logo': a music voice that must not be ducked belongs on bus 'react' (mix.react, routing.mjs)`)
   // ---- instrument voices -> per-instrument buses (body, react and logo kept apart)
   const instBus = new Map()   // key `${bus}:${inst}` -> stereo
   const routes = new Map()    // the same key -> routeOf(bus, inst) (routing.mjs)

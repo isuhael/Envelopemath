@@ -3,7 +3,8 @@
   "The acceptance thresholds of the sound pass: one entry per check, keyed by its ID in sound/BIBLE.md §9 (plus the packs' own rules).",
   "This file is the single source of truth. sound/checks/ (node src/cli.mjs verify) and the symbolic score checks the audit runs (src/sound/scorecheck.mjs) read every threshold from here; nothing else hardcodes one.",
   "Resolution: an entry's top-level values apply to every look; `looks.<look>` replaces individual keys for that look ('*' is the fallback for a look not listed). A check whose entry ends up with no thresholds for a look is skipped for it.",
-  "`gate: false` reports the measurement without failing. `pending` marks a value that passes today but differs from the bible's text: it carries what the bible says, what passes now and why; the bible owner syncs §9 (or changes the pack) and then removes the marker.",
+  "`gate: false` reports the measurement without failing. `pending` marks a value that passes today but differs from the bible's text: it carries what the bible says, what passes now and why; the bible owner syncs §9 (or changes the pack) and then removes the marker. Bible v2 (2026-10-12) synced §9 with this file and resolved the seven v1 markers; one owner decision is pending (A8's correlation target for Becker Rig).",
+  "The bible's §9 tables mirror this file threshold for threshold (§9.0): change both in the same pass.",
   "Meta keys (never thresholds): bible, name, on, note, method, pending, gate, looks, manual."
  ],
  "version": 1,
@@ -28,12 +29,7 @@
   "A5": {
    "bible": "§9.1", "name": "PLR (true peak - integrated)", "on": "delivery: A2's true peak minus A1's integrated",
    "min": 8, "max": 13,
-   "pending": {
-    "bibleSays": "A5 is a measurement on the final MP4 (8-13 dB); §8.6 step 9 only retries on true peak.",
-    "passesNow": "The engine enforces the upper bound itself: the encode loop (src/sound/engine.mjs, PLR_MAX = 13.0) treats a decoded PLR over 12.95 like a true-peak failure and lowers the limiter ceiling (locally, then globally) until it holds. test/acceptance.test.mjs checks that PLR_MAX equals A5.max.",
-    "reason": "AAC adds 0.3-0.5 dB of true peak over the -1.5 dBTP ceiling, which put the decoded PLR of 01c, 03a, 04c, 07a and 08b at 13.02-13.12 whatever the mix did; the fix belongs in the master, not in a pack.",
-    "sync": "§8.6 step 9: retry when the decoded true peak is above -1.0 dBTP OR the decoded PLR is above 13 dB."
-   }
+   "note": "The engine enforces the upper bound (bible §8.6 step 9): its encode loop retries, locally then globally, until the decoded PLR is <= PLR_MAX - 0.05 (src/sound/engine.mjs, PLR_MAX = 13.0; test/acceptance.test.mjs checks that it equals max)."
   },
   "A6": {
    "bible": "§9.1", "name": "Silence", "on": "delivery, [0, duration - tailExclude]",
@@ -45,7 +41,13 @@
   },
   "A8": {
    "bible": "§9.1", "name": "Mono compatibility", "on": "delivery: Pearson L/R correlation per 400 ms window (silent windows skipped), mono fold = 0.5(L+R)",
-   "corrMeanMin": 0.30, "corrWindowMin": -0.10, "monoFoldMaxLu": 1.5
+   "corrMeanMin": 0.30, "corrWindowMin": -0.10, "monoFoldMaxLu": 1.5,
+   "pending": {
+    "bibleSays": "§9.1 A8: mean L/R correlation >= 0.30 (gated), with a target of 0.45-0.85 (not gated).",
+    "passesNow": "The gate holds on all 30. Scoreboard measures 0.73-0.79, inside the target; Becker Rig measures 0.87-0.92 on all 15, over it (mono fold -0.28..-0.44 LU, so nothing is lost in mono).",
+    "reason": "Found in the v2 sync (2026-10-12), not decided: Becker Rig's returns sit 9.4-12.3 LU under the mix (Scoreboard's about 6) and its band is centred or panned narrow (kick, bass, snare, clap and brass centred; marimba +-30% by pitch, pizz +-20%, glock -10..+35%, shaker +18..+30%), so little decorrelated energy reaches the mix. Whether that is too narrow is a design call, not a measurement fix.",
+    "sync": "The owner decides: either §9.1 A8's target becomes 0.45-0.92 for Becker Rig (its width is the dry toy-box design, §6.7.3), or the pack widens (pan spread, room width) towards 0.85 and refits (§11.2). Then sync §9.1 and remove this marker; npm test needs no marker to remain."
+   }
   },
   "A9": {
    "bible": "§9.1", "name": "DC offset", "on": "delivery, per channel",
@@ -78,13 +80,7 @@
    "looks": {
     "scoreboard": {
      "bands": { "31.5": [-20, 3], "63": [4, 10], "125": [2, 8], "250": [0, 6], "500": [-1, 4], "2000": [-5, 0], "4000": [-9, -2], "8000": [-14, -5], "16000": [-26, -12] },
-     "pending": {
-      "bibleSays": "Scoreboard 31.5 Hz: -8..+3 dB re 1 kHz.",
-      "passesNow": "-20..+3 (the 15 Scoreboard teasers measure -14.6 to -18.5).",
-      "reason": "The critic's fix returned SB-Kick's tail to the bible's 48 Hz (it had been tuned to D1, 36.7 Hz, only to reach this window) and asked for the window to move instead of the kick: with a 48 Hz kick and the 808 on 58-110 Hz the octave cannot reach -8 without tuning to the meter.",
-      "sync": "§9.2 table, Scoreboard 31.5 Hz: -20..+3.",
-      "see": "looks/scoreboard/README.md (Deviations from the bible: SB-Kick and the 31.5 Hz band)"
-     }
+     "note": "31.5 Hz is -20..+3 (bible v1: -8..+3): with SB-Kick's 48 Hz tail and the 808 on 58-110 Hz the octave measures about -15 to -19; v1's -8 was reachable only by tuning the kick to D1 for the meter (bible §9.2)."
     },
     "becker-rig": {
      "bands": { "31.5": [-16, -4], "63": [-2, 7], "125": [1, 7], "250": [0, 6], "500": [-1, 4], "2000": [-5, 0], "4000": [-8, -2], "8000": [-13, -5], "16000": [-25, -12] }
@@ -104,24 +100,12 @@
    "looks": {
     "scoreboard": {
      "music": [-3.5, -1.5], "sfx": [-5, -2.5],
-     "pending": {
-      "bibleSays": "§8.1 balance targets: music -1.5..-3.5 LU, SFX -2.5..-5 LU re the mix (no word on the returns).",
-      "passesNow": "The same windows, but only because the returns bus is trimmed +2.5 dB (looks/scoreboard/sound/mix.mjs `returns`), which puts the returns stem at about -6 LU re the mix (measured -5.4..-6.4, reported here, not gated).",
-      "reason": "The SFX stem is intermittent: its gated loudness counts its active blocks only, so with music + SFX alone the mix sits barely 1.5 LU over the music and the fader cannot put both stems in their windows. About a quarter of the gated mix has to be in neither stem.",
-      "sync": "§8.1 should state the returns' share the Scoreboard targets assume (returns stem about -6 LU re the mix), or move the windows.",
-      "see": "looks/scoreboard/README.md (Deviations: the returns at +2.5 dB)"
-     }
+     "note": "The windows assume the returns stem at about -6 LU re the mix (bible §8.1): reported, not gated. The pack trims its returns bus +2.5 dB for it (looks/scoreboard/sound/mix.mjs `returns`)."
     },
     "becker-rig": {
      "music": [-4.5, -0.5], "sfxMinusMusic": [-2, 2], "returnsMax": -8,
      "asWritten": { "music": [-4.5, -2.5], "sfx": [-4, -2] },
-     "pending": {
-      "bibleSays": "§8.1 balance targets: music -2.5..-4.5 LU, SFX -2..-4 LU re the mix, both gated.",
-      "passesNow": "The proposed B1: music -0.5..-4.5 LU re the mix; SFX (gated) minus music (gated) in [-2, +2] LU; returns <= -8 LU re the mix. B1 as written is reported as B1w (waived): it fails on all 15 Becker teasers (music -1.0..-2.0, SFX -0.3..-2.8).",
-      "reason": "With sparse cues (gated SFX minus ungated SFX = 3-7 LU) the two written bands only hold together when about a third of the mix is in neither stem (reverb). The previous pass met them with returns 4-5 LU under the mix, as loud as the dry band; with the §8.5 sends they cannot both pass.",
-      "sync": "§8.1/§9.3 B1 for Becker Rig: the three conditions above.",
-      "see": "looks/becker-rig/README.md (B1: a bible change request)"
-     }
+     "note": "bible §8.1: music -0.5..-4.5 LU re the mix; gated SFX minus gated music in [-2, +2] LU; returns <= -8 LU. `asWritten` holds bible v1's two bands, reported as B1w (never gated)."
     }
    }
   },
@@ -135,13 +119,7 @@
    "looks": {
     "scoreboard": {
      "exemptCard": true,
-     "pending": {
-      "bibleSays": "Every cue with gain >= 0.4 of the six kinds, the end card included.",
-      "passesNow": "Card cues (t >= base) are reported, not gated: the card's pop and thud sit 13.7-15.8 dB under the held sting on all 15 Scoreboard teasers.",
-      "reason": "By design (§3.2): the em sting holds over the card and its handle cues are texture under it. Becker Rig's card cues clear B3 and stay gated.",
-      "sync": "§9.3 B3: 'body cues (t < base); card cues are exempt where the sting holds over them'.",
-      "see": "looks/scoreboard/README.md (Deviations: B3 at the end card)"
-     }
+     "note": "Card cues (t >= base) are reported, not gated (bible §9.3): the sting holds over the card and its handle cues are texture under it."
     }
    }
   },
@@ -156,19 +134,14 @@
     "scoreboard": { "method": "flux" },
     "becker-rig": {
      "method": "rise",
-     "pending": {
-      "bibleSays": "The music stem has an onset at P within +-10 ms (spectral flux peak).",
-      "passesNow": "Becker Rig measures the steepest rise of 2 ms-frame energy (HP 100 Hz) within +-60 ms of P: 0.0 ms on all 15. The spectral-flux peak (1024-point frames, hop 64) reads -8.0 ms on all 15 (inside 10 ms, but with 2 ms to spare).",
-      "reason": "The reverse crash that ends exactly at P and the brass 'ka' scoop put energy into the flux frame that straddles P, so the flux centre leads the downbeat by a frame and a half; the energy rise resolves the downbeat itself.",
-      "sync": "§9.3 B5: allow either onset measure (flux peak, or the 2 ms energy rise), or name the energy rise for Becker Rig."
-     }
+     "note": "The steepest rise of 2 ms-frame energy (HP 100 Hz), bible §9.3: the reverse crash ending at P and the brass 'ka' scoop make the flux peak lead P by a frame and a half (-8.0 ms on all 15)."
     }
    }
   },
   "B6": {
    "bible": "§9.3", "name": "Continuity", "on": "music.dry short-term loudness (3 s windows ending in [3 s, base]) vs its own integrated loudness",
    "maxBelowLu": 18,
-   "note": "The bible exempts the TENSION gap; the 3 s windows never fall 18 LU for a 0.27 s gap, so nothing is exempted."
+   "note": "No exemption (bible v2 §9.3): a 3 s window never falls 18 LU for the TENSION gap (at most 0.27 s). v1 exempted the gap."
   },
   "B7": {
    "bible": "§9.3", "name": "Energy curve", "on": "music.dry short-term loudness sampled every 100 ms, both on windows ending at t (edge) and centred on t (clipped at base); both must pass",
@@ -238,12 +211,7 @@
      "velSd": { "min": 0.03, "max": 0.15, "minEvents": 8, "gate": true, "exclude": ["revcrash", "timp", "crash", "whistle", "honkF", "strings"] }
     }
    },
-   "pending": {
-    "bibleSays": "Per-instrument velocity SD 0.03-0.15; hats and shaker timing SD 1.5-5 ms from the grid; Becker off-beat 16ths at 58% +- 1%; kick, snare and clap on the grid exact.",
-    "passesNow": "Timing SD and the on-grid rule are gated for both looks (Scoreboard hats on the straight 16th/32nd/triplet grid, Becker shaker on the 58% swung grid; a drum merged onto a cue onset, |dt| <= 1 ms, is exempt). The velocity SD is gated for Becker over instruments with >= 8 body events except the accent-only voices listed; for Scoreboard it is reported only (the raw SD of arp, stab, hat and snare is 0.16-0.42: written accents, not jitter). The 58% swing itself is not measured (it is the grid the shaker is judged against).",
-    "reason": "The score keeps the final velocity (written accent x jitter), so the raw SD of an accented part is not the humanising SD the bible means; §4.6.1 merges snap a backbeat onto a cue (02a: snare onto a step, 35 ms off the swung grid).",
-    "sync": "§9.4 S8: define the velocity SD on the jitter (or per written velocity), exempt §4.6.1 merges from 'exact on the grid'."
-   }
+   "note": "bible §9.4 S8. Velocity SD: gated for Becker Rig (>= 8 body events, accent-only voices excluded), reported for Scoreboard, whose raw SD is its written accents (the score keeps accent x jitter). The 58% swing is the grid the shaker is judged against. A drum merged onto a cue onset (|dt| <= 1 ms) is exempt from the on-grid rule."
   },
   "S9": {
    "bible": "§9.4 / §2.3", "name": "Tempo", "on": "score.tempo: segment 1 in [lo, hi]; later segments in [absLo, absHi] and within maxDev of BPM1 (maxDevV when V is anchored)",
@@ -275,7 +243,7 @@
   "S14": {
    "bible": "§9.4", "name": "Polyphony", "on": "score: pitched body notes sounding at once",
    "maxNotes": 12,
-   "note": "Counts every pitched body note for its written duration (the bible excludes tails below -30 dB: this is stricter)."
+   "note": "Counts every pitched body note for its whole written duration (bible v2 §9.4). v1 excluded tails below -30 dB; this is stricter. All 30 teasers measure exactly 12."
   },
   "U1": {
    "bible": "§9.5", "name": "Aliasing", "on": "each pitched voice at D6 and A6 for 1 s: off-series spectral peaks re the fundamental",
@@ -301,31 +269,31 @@
    "note": "Scoreboard's buzz is exempt: the bible gives it no variation (one per teaser). Scoreboard compares two solo renders at lag 0 on the left channel; Becker compares consecutive cues of each Becker teaser (mono, best of lags 0, ±1, ±2 ms)."
   },
   "TRAIN": {
-   "bible": "scoreboard pack (§4.6.6)", "name": "Clock trains never flam", "on": "score: music kick/clap/snare/hat and arp/lead/stab onsets vs clock-train ticks (anchors excepted)",
+   "bible": "§9.6 (scoreboard pack, §4.6.6)", "name": "Clock trains never flam", "on": "score: music kick/clap/snare/hat and arp/lead/stab onsets vs clock-train ticks (anchors excepted)",
    "looks": { "scoreboard": { "minMs": 12, "maxMs": 60, "drums": "kick|clap|snare|hat", "roles": "arp|lead|stab" } }
   },
   "DUCK": {
-   "bible": "scoreboard pack (B3 clearance)", "name": "The B3 clearance stays band-selective", "on": "score.sfx[].duck vs the pack's §5 table (mix.mjs duck/duckBig), scaled by clamp(gain/0.7, 0.3, 1.2)",
+   "bible": "§9.6 (scoreboard pack, the B3 clearance §4.7.4)", "name": "The B3 clearance stays band-selective", "on": "score.sfx[].duck vs the pack's §5 table (mix.mjs duck/duckBig), scaled by clamp(gain/0.7, 0.3, 1.2)",
    "looks": { "scoreboard": { "capX": 1.5, "hookAndVMinDb": 6, "tolDb": 0.05 } }
   },
   "LOGO": {
-   "bible": "scoreboard pack (§3.2)", "name": "The sting's long note leads", "on": "units: n4's RMS over the first windowMs vs each pickup's, solo at the mix levels",
+   "bible": "§9.6 (scoreboard pack, §3.2)", "name": "The sting's long note leads", "on": "units: n4's RMS over the first windowMs vs each pickup's, solo at the mix levels",
    "looks": { "scoreboard": { "windowMs": 85, "leadDb": 2 } }
   },
   "MALLET": {
-   "bible": "becker-rig pack (critic, must 1)", "name": "The marimba carries the BUILD", "on": "the BUILD re-rendered per instrument (pre glue/duck, with musicDb and the voice automation): marimba K-weighted loudness re the band, and the loudest voice in 500-1200 Hz",
+   "bible": "§9.6 (becker-rig pack, critic must 1, §6.4)", "name": "The marimba carries the BUILD", "on": "the BUILD re-rendered per instrument (pre glue/duck, with musicDb and the voice automation): marimba K-weighted loudness re the band, and the loudest voice in 500-1200 Hz",
    "looks": { "becker-rig": { "minLu": -10, "bandHz": [500, 1200], "loudestInBand": "mallet" } }
   },
   "FLAMS": {
-   "bible": "becker-rig pack (critic)", "name": "No flams against body cues or clock ticks", "on": "score: music kick/snare/clap/tom 15-70 ms off a body cue >= minGain or a clock-train tick/thud (anchors excepted)",
+   "bible": "§9.6 (becker-rig pack, critic, §6.6)", "name": "No flams against body cues or clock ticks", "on": "score: music kick/snare/clap/tom 15-70 ms off a body cue >= minGain or a clock-train tick/thud (anchors excepted)",
    "looks": { "becker-rig": { "kinds": ["thud", "hit", "cash", "reveal", "step"], "minGain": 0.35, "trainKinds": ["tick", "thud"], "drums": ["kick", "snare", "clap", "tom"], "minMs": 15, "maxMs": 70 } }
   },
   "B1w": {
-   "bible": "§9.3 (as written)", "name": "B1 as written (Becker: waived)", "gate": false, "on": "report.stems vs the B1 asWritten windows",
+   "bible": "§9.7 (bible v1's B1 bands)", "name": "B1 v1 bands (Becker: reported)", "gate": false, "on": "report.stems vs the B1 asWritten windows (bible v1's music and SFX bands)",
    "looks": { "becker-rig": {} }
   },
   "INFO": {
-   "bible": "reporting (every look: AAC0; Becker Rig: the critic's measurements)", "name": "Reported, never gated", "gate": false,
+   "bible": "§9.7 (every look: AAC0; Becker Rig: the critic's measurements)", "name": "Reported, never gated", "gate": false,
    "on": "B1u (SFX ungated re mix, the SFX's own contribution), REACT (the react-bus voices and the duck curve under them), DUCKSTATS (body share >= 6 dB down, dips > 6 dB per minute, per-kind duck depths), FOLEY (in-band audibility of tick/step/roll/whoosh), DEFLATE (the Gm span and the bass bends), AAC0 (decoded true peak in the first 30 ms re the master's)",
    "looks": { "becker-rig": { "foleyBands": { "tick": [500, 3000, 0.08], "step": [80, 1200, 0.09], "roll": [1800, 2600, null], "whoosh": [700, 3500, null] }, "duckDeepDb": 6, "duckReleaseDb": 3 }, "scoreboard": {} }
   }

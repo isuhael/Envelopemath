@@ -43,6 +43,6 @@
   "LOGO_PRE_sd": 0.03,
   "OPEN_FIT_sd": 0.56,
   "specs": 15,
-  "from": "/tmp/fix-snd-scoreboard/run5"
+  "from": "calibrate.mjs on an audio --stems render of 15 teasers, cue records test/fixtures/cues.json (2026-10-11); re-measured 2026-10-12 on the same records: within 0.03 dB on the scalars, 0.10 dB on BEDS (not written)"
  }
 }

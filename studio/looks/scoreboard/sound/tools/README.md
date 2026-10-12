@@ -17,7 +17,7 @@ The pack's SFX fader, its opening lift and the sting's level are models fitted o
 | `OFF_EFF` | `balance.mjs` | How far the music stem moves per dB of bed offset (0.65). It was measured by hand on 02c at offsets of -1.3 and -2.5 dB (0.63-0.70). `calibrate.mjs` passes it through unchanged |
 | `stats` | (information) | The spread of each fit over the teasers, the teaser count and the render it came from |
 
-**BEDC** is retired. The comment in `sfx.mjs` still mentions a table of the music's 50 ms RMS at the cue times. `clearance.mjs` now renders the bed at every cue window instead, so no BEDC value exists or needs fitting.
+**BEDC** (the music's 50 ms RMS at the cue times) is retired: `clearance.mjs` renders the bed at every cue window instead, so no BEDC value exists or needs fitting.
 
 **Designed constants** are not fitted; change them deliberately. In `balance.mjs`:
 - `S_MINUS_M` -1.35: a busy teaser cuts its cues until the SFX stem sits 1.35 LU under the music stem.
@@ -29,17 +29,21 @@ In `logo.mjs`, `LOGO_AT` -12.1 is the middle of B8's window. The B1 windows the 
 
 ## Refit (after any change to the arrangement, the levels, the sends, the duck table or a cue list)
 
+The same commands as BIBLE.md §11.2. Dump fresh records first: after a kit or spec change, `test/fixtures/cues.json` still holds the old cue lists.
+
 ```bash
 cd studio
 node src/cli.mjs cues specs/*-scoreboard-*.json --out /tmp/snd-sb/cues.json
 node src/cli.mjs audio specs/*-scoreboard-*.json --cues /tmp/snd-sb/cues.json --out /tmp/snd-sb/run --stems --no-check
-node looks/scoreboard/sound/tools/calibrate.mjs /tmp/snd-sb/run --cues=/tmp/snd-sb/cues.json            # prints the values
-node looks/scoreboard/sound/tools/calibrate.mjs /tmp/snd-sb/run --cues=/tmp/snd-sb/cues.json --write    # stores them
+node looks/scoreboard/sound/tools/calibrate.mjs /tmp/snd-sb/run --cues /tmp/snd-sb/cues.json            # prints the values
+node looks/scoreboard/sound/tools/calibrate.mjs /tmp/snd-sb/run --cues /tmp/snd-sb/cues.json --write    # stores them
 ```
 
+`calibrate.mjs` needs `--cues` (the records the render was made from; `--cues=<file>` works too), takes `--skip <id prefixes>` and `--write`, and stops on any other flag. The render takes about 1 GB in `/tmp`.
+
 Each calibration moves the next render a little: the fader, the lift and the sting read the tables. So render again and calibrate again, until the printed values stop moving (two rounds are usually enough). Run without `--write` to check the state. Then:
-1. Run `npm run sound:verify`.
-2. When it passes, rewrite the baseline (`npm run sound:baseline`) and, if a cue list moved, the cue fixture (`node src/cli.mjs cues specs/*.json --out test/fixtures/cues.json`).
+1. Run `npm run sound:verify`. It prints a `CUE DRIFT` block until the fixture is updated; that is expected here.
+2. When it passes, finish with BIBLE.md §11.1 steps 3-7: store the records (`node src/cli.mjs cues specs/*.json --out test/fixtures/cues.json`), regenerate the tempo table (`node sound/tools/tempo-table.mjs --write`), update Appendix A's pins if 09c or 10a moved, `npm test`, record the change, then ship (§11.5, which rewrites the baseline).
 3. Say in the commit which masters changed.
 
 **State on 2026-10-12.** Re-measured from the baseline render of today's cue lists, the values match `calibration.json` to 0.03 dB on the scalars (M_FIT 1.65 vs 1.68, GM -16.06 vs -16.07, GM_PLAN -16.00 vs -16.02, LOGO_PRE -16.25, OPEN_FIT 2.03 vs 2.00) and to 0.10 dB on BEDS. The pack sits at its fixed point.

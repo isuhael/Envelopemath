@@ -16,9 +16,11 @@
 //   node src/cli.mjs score  specs/*.json --out dir [--cues cues.json]   timeline + harmony + notes only (no audio)
 //   node src/cli.mjs verify specs/*.json [--from dir] [--json] [--detail] [--jobs 4] [--cues cues.json] [--video dir | --no-video]
 //        [--out dir] [--keep] [--twice] [--no-units | --units-only] [--expect-identical] [--baseline file] [--write-baseline file] [--pending]
+//        [--strict-cues]
 //        the acceptance harness (sound/checks/, thresholds in sound/acceptance.json): builds the audio + stems into a temp
 //        dir unless --from names prebuilt outputs, muxes onto the finished MP4s (read only) for A12/A13, runs every check,
-//        prints the pass table and the failures, exits 1 on any failure
+//        prints the pass table and the failures, exits 1 on any failure. It also compares the cue records with
+//        test/fixtures/cues.json (cue drift: the packs' fitted values may be stale); --strict-cues makes that a failure
 // With no spec arguments, check/stills/sheet/audio/sound/cues/score/verify use every specs/*.json; render needs --all for that.
 // Nothing is written into renders/channel/ unless --final is passed.
 // Brand (studio/brand/brand.json: the logo in the look's mark + the CTA end card) is on by default:
@@ -30,12 +32,13 @@ import path from 'node:path'
 import { ROOT, readSpec as readSpecFile, launch, loadBrand, brandSummary } from './page.mjs'
 import { renderSpec, renderStills, contactSheet } from './render.mjs'
 import { checkSpec, formatReport } from './check.mjs'
+import { cueDrift, STORE_CUES } from './sound/cues.mjs'
 
 const [cmd, ...rest] = process.argv.slice(2)
 const files = [], opt = {}
 // flags that never take a value (so "--no-brand specs/a.json" keeps the spec)
 const BOOL = new Set(['all', 'sheet', 'json', 'no-brand', 'help', 'h', 'legacy-audio', 'score', 'wav', 'no-encode', 'no-check', 'final', 'no-spectrogram',
-  'detail', 'keep', 'twice', 'no-units', 'units-only', 'no-video', 'expect-identical', 'pending'])
+  'detail', 'keep', 'twice', 'no-units', 'units-only', 'no-video', 'expect-identical', 'pending', 'strict-cues'])
 // flags whose value is optional: taken only when the next token is not a flag and not a spec/media file
 const OPTIONAL = new Set(['stems'])
 for (let i = 0; i < rest.length; i++) {
@@ -48,6 +51,8 @@ for (let i = 0; i < rest.length; i++) {
   } else files.push(a)
 }
 const brandOpt = opt['no-brand'] ? false : { ...(typeof opt.brand === 'string' ? { config: opt.brand } : {}), ...(typeof opt.logo === 'string' ? { logo: opt.logo } : {}) }
+// the cue fixture (test/fixtures/cues.json) was mounted with the default brand; any other brand changes every record
+const defaultBrand = brandOpt !== false && !brandOpt.config && !brandOpt.logo
 const readSpec = f => readSpecFile(f, { brand: brandOpt })
 const COMMANDS = ['render', 'check', 'stills', 'sheet', 'audio', 'sound', 'remux', 'audit', 'cues', 'score', 'verify']
 if (opt.help || opt.h) {
@@ -76,6 +81,17 @@ const fmtS = ms => (ms / 1000).toFixed(1) + ' s'
 function soundLine(r) {
   const L = r.report.loudness
   return `${r.id}: ${L.integrated} LUFS, TP ${L.truePeak}${L.postEncode ? ` (AAC ${L.postEncode.truePeak})` : ''} dBTP, LRA ${L.lra}, P ${r.report.P.t} (${r.report.P.rule}), ${r.report.bpm.join('/')} BPM, cue onset max ${r.report.cueStartMaxErrMs} ms, ${fmtS(r.report.timing.totalMs)}`
+}
+
+// cue drift (BIBLE.md §11.1): a mounted record that differs from test/fixtures/cues.json means the packs' fitted values
+// (Scoreboard calibration.json, Becker MODEL) were fitted on a teaser that no longer exists. Report it; npm test gates it.
+function warnCueDrift(recs, dumping = false) {
+  const drift = cueDrift(recs)
+  if (!drift.length) return
+  for (const d of drift) console.error(`! ${d.line}`)
+  console.error(dumping
+    ? `! ${drift.length} record(s) differ from test/fixtures/cues.json. Refit the pack on this dump before storing it as the fixture (BIBLE.md §11.1).`
+    : `! The audio was made with fitted values that may be stale. Refit, verify, then store the records (${STORE_CUES}) and regenerate the tempo table (BIBLE.md §11.1).`)
 }
 
 async function soundCommands() {
@@ -108,6 +124,7 @@ async function soundCommands() {
   console.error(brandSummary(brandOpt === false ? null : loadBrand(brandOpt)))
   const t0 = Date.now()
   const recs = await S.gatherRecords(specs, { cuesFile: typeof opt.cues === 'string' ? opt.cues : null, launch, log: m => console.error(m) })
+  if (typeof opt.cues !== 'string' && defaultBrand) warnCueDrift(recs, cmd === 'cues')
   if (cmd === 'cues') {
     const out = typeof opt.out === 'string' && opt.out.endsWith('.json') ? path.resolve(opt.out) : path.join(outDir, 'cues.json')
     fs.mkdirSync(path.dirname(out), { recursive: true })
@@ -182,6 +199,7 @@ async function verifyCommand() {
     baseline: typeof opt.baseline === 'string' ? path.resolve(opt.baseline) : null, expectIdentical: !!opt['expect-identical'],
     writeBaseline: typeof opt['write-baseline'] === 'string' ? path.resolve(opt['write-baseline']) : null,
     json: !!opt.json, detail: !!opt.detail, keep: !!opt.keep,
+    cuesFrom: cuesFile ? path.resolve(cuesFile) : null, strictCues: !!opt['strict-cues'], cueCheck: defaultBrand,
     renderAudio: (items, n, onDone) => S.runPool(items, n, onDone),
   })
   return code
@@ -219,6 +237,7 @@ async function main() {
           const r = await renderSpec(browser, spec, { outDir, crf: +(opt.crf || 18), preset: opt.preset || 'medium', legacyAudio: !!opt['legacy-audio'] })
           const snd = r.sound ? `, sound ${r.sound.loudness.integrated} LUFS / TP ${r.sound.loudness.postEncode ? r.sound.loudness.postEncode.truePeak : r.sound.loudness.truePeak} dBTP` : ', legacy SFX audio'
           console.log(`✓ ${spec.id}: ${r.duration.toFixed(1)} s, ${r.frames} frames, ${r.sfx} sfx${snd} → ${path.relative(process.cwd(), r.mp4)} (${((Date.now() - t0) / 1000).toFixed(0)} s)`)
+          if (r.record && defaultBrand) warnCueDrift([r.record])
           if (opt.sheet) await contactSheet(browser, spec, path.join(outDir, 'sheets', `${spec.id}.png`))
         } catch (e) { failed++; console.error(`✗ ${spec.id}: ${e.message}`) }
       })

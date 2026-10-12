@@ -3,7 +3,7 @@
 // from a full render of the 15 Scoreboard teasers with stems (the B3 clearance needs no table: clearance.mjs renders
 // the bed at every cue):
 //   node src/cli.mjs audio specs/*-scoreboard-*.json --out <dir> --stems --no-check
-//   node looks/scoreboard/sound/tools/calibrate.mjs <dir> --cues=<cues.json> [--write]   (run it twice: GM_PLAN uses the tables)
+//   node looks/scoreboard/sound/tools/calibrate.mjs <dir> --cues <cues.json> [--write]   (run it twice: GM_PLAN uses the tables)
 // See tools/README.md for what each value is, when it goes stale and the whole refit procedure.
 // It prints (and with --write stores in calibration.json, which the pack reads at load time):
 //   BEDS      the music's power over whole sections, from music.dry (before the event duck), pre-master, by section and
@@ -34,13 +34,29 @@ import { OPENING } from '../compose.mjs'
 import { CAL } from '../cal.mjs'
 
 const HERE = path.dirname(fileURLToPath(import.meta.url))
-const dir = path.resolve(process.argv[2] || '.')
+const STUDIO = path.resolve(HERE, '..', '..', '..', '..')
+const FIXTURE = path.join(STUDIO, 'test', 'fixtures', 'cues.json')
+// arguments: <dir> --cues <file> [--skip a,b] [--write]; --name=value works too, and an unknown flag is an error
+const USAGE = 'usage: node looks/scoreboard/sound/tools/calibrate.mjs <render dir> --cues <cues.json> [--skip <id prefixes,...>] [--write]'
+const argv = process.argv.slice(2), opt = { write: false, cues: null, skip: '' }, pos = []
+for (let i = 0; i < argv.length; i++) {
+  const a = argv[i], eq = a.indexOf('='), k = a.startsWith('--') ? a.slice(2, eq > 0 ? eq : undefined) : null
+  if (!k) { pos.push(a); continue }
+  if (k === 'help' || k === 'h') { console.error(USAGE); process.exit(0) }
+  if (k === 'write' && eq < 0) { opt.write = true; continue }
+  if (k !== 'cues' && k !== 'skip') { console.error(`unknown flag ${a}\n${USAGE}`); process.exit(2) }
+  const v = eq > 0 ? a.slice(eq + 1) : argv[i + 1] != null && !argv[i + 1].startsWith('--') ? argv[++i] : null
+  if (v == null || v === '') { console.error(`${a} needs a value\n${USAGE}`); process.exit(2) }
+  opt[k] = v
+}
+if (pos.length !== 1 || !opt.cues) { console.error(`${pos.length !== 1 ? 'name one render directory' : '--cues is required: the records the render was made from'}\n${USAGE}`); process.exit(2) }
+const dir = path.resolve(pos[0])
 const SR = 48000
 const B3 = new Set(['thud', 'hit', 'ding', 'cash', 'reveal', 'pop'])
-const CUES = process.argv.find(a => a.startsWith('--cues='))
-const recs = CUES ? JSON.parse(fs.readFileSync(CUES.slice(7), 'utf8')) : {}
+const cuesFile = path.resolve(opt.cues)
+const recs = JSON.parse(fs.readFileSync(cuesFile, 'utf8'))
 const cueRec = id => recs[id] || null
-const SKIP = (process.argv.find(a => a.startsWith('--skip=')) || '--skip=').slice(7).split(',').filter(Boolean)
+const SKIP = opt.skip.split(',').filter(Boolean)
 const ids = fs.readdirSync(dir).filter(f => f.endsWith('.score.json')).map(f => f.replace('.score.json', '')).filter(id => !SKIP.some(p => id.startsWith(p))).sort()
 const pack = normalizePack(PACK, 'scoreboard')
 const bedm = {}, fits = [], gms = [], logos = [], opens = []
@@ -104,9 +120,9 @@ for (const f of fits) {
 }
 const sd = a => { const m = mean(a); return Math.sqrt(mean(a.map(x => (x - m) ** 2))) }
 const cal = { BEDS, OFF_EFF, OPEN_FIT: opens.length ? +((CAL.OPEN_FIT ?? 0) + mean(opens)).toFixed(2) : CAL.OPEN_FIT, M_FIT: +mean(fits.map(f => f.resid)).toFixed(2), GM: +mean(gms).toFixed(2), GM_PLAN: gmPlan.length ? +mean(gmPlan).toFixed(2) : undefined, LOGO_PRE: logos.length ? +mean(logos).toFixed(2) : null,
-  stats: { M_FIT_sd: +sd(fits.map(f => f.resid)).toFixed(2), GM_sd: +sd(gms).toFixed(2), GM_PLAN_sd: gmPlan.length ? +sd(gmPlan).toFixed(2) : null, LOGO_PRE_sd: logos.length ? +sd(logos).toFixed(2) : null, OPEN_FIT_sd: opens.length ? +sd(opens).toFixed(2) : null, specs: ids.length, from: dir } }
+  stats: { M_FIT_sd: +sd(fits.map(f => f.resid)).toFixed(2), GM_sd: +sd(gms).toFixed(2), GM_PLAN_sd: gmPlan.length ? +sd(gmPlan).toFixed(2) : null, LOGO_PRE_sd: logos.length ? +sd(logos).toFixed(2) : null, OPEN_FIT_sd: opens.length ? +sd(opens).toFixed(2) : null, specs: ids.length, from: `calibrate.mjs on an audio --stems render of ${ids.length} teasers, cue records ${cuesFile === FIXTURE ? 'test/fixtures/cues.json' : 'from a fresh dump (node src/cli.mjs cues)'}` } }
 console.log(JSON.stringify(cal, null, 1))
-if (process.argv.includes('--write')) {
+if (opt.write) {
   // keep any table entry this render had no data for
   const f = path.join(HERE, '..', 'calibration.json')
   const old = fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, 'utf8')) : {}

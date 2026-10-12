@@ -12,9 +12,10 @@
 //   sound/clearance.mjs    §9.3 B3: the bed rendered at every cue window, the lever solver (selective dips, 808 and
 //                          kick-tail dips, cue lifts, broadband within 1.5x the table), the anchor-stab budget
 //   sound/logo.mjs         §3.2 the em sting as an LED fanfare
-//   sound/mix.mjs          §8 levels, sends, ducks, sidechain, bus dynamics
-//   sound/verify.mjs       the acceptance checks the audit does not run (B1, B3, B5-B9, A3, A4, A7, A11, bands) and the
-//                          pack's TRAIN and DUCK rules; sound/units.mjs: U1-U4 and LOGO
+//   sound/mix.mjs          §8 levels, sends, ducks, sidechain, bus dynamics, mix.react (the P/V stabs and the reverse
+//                          crash ride the engine's react bus via the logo path: src/sound/routing.mjs)
+//   the acceptance checks, TRAIN, DUCK and the units (U1-U4, LOGO) live in studio/sound/checks/looks/scoreboard.mjs
+//   (`node src/cli.mjs verify`); the calibration tool in sound/tools/
 export const name = 'scoreboard'
 export const look = 'scoreboard'
 export const key = ['D', 'minor']

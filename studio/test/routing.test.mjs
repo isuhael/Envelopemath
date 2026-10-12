@@ -64,6 +64,9 @@ test('routing: a react voice is not ducked; via logo is bit-identical to the log
     assert.deepEqual(Buffer.from(viaLogo.stems[k].L.buffer), Buffer.from(onLogo.stems[k].L.buffer), `${k} L`)
     assert.deepEqual(Buffer.from(viaLogo.stems[k].R.buffer), Buffer.from(onLogo.stems[k].R.buffer), `${k} R`)
   }
+  // a music voice put on the sting's bus is flagged (the old way of escaping the duck); the react bus is not
+  assert.ok(onLogo.info.warnings.some(w => /"tone" events on bus 'logo'/.test(w)), onLogo.info.warnings.join('; '))
+  assert.ok(!viaLogo.info.warnings.some(w => /bus 'logo'/.test(w)))
   // musicDb: the react route follows the -6 dB step, musicDb: false does not (glue off: its gain reduction moves with level)
   const withDb = run('react', { glue: false }, { musicDb: true }), noDb = run('react', { musicDb: false, glue: false }, { musicDb: true })
   const step = x => rms(x.stems.music, 3.3, 3.9) - rms(x.stems.music, 1.0, 1.9)

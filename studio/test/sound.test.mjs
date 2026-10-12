@@ -4,7 +4,7 @@ import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import { execFileSync } from 'node:child_process'
+import { execFileSync, spawnSync } from 'node:child_process'
 import * as D from '../src/sound/dsp.mjs'
 import * as T from '../src/sound/theory.mjs'
 import * as K from '../src/sound/kit.mjs'
@@ -15,81 +15,55 @@ import { renderSound, renderMix, loadPack, KINDS } from '../src/sound/engine.mjs
 import { readWav } from '../src/sound/wav.mjs'
 import { muxVerified } from '../src/sound/batch.mjs'
 import { checkScore } from '../src/sound/scorecheck.mjs'
+import { readTable, tableLines, checkRow, runReference, REGEN_HINT } from '../sound/tools/tempo-table.mjs'
 
 const here = path.dirname(new URL(import.meta.url).pathname)
 const CUES = JSON.parse(fs.readFileSync(path.join(here, 'fixtures/cues.json'), 'utf8'))
 const rec = id => Object.values(CUES).find(r => r.id.startsWith(id + '-'))
 const tmp = () => fs.mkdtempSync(path.join(os.tmpdir(), 'sound-test-'))
 
-// bible §2.3 reference table: id, P rule, P, N1, BPM1, later segments [to, end, beats, bpm], L
-const VECTORS = [
-  ['01a', 'riser', 14.5, 36, 148.966, [['V', 20.5, 15, 150.00], ['base', 24.5, 10, 150.00]], 24.86],
-  ['01b', 'riser', 12.45, 24, 115.663, [['V', 19.3, 13, 113.87], ['base', 24.0, 9, 114.89]], 24.50],
-  ['01c', 'riser', 15.9, 32, 120.755, [['V', 20.4, 9, 120.00], ['base', 25.3, 10, 122.45]], 25.80],
-  ['02a', 'verdict+hit', 10.7, 20, 112.150, [['base', 13.4, 5, 111.11]], 13.90],
-  ['02b', 'verdict', 10.7, 26, 145.794, [['base', 14.0, 8, 145.45]], 14.36],
-  ['02c', 'verdict', 10.0, 24, 144.000, [['base', 13.0, 7, 140.00]], 13.36],
-  ['03a', 'verdict+hit', 31.0, 62, 120.000, [['base', 37.2, 12, 116.13]], 37.70],
-  ['03b', 'verdict', 25.8, 62, 144.186, [['base', 30.6, 12, 150.00]], 30.96],
-  ['03c', 'verdict', 22.0, 52, 141.818, [['base', 29.8, 18, 138.46]], 30.16],
-  ['04a', 'riser', 36.4, 86, 141.758, [['V', 42.5, 14, 137.70], ['base', 45.5, 7, 140.00]], 45.86],
-  ['04b', 'hit+cash', 24.3, 48, 118.519, [['base', 36.0, 24, 123.08]], 36.50],
-  ['04c', 'riser', 24.79, 60, 145.220, [['V', 33.5, 21, 144.66], ['base', 36.5, 7, 140.00]], 36.86],
-  ['05a', 'verdict+hit', 21.2, 40, 113.208, [['base', 24.7, 7, 120.00]], 25.20],
-  ['05b', 'hit+cash', 18.2, 36, 118.681, [['base', 22.1, 8, 123.08]], 22.60],
-  ['05c', 'hit+cash', 9.13, 22, 144.578, [['V', 17.0, 19, 144.85], ['base', 22.8, 14, 144.83]], 23.16],
-  ['06a', 'riser', 21.4, 52, 145.794, [['base', 26.5, 12, 141.18]], 26.86],
-  ['06b', 'riser', 23.0, 56, 146.087, [['V', 26.0, 7, 140.00], ['base', 30.5, 11, 146.67]], 30.86],
-  ['06c', 'riser', 20.4, 40, 117.647, [['base', 28.0, 15, 118.42]], 28.50],
-  ['07a', 'riser', 12.0, 30, 150.000, [['V', 18.1, 16, 157.38], ['base', 22.8, 12, 153.19]], 23.16],
-  ['07b', 'hit+cash', 16.9, 34, 120.710, [['base', 27.4, 21, 120.00]], 27.90],
-  ['07c', 'hit+cash', 12.9, 26, 120.930, [['base', 19.1, 12, 116.13]], 19.60],
-  ['08a', 'riser', 14.77, 36, 146.242, [['V', 18.4, 9, 148.76], ['base', 22.0, 9, 150.00]], 22.36],
-  ['08b', 'verdict', 21.8, 44, 121.101, [['base', 27.0, 10, 115.38]], 27.50],
-  ['08c', 'verdict+hit', 17.35, 36, 124.496, [['base', 22.0, 10, 129.03]], 22.50],
-  ['09a', 'riser', 19.4, 40, 123.711, [['V', 24.2, 10, 125.00], ['base', 28.5, 9, 125.58]], 29.00],
-  ['09b', 'riser', 17.8, 36, 121.348, [['base', 27.0, 18, 117.39]], 27.50],
-  ['09c', 'riser', 19.12, 46, 144.351, [['V', 25.6, 16, 148.15], ['base', 31.5, 14, 142.37]], 31.86],
-  ['10a', 'riser', 32.511, 80, 147.642, [['base', 36.5, 10, 150.41]], 36.86],
-  ['10b', 'riser', 33.3, 68, 122.523, [['base', 36.6, 7, 127.27]], 37.10],
-  ['10c', 'riser', 26.403, 66, 149.983, [['base', 31.0, 12, 156.62]], 31.36],
-]
+// The tempo-map vectors are the rows of the bible's §2.3 table, read from sound/BIBLE.md (one copy only). Appendix B's
+// Python reference prints them from test/fixtures/cues.json; sound/tools/tempo-table.mjs regenerates them (BIBLE §11.1).
+const TABLE = readTable()
+const tableHint = id => `BIBLE.md §2.3 row ${id}: the engine no longer reproduces it for test/fixtures/cues.json. ${REGEN_HINT}`
 
 test('tempo map: the bible §2.3 table (30 specs) is reproduced', () => {
-  for (const [id, rule, P, n1, bpm1, later, L] of VECTORS) {
-    const tl = buildTimeline(rec(id), null, { overrides: {} })
-    assert.equal(tl.anchors.P.t, P, `${id} P`)
-    assert.equal(tl.anchors.P.rule, rule, `${id} rule`)
-    assert.equal(tl.tempo[0].n, n1, `${id} N1`)
-    assert.ok(Math.abs(tl.tempo[0].bpm - bpm1) < 0.01, `${id} BPM1 ${tl.tempo[0].bpm}`)
-    const segs = tl.tempo.slice(1)
-    assert.equal(segs.length, later.length, `${id} segments`)
-    later.forEach(([to, b, n, bpm], j) => {
-      assert.equal(segs[j].to, to, `${id} seg ${j} anchor`)
-      assert.ok(Math.abs(segs[j].b - b) < 1e-9 && segs[j].n === n && Math.abs(segs[j].bpm - bpm) < 0.01, `${id} seg ${j}: ${segs[j].n} @ ${segs[j].bpm}`)
-    })
-    assert.ok(Math.abs(tl.card.L - L) < 0.006, `${id} L ${tl.card.L}`)
+  const ids = Object.values(CUES).map(r => r.id.split('-')[0]).sort()
+  assert.deepEqual(TABLE.map(r => r.id).sort(), ids, `BIBLE.md §2.3 needs exactly one row per record in test/fixtures/cues.json. ${REGEN_HINT}`)
+  for (const row of TABLE) {
+    const tl = buildTimeline(rec(row.id), null, { overrides: {} })
+    const bad = checkRow(row, tl)
+    assert.deepEqual(bad, [], `${tableHint(row.id)}\n  ${bad.join('\n  ')}`)
     // every anchor lands on a bar line; P is a downbeat
-    assert.ok(tl.bars.some(b => Math.abs(b.t - P) < 1e-9), `${id} bar at P`)
-    assert.ok(Math.abs(tl.timeAt(tl.beatAt(P)) - P) < 1e-9)
+    assert.ok(tl.bars.some(b => Math.abs(b.t - row.P) < 1e-9), `${row.id} bar at P`)
+    assert.ok(Math.abs(tl.timeAt(tl.beatAt(row.P)) - row.P) < 1e-9)
   }
 })
 
+test('tempo map: Appendix B (the Python reference) prints the §2.3 table exactly', { skip: spawnSync('python3', ['--version']).status !== 0 && 'python3 not found' }, () => {
+  const r = runReference(path.join(here, 'fixtures/cues.json'))
+  assert.ok(r.rows, `Appendix B failed: ${r.error}`)
+  assert.deepEqual(r.rows, tableLines().rows, `Appendix B's output on test/fixtures/cues.json differs from the §2.3 rows. ${REGEN_HINT}`)
+})
+
+// Pinned from Appendix A (09c, 09b) and the cue records. When a record moves, these move with it: the message says how.
+const pinHint = what => `${what} moved. If test/fixtures/cues.json changed, update BIBLE.md Appendix A by hand and this pinned value; node sound/tools/tempo-table.mjs prints the new ones (BIBLE §11.1). If it did not, the engine's timeline changed`
+
 test('timeline: Appendix A sections and energy (09c, 09b), cue prep, trains, clusters', () => {
   const a = buildTimeline(rec('09c'), null, { overrides: {} })
-  assert.deepEqual(a.sections.map(s => [s.name, s.b0, s.b1]), [['HOOK', 0, 6], ['BUILD', 6, 40], ['TENSION', 40, 46], ['DROP', 46, 54], ['HOLD', 54, 62], ['VERDICT', 62, 66], ['HOLD2', 66, 70], ['CADENCE', 70, 76], ['CARD', 76, a.sections.at(-1).b1]])
-  assert.equal(a.bars.map(b => b.energy).join(''), '43333344444455334333')
-  assert.ok(a.bars[0].pickup && a.bars[0].beats === 2)
-  assert.deepEqual(a.bars[10].split, [{ beat: 2, section: 'TENSION' }])
-  assert.equal(a.cues[0].t, 0); assert.equal(a.cues[0].tCue, -0.05); assert.equal(a.cues[0].kind, 'ding')
+  assert.deepEqual(a.sections.map(s => [s.name, s.b0, s.b1]), [['HOOK', 0, 6], ['BUILD', 6, 40], ['TENSION', 40, 46], ['DROP', 46, 54], ['HOLD', 54, 62], ['VERDICT', 62, 66], ['HOLD2', 66, 70], ['CADENCE', 70, 76], ['CARD', 76, a.sections.at(-1).b1]], pinHint('09c sections (Appendix A.1)'))
+  assert.equal(a.bars.map(b => b.energy).join(''), '43333344444455334333', pinHint('09c energy (Appendix A.1)'))
+  assert.ok(a.bars[0].pickup && a.bars[0].beats === 2, pinHint('09c bar 0 (a 2-beat pickup, Appendix A.1)'))
+  assert.deepEqual(a.bars[10].split, [{ beat: 2, section: 'TENSION' }], pinHint('09c bar 10 split (Appendix A.1)'))
+  assert.ok(a.cues[0].t === 0 && a.cues[0].tCue === -0.05 && a.cues[0].kind === 'ding', pinHint('09c first cue (the ding at -0.05, Appendix A.1)'))
   const b = buildTimeline(rec('09b'), null, { overrides: {} })
-  assert.equal(b.bars.map(x => x.energy).join(''), '43334444455333')
-  assert.equal(b.anchors.V, null)   // pick(V, base) would need +5.2%
+  assert.equal(b.bars.map(x => x.energy).join(''), '43334444455333', pinHint('09b energy (Appendix A.2)'))
+  assert.equal(b.anchors.V, null, pinHint('09b V, not anchored (Appendix A.2)'))   // pick(V, base) would need +5.2%
   const train = (id, kind) => buildTimeline(rec(id), null, { overrides: {} }).trains.find(t => t.kind === kind)
-  assert.ok(Math.abs(train('10a', 'tick').period - 1.0) < 0.002)
-  assert.ok(Math.abs(train('10b', 'tick').period - 0.832) < 0.002)
-  assert.ok(Math.abs(train('02a', 'thud').period - 0.5) < 0.002)
-  assert.ok(Math.abs(train('09b', 'thud').period - 2.0) < 0.002)
+  for (const [id, kind, period] of [['10a', 'tick', 1.0], ['10b', 'tick', 0.832], ['02a', 'thud', 0.5], ['09b', 'thud', 2.0]]) {
+    const tr = train(id, kind)
+    assert.ok(tr && Math.abs(tr.period - period) < 0.002, pinHint(`${id}'s ${kind} train period (${tr ? tr.period.toFixed(3) : 'none'}, pinned ${period})`))
+  }
   // every cue has n (per kind) and i (global)
   for (const c of a.cues) assert.ok(Number.isInteger(c.i) && Number.isInteger(c.n))
   // overrides: a forced payoff wins (score 7) and the verdict anchor can be disabled

@@ -172,7 +172,7 @@ The acceptance checks, the pack's own rules (TRAIN, DUCK, LOGO) and the §9.5 DS
   - P lands on a downbeat with kick, clap, the D1 sub, an 808 diving 12 st, the stab and a reverse crash into it.
   - When a hit owns P, the music's crash stays out (the hit brings its own), so P is not three crashes in one wash. A payoff without a hit keeps a crash with τ 1.0 s.
   - The engine's payoff duck clears the first 150 ms (B2).
-  - The stab at P and V plays on the unducked path (the logo bus), budgeted against the anchor's cues as the fader leaves them: its 50 ms power sits 7.5 dB under the cues', and its peak 9 dB under theirs, so the limiter does not eat the payoff.
+  - The stab at P and V plays on the react bus (`bus: 'react'`, never ducked), which `mix.react = { via: 'logo' }` routes through the logo path (see the deviations below). It is budgeted against the anchor's cues as the fader leaves them: its 50 ms power sits 7.5 dB under the cues', and its peak 9 dB under theirs, so the limiter does not eat the payoff.
 - **End card.** The sting (§3.1, §3.2):
   - The motif's A4 D5 E5 on the SB-Laser lead, with the pluck an octave down.
   - A5 on neon brass with A4 under it. It leads: its first 85 ms sit 4.5 dB over the loudest pickup (the LOGO unit check).
@@ -237,8 +237,9 @@ node src/cli.mjs verify specs/*-scoreboard-*.json
 node src/cli.mjs verify specs/*-scoreboard-*.json --from /tmp/snd-scoreboard/run
 # the unit checks alone (about 5 s for this look)
 node src/cli.mjs verify specs/*-scoreboard-*.json --units-only --cues test/fixtures/cues.json
-# re-measure the pack's values after a change to the arrangement, the levels or a cue list (see sound/tools/README.md)
-node looks/scoreboard/sound/tools/calibrate.mjs /tmp/snd-scoreboard/run --cues=/tmp/snd-scoreboard/cues.json [--write]
+# re-measure the pack's values after a change to the arrangement, the levels or a cue list (see sound/tools/README.md and,
+# after a cue change, BIBLE.md §11.1 for the steps that follow: store the records, regenerate the tempo table, npm test)
+node looks/scoreboard/sound/tools/calibrate.mjs /tmp/snd-scoreboard/run --cues /tmp/snd-scoreboard/cues.json [--write]
 # the delivery pass: the audio muxed onto the finished MP4s (into /tmp; nothing reaches renders/ without --final), then the audit
 node src/cli.mjs sound specs/*-scoreboard-*.json --video ../renders/channel --out /tmp/snd-scoreboard/mp4 --score --wav --stems
 node src/cli.mjs audit /tmp/snd-scoreboard/mp4 --reports /tmp/snd-scoreboard/mp4/sound --out /tmp/snd-scoreboard/audit
@@ -250,9 +251,12 @@ node src/cli.mjs audit /tmp/snd-scoreboard/mp4 --reports /tmp/snd-scoreboard/mp4
 - **SB-Kick and the 31.5 Hz band:**
   - The kick keeps the bible's 48 Hz tail and adds a punch layer (180 → 90 Hz) and a 3 kHz knock.
   - The previous pass tuned the tail to D1 (36.7 Hz) only to reach the §9.2 31.5 Hz window (−8..+3 dB re 1 kHz). With a 48 Hz kick and the 808 on 58-110 Hz, that band measures about −15 to −18.5 dB.
-  - `studio/sound/acceptance.json` (BANDS) applies −20..+3 for that band only, marked pending bible sync. **This is a requested bible change** (§9.2, Scoreboard 31.5 Hz: −20..+3), made on the critic's instruction not to tune the kick to a meter.
+  - That band's window is −20..+3 for Scoreboard, synced in bible v2 (2026-10-12): see BIBLE §9.2 and `studio/sound/acceptance.json` BANDS. It was made on the critic's instruction not to tune the kick to a meter.
 - **The returns at +2.5 dB.** B1 needs the returns stem at about −6 LU re the mix (see `mix.mjs`): with the returns at 0 dB the music stem measured −1.2 to −1.8 LU re the mix, outside its window. The ticker's ping-pong delay is gone and the pad hall is back at −14 dB, so the wetness is the stab's hall, the clap plate and the lead's delay.
-- **The anchor stab at P and V** plays on the logo bus (not ducked, not glued), level-budgeted per anchor. The reverse crash into P rides the same path, so the 12 dB gap duck does not touch it.
+- **The anchor stab at P and V** plays on the engine's react bus (`bus: 'react'`, not ducked; `studio/sound/README.md`, "The react bus"), level-budgeted per anchor. The reverse crash into P rides the same bus, so the 12 dB gap duck does not touch it.
+  - `mix.mjs` sets `react: { via: 'logo' }`: these voices also skip `musicDb`, the glue, the kick sidechain and the body gate, take `mix.logo`, and send to the un-ducked returns (the stab's hall rings over the impact). `clearance.mjs` models each event on its engine route (`routing.mjs` `routeOf`), so it follows whatever `mix.react` says.
+  - Until 2026-10-12 the pack put these events on `bus: 'logo'`. `via: 'logo'` sums them into the logo bus, so the masters stayed bit-identical (`verify --expect-identical`, 30/30).
+  - The engine's default (`via: 'music'`: `musicDb`, the glue and the music returns, only the duck skipped) was tried at the same levels (11 of the 15 teasers built): B3 unchanged, B1 within 0.03 LU, A11 better on some and worse on 04c (1.0% → 1.8%), the P onset (B5) 1.3-2.7 ms earlier on 02b, 05c and 06b. No check improved, so the pack keeps `via: 'logo'`.
 - **No music kick at V** when the verdict cue brings its own body (§8.4.1 one low body, over §4.5's VERDICT kick).
 - **No music crash at P** when a hit owns P (the hit brings its own). Otherwise the music crash rings with τ 1.0 s, not 1.3 s.
 - **The B3 clearance** may lift a cue above its kit gain: up to +6 dB, never past gain 1.
@@ -261,8 +265,8 @@ node src/cli.mjs audit /tmp/snd-scoreboard/mp4 --reports /tmp/snd-scoreboard/mp4
 - **Note gates:** every gate ends 1.5 ms early. The score rounds t and dur separately, so a note ending exactly at its successor's onset would count as two notes sounding at once (S14).
 - **Levels:** tuned against B1 and §9.2. The stab is at −11 dB (bible −8), the arp at −13.5 (bible −16; it carries the look), and the pad, clap and snare sit near the bible's starting levels.
 - **Envelopes:** the arp's amplitude decays exponentially (τ 70 ms). The engine's ADSR reaches 99% at `d`, which would make a 39 ms blip. Onsets are quadratic or cubic over 3-4 ms where a linear 1-2 ms ramp would click (U2).
-- **B3 at the end card:** the card's pop and thud sit under the held sting by design (§3.2), so the harness reports them but does not fail on them (`acceptance.json` B3 `exemptCard`, pending bible sync).
-- **B1 and the returns:** the §8.1 windows hold only with the returns bus at +2.5 dB (above); `acceptance.json` marks Scoreboard's B1 pending bible sync and reports the returns stem (−5.4 to −6.4 LU re the mix) without gating it.
+- **B3 at the end card:** the card's pop and thud sit under the held sting by design (§3.2), so the harness reports them but does not fail on them (`acceptance.json` B3 `exemptCard`). Synced in bible v2 (2026-10-12), see BIBLE §9.3.
+- **B1 and the returns:** the §8.1 windows hold only with the returns bus at +2.5 dB (above). The harness reports the returns stem (−5.4 to −6.4 LU re the mix) without gating it. Synced in bible v2 (2026-10-12): the returns at about −6 LU are part of Scoreboard's B1 target, see BIBLE §8.1.
 
 ### Measured (2026-10-11, the 15 Scoreboard teasers muxed onto `renders/channel`, written to /tmp/fix-snd-scoreboard)
 
@@ -312,6 +316,11 @@ Every mux kept the picture bit-identical (video md5). Two renders of a spec give
 - Measures: I −14.07 to −14.17 LUFS, true peak −1.16 to −1.40 dBTP, PLR 12.69 to 12.92, LRA 4.66 to 6.68.
 - B3's closest cue sits 3.9 dB over the music; B8's logo lands at −11.7 to −12.6 LUFS.
 - `npm run sound:verify` prints the current values.
+
+**And after that (2026-10-12): the react bus and the AAC pre-roll.** The P/V stabs and the reverse crash moved from `bus: 'logo'` to `bus: 'react'` with `mix.react = { via: 'logo' }`: bit-identical, all 30 masters unchanged. Then the engine started encoding behind a trimmed 64 ms silent pre-roll and measuring its local ceiling dips from the master's own peak (`studio/sound/README.md`, "The AAC first frame").
+- That changed nine Scoreboard masters, all through the encode loop's local dips: 03b 04a 04c 05c 06b 07a 08a 10a 10c. With the new AAC streams the dips land elsewhere or are not needed. 01a 02b 02c 03c 06a 09c are identical (no dip before or after).
+- `verify`: all 15 pass 42/42, units 69/69. I −14.08 to −14.17 LUFS, decoded true peak −1.19 to −1.40 dBTP, PLR 12.72-12.93, LRA 4.65-6.70. Every teaser ends at ceiling −1.5 dBTP. Over the first 30 ms the decode is at most +0.12 dB over the master (04a; it was +0.54 on 06a). B3's closest cue sits 3.9 dB over the music, and B8's logo at −11.65 to −12.57 LUFS.
+- `renders/channel` still carries the earlier audio until it is remuxed (see `studio/sound/README.md`, "Determinism and the baseline").
 
 ---
 

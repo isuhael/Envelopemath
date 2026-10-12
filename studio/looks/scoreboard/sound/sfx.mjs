@@ -397,9 +397,8 @@ const raw = {
 }
 
 // ---------------------------------------------------------------- the SFX fader (B1, balance.mjs)
-// The bed tables (cal.mjs, measured by calibrate.mjs on all 15, pre-master, before any duck, at the bus's 0 dB: the
+// The bed table (cal.mjs, measured by calibrate.mjs on all 15, pre-master, before any duck, at the bus's 0 dB: the
 // energy curve is added back here, so a 1-bar DROP's +3 dB or an afterglow is in the estimate)
-//   BEDC  the music's 50 ms RMS at the cue times (the arrangement yields around cues: the arp rests, the kick moves)
 //   BEDS  the music's power over whole sections (the music-stem model of balance.mjs)
 export const bedSec = (tl, t) => {
   const bar = tl.barAt(t + 1e-6)

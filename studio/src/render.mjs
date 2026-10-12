@@ -18,7 +18,7 @@ function ffmpeg(args) {
 }
 
 /**
- * Render one spec. Returns { mp4, duration, frames, sfx, sound }.
+ * Render one spec. Returns { mp4, duration, frames, sfx, sound, record } (record: the cue record the soundtrack used).
  * opts: { outDir, crf = 18, preset = 'medium', onProgress(f, N), legacyAudio = false, sound = {} }
  * The soundtrack comes from the sound engine (src/sound: music + SFX, mastered to -14 LUFS, AAC 192k stereo, copied into
  * the MP4 as verified). legacyAudio: the old mono SFX-only track (src/audio.mjs mix(), AAC 160k).
@@ -30,12 +30,13 @@ export async function renderSpec(browser, spec, { outDir, crf = 18, preset = 'me
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'studio-sound-'))
   try {
     const fps = info.fps, N = Math.round(info.duration * fps)
-    let audio, audioArgs, snd = null
+    let audio, audioArgs, snd = null, record = null
     if (legacyAudio) {
       audio = path.join(outDir, `${spec.id}.sfx.wav`)
       writeWav(audio, mix(info.sfx, info.duration))
       audioArgs = ['-c:a', 'aac', '-b:a', '160k']
     } else {
+      record = cueRecord(spec, info)   // a separate copy for the caller's cue-drift check (the engine gets its own)
       snd = await renderSound(cueRecord(spec, info), { outDir: sound.outDir || tmp, score: !!sound.outDir, report: !!sound.outDir, ...sound })
       audio = snd.m4a
       audioArgs = ['-c:a', 'copy']
@@ -59,7 +60,7 @@ export async function renderSpec(browser, spec, { outDir, crf = 18, preset = 'me
     await done
     if (legacyAudio) fs.rmSync(audio, { force: true })
     if (errors.length) throw new Error(`${spec.id}: page errors during render:\n${errors.join('\n')}`)
-    return { mp4, duration: info.duration, frames: N, sfx: info.sfx.length, sound: snd ? snd.report : null }
+    return { mp4, duration: info.duration, frames: N, sfx: info.sfx.length, sound: snd ? snd.report : null, record }
   } finally {
     fs.rmSync(tmp, { recursive: true, force: true })
     await page.close()

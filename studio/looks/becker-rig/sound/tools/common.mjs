@@ -10,17 +10,29 @@ export const STUDIO = path.resolve(path.dirname(fileURLToPath(import.meta.url)),
 export const FIXTURE = path.join(STUDIO, 'test', 'fixtures', 'cues.json')
 export { BANDS, SR }
 
-/** argv -> { prefixes, flags }: `--name value` pairs; everything else is an id prefix */
-export function args(argv = process.argv.slice(2)) {
+/**
+ * argv -> { prefixes, flags }: `--name value` or `--name=value` for the flags in `known` (anything else starting with -- is
+ * an error, so a typo cannot silently fall back to the fixture); every other argument is an id prefix.
+ */
+export function args(argv = process.argv.slice(2), known = ['cues']) {
   const prefixes = [], flags = {}
+  const usage = `flags: ${known.map(k => `--${k} <value>`).join(' ')} (or --name=value); other arguments are id prefixes`
   for (let i = 0; i < argv.length; i++) {
-    if (argv[i].startsWith('--')) { const k = argv[i].slice(2); const v = argv[i + 1] && !argv[i + 1].startsWith('--') ? argv[++i] : true; flags[k] = v }
-    else prefixes.push(argv[i])
+    const a = argv[i]
+    if (a === '-h' || a === '--help') { console.error(usage); process.exit(0) }
+    if (!a.startsWith('--')) { prefixes.push(a); continue }
+    const eq = a.indexOf('=')
+    const k = eq > 0 ? a.slice(2, eq) : a.slice(2)
+    if (!known.includes(k)) { console.error(`unknown flag ${a}; ${usage}`); process.exit(2) }
+    const v = eq > 0 ? a.slice(eq + 1) : argv[i + 1] != null && !argv[i + 1].startsWith('--') ? argv[++i] : null
+    if (v == null || v === '') { console.error(`${a} needs a value; ${usage}`); process.exit(2) }
+    flags[k] = v
   }
   return { prefixes, flags }
 }
 /** the Becker cue records, sorted by id, filtered by id prefixes (none = all) */
 export function beckerRecords({ prefixes = [], cues = null } = {}) {
+  if (!cues) console.error('cue records: test/fixtures/cues.json, the records MODEL was fitted on. After a kit or spec change, dump fresh ones (node src/cli.mjs cues specs/*-becker-rig-*.json --out /tmp/snd-br/cues.json) and pass --cues /tmp/snd-br/cues.json, or this works on the old cue lists.')
   const recs = JSON.parse(fs.readFileSync(cues ? path.resolve(cues) : FIXTURE, 'utf8'))
   return Object.keys(recs).sort().filter(id => recs[id].look === 'becker-rig' && (!prefixes.length || prefixes.some(p => id.startsWith(p)))).map(id => recs[id])
 }

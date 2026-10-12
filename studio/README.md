@@ -99,7 +99,7 @@ The teasers carry no narration, so the music and sound effects carry the video. 
 
 **How the soundtrack is made.**
 - `src/sound/` turns a mounted spec's cue list (`info.sfx`, plus the spec's verdict and the brand card's timing) into a timeline. The timeline holds the payoff P, a tempo map that puts P, the verdict and the card on bar lines, sections and energy.
-- A look's **sound pack** composes music on that timeline and renders every SFX kind. A pack lives in `sound/packs/<look>.mjs`; until it exists, the default pack in `src/sound/packs/default.mjs` is used.
+- A look's **sound pack** composes music on that timeline and renders every SFX kind. The engine looks for it at `sound/packs/<look>.mjs`, then `looks/<look>/sound.mjs` (where the Scoreboard and Becker Rig packs live), then falls back to the default pack in `src/sound/packs/default.mjs`.
 - The engine mixes music, SFX and reverbs, ducks the music under the cues, and masters to −14 LUFS with a −1.5 dBTP true-peak limiter.
 - It encodes AAC-LC 192k stereo and checks the decoded true peak (≤ −1.0 dBTP).
 - Everything is synthesised and seeded: the same spec always gives the same master WAV.
@@ -112,6 +112,7 @@ The teasers carry no narration, so the music and sound effects carry the video. 
 - `verify` is the acceptance harness: it builds the audio and stems into a temp dir (or reads `--from <dir>`), muxes them onto the finished MP4s for the picture checks, runs every check in `sound/acceptance.json`, prints a pass table and the failures, and exits non-zero on any failure (`npm run sound:verify`; see [`sound/README.md`](sound/README.md#acceptance-harness-verify)).
 - `cues` and `score` dump the engine's input and plan.
 - Nothing is written into `renders/channel/` unless `--final` is passed.
+- **Before changing a kit, a spec, a pack or the engine**, read [`sound/BIBLE.md`](sound/BIBLE.md) §11. Both packs carry values fitted on today's cue lists (`test/fixtures/cues.json`). After an edit, `node --test test/cues.test.mjs` (about 10 s) tells you whether a cue moved; `render`, `audio`, `sound` and `verify` warn about it too. If one did, §11.1 lists the steps: refit, verify, store the records, regenerate the tempo table, `npm test`.
 
 ```bash
 node src/cli.mjs audio specs/09c-*.json --out /tmp/sound/audio --stems

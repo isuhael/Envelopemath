@@ -12,8 +12,8 @@ import { loudness } from '../../../../src/sound/loudness.mjs'
 import { ungated } from '../../../../sound/checks/measure.mjs'
 import { args, beckerRecords } from './common.mjs'
 
-const { prefixes, flags } = args()
-MODEL.fixedTrim = flags.trim != null && flags.trim !== true ? +flags.trim : 0
+const { prefixes, flags } = args(process.argv.slice(2), ['cues', 'trim'])
+MODEL.fixedTrim = flags.trim != null ? +flags.trim : 0
 const pack = await loadPack('becker-rig')
 const f = b => masterFilters(b)
 for (const rec of beckerRecords({ prefixes, cues: flags.cues })) {
