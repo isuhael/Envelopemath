@@ -30,7 +30,7 @@
    "min": 8, "max": 13,
    "pending": {
     "bibleSays": "A5 is a measurement on the final MP4 (8-13 dB); §8.6 step 9 only retries on true peak.",
-    "passesNow": "The engine enforces the upper bound itself: the encode loop (src/sound/engine.mjs, PLR_MAX = 13.0) treats a decoded PLR over 12.95 like a true-peak failure and lowers the limiter ceiling (locally, then globally) until it holds. test/sound.test.mjs checks that PLR_MAX equals A5.max.",
+    "passesNow": "The engine enforces the upper bound itself: the encode loop (src/sound/engine.mjs, PLR_MAX = 13.0) treats a decoded PLR over 12.95 like a true-peak failure and lowers the limiter ceiling (locally, then globally) until it holds. test/acceptance.test.mjs checks that PLR_MAX equals A5.max.",
     "reason": "AAC adds 0.3-0.5 dB of true peak over the -1.5 dBTP ceiling, which put the decoded PLR of 01c, 03a, 04c, 07a and 08b at 13.02-13.12 whatever the mix did; the fix belongs in the master, not in a pack.",
     "sync": "§8.6 step 9: retry when the decoded true peak is above -1.0 dBTP OR the decoded PLR is above 13 dB."
    }
@@ -180,7 +180,8 @@
   },
   "B9": {
    "bible": "§9.3", "name": "Card tail", "on": "master WAV: no 50 ms window (louder channel) below thrDbfs in [base, duration - fadeS]; the last sample 0",
-   "thrDbfs": -45, "windowS": 0.05, "fadeS": 0.40, "lastSampleZero": true
+   "thrDbfs": -45, "windowS": 0.05, "fadeS": 0.40, "lastSampleZero": true,
+   "note": "The cosine shape of the final fade is the engine's (masterMix edges); it is not measured."
   },
   "B10": {
    "bible": "§9.3", "name": "Flams", "on": "score: music kick/snare/clap onsets vs strong cues; anchors (0, P, V, base) never yield (engine decision 6)",
@@ -188,7 +189,8 @@
   },
   "S1": {
    "bible": "§9.4", "name": "In key", "on": "score: pitched body notes in the key or the sounding chord, or flagged chromatic",
-   "minPct": 97
+   "minPct": 97,
+   "note": "Not automated (as before this harness): that each flagged chromatic note moves by <= 2 st within 1 beat to a chord tone."
   },
   "S2": {
    "bible": "§9.4", "name": "Chord tones on strong beats", "on": "score: notes within tolMs of beats 1 and 3",
@@ -210,7 +212,8 @@
   },
   "S5": {
    "bible": "§9.4", "name": "Repetition", "on": "score: bar fingerprints (instrument, 1/gridDiv-bar position, MIDI, velocity to 0.1)",
-   "maxIdenticalRun": 2, "windowBars": 8, "minDistinctInWindow": 3, "gridDiv": 32
+   "maxIdenticalRun": 2, "windowBars": 8, "minDistinctInWindow": 3, "gridDiv": 32,
+   "note": "Not automated (as before this harness): 'no 2-bar lead or glock phrase more than twice'."
   },
   "S6": {
    "bible": "§9.4", "name": "Anchors", "on": "score: bar line, kick, bass and crash/stab at P; no note-on in [P - 1 eighth, P) but the reverse crash",
@@ -245,7 +248,7 @@
   "S9": {
    "bible": "§9.4 / §2.3", "name": "Tempo", "on": "score.tempo: segment 1 in [lo, hi]; later segments in [absLo, absHi] and within maxDev of BPM1 (maxDevV when V is anchored)",
    "maxDev": 0.08, "maxDevV": 0.05,
-   "note": "The look ranges must equal the engine's LOOK_DEFAULTS and the packs' `tempo` (test/sound.test.mjs checks it).",
+   "note": "The look ranges must equal the engine's LOOK_DEFAULTS and the packs' `tempo` (test/acceptance.test.mjs checks it).",
    "looks": {
     "scoreboard": { "lo": 136, "hi": 152, "absLo": 128, "absHi": 160 },
     "becker-rig": { "lo": 112, "hi": 128, "absLo": 104, "absHi": 136 },
@@ -258,7 +261,8 @@
   },
   "S11": {
    "bible": "§9.4", "name": "Energy plan", "on": "score.bars energy by section",
-   "hookFirst": 4, "hookRest": 3, "dropEnergy": 5, "holdMax": 4
+   "hookFirst": 4, "hookRest": 3, "dropEnergy": 5, "holdMax": 4,
+   "note": "Not automated (as before this harness): the TENSION rule (no kick or clap backbeat for Scoreboard, a heartbeat kick for Becker Rig)."
   },
   "S12": {
    "bible": "§9.4", "name": "Voice leading", "on": "score: pad voices between consecutive chords (not across P)",
@@ -270,7 +274,8 @@
   },
   "S14": {
    "bible": "§9.4", "name": "Polyphony", "on": "score: pitched body notes sounding at once",
-   "maxNotes": 12
+   "maxNotes": 12,
+   "note": "Counts every pitched body note for its written duration (the bible excludes tails below -30 dB: this is stricter)."
   },
   "U1": {
    "bible": "§9.5", "name": "Aliasing", "on": "each pitched voice at D6 and A6 for 1 s: off-series spectral peaks re the fundamental",
@@ -320,7 +325,7 @@
    "looks": { "becker-rig": {} }
   },
   "INFO": {
-   "bible": "becker-rig pack (critic's measurements)", "name": "Reported, never gated", "gate": false,
+   "bible": "reporting (every look: AAC0; Becker Rig: the critic's measurements)", "name": "Reported, never gated", "gate": false,
    "on": "B1u (SFX ungated re mix, the SFX's own contribution), REACT (the react-bus voices and the duck curve under them), DUCKSTATS (body share >= 6 dB down, dips > 6 dB per minute, per-kind duck depths), FOLEY (in-band audibility of tick/step/roll/whoosh), DEFLATE (the Gm span and the bass bends), AAC0 (decoded true peak in the first 30 ms re the master's)",
    "looks": { "becker-rig": { "foleyBands": { "tick": [500, 3000, 0.08], "step": [80, 1200, 0.09], "roll": [1800, 2600, null], "whoosh": [700, 3500, null] }, "duckDeepDb": 6, "duckReleaseDb": 3 }, "scoreboard": {} }
   }

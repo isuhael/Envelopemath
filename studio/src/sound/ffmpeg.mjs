@@ -11,10 +11,55 @@ function run(bin, args, { input = null, maxBuffer = 1 << 30 } = {}) {
 }
 const ff = (args, o) => run('ffmpeg', ['-hide_banner', '-nostdin', '-y', ...args], o)
 
-/** encode a WAV to AAC-LC (bible §8.6: 192k, 48 kHz, stereo) in an .m4a, single-threaded (deterministic) */
-export function encodeAac(wav, out, { bitrate = '192k' } = {}) {
-  ff(['-loglevel', 'error', '-threads', '1', '-i', wav, '-c:a', 'aac', '-b:a', bitrate, '-ar', '48000', '-ac', '2', '-movflags', '+faststart', out])
-  return out
+/** samples per AAC-LC frame, and the encoder's priming (ffmpeg writes it as a 1024-sample edit list) */
+export const AAC_FRAME = 1024
+/**
+ * The silent pre-roll encodeAac puts in front of the audio, in samples: 3 frames = 64 ms. A whole number of frames (the
+ * dropped packets are exactly the silence) and of milliseconds (ffmpeg's encoder then sizes the last packet exactly: with
+ * 1024 or 2048 samples the file came out 16-32 samples short).
+ */
+export const AAC_PREROLL = 3 * AAC_FRAME
+const secs = n => (n / 48000).toFixed(9)
+/** the audio packets of a file: [{ pts, size }] and the stream's duration_ts */
+function packets(file) {
+  const r = run('ffprobe', ['-v', 'error', '-select_streams', 'a:0', '-show_entries', 'packet=pts,size:stream=duration_ts', '-of', 'json', file])
+  const j = JSON.parse(String(r.stdout))
+  return { pk: (j.packets || []).map(p => ({ pts: +p.pts, size: +p.size })), durationTs: j.streams && j.streams[0] ? +j.streams[0].duration_ts : null }
+}
+/**
+ * Encode a WAV to AAC-LC (bible §8.6: 192k, 48 kHz, stereo) in an .m4a, single-threaded (deterministic).
+ *
+ * The first frame (sound/README.md "The AAC first frame"): ffmpeg's encoder starts a file with an empty bit reservoir,
+ * so a hard hit at t = 0 is coded with far fewer bits than the same hit later on (05b: 392 bytes where it gets 1039
+ * after silence; the decoded first 50 ms at 12.9 dB SNR instead of 30.5, and up to +3 dB of true peak over the master).
+ * So the encoder first sees `preroll` samples of digital silence (adelay), and a stream copy then drops the silent
+ * packets, keeping the last one as the codec's priming packet (pts -1024 under the usual 1024-sample edit list). AAC
+ * frames do not reference each other's bits (the reservoir is the encoder's bookkeeping), so the result decodes
+ * sample-aligned and has the plain encode's shape: same packet count, edit list and duration. It is checked (the kept
+ * packets are the pre-roll encode's own, byte for byte in size, and the durations agree); when the check fails (another
+ * ffmpeg's seek or muxer behaving differently) the plain encode is used and `warning` says so. preroll 0 = plain encode.
+ * Returns { file, preroll (samples used), warning? }.
+ */
+export function encodeAac(wav, out, { bitrate = '192k', preroll = AAC_PREROLL } = {}) {
+  const codec = ['-c:a', 'aac', '-b:a', bitrate, '-ar', '48000', '-ac', '2']
+  const plain = () => ff(['-loglevel', 'error', '-threads', '1', '-i', wav, ...codec, '-movflags', '+faststart', out])
+  if (!preroll) { plain(); return { file: out, preroll: 0 } }
+  if (preroll % AAC_FRAME) throw new Error(`encodeAac: preroll ${preroll} is not a multiple of ${AAC_FRAME}`)
+  const tmp = `${out}.preroll.m4a`
+  try {
+    ff(['-loglevel', 'error', '-threads', '1', '-i', wav, '-af', `adelay=${preroll}S:all=1`, ...codec, tmp])
+    // keep the packets from pts preroll - 1024 on (the last silent one becomes the priming packet), shifted by -preroll
+    ff(['-loglevel', 'error', '-ss', secs(preroll - AAC_FRAME), '-i', tmp, '-map', '0:a:0', '-c:a', 'copy', '-copyts',
+      '-output_ts_offset', '-' + secs(preroll), '-avoid_negative_ts', 'disabled', '-movflags', '+faststart', out])
+    const a = packets(tmp), b = packets(out), drop = preroll / AAC_FRAME
+    const sameTail = b.pk.length === a.pk.length - drop && b.pk.every((p, i) => p.size === a.pk[i + drop].size)
+    const ok = sameTail && b.pk.length > 0 && b.pk[0].pts === -AAC_FRAME && b.durationTs === a.durationTs - preroll
+    if (!ok) {
+      plain()
+      return { file: out, preroll: 0, warning: `AAC pre-roll trim did not check out (${b.pk.length} of ${a.pk.length} packets, first pts ${b.pk[0] && b.pk[0].pts}, duration ${b.durationTs} vs ${a.durationTs} - ${preroll}): plain encode used` }
+    }
+    return { file: out, preroll }
+  } finally { fs.rmSync(tmp, { force: true }) }
 }
 /** decode any file's first audio stream to 48 kHz stereo float -> { L, R } */
 export function decodeAudio(file, { stream = '0:a:0' } = {}) {

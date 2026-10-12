@@ -14,6 +14,7 @@ node src/cli.mjs render specs/01a-*.json --no-brand     # without the brand laye
 node src/cli.mjs stills specs/01a-*.json --at end --logo /tmp/test-logo.png   # try a logo without copying it in
 node src/cli.mjs sound specs/*.json --video ../renders/channel --out /tmp/sound/mp4   # new audio on finished MP4s (picture copied)
 node src/cli.mjs audit /tmp/sound/mp4 --reports /tmp/sound/mp4/sound   # loudness, peaks, stereo, bands, spectrograms
+npm run sound:verify                                     # the sound acceptance harness: every check of sound/acceptance.json on all 30
 ```
 
 ## Layout
@@ -25,7 +26,7 @@ node src/cli.mjs audit /tmp/sound/mp4 --reports /tmp/sound/mp4/sound   # loudnes
 | `fonts/` | Vendored Google Fonts (OFL): Archivo Black, IBM Plex Mono, Inter, Inter Tight, JetBrains Mono and Anton, plus a full-glyph Inter for `≈ → × ÷ −` |
 | `looks/<look>/` | One kit per look: `index.html`, `kit.js`, `formats/<format>.js`, `README.md`, `samples/` |
 | `src/` | Node side: `page.mjs` (Chromium + routed origin), `render.mjs` (MP4, stills, contact sheets), `check.mjs` (linter), `sound/` (the sound engine), `audio.mjs` (the legacy mono SFX synth), `cli.mjs` |
-| `sound/` | The sound bible (`BIBLE.md`), the engine and pack contract (`README.md`), and the look packs (`packs/<look>.mjs`) |
+| `sound/` | The sound bible (`BIBLE.md`), the engine and pack contract (`README.md`), the acceptance thresholds (`acceptance.json`) and the harness that runs them (`checks/`). Look packs live in `looks/<look>/sound.mjs` (or `sound/packs/<look>.mjs`) |
 | `specs/` | One teaser per file (contract: [`FORMATS.md`](FORMATS.md)) |
 | `brand/` | The channel brand: `brand.json` (handle, CTA, logo crop) and `logo.png` (dropped in by the owner). See [`brand/README.md`](brand/README.md) |
 | `out/` | Renders (not in git) |
@@ -108,6 +109,7 @@ The teasers carry no narration, so the music and sound effects carry the video. 
 - `sound` puts new audio on finished MP4s without re-encoding the picture (the video-stream md5 is checked).
 - `audio` renders the audio, score and report only.
 - `audit` measures any MP4.
+- `verify` is the acceptance harness: it builds the audio and stems into a temp dir (or reads `--from <dir>`), muxes them onto the finished MP4s for the picture checks, runs every check in `sound/acceptance.json`, prints a pass table and the failures, and exits non-zero on any failure (`npm run sound:verify`; see [`sound/README.md`](sound/README.md#acceptance-harness-verify)).
 - `cues` and `score` dump the engine's input and plan.
 - Nothing is written into `renders/channel/` unless `--final` is passed.
 

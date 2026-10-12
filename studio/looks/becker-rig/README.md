@@ -872,7 +872,7 @@ The Becker Rig sound pack is "toy-box funk": a synthesised band under cartoon fo
 - **Slide whistle** into P, only when no SFX `riser` covers TENSION.
 - **Drums:** a dry kit. The kick is a sine 130 → 46 Hz (it carries the 31.5 Hz octave now that the bass has no sub), plus snare, ghost and roll, clap, shaker, tambourine, block, tom, timpani, crash and reverse crash. Kick, snare and clap are soft-clipped at their own peak (tanh 1.5).
 
-**The react bus.** The band's answers to the cues play on the engine's un-ducked bus (`bus: 'logo'`; the score keeps role `brass`), with their own sends, so the cue they answer does not duck them away:
+**The react bus.** The band's answers to the cues play on the engine's un-ducked bus (`bus: 'logo'`; the score keeps role `brass`), with their own sends, so the cue they answer does not duck them away. That path also skips `musicDb`, the glue and the body gate, and sends to the un-ducked returns; the voices stay in the music stems the checks read (see `studio/sound/README.md`, "Pack conventions the checks see"):
 - `honkR`: the "catch the hit" stab, at most one per 2 bars, on a hit ≥ 0.85 at the hit time.
 - `honkR` + `crashR`: the verdict button.
 - `honkFR`: the fanfare's sustained "TA".
@@ -985,13 +985,13 @@ SFX sends are the §7 table less 1.5 dB. There is no extra payoff send. The retu
    - **Dull cues** (bloops, dings, taps crowd 1 kHz): presence +1.6 dB per tilt unit (not the shaker or tambourine), bass and pad +1, glock -1, and harder marimba mallets.
    - **Bright cues:** presence -1 per unit, and the toys +1.
    - The marimba and pizz are never moved down.
-3. **The music trim** sets the music stem against the SFX stem's gated loudness, M = I - 1 LU (+ up to 2 dB for a strongly tilted SFX spectrum). That puts a hit the same 1 LU over the band whether the teaser has three hits or forty taps. A bias (-0.35 LU) covers what the engine's merges take off the SFX. The master gain is predicted from `mix = (1 + a)·M + b·U` (a 0.007, b 1.288, C -23.46, tiltUp 0.88, fitted on the 15 teasers at trim 0), and the card is trimmed against it. **Refit `MODEL` after any level change:** render at `MODEL.fixedTrim = 0`, then least-squares fit.
+3. **The music trim** sets the music stem against the SFX stem's gated loudness, M = I - 1 LU (+ up to 2 dB for a strongly tilted SFX spectrum). That puts a hit the same 1 LU over the band whether the teaser has three hits or forty taps. A bias (-0.35 LU) covers what the engine's merges take off the SFX. The master gain is predicted from `mix = (1 + a)·M + b·U` (a 0.007, b 1.288, C -23.46, tiltUp 0.88, fitted on the 15 teasers at trim 0), and the card is trimmed against it. **Refit `MODEL` after any level change or cue-list change:** `sound/tools/fit.mjs` renders at trim 0, `sound/tools/fitsolve.py` does the least-squares fit. See `sound/tools/README.md`, which also lists which balance constants are fitted and which are designed, and the state of the fit on 2026-10-12.
 
 ### B1: a bible change request
 
 As written, §8.1/§9.3 B1 asks for the music stem at -2.5..-4.5 LU and the SFX stem at -2..-4 LU re the mix, both gated. With sparse cues (gated SFX minus ungated SFX = 3-7 LU), the two bands only hold together when about a third of the mix is in neither stem. The previous version of this pack met B1 that way: returns 4-5 LU under the mix, as loud as the dry band. With the §8.5 sends, B1 as written fails on all 15 teasers (music -1.1..-2.0, SFX -0.3..-2.8 LU). The harness reports that as **B1w (waived)**.
 
-**Proposed B1** (Becker; what `check.mjs` gates on):
+**Proposed B1** (Becker; what `studio/sound/acceptance.json` B1 gates on, marked pending bible sync; B1 as written is reported as B1w, never gated):
 - music stem -0.5..-4.5 LU re the mix;
 - SFX stem (gated) minus music stem (gated) in [-2, +2] LU, so the cues sit within 2 LU of the band while they sound;
 - returns ≤ -8 LU re the mix (no reverb fill).
@@ -1000,17 +1000,31 @@ The ungated SFX share (-5..-7.6 LU) and the SFX's own contribution (mix minus mi
 
 ### Verifying
 
-```
-node src/cli.mjs sound specs/*-becker-rig-*.json --video ../renders/channel --out /tmp/fix-snd-becker-rig/mp4 --score --stems --jobs 4
-node src/cli.mjs audit /tmp/fix-snd-becker-rig/mp4 --reports /tmp/fix-snd-becker-rig/mp4/sound --out /tmp/fix-snd-becker-rig/audit
+```bash
+cd studio
+node src/cli.mjs verify specs/*-becker-rig-*.json             # build into a temp dir, mux onto renders/channel (read only), run every check
+node src/cli.mjs verify specs/*-becker-rig-*.json --detail    # every measurement, the critic's included (INFO)
+node src/cli.mjs verify specs/*-becker-rig-*.json --units-only --cues test/fixtures/cues.json   # U1-U4 only (about 30 s)
 ```
 
-Results:
-- **Engine audit:** score 15/15 for every spec.
-- **Loudness:** I -14.07 to -14.14 LUFS, decoded true peak -1.04 to -1.59 dBTP, LRA 4.3-5.6 LU, silence 0%.
-- **Stereo:** correlation 0.87-0.92 (minimum ≥ 0.42), mono fold within 0.45 LU, phone proxy 1.8-2.8 LU.
-- **Bands and timing:** every §9.2 band is inside the Becker windows, with harshness ≤ 1.0 dB. Cue onsets land within 0.42 ms.
-- **B and S checks:** B1 (proposed), B2-B10 and S1-S14 pass on all 15.
+The thresholds are in `studio/sound/acceptance.json`, and the Becker checks are in `studio/sound/checks/looks/becker-rig.mjs`. They fold in the fixer's scratchpad harness:
+- **MALLET**, the critic's must 1: the marimba ≥ −10 LU re the band in the BUILD, and the loudest voice in 500-1200 Hz.
+- **FLAMS**: no kick, snare, clap or tom 15-70 ms off a body cue ≥ 0.35 or a clock-train tick.
+- **INFO**, reported only:
+  - B1u (the SFX's ungated share and its own contribution);
+  - REACT (the react voices, the ding at V, the P duck's bloom);
+  - DUCKSTATS (body share ≥ 6 dB down, dips per minute, per-kind depths, returns);
+  - FOLEY (in-band audibility);
+  - DEFLATE;
+  - AAC0 (the codec's first frame).
+- **U1-U4**: U3/U4 run over every Becker teaser's own cues.
+
+Results on the delivered build (2026-10-12; the AAC streams are identical to `renders/channel`):
+- **Harness:** every Becker teaser passes 42/42 teaser checks, and the units pass 77/77 (U1 18, U2 33, U3 15, U4 11).
+- **Loudness:** I −14.07 to −14.15 LUFS, decoded true peak −1.20 to −1.69 dBTP, PLR 12.40-12.91, LRA 4.2-5.6 LU, silence 0%.
+- **Stereo:** correlation 0.87-0.92, phone proxy 1.8-2.8 LU.
+- **Bands and timing:** every §9.2 band is inside the Becker windows, with harshness ≤ 1.0 dB. Cue onsets land within 0.42 ms. B3's closest cue sits 3.8 dB over the band.
+- **B and S checks:** B1 (proposed), B2-B10 and S1-S14 pass on all 15; B8's logo lands at −10.4 to −12.5 LUFS.
 - **The critic's measurements:**
 
 | Measure | Before | Now |
@@ -1021,10 +1035,8 @@ Results:
 | P duck | 15 dB | 9-10 dB, back to -2 dB at P + 0.6 s |
 | ding at V | 15-18 dB | 4 dB |
 | Flams (incl. steps ≥ 0.35 and clock ticks) | — | none |
-| Deterministic | — | yes: a re-render gives the same WAV sha256 |
-
-- **DSP unit checks:** U1-U4 pass, 77/77.
+| Deterministic | — | yes: the masters match `test/fixtures/sound-baseline.sha256` |
 
 Known limits (engine):
-- **A5 (PLR on the decoded AAC)** reads 13.02-13.10 on 01c, 03a and 08b. The engine's -1.5 dBTP ceiling plus 0.3-0.5 dB of AAC overshoot puts the decoded PLR at 12.5-13.1 whatever the mix (pack-side changes moved it chaotically). The fix is in the engine: a -1.6 dBTP ceiling, or a decoded-PLR retry in the encode loop.
-- **The AAC first frame:** a hard t = 0 hit can decode up to +3 dB over its master peak at about 12 ms. The engine's local ceiling dips do not always clear it, and it then lowers the whole ceiling, which means more limiting for that teaser. The hook brass at -2 dB keeps all 15 teasers clear today.
+- **A5 (PLR on the decoded AAC)** read 13.02-13.10 on 01c, 03a and 08b in the fixer's run. This is fixed in the engine: its encode loop now treats a decoded PLR over 12.95 like a true-peak failure (`PLR_MAX`; `acceptance.json` A5, pending bible sync). It reads 12.40-12.91 now.
+- **The AAC first frame:** a hard t = 0 hit can decode up to +3 dB over its master peak at about 12 ms. The engine's local ceiling dips do not always clear it, and it then lowers the whole ceiling, which means more limiting for that teaser. The hook brass at -2 dB keeps all 15 teasers clear today: 05b's first frame needed a local dip, and 04b fell back to a -2.0 dBTP ceiling for other spots. The INFO row's AAC0 shows it per teaser.

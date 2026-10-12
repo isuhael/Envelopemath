@@ -14,13 +14,16 @@
 //      verify.mjs DUCK fails on it)
 // Then the dips the later levers made unnecessary are given back (the 808 and kick dip first, then the selective dip).
 // A hit at P keeps the payoff design (its table duck plus the engine's payoff duck: B2, "impact first, then the music").
-// The anchor stabs at P and V play on an unducked path (compose.mjs); their level is budgeted here so the anchor cue
-// still clears B3 (stabBudget). Deterministic: the bed and the cues render from the same seeded streams as the engine.
+// The anchor stabs at P and V play on the react bus, not ducked (compose.mjs, routing.mjs); their level is budgeted here
+// so the anchor cue still clears B3 (stabBudget). Every event is modelled on its engine route (routing.mjs routeOf: the
+// bus trim, musicDb, the kick sidechain, whether the duck reaches it); un-ducked voices are kept under '<inst>@free'
+// keys. Deterministic: the bed and the cues render from the same seeded streams as the engine.
 import * as D from '../../../src/sound/dsp.mjs'
 import * as Th from '../../../src/sound/theory.mjs'
 import { instruments } from './instruments.mjs'
 import { mix } from './mix.mjs'
 import { evalDb } from './energy.mjs'
+import { BUS_RANK, busOf, routeOf } from '../../../src/sound/routing.mjs'
 
 const SR = 48000
 const WIN = 0.05
@@ -48,6 +51,8 @@ function quad(M, g) {
   return Math.max(0, s)
 }
 const clamp = (x, a, b) => (x < a ? a : x > b ? b : x)
+/** the bus trim an event's route applies (mix.music, mix.logo or none), linear */
+const faderOf = route => D.dbToGain(route.fader === 'music' ? (mix.music || 0) : route.fader === 'logo' ? (mix.logo || 0) : 0)
 
 /** a cue the B3 check covers (the card's cues sit under the sting by design, bible §3.2) */
 export const isB3 = (tl, c) => B3_KINDS.has(c.kind) && c.gain >= 0.4 && !c.inCard && c.t < tl.base - 1e-6
@@ -90,8 +95,9 @@ const BEDS = new WeakMap()
 export function eventRenderer(tl, notes, drums) {
   const all = [...notes.map((e, j) => ({ e, j })), ...drums.map((e, j) => ({ e, j }))]
     .filter(x => Number.isFinite(x.e.t) && x.e.t < tl.duration && x.e.inst)
-    .map(x => ({ ...x, bus: x.e.bus || (x.e.role === 'logo' ? 'logo' : 'music') }))
-    .sort((a, b) => a.e.t - b.e.t || (a.bus < b.bus ? -1 : a.bus > b.bus ? 1 : 0) || (a.e.inst < b.e.inst ? -1 : a.e.inst > b.e.inst ? 1 : 0) || (a.e.midi ?? -1) - (b.e.midi ?? -1) || a.j - b.j)
+    .map(x => { const bus = busOf(x.e); return { ...x, bus, route: routeOf(bus, x.e.inst, mix), fader: 0 } })
+    .sort((a, b) => a.e.t - b.e.t || BUS_RANK[a.bus] - BUS_RANK[b.bus] || (a.e.inst < b.e.inst ? -1 : a.e.inst > b.e.inst ? 1 : 0) || (a.e.midi ?? -1) - (b.e.midi ?? -1) || a.j - b.j)
+  for (const x of all) x.fader = faderOf(x.route)
   const count = {}
   for (const x of all) { x.k = count[x.e.inst] = (count[x.e.inst] ?? -1) + 1 }
   const rendered = new Map()
@@ -111,9 +117,8 @@ export function eventRenderer(tl, notes, drums) {
   }
   return { all, render }
 }
-/** the music (both buses, levels, bus level and the energy curve applied; no dips, ducks or sidechain) over [t0, t1] */
+/** the music (every bus, levels, bus level and the energy curve applied; no dips, ducks or sidechain) over [t0, t1] */
 export function renderSpan(tl, er, musicDb, t0, t1) {
-  const music = D.dbToGain(mix.music || 0), logo = D.dbToGain(mix.logo || 0)
   const i0 = Math.round(t0 * SR), n = Math.round((t1 - t0) * SR)
   const L = new Float64Array(n), R = new Float64Array(n)
   for (const x of er.all) {
@@ -122,10 +127,10 @@ export function renderSpan(tl, er, musicDb, t0, t1) {
     if (e.t + (e.runDur ?? e.dur ?? 0) + (TAIL[e.inst] ?? 1) < t0) continue
     const b = er.render(x)
     if (!b) continue
-    const lvl = D.dbToGain(mix.levels[e.inst] ?? 0) * (x.bus === 'logo' ? logo : music)
+    const lvl = D.dbToGain(mix.levels[e.inst] ?? 0) * x.fader
     const at = Math.round(e.t * SR) - (b.offset || 0)
     for (let i = Math.max(i0, at); i < Math.min(i0 + n, at + b.L.length); i++) {
-      const g = lvl * (x.bus === 'music' ? Math.pow(10, evalDb(musicDb, i / SR) / 20) : 1)
+      const g = lvl * (x.route.musicDb ? Math.pow(10, evalDb(musicDb, i / SR) / 20) : 1)
       L[i - i0] += b.L[i - at] * g; R[i - i0] += b.R[i - at] * g
     }
   }
@@ -137,7 +142,6 @@ export function renderSpan(tl, er, musicDb, t0, t1) {
  * every cue that rings there (gain 1). Called by compose(); the solver reads it.
  */
 export function prepareBed(tl, notes, drums, { musicDb, sfxRender, er = eventRenderer(tl, notes, drums) }) {
-  const music = D.dbToGain(mix.music || 0), logo = D.dbToGain(mix.logo || 0)
   const { all, render } = er
   const kicks = drums.filter(d => d.inst === 'kick').map(d => d.t).sort((a, b) => a - b)
   const sc = mix.sidechain
@@ -172,16 +176,17 @@ export function prepareBed(tl, notes, drums, { musicDb, sfxRender, er = eventRen
       if (e.t + (e.runDur ?? e.dur ?? 0) + (TAIL[e.inst] ?? 1) < t0) continue
       const b = render(x)
       if (!b) continue
-      const lvl = D.dbToGain(mix.levels[e.inst] ?? 0) * (x.bus === 'logo' ? logo : music)
+      const lvl = D.dbToGain(mix.levels[e.inst] ?? 0) * x.fader
       const at = Math.round(e.t * SR) - (b.offset || 0)
       // the unducked anchor stabs are kept apart by onset (stabBudget scales each); the anchor kicks never dip
       const anchorKick = e.inst === 'kick' && tl.isAnchor(e.t, 0.001)
-      const key = x.bus === 'logo' ? (e.inst === 'stab' ? `stab@logo:${Math.round(e.t * 1000)}` : `${e.inst}@logo`) : anchorKick ? 'kick@a' : e.inst
+      const key = !x.route.duck ? (e.inst === 'stab' ? `stab@free:${Math.round(e.t * 1000)}` : `${e.inst}@free`) : anchorKick ? 'kick@a' : e.inst
       let v = vecs.get(key)
       for (let i = Math.max(i0, at); i < Math.min(i0 + n, at + b.L.length); i++) {
         const t = i / SR
         let gdb = 0
-        if (x.bus === 'music') { gdb += evalDb(musicDb, t); if (sc && sc.targets.includes(e.inst)) gdb += scDb(t) }
+        if (x.route.musicDb) gdb += evalDb(musicDb, t)
+        if (x.route.sidechain && sc && sc.targets.includes(e.inst)) gdb += scDb(t)
         const g = lvl * Math.pow(10, gdb / 20)
         if (!v) vecs.set(key, v = new Float64Array(n2))
         v[i - i0] += b.L[i - at] * g; v[n + i - i0] += b.R[i - at] * g
@@ -241,12 +246,12 @@ export function prepareBed(tl, notes, drums, { musicDb, sfxRender, er = eventRen
   // over the first 200 ms: the stab's budget keeps the limiter from eating the payoff (stabBudget)
   const stabPeak = new Map(), sfxPeak = new Map()
   for (const x of all) {
-    if (x.bus !== 'logo' || x.e.inst !== 'stab') continue
-    const key = `stab@logo:${Math.round(x.e.t * 1000)}`
+    if (x.route.duck || x.e.inst !== 'stab') continue
+    const key = `stab@free:${Math.round(x.e.t * 1000)}`
     if (!stabPeak.has(key)) stabPeak.set(key, { t: x.e.t, L: new Float64Array(Math.round(0.2 * SR)), R: new Float64Array(Math.round(0.2 * SR)) })
     const acc = stabPeak.get(key), b = render(x)
     if (!b) continue
-    const g = D.dbToGain(mix.levels.stab ?? 0) * logo
+    const g = D.dbToGain(mix.levels.stab ?? 0) * x.fader * (x.route.musicDb ? Math.pow(10, evalDb(musicDb, x.e.t) / 20) : 1)
     for (let i = 0; i < acc.L.length && i < b.L.length; i++) { acc.L[i] += b.L[i] * g; acc.R[i] += b.R[i] * g }
   }
   for (const [key, acc] of stabPeak) {
@@ -282,7 +287,7 @@ export function stabBudget(tl, t, trimOf = () => 0) {
   const bed = bedFor(tl)
   if (!bed) return 1
   const c = bed.cues.find(x => Math.abs(x.t - t) <= 0.015)
-  const key = `stab@logo:${Math.round(t * 1000)}`
+  const key = `stab@free:${Math.round(t * 1000)}`
   if (!c) return 1
   const w = bed.win.get(c.i), ps = w.parts[key] || 0
   if (!(ps > 0)) return 1
@@ -334,8 +339,8 @@ export function solve(tl, { trim = () => 0, offset = 0, giveWay = [] } = {}) {
     const liftOf = i => (lifts.get(i) || 0) + (grp.members.some(c => c.i === i) ? lift : 0)
     const psfx = () => quad(w.C, w.sfxKeys.map(i => tl.cues[i].gain * Math.pow(10, (trim(tl.cues[i]) + liftOf(i)) / 20)))
     const pmus = (broad, sel, low) => quad(w.M, w.keys.map(k => {
-      if (k.startsWith('stab@logo:')) return Math.sqrt(bed.stabK.get(k) ?? 1)
-      if (k.includes('@logo')) return 1
+      if (k.startsWith('stab@free:')) return Math.sqrt(bed.stabK.get(k) ?? 1)
+      if (k.includes('@free')) return 1
       let d = Math.max(broad, ambBroad)
       if (SEL.includes(k)) d += Math.max(sel, ambSel)
       if (LOW.includes(k) && (k !== 'kick' || w.kickDip)) d += Math.max(low, ambLow)

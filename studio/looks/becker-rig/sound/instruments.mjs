@@ -184,8 +184,8 @@ export function air(ev, c) {
 export const instruments = {
   bass: bounce, mallet, glock, pizz, honk, honkF: honk, strings, pad: warm, whistle,
   kick, snare, ghost, roll: ghost, clap, shaker, tamb, block, tom, timp, crash, revcrash,
-  // the react voices (on the un-ducked bus): catch stabs, the verdict button, the fanfare's "TA"
-  honkR: honk, honkFR: honk, crashR: crash, honkH: honk,
+  // the react voices (on the react bus, not ducked): catch stabs, the verdict button, the fanfare's "TA"
+  honkR: honk, honkFR: honk, crashR: crash,
   // the logo (its own bus: not gated at base, not ducked)
   logoMallet: mallet, logoPizz: pizz, logoGlock: glock, logoEcho: glock, logoHonk: (ev, c) => honk({ ...ev, logo: true }, c),
   logoPad: warm, logoTimp: timp, logoCrash: crash, logoSwell: revcrash, logoAir: air,

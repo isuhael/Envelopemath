@@ -7,7 +7,8 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-export const FILE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'acceptance.json')
+// SOUND_ACCEPTANCE=<file> points the harness at another thresholds file (e.g. to try a tighter window); default sound/acceptance.json
+export const FILE = path.resolve(process.env.SOUND_ACCEPTANCE || path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'acceptance.json'))
 /** keys that describe a check and are never thresholds */
 export const META = new Set(['bible', 'name', 'on', 'note', 'pending', 'gate', 'looks', 'manual'])
 

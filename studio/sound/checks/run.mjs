@@ -28,6 +28,13 @@ export const SHORT = { scoreboard: 'SB', 'becker-rig': 'BR' }
 
 /** the spec-level check IDs, in acceptance.json order */
 export const specIds = () => allIds().filter(id => !UNIT_IDS.includes(id) && !load().checks[id].manual)
+/** does the harness run check `id` for `look`? (every threshold in acceptance.json must be read by some check) */
+export async function implemented(id, look) {
+  if (SCORE_IDS.includes(id) || DELIVERY[id] || STEMS[id] || id === 'INFO') return true
+  const mod = await lookModule(look)
+  if (UNIT_IDS.includes(id)) return !!(mod && mod.units)
+  return !!(mod && mod.checks && mod.checks[id])
+}
 
 // ---------------------------------------------------------------- one teaser (worker side)
 /**
@@ -217,7 +224,7 @@ export async function verify(opts) {
   }
   const report = {
     acceptance: path.relative(process.cwd(), ACCEPTANCE), dir, specs, units,
-    baseline: { file: baselineFile, compared: baseCmp.length, changed: changed.map(x => x.id) },
+    baseline: { file: baselineFile, compared: baseCmp.length, changed: changed.map(x => x.id), missing: ids.filter(id => !base[id]), expectIdentical: !!opts.expectIdentical, failed: baselineFail },
     pending: pending().map(p => `${p.id}${p.look ? `[${p.look}]` : ''}`), seconds: +((Date.now() - t0) / 1000).toFixed(1), code,
   }
   if (opts.json) console.log(JSON.stringify(report, null, 1))
@@ -301,7 +308,8 @@ export function formatReport(rep, { detail = false } = {}) {
   L.push('')
   L.push(`pending bible sync: ${rep.pending.length} values (${rep.pending.join(', ')}); see ${rep.acceptance} or \`node src/cli.mjs verify --pending\``)
   const b = rep.baseline
-  if (b.compared) L.push(`baseline: ${b.compared - b.changed.length}/${b.compared} master WAVs identical to ${path.relative(process.cwd(), b.file)}${b.changed.length ? `; changed: ${b.changed.join(', ')}` : ''}`)
+  if (b.compared) L.push(`baseline: ${b.compared - b.changed.length}/${b.compared} master WAVs identical to ${path.relative(process.cwd(), b.file)}${b.changed.length ? `; changed: ${b.changed.join(', ')}` : ''}${b.missing && b.missing.length ? `; not in it: ${b.missing.join(', ')}` : ''}`)
+  if (b.failed) L.push('--expect-identical: the audio differs from the baseline (a failure)')
   const nSpec = rep.specs.filter(s => !s.results.some(r => r.gate && r.pass === false)).length
   const nUnit = rep.units.filter(u => !u.results.some(r => r.pass === false)).length
   L.push(`${rep.code ? 'FAIL' : 'PASS'}: ${rep.specs.length ? `${nSpec}/${rep.specs.length} teasers pass` : 'unit checks only'}${rep.units.length ? `, units ${nUnit}/${rep.units.length} looks` : ''} (${rep.seconds} s)`)

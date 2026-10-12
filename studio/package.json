@@ -11,6 +11,10 @@
     "audio": "node src/cli.mjs audio",
     "sound": "node src/cli.mjs sound",
     "audit": "node src/cli.mjs audit",
+    "sound:verify": "node src/cli.mjs verify",
+    "sound:units": "node src/cli.mjs verify --units-only --cues test/fixtures/cues.json",
+    "sound:pending": "node src/cli.mjs verify --pending",
+    "sound:baseline": "node src/cli.mjs verify --write-baseline test/fixtures/sound-baseline.sha256",
     "test": "node --test test/*.test.mjs"
   },
   "engines": { "node": ">=20" },

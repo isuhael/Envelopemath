@@ -7,7 +7,8 @@
 //
 // Signal flow (bible §8.1):
 //   notes/drums -> instrument buses (levels, automation, kick sidechain, body gate at base) -> MUSIC body bus
-//     (HP 30 Hz, glue 2:1, event duck)  + LOGO bus (not gated, not ducked)
+//     (HP 30 Hz, glue 2:1, event duck)  + REACT bus (as the body, minus the event duck; mix.react, routing.mjs)
+//     + LOGO bus (not gated, not ducked)
 //   cues -> SFX renderers (merge rule §8.4) -> SFX bus (HP 35 Hz, compressor 3:1)
 //   sends -> music returns (PLATE/HALL/ROOM/delay, ducked by half the music duck and -6 dB under the logo)
 //          + sfx/logo returns (not ducked)
@@ -24,6 +25,7 @@ import { fdnReverb, pingPong, compress, levelPercentile, duckCurve, dbCurveToGai
 import { loudness, truePeakDb, truePeakEnvelope } from './loudness.mjs'
 import { writeWavF32, sha256, encodeWavF32 } from './wav.mjs'
 import * as FF from './ffmpeg.mjs'
+import { BUS_RANK, busOf, routeOf } from './routing.mjs'
 
 export const KINDS = ['tick', 'type', 'pop', 'ding', 'reveal', 'thud', 'whoosh', 'riser', 'roll', 'cash', 'buzz', 'boing', 'step', 'hit', 'swipe']
 export const TARGET_LUFS = -14.0
@@ -62,7 +64,7 @@ export function normalizePack(mod, file = '(inline)') {
     harmony: m.harmony || (() => []), compose: m.compose || (() => ({ notes: [], drums: [] })), logo: m.logo || (() => ({ notes: [], drums: [] })),
     instruments: m.instruments || {}, sfx: m.sfx || {},
     mix: {
-      levels: {}, sends: {}, sfxSends: {}, duck: {}, duckBig: {}, sidechain: null,
+      levels: {}, sends: {}, sfxSends: {}, duck: {}, duckBig: {}, sidechain: null, react: {},
       delay: { beats: 0.75, feedback: 0.3, lp: 3500, hp: 300, returnDb: -14 },
       glue: { ratio: 2, attack: 0.01, release: 0.12, knee: 6, targetGr: 2 },
       sfxComp: { ratio: 3, attack: 0.002, release: 0.08, knee: 3, maxGr: 2.5 },
@@ -128,11 +130,12 @@ export function renderMix(rec, pack, { overrides, fallback = null } = {}) {
   const auto = comp.automation || {}
   const events = [...notes, ...drums, ...logoNotes, ...logoDrums]
     .filter(e => Number.isFinite(e.t) && e.t < rec.duration && e.inst)
-    .map(e => ({ ...e, bus: e.bus || (e.role === 'logo' ? 'logo' : 'music') }))
-    .sort((a, b) => a.t - b.t || (a.bus < b.bus ? -1 : a.bus > b.bus ? 1 : 0) || (a.inst < b.inst ? -1 : a.inst > b.inst ? 1 : 0) || (a.midi ?? -1) - (b.midi ?? -1) || a.j - b.j)
+    .map(e => ({ ...e, bus: busOf(e) }))
+    .sort((a, b) => a.t - b.t || BUS_RANK[a.bus] - BUS_RANK[b.bus] || (a.inst < b.inst ? -1 : a.inst > b.inst ? 1 : 0) || (a.midi ?? -1) - (b.midi ?? -1) || a.j - b.j)
 
-  // ---- instrument voices -> per-instrument buses (body and logo kept apart)
+  // ---- instrument voices -> per-instrument buses (body, react and logo kept apart)
   const instBus = new Map()   // key `${bus}:${inst}` -> stereo
+  const routes = new Map()    // the same key -> routeOf(bus, inst) (routing.mjs)
   const count = new Map()
   const instStats = {}
   for (const ev of events) {
@@ -145,7 +148,7 @@ export function renderMix(rec, pack, { overrides, fallback = null } = {}) {
     if (!buf) continue
     buf = toStereo(buf, ev.pan || 0)
     const key = `${ev.bus}:${ev.inst}`
-    if (!instBus.has(key)) instBus.set(key, stereo(N))
+    if (!instBus.has(key)) { instBus.set(key, stereo(N)); routes.set(key, routeOf(ev.bus, ev.inst, pack.mix)) }
     const lvl = dbToGain(pack.mix.levels[ev.inst] ?? 0)
     addAt(instBus.get(key), buf, nS(ev.t), lvl)
     const st = instStats[ev.inst] || (instStats[ev.inst] = { events: 0, peak: 0 })
@@ -157,10 +160,10 @@ export function renderMix(rec, pack, { overrides, fallback = null } = {}) {
   const sc = pack.mix.sidechain
   const scCurve = sc ? dbCurveToGain(sidechainCurve(N, drums.filter(d => (sc.triggers || ['kick']).includes(d.inst)).map(d => d.t), sc)) : null
   for (const [key, b] of instBus) {
-    const [bus, inst] = key.split(':')
+    const inst = key.slice(key.indexOf(':') + 1), r = routes.get(key)
     if (auto.gain && auto.gain[inst]) applyGain(b, evalDbPoints(auto.gain[inst], N))
-    if (scCurve && bus === 'music' && (sc.targets || []).includes(inst)) applyGain(b, scCurve)
-    if (gate && bus === 'music') applyGain(b, gate)
+    if (scCurve && r.sidechain && (sc.targets || []).includes(inst)) applyGain(b, scCurve)
+    if (gate && r.gate) applyGain(b, gate)
   }
 
   // ---- SFX (merge rule §8.4, card low end, transient merge with music hits)
@@ -243,35 +246,62 @@ export function renderMix(rec, pack, { overrides, fallback = null } = {}) {
   if (pd && pd.depth > 0) duckEvents.push({ t: P, depth: pd.depth, hold: pd.hold ?? 0.15, release: pd.release ?? 0.45 })
   const duckDb = duckCurve(N, duckEvents)
 
-  // ---- MUSIC body bus and LOGO bus
+  // ---- MUSIC body bus, REACT buses and LOGO bus (routing.mjs: each (bus, instrument) is summed where its route says)
+  // react voices on the music path are summed per (musicDb, glue) setting; via 'logo' they are summed into the logo bus
   const body = stereo(N), logo = stereo(N)
+  const reacts = new Map()    // `${musicDb}|${glue}` -> { buf, musicDb, glue }
   for (const [key, b] of instBus) {
-    const [bus, inst] = key.split(':')
-    addStereo(bus === 'logo' ? logo : body, b)
-    // sends (post sidechain/gate, pre duck): music body -> music returns; logo -> other returns
+    const inst = key.slice(key.indexOf(':') + 1), r = routes.get(key)
+    let dst = body
+    if (r.sum === 'logo') dst = logo
+    else if (r.sum === 'react') {
+      const rk = `${r.musicDb}|${r.glue}`
+      if (!reacts.has(rk)) reacts.set(rk, { buf: stereo(N), musicDb: r.musicDb, glue: r.glue })
+      dst = reacts.get(rk).buf
+    }
+    addStereo(dst, b)
+    // sends (post sidechain/gate, pre duck): route sends 'music' -> music returns (ducked), 'free' -> other returns
     const s = pack.mix.sends[inst] || {}
     for (const [k, db] of Object.entries(s)) {
-      const K = k.toUpperCase(), grp = bus === 'logo' ? sends.other : sends.music
+      const K = k.toUpperCase(), grp = r.sends === 'free' ? sends.other : sends.music
       if (grp[K] && db > -120) addStereo(grp[K], b, dbToGain(db))
     }
   }
-  if (auto.musicDb) applyGain(body, evalDbPoints(auto.musicDb, N))
-  if (pack.mix.music) D.scale(body, dbToGain(pack.mix.music))
+  const reactBufs = [...reacts.values()]
+  if (auto.musicDb) {
+    const g = evalDbPoints(auto.musicDb, N)
+    applyGain(body, g)
+    for (const x of reactBufs) if (x.musicDb) applyGain(x.buf, g)
+  }
+  if (pack.mix.music) { D.scale(body, dbToGain(pack.mix.music)); for (const x of reactBufs) if (x.musicDb) D.scale(x.buf, dbToGain(pack.mix.music)) }
   if (pack.mix.logo) D.scale(logo, dbToGain(pack.mix.logo))
   filter(body, 'hp', 30, { q: 0.7071 }); filter(logo, 'hp', 30, { q: 0.7071 })
-  // glue compressor 2:1, threshold so the DROP shows about targetGr dB of gain reduction
+  for (const x of reactBufs) filter(x.buf, 'hp', 30, { q: 0.7071 })
+  // glue compressor 2:1, threshold so the DROP shows about targetGr dB of gain reduction. React voices with glue share
+  // it: one detector over the body and them, the same gain reduction on each (the body alone when there are none)
   const G = pack.mix.glue
   const drop = tl.section('DROP') || { t0: 0, t1: Math.min(base, 4) }
-  const lvlDrop = levelPercentile(body, nS(drop.t0), nS(drop.t1), 0.75)
+  const glued = reactBufs.filter(x => x.glue)
+  let det = body
+  if (glued.length) { det = cloneStereo(body); for (const x of glued) addStereo(det, x.buf) }
+  const lvlDrop = levelPercentile(det, nS(drop.t0), nS(drop.t1), 0.75)
   const glueThr = lvlDrop - G.targetGr * G.ratio / (G.ratio - 1)
-  const { gr: glueGr } = compress(body, { threshold: glueThr, ratio: G.ratio, attack: G.attack, release: G.release, knee: G.knee })
+  const { gr: glueGr } = compress(det, { threshold: glueThr, ratio: G.ratio, attack: G.attack, release: G.release, knee: G.knee })
+  if (glued.length) {
+    const g = new Float32Array(N)
+    for (let i = 0; i < N; i++) g[i] = Math.pow(10, -glueGr[i] / 20)
+    applyGain(body, g)
+    for (const x of glued) applyGain(x.buf, g)
+  }
   let grSum = 0, grN = 0
   for (let i = nS(drop.t0); i < nS(drop.t1); i++) { grSum += glueGr[i]; grN++ }
   const musicDry = cloneStereo(body)
+  for (const x of reactBufs) addStereo(musicDry, x.buf)
   addStereo(musicDry, logo)
   const duckGain = dbCurveToGain(duckDb)
   applyGain(body, duckGain)
   const music = body
+  for (const x of reactBufs) addStereo(music, x.buf)
   addStereo(music, logo)
 
   // ---- SFX bus: HP 35 Hz, compressor 3:1 with <= maxGr on the loudest hit
@@ -322,8 +352,8 @@ export function renderMix(rec, pack, { overrides, fallback = null } = {}) {
     harmony: tl.harmony.map(h => ({ t0: r3(h.t0), t1: r3(h.t1), sym: h.sym, root: h.root, tones: h.tones, bass: h.bass })),
     trains: tl.trains.map(t => ({ kind: t.kind, period: r3(t.period), k: t.k, t0: t.t0, t1: t.t1 })),
     clusters: tl.clusters.map(c => ({ t: c.t, members: c.members, ranked: c.ranked, ...(c.capped ? { capped: c.capped } : {}) })),
-    notes: events.filter(e => e.kind === 'note').map(e => ({ t: r3(e.t), dur: r3(e.dur ?? 0), midi: e.midi, vel: round(e.vel ?? 1, 3), inst: e.inst, role: e.role || e.inst, ...(e.chromatic ? { chromatic: e.chromatic } : {}), ...(e.pan ? { pan: round(e.pan, 3) } : {}) })),
-    drums: events.filter(e => e.kind === 'drum').map(e => ({ t: r3(e.t), inst: e.inst, vel: round(e.vel ?? 1, 3), ...(e.role === 'logo' ? { role: 'logo' } : {}) })),
+    notes: events.filter(e => e.kind === 'note').map(e => ({ t: r3(e.t), dur: r3(e.dur ?? 0), midi: e.midi, vel: round(e.vel ?? 1, 3), inst: e.inst, role: e.role || e.inst, ...(e.chromatic ? { chromatic: e.chromatic } : {}), ...(e.pan ? { pan: round(e.pan, 3) } : {}), ...(e.bus === 'react' ? { bus: 'react' } : {}) })),
+    drums: events.filter(e => e.kind === 'drum').map(e => ({ t: r3(e.t), inst: e.inst, vel: round(e.vel ?? 1, 3), ...(e.role === 'logo' ? { role: 'logo' } : {}), ...(e.bus === 'react' ? { bus: 'react' } : {}) })),
     sfx: sfxScore,
     duck: { rate: 100, db: Array.from({ length: Math.floor(N / 480) }, (_, k) => round(duckDb[k * 480], 2)) },
     logo: motif,
@@ -382,6 +412,12 @@ function overSpots(dec, limit, n) {
     else out.push({ i, t: i / SR, over })
   }
   return out
+}
+/** the master's true peak (dBTP, both channels) over [t - 25 ms, t + 25 ms]; env = per-sample max of the L/R envelopes */
+function localPeakDb(env, t) {
+  let m = 0
+  for (let i = Math.max(0, nS(t - 0.025)); i < Math.min(env.length, nS(t + 0.025)); i++) if (env[i] > m) m = env[i]
+  return m > 0 ? 20 * Math.log10(m) : -Infinity
 }
 /** lower a ceiling curve by `db` over [t - 25 ms, t + 25 ms] with 5 ms cosine edges (deepest wins) */
 function dipCurve(curve, t, db) {
@@ -452,17 +488,23 @@ export async function renderSound(rec, opts = {}) {
   const wav = path.join(outDir, `${id}.wav`)
   let wavSha = writeWavF32(wav, m.out)
   files.wav = wav
-  let post = null, retries = 0
+  let post = null, retries = 0, aacPreroll = null
   const trials = []
   if (opts.encode !== false) {
     const m4a = path.join(outDir, `${id}.m4a`)
-    // AAC adds true peak where the codec cannot follow a transient (measured: up to +1.9 dB on the hard t = 0 hook, where
-    // lowering the whole ceiling does not help). So a failing encode first lowers the ceiling LOCALLY, around each spot
-    // that went over in the decoded audio (±25 ms, by the excess + 0.3 dB; at most 3 times), then globally by 0.5 dB as
-    // the bible's §8.6 step 9 (at most 2 times)
+    // AAC adds true peak where the codec cannot follow a transient. The encode runs behind a silent pre-roll that is then
+    // trimmed (ffmpeg.mjs encodeAac): a hard hit at t = 0 meets an encoder that has had silence to fill its bit
+    // reservoir, like any later hit, instead of the file's starved first frame. A failing encode then lowers the ceiling
+    // LOCALLY around each spot that went over in the decoded audio (±25 ms; at most 3 times) to the master's OWN true peak
+    // there less the excess + 0.3 dB, so every dip reaches the limiter even where the master sat under the ceiling
+    // (a dip measured from the ceiling did nothing there: 04b at 36.5 s), then globally by 0.5 dB as the bible's §8.6
+    // step 9 (at most 2 times)
     let curve = null, local = 0, global = 0
+    const preroll = opts.aacPreroll ?? FF.AAC_PREROLL
     for (;;) {
-      FF.encodeAac(wav, m4a)
+      const enc = FF.encodeAac(wav, m4a, { preroll })
+      aacPreroll = enc.preroll
+      if (enc.warning) mix.info.warnings.push(enc.warning)
       const dec = FF.decodeAudio(m4a)
       post = { tp: truePeakDb(dec), ...(opts.ffmpegCheck !== false ? { ffmpeg: FF.ebur128(m4a) } : {}) }
       post.integrated = loudness(dec).integrated
@@ -476,7 +518,14 @@ export async function renderSound(rec, opts = {}) {
       if (local < 3 && spots.length) {
         local++
         curve = curve || new Float32Array(m.out.L.length)
-        for (const sp of spots) dipCurve(curve, sp.t, sp.over + 0.3)
+        const eL = truePeakEnvelope(m.out.L), eR = truePeakEnvelope(m.out.R)
+        for (let i = 0; i < eL.length; i++) if (eR[i] > eL[i]) eL[i] = eR[i]
+        const last = trials[trials.length - 1]
+        spots.forEach((sp, k) => {
+          const pk = localPeakDb(eL, sp.t), db = Math.max(0, ceiling - pk) + sp.over + 0.3
+          dipCurve(curve, sp.t, db)
+          last.spots[k].masterTp = round(pk, 2); last.spots[k].dipDb = round(db, 2)
+        })
       } else if (global < 2) { global++; ceiling -= 0.5 } else break
       retries++
       m = masterMix(pre, { ceiling, ceilingCurve: curve })
@@ -516,7 +565,7 @@ export async function renderSound(rec, opts = {}) {
       postEncode: post ? { integrated: round(post.integrated, 2), truePeak: round(post.tp, 2), ffmpeg: post.ffmpeg || null } : null,
       ffmpegLoudnorm: loudnorm,
     },
-    master: { gainDb: round(m.gainDb, 2), ceiling, iterations: m.iterations, encodeRetries: retries, encodeTrials: trials },
+    master: { gainDb: round(m.gainDb, 2), ceiling, iterations: m.iterations, encodeRetries: retries, aacPreroll, encodeTrials: trials },
     limiter: { maxGr: round(m.limiter.maxGr, 2), pctOver1dB: round(m.limiter.pctOver1dB, 3), pctActive: round(m.limiter.pctOver0, 3), hotspots: limiterHotspots(m.grCurve, mix) },
     glue: mix.info.glue, sfxComp: mix.info.sfxComp,
     stems: Object.fromEntries(Object.entries(stemLoud).map(([k, v]) => [k, { lufs: v, reMix: round(v - L.integrated, 2) }])),

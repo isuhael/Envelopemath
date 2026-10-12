@@ -19,6 +19,9 @@ node src/cli.mjs sound specs/*.json --video ../renders/channel --out /tmp/sound/
 
 # measurements, spectrogram PNGs and the symbolic-score checks
 node src/cli.mjs audit /tmp/sound/mp4 --reports /tmp/sound/mp4/sound --out /tmp/sound/audit
+
+# the acceptance harness: every check of sound/acceptance.json on every spec (builds into a temp dir), exit 1 on a failure
+npm run sound:verify
 ```
 
 ## Commands
@@ -28,7 +31,8 @@ node src/cli.mjs audit /tmp/sound/mp4 --reports /tmp/sound/mp4/sound --out /tmp/
 | `audio <specs> --out <dir>` | Renders the audio for each spec: `<id>.wav` (float32 master), `<id>.m4a` (AAC-LC 192k, true peak verified after decoding), `<id>.score.json`, `<id>.report.json`. `--stems [dir]` writes `music.dry`, `music`, `sfx`, `returns` and `mix` WAVs. `--no-encode` skips the AAC stage, and `--no-check` skips the ffmpeg cross-measurements |
 | `sound <specs> --video <dir\|mp4> --out <dir>` | The same audio, muxed onto the finished MP4 with `-map 0:v:0 -map 1:a:0 -c:v copy`. Writes `<out>/<id>.mp4`, plus `<out>/sound/<id>.report.json`. `--score` keeps the score, `--wav` the master WAV, and `--stems [dir]` the stems. Each mux is verified: the video-stream md5 must equal the source's, the audio must be AAC stereo 48 kHz, and the audio duration must match the video within 1/fps |
 | `remux <spec> --video <mp4> --out <mp4>` | The bible's single-spec form of `sound` (§10.5) |
-| `audit <files or dirs>` | For each MP4/M4A/WAV: integrated loudness, true peak, LRA, PLR, crest factor, silence (50 ms RMS below −45 dBFS for at least 1 s) and the longest quiet run, L/R correlation (mean and minimum over 400 ms windows), the mono-fold delta, the phone proxy (HP 250 Hz, 4th order), octave bands relative to 1 kHz, the 2-5 kHz harshness margin, cue-onset alignment and a spectrogram PNG. With the engine's score next to the file (or `--reports <dir>`), it also runs the symbolic checks S1-S14, B2 and B10. `--json` prints everything |
+| `verify <specs>` | The acceptance harness (see [Acceptance harness](#acceptance-harness-verify)): every check of `acceptance.json` on every spec, a pass table, the failures, exit 1 on any failure |
+| `audit <files or dirs>` | For each MP4/M4A/WAV: integrated loudness, true peak, LRA, PLR, crest factor, silence (50 ms RMS below −45 dBFS for at least 1 s) and the longest quiet run, L/R correlation (mean and minimum over 400 ms windows), the mono-fold delta, the phone proxy (HP 250 Hz, 4th order), octave bands relative to 1 kHz, the 2-5 kHz harshness margin, cue-onset alignment and a spectrogram PNG. With the engine's score next to the file (or `--reports <dir>`), it also runs the symbolic checks S1-S14, B2 and B10 (the same code and thresholds as `verify`). `--json` prints everything |
 | `cues <specs> --out cues.json` | The cue records (see below) as JSON |
 | `score <specs> --out <dir>` | The timeline, harmony and notes only, with no audio (`<id>.plan.json`). Fast, for composing |
 | `render <specs>` | As before, but the soundtrack now comes from this engine. `--legacy-audio` keeps the old mono SFX track (`src/audio.mjs`) |
@@ -48,14 +52,17 @@ openSpec ─▶ cue record ─▶ timeline (§2) ─▶ pack.harmony ─▶ pack
 cues ─▶ pack.sfx[kind] (merge rule §8.4) ─────┼────────────────┴─────────────┘
                                               ▼
  instrument voices ─▶ instrument buses (levels, automation, kick sidechain, body gate at base)
-   ├─ MUSIC body: HP 30 Hz, glue 2:1, event duck            ├─ LOGO: not gated, not ducked
+   ├─ MUSIC body (bus 'music'): musicDb, HP 30 Hz, glue 2:1, event duck
+   ├─ REACT (bus 'react'): as the body but never ducked (mix.react: via the music path, or via the logo path)
+   ├─ LOGO (bus 'logo'): not gated, not ducked, not glued
  SFX bus: HP 35 Hz, compressor 3:1
  returns: music sends (PLATE/HALL/ROOM/ping-pong delay; ducked by half the music duck, −6 dB under the logo)
           + SFX/logo sends (not ducked)
  MASTER = music + SFX + returns ─▶ HP 25 Hz ─▶ low mono < 120 Hz ─▶ gain to −14 LUFS ─▶ 4x true-peak limiter (−1.5 dBTP)
         ─▶ re-measure (≤ 2 corrections) ─▶ 1 ms ramp in, 0.40 s cosine fade out, last sample 0 ─▶ WAV
-        ─▶ AAC 192k ─▶ decode ─▶ true peak ≤ −1.0 dBTP? else lower the ceiling locally around each spot that went
-           over (≤ 3 times), then globally by 0.5 dB (≤ 2 times), and redo
+        ─▶ AAC 192k behind a 64 ms silent pre-roll, trimmed by stream copy ─▶ decode ─▶ true peak ≤ −1.0 dBTP and
+           PLR ≤ 13? else lower the ceiling locally around each spot that went over, from the master's own peak there
+           (≤ 3 times), then globally by 0.5 dB (≤ 2 times), and redo
 ```
 
 ## Files
@@ -70,13 +77,16 @@ cues ─▶ pack.sfx[kind] (merge rule §8.4) ─────┼─────�
 | `src/sound/fx.mjs` | The three FDN reverbs (§8.5 tables), ping-pong delay, compressor, `duckCurve`, `sidechainCurve`, `lowMono`, `limitTruePeak` |
 | `src/sound/loudness.mjs` | BS.1770-4 integrated, momentary and short-term loudness, EBU 3342 LRA, and the 4x true-peak meter |
 | `src/sound/engine.mjs` | `loadPack`, `renderMix`, `masterMix`, `renderSound`, `scoreOnly` |
-| `src/sound/scorecheck.mjs` | The symbolic checks (§9.4 S1-S14, B2, B10) on a score JSON |
+| `src/sound/routing.mjs` | The buses an event can name (`music`, `react`, `logo`), their order, and `routeOf(bus, inst, mix)`: what the engine does to a voice on each. Packs that model the mix import it (Scoreboard's `clearance.mjs`) |
+| `src/sound/scorecheck.mjs` | Re-exports `checkScore` from `sound/checks/score.mjs` (the symbolic checks §9.4 S1-S14, B2, B10), for the audit, `index.mjs` and the tests |
 | `src/sound/audit.mjs` | The audit command's measurements and table |
 | `src/sound/batch.mjs`, `worker.mjs` | Record gathering, worker-thread pool, verified mux |
-| `src/sound/ffmpeg.mjs` | Encode, decode, mux, ebur128, the loudnorm measurement, video md5, spectrogram |
+| `src/sound/ffmpeg.mjs` | Encode (with the trimmed silent pre-roll, `AAC_PREROLL`), decode, mux, ebur128, the loudnorm measurement, video md5, spectrogram |
 | `src/sound/wav.mjs` | Float32 WAV writer and a WAV reader |
 | `src/sound/packs/default.mjs` | The default pack: a stereo, chord-aware port of the legacy SFX plus a minimal neutral bed. Copy it to start a pack |
 | `src/audio.mjs` | Legacy mono `mix()`, `KINDS`, `RATE` (kept for `--legacy-audio` and its test) |
+| `sound/acceptance.json` | Every acceptance threshold, keyed by bible check ID, global and per look; the values that pass today but differ from the bible's text are marked `pending` |
+| `sound/checks/` | The acceptance harness behind `verify` (see below) |
 
 ## The cue record (engine input)
 
@@ -87,7 +97,7 @@ cues ─▶ pack.sfx[kind] (merge rule §8.4) ─────┼─────�
   vo: [{ t, d, text }], verdict: { t, text } | null, beats: [...] }   // from the spec (beats = lookOpts.beats)
 ```
 
-`test/fixtures/cues.json` holds the records of all 30 specs as mounted on 2026-10-11.
+`test/fixtures/cues.json` holds the records of all 30 specs as mounted on 2026-10-11. Both look packs carry values fitted on these cue lists, so `test/cues.test.mjs` mounts every spec and fails with `cue list changed for <id>: refit the sound pack, see <the look's tools/README.md>` when one moves (see [Fitted values and cue drift](#fitted-values-and-cue-drift)).
 
 ## Pack contract
 
@@ -130,9 +140,10 @@ export const sfx = { tick, type, pop, ding, reveal, thud, whoosh, riser, roll, c
 - note `{ t, dur, midi, vel, inst, role, chromatic?, pan?, ...anything the instrument reads }`
 - drum `{ t, inst, vel, pan?, ... }`
 - `role` is one of the §9.4 roles (bass, pad, arp, lead, stab, brass, mallet, glock, pizz, strings, logo). Logo events go to the LOGO bus.
+- `bus` (optional) is `'music'` (the default), `'react'` or `'logo'` (the default for role `logo`). Any other value is an error. See [The react bus](#the-react-bus-bus-react).
 - Times are seconds, placed at `Math.round(t·48000)`.
 - The instrument applies `vel`; the engine applies `mix.levels[inst]` (dB) and the pan (constant power).
-- Voices are summed in the order (t, bus, inst, midi, index).
+- Voices are summed in the order (t, bus, inst, midi, index), with the buses in the order logo, react, music (`routing.mjs` `BUS_RANK`). The instrument index `k` (its noise stream) counts in the same order.
 
 **Instrument ctx:** `{ tl, ev, rng, bpm, beatLen, chordAt, keyAt, k, D, T }`. `rng` is the seeded stream `noise:<inst>:<k>`, where `k` is the instrument's event index.
 
@@ -168,7 +179,26 @@ export const sfx = { tick, type, pop, ding, reveal, thud, whoosh, riser, roll, c
 - `glue: { ratio, attack, release, knee, targetGr }`: the threshold is set so the DROP's 75th-percentile level shows `targetGr` dB of gain reduction
 - `sfxComp: { ratio, attack, release, knee, maxGr }`: the threshold is set so the loudest `hit` peak gets `maxGr` dB
 - `payoffDuck: { depth: 9, hold: 0.15, release: 0.45 }`: an engine duck at P (see the engine decisions); `null` turns it off
+- `react: { via, musicDb, glue, sends, inst }`: what the react bus does besides skipping the duck (below)
 - `music`, `sfxBus`, `returns`, `logo`: bus trims in dB
+
+#### The react bus (`bus: 'react'`)
+
+A music voice that answers a cue — a "catch the hit" stab, a payoff stab, a verdict button — should not be ducked by the cue it answers. Give its events `bus: 'react'`. The engine then leaves it out of every event duck: the cue ducks, `automation.duck` and the payoff duck. Everything else is the pack's choice, in `mix.react`:
+
+| Key | Default | Meaning |
+|---|---|---|
+| `via` | `'music'` | `'music'`: the voice is processed as a music voice — its gain automation, the kick sidechain (if it is a `sidechain.targets` instrument), the body gate at `base`, HP 30 Hz, and the keys below. `'logo'`: the voice joins the logo bus and gets exactly what the sting gets: no `musicDb`, glue, sidechain or gate, sends to the un-ducked returns, `mix.logo` |
+| `musicDb` | `true` | (`via: 'music'`) follows `automation.musicDb` and `mix.music`, like the body |
+| `glue` | `true` | (`via: 'music'`) shares the glue compressor with the body: one detector over both, the same gain reduction on both (the DROP level that sets its threshold includes the react voices) |
+| `sends` | `'music'` | (`via: 'music'`) `'music'`: its sends feed the music returns (half the duck, −6 dB under the logo). `'free'`: the un-ducked returns, like the SFX and the logo |
+| `inst` | — | per-instrument overrides of the keys above, e.g. `inst: { revcrash: { via: 'logo' } }` |
+
+- `routing.mjs` `routeOf(bus, inst, mix)` returns what the engine does to a voice (`{ sum, duck, musicDb, glue, sidechain, gate, sends, fader }`). A pack that models the mix (Scoreboard's `clearance.mjs`) should read it rather than test bus names.
+- React voices are part of the `music` and `music.dry` stems, so B3, B5, B6 and B7 count them. B2 reads the duck curve, not the audio: a react voice at P is outside the payoff duck, so budget its level against the cues it answers.
+- The score marks them `bus: 'react'` (notes and drums).
+- `via: 'logo'` sums the voice into the logo bus itself, so it is bit-identical to the old way of escaping the duck (`bus: 'logo'` on a non-logo event). Don't put non-logo events on `bus: 'logo'` any more; that bus is the sting's.
+- Both packs use `via: 'logo'` today (their react levels were set on that path, see their READMEs).
 
 **Determinism rules for packs:**
 - Never use `Math.random` or the clock.
@@ -288,6 +318,105 @@ Use `os: 2` for a bright, unfiltered saw or square above about MIDI 80.
     - A pack can change it, or turn it off with `mix.payoffDuck = null`.
 12. **Missing file.** `studio/sound/overrides.json` (`{ "<id>": { "payoff": t, "verdictAnchor": false } }`) is read when it exists. The engine does not create it.
 
+## Acceptance harness (`verify`)
+
+`sound/acceptance.json` is the single source of truth for every threshold of the bible's §9 (A1-A14, the §9.2 bands and harshness, B1-B10, S1-S14, U1-U4) and of the packs' own rules (TRAIN, DUCK, LOGO for Scoreboard; MALLET, FLAMS for Becker Rig). An entry's top-level values apply to every look; `looks.<look>` overrides them. `gate: false` reports without failing (B1w, INFO). Nothing in `sound/checks/` or `src/sound/scorecheck.mjs` hardcodes a threshold, and `test/acceptance.test.mjs` checks that every threshold is read by a check and that A1/A2/A5 and S9 agree with the engine's constants and the packs' tempo.
+
+```bash
+npm run sound:verify                                    # all 30: build (audio + AAC + stems) into a temp dir, mux, check
+node src/cli.mjs verify specs/09c-*.json                # some specs
+node src/cli.mjs verify --from /tmp/sound/audio         # check prebuilt outputs (audio --stems, or sound --score --wav --stems)
+node src/cli.mjs verify --json > verify.json            # everything as JSON (logs on stderr)
+node src/cli.mjs verify --detail                        # every check's measurement, per spec
+npm run sound:units                                     # the packs' §9.5 unit checks only (no audio build, about 30 s)
+npm run sound:pending                                   # the values that pass today but differ from the bible's text, and why
+SOUND_ACCEPTANCE=/tmp/try.json node src/cli.mjs verify --from <dir>   # try other thresholds without touching acceptance.json
+```
+
+**What it does.**
+1. Gathers the cue records: `--cues <file>`, or `<from>/cues.json`, or mounted in Chromium.
+2. Without `--from`, renders every spec as `audio --stems` does (encode loop and ffmpeg cross-checks included) into a fresh temp dir (`--out <dir>` to choose it, `--keep` to keep it). It never writes into `renders/`. A failing run keeps its outputs and prints where.
+3. Muxes each verified AAC onto the finished MP4 (`--video <dir>`, default `../renders/channel`, read only; `--no-video` skips) into the temp dir, for A12 and A13.
+4. Runs the checks over a worker pool (`--jobs`, default 4): the global ones (`delivery.mjs` §9.1-9.2, `stems.mjs` §9.3, `score.mjs` §9.4) and the look's (`looks/<look>.mjs`). Each look's unit checks run once alongside. Becker Rig's U3/U4 render every Becker teaser's own cues.
+5. Prints:
+   - a table: one row per spec with I, TP, PLR, LRA and one character per check (✓ pass, ✗ fail, w waived, i info);
+   - each check's pass count per look, and the units per look;
+   - the failures with their measurements;
+   - the pending-bible-sync list;
+   - the comparison with the baseline.
+6. Exits 1 if any gated check fails.
+
+**Determinism and the baseline.**
+- A14 checks that each master WAV hashes to the `wavSha256` the engine wrote and differs from every other spec's. `--twice` renders everything a second time and compares.
+- `test/fixtures/sound-baseline.sha256` (`sha256sum` format) holds the 30 master WAVs of 2026-10-12. The AAC streams of that build are packet-identical to the delivered `renders/channel` MP4s. Every run prints how many masters are identical to it.
+- `--expect-identical` makes a difference a failure: use it when a change must not touch the audio.
+- After an intended change, `npm run sound:baseline` re-verifies and rewrites the file. It writes only if everything passes.
+
+**Pending bible sync.** Where today's passing practice differs from the bible's text, the entry carries `pending: { bibleSays, passesNow, reason, sync, see }`. These cover:
+- A5: the engine's encode loop enforces PLR ≤ 13.
+- The Scoreboard 31.5 Hz band at -20..+3.
+- Scoreboard B1: the windows hold only with the returns at +2.5 dB.
+- Becker B1: the proposed three-part B1; as written it is reported as B1w.
+- Scoreboard B3: card cues are exempt under the sting.
+- Becker B5: the 2 ms energy-rise onset rather than the flux peak.
+- S8: velocity SD gated for Becker only, the merge exemption from "on the grid".
+
+The bible owner syncs §9 (or changes a pack), then removes the marker.
+
+**Runtime** (4 workers, this container): the build takes about 245 s for all 30. The checks take about 80 s more: Becker's MALLET and per-teaser U3/U4 re-render instruments and cues. `--from` skips the build.
+
+**Adding or changing a check.**
+1. Put its thresholds under its ID in `acceptance.json`, with `bible`, `name` and `on`.
+2. Implement it as `(ctx, lim) => ({ pass, detail, value? })` in the module for its scope:
+   - `delivery.mjs`, `stems.mjs` or `score.mjs` for every look;
+   - `looks/<look>.mjs` `checks` for one look;
+   - `units()` for a pack unit check.
+3. `ctx` (`context.mjs`) loads the report, score, master WAV, decoded delivery, stems, cue record and pack lazily. Shared measurements are in `measure.mjs`.
+4. `test/acceptance.test.mjs` fails if a threshold has no check.
+
+| File | What it holds |
+|---|---|
+| `checks/acceptance.mjs` | `limits(id, look)`, `gated`, `pending`: the resolver over `acceptance.json` |
+| `checks/delivery.mjs` | A1-A14, BANDS, HARSH (the decoded AAC or muxed MP4, the report) |
+| `checks/stems.mjs` | B1, B1w, B3-B9 (stems, report, delivery) |
+| `checks/score.mjs` | S1-S14, B2, B10 on the score (also what the audit runs) |
+| `checks/looks/scoreboard.mjs` | TRAIN, DUCK; units U1-U4, LOGO (folded in from the pack's old `verify.mjs` and `units.mjs`) |
+| `checks/looks/becker-rig.mjs` | MALLET, FLAMS, INFO (the critic's reported measurements); units U1-U4 (folded in from the fixer's `check.mjs`, `fixcheck.mjs`, `ucheck.mjs`); `instrumentBuses`, shared with the pack's calibration tools |
+| `checks/measure.mjs` | Shared measurements: windowed power, series lookups, ungated loudness, band-pass, FFT, the two onset measures, the score grids |
+| `checks/context.mjs`, `run.mjs`, `worker.mjs`, `baseline.mjs` | The per-spec context and the two output layouts, the run and its report, the worker pool, the sha256 file |
+
+### Fitted values and cue drift
+
+Both packs carry values fitted on the 30 cue lists of `test/fixtures/cues.json`:
+- Scoreboard: `calibration.json` (BEDS, M_FIT, GM, GM_PLAN, LOGO_PRE, OPEN_FIT).
+- Becker Rig: `balance.mjs` `MODEL`.
+
+A kit or spec change that moves a cue leaves them describing a teaser that no longer exists. Nothing in the audio would fail loudly: the fader, the sting level and the card trim would just drift.
+- `test/cues.test.mjs` mounts all 30 specs (about 10 s; `SOUND_SKIP_CUE_DRIFT=1` skips it locally) and names each spec whose record changed, with the look's refit doc. It also fails when a spec has no record.
+- The refit procedures are in `looks/scoreboard/sound/tools/README.md` and `looks/becker-rig/sound/tools/README.md`. They give each value's derivation, the commands, and the state measured on 2026-10-12.
+- After a refit and a passing `verify`, store the new records: `node src/cli.mjs cues specs/*.json --out test/fixtures/cues.json`.
+
+### Pack conventions the checks see
+
+**The un-ducked path (`bus: 'logo'`).** A note or drum event a pack emits with `bus: 'logo'` is mixed like the em sting:
+- The music bus's `musicDb`, the glue compressor, the event duck, the kick sidechain and the body gate at `base` all skip it. Its per-instrument gain automation and `mix.logo` still apply.
+- Its sends go to the un-ducked returns.
+- It is still part of the `music` and `music.dry` stems. So B3, B5, B6 and B7 count it, and the score keeps its role (`stab`, `brass`).
+
+The packs use it so a cue does not duck away the music's answer to it:
+- Scoreboard: the stab at P and V, and the reverse crash into P. The stab is budgeted against the anchor's cues (`clearance.mjs`).
+- Becker Rig: the `honkR` catch stabs, the `honkR` + `crashR` verdict button, and the fanfare's sustained `honkFR` "TA".
+
+A voice put there is outside the payoff duck (B2 reads the duck curve, not the audio) and outside the glue. Budget its level against the cues it answers.
+
+**The AAC first frame.** A hard hit at t = 0 can decode up to about 3 dB over its master peak near 12 ms.
+- The encode loop's local ceiling dips do not always clear it there, and the loop then falls back to a global ceiling step for the whole teaser.
+- In this build, 05b's first frame went 1.22 dB over at 11.9 ms; a local dip cleared it, and it still decodes 1.3 dB over the master there.
+- 04b needed the global fallback (final ceiling -2.0 dBTP), for spots at 0.30 s and 36.5 s.
+- Becker Rig keeps its t = 0 brass (`honkH`) 2 dB under the fanfare for this reason.
+- A2 gates the result.
+- The INFO row's `AAC0` reports, per teaser, the decoded true peak over the first 30 ms against the master's, the number of encodes and the final ceiling. A teaser on the global fallback shows there first.
+
 ## Tests
 
 `npm test` (`test/sound.test.mjs`) covers:
@@ -298,6 +427,14 @@ Use `os: 2` for a bright, unfiltered saw or square above about MIDI 80.
 - a synthetic teaser that masters to −14 ± 0.3 LUFS: stereo, bounded, last sample 0, cue onsets within 2 ms, byte-identical across two runs and different for a different id
 - all 15 default-pack kinds: within their level, varying between occurrences (U4)
 - a remux whose video md5 is unchanged, with AAC stereo 48 kHz at 172-212 kb/s and durations within one frame
+
+`test/acceptance.test.mjs` checks that:
+- `acceptance.json` is well formed and resolves per look;
+- every threshold is read by a check;
+- A1/A2/A5 equal the engine's `TARGET_LUFS`/`DELIVERY_TP`/`PLR_MAX`, and S9 equals `LOOK_DEFAULTS` and each pack's `tempo`;
+- the baseline lists every spec.
+
+`test/cues.test.mjs` is the cue-drift guard (above).
 
 `test/studio.test.mjs` keeps:
 - the legacy `mix()` test

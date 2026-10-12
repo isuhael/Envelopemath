@@ -34,6 +34,10 @@ export const mix = {
   duckBig: { hit: [9, 0.15, 0.45], reveal: [6, 0.12, 0.4] },
   // §8.2: pad, arp and lead pump 3 dB on every music kick; the 808 owns the sustain and never ducks
   sidechain: { triggers: ['kick'], targets: ['pad', 'arp', 'lead'], depth: 3, attack: 0.002, hold: 0.02, release: 0.12 },
+  // the react bus (src/sound/routing.mjs): the P and V stabs and the reverse crash into P skip the event duck AND ride
+  // the logo path (no musicDb, no glue, un-ducked returns, mix.logo): clearance.mjs budgets the stabs that way and the
+  // stab's hall is the arena tail over the impact. via 'music' measured no better on the bible's checks (README "Sound")
+  react: { via: 'logo' },
   delay: { beats: 0.75, feedback: 0.3, lp: 3500, hp: 300, returnDb: -14 },
   glue: { ratio: 2, attack: 0.01, release: 0.12, knee: 6, targetGr: 1.5 },
   sfxComp: { ratio: 3, attack: 0.002, release: 0.08, knee: 3, maxGr: 2.5 },

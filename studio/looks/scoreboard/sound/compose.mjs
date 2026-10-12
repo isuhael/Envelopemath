@@ -275,8 +275,8 @@ export function compose(tl) {
   }
 
   // ---------------------------------------------------------------- anchors: the hook, the drop, the verdict
-  // the stadium stab (§4.3 SB-Stab) on the three anchors. At P and V it plays on the unducked path (the logo bus: no
-  // event duck, no glue), HP'd at 250 Hz so the cue's body keeps the low end, its level budgeted against the anchor's
+  // the stadium stab (§4.3 SB-Stab) on the three anchors. At P and V it plays on the react bus (routing.mjs: no event
+  // duck; mix.react via 'logo': no musicDb, no glue), HP'd at 250 Hz so the cue's body keeps the low end, its level budgeted against the anchor's
   // cues after the bed is known (clearance.mjs stabBudget): the arena chord rings over the impact instead of under a
   // 9-15 dB duck. The hook's stab stays on the music bus (S10 wants it at velocity >= 0.9 on frame 1)
   const anchorStabs = []
@@ -291,17 +291,17 @@ export function compose(tl) {
   const hookSym = tl.chordAt(0).sym, pSym = tl.chordAt(P + EPS).sym
   stabChord(0, hookSym, 1)
   drums.push({ t: 0, inst: 'kick', vel: 1 }, { t: 0, inst: 'crash', vel: dB(countAtZero ? -9 : -3), tau: 0.9 })
-  stabChord(P, pSym, 1, { bus: 'logo' })
+  stabChord(P, pSym, 1, { bus: 'react' })
   // a hit at P brings its own wide crash (τ 0.9 s): the music's crash then stays out, the reverse crash still leads in, so
   // the most-watched second is not three crashes and E5's open hats in one wash. A payoff without a hit keeps it (τ 1.0 s)
   const hitOwnsP = tl.cues.some(c => c.kind === 'hit' && Math.abs(c.t - P) <= 0.015)
-  // the reverse crash into P rides the unducked path: the gap's duck (below) clears the body and halves the reverb tails
+  // the reverse crash into P rides the react bus: the gap's duck (below) clears the body and halves the reverb tails
   // (a hard cut before the drop), and the swell still leads in
-  drums.push({ t: P, inst: 'kick', vel: 1 }, { t: P, inst: 'clap', vel: 1 }, { t: P, inst: 'revcrash', vel: 0.9, len: 0.6, bus: 'logo' })
+  drums.push({ t: P, inst: 'kick', vel: 1 }, { t: P, inst: 'clap', vel: 1 }, { t: P, inst: 'revcrash', vel: 0.9, len: 0.6, bus: 'react' })
   if (!hitOwnsP) drums.push({ t: P, inst: 'crash', vel: 1, tau: 1.0 })
   notes.push({ t: P, dur: 1.2, midi: 26, vel: 1, inst: 'sub', role: 'bass' })
   if (V != null) {
-    stabChord(V, tl.chordAt(V + EPS).sym, dB(-3), { bus: 'logo' })
+    stabChord(V, tl.chordAt(V + EPS).sym, dB(-3), { bus: 'react' })
     // one low body (§8.4.1, §4.6.1): when the verdict cue brings its own (a reveal's thud body, a hit, a thud), that body
     // is the kick at V; the music answers with the stab, the crash and the 808
     if (!bodyAtV) drums.push({ t: V, inst: 'kick', vel: 1 })

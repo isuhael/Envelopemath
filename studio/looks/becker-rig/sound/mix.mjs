@@ -7,10 +7,8 @@ export const mix = {
     kick: -17.6, snare: -13.9, ghost: -17.4, roll: -19.9, clap: -17.1, shaker: -23.9, tamb: -31.4, block: -25.9, tom: -19.9, timp: -14.9, crash: -22.9, revcrash: -11.4,
     bass: -10.8, mallet: -19.4, glock: -24.4, pizz: -20.4, honk: -23.9, honkF: -20.9, strings: -25.9, pad: -23.1, whistle: -21.9,
     // the react voices (compose.mjs): the band's own answers to the cues ("catch the hit", the verdict button, the
-    // fanfare's sustained "TA"), routed to the un-ducked bus so the cue they answer does not duck them away
+    // fanfare's sustained "TA"), on the react bus (bus: 'react') so the cue they answer does not duck them away
     honkR: -23.9, honkFR: -26.4, crashR: -22.9,
-    // the hook's t = 0 brass, 2 dB under the fanfare: the file's first frame is where the AAC encoder overshoots most
-    honkH: -22.9,
     logoMallet: -11.5, logoPizz: -16.5, logoGlock: -25.5, logoEcho: -25.5, logoHonk: -34, logoPad: -29, logoTimp: -25, logoCrash: -30, logoSwell: -24, logoAir: -40,
   },
   // music sends (dB re each voice; the engine takes them post-level and pre-bus-fader, so the music bus fader stays at 0):
@@ -20,7 +18,7 @@ export const mix = {
   sends: {
     snare: { room: -11.5 }, ghost: { room: -15.5 }, roll: { room: -15.5 }, clap: { room: -13.5 }, tom: { room: -13.5 }, tamb: { room: -17.5 },
     mallet: { room: -17.5 }, glock: { hall: -13.5 }, pizz: { room: -15.5 }, honk: { hall: -15.5 }, honkF: { hall: -15.5 }, strings: { hall: -13.5 },
-    timp: { hall: -11.5 }, crash: { hall: -13.5 }, pad: { hall: -15.5 }, whistle: { room: -15.5 }, honkH: { hall: -15.5 },
+    timp: { hall: -11.5 }, crash: { hall: -13.5 }, pad: { hall: -15.5 }, whistle: { room: -15.5 },
     honkR: { hall: -15.5 }, honkFR: { hall: -15.5 }, crashR: { hall: -13.5 },
     logoMallet: { hall: -10 }, logoPizz: { hall: -10 }, logoGlock: { hall: -10 }, logoEcho: { hall: -10 }, logoHonk: { hall: -10 },
     logoPad: { hall: -10 }, logoTimp: { hall: -10 }, logoCrash: { hall: -10 },
@@ -43,6 +41,11 @@ export const mix = {
   // within about half a second (impact first, then the music)
   payoffDuck: { depth: 9, hold: 0.15, release: 0.3 },
   sidechain: { triggers: ['kick'], targets: ['pad', 'strings'], depth: 1.5, attack: 0.002, hold: 0.02, release: 0.12 },
+  // the react bus (src/sound/routing.mjs): the react voices skip the event duck AND ride the logo path (no musicDb, no
+  // glue, un-ducked returns, mix.logo). Their levels above were set that way, the MALLET check and the calibration tools
+  // model them without musicDb (sound/checks/looks/becker-rig.mjs instrumentBuses), and via 'music' measured no better
+  // on the bible's checks (README "Sound": the react bus). Changing it means re-levelling honkR/honkFR/crashR
+  react: { via: 'logo' },
   glue: { ratio: 2, attack: 0.01, release: 0.12, knee: 6, targetGr: 2 },
   sfxComp: { ratio: 3, attack: 0.002, release: 0.08, knee: 3, maxGr: 3 },
   music: 0, sfxBus: 0, returns: 0, logo: 0,

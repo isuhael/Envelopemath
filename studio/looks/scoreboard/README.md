@@ -134,8 +134,10 @@ The cues drive a music bed and the sonic logo as well; both are described in the
 | `balance.mjs` | The per-teaser SFX fader and bed offset (B1) |
 | `logo.mjs` | The em sting, "LED fanfare" (§3.2) |
 | `mix.mjs` | Levels, sends, ducks, the kick sidechain, the bus dynamics |
-| `cal.mjs`, `calibration.json`, `calibrate.mjs` | The measured values the fader, the opening lift and the logo level use, and the tool that measures them |
-| `verify.mjs`, `units.mjs` | The acceptance checks the engine's `audit` does not run, plus the pack's own rules (TRAIN, DUCK, LOGO), and the §9.5 DSP unit checks |
+| `cal.mjs`, `calibration.json` | The measured values the fader, the opening lift and the logo level use |
+| `tools/calibrate.mjs`, `tools/README.md` | The tool that measures them, and how each value is derived and refitted |
+
+The acceptance checks, the pack's own rules (TRAIN, DUCK, LOGO) and the §9.5 DSP unit checks live in the shared harness: `studio/sound/checks/looks/scoreboard.mjs`, with the thresholds in `studio/sound/acceptance.json` (`node src/cli.mjs verify`, see `studio/sound/README.md`). They used to be this folder's `verify.mjs` and `units.mjs`.
 
 ### The music
 
@@ -173,7 +175,7 @@ The cues drive a music bed and the sonic logo as well; both are described in the
   - The stab at P and V plays on the unducked path (the logo bus), budgeted against the anchor's cues as the fader leaves them: its 50 ms power sits 7.5 dB under the cues', and its peak 9 dB under theirs, so the limiter does not eat the payoff.
 - **End card.** The sting (§3.1, §3.2):
   - The motif's A4 D5 E5 on the SB-Laser lead, with the pluck an octave down.
-  - A5 on neon brass with A4 under it. It leads: its first 85 ms sit 4.5 dB over the loudest pickup (`units.mjs` LOGO).
+  - A5 on neon brass with A4 under it. It leads: its first 85 ms sit 4.5 dB over the loudest pickup (the LOGO unit check).
   - Two ping-pong echoes, a D add9 pad held to the end, the 808 on D2 and the D1 sub, crash and reverse crash, hall sends.
   - A bright shimmer (BP noise 7 / 11 kHz and a D7 + A7 glint) on the ring flare, t0 + 0.22·k, where the badge visibly lands.
   - The card's own cues use constant seeds, so the card sounds the same in every teaser. The sting's sustained layers dip 9 dB under the handle ding.
@@ -212,7 +214,7 @@ Consecutive cues of a kind vary in pitch, cutoff, seed and pan (U4). In a cluste
   4. The cue's own lift: +6 dB for the hook's frame-1 count, the verdict and soft cues (gain ≤ 0.5), +3 dB otherwise, never past gain 1.
   5. Broadband up to 1.5x the table, or 6 dB at the hook and V.
   6. Then the lift up to +6 dB.
-  7. Only then broadband past the cap. On the 15 teasers this never happens (`verify.mjs` DUCK).
+  7. Only then broadband past the cap. On the 15 teasers this never happens (the DUCK check).
 - **What is given back.** Once the later levers are set, the dips they made unnecessary are given back.
 - **A hit at P** keeps the payoff design: its table duck plus the engine's payoff duck.
 - **The result on the 15** (see Measured): every cue clears B3 by at least 3.9 dB, and no broadband duck goes past its cap. The hook's frame-1 counts take 2.6-3.5 dB, where the previous pass used 11.4-13.5 dB. Cash at P + 0.06 s and at V takes its table duck, where the previous pass used 13-15 dB: the SFX stem in its window holds the hit or the reveal too.
@@ -227,21 +229,19 @@ Consecutive cues of a kind vary in pitch, cutoff, seed and pan (U4). In a cluste
 
 ```bash
 cd studio
-# the cue records (mounts the kits once; every later step reads the dump)
-node src/cli.mjs cues specs/*-scoreboard-*.json --out /tmp/snd-scoreboard/cues.json
-# the audio, with stems, from a cue dump
-node src/cli.mjs audio specs/*-scoreboard-*.json --cues /tmp/snd-scoreboard/cues.json --out /tmp/snd-scoreboard/run --stems --no-check
-# re-measure the pack's values after a change to the arrangement or the levels (BEDS, M_FIT, GM, GM_PLAN, LOGO_PRE,
-# OPEN_FIT; run it after two renders: each calibration moves the next render a little)
-node looks/scoreboard/sound/calibrate.mjs /tmp/snd-scoreboard/run --cues=/tmp/snd-scoreboard/cues.json --write
-# B1, B3, B5-B9, A3, A4, A7, A11, the §9.2 bands, harshness, S8 stats, TRAIN, DUCK
-node looks/scoreboard/sound/verify.mjs /tmp/snd-scoreboard/run --stems /tmp/snd-scoreboard/run/stems [--detail|--json]
-# U1-U4 and LOGO
-node looks/scoreboard/sound/units.mjs
+# the acceptance harness on the 15 Scoreboard teasers: builds the audio and stems into a temp dir, muxes them onto
+# renders/channel (read only) for the picture checks, runs every check of sound/acceptance.json (the §9 checks, TRAIN,
+# DUCK) and the unit checks (U1-U4, LOGO); exit 1 on a failure. --detail prints every measurement
+node src/cli.mjs verify specs/*-scoreboard-*.json
+# the same on outputs you built yourself (audio --stems, or sound --score --wav --stems)
+node src/cli.mjs verify specs/*-scoreboard-*.json --from /tmp/snd-scoreboard/run
+# the unit checks alone (about 5 s for this look)
+node src/cli.mjs verify specs/*-scoreboard-*.json --units-only --cues test/fixtures/cues.json
+# re-measure the pack's values after a change to the arrangement, the levels or a cue list (see sound/tools/README.md)
+node looks/scoreboard/sound/tools/calibrate.mjs /tmp/snd-scoreboard/run --cues=/tmp/snd-scoreboard/cues.json [--write]
 # the delivery pass: the audio muxed onto the finished MP4s (into /tmp; nothing reaches renders/ without --final), then the audit
-node src/cli.mjs sound specs/*-scoreboard-*.json --video ../renders/channel --out /tmp/snd-scoreboard/mp4 --score --wav --stems --cues /tmp/snd-scoreboard/cues.json
+node src/cli.mjs sound specs/*-scoreboard-*.json --video ../renders/channel --out /tmp/snd-scoreboard/mp4 --score --wav --stems
 node src/cli.mjs audit /tmp/snd-scoreboard/mp4 --reports /tmp/snd-scoreboard/mp4/sound --out /tmp/snd-scoreboard/audit
-node looks/scoreboard/sound/verify.mjs /tmp/snd-scoreboard/mp4/sound --stems /tmp/snd-scoreboard/mp4/stems
 ```
 
 ### Deviations from the bible
@@ -250,7 +250,7 @@ node looks/scoreboard/sound/verify.mjs /tmp/snd-scoreboard/mp4/sound --stems /tm
 - **SB-Kick and the 31.5 Hz band:**
   - The kick keeps the bible's 48 Hz tail and adds a punch layer (180 → 90 Hz) and a 3 kHz knock.
   - The previous pass tuned the tail to D1 (36.7 Hz) only to reach the §9.2 31.5 Hz window (−8..+3 dB re 1 kHz). With a 48 Hz kick and the 808 on 58-110 Hz, that band measures about −15 to −18.5 dB.
-  - `verify.mjs` applies −20..+3 for that band only. **This is a requested bible change** (§9.2, Scoreboard 31.5 Hz: −20..+3), made on the critic's instruction not to tune the kick to a meter.
+  - `studio/sound/acceptance.json` (BANDS) applies −20..+3 for that band only, marked pending bible sync. **This is a requested bible change** (§9.2, Scoreboard 31.5 Hz: −20..+3), made on the critic's instruction not to tune the kick to a meter.
 - **The returns at +2.5 dB.** B1 needs the returns stem at about −6 LU re the mix (see `mix.mjs`): with the returns at 0 dB the music stem measured −1.2 to −1.8 LU re the mix, outside its window. The ticker's ping-pong delay is gone and the pad hall is back at −14 dB, so the wetness is the stab's hall, the clap plate and the lead's delay.
 - **The anchor stab at P and V** plays on the logo bus (not ducked, not glued), level-budgeted per anchor. The reverse crash into P rides the same path, so the 12 dB gap duck does not touch it.
 - **No music kick at V** when the verdict cue brings its own body (§8.4.1 one low body, over §4.5's VERDICT kick).
@@ -261,14 +261,15 @@ node looks/scoreboard/sound/verify.mjs /tmp/snd-scoreboard/mp4/sound --stems /tm
 - **Note gates:** every gate ends 1.5 ms early. The score rounds t and dur separately, so a note ending exactly at its successor's onset would count as two notes sounding at once (S14).
 - **Levels:** tuned against B1 and §9.2. The stab is at −11 dB (bible −8), the arp at −13.5 (bible −16; it carries the look), and the pad, clap and snare sit near the bible's starting levels.
 - **Envelopes:** the arp's amplitude decays exponentially (τ 70 ms). The engine's ADSR reaches 99% at `d`, which would make a 39 ms blip. Onsets are quadratic or cubic over 3-4 ms where a linear 1-2 ms ramp would click (U2).
-- **B3 at the end card:** the card's pop and thud sit under the held sting by design (§3.2), so `verify.mjs` reports them but does not fail on them.
+- **B3 at the end card:** the card's pop and thud sit under the held sting by design (§3.2), so the harness reports them but does not fail on them (`acceptance.json` B3 `exemptCard`, pending bible sync).
+- **B1 and the returns:** the §8.1 windows hold only with the returns bus at +2.5 dB (above); `acceptance.json` marks Scoreboard's B1 pending bible sync and reports the returns stem (−5.4 to −6.4 LU re the mix) without gating it.
 
 ### Measured (2026-10-11, the 15 Scoreboard teasers muxed onto `renders/channel`, written to /tmp/fix-snd-scoreboard)
 
-All 15 pass:
-- `verify.mjs`: 255/255 checks (17 per teaser, TRAIN and DUCK included);
+All 15 passed:
+- the pack's old `verify.mjs`: 255/255 checks (17 per teaser, TRAIN and DUCK included);
 - the audit's symbolic checks S1-S14, B2 and B10: 15/15 each;
-- `units.mjs`: 69/69 (LOGO included);
+- the old `units.mjs`: 69/69 (LOGO included);
 - `node src/cli.mjs check`: 30/30 clean;
 - `npm test`: 16/16.
 
@@ -305,6 +306,12 @@ Every mux kept the picture bit-identical (video md5). Two renders of a spec give
 - **Clock trains:** the music has no onset 12-60 ms from a tick in 02b, 02c, 10a and 10c (TRAIN).
 - **PLR.** 04c and 07a measure 13.12 and 13.03, just over A5's 13. The master puts the delivered true peak at −1.0 to −1.1 dBTP after AAC, and the delivered integrated loudness lands at −14.07 to −14.16 (AAC takes about 0.07 LU off the master's −14.0). That is the engine's master, not the pack: see the notes for the engine.
 - **Tightest §9.2 margins:** 02c at 250 Hz (+0.7 against a floor of 0) and at 2 kHz (−4.7 against −5). The 31.5 Hz band measures −14.6 to −18.5 (see the deviations).
+
+**Since then (2026-10-12).** The engine's encode loop now enforces the decoded PLR (A5), so the table's PLR and true-peak columns moved.
+- `node src/cli.mjs verify` on the delivered build: all 15 Scoreboard teasers pass 42/42 teaser checks, and the units pass 69/69.
+- Measures: I −14.07 to −14.17 LUFS, true peak −1.16 to −1.40 dBTP, PLR 12.69 to 12.92, LRA 4.66 to 6.68.
+- B3's closest cue sits 3.9 dB over the music; B8's logo lands at −11.7 to −12.6 LUFS.
+- `npm run sound:verify` prints the current values.
 
 ---
 

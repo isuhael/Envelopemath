@@ -15,7 +15,8 @@
 //   VERDICT "ding! ba-DAM": the ding owns V's downbeat, the band (kick, bass, brass button, crash) answers a 16th later
 //   CADENCE Em7 -> A7sus4 -> A7, a swung snare + tom fill on the last beat, stop dead at base
 // Reactions (§6.6): drums yield to body cues (>= 0.35, footsteps too) and to the cues B3 listens to; "catch the hit"
-// brass stabs on the react bus (the engine's un-ducked bus: the cue they answer does not duck them); clock trains
+// brass stabs on the react bus (the engine's duck-exempt bus, routing.mjs: the cue they answer does not duck them; mix.mjs
+// react.via 'logo' keeps them off musicDb and the glue, as calibrated); clock trains
 // silence the shaker and block and keep the kit, ghosts, pizz chops and marimba off their ticks; the buzz deflate (Gm,
 // the bass bends down 3 st, drums and marimba out for a beat); the bass chokes for bloops, dings, landings and steps;
 // band-selective dips of the mid voices under the cues (a dynamic EQ in automation); dense beats lose the glock and thin
@@ -342,13 +343,13 @@ export function compose(tl, rng) {
   {
     const b0 = tl.bars[0], st0 = s => tl.step(b0, s, SWING)
     if (hookV === 1) {
-      for (const m of [62, 66, 69, 74]) note(0, bar16(0) * 0.9, m, 0.92, 'honkH', 'brass')
+      for (const m of [62, 66, 69, 74]) note(0, bar16(0) * 0.9, m, 0.92, 'honkF', 'brass')
       for (const m of [66, 69, 74, 78]) note(st0(3), tl.beatLen(0) * 0.62, m, 1.0, 'honkF', 'brass')
       drum(0, 'timp', 0.8, { midi: 38 })
       drum(st0(3), 'timp', 0.9, { midi: 38 })
       drum(st0(3), 'crash', 0.7)
     } else {
-      for (const m of [62, 66, 69, 74]) note(0, tl.beatLen(0) * 0.5, m, 1.0, 'honkH', 'brass')
+      for (const m of [62, 66, 69, 74]) note(0, tl.beatLen(0) * 0.5, m, 1.0, 'honkF', 'brass')
       drum(0, 'timp', 0.9, { midi: 38 })
       drum(0, 'crash', 0.7)
       if (hookV === 2) [74, 78, 81, 86].forEach((m, k) => note(st0(2 + k), bar16(0) * (k === 3 ? 3 : 0.95), m, [0.66, 0.72, 0.8, 0.9][k], 'glock', 'glock'))
@@ -405,7 +406,7 @@ export function compose(tl, rng) {
     // (a payoff marked by a ding or a pop, not a hit, keeps its first 50 ms: the "ka" is left out, the crash marks P)
     const bellP = tl.cues.some(c => Math.abs(c.t - P) <= 0.015 && (c.kind === 'ding' || c.kind === 'pop')) && !tl.cues.some(c => Math.abs(c.t - P) <= 0.015 && c.kind === 'hit')
     if (!bellP) for (const m of [62, 66, 69, 74]) note(P, bar16(P) * 0.9, m, 1.0, 'honkF', 'brass')
-    for (const m of [62, 66, 69, 74, 78, 81, 86]) note(tTa, dur, m, 1.0, 'honkFR', 'brass', { bus: 'logo' })
+    for (const m of [62, 66, 69, 74, 78, 81, 86]) note(tTa, dur, m, 1.0, 'honkFR', 'brass', { bus: 'react' })
     drum(P, 'timp', 1.0, { midi: 38 })
     drum(P, 'crash', 0.9, { tau: 1.4 })
     drum(P, 'snare', 1.0)
@@ -427,8 +428,8 @@ export function compose(tl, rng) {
     // punctuation of the verdict, so it is not ducked by it)
     // it answers the ding one swung 16th later ("ding! ba-DAM"), so the verdict's first 50 ms are the ding's own (B3)
     const tB = tl.step(tl.barAt(V + 1e-6), 2, SWING)
-    for (const m of [62, 66, 69, 74]) note(tB, tl.beatLen(V) * 0.5, m, 0.95 + g('brass', 0.02), 'honkR', 'brass', { bus: 'logo' })
-    drum(tB, 'crashR', 0.5, { bus: 'logo' })
+    for (const m of [62, 66, 69, 74]) note(tB, tl.beatLen(V) * 0.5, m, 0.95 + g('brass', 0.02), 'honkR', 'brass', { bus: 'react' })
+    drum(tB, 'crashR', 0.5, { bus: 'react' })
     // the band's downbeat (kick and bass) comes with the button: the verdict's downbeat is the ding's alone
     for (let j = drums.length - 1; j >= 0; j--) if (drums[j].inst === 'kick' && Math.abs(drums[j].t - V) < 0.002) drums.splice(j, 1)
     for (let j = notes.length - 1; j >= 0; j--) if (notes[j].inst === 'bass' && Math.abs(notes[j].t - V) < 0.002) notes.splice(j, 1)
@@ -460,7 +461,7 @@ export function compose(tl, rng) {
       const tri = T.voicing(ch.sym, { n: 3, lo: 57, hi: 72 })
       let any = false
       const v = 0.93 + g('brass', 0.03)
-      for (const m of tri) any = note(c.t, tl.beatLen(c.t) * 0.5, m, v + g('brass', 0.02), 'honkR', 'brass', { bus: 'logo' }) || any
+      for (const m of tri) any = note(c.t, tl.beatLen(c.t) * 0.5, m, v + g('brass', 0.02), 'honkR', 'brass', { bus: 'react' }) || any
       if (any) lastCatch = c.t
     }
   }
@@ -492,7 +493,7 @@ export function compose(tl, rng) {
   // (presence: +1.6 dB per tilt unit when dull (not the shaker and tambourine: 8 kHz is not where dull cues leave a
   // hole), -1 when bright; bass and pad +1 when dull; toys +1 when bright;
   // the glock, the one toy that sings in the cues' own octave, steps back 1 dB per unit when the cues crowd it)
-  const TILT = { snare: 1, clap: 1, ghost: 1, roll: 1, shaker: 1, tamb: 1, honk: 1, honkF: 1, honkH: 1, honkR: 1, honkFR: 1 }
+  const TILT = { snare: 1, clap: 1, ghost: 1, roll: 1, shaker: 1, tamb: 1, honk: 1, honkF: 1, honkR: 1, honkFR: 1 }
   const TOYS = { mallet: 1, glock: 1, pizz: 1 }
   for (const inst of new Set([...notes, ...dd].map(e => e.inst))) {
     const w = TILT[inst] || 0

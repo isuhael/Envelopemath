@@ -175,7 +175,8 @@ async function verifyCommand() {
   const cuesFile = typeof opt.cues === 'string' ? opt.cues : from && fs.existsSync(path.join(from, 'cues.json')) ? path.join(from, 'cues.json') : null
   const recs = await S.gatherRecords(specs, { cuesFile, launch, log: m => console.error(m) })
   const video = opt['no-video'] ? null : typeof opt.video === 'string' ? path.resolve(opt.video) : fs.existsSync(S.CHANNEL_DIR) ? S.CHANNEL_DIR : null
-  const buildDir = !from && typeof opt.out === 'string' ? S.guardOut(path.resolve(opt.out), opt.final) : null
+  // verify never writes into renders/channel (no --final here)
+  const buildDir = !from && typeof opt.out === 'string' ? S.guardOut(path.resolve(opt.out)) : null
   const { code } = await V.verify({
     recs, dir: from, buildDir, jobs, video, units: !opt['no-units'], unitsOnly: !!opt['units-only'], twice: !!opt.twice,
     baseline: typeof opt.baseline === 'string' ? path.resolve(opt.baseline) : null, expectIdentical: !!opt['expect-identical'],
