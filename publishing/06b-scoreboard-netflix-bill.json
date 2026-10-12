@@ -4,27 +4,24 @@
   "prepared": "2026-10-12",
   "for_video": {
     "current_render": "renders/channel/06b-scoreboard-netflix-bill.mp4",
-    "current_duration_s": 33.0,
-    "current_sha256": "323dc45ed1bea3400a3c78b16cb1e955f73f4f4ba4f9c58b761b020ca211c9c2",
-    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the 33.0 s round-2 cut. The condensed cut the owner asked for is being made now; when it ships, rebuild this sheet with --covers so for_video and both covers follow the shipped file.",
+    "current_duration_s": 20.8,
+    "current_sha256": "b5854b923eb172559519c13e9d49bcf32c26e6d794fce378eddb6a0cb4a8ae07",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-12.",
     "cut": {
-      "name": "round 2, ported to Scoreboard (2026-10-08)",
+      "name": "condensed (2026-10-12)",
       "spec": "studio/specs/06b-scoreboard-netflix-bill.json",
-      "body_s": 30.5,
+      "body_s": 18.3,
       "card_s": 2.5,
-      "shipped": "2026-10-12 (the sound pass, with all 30)",
-      "status": "to be replaced by the condensed cut (in progress in studio/specs-wip/ on 2026-10-12)"
-    },
-    "on_ship": [
-      "Promote and ship the condensed cut (studio/sound/BIBLE.md §11).",
-      "Run `python3 publishing/tools/build_publishing.py 06b-scoreboard-netflix-bill --covers`: it re-reads the render's duration and sha256 and re-exports both covers at COVER_T.",
-      "Re-pick the cover by content on the shipped file (cover.frame_by_content); if it is no longer frame 0, set COVER_T and COVER_FRAME in the data file and rebuild.",
-      "In publishing/data/06b-scoreboard-netflix-bill.py, update the Video bullet, FOR_VIDEO_NOTE, CUT, COVER_RENDER_WORD ('shipped'), COVER_FRAME_MEASURED and MATH_RUN. The copy needs no change unless a figure moved, and the numbers check catches that.",
-      "Re-read the long alt text against the shipped cut: it describes content, not timings, but the condense may drop a beat it names."
-    ]
+      "shipped": "2026-10-12",
+      "replaces": {
+        "duration_s": 33.0,
+        "sha256": "323dc45ed1bea3400a3c78b16cb1e955f73f4f4ba4f9c58b761b020ca211c9c2",
+        "note": "the 30.5 s round-2 cut (ported to Scoreboard 2026-10-08) + card, retired; in git history (471c793)"
+      }
+    }
   },
   "facts": {
-    "source": "teasers/v2/06-pov-race.md section (b) 06b; teasers/v2/checks/06-pov-race.py: 443 checks, 0 failed on studio/specs/ (2026-10-12)",
+    "source": "teasers/v2/06-pov-race.md section (b) 06b; teasers/v2/checks/06-pov-race.py: 442 checks, 0 failed on studio/specs/ (2026-10-12)",
     "bills": "168 monthly US Standard-plan list prices, Jan 2012-Dec 2025: $7.99, then 7 hikes (May 2014 $8.99, Oct 2015 $9.99, Oct 2017 $10.99, Jan 2019 $12.99, Oct 2020 $13.99, Jan 2022 $15.49, Jan 2025 $17.99), each counted from the month it was announced; $2,037.32 in all",
     "method": "each year's 12 bills buy NFLX at that year's average split-adjusted close (Macrotrends); Netflix pays no dividend; no fees or taxes",
     "end_2012": "$95.88 in, $106.98 in stock ≈ 5 months of today's Netflix ($107 ÷ $19.99 = 5.35)",
@@ -238,7 +235,7 @@
       "frame_in_current_render_s": 0,
       "frame_index": 0,
       "frame_by_content": "The clean cover, frame 1: the question '$19.99 NETFLIX, FREE / FOR HOW MANY YEARS?' with $19.99 the only price, the board's tags PAID TO NETFLIX | IN NETFLIX STOCK over unlit counters ('$-.--'), the empty 2013-2025 race under the 2012 year clock, the working 'STOCK ÷ ($19.99 × 12)' and the empty answer '? YEARS'. It asks and does not answer, like the title and the caption. The write-up names frame 1 as the Instagram cover, and the spec designs it as one (`cover: \"clean\"`). On any cut, use the last frame before the first ticket falls and the counters light.",
-      "frame_measured": "On the current 33 s render, frames 0-2 (0.00-0.07 s) are that clean frame; from frame 3 the first ticket falls in, and the counters light at 0.3 s (frame 9). Frame 0 shows the first caption, 'Your Netflix, free. For how long?', with only 'Your' lit (the kit lights it word by word); the grey words still read.",
+      "frame_measured": "On the shipped 20.8 s render, frame 0 (0.00 s) is that clean frame, and the only one: from frame 1 (0.03 s) the first ticket falls in, and the counters light at frame 8 (0.27 s; the race starts at 0.24 s). Frame 0 shows the whole first caption, 'Your Netflix, free. For how long?' (pre-typed from t −0.4 s), with 'Your Netflix,' lit (the kit lights it word by word); the grey words still read.",
       "crop": "3:4 = 1080×1440 from y 60 to 1500 of the 1080×1920 frame: the badge, the question, the board, the empty race, '? YEARS' and the caption; it drops the empty floor. A centred grid crop (y 240-1680) cuts the badge and leaves the question on the edge.",
       "how_to_set": "In 'Edit cover', pick frame 1 of the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts both board tags.",
       "re_export": "ffmpeg -ss 0 -i renders/channel/06b-scoreboard-netflix-bill.mp4 -frames:v 1 -vf \"crop=1080:1440:0:60\" -q:v 2 publishing/06b-scoreboard-netflix-bill-cover-3x4.jpg",
@@ -249,7 +246,7 @@
     "trial_reels": {
       "recommendation": "Post as a regular Reel, not a Trial.",
       "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut ships, the 33.0 s render it replaces leaves renders/channel; get it from git with `git show 471c793:renders/channel/06b-scoreboard-netflix-bill.mp4 > 06b-33s.mp4` (sha256 323dc45e…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3% on its first day) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. The 33.0 s render the condensed cut replaced has left renders/channel; get it from git with `git show 471c793:renders/channel/06b-scoreboard-netflix-bill.mp4 > 06b-33s.mp4` (sha256 323dc45e…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3% on its first day) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
     },
     "settings": {
       "audio": "Rename the original audio to 'Netflix bills vs Netflix stock — The Back of the Envelope' if the app allows; it is the score, with no voice.",
@@ -698,7 +695,7 @@
   "checked": {
     "date": "2026-10-12",
     "by": "adversarial check of this sheet",
-    "math": "python3 teasers/v2/checks/06-pov-race.py: 443 checks, 0 failed on studio/specs/ (2026-10-12, the 33.0 s cut), re-run at the adversarial check with the same result; every public figure traced to the 06b maths table, the 168 bills re-added from the plan-price schedule, and each year's figure pinned beside its year (COPY_RULES)",
+    "math": "python3 teasers/v2/checks/06-pov-race.py: 443 checks, 0 failed on studio/specs/ (2026-10-12, the 33.0 s cut), re-run at the adversarial check with the same result; re-run when the condensed cut was promoted into studio/specs/ and shipped (2026-10-12): 442 checks, 0 failed; every public figure traced to the 06b maths table, the 168 bills re-added from the plan-price schedule, and each year's figure pinned beside its year (COPY_RULES)",
     "limits": {
       "youtube_title_chars": 84,
       "youtube_description_chars": 1480,

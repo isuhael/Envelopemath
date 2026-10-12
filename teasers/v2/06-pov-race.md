@@ -196,7 +196,7 @@ What was your first iPhone, and what did you pay?
 
 ### Beat sheet (condensed cut, 2026-10-12: chart clock x 2012 → 2025.99 over t 0.24 → 15.9 s, paused briefly on the three answer-row landings: 1.2-1.7 on the 2012 close, 9.7-10.3 on 2020's, 12.3-12.9 on 2022's; 1.00 s per year between them (0.97 to the 2012 close), 1.00 s per year moving; payoff and verdict at 16.7 s; body 18.3 s + the 2.5 s end card = 20.8 s)
 
-Spec: `studio/specs/06b-scoreboard-netflix-bill.json` (promoted 2026-10-12). It replaced the 30.5 s cut (race 0.3 → 23.0 s at ≈ 1.6 s per year with 1.3-1.8 s holds, verdict 26.0 s), whose beat sheet and guide VO script are in git history (471c793 and earlier). The Review log ("Condensed cut (2026-10-12): 06b") lists every change. Every string, number, hike tag and cue role is the 30.5 s cut's; only the clock moved.
+Spec: `studio/specs/06b-scoreboard-netflix-bill.json` (promoted 2026-10-12). It replaced the 30.5 s cut (race 0.3 → 23.0 s at ≈ 1.6 s per year with 1.3-1.8 s holds, verdict 26.0 s), whose beat sheet and guide VO script are in git history (471c793 and earlier). The Review log ("Condensed cut (2026-10-12): 06b", "QA fix pass" and "Condensed cut: promoted and shipped (2026-10-12): 06b") lists every change. Every string, number, hike tag and cue role is the 30.5 s cut's; only the clock moved.
 
 | t (s) | On screen | Caption |
 |---|---|---|
@@ -1142,7 +1142,7 @@ The release check measured the shipped cut's opening as a still run: 14 identica
 - Results: 443 checks, 0 failed by default (was 441; the two new rows say which 06b cut was checked); 442, 0 failed with `--spec studio/specs-wip/06b-scoreboard-netflix-bill.json`; 443, 0 failed on a git-history copy of the 30.5 s spec.
 - Mutation test (scratch copies): 9 of 9 caught, each with exit 1 and a named failure. The mutations were: a 1.0 s 2020 pause; the verdict 1.8 s after the reveal; vo[0] at 0.0; the race at 0.12 s; the 188.8-shares footer step at 15.8; a 2.3 s first year; a 21.0 s body; a 1.0 s caption; and "about 39 years".
 
-**To promote:**
+**To promote** (done on 2026-10-12: see "Condensed cut: promoted and shipped (2026-10-12): 06b" below)**:**
 1. Copy the WIP spec over `studio/specs/06b-scoreboard-netflix-bill.json` and set `B_IN_SPECS = "b"` in the check.
 2. Follow BIBLE §11.1 for the moved record. Refit Scoreboard (the dry run above says the values stay inside the fixed-point tolerance, so nothing needs writing). Store the records in `test/fixtures/cues.json` and run `tempo-table --write` (the 06b row above). Then run `verify --strict-cues` and `npm test`, and add the bible status line. It names A11 at 2.83% of 3% next to the tightest-margins list (QA nit), so the next §11.2 Scoreboard refit checks it.
 3. Ship by §11.5 from a picture folder that holds this render and `renders/channel/` for the other 29.
@@ -1150,7 +1150,7 @@ The release check measured the shipped cut's opening as a still run: 14 identica
 
 **Open items:**
 - A11 at 2.83% of 3% and 16 kHz at 0.7 dB are the margins to watch on the next Scoreboard pack change.
-- The publishing data is a separate step. Its cover is either frame 1 (the clean cover, as the platform notes say) or the first settled frame of the verdict hold, about 17.2 s.
+- The publishing data is a separate step. Its cover is either frame 1 (the clean cover, as the platform notes say) or the first settled frame of the verdict hold, about 17.2 s. (Done at the ship: frame 1, see below.)
 
 ### QA fix pass (2026-10-12): 06b condensed cut
 
@@ -1182,3 +1182,37 @@ The QA judge passed the condensed cut at 8.6 with no musts and no shoulds, only 
   - Still runs ≥ 0.4 s: only 17.63-18.03 (verdict hold) and the card hold, 19.80-20.77.
   - Near-still (YAVG < 0.25) before the verdict: 16.17-16.63 only.
   - The caption breath at 10.3-10.9 moves throughout (YAVG 0.46-1.14).
+
+### Condensed cut: promoted and shipped (2026-10-12): 06b
+
+- **Promoted.** The QA-fixed spec is now `studio/specs/06b-scoreboard-netflix-bill.json`, and `studio/specs-wip/` is gone. `checks/06-pov-race.py` has `B_IN_SPECS = "b"`, so `studio/specs/` must hold the condensed cut. The 30.5 s set is kept for a git-history copy passed with `--spec` (`git show 471c793:studio/specs/06b-scoreboard-netflix-bill.json`). The default run gives 442 checks, 0 failed, and the git-history copy gives 443, 0 failed. Lint: 30/30 clean (06b 20.8 s = 18.3 + 2.5 s end card).
+- **Picture.** `render specs/06b-scoreboard-netflix-bill.json --out /tmp/ship06b/video` gives 624 frames, 20.8 s and 23 sfx. The file is byte-identical to the reviewed render (MD5 `3b963c17…`, video stream `f88705f3ed5d…`), so the QA fix pass's stills, motion audit and master all describe it. The motion audit, re-run on the shipped file, gives the same runs. Before the verdict no still run reaches 0.4 s (the longest is 0.30 s, at 12.57-12.87). The only runs of 0.4 s or more are the verdict hold (17.60-18.03) and the card hold (19.77-20.77).
+- **Cue drift and the Scoreboard refit (BIBLE §11.1-11.2).** A fresh dump of the 30 records differed from `test/fixtures/cues.json` in 06b only. On the 15 Scoreboard records, `audio --stems` and `calibrate.mjs` without `--write` gave:
+  - M_FIT 1.67 (file 1.68), GM −16.09 (−16.07), GM_PLAN −16.01 (−16.02), LOGO_PRE −16.24 (−16.25) and OPEN_FIT 2.00 (2.00);
+  - BEDS moved in two cells only: VERDICT 4 −18.26 before rounding (file −18.2) and CADENCE 3 −18.69 (−18.6).
+
+  That is inside the fixed-point tolerance (0.03 dB on the scalars, 0.10 dB on BEDS), so the values had already stopped moving and nothing was written. In the re-measure's render, the other 14 Scoreboard masters equal the baseline. A write would have changed all 15 masters for no gain, and with them the margin on 02c's 2 kHz octave (0.3 dB).
+- **Records and vectors.** The fresh records are stored in `test/fixtures/cues.json`, one record per line as before, so the diff is 06b's line alone. `tempo-table --write` rewrote only 06b's §2.3 row: `| 06b | riser | 15.900 | 40 (r0) | 150.943 | base 18.30: 6 (r2) @ 150.00 | 18.66 |`. The old row was P 23.000, 56 beats at 146.087, V 26.00, base 30.50 and L 30.86. Appendix B and the engine agree on all 30 rows. No Appendix A value or test pin moved: 09c, 09b, 10a, 10b and 02a are unchanged.
+  - BIBLE §2.5 used 06b as its example of a 1-bar DROP before a 3-beat BREAK. The condensed cut anchors no V, so the example is now 01a.
+  - §2.5 also now states the engine's 1-bar DROP floor, which 02a, 06b and 06c use. 06b's DROP is 1 bar, and its CADENCE is the 2 remainder beats.
+  - `npm test`: 28/28.
+- **Shipped by BIBLE §11.5,** from a picture folder that holds this render and symlinks to `renders/channel/` for the other 29.
+  - `sound specs/*.json --video <folder> --out /tmp/sound/mp4 --score --wav --stems --jobs 4`: 30/30, and every mux kept its source's video md5. An independent `ffmpeg -f md5` pass agrees on all 30.
+  - `verify --from /tmp/sound/mp4 --strict-cues --video <folder>`: PASS. All 30 teasers pass 42/42, and the units pass 69/69 and 77/77. All 30 records equal the fixture, and 29 of 30 masters equal the baseline (06b changed).
+  - The build was copied into `renders/channel/`, and `--write-baseline` rewrote 06b's line in `test/fixtures/sound-baseline.sha256` (`27d95cfa…`, was `7ae652c1…`).
+  - Only 06b's MP4 changed in `renders/channel/` (sha256 `b5854b92…`, MD5 `3b963c17…`). The other 29 are byte-identical to the previous ship.
+  - The build went to `/tmp` and was then copied, as §11.5 says. With `--final --out ../renders/channel`, the picture folder's symlinks would point ffmpeg at the files it was writing, and its same-file check cannot see through a symlink.
+- **06b's sound, as delivered.** `verify --detail` gives the QA fix pass's values unchanged:
+  - I −14.10 LUFS, TP −1.20 dBTP, PLR 12.90, LRA 5.93;
+  - A11 2.832% (max 3.9 dB), now the set's highest (08a 2.553% next);
+  - every BANDS octave at least 0.7 dB inside its window (16 kHz −12.7 against −12, 125 Hz +1.2, 2 kHz +1.3);
+  - B3's closest cue 4.2 dB, B8's logo −12.11 LUFS against the payoff's −10.21, and 150.943 / 150 BPM.
+
+  The set's tightest BANDS margins are unchanged: 02a, 04b and 09a at 0.1 dB, 01c at 0.2, and 02c and 05b at 0.3. The audit of `renders/channel/`, with the build's scores, gives 06b −14.10 LUFS, TP −1.24 dBTP (the JS meter alone), LRA 5.93, PLR 12.86, silence 0% and symbolic score checks 16/16. All 30 teasers pass 16/16.
+- **Publishing.** `build_publishing.py 06b-scoreboard-netflix-bill --covers`, then `--check`: PASS.
+  - `for_video` follows the shipped file (20.8 s, sha256 `b5854b92…`), and `cut.replaces` names the 33.0 s render (`323dc45e…`, in git at 471c793).
+  - The cover is still frame 1, picked by content. Frame 0 is this cut's only clean frame: the first ticket falls from frame 1, and the counters light at frame 8.
+  - Both JPGs were re-exported from the shipped file. They show the same picture as before, except that "Your Netflix," is lit in the hook caption (the old frame lit only "Your").
+  - The long alt text was re-read against the cut. Every beat it names is still there, so no copy changed.
+  - 06c's sheet still passes `--check` and still rebuilds byte for byte.
+- **Elsewhere:** `teasers/v2/teasers.json` has 06b's `runtime_s` at 20.8 (was 33.0) and the 2012 landing time in its key numbers. `renders/channel/README.md`, `HANDOFF-finance-channel.md`, `studio/sound/README.md`, BIBLE status v2.3 and the Scoreboard READMEs name the new cut.

@@ -15,7 +15,7 @@ MATH_RUN = "442 checks, 0 failed"      # python3 teasers/v2/checks/06-pov-race.p
 MATH_RUN_AT_CHECK = "443 checks, 0 failed"   # the same script at this sheet's adversarial check, with the 33.0 s cut in studio/specs/
 
 MD_INTRO = [
-    f"- **Video.** `renders/channel/{BASE}.mp4`: the condensed cut ({VIDEO_S:g} s: a {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`), "
+    f"- **Video.** `renders/channel/{BASE}.mp4`: the condensed cut ({VIDEO_S:g} s: an {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`), "
     "promoted and shipped on 2026-10-12. It replaces the 33.0 s round-2 cut (the owner: \"too many still moments\"). "
     "Nothing below names a timestamp except the cover, which is picked by content (frame 1), so the copy carried over unchanged. "
     f"The ship rebuilt this sheet and re-exported both covers from the shipped file: `python3 publishing/tools/build_publishing.py {BASE} --covers`.",
