@@ -404,7 +404,7 @@
       "becker-rig"
     ],
     "file": "teasers/v2/06-pov-race.md",
-    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/06-pov-race.py -> 365 checks, 0 failed, ALL PASS (exit 0) after hook pass 2 (06b's years-of-Netflix steps; was 352, and 313 before that). New checks cover: VO pacing in spoken words at 2.8 per second, counting numbers as they are read aloud; race moving by 1.0 s; first payoff by 3.0 s; raw-close derivation of the $3.65 launch price; every pinned-comment product multiplying out. Studio linter (node src/cli.mjs check): 06a, 06b and 06c each 0 errors, 0 warnings (3/3 clean).",
+    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/06-pov-race.py -> 365 checks, 0 failed, ALL PASS (exit 0) after hook pass 2 (06b's years-of-Netflix steps; was 352, and 313 before that). New checks cover: VO pacing in spoken words at 2.8 per second, counting numbers as they are read aloud; race moving by 1.0 s; first payoff by 3.0 s; raw-close derivation of the $3.65 launch price; every pinned-comment product multiplying out. Studio linter (node src/cli.mjs check): 06a, 06b and 06c each 0 errors, 0 warnings (3/3 clean). Re-run 2026-10-12 after 06c's condensed cut (18.2 s, was 30.5 s) was promoted into studio/specs/ and shipped: 441 checks, 0 failed; 06c lints clean (18.2 s = 15.7 + 2.5 s end card).",
     "teasers": [
       {
         "id": "06a-scoreboard-first-iphone-apple",
@@ -452,10 +452,10 @@
         "look": "becker-rig",
         "title": "What If Every $4 Starbucks Latte Bought Starbucks Stock Instead?",
         "header": "POV: Since 2014 you invested\nin Starbucks instead of paying\n**$4/day** for a Starbucks latte",
-        "runtime_s": 30.5,
+        "runtime_s": 18.2,
         "key_numbers": [
           "$4/day (inside the FinanceBuzz grande-latte bracket $3.65 in 2014 to $4.45 in 2024); $1,460 a year",
-          "end of 2014 $1,586 vs $1,460 (first payoff at 2.14 s)",
+          "end of 2014 $1,586 vs $1,460 (first payoff at 1.53 s in the condensed cut; 2.14 s in the retired 28.0 s cut)",
           "by 2021 $24,343 vs $11,688 spent (2.08x, 'doubled')",
           "2022-2025: +$5,844 in, stake +$585 ('stalls')",
           "$17,532 of lattes (4,383 days); 296.03 shares x $84.21 = $24,928.31 shown as ≈ $24,900",

@@ -131,7 +131,7 @@ export function sfxLevels(tl, rendered = renderCues(tl)) {
  * C and tiltUp fitted on the 15 teasers at trim 0; refit after any level change). MODEL.fixedTrim (a calibration
  * hook) overrides the trim.
  */
-export const MODEL = { C: -23.46, a: 0.007, b: 1.288, tiltUp: 0.88, iBias: -0.35, dIS: 1.0, dISTilt: 0.8, dISTiltMax: 2.0, trimLo: -3, trimHi: 3, gRef: 5.7, fixedTrim: null }
+export const MODEL = { C: -23.37, a: 0.061, b: 1.165, tiltUp: 0.63, iBias: -0.42, dIS: 1.0, dISTilt: 0.8, dISTiltMax: 2.0, trimLo: -3, trimHi: 3, gRef: 5.7, fixedTrim: null }
 export function duckCost(tl, rendered, trims = new Map()) {
   const N = Math.round(tl.base * SR), P = tl.anchors.P.t
   const DEF = { tick: [1, 0.04, 0.08], roll: [2.5, 0, 0.15], riser: [0, 0, 0] }
@@ -153,15 +153,17 @@ export function duckCost(tl, rendered, trims = new Map()) {
   for (let i = 0; i < N; i++) s += Math.pow(10, db[i] / 10)
   return 10 * Math.log10(s / Math.max(1, N))
 }
-export function musicTrim(tl, rendered, lv, tilt) {
+export function musicTrim(tl, rendered, lv, tilt, crowd = null) {
   const cost = duckCost(tl, rendered, lv.trims)
   const { C, a, b, tiltUp, dIS, dISTilt, dISTiltMax, trimLo, trimHi } = MODEL
   const Mfree = C + cost + tiltUp * Math.max(0, tilt)
   // cues bunched in one octave (|tilt| large: all bloops and dings, or all swishes and bursts) cut through on their own:
   // they sit up to 2 dB nearer the band (0.8 dB per tilt unit), which keeps that octave from swamping the long-term
-  // spectrum (§9.2)
-  // (iBias: the engine's SFX stem reads about 0.35 LU under this render of it: merges drop transients and low bodies)
-  const M = lv.I + MODEL.iBias - dIS + Math.min(dISTiltMax, dISTilt * Math.abs(tilt))
+  // spectrum (§9.2). The tilt only sees the slope between the cues' 1 and 2 kHz octaves; cues that ring in both (dings
+  // on F#6 and D6, coins) read as level, yet own the 1 kHz octave that every §9.2 band is measured against. So the
+  // nearness also reads that octave directly (CROWD, below): the larger of the two terms, capped at the same 2 dB
+  // (iBias: the engine's SFX stem reads about 0.4 LU under this render of it: merges drop transients and low bodies)
+  const M = lv.I + MODEL.iBias - dIS + nearness(tilt, crowd)
   let trim = Math.max(trimLo, Math.min(trimHi, Math.round((M - Mfree) * 100) / 100))
   if (MODEL.fixedTrim != null) trim = MODEL.fixedTrim
   // the master gain this teaser will get (-14 LUFS minus the predicted pre-master loudness): the card (its SFX and the
@@ -171,6 +173,26 @@ export function musicTrim(tl, rendered, lv, tilt) {
   const gain = -14 - mixPre
   const card = Math.max(-1.5, Math.min(1.0, Math.round((MODEL.gRef - gain) * 100) / 100))
   return { cost, M: +M.toFixed(2), Mfree: +Mfree.toFixed(2), trim, gain: +gain.toFixed(2), card }
+}
+
+/**
+ * The reference-octave crowding (bible §9.2, §6.7.4). BANDS measures every octave against the mix's 1 kHz octave, over
+ * [0, base]. Bells (dings, coins) ring for up to a second in 1-2 kHz with a hall tail, so their long-term energy in that
+ * octave is far larger than their gated loudness suggests, and the more so the shorter the body they ring in. 06c's
+ * condensed cut (a 15.7 s body, two dings and two coins) is the case: its cues owned about half of the mix's 1 kHz
+ * octave, nearly all of it from those four bells, its 2 kHz/1 kHz tilt read level (0.54), and the band's 250 Hz octave
+ * sat at its BANDS floor (0.2 dB). `crowd` is the cues' long-term 1 kHz-octave power over the body (this plan's SFX
+ * render, after the leveller) re their gated loudness I, in dB; the 15 teasers of 2026-10-12 read 43.9 (08c) to 58.1
+ * (09b). Above `ref` the band comes `k` dB nearer the cues per dB (in musicTrim, with the tilt term: the larger wins,
+ * capped at MODEL.dISTiltMax), so the band keeps its share of the reference octave. With ref 54.5 it moves 06c (0.43 ->
+ * 2.0 dB), 07c and 09b (1.5 -> 2.0); the rest keep their tilt term. Designed, not fitted: see tools/README.md.
+ */
+export const CROWD = { ref: 54.5, k: 1.0 }
+export function nearness(tilt, crowd = null) {
+  const { dISTilt, dISTiltMax } = MODEL
+  const byTilt = dISTilt * Math.abs(tilt)
+  const byCrowd = crowd != null && Number.isFinite(crowd) ? CROWD.k * Math.max(0, crowd - CROWD.ref) : 0
+  return Math.min(dISTiltMax, Math.max(byTilt, byCrowd))
 }
 
 /**
@@ -185,20 +207,22 @@ export function sfxTilt(tl, rendered, trims) {
   const P = ltas(sum.L, sum.R, 0, Math.min(sum.L.length, Math.round(tl.base * SR)), N)
   const band = (lo, hi) => { let x = 0; for (let k = Math.ceil(lo * N / SR); k <= Math.floor(hi * N / SR); k++) x += P[k]; return x }
   const b1 = band(707, 1414), b2 = band(1414, 2828)
-  if (!(b1 > 0) || !(b2 > 0)) return { x: 0, tilt: 0 }
+  if (!(b1 > 0) || !(b2 > 0)) return { x: 0, tilt: 0, l1k: null }
   const x = 10 * Math.log10(b2 / b1)
   // bright SFX pull harder (0.3 dB per dB, to -3.5): a teaser of bloops and swishes is the one the 2 kHz octave runs over
   const t = x > TILT_REF ? Math.max(-3.5, -0.3 * (x - TILT_REF)) : Math.min(2.5, -0.2 * (x - TILT_REF))
-  return { x: Math.round(x * 10) / 10, tilt: Math.round(t * 100) / 100 }
+  // l1k: the 1 kHz octave's long-term power (the CROWD measure reads it against the gated loudness I)
+  return { x: Math.round(x * 10) / 10, tilt: Math.round(t * 100) / 100, l1k: Math.round(10 * Math.log10(b1) * 100) / 100 }
 }
 
-/** the whole plan for a teaser: { trims (SFX per cue), thr, I0, I, U, tilt: { x, tilt }, music: { cost, k, x, y, M, trim } } */
+/** the whole plan for a teaser: { trims (SFX per cue), thr, I0, I, U, tilt: { x, tilt, l1k }, crowd, music: { cost, M, Mfree, trim, gain, card } } */
 export function balancePlan(tl) {
   const rendered = renderCues(tl)
   const s = sfxLevels(tl, rendered)
   const lv = { ...s, U: ungated(sumOf(tl, rendered, s.trims)) }
   const tilt = sfxTilt(tl, rendered, s.trims)
-  return { ...lv, tilt, music: musicTrim(tl, rendered, lv, tilt.tilt) }
+  const crowd = tilt.l1k != null && Number.isFinite(lv.I) ? Math.round((tilt.l1k - lv.I) * 10) / 10 : null
+  return { ...lv, tilt, crowd, music: musicTrim(tl, rendered, lv, tilt.tilt, crowd) }
 }
 /** ungated loudness (the mean K-weighted power over the whole file, LUFS): what the SFX really add to the mix */
 export function ungated(b) {

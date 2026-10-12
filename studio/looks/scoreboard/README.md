@@ -320,7 +320,7 @@ Every mux kept the picture bit-identical (video md5). Two renders of a spec give
 **And after that (2026-10-12): the react bus and the AAC pre-roll.** The P/V stabs and the reverse crash moved from `bus: 'logo'` to `bus: 'react'` with `mix.react = { via: 'logo' }`: bit-identical, all 30 masters unchanged. Then the engine started encoding behind a trimmed 64 ms silent pre-roll and measuring its local ceiling dips from the master's own peak (`studio/sound/README.md`, "The AAC first frame").
 - That changed nine Scoreboard masters, all through the encode loop's local dips: 03b 04a 04c 05c 06b 07a 08a 10a 10c. With the new AAC streams the dips land elsewhere or are not needed. 01a 02b 02c 03c 06a 09c are identical (no dip before or after).
 - `verify`: all 15 pass 42/42, units 69/69. I −14.08 to −14.17 LUFS, decoded true peak −1.19 to −1.40 dBTP, PLR 12.72-12.93, LRA 4.65-6.70. Every teaser ends at ceiling −1.5 dBTP. Over the first 30 ms the decode is at most +0.12 dB over the master (04a; it was +0.54 on 06a). B3's closest cue sits 3.9 dB over the music, and B8's logo at −11.65 to −12.57 LUFS.
-- `renders/channel` still carries the earlier audio until it is remuxed (see `studio/sound/README.md`, "Determinism and the baseline").
+- Shipped to `renders/channel` on 2026-10-12 (BIBLE.md status v2.2). The Scoreboard masters are unchanged since then, and the calibration re-measured at its fixed point (`sound/tools/README.md`).
 
 ---
 

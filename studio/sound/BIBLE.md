@@ -10,11 +10,12 @@ Who uses this document:
 
 Nobody in this pipeline can hear. Quality has to be designed in by rules, then shown by measurements, spectrogram PNGs and the symbolic score. When a rule here conflicts with taste, follow the rule and file a note. When a number here proves wrong under measurement, change this file **and `sound/acceptance.json`** in the same pass and say why (§9.0).
 
-Status: v2.1, 2026-10-12.
-- v1 (2026-10-11) was the brief. The cue data, tempo table and card times below were measured on the kits then (`specs/*.json` with the real brand, a 2.5 s card); `test/fixtures/cues.json` holds those records, and they have not moved.
+Status: v2.2, 2026-10-12.
+- v1 (2026-10-11) was the brief. The cue data, tempo table and card times below were measured on the kits then (`specs/*.json` with the real brand, a 2.5 s card); `test/fixtures/cues.json` held those records unchanged until v2.2 replaced 06c's. §0's counts are still v1's.
 - v2 makes this file match what was built and what passes. §9 now equals `sound/acceptance.json`, threshold for threshold. The seven values that passed but differed from v1 are now this text, and one owner decision is pending (A8's correlation target for Becker Rig, §9.1). Each look's deliberate deviations from v1 are in the text where they are now the design, and the rest are in the "As built" lists (§4.7, §6.7). Two engine features are new: the react bus (§8.3.1) and the AAC first-frame handling (§8.6). §11 says how to change things safely.
 - On 2026-10-12 all 30 teasers passed every gated check (42/42 each), and both looks' unit checks passed (Scoreboard 69/69, Becker Rig 77/77).
 - v2.1 (2026-10-12, maintenance; no rule or threshold changed). §11 says what to do when the cue records move, in order, including the tempo-map vectors. The §2.3 rows are now the only copy of those vectors: `test/sound.test.mjs` reads them from this file. Appendix B also computes L (§2.4) and prints the rows exactly, and `sound/tools/tempo-table.mjs` regenerates them from it. `verify`, `render`, `audio` and `sound` report cue drift. §8.6 step 9 separates the built audio from what `renders/channel/` delivers. Becker's stale `MODEL` is an owner decision before the next ship (§11.2).
+- v2.2 (2026-10-12, shipped). 06c's condensed cut (18.2 s: a 15.7 s body and the card; it was 30.5 s) was promoted into `specs/`, so its cue record moved (36 cues, was 41) and so did its §2.3 row: P 13.000 by the riser rule, N₁ 25 (a 1-beat pickup) at 115.385 BPM, base 15.70 after 5 beats at 111.11, L 16.20 (it was P 20.400, 40 beats at 117.647, base 28.00, L 28.50). No other row and no Appendix A value moved. Becker's `MODEL` was refit on the new records (§11.2: C −23.37, a 0.061, b 1.165, tiltUp 0.63, iBias −0.42), which settles that owner decision. Becker's music trim gained one rule, the reference-octave crowding (§6.7 item 4): 06c's two dings and two coins owned about half of its 1 kHz octave, and its 250 Hz octave sat 0.2 dB over its BANDS floor. The rule moves 06c, 07c and 09b, and 06c's octaves now sit at least 0.8 dB inside every window (250 Hz: +1.0). No threshold changed, and Scoreboard's calibration still sits at its fixed point (§11.2). All 30 teasers pass 42/42 with `--strict-cues`, and the units pass 69/69 and 77/77. The build went into `renders/channel/` by §11.5 and the baseline was rewritten (§11.4). A8's Becker Rig target is still the owner's call (§9.1). §8.1, §8.6 and §9 quote this build's measurements. Later that day 06c's picture was re-rendered for its opening: Becker Rig's pov-race now has the figure weigh the coin before the first purchase (`heft`), so its first 0.43 s no longer hold still. No cue moved, so there was no refit and no §2.3 change. It shipped by §11.5: every master equals the baseline, and only 06c's video stream changed. §11.2 now lists the tightest BANDS margins.
 
 ---
 
@@ -165,7 +166,7 @@ Otherwise use a single segment from `pick(P, base)`. Choose first, then test aga
 | 05c | hit+cash | 9.130 | 22 (r2) | 144.578 | V 17.00: 19 (r3) @ 144.85 · base 22.80: 14 (r2) @ 144.83 | 23.16 |
 | 06a | riser | 21.400 | 52 (r0) | 145.794 | base 26.50: 12 (r0) @ 141.18 | 26.86 |
 | 06b | riser | 23.000 | 56 (r0) | 146.087 | V 26.00: 7 (r3) @ 140.00 · base 30.50: 11 (r3) @ 146.67 | 30.86 |
-| 06c | riser | 20.400 | 40 (r0) | 117.647 | base 28.00: 15 (r3) @ 118.42 | 28.50 |
+| 06c | riser | 13.000 | 25 (r1) | 115.385 | base 15.70: 5 (r1) @ 111.11 | 16.20 |
 | 07a | riser | 12.000 | 30 (r2) | 150.000 | V 18.10: 16 (r0) @ 157.38 · base 22.80: 12 (r0) @ 153.19 | 23.16 |
 | 07b | hit+cash | 16.900 | 34 (r2) | 120.710 | base 27.40: 21 (r1) @ 120.00 | 27.90 |
 | 07c | hit+cash | 12.900 | 26 (r2) | 120.930 | base 19.10: 12 (r0) @ 116.13 | 19.60 |
@@ -574,11 +575,12 @@ These are the pack's own design decisions (`looks/becker-rig/sound/`, documented
 
 1. **Section levels** (`automation.musicDb`): E5 +1.1 dB (+1.6 for a one-bar DROP) · E4 0 · E3 −1.7 · HOLD −5.5 · BREAK −2 · TENSION ramps −1 → +1, all plus the music trim (item 4). Swing is 58% everywhere except the TENSION, fills included.
 2. **Levels** (`mix.mjs`, dB applied to instrument buffers that peak at about `vel`; not the §8.1 peak levels): marimba −19.4 · pizz −20.4 · glock −24.4 · bass −10.8 · pad −23.1 · kick −17.6 · snare −13.9 · shaker −23.9 · tom −19.9. The music bus fader stays at 0. The toys carry the look: the levels were chosen with the level optimiser (`opt.py`, §11.2) so that every teaser's §9.2 bands sit inside the Becker windows while the marimba stays the loudest voice in 500-1200 Hz (MALLET).
-3. **Sends** are the §8.5 values less 1.5 dB (music and SFX alike), plus a pad hall at −15.5 dB; there is no extra payoff send. The returns stem reads 9.4-12.3 LU under the mix; the first pass had it 3.9-5.2 LU under, as loud as the dry band. Becker Rig's B1 caps it at −8 LU (§8.1).
+3. **Sends** are the §8.5 values less 1.5 dB (music and SFX alike), plus a pad hall at −15.5 dB; there is no extra payoff send. The returns stem reads 9.6-12.2 LU under the mix; the first pass had it 3.9-5.2 LU under, as loud as the dry band. Becker Rig's B1 caps it at −8 LU (§8.1).
 4. **The balance** (`balance.mjs`, run by `compose()`):
    - **The leveller** renders the body cues as the engine will (cluster cap, SFX-bus compressor) and pins the gated SFX stem to −22.9 LUFS pre-master. It rides down only pile-ups of big cues: at most 6 dB, 3 dB for a cue B3 listens to, and payoff cues only by how far they tower over the card. The small foley (`tick`, `step`, `roll`, `type`, `pop`, `swipe`, `whoosh`) is never trimmed.
    - **The tilt** compares the SFX stem's 2 kHz octave with its 1 kHz octave and leans the band to frame the cues' octave (§9.2). Dull cues (bloops, dings, taps crowd 1 kHz): presence +1.6 dB per tilt unit, bass and pad +1, glock −1, and harder marimba mallets (overtones above 1.5 kHz up by as much as 1.2). Bright cues: presence −1 per unit, the toys +1. The marimba and pizz never move down.
-   - **The music trim** sets the music stem against the SFX stem's gated loudness: M = I − 1 LU (up to 2 dB nearer for a strongly tilted SFX spectrum), clamped to ±3 dB. That puts a hit the same 1 LU over the band whether the teaser has three hits or forty taps, which is what B1's "SFX minus music in −2..+2 LU" asks (§8.1).
+   - **The music trim** sets the music stem against the SFX stem's gated loudness: M = I − 1 LU (up to 2 dB nearer for a strongly tilted SFX spectrum, or for cues that crowd the 1 kHz octave), clamped to ±3 dB. That puts a hit the same 1 LU over the band whether the teaser has three hits or forty taps, which is what B1's "SFX minus music in −2..+2 LU" asks (§8.1).
+   - **The reference-octave crowding** (`CROWD`, added 2026-10-12). §9.2 reads every octave against the mix's 1 kHz octave. Bells (dings and coins) ring for up to a second in 1-2 kHz with a hall tail, so in a short body a few of them can own that octave, and every other band then reads low against it. The tilt cannot see this when the bells sit in both octaves. In 06c's condensed cut (a 15.7 s body, two dings and two coins) the tilt read level (0.54), the cues held about half of the 1 kHz octave, and the 250 Hz octave sat 0.2 dB over its floor. `crowd` is the cues' long-term 1 kHz-octave power over the body (the plan's SFX render, after the leveller), relative to their gated loudness. On the 15 teasers it reads 43.9 (08c) to 58.1 (09b). Above 54.5, the music comes 1 dB nearer per dB. The music trim takes the larger of this term and the tilt's, under the same 2 dB cap. It moves 06c (from 0.43 to 2.0 dB nearer), 07c and 09b (from 1.5 to 2.0). For 06c, 250 Hz now sits 1.0 dB over its floor and 8 kHz 0.8 dB under its ceiling. The rule is designed, not fitted (`looks/becker-rig/sound/tools/README.md`).
    - **The master gain is predicted** from `MODEL` (`mix power = (1 + a)·M + b·U`, fitted on the 15 teasers; §11.2), and the card is trimmed against it (§3.2).
 5. **Payoff duck:** 9 dB, held 150 ms, released over 0.3 s (the engine's default is 0.45 s), so the "TA" and the DROP bloom back within about half a second (B2 still holds over [P, P + 0.15]).
 6. **Measured on 2026-10-12** (15 teasers): the marimba in the BUILD sits −5.4 to −9.4 LU re the band (it was −16 to −21) and is the loudest voice in 500-1200 Hz on all 15. 0.8-5.0% of the body is ducked ≥ 6 dB (0-3.7% outside the payoff; it was 3-13%). The `ding` at V ducks 4 dB (it was 15-18 dB). No flams against body cues ≥ 0.35 or clock ticks.
@@ -665,7 +667,7 @@ sends  ─▶ music returns (PLATE / HALL / ROOM / delay; half the duck) ──�
 
 Measured on 2026-10-12:
 - **Scoreboard:** music −1.68 to −2.62 LU, SFX −2.99 to −3.90, returns −5.43 to −6.42.
-- **Becker Rig:** music −1.03 to −2.00 LU, SFX minus music −1.56 to +0.93, returns −9.41 to −12.25. The SFX's own contribution (the mix minus the mix without SFX) is +0.8 to +1.5 LU.
+- **Becker Rig:** music −1.00 to −2.06 LU, SFX minus music −1.40 to +0.92, returns −9.58 to −12.15. The SFX's own contribution (the mix minus the mix without SFX) is +0.8 to +1.5 LU.
 
 ### 8.2 Kick sidechain (the groove pump)
 
@@ -755,7 +757,7 @@ Reverbs: FDN, 8 delay lines, a Householder feedback matrix, a 1-pole damping LP 
    - **Retry locally first**, at most 3 times. Find the spots where the decoded audio went over the limit (−0.1 dB). Around each spot (±25 ms), lower the limiter's ceiling to the master's **own** true peak there, less the excess and 0.3 dB, then redo steps 5-9. Measure the dip from the master's peak, not from the ceiling: a dip measured from the ceiling did nothing where the master already sat under it (04b at 36.5 s). Lowering the whole ceiling for one transient costs every other transient.
    - **Then globally:** lower the whole ceiling by 0.5 dB and redo steps 5-9, at most 2 times.
    - **The report** records each trial (`master.encodeTrials`: the ceiling, the decoded true peak, and each spot with its excess, the master's peak there and the dip), plus `master.aacPreroll` (3072, or 0 with a warning when the plain encode had to be used).
-   - **On 2026-10-12** all 30 teasers ended at ceiling −1.5 dBTP with no global step (04b used to fall back to −2.0). They took 54 encodes: 13 teasers needed one, 11 two, 5 three, and 09a four. Built (not yet in `renders/channel/`): true peak −1.19 to −1.40 dBTP, PLR 12.68 to 12.93. `renders/channel/` still holds the earlier build, at true peak up to −1.16 dBTP and PLR up to 12.92, until the owner ships it (§11.4, §11.5).
+   - **On 2026-10-12** all 30 teasers ended at ceiling −1.5 dBTP with no global step (04b used to fall back to −2.0). The shipped build (v2.2, now in `renders/channel/`) took 49 encodes: 15 teasers needed one, 12 two, 06c and 08b three, and 07b four. Delivered, as `verify` measures it on the shipped MP4s (A2, the worse of the JS and ffmpeg meters, and A5): true peak −1.19 to −1.50 dBTP, PLR 12.60 to 12.93. Quote these values; `audit` reads the JS meter alone, which gives 06c −1.52 dBTP and PLR 12.58. The build before it, which `renders/channel/` held until then, reached true peak −1.16 dBTP and PLR 12.92.
 10. **Mux** onto the finished picture without re-encoding either stream: the verified `.m4a` is copied (`-c:a copy`), so the delivered audio is exactly the stream that was measured.
     - `ffmpeg -i <renders/channel/id>.mp4 -i <id>.m4a -map 0:v:0 -map 1:a:0 -c:v copy -c:a copy -t <info.duration> -movflags +faststart <out>.mp4`
     - The mux is verified: the video-stream md5 equals the source's (A13), the audio is AAC stereo 48 kHz, and it lasts info.duration ±1 frame (A12).
@@ -815,13 +817,13 @@ ffmpeg -i out.mp4 -map 0:a -lavfi showspectrumpic=s=1920x1080:legend=1:fscale=lo
 | A13 | Picture untouched | the video-stream md5 of the muxed MP4 (`ffmpeg -i x.mp4 -map 0:v -c copy -f md5 -`) equals the source's in `renders/channel/` |
 | A14 | Determinism | each master WAV's sha256 equals the `wavSha256` its report holds and differs from every other spec's; with `verify --twice`, it also equals a second render's |
 
-Measured on the 30 teasers (2026-10-12):
-- **Loudness:** I −14.08 to −14.17 LUFS, true peak −1.19 to −1.40 dBTP, PLR 12.68 to 12.93. LRA Scoreboard 4.65-6.70, Becker Rig 4.33-5.59. Silence 0%.
-- **Hook (A7):** Scoreboard −7.5 to −12.2 LUFS, Becker Rig −10.7 to −12.4.
+Measured on the 30 teasers (2026-10-12, the shipped v2.2 build):
+- **Loudness:** I −14.07 to −14.17 LUFS, true peak −1.19 to −1.50 dBTP (A2), PLR 12.60 to 12.93 (A5), as `verify` reports them. LRA Scoreboard 4.65-6.70, Becker Rig 4.31-5.64. Silence 0%.
+- **Hook (A7):** Scoreboard −7.5 to −12.2 LUFS, Becker Rig −10.6 to −12.5.
 - **Stereo (A8):** correlation mean Scoreboard 0.73-0.79, Becker Rig 0.87-0.92. The lowest window is 0.32. The mono fold is −0.3 to −0.7 LU.
-  - **Pending, the owner's call:** Becker Rig sits over A8's 0.45-0.85 target on all 15 teasers. The gate holds, and nothing is lost in mono (−0.28 to −0.44 LU). Its returns sit 9.4-12.3 LU under the mix (§6.7.3), and its band is centred or panned narrow, so little decorrelated energy reaches the mix. Either the target becomes 0.45-0.92 for Becker Rig (the dry toy box is the design), or the pack widens towards 0.85 and refits (§11.2). `acceptance.json` A8 carries the marker until then.
-- **Phone proxy (A10):** Scoreboard 2.6-3.2 LU, Becker Rig 1.8-2.7.
-- **Limiter (A11):** at most 2.55% of samples (08a), max 4.27 dB (04b).
+  - **Pending, the owner's call:** Becker Rig sits over A8's 0.45-0.85 target on all 15 teasers. The gate holds, and nothing is lost in mono (−0.28 to −0.45 LU). Its returns sit 9.4-12.3 LU under the mix (§6.7.3), and its band is centred or panned narrow, so little decorrelated energy reaches the mix. Either the target becomes 0.45-0.92 for Becker Rig (the dry toy box is the design), or the pack widens towards 0.85 and refits (§11.2). `acceptance.json` A8 carries the marker until then.
+- **Phone proxy (A10):** Scoreboard 2.6-3.2 LU, Becker Rig 1.7-2.7.
+- **Limiter (A11):** at most 2.55% of samples (08a), max 4.29 dB (04b).
 
 ### 9.2 Spectral balance (long-term average on the decoded mix)
 
@@ -833,8 +835,8 @@ Measured on the 30 teasers (2026-10-12):
 | Becker Rig | −16..−4 | −2..+7 | +1..+7 | 0..+6 | −1..+4 | 0 | −5..0 | −8..−2 | −13..−5 | −25..−12 |
 
 - **Scoreboard's 31.5 Hz window is −20..+3 (v1: −8..+3).** SB-Kick's tail is 48 Hz and the 808 plays on 58-110 Hz (§4.3), so that octave measures −15.1 to −18.8 dB. v1's −8 could be reached only by tuning the kick's tail to D1 (36.7 Hz) for the meter's sake, as the first pass did. On the critic's instruction, the window moved instead of the kick. The upper bound still stops a sub that swamps the mix.
-- **Becker Rig's 31.5 Hz octave** (−8.6 to −12.8 dB) is carried by the kick's 46 Hz tail (§6.3), since the bass has no sub-octave.
-- **HARSH (harshness):** the 2-5 kHz band sits ≤ +2 dB above the regression line fitted through the 500 Hz-8 kHz bands. Measured: Scoreboard −1.0 to +0.6, Becker Rig −1.7 to +1.0.
+- **Becker Rig's 31.5 Hz octave** (−8.6 to −12.0 dB) is carried by the kick's 46 Hz tail (§6.3), since the bass has no sub-octave.
+- **HARSH (harshness):** the 2-5 kHz band sits ≤ +2 dB above the regression line fitted through the 500 Hz-8 kHz bands. Measured: Scoreboard −1.0 to +0.6, Becker Rig −1.7 to +0.5.
 - **Spectrogram (manual, not gated):** a vertical broadband stripe exactly at P and at L; horizontal partials at note frequencies; no mirror lines falling while a riser rises (that is aliasing); no energy wall above 16 kHz. `node src/cli.mjs audit <dir> --out <dir>` writes the PNGs.
 
 ### 9.3 Mix relations and timing (stems, score, report)
@@ -854,10 +856,10 @@ Measured on the 30 teasers (2026-10-12):
 
 - **B5 per look.** In Becker Rig, the reverse crash that ends exactly at P and the brass "ka" scoop both put energy into the flux frame that straddles P. So the flux centre leads the downbeat by a frame and a half: −8.0 ms on all 15, inside 10 ms but with 2 ms to spare. The energy rise resolves the downbeat itself, at 0.0 ms on all 15. Scoreboard's flux peak reads −8.0 to +1.3 ms; the energy rise reads 0.0 on all 30.
 - **Measured on 2026-10-12:**
-  - B3: the closest cue sits 3.9 dB over the music (Scoreboard) and 3.8 dB (Becker Rig).
+  - B3: the closest cue sits 3.9 dB over the music in both looks.
   - B6: the deepest dip is 5.3 LU.
   - B7: the DROP sits 2.6-5.9 LU over the BUILD.
-  - B8: the logo lands at −11.65 to −12.57 LUFS (Scoreboard) and −10.44 to −12.56 (Becker Rig).
+  - B8: the logo lands at −11.65 to −12.57 LUFS (Scoreboard) and −10.46 to −12.48 (Becker Rig).
 
 ### 9.4 Symbolic score (`<id>.score.json`)
 
@@ -1033,9 +1035,9 @@ node looks/becker-rig/sound/tools/trims.mjs --cues /tmp/snd-br/cues.json        
 
 Copy the printed values into `MODEL` in `balance.mjs`; this changes every Becker master. For level changes, `dump.mjs` and `opt.py` propose voice levels and tilt slopes against the §9.2 windows and MALLET, which they read from `acceptance.json`. `bandparts.mjs <id>` shows where each octave's energy comes from when BANDS fails.
 
-**Owner decision before the next ship: Becker's `MODEL` is stale.** It was fitted before the pack's last fixes. On today's records the refit gives C −23.33, a 0.042, b 1.215, tiltUp 0.63, iBias −0.37, against the stored −23.46, 0.007, 1.288, 0.88, −0.35. With the stored values the predicted master gain is off by −0.54 to +0.43 dB (mean −0.18). Every teaser still passes B8 and every other check. The refit was held back on 2026-10-12 because it would change the delivered audio. That no longer holds: the build waiting to ship (§11.4) already changes all 15 Becker masters. So, before §11.5, either:
-- refit now (the block above), run `verify`, and ship both changes together; or
-- keep the stored `MODEL`, and record why in `looks/becker-rig/sound/tools/README.md`.
+**State on 2026-10-12: refit and shipped.** `MODEL` had been fitted before the pack's last fixes, and 06c's condensed cut then moved its cue record, so it was refit on the fresh records. The fit took two rounds, because the card trim reads the predicted gain and so moves the fitted mix. Round 1 gave C −23.37, a 0.065, b 1.159, tiltUp 0.63, iBias −0.41; round 2 gave a 0.061, b 1.165, iBias −0.42. A third round moved the predicted gains by under 0.01 dB. The values replaced were −23.46, 0.007, 1.288, 0.88, −0.35. The refit changed all 15 Becker masters, and it shipped with the condensed 06c and the reference-octave crowding (§6.7 item 4). The predicted master gain is still off by −0.66 to +0.37 dB (mean −0.20) against the delivered reports, about as before. The error comes from the music-stem model, C + duck cost + tiltUp·tilt, whose residual on the 15 teasers is −0.59 to +0.61 dB, and no refit can remove that. Every teaser passes B8.
+
+**Tightest BANDS margins after v2.2** (the delivered build, re-measured by `verify` after 06c's re-ship): 02a 2 kHz 0.1 dB under its ceiling, 04b 250 Hz 0.1 over its floor, 09a 2 kHz 0.1 under its ceiling and 01c 500 Hz 0.2 under its ceiling, all Becker Rig. The next tier is 02c (Scoreboard) 2 kHz and 05b 8 kHz at 0.3 dB. The previous build's MP4s had the same margins, so v2.2 did not cause them, but these octaves will flip first on the next pack change or refit. Check them in `verify --detail` before shipping one, and widen them with `opt.py` if there is room.
 
 ### 11.3 Running the harness
 
@@ -1058,15 +1060,16 @@ A full `verify` takes about 5-6 minutes with 4 workers and about 2.1 GB of tempo
 - **`test/fixtures/sound-baseline.sha256`** holds the masters' sha256 (`sha256sum` format). Every `verify` prints how many masters equal it.
   - `verify --expect-identical` turns any difference into a failure. Use it for a change that must not touch the audio (a refactor, a routing migration).
   - After an intended change, `npm run sound:baseline` re-verifies all 30 (a full build, about 2.1 GB of temp space) and rewrites the file only if everything passes. `verify --from <dir> --write-baseline test/fixtures/sound-baseline.sha256` does the same on a build you already have. Say in the commit which masters changed and why.
-- **State on 2026-10-12.** The baseline and `renders/channel/` hold the audio from before the AAC pre-roll and the `honkF` hook. The current engine changes 24 of the 30 masters:
-  - all 15 Becker Rig teasers, whose t = 0 brass is 2 dB louder;
+- **State on 2026-10-12 (shipped).** The baseline and `renders/channel/` hold the v2.2 build: the AAC pre-roll, the `honkF` hook, the Becker refit and its crowding rule, and 06c's condensed cut. Against the previous baseline, 24 of the 30 masters changed:
+  - all 15 Becker Rig teasers: the t = 0 brass is 2 dB louder, `MODEL` was refit, and 06c, 07c and 09b sit nearer their bells (§6.7 item 4); 06c is the new cut;
   - nine Scoreboard teasers (03b 04a 04c 05c 06b 07a 08a 10a 10c), because the encode loop's local dips land elsewhere or are no longer needed.
-  - 01a 02b 02c 03c 06a 09c are identical. Every AAC stream changed.
+  - 01a 02b 02c 03c 06a 09c are identical. Every AAC stream changed, so all 30 MP4s in `renders/channel/` changed, each with its video stream bit for bit as before (06c's is the condensed cut's new render).
+  - Later the same day 06c's picture was re-rendered once more, for its opening (§11.5). Its master and its AAC stream did not change, so the baseline rewrite kept the same 30 hashes. Only 06c's video stream is new.
 - **No float shortcuts.** Seeded streams only, a fixed summing order (§1) and no clock. A change that makes two runs differ is a bug, even if every other check passes.
 
 ### 11.5 Rebuilding the audio onto the finished videos
 
-The pictures in `renders/channel/` are final. New audio goes onto them by stream copy, so a sound change never needs a re-render. Before shipping, settle the open owner decisions: Becker's `MODEL` (§11.2) and A8's target (§9.1).
+The pictures in `renders/channel/` are final. New audio goes onto them by stream copy, so a sound change never needs a re-render. Before shipping, settle the open owner decisions (`npm run sound:pending`). On 2026-10-12, Becker's `MODEL` was settled by a refit (§11.2). A8's Becker Rig target (§9.1) was still open at that ship. No gate reads it, and the ship carried it as it stood.
 
 ```bash
 df -h /tmp                                                       # about 2.3 GB free: the build below takes 2.1 GB, verify adds about 0.1 GB
@@ -1082,6 +1085,7 @@ rm -rf /tmp/sound/mp4
 - `sound` refuses to write into `renders/channel/` unless `--final` is passed. Even with `--final`, `--out` cannot be the `--video` directory: ffmpeg refuses to write a file it is reading ("Output … same as Input #0 - exiting"). Build elsewhere, verify, then copy.
 - Each mux is checked as it is written: the video-stream md5 must equal the source's, the audio must be AAC stereo 48 kHz, and its duration must match the video's within 1/fps. The muxed audio is the verified `.m4a`, copied (§8.6 step 10).
 - For one teaser: `node src/cli.mjs remux specs/<id>.json --video ../renders/channel/<id>.mp4 --out /tmp/sound/<id>.mp4`.
+- **A teaser whose picture was re-rendered** (06c's condensed cut on 2026-10-12, then its opening heft the same day) ships the same way, from a picture folder that holds its new render and `renders/channel/`'s file for every other teaser (symlinks work). Pass that folder as `--video` to `sound` and to the `verify --from` before the copy, because A13 compares each MP4 with its source. After the copy, the `--write-baseline` run can compare against `renders/channel/` again.
 - Re-rendering a picture (`node src/cli.mjs render`) also renders its audio with this engine, so a re-rendered teaser needs no separate audio step. `render` prints a cue-drift warning when the kit or spec moved a cue. Whenever a kit or a spec changed, run `node --test test/cues.test.mjs`, then `verify --strict-cues`. If a record moved, follow §11.1 before shipping.
 
 ---

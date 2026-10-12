@@ -54,6 +54,10 @@
 //   rail: 'plain'               the timeline is only a progress line (no ticks, no purchase dots) with the final year
 //                               at its right end
 //   tagLife: s                  how long a purchase tag stays up (default up to 1.8 s)
+//   heft: false                 no opening beat. By default, when the first purchase (the big coin) comes 0.3 s or
+//                               more after frame 1, he weighs the coin in his hand until it starts (a small bounce
+//                               about every 0.24 s and a nod), so the hook frame never holds still; frame 1 and the
+//                               cues are unchanged
 import {
   h, s, style, attr, setText, setHTML, markup, fitText, prog, clamp, lerp, rng,
   C, F, L, E, poseTrack, poseOf, blendPose, secondary, fk, Figure, makeWorld, makeFx, camera,
@@ -668,8 +672,18 @@ export default function povRace(spec, ctx) {
   const base = poseTrack(keys)
   const reactW = (t, r) => (t < r.t || t > r.t + r.d ? 0 : Math.min(E.out(prog(t, r.t, 0.1)), 1 - E.inOut(prog(t, r.t + r.d - 0.3, 0.3))))
   for (const r of reacts) if (r.pose === 'shocked') hops.push({ t0: r.t, dur: 0.4, h: 30 })
+  // the opening beat (lookOpts.heft): while he holds the big coin out before the first purchase, he weighs it in his
+  // hand, a small bounce about every 0.24 s with a nod, so the hook frame is never a still picture. Frame 1 is
+  // unchanged (it starts after it) and so is the coin's face; it ends at rest as the purchase starts. Picture only:
+  // no cue moves.
+  const c0 = cycles[0]
+  const HEFT = showFig && lo.heft !== false && c0 && c0.big && c0.t >= 0.3
+    ? { t0: 1 / 60, t1: c0.t, n: Math.max(1, Math.round((c0.t - 1 / 60) / 0.24)) } : null
+  const heftAt = t => (!HEFT || t <= HEFT.t0 || t >= HEFT.t1 ? 0 : Math.abs(Math.sin(Math.PI * HEFT.n * (t - HEFT.t0) / (HEFT.t1 - HEFT.t0))))
   const poseAt = t => {
     let p = base.at(t)
+    const hf = heftAt(t)
+    if (hf > 0) p = { ...p, aF: [p.aF[0] + 9 * hf, p.aF[1] - 8 * hf], tilt: (p.tilt || 0) + 5 * hf }
     for (const r of reacts) {
       const w = reactW(t, r)
       if (w <= 0) continue

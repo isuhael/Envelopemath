@@ -2,8 +2,8 @@
 
 YouTube Shorts (@envelopemath) and Instagram Reels (@envelopemath). Prepared 2026-10-12. Machine-readable twin: `publishing/06c-becker-rig-latte-starbucks.json`.
 
-- **Video.** `renders/channel/06c-becker-rig-latte-starbucks.mp4` is still the 30.5 s cut. The condensed cut (18.2 s: a 15.7 s body + the 2.5 s card) is rendered and checked (`/tmp/06c/final/06c-becker-rig-latte-starbucks.mp4`, sha256 `a8e110b3…`) but not promoted yet: it waits on the sound workflow's sign-off. Post the condensed cut. Nothing below names a timestamp except the cover, which is picked by content.
-- **Numbers.** Every figure comes from `teasers/v2/06-pov-race.md` (06c) and its check, `python3 teasers/v2/checks/06-pov-race.py`: 442 checks, 0 failed by default, and 440 with `--spec` on the condensed WIP spec (re-run 2026-10-12 after the condensed cut's fix pass).
+- **Video.** `renders/channel/06c-becker-rig-latte-starbucks.mp4`: the condensed cut (18.2 s: a 15.7 s body + the 2.5 s card; sha256 `d431ea6b…`), promoted and shipped on 2026-10-12. It replaces the 30.5 s cut. Nothing below names a timestamp except the cover, which is picked by content.
+- **Numbers.** Every figure comes from `teasers/v2/06-pov-race.md` (06c) and its check, `python3 teasers/v2/checks/06-pov-race.py`: 441 checks, 0 failed on `studio/specs/` with the condensed cut promoted (re-run 2026-10-12). `python3 publishing/tools/build_06c_publishing.py --check` checks this sheet's limits, paste blocks and figures.
 - **Honesty rules kept.** The title asks and never gives the result. The Instagram caption keeps the result below 'more'. Every claim stays inside "≈ 1.4×. Not rich. Not zero." No advice, no urgency, and 'Not financial advice.' is in both.
 - **Brand.** "Starbucks" and "SBUX" are used only to name the company and the stock the maths is about. Both platforms' copy says 'Not affiliated with or endorsed by Starbucks.' The video draws a generic cup with no logo.
 - **Prices.** SBUX prices are Macrotrends' split- and dividend-adjusted series, which sit below the prices quoted at the time. The copy says "adjusted" wherever it names a close, so a viewer who looks up the 2021 close does not think the numbers are wrong.
@@ -90,7 +90,7 @@ The question comes first so it shows in the collapsed preview. It asks for the v
 
 ### Posting window
 
-- **When:** First Tue-Thu evening after the condensed render passes QA; earliest Wed 14 Oct 2026, 21:30-22:30 ET (Thu 01:30-02:30 UTC). Sunday 06:00-08:00 ET is the alternative.
+- **When:** First Tue-Thu evening now that the condensed render has passed QA (shipped 2026-10-12); earliest Wed 14 Oct 2026, 21:30-22:30 ET (Thu 01:30-02:30 UTC). Sunday 06:00-08:00 ET is the alternative.
 - **Spacing:** Keep it at least 6 h from any other upload on the channel.
 - **Why:** The channel's own October Shorts, median views by posting slot: Sunday 05:00-08:00 ET 1,178 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 262 (n = 2). The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. Search demand: 'starbucks' runs +55.4% over its 30-day baseline (fall menu season). Starbucks' next quarterly report is due in late October, per a third-party Short's description (not verified). Posting about two weeks earlier gives the Short time to be indexed if 'starbucks stock' interest rises then. The copy mentions neither.
 
@@ -151,12 +151,11 @@ Two are specific:
 
 ![06c cover, 3:4](06c-becker-rig-latte-starbucks-cover-3x4.jpg)
 
-- **Files:** `publishing/06c-becker-rig-latte-starbucks-cover-3x4.jpg` (1080×1440) and `publishing/06c-becker-rig-latte-starbucks-cover-9x16.jpg` (1080×1920). Both come from the current (30.5 s) render at 24.5 s.
-- **From the condensed render:** the same frame is at 15.2 s (its verdict hold runs 14.8-15.7 s): `/tmp/06c/final/cover-3x4-15.2s.jpg` and `/tmp/06c/final/cover-9x16-15.2s.jpg`. Copy them over the two files above when the condensed cut is promoted, and use them when posting it.
-- **Frame, by content:** The verdict hold: '$0 left' in the empty spent column, the '≈ 1.4×' mark on the tower top, '$17,532 spent' vs '≈ $24,900', and the line '≈ 1.4×. Not rich. Not zero.' fully drawn. Use the first settled frame of that hold, before the em end card. The condense will move this time, so re-pick it by content.
+- **Files:** `publishing/06c-becker-rig-latte-starbucks-cover-3x4.jpg` (1080×1440) and `publishing/06c-becker-rig-latte-starbucks-cover-9x16.jpg` (1080×1920). Both come from the shipped (18.2 s) render at 14.7 s (frame 441).
+- **Frame, by content:** The verdict hold: '$0 left' in the empty spent column, the '≈ 1.4×' mark on the tower top, '$17,532 spent' vs '≈ $24,900', and the line '≈ 1.4×. Not rich. Not zero.' fully drawn. Use the first settled frame of that hold, before the em end card. On the shipped MP4 the verdict lands at 14.1 s and the '≈ $24,900' plate finishes growing at 14.67 s; from 14.70 s (frame 441) the frame-to-frame luma change stays at the figure's idle level (≤ 0.011 mean) until the end card at 15.73 s. If the cut changes, re-pick it by content.
 - **Crop:** 3:4 = 1080×1440 from y 60 to 1500 of the 1080×1920 frame (badge, header, both numbers, both piles and the verdict line; drops the empty floor). A centred grid crop (y 240-1680) cuts the badge.
 - **How to set it:** In 'Edit cover', pick the verdict frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts both numbers.
-- **Re-export from the condensed render:** `ffmpeg -ss <T> -i <condensed.mp4> -frames:v 1 -vf "crop=1080:1440:0:60" -q:v 2 publishing/06c-becker-rig-latte-starbucks-cover-3x4.jpg`
+- **Re-export:** `ffmpeg -ss 14.7 -i renders/channel/06c-becker-rig-latte-starbucks.mp4 -frames:v 1 -vf "crop=1080:1440:0:60" -q:v 2 publishing/06c-becker-rig-latte-starbucks-cover-3x4.jpg` and `ffmpeg -ss 14.7 -i renders/channel/06c-becker-rig-latte-starbucks.mp4 -frames:v 1 -q:v 2 publishing/06c-becker-rig-latte-starbucks-cover-9x16.jpg`, or `python3 publishing/tools/build_06c_publishing.py --covers`.
 
 ### First comment (post it, then pin it)
 
@@ -166,7 +165,7 @@ Cups: $0. Stock: ≈ $24,900, on $17,532 of lattes. A grande latte was $3.65 in 
 
 ### Trial Reels
 
-**Post as a regular Reel, not a Trial.** @envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared. A hook test afterwards, if you want one: the other cut (for example the 30.5 s render against the condensed one) as a Trial with MANUAL graduation 48-72 h later. Compare skip rate (October Reels ran 27.0-65.1%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app.
+**Post as a regular Reel, not a Trial.** @envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared. A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. The 30.5 s render it replaced is no longer in renders/channel; get it from git with `git show 80e35e5:renders/channel/06c-becker-rig-latte-starbucks.mp4 > 06c-30.5s.mp4` (sha256 ca342ff6…, with the soundtrack it had before the v2.2 ship). Compare skip rate (October Reels ran 27.0-65.1%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app.
 
 ### Posting window and settings
 
@@ -291,3 +290,5 @@ One weekday evening is the best Instagram slot and the second-best YouTube slot,
 - **Kept on purpose.**
   - The cover and YouTube frame show the verdict. The write-up's no-result rule covers the header, the title and the caption, and the cover also carries the POV hook.
   - The title has no "since 2014": the header says it on frame 1, and adding it scores the same but leaves no room for the house's three title hashtags.
+- **Re-checked when the condensed cut shipped (2026-10-12).** `06-pov-race.py` on `studio/specs/`: 441 checks, 0 failed. The copy names no timestamp, so only the video facts and the cover changed: `for_video` now points at the shipped 18.2 s MP4, and both cover JPGs were re-exported from it at 14.7 s (frame 441), the first settled frame of the verdict hold. The numbers check passes (limits, paste blocks, figures).
+- **Re-shipped the same day (opening fix).** The first 0.5 s no longer hold still: the figure weighs the $4 coin in his hand until the first purchase (Becker Rig pov-race `heft`). Frame 1, the soundtrack (packet for packet), the timings and every figure are unchanged, and so is the copy. `for_video`'s sha256 follows the new file, and both covers were re-exported from it at 14.7 s.

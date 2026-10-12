@@ -28,7 +28,7 @@ node src/cli.mjs render specs/02c-scoreboard-salary-per-hour.json --out ../rende
 
 The finished MP4s are already in `renders/channel/`, so rendering is only needed after you change a spec or the brand. `node src/cli.mjs render --all --out ../renders/local` re-renders all 30 (about 20 minutes on 4 cores).
 
-These steps were checked from a fresh clone on 2026-10-11 (the suite had 8 tests then): 30/30 specs clean, and the re-rendered teasers matched the committed `renders/channel/` files frame for frame. The picture still does. The soundtrack does not: since 2026-10-12, `render` makes the new audio (see [Sound](#sound)), which differs from the committed files on 24 of the 30 teasers until it is shipped.
+These steps were checked from a fresh clone on 2026-10-11 (the suite had 8 tests then): 30/30 specs clean, and the re-rendered teasers matched the committed `renders/channel/` files frame for frame. The picture still does. The soundtrack does not: since 2026-10-12, `render` makes the new audio (see [Sound](#sound)), and that audio was shipped into `renders/channel/` the same day. 06c's picture is the condensed cut, re-rendered on 2026-10-12, then re-rendered again the same day for its opening (Becker Rig pov-race `heft`: the figure weighs the $4 coin until the first purchase, so the hook never holds still).
 
 If the Finance Channel folder is itself a git repository, either add `back-of-the-envelope/` to its `.gitignore`, or use `git submodule add -b claude/viral-finance-shorts-research-q9az4u https://github.com/isuhael/Envelopemath.git back-of-the-envelope` instead of `git clone`, so the two histories stay separate.
 
@@ -38,11 +38,11 @@ The fonts are bundled in `studio/fonts/`, so local renders match the cloud rende
 
 The teasers carry a synthesised soundtrack: music and sound effects, no narration. Start with [`studio/sound/README.md`](studio/sound/README.md) (the engine and its commands). The design rules and acceptance checks are in [`studio/sound/BIBLE.md`](studio/sound/BIBLE.md), and its §11, "Changing things safely", is the maintenance procedure.
 
-**State on 2026-10-12: built and verified, not yet shipped.** A newer soundtrack (the AAC pre-roll, and Becker Rig's hook brass at full level) passes every gated check on all 30 teasers (`npm run sound:verify`). `renders/channel/` still carries the earlier audio. Shipping changes 24 of the 30 master WAVs: all 15 Becker Rig teasers and nine Scoreboard ones. Two owner decisions are open first:
-- Becker Rig's fitted `MODEL` is stale (BIBLE §11.2): refit before the ship, or record why not.
-- A8's stereo-width target for Becker Rig (BIBLE §9.1, `npm run sound:pending`).
+**State on 2026-10-12: shipped.** `renders/channel/` carries the current soundtrack: the AAC pre-roll, Becker Rig's hook brass at full level, Becker Rig's refit `MODEL` and its reference-octave rule (BIBLE §6.7, §11.2), and 06c's condensed cut (18.2 s; it was 30.5 s). All 30 teasers pass every gated check (`verify --strict-cues`: 42/42 each, units 69/69 and 77/77), and `studio/test/fixtures/sound-baseline.sha256` holds the shipped masters. Against the previous delivery, 24 of the 30 master WAVs changed (all 15 Becker Rig, and nine Scoreboard). Every MP4's audio stream changed, and every video stream is bit-identical to its source. One owner decision is still open: A8's stereo-width target for Becker Rig (BIBLE §9.1, `npm run sound:pending`). It is reported, not gated.
 
-To ship it (BIBLE §11.5), from `studio/`:
+Later on 2026-10-12, 06c was re-shipped for its opening by the same procedure. No cue moved, every master equals the baseline, and its AAC stream is packet-identical. Only 06c's video stream and its publishing sheet's sha256 and covers changed. BIBLE §11.2 now lists the tightest BANDS margins, which will flip first on the next Becker pack change: 02a, 04b and 09a at 0.1 dB, and 01c at 0.2.
+
+To ship a later sound change (BIBLE §11.5), from `studio/`:
 
 ```bash
 df -h /tmp                                                       # needs about 2.3 GB free

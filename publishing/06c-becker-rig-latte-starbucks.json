@@ -4,29 +4,24 @@
   "prepared": "2026-10-12",
   "for_video": {
     "current_render": "renders/channel/06c-becker-rig-latte-starbucks.mp4",
-    "current_duration_s": 30.5,
-    "current_sha256": "ca342ff6b8a4f50284e25808fb52fb906e65dcc589e2dc77218523a0e3af718b",
-    "note": "Metadata is cut-independent: it names no timestamps. current_* is what renders/channel holds today (the 28.0 s cut + card). The condensed cut is rendered and checked but not promoted: on promotion, copy condensed_render's covers over instagram.cover.files and move its duration and sha256 into current_*.",
-    "condensed_render": {
-      "status": "rendered and checked 2026-10-12 (fix pass); not promoted: promotion waits on the sound workflow's re-verify on its engine, and BANDS 250 Hz sits on its window edge (0.0 dB)",
-      "spec": "studio/specs-wip/06c-becker-rig-latte-starbucks.json",
-      "file": "/tmp/06c/final/06c-becker-rig-latte-starbucks.mp4",
-      "duration_s": 18.2,
+    "current_duration_s": 18.2,
+    "current_sha256": "d431ea6be5e302c3cc351c4051e8d2f279b1d52765128e036ee3cee98c892dab",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-12.",
+    "cut": {
+      "name": "condensed (2026-10-12)",
+      "spec": "studio/specs/06c-becker-rig-latte-starbucks.json",
       "body_s": 15.7,
-      "sha256": "a8e110b37891a4a6efbe4ce52587d9ad8a5b8fd2c737d7e4497d1713943242a1",
-      "verdict_hold_s": [
-        14.8,
-        15.7
-      ],
-      "cover_frame_s": 15.2,
-      "covers": {
-        "9x16": "/tmp/06c/final/cover-9x16-15.2s.jpg",
-        "3x4": "/tmp/06c/final/cover-3x4-15.2s.jpg"
+      "card_s": 2.5,
+      "shipped": "2026-10-12",
+      "replaces": {
+        "duration_s": 30.5,
+        "sha256": "ca342ff6b8a4f50284e25808fb52fb906e65dcc589e2dc77218523a0e3af718b",
+        "note": "the 28.0 s round-2 cut + card, retired; in git history"
       }
     }
   },
   "facts": {
-    "source": "teasers/v2/06-pov-race.md section (b) 06c; teasers/v2/checks/06-pov-race.py: 442 checks, 0 failed by default and 440 with --spec on the condensed WIP spec (re-run 2026-10-12 after the condensed cut's fix pass; 436 at this sheet's first check)",
+    "source": "teasers/v2/06-pov-race.md section (b) 06c; teasers/v2/checks/06-pov-race.py: 441 checks, 0 failed on studio/specs/ with the condensed cut promoted (re-run 2026-10-12; 436 at this sheet's first check)",
     "stake": "$4/day, every day 1/1/2014-12/31/2025, held flat ($4 ≈ a grande latte: $3.65 in 2014, $4.45 in 2024, FinanceBuzz via Visual Capitalist)",
     "per_year": "$1,460 ($4 × 365; $1,464 in 2016, 2020, 2024)",
     "spent_total": "$17,532 ($4 × 4,383 days)",
@@ -164,7 +159,7 @@
       "captions": "None needed (no narration; all text is on screen)"
     },
     "posting_window": {
-      "when": "First Tue-Thu evening after the condensed render passes QA; earliest Wed 14 Oct 2026, 21:30-22:30 ET (Thu 01:30-02:30 UTC). Sunday 06:00-08:00 ET is the alternative.",
+      "when": "First Tue-Thu evening now that the condensed render has passed QA (shipped 2026-10-12); earliest Wed 14 Oct 2026, 21:30-22:30 ET (Thu 01:30-02:30 UTC). Sunday 06:00-08:00 ET is the alternative.",
       "spacing": "Keep it at least 6 h from any other upload on the channel.",
       "why": "The channel's own October Shorts, median views by posting slot: Sunday 05:00-08:00 ET 1,178 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 262 (n = 2). The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. Search demand: 'starbucks' runs +55.4% over its 30-day baseline (fall menu season). Starbucks' next quarterly report is due in late October, per a third-party Short's description (not verified). Posting about two weeks earlier gives the Short time to be indexed if 'starbucks stock' interest rises then. The copy mentions neither."
     },
@@ -191,24 +186,21 @@
         "3x4": "publishing/06c-becker-rig-latte-starbucks-cover-3x4.jpg",
         "9x16": "publishing/06c-becker-rig-latte-starbucks-cover-9x16.jpg"
       },
-      "frame_in_current_render_s": 24.5,
+      "frame_in_current_render_s": 14.7,
+      "frame_index": 441,
       "frame_by_content": "The verdict hold: '$0 left' in the empty spent column, the '≈ 1.4×' mark on the tower top, '$17,532 spent' vs '≈ $24,900', and the line '≈ 1.4×. Not rich. Not zero.' fully drawn. Use the first settled frame of that hold, before the em end card.",
+      "frame_measured": "On the shipped MP4 the verdict lands at 14.1 s and the '≈ $24,900' plate finishes growing at 14.67 s; from 14.70 s (frame 441) the frame-to-frame luma change stays at the figure's idle level (≤ 0.011 mean) until the end card at 15.73 s.",
       "crop": "3:4 = 1080×1440 from y 60 to 1500 of the 1080×1920 frame (badge, header, both numbers, both piles and the verdict line; drops the empty floor). A centred grid crop (y 240-1680) cuts the badge.",
       "how_to_set": "In 'Edit cover', pick the verdict frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts both numbers.",
-      "re_export": "ffmpeg -ss <T> -i <condensed.mp4> -frames:v 1 -vf \"crop=1080:1440:0:60\" -q:v 2 publishing/06c-becker-rig-latte-starbucks-cover-3x4.jpg",
-      "frame_in_condensed_render_s": 15.2,
-      "condensed_files": {
-        "3x4": "/tmp/06c/final/cover-3x4-15.2s.jpg",
-        "9x16": "/tmp/06c/final/cover-9x16-15.2s.jpg",
-        "note": "cut from the condensed render at 15.2 s (the verdict hold runs 14.8-15.7 s); they replace files on promotion"
-      }
+      "re_export": "ffmpeg -ss 14.7 -i renders/channel/06c-becker-rig-latte-starbucks.mp4 -frames:v 1 -vf \"crop=1080:1440:0:60\" -q:v 2 publishing/06c-becker-rig-latte-starbucks-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 14.7 -i renders/channel/06c-becker-rig-latte-starbucks.mp4 -frames:v 1 -q:v 2 publishing/06c-becker-rig-latte-starbucks-cover-9x16.jpg"
     },
     "first_comment": "Cups: $0. Stock: ≈ $24,900, on $17,532 of lattes. A grande latte was $3.65 in 2014 and $4.45 in 2024 (FinanceBuzz). What does yours cost now?",
     "first_comment_action": "Post it right after publishing and pin it.",
     "trial_reels": {
       "recommendation": "Post as a regular Reel, not a Trial.",
       "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-      "use_trial_for": "A hook test afterwards, if you want one: the other cut (for example the 30.5 s render against the condensed one) as a Trial with MANUAL graduation 48-72 h later. Compare skip rate (October Reels ran 27.0-65.1%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. The 30.5 s render it replaced is no longer in renders/channel; get it from git with `git show 80e35e5:renders/channel/06c-becker-rig-latte-starbucks.mp4 > 06c-30.5s.mp4` (sha256 ca342ff6…, with the soundtrack it had before the v2.2 ship). Compare skip rate (October Reels ran 27.0-65.1%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
     },
     "settings": {
       "audio": "Rename the original audio to 'Latte vs Starbucks stock — The Back of the Envelope' if the app allows; it is the score, with no voice.",
@@ -513,7 +505,7 @@
   "checked": {
     "date": "2026-10-12",
     "by": "adversarial check of this sheet",
-    "math": "python3 teasers/v2/checks/06-pov-race.py: 436 checks, 0 failed at this check; re-run after the condensed cut's fix pass: 442 (default) and 440 (--spec on the WIP spec), 0 failed; every public figure traced to the 06c maths table",
+    "math": "python3 teasers/v2/checks/06-pov-race.py: 436 checks, 0 failed at this check; re-run when the condensed cut was promoted into studio/specs/ and shipped (2026-10-12): 441 checks, 0 failed; every public figure traced to the 06c maths table",
     "limits": {
       "youtube_title_chars": 99,
       "youtube_description_chars": 1239,

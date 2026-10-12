@@ -30,10 +30,13 @@ Looks: 06a and 06b Scoreboard (06b ported from Live Sheet on 2026-10-08), 06c Be
 4. Prints a table and exits 1 on any mismatch.
 
 Run:  python3 teasers/v2/checks/06-pov-race.py                    (the specs in studio/specs/)
-      python3 teasers/v2/checks/06-pov-race.py --spec studio/specs-wip/06c-becker-rig-latte-starbucks.json
+      python3 teasers/v2/checks/06-pov-race.py --spec /tmp/06c-becker-rig-latte-starbucks.json
       --spec [KEY=]PATH (repeatable) checks PATH in place of studio/specs/<id>.json. KEY is a, b or c
       (or 06a/06b/06c); without it the file's stem must be one of the three ids. 06c is checked against
-      the expectations of the cut it is: the 28.0 s round-2 cut or the condensed cut (body <= 19 s).
+      the condensed cut (promoted into studio/specs/ on 2026-10-12). The retired 28.0 s round-2 cut is kept
+      only as a reference: a --spec file of exactly 28.0 s outside studio/specs/ (e.g. `git show
+      80e35e5:studio/specs/06c-becker-rig-latte-starbucks.json > /tmp/06c-becker-rig-latte-starbucks.json`)
+      is checked against it; studio/specs/ must hold the condensed cut, and any other length fails the lane.
 """
 import calendar
 import datetime as dt
@@ -636,10 +639,11 @@ check("06b", "pinned: 188.84 shares x $93.76 ≈ $17,706",
 check("06b", "7 hikes after the $7.99 start", len(B["ticks"]) - 1, 7)
 
 # ---- 06c
-# Two cuts exist. The 28.0 s cut (round 2, narration-paced captions) is what studio/specs/ and renders/channel/ hold
-# until the condensed cut is promoted; the condensed cut (2026-10-12, the owner's "too many still moments, condense
-# it") is studio/specs-wip/06c-becker-rig-latte-starbucks.json. check_spec picks the set by the spec's duration
-# (body <= 19 s: condensed), so the default run keeps checking whatever studio/specs/ holds.
+# The condensed cut (2026-10-12, the owner's "too many still moments, condense it") is the cut: it was promoted into
+# studio/specs/ and shipped to renders/channel/ on 2026-10-12, and EXP["c"] is its expectation set. The 28.0 s cut
+# (round 2, narration-paced captions) is retired; it is in git history (80e35e5 and earlier). Its set, EXP["c_28s"],
+# is kept as a reference only and is used for a --spec file outside studio/specs/ whose duration is exactly 28.0 s
+# (see RETIRED_C_28S); studio/specs/ must hold the condensed cut, and any other length fails the condensed lane.
 _C_STRINGS = {
     "header": f"POV: Since {SBUX_START} you invested\nin Starbucks instead of paying\n"
               f"**{usd(LATTE_STAKE)}/day** for a Starbucks latte",
@@ -669,10 +673,11 @@ _C_COMMON = {
     "sfx": {0: float(SBUX_START), 1: ye(2021), 2: ye(SBUX_END)},
     "lookOpts_t": {"multiple": ye(2021)},
 }
-# the 28.0 s cut (round 2): 9 narration-paced lines, the chip on the 2017 close, "$0 left" at the verdict
+# the retired 28.0 s cut (round 2; reference only, see above): 9 narration-paced lines, the chip on the 2017 close,
+# "$0 left" at the verdict
 EXP["c_28s"] = {
     **_C_COMMON,
-    "cut": "28.0 s (round 2)",
+    "cut": "28.0 s (round 2, retired)",
     "raceT": [0.5, 20.4],
     "pace": "narration",
     "lane": LANE,
@@ -893,15 +898,27 @@ def x_at(spec, t):
     return px + (t - pt1) / (t1 - pt1) * (xt - px)
 
 
+RETIRED_C_28S = 28.0   # s: the round-2 cut's duration; only a --spec file of exactly this length is checked as it
+
+
+def retired_c_28s(spec, path):
+    """True for the retired 28.0 s cut given with --spec from outside studio/specs/ (a git-history copy)."""
+    outside = os.path.dirname(os.path.abspath(path)) != os.path.abspath(SPECS)
+    return outside and abs(spec.get("duration", 0) - RETIRED_C_28S) < 1e-9
+
+
 def check_spec(key):
     sid = IDS[key]
     path = SPEC_PATHS[key]
     with open(path, encoding="utf-8") as f:
         spec = json.load(f)
     e = EXP[key]
-    if key == "c" and spec.get("duration", 0) > EXP["c"]["lane"][1]:
-        e = EXP["c_28s"]                              # the round-2 cut, until the condensed one is promoted
+    if key == "c" and retired_c_28s(spec, path):
+        e = EXP["c_28s"]                              # the retired round-2 cut, from git history (reference only)
     if key == "c":
+        in_specs = os.path.dirname(os.path.abspath(path)) == os.path.abspath(SPECS)
+        check(sid, "studio/specs/ holds the condensed cut", e["cut"] if in_specs else "(--spec file)",
+              EXP["c"]["cut"] if in_specs else "(--spec file)")
         check(sid, f"cut recognised ({os.path.relpath(path, ROOT)})", e["cut"], e["cut"])
     d = spec["data"]
 
@@ -914,6 +931,12 @@ def check_spec(key):
     dur = spec["duration"]
     lane = e.get("lane", LANE)
     check(sid, "duration in lane", dur, f"{lane[0]}-{lane[1]} s", ok=lane[0] <= dur <= lane[1])
+    if key == "c" and not lane[0] <= dur <= lane[1]:
+        # neither the condensed cut nor (via --spec, from git history) the retired 28.0 s cut: no expectation set
+        # applies, so stop here rather than compare it field by field with a cut it is not
+        check(sid, "a known 06c cut", f"{dur} s", f"condensed {EXP['c']['lane'][0]}-{EXP['c']['lane'][1]} s, or "
+              f"the retired {RETIRED_C_28S} s cut via --spec outside studio/specs/", ok=False)
+        return spec
 
     # --- hook rules on the header
     hw = words(spec["header"])
@@ -928,8 +951,11 @@ def check_spec(key):
     covered = set()
     for p, want in e["strings"].items():
         node = spec
-        for part in p.split("."):
-            node = node[int(part)] if isinstance(node, list) else node[part]
+        try:
+            for part in p.split("."):
+                node = node[int(part)] if isinstance(node, list) else node[part]
+        except (KeyError, IndexError, TypeError, ValueError):
+            node = "(missing: the spec is not shaped like this cut)"
         check(sid, p, node, want)
         covered.add(p)
 
