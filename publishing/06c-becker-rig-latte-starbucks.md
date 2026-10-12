@@ -2,8 +2,8 @@
 
 YouTube Shorts (@envelopemath) and Instagram Reels (@envelopemath). Prepared 2026-10-12. Machine-readable twin: `publishing/06c-becker-rig-latte-starbucks.json`.
 
-- **Video.** `renders/channel/06c-becker-rig-latte-starbucks.mp4` (30.5 s now). A condensed cut is in progress. Nothing below names a timestamp except the cover, which is picked by content.
-- **Numbers.** Every figure comes from `teasers/v2/06-pov-race.md` (06c) and its check, `python3 teasers/v2/checks/06-pov-race.py`: 436 checks, 0 failed (run 2026-10-12).
+- **Video.** `renders/channel/06c-becker-rig-latte-starbucks.mp4` is still the 30.5 s cut. The condensed cut (18.2 s: a 15.7 s body + the 2.5 s card) is rendered and checked (`/tmp/06c/final/06c-becker-rig-latte-starbucks.mp4`, sha256 `a8e110b3…`) but not promoted yet: it waits on the sound workflow's sign-off. Post the condensed cut. Nothing below names a timestamp except the cover, which is picked by content.
+- **Numbers.** Every figure comes from `teasers/v2/06-pov-race.md` (06c) and its check, `python3 teasers/v2/checks/06-pov-race.py`: 442 checks, 0 failed by default, and 440 with `--spec` on the condensed WIP spec (re-run 2026-10-12 after the condensed cut's fix pass).
 - **Honesty rules kept.** The title asks and never gives the result. The Instagram caption keeps the result below 'more'. Every claim stays inside "≈ 1.4×. Not rich. Not zero." No advice, no urgency, and 'Not financial advice.' is in both.
 - **Brand.** "Starbucks" and "SBUX" are used only to name the company and the stock the maths is about. Both platforms' copy says 'Not affiliated with or endorsed by Starbucks.' The video draws a generic cup with no logo.
 - **Prices.** SBUX prices are Macrotrends' split- and dividend-adjusted series, which sit below the prices quoted at the time. The copy says "adjusted" wherever it names a close, so a viewer who looks up the 2021 close does not think the numbers are wrong.
@@ -151,7 +151,8 @@ Two are specific:
 
 ![06c cover, 3:4](06c-becker-rig-latte-starbucks-cover-3x4.jpg)
 
-- **Files:** `publishing/06c-becker-rig-latte-starbucks-cover-3x4.jpg` (1080×1440) and `publishing/06c-becker-rig-latte-starbucks-cover-9x16.jpg` (1080×1920). Both come from the current render at 24.5 s.
+- **Files:** `publishing/06c-becker-rig-latte-starbucks-cover-3x4.jpg` (1080×1440) and `publishing/06c-becker-rig-latte-starbucks-cover-9x16.jpg` (1080×1920). Both come from the current (30.5 s) render at 24.5 s.
+- **From the condensed render:** the same frame is at 15.2 s (its verdict hold runs 14.8-15.7 s): `/tmp/06c/final/cover-3x4-15.2s.jpg` and `/tmp/06c/final/cover-9x16-15.2s.jpg`. Copy them over the two files above when the condensed cut is promoted, and use them when posting it.
 - **Frame, by content:** The verdict hold: '$0 left' in the empty spent column, the '≈ 1.4×' mark on the tower top, '$17,532 spent' vs '≈ $24,900', and the line '≈ 1.4×. Not rich. Not zero.' fully drawn. Use the first settled frame of that hold, before the em end card. The condense will move this time, so re-pick it by content.
 - **Crop:** 3:4 = 1080×1440 from y 60 to 1500 of the 1080×1920 frame (badge, header, both numbers, both piles and the verdict line; drops the empty floor). A centred grid crop (y 240-1680) cuts the badge.
 - **How to set it:** In 'Edit cover', pick the verdict frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts both numbers.

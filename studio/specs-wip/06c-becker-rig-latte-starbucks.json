@@ -3,14 +3,14 @@
   "look": "becker-rig",
   "format": "pov-race",
   "fps": 30,
-  "duration": 16.0,
+  "duration": 15.7,
   "header": "POV: Since 2014 you invested\nin Starbucks instead of paying\n**$4/day** for a Starbucks latte",
   "footer": "$4 ≈ a grande latte · with dividends",
   "captions": true,
   "vo": [
     {
-      "t": 0.0,
-      "d": 1.7,
+      "t": -0.4,
+      "d": 2.1,
       "text": "Skip the $4 latte, get rich?"
     },
     {
@@ -19,38 +19,43 @@
       "text": "That's $1,460 a year."
     },
     {
-      "t": 3.75,
-      "d": 4.65,
+      "t": 3.7,
+      "d": 2.05,
       "text": "The stock outruns the cups."
     },
     {
-      "t": 8.5,
-      "d": 1.75,
+      "t": 5.8,
+      "d": 2.4,
+      "text": "2019–20: it takes off."
+    },
+    {
+      "t": 8.25,
+      "d": 1.45,
       "text": "By 2021, your money doubled."
     },
     {
-      "t": 10.3,
-      "d": 1.5,
+      "t": 9.75,
+      "d": 1.75,
       "text": "Then it stalls. You keep buying."
     },
     {
-      "t": 11.85,
+      "t": 11.55,
       "d": 1.3,
-      "text": "2025: $17,532 of lattes."
+      "text": "By 2025: $17,532 of lattes."
     },
     {
-      "t": 13.2,
+      "t": 12.9,
       "d": 1.2,
       "text": "Or about $24,900 in stock."
     },
     {
-      "t": 14.4,
+      "t": 14.1,
       "d": 1.2,
       "text": "About 1.4 times. Not rich. Not zero."
     }
   ],
   "verdict": {
-    "t": 14.4,
+    "t": 14.1,
     "text": "**≈ 1.4×**. Not rich. Not zero."
   },
   "data": {
@@ -189,7 +194,7 @@
     },
     "raceT": [
       0.5,
-      13.3
+      13.0
     ],
     "hold": 2.7
   },
@@ -199,7 +204,7 @@
     "endPose": "shrug",
     "multiple": {
       "x": 2021.99,
-      "t": 9.03,
+      "t": 8.83,
       "k": 2,
       "label": "2×",
       "hold": 0.9
@@ -212,13 +217,14 @@
     },
     "spentLeft": {
       "text": "$0 left",
-      "t": 13.85
+      "t": 13.55
     },
     "endMark": {
       "label": "≈ 1.4×"
     },
     "rail": "plain",
-    "tagLife": 0.8
+    "tagLife": 0.8,
+    "figureScale": 1.18
   },
   "sfx": [
     {
@@ -226,12 +232,19 @@
       "kind": "pop"
     },
     {
-      "t": 9.03,
-      "kind": "ding"
+      "t": 8.85,
+      "kind": "ding",
+      "gain": 0.8
     },
     {
-      "t": 13.3,
-      "kind": "cash"
+      "t": 13.0,
+      "kind": "cash",
+      "gain": 0.3
+    },
+    {
+      "t": 13.675,
+      "kind": "pop",
+      "gain": 0.6
     }
   ]
 }

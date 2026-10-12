@@ -15,7 +15,7 @@ Looks: 06a and 06b Scoreboard (06b ported from Live Sheet on 2026-10-08), 06c Be
    - every string in the spec that contains a digit is covered by one of those checks,
    - the hook rules the linter can't see: header <= 15 words with exactly one $ figure,
      a number in the header at t = 0, duration inside the 18-35 s lane for this format
-     (06c's condensed cut: a 16-19 s body, the owner's 2026-10-12 note),
+     (06c's condensed cut: a 15.5-19 s body, the owner's 2026-10-12 note),
    - VO timing: each line's d >= written words / 2.6 AND >= spoken words / 2.8 (numbers
      counted as read aloud: "$17,532" = 5 words, "2025" = 2, "$7.99" = 2, "8.7" = 3),
      no overlaps, last line ends at least 0.4 s before the end. The posted shorts have no
@@ -700,38 +700,49 @@ EXP["c_28s"] = {
     "faster_vo": 3,
     "own_vo": 7,
 }
-# the condensed cut (2026-10-12): 8 caption lines (7 shown; the verdict replaces the last), a race of about 1 s a
-# year, the chip on the 2015 close, "$0 left" after the own final and before the verdict, the verdict <= 1.5 s
-# after the final reveal and held 1.2-1.6 s, then the 2.5 s end card
+# the condensed cut (2026-10-12, fix pass the same day): 9 caption lines (8 shown; the verdict replaces the last), a
+# race of about 1 s a year that ends at 13.0 s, the chip on the 2015 close, "$0 left" after the own final and before the
+# verdict, the verdict <= 1.5 s after the final reveal and held 1.2-1.6 s, then the 2.5 s end card
+# the stake's yearly gains, and the two biggest of them (the "takes off" caption names them)
+C["gain"] = {y: C["value"][y] - C["value"][y - 1] for y in range(SBUX_START + 1, SBUX_END + 1)}
+C["takeoff"] = tuple(sorted(sorted(C["gain"], key=lambda y: -C["gain"][y])[:2]))
 EXP["c"] = {
     **_C_COMMON,
     "cut": "condensed (2026-10-12)",
-    "raceT": [0.5, 13.3],
+    # the race ends (the payoff P) at 13.0 s, not 13.3: at 13.3 the AAC encode overshot the payoff transient by
+    # 1-8 dB and forced the limiter past the A11 gate in most mixes; at 13.0 it stays clean (sound fix pass)
+    "raceT": [0.5, 13.0],
     "pace": "captions",
-    "lane": (16.0, 19.0),       # the owner's condense note: body about 16-19 s (+ the 2.5 s card)
+    # the owner's condense note: a body of about 16-19 s (+ the 2.5 s card); the fix pass's 13.0 s race end puts
+    # it at 15.7 s (verdict 1.1 s after the reveal, held 1.6 s), so the lane opens to 15.5
+    "lane": (15.5, 19.0),
     "strings": {**_C_STRINGS,
                 # "That's $1,460 a year." as a chip on the spent column at the 2015 close (a 365-day year): the
                 # first year-end after the 2014 payoff, while the counter already reads $2,920
                 "lookOpts.chip.text": f"+{usd(C['spend_y'][2015])}",
                 "lookOpts.spentLeft.text": "$0 left"},
     "vo_numbers": [
-        [f"{LATTE_STAKE:.0f}"],                       # Skip the $4 latte, get rich?
+        [f"{LATTE_STAKE:.0f}"],                       # Skip the $4 latte, get rich?  (pre-typed: complete on frame 1)
         [f"{C['per_year']:,.0f}"],                    # That's $1,460 a year.
         [],                                           # The stock outruns the cups.
+        [str(C["takeoff"][0]), str(C["takeoff"][1])[2:]],   # 2019–20: it takes off.
         ["2021"],                                     # By 2021, your money doubled.
         [],                                           # Then it stalls. You keep buying.
-        [str(SBUX_END), f"{C['total']:,.0f}"],        # 2025: $17,532 of lattes.
+        [str(SBUX_END), f"{C['total']:,.0f}"],        # By 2025: $17,532 of lattes.
         [f"{sig(C['final'], 3):,.0f}"],               # Or about $24,900 in stock.
         [mult(C["mult"])],                            # (under the verdict) About 1.4 times. Not rich. Not zero.
     ],
-    "vo_about": {6: [f"{sig(C['final'], 3):,.0f}"], 7: [mult(C["mult"])]},
+    "vo_about": {7: [f"{sig(C['final'], 3):,.0f}"], 8: [mult(C["mult"])]},
     "sync": [(0, float(SBUX_START), "day-1 tick"), (0, ye(SBUX_START), "first payoff (end of 2014)"),
-             (3, ye(2021), "2021: doubled"), (4, ye(2022), "2022 dip: the stall"),
-             (5, ye(SBUX_END), "spend final"), (6, ye(SBUX_END), "own final")],
+             (4, ye(2021), "2021: doubled"), (5, ye(2022), "2022 dip: the stall"),
+             (6, ye(SBUX_END), "spend final"), (7, ye(SBUX_END), "own final")],
     "chip": {"year": 2015, "vo": 1},
-    "mu_vo": 3,
+    "mu_vo": 4,
     "faster_vo": 2,
-    "own_vo": 6,
+    "takeoff_vo": 3,
+    "own_vo": 7,
+    # the "$0 left" beat has its own cue (a pop as the text fades in), so the empty column lands as a beat
+    "sfx_at": {3: ("pop", "spentLeft", 0.125)},
     # the condensed cut's timing targets (the editor's brief for the owner's note)
     "moving_s_per_year": (0.8, 1.0),   # the race's moving time per year (the 2× pause excluded)
     "verdict_after_final": 1.5,        # the verdict lands within this long after the final reveal (raceT[1])
@@ -749,6 +760,11 @@ C["gain"] = {y: C["value"][y] - C["value"][y - 1] for y in range(SBUX_START + 1,
 check("06c", "'outruns the cups': stake gain > lattes, 2017-2021",
       ", ".join(f"{y}: +{C['gain'][y]:,.0f}" for y in range(2017, 2022)),
       f"each > +{C['per_year']:,.0f}", ok=all(C["gain"][y] > C["spend_y"][y] for y in range(2017, 2022)))
+# "2019–20: it takes off" (the condensed cut's split of the "outruns" line): 2019 and 2020 are the two biggest yearly
+# gains of the stake in 2015-2025 (+$5,354 and +$5,533; no other year beats +$3,822)
+check("06c", "'2019–20: it takes off': the two biggest yearly gains",
+      ", ".join(f"{y}: +{C['gain'][y]:,.0f}" for y in C["takeoff"]), "2019, 2020",
+      ok=C["takeoff"] == (2019, 2020) and all(C["gain"][y] > 2 * C["spend_y"][y] for y in C["takeoff"]))
 
 # =====================================================================================
 # SPEC CHECKS
@@ -936,14 +952,16 @@ def check_spec(key):
     # --- VO
     vo = spec["vo"]
     check(sid, "vo line count", len(vo), len(e["vo_numbers"]))
-    end_prev = 0.0
+    end_prev = 0.0 if e.get("pace") != "captions" else -math.inf
     for i, line in enumerate(vo):
         n = len(words(line["text"]))
         if e.get("pace") == "captions":
-            # no narration: the line is on-screen text, read at phone size
+            # no narration: the line is on-screen text, read at phone size. A line that starts before 0 is pre-typed
+            # (complete on frame 1), so what counts is how long it is up from frame 1
             need = max(CAP_MIN, CAP_SPW * n)
-            check(sid, f"vo[{i}] caption d ≥ max({CAP_MIN}, {n} words × {CAP_SPW})", line["d"], f"≥ {need:.2f}",
-                  ok=line["d"] + 1e-9 >= need)
+            shown = line["t"] + line["d"] - max(0.0, line["t"])
+            check(sid, f"vo[{i}] caption up ≥ max({CAP_MIN}, {n} words × {CAP_SPW})", rnd(shown, 2), f"≥ {need:.2f}",
+                  ok=shown + 1e-9 >= need)
         else:
             need = n / WPS
             check(sid, f"vo[{i}] d ≥ {n} words / {WPS}", line["d"], f"≥ {need:.2f}", ok=line["d"] + 1e-9 >= need)
@@ -960,7 +978,12 @@ def check_spec(key):
         for num in e["vo_about"].get(i, []):
             ok = re.search(r"\babout\s+(?:every\s+)?\$?" + re.escape(num) + r"\b", line["text"], re.I) is not None
             check(sid, f"vo[{i}] 'about' before rounded {num}", ok, True)
-    check(sid, "vo starts at 0.0 (hook spoken on frame 1)", vo[0]["t"], 0.0)
+    if e.get("pace") == "captions":
+        # the hook question is the frame a viewer swipes on: the kit pre-types a caption that starts before 0, so a
+        # start at or before 0 puts it on frame 1 complete (fix pass: t -0.4, still ending at 1.7)
+        check(sid, "vo[0] complete on frame 1 (t ≤ 0)", vo[0]["t"], "≤ 0.0", ok=vo[0]["t"] <= 1e-9)
+    else:
+        check(sid, "vo starts at 0.0 (hook spoken on frame 1)", vo[0]["t"], 0.0)
     check(sid, "last vo ends ≥ 0.4 s before the end", rnd(end_prev, 2), f"≤ {dur - 0.4:.1f}",
           ok=end_prev <= dur - 0.4 + 1e-9)
 
@@ -983,11 +1006,18 @@ def check_spec(key):
 
     # --- sfx on their beats
     sfx = spec.get("sfx", [])
-    check(sid, "sfx count", len(sfx), len(e["sfx"]))
+    check(sid, "sfx count", len(sfx), len(e["sfx"]) + len(e.get("sfx_at", {})))
     for j, x in e["sfx"].items():
         want_t = rnd(chart_t(spec, x), 2)
         check(sid, f"sfx[{j}] {sfx[j]['kind']} on beat x {x:.2f}", sfx[j]["t"], want_t,
               ok=abs(sfx[j]["t"] - want_t) <= 0.05)
+    # cues on a lookOpts beat that has its own t (not a chart x): kind, and the beat's t + an offset (the first
+    # visible frame of the fade-in), ±0.05 s
+    for j, (kind, opt, off) in e.get("sfx_at", {}).items():
+        node = spec["lookOpts"][opt]
+        want_t = rnd(node["t"] + off, 3)
+        check(sid, f"sfx[{j}] {kind} on lookOpts.{opt} (t {node['t']} + {off})", f"{sfx[j]['kind']} {sfx[j]['t']}",
+              f"{kind} {want_t}", ok=sfx[j]["kind"] == kind and abs(sfx[j]["t"] - want_t) <= 0.05)
 
     # --- lookOpts timings that sit on beats
     for p, x in e["lookOpts_t"].items():
@@ -1109,6 +1139,16 @@ def check_spec(key):
         check(sid, f"vo[{fv}] '{strip_markup(vo[fv]['text'])}': stake gain > lattes in every year under it",
               f"x {xa:.2f}-{xb:.2f}: " + ", ".join(f"{y} +{C['gain'][y]:,.0f}" for y in yrs),
               f"each > +{C['per_year']:,.0f}", ok=bool(yrs) and all(C["gain"][y] > C["spend_y"][y] for y in yrs))
+        # "2019–20: it takes off" (condensed cut): the line is up while the race runs through both of those years'
+        # growth (>= 0.75 of each on the race clock) and does not start before 2019's growth does
+        tv = e.get("takeoff_vo")
+        if tv is not None:
+            ta, tb = x_at(spec, vo[tv]["t"]), x_at(spec, vo[tv]["t"] + vo[tv]["d"])
+            cov = {y: min(tb, ye(y)) - max(ta, ye(y - 1)) for y in C["takeoff"]}
+            check(sid, f"vo[{tv}] '{strip_markup(vo[tv]['text'])}': up through {C['takeoff'][0]}-{C['takeoff'][1]}'s growth",
+                  f"x {ta:.2f}-{tb:.2f}: " + ", ".join(f"{y} {cov[y]:.2f} y" for y in C["takeoff"]),
+                  "each ≥ 0.75 y, starts ≥ the 2018 close − 0.25",
+                  ok=all(cov[y] >= 0.75 for y in C["takeoff"]) and ta >= ye(C["takeoff"][0] - 1) - 0.25)
         # the verdict's ratio is drawn on the piles with the verdict (endMark, no own t); "$0 left" ("Not zero")
         em = spec["lookOpts"]["endMark"]
         check(sid, "endMark lands with the verdict", em.get("t", spec["verdict"]["t"]), spec["verdict"]["t"])

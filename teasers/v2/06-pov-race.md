@@ -2,7 +2,7 @@
 
 **Teasers:** 06a Scoreboard (Apple / first iPhone), 06b Scoreboard (Netflix bill / Netflix stock; ported from Live Sheet on 2026-10-08), 06c Becker Rig (latte / Starbucks stock)
 **Date:** 2026-10-07; hook pass 2026-10-08 (06b and 06c kept); hook pass 2 2026-10-08 (06b's hook replaced); 06b ported to Scoreboard 2026-10-08; 06c condensed cut 2026-10-12 · **Writer:** format 6 (revised after review, see the Review log at the end) · **Specs:** `studio/specs/06a-scoreboard-first-iphone-apple.json`, `06b-scoreboard-netflix-bill.json` (the Live Sheet spec is in `studio/specs/retired/`), `06c-becker-rig-latte-starbucks.json` (06c's condensed cut is `studio/specs-wip/06c-becker-rig-latte-starbucks.json` until it is promoted over that file)
-**Check:** `python3 teasers/v2/checks/06-pov-race.py`. It recomputes every on-screen and spoken number, cross-checks the source tables, and asserts the specs match, including VO pacing in spoken words (numbers read out in full) and the motion/payoff timing of the hook. Current result (2026-10-12): 441 checks, 0 failed on `studio/specs/` (06c there is still the 28.0 s cut); 434 checks, 0 failed with `--spec studio/specs-wip/06c-becker-rig-latte-starbucks.json` (the condensed cut). The script checks 06c against the expectations of the cut it is given.
+**Check:** `python3 teasers/v2/checks/06-pov-race.py`. It recomputes every on-screen and spoken number, cross-checks the source tables, and asserts the specs match, including VO pacing in spoken words (numbers read out in full) and the motion/payoff timing of the hook. Current result (2026-10-12, after the condensed cut's fix pass): 442 checks, 0 failed on `studio/specs/` (06c there is still the 28.0 s cut); 440 checks, 0 failed with `--spec studio/specs-wip/06c-becker-rig-latte-starbucks.json` (the condensed cut). The script checks 06c against the expectations of the cut it is given.
 
 ---
 
@@ -19,7 +19,7 @@
    - "POV: In 2002 You invested $5000 in…": [15,876,376 (100.45x)](https://www.youtube.com/shorts/KmtLGAPIutg).
    - "POV: Since 1996 you invested $100/month in … and never sold": [1,391,731 (5.91x)](https://www.youtube.com/shorts/2cF446rExhY). Its grey "Investment" line is the only working ChartOrbit ever shows.
 4. **Rules.** Keep the same-brand pairing, the operative verb "instead of paying", one small input and a hidden result; honest losses and "meh" results count too, since GoPro, a decline, is the biggest post. Add three things: the spend line beside the value line, a last-second envelope line (multiple or doublings), and a footer with the dates and the dividend choice. The race is already moving by 0.5 s and the first year-end lands by about 2 s.
-5. **Risks.** None of the 5 @investment_timeline videos could be watched (all 7 watch jobs failed), and n = 5, so viability is 6. Their posts are 60 s; ours sit in the 18-35 s lane (26.5 / 30.5 / 28.0 s). 06c's condensed cut (2026-10-12) is shorter: a 16.0 s body plus the 2.5 s end card.
+5. **Risks.** None of the 5 @investment_timeline videos could be watched (all 7 watch jobs failed), and n = 5, so viability is 6. Their posts are 60 s; ours sit in the 18-35 s lane (26.5 / 30.5 / 28.0 s). 06c's condensed cut (2026-10-12) is shorter: a 15.7 s body plus the 2.5 s end card (18.2 s).
 
 ### Where the teasers depart from the seeds (inside the lane)
 
@@ -308,7 +308,7 @@ Which plan are you on?
 - Two piles on one dollar scale: the spent money as a ghost column, the same money in the stock as a tower of gold coins on an "SBUX" plinth.
 - Every operation is a verb the figure performs: it pays a coin for the cup, drinks, and flings the cup onto a junk heap; the coins land on the tower and tumble off it when the stock falls.
 - Impacts use the kit's flash, shake and SFX.
-- Applied here are transfer devices "numbers are objects", "results are transformations" and "one number per short that the viewer watches move". The kit's pov-race module draws this by default; the spec sets `lookOpts` `prop: "cup"`, `jarLabel: "SBUX"` and `endPose: "shrug"`, plus the round-2 beats: `multiple` (the "2×" mark, which pauses the race on the 2021 close), `land` (each year-end's exact figures hold for 0.12 s), `chip` ("+$1,460" on the spent column at the 2015 close; at the 2017 close in the 28.0 s cut), `spentLeft` ("$0 left" in the emptied spent column 0.55 s after the final reveal; at the verdict in the 28.0 s cut), `endMark` ("≈ 1.4×" drawn on the piles at the verdict), `rail: "plain"` and `tagLife: 0.8`.
+- Applied here are transfer devices "numbers are objects", "results are transformations" and "one number per short that the viewer watches move". The kit's pov-race module draws this by default; the spec sets `lookOpts` `prop: "cup"`, `jarLabel: "SBUX"` and `endPose: "shrug"`, plus the round-2 beats: `multiple` (the "2×" mark, which pauses the race on the 2021 close), `land` (each year-end's exact figures hold for 0.12 s), `chip` ("+$1,460" on the spent column at the 2015 close; at the 2017 close in the 28.0 s cut), `spentLeft` ("$0 left" in the emptied spent column 0.55 s after the final reveal; at the verdict in the 28.0 s cut), `endMark` ("≈ 1.4×" drawn on the piles at the verdict), `rail: "plain"`, `tagLife: 0.8` and, in the condensed cut, `figureScale: 1.18` (the figure drawn 1.18× in the mostly empty stage).
 
 **Platform title (YouTube):** "What If Every $4 Starbucks Latte Bought Starbucks Stock Instead?" (the format's own grammar, like 06a/06b; it no longer collides with 09c's yes/no "Does $5 a Day Invested Make You a Millionaire?", which reaches the opposite verdict)
 **Hook pass (2026-10-08): kept.** The two judges averaged the current hook at 7.0, the highest score in this teaser's set. The best candidate (C, "12 years of $4/day lattes … Watch year 9") averaged 6.5. B was marked dishonest by judge 2, so it is out. The hook, title and body stay as they are. Details are in the Review log.
@@ -321,7 +321,7 @@ Which plan are you on?
 - Non-benchmark context only: @davidlbach "The Latte Factor! DRINKING A STARBUCKS COFFEE A DAY VS BUYING THE STOCK INSTEAD (SBUX)", 1.9M (201.5x) (watch/investment-timeline.md §4). It shows demand, and that the idea is taken; our answer is an honest "meh".
 
 **Hook rules it satisfies:**
-- **R1:** "$4/day" is in the header, and the figure holds up the $4 coin with both tips at $4 on frame 1.
+- **R1:** "$4/day" is in the header, and the figure holds up the $4 coin with both tips at $4 on frame 1. In the condensed cut the hook question "Skip the $4 latte, get rich?" is also complete on frame 1 (pre-typed from t −0.4).
 - **R2:** one input, no result, in the header, the title and the caption.
 - **R3:** a habit price coffee buyers can swap their own number into (the pinned comment asks).
 - **R4:** a round $4.
@@ -330,44 +330,46 @@ Which plan are you on?
 - **R7:** "a Starbucks latte" vs Starbucks stock, the brand named twice.
 - **R8:** 15 words.
 - **R9:** the year timeline only; the cup heap cannot be counted.
-- **R10:** something changes at 0.5 s (the coin buys the cup, the cup is drunk and flung, a coin lands on the tower), and the first payoff ($1,586 vs $1,460 at the end of 2014) lands at 1.56 s in the condensed cut (2.14 s in the 28.0 s cut), held for 0.12 s so the exact figures can be read.
+- **R10:** something changes at 0.5 s (the coin buys the cup, the cup is drunk and flung, a coin lands on the tower), and the first payoff ($1,586 vs $1,460 at the end of 2014) lands at 1.53 s in the condensed cut (2.14 s in the 28.0 s cut), held for 0.12 s so the exact figures can be read.
 - **R11:** the title asks, the screen says POV, and the caption sets up the test without the answer.
 - **R12:** "≈ 1.4×. Not rich. Not zero." is the repeatable verdict, shown word for word. The lopsided frame is drawn on the piles at the verdict: the spent column empties to its dashed outline with a red **"$0 left"** in it, and a green dotted line on the tower top, labelled **"≈ 1.4×"**, sits above the red paid line (1×). "≈ $24,900" on the gold plate is the biggest number on screen (it grows to about 90 px as it lands; "$17,532" steps down to 64 px). The two-line verdict "Cups: $0. Stock: ≈ $24,900." is ready to swap in once the kit's verdict band is fixed (see the Review log).
 
 **Wrong belief it exploits (R5):** "Skip the latte and you'll be rich" (the "latte factor"). Invested in the latte company's own stock, 12 years of lattes come to ≈ 1.4×, with almost no growth after 2021. It is an honest "meh", the same move as GoPro's decline, the biggest post in the benchmark set. The flip side is in the picture and the last word of the verdict: the cups are worth $0, the stock is "not zero".
 
-### Beat sheet (condensed cut, 2026-10-12: chart clock x 2014 → 2021.99 over t 0.5 → 9.03 s, ≈ 1.07 s per year; paused 9.03-9.93 on the 2021 close; x 2021.99 → 2025.99 over t 9.93 → 13.3 s, ≈ 0.84 s per year; ≈ 0.99 s per year moving; body 16.0 s + the 2.5 s end card)
+### Beat sheet (condensed cut after its fix pass, 2026-10-12: chart clock x 2014 → 2021.99 over t 0.5 → 8.83 s, ≈ 1.04 s per year; paused 8.83-9.73 on the 2021 close; x 2021.99 → 2025.99 over t 9.73 → 13.0 s, ≈ 0.82 s per year; ≈ 0.97 s per year moving; body 15.7 s + the 2.5 s end card = 18.2 s)
 
-Spec: `studio/specs-wip/06c-becker-rig-latte-starbucks.json` until it is promoted over `studio/specs/06c-becker-rig-latte-starbucks.json`. That file still holds the 28.0 s round-2 cut (race 0.5 → 20.4 s at ≈ 1.66 s per year, verdict 23.7 s). Its beat sheet is in git at HEAD, and the Review log ("Condensed cut") lists every change.
+Spec: `studio/specs-wip/06c-becker-rig-latte-starbucks.json` until it is promoted over `studio/specs/06c-becker-rig-latte-starbucks.json`. That file still holds the 28.0 s round-2 cut (race 0.5 → 20.4 s at ≈ 1.66 s per year, verdict 23.7 s). Its beat sheet is in git at HEAD. The Review log ("Condensed cut" and "Condensed cut: fix pass") lists every change. The race ends at 13.0 s, not 13.3, so that the AAC encode stays clean at the payoff (see the fix pass). The figure is drawn 1.18× (`lookOpts.figureScale`).
 
 | t (s) | On screen | Caption |
 |---|---|---|
-| 0.0 | Header. One-line footer. The figure holds up the $4 coin. Tips **$4 / $4**. Timeline: "2014", a progress line and "2025" at its end. | "Skip the $4 latte, get rich?" (0.0-1.7) |
-| 0.5 | Race starts (pop). Tag "Day 1 · $4" (0.44-1.3): the coin buys the cup, the figure drinks and flings it onto the heap, and a coin lands on the SBUX tower. From 2015 to 2021 he buys one cup per year-end (2.62, 3.69, 4.76, 5.83, 6.89, 7.96 s). | |
-| 1.56 | End of 2014: spent **$1,460**, owned **$1,586** (first payoff), held for 0.12 s like every year-end. | |
-| 2.62 | End of 2015: $2,920 vs $3,997. A red **"+$1,460"** chip pops on top of the spent column and rides it to 3.52. | "That's $1,460 a year." (1.8-3.6) |
-| 3.69-7.96 | 2016 $4,384 / $5,199 (3.69), 2017 $5,844 / $6,955 (4.76), 2018 $7,304 / $9,633 (5.83), 2019 $8,764 / $14,988 (6.89), 2020 $10,228 / $20,521 (7.96). The tower outgrows the ghost column. | "The stock outruns the cups." (3.75-8.4) |
-| 9.03 | End of 2021 (ding): owned **$24,343**, spent **$11,688** (2.08×). The race clock pauses 9.03-9.93: the year reads 2021, and both counters and both piles hold those figures. The 2020 cup is flung and lands (9.56) during the pause. On the ding a green dotted line labelled **2×** draws across the piles at 2 × $11,688 = $23,376, just under the tower top. | "By 2021, your money doubled." (8.5-10.25) |
-| 9.93 | The race resumes with the 2021 purchase, and the 2× mark fades by 10.23. 2022 dip to $22,808 (10.77): coins tumble off the tower while the ghost column keeps growing ($13,148). | "Then it stalls. You keep buying." (10.3-11.8) |
-| 11.62-12.46 | 2023 $23,942 vs $14,608 (11.62, the last purchase), 2024 $24,865 vs $16,072 (12.46). Riser from 12.3. | "2025: $17,532 of lattes." (11.85-13.15) |
-| 13.3 | Final (hit + cash): **$17,532 spent**; the stock counter runs onto the exact $24,928, then hard-cuts to **≈ $24,900** on the gold plate. Over 0.4 s the plate grows 1.2× (the number to about 90 px) while "$17,532" steps down to 64 px. The figure shrugs (13.55-13.85). | "Or about $24,900 in stock." (13.2-14.4) |
-| 13.85 | The spent column empties to its dashed outline and **"$0 left"** pops inside it (13.95-14.2): the lattes are gone, the stock is not. | |
-| 14.4 | Verdict (ding): **≈ 1.4×**. Not rich. Not zero. Its swoosh draws to 15.08. A green dotted line on the tower top runs from over the spent column to the tower, with **"≈ 1.4×"** under its left end, above the red paid line. | (the verdict replaces the captions) |
-| 15.1-16.0 | Verdict hold: 1.6 s from the verdict to the card. | |
-| 16.0-18.5 | End card (unchanged): "Follow for the math behind your money", "shown, not hand-waved.", @envelopemath; the figure points at the em badge. | |
+| 0.0 | Header. One-line footer. The figure holds up the $4 coin. Tips **$4 / $4**. Timeline: "2014", a progress line and "2025" at its end. The hook question is already complete on frame 1 (the caption is pre-typed from t −0.4). | "Skip the $4 latte, get rich?" (−0.4-1.7, complete on frame 1) |
+| 0.5 | Race starts (pop). Tag "Day 1 · $4" (0.44-1.3): the coin buys the cup, the figure drinks and flings it onto the heap, and a coin lands on the SBUX tower. From 2015 to 2021 he buys one cup per year-end (2.61, 3.65, 4.69, 5.73, 6.78, 7.82 s). | |
+| 1.53 | End of 2014: spent **$1,460**, owned **$1,586** (first payoff), held for 0.12 s like every year-end. | |
+| 2.58 | End of 2015: $2,920 vs $3,997. A red **"+$1,460"** chip pops on top of the spent column and rides it to 3.48. | "That's $1,460 a year." (1.8-3.6) |
+| 3.62-5.70 | 2016 $4,384 / $5,199 (3.62), 2017 $5,844 / $6,955 (4.66), 2018 $7,304 / $9,633 (5.70). The tower outgrows the ghost column. | "The stock outruns the cups." (3.7-5.75) |
+| 5.70-7.79 | 2019 $8,764 / $14,988 (6.74), 2020 $10,228 / $20,521 (7.79): the two biggest years of the race (+$5,354, +$5,533). | "2019–20: it takes off." (5.8-8.2) |
+| 8.83 | End of 2021 (ding on the next 8th, 8.85): owned **$24,343**, spent **$11,688** (2.08×). The race clock pauses 8.83-9.73: the year reads 2021, and both counters and both piles hold those figures. The 2020 cup is flung and lands (9.37) during the pause. On the ding a green dotted line labelled **2×** draws across the piles at 2 × $11,688 = $23,376, just under the tower top. | "By 2021, your money doubled." (8.25-9.7) |
+| 9.73 | The race resumes with the 2021 purchase (9.76), and the 2× mark fades. 2022 dip to $22,808 (10.55): coins tumble off the tower while the ghost column keeps growing ($13,148). | "Then it stalls. You keep buying." (9.75-11.5) |
+| 11.37-12.18 | 2023 $23,942 vs $14,608 (11.37, the last purchase at 11.40), 2024 $24,865 vs $16,072 (12.18). Riser from 12.0. | "By 2025: $17,532 of lattes." (11.55-12.85) |
+| 13.0 | Final (hit + cash): **$17,532 spent**; the stock counter runs onto the exact $24,928, then hard-cuts to **≈ $24,900** on the gold plate. Over 0.4 s the plate grows 1.2× (the number to about 90 px) while "$17,532" steps down to 64 px. The figure shrugs (13.25-13.55). | "Or about $24,900 in stock." (12.9-14.1) |
+| 13.55 | The spent column empties to its dashed outline and **"$0 left"** pops inside it (13.63-13.75), on its own pop (13.675): the lattes are gone, the stock is not. | |
+| 14.1 | Verdict (ding): **≈ 1.4×**. Not rich. Not zero. Its swoosh draws to 14.78. A green dotted line on the tower top runs from over the spent column to the tower, with **"≈ 1.4×"** under its left end, above the red paid line. | (the verdict replaces the captions) |
+| 14.8-15.7 | Verdict hold: 1.6 s from the verdict to the card. | |
+| 15.7-18.2 | End card (unchanged): "Follow for the math behind your money", "shown, not hand-waved.", @envelopemath; the figure points at the em badge. | |
 
 The kit skips the 2022 and 2024 purchases because they come less than its 0.95 s minimum gap after the one before. The heap ends with 9 cups (R9: it cannot be counted anyway).
 
-### Captions (on-screen text, no narration; 35 words shown)
+### Captions (on-screen text, no narration; 40 words shown)
 
-> Skip the $4 latte, get rich? · That's $1,460 a year. · The stock outruns the cups. · By 2021, your money doubled. · Then it stalls. You keep buying. · 2025: $17,532 of lattes. · Or about $24,900 in stock.
+> Skip the $4 latte, get rich? · That's $1,460 a year. · The stock outruns the cups. · 2019–20: it takes off. · By 2021, your money doubled. · Then it stalls. You keep buying. · By 2025: $17,532 of lattes. · Or about $24,900 in stock.
 
-Then the verdict, `≈ 1.4×. Not rich. Not zero.` The spec's last `vo` line ("About 1.4 times. Not rich. Not zero.", 14.4-15.6) sits under it and is never shown, because the Becker Rig chrome replaces the captions with the verdict. Pacing is for reading, not speaking: each caption is up for at least max(1.2 s, 0.12 s per word), and there is no gap over 0.15 s between captions.
+Then the verdict, `≈ 1.4×. Not rich. Not zero.` The spec's last `vo` line ("About 1.4 times. Not rich. Not zero.", 14.1-15.3) sits under it and is never shown, because the Becker Rig chrome replaces the captions with the verdict. Pacing is for reading, not speaking: each caption is up for at least max(1.2 s, 0.12 s per word) from frame 1, and there is no gap over 0.1 s between captions. The longest line, "Then it stalls. You keep buying." (6 words), is up 1.75 s.
 
 Changes from the 28.0 s cut's 54-word script:
 - "Since 2014, that $4 buys Starbucks stock." is cut, because the header already says it.
-- "The stock climbs faster than the cups pile up." is now "The stock outruns the cups."
+- "The stock climbs faster than the cups pile up." is now "The stock outruns the cups." (2017-2018), followed by a new line, "2019–20: it takes off." (the two biggest years).
 - "By 2021, you've doubled your money." is now "By 2021, your money doubled."
+- "2025: $17,532 of lattes." is now "By 2025: $17,532 of lattes." (framed as the destination, so the racing counter reads as catching up).
 - The other lines are unchanged.
 
 ### The maths
@@ -396,7 +398,8 @@ Each year's $4 × days buys shares at that year's average close (adjusted for sp
 | $17,532 spent | $4 × 4,383 days (1/1/2014-12/31/2025, three leap years) |
 | ≈ $24,900 / "about $24,900" | 296.03 shares × $84.21 = $24,928.31, to 3 significant figures |
 | ≈ 1.4× / "about 1.4 times" | 24,928.31 ÷ 17,532 = 1.42 |
-| "The stock outruns the cups" (on screen over x 2017.04-2021.40 in the condensed cut; the 28.0 s cut's "climbs faster than the cups" ran over 2019-2021) | the stake grew +$1,756, +$2,679, +$5,354, +$5,533 and +$3,822 in 2017-2021, against $1,460 of lattes a year ($1,464 in 2020). 2016 (+$1,202) would not qualify, and the line starts after its close. |
+| "The stock outruns the cups" (on screen over x 2017.07-2019.04 in the condensed cut; the 28.0 s cut's "climbs faster than the cups" ran over 2019-2021) | the stake grew +$1,756 and +$2,679 in 2017 and 2018 (and +$5,354, +$5,533, +$3,822 in 2019-2021), against $1,460 of lattes a year ($1,464 in 2020). 2016 (+$1,202) would not qualify, and the line starts after its close. |
+| "2019–20: it takes off" (on screen over x 2019.08-2021.39 in the condensed cut: 0.91 of 2019's growth and all of 2020's) | +$5,354 in 2019 and +$5,533 in 2020: the two biggest yearly gains of 2015-2025 (no other year beats +$3,822), each more than 3.6× that year's lattes. The stake goes from $9,633 to $20,521 (2.1×) while $2,924 of lattes go in. |
 | "doubled" by 2021 | $24,343 ÷ $11,688 = 2.08 |
 | the **2×** mark (end of 2021) | a line at 2 × $11,688 = $23,376; the tower ($24,343) is above it, so "2×" is the whole multiple reached |
 | "stalls" | 2022-2025: $5,844 more in, while the stake rose only $585 ($24,343 → $24,928). The 229 shares held at the end of 2021 fell from $106.24 to $84.21. |
@@ -418,7 +421,7 @@ Each year's $4 × days buys shares at that year's average close (adjusted for sp
 - The value is taken at the 12/31/2025 close ($84.21).
 - No fees or taxes.
 
-**Publishing metadata (SEO, YouTube and Instagram):** `publishing/06c-becker-rig-latte-starbucks.md` and its JSON twin (2026-10-12). It has the vidIQ-scored titles, description, tags, hashtags, pinned comment, Instagram caption, alt text, cover and posting window, and it replaces the caption below for posting. It names no timestamps. Its cover is "the settled verdict hold", which in the condensed render is 15.1-15.97 s (export at 15.5 s).
+**Publishing metadata (SEO, YouTube and Instagram):** `publishing/06c-becker-rig-latte-starbucks.md` and its JSON twin (2026-10-12). It has the vidIQ-scored titles, description, tags, hashtags, pinned comment, Instagram caption, alt text, cover and posting window, and it replaces the caption below for posting. It names no timestamps. Its cover is "the settled verdict hold", which in the condensed render (after its fix pass) is 14.8-15.7 s (export at 15.2 s).
 
 **Caption (round 2):** POV: Since 2014 you invested in Starbucks instead of paying $4/day for a Starbucks latte. The latte factor, tested on Starbucks itself. #starbucks #latte #lattefactor #usa #investment #stocks
 
@@ -432,7 +435,7 @@ The maths:
 A grande latte was $3.65 in 2014 and $4.45 in 2024 (FinanceBuzz). What do you pay now?
 
 **Per-platform notes:**
-- **YouTube:** the "What if" title asks; the verdict answers it on screen at 14.4 s in the condensed cut (23.7 s in the 28.0 s cut).
+- **YouTube:** the "What if" title asks; the verdict answers it on screen at 14.1 s in the condensed cut (23.7 s in the 28.0 s cut).
 - **Instagram Reels:** the figure gag reads with the sound off (the Becker "mute test"): something happens inside the first second. Keep the heap and the tower inside x 60-940 below y 820. The post caption is the POV line + the numberless test line above.
 - **TikTok:** the caption above. The "latte factor" argument should draw comments both ways.
 - **All:** "Starbucks" and "SBUX" in text only. The cup is the kit's generic `cup`, with no siren logo and no green brand colour on the cup.
@@ -957,3 +960,44 @@ The QA judge scored the port 6.5/10. Lint was clean and every number was right, 
   - `teasers/v2/teasers.json`: 06c's runtime and the check count.
   - `publishing/06c-becker-rig-latte-starbucks.{md,json}`: `current_render`; the cover's `frame_in_current_render_s` (24.5 s now, 15.5 s in the condensed render); "436 checks" (now 441 by default, 434 with `--spec` on the WIP).
 - The figure is small, in a mostly empty lower frame. That is the kit's layout, which was off limits here.
+
+### Condensed cut: fix pass (2026-10-12): 06c
+
+The critic scored the condensed cut 7/10: 1 must, 4 shoulds and 4 nits. All of them are applied or answered below.
+
+**Files:**
+- Changed: `studio/specs-wip/06c-becker-rig-latte-starbucks.json`, `teasers/v2/checks/06-pov-race.py`, this write-up and the publishing sheet (`publishing/06c-becker-rig-latte-starbucks.{md,json}`: check counts and the pending condensed render, no copy changes).
+- Not touched: `studio/specs/06c-becker-rig-latte-starbucks.json`, `studio/looks/**`, `studio/src/**`, `studio/sound/**` and `renders/`. Nothing is committed.
+- Renders are in `/tmp/06c/final/` only. The sound workflow was editing `studio/src/sound` in place during this pass (its react-bus migration), so every sound build, `render`, `sound`, `audit` and `verify` here ran on a snapshot of the committed studio (`git archive HEAD studio`, HEAD 9f82341) in `/tmp/06c/snap/`. The spec's kit and picture code are identical there.
+
+| Severity | Critic's item | Resolution |
+|---|---|---|
+| must | The cut fails the sound acceptance gate: A11 (3.161% of samples over 1 dB of limiting, max 4.99 dB at 13.30, global −2.5 dBTP ceiling) and BANDS (250 Hz −1.9, 500 Hz −1.2 re 1 kHz). | **Now 46/46 (42 gated + 4 reported/info), but BANDS has no margin.** About 30 scratch variants were verified (`/tmp/06c/fix/var/*`, each with `verify.txt`). Findings: (1) at P = 13.3 the AAC encode overshoots the payoff transient at 13.304 s by 1.1-7.9 dB depending on unrelated gains, so A11, A2/A5 and B8 flip from variant to variant; with the race ending at **13.0 s** the overshoot at the payoff falls to 0-0.6 dB in every variant tried. (2) BANDS is a 1 kHz vs 2 kHz tilt problem: in a 15.7-16 s body the spec's 2× ding carries 50-70% of the SFX energy in the 1 kHz octave, while the kit's verdict ding (F#6/A6 on the DROP's D chord, gain 0.7) and its own cash at P + 0.1 together carry 40-60% of all the energy in the 2 kHz octave. Lowering the 2× ding lifts 250 Hz but pushes 2000 Hz over 0. Spec changes: `raceT` [0.5, 13.0]; the 2× ding moved from the 2021 close (8.83) to the next 8th (8.85), which is the A chord's bar line, so both its notes (C#6, E6) sit in the 1 kHz octave, at gain 0.8; the spec's cash at P lowered to 0.3 (the kit's cash at P + 0.1 stays the ka-ching). **Result** (`verify --video /tmp/06c/final/render`): PASS, A11 1.774% / max 2.87 dB with 1 encode retry at −1.5 dBTP; BANDS 31.5 −11.3, 63 1.4, 125 2.8, **250 0.0** (window 0..6, so on its edge), 500 1.0, 2000 −1.6, 4000 −4.3, 8000 −5.9 dB re 1 kHz; HARSH −0.67; B3 10/10 (closest 5.0 dB); B8 logo −12.22 vs payoff −10.15 LUFS; S9 115.4 / 111.1 BPM (−3.7%, was +5.5%). The master is deterministic (sha256 `d87cd9c1…`), but a 0.0 dB edge will not survive a pack change. **Do not promote** until the sound workflow re-verifies on its engine (its pending first-frame AAC / local-dip work changes this encode loop) and either fixes the tilt at pack level or records a waiver, then re-records `test/fixtures/sound-baseline.sha256` and `cues.json` with it (A14 baseline now DIFFERS, as expected). |
+| should | 13.70-14.40 near-still (0.63 s), the "$0 left" fade silent. | "$0 left" now has its own cue, `{ t: 13.675, kind: pop, gain: 0.6 }` (`spentLeft.t` + 0.125, its first visible frame), 5 dB over the band (B3). With the race ending at 13.0 the post-reveal sequence is: plate 13.0-13.4, shrug 13.25-13.55, "$0 left" 13.55 (fade 13.63-13.75), verdict 14.1. The longest near-still (YAVG < 0.25) there is 13.77-14.10 (0.33 s). |
+| should | Frame 1 has no caption. | `vo[0]` = { t −0.4, d 2.1 }: the kit pre-types it, so "Skip the $4 latte, get rich?" is complete on frame 1 (stills at 0.0 and 0.5 read). The check now asserts `vo[0].t ≤ 0` for the condensed cut and paces captions by the time they are up from frame 1. `raceT[0]` stays 0.5: the kit starts the first purchase at max(0.5, race start) anyway, and any earlier race start retimes the year-end cues so the engine picks 120 BPM, where the 2× ding lands on Bm and BANDS fails (250 −0.6/−0.7, 2000 −0.6/−0.7 at race starts 0.4 and 0.3). |
+| should | "Then it stalls. You keep buying." too dense (6 words in 1.5 s). | Up 1.75 s now (9.75-11.5); "By 2021, your money doubled." 8.25-9.7 still covers the 2× hold (8.83-9.73) within tolerance. |
+| should | Publishing sheet still names the old render and check counts. | Check counts updated (442 default, 440 on the WIP spec). The condensed render's facts (18.2 s, sha256, cover frame 15.2 s in the 14.8-15.7 s verdict hold) are recorded as pending; the covers cut from it are `/tmp/06c/final/cover-9x16-15.2s.jpg` and `cover-3x4-15.2s.jpg`. They replace the files in `publishing/` on promotion, when `current_render` changes. No copy changes. |
+| nit | "2025: $17,532 of lattes." disagrees with the racing counter. | Now "By 2025: $17,532 of lattes." with the same timing role (11.55-12.85). |
+| nit | Ding inside the DROP, the +5.5% tempo jump at P. | P is now 13.0: 115.4 BPM to P, 111.1 BPM after (−3.7%). The verdict ding still lands in the DROP (14.1, 1.1 s after P), passing B3. |
+| nit | 3.75-8.4: one caption for 4.65 s, no beat of its own. | Split: "The stock outruns the cups." (3.7-5.75, over 2017-2018) and "2019–20: it takes off." (5.8-8.2, over 2019 and 2020, the two biggest yearly gains). The check verifies both windows on the race clock and that 2019 and 2020 are the top two gains. |
+| nit | Small figure in a mostly empty frame. | `lookOpts.figureScale: 1.18`. Stills at 0, 2.6, 8.86, 9.3, 10.57, 12.2, 13.35 and 14.6: no new collision. The cup he holds already touched the tower's left edge at 1.0× (8.86, 10.57); at 1.18× it overlaps it by a few px more. The empty band under the caption is the kit's layout (and partly platform UI). |
+
+**Measured** (frame difference at 270×480, YAVG < 0.15 = still; `/tmp/06c/motion.py`):
+
+| | Still runs ≥ 0.4 s | Runs 0.25-0.4 s |
+|---|---|---|
+| 28.0 s cut (30.5 s, `renders/channel`) | 20.97-23.17 (2.20), 24.10-28.03 (3.93), card 29.23-30.50 | 14.30-14.63, 23.20-23.53 |
+| Condensed cut before this pass (18.5 s) | verdict hold 14.80-16.03 (1.23), card 17.23-18.50 | 9.63-9.93, 14.07-14.40 |
+| **After this pass (18.2 s)** | **0.03-0.47 (0.43)**, verdict hold 14.50-15.73 (1.23), card 16.93-18.20 | 9.47-9.73, 13.77-14.10 |
+
+The new 0.03-0.47 run is the cost of the frame-1 caption: before, the type-on was the only motion there (YAVG 0.14-0.22, so the opening was near-still at the 0.25 level in both cuts: 0.03-0.50). Now frame 1 holds the complete hook (header, question, $4 coin) until the coin moves at 0.5. **For the Becker Rig kit owner:** `pov-race.js` floors the first purchase at 0.5 s (`c.t = Math.max(0.5, …)`); a lower floor would let the coin move from frame ~6 with no spec change other than `raceT[0]`.
+
+**Stills read** (`stills` at 0, 0.5, 1.56, 2.6, 3.64, 4.68, 5.73, 5.9, 6.77, 7.81, 8.86, 9.3, 9.72, 10.57, 11.39, 12.2, 13.02, 13.35, 13.7, 14.1, 14.6, 15.6, 16.6 and 18.15): every year-end matches the maths table ($1,460 / $1,586; $2,920 / $3,997 with "+$1,460"; $4,384 / $5,199; $5,844 / $6,955; $7,304 / $9,633; $8,764 / $14,988; $10,228 / $20,521; $11,688 / $24,343 with "2×" at 8.86-9.72; $13,148 / $22,808 with coins tumbling; $14,608 / $23,942; $16,072 / $24,865; $17,532 / ≈ $24,900), "2019–20" renders with its en dash, "$0 left" fades in at 13.7, the verdict and "≈ 1.4×" mark hold at 14.6-15.6, the card at 16.6-18.15.
+
+**Lint:** `check specs-wip/06c-becker-rig-latte-starbucks.json`: 0 errors, 0 warnings (18.2 s = 15.7 + 2.5 s end card).
+
+**Check (`checks/06-pov-race.py`):** 440 checks, 0 failed with `--spec` on the WIP spec; 442, 0 failed by default. Changed for the condensed cut: `raceT` [0.5, 13.0]; the lane opens to 15.5-19 s; 9 caption lines (indices shifted); `vo[0]` must start at or before 0 and captions are paced by their time up from frame 1; a cue tied to a `lookOpts` beat (`sfx_at`: the "$0 left" pop at `spentLeft.t` + 0.125); the "takes off" line's window and the top-two-gains fact. Mutation test (scratch copies in `/tmp/06c/mut2/`): the takeoff line moved to 4.9 s, the pop moved to 13.9, `vo[0]` at +0.1 and a 15.3 s body each exit 1 with a named failure.
+
+**Render and sound** (`/tmp/06c/final/`): `render` → `render/06c-becker-rig-latte-starbucks.mp4` (18.2 s, 546 frames, 36 sfx); `sound … --video /tmp/06c/final/render --out /tmp/06c/final --score` → `06c-becker-rig-latte-starbucks.mp4` (video md5 identical; the file is byte-identical to the render's, sha256 `a8e110b3…`); `audit`: −14.11 LUFS, TP −1.2 dBTP, LRA 6.13, PLR 12.91, silence 0%, L/R correlation 0.87, phone drop 1.56 LU, 36/36 onsets within 24.5 ms, symbolic score checks 16/16.
+
+**To promote** (after the sound workflow signs off): copy the WIP spec over `studio/specs/06c-becker-rig-latte-starbucks.json`, rebuild with `--final` on the sound workflow's engine, re-run `verify` (and `npm test`'s baseline/cue guards with that workflow), copy the two covers into `publishing/` and fill in `for_video` from the promoted MP4.
