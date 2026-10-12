@@ -15,18 +15,22 @@ Looks: 06a and 06b Scoreboard (06b ported from Live Sheet on 2026-10-08), 06c Be
    - every string in the spec that contains a digit is covered by one of those checks,
    - the hook rules the linter can't see: header <= 15 words with exactly one $ figure,
      a number in the header at t = 0, duration inside the 18-35 s lane for this format
-     (06c's condensed cut: a 15.5-19 s body, the owner's 2026-10-12 note),
+     (06c's condensed cut: a 15.5-19 s body, the owner's 2026-10-12 note; 06b's condensed cut: 17-20 s),
    - VO timing: each line's d >= written words / 2.6 AND >= spoken words / 2.8 (numbers
      counted as read aloud: "$17,532" = 5 words, "2025" = 2, "$7.99" = 2, "8.7" = 3),
      no overlaps, last line ends at least 0.4 s before the end. The posted shorts have no
-     narration, so 06c's condensed cut is paced as on-screen captions instead: each line's
+     narration, so the condensed cuts (06c, 06b) are paced as on-screen captions instead: each line's
      d >= max(1.2 s, 0.12 s per word) at phone size,
    - beat sync: each beat a VO line mentions lands (on the chart's x -> t clock) inside
      that line's window, +/- 0.3 s; every sfx cue sits on its beat,
    - motion and payoff timing: the race starts by 1.0 s and the first year-end payoff
      lands by 3.0 s (R10); for 06c's condensed cut also the race's moving pace (0.8-1.0 s a
      year), the "2×" mark on the linear clock position of the 2021 close, "$0 left" between
-     the final reveal and the verdict, the verdict <= 1.5 s after the reveal and held 1.2-1.6 s.
+     the final reveal and the verdict, the verdict <= 1.5 s after the reveal and held 1.2-1.6 s;
+     for 06b's condensed cut the race start (frame 1 clean, moving from frame 2), the answer-row
+     pauses (each 0.4-0.7 s, 2.0 s in all), the moving pace (0.85-1.05 s a year), the payoff
+     <= 1.5 s after the reveal, the verdict hold, caption gaps (< 0.2 s, or a breath of <= 0.6 s while
+     the race runs with no beat inside it) and footer steps up >= 1.2 s.
 4. Prints a table and exits 1 on any mismatch.
 
 Run:  python3 teasers/v2/checks/06-pov-race.py                    (the specs in studio/specs/)
@@ -37,6 +41,10 @@ Run:  python3 teasers/v2/checks/06-pov-race.py                    (the specs in 
       only as a reference: a --spec file of exactly 28.0 s outside studio/specs/ (e.g. `git show
       80e35e5:studio/specs/06c-becker-rig-latte-starbucks.json > /tmp/06c-becker-rig-latte-starbucks.json`)
       is checked against it; studio/specs/ must hold the condensed cut, and any other length fails the lane.
+      06b has two cuts, picked by length: the condensed cut (2026-10-12, 17-20 s; promoted into studio/specs/
+      and shipped the same day; B_IN_SPECS names it) and the retired 30.5 s round-2 cut, kept as a reference
+      for a git-history copy (`git show 471c793:studio/specs/06b-scoreboard-netflix-bill.json`) passed with
+      --spec; studio/specs/ must hold the condensed cut, and any other length fails the lane.
 """
 import calendar
 import datetime as dt
@@ -575,47 +583,48 @@ fb = [
 ]
 # purchase tags: the start bill, then the hikes counted ("Hike 1" ... "Hike 7", R9)
 B["tag_labels"] = [lab if i == 0 else f"Hike {i} · {lab}" for i, (_, lab, _) in enumerate(B["ticks"])]
-EXP["b"] = {
-    "raceT": [0.3, 23.0], "x": {"from": NFLX_START, "to": ye(NFLX_END), "tickEvery": 3},
+_B_STRINGS = {
+    # hook pass 2: today's bill is the hook's only $ figure and the unit of the answer.
+    # Assembly round 2: two lines broken by sense, set at 64 px (three lines capped the banner at ~46 px); the
+    # mechanism ("Paid to Netflix" vs "Same bills in Netflix stock") and the "? years" slot are the sheet's own
+    # frame-1 cells, and the ÷ $19.99 conversion is the formula bar's frame-1 formula.
+    "header": f"**{NOW}** Netflix, free\nfor how many years?",
+    "footer": f"Standard plan list price · {VALUE_DATE.month}/{VALUE_DATE.day}/{VALUE_DATE:%y} close",
+    # Scoreboard answer row: line 1 the working, line 2 the stake in years of today's bill
+    "lookOpts.unit.formula": fb[0].removeprefix("= "),
+    **{f"lookOpts.unit.holds.{i}.work": fb[j].split(" ≈ ")[0] for i, j in enumerate((1, 3, 4))},
+    **{f"lookOpts.unit.holds.{i}.display": B["holds"][y] for i, y in enumerate((2012, 2020, 2022))},
+    "lookOpts.unit.final": f"≈ {B['yrs_shown'][NFLX_END]} years",
+    # the finish's working is the board's own rounded stake (≈ $17,700), never $17,706 beside it (round-2 port QA
+    # nit); the exact $17,706 waits for the footer's last step at the payoff (verdict.t), when the board has gone
+    "lookOpts.unit.finalWork": f"{approx_usd(B['final'])} ÷ {UNIT}",
+    # the payoff lands last in the hero: the board hard-cuts to one number at the verdict
+    "lookOpts.payoff.display": f"≈ {B['yrs_shown'][NFLX_END]} years",
+    # the footer's working steps: the method (capitalised as a footer line), then the finish's two lines
+    "lookOpts.footerSteps.0.text": fb[2][0].upper() + fb[2][1:],
+    "lookOpts.footerSteps.1.text": fb[5],
+    "lookOpts.footerSteps.2.text": fb[6],
+    "verdict.text": f"**≈ {B['yrs_shown'][NFLX_END]} years** of Netflix\nat {NOW} a month",
+    "data.spend.final": f"{usd(B['total'], 2)} spent",
+    "data.own.final": approx_usd(B["final"]),
+    **{f"data.purchases.{i}.label": lab for i, lab in enumerate(B["tag_labels"])},
+    **{f"data.purchases.{i}.price": pr for i, (_, _, pr) in enumerate(B["ticks"])},
+}
+_B_COMMON = {
+    "x": {"from": NFLX_START, "to": ye(NFLX_END), "tickEvery": 3},
     "first_payoff_x": ye(NFLX_START),
-    "strings": {
-        # hook pass 2: today's bill is the hook's only $ figure and the unit of the answer.
-        # Assembly round 2: two lines broken by sense, set at 64 px (three lines capped the banner at ~46 px); the
-        # mechanism ("Paid to Netflix" vs "Same bills in Netflix stock") and the "? years" slot are the sheet's own
-        # frame-1 cells, and the ÷ $19.99 conversion is the formula bar's frame-1 formula.
-        "header": f"**{NOW}** Netflix, free\nfor how many years?",
-        "footer": f"Standard plan list price · {VALUE_DATE.month}/{VALUE_DATE.day}/{VALUE_DATE:%y} close",
-        # Scoreboard answer row: line 1 the working, line 2 the stake in years of today's bill
-        "lookOpts.unit.formula": fb[0].removeprefix("= "),
-        **{f"lookOpts.unit.holds.{i}.work": fb[j].split(" ≈ ")[0] for i, j in enumerate((1, 3, 4))},
-        **{f"lookOpts.unit.holds.{i}.display": B["holds"][y] for i, y in enumerate((2012, 2020, 2022))},
-        "lookOpts.unit.final": f"≈ {B['yrs_shown'][NFLX_END]} years",
-        # the finish's working is the board's own rounded stake (≈ $17,700), never $17,706 beside it (round-2 port QA
-        # nit); the exact $17,706 waits for the footer step at 26.0 s, when the board has gone
-        "lookOpts.unit.finalWork": f"{approx_usd(B['final'])} ÷ {UNIT}",
-        # the payoff lands last in the hero: the board hard-cuts to one number at the verdict
-        "lookOpts.payoff.display": f"≈ {B['yrs_shown'][NFLX_END]} years",
-        # the footer's working steps: the method (capitalised as a footer line), then the finish's two lines
-        "lookOpts.footerSteps.0.text": fb[2][0].upper() + fb[2][1:],
-        "lookOpts.footerSteps.1.text": fb[5],
-        "lookOpts.footerSteps.2.text": fb[6],
-        "verdict.text": f"**≈ {B['yrs_shown'][NFLX_END]} years** of Netflix\nat {NOW} a month",
-        "data.spend.final": f"{usd(B['total'], 2)} spent",
-        "data.own.final": approx_usd(B["final"]),
-        **{f"data.purchases.{i}.label": lab for i, lab in enumerate(B["tag_labels"])},
-        **{f"data.purchases.{i}.price": pr for i, (_, _, pr) in enumerate(B["ticks"])},
-    },
+    "strings": _B_STRINGS,
     "points": {"spend": B["spend"], "own": B["own"]},
     "purchases_x": [x for (x, _, _) in B["ticks"]],
     "vo_numbers": [
-        [],
-        [str(NFLX_START)],
-        [], [],
-        ["2020", B["yrs_shown"][2020]],
-        ["2022"],
-        [],
-        [f"{rnd(B['total']):,.0f}", f"{sig(B['final'], 3):,.0f}"],
-        [f"{NFLX_STD_NOW:.2f}", B["yrs_shown"][NFLX_END]],
+        [],                                                         # Your Netflix, free. For how long?
+        [str(NFLX_START)],                                          # Since 2012, every bill buys Netflix stock.
+        [], [],                                                     # Price hike? ... / Each year's bills ...
+        ["2020", B["yrs_shown"][2020]],                             # 2020: about 38 years.
+        ["2022"],                                                   # 2022: it halves.
+        [],                                                         # You keep paying. It comes back.
+        [f"{rnd(B['total']):,.0f}", f"{sig(B['final'], 3):,.0f}"],  # About $2,037 in bills. About $17,700 in stock.
+        [f"{NFLX_STD_NOW:.2f}", B["yrs_shown"][NFLX_END]],          # At $19.99 a month: about 74 years of Netflix.
     ],
     "vo_about": {4: [B["yrs_shown"][2020]], 7: [f"{rnd(B['total']):,.0f}", f"{sig(B['final'], 3):,.0f}"],
                  8: [B["yrs_shown"][NFLX_END]]},
@@ -633,6 +642,42 @@ EXP["b"] = {
     # the answer row's landings: (spoken year-end x, the VO line that says it)
     "holds": [(ye(2012), 0), (ye(2020), 4), (ye(2022), 5)],
 }
+# The round-2 cut as ported to Scoreboard (2026-10-08): 30.5 s, narration-paced captions, the race at about 1.6 s a
+# year with 1.3-1.8 s holds, the verdict 3.0 s after the reveal. Retired on 2026-10-12, when the condensed cut below was
+# promoted into studio/specs/ (B_IN_SPECS) and shipped; it is a reference for a git-history copy (471c793 and earlier)
+# passed with --spec.
+EXP["b_30s"] = {
+    **_B_COMMON,
+    "cut": "30.5 s (round 2, Scoreboard port)",
+    "raceT": [0.3, 23.0],
+    "pace": "narration",
+    "lane": LANE,
+}
+# The condensed cut (2026-10-12, the owner's note on 06c applied to 06b: "too many still moments kill a short; condense
+# it"). Same strings, numbers, beats and cue roles; only the clock moved. Captions are paced for reading (no
+# narration), the race runs at about 1 s a year with short pauses on the three answer-row landings (2012 ≈ 5 months,
+# the first payoff, briefly; the 2020 peak and the 2022 halving), and the verdict lands within 1.5 s of the reveal.
+EXP["b"] = {
+    **_B_COMMON,
+    "cut": "condensed (2026-10-12)",
+    # frame 1 is the clean cover (the first ticket's 0.24 s drop starts at 0, so it is invisible on frame 1 and falls
+    # from frame 2); the counters slam in at 0.24
+    "raceT": [0.24, 15.9],
+    "pace": "captions",
+    # the brief: a body of about 17-20 s (+ the 2.5 s card)
+    "lane": (17.0, 20.0),
+    "first_cap_up": 0.14,                # Scoreboard captions rise in over M.capIn: vo[0] starts this early or earlier
+    "race_start": (0.24, 0.3),           # frame 1 clean (the kit's 0.24 s icon drop) and moving from frame 2
+    "moving_s_per_year": (0.85, 1.05),   # the race's moving time per year (the answer-row pauses excluded)
+    "hold_s": (0.4, 0.7),                # each answer-row pause: long enough to land, short enough not to sit still
+    "paused_max": 2.0,                   # all pauses together
+    "verdict_after_final": 1.5,          # the payoff and verdict land within this long after the reveal (raceT[1])
+    "verdict_hold": (1.2, 1.6),          # and hold this long before the end card
+    "footer_up": 1.2,                    # each footer working step stays up at least this long
+    "cap_breath": 0.6,                   # the longest caption gap allowed, and only while the race runs with no beat
+}
+# which 06b cut studio/specs/ must hold: the condensed cut, promoted on 2026-10-12 (it was "b_30s" until then)
+B_IN_SPECS = "b"
 check("06b", "table: 2015 bills = 9 old + 3 new months", m_old_2015, 9)
 check("06b", "pinned: 188.84 shares x $93.76 ≈ $17,706",
       usd(rnd(B["cum_shares"][NFLX_END], 2) * MT_NFLX_CLOSE[NFLX_END]), "$17,706")
@@ -913,12 +958,19 @@ def check_spec(key):
     with open(path, encoding="utf-8") as f:
         spec = json.load(f)
     e = EXP[key]
+    in_specs = os.path.dirname(os.path.abspath(path)) == os.path.abspath(SPECS)
     if key == "c" and retired_c_28s(spec, path):
         e = EXP["c_28s"]                              # the retired round-2 cut, from git history (reference only)
     if key == "c":
-        in_specs = os.path.dirname(os.path.abspath(path)) == os.path.abspath(SPECS)
         check(sid, "studio/specs/ holds the condensed cut", e["cut"] if in_specs else "(--spec file)",
               EXP["c"]["cut"] if in_specs else "(--spec file)")
+        check(sid, f"cut recognised ({os.path.relpath(path, ROOT)})", e["cut"], e["cut"])
+    if key == "b":
+        # two cuts, picked by length: the 30.5 s round-2 cut, or the condensed cut (any other length fails its lane)
+        if abs(spec.get("duration", 0) - 30.5) < 1e-9:
+            e = EXP["b_30s"]
+        check(sid, "studio/specs/ holds the expected cut", e["cut"] if in_specs else "(--spec file)",
+              EXP[B_IN_SPECS]["cut"] if in_specs else "(--spec file)")
         check(sid, f"cut recognised ({os.path.relpath(path, ROOT)})", e["cut"], e["cut"])
     d = spec["data"]
 
@@ -936,6 +988,10 @@ def check_spec(key):
         # applies, so stop here rather than compare it field by field with a cut it is not
         check(sid, "a known 06c cut", f"{dur} s", f"condensed {EXP['c']['lane'][0]}-{EXP['c']['lane'][1]} s, or "
               f"the retired {RETIRED_C_28S} s cut via --spec outside studio/specs/", ok=False)
+        return spec
+    if key == "b" and not lane[0] <= dur <= lane[1]:
+        check(sid, "a known 06b cut", f"{dur} s", f"condensed {EXP['b']['lane'][0]}-{EXP['b']['lane'][1]} s, or "
+              "the 30.5 s round-2 cut", ok=False)
         return spec
 
     # --- hook rules on the header
@@ -1006,8 +1062,10 @@ def check_spec(key):
             check(sid, f"vo[{i}] 'about' before rounded {num}", ok, True)
     if e.get("pace") == "captions":
         # the hook question is the frame a viewer swipes on: the kit pre-types a caption that starts before 0, so a
-        # start at or before 0 puts it on frame 1 complete (fix pass: t -0.4, still ending at 1.7)
-        check(sid, "vo[0] complete on frame 1 (t ≤ 0)", vo[0]["t"], "≤ 0.0", ok=vo[0]["t"] <= 1e-9)
+        # start at or before 0 puts it on frame 1 complete (fix pass: t -0.4, still ending at 1.7). Scoreboard
+        # captions rise in over 0.14 s from their t, so there it must start that much before 0 (no rise on frame 1)
+        up = -e.get("first_cap_up", 0.0)
+        check(sid, f"vo[0] complete on frame 1 (t ≤ {up:g})", vo[0]["t"], f"≤ {up:g}", ok=vo[0]["t"] <= up + 1e-9)
     else:
         check(sid, "vo starts at 0.0 (hook spoken on frame 1)", vo[0]["t"], 0.0)
     check(sid, "last vo ends ≥ 0.4 s before the end", rnd(end_prev, 2), f"≤ {dur - 0.4:.1f}",
@@ -1118,6 +1176,62 @@ def check_spec(key):
         check(sid, "payoff lands with the footer's last step", po["t"], steps[-1]["t"])
         check(sid, "payoff lands inside vo[8], before it says the 74", f"t={po['t']:.2f}",
               f"{vo[8]['t']:.2f}-{vo[8]['t'] + vo[8]['d']:.2f}", ok=vo[8]["t"] <= po["t"] <= vo[8]["t"] + vo[8]["d"])
+        if e["pace"] == "captions":
+            # the condensed cut's timing targets (the editor's brief): frame 1 clean and moving from frame 2, about
+            # 1 s a year, short pauses only on the three landings, the payoff soon after the reveal, no still tail
+            t0, t1 = d["raceT"]
+            rs = e["race_start"]
+            check(sid, "race start: frame 1 clean (first ticket's drop starts ≥ 0), moving from frame 2",
+                  t0, f"{rs[0]}-{rs[1]}", ok=rs[0] - 1e-9 <= t0 <= rs[1] + 1e-9)
+            ks = unit_knots(spec)
+            pauses = [(xa, tb - ta) for (ta, xa), (tb, xb) in zip(ks, ks[1:]) if xb == xa]
+            hs = e["hold_s"]
+            check(sid, "answer-row pauses are short", ", ".join(f"{int(x)} {p:.2f} s" for x, p in pauses),
+                  f"each {hs[0]}-{hs[1]} s", ok=bool(pauses) and all(hs[0] - 1e-9 <= p <= hs[1] + 1e-9 for _, p in pauses))
+            paused = sum(p for _, p in pauses)
+            check(sid, "answer-row pauses in total", f"{paused:.2f} s", f"≤ {e['paused_max']}",
+                  ok=paused <= e["paused_max"] + 1e-9)
+            lo_s, hi_s = e["moving_s_per_year"]
+            span = d["x"]["to"] - d["x"]["from"]
+            moving = (t1 - t0 - paused) / span
+            legs = [(xb - xa, tb - ta) for (ta, xa), (tb, xb) in zip(ks, ks[1:]) if xb > xa]
+            check(sid, "race pace: moving s per year (pauses excluded)",
+                  f"{moving:.3f} (legs " + ", ".join(f"{dt / dx:.2f}" for dx, dt in legs) + ")", f"{lo_s}-{hi_s}",
+                  ok=lo_s <= moving <= hi_s + 1e-9)
+            va = spec["verdict"]["t"] - t1
+            check(sid, "payoff and verdict land soon after the reveal", f"{va:.2f} s after raceT[1]",
+                  f"≤ {e['verdict_after_final']}", ok=0 < va <= e["verdict_after_final"] + 1e-9)
+            vh = dur - spec["verdict"]["t"]
+            check(sid, "verdict hold before the end card", f"{vh:.2f} s", f"{e['verdict_hold'][0]}-{e['verdict_hold'][1]}",
+                  ok=e["verdict_hold"][0] - 1e-9 <= vh <= e["verdict_hold"][1] + 1e-9)
+            # captions run back to back (each gap < 0.2 s), so no beat is unlabelled. One kind of gap may be longer
+            # (≤ cap_breath): a breath while the race runs between two captioned beats, so a caption does not name a
+            # figure before its picture (QA nit, 2026-10-12: "2022: it halves." over the rising 2021 line). It may not
+            # hold a beat (an sfx cue, a hike tag, a footer step, an answer-row landing, the reveal or the payoff)
+            # or touch an answer-row pause: the picture moves and nothing lands uncaptioned
+            beats = sorted({s_["t"] for s_ in spec.get("sfx", [])} | {st["t"] for st in steps}
+                           | {hq["t"] for hq in unit["holds"]} | {rnd(chart_t(spec, x), 2) for x in e["purchases_x"]}
+                           | {t0, t1, spec["verdict"]["t"], po["t"]})
+            ks_ = unit_knots(spec)
+            pz_ = [(ta, tb) for (ta, xa), (tb, xb) in zip(ks_, ks_[1:]) if xb == xa]
+            gb = e["cap_breath"]
+            bad = []
+            for a, b in zip(vo, vo[1:]):
+                ga, gz = a["t"] + a["d"], b["t"]
+                if gz - ga < 0.2 - 1e-9:
+                    continue
+                inside = [bt for bt in beats if ga + 1e-6 < bt < gz - 1e-6]
+                still = [p_ for p_ in pz_ if p_[0] < gz - 1e-6 and p_[1] > ga + 1e-6]
+                if gz - ga > gb + 1e-9 or inside or still:
+                    bad.append(f"{ga:.2f}-{gz:.2f} ({gz - ga:.2f} s)" + (f" holds beats {inside}" if inside else "")
+                               + (" in a pause" if still else ""))
+            gaps = [round(b["t"] - (a["t"] + a["d"]), 2) for a, b in zip(vo, vo[1:])]
+            check(sid, "caption gaps < 0.2 s, or a breath while the race runs", "; ".join(bad) if bad else gaps,
+                  f"each < 0.2, or ≤ {gb} with the race moving and no beat inside", ok=not bad)
+            ends = [st["t"] for st in steps[1:]] + [dur]
+            ups = [round(b - st["t"], 2) for st, b in zip(steps, ends)]
+            check(sid, "each footer working step up long enough to read", ups, f"each ≥ {e['footer_up']}",
+                  ok=all(u >= e["footer_up"] - 1e-9 for u in ups))
 
     if key == "c":
         t0, t1 = d["raceT"]

@@ -404,7 +404,7 @@
       "becker-rig"
     ],
     "file": "teasers/v2/06-pov-race.md",
-    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/06-pov-race.py -> 365 checks, 0 failed, ALL PASS (exit 0) after hook pass 2 (06b's years-of-Netflix steps; was 352, and 313 before that). New checks cover: VO pacing in spoken words at 2.8 per second, counting numbers as they are read aloud; race moving by 1.0 s; first payoff by 3.0 s; raw-close derivation of the $3.65 launch price; every pinned-comment product multiplying out. Studio linter (node src/cli.mjs check): 06a, 06b and 06c each 0 errors, 0 warnings (3/3 clean). Re-run 2026-10-12 after 06c's condensed cut (18.2 s, was 30.5 s) was promoted into studio/specs/ and shipped: 441 checks, 0 failed; 06c lints clean (18.2 s = 15.7 + 2.5 s end card).",
+    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/06-pov-race.py -> 365 checks, 0 failed, ALL PASS (exit 0) after hook pass 2 (06b's years-of-Netflix steps; was 352, and 313 before that). New checks cover: VO pacing in spoken words at 2.8 per second, counting numbers as they are read aloud; race moving by 1.0 s; first payoff by 3.0 s; raw-close derivation of the $3.65 launch price; every pinned-comment product multiplying out. Studio linter (node src/cli.mjs check): 06a, 06b and 06c each 0 errors, 0 warnings (3/3 clean). Re-run 2026-10-12 after 06c's condensed cut (18.2 s, was 30.5 s) was promoted into studio/specs/ and shipped: 441 checks, 0 failed; 06c lints clean (18.2 s = 15.7 + 2.5 s end card). Re-run 2026-10-12 after 06b's condensed cut (20.8 s, was 33.0 s) was promoted into studio/specs/ and shipped: 442 checks, 0 failed; 06b lints clean (20.8 s = 18.3 + 2.5 s end card).",
     "teasers": [
       {
         "id": "06a-scoreboard-first-iphone-apple",
@@ -431,11 +431,11 @@
         "look": "scoreboard",
         "title": "Your 2012-2025 Netflix Bills in Netflix Stock: How Many Years of Free Netflix?",
         "header": "**$19.99** Netflix, free\nfor how many years?",
-        "runtime_s": 33.0,
+        "runtime_s": 20.8,
         "key_numbers": [
           "hook unit: today's Standard bill $19.99 (from March 2026, CNBC 2026-03-26); 12 x $19.99 = $239.88 a year; not a race input",
           "$7.99 Standard plan from Jan 2012, 7 hikes to $17.99 (tags 'Hike 1 · May 2014' ... 'Hike 7 · Jan 2025'); NFLX 2012-2014 at Macrotrends' 4 dp",
-          "end of 2012 $107 vs $95.88 (row at 1.91 s); bar ≈ $107 ÷ $19.99 ≈ 5 months (first payoff in the hook's unit, typed by ~2.75 s)",
+          "end of 2012 $107 vs $95.88; bar ≈ $107 ÷ $19.99 ≈ 5 months (first payoff in the hook's unit: the row lands at 1.2 s with the race paused to 1.7 s in the condensed cut; 1.91 s in the retired 30.5 s cut)",
           "bar year-counts: 2013 ≈ 2.4 years ($568), 2020 ≈ 38 ($9,181), 2022 ≈ 22 ($5,289, the stake halves from $10,410)",
           "$2,037.32 paid over 168 months; 188.84 shares x $93.76 = $17,705.59 shown as ≈ $17,700",
           "verdict ≈ 74 years of Netflix at $19.99 a month (17,705.59 ÷ 239.88 = 73.81); pinned ≈ 73.8 years and ≈ 8.7x the bills"

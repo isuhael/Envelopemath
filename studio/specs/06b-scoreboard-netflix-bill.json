@@ -3,59 +3,59 @@
   "look": "scoreboard",
   "format": "pov-race",
   "fps": 30,
-  "duration": 30.5,
+  "duration": 18.3,
   "header": "**$19.99** Netflix, free\nfor how many years?",
   "footer": "Standard plan list price · 12/31/25 close",
   "captions": true,
   "vo": [
     {
-      "t": 0.0,
-      "d": 2.4,
+      "t": -0.4,
+      "d": 2.1,
       "text": "Your Netflix, free. For how long?"
     },
     {
-      "t": 3.0,
-      "d": 2.9,
+      "t": 1.75,
+      "d": 1.8,
       "text": "Since 2012, every bill buys Netflix stock."
     },
     {
-      "t": 6.0,
-      "d": 2.8,
+      "t": 3.6,
+      "d": 1.8,
       "text": "Price hike? Your investment goes up too."
     },
     {
-      "t": 9.2,
+      "t": 5.45,
       "d": 3.6,
       "text": "Each year's bills buy at that year's average price."
     },
     {
-      "t": 14.3,
-      "d": 2.4,
+      "t": 9.1,
+      "d": 1.2,
       "text": "2020: about 38 years."
     },
     {
-      "t": 17.0,
-      "d": 1.6,
+      "t": 10.9,
+      "d": 2.0,
       "text": "2022: it halves."
     },
     {
-      "t": 18.7,
-      "d": 2.4,
+      "t": 12.95,
+      "d": 2.2,
       "text": "You keep paying. It comes back."
     },
     {
-      "t": 21.2,
-      "d": 4.7,
+      "t": 15.2,
+      "d": 1.5,
       "text": "About $2,037 in bills. About $17,700 in stock."
     },
     {
-      "t": 26.0,
-      "d": 3.6,
+      "t": 16.7,
+      "d": 1.2,
       "text": "At $19.99 a month: about 74 years of Netflix."
     }
   ],
   "verdict": {
-    "t": 26.0,
+    "t": 16.7,
     "text": "**≈ 74 years** of Netflix\nat $19.99 a month"
   },
   "data": {
@@ -244,10 +244,10 @@
       "dp": 0
     },
     "raceT": [
-      0.3,
-      23.0
+      0.24,
+      15.9
     ],
-    "hold": 7.5
+    "hold": 2.4
   },
   "lookOpts": {
     "cover": "clean",
@@ -260,86 +260,88 @@
       "holds": [
         {
           "x": 2012.99,
-          "t": 1.91,
+          "t": 1.2,
           "work": "2012: $107 ÷ $19.99",
-          "display": "≈ 5 months"
+          "display": "≈ 5 months",
+          "hold": 0.5
         },
         {
           "x": 2020.99,
-          "t": 14.9,
-          "hold": 1.8,
+          "t": 9.7,
+          "hold": 0.6,
           "work": "2020: $9,181 ÷ $239.88",
           "display": "≈ 38 years"
         },
         {
           "x": 2022.99,
-          "t": 18.5,
+          "t": 12.3,
           "work": "2022: $5,289 ÷ $239.88",
           "display": "≈ 22 years",
-          "tone": "bad"
+          "tone": "bad",
+          "hold": 0.6
         }
       ],
-      "hold": 1.3,
+      "hold": 0.6,
       "final": "≈ 74 years",
       "finalWork": "≈ $17,700 ÷ $239.88",
       "icon": "ticket"
     },
     "payoff": {
-      "t": 26.0,
+      "t": 16.7,
       "display": "≈ 74 years",
       "icon": "ticket",
       "dur": 0
     },
     "footerSteps": [
       {
-        "t": 9.2,
+        "t": 5.45,
         "text": "Each year: bills ÷ avg price"
       },
       {
-        "t": 21.2,
+        "t": 15.2,
         "text": "188.8 shares × $93.76 ≈ $17,700"
       },
       {
-        "t": 26.0,
+        "t": 16.7,
         "text": "$17,706 ÷ $239.88 ≈ 74 years"
       }
     ]
   },
   "sfx": [
     {
-      "t": 5.17,
+      "t": 3.04,
       "kind": "pop"
     },
     {
-      "t": 7.24,
+      "t": 4.46,
       "kind": "pop"
     },
     {
-      "t": 10.17,
+      "t": 6.46,
       "kind": "pop"
     },
     {
-      "t": 11.99,
+      "t": 7.71,
       "kind": "pop"
     },
     {
-      "t": 14.55,
+      "t": 9.46,
       "kind": "pop"
     },
     {
-      "t": 17.61,
+      "t": 11.31,
       "kind": "pop"
     },
     {
-      "t": 18.5,
+      "t": 12.3,
       "kind": "thud"
     },
     {
-      "t": 21.94,
+      "t": 14.91,
       "kind": "pop"
     },
     {
-      "t": 23.0,
+      "t": 15.9,
       "kind": "cash"
     }
   ]

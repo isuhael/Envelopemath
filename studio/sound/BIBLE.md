@@ -165,7 +165,7 @@ Otherwise use a single segment from `pick(P, base)`. Choose first, then test aga
 | 05b | hit+cash | 18.200 | 36 (r0) | 118.681 | base 22.10: 8 (r0) @ 123.08 | 22.60 |
 | 05c | hit+cash | 9.130 | 22 (r2) | 144.578 | V 17.00: 19 (r3) @ 144.85 · base 22.80: 14 (r2) @ 144.83 | 23.16 |
 | 06a | riser | 21.400 | 52 (r0) | 145.794 | base 26.50: 12 (r0) @ 141.18 | 26.86 |
-| 06b | riser | 23.000 | 56 (r0) | 146.087 | V 26.00: 7 (r3) @ 140.00 · base 30.50: 11 (r3) @ 146.67 | 30.86 |
+| 06b | riser | 15.900 | 40 (r0) | 150.943 | base 18.30: 6 (r2) @ 150.00 | 18.66 |
 | 06c | riser | 13.000 | 25 (r1) | 115.385 | base 15.70: 5 (r1) @ 111.11 | 16.20 |
 | 07a | riser | 12.000 | 30 (r2) | 150.000 | V 18.10: 16 (r0) @ 157.38 · base 22.80: 12 (r0) @ 153.19 | 23.16 |
 | 07b | hit+cash | 16.900 | 34 (r2) | 120.710 | base 27.40: 21 (r1) @ 120.00 | 27.90 |
@@ -199,12 +199,12 @@ Tempo only ever changes at P or V, each under a hit and a section change, so it 
 3. **BUILD:** HOOK end to TENSION start.
    - Split it into 4-bar phrases from the HOOK end; the last phrase may be short.
    - Energy steps E3 → E4 at the bar line nearest the BUILD's time midpoint (a tie goes to the earlier bar line).
-4. **DROP:** P to min(P + 2 bars, the start of the BREAK before V (or V itself) if V is anchored, base − 1 bar). With 06b, for example, the DROP is 1 bar, then a 3-beat BREAK, then V.
+4. **DROP:** P to min(P + 2 bars, the start of the BREAK before V (or V itself) if V is anchored, base − 1 bar). If that leaves less than 1 bar, the DROP is min(P + 1 bar, that BREAK or V, base) instead. With 01a, for example, the DROP is 2 bars, then a 1-bar HOLD, a 3-beat BREAK and V. 02a, 06b and 06c have 5-6 beats from P to base, so each has a 1-bar DROP and a short CADENCE.
 5. **HOLD:** DROP end to the next anchor (V or CADENCE). With V anchored:
    - BREAK: the r beats before V, if r > 0
    - VERDICT: 1 bar from V
    - HOLD 2: on to CADENCE
-6. **CADENCE:** the last full bar before base plus any remainder beats.
+6. **CADENCE:** the last full bar before base plus any remainder beats. It starts later if the DROP (or, with V anchored, the VERDICT bar) ends later, so it can be only the remainder beats (06b: 2 beats).
 7. **CARD:** base to duration.
 
 A HOLD longer than 4 bars with no cue of weight ≥ 1 becomes a **mini-build**: energy +1 every 4 bars, capped at E4.

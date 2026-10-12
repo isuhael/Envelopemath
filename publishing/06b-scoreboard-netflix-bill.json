@@ -1,0 +1,714 @@
+{
+  "id": "06b-scoreboard-netflix-bill",
+  "teaser": "06b Scoreboard, pov-race: \"Your 2012-2025 Netflix bills in Netflix stock: how many years of free Netflix?\"",
+  "prepared": "2026-10-12",
+  "for_video": {
+    "current_render": "renders/channel/06b-scoreboard-netflix-bill.mp4",
+    "current_duration_s": 33.0,
+    "current_sha256": "323dc45ed1bea3400a3c78b16cb1e955f73f4f4ba4f9c58b761b020ca211c9c2",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the 33.0 s round-2 cut. The condensed cut the owner asked for is being made now; when it ships, rebuild this sheet with --covers so for_video and both covers follow the shipped file.",
+    "cut": {
+      "name": "round 2, ported to Scoreboard (2026-10-08)",
+      "spec": "studio/specs/06b-scoreboard-netflix-bill.json",
+      "body_s": 30.5,
+      "card_s": 2.5,
+      "shipped": "2026-10-12 (the sound pass, with all 30)",
+      "status": "to be replaced by the condensed cut (in progress in studio/specs-wip/ on 2026-10-12)"
+    },
+    "on_ship": [
+      "Promote and ship the condensed cut (studio/sound/BIBLE.md §11).",
+      "Run `python3 publishing/tools/build_publishing.py 06b-scoreboard-netflix-bill --covers`: it re-reads the render's duration and sha256 and re-exports both covers at COVER_T.",
+      "Re-pick the cover by content on the shipped file (cover.frame_by_content); if it is no longer frame 0, set COVER_T and COVER_FRAME in the data file and rebuild.",
+      "In publishing/data/06b-scoreboard-netflix-bill.py, update the Video bullet, FOR_VIDEO_NOTE, CUT, COVER_RENDER_WORD ('shipped'), COVER_FRAME_MEASURED and MATH_RUN. The copy needs no change unless a figure moved, and the numbers check catches that.",
+      "Re-read the long alt text against the shipped cut: it describes content, not timings, but the condense may drop a beat it names."
+    ]
+  },
+  "facts": {
+    "source": "teasers/v2/06-pov-race.md section (b) 06b; teasers/v2/checks/06-pov-race.py: 443 checks, 0 failed on studio/specs/ (2026-10-12)",
+    "bills": "168 monthly US Standard-plan list prices, Jan 2012-Dec 2025: $7.99, then 7 hikes (May 2014 $8.99, Oct 2015 $9.99, Oct 2017 $10.99, Jan 2019 $12.99, Oct 2020 $13.99, Jan 2022 $15.49, Jan 2025 $17.99), each counted from the month it was announced; $2,037.32 in all",
+    "method": "each year's 12 bills buy NFLX at that year's average split-adjusted close (Macrotrends); Netflix pays no dividend; no fees or taxes",
+    "end_2012": "$95.88 in, $106.98 in stock ≈ 5 months of today's Netflix ($107 ÷ $19.99 = 5.35)",
+    "end_2020": "$1,095.92 in, $9,181 in stock ≈ 38 years ($9,181 ÷ $239.88 = 38.27)",
+    "halving_2022": "the stake falls from $10,410 (end of 2021, 43.4 years) to $5,289 (≈ 22 years): −49.2%, the stock −51.05%",
+    "final": "188.839 shares × $93.76 (12/31/2025 close, split-adjusted) = $17,705.59 ≈ $17,700 (footer 188.8 × $93.76 ≈ $17,700; pinned 188.84 × $93.76 ≈ $17,706)",
+    "multiple": "17,705.59 ÷ 2,037.32 = 8.69 ≈ 8.7× (pinned comment only)",
+    "unit": "today's Standard, $19.99 a month since March 2026 (CNBC): × 12 = $239.88 a year; it converts the stake into years and is never a race input",
+    "years": "$17,705.59 ÷ $239.88 = 73.81 ≈ 74 years (885.7 months); the working's $17,706 ÷ $239.88 = 73.81 too",
+    "assumptions": "$19.99 held flat (future hikes ignored); valued at the 12/31/2025 close, and NFLX has moved since; members grandfathered in 2014-2016 paid a little under list",
+    "verdict": "≈ 74 years of Netflix at $19.99 a month"
+  },
+  "youtube": {
+    "titles_ranked": [
+      {
+        "rank": 1,
+        "title": "What If Your Netflix Bills Had Bought Netflix Stock? How Many Years of Free Netflix?",
+        "vidiq_score": 96,
+        "chars": 84,
+        "note": "PICK. The whole first question is the first 52 characters, and the second is the video's own hook. No hashtags in the title (no room for three), so the description's first three show above it."
+      },
+      {
+        "rank": 2,
+        "title": "What If Every Netflix Bill Since 2012 Had Bought Netflix Stock? How Many Years of Free Netflix?",
+        "vidiq_score": 98,
+        "chars": 95,
+        "note": "Top score, 2 points over the pick, but 95 characters, with 'Netflix Stock' ending at character 62 (51 in the pick). The year clock already shows 2012 on frame 1."
+      },
+      {
+        "rank": 3,
+        "title": "What If You Bought Netflix Stock Instead of Paying for Netflix? #Netflix #NetflixStock #stocks",
+        "vidiq_score": 95,
+        "chars": 94,
+        "note": "The house 3-hashtag form, with 'Netflix Stock' at characters 20-32. It drops the years question, the one thing no same-idea Short asks, and is close to titles already up (research, section 2)."
+      }
+    ],
+    "titles_also_scored": [
+      {
+        "title": "What If Your Netflix Bills Had Bought Netflix Stock Instead? How Many Years of Free Netflix?",
+        "vidiq_score": 97,
+        "chars": 92,
+        "note": "92 chars: 'Instead' adds 8 characters for 1 point"
+      },
+      {
+        "title": "What If Your Netflix Bills Since 2012 Had Bought Netflix Stock? How Many Years of Free Netflix?",
+        "vidiq_score": 96,
+        "chars": 95,
+        "note": "95 chars, no gain over the pick"
+      },
+      {
+        "title": "What If You Bought Netflix Stock Instead of Paying Netflix Since 2012?",
+        "vidiq_score": 95,
+        "chars": 70,
+        "note": ""
+      },
+      {
+        "title": "What If You Bought Netflix Stock Instead of Paying for Netflix?",
+        "vidiq_score": 95,
+        "chars": 63,
+        "note": "the core of option 3"
+      },
+      {
+        "title": "What If Your Netflix Bills Bought Netflix Stock? How Many Years of Free Netflix?",
+        "vidiq_score": 95,
+        "chars": 80,
+        "note": "the pick without 'Had'"
+      },
+      {
+        "title": "What If Your Netflix Bills Bought Netflix Stock? How Many Years of Free Netflix? #NetflixStock",
+        "vidiq_score": 95,
+        "chars": 94,
+        "note": ""
+      },
+      {
+        "title": "How Many Years of Free Netflix Would Your Old Netflix Bills Buy in Netflix Stock?",
+        "vidiq_score": 90,
+        "chars": 81,
+        "note": ""
+      },
+      {
+        "title": "What If Every Netflix Bill Since 2012 Bought Netflix Stock?",
+        "vidiq_score": 89,
+        "chars": 59,
+        "note": ""
+      },
+      {
+        "title": "What If Your Netflix Bills Had Bought Netflix Stock Instead?",
+        "vidiq_score": 88,
+        "chars": 60,
+        "note": ""
+      },
+      {
+        "title": "What If Your Netflix Bills Had Bought Netflix Stock Instead? #Netflix #NetflixStock #stocks",
+        "vidiq_score": 88,
+        "chars": 91,
+        "note": ""
+      },
+      {
+        "title": "What If Your Netflix Bills Bought Netflix Stock Instead?",
+        "vidiq_score": 87,
+        "chars": 56,
+        "note": ""
+      },
+      {
+        "title": "What If Your Netflix Bills Bought Netflix Stock Instead? #Netflix #NetflixStock #stocks",
+        "vidiq_score": 87,
+        "chars": 87,
+        "note": ""
+      },
+      {
+        "title": "Netflix Stock Instead of Your Netflix Bills: How Many Years of Free Netflix?",
+        "vidiq_score": 87,
+        "chars": 76,
+        "note": ""
+      },
+      {
+        "title": "Your Netflix Bills in Netflix Stock: How Many Years of Free Netflix?",
+        "vidiq_score": 84,
+        "chars": 68,
+        "note": ""
+      },
+      {
+        "title": "Your 2012-2025 Netflix Bills in Netflix Stock: How Many Years of Free Netflix?",
+        "vidiq_score": 81,
+        "chars": 78,
+        "note": "the write-up's title"
+      },
+      {
+        "title": "$19.99 Netflix, Free for How Many Years?",
+        "vidiq_score": 81,
+        "chars": 40,
+        "note": "the on-screen header"
+      }
+    ],
+    "title_pick": "What If Your Netflix Bills Had Bought Netflix Stock? How Many Years of Free Netflix?",
+    "title_pick_chars": 84,
+    "description": "What if every Netflix bill from 2012 to 2025 had bought Netflix stock instead? $2,037.32 of bills vs about $17,700 in stock at the 12/31/2025 close. At today's $19.99 a month, that's about 74 years of Netflix.\n\nThe math, shown:\n• 168 monthly bills at the US Standard plan's list price, from $7.99 in 2012 through seven price hikes to $17.99 in 2025: $2,037.32.\n• Each year's 12 bills buy NFLX at that year's average price (split-adjusted). Netflix pays no dividend.\n• End of 2020: $1,095.92 in, $9,181 in stock. ≈ 38 years of Netflix at $19.99.\n• 2022: the stake halves, from $10,410 to $5,289 (≈ 22 years). You keep paying. It comes back.\n• End (12/31/2025 close): 188.8 shares × $93.76 ≈ $17,700, vs $2,037.32 of bills.\n• $17,706 ÷ ($19.99 × 12 = $239.88 a year) ≈ 74 years, with $19.99 held flat.\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\n\nAnimation and original sound: The Back of the Envelope. US Standard plan list prices, each counted from the month it was announced (Android Authority; Variety; CNBC); Standard is $19.99 a month since March 2026 (CNBC). Each year's bills buy at that year's average NFLX price, adjusted for splits (Macrotrends); valued at the 12/31/2025 close ($93.76, split-adjusted), and NFLX has moved since. Future price hikes are ignored; members grandfathered in 2014-2016 paid a little under list. No fees or taxes. Not financial advice. Not affiliated with or endorsed by Netflix.\n#Netflix #NetflixStock #stocks",
+    "description_chars": 1480,
+    "hashtags_in_order": [
+      "#Netflix",
+      "#NetflixStock",
+      "#stocks"
+    ],
+    "hashtag_rules": "Title hashtags show as links in the title; with none in the title, the first 3 description hashtags show above it. Over 60 hashtags and YouTube ignores all of them. #Shorts is not needed (vertical, under 3 min).",
+    "tags": [
+      "netflix stock",
+      "netflix subscription",
+      "what if you invested",
+      "netflix price hike",
+      "netflix price increase",
+      "netflix stock price",
+      "netflix stock crash",
+      "nflx",
+      "netflix",
+      "stocks",
+      "dollar cost averaging",
+      "opportunity cost",
+      "money math",
+      "math animation",
+      "the back of the envelope",
+      "envelope math"
+    ],
+    "tags_chars_as_youtube_counts": 287,
+    "pinned_comment": "Which plan are you on? Standard is $19.99 a month since March 2026; on another plan, divide by your own bill × 12.\n\nThe working: 188.84 shares × $93.76 (12/31/2025 close, split-adjusted) ≈ $17,706, against $2,037.32 of bills (≈ 8.7×). $17,706 ÷ $239.88 a year ≈ 73.8 years. NFLX has moved since 12/31/2025, and the years move with it. Ignores taxes and future price hikes.",
+    "related_video": {
+      "pick": {
+        "id": "fbpdKf4Wy8c",
+        "title": "What If You Bought Starbucks Stock Instead of a $4 Latte Every Day?",
+        "url": "https://www.youtube.com/shorts/fbpdKf4Wy8c",
+        "why": "06c, the same POV-race series and mechanic, live since Mon 12 Oct 2026. Starbucks gave about 1.4× on 12 years of lattes and Netflix about 8.7× on 14 years of bills, so the pair shows the answer depends on the stock."
+      },
+      "swap_when_live": "06a (first iPhone vs Apple stock), the third POV race, once published. Then point 06c's Related video at this Short.",
+      "end_screen": "Shorts have no end screens or cards. The Related video link is the Shorts equivalent."
+    },
+    "thumbnail_frame": "In the YouTube app, pick frame 1, the clean cover (the same content as the IG cover).",
+    "settings": {
+      "category": "Education",
+      "audience": "Not made for kids",
+      "altered_or_synthetic_content": "No (animated chart, not realistic footage)",
+      "remixing": "Allow",
+      "captions": "None needed (no narration; all text is on screen)"
+    },
+    "posting_window": {
+      "when": "First Tue-Thu evening after the condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day): Tue 13 Oct 2026 at the earliest. Sunday 06:00-08:00 ET is the alternative.",
+      "spacing": "Keep it at least 6 h from any other upload on the channel. 06c went up Mon 12 Oct 03:45 ET, so any Tue-Thu evening clears it.",
+      "why": "The channel's own October Shorts, median views by posting slot (refreshed 2026-10-12): Sunday 05:00-08:00 ET 1,191 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2); 06c, posted Mon 03:45 ET, had 536 views the same day (too young to compare). The evening slot is also the best one on Instagram, so one evening serves both. n = 7 (06c left out, one day old) and confounded by topic, so treat it as a test. Search demand: 'netflix stock' runs +10.4% and 'netflix subscription' +49.0% over their 30-day baselines. Third-party Shorts from late Sep and early Oct 2026 cover NFLX's slide and analyst calls (not verified here), so the stock is in the news. The copy says only that NFLX has moved since 12/31/2025."
+    },
+    "description_utf8_bytes": 1505
+  },
+  "instagram": {
+    "caption": "What if every Netflix bill from 2012 to 2025 had bought Netflix stock instead? Your old bills, paying for your new ones.\n\nPOV: every Standard-plan bill you paid Netflix, 2012 to 2025, buys Netflix stock instead. Each year's 12 bills buy NFLX at that year's average price (split-adjusted).\n\nThe math, shown:\n• 168 bills, $7.99 a month in 2012 up to $17.99 in 2025: $2,037.32.\n• End of 2020: $9,181 in stock. ≈ 38 years of Netflix at $19.99.\n• 2022: it halves, to $5,289 (≈ 22 years). Then it comes back.\n• End of 2025: 188.8 shares × $93.76 (split-adjusted close) ≈ $17,700 in stock.\n• $17,706 ÷ $239.88 a year ≈ 74 years of Netflix at $19.99 a month.\n\nYour old bills would pay for your new ones, if $19.99 never went up and NFLX held its 12/31/2025 close. It has moved since.\n\n$19.99 is Standard since March 2026. US list prices; members grandfathered in 2014-2016 paid a little less. Netflix pays no dividend. No fees or taxes. Not financial advice. Not affiliated with or endorsed by Netflix.\n\nWhich plan are you on?\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\nAnimation and original sound: The Back of the Envelope.\n\n#netflix #NFLX #stocks #investing #personalfinance",
+    "caption_chars": 1204,
+    "caption_first_125": "What if every Netflix bill from 2012 to 2025 had bought Netflix stock instead? Your old bills, paying for your new ones.\n\nPOV",
+    "caption_rule": "The first 125 characters are the question, the 'Netflix bill' and 'Netflix stock' keywords and the write-up's numberless caption line, no result: the caption overlays the Reel from frame 1, so every number sits below 'more'.",
+    "hashtags_in_order": [
+      "#netflix",
+      "#NFLX",
+      "#stocks",
+      "#investing",
+      "#personalfinance"
+    ],
+    "hashtag_rule": "Instagram caps a post at 5 hashtags (since Dec 2025).",
+    "alt_text_short": "Chart: $2,037 of Netflix bills, 2012 to 2025, vs about $17,700 in stock: about 74 years of Netflix.",
+    "alt_text_long": "Animation on a black scoreboard. The header asks: $19.99 Netflix, free for how many years? Two counters race from 2012 to 2025: what you paid Netflix, with a ticket dropping onto its line at each of seven price hikes, and the same bills in Netflix stock, in green. An answer row turns the stock into years of today's $19.99 plan: about 38 years by 2020, about 22 after the stock halves in 2022, then a climb back. Finish: $2,037.32 of bills vs about $17,700 in stock. Payoff: about 74 years of Netflix at $19.99 a month.",
+    "alt_text_where": "Advanced settings → Accessibility → Alt text, if your app shows it for Reels.",
+    "cover": {
+      "files": {
+        "3x4": "publishing/06b-scoreboard-netflix-bill-cover-3x4.jpg",
+        "9x16": "publishing/06b-scoreboard-netflix-bill-cover-9x16.jpg"
+      },
+      "frame_in_current_render_s": 0,
+      "frame_index": 0,
+      "frame_by_content": "The clean cover, frame 1: the question '$19.99 NETFLIX, FREE / FOR HOW MANY YEARS?' with $19.99 the only price, the board's tags PAID TO NETFLIX | IN NETFLIX STOCK over unlit counters ('$-.--'), the empty 2013-2025 race under the 2012 year clock, the working 'STOCK ÷ ($19.99 × 12)' and the empty answer '? YEARS'. It asks and does not answer, like the title and the caption. The write-up names frame 1 as the Instagram cover, and the spec designs it as one (`cover: \"clean\"`). On any cut, use the last frame before the first ticket falls and the counters light.",
+      "frame_measured": "On the current 33 s render, frames 0-2 (0.00-0.07 s) are that clean frame; from frame 3 the first ticket falls in, and the counters light at 0.3 s (frame 9). Frame 0 shows the first caption, 'Your Netflix, free. For how long?', with only 'Your' lit (the kit lights it word by word); the grey words still read.",
+      "crop": "3:4 = 1080×1440 from y 60 to 1500 of the 1080×1920 frame: the badge, the question, the board, the empty race, '? YEARS' and the caption; it drops the empty floor. A centred grid crop (y 240-1680) cuts the badge and leaves the question on the edge.",
+      "how_to_set": "In 'Edit cover', pick frame 1 of the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts both board tags.",
+      "re_export": "ffmpeg -ss 0 -i renders/channel/06b-scoreboard-netflix-bill.mp4 -frames:v 1 -vf \"crop=1080:1440:0:60\" -q:v 2 publishing/06b-scoreboard-netflix-bill-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 0 -i renders/channel/06b-scoreboard-netflix-bill.mp4 -frames:v 1 -q:v 2 publishing/06b-scoreboard-netflix-bill-cover-9x16.jpg"
+    },
+    "first_comment": "Bills: $2,037.32. Stock: ≈ $17,700 at the 12/31/2025 close. At $19.99 a month that's ≈ 74 years of Netflix, if the price never rose. Which plan are you on?",
+    "first_comment_action": "Post it right after publishing and pin it.",
+    "trial_reels": {
+      "recommendation": "Post as a regular Reel, not a Trial.",
+      "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut ships, the 33.0 s render it replaces leaves renders/channel; get it from git with `git show 471c793:renders/channel/06b-scoreboard-netflix-bill.mp4 > 06b-33s.mp4` (sha256 323dc45e…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3% on its first day) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+    },
+    "settings": {
+      "audio": "Rename the original audio to 'Netflix bills vs Netflix stock — The Back of the Envelope' if the app allows; it is the score, with no voice.",
+      "share_to_feed": "On",
+      "google_indexing": "Public professional-account posts can appear in Google/Bing since 10 Jul 2025, so the caption is written as a searchable question."
+    },
+    "posting_window": {
+      "when": "Same evening as YouTube, about 15 min after the Short: 21:45-22:45 ET, Tue 13 Oct 2026 at the earliest.",
+      "why": "October Reels, median plays by posting slot (refreshed 2026-10-12): weekday 22:00-00:30 ET 5,445 (n = 3, including the two best: 7,276 and 5,445), weekday midday 1,202 (n = 2), Sunday 05:00-08:00 ET 1,083 (n = 2). 06c, posted Mon 03:46 ET, had 1,685 plays the same day with a 40.3% skip rate. Skip rate tracks plays more closely than the hour does: 27.0-27.5% for the top two, 56.9-65.1% for the bottom two. The condense matters more than the hour."
+    },
+    "alt_text_rule": "Paste the short version into Instagram: it is kept at or under 100 characters so it fits the field however short it is, and it writes 'to' and 'about' instead of '-' and '≈' so screen readers read it cleanly. The long version is for anywhere with room (a website embed, a newsletter)."
+  },
+  "research": {
+    "keywords_youtube": [
+      {
+        "keyword": "netflix stock",
+        "est_monthly_searches": 35557,
+        "volume": 67.9,
+        "competition": 30.0,
+        "overall": 68.8,
+        "note": "seed; +10.4% vs its 30-day baseline (32,208)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "netflix subscription",
+        "est_monthly_searches": 28272,
+        "volume": 66.4,
+        "competition": 45.2,
+        "overall": 61.8,
+        "note": "+49.0% vs its 30-day baseline (18,978); much of it how-to intent",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "free netflix subscription",
+        "est_monthly_searches": 11519,
+        "volume": 60.6,
+        "competition": 13.8,
+        "overall": 70.9,
+        "note": "people looking for a free account: not this video's intent, so not in the tags",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "what if you invested",
+        "est_monthly_searches": 9269,
+        "volume": 59.2,
+        "competition": 37.5,
+        "overall": 60.5,
+        "note": "+79.0% vs its 30-day baseline (5,178); 9,302 in the 06c sheet a day earlier",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "cancel netflix subscription",
+        "est_monthly_searches": 7402,
+        "volume": 57.8,
+        "competition": 41.6,
+        "overall": 58.0,
+        "note": "+80.3% vs its baseline (4,105); how-to intent, not in the tags",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "how many hours of work to afford a netflix subscription",
+        "est_monthly_searches": 5382,
+        "volume": 55.7,
+        "competition": 26.9,
+        "overall": 62.7,
+        "note": "the same re-pricing idea: a bill in another unit",
+        "metrics_as_of": "2026-09-14"
+      },
+      {
+        "keyword": "netflix stock crash",
+        "est_monthly_searches": 5365,
+        "volume": 55.7,
+        "competition": 31.2,
+        "overall": 60.9,
+        "note": "the video's 2022 halving; news intent too",
+        "metrics_as_of": "2026-08-19"
+      },
+      {
+        "keyword": "netflix price hike",
+        "est_monthly_searches": 5186,
+        "volume": 55.5,
+        "competition": 59.0,
+        "overall": 49.7,
+        "note": "flat (0%); the highest competition here",
+        "metrics_as_of": "2026-05-19"
+      },
+      {
+        "keyword": "netflix stock price",
+        "est_monthly_searches": 4891,
+        "volume": 55.1,
+        "competition": 41.6,
+        "overall": 56.4,
+        "note": "",
+        "metrics_as_of": "2026-07-09"
+      },
+      {
+        "keyword": "netflix price increase",
+        "est_monthly_searches": 4125,
+        "volume": 54.0,
+        "competition": 38.8,
+        "overall": 56.9,
+        "note": "",
+        "metrics_as_of": "2026-08-01"
+      },
+      {
+        "keyword": "nflx",
+        "est_monthly_searches": 3542,
+        "volume": 53.0,
+        "competition": 32.9,
+        "overall": 58.6,
+        "note": "the ticker",
+        "metrics_as_of": "2026-09-18"
+      },
+      {
+        "keyword": "netflix (topic)",
+        "est_monthly_searches": 1509447,
+        "volume": 92.2,
+        "competition": 77.0,
+        "overall": 64.5,
+        "note": "-30.6% vs its 30-day baseline (2,173,946)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "what if you invested in netflix",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": 11.2,
+        "overall": 35.5,
+        "note": "<750/month (overall 35.5): too small to target",
+        "metrics_as_of": null
+      },
+      {
+        "keyword": "netflix subscription cost",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": 29.7,
+        "overall": 28.1,
+        "note": "<750/month",
+        "metrics_as_of": null
+      },
+      {
+        "keyword": "invest instead of subscriptions",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": null,
+        "overall": null,
+        "note": "<750/month; no competition score",
+        "metrics_as_of": null
+      }
+    ],
+    "keywords_source": "vidIQ keyword research (research, matching_terms and questions modes), pulled 2026-10-12. vidIQ refreshes each keyword on its own schedule, so each row carries its snapshot date in metrics_as_of; six rows are older snapshots (2026-05-19 to 2026-09-18).",
+    "same_idea_youtube_shorts": [
+      {
+        "title": "Don't Just Sub To Netflix, Buy Their STOCKS! #stockmarket #investing #netflix",
+        "channel": "HD Finance",
+        "subscribers": 986,
+        "views": 22697,
+        "published": "2023-06-20",
+        "note": "10 s; outlier score 1,260.9 in vidIQ's search"
+      },
+      {
+        "title": "🔥 How much you make investing your Netflix Subscriptions",
+        "channel": "Raylin Records",
+        "subscribers": 12000,
+        "views": 5077,
+        "published": "2022-08-16"
+      },
+      {
+        "title": "Your Netflix Bill Could’ve Bought Netflix",
+        "channel": "Invested Instead",
+        "subscribers": 19,
+        "views": 2351,
+        "published": "2026-06-22",
+        "note": "$10/month since 2010"
+      },
+      {
+        "title": "Netflix & Chill... but what if you also invested? 💰",
+        "channel": "Sid Panjabi",
+        "subscribers": 3210,
+        "views": 1761,
+        "published": "2025-04-01",
+        "note": "India-facing; since 2007"
+      },
+      {
+        "title": "You paid Netflix $2,411… it could've paid YOU",
+        "channel": "The Market Feed",
+        "subscribers": 9,
+        "views": 1481,
+        "published": "2026-09-28",
+        "note": "Standard plan, Jan 2010-Sep 2026"
+      },
+      {
+        "title": "Netflix Subscription vs Investment",
+        "channel": "8bitbullish",
+        "subscribers": 60,
+        "views": 1315,
+        "published": "2025-07-14"
+      },
+      {
+        "title": "What if you’d invested £1,000 in Netflix in 2020? 👀 #Stocks #Netflix #Finance",
+        "channel": "IG UK",
+        "subscribers": 79800,
+        "views": 1261,
+        "published": "2025-05-15",
+        "note": "a lump sum, not bills, but its description answers in years of binge-watching ('94 years'), the same unit as ours"
+      },
+      {
+        "title": "What If You Invested $15 a Month in Netflix Instead of Paying to Watch?",
+        "channel": "Your Chart Guy",
+        "subscribers": 10,
+        "views": 1018,
+        "published": "2026-10-07"
+      },
+      {
+        "title": "Paying for Netflix every month vs buying the stock instead",
+        "channel": "Race Charts",
+        "subscribers": 21,
+        "views": 599,
+        "published": "2026-09-09"
+      },
+      {
+        "title": "What if you invested 10$ a month in Netflix instead of paying for a membership",
+        "channel": "DatasDash",
+        "subscribers": 87,
+        "views": 593,
+        "published": "2026-09-03"
+      },
+      {
+        "title": "Your Netflix Bill in Netflix Stock Since 2011 = $17,380 📺 #inflationsolved #netflix #investing",
+        "channel": "inflationsolved",
+        "subscribers": 35,
+        "views": 134,
+        "published": "2026-09-28",
+        "note": "the closest twin to the write-up's title: Standard-plan bills since 2011, 7.5x; its description says the stake roughly halved from a June 2025 peak to a July 2026 low"
+      },
+      {
+        "title": "Your Netflix fee in Netflix stock since 2007: $79K",
+        "channel": "Assetly - Invest Smarter",
+        "subscribers": 31,
+        "views": 109,
+        "published": "2026-10-08",
+        "note": "valued at a 7 Oct 2026 close of $69.70 (split-adjusted), per its description; not verified here"
+      },
+      {
+        "title": "What If You Bought Netflix Stock Instead of Subscribing?",
+        "channel": "Stocks Over Stuff",
+        "subscribers": 73,
+        "views": 123,
+        "published": "2025-11-16",
+        "note": "2:44 long; near-twin of option 3"
+      },
+      {
+        "title": "What If You Bought Netflix Stock Instead of a Subscription?",
+        "channel": "Silver Glove",
+        "subscribers": 62,
+        "views": 8,
+        "published": "2025-09-25",
+        "note": "2:39 long; near-twin of option 3"
+      }
+    ],
+    "same_idea_note": "vidIQ YouTube search (under 4 min; by views and by relevance): 13 channels with the bill-vs-stock idea, 7 of them since June 2026, all but one under 5,100 views; the biggest is HD Finance's 2023 Short (22,697). None answers in years of Netflix; IG UK's lump-sum Short's description does ('94 years of binge-watching'). Several 2026 descriptions value the stake after 12/31/2025 and show it well down (not verified here), which is why the copy dates its close.",
+    "instagram_tiktok_outliers": [
+      {
+        "handle": "@velturbo.xq",
+        "platform": "Instagram",
+        "id": "Db0auE5JyZA",
+        "on_screen": "HBO Max is $10 a month. HBO is owned by AT&T and its stock $T can be bought for $25 a share rn.",
+        "views": "305.9K (21.3x the account median of 14.3K)",
+        "note": "a static tweet screenshot setting a streaming bill against the parent company's stock; the account's own caption is unrelated"
+      },
+      {
+        "handle": "@claudiagadelha",
+        "platform": "Instagram",
+        "id": "DcUCetIFNok",
+        "on_screen": "POV: YOU INVESTED $399 IN TESLA INSTEAD OF BUYING A PS4 IN 2013",
+        "views": "593.2K (69.4x the account median of 8.5K)",
+        "note": "the POV race on an animated chart; frame 1 is the question, no result"
+      },
+      {
+        "handle": "@data.dragonn",
+        "platform": "TikTok",
+        "id": "7680694072218029344",
+        "on_screen": "POV: Someone invested $100 every month in the GoPro Stock over the last 12 years",
+        "views": "1.4M (49.6x)",
+        "note": "monthly buying, like the bills here, and an honest loss"
+      },
+      {
+        "handle": "@investment_timeline",
+        "platform": "TikTok",
+        "id": "7671760671867997473",
+        "on_screen": "POV: You invested in Monster instead of paying $3/day for a Monster Energy",
+        "caption": "the POV line + #monster #energydrink #usa #investment #stocks",
+        "views": "1.5M (140.6x)"
+      }
+    ],
+    "own_channel_youtube_october_shorts": [
+      {
+        "id": "LjHDFzVxRyM",
+        "title": "Can You Find the Missing Dollar?",
+        "posted_et": "Sun 07:04",
+        "views": 1241
+      },
+      {
+        "id": "hJBvmGA6sZ0",
+        "title": "You Can Lean on $1 Million. Not on $1 Billion.",
+        "posted_et": "Thu 00:25",
+        "views": 1221
+      },
+      {
+        "id": "XVUeMcTg9OQ",
+        "title": "Your Interest Has a Speed Limit",
+        "posted_et": "Sun 05:49",
+        "views": 1141
+      },
+      {
+        "id": "8__HTUa2PoU",
+        "title": "Pay the Minimum on $5,000? 238 Months.",
+        "posted_et": "Mon 22:09",
+        "views": 642
+      },
+      {
+        "id": "fbpdKf4Wy8c",
+        "title": "What If You Bought Starbucks Stock Instead of a $4 Latte Every Day? (06c)",
+        "posted_et": "Mon 03:45",
+        "views": 536
+      },
+      {
+        "id": "FW_oxA3kbsM",
+        "title": "A $2 Lottery Ticket Was Worth $6.98. Until the Fine Print.",
+        "posted_et": "Wed 12:03",
+        "views": 348
+      },
+      {
+        "id": "mXbKY_R63h4",
+        "title": "You Can Carry $1 Million. Not in Pennies.",
+        "posted_et": "Thu 13:38",
+        "views": 177
+      },
+      {
+        "id": "EqFQCJheCMU",
+        "title": "Start Investing 10 Years Late? You Get Half.",
+        "posted_et": "Tue 22:27",
+        "views": 160
+      }
+    ],
+    "own_channel_instagram_october_reels": [
+      {
+        "shortcode": "DeIvYk7I4Qr",
+        "topic": "$5,000 on the minimum",
+        "posted_et": "Mon 22:46",
+        "plays": 7276,
+        "skip_rate_pct": 27.5,
+        "avg_watched_pct": 56.5
+      },
+      {
+        "shortcode": "DeOEthJJ1TG",
+        "topic": "$1M stack vs Burj Khalifa",
+        "posted_et": "Thu 00:28",
+        "plays": 5445,
+        "skip_rate_pct": 27.0,
+        "avg_watched_pct": 83.2
+      },
+      {
+        "shortcode": "DeWgFZRoR_S",
+        "topic": "Missing dollar",
+        "posted_et": "Sun 07:05",
+        "plays": 1988,
+        "skip_rate_pct": 31.9,
+        "avg_watched_pct": 81.4
+      },
+      {
+        "shortcode": "DeMvZv9IqRw",
+        "topic": "Powerball $6.98",
+        "posted_et": "Wed 12:05",
+        "plays": 1805,
+        "skip_rate_pct": 58.9,
+        "avg_watched_pct": 57.9
+      },
+      {
+        "shortcode": "DeYuqT4pjVC",
+        "topic": "06c latte vs Starbucks stock",
+        "posted_et": "Mon 03:46",
+        "plays": 1685,
+        "skip_rate_pct": 40.3,
+        "avg_watched_pct": 69.7
+      },
+      {
+        "shortcode": "DePe11HIHwn",
+        "topic": "$1M in pennies",
+        "posted_et": "Thu 13:37",
+        "plays": 598,
+        "skip_rate_pct": 42.0,
+        "avg_watched_pct": 66.7
+      },
+      {
+        "shortcode": "DeLSd9io8UK",
+        "topic": "10 years late",
+        "posted_et": "Tue 22:30",
+        "plays": 219,
+        "skip_rate_pct": 65.1,
+        "avg_watched_pct": 30.6
+      },
+      {
+        "shortcode": "DeEW2ZMIiYd",
+        "topic": "Speed limit (e)",
+        "posted_et": "Sun 05:54",
+        "plays": 177,
+        "skip_rate_pct": 56.9,
+        "avg_watched_pct": 31.2
+      }
+    ],
+    "channel_stats": {
+      "youtube_subscribers": 53,
+      "youtube_views": 9001,
+      "youtube_videos": 40,
+      "youtube_30d": "+27 subscribers, +3,907 views, 10 videos",
+      "instagram_followers": 8,
+      "instagram_30d_views": 18641
+    },
+    "limits": [
+      "vidIQ's YouTube authorization is a different channel (UCRC5v_El2fibbkqsZs6uFjA), so @envelopemath's YouTube Analytics (audience hours, geography) were not readable. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
+      "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and on the same-idea Shorts' and outliers' own tags.",
+      "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
+      "NFLX's moves after 12/31/2025 come only from third-party Short descriptions (e.g. a 7 Oct 2026 close of $69.70 in Assetly's); none is verified here, and none is in the copy, which says only that NFLX has moved since."
+    ],
+    "adjacent_youtube_outliers": [
+      {
+        "title": "iPhone vs Apple Shares - Price Zyada par GROWTH kitni?! | Ankur Warikoo #shorts",
+        "channel": "warikoo",
+        "subscribers": 7150000,
+        "views": 27635784,
+        "published": "2024-11-04",
+        "note": "India-facing; a product vs its own shares"
+      },
+      {
+        "title": "💴What If You Invested $5,000 in NETFLIX and DISNEY? #linechart #datavisualization",
+        "channel": "ChartOrbit",
+        "subscribers": 15400,
+        "views": 15876424,
+        "published": "2025-11-05",
+        "note": "the write-up's H16 (100.45x); a lump sum, not bills"
+      }
+    ],
+    "titles_scored": "19 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-12; all are in youtube.titles_ranked and youtube.titles_also_scored."
+  },
+  "checked": {
+    "date": "2026-10-12",
+    "by": "adversarial check of this sheet",
+    "math": "python3 teasers/v2/checks/06-pov-race.py: 443 checks, 0 failed on studio/specs/ (2026-10-12, the 33.0 s cut), re-run at the adversarial check with the same result; every public figure traced to the 06b maths table, the 168 bills re-added from the plan-price schedule, and each year's figure pinned beside its year (COPY_RULES)",
+    "limits": {
+      "youtube_title_chars": 84,
+      "youtube_description_chars": 1480,
+      "youtube_description_utf8_bytes": 1505,
+      "youtube_tags_chars_as_youtube_counts": 287,
+      "youtube_hashtags": 3,
+      "instagram_caption_chars": 1204,
+      "instagram_hashtags": 5,
+      "instagram_alt_text_short_chars": 99
+    },
+    "vidiq_requeried": "pulled 2026-10-12: netflix stock 35,557 / 30.0 (+10.4%); netflix subscription 28,272 (+49.0%); what if you invested 9,269 (+79.0%); nflx 3,542; title scores 96 (pick), 98 (top) and 81 (write-up title); channel 53 subs / 9,001 views / 40 videos; Instagram 8 followers, 18,641 views in 30 days. Re-queried at the adversarial check: netflix stock 35,557 / 30.0 (+10.4%); stocks 221,285 (-17.4%); the pick's title score 96; 06c (fbpdKf4Wy8c) 536 views, published 07:45 UTC (03:45 ET). All match."
+  }
+}
