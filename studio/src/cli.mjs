@@ -108,10 +108,18 @@ async function soundCommands() {
     if (!targets.length) { console.error('audit: name MP4/M4A/WAV files or directories'); return 2 }
     const recs = opt.cues ? JSON.parse(fs.readFileSync(opt.cues, 'utf8')) : {}
     const sidecarDirs = typeof opt.reports === 'string' ? [path.resolve(opt.reports)] : []
+    // the sidecars (<id>.audit.json, <id>.spectrogram.png, ~3 MB each) go next to each file unless --out is given, but never
+    // into the delivery folders under renders/: there they would land in the next commit
+    const renders = path.resolve(ROOT, '..', 'renders') + path.sep
+    let outDir = typeof opt.out === 'string' ? path.resolve(opt.out) : null
+    if (!outDir && targets.some(f => f.startsWith(renders))) {
+      outDir = fs.mkdtempSync(path.join((await import('node:os')).tmpdir(), 'studio-audit-'))
+      console.error(`audit: sidecars go to ${outDir} (not into renders/); pass --out <dir> to choose`)
+    }
     const rows = []
     for (const f of targets) {
       const id = path.basename(f).replace(/\.(mp4|m4a|wav)$/i, '')
-      try { rows.push(auditFile(f, { outDir: typeof opt.out === 'string' ? path.resolve(opt.out) : null, rec: recs[id] || null, sidecarDirs, spectro: !opt['no-spectrogram'] })) }
+      try { rows.push(auditFile(f, { outDir, rec: recs[id] || null, sidecarDirs, spectro: !opt['no-spectrogram'] })) }
       catch (e) { console.error(`✗ ${id}: ${e.message}`) }
     }
     if (opt.json) console.log(JSON.stringify(rows, null, 1))
