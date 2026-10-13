@@ -18,7 +18,19 @@ print('fit err dB', np.round(10 * np.log10(pred / mix), 2))
 y = np.array([r['M'] - r['cost'] for r in rows]); t = np.array([max(0, r['tilt']) for r in rows]); tn = np.array([max(0, -r['tilt']) for r in rows])
 X = np.vstack([np.ones_like(t), t, tn]).T
 c2 = np.linalg.lstsq(X, y, rcond=None)[0]
-print('C=%.2f tiltUp=%.2f tiltDn=%.2f' % tuple(c2), 'resid', np.round(y - X @ c2, 2))
+# The tilt terms are lifts (a dull tilt lifts the presence voices, the bass and the pad; a bright one the toys): neither
+# can make the band quieter, so they are fitted non-negative (the best least-squares fit over the active sets with
+# tiltUp >= 0 and tiltDn >= 0). Since 2026-10-13 (the condensed 07b-10b): without the long dull teasers (07c, 09b and
+# 10b's long cuts read tilt 1.4-1.9) the free fit put tiltUp at -0.25, a term today's records cannot identify
+best = None
+for keep in ([0, 1, 2], [0, 1], [0, 2], [0]):
+    c = np.zeros(3); c[keep] = np.linalg.lstsq(X[:, keep], y, rcond=None)[0]
+    if (c[1:] < 0).any(): continue
+    sse = float(((y - X @ c) ** 2).sum())
+    if best is None or sse < best[0] - 1e-12: best = (sse, c)
+c2 = best[1]
+print('C=%.2f tiltUp=%.2f tiltDn=%.2f' % tuple(c2), '(tilt lifts >= 0; free fit C=%.2f tiltUp=%.2f tiltDn=%.2f)' % tuple(np.linalg.lstsq(X, y, rcond=None)[0]),
+      'resid', np.round(y - X @ c2, 2), 'sd %.2f' % (y - X @ c2).std())
 print('Upred-U', np.round(np.array([r['Upred'] for r in rows]) - np.array([r['U'] for r in rows]), 2))
 if all('Ipred' in r for r in rows):
     d = np.array([r['I'] - r['Ipred'] for r in rows])
