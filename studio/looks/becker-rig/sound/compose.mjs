@@ -6,9 +6,10 @@
 //   HOOK   one of three seeded openings at t = 0 ("ta-da", "ba-DA", "ta-da-ling"), brass D major always on t = 0 (S10)
 //   BUILD  E3 (bounce, ostinato, shaker 16ths) -> E4 at the midpoint (kick 4/7, ghost snares, pizz chops, slides)
 //   TENSION "strain": heartbeat kick on every beat, snare roll 16ths -> 32nds, tremolo strings on the climb, bass
-//          F# G G# A, no marimba; the slide whistle when no SFX riser covers it; the last 8th before P is silent
-//   P      "ka-TA": a short brass "ka" with timpani, crash, kick, snare and clap on the downbeat (inside the payoff duck),
-//          the sustained fanfare "TA" on the react bus from the next free swung 16th; glock A5
+//          F# G G# A pumping octaves, no marimba; the slide whistle when no SFX riser covers it; the last 8th
+//          before P is silent
+//   P      "ka-TA": a short brass "ka" with timpani, crash, kick, snare and clap (no clap on a hit) on the downbeat
+//          (inside the payoff duck), the sustained fanfare "TA" on the react bus from the next free swung 16th; glock A5
 //   DROP   E5: four on the floor, clap, tambourine, brass stabs on 1 and the and-of-2, ostinato in its home octave, glock line
 //   HOLD   "victory lap" E3 (bounce, pizz chops, ostinato), glock only in sparse bars and never in the 2 bars after V
 //   BREAK  drums out, dominant pad, pizz tremolo on A3, a reverse crash into V
@@ -18,13 +19,16 @@
 // brass stabs on the react bus (the engine's duck-exempt bus, routing.mjs: the cue they answer does not duck them; mix.mjs
 // react.via 'logo' keeps them off musicDb and the glue, as calibrated); clock trains
 // silence the shaker and block and keep the kit, ghosts, pizz chops and marimba off their ticks; the buzz deflate (Gm,
-// the bass bends down 3 st, drums and marimba out for a beat); the bass chokes for bloops, dings, landings and steps;
-// band-selective dips of the mid voices under the cues (a dynamic EQ in automation); dense beats lose the glock and thin
-// the marimba; long cue-free holds change something every 2 bars.
+// the bass bends down 3 st, drums and marimba out for a beat); the bass chokes for bloops, dings, coins, landings, hits
+// and steps; band-selective dips of the mid voices under the cues (a dynamic EQ in automation); the payoff's own cues
+// keep the payoff duck under their first 50 ms; dense beats lose the glock and thin the marimba; long cue-free holds
+// change something every 2 bars.
+// Short and dense bodies (2026-10-13, the condensed cuts; README "Short and dense bodies"): the hook settle and the
+// BUILD crescendo (CLIMB, B7), the bass's low yield (LOW), the velocity spread guard (SPREAD, S8), the TENSION walk's
+// octave pump (the 250 Hz octave).
 import * as T from '../../../src/sound/theory.mjs'
 import { climb, deflateEnd } from './harmony.mjs'
 import { balancePlan, OWN, PAYOFF_OWN } from './balance.mjs'
-import { mix } from './mix.mjs'
 
 export const SWING = 0.58
 const W = { tick: 0.5, type: 0.5, pop: 0.5, swipe: 0.5, whoosh: 0.5, step: 0.5, thud: 1, ding: 1, buzz: 1, boing: 1, cash: 1.5, hit: 2, reveal: 2, roll: 2, riser: 0 }
@@ -386,10 +390,15 @@ export function compose(tl, rng) {
       const p = parts.length > 1 ? j / (parts.length - 1) : 1
       for (const m of CLIMB_V[c.sym]) note(t0, t1 - t0 + 0.004, m, 0.62 + 0.36 * p + g('strings', 0.02), 'strings', 'strings')
       const bm = CLIMB_B[c.sym]
+      // (the walk pumps octaves, 2026-10-13: the off-beat 8ths jump to bm + 12. In octave 2 alone the walk had nothing in
+      // the 250 Hz octave (its 250-over-125 read -9.6 dB against the BUILD bounce's -3.5), and in a condensed cut the
+      // TENSION holds up to half of the bass's time: 02a's and 05b's 250 Hz octave sat 2.3 and 0.8 dB under the bands'
+      // floor, 01b's 0.2 over it, BIBLE §9.2. The walk keeps its pitch classes and its downbeats, S4)
       for (let e = beat; e < beat + c.beats - 1e-9; e += 0.5) {
         const t = tl.timeAt(e)
         if (t >= gap - 1e-6) break
-        note(t, tl.beatLen(t) * 0.42, bm, 0.78 + 0.18 * p + g('bass', 0.025), 'bass', 'bass')
+        const up = Math.round((e - ten.b0) * 2) % 2 === 1
+        note(t, tl.beatLen(t) * 0.42, bm + (up ? 12 : 0), 0.78 + 0.18 * p + g('bass', 0.025), 'bass', 'bass')
       }
       beat += c.beats
     })
@@ -414,8 +423,13 @@ export function compose(tl, rng) {
     for (const m of [62, 66, 69, 74, 78, 81, 86]) note(tTa, dur, m, 1.0, 'honkFR', 'brass', { bus: 'react' })
     drum(P, 'timp', 1.0, { midi: 38 })
     drum(P, 'crash', 0.9, { tau: 1.4 })
+    // (the clap yields to a hit on P, 2026-10-13: the hit's 1.8 kHz smack is the clap's slap, and the two on the same
+    // sample only stacked crest onto the payoff's transient. In the dense cuts the limiter then held the payoff at the
+    // ceiling, the AAC decode went 0.9-1.5 dB over it, and the encode loop's dips there took up to 0.65 LU off the
+    // payoff's momentary: 05b's payoff fell under its sting, B8. The snare stays: it marks P in the music stem, B5)
+    const hitP = tl.cues.some(c => c.kind === 'hit' && !c.inCard && Math.abs(c.t - P) <= 0.015)
     drum(P, 'snare', 1.0)
-    drum(P, 'clap', 0.9)
+    if (!hitP) drum(P, 'clap', 0.9)
     // the glock line over the DROP (A5 on P)
     for (const n of dropLine) note(n.t, n.dur, n.midi, n.vel + g('glock', 0.04), 'glock', 'glock', { pan: clamp(0.12 + (n.midi - 81) / 40, -0.1, 0.35) })
   }
@@ -524,16 +538,19 @@ export function compose(tl, rng) {
   // or roll the mid voices step back while the bass, kick, shaker and the react bus keep the groove going, so the
   // broadband duck stays at the §7 depths (no pumping of the sustained bass)
   {
-    const dp = dipPoints(tl, gap, P, base)
-    if (dp.length) for (const inst of MID) {
-      if (!gain[inst]) continue
+    // the body's cues (DIP) and the payoff's own cues (DIP_P: every B3 kind within PAYOFF_OWN s after P, 2026-10-13).
+    // The payoff's own cues dip the mid voices, not the whole band: the kick, bass, shaker and the band's payoff crash
+    // keep the DROP going under them (the crash carries the payoff's ring), and the fanfare's "TA" steps back as before
+    const body = dipCurve(tl, gap, P, base, 'body'), own = dipCurve(tl, gap, P, base, 'own')
+    const both = body.map((x, k) => Math.min(x, own[k]))
+    const apply = (inst, curve) => {
+      const dp = dipCurvePoints(curve)
+      if (!dp.length || !gain[inst]) return
       const off = gain[inst][0].db
       gain[inst] = [...gain[inst], ...dp.map(x => ({ t: x.t, db: off + x.db }))].sort((a, b) => a.t - b.t)
     }
-    // the fanfare's "TA" (un-ducked) steps back under the payoff's own coins, dings and landings that follow the hit
-    const dpP = dipPoints(tl, gap, P, base, { payoff: true })
-    // ... and so does the band's own payoff crash (τ 1.4 s, ringing over them once the payoff duck lets go)
-    for (const inst of ['honkFR', 'crash']) if (dpP.length && gain[inst]) { const off = gain[inst][0].db; gain[inst] = [...gain[inst], ...dpP.filter(x => x.t > P).map(x => ({ t: x.t, db: off + x.db }))].sort((a, b) => a.t - b.t) }
+    for (const inst of MID) apply(inst, inst === 'crash' ? body : both)
+    apply('honkFR', own)
     // the reverse crash swells into P through the gap: a cue B3 listens to inside its swell gets its first 50 ms
     // (8 dB down, back by P - 10 ms so the swell still lands on P)
     const inSwell = tl.cues.filter(c => AUD.has(c.kind) && c.gain >= 0.4 && !c.inCard && c.t > P - 0.6 && c.t < P - 0.06)
@@ -579,14 +596,7 @@ export function compose(tl, rng) {
   }
   musicDb.push({ t: base, db: musicDb.length ? musicDb[musicDb.length - 1].db : 0 })
   for (const x of musicDb) x.db = +(x.db + mTrim).toFixed(3)
-  // the payoff's own cues keep the payoff duck (B3; 2026-10-13): the coins, dings, pops and landings that follow the hit
-  // within PAYOFF_OWN s are part of the payoff, so the band stays down under each of their first 50 ms (the payoff duck's
-  // depth and release) instead of blooming back over them. (Until now the hit's 1.1 s crash filled those windows and
-  // B3 counted it as theirs; the crash is now a splash, see sfx.mjs SPLASH.) music.dry, and so B7, is pre-duck
-  const pd = mix.payoffDuck || { depth: 9, release: 0.3 }
-  const duck = tl.cues.filter(c => AUD.has(c.kind) && c.gain >= 0.4 && !c.inCard && c.t > P + 0.002 && c.t <= P + PAYOFF_OWN && c.t < base - 1e-6)
-    .map(c => ({ t: c.t, depth: pd.depth, hold: OWN, release: pd.release }))
-  return { notes, drums: dd, automation: { gain, musicDb, ...(duck.length ? { duck } : {}) } }
+  return { notes, drums: dd, automation: { gain, musicDb } }
 }
 
 /**
@@ -629,35 +639,45 @@ function spreadGuard(events, base) {
   }
 }
 
-/** the band's mid voices (the 400 Hz-4 kHz band of the mix): the toys, brass, strings, pad, snare family */
-const MID = ['mallet', 'glock', 'pizz', 'honk', 'honkF', 'strings', 'pad', 'snare', 'clap', 'ghost', 'tom', 'whistle']
+/** the band's mid voices (the 400 Hz-4 kHz band of the mix): the toys, brass, strings, pad, snare family; and the
+ *  band's crash and timpani (2026-10-13), which ring for a second over whatever cue follows the hook's "ta-da" or a
+ *  downbeat: 04b's pop 0.55 s into the hook sat 3.2 dB over the band, 0.2 dB from B3's floor */
+const MID = ['mallet', 'glock', 'pizz', 'honk', 'honkF', 'strings', 'pad', 'snare', 'clap', 'ghost', 'tom', 'whistle', 'crash', 'timp']
 /** dip per cue kind: [depth dB (scaled by clamp(gain / 0.4, 0.3, 1)), hold s, release τ s] */
 export const DIP = { pop: [6, 0.05, 0.1], ding: [6, 0.08, 0.22], cash: [6, 0.1, 0.3], tick: [3, 0.03, 0.08], step: [4, 0.03, 0.07], roll: [5, 0, 0.15], thud: [4, 0.05, 0.14], whoosh: [2.5, 0.05, 0.12], hit: [4, 0.05, 0.14] }
-/** the payoff's dips (only the fanfare's "TA" is under them): every B3 kind after the hit, 8 dB */
+/** the payoff's own dips (the fanfare's "TA" and the mid voices, not the band's payoff crash): every B3 kind within
+ *  PAYOFF_OWN s after the hit, 8 dB */
 const DIP_P = { pop: [8, 0.05, 0.1], ding: [8, 0.08, 0.2], cash: [8, 0.1, 0.25], thud: [8, 0.05, 0.14], hit: [8, 0.08, 0.2], reveal: [8, 0.08, 0.2] }
 /**
- * The dip curve as gain points ({ t, db }, db <= 0, 2.5 ms apart where it moves, 0 dB at both ends): 5 ms lookahead
- * ramp, hold (a roll holds over its length), exponential release; the deepest cue wins. None around the payoff
- * (the payoff duck owns it), in the card, or after base.
+ * The dip curve (dB <= 0 every 2.5 ms over [0, base]): 5 ms lookahead ramp, hold (a roll holds over its length),
+ * exponential release; the deepest cue wins. 'body': the DIP kinds, none around the payoff (the payoff duck owns
+ * gap - 50 ms .. P + 0.4 s) and none for the payoff's own cues; 'own': the payoff's own cues (DIP_P kinds,
+ * P < t <= P + PAYOFF_OWN). None in the card or after base.
  */
-function dipPoints(tl, gap, P, base, { payoff = false } = {}) {
+function dipCurve(tl, gap, P, base, mode) {
   const dt = 0.0025, n = Math.ceil(base / dt) + 1, c = new Float64Array(n)
   for (const q of tl.cues) {
-    const d = payoff ? DIP_P[q.kind] : DIP[q.kind]
-    if (!d || q.inCard || q.t >= base - 1e-6) continue
-    if (payoff ? !(q.t > P + 0.002 && q.t < P + 1.2) : (q.t > gap - 0.05 && q.t < P + 0.4)) continue
+    if (q.inCard || q.t >= base - 1e-6) continue
+    const own = q.t > P + 0.002 && q.t <= P + PAYOFF_OWN && DIP_P[q.kind]
+    const d = mode === 'own' ? (own ? DIP_P[q.kind] : null) : own ? null : DIP[q.kind]
+    if (!d) continue
+    if (mode === 'body' && q.t > gap - 0.05 && q.t < P + 0.4) continue
     // the full dip down to gain 0.4 (the small foley at its usual 0.25-0.55 must read: a step, a tap, a ratchet), less
     // for the cues a spec marks as background (a 0.14 tick is meant to be felt, not heard)
     const depth = d[0] * clamp(q.gain / 0.4, 0.3, 1), hold = q.kind === 'roll' ? (q.dur || 0) : d[1], rel = d[2]
     const k0 = Math.max(0, Math.floor((q.t - 0.005) / dt)), k1 = Math.min(n - 1, Math.ceil((q.t + hold + 5 * rel) / dt))
     for (let k = k0; k <= k1; k++) {
       const t = k * dt
-      if (!payoff && t > gap - 0.003 && t < P + 0.4) continue
+      if (mode === 'body' && t > gap - 0.003 && t < P + 0.4) continue
       const v = t < q.t ? -depth * (t - (q.t - 0.005)) / 0.005 : t <= q.t + hold ? -depth : -depth * Math.exp(-(t - q.t - hold) / rel)
       if (v < c[k]) c[k] = v
     }
   }
-  const out = []
+  return c
+}
+/** a dip curve as gain points ({ t, db }, 2.5 ms apart where it moves, 0 dB at both ends) */
+function dipCurvePoints(c, dt = 0.0025) {
+  const out = [], n = c.length
   for (let k = 0; k < n; k++) {
     if (c[k] > -0.05 && (k === 0 || c[k - 1] > -0.05) && (k === n - 1 || c[k + 1] > -0.05)) continue
     out.push({ t: +(k * dt).toFixed(4), db: c[k] > -0.05 ? 0 : +c[k].toFixed(2) })

@@ -27,13 +27,14 @@ Two cuts per teaser, picked by the spec's duration (the body, without the 2.5 s 
      captions are on-screen text (no narration): each caption up >= max(1.2 s, 0.12 s a word) from frame 1, 0..0.2 s
      apart, the hook caption complete on frame 1, the verdict held 1.2-1.6 s and landing 0.7-1.5 s after the final
      reveal, the body on the 30 fps grid, each named row landing under the caption that names it (up at most 1.0 s
-     before it, and no other row landing in between), plus each teaser's own cadence (07a: the opening sums and the
-     Age 35 cut, and the climax count, marks, table, winner beat and verdict, at most 0.7 / 0.55 s apart as picture
-     beats, a caption rising is not one; 07b: the crash by 0.5 s, the 2008 rings on their caption, every event /
-     cash-out pill readable >= 1.0 s on the kit's timing, Alex acting under "Alex holds." and after Sam's 2025 ring;
-     07c: Year 1 by 0.5 s, You's look-up returning just before Year 3, Leo acting on his $618 caption, the crown on
-     its caption). The fixer pass (2026-10-13) added the cadence rules that the caption-band-out motion audit asked
-     for. A spec of any other length fails "a known cut" and stops there.
+     before it, 0.2 s in 07c, and no other row landing in between), plus each teaser's own cadence (07a: the opening
+     sums and the Age 35 cut at most 0.7 s apart, and the climax count, marks, table, winner beat and verdict at most
+     0.55 s apart, as picture beats: a caption rising is not one; 07b: the crash by 0.5 s, the 2008 rings on their
+     caption, every event / cash-out pill readable >= 1.0 s on the kit's timing, Alex getting up after the rings,
+     acting under "Alex holds." and after Sam's 2025 ring; 07c: Year 1 by 0.5 s, You acting between Year 2 and Year 3
+     and back just before Year 3, Leo acting on his $618 caption, the crown on its caption). The fixer pass
+     (2026-10-13) added the cadence rules the caption-band-out motion audit asked for. A spec of any other length
+     fails "a known cut" and stops there.
 
 Run:  python3 teasers/v2/checks/07-ledger-duel.py [--spec [KEY=]PATH ...]
       --spec [KEY=]PATH (repeatable) checks PATH in place of studio/specs/<id>.json. KEY is a, b or c (or the full
@@ -991,6 +992,12 @@ if cond(idb):
     r08 = [m["t"] for m in loB.get("marks", []) if m["row"] == 1]
     claim(idb, "condensed: the 2008 rings as 'Both drop to $6,300.' pops (0.1-0.4 s after it goes up)", r08,
           f"{a1 + 0.1:.2f}..{a1 + 0.4:.2f}", len(r08) == 2 and all(a1 + 0.1 - 1e-9 <= t <= a1 + 0.4 + 1e-9 for t in r08))
+    # the kit keeps a crashed figure down on his coins until 1.62 s after the crash (AIR 0.42 + 1.2): Alex gets up
+    # first, 0.15-0.35 s after the rings (the wait to the kit's own get-up read near-still for 0.40 s otherwise)
+    upA = [x for x in beatsB if x["person"] == 0 and r08 and max(r08) < x["t"] < tB["2008"] + 1.62]
+    claim(idb, "condensed: Alex gets up 0.15-0.35 s after the 2008 rings (before the kit's get-up)",
+          [(x["act"], x["t"]) for x in upA], f"{max(r08 or [0]) + 0.15:.2f}..{max(r08 or [0]) + 0.35:.2f}", len(upA) == 1
+          and 0.15 - 1e-9 <= upA[0]["t"] - max(r08) <= 0.35 + 1e-9)
     a3b, _ = win(SB, 3)
     holdA = [x for x in beatsB if x["person"] == 0 and tB["2009"] < x["t"] < tB["2012"]]
     claim(idb, "condensed: one Alex pose under 'Alex holds.', 0.2-0.5 s after 2009 lands", [(x["act"], x["t"]) for x in holdA],
@@ -1039,15 +1046,19 @@ else:
               "one pose", len(acts) == 1)
     # fixer pass (2026-10-13), from the caption-band-out motion audit: Leo (the hero) acts as "High-yield: about $618."
     # goes up (until then only You's slump release and a small look-up moved in 9.43-10.33 before the crown), and
-    # You's look-up between Year 2 and Year 3 returns 0.2-0.45 s before Year 3 cuts (4.90-5.30 was near-still)
+    # You acts between Year 2 and Year 3 and returns 0.2-0.45 s before Year 3 cuts (4.90-5.30 was near-still). A
+    # look-up does not count for either: its head tilt reads under the near-still line at phone size. You stands at
+    # the frame's left edge, so his pose there must move both arms (ARM_POSES): a hand-to-chin think measured
+    # near-still too (4.40-4.83 and 4.90-5.30 on a scratch render)
+    ARM_POSES = {"shrug", "slump", "shocked", "cheer"}
     leo = [x for x in beatsC if x["person"] == 1 and abs(x["t"] - a5) <= 0.1 + 1e-9 and x["act"] != "lookUp"]
     claim(idc, "condensed: Leo acts (not a look-up) as 'High-yield: about $618.' goes up (± 0.1 s)",
           [(x["act"], x["t"]) for x in leo], f"{a5 - 0.1:.2f}..{a5 + 0.1:.2f}", len(leo) == 1)
     t2, t3 = rowsC[2]["t"], rowsC[3]["t"]
     y23 = [x for x in beatsC if x["person"] == 0 and t2 < x["t"] < t3]
-    claim(idc, "condensed: one You pose between Year 2 and Year 3, back 0.2-0.45 s before Year 3",
-          [(x["act"], x["t"], x.get("d")) for x in y23], f"t + d in {t3 - 0.45:.2f}..{t3 - 0.2:.2f}", len(y23) == 1
-          and 0.2 - 1e-9 <= t3 - (y23[0]["t"] + y23[0].get("d", 1.4)) <= 0.45 + 1e-9)
+    claim(idc, "condensed: one You arm pose between Year 2 and Year 3, back 0.2-0.45 s before Year 3",
+          [(x["act"], x["t"], x.get("d")) for x in y23], f"{'/'.join(sorted(ARM_POSES))}, t + d in {t3 - 0.45:.2f}..{t3 - 0.2:.2f}",
+          len(y23) == 1 and y23[0]["act"] in ARM_POSES and 0.2 - 1e-9 <= t3 - (y23[0]["t"] + y23[0].get("d", 1.4)) <= 0.45 + 1e-9)
 # ring tones follow the verdict's colours: You's numbers are __red__, Leo's **green**
 vtext = SC["verdict"]["text"]
 claim(idc, "Becker: verdict colours You's final red, Leo's green",

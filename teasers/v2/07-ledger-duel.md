@@ -10,8 +10,8 @@
   - [`studio/specs/07b-becker-rig-panic-sell-2008.json`](../../studio/specs/07b-becker-rig-panic-sell-2008.json) (Becker Rig)
   - [`studio/specs/07c-becker-rig-savings-rate.json`](../../studio/specs/07c-becker-rig-savings-rate.json) (Becker Rig)
   - Retired (the owner kept Scoreboard and Becker Rig): [`studio/specs/retired/07a-live-sheet-start-at-25.json`](../../studio/specs/retired/07a-live-sheet-start-at-25.json) and [`studio/specs/retired/07c-clean-sheet-savings-rate.json`](../../studio/specs/retired/07c-clean-sheet-savings-rate.json)
-  - Condensed cuts (2026-10-13; work copies until the ship step promotes them): [`studio/specs-wip/07a-scoreboard-start-at-25.json`](../../studio/specs-wip/07a-scoreboard-start-at-25.json) (14.6 s + the 2.5 s end card), [`studio/specs-wip/07b-becker-rig-panic-sell-2008.json`](../../studio/specs-wip/07b-becker-rig-panic-sell-2008.json) (14.1 s + card) and [`studio/specs-wip/07c-becker-rig-savings-rate.json`](../../studio/specs-wip/07c-becker-rig-savings-rate.json) (13.3 s + card). See [Condensed cut (2026-10-13)](#condensed-cut-2026-10-13).
-- Check: [`teasers/v2/checks/07-ledger-duel.py`](checks/07-ledger-duel.py). Run `python3 teasers/v2/checks/07-ledger-duel.py`. It reports **467 checks, 0 failures** on `studio/specs/` (the full cuts) and exits 0. With `--spec` on the three condensed work copies (`--spec studio/specs-wip/07a-scoreboard-start-at-25.json --spec studio/specs-wip/07b-becker-rig-panic-sell-2008.json --spec studio/specs-wip/07c-becker-rig-savings-rate.json`), it reports **517 checks, 0 failures**. The condensed-cut pass (2026-10-13) made it cut-aware: each teaser is checked against its full or condensed expectations, picked by the spec's body length. That added 6 checks to the default run ("a known cut" and "`studio/specs/` holds the expected cut" for each teaser) and left every full-cut row unchanged; see [Condensed cut (2026-10-13)](#condensed-cut-2026-10-13). Before it, the check reported 461 (the fix pass took it from 453, +8: 07a's resting working line and its coverage line, the table's cut in the VO gap, Ben's working line on that cut, the plan focus on the "3 times" line, and 07c's hero figure split into Leo-is-hero and You-ponders; see [Fix pass](#fix-pass-2026-10-08-07a-and-07c). The port to Scoreboard and Becker Rig took it from 416: see [the port entries](#port-to-scoreboard-2026-10-08-07a) in the review log. Before the port: the 07b round-2 fix pass split 07b's last VO line in two, +3: its numbers, its length and its gap to the line before; 413 before it; 418 after the round-2 fix pass. The 07b assembly pass took 07b from 152 checks to 147: it dropped the two round-1 prop labels the kit has no prop for, the "−37%" weight and the "≈ −18%" impact, with their coverage lines (−4); the sell label is now the pill text "sold → cash at 0%"; the rig beats went from impact, carry, impact, grow, peek to think, sell, peek, cheer (−1); three spec cues the kit already makes were dropped, whoosh, hit and roll (−3); and three VO-locked pencil marks were added (+3). 410 after the assembly pass, 407 after hook pass 2, 406 before it; the assembly pass added six VO-locked mark checks and dropped 07a's three "sfx on a beat" checks with its three duplicate spec cues; the round-2 fix pass added 07a's two new formula-bar lines and their claims, one 07c VO line and one 07c mark, and dropped 07a's shown-factors product claim). The round-2 fix pass's four corruptions of scratch copies (Ava's bar result "≈ $280,000", Ben's mark moved into Ava's VO line, 07c "About 6 cents", a dropped "≈" in 07c's verdict) gave 6 named failures and exit 1. Two deliberate corruptions (the old "× ≈ 8.1" shortcut in 07a's formula bar, and "$6,600" in a 07b VO line) made it exit 1, each with a named failure. Hook pass 2's four corruptions of a scratch copy of the new 07c spec (a Year 3 cell, "about 6 cents", the Year 5 row off its word, a dropped "≈" in the verdict) gave 5 named failures and exit 1.
+  - Condensed cuts (2026-10-13; work copies until the ship step promotes them): [`studio/specs-wip/07a-scoreboard-start-at-25.json`](../../studio/specs-wip/07a-scoreboard-start-at-25.json) (14.6 s + the 2.5 s end card), [`studio/specs-wip/07b-becker-rig-panic-sell-2008.json`](../../studio/specs-wip/07b-becker-rig-panic-sell-2008.json) (14.1 s + card) and [`studio/specs-wip/07c-becker-rig-savings-rate.json`](../../studio/specs-wip/07c-becker-rig-savings-rate.json) (13.3 s + card). See [Condensed cut (2026-10-13)](#condensed-cut-2026-10-13) and its [fixer pass](#condensed-cut-fixer-pass-2026-10-13-after-the-critic) after the critic.
+- Check: [`teasers/v2/checks/07-ledger-duel.py`](checks/07-ledger-duel.py). Run `python3 teasers/v2/checks/07-ledger-duel.py`. It reports **467 checks, 0 failures** on `studio/specs/` (the full cuts) and exits 0. With `--spec` on the three condensed work copies (`--spec studio/specs-wip/07a-scoreboard-start-at-25.json --spec studio/specs-wip/07b-becker-rig-panic-sell-2008.json --spec studio/specs-wip/07c-becker-rig-savings-rate.json`), it reports **535 checks, 0 failures** (517 before the [fixer pass](#condensed-cut-fixer-pass-2026-10-13-after-the-critic), which added 18 condensed-only checks; the default run is unchanged). The condensed-cut pass (2026-10-13) made it cut-aware: each teaser is checked against its full or condensed expectations, picked by the spec's body length. That added 6 checks to the default run ("a known cut" and "`studio/specs/` holds the expected cut" for each teaser) and left every full-cut row unchanged; see [Condensed cut (2026-10-13)](#condensed-cut-2026-10-13). Before it, the check reported 461 (the fix pass took it from 453, +8: 07a's resting working line and its coverage line, the table's cut in the VO gap, Ben's working line on that cut, the plan focus on the "3 times" line, and 07c's hero figure split into Leo-is-hero and You-ponders; see [Fix pass](#fix-pass-2026-10-08-07a-and-07c). The port to Scoreboard and Becker Rig took it from 416: see [the port entries](#port-to-scoreboard-2026-10-08-07a) in the review log. Before the port: the 07b round-2 fix pass split 07b's last VO line in two, +3: its numbers, its length and its gap to the line before; 413 before it; 418 after the round-2 fix pass. The 07b assembly pass took 07b from 152 checks to 147: it dropped the two round-1 prop labels the kit has no prop for, the "−37%" weight and the "≈ −18%" impact, with their coverage lines (−4); the sell label is now the pill text "sold → cash at 0%"; the rig beats went from impact, carry, impact, grow, peek to think, sell, peek, cheer (−1); three spec cues the kit already makes were dropped, whoosh, hit and roll (−3); and three VO-locked pencil marks were added (+3). 410 after the assembly pass, 407 after hook pass 2, 406 before it; the assembly pass added six VO-locked mark checks and dropped 07a's three "sfx on a beat" checks with its three duplicate spec cues; the round-2 fix pass added 07a's two new formula-bar lines and their claims, one 07c VO line and one 07c mark, and dropped 07a's shown-factors product claim). The round-2 fix pass's four corruptions of scratch copies (Ava's bar result "≈ $280,000", Ben's mark moved into Ava's VO line, 07c "About 6 cents", a dropped "≈" in 07c's verdict) gave 6 named failures and exit 1. Two deliberate corruptions (the old "× ≈ 8.1" shortcut in 07a's formula bar, and "$6,600" in a 07b VO line) made it exit 1, each with a named failure. Hook pass 2's four corruptions of a scratch copy of the new 07c spec (a Year 3 cell, "about 6 cents", the Year 5 row off its word, a dropped "≈" in the verdict) gave 5 named failures and exit 1.
   - New in the revision: the first payoff row must land by **3.0 s** (R10); a formula that multiplies shown factors must reproduce the shown result (now 07a's "3 × $24,000 = $72,000"); every formula-bar line must stay up long enough to type (24 characters a second) and then be read (1.5 s); headers are capped at 4 lines; 07a's break-even rate and 6% case are asserted.
 
 **How the facts were checked:**
@@ -77,7 +77,7 @@
 
 *Ported to Scoreboard on 2026-10-08 (it was built in Live Sheet, now retired; the old spec is `studio/specs/retired/07a-live-sheet-start-at-25.json`). The hook, the VO wording and timings, every number and the verdict are unchanged. What changed is how the screen carries them; see "Port to Scoreboard (2026-10-08): 07a" in the Review log. A fix pass the same day re-staged the 3× line, the payoff and the table (see "Fix pass (2026-10-08): 07a and 07c"): no number or VO word changed; the working line gained a resting step at 9.9 s, and Ben's working line moved from 14.6 to 14.45 s to share the table's cut.*
 
-*Condensed cut (2026-10-13; `studio/specs-wip/07a-scoreboard-start-at-25.json`, not yet promoted): 14.6 s + the 2.5 s end card = 17.1 s, down from 25.3 s. The hook, header, footer, plans, every cell, the seven working-line texts, all six captions (word for word) and the verdict are unchanged. Only the clock moved, plus three spec knobs: a 0.45 s opening plan focus, `finalRoll` 1.52 s and a winner flood before the verdict (`winnerT` 12.7). Its beat sheet and captions come first below. The full cut's follow, because `studio/specs/` still holds it.*
+*Condensed cut (2026-10-13; `studio/specs-wip/07a-scoreboard-start-at-25.json`, not yet promoted): 14.6 s + the 2.5 s end card = 17.1 s, down from 25.3 s. The hook, header, footer, plans, every cell, the seven working-line texts, all six captions (word for word) and the verdict are unchanged. Only the clock moved, plus three spec knobs: a 0.45 s opening plan focus, `finalRoll` 1.52 s and a winner flood before the verdict (`winnerT` 12.7). The fixer pass (after the critic, the same day) moved the Age 35 cut to 1.75 s and added a second mark on Ben's value as his caption rises (11.45 s), so no still run before the verdict reaches 0.4 s with the caption band left out either. Its beat sheet and captions come first below. The full cut's follow, because `studio/specs/` still holds it.*
 
 | | |
 |---|---|
@@ -119,7 +119,7 @@
 - H18, ChartOrbit: "Does investing 100$ monthly in BMW make you rich?", 1,391,731 (5.91x). A small monthly amount, plus a question that waits for a verdict.
 - H64, Gage: "What $1 costs you by age", 1,150,974 (210x med). Ages as the rows.
 
-**Condensed cut (2026-10-13): beat sheet** (`studio/specs-wip/07a-scoreboard-start-at-25.json`. Rows cut at 0.15, 1.5 and 3.1 s, then every 1.2 s up to Age 65 at 9.1. The climax count lands at 10.7. The verdict comes at 13.1 and holds 1.5 s. Body 14.6 s + the 2.5 s end card = 17.1 s. Stills read at every row below.)
+**Condensed cut (2026-10-13): beat sheet** (`studio/specs-wip/07a-scoreboard-start-at-25.json`. Rows cut at 0.15, 1.75 and 3.1 s, then every 1.2 s up to Age 65 at 9.1. The climax count lands at 10.7. The verdict comes at 13.1 and holds 1.5 s. Body 14.6 s + the 2.5 s end card = 17.1 s. Stills read at every row below.)
 
 | t (s) | On screen | Caption |
 |---|---|---|
@@ -127,7 +127,7 @@
 | 0.3-0.75 | Opening plan focus (`planFocus` { t 0.3, d 0.45 }). "put in $24,000" lights green and "put in $72,000" yellow, each with a glow and a bump, and the "Age … → …" lines dim. The bet is what moves in the first second | |
 | 0.75 | Row **Age 30** lands: ≈ $14,000 / $0, the first payoff (2.0 s in the full cut). It lands quietly, with no ding, because its cut at 0.15 falls inside the focus window | |
 | 1.2 | Working line: "Ava: $200 × 120 months = $24,000" | |
-| 1.5 | Row **Age 35** cuts (thud). The ticker rolls 30 → 35, the pips step and Age 30 ships into the strip. Ava rolls to ≈ $35,000 (lands at 2.88, with a ding); Ben stays at $0. On that landing, label line 2 cuts to "AVA STOPS · BEN STARTS" and a white wash crosses both panels. Both hold 2.5 s | |
+| 1.75 | Row **Age 35** cuts (thud; at 1.5 until the fixer pass, which left the slow count alone on the board 2.00-2.47). The ticker rolls 30 → 35, the pips step and Age 30 ships into the strip. Ava rolls to ≈ $35,000 (lands at 2.98, with a ding); Ben stays at $0. On that landing, label line 2 cuts to "AVA STOPS · BEN STARTS" and a white wash crosses both panels. Both hold 2.5 s | |
 | 2.25 | | "Ben starts at 35 and never stops." (2.25-4.8) |
 | 2.45 | Working line: "Ben: $200 × 360 months = $72,000" | |
 | 3.1, 4.3 | Rows 40 and 45 (thud). They land at 4.18 and 5.38, each with a ding: ≈ $49,000 / ≈ $14,000, then ≈ $70,000 / ≈ $35,000. Ben's odometer starts to move | |
@@ -137,11 +137,11 @@
 | 9.1 | Row **Age 65** cuts, the climax. The ticker steps back, and both odometers roll for 1.52 s (`finalRoll`) over a riser. The working line goes back to the resting "$200 a month at 7% a year" | "At 65, Ava has about $281,000." (9.15-11.4) |
 | 10.7 | The count lands at **≈ $281,000 / ≈ $244,000** (hit + cash, a bump, a green floor bloom). Working line: "Ava: $24,000 in → ≈ $281,000" | |
 | 10.95 | Ava's mark: her border lights green and her value bumps, while Ben's steps back (tick) | |
-| 11.45 | | "Ben has about $244,000." (11.45-13.05) |
+| 11.45 | Ben's read mark (fixer pass): his border lights yellow, his ≈ $244,000 bumps and flares, and Ava's steps back (tick). Before it only his caption rising moved here: 11.13-11.90 was still with the caption band left out | "Ben has about $244,000." (11.45-13.05) |
 | 11.9 | One cut (thud). The table (Age 30, 35, 45, 55, 65) replaces the ticker, pips and strip, and Ben's working line "Ben: $72,000 in → ≈ $244,000" arrives on the same cut | |
-| 12.25 | Ben's mark: the focus hops to his panel (tick) | |
+| 12.25 | Ben's final mark: his value bumps and flares again under his working line (tick) | |
 | 12.7 | The winner beat (`winnerT`, reveal): Ava's panel floods neon green with black type, and Ben's steps back to 60% | |
-| 13.1 | The verdict "**AVA** WINS BY ≈ $37,000 / WITH A THIRD OF THE MONEY" slams into the label slot (reveal), 0.85 s after Ben's mark, the last reveal. The Scoreboard sets the last caption under it | "A third of the money, and Ava still wins." (13.1-14.3) |
+| 13.1 | The verdict "**AVA** WINS BY ≈ $37,000 / WITH A THIRD OF THE MONEY" slams into the label slot (reveal), 0.85 s after Ben's final mark, the last reveal. The Scoreboard sets the last caption under it | "A third of the money, and Ava still wins." (13.1-14.3) |
 | 13.1-14.6 | Hold, 1.5 s: the table, the flooded panel and the verdict | |
 | 14.6-17.1 | The end card (unchanged) | |
 
@@ -149,9 +149,10 @@
 - The six lines are the full cut's guide VO, word for word. There is no narration, so they are paced for reading: each is up for at least max(1.2 s, 0.12 s a word) from frame 1, with 0.05 s between lines.
 - The first line goes up at −0.4 s. A Scoreboard caption rises in 0.14 s, so the whole hook line is on frame 1.
 - The rows the captions name land under their lines:
-  - the Age 35 cut (1.5) under the first line, on "then stops";
+  - the Age 35 cut (1.75) under the first line;
   - the Age 65 count (10.7) under "At 65, Ava has about $281,000.";
-  - Ben's mark (12.25) under his line.
+  - Ben's read mark (11.45) as his line rises, and his final mark (12.25) under it.
+- After the climax a picture beat (the landing, a mark, the table, the flood, the verdict) comes at most 0.55 s after the one before; a caption rising is not counted.
 - `data.hold` is 0.3, the body length minus the end of the last caption (the check's rule).
 - **Instagram cover:** the frame at **1.0 s**. It shows AGE 30 landed at ≈ $14,000 / $0, both plans and the hook line, with the question still open. Frame 1 still shows Ava's count mid-roll ($8,531).
 
@@ -274,7 +275,7 @@ In the table, g = 1 + 0.07/12.
 - H78/H79, Jake: "2 people invest $10,000 / 10 years ago", 322,339 (6.6x med) and 301,112 (6.17x). Same stake, two choices, ledger, and the 2022 crash row as a second test (TQQQ −64.8%, SOXL −72.7%).
 - H71, The Market Hustle: "How Long It Took To Recover After the Worst Crashes:", 190,187 (4.5x med). Its caption: "It's about continuing to invest through a crash instead of stopping."
 
-*Condensed cut (2026-10-13; `studio/specs-wip/07b-becker-rig-panic-sell-2008.json`, not yet promoted): 14.1 s + the 2.5 s end card = 16.6 s, down from 29.9 s. Every string, number, pill, caption word and the verdict are unchanged. The clock moved and the rig got more acting. Sam now looks up on frame 2, shrugs after his chop and looks up as his 2025 cell is ringed. Alex points and cheers under the 2012 pill. The condensed beat sheet and captions come first below. The full cut's follow, because `studio/specs/` still holds it.*
+*Condensed cut (2026-10-13; `studio/specs-wip/07b-becker-rig-panic-sell-2008.json`, not yet promoted): 14.1 s + the 2.5 s end card = 16.6 s, down from 29.9 s. Every string, number, pill, caption word and the verdict are unchanged. The clock moved and the rig got more acting. Sam now looks up on frame 2, shrugs after his chop and looks up as his 2025 cell is ringed. Alex points and cheers under the 2012 pill. The fixer pass (after the critic, the same day) moved the 2008 rings to 1.55 s, had Alex get up first (1.8), hold out a hand under "Alex holds." (4.6) and point at the ledger after Sam's ring (12.0), and moved "Alex holds. By 2012, …" to 4.3 s, after 2009 lands. The condensed beat sheet and captions come first below. The full cut's follow, because `studio/specs/` still holds it.*
 
 **Condensed cut (2026-10-13): beat sheet** (`studio/specs-wip/07b-becker-rig-panic-sell-2008.json`. The crash comes at 0.4 s and the sell at 2.85. Rows 2009-2021 are 0.85-1.4 s apart. The 2022 dip is at 9.05 and the crown at 10.65. The verdict comes at 12.55 and holds 1.55 s. Body 14.1 s + the 2.5 s end card = 16.6 s. Stills read at every row below.)
 
@@ -283,13 +284,15 @@ In the table, g = 1 + 0.07/12.
 | 0.0 | **Frame 1, the thumbnail.** Header, footer, both column heads and plans. "Dec 2007: $10,000 / $10,000" is settled and the eight later year labels are dim (`rowLabelsAtStart`). Both figures stand on their $10,000 stacks. The hook caption is complete on frame 1. Sam looks up from frame 2 (`lookUp` 0.03) | "2008 takes 37%." (from −0.4; up 1.2 s from frame 1) |
 | 0.4 | **Impact on both stacks** (hit + thud; at 1.0 s in the full cut). The lost coins burst off and land beside the stacks (tick, 0.74), and both figures are blown up off their stacks. Row **2008**: $6,300 / $6,300 in red, with the pill "crash −37%" over it (0.46-1.65) | |
 | 1.25 | | "Both drop to $6,300." (1.25-2.55) |
-| 1.7 | Pencil rings round both 2008 cells (swipe). The crash pill closes as they draw | |
+| 1.55 | Pencil rings round both 2008 cells (swipe; 1.7 until the fixer pass). The crash pill closes as they draw (0.46-1.50) | |
+| 1.8 | Alex gets up first and looks up at the ledger. Sam stays down on his coins until the kit's get-up at 2.0 | |
 | 2.25 | Sam thinks, hand on chin | |
-| 2.6 | | "Sam sells to cut his losses." (2.6-4.1) |
+| 2.6 | | "Sam sells to cut his losses." (2.6-4.25) |
 | 2.85 | **Sell:** Sam chops his stack into a cash brick (thud). The pill "sold → cash at 0%" sits over his column (pop; 2.89-3.93), and the 2008 rings close | |
 | 3.3 | Sam shrugs over his brick | |
-| 4.15 | | "Alex holds. By 2012, he’s back above $10,000." (4.15-8.7) |
 | 4.25 | Row 2009: ≈ $8,000 (green) / $6,300 (thud). Alex's stack springs up and he rides it, arms up | |
+| 4.3 | | "Alex holds. By 2012, he’s back above $10,000." (4.3-8.7; it went up at 4.15, before 2009, until the fixer pass) |
+| 4.6 | Alex holds a hand out over his stack (`hold`, 0.3 s) | |
 | 5.1 | Row **2012**: ≈ $10,900 / $6,300 (thud). The pill "back above $10,000" sits on Alex's cell (pop; 5.16-6.18) | |
 | 5.45, 5.85 | Alex points at it, then cheers | |
 | 6.5, 7.35, 8.2 | Rows 2016, 2019, 2021 (a thud on each, 0.85 s apart): ≈ $18,500, ≈ $28,400, ≈ $43,300, against $6,300. Alex's stack climbs with each | |
@@ -299,6 +302,7 @@ In the table, g = 1 + 0.07/12.
 | 10.65 | Row **2025**, the crown. The gold plate opens and Alex's **≈ $66,000** lands on it at 1.3× (hit + cash, camera punch, rays). He hops (step, 11.39), celebrates and points. Sam turns his back, and the rows in between settle to 55% | |
 | 11.3 | | "Sam’s still at $6,300." (11.3-12.5) |
 | 11.75-11.8 | Sam looks up as a pencil ring is drawn round his 2025 cell, $6,300 (swipe). The ring stays | |
+| 12.0 | Alex points at the ledger and holds it until his verdict cheer (fixer pass) | |
 | 12.55 | The verdict replaces the captions: "Selling didn’t dodge the crash. / It dodged the **recovery**." (green swoosh, ding). It lands 1.9 s after the crown and 0.75 s after Sam's ring | ("He dodged the recovery." is the last caption line, on the verdict's time. The kit hides captions under the verdict, as in the full cut) |
 | 12.85 | Alex throws both arms up on his tower and holds | |
 | 13.1 | Sam peeks up at Alex's tower, hand over his eyes (boing) | |
@@ -310,10 +314,10 @@ In the table, g = 1 + 0.07/12.
 - The Becker caption pops its words in over 0.16 s with a stagger, so the first line starts at −0.4 s and is whole on frame 1.
 - Each named row lands under its line:
   - the crash (0.4) under "2008 takes 37%.";
-  - 2012 (5.1) under "Alex holds. By 2012, …";
+  - 2012 (5.1) under "Alex holds. By 2012, …", which goes up at 4.3, after 2009 lands: no other row lands between a line and the row it names;
   - 2022 (9.05) under "2022 dips. …";
   - 2025 (10.65) under "End of 2025: …".
-- Every pill is up for at least 1.0 s on the kit's timing: crash 1.19 s, sold 1.04, back above $10,000 1.02, dip 1.22.
+- Every pill is up for at least 1.0 s on the kit's timing: crash 1.04 s (1.19 before the rings moved to 1.55), sold 1.04, back above $10,000 1.02, dip 1.22.
 - **Instagram cover:** the impact at about **0.6 s**. It shows both figures in the air, the red 2008 row and the "crash −37%" pill, and no final number.
 
 **Beat sheet, full cut** (27.4 s, what `studio/specs/` holds; as rendered by the Becker `ledger-duel` kit; the scripted acting is `lookOpts.beats` and `lookOpts.marks`, everything else is the kit's own row physics)
@@ -414,7 +418,7 @@ The verifier independently matched the 2007-2025 figures (including 2025 +17.88%
 
 *Ported to Becker Rig on 2026-10-08 (it was built in Clean Sheet, now retired; the old spec is `studio/specs/retired/07c-clean-sheet-savings-rate.json`). The hook, the VO wording and timings, every number and the verdict are unchanged. The footer, the stake line and the plans' line breaks were reworded to fit the Becker kit's mono lines (below), and the crown moved onto its spoken number; see "Port to Becker Rig (2026-10-08): 07c" in the Review log. A fix pass the same day swapped the figure colours to the kit default (Leo, the winner, is the green hero; You is slate), reshaped the pencil rings so they clear the "≈", and tidied the acting (see "Fix pass (2026-10-08): 07a and 07c"). No number or VO word changed.*
 
-*Condensed cut (2026-10-13; `studio/specs-wip/07c-becker-rig-savings-rate.json`, not yet promoted): 13.3 s + the 2.5 s end card = 15.8 s, down from 21.6 s. Every string, number, ring tone, figure colour, caption word and the verdict are unchanged. The clock moved, and short poses now act on every ring. The condensed beat sheet and captions come first below. The full cut's follow, because `studio/specs/` still holds it.*
+*Condensed cut (2026-10-13; `studio/specs-wip/07c-becker-rig-savings-rate.json`, not yet promoted): 13.3 s + the 2.5 s end card = 15.8 s, down from 21.6 s. Every string, number, ring tone, figure colour, caption word and the verdict are unchanged. The clock moved, and short poses now act on every ring. The fixer pass (after the critic, the same day) put "Year 3: …" and "Year 5: …" up on their rows' cuts (5.35, 8.15), had Leo point as "High-yield: about $618." pops (9.75) and turned You's look-up after Year 2 into a shrug (4.6). The condensed beat sheet and captions come first below. The full cut's follow, because `studio/specs/` still holds it.*
 
 | | |
 |---|---|
@@ -471,21 +475,21 @@ The verifier independently matched the 2007-2025 figures (including 2025 +17.88%
 | 1.45 | | "About 5 cents." (1.45-2.65) |
 | 1.5 | A red ring is drawn round You's ≈ $0.05 (swipe), and the cell turns red. You shrugs | |
 | 2.25 | You slumps | |
-| 2.7 | | "High-yield: about $22." (2.7-4.95) |
+| 2.7 | | "High-yield: about $22." (2.7-5.3) |
 | 2.75 | A green ring is drawn round Leo's ≈ $21.84 (swipe), and You's ring closes. Leo points at it | |
 | 3.55 | Leo cheers | |
 | 4.2 | Year 2: ≈ $0.23 / ≈ $92.56 (thud). Leo's ring closes and he rides up | |
-| 4.55 | You looks up at Leo's stack | |
-| 5.0 | | "Year 3: about 53 cents." (5.0-7.05) |
+| 4.6 | You shrugs, 0.45 s (back at 5.05). Until the fixer pass it was a look-up at 4.55: a head tilt at the frame's left edge, too small to count as motion | |
+| 5.35 | | "Year 3: about 53 cents." (5.35-8.1) |
 | 5.4 | Year 3: ≈ $0.53 / ≈ $214.11 (thud) | |
 | 6.2, 6.55 | A red ring is drawn round You's ≈ $0.53 (swipe), and the cell turns red. You looks up, then shrugs | |
-| 7.1 | | "Year 5: about $1.48." (7.1-9.75) |
-| 7.2 | Year 4: ≈ $0.94 / ≈ $388.52 (thud) | |
+| 7.2 | Year 4: ≈ $0.94 / ≈ $388.52 (thud), under "Year 3: about 53 cents." | |
+| 8.15 | | "Year 5: about $1.48." (8.15-9.7). Until the fixer pass it went up at 7.1 and sat over the Year 4 row for 1.1 s |
 | 8.2 | **Year 5**: ≈ $1.48 / ≈ $617.90 (thud). Leo's cell is at 1× like any row, and he rides plain: the crown waits for its line | |
 | 9.0 | A red ring is drawn round You's ≈ $1.48, the header's "?" (swipe). It stays to the end, and the cell stays red. You slumps | |
 | 9.65 | You looks up at Leo's tower | |
-| 9.8 | | "High-yield: about $618." (9.8-11.75) |
-| 10.4 | **The crown** (`winnerT`, 0.6 s after its line goes up). The gold plate opens and Leo's ≈ $617.90 grows onto it at 1.3× (hit + cash, camera punch, rays). Leo celebrates, hops (step, 11.14) and points. You droops, and Years 2 and 4 and the Start row settle to 55% | |
+| 9.75 | Leo points at the ledger, 0.3 s, as his line pops (fixer pass) | "High-yield: about $618." (9.75-11.75) |
+| 10.4 | **The crown** (`winnerT`, 0.65 s after its line goes up). The gold plate opens and Leo's ≈ $617.90 grows onto it at 1.3× (hit + cash, camera punch, rays). Leo celebrates, hops (step, 11.14) and points. You droops, and Years 2 and 4 and the Start row settle to 55% | |
 | 11.45 | You looks up at Leo's tower | |
 | 11.8 | The verdict replaces the captions: "Same $6,000, different account: / ≈ $1.48 vs ≈ $617.90", with ≈ $1.48 in red and ≈ $617.90 green on the swoosh (ding). It lands 1.4 s after the crown | ("Same $6,000. Different account." is the last caption line, on the verdict's time, hidden under it as in the full cut) |
 | 12.25 | You peeks up at Leo's tower, hand over his eyes (boing), and holds it to the end | |
@@ -498,10 +502,11 @@ The verifier independently matched the 2007-2025 figures (including 2025 +17.88%
 - The first line starts at −0.45 s, so it is whole on frame 1.
 - The rows and the crown land under the lines that name them:
   - Year 1 (0.4) under "Year 1 at a big bank:";
-  - Year 3 (5.4) under "Year 3: …";
-  - Year 5 (8.2) under "Year 5: …";
-  - the crown 0.6 s into "High-yield: about $618.".
-- Each ring has one pose on its time: You shrugs, Leo points, You looks up, You slumps.
+  - Year 3 (5.4) under "Year 3: …", up on its cut (5.35);
+  - Year 5 (8.2) under "Year 5: …", up on its cut (8.15);
+  - the crown 0.65 s into "High-yield: about $618.".
+- No other row lands between a line and the row it names. The cost: "High-yield: about $22." stays up over Year 2 (4.2-5.3), and "Year 3: about 53 cents." over Year 4 (7.2-8.1). Each names a row that is still on screen, and the next line cannot go up before its own row.
+- Each ring has one pose on its time: You shrugs, Leo points, You looks up, You slumps. Leo also points as his $618 line pops, and You shrugs between Year 2 and Year 3.
 - **Instagram cover:** stays frame 1.
 
 **Beat sheet, full cut** (19.1 s, what `studio/specs/` holds; as rendered by the Becker `ledger-duel` kit; the scripted acting is `lookOpts.beats`, `marks` and `winnerT`, everything else is the kit's own row physics)
@@ -1135,7 +1140,7 @@ QA scored the ports 7.5 (07a, Scoreboard) and 8 (07c, Becker Rig), with no musts
 
 Each body is therefore about as short as its story and its pack allow. Each final was then built on its rendered picture and verified as below.
 
-**Measured after** (the final renders, `/tmp/cond/07/<id>/final/<id>.mp4`):
+**Measured after** (the condensed pass's own renders, full frame only; the [fixer pass](#condensed-cut-fixer-pass-2026-10-13-after-the-critic) replaced them and re-measured both metrics):
 
 | | Length | Still runs ≥ 0.4 s | Longest still before the verdict | Longest near-still before the verdict |
 |---|---|---|---|---|
@@ -1143,7 +1148,7 @@ Each body is therefore about as short as its story and its pack allow. Each fina
 | 07b | 14.1 + 2.5 = 16.6 s | 13.20-14.13 (the verdict hold, 0.93 s) and 15.33-16.60 (the card) | 0.30 s (4.57-4.87) | 0.37 s (6.77-7.13) |
 | 07c | 13.3 + 2.5 = 15.8 s | 12.33-13.33 (the verdict hold, 1.00 s) and 14.53-15.80 (the card) | 0.30 s (2.33-2.63, 3.27-3.57) | 0.37 s (9.43-9.80, 9.97-10.33) |
 
-No still or near-still run before any verdict reaches 0.4 s (before the pass: 28 still runs, 27.2 s in all). Something moves from frame 1 in all three:
+On the full frame, no still or near-still run before any verdict reached 0.4 s (before the pass: 28 still runs, 27.2 s in all). **Corrected by the fixer pass:** with the caption band left out (the judge's metric in 06a and 09), six did: 07a 2.00-2.47 (near-still) and 11.13-11.90 (still, 0.77 s); 07b 1.23-1.67 and 4.47-4.87 (still); 07c 4.90-5.30 and 9.43-10.33 (near-still, 0.90 s). The fixer pass fixed all six. Something moves from frame 1 in all three:
 - 07a: both odometers' intro count;
 - 07b: the crash at 0.4 s, with Sam's look-up from frame 2;
 - 07c: Leo's look-up from frame 2 and Year 1 at 0.4 s.
@@ -1163,7 +1168,7 @@ What they show:
 
 **Render and sound** (each picture rendered to `/tmp/cond/07/<id>/render/`):
 - Each soundtrack was built with `sound … --video <render dir> --out /tmp/cond/07/<id>/final --score` and checked with `verify … --video /tmp/cond/07/<id>/final`.
-- All three pass **42/42 gated checks, failures: none**.
+- All three pass **42/42 gated checks, failures: none**. (These builds and the table below are superseded by the [fixer pass](#condensed-cut-fixer-pass-2026-10-13-after-the-critic)'s, which were made on a newer Becker pack.)
 - CUE DRIFT and "baseline DIFFERS" are expected: these cue lists are not the packs' fixtures.
 - Margins are to the nearest bound:
 
@@ -1256,4 +1261,164 @@ The other gated checks all pass: A6, A9, B4, B5, B9, B10, S1-S14, TRAIN and DUCK
   - 07b: BANDS 8 kHz 0.2;
   - 07c: BANDS 250 Hz 0.3, 2 kHz 0.5.
   - These failure modes appeared at shorter bodies in the sweeps. Nothing was fixed in the packs or in `acceptance.json`.
+  - Today's margins, after the fixer pass and the Becker pack's short-body changes, are in the [fixer pass](#condensed-cut-fixer-pass-2026-10-13-after-the-critic).
 - 07a's frame 1 still shows Ava's count mid-roll ($8,531), as the full cut did ($4,671). In motion it reads as a count; the Instagram cover avoids it.
+
+### Condensed cut, fixer pass (2026-10-13, after the critic)
+
+**The critic's verdict:** pass, no musts. Scores 07a 8, 07b 8, 07c 7. It found four shoulds in the picture and the write-up, three in the sound and five nits. Its main point: the stillness claim above held on the full frame only. With the caption band left out (the frame above y 1330, counted against the full frame, as in 06a and 09), six stretches were still or near-still for 0.40-0.90 s. In each one only a caption was rising.
+
+**Applied.** These are spec changes only. No text, number, row value, verdict, end card or kit changed, and the bodies are unchanged (14.6 / 14.1 / 13.3 s), because the sweeps found that shorter bodies fail the packs. The kit files are untouched (`looks/*/formats/ledger-duel.js` last changed in 61bef90), so no default-unchanged proof is needed.
+
+| Item | Severity | Was | Now | Result (final renders; caption band out unless noted) |
+|---|---|---|---|---|
+| 07c: "Year 5: about $1.48." went up at 7.1 s, before Year 4 had even cut, and named $1.48 over the Year 4 row ($0.94) | should | vo[3] 5.0-7.05; vo[4] 7.1-9.75 | vo[3] **5.35-8.1**; vo[4] **8.15-9.7**, on the Year 5 cut (8.2) | Stills: "Year 3: about 53 cents." stays up over Year 4 (7.25, 8.0), and "Year 5: about" pops with the Year 5 row (8.25). New check rule (below). The critic's scratch copy (vo[4] at 6.95) now fails it |
+| 07c: 9.43-10.33 near-still (0.90 s) before the crown | should | You slumps at 9.0 and looks up at 9.65 (a head tilt that reads under the near-still line) | **Leo points at 9.75** (0.3 s) as "High-yield: about $618." pops. That line moves 9.8 → 9.75, and the crown (10.4) comes 0.65 s after it | 9.43-9.77 (0.33 s) on both metrics. No run of 0.30 s or more in 9.8-10.4 |
+| 07a: 11.13-11.90 still (0.77 s) between Ava's mark and the table | should | marks: Ava 10.95, Ben 12.25 | **A read mark on Ben's ≈ $244,000 at 11.45**, as his caption rises: his border lights, his value bumps and Ava's steps back (tick). His mark at 12.25 stays, as a re-mark under his working line. The table (11.9), flood (12.7), verdict (13.1) and body (14.6) are unchanged | 11.13-11.47 (0.33 s) and 11.63-11.90 (0.27 s), the same on both metrics. The verdict lands 0.85 s after Ben's final mark |
+| Write-up: the stillness claim covered the full frame only | should | one metric | "Measured after" below has both metrics. The condensed entry above is corrected | |
+| Sound: 07a, 07b and 07c margins | should (×3) | | **Not applied.** They belong to the ship step's refits. Today's margins are below | |
+| 07b: 11.83-12.55 reads as a pause before the payoff | nit | Only Sam's look-up release (12.15) moved | **Alex points at the ledger at 12.0** and holds the point into his verdict cheer (d 0.8) | Full frame: 11.83-12.20 (0.37 s) and 12.23-12.57 (0.33 s) near-still. The point is one thin arm at phone size, so it splits the stretch but does not fill it. The verdict stays 0.75 s after Sam's ring |
+| 07b: 1.23-1.67 (0.43 s) and 4.47-4.87 (0.40 s) still | nit | rings at 1.7; nothing between 2009 (4.25) and 2012 (5.1) except caption words | **Rings at 1.55**, 0.3 s into "Both drop to $6,300.". **Alex gets up first, at 1.8** (`lookUp`; the kit keeps both figures down until 2.02). **Alex holds out a hand at 4.6** (`hold`), under "Alex holds." | 1.23-1.53 (0.30 s) and 4.70-5.00 (0.30 s). With the rings at 1.55 alone, a scratch render read 1.63-2.03 near-still (0.40 s), hence the early get-up. The crash pill is now up 1.04 s (0.46-1.50; it was 1.19 s) |
+| 07b: four captions back to back at the floor | nit | | No change, as the critic advised | |
+| 07a: busy opening; 2.00-2.47 near-still (0.47 s) with only odometer digits moving | nit (and one of the six runs) | Age 35 cut at 1.5 | **Age 35 cut at 1.75**. Ava's sum (1.2), Ben's sum (2.45) and every caption are unchanged; the count now lands at 2.98 | The opening's longest run is 1.43-1.77 (0.33 s) on both metrics. The critic's own suggestion (hold the resting line to 1.5, Ava's sum on the Age 35 cut) was not used: it leaves 1.0-1.5 with no picture beat (0.5 s), and Ava's sum would be up 0.95 s before Ben's at 2.45, under the 1.2 s floor |
+| 07c: "Year 3: about 53 cents." went up 0.4 s before its row; 4.90-5.30 near-still | nit | vo[3] at 5.0; You looks up at 4.55 for 0.3 s | vo[3] at **5.35** (row 5.4). **You shrugs at 4.6 for 0.45 s**, back at 5.05 | 4.90-5.30 is gone. Scratch renders with a look-up and then a think (hand on chin) at 4.6 still read 4.40-4.83 and 4.90-5.30 near-still. You stands at the frame's left edge, so only a pose that moves both arms registers. The cost: "High-yield: about $22." now stays up over the Year 2 row until 5.3 |
+
+To satisfy the new rule, 07b's "Alex holds. By 2012, he’s back above $10,000." also moved from 4.15 to **4.3**, after 2009 (4.25) lands. "Sam sells to cut his losses." now runs 2.6-4.25.
+
+**Audio cues** (`node src/cli.mjs cues`, before and after):
+- **07a** `sfx`: the Age 35 thud moves 1.5 → 1.75, its ding 2.875 → 2.98, and Ben's read mark adds a tick at 11.45.
+- **07b** `sfx`: the 2008 rings' swipe moves 1.7 → 1.55.
+- **07c**: only `vo` and `beats` change, and the engine does not read them. 07c's master is byte-identical to the first cut's on the same pack (`cea9c071f665c8cc`).
+
+**Check (`checks/07-ledger-duel.py`):**
+- **All three teasers:**
+  - Every row a caption names after the hook gets a new row: "no other row lands between vo[i] going up and the row it names" (5 rows).
+  - `CAP_LEAD` is now per teaser. It was 1.3 s for all three. Now it is 1.0 s for 07a and 07b, whose lines narrate the run-up ("By 2012, …"). It is 0.2 s for 07c, whose lines are a row's number and nothing else ("Year 3: about 53 cents.").
+- **07a:**
+  - Ava's sum, the Age 35 cut and Ben's sum come at most 0.7 s apart.
+  - Exactly two marks on Ben's Age 65 value, the first 0-0.15 s after his caption goes up.
+  - The table forms between Ben's read mark (+0.3 s) and his final mark, and at least 0.5 s after Ava's mark.
+  - The post-climax cadence counts picture beats only (Ben's read mark replaces his caption), at most 0.55 s apart. It was 0.65 s with the caption counted.
+- **07b:**
+  - The 2008 rings come 0.1-0.4 s after "Both drop to $6,300." goes up.
+  - Alex gets up 0.15-0.35 s after the rings, before the kit's get-up (crash + 1.62 s).
+  - One Alex pose under "Alex holds.", 0.2-0.5 s after 2009.
+  - One Alex beat between Sam's 2025 ring (+0.15 s) and the verdict (−0.4 s).
+- **07c:**
+  - Leo acts (a pose that is not a look-up) within 0.1 s of "High-yield: about $618." going up.
+  - One You arm pose (shrug, slump, shocked or cheer) between Year 2 and Year 3, back 0.2-0.45 s before Year 3.
+- **Counts:**
+  - Default run (the full cuts in `studio/specs/`): **467 checks, 0 failures**, unchanged, because every new rule is condensed-only.
+  - `--spec` on the three work copies: **535 checks, 0 failures**. It was 517: +5 "no other row" rows, +3 for 07a (one is the new mark's VO check), +7 for 07b (three are the new beats' anchor rows) and +3 for 07c (one is Leo's beat's anchor row).
+- **The first cut fails exactly the critic's items.** The condensed pass's work copies (kept in `/tmp/cond/07/prefix/`) give 530 checks and 13 failures: 07a's opening, Ben's read mark and cadence; 07b's rings, get-up, "Alex holds" pose, end beat and the 2009 row under vo[3]; 07c's Leo beat, You's pose, Year 3's 0.40 s lead, and Year 5's 1.10 s lead with Year 4 landing under its line.
+- **Mutation test: 39 of 39 caught** (`/tmp/cond/07/fix/mutate2.py`), each with exit 1 and a named failure. These are the condensed pass's 24 plus 15 new ones:
+  - 07c: the critic's vo[4] at 6.95; vo[3] at 5.0; no Leo beat; Leo's beat as a look-up; You's pose back at 4.55 for 0.3 s; You's pose as a look-up; You's pose as a think.
+  - 07b: vo[3] at 4.15; the rings at 1.7; no "Alex holds" pose; no end beat; no early get-up.
+  - 07a: the Age 35 cut at 1.5; no read mark; the read mark at 11.7.
+
+**Measured after** (the final renders, `/tmp/cond/07/<id>/final/<id>.mp4`). The measure is the frame difference at 270×480: still if YAVG < 0.15, near-still if under 0.25. "Caption band out" is the frame above y 1330, counted against the full frame (YAVG × 1330/1920, 09's corrected method). Each cell gives the longest run before the verdict, still / near-still.
+
+| | Length, verdict (hold) | Full frame | Caption band out | Was (caption band out, the critic's runs) |
+|---|---|---|---|---|
+| 07a | 14.6 + 2.5 = 17.1 s, 13.1 (1.5) | 0.33 (1.43-1.77, 11.13-11.47) / 0.33 (the same) | 0.33 (1.43-1.77, 11.13-11.47) / 0.33 (the same; 11.60-11.90 0.30) | 11.13-11.90 still 0.77; 2.00-2.47 near-still 0.47 |
+| 07b | 14.1 + 2.5 = 16.6 s, 12.55 (1.55) | 0.30 (12.23-12.53) / 0.37 (6.77-7.13, 11.83-12.20) | 0.30 (1.23-1.53, 4.70-5.00) / 0.37 (6.77-7.13, 11.83-12.20). The run from 12.23 lasts 0.32 s before the verdict and runs on into the hold, because the verdict lands in the cropped band | 1.23-1.67 still 0.43; 4.47-4.87 still 0.40 |
+| 07c | 13.3 + 2.5 = 15.8 s, 11.8 (1.5) | 0.30 (2.33-2.63, 3.27-3.57) / 0.33 (3.23-3.57, 9.43-9.77) | 0.30 (1.23-1.53, 2.33-2.63, 3.27-3.57) / 0.37 (1.17-1.53, 2.83-3.20) | 9.43-10.33 near-still 0.90; 4.90-5.30 near-still 0.40 |
+
+Before any verdict, no still or near-still run reaches 0.4 s on either metric; the longest is 0.37 s. The only runs of 0.4 s or more are the verdict holds and the card, on the full frame:
+- 07a 13.37-14.47 (1.10 s);
+- 07b 13.20-14.13 (0.93 s);
+- 07c 12.33-13.33 (1.00 s);
+- the card in each.
+
+Frame 1 is unchanged in all three: the complete hook caption, and motion from frame 1 (07a's odometers, Sam's and Leo's look-ups).
+
+**Verified:**
+- **Lint:** `check specs-wip/<id>.json` gives 0 errors and 0 warnings for each, at the default step and at every frame.
+- **Stills read** (contact sheets of the final specs):
+  - 07a at 0, 0.5, 1.0, 1.3, 1.6, 1.85, 2.1, 2.35, 2.6, 3.05, 9.3, 10.8, 11.1, 11.35, 11.55, 11.75, 12.0, 12.35, 12.8 and 13.3 s;
+  - 07b at 0, 0.45, 1.3, 1.6, 1.9, 2.3, 2.95, 3.4, 4.3, 4.65, 5.2, 5.5, 5.9, 9.1, 10.7, 11.85, 12.05, 12.3, 12.6 and 13.2 s;
+  - 07c at 0, 0.45, 1.55, 2.8, 4.25, 4.65, 5.1, 5.45, 6.25, 6.6, 7.25, 8.0, 8.25, 9.05, 9.8, 10.0, 10.45, 11.0, 11.9 and 12.4 s.
+  - They show:
+    - 07a: the Age 35 cut rolling at 1.85; Ben's panel lit under "Ben has about $244,000." at 11.55; the table at 12.0; Ava's flood at 12.8.
+    - 07b: both 2008 cells ringed under "Both drop to $6,300." at 1.6; Alex up while Sam is still down at 1.9; Alex's hand out under "Alex holds. …" at 4.65; Alex pointing at 12.05-12.3.
+    - 07c: "Year 3: about" popping with the Year 3 row at 5.45; "Year 3: about 53 cents." over Year 4 at 7.25-8.0; "Year 5: about" popping with the Year 5 row at 8.25; Leo pointing at 9.8-10.0.
+    - Every number matches the checker. Nothing overlaps, and the end card is unchanged.
+- **Renders:** `/tmp/cond/07/<id>/final/<id>.mp4`, with `sound/` beside each. The picture renders were muxed and then deleted to free disk; each final MP4's video stream is the render's (A13).
+- **Sound** (`sound … --video <render> --out /tmp/cond/07/<id>/final --score`, then `verify … --video /tmp/cond/07/<id>/final --detail`): **PASS, 42/42 gated checks for each, failures: none.** CUE DRIFT (1) and "baseline DIFFERS" are expected for a WIP cut.
+
+**The Becker pack moved during this pass.** Another workflow's short-body sound pass changed `looks/becker-rig/sound/` in the working tree:
+- `balance.mjs` and `sfx.mjs`, snapshotted in ca1087f;
+- `compose.mjs`, changed again at 08:27:30 UTC.
+
+07b's first sound build straddled that change, so its master differed from verify's rebuild. It was rebuilt and re-verified on the same pack state. That state, as sha256 prefixes, is `balance.mjs` `e3de95b9…`, `compose.mjs` `7804287e…` and `sfx.mjs` `6f4c8486…` for 07b and 07c, and the unchanged Scoreboard pack for 07a. All three delivered masters now equal verify's rebuild (A14 "= report"). For attribution, the condensed pass's work copies were also verified on today's packs (`verify --no-video`).
+
+**A later state of the Becker pack fails 07c.** That pack was still being edited: `sfx.mjs` changed at 08:31 and 08:41, `balance.mjs` at 08:36 and 08:42. A paired rebuild and verify at 08:40-08:42, on `balance.mjs` `7fb6c2bc…` and `sfx.mjs` `3b42d402…`, gave these results (kept in `/tmp/cond/07/fix/rerun/`):
+- **07b passed 42/42.** A2 −1.36, A5 12.79, BANDS 8 kHz −7.0, B8 −12.10 / −10.72.
+- **07c failed two checks:**
+  - **A11:** max 6.63 dB, against ≤ 6;
+  - **B8:** the logo (M(L+0.2) −11.94) was louder than the payoff (M(P+0.2) −12.34).
+- 07c's cue list is identical before and after this pass, apart from `vo` and `beats`, which the engine does not read. So this is the pack's in-progress change, not the cut's.
+- The delivered finals stay on the verified state above. Nothing in the pack was touched here. The ship step's Becker refit must re-verify 07c, and A11 and B8 first.
+
+**Sound margins** (fixed cut; the margin to the nearest bound is in brackets. "Pre-fix" is the condensed pass's work copy on the same pack, given for 07a only, because the Scoreboard pack did not move. For 07b see the paired run below the table):
+
+| Check | 07a (Scoreboard) | 07b (Becker) | 07c (Becker) |
+|---|---|---|---|
+| A1 delivery / master | −14.08 (0.92) / −14.01 (0.29) | −14.14 (0.86) / −14.07 (0.23) | −14.14 (0.86) / −14.07 (0.23) |
+| A2 true peak (max −1) | −1.25 dBTP (0.25; pre-fix −1.20) | −1.38 (0.38) | −1.50 (0.50) |
+| A3 LRA | 4.26 (0.26 over the floor of 4; pre-fix 4.33) | 4.34 (1.34 over 3) | 4.39 (1.39) |
+| A4 ST / M max | −11.86 (3.86) / −9.18 (3.18) | −12.09 (3.91) / −9.33 (3.33) | −11.79 (3.79) / −9.93 (3.93) |
+| A5 PLR (max 13; the engine holds it at 12.95 or less) | 12.83 (0.17; pre-fix 12.88) | 12.76 (0.24) | 12.64 (0.36) |
+| A7 first 0.4 s | −10.39 (7.61) | −12.35 (5.65) | −12.45 (5.55) |
+| A8 corr mean / min / mono fold | 0.76 / 0.40 / −0.71 | 0.89 / 0.55 / −0.37 | 0.89 / 0.55 / −0.35 |
+| A10 phone drop | 2.54 (4.46) | 2.03 (2.47) | 1.86 (2.64) |
+| A11 | 0.942% (2.06), max 3.68 (2.32) | 0.275% (2.73), max 1.34 (4.66) | 0.89% (2.11), max 4.19 (1.81) |
+| A12 length | 17.100 s = video | 16.600 = video | 15.800 = video |
+| A13 video md5 | 5c818eb7d0ff identical | 71774e11d3b1 identical | 967edcf7d7b4 identical |
+| A14 master sha256 | 9efb624e56188aa9 | 7dd5194fa835a163 | cea9c071f665c8cc (= pre-fix) |
+| BANDS (tightest three) | 250 Hz +0.4 (0.4); 125 Hz +2.5 (0.5; pre-fix 2.6); 2 kHz −4.5 (0.5; pre-fix −4.4) | 2 kHz −0.9 (0.9); 500 Hz +2.8 (1.2); 8 kHz −7.0 (2.0) | 2 kHz −0.7 (0.7); 250 Hz +1.7 (1.7); 4 kHz −6.1 (1.9) |
+| HARSH | −0.04 (2.04) | −0.66 (2.66) | −0.75 (2.75) |
+| B1 | music −2.92 (0.58), sfx −4.33 (0.67) | music −2.19 (1.69), sfx − music −0.33 (1.67), returns −10.91 (2.91) | music −1.92 (1.42), sfx − music −0.59 (1.41), returns −10.5 (2.5) |
+| B2 duck at P | −10.8 (2.8) | −9 (1.0) | −9 (1.0) |
+| B3 cues over the music | 16/16, closest 4.3 (1.3) | 17/17, closest 6.2 (3.2) | 11/11, closest 5.4 (2.4) |
+| B6 continuity | 4.4 LU under (13.6) | 2.7 (15.3) | 2.0 (16.0) |
+| B7 drop over build (edge / centred) | 4.8 / 3.7 (2.8 / 1.7) | 3.1 / 2.7 (1.1 / 0.7) | 2.8 / 2.8 (0.8 / 0.8) |
+| B8 logo / payoff | −12.52 (0.48; pre-fix −12.51) / −10.78 | −11.80 (1.20) / −10.77 | −11.85 (1.15) / −11.84 |
+| S9 tempo | 145.794 / 153.846 BPM | 112.676 / 104.348 | 115.385 / 124.138 |
+
+The other gated checks all pass: A6, A9, B4, B5, B9, B10, S1-S14, TRAIN and DUCK (07a), and MALLET and FLAMS (07b, 07c). B1w (the as-written v1 band, reported and not gated) has music at −2.19 (07b) and −1.92 (07c), against −4.5..−2.5.
+
+**What moved the margins, and what is left for the ship step** (the critic's three sound shoulds):
+- **07a:**
+  - The Scoreboard pack did not move: the pre-fix work copy rebuilds byte-identical to the condensed pass's master (`a1f63e802027a304`).
+  - This pass's cue changes moved A3 from 4.33 to 4.26 (margin 0.33 → 0.26). They also moved A2 to −1.25, A5 to 12.83, B8 to −12.52 and BANDS 125 Hz / 2 kHz by 0.1. The changes were the Age 35 thud and ding 0.25 s later, and a tick at 11.45.
+  - Still thin: A3 0.26, A5 0.17 (held by the engine), A2 0.25, A1 master 0.29, BANDS 250 Hz 0.4, 125 Hz and 2 kHz 0.5, B8 0.48.
+  - Likely cause, as the critic said: the 14.6 s body (the sweeps fail A3 at 13.4 s or less), with the climax roll and the row spacing moving B8.
+  - For the ship step: the Scoreboard refit (BIBLE §11.1-11.2), then `verify --strict-cues`, watching A3 first, then B8 and BANDS 250 Hz.
+- **07b:**
+  - BANDS 8 kHz went from −5.2 (margin 0.2) to −7.0 (2.0) because of the Becker pack change, not the cut: the pre-fix work copy on today's pack also reads −7.0.
+  - This pass's one cue change (the rings' swipe 1.7 → 1.55) barely moves the sound. The paired run at 08:40-08:42 built the pre-fix and fixed specs on one pack state: A2 −1.40 / −1.36, A5 12.76 / 12.79, 8 kHz −7.1 / −7.0, B8 payoff −10.90 / −10.72. The first attribution run is not a fair comparison: its pre-fix verify (A2 −1.20, A5 12.94) came after the 08:31 `sfx.mjs` edit.
+  - Still thin: A1 master 0.23, A5 0.24, A2 0.38, B7 centred 0.7.
+  - The crown-to-verdict gap stays 1.9 s, above the 1.4 s at which the sweeps broke 8 kHz.
+  - For the ship step: the Becker refit, then re-check BANDS 8 kHz and B7.
+- **07c:**
+  - No cue moved, so every change since the critic's run is the pack's: 250 Hz +0.3 → +1.7 and 2 kHz −0.5 → −0.7.
+  - Still thin: A1 master 0.23, A5 0.36, A2 0.50, BANDS 2 kHz 0.7, B7 0.8.
+  - For the ship step: the Becker refit, re-verified.
+
+Nothing in the packs or in `acceptance.json` was touched by this pass.
+
+**Files:**
+- Changed:
+  - `studio/specs-wip/07a-scoreboard-start-at-25.json`;
+  - `studio/specs-wip/07b-becker-rig-panic-sell-2008.json`;
+  - `studio/specs-wip/07c-becker-rig-savings-rate.json`;
+  - `teasers/v2/checks/07-ledger-duel.py`;
+  - this write-up.
+- Not touched: `studio/specs/`, `studio/looks/**`, `studio/src/**`, `studio/sound/**`, the sound packs, `studio/test/**`, `publishing/` and `renders/`.
+- Nothing was committed by this pass.
+- The "To promote" steps above are unchanged.
+
+**Open items:**
+- The 07c caption trade-offs above: "High-yield: about $22." stays up over Year 2, and "Year 3: about 53 cents." over Year 4, because no line may go up before its own row.
+- 07b's end point (12.0) splits the 0.7 s before the verdict but does not fill it: two near-still runs of 0.37 and 0.33 s on the full frame. A bigger pose there would compete with the verdict cheer.
