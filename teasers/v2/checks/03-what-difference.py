@@ -577,15 +577,21 @@ MERGED_03C = ("Interest alone:", "More than the loan.")
 # reads: (target, caption, anchor). The anchor is the caption's word that the read answers; on screen there is no
 # narration, so a read must fall inside that caption's window (not within 0.25 s of a spoken word)
 reads_c = {
+    # (fixer pass: the read on "$1,800 less" is a compare read of Monthly's ≈ $10,000 and Round up's ≈ $8,200 together,
+    # after the count-down settles: the two shown values whose difference the caption and the step give)
     ida: [((0, "payoff"), 1, "72"), ((0, "interest"), 1, "$10,000"), (((1, 2), "interest"), 3, "$35"),
-          ((0, "payoff"), 4, "12"), ((3, "interest"), 6, "$1,800"), ((3, "payoff"), 7, "year")],
+          ((0, "payoff"), 4, "12"), (((0, 3), "interest"), 6, "$1,800"), ((3, "payoff"), 7, "year")],
     idb: [("hero", 0, "15"), ((0, "interest"), 1, "$7,300"), ((0, "interest"), 1, "owed"),
           ((1, "payoff"), 4, "4.8"), ((1, "interest"), 4, "$3,100"), ((2, "payoff"), 5, "2.2")],
     idc: [("hero", 0, "$587,200"), ((0, "interest"), 0, "$587,200"), ("hero", 0, "loan"), ((1, "payoff"), 2, "40"),
           ("hero", 2, "$78,600"), ((2, "payoff"), 4, "11"), ("hero", 4, "$245,000")],
 }
 # 03a working-slot steps (cond indices): (step, caption, anchor)
-steps_c = {ida: [(0, 2, "$1,100"), (1, 3, "$35"), (2, 6, "$1,800"), (3, 7, "year")]}
+steps_c = {ida: [(0, 2, "$1,100"), (1, 3, "$35"), (2, 6, "$1,800"), (3, 7, "$12"), (4, 7, "year")]}
+# 03a (fixer pass): the scan's hops, by lane (the three waiting figures in turn, then Biweekly's again, so the ripple
+# runs until Monthly's caption goes up: a single figure's hop registers as near-still)
+SCAN_ORDER_C = {ida: [1, 2, 3, 1]}
+SLOT_HOLD_VERDICT = 0.7          # 03a: the two working lines of the verdict hold: each >= 0.7 s (and >= 0.7 s before the card)
 # where each later option wakes / cuts (the caption that names it) and lands (the caption that speaks its payoff)
 wakes_c = {ida: [(1, 2), (2, 3), (3, 5)], idb: [(1, 2), (2, 5)], idc: [(1, 1), (2, 3)]}
 lands_c = {ida: [(1, 2), (2, 3), (3, 6)], idb: [(1, 4), (2, 5)], idc: [(1, 2), (2, 4)]}
