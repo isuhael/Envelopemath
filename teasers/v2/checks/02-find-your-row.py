@@ -31,9 +31,12 @@ gets its own pick label, "≈ 78 min of tax a day").
 Two cuts per teaser (condensed cut, 2026-10-13: the owner's "too many still moments are a killer for a short;
 condense the rest", the 06b/06c precedent). A spec is checked against one of two expectation sets, picked by its
 duration:
-   - the round-2 cut (narration-paced VO lines; 13.4 / 14.0 / 13.0 s): what studio/specs/ holds and renders/channel/
-     ships today (IN_SPECS names the cut studio/specs/ must hold). Its rules are the ones listed under 3 above.
-   - the condensed cut (studio/specs-wip/<id>.json; a 6.5-9 s body + the 2.5 s end card). The strings, rows, labels,
+   - the round-2 cut (narration-paced VO lines; 13.4 / 14.0 / 13.0 s): retired from studio/specs/ on 2026-10-13 and
+     kept as a reference for a git-history copy (`git show 4fb0b00^:studio/specs/<id>.json`) passed with --spec;
+     renders/channel/ still ships it until the ship step replaces it. Its rules are the ones listed under 3 above.
+   - the condensed cut (a 6.5-9 s body + the 2.5 s end card): written in studio/specs-wip/, promoted into studio/specs/
+     on 2026-10-13 and what studio/specs/ holds (IN_SPECS names the cut studio/specs/ must hold; the sound and the ship
+     follow). The strings, rows, labels,
      verdicts and every number are the round-2 cut's, character for character; only the clock moved. Its timing rules
      replace the narration rules: each caption up >= max(1.2 s, 0.12 s a word) from frame 1, captions back to back
      (gaps < 0.2 s, no overlap), the hook caption complete on frame 1 (Becker Rig pre-types a line that starts early
@@ -49,7 +52,9 @@ duration:
      02b's spotlight is 0.25 s; 02c's second pick (and its caption) comes at 2.8 s, with the bottom rows re-spaced.
 
 Run:  python3 teasers/v2/checks/02-find-your-row.py                  (the specs in studio/specs/)
-      python3 teasers/v2/checks/02-find-your-row.py --spec studio/specs-wip/02a-becker-rig-3-a-day-by-age.json ...
+      python3 teasers/v2/checks/02-find-your-row.py --spec /tmp/02a-becker-rig-3-a-day-by-age.json ...
+        (e.g. the retired round-2 cut: `git show 4fb0b00^:studio/specs/02a-becker-rig-3-a-day-by-age.json
+        > /tmp/02a-becker-rig-3-a-day-by-age.json`)
       --spec [KEY=]PATH (repeatable) checks PATH in place of studio/specs/<id>.json. KEY is a, b or c, 02a/02b/02c, or
       the full id (02b-scoreboard-trillion-at-your-wage); without it the file's stem must be one of the three ids. A round-2-length spec is checked as the round-2 cut, any
       other as the condensed cut (and fails its lane unless it is one).
@@ -71,7 +76,7 @@ WPS_SPLIT = 2.8  # second, stricter read: hyphenated numbers split ("twenty-five
 IDS = {"a": "02a-becker-rig-3-a-day-by-age", "b": "02b-scoreboard-trillion-at-your-wage", "c": "02c-scoreboard-salary-per-hour"}
 # the two cuts (see the docstring): picked by the spec's duration
 R2_DURATION = {"a": 13.4, "b": 14.0, "c": 13.0}        # the round-2 cut's body (s)
-IN_SPECS = {"a": "r2", "b": "r2", "c": "r2"}          # the cut studio/specs/ must hold ("cond" once promoted)
+IN_SPECS = {"a": "cond", "b": "cond", "c": "cond"}    # the cut studio/specs/ must hold (promoted 2026-10-13; was "r2")
 CUT_NAME = {"r2": "round-2 cut (narration-paced)", "cond": "condensed cut (2026-10-13)"}
 # condensed-cut timing targets (the editor's brief for the owner's note, as for 06b/06c)
 COND_LANE = (6.5, 9.0)      # body (s), plus the 2.5 s end card

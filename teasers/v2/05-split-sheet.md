@@ -1,13 +1,13 @@
 # 05 · Split sheet: three teasers
 
 **Format:** `split-sheet` (rank 5 in [`../../research/v2/04-formats.md`](../../research/v2/04-formats.md), hook pattern **P9**)
-**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews), hook pass 1 on 2026-10-08 (05b and 05c kept), **hook pass 2 on 2026-10-08 (05b and 05c rewritten: rewrite A adopted for both)**, then the assembly pass on 2026-10-08 (the three teasers fitted, rendered and fixed frame by frame; no figure changed), then the **QA fix pass on 2026-10-08** (05a retimed to 24.7 s with a big verdict lockup; 05b's header answer slot, needs bracket and retime; 05c's landings put on the spoken numbers, the hero tagged and rolled to ≈ $3.93 at the verdict), then the **port to Becker Rig on 2026-10-08** (the owner kept Scoreboard and Becker Rig and retired Clean Sheet, so 05a moved to Becker Rig: same hook, numbers, VO lines and verdict, restaged with the figure carving the $10 slab; its Clean Sheet spec is in `studio/specs/retired/`), then the **QA fix pass on the Becker Rig port on 2026-10-08** (05a: the climax is one beat, a "PROFIT ≈ $1.29" payoff slab bookends the "YOUR ORDER $10.00" slab, the slab's remainder carries the "$7.04?" guess, the lanes end as a bar chart of the $10, and the footer is one line; no number, VO line or verdict changed), then the **condensed cut on 2026-10-13** (the owner: "Too many still moments are a killer for a short. Condense the rest. The CTA (end card) is good."): all three were retimed so that no still run reaches 0.4 s before the verdict hold. Bodies: 05a 24.7 → 12.7 s, 05b 22.1 → 11.45 s, 05c 22.8 → 8.9 s, each plus the unchanged 2.5 s end card. They are WIP copies in `studio/specs-wip/`, not yet promoted. No number, display string, verdict or caption word changed, except that 05c's "Check: $100." is merged into the caption before it. A fix pass after the critic followed the same day: 05b's "Needs get five." became its own caption, so "$10 a day" goes up with the lone brick, and 05c's footer keeps the goal row's working through the check (one footer step fewer). It also corrected the 05c frame-1 claim. No word, number or sound changed. 05a was in neither hook pass. What changed and why is in the "Review log" at the end.
-**Specs** (round-2 cuts, what `studio/specs/` holds until the condensed cuts are promoted):
+**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews), hook pass 1 on 2026-10-08 (05b and 05c kept), **hook pass 2 on 2026-10-08 (05b and 05c rewritten: rewrite A adopted for both)**, then the assembly pass on 2026-10-08 (the three teasers fitted, rendered and fixed frame by frame; no figure changed), then the **QA fix pass on 2026-10-08** (05a retimed to 24.7 s with a big verdict lockup; 05b's header answer slot, needs bracket and retime; 05c's landings put on the spoken numbers, the hero tagged and rolled to ≈ $3.93 at the verdict), then the **port to Becker Rig on 2026-10-08** (the owner kept Scoreboard and Becker Rig and retired Clean Sheet, so 05a moved to Becker Rig: same hook, numbers, VO lines and verdict, restaged with the figure carving the $10 slab; its Clean Sheet spec is in `studio/specs/retired/`), then the **QA fix pass on the Becker Rig port on 2026-10-08** (05a: the climax is one beat, a "PROFIT ≈ $1.29" payoff slab bookends the "YOUR ORDER $10.00" slab, the slab's remainder carries the "$7.04?" guess, the lanes end as a bar chart of the $10, and the footer is one line; no number, VO line or verdict changed), then the **condensed cut on 2026-10-13** (the owner: "Too many still moments are a killer for a short. Condense the rest. The CTA (end card) is good."): all three were retimed so that no still run reaches 0.4 s before the verdict hold. Bodies: 05a 24.7 → 12.7 s, 05b 22.1 → 11.45 s, 05c 22.8 → 8.9 s, each plus the unchanged 2.5 s end card. They were written as WIP copies in `studio/specs-wip/` and promoted into `studio/specs/` on 2026-10-13 (the sound and the ship follow). No number, display string, verdict or caption word changed, except that 05c's "Check: $100." is merged into the caption before it. A fix pass after the critic followed the same day: 05b's "Needs get five." became its own caption, so "$10 a day" goes up with the lone brick, and 05c's footer keeps the goal row's working through the check (one footer step fewer). It also corrected the 05c frame-1 claim. No word, number or sound changed. 05a was in neither hook pass. What changed and why is in the "Review log" at the end.
+**Specs** (the condensed cuts since their promotion on 2026-10-13; the durations in brackets are the round-2 cuts', which are in git history, `4fb0b00^` and earlier, and which `renders/channel/` ships until the ship step):
 - [`studio/specs/05a-becker-rig-chipotle-10.json`](../../studio/specs/05a-becker-rig-chipotle-10.json) (24.7 s; Becker Rig since the port, was [`05a-clean-sheet-chipotle-10.json`](../../studio/specs/retired/05a-clean-sheet-chipotle-10.json))
 - [`studio/specs/05b-becker-rig-3000-paycheck.json`](../../studio/specs/05b-becker-rig-3000-paycheck.json) (22.1 s; the file stem keeps "3000-paycheck", the $3,000 take-home on the slab, so links stay valid)
 - [`studio/specs/05c-scoreboard-costco-100.json`](../../studio/specs/05c-scoreboard-costco-100.json) (22.8 s)
 
-**Condensed cuts (2026-10-13, WIP):** `studio/specs-wip/05a-becker-rig-chipotle-10.json` (12.72 s + card = 15.2 s), `studio/specs-wip/05b-becker-rig-3000-paycheck.json` (11.45 s + card = 13.95 s) and `studio/specs-wip/05c-scoreboard-costco-100.json` (8.89 s + card = 11.4 s). Their beat sheets and captions are in each teaser's section below, under the round-2 ones. Renders: `/tmp/cond/05/<id>/final/<id>.mp4`.
+**Condensed cuts (2026-10-13, promoted from `studio/specs-wip/` on 2026-10-13):** `studio/specs/05a-becker-rig-chipotle-10.json` (12.72 s + card = 15.2 s), `studio/specs/05b-becker-rig-3000-paycheck.json` (11.45 s + card = 13.95 s) and `studio/specs/05c-scoreboard-costco-100.json` (8.89 s + card = 11.4 s). Their beat sheets and captions are in each teaser's section below, under the round-2 ones. Renders: `/tmp/cond/05/<id>/final/<id>.mp4`.
 
 **Maths check:** [`checks/05-split-sheet.py`](checks/05-split-sheet.py). It recomputes every on-screen number from the sourced inputs, then checks every digit-bearing display string in the three specs against the computed, formatted value. A digit-bearing string the script does not know is a failure. It also checks every number in every VO line, including number words such as "five" and "ten", and that numeric fields agree with their display strings (`value`, `share`). Further checks:
 - "≈" sits on every rounded amount and on no exact one, **on screen and in the VO text** (captions are on, so the VO is on screen too).
@@ -28,9 +28,9 @@
   - the verdict lands 0.8-1.5 s after the final reveal and holds 1.2-1.6 s;
   - each teaser keeps the motion cadence it was timed to (see the Review log);
   - critic fixes: 05b's first "$10" caption is its own line, goes up 0-0.3 s before the lone brick lands and types its "$10" with the slot's stamp (±0.15 s); 05c's footer has five steps (no return to the assumption line at the check), each up ≥ max(0.9 s, 0.12 s per token).
-  `--spec [KEY=]PATH` checks a file in place of `studio/specs/<id>.json`. `IN_SPECS` names the cut `studio/specs/` must hold: "full" until promotion.
+  `--spec [KEY=]PATH` checks a file in place of `studio/specs/<id>.json`. `IN_SPECS` names the cut `studio/specs/` must hold: "full" until the promotion, "condensed" since (2026-10-13).
 
-Result: **560 checks, 0 failures, exit 0** on `studio/specs/` (the round-2 cuts; 554 before the cut rows were added on 2026-10-13). With `--spec` on the three WIP copies the result is **583 checks, 0 failed** after the critic fixes (579 before), and the condensed cuts' mutation test caught **21 of 21** (16 of 16 before the fixes). Earlier counts (554 after the Becker Rig QA fix pass of 05a; 544 after the port, 531 after the QA fix pass, 512 after the assembly pass, 494 after hook pass 2, 481 before). The Becker Rig QA pass's in-memory mutation test caught **11 of 11**, and the port's caught **12 of 12** (both listed in their Review log entries). The fix pass's in-memory mutation test caught **12 of 12**: the pre-fix 05c spec, 05c with the kit's default rolls (rows land late), footer step 3 back at the cut, a $3.94 hero, the LEFT counter rolling with row 3, a bare "$3.93" caption, 05b's slot filling late, "= 4 bricks", a "$11" slot, 05a's check after the verdict, 05a's row 1 lit at frame 1, and "$7.40" in 05a's verdict. In the round-2 mutation test, eight broken copies each failed with exit 1: a missing "≈" in a caption, "≈" on an exact $10, "Costco keeps" back in the verdict, the row label back to "Income tax", the wrong guess moved off frame 1, the mask on a non-goal row, the hero landing on ≈ $1.94 early, and "before tax" dropped from footer step 3. Hook pass 2's in-memory mutation test of the new 05b and 05c specs caught **10 of 10** (food row $310, "$11 a day" in a VO line, the rent landing off "four", $3,000 back in the 05b header, 8 bricks, 05c masking only the goal row, the membership row moved off frame 1, "Costco keeps" in the verdict, $11,686M in footer step 5, a bare "$1.94" in a caption).
+Result since the promotion (2026-10-13): **583 checks, 0 failed** on `studio/specs/` (the condensed cuts), and **560, 0 failed** with `--spec` on git-history copies of the round-2 cuts. Before it: **560 checks, 0 failures, exit 0** on `studio/specs/` (the round-2 cuts; 554 before the cut rows were added on 2026-10-13). With `--spec` on the three WIP copies the result is **583 checks, 0 failed** after the critic fixes (579 before), and the condensed cuts' mutation test caught **21 of 21** (16 of 16 before the fixes). Earlier counts (554 after the Becker Rig QA fix pass of 05a; 544 after the port, 531 after the QA fix pass, 512 after the assembly pass, 494 after hook pass 2, 481 before). The Becker Rig QA pass's in-memory mutation test caught **11 of 11**, and the port's caught **12 of 12** (both listed in their Review log entries). The fix pass's in-memory mutation test caught **12 of 12**: the pre-fix 05c spec, 05c with the kit's default rolls (rows land late), footer step 3 back at the cut, a $3.94 hero, the LEFT counter rolling with row 3, a bare "$3.93" caption, 05b's slot filling late, "= 4 bricks", a "$11" slot, 05a's check after the verdict, 05a's row 1 lit at frame 1, and "$7.40" in 05a's verdict. In the round-2 mutation test, eight broken copies each failed with exit 1: a missing "≈" in a caption, "≈" on an exact $10, "Costco keeps" back in the verdict, the row label back to "Income tax", the wrong guess moved off frame 1, the mask on a non-goal row, the hero landing on ≈ $1.94 early, and "before tax" dropped from footer step 3. Hook pass 2's in-memory mutation test of the new 05b and 05c specs caught **10 of 10** (food row $310, "$11 a day" in a VO line, the rent landing off "four", $3,000 back in the 05b header, 8 bricks, 05c masking only the goal row, the membership row moved off frame 1, "Costco keeps" in the verdict, $11,686M in footer step 5, a bare "$1.94" in a caption).
 **Studio linter:** `node src/cli.mjs check specs/05*.json` gives **3/3 clean, 0 errors, 0 warnings** after the fix pass, and again after the Becker Rig port and its QA fix pass (05a also clean at a 0.05 s step) (the assembly pass removed hook pass 2's one warning, 05b's "=" at 38.7 px mid-pop at 14.5 s: the check tokens now pop from at least 41 px). (Round-2 note: the four kit samples for split-sheet in clean-sheet and scoreboard are also clean, and `node --test` passes 6/6). All three kits now implement `split-sheet`; renders of every beat were inspected for this revision.
 **Web searches used:** 12 in round 1 + 4 in this revision (see the search log). The egress proxy blocks page fetches (eia.gov in round 1, sec.gov again today), so every figure rests on the search engine's result text for the named primary page. Each figure is cross-checked against a second, independent source or an accounting identity (see each Sources table).
 
@@ -78,7 +78,7 @@ Following the brief ("if a figure can't be verified, choose a topic that doesn't
 | First payoff | ≈ $2.96 at 0.8 s | $3,000 ÷ 10 = $300, 10 bricks, at 1.2 s | ≈ $88.91 lands at 0.93 s, on the spoken number (cut at 0.25 s; the hero rolls to LEFT ≈ $11.09 with it) |
 | Wrong belief busted | "Chipotle keeps the other $7.04" | "rent under half my take-home is fine under 50/30/20" | "Costco's profit is all membership fees" |
 | Verdict (screen) | Chipotle keeps / **≈ $1.29**, not $7.04. (64 px, green swoosh under ≈ $1.29, $7.04 in red); on the same word the header slot's struck guess is stamped over: "at Chipotle: **≈ $1.29 profit**" | $1,200 rent leaves food and / every bill **$10 a day**. | Not all fees: your cart leaves **≈ $1.94**. / Membership fees: **≈ $1.99**. (the hero rolls to PROFIT PER $100 ≈ $3.93 above it) |
-| Runtime | 24.7 s (condensed cut, WIP: 12.72 s; ≈ $1.29 lands at 10.32 s, the verdict at 11.22 s) | 22.1 s (condensed: 11.45 s; the $10-a-day slab at 9.15 s, the verdict at 9.95 s) | 22.8 s (condensed: 8.89 s; ≈ $88.91 lands at 1.13 s, ≈ $3.93 at 6.49 s, the verdict at 7.29 s) |
+| Runtime | 24.7 s (condensed cut, promoted 2026-10-13: 12.72 s; ≈ $1.29 lands at 10.32 s, the verdict at 11.22 s) | 22.1 s (condensed: 11.45 s; the $10-a-day slab at 9.15 s, the verdict at 9.95 s) | 22.8 s (condensed: 8.89 s; ≈ $88.91 lands at 1.13 s, ≈ $3.93 at 6.49 s, the verdict at 7.29 s) |
 | Closest benchmark hook | H70, 221,830 (+ H84's "Actually", 3M, 140x) | H84, 3M, 140x (run it on your own number) + H04, 9.9M, 106.16x (a unit on screen) + H49, 382,100, 289.1x (small daily verdict) | H31, 578,461 ("NOT EMI" myth-bust) + H18, 1,391,731, 5.91x (yes/no) + H70 |
 
 **Display convention (all three):**
@@ -90,7 +90,7 @@ Following the brief ("if a figure can't be verified, choose a topic that doesn't
 
 ## 05a · Becker Rig · What you're really paying for when you spend $10 at Chipotle
 
-**Spec:** `studio/specs/05a-becker-rig-chipotle-10.json` · 24.7 s · captions on · **condensed cut (2026-10-13, WIP): `studio/specs-wip/05a-becker-rig-chipotle-10.json`, 12.72 s** (see "Beat sheet (condensed cut)") · **ported from Clean Sheet on 2026-10-08** (hook, numbers, VO and verdict unchanged; the Clean Sheet spec is in `studio/specs/retired/`), then fixed after QA the same day (see "QA fix pass on the Becker Rig port")
+**Spec:** `studio/specs/05a-becker-rig-chipotle-10.json` · **condensed cut (2026-10-13, promoted from `studio/specs-wip/` the same day), 12.72 s** (see "Beat sheet (condensed cut)") · captions on · the round-2 cut (24.7 s) is in git history (`4fb0b00^`) · **ported from Clean Sheet on 2026-10-08** (hook, numbers, VO and verdict unchanged; the Clean Sheet spec is in `studio/specs/retired/`), then fixed after QA the same day (see "QA fix pass on the Becker Rig port")
 **Platform title:** Chipotle Keeps How Much of Your $10?
 **On-screen hook (header):** What You're Really Paying For / When You Spend **$10** / at Chipotle:
 
@@ -125,7 +125,7 @@ Following the brief ("if a figure can't be verified, choose a topic that doesn't
 
 Profit is ≈ $1.29, and the crew gets almost twice that.
 
-### Beat sheet (round-2 cut: what `studio/specs/` holds until the condensed cut is promoted)
+### Beat sheet (round-2 cut: what `studio/specs/` held until the condensed cut was promoted on 2026-10-13)
 
 | t (s) | On screen | VO |
 |---|---|---|
@@ -157,9 +157,9 @@ Profit is ≈ $1.29, and the crew gets almost twice that.
 > Tax, minus interest earned: ≈ 34 cents.
 > What's left: ≈ $1.29. Not $7.04.
 
-### Beat sheet (condensed cut, 2026-10-13: 12.72 s body + the 2.5 s end card = 15.2 s; WIP)
+### Beat sheet (condensed cut, 2026-10-13: 12.72 s body + the 2.5 s end card = 15.2 s; promoted 2026-10-13)
 
-Spec: `studio/specs-wip/05a-becker-rig-chipotle-10.json`. Every string, number, row, verdict and caption word is the round-2 cut's. Only the clock moved, plus one new figure beat (he points down at the last piece at 9.46 s). Times marked ≈ are the kit's own (walks and saws follow `activate` and the landings).
+Spec: `studio/specs/05a-becker-rig-chipotle-10.json` (promoted 2026-10-13; written as `studio/specs-wip/05a-becker-rig-chipotle-10.json`). Every string, number, row, verdict and caption word is the round-2 cut's. Only the clock moved, plus one new figure beat (he points down at the last piece at 9.46 s). Times marked ≈ are the kit's own (walks and saws follow `activate` and the landings).
 
 | t (s) | On screen | Caption (no narration) |
 |---|---|---|
@@ -270,7 +270,7 @@ FY2025 is the latest 10-K as of Oct 7, 2026: Chipotle's fiscal year is the calen
 
 ## 05b · Becker Rig · Rent $1,200 on 50/30/20? Food and every bill get this much a day
 
-**Spec:** `studio/specs/05b-becker-rig-3000-paycheck.json` · 22.1 s · captions on · **condensed cut (2026-10-13, WIP): `studio/specs-wip/05b-becker-rig-3000-paycheck.json`, 11.45 s** (see "Beat sheet (condensed cut)")
+**Spec:** `studio/specs/05b-becker-rig-3000-paycheck.json` · **condensed cut (2026-10-13, promoted from `studio/specs-wip/` the same day), 11.45 s** (see "Beat sheet (condensed cut)") · captions on · the round-2 cut (22.1 s) is in git history (`4fb0b00^`)
 **Platform title:** Pay $1,200 Rent? 50/30/20 Leaves Food and Bills How Much a Day?
 **On-screen hook (header):** Rent **$1,200** on 50/30/20? / Food and every bill get / this much a day:
 **Hook pass 2 (2026-10-08): rewrite A adopted.** The two judges scored it 7 and 7.5 (average **7.25**), against 5.00 for the old hook "Could you live on 50/30/20 with $3,000 a month take-home?". That is +2.25. Header, title, VO, sheet (now four bins) and timings all changed; the maths is still pure 50/30/20 arithmetic. Scores and reasons are in the Review log.
@@ -300,7 +300,7 @@ FY2025 is the latest 10-K as of Oct 7, 2026: Chipotle's fiscal year is the calen
 
 **The wrong belief it plays on:** "My rent is under half my take-home, so 50/30/20 works." On $3,000 a month after tax, needs get half: $1,500, five $300 bricks. A $1,200 rent eats four of them. That leaves one brick, $300 a month or $10 a day, for food and every other bill. Rent is 40% of pay, under the 50% line, and food and bills still get only 10%.
 
-### Beat sheet (round-2 cut: what `studio/specs/` holds until the condensed cut is promoted)
+### Beat sheet (round-2 cut: what `studio/specs/` held until the condensed cut was promoted on 2026-10-13)
 
 | t (s) | On screen | VO |
 |---|---|---|
@@ -326,9 +326,9 @@ FY2025 is the latest 10-K as of Oct 7, 2026: Chipotle's fiscal year is the calen
 > Check: $3,000.
 > $1,200 rent leaves food and every bill $10 a day.
 
-### Beat sheet (condensed cut, 2026-10-13: 11.45 s body + the 2.5 s end card = 13.95 s; WIP)
+### Beat sheet (condensed cut, 2026-10-13: 11.45 s body + the 2.5 s end card = 13.95 s; promoted 2026-10-13)
 
-Spec: `studio/specs-wip/05b-becker-rig-3000-paycheck.json`. Every string, number, bin, verdict and caption word is the round-2 cut's. Since the critic fixes, "Needs get five." is its own caption, with the same words: the one line had typed "$10 a day" about 1.2 s before the picture showed it. Only the clock moved, plus a frame-1 beat: `lookOpts.beats` `[{ t: 0, act: "carry", hold: true }]`, an existing spec knob. With it he reaches for the cleaver from frame 1, because the kit brings the cleaver out no earlier than 0.15 s. The payoff slab now comes before the verdict, as its final reveal. Times marked ≈ are the kit's own.
+Spec: `studio/specs/05b-becker-rig-3000-paycheck.json` (promoted 2026-10-13; written as `studio/specs-wip/05b-becker-rig-3000-paycheck.json`). Every string, number, bin, verdict and caption word is the round-2 cut's. Since the critic fixes, "Needs get five." is its own caption, with the same words: the one line had typed "$10 a day" about 1.2 s before the picture showed it. Only the clock moved, plus a frame-1 beat: `lookOpts.beats` `[{ t: 0, act: "carry", hold: true }]`, an existing spec knob. With it he reaches for the cleaver from frame 1, because the kit brings the cleaver out no earlier than 0.15 s. The payoff slab now comes before the verdict, as its final reveal. Times marked ≈ are the kit's own.
 
 | t (s) | On screen | Caption (no narration) |
 |---|---|---|
@@ -411,7 +411,7 @@ The book is the primary source. The page couldn't be opened here, so the definit
 
 ## 05c · Scoreboard · Is Costco's profit all membership fees? Follow your $100 cart
 
-**Spec:** `studio/specs/05c-scoreboard-costco-100.json` · 22.8 s · captions on · **condensed cut (2026-10-13, WIP): `studio/specs-wip/05c-scoreboard-costco-100.json`, 8.89 s** (see "Beat sheet (condensed cut)")
+**Spec:** `studio/specs/05c-scoreboard-costco-100.json` · **condensed cut (2026-10-13, promoted from `studio/specs-wip/` the same day), 8.89 s** (see "Beat sheet (condensed cut)") · captions on · the round-2 cut (22.8 s) is in git history (`4fb0b00^`)
 **Platform title:** Is Costco's Profit All Membership Fees? Follow Your $100 Cart
 **On-screen hook (header):** IS COSTCO'S PROFIT / ALL MEMBERSHIP FEES? / FOLLOW YOUR **$100** CART:
 **Hook pass 2 (2026-10-08): rewrite A adopted.** Both judges scored it 7 (average **7.00**), against 5.75 for the old hook "HOW MUCH OF YOUR $100 DOES COSTCO ACTUALLY KEEP?". That is +1.25. Header, title, VO, row 3's label, the masks, the membership row (now on the sheet at frame 1) and the timings changed; every figure is the same FY2026 number as before. Scores and reasons are in the Review log.
@@ -442,7 +442,7 @@ The book is the primary source. The page couldn't be opened here, so the definit
 
 **The wrong belief it plays on:** "Costco makes all its profit on membership fees; the cart makes nothing." Of every $100 rung up, ≈ $88.91 pays for the goods and ≈ $9.15 pays the staff and runs the warehouses. That leaves ≈ $1.94 before tax: not zero. Membership fees bring in ≈ $1.99 per $100 of sales. Operating income is $11,685M = $5,778M from the carts (49.4%) + $5,907M from fees (50.6%): about half each, and the cart makes 97.8% as much as the fees. "Profit" in the header is this operating profit, which the footer tags "before tax". After interest and tax, the fees ($5,907M) are 64% of net income ($9,226M), still not all of it.
 
-### Beat sheet (round-2 cut: what `studio/specs/` holds until the condensed cut is promoted)
+### Beat sheet (round-2 cut: what `studio/specs/` held until the condensed cut was promoted on 2026-10-13)
 
 Every row lands on its spoken number (fix pass): the kit's landing is the cut + 0.18 s + the row's roll (`lookOpts.rolls` 0.5 / 0.6 / 1.15 s), and the check script tests the landing, not the cut.
 
@@ -467,9 +467,9 @@ Every row lands on its spoken number (fix pass): the kit's landing is the cut + 
 > Membership fees: ≈ $1.99 per $100 rung up.
 > Profit: ≈ $3.93. Your cart makes almost half.
 
-### Beat sheet (condensed cut, 2026-10-13: 8.89 s body + the 2.5 s end card = 11.4 s; WIP)
+### Beat sheet (condensed cut, 2026-10-13: 8.89 s body + the 2.5 s end card = 11.4 s; promoted 2026-10-13)
 
-Spec: `studio/specs-wip/05c-scoreboard-costco-100.json`. Every string and number is the round-2 cut's, as are the verdict, the footer workings and the hero's figures. Since the critic fixes, the footer no longer goes back to the assumption line at the check, so it has five steps, not six; the assumption line is the footer at frame 1. The clock moved, and so did the rolls: rows 1-2 roll 0.89 / 0.85 s, with the hero counting down with them, and the goal row rolls 0.3 s (its counter alone reads as still). "Check: $100." is merged into the caption before it. The hero's last roll now precedes the verdict, so ≈ $3.93 is the final reveal.
+Spec: `studio/specs/05c-scoreboard-costco-100.json` (promoted 2026-10-13; written as `studio/specs-wip/05c-scoreboard-costco-100.json`). Every string and number is the round-2 cut's, as are the verdict, the footer workings and the hero's figures. Since the critic fixes, the footer no longer goes back to the assumption line at the check, so it has five steps, not six; the assumption line is the footer at frame 1. The clock moved, and so did the rolls: rows 1-2 roll 0.89 / 0.85 s, with the hero counting down with them, and the goal row rolls 0.3 s (its counter alone reads as still). "Check: $100." is merged into the caption before it. The hero's last roll now precedes the verdict, so ≈ $3.93 is the final reveal.
 
 | t (s) | On screen | Caption (no narration) |
 |---|---|---|
@@ -589,7 +589,7 @@ The FY2026 10-K was filed on Oct 6, 2026 (search, Oct 7, 2026), so it is cited a
    **Kit owners (not editable here):** becker-rig's theme sets the header at −0.025em with no extra word space ("thismuch a day"); 05b's format overrides its own header (0.2em word spacing, −0.01em tracking), but the kit default should change for every format. Clean-sheet's mono % column gave the decimal point a full cell ("3 . 4%"); the split-sheet format now sets its % column in Inter with tabular figures, and the kit's other formats may want the same.
 3. **05c replaced the gasoline seed** (reasons at the top). If the owner still wants gasoline, it needs one unblocked read of EIA's "Gasoline and Diesel Fuel Update" components box (crude / refining / distribution & marketing / taxes for the latest month). The same Scoreboard spec structure then works with 4 parts.
 4. **Slate overlap, for the owner:** 05c (Costco, is its profit all membership fees?) and 08a (Costco hot dogs as a unit) share the brand and the Scoreboard look, and both touch membership; since hook pass 2, 05c's header leads with it. Keep both only if a Costco pair is wanted; otherwise 05c can move to another look, or to another retailer whose 10-K splits the same way.
-5. **The condensed cuts (2026-10-13) are WIP** in `studio/specs-wip/`. 05b and 05c each fail three sound gates. The promotion steps, the gate values and the publishing facts are in the Review log entry "Condensed cut (2026-10-13)".
+5. **The condensed cuts (2026-10-13) are promoted** (2026-10-13, from `studio/specs-wip/` into `studio/specs/`), not yet shipped. 05b and 05c each fail three sound gates. The promotion steps, the gate values and the publishing facts are in the Review log entry "Condensed cut (2026-10-13)".
 
 ## Search log (16 in total: 12 in round 1, 4 in this revision)
 
@@ -1100,7 +1100,7 @@ The cause was the same in all three. A narration-paced VO talked each part in fo
   - 05b: the payoff slab after the verdict, no frame-1 carry beat, a 2.5 s gap between landings, a 13.0 s body;
   - 05c: a 1.15 s goal roll, the verdict 0.5 s after the hero lands, "Check: $100." split back out, the hero's roll 0.9 s after the fees beat, "$1.95" in the verdict.
 
-**To promote** (the ship step's; not done here):
+**To promote** (the ship step's; step 1 was done on 2026-10-13, see "Promoted (2026-10-13)" at the end of this log):
 1. Copy the three WIP specs over `studio/specs/` and set `IN_SPECS` to "condensed" for each in `checks/05-split-sheet.py`. The default run then checks the condensed cuts.
 2. BIBLE §11.1: all three cue records moved. Refit Becker's `MODEL` (05a, 05b) and Scoreboard's calibration (05c) on the fresh records, store them in `test/fixtures/cues.json` and run `tempo-table --write`. Their P values are 05a 11.22 (verdict + hit, 117.647 / 120), 05b 9.15 (hit + cash, 118.033), 05c 3.63 (hit + cash, 148.76 / 147.541 / 150).
 3. Make 05b and 05c pass A3 / BANDS / B3 / B8 at pack level (above), then `verify --strict-cues` and `npm test`, and ship by §11.5.
@@ -1189,3 +1189,7 @@ The fresh-eyes review passed all three cuts: no musts, with scores of 8 (05a), 7
 - 05c's verdict hold now measures still from 7.73 s (near-still from 7.50). The first render's "8.30-8.67" came from six one-frame YAVG spikes of about 8.5 at 7.87-8.27 s in that file, whose decoded frames are identical. It was a measurement artifact of that file, and the new file has none. The hold is the allowed one: the verdict lands at 7.29 and holds 1.6 s.
 
 **Still open, for the ship step:** the three sound items above. 05c's check sum is up 0.8 s, and 05b's "Check: $3,000." runs 0.75 s under the payoff slab: both are acceptable at this length and are noted for the owner. The opt-in sawdust burst for 05a also stays open, only if retention asks for it.
+
+### Promoted (2026-10-13)
+
+The three condensed cuts (after the critic fixes) were copied from `studio/specs-wip/` over `studio/specs/` (commit 4fb0b00) and `IN_SPECS` is "condensed" for each: 583 checks, 0 failed by default, and 560, 0 failed on git-history copies of the round-2 cuts passed with `--spec`; the sound refit and the ship follow (`renders/channel/` keeps the round-2 cuts until then).

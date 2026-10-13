@@ -1,12 +1,12 @@
 # 02 · Find your row: three teasers
 
 **Format:** `find-your-row` (rank 2 in [`../../research/v2/04-formats.md`](../../research/v2/04-formats.md), hook pattern **P7**)
-**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews, then again in the round-2 **hook pass**, which replaced all three hooks; then the round-2 **assembly pass** and the round-2 **fix pass** on 2026-10-08; then the **port** of 2026-10-08, when the owner kept two looks: 02a moved from Live Sheet to **Becker Rig** and 02c from Clean Sheet to **Scoreboard**; then the **fix pass on the ports** the same day; then the **condensed cut** of 2026-10-13 (the owner: too many still moments; condense; the end card stays), in `studio/specs-wip/` until the ship step promotes it, and its fix pass the same day; see the [Review log](#review-log))
+**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews, then again in the round-2 **hook pass**, which replaced all three hooks; then the round-2 **assembly pass** and the round-2 **fix pass** on 2026-10-08; then the **port** of 2026-10-08, when the owner kept two looks: 02a moved from Live Sheet to **Becker Rig** and 02c from Clean Sheet to **Scoreboard**; then the **fix pass on the ports** the same day; then the **condensed cut** of 2026-10-13 (the owner: too many still moments; condense; the end card stays), written in `studio/specs-wip/`, its fix pass the same day, and promoted into `studio/specs/` on 2026-10-13 (the sound and the ship follow); see the [Review log](#review-log))
 **Specs:**
 - [`studio/specs/02a-becker-rig-3-a-day-by-age.json`](../../studio/specs/02a-becker-rig-3-a-day-by-age.json)
 - [`studio/specs/02b-scoreboard-trillion-at-your-wage.json`](../../studio/specs/02b-scoreboard-trillion-at-your-wage.json)
 - [`studio/specs/02c-scoreboard-salary-per-hour.json`](../../studio/specs/02c-scoreboard-salary-per-hour.json)
-- The condensed cuts (2026-10-13, not yet promoted; the beat sheets and captions below describe them): [`studio/specs-wip/02a-becker-rig-3-a-day-by-age.json`](../../studio/specs-wip/02a-becker-rig-3-a-day-by-age.json), [`studio/specs-wip/02b-scoreboard-trillion-at-your-wage.json`](../../studio/specs-wip/02b-scoreboard-trillion-at-your-wage.json) and [`studio/specs-wip/02c-scoreboard-salary-per-hour.json`](../../studio/specs-wip/02c-scoreboard-salary-per-hour.json). `studio/specs/` and `renders/channel/` hold the round-2 cuts (13.4 / 14.0 / 13.0 s bodies) until then; their beat sheets are in git history (HEAD 3db6d30).
+- The condensed cuts (2026-10-13; the beat sheets and captions below describe them) were promoted from `studio/specs-wip/` on 2026-10-13: the three specs above are now the condensed cuts. The round-2 cuts (13.4 / 14.0 / 13.0 s bodies) are in git history (`4fb0b00^` and earlier; their beat sheets at HEAD 3db6d30); `renders/channel/` holds their renders until the ship step.
 
 (The slugs are kept from the earlier rounds so the slate index stays linked; the titles and hooks below are the hook-pass versions. The retired Live Sheet and Clean Sheet specs are in `studio/specs/retired/` as `02a-live-sheet-3-a-day-by-age.json` and `02c-clean-sheet-salary-per-hour.json`.)
 
@@ -16,7 +16,7 @@
 - that this write-up quotes every VO line, verdict, footer, formula and platform title exactly as the specs carry them (a `\n` line break is quoted here as " / ");
 - the look options the specs carry (`lookOpts`: 02a's timed bracket from the 35 row up to the 25 row, its shrug beat inside line 1, its hop on "≈ $240,000" inside line 3 while the 25 row is pointed at, and its figure scale; 02c's verdict row).
 
-Result: **PASSED: all 183 checks** on `studio/specs/` (the round-2 cuts) and **all 225** with `--spec` on the three condensed cuts in `studio/specs-wip/` (216 before the condensed cut's fix pass added a label-time rule per pick). The check is cut-aware since 2026-10-13: a spec of the round-2 length is held to the rules above, any other to the condensed cut's (captions paced for reading, back to back, the hook complete on frame 1, frame 1 clean and moving from frame 2, picks inside their captions, no gap of 0.4 s or more in the scheduled motion before the verdict, the verdict 0.8-1.5 s after the final reveal and held 1.2-1.6 s). The strings and numbers are the same for both. Mutation tests fail with exit 1 and a named failure (see the Review log).
+Result: since the promotion (2026-10-13), **PASSED: all 225 checks** on `studio/specs/` (the condensed cuts) and **all 183** with `--spec` on git-history copies of the round-2 cuts; before it, **all 183 checks** on `studio/specs/` (the round-2 cuts) and **all 225** with `--spec` on the three condensed cuts in `studio/specs-wip/` (216 before the condensed cut's fix pass added a label-time rule per pick). The check is cut-aware since 2026-10-13: a spec of the round-2 length is held to the rules above, any other to the condensed cut's (captions paced for reading, back to back, the hook complete on frame 1, frame 1 clean and moving from frame 2, picks inside their captions, no gap of 0.4 s or more in the scheduled motion before the verdict, the verdict 0.8-1.5 s after the final reveal and held 1.2-1.6 s). The strings and numbers are the same for both. Mutation tests fail with exit 1 and a named failure (see the Review log).
 
 **Studio linter:** `node src/cli.mjs check` on the three specs: **3/3 clean, 0 errors, 0 warnings** (after the fix pass on the ports, also at a 0.05 s sampling step). Contact sheets and stills at every beat were rendered and inspected, and the final MP4s were rendered and spot-checked frame by frame (see [Assembly pass](#assembly-pass-2026-10-08)): each header and its first number read in frame 1.
 
@@ -58,7 +58,7 @@ Result: **PASSED: all 183 checks** on `studio/specs/` (the round-2 cuts) and **a
 
 ## 02a · Becker Rig · "It's just $3 a day": what it costs you by 65
 
-**Spec:** `studio/specs/02a-becker-rig-3-a-day-by-age.json` · **13.4 s** · captions on · condensed cut (2026-10-13, not yet promoted): `studio/specs-wip/02a-becker-rig-3-a-day-by-age.json` · **7.8 s** + the 2.5 s end card
+**Spec:** `studio/specs/02a-becker-rig-3-a-day-by-age.json` · condensed cut (2026-10-13, promoted from `studio/specs-wip/` the same day) · **7.8 s** + the 2.5 s end card · captions on · the round-2 cut (**13.4 s**) is in git history (`4fb0b00^`)
 
 *Ported from Live Sheet to Becker Rig on 2026-10-08 (the old spec is `studio/specs/retired/02a-live-sheet-3-a-day-by-age.json`). The hook, every number, every VO line and the verdict are unchanged. What changed: the footer breaks between its clauses instead of at "· no tax, fees," (same words), and the measured pick now runs from the 35 row up to the 25 row, landing on "more than double" with the label "≈ 2.2× the cost at 35" (same 2.152 ratio). See "Port to Becker Rig (2026-10-08)" in the Review log. The fix pass on the port (same day) kept every word and number: the figure is bigger (0.82) and stands clear of the shelving post, the 35 row is marked as the reference while the bracket (now the look's prop stroke) is up, the payoff label is 48 px, a silent hop lands on "≈ $240,000", and the line-4 caption breaks after "10 years younger?". See "Fix pass on the ports (2026-10-08)".*
 
@@ -96,7 +96,7 @@ Result: **PASSED: all 183 checks** on `studio/specs/` (the round-2 cuts) and **a
 
 ### Beat sheet (condensed cut, 2026-10-13: 7.8 s body + the 2.5 s end card = 10.3 s; was 13.4 + 2.5)
 
-`studio/specs-wip/02a-becker-rig-3-a-day-by-age.json`. Every number, label and the verdict are the round-2 cut's; the clock and two acts moved, and since the fix pass the last caption is the question alone ("10 years younger?"), so "more than double" first appears with the verdict, the gold plate and the "≈ 2.2×" pill. Captions are on-screen text (no narration), back to back, each up at least max(1.2 s, 0.12 s a word).
+`studio/specs/02a-becker-rig-3-a-day-by-age.json` (promoted 2026-10-13; written as `studio/specs-wip/02a-becker-rig-3-a-day-by-age.json`). Every number, label and the verdict are the round-2 cut's; the clock and two acts moved, and since the fix pass the last caption is the question alone ("10 years younger?"), so "more than double" first appears with the verdict, the gold plate and the "≈ 2.2×" pill. Captions are on-screen text (no narration), back to back, each up at least max(1.2 s, 0.12 s a word).
 
 | t (s) | On screen | Caption |
 |---|---|---|
@@ -192,7 +192,7 @@ Inputs: $3 a day; 365 days; 7% a year, compounded monthly (7% ÷ 12 each month, 
 
 ## 02b · Scoreboard · "How fast Elon's $1 trillion pay plan earns your whole career's pay"
 
-**Spec:** `studio/specs/02b-scoreboard-trillion-at-your-wage.json` · **14.0 s** · captions on · condensed cut (2026-10-13, not yet promoted): `studio/specs-wip/02b-scoreboard-trillion-at-your-wage.json` · **7.6 s** + the 2.5 s end card
+**Spec:** `studio/specs/02b-scoreboard-trillion-at-your-wage.json` · condensed cut (2026-10-13, promoted from `studio/specs-wip/` the same day) · **7.6 s** + the 2.5 s end card · captions on · the round-2 cut (**14.0 s**) is in git history (`4fb0b00^`)
 
 **Platform title:** How Fast Elon's $1 Trillion Pay Plan Earns Your Whole Career's Pay
 **On-screen hook (header):** ELON'S **$1 TRILLION** PAY PLAN / EARNS YOUR WHOLE CAREER'S PAY IN…
@@ -231,7 +231,7 @@ Inputs: $3 a day; 365 days; 7% a year, compounded monthly (7% ÷ 12 each month, 
 
 ### Beat sheet (condensed cut, 2026-10-13: 7.6 s body + the 2.5 s end card = 10.1 s; was 14.0 + 2.5)
 
-`studio/specs-wip/02b-scoreboard-trillion-at-your-wage.json`. Every word, number and label and the verdict are the round-2 cut's; only the clock moved, plus one look option (`focus` 0.25, since the fix pass; 0.3 before it).
+`studio/specs/02b-scoreboard-trillion-at-your-wage.json` (promoted 2026-10-13; written as `studio/specs-wip/02b-scoreboard-trillion-at-your-wage.json`). Every word, number and label and the verdict are the round-2 cut's; only the clock moved, plus one look option (`focus` 0.25, since the fix pass; 0.3 before it).
 
 | t (s) | On screen | Caption |
 |---|---|---|
@@ -324,7 +324,7 @@ Each line is up at least max(1.2 s, 0.12 s a word), 0.05 s apart. The last one g
 
 ## 02c · Scoreboard · "What time your 9-to-5 starts paying you, by salary"
 
-**Spec:** `studio/specs/02c-scoreboard-salary-per-hour.json` · **13.0 s** · captions on · condensed cut (2026-10-13, not yet promoted): `studio/specs-wip/02c-scoreboard-salary-per-hour.json` · **7.6 s** + the 2.5 s end card
+**Spec:** `studio/specs/02c-scoreboard-salary-per-hour.json` · condensed cut (2026-10-13, promoted from `studio/specs-wip/` the same day) · **7.6 s** + the 2.5 s end card · captions on · the round-2 cut (**13.0 s**) is in git history (`4fb0b00^`)
 
 *Ported from Clean Sheet to Scoreboard on 2026-10-08 (the old spec is `studio/specs/retired/02c-clean-sheet-salary-per-hour.json`). The hook, every number, every VO line, the footer and the verdict are unchanged, and so is `data`; only `id` and `look` changed. `lookOpts.verdictRow: 0` is kept, and the Scoreboard's find-your-row format now reads it, so the verdict lights the $200,000 row as in the Clean Sheet cut. See "Port to Scoreboard (2026-10-08)" in the Review log. The fix pass on the port (same day) added one pick label, "≈ 78 min of tax a day" on line 3 (78 is the row's own cell), and the $200,000 row now lights from the end of the VO, just before the verdict lands. See "Fix pass on the ports (2026-10-08)".*
 
@@ -363,7 +363,7 @@ Each line is up at least max(1.2 s, 0.12 s a word), 0.05 s apart. The last one g
 
 ### Beat sheet (condensed cut, 2026-10-13: 7.6 s body + the 2.5 s end card = 10.1 s; was 13.0 + 2.5)
 
-`studio/specs-wip/02c-scoreboard-salary-per-hour.json`. Every word, number and label and the verdict are the round-2 cut's; only the clock moved, plus one look option (`focus` 0.3).
+`studio/specs/02c-scoreboard-salary-per-hour.json` (promoted 2026-10-13; written as `studio/specs-wip/02c-scoreboard-salary-per-hour.json`). Every word, number and label and the verdict are the round-2 cut's; only the clock moved, plus one look option (`focus` 0.3).
 
 | t (s) | On screen | Caption |
 |---|---|---|
@@ -482,7 +482,7 @@ The 8-hour day is in the header ("9-to-5") and the footnote "= 9:00 am + 480 min
 ## Open items
 
 - **Owner decision: a ~10 s "find your row".** The condensed cuts run 10.3 / 10.1 / 10.1 s with the card (bodies 7.8 / 7.6 / 7.6 s), about half the 06b/06c bodies (15.7-18.3 s). Nothing was dropped to get there: the removed time was the still runs and the narration-paced captions, and every beat, number and line is kept. A ~10 s looping lookup is a good retention shape, but it is a new length for the slate, so the owner should approve it knowingly before promotion. If longer is wanted, the levers are a 1.6 s verdict hold (+0.05-0.1 s) or a fourth pick (about +1.6 s each), not a still board.
-- **The condensed cuts (2026-10-13) are not promoted.** They sit in `studio/specs-wip/` with their renders in `/tmp/cond/02/<id>/`; `studio/specs/` and `renders/channel/` still hold the round-2 cuts. The ship step owns promotion and sound (the steps and the three sound failures to settle are in the review-log entries "Condensed cut (2026-10-13)" and "Condensed cut: fix pass (2026-10-13)"). On promotion these go stale and are outside this pass's files: `teasers/v2/teasers.json` (runtimes 10.3 / 10.1 / 10.1 s), `publishing/02{a,b,c}-*.{md,json}` (`for_video`, the cover frames, "177 checks"; the sheets re-pick their covers by content with `build_publishing.py <id> --covers`) and the files under `renders/`.
+- **The condensed cuts (2026-10-13) are promoted (2026-10-13), not yet shipped.** They moved from `studio/specs-wip/` into `studio/specs/`; their reviewed renders are in `/tmp/cond/02/<id>/`, and `renders/channel/` still holds the round-2 cuts. The ship step owns sound and the ship (the steps and the three sound failures to settle are in the review-log entries "Condensed cut (2026-10-13)" and "Condensed cut: fix pass (2026-10-13)"). On promotion these go stale and are outside this pass's files: `teasers/v2/teasers.json` (runtimes 10.3 / 10.1 / 10.1 s), `publishing/02{a,b,c}-*.{md,json}` (`for_video`, the cover frames, "177 checks"; the sheets re-pick their covers by content with `build_publishing.py <id> --covers`) and the files under `renders/`.
 - **Linter:** both kept kits mount and `node src/cli.mjs check` passes 02a (Becker Rig), 02b and 02c (Scoreboard) with 0 errors and 0 warnings (2026-10-08, after the fix pass on the ports; also at a 0.05 s sampling step). The Scoreboard's find-your-row samples and 02b render pixel-identical before and after the port's and the fix pass's format-file changes. The Becker Rig samples change with the fix pass (post, bracket, reference row, shelf formula) and stay lint-clean.
 - **Not changed by the port** (outside its files): `teasers.json`, `slate.json` and `renders/v2/` still list the retired ids and MP4s for 02a and 02c; the new MP4s are in `studio/out/`. The Becker Rig and Scoreboard READMEs do not yet document the new find-your-row options (`compare[].start`, `beats` and its value tap; `verdictRow` and its lead); each format file's header comment does.
 - **Slate overlap to decide (owner):** 02b now uses the same device as **10b** ("40 years of your pay vs 1 minute of new US debt", verdict "40 years of median pay: ≈ 33 seconds"): a whole working life set against a mega-rate clock. Both judges also flagged an echo of **10c** (Amazon's sales per second). 02b is a per-wage lookup table with a named person's plan; 10b is one median career against a national-debt counter. If only one should carry the device, 02b's runner-up ("1 second of the plan at your wage", 7.25) is ready in the Review log.
@@ -792,7 +792,7 @@ The longest still before the verdict is now **0.27 s (02a), 0.30 s (02b) and 0.3
 - **Results:** **183 checks, 0 failed by default** (was 177: the new rows say which cut `studio/specs/` holds and compare the data fields); **216, 0 failed with `--spec` on the three WIP specs**. A scratch tree with the WIP specs in place of `studio/specs/` fails exactly the three "studio/specs/ holds the expected cut" rows until `IN_SPECS` is flipped to `"cond"` (then 216, 0 failed), and the round-2 specs pass through `--spec` from outside `studio/specs/` (183, 0 failed).
 - **Mutation test** (scratch copies in `/tmp/cond/02/mut/`): 14 of 14 caught, each with exit 1 and a named failure. Every one except the dropped verdict row (caught by the exact `lookOpts`) is also caught by a timing rule. The mutations: vo[0] at 0.0 (a type-on at frame 1); the hop moved into the compare; row 20 at 0.1 s (frame 1 not clean); a 3.0 s verdict hold; the shrug into the leap; a verdict 2.1 s after the final pick; no `focus`; a 1.0 s caption; the $1,000 row landing after its pick; 02c's bottom rows filled by 1.8 s (the old fast fill: the motion proxy fails); "≈ 10:19" in a caption; the last pick 0.7 s into its caption; `verdictRow` dropped; a 0.35 s caption gap.
 
-**To promote** (the ship step):
+**To promote** (the ship step; step 1 was done on 2026-10-13, see "Promoted (2026-10-13)" at the end of this log):
 1. Copy the three WIP specs over `studio/specs/` and set `IN_SPECS` to `"cond"` for each in the check (183 → 225 checks by default since the fix pass, checked on a scratch tree).
 2. Follow BIBLE §11.1 for the three moved records: refit Becker Rig's `MODEL` (§11.2) and re-measure the Scoreboard calibration; settle the three failures above (02a BANDS, B7 and S8; the 02b and 02c BANDS) at pack level; decide whether a free base is acceptable or the Scoreboard hold should become 1.3 s (3 beats). Then store the records, run `tempo-table --write`, `verify --strict-cues` and `npm test`, and add the bible status line.
 3. Ship by §11.5 from a picture folder that holds these renders (since the fix pass: `/tmp/cond/02/<id>/final/render/`; the round-1 renders named in this entry were replaced and deleted) and `renders/channel/` for the other 27.
@@ -851,3 +851,7 @@ The critic passed format 02 (02a 8, 02b 8, 02c 7) with no musts. It raised 7 sho
   - Every other gated check passes with at least 0.68 of margin in its own unit (02a A3 LRA 4.68 against 3-8 is the next tightest). The full lists are in each `final/verify.txt`.
 
 **To promote:** as in the round-1 entry, with 225 checks by default after the flip. The picture folder for §11.5 is `/tmp/cond/02/<id>/final/render/`. Covers, by content, are the settled payoff frames: about 6.9-7.8 s in 02a, 6.3-7.6 s in 02b and 6.8-7.6 s in 02c.
+
+### Promoted (2026-10-13)
+
+The three condensed cuts (after their fix pass) were copied from `studio/specs-wip/` over `studio/specs/` (commit 4fb0b00) and `IN_SPECS` is `"cond"` for each: all 225 checks pass by default, and all 183 on git-history copies of the round-2 cuts passed with `--spec`; the sound refit and the ship follow (`renders/channel/` keeps the round-2 cuts until then).

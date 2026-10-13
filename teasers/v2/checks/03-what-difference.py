@@ -63,9 +63,12 @@ Port QA fixer pass (2026-10-08): no number, VO line or verdict changed.
 Two cuts per teaser (condensed cut, 2026-10-13: the owner's "too many still moments are a killer for a short;
 condense the rest. The CTA (end card) is good", the 06b/06c precedent). A spec is checked against one of two
 expectation sets, picked by its duration:
-   - the round-2 cut (narration-paced VO lines; 37.2 / 30.6 / 29.8 s): what studio/specs/ holds and renders/channel/
-     ships today (IN_SPECS names the cut studio/specs/ must hold). Its rules are the ones listed above.
-   - the condensed cut (studio/specs-wip/<id>.json; bodies of 14-17 / 10.5-13 / 11.5-14 s + the 2.5 s end card). Every
+   - the round-2 cut (narration-paced VO lines; 37.2 / 30.6 / 29.8 s): retired from studio/specs/ on 2026-10-13 and
+     kept as a reference for a git-history copy (`git show 4fb0b00^:studio/specs/<id>.json`) passed with --spec;
+     renders/channel/ still ships it until the ship step replaces it. Its rules are the ones listed above.
+   - the condensed cut (bodies of 14-17 / 10.5-13 / 11.5-14 s + the 2.5 s end card): written in studio/specs-wip/,
+     promoted into studio/specs/ on 2026-10-13 and what studio/specs/ holds (IN_SPECS names the cut studio/specs/ must
+     hold; the sound and the ship follow). Every
      number and display string is the round-2 cut's (03a times its first three formulas itself and keeps the round-2
      steps[3], a repeat of formulas[3], at the verdict for the hidden last caption; 03b re-slams its frame-1 note on
      "Because it shrinks"; 03c merges its first two captions, word for word). Its timing rules replace the narration
@@ -85,7 +88,9 @@ expectation sets, picked by its duration:
      Scoreboard `readHold` of 0.05-0.3 s).
 
 Run:  python3 teasers/v2/checks/03-what-difference.py                  (the specs in studio/specs/)
-      python3 teasers/v2/checks/03-what-difference.py --spec studio/specs-wip/03a-becker-rig-car-loan-weekly.json ...
+      python3 teasers/v2/checks/03-what-difference.py --spec /tmp/03a-becker-rig-car-loan-weekly.json ...
+        (e.g. the retired round-2 cut: `git show 4fb0b00^:studio/specs/03a-becker-rig-car-loan-weekly.json
+        > /tmp/03a-becker-rig-car-loan-weekly.json`)
       --spec [KEY=]PATH (repeatable) checks PATH in place of studio/specs/<id>.json. KEY is a, b or c (or 03a/03b/03c,
       or the full id); without it the file's stem must be one of the three ids. A round-2-length spec is checked as the round-2 cut, any
       other as the condensed cut (and fails its lane unless it is one).
@@ -107,7 +112,7 @@ FIRST_VALUES_BY = 3.0  # R10: the first option's values are on screen by this ti
 # ---- the two cuts (see the docstring): picked by the spec's duration
 IDS = {"a": "03a-becker-rig-car-loan-weekly", "b": "03b-scoreboard-card-minimum", "c": "03c-scoreboard-mortgage-extra-100"}
 R2_DURATION = {"a": 37.2, "b": 30.6, "c": 29.8}          # the round-2 cut's body (s)
-IN_SPECS = {"a": "r2", "b": "r2", "c": "r2"}               # the cut studio/specs/ must hold ("cond" once promoted)
+IN_SPECS = {"a": "cond", "b": "cond", "c": "cond"}         # the cut studio/specs/ must hold (promoted 2026-10-13; was "r2")
 CUT_NAME = {"r2": "round-2 cut (narration-paced)", "cond": "condensed cut (2026-10-13)"}
 # condensed-cut targets (the editor's brief for the owner's note, as for 06b/06c)
 COND_LANE = {"a": (14.0, 17.0), "b": (10.5, 13.0), "c": (11.5, 14.0)}   # body (s), plus the 2.5 s end card

@@ -52,9 +52,11 @@ Run:  python3 teasers/v2/checks/06-pov-race.py                    (the specs in 
       and shipped the same day; B_IN_SPECS names it) and the retired 30.5 s round-2 cut, kept as a reference
       for a git-history copy (`git show 471c793:studio/specs/06b-scoreboard-netflix-bill.json`) passed with
       --spec; studio/specs/ must hold the condensed cut, and any other length fails the lane.
-      06a has two cuts, picked by length: the 26.5 s round-2 cut (what studio/specs/ holds; A_IN_SPECS names it) and
-      the condensed cut (2026-10-13, 15-18 s), written to studio/specs-wip/ and checked with --spec until it is
-      promoted (then set A_IN_SPECS = "a"; the 26.5 s set stays as a reference for a git-history copy).
+      06a has two cuts, picked by length: the condensed cut (2026-10-13, 15-18 s; written to studio/specs-wip/ and
+      promoted into studio/specs/ the same day, A_IN_SPECS names it; the sound and the ship follow) and the retired
+      26.5 s round-2 cut, kept as a reference for a git-history copy (`git show
+      4fb0b00^:studio/specs/06a-scoreboard-first-iphone-apple.json`) passed with --spec; studio/specs/ must hold the
+      condensed cut.
 """
 import calendar
 import datetime as dt
@@ -579,8 +581,8 @@ _A_COMMON = {
     "lookOpts_t": {"footerSteps.0": ye(2025)},
 }
 # The round-2 cut (26.5 s + the 2.5 s card): narration-paced captions, the race at about 1.11 s a year from 0.3 s, the
-# verdict 0.6 s after the reveal and held 4.5 s. It is what studio/specs/ holds until the condensed cut is promoted
-# (A_IN_SPECS); after that it is a reference for a git-history copy passed with --spec.
+# verdict 0.6 s after the reveal and held 4.5 s. It was what studio/specs/ held until the condensed cut was promoted
+# (2026-10-13, A_IN_SPECS); it is now a reference for a git-history copy (4fb0b00^ and earlier) passed with --spec.
 EXP["a_26s"] = {
     **_A_COMMON,
     "cut": "26.5 s (round 2)",
@@ -638,8 +640,8 @@ EXP["a"] = {
               (5, ye(2025), "the final value")],
     "footer_up": 1.2,                     # the footer's working step stays up at least this long
 }
-# which 06a cut studio/specs/ must hold: the 26.5 s cut until the condensed cut is promoted (then "a")
-A_IN_SPECS = "a_26s"
+# which 06a cut studio/specs/ must hold: the condensed cut, promoted on 2026-10-13 (it was "a_26s" until then)
+A_IN_SPECS = "a"
 
 # sanity on the claims baked into the strings above
 check("06a", "footer step: 136.7 × $271.12 to the nearest $1,000 = the final display",

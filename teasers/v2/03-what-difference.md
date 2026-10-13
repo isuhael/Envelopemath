@@ -3,14 +3,14 @@
 **Format:** `what-difference` (rank 3 in [`../../research/v2/04-formats.md`](../../research/v2/04-formats.md), hook pattern **P5**)
 **Date:** 2026-10-07 (revision 2, after the verifier and hook-judge reviews), plus the 2026-10-08 hook pass on 03b, the 2026-10-08 assembly pass on all three, the 2026-10-08 fixer pass after the round-2 QA, the 2026-10-08 port (the owner kept Scoreboard and Becker Rig and retired Live Sheet and Clean Sheet, so 03a moved to Becker Rig and 03b to Scoreboard), and the 2026-10-08 fixer pass after the port QA (see "Review log" at the end)
 **Specs:**
-- [`studio/specs/03a-becker-rig-car-loan-weekly.json`](../../studio/specs/03a-becker-rig-car-loan-weekly.json) (37.2 s; ported from Live Sheet, the old spec is `studio/specs/retired/03a-live-sheet-car-loan-weekly.json`)
-- [`studio/specs/03b-scoreboard-card-minimum.json`](../../studio/specs/03b-scoreboard-card-minimum.json) (30.6 s; ported from Clean Sheet, the old spec is `studio/specs/retired/03b-clean-sheet-card-minimum.json`)
-- [`studio/specs/03c-scoreboard-mortgage-extra-100.json`](../../studio/specs/03c-scoreboard-mortgage-extra-100.json) (29.8 s)
+- [`studio/specs/03a-becker-rig-car-loan-weekly.json`](../../studio/specs/03a-becker-rig-car-loan-weekly.json) (the condensed cut since 2026-10-13; the round-2 cut was 37.2 s; ported from Live Sheet, the old spec is `studio/specs/retired/03a-live-sheet-car-loan-weekly.json`)
+- [`studio/specs/03b-scoreboard-card-minimum.json`](../../studio/specs/03b-scoreboard-card-minimum.json) (the condensed cut since 2026-10-13; the round-2 cut was 30.6 s; ported from Clean Sheet, the old spec is `studio/specs/retired/03b-clean-sheet-card-minimum.json`)
+- [`studio/specs/03c-scoreboard-mortgage-extra-100.json`](../../studio/specs/03c-scoreboard-mortgage-extra-100.json) (the condensed cut since 2026-10-13; the round-2 cut was 29.8 s)
 
-**Condensed cut (2026-10-13), not yet promoted.** The owner's note on the set ("Too many still moments are a killer for a short. Condense the rest. The CTA (end card) is good.") is applied to all three, on the 06b/06c precedent. The condensed specs are in `studio/specs-wip/`; `studio/specs/` and `renders/channel/` keep the round-2 cuts listed above until the ship step promotes them. The beat sheets and caption tables below describe the condensed cuts; the round-2 beat sheets and guide VO scripts are in git history (HEAD 3db6d30), and the Review log ("Condensed cut (2026-10-13)" and "Fixer pass (2026-10-13, condensed-cut QA)") lists every change.
-- [`studio/specs-wip/03a-becker-rig-car-loan-weekly.json`](../../studio/specs-wip/03a-becker-rig-car-loan-weekly.json): 14.8 s body + the 2.5 s end card = 17.3 s (was 37.2 + 2.5 = 39.7 s; the editor's condensed cut was 15.25 + 2.5 = 17.75 s, retimed by the fixer pass)
-- [`studio/specs-wip/03b-scoreboard-card-minimum.json`](../../studio/specs-wip/03b-scoreboard-card-minimum.json): 11.65 + 2.5 = 14.15 s (was 30.6 + 2.5 = 33.1 s)
-- [`studio/specs-wip/03c-scoreboard-mortgage-extra-100.json`](../../studio/specs-wip/03c-scoreboard-mortgage-extra-100.json): 12.85 + 2.5 = 15.35 s (was 29.8 + 2.5 = 32.3 s)
+**Condensed cut (2026-10-13), promoted 2026-10-13 (not yet shipped).** The owner's note on the set ("Too many still moments are a killer for a short. Condense the rest. The CTA (end card) is good.") is applied to all three, on the 06b/06c precedent. The condensed specs were written in `studio/specs-wip/` and promoted over the round-2 cuts in `studio/specs/` on 2026-10-13 (the round-2 specs are in git history, `4fb0b00^` and earlier); `renders/channel/` keeps the round-2 renders until the ship step. The beat sheets and caption tables below describe the condensed cuts; the round-2 beat sheets and guide VO scripts are in git history (HEAD 3db6d30), and the Review log ("Condensed cut (2026-10-13)" and "Fixer pass (2026-10-13, condensed-cut QA)") lists every change.
+- [`studio/specs/03a-becker-rig-car-loan-weekly.json`](../../studio/specs/03a-becker-rig-car-loan-weekly.json): 14.8 s body + the 2.5 s end card = 17.3 s (was 37.2 + 2.5 = 39.7 s; the editor's condensed cut was 15.25 + 2.5 = 17.75 s, retimed by the fixer pass)
+- [`studio/specs/03b-scoreboard-card-minimum.json`](../../studio/specs/03b-scoreboard-card-minimum.json): 11.65 + 2.5 = 14.15 s (was 30.6 + 2.5 = 33.1 s)
+- [`studio/specs/03c-scoreboard-mortgage-extra-100.json`](../../studio/specs/03c-scoreboard-mortgage-extra-100.json): 12.85 + 2.5 = 15.35 s (was 29.8 + 2.5 = 32.3 s)
 
 **Maths check:** [`checks/03-what-difference.py`](checks/03-what-difference.py). It rebuilds all three loans payment by payment from the sourced inputs, then checks every display string in the three specs against the computed, formatted value, and every number in every VO line too. It also checks:
 - each shown delta equals the difference of the shown totals, and "≈"/"about" appear exactly on rounded numbers;
@@ -27,7 +27,7 @@
   - 03b: no option carries a delta (the verdict alone says "≈ 10 years sooner"; no "13 years" anywhere on screen, ③'s ≈ 13 is a write-up claim); `heroEnd: "value"`: the hero lands ②'s own ≈ 4.8 on "ten" (`data.winnerT`), rolled from ①'s ≈ 15.1 after the verdict, and the shown 15.1 − 4.8 rounds to the verdict's ≈ 10; the frame-1 label step is one size down;
 - the sensitivity claims in this file.
 
-Since the condensed cut (2026-10-13) the check is cut-aware: `--spec [KEY=]PATH` checks a spec in place of `studio/specs/<id>.json`, and each spec is held to the round-2 rules above or, by its length, to the condensed cut's (captions paced for reading, every beat inside the caption that carries its number, the verdict 0.8-1.5 s after the final reveal and held 1.2-1.6 s, and a proxy for the motion audit; see "Condensed cut (2026-10-13)" in the Review log). **528 checks, 0 failures** by default (the round-2 cuts in `studio/specs/`); **565 checks, 0 failures** with `--spec` on the three WIP specs (551 before the fixer pass); 14 of 14 condensed-cut mutations caught, then 25 of 25 in the fixer pass. `--spec` takes KEY as a, 03a or the full id.
+Since the condensed cut (2026-10-13) the check is cut-aware: `--spec [KEY=]PATH` checks a spec in place of `studio/specs/<id>.json`, and each spec is held to the round-2 rules above or, by its length, to the condensed cut's (captions paced for reading, every beat inside the caption that carries its number, the verdict 0.8-1.5 s after the final reveal and held 1.2-1.6 s, and a proxy for the motion audit; see "Condensed cut (2026-10-13)" in the Review log). Since the promotion (2026-10-13): **565 checks, 0 failures** by default (the condensed cuts in `studio/specs/`) and **528, 0 failures** with `--spec` on git-history copies of the round-2 cuts. Before it: **528 checks, 0 failures** by default (the round-2 cuts in `studio/specs/`); **565 checks, 0 failures** with `--spec` on the three WIP specs (551 before the fixer pass); 14 of 14 condensed-cut mutations caught, then 25 of 25 in the fixer pass. `--spec` takes KEY as a, 03a or the full id.
 
 Result before the condensed cut: **525 checks, 0 failures, exit 0** (after the 2026-10-08 port-QA fixer pass; 509 after the port, 480 after the fixer pass, 439 after the assembly pass, 388 after the 03b hook pass). Mutation tests:
 - Revision 2: one interest cell changed (03c "≈ $508,600" → "≈ $508,700"), one "about" removed (03b "About $7 more" → "$7 more") and the 03a lever moved off its beat (18.0 → 18.3 s) gave 4 failures and exit 1, as they should; the restored specs pass again.
@@ -73,7 +73,7 @@ Result before the condensed cut: **525 checks, 0 failures, exit 0** (after the 2
 | Runtime (body, before the 2.5 s end card) | 37.2 s round-2 cut; **14.8 s condensed** | 30.6 s; **11.65 s condensed** | 29.8 s; **12.85 s condensed** |
 | Benchmark hook it copies most closely | H48, 1.9M, 902.5x | H31's "NOT EMI" mechanic + H48 frame + H84's one-word cue | H50, 290.7K, 127.3x |
 
-The times in the rows above are the round-2 cut's (what `studio/specs/` holds). The condensed cut keeps every number, string and beat role in this table and only moves the clock (plus the three small changes listed per teaser below); its times are in each beat sheet.
+The times in the rows above are the round-2 cut's (what `studio/specs/` held until the condensed cut's promotion on 2026-10-13). The condensed cut keeps every number, string and beat role in this table and only moves the clock (plus the three small changes listed per teaser below); its times are in each beat sheet.
 
 **Winner convention.** `winner` is the option the verdict names, not always the biggest number. In 03b the flat $250 is faster than keeping the first minimum, but the verdict answers the $0 lever the hook asks about. The $250 row is the "biggest number last" bonus, toned `good` rather than `goal`.
 
@@ -86,8 +86,8 @@ The times in the rows above are the round-2 cut's (what `studio/specs/` holds). 
 
 ## 03a · Becker Rig · Weekly and biweekly vs monthly on a $44,000 car loan
 
-**Spec:** `studio/specs/03a-becker-rig-car-loan-weekly.json` · 37.2 s · captions on (the round-2 cut, shipped)
-**Condensed cut (2026-10-13, fixer pass):** `studio/specs-wip/03a-becker-rig-car-loan-weekly.json` · 14.8 s + the 2.5 s end card = 17.3 s. The beat sheet and captions below are the condensed cut's; the times quoted in "Why this hook" are the round-2 cut's, which are also in the Review log ("Condensed cut (2026-10-13)").
+**Spec:** `studio/specs/03a-becker-rig-car-loan-weekly.json` · the condensed cut since its promotion on 2026-10-13 (below); the round-2 cut it replaced (37.2 s, captions on) is in git history (`4fb0b00^`) and is the one `renders/channel/` ships until the ship step
+**Condensed cut (2026-10-13, fixer pass; promoted 2026-10-13):** `studio/specs/03a-becker-rig-car-loan-weekly.json` (written as `studio/specs-wip/03a-becker-rig-car-loan-weekly.json`) · 14.8 s + the 2.5 s end card = 17.3 s. The beat sheet and captions below are the condensed cut's; the times quoted in "Why this hook" are the round-2 cut's, which are also in the Review log ("Condensed cut (2026-10-13)").
 
 *Ported to Becker Rig on 2026-10-08 (it was built in Live Sheet, now retired; the old spec is in `studio/specs/retired/`). The hook, the VO, every number and the verdict are unchanged. What changed is how the screen carries them: the debt is a crate the stick figure drives down a time lane, so each payoff is a distance. See "Port to Becker Rig (2026-10-08): 03a" in the Review log.*
 **Platform title:** What Difference Do Weekly Car Payments Really Make on $44,000?
@@ -221,8 +221,8 @@ The first sentence starts the argument vidIQ predicted for H48's comments. The s
 
 ## 03b · Scoreboard · Paying the same minimum every month on a $5,000 credit card
 
-**Spec:** `studio/specs/03b-scoreboard-card-minimum.json` · 30.6 s · captions on (the round-2 cut, shipped)
-**Condensed cut (2026-10-13):** `studio/specs-wip/03b-scoreboard-card-minimum.json` · 11.65 s + the 2.5 s end card = 14.15 s. The beat sheet and captions below are the condensed cut's; the times quoted in "Why this hook" are the round-2 cut's, which are also in the Review log ("Condensed cut (2026-10-13)").
+**Spec:** `studio/specs/03b-scoreboard-card-minimum.json` · the condensed cut since its promotion on 2026-10-13 (below); the round-2 cut it replaced (30.6 s, captions on) is in git history (`4fb0b00^`) and is the one `renders/channel/` ships until the ship step
+**Condensed cut (2026-10-13; promoted 2026-10-13):** `studio/specs/03b-scoreboard-card-minimum.json` (written as `studio/specs-wip/03b-scoreboard-card-minimum.json`) · 11.65 s + the 2.5 s end card = 14.15 s. The beat sheet and captions below are the condensed cut's; the times quoted in "Why this hook" are the round-2 cut's, which are also in the Review log ("Condensed cut (2026-10-13)").
 
 *Ported to Scoreboard on 2026-10-08 (it was built in Clean Sheet, now retired; the old spec is in `studio/specs/retired/`). The hook, the VO, every number and the verdict are unchanged. What changed is how the screen carries them: the payoff time is the neon hero ("PAID OFF IN ≈ 15.1 YEARS" in red at frame 1, rolling down to ≈ 4.8, and at the winner beat rolling from ≈ 15.1 down to ≈ 4.8 again, landing on "ten" while the verdict says "≈ 10 years sooner"), and the three options are a leaderboard of time bars. See "Port to Scoreboard (2026-10-08): 03b" and "Fixer pass (2026-10-08, port QA)" in the Review log.*
 **Platform title:** What Difference Does Paying the Same Card Minimum Every Month Make on $5,000?
@@ -379,8 +379,8 @@ Line 1 is now literally the lever. Line 2 gives both pairs of totals, and no int
 
 ## 03c · Scoreboard · Just $100 extra a month on a 30-year mortgage
 
-**Spec:** `studio/specs/03c-scoreboard-mortgage-extra-100.json` · 29.8 s · captions on (the round-2 cut, shipped)
-**Condensed cut (2026-10-13):** `studio/specs-wip/03c-scoreboard-mortgage-extra-100.json` · 12.85 s + the 2.5 s end card = 15.35 s. The beat sheet and captions below are the condensed cut's; the times quoted in "Why this hook" are the round-2 cut's, which are also in the Review log ("Condensed cut (2026-10-13)").
+**Spec:** `studio/specs/03c-scoreboard-mortgage-extra-100.json` · the condensed cut since its promotion on 2026-10-13 (below); the round-2 cut it replaced (29.8 s, captions on) is in git history (`4fb0b00^`) and is the one `renders/channel/` ships until the ship step
+**Condensed cut (2026-10-13; promoted 2026-10-13):** `studio/specs/03c-scoreboard-mortgage-extra-100.json` (written as `studio/specs-wip/03c-scoreboard-mortgage-extra-100.json`) · 12.85 s + the 2.5 s end card = 15.35 s. The beat sheet and captions below are the condensed cut's; the times quoted in "Why this hook" are the round-2 cut's, which are also in the Review log ("Condensed cut (2026-10-13)").
 **Platform title:** How Much Difference Does Just $100 Extra a Month Make on a Mortgage?
 **On-screen hook (header):** HOW MUCH DIFFERENCE DOES / JUST **$100** EXTRA A MONTH MAKE / ON A 30-YEAR MORTGAGE?
 
@@ -511,7 +511,7 @@ Model: standard monthly amortisation at 7.3%/12, with interest rounded to the ce
    - 03c is re-rendered too (`studio/out/03c-scoreboard-mortgage-extra-100.mp4`, 29.8 s, 894 frames): its spec is unchanged, but its race labels now follow the Scoreboard module's new label-side rule.
    - The retired looks' renders (`03a-live-sheet-…`, `03b-clean-sheet-…`) are still in `studio/out/` and `renders/v2/`; they are not the current teasers.
    - Condensed cut (2026-10-13): the three condensed renders are in `/tmp/cond/03/<id>/render/` and, with the sound rebuilt on them, `/tmp/cond/03/<id>/final/` (fixer pass: 03a 17.3 s, 519 frames; 03b 14.15 s, 425 frames; 03c 15.35 s, 461 frames; the editor's 03a was 17.75 s, 533 frames). Each final MP4 is byte-identical to its render. Nothing under `renders/` changed.
-6. **The condensed cut is not promoted.** `studio/specs-wip/` holds it; `studio/specs/`, `renders/channel/` and `publishing/` still hold the round-2 cuts. The ship step owns promotion and sound; the steps, the sound failures it must settle and the publishing facts that change are in the Review log entries "Condensed cut (2026-10-13)" ("To promote") and "Fixer pass (2026-10-13, condensed-cut QA)". On promotion, these go stale and are outside this pass's files: `teasers/v2/teasers.json` (runtimes 17.3 / 14.15 / 15.35 s), `publishing/03{a,b,c}-*.{md,json}` (`for_video`, the covers, "525 checks") and the files under `renders/`.
+6. **The condensed cut is promoted (2026-10-13), not yet shipped.** `studio/specs/` holds it (moved from `studio/specs-wip/`); `renders/channel/` and `publishing/` still hold the round-2 cuts. The ship step owns sound and the ship; the steps, the sound failures it must settle and the publishing facts that change are in the Review log entries "Condensed cut (2026-10-13)" ("To promote") and "Fixer pass (2026-10-13, condensed-cut QA)". On promotion, these go stale and are outside this pass's files: `teasers/v2/teasers.json` (runtimes 17.3 / 14.15 / 15.35 s), `publishing/03{a,b,c}-*.{md,json}` (`for_video`, the covers, "525 checks") and the files under `renders/`.
 
 ---
 
@@ -859,7 +859,7 @@ The longest still before the verdict is now **0.33 s (03a), 0.37 s (03b) and 0.3
 - **Results:** **528 checks, 0 failed by default** (was 525); **551, 0 failed with `--spec` on the three WIP specs**; the round-2 specs pass through `--spec` from outside `studio/specs/` (528, 0 failed). A scratch tree with the WIP specs in place of `studio/specs/` fails exactly the three "studio/specs/ holds the expected cut" rows until `IN_SPECS` is flipped to `"cond"` (then 551, 0 failed).
 - **Mutation test** (scratch copies in `/tmp/cond/03/mut/`, `/tmp/cond/03/tools/mutate.py`): **14 of 14 caught**, each with exit 1 and a named failure: 03a vo[0] at 0.0 (a type-on at frame 1), a 21.0 s body, the lever beats removed, the $35 step before its value lands, the scan from 0.5 s; 03b the verdict 1.8 s after the final reveal, "≈ 4.9 years", `readHold` dropped, a 0.4 s caption gap; 03c the row-1 cell read moved to 1.6 s, the +$100 delta 0.15 s after its label step, a 1.0 s caption, a 2.2 s verdict hold, "$587,300" in the hook caption.
 
-**To promote** (the ship step):
+**To promote** (the ship step; step 1 was done on 2026-10-13, see "Promoted (2026-10-13)" at the end of this log):
 1. Copy the three WIP specs over `studio/specs/` and set `IN_SPECS` to `"cond"` in the check (528 → 565 checks by default, after the fixer pass).
 2. Follow BIBLE §11.1 for the three moved records: refit Becker Rig's `MODEL` (§11.2) for 03a and re-measure the Scoreboard calibration for 03b/03c; settle the failures at pack level (after the fixer pass: 03a A11, BANDS 125 Hz and 8 kHz, S8 pad; 03b BANDS 125 Hz and B8; 03c BANDS 125/250 Hz and B8; see "Fixer pass (2026-10-13, condensed-cut QA)"). Then store the records, run `tempo-table --write`, `verify --strict-cues` and `npm test`, and add the bible status line.
 3. Ship by §11.5 from a picture folder that holds these renders (`/tmp/cond/03/<id>/render/`) and `renders/channel/` for the other 27.
@@ -999,3 +999,7 @@ What they show:
 - **03a's A11 failure** is new and is the ship step's (see Verify). Watch 03a's B3 closest cue (3.0 against 3) after the refit too.
 - **03a's 0.35 s of mismatch** between the $1,800 working and the running count (12.05-12.4) is the price of the critic's "step inside the count-down". To remove it, move the step to the settle (12.4), which brings back a 0.5 s near-still stretch before the verdict, or have the kit's count land sooner (a kit opt-in).
 - **03a's figures are still small** (0.51); the motion now comes from beats that register, not from bigger figures.
+
+### Promoted (2026-10-13)
+
+The three condensed cuts (after the fixer pass) were copied from `studio/specs-wip/` over `studio/specs/` (commit 4fb0b00) and `IN_SPECS` is `"cond"` for each: 565 checks, 0 failures by default, and 528, 0 failures on git-history copies of the round-2 cuts passed with `--spec`; the sound refit and the ship follow (`renders/channel/` keeps the round-2 cuts until then).

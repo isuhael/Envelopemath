@@ -27,8 +27,9 @@
 4. Prints a table and exits 1 on any mismatch.
 
 Two cuts per teaser, picked by the spec's duration:
-  - the round-2 cut (narration-paced VO, 45.5 / 36.0 / 36.5 s bodies): what studio/specs/ holds until the condensed cuts
-    are promoted (IN_SPECS names it). Every check above applies as written.
+  - the round-2 cut (narration-paced VO, 45.5 / 36.0 / 36.5 s bodies): retired from studio/specs/ on 2026-10-13 and kept
+    as a reference for a git-history copy (`git show 4fb0b00^:studio/specs/<id>.json`) passed with --spec;
+    renders/channel/ still ships it until the ship step replaces it. Every check above applies as written.
   - the condensed cut (2026-10-13, the owner's note: "Too many still moments are a killer for a short. Condense the
     rest. The CTA (end card) is good."; the 06b/06c precedent): a 15.5-19 s body plus the 2.5 s end card. The VO is
     on-screen captions (no narration), so the narration rules are replaced by caption rules: the hook caption complete
@@ -38,11 +39,15 @@ Two cuts per teaser, picked by the spec's duration:
     that year's segment; a figure a caption quotes is on its carrier (flag, label, footer step, tip) while the caption
     is up, the caption leading it by <= 0.6 s; the race's moving pace (per teaser); something moves from frame 2;
     the verdict 0.6-1.5 s after the last reveal and held 1.2-1.6 s (a Scoreboard caption may run on under the verdict,
-    which sits above the caption band, by <= 0.6 s; the Becker Rig hides captions under it).
+    which sits above the caption band, by <= 0.6 s; the Becker Rig hides captions under it). Written in
+    studio/specs-wip/, promoted into studio/specs/ on 2026-10-13: it is what studio/specs/ holds (IN_SPECS names it);
+    the sound and the ship follow.
   A spec of any other length fails its lane and is not checked further.
 
 Run:  python3 teasers/v2/checks/04-chart-race.py                          (the specs in studio/specs/)
-      python3 teasers/v2/checks/04-chart-race.py --spec studio/specs-wip/04a-scoreboard-sp500-vs-gold.json
+      python3 teasers/v2/checks/04-chart-race.py --spec /tmp/04a-scoreboard-sp500-vs-gold.json
+        (e.g. the retired round-2 cut: `git show 4fb0b00^:studio/specs/04a-scoreboard-sp500-vs-gold.json
+        > /tmp/04a-scoreboard-sp500-vs-gold.json`)
       --spec [KEY=]PATH (repeatable) checks PATH in place of studio/specs/<id>.json. KEY is a, b or c (or 04a/04b/04c);
       without it the file's stem must be one of the three ids. CHART_RACE_SPECS=<dir> still swaps the whole folder.
 """
@@ -170,8 +175,9 @@ def parse_spec_args(argv):
 SPEC_PATHS = {k: os.path.join(SPECS, sid + ".json") for k, sid in IDS.items()}
 SPEC_PATHS.update(parse_spec_args(sys.argv[1:]))
 
-# The two cuts (see the module docstring). "r2": the round-2 cut, narration-paced (studio/specs/ holds it until the
-# condensed cuts are promoted); "cond": the condensed cut of 2026-10-13 (studio/specs-wip/ until then).
+# The two cuts (see the module docstring). "r2": the round-2 cut, narration-paced (retired from studio/specs/ on
+# 2026-10-13; a reference for a git-history copy passed with --spec); "cond": the condensed cut of 2026-10-13 (written in
+# studio/specs-wip/, promoted into studio/specs/ the same day).
 DUR_R2 = {"a": 45.5, "b": 36.0, "c": 36.5}
 # the captions, byte for byte (no-break spaces included: they decide where a line wraps on screen), the same in both
 # cuts: the condensed cut retimes them and never rewrites one (critic, 2026-10-13: 04a's vo[8] had lost its no-break
@@ -188,7 +194,7 @@ VO_TEXT = {
           "Final: USA ≈ $39,800.", "Europe ≈ $22,700.", "The USA ≈ doubled twice. Europe, once."],
 }
 LANE_COND = (15.5, 19.0)        # the condensed cut's body (the 2.5 s end card comes on top), as 06c's
-IN_SPECS = {"a": "r2", "b": "r2", "c": "r2"}   # which cut studio/specs/ must hold (flip to "cond" on promotion)
+IN_SPECS = {"a": "cond", "b": "cond", "c": "cond"}   # which cut studio/specs/ must hold (promoted 2026-10-13; was "r2")
 RACES = {
     # 04a: 26 years at 1.23 s a year (r2), at 0.49 s a year (cond); the cond race starts at -0.25 so frame 1 (x 2000.51)
     # comes before the corner clock's roll into 2001 (fixer pass: at -0.4, x 2000.80, the clock was mid-roll on frame 1;
@@ -1737,13 +1743,14 @@ if os.path.exists(WRITEUP):
               "2018 SELL-OFF", "(brighter", "goes back to \"Total return", "flagHold: 3.0", "\"≈ $22,700\" at 22.25"]:
         claim("c", f"04c section has no stale '{s}'", s in sec_c, False)
     claim("c", "write-up links the new spec", f"studio/specs/{IDS['c']}.json" in md, True)
-    # the condensed cut (2026-10-13): its review-log entry, and each teaser section describes it (linking the WIP spec,
-    # which the ship step promotes into studio/specs/)
+    # the condensed cut (2026-10-13): its review-log entry, and each teaser section describes it (linking the promoted
+    # spec in studio/specs/; it linked the WIP spec in studio/specs-wip/ until the promotion)
     claim("-", "write-up has the 'Condensed cut (2026-10-13)' review-log entry", "### Condensed cut (2026-10-13)" in md, True)
     for k, a0, a1 in (("a", "### 04a", "### 04b"), ("b", "### 04b", "### 04c"), ("c", "### 04c", "## Sources")):
         sec = md[md.find(a0):md.find(a1)]
-        claim(k, f"write-up's {a0[4:]} section describes the condensed cut (links studio/specs-wip/{IDS[k]}.json)",
-              f"studio/specs-wip/{IDS[k]}.json" in sec and "**Captions** (on-screen text, no narration" in sec, True)
+        claim(k, f"write-up's {a0[4:]} section describes the condensed cut (links studio/specs/{IDS[k]}.json, not the WIP copy)",
+              f"studio/specs/{IDS[k]}.json" in sec and f"studio/specs-wip/{IDS[k]}.json" not in sec
+              and "**Captions** (on-screen text, no narration" in sec, True)
 else:
     claim("-", "write-up exists", WRITEUP, "exists", ok=False)
 

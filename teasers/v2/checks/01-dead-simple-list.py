@@ -38,9 +38,12 @@ Since the port of 2026-10-08 the owner keeps two looks: 01a runs in Scoreboard (
    full 2026 federal tax, the pinned comment's myth / FICA / kept figures, and the salary window).
 
 7. Two cuts per teaser (2026-10-13, the owner's "too many still moments are a killer for a short; condense the
-   rest; the CTA is good"), picked by the spec's duration. The narration cut (round 2 / the port: 01a 24.5 s,
-   01b 24.0 s, 01c 25.3 s, VO-paced captions) is what studio/specs/ holds until the ship step promotes the
-   condensed cut (IN_SPECS names the cut studio/specs/ must hold). The condensed cut (a body of 11-15 s, the
+   rest; the CTA is good"), picked by the spec's duration. The condensed cut was promoted from studio/specs-wip/
+   into studio/specs/ on 2026-10-13 and is what studio/specs/ holds (IN_SPECS names the cut studio/specs/ must
+   hold); the sound and the ship to renders/channel/ follow, and until then renders/channel/ keeps the narration
+   cut. The narration cut (round 2 / the port: 01a 24.5 s, 01b 24.0 s, 01c 25.3 s, VO-paced captions) is retired
+   to a reference: a git-history copy (`git show 4fb0b00^:studio/specs/<id>.json`) passed with --spec is still
+   checked against it. The condensed cut (a body of 11-15 s, the
    06c / 06b precedent) is checked as on-screen captions with no narration: each line up >= max(1.2 s, 0.12 s a
    word); captions back to back (gaps < 0.2 s); the hook caption complete on frame 1 (vo[0] starts early enough
    for the kit's rise / word pops); each result opening the caption line that says it, every other beat inside
@@ -57,7 +60,9 @@ Since the port of 2026-10-08 the owner keeps two looks: 01a runs in Scoreboard (
 
 Prints a table and exits non-zero on any mismatch.
 Run:  python3 teasers/v2/checks/01-dead-simple-list.py                 (the specs in studio/specs/)
-      python3 teasers/v2/checks/01-dead-simple-list.py --spec studio/specs-wip/01a-scoreboard-paid-biweekly.json
+      python3 teasers/v2/checks/01-dead-simple-list.py --spec /tmp/01a-scoreboard-paid-biweekly.json
+        (e.g. the retired narration cut: `git show 4fb0b00^:studio/specs/01a-scoreboard-paid-biweekly.json
+        > /tmp/01a-scoreboard-paid-biweekly.json`)
       --spec [KEY=]PATH (repeatable) checks PATH in place of studio/specs/<id>.json. KEY is 01a, 01b or 01c (or a,
       b, c); without it the file's stem must be one of the three ids.
 """
@@ -119,11 +124,11 @@ SPEC_PATHS = {**FILES, **parse_spec_args(sys.argv[1:])}
 
 # The two cuts (see 7. in the docstring). The narration cut is the round-2 / port cut (VO-paced captions), the
 # condensed cut the 2026-10-13 retime (captions paced for reading, no narration). IN_SPECS names the cut that
-# studio/specs/ must hold: the narration cut until the ship step promotes the condensed WIP specs
-# (studio/specs-wip/), which then sets these to "condensed".
+# studio/specs/ must hold: the condensed cut, promoted from studio/specs-wip/ on 2026-10-13 (it was "narration" until
+# then). The narration cut stays a reference for a git-history copy (4fb0b00^ and earlier) passed with --spec.
 NARRATION_DUR = {"01a": 24.5, "01b": 24.0, "01c": 25.3}
 CONDENSED_LANE = (11.0, 15.0)      # s, the body (+ the 2.5 s end card): 06c 15.7, 06b 18.3; a 3-4 item list is shorter
-IN_SPECS = {"01a": "narration", "01b": "narration", "01c": "narration"}
+IN_SPECS = {"01a": "condensed", "01b": "condensed", "01c": "condensed"}
 CAP_MIN, CAP_SPW = 1.2, 0.12       # condensed: a caption is up >= max(1.2 s, 0.12 s a word) (phone reading)
 CAP_GAP = 0.2                      # condensed: captions back to back (no unlabelled beat)
 FIRST_CAP_UP = {"scoreboard": -0.14, "becker-rig": -0.48}   # vo[0].t at or before this: complete on frame 1

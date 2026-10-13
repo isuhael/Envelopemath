@@ -43,12 +43,16 @@
                 apart, the check on the last landing and the payoff slab on the check's end, the "$10 a day" caption
                 on the lone brick's landing; 05c: the goal row's roll <= 0.35 s, each cut <= 0.6 s after the last
                 landing, the hero's last roll <= 0.5 s after the fees beat, each footer working up >= 0.9 s).
-   studio/specs/ must hold the cut IN_SPECS names (the full cuts until the condensed ones are promoted); any other
-   length fails its lane and stops there.
+   studio/specs/ must hold the cut IN_SPECS names: the condensed cuts, promoted from studio/specs-wip/ on 2026-10-13
+   (the sound and the ship to renders/channel/ follow; renders/channel/ keeps the full cuts until then). The full
+   cuts are retired to a reference for a git-history copy (`git show 4fb0b00^:studio/specs/<id>.json`) passed with
+   --spec. Any other length fails its lane and stops there.
 
 Prints a table and exits non-zero on any mismatch.
 Run:  python3 teasers/v2/checks/05-split-sheet.py                                (the specs in studio/specs/)
-      python3 teasers/v2/checks/05-split-sheet.py --spec studio/specs-wip/05a-becker-rig-chipotle-10.json
+      python3 teasers/v2/checks/05-split-sheet.py --spec /tmp/05a-becker-rig-chipotle-10.json
+        (e.g. the retired full cut: `git show 4fb0b00^:studio/specs/05a-becker-rig-chipotle-10.json
+        > /tmp/05a-becker-rig-chipotle-10.json`)
       --spec [KEY=]PATH (repeatable) checks PATH in place of studio/specs/<id>.json. KEY is a, b or c (or 05a/05b/05c);
       without it the file's stem must be one of the three ids.
 """
@@ -105,8 +109,9 @@ STEMS = {"05a": "05a-becker-rig-chipotle-10", "05b": "05b-becker-rig-3000-payche
 # ---- the two cuts (see 5. above), picked by duration
 FULL_DUR = {"05a": 24.7, "05b": 22.1, "05c": 22.8}                 # the round-2 bodies (+ the 2.5 s end card)
 LANE_C = {"05a": (12.0, 14.0), "05b": (10.5, 12.5), "05c": (8.0, 10.0)}   # the condensed bodies (2026-10-13)
-# which cut studio/specs/ must hold: the full cuts until the condensed ones are promoted (then set them to "condensed")
-IN_SPECS = {"05a": "full", "05b": "full", "05c": "full"}
+# which cut studio/specs/ must hold: the condensed cuts, promoted on 2026-10-13 (they were "full" until then; the full
+# set stays a reference for a git-history copy passed with --spec)
+IN_SPECS = {"05a": "condensed", "05b": "condensed", "05c": "condensed"}
 CAP_MIN, CAP_SPW = 1.2, 0.12      # caption pacing (no narration): >= 1.2 s a line, >= 0.12 s a word at phone size
 CAP_GAP = 0.2                     # the longest gap between two captions (no beat goes unlabelled)
 CAP_LEFT = 0.25                   # a landing leaves at least this much of its caption on screen after it
