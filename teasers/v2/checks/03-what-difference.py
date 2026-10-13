@@ -79,8 +79,8 @@ expectation sets, picked by its duration:
 
 Run:  python3 teasers/v2/checks/03-what-difference.py                  (the specs in studio/specs/)
       python3 teasers/v2/checks/03-what-difference.py --spec studio/specs-wip/03a-becker-rig-car-loan-weekly.json ...
-      --spec [KEY=]PATH (repeatable) checks PATH in place of studio/specs/<id>.json. KEY is a, b or c (or 03a/03b/03c);
-      without it the file's stem must be one of the three ids. A round-2-length spec is checked as the round-2 cut, any
+      --spec [KEY=]PATH (repeatable) checks PATH in place of studio/specs/<id>.json. KEY is a, b or c (or 03a/03b/03c,
+      or the full id); without it the file's stem must be one of the three ids. A round-2-length spec is checked as the round-2 cut, any
       other as the condensed cut (and fails its lane unless it is one).
 """
 import json
@@ -129,15 +129,20 @@ def parse_spec_args(argv):
                 v = a.split("=", 1)[1]
             if not v:
                 sys.exit("--spec needs a path")
-            m = re.fullmatch(r"(?:03)?([abc])=(.+)", v)
-            if m:
-                key, path = m.group(1), m.group(2)
+            # (fixer pass: KEY may also be the full id, as in 02-find-your-row.py)
+            keys = {**{k: k for k in IDS}, **{f"03{k}": k for k in IDS}, **{sid: k for k, sid in IDS.items()}}
+            head, eq, tail = v.partition("=")
+            if eq and head in keys:
+                key, path = keys[head], tail
+            elif eq and not os.path.exists(v):
+                sys.exit(f"--spec {v}: KEY {head!r} is not one of {', '.join(keys)}")
             else:
                 path = v
                 stem = os.path.splitext(os.path.basename(v))[0]
                 key = next((k for k, s_ in IDS.items() if s_ == stem), None)
                 if key is None:
-                    sys.exit(f"--spec {v}: the file stem is not one of {sorted(IDS.values())}; pass KEY=PATH")
+                    sys.exit(f"--spec {v}: the file stem is not one of {sorted(IDS.values())}; pass KEY=PATH "
+                             f"(KEY: {', '.join(keys)})")
             if not os.path.isfile(path):
                 sys.exit(f"--spec {v}: no such file")
             out[IDS[key]] = os.path.abspath(path)
@@ -552,9 +557,13 @@ label_beats = {idb: [(0, 0, None), (1, 1, "More"), (2, 3, "dollar")]}
 # 03a: formulas[2] carries its own t ({ t, text }: shown after the $1,100 step has been read, not at Weekly's wake);
 #      the round-2 steps[3] ("= $187.54 + $12.46 = $200 a week", a repeat of formulas[3] for the last caption, which the
 #      verdict card replaces) is dropped, so the "≈ 1 year sooner" working is steps[3]
+#      Fixer pass (2026-10-13, critic): formulas[0] and formulas[1] carry their own t too (Monthly's working pops with the
+#      ≈ $10,000 read, late in its caption, so the stake line stays up 1.95 s; Biweekly's waits until Monthly's has been
+#      up 1.0 s), and the round-2 steps[3] is back at the verdict (the verdict card hides the last caption, "About $12
+#      more a week. About a year sooner.": the slot carries both halves in the hold), so the step paths are round-2's
 ea_c = dict(ea)
-ea_c["lookOpts.formulas[2].text"] = ea_c.pop("lookOpts.formulas[2]")
-ea_c["lookOpts.steps[3].text"] = ea_c.pop("lookOpts.steps[4].text")
+for _i in (0, 1, 2):
+    ea_c[f"lookOpts.formulas[{_i}].text"] = ea_c.pop(f"lookOpts.formulas[{_i}]")
 # 03b: the frame-1 note is re-slammed (same string, one size down) on "Because it shrinks.", so the label steps shift
 eb_c = dict(eb)
 eb_c["lookOpts.labelSteps[3].text"] = eb_c.pop("lookOpts.labelSteps[2].text")
