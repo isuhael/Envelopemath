@@ -3,29 +3,27 @@
   "look": "scoreboard",
   "format": "cost-counter",
   "fps": 30,
-  "duration": 34.95,
+  "duration": 18.6,
   "header": "US debt interest since you hit **play**:\nwhen does it pass **your salary**?",
   "footer": "FY25: $970B ÷ 31,536,000 s · median $1,251 × 52",
   "captions": true,
   "vo": [
     { "t": -0.4,  "d": 2.45, "text": "Find your salary." },
     { "t": 2.1,   "d": 1.2,  "text": "Median pay: passed." },
-    { "t": 3.3,   "d": 2.05, "text": "$100,000: passed." },
-    { "t": 5.4,   "d": 2.7,  "text": "**≈ $30,800** a second." },
-    { "t": 8.15,  "d": 4.25, "text": "$250,000 a year: ≈ 8 seconds." },
-    { "t": 12.45, "d": 3.8,  "text": "Your seconds: yearly pay ÷ 30,800." },
-    { "t": 16.3,  "d": 2.75, "text": "$500,000: ≈ 16 seconds." },
-    { "t": 19.1,  "d": 3.55, "text": "That's **≈ $111 million** an hour." },
-    { "t": 22.7,  "d": 5.25, "text": "At fiscal 2025's rate: $970 billion a year." },
-    { "t": 28.0,  "d": 4.45, "text": "And the last row?" },
-    { "t": 32.5,  "d": 2.05, "text": "**$1 million**: passed." }
+    { "t": 3.3,   "d": 1.3,  "text": "$100,000: passed." },
+    { "t": 4.65,  "d": 1.7,  "text": "At fiscal 2025's rate: $970 billion a year." },
+    { "t": 6.4,   "d": 1.7,  "text": "That's **≈ $111 million** an hour." },
+    { "t": 8.15,  "d": 2.35, "text": "$250,000 a year: ≈ 8 seconds." },
+    { "t": 10.55, "d": 2.85, "text": "Your seconds: yearly pay ÷ 30,800." },
+    { "t": 13.45, "d": 2.75, "text": "And the last row?" },
+    { "t": 16.25, "d": 1.95, "text": "**$500,000**: passed." }
   ],
-  "verdict": { "t": 33.35, "text": "**$1M** a year: ≈ 33 seconds." },
+  "verdict": { "t": 17.07, "text": "**$500K** a year: ≈ 16 seconds." },
   "data": {
     "label": "Net interest on the US debt, since you hit play",
     "perSecond": 30758.5,
     "rateDisplay": "≈ $30,800 every second",
-    "counterT": [0.0, 32.51135],
+    "counterT": [0.0, 16.25568],
     "startValue": 0,
     "prefix": "$",
     "dp": 0,
@@ -34,11 +32,10 @@
       { "value": 65052, "label": "Median pay: $65,052" },
       { "value": 100000, "label": "A $100,000 salary: $100,000" },
       { "value": 250000, "label": "A $250,000 salary: $250,000" },
-      { "value": 500000, "label": "A $500,000 salary: $500,000" },
-      { "value": 1000000, "label": "A $1,000,000 salary: $1,000,000" }
+      { "value": 500000, "label": "A $500,000 salary: $500,000" }
     ],
-    "final": "$1,000,000",
-    "hold": 2.43865
+    "final": "$500,000",
+    "hold": 2.34432
   },
   "lookOpts": {
     "intro": { "l1": "≈ $30,800", "l2": "every second" },
@@ -47,23 +44,21 @@
       { "l1": "Median pay: $65,052", "l2": "≈ 2.1 seconds" },
       { "l1": "$100,000 a year", "l2": "≈ 3.3 seconds" },
       { "l1": "$250,000 a year", "l2": "≈ 8 seconds" },
-      { "l1": "$500,000 a year", "l2": "≈ 16 seconds" },
-      { "l1": "$1,000,000 a year", "l2": "≈ 33 seconds" }
+      { "l1": "$500,000 a year", "l2": "≈ 16 seconds" }
     ],
     "flash": 4.6,
     "rateSteps": [
-      { "t": 5.4, "l1": "≈ $30,800", "l2": "every second", "d": 3.0 },
-      { "t": 12.45, "l1": "$65,052 ÷ 30,800", "l2": "≈ 2.1 seconds (median)", "d": 4.0 },
-      { "t": 19.1, "l1": "≈ $30,800 × 3,600 s", "l2": "≈ $111,000,000", "d": 3.6 },
-      { "t": 22.7, "l1": "$970B ÷ 31,536,000 s", "l2": "≈ $30,800 every second", "d": 5.3 },
-      { "t": 28.0, "l1": "Next", "l2": "$1,000,000 a year", "d": 4.6 }
+      { "t": 4.65, "l1": "$970B ÷ 31,536,000 s", "l2": "≈ $30,800 every second", "d": 1.75 },
+      { "t": 6.4, "l1": "≈ $30,800 × 3,600 s", "l2": "≈ $111,000,000", "d": 1.75 },
+      { "t": 10.55, "l1": "$65,052 ÷ 30,800", "l2": "≈ 2.1 seconds (median)", "d": 2.9 },
+      { "t": 13.45, "l1": "Next", "l2": "$500,000 a year", "d": 2.85 }
     ],
     "pips": true,
-    "pipLabels": ["$30K", "Median $65K", "$100K", "$250K", "$500K", "$1M"],
-    "icons": ["bill", "bill", "bill", "bill", "bill", "coin"],
+    "pipLabels": ["$30K", "Median $65K", "$100K", "$250K", "$500K"],
+    "icons": ["bill", "bill", "bill", "bill", "coin"],
     "heroIcon": false,
     "stream": 24,
-    "runup": { "beat": 0.40639 }
+    "runup": { "beat": 0.4064, "from": 9.7 }
   },
   "sfx": []
 }

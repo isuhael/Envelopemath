@@ -8,26 +8,84 @@
 //   low end SB-808 D2 diving from D3 over 40 ms, τ 0.9 s, and the D1 sub (-10 dB, τ 0.4 s)
 //   space   crash at L (-6 dB re n4), a 0.6 s reverse crash ending at L (-12 dB re n4), hall sends -8 dB
 //   flare   a bright shimmer (BP noise 7 / 11 kHz, D7 + A7 glint, τ 0.16 s) at the ring flare, t0 + 0.22·k = L - 0.14·k
-import { planFor } from './sfx.mjs'
-import { CAL } from './cal.mjs'
+import { planFor, sfxBodyPower, leversFor } from './sfx.mjs'
+import { CAL, acceptance } from './cal.mjs'
+import { modelFor, payoffPre } from './bands.mjs'
 const dB = d => Math.pow(10, d / 20)
 /**
  * The master normalises each teaser to -14 LUFS, so a logo at a fixed level comes out 1-2 dB apart across teasers
- * (B8 wants it at >= -13 LUFS and under the payoff). The master gain is predictable from the bed (balance.mjs: about
- * GM_PLAN - M, M the plan's music-stem estimate, about ±0.25 dB), so the sting is scaled to land at LOGO_AT after mastering,
- * the middle of B8's window (>= -13 LUFS, under the payoff at -10.2 .. -11.7 LUFS).
- * LOGO_PRE: its loudness (momentary at L + 0.2, pre-master, scale 1), measured -17.38 ± 0.04 on all 15 (calibration.json).
+ * (B8 wants it at >= -13 LUFS and under the payoff). The sting is scaled to land at its aim after mastering:
+ *   gainEst   the master gain, from the music model (balance.mjs: M) and the cues' power over the body (sfx.mjs
+ *             sfxBodyPower: Su): G = GM_PLAN - 10 log10(10^(M/10) + GM_SFX 10^(Su/10)). With the music alone (GM_SFX 0,
+ *             as until 2026-10-12) a short, busy body mastered 0.4-0.9 dB under the estimate: its cues carry a real share
+ *             of the mix (calibration sd 0.35 dB; 0.15 dB with the cues counted).
+ *   LOGO_PRE  the sting's momentary loudness in the 400 ms window ending exactly at L + 0.2 s, pre-master, at scale 1
+ *             (calibrate.mjs measures that window on the delivery, not the meter's nearest hop).
+ * The sting is levelled for its true loudness at L + 0.2: LOGO_AT, or the middle of the teaser's own B8 window when that
+ * is lower (logoAim), the same in every teaser whatever the meter's phase.
  */
-export const LOGO_AT = -12.1
+export const LOGO_AT = -12.4
 export const LOGO_PRE = CAL.LOGO_PRE
+/**
+ * B8's window is [-13 LUFS, the payoff's own momentary loudness]. In a long teaser the payoff lands at -9.8 .. -11.1
+ * LUFS and LOGO_AT sits well inside; in a short, dense one the master gain is low (its body is loud for its length)
+ * and the payoff, whose B8 frame is half the TENSION's gap, can land near -12. So the sting aims at the middle of the
+ * teaser's own window when that is lower than LOGO_AT: payoffEst = payoffPre (bands.mjs: the band model's music, glue
+ * included, and cues in the payoff's B8 frame) + gainEst - CAL.PAY_LOSS, and CAL.PAY_HIT more when a hit marks P: the
+ * hit is the SFX bus compressor's reference (2.5 dB on the loudest hit) and it drives the limiter (1.3-4 dB at P); a
+ * payoff without a hit (a reveal on the verdict) loses only what the returns and the AAC leave out. calibrate.mjs
+ * measures both. The window's floor is read from sound/acceptance.json (B8.minLufs).
+ */
+export const hitAtP = tl => tl.cues.some(c => c.kind === 'hit' && Math.abs(c.t - tl.anchors.P.t) <= 0.015)
+export function payoffEst(tl) {
+  const pre = payoffPre(modelFor(tl), leversFor(tl) || {})
+  return pre == null ? null : pre + gainEst(tl) - (CAL.PAY_LOSS ?? 1.4) - (hitAtP(tl) ? CAL.PAY_HIT ?? 1.6 : 0)
+}
+/**
+ * The meter's frame. B8 reads the meter's momentary value on its 100 ms hop grid nearest L + 0.2 (src/sound/
+ * loudness.mjs, sound/checks/measure.mjs seriesAt), so the window it reads ends up to 50 ms from L + 0.2, and the sting
+ * rises about CAL.LOGO_SLOPE (15 dB/s) there (n4, the pad, the 808 and the crash land at L): the reading is the true
+ * level plus LOGO_SLOPE x b8Frame(L), up to +-0.74 dB. Twelve of the fifteen teasers read 0.59 dB over the true level
+ * (L + 0.2 falls 40 ms before a hop), 03b and 03c 0.15 dB under it, 05c 0.74 dB under it. The sting keeps its true
+ * level wherever that reading still sits B8_MARGIN inside the teaser's window (as the meter reads it); where it would
+ * not, the sting moves by the least that restores the margin (or to the window's middle, as read, when the window is
+ * narrower than two margins). This guard exists only because of the hop grid: with B8 reading the window that ends
+ * exactly at L + 0.2 and P + 0.2 (proposed for the harness), it never acts.
+ */
+export const B8_MARGIN = 0.5
+export const B8_AT = 0.2, METER_HOP = 0.1
+export const b8Frame = L => Math.round((L + B8_AT) / METER_HOP) * METER_HOP - (L + B8_AT)
+/** the sting's aim (LUFS, true momentary loudness at L + 0.2 after mastering) and why: { aim, base, read, guard } */
+export function logoPlan(tl) {
+  const floor = acceptance().checks?.B8?.minLufs ?? -13, mP = payoffEst(tl)
+  const base = mP == null ? LOGO_AT : Math.min(LOGO_AT, (floor + mP) / 2)
+  const off = tl.card ? (CAL.LOGO_SLOPE ?? 0) * b8Frame(tl.card.L) : 0
+  const lo = floor + B8_MARGIN, hi = mP == null ? Infinity : mP - B8_MARGIN
+  let aim = base
+  if (lo > hi) aim = (floor + mP) / 2 - off
+  else if (base + off < lo) aim = lo - off
+  else if (base + off > hi) aim = hi - off
+  return { aim, base, read: aim + off, guard: +(aim - base).toFixed(3) }
+}
+export const logoAim = tl => logoPlan(tl).aim
+/** the sting's scale range (dB): the master gains of the set span 1.6 (05c) to 4.4 dB (09c), and the scale follows
+ * them; the range only guards against a broken estimate (it was +-3 dB until 2026-10-13, which held 05c's sting 0.9 dB
+ * under its aim) */
+export const LOGO_K = [-3, 5]
+/** the master gain the teaser will get (dB): the music model plus the cues' power over the body */
+export function gainEst(tl) {
+  // the music model, plus what the band guard's level levers add to it (bands.mjs leverLoudness)
+  const M = planFor(tl).M + (leversFor(tl)?.dM || 0), Su = sfxBodyPower(tl)
+  return (CAL.GM_PLAN ?? CAL.GM) - 10 * Math.log10(Math.pow(10, M / 10) + (CAL.GM_SFX ?? 0) * Math.pow(10, Su / 10))
+}
 
 export function logo(tl, ctx) {
   const m = ctx.motif
   if (!m) return { notes: [], drums: [] }
   const notes = [], drums = []
   const L = m.L, end = tl.duration
-  const gEst = (CAL.GM_PLAN ?? CAL.GM) - planFor(tl).M
-  const k = dB(Math.max(-3, Math.min(3, LOGO_AT - (LOGO_PRE + gEst))))
+  const gEst = gainEst(tl)
+  const k = dB(Math.max(LOGO_K[0], Math.min(LOGO_K[1], logoAim(tl) - (LOGO_PRE + gEst))))
   // the handle ding must cut through the held chord and the 808 / crash tails (B3): those layers dip 9 dB under its first
   // 60 ms and come back over ~0.6 s; the motif's brass has decayed by then and keeps its line
   const ding = tl.cues.find(c => c.inCard && c.kind === 'ding')

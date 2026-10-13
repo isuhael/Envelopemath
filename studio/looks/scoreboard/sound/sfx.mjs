@@ -6,15 +6,16 @@
 // Variation (§5, U4): consecutive cues of a kind differ in at least two of pitch, filter cutoff (±8%), noise seed, pan.
 import {
   SR, sec, mono, stereo, clamp, mtof, dbToGain, osc, noise, svf, onePoleLP, onePoleHP, dcBlock, expEnv, saturate, scale,
-  peakOf, panMono, panGains, fm, rngFor,
+  peakOf, panMono, panGains, fm, rngFor, biquad, biquadCoefs,
 } from '../../../src/sound/dsp.mjs'
 import * as K from '../../../src/sound/kit.mjs'
 import * as T from '../../../src/sound/theory.mjs'
 import { loudness } from '../../../src/sound/loudness.mjs'
 import { modal as D_modal } from '../../../src/sound/dsp.mjs'
-import { plan as balancePlan, cueTrim } from './balance.mjs'
+import { plan as balancePlan, cueTrim, kfilter } from './balance.mjs'
 import { curveFor, evalDb } from './energy.mjs'
 import { CAL, lookup } from './cal.mjs'
+import { mix } from './mix.mjs'
 import { solve, isB3, GIVE_WAY } from './clearance.mjs'
 
 const TAU = Math.PI * 2
@@ -276,6 +277,10 @@ const raw = {
     const mt = K.metal(n, { ratio: 2.3 * (1 + r.bi() * 0.02), bp: 8000, hp: 4000, q: 0.8 })
     const ce = expEnv(n, ctau, 0.001)
     for (let i = 0; i < n; i++) { cr.L[i] = (cr.L[i] + mt[i] * 0.6) * ce[i]; cr.R[i] = (cr.R[i] + mt[i] * 0.6) * ce[i] }
+    // the band guard's P-stack shelf (bands.mjs pay16): a hit at P takes it on its crash layer, the source of most of a
+    // short body's 16 kHz octave
+    const sh = !cue.inCard && ctx.atP && ctx.tl ? (leversFor(ctx.tl)?.pay16 || 0) : 0
+    if (sh) for (const x of [cr.L, cr.R]) biquad(x, biquadCoefs('highshelf', 10000, { gainDb: sh }))
     const parts = [
       { buf: body, body: true },
       { buf: subN, gain: dbToGain(-8), body: true },
@@ -339,10 +344,14 @@ const raw = {
     return finish([{ buf: K.panSweep(w, -0.4 * dir, 0.4 * dir) }], w.length, -16, ctx, { pitches: [], pan: 0 })
   },
 
-  // ---- whoosh: a race starts. Noise BP 500 Hz -> 4 kHz (peak at 60%) -> 800 Hz, plus LP 300 Hz air; ±50% sweep
+  // ---- whoosh: a race starts. Noise BP 500 Hz -> 4 kHz (peak at 60%) -> 800 Hz, plus LP 300 Hz air; ±50% sweep.
+  //      Its window's floor is -16 dB re its peak (the swipe's is -22): the sweep starts at 500 Hz, where the band-pass
+  //      rings up slowest, and at -22 dB the quietest whoosh of the set (04a's, gain 0.3 at t = 0) first passed -60
+  //      dBFS 1.94 ms after its cue (B4: 2 ms). At -16 dB it does at 1.2 ms; the floor only holds over the window's
+  //      first 13 ms (2026-10-13)
   whoosh(cue, ctx) {
     const r = ctx.rng, dur = Math.max(0.08, cue.dur || 0.35)
-    const w = K.noiseSweep(r, dur, { f0: 500, f1: 4000, f2: 800, peakAt: 0.6, q: 0.9, window: 'sin', stereo: false, floor: 0.08 })
+    const w = K.noiseSweep(r, dur, { f0: 500, f1: 4000, f2: 800, peakAt: 0.6, q: 0.9, window: 'sin', stereo: false, floor: WHOOSH_FLOOR })
     const air = noise(w.length, r); onePoleLP(air, 300); onePoleLP(air, 300)
     for (let i = 0; i < w.length; i++) w[i] += air[i] * dbToGain(-10) * 3 * Math.sin(Math.PI * i / w.length)
     const dir = cue.n % 2 ? -1 : 1
@@ -418,12 +427,55 @@ export function planFor(tl) {
     bedAt: t => bedSec(tl, t),
   })
 }
+/**
+ * The cues' power over the body, K-weighted and ungated (LUFS-like, pre-master): every cue at its final level (the
+ * fader's trim, the clearance's lift, the engine's cluster cap after both), summed over [0, base]. The master gain
+ * model (logo.mjs gainEst) adds it to the music's: in a short, busy body the cues carry a real share of the mix, and the
+ * master gain comes out that much lower than the music alone predicts (BIBLE §11.2 refit, 2026-10-13). Cached.
+ */
+const BODYP = new WeakMap()
+export function sfxBodyPower(tl) {
+  if (BODYP.has(tl)) return BODYP.get(tl)
+  const p = planFor(tl), res = clearFor(tl), P = tl.anchors.P.t
+  const N = Math.max(1, Math.round(tl.base * SR))
+  const lvl = c => Math.pow(10, (cueTrim(c, Math.abs(c.t - P) <= 0.015, p.trim) + (isB3(tl, c) ? (res.get(c.i)?.lift || 0) : 0)) / 20) * c.gain
+  const bufs = new Map()
+  for (const c of tl.cues) {
+    if (c.inCard || c.t >= tl.base) continue
+    const b = raw[c.kind](c, cueCtx(tl, c))
+    if (b) bufs.set(c.i, { b: b.L ? b : { L: b, R: b }, off: b.offset || 0, g: lvl(c) })
+  }
+  // §8.4.3 after the trims, as the engine caps
+  for (const cl of tl.clusters) {
+    const mem = cl.members.filter(i => bufs.has(i))
+    if (mem.length < 2) continue
+    const at = i => Math.round(tl.cues[i].t * SR) - bufs.get(i).off
+    const a0 = Math.min(...mem.map(at)), a1 = Math.max(...mem.map(i => at(i) + bufs.get(i).b.L.length))
+    const L = new Float64Array(a1 - a0), R = new Float64Array(a1 - a0)
+    let top = 0
+    for (const i of mem) { const x = bufs.get(i); let pk = 0; for (let j = 0; j < x.b.L.length; j++) { L[at(i) - a0 + j] += x.b.L[j] * x.g; R[at(i) - a0 + j] += x.b.R[j] * x.g; pk = Math.max(pk, Math.abs(x.b.L[j]), Math.abs(x.b.R[j])) } top = Math.max(top, pk * x.g) }
+    let pk = 0
+    for (let j = 0; j < L.length; j++) pk = Math.max(pk, Math.abs(L[j]), Math.abs(R[j]))
+    const cap = top * Math.pow(10, 1.5 / 20)
+    if (pk > cap) for (const i of mem) bufs.get(i).g *= cap / pk
+  }
+  const sum = { L: new Float64Array(N), R: new Float64Array(N) }
+  for (const [i, x] of bufs) {
+    const at = Math.round(tl.cues[i].t * SR) - x.off
+    for (let j = Math.max(0, -at); j < x.b.L.length && at + j < N; j++) { sum.L[at + j] += x.b.L[j] * x.g; sum.R[at + j] += x.b.R[j] * x.g }
+  }
+  let e = 0
+  for (const ch of ['L', 'R']) { const y = kfilter(sum[ch]); for (let j = 0; j < N; j++) e += y[j] * y[j] }
+  const v = -0.691 + 10 * Math.log10(Math.max(1e-30, e / N))
+  BODYP.set(tl, v)
+  return v
+}
 /** the clearance solved under a fader setting (cached per timeline and setting) */
 const SOLVES = new WeakMap()
 function solveAt(tl, trim, offset) {
   const m = SOLVES.get(tl) || SOLVES.set(tl, new Map()).get(tl)
   const key = `${trim.toFixed(5)}|${offset.toFixed(4)}`
-  if (!m.has(key)) m.set(key, solve(tl, { trim: c => cueTrim(c, Math.abs(c.t - tl.anchors.P.t) <= 0.015, trim), offset, giveWay: GIVE_WAY }))
+  if (!m.has(key)) m.set(key, solve(tl, { trim: c => cueTrim(c, Math.abs(c.t - tl.anchors.P.t) <= 0.015, trim), offset, giveWay: GIVE_WAY, levers: leversFor(tl) }))
   return m.get(key)
 }
 /** forget the solved clearances (compose() re-budgets the anchor stabs once the plan is known) */
@@ -460,5 +512,68 @@ export const sfx = Object.fromEntries(Object.entries(raw).map(([kind, fn]) => [k
   const b = fn(cue, ctx)
   if (b && trim) scale(b, dbToGain(trim))
   if (b && b.meta) { b.meta.trimDb = +trim.toFixed(2); if (lift) b.meta.liftDb = +lift.toFixed(2) }
+  // the reverb sends (sendsFor): the payoff's hall budget and the band guard's dry bells
+  const sd = b && b.meta && !ctx.__est ? sendsFor(ctx.tl, cue, ctx.atP) : null
+  if (sd) b.meta.sends = sd
   return b
 }]))
+/** the whoosh's window floor (re its peak): see whoosh() */
+export const WHOOSH_FLOOR = 0.16
+/**
+ * A cue's reverb sends when they differ from mix.sfxSends (null otherwise), as the engine reads them (meta.sends):
+ *   the payoff's hall budget (PAY_SEND_DB): the cues at P send PAY_SEND_DB under their table. The SFX returns never duck
+ *     (engine §8.3) and the returns bus sits +3 dB (mix.returns), so a hit at P into its -8 dB hall, with the payoff's
+ *     cash and the stab's arena hall, kept the true-peak limiter working for ~0.5 s after P (06b: 2.8 % of its samples
+ *     over 1 dB, A11). The payoff still rings in the stab's arena hall; its own hall blooms 4 dB lower.
+ *   the dry bells of the band guard (bands.mjs, compose()): every body cue's sends move by levers.sends dB.
+ * The end card's cues keep the table (the card sounds the same in every teaser).
+ */
+export const PAY_SEND_DB = -4
+export function sendsFor(tl, c, atP) {
+  if (c.inCard) return null
+  const lv = leversFor(tl), d = (atP ? PAY_SEND_DB : 0) + (lv ? lv.sends || 0 : 0)
+  if (!(d < -0.01)) return null
+  const s0 = mix.sfxSends[c.kind] || {}
+  return Object.fromEntries(Object.entries(s0).map(([k, v]) => [k, +(v + d).toFixed(2)]))
+}
+/** the band guard's levers per timeline (compose() sets them; null before) */
+const LEVERS = new WeakMap()
+export const leversFor = tl => LEVERS.get(tl) || null
+export const setLevers = (tl, lv) => LEVERS.set(tl, lv)
+
+/**
+ * The body cues as the engine will play them, for the band model (bands.mjs): each through this pack's wrapper (the
+ * fader's trim, the clearance's lift and broadband duck), the engine's cluster cap after them, and the duck events the
+ * engine builds from them (meta.duck, else the big table at P, else the table; scaled by gain) plus the payoff duck.
+ */
+export function bandCues(tl) {
+  const P = tl.anchors.P.t, out = []
+  for (const c of tl.cues) {
+    if (c.inCard || c.t >= tl.base) continue
+    const b = sfx[c.kind](c, { ...cueCtx(tl, c), __est: false })
+    if (b) out.push({ c, buf: b, g: c.gain, meta: b.meta || {} })
+  }
+  const st = b => (b.L ? b : { L: b, R: b })
+  const pk = b => { let q = 0; const x = st(b); for (let i = 0; i < x.L.length; i++) q = Math.max(q, Math.abs(x.L[i]), Math.abs(x.R[i])); return q }
+  for (const cl of tl.clusters) {
+    const mem = out.filter(x => cl.members.includes(x.c.i))
+    if (mem.length < 2) continue
+    const at = x => Math.round(x.c.t * SR) - (x.buf.offset || 0)
+    const a0 = Math.min(...mem.map(at)), a1 = Math.max(...mem.map(x => at(x) + st(x.buf).L.length))
+    const L = new Float64Array(a1 - a0), R = new Float64Array(a1 - a0)
+    for (const x of mem) { const b = st(x.buf), o = at(x) - a0; for (let j = 0; j < b.L.length; j++) { L[o + j] += b.L[j] * x.g; R[o + j] += b.R[j] * x.g } }
+    let q = 0
+    for (let j = 0; j < L.length; j++) q = Math.max(q, Math.abs(L[j]), Math.abs(R[j]))
+    const cap = Math.max(...mem.map(x => pk(x.buf) * x.g)) * Math.pow(10, 1.5 / 20)
+    if (q > cap) for (const x of mem) x.g *= cap / q
+  }
+  const duckEvents = []
+  for (const x of out) {
+    const tbl = x.meta.duck || (Math.abs(x.c.t - P) <= 0.015 && mix.duckBig[x.c.kind]) || mix.duck[x.c.kind]
+    const d = Array.isArray(tbl) ? { depth: tbl[0], hold: tbl[1], release: tbl[2] } : tbl
+    if (!d || !(d.depth > 0)) continue
+    duckEvents.push({ t: x.c.t, depth: d.depth * Math.min(1.2, Math.max(0.3, x.c.gain / 0.7)), hold: d.hold || 0, release: d.release || 0.1, ...(['roll', 'type'].includes(x.c.kind) ? { until: x.c.t + (x.c.dur || 0), attack: 0.02 } : {}) })
+  }
+  if (mix.payoffDuck && mix.payoffDuck.depth > 0) duckEvents.push({ t: P, depth: mix.payoffDuck.depth, hold: mix.payoffDuck.hold ?? 0.15, release: mix.payoffDuck.release ?? 0.45 })
+  return { cues: out, duckEvents }
+}

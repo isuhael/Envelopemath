@@ -65,12 +65,36 @@ expectation sets, picked by its duration:
      covering the run-up from its last label beat with no gap of a beat or more; and a last caption the verdict
      repeats word for word (10c's "≈ 26 seconds.") ends within 0.5 s of the verdict landing. 10a's and 10c's
      condensed lookOpts also carry stream: 24 (a denser money stream; the kit default is 14).
+   - the recut to the earlier verdict (10a and 10c only; the owner's decision of 2026-10-13, "Mixed": 10b ships
+     real time as condensed, 10a and 10c take option B). The counter still runs in real time ("since you hit
+     play" stays literal) but stops on a pass it already made in every cut: 10a on $500,000 at 16.256 s ("$500K a
+     year: ≈ 16 seconds."), 10c on half a year of median pay, $32,526, at 13.201 s ("Half a year of median pay:
+     ≈ 13 seconds."). The rows past the stop go (10a's $1M row and its coin, 10c's year row), the last kept row
+     takes the coin, and the label beats and captions that sat after the new stop move before it (10a: the $970B
+     working and "≈ $111 million an hour" at 4.65 and 6.4 s; 10c: the $77.7B working and the swap-in rule at 6.5 and
+     8.2 s). Every caption and label string is a round-2 string except the new last caption ("**$500,000**:
+     passed.", "And half a year?"), the new "Next" label and the new verdicts, all built from the same computed
+     numbers. Its timing rules are the condensed cut's (check_timing_cond) with the recut's lane (the new last pass
+     + the verdict's lag + its hold: 18.2-18.8 / 15.1-15.7 s), and three more: every label beat holds to the next
+     one on 10a too (the resting rate never flashes between beats), the kit's riser (the run-up from the last label
+     beat, min(2.4, gap - 0.4) s) is at least 0.8 s, so the score's P is the riser climax the run-up's beat is built
+     on, and the run-up's (P, N1) is the recut's own §2.3 row (tempo-table on the recut's cue record: 10a 16.256 /
+     40, 10c 13.201 / 33). The write-up's caption and pinned-comment numbers are checked against the cut the write-up
+     describes (MD_CUT: the recut for 10a and 10c), so a caption that still says "$1 million ≈ 33 seconds" fails.
+     Recut fix pass (2026-10-13, the critic's items): the run-up may start before the last label beat with the kit's
+     own opt-in lookOpts.runup.from (10a 9.7 s, 10c 7.6 s: the coin pulses through the swap-in rule, where the stage
+     measured near-still with the hero counter masked). check_runup then counts the pulses from `from` and holds it at
+     or before the last label beat (the kit's riser keeps its own start, so the cue record does not move) and at least
+     FROM_AFTER (1.0 s) after the previous pass (the last icon has dropped in and settled, so every pulse has an icon to
+     bump). 10c's verdict stays at 13.96 s (14.0 was tried for the critic's N1 and not kept; see RECUT).
 
 Run:  python3 teasers/v2/checks/10-cost-counter.py                  (the specs in studio/specs/)
       python3 teasers/v2/checks/10-cost-counter.py --spec studio/specs-wip/10a-scoreboard-debt-interest-live.json ...
       --spec [KEY=]PATH (repeatable) checks PATH in place of studio/specs/<id>.json. KEY is a, b or c (or 10a/10b/10c,
       or the full id); without it the file's stem must be one of the three ids. A round-2-length spec is checked as
-      the round-2 cut, any other as the condensed cut (and fails its lane unless it is one).
+      the round-2 cut; for 10a and 10c a spec in the condensed cut's lane as the condensed (real-time) cut and any
+      other as the recut; for 10b any other length as the condensed cut (each fails its lane unless it is one).
+      --md PATH checks the caption and pinned comments of PATH in place of teasers/v2/10-cost-counter.md (tests).
 """
 import json
 import math
@@ -91,8 +115,14 @@ SYNC = 0.5                   # max gap (s) between a beat and the moment the VO 
 # ---- the two cuts (see the docstring): picked by the spec's duration
 IDS = {"a": "10a-scoreboard-debt-interest-live", "b": "10b-becker-rig-debt-vs-your-pay", "c": "10c-scoreboard-amazon-makes"}
 R2_DURATION = {"a": 36.5, "b": 36.6, "c": 31.0}            # the round-2 cut's body (s)
-IN_SPECS = {"a": "r2", "b": "r2", "c": "r2"}               # the cut studio/specs/ must hold ("cond" once promoted)
-CUT_NAME = {"r2": "round-2 cut (narration-paced)", "cond": "condensed cut (2026-10-13)"}
+IN_SPECS = {"a": "r2", "b": "r2", "c": "r2"}               # the cut studio/specs/ must hold (once promoted:
+                                                           # {"a": "recut", "b": "cond", "c": "recut"})
+CUT_NAME = {"r2": "round-2 cut (narration-paced)", "cond": "condensed cut (2026-10-13)",
+            "recut": "recut to the earlier verdict (2026-10-13)"}
+MD_CUT = {"a": "recut", "b": "cond", "c": "recut"}         # the cut the write-up's caption and pinned comment describe
+# the recut (10a and 10c, the owner's option B): the body is the new last pass (16.256 / 13.201 s) + the verdict's lag
+# + its hold
+RECUT_LANE = {"a": (18.2, 18.8), "c": (15.1, 15.7)}
 # condensed-cut targets (the editor's brief for the owner's note, as for 06b/06c). The counter is real time, so a
 # body is its last pass (32.51 / 33.27 / 26.40 s) + the verdict's lag (0.8-1.5 s) + its hold (1.2-1.6 s)
 COND_LANE = {"a": (34.0, 35.6), "b": (35.0, 36.4), "c": (28.2, 29.5)}   # body (s), plus the 2.5 s end card
@@ -106,6 +136,8 @@ STUTTER_MAX = 0.5                # a last caption the verdict repeats leaves wit
 TEXT_GAP_MAX = 5.5               # Scoreboard: no text (caption start or label beat) holds alone longer before the reveal
 BIBLE = REPO / "studio" / "sound" / "BIBLE.md"   # its section 2.3 rows give the score's beat up to P (lookOpts.runup)
 RU_DUR = 0.32                    # the kit's run-up pulse lasts this long (looks/scoreboard/formats/cost-counter.js)
+FROM_AFTER = 1.0                 # runup.from: the last icon drops in at the previous pass + its pop (<= 0.3 s), falls
+                                 # (<= 0.3 s) and settles (0.24 s); a pulse from this long after the pass has it on stage
 STILL_MAX = 0.4                  # the motion proxy never leaves this long a gap before the verdict
 SETTLE = {"scoreboard": 0.40, "becker-rig": 0.75}   # the reveal's own motion (s after the reveal), measured
 YIELD = {"scoreboard": 0.067, "becker-rig": 0.0}    # the verdict's first moving frame before verdict.t (label yield)
@@ -114,8 +146,11 @@ CARD_PAD = 0.4                   # the last caption ends at least this long befo
 CAP_TAIL = 0.15                  # both kits fade a caption out over 0.15 s past its end (runtime captionAt endPad)
 
 
+MD_PATH = []                     # --md PATH (tests): the write-up whose caption and pinned comments are checked
+
+
 def parse_spec_args(argv):
-    """--spec [KEY=]PATH (repeatable) -> {id: Path}; see the module docstring"""
+    """--spec [KEY=]PATH (repeatable) -> {id: Path}; --md PATH; see the module docstring"""
     out, i = {}, 0
     keys = {**{k: k for k in IDS}, **{f"10{k}": k for k in IDS}, **{sid: k for k, sid in IDS.items()}}
     while i < len(argv):
@@ -123,7 +158,13 @@ def parse_spec_args(argv):
         if a in ("-h", "--help"):
             print(__doc__)
             sys.exit(0)
-        if a == "--spec" or a.startswith("--spec="):
+        if a == "--md" or a.startswith("--md="):
+            v = (argv[i + 1] if i + 1 < len(argv) else "") if a == "--md" else a.split("=", 1)[1]
+            i += 1 if a == "--md" else 0
+            if not os.path.isfile(v):
+                sys.exit(f"--md {v}: no such file")
+            MD_PATH.append(Path(os.path.abspath(v)))
+        elif a == "--spec" or a.startswith("--spec="):
             if a == "--spec":
                 i += 1
                 v = argv[i] if i < len(argv) else ""
@@ -147,7 +188,7 @@ def parse_spec_args(argv):
                 sys.exit(f"--spec {v}: no such file")
             out[IDS[key]] = Path(os.path.abspath(path))
         else:
-            sys.exit(f"unknown argument {a!r}; usage: 10-cost-counter.py [--spec [KEY=]PATH ...]")
+            sys.exit(f"unknown argument {a!r}; usage: 10-cost-counter.py [--spec [KEY=]PATH ...] [--md PATH]")
         i += 1
     return out
 
@@ -347,6 +388,17 @@ for v in A["ladder"]:
 row("10a", "swap-in: median", "$65,052 ÷ 30,800", F(PAY, A["rate_shown"]), f"≈ {d1(A['s_fx_pay'])} seconds (label at 12.45 s)")
 row("10a", "counter final", "rate × 32.51135 s", A["final_exact"], A["final"] + " (stops on the $1M pass)")
 row("10a", "at 1.5 s", "rate × 1.5 ÷ $65,052", RATE_A * F(3, 2) / PAY * 100, "the median bill ≈ 71% full (frame check)")
+# the recut (owner's option B, 2026-10-13): the counter stops on the $500,000 pass instead (5 dp: the exact-rate pass is
+# 16.2556701 s, the kit's stored-rate pass 16.2556692 s; r × 16.25568 = $500,000.30, so the dollar reading is exact)
+A["top_recut"] = 500000
+A["run_recut"] = (F("0.0"), F("16.25568"))
+A["final_exact_recut"] = RATE_A * (A["run_recut"][1] - A["run_recut"][0])     # 500,000.30
+A["final_recut"] = usd(A["top_recut"])                                          # $500,000 (no ≈)
+assert A["t"][A["top_recut"]] < A["run_recut"][1], "the $500,000 row must pass before the recut's stop"
+assert pass_time(A["top_recut"], F("30758.5")) < A["run_recut"][1], "the kit's $500,000 pass must come before the stop"
+assert abs(A["final_exact_recut"] - A["top_recut"]) < F(1, 2), "the recut must stop on $500,000 to the dollar"
+assert A["shown"][A["top_recut"]] == 16, "the recut's verdict: $500K ≈ 16 seconds"
+row("10a", "recut: final", "rate × 16.25568 s", A["final_exact_recut"], A["final_recut"] + " (the recut stops on the $500K pass)")
 
 SPEC_A = {
     "id": "10a-scoreboard-debt-interest-live",
@@ -583,6 +635,16 @@ row("10c", "t half a year", "$32,526 ÷ rate", C["t_half"], f"≈ {C['s_half']} 
 row("10c", "t a year", "$65,052 ÷ rate", C["t_keep_pay"], f"≈ {C['s_keep_pay']} seconds (also $65,052 ÷ $2,464)")
 row("10c", "counter final", "rate × 26.4026 s", C["final_exact"], C["final"] + " (stops on the 1-year pass)")
 row("10c", "at 1.5 s", "rate × 1.5", KEEP_C * F(3, 2), "$3,695 on the Scoreboard counter (a running count rounds down; frame check)")
+# the recut (owner's option B, 2026-10-13): the counter stops on the half-year pass, $32,526 (exact 13.2012862 s, the
+# kit's stored-rate pass 13.2012907 s; k × 13.2013 = $32,526.03, so the dollar reading is exact)
+C["run_recut"] = (F("0.0"), F("13.2013"))
+C["final_exact_recut"] = KEEP_C * (C["run_recut"][1] - C["run_recut"][0])     # 32,526.03
+C["final_recut"] = usd(C["half"])                                              # $32,526 (no ≈)
+assert C["kit_t"][2] < C["run_recut"][1] and C["t_half"] < C["run_recut"][1], "the half-year row must pass before the stop"
+assert abs(C["final_exact_recut"] - C["half"]) < F(1, 2) and abs(F("2463.85") * C["run_recut"][1] - C["half"]) < F(1, 2), \
+    "the recut must stop on $32,526 to the dollar (exact and stored rate)"
+assert C["s_half"] == 13 and rhu(C["half"] / C["keep_shown"]) == 13, "half a year ≈ 13 s, by the exact and the shown rate"
+row("10c", "recut: final", "rate × 13.2013 s", C["final_exact_recut"], C["final_recut"] + " (the recut stops on the half-year pass)")
 
 SPEC_C = {
     "id": "10c-scoreboard-amazon-makes",
@@ -744,7 +806,98 @@ COND[SPEC_C["id"]]["lookOpts"]["runup"] = {"beat": 0.40005}
 # counter climbs between beats (decoration; no cue, no text)
 COND[SPEC_A["id"]]["lookOpts"]["stream"] = 24
 COND[SPEC_C["id"]]["lookOpts"]["stream"] = 24
-RUNUP_ROW = {"a": (F("32.511"), 80), "c": (F("26.403"), 66)}   # (P, N1) the run-up's beat is built on
+# (P, N1) of each cut's sound/BIBLE.md section 2.3 row: the run-up's beat is built on it, and BIBLE.md must carry the
+# row of the cut studio/specs/ holds (IN_SPECS). The round-2 and condensed cuts share P (the same last pass) and N1; the
+# recut's rows come from sound/tools/tempo-table.mjs --cues on its cue record (not in BIBLE.md until it is promoted)
+RUNUP_ROW = {"r2": {"a": (F("32.511"), 80), "c": (F("26.403"), 66)},
+             "cond": {"a": (F("32.511"), 80), "c": (F("26.403"), 66)},
+             "recut": {"a": (F("16.256"), 40), "c": (F("13.201"), 33)}}
+RISER_MIN = 0.8                  # the kit cues its riser only when it lasts this long (P is then the riser climax)
+
+
+# ---------- the recut to the earlier verdict (2026-10-13; 10a and 10c) --------------------------------------------
+# The owner's decision ("Mixed"): 10b ships real time as condensed; 10a and 10c stop on a pass the counter already makes
+# in every cut, so "since you hit play" stays literal: 10a on $500,000 (16.256 s), 10c on half a year of median pay
+# ($32,526, 13.201 s). The rows past the stop go and the last kept row takes the coin; the beats after the new stop
+# move before it. Every caption and label string is a round-2 string (picked by index below) except the new last
+# caption, 10c's new "Next" label and question, and the verdicts, all built from the same numbers. vo: (t, d, text).
+def recut_of(base, cond, *, duration, verdict, vo, milestones, run, final, lands_on, lookopts, sync, beats):
+    w = copy.deepcopy(base)
+    w["duration"] = duration
+    w["vo"] = vo
+    w["verdict"] = verdict
+    w["data"]["milestones"] = milestones
+    w["data"]["counterT"] = [float(run[0]), float(run[1])]
+    w["data"]["final"] = final
+    w["data"]["hold"] = float(F(str(duration)) - run[1])
+    w["lookOpts"] = lookopts
+    w["lands_on"] = lands_on
+    w["sync_c"] = sync              # (milestone value, vo index): the caption that names it goes up at its pass
+    w["beats"] = beats              # lookOpts beats: (t, the vo line it starts)
+    w["reveal"] = run[1]            # the final reveal: the stop on the last kept milestone
+    w["hidden_last"] = False
+    w["cut"] = "recut"
+    return w
+
+
+_va, _rsa = SPEC_A["vo"], SPEC_A["lookOpts"]["rateSteps"]
+_loa = copy.deepcopy(COND[SPEC_A["id"]]["lookOpts"])
+_keep_a = [v for v in A["ladder"] if v <= A["top_recut"]]
+_loa.update({
+    "labels": _loa["labels"][:len(_keep_a)],
+    # the $970B working and the hourly working move before the stop (4.65, 6.4 s); the rule to 10.55 s; "Next" names
+    # the new last row. Each holds to the next beat (d clamped by the kit to the next beat's start)
+    "rateSteps": [{**_rsa[3], "t": 4.65, "d": 1.75}, {**_rsa[2], "t": 6.4, "d": 1.75},
+                  {**_rsa[1], "t": 10.55, "d": 2.9}, {**_rsa[4], "l2": f"{usd(A['top_recut'])} a year", "t": 13.45, "d": 2.85}],
+    "pipLabels": _loa["pipLabels"][:len(_keep_a)],
+    "icons": ["bill"] * (len(_keep_a) - 1) + ["coin"],   # the $500K row takes the coin
+    # P / N1 = 16.256 / 40 (the recut's row). Recut fix pass: from 9.7 s (the kit's opt-in `from`), so the coin pulses
+    # from 9.75 s, once the $250K label has had its read, through the rule and "Next" (the riser keeps its 13.45 s
+    # prevT): with the hero counter masked, 9.67-10.57 s measured near-still before (the critic's S1)
+    "runup": {"beat": 0.4064, "from": 9.7},
+})
+_vc, _rsc = SPEC_C["vo"], SPEC_C["lookOpts"]["rateSteps"]
+_loc = copy.deepcopy(COND[SPEC_C["id"]]["lookOpts"])
+_loc.update({
+    "labels": _loc["labels"][:3],
+    # the $77.7B working and the swap-in rule move before the stop (6.5, 8.2 s); the new "Next" beat at 10.8 s works
+    # the footer's pay down to the half year (the kit's riser then lasts 2.0 s: see the Review log, BANDS)
+    "rateSteps": [dict(_loc["rateSteps"][0]), {**_rsc[1], "t": 6.5, "d": 1.7}, {**_rsc[2], "t": 8.2, "d": 2.6},
+                  {"t": 10.8, "l1": f"{usd(MEDIAN_WEEKLY)} × {WEEKS} ÷ 2 = {usd(C['half'])}",
+                   "l2": "Next: half a year of median pay", "d": 2.45}],
+    "pipLabels": _loc["pipLabels"][:3],
+    "pipPassed": _loc["pipPassed"][:3],
+    "icons": ["bill", "bill", "coin"],                    # the half-year row takes the coin
+    # P / N1 = 13.201 / 33 (the recut's row). Recut fix pass: from 7.6 s, so the coin pulses from 7.60 s through the
+    # $77.7B working's last beat, the rule and "Next" (the riser keeps its 10.8 s prevT): with the hero counter masked,
+    # 7.67-8.20 and 8.93-10.80 s measured near-still before, 10.17-10.67 s still (the critic's S2)
+    "runup": {"beat": 0.40003, "from": 7.6},
+})
+RECUT = {
+    # the stop on $500,000 at 16.256 s; the verdict 0.81 s later, held 1.53 s
+    SPEC_A["id"]: recut_of(
+        SPEC_A, COND[SPEC_A["id"]], duration=18.6,
+        verdict=(17.07, f"**${A['top_recut'] // 1000}K** a year: ≈ {secs_text(A['shown'][A['top_recut']])}."),
+        vo=[(-0.4, 2.45, _va[0][2]), (2.1, 1.2, _va[1][2]), (3.3, 1.3, _va[2][2]), (4.65, 1.7, _va[8][2]),
+            (6.4, 1.7, _va[7][2]), (8.15, 2.35, _va[4][2]), (10.55, 2.85, _va[5][2]), (13.45, 2.75, _va[9][2]),
+            (16.25, 1.95, f"**{usd(A['top_recut'])}**: passed.")],
+        milestones=[m for m in SPEC_A["data"]["milestones"] if m[0] <= A["top_recut"]],
+        run=A["run_recut"], final=A["final_recut"], lands_on=A["top_recut"], lookopts=_loa,
+        sync=[(PAY, 1), (100000, 2), (250000, 5), (A["top_recut"], 8)],
+        beats=[(4.65, 3), (6.4, 4), (10.55, 6), (13.45, 7)]),
+    # the stop on $32,526 at 13.201 s (the coin grows 0.5 s); the verdict 0.76 s later, held 1.59 s. (Recut fix pass:
+    # 14.0 s, 0.80 s after the stop, was rendered and measured for the critic's N1 and not kept: it stretched the
+    # landing's near-still with the hero masked from 0.37 to 0.43 s, 13.53-13.97, for a 0.04 s later verdict)
+    SPEC_C["id"]: recut_of(
+        SPEC_C, COND[SPEC_C["id"]], duration=15.55,
+        verdict=(13.96, f"Half a year of median pay:\n**≈ {C['s_half']} seconds**."),
+        vo=[(-0.4, 3.15, _vc[0][2]), (2.8, 2.15, _vc[1][2]), (5.0, 1.45, _vc[2][2]), (6.5, 1.65, _vc[3][2]),
+            (8.2, 2.55, _vc[5][2]), (10.8, 2.35, "And half a year?"), (13.2, 1.2, _vc[4][2])],
+        milestones=SPEC_C["data"]["milestones"][:3],
+        run=C["run_recut"], final=C["final_recut"], lands_on=C["half"], lookopts=_loc,
+        sync=[(C["five_cents"], 2), (C["half"], 6)],
+        beats=[(2.8, 1), (6.5, 3), (8.2, 4), (10.8, 5)]),
+}
 
 # the 10b pass rows of the printed table, with each cut's caption (round-2: the VO line) times, put back in their
 # place (after "t 1 yr (block 1)")
@@ -784,8 +937,18 @@ FORBIDDEN = {
     "10c": [r"\blive\b"],
 }
 
-# Every number allowed in any display string or VO line, per teaser: computed values + labelled constants.
-def allowed_numbers(tid):
+# Every number allowed in any display string or VO line, per teaser: computed values + labelled constants. The recut
+# drops what it no longer shows: 10a's $1 million row ($1,000,000, "$1M", ≈ 33 s), 10c's year row (≈ 26 s).
+def allowed_numbers(tid, cut=None):
+    out = _allowed_numbers(tid)
+    if cut == "recut" and tid == "10a":
+        out -= {F(10**6), F(10**6 // 1000), F(A["shown"][10**6])}
+    if cut == "recut" and tid == "10c":
+        out -= {F(C["s_keep_pay"])}
+    return out
+
+
+def _allowed_numbers(tid):
     common = {F(MEDIAN_WEEKLY), F(WEEKS), F(PAY), F(NEW_HOUSE), F(SECONDS_PER_YEAR), F(1), F(10**6)}
     if tid == "10a":
         return (common | {F(A["fy"]), F(2025), F(970), F(A["rate_shown"]), F(A["hour_m"]), F(A["hour_m"] * 10**6),
@@ -851,14 +1014,23 @@ def check_spec(want):
         return
     spec = json.loads(path.read_text())
 
-    # ---- which cut: the round-2 cut by its length, any other length the condensed cut (fails its lane if not one)
-    cut = "r2" if abs(spec.get("duration", 0) - R2_DURATION[key]) < 1e-9 else "cond"
+    # ---- which cut: the round-2 cut by its length; for 10a and 10c a spec in the condensed cut's lane is the condensed
+    # (real-time) cut and any other the recut; for 10b any other length the condensed cut (each fails its lane if not one)
+    dur_ = spec.get("duration", 0)
+    if abs(dur_ - R2_DURATION[key]) < 1e-9:
+        cut = "r2"
+    elif key in RECUT_LANE and not (COND_LANE[key][0] - 1e-9 <= dur_ <= COND_LANE[key][1] + 1e-9):
+        cut = "recut"
+    else:
+        cut = "cond"
     in_specs = path.resolve() == (SPEC_DIR / f"{sid}.json").resolve()
     check(cut == IN_SPECS[key] if in_specs else True, tid, "studio/specs/ holds the expected cut",
           f"{CUT_NAME[cut]} in studio/specs/, want {CUT_NAME[IN_SPECS[key]]}")
     CUTS[sid] = (CUT_NAME[cut], os.path.relpath(path, REPO))
     if cut == "cond":
         want = COND[sid]
+    elif cut == "recut":
+        want = RECUT[sid]
 
     # ---- contract shape -------------------------------------------------------------
     eq(tid, "id", spec.get("id"), sid)
@@ -912,7 +1084,7 @@ def check_spec(want):
     check(all(pass_time(v, rate, t0) < t1 for v in vals), tid, "every milestone passes before the counter stops")
 
     # ---- every number token is computed or a labelled constant --------------------------
-    allowed = allowed_numbers(tid)
+    allowed = allowed_numbers(tid, want["cut"])
     for where, text in display_strings(spec):
         for n in number_tokens(text):
             check(n in allowed, tid, f"number {n} in {where} is computed/sourced", text)
@@ -941,9 +1113,9 @@ def check_spec(want):
     # ---- timing ------------------------------------------------------------------------
     check(bool(NUM_RE.search(d["rateDisplay"])), tid, "rateDisplay carries a number")
     check(len(strip_markup(spec["header"]).split()) <= 15, tid, "header <= 15 words (R8)")
-    if tid == "10c":
-        check_label_holds_c(spec)
-    if want["cut"] == "cond":
+    if tid == "10c" or want["cut"] == "recut":
+        check_label_holds(tid, spec)
+    if want["cut"] in ("cond", "recut"):
         check_timing_cond(tid, spec, want, d, rate, t0, t1)
         ROWS.append((want["id"], len(spec["vo"]), len(d["milestones"]), d["rateDisplay"], d["final"], spec["duration"]))
         return
@@ -980,9 +1152,10 @@ def check_spec(want):
     ROWS.append((want["id"], len(spec["vo"]), len(d["milestones"]), d["rateDisplay"], d["final"], dur))
 
 
-def check_label_holds_c(spec):
-    """10c in the Scoreboard: every label beat (the kit's passes at the stored rate, the rate steps) holds to the next
-    beat or the verdict, so the resting rate never flashes between beats (it shows only before the first pass)"""
+def check_label_holds(tid, spec):
+    """the Scoreboard (10c on every cut, 10a on the recut): every label beat (the kit's passes at the stored rate, the
+    rate steps) holds to the next beat or the verdict, so the resting rate never flashes between beats (it shows only
+    before the first pass)"""
     lo, d = spec["lookOpts"], spec["data"]
     kit_rate, t0 = F(str(d["perSecond"])), F(str(d["counterT"][0]))
     beats = sorted([(float(t0 + F(str(m["value"])) / kit_rate), lo.get("flash", 3.0)) for m in d["milestones"]]
@@ -991,7 +1164,7 @@ def check_label_holds_c(spec):
     beats = [b for b in beats if b[0] < vt]
     nxt = [b[0] for b in beats[1:]] + [vt]
     for (t, hold), n in zip(beats, nxt):
-        check(t + hold >= n - 1e-9, "10c", f"label beat at {t:.3f} s holds to the next beat ({n:.3f} s)",
+        check(t + hold >= n - 1e-9, tid, f"label beat at {t:.3f} s holds to the next beat ({n:.3f} s)",
               f"ends {t + hold:.3f} s")
 
 
@@ -999,9 +1172,9 @@ def check_timing_cond(tid, spec, want, d, rate, t0, t1):
     """the condensed cut: captions paced for reading, every pass under its caption, the verdict after the reveal"""
     key, look = KEY_OF[want["id"]], spec["look"]
     vo, dur, vt = spec["vo"], spec["duration"], spec["verdict"]["t"]
-    lo_, hi_ = COND_LANE[key]
-    check(lo_ - 1e-9 <= dur <= hi_ + 1e-9, tid, f"condensed body in its lane ({lo_}-{hi_} s, + the 2.5 s end card)",
-          str(dur))
+    lo_, hi_ = (RECUT_LANE if want["cut"] == "recut" else COND_LANE)[key]
+    check(lo_ - 1e-9 <= dur <= hi_ + 1e-9, tid, f"{'recut' if want['cut'] == 'recut' else 'condensed'} body in its lane "
+          f"({lo_}-{hi_} s, + the 2.5 s end card)", str(dur))
 
     # frame 1: the hook caption complete (no type-on), the counter moving from frame 2 to the stop
     v0 = vo[0]
@@ -1107,7 +1280,7 @@ def check_timing_cond(tid, spec, want, d, rate, t0, t1):
         g, a, b = max(gaps)
         check(g <= TEXT_GAP_MAX + 1e-9, tid, f"no text holds alone over {TEXT_GAP_MAX} s before the reveal (captions, label beats)",
               f"{g:.2f} s, {a:.2f}-{b:.2f}")
-        check_runup(tid, key, spec, t1)
+        check_runup(tid, key, spec, t1, want["cut"])
 
 
 def bible_row(tid):
@@ -1118,23 +1291,28 @@ def bible_row(tid):
     return (m.group(1), F(m.group(2)), int(m.group(3))) if m else None
 
 
-def check_runup(tid, key, spec, t1):
+def check_runup(tid, key, spec, t1, cut):
     """lookOpts.runup (the Scoreboard's opt-in run-up pulse): its beat is the score's beat up to the payoff, P / N1 of
-    the spec's BIBLE section 2.3 row, with P the riser climax = the last pass; the pulses (tp - k * beat, back to the
-    last label beat before the pass) leave no gap of RU_DUR + 0.4 s or more"""
+    the cut's section 2.3 row (RUNUP_ROW; BIBLE.md carries the row of the cut studio/specs/ holds), with P the riser
+    climax = the last pass, and the kit's riser at least RISER_MIN s long so that P is the riser climax; the pulses
+    (tp - k * beat, back to the last label beat before the pass) leave no gap of RU_DUR + 0.4 s or more"""
     ru = spec["lookOpts"].get("runup")
     check(isinstance(ru, dict) and isinstance(ru.get("beat"), (int, float)), tid, "lookOpts.runup.beat set (the run-up pulse)",
           str(ru))
     if not (isinstance(ru, dict) and isinstance(ru.get("beat"), (int, float))):
         return
     beat = F(str(ru["beat"]))
-    P, N1 = RUNUP_ROW[key]
+    P, N1 = RUNUP_ROW[cut][key]
+    sP, sN1 = RUNUP_ROW[IN_SPECS[key]][key]          # the row of the cut studio/specs/ holds (what BIBLE.md describes)
     br = bible_row(tid)
     check(br is not None, tid, "the spec's tempo row is in BIBLE.md section 2.3", str(BIBLE))
     if br is not None:
-        check(br[0] == "riser" and br[1] == P and br[2] == N1, tid,
-              "BIBLE.md section 2.3 row = the (P, N1) the run-up's beat is built on (rerun when the table moves)",
-              f"row {br[0]} P {float(br[1])} N1 {br[2]}, expected riser {float(P)} / {N1}")
+        check(br[0] == "riser" and br[1] == sP and br[2] == sN1, tid,
+              f"BIBLE.md section 2.3 row = the shipped cut's (P, N1) ({CUT_NAME[IN_SPECS[key]]}; rerun when the table moves)",
+              f"row {br[0]} P {float(br[1])} N1 {br[2]}, expected riser {float(sP)} / {sN1}")
+        if (P, N1) != (sP, sN1):
+            NOTES.append(f"{tid}: the {CUT_NAME[cut]} runs on (P, N1) = ({float(P)}, {N1}); BIBLE.md section 2.3 still "
+                         f"holds the shipped cut's ({float(sP)}, {sN1}) until the promotion's tempo-table --write")
     check(abs(beat - P / N1) <= F(5, 10**6), tid, f"runup.beat = P / N1 = {float(P)} / {N1} (5 dp)",
           f"{float(beat)} vs {float(P / N1):.7f}")
     d, lo = spec["data"], spec["lookOpts"]
@@ -1143,17 +1321,34 @@ def check_runup(tid, key, spec, t1):
     tp = passes[-1]
     check(abs(tp - P) <= F(1, 1000), tid, "P is the last pass (the riser climax, to the ms)", f"{float(tp):.4f} vs {float(P)}")
     prev = max([t0] + passes[:-1] + [F(str(s["t"])) for s in lo.get("rateSteps", []) if F(str(s["t"])) < tp])
+    riser = min(F("2.4"), tp - prev - F("0.4"))      # the kit's riser cue (cost-counter.js: min(2.4, tp - prevT - 0.4))
+    check(riser >= F(str(RISER_MIN)), tid, f"the kit's riser lasts >= {RISER_MIN} s, so P is the riser climax",
+          f"{float(riser):.3f} s ({float(prev):.2f} -> {float(tp):.3f})")
+    # runup.from (the kit's existing opt-in key; recut fix pass, 2026-10-13): the pulses start earlier than the last
+    # label beat. The riser keeps its own prevT, so `from` may only move the start back (at or before prev), and only
+    # once the last icon is on the stage (it drops in at the previous pass + its pop, lands and settles within
+    # FROM_AFTER s), so every pulse has an icon to bump
+    start = prev
+    if "from" in ru:
+        frm = F(str(ru["from"]))
+        start = max(t0, frm)                          # the kit: from = max(T0, from)
+        prev_pass = passes[-2] if len(passes) > 1 else t0
+        check(start <= prev, tid, "runup.from at or before the last label beat (the riser keeps its prevT)",
+              f"from {float(frm)} vs the last label beat {float(prev):.2f}")
+        check(start >= prev_pass + F(str(FROM_AFTER)), tid,
+              f"runup.from >= the previous pass + {FROM_AFTER} s (the last icon has landed: a pulse has an icon to bump)",
+              f"from {float(frm)} vs pass {float(prev_pass):.3f}")
     pulses = []
     k = 1
-    while tp - k * beat >= prev - F(1, 10**6):
+    while tp - k * beat >= start - F(1, 10**6):
         pulses.append(tp - k * beat)
         k += 1
     first = min(pulses) if pulses else tp
-    gap = max(float(first - prev), float(beat) - RU_DUR)
+    gap = max(float(first - start), float(beat) - RU_DUR)
     check(len(pulses) >= 4 and gap < STILL_MAX, tid,
-          f"run-up pulses cover {float(prev):.2f}-{float(tp):.2f} s on the beat (no gap >= {STILL_MAX} s)",
+          f"run-up pulses cover {float(start):.2f}-{float(tp):.2f} s on the beat (no gap >= {STILL_MAX} s)",
           f"{len(pulses)} pulses, longest gap {gap:.3f} s")
-    RUNUPS[tid] = (float(prev), float(tp), len(pulses), float(beat))
+    RUNUPS[tid] = (float(start), float(tp), len(pulses), float(beat))
 
 def check_quantities(tid, texts):
     """Any number within 5% of a computed quantity must be that quantity's one shown rounding."""
@@ -1172,10 +1367,11 @@ def check_forbidden(tid, texts):
 
 # ---- caption / pinned comment numbers in the write-up ------------------------------------
 def check_md():
-    if not MD.exists():
-        check(False, "md", "write-up exists", str(MD))
+    md = MD_PATH[0] if MD_PATH else MD
+    if not md.exists():
+        check(False, "md", "write-up exists", str(md))
         return
-    text = MD.read_text()
+    text = md.read_text()
     cbo_pct = rhu(F(NI_PUBLIC_11M_FY2026 - NI_PUBLIC_11M_FY2025, NI_PUBLIC_11M_FY2025) * 100)   # 12 (%)
     extra = {   # caption / pinned-comment numbers: computed here, or a labelled sourced constant
         "10a": {F(2026), A["s_pay"], F(cbo_pct), F(11), F(0)},                   # 2.1 s; CBO: 12%, 11 months; $0 off the debt
@@ -1193,7 +1389,7 @@ def check_md():
         sec = m.group(0)
         blocks = re.findall(r"\*\*(?:Caption|Pinned comment)[^\n]*\n((?:> [^\n]*\n?)+)", sec)
         check(len(blocks) == 2, "md", f"{tid}: caption + pinned comment blocks found", str(len(blocks)))
-        allowed = allowed_numbers(tid) | extra[tid]
+        allowed = allowed_numbers(tid, MD_CUT[tid[-1]]) | extra[tid]
         for b in blocks:
             body = re.sub(r"#\w+", "", b)
             for n in number_tokens(body):
@@ -1205,6 +1401,7 @@ def check_md():
 ROWS = []
 CUTS = {}
 RUNUPS = {}
+NOTES = []
 for want in EXPECTED:
     check_spec(want)
 check_md()
@@ -1224,6 +1421,8 @@ for r in ROWS:
 for tid, (a, b, n, beat) in sorted(RUNUPS.items()):
     print(f"{tid}: run-up {a:.2f}-{b:.3f} s, {n} pulses on a {beat} s beat")
 print()
+for n in NOTES:
+    print("note:", n)
 print(f"{CHECKS} checks, {len(FAILS)} failures")
 for f in FAILS:
     print("FAIL", *f)

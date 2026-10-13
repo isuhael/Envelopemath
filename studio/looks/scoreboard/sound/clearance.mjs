@@ -39,6 +39,14 @@ export const SEL = ['pad', 'arp', 'lead', 'hat', 'clap', 'snare', 'mriser']
 export const LOW = ['b808', 'kick']
 /** the layers that give way when a teaser's cues are too quiet for the SFX fader (balance.mjs): 1.4x the plan's offset */
 export const GIVE_WAY = ['arp', 'pad', 'hat', 'clap', 'snare', 'lead', 'stab', 'crash', 'mriser']
+/** the band guard's level levers (bands.mjs): the 808 floor and the mid layers that step back, as constant bus-gain
+ * offsets on their instruments. The stab is not one of them: the engine applies automation.gain[inst] to every bus that
+ * carries the instrument (engine.mjs), so a stab offset would also reach the anchor stabs at P and V on the react bus,
+ * which stabBudget levels against their cues (until 2026-10-13 it did: the payoff's stab sat up to 3 dB under its
+ * budget in 02b, 02c and 03c) */
+export const MID_LEVER = ['arp', 'lead', 'clap', 'snare', 'mriser']
+export const LEVER_INSTS = ['b808', ...MID_LEVER]
+export const leverDb = (lv, inst) => (!lv ? 0 : inst === 'b808' ? lv.b808 || 0 : MID_LEVER.includes(inst) ? lv.mid || 0 : 0)
 /** how long an instrument's voice rings past its gate (s), for finding the events that sound in a window */
 const TAIL = { kick: 0.3, clap: 0.75, snare: 0.5, hat: 1.2, crash: 7, revcrash: 0, mriser: 0.05, b808: 1.3, sub: 2.1, arp: 0.12, pad: 0.35, lead: 0.12, stab: 0.12 }
 const SUSTAINED = new Set(['roll', 'type'])
@@ -111,6 +119,9 @@ export function eventRenderer(tl, notes, drums) {
       const ctx = { tl, ev, rng: tl.stream(`noise:${ev.inst}:${x.k}`), bpm: tl.bpmAt(ev.t), beatLen: tl.beatLen(ev.t), chordAt: tl.chordAt, keyAt: tl.keyAt, k: x.k, D, T: Th }
       b = fn(ev, ctx)
       if (b) b = D.toStereo(b.L ? { L: Float32Array.from(b.L), R: Float32Array.from(b.R), offset: b.offset } : Float32Array.from(b), ev.pan || 0)
+      // the velocity it was rendered at: the anchor stabs are budgeted after their first render (stabBudget), and the
+      // stab is linear in velocity, so later readers scale the cached render (bands.mjs)
+      if (b) b.vel0 = ev.vel
     }
     rendered.set(x, b)
     return b
@@ -307,7 +318,7 @@ export function stabBudget(tl, t, trimOf = () => 0) {
  * -> Map(cue index -> { broad, hold, release, sel, low, lift, deep, margin, table }). broad is the engine depth (dB,
  * already scaled by the cue gain), sel and low are absolute dips (dB), lift is added to the cue's trim.
  */
-export function solve(tl, { trim = () => 0, offset = 0, giveWay = [] } = {}) {
+export function solve(tl, { trim = () => 0, offset = 0, giveWay = [], levers = null } = {}) {
   const bed = bedFor(tl)
   if (!bed) throw new Error('scoreboard clearance: compose() must run before the clearance is solved')
   const out = new Map()
@@ -319,7 +330,7 @@ export function solve(tl, { trim = () => 0, offset = 0, giveWay = [] } = {}) {
   })
   if (payoff && payoff.depth > 0) ducks.push({ t: P, depth: payoff.depth, hold: payoff.hold ?? 0.15, release: payoff.release ?? 0.45 })
   const sels = [], lows = []
-  const offDb = inst => (giveWay.includes(inst) ? 1.4 * Math.min(0, offset) : 0)
+  const offDb = inst => (giveWay.includes(inst) ? 1.4 * Math.min(0, offset) : 0) + leverDb(levers, inst)
   const lifts = new Map()
   const groups = []
   for (const c of bed.cues) {
@@ -411,7 +422,7 @@ function combine(list, off = 0) {
  * The clearance as engine gain automation ({ inst: [{ t, db }] }): the selective dips on the SEL layers, the kick-tail
  * dips on the kick (only where no anchor kick sounds), and the bed's give-way offset on the GIVE_WAY layers.
  */
-export function selAutomation(tl, res, { offset = 0, giveWay = [] } = {}) {
+export function selAutomation(tl, res, { offset = 0, giveWay = [], levers = null } = {}) {
   const bed = bedFor(tl)
   const sel = [], kick = []
   for (const [i, r] of res) {
@@ -420,11 +431,11 @@ export function selAutomation(tl, res, { offset = 0, giveWay = [] } = {}) {
     if (r.low > 0.05 && bed && bed.win.get(i) && bed.win.get(i).kickDip) kick.push(selShape(t, r.low))
   }
   const gain = {}
-  for (const inst of new Set([...SEL, ...giveWay, 'kick'])) {
-    const off = giveWay.includes(inst) ? 1.4 * Math.min(0, offset) : 0
+  for (const inst of new Set([...SEL, ...giveWay, 'kick', ...LEVER_INSTS])) {
+    const off = (giveWay.includes(inst) ? 1.4 * Math.min(0, offset) : 0) + leverDb(levers, inst)
     const pts = combine(inst === 'kick' ? kick : SEL.includes(inst) ? sel : [], off)
     if (pts) gain[inst] = pts
-    else if (off < -0.01) gain[inst] = [{ t: 0, db: off }]
+    else if (Math.abs(off) > 0.01) gain[inst] = [{ t: 0, db: +off.toFixed(3) }]
   }
   return gain
 }

@@ -1,9 +1,9 @@
 # Format 10: real-time cost counter, three teasers
 
 **Channel:** Back of the Envelope (YouTube Shorts, Instagram Reels, TikTok), US audience, USD
-**Date:** 2026-10-07 (round-2 revision), hook pass 2026-10-08 (10b's hook replaced), hook pass 2 2026-10-08 (10a's and 10c's hooks replaced), assembly pass 2 2026-10-08 (10a and 10c re-paced; both counters now stop on their payoff), assembly pass 3 2026-10-08 (10b fitted and QA'd in the Becker kit's stack mode), assembly pass 4 2026-10-08 (10b's QA fixes: the counter stops on its payoff, a 2-line hook, a 30-year beat and a plinth countdown), port to Scoreboard 2026-10-08 (10c moved from the retired Live Sheet look to the Scoreboard; hook, numbers, VO and verdict unchanged), fixer pass 2026-10-08 (10c's Scoreboard QA: the verdict split into two short lines so it sets bigger than the labels, "And a whole year?" moved into the riser, the climax coin grown, and three kit nits), condensed cut 2026-10-13 (the owner's "too many still moments"; WIP, not promoted), condensed-cut fix pass 2026-10-13 (the critic's items: 10c's label beats retimed and its verdict 0.05 s sooner, 10b's verdict held for its reading time, an opt-in Scoreboard run-up pulse for 10a and 10c, and the length put to the owner). What changed and why is in the **Review log** at the end.
+**Date:** 2026-10-07 (round-2 revision), hook pass 2026-10-08 (10b's hook replaced), hook pass 2 2026-10-08 (10a's and 10c's hooks replaced), assembly pass 2 2026-10-08 (10a and 10c re-paced; both counters now stop on their payoff), assembly pass 3 2026-10-08 (10b fitted and QA'd in the Becker kit's stack mode), assembly pass 4 2026-10-08 (10b's QA fixes: the counter stops on its payoff, a 2-line hook, a 30-year beat and a plinth countdown), port to Scoreboard 2026-10-08 (10c moved from the retired Live Sheet look to the Scoreboard; hook, numbers, VO and verdict unchanged), fixer pass 2026-10-08 (10c's Scoreboard QA: the verdict split into two short lines so it sets bigger than the labels, "And a whole year?" moved into the riser, the climax coin grown, and three kit nits), condensed cut 2026-10-13 (the owner's "too many still moments"; WIP, not promoted), condensed-cut fix pass 2026-10-13 (the critic's items: 10c's label beats retimed and its verdict 0.05 s sooner, 10b's verdict held for its reading time, an opt-in Scoreboard run-up pulse for 10a and 10c, and the length put to the owner), recut to the earlier verdict 2026-10-13 (the owner's answer, "Mixed": 10b ships real time as condensed; 10a stops on its $500,000 pass and 10c on half a year of median pay; WIP, not promoted), recut fix pass 2026-10-13 (the critic's items: the coin's run-up starts earlier in both, `runup.from`; 10c's verdict 0.04 s later; the motion re-measured with the mask on the counter; WIP, not promoted). What changed and why is in the **Review log** at the end.
 
-**Condensed cut (2026-10-13), not yet promoted.** The owner's note on the set ("Too many still moments are a killer for a short. Condense the rest. The CTA (end card) is good.") is applied to all three, on the 06b/06c precedent. The condensed specs are in `studio/specs-wip/`; `studio/specs/` and `renders/channel/` keep the round-2 cuts until the ship step promotes them. **These three counters run in real time** ("since you hit play" is literal: $0 on frame 1, the sourced rate, and the stop on the last milestone, which is the verdict's own number), so no pass can move: the $1,000,000 row passes at 32.51 s, the 40th brick at 33.27 s and a year of median pay at 26.40 s, whatever the cut. What the cut can and does change: the 3.3-4.6 s still hold after each verdict (now 1.59-1.6 s; 10b's 17-word verdict 2.05 s, its reading time), the verdict's timing (now 0.76-0.84 s after the final reveal instead of on it), frame 1 (the hook caption complete, no type-on), the caption pacing (reading-paced and back to back; the 1.6-2.9 s uncaptioned stretches are gone) and, in the fix pass, the run-up to 10a's and 10c's last pass, which now pulses on the score's beat instead of leaving only the counter moving (`lookOpts.runup`, an opt-in Scoreboard kit option). Totals with the 2.5 s end card: **10a 39.0 → 37.45 s, 10b 39.1 → 38.65 s, 10c 33.5 → 31.25 s.** The beat sheets and caption tables below describe the condensed cuts; the round-2 beat sheets and guide VO scripts are in git history (HEAD 4f060a8 and earlier), and the Review log ("Condensed cut (2026-10-13): 10a, 10b, 10c") lists every change. A shorter teaser in this format needs a new verdict. **That is an owner decision, open before promotion** (Review log, "Condensed cut, fix pass", *Owner decision*): these cuts are only 1-7% shorter than round 2, with bodies about twice 06b's and 06c's. The recommendation: ship 10b in real time as it is, and cut 10a and 10c to an earlier verdict their counters already reach (10a "$500K a year: ≈ 16 seconds", a body of about 18.7 s; 10c "Half a year of median pay: ≈ 13 seconds", about 15.6 s).
+**Recut to the earlier verdict (2026-10-13), not yet promoted.** The owner's note on the set ("Too many still moments are a killer for a short. Condense the rest. The CTA (end card) is good.") was applied to all three on the 06b/06c precedent (the condensed cut: still holds gone, captions reading-paced, the hook complete on frame 1, a run-up that pulses on the beat). The condensed cuts could not get much shorter, because these counters run in real time, so the length went to the owner, and the owner answered on 2026-10-13: **"Mixed"** (Review log, *Owner decision*). **10b ships real time as condensed** (36.15 s + the 2.5 s end card = 38.65 s; its WIP spec is untouched). **10a and 10c are recut to an earlier verdict on a pass their counters already make.** "Since you hit play" stays literal: $0 on frame 1, the sourced rate, and the stop on the verdict's own number. 10a now stops on **$500,000 at 16.256 s**: "**$500K** a year: ≈ 16 seconds." (body 18.6 s, 21.1 s with the card). 10c stops on **half a year of median pay, $32,526, at 13.201 s**: "Half a year of median pay: **≈ 13 seconds**." (body 15.55 s, 18.05 s with the card). The rows past the stop are gone (10a's $1M row and its coin, 10c's year row), and the last kept row takes the coin and the run-up. The beats that came after the new stop now come before it: in 10a the $970B working and "≈ $111 million an hour", in 10c the $77.7B working and the swap-in rule. The hooks still ask what the videos answer (Review log, "Recut to the earlier verdict"). Every number on screen is one the earlier cuts already showed, verified by the check. Totals with the end card: **10a 39.0 → 37.45 → 21.1 s, 10b 39.1 → 38.65 s, 10c 33.5 → 31.25 → 18.05 s** (round 2 → condensed → recut). The WIP specs are in `studio/specs-wip/`. `studio/specs/` and `renders/channel/` keep the round-2 cuts until the ship step promotes the WIP specs. The beat sheets and caption tables below describe the WIP cuts: 10a and 10c the recut, 10b the condensed cut. The real-time condensed 10a and 10c are in git history (ca1087f), and the round-2 beat sheets and guide VO scripts at 4f060a8 and earlier. The Review log entries "Condensed cut", "Condensed cut, fix pass", "Recut to the earlier verdict (2026-10-13)" and "Recut, fix pass (2026-10-13)" list every change. **Recut fix pass (the critic's items):** both coins now pulse on the beat from earlier (`lookOpts.runup.from`, the kit's own opt-in key: 10a from 9.75 s, 10c from 7.60 s), because a re-measure with the mask on the counter (the earlier mask missed its top) found counter-only stretches through the swap-in rule; what is left is one stretch in each (10a 6.8-8.1 s, 10c 3.8-5.0 s, a bill's last second before its pass), carried by the counter's roll and the stream, and the full frame never goes near-still for 0.4 s before either verdict. No cue moved (both cue records are byte-identical to the recut's). 10c's verdict stays at 13.96 s (14.0 was tried and not kept), the Instagram covers move to after the last caption, and 10c's verdict wording is put to the owner as a follow-up. Sound (the ship step's): on the committed Scoreboard pack 10a passes `verify` 42/42 and 10c fails BANDS 16 kHz by 0.3 dB, as the critic found; on a snapshot of the working tree, which the concurrent Scoreboard sound pass is still changing, both pass 42/42 with thin margins. So 10c must not be promoted onto the committed pack as it is (Review log, fix pass; the ship step's call).
 **Format:** `cost-counter`. No hook pattern of its own in the hook bank ("–"). The hooks borrow the grammar of P4, P5, P6, P8 and P9 winners (quoted under each teaser).
 **Lane:** a real-time dollar counter at a verified rate (interest on the US debt, new US debt, a mega-company's profit per second)
 **Files:**
@@ -11,9 +11,11 @@
   - [`studio/specs/10a-scoreboard-debt-interest-live.json`](../../studio/specs/10a-scoreboard-debt-interest-live.json)
   - [`studio/specs/10b-becker-rig-debt-vs-your-pay.json`](../../studio/specs/10b-becker-rig-debt-vs-your-pay.json)
   - [`studio/specs/10c-scoreboard-amazon-makes.json`](../../studio/specs/10c-scoreboard-amazon-makes.json) (ported from the Live Sheet on 2026-10-08; the old spec is in [`studio/specs/retired/`](../../studio/specs/retired/10c-live-sheet-amazon-makes.json))
-  - Condensed cuts (2026-10-13, WIP): [`studio/specs-wip/10a-scoreboard-debt-interest-live.json`](../../studio/specs-wip/10a-scoreboard-debt-interest-live.json), [`studio/specs-wip/10b-becker-rig-debt-vs-your-pay.json`](../../studio/specs-wip/10b-becker-rig-debt-vs-your-pay.json), [`studio/specs-wip/10c-scoreboard-amazon-makes.json`](../../studio/specs-wip/10c-scoreboard-amazon-makes.json)
+  - WIP (2026-10-13, not promoted): [`studio/specs-wip/10a-scoreboard-debt-interest-live.json`](../../studio/specs-wip/10a-scoreboard-debt-interest-live.json) (the recut), [`studio/specs-wip/10b-becker-rig-debt-vs-your-pay.json`](../../studio/specs-wip/10b-becker-rig-debt-vs-your-pay.json) (the condensed cut), [`studio/specs-wip/10c-scoreboard-amazon-makes.json`](../../studio/specs-wip/10c-scoreboard-amazon-makes.json) (the recut). The real-time condensed 10a and 10c are in git history (ca1087f)
 - Check: [`teasers/v2/checks/10-cost-counter.py`](checks/10-cost-counter.py). Run `python3 teasers/v2/checks/10-cost-counter.py`. It recomputes every number from the sourced inputs, rebuilds every display string, compares them with the three specs and with the caption and pinned-comment numbers in this file, prints a table and exits 1 on any mismatch.
-  - **Cut-aware since the condensed cut (2026-10-13).** `--spec [KEY=]PATH` (repeatable; KEY a/b/c, 10a/10b/10c or the full id) checks a spec in place of `studio/specs/<id>.json`. A spec of the round-2 length is held to the rules below; any other length to the condensed cut's (the same strings, numbers, lookOpts and counter clock; captions paced for reading and back to back, the hook complete on frame 1, each milestone's caption up at its pass, the verdict 0.8-1.5 s after the final reveal (10c from 0.75) and held 1.2-1.6 s or its reading time, a motion proxy for the gap between them, no text holding alone over 5.5 s on the Scoreboard, and the run-up pulse on the score's beat; see the Review log). **1018 checks, 0 failures** by default (the round-2 cuts in `studio/specs/`); **1055 checks, 0 failures** with `--spec` on the three WIP specs; 26 of 26 condensed-cut mutations caught (fix pass).
+  - **Cut-aware since the condensed cut (2026-10-13).** `--spec [KEY=]PATH` (repeatable; KEY a/b/c, 10a/10b/10c or the full id) checks a spec in place of `studio/specs/<id>.json`. A spec of the round-2 length is held to the rules below; any other length to the condensed cut's (the same strings, numbers, lookOpts and counter clock; captions paced for reading and back to back, the hook complete on frame 1, each milestone's caption up at its pass, the verdict 0.8-1.5 s after the final reveal (10c from 0.75) and held 1.2-1.6 s or its reading time, a motion proxy for the gap between them, no text holding alone over 5.5 s on the Scoreboard, and the run-up pulse on the score's beat; see the Review log). At the fix pass: 1018 checks by default, 1055 with `--spec` on the three WIP specs, 26 of 26 condensed-cut mutations caught.
+  - **Recut-aware since the recut (2026-10-13).** For 10a and 10c a spec in the condensed cut's lane is checked as the condensed (real-time) cut and any other length as the recut: the same rules with the recut's lane, its strings (the round-2 strings by index, plus the new last caption, 10c's new "Next" label and question, and the new verdicts), the stop on the new last milestone within $0.50 at both rates, every label beat holding to the next one on 10a too, the kit's riser at least 0.8 s, and the run-up on the recut's own (P, N1). `BIBLE.md` §2.3 must hold the row of the cut `studio/specs/` holds; until the promotion the run prints a note naming the recut's row. The write-up's caption and pinned-comment numbers are checked against the recut (`MD_CUT`), so "$1 million ≈ 33 seconds" or "≈ 26 seconds" there fails. `--md PATH` points that scan at a scratch copy. **1019 checks, 0 failures** by default (the round-2 cuts in `studio/specs/`; one more than before because the 10a caption now says "≈ $111 million an hour"). **995 checks, 0 failures** with `--spec` on the three WIP specs (10a and 10c recut, 10b condensed). **1058 checks, 0 failures** on the git-history condensed 10a and 10c with the 10b WIP spec. **27 of 27 recut mutations caught**, and the 26 condensed-cut mutations re-run on the history copies are all still caught (Review log, recut entry).
+  - **Recut fix pass (2026-10-13).** The recut's expected `lookOpts.runup` carry `from` (10a 9.7 s, 10c 7.6 s); `check_runup` counts the pulses from `from` and holds it at or before the last label beat (the riser and the cue record stay put) and at least 1.0 s after the previous pass (the coin is on the stage). **1019 checks, 0 failures** by default; **999, 0 failures** with `--spec` on the three WIP specs (4 more: the two `from` rules on each); **1058, 0 failures** on the git-history condensed 10a and 10c. **34 of 34 recut mutations caught** (the 27 above, re-based, and 7 new), and the 26 condensed-cut mutations on the history copies are all still caught (Review log, fix pass).
   - Before the condensed cut it reported **1005 checks, 0 failures** and exited 0 (after the fixer pass on 10c: its verdict has no "1 second ≈ 2 weeks" line any more, so three fewer number checks; 1008 after the port of 10c to the Scoreboard; 999 after assembly pass 4, 981 after assembly pass 2, 949 after the assembly pass, 915 after hook pass 2, 853 after the first hook pass). Assembly pass 4 moved 10b onto the "lands on" rule (its counter now stops on the 40-year pass) and added its 30-year row. Hook pass 2 rebuilt 10a on a salary ladder and 10c on Amazon's profit in weeks of median pay (4 rows), and dropped Amazon's sales from the check. Assembly pass 2 added the median and $500,000 rows to 10a's ladder (6 pass times) and a "lands on" rule: a counter that stops on its last milestone must be within $0.50 of it at both the exact and the stored rate, and then shows it with no "≈".
   - New in round 2: every footer must carry the viewer-owned pay figure ("$1,251 … × 52") at 0.0 s; every header must ask a question; **one rounding per quantity** (any number within 5% of a computed quantity, in a spec string, a VO line, a caption or a pinned comment, must be that quantity's one shown rounding); and a list of banned overclaims ("live", "in real time", "fiscal 2026" for a 364-day window, "Under 1 second" as a universal claim). Hook pass 2 added one exemption: 10a's $30,000 salary row is an exact input that happens to sit 2.5% under the ≈ $30,800 rate, so it is not read as a second rounding of the rate.
   - As a test I broke one thing per teaser in a scratch copy: the 10a footer without the pay figure, 10b's caption back to "≈ $78,006", and 10c's vo[6] back to "≈ $2,500". It exited 1 with 7 failures, naming all three. Run against the round-1 captions, the new guards flagged "$30,758", "$78,006", "$22,733" and "fiscal 2026".
@@ -28,7 +30,7 @@
 - **Nothing unverifiable on screen.** 10b no longer claims a fiscal-year figure, because the 2026-09-30 reading could not be confirmed (Review log, item V4).
 - **No market data.** No teaser uses a market price or a forecast on screen.
 
-**Studio linter:** `node src/cli.mjs check` passes on all three specs: **3/3 clean, 0 errors, 0 warnings**; the three condensed cuts in `studio/specs-wip/` too, after their fix pass (10a 37.45 s = 34.95 + 2.5 s end card, 10b 38.65 = 36.15 + 2.5, 10c 31.25 = 28.75 + 2.5; 0 errors, 0 warnings each, and with `--every 0.05` on 10a and 10c, the run-up's pulses and swell included) (rerun after hook pass 2; 10a and 10c rerun after the assembly pass and again after assembly pass 2: 2/2 clean; the four kit samples of the two edited `cost-counter` modules are clean too; 10b and the two Becker `cost-counter` samples rerun after assembly pass 4: 3/3 clean; after the port, 10c in the Scoreboard, 10a and the two Scoreboard `cost-counter` samples: 4/4 clean; the same four again after the fixer pass: 4/4 clean).
+**Studio linter:** `node src/cli.mjs check` passes on all three specs: **3/3 clean, 0 errors, 0 warnings**; the three WIP specs in `studio/specs-wip/` too (the recut 10a 21.1 s = 18.6 + 2.5 s end card and 10c 18.05 s = 15.55 + 2.5, 0 errors and 0 warnings each, also with `--every 0.05`, the run-up's pulses and swell included, and again after the recut fix pass, with the earlier pulses; 10b 38.65 = 36.15 + 2.5 after the condensed cut's fix pass) (rerun after hook pass 2; 10a and 10c rerun after the assembly pass and again after assembly pass 2: 2/2 clean; the four kit samples of the two edited `cost-counter` modules are clean too; 10b and the two Becker `cost-counter` samples rerun after assembly pass 4: 3/3 clean; after the port, 10c in the Scoreboard, 10a and the two Scoreboard `cost-counter` samples: 4/4 clean; the same four again after the fixer pass: 4/4 clean).
 - The Scoreboard and Becker Rig `cost-counter` modules are both built (working tree), so all three specs are linted with their real counters. 10a and 10c share the Scoreboard module.
 - I rendered stills at 0 s, 1.5 s and the verdict for all three (10b again at 0 / 1.5 / 3 / 25.5 / 33.4 s after the hook pass; 10a at 0 / 1.5 / 3 / 33.5 s and 10c at 0 / 1.1 / 1.5 / 3 / 26.6 / 27.5 s after hook pass 2; 10c in the Scoreboard at 0, every beat and the end after the port, and again after the fixer pass). In each, the header, the footer, the caption band and the verdict fit their zones.
 - The Scoreboard kit reads every `lookOpts` key that 10a and 10c pass. The Becker kit draws 10b's block-stack, stopwatch, actions, heat keys and gag stamp (stack mode); only its `stamp` is not drawn (10b, Look note). Each spec still tells its story from the contract fields alone: the header asks, the footer carries the pay figure and the working, the counter runs, the verdict answers.
@@ -65,29 +67,30 @@
 ### Decisions shared by all three
 
 - **The counter is the answer machine; the header is the question.**
-  - 10a: "When does it pass your salary?" The counter lights a ladder of salaries: $30,000 at ≈ 1.0 second, median pay at ≈ 2.1 seconds, $100,000 at ≈ 3.3 seconds, $1 million at ≈ 33 seconds, where it stops on exactly $1,000,000.
+  - 10a: "When does it pass your salary?" The counter lights a ladder of salaries: $30,000 at ≈ 1.0 second, median pay at ≈ 2.1 seconds, $100,000 at ≈ 3.3 seconds, $250,000 at ≈ 8 seconds and $500,000 at ≈ 16 seconds, where it stops on exactly $500,000 (the recut; the round-2 and condensed cuts went on to $1 million at ≈ 33 seconds).
   - 10b: "40 years of your pay vs 1 minute of new US debt. Which is bigger?" The counter eats the 40 years in ≈ 33 seconds, 55% of the minute.
-  - 10c: "How long do you work for 1 second of Amazon's profit?" Each answer slams into the label stack as the counter passes its target, and the target on the ladder turns into that answer: ≈ 2 weeks of median pay at 1.0 s, a year of it at ≈ 26 s, where it stops on exactly $65,052.
+  - 10c: "How long do you work for 1 second of Amazon's profit?" Each answer slams into the label stack as the counter passes its target, and the target on the ladder turns into that answer: ≈ 2 weeks of median pay at 1.0 s, ≈ 10 weeks at 5 s, half a year of it at ≈ 13 s, where it stops on exactly $32,526 (the recut; the earlier cuts went on to a year of it at ≈ 26 s, $65,052).
 - **The counter starts at frame 1, at $0** in all three, so "since you hit play" is literal: the number on screen is what passed while this viewer watched. The loop restarts the count, which is honest on every replay.
   - 10b's 2.4 s armed pause and its ding were dropped in the hook pass (2026-10-08): nothing moved in its first 1.5 s.
   - 10c: the Scoreboard counts from `counterT[0]` (0.0 s) with no preroll, so frame 1 reads $0. In the retired Live Sheet build it needed `lookOpts.preroll: 0`: without it that kit started its counter 1 s in, which made the old 10c's frame 1 read $22,733 (found by the hook-pass-2 judges).
-- **The viewer's own number is on screen at 0.0 s in every teaser:** the footer carries the pay basis ($1,251 a week × 52 = **$65,052**, BLS Q2 2026), and the checker enforces it. 10a also prints its salary ladder ($30K to $1M, with the median as its own "Median $65K" row, so the footer's pay figure pays off at 2.1 s) beside the pips from frame 1, so every viewer has a row.
-  - The milestones are pay yardsticks: round yearly salaries plus the median in 10a; years of median pay in 10b (3, 10, 20 and 40); weeks, months and a year of median pay in 10c. The median new house left the series in hook pass 2.
+- **The viewer's own number is on screen at 0.0 s in every teaser:** the footer carries the pay basis ($1,251 a week × 52 = **$65,052**, BLS Q2 2026), and the checker enforces it. 10a also prints its salary ladder ($30K to $500K in the recut, $1M in the earlier cuts, with the median as its own "Median $65K" row, so the footer's pay figure pays off at 2.1 s) beside the pips from frame 1, so every viewer has a row.
+  - The milestones are pay yardsticks: round yearly salaries plus the median in 10a; years of median pay in 10b (3, 10, 20 and 40); weeks and months of median pay in 10c (and a year of it before the recut). The median new house left the series in hook pass 2.
   - The first payoff lands by 2.5 s in every teaser: the $30,000 row at 0.98 s (10a), ≈ 2 weeks of median pay at 1.0 s (10c), 3 years of median pay at 2.5 s (10b; its first $65,052 brick goes into the board at 0.83 s).
   - The swap-in rule for the viewer's own pay (R3): the VO says it in 10a ("Your seconds: yearly pay ÷ 30,800.", with the label stack working it for the median: "$65,052 ÷ 30,800 / ≈ 2.1 seconds") and 10c ("2,464 ÷ your weekly pay = your weeks."); the pinned comments repeat it, and 10b's gives it.
 - **Rounding: one rounding per quantity.** A quantity shows one rounded figure everywhere it appears: spec strings, captions (the VO), label stack and ladder, caption text and pinned comment. The checker enforces it.
-  - Every rounded number shows "≈" on screen and in the captions, including 10b's counter final (≈ $2,604,105). 10a and 10c stop on their last milestone, within $0.50 of it, so their finals ($1,000,000 and $65,052) are exact dollar readings and carry no "≈" (assembly pass 2; the checker holds both rates to the $0.50).
+  - Every rounded number shows "≈" on screen and in the captions, including 10b's counter final (≈ $2,604,105). 10a and 10c stop on their last milestone, within $0.50 of it, so their finals are exact dollar readings and carry no "≈" (assembly pass 2; the checker holds both rates to the $0.50): $500,000 and $32,526 in the recut, $1,000,000 and $65,052 before it.
   - Rates: 3 significant figures for 10a (≈ $30,800), 2 for 10b (≈ $78,000 a second, ≈ $4.7 million a minute), and Amazon's profit rate to the dollar (≈ $2,464) because the label stack's working and the swap-in rule divide by it.
-  - Times: whole seconds from 5 s up (≈ 8, ≈ 13, ≈ 16, ≈ 26, ≈ 33 s). Under 5 s, 10a's rows show tenths (≈ 1.0 / 2.1 / 3.3 s): whole seconds would put $30,000 and the median both at "≈ 1-2 s" and lose the ladder's point. Each time still has one rounding everywhere it appears; the median's 2.1 s is the same by the exact rate (2.115 s) and by the swap-in rule ($65,052 ÷ 30,800 = 2.112).
+  - Times: whole seconds from 5 s up (≈ 8, ≈ 13, ≈ 16 s; ≈ 26 and ≈ 33 s in 10b and the earlier 10a/10c cuts). Under 5 s, 10a's rows show tenths (≈ 1.0 / 2.1 / 3.3 s): whole seconds would put $30,000 and the median both at "≈ 1-2 s" and lose the ladder's point. Each time still has one rounding everywhere it appears; the median's 2.1 s is the same by the exact rate (2.115 s) and by the swap-in rule ($65,052 ÷ 30,800 = 2.112).
 - **VO text uses numerals.** It doubles as the captions, and the checker reads its numbers. Line lengths assume 2.6 spoken words a second, with digits expanded the way they are read ("$65,052" = 4 words, "2025" = 2, "US" = 2).
 - **Sync:** the on-screen beat (label, thud, row) lands on the pass itself, and each milestone the VO names passes within 0.5 s of the moment it is said (the checker's limit). The VO times below are the round-2 cut's.
+  - **Recut (2026-10-13), 10a and 10c:** the condensed cut's caption rule, on the new clock. 10a: median pay 2.1 (pass 2.115), $100K 3.3 (3.251), $250K 8.15 (8.128), $500K 16.25 (16.256, "**$500,000**: passed."). 10c: 5 seconds 5.0 (5.000), ≈ 13 s 13.2 (13.201). Every label-stack beat starts with its caption (10a 4.65, 6.4, 10.55, 13.45 s; 10c 2.8, 6.5, 8.2, 10.8 s) and holds to the next beat.
   - **Condensed cut (2026-10-13):** there is no narration, so the VO lines are on-screen captions only, and the caption that names a milestone goes up within −0.15..+0.3 s of its pass (they say "passed" and "gone", so never early). 10a: median pay 2.1 (pass 2.115), $100K 3.3 (3.251), $250K 8.15 (8.128), $500K 16.3 (16.256), $1 million 32.5 (32.511). 10b: 3 years 2.5 (2.496), 10 years 8.3 (8.319), 20 years 16.5 (16.637), 30 years 25.1 (24.956); the 40-year pass is the lock, answered by the stamp and the verdict. 10c: 5 seconds 5.0 (5.000), ≈ 13 s 13.2 (13.201), ≈ 26 s 26.4 (26.403). Every label-stack beat still starts with its caption.
   - 10a: median pay said at 2.1 s (pass 2.11), $100K at 3.25 (3.25), $250K at 8.5 (8.13, the widest gap at 0.37 s), $500K at 16.3 (16.26), $1 million at 32.5 (32.51). The $30K row is not spoken: it lights at 0.98 s, during "Find your salary.", and the label stack names it. Every label-stack beat starts with its VO line (5.4, 12.45, 19.1, 22.7, 28.0 s) and holds to the next beat, so the resting rate never shows over a line it does not match.
   - 10b: gaps of 0.03-0.14 s (3, 10, 20 and 40 years).
   - 10c: 5 seconds said at 5.2 (pass 5.0), ≈ 13 at 13.2 (13.20), ≈ 26 at 26.4 (26.40). The 1-second answer slams into the label stack at 1.0 s while the opening question is still spoken, and vo[1] reads it back at 2.8 s with the label stack's working ("$2,464 ÷ $1,251 a week"): the one accepted gap (1.8 s), so the hook keeps its spoken question. Every rate step starts with its VO line (2.8, 7.4, 15.8, 22.8 s) and holds to the next beat, so the resting rate shows only before the first pass (0-1.0 s).
 - **Lane check:**
   - These are counters at a real rate, over one continuous stretch.
-  - No find-your-row table. 10a's salary ladder has a row for every kind of viewer, but it is the counter's own milestone ladder (6 pips the counter lights), with no per-row computation shown and the counter still the mechanic. 10c's 4 milestones are time slices of one counter (1, 5, ≈ 13 and ≈ 26 s), on the same kind of ladder as 10a's.
+  - No find-your-row table. 10a's salary ladder has a row for most kinds of viewer, but it is the counter's own milestone ladder (5 pips the counter lights in the recut, 6 before), with no per-row computation shown and the counter still the mechanic. 10c's 3 milestones (4 before the recut) are time slices of one counter (1, 5 and ≈ 13 s), on the same kind of ladder as 10a's.
   - No unit stacks (that is `unit-ladder`). 10b's 40-brick stack is a prop the counter eats, not a ladder of units.
   - No race between two assets (`chart-race`): every teaser has one counter.
   - No "instead of paying" (`pov-race`).
@@ -107,10 +110,10 @@
 | | |
 |---|---|
 | Look | `scoreboard` (black bars, neon-green odometer in the top bar, milestone ladder on the stage, label stack in the bottom bar, footer working) |
-| Spec | `studio/specs/10a-scoreboard-debt-interest-live.json` (36.5 s, the round-2 cut); condensed cut (WIP): `studio/specs-wip/10a-scoreboard-debt-interest-live.json` (34.95 s + the 2.5 s end card = 37.45 s) |
+| Spec | `studio/specs/10a-scoreboard-debt-interest-live.json` (36.5 s, the round-2 cut); the recut to the earlier verdict (WIP): `studio/specs-wip/10a-scoreboard-debt-interest-live.json` (18.6 s + the 2.5 s end card = 21.1 s). The real-time condensed cut (34.95 + 2.5 = 37.45 s) is in git history (ca1087f) |
 | Platform title | **US Debt Interest Since You Hit Play: When Does It Pass Your Salary?** |
 | On-screen hook (header) | **US DEBT INTEREST SINCE YOU HIT PLAY: / WHEN DOES IT PASS YOUR SALARY?** (13 words, 2 lines; "PLAY" and "YOUR SALARY" in green) |
-| Frame 1 | Header. The odometer reads **$0**, centred, and rolls from frame 1 ($46,137 at 1.5 s). On the stage, a 6-pip salary ladder labelled **$30K · Median $65K · $100K · $250K · $500K · $1M** (bottom to top), with $30K lit as the next target, and the big bill ghost of the $30K row starting to fill, tagged "$30K" under it. Label stack "≈ $30,800 / EVERY SECOND". Footer "FY25: $970B ÷ 31,536,000 s · median $1,251 × 52". Caption "Find your salary." |
+| Frame 1 | Header. The odometer reads **$0**, centred, and rolls from frame 1 ($46,137 at 1.5 s). On the stage, a 5-pip salary ladder labelled **$30K · Median $65K · $100K · $250K · $500K** (bottom to top; the recut; the earlier cuts had a sixth, $1M), with $30K lit as the next target, and the big bill ghost of the $30K row starting to fill, tagged "$30K" under it. Label stack "≈ $30,800 / EVERY SECOND". Footer "FY25: $970B ÷ 31,536,000 s · median $1,251 × 52". Caption "Find your salary." |
 | Footer | FY25: $970B ÷ 31,536,000 s · median $1,251 × 52 |
 
 **Topic vs the seed:**
@@ -121,24 +124,24 @@
 
 **Wrong belief it exploits**
 1. **"My year's salary is a lot of money, even next to the government."** The counter passes $30,000 in ≈ 1.0 second, a year of median pay ($65,052) in ≈ 2.1 seconds and $100,000 in ≈ 3.3 seconds. Most viewers' whole year is gone before they finish reading the header.
-2. "$1 million a year is out of reach." The counter gets there in **≈ 33 seconds**.
+2. "Half a million a year is a fortune." The counter gets there in **≈ 16 seconds** (the recut's verdict; the earlier cuts ran on to $1 million in ≈ 33 seconds).
 
 **Hook rules satisfied**
 
 | Rule | How |
 |---|---|
-| R1 | The counter ($0, rolling), the six salary pips ($30K to $1M, the median among them), "≈ $30,800 every second" and the footer's working are on screen at 0.0 s |
+| R1 | The counter ($0, rolling), the five salary pips ($30K to $500K, the median among them), "≈ $30,800 every second" and the footer's working are on screen at 0.0 s |
 | R2 | The hook line holds one input, the viewer's own salary, and no result. The rate sits in the label stack and the footer |
-| R3 | Full pass: every viewer's salary sits on or between the pips, and the first spoken words are "Find your salary." The footer's median pay is a row of its own (passed at 2.1 s, "Median pay: passed."). The swap-in rule for salaries between rows is spoken at 12.45 s ("Your seconds: yearly pay ÷ 30,800."), worked on screen for the median ("$65,052 ÷ 30,800 / ≈ 2.1 seconds") and pinned |
-| R4 | Round, familiar salaries ($30K, $100K) and the median ($65K). "$970B" appears only as the footer's working, its label beat at 22.7 s and once in the VO |
+| R3 | Pass: almost every viewer's salary sits on or between the pips ($30K to $500K), and the first caption is "Find your salary." The footer's median pay is a row of its own (passed at 2.1 s, "Median pay: passed."). The swap-in rule covers every other salary, between rows, under $30K or over $500K: it is captioned at 10.55 s ("Your seconds: yearly pay ÷ 30,800."), worked on screen for the median ("$65,052 ÷ 30,800 / ≈ 2.1 seconds") and pinned. The recut dropped the $1M row, so the ladder no longer reaches the top earners, and the rule covers them |
+| R4 | Round, familiar salaries ($30K, $100K) and the median ($65K). "$970B" appears only as the footer's working, its label beat at 4.65 s and once in the captions |
 | R5 | The implied wrong answer is "a while". The everyday rows go in ≈ 1.0 to 3.3 seconds, with no "most people think" |
 | R6 | You (your salary) + an amount (the counter) + a horizon ("since you hit play"). The money is the government's, so this is a partial pass |
 | R7 | The VO opens on an instruction ("Find your salary."), not a topic label |
 | R8 | 13 words, 2 lines |
-| R9 | 6 labelled pips from 0.0 s, each lit with a thud and a ding as it is passed (1.0, 2.1, 3.3, 8, 16 s); the $1M coin is the long pull, and the big icon on the stage carries its target ("$500K", "$1M") as a tag |
-| R10 | First payoff at 0.98 s: the $30K pip lights and the label stack slams "$30,000 A YEAR / ≈ 1.0 SECOND". Three rows are gone by 3.3 s; the biggest ($1 million) comes last, where the counter stops on exactly $1,000,000 |
-| R11 | The question is on screen and in the title; the one-line verdict answers it |
-| R12 | A line to repeat: **$1M a year: ≈ 33 seconds.** The caption and pinned comment pair it with $100,000 ≈ 3.3 seconds |
+| R9 | 5 labelled pips from 0.0 s, each lit with a thud and a ding as it is passed (1.0, 2.1, 3.3, 8 s); the $500K coin is the long pull (it fills from 8.1 s, pulses on the beat from 9.75 s (the run-up from `runup.from` 9.7 s, through the swap-in rule and the 13.45 s "Next" beat) and lands at 16.26 s), and the big icon on the stage carries its target ("$250K", "$500K") as a tag |
+| R10 | First payoff at 0.98 s: the $30K pip lights and the label stack slams "$30,000 A YEAR / ≈ 1.0 SECOND". Three rows are gone by 3.3 s; the biggest ($500,000) comes last, where the counter stops on exactly $500,000 |
+| R11 | The question is on screen and in the title, and the video answers it: a row for each salary on the ladder, the rule for any other, and the one-line verdict for the top row. Re-checked for the recut: the question is about the viewer's salary, not about $1 million, so stopping at $500,000 leaves it answered |
+| R12 | A line to repeat: **$500K a year: ≈ 16 seconds.** The caption pairs it with $100,000 ≈ 3.3 seconds, and the pinned comment gives the $100,000 row |
 
 **Benchmark hooks it is modelled on**
 - **H64, Gage Heward, "What $1 costs you by age"** (48 blank rows, "Find your age"). **1,150,974 views, 210x the creator's median.** https://www.instagram.com/reel/Da_dukjxB56/
@@ -153,44 +156,43 @@
   - Borrowed: the spoken swap-in instruction ("Yearly pay ÷ 30,800").
 - **Contrast, H15, HD Guy, "Wages Visualized In Real Time"**: **9,025**. Pay as the subject of the counter flopped; here pay is only the yardstick.
 
-**Beat sheet (condensed cut, 2026-10-13: the real-time counter runs 0 → 32.511 s as before; captions reading-paced and back to back, the hook complete on frame 1; the verdict at 33.35 s, 0.84 s after the stop, held 1.6 s; body 34.95 s + the 2.5 s end card = 37.45 s; fix pass: the run-up from 28.0 s pulses on the score's beat, `lookOpts.runup`)** (milestone pass time = value ÷ $30,758.50 a second). The round-2 cut (verdict on the stop at 32.5 s, held 4.0 s; 36.5 + 2.5 = 39.0 s) and its guide VO script are in git history (4f060a8 and earlier).
+**Beat sheet (the recut to the earlier verdict, 2026-10-13: the real-time counter runs 0 → 16.256 s and stops on its $500,000 pass; captions reading-paced and back to back, the hook complete on frame 1; the verdict at 17.07 s, 0.81 s after the stop, held 1.53 s; body 18.6 s + the 2.5 s end card = 21.1 s; the coin pulses on the score's beat from 9.75 s, `lookOpts.runup` with `from` 9.7 s (the recut fix pass; it was from the 13.45 s "Next" beat))** (milestone pass time = value ÷ $30,758.50 a second). The real-time condensed cut (the counter on to $1,000,000 at 32.511 s, the verdict "$1M a year: ≈ 33 seconds." at 33.35 s; 34.95 + 2.5 = 37.45 s) is in git history (ca1087f), and the round-2 cut (36.5 + 2.5 = 39.0 s) with its guide VO script at 4f060a8 and earlier.
 
 | t (s) | On screen | Caption |
 |---|---|---|
-| 0.0 | Header. Odometer **$0**, rolling from frame 2 ($1,025; $1,045 at 0.034 s). 6 pips "$30K · Median $65K · $100K · $250K · $500K · $1M"; $30K lit as the next target. Bill ghost filling, the money stream already pouring (24 dots a second, fix pass), tagged "$30K". Label "≈ $30,800 / EVERY SECOND". Footer | "Find your salary." (−0.4-2.05: complete on frame 1) |
+| 0.0 | Header. Odometer **$0**, rolling from frame 2 ($1,025; $1,045 at 0.034 s). 5 pips "$30K · Median $65K · $100K · $250K · $500K"; $30K lit as the next target. Bill ghost filling, the money stream already pouring (24 dots a second), tagged "$30K". Label "≈ $30,800 / EVERY SECOND". Footer | "Find your salary." (−0.4-2.05: complete on frame 1) |
 | 0.98 | The counter passes **$30,000**. Pip 1 lights (thud + ding); label slams "$30,000 A YEAR / ≈ 1.0 SECOND" (held to the next pass); the bill flies to the ladder (the labels it crosses duck) and the median's bill drops in | |
 | 1.5 | The counter reads $46,137; the median bill is 71% full | |
 | 2.11 | The counter passes **$65,052** (median pay, the footer's $1,251 × 52). Pip 2; tag "MEDIAN $65K" turns green. Label "MEDIAN PAY: $65,052 / ≈ 2.1 SECONDS" | "Median pay: passed." (2.1-3.3) |
-| 3.25 | The counter passes **$100,000**. Pip 3. Label "$100,000 A YEAR / ≈ 3.3 SECONDS" (to 5.4) | "$100,000: passed." (3.3-5.35) |
-| 5.4 | Label slams the rate "≈ $30,800 / EVERY SECOND" (to the $250K pass) | "≈ $30,800 a second." (5.4-8.1) |
-| 8.13 | The counter passes **$250,000**. Pip 4. Label "$250,000 A YEAR / ≈ 8 SECONDS" (held to 12.45) | "$250,000 a year: ≈ 8 seconds." (8.15-12.4) |
-| 12.45 | Label "$65,052 ÷ 30,800 / ≈ 2.1 SECONDS (MEDIAN)": the rule, worked for the footer's pay | "Your seconds: yearly pay ÷ 30,800." (12.45-16.25) |
-| 16.26 | The counter passes **$500,000**. Pip 5. Label "$500,000 A YEAR / ≈ 16 SECONDS"; the $1M coin drops in | "$500,000: ≈ 16 seconds." (16.3-19.05) |
-| 19.1 | Label "≈ $30,800 × 3,600 s / ≈ $111,000,000" (the working; the caption says the sentence) | "That's ≈ $111 million an hour." (19.1-22.65) |
-| 22.7 | Label "$970B ÷ 31,536,000 s / ≈ $30,800 EVERY SECOND" (held to 28.0) | "At fiscal 2025's rate: $970 billion a year." (22.7-27.95) |
-| 28.0 | Label "NEXT / $1,000,000 A YEAR" (held to the pass) | "And the last row?" (28.0-32.45: the question holds through the riser) |
-| 28.04-32.11 | **The run-up pulse** (`lookOpts.runup`, beat 0.40639 s = 32.511 s ÷ 80, the score's beat up to P): on each of 11 beats (28.04, 28.45 … 32.11) the nearly full coin bumps and its rim glows, its "$1M" tag rides the bump, and the ladder's $1M row and the hero's glow pulse with it; the bump grows from 2.5% to 5% toward the pass | |
-| 30.11-32.51 | The kit's 2.4 s riser as the counter closes on $1,000,000; the hero swells 4% over it (eased in, released over the pass bump) | |
-| 32.51 | The counter passes **$1,000,000** and stops on it exactly (counterT ends 32.51135 s). Pip 6 (coin); the coin pops with its "$1M" tag; hit + cash; label "$1,000,000 A YEAR / ≈ 33 SECONDS" | "$1 million: passed." (32.5-34.55) |
-| 32.5-33.3 | The hero's bump and glow and the coin's pop settle (the motion audit's only near-still before the verdict, 32.97-33.30, 0.33 s) | |
-| 33.35 | Verdict replaces the label stack (it yields from 33.28), one line: "**$1M** A YEAR: ≈ 33 SECONDS."; reveal cue | |
-| 33.35-34.95 | Verdict hold (1.6 s), then the 2.5 s end card (unchanged) | |
+| 3.25 | The counter passes **$100,000**. Pip 3. Label "$100,000 A YEAR / ≈ 3.3 SECONDS" (to 4.65) | "$100,000: passed." (3.3-4.6) |
+| 4.65 | Label "$970B ÷ 31,536,000 S / ≈ $30,800 EVERY SECOND": the rate's working, the footer read out (to 6.4) | "At fiscal 2025's rate: $970 billion a year." (4.65-6.35) |
+| 6.4 | Label "≈ $30,800 × 3,600 S / ≈ $111,000,000" (to the $250K pass). From 6.8 s the $250K bill is 84% full: until its pass only the counter, the stream and the bill's level line move (with the counter masked, the motion audit's one near-still run of 0.4 s or more, 6.80-8.13 s; the full frame keeps moving) | "That's **≈ $111 million** an hour." (6.4-8.1) |
+| 8.13 | The counter passes **$250,000**. Pip 4. Label "$250,000 A YEAR / ≈ 8 SECONDS" (held to 10.55); the bill flies to the ladder and the **$500K coin** drops in, half full | "$250,000 a year: ≈ 8 seconds." (8.15-10.5) |
+| 9.75 | The run-up starts (`runup.from` 9.7 s): the coin, 60% full, pulses on the beat (below) | |
+| 10.55 | Label "$65,052 ÷ 30,800 / ≈ 2.1 SECONDS (MEDIAN)": the rule, worked for the footer's pay | "Your seconds: yearly pay ÷ 30,800." (10.55-13.4) |
+| 13.45 | Label "NEXT / $500,000 A YEAR" (held to the pass) | "And the last row?" (13.45-16.2: the question holds through the riser) |
+| 9.75-15.85 | **The run-up pulse** (`lookOpts.runup`, beat 0.4064 s = 16.256 s ÷ 40, the score's beat up to P; `from` 9.7 s): on each of 16 beats (9.75, 10.16, 10.57 … 15.04, 15.44, 15.85) the coin bumps and its rim glows, its "$500K" tag rides the bump, and the ladder's $500K row and the hero's glow pulse with it; the bump grows from 2.5% to 5% toward the pass. It runs under the $250K line's last 0.8 s, the rule and "Next" | |
+| 13.86-16.26 | The kit's 2.4 s riser as the counter closes on $500,000; the hero swells 4% over it (eased in, released over the pass bump) | |
+| 16.26 | The counter passes **$500,000** and stops on it exactly (counterT ends 16.25568 s). Pip 5 (coin); the coin pops with its "$500K" tag; hit + cash; label "$500,000 A YEAR / ≈ 16 SECONDS" | "**$500,000**: passed." (16.25-18.2) |
+| 16.3-17.0 | The hero's bump and glow and the coin's pop settle (on the full frame the motion audit's only near-still before the verdict, 16.70-17.03, 0.33 s; the same with the counter masked) | |
+| 17.07 | Verdict replaces the label stack (it yields from 17.0), one line: "**$500K** A YEAR: ≈ 16 SECONDS."; reveal cue | |
+| 17.07-18.6 | Verdict hold (1.53 s), then the 2.5 s end card (unchanged) | |
 
-**On-screen captions** (condensed cut; no narration, so the VO lines are captions only; 49 words, all shown, every line up ≥ 1.2 s from frame 1):
+**On-screen captions** (the recut; no narration, so the VO lines are captions only; 40 words, all shown, every line up ≥ 1.2 s from frame 1; every line but the last is a round-2 line, word for word):
 
 | # | Up (s) | For (s) | Caption |
 |---|---|---|---|
 | 0 | −0.4-2.05 | 2.05 from frame 1 | Find your salary. |
 | 1 | 2.1-3.3 | 1.2 | Median pay: passed. |
-| 2 | 3.3-5.35 | 2.05 | $100,000: passed. |
-| 3 | 5.4-8.1 | 2.7 | **≈ $30,800** a second. |
-| 4 | 8.15-12.4 | 4.25 | $250,000 a year: ≈ 8 seconds. |
-| 5 | 12.45-16.25 | 3.8 | Your seconds: yearly pay ÷ 30,800. |
-| 6 | 16.3-19.05 | 2.75 | $500,000: ≈ 16 seconds. |
-| 7 | 19.1-22.65 | 3.55 | That's **≈ $111 million** an hour. |
-| 8 | 22.7-27.95 | 5.25 | At fiscal 2025's rate: $970 billion a year. |
-| 9 | 28.0-32.45 | 4.45 | And the last row? |
-| 10 | 32.5-34.55 | 2.05 | **$1 million**: passed. |
+| 2 | 3.3-4.6 | 1.3 | $100,000: passed. |
+| 3 | 4.65-6.35 | 1.7 | At fiscal 2025's rate: $970 billion a year. |
+| 4 | 6.4-8.1 | 1.7 | That's **≈ $111 million** an hour. |
+| 5 | 8.15-10.5 | 2.35 | $250,000 a year: ≈ 8 seconds. |
+| 6 | 10.55-13.4 | 2.85 | Your seconds: yearly pay ÷ 30,800. |
+| 7 | 13.45-16.2 | 2.75 | And the last row? |
+| 8 | 16.25-18.2 | 1.95 | **$500,000**: passed. |
+
+The recut dropped one caption, "**≈ $30,800** a second." (5.4 s in the condensed cut): the rate is on screen in the label stack from frame 1 to the first pass and again under the $970B working at 4.65 s, so the 4.65-8.1 s window carries the working and the hourly line instead.
 
 **The maths**
 
@@ -198,22 +200,23 @@
 - **Rate:** r = $970B ÷ 31,536,000 = $30,758.498… a second (spec `perSecond` 30,758.50).
 - **Counter:** value(t) = r × t, with t in seconds from 0.0.
 - **Salary rows:** pass time = salary ÷ r. Rows that pass under 5 s show tenths (whole seconds would put $30,000 and the median both at "≈ 1-2 s"); from 5 s up, whole seconds. Each time has one rounding everywhere it appears.
-- **The stop:** the counter stops on the $1,000,000 pass: counterT ends at 32.51135 s, just after the exact pass (32.5113402 s) and the kit's stored-rate pass (32.5113383 s). r × 32.51135 = $1,000,000.30, so the board's dollar reading is exactly $1,000,000.
+- **The stop (the recut):** the counter stops on the $500,000 pass: counterT ends at 16.25568 s, just after the exact pass (16.2556701 s) and the kit's stored-rate pass (16.2556692 s). r × 16.25568 = $500,000.30 (stored rate: $500,000.33), so the board's dollar reading is exactly $500,000. The earlier cuts stopped on the $1,000,000 pass at 32.51135 s ($1,000,000.30).
 
 | On screen | Formula | Exact | Shown |
 |---|---|---:|---|
-| Rate | 970,000,000,000 ÷ 31,536,000 | 30,758.498 | ≈ $30,800 every second (label, VO, caption, pinned) |
-| Per hour | r × 3,600 | 110,730,594 | ≈ $111 million an hour |
+| Rate | 970,000,000,000 ÷ 31,536,000 | 30,758.498 | ≈ $30,800 every second (label; the swap-in caption and the pinned comment divide by 30,800) |
+| Per hour | r × 3,600 | 110,730,594 | ≈ $111 million an hour (caption at 6.4 s, platform caption) |
 | Pass: $30,000 | 30,000 ÷ r | 0.975 s | ≈ 1.0 second (label) |
-| Pass: median pay | $1,251 × 52 = $65,052; ÷ r | 2.115 s | ≈ 2.1 seconds (label, caption); caption at 2.1 (the round-2 VO too) |
+| Pass: median pay | $1,251 × 52 = $65,052; ÷ r | 2.115 s | ≈ 2.1 seconds (label, platform caption); caption "Median pay: passed." at 2.1 |
 | Pass: $100,000 | 100,000 ÷ r | 3.251 s | ≈ 3.3 seconds (label, caption, pinned); caption at 3.3 (the round-2 VO at 3.25) |
-| Pass: $250,000 | 250,000 ÷ r | 8.128 s | ≈ 8 seconds (label; caption at 8.15, the round-2 VO at 8.5) |
-| Pass: $500,000 | 500,000 ÷ r | 16.256 s | ≈ 16 seconds (label; caption at 16.3, as the round-2 VO) |
-| Pass: $1,000,000 | 1,000,000 ÷ r | 32.511 s | ≈ 33 seconds (label, verdict, caption); VO "$1 million: passed." at 32.5 |
+| Pass: $250,000 | 250,000 ÷ r | 8.128 s | ≈ 8 seconds (label, caption at 8.15; the round-2 VO at 8.5) |
+| Pass: $500,000 | 500,000 ÷ r | 16.256 s | ≈ 16 seconds (label, **verdict**, platform caption); caption "$500,000: passed." at 16.25, where the recut stops |
+| Pass: $1,000,000 (earlier cuts only) | 1,000,000 ÷ r | 32.511 s | ≈ 33 seconds (the round-2 and condensed verdict; not in the recut) |
 | Per hour, in digits (label) | r × 3,600 | 110,730,594 | ≈ $111,000,000 (the same 3-figure rounding as ≈ $111 million) |
 | Swap-in label | $65,052 ÷ 30,800 | 2.112 | ≈ 2.1 seconds (median), the same as the exact 2.115 |
 | Counter at 1.5 s | r × 1.5 | 46,137.75 | $46,137 (70.9% of the median bill) |
-| Counter final | r × 32.51135 | 1,000,000.30 | $1,000,000 (stops on the $1M pass; no ≈: the dollar reading is exact) |
+| Counter final (the recut) | r × 16.25568 | 500,000.30 | $500,000 (stops on the $500K pass; no ≈: the dollar reading is exact) |
+| Counter final (earlier cuts) | r × 32.51135 | 1,000,000.30 | $1,000,000 |
 | Swap-in rule | your yearly pay ÷ 30,800 | e.g. 100,000 ÷ 30,800 = 3.247 | approximate by design; the labels use the exact rate (3.251 → ≈ 3.3). The on-screen worked example is the median, where both round to 2.1 |
 
 **Sources (real-world inputs)**
@@ -229,7 +232,7 @@
 | **Median full-time pay: $1,251 a week** (footer and caption; 120.9 million full-time wage and salary workers, not seasonally adjusted, +4.6% a year) | U.S. Bureau of Labor Statistics, "Usual Weekly Earnings of Wage and Salary Workers, Second Quarter 2026" (USDL-26-1257) | 2026-07-21 | https://www.bls.gov/news.release/archives/wkyeng_07212026.htm |
 | Same, second source | DWM Magazine, "USBLS announces unemployment and wage rates" | 2026-07-24 | https://www.dwmmag.com/2026/07/24/usbls-announces-unemployment-and-wage-rates/ |
 
-The salary rows ($30,000 to $1 million) are round yardsticks chosen for the ladder, not statistics, so they need no source.
+The salary rows ($30,000 to $500,000; $1 million before the recut) are round yardsticks chosen for the ladder, not statistics, so they need no source.
 
 **Assumptions** (the footer carries the rate's working and the pay basis)
 - FY2025 net interest ($970B) is spread evenly over a 365-day year. Real payments are lumpy (coupon dates), so this is the average rate.
@@ -237,30 +240,30 @@ The salary rows ($30,000 to $1 million) are round yardsticks chosen for the ladd
 - "Median pay" (footer, the median row and caption) means BLS median usual weekly earnings of full-time wage and salary workers × 52.
 
 **Caption (IG / TikTok; also the YouTube description)**
-> $100,000 a year of pay ≈ 3.3 seconds of US debt interest. $1 million ≈ 33 seconds. In fiscal 2025 the US paid $970 billion in net interest (Treasury; CBO). Divide by the 31,536,000 seconds in a year: ≈ $30,800 a second. A year of median full-time pay ($1,251 a week × 52 = $65,052, BLS) lasts ≈ 2.1 seconds. Yours: divide your yearly pay by 30,800. And $0 of it pays the debt down: interest is the cost of carrying the debt, not a repayment. Fiscal 2026 ran hotter: CBO's August review put net interest on the public debt 12% above the same 11 months of fiscal 2025, so this counter runs slow. Educational maths, not advice.
+> $100,000 a year of pay ≈ 3.3 seconds of US debt interest. $500,000 ≈ 16 seconds. In fiscal 2025 the US paid $970 billion in net interest (Treasury; CBO). Divide by the 31,536,000 seconds in a year: ≈ $30,800 a second, ≈ $111 million an hour. A year of median full-time pay ($1,251 a week × 52 = $65,052, BLS) lasts ≈ 2.1 seconds. Yours: divide your yearly pay by 30,800. And $0 of it pays the debt down: interest is the cost of carrying the debt, not a repayment. Fiscal 2026 ran hotter: CBO's August review put net interest on the public debt 12% above the same 11 months of fiscal 2025, so this counter runs slow. Educational maths, not advice.
 > #nationaldebt #interest #moneymath
 
 **Pinned comment**
 > Yearly pay ÷ 30,800 = your seconds ($100,000 ≈ 3.3). Which row are you?
 
 **Per-platform notes**
-- **Posting plan (preferred):** post after Treasury's September 2026 Monthly Treasury Statement (about 2026-10-13) and rebuild on FY2026 net interest. Set `NET_INTEREST_FY2025` in the check to the FY2026 figure and rerun it; it will list every string to change: perSecond, rateDisplay, intro, rateSteps (all five), vo[3], vo[5], vo[6], vo[7], vo[8] ("fiscal 2026's rate"), every row's label time, the VO times that must stay in sync, the verdict, counterT (the new $1 million pass, to 5 decimals, so the stop still lands on $1,000,000), hold, the footer ("FY26"), the caption (drop the "ran hotter" sentence) and the pinned comment. At $1.0-1.1 trillion the $1 million row moves from ≈ 33 s to ≈ 29-32 s and the $100,000 row from ≈ 3.3 s to ≈ 2.9-3.2 s. If it posts before then, it goes out as written: FY2025, with the past-tense caption.
+- **Posting plan (preferred):** post after Treasury's September 2026 Monthly Treasury Statement (about 2026-10-13) and rebuild on FY2026 net interest. Set `NET_INTEREST_FY2025` in the check to the FY2026 figure and rerun it; it will list every string to change: perSecond, rateDisplay, intro, rateSteps (all four in the recut), vo[3] ("fiscal 2026's rate"), vo[4], vo[5], vo[6], every row's label time, the caption times that must stay at their passes, the verdict, counterT (the new $500,000 pass, to 5 decimals, so the stop still lands on $500,000), hold, the footer ("FY26"), the caption (drop the "ran hotter" sentence) and the pinned comment. At $1.0-1.1 trillion the $500,000 row moves from ≈ 16 s to ≈ 14-16 s and the $100,000 row from ≈ 3.3 s to ≈ 2.9-3.2 s, so the body shortens with it and the run-up's beat follows the new §2.3 row. If it posts before then, it goes out as written: FY2025, with the past-tense caption.
 - **YouTube Shorts:** the title asks the question and keeps HD Guy's "since you hit play" premise. No CTA; hard-cut back to frame 1 so the replay restarts the count (and the viewer can watch their own row again).
-- **Instagram Reels:** caption line 1 pairs the $100,000 row with the verdict's $1 million. Use the verdict frame (33 s on in the round-2 cut; 33.6-34.9 s in the condensed cut, the settled verdict hold: the board at $1,000,000, the lit coin, "$1M A YEAR: ≈ 33 SECONDS.") as the cover.
+- **Instagram Reels:** caption line 1 pairs the $100,000 row with the verdict's $500,000. Use the verdict frame as the cover: 18.4-18.55 s in the recut, the settled verdict hold once the last caption has gone ("$500,000: passed." is up to 18.2 s and fades out by 18.4; the card starts at 18.6): the board at $500,000, the lit coin, "$500K A YEAR: ≈ 16 SECONDS." (recut fix pass; it was 17.3-18.4 s, with the caption still under the verdict). It was 33 s on in the round-2 cut.
 - **TikTok:**
   - Expected comment fights: "net vs gross interest", "that's last year's number", "my salary is before tax" (the rows are gross salaries) and "does any of it pay the debt down?". The caption pre-empts all four: $970B is the net figure (a gross figure is bigger), FY2026 ran higher, and $0 of it repays principal.
   - Reply with the CBO line rather than a new number.
   - Put "$100,000 a year of pay ≈ 3.3 seconds" in the first 100 characters.
 - **Look note:**
   - The Scoreboard's real-time mode is "0 cuts" (03-look-directions, Direction 3), so the stage stays a dark grid.
-  - The kit reads everything this spec passes: `intro` (the resting label stack), `labels` (one per row: "$30,000 a year" in green over "≈ 1.0 SECOND" in white caps; "Median pay: $65,052" for the median), `flash: 4.6` (a milestone holds the label stack to the next beat), `rateSteps` (five label-stack beats, each starting with its VO line and held to the next beat: the rate at 5.4 s, the median's worked swap-in at 12.45 s, the hourly working at 19.1 s, the $970B working at 22.7 s and "Next / $1,000,000 a year" at 28.0 s, held to the $1,000,000 pass, whose label "$1,000,000 A YEAR / ≈ 33 SECONDS" then holds until the verdict replaces it), `pipLabels` ("$30K", "Median $65K" … "$1M" beside the ladder icons from frame 1) and `icons` (five bills and a coin for the $1 million row).
+  - The kit reads everything this spec passes: `intro` (the resting label stack), `labels` (one per row: "$30,000 a year" in green over "≈ 1.0 SECOND" in white caps; "Median pay: $65,052" for the median), `flash: 4.6` (a milestone holds the label stack to the next beat), `rateSteps` (in the recut, four label-stack beats, each starting with its caption and held to the next beat: the $970B working at 4.65 s, the hourly working at 6.4 s, the median's worked swap-in at 10.55 s and "Next / $500,000 a year" at 13.45 s, held to the $500,000 pass, whose label "$500,000 A YEAR / ≈ 16 SECONDS" then holds until the verdict replaces it; the earlier cuts had five, from the rate at 5.4 s to "Next / $1,000,000 a year" at 28.0 s), `pipLabels` ("$30K", "Median $65K" … "$500K" beside the ladder icons from frame 1) and `icons` (four bills and a coin for the $500,000 row; the coin was the $1 million row's before the recut).
   - The labels carry the working and the captions the sentence, so no line sits on screen twice; the milestone beats (label "$250,000 A YEAR / ≈ 8 SECONDS" over the caption "$250,000 a year: ≈ 8 seconds.") are the format's call-and-response and stay.
   - The milestone labels start with "A" or "Median", so the kit stacks a twin icon for the repeated bills instead of a "×N" badge.
-  - `final` is "$1,000,000" with no "≈", so the kit draws no unlit "≈" ghost beside the hero, and the number stays centred.
+  - `final` is "$500,000" (the recut; "$1,000,000" before) with no "≈", so the kit draws no unlit "≈" ghost beside the hero, and the number stays centred.
   - Kit changes in the Scoreboard `cost-counter` module (assembly pass 2): the big stage icon carries its pip label as a tag under the art (white while it fills, green on the pass, riding the icon's bump); ladder labels duck while a flying icon crosses them (this is what makes six labelled pips lint-clean: a $75K pip was dropped in hook pass 2 for exactly that contrast error); the hero is set 8% under its full fit, for air under the header and above the footer.
   - No `slot` (frame 1 holds one task), `heroIcon: false`, no spec sfx: the kit cues the riser, hit and cash on the last milestone.
   - Kit change from 10c's fixer pass (no change to this spec): the big icon keeps clear of the ladder column at its pop's peak (bump 1 + amp, plus the glow), so the bills sit right of the region's centre (x 420-937 at rest). The median bill's pop at 2.15 s now clears "Median $65K" by 33 px (it came within about 9 px and its glow covered the "K"). Lint is still clean; the MP4 in `studio/out/` was re-rendered with it.
-  - Kit option from the condensed cut's fix pass (`lookOpts.runup`, opt-in; the condensed cut in `studio/specs-wip/` sets it, with `stream: 24`, a denser money stream than the kit's 14 dots a second; the round-2 spec sets neither): `{ "beat": 0.40639 }`. From the last label beat before the $1,000,000 pass ("Next", 28.0 s) the coin pulses on the score's beat (P 32.511 s ÷ 80 beats, the spec's row in `sound/BIBLE.md` §2.3), with its tag, the ladder's $1M row and the hero's glow; the hero swells 4% over the kit's 2.4 s riser. It adds no cue, so the sound is the same. Its reason: with the coin nearly full, the money stream falls only a short way, and 28.6-32.5 s measured near-still with the hero counter masked (Review log, "Condensed cut, fix pass"). If the tempo row moves (a new cue record), the check names the new P ÷ N₁ and the beat must follow it.
+  - Kit option from the condensed cut's fix pass (`lookOpts.runup`, opt-in; the WIP spec sets it, with `stream: 24`, a denser money stream than the kit's 14 dots a second; the round-2 spec sets neither): in the recut `{ "beat": 0.4064, "from": 9.7 }`. From 9.7 s (the kit's own opt-in `from`; without it the run-up starts at the last label beat before the pass, "Next" at 13.45 s) the coin pulses on the score's beat (P 16.256 s ÷ 40 beats, the recut's §2.3 row from `tempo-table --cues`; the condensed cut's was 32.511 s ÷ 80 = 0.40639 s from "Next" at 28.0 s), 16 pulses from 9.75 s, with its tag, the ladder's $500K row and the hero's glow; the hero swells 4% over the kit's 2.4 s riser, which keeps its 13.45 s start. It adds no cue, so the sound is the same. Its reason: with the coin filling, the money stream falls only a short way, and the stretches before a pass measured near-still with the hero counter masked (28.6-32.5 s in the condensed cut; 9.67-13.47 s in the recut before `from`; Review log, "Condensed cut, fix pass" and "Recut, fix pass"). The bill's last stretch before the $250K pass (6.8-8.1 s) cannot take a pulse (the run-up is the last milestone's) and is carried by the counter's own roll and the stream. If the tempo row moves (a new cue record), the check names the new P ÷ N₁ and the beat must follow it.
 
 ---
 
@@ -442,10 +445,10 @@ All "≈ N seconds" are counter time, and the counter starts at 0.0 s, so they a
 | | |
 |---|---|
 | Look | `scoreboard` (black bars, neon-green odometer in the top bar, a milestone ladder and a filling icon on the dark stage, label stack in the bottom bar, footer working). Ported from the retired Live Sheet on 2026-10-08 (Review log, "Port to scoreboard"); the old spec is `studio/specs/retired/10c-live-sheet-amazon-makes.json` |
-| Spec | `studio/specs/10c-scoreboard-amazon-makes.json` (31.0 s, the round-2 cut); condensed cut (WIP): `studio/specs-wip/10c-scoreboard-amazon-makes.json` (28.75 s + the 2.5 s end card = 31.25 s, after the fix pass) |
+| Spec | `studio/specs/10c-scoreboard-amazon-makes.json` (31.0 s, the round-2 cut); the recut to the earlier verdict (WIP): `studio/specs-wip/10c-scoreboard-amazon-makes.json` (15.55 s + the 2.5 s end card = 18.05 s). The real-time condensed cut (28.75 + 2.5 = 31.25 s) is in git history (ca1087f) |
 | Platform title | **How Long Do You Work for 1 Second of Amazon's Profit?** |
 | On-screen hook (header) | **HOW LONG DO YOU WORK FOR / 1 SECOND OF AMAZON'S PROFIT?** (11 words, 2 lines; "YOU" in green) |
-| Frame 1 | Header. The odometer reads **$0**, centred, and counts from frame 1 ($3,695 at 1.5 s). Under it the 2-line footer with the pay basis. On the stage, a 4-pip ladder of the profit targets, **≈ $2,464 · ≈ $12,319 · $32,526 · $65,052** (bottom to top; ≈ $2,464 lit white as the next one; each "≈" hangs in a gutter, so the "$" and digits of all four rows line up), and the big bill ghost of the 1-second row, the money stream already pouring into it, tagged "≈ $2,464" under it. No answer is on screen yet (the countable loop: each target turns into its answer as it is passed). Label stack "≈ $2,464 every second / AMAZON'S PROFIT SINCE YOU HIT PLAY". Caption "How long do you work for this?" |
+| Frame 1 | Header. The odometer reads **$0**, centred, and counts from frame 1 ($3,695 at 1.5 s). Under it the 2-line footer with the pay basis. On the stage, a 3-pip ladder of the profit targets, **≈ $2,464 · ≈ $12,319 · $32,526** (bottom to top; the recut; the earlier cuts had a fourth, $65,052; ≈ $2,464 lit white as the next one; each "≈" hangs in a gutter, so the "$" and digits of the rows line up), and the big bill ghost of the 1-second row, the money stream already pouring into it, tagged "≈ $2,464" under it. No answer is on screen yet (the countable loop: each target turns into its answer as it is passed). Label stack "≈ $2,464 every second / AMAZON'S PROFIT SINCE YOU HIT PLAY". Caption "How long do you work for this?" |
 | Footer | Amazon 2025 net income: $77.7B / Pay: BLS median $1,251 a week × 52 |
 
 **Topic vs the seed:**
@@ -456,24 +459,24 @@ All "≈ N seconds" are counter time, and the counter starts at 0.0 s, so they a
 - Fixed: `lookOpts.preroll: 0`, so frame 1 is $0 and "since you hit play" is literal. The Scoreboard (port) has no preroll: its counter runs from `counterT[0]` = 0.0 s, so frame 1 is $0 without a key.
 - Why Amazon: a household brand, and its profit per second (≈ $2,464) is the size of a couple of weeks' pay, so the comparison lands in a unit the viewer lives in.
 
-**Wrong belief it exploits:** "A second of a company's profit is pocket change." 1 second of Amazon's 2025 profit (≈ $2,464) is **≈ 2 weeks** of median full-time pay; 5 seconds is ≈ 10 weeks; half a year of pay goes in ≈ 13 seconds and a whole year in ≈ 26.
+**Wrong belief it exploits:** "A second of a company's profit is pocket change." 1 second of Amazon's 2025 profit (≈ $2,464) is **≈ 2 weeks** of median full-time pay; 5 seconds is ≈ 10 weeks; half a year of pay goes in **≈ 13 seconds** (the recut's verdict; the earlier cuts ran on to a whole year in ≈ 26).
 
 **Hook rules satisfied**
 
 | Rule | How |
 |---|---|
-| R1 | The counter ($0, counting), the rate ("≈ $2,464 every second"), the ladder's four profit targets and the footer ($77.7B, $1,251 a week × 52) are on screen at 0.0 s |
+| R1 | The counter ($0, counting), the rate ("≈ $2,464 every second"), the ladder's three profit targets and the footer ($77.7B, $1,251 a week × 52) are on screen at 0.0 s |
 | R2 | The hook line has one input (1 second) and no result: no answer is on screen until the first pass |
-| R3 | The answer unit is the viewer's: weeks of work ("≈ 2 WEEKS OF WORK", the header's "you"). The answers use the median ($1,251 a week, in the footer, the 2.8 s working and the verdict); the swap-in rule is spoken and worked in the label stack at 17.4 s (15.8 s in the round-2 cut; "$2,464 ÷ your weekly pay / your weeks per second") and pinned. Partial pass: the answers are the median's, not the viewer's own |
-| R4 | Small, round inputs (1 second, 5 seconds) and a familiar unit (weeks, months, a year of pay). "$77.7 billion" appears only in the footer, the 8.6 s working (7.4 s in the round-2 cut) and once in the VO |
+| R3 | The answer unit is the viewer's: weeks of work ("≈ 2 WEEKS OF WORK", the header's "you"). The answers use the median ($1,251 a week, in the footer, the 2.8 s working and the verdict); the swap-in rule is captioned and worked in the label stack at 8.2 s (the recut; 17.4 s in the condensed cut, 15.8 s in the round-2 cut; "$2,464 ÷ your weekly pay / your weeks per second") and pinned. Partial pass: the answers are the median's, not the viewer's own |
+| R4 | Small, round inputs (1 second, 5 seconds) and a familiar unit (weeks, months of pay). "$77.7 billion" appears only in the footer, the 6.5 s working (the recut; 8.6 s condensed, 7.4 s round 2) and once in the captions |
 | R5 | The implied wrong answer is "a few minutes of my work". The first answer says ≈ 2 weeks |
 | R6 | You ("do you work") + an amount (a second of profit) + a horizon ("since you hit play"). The money is Amazon's, so this is a partial pass |
 | R7 | The VO opens on the question, not a label |
 | R8 | 11 words, 2 lines |
-| R9 | 4 targets on the ladder from 0.0 s, the next one glowing; the big icon fills toward it (tagged with its amount) and pops on the pass at 1.0, 5.0, 13.2 and 26.4 s (thud + ding), the label stack slams the answer and the ladder label turns into it (≈ 2 weeks, ≈ 10 weeks, 6 months, 1 year). "And a whole year?" lands into a 2.4 s riser before the last |
-| R10 | First payoff at 1.000 s: the bill pops and the label stack slams "1 SECOND: ≈ $2,464 / ≈ 2 WEEKS OF WORK". The biggest answer (a year of pay) comes last, as the hero lands on exactly $65,052 (hit + cash) and the coin grows to the biggest object of the video (424 px, taller than the bills) |
-| R11 | The question is on screen and in the title; the verdict answers it with the climax, and the end frame keeps the 1-second answer (the ladder's bottom row, ≈ 2 weeks) |
-| R12 | A line to repeat: **A year of median pay: ≈ 26 seconds.** The hook's own answer (1 second ≈ 2 weeks) is caption line 1 and the pinned comment |
+| R9 | 3 targets on the ladder from 0.0 s, the next one glowing; the big icon fills toward it (tagged with its amount) and pops on the pass at 1.0 and 5.0 s (thud + ding) and 13.2 s (hit + cash), the label stack slams the answer and the ladder label turns into it (≈ 2 weeks, ≈ 10 weeks, 6 months). "And half a year?" lands at 10.8 s, into a 2.0 s riser; the coin pulses on the beat from 7.6 s (`runup.from`) to its pass |
+| R10 | First payoff at 1.000 s: the bill pops and the label stack slams "1 SECOND: ≈ $2,464 / ≈ 2 WEEKS OF WORK". The biggest answer (half a year of pay) comes last, as the hero lands on exactly $32,526 (hit + cash) and the coin grows to the biggest object of the video (336 → about 424 px across, taller than the bills) |
+| R11 | The question is on screen and in the title, and the video answers it: ≈ 2 weeks of median pay (1.0 s, read back at 2.8 s) and the viewer's own weeks by the rule (8.2 s, pinned). The verdict turns it round for the climax, and the end frame keeps the 1-second answer (the ladder's bottom row, ≈ 2 weeks). Re-checked for the recut: the hook asks about 1 second, so ending on half a year instead of a year leaves it answered |
+| R12 | A line to repeat: **Half a year of median pay: ≈ 13 seconds.** The hook's own answer (1 second ≈ 2 weeks) is caption line 1 and the pinned comment |
 
 **Benchmark hooks it is modelled on**
 - **H04 and H01, HD Guy, "Cost in Units of Starbucks Lattes" and "Cost in Units of RTX 5090"**. **9,858,084 (106.16x) and 30,617,461 (62.49x).** https://www.youtube.com/shorts/NHbMe2F_JXY, https://www.youtube.com/shorts/E2oVrAwHDOw
@@ -488,41 +491,39 @@ All "≈ N seconds" are counter time, and the counter starts at 0.0 s, so they a
   - Borrowed: the counter is running at 0.0 s, and round milestones pull the viewer through.
 - **Look evidence:** HD Guy's counters are this look (H02 above; "Cost in Units of…", H01 and H04): a neon odometer in a black top bar, one object on a dark stage, a hard-cut label stack. The working the Live Sheet put in its formula bar now rides the label stack's line 1.
 
-**Beat sheet (condensed cut, 2026-10-13: the real-time counter runs 0 → 26.403 s as before; captions reading-paced and back to back, the hook complete on frame 1; the verdict at 27.16 s, 0.76 s after the stop, held 1.59 s; body 28.75 s + the 2.5 s end card = 31.25 s; fix pass: the $77.7B and swap-in beats at 8.6 and 17.4 s, the run-up from 22.8 s pulsing on the score's beat, a denser money stream)** (milestone pass time = value ÷ $2,463.85 a second, from 0.0 s; label beats from `lookOpts.labels` and `lookOpts.rateSteps`). The round-2 cut (verdict on the stop at 26.4 s, held 4.6 s; 31.0 + 2.5 = 33.5 s) and its guide VO script are in git history (4f060a8 and earlier). `lookOpts` values that moved: the "Next" step at 22.8 s is held 3.7 s, not 3.6 (it runs into the last pass instead of ending 2.6 ms before it; no frame changes); in the fix pass, the rate's working and the swap-in rule start at 8.6 and 17.4 s (were 7.4 and 15.8), `flash` is 4.2 s (the kit default 3.0), and `stream: 24` and `runup` are new (Review log, "Condensed cut, fix pass").
+**Beat sheet (the recut to the earlier verdict, 2026-10-13: the real-time counter runs 0 → 13.201 s and stops on its half-year pass, $32,526; captions reading-paced and back to back, the hook complete on frame 1; the verdict at 13.96 s, 0.76 s after the stop, held 1.59 s; body 15.55 s + the 2.5 s end card = 18.05 s; the coin pulses on the score's beat from 7.6 s, `lookOpts.runup` with `from` 7.6 s (the recut fix pass; the run-up was from the 10.8 s "Next" beat))** (milestone pass time = value ÷ $2,463.85 a second, from 0.0 s; label beats from `lookOpts.labels` and `lookOpts.rateSteps`). The real-time condensed cut (the counter on to $65,052 at 26.403 s, the verdict "A year of median pay: ≈ 26 seconds." at 27.16 s; 28.75 + 2.5 = 31.25 s) is in git history (ca1087f), and the round-2 cut (31.0 + 2.5 = 33.5 s) with its guide VO script at 4f060a8 and earlier. `lookOpts` in the recut: the year row's label, ladder entries and coin are gone, and the coin moves to the half-year row; the $77.7B working and the swap-in rule start at 6.5 and 8.2 s (were 8.6 and 17.4); the "Next" step is new ("$1,251 × 52 ÷ 2 = $32,526 / Next: half a year of median pay", 10.8 s); `runup` is `{ "beat": 0.40003, "from": 7.6 }` (13.201 s ÷ 33; the recut fix pass added `from`); `flash` 4.2, `stream` 24, `climaxScale` and `tallVerdict` as before.
 
 | t (s) | On screen | Caption |
 |---|---|---|
-| 0.0 | Header. Odometer **$0**, counting from frame 2 ($82). Ladder "≈ $2,464 · ≈ $12,319 · $32,526 · $65,052" (≈ $2,464 lit as the next target). Bill ghost filling, the money stream already pouring (24 dots a second), tagged "≈ $2,464". Label "≈ $2,464 every second / AMAZON'S PROFIT SINCE YOU HIT PLAY". 2-line footer | "How long do you work for this?" (−0.4-2.75: complete on frame 1) |
+| 0.0 | Header. Odometer **$0**, counting from frame 2 ($82). Ladder "≈ $2,464 · ≈ $12,319 · $32,526" (≈ $2,464 lit as the next target). Bill ghost filling, the money stream already pouring (24 dots a second), tagged "≈ $2,464". Label "≈ $2,464 every second / AMAZON'S PROFIT SINCE YOU HIT PLAY". 2-line footer | "How long do you work for this?" (−0.4-2.75: complete on frame 1) |
 | 1.00 | The counter passes **≈ $2,464** (1 second). The bill pops; thud + ding. Label slams "1 SECOND: ≈ $2,464 / ≈ 2 WEEKS OF WORK" (held to 2.8). The bill flies to the ladder, and as it lands (1.72 s) its ladder label turns **≈ 2 weeks**; the 5-second bill drops in, already part full | |
 | 1.5 | The counter reads $3,695 | |
-| 2.8 | Label "$2,464 ÷ $1,251 A WEEK / ≈ 2 WEEKS OF MEDIAN PAY": the working, for the footer's pay (to 5.0) | "≈ 2 weeks, at median pay." (2.8-4.95) |
-| 5.00 | The counter passes **≈ $12,319**. The bill pops; label "5 SECONDS: ≈ $12,319 / ≈ 10 WEEKS OF WORK" (held to 8.6: `flash` 4.2); its ladder label turns **≈ 10 weeks** (5.72 s); the $32,526 bill drops in | "5 seconds: ≈ 10 weeks." (5.0-8.55) |
-| 8.6 | Label "$77.7B ÷ 31,536,000 S / ≈ $2,464 EVERY SECOND" (held to the 13.2 pass) | "Amazon's 2025 profit: $77.7 billion." (8.6-13.15) |
-| 13.20 | The counter passes **$32,526**. Label "≈ 13 SECONDS: $32,526 / 6 MONTHS OF WORK" (held to 17.4); its ladder label turns **6 months** (13.92 s); the coin drops in, about half full, tagged "$65,052" | "≈ 13 seconds: half a year." (13.2-17.35) |
-| 17.4 | Label "$2,464 ÷ YOUR WEEKLY PAY / YOUR WEEKS PER SECOND" (the swap-in rule, to 22.8: 5.4 s, the longest any text holds alone) | "2,464 ÷ your weekly pay = your weeks." (17.4-22.75; the caption breaks "… your weekly pay / = your weeks.") |
-| 22.8 | Label "$1,251 × 52 = $65,052 / NEXT: A YEAR OF MEDIAN PAY" (held to the pass) | "And a whole year?" (22.8-26.35: the question holds through the riser) |
-| 22.80-26.00 | **The run-up pulse** (`lookOpts.runup`, beat 0.40005 s = 26.403 s ÷ 66, the score's beat up to P): on each of 9 beats (22.80, 23.20 … 26.00) the coin bumps and its rim glows, its "$65,052" tag rides the bump, and the ladder's top row and the hero's glow pulse with it; the bump grows from 2.5% to 5% toward the pass | |
-| 24.0-26.4 | The kit's 2.4 s riser as the counter closes on $65,052; the hero swells 4% over it (eased in, released over the pass bump) | |
-| 26.40 | The counter passes **$65,052** and stops on it exactly (counterT ends 26.4026 s). The coin pops and grows over 0.5 s from 336 to 424 px (`climaxScale`); its tag fades as it grows; the top ladder label turns **1 year**; hit + cash; label "≈ 26 SECONDS: $65,052 / 1 YEAR OF WORK" | "≈ 26 seconds." (26.4-27.6: it leaves 0.44 s into the verdict, so the two never read as a stutter) |
-| 26.8-27.1 | The coin settles (the motion audit's only near-still before the verdict, 26.80-27.10, 0.30 s; it was 0.37 s with the verdict at 27.21) | |
-| 26.96-27.16 | A black band rises over the stage foot (the kit's tall verdict slot, `tallVerdict`); the label stack yields from 27.09 | |
-| 27.16 | Verdict, two short lines at 78 px: "A YEAR OF MEDIAN PAY: / **≈ 26 SECONDS**."; reveal cue | |
-| 27.16-28.75 | Verdict hold (1.59 s): the hero on $65,052, the big lit coin, the ladder reading ≈ 2 weeks · ≈ 10 weeks · 6 months · 1 year, the verdict. Then the 2.5 s end card (unchanged) | |
+| 2.8 | Label "$2,464 ÷ $1,251 A WEEK / ≈ 2 WEEKS OF MEDIAN PAY": the working, for the footer's pay (to 5.0). From 3.8 s the 5-second bill is over 75% full: until its pass only the counter, the stream and the level line move (with the counter masked, near-still at 3.83-4.37 and 4.40-5.00 s; the full frame keeps moving) | "≈ 2 weeks, at median pay." (2.8-4.95) |
+| 5.00 | The counter passes **≈ $12,319**. The bill pops; label "5 SECONDS: ≈ $12,319 / ≈ 10 WEEKS OF WORK" (held to 6.5); its ladder label turns **≈ 10 weeks** (5.72 s); the **coin** for the half year drops in, about 38% full, tagged "$32,526" | "5 seconds: ≈ 10 weeks." (5.0-6.45) |
+| 6.5 | Label "$77.7B ÷ 31,536,000 S / ≈ $2,464 EVERY SECOND" (to 8.2) | "Amazon's 2025 profit: $77.7 billion." (6.5-8.15) |
+| 8.2 | Label "$2,464 ÷ YOUR WEEKLY PAY / YOUR WEEKS PER SECOND": the swap-in rule (to 10.8) | "2,464 ÷ your weekly pay = your weeks." (8.2-10.75; the caption breaks "… your weekly pay / = your weeks.") |
+| 10.8 | Label "$1,251 × 52 ÷ 2 = $32,526 / NEXT: HALF A YEAR OF MEDIAN PAY" (held to the pass; its second line sets a little smaller, width-bound) | "And half a year?" (10.8-13.15: the question holds through the riser) |
+| 7.60-12.80 | **The run-up pulse** (`lookOpts.runup`, beat 0.40003 s = 13.201 s ÷ 33, the score's beat up to P; `from` 7.6 s): on each of 14 beats (7.60, 8.00, 8.40 … 12.00, 12.40, 12.80) the coin bumps and its rim glows, its "$32,526" tag rides the bump, and the ladder's top row and the hero's glow pulse with it; the bump grows from 2.5% to 5% toward the pass. It starts under the $77.7B line's last 0.6 s (the coin 58% full) and runs through the rule and "Next" | |
+| 11.2-13.2 | The kit's riser, 2.0 s (it starts 0.4 s after the "Next" beat), as the counter closes on $32,526; the hero swells 4% over it (eased in, released over the pass bump) | |
+| 13.20 | The counter passes **$32,526** and stops on it exactly (counterT ends 13.2013 s). The coin pops and grows over 0.5 s from about 336 to 424 px across (`climaxScale`); its tag fades as it grows; the top ladder label turns **6 months**; hit + cash; label "≈ 13 SECONDS: $32,526 / 6 MONTHS OF WORK" | "≈ 13 seconds: half a year." (13.2-14.4: it leaves 0.44 s into the verdict) |
+| 13.6-13.9 | The coin settles (the motion audit's longest near-still before the verdict on the full frame, 0.13 s; 0.37 s with the counter masked at y 380-540, 13.53-13.90) | |
+| 13.76-13.96 | A black band rises over the stage foot (the kit's tall verdict slot, `tallVerdict`); the label stack yields from 13.89 | |
+| 13.96 | Verdict, two lines: "HALF A YEAR OF MEDIAN PAY: / **≈ 13 SECONDS**." (caps about 64 px, about level with the label lines' 62: the longer first line sets it a little under the year verdict's 78 px type, caps 68); reveal cue | |
+| 13.96-15.55 | Verdict hold (1.59 s): the hero on $32,526, the big lit coin, the ladder reading ≈ 2 weeks · ≈ 10 weeks · 6 months, the verdict. Then the 2.5 s end card (unchanged) | |
 
-The 1-second answer slams into the label stack at its pass (1.0 s) while the hook caption is up, and vo[1] reads it back at 2.8 s with the label stack's working: the one pass whose own caption is not at the pass (the hook keeps its question). Every other pass's caption goes up within 0.2 s of it. The resting rate shows only before the first pass (0-1.0 s): every later beat holds to the next one (the checker asserts it, on either cut).
+The 1-second answer slams into the label stack at its pass (1.0 s) while the hook caption is up, and vo[1] reads it back at 2.8 s with the label stack's working: the one pass whose own caption is not at the pass (the hook keeps its question). The other two passes' captions go up within 0.01 s of them. The resting rate shows only before the first pass (0-1.0 s): every later beat holds to the next one (the checker asserts it).
 
-**On-screen captions** (condensed cut; no narration, so the VO lines are captions only; 44 words, all shown, every line up ≥ 1.2 s from frame 1):
+**On-screen captions** (the recut; no narration, so the VO lines are captions only; 41 words, all shown, every line up ≥ 1.2 s from frame 1; every line but "And half a year?" is a round-2 line, word for word):
 
 | # | Up (s) | For (s) | Caption |
 |---|---|---|---|
 | 0 | −0.4-2.75 | 2.75 from frame 1 | How long do you work for this? |
 | 1 | 2.8-4.95 | 2.15 | ≈ 2 weeks, at median pay. |
-| 2 | 5.0-8.55 | 3.55 | 5 seconds: ≈ 10 weeks. |
-| 3 | 8.6-13.15 | 4.55 | Amazon's 2025 profit: $77.7 billion. |
-| 4 | 13.2-17.35 | 4.15 | ≈ 13 seconds: half a year. |
-| 5 | 17.4-22.75 | 5.35 | 2,464 ÷ your weekly pay = your weeks. |
-| 6 | 22.8-26.35 | 3.55 | And a whole year? |
-| 7 | 26.4-27.6 | 1.2 | ≈ 26 seconds. |
+| 2 | 5.0-6.45 | 1.45 | 5 seconds: ≈ 10 weeks. |
+| 3 | 6.5-8.15 | 1.65 | Amazon's 2025 profit: $77.7 billion. |
+| 4 | 8.2-10.75 | 2.55 | 2,464 ÷ your weekly pay = your weeks. |
+| 5 | 10.8-13.15 | 2.35 | And half a year? |
+| 6 | 13.2-14.4 | 1.2 | ≈ 13 seconds: half a year. |
 
 **The maths**
 
@@ -532,16 +533,17 @@ The 1-second answer slams into the label stack at its pass (1.0 s) while the hoo
 
 | On screen | Formula | Exact | Shown (everywhere) |
 |---|---|---:|---|
-| Profit rate | 77.7e9 ÷ 31,536,000 | 2,463.851 | ≈ $2,464 a second (rate label, ladder, the 1-second label, the 2.8 / 8.6 / 17.4 s working (7.4 / 15.8 s in the round-2 cut), VO, caption, pinned) |
+| Profit rate | 77.7e9 ÷ 31,536,000 | 2,463.851 | ≈ $2,464 a second (rate label, ladder, the 1-second label, the 2.8 / 6.5 / 8.2 s working in the recut (8.6 / 17.4 s condensed, 7.4 / 15.8 s round 2), captions, platform caption, pinned) |
 | 1 second in weeks of median pay | 2,463.851 ÷ 1,251 | 1.970 | ≈ 2 weeks (label, ladder, VO, caption, pinned); the 2.8 s working's $2,464 ÷ $1,251 = 1.970 rounds the same |
 | 5 seconds of profit | k × 5 | 12,319.25 | ≈ $12,319 |
 | 5 seconds in weeks | 12,319.25 ÷ 1,251 | 9.848 | ≈ 10 weeks (label, ladder, VO, caption); $12,319 ÷ $1,251 = 9.847 rounds the same |
-| Half a year of median pay | $65,052 ÷ 2 | 32,526 | $32,526 = 6 months (exact) |
-| Pass: half a year | 32,526 ÷ k | 13.201 s | ≈ 13 seconds (label, VO) |
-| Pass: a year of median pay | 65,052 ÷ k | 26.403 s | ≈ 26 seconds (caption, verdict, the last pass label: never shown in the round-2 cut, up 26.403-27.14 in the condensed cut); 65,052 ÷ 2,464 = 26.401 rounds the same |
+| Half a year of median pay | $1,251 × 52 ÷ 2 | 32,526 | $32,526 = 6 months (exact; the "Next" label at 10.8 s works it from the footer's pay) |
+| Pass: half a year | 32,526 ÷ k | 13.201 s | ≈ 13 seconds (label, caption, **verdict**, platform caption, where the recut stops); 32,526 ÷ 2,464 = 13.201 rounds the same |
+| Pass: a year of median pay (earlier cuts only) | 65,052 ÷ k | 26.403 s | ≈ 26 seconds (the round-2 and condensed verdict; not in the recut) |
 | Counter at 1.5 s | k × 1.5 | 3,695.78 | $3,695 (frame check: the Scoreboard's running count rounds down, as 10a's $46,137) |
-| Counter final | k × 26.4026 | 65,052.07 | $65,052 (stops on the 1-year pass; no ≈: the dollar reading is exact) |
-| Kit pass timing | value ÷ 2,463.85 (the stored rate), from 0.0 s | 1.000 / 5.000 / 13.201 / 26.403 s | each pass beat lands on its pass; the last at the stop itself (26.40258 < 26.4026) |
+| Counter final (the recut) | k × 13.2013 | 32,526.03 | $32,526 (stops on the half-year pass; no ≈: the dollar reading is exact; stored rate $32,526.02) |
+| Counter final (earlier cuts) | k × 26.4026 | 65,052.07 | $65,052 |
+| Kit pass timing | value ÷ 2,463.85 (the stored rate), from 0.0 s | 1.000 / 5.000 / 13.201 s | each pass beat lands on its pass; the last at the stop itself (13.2012907 < 13.2013, after the exact pass 13.2012862) |
 
 **Sources (real-world inputs)**
 
@@ -558,31 +560,32 @@ The 1-second answer slams into the label stack at its pass (1.0 s) while the hoo
 - "Median pay" means BLS median usual weekly earnings of full-time wage and salary workers ($1,251 a week); a year of it is × 52 ($65,052) and 6 months is half of that.
 
 **Caption (IG / TikTok; also the YouTube description)**
-> 1 second of Amazon's profit ≈ 2 weeks of median full-time pay. Amazon kept $77.7 billion in 2025 (net income). Divide by the 31,536,000 seconds in a year: ≈ $2,464 a second. Median full-time pay is $1,251 a week (BLS), so 5 seconds ≈ 10 weeks of it, and a year of it ($65,052) goes by every ≈ 26 seconds. Yours: 2,464 ÷ your weekly pay. Source: Amazon's Q4 2025 results (February 2026); pay: BLS. Educational maths, not advice.
+> 1 second of Amazon's profit ≈ 2 weeks of median full-time pay. Amazon kept $77.7 billion in 2025 (net income). Divide by the 31,536,000 seconds in a year: ≈ $2,464 a second. Median full-time pay is $1,251 a week (BLS), so 5 seconds ≈ 10 weeks of it, and half a year of it ($32,526) goes by every ≈ 13 seconds. Yours: 2,464 ÷ your weekly pay. Source: Amazon's Q4 2025 results (February 2026); pay: BLS. Educational maths, not advice.
 > #amazon #moneymath #profit
 
 **Pinned comment**
 > 2,464 ÷ your weekly pay = weeks of your work per second of Amazon's profit. Median ($1,251): ≈ 2. Yours?
 
 **Per-platform notes**
-- **YouTube Shorts:** the title is the header's question. The finished board is the screenshot frame (held 4.6 s in the round-2 cut; 1.59 s in the condensed cut, which trades the long hold for no still run before the card).
-- **Instagram Reels:** use the finished board with the verdict (27 s on in the round-2 cut; 27.5-28.75 s in the condensed cut: the hero at $65,052, the big lit coin, the ladder reading ≈ 2 weeks · ≈ 10 weeks · 6 months · 1 year, the verdict) as the cover. Caption line 1 carries the hook's answer (1 second ≈ 2 weeks), which the verdict no longer repeats; on the cover it is the ladder's bottom row (≈ 2 weeks).
+- **YouTube Shorts:** the title is the header's question. The finished board is the screenshot frame (held 1.59 s in the recut and the condensed cut, 4.6 s in the round-2 cut).
+- **Instagram Reels:** use the finished board with the verdict as the cover: 14.6-15.5 s in the recut, once the last caption has gone ("≈ 13 seconds: half a year." is up to 14.4 s and gone by 14.55; recut fix pass, it was 14.1-15.5 s) (the hero at $32,526, the big lit coin, the ladder reading ≈ 2 weeks · ≈ 10 weeks · 6 months, "HALF A YEAR OF MEDIAN PAY: ≈ 13 SECONDS."); it was 27 s on in the round-2 cut. Caption line 1 carries the hook's answer (1 second ≈ 2 weeks), which the verdict no longer repeats; on the cover it is the ladder's bottom row (≈ 2 weeks).
 - **TikTok:**
   - Expected fights: "that's before tax" (the weeks are gross median pay, as the footer says), "net income includes one-off gains" (answer: the video uses the net income Amazon reports; other lines are not used on screen) and "AWS makes all the profit" (answer with the release's own segment figures only if asked).
   - Keep "1 second ≈ 2 weeks of median full-time pay" in the first 100 characters.
 - **Look note:**
   - Ported from the Live Sheet to the Scoreboard on 2026-10-08 (Review log, "Port to scoreboard"). The header, footer, every number and the VO wording are unchanged. The fixer pass (Review log, "Fixer pass") split the verdict for the Scoreboard's slot (its second sentence, "1 second ≈ 2 weeks.", left it), moved "And a whole year?" from 21.0 to 22.8 s and dropped a leading "=" from a label line.
-  - The Live Sheet's table becomes the Scoreboard's milestone ladder and label stack:
+  - The Live Sheet's table becomes the Scoreboard's milestone ladder and label stack (as ported, with the year row; the recut drops it, see below):
     - the Profit column is the ladder (`pipLabels` "≈ $2,464", "≈ $12,319", "$32,526", "$65,052", the milestones' own amounts) and the big icon's tag: the targets the hero is chasing, from frame 1;
     - the You work column is what each ladder label turns into as its icon lands in the slot (`pipPassed` "≈ 2 weeks", "≈ 10 weeks", "6 months", "1 year"), so the answers stay hidden until passed and the end frame reads as the old finished column;
     - the Since play column rides the pass labels (`labels`: "1 SECOND: ≈ $2,464 / ≈ 2 WEEKS OF WORK" … ), the answer in the label stack's big line;
     - the formula bar's steps become `rateSteps`, one working per VO beat, each starting with its line and held to the next beat (round-2 cut: 2.8 s the median working, 7.4 s the rate's working, 15.8 s the swap-in rule, held 7.0 s, and 22.8 s "$1,251 × 52 = $65,052 / Next: a year of median pay", as 10a's "Next" beat, held 3.6 s into the verdict; the 7.4 s step is held 5.9 s, past the 13.2013 s pass, so frame 13.2 never flashes the resting rate: 5.8 s ended 1.3 ms short, and the checker caught it). In the condensed cut after its fix pass the rate's working is at 8.6 s and the swap-in rule at 17.4 s (each with its caption, so no text holds alone over 5.4 s), and the "Next" beat is held 3.7 s to the year's pass (26.403 s), whose label then holds 0.76 s until the verdict replaces it. A milestone label holds 4.2 s (`flash: 4.2`; the kit default is 3.0), so the 5-second row's label reaches the 8.6 s step and the half-year's the 17.4 s step.
   - `icons`: bills for the first three rows and a coin for the year, as 10a's ladder ends on a coin. `badges: false`: the kit would otherwise stamp the repeated bills "×5", "×13" from the names "5 seconds" and "≈ 13 seconds" (×13 is not true: it is 13.2 seconds), so they take the stacked twin on the ladder instead.
-  - `final` is "$65,052" with no "≈", so the hero draws no unlit "≈" ghost and lands centred on the pass, as 10a's $1,000,000 does.
+  - `final` is "$32,526" in the recut ("$65,052" before) with no "≈", so the hero draws no unlit "≈" ghost and lands centred on the pass, as 10a's $500,000 does.
+  - The recut (2026-10-13; Review log, "Recut to the earlier verdict"): the ladder, `pipPassed`, `labels` and milestones lose the year row; `icons` are "bill", "bill", "coin", so the half-year row, now the last, takes the coin and its `climaxScale` growth; the `rateSteps` are the 2.8 s working, the $77.7B working at 6.5 s, the swap-in rule at 8.2 s and a new "Next" step at 10.8 s, "$1,251 × 52 ÷ 2 = $32,526 / Next: half a year of median pay", held to the pass (its second line is width-bound, a little under the other label lines); `runup` is `{ "beat": 0.40003, "from": 7.6 }` (13.201 s ÷ 33, the recut's §2.3 row; `from`, the kit's own opt-in, starts the pulses at 7.60 s instead of the 10.8 s "Next" beat, recut fix pass). The verdict is "Half a year of median pay: / **≈ 13 seconds**." (the owner's wording): its longer first line (779 px wide) sets it a little smaller than the year verdict: caps about 64 px against 68 px (78 px type), about level with the label lines (caps 62 px). If the owner wants the full size back, the shorter route is "Half a year of pay: / **≈ 13 seconds**." (the median is in the footer), measured at caps 67 px. That choice is put to the owner (Review log, *Owner decision*, follow-up); until the owner answers, the owner's wording stands.
   - Dropped with the Live Sheet: `preroll`, `formulaSteps`, `columns`, `rows`, `loop` (the Scoreboard reads none of them; its counter runs from `counterT[0]` = 0.0 s, so frame 1 is $0 without a preroll key).
   - The 2-line footer stays as written: the Scoreboard sets a `\n` footer as two 40 px rows and starts the stage one row lower.
-  - The verdict is two short lines, "A year of median pay: / **≈ 26 seconds**." (fixer pass). The judged version, "A year of median pay: **≈ 26 seconds**. / 1 second ≈ 2 weeks.", was width-bound in the Scoreboard's slot (line 1 at 776 px) and set at 54 px (caps 47), under the 72 px label line it replaces. Split, each line is short, and with `tallVerdict` (the kit's 196 px boxed slot: a black band rises over the stage foot in the 0.2 s before) it sets at **78 px** (caps about 68 px), above the label lines and level with 10a's one-line verdict (76 px). In the 170 px slot without the band it would set at 70 px. The 1-second answer stays on the end frame as the ladder's bottom row, in caption line 1 and in the pinned comment. If the owner wants "1 second ≈ 2 weeks" back in the verdict, the shorter route is "A year of pay: **≈ 26 seconds**." (the median is in the footer), at about 65 px.
-  - `climaxScale: true`: the coin grows on its pass toward the bills' width, as far as the stage allows: 336 → 424 px across (the bills are 537 × 327), its top and foot 16 px inside the stage and the band. Its tag yields as it grows; the hero has just landed on the same $65,052.
+  - Before the recut the verdict was two short lines, "A year of median pay: / **≈ 26 seconds**." (fixer pass). The judged version, "A year of median pay: **≈ 26 seconds**. / 1 second ≈ 2 weeks.", was width-bound in the Scoreboard's slot (line 1 at 776 px) and set at 54 px (caps 47), under the 72 px label line it replaces. Split, each line is short, and with `tallVerdict` (the kit's 196 px boxed slot: a black band rises over the stage foot in the 0.2 s before) it sets at **78 px** (caps about 68 px), above the label lines and level with 10a's one-line verdict (76 px). In the 170 px slot without the band it would set at 70 px. The 1-second answer stays on the end frame as the ladder's bottom row, in caption line 1 and in the pinned comment. If the owner wants "1 second ≈ 2 weeks" back in the verdict, the shorter route is "A year of pay: **≈ 26 seconds**." (the median is in the footer), at about 65 px.
+  - `climaxScale: true`: the coin grows on its pass toward the bills' width, as far as the stage allows: 336 → 424 px across (the bills are 537 × 327), its top and foot 16 px inside the stage and the band. Its tag yields as it grows; the hero has just landed on the same number ($32,526 in the recut, where the half-year coin grows the same way).
   - Kit changes in the Scoreboard `cost-counter` module (this port; defaults unchanged, so 10a and the two samples render pixel-identically): `pipPassed` (a ladder label that turns into its answer once passed, the column sized for the wider text) and `badges: false`.
   - Kit changes in the fixer pass: `climaxScale` and `tallVerdict` (both opt-in, default off); a leading "≈ " in a ladder label hangs in a gutter as wide as "≈ ", so the column's digits align (only in a column that has one, so not in 10a); and the big icon keeps clear of the ladder column at its pop's peak (the bump's 1 + amp, plus 16 px of glow, plus 14 px): its art box sits right of the region's centre (here x 404-938 at rest, 33 px clear of "≈ 10 weeks" at the peak, was 4 px). That last one shows in 10a too (its Look note).
   - No `slot`: the label stack and the ladder carry the answers, and frame 1 holds one task. No Amazon logo or brand colours: the name is text in the header.
@@ -1181,24 +1184,297 @@ The §2.3 rows the promotion will need (Appendix B run on the WIP cue records; t
 | MALLET | >= -10 | – | -9.0 (1.0) | – |
 - **Under 0.5 of margin:** 10a A5 PLR 12.92 (0.08; the encode loop caps it at 12.95), A2 −1.15 dBTP (0.15), A1 master (0.29, centred), B1 music −2.0 (0.50); 10b B3 3.2 dB (0.20, the P hit at 33.3 s; see item 6), A5 12.85 (0.15), A1 master −14.07 (0.23), A2 −1.27 (0.27), B1 music −0.88 (0.38); 10c A5 12.78 (0.22), A1 master (0.29), A2 −1.30 (0.30), B1 music −1.93 (0.43). S12 (10b) and S14 (all three) at their limits, as in every cut. Likely causes, for the ship step: A5 and A2 follow the payoff stack's AAC overshoot (P = 32.511 / 33.3 / 26.403 s) under the −1.5 dBTP ceiling (PLR follows TP, since I is fixed); B1 music sits at the hot edge of the Scoreboard window on 10a and 10c; 10b's B3 is the P hit over the band's P downbeat on the Becker pack being edited now. None is a gate failure and none was fixed here (packs and `acceptance.json` are the ship step's).
 
-**Owner decision (open; asked before promotion).** *These three run in real time, so the condensed cuts are only 1-7% shorter than round 2 (bodies 34.95 / 36.15 / 28.75 s, about twice 06b's and 06c's 16-18 s). Do you want them shorter, and how?*
+**Owner decision (answered 2026-10-13: "Mixed").** *These three run in real time, so the condensed cuts are only 1-7% shorter than round 2 (bodies 34.95 / 36.15 / 28.75 s, about twice 06b's and 06c's 16-18 s). Do you want them shorter, and how?*
 - **A. Ship them real time, as condensed here** (37.45 / 38.65 / 31.25 s with the card). "Since you hit play" stays literal and each keeps its climax ($1 million a year, a working life, a year of pay). The still holds are gone and the run-ups now move.
 - **B. An earlier verdict on a pass the counter already makes** (10a and 10c; spec-only, every number already verified on screen):
   - 10a stops on $500,000 at 16.256 s: "$500K a year: ≈ 16 seconds.", a body of about 18.7 s (21.2 s with the card). The $1M row, its coin and riser go; the $500K row takes the coin; "≈ $111 million an hour" and the $970B working must move into the first 16 s or drop to the caption.
   - 10c stops on half a year ($32,526) at 13.201 s: "Half a year of median pay: ≈ 13 seconds.", about 15.6 s (18.1 s). The year row goes; the $77.7B working and the swap-in rule move before 13.2 s.
   - Each needs a new verdict and a hook re-check (both hooks still hold: "when does it pass your salary?", "how long do you work for 1 second…?"). 10b cannot do this without a new duel (its hook names "40 years vs 1 minute").
 - **C. A visible fast-forward** (for example 2× with an on-screen real-time clock): keeps every climax, but "since you hit play" is no longer literal, the verdict's "≈ 33 seconds" becomes clock time, not video time, and it needs a new opt-in kit option.
-- **Recommendation (the critic's too):** **A for 10b**, which has the best moment-to-moment action (the bricks, the heat keys, the cower, the burst); **B for 10a and 10c**, which keeps the premise literal and lands near the 06b/06c bodies. C is not recommended. Until the owner answers, the WIP files hold option A for all three; the answer goes in this log.
+- **Recommendation (the critic's too):** **A for 10b**, which has the best moment-to-moment action (the bricks, the heat keys, the cower, the burst); **B for 10a and 10c**, which keeps the premise literal and lands near the 06b/06c bodies. C is not recommended.
+- **The owner's answer (2026-10-13): "Mixed", the recommendation.** 10b ships real time as it is (option A; its WIP spec is not touched again). 10a and 10c get option B, an earlier verdict on a pass the counter already makes, keeping "since you hit play" literal: 10a stops on $500,000 at 16.256 s ("$500K a year: ≈ 16 seconds."), 10c on half a year of median pay ($32,526) at 13.201 s ("Half a year of median pay: ≈ 13 seconds."). The verdict wording could be tightened for reading time, every number had to come from the sourced rates and the check, and the hooks had to be re-checked. Done in the next entry, "Recut to the earlier verdict (2026-10-13)".
+- **Follow-up for the owner (open, from the recut's review, 2026-10-13): 10c's verdict wording.** Your wording, "Half a year of median pay: / **≈ 13 seconds**.", is what the recut uses. Its longer first line sets the verdict at caps of about 64 px, barely above the label lines (62 px), so the climax line is no bigger than the label it replaces. The shorter "Half a year of pay: / **≈ 13 seconds**." (the median is in the footer, and the label stack has just said "Next: half a year of median pay") measured caps 67 px. Keep yours, or take the shorter one? Until you answer, yours stays; the swap is one string in the spec and the check.
 
-**To promote** (the ship step; replaces the condensed cut's list):
+**To promote** (as it stood; superseded by the list in "Recut to the earlier verdict" below, after the owner's answer):
 1. **First the owner's answer for 10a and 10c** (above). 10b can promote as it is. If B is chosen for 10a or 10c, that is a new cut (a new verdict, the rows trimmed, the check's expectations), not this file.
 2. Copy the WIP specs over `studio/specs/<id>.json` and set `IN_SPECS = {"a": "cond", "b": "cond", "c": "cond"}` in the check. **The kit change ships with them**: 10a's and 10c's WIP specs use `lookOpts.runup` (the working tree's `formats/cost-counter.js`); without it they render as the condensed cut did, with no pulse.
 3. BIBLE §11.1 for the moved records: the Scoreboard re-measure (10c's record moved; 10a's is identical to the condensed cut's but not to the fixture) and the Becker Rig `MODEL` refit (10b) on the pack as it then stands; store the records in `test/fixtures/cues.json`; `tempo-table --write` (the three rows above); `verify --strict-cues`, `npm test`. After the table is rewritten, rerun the check: its run-up rule reads the 10a and 10c rows (P 32.511 / N₁ 80 and 26.403 / 66 are expected to stay).
 4. Ship by §11.5; then `publishing/10{a,b,c}-*` and `teasers/v2/teasers.json` (runtimes 37.45 / 38.65 / 31.25 s; covers: 10a 33.6-34.9 s, 10b 34.95-36.1 s, 10c 27.5-28.75 s).
 
-**Open items:**
-- The owner decision above.
+**Open items** (as they stood; the recut entry below answers or carries each):
+- The owner decision above (answered: "Mixed").
 - 10c's two masked near-stills (12.30-13.20 and 22.17-22.80 s, the last second before a pass with the icon nearly full) stay; the full-frame metric has nothing there (the hero counter changes every frame). The cheap remedy for the second is `runup.from` ≈ 22.0 s (two more pulses); the first would need a pulse before every pass (a second opt-in).
 - The caption karaoke on long reading-paced lines (item 10): an opt-in in the Scoreboard's shared caption code, for a later pass.
 - The margins under 0.5 listed above, for the ship step's re-measure and refit.
+- On promotion these go stale and are outside this pass's files: `teasers/v2/teasers.json`, `publishing/10{a,b,c}-*.{md,json}` and the files under `renders/`.
+
+### Recut to the earlier verdict (2026-10-13): 10a and 10c
+
+**The brief:** the owner's answer to the length question (*Owner decision*, above): "Mixed". 10b ships real time as condensed, and this pass does not touch its WIP spec. 10a and 10c get option B: an earlier verdict on a pass the counter already makes, with "since you hit play" kept literal. 10a stops on $500,000 at 16.256 s, verdict "$500K a year: ≈ 16 seconds." (the brief's body: about 18.7 s); the $1M row, its coin and its riser go, and the $500K row takes the coin, the run-up and the riser. "≈ $111 million an hour" and the $970B working move into the first 16 s or drop to a caption. 10c stops on half a year of median pay ($32,526) at 13.201 s, verdict "Half a year of median pay: ≈ 13 seconds." (about 15.6 s); the year row goes, and the $77.7B working and the swap-in rule move before 13.2 s. The verdict wording could be tightened for reading time, but every number had to come from the sourced rates and be verified by the check, and the hooks had to be re-checked. The condensed cut's rules stand: frame 1 complete and moving, no still run of 0.4 s or more before the verdict hold, captions up at least max(1.2 s, 0.12 s a word), the verdict 0.8-1.5 s after the final reveal and held 1.2-1.6 s, and the end card unchanged.
+
+**Files:**
+- Changed: `studio/specs-wip/10a-scoreboard-debt-interest-live.json` and `studio/specs-wip/10c-scoreboard-amazon-makes.json` (the recut; the real-time condensed versions are in git history, ca1087f); `teasers/v2/checks/10-cost-counter.py`; this write-up (the status paragraph, the shared decisions, the 10a and 10c sections: tables, wrong beliefs, hook rules, beat sheets, caption tables, maths, platform captions, platform notes and look notes; the *Owner decision* entry; this entry).
+- Not touched: `studio/specs-wip/10b-becker-rig-debt-vs-your-pay.json`, `studio/specs/`, every kit file (**no kit change**: the recut is spec values only, and `lookOpts.runup` is the fix pass's opt-in option, already in HEAD), the Scoreboard `lib.js`, `theme.js`, `style.css`, `cta.js`, `kit.js` and every other format, the sound packs, `sound/` (BIBLE.md, acceptance.json), `src/`, `test/`, `publishing/` and `renders/`. Nothing is committed.
+- Renders: `/tmp/cond/10/<id>/recut-final/<id>.mp4` (the picture with the sound built on it). The picture-only renders in `recut/` were deleted after the sound step's video-md5 check.
+
+**What changed** (spec, against the condensed cut; the counter's rate, the header, the footer and the end card are the same):
+
+| | 10a | 10c |
+|---|---|---|
+| The stop (`counterT[1]`) / `final` | 32.51135 → **16.25568 s** / "$1,000,000" → **"$500,000"** (r × 16.25568 = $500,000.30; stored rate $500,000.33) | 26.4026 → **13.2013 s** / "$65,052" → **"$32,526"** (k × 13.2013 = $32,526.03; stored rate $32,526.02) |
+| Milestones, ladder, icons | 6 → **5**: the $1,000,000 row, its label, its "$1M" pip and its coin go; `icons` bill ×4 + **coin for $500K** | 4 → **3**: the year row, its label, its pip and its "1 year" answer go; `icons` bill, bill, **coin for the half year** |
+| Verdict | "**$1M** a year: ≈ 33 seconds." at 33.35 → "**$500K** a year: ≈ 16 seconds." at **17.07** (0.81 s after the stop) | "A year of median pay: / **≈ 26 seconds**." at 27.16 → "Half a year of median pay: / **≈ 13 seconds**." at **13.96** (0.76 s after the stop) |
+| Verdict hold / body / total | 1.6 → **1.53 s** / 34.95 → **18.6 s** / 37.45 → **21.1 s** | 1.59 → **1.59 s** / 28.75 → **15.55 s** / 31.25 → **18.05 s** |
+| `data.hold` | 2.43865 → 2.34432 | 2.3474 → 2.3487 |
+| Captions | 11 → **9**. Dropped: "≈ $30,800 a second." (the rate is in the label stack from frame 1, and under the $970B working), "$500,000: ≈ 16 seconds." (the verdict says it) and "$1 million: passed.". New: "**$500,000**: passed." (16.25 s). Moved: "At fiscal 2025's rate: $970 billion a year." 22.7 → 4.65 s, "That's ≈ $111 million an hour." 19.1 → 6.4, the $250K line 8.15 (unchanged start), the swap-in rule 12.45 → 10.55, "And the last row?" 28.0 → 13.45 | 8 → **7**. Dropped: "And a whole year?", "≈ 26 seconds.". New: "And half a year?" (10.8 s). Moved: the $77.7B line 8.6 → 6.5 s, the swap-in rule 17.4 → 8.2, "≈ 13 seconds: half a year." 13.2 (unchanged; now the last line, up 1.2 s, gone 0.44 s into the verdict) |
+| `rateSteps` | 5 → **4**: the 5.4 s rate step ("≈ $30,800 / every second", the resting label again) goes; the $970B working 22.7 → **4.65 s**, the hourly working 19.1 → **6.4**, the swap-in working 12.45 → **10.55**, "Next / $1,000,000 a year" 28.0 → "Next / **$500,000 a year**" **13.45** | the 2.8 s working kept; the $77.7B working 8.6 → **6.5 s**, the swap-in rule 17.4 → **8.2**; "$1,251 × 52 = $65,052 / Next: a year of median pay" (22.8) → "**$1,251 × 52 ÷ 2 = $32,526 / Next: half a year of median pay**" (**10.8**) |
+| `runup.beat` | 0.40639 → **0.4064** (P 16.256 s ÷ 40) | 0.40005 → **0.40003** (P 13.201 s ÷ 33) |
+| Cue record | 50 → **32 cues** (base 18.6) | 39 → **24 cues** (base 15.55) |
+
+Every caption and label string in the recut is a round-2 string, word for word, except the new last caption (10a), the new question and "Next" label (10c) and the two verdicts. The check builds those from the same computed numbers.
+
+**The hooks, re-checked.**
+- 10a asks "US debt interest since you hit play: when does it pass your salary?". The video still answers it. Each salary from $30K to $500K has a pip or sits between two (each passed with a thud, a label and a caption). Any other salary, including the top earners the $1M row used to cover, gets the swap-in rule, captioned at 10.55 s, worked on screen for the median and pinned. The verdict gives the top row. The question was never about $1 million, so stopping on $500,000 leaves it honest. Frame 1 still shows $0, the five pips with the median among them, the rate and the footer's pay figure. "Since you hit play" stays literal: the counter starts at $0 on frame 1, runs at the sourced rate and stops on the verdict's own number.
+- 10c asks "How long do you work for 1 second of Amazon's profit?". It is answered at 1.0 s (the label "≈ 2 WEEKS OF WORK"), read back at 2.8 s with its working ("≈ 2 weeks, at median pay"), and turned into the viewer's own answer by the rule at 8.2 s. The verdict was always the climax turned round (how much of your pay one stretch of profit is). The recut turns it round at half a year instead of a year, and the counter really stops on $32,526 at the time the verdict says.
+- The titles, headers and footers are unchanged. The R-rules are re-stated in each section (10a R1, R3, R4, R9-R12; 10c R1, R3, R4, R9-R12).
+
+**The numbers** (every one already on screen in the earlier cuts, now recomputed by the check):
+- 10a: $500,000 ÷ $30,758.50 a second = 16.256 s → **≈ 16 seconds** (whole seconds from 5 s up, the format's rule; the same "≈ 16 SECONDS" the $500K label always showed). "$500K" is the ladder's own pip label. ≈ $111 million an hour = r × 3,600 = $110,730,594 to 3 figures.
+- 10c: $1,251 × 52 ÷ 2 = **$32,526** (exact, 6 months of median pay; the new "Next" label works it from the footer's pay) ÷ $2,463.85 a second = 13.201 s → **≈ 13 seconds**; $32,526 ÷ the shown $2,464 = 13.201, which rounds the same.
+- The stops land after both passes (exact and stored rate: 16.2556701 / 16.2556692 s; 13.2012862 / 13.2012907 s) and within $0.50 of the milestone at both rates, so the finals are exact and carry no "≈", as before.
+- The platform captions follow the verdicts. 10a's line 1 is "… $500,000 ≈ 16 seconds." (was "$1 million ≈ 33 seconds."), and "≈ $111 million an hour" is added after the per-second rate. 10c's "a year of it ($65,052) goes by every ≈ 26 seconds" becomes "half a year of it ($32,526) goes by every ≈ 13 seconds". The pinned comments do not change.
+
+**Timing choices.**
+- 10a: the kit's riser runs min(2.4, the gap from the last label beat − 0.4) s, so the full 2.4 s riser needs "Next" at least 2.8 s before the pass: 13.45 s. That leaves 4.65-8.1 s, between the $100K caption and the $250K pass, for the two workings (1.7 s each, each a label beat with its caption), and 10.55-13.4 s (2.85 s) for the swap-in rule. The verdict went in at 17.1 s first (0.84 s after the stop): the landing's settle left 0.37 s of near-still before it. At **17.07 s** it is 0.33 s, the condensed cut's figure.
+- 10c: the 0-5 s opening is the condensed cut's. The 5.0-13.2 s window carries four beats: the 5-second answer (1.45 s), the $77.7B working (1.65 s), the swap-in rule (2.55 s) and "And half a year?" (2.35 s, into a 2.0 s riser from 11.2 s). "Next" went in at 10.4 s first (a 2.4 s riser, the rule up 2.15 s). It is at **10.8 s** for the rule's reading time, the line a viewer has to work through. The move was first tried as a sound fix, but it was not one (below). The verdict at **13.96 s** is 0.76 s after the stop: the coin's growth settles inside 0.4 s, as in the condensed cut's 0.757 s.
+
+**Iteration (sound).** The Scoreboard pack changed under this pass. The working tree's `looks/scoreboard/sound/*` was rewritten at 10:51 by the concurrent sound pass, not by this pass, and `git status` at the start showed no change there. Results on both packs:
+- 10a, B8 (the logo's M(L + 0.2), ≥ −13 LUFS). With an 18.67 s body (verdict 17.07) it measured **−13.01 on the committed pack**, a fail. A sweep of the body on the committed pack (sound only, the same picture): 18.5 s −12.09, 18.55 −12.83, **18.6 −12.10**, 18.67 −13.01, 18.7 (verdict 17.1) −12.02. The last segment's beats move the logo's run-in. **18.6 s** was kept: hold 1.53 s, a shorter body, and it passes on both packs (−12.10 committed, −12.39 working tree; on the working tree 18.67 passes too, at −12.44).
+- 10c, BANDS 16 kHz (≤ −12 dB re the 1 kHz octave). **On the committed pack the recut fails, at −11.7 (−11.9 with "Next" at 10.4 s, −11.8/−11.9 at bodies of 15.4-15.5 s).** The short body is bright. In the committed pack's mix (octave power over [0, base]), the riser and drop (11.2-15.55 s, 28% of the span) carry 16 kHz at −8.7 and −7.2 dB re the whole span's 1 kHz octave, against −14.6 before the riser. On the working tree's pack the build and riser are 2.7-2.8 dB darker at 16 kHz, and the recut passes at **−13.4** (−13.5 with "Next" at 10.4). No spec knob in the cut's lane moves it enough: the hold, the riser's length and the body each change it by 0.1-0.2 dB. 06b, the other short Scoreboard body, had its 16 kHz as its tightest band for the same reason. **10c's sound therefore depends on the working tree's Scoreboard pack (or another short-body rule) shipping. That is the ship step's call: no pack or `acceptance.json` was edited here.**
+
+**Measured** (`/tmp/cond/10/tools/motion3.py` on the final renders: frame difference at 270×480, `tblend` difference → `signalstats` YAVG; still < 0.15, near-still < 0.25; and with the hero counter's band left out). **Corrected in the fix pass below (the critic's S1 and S2):** this entry first measured with the band at y 430-610, the default the earlier rounds used too. That band misses the top of the counter's digits (about y 395-430) and their glow, which change every frame, so its "masked" figures counted the counter as stage motion and read too busy. The figures below are re-measured with the band on the counter, **y 380-540** (`motion3.py --mask 380:540`; `/tmp/cond/10/fix2/tools/mstats.py` for the counts and the share). The earlier rounds' masked tables (the condensed cut and its fix pass, above) used the same leaky band; their full-frame figures stand.
+
+| | Full frame, before the verdict: longest still / near-still | Counter masked (y 380-540), before the verdict: still runs ≥ 0.4 s / near-still runs ≥ 0.4 s / near-still share | Verdict hold |
+|---|---|---|---|
+| 10a condensed (fix pass) | 0.20 / 0.33 s | 1 (15.67-16.27, 0.60 s) / **17** (the longest 25.67-28.00, 2.33 s) / 0.63 | 1.6 s, 1.33 s still |
+| **10a recut** (as first published) | **0.17 s (16.87-17.03) / 0.33 s (16.70-17.03)**, the landing's glow settling | none (the longest 7.90-8.13, 0.23 s) / **6**: 6.80-8.13 (1.33), 9.67-10.57 (0.90), 10.80-11.47 (0.67), 11.50-12.03 (0.53), 12.07-12.53 (0.47), 12.57-13.47 (0.90) / 0.49 | 1.53 s: still 17.23-18.37 and 18.40-18.63 (the caption's fade splits it), then the card (19.93/20.10-21.10) |
+| 10c condensed (fix pass) | 0.07 / 0.30 s | 3 (the longest 11.73-13.20, 1.47 s) / **14** (the longest 18.87-21.37, 2.50 s) / 0.68 | 1.59 s |
+| **10c recut** (as first published) | **0.07 s / 0.13 s (13.77-13.90)** | **1: 10.17-10.67 (0.50 s)**, the end of the rule beat / **5**: 3.83-4.37 (0.53), 4.40-5.00 (0.60), 7.67-8.20 (0.53), 8.93-10.10 (1.17), 10.13-10.80 (0.67) / 0.53 | 1.59 s: still 14.10-14.57 and 14.60-15.57, then the card (17.03-18.07) |
+
+- On the full frame (the brief's metric) no still or near-still run reaches 0.4 s before either verdict; the recut passed that gate as published. With the counter masked it did not look as clean as first written: 10a had six near-still runs of 0.4 s or more and 10c one still run (10.17-10.67 s, the end of the swap-in rule beat with the coin about 80% full and the run-up not yet started). The fix pass below gives both coins their pulse from earlier (`runup.from`) and re-measures: 10a keeps one masked near-still run (6.80-8.13 s), 10c two (3.83-5.00 s), each the last stretch before a bill's pass, carried by the counter's roll and the stream.
+- Against the condensed cut on the same correct mask the recut was already calmer: 10a 17 → 6 near-still runs of 0.4 s or more (share 0.63 → 0.49), 10c 3 → 1 still runs (the longest 1.47 → 0.50 s).
+- Frame 1 → 2 is the condensed cut's: the hook caption complete, $0 → $1,025 (10a) and $82 (10c), the money stream falling.
+
+**Stills read** (`node src/cli.mjs stills`, tiled; `/tmp/cond/10/recut/sheet-10{a,c}.png`, final specs):
+- 10a at 0, 0.034, 0.98, 2.13, 3.27, 4.7, 6.45, 8.15, 10.6, 13.5, 14.75, 16.233, 16.267, 16.6, 17.0, 17.07, 17.1, 17.13, 17.3, 17.4, 18.2, 18.25, 18.55, 18.63, 18.65, 18.7 and 21.05 s, and the label boundaries at 4.667, 6.4 and 13.45 s. Frame 1: the header, $0, the five pips, the $30K bill ghost, "≈ $30,800 / EVERY SECOND", the footer and the complete "Find your salary.". Hero readings: $1,045, $30,143, $65,515, $100,580, $144,564 (the $970B working), $198,392 (the hourly working), $250,681, $326,040 (the rule), $415,239 and $453,687 ("NEXT / $500,000 A YEAR", the coin pulsing), $499,302 at 16.233 s, and $500,000 from 16.267 s with "$500,000 A YEAR / ≈ 16 SECONDS". The verdict "$500K A YEAR: ≈ 16 SECONDS." fades in at 17.07 s and is solid by 17.13 s; the caption is gone by 18.63 s and the card starts at 18.6 s. At each label boundary the next label is already slamming in: no frame shows the resting rate between beats.
+- 10c at 0, 0.034, 1.0, 1.75, 2.85, 5.02, 5.75, 6.55, 8.25, 10.0, 10.85, 11.2, 12.4, 13.2, 13.233, 13.5, 13.95, 14.0, 14.3, 14.6, 15.5, 15.6 and 18.0 s, and 4.967, 5.0, 5.033, 8.2 and 10.8 s. Frame 1: $0, the ladder "≈ $2,464 · ≈ $12,319 · $32,526", the bill ghost, the resting rate and the complete "How long do you work for this?". Hero readings: $83, $2,463, $4,311, $7,021, $12,368, $14,167, $16,138, $20,326, $24,638, $26,732, $27,595 and $30,551 under "$1,251 × 52 ÷ 2 = $32,526 / NEXT: HALF A YEAR OF MEDIAN PAY", $32,522 at 13.2 s (the label still "Next"), then $32,526 from 13.233 s with "≈ 13 SECONDS: $32,526 / 6 MONTHS OF WORK". The ladder turns into ≈ 2 weeks, ≈ 10 weeks and 6 months, and the coin grows (about 336 → 424 px across). The band rises at 13.95 s, the verdict "HALF A YEAR OF MEDIAN PAY: / ≈ 13 SECONDS." is up from 14.0 s and held to 15.55 s, and the card follows.
+
+**Lint:** `node src/cli.mjs check specs-wip/<id>.json`: 10a 21.1 s = 18.6 + 2.5 s end card, 10c 18.05 s = 15.55 + 2.5 (printed as 18.1 = 15.6 + 2.5); **0 errors, 0 warnings** each, also with `--every 0.05`.
+
+**Render and sound** (`/tmp/cond/10/<id>/recut-final/`):
+- `render specs-wip/<id>.json --out …/recut --jobs 1`: 10a 633 frames (21.1 s), 32 sfx; 10c 542 frames (18.07 s), 24 sfx.
+- `sound specs-wip/<id>.json --video …/recut --out …/recut-final --score`: the video md5 is identical in each (10a `84610308a719`, 10c `1cc140bb4152`). P is 16.256 / 13.201 s by the riser rule, at 147.638 / 153.584 BPM (10a) and 149.989 / 153.257 BPM (10c); cue onsets are within 0.08 / 0.1 ms.
+- The §2.3 rows the promotion will need (`sound/tools/tempo-table.mjs --cues` on the fixture with these two records substituted; Appendix B and the engine agree on all 30 rows):
+  - `| 10a | riser | 16.256 | 40 (r0) | 147.638 | base 18.60: 6 (r2) @ 153.58 | 18.96 |` (was P 32.511, 80 beats, base 36.50: 10 (r2) @ 150.41, L 36.86)
+  - `| 10c | riser | 13.201 | 33 (r1) | 149.989 | base 15.55: 6 (r2) @ 153.26 | 15.91 |` (was P 26.403, 66 (r2), base 31.00: 12 (r0) @ 156.62, L 31.36). N₁ 33 has a 1-beat pickup, as 06c's 25 does: the whole-second ticks and the 0.1 s-grid label beats sit on its 16ths.
+  - The tempo step at P is +4.03% (10a) and +2.18% (10c), inside ±8%. No V is anchored.
+  - `runup.beat` is P ÷ N₁ of these rows: 0.4064 and 0.40003 s.
+
+**Verify** (`node src/cli.mjs verify specs-wip/<id>.json --video …/recut-final --detail`, on the working tree as it stands): **PASS, 42/42 gated on each; units 1/1 looks.** The CUE DRIFT block (one record each) and "baseline DIFFERS" (A14) are the expected WIP notices. A re-run 10 minutes later gave the same margins. Every gated numeric check, value (margin to its limit):
+
+| Gate | Limit (Scoreboard) | 10a value (margin) | 10c value (margin) |
+|---|---|---|---|
+| A1 delivery | -14 ±1 | -14.08 (0.92) | -14.08 (0.92) |
+| A1 master | -14 ±0.3 | -14.01 (0.29) | -14.01 (0.29) |
+| A2 TP | <= -1 | -1.30 (0.30) | -1.30 (0.30) |
+| A3 LRA | 4-9 | 5.19 (1.19) | 4.69 (0.69) |
+| A4 ST max | <= -8 | -11.32 (3.32) | -11.61 (3.61) |
+| A4 M max | <= -6 | -9.33 (3.33) | -9.34 (3.34) |
+| A5 PLR | 8-13 | 12.78 (0.22) | 12.78 (0.22) |
+| A7 open | >= -18 | -10.49 (7.51) | -9.90 (8.10) |
+| A8 corr mean | >= 0.3 | 0.74 (0.44) | 0.75 (0.45) |
+| A8 corr min | >= -0.1 | 0.41 (0.51) | 0.51 (0.61) |
+| A8 mono fold | ±1.5 | -0.70 (0.80) | -0.70 (0.80) |
+| A10 phone drop | <= 7 | 2.77 (4.23) | 2.75 (4.25) |
+| A11 limited % | <= 3 | 1.499 (1.501) | 0.764 (2.236) |
+| A11 max | <= 6 | 2.39 (3.61) | 3.38 (2.62) |
+| BANDS 31.5 | -20..3 | -16.2 (3.8) | -14.1 (5.9) |
+| BANDS 63 | 4..10 | 6.9 (2.9) | 8.2 (1.8) |
+| BANDS 125 | 2..8 | 3.2 (1.2) | 4.1 (2.1) |
+| BANDS 250 | 0..6 | 2.2 (2.2) | 3.1 (2.9) |
+| BANDS 500 | -1..4 | 1.4 (2.4) | 2.5 (1.5) |
+| BANDS 2000 | -5..0 | -4.0 (1.0) | -2.1 (2.1) |
+| BANDS 4000 | -9..-2 | -7.0 (2.0) | -6.1 (2.9) |
+| BANDS 8000 | -14..-5 | -8.6 (3.6) | -7.6 (2.6) |
+| BANDS 16000 | -26..-12 | -13.8 (1.8) | -13.4 (1.4) |
+| HARSH | <= 2 | -0.59 (2.59) | 0.28 (1.72) |
+| B1 music | -3.5..-1.5 | -2.48 (0.98) | -2.23 (0.73) |
+| B1 sfx | -5..-2.5 | -4.00 (1.00) | -3.91 (1.09) |
+| B2 duck | <= -8 | -10.8 (2.8) | -10.8 (2.8) |
+| B3 closest cue | >= 3 | 4.2 (1.2) | 4.1 (1.1) |
+| B4 onset | <= 2 | 0.08 (1.92) | 0.10 (1.90) |
+| B5 P onset | ±10 | 0.0 (10.0) | -2.7 (7.3) |
+| B6 valley | <= 18 | 4.7 (13.3) | 4.3 (13.7) |
+| B7 drop over build, edge / centred | >= 2 | 4.5 / 5.2 (2.5) | 4.7 / 5.1 (2.7) |
+| B8 logo, M(L + 0.2) | >= -13 LUFS | -12.39 (0.61) | -12.26 (0.74) |
+| B9 card quietest | >= -45 | -25.2 (19.8) | -24.2 (20.8) |
+| S1 in key | >= 97 | 100.0 (3.0) | 100.0 (3.0) |
+| S5 identical run | <= 2 | 1 (1.0) | 1 (1.0) |
+| S5 distinct | >= 3 | 8 (5.0) | 8 (5.0) |
+| S8 timing SD | 1.5-5 | 3.07 (1.57) | 3.00 (1.50) |
+| S8 off-grid | <= 0.2 | 0.066 (0.134) | 0.073 (0.127) |
+| S9 BPM, segment 1 in 136-152 / tempo step at P (±8%) | | 147.638 (4.36) / +4.03% (3.97) | 149.989 (2.01) / +2.18% (5.82) |
+| S12 pad move | <= 5 | 3 (2.0) | 3 (2.0) |
+| S14 polyphony | <= 12 | 12 (0.0) | 12 (0.0) |
+
+- The pass/fail-only gates pass on both: A6 (0% silent), A9 (DC), A12 (AAC LC 48 kHz, audio = video within a frame), A13 (video md5 identical), A14 (master unique), B10, S2-S4, S6, S7, S10, S11, S13, TRAIN and DUCK.
+- **Under 0.5 of margin:** A5 PLR 12.78 (0.22) on both, A1 master −14.01 (0.29, centred) and A2 −1.30 dBTP (0.30) on both, and S14 at its limit as in all 30 teasers. 10c's A3 LRA is 4.69 (0.69), lower than its condensed cut's 5.93 because the short body has less range.
+- **On the committed pack** (`git archive HEAD studio` into a scratch folder, `node_modules` linked, the same final MP4s): 10a **PASS 42/42** (B8 −12.10 (0.90), A5 12.88 (0.12), A2 −1.20 (0.20), 16 kHz −13.4); 10c **41/42: BANDS 16 kHz −11.7, 0.3 over** (see *Iteration*).
+
+**Check** (`checks/10-cost-counter.py`):
+- **The recut is a third expectation set** (`RECUT`, built by `recut_of`). For 10a and 10c, a spec in the condensed cut's lane is checked as the condensed (real-time) cut and any other length as the recut; 10b is unchanged. The strings are the round-2 strings, picked by index, plus the new ones built from the same numbers. The numbers come from new maths blocks (`A["run_recut"]`, `C["run_recut"]`): the stop after both passes and within $0.50 at both rates, $500K ≈ 16 s, and half a year ≈ 13 s by the exact and the shown rate.
+- New rules for the recut:
+  - its lane: 18.2-18.8 / 15.1-15.7 s;
+  - every label beat holds to the next one on 10a too (the condensed cut checked 10c only);
+  - the kit's riser is at least 0.8 s, so the score's P is the riser climax the run-up is built on;
+  - the run-up's (P, N₁) is the recut's row (`RUNUP_ROW`, per cut).
+- `BIBLE.md` §2.3 must hold the row of the cut `studio/specs/` holds (`IN_SPECS`). Until the promotion the run prints a note naming the recut's row.
+- The allowed numbers are per cut: the recut drops 10a's $1,000,000, "$1M" and ≈ 33 s, and 10c's ≈ 26 s. The write-up's caption and pinned-comment numbers are checked against the recut (`MD_CUT`), so the old "$1 million ≈ 33 seconds" caption failed until it was updated. `--md PATH` points that scan at a scratch copy.
+- Results:
+  - **1019 checks, 0 failures** by default (the round-2 cuts in `studio/specs/`; one number more than before, the 10a caption's "≈ $111 million").
+  - **995 checks, 0 failures** with `--spec` on the three WIP specs.
+  - **1058 checks, 0 failures** on the git-history condensed 10a and 10c with the 10b WIP spec (the condensed expectations are kept).
+- **Mutation test** (`/tmp/cond/10/recut/mutate3.py`, scratch copies in `/tmp/cond/10/recut/mut/`): **27 of 27 caught**, each with exit 1 and the named rule.
+  - 10a: the stop 0.03 ms before the $500K pass; final "≈ $500,000"; the verdict "≈ 17 seconds"; the verdict 0.64 s after the stop; a 2.0 s hold; the $1M row kept; the old $1M verdict; "Next" at 15.5 s (a 0.36 s riser, so no riser cue); the condensed cut's run-up beat; the $970B caption up 1.0 s; the $250K caption 0.37 s late; the $970B label held 1.0 s (the resting rate at 5.65-6.4 s); "≈ $110 million"; the hook caption typed on at frame 1.
+  - 10c: the stop at 13.2012 s (before the stored-rate pass); the verdict "≈ 26 seconds"; the verdict at 14.3 s (the motion proxy); "Next" as "$1,251 × 26"; "Next" at 10.4 s without its caption; no `runup`; a 1.0 s hold; the coin row's answer as "1 year"; the swap-in caption up 1.0 s; the half-year caption 0.35 s late; the $77.7B label held 1.2 s.
+  - The write-up: 10a's caption back to "$1 million ≈ 33 seconds."; 10c's back to "≈ 26 seconds".
+  - The fix pass's 26 condensed-cut mutations, re-run on the git-history copies, are all still caught.
+
+**To promote** (as it stood; the fix pass's list below replaces it):
+1. Copy the three WIP specs over `studio/specs/<id>.json` (10a and 10c the recut, 10b the condensed cut) and set `IN_SPECS = {"a": "recut", "b": "cond", "c": "recut"}` in the check. The Scoreboard `runup` option they use is already in HEAD.
+2. BIBLE §11.1 for the moved records. Re-measure the Scoreboard on the fresh records: 10a and 10c moved, to 32 and 24 cues. Refit the Becker Rig `MODEL` (10b). **10c needs the working tree's Scoreboard pack, or another short-body rule, to pass BANDS** (16 kHz −11.7 on the committed pack, −13.4 on the working tree). Store the records in `test/fixtures/cues.json`, run `tempo-table --write` (the 10a and 10c rows above, and 10b's from the fix pass), then `verify --strict-cues` and `npm test`. Rerun the check: its run-up rule then expects (16.256, 40) and (13.201, 33) in `BIBLE.md`.
+3. Ship by §11.5. Then update `publishing/10{a,b,c}-*` and `teasers/v2/teasers.json`: runtimes **21.1 / 38.65 / 18.05 s**; covers 10a 17.3-18.4 s, 10b 34.95-36.1 s, 10c 14.1-15.5 s. The 10a and 10c sheets need the new verdicts and platform captions from this file.
+
+**Open items** (as they stood; the fix pass below answers or carries each):
+- 10c's sound depends on the Scoreboard pack (above). If the committed pack ships, 10c fails BANDS at 16 kHz by 0.3 dB.
+- The margins under 0.5 (A5 0.22, A1 master 0.29 and A2 0.30 on both; S14 at its limit), for the ship step's re-measure.
+- 10c's verdict sets at caps of about 64 px (the year verdict's were 68), about level with the label lines. The owner's wording is kept. "Half a year of pay: / ≈ 13 seconds." would measure caps 67 px. 10c's "Next" label sets its second line a little small (width-bound) but above the type floor.
+- 10a's ladder now tops out at $500K: salaries above it have no row and use the rule (captioned and pinned).
+- Carried from the fix pass: the caption karaoke on reading-paced lines (the Scoreboard's shared caption code).
+- On promotion these go stale and are outside this pass's files: `teasers/v2/teasers.json`, `publishing/10{a,b,c}-*.{md,json}` and the files under `renders/`.
+
+### Recut, fix pass (2026-10-13): the critic's items
+
+**The brief:** apply every must and should (and the cheap nits) from the critic's review of the recut: PASS, no must items, 10a 8 and 10c 7.5. Sound items are fixed here only if the cut's timing causes them; otherwise they are noted for the ship step. The recut's rules, files and limits stand. 10b's WIP spec is not touched.
+
+| # | Severity | Item | What was done |
+|---|---|---|---|
+| S1 | should | 10a: the masked motion figures came from a band (y 430-610) that misses the top of the counter (about y 395-430). With the counter masked (y 380-540) there are counter-only near-still runs at 6.80-8.13 s (1.33 s) and 9.67-13.47 s (six runs of 0.47-0.90 s) | **Re-measured and applied.** The recut entry's Measured section is corrected (the earlier rounds' masked tables used the same band; that is noted there), and so are the beat-sheet notes. The coin now pulses from 9.7 s (`lookOpts.runup.from`, the kit's existing opt-in key; no kit change): 16 pulses from 9.75 s, where there were 6 from 13.82 s. The six runs at 9.67-13.47 s are gone. 6.80-8.13 s stays: it is the $250K bill's last stretch, and the run-up only pulses the last milestone's icon. It is counter-carried, and the beat sheet, the Look note and this entry say so. 9.7 s was chosen over the critic's 10.55 s because from 10.55 s the 9.67-10.57 s run (0.90 s) stays |
+| S2 | should | 10c: the same band. With the counter masked, 3.83-5.00, 7.67-8.20 and 8.93-10.80 s are near-still, and 10.17-10.67 s is still (0.50 s) | **Re-measured and applied.** `runup.from` is 7.6 s: 14 pulses from 7.60 s, where there were 6 from 10.80 s. The still run is gone (the longest masked still is now 0.27 s, at 4.73-5.00), and so are the near-still runs at 7.67-8.20 and 8.93-10.80 s. 3.83-5.00 s stays: it is the 5-second bill's last second, before the coin is on the stage. 7.6 s was chosen over the critic's 9.6 s, which leaves 8.93-9.6 s and on a still-frame sequence measured a 0.70 s near-still run at 12.27-12.97 s. With the earlier start, the pulses in the riser are stronger |
+| S3 | should | 10c fails BANDS 16 kHz on the committed Scoreboard pack (−11.7, 0.3 over) and passes on the working tree's pack | **Not the cut's timing, so left for the ship step.** Re-verified on the committed pack with the new MP4: the same −11.7, 41/42 (table below). 10c's cue record is byte-identical to the recut's, and the recut's sweep found that the spec knobs move this band only 0.1-0.2 dB. **Do not promote 10c's WIP spec onto the committed pack as it is.** Ship it with the Scoreboard pack the concurrent sound pass is finishing, or with a short-body 16 kHz rule (To promote, below) |
+| S4 | should | 10a: margins under 0.5 dB; B8 swings about 0.9 LU over a few hundredths of a second of body | **Not changed; left for the ship step.** This pass does not move 10a's duration, its verdict or any cue: the cue record is byte-identical to the recut's. Any later change to 10a's duration or verdict time must re-run `verify` on both packs (To promote) |
+| S5 | should | 10c: margins under 0.5 dB; A3 LRA 4.69 | **Not changed; left for the ship step** (the Scoreboard refit's re-measure). The cue record is byte-identical to the recut's. On the working tree as it stands, 10c's B8 is now −12.97, a margin of 0.03 (it was −12.26 on the pack as it stood at 10:51). The Scoreboard pack changed under this pass (below), so this is the ship step's first number to watch |
+| N1 | nit | 10c's verdict lands 0.76 s after the stop, and the last caption stays under it for 0.44 s; the IG covers include the caption | **Verdict: tried, not kept. Covers: fixed.** A verdict at 14.0 s (0.80 s after the stop) was rendered and measured. It stretched the landing's near-still, with the counter masked, from 0.37 to 0.43 s (13.53-13.97 s), in return for a verdict 0.04 s later and 0.04 s less caption overlap, and it moved the reveal cue. 13.96 s stays: the check's 10c floor is 0.75 s, the condensed fix pass's precedent. The covers move to frames where the last caption has gone (checked frame by frame): **10a 18.4-18.55 s, 10c 14.6-15.5 s** (were 17.3-18.4 and 14.1-15.5) |
+| N2 | nit | 10c's verdict sets at caps of about 64 px; "Half a year of pay: / ≈ 13 seconds." measured caps 67 | **Put to the owner** (*Owner decision*, follow-up). The owner's wording stays until the owner answers |
+| N3 | nit | 10a's R9 row said the coin "pulses on the beat from 13.45 s"; the first pulse was at 13.82 s | **Fixed**, and rewritten for the new start: "pulses on the beat from 9.75 s (the run-up from `runup.from` 9.7 s, through the swap-in rule and the 13.45 s "Next" beat)" |
+
+**What changed:**
+- `studio/specs-wip/10a-scoreboard-debt-interest-live.json`: `lookOpts.runup` `{ "beat": 0.4064 }` → `{ "beat": 0.4064, "from": 9.7 }`. `studio/specs-wip/10c-scoreboard-amazon-makes.json`: `{ "beat": 0.40003 }` → `{ "beat": 0.40003, "from": 7.6 }`. Nothing else in either spec changed (10c's verdict was tried at 14.0 s and put back to 13.96 s).
+- **No kit change.** `from` is the kit's own documented opt-in key (the run-up's doc block in `looks/scoreboard/formats/cost-counter.js`, in HEAD since the condensed cut's fix pass). It moves the first pulse earlier and leaves the riser's span (its `prevT`) alone, so it adds no cue: **both cue records are byte-identical to the recut's** (`node src/cli.mjs cues`, then `cmp` against `/tmp/cond/10/recut/wip.cues.json`), and on any one pack the sound is the same.
+- How `from` was chosen. I rendered every-frame still sequences (`/tmp/cond/10/tools/seqmotion.sh`, masked at y 380-540): 10a from 9.0 to 16.4 s with `from` at 10.55 and 9.7 s, and 10c from 7.0 or 8.0 to 13.3 s with `from` at 9.6, 8.6 and 7.6 s. For each, the earliest start that clears the measured run won, provided the coin is on the stage and has settled by then. 10a's coin drops in at 8.43 s and has settled by 8.97 s, and is 60% full at 9.75 s. 10c's has settled by 5.84 s and is 58% full at 7.60 s. The first pulse is at half the bump (2.5%), and the pulses sit on the score's beat grid (P − k·beat), so they are in time with the music from the first one. I read the frames at 7.53-8.47 s (10c) and 9.13-9.87 s (10a). The pulse is a gentle bump with a rim glow on the stage, and it does not reach the label stack or the caption.
+- `teasers/v2/checks/10-cost-counter.py`: the recut's expected `lookOpts.runup` carry `from` (10a 9.7, 10c 7.6). `check_runup` counts the pulses from `from` and adds two rules. `from` must be at or before the last label beat, because the riser keeps its start and so the cue record cannot move. `from` must also be at least 1.0 s after the previous pass (`FROM_AFTER`), so the last icon has dropped in and settled and every pulse has an icon to bump. 10c's expected verdict stays 13.96 s, and the N1 trial is recorded beside it. The docstring describes all of this.
+- This write-up: the date line, the status paragraph, the check and lint lines, 10a's R9 row, beat sheet (the 6.4 s note, the 9.75 s row, the run-up row, the landing note) and Look note; 10c's R9 row, beat sheet (the 2.8 s note, the run-up row, the landing note) and Look note; the Instagram covers; the recut entry's Measured section (corrected) and its To promote and Open items (superseded by this entry's); the *Owner decision* follow-up; and this entry.
+
+**Measured** (the final renders in `/tmp/cond/10/<id>/final/`, using `motion3.py --mask 380:540` and `/tmp/cond/10/fix2/tools/mstats.py`; still < 0.15, near-still < 0.25; the full frame is the brief's gate and the masked metric is a flag):
+
+| | Full frame, before the verdict: longest still / near-still | Counter masked (y 380-540): still runs ≥ 0.4 s / near-still runs ≥ 0.4 s / near-still share before the verdict |
+|---|---|---|
+| 10a condensed (fix pass) | 0.20 / 0.33 s | 1 / 17 / 0.63 |
+| 10a recut | 0.17 / 0.33 s | none / 6 / 0.49 |
+| **10a fix pass** | **0.17 s (16.87-17.03) / 0.33 s (16.70-17.03)** | **none (the longest 7.90-8.13, 0.23 s) / 1: 6.80-8.13 (1.33 s) / 0.38** |
+| 10c condensed (fix pass) | 0.07 / 0.30 s | 3 / 14 / 0.68 |
+| 10c recut | 0.07 / 0.13 s | 1 (10.17-10.67, 0.50 s) / 5 / 0.53 |
+| **10c fix pass** | **0.07 s (13.83-13.90) / 0.13 s (13.77-13.90)** | **none (the longest 4.73-5.00, 0.27 s) / 2: 3.83-4.37 (0.53), 4.40-5.00 (0.60) / 0.42** |
+
+- The shorter masked near-still runs (0.2-0.4 s): in 10a, 3.03-3.27, 6.03-6.40, 9.03-9.27, the run-up's gaps between pulses (14.00-14.23, 14.80-15.07, 15.63-15.87, 16.03-16.27; each ≤ 0.27 s) and the landing at 16.70-17.03 s (0.33). In 10c, 3.20-3.40, 6.17-6.50, 7.03-7.37, 7.40-7.63, the run-up's gaps (11.03-13.20 s, each ≤ 0.27 s) and the landing at 13.53-13.90 s (0.37). A tighter mask (y 395-530) gives the same runs to within a frame or two.
+- **Counter-carried, by choice:** 10a 6.80-8.13 s (the hourly working, with the $250K bill 84-100% full) and 10c 3.83-5.00 s (the "≈ 2 weeks, at median pay" working, with the 5-second bill 77-100% full). The run-up option pulses only the last milestone's icon, and that icon is not on the stage yet. In both stretches the counter rolls every frame (+$1,025 or +$82 a frame), the stream pours into the bill and its level line rises, so the full frame never goes near-still there. A pulse before every pass would need a second opt-in kit option (an open item since the condensed fix pass); this pass does not add one.
+- The verdict holds (10a 1.53 s, 10c 1.59 s) and frame 1 → 2 are unchanged.
+
+**Stills read** (`node src/cli.mjs stills specs-wip/<id>.json`, tiled as `/tmp/cond/10/fix2/sheet-10{a,c}.png`; 24-frame contact sheets from `node src/cli.mjs sheet` in `/tmp/cond/10/fix2/sheets/`):
+- 10a at 0, 0.034, 0.98, 2.13, 3.27, 4.7, 6.45, 8.15, 8.8, 9.75, 9.8, 10.6, 11.4, 12.6, 13.5, 14.75, 15.9, 16.233, 16.267, 16.6, 17.07, 17.13, 17.4, 18.2, 18.3, 18.4, 18.5, 18.55, 18.65 and 21.05 s. Everything is as in the recut except the coin, which pulses from 9.75 s (the bump, the rim glow, the "$500K" tag riding it, the ladder's $500K row glowing) under "$250,000 A YEAR / ≈ 8 SECONDS", then the rule, then "Next". Frame 1 shows the full hook caption, $0, the five pips, the bill ghost and the footer. The verdict "$500K A YEAR: ≈ 16 SECONDS." is solid from 17.13 s. "$500,000: passed." is up at 18.3 s and gone at 18.4 s, and the card fades in from 18.6 s.
+- 10c at 0, 0.034, 1.0, 1.75, 2.85, 5.02, 5.75, 6.55, 7.6, 7.65, 8.25, 9.2, 9.65, 10.0, 10.85, 11.2, 12.4, 13.2, 13.233, 13.5, 13.95, 14.0, 14.3, 14.45, 14.55, 14.6, 15.5, 15.6 and 18.0 s. The coin pulses from 7.60 s under "$77.7B ÷ 31,536,000 S / ≈ $2,464 EVERY SECOND", then through the rule and "Next"; the rest is as in the recut. "≈ 13 seconds: half a year." is up at 14.45 s and gone at 14.55 s. Nothing collides or is cut off.
+- I compared frames from the final MP4s at six times each with the stills: mean absolute difference 0.6-1.1 of 255 (2.1 at 10c's 10.85 s, a half-frame offset into the "Next" label's slam).
+
+**Lint:** `node src/cli.mjs check specs-wip/<id>.json`: 10a 21.1 s = 18.6 + 2.5 s end card, 10c 18.05 s; **0 errors, 0 warnings** each, also with `--every 0.05`.
+
+**Check** (`checks/10-cost-counter.py`): **1019 checks, 0 failures** with no arguments (the round-2 cuts in `studio/specs/`). **999, 0 failures** with `--spec` on the three WIP specs (995 before; the 4 new checks are the two `from` rules on each). **1058, 0 failures** on the git-history condensed 10a and 10c with the 10b WIP spec. **Mutation test** (`/tmp/cond/10/fix2/mutate4.py`, scratch copies in `/tmp/cond/10/fix2/mut/`): **34 of 34 caught**, each with exit 1 and the named rule. These are the recut's 27, re-based on the new WIP specs, and 7 new ones: 10a with `from` dropped, at 13.8 s (after "Next") and at 8.5 s (the coin still dropping in); 10c with `from` at 5.5 s and at 11.0 s; 10c's verdict at 14.0 s (the N1 trial) and at 13.9 s (0.70 s after the stop). The condensed fix pass's 26 mutations, run on the history copies (`/tmp/cond/10/recut/mutate2c.py`), are all still caught.
+
+**Render and sound** (`/tmp/cond/10/<id>/final/`, replacing the real-time condensed finals there; 10b's final is untouched):
+- `render specs-wip/<id>.json --jobs 2`: 10a 633 frames (21.1 s), 32 sfx; 10c 542 frames, 24 sfx.
+- `sound specs-wip/<id>.json --video … --out …/final --score`, with the video md5 identical in each (10a `4dfb7f6ecd92`, 10c `d0e90a0b2d9c`). P is 16.256 / 13.201 s at 147.638 / 153.584 BPM (10a) and 149.989 / 153.257 BPM (10c), the recut's rows, and the cue onsets are within 0.08 / 0.1 ms.
+- The recut's `recut-final/` MP4s and this pass's picture-only renders were deleted after the video-md5 checks (disk).
+- **The Scoreboard pack moved during this pass.** The concurrent Scoreboard sound pass edited `looks/scoreboard/sound/{balance,bands,clearance,compose,energy,logo,sfx}.mjs` between 11:52 and 11:56 and changed two of them while this pass's first sound build was running. So the final sound and the working-tree `verify` were both run in a frozen copy of the working tree's `studio/` (taken at 11:57:52, with the pack unchanged during the copy). At 12:03 that copy still matched the live working tree (`/tmp/cond/10/fix2/packs-wt-snapshot.txt` has the md5s). The committed pack was verified from `git archive HEAD studio` with the WIP specs copied in, on the same MP4s.
+
+**Verify** (`node src/cli.mjs verify specs-wip/<id>.json --video …/final --detail`): **10a PASS 42/42 on both packs. 10c PASS 42/42 on the working tree; 41/42 on the committed pack (BANDS 16 kHz −11.7, 0.3 over: S3).** Units pass 1/1 everywhere. The CUE DRIFT block (one record each) and "baseline DIFFERS" (A14) are the expected WIP notices. Every gated numeric check, value (margin to its limit):
+
+| Gate | Limit | 10a working tree | 10a committed pack | 10c working tree | 10c committed pack |
+|---|---|---|---|---|---|
+| A1 delivery | -14 ±1 | -14.08 (0.92) | -14.08 (0.92) | -14.09 (0.91) | -14.17 (0.83) |
+| A1 master | -14 ±0.3 | -14.01 (0.29) | -14.01 (0.29) | -14.01 (0.29) | -14.09 (0.21) |
+| A2 TP | <= -1 | -1.30 (0.3) | -1.20 (0.2) | -1.18 (0.18) | -1.40 (0.4) |
+| A3 LRA | 4-9 | 5.23 (1.23) | 5.30 (1.3) | 4.72 (0.72) | 4.94 (0.94) |
+| A4 ST max | <= -8 | -11.31 (3.31) | -11.28 (3.28) | -11.51 (3.51) | -11.50 (3.5) |
+| A4 M max | <= -6 | -9.29 (3.29) | -9.27 (3.27) | -9.26 (3.26) | -9.23 (3.23) |
+| A5 PLR | 8-13 | 12.78 (0.22) | 12.88 (0.12) | 12.90 (0.1) | 12.77 (0.23) |
+| A7 open | >= -18 | -10.49 (7.51) | -10.56 (7.44) | -9.83 (8.17) | -10.04 (7.96) |
+| A8 corr mean | >= 0.3 | 0.74 (0.44) | 0.76 (0.46) | 0.75 (0.45) | 0.77 (0.47) |
+| A8 corr min | >= -0.1 | 0.41 (0.51) | 0.44 (0.54) | 0.51 (0.61) | 0.53 (0.63) |
+| A8 mono fold | ±1.5 | -0.70 (0.8) | -0.67 (0.83) | -0.69 (0.81) | -0.67 (0.83) |
+| A10 phone drop | <= 7 | 2.76 (4.24) | 2.80 (4.2) | 2.79 (4.21) | 2.81 (4.19) |
+| A11 limited % | <= 3 | 1.474 (1.526) | 1.495 (1.505) | 0.87 (2.13) | 0.662 (2.338) |
+| A11 max | <= 6 | 2.39 (3.61) | 2.11 (3.89) | 3.23 (2.77) | 2.78 (3.22) |
+| BANDS 31.5 | -20..3 | -16.2 (3.8) | -16.1 (3.9) | -14.1 (5.9) | -14 (6.0) |
+| BANDS 63 | 4..10 | 6.9 (2.9) | 7 (3.0) | 8.3 (1.7) | 8.4 (1.6) |
+| BANDS 125 | 2..8 | 3.2 (1.2) | 3.4 (1.4) | 4.1 (2.1) | 4.2 (2.2) |
+| BANDS 250 | 0..6 | 2.2 (2.2) | 2.3 (2.3) | 3.1 (2.9) | 3.1 (2.9) |
+| BANDS 500 | -1..4 | 1.4 (2.4) | 1.4 (2.4) | 2.5 (1.5) | 2.5 (1.5) |
+| BANDS 2000 | -5..0 | -4 (1.0) | -4 (1.0) | -2.1 (2.1) | -2.2 (2.2) |
+| BANDS 4000 | -9..-2 | -7 (2.0) | -7 (2.0) | -6.1 (2.9) | -6 (3.0) |
+| BANDS 8000 | -14..-5 | -8.5 (3.5) | -8.3 (3.3) | -7.5 (2.5) | -7 (2.0) |
+| BANDS 16000 | -26..-12 | -13.7 (1.7) | -13.4 (1.4) | -13.1 (1.1) | **-11.7 (FAIL, -0.3)** |
+| HARSH | <= 2 | -0.61 (2.61) | -0.67 (2.67) | 0.26 (1.74) | 0.10 (1.9) |
+| B1 music | -3.5..-1.5 | -2.47 (0.97) | -2.35 (0.85) | -2.22 (0.72) | -2.15 (0.65) |
+| B1 sfx | -5..-2.5 | -4.01 (0.99) | -3.93 (1.07) | -3.81 (1.19) | -3.88 (1.12) |
+| B2 duck | <= -8 | -10.8 (2.8) | -10.8 (2.8) | -10.8 (2.8) | -10.8 (2.8) |
+| B3 closest cue | >= 3 | 4.2 (1.2) | 4.1 (1.1) | 4.1 (1.1) | 4.3 (1.3) |
+| B4 onset | <= 2 | 0.08 (1.92) | 0.08 (1.92) | 0.1 (1.9) | 0.08 (1.92) |
+| B5 P onset | ±10 | -4.0 (6.0) | -4.0 (6.0) | -2.7 (7.3) | 1.3 (8.7) |
+| B6 valley | <= 18 | 4.7 (13.3) | 4.7 (13.3) | 4.2 (13.8) | 4.2 (13.8) |
+| B7 drop-build edge/centred | >= 2 | 4.6/5.2 | 4.6/5.2 | 4.7/5.2 | 4.6/5.1 |
+| B8 logo | >= -13 LUFS | -12.38 (0.62) | -12.10 (0.9) | -12.97 (0.03) | -12.71 (0.29) |
+| B9 card quietest | >= -45 | -25.2 (19.8) | -25.5 (19.5) | -24.2 (20.8) | -24.7 (20.3) |
+| S1 in key | >= 97 | 100.0 (3.0) | 100.0 (3.0) | 100.0 (3.0) | 100.0 (3.0) |
+| S5 identical run | <= 2 | 1 (1.0) | 1 (1.0) | 1 (1.0) | 1 (1.0) |
+| S5 distinct | >= 3 | 8 (5.0) | 8 (5.0) | 8 (5.0) | 8 (5.0) |
+| S8 timing SD | 1.5-5 | 3.07 (1.57) | 3.07 (1.57) | 3.00 (1.5) | 3.00 (1.5) |
+| S8 off-grid | <= 0.2 | 0.066 (0.134) | 0.066 (0.134) | 0.073 (0.127) | 0.073 (0.127) |
+| S9 BPM | seg1 range, ±8% | 147.638/153.584 (4.03) | 147.638/153.584 (4.03) | 149.989/153.257 (2.18) | 149.989/153.257 (2.18) |
+| S12 pad move | <= 5 | 3 (2.0) | 3 (2.0) | 3 (2.0) | 3 (2.0) |
+| S14 polyphony | <= 12 | 12 (0.0) | 12 (0.0) | 12 (0.0) | 12 (0.0) |
+
+- The pass/fail-only gates pass on all four runs: A6 (0% silent), A9 (DC), A12 (AAC LC 48 kHz, audio = video within a frame), A13 (video md5 identical), A14 (master unique), B10, S2-S4, S6, S7, S10, S11, S13, TRAIN and DUCK.
+- **Under 0.5 of margin.** 10a: A5 PLR 0.22 / 0.12, A2 0.30 / 0.20 and A1 master 0.29 (working tree / committed). 10c: **B8 0.03 on the working tree** (it was 0.74 on the 10:51 pack; 0.29 committed), A5 0.10 / 0.23, A2 0.18 / 0.40, A1 master 0.29 / 0.21 and 16 kHz −0.3 committed. S14 is at its limit in all four, as in all 30 teasers. 10a's figures match the recut's on the committed pack, and on the working tree they are within 0.03 of them. 10c's moved with the pack, not with the cut: the cue record, and so the input to the engine, is byte-identical to the recut's.
+
+**To promote** (the ship step; replaces the recut entry's list):
+1. Copy the three WIP specs over `studio/specs/<id>.json` (10a and 10c the recut with this pass's `runup.from`, 10b the condensed cut) and set `IN_SPECS = {"a": "recut", "b": "cond", "c": "recut"}` in the check. Everything they use (`runup`, its `from`, `stream`, `climaxScale`, `tallVerdict`) is already in the HEAD kit.
+2. BIBLE §11.1 for the moved records: re-measure the Scoreboard on the fresh records (10a and 10c, 32 and 24 cues, byte-identical to the recut's) after the concurrent Scoreboard pass has landed, and refit the Becker Rig `MODEL` (10b). **Do not ship 10c on the committed Scoreboard pack:** it fails BANDS 16 kHz there by 0.3 dB. Ship it with the pack that pass finishes, or with a short-body 16 kHz rule, and re-check 10c's B8 (0.03 on the working tree now). **Any later change to 10a's duration or verdict time re-runs `verify` on both packs** (B8 swings about 0.9 LU over a few hundredths of a second of body: the recut's sweep). Store the records in `test/fixtures/cues.json`, run `tempo-table --write` (the 10a and 10c rows in the recut entry, 10b's from the condensed fix pass), then `verify --strict-cues` and `npm test`. Rerun the check: its run-up rule then expects (16.256, 40) and (13.201, 33) in `BIBLE.md`.
+3. Ship by §11.5. Then update `publishing/10{a,b,c}-*` and `teasers/v2/teasers.json`: runtimes **21.1 / 38.65 / 18.05 s**; covers **10a 18.4-18.55 s, 10b 34.95-36.1 s, 10c 14.6-15.5 s** (each after its last caption has gone). The 10a and 10c sheets need the new verdicts and platform captions from this file.
+
+**Open items:**
+- 10c's sound on the Scoreboard pack: BANDS 16 kHz on the committed pack (S3), and B8 at 0.03 on the working tree as it stands (S5). Both are for the Scoreboard refit.
+- The margins under 0.5 above, for the ship step's re-measure.
+- **The owner's follow-up on 10c's verdict wording** (*Owner decision*): the owner's wording stays until the owner answers.
+- Counter-carried stretches, by choice: 10a 6.80-8.13 s and 10c 3.83-5.00 s (masked near-still; the full frame moves). A pulse before every pass would need a second opt-in kit option.
+- 10a's ladder tops out at $500K: salaries above it have no row and use the rule (captioned and pinned).
+- Carried from the condensed fix pass: the caption karaoke on reading-paced lines (the Scoreboard's shared caption code).
 - On promotion these go stale and are outside this pass's files: `teasers/v2/teasers.json`, `publishing/10{a,b,c}-*.{md,json}` and the files under `renders/`.

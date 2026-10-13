@@ -9,10 +9,11 @@
 import * as T from '../../../src/sound/theory.mjs'
 import { ARP_CUT } from './instruments.mjs'
 import { voiceLead } from './voicing.mjs'
-import { planFor, rawSfx, cueCtx, clearFor, bedSec, resetSolves } from './sfx.mjs'
-import { energyCurve, setCurve, withOpening } from './energy.mjs'
+import { planFor, rawSfx, cueCtx, clearFor, bedSec, resetSolves, setLevers, bandCues } from './sfx.mjs'
+import { energyCurve, setCurve, withOpening, shortBuild, setBuildExtra, buildExtra, b7Halves, B7_MARGIN, SHORT_BUILD } from './energy.mjs'
 import { prepareBed, stabBudget, selAutomation, GIVE_WAY, eventRenderer, renderSpan } from './clearance.mjs'
-import { kfilter, cueTrim } from './balance.mjs'
+import { model as bandModel, guard, leverLoudness, keepModel, AIR, isPayAir, dryBlocks } from './bands.mjs'
+import { kfilter, cueTrim, resetPlan } from './balance.mjs'
 import { CAL } from './cal.mjs'
 
 const EPS = 1e-6
@@ -476,7 +477,7 @@ export function compose(tl) {
       if (sp.free) { ev.swell = 6; ev.swellDur = tl.timeAt(Pb + 4) - P }
       if (sp.t1 >= gapT - 0.002 && sp.t0 < gapT) ev.rel = 0.01
       const ord = [...vs[k]].sort((a, b) => a - b)
-      for (const m of vs[k]) notes.push({ ...ev, midi: m, vel: clamp((velBase + g(hum.pad, 0.03)) * PAD_TILT[ord.indexOf(m)], 0.3, 1) })
+      for (const m of vs[k]) notes.push({ ...ev, midi: m, vel: clamp((velBase + g(hum.pad, 0.03)) * PAD_TILT[ord.indexOf(m)], 0.3, 1), ...(ord.indexOf(m) >= 2 ? { padHi: true } : {}) })
     })
   }
 
@@ -572,43 +573,80 @@ export function compose(tl) {
   const er = eventRenderer(tl, nn, ddOut)
   // the opening: a teaser whose first 3 s would measure under -14.5 LUFS short-term (a sparse hook: a clock train that
   // is the hats, a few soft cues) lifts its music bus from 0.3 s to 3 s, by up to 2.5 dB (openingLift)
-  let musicDb = energyCurve(tl)
-  const lift = openingLift(tl, er, musicDb, sfxRender)
-  if (lift > 0.05) musicDb = withOpening(musicDb, lift)
-  setCurve(tl, musicDb)
-
-  // ---------------------------------------------------------------- B3 clearance (clearance.mjs)
-  // the bed is rendered at every B3 cue window from these final lists; the anchor stabs are budgeted against their cues;
-  // the SFX fader is planned (balance.mjs); then each cue's levers are solved: the selective dips go out as gain
-  // automation on the pad, arp, lead, hats, clap, snare and music riser, the 808 dips onto its notes, the broadband part
-  // and the cue lifts reach the engine through the SFX renderers (sfx.mjs). When a teaser's cues are too quiet for the
-  // fader to reach B1, the bed also gives way: the GIVE_WAY layers come down by 1.4x the plan's offset
-  prepareBed(tl, nn, ddOut, { musicDb, sfxRender, er })
-  // the anchor stabs are budgeted against their cues twice: before the plan (cues at their kit gain), then with the
-  // fader's trims (a busy teaser's cut cues leave the stab less room), and the clearance is solved again
-  for (const n of anchorStabs) { n.vel0 = n.vel; n.vel = n.vel0 * stabBudget(tl, n.t) }
-  const plan = planFor(tl)
-  const trimOf = c => cueTrim(c, Math.abs(c.t - P) <= 0.015, plan.trim)
-  for (const n of anchorStabs) n.vel = n.vel0 * stabBudget(tl, n.t, trimOf)
-  resetSolves(tl)
-  const res = clearFor(tl)
-  for (const [i, r] of res) {
-    if (!(r.low > 0.05)) continue
-    const c = tl.cues[i]
-    for (const n of bass) {
-      if (n.tiedIn) continue
-      const end = n.t + (n.runDur ?? n.dur) + (n.rel ?? 0.04)
-      // every 808 voice that sounds in the cue's 50 ms window dips, one that starts inside it included (it starts dipped)
-      if (n.t < c.t + 0.05 && c.t < end) (n.dips = n.dips || []).push({ at: c.t - n.t, depth: r.low, hold: 0.05, release: 0.08 })
-    }
-  }
-  const gain = selAutomation(tl, res, { offset: plan.offset, giveWay: GIVE_WAY })
+  const lift = openingLift(tl, er, energyCurve(tl), sfxRender)
   // the TENSION gap (§4.5): every music voice is released at P - 1/8; a 12 dB event duck over the gap takes the reverb
   // tails down 6 dB with them (the engine ducks the returns by half the music duck), so the eighth before the drop is a
   // hard cut with only the riser and the reverse crash in it. It lets go 40 ms before P (τ 10 ms), so the tails are back
   // under the drop's onset: a near-silent hole right before a full-band attack is where the AAC encoder overshoots (02c
   // measured +4.6 dB over the ceiling at P with the duck held to P - 3 ms); the payoff duck takes over at P
   const duck = P - gapT > 0.08 ? [{ t: gapT, depth: 12, attack: 0.008, hold: 0, until: P - 0.04, release: 0.01 }] : []
+  // the 808 under the B3 cues (the clearance's low lever): every 808 voice that sounds in a cue's 50 ms window dips, one
+  // that starts inside it included (it starts dipped)
+  const dip808 = res => {
+    for (const n of bass) delete n.dips
+    for (const [i, r] of res) {
+      if (!(r.low > 0.05)) continue
+      const c = tl.cues[i]
+      for (const n of bass) {
+        if (n.tiedIn) continue
+        const end = n.t + (n.runDur ?? n.dur) + (n.rel ?? 0.04)
+        if (n.t < c.t + 0.05 && c.t < end) (n.dips = n.dips || []).push({ at: c.t - n.t, depth: r.low, hold: 0.05, release: 0.08 })
+      }
+    }
+  }
+  for (const n of anchorStabs) n.vel0 = n.vel
+  // Everything below reads the energy curve, so a short BUILD whose B7 halves the first pass predicts short (energy.mjs
+  // SHORT_BUILD) runs it again with its extra climb (the plan, the clearance and the band model are rebuilt)
+  let musicDb, plan, res, bm, lv
+  for (let pass = 0; ; pass++) {
+    musicDb = energyCurve(tl)
+    if (lift > 0.05) musicDb = withOpening(musicDb, lift)
+    setCurve(tl, musicDb)
+    // ---------------------------------------------------------------- B3 clearance (clearance.mjs)
+    // the bed is rendered at every B3 cue window from these final lists; the anchor stabs are budgeted against their
+    // cues; the SFX fader is planned (balance.mjs); then each cue's levers are solved: the selective dips go out as gain
+    // automation on the pad, arp, lead, hats, clap, snare and music riser, the 808 dips onto its notes, the broadband
+    // part and the cue lifts reach the engine through the SFX renderers (sfx.mjs). When a teaser's cues are too quiet
+    // for the fader to reach B1, the bed also gives way: the GIVE_WAY layers come down by 1.4x the plan's offset
+    prepareBed(tl, nn, ddOut, { musicDb, sfxRender, er })
+    // the anchor stabs are budgeted against their cues twice: before the plan (cues at their kit gain), then with the
+    // fader's trims (a busy teaser's cut cues leave the stab less room), and the clearance is solved again
+    for (const n of anchorStabs) n.vel = n.vel0 * stabBudget(tl, n.t)
+    plan = planFor(tl)
+    const trimOf = c => cueTrim(c, Math.abs(c.t - P) <= 0.015, plan.trim)
+    for (const n of anchorStabs) n.vel = n.vel0 * stabBudget(tl, n.t, trimOf)
+    resetSolves(tl)
+    res = clearFor(tl)
+    dip808(res)
+    // ---------------------------------------------------------------- the band guard (bands.mjs, §9.2 BANDS)
+    // the reference-octave model of this teaser as it now stands (the music by group with its dips, glue and ducks,
+    // the cues at the fader's levels), then the levers that keep its octaves inside the §9.2 windows: the bed's
+    // re-voice, the 808 and the pad's lower voices, the cues' sends, the air shelves. The level levers are bus-gain
+    // offsets the clearance solves with (B3 holds)
+    bm = bandInputs(tl, { er, musicDb, gain: selAutomation(tl, res, { offset: plan.offset, giveWay: GIVE_WAY }), duck })
+    lv = guard(bm)
+    lv.dM = leverLoudness(bm, lv)
+    setLevers(tl, lv)
+    if (lv.b808 || lv.mid) { resetSolves(tl); res = clearFor(tl); dip808(res) }
+    // a short BUILD: the climb B7 still needs on this pass's music.dry (each pass adds what the last one's dips and
+    // levers took back), at most SHORT_BUILD.passes passes and maxExtraDb in all
+    if (pass + 1 >= SHORT_BUILD.passes || !shortBuild(tl)) break
+    const x0 = buildExtra(tl), dx = buildClimb(tl, dryBlocks(bm, lv), SHORT_BUILD.maxExtraDb - x0)
+    if (!(dx > 0.05)) break
+    setBuildExtra(tl, +(x0 + dx).toFixed(2))
+    resetPlan(tl); resetSolves(tl); setLevers(tl, null)
+  }
+  keepModel(tl, bm)
+  // the air shelves: the P stack's (pay16: the music's crash and reverse crash at P; sfx.mjs takes the same shelf on a
+  // hit's crash layer at P) and the body's (air16: the hats, crashes and reverse crashes elsewhere)
+  for (const d of ddOut) {
+    if (!AIR.includes(d.inst)) continue
+    const sh = isPayAir(d, P) ? lv.pay16 : lv.air16
+    if (sh) d.shelf = +((d.shelf || 0) + sh).toFixed(2)
+  }
+  if (lv.padHi) for (const n of nn) if (n.inst === 'pad' && n.padHi) n.vel = +(n.vel * Math.pow(10, lv.padHi / 20)).toFixed(4)
+  if (lv.padLo) for (const n of nn) if (n.inst === 'pad' && !n.padHi) n.vel = +(n.vel * Math.pow(10, lv.padLo / 20)).toFixed(4)
+  const gain = selAutomation(tl, res, { offset: plan.offset, giveWay: GIVE_WAY, levers: lv })
   return { notes: nn, drums: ddOut, automation: { musicDb, ...(Object.keys(gain).length ? { gain } : {}), ...(duck.length ? { duck } : {}) } }
 }
 
@@ -653,4 +691,24 @@ function openingLift(tl, er, musicDb, sfxRender) {
   }
   OPENING.set(tl, { lift, pred0: L(1), pred: L(Math.pow(10, lift / 20)) })
   return lift
+}
+
+/** the band model's inputs at the end of compose(): the cues as the engine will play them and the duck it will build */
+function bandInputs(tl, { er, musicDb, gain, duck }) {
+  const { cues, duckEvents } = bandCues(tl)
+  return bandModel(tl, { er, musicDb, gain, duckEvents: [...duckEvents, ...duck], cues })
+}
+
+/**
+ * A short BUILD's extra climb (dB at its end, energy.mjs SHORT_BUILD), on top of what the blocks already hold: the least
+ * that brings B7's predicted halves (edge and centred) to B7_MARGIN on the band model's music.dry blocks (levers
+ * applied), at most X; 0 when they already pass
+ */
+function buildClimb(tl, blocks, X = SHORT_BUILD.maxExtraDb) {
+  const worst = x => { const h = b7Halves(tl, blocks, x); return h ? Math.min(h.edge ?? Infinity, h.centred ?? Infinity) : Infinity }
+  if (worst(0) >= B7_MARGIN || X <= 0.05) return 0
+  if (worst(X) < B7_MARGIN) return X
+  let a = 0, b = X
+  for (let k = 0; k < 20; k++) { const m = (a + b) / 2; if (worst(m) >= B7_MARGIN) b = m; else a = m }
+  return +b.toFixed(2)
 }

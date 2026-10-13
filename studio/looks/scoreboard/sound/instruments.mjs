@@ -101,10 +101,15 @@ function hat(ev, c) {
   return ev.choke != null && ev.choke > 0 ? cutVoice(x, ev.choke, 0.006) : x
 }
 /** SB-Crash: decorrelated noise HP 3.5 kHz + metal ×2.3 at -10 dB, τ 0.9 s (1.3 s on P) */
-function crash(ev, c) { return K.crash(c.rng, { vel: ev.vel, tau: ev.tau || 0.9, ratio: 2.3, metalDb: -10, hp: 3500 }) }
+function crash(ev, c) { return airShelf(K.crash(c.rng, { vel: ev.vel, tau: ev.tau || 0.9, ratio: 2.3, metalDb: -10, hp: 3500 }), ev.shelf) }
+/** ev.shelf on a stereo crash: the band guard's high shelf at 10 kHz (dB; compose() sets it, bands.mjs) */
+function airShelf(b, db) {
+  if (db) for (const x of [b.L, b.R]) biquad(x, biquadCoefs('highshelf', 10000, { gainDb: db }))
+  return b
+}
 /** the reverse crash: the crash envelope reversed, `len` s (0.6), its last sample on the event time */
 function revcrash(ev, c) {
-  const b = K.crash(c.rng, { vel: ev.vel, tau: ev.tau || 0.22, len: ev.len || 0.6, ratio: 2.3, metalDb: -10, hp: 3000, reverse: true })
+  const b = airShelf(K.crash(c.rng, { vel: ev.vel, tau: ev.tau || 0.22, len: ev.len || 0.6, ratio: 2.3, metalDb: -10, hp: 3000, reverse: true }), ev.shelf)
   // white noise steps hard sample to sample: a 15 ms fade into the event time keeps its last 1 ms under 0.02 (U2)
   const n = b.L.length, f = sec(0.015)
   for (let i = 0; i < f; i++) { const g = i / f; b.L[n - 1 - i] *= g; b.R[n - 1 - i] *= g }

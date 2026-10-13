@@ -12,9 +12,20 @@
 //   M_FIT     music stem - (BEDS + the energy curve, under the ducks, + OFF_EFF x the offset), mean over the specs
 //   GM        master gain + music stem (pre-master): the master gain follows as GM - M
 //   GM_PLAN   master gain + the plan's own music estimate (what logo.mjs uses)
-//   LOGO_PRE  the sting's momentary loudness at L + 0.2, pre-master, at scale 1
+//   LOGO_PRE  the sting's momentary loudness in the 400 ms window ending exactly at L + 0.2, pre-master, at scale 1
 //   OPEN_FIT  the delivered short-term loudness at 3 s minus compose()'s prediction (the opening lift's model leaves out
 //             the returns, the ducks and the glue); it adds to the current value
+//   GM_SFX    the cues' weight in the master gain model (logo.mjs gainEst), fitted with GM_PLAN
+//   LOGO_SLOPE the sting's rise at L + 0.2 (dB/s): B8 reads the meter's 100 ms hop nearest L + 0.2, and logo.mjs's meter
+//             guard predicts that reading from it
+//   BAND_REF  the band model's cue weight w (bands.mjs predict: the cues and their returns against the music, for the
+//             SFX bus compressor and HP), fitted on the delivered octaves of every teaser
+//   BAND_FIT  the band model's residual per octave (delivered minus predicted, dB re 1 kHz, mean over the teasers)
+//   BAND_SD   the residual's spread per octave: the band guard aims BAND_MARGIN + BAND_K x BAND_SD inside each window
+//   PAY_LOSS, PAY_HIT  the payoff's delivered momentary loudness in B8's frame against the band model's (payoffPre)
+//             plus the master gain: what a payoff loses (mean), and how much more when a hit marks P (the SFX bus
+//             compressor and the limiter work on it); logo.mjs aims the sting inside [-13, the payoff]
+// --per prints each teaser's residuals as well.
 // Re-run after any change to the arrangement or the levels; the tables only describe this pack's own music.
 import fs from 'node:fs'
 import path from 'node:path'
@@ -27,23 +38,27 @@ import * as Th from '../../../../src/sound/theory.mjs'
 import { buildTimeline } from '../../../../src/sound/timeline.mjs'
 import { normalizePack } from '../../../../src/sound/engine.mjs'
 import * as PACK from '../../sound.mjs'
-import { planFor } from '../sfx.mjs'
-import { curveFor, evalDb } from '../energy.mjs'
+import { planFor, sfxBodyPower, leversFor } from '../sfx.mjs'
+import { modelFor, predict, payoffPre, octaves as octOf, OCT, dryBlocks } from '../bands.mjs'
+import { curveFor, evalDb, b7Halves } from '../energy.mjs'
 import { OFF_EFF } from '../balance.mjs'
 import { OPENING } from '../compose.mjs'
 import { CAL } from '../cal.mjs'
+import { b8Frame, hitAtP } from '../logo.mjs'
+import { kfilter } from '../balance.mjs'
 
 const HERE = path.dirname(fileURLToPath(import.meta.url))
 const STUDIO = path.resolve(HERE, '..', '..', '..', '..')
 const FIXTURE = path.join(STUDIO, 'test', 'fixtures', 'cues.json')
 // arguments: <dir> --cues <file> [--skip a,b] [--write]; --name=value works too, and an unknown flag is an error
-const USAGE = 'usage: node looks/scoreboard/sound/tools/calibrate.mjs <render dir> --cues <cues.json> [--skip <id prefixes,...>] [--write]'
-const argv = process.argv.slice(2), opt = { write: false, cues: null, skip: '' }, pos = []
+const USAGE = 'usage: node looks/scoreboard/sound/tools/calibrate.mjs <render dir> --cues <cues.json> [--skip <id prefixes,...>] [--per] [--write]'
+const argv = process.argv.slice(2), opt = { write: false, per: false, cues: null, skip: '' }, pos = []
 for (let i = 0; i < argv.length; i++) {
   const a = argv[i], eq = a.indexOf('='), k = a.startsWith('--') ? a.slice(2, eq > 0 ? eq : undefined) : null
   if (!k) { pos.push(a); continue }
   if (k === 'help' || k === 'h') { console.error(USAGE); process.exit(0) }
   if (k === 'write' && eq < 0) { opt.write = true; continue }
+  if (k === 'per' && eq < 0) { opt.per = true; continue }
   if (k !== 'cues' && k !== 'skip') { console.error(`unknown flag ${a}\n${USAGE}`); process.exit(2) }
   const v = eq > 0 ? a.slice(eq + 1) : argv[i + 1] != null && !argv[i + 1].startsWith('--') ? argv[++i] : null
   if (v == null || v === '') { console.error(`${a} needs a value\n${USAGE}`); process.exit(2) }
@@ -59,7 +74,7 @@ const cueRec = id => recs[id] || null
 const SKIP = opt.skip.split(',').filter(Boolean)
 const ids = fs.readdirSync(dir).filter(f => f.endsWith('.score.json')).map(f => f.replace('.score.json', '')).filter(id => !SKIP.some(p => id.startsWith(p))).sort()
 const pack = normalizePack(PACK, 'scoreboard')
-const bedm = {}, fits = [], gms = [], logos = [], opens = []
+const bedm = {}, fits = [], gms = [], logos = [], opens = [], slopes = [], bands = [], pays = [], b7s = []
 const push = (o, sec, E, v) => { ((o[sec] = o[sec] || {})[E] = o[sec][E] || []).push(v) }
 const secAt = (sc, t) => (sc.sections.find(s => t >= s.t0 - 1e-6 && t < s.t1 - 1e-6) || {}).name
 for (const id of ids) {
@@ -96,8 +111,35 @@ for (const id of ids) {
   if (n4 && sc.anchors.L != null) {
     const m4a = path.join(dir, `${id}.m4a`)
     const mix = fs.existsSync(m4a) ? decodeAudio(m4a) : readWav(path.join(dir, `${id}.wav`))   // B8 is judged on the delivery
-    const m = loudness(mix).momentary[Math.round((sc.anchors.L + 0.2) / 0.1) - 1]
-    logos.push(m - G - 20 * Math.log10(n4.vel))
+    const Lt = sc.anchors.L, mHop = loudness(mix).momentary[Math.round((Lt + 0.2) / 0.1) - 1]
+    // the sting's momentary loudness in the 400 ms window ending exactly at L + 0.2 (BS.1770: K-weighted, the channels
+    // summed), and its slope there (windows ending 50 ms either side, dB/s: the meter guard of logo.mjs reads it)
+    const kl = kfilter(mix.L), kr = kfilter(mix.R)
+    const win = te => { const i1 = Math.round(te * SR), i0 = i1 - Math.round(0.4 * SR); let e = 0; for (let i = i0; i < i1; i++) e += kl[i] * kl[i] + kr[i] * kr[i]; return -0.691 + 10 * Math.log10(e / (i1 - i0)) }
+    slopes.push((win(Lt + 0.25) - win(Lt + 0.15)) / 0.1)
+    logos.push({ id, m: win(Lt + 0.2) - G - 20 * Math.log10(n4.vel), hop: mHop - win(Lt + 0.2), d: b8Frame(Lt) })
+    // the payoff in its B8 frame against the band model's (pre-master) plus this render's master gain
+    const P = sc.anchors.P.t, mP = loudness(mix).momentary[Math.round((P + 0.2) / 0.1) - 1], pre = payoffPre(modelFor(tl), leversFor(tl) || {})
+    if (pre != null && Number.isFinite(mP)) pays.push({ id, r: mP - (pre + G), hit: hitAtP(tl) })
+  }
+  fits[fits.length - 1].Su = sfxBodyPower(tl)
+  fits[fits.length - 1].dM = (leversFor(tl) || {}).dM || 0
+  // the delivered octaves over [0, base] (as the BANDS check reads them) against the band model compose() kept
+  const bm = modelFor(tl)
+  if (bm) {
+    const m4b = path.join(dir, `${id}.m4a`)
+    const dl = fs.existsSync(m4b) ? decodeAudio(m4b) : readWav(path.join(dir, `${id}.wav`))
+    const o = octOf(dl, Math.round(Math.min(sc.base, dl.L.length / SR) * SR)), ref = o[OCT.indexOf(1000)]
+    bands.push({ id, m: bm, lv: leversFor(tl) || {}, dlv: Object.fromEntries(OCT.map((f, i) => [f, 10 * Math.log10(o[i] / ref)])) })
+    // B7's BUILD halves on the music.dry stem (as the harness reads them) against the band model's prediction
+    const pr7 = b7Halves(tl, dryBlocks(bm, leversFor(tl) || {}), 0)
+    if (pr7 && pr7.edge != null) {
+      const ld = loudness(mu), B = sc.sections.find(x => x.name === 'BUILD'), mid = (B.t0 + B.t1) / 2
+      const st = t => { const h = Math.round(t / 0.1) - 1; return h >= 29 && h < ld.shortTerm.length && Number.isFinite(ld.shortTerm[h]) ? ld.shortTerm[h] : null }
+      const mST = (a, b, c) => { const v = []; for (let t = a; t <= b + 1e-9; t += 0.1) { const y = st(c ? Math.min(sc.base, t + 1.5) : t); if (y != null) v.push(y) } return v.length ? v.reduce((x, y) => x + y, 0) / v.length : null }
+      const me = { edge: mST(mid, B.t1, false) - mST(B.t0, mid, false), centred: mST(mid, B.t1, true) - mST(B.t0, mid, true) }
+      b7s.push({ id, m: me, p: pr7 })
+    }
   }
 }
 const mean = a => a.reduce((x, y) => x + y, 0) / a.length
@@ -115,12 +157,53 @@ for (const f of fits) {
   }
   f.resid = f.M - (10 * Math.log10(e / n) + OFF_EFF * Math.min(0, f.plan.offset))
   gms.push(f.G + f.M)
-  // GM_PLAN: master gain + the plan's music estimate (made with the calibration loaded now: run twice after a change)
-  gmPlan.push(f.G + f.plan.M)
 }
+// GM_PLAN and GM_SFX: the master gain model of logo.mjs (gainEst), G = GM_PLAN - 10 log10(10^(M/10) + GM_SFX 10^(Su/10)),
+// M the plan's music estimate, Su the cues' power over the body (made with the calibration loaded now: run twice)
+const gmOf = (f, k) => f.G + 10 * Math.log10(Math.pow(10, (f.plan.M + f.dM) / 10) + k * Math.pow(10, f.Su / 10))
+let gmFit = null
+for (let k = 0; k <= 3 + 1e-9; k += 0.01) {
+  const v = fits.map(f => gmOf(f, k)), m = mean(v), s = Math.sqrt(mean(v.map(x => (x - m) ** 2)))
+  if (!gmFit || s < gmFit.sd - 1e-9) gmFit = { k: +k.toFixed(2), m, sd: s }
+}
+for (const f of fits) gmPlan.push(gmOf(f, gmFit.k))
+const LOGO_SLOPE = slopes.length ? mean(slopes) : (CAL.LOGO_SLOPE ?? 0)
 const sd = a => { const m = mean(a); return Math.sqrt(mean(a.map(x => (x - m) ** 2))) }
-const cal = { BEDS, OFF_EFF, OPEN_FIT: opens.length ? +((CAL.OPEN_FIT ?? 0) + mean(opens)).toFixed(2) : CAL.OPEN_FIT, M_FIT: +mean(fits.map(f => f.resid)).toFixed(2), GM: +mean(gms).toFixed(2), GM_PLAN: gmPlan.length ? +mean(gmPlan).toFixed(2) : undefined, LOGO_PRE: logos.length ? +mean(logos).toFixed(2) : null,
-  stats: { M_FIT_sd: +sd(fits.map(f => f.resid)).toFixed(2), GM_sd: +sd(gms).toFixed(2), GM_PLAN_sd: gmPlan.length ? +sd(gmPlan).toFixed(2) : null, LOGO_PRE_sd: logos.length ? +sd(logos).toFixed(2) : null, OPEN_FIT_sd: opens.length ? +sd(opens).toFixed(2) : null, specs: ids.length, from: `calibrate.mjs on an audio --stems render of ${ids.length} teasers, cue records ${cuesFile === FIXTURE ? 'test/fixtures/cues.json' : 'from a fresh dump (node src/cli.mjs cues)'}` } }
+// BAND_REF and BAND_FIT: the least spread of the residuals (delivered minus predicted) over the octaves the band guard
+// watches, on a grid of the 1 kHz scalings; the per-octave means are the residuals
+const WATCH = [63, 125, 250, 16000]
+let bandFit = null
+if (bands.length) {
+  for (let w = 0.3; w <= 2 + 1e-9; w += 0.01) {
+    const R = { w }, pr = bands.map(x => predict(x.m, x.lv, R, {}))
+    let tot = 0
+    for (const f of WATCH) tot += sd(bands.map((x, i) => x.dlv[f] - pr[i][f])) ** 2
+    if (!bandFit || tot < bandFit.tot - 1e-12) bandFit = { tot, R: { w: +w.toFixed(2) } }
+  }
+  const pr = bands.map(x => predict(x.m, x.lv, bandFit.R, {}))
+  bandFit.F = {}; bandFit.sd = {}
+  for (const f of OCT) { if (f === 1000) continue; const r = bands.map((x, i) => x.dlv[f] - pr[i][f]); bandFit.F[f] = +mean(r).toFixed(2); bandFit.sd[f] = +sd(r).toFixed(2) }
+}
+// PAY_LOSS, PAY_HIT: delivered - (payoffPre + G) = -PAY_LOSS - PAY_HIT x [a hit at P]
+let payFit = null
+const plain = pays.filter(x => !x.hit), hits = pays.filter(x => x.hit)
+if (plain.length && hits.length) {
+  payFit = { loss: -mean(plain.map(x => x.r)), hit: -mean(hits.map(x => x.r)) + mean(plain.map(x => x.r)) }
+  for (const x of pays) x.e = x.r + payFit.loss + (x.hit ? payFit.hit : 0)
+}
+if (opt.per) {
+  console.error('per teaser: GM_PLAN residual (dB), LOGO_PRE residual (and what the meter hop adds to it), PAY residual, band residuals 63/125/250/16k (dB), B7 BUILD halves measured (predicted by the band model)')
+  const gm = mean(gmPlan)
+  for (const [i, f] of fits.entries()) {
+    const lg = logos.find(x => x.id === f.id), py = pays.find(x => x.id === f.id), bd = bands.find(x => x.id === f.id)
+    const pr = bd && bandFit ? predict(bd.m, bd.lv, bandFit.R, bandFit.F) : null
+    const b7 = b7s.find(x => x.id === f.id)
+    console.error(f.id.slice(0, 3), (gmPlan[i] - gm).toFixed(2), lg ? `${(lg.m - mean(logos.map(x => x.m))).toFixed(2)} (hop ${lg.hop >= 0 ? '+' : ''}${lg.hop.toFixed(2)} at ${lg.d >= 0 ? '+' : ''}${(lg.d * 1000).toFixed(0)} ms)` : '-', py && py.e != null ? py.e.toFixed(2) : '-', pr ? [63, 125, 250, 16000].map(o => (bd.dlv[o] - pr[o]).toFixed(2)).join(' ') : '-', b7 ? `B7 halves edge ${b7.m.edge.toFixed(2)} (pred ${b7.p.edge.toFixed(2)}) centred ${b7.m.centred.toFixed(2)} (pred ${b7.p.centred.toFixed(2)})` : '')
+  }
+}
+const cal = { BEDS, OFF_EFF, OPEN_FIT: opens.length ? +((CAL.OPEN_FIT ?? 0) + mean(opens)).toFixed(2) : CAL.OPEN_FIT, M_FIT: +mean(fits.map(f => f.resid)).toFixed(2), GM: +mean(gms).toFixed(2), GM_PLAN: gmPlan.length ? +mean(gmPlan).toFixed(2) : undefined, GM_SFX: gmFit ? gmFit.k : (CAL.GM_SFX ?? 0), LOGO_PRE: logos.length ? +mean(logos.map(x => x.m)).toFixed(2) : null, LOGO_SLOPE: +LOGO_SLOPE.toFixed(1),
+  BAND_REF: bandFit ? bandFit.R : CAL.BAND_REF, BAND_FIT: bandFit ? bandFit.F : CAL.BAND_FIT, BAND_SD: bandFit ? bandFit.sd : CAL.BAND_SD, PAY_LOSS: payFit ? +payFit.loss.toFixed(2) : CAL.PAY_LOSS, PAY_HIT: payFit ? +payFit.hit.toFixed(2) : CAL.PAY_HIT,
+  stats: { PAY_sd: payFit ? +sd(pays.map(x => x.e)).toFixed(2) : null, M_FIT_sd: +sd(fits.map(f => f.resid)).toFixed(2), GM_sd: +sd(gms).toFixed(2), GM_PLAN_sd: gmPlan.length ? +sd(gmPlan).toFixed(2) : null, LOGO_PRE_sd: logos.length ? +sd(logos.map(x => x.m)).toFixed(2) : null, LOGO_SLOPE_sd: slopes.length ? +sd(slopes).toFixed(1) : null, OPEN_FIT_sd: opens.length ? +sd(opens).toFixed(2) : null, specs: ids.length, from: `calibrate.mjs on an audio --stems render of ${ids.length} teasers, cue records ${cuesFile === FIXTURE ? 'test/fixtures/cues.json' : 'from a fresh dump (node src/cli.mjs cues)'}` } }
 console.log(JSON.stringify(cal, null, 1))
 if (opt.write) {
   // keep any table entry this render had no data for

@@ -49,7 +49,12 @@ export const mix = {
   // its gated loudness counts its active blocks only, and with the music and SFX stems alone the mix sits barely 1.5 LU
   // over the music (measured with the returns at 0 dB: music -1.2 to -1.8 LU re the mix, SFX -2.2 to -2.9; the fader's
   // S - M cannot move both into their windows, it trades one against the other). With the ticker's ping-pong gone and the
-  // pad hall at the bible's -14, +2.5 dB puts the returns stem at about -6 LU re the mix (it was -4.6 to -6.1 with the
-  // arp delay), and the wetness is the stab's arena hall, the clap plate and the lead's delay, not a delay under 16ths
-  returns: 2.5,
+  // pad hall at the bible's -14, +2.5 dB put the returns stem at about -6 LU re the mix (it was -4.6 to -6.1 with the
+  // arp delay), and the wetness is the stab's arena hall, the clap plate and the lead's delay, not a delay under 16ths.
+  // 2026-10-13: the condensed cuts and the band guard's sends lever left the returns stem at -5.7 to -8.2 LU (mean -6.6)
+  // and the music stem 0.26 LU under B1's ceiling in 10c (a long, sparse body: the mix sits only 1.8 LU over its music).
+  // The returns trim is the one lever that moves every music stem away from that ceiling, and it costs the dense bodies
+  // (01a: many ducks, its music stem sits 3.1-3.3 LU under the mix, near B1's floor): +3.0 dB balances the two ends
+  // (10c 0.4 LU inside, 01a 0.35; +3.5 left 01a at 0.22)
+  returns: 3.0,
 }

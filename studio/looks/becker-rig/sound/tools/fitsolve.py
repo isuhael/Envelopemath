@@ -3,8 +3,7 @@
 #                                                         musicTrim feeds it, so the plan's render carries no bias in)
 #   M = C + cost + tiltUp·max(0, tilt) + tiltDn·max(0, -tilt)
 #                                           -> C, tiltUp, tiltDn (the music stem before the trim)
-#   iBias = mean(In - Ipred)                (the engine's SFX stem without the payoff splash vs the plan's render of it:
-#                                            the merges' loss; lines without In fall back to I)
+#   iBias = mean(I - Ipred)                 (the engine's SFX stem vs the plan's render of it: the merges' loss)
 # usage (from studio/): python3 looks/becker-rig/sound/tools/fitsolve.py /tmp/fit.jsonl   (needs numpy)
 import json, sys
 import numpy as np
@@ -22,7 +21,6 @@ c2 = np.linalg.lstsq(X, y, rcond=None)[0]
 print('C=%.2f tiltUp=%.2f tiltDn=%.2f' % tuple(c2), 'resid', np.round(y - X @ c2, 2))
 print('Upred-U', np.round(np.array([r['Upred'] for r in rows]) - np.array([r['U'] for r in rows]), 2))
 if all('Ipred' in r for r in rows):
-    d = np.array([r.get('In', r['I']) - r['Ipred'] for r in rows])
-    print('iBias (mean In - Ipred) %.2f, sd %.2f' % (d.mean(), d.std()))
-    if all('In' in r for r in rows): print('the payoff splash (I - In)', np.round(np.array([r['I'] - r['In'] for r in rows]), 2))
+    d = np.array([r['I'] - r['Ipred'] for r in rows])
+    print('iBias (mean I - Ipred) %.2f, sd %.2f' % (d.mean(), d.std()), np.round(d, 2))
 for r in rows: print(r['id'], 'M-mix %.2f U-mix %.2f R-mix %.2f I-mix %.2f' % (r['M'] - r['mix'], r['U'] - r['mix'], r['R'] - r['mix'], r['I'] - r['mix']))

@@ -54,6 +54,8 @@ export const S_CAL = -0.3
 export const SOFT = new Set(['pop', 'ding', 'cash', 'reveal'])
 const SUSTAINED = new Set(['roll', 'type'])
 const PLANS = new WeakMap()
+/** forget a teaser's plan (compose() plans again when a second pass changes the energy curve) */
+export const resetPlan = tl => PLANS.delete(tl)
 
 /**
  * The trim (dB) a cue gets under a fader setting. A cut spares the soft B3-critical kinds below gain 0.7 (they have the
@@ -87,48 +89,60 @@ export function plan(tl, { renderCue, extraDuck, bedAt }) {
   const end = Math.max(tl.duration, ...cues.map(c => c.t + (c.dur || 0) + 2.0))
   const N = Math.round(end * SR)
   // the classes (classOf): the payoff cluster, the soft kinds under gain 0.7, the main body of cues (each split by whether
-  // a lift reaches it), the card
+  // a lift reaches it), the card. A cluster the engine caps (§8.4.3) gets its own group per class: the engine caps it
+  // AFTER the fader's trims (the sfx wrapper scales each buffer first), so its factor depends on the trim (capAt)
   const mk = () => ({ L: new Float32Array(N), R: new Float32Array(N) })
-  const grp = Object.fromEntries(CLASSES.map(k => [k, mk()]))
   const atP = c => Math.abs(c.t - P) <= 0.015
   const bufs = cues.map(c => renderCue(c))
-  const peak = b => { let p = 0; const st = b.L ? b : { L: b, R: b }; for (let i = 0; i < st.L.length; i++) p = Math.max(p, Math.abs(st.L[i]), Math.abs(st.R[i])); return p }
-  // §8.4.3 as the engine applies it: a cluster's summed peak is capped at its loudest member + 1.5 dB
-  const capK = new Map()
+  const st = b => (b.L ? b : { L: b, R: b })
+  const peak = b => { let p = 0; const x = st(b); for (let i = 0; i < x.L.length; i++) p = Math.max(p, Math.abs(x.L[i]), Math.abs(x.R[i])); return p }
+  const caps = []          // { members: [{ i, cls, o }], n, pk: [member peak at its gain] }
+  const capOf = new Map()  // cue index -> its cap record
   for (const cl of tl.clusters) {
     const mem = cl.members.filter(i => bufs[i])
     if (mem.length < 2) continue
     const t0 = Math.min(...mem.map(i => Math.round(cues[i].t * SR) - (bufs[i].offset || 0)))
-    const t1 = Math.max(...mem.map(i => Math.round(cues[i].t * SR) - (bufs[i].offset || 0) + (bufs[i].L ? bufs[i].L.length : bufs[i].length)))
-    const tmp = { L: new Float32Array(t1 - t0), R: new Float32Array(t1 - t0) }
-    for (const i of mem) { const b = bufs[i], st = b.L ? b : { L: b, R: b }, o = Math.round(cues[i].t * SR) - (b.offset || 0) - t0; for (let j = 0; j < st.L.length; j++) { tmp.L[o + j] += st.L[j] * cues[i].gain; tmp.R[o + j] += st.R[j] * cues[i].gain } }
-    const pk = peak(tmp), cap = Math.max(...mem.map(i => peak(bufs[i]) * cues[i].gain)) * Math.pow(10, 1.5 / 20)
-    if (pk > cap) for (const i of mem) capK.set(i, cap / pk)
+    const t1 = Math.max(...mem.map(i => Math.round(cues[i].t * SR) - (bufs[i].offset || 0) + st(bufs[i]).L.length))
+    const rec = { id: caps.length, t0, n: t1 - t0, members: mem.map(i => ({ i, cls: classOf(cues[i], atP(cues[i])), o: Math.round(cues[i].t * SR) - (bufs[i].offset || 0) - t0, pk: peak(bufs[i]) * cues[i].gain })) }
+    caps.push(rec)
+    for (const i of mem) capOf.set(i, rec)
   }
+  const grp = {}
+  const groupOf = (c, i) => classOf(c, atP(c)) + (capOf.has(i) ? `@${capOf.get(i).id}` : '')
   cues.forEach((c, i) => {
     const b = bufs[i]
     if (!b) return
-    const st = b.L ? b : { L: b, R: b }
-    const g = grp[classOf(c, atP(c))], k = c.gain * (capK.get(i) ?? 1)
+    const x = st(b), key = groupOf(c, i), g = grp[key] || (grp[key] = mk()), k = c.gain
     const at0 = Math.round(c.t * SR) - (b.offset || 0)
-    for (let j = Math.max(0, -at0); j < st.L.length && at0 + j < N; j++) { g.L[at0 + j] += st.L[j] * k; g.R[at0 + j] += st.R[j] * k }
+    for (let j = Math.max(0, -at0); j < x.L.length && at0 + j < N; j++) { g.L[at0 + j] += x.L[j] * k; g.R[at0 + j] += x.R[j] * k }
   })
-  // S(trim): the BS.1770 integrated loudness of the summed classes. The K-weighting is linear, so each class is filtered
-  // once and every 100 ms hop keeps the classes' cross energies: a fader setting's hop energy is then g' C g, and the
+  // §8.4.3 as the engine applies it, after the trims: a cluster's summed peak is capped at its loudest member + 1.5 dB
+  const capAt = (rec, trim) => {
+    const gs = rec.members.map(m => Math.pow(10, classTrim(m.cls, trim) / 20))
+    const L = new Float64Array(rec.n), R = new Float64Array(rec.n)
+    rec.members.forEach((m, a) => { const x = st(bufs[m.i]), k = cues[m.i].gain * gs[a]; for (let j = 0; j < x.L.length; j++) { L[m.o + j] += x.L[j] * k; R[m.o + j] += x.R[j] * k } })
+    let pk = 0
+    for (let j = 0; j < rec.n; j++) pk = Math.max(pk, Math.abs(L[j]), Math.abs(R[j]))
+    const cap = Math.max(...rec.members.map((m, a) => m.pk * gs[a])) * Math.pow(10, 1.5 / 20)
+    return pk > cap ? cap / pk : 1
+  }
+  // S(trim): the BS.1770 integrated loudness of the summed groups. The K-weighting is linear, so each group is filtered
+  // once and every 100 ms hop keeps the groups' cross energies: a fader setting's hop energy is then g' C g, and the
   // gating runs on those (the same blocks and gates as loudness.mjs), without re-filtering the sum for every trial
-  const live = CLASSES.filter(k => grp[k].L.some(v => v !== 0) || grp[k].R.some(v => v !== 0))
+  const live = Object.keys(grp).sort().filter(k => grp[k].L.some(v => v !== 0) || grp[k].R.some(v => v !== 0))
   const HOP = 4800, H = Math.floor(N / HOP), nk = live.length
   const cross = new Float64Array(H * nk * nk)
+  const ys = live.map(k => [kfilter(grp[k].L), kfilter(grp[k].R)])
   {
-    const ys = live.map(k => [kfilter(grp[k].L), kfilter(grp[k].R)])
     for (let h = 0; h < H; h++) for (let a = 0; a < nk; a++) for (let b = a; b < nk; b++) {
       let e = 0
       for (const ch of [0, 1]) { const x = ys[a][ch], y = ys[b][ch]; for (let i = h * HOP; i < (h + 1) * HOP; i++) e += x[i] * y[i] }
       cross[(h * nk + a) * nk + b] = cross[(h * nk + b) * nk + a] = e / HOP
     }
   }
+  const gainsAt = trim => live.map(k => { const [cls, cid] = k.split('@'); return Math.pow(10, classTrim(cls, trim) / 20) * (cid != null ? capAt(caps[+cid], trim) : 1) })
   const S = trim => {
-    const g = live.map(k => Math.pow(10, classTrim(k, trim) / 20))
+    const g = gainsAt(trim)
     const hops = new Float64Array(H)
     for (let h = 0; h < H; h++) { let e = 0; for (let a = 0; a < nk; a++) for (let b = 0; b < nk; b++) e += g[a] * g[b] * cross[(h * nk + a) * nk + b]; hops[h] = Math.max(0, e) }
     return integratedOf(hops) + S_CAL

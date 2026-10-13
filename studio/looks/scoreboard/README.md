@@ -132,10 +132,12 @@ The cues drive a music bed and the sonic logo as well; both are described in the
 | `sfx.mjs` | The 15 SFX kinds (§5), the broadband part of the B3 clearance, and the SFX fader wrapper |
 | `clearance.mjs` | The B3 clearance: the bed rendered at every cue window, the lever solver, the anchor-stab budget |
 | `balance.mjs` | The per-teaser SFX fader and bed offset (B1) |
-| `logo.mjs` | The em sting, "LED fanfare" (§3.2) |
+| `bands.mjs` | The reference-octave model and the band guard (§9.2 BANDS): the levers that keep each octave inside its window |
+| `logo.mjs` | The em sting, "LED fanfare" (§3.2), and its level: the master gain estimate and the payoff estimate (B8) |
 | `mix.mjs` | Levels, sends, ducks, the kick sidechain, the bus dynamics |
-| `cal.mjs`, `calibration.json` | The measured values the fader, the opening lift and the logo level use |
+| `cal.mjs`, `calibration.json` | The measured values the fader, the opening lift, the band guard and the logo level use (and the reader of `sound/acceptance.json`'s windows) |
 | `tools/calibrate.mjs`, `tools/README.md` | The tool that measures them, and how each value is derived and refitted |
+| `tools/bandparts.mjs` | Where each §9.2 octave's energy comes from (stems, SFX kinds, instruments): the first thing to run on a BANDS failure |
 
 The acceptance checks, the pack's own rules (TRAIN, DUCK, LOGO) and the §9.5 DSP unit checks live in the shared harness: `studio/sound/checks/looks/scoreboard.mjs`, with the thresholds in `studio/sound/acceptance.json` (`node src/cli.mjs verify`, see `studio/sound/README.md`). They used to be this folder's `verify.mjs` and `units.mjs`.
 
@@ -156,10 +158,12 @@ The acceptance checks, the pack's own rules (TRAIN, DUCK, LOGO) and the §9.5 DS
 - **Arrangement vs timeline.**
   - Energy tiers per bar from the engine (E2-E5) set the groove, the arp, the hat rate and the bus level (`energy.mjs`). E3 is −6 dB, E4 −3, E5 0, and the hook bar −2.5.
   - The BUILD starts at its tier's nominal level and crescendos +2 dB. Its range comes from the arrangement: in E3 the ticker is gated 3+3+2 (16ths 1, 4 and 7 of each half bar); E4 opens to straight 16ths with 16th hats and the lead.
+  - **A short BUILD** (shorter than two 3 s short-term windows, `energy.mjs` `SHORT_BUILD`; 01a, 03b): B7 reads the BUILD's first half through windows that are mostly HOOK, so the hook's last bar falls away after its first beat (the ta-da keeps its level) to 8 dB under the BUILD's E3 start by the bar line, and the BUILD enters at its own level. 01a's edge halves went from −0.6 to +0.6 LU, and its LRA gained 0.15 LU.
   - The ticker rests on the last beat of a phrase (the fill's beat) and in the beat before a heavy cue (weight ≥ 1, gain ≥ 0.5), unless another heavy cue came within 2 beats. The count lands in the space.
   - The TENSION ramps −7 → +1 dB. Its snare roll accelerates 8ths → 32nds with the body pitch rising 7 st. A music riser plays only when no SFX riser covers it. Everything stops for the eighth before P, and a 12 dB event duck over that gap takes the reverb tails down 6 dB, so the gap is a hard cut. The duck lets go 40 ms before P: a near-silent hole right before the full-band drop is where the AAC encoder overshoots (02c measured +4.6 dB over the ceiling with the duck held to P).
   - The DROP sits at +2 dB. The half-time HOLD after it releases from −5 to −8 dB over its first bar. The VERDICT bar is −3 dB, and HOLD 2 eases back to −8 over 2 beats.
   - **Opening lift.** A teaser whose first 3 s would measure under −14.5 LUFS short-term lifts its music from 0.3 s to 3 s by up to 2.5 dB. The prediction comes from the actual events and cues plus `CAL.OPEN_FIT`. A hot opening is left alone.
+  - **An early payoff** (`energy.mjs` `EARLY_P`: fewer than a tenth of the teaser's short-term windows end before P; 05c, P at 3.63 s in an 11.4 s file). A3's loudness range is the 95th minus the 10th percentile of the 3 s windows, and the first window ends at 3 s: 7 of 05c's 84 windows end before P, too few for the opening to reach the 10th percentile, so the range has to come from the DROP. Such a DROP sits 3 dB over a normal DROP, its TENSION ramp starts at −10 dB, the payoff's cues ride 3 dB higher with it (the louder body masters lower, and B8 wants the logo under the payoff), and the opening takes no lift (the payoff lands inside the first 4 s and is the opening). 05c's LRA went from 2.79 to 4.68.
 - **Clock trains** (§4.6.6). A train whose ticks sit off the 16th grid (by > 12 ms) gets these rules:
   - No music kick, clap, snare, hat, arp or lead onset lands 12-60 ms from a tick (anchors excepted).
   - A fast train (period under 1.5 beats: 02b's 0.35 s, 02c's 0.2 s) is the hats while it runs: the music hats rest, the ticker plays quarter notes, and no lead phrase starts in a bar with an off-grid tick.
@@ -179,7 +183,7 @@ The acceptance checks, the pack's own rules (TRAIN, DUCK, LOGO) and the §9.5 DS
   - Two ping-pong echoes, a D add9 pad held to the end, the 808 on D2 and the D1 sub, crash and reverse crash, hall sends.
   - A bright shimmer (BP noise 7 / 11 kHz and a D7 + A7 glint) on the ring flare, t0 + 0.22·k, where the badge visibly lands.
   - The card's own cues use constant seeds, so the card sounds the same in every teaser. The sting's sustained layers dip 9 dB under the handle ding.
-  - The sting's level is set per teaser from the predicted master gain, so it lands at about −12 LUFS momentary (B8).
+  - The sting's level is set per teaser from the predicted master gain, so it lands at about −12 LUFS momentary (B8). The master gain estimate counts the cues' power with the music's (`logo.mjs` `gainEst`: a short, busy body masters up to 0.9 dB lower than its music alone predicts), and the sting is levelled for the 100 ms meter frame B8 actually reads (`b8Frame`: the sting rises about 15 dB/s at L + 0.2 s). When the teaser's own B8 window is narrow (a payoff under −11.2 LUFS: B8 wants the logo between −13 LUFS and the payoff), the sting aims at the window's middle instead, from the payoff's estimate (`payoffEst`: the band model's payoff frame, the master gain, and what the SFX bus compressor and the limiter take from a hit at P). The sting's scale may range −3..+5 dB (it was ±3, which held 05c's sting 0.9 dB under its aim).
 
 ### The SFX
 
@@ -194,7 +198,7 @@ The acceptance checks, the pack's own rules (TRAIN, DUCK, LOGO) and the §9.5 DS
 | hit | 4 ms burst, a body diving to the root with drive, the D1 sub, a wide crash |
 | reveal | a 180 ms reversed-noise pre-roll, a thud body, the chord's root, 3rd and 5th as FM bells at 0 / 40 / 80 ms, a 9 kHz light-up shimmer |
 | riser | BP noise 300 Hz → 9 kHz plus Shepard saws ending on the dominant A, width 10 → 80% |
-| swipe, whoosh | band-passed noise sweeps (2 → 7 kHz; 500 Hz → 4 kHz → 800 Hz plus air) |
+| swipe, whoosh | band-passed noise sweeps (2 → 7 kHz; 500 Hz → 4 kHz → 800 Hz plus air). The whoosh's window floor is −16 dB re its peak (the swipe's −22): at −22 the quietest whoosh (04a's, at t = 0) first passed −60 dBFS 1.94 ms after its cue (B4: 2 ms); now 1.2 ms |
 | buzz | D3 and Eb3 squares beating at 8.7 Hz, LP 1.8 kHz |
 | step, boing, type | the bible's variants of thud, pop and tick |
 
@@ -224,6 +228,14 @@ Consecutive cues of a kind vary in pitch, cutoff, seed and pan (U4). In a cluste
 - It models the music stem from `CAL.BEDS` plus the energy curve under the clearance's broadband ducks.
 - A busy teaser cuts its cues until S − M = −1.35 LU. The soft cues and the payoff are spared.
 - A sparse one lifts its event cues and payoff, never the ticks or dings, by up to 4 dB until S − M = −2.1 LU. If that is still short, the arp, pad, hats, clap, snare, lead, stab and crashes give way by up to 3.5 dB.
+- The engine caps a cluster's peak (§8.4.3) after the fader's trims, so the fader does too: each capped cluster gets its own group whose factor follows the trim (`capAt`). Capping before the trims had under-estimated S by up to 1.5 dB in the lifted teasers, and 02b and 02c gave way when they did not need to.
+- The cues at P send 4 dB under their reverb table (`sfx.mjs` `PAY_SEND_DB`): the SFX returns never duck, and a hit into its −8 dB hall with the payoff's cash and the stab's arena hall kept the limiter working for 0.5 s after P (06b's A11 2.83% of 3%; 2.06% now).
+
+*The band guard* (`bands.mjs`) keeps each §9.2 octave inside its window.
+- **The model.** At the end of `compose()` the body's music is rendered by lever group (the 808; kick and sub; the pad's two lower and two upper voices; the mid layers: arp, lead, clap, snare, music riser, stab; the air: hats, crashes, reverse crashes), with the levels, the bus trim, the energy curve, the clearance's dips, the kick sidechain and the event duck. The cues are rendered at the level the engine will play them. The returns of both go through the engine's own reverbs and delay (`src/sound/fx.mjs`), from where the engine takes the sends. `predict()` sums them per octave with the levers' gains, relative to the 1 kHz octave. What the model leaves out (the glue, the SFX bus, the limiter, the AAC) is `CAL.BAND_FIT`, measured per octave on the 15 (spread 0.2-0.4 dB, `CAL.BAND_SD`).
+- **The aim.** Each watched octave (63, 125, 250 Hz floors; 16 kHz ceiling) is aimed `0.5 + 3 × BAND_SD` dB inside its window (`bandAim`), so the delivery keeps 0.5 dB through the model's spread. The windows are read from `sound/acceptance.json`.
+- **The levers, in order.** The lows short (dense bells own 50-75% of the 1 kHz reference): the cues' reverb sends come down (to −9 dB); then the bed re-voices (the mid layers by up to −3 dB and the pad's upper voices by up to −4 dB, the 808 up by what keeps the bed's loudness where the fader left it); then the 808 (63 and 125 Hz) and the pad's lower voices (250 Hz) share up to 0.4 dB of added loudness, step by step to whichever clears more. No lever lifts an octave over its ceiling. Too much air: the hats, crashes and reverse crashes take a high shelf at 10 kHz (up to −6 dB).
+- The level levers reach the engine as constant gain automation (the clearance solves with them in place, so B3 holds) and as the pad's velocities; the shelf as `ev.shelf` on the drum events.
 
 ### Tools
 
@@ -237,9 +249,11 @@ node src/cli.mjs verify specs/*-scoreboard-*.json
 node src/cli.mjs verify specs/*-scoreboard-*.json --from /tmp/snd-scoreboard/run
 # the unit checks alone (about 5 s for this look)
 node src/cli.mjs verify specs/*-scoreboard-*.json --units-only --cues test/fixtures/cues.json
+# where each §9.2 octave's energy comes from (the stems, and with --parts each SFX kind and instrument)
+node looks/scoreboard/sound/tools/bandparts.mjs 02c --cues /tmp/snd-scoreboard/cues.json --parts
 # re-measure the pack's values after a change to the arrangement, the levels or a cue list (see sound/tools/README.md and,
 # after a cue change, BIBLE.md §11.1 for the steps that follow: store the records, regenerate the tempo table, npm test)
-node looks/scoreboard/sound/tools/calibrate.mjs /tmp/snd-scoreboard/run --cues /tmp/snd-scoreboard/cues.json [--write]
+node looks/scoreboard/sound/tools/calibrate.mjs /tmp/snd-scoreboard/run --cues /tmp/snd-scoreboard/cues.json [--per] [--write]
 # the delivery pass: the audio muxed onto the finished MP4s (into /tmp; nothing reaches renders/ without --final), then the audit
 node src/cli.mjs sound specs/*-scoreboard-*.json --video ../renders/channel --out /tmp/snd-scoreboard/mp4 --score --wav --stems
 node src/cli.mjs audit /tmp/snd-scoreboard/mp4 --reports /tmp/snd-scoreboard/mp4/sound --out /tmp/snd-scoreboard/audit
@@ -252,7 +266,7 @@ node src/cli.mjs audit /tmp/snd-scoreboard/mp4 --reports /tmp/snd-scoreboard/mp4
   - The kick keeps the bible's 48 Hz tail and adds a punch layer (180 → 90 Hz) and a 3 kHz knock.
   - The previous pass tuned the tail to D1 (36.7 Hz) only to reach the §9.2 31.5 Hz window (−8..+3 dB re 1 kHz). With a 48 Hz kick and the 808 on 58-110 Hz, that band measures about −15 to −18.5 dB.
   - That band's window is −20..+3 for Scoreboard, synced in bible v2 (2026-10-12): see BIBLE §9.2 and `studio/sound/acceptance.json` BANDS. It was made on the critic's instruction not to tune the kick to a meter.
-- **The returns at +2.5 dB.** B1 needs the returns stem at about −6 LU re the mix (see `mix.mjs`): with the returns at 0 dB the music stem measured −1.2 to −1.8 LU re the mix, outside its window. The ticker's ping-pong delay is gone and the pad hall is back at −14 dB, so the wetness is the stab's hall, the clap plate and the lead's delay.
+- **The returns at +3.0 dB** (+2.5 until 2026-10-13). B1 needs the returns stem at about −6 LU re the mix (see `mix.mjs`): with the returns at 0 dB the music stem measured −1.2 to −1.8 LU re the mix, outside its window. The ticker's ping-pong delay is gone and the pad hall is back at −14 dB, so the wetness is the stab's hall, the clap plate and the lead's delay. The condensed cuts and the band guard's dry bells left the returns at −5.7 to −8.2 LU and 10c's music stem 0.27 LU under B1's ceiling; +3.0 balances the long, sparse bodies (music near the ceiling) against 01a (many ducks, music near the floor).
 - **The anchor stab at P and V** plays on the engine's react bus (`bus: 'react'`, not ducked; `studio/sound/README.md`, "The react bus"), level-budgeted per anchor. The reverse crash into P rides the same bus, so the 12 dB gap duck does not touch it.
   - `mix.mjs` sets `react: { via: 'logo' }`: these voices also skip `musicDb`, the glue, the kick sidechain and the body gate, take `mix.logo`, and send to the un-ducked returns (the stab's hall rings over the impact). `clearance.mjs` models each event on its engine route (`routing.mjs` `routeOf`), so it follows whatever `mix.react` says.
   - Until 2026-10-12 the pack put these events on `bus: 'logo'`. `via: 'logo'` sums them into the logo bus, so the masters stayed bit-identical (`verify --expect-identical`, 30/30).
@@ -266,7 +280,7 @@ node src/cli.mjs audit /tmp/snd-scoreboard/mp4 --reports /tmp/snd-scoreboard/mp4
 - **Levels:** tuned against B1 and §9.2. The stab is at −11 dB (bible −8), the arp at −13.5 (bible −16; it carries the look), and the pad, clap and snare sit near the bible's starting levels.
 - **Envelopes:** the arp's amplitude decays exponentially (τ 70 ms). The engine's ADSR reaches 99% at `d`, which would make a 39 ms blip. Onsets are quadratic or cubic over 3-4 ms where a linear 1-2 ms ramp would click (U2).
 - **B3 at the end card:** the card's pop and thud sit under the held sting by design (§3.2), so the harness reports them but does not fail on them (`acceptance.json` B3 `exemptCard`). Synced in bible v2 (2026-10-12), see BIBLE §9.3.
-- **B1 and the returns:** the §8.1 windows hold only with the returns bus at +2.5 dB (above). The harness reports the returns stem (−5.4 to −6.4 LU re the mix) without gating it. Synced in bible v2 (2026-10-12): the returns at about −6 LU are part of Scoreboard's B1 target, see BIBLE §8.1.
+- **B1 and the returns:** the §8.1 windows hold only with the returns bus at +3.0 dB (above). The harness reports the returns stem (−5.4 to −6.4 LU re the mix) without gating it. Synced in bible v2 (2026-10-12): the returns at about −6 LU are part of Scoreboard's B1 target, see BIBLE §8.1.
 
 ### Measured (2026-10-11, the 15 Scoreboard teasers muxed onto `renders/channel`, written to /tmp/fix-snd-scoreboard)
 
@@ -322,6 +336,11 @@ Every mux kept the picture bit-identical (video md5). Two renders of a spec give
 - `verify`: all 15 pass 42/42, units 69/69. I −14.08 to −14.17 LUFS, decoded true peak −1.19 to −1.40 dBTP, PLR 12.72-12.93, LRA 4.65-6.70. Every teaser ends at ceiling −1.5 dBTP. Over the first 30 ms the decode is at most +0.12 dB over the master (04a; it was +0.54 on 06a). B3's closest cue sits 3.9 dB over the music, and B8's logo at −11.65 to −12.57 LUFS.
 - Shipped to `renders/channel` on 2026-10-12 (BIBLE.md status v2.2). The calibration re-measured at its fixed point (`sound/tools/README.md`).
 - **06b's condensed cut (BIBLE.md v2.3, the same day)** moved 06b's cue record (20.8 s, was 33.0 s), so the calibration was re-measured on the new records. It stayed at its fixed point, so nothing was written and the other 14 Scoreboard masters are unchanged. 06b passes 42/42: I −14.10, TP −1.20 dBTP, PLR 12.90, LRA 5.93; every octave at least 0.7 dB inside its window (16 kHz −12.7 against −12); B3's closest cue 4.2 dB; B8's logo −12.11 LUFS against the payoff's −10.21. Its A11 is 2.83% of 3%, the set's highest: the payoff burst at P is about 0.59 s in either cut, and the cut is shorter. Watch it on the next pack change (BIBLE.md §11.2).
+
+**The condensed cuts (2026-10-13, not shipped).** Nine records moved (01a 02b 02c 03b 03c 04a 04c 05c 06a), and before this pass eight of them failed a gated check: the §9.2 octaves (125/250 Hz in the crowded short bodies 02b 02c 03b 03c 05c, 16 kHz in 01a and 04a), B8 (03b 03c 05c: the logo under −13 LUFS), B7 (01a: the short BUILD's halves), A3 (05c: LRA 2.79). The pack gained the rules above (the band guard, the short-BUILD fall, the early payoff, the payoff's hall budget, the whoosh's floor, the returns at +3.0 dB) and its models were corrected and refitted (the fader's cluster cap after the trims, the master gain with the cues, the B8 frame, the payoff estimate; `sound/tools/README.md`). `verify --video` on a fresh dump of the records (`/tmp/snd-short-scoreboard/after.txt`): all 15 pass, units 69/69.
+- Every §9.2 octave of every teaser sits at least 0.5 dB inside its window (the look-wide minimum per octave: 31.5 Hz +1.6, 63 Hz +1.4, 125 Hz +0.9, 250 Hz +0.5 (02c), 500 Hz +0.6, 2 kHz +1.0, 4 kHz +1.1, 8 kHz +1.7, 16 kHz +0.9).
+- A3 4.47-6.39 LU (05c 4.68); B7's edge halves at least +0.6 LU (01a), drop-hold at least 1.9 (09c, unchanged); B8's logo −11.91 to −12.61 LUFS and at least 0.68 LU under its payoff; B1 music at least 0.39 LU inside (10c), SFX 0.56 (02b); A11 at most 2.06% (06b, was 2.83%) with at most 4.08 dB; B4 at most 1.19 ms (04a, was 1.94).
+- All 15 masters change (the returns, the payoff's sends and the refit reach every teaser). Two builds give the same master (02c, 05c). The cue fixture and the tempo table still hold the old records (BIBLE.md §11.1 steps 3-7 are the shipper's).
 
 ---
 

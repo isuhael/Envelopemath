@@ -17,11 +17,14 @@ const unit = b => { const p = peakOf(b); if (p > 0) scale(b, 1 / p); return b }
 const env = (x, e) => { for (let i = 0; i < x.length; i++) x[i] *= e[i] ?? 0; return x }
 const rot = (arr, n) => arr[((n % arr.length) + arr.length) % arr.length]
 const cents = c => Math.pow(2, c / 1200)
-/** normalise the FULL layered sound to peakDb, then leave out the layers the merge rule drops (never raises the rest) */
+/** normalise the FULL layered sound to peakDb, then leave out the layers the merge rule drops (never raises the rest);
+ *  a layer with a `norm` buffer is levelled as that buffer and sounds as `buf` (the ring budget, RING: a shorter, darker
+ *  ring never raises the rest) */
 function outLayers(parts, n, peakDb, ctx, meta = {}) {
-  const full = K.layer(parts, n), pk = peakOf(full)
+  const alt = parts.some(p => p.norm)
+  const full = K.layer(alt ? parts.map(p => (p.norm ? { ...p, buf: p.norm } : p)) : parts, n), pk = peakOf(full)
   const keep = parts.filter(p => !(p.body && ctx.dropBody) && !(p.transient && ctx.dropTransient) && !p.skip)
-  const b = keep.length === parts.length ? full : K.layer(keep, n)
+  const b = keep.length === parts.length && !alt ? full : K.layer(keep, n)
   if (pk > 0) scale(b, dbToGain(peakDb) / pk)
   b.meta = { ...meta, body: !ctx.dropBody }
   return b
@@ -104,7 +107,7 @@ const glockNote = (m, tauScale = 1, len = 1.0) => K.glock(m, { vel: 1, tauScale,
  *  median body of the 15 teasers the pack's levels and bands were set on (25.3 s, the records of 2026-10-12); bodies of
  *  25 s and over keep their ring as shipped, and the ring never shortens below half (a 12.5 s body). Visible to the plan:
  *  the leveller, the tilt and the music placement size the cues as they ring */
-export const RING = { ref: 25, min: 0.5 }
+export const RING = { ref: 25, min: 0.3 }
 export const ring = tl => Math.max(RING.min, Math.min(1, (tl.base || RING.ref) / RING.ref))
 
 // ---------------------------------------------------------------- the kinds
@@ -240,12 +243,19 @@ const kinds = {
     if (big) {
       const tp = K.timpani(r, { vel: 1, f: mtof(cue.inCard ? 38 : T.rootIn(ctx.chord, 33, 38)), tau: 1.1 }); unit(tp)
       parts.push({ buf: tp, gain: 0.7, body: true, skip: ctx.atP || ctx.atV })
-      // (its ring follows the body: RING above, the payoff's wash included)
-      const cr = K.crash(r, { vel: 1, tau: 1.1 * (1 + 0.05 * r.bi()) * (cue.inCard ? 1 : ring(ctx.tl)), ratio: 2.6 })
-      svf(cr.L, 'lp', 7500); svf(cr.R, 'lp', 7500)
-      for (let i = 0; i < cr.L.length; i++) { const M = (cr.L[i] + cr.R[i]) / 2, S = (cr.L[i] - cr.R[i]) / 2 * 0.7; cr.L[i] = M + S; cr.R[i] = M - S }
-      unit(cr)
-      parts.push({ buf: cr, gain: ctx.atP ? 0.65 : 0.5 })
+      // the crash (τ 1.1 s, LP 7.5 kHz, narrowed to ±70%); its ring follows the body (RING above, the payoff's wash
+      // included): τ x ring, its top octave darker (LP x √ring). The hit is still levelled with its full crash (the same
+      // seed): the ring budget changes how the crash rings, never the level of the punch, smack and burst (`norm`)
+      const rg = cue.inCard ? 1 : ring(ctx.tl)
+      const crashOf = (rr, tau, lp) => {
+        const c = K.crash(rr, { vel: 1, tau, ratio: 2.6 })
+        svf(c.L, 'lp', lp); svf(c.R, 'lp', lp)
+        for (let i = 0; i < c.L.length; i++) { const M = (c.L[i] + c.R[i]) / 2, S = (c.L[i] - c.R[i]) / 2 * 0.7; c.L[i] = M + S; c.R[i] = M - S }
+        return unit(c)
+      }
+      const tau = 1.1 * (1 + 0.05 * r.bi())
+      if (rg < 1) parts.push({ buf: crashOf(ctx.tl.stream(`sfx:${cue.i}:crash`), tau * rg, 7500 * Math.sqrt(rg)), norm: crashOf(ctx.tl.stream(`sfx:${cue.i}:crash`), tau, 7500), gain: ctx.atP ? 0.65 : 0.5 })
+      else parts.push({ buf: crashOf(r, tau, 7500), gain: ctx.atP ? 0.65 : 0.5 })
     }
     const meta = { pitches: ctx.dropBody ? [] : [m], pan: 0 }
     // on P the hit ducks the band exactly as deep and as long as the payoff duck (9 dB, hold 150 ms, release 0.3 s):
@@ -286,8 +296,12 @@ const kinds = {
     // (the bell rings τ x ring(tl): RING above)
     const rg = cue.inCard ? 1 : ring(ctx.tl)
     const n1 = glockNote(a + r.bi() * 0.03, 0.85 * rg, 1.0), n2 = glockNote(b + r.bi() * 0.03, 0.85 * rg, 0.94)
+    // a body bell also steps back by the ring (its level and its hall send, 10·log10(ring) dB); the payoff's bell keeps
+    // its level (the payoff is sized against the card, B8)
+    const lv = ctx.atP ? 0 : 10 * Math.log10(rg)
+    if (lv < 0) meta.sends = { hall: -11.5 + lv }
     const parts = [{ buf: unit(n1), pan: -0.15 }, { buf: unit(n2), pan: 0.15, at: 0.06, gain: 0.85 }]
-    return outLayers(parts, sec(1.0), -10, ctx, meta)
+    return outLayers(parts, sec(1.0), -10 + lv, ctx, meta)
   },
 
   /** whoosh (a dash, a swing, a heave): noise BP 700 Hz -> 3.5 kHz -> 900 Hz, amplitude modulated at 28 Hz (depth 20%,
