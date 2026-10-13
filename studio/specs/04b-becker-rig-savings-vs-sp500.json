@@ -3,54 +3,54 @@
   "look": "becker-rig",
   "format": "chart-race",
   "fps": 30,
-  "duration": 36.0,
+  "duration": 16.3,
   "header": "Your **$1,000**: 16 years of savings\nVS 1 year of the S&P 500",
   "footer": "Savings: FDIC avg · S&P w/ dividends",
   "captions": true,
   "vo": [
     {
-      "t": 0.0,
-      "d": 4.7,
+      "t": -0.4,
+      "d": 1.6,
       "text": "Year one in the S&P: ≈ $151."
     },
     {
-      "t": 4.8,
-      "d": 2.7,
+      "t": 1.25,
+      "d": 2.1,
       "text": "Savings gets 16 years to match it."
     },
     {
-      "t": 7.5,
-      "d": 1.7,
+      "t": 3.4,
+      "d": 1.85,
       "text": "Stocks have already doubled."
     },
     {
-      "t": 10.8,
-      "d": 2.5,
+      "t": 5.3,
+      "d": 1.32,
       "text": "Savings? Under $10 so far."
     },
     {
-      "t": 14.35,
-      "d": 3.1,
+      "t": 7.2,
+      "d": 2.1,
       "text": "2020: stocks top $4,000."
     },
     {
-      "t": 19.1,
-      "d": 3.1,
+      "t": 9.35,
+      "d": 2.4,
       "text": "2022: stocks drop ≈ 18%."
     },
     {
-      "t": 23.6,
-      "d": 4.3,
+      "t": 11.8,
+      "d": 1.75,
       "text": "2025: savings made under $30 in 16 years."
     },
     {
-      "t": 27.95,
-      "d": 4.7,
+      "t": 13.6,
+      "d": 1.2,
       "text": "The S&P's first year alone: ≈ $151."
     }
   ],
   "verdict": {
-    "t": 32.7,
+    "t": 14.8,
     "text": "The S&P 500's **2010 alone**\nbeat 16 years of savings."
   },
   "data": {
@@ -217,8 +217,8 @@
       "log": false
     },
     "raceT": [
-      -0.4,
-      23.6
+      -0.2,
+      11.79
     ],
     "events": [
       {
@@ -226,7 +226,7 @@
         "label": "Bear market"
       }
     ],
-    "hold": 12.4
+    "hold": 4.51
   },
   "lookOpts": {
     "stage": "light",
@@ -244,76 +244,82 @@
     ],
     "beats": [
       {
-        "t": 1.09,
+        "t": 0.55,
         "act": "cheer",
         "series": 0,
         "label": "year 1: ≈ +$151"
       },
       {
-        "t": 4.8,
+        "t": 1.25,
         "act": "think",
         "series": 1,
-        "d": 18.8,
+        "d": 10.54,
         "label": "goal: ≈ +$151",
         "chip": true
       },
       {
-        "t": 8.65,
+        "t": 3.4,
         "act": "cheer",
         "series": 0,
         "pulse": true
       },
       {
-        "t": 10.8,
+        "t": 5.3,
         "act": "peek",
         "series": 1,
-        "d": 2.5,
+        "d": 1.32,
         "pulse": true
       },
       {
-        "t": 16.27,
+        "t": 7.79,
         "act": "pump",
         "series": 0,
         "d": 1.0,
         "pulse": true
       },
       {
-        "t": 16.27,
+        "t": 7.79,
         "act": "shocked",
         "series": 1,
         "d": 1.0
       },
       {
-        "t": 19.1,
+        "t": 9.54,
         "act": "impact",
         "series": 0,
         "label": "2022: ≈ −18%"
       },
       {
-        "t": 23.6,
+        "t": 11.79,
         "act": "grow",
         "series": 0
       },
       {
-        "t": 23.6,
+        "t": 11.79,
         "act": "shrug",
         "series": 1,
         "label": "under +$30"
       },
       {
-        "t": 27.95,
+        "t": 13.6,
         "act": "pointBack",
         "series": 0,
-        "d": 4.7
+        "d": 0.76
       },
       {
-        "t": 32.7,
+        "t": 13.96,
+        "act": "pump",
+        "series": 0,
+        "d": 0.75
+      },
+      {
+        "t": 14.36,
         "act": "cheer",
         "series": 0
       }
     ],
     "lens": {
-      "t": 26.2,
+      "t": 12.9,
       "rows": [
         {
           "series": 1,
@@ -323,80 +329,81 @@
           "display": "under +$30"
         },
         {
-          "t": 27.95,
+          "t": 13.6,
           "series": 0,
           "from": 2010,
           "to": 2010.99,
           "label": "S&P 500 in 2010",
-          "display": "≈ +$151"
+          "display": "≈ +$151",
+          "d": 0.3
         }
       ]
     },
-    "gag": "Each figure climbs its own line. The S&P figure scrambles up a steep, jagged slope: the race freezes as his first year closes (he cheers over \"year 1: ≈ +$151\"), then sprints to catch up; he cheers as stocks double, pumps a fist as they top $4,000, stumbles in 2018 and gets knocked down in 2022. The savings figure strolls a ledge so flat it never dips, a step behind him, chin in hand, his goal pinned under a counter that barely moves: he peeks at it, and gapes as the S&P tops $4,000. At the end he shrugs at his 16-year total and sits; a big card drops in over the sky: his grey stub on a dashed track (the goal he never reached) against the full green bar the S&P made in its first year, which the hero points back up at while his gold plate steps back. The verdict lands as the last line ends.",
+    "gag": "Each figure climbs its own line. The S&P figure scrambles up a steep, jagged slope: the race freezes as his first year closes (he cheers over \"year 1: ≈ +$151\"), then sprints to catch up; he cheers as stocks double, pumps a fist as they top $4,000, stumbles in 2018 and gets knocked down in 2022. The savings figure strolls a ledge so flat it never dips, a step behind him, chin in hand, his goal pinned under a counter that barely moves: he peeks at it, and gapes as the S&P tops $4,000. At the end he shrugs at his 16-year total and sits; a big card drops in over the sky: his grey stub on a dashed track (the goal he never reached) against the full green bar the S&P made in its first year, which the hero points back up at as it shoots, then punches the air as it lands, while his gold plate steps back. The verdict lands as the last line ends.",
     "fill": "gap",
     "hitStop": {
       "x": 2010.99,
-      "until": 2.95,
-      "rejoin": 6.6
+      "until": 1.1,
+      "rejoin": 2.6
     }
   },
   "sfx": [
     {
-      "t": 1.09,
+      "t": 0.55,
       "kind": "pop"
     },
     {
-      "t": 2.95,
+      "t": 1.1,
       "kind": "whoosh",
       "dur": 0.6,
       "gain": 0.4
     },
     {
-      "t": 4.8,
+      "t": 1.25,
       "kind": "swipe"
     },
     {
-      "t": 8.65,
+      "t": 3.4,
       "kind": "ding",
       "gain": 0.5
     },
     {
-      "t": 10.8,
+      "t": 5.3,
       "kind": "tick"
     },
     {
-      "t": 16.27,
+      "t": 7.79,
       "kind": "pop",
       "gain": 0.45
     },
     {
-      "t": 19.1,
+      "t": 9.54,
       "kind": "hit"
     },
     {
-      "t": 23.6,
+      "t": 11.79,
       "kind": "roll",
       "dur": 1.0
     },
     {
-      "t": 23.7,
+      "t": 11.89,
       "kind": "boing"
     },
     {
-      "t": 26.2,
+      "t": 12.9,
       "kind": "pop"
     },
     {
-      "t": 28.05,
+      "t": 13.7,
       "kind": "whoosh",
-      "dur": 0.8
+      "dur": 0.35
     },
     {
-      "t": 28.86,
+      "t": 13.96,
       "kind": "pop"
     },
     {
-      "t": 32.7,
+      "t": 14.8,
       "kind": "thud"
     }
   ]

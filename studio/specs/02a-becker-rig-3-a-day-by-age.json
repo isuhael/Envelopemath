@@ -3,17 +3,17 @@
   "look": "becker-rig",
   "format": "find-your-row",
   "fps": 30,
-  "duration": 13.4,
+  "duration": 7.8,
   "header": "“It’s just **$3 a day**.”\nWhat it costs you by 65:",
   "footer": "At 7% a year until 65\nno tax, fees, inflation",
   "captions": true,
   "vo": [
-    { "t": 0.0, "d": 1.95, "text": "Just $3 a day?" },
-    { "t": 2.0, "d": 2.7, "text": "At 18: **≈ $400,000**." },
-    { "t": 4.9, "d": 3.3, "text": "At 25: **≈ $240,000**." },
-    { "t": 8.4, "d": 3.5, "text": "10 years younger?\nIt costs you **more than double**." }
+    { "t": -0.4, "d": 1.8, "text": "Just $3 a day?" },
+    { "t": 1.45, "d": 1.55, "text": "At 18: **≈ $400,000**." },
+    { "t": 3.05, "d": 1.6, "text": "At 25: **≈ $240,000**." },
+    { "t": 4.7, "d": 1.6, "text": "10 years younger?" }
   ],
-  "verdict": { "t": 10.7, "text": "10 years younger?\nIt costs **more than double**." },
+  "verdict": { "t": 6.3, "text": "10 years younger?\nIt costs **more than double**." },
   "data": {
     "columns": [
       { "label": "Your age" },
@@ -33,19 +33,14 @@
       ["60", "$5,475", "≈ $6,500"]
     ],
     "formula": "= $3 × 365 ÷ 12 = $91.25 a month",
-    "rowsT": 0.0,
-    "rowEvery": 0.5,
+    "rowT": [0, 0.22, 0.55, 0.85, 1.15, 1.85, 2.3, 3.5, 3.95, 4.4],
     "pick": [
-      { "t": 2.0, "row": 0, "label": "≈ 7.8× what you think" },
-      { "t": 4.9, "row": 2, "label": "≈ 5.5× what you think" },
-      { "t": 10.7, "row": 2, "label": "**≈ 2.2×** the cost at 35" }
+      { "t": 1.45, "row": 0, "label": "≈ 7.8× what you think" },
+      { "t": 3.05, "row": 2, "label": "≈ 5.5× what you think" },
+      { "t": 6.3, "row": 2, "label": "**≈ 2.2×** the cost at 35" }
     ],
-    "hold": 2.7
+    "hold": 1.5
   },
-  "lookOpts": {
-    "compare": [{ "pick": 2, "from": 4, "start": 8.4 }],
-    "beats": [{ "t": 0.25, "act": "shrug", "d": 0.9 }, { "t": 6.2, "act": "shocked", "d": 0.7 }],
-    "figureScale": 0.82
-  },
-  "sfx": [ { "t": 10.7, "kind": "ding" } ]
+  "lookOpts": { "compare": [{ "pick": 2, "from": 4, "start": 4.7 }], "beats": [{ "t": 0.0, "act": "shrug", "d": 0.6 }, { "t": 3.45, "act": "shocked", "d": 0.6 }], "figureScale": 0.82 },
+  "sfx": [ { "t": 6.3, "kind": "ding" } ]
 }

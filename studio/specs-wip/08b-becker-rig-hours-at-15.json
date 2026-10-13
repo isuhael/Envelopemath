@@ -1,0 +1,39 @@
+{
+  "id": "08b-becker-rig-hours-at-15",
+  "look": "becker-rig",
+  "format": "unit-ladder",
+  "fps": 30,
+  "duration": 12.85,
+  "header": "At **$15/hr**, you work for rent\nfrom the 1st to the ___",
+  "footer": "≈ $13.10 kept: 2026 federal tax + FICA, single, no state tax",
+  "captions": true,
+  "vo": [
+    {"t": -0.4, "d": 2.93, "text": "$15 an hour? Median rent:"},
+    {"t": 2.55, "d": 1.2, "text": "**≈ 117 hours**. Every hour you work, to **≈ the 20th**."},
+    {"t": 3.77, "d": 1.36, "text": "A year of rent?"},
+    {"t": 5.15, "d": 1.2, "text": "**≈ 1,400**."},
+    {"t": 6.37, "d": 1.36, "text": "An average new car?"},
+    {"t": 7.75, "d": 1.2, "text": "**≈ 3,800**."},
+    {"t": 8.97, "d": 2.28, "text": "A median new house?"},
+    {"t": 11.25, "d": 1.2, "text": "That's **≈ 14 years** of full-time work. Every cent you keep."}
+  ],
+  "verdict": {"t": 11.25, "text": "**≈ 14 years** of full-time work.\nEvery cent you keep."},
+  "data": {
+    "unit": {"name": "Hour of work at $15 (≈ $13.10 kept)", "price": "$13.10", "icon": "hour"},
+    "rungs": [
+      {"t": 0.0, "item": "Median rent, 1 month", "cost": "$1,531", "units": 117, "unitsDisplay": "≈ 117"},
+      {"t": 2.95, "item": "Median rent, 1 year", "cost": "$18,372", "units": 1402, "unitsDisplay": "≈ 1,402"},
+      {"t": 5.55, "item": "An average new car", "cost": "$50,089", "units": 3824, "unitsDisplay": "≈ 3,824"},
+      {"t": 8.15, "item": "A median new house", "cost": "$393,700", "units": 30053, "unitsDisplay": "≈ 30,053"}
+    ],
+    "hold": 2.5
+  },
+  "lookOpts": {
+    "pileLabels": false,
+    "landAfter": 2.2,
+    "blank": {"t": 0.15, "d": 2.4, "text": "≈ 20th", "calendar": 30},
+    "morph": {"t": 11.25, "working": "30,053 hours ÷ 2,080 a year", "display": "14", "label": "years of full-time work"},
+    "beats": [{"t": 2.41, "act": "pointUp", "d": 0.5}]
+  },
+  "sfx": []
+}

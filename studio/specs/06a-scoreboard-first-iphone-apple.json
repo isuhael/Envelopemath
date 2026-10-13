@@ -3,49 +3,49 @@
   "look": "scoreboard",
   "format": "pov-race",
   "fps": 30,
-  "duration": 26.5,
+  "duration": 15.3,
   "header": "POV: IN 2007 YOU INVESTED IN APPLE\nINSTEAD OF PAYING **$499**\nFOR THE FIRST IPHONE",
   "footer": "6/29/07 close → 12/31/25 · dividends reinvested",
   "captions": true,
   "vo": [
     {
-      "t": 0.0,
-      "d": 5.8,
-      "text": "Launch day 2007: you skip the $499 iPhone and buy Apple\u00a0stock."
+      "t": -0.4,
+      "d": 3.64,
+      "text": "Launch day 2007: you skip the $499 iPhone and buy Apple stock."
     },
     {
-      "t": 6.0,
-      "d": 3.6,
-      "text": "2012: about\u00a0$2,200. You just\u00a0hold."
+      "t": 3.29,
+      "d": 2.72,
+      "text": "2012: about $2,200. You just hold."
     },
     {
-      "t": 9.8,
-      "d": 3.4,
-      "text": "2017: over\u00a010 times. The phone's long\u00a0gone."
+      "t": 6.06,
+      "d": 1.93,
+      "text": "2017: over 10 times. The phone's long gone."
     },
     {
-      "t": 13.7,
-      "d": 2.2,
+      "t": 8.04,
+      "d": 1.67,
       "text": "2020: it passes $10,000."
     },
     {
-      "t": 16.6,
-      "d": 2.2,
+      "t": 9.76,
+      "d": 1.83,
       "text": "2022 knocks off a quarter."
     },
     {
-      "t": 19.6,
-      "d": 2.4,
-      "text": "2025: about\u00a0$37,000."
+      "t": 11.64,
+      "d": 2.06,
+      "text": "2025: about $37,000."
     },
     {
-      "t": 22.0,
-      "d": 3.6,
+      "t": 13.7,
+      "d": 1.2,
       "text": "About 74 times. It doubled about every 3 years."
     }
   ],
   "verdict": {
-    "t": 22.0,
+    "t": 13.7,
     "text": "**≈ 74×** your $499.\n2× every **≈ 3 yrs**."
   },
   "data": {
@@ -167,44 +167,69 @@
       "dp": 0
     },
     "raceT": [
-      0.3,
-      21.4
+      -0.04,
+      12.8
     ],
-    "hold": 5.1
+    "hold": 2.5
   },
   "lookOpts": {
     "stage": "race",
     "tags": false,
     "footerSteps": [
       {
-        "t": 21.4,
+        "t": 12.8,
         "text": "≈ 136.7 shares × $271.12 (12/31/25 close)"
       }
-    ]
+    ],
+    "clockKnots": [
+      [
+        5.7,
+        2015.1
+      ],
+      [
+        6.26,
+        2016.5
+      ],
+      [
+        7.36,
+        2018.05
+      ],
+      [
+        7.81,
+        2018.95
+      ]
+    ],
+    "startPing": true
   },
   "sfx": [
     {
-      "t": 0.84,
+      "t": 0.07,
+      "kind": "whoosh",
+      "dur": 0.6,
+      "gain": 0.45
+    },
+    {
+      "t": 0.31,
       "kind": "pop"
     },
     {
-      "t": 2.51,
+      "t": 1.37,
       "kind": "thud"
     },
     {
-      "t": 6.96,
+      "t": 4.2,
       "kind": "tick"
     },
     {
-      "t": 12.51,
+      "t": 7.32,
       "kind": "tick"
     },
     {
-      "t": 14.78,
+      "t": 8.58,
       "kind": "ding"
     },
     {
-      "t": 21.4,
+      "t": 12.8,
       "kind": "cash"
     }
   ]
