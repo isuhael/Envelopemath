@@ -6,8 +6,8 @@
 //   HOOK   one of three seeded openings at t = 0 ("ta-da", "ba-DA", "ta-da-ling"), brass D major always on t = 0 (S10)
 //   BUILD  E3 (bounce, ostinato, shaker 16ths) -> E4 at the midpoint (kick 4/7, ghost snares, pizz chops, slides)
 //   TENSION "strain": heartbeat kick on every beat, snare roll 16ths -> 32nds, tremolo strings on the climb, bass
-//          F# G G# A pumping octaves, no marimba; the slide whistle when no SFX riser covers it; the last 8th
-//          before P is silent
+//          F# G G# A (pumping octaves in a short body), no marimba; the slide whistle when no SFX riser covers it; the
+//          last 8th before P is silent
 //   P      "ka-TA": a short brass "ka" with timpani, crash, kick, snare and clap (no clap on a hit) on the downbeat
 //          (inside the payoff duck), the sustained fanfare "TA" on the react bus from the next free swung 16th; glock A5
 //   DROP   E5: four on the floor, clap, tambourine, brass stabs on 1 and the and-of-2, ostinato in its home octave, glock line
@@ -20,16 +20,18 @@
 // react.via 'logo' keeps them off musicDb and the glue, as calibrated); clock trains
 // silence the shaker and block and keep the kit, ghosts, pizz chops and marimba off their ticks; the buzz deflate (Gm,
 // the bass bends down 3 st, drums and marimba out for a beat); the bass chokes for bloops, dings, coins, landings, hits
-// and steps; band-selective dips of the mid voices under the cues (a dynamic EQ in automation); the payoff's own cues
-// keep the payoff duck under their first 50 ms; dense beats lose the glock and thin the marimba; long cue-free holds
-// change something every 2 bars.
+// and steps; band-selective dips of the mid voices under the cues (a dynamic EQ in automation), the payoff's own cues
+// after the payoff duck's hold included (DIP_P: the mid voices and the band's crash for each cue's own 50 ms, the "TA"
+// under all of them); dense beats lose the glock and thin the marimba; long cue-free holds change something every 2 bars.
 // Short and dense bodies (2026-10-13, the condensed cuts; README "Short and dense bodies"): the hook settle and the
-// BUILD crescendo (CLIMB, B7), the bass's low yield (LOW), the velocity spread guard (SPREAD, S8), the TENSION walk's
-// octave pump (the 250 Hz octave).
+// BUILD crescendo, a short BUILD's step and a short HOLD's eased DROP (CLIMB, B7), the bass's low yield (LOW), the
+// velocity spread guard (SPREAD, S8), the TENSION walk's octave pump by body length and its lead's share (TEN, the
+// 250 Hz and 1 kHz octaves).
 import * as T from '../../../src/sound/theory.mjs'
 import { climb, deflateEnd } from './harmony.mjs'
 import { balancePlan, OWN, PAYOFF_OWN } from './balance.mjs'
 import { mix } from './mix.mjs'
+import { shortness } from './sfx.mjs'
 
 export const SWING = 0.58
 const W = { tick: 0.5, type: 0.5, pop: 0.5, swipe: 0.5, whoosh: 0.5, step: 0.5, thud: 1, ding: 1, buzz: 1, boing: 1, cash: 1.5, hit: 2, reveal: 2, roll: 2, riser: 0 }
@@ -391,14 +393,18 @@ export function compose(tl, rng) {
       const p = parts.length > 1 ? j / (parts.length - 1) : 1
       for (const m of CLIMB_V[c.sym]) note(t0, t1 - t0 + 0.004, m, 0.62 + 0.36 * p + g('strings', 0.02), 'strings', 'strings')
       const bm = CLIMB_B[c.sym]
-      // (the walk pumps octaves, 2026-10-13: the off-beat 8ths jump to bm + 12. In octave 2 alone the walk had nothing in
-      // the 250 Hz octave (its 250-over-125 read -9.6 dB against the BUILD bounce's -3.5), and in a condensed cut the
-      // TENSION holds up to half of the bass's time: 02a's and 05b's 250 Hz octave sat 2.3 and 0.8 dB under the bands'
-      // floor, 01b's 0.2 over it, BIBLE §9.2. The walk keeps its pitch classes and its downbeats, S4)
+      // (the walk pumps octaves in a short body, 2026-10-13: the off-beat 8ths jump to bm + 12. In octave 2 alone the
+      // walk has nothing in the 250 Hz octave (its 250-over-125 read -9.6 dB against the BUILD bounce's -3.5), and in a
+      // condensed cut the TENSION holds up to a quarter of the body: 02a's and 05b's 250 Hz octave sat 2.5 and 1.2 dB
+      // under the bands' floor, 01b's and 01c's on it, BIBLE §9.2. The pump also adds 0.5-0.7 LU to the TENSION's loudness,
+      // which comes off the drop's lift over it, so it is keyed on the body's length: the last shortness(base) of the
+      // TENSION's 8ths pump (all of them at 12.5 s and under, none at 25 s and over: the long teasers keep the walk and the
+      // lift they shipped with). The walk keeps its pitch classes and its downbeats, S4)
+      const pumpFrom = ten.b0 + (1 - shortness(base)) * Tn
       for (let e = beat; e < beat + c.beats - 1e-9; e += 0.5) {
         const t = tl.timeAt(e)
         if (t >= gap - 1e-6) break
-        const up = Math.round((e - ten.b0) * 2) % 2 === 1
+        const up = Math.round((e - ten.b0) * 2) % 2 === 1 && e >= pumpFrom - 1e-9
         note(t, tl.beatLen(t) * 0.42, bm + (up ? 12 : 0), 0.78 + 0.18 * p + g('bass', 0.025), 'bass', 'bass')
       }
       beat += c.beats
@@ -487,11 +493,12 @@ export function compose(tl, rng) {
   }
 
   // ---- the bass makes room for a bloop, a ding, a landing or a footstep (gain >= 0.4): a note ringing into it is
-  // choked 5 ms before it; a note starting within 60 ms of a bloop or ding is left out (the bounce is staccato; a missing
-  // 16th reads as a rest), one starting with a landing or a step answers it 70 ms later (the thud is the downbeat, the
-  // bass bounces off it)
+  // choked 5 ms before it; a note starting from 60 ms before a bloop or ding to the end of its own 50 ms is left out
+  // (the bounce is staccato; a missing 16th reads as a rest), one starting with a landing or a step answers it 70 ms
+  // later (the thud is the downbeat, the bass bounces off it); a note starting after the cue's 50 ms stays
   // (every cue B3 listens to, 2026-10-13: an impact is a landing the bass answers, a coin a bell it leaves out; a dense
-  // body put bass notes inside 05b's light hits)
+  // body put bass notes inside 05b's light hits. The leave-out ends with the cue's own 50 ms, not 60 ms: with hits and
+  // coins on its 16ths, 02a's one-bar BUILD lost the notes 50-60 ms after them, and with them its second half, B7)
   const LAND = new Set(['thud', 'step', 'hit'])
   for (const c of tl.cues) {
     if (!['pop', 'ding', 'thud', 'step', 'hit', 'cash'].includes(c.kind) || c.gain < 0.4 || c.inCard || c.t >= base - 1e-6 || Math.abs(c.t - P) < 0.02 || (V != null && Math.abs(c.t - V) < 0.02)) continue
@@ -530,6 +537,14 @@ export function compose(tl, rng) {
     if (inst === 'revcrash') { if (off) gain[inst] = [{ t: 0, db: off }]; continue }
     gain[inst] = [{ t: gap - 0.0005, db: off }, { t: gap + 0.010, db: -90 }, { t: P - 0.0002, db: -90 }, { t: P, db: off }]
   }
+  // the TENSION's sustained lead (the slide whistle, the tremolo strings) keeps the share of the 500 Hz-1 kHz octaves it
+  // has in a long body (TEN.share: the TENSION's ~2 s of a 20-25 s body): where the TENSION holds more of the body it
+  // steps back 10·log10(TEN.share / share) dB (2026-10-13; 02a's 2.1 s TENSION is 27% of its 7.8 s body, and its whistle
+  // alone was a tenth of the mix's 1 kHz octave, the reference that left its 250 Hz octave on the BANDS floor)
+  if (ten) {
+    const share = (gap - ten.t0) / base, st = 10 * Math.log10(Math.min(1, TEN.share / Math.max(1e-3, share)))
+    if (st < 0) for (const inst of ['whistle', 'strings']) if (gain[inst]) gain[inst] = gain[inst].map(x => ({ ...x, db: +(x.db + st).toFixed(3) }))
+  }
   // the roll's crescendo: -6 dB at the TENSION start -> 0 dB at the gap, on top of its velocity ramp
   // the card's trim against this teaser's master gain (balance.mjs): every logo voice
   const cardDb = tl.becker.music.card || 0
@@ -540,8 +555,11 @@ export function compose(tl, rng) {
   // broadband duck stays at the §7 depths (no pumping of the sustained bass)
   {
     // the body's cues (DIP) and the payoff's own cues (DIP_P: every B3 kind within PAYOFF_OWN s after P, 2026-10-13).
-    // The payoff's own cues dip the mid voices, not the whole band: the kick, bass, shaker and the band's payoff crash
-    // keep the DROP going under them (the crash carries the payoff's ring), and the fanfare's "TA" steps back as before
+    // The payoff's own cues dip the mid voices for their own 50 ms once the payoff duck's hold is over, not the whole
+    // band: the kick, bass and shaker keep the DROP going under them and the band's payoff crash keeps ringing (it steps
+    // back for those 50 ms like the other mid voices: left out of the dips, it stood under 03a's coin at P + 0.45 s and
+    // the decoded payoff went 1-2 dB over the PLR limit, so the encode loop dipped the payoff itself, B8), and the
+    // fanfare's "TA" steps back as before
     const body = dipCurve(tl, gap, P, base, 'body'), own = dipCurve(tl, gap, P, base, 'own'), mid = dipCurve(tl, gap, P, base, 'mid')
     const both = body.map((x, k) => Math.min(x, mid[k]))
     const apply = (inst, curve) => {
@@ -550,7 +568,7 @@ export function compose(tl, rng) {
       const off = gain[inst][0].db
       gain[inst] = [...gain[inst], ...dp.map(x => ({ t: x.t, db: off + x.db }))].sort((a, b) => a.t - b.t)
     }
-    for (const inst of MID) apply(inst, inst === 'crash' ? body : both)
+    for (const inst of MID) apply(inst, both)
     apply('honkFR', own)
   }
   // energy shaping on the music bus (bible B7: the DROP stands >= 2 LU over the BUILD, the HOLD sits under the DROP,
@@ -564,7 +582,12 @@ export function compose(tl, rng) {
   // grid cannot place inside one bar), ramped over 60 ms, and the DROP stands CLIMB.dropLift dB higher with it
   const bld = tl.section('BUILD')
   const shortBuild = !!bld && bld.t1 - bld.t0 < CLIMB.window, bMid = bld ? (bld.t0 + bld.t1) / 2 : 0
-  const lvl = b => (b.section === 'TENSION' ? null : b.section === 'BREAK' ? -2 : b.energy >= 5 ? (oneBarDrop ? 1.6 : 1.1) + (shortBuild ? CLIMB.dropLift : 0) : b.energy === 4 ? 0
+  // a HOLD shorter than B7's window: B7's edge windows over it are mostly the DROP's last bar (09b: a 2.0 s HOLD, edge
+  // DROP-over-HOLD 1.55 against B7's 1.5), so the DROP eases into it: its bars after the payoff's bar step back
+  // CLIMB.holdDip dB (the payoff's bar keeps its level: no more limiting, A11)
+  const hld = tl.section('HOLD'), shortHold = !!hld && hld.t1 - hld.t0 < CLIMB.window
+  const dropTail = b => shortHold && b.section === 'DROP' && b.t > P + 0.002
+  const lvl = b => (b.section === 'TENSION' ? null : b.section === 'BREAK' ? -2 : b.energy >= 5 ? (oneBarDrop ? 1.6 : 1.1) + (shortBuild ? CLIMB.dropLift : 0) + (dropTail(b) ? -CLIMB.holdDip : 0) : b.energy === 4 ? 0
     : /HOLD/.test(b.section) ? -5.5 : b.section === 'CADENCE' && b.t < P + twoBars - 0.05 ? 0 : b.section === 'HOOK' ? -1.7 - CLIMB.hookSettle : -1.7)
   // the BUILD climbs (B7): a crescendo of CLIMB.ramp dB across the section, centred on the bar levels
   const climbAt = t => (bld && t >= bld.t0 - 1e-6 && t < bld.t1 ? CLIMB.ramp * ((t - bld.t0) / Math.max(1e-3, bld.t1 - bld.t0) - 0.5) + (shortBuild ? CLIMB.step * clamp((t - bMid + 0.03) / 0.06, 0, 1) : 0) : 0)
@@ -573,7 +596,10 @@ export function compose(tl, rng) {
     if (b.section === 'TENSION' || (b.split && b.split.some(x => x.section === 'TENSION'))) {
       const t0 = ten ? ten.t0 : b.t
       if (b.t < t0 - 1e-6) { musicDb.push({ t: b.t + 0.03, db: lvl(b) ?? -1 }); musicDb.push({ t: t0, db: lvl(b) ?? -1 }) }
-      musicDb.push({ t: t0 + 0.03, db: -1 - TEN.pump }, { t: P - 0.01, db: 1 - TEN.pump })
+      // (after a short BUILD the TENSION climbs on from the BUILD's step instead of falling back under it: B7's centred
+      // windows over the BUILD's second half reach into the TENSION)
+      const tOff = shortBuild ? CLIMB.step : 0
+      musicDb.push({ t: t0 + 0.03, db: -1 + tOff }, { t: P - 0.01, db: 1 + tOff })
       continue
     }
     const d = lvl(b)
@@ -596,13 +622,17 @@ export function compose(tl, rng) {
     musicDb.push({ t: Math.max(0, b.t - 0.03), db: musicDb.length ? musicDb[musicDb.length - 1].db : d }, { t: b.t + 0.03, db: d })
   }
   musicDb.push({ t: base, db: musicDb.length ? musicDb[musicDb.length - 1].db : 0 })
-  // (the short BUILD's step and the DROP's lift with it add loudness the music model does not see, so the trim pays for
-  // them: their power over the body comes off every point, and the music still lands on the plan's level, B1)
-  let shapeDb = 0
+  // (the short BUILD's step, the TENSION climbing on from it, the DROP's lift with it and a short HOLD's eased DROP
+  // change the loudness the music model sees, so the trim evens them out: their power over the body comes off (or goes
+  // back on) every point, and the music still lands on the plan's level, B1)
+  const pw = (dur, db) => dur / base * (Math.pow(10, db / 10) - 1)
+  let shape = 0
   if (shortBuild) {
     const dropT = tl.bars.filter(b => b.section === 'DROP' && b.t < base - 1e-6).reduce((a, b) => a + Math.min(b.t1, base) - b.t, 0)
-    shapeDb = 10 * Math.log10(1 + (bld.t1 - bMid) / base * (Math.pow(10, CLIMB.step / 10) - 1) + dropT / base * (Math.pow(10, CLIMB.dropLift / 10) - 1))
+    shape += pw(bld.t1 - bMid, CLIMB.step) + pw(dropT, CLIMB.dropLift) + (ten ? pw(P - ten.t0, CLIMB.step) : 0)
   }
+  for (const b of tl.bars) if (dropTail(b) && b.t < base - 1e-6) shape += pw(Math.min(b.t1, base) - b.t, -CLIMB.holdDip)
+  const shapeDb = 10 * Math.log10(1 + shape)
   for (const x of musicDb) x.db = +(x.db + mTrim - shapeDb).toFixed(3)
   return { notes, drums: dd, automation: { gain, musicDb } }
 }
@@ -614,12 +644,18 @@ export function compose(tl, rng) {
  * So the hook's settle bars sit CLIMB.hookSettle dB under the BUILD's E3 start (the ta-da itself, its first bar, keeps
  * its level: A7, S10), and the BUILD is a crescendo of CLIMB.ramp dB across its length, centred on the bar levels, so
  * the BUILD's mean (and B7's DROP-over-BUILD) is unchanged.
+ * A BUILD shorter than the window (CLIMB.window s: 02a's one bar, 2.1 s) has no E3 -> E4 bar line to climb on, and its
+ * first half's only edge window, [0.1, 3.1] s, holds the hook: the BUILD steps up CLIMB.step dB at its midpoint (ramped
+ * over 60 ms), the hook's first beat (the "ta-da") steps back CLIMB.head dB under its bar (A7 keeps 6 dB of room), the
+ * TENSION climbs on from the step instead of falling back under it (B7's centred windows over the second half reach
+ * into it), and the DROP stands CLIMB.dropLift dB higher so DROP-over-BUILD keeps its margin. A HOLD shorter than the
+ * window (09b's 2.0 s): the DROP's bars after the payoff's bar ease CLIMB.holdDip dB (see lvl). The trim pays for all of
+ * it (shapeDb), so B1 sees the music at the plan's level.
  */
-export const CLIMB = { hookSettle: 1.5, ramp: 1.5, window: 3, step: 2.5, dropLift: 0.5, head: 2.5 }
-/** the TENSION's level ramp (-1 -> +1 dB) steps back by TEN.pump dB: the walk's octave pump (the off-beat 8ths an
- *  octave up, 250 Hz octave) adds 0.3-0.8 dB to the TENSION's mean momentary loudness in music.dry (01b, 03a, 05b, 09b),
- *  and the drop's lift over the TENSION is what the payoff stands on. The pump keeps its 250 Hz share */
-export const TEN = { pump: 0 }
+export const CLIMB = { hookSettle: 1.5, ramp: 1.5, window: 3, step: 3, dropLift: 0.5, head: 3, holdDip: 1.5 }
+/** the TENSION's sustained lead (whistle, strings) keeps its long-body share of the reference octaves: it steps back
+ *  10·log10(TEN.share / share) dB where the TENSION (its start to the gap) holds more than TEN.share of the body */
+export const TEN = { share: 0.1 }
 /** the bass's dull lift yields to the cues' landings: gone when the cues' 125 Hz octave stands LOW.span dB over their 1 kHz octave */
 export const LOW = { span: 5 }
 
@@ -627,15 +663,18 @@ export const LOW = { span: 5 }
  * The velocity spread guard (bible §9.4 S8; 2026-10-13). S8 reads each voice's raw velocity spread (written accent x
  * humanising jitter) over the body and wants it in 0.03-0.15. The written accents put several voices near its edges by
  * design: the roll's crescendo, the kick's pattern with the heartbeat and the anchors, the marimba's accents with the
- * dense-beat thinning at 0.13-0.15; the pad and pizz chops, nearly flat, at 0.03-0.05. A long body averages a hundred
- * events or more; a condensed one 8-20, and a handful of fills or chords then tips a voice over an edge (02a's snare
- * 0.162 with 8 events, 01c's pizz 0.028, 03a's pad 0.029), while a long one can sit on it (08b's marimba 0.149 over 89
- * events). So a voice S8 gates (>= SPREAD.minEvents body events, not one of its accent-only voices) whose spread falls
- * outside SPREAD.lo-SPREAD.hi (S8's window less a tenth of its width at each end) is scaled about its mean to that
- * bound: the accent shape and the order of the hits stay, only their depth changes (the boost at most
- * SPREAD.maxBoost). Every voice inside the band is left as written. Keyed on the voice's own spread (the measure S8
- * reads), so S8's velocity part holds by construction for this look at its edges, with 0.015 to spare; the timing part
- * and the grid are untouched. The t = 0 hits keep at least their written 0.9 (S10). Deterministic.
+ * dense-beat thinning at 0.13-0.15; the pad and pizz chops, nearly flat, at 0.03-0.05. A condensed body has 8-20 events
+ * per voice, and a handful of fills or chords then tips a voice over an edge (02a's snare 0.162 with 8 events, 01c's
+ * pizz 0.028, 03a's pad 0.029); a long one can sit on it from its written accents alone (08b's marimba 0.149 over 89
+ * events, 03a's 0.148 over 47, 06c's kick 0.147). What it does: every voice S8 gates (>= SPREAD.minEvents body events,
+ * not one of S8's accent-only voices) whose spread falls outside SPREAD.lo-SPREAD.hi (S8's window less a tenth of its
+ * width at each end) is scaled about its mean to that bound (a boost at most SPREAD.maxBoost); the accent shape and the
+ * order of the hits stay, only their depth changes (0.137-0.149 -> 0.135 is 2-10% off the accents); every voice inside
+ * the band is left exactly as written. Keyed on the voice's own spread, i.e. on the statistic S8 itself reads, so for
+ * this look S8's velocity part holds by construction (0.015 to spare at either edge) and no longer tests the writing;
+ * S8's timing part and the grid are untouched and still test. Not keyed on the event count alone: the long voices that
+ * sit on the edge from their written accents (above) would keep a margin of 0.001. The t = 0 hits keep at least their
+ * written 0.9 (S10). Deterministic.
  */
 export const SPREAD = { lo: 0.045, hi: 0.135, minEvents: 8, maxBoost: 2.5, accentOnly: ['revcrash', 'timp', 'crash', 'whistle', 'honkF', 'strings'] }
 function spreadGuard(events, base) {
@@ -660,14 +699,15 @@ function spreadGuard(events, base) {
 const MID = ['mallet', 'glock', 'pizz', 'honk', 'honkF', 'strings', 'pad', 'snare', 'clap', 'ghost', 'tom', 'whistle', 'crash', 'timp']
 /** dip per cue kind: [depth dB (scaled by clamp(gain / 0.4, 0.3, 1)), hold s, release τ s] */
 export const DIP = { pop: [6, 0.05, 0.1], ding: [6, 0.08, 0.22], cash: [6, 0.1, 0.3], tick: [3, 0.03, 0.08], step: [4, 0.03, 0.07], roll: [5, 0, 0.15], thud: [4, 0.05, 0.14], whoosh: [2.5, 0.05, 0.12], hit: [4, 0.05, 0.14] }
-/** the payoff's own dips (the fanfare's "TA" and the mid voices, not the band's payoff crash): every B3 kind within
- *  PAYOFF_OWN s after the hit, 8 dB */
+/** the payoff's own dips: every B3 kind within PAYOFF_OWN s after the hit, 8 dB. The fanfare's "TA" dips under all of
+ *  them ('own'); the mid voices and the band's crash only under those after the payoff duck's hold ('mid': inside it the
+ *  duck owns them), each for its own 50 ms */
 const DIP_P = { pop: [8, 0.05, 0.1], ding: [8, 0.08, 0.2], cash: [8, 0.1, 0.25], thud: [8, 0.05, 0.14], hit: [8, 0.08, 0.2], reveal: [8, 0.08, 0.2] }
 /**
  * The dip curve (dB <= 0 every 2.5 ms over [0, base]): 5 ms lookahead ramp, hold (a roll holds over its length),
  * exponential release; the deepest cue wins. 'body': the DIP kinds, none around the payoff (the payoff duck owns
  * gap - 50 ms .. P + 0.4 s) and none for the payoff's own cues; 'own': the payoff's own cues (DIP_P kinds,
- * P < t <= P + PAYOFF_OWN). None in the card or after base.
+ * P < t <= P + PAYOFF_OWN); 'mid': those of them after the payoff duck's hold. None in the card or after base.
  */
 function dipCurve(tl, gap, P, base, mode) {
   const dt = 0.0025, n = Math.ceil(base / dt) + 1, c = new Float64Array(n)

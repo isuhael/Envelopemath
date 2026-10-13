@@ -37,8 +37,11 @@ export const B3_KINDS = new Set(['thud', 'hit', 'ding', 'cash', 'reveal', 'pop']
 /** the layers a selective dip reaches (they mask pitched cues in 0.2-8 kHz); the kick, 808, stab and crashes are not in it */
 export const SEL = ['pad', 'arp', 'lead', 'hat', 'clap', 'snare', 'mriser']
 export const LOW = ['b808', 'kick']
-/** the layers that give way when a teaser's cues are too quiet for the SFX fader (balance.mjs): 1.4x the plan's offset */
-export const GIVE_WAY = ['arp', 'pad', 'hat', 'clap', 'snare', 'lead', 'stab', 'crash', 'mriser']
+/** the layers that give way when a teaser's cues are too quiet for the SFX fader (balance.mjs): 1.4x the plan's offset.
+ * The stab is not one of them, for the reason MID_LEVER gives below: the give-way is gain automation on the instrument,
+ * which the engine applies on the react bus too, so it put the anchor stabs under their budget (until 2026-10-13; 02c,
+ * the one teaser whose bed gives way, played them 0.3-0.4 dB under it) */
+export const GIVE_WAY = ['arp', 'pad', 'hat', 'clap', 'snare', 'lead', 'crash', 'mriser']
 /** the band guard's level levers (bands.mjs): the 808 floor and the mid layers that step back, as constant bus-gain
  * offsets on their instruments. The stab is not one of them: the engine applies automation.gain[inst] to every bus that
  * carries the instrument (engine.mjs), so a stab offset would also reach the anchor stabs at P and V on the react bus,

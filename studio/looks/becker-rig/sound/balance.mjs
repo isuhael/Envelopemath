@@ -13,8 +13,7 @@ import * as D from '../../../src/sound/dsp.mjs'
 import { loudness } from '../../../src/sound/loudness.mjs'
 import { duckCurve, compress } from '../../../src/sound/fx.mjs'
 import { ltas } from '../../../src/sound/audit.mjs'
-import { raw, RING } from './sfx.mjs'
-const RING_REF = RING.ref
+import { raw, shortness } from './sfx.mjs'
 import { mix } from './mix.mjs'
 
 /** pre-master gated loudness the SFX stem is pinned to (LUFS): the music stem sits near -24, so the SFX stem lands a
@@ -25,8 +24,9 @@ export const MAX_TRIM = 6
 export const PAYOFF_LIFT = 1
 /** the window a cue B3 listens to owns (bible §6.6.1, §9.3 B3: the SFX over the music in [t, t + 50 ms]) */
 export const OWN = 0.05
-/** the payoff's own cues: the cues B3 listens to within this many seconds after P (compose.mjs: the band's mid voices
- *  and the fanfare's "TA" dip under each of them, DIP_P) */
+/** the payoff's own cues: the cues B3 listens to within this many seconds after P (compose.mjs DIP_P: the fanfare's
+ *  "TA" dips under each of them, the band's mid voices and its crash under those after the payoff duck's hold, each for
+ *  its own 50 ms; the whole band is never ducked for them) */
 export const PAYOFF_OWN = 1.2
 /** the leveller only rides the top RANGE dB of moments: below that, cues keep their level even if the target is not met */
 export const RANGE = 14
@@ -145,10 +145,10 @@ export function sfxLevels(tl, rendered = renderCues(tl)) {
  * difference, clamped to [-3, +3] dB. (tiltDn since 2026-10-13: the bright side of the tilt lifts the toys by up to
  * 3.5 dB, which the model did not see; 02a's and 08c's music came out 0.7-0.8 dB over its prediction, and 02a's stood
  * 2 LU over its SFX, B1.) The master gain is predicted from mix = (1 + a)·M + b·U (powers; U = the plan's ungated SFX
- * level; a, b, C, tiltUp and tiltDn fitted on the 15 teasers at trim 0, b against the plan's own U; refit after any
- * level change). MODEL.fixedTrim (a calibration hook) overrides the trim.
+ * level; a, b, C, tiltUp, tiltDn and iBias fitted on the 15 teasers at trim 0, b against the plan's own U; refit after
+ * any level change: tools/README.md). MODEL.fixedTrim (a calibration hook) overrides the trim.
  */
-export const MODEL = { C: -23.66, a: 0.068, b: 1.137, tiltUp: 0.88, tiltDn: 0.35, iBias: 0.05, dIS: 1.0, dISTilt: 0.8, dISTiltMax: 2.0, trimLo: -3, trimHi: 3, gRef: 5.7, cardMax: -0.75, fixedTrim: null }
+export const MODEL = { C: -23.66, a: 0.074, b: 1.14, tiltUp: 0.88, tiltDn: 0.31, iBias: 0.02, dIS: 1.0, dISTilt: 0.8, dISTiltMax: 2.0, trimLo: -3, trimHi: 3, gRef: 5.7, cardMax: -0.75, fixedTrim: null }
 export function duckCost(tl, rendered, trims = new Map()) {
   const N = Math.round(tl.base * SR), P = tl.anchors.P.t
   const DEF = { tick: [1, 0.04, 0.08], roll: [2.5, 0, 0.15], riser: [0, 0, 0] }
@@ -170,9 +170,10 @@ export function duckCost(tl, rendered, trims = new Map()) {
   for (let i = 0; i < N; i++) s += Math.pow(10, db[i] / 10)
   return 10 * Math.log10(s / Math.max(1, N))
 }
-/** the card's payoff cap (musicTrim): the logo's momentary at L + 0.2 s is card + master gain + CARD.logo LUFS; it stays
- *  CARD.gap dB under the payoff's SFX (pMom) and over CARD.floor LUFS */
-export const CARD = { logo: -17.7, gap: 0.5, floor: -12.2 }
+/** the card's payoff cap (musicTrim, dense bodies): the logo's momentary at L + 0.2 s is card + master gain + CARD.logo
+ *  LUFS; it stays CARD.gap dB under the payoff's SFX (pMom) and over CARD.floor LUFS (B8's -13 floor plus the 0.5 dB a
+ *  gated check keeps; the gain prediction's error, sd 0.3 dB over the 15, comes out of it) */
+export const CARD = { logo: -17.7, gap: 0.5, floor: -12.5 }
 export function musicTrim(tl, rendered, lv, tilt, crowd = null) {
   const cost = duckCost(tl, rendered, lv.trims)
   const { C, a, b, tiltUp, tiltDn, dIS, dISTilt, dISTiltMax, trimLo, trimHi } = MODEL
@@ -182,7 +183,8 @@ export function musicTrim(tl, rendered, lv, tilt, crowd = null) {
   // spectrum (§9.2). The tilt only sees the slope between the cues' 1 and 2 kHz octaves; cues that ring in both (dings
   // on F#6 and D6, coins) read as level, yet own the 1 kHz octave that every §9.2 band is measured against. So the
   // nearness also reads that octave directly (CROWD, below): the larger of the two terms, capped at the same 2 dB
-  // (iBias: the engine's SFX stem reads about 0.4 LU under this render of it: merges drop transients and low bodies)
+  // (iBias: the engine's SFX stem against this plan's render of it, fitted on the delivered render: +0.02 LU, sd 0.10,
+  // since the plan renders the cues as the engine does, the card's trim and the ring budget included, 2026-10-13)
   const M = lv.I + MODEL.iBias - dIS + nearness(tilt, crowd, crowdRef(tl.base))
   let trim = Math.max(trimLo, Math.min(trimHi, Math.round((M - Mfree) * 100) / 100))
   if (MODEL.fixedTrim != null) trim = MODEL.fixedTrim
@@ -221,14 +223,17 @@ export function musicTrim(tl, rendered, lv, tilt, crowd = null) {
  * render, after the leveller) re their gated loudness I, in dB; the 15 teasers of 2026-10-12 read 43.9 (08c) to 58.1
  * (09b). Above `ref` the band comes `k` dB nearer the cues per dB (in musicTrim, with the tilt term: the larger wins,
  * capped at MODEL.dISTiltMax), so the band keeps its share of the reference octave. With ref 54.5 it moved 06c (0.43 ->
- * 2.0 dB), 07c and 09b (1.5 -> 2.0). Since 2026-10-13 ref is 53: the condensed cuts put more bells per second into the
- * reference octave, and 01b (53.6), 01c (54.0), 03a (53.7) and 04b (55.5) then sat with their 250 Hz octave 0.0-0.2 dB
- * over its floor; 08b (51.3), 09a (52.4) and every bright-tilted teaser keep their tilt term. Designed, not fitted:
- * see tools/README.md.
+ * 2.0 dB), 07c and 09b (1.5 -> 2.0). Since 2026-10-13 the reference falls with the body's length (crowdRef: 54.5 from
+ * 25 s up, CROWD.refShort 53 at 12.5 s and under, sfx.mjs shortness): a short body puts more bells per second into the
+ * reference octave (01b 55.1, 01c 54.6, 03a 54.9 on the fresh dump) and the band needs the share back; no teaser of
+ * 25 s or more moves (07b, 08b, 09a, 09b, 10b). With the TENSION's octave pump alone the short cuts' 250 Hz octave
+ * holds (01b 0.6, 01c 0.9 dB inside), but 03a's 125 Hz and 8 kHz octaves and its limiter (A11 2.6%) lean on the
+ * nearer band. Designed, not fitted: see tools/README.md.
  */
 export const CROWD = { ref: 54.5, refShort: 53, k: 1.0 }
-/** the crowding reference for a body of `base` s: CROWD.ref from RING_REF s up, CROWD.refShort at half of that and under */
-export const crowdRef = base => CROWD.ref - (CROWD.ref - CROWD.refShort) * Math.max(0, Math.min(1, (RING_REF - base) / (RING_REF / 2)))
+/** the crowding reference for a body of `base` s: CROWD.ref from RING.ref (25 s) up, CROWD.refShort at half of that and
+ *  under (sfx.mjs shortness), so no teaser of 25 s or more moves */
+export const crowdRef = base => CROWD.ref - (CROWD.ref - CROWD.refShort) * shortness(base)
 export function nearness(tilt, crowd = null, ref = null) {
   const { dISTilt, dISTiltMax } = MODEL
   const byTilt = dISTilt * Math.abs(tilt)
@@ -280,18 +285,22 @@ export function balancePlan(tl) {
   // (2026-10-13: a card 1.5-2.7 dB down took 0.5-1.7 LU off a short body's gated SFX stem that the plan had counted, and
   // the music landed that much over it, B1)
   const hP = Math.round((tl.anchors.P.t + 0.2) / 0.1) - 1
-  const place = trims => {
+  const place = (trims, bodyI) => {
     const fin = sumOf(tl, rendered, trims), Lf = loudness(fin)
     // pMom: the SFX stem's momentary loudness at P + 0.2 s (the B8 window), as planned
     const lv = { ...s, trims, I: Lf.integrated, U: ungated(fin), pMom: Lf.momentary[hP] != null ? Math.round(Lf.momentary[hP] * 100) / 100 : null }
     const tilt = sfxTilt(tl, rendered, trims)
-    const crowd = tilt.l1k != null && Number.isFinite(lv.I) ? Math.round((tilt.l1k - lv.I) * 10) / 10 : null
+    // (the crowding reads the body's cues: l1k is measured over [0, base], so it is held against the I of the leveller's
+    // trims, before the card's cues are trimmed; with the card in it a card 1.5 dB down moved 10b's crowd 0.5 dB and its
+    // music 0.5 dB nearer, B1)
+    const cI = bodyI ?? lv.I
+    const crowd = tilt.l1k != null && Number.isFinite(cI) ? Math.round((tilt.l1k - cI) * 10) / 10 : null
     return { ...lv, tilt, crowd, music: musicTrim(tl, rendered, lv, tilt.tilt, crowd) }
   }
   const first = place(s.trims)
   const withCard = new Map(s.trims)
   for (const { c } of rendered) if (c.inCard) { const v = c.kind === 'pop' ? Math.min(0, first.music.card) : first.music.card; if (v) withCard.set(c.i, v) }
-  const plan = place(withCard)
+  const plan = place(withCard, first.I)
   // (the leveller's trims stay the body's: sfx.mjs reads the card's trim from music.card)
   return { ...plan, trims: s.trims }
 }

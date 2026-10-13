@@ -16,56 +16,84 @@ const HOLD_DB = -8
  * Short bodies (2026-10-13, the condensed cuts). B7 and A3 read 3 s short-term windows, and the first one ends at 3 s:
  *   SHORT_BUILD  a BUILD shorter than two windows (6 s) has the first half of B7's "second half >= first" read through
  *                windows that are mostly HOOK (01a: a 1.8 s hook bar at -2.5 dB with the frame-1 hit, then a 4 s BUILD
- *                whose E3 bar is the quietest of the body). Such a BUILD climbs harder: its crescendo grows by the least
- *                that brings B7's predicted halves (edge and centred windows, on the band model's music.dry,
- *                bands.mjs dryST, with the clearance's dips and the guard's levers) to B7_MARGIN, by at most
- *                maxExtraDb; a BUILD whose halves already pass is left alone (03b). No dip after the hook (§4.7.1).
+ *                whose E3 bar is the quietest of the body). compose() predicts B7's halves (edge and centred windows,
+ *                b7Halves on the band model's music.dry, bands.mjs dryBlocks, with the clearance's dips, the glue and
+ *                the guard's levers) and, only when they fall short of B7_MARGIN, sizes two moves to the deficit:
+ *                (1) the BUILD climbs harder, its crescendo growing by the least that closes it, by at most
+ *                maxExtraDb, and never past the point where B7's predicted drop-build (the DROP over the BUILD) would
+ *                fall under dropOverBuild (2 + B7_MARGIN): a BUILD that ends as loud as the DROP has no drop;
+ *                (2) what the climb cannot give, the hook's last bar eases down after its first beat (the ta-da
+ *                keeps its level), by at most maxEaseDb. A BUILD whose halves already pass is left alone (03b).
+ *                The ease deviates from §4.7.1's "no dip after the hook" (it is a dip at the hook's end, sized to
+ *                B7's deficit; 01a: climb +2.3 dB, ease 2.7 dB, its first 3 s 0.6 LU quieter), because a 4 s BUILD
+ *                that may not out-climb its DROP cannot otherwise read louder than a hook bar carrying the frame-1
+ *                hit. The designer's first version fell 8 dB on every short BUILD, 03b included.
  *   EARLY_P      when fewer than a tenth of the teaser's short-term windows end before P (05c: P at 3.63 s in an
  *                11.39 s file, 7 of 85), A3's 10th percentile cannot come from the opening without making the first
  *                seconds the quietest of the set (the opening keeps its lift and its TENSION ramp). The range comes
- *                from the payoff on: a drop-then-breakdown. The DROP sits dropDb over a normal DROP (the top of the
- *                range: its windows are the 95th percentile), and the sections between the DROP and the card (05c's
- *                BREAK and VERDICT) break down to breathDb (-11 -> -14 dB over their first bar; the verdict's stab
- *                and cue carry it), so the windows that hold the breakdown and the card's start are the 10th
- *                percentile, not the opening. Measured on 05c's stems (opening lift kept): +2 / -6 dB gives LRA 4.9
- *                with every window at or under p10 ending at 9.8-10.6 s, the opening at -15.5 LUFS short-term (it was
- *                -15.6 before this pass) and A7 -12.6 (-13.0); the DROP alone needs +3 dB for 5.0 and drags the
- *                opening to -15.9, as the louder body masters lower.
+ *                from the payoff on: a drop-then-breakdown. The DROP's first bar sits dropDb over a normal DROP (the
+ *                top of the range: its windows are the 95th percentile); a 2-bar DROP settles over its second bar to
+ *                HOLD_DB, as a 2-bar DROP before a 1-bar HOLD does (the impact rings out); and the sections between the
+ *                DROP and the card (05c's BREAK and VERDICT) break down to breathDb (-14 -> -17 dB over their first
+ *                bar; the verdict's stab and reveal carry it), so the windows that end in the breakdown are the 10th
+ *                percentile, not the opening. The card's windows cannot be: the sting must read >= -13 LUFS (B8).
+ *                Measured on 05c's stems: a louder DROP alone (+3 dB, the payoff's cues +3) reaches LRA 5.4 only by
+ *                pulling the opening to -16.8 LUFS short-term, as the louder body masters lower; with the settle and
+ *                the breakdown 05c delivers LRA 4.73 (2.79 before this pass), its first 3 s at -15.27 LUFS short-term
+ *                (-15.58 before) and A7 -12.21 (-12.97 before).
  */
-export const SHORT_BUILD = { windows: 2, maxExtraDb: 4, passes: 3 }
-export const B7_MARGIN = 0.5
+export const SHORT_BUILD = { windows: 2, maxExtraDb: 4, maxEaseDb: 4, passes: 4, dropOverBuild: 2.6 }
+/** the predicted halves the climb aims at (LU): the 0.5 a check keeps, plus the model's B7 residual (the music.dry
+ * blocks read the halves 0.03-0.09 LU high on the 15, calibrate.mjs --per) */
+export const B7_MARGIN = 0.6
 export const CRESC_DB = 2
-export const EARLY_P = { share: 0.1, dropDb: 2, breathDb: [-11, -14] }
+export const EARLY_P = { share: 0.1, dropDb: 2, breathDb: [-14, -17] }
 const ST_WIN = 3
 export const shortBuild = tl => { const b = tl.section('BUILD'); return !!(b && b.t1 - b.t0 < SHORT_BUILD.windows * ST_WIN - 1e-6) }
 export const earlyPayoff = tl => Math.max(0, tl.anchors.P.t - ST_WIN) < EARLY_P.share * Math.max(0, (tl.duration ?? tl.base) - ST_WIN)
 /** a short BUILD's extra crescendo (dB at its end; compose.mjs sets it from the B7 prediction, 0 before) */
 const BUILD_X = new WeakMap()
-export const setBuildExtra = (tl, x) => BUILD_X.set(tl, x)
-export const buildExtra = tl => BUILD_X.get(tl) || 0
+export const setBuildExtra = (tl, x, y = 0) => BUILD_X.set(tl, { x, y })
+export const buildExtra = tl => (BUILD_X.get(tl) || { x: 0, y: 0 }).x
+export const hookEase = tl => (BUILD_X.get(tl) || { x: 0, y: 0 }).y
 /**
- * B7's BUILD halves as the harness reads them (sound/checks/stems.mjs B7: music.dry short-term loudness every 100 ms,
- * windows ending at t or centred on t and clipped at base; the means of the two halves of the BUILD), predicted from
- * 100 ms K-weighted block energies of music.dry (bands.mjs dryST) with `x` dB more crescendo over the BUILD (0 at its
- * start). -> { edge, centred } (second half minus first, LU), null when there is no BUILD or no window in a half
+ * B7 as the harness reads it (sound/checks/stems.mjs B7: music.dry short-term loudness every 100 ms, windows ending at
+ * t or centred on t and clipped at base), predicted from 100 ms K-weighted block energies of music.dry (bands.mjs
+ * dryBlocks) with `x` dB more crescendo over the BUILD (0 at its start) and the hook's last bar easing `y` dB down
+ * after its first beat. -> { edge, centred } (the BUILD's second half minus its first, LU) and { dbEdge, dbCentred }
+ * (the mean over [P, P + 2 bars] minus the BUILD's mean); null when there is no BUILD or no window in a half
  */
-export function b7Halves(tl, blocks, x = 0) {
-  const B = tl.section('BUILD')
+export function b7Halves(tl, blocks, x = 0, y = 0) {
+  const B = tl.section('BUILD'), hook = tl.section('HOOK')
   if (!B || !blocks || !blocks.length) return null
-  const base = tl.base, H = blocks.length
-  const e = Float64Array.from(blocks, (v, h) => { const t = (h + 0.5) / 10; return t > B.t0 && t < B.t1 ? v * Math.pow(10, x * (t - B.t0) / Math.max(0.1, B.t1 - B.t0) / 10) : v })
+  const base = tl.base, H = blocks.length, P = tl.anchors.P.t
+  const hb = hook ? tl.bars.find(b => b.t < hook.t1 - 1e-6 && b.t1 >= hook.t1 - 1e-6) : null
+  const y0 = hb ? hb.t + tl.beatLen(hb.t + 1e-6) : null
+  const e = Float64Array.from(blocks, (v, h) => {
+    const t = (h + 0.5) / 10
+    if (t > B.t0 && t < B.t1) return v * Math.pow(10, x * (t - B.t0) / Math.max(0.1, B.t1 - B.t0) / 10)
+    if (y && hb && t > y0 && t < hook.t1) return v * Math.pow(10, -y * (t - y0) / Math.max(0.05, hook.t1 - y0) / 10)
+    return v
+  })
   const st = tEnd => { const h = Math.round(tEnd / 0.1) - 1; if (h < 29 || h >= H) return null; let s = 0; for (let k = h - 29; k <= h; k++) s += e[k]; return -0.691 + 10 * Math.log10(Math.max(1e-30, s / 30)) }
-  const mST = (t0, t1, centred) => { const v = []; for (let t = t0; t <= t1 + 1e-9; t += 0.1) { const y = st(centred ? Math.min(base, t + 1.5) : t); if (y != null) v.push(y) } return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null }
+  const mST = (t0, t1, centred) => { const v = []; for (let t = t0; t <= t1 + 1e-9; t += 0.1) { const yv = st(centred ? Math.min(base, t + 1.5) : t); if (yv != null) v.push(yv) } return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null }
+  const bP = tl.bars.find(b => Math.abs(b.t - P) < 0.002), span = bP ? 2 * bP.beats * tl.beatLen(P + 1e-6) : 4
   const mid = (B.t0 + B.t1) / 2, out = {}
-  for (const c of [false, true]) { const h1 = mST(B.t0, mid, c), h2 = mST(mid, B.t1, c); out[c ? 'centred' : 'edge'] = h1 == null || h2 == null ? null : h2 - h1 }
+  for (const c of [false, true]) {
+    const k = c ? 'centred' : 'edge', h1 = mST(B.t0, mid, c), h2 = mST(mid, B.t1, c), bu = mST(B.t0, B.t1, c), dr = mST(P, Math.min(base, P + span), c)
+    out[k] = h1 == null || h2 == null ? null : h2 - h1
+    out[k === 'edge' ? 'dbEdge' : 'dbCentred'] = bu == null || dr == null ? null : dr - bu
+  }
   return out
 }
 export function energyCurve(tl) {
   const P = tl.anchors.P.t, build = tl.section('BUILD'), drop = tl.section('DROP')
-  const sb = shortBuild(tl), early = earlyPayoff(tl), xb = buildExtra(tl)
+  const sb = shortBuild(tl), early = earlyPayoff(tl), xb = buildExtra(tl), yh = hookEase(tl), hook = tl.section('HOOK')
   const glowEnd = tl.timeAt(tl.anchors.P.beat + 8)
   const hold = tl.section('HOLD')
-  const shortHold = !!(drop && hold && Math.abs(hold.b0 - drop.b1) < 1e-6 && hold.b1 - hold.b0 <= 4 + 1e-6 && drop.b1 - drop.b0 >= 8 - 1e-6)
+  // a 2-bar DROP settles over its second bar into what follows when that is a breath: a 1-bar HOLD, or an early
+  // payoff's breakdown (EARLY_P)
+  const shortHold = !!(drop && drop.b1 - drop.b0 >= 8 - 1e-6 && ((hold && Math.abs(hold.b0 - drop.b1) < 1e-6 && hold.b1 - hold.b0 <= 4 + 1e-6) || early))
   const level = (s, b, t) => {
     let d = E_DB[b.energy] ?? -6
     if (s.name === 'VERDICT') d = -3
@@ -74,6 +102,12 @@ export function energyCurve(tl) {
     if ((s.name === 'HOLD' || s.name === 'HOLD2') && b.energy <= 3) d = HOLD_DB
     // the BUILD's crescendo: CRESC_DB over its length, and a short BUILD's extra climb (SHORT_BUILD, compose.mjs)
     if (s.name === 'BUILD' && build) d += (CRESC_DB + (sb ? xb : 0)) * (t - build.t0) / Math.max(0.1, build.t1 - build.t0)
+    // a short BUILD's hook ease (SHORT_BUILD, only what the climb cannot give): its last bar eases yh dB down after the
+    // first beat (the ta-da keeps its level)
+    if (sb && yh && s.name === 'HOOK' && hook && build && Math.abs(b.t1 - hook.t1) < 1e-6 && Math.abs(hook.t1 - build.t0) < 1e-6) {
+      const t1 = b.t + tl.beatLen(b.t + 1e-6), k = (t - t1) / Math.max(0.05, b.t1 - t1)
+      if (k > 0) d -= yh * Math.min(1, k)
+    }
     // an early payoff: the sections between its DROP and the card are the breakdown (EARLY_P)
     if (early && drop && t >= drop.t1 - 1e-6 && s.name !== 'CARD') {
       const bl = 4 * tl.beatLen(drop.t1 + 1e-6), k = (t - drop.t1) / bl, [b0, b1] = EARLY_P.breathDb
@@ -84,11 +118,11 @@ export function energyCurve(tl) {
     if (s.name === 'HOLD2') { const bl = 2 * tl.beatLen(s.t0 + 1e-6), k = (t - s.t0) / bl; if (k < 1) d = Math.max(d, -3 + (d + 3) * k) }
     // a DROP of 2 bars followed by a 1-bar HOLD settles over its second bar (+2 -> -8 dB): the impact rings out into the
     // breath, so the HOLD reads as a breath even in 3 s windows that are mostly DROP (B7)
-    if (s.name === 'DROP' && shortHold && t >= tl.timeAt(tl.anchors.P.beat + 4) - 1e-6) d = 2 + (HOLD_DB - 2) * Math.min(1, (t - tl.timeAt(tl.anchors.P.beat + 4)) / Math.max(0.1, s.t1 - tl.timeAt(tl.anchors.P.beat + 4)))
+    if (s.name === 'DROP' && shortHold && t >= tl.timeAt(tl.anchors.P.beat + 4) - 1e-6) { const top = 2 + (early ? EARLY_P.dropDb : 0); d = top + (HOLD_DB - top) * Math.min(1, (t - tl.timeAt(tl.anchors.P.beat + 4)) / Math.max(0.1, s.t1 - tl.timeAt(tl.anchors.P.beat + 4))) }
     // the DROP sits 2 dB over E5's nominal, 3 dB when it is a single bar (A3: the teasers need their peak)
     if (s.name === 'DROP' && !(shortHold && t >= tl.timeAt(tl.anchors.P.beat + 4) - 1e-6)) d += drop && drop.b1 - drop.b0 < 8 - 1e-6 ? 3 : 2
-    // an early payoff's DROP carries the top of the loudness range (EARLY_P)
-    if (s.name === 'DROP' && early) d += EARLY_P.dropDb
+    // an early payoff's DROP carries the top of the loudness range (EARLY_P; its second bar settles, above)
+    if (s.name === 'DROP' && early && !(shortHold && t >= tl.timeAt(tl.anchors.P.beat + 4) - 1e-6)) d += EARLY_P.dropDb
     if (drop && t >= drop.t1 - 1e-6 && t < glowEnd && s.name !== 'CARD') {
       const k = (t - drop.t1) / Math.max(0.1, glowEnd - drop.t1)
       d = Math.max(d, -0.5 + (d + 0.5) * k)

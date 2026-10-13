@@ -7,13 +7,15 @@
 // hum:lead (humanising), arr:fill, arr:trap, arr:lead (arrangement choices). `rng` (arr:compose) is not used, so the
 // layers never share draws.
 import * as T from '../../../src/sound/theory.mjs'
-import { ARP_CUT } from './instruments.mjs'
+import { ARP_CUT, instruments } from './instruments.mjs'
+import { LOGO_AT, LOGO_K } from './logo.mjs'
+import * as Dsp from '../../../src/sound/dsp.mjs'
 import { voiceLead } from './voicing.mjs'
 import { planFor, rawSfx, cueCtx, clearFor, bedSec, resetSolves, setLevers, bandCues } from './sfx.mjs'
-import { energyCurve, setCurve, withOpening, shortBuild, setBuildExtra, buildExtra, b7Halves, B7_MARGIN, SHORT_BUILD } from './energy.mjs'
+import { energyCurve, setCurve, withOpening, shortBuild, setBuildExtra, buildExtra, hookEase, b7Halves, B7_MARGIN, SHORT_BUILD } from './energy.mjs'
 import { prepareBed, stabBudget, selAutomation, GIVE_WAY, eventRenderer, renderSpan } from './clearance.mjs'
-import { model as bandModel, guard, leverLoudness, keepModel, AIR, isPayAir, dryBlocks } from './bands.mjs'
-import { kfilter, cueTrim, resetPlan } from './balance.mjs'
+import { model as bandModel, guard, leverLoudness, leverDmMax, keepModel, AIR, isPayAir, dryBlocks } from './bands.mjs'
+import { kfilter, cueTrim, resetPlan, LIFT_MAX } from './balance.mjs'
 import { CAL } from './cal.mjs'
 
 const EPS = 1e-6
@@ -573,7 +575,6 @@ export function compose(tl) {
   const er = eventRenderer(tl, nn, ddOut)
   // the opening: a teaser whose first 3 s would measure under -14.5 LUFS short-term (a sparse hook: a clock train that
   // is the hats, a few soft cues) lifts its music bus from 0.3 s to 3 s, by up to 2.5 dB (openingLift)
-  const lift = openingLift(tl, er, energyCurve(tl), sfxRender)
   // the TENSION gap (§4.5): every music voice is released at P - 1/8; a 12 dB event duck over the gap takes the reverb
   // tails down 6 dB with them (the engine ducks the returns by half the music duck), so the eighth before the drop is a
   // hard cut with only the riser and the reverse crash in it. It lets go 40 ms before P (τ 10 ms), so the tails are back
@@ -597,6 +598,8 @@ export function compose(tl) {
   for (const n of anchorStabs) n.vel0 = n.vel
   // Everything below reads the energy curve, so a short BUILD whose B7 halves the first pass predicts short (energy.mjs
   // SHORT_BUILD) runs it again with its extra climb (the plan, the clearance and the band model are rebuilt)
+  // the opening lift is set on the first pass's curve: a short BUILD's hook ease (below) is not lifted back
+  const lift = openingLift(tl, er, energyCurve(tl), sfxRender)
   let musicDb, plan, res, bm, lv
   for (let pass = 0; ; pass++) {
     musicDb = energyCurve(tl)
@@ -624,16 +627,22 @@ export function compose(tl) {
     // re-voice, the 808 and the pad's lower voices, the cues' sends, the air shelves. The level levers are bus-gain
     // offsets the clearance solves with (B3 holds)
     bm = bandInputs(tl, { er, musicDb, gain: selAutomation(tl, res, { offset: plan.offset, giveWay: GIVE_WAY }), duck })
-    lv = guard(bm)
+    lv = guard(bm, { dmMax: leverDmMax(plan.trim) })
     lv.dM = leverLoudness(bm, lv)
     setLevers(tl, lv)
-    if (lv.b808 || lv.mid) { resetSolves(tl); res = clearFor(tl); dip808(res) }
+    // the fader planned the cues against the bed before the guard added to it: a lifted (sparse) teaser's cues follow
+    // the bed's added loudness, so its SFX stem keeps the place in B1 the fader gave it (never past LIFT_MAX)
+    if (plan.trim > 0 && lv.dM > 0.01) {
+      plan.trim = +Math.min(LIFT_MAX, plan.trim + lv.dM).toFixed(3)
+      for (const n of anchorStabs) n.vel = n.vel0 * stabBudget(tl, n.t, trimOf)
+    }
+    if (lv.b808 || lv.mid || lv.dM > 0.01) { resetSolves(tl); res = clearFor(tl); dip808(res) }
     // a short BUILD: the climb B7 still needs on this pass's music.dry (each pass adds what the last one's dips and
     // levers took back), at most SHORT_BUILD.passes passes and maxExtraDb in all
     if (pass + 1 >= SHORT_BUILD.passes || !shortBuild(tl)) break
-    const x0 = buildExtra(tl), dx = buildClimb(tl, dryBlocks(bm, lv), SHORT_BUILD.maxExtraDb - x0)
-    if (!(dx > 0.05)) break
-    setBuildExtra(tl, +(x0 + dx).toFixed(2))
+    const x0 = buildExtra(tl), y0 = hookEase(tl), d = buildClimb(tl, dryBlocks(bm, lv), x0, y0)
+    if (!(d.dx > 0.05 || d.dy > 0.05)) break
+    setBuildExtra(tl, +(x0 + d.dx).toFixed(2), +(y0 + d.dy).toFixed(2))
     resetPlan(tl); resetSolves(tl); setLevers(tl, null)
   }
   keepModel(tl, bm)
@@ -693,22 +702,52 @@ function openingLift(tl, er, musicDb, sfxRender) {
   return lift
 }
 
-/** the band model's inputs at the end of compose(): the cues as the engine will play them and the duck it will build */
+/** the band model's inputs at the end of compose(): the cues as the engine will play them, the duck it will build and
+ * the card's pre-roll */
 function bandInputs(tl, { er, musicDb, gain, duck }) {
   const { cues, duckEvents } = bandCues(tl)
-  return bandModel(tl, { er, musicDb, gain, duckEvents: [...duckEvents, ...duck], cues })
+  return bandModel(tl, { er, musicDb, gain, duckEvents: [...duckEvents, ...duck], cues, extra: cardPreroll(tl) })
+}
+/**
+ * The part of the card that sounds inside the body: the sting's reverse-crash swell ends at L (base + 0.36 s), so its
+ * first 0.24 s lie before base, where §9.2 reads the octaves. logo.mjs scales the sting per teaser; here it is scaled
+ * for LOGO_AT with the opening lift's master gain estimate (the swell is the brightest 0.24 s of a short body's end)
+ */
+function cardPreroll(tl) {
+  const m = tl.card && tl.logoMotif ? tl.logoMotif() : null
+  if (!m || !m.swell || !(m.L - m.swell.dur < tl.base)) return []
+  let bed = 0
+  const K = Math.max(1, Math.floor(tl.base * 100))
+  for (let k = 0; k < K; k++) bed += Math.pow(10, bedSec(tl, k / 100) / 10)
+  const G = CAL.GM - (10 * Math.log10(bed / K) + CAL.M_FIT)
+  const vel = Math.pow(10, clamp(LOGO_AT - (CAL.LOGO_PRE + G), LOGO_K[0], LOGO_K[1]) / 20)
+  const ev = { t: m.L, inst: 'logoSwell', vel, len: m.swell.dur, tau: 0.25 }
+  const b = instruments.logoSwell(ev, { tl, ev, k: 0 })
+  return b ? [{ e: ev, buf: Dsp.toStereo(b.L ? { L: Float32Array.from(b.L), R: Float32Array.from(b.R), offset: b.offset } : Float32Array.from(b), 0) }] : []
 }
 
 /**
- * A short BUILD's extra climb (dB at its end, energy.mjs SHORT_BUILD), on top of what the blocks already hold: the least
- * that brings B7's predicted halves (edge and centred) to B7_MARGIN on the band model's music.dry blocks (levers
- * applied), at most X; 0 when they already pass
+ * A short BUILD's B7 levers (energy.mjs SHORT_BUILD), on top of what this pass's music.dry blocks already hold (x0, y0
+ * applied): first the climb, dx, the least that brings B7's predicted halves (edge and centred) to B7_MARGIN, but no
+ * further than keeps the DROP SHORT_BUILD.dropOverBuild LU over the BUILD in both windows (B7's 2 LU, the margin and
+ * the model's residual); then, only for what the climb could not give, the hook ease dy (its last bar easing down after
+ * the ta-da), the least that brings the halves there, at most maxEaseDb in all. -> { dx, dy }
  */
-function buildClimb(tl, blocks, X = SHORT_BUILD.maxExtraDb) {
-  const worst = x => { const h = b7Halves(tl, blocks, x); return h ? Math.min(h.edge ?? Infinity, h.centred ?? Infinity) : Infinity }
-  if (worst(0) >= B7_MARGIN || X <= 0.05) return 0
-  if (worst(X) < B7_MARGIN) return X
-  let a = 0, b = X
-  for (let k = 0; k < 20; k++) { const m = (a + b) / 2; if (worst(m) >= B7_MARGIN) b = m; else a = m }
-  return +b.toFixed(2)
+function buildClimb(tl, blocks, x0 = 0, y0 = 0) {
+  const at = (x, y) => b7Halves(tl, blocks, x, y)
+  const halves = h => (h ? Math.min(h.edge ?? Infinity, h.centred ?? Infinity) : Infinity)
+  const dropOver = h => (h ? Math.min(h.dbEdge ?? Infinity, h.dbCentred ?? Infinity) : Infinity)
+  if (halves(at(0, 0)) >= B7_MARGIN) return { dx: 0, dy: 0 }
+  const X = Math.max(0, SHORT_BUILD.maxExtraDb - x0), Y = Math.max(0, SHORT_BUILD.maxEaseDb - y0)
+  // the most climb the DROP allows
+  let xmax = X
+  if (dropOver(at(X, 0)) < SHORT_BUILD.dropOverBuild) { let a = 0, b = X; if (dropOver(at(0, 0)) < SHORT_BUILD.dropOverBuild) b = 0; else for (let k = 0; k < 20; k++) { const m = (a + b) / 2; if (dropOver(at(m, 0)) >= SHORT_BUILD.dropOverBuild) a = m; else b = m } xmax = a }
+  let dx = xmax
+  if (halves(at(xmax, 0)) >= B7_MARGIN) { let a = 0, b = xmax; for (let k = 0; k < 20; k++) { const m = (a + b) / 2; if (halves(at(m, 0)) >= B7_MARGIN) b = m; else a = m } dx = b }
+  let dy = 0
+  if (halves(at(dx, 0)) < B7_MARGIN && Y > 0.05) {
+    if (halves(at(dx, Y)) < B7_MARGIN) dy = Y
+    else { let a = 0, b = Y; for (let k = 0; k < 20; k++) { const m = (a + b) / 2; if (halves(at(dx, m)) >= B7_MARGIN) b = m; else a = m } dy = b }
+  }
+  return { dx: +dx.toFixed(2), dy: +dy.toFixed(2) }
 }

@@ -47,12 +47,20 @@ export function payoffEst(tl) {
  * rises about CAL.LOGO_SLOPE (15 dB/s) there (n4, the pad, the 808 and the crash land at L): the reading is the true
  * level plus LOGO_SLOPE x b8Frame(L), up to +-0.74 dB. Twelve of the fifteen teasers read 0.59 dB over the true level
  * (L + 0.2 falls 40 ms before a hop), 03b and 03c 0.15 dB under it, 05c 0.74 dB under it. The sting keeps its true
- * level wherever that reading still sits B8_MARGIN inside the teaser's window (as the meter reads it); where it would
- * not, the sting moves by the least that restores the margin (or to the window's middle, as read, when the window is
- * narrower than two margins). This guard exists only because of the hop grid: with B8 reading the window that ends
- * exactly at L + 0.2 and P + 0.2 (proposed for the harness), it never acts.
+ * level wherever that reading still sits B8_MARGIN plus the estimates' spread (b8Spread) inside the teaser's window (as
+ * the meter reads it); where it would not, the sting moves by the least that restores the margin (the floor's first,
+ * when the estimated window is narrower than the two margins). This guard exists only because of the hop grid: with B8 reading the window that ends exactly at
+ * L + 0.2 and P + 0.2 (proposed for the harness), it would act only where a payoff is that quiet.
  */
 export const B8_MARGIN = 0.5
+/** the spread of the guard's estimates (calibrate.mjs stats): the sting's reading (the master gain model and LOGO_PRE)
+ * and, against the payoff, that and the payoff's estimate. The guard keeps B8_MARGIN plus that spread inside each edge,
+ * as the band guard aims BAND_MARGIN plus its spread inside each octave (bands.mjs bandAim): with B8_MARGIN alone the
+ * guarded stings read 0.49-0.53 dB inside the floor (03b, 03c, 05c on 2026-10-13), half of them under the margin */
+export function b8Spread() {
+  const S = CAL.stats || {}, sdL = Math.hypot(S.GM_PLAN_sd ?? 0, S.LOGO_PRE_sd ?? 0)
+  return { floor: sdL, payoff: Math.hypot(sdL, S.PAY_sd ?? 0) }
+}
 export const B8_AT = 0.2, METER_HOP = 0.1
 export const b8Frame = L => Math.round((L + B8_AT) / METER_HOP) * METER_HOP - (L + B8_AT)
 /** the sting's aim (LUFS, true momentary loudness at L + 0.2 after mastering) and why: { aim, base, read, guard } */
@@ -60,10 +68,11 @@ export function logoPlan(tl) {
   const floor = acceptance().checks?.B8?.minLufs ?? -13, mP = payoffEst(tl)
   const base = mP == null ? LOGO_AT : Math.min(LOGO_AT, (floor + mP) / 2)
   const off = tl.card ? (CAL.LOGO_SLOPE ?? 0) * b8Frame(tl.card.L) : 0
-  const lo = floor + B8_MARGIN, hi = mP == null ? Infinity : mP - B8_MARGIN
+  const sd = b8Spread(), lo = floor + B8_MARGIN + sd.floor, hi = mP == null ? Infinity : mP - B8_MARGIN - sd.payoff
+  // a window narrower than the two margins (as estimated) keeps the floor's margin: the payoff's estimate is the uncertain
+  // side (its spread is 0.39 dB, and the B8 floor is a fixed number)
   let aim = base
-  if (lo > hi) aim = (floor + mP) / 2 - off
-  else if (base + off < lo) aim = lo - off
+  if (base + off < lo || lo > hi) aim = lo - off
   else if (base + off > hi) aim = hi - off
   return { aim, base, read: aim + off, guard: +(aim - base).toFixed(3) }
 }

@@ -98,17 +98,21 @@ function lowPitches(tl, kind) {
 }
 /** a glock note (free-bar partials) for dings and the ka-ching */
 const glockNote = (m, tauScale = 1, len = 1.0) => K.glock(m, { vel: 1, tauScale, len })
-/** the ring budget (2026-10-13): every ringing layer the cues bring (a ding's glock, a big hit's crash, at P too) rings
- *  τ x ring(tl) = clamp(base / RING.ref, RING.min, 1). A bell or a cymbal rings for the same second in a 12 s body as in
- *  a 30 s one, so its share of the long-term 2-8 kHz octaves (BANDS, read over [0, base]) grows as the body shrinks; with
- *  τ in proportion to the body (its energy is τ/2) that share stays what it is in a RING.ref s body. The payoff hit's
- *  crash is the payoff's wash above 4 kHz (8-13 dB over the band's own crash there) and owned 01b's, 03a's and 05b's 8 kHz
- *  octave; 05b's two big hits 0.3 s apart stacked two crashes; 01b's verdict ding owned its 2 kHz octave. RING.ref is the
- *  median body of the 15 teasers the pack's levels and bands were set on (25.3 s, the records of 2026-10-12); bodies of
- *  25 s and over keep their ring as shipped, and the ring never shortens below half (a 12.5 s body). Visible to the plan:
- *  the leveller, the tilt and the music placement size the cues as they ring */
+/** the ring budget (2026-10-13): every ringing layer the cues bring (a ding's glock, a big hit's crash, the payoff hit's
+ *  crash included) rings τ x ring(tl), ring = clamp(base / RING.ref, RING.min, 1). A bell or a cymbal rings for the same
+ *  second in a 12 s body as in a 30 s one, so its share of the long-term 2-8 kHz octaves (BANDS, read over [0, base])
+ *  grows as the body shrinks; with τ in proportion to the body (its energy is τ/2) that share stays what it is in a
+ *  RING.ref s body. The payoff hit's crash is the payoff's wash above 4 kHz and owned 01b's, 03a's and 05b's 8 kHz octave
+ *  in the condensed cuts (-2.1, -1.6, -1.0 dB); 05b's two big hits 0.3 s apart stacked two crashes; 01b's verdict ding
+ *  owned its 2 kHz octave. RING.ref is the median body of the 15 teasers the pack's levels and bands were set on (25.3 s,
+ *  the records of 2026-10-12); bodies of RING.ref s and over keep their ring as shipped, and the ring never shortens below
+ *  RING.min (a 7.5 s body). Visible to the plan: the leveller, the tilt and the music placement size the cues as they ring */
 export const RING = { ref: 25, min: 0.3 }
 export const ring = tl => Math.max(RING.min, Math.min(1, (tl.base || RING.ref) / RING.ref))
+/** how short a body is, 0..1: 0 from RING.ref s up, 1 at half of that and under. The short-body rules that are not a
+ *  ring (the TENSION walk's octave pump, compose.mjs; the crowding reference, balance.mjs CROWD) scale with it, so a
+ *  teaser of RING.ref s or more sounds as shipped */
+export const shortness = base => Math.max(0, Math.min(1, (RING.ref - (base || RING.ref)) / (RING.ref / 2)))
 
 // ---------------------------------------------------------------- the kinds
 const kinds = {
@@ -233,8 +237,13 @@ const kinds = {
     unit(smack)
     const parts = [
       // on the payoff the hit leans on slap and air rather than the punch's first cycle: less peak for the limiter to
-      // shave, the same weight in the ear (the music's own timpani, kick and brass carry the low end there)
-      { buf: punch, body: true, gain: ctx.atP ? 0.6 : big ? 0.8 : 1 },
+      // shave, the same weight in the ear (the music's own timpani, kick and brass carry the low end there). The punch is
+      // at 0.3 there (2026-10-13; it was 0.6): its first cycle landed in phase with the band's kick and timpani under the
+      // payoff duck (05b: SFX -2.7 dBFS + the ducked band -8 dBFS = +1.1 dBFS on one sample), the limiter held the payoff
+      // 3 dB down, the AAC decode went over the PLR limit there and the encode loop's local dips took 0.6-2.6 dB more off
+      // the payoff's first 50 ms, i.e. off B8's payoff window. With the punch at 0.3 the hit, levelled by its peak, keeps
+      // more slap and crash for the same peak
+      { buf: punch, body: true, gain: ctx.atP ? 0.3 : big ? 0.8 : 1 },
       // the burst marks the onset; kept low (-9 dB, none in the card) so the hit's first millisecond is not a lone spike
       // for the limiter to shave and the AAC encoder to overshoot (A5 on the decoded file)
       { buf: tr, gain: dbToGain(-9), transient: true, skip: cue.inCard },
@@ -244,7 +253,8 @@ const kinds = {
       const tp = K.timpani(r, { vel: 1, f: mtof(cue.inCard ? 38 : T.rootIn(ctx.chord, 33, 38)), tau: 1.1 }); unit(tp)
       parts.push({ buf: tp, gain: 0.7, body: true, skip: ctx.atP || ctx.atV })
       // the crash (τ 1.1 s, LP 7.5 kHz, narrowed to ±70%); its ring follows the body (RING above, the payoff's wash
-      // included): τ x ring, its top octave darker (LP x √ring). The hit is still levelled with its full crash (the same
+      // included): τ x ring, and darker with it (LP 7.5 kHz x ring: the wash keeps its 2-5 kHz body, where the ear and the
+      // K-weighting hear it, and gives up the 8 kHz octave first). The hit is still levelled with its full crash (the same
       // seed): the ring budget changes how the crash rings, never the level of the punch, smack and burst (`norm`)
       const rg = cue.inCard ? 1 : ring(ctx.tl)
       const crashOf = (rr, tau, lp) => {
@@ -254,7 +264,7 @@ const kinds = {
         return unit(c)
       }
       const tau = 1.1 * (1 + 0.05 * r.bi())
-      if (rg < 1) parts.push({ buf: crashOf(ctx.tl.stream(`sfx:${cue.i}:crash`), tau * rg, 7500 * Math.sqrt(rg)), norm: crashOf(ctx.tl.stream(`sfx:${cue.i}:crash`), tau, 7500), gain: ctx.atP ? 0.65 : 0.5 })
+      if (rg < 1) parts.push({ buf: crashOf(ctx.tl.stream(`sfx:${cue.i}:crash`), tau * rg, 7500 * rg), norm: crashOf(ctx.tl.stream(`sfx:${cue.i}:crash`), tau, 7500), gain: ctx.atP ? 0.65 : 0.5 })
       else parts.push({ buf: crashOf(r, tau, 7500), gain: ctx.atP ? 0.65 : 0.5 })
     }
     const meta = { pitches: ctx.dropBody ? [] : [m], pan: 0 }
@@ -296,9 +306,10 @@ const kinds = {
     // (the bell rings τ x ring(tl): RING above)
     const rg = cue.inCard ? 1 : ring(ctx.tl)
     const n1 = glockNote(a + r.bi() * 0.03, 0.85 * rg, 1.0), n2 = glockNote(b + r.bi() * 0.03, 0.85 * rg, 0.94)
-    // a body bell also steps back by the ring (its level and its hall send, 10·log10(ring) dB); the payoff's bell keeps
-    // its level (the payoff is sized against the card, B8)
-    const lv = ctx.atP ? 0 : 10 * Math.log10(rg)
+    // a body bell also steps back by the ring (its level and its hall send, 10·log10(ring) dB); the payoff's bell half as
+    // far (5·log10(ring) dB): it is still the payoff's bell, sized against the card (B8), but at full level 02a's single
+    // P ding (F#6 + A6, 7.8 s body) owned the 2 kHz octave on its own (-1.7 dB re the mix's 1 kHz, the octave at 0.0)
+    const lv = (ctx.atP ? 5 : 10) * Math.log10(rg)
     if (lv < 0) meta.sends = { hall: -11.5 + lv }
     const parts = [{ buf: unit(n1), pan: -0.15 }, { buf: unit(n2), pan: 0.15, at: 0.06, gain: 0.85 }]
     return outLayers(parts, sec(1.0), -10 + lv, ctx, meta)

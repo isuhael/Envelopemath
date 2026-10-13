@@ -18,8 +18,9 @@
 //   GM_SFX    the cues' weight in the master gain model (logo.mjs gainEst), fitted with GM_PLAN
 //   LOGO_SLOPE the sting's rise at L + 0.2 (dB/s): B8 reads the meter's 100 ms hop nearest L + 0.2, and logo.mjs's meter
 //             guard predicts that reading from it
-//   BAND_REF  the band model's cue weight w (bands.mjs predict: the cues and their returns against the music, for the
-//             SFX bus compressor and HP), fitted on the delivered octaves of every teaser
+//   BAND_REF  the band model's cue weights (bands.mjs predict: the cues and their returns against the music, for the
+//             SFX bus compressor and HP): w fitted on the delivered 63-250 Hz octaves of every teaser, w16 (the 8 and
+//             16 kHz octaves) on the delivered 16 kHz octave
 //   BAND_FIT  the band model's residual per octave (delivered minus predicted, dB re 1 kHz, mean over the teasers)
 //   BAND_SD   the residual's spread per octave: the band guard aims BAND_MARGIN + BAND_K x BAND_SD inside each window
 //   PAY_LOSS, PAY_HIT  the payoff's delivered momentary loudness in B8's frame against the band model's (payoffPre)
@@ -171,15 +172,24 @@ const LOGO_SLOPE = slopes.length ? mean(slopes) : (CAL.LOGO_SLOPE ?? 0)
 const sd = a => { const m = mean(a); return Math.sqrt(mean(a.map(x => (x - m) ** 2))) }
 // BAND_REF and BAND_FIT: the least spread of the residuals (delivered minus predicted) over the octaves the band guard
 // watches, on a grid of the 1 kHz scalings; the per-octave means are the residuals
-const WATCH = [63, 125, 250, 16000]
+const WATCH = [63, 125, 250], WATCH16 = [16000]
 let bandFit = null
 if (bands.length) {
+  // w on the low watched octaves, then w16 on the top one (the lows do not depend on w16)
   for (let w = 0.3; w <= 2 + 1e-9; w += 0.01) {
     const R = { w }, pr = bands.map(x => predict(x.m, x.lv, R, {}))
     let tot = 0
     for (const f of WATCH) tot += sd(bands.map((x, i) => x.dlv[f] - pr[i][f])) ** 2
     if (!bandFit || tot < bandFit.tot - 1e-12) bandFit = { tot, R: { w: +w.toFixed(2) } }
   }
+  let best16 = null
+  for (let w16 = 0.3; w16 <= 2 + 1e-9; w16 += 0.01) {
+    const R = { ...bandFit.R, w16 }, pr = bands.map(x => predict(x.m, x.lv, R, {}))
+    let tot = 0
+    for (const f of WATCH16) tot += sd(bands.map((x, i) => x.dlv[f] - pr[i][f])) ** 2
+    if (!best16 || tot < best16.tot - 1e-12) best16 = { tot, w16: +w16.toFixed(2) }
+  }
+  bandFit.R.w16 = best16.w16
   const pr = bands.map(x => predict(x.m, x.lv, bandFit.R, {}))
   bandFit.F = {}; bandFit.sd = {}
   for (const f of OCT) { if (f === 1000) continue; const r = bands.map((x, i) => x.dlv[f] - pr[i][f]); bandFit.F[f] = +mean(r).toFixed(2); bandFit.sd[f] = +sd(r).toFixed(2) }
