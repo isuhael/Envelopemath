@@ -60,14 +60,17 @@ FACTS = {
 YT_TITLE = "Which Is Bigger: 40 Years of Your Pay or 1 Minute of New US Debt?"
 YT_TITLES = [
     {"rank": 1, "title": YT_TITLE, "vidiq_score": 96,
-     "note": "PICK. The write-up's own title, tied top score of the 6 scored. HD Guy's rare question grammar ('Which is cheaper? A or B', the write-up's H07), the header's two sides in the header's words, "
+     "note": "PICK. The write-up's own title, tied top score of the 7 scored. HD Guy's rare question grammar ('Which is cheaper? A or B', the write-up's H07), the header's two sides in the header's words, "
              "and 'US Debt' ('us debt' 44,622 searches a month) inside its 65 characters. No hashtags in the title; the description's first three show above it."},
     {"rank": 2, "title": "Which Is Bigger: 40 Years of Your Pay or 1 Minute of New US National Debt?", "vidiq_score": 96,
-     "note": "The same score with 'National' added (75 characters): it carries the exact phrase 'national debt' (25,193 a month) as well. The fallback if search matters more than matching the header."},
-    {"rank": 3, "title": "Which Is Bigger: 40 Years of Your Pay or 1 Minute of New US Debt? #NationalDebt #USDebt #Debt", "vidiq_score": 96,
-     "note": "The house 3-hashtag form (95 characters), the same score. If used, swap its tags for the description's three (#NationalDebt #DebtClock #MoneyMath), which the check requires."},
+     "note": "The same score with 'National' added (74 characters): it carries the exact phrase 'national debt' (25,193 a month) as well. The fallback if search matters more than matching the header."},
+    {"rank": 3, "title": "Which Is Bigger: 40 Years of Your Pay or 1 Minute of New Debt? #NationalDebt #DebtClock #MoneyMath", "vidiq_score": 96,
+     "note": "The house 3-hashtag form (98 characters), the same score, with the description's three hashtags in its order, which the builder's check requires of a title that carries any. "
+             "The pick plus those three runs 101 characters, over YouTube's 100, so this one drops 'US' and lets #NationalDebt carry it. Re-scored at the adversarial check; "
+             "the first build's form (#NationalDebt #USDebt #Debt) would have failed that check if picked, and moves to 'also scored'."},
 ]
 YT_TITLES_ALSO_SCORED = [
+    ("Which Is Bigger: 40 Years of Your Pay or 1 Minute of New US Debt? #NationalDebt #USDebt #Debt", 96, "option 3 at the first build: '#USDebt #Debt' are not the description's hashtags, so the check would refuse it as the title"),
     ("Which Is Bigger: Your Whole Working Life or 1 Minute of US National Debt?", 96, "'working life' is the video's own phrase, but the title loses the header's '40 years'"),
     ("Your Pay for 40 Years vs 1 Minute of New US Debt: Which Is Bigger?", 88, "the on-screen header first, the question last: 8 points lower"),
     ("40 Years of Your Paychecks vs 1 Minute of US National Debt: Which Is Bigger?", 88, ""),
@@ -361,28 +364,37 @@ LIMITS = [
     "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file.",
 ]
 RESEARCH_EXTRA = {
-    "titles_scored": "6 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored.",
+    "titles_scored": "7 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13: 6 at the first build and option 3 with the description's own hashtags at the adversarial check; all are in youtube.titles_ranked and youtube.titles_also_scored.",
     "vidiq_credits": "60 credits for this teaser by listed cost (3 keyword queries, 1 YouTube search, 1 Shorts outlier search, 1 Instagram/TikTok outlier search and 6 title scores at up to 5 each), plus 10a's debt keyword queries (shared), 10 shared across 10a-10c for the channel's stats and Shorts list (Instagram owner insights cost 0), and 5 for the re-score after the build. "
-                     "Account balance: 4,375 at the start of the 10 research and 4,135 when it ended, a 240 drop for 56 calls (the balance is shared with sheets built in parallel, so the drop is an upper bound; keyword queries cost less than 5); 4,060 after the 3 re-scores (15 credits by listed cost; the rest of that 75 drop is other sheets'). About 255 for the three 10 sheets, against a budget of about 450.",
+                     "Account balance: 4,375 at the start of the 10 research and 4,135 when it ended, a 240 drop for 56 calls (the balance is shared with sheets built in parallel, so the drop is an upper bound; keyword queries cost less than 5); 4,060 after the 3 re-scores (15 credits by listed cost; the rest of that 75 drop is other sheets'). About 255 for the three 10 sheets, against a budget of about 450. "
+                     "Adversarial check: 10 for this teaser by listed cost (the pick's title score and option 3's) plus 2 keyword queries ('40 trillion debt animated' twice), and 5 shared across 10a-10c for the three related videos' titles. "
+                     "Balance 3,695 at the check's start and 3,635 after its last call (a 60 drop for 18 calls across 10a-10c, 30 of it listed title and video costs; the balance is shared with sheets checked in parallel).",
 }
 
 # ---------------------------------------------------------------- the check log
-CHECKED_BY = "the publishing strategist's own check at the first build (no adversarial pass yet)"
+CHECKED_BY = "adversarial check of this sheet"
 CHECKED_MATH = (f"python3 teasers/v2/checks/10-cost-counter.py: {MATH_RUN} on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/10-cost-counter.py; "
                 "the growth, the rate and every figure recomputed from the two readings in MATH_RELATIONS (≈ $2.46 trillion in 364 days; ≈ $78,000 a second; ≈ $4.7 million a minute; $2,602,080; ≈ 33 seconds; ≈ $117,000; ≈ 72 years; the public part ≈ $66,000 and ≈ $4.0 million); "
-                "COPY_RULES hold every figure to the write-up's one rounding, put '≈' or 'about' on every rounded figure, keep each reading beside its date and every '≈ 33 seconds' with median pay, and ban 'live', 'fiscal 2026', 'FY2026', 'under 1 second', politics and advice wording")
+                "COPY_RULES hold every figure to the write-up's one rounding, put '≈' or 'about' on every rounded figure, keep each reading beside its date and every '≈ 33 seconds' with median pay, and ban 'live', 'fiscal 2026', 'FY2026', 'under 1 second', politics and advice wording. Re-run at the adversarial check (2026-10-13) with the same result")
 VIDIQ_REQUERIED = ("pulled 2026-10-13: national debt 25,193 / 62.0 (+2.0%); us debt 40 trillion 6,189 (-68.1%); 40 trillion debt animated 5,396 / 17.3; "
                    "title scores 96 (pick = the write-up's title; three others tie); channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,519 views in 30 days. "
-                   "Re-queried after the build: the pick's title score 96. Match.")
-CHECK_LOG_TITLE = "first build, 2026-10-13"
+                   "Re-queried after the build: the pick's title score 96. Match. "
+                   "Re-queried at the adversarial check: the pick's title score 96; 40 trillion debt animated 5,396 / 17.3 (snapshot 2026-09-20); "
+                   "the related video hJBvmGA6sZ0 1,222 views (1,221 at the build), title as in the pick. All match.")
+CHECK_LOG_TITLE = "adversarial pass, 2026-10-13"
 CHECK_LOG = [
     f"- **Maths.** `python3 teasers/v2/checks/10-cost-counter.py`: {MATH_RUN} on `studio/specs/`. Every public figure traces to the 10b maths table: $40,096,954,633,566.68 − $37,637,553,494,935.61 = $2,459,401,138,631.07 ≈ $2.46 trillion; "
     "÷ 31,449,600 s = $78,201.35 ≈ $78,000 a second; × 60 = $4,692,081 ≈ $4.7 million; $1,251 × 52 × 40 = $2,602,080 ≈ $2.6 million; $2,602,080 ÷ r = 33.27 ≈ 33 s; 1 minute ÷ 40 = $117,302 ≈ $117,000; 1 minute ÷ $65,052 = 72.1 ≈ 72 years; "
     "$2.09T ÷ 31,449,600 s = $66,456 ≈ $66,000, × 60 ≈ $4.0 million. The data file recomputes every one, and the 364 days from the two dates.",
     "{LIMITS}",
-    "- **vidIQ.** Keywords pulled 2026-10-13 (table above; the debt rows shared with 10a). 6 titles scored against this channel: the pick (the write-up's own title) 96, tied with three others. "
+    "- **vidIQ.** Keywords pulled 2026-10-13 (table above; the debt rows shared with 10a). 7 titles scored against this channel (6 at the first build, option 3 with the description's hashtags at the adversarial check): the pick (the write-up's own title) 96, tied with four others. "
     "Channel 53 subscribers / 10,221 views / 41 videos; Instagram owner insights refreshed (8 followers, 20,519 views in 30 days).",
-    "- **vidIQ re-queried** after the build: the pick's title score 96, as first scored.",
+    "- **vidIQ re-queried** after the build: the pick's title score 96, as first scored. At the adversarial check: the pick's title score 96; '40 trillion debt animated' 5,396 / 17.3 (snapshot 2026-09-20); "
+    "the related video (`hJBvmGA6sZ0`) 1,222 views, its title as in the pick. All match.",
+    "- **Changed at the adversarial check.**",
+    "  - Option 3 used `#NationalDebt #USDebt #Debt`, which are not the description's hashtags, so the builder's check would have refused it if picked. The pick plus the description's three runs 101 characters, so option 3 is now "
+    "'Which Is Bigger: 40 Years of Your Pay or 1 Minute of New Debt? #NationalDebt #DebtClock #MoneyMath' (98 characters, scored 96); the old form moves to 'also scored'.",
+    "  - Two title notes miscounted: option 2 is 74 characters (not 75), and the pick ties the top score of 7 titles now scored (was 'of the 6').",
     "- **Generator.** Unchanged. `MATH_SCRIPT` is the adapter `publishing/data/checks/10-cost-counter.py`, shared with 10a and 10c.",
     "- **Mutation test.** Breaks on scratch copies of this file all fail by name: a title that gives the verdict, 'fiscal 2026' in the description, a second rounding of the rate ('$78,201'), "
     "'≈ 33 seconds' with 'your working life' in place of median pay (the first version of that rule read whole lines and missed it in the one-line long alt text; it now looks 90 characters back), a reading moved beside the wrong date, and a result in the caption's first 125 characters. (20 of 20 across 10a-10c.)",
@@ -391,7 +403,10 @@ CHECK_LOG = [
     "  - Every '≈ 33 seconds' names median pay: the counter eats the median's 40 years, not the viewer's; the flip point (≈ $117,000) and the swap-in rule answer 'your pay'.",
     "  - '364 days', never a fiscal year: the 2026-09-30 reading could not be confirmed (the write-up's Review log, V4).",
     "  - The public-debt answer ($2.09 trillion, ≈ $66,000 a second) sits in the pinned comment, as the write-up's TikTok reply, not in the description.",
-    "- **Still to do.** An adversarial pass of this sheet; the ship rebuild (`--covers`) on the condensed file, re-reading the long alt text against it.",
+    "- **Checked and kept.** Every figure in the copy against the 10b maths table and the check's output (the swap-in rule gives the median ≈ 33 seconds and the flip point ≈ $117,000, the same as the exact rate); "
+    "the title (65/100), description (bytes), tags, hashtags, caption, first 125 characters and both alt texts against the platform limits; PrimeRates named only as the publisher of the Treasury readings, as 06b names its sources, and the board a generic counter; "
+    "frame 1 (thumbnail) and frame 1065 (cover) read from the render.",
+    "- **Still to do.** The ship rebuild (`--covers`) on the condensed file, re-reading the long alt text against it.",
 ]
 
 # ---------------------------------------------------------------- the numbers check

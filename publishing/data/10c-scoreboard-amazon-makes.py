@@ -57,7 +57,7 @@ FACTS = {
 YT_TITLE = "How Long Would You Have to Work for 1 Second of Amazon's Profit?"
 YT_TITLES = [
     {"rank": 1, "title": YT_TITLE, "vidiq_score": 98,
-     "note": "PICK. Top score of the 9 scored, 10 points over the write-up's title (88) with the same question: 'Would You Have to' only makes it a hypothetical. "
+     "note": "PICK. Top score of the 6 scored, 10 points over the write-up's title (88) with the same question: 'Would You Have to' only makes it a hypothetical. "
              "It carries 'Amazon's profit' ('amazon profit' 3,398 searches a month) and the header's own '1 second'. No hashtags in the title; the description's first three show above it."},
     {"rank": 2, "title": "How Much Profit Does Amazon Make Every Second? How Long Do You Work for It?", "vidiq_score": 97,
      "note": "One point lower at 75 characters, and it carries the searched question ('how much money does amazon make every second?', 4,651 a month at competition 25.0). "
@@ -68,7 +68,7 @@ YT_TITLES = [
 YT_TITLES_ALSO_SCORED = [
     ("Amazon Makes a Profit Every Second. How Long Do You Work for 1 Second of It?", 89, ""),
     ("How Long Do You Work for 1 Second of Amazon's Profit?", 88, "the write-up's title and the on-screen header"),
-    ("How Long Do You Work for 1 Second of Amazon's Profit? #Amazon #MoneyMath #Profit", 88, "the house 3-hashtag form"),
+    ("How Long Do You Work for 1 Second of Amazon's Profit? #Amazon #MoneyMath #Profit", 88, "the house 3-hashtag form, but not in the description's order (#Amazon #Profit #MoneyMath), so the check would refuse it as the title as written"),
 ]
 TITLE_BULLETS = [
     "The pick is the header's question with 'Would You Have to', which raises it from 88 to 98: 'How Long' opens it, 'Amazon's Profit' closes it, and '1 Second' (the input) sits in the middle. A title cut short still asks.",
@@ -139,7 +139,7 @@ YT_POSTING_WINDOW = {
 }
 
 # ---------------------------------------------------------------- Instagram
-IG_HOOK = ("How long would you have to work for 1 second of Amazon's profit? Amazon's profit counter starts at $0 the moment you hit play.")
+IG_HOOK = ("How long would you have to work for 1 second of Amazon's profit? The profit counter starts at $0 the moment you hit play.")
 
 IG_CAPTION = IG_HOOK + """
 
@@ -166,7 +166,7 @@ Animation and original sound: The Back of the Envelope.
 IG_CAPTION_RULE = ("The first 125 characters are the title's question, the 'Amazon's profit' keywords and the counter's $0 start, no result: "
                    "the caption overlays the Reel from frame 1, so the rate, every answer and the verdict sit below 'more'.")
 IG_CAPTION_BULLETS = [
-    "**First 125 characters:** the header's question plus the counter's $0 start, with no figure but the input (1 second). The write-up's caption line 1 is the hook's answer "
+    "**First 125 characters:** the header's question plus the counter's $0 start, with no figure but the input (1 second); the hook is 121 characters, so it shows whole before 'more'. The write-up's caption line 1 is the hook's answer "
     "('1 second of Amazon's profit ≈ 2 weeks of median full-time pay.'); the house rule moves it to the second paragraph, below 'more', because the caption overlays the Reel from frame 1. "
     "The numbers sit below the fold, where Instagram search and Google indexing still read them.",
     "The write-up's caption sentences are kept: net income, the division, the median's weeks, the year in ≈ 26 seconds, the swap-in rule and its source line. "
@@ -193,7 +193,7 @@ IG_ALT_RULE = ("Paste the short version into Instagram: it is kept at or under 1
 IG_ALT_LONG = ("Animation on a black scoreboard. The header asks: how long do you work for 1 second of Amazon's profit? A green counter starts at $0 and climbs at about $2,464 a second: "
                "Amazon's 2025 net income, $77.7 billion, spread over the year. A ladder of targets turns into answers in weeks of median full-time pay ($1,251 a week): "
                "1 second, about $2,464, is about 2 weeks; 5 seconds, about $12,319, about 10 weeks; $32,526, at about 13 seconds, is 6 months. "
-               "The counter stops on exactly $65,052 as a coin grows to fill the stage. Payoff: a year of median pay: about 26 seconds.")
+               "The counter stops on exactly $65,052 as a coin pops and grows to the biggest object on the stage. Payoff: a year of median pay: about 26 seconds.")
 
 IG_FIRST_COMMENT = "2,464 ÷ your weekly pay = weeks of your work per second of Amazon's profit. Median ($1,251): ≈ 2. Yours?"
 
@@ -353,25 +353,34 @@ LIMITS = [
 RESEARCH_EXTRA = {
     "titles_scored": "6 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored.",
     "vidiq_credits": "65 credits for this teaser by listed cost (3 keyword queries, 2 YouTube searches, 1 Shorts outlier search, 1 Instagram/TikTok outlier search and 6 title scores at up to 5 each), plus 10 shared across 10a-10c for the channel's stats and Shorts list (Instagram owner insights cost 0), and 5 for the re-score after the build. "
-                     "Account balance: 4,375 at the start of the 10 research and 4,135 when it ended, a 240 drop for 56 calls (the balance is shared with sheets built in parallel, so the drop is an upper bound; keyword queries cost less than 5); 4,060 after the 3 re-scores (15 credits by listed cost; the rest of that 75 drop is other sheets'). About 255 for the three 10 sheets, against a budget of about 450.",
+                     "Account balance: 4,375 at the start of the 10 research and 4,135 when it ended, a 240 drop for 56 calls (the balance is shared with sheets built in parallel, so the drop is an upper bound; keyword queries cost less than 5); 4,060 after the 3 re-scores (15 credits by listed cost; the rest of that 75 drop is other sheets'). About 255 for the three 10 sheets, against a budget of about 450. "
+                     "Adversarial check: 5 for this teaser by listed cost (the pick's title score) plus 2 keyword queries ('how much money does amazon make every second', questions and research), and 5 shared across 10a-10c for the three related videos' titles. "
+                     "Balance 3,695 at the check's start and 3,635 after its last call (a 60 drop for 18 calls across 10a-10c, 30 of it listed title and video costs; the balance is shared with sheets checked in parallel).",
 }
 
 # ---------------------------------------------------------------- the check log
-CHECKED_BY = "the publishing strategist's own check at the first build (no adversarial pass yet)"
+CHECKED_BY = "adversarial check of this sheet"
 CHECKED_MATH = (f"python3 teasers/v2/checks/10-cost-counter.py: {MATH_RUN} on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/10-cost-counter.py; "
                 "the rate and every answer recomputed from $77.7 billion and $1,251 a week in MATH_RELATIONS ($2,463.85 ≈ $2,464; ≈ 2 weeks; ≈ $12,319 and ≈ 10 weeks; $32,526 at ≈ 13 seconds; $65,052 at ≈ 26 seconds; the swap-in rule's 1.97); "
-                "COPY_RULES hold every figure to the write-up's one rounding, put '≈' or 'about' on every rounded figure, keep $77.7 billion beside 2025 and named as net income, and ban 'live', a share price, a ticker, any person's name and advice wording")
+                "COPY_RULES hold every figure to the write-up's one rounding, put '≈' or 'about' on every rounded figure, keep $77.7 billion beside 2025 and named as net income, and ban 'live', a share price, a ticker, any person's name and advice wording. Re-run at the adversarial check (2026-10-13) with the same result")
 VIDIQ_REQUERIED = ("pulled 2026-10-13: amazon profit 3,398 / 44.5; how much money does amazon make every second? 4,651 / 25.0; amazon 873,376 (+4.2%); "
                    "title scores 98 (pick), 88 (the write-up's title); channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,519 views in 30 days. "
-                   "Re-queried after the build: the pick's title score 98. Match.")
-CHECK_LOG_TITLE = "first build, 2026-10-13"
+                   "Re-queried after the build: the pick's title score 98. Match. "
+                   "Re-queried at the adversarial check: the pick's title score 98; how much money does amazon make every second? 4,651 / 25.0 (2026-10-12); "
+                   "the related video fbpdKf4Wy8c 760 views, title as in the pick. All match.")
+CHECK_LOG_TITLE = "adversarial pass, 2026-10-13"
 CHECK_LOG = [
     f"- **Maths.** `python3 teasers/v2/checks/10-cost-counter.py`: {MATH_RUN} on `studio/specs/`. Every public figure traces to the 10c maths table: $77,700,000,000 ÷ 31,536,000 = $2,463.85 ≈ $2,464 a second; ÷ $1,251 = 1.97 ≈ 2 weeks; "
     "× 5 = $12,319.25 ≈ $12,319, ÷ $1,251 = 9.85 ≈ 10 weeks; $65,052 ÷ 2 = $32,526, ÷ k = 13.20 ≈ 13 s; $1,251 × 52 = $65,052, ÷ k = 26.40 ≈ 26 s (and $65,052 ÷ $2,464 = 26.40 too). The data file recomputes every one.",
     "{LIMITS}",
     "- **vidIQ.** Keywords pulled 2026-10-13 (table above). 6 titles scored against this channel: the pick 98, the write-up's title 88. "
     "Channel 53 subscribers / 10,221 views / 41 videos; Instagram owner insights refreshed (8 followers, 20,519 views in 30 days).",
-    "- **vidIQ re-queried** after the build: the pick's title score 98, as first scored.",
+    "- **vidIQ re-queried** after the build: the pick's title score 98, as first scored. At the adversarial check: the pick's title score 98; 'how much money does amazon make every second?' 4,651 / 25.0 (2026-10-12); "
+    "the related video (`fbpdKf4Wy8c`) 760 views, its title as in the pick. All match.",
+    "- **Changed at the adversarial check.**",
+    "  - The caption's hook ran 126 characters, so Instagram's fold cut its last character. It now says 'The profit counter' (121 characters), so the whole sentence shows before 'more'.",
+    "  - The long alt text said the coin 'grows to fill the stage'; on the cover it grows to the biggest object on the stage, beside the ladder. It now says that.",
+    "  - The pick's note said 'Top score of the 9 scored'; 6 titles were scored. The 'also scored' hashtag form now says its hashtags are not in the description's order.",
     "- **Generator.** Unchanged. `MATH_SCRIPT` is the adapter `publishing/data/checks/10-cost-counter.py`, shared with 10a and 10b.",
     "- **Mutation test.** Breaks on scratch copies of this file all fail by name: a title that gives the answer ('… ≈ 2 Weeks'), the affiliation line dropped from the caption, 'amazon stock' in the tags, "
     "a second rounding of the rate ('$2,463.85'), '≈ 3 weeks' for the 1-second answer (caught by the figures check: 3 is no maths figure), and a result in the caption's first 125 characters. (20 of 20 across 10a-10c.)",
@@ -380,7 +389,10 @@ CHECK_LOG = [
     "  - The YouTube thumbnail is frame 1 (the question) and the Instagram cover is the finished board with the verdict, as the write-up's Instagram note asks.",
     "  - 'Profit' is always named as net income (as Amazon reports it), and never as sales: the same-idea Shorts divide revenue.",
     "  - No share price, ticker or person: 'amazon stock' (+69.3%) and 'jeff bezos' are big searches, and neither is in the write-up's video.",
-    "- **Still to do.** An adversarial pass of this sheet; the ship rebuild (`--covers`) on the condensed file, re-reading the long alt text against it.",
+    "- **Checked and kept.** Every figure in the copy against the 10c maths table and the check's output (the swap-in rule's 2,464 ÷ 1,251 = 1.97 ≈ 2 matches the exact rate); the title (64/100), description (bytes), tags, hashtags, caption, first 125 characters "
+    "and both alt texts against the platform limits; 'Amazon' only as the company whose reported net income is divided, the affiliation line in both long texts, '#Amazon' as a descriptive tag, no handle, logo, stock or person; "
+    "frame 1 (thumbnail) and frame 900 (cover) read from the render.",
+    "- **Still to do.** The ship rebuild (`--covers`) on the condensed file, re-reading the long alt text against it.",
 ]
 
 # ---------------------------------------------------------------- the numbers check

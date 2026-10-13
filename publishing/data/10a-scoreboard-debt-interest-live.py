@@ -68,10 +68,12 @@ YT_TITLES = [
              "'US Debt Interest' leads ('us debt' 44,622 searches a month, 'national debt interest' 4,591), and 'since you hit play' keeps HD Guy's real-time premise without the banned word 'live'. No hashtags in the title; the description's first three show above it."},
     {"rank": 2, "title": "The US Pays Interest on Its Debt Every Second. When Does It Pass Your Salary?", "vidiq_score": 95,
      "note": "Top score, 2 points over the pick, at 77 characters. Not picked: 'pays … every second' states as fact what the write-up calls an average (real interest payments are lumpy, on coupon dates). The pick says only what the counter shows."},
-    {"rank": 3, "title": "When Does US Debt Interest Pass Your Salary? #NationalDebt #USDebt #Debt", "vidiq_score": 93,
-     "note": "The house 3-hashtag form (72 characters), the same score as the pick. If used, swap its tags for the description's three (#NationalDebt #USDebt #MoneyMath), which the check requires."},
+    {"rank": 3, "title": "When Does US Debt Interest Pass Your Salary? #NationalDebt #USDebt #MoneyMath", "vidiq_score": 93,
+     "note": "The house 3-hashtag form (77 characters), the same score as the pick, with the description's three hashtags in its order, which the builder's check requires of a title that carries any. "
+             "Re-scored at the adversarial check; the first build's form (#NationalDebt #USDebt #Debt) would have failed that check if picked, and moves to 'also scored'."},
 ]
 YT_TITLES_ALSO_SCORED = [
+    ("When Does US Debt Interest Pass Your Salary? #NationalDebt #USDebt #Debt", 93, "option 3 at the first build: '#Debt' is not one of the description's hashtags, so the check would refuse it as the title"),
     ("When Does US Debt Interest Pass Your Salary? Counted Since You Hit Play", 93, ""),
     ("Find Your Salary: When Does US Debt Interest Pass It?", 93, "the VO's first line as the title"),
     ("US Debt Interest Adds Up Every Second. When Does It Pass Your Salary?", 93, "the honest wording of option 2, 2 points lower"),
@@ -85,7 +87,7 @@ TITLE_BULLETS = [
     "The Shorts player shows the opening, so 'US Debt Interest Since You Hit Play' is what a scroller reads; the question finishes it.",
     "It names no result: no rate, no seconds, no row. The answer's unit is not even hinted ('how many seconds' scored 89-92 and gives the surprise away).",
     "Option 2 scores 2 points higher but says the US 'pays' interest every second; the write-up's rate is fiscal 2025's total spread evenly over the year, so the pick keeps the counter's own wording. "
-    "vidIQ's model ranks titles but does not predict views; 9 of the 10 titles scored sit between 90 and 95.",
+    "vidIQ's model ranks titles but does not predict views; 10 of the 11 titles scored sit between 90 and 95.",
 ]
 
 YT_DESCRIPTION = """When does US debt interest pass your salary? At fiscal 2025's rate, about $30,800 a second: a year of median full-time pay goes by in about 2.1 seconds, $100,000 in about 3.3 seconds and $1 million in about 33 seconds.
@@ -117,18 +119,20 @@ YT_HASHTAG_NOTES = [
 YT_HASHTAG_PLACEMENT = ("The title carries no hashtags, so YouTube shows these 3, the description's first, above the title. "
                         "Over 60 hashtags and YouTube ignores all of them. `#Shorts` isn't needed.")
 
-YT_TAGS = ["us debt interest", "national debt interest", "interest on the national debt", "national debt", "us national debt", "us debt",
+YT_TAGS = ["us debt interest", "national debt interest", "interest on national debt", "national debt", "us national debt", "us debt",
            "national debt explained", "how the national debt works", "can we pay off the national debt", "debt crisis", "net interest",
            "salary", "money math", "math animation", "the back of the envelope", "envelope math"]
-TAGS_NOTE = ("Tags carry little weight. These mirror the keyword research plus the house's channel tags. 'can we pay off the national debt' (5,321 a month) is answered by the '$0 of it pays the debt down' line; "
+TAGS_NOTE = ("Tags carry little weight. These mirror the keyword research plus the house's channel tags. 'interest on national debt' (4,270 a month) is the question as people type it; with 'the' it is under 750. "
+             "'can we pay off the national debt' (5,321 a month) is answered by the '$0 of it pays the debt down' line; "
              "'how the national debt works' (5,231) has the lowest competition of the debt questions (37.5). "
              "Left out on purpose: 'national debt clock live' (8,779), the biggest counter phrase, because the write-up bans 'live' and 'in real time' for 10a (a fixed average is not a live feed); "
              "'interest rates' (63,613) is a different topic; and every phrase that names a politician or a party (the write-up's tone rule).")
 
-YT_PINNED = """Which row are you? Your seconds = yearly pay ÷ 30,800 ($100,000 ≈ 3.3 seconds).
+YT_PINNED = """Which row are you? Your seconds = yearly pay ÷ 30,800 (median pay: $65,052 ÷ 30,800 ≈ 2.1 seconds).
 
 The $970 billion is fiscal 2025 net interest (a gross figure is bigger), spread evenly over 31,536,000 seconds. Fiscal 2026 ran hotter (CBO: net interest on the public debt up 12% over the same 11 months), so this counter runs slow. The rows are gross salaries, before tax. And $0 of it pays the debt down."""
-PINNED_NOTE = ("The question comes first so it shows in the collapsed preview, and it asks for the viewer's own row (R3), with the write-up's swap-in rule and its example. "
+PINNED_NOTE = ("The question comes first so it shows in the collapsed preview, and it asks for the viewer's own row (R3), with the write-up's swap-in rule worked for the median, as the video's own label works it ($65,052 ÷ 30,800 ≈ 2.1 seconds). "
+               "The write-up's pinned comment pairs the rule with '$100,000 ≈ 3.3', but 3.3 is the exact rate's answer: the rule's rounded 30,800 gives 100,000 ÷ 30,800 = 3.247, so 3.2, and a viewer checking it on a calculator would catch it. The median is the row where both give 2.1. "
                "The second paragraph answers the four comment fights the write-up expects: net vs gross interest, 'that's last year's number', 'my salary is before tax' and 'does any of it pay the debt down?'. "
                "It answers with the CBO line, not a new number, as the write-up asks.")
 
@@ -152,7 +156,7 @@ YT_POSTING_WINDOW = {
 }
 
 # ---------------------------------------------------------------- Instagram
-IG_HOOK = ("When does US debt interest pass your salary? Find yours on the ladder: the interest counter starts at $0 the moment you hit play.")
+IG_HOOK = ("When does US debt interest pass your salary? Find your row on the ladder: the counter starts at $0 the moment you hit play.")
 
 IG_CAPTION = IG_HOOK + """
 
@@ -181,7 +185,7 @@ Animation and original sound: The Back of the Envelope.
 IG_CAPTION_RULE = ("The first 125 characters are the title's question, the 'US debt interest' keywords and the video's frame-1 instruction (find your salary; the counter starts at $0), no result: "
                    "the caption overlays the Reel from frame 1, so the rate, every row and the verdict sit below 'more'.")
 IG_CAPTION_BULLETS = [
-    "**First 125 characters:** the header's question plus the VO's first instruction, 'Find your salary', with no figure but the counter's $0 start. The write-up's caption line 1 is the result "
+    "**First 125 characters:** the header's question plus the VO's first instruction ('Find your salary.', here 'Find your row on the ladder'), with no figure but the counter's $0 start; the hook is 123 characters, so it shows whole before 'more'. The write-up's caption line 1 is the result "
     "('$100,000 a year of pay ≈ 3.3 seconds of US debt interest. $1 million ≈ 33 seconds.'); the house rule moves it to the second paragraph, below 'more', because the caption overlays the Reel from frame 1. "
     "The numbers sit below the fold, where Instagram search and Google indexing still read them.",
     "The write-up's caption sentences are kept, in its order: the $970 billion, the division, median pay, the swap-in rule, '$0 of it pays the debt down' and the fiscal 2026 sentence, which names CBO's line and its 11 months.",
@@ -209,7 +213,7 @@ IG_ALT_LONG = ("Animation on a black scoreboard. The header asks: US debt intere
                "It lights a ladder of yearly salaries as it passes them: $30,000 at about 1.0 second, median pay ($65,052) at about 2.1, $100,000 at about 3.3, "
                "$250,000 at about 8 and $500,000 at about 16. It stops on exactly $1,000,000. Payoff: $1M a year: about 33 seconds.")
 
-IG_FIRST_COMMENT = "Yearly pay ÷ 30,800 = your seconds ($100,000 ≈ 3.3 seconds). Which row are you?"
+IG_FIRST_COMMENT = "Yearly pay ÷ 30,800 = your seconds (median pay: $65,052 ÷ 30,800 ≈ 2.1 seconds). Which row are you?"
 
 # ---------------------------------------------------------------- the cover frame
 # The verdict frame, picked by content: the write-up's Instagram note names "the verdict frame (the board at
@@ -262,7 +266,8 @@ KEYWORDS = [  # keyword, est. monthly YouTube searches, volume score, competitio
     ("interest rates", 63613, 71.7, 66.5, 56.4, "+22.8%; a different topic (rates, not the interest bill): not in the tags", "2026-10-12"),
     ("economy", 378531, 83.3, 75.5, 59.8, "+9.8% vs its baseline (344,793); the broad layer (#economy on Instagram)", "2026-10-12"),
     ("average salary in america", 0, 0, 38.5, 24.6, "<750/month: the salary side has no search demand of its own", None),
-    ("interest on the national debt", 0, 0, None, None, "<750/month; vidIQ returned no matching terms", None),
+    ("interest on national debt", 4270, 54.2, 40.0, 56.5, "the question as people type it (no 'the'): in the tags; found at the adversarial check", "2026-10-12"),
+    ("interest on the national debt", 0, 0, 47.0, 21.2, "<750/month with 'the': the tag uses the searched form above", None),
 ]
 KEYWORD_MD_NOTE = {"national debt clock live": "the biggest counter phrase; 'live' is banned by the write-up, so not in the tags",
                    "us debt": "-33.1%: the August spike fading; still the biggest debt phrase"}
@@ -271,7 +276,7 @@ KEYWORDS_SOURCE = ("vidIQ keyword research (research, matching_terms and questio
 KW_HEADING_MD = ("**1. Search demand (vidIQ keyword research, pulled 2026-10-13).** "
                  "vidIQ refreshes each keyword on its own schedule, so the last column gives each row's snapshot date. Two rows are older snapshots.")
 KW_OUTRO = ("The debt is searched as a topic and as questions: 'us debt' (44,622) and 'national debt' (25,193) lead, and the questions people type ('how the national debt works', 'can we pay off the national debt', about 5,200-5,300 each) "
-            "are ones the description answers. The interest bill itself is a small phrase ('national debt interest' 4,591; 'interest on the national debt' under 750), so the title leads with 'US Debt Interest' and lets 'debt' carry the volume. "
+            "are ones the description answers. The interest bill itself is a mid-sized phrase ('national debt interest' 4,591; 'interest on national debt' 4,270, though under 750 with 'the'), so the title leads with 'US Debt Interest' and lets 'debt' carry the volume. "
             "The counter phrases ('national debt clock live' 8,779) promise a live feed, which the write-up bans for this average-rate counter, and money 'per second' has no search demand of its own "
             "(every 'per second' phrase vidIQ returns is anime, gaming or code). Salary searches are tiny ('average salary in america' under 750): the salary is the hook, not the search term.")
 
@@ -369,39 +374,56 @@ LIMITS = [
     "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file.",
 ]
 RESEARCH_EXTRA = {
-    "titles_scored": "10 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored.",
+    "titles_scored": "11 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13: 10 at the first build and option 3 with the description's own hashtags at the adversarial check; all are in youtube.titles_ranked and youtube.titles_also_scored.",
     "vidiq_credits": "105 credits for this teaser by listed cost (8 keyword queries, 2 YouTube searches, 1 Shorts outlier search, 1 Instagram/TikTok outlier search and 9 title scores at up to 5 each), plus 10 shared across 10a-10c for the channel's stats and Shorts list (Instagram owner insights cost 0), and 5 for the re-score after the build. "
-                     "Account balance: 4,375 at the start of the 10 research and 4,135 when it ended, a 240 drop for 56 calls (the balance is shared with sheets built in parallel, so the drop is an upper bound; keyword queries cost less than 5); 4,060 after the 3 re-scores (15 credits by listed cost; the rest of that 75 drop is other sheets'). About 255 for the three 10 sheets, against a budget of about 450.",
+                     "Account balance: 4,375 at the start of the 10 research and 4,135 when it ended, a 240 drop for 56 calls (the balance is shared with sheets built in parallel, so the drop is an upper bound; keyword queries cost less than 5); 4,060 after the 3 re-scores (15 credits by listed cost; the rest of that 75 drop is other sheets'). About 255 for the three 10 sheets, against a budget of about 450. "
+                     "Adversarial check: 10 for this teaser by listed cost (the pick's title score and option 3's) plus 4 keyword queries ('national debt interest' twice, 'interest on the national debt', 'interest on national debt'), and 5 shared across 10a-10c for the three related videos' titles. "
+                     "Balance 3,695 at the check's start and 3,635 after its last call (a 60 drop for 18 calls across 10a-10c, 30 of it listed title and video costs; the balance is shared with sheets checked in parallel).",
     "related_debt_counter_note": "10b (new US debt) shares this Short's topic; the write-up asks for the two to go out at least a week apart or as a labelled pair.",
 }
 
 # ---------------------------------------------------------------- the check log
-CHECKED_BY = "the publishing strategist's own check at the first build (no adversarial pass yet)"
+CHECKED_BY = "adversarial check of this sheet"
 CHECKED_MATH = (f"python3 teasers/v2/checks/10-cost-counter.py: {MATH_RUN} on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/10-cost-counter.py; "
                 "the rate and every row recomputed from $970 billion in MATH_RELATIONS ($30,758.50 ≈ $30,800; ≈ $111 million an hour; 1.0 / 2.1 / 3.3 / 8 / 16 / 33 seconds; $1,251 × 52 = $65,052; the swap-in 2.112 ≈ 2.1; CBO's 12%); "
-                "COPY_RULES hold every figure to the write-up's one rounding, put '≈' or 'about' on every rounded figure, keep $970 billion beside fiscal 2025 and the 12% beside its own line, and ban 'live', 'in real time', politics and advice wording")
+                "COPY_RULES hold every figure to the write-up's one rounding, put '≈' or 'about' on every rounded figure, keep $970 billion beside fiscal 2025 and the 12% beside its own line, keep the swap-in rule's worked example to what the rule gives, and ban 'live', 'in real time', politics and advice wording. "
+                "Re-run at the adversarial check (2026-10-13) with the same result")
 VIDIQ_REQUERIED = ("pulled 2026-10-13: national debt 25,193 / 62.0 (+2.0%); us debt 44,622 (-33.1%); national debt interest 4,591; national debt clock live 8,779; "
                    "title scores 93 (pick = the write-up's title), 95 (top); channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,519 views in 30 days. "
-                   "Re-queried after the build: the pick's title score 93. Match.")
-CHECK_LOG_TITLE = "first build, 2026-10-13"
+                   "Re-queried after the build: the pick's title score 93. Match. "
+                   "Re-queried at the adversarial check: the pick's title score 93; national debt interest 4,591 / 43.0 (snapshot 2026-03-01); "
+                   "the related video 8__HTUa2PoU 642 views, title as in the pick. All match. New: 'interest on national debt' 4,270 / 40.0 (the tag now uses it); 'interest on the national debt' still under 750.")
+CHECK_LOG_TITLE = "adversarial pass, 2026-10-13"
 CHECK_LOG = [
     f"- **Maths.** `python3 teasers/v2/checks/10-cost-counter.py`: {MATH_RUN} on `studio/specs/`. Every public figure traces to the 10a maths table: $970,000,000,000 ÷ 31,536,000 = $30,758.50 ≈ $30,800 a second; × 3,600 = $110,730,594 ≈ $111 million an hour; "
     "$30,000 ÷ r = 0.975 ≈ 1.0 s; $65,052 ÷ r = 2.115 ≈ 2.1 s; $100,000 ÷ r = 3.251 ≈ 3.3 s; $250,000 ÷ r = 8.128 ≈ 8 s; $500,000 ÷ r = 16.256 ≈ 16 s; $1,000,000 ÷ r = 32.511 ≈ 33 s; $65,052 ÷ 30,800 = 2.112 ≈ 2.1; "
     "CBO: ($1,052B − $941B) ÷ $941B = 11.8% ≈ 12%. The data file recomputes every one.",
     "{LIMITS}",
-    "- **vidIQ.** Keywords pulled 2026-10-13 (table above). 10 titles scored against this channel: the pick (the write-up's own title) 93, the top 95. "
+    "- **vidIQ.** Keywords pulled 2026-10-13 (table above). 11 titles scored against this channel (10 at the first build, option 3 with the description's hashtags at the adversarial check): the pick (the write-up's own title) 93, the top 95. "
     "Channel 53 subscribers / 10,221 views / 41 videos; Instagram owner insights refreshed (8 followers, 20,519 views in 30 days).",
-    "- **vidIQ re-queried** after the build: the pick's title score 93, as first scored.",
+    "- **vidIQ re-queried** after the build: the pick's title score 93, as first scored. At the adversarial check: the pick's title score 93; 'national debt interest' 4,591 / 43.0 (snapshot 2026-03-01); "
+    "the related video (`8__HTUa2PoU`) 642 views, its title as in the pick. All match. One new number: 'interest on national debt' 4,270 / 40.0 (2026-10-12), next to 'interest on the national debt' under 750.",
+    "- **Changed at the adversarial check.**",
+    "  - The pinned comment and the first comment paired the swap-in rule with '$100,000 ≈ 3.3 seconds', as the write-up's pinned comment does. But 3.3 is the exact rate's answer; the rule itself gives 100,000 ÷ 30,800 = 3.247, so 3.2, "
+    "and a viewer who checks it on a calculator catches the gap. Both now work the rule for the median, as the video's own label does ('$65,052 ÷ 30,800 ≈ 2.1 seconds'), where the rule and the exact rate agree. "
+    "A new `COPY_RULES` entry holds every worked example on a '÷ 30,800' line to what the rule gives; '$100,000 ≈ 3.3' there now fails by name. The $100,000 row keeps its ≈ 3.3 seconds everywhere else (caption line 2, the description, the alt text).",
+    "  - Option 3 used `#NationalDebt #USDebt #Debt`, which are not the description's hashtags, so the builder's check would have refused it if picked. It now carries the description's three in order "
+    "(`#NationalDebt #USDebt #MoneyMath`, 77 characters, scored 93); the old form moves to 'also scored'.",
+    "  - The caption's hook ran 129 characters, so Instagram's fold cut it at 'hit p'. It is now 123 ('Find your row on the ladder: the counter starts at $0 …'), so the whole sentence shows before 'more' and the first 125 characters stay result-free.",
+    "  - The tag 'interest on the national debt' (under 750 a month) is now 'interest on national debt' (4,270, the form people type); the keyword table and its note say so.",
     "- **Generator.** Unchanged. The 10 check prints '1005 checks, 0 failures', and the builder reads only 'N checks, F failed', so `MATH_SCRIPT` is "
     "the adapter `publishing/data/checks/10-cost-counter.py` (a copy of the 07 adapter: it runs the check unchanged and adds the summary line).",
     "- **Mutation test.** Breaks on scratch copies of this file all fail by name: a title that gives the verdict ('… ≈ 33 Seconds'), 'live' in the title, a second rounding of the rate ('$30,758') in the description, "
-    "'≈ 3 seconds' for the $100,000 row (caught by the figures check: 3 is no maths figure), the 12% without its line, a result in the caption's first 125 characters, a politician's name in the pinned comment, and $970 billion moved beside 2026. (20 of 20 across 10a-10c.)",
+    "'≈ 3 seconds' for the $100,000 row (caught by the figures check: 3 is no maths figure), the 12% without its line, a result in the caption's first 125 characters, a politician's name in the pinned comment, and $970 billion moved beside 2026. (20 of 20 across 10a-10c.) "
+    "At the adversarial check, two more on scratch copies also fail by name: the pinned comment back to '($100,000 ≈ 3.3 seconds)' beside '÷ 30,800', and the first 120-character hook, which let the result paragraph's '$10' into the first 125 characters.",
     "- **Kept on purpose.**",
     "  - The pick is the write-up's own title (93), not the top score (95): the top one says the US 'pays' interest every second, which the write-up calls an average.",
     "  - The YouTube thumbnail is frame 1 (the question) and the Instagram cover is the verdict frame, as the write-up's Instagram note asks. The no-result rule covers the title and the caption's first 125 characters.",
     "  - 'Fiscal 2025' wherever the $970 billion appears, and the fiscal 2026 sentence in the past tense with CBO's own line (net interest on the public debt, 11 months), as the write-up's caption has it.",
     "  - 'national debt clock live' (8,779 a month) stays out of the tags: the write-up bans 'live' and 'in real time' for this counter.",
-    "- **Still to do.** An adversarial pass of this sheet; the owner's FY2026 decision (a rebuild changes every figure here); and the ship rebuild (`--covers`) on the condensed file, re-reading the long alt text against it.",
+    "- **Checked and kept.** Every figure in the copy against the 10a maths table and the check's output; the title (67/100), description (bytes), tags, hashtags, caption, first 125 characters and both alt texts against the platform limits; "
+    "no brand, party or person anywhere; frame 1 (thumbnail) and frame 1065 (cover) read from the render. The tag 'debt crisis' is kept: it is a searched topic phrase (+235.9%), it is in no visible copy, and the copy itself stays to the maths.",
+    "- **Still to do.** The owner's FY2026 decision (a rebuild changes every figure here); and the ship rebuild (`--covers`) on the condensed file, re-reading the long alt text against it.",
 ]
 
 # ---------------------------------------------------------------- the numbers check
@@ -426,7 +448,7 @@ MATH_RELATIONS = [
     (round(float(_t(500000))) == 16, "$500,000 ÷ rate = 16.256 ≈ 16 seconds"),
     (round(float(_t(10**6))) == 33, "$1,000,000 ÷ rate = 32.511 ≈ 33 seconds"),
     (_r1(_F(65052, 30800)) == 2.1 == _r1(_t(65052)), "the swap-in rule for the median, $65,052 ÷ 30,800 = 2.112, rounds the same as the exact 2.115"),
-    (_r1(_F(100000, 30800)) == 3.2 and _r1(_t(100000)) == 3.3, "the swap-in rule is approximate by design (100,000 ÷ 30,800 = 3.247); the copy's 3.3 is the exact rate's, as the write-up's"),
+    (_r1(_F(100000, 30800)) == 3.2 and _r1(_t(100000)) == 3.3, "the swap-in rule is approximate by design (100,000 ÷ 30,800 = 3.247 ≈ 3.2; the exact rate gives 3.3), so the copy never pairs $100,000 ≈ 3.3 with the rule: its worked example is the median, where both give 2.1"),
     (abs(float(_r * _F("32.51135")) - 1e6) < 0.5, "the counter stops on exactly $1,000,000 (r × 32.51135 = $1,000,000.30), so its final has no '≈'"),
     (round(float(_F(1052 - 941, 941)) * 100) == 12, "CBO: ($1,052B − $941B) ÷ $941B = 11.8% ≈ 12% (net interest on the public debt, 11 months)"),
     (_F(30000) < _r and (_r - 30000) / _r < _F(1, 20), "$30,000 is an exact salary input 2.5% under the rate, not a second rounding of it (the check's exemption)"),
@@ -471,6 +493,11 @@ _DOLLAR_RE = _re.compile(r"\$?(\d[\d,]*(?:\.\d+)?)")
 _bad_rate = [m.group(0) for m in _DOLLAR_RE.finditer(_ALL) if m.group(1) not in ("30,000", "30,800")
              and abs(_num(m.group(1)) - float(_r)) <= float(_r) / 20]
 _bad_hour = [m.group(0) for m in _re.finditer(r"\$(\d[\d,.]*) million", _ALL) if abs(_num(m.group(1)) - 110.73) <= 110.73 / 20 and m.group(1) != "111"]
+# A worked example on a swap-in line (one that says '÷ 30,800' or 'by 30,800') must be what the rule itself gives:
+# '$100,000 ≈ 3.3' there would be the exact rate's answer, and 100,000 ÷ 30,800 = 3.247 is 3.2.
+_bad_swap = [m.group(0) for ln in _lines() if _re.search(r"(?:÷|by) 30,800", ln)
+             for m in _re.finditer(r"\$([\d,]+)(?: ÷ 30,800)?:? ≈ (\d+(?:\.\d+)?) seconds?", ln)
+             if round(_num(m.group(1)) / 30800, len(m.group(2).split(".")[1]) if "." in m.group(2) else 0) != float(m.group(2))]
 
 _NUMBER_WORDS = _re.compile(r"\b(?:zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|"
                             r"sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|"
@@ -480,6 +507,8 @@ COPY_RULES = [
     (not _bad_times, f"every time is its row's one rounding (≈ 1.0 / 2.1 / 3.3 / 8 / 16 / 33 seconds): {_bad_times}"),
     (not _bad_rate, f"the rate is only ever $30,800 (one rounding of $30,758.50): {_bad_rate}"),
     (not _bad_hour, f"the hourly figure is only ever $111 million: {_bad_hour}"),
+    (not _bad_swap and "$65,052 ÷ 30,800 ≈ 2.1 seconds" in YT_PINNED and "$65,052 ÷ 30,800 ≈ 2.1 seconds" in IG_FIRST_COMMENT,
+     f"the swap-in rule's worked example is what the rule gives ($65,052 ÷ 30,800 = 2.112 ≈ 2.1, as the video's label), never '$100,000 ≈ 3.3' beside '÷ 30,800': {_bad_swap}"),
     (all(_approx(p) for p in (r"\$30,800", r"\$111 million", r"(?<![\d.])(?:1\.0|2\.1|3\.3|8|16|33) seconds?\b")),
      "≈ $30,800, ≈ $111 million and every pass time come with '≈' or 'about' ($1,000,000 is the exact stop and goes without)"),
     (_beside(r"\$970 billion", "2025"), "$970 billion always sits beside (fiscal) 2025"),

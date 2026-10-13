@@ -18,7 +18,7 @@ YouTube Shorts (@envelopemath) and Instagram Reels (@envelopemath). Prepared 202
 |---|---|---:|---:|
 | 1 | US Debt Interest Since You Hit Play: When Does It Pass Your Salary? | 93 | 67 |
 | 2 | The US Pays Interest on Its Debt Every Second. When Does It Pass Your Salary? | 95 | 77 |
-| 3 | When Does US Debt Interest Pass Your Salary? #NationalDebt #USDebt #Debt | 93 | 72 |
+| 3 | When Does US Debt Interest Pass Your Salary? #NationalDebt #USDebt #MoneyMath | 93 | 77 |
 
 **Pick (paste):**
 
@@ -29,8 +29,8 @@ US Debt Interest Since You Hit Play: When Does It Pass Your Salary?
 - 67 of 100 characters.
 - The pick is the write-up's title and the on-screen header, unchanged: 'US Debt Interest' in the first 16 characters, then the viewer's own stake, 'your salary'. The Shorts player shows the opening, so 'US Debt Interest Since You Hit Play' is what a scroller reads; the question finishes it.
 - It names no result: no rate, no seconds, no row. The answer's unit is not even hinted ('how many seconds' scored 89-92 and gives the surprise away).
-- Option 2 scores 2 points higher but says the US 'pays' interest every second; the write-up's rate is fiscal 2025's total spread evenly over the year, so the pick keeps the counter's own wording. vidIQ's model ranks titles but does not predict views; 9 of the 10 titles scored sit between 90 and 95.
-- Also scored, not used: "When Does US Debt Interest Pass Your Salary? Counted Since You Hit Play" 93; "Find Your Salary: When Does US Debt Interest Pass It?" 93 (the VO's first line as the title); "US Debt Interest Adds Up Every Second. When Does It Pass Your Salary?" 93 (the honest wording of option 2, 2 points lower); "US National Debt Interest Since You Hit Play: When Does It Pass Your Salary?" 92 (adding 'National' costs a point); "National Debt Interest vs Your Salary: How Many Seconds?" 92 (names the answer's unit, seconds); "How Fast Does Interest on the National Debt Pass Your Salary?" 90; "How Many Seconds of US Debt Interest Equal Your Salary?" 89.
+- Option 2 scores 2 points higher but says the US 'pays' interest every second; the write-up's rate is fiscal 2025's total spread evenly over the year, so the pick keeps the counter's own wording. vidIQ's model ranks titles but does not predict views; 10 of the 11 titles scored sit between 90 and 95.
+- Also scored, not used: "When Does US Debt Interest Pass Your Salary? #NationalDebt #USDebt #Debt" 93 (option 3 at the first build: '#Debt' is not one of the description's hashtags, so the check would refuse it as the title); "When Does US Debt Interest Pass Your Salary? Counted Since You Hit Play" 93; "Find Your Salary: When Does US Debt Interest Pass It?" 93 (the VO's first line as the title); "US Debt Interest Adds Up Every Second. When Does It Pass Your Salary?" 93 (the honest wording of option 2, 2 points lower); "US National Debt Interest Since You Hit Play: When Does It Pass Your Salary?" 92 (adding 'National' costs a point); "National Debt Interest vs Your Salary: How Many Seconds?" 92 (names the answer's unit, seconds); "How Fast Does Interest on the National Debt Pass Your Salary?" 90; "How Many Seconds of US Debt Interest Equal Your Salary?" 89.
 
 ### Description (paste)
 
@@ -63,23 +63,23 @@ Animation and original sound: The Back of the Envelope. Net interest, fiscal 202
 
 The title carries no hashtags, so YouTube shows these 3, the description's first, above the title. Over 60 hashtags and YouTube ignores all of them. `#Shorts` isn't needed.
 
-### Tags (paste; 320 of 500 characters as YouTube counts them: commas count, and a tag with a space counts 2 more for the quotes YouTube adds)
+### Tags (paste; 316 of 500 characters as YouTube counts them: commas count, and a tag with a space counts 2 more for the quotes YouTube adds)
 
 ```
-us debt interest, national debt interest, interest on the national debt, national debt, us national debt, us debt, national debt explained, how the national debt works, can we pay off the national debt, debt crisis, net interest, salary, money math, math animation, the back of the envelope, envelope math
+us debt interest, national debt interest, interest on national debt, national debt, us national debt, us debt, national debt explained, how the national debt works, can we pay off the national debt, debt crisis, net interest, salary, money math, math animation, the back of the envelope, envelope math
 ```
 
-Tags carry little weight. These mirror the keyword research plus the house's channel tags. 'can we pay off the national debt' (5,321 a month) is answered by the '$0 of it pays the debt down' line; 'how the national debt works' (5,231) has the lowest competition of the debt questions (37.5). Left out on purpose: 'national debt clock live' (8,779), the biggest counter phrase, because the write-up bans 'live' and 'in real time' for 10a (a fixed average is not a live feed); 'interest rates' (63,613) is a different topic; and every phrase that names a politician or a party (the write-up's tone rule).
+Tags carry little weight. These mirror the keyword research plus the house's channel tags. 'interest on national debt' (4,270 a month) is the question as people type it; with 'the' it is under 750. 'can we pay off the national debt' (5,321 a month) is answered by the '$0 of it pays the debt down' line; 'how the national debt works' (5,231) has the lowest competition of the debt questions (37.5). Left out on purpose: 'national debt clock live' (8,779), the biggest counter phrase, because the write-up bans 'live' and 'in real time' for 10a (a fixed average is not a live feed); 'interest rates' (63,613) is a different topic; and every phrase that names a politician or a party (the write-up's tone rule).
 
 ### Pinned comment (post it, then pin it)
 
 ```
-Which row are you? Your seconds = yearly pay ÷ 30,800 ($100,000 ≈ 3.3 seconds).
+Which row are you? Your seconds = yearly pay ÷ 30,800 (median pay: $65,052 ÷ 30,800 ≈ 2.1 seconds).
 
 The $970 billion is fiscal 2025 net interest (a gross figure is bigger), spread evenly over 31,536,000 seconds. Fiscal 2026 ran hotter (CBO: net interest on the public debt up 12% over the same 11 months), so this counter runs slow. The rows are gross salaries, before tax. And $0 of it pays the debt down.
 ```
 
-The question comes first so it shows in the collapsed preview, and it asks for the viewer's own row (R3), with the write-up's swap-in rule and its example. The second paragraph answers the four comment fights the write-up expects: net vs gross interest, 'that's last year's number', 'my salary is before tax' and 'does any of it pay the debt down?'. It answers with the CBO line, not a new number, as the write-up asks.
+The question comes first so it shows in the collapsed preview, and it asks for the viewer's own row (R3), with the write-up's swap-in rule worked for the median, as the video's own label works it ($65,052 ÷ 30,800 ≈ 2.1 seconds). The write-up's pinned comment pairs the rule with '$100,000 ≈ 3.3', but 3.3 is the exact rate's answer: the rule's rounded 30,800 gives 100,000 ÷ 30,800 = 3.247, so 3.2, and a viewer checking it on a calculator would catch it. The median is the row where both give 2.1. The second paragraph answers the four comment fights the write-up expects: net vs gross interest, 'that's last year's number', 'my salary is before tax' and 'does any of it pay the debt down?'. It answers with the CBO line, not a new number, as the write-up asks.
 
 ### Related video and end screen
 
@@ -105,7 +105,7 @@ The question comes first so it shows in the collapsed preview, and it asks for t
 ### Caption (paste)
 
 ```
-When does US debt interest pass your salary? Find yours on the ladder: the interest counter starts at $0 the moment you hit play.
+When does US debt interest pass your salary? Find your row on the ladder: the counter starts at $0 the moment you hit play.
 
 $100,000 a year of pay ≈ 3.3 seconds of US debt interest. $1 million ≈ 33 seconds.
 
@@ -131,8 +131,8 @@ Animation and original sound: The Back of the Envelope.
 #nationaldebt #usdebt #interest #economy #moneymath
 ```
 
-- 1,152 of 2,200 characters.
-- **First 125 characters:** the header's question plus the VO's first instruction, 'Find your salary', with no figure but the counter's $0 start. The write-up's caption line 1 is the result ('$100,000 a year of pay ≈ 3.3 seconds of US debt interest. $1 million ≈ 33 seconds.'); the house rule moves it to the second paragraph, below 'more', because the caption overlays the Reel from frame 1. The numbers sit below the fold, where Instagram search and Google indexing still read them.
+- 1,146 of 2,200 characters.
+- **First 125 characters:** the header's question plus the VO's first instruction ('Find your salary.', here 'Find your row on the ladder'), with no figure but the counter's $0 start; the hook is 123 characters, so it shows whole before 'more'. The write-up's caption line 1 is the result ('$100,000 a year of pay ≈ 3.3 seconds of US debt interest. $1 million ≈ 33 seconds.'); the house rule moves it to the second paragraph, below 'more', because the caption overlays the Reel from frame 1. The numbers sit below the fold, where Instagram search and Google indexing still read them.
 - The write-up's caption sentences are kept, in its order: the $970 billion, the division, median pay, the swap-in rule, '$0 of it pays the debt down' and the fiscal 2026 sentence, which names CBO's line and its 11 months.
 - No brand is named and no handle is tagged. The caption follows the house close: the follow line plus the credit.
 
@@ -169,7 +169,7 @@ Three are the write-up's own (`#nationaldebt #interest #moneymath`), plus two:
 ### First comment (post it, then pin it)
 
 ```
-Yearly pay ÷ 30,800 = your seconds ($100,000 ≈ 3.3 seconds). Which row are you?
+Yearly pay ÷ 30,800 = your seconds (median pay: $65,052 ÷ 30,800 ≈ 2.1 seconds). Which row are you?
 ```
 
 ### Trial Reels
@@ -203,9 +203,10 @@ Yearly pay ÷ 30,800 = your seconds ($100,000 ≈ 3.3 seconds). Which row are yo
 | interest rates | 63,613 | 66.5 | 56.4 | +22.8%; a different topic (rates, not the interest bill): not in the tags | 2026-10-12 |
 | economy | 378,531 | 75.5 | 59.8 | +9.8% vs its baseline (344,793); the broad layer (#economy on Instagram) | 2026-10-12 |
 | average salary in america | 0 (<750) | 38.5 | 24.6 | <750/month: the salary side has no search demand of its own | no snapshot |
-| interest on the national debt | 0 (<750) |  |  | <750/month; vidIQ returned no matching terms | no snapshot |
+| interest on national debt | 4,270 | 40.0 | 56.5 | the question as people type it (no 'the'): in the tags; found at the adversarial check | 2026-10-12 |
+| interest on the national debt | 0 (<750) | 47.0 | 21.2 | <750/month with 'the': the tag uses the searched form above | no snapshot |
 
-The debt is searched as a topic and as questions: 'us debt' (44,622) and 'national debt' (25,193) lead, and the questions people type ('how the national debt works', 'can we pay off the national debt', about 5,200-5,300 each) are ones the description answers. The interest bill itself is a small phrase ('national debt interest' 4,591; 'interest on the national debt' under 750), so the title leads with 'US Debt Interest' and lets 'debt' carry the volume. The counter phrases ('national debt clock live' 8,779) promise a live feed, which the write-up bans for this average-rate counter, and money 'per second' has no search demand of its own (every 'per second' phrase vidIQ returns is anime, gaming or code). Salary searches are tiny ('average salary in america' under 750): the salary is the hook, not the search term.
+The debt is searched as a topic and as questions: 'us debt' (44,622) and 'national debt' (25,193) lead, and the questions people type ('how the national debt works', 'can we pay off the national debt', about 5,200-5,300 each) are ones the description answers. The interest bill itself is a mid-sized phrase ('national debt interest' 4,591; 'interest on national debt' 4,270, though under 750 with 'the'), so the title leads with 'US Debt Interest' and lets 'debt' carry the volume. The counter phrases ('national debt clock live' 8,779) promise a live feed, which the write-up bans for this average-rate counter, and money 'per second' has no search demand of its own (every 'per second' phrase vidIQ returns is anime, gaming or code). Salary searches are tiny ('average salary in america' under 750): the salary is the hook, not the search term.
 
 **2. The interest bill per second is a proven idea, but nobody measures it against a salary (vidIQ YouTube search and outliers, Shorts, under 4 min).**
 
@@ -296,17 +297,23 @@ One weekday evening is the best Instagram slot and the second-best YouTube slot,
 
 ---
 
-## Check log (first build, 2026-10-13)
+## Check log (adversarial pass, 2026-10-13)
 
 - **Maths.** `python3 teasers/v2/checks/10-cost-counter.py`: 1005 checks, 0 failed on `studio/specs/`. Every public figure traces to the 10a maths table: $970,000,000,000 ÷ 31,536,000 = $30,758.50 ≈ $30,800 a second; × 3,600 = $110,730,594 ≈ $111 million an hour; $30,000 ÷ r = 0.975 ≈ 1.0 s; $65,052 ÷ r = 2.115 ≈ 2.1 s; $100,000 ÷ r = 3.251 ≈ 3.3 s; $250,000 ÷ r = 8.128 ≈ 8 s; $500,000 ÷ r = 16.256 ≈ 16 s; $1,000,000 ÷ r = 32.511 ≈ 33 s; $65,052 ÷ 30,800 = 2.112 ≈ 2.1; CBO: ($1,052B − $941B) ÷ $941B = 11.8% ≈ 12%. The data file recomputes every one.
-- **Limits.** Title 67/100. Description 1,469 characters (1,507 bytes) of 5,000. 3 hashtags. Tags 320/500 as YouTube counts them. Instagram caption 1,152/2,200, with the first 125 characters result-free. 5 hashtags. Short alt text 96. No `<` or `>`.
-- **vidIQ.** Keywords pulled 2026-10-13 (table above). 10 titles scored against this channel: the pick (the write-up's own title) 93, the top 95. Channel 53 subscribers / 10,221 views / 41 videos; Instagram owner insights refreshed (8 followers, 20,519 views in 30 days).
-- **vidIQ re-queried** after the build: the pick's title score 93, as first scored.
+- **Limits.** Title 67/100. Description 1,469 characters (1,507 bytes) of 5,000. 3 hashtags. Tags 316/500 as YouTube counts them. Instagram caption 1,146/2,200, with the first 125 characters result-free. 5 hashtags. Short alt text 96. No `<` or `>`.
+- **vidIQ.** Keywords pulled 2026-10-13 (table above). 11 titles scored against this channel (10 at the first build, option 3 with the description's hashtags at the adversarial check): the pick (the write-up's own title) 93, the top 95. Channel 53 subscribers / 10,221 views / 41 videos; Instagram owner insights refreshed (8 followers, 20,519 views in 30 days).
+- **vidIQ re-queried** after the build: the pick's title score 93, as first scored. At the adversarial check: the pick's title score 93; 'national debt interest' 4,591 / 43.0 (snapshot 2026-03-01); the related video (`8__HTUa2PoU`) 642 views, its title as in the pick. All match. One new number: 'interest on national debt' 4,270 / 40.0 (2026-10-12), next to 'interest on the national debt' under 750.
+- **Changed at the adversarial check.**
+  - The pinned comment and the first comment paired the swap-in rule with '$100,000 ≈ 3.3 seconds', as the write-up's pinned comment does. But 3.3 is the exact rate's answer; the rule itself gives 100,000 ÷ 30,800 = 3.247, so 3.2, and a viewer who checks it on a calculator catches the gap. Both now work the rule for the median, as the video's own label does ('$65,052 ÷ 30,800 ≈ 2.1 seconds'), where the rule and the exact rate agree. A new `COPY_RULES` entry holds every worked example on a '÷ 30,800' line to what the rule gives; '$100,000 ≈ 3.3' there now fails by name. The $100,000 row keeps its ≈ 3.3 seconds everywhere else (caption line 2, the description, the alt text).
+  - Option 3 used `#NationalDebt #USDebt #Debt`, which are not the description's hashtags, so the builder's check would have refused it if picked. It now carries the description's three in order (`#NationalDebt #USDebt #MoneyMath`, 77 characters, scored 93); the old form moves to 'also scored'.
+  - The caption's hook ran 129 characters, so Instagram's fold cut it at 'hit p'. It is now 123 ('Find your row on the ladder: the counter starts at $0 …'), so the whole sentence shows before 'more' and the first 125 characters stay result-free.
+  - The tag 'interest on the national debt' (under 750 a month) is now 'interest on national debt' (4,270, the form people type); the keyword table and its note say so.
 - **Generator.** Unchanged. The 10 check prints '1005 checks, 0 failures', and the builder reads only 'N checks, F failed', so `MATH_SCRIPT` is the adapter `publishing/data/checks/10-cost-counter.py` (a copy of the 07 adapter: it runs the check unchanged and adds the summary line).
-- **Mutation test.** Breaks on scratch copies of this file all fail by name: a title that gives the verdict ('… ≈ 33 Seconds'), 'live' in the title, a second rounding of the rate ('$30,758') in the description, '≈ 3 seconds' for the $100,000 row (caught by the figures check: 3 is no maths figure), the 12% without its line, a result in the caption's first 125 characters, a politician's name in the pinned comment, and $970 billion moved beside 2026. (20 of 20 across 10a-10c.)
+- **Mutation test.** Breaks on scratch copies of this file all fail by name: a title that gives the verdict ('… ≈ 33 Seconds'), 'live' in the title, a second rounding of the rate ('$30,758') in the description, '≈ 3 seconds' for the $100,000 row (caught by the figures check: 3 is no maths figure), the 12% without its line, a result in the caption's first 125 characters, a politician's name in the pinned comment, and $970 billion moved beside 2026. (20 of 20 across 10a-10c.) At the adversarial check, two more on scratch copies also fail by name: the pinned comment back to '($100,000 ≈ 3.3 seconds)' beside '÷ 30,800', and the first 120-character hook, which let the result paragraph's '$10' into the first 125 characters.
 - **Kept on purpose.**
   - The pick is the write-up's own title (93), not the top score (95): the top one says the US 'pays' interest every second, which the write-up calls an average.
   - The YouTube thumbnail is frame 1 (the question) and the Instagram cover is the verdict frame, as the write-up's Instagram note asks. The no-result rule covers the title and the caption's first 125 characters.
   - 'Fiscal 2025' wherever the $970 billion appears, and the fiscal 2026 sentence in the past tense with CBO's own line (net interest on the public debt, 11 months), as the write-up's caption has it.
   - 'national debt clock live' (8,779 a month) stays out of the tags: the write-up bans 'live' and 'in real time' for this counter.
-- **Still to do.** An adversarial pass of this sheet; the owner's FY2026 decision (a rebuild changes every figure here); and the ship rebuild (`--covers`) on the condensed file, re-reading the long alt text against it.
+- **Checked and kept.** Every figure in the copy against the 10a maths table and the check's output; the title (67/100), description (bytes), tags, hashtags, caption, first 125 characters and both alt texts against the platform limits; no brand, party or person anywhere; frame 1 (thumbnail) and frame 1065 (cover) read from the render. The tag 'debt crisis' is kept: it is a searched topic phrase (+235.9%), it is in no visible copy, and the copy itself stays to the maths.
+- **Still to do.** The owner's FY2026 decision (a rebuild changes every figure here); and the ship rebuild (`--covers`) on the condensed file, re-reading the long alt text against it.

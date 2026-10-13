@@ -35,7 +35,7 @@
         "title": "How Long Would You Have to Work for 1 Second of Amazon's Profit?",
         "vidiq_score": 98,
         "chars": 64,
-        "note": "PICK. Top score of the 9 scored, 10 points over the write-up's title (88) with the same question: 'Would You Have to' only makes it a hypothetical. It carries 'Amazon's profit' ('amazon profit' 3,398 searches a month) and the header's own '1 second'. No hashtags in the title; the description's first three show above it."
+        "note": "PICK. Top score of the 6 scored, 10 points over the write-up's title (88) with the same question: 'Would You Have to' only makes it a hypothetical. It carries 'Amazon's profit' ('amazon profit' 3,398 searches a month) and the header's own '1 second'. No hashtags in the title; the description's first three show above it."
       },
       {
         "rank": 2,
@@ -69,7 +69,7 @@
         "title": "How Long Do You Work for 1 Second of Amazon's Profit? #Amazon #MoneyMath #Profit",
         "vidiq_score": 88,
         "chars": 80,
-        "note": "the house 3-hashtag form"
+        "note": "the house 3-hashtag form, but not in the description's order (#Amazon #Profit #MoneyMath), so the check would refuse it as the title as written"
       }
     ],
     "title_pick": "How Long Would You Have to Work for 1 Second of Amazon's Profit?",
@@ -128,9 +128,9 @@
     "description_utf8_bytes": 1215
   },
   "instagram": {
-    "caption": "How long would you have to work for 1 second of Amazon's profit? Amazon's profit counter starts at $0 the moment you hit play.\n\n1 second of Amazon's profit ≈ 2 weeks of median full-time pay.\n\nThe math, shown:\n• Amazon kept $77.7 billion in 2025 (net income).\n• ÷ 31,536,000 seconds in a year ≈ $2,464 a second.\n• Median full-time pay is $1,251 a week (BLS): $2,464 ÷ $1,251 ≈ 2 weeks of it per second.\n• 5 seconds: ≈ $12,319, ≈ 10 weeks.\n• Half a year of median pay, $32,526: ≈ 13 seconds.\n• A year of it, $1,251 × 52 = $65,052: ≈ 26 seconds.\n\nYours: 2,464 ÷ your weekly pay.\n\nSource: Amazon's Q4 2025 results (February 2026); pay: BLS, gross. The year's average rate: profit is seasonal and lumpy. Not financial advice. Not affiliated with or endorsed by Amazon.\n\nHow many weeks is yours?\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\nAnimation and original sound: The Back of the Envelope.\n\n#amazon #profit #salary #moneymath #personalfinance",
-    "caption_chars": 976,
-    "caption_first_125": "How long would you have to work for 1 second of Amazon's profit? Amazon's profit counter starts at $0 the moment you hit play",
+    "caption": "How long would you have to work for 1 second of Amazon's profit? The profit counter starts at $0 the moment you hit play.\n\n1 second of Amazon's profit ≈ 2 weeks of median full-time pay.\n\nThe math, shown:\n• Amazon kept $77.7 billion in 2025 (net income).\n• ÷ 31,536,000 seconds in a year ≈ $2,464 a second.\n• Median full-time pay is $1,251 a week (BLS): $2,464 ÷ $1,251 ≈ 2 weeks of it per second.\n• 5 seconds: ≈ $12,319, ≈ 10 weeks.\n• Half a year of median pay, $32,526: ≈ 13 seconds.\n• A year of it, $1,251 × 52 = $65,052: ≈ 26 seconds.\n\nYours: 2,464 ÷ your weekly pay.\n\nSource: Amazon's Q4 2025 results (February 2026); pay: BLS, gross. The year's average rate: profit is seasonal and lumpy. Not financial advice. Not affiliated with or endorsed by Amazon.\n\nHow many weeks is yours?\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\nAnimation and original sound: The Back of the Envelope.\n\n#amazon #profit #salary #moneymath #personalfinance",
+    "caption_chars": 971,
+    "caption_first_125": "How long would you have to work for 1 second of Amazon's profit? The profit counter starts at $0 the moment you hit play.\n\n1 ",
     "caption_rule": "The first 125 characters are the title's question, the 'Amazon's profit' keywords and the counter's $0 start, no result: the caption overlays the Reel from frame 1, so the rate, every answer and the verdict sit below 'more'.",
     "hashtags_in_order": [
       "#amazon",
@@ -141,7 +141,7 @@
     ],
     "hashtag_rule": "Instagram caps a post at 5 hashtags (since Dec 2025).",
     "alt_text_short": "Chart: 1 second of Amazon's 2025 profit, about $2,464, is about 2 weeks of median full-time pay.",
-    "alt_text_long": "Animation on a black scoreboard. The header asks: how long do you work for 1 second of Amazon's profit? A green counter starts at $0 and climbs at about $2,464 a second: Amazon's 2025 net income, $77.7 billion, spread over the year. A ladder of targets turns into answers in weeks of median full-time pay ($1,251 a week): 1 second, about $2,464, is about 2 weeks; 5 seconds, about $12,319, about 10 weeks; $32,526, at about 13 seconds, is 6 months. The counter stops on exactly $65,052 as a coin grows to fill the stage. Payoff: a year of median pay: about 26 seconds.",
+    "alt_text_long": "Animation on a black scoreboard. The header asks: how long do you work for 1 second of Amazon's profit? A green counter starts at $0 and climbs at about $2,464 a second: Amazon's 2025 net income, $77.7 billion, spread over the year. A ladder of targets turns into answers in weeks of median full-time pay ($1,251 a week): 1 second, about $2,464, is about 2 weeks; 5 seconds, about $12,319, about 10 weeks; $32,526, at about 13 seconds, is 6 months. The counter stops on exactly $65,052 as a coin pops and grows to the biggest object on the stage. Payoff: a year of median pay: about 26 seconds.",
     "alt_text_where": "Advanced settings → Accessibility → Alt text, if your app shows it for Reels.",
     "cover": {
       "files": {
@@ -485,22 +485,22 @@
       "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file."
     ],
     "titles_scored": "6 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored.",
-    "vidiq_credits": "65 credits for this teaser by listed cost (3 keyword queries, 2 YouTube searches, 1 Shorts outlier search, 1 Instagram/TikTok outlier search and 6 title scores at up to 5 each), plus 10 shared across 10a-10c for the channel's stats and Shorts list (Instagram owner insights cost 0), and 5 for the re-score after the build. Account balance: 4,375 at the start of the 10 research and 4,135 when it ended, a 240 drop for 56 calls (the balance is shared with sheets built in parallel, so the drop is an upper bound; keyword queries cost less than 5); 4,060 after the 3 re-scores (15 credits by listed cost; the rest of that 75 drop is other sheets'). About 255 for the three 10 sheets, against a budget of about 450."
+    "vidiq_credits": "65 credits for this teaser by listed cost (3 keyword queries, 2 YouTube searches, 1 Shorts outlier search, 1 Instagram/TikTok outlier search and 6 title scores at up to 5 each), plus 10 shared across 10a-10c for the channel's stats and Shorts list (Instagram owner insights cost 0), and 5 for the re-score after the build. Account balance: 4,375 at the start of the 10 research and 4,135 when it ended, a 240 drop for 56 calls (the balance is shared with sheets built in parallel, so the drop is an upper bound; keyword queries cost less than 5); 4,060 after the 3 re-scores (15 credits by listed cost; the rest of that 75 drop is other sheets'). About 255 for the three 10 sheets, against a budget of about 450. Adversarial check: 5 for this teaser by listed cost (the pick's title score) plus 2 keyword queries ('how much money does amazon make every second', questions and research), and 5 shared across 10a-10c for the three related videos' titles. Balance 3,695 at the check's start and 3,635 after its last call (a 60 drop for 18 calls across 10a-10c, 30 of it listed title and video costs; the balance is shared with sheets checked in parallel)."
   },
   "checked": {
     "date": "2026-10-13",
-    "by": "the publishing strategist's own check at the first build (no adversarial pass yet)",
-    "math": "python3 teasers/v2/checks/10-cost-counter.py: 1005 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/10-cost-counter.py; the rate and every answer recomputed from $77.7 billion and $1,251 a week in MATH_RELATIONS ($2,463.85 ≈ $2,464; ≈ 2 weeks; ≈ $12,319 and ≈ 10 weeks; $32,526 at ≈ 13 seconds; $65,052 at ≈ 26 seconds; the swap-in rule's 1.97); COPY_RULES hold every figure to the write-up's one rounding, put '≈' or 'about' on every rounded figure, keep $77.7 billion beside 2025 and named as net income, and ban 'live', a share price, a ticker, any person's name and advice wording",
+    "by": "adversarial check of this sheet",
+    "math": "python3 teasers/v2/checks/10-cost-counter.py: 1005 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/10-cost-counter.py; the rate and every answer recomputed from $77.7 billion and $1,251 a week in MATH_RELATIONS ($2,463.85 ≈ $2,464; ≈ 2 weeks; ≈ $12,319 and ≈ 10 weeks; $32,526 at ≈ 13 seconds; $65,052 at ≈ 26 seconds; the swap-in rule's 1.97); COPY_RULES hold every figure to the write-up's one rounding, put '≈' or 'about' on every rounded figure, keep $77.7 billion beside 2025 and named as net income, and ban 'live', a share price, a ticker, any person's name and advice wording. Re-run at the adversarial check (2026-10-13) with the same result",
     "limits": {
       "youtube_title_chars": 64,
       "youtube_description_chars": 1183,
       "youtube_description_utf8_bytes": 1215,
       "youtube_tags_chars_as_youtube_counts": 328,
       "youtube_hashtags": 3,
-      "instagram_caption_chars": 976,
+      "instagram_caption_chars": 971,
       "instagram_hashtags": 5,
       "instagram_alt_text_short_chars": 96
     },
-    "vidiq_requeried": "pulled 2026-10-13: amazon profit 3,398 / 44.5; how much money does amazon make every second? 4,651 / 25.0; amazon 873,376 (+4.2%); title scores 98 (pick), 88 (the write-up's title); channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,519 views in 30 days. Re-queried after the build: the pick's title score 98. Match."
+    "vidiq_requeried": "pulled 2026-10-13: amazon profit 3,398 / 44.5; how much money does amazon make every second? 4,651 / 25.0; amazon 873,376 (+4.2%); title scores 98 (pick), 88 (the write-up's title); channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,519 views in 30 days. Re-queried after the build: the pick's title score 98. Match. Re-queried at the adversarial check: the pick's title score 98; how much money does amazon make every second? 4,651 / 25.0 (2026-10-12); the related video fbpdKf4Wy8c 760 views, title as in the pick. All match."
   }
 }

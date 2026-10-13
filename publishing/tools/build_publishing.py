@@ -488,7 +488,10 @@ def numbers_check(D, md, js):
            (len(ig["caption"]) <= 2200, "caption <= 2,200"), (len(ig["hashtags_in_order"]) <= 5, "IG hashtags <= 5"),
            (re.findall(r"#\w+", ig["caption"]) == ig["hashtags_in_order"], "IG caption hashtags = hashtags_in_order"),
            (len(ig["alt_text_short"]) <= 100, "short alt text <= 100"),
-           (not re.search(D.RESULT_RE_CAPTION, ig["caption"][:125]), "caption's first 125 characters result-free"),
+           # the fold can cut a word ("$6…"); test through the end of the word that straddles character 125
+           (not re.search(D.RESULT_RE_CAPTION, ig["caption"][:125 + (len(re.match(r"\S*", ig["caption"][125:]).group(0))
+                                                                     if ig["caption"][124:125].strip() else 0)]),
+            "caption's first 125 characters (to the end of the word at the fold) result-free"),
            (not re.search(D.RESULT_RE_TITLE, yt["title_pick"]), "title result-free")]
     bad += [f"limit: {w}" for ok, w in lim if not ok]
     # stated counts equal the strings

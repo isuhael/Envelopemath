@@ -29,7 +29,7 @@ How Long Would You Have to Work for 1 Second of Amazon's Profit?
 - The pick is the header's question with 'Would You Have to', which raises it from 88 to 98: 'How Long' opens it, 'Amazon's Profit' closes it, and '1 Second' (the input) sits in the middle. A title cut short still asks.
 - It names no result and not even the answer's unit: no weeks, no ≈ $2,464, no ≈ 26 seconds. The wrong answer the viewer holds ('a few minutes of my work') stays intact until the first pass.
 - 'Profit' is the word on screen and in the copy, and the copy says it is net income, not sales: the same-idea Shorts on Amazon divide its revenue instead ('Amazon makes $22,700 every second'). vidIQ's model ranks titles but does not predict views; the three question-first titles scored 97-98, the header itself 88.
-- Also scored, not used: "Amazon Makes a Profit Every Second. How Long Do You Work for 1 Second of It?" 89; "How Long Do You Work for 1 Second of Amazon's Profit?" 88 (the write-up's title and the on-screen header); "How Long Do You Work for 1 Second of Amazon's Profit? #Amazon #MoneyMath #Profit" 88 (the house 3-hashtag form).
+- Also scored, not used: "Amazon Makes a Profit Every Second. How Long Do You Work for 1 Second of It?" 89; "How Long Do You Work for 1 Second of Amazon's Profit?" 88 (the write-up's title and the on-screen header); "How Long Do You Work for 1 Second of Amazon's Profit? #Amazon #MoneyMath #Profit" 88 (the house 3-hashtag form, but not in the description's order (#Amazon #Profit #MoneyMath), so the check would refuse it as the title as written).
 
 ### Description (paste)
 
@@ -103,7 +103,7 @@ The question comes first so it shows in the collapsed preview, and it asks for t
 ### Caption (paste)
 
 ```
-How long would you have to work for 1 second of Amazon's profit? Amazon's profit counter starts at $0 the moment you hit play.
+How long would you have to work for 1 second of Amazon's profit? The profit counter starts at $0 the moment you hit play.
 
 1 second of Amazon's profit ≈ 2 weeks of median full-time pay.
 
@@ -127,8 +127,8 @@ Animation and original sound: The Back of the Envelope.
 #amazon #profit #salary #moneymath #personalfinance
 ```
 
-- 976 of 2,200 characters.
-- **First 125 characters:** the header's question plus the counter's $0 start, with no figure but the input (1 second). The write-up's caption line 1 is the hook's answer ('1 second of Amazon's profit ≈ 2 weeks of median full-time pay.'); the house rule moves it to the second paragraph, below 'more', because the caption overlays the Reel from frame 1. The numbers sit below the fold, where Instagram search and Google indexing still read them.
+- 971 of 2,200 characters.
+- **First 125 characters:** the header's question plus the counter's $0 start, with no figure but the input (1 second); the hook is 121 characters, so it shows whole before 'more'. The write-up's caption line 1 is the hook's answer ('1 second of Amazon's profit ≈ 2 weeks of median full-time pay.'); the house rule moves it to the second paragraph, below 'more', because the caption overlays the Reel from frame 1. The numbers sit below the fold, where Instagram search and Google indexing still read them.
 - The write-up's caption sentences are kept: net income, the division, the median's weeks, the year in ≈ 26 seconds, the swap-in rule and its source line. The 5-second and half-year rows are added from its maths table, so the caption carries the whole ladder.
 - No brand handle is tagged. The caption follows the house close: the follow line plus the credit.
 
@@ -147,7 +147,7 @@ Three are the write-up's own (`#amazon #moneymath #profit`), plus two:
 
 - **Short (96 characters; paste this one into Instagram):** Chart: 1 second of Amazon's 2025 profit, about $2,464, is about 2 weeks of median full-time pay.
   - It stays at or under 100 characters, so it fits the field however short it is. It says 'about', not '≈', so screen readers read it cleanly, and it keeps the hook's answer with its basis (2025 profit; median full-time pay).
-- **Long (for anywhere with room, such as a website embed):** Animation on a black scoreboard. The header asks: how long do you work for 1 second of Amazon's profit? A green counter starts at $0 and climbs at about $2,464 a second: Amazon's 2025 net income, $77.7 billion, spread over the year. A ladder of targets turns into answers in weeks of median full-time pay ($1,251 a week): 1 second, about $2,464, is about 2 weeks; 5 seconds, about $12,319, about 10 weeks; $32,526, at about 13 seconds, is 6 months. The counter stops on exactly $65,052 as a coin grows to fill the stage. Payoff: a year of median pay: about 26 seconds.
+- **Long (for anywhere with room, such as a website embed):** Animation on a black scoreboard. The header asks: how long do you work for 1 second of Amazon's profit? A green counter starts at $0 and climbs at about $2,464 a second: Amazon's 2025 net income, $77.7 billion, spread over the year. A ladder of targets turns into answers in weeks of median full-time pay ($1,251 a week): 1 second, about $2,464, is about 2 weeks; 5 seconds, about $12,319, about 10 weeks; $32,526, at about 13 seconds, is 6 months. The counter stops on exactly $65,052 as a coin pops and grows to the biggest object on the stage. Payoff: a year of median pay: about 26 seconds.
 - **Where:** Advanced settings → Accessibility → Alt text, if your app shows it for Reels.
 
 ### Cover
@@ -286,12 +286,16 @@ One weekday evening is the best Instagram slot and the second-best YouTube slot,
 
 ---
 
-## Check log (first build, 2026-10-13)
+## Check log (adversarial pass, 2026-10-13)
 
 - **Maths.** `python3 teasers/v2/checks/10-cost-counter.py`: 1005 checks, 0 failed on `studio/specs/`. Every public figure traces to the 10c maths table: $77,700,000,000 ÷ 31,536,000 = $2,463.85 ≈ $2,464 a second; ÷ $1,251 = 1.97 ≈ 2 weeks; × 5 = $12,319.25 ≈ $12,319, ÷ $1,251 = 9.85 ≈ 10 weeks; $65,052 ÷ 2 = $32,526, ÷ k = 13.20 ≈ 13 s; $1,251 × 52 = $65,052, ÷ k = 26.40 ≈ 26 s (and $65,052 ÷ $2,464 = 26.40 too). The data file recomputes every one.
-- **Limits.** Title 64/100. Description 1,183 characters (1,215 bytes) of 5,000. 3 hashtags. Tags 328/500 as YouTube counts them. Instagram caption 976/2,200, with the first 125 characters result-free. 5 hashtags. Short alt text 96. No `<` or `>`.
+- **Limits.** Title 64/100. Description 1,183 characters (1,215 bytes) of 5,000. 3 hashtags. Tags 328/500 as YouTube counts them. Instagram caption 971/2,200, with the first 125 characters result-free. 5 hashtags. Short alt text 96. No `<` or `>`.
 - **vidIQ.** Keywords pulled 2026-10-13 (table above). 6 titles scored against this channel: the pick 98, the write-up's title 88. Channel 53 subscribers / 10,221 views / 41 videos; Instagram owner insights refreshed (8 followers, 20,519 views in 30 days).
-- **vidIQ re-queried** after the build: the pick's title score 98, as first scored.
+- **vidIQ re-queried** after the build: the pick's title score 98, as first scored. At the adversarial check: the pick's title score 98; 'how much money does amazon make every second?' 4,651 / 25.0 (2026-10-12); the related video (`fbpdKf4Wy8c`) 760 views, its title as in the pick. All match.
+- **Changed at the adversarial check.**
+  - The caption's hook ran 126 characters, so Instagram's fold cut its last character. It now says 'The profit counter' (121 characters), so the whole sentence shows before 'more'.
+  - The long alt text said the coin 'grows to fill the stage'; on the cover it grows to the biggest object on the stage, beside the ladder. It now says that.
+  - The pick's note said 'Top score of the 9 scored'; 6 titles were scored. The 'also scored' hashtag form now says its hashtags are not in the description's order.
 - **Generator.** Unchanged. `MATH_SCRIPT` is the adapter `publishing/data/checks/10-cost-counter.py`, shared with 10a and 10b.
 - **Mutation test.** Breaks on scratch copies of this file all fail by name: a title that gives the answer ('… ≈ 2 Weeks'), the affiliation line dropped from the caption, 'amazon stock' in the tags, a second rounding of the rate ('$2,463.85'), '≈ 3 weeks' for the 1-second answer (caught by the figures check: 3 is no maths figure), and a result in the caption's first 125 characters. (20 of 20 across 10a-10c.)
 - **Kept on purpose.**
@@ -299,4 +303,5 @@ One weekday evening is the best Instagram slot and the second-best YouTube slot,
   - The YouTube thumbnail is frame 1 (the question) and the Instagram cover is the finished board with the verdict, as the write-up's Instagram note asks.
   - 'Profit' is always named as net income (as Amazon reports it), and never as sales: the same-idea Shorts divide revenue.
   - No share price, ticker or person: 'amazon stock' (+69.3%) and 'jeff bezos' are big searches, and neither is in the write-up's video.
-- **Still to do.** An adversarial pass of this sheet; the ship rebuild (`--covers`) on the condensed file, re-reading the long alt text against it.
+- **Checked and kept.** Every figure in the copy against the 10c maths table and the check's output (the swap-in rule's 2,464 ÷ 1,251 = 1.97 ≈ 2 matches the exact rate); the title (64/100), description (bytes), tags, hashtags, caption, first 125 characters and both alt texts against the platform limits; 'Amazon' only as the company whose reported net income is divided, the affiliation line in both long texts, '#Amazon' as a descriptive tag, no handle, logo, stock or person; frame 1 (thumbnail) and frame 900 (cover) read from the render.
+- **Still to do.** The ship rebuild (`--covers`) on the condensed file, re-reading the long alt text against it.

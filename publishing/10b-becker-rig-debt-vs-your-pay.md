@@ -17,7 +17,7 @@ YouTube Shorts (@envelopemath) and Instagram Reels (@envelopemath). Prepared 202
 |---|---|---:|---:|
 | 1 | Which Is Bigger: 40 Years of Your Pay or 1 Minute of New US Debt? | 96 | 65 |
 | 2 | Which Is Bigger: 40 Years of Your Pay or 1 Minute of New US National Debt? | 96 | 74 |
-| 3 | Which Is Bigger: 40 Years of Your Pay or 1 Minute of New US Debt? #NationalDebt #USDebt #Debt | 96 | 93 |
+| 3 | Which Is Bigger: 40 Years of Your Pay or 1 Minute of New Debt? #NationalDebt #DebtClock #MoneyMath | 96 | 98 |
 
 **Pick (paste):**
 
@@ -29,7 +29,7 @@ Which Is Bigger: 40 Years of Your Pay or 1 Minute of New US Debt?
 - The question comes first ('Which Is Bigger:'), then the two sides exactly as the header sets them: 40 years of your pay, 1 minute of new US debt. Both sides are inputs, so a title cut short still asks.
 - It names no result: not which side wins, not ≈ $4.7 million, not ≈ 33 seconds. The answer is lopsided, and the title leaves the viewer holding the wrong answer the write-up exploits ('my 40 years, obviously').
 - 'New US debt' is the growth, not the total, which is what the counter counts; 'national debt' is in the description, the tags and the hashtags, and option 2 puts it in the title at the same score. vidIQ's model ranks titles but does not predict views; the question-first titles all scored 96, and the header-first ones 88.
-- Also scored, not used: "Which Is Bigger: Your Whole Working Life or 1 Minute of US National Debt?" 96 ('working life' is the video's own phrase, but the title loses the header's '40 years'); "Your Pay for 40 Years vs 1 Minute of New US Debt: Which Is Bigger?" 88 (the on-screen header first, the question last: 8 points lower); "40 Years of Your Paychecks vs 1 Minute of US National Debt: Which Is Bigger?" 88.
+- Also scored, not used: "Which Is Bigger: 40 Years of Your Pay or 1 Minute of New US Debt? #NationalDebt #USDebt #Debt" 96 (option 3 at the first build: '#USDebt #Debt' are not the description's hashtags, so the check would refuse it as the title); "Which Is Bigger: Your Whole Working Life or 1 Minute of US National Debt?" 96 ('working life' is the video's own phrase, but the title loses the header's '40 years'); "Your Pay for 40 Years vs 1 Minute of New US Debt: Which Is Bigger?" 88 (the on-screen header first, the question last: 8 points lower); "40 Years of Your Paychecks vs 1 Minute of US National Debt: Which Is Bigger?" 88.
 
 ### Description (paste)
 
@@ -289,12 +289,15 @@ One weekday evening is the best Instagram slot and the second-best YouTube slot,
 
 ---
 
-## Check log (first build, 2026-10-13)
+## Check log (adversarial pass, 2026-10-13)
 
 - **Maths.** `python3 teasers/v2/checks/10-cost-counter.py`: 1005 checks, 0 failed on `studio/specs/`. Every public figure traces to the 10b maths table: $40,096,954,633,566.68 − $37,637,553,494,935.61 = $2,459,401,138,631.07 ≈ $2.46 trillion; ÷ 31,449,600 s = $78,201.35 ≈ $78,000 a second; × 60 = $4,692,081 ≈ $4.7 million; $1,251 × 52 × 40 = $2,602,080 ≈ $2.6 million; $2,602,080 ÷ r = 33.27 ≈ 33 s; 1 minute ÷ 40 = $117,302 ≈ $117,000; 1 minute ÷ $65,052 = 72.1 ≈ 72 years; $2.09T ÷ 31,449,600 s = $66,456 ≈ $66,000, × 60 ≈ $4.0 million. The data file recomputes every one, and the 364 days from the two dates.
 - **Limits.** Title 65/100. Description 1,367 characters (1,402 bytes) of 5,000. 3 hashtags. Tags 350/500 as YouTube counts them. Instagram caption 1,103/2,200, with the first 125 characters result-free. 5 hashtags. Short alt text 99. No `<` or `>`.
-- **vidIQ.** Keywords pulled 2026-10-13 (table above; the debt rows shared with 10a). 6 titles scored against this channel: the pick (the write-up's own title) 96, tied with three others. Channel 53 subscribers / 10,221 views / 41 videos; Instagram owner insights refreshed (8 followers, 20,519 views in 30 days).
-- **vidIQ re-queried** after the build: the pick's title score 96, as first scored.
+- **vidIQ.** Keywords pulled 2026-10-13 (table above; the debt rows shared with 10a). 7 titles scored against this channel (6 at the first build, option 3 with the description's hashtags at the adversarial check): the pick (the write-up's own title) 96, tied with four others. Channel 53 subscribers / 10,221 views / 41 videos; Instagram owner insights refreshed (8 followers, 20,519 views in 30 days).
+- **vidIQ re-queried** after the build: the pick's title score 96, as first scored. At the adversarial check: the pick's title score 96; '40 trillion debt animated' 5,396 / 17.3 (snapshot 2026-09-20); the related video (`hJBvmGA6sZ0`) 1,222 views, its title as in the pick. All match.
+- **Changed at the adversarial check.**
+  - Option 3 used `#NationalDebt #USDebt #Debt`, which are not the description's hashtags, so the builder's check would have refused it if picked. The pick plus the description's three runs 101 characters, so option 3 is now 'Which Is Bigger: 40 Years of Your Pay or 1 Minute of New Debt? #NationalDebt #DebtClock #MoneyMath' (98 characters, scored 96); the old form moves to 'also scored'.
+  - Two title notes miscounted: option 2 is 74 characters (not 75), and the pick ties the top score of 7 titles now scored (was 'of the 6').
 - **Generator.** Unchanged. `MATH_SCRIPT` is the adapter `publishing/data/checks/10-cost-counter.py`, shared with 10a and 10c.
 - **Mutation test.** Breaks on scratch copies of this file all fail by name: a title that gives the verdict, 'fiscal 2026' in the description, a second rounding of the rate ('$78,201'), '≈ 33 seconds' with 'your working life' in place of median pay (the first version of that rule read whole lines and missed it in the one-line long alt text; it now looks 90 characters back), a reading moved beside the wrong date, and a result in the caption's first 125 characters. (20 of 20 across 10a-10c.)
 - **Kept on purpose.**
@@ -302,4 +305,5 @@ One weekday evening is the best Instagram slot and the second-best YouTube slot,
   - Every '≈ 33 seconds' names median pay: the counter eats the median's 40 years, not the viewer's; the flip point (≈ $117,000) and the swap-in rule answer 'your pay'.
   - '364 days', never a fiscal year: the 2026-09-30 reading could not be confirmed (the write-up's Review log, V4).
   - The public-debt answer ($2.09 trillion, ≈ $66,000 a second) sits in the pinned comment, as the write-up's TikTok reply, not in the description.
-- **Still to do.** An adversarial pass of this sheet; the ship rebuild (`--covers`) on the condensed file, re-reading the long alt text against it.
+- **Checked and kept.** Every figure in the copy against the 10b maths table and the check's output (the swap-in rule gives the median ≈ 33 seconds and the flip point ≈ $117,000, the same as the exact rate); the title (65/100), description (bytes), tags, hashtags, caption, first 125 characters and both alt texts against the platform limits; PrimeRates named only as the publisher of the Treasury readings, as 06b names its sources, and the board a generic counter; frame 1 (thumbnail) and frame 1065 (cover) read from the render.
+- **Still to do.** The ship rebuild (`--covers`) on the condensed file, re-reading the long alt text against it.
