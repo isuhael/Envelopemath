@@ -69,6 +69,10 @@
 //                             Default: on when the takeaway is asked (morph.ask), else off
 //   landAfter: s              every rung's count lands this long after its cut (coin drop, punch and fill keep their
 //                             proportions; the lead never goes under 0.4 s). Default: the kit's pacing (≈ 2.2 s on a 4 s gap)
+//   prefillPan: s             (opt-in) with a pre-filled first rung, the camera's pan from the centred frame-1 group back to
+//                             his usual spot runs from frame 1 over s seconds (ease-out), not with the next cut's push-in:
+//                             the answered frame-1 picture moves from frame 2 instead of holding still until the cut.
+//                             Frame 1 is unchanged. Absent: the pan runs with the push-in (the default, as before)
 //   beats: [{ t, act, d }]    scripted reactions: a POSES name ('cheer' = celebrate) at t, back to idle after d s
 //                             (default 1.2; d: null holds it)
 //
@@ -1027,7 +1031,11 @@ export default function unitLadder(spec, ctx) {
     const left = FXS + (x0w - XF) * z0, right = FXS + (R[0].px + R[0].W - XF) * z0
     pan0 = Math.max(0, Math.min(540 - (left + right) / 2, XR - right))
   }
-  const panAt = t => (!pan0 ? 0 : N < 2 ? pan0 : pan0 * (1 - E.inOut(prog(t, R[1].push[0], R[1].push[1]))))
+  // lookOpts.prefillPan (opt-in): that pan back runs from frame 1 over prefillPan s (ease-out: moving from frame 2,
+  // settling as it ends) instead of with the next cut's push-in, so the answered frame-1 picture is never held still.
+  // Frame 1 is unchanged; absent, the pan runs with the push-in as before
+  const PP = pan0 && N >= 2 && Number.isFinite(+lo.prefillPan) && +lo.prefillPan > 0 ? +lo.prefillPan : null
+  const panAt = t => (!pan0 ? 0 : N < 2 ? pan0 : PP ? pan0 * (1 - E.outQuad(prog(t, 0, PP))) : pan0 * (1 - E.inOut(prog(t, R[1].push[0], R[1].push[1]))))
     + (beside && beside.k < 1 ? (beside.S - FXS) * (1 - besideCam(t)) : 0)
 
   // ================================================================== seek
