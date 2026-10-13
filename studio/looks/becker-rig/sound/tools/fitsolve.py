@@ -1,7 +1,8 @@
 # Refit balance.mjs's MODEL, step 2 of 2: least squares on the lines fit.mjs printed (trim 0).
 #   mix power = (1 + a)·M + b·Upred        -> a, b      (the master-gain prediction, on the plan's own U: the value
 #                                                         musicTrim feeds it, so the plan's render carries no bias in)
-#   M = C + cost + tiltUp·max(0, tilt) + tiltDn·max(0, -tilt)
+#   M = C + cost + tiltUp·max(0, tilt) + tiltDn·max(0, -tilt) + land
+#                                           (land: the band's loss to the landing yield, LAND, which the plan adds itself)
 #                                           -> C, tiltUp, tiltDn (the music stem before the trim)
 #   iBias = mean(I - Ipred)                 (the engine's SFX stem vs the plan's render of it: the merges' loss)
 # usage (from studio/): python3 looks/becker-rig/sound/tools/fitsolve.py /tmp/fit.jsonl   (needs numpy)
@@ -15,7 +16,7 @@ coef, res, rk, sv = np.linalg.lstsq(A, mix, rcond=None)
 print('1+a=%.3f b=%.3f' % tuple(coef), '-> MODEL.a = %.3f, MODEL.b = %.3f' % (coef[0] - 1, coef[1]))
 pred = A @ coef
 print('fit err dB', np.round(10 * np.log10(pred / mix), 2))
-y = np.array([r['M'] - r['cost'] for r in rows]); t = np.array([max(0, r['tilt']) for r in rows]); tn = np.array([max(0, -r['tilt']) for r in rows])
+y = np.array([r['M'] - r['cost'] - r.get('land', 0) for r in rows]); t = np.array([max(0, r['tilt']) for r in rows]); tn = np.array([max(0, -r['tilt']) for r in rows])
 X = np.vstack([np.ones_like(t), t, tn]).T
 c2 = np.linalg.lstsq(X, y, rcond=None)[0]
 # The tilt terms are lifts (a dull tilt lifts the presence voices, the bass and the pad; a bright one the toys): neither

@@ -8,15 +8,15 @@
 // layers never share draws.
 import * as T from '../../../src/sound/theory.mjs'
 import { ARP_CUT, instruments } from './instruments.mjs'
-import { LOGO_AT, LOGO_K } from './logo.mjs'
+import { LOGO_AT, LOGO_K, gainEst, logoPlan, payoffEst, payoffNeed } from './logo.mjs'
 import * as Dsp from '../../../src/sound/dsp.mjs'
 import { voiceLead } from './voicing.mjs'
-import { planFor, rawSfx, cueCtx, clearFor, bedSec, resetSolves, setLevers, bandCues } from './sfx.mjs'
-import { energyCurve, setCurve, withOpening, shortBuild, setBuildExtra, buildExtra, hookEase, b7Halves, B7_MARGIN, SHORT_BUILD } from './energy.mjs'
+import { planFor, rawSfx, cueCtx, clearFor, bedSec, resetSolves, setLevers, bandCues, resetBodyPower } from './sfx.mjs'
+import { energyCurve, setCurve, withOpening, shortBuild, setBuildExtra, buildExtra, hookEase, b7Halves, B7_MARGIN, SHORT_BUILD, RANGE, rangeLift, setRangeLift, evalDb } from './energy.mjs'
 import { prepareBed, stabBudget, selAutomation, GIVE_WAY, eventRenderer, renderSpan } from './clearance.mjs'
-import { model as bandModel, guard, leverLoudness, leverDmMax, keepModel, AIR, isPayAir, dryBlocks } from './bands.mjs'
+import { model as bandModel, guard, leverLoudness, leverDmMax, keepModel, AIR, isPayAir, dryBlocks, payoffBurst, rangeEst, mixBlocks, airShelves } from './bands.mjs'
 import { kfilter, cueTrim, resetPlan, LIFT_MAX } from './balance.mjs'
-import { CAL } from './cal.mjs'
+import { CAL, acceptance } from './cal.mjs'
 
 const EPS = 1e-6
 const W = { tick: 0.5, type: 0.5, pop: 0.5, swipe: 0.5, whoosh: 0.5, step: 0.5, thud: 1, ding: 1, buzz: 1, boing: 1, cash: 1.5, hit: 2, reveal: 2, roll: 2, riser: 0 }
@@ -637,15 +637,28 @@ export function compose(tl) {
       for (const n of anchorStabs) n.vel = n.vel0 * stabBudget(tl, n.t, trimOf)
     }
     if (lv.b808 || lv.mid || lv.dM > 0.01) { resetSolves(tl); res = clearFor(tl); dip808(res) }
+    keepModel(tl, bm)
+    // the hit at P's level (payoffLevel): up by the least that keeps B8's room over the sting, down by the least that
+    // keeps the master limiter's predicted burst under its share of the file (PAY_BURST)
+    resetBodyPower(tl)
+    lv.payHit = payoffLevel(tl, bm, lv)
+    resetBodyPower(tl)
+    // the hit's level moves its crash layer's air: the shelves follow it (bands.mjs airShelves)
+    if (lv.payHit) airShelves(bm, lv)
+    if (pass + 1 >= SHORT_BUILD.passes) break
+    let again = false
     // a short BUILD: the climb B7 still needs on this pass's music.dry (each pass adds what the last one's dips and
     // levers took back), at most SHORT_BUILD.passes passes and maxExtraDb in all
-    if (pass + 1 >= SHORT_BUILD.passes || !shortBuild(tl)) break
-    const x0 = buildExtra(tl), y0 = hookEase(tl), d = buildClimb(tl, dryBlocks(bm, lv), x0, y0)
-    if (!(d.dx > 0.05 || d.dy > 0.05)) break
-    setBuildExtra(tl, +(x0 + d.dx).toFixed(2), +(y0 + d.dy).toFixed(2))
+    if (shortBuild(tl)) {
+      const x0 = buildExtra(tl), y0 = hookEase(tl), d = buildClimb(tl, dryBlocks(bm, lv), x0, y0)
+      if (d.dx > 0.05 || d.dy > 0.05) { setBuildExtra(tl, +(x0 + d.dx).toFixed(2), +(y0 + d.dy).toFixed(2)); again = true }
+    }
+    // the payoff's range (energy.mjs RANGE): the DROP's lift the predicted loudness range still needs
+    const rx = rangeLift(tl), dr = rangeClimb(tl, bm, lv)
+    if (Math.abs(dr) >= RANGE.step) { setRangeLift(tl, +Math.min(RANGE.maxDb, Math.max(0, rx + dr)).toFixed(2)); again = again || Math.abs(rangeLift(tl) - rx) >= RANGE.step }
+    if (!again) break
     resetPlan(tl); resetSolves(tl); setLevers(tl, null)
   }
-  keepModel(tl, bm)
   // the air shelves: the P stack's (pay16: the music's crash and reverse crash at P; sfx.mjs takes the same shelf on a
   // hit's crash layer at P) and the body's (air16: the hats, crashes and reverse crashes elsewhere)
   for (const d of ddOut) {
@@ -724,6 +737,82 @@ function cardPreroll(tl) {
   const ev = { t: m.L, inst: 'logoSwell', vel, len: m.swell.dur, tau: 0.25 }
   const b = instruments.logoSwell(ev, { tl, ev, k: 0 })
   return b ? [{ e: ev, buf: Dsp.toStereo(b.L ? { L: Float32Array.from(b.L), R: Float32Array.from(b.R), offset: b.offset } : Float32Array.from(b), 0) }] : []
+}
+
+/**
+ * The hit at P's level (lv.payHit, dB), between two of the payoff's checks:
+ *   B8's room (PAY_ROOM): B8 wants the sting at >= -13 LUFS and under the payoff's own reading, and logo.mjs keeps
+ *     B8_MARGIN plus the estimates' spread inside both edges, which needs the payoff to read at least the two margins
+ *     over the floor (logo.mjs payoffNeed). A louder DROP (the range lift) masters lower, and the payoff's frame, which
+ *     the hit and the react stab own under the payoff duck, sinks with the master gain: 09c with a 1.8 dB lift estimated
+ *     -12.1 LUFS, 0.6 dB short. The hit comes up by the least that restores the room, at most PAY_ROOM.maxDb, so the
+ *     payoff stays the biggest moment (the fader's own rule for the payoff cluster, balance.mjs cueTrim);
+ *   the limiter budget (PAY_BURST): A11 counts the samples the master limiter takes more than 1 dB from, over the whole
+ *     file, and the payoff's burst (the hit, the kick and the 808 at P, the stab and the halls blooming) is a fixed
+ *     ~0.1-0.5 s event that a short file cannot dilute: 08a on its fresh record (a 13.9 s body, its cues cut by the
+ *     fader's full 8 dB, the hit at P only 2) measured 3.1% of 16.4 s, the gate 3%. The band model's payoff window
+ *     predicts the burst (bands.mjs payoffBurst: the SFX bus compressor, the master's filters, its gain estimate, its
+ *     limiter); while it passes PAY_BURST.pct of the file (half A11's gate), first the hit's own hall comes down
+ *     (lv.payHall, in steps of hallStep to hallDb under the payoff's hall budget, sfx.mjs PAY_SEND_DB: the hall is not
+ *     the SFX stem, so B1 keeps its balance), then the hit, a step at a time to PAY_BURST.maxDb: the hit is what drives
+ *     the limiter there (a dB off it shortens 08a's burst by a quarter), and in a teaser whose fader cut its body cues it
+ *     still stands over them. 08a: the hall 6 dB down, the hit 1.8 dB.
+ * The budget has the last word: A11 is the harder gate, and logo.mjs keeps B8's floor first when the window is narrow.
+ */
+export const PAY_BURST = { pct: 1.5, hallDb: -6, hallStep: 0.5, maxDb: -3, step: 0.1 }
+export const PAY_ROOM = { maxDb: 2 }
+function payoffLevel(tl, bm, lv) {
+  if (!tl.cues.some(c => c.kind === 'hit' && !c.inCard && Math.abs(c.t - tl.anchors.P.t) <= 0.015)) return 0
+  const budget = PAY_BURST.pct / 100 * (tl.duration ?? tl.base), step = PAY_BURST.step
+  // lv is the teaser's levers (setLevers): the master gain and the payoff estimates read them, the hit's level among them
+  const set = x => { lv.payHit = x; resetBodyPower(tl) }
+  const burst = x => { set(x); return payoffBurst(bm, lv, { gainDb: gainEst(tl) }).s }
+  const room = x => { set(x); const mP = payoffEst(tl); return mP == null ? 0 : mP - payoffNeed() }
+  let x = 0
+  lv.payHall = 0
+  while (room(x) < 0 && x + step <= PAY_ROOM.maxDb + 1e-9) x = +(x + step).toFixed(2)
+  // the budget: first the hit's own hall (it is not the SFX stem, so B1 keeps its balance), then the hit
+  while (burst(x) > budget && lv.payHall - PAY_BURST.hallStep >= PAY_BURST.hallDb - 1e-9) lv.payHall = +(lv.payHall - PAY_BURST.hallStep).toFixed(2)
+  while (burst(x) > budget && x - step >= PAY_BURST.maxDb - 1e-9) x = +(x - step).toFixed(2)
+  set(x)
+  return x
+}
+/**
+ * The payoff's range (energy.mjs RANGE): the extra DROP lift (dB, on top of the current one) that brings the predicted
+ * loudness range to its aim, or less (a negative step) when the current lift overshoots it by more than a step; 0 when
+ * the range is there already. The prediction moves the glued body by the curve's difference and the master gain by
+ * the body's integrated loudness change (a louder DROP masters lower); the next pass renders the plan, the clearance and
+ * the band model with the new curve and checks it again.
+ */
+function rangeClimb(tl, bm, lv) {
+  const R = CAL.RANGE
+  if (!R || !R.card) return 0
+  const floor = (acceptance().checks?.A3?.looks?.scoreboard || {}).min ?? 4
+  const aim = floor + RANGE.margin + RANGE.k * (R.sd ?? 0.2)
+  const x0 = rangeLift(tl), base0 = energyCurve(tl, { range: x0 })
+  const G0 = gainEst(tl), sting = logoPlan(tl).aim
+  const intOf = e => { const b = []; for (let h = 3; h < e.length; h++) b.push((e[h] + e[h - 1] + e[h - 2] + e[h - 3]) / 4); const LU = z => -0.691 + 10 * Math.log10(z); const a = b.filter(z => LU(z) > -70), m = a.reduce((p, q) => p + q, 0) / a.length; const r = a.filter(z => LU(z) > LU(m) - 10); return LU(r.reduce((p, q) => p + q, 0) / r.length) }
+  const I0 = intOf(mixBlocks(bm, lv))
+  const est = x => {
+    if (Math.abs(x - x0) < 1e-6) return rangeEst(bm, lv, { gainDb: G0, sting, durationS: tl.duration })
+    const c = energyCurve(tl, { range: x }), liftAt = t => evalDb(c, t) - evalDb(base0, t)
+    const dI = intOf(mixBlocks(bm, lv, liftAt)) - I0
+    return rangeEst(bm, lv, { liftAt, gainDb: G0 - dI, sting, durationS: tl.duration })
+  }
+  const r0 = est(x0)
+  if (r0 == null) return 0
+  if (r0 >= aim) {
+    // the lift a former pass set may now be more than the aim needs: give back what it does not
+    if (x0 <= 0) return 0
+    let a = 0, b = x0
+    if (est(0) < aim) { for (let k = 0; k < 12; k++) { const m = (a + b) / 2; if (est(m) >= aim) b = m; else a = m } }
+    else b = 0
+    return b - x0 <= -RANGE.step ? b - x0 : 0
+  }
+  if (est(RANGE.maxDb) < aim) return RANGE.maxDb - x0
+  let a = x0, b = RANGE.maxDb
+  for (let k = 0; k < 12; k++) { const m = (a + b) / 2; if (est(m) >= aim) b = m; else a = m }
+  return b - x0
 }
 
 /**

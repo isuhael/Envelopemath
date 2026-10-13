@@ -113,6 +113,31 @@ export const ring = tl => Math.max(RING.min, Math.min(1, (tl.base || RING.ref) /
  *  ring (the TENSION walk's octave pump, compose.mjs; the crowding reference, balance.mjs CROWD) scale with it, so a
  *  teaser of RING.ref s or more sounds as shipped */
 export const shortness = base => Math.max(0, Math.min(1, (RING.ref - (base || RING.ref)) / (RING.ref / 2)))
+/** the payoff stack's make-up (2026-10-13, the condensed 07b-10b), one answer for compose.mjs, balance.mjs and the
+ *  renderers. `hit`: a body hit marks P (within 15 ms). `bell`: only a ding or a pop does (the verdict rule without a hit,
+ *  bible §2.2); the band leaves it its first 50 ms (no "ka" on P, compose.mjs, as before this rule). `ding`: a bell payoff with a
+ *  ding in it (08b's verdict ding): the ding is sized as the payoff's impact (BELL_P), so the band's timpani and clap yield
+ *  to it as well and the card stays under it (balance.mjs). A pop alone is a `bell` but not a `ding`: it is not resized,
+ *  so it keeps the band's timpani and clap under it (no Becker teaser has one today) */
+export function payoffStack(tl) {
+  if (tl._beckerStack) return tl._beckerStack
+  const P = tl.anchors.P.t, at = c => !c.inCard && Math.abs(c.t - P) <= 0.015
+  const hit = tl.cues.some(c => at(c) && c.kind === 'hit')
+  const bell = !hit && tl.cues.some(c => at(c) && (c.kind === 'ding' || c.kind === 'pop'))
+  return (tl._beckerStack = { hit, bell, ding: bell && tl.cues.some(c => at(c) && c.kind === 'ding') })
+}
+/** the bell payoff (BELL_P, 2026-10-13): a payoff marked by a bell alone has no impact under it, so the bell is the
+ *  payoff's impact. It takes its size from its onset, not its ring: it sounds at `peak` dBFS (most of its U3 allowance:
+ *  the §7 ding peak -10 + 1, like the tick and the whoosh) and rings in the energy the ring budget gives a body bell (τ
+ *  shortened until the rendered bell's energy matches), so the 2 kHz octave it owns grows no more than any other bell's.
+ *  See compose.mjs (the band leaves it its first 50 ms) and balance.mjs (the card stays under it) */
+export const BELL_P = { peak: -9.2 }
+/** the payoff hit's onset ramp (s): longer than two of the AAC encoder's short blocks (2 x 128 samples, 5.3 ms) */
+export const PAYOFF_ONSET = 0.006
+/** the landing crowding (LAND, 2026-10-13): set by balance.mjs balancePlan on tl.beckerLand when the cues' 125 Hz or
+ *  63 Hz octave crowds the body ({ ring, bassDb, excess, Ishift }); the body hits' punch rings τ x ring (levelled with
+ *  its full ring) */
+export const landOf = tl => (tl && tl.beckerLand) || null
 
 // ---------------------------------------------------------------- the kinds
 const kinds = {
@@ -224,8 +249,12 @@ const kinds = {
     const n = sec(big ? 1.6 : 0.6)
     const m = cue.inCard ? 38 : big ? T.rootIn(ctx.chord, 38, 45) : (lowPitches(ctx.tl, 'hit').get(cue.i) ?? T.rootIn(ctx.chord, 38, 45))
     const f = mtof(m), tg = 0.03 / 3
-    const punch = osc('sine', n, i => f * Math.pow(4, Math.exp(-i / (tg * SR))))
-    env(punch, expEnv(n, 0.16 * (1 + 0.05 * r.bi()), 0.0008)); saturate(punch, 2.0); dcBlock(punch, 25); unit(punch)
+    const punchOf = tau => { const p = osc('sine', n, i => f * Math.pow(4, Math.exp(-i / (tg * SR)))); env(p, expEnv(n, tau, 0.0008)); saturate(p, 2.0); dcBlock(p, 25); return unit(p) }
+    const ptau = 0.16 * (1 + 0.05 * r.bi()), punch = punchOf(ptau)
+    // (a body whose landings crowd the 125 Hz octave, LAND: the punch rings shorter, levelled with its full ring, so the
+    // hit keeps its attack and its peak and sheds only the boom's long-term energy)
+    const land = !ctx.atP && !cue.inCard ? landOf(ctx.tl) : null
+    const punchL = land && land.ring < 1 ? punchOf(ptau * land.ring) : null
     const nz = noise(sec(0.003), r); for (let i = 0; i < nz.length; i++) nz[i] *= 1 - i / nz.length
     const ck = tick0(r, 1, { hp: 1500 })
     const tr = mono(Math.max(nz.length, ck.length) + sec(0.004)); for (let i = 0; i < tr.length; i++) tr[i] = (nz[i] || 0) + 0.8 * (ck[i] || 0)
@@ -243,7 +272,7 @@ const kinds = {
       // 3 dB down, the AAC decode went over the PLR limit there and the encode loop's local dips took 0.6-2.6 dB more off
       // the payoff's first 50 ms, i.e. off B8's payoff window. With the punch at 0.3 the hit, levelled by its peak, keeps
       // more slap and crash for the same peak
-      { buf: punch, body: true, gain: ctx.atP ? 0.3 : big ? 0.8 : 1 },
+      punchL ? { buf: punchL, norm: punch, body: true, gain: big ? 0.8 : 1 } : { buf: punch, body: true, gain: ctx.atP ? 0.3 : big ? 0.8 : 1 },
       // the burst marks the onset; kept low (-9 dB, none in the card) so the hit's first millisecond is not a lone spike
       // for the limiter to shave and the AAC encoder to overshoot (A5 on the decoded file)
       { buf: tr, gain: dbToGain(-9), transient: true, skip: cue.inCard },
@@ -285,7 +314,22 @@ const kinds = {
     }
     // the whole impact through a soft clip (tanh 1.5 at its own peak): about 3.5 dB less crest, so the same weight in
     // the ear sits 2.5-3 dB lower in peak, and the master limiter is not left to flatten every payoff
-    return fatten(outLayers(parts, n, ctx.atP ? -8 : -7.5, ctx, meta), HIT_DRIVE)
+    const b = fatten(outLayers(parts, n, ctx.atP ? -8 : -7.5, ctx, meta), HIT_DRIVE)
+    // the payoff hit's onset (PAYOFF_ONSET, 2026-10-13): at P the band strikes and the hit's transient is left out, so its
+    // layers (punch, smack, crash) started as a step out of the TENSION's silent 8th, at the master's ceiling. The AAC
+    // encoder overshoots such a step by 0.3-1.8 dB (07c 1.75, 03a 1.8, 10b 1.4), and the encode loop then dips the
+    // payoff itself (07c: 3.65 dB, its limiter at 5.9 dB, A11, and B8's payoff window with it). The layers now enter on
+    // a raised-cosine ramp longer than two of the encoder's short blocks (128 samples): no step inside one block
+    // (loudness-neutral: the ramp sheds the step, not the hit, so the hit is scaled back to its energy over B3's and the
+    // leveller's first 400 ms, which the ramp's 6 ms cost about 0.2 dB; its peak stays under the step's)
+    if (ctx.atP && !cue.inCard && PAYOFF_ONSET > 0) {
+      const a = sec(PAYOFF_ONSET), w = Math.min(b.L.length, sec(0.4)), e = () => { let s = 0; for (let i = 0; i < w; i++) s += b.L[i] * b.L[i] + b.R[i] * b.R[i]; return s }
+      const e0 = e()
+      for (let i = 0; i < a && i < b.L.length; i++) { const g = 0.5 - 0.5 * Math.cos(Math.PI * i / a); b.L[i] *= g; b.R[i] *= g }
+      const k = Math.sqrt(e0 / Math.max(1e-30, e()))
+      for (let i = 0; i < b.L.length; i++) { b.L[i] *= k; b.R[i] *= k }
+    }
+    return b
   },
 
   /** ding (the verdict, a result): a BR-Glock note on the chord's 3rd (MIDI 86-93, or the nearest octave), then its 5th
@@ -305,14 +349,29 @@ const kinds = {
     else if (ctx.atP) meta.duck = duckFor(cue, 10, 0.15, 0.3)
     // (the bell rings τ x ring(tl): RING above)
     const rg = cue.inCard ? 1 : ring(ctx.tl)
-    const n1 = glockNote(a + r.bi() * 0.03, 0.85 * rg, 1.0), n2 = glockNote(b + r.bi() * 0.03, 0.85 * rg, 0.94)
-    // a body bell also steps back by the ring (its level and its hall send, 10·log10(ring) dB); the payoff's bell half as
-    // far (5·log10(ring) dB): it is still the payoff's bell, sized against the card (B8), but at full level 02a's single
-    // P ding (F#6 + A6, 7.8 s body) owned the 2 kHz octave on its own (-1.7 dB re the mix's 1 kHz, the octave at 0.0)
-    const lv = (ctx.atP ? 5 : 10) * Math.log10(rg)
+    // a body bell also steps back by the ring (its level and its hall send, 10·log10(ring) dB), and so does a ding that
+    // shares P with a hit (2026-10-13, the P stack's make-up): the hit carries the payoff's size (B8). Until then the P
+    // ding stepped back half as far (5·log10(ring) dB), and 02a's single P ding (F#6 + A6, 7.8 s body), which owns its
+    // 2 kHz octave, left that octave 0.45 dB under its ceiling. A ding that marks P without a hit is the bell payoff
+    // (BELL_P, below), sized by its onset
+    const lv = 10 * Math.log10(rg)
+    const da = r.bi() * 0.03, db = r.bi() * 0.03
+    const partsAt = ts => [{ buf: unit(glockNote(a + da, 0.85 * ts, 1.0)), pan: -0.15 }, { buf: unit(glockNote(b + db, 0.85 * ts, 0.94)), pan: 0.15, at: 0.06, gain: 0.85 }]
     if (lv < 0) meta.sends = { hall: -11.5 + lv }
-    const parts = [{ buf: unit(n1), pan: -0.15 }, { buf: unit(n2), pan: 0.15, at: 0.06, gain: 0.85 }]
-    return outLayers(parts, sec(1.0), -10 + lv, ctx, meta)
+    // a bell payoff (BELL_P: no hit on P) takes its size from its onset, not its ring: it sounds at BELL_P.peak, and rings
+    // shorter by as much as keeps its energy that of a body bell (level and τ both by the ring above; matched on the
+    // rendered bell, since the glock's partials and its second note make level² x τ only approximate): louder in its
+    // first 150 ms (B3, B8), and no larger a share of the 2 kHz octave it owns than any other bell of the body
+    if (ctx.atP && !cue.inCard && payoffStack(ctx.tl).ding) {
+      const lb = 10 * Math.log10(rg)
+      if (lb < 0) meta.sends = { hall: -11.5 + lb }
+      const energy = (ts, pk) => { const x = outLayers(partsAt(ts), sec(1.0), pk, ctx, meta); let e = 0; for (let i = 0; i < x.L.length; i++) e += x.L[i] * x.L[i] + x.R[i] * x.R[i]; return e }
+      const E0 = energy(rg, -10 + lb)
+      let ts = rg * Math.pow(10, (-10 + lb - BELL_P.peak) / 10)
+      for (let k = 0; k < 3; k++) ts *= E0 / energy(ts, BELL_P.peak)
+      return outLayers(partsAt(ts), sec(1.0), BELL_P.peak, ctx, meta)
+    }
+    return outLayers(partsAt(rg), sec(1.0), -10 + lv, ctx, meta)
   },
 
   /** whoosh (a dash, a swing, a heave): noise BP 700 Hz -> 3.5 kHz -> 900 Hz, amplitude modulated at 28 Hz (depth 20%,

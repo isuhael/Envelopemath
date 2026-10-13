@@ -13,7 +13,7 @@ import * as D from '../../../src/sound/dsp.mjs'
 import { loudness } from '../../../src/sound/loudness.mjs'
 import { duckCurve, compress } from '../../../src/sound/fx.mjs'
 import { ltas } from '../../../src/sound/audit.mjs'
-import { raw, shortness } from './sfx.mjs'
+import { raw, shortness, payoffStack } from './sfx.mjs'
 import { mix } from './mix.mjs'
 
 /** pre-master gated loudness the SFX stem is pinned to (LUFS): the music stem sits near -24, so the SFX stem lands a
@@ -122,7 +122,11 @@ export function sfxLevels(tl, rendered = renderCues(tl)) {
   const Lc = tl.card ? tl.card.L : null
   const lead = Lc != null ? momAt(P + 0.2) - momAt(Lc + 0.2) : 0
   const capP = Math.max(0, Math.min(6, (lead - 4) * 1.2))
-  const cap = new Map(rendered.map(({ c }) => [c.i, SMALL.has(c.kind) ? 0 : c.t >= P - 0.3 && c.t <= P + 0.35 ? capP : AUDIBLE.has(c.kind) && c.gain >= 0.4 ? MAX_TRIM_AUDIBLE : MAX_TRIM]))
+  // (... except the payoff's cues B3 listens to, which keep their level (2026-10-13): B3 weighs each against the band's
+  // whole P strike, which plays at full velocity under the payoff duck, and riding them took their clearance with it:
+  // 10b's payoff hit and coin, ridden 1.4 dB, sat 3.3 and 3.7 dB over the band)
+  const audible = c => AUDIBLE.has(c.kind) && c.gain >= 0.4
+  const cap = new Map(rendered.map(({ c }) => [c.i, SMALL.has(c.kind) ? 0 : c.t >= P - 0.3 && c.t <= P + 0.35 ? (audible(c) ? 0 : capP) : audible(c) ? MAX_TRIM_AUDIBLE : MAX_TRIM]))
   const trimsAt = thr => { const t = new Map(); for (const [i, m] of local) { const d = Math.min(cap.get(i), Math.max(0, m - thr)); if (d > 0) t.set(i, -Math.round(d * 100) / 100) } return t }
   const IAt = thr => loudness(sumOf(tl, rendered, trimsAt(thr))).integrated
   let hi = Math.max(...local.values()), lo = hi - RANGE
@@ -148,7 +152,7 @@ export function sfxLevels(tl, rendered = renderCues(tl)) {
  * level; a, b, C, tiltUp, tiltDn and iBias fitted on the 15 teasers at trim 0, b against the plan's own U; refit after
  * any level change: tools/README.md). MODEL.fixedTrim (a calibration hook) overrides the trim.
  */
-export const MODEL = { C: -23.26, a: 0.102, b: 1.093, tiltUp: 0, tiltDn: 0.06, iBias: 0.02, dIS: 1.0, dISTilt: 0.8, dISTiltMax: 2.0, trimLo: -3, trimHi: 3, gRef: 5.7, cardMax: -0.75, fixedTrim: null }
+export const MODEL = { C: -23.28, a: 0.082, b: 1.096, tiltUp: 0, tiltDn: 0.04, iBias: -0.07, dIS: 1.0, dISTilt: 0.8, dISTiltMax: 2.0, trimLo: -3, trimHi: 3, gRef: 5.7, cardMax: -0.75, fixedTrim: null }
 export function duckCost(tl, rendered, trims = new Map()) {
   const N = Math.round(tl.base * SR), P = tl.anchors.P.t
   const DEF = { tick: [1, 0.04, 0.08], roll: [2.5, 0, 0.15], riser: [0, 0, 0] }
@@ -173,7 +177,7 @@ export function duckCost(tl, rendered, trims = new Map()) {
 /** the card's payoff cap (musicTrim, dense bodies): the logo's momentary at L + 0.2 s is card + master gain + CARD.logo
  *  LUFS; it stays CARD.gap dB under the payoff's SFX (pMom) and over CARD.floor LUFS (B8's -13 floor plus the 0.5 dB a
  *  gated check keeps; the gain prediction's error, sd 0.3 dB over the 15, comes out of it) */
-export const CARD = { logo: -17.7, gap: 0.5, floor: -12.5 }
+export const CARD = { logo: -17.7, gap: 0.5, floor: -12.5, min: -2.5, minDense: -1.5 }
 export function musicTrim(tl, rendered, lv, tilt, crowd = null) {
   const cost = duckCost(tl, rendered, lv.trims)
   const { C, a, b, tiltUp, tiltDn, dIS, dISTilt, dISTiltMax, trimLo, trimHi } = MODEL
@@ -183,14 +187,19 @@ export function musicTrim(tl, rendered, lv, tilt, crowd = null) {
   // spectrum (§9.2). The tilt only sees the slope between the cues' 1 and 2 kHz octaves; cues that ring in both (dings
   // on F#6 and D6, coins) read as level, yet own the 1 kHz octave that every §9.2 band is measured against. So the
   // nearness also reads that octave directly (CROWD, below): the larger of the two terms, capped at the same 2 dB
-  // (iBias: the engine's SFX stem against this plan's render of it, fitted on the delivered render: +0.02 LU, sd 0.10,
-  // since the plan renders the cues as the engine does, the card's trim and the ring budget included, 2026-10-13)
-  const M = lv.I + MODEL.iBias - dIS + nearness(tilt, crowd, crowdRef(tl.base))
+  // (iBias: the engine's SFX stem against this plan's render of it, fitted on the delivered render: -0.07 LU, sd 0.04 on
+  // the records of the second condensed batch (+0.02, sd 0.10 on the first), since the plan renders the cues as the
+  // engine does, the card's trim and the ring budget included, 2026-10-13. Under the landing crowding (LAND) the band is
+  // set against the cues as written: + land.Ishift)
+  const M = lv.I + (lv.land ? lv.land.Ishift : 0) + MODEL.iBias - dIS + nearness(tilt, crowd, crowdRef(tl.base))
   let trim = Math.max(trimLo, Math.min(trimHi, Math.round((M - Mfree) * 100) / 100))
   if (MODEL.fixedTrim != null) trim = MODEL.fixedTrim
   // the master gain this teaser will get (-14 LUFS minus the predicted pre-master loudness): the card (its SFX and the
   // logo) is trimmed against it, so the em sting lands at the same loudness after mastering in every teaser (B8)
-  const Mp = Mfree + trim
+  // (the bass's landing yield, LAND, is not paid back: the band gives way by the bass's share, LAND.bassShare of its power,
+  // and the gain prediction knows it, so the card is trimmed against the master gain the quieter band will get, B8)
+  const landDb = lv.land ? 10 * Math.log10(1 + LAND.bassShare * (Math.pow(10, lv.land.bassDb / 10) - 1)) : 0
+  const Mp = Mfree + trim + landDb
   const mixPre = 10 * Math.log10((1 + a) * Math.pow(10, Mp / 10) + b * Math.pow(10, lv.U / 10))
   const gain = -14 - mixPre
   // (the card is trimmed at least -cardMax dB, 2026-10-13. A card lifted for a low master gain, i.e. a dense body, stood
@@ -198,7 +207,13 @@ export function musicTrim(tl, rendered, lv, tilt, crowd = null) {
   // 0.25 dB under it in the master, and the encoder's dips at the payoff's transient took 0.65 dB more off the payoff in
   // the delivery. -0.75 is the middle of B8's window on the two edge cases of the look: 05b's quietest payoff and 04b's
   // logo nearest the -13 LUFS floor; only teasers with a predicted gain under gRef + 0.75 are moved)
-  let card = Math.max(-1.5, Math.min(MODEL.cardMax ?? 0, Math.round((MODEL.gRef - gain) * 100) / 100))
+  // (the card's trim reaches CARD.min (-2.5) since 2026-10-13; it stopped at CARD.minDense (-1.5), which left the logo of
+  // a quiet body, one whose predicted master gain is over gRef + 1.5 = 7.2 dB, that much over the look's nominal -12.0
+  // LUFS: 07c's sting, 0.6-1.1 dB over it, sat on its payoff, B8. -2.5 brings a body up to 8.2 dB of predicted gain to
+  // the nominal; the quietest body of the look (02a, 9.0 dB predicted) lands 0.8 dB over it. A dense body keeps the
+  // -1.5: its card is set by the payoff it must stay under (the dense cap below), and lower its logo only lost the
+  // margin to CARD.floor that the cap leaves it (04b's logo lands 0.33 dB under the CARD.logo line))
+  let card = Math.max(lv.dense ? CARD.minDense : CARD.min, Math.min(MODEL.cardMax ?? 0, Math.round((MODEL.gRef - gain) * 100) / 100))
   // ... and in a dense body the sting stays CARD.gap dB under the payoff's own cues (2026-10-13). A dense body is one the
   // leveller could not bring down to SFX_TARGET (its caps protect the cues B3 listens to): there the payoff stands only
   // a little over the body, so after the master it is the quietest payoff of the look (05b: 1.4 dB over B8's -13 floor),
@@ -206,7 +221,10 @@ export function musicTrim(tl, rendered, lv, tilt, crowd = null) {
   // payoff window) to 0.1 dB (lv.pMom), and the band only adds to it, so a logo levelled CARD.gap under that never tops
   // the payoff; the logo lands at card + gain + CARD.logo LUFS momentary (measured on the 15 teasers: -17.7 ± 0.12), and
   // it is never pulled under CARD.floor LUFS (B8's -13 floor, with room for the gain's prediction error)
-  if (lv.dense && lv.pMom != null && Number.isFinite(lv.pMom)) {
+  // (a bell payoff, BELL_P (a ding marks P without a hit: sfx.mjs payoffStack .ding), is held the same way since
+  // 2026-10-13: with no impact under it, 08b's verdict ding was the quietest payoff of the look, and its logo sat 0.6 dB
+  // over it, B8)
+  if ((lv.dense || lv.bell) && lv.pMom != null && Number.isFinite(lv.pMom)) {
     const capP = lv.pMom - CARD.logo - CARD.gap, floor = CARD.floor - gain - CARD.logo
     card = Math.round(Math.max(floor, Math.min(card, capP)) * 100) / 100
   }
@@ -258,21 +276,81 @@ export function sfxTilt(tl, rendered, trims) {
   // bright SFX pull harder (0.3 dB per dB, to -3.5): a teaser of bloops and swishes is the one the 2 kHz octave runs over
   const t = x > TILT_REF ? Math.max(-3.5, -0.3 * (x - TILT_REF)) : Math.min(2.5, -0.2 * (x - TILT_REF))
   // l1k: the 1 kHz octave's long-term power (the CROWD measure reads it against the gated loudness I); l125: the 125 Hz
-  // octave's (compose.mjs LOW reads it against l1k: the cues' landings against their bells)
-  const b125 = band(88, 177)
-  return { x: Math.round(x * 10) / 10, tilt: Math.round(t * 100) / 100, l1k: Math.round(10 * Math.log10(b1) * 100) / 100, l2k: Math.round(10 * Math.log10(b2) * 100) / 100, l8k: Math.round(10 * Math.log10(band(5657, 11314) + 1e-30) * 100) / 100, l125: b125 > 0 ? Math.round(10 * Math.log10(b125) * 100) / 100 : null }
+  // octave's (compose.mjs LOW reads it against l1k: the cues' landings against their bells; LAND, with l63, against I);
+  // l4k: the 4 kHz octave's (compose.mjs PRES reads it against l1k)
+  const b125 = band(88, 177), b63 = band(44, 88), b4 = band(2828, 5657)
+  return { x: Math.round(x * 10) / 10, tilt: Math.round(t * 100) / 100, l1k: Math.round(10 * Math.log10(b1) * 100) / 100, l2k: Math.round(10 * Math.log10(b2) * 100) / 100, l8k: Math.round(10 * Math.log10(band(5657, 11314) + 1e-30) * 100) / 100, l125: b125 > 0 ? Math.round(10 * Math.log10(b125) * 100) / 100 : null, l63: b63 > 0 ? Math.round(10 * Math.log10(b63) * 100) / 100 : null, l4k: b4 > 0 ? Math.round(10 * Math.log10(b4) * 100) / 100 : null }
 }
 
-/** the whole plan for a teaser: { trims (SFX per cue), thr, I0, I, payoffLift?, U, tilt: { x, tilt, l1k, l125 }, crowd, music: { cost, M, Mfree, trim, gain, card } } */
+/**
+ * The landing crowding (bible §9.2 125 Hz; 2026-10-13, 08b's condensed cut). The hits' punch (a sine diving onto the
+ * chord root in MIDI 38-45, τ 160 ms) lands in the 63 and 125 Hz octaves, and the music is set against the cues' gated
+ * loudness (musicTrim), so a body whose cues bring more boom per unit of loudness than the look's levels were set on
+ * reads high in those octaves whatever the band does: 08b's five coin and plate hits in a 12.85 s body (and its bass on
+ * top) read 8.7 dB in the 125 Hz octave, 1.7 over its ceiling. The crowding is the cues' long-term power in each of the
+ * two octaves over the body (the plan's SFX render with the leveller's trims) re their gated loudness I, the low twins of
+ * CROWD. On the 15 teasers (the cues as written, this pack) the 125 Hz octave reads 47.1 (10b) to 64.5 (08b), the next
+ * 61.7 (08c) and 60.4 (01b); the 63 Hz octave (the punches on D and B, 73 and 62 Hz) 42.2 (10b) to 63.8 (08c), the next
+ * 62.3 (07b) and 62.0 (05b). The excess is the larger of the two over its reference (LAND.ref 62 for 125 Hz, LAND.ref63
+ * 63 for 63 Hz), placed, as CROWD's was, just over the look's non-outliers: 08c's 125 Hz octave sits 0.33 under its
+ * reference, 07b's 63 Hz octave 0.74 under. The rule is continuous there (the ring's shortening and the bass's step both
+ * go to 0 with the excess), so a teaser that crosses a reference moves by as much as it crosses it, not by a step. Over
+ * it the excess sheds where it comes from: the body hits' punch rings
+ * τ x 10^(-excess / 10) (levelled with its full ring: the hit keeps its attack and peak; never under LAND.ringMin), and
+ * the bass, the band's own voice in both octaves, steps back LAND.k dB per dB. The trim does not pay the bass back (paid
+ * back, the whole band rose 1.1 dB with it and 08b's DROP backbeat went 5.0 dB into the limiter, A11): the band gives way
+ * by the bass's share of its power (LAND.bassShare: the bass costs 1.6-2.7 LU of the band on the 15 teasers, median
+ * 2.0 LU, i.e. 0.37 of its power) and the master-gain prediction counts that (musicTrim; tools/fit.mjs leaves it out of
+ * the music model). Designed, not fitted; it reads the cues as written, so the rule does not chase its own result. Moves
+ * 08b (125 Hz, excess 2.48: ring 0.57, bass -3.72 dB) and 08c (63 Hz, 0.75: ring 0.84, bass -1.12 dB).
+ * (Watch: the band's loss is assumed, not measured. On 08b the bass costs the band a little more than bassShare says:
+ * its music residual is -0.48 dB (-0.28 before this pass's rules, the look's sd 0.30), so its master gain lands 0.52 dB
+ * over the prediction (8.36 for 7.84). Its card sits at CARD.floor under the bell cap, so the logo lands that much
+ * louder, i.e. further over B8's floor; an exact prediction would pull it 0.5 dB nearer the floor, not further under the
+ * payoff. The band's level, not the prediction, sets the limiter: 08b's DROP backbeat goes 4.79 dB into it (A11; 4.50
+ * before this pass, 5.0 with the bass paid back), and its LRA came down to 3.59 (A3, floor 3). Re-measure both before
+ * moving LAND.k or bassShare)
+ */
+export const LAND = { ref: 62, ref63: 63, k: 1.5, ringMin: 0.3, bassShare: 0.37 }
+function landing(tl, rendered) {
+  const lv = sfxLevels(tl, rendered)
+  if (!Number.isFinite(lv.I)) return null
+  const t = sfxTilt(tl, rendered, lv.trims)
+  if (t.l125 == null || t.l63 == null) return null
+  const excess = Math.round(Math.max(t.l125 - lv.I - LAND.ref, t.l63 - lv.I - LAND.ref63) * 100) / 100
+  if (!(excess > 0)) return null
+  return { excess, ring: Math.round(Math.max(LAND.ringMin, Math.pow(10, -excess / 10)) * 1000) / 1000, bassDb: Math.round(-LAND.k * excess * 100) / 100, lv }
+}
+
+/** the whole plan for a teaser: { trims (SFX per cue), thr, I0, I, dense, payoffLift?, land (LAND or null), bell (BELL_P), U,
+ *  tilt: { x, tilt, l1k, l2k, l8k, l125, l63, l4k }, crowd, music: { cost, M, Mfree, trim, gain, card } } */
 export function balancePlan(tl) {
-  const rendered = renderCues(tl)
-  const s = sfxLevels(tl, rendered)
+  let rendered = renderCues(tl)
+  // the landing crowding (LAND, 2026-10-13): the cues' 63 and 125 Hz octaves over the body re their gated loudness,
+  // measured on the cues as written (the leveller's trims, before the card); over the reference the hits' punch rings
+  // shorter and the bass steps back (sfx.mjs hit, compose.mjs), and the plan renders the cues again as they will sound.
+  // The shorter punches shed boom, not the loudness the cues and the band answer each other with: the leveller's trims
+  // and the band's level are set on the cues as written, and the plan renders the landed cues for the rest (the master
+  // gain, the payoff, the tilt). Levelled again, the leveller lifted every cue back, the bells with it; followed down,
+  // the band took the reference octave with it: either way 08b's bells' 2 kHz octave rose 0.5-0.8 dB, BANDS
+  const land = landing(tl, rendered)
+  const s = land ? land.lv : sfxLevels(tl, rendered)
+  if (land) {
+    tl.beckerLand = land
+    rendered = renderCues(tl)
+    const I = loudness(sumOf(tl, rendered, s.trims)).integrated
+    land.Ishift = Number.isFinite(I) && Number.isFinite(s.I) ? Math.max(0, Math.round((s.I - I) * 100) / 100) : 0
+    s.I = I
+    delete land.lv
+  }
+  s.land = land
+  s.bell = payoffStack(tl).ding
   // the payoff keeps its height over a dense body (B8; 2026-10-13). When the leveller cannot bring the SFX stem down to
   // its target (its caps protect the cues B3 listens to: 05b's 38 cues in 11.45 s left it 0.8 dB over), the mix is that
   // much louder before the master, so the master gain comes down by it and takes the payoff with it (the payoff's cues
   // are never ridden). So the payoff's own cues (P - 0.3 .. P + 0.35 s, the window the leveller spares) stand up by that
   // excess, at most PAYOFF_LIFT dB; the music then follows the (slightly louder) stem as usual
-  const short = Number.isFinite(s.I) ? s.I - SFX_TARGET : 0
+  const short = Number.isFinite(s.I) ? s.I + (land ? land.Ishift : 0) - SFX_TARGET : 0
   s.dense = short > 0.05 && s.thr != null
   if (s.dense) {
     const P = tl.anchors.P.t, up = Math.round(Math.min(PAYOFF_LIFT, short) * 100) / 100

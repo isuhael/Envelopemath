@@ -10,6 +10,7 @@
 // second bar. After a DROP the half-time HOLD settles from -5 to -8 dB over its first bar (a release, not a cliff); a
 // DROP shorter than 2 bars leaves an afterglow until P + 2 bars. BREAK -4 (a held dominant, drums out), the VERDICT bar
 // -3, HOLD 2 back to -8 over its first 2 beats, the CADENCE at E3. A point every beat, 30 ms crossfades at bar lines.
+// A short body whose predicted loudness range falls short of A3's aim lifts its DROP (RANGE, below; compose.mjs).
 const E_DB = { 2: -7, 3: -6, 4: -3, 5: 0 }
 const HOLD_DB = -8
 /**
@@ -50,6 +51,34 @@ export const CRESC_DB = 2
 export const EARLY_P = { share: 0.1, dropDb: 2, breathDb: [-14, -17] }
 const ST_WIN = 3
 export const shortBuild = tl => { const b = tl.section('BUILD'); return !!(b && b.t1 - b.t0 < SHORT_BUILD.windows * ST_WIN - 1e-6) }
+/**
+ * RANGE (2026-10-13, the condensed cuts of 07a-10c): A3 reads the delivery's loudness range, the 95th minus the 10th
+ * percentile of its 3 s windows, and a short body has few windows past its payoff: 09c (a 12.8 s body, P at 9.52 s)
+ * measured LRA 4.00 on its fresh record, 07a and 08a 4.5-4.6. The loud tail is the windows that hold the DROP and its
+ * afterglow; the quiet one is the BUILD's E3 bars and the TENSION's start, which the opening (§4.7.1: no dip after the
+ * hook) and the short BUILD's climb (SHORT_BUILD) keep where they are. So, like an early payoff (EARLY_P), the range comes
+ * from the payoff on: compose() predicts the delivery's range (bands.mjs rangeEst: the body's blocks from the band model,
+ * the payoff window through the SFX bus compressor and the master limiter, the card from its measured template at the
+ * sting's level, CAL.RANGE) and, only when it falls short of the aim (A3's floor + RANGE.margin + RANGE.k x the model's
+ * spread, CAL.RANGE.sd: 4 + 0.5 + 1 x 0.17 = 4.67 LU), lifts the DROP from P through its afterglow (fading with it), by
+ * the least that reaches the aim, at most maxDb. One spread, not the band guard's three: the residual has no structure
+ * across the teasers with a BUILD (-0.1 to +0.3 LU, the model reads them low if anything), and 3 spreads lifted six
+ * teasers by 1-2 dB for ranges they had. What moves with the lift:
+ *   - the DROP's body cues ride it at their onset (sfx.mjs rangeCueDb), the hit at P apart (it has its own level,
+ *     compose.mjs payoffLevel): the DROP sits higher as a whole, and the SFX stem keeps its place in B1 (07a's SFX stem
+ *     read 0.31 LU inside B1's floor with the music lifted alone);
+ *   - the fader does not (sfx.mjs planFor plans on the bed without the lift, dMrange): a fader that raised every cue with
+ *     the music's added loudness fills the quiet windows the lift is there to stand out from (09c: a 2 dB lift moved its
+ *     cut from -5.4 to -2.7 dB and bought 0.2 LU of range instead of 0.8);
+ *   - the master gain estimate does (logo.mjs gainEst counts dMrange), so the sting keeps its level.
+ * The lift starts at P, not later, so the payoff's B8 frame (P + 0.2) rises with the DROP; the gap before P is silent, so
+ * the step is not heard. A louder DROP masters lower all the same, and compose.mjs payoffLevel keeps B8's room and the
+ * limiter's budget at the hit at P.
+ */
+export const RANGE = { margin: 0.5, k: 1, maxDb: 2, step: 0.05 }
+const RANGE_X = new WeakMap()
+export const setRangeLift = (tl, x) => RANGE_X.set(tl, x)
+export const rangeLift = tl => RANGE_X.get(tl) || 0
 export const earlyPayoff = tl => Math.max(0, tl.anchors.P.t - ST_WIN) < EARLY_P.share * Math.max(0, (tl.duration ?? tl.base) - ST_WIN)
 /** a short BUILD's extra crescendo (dB at its end; compose.mjs sets it from the B7 prediction, 0 before) */
 const BUILD_X = new WeakMap()
@@ -86,8 +115,9 @@ export function b7Halves(tl, blocks, x = 0, y = 0) {
   }
   return out
 }
-export function energyCurve(tl) {
+export function energyCurve(tl, { range = null } = {}) {
   const P = tl.anchors.P.t, build = tl.section('BUILD'), drop = tl.section('DROP')
+  const rx = range ?? rangeLift(tl), Pb = tl.anchors.P.beat
   const sb = shortBuild(tl), early = earlyPayoff(tl), xb = buildExtra(tl), yh = hookEase(tl), hook = tl.section('HOOK')
   const glowEnd = tl.timeAt(tl.anchors.P.beat + 8)
   const hold = tl.section('HOLD')
@@ -126,6 +156,14 @@ export function energyCurve(tl) {
     if (drop && t >= drop.t1 - 1e-6 && t < glowEnd && s.name !== 'CARD') {
       const k = (t - drop.t1) / Math.max(0.1, glowEnd - drop.t1)
       d = Math.max(d, -0.5 + (d + 0.5) * k)
+    }
+    // the range lift (RANGE): the DROP from P (the gap before it is silent, so the step is not heard), fading with its
+    // settle and its afterglow
+    if (rx && drop && s.name !== 'CARD' && (s.name === 'DROP' || (t >= drop.t1 - 1e-6 && t < glowEnd))) {
+      let w = 1
+      if (s.name === 'DROP' && shortHold && t >= tl.timeAt(Pb + 4) - 1e-6) w = 1 - Math.min(1, (t - tl.timeAt(Pb + 4)) / Math.max(0.1, s.t1 - tl.timeAt(Pb + 4)))
+      else if (s.name !== 'DROP') w = 1 - Math.min(1, (t - drop.t1) / Math.max(0.1, glowEnd - drop.t1))
+      d += rx * w
     }
     return d
   }
@@ -167,6 +205,15 @@ export function curveFor(tl) {
   return CURVES.get(tl)
 }
 export function setCurve(tl, pts) { CURVES.set(tl, pts) }
+/** the range lift's own part of the curve at t (dB, >= 0): the teaser's curve with its lift minus without it (RANGE) */
+const RANGE_AT = new WeakMap()
+export function rangeAt(tl, t) {
+  const x = rangeLift(tl)
+  if (!x) return 0
+  let c = RANGE_AT.get(tl)
+  if (!c || c.x !== x) { c = { x, on: energyCurve(tl, { range: x }), off: energyCurve(tl, { range: 0 }) }; RANGE_AT.set(tl, c) }
+  return evalDb(c.on, t) - evalDb(c.off, t)
+}
 /**
  * The opening lift (compose.mjs openingLift): `lift` dB on the music bus from 0.30 s (the frame-1 hit keeps its level) to
  * 3.0 s, back to 0 by 5.0 s; added to the curve's points, with the lift's own corners inserted.

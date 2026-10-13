@@ -31,7 +31,7 @@ import * as T from '../../../src/sound/theory.mjs'
 import { climb, deflateEnd } from './harmony.mjs'
 import { balancePlan, OWN, PAYOFF_OWN } from './balance.mjs'
 import { mix } from './mix.mjs'
-import { shortness } from './sfx.mjs'
+import { shortness, payoffStack } from './sfx.mjs'
 
 export const SWING = 0.58
 const W = { tick: 0.5, type: 0.5, pop: 0.5, swipe: 0.5, whoosh: 0.5, step: 0.5, thud: 1, ding: 1, buzz: 1, boing: 1, cash: 1.5, hit: 2, reveal: 2, roll: 2, riser: 0 }
@@ -424,19 +424,23 @@ export function compose(tl, rng) {
     const busy = t => tl.cues.some(c => AUD.has(c.kind) && c.gain >= 0.4 && Math.abs(c.t - P) > 0.002 && c.t > t - 0.05 && c.t < t + 0.02)
     const tTa = [2, 3, 4].map(k => tl.step(pBar, k, SWING)).find(t => !busy(t)) ?? tl.step(pBar, 4, SWING)
     const dur = tl.step(pBar, 7, SWING) - tTa - 0.02
-    // (a payoff marked by a ding or a pop, not a hit, keeps its first 50 ms: the "ka" is left out, the crash marks P)
-    const bellP = tl.cues.some(c => Math.abs(c.t - P) <= 0.015 && (c.kind === 'ding' || c.kind === 'pop')) && !tl.cues.some(c => Math.abs(c.t - P) <= 0.015 && c.kind === 'hit')
+    // (a payoff marked by a ding or a pop, not a hit, keeps its first 50 ms: the "ka" is left out, the crash marks P.
+    // Since 2026-10-13 a ding that marks P alone (BELL_P, 08b's verdict ding; sfx.mjs payoffStack .ding) has the timpani
+    // and the clap left out with it: B3 weighs the bell against the band's whole strike, and with no impact under it the
+    // bell sat 2.2 dB over the band's ducked timpani, kick, bass and backbeat. The kick, the bass, the snare and the
+    // crash still mark P (S6; B5's energy rise: without the snare the steepest rise came 12 ms late). A pop alone is not
+    // resized (no BELL_P onset), so it keeps the timpani and the clap under it)
+    const { bell: bellP, ding: dingP, hit: hitP } = payoffStack(tl)
     if (!bellP) for (const m of [62, 66, 69, 74]) note(P, bar16(P) * 0.9, m, 1.0, 'honkF', 'brass')
     for (const m of [62, 66, 69, 74, 78, 81, 86]) note(tTa, dur, m, 1.0, 'honkFR', 'brass', { bus: 'react' })
-    drum(P, 'timp', 1.0, { midi: 38 })
+    if (!dingP) drum(P, 'timp', 1.0, { midi: 38 })
     drum(P, 'crash', 0.9, { tau: 1.4 })
     // (the clap yields to a hit on P, 2026-10-13: the hit's 1.8 kHz smack is the clap's slap, and the two on the same
     // sample only stacked crest onto the payoff's transient. In the dense cuts the limiter then held the payoff at the
     // ceiling, the AAC decode went 0.9-1.5 dB over it, and the encode loop's dips there took up to 0.65 LU off the
     // payoff's momentary: 05b's payoff fell under its sting, B8. The snare stays: it marks P in the music stem, B5)
-    const hitP = tl.cues.some(c => c.kind === 'hit' && !c.inCard && Math.abs(c.t - P) <= 0.015)
     drum(P, 'snare', 1.0)
-    if (!hitP) drum(P, 'clap', 0.9)
+    if (!hitP && !dingP) drum(P, 'clap', 0.9)
     // the glock line over the DROP (A5 on P)
     for (const n of dropLine) note(n.t, n.dur, n.midi, n.vel + g('glock', 0.04), 'glock', 'glock', { pan: clamp(0.12 + (n.midi - 81) / 40, -0.1, 0.35) })
   }
@@ -529,11 +533,22 @@ export function compose(tl, rng) {
   // much as their bells carry the 1 kHz one, it is withheld: LOW.span dB of the cues' 125-over-1k octave takes it away)
   const tb = tl.becker.tilt, x125 = tb.l125 != null && tb.l1k != null ? tb.l125 - tb.l1k : -Infinity
   const lowYield = clamp(1 - x125 / LOW.span, 0, 1)
+  // (... and where the cues' landings crowd the 125 Hz octave (LAND, balance.mjs: the cues' 125 Hz octave over their
+  // gated loudness above its reference), the bass steps back besides: tl.becker.land.bassDb)
+  const landBass = tl.becker.land ? tl.becker.land.bassDb : 0
+  // (and the drums' dull presence lift yields to the cues' own presence octave (PRES, 2026-10-13): where the cues'
+  // 4 kHz octave stands within PRES.span of their 1 kHz octave, it already frames the 1 kHz octave from above, and the
+  // lifted snare and claps crowded 4 kHz: 03a's payoff crash and swipes left it 0.45 dB under its ceiling once the encoder
+  // stopped dipping its payoff. The brass keeps its lift: it is part of the 1 kHz octave the bands are read against; and
+  // so does the clap, which plays in the DROP only: yielded, it took the DROP's lift over the BUILD down with it, B7)
+  const x4k = tb.l4k != null && tb.l1k != null ? tb.l4k - tb.l1k : -Infinity
+  const presYield = clamp(1 - (x4k - PRES.lo) / PRES.span, 0, 1)
+  const DRUMS_P = new Set(['snare', 'ghost', 'roll'])
   const TOYS = { mallet: 1, glock: 1, pizz: 1 }
   for (const inst of new Set([...notes, ...dd].map(e => e.inst))) {
     const w = TILT[inst] || 0
-    const off = inst === 'bass' ? Math.max(0, tilt) * lowYield : inst === 'pad' ? Math.max(0, tilt) : inst === 'glock' && tilt > 0 ? -1.0 * tilt : TOYS[inst] ? 1.0 * Math.max(0, -tilt)
-      : w * (tilt > 0 ? (inst === 'shaker' || inst === 'tamb' ? 0 : 1.6) : 1) * tilt
+    const off = inst === 'bass' ? Math.max(0, tilt) * lowYield + landBass : inst === 'pad' ? Math.max(0, tilt) : inst === 'glock' && tilt > 0 ? -1.0 * tilt : TOYS[inst] ? 1.0 * Math.max(0, -tilt)
+      : w * (tilt > 0 ? (inst === 'shaker' || inst === 'tamb' ? 0 : 1.6 * (DRUMS_P.has(inst) ? presYield : 1)) : 1) * tilt
     if (inst === 'revcrash') { if (off) gain[inst] = [{ t: 0, db: off }]; continue }
     gain[inst] = [{ t: gap - 0.0005, db: off }, { t: gap + 0.010, db: -90 }, { t: P - 0.0002, db: -90 }, { t: P, db: off }]
   }
@@ -658,6 +673,9 @@ export const CLIMB = { hookSettle: 1.5, ramp: 1.5, window: 3, step: 3, dropLift:
 export const TEN = { share: 0.1 }
 /** the bass's dull lift yields to the cues' landings: gone when the cues' 125 Hz octave stands LOW.span dB over their 1 kHz octave */
 export const LOW = { span: 5 }
+/** the drums' dull presence lift yields to the cues' 4 kHz octave: full at PRES.lo dB re their 1 kHz octave and under, gone
+ *  at PRES.lo + PRES.span and over */
+export const PRES = { lo: -5, span: 5 }
 
 /**
  * The velocity spread guard (bible §9.4 S8; 2026-10-13). S8 reads each voice's raw velocity spread (written accent x

@@ -13,7 +13,7 @@ import * as T from '../../../src/sound/theory.mjs'
 import { loudness } from '../../../src/sound/loudness.mjs'
 import { modal as D_modal } from '../../../src/sound/dsp.mjs'
 import { plan as balancePlan, cueTrim, kfilter } from './balance.mjs'
-import { curveFor, evalDb } from './energy.mjs'
+import { curveFor, evalDb, rangeAt } from './energy.mjs'
 import { CAL, lookup } from './cal.mjs'
 import { mix } from './mix.mjs'
 import { solve, isB3, GIVE_WAY } from './clearance.mjs'
@@ -413,8 +413,24 @@ export const bedSec = (tl, t) => {
   const bar = tl.barAt(t + 1e-6)
   return lookup(CAL.BEDS, tl.sectionAt(t + 1e-6).name, bar ? bar.energy : 3, -18) + evalDb(curveFor(tl), t + 0.005)
 }
-/** the teaser's fader plan { trim, offset, S, M } (cached per timeline) */
+/**
+ * the teaser's fader plan { trim, offset, S, M, dMrange } (cached per timeline). The fader balances the cues against the
+ * bed without the DROP's range lift (energy.mjs RANGE): the lift is the payoff's own dynamics, and a fader that raised
+ * every cue with it would fill the quiet windows the lift is there to stand out from (09c: a 2 dB lift moved the cut
+ * from -5.4 to -2.7 dB and bought 0.2 LU of range instead of 0.8). dMrange is what the lift adds to the music model
+ * (the bed's power over the body with and without it): the master gain estimate counts it (logo.mjs gainEst).
+ */
 export function planFor(tl) {
+  const p = planOf(tl)
+  if (p.dMrange === undefined) {
+    let a = 0, b = 0
+    const K = Math.max(1, Math.floor(tl.base * 100))
+    for (let k = 0; k < K; k++) { const t = k / 100, r = rangeAt(tl, t + 0.005), e = Math.pow(10, (bedSec(tl, t) - r) / 10); a += e; b += e * Math.pow(10, r / 10) }
+    p.dMrange = +(10 * Math.log10(b / a)).toFixed(3)
+  }
+  return p
+}
+function planOf(tl) {
   return balancePlan(tl, {
     renderCue: c => raw[c.kind](c, cueCtx(tl, c)),
     // the music model sees each cue's broadband duck as the clearance solves it under that fader setting
@@ -424,7 +440,7 @@ export function planFor(tl) {
       if (!r || r.fixed || r.broad <= r.table + 0.05) return null
       return { depth: r.broad / Math.min(1.2, Math.max(0.3, c.gain / 0.7)), hold: r.hold, release: r.release }
     },
-    bedAt: t => bedSec(tl, t),
+    bedAt: t => bedSec(tl, t) - rangeAt(tl, t + 0.005),
   })
 }
 /**
@@ -438,7 +454,7 @@ export function sfxBodyPower(tl) {
   if (BODYP.has(tl)) return BODYP.get(tl)
   const p = planFor(tl), res = clearFor(tl), P = tl.anchors.P.t
   const N = Math.max(1, Math.round(tl.base * SR))
-  const lvl = c => Math.pow(10, (cueTrim(c, Math.abs(c.t - P) <= 0.015, p.trim) + (isB3(tl, c) ? (res.get(c.i)?.lift || 0) : 0)) / 20) * c.gain
+  const lvl = c => { const atP = Math.abs(c.t - P) <= 0.015; return Math.pow(10, (cueTrim(c, atP, p.trim) + (isB3(tl, c) ? (res.get(c.i)?.lift || 0) : 0) + payHitDb(tl, c, atP) + rangeCueDb(tl, c, atP)) / 20) * c.gain }
   const bufs = new Map()
   for (const c of tl.cues) {
     if (c.inCard || c.t >= tl.base) continue
@@ -470,6 +486,13 @@ export function sfxBodyPower(tl) {
   BODYP.set(tl, v)
   return v
 }
+/** forget the cues' body power (compose() moves the hit at P after it was first read: the payoff's limiter budget) */
+export const resetBodyPower = tl => BODYP.delete(tl)
+/** the hit at P's level on a cue (dB): the hit at P takes levers.payHit (compose.mjs payoffLevel), nothing else */
+export const payHitDb = (tl, c, atP) => (atP && c.kind === 'hit' && !c.inCard ? (leversFor(tl)?.payHit || 0) : 0)
+/** the range lift on a cue (dB): the DROP's body cues ride the music's range lift at their onset (energy.mjs RANGE), so
+ * the DROP sits higher as a whole and the SFX stem keeps its place in B1; the hit at P keeps its own level (payHitDb) */
+export const rangeCueDb = (tl, c, atP) => (c.inCard || c.t >= tl.base || (atP && c.kind === 'hit') ? 0 : rangeAt(tl, c.t))
 /** the clearance solved under a fader setting (cached per timeline and setting) */
 const SOLVES = new WeakMap()
 function solveAt(tl, trim, offset) {
@@ -506,7 +529,8 @@ export const sfx = Object.fromEntries(Object.entries(raw).map(([kind, fn]) => [k
   const p = ctx.__est ? null : planFor(ctx.tl)
   // the clearance may lift a cue it cannot clear otherwise (the hook's frame-1 count, the verdict: clearance.mjs)
   const lift = p && isB3(ctx.tl, cue) ? (clearFor(ctx.tl).get(cue.i)?.lift || 0) : 0
-  const trim = (p ? cueTrim(cue, ctx.atP, p.trim) : 0) + lift
+  // the hit at P's level (compose.mjs payoffLevel: B8's room and the limiter budget) is levers.payHit
+  const trim = (p ? cueTrim(cue, ctx.atP, p.trim) : 0) + lift + (p ? payHitDb(ctx.tl, cue, ctx.atP) + rangeCueDb(ctx.tl, cue, ctx.atP) : 0)
   ctx.sfxTrim = trim
   ctx.bedOffset = p ? p.offset : 0
   const b = fn(cue, ctx)
@@ -531,7 +555,8 @@ export const WHOOSH_FLOOR = 0.16
 export const PAY_SEND_DB = -4
 export function sendsFor(tl, c, atP) {
   if (c.inCard) return null
-  const lv = leversFor(tl), d = (atP ? PAY_SEND_DB : 0) + (lv ? lv.sends || 0 : 0)
+  // the hit at P's own hall comes down further when the payoff's limiter budget needs it (compose.mjs payoffLevel)
+  const lv = leversFor(tl), d = (atP ? PAY_SEND_DB : 0) + (lv ? lv.sends || 0 : 0) + (lv && atP && c.kind === 'hit' ? lv.payHall || 0 : 0)
   if (!(d < -0.01)) return null
   const s0 = mix.sfxSends[c.kind] || {}
   return Object.fromEntries(Object.entries(s0).map(([k, v]) => [k, +(v + d).toFixed(2)]))

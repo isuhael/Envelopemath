@@ -18,14 +18,19 @@
 //   GM_SFX    the cues' weight in the master gain model (logo.mjs gainEst), fitted with GM_PLAN
 //   LOGO_SLOPE the sting's rise at L + 0.2 (dB/s): B8 reads the meter's 100 ms hop nearest L + 0.2, and logo.mjs's meter
 //             guard predicts that reading from it
-//   BAND_REF  the band model's cue weights (bands.mjs predict: the cues and their returns against the music, for the
-//             SFX bus compressor and HP): w fitted on the delivered 63-250 Hz octaves of every teaser, w16 (the 8 and
-//             16 kHz octaves) on the delivered 16 kHz octave
+//   BAND_REF  the band model's cue weight (bands.mjs predict: the cues and their returns against the music, for the
+//             SFX bus compressor and HP): w, fitted on the delivered 63-250 Hz octaves of every teaser and used on every
+//             octave (a separate top-octave weight, w16, had no fixed point: see below)
 //   BAND_FIT  the band model's residual per octave (delivered minus predicted, dB re 1 kHz, mean over the teasers)
 //   BAND_SD   the residual's spread per octave: the band guard aims BAND_MARGIN + BAND_K x BAND_SD inside each window
 //   PAY_LOSS, PAY_HIT  the payoff's delivered momentary loudness in B8's frame against the band model's (payoffPre)
 //             plus the master gain: what a payoff loses (mean), and how much more when a hit marks P (the SFX bus
 //             compressor and the limiter work on it); logo.mjs aims the sting inside [-13, the payoff]
+//   RANGE     the range model (bands.mjs rangeEst, energy.mjs RANGE): body, the delivered body's 100 ms blocks against
+//             the band model's at the master gain (median offset, mean over the teasers); card, the card's blocks against
+//             the sting's true level at L + 0.2 (mean per block); fit and sd, the delivered A3 against rangeEst as
+//             compose() runs it (mean residual and spread): the DROP's range lift aims RANGE.margin + RANGE.k x sd
+//             inside A3's floor
 // --per prints each teaser's residuals as well.
 // Re-run after any change to the arrangement or the levels; the tables only describe this pack's own music.
 import fs from 'node:fs'
@@ -40,12 +45,12 @@ import { buildTimeline } from '../../../../src/sound/timeline.mjs'
 import { normalizePack } from '../../../../src/sound/engine.mjs'
 import * as PACK from '../../sound.mjs'
 import { planFor, sfxBodyPower, leversFor } from '../sfx.mjs'
-import { modelFor, predict, payoffPre, octaves as octOf, OCT, dryBlocks } from '../bands.mjs'
+import { modelFor, predict, payoffPre, octaves as octOf, OCT, dryBlocks, mixBlocks, rangeEst } from '../bands.mjs'
 import { curveFor, evalDb, b7Halves } from '../energy.mjs'
 import { OFF_EFF } from '../balance.mjs'
 import { OPENING } from '../compose.mjs'
 import { CAL } from '../cal.mjs'
-import { b8Frame, hitAtP } from '../logo.mjs'
+import { b8Frame, hitAtP, gainEst, logoPlan } from '../logo.mjs'
 import { kfilter } from '../balance.mjs'
 
 const HERE = path.dirname(fileURLToPath(import.meta.url))
@@ -75,7 +80,7 @@ const cueRec = id => recs[id] || null
 const SKIP = opt.skip.split(',').filter(Boolean)
 const ids = fs.readdirSync(dir).filter(f => f.endsWith('.score.json')).map(f => f.replace('.score.json', '')).filter(id => !SKIP.some(p => id.startsWith(p))).sort()
 const pack = normalizePack(PACK, 'scoreboard')
-const bedm = {}, fits = [], gms = [], logos = [], opens = [], slopes = [], bands = [], pays = [], b7s = []
+const bedm = {}, fits = [], gms = [], logos = [], opens = [], slopes = [], bands = [], pays = [], b7s = [], ranges = []
 const push = (o, sec, E, v) => { ((o[sec] = o[sec] || {})[E] = o[sec][E] || []).push(v) }
 const secAt = (sc, t) => (sc.sections.find(s => t >= s.t0 - 1e-6 && t < s.t1 - 1e-6) || {}).name
 for (const id of ids) {
@@ -124,9 +129,25 @@ for (const id of ids) {
     if (pre != null && Number.isFinite(mP)) pays.push({ id, r: mP - (pre + G), hit: hitAtP(tl) })
   }
   fits[fits.length - 1].Su = sfxBodyPower(tl)
-  fits[fits.length - 1].dM = (leversFor(tl) || {}).dM || 0
+  // what the band guard's levers and the DROP's range lift add to the plan's music model (logo.mjs gainEst counts both)
+  fits[fits.length - 1].dM = ((leversFor(tl) || {}).dM || 0) + (plan.dMrange || 0)
   // the delivered octaves over [0, base] (as the BANDS check reads them) against the band model compose() kept
   const bm = modelFor(tl)
+  // the range model (bands.mjs rangeEst, energy.mjs RANGE): the delivered body's 100 ms blocks against the band model's
+  // at this render's master gain (their median offset), the card's blocks against the sting's true level at L + 0.2
+  // (the card is the same in every teaser but its level), and the delivered loudness range for the residual
+  if (bm && bm.mix && sc.anchors.L != null) {
+    const dl = decodeAudio(path.join(dir, `${id}.m4a`)), kl = kfilter(dl.L), kr = kfilter(dl.R)
+    const blk = h => { let e = 0; for (let i = h * 4800; i < (h + 1) * 4800; i++) e += kl[i] * kl[i] + kr[i] * kr[i]; return 10 * Math.log10(e / 4800 + 1e-30) }
+    const ew = te => { const i1 = Math.round(te * SR), i0 = i1 - Math.round(0.4 * SR); let e = 0; for (let i = i0; i < i1; i++) e += kl[i] * kl[i] + kr[i] * kr[i]; return -0.691 + 10 * Math.log10(e / (i1 - i0)) }
+    const mb = mixBlocks(bm, leversFor(tl) || {}), H = mb.length
+    const offs = []
+    for (let h = 0; h < H; h++) offs.push(blk(h) - (10 * Math.log10(mb[h] + 1e-30) + G))
+    offs.sort((a, b) => a - b)
+    const sting = ew(sc.anchors.L + 0.2), card = []
+    for (let h = H; h < Math.floor(dl.L.length / 4800); h++) card.push(blk(h) - 0.691 - sting)
+    ranges.push({ id, tl, m: bm, lv: leversFor(tl) || {}, body: offs[offs.length >> 1], card, A3: loudness(dl).lra, G: gainEst(tl), aim: logoPlan(tl).aim, dur: tl.duration })
+  }
   if (bm) {
     const m4b = path.join(dir, `${id}.m4a`)
     const dl = fs.existsSync(m4b) ? decodeAudio(m4b) : readWav(path.join(dir, `${id}.wav`))
@@ -170,26 +191,32 @@ for (let k = 0; k <= 3 + 1e-9; k += 0.01) {
 for (const f of fits) gmPlan.push(gmOf(f, gmFit.k))
 const LOGO_SLOPE = slopes.length ? mean(slopes) : (CAL.LOGO_SLOPE ?? 0)
 const sd = a => { const m = mean(a); return Math.sqrt(mean(a.map(x => (x - m) ** 2))) }
-// BAND_REF and BAND_FIT: the least spread of the residuals (delivered minus predicted) over the octaves the band guard
-// watches, on a grid of the 1 kHz scalings; the per-octave means are the residuals
-const WATCH = [63, 125, 250], WATCH16 = [16000]
+// BAND_REF and BAND_FIT: the least spread of the residuals (delivered minus predicted) over the low octaves the band
+// guard watches, on a grid of the cues' weight w; the per-octave means are the residuals (BAND_FIT), their spreads
+// BAND_SD. One weight serves every octave (bands.mjs predict): the SFX bus compressor that w stands for is broadband.
+// Until 2026-10-13 the 8 and 16 kHz octaves had a weight of their own, w16, fitted on the 16 kHz octave alone, and it
+// had no fixed point: the cues' share of the top octaves is about the same in every teaser, so a change of w16 moves
+// every teaser's prediction alike, BAND_FIT 8000/16000 absorb it, and the 16 kHz spread hardly changes (its least-spread
+// value wandered 0.81-1.13 from round to round, BAND_FIT 8000 by 0.36 dB, more than its own spread). --per prints what
+// a free w16 would gain on the 16 kHz spread.
+const WATCH = [63, 125, 250]
 let bandFit = null
 if (bands.length) {
-  // w on the low watched octaves, then w16 on the top one (the lows do not depend on w16)
   for (let w = 0.3; w <= 2 + 1e-9; w += 0.01) {
     const R = { w }, pr = bands.map(x => predict(x.m, x.lv, R, {}))
     let tot = 0
     for (const f of WATCH) tot += sd(bands.map((x, i) => x.dlv[f] - pr[i][f])) ** 2
     if (!bandFit || tot < bandFit.tot - 1e-12) bandFit = { tot, R: { w: +w.toFixed(2) } }
   }
-  let best16 = null
-  for (let w16 = 0.3; w16 <= 2 + 1e-9; w16 += 0.01) {
-    const R = { ...bandFit.R, w16 }, pr = bands.map(x => predict(x.m, x.lv, R, {}))
-    let tot = 0
-    for (const f of WATCH16) tot += sd(bands.map((x, i) => x.dlv[f] - pr[i][f])) ** 2
-    if (!best16 || tot < best16.tot - 1e-12) best16 = { tot, w16: +w16.toFixed(2) }
+  if (opt.per) {
+    // the 16 kHz spread over a free top-octave weight (information only: the degeneracy above)
+    const sd16 = w16 => { const pr = bands.map(x => predict(x.m, x.lv, { ...bandFit.R, w16 }, {})); return sd(bands.map((x, i) => x.dlv[16000] - pr[i][16000])) }
+    let best = null
+    for (let w16 = 0.3; w16 <= 2 + 1e-9; w16 += 0.01) { const s = sd16(w16); if (!best || s < best.s - 1e-12) best = { s, w16 } }
+    const flat = []
+    for (let w16 = 0.3; w16 <= 2 + 1e-9; w16 += 0.01) if (sd16(w16) <= best.s + 0.01) flat.push(w16)
+    console.error(`16 kHz spread: ${sd16(bandFit.R.w).toFixed(3)} dB at w ${bandFit.R.w}; least ${best.s.toFixed(3)} at a free weight ${best.w16.toFixed(2)}; within 0.01 dB of it for ${flat[0].toFixed(2)}-${flat[flat.length - 1].toFixed(2)}`)
   }
-  bandFit.R.w16 = best16.w16
   const pr = bands.map(x => predict(x.m, x.lv, bandFit.R, {}))
   bandFit.F = {}; bandFit.sd = {}
   for (const f of OCT) { if (f === 1000) continue; const r = bands.map((x, i) => x.dlv[f] - pr[i][f]); bandFit.F[f] = +mean(r).toFixed(2); bandFit.sd[f] = +sd(r).toFixed(2) }
@@ -211,8 +238,22 @@ if (opt.per) {
     console.error(f.id.slice(0, 3), (gmPlan[i] - gm).toFixed(2), lg ? `${(lg.m - mean(logos.map(x => x.m))).toFixed(2)} (hop ${lg.hop >= 0 ? '+' : ''}${lg.hop.toFixed(2)} at ${lg.d >= 0 ? '+' : ''}${(lg.d * 1000).toFixed(0)} ms)` : '-', py && py.e != null ? py.e.toFixed(2) : '-', pr ? [63, 125, 250, 16000].map(o => (bd.dlv[o] - pr[o]).toFixed(2)).join(' ') : '-', b7 ? `B7 halves edge ${b7.m.edge.toFixed(2)} (pred ${b7.p.edge.toFixed(2)}) centred ${b7.m.centred.toFixed(2)} (pred ${b7.p.centred.toFixed(2)})` : '')
   }
 }
+// RANGE: the body's offset and the card's template (means), then the residual of the delivered A3 against rangeEst as
+// compose() runs it (the master gain estimate, the sting's aim), its mean (fit) and spread (sd)
+let rangeFit = null
+if (ranges.length) {
+  const K = Math.min(...ranges.map(x => x.card.length))
+  const R0 = { body: +mean(ranges.map(x => x.body)).toFixed(2), card: Array.from({ length: K }, (_, k) => +mean(ranges.map(x => x.card[k])).toFixed(2)), fit: 0 }
+  const keep = CAL.RANGE
+  CAL.RANGE = R0
+  const res = ranges.map(x => { const p = rangeEst(x.m, x.lv, { gainDb: x.G, sting: x.aim, durationS: x.dur }); return { id: x.id, r: p == null ? null : x.A3 - p, A3: x.A3 } }).filter(x => x.r != null)
+  CAL.RANGE = keep
+  const f = mean(res.map(x => x.r))
+  rangeFit = { ...R0, fit: +f.toFixed(2), sd: +Math.sqrt(mean(res.map(x => (x.r - f) ** 2))).toFixed(2) }
+  if (opt.per) for (const x of res) console.error(`${x.id.slice(0, 3)} A3 ${x.A3.toFixed(2)} range residual ${(x.r - f).toFixed(2)}`)
+}
 const cal = { BEDS, OFF_EFF, OPEN_FIT: opens.length ? +((CAL.OPEN_FIT ?? 0) + mean(opens)).toFixed(2) : CAL.OPEN_FIT, M_FIT: +mean(fits.map(f => f.resid)).toFixed(2), GM: +mean(gms).toFixed(2), GM_PLAN: gmPlan.length ? +mean(gmPlan).toFixed(2) : undefined, GM_SFX: gmFit ? gmFit.k : (CAL.GM_SFX ?? 0), LOGO_PRE: logos.length ? +mean(logos.map(x => x.m)).toFixed(2) : null, LOGO_SLOPE: +LOGO_SLOPE.toFixed(1),
-  BAND_REF: bandFit ? bandFit.R : CAL.BAND_REF, BAND_FIT: bandFit ? bandFit.F : CAL.BAND_FIT, BAND_SD: bandFit ? bandFit.sd : CAL.BAND_SD, PAY_LOSS: payFit ? +payFit.loss.toFixed(2) : CAL.PAY_LOSS, PAY_HIT: payFit ? +payFit.hit.toFixed(2) : CAL.PAY_HIT,
+  BAND_REF: bandFit ? bandFit.R : CAL.BAND_REF, BAND_FIT: bandFit ? bandFit.F : CAL.BAND_FIT, BAND_SD: bandFit ? bandFit.sd : CAL.BAND_SD, PAY_LOSS: payFit ? +payFit.loss.toFixed(2) : CAL.PAY_LOSS, PAY_HIT: payFit ? +payFit.hit.toFixed(2) : CAL.PAY_HIT, RANGE: rangeFit || CAL.RANGE,
   stats: { PAY_sd: payFit ? +sd(pays.map(x => x.e)).toFixed(2) : null, M_FIT_sd: +sd(fits.map(f => f.resid)).toFixed(2), GM_sd: +sd(gms).toFixed(2), GM_PLAN_sd: gmPlan.length ? +sd(gmPlan).toFixed(2) : null, LOGO_PRE_sd: logos.length ? +sd(logos.map(x => x.m)).toFixed(2) : null, LOGO_SLOPE_sd: slopes.length ? +sd(slopes).toFixed(1) : null, OPEN_FIT_sd: opens.length ? +sd(opens).toFixed(2) : null, specs: ids.length, from: `calibrate.mjs on an audio --stems render of ${ids.length} teasers, cue records ${cuesFile === FIXTURE ? 'test/fixtures/cues.json' : 'from a fresh dump (node src/cli.mjs cues)'}` } }
 console.log(JSON.stringify(cal, null, 1))
 if (opt.write) {

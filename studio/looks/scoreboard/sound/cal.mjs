@@ -22,7 +22,9 @@ export function lookup(table, sec, E, dflt) {
   if (!o) return dflt
   return o[E] ?? Object.values(o)[0] ?? dflt
 }
-/** sound/acceptance.json (the thresholds, §9.0): the pack aims inside the windows it holds (BANDS, B8), read once */
+/** sound/acceptance.json (the thresholds, §9.0): the pack aims inside three of them, read once: the BANDS windows
+ * (bands.mjs), B8's floor (logo.mjs) and A3's floor (compose.mjs rangeClimb, since 2026-10-13). An edit to any of them
+ * moves Scoreboard masters, not only the verdicts */
 const ACC = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..', 'sound', 'acceptance.json')
 let ACCEPT = null
 export function acceptance() {

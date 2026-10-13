@@ -53,13 +53,26 @@ export function payoffEst(tl) {
  * L + 0.2 and P + 0.2 (proposed for the harness), it would act only where a payoff is that quiet.
  */
 export const B8_MARGIN = 0.5
+/** the spreads the guard keeps inside B8's floor (B8_K x the sting's estimate spread): the floor is a fixed -13 LUFS and
+ * the sting's reading the estimate that misses it, so it keeps three spreads, as the band guard does inside each octave
+ * (bands.mjs BAND_K); against the payoff it keeps one, as that edge gives way first in a narrow window. With one spread
+ * at the floor (until 2026-10-13, the condensed 07a-10c) the guarded stings read 0.50-0.58 dB inside it: 10c (the hop
+ * 10 ms early, its master 0.1 dB under the estimate) 0.50, 08a 0.54 */
+export const B8_K = 3
 /** the spread of the guard's estimates (calibrate.mjs stats): the sting's reading (the master gain model and LOGO_PRE)
- * and, against the payoff, that and the payoff's estimate. The guard keeps B8_MARGIN plus that spread inside each edge,
- * as the band guard aims BAND_MARGIN plus its spread inside each octave (bands.mjs bandAim): with B8_MARGIN alone the
- * guarded stings read 0.49-0.53 dB inside the floor (03b, 03c, 05c on 2026-10-13), half of them under the margin */
+ * and, against the payoff, that and the payoff's estimate. The guard keeps B8_MARGIN plus that spread inside each edge
+ * (B8_K of it at the floor), as the band guard aims BAND_MARGIN plus its spread inside each octave (bands.mjs bandAim):
+ * with B8_MARGIN alone the guarded stings read 0.49-0.53 dB inside the floor (03b, 03c, 05c on 2026-10-13), half of them
+ * under the margin */
 export function b8Spread() {
   const S = CAL.stats || {}, sdL = Math.hypot(S.GM_PLAN_sd ?? 0, S.LOGO_PRE_sd ?? 0)
   return { floor: sdL, payoff: Math.hypot(sdL, S.PAY_sd ?? 0) }
+}
+/** the payoff's reading (LUFS) at which B8's window holds both margins (logoPlan's floor and payoff edges): the floor,
+ * B8_MARGIN twice and the spreads (B8_K at the floor); compose.mjs raises the hit at P towards it (payoffLevel) */
+export function payoffNeed() {
+  const floor = acceptance().checks?.B8?.minLufs ?? -13, sd = b8Spread()
+  return floor + 2 * B8_MARGIN + B8_K * sd.floor + sd.payoff
 }
 export const B8_AT = 0.2, METER_HOP = 0.1
 export const b8Frame = L => Math.round((L + B8_AT) / METER_HOP) * METER_HOP - (L + B8_AT)
@@ -68,7 +81,7 @@ export function logoPlan(tl) {
   const floor = acceptance().checks?.B8?.minLufs ?? -13, mP = payoffEst(tl)
   const base = mP == null ? LOGO_AT : Math.min(LOGO_AT, (floor + mP) / 2)
   const off = tl.card ? (CAL.LOGO_SLOPE ?? 0) * b8Frame(tl.card.L) : 0
-  const sd = b8Spread(), lo = floor + B8_MARGIN + sd.floor, hi = mP == null ? Infinity : mP - B8_MARGIN - sd.payoff
+  const sd = b8Spread(), lo = floor + B8_MARGIN + B8_K * sd.floor, hi = mP == null ? Infinity : mP - B8_MARGIN - sd.payoff
   // a window narrower than the two margins (as estimated) keeps the floor's margin: the payoff's estimate is the uncertain
   // side (its spread is 0.39 dB, and the B8 floor is a fixed number)
   let aim = base
@@ -84,7 +97,8 @@ export const LOGO_K = [-3, 5]
 /** the master gain the teaser will get (dB): the music model plus the cues' power over the body */
 export function gainEst(tl) {
   // the music model, plus what the band guard's level levers add to it (bands.mjs leverLoudness)
-  const M = planFor(tl).M + (leversFor(tl)?.dM || 0), Su = sfxBodyPower(tl)
+  // and what the DROP's range lift adds to it (sfx.mjs planFor dMrange: the fader plans without it)
+  const p = planFor(tl), M = p.M + (p.dMrange || 0) + (leversFor(tl)?.dM || 0), Su = sfxBodyPower(tl)
   return (CAL.GM_PLAN ?? CAL.GM) - 10 * Math.log10(Math.pow(10, M / 10) + (CAL.GM_SFX ?? 0) * Math.pow(10, Su / 10))
 }
 
