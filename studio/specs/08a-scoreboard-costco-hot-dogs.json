@@ -3,40 +3,39 @@
   "look": "scoreboard",
   "format": "unit-ladder",
   "fps": 30,
-  "duration": 22.0,
+  "duration": 13.93,
   "header": "WHAT YOUR **$1.50** HOT DOG WOULD\nCOST IF IT ROSE LIKE A HOUSE",
   "footer": "Hot dog + soda: $1.50 in 1985. Still $1.50.",
   "captions": true,
   "vo": [
-    { "t": 0.0,   "d": 2.35, "text": "Your **$1.50** hot dog." },
-    { "t": 2.4,   "d": 0.8,  "text": "Costco card?" },
-    { "t": 3.2,   "d": 1.55, "text": "**≈ 43** hot dogs." },
-    { "t": 4.8,   "d": 1.55, "text": "A month of rent?" },
-    { "t": 6.75,  "d": 1.2,  "text": "**≈ 1,000**." },
-    { "t": 8.0,   "d": 2.35, "text": "A new house in 1985?" },
-    { "t": 10.35, "d": 1.55, "text": "**56,200**." },
-    { "t": 11.95, "d": 2.7,  "text": "And a new house in 2026?" },
-    { "t": 14.8,  "d": 1.95, "text": "**≈ 262,000**." },
-    { "t": 16.8,  "d": 1.55, "text": "Rose like a house?" },
-    { "t": 18.4,  "d": 2.7,  "text": "A **≈ $7.01** hot dog." }
+    {"t": -0.4, "d": 2.35, "text": "Your **$1.50** hot dog."},
+    {"t": 1.98, "d": 2.42, "text": "Costco card? **≈ 43** hot dogs. A month of rent?"},
+    {"t": 4.42, "d": 2.42, "text": "**≈ 1,000**. A new house in 1985?"},
+    {"t": 6.86, "d": 3.87, "text": "**56,200**. And a new house in 2026?"},
+    {"t": 10.73, "d": 1.6, "text": "Rose like a house?"},
+    {"t": 12.33, "d": 1.2, "text": "A **≈ $7.01** hot dog."}
   ],
-  "verdict": { "t": 18.4, "text": "Rose like a house?\nA **≈ $7.01** hot dog." },
+  "verdict": {"t": 12.33, "text": "Rose like a house?\nA **≈ $7.01** hot dog."},
   "data": {
-    "unit": { "name": "Costco hot dog", "label": "Your hot dog + soda", "price": "$1.50", "icon": "hotdog" },
+    "unit": {"name": "Costco hot dog", "label": "Your hot dog + soda", "price": "$1.50", "icon": "hotdog"},
     "rungs": [
-      { "t": 1.5,   "item": "Your Costco membership",       "cost": "$65",      "units": 43,     "unitsDisplay": "≈ 43" },
-      { "t": 4.8,   "item": "A month of median rent, 2026", "cost": "$1,531",   "units": 1021,   "unitsDisplay": "≈ 1,021" },
-      { "t": 8.0,   "item": "A median new house, 1985",     "cost": "$84,300",  "units": 56200,  "unitsDisplay": "56,200" },
-      { "t": 11.95, "item": "A median new house, Aug 2026", "cost": "$393,700", "units": 262467, "unitsDisplay": "≈ 262,467" }
+      {"t": 0.5, "item": "Your Costco membership", "cost": "$65", "units": 43, "unitsDisplay": "≈ 43"},
+      {"t": 2.48, "item": "A month of median rent, 2026", "cost": "$1,531", "units": 1021, "unitsDisplay": "≈ 1,021"},
+      {"t": 4.92, "item": "A median new house, 1985", "cost": "$84,300", "units": 56200, "unitsDisplay": "56,200"},
+      {"t": 7.36, "item": "A median new house, Aug 2026", "cost": "$393,700", "units": 262467, "unitsDisplay": "≈ 262,467"}
     ],
-    "hold": 7.23
+    "hold": 3.75
   },
   "lookOpts": {
     "introHero": "price",
     "climaxFill": 1,
-    "payoff": { "t": 16.8, "from": "$1.50", "display": "≈ $7.01", "label": "Rose like a house?" },
-    "split": { "tags": ["1985", "Aug 2026"] },
-    "footerSteps": [ { "t": 16.8, "text": "$393,700 (Aug 2026) ÷ 56,200 hot dogs (1985)" } ]
+    "payoff": {"t": 10.73, "from": "$1.50", "display": "≈ $7.01", "label": "Rose like a house?"},
+    "split": {"tags": ["1985", "Aug 2026"]},
+    "footerSteps": [
+      {"t": 10.73, "text": "$393,700 (Aug 2026) ÷ 56,200 hot dogs (1985)"}
+    ]
   },
-  "sfx": [ { "t": 18.4, "kind": "ding" } ]
+  "sfx": [
+    {"t": 12.33, "kind": "ding"}
+  ]
 }
