@@ -39,10 +39,13 @@
    14.5-16.8 s gap; a claim asserts it is the only one, sits on the year-20 rung and ends >= 0.6 s before the next
    coin's wind-up (which starts at most 0.95 s before its rung). Everything else in that pass is in the format file.
 4. Two cuts per teaser (2026-10-13, the owner's "too many still moments are a killer for a short; condense the
-   rest; the CTA is good"), picked by the spec's duration. The narration cut (09a 28.5 s, 09b 27.0 s, 09c 31.5 s:
-   VO-paced lines) is what studio/specs/ holds until the ship step promotes the condensed cut (IN_SPECS names the
-   cut studio/specs/ must hold). The condensed cut (a body of 12-16 s, the 06c / 06b precedent; studio/specs-wip/)
-   shares every string, number, row and claim above and is timed as on-screen captions with no narration:
+   rest; the CTA is good"), picked by the spec's duration. The condensed cut was promoted from studio/specs-wip/
+   into studio/specs/ on 2026-10-13 and is what studio/specs/ holds (IN_SPECS names the cut studio/specs/ must
+   hold); the sound and the ship to renders/channel/ follow, and until then renders/channel/ keeps the narration
+   cut. The narration cut (09a 28.5 s, 09b 27.0 s, 09c 31.5 s: VO-paced lines) is retired to a reference: a
+   git-history copy (`git show 480efc1^:studio/specs/<id>.json`) passed with --spec is still checked against it.
+   The condensed cut (a body of 12-16 s, the 06c / 06b precedent) shares every string, number, row and claim above
+   and is timed as on-screen captions with no narration:
    - each caption is up >= max(1.2 s, 0.12 s a word), counted from frame 1; captions back to back (gaps < 0.2 s);
      the first one complete on frame 1 (vo[0].t at or before the look's word pop / rise: Becker -0.48, Scoreboard
      -0.14);
@@ -69,7 +72,9 @@
 5. Prints a table and exits 1 on any mismatch.
 
 Run:  python3 teasers/v2/checks/09-growth-ladder.py                      (the specs in studio/specs/)
-      python3 teasers/v2/checks/09-growth-ladder.py --spec studio/specs-wip/09a-becker-rig-100-a-month-doubles.json
+      python3 teasers/v2/checks/09-growth-ladder.py --spec /tmp/09a-becker-rig-100-a-month-doubles.json
+        (e.g. the retired narration cut: `git show 480efc1^:studio/specs/09a-becker-rig-100-a-month-doubles.json
+        > /tmp/09a-becker-rig-100-a-month-doubles.json`)
       --spec [KEY=]PATH (repeatable) checks PATH in place of studio/specs/<id>.json. KEY is a, b or c (or 09a, 09b,
       09c, or the full id); without it the file's stem must be one of the three ids.
 """
@@ -92,7 +97,9 @@ IDS = {"a": "09a-becker-rig-100-a-month-doubles", "b": "09b-becker-rig-1000-time
 
 # ---- the two cuts (see 4. in the docstring)
 NARRATION_DUR = {IDS["a"]: 28.5, IDS["b"]: 27.0, IDS["c"]: 31.5}
-IN_SPECS = {IDS["a"]: "narration", IDS["b"]: "narration", IDS["c"]: "narration"}   # -> "condensed" on promotion
+# the cut studio/specs/ must hold: the condensed cut, promoted from studio/specs-wip/ on 2026-10-13 (it was "narration"
+# until then). The narration cut stays a reference for a git-history copy (480efc1^ and earlier) passed with --spec.
+IN_SPECS = {IDS["a"]: "condensed", IDS["b"]: "condensed", IDS["c"]: "condensed"}
 CONDENSED_LANE = (12.0, 16.0)      # s, the body (+ the 2.5 s end card): 06c 15.7, 06b 18.3, 06a 15.3
 CAP_MIN, CAP_SPW = 1.2, 0.12       # a caption is up >= max(1.2 s, 0.12 s a word), from frame 1
 CAP_GAP = 0.2                      # captions back to back: no beat goes unlabelled

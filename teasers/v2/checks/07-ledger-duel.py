@@ -20,8 +20,10 @@
 3. Prints a table and exits 1 on any mismatch.
 
 Two cuts per teaser, picked by the spec's duration (the body, without the 2.5 s end card):
-   - "full": the narration-paced round-2 cuts (07a 22.8 s, 07b 27.4 s, 07c 19.1 s), what studio/specs/ holds and
-     renders/channel/ ships (IN_SPECS names the cut studio/specs/ must hold). Every rule above applies as before.
+   - "full": the narration-paced round-2 cuts (07a 22.8 s, 07b 27.4 s, 07c 19.1 s), retired from studio/specs/ on
+     2026-10-13 and kept as a reference for a git-history copy (`git show 480efc1^:studio/specs/<id>.json`) passed
+     with --spec; renders/channel/ still ships them until the ship step replaces them. Every rule above applies as
+     before.
    - "condensed": the owner's 2026-10-13 note ("too many still moments are a killer for a short; condense the rest;
      the CTA is good"), the 06b/06c precedent. Same strings, numbers, facts and verdicts; the clock moved and the
      captions are on-screen text (no narration): each caption up >= max(1.2 s, 0.12 s a word) from frame 1, 0..0.2 s
@@ -33,13 +35,16 @@ Two cuts per teaser, picked by the spec's duration (the body, without the 2.5 s 
      caption, every event / cash-out pill readable >= 1.0 s on the kit's timing, Alex getting up after the rings,
      acting under "Alex holds." and after Sam's 2025 ring; 07c: Year 1 by 0.5 s, You acting between Year 2 and Year 3
      and back just before Year 3, Leo acting on his $618 caption, the crown on its caption). The fixer pass
-     (2026-10-13) added the cadence rules the caption-band-out motion audit asked for. A spec of any other length
-     fails "a known cut" and stops there.
+     (2026-10-13) added the cadence rules the caption-band-out motion audit asked for. Written in studio/specs-wip/,
+     promoted into studio/specs/ on 2026-10-13: it is what studio/specs/ holds (IN_SPECS names it); the sound and the
+     ship to renders/channel/ follow. A spec of any other length fails "a known cut" and stops there.
 
-Run:  python3 teasers/v2/checks/07-ledger-duel.py [--spec [KEY=]PATH ...]
+Run:  python3 teasers/v2/checks/07-ledger-duel.py [--spec [KEY=]PATH ...]          (the specs in studio/specs/)
       --spec [KEY=]PATH (repeatable) checks PATH in place of studio/specs/<id>.json. KEY is a, b or c (or the full
       id); without it the file stem must be the teaser id, e.g.
-      python3 teasers/v2/checks/07-ledger-duel.py --spec studio/specs-wip/07a-scoreboard-start-at-25.json
+      python3 teasers/v2/checks/07-ledger-duel.py --spec /tmp/07a-scoreboard-start-at-25.json
+        (e.g. the retired round-2 cut: `git show 480efc1^:studio/specs/07a-scoreboard-start-at-25.json
+        > /tmp/07a-scoreboard-start-at-25.json`)
 """
 import json
 import os
@@ -107,7 +112,9 @@ SPEC_PATHS.update(parse_spec_args(sys.argv[1:]))
 # the two cuts (module docstring): the full cut is known by its exact length, the condensed cut by its lane
 FULL_DUR = {IDS["a"]: 22.8, IDS["b"]: 27.4, IDS["c"]: 19.1}
 COND_LANE = {IDS["a"]: (13.5, 16.0), IDS["b"]: (13.0, 15.5), IDS["c"]: (12.5, 14.5)}
-IN_SPECS = {IDS["a"]: "full", IDS["b"]: "full", IDS["c"]: "full"}   # the cut studio/specs/ holds (the ship step flips it)
+# the cut studio/specs/ holds: the condensed cut, promoted from studio/specs-wip/ on 2026-10-13 (it was "full" until
+# then; the full set stays a reference for a git-history copy, 480efc1^ and earlier, passed with --spec)
+IN_SPECS = {IDS["a"]: "condensed", IDS["b"]: "condensed", IDS["c"]: "condensed"}
 CAP_MIN, CAP_SPW, CAP_GAP = 1.2, 0.12, 0.2   # condensed: a caption is up >= max(1.2 s, 0.12 s a word), gaps <= 0.2 s
 SB_CAP_IN = 0.14                             # Scoreboard captions rise in over M.capIn from their t
 REVEAL_TO_VERDICT = (0.7, 1.5)               # condensed: the verdict lands this long after the final reveal

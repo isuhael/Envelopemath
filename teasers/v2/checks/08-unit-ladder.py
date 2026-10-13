@@ -31,13 +31,14 @@ Format 8 "unit-ladder" (P8, "Cost in units of X"): maths and spec check for teas
 4. Prints a table and exits 1 on any mismatch.
 
 Two cuts per teaser (2026-10-13), picked by the spec's duration:
-   - the round-2 cut ("full": 08a 22.0 s, 08b 27.0 s, 08c 22.0 s; paced for a recorded VO), which studio/specs/
-     holds today (IN_SPECS names the cut each id must hold there);
+   - the round-2 cut ("full": 08a 22.0 s, 08b 27.0 s, 08c 22.0 s; paced for a recorded VO), retired from
+     studio/specs/ on 2026-10-13 and kept as a reference for a git-history copy passed with --spec from outside
+     studio/specs/ (`git show 480efc1^:studio/specs/<id>.json > /tmp/<id>.json`); renders/channel/ still ships it
+     until the ship step replaces it;
    - the condensed cut ("cond", the owner's 2026-10-13 note: "too many still moments are a killer for a short.
-     Condense the rest. The CTA (end card) is good."), written to studio/specs-wip/ and checked with --spec until
-     the ship step promotes it (then set IN_SPECS[id] = "cond"; the full set serves a git-history copy passed with
-     --spec from outside studio/specs/, e.g. `git show d71fd5c:studio/specs/<id>.json > /tmp/<id>.json`). A spec of
-     any other length is checked against the condensed set and fails its lane.
+     Condense the rest. The CTA (end card) is good."), written to studio/specs-wip/ and promoted into studio/specs/
+     on 2026-10-13: it is what studio/specs/ holds (IN_SPECS names the cut each id must hold there; the sound and the
+     ship follow). A spec of any other length is checked against the condensed set and fails its lane.
    The condensed cut keeps every number, string, rung, unit, verdict, payoff and kit option of the round-2 cut; only
    the clock, the caption pacing and three caption merges change. Its rules replace the narration rules:
    - the posted shorts have no narration, so captions are paced for reading: each caption on screen for
@@ -62,7 +63,9 @@ Two cuts per teaser (2026-10-13), picked by the spec's duration:
    - lanes: 08a 13-15 s, 08b 12-14 s, 08c 11.5-13.5 s of body (+ the 2.5 s end card).
 
 Run:  python3 teasers/v2/checks/08-unit-ladder.py                     (the specs in studio/specs/)
-      python3 teasers/v2/checks/08-unit-ladder.py --spec studio/specs-wip/08a-scoreboard-costco-hot-dogs.json ...
+      python3 teasers/v2/checks/08-unit-ladder.py --spec /tmp/08a-scoreboard-costco-hot-dogs.json ...
+        (e.g. the retired round-2 cut: `git show 480efc1^:studio/specs/08a-scoreboard-costco-hot-dogs.json
+        > /tmp/08a-scoreboard-costco-hot-dogs.json`)
       --spec [KEY=]PATH (repeatable) checks PATH in place of studio/specs/<id>.json. KEY is a, b or c, 08a/08b/08c
       or the full id; without it the file's stem must be one of the three ids.
 """
@@ -82,7 +85,8 @@ IDS = {"08a": "08a-scoreboard-costco-hot-dogs", "08b": "08b-becker-rig-hours-at-
        "08c": "08c-becker-rig-college-in-big-macs"}
 FULL_DUR = {"08a": 22.0, "08b": 27.0, "08c": 22.0}            # the round-2 cuts (paced for a recorded VO)
 COND_LANE = {"08a": (13.0, 15.0), "08b": (12.0, 14.0), "08c": (11.5, 13.5)}   # condensed bodies (2026-10-13)
-IN_SPECS = {"08a": "full", "08b": "full", "08c": "full"}     # the cut studio/specs/ holds; "cond" once promoted
+IN_SPECS = {"08a": "cond", "08b": "cond", "08c": "cond"}     # the cut studio/specs/ holds (promoted 2026-10-13; was
+                                                              # "full", now a reference for a git-history copy)
 CAP_MIN, CAP_SPW = 1.2, 0.12  # caption pacing (no narration): >= 1.2 s a line, >= 0.12 s a word at phone size
 
 

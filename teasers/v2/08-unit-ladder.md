@@ -1,11 +1,12 @@
 # 08 · Unit ladder ("Cost in units of X"): three teasers
 
 **Format:** `unit-ladder` (rank 8 in [`../../research/v2/04-formats.md`](../../research/v2/04-formats.md), hook pattern **P8**)
-**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews). All three hooks were rewritten on 2026-10-08 in hook pass 2, and the round-2 QA fix pass (2026-10-08) rebuilt the reveals and payoffs. On 2026-10-08 08c was **ported from Clean Sheet (retired) to Becker Rig**; see the [Review log](#review-log).
+**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews). All three hooks were rewritten on 2026-10-08 in hook pass 2, and the round-2 QA fix pass (2026-10-08) rebuilt the reveals and payoffs. On 2026-10-08 08c was **ported from Clean Sheet (retired) to Becker Rig**. On 2026-10-13 all three were condensed (the owner's "too many still moments" note) in `studio/specs-wip/` and **promoted into `studio/specs/`** the same day; the sound and the ship follow. See the [Review log](#review-log).
 **Specs:** the file names are kept from the first draft (08c's carries its new look).
 - [`studio/specs/08a-scoreboard-costco-hot-dogs.json`](../../studio/specs/08a-scoreboard-costco-hot-dogs.json). The hook is now "What your $1.50 hot dog would cost if it rose like a house".
 - [`studio/specs/08b-becker-rig-hours-at-15.json`](../../studio/specs/08b-becker-rig-hours-at-15.json). The hook is now "At $15/hr, you work for rent from the 1st to the ___".
 - [`studio/specs/08c-becker-rig-college-in-big-macs.json`](../../studio/specs/08c-becker-rig-college-in-big-macs.json). The hook is now "Community? In-state? Out-of-state? Private? Your year in Big Macs". The Clean Sheet version is kept for reference in [`studio/specs/retired/08c-clean-sheet-college-in-big-macs.json`](../../studio/specs/retired/08c-clean-sheet-college-in-big-macs.json).
+- Since 2026-10-13 the three specs above are the condensed cuts (13.93 / 12.85 / 12.1 s + the 2.5 s end card), promoted from `studio/specs-wip/`. The round-2 cuts they replaced (22.0 / 27.0 / 22.0 s) are in git history (`480efc1^` and earlier); `renders/channel/` keeps their renders until the ship step.
 
 **Maths check:** [`checks/08-unit-ladder.py`](checks/08-unit-ladder.py).
 - It recomputes every on-screen number from the sourced inputs, in exact fractions, and rebuilds every display string and VO line from those numbers. Then it compares them with the three specs, leaf by leaf.
@@ -30,7 +31,7 @@
   - the calendar claim behind 08b's "≈ the 20th", on a 30-day month, on the average month and on a Monday-Friday calendar for all 7 weekdays the 1st can fall on;
   - every pinned-comment and caption number in this file.
 - **Result: PASSED, all 677 checks** (503 before the assembly pass, 524 after it, 680 after the fix pass; the Becker Rig port of 08c replaced the Clean Sheet replay (674); its QA fix pass added 3; see the [Review log](#review-log)).
-- **Cut-aware since the condensed cut (2026-10-13).** Each teaser has two expectation sets, picked by the spec's length: the round-2 cut (22.0 / 27.0 / 22.0 s, what `studio/specs/` holds; `IN_SPECS` names it) and the condensed cut (`studio/specs-wip/`, checked with `--spec [KEY=]PATH`). The condensed set swaps the narration rules for caption pacing (≥ max(1.2 s, 0.12 s a word) on screen, back to back), frame-1 and no-still rules, and the payoff windows; see the [Condensed cut](#condensed-cut-2026-10-13-08a-08b-08c) entry. **PASSED: 680 checks by default** (677 + one "which cut" row per teaser) **and 682 with `--spec` on the three condensed specs** (701 before the fix pass merged the captions: fewer lines, fewer per-line rows). 38 mutations of the condensed specs (fix pass) are all caught.
+- **Cut-aware since the condensed cut (2026-10-13).** Each teaser has two expectation sets, picked by the spec's length: the condensed cut (what `studio/specs/` holds since its promotion on 2026-10-13; `IN_SPECS` names it) and the round-2 cut (22.0 / 27.0 / 22.0 s; retired to git history, `480efc1^` and earlier, and checked with `--spec [KEY=]PATH` on a copy). The condensed set swaps the narration rules for caption pacing (≥ max(1.2 s, 0.12 s a word) on screen, back to back), frame-1 and no-still rules, and the payoff windows; see the [Condensed cut](#condensed-cut-2026-10-13-08a-08b-08c) entry. Since the promotion (2026-10-13): **PASSED: 682 checks by default** (the condensed cuts) **and 680 with `--spec` on git-history copies of the round-2 cuts** (`git show 480efc1^:studio/specs/<id>.json`). Before it: 680 by default (677 + one "which cut" row per teaser) and 682 with `--spec` on the three condensed specs in `studio/specs-wip/` (701 before the fix pass merged the captions: fewer lines, fewer per-line rows). 38 mutations of the condensed specs (fix pass) are all caught.
 - **Mutation test:** on scratch copies of the three specs, six mutations: in 08a the verdict ≈ $7.01 → ≈ $7.00 and the rung-1 cut back to 2.0 s; in 08b "≈ the 20th" → "≈ the 18th" and vo[2] back on its cut at 8.4 s; in 08c one count ≈ 5,125 → ≈ 5,126 and row 1 moved to t = 0.0, so it is no longer pre-filled. 16 of 503 checks fail, and the script exits with code 1. Every mutation is caught by an independent rule as well as by the leaf-by-leaf comparison: R10 (first count at 3.48 s), the voice 0.69 s ahead of the counter, row 1 not pre-filled, or a number that is not computed.
 - **Assembly-pass mutations:** 08b's blank "≈ 20th" → "≈ 18th", 08b's blank start 4.7 → 6.0 s, and 08a's payoff start 20.2 → 21.5 s. Each fails 3 checks (the leaf comparison plus two independent rules: a number that is not computed or a day the voice does not say; the blank landing after the voice; the payoff landing 0.98 s after the voice), and the script exits with code 1.
 - **Port mutations** (08c in Becker Rig, scratch copies, 2026-10-08): `landAfter` 1.7 → 2.2 s; the morph's number 10.8 → 10.9; its working's divisor $4,150 → $11,950; the ask 15.85 → 13.0 s (before the last count lands); rung 1 cut at 0.0 instead of −1.0 (no longer pre-filled); verdict and morph 17.35 → 16.9 s. Each fails 3-6 checks, always including an independent rule (an answer line before its count lands; a number that is not the working's ratio; a working that does not divide the compared piles; an ask before the last landing; a rung not landed by frame 1; the voice off the verdict's beat), and the script exits with code 1.
@@ -135,7 +136,7 @@ All three keep HD Guy's footer device: "Tall Latte ☕ = $4.45" (H04) and "Price
 
 ## 08a · Scoreboard · "What Your $1.50 Costco Hot Dog Would Cost If It Rose Like a House"
 
-**Spec:** the condensed cut (2026-10-13) is `studio/specs-wip/08a-scoreboard-costco-hot-dogs.json` · **13.93 s** + the 2.5 s end card · captions on · lints clean · rendered in the Scoreboard kit. `studio/specs/08a-scoreboard-costco-hot-dogs.json` holds the 22.0 s round-2 cut until the ship step promotes the condensed one (see the [Review log](#condensed-cut-2026-10-13-08a-08b-08c)).
+**Spec:** the condensed cut (2026-10-13) is `studio/specs/08a-scoreboard-costco-hot-dogs.json` (written as `studio/specs-wip/08a-scoreboard-costco-hot-dogs.json`, promoted 2026-10-13) · **13.93 s** + the 2.5 s end card · captions on · lints clean · rendered in the Scoreboard kit. The 22.0 s round-2 cut it replaced is in git history (`480efc1^`), and `renders/channel/` keeps its render until the ship step (see the [Review log](#condensed-cut-2026-10-13-08a-08b-08c)).
 
 **Platform title:** What Your $1.50 Costco Hot Dog Would Cost If It Rose Like a House
 **On-screen hook (header):** WHAT YOUR **$1.50** HOT DOG WOULD / COST IF IT ROSE LIKE A HOUSE
@@ -283,7 +284,7 @@ Each rung's label gives its basis (median new house, 1985 annual or August 2026)
 
 ## 08b · Becker Rig · "At $15/hr, You Work for Rent From the 1st Until…"
 
-**Spec:** the condensed cut (2026-10-13) is `studio/specs-wip/08b-becker-rig-hours-at-15.json` · **12.85 s** + the 2.5 s end card · captions on · lints clean · rendered in the built Becker Rig `unit-ladder`. `studio/specs/08b-becker-rig-hours-at-15.json` holds the 27.0 s round-2 cut until the ship step promotes the condensed one.
+**Spec:** the condensed cut (2026-10-13) is `studio/specs/08b-becker-rig-hours-at-15.json` (written as `studio/specs-wip/08b-becker-rig-hours-at-15.json`, promoted 2026-10-13) · **12.85 s** + the 2.5 s end card · captions on · lints clean · rendered in the built Becker Rig `unit-ladder`. The 27.0 s round-2 cut it replaced is in git history (`480efc1^`), and `renders/channel/` keeps its render until the ship step.
 
 **Platform title:** At $15/hr, You Work for Rent From the 1st Until…
 **On-screen hook (header):** At **$15/hr**, you work for rent / from the 1st to the ___
@@ -466,7 +467,7 @@ Also assumed:
 
 ## 08c · Becker Rig · "Community? In-State? Private? Your Year of College in Big Macs"
 
-**Spec:** the condensed cut (2026-10-13) is `studio/specs-wip/08c-becker-rig-college-in-big-macs.json` · **12.1 s** + the 2.5 s end card · captions on · lints clean (0 errors, 0 warnings) · rendered in the built Becker Rig `unit-ladder`. `studio/specs/08c-becker-rig-college-in-big-macs.json` holds the 22.0 s round-2 cut until the ship step promotes the condensed one. Ported from Clean Sheet on 2026-10-08 (the old spec is in `studio/specs/retired/`); the hook, every number, the VO and the verdict are unchanged. The QA fix pass after the port (2026-10-08) changed only the format's staging, not the spec (see the [Review log](#review-log)).
+**Spec:** the condensed cut (2026-10-13) is `studio/specs/08c-becker-rig-college-in-big-macs.json` (written as `studio/specs-wip/08c-becker-rig-college-in-big-macs.json`, promoted 2026-10-13) · **12.1 s** + the 2.5 s end card · captions on · lints clean (0 errors, 0 warnings) · rendered in the built Becker Rig `unit-ladder`. The 22.0 s round-2 cut it replaced is in git history (`480efc1^`), and `renders/channel/` keeps its render until the ship step. Ported from Clean Sheet on 2026-10-08 (the old spec is in `studio/specs/retired/`); the hook, every number, the VO and the verdict are unchanged. The QA fix pass after the port (2026-10-08) changed only the format's staging, not the spec (see the [Review log](#review-log)).
 
 **Platform title:** Community? In-State? Private? Your Year of College in Big Macs
 **On-screen hook (header):** Community? In-state? / Out-of-state? Private? / Your year in **Big Macs**
@@ -1076,7 +1077,7 @@ The kits only move between a cut and its landing (and for 0.2-0.35 s after it); 
   - 08b: the blank from frame 1; the blank 0.8 s after the count; no `pointUp` beat; the verdict 1.8 s after the last count; `landAfter` 2.6; a 0.4 s caption gap; "≈ the 18th";
   - 08c: no `prefillPan`; `prefillPan` 0.5 s; the ask 1.0 s after the last count; a 2.0 s verdict hold; "≈ 7,235." and "Versus community?" split again; rung 1 at 0.9 s; the hook caption from −0.2 s; "≈ 5,152".
 
-**To promote** (the ship step):
+**To promote** (the ship step; step 1 was done on 2026-10-13, see "Promoted (2026-10-13)" at the end of this log):
 1. Copy the three WIP specs over `studio/specs/<id>.json` and set `IN_SPECS` to `"cond"` for all three in `checks/08-unit-ladder.py` (the round-2 sets then serve git-history copies: `git show d71fd5c:studio/specs/<id>.json` passed with `--spec` from outside `studio/specs/`).
 2. Commit the kit change with them (`looks/becker-rig/formats/unit-ladder.js` and README §12); the committed specs render as before (proof above).
 3. BIBLE §11.1 for the three moved records: refit Scoreboard (§11.2) and Becker Rig's `MODEL`, store the records in `test/fixtures/cues.json`, `tempo-table --write` (the three rows above), then `verify --strict-cues` and `npm test`, and add a status line. The sound gates these cuts fail today are listed under Verify; each needs a pack-level answer, not a spec one (the sweeps under Verify).
@@ -1209,3 +1210,7 @@ The critic did not pass format 08 (scores 7 / 6 / 7.5). There was one must (08b'
 - **Tight passes to watch:** 08a A5 0.16, A2 0.28, B8 0.10; 08b A3 0.16, B3 0.3; 08c 250 Hz 0.6.
 
 **To promote:** as in the condensed-cut entry (copy the three WIP specs, set `IN_SPECS` to `"cond"`, then the §11.1 refits). The §2.3 tempo rows are unchanged, because no sfx cue moved. 08b's Instagram cover moment is still 2.55-2.95 s ("≈ 20th" landed, the 117-hour pile, the grid on the 20th); the hook answer is whole there from 2.77 s.
+
+### Promoted (2026-10-13)
+
+The three condensed cuts (after the fix pass) were copied from `studio/specs-wip/` over `studio/specs/` (commit 480efc1) and `IN_SPECS` is `"cond"` for each: 682 checks, 0 failed by default, and 680, 0 failed on git-history copies of the round-2 cuts passed with `--spec` (`git show 480efc1^:studio/specs/<id>.json`); the sound refit and the ship follow (`renders/channel/` keeps the round-2 cuts until then).

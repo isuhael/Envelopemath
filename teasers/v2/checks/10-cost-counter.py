@@ -37,12 +37,18 @@ Format 10 "cost-counter" (real-time cost counter): maths and spec check for teas
 Two cuts per teaser (condensed cut, 2026-10-13: the owner's "too many still moments are a killer for a short;
 condense the rest. The CTA (end card) is good", on the 06b/06c precedent). A spec is checked against one of two
 expectation sets, picked by its duration:
-   - the round-2 cut (narration-paced VO lines; bodies of 36.5 / 36.6 / 31.0 s): what studio/specs/ holds and
-     renders/channel/ ships today (IN_SPECS names the cut studio/specs/ must hold). Its rules are the ones above.
-   - the condensed cut (studio/specs-wip/<id>.json; bodies of 34.95 / 35.75 / 28.8 s + the 2.5 s end card). The
-     counter is real time ("since you hit play" is literal: $0 on frame 1, the rate, the stop on the last milestone),
-     so every number, display string, lookOpts value, milestone and the counter's clock are the round-2 cut's; only
-     the caption times, the verdict time, the duration and data.hold move. Its timing rules replace the narration
+   - the round-2 cut (narration-paced VO lines; bodies of 36.5 / 36.6 / 31.0 s): retired from studio/specs/ on
+     2026-10-13 and kept as a reference for a git-history copy (`git show 480efc1^:studio/specs/<id>.json`) passed
+     with --spec; renders/channel/ still ships it until the ship step replaces it (SHIPPED names that cut). Its rules
+     are the ones above.
+   - the condensed cut (written in studio/specs-wip/; bodies of 34.95 / 35.75 / 28.8 s + the 2.5 s end card). 10b's
+     (36.15 s since its fix pass) was promoted into studio/specs/ on 2026-10-13 and is what studio/specs/ holds
+     (IN_SPECS; the sound and the ship follow). 10a's and 10c's (34.95 / 28.75 s) never reached studio/specs/: the
+     recut below replaced them before the promotion, and they stay a reference for a git-history copy (`git show
+     ca1087f:studio/specs-wip/<id>.json`) passed with --spec. The counter is real time ("since you hit play" is
+     literal: $0 on frame 1, the rate, the stop on the last milestone), so every number, display string, lookOpts
+     value, milestone and the counter's clock are the round-2 cut's; only the caption times, the verdict time, the
+     duration and data.hold move. Its timing rules replace the narration
      rules (check_timing_cond): the lane (the last pass + the verdict's lag + its hold); the hook caption complete
      on frame 1 (Scoreboard: started >= 0.14 s before t = 0, its rise done; Becker Rig: its last word settled by
      t = 0); each caption up >= max(1.2 s, 0.12 s a word) from frame 1; captions back to back (gaps 0-0.2 s); each
@@ -86,10 +92,15 @@ expectation sets, picked by its duration:
      measured near-still with the hero counter masked). check_runup then counts the pulses from `from` and holds it at
      or before the last label beat (the kit's riser keeps its own start, so the cue record does not move) and at least
      FROM_AFTER (1.0 s) after the previous pass (the last icon has dropped in and settled, so every pulse has an icon to
-     bump). 10c's verdict stays at 13.96 s (14.0 was tried for the critic's N1 and not kept; see RECUT).
+     bump). 10c's verdict stays at 13.96 s (14.0 was tried for the critic's N1 and not kept; see RECUT). Written in
+     studio/specs-wip/, the recut was promoted into studio/specs/ on 2026-10-13 and is what studio/specs/ holds for
+     10a and 10c (IN_SPECS; the sound and the ship follow).
 
 Run:  python3 teasers/v2/checks/10-cost-counter.py                  (the specs in studio/specs/)
-      python3 teasers/v2/checks/10-cost-counter.py --spec studio/specs-wip/10a-scoreboard-debt-interest-live.json ...
+      python3 teasers/v2/checks/10-cost-counter.py --spec /tmp/10a-scoreboard-debt-interest-live.json ...
+        (e.g. the retired round-2 cut: `git show 480efc1^:studio/specs/10a-scoreboard-debt-interest-live.json
+        > /tmp/10a-scoreboard-debt-interest-live.json`, or 10a's real-time condensed cut: `git show
+        ca1087f:studio/specs-wip/10a-scoreboard-debt-interest-live.json > /tmp/10a-scoreboard-debt-interest-live.json`)
       --spec [KEY=]PATH (repeatable) checks PATH in place of studio/specs/<id>.json. KEY is a, b or c (or 10a/10b/10c,
       or the full id); without it the file's stem must be one of the three ids. A round-2-length spec is checked as
       the round-2 cut; for 10a and 10c a spec in the condensed cut's lane as the condensed (real-time) cut and any
@@ -115,8 +126,10 @@ SYNC = 0.5                   # max gap (s) between a beat and the moment the VO 
 # ---- the two cuts (see the docstring): picked by the spec's duration
 IDS = {"a": "10a-scoreboard-debt-interest-live", "b": "10b-becker-rig-debt-vs-your-pay", "c": "10c-scoreboard-amazon-makes"}
 R2_DURATION = {"a": 36.5, "b": 36.6, "c": 31.0}            # the round-2 cut's body (s)
-IN_SPECS = {"a": "r2", "b": "r2", "c": "r2"}               # the cut studio/specs/ must hold (once promoted:
-                                                           # {"a": "recut", "b": "cond", "c": "recut"})
+IN_SPECS = {"a": "recut", "b": "cond", "c": "recut"}       # the cut studio/specs/ must hold (promoted 2026-10-13;
+                                                           # was {"a": "r2", "b": "r2", "c": "r2"})
+SHIPPED = {"a": "r2", "b": "r2", "c": "r2"}                # the cut renders/channel/ ships (the ship step sets it to
+                                                           # IN_SPECS); BIBLE.md's tempo rows may describe it until then
 CUT_NAME = {"r2": "round-2 cut (narration-paced)", "cond": "condensed cut (2026-10-13)",
             "recut": "recut to the earlier verdict (2026-10-13)"}
 MD_CUT = {"a": "recut", "b": "cond", "c": "recut"}         # the cut the write-up's caption and pinned comment describe
@@ -807,8 +820,10 @@ COND[SPEC_C["id"]]["lookOpts"]["runup"] = {"beat": 0.40005}
 COND[SPEC_A["id"]]["lookOpts"]["stream"] = 24
 COND[SPEC_C["id"]]["lookOpts"]["stream"] = 24
 # (P, N1) of each cut's sound/BIBLE.md section 2.3 row: the run-up's beat is built on it, and BIBLE.md must carry the
-# row of the cut studio/specs/ holds (IN_SPECS). The round-2 and condensed cuts share P (the same last pass) and N1; the
-# recut's rows come from sound/tools/tempo-table.mjs --cues on its cue record (not in BIBLE.md until it is promoted)
+# row of the cut studio/specs/ holds (IN_SPECS) or, until the sound pass's tempo-table --write for the promoted cuts,
+# the row of the cut renders/channel/ ships (SHIPPED). The round-2 and condensed cuts share P (the same last pass) and
+# N1; the recut's rows come from sound/tools/tempo-table.mjs --cues on its cue record (promoted into studio/specs/ on
+# 2026-10-13; in BIBLE.md once the sound pass writes the table)
 RUNUP_ROW = {"r2": {"a": (F("32.511"), 80), "c": (F("26.403"), 66)},
              "cond": {"a": (F("32.511"), 80), "c": (F("26.403"), 66)},
              "recut": {"a": (F("16.256"), 40), "c": (F("13.201"), 33)}}
@@ -1293,7 +1308,8 @@ def bible_row(tid):
 
 def check_runup(tid, key, spec, t1, cut):
     """lookOpts.runup (the Scoreboard's opt-in run-up pulse): its beat is the score's beat up to the payoff, P / N1 of
-    the cut's section 2.3 row (RUNUP_ROW; BIBLE.md carries the row of the cut studio/specs/ holds), with P the riser
+    the cut's section 2.3 row (RUNUP_ROW; BIBLE.md carries the row of the cut studio/specs/ holds, or the shipped
+    cut's until the sound pass's tempo-table --write), with P the riser
     climax = the last pass, and the kit's riser at least RISER_MIN s long so that P is the riser climax; the pulses
     (tp - k * beat, back to the last label beat before the pass) leave no gap of RU_DUR + 0.4 s or more"""
     ru = spec["lookOpts"].get("runup")
@@ -1303,16 +1319,23 @@ def check_runup(tid, key, spec, t1, cut):
         return
     beat = F(str(ru["beat"]))
     P, N1 = RUNUP_ROW[cut][key]
-    sP, sN1 = RUNUP_ROW[IN_SPECS[key]][key]          # the row of the cut studio/specs/ holds (what BIBLE.md describes)
+    # the rows BIBLE.md may carry: the cut studio/specs/ holds (after the sound pass's tempo-table --write) or, until
+    # then, the cut renders/channel/ ships (SHIPPED; the ship step sets it to IN_SPECS, so only the first is left)
+    rows_ok = {RUNUP_ROW[SHIPPED[key]][key]: SHIPPED[key], RUNUP_ROW[IN_SPECS[key]][key]: IN_SPECS[key]}
     br = bible_row(tid)
     check(br is not None, tid, "the spec's tempo row is in BIBLE.md section 2.3", str(BIBLE))
     if br is not None:
-        check(br[0] == "riser" and br[1] == sP and br[2] == sN1, tid,
-              f"BIBLE.md section 2.3 row = the shipped cut's (P, N1) ({CUT_NAME[IN_SPECS[key]]}; rerun when the table moves)",
-              f"row {br[0]} P {float(br[1])} N1 {br[2]}, expected riser {float(sP)} / {sN1}")
-        if (P, N1) != (sP, sN1):
-            NOTES.append(f"{tid}: the {CUT_NAME[cut]} runs on (P, N1) = ({float(P)}, {N1}); BIBLE.md section 2.3 still "
-                         f"holds the shipped cut's ({float(sP)}, {sN1}) until the promotion's tempo-table --write")
+        held = rows_ok.get((br[1], br[2]))
+        check(br[0] == "riser" and held is not None, tid,
+              f"BIBLE.md section 2.3 row = the (P, N1) of the cut studio/specs/ holds ({CUT_NAME[IN_SPECS[key]]}) "
+              f"or, until its tempo-table --write, the shipped cut's ({CUT_NAME[SHIPPED[key]]}; rerun when the "
+              f"table moves)",
+              f"row {br[0]} P {float(br[1])} N1 {br[2]}, expected riser "
+              + " or ".join(f"{float(p_)} / {n_}" for p_, n_ in rows_ok))
+        if held is not None and (P, N1) != (br[1], br[2]):
+            NOTES.append(f"{tid}: the {CUT_NAME[cut]} runs on (P, N1) = ({float(P)}, {N1}); BIBLE.md section 2.3 holds "
+                         f"({float(br[1])}, {br[2]}), the row of the {CUT_NAME[held]}"
+                         + (" (until the sound pass's tempo-table --write)" if held != IN_SPECS[key] else ""))
     check(abs(beat - P / N1) <= F(5, 10**6), tid, f"runup.beat = P / N1 = {float(P)} / {N1} (5 dp)",
           f"{float(beat)} vs {float(P / N1):.7f}")
     d, lo = spec["data"], spec["lookOpts"]
