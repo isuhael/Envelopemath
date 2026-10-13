@@ -131,7 +131,7 @@ export function sfxLevels(tl, rendered = renderCues(tl)) {
  * C and tiltUp fitted on the 15 teasers at trim 0; refit after any level change). MODEL.fixedTrim (a calibration
  * hook) overrides the trim.
  */
-export const MODEL = { C: -23.37, a: 0.061, b: 1.165, tiltUp: 0.63, iBias: -0.42, dIS: 1.0, dISTilt: 0.8, dISTiltMax: 2.0, trimLo: -3, trimHi: 3, gRef: 5.7, fixedTrim: null }
+export const MODEL = { C: -23.29, a: 0.065, b: 1.159, tiltUp: 0.63, iBias: -0.42, dIS: 1.0, dISTilt: 0.8, dISTiltMax: 2.0, trimLo: -3, trimHi: 3, gRef: 5.7, fixedTrim: null }
 export function duckCost(tl, rendered, trims = new Map()) {
   const N = Math.round(tl.base * SR), P = tl.anchors.P.t
   const DEF = { tick: [1, 0.04, 0.08], roll: [2.5, 0, 0.15], riser: [0, 0, 0] }

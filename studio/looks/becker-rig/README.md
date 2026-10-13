@@ -707,7 +707,7 @@ A price ladder in a unit you know (FORMATS.md §8): cost ÷ unit price, repeated
 - **Frame 1**:
   - If the first rung starts late, he holds up one unit and the HUD reads `1 hot dog = $1.50` with the counter at 1.
   - Otherwise the first price coin is already standing in front of him.
-  - A first rung cut before frame 1 (`t < 0`) is pre-filled: punched, piled and counted before t = 0, so frame 1 shows its pile, its count and the "≈" working, with him pointing at it (no sound or shake from it). The camera frames him and the pile as one group, then pans back to his usual spot as the next cut pushes in.
+  - A first rung cut before frame 1 (`t < 0`) is pre-filled: punched, piled and counted before t = 0, so frame 1 shows its pile, its count and the "≈" working, with him pointing at it (no sound or shake from it). The camera frames him and the pile as one group, then pans back to his usual spot as the next cut pushes in (or, with `prefillPan`, from frame 1 on).
 - **Per rung**:
   1. The HUD swaps to the item and "cost ÷ price =" (the HUD and the counter swap together), and the counter becomes `?`.
   2. A gold coin (the price) drops in front of him. He punches it (a karate chop for small coins), and it bursts into units.
@@ -739,9 +739,10 @@ lookOpts:
 | `morph.ask` | none | s: the takeaway is asked first, like a rung's cut (`whoosh`). At `ask` the item line becomes `morph.item` (if given), the working reads "`working` =", the counter shows "?", and he thinks. At `t` the answer pops in on the hit (impact, flash, punch) at up to 1.2× the counts' size on a fresh plate (the biggest number in the video), and the "=" turns into "≈". `morph.compare: [i, j]`: from the ask the other rungs' piles and recap rows dim, and (unless `beside: false`) the smaller compared pile hops over the piles between them to stand beside the bigger one (squash, thud), the others shuffling along |
 | `hop` | on with `morph.ask`, else off | a jump is a real hop: a crouch, take-off on the beat, an arc (56 px on the last count, 70 on the asked takeaway), a squash on touchdown, then "whoa" until the slump. `false`: the `'shocked'` pose held in mid-air |
 | `landAfter` | kit pacing | s: every rung's count lands this long after its cut (≥ 0.9; coin drop, punch and fill keep their proportions). The kit's pacing is about 2.2 s on a 4 s gap |
+| `prefillPan` | none (opt-in) | s: with a pre-filled first rung, the camera's pan from the centred frame-1 group back to his usual spot runs from frame 1 over this long (ease-out) instead of with the next cut's push-in, so the answered frame-1 picture moves from frame 2. Frame 1 and every cue are unchanged; ignored without a pre-filled first rung. Absent, the pan runs with the push-in, as before (added 2026-10-13 for 08c's condensed cut) |
 | `beats` | none | `[{ t, act, d }]`: a POSES name (`'cheer'` = celebrate) at `t`, back to idle after `d` s (default 1.2; `d: null` holds it) |
 
-Examples: `specs/08b-becker-rig-hours-at-15.json` uses `blank` (the hook's `___` lands on "≈ 20th" with a 30-day `calendar`), `pileLabels: false` and a plain `morph` into "14 years of full-time work". `specs/08c-becker-rig-college-in-big-macs.json` uses `landAfter: 1.7` and an asked `morph` (`ask: 15.85`, `item`, `compare: [0, 3]`), so `hop` is on.
+Examples: `specs/08b-becker-rig-hours-at-15.json` uses `blank` (the hook's `___` lands on "≈ 20th" with a 30-day `calendar`), `pileLabels: false` and a plain `morph` into "14 years of full-time work". `specs/08c-becker-rig-college-in-big-macs.json` uses `landAfter: 1.7` and an asked `morph` (`ask: 15.85`, `item`, `compare: [0, 3]`), so `hop` is on. Its condensed cut (`specs-wip/`, 2026-10-13, pending promotion) uses `landAfter: 2.2` and `prefillPan: 1.55`.
 
 Samples:
 - `unit-ladder.json`: Costco hot dogs, 5 rungs from Netflix to a house, 24 s.

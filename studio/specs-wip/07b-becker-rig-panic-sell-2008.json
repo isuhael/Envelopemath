@@ -1,0 +1,230 @@
+{
+  "id": "07b-becker-rig-panic-sell-2008",
+  "look": "becker-rig",
+  "format": "ledger-duel",
+  "fps": 30,
+  "duration": 13.1,
+  "header": "2 people invest **$10,000**\nright before 2008\nOne sells to cut his losses",
+  "footer": "Year-end S&P 500 total return, dividends in · cash at 0%",
+  "captions": true,
+  "vo": [
+    {
+      "t": -0.4,
+      "d": 1.6,
+      "text": "2008 takes 37%."
+    },
+    {
+      "t": 1.25,
+      "d": 1.3,
+      "text": "Both drop to $6,300."
+    },
+    {
+      "t": 2.6,
+      "d": 1.25,
+      "text": "Sam sells to cut his losses."
+    },
+    {
+      "t": 3.9,
+      "d": 3.65,
+      "text": "Alex holds. By 2012, he’s back above $10,000."
+    },
+    {
+      "t": 7.6,
+      "d": 1.35,
+      "text": "2022 dips. Alex holds again."
+    },
+    {
+      "t": 9.0,
+      "d": 1.2,
+      "text": "End of 2025: Alex has about $66,000."
+    },
+    {
+      "t": 10.25,
+      "d": 1.2,
+      "text": "Sam’s still at $6,300."
+    },
+    {
+      "t": 11.5,
+      "d": 1.3,
+      "text": "He dodged the recovery."
+    }
+  ],
+  "verdict": {
+    "t": 11.5,
+    "text": "Selling didn’t dodge the crash.\nIt dodged the **recovery**."
+  },
+  "data": {
+    "people": [
+      {
+        "name": "Alex",
+        "plan": "Holds through\nthe crash"
+      },
+      {
+        "name": "Sam",
+        "plan": "Sells when\n2008 ends"
+      }
+    ],
+    "stake": "$10,000 each in the S&P 500 · Dec 31, 2007",
+    "rows": [
+      {
+        "t": 0.0,
+        "label": "Dec 2007",
+        "values": [
+          "$10,000",
+          "$10,000"
+        ]
+      },
+      {
+        "t": 0.4,
+        "label": "2008",
+        "values": [
+          "$6,300",
+          "$6,300"
+        ],
+        "event": "crash −37%",
+        "tone": "bad"
+      },
+      {
+        "t": 3.75,
+        "label": "2009",
+        "values": [
+          "≈ $8,000",
+          "$6,300"
+        ]
+      },
+      {
+        "t": 4.6,
+        "label": "2012",
+        "values": [
+          "≈ $10,900",
+          "$6,300"
+        ],
+        "event": "back above $10,000",
+        "tone": "good"
+      },
+      {
+        "t": 5.45,
+        "label": "2016",
+        "values": [
+          "≈ $18,500",
+          "$6,300"
+        ]
+      },
+      {
+        "t": 6.3,
+        "label": "2019",
+        "values": [
+          "≈ $28,400",
+          "$6,300"
+        ]
+      },
+      {
+        "t": 7.15,
+        "label": "2021",
+        "values": [
+          "≈ $43,300",
+          "$6,300"
+        ]
+      },
+      {
+        "t": 8.0,
+        "label": "2022",
+        "values": [
+          "≈ $35,500",
+          "$6,300"
+        ],
+        "event": "dip ≈ −18%",
+        "tone": "bad"
+      },
+      {
+        "t": 9.6,
+        "label": "2025",
+        "values": [
+          "≈ $66,000",
+          "$6,300"
+        ],
+        "tone": "goal"
+      }
+    ],
+    "winner": 0,
+    "hold": 0.3
+  },
+  "lookOpts": {
+    "rowLabelsAtStart": true,
+    "figures": [
+      {
+        "person": 0,
+        "color": "hero"
+      },
+      {
+        "person": 1,
+        "color": "neutral"
+      }
+    ],
+    "beats": [
+      {
+        "t": 0.03,
+        "act": "lookUp",
+        "person": 1,
+        "d": 0.4
+      },
+      {
+        "t": 2.25,
+        "act": "think",
+        "person": 1,
+        "d": 0.3
+      },
+      {
+        "t": 2.85,
+        "act": "sell",
+        "person": 1,
+        "label": "sold → cash at 0%"
+      },
+      {
+        "t": 10.7,
+        "act": "lookUp",
+        "person": 1,
+        "d": 0.4
+      },
+      {
+        "t": 12.05,
+        "act": "peek",
+        "person": 1,
+        "d": 1.05
+      },
+      {
+        "t": 11.8,
+        "act": "cheer",
+        "person": 0,
+        "d": 1.3
+      }
+    ],
+    "marks": [
+      {
+        "t": 1.7,
+        "row": 1,
+        "person": 0
+      },
+      {
+        "t": 1.7,
+        "row": 1,
+        "person": 1
+      },
+      {
+        "t": 10.75,
+        "row": 8,
+        "person": 1
+      }
+    ]
+  },
+  "sfx": [
+    {
+      "t": 0.4,
+      "kind": "thud"
+    },
+    {
+      "t": 12.05,
+      "kind": "boing"
+    }
+  ]
+}

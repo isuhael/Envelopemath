@@ -34,10 +34,37 @@ Format 10 "cost-counter" (real-time cost counter): maths and spec check for teas
    - the caption and pinned-comment numbers in teasers/v2/10-cost-counter.md are computed or sourced values.
 4. Prints a table and exits 1 on any mismatch.
 
-Run:  python3 teasers/v2/checks/10-cost-counter.py
+Two cuts per teaser (condensed cut, 2026-10-13: the owner's "too many still moments are a killer for a short;
+condense the rest. The CTA (end card) is good", on the 06b/06c precedent). A spec is checked against one of two
+expectation sets, picked by its duration:
+   - the round-2 cut (narration-paced VO lines; bodies of 36.5 / 36.6 / 31.0 s): what studio/specs/ holds and
+     renders/channel/ ships today (IN_SPECS names the cut studio/specs/ must hold). Its rules are the ones above.
+   - the condensed cut (studio/specs-wip/<id>.json; bodies of 34.95 / 35.75 / 28.8 s + the 2.5 s end card). The
+     counter is real time ("since you hit play" is literal: $0 on frame 1, the rate, the stop on the last milestone),
+     so every number, display string, lookOpts value, milestone and the counter's clock are the round-2 cut's; only
+     the caption times, the verdict time, the duration and data.hold move. Its timing rules replace the narration
+     rules (check_timing_cond): the lane (the last pass + the verdict's lag + its hold); the hook caption complete
+     on frame 1 (Scoreboard: started >= 0.14 s before t = 0, its rise done; Becker Rig: its last word settled by
+     t = 0); each caption up >= max(1.2 s, 0.12 s a word) from frame 1; captions back to back (gaps 0-0.2 s); each
+     milestone's caption up within -0.15..+0.3 s of its pass (captions say "passed" / "gone", so never early);
+     the lookOpts beats starting their caption lines; the counter moving every frame from frame 1 to the stop (a
+     whole-dollar count at >= $1 a frame); the verdict 0.8-1.5 s after the final reveal (Scoreboard: the stop on
+     the last milestone; Becker Rig: the lock's hit, where the board bursts, the stamp and the stopwatch's end
+     label land) and held 1.2-1.6 s before the end card; a proxy for the motion audit (the reveal's own motion
+     settles about 0.4 s after the stop on the Scoreboard and 0.75 s after the hit on the Becker Rig, as measured
+     on the condensed renders; the gap from there to the verdict's first moving frame stays under 0.4 s); the
+     verdict landing while the last caption is up (Scoreboard), or the last line hidden under it at its own time
+     (Becker Rig, as 06c); the last caption ending >= 0.4 s before the card; hold = duration - counter end.
+
+Run:  python3 teasers/v2/checks/10-cost-counter.py                  (the specs in studio/specs/)
+      python3 teasers/v2/checks/10-cost-counter.py --spec studio/specs-wip/10a-scoreboard-debt-interest-live.json ...
+      --spec [KEY=]PATH (repeatable) checks PATH in place of studio/specs/<id>.json. KEY is a, b or c (or 10a/10b/10c,
+      or the full id); without it the file's stem must be one of the three ids. A round-2-length spec is checked as
+      the round-2 cut, any other as the condensed cut (and fails its lane unless it is one).
 """
 import json
 import math
+import os
 import re
 import sys
 from fractions import Fraction as F
@@ -50,6 +77,69 @@ MD = REPO / "teasers" / "v2" / "10-cost-counter.md"
 WPS = 2.6                    # voice-over reading speed, words per second
 LANE = (20.0, 40.0)          # duration lane for this format (HD Guy's F-16 counter is 30 s; brief: 20-40 s)
 SYNC = 0.5                   # max gap (s) between a beat and the moment the VO says it
+
+# ---- the two cuts (see the docstring): picked by the spec's duration
+IDS = {"a": "10a-scoreboard-debt-interest-live", "b": "10b-becker-rig-debt-vs-your-pay", "c": "10c-scoreboard-amazon-makes"}
+R2_DURATION = {"a": 36.5, "b": 36.6, "c": 31.0}            # the round-2 cut's body (s)
+IN_SPECS = {"a": "r2", "b": "r2", "c": "r2"}               # the cut studio/specs/ must hold ("cond" once promoted)
+CUT_NAME = {"r2": "round-2 cut (narration-paced)", "cond": "condensed cut (2026-10-13)"}
+# condensed-cut targets (the editor's brief for the owner's note, as for 06b/06c). The counter is real time, so a
+# body is its last pass (32.51 / 33.27 / 26.40 s) + the verdict's lag (0.8-1.5 s) + its hold (1.2-1.6 s)
+COND_LANE = {"a": (34.0, 35.6), "b": (35.0, 36.4), "c": (28.2, 29.5)}   # body (s), plus the 2.5 s end card
+CAP_MIN, CAP_SPW = 1.2, 0.12     # captions (no narration): up >= 1.2 s a line, >= 0.12 s a word at phone size
+CAP_GAP = 0.2                    # captions run back to back: each gap < 0.2 s
+PASS_WIN = (-0.15, 0.3)          # a milestone's caption goes up this close to its pass (s, caption start - pass)
+VERDICT_AFTER = (0.8, 1.5)       # the verdict lands this long after the final reveal
+VERDICT_HOLD = (1.2, 1.6)        # and holds this long before the end card
+STILL_MAX = 0.4                  # the motion proxy never leaves this long a gap before the verdict
+SETTLE = {"scoreboard": 0.40, "becker-rig": 0.75}   # the reveal's own motion (s after the reveal), measured
+YIELD = {"scoreboard": 0.067, "becker-rig": 0.0}    # the verdict's first moving frame before verdict.t (label yield)
+CAP_RISE = {"scoreboard": 0.14}  # a Scoreboard caption rises over 0.14 s (complete when started that long before 0)
+CARD_PAD = 0.4                   # the last caption ends at least this long before the end card
+CAP_TAIL = 0.15                  # both kits fade a caption out over 0.15 s past its end (runtime captionAt endPad)
+
+
+def parse_spec_args(argv):
+    """--spec [KEY=]PATH (repeatable) -> {id: Path}; see the module docstring"""
+    out, i = {}, 0
+    keys = {**{k: k for k in IDS}, **{f"10{k}": k for k in IDS}, **{sid: k for k, sid in IDS.items()}}
+    while i < len(argv):
+        a = argv[i]
+        if a in ("-h", "--help"):
+            print(__doc__)
+            sys.exit(0)
+        if a == "--spec" or a.startswith("--spec="):
+            if a == "--spec":
+                i += 1
+                v = argv[i] if i < len(argv) else ""
+            else:
+                v = a.split("=", 1)[1]
+            if not v:
+                sys.exit("--spec needs a path")
+            head, eq_, tail = v.partition("=")
+            if eq_ and head in keys:
+                key, path = keys[head], tail
+            elif eq_ and not os.path.exists(v):
+                sys.exit(f"--spec {v}: KEY {head!r} is not one of {', '.join(keys)}")
+            else:
+                path = v
+                stem = os.path.splitext(os.path.basename(v))[0]
+                key = next((k for k, s_ in IDS.items() if s_ == stem), None)
+                if key is None:
+                    sys.exit(f"--spec {v}: the file stem is not one of {sorted(IDS.values())}; pass KEY=PATH "
+                             f"(KEY: {', '.join(keys)})")
+            if not os.path.isfile(path):
+                sys.exit(f"--spec {v}: no such file")
+            out[IDS[key]] = Path(os.path.abspath(path))
+        else:
+            sys.exit(f"unknown argument {a!r}; usage: 10-cost-counter.py [--spec [KEY=]PATH ...]")
+        i += 1
+    return out
+
+
+SPEC_PATHS = {sid: SPEC_DIR / f"{sid}.json" for sid in IDS.values()}
+SPEC_PATHS.update(parse_spec_args(sys.argv[1:]))
+KEY_OF = {sid: k for k, sid in IDS.items()}
 
 # ======================================================================================
 # Sourced real-world inputs (USD). Sources: teasers/v2/10-cost-counter.md, "Sources".
@@ -572,6 +662,59 @@ assert all(t + hold >= nxt - 1e-9 for (t, hold), (nxt, _) in zip(_beats_c, _beat
     "10c: every label beat holds to the next one (the resting rate shows only before the first pass)"
 
 EXPECTED = [SPEC_A, SPEC_B, SPEC_C]
+for _w in EXPECTED:
+    _w["cut"] = "r2"
+
+# ---------- the condensed cut (2026-10-13) ----------------------------------------------------------------------
+# The same strings, numbers, milestones, lookOpts and counter clock as the round-2 cut (the counter is real time:
+# "since you hit play" is literal, so no pass can move); new caption times (reading-paced, back to back, the hook
+# complete on frame 1), a new verdict time (0.8-1.5 s after the final reveal), a new duration (the verdict held
+# 1.2-1.6 s) and data.hold = duration - counterT[1]. vo: (t, d) per line, in the round-2 order and wording.
+import copy
+
+
+def cond_of(base, duration, verdict_t, vo_td, sync, beats, reveal, hidden_last=False):
+    w = copy.deepcopy(base)
+    assert len(vo_td) == len(base["vo"])
+    w["duration"] = duration
+    w["vo"] = [(t, dd, text) for (t, dd), (_, _, text) in zip(vo_td, base["vo"])]
+    w["verdict"] = (verdict_t, base["verdict"][1])
+    w["data"]["hold"] = float(F(str(duration)) - F(str(base["data"]["counterT"][1])))
+    w["sync_c"] = sync              # (milestone value, vo index): the caption that names it goes up at its pass
+    w["beats"] = beats              # lookOpts beats: (t, the vo line it starts)
+    w["reveal"] = reveal            # the final reveal: the stop (Scoreboard) or the lock's hit (Becker Rig)
+    w["hidden_last"] = hidden_last  # Becker Rig: the last line lands under the verdict and is never shown (06c)
+    w["cut"] = "cond"
+    return w
+
+
+COND = {
+    # the stop on $1,000,000 at 32.511 s; the verdict 0.84 s later; "And the last row?" holds through the riser
+    SPEC_A["id"]: cond_of(SPEC_A, 34.95, 33.35,
+                          [(-0.4, 2.45), (2.1, 1.2), (3.3, 2.05), (5.4, 2.7), (8.15, 4.25), (12.45, 3.8),
+                           (16.3, 2.75), (19.1, 3.55), (22.7, 5.25), (28.0, 4.45), (32.5, 2.05)],
+                          sync=[(PAY, 1), (100000, 2), (250000, 4), (500000, 6), (10**6, 10)],
+                          beats=SPEC_A["beats"], reveal=A["run"][1]),
+    # the lock (33.274 s) and its hit at 33.3 s: the board bursts, the stamp and the stopwatch's end label land; the
+    # question holds through it and the verdict replaces it 0.9 s later; "A working life" lands under the verdict
+    SPEC_B["id"]: cond_of(SPEC_B, 35.75, 34.2,
+                          [(-0.4, 2.85), (2.5, 1.65), (4.2, 4.05), (8.3, 2.25), (10.6, 5.8), (16.5, 1.6),
+                           (18.2, 4.8), (23.1, 2.0), (25.1, 3.4), (28.6, 5.55), (34.2, 1.15)],
+                          sync=[(PAY3, 1), (PAY10, 3), (PAY20, 5), (PAY30, 8)],
+                          beats=[(16.5, 5), (28.6, 9)], reveal=F("33.3"), hidden_last=True),
+    # the stop on $65,052 at 26.403 s (the coin grows 0.5 s); the verdict 0.81 s later
+    SPEC_C["id"]: cond_of(SPEC_C, 28.8, 27.21,
+                          [(-0.4, 3.15), (2.8, 2.15), (5.0, 2.35), (7.4, 5.75), (13.2, 2.55), (15.8, 6.95),
+                           (22.8, 3.55), (26.4, 2.0)],
+                          sync=[(C["five_cents"], 2), (C["half"], 4), (PAY, 7)],
+                          beats=SPEC_C["beats"], reveal=C["run"][1]),
+}
+# 10c: "Next: a year of median pay" (22.8 s) is held 3.7 s, not 3.6, so the label beat runs into the last pass
+# (26.40258 s at the stored rate) instead of ending 2.6 ms before it. In the round-2 cut the verdict replaced the label
+# stack at 26.4, so the gap never showed; with the verdict at 27.21 a frame inside it would flash the resting rate. No
+# frame falls inside it (26.4 s ends the beat at 22.8 + 3.6 = 26.400000000000002 in float), so the picture and the cue
+# record are unchanged, but the check now holds every beat to the next one (check_label_holds_c).
+COND[SPEC_C["id"]]["lookOpts"]["rateSteps"][3]["d"] = 3.7
 
 # One shown rounding per quantity: (name, exact value, the one display allowed within Â±5% of it)
 QUANTITIES = {
@@ -657,14 +800,26 @@ APPROX_NEEDED = {  # display strings whose number is rounded: they must carry "â
 
 def check_spec(want):
     tid = want["id"][:3]
-    path = SPEC_DIR / f"{want['id']}.json"
+    sid, key = want["id"], KEY_OF[want["id"]]
+    path = SPEC_PATHS[sid]
     check(path.exists(), tid, "spec file exists", str(path))
     if not path.exists():
         return
     spec = json.loads(path.read_text())
 
+    # ---- which cut: the round-2 cut by its length, any other length the condensed cut (fails its lane if not one)
+    cut = "r2" if abs(spec.get("duration", 0) - R2_DURATION[key]) < 1e-9 else "cond"
+    in_specs = path.resolve() == (SPEC_DIR / f"{sid}.json").resolve()
+    check(cut == IN_SPECS[key] if in_specs else True, tid, "studio/specs/ holds the expected cut",
+          f"{CUT_NAME[cut]} in studio/specs/, want {CUT_NAME[IN_SPECS[key]]}")
+    CUTS[sid] = (CUT_NAME[cut], os.path.relpath(path, REPO))
+    if cut == "cond":
+        want = COND[sid]
+
     # ---- contract shape -------------------------------------------------------------
-    eq(tid, "id = file stem", spec.get("id"), path.stem)
+    eq(tid, "id", spec.get("id"), sid)
+    if in_specs:
+        eq(tid, "id = file stem", spec.get("id"), path.stem)
     for k in ("id", "look", "format", "fps", "duration", "header", "footer", "captions", "vo", "verdict", "data"):
         check(k in spec, tid, f"common field {k}")
     for k in ("label", "perSecond", "rateDisplay", "counterT", "startValue", "prefix", "dp", "milestones", "final", "hold"):
@@ -741,6 +896,13 @@ def check_spec(want):
 
     # ---- timing ------------------------------------------------------------------------
     check(bool(NUM_RE.search(d["rateDisplay"])), tid, "rateDisplay carries a number")
+    check(len(strip_markup(spec["header"]).split()) <= 15, tid, "header <= 15 words (R8)")
+    if tid == "10c":
+        check_label_holds_c(spec)
+    if want["cut"] == "cond":
+        check_timing_cond(tid, spec, want, d, rate, t0, t1)
+        ROWS.append((want["id"], len(spec["vo"]), len(d["milestones"]), d["rateDisplay"], d["final"], spec["duration"]))
+        return
     check(spec["vo"][0]["t"] == 0.0, tid, "VO starts at 0.0")
     for i, v in enumerate(spec["vo"]):
         words = spoken_words(v["text"])
@@ -770,9 +932,110 @@ def check_spec(want):
     check(dur >= vt + 2.5 - 1e-9, tid, "duration covers verdict + 2.5 s")
     check(abs(d["hold"] - (dur - float(t1))) < 1e-9, tid, "hold = duration - counter end",
           f"{d['hold']} vs {dur - float(t1):.2f}")
-    check(len(strip_markup(spec["header"]).split()) <= 15, tid, "header <= 15 words (R8)")
 
     ROWS.append((want["id"], len(spec["vo"]), len(d["milestones"]), d["rateDisplay"], d["final"], dur))
+
+
+def check_label_holds_c(spec):
+    """10c in the Scoreboard: every label beat (the kit's passes at the stored rate, the rate steps) holds to the next
+    beat or the verdict, so the resting rate never flashes between beats (it shows only before the first pass)"""
+    lo, d = spec["lookOpts"], spec["data"]
+    kit_rate, t0 = F(str(d["perSecond"])), F(str(d["counterT"][0]))
+    beats = sorted([(float(t0 + F(str(m["value"])) / kit_rate), lo.get("flash", 3.0)) for m in d["milestones"]]
+                   + [(s["t"], s.get("d", 4.0)) for s in lo.get("rateSteps", [])])
+    vt = spec["verdict"]["t"]
+    beats = [b for b in beats if b[0] < vt]
+    nxt = [b[0] for b in beats[1:]] + [vt]
+    for (t, hold), n in zip(beats, nxt):
+        check(t + hold >= n - 1e-9, "10c", f"label beat at {t:.3f} s holds to the next beat ({n:.3f} s)",
+              f"ends {t + hold:.3f} s")
+
+
+def check_timing_cond(tid, spec, want, d, rate, t0, t1):
+    """the condensed cut: captions paced for reading, every pass under its caption, the verdict after the reveal"""
+    key, look = KEY_OF[want["id"]], spec["look"]
+    vo, dur, vt = spec["vo"], spec["duration"], spec["verdict"]["t"]
+    lo_, hi_ = COND_LANE[key]
+    check(lo_ - 1e-9 <= dur <= hi_ + 1e-9, tid, f"condensed body in its lane ({lo_}-{hi_} s, + the 2.5 s end card)",
+          str(dur))
+
+    # frame 1: the hook caption complete (no type-on), the counter moving from frame 2 to the stop
+    v0 = vo[0]
+    if look == "scoreboard":
+        check(v0["t"] <= -CAP_RISE["scoreboard"] + 1e-9, tid, "hook caption complete on frame 1 (its 0.14 s rise done)",
+              f"vo[0].t = {v0['t']}")
+    else:
+        n = len(strip_markup(v0["text"]).split())
+        done = v0["t"] + (n - 1) * min(0.045, 0.32 / max(1, n)) + 0.16
+        check(done <= 1e-9, tid, "hook caption complete on frame 1 (its last word settled by t = 0)",
+              f"settles at {done:.3f} s")
+    check(float(t0) <= 0 and d["dp"] == 0 and F(str(d["perSecond"])) / spec["fps"] >= 1, tid,
+          "the counter moves every frame from frame 1 to the stop (>= $1 a frame)", f"{d['perSecond']} / {spec['fps']}")
+
+    # captions: reading-paced, back to back; a Becker Rig line at the verdict is never shown (the verdict replaces it)
+    hidden = want["hidden_last"]
+    shown = vo[:-1] if hidden else vo
+    for i, v in enumerate(shown):
+        words = len(strip_markup(v["text"]).split())
+        need = max(CAP_MIN, CAP_SPW * words)
+        up = v["t"] + v["d"] - max(0.0, v["t"])
+        check(up >= need - 1e-9, tid, f"vo[{i}] up >= {need:.2f} s from frame 1 ({words} words)", f"up {up:.2f} s")
+    for i in range(len(vo) - 1):
+        gap = vo[i + 1]["t"] - (vo[i]["t"] + vo[i]["d"])
+        check(-1e-9 <= gap < CAP_GAP - 1e-9, tid, f"captions back to back: vo[{i}] -> vo[{i + 1}] gap < {CAP_GAP} s",
+              f"{gap:.2f} s")
+
+    # each milestone's caption goes up at its pass (they say "passed" / "gone": never early); every pass under a caption
+    for value, li in want["sync_c"]:
+        passed = pass_time(value, rate, t0)
+        lag = F(str(vo[li]["t"])) - passed
+        check(F(str(PASS_WIN[0])) <= lag <= F(str(PASS_WIN[1])), tid,
+              f"milestone {float(value):,.2f}'s caption vo[{li}] goes up at its pass ({PASS_WIN[0]}..+{PASS_WIN[1]} s)",
+              f"pass {float(passed):.3f} s, caption {vo[li]['t']} ({float(lag):+.3f})")
+    for m in d["milestones"]:   # (a caption stays up CAP_TAIL s past its end as it fades, unless the next one starts)
+        tp = float(pass_time(F(str(m["value"])), rate, t0))
+        check(any(v["t"] <= tp < v["t"] + v["d"] + CAP_TAIL for v in shown), tid,
+              f"milestone {m['value']:,} passes under a caption", f"{tp:.3f} s")
+    for t, li in want["beats"]:
+        eq(tid, f"beat {t} starts vo[{li}]", vo[li]["t"], t)
+
+    # the final reveal: the stop on the last milestone (Scoreboard), or the lock's hit (Becker Rig: the burst, the
+    # stamp and the stopwatch's end label land on it)
+    reveal = float(want["reveal"])
+    if look == "scoreboard":
+        check(abs(reveal - float(t1)) < 1e-9, tid, "the final reveal is the stop on the last milestone", f"{reveal} vs {float(t1)}")
+    else:
+        lo = spec["lookOpts"]
+        check(0 <= reveal - float(t1) <= 0.1, tid, "the final reveal is the lock (the first beat on or after the stop)",
+              f"{reveal} vs stop {float(t1)}")
+        check(any(x["kind"] == "hit" and abs(x["t"] - reveal) < 1e-9 for x in spec.get("sfx", [])), tid,
+              "the lock's hit lands on the reveal")
+        check(abs(lo["gag"]["t"] - reveal) < 1e-9 and abs(lo["timer"]["endLabel"]["t"] - reveal) < 1e-9
+              and any(k["state"] == "burst" and abs(k["t"] - reveal) < 1e-9 for k in lo["heat"]), tid,
+              "the stamp, the stopwatch's end label and the burst land on the reveal")
+
+    # the verdict: 0.8-1.5 s after the reveal, held 1.2-1.6 s; the motion proxy across the gap
+    lag = vt - reveal
+    check(VERDICT_AFTER[0] - 1e-9 <= lag <= VERDICT_AFTER[1] + 1e-9, tid,
+          f"verdict {VERDICT_AFTER[0]}-{VERDICT_AFTER[1]} s after the final reveal ({reveal:.3f} s)", f"{lag:.3f} s")
+    hold = dur - vt
+    check(VERDICT_HOLD[0] - 1e-9 <= hold <= VERDICT_HOLD[1] + 1e-9, tid,
+          f"verdict held {VERDICT_HOLD[0]}-{VERDICT_HOLD[1]} s before the end card", f"{hold:.2f} s")
+    gap = (vt - YIELD[look]) - (reveal + SETTLE[look])
+    check(gap < STILL_MAX, tid, f"motion proxy: the reveal settles +{SETTLE[look]} s, the verdict moves within "
+          f"{STILL_MAX} s of it", f"{gap:.3f} s")
+    last = vo[-1]
+    if hidden:
+        eq(tid, "the last line lands under the verdict (never shown; Becker Rig, as 06c)", last["t"], vt)
+        prev = vo[-2]
+        check(prev["t"] <= reveal < prev["t"] + prev["d"], tid, "a caption is up through the reveal",
+              f"vo[-2] {prev['t']}-{prev['t'] + prev['d']:.2f}")
+    else:
+        check(last["t"] <= vt <= last["t"] + last["d"], tid, "the verdict lands while the last caption is up",
+              f"{last['t']}-{last['t'] + last['d']:.2f} vs {vt}")
+    check(dur >= last["t"] + last["d"] + CARD_PAD - 1e-9, tid, f"the last caption ends >= {CARD_PAD} s before the end card")
+    check(abs(d["hold"] - (dur - float(t1))) < 1e-9, tid, "hold = duration - counter end",
+          f"{d['hold']} vs {dur - float(t1):.5f}")
 
 def check_quantities(tid, texts):
     """Any number within 5% of a computed quantity must be that quantity's one shown rounding."""
@@ -822,6 +1085,7 @@ def check_md():
         check_forbidden(tid, texts)
 
 ROWS = []
+CUTS = {}
 for want in EXPECTED:
     check_spec(want)
 check_md()
@@ -834,9 +1098,10 @@ print("-" * 110)
 for tid, what, formula, exact, shown in VALUES:
     print(f"{tid:6} {what:18} {formula:24} {float(exact):>18,.4f}  {shown}")
 print()
-print(f"{'spec':40} {'vo':>3} {'miles':>5}  {'rate':24} {'final':16} {'dur':>5}")
+print(f"{'spec':40} {'vo':>3} {'miles':>5}  {'rate':24} {'final':16} {'dur':>5}  cut (file)")
 for r in ROWS:
-    print(f"{r[0]:40} {r[1]:>3} {r[2]:>5}  {r[3]:24} {r[4]:16} {r[5]:>5}")
+    cut, rel = CUTS.get(r[0], ("?", "?"))
+    print(f"{r[0]:40} {r[1]:>3} {r[2]:>5}  {r[3]:24} {r[4]:16} {r[5]:>5}  {cut} ({rel})")
 print()
 print(f"{CHECKS} checks, {len(FAILS)} failures")
 for f in FAILS:

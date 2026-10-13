@@ -12,37 +12,37 @@
    "4": -18.6
   },
   "DROP": {
-   "5": -18.9
+   "5": -19.0
   },
   "HOLD": {
-   "3": -18
+   "3": -18.1
   },
   "BREAK": {
-   "2": -18.1
+   "2": -19.1
   },
   "VERDICT": {
-   "4": -18.2
+   "4": -18.1
   },
   "CADENCE": {
-   "3": -18.6
+   "3": -18.8
   },
   "HOLD2": {
    "3": -18.3
   }
  },
  "OFF_EFF": 0.65,
- "OPEN_FIT": 2,
+ "OPEN_FIT": 1.8,
  "M_FIT": 1.68,
- "GM": -16.07,
- "GM_PLAN": -16.02,
- "LOGO_PRE": -16.25,
+ "GM": -16.46,
+ "GM_PLAN": -16.3,
+ "LOGO_PRE": -16.4,
  "stats": {
-  "M_FIT_sd": 0.19,
-  "GM_sd": 0.25,
-  "GM_PLAN_sd": 0.25,
-  "LOGO_PRE_sd": 0.03,
-  "OPEN_FIT_sd": 0.56,
+  "M_FIT_sd": 0.2,
+  "GM_sd": 0.42,
+  "GM_PLAN_sd": 0.35,
+  "LOGO_PRE_sd": 0.38,
+  "OPEN_FIT_sd": 0.68,
   "specs": 15,
-  "from": "calibrate.mjs on an audio --stems render of 15 teasers, cue records test/fixtures/cues.json (2026-10-11); re-measured 2026-10-12 on the same records: within 0.03 dB on the scalars, 0.10 dB on BEDS (not written)"
+  "from": "refit round 1 (2026-10-13) on a fresh dump of the 15 records (9 condensed cuts): calibrate.mjs on the before-build; written only where a value moved past the fixed-point tolerance (scalars 0.03 dB, BEDS 0.10 dB): BEDS DROP 5, CADENCE 3, BREAK 2, VERDICT 4, HOLD 3, GM, GM_PLAN, LOGO_PRE, OPEN_FIT; M_FIT (1.651) and the other BEDS cells kept"
  }
 }

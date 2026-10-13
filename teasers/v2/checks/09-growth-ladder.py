@@ -38,9 +38,36 @@
    joins lookOpts.beats at rowT[5] (year 20, 13.9 s, point then think, 2.3 s), so the figure acts through the
    14.5-16.8 s gap; a claim asserts it is the only one, sits on the year-20 rung and ends >= 0.6 s before the next
    coin's wind-up (which starts at most 0.95 s before its rung). Everything else in that pass is in the format file.
-4. Prints a table and exits 1 on any mismatch.
+4. Two cuts per teaser (2026-10-13, the owner's "too many still moments are a killer for a short; condense the
+   rest; the CTA is good"), picked by the spec's duration. The narration cut (09a 28.5 s, 09b 27.0 s, 09c 31.5 s:
+   VO-paced lines) is what studio/specs/ holds until the ship step promotes the condensed cut (IN_SPECS names the
+   cut studio/specs/ must hold). The condensed cut (a body of 12-16 s, the 06c / 06b precedent; studio/specs-wip/)
+   shares every string, number, row and claim above and is timed as on-screen captions with no narration:
+   - each caption is up >= max(1.2 s, 0.12 s a word), counted from frame 1; captions back to back (gaps < 0.2 s);
+     the first one complete on frame 1 (vo[0].t at or before the look's word pop / rise: Becker -0.48, Scoreboard
+     -0.14);
+   - each number caption is up while its row lands: Becker, it goes up <= 1.3 s before the rung lands and stays
+     >= 0.5 s after; Scoreboard, it goes up with the row's cut (+-0.05 s) and stays >= 0.25 s after the count lands
+     (the count clock is the kit's: cut, a 0.12 s dip, a roll of 0.8-1.9 s by the value's ratio, capped 0.25 s before
+     the next cut, the last >= 2.4 s);
+   - the verdict 0.8-1.5 s after the final reveal (Becker: the last rung's plate; Scoreboard: the hero's beat) and
+     held 1.2-1.6 s before the end card; the last caption line starts with it and ends by the end;
+   - motion (a proxy for the frame-difference audit, no still run >= 0.4 s before the verdict): Becker, a rung gap
+     with no figure act is <= 1.7 s and one with an act <= 2.1 s (a landing moves ~0.4 s, a throw takes the last
+     0.95 s), the first throw winds up after the frame-1 nod (rung 2 >= 1.6 s), the figure moves from frame 2 (an
+     act-only opening beat on row 0 at t -0.12, so the kit's +0.14 s act starts at 0.02 s), the heave is the cut's
+     own (09a short: the last gap 1.4-2.2 s; 09b long: room for the >= 2.2 s struggle, <= 3.15 s), 09a's verdict point
+     starts after the kit's heave pointUp (rung + 1.25 s), so he points at year 9, not the plate, and 09a's tags are
+     up >= 1.0 s; Scoreboard (09c), the first cut by 0.5 s (frame 1's landing bump ends at 0.31 s), every later cut
+     <= 0.5 s after the previous landing, the hero's "× 75,176" 0.6-0.9 s after the year-40 landing and the verdict's
+     make-room scroll (verdict - 0.35 s) <= 0.25 s after the hero's bump (hero + 0.36 s).
+   A spec of any other length fails "a known cut" and stops there.
+5. Prints a table and exits 1 on any mismatch.
 
-Run:  python3 teasers/v2/checks/09-growth-ladder.py
+Run:  python3 teasers/v2/checks/09-growth-ladder.py                      (the specs in studio/specs/)
+      python3 teasers/v2/checks/09-growth-ladder.py --spec studio/specs-wip/09a-becker-rig-100-a-month-doubles.json
+      --spec [KEY=]PATH (repeatable) checks PATH in place of studio/specs/<id>.json. KEY is a, b or c (or 09a, 09b,
+      09c, or the full id); without it the file's stem must be one of the three ids.
 """
 import json
 import math
@@ -56,6 +83,86 @@ LANE = (20.0, 40.0)  # duration lane for this format (task brief)
 BEAT_TOL = 0.5       # a named row must land within this many seconds of its spoken word
 FIRST_ROW_MAX = 3.0  # R10: first payoff by ~3 s
 LOOKS = ("clean-sheet", "live-sheet", "scoreboard", "becker-rig")
+IDS = {"a": "09a-becker-rig-100-a-month-doubles", "b": "09b-becker-rig-1000-times-1-07",
+       "c": "09c-scoreboard-5-a-day-millionaire"}
+
+# ---- the two cuts (see 4. in the docstring)
+NARRATION_DUR = {IDS["a"]: 28.5, IDS["b"]: 27.0, IDS["c"]: 31.5}
+IN_SPECS = {IDS["a"]: "narration", IDS["b"]: "narration", IDS["c"]: "narration"}   # -> "condensed" on promotion
+CONDENSED_LANE = (12.0, 16.0)      # s, the body (+ the 2.5 s end card): 06c 15.7, 06b 18.3, 06a 15.3
+CAP_MIN, CAP_SPW = 1.2, 0.12       # a caption is up >= max(1.2 s, 0.12 s a word), from frame 1
+CAP_GAP = 0.2                      # captions back to back: no beat goes unlabelled
+FIRST_CAP_UP = {"scoreboard": -0.14, "becker-rig": -0.48}   # vo[0].t at or before this: complete on frame 1
+#   (Scoreboard: a line rises in over 0.14 s; Becker Rig: its words pop in over <= 0.32 s + 0.16 s)
+VERDICT_AFTER = (0.8, 1.5)         # the verdict this long after the final reveal ...
+VERDICT_HOLD = (1.2, 1.6)          # ... and held this long before the end card
+BR_CAP_LEAD, BR_CAP_TRAIL = 1.3, 0.5   # Becker: a number caption goes up <= 1.3 s before its rung, stays >= 0.5 s after
+SB_CAP_CUT, SB_CAP_TRAIL = 0.05, 0.25  # Scoreboard: it goes up with the row's cut, stays >= 0.25 s after the landing
+BR_GAP_PLAIN, BR_GAP_ACT = 1.7, 2.1    # Becker: a rung gap with no figure act / with one (motion proxy)
+BR_FIRST_THROW = 1.6               # Becker: rung 2 lands >= 1.6 s (its 0.95 s throw winds up after the frame-1 nod)
+BR_OPEN_ACT_T = (-0.14, -0.14 + 1 / 30)   # Becker: the opening act's beat t: the act (t + 0.14 s) starts by frame 2
+BR_HEAVE = {IDS["a"]: ("short", 1.4, 2.2), IDS["b"]: ("long", 2.3, 3.15)}   # the last gap (s) for the cut's heave
+BR_POINT_UP = 1.25                 # the kit's heave: pointUp at the plate's rung + 1.25 s
+BR_TAG_MIN = 1.0                   # 09a's tags are up >= 1.0 s (t + 0.08 s, or + 0.24 s on an impact, to t + d)
+SB_FIRST_CUT, SB_NEXT_CUT = 0.5, 0.5   # 09c: the first cut by 0.5 s; each later cut <= 0.5 s after the last landing
+#   (the landing bump runs 0.36 s and the next count starts 0.12 s after its cut: the render measured no still run
+#   over 0.23 s before the verdict with a 0.47 s wait after row 5)
+SB_HERO_AFTER = (0.6, 0.9)         # 09c: the hero's "× 75,176" this long after the year-40 landing
+SB_ROOM_GAP = 0.25                 # 09c: the make-room scroll (verdict - 0.35 s) <= this after the hero's bump ends
+
+
+def parse_spec_args(argv):
+    """--spec [KEY=]PATH (repeatable) -> {id: abs path}; see the module docstring"""
+    out, i = {}, 0
+    keys = {**{k: sid for k, sid in IDS.items()}, **{sid[:3]: sid for sid in IDS.values()},
+            **{sid: sid for sid in IDS.values()}}
+    while i < len(argv):
+        a = argv[i]
+        if a in ("-h", "--help"):
+            print(__doc__)
+            sys.exit(0)
+        if a == "--spec" or a.startswith("--spec="):
+            if a == "--spec":
+                i += 1
+                v = argv[i] if i < len(argv) else ""
+            else:
+                v = a.split("=", 1)[1]
+            if not v:
+                sys.exit("--spec needs a path")
+            k, sep, rest = v.partition("=")
+            if sep and k in keys:
+                sid, path = keys[k], rest
+            else:
+                path = v
+                stem = os.path.splitext(os.path.basename(v))[0]
+                sid = stem if stem in IDS.values() else None
+                if sid is None:
+                    sys.exit(f"--spec {v}: the file stem is not one of {sorted(IDS.values())}; pass KEY=PATH")
+            if not os.path.isfile(path):
+                sys.exit(f"--spec {v}: no such file")
+            out[sid] = os.path.abspath(path)
+        else:
+            sys.exit(f"unknown argument {a!r}; usage: 09-growth-ladder.py [--spec [KEY=]PATH ...]")
+        i += 1
+    return out
+
+
+SPEC_PATHS = {sid: os.path.join(SPECS, sid + ".json") for sid in IDS.values()}
+SPEC_PATHS.update(parse_spec_args(sys.argv[1:]))
+SPEC = {sid: json.load(open(p, encoding="utf-8")) for sid, p in SPEC_PATHS.items()}
+
+
+def pick_cut(sid, spec):
+    """'narration' (the round-2 / port cut), 'condensed' (2026-10-13) or None, by the spec's duration"""
+    dur = spec.get("duration", 0)
+    if abs(dur - NARRATION_DUR[sid]) < 1e-9:
+        return "narration"
+    if CONDENSED_LANE[0] <= dur <= CONDENSED_LANE[1]:
+        return "condensed"
+    return None
+
+
+CUT = {sid: pick_cut(sid, s) for sid, s in SPEC.items()}
 
 # ============================================================== inputs (assumptions, no market data)
 
@@ -377,9 +484,145 @@ def record(sid, field, shown, want, ok, why=""):
     if not ok:
         fails.append(f"{sid} {field}: shown {shown!r} want {want!r} {why}")
 
+def is_open_act(b):
+    """Becker: the act-only opening beat on row 0 (the figure moves from frame 2)"""
+    return isinstance(b, dict) and b.get("row") == 0 and b.get("act") and "label" not in b and not b.get("relight") \
+        and not b.get("impact") and b.get("t", 0) < 0
+
+
+def sb_steps(spec):
+    """Scoreboard growth-ladder's count clock (looks/scoreboard/formats/growth-ladder.js): per row its cut, the count's
+    start and its landing. A cut slams the row in, the count starts 0.12 s later (DIP) and rolls rollFor(from, to) s
+    (0.8-1.9), capped to land >= 0.25 s before the next cut; the big last row rolls >= 2.4 s; a row timed before 0.5 s
+    is on the board at frame 1 (its count started 0.45 s before its cut, or before 0 when it is the intro)."""
+    d = spec["data"]
+    rows, N = d["rows"], len(d["rows"])
+    num_ = lambda s: float(re.sub(r"[^\d.]", "", bare(s)) or "nan")
+    worth = [num_(r[-1]) for r in rows]
+    put = [num_(r[1]) for r in rows]
+    cut_t = []
+    for i, t in enumerate(d["rowT"]):
+        cut_t.append(max(t, cut_t[i - 1] + 0.3) if i else t)
+    intro = cut_t[0] >= 0.5
+    def roll_for(f, t):
+        return min(1.9, max(0.8, 0.75 + 0.45 * math.log2(max(1, t / f)))) if f > 0 else 1.3
+    out = []
+    for i in range(N):
+        prev = worth[i - 1] if i else 0
+        f = min(worth[i], max(prev, put[i]))
+        if i == 0 and intro:
+            cut, start, roll = 0, -0.45, cut_t[0] + 0.6 + 0.45
+        elif i == 0:
+            cut = min(cut_t[0], 0); start = cut - 0.45; roll = roll_for(f, worth[i])
+        else:
+            cut = cut_t[i]; start = cut + 0.12; roll = roll_for(f, worth[i])
+        if i == N - 1 and d.get("highlightLast", True) is not False and N > 1:
+            roll = max(roll, 2.4)
+        if i + 1 < N:
+            roll = min(roll, max(0.45, cut_t[i + 1] - start - 0.25))
+        out.append({"cut": cut, "start": start, "land": start + roll})
+    return out
+
+
+def condensed_timing(sid, spec, look):
+    """The condensed cut's timing rules (docstring 4.)"""
+    vo, d, dur = spec["vo"], spec["data"], spec["duration"]
+    ts, V = d["rowT"], spec["verdict"]["t"]
+    lo = spec.get("lookOpts", {})
+    labels = [r[0] for r in d["rows"]]
+    # captions, read on a phone with no narration
+    for i, line in enumerate(vo):
+        n = len(strip_markup(line["text"]).split())
+        need = max(CAP_MIN, CAP_SPW * n)
+        up = line["t"] + line["d"] - max(0.0, line["t"])
+        record(sid, f"vo[{i}] up ≥ max({CAP_MIN}, {CAP_SPW} × {n} words) from frame 1", round(up, 3), f"≥ {need:.2f}",
+               up >= need - 1e-9)
+    gaps = [round(vo[i + 1]["t"] - (vo[i]["t"] + vo[i]["d"]), 3) for i in range(len(vo) - 1)]
+    record(sid, f"captions back to back (gaps < {CAP_GAP} s)", gaps, f"0 ≤ gap < {CAP_GAP}",
+           all(0 <= g < CAP_GAP for g in gaps))
+    record(sid, f"vo[0] complete on frame 1 ({look})", vo[0]["t"], f"≤ {FIRST_CAP_UP[look]}", vo[0]["t"] <= FIRST_CAP_UP[look])
+    end = vo[-1]["t"] + vo[-1]["d"]
+    record(sid, "last caption line ends by the end", round(end, 3), f"≤ {dur}", end <= dur + 1e-9)
+    # the verdict: after the final reveal, then held before the end card
+    hero = [b for b in lo.get("beats", []) if "hero" in b]
+    steps = sb_steps(spec) if look == "scoreboard" else None
+    reveal = hero[-1]["t"] if hero else (steps[-1]["land"] if steps else ts[-1])
+    what = "the hero's beat" if hero else ("the last landing" if steps else "the last rung")
+    record(sid, f"verdict {VERDICT_AFTER[0]}-{VERDICT_AFTER[1]} s after {what}", round(V - reveal, 3),
+           f"{VERDICT_AFTER[0]}-{VERDICT_AFTER[1]}", VERDICT_AFTER[0] - 1e-9 <= V - reveal <= VERDICT_AFTER[1] + 1e-9)
+    record(sid, f"verdict held {VERDICT_HOLD[0]}-{VERDICT_HOLD[1]} s before the end card", round(dur - V, 3),
+           f"{VERDICT_HOLD[0]}-{VERDICT_HOLD[1]}", VERDICT_HOLD[0] - 1e-9 <= dur - V <= VERDICT_HOLD[1] + 1e-9)
+    # each number caption is up while its row lands
+    for label, li, kw in beats[sid]:
+        k = labels.index(label)
+        line = vo[li]
+        t0, t1 = line["t"], line["t"] + line["d"]
+        if look == "becker-rig":
+            T = ts[k]
+            lead, trail = T - max(t0, 0.0), t1 - T
+            record(sid, f"vo[{li}] ('{kw}') up ≤ {BR_CAP_LEAD} s before rung {label} lands, ≥ {BR_CAP_TRAIL} s after",
+                   f"{lead:.2f} / {trail:.2f}", f"0-{BR_CAP_LEAD} / ≥ {BR_CAP_TRAIL}",
+                   t0 <= T + 1e-9 and lead <= BR_CAP_LEAD + 1e-9 and trail >= BR_CAP_TRAIL - 1e-9)
+        else:
+            st = steps[k]
+            on_cut = t0 <= 1e-9 if st["cut"] <= 0 else abs(t0 - st["cut"]) <= SB_CAP_CUT + 1e-9
+            trail = t1 - max(st["land"], 0.0)
+            record(sid, f"vo[{li}] ('{kw}') up with row {label}'s cut, ≥ {SB_CAP_TRAIL} s past its landing",
+                   f"cut {st['cut']:.2f} vo {t0:.2f} / land {st['land']:.2f} end {t1:.2f}",
+                   f"±{SB_CAP_CUT} / ≥ {SB_CAP_TRAIL}", on_cut and trail >= SB_CAP_TRAIL - 1e-9)
+    if look == "becker-rig":
+        bts = lo.get("beats", [])
+        opens = [b for b in bts if is_open_act(b)]
+        first_throw = ts[1] - 0.95
+        ok = len(opens) == 1 and BR_OPEN_ACT_T[0] < opens[0]["t"] <= BR_OPEN_ACT_T[1] + 1e-9 \
+            and min(opens[0]["t"] + opens[0]["d"], first_throw - 0.02) - (opens[0]["t"] + 0.14) >= 0.3
+        record(sid, "the figure moves from frame 2 (one act-only beat on row 0, its act at t + 0.14 ≤ 1/30 s, ≥ 0.3 s long)",
+               [(b["t"], b.get("act"), b.get("d")) for b in opens], f"t in ({BR_OPEN_ACT_T[0]}, {BR_OPEN_ACT_T[1]:.3f}]", ok)
+        record(sid, f"the first throw winds up after the frame-1 nod (rung 2 ≥ {BR_FIRST_THROW} s)", ts[1],
+               f"≥ {BR_FIRST_THROW}", ts[1] >= BR_FIRST_THROW - 1e-9)
+        acted = {b["row"] for b in bts if b.get("act") and (abs(b["t"] - ts[b["row"]]) < 1e-9 or is_open_act(b))}
+        bad = []
+        for i in range(len(ts) - 2):                  # every gap but the heave's
+            g = ts[i + 1] - ts[i]
+            lim = BR_GAP_ACT if i in acted else BR_GAP_PLAIN
+            if not (0.6 <= g <= lim + 1e-9):
+                bad.append((labels[i], labels[i + 1], round(g, 3), lim))
+        record(sid, f"rung gaps: ≤ {BR_GAP_PLAIN} s, or ≤ {BR_GAP_ACT} s with a figure act (motion proxy)",
+               bad or "all", "all", not bad)
+        kind, g0, g1 = BR_HEAVE[sid]
+        g = ts[-1] - ts[-2]
+        room = g - 0.1
+        ok = (room < 2.2 if kind == "short" else room >= 2.2) and g0 - 1e-9 <= g <= g1 + 1e-9
+        record(sid, f"the {kind} heave: the last gap {g0}-{g1} s", round(g, 3), f"{g0}-{g1}", ok)
+    else:
+        record(sid, f"the first cut by {SB_FIRST_CUT} s (frame 1's landing bump ends at 0.31 s)", steps[1]["cut"],
+               f"≤ {SB_FIRST_CUT}", steps[1]["cut"] <= SB_FIRST_CUT + 1e-9)
+        late = [(labels[i], round(steps[i]["cut"] - steps[i - 1]["land"], 3)) for i in range(2, len(steps))
+                if steps[i]["cut"] - steps[i - 1]["land"] > SB_NEXT_CUT + 1e-9]
+        record(sid, f"each later cut ≤ {SB_NEXT_CUT} s after the previous landing", late or "all", "all", not late)
+        if hero:
+            H = hero[0]["t"]
+            record(sid, f"the hero's beat {SB_HERO_AFTER[0]}-{SB_HERO_AFTER[1]} s after the last landing",
+                   round(H - steps[-1]["land"], 3), f"{SB_HERO_AFTER[0]}-{SB_HERO_AFTER[1]}",
+                   SB_HERO_AFTER[0] - 1e-9 <= H - steps[-1]["land"] <= SB_HERO_AFTER[1] + 1e-9)
+            gap = (V - 0.35) - (H + 0.36)
+            record(sid, f"the verdict's make-room scroll ≤ {SB_ROOM_GAP} s after the hero's bump", round(gap, 3),
+                   f"≤ {SB_ROOM_GAP}", gap <= SB_ROOM_GAP + 1e-9)
+
+
 def check_spec(sid):
-    with open(os.path.join(SPECS, sid + ".json"), encoding="utf-8") as f:
-        spec = json.load(f)
+    spec = SPEC[sid]
+    path = SPEC_PATHS[sid]
+    in_specs = os.path.abspath(path) == os.path.abspath(os.path.join(SPECS, sid + ".json"))
+    cut = CUT[sid]
+    if cut is None:
+        record(sid, "a known cut (by its length)", f"{spec.get('duration')} s",
+               f"narration {NARRATION_DUR[sid]} s or condensed {CONDENSED_LANE[0]:g}-{CONDENSED_LANE[1]:g} s", False)
+        return
+    if in_specs:
+        record(sid, "studio/specs/ holds the expected cut", cut, IN_SPECS[sid], cut == IN_SPECS[sid])
+    else:
+        record(sid, f"--spec {os.path.relpath(path, ROOT)} checked as the {cut} cut", f"{spec['duration']} s", cut, True)
     # --- common fields (FORMATS.md)
     record(sid, "id = file stem", spec.get("id"), sid, spec.get("id") == sid)
     record(sid, "format", spec.get("format"), "growth-ladder", spec.get("format") == "growth-ladder")
@@ -388,7 +631,9 @@ def check_spec(sid):
     record(sid, "fps", spec.get("fps"), 30, spec.get("fps") == 30)
     record(sid, "captions", spec.get("captions"), True, spec.get("captions") is True)
     dur = spec["duration"]
-    record(sid, "duration lane", dur, f"{LANE[0]}-{LANE[1]} s", LANE[0] <= dur <= LANE[1])
+    lane = LANE if cut == "narration" else CONDENSED_LANE
+    record(sid, f"duration lane ({cut})", dur, f"{lane[0]}-{lane[1]} s", lane[0] <= dur <= lane[1])
+    record(sid, "duration on a frame (× 30 an integer)", dur, "n / 30 s", abs(dur * 30 - round(dur * 30)) < 1e-6)
     record(sid, "header has a number (R1)", spec["header"], "digit", bool(re.search(r"\d", spec["header"])))
     words = len(strip_markup(spec["header"]).replace("\n", " ").split())
     record(sid, "header ≤ 15 words (R8)", words, "≤ 15", words <= 15)
@@ -457,37 +702,43 @@ def check_spec(sid):
             continue
         record(sid, f"covered: {p}", str(v).replace("\n", " / "), "checked", p in covered)
 
-    # --- timing
+    # --- timing (shared by both cuts)
     for i, line in enumerate(vo):
-        n = len(spoken(line["text"]))
-        need = n / WPS
-        ok = need - 0.05 <= line["d"] <= need + 0.6
-        record(sid, f"vo[{i}] d vs {n} words", line["d"], f"{need:.2f}-{need + 0.6:.2f}", ok)
         if i + 1 < len(vo):
             end = round(line["t"] + line["d"], 3)
             record(sid, f"vo[{i}] ends before vo[{i+1}]", end, f"≤ {vo[i+1]['t']}", end <= vo[i + 1]["t"])
-    record(sid, "vo[0] at t=0", vo[0]["t"], 0.0, vo[0]["t"] == 0.0)
-    end = vo[-1]["t"] + vo[-1]["d"]
-    record(sid, "last VO ends ≥ 2 s before end (hold)", round(end, 2), f"≤ {dur - 2.0}", end <= dur - 2.0)
     record(sid, "verdict.t = last VO line t", spec["verdict"]["t"], vo[-1]["t"], spec["verdict"]["t"] == vo[-1]["t"])
     ts = d["rowT"]
     record(sid, "row times ascending", ts, "ascending", all(a < b for a, b in zip(ts, ts[1:])) and ts[-1] < dur)
     record(sid, "first row by 3 s (R10)", ts[0], f"≤ {FIRST_ROW_MAX}", ts[0] <= FIRST_ROW_MAX)
     record(sid, "hold = duration − last row", d["hold"], round(dur - ts[-1], 2), abs(d["hold"] - (dur - ts[-1])) < 0.051)
     record(sid, "last row before verdict", ts[-1], f"< {spec['verdict']['t']}", ts[-1] < spec["verdict"]["t"])
-    for label, li, kw in beats[sid]:
-        k = [r[0] for r in d["rows"]].index(label)
-        est = word_time(vo[li], kw)
-        record(sid, f"row {label} vs VO '{kw}'", ts[k], f"{est:.2f} ± {BEAT_TOL}", abs(ts[k] - est) <= BEAT_TOL)
-    for key, t, li, kw in extra_t[sid]:
-        est = word_time(vo[li], kw)
-        found = [x for x in (spec["lookOpts"].get(key) if isinstance(spec["lookOpts"].get(key), list)
-                             else [spec["lookOpts"][key]]) if abs(x["t"] - t) < 1e-9]
-        record(sid, f"lookOpts.{key} t={t} vs VO '{kw}'", t, f"{est:.2f} ± {BEAT_TOL}", bool(found) and abs(t - est) <= BEAT_TOL)
+    if cut == "narration":
+        for i, line in enumerate(vo):
+            n = len(spoken(line["text"]))
+            need = n / WPS
+            ok = need - 0.05 <= line["d"] <= need + 0.6
+            record(sid, f"vo[{i}] d vs {n} words", line["d"], f"{need:.2f}-{need + 0.6:.2f}", ok)
+        record(sid, "vo[0] at t=0", vo[0]["t"], 0.0, vo[0]["t"] == 0.0)
+        end = vo[-1]["t"] + vo[-1]["d"]
+        record(sid, "last VO ends ≥ 2 s before end (hold)", round(end, 2), f"≤ {dur - 2.0}", end <= dur - 2.0)
+        for label, li, kw in beats[sid]:
+            k = [r[0] for r in d["rows"]].index(label)
+            est = word_time(vo[li], kw)
+            record(sid, f"row {label} vs VO '{kw}'", ts[k], f"{est:.2f} ± {BEAT_TOL}", abs(ts[k] - est) <= BEAT_TOL)
+        for key, t, li, kw in extra_t[sid]:
+            est = word_time(vo[li], kw)
+            found = [x for x in (spec["lookOpts"].get(key) if isinstance(spec["lookOpts"].get(key), list)
+                                 else [spec["lookOpts"][key]]) if abs(x["t"] - t) < 1e-9]
+            record(sid, f"lookOpts.{key} t={t} vs VO '{kw}'", t, f"{est:.2f} ± {BEAT_TOL}", bool(found) and abs(t - est) <= BEAT_TOL)
+    else:
+        condensed_timing(sid, spec, look)
     anchors = ts + [spec["verdict"]["t"]] + [line["t"] for line in vo]
     for item in [x for v in spec.get("lookOpts", {}).values() if isinstance(v, list) for x in v] + \
                 [v for v in spec.get("lookOpts", {}).values() if isinstance(v, dict) and "t" in v]:
         if isinstance(item, dict) and "t" in item:
+            if cut == "condensed" and (is_open_act(item) or "hero" in item):
+                continue        # the opening act and the hero's beat: checked by their own condensed rules
             ok = any(abs(item["t"] - a) < 1e-9 for a in anchors) or any(
                 abs(item["t"] - t) < 1e-9 for _, t, _, _ in extra_t[sid])
             record(sid, f"lookOpts beat t={item['t']} anchored", item["t"], "row/VO/verdict t", ok)
@@ -502,8 +753,8 @@ def claim(sid, what, shown, want, ok):
     record(sid, "claim: " + what, shown, want, ok)
 
 def load(sid):
-    with open(os.path.join(SPECS, sid + ".json"), encoding="utf-8") as f:
-        return json.load(f)
+    """the spec being checked (studio/specs/<id>.json, or the --spec file)"""
+    return SPEC[sid]
 
 # 09a: "You add $100 a month. When does it earn $100 a month?"
 for y in A_YEARS:
@@ -577,11 +828,27 @@ claim(ida, "the year-9 impact sits on the crossing row", [(b["row"], b["t"]) for
 # port QA fix pass: one act-only beat fills the year-20 gap (13.9 s rung, next coin's wind-up starts ≤ 0.95 s before 17.8 s)
 _acts = [b for b in _lo["beats"] if "label" not in b and not b.get("relight") and not b.get("impact")]
 _rt = _sa["data"]["rowT"]
-claim(ida, "one act-only beat on the year-20 rung, at its landing, ending ≥ 0.6 s before the next coin's wind-up",
-      [(_sa["data"]["rows"][b["row"]][0], b["t"], round(b["t"] + b["d"], 2), b.get("act")) for b in _acts],
-      f"year 20 at {_rt[5]}, ends ≤ {round(_rt[6] - 0.95 - 0.6, 2)}",
-      len(_acts) == 1 and _sa["data"]["rows"][_acts[0]["row"]][0] == "20" and _acts[0]["t"] == _rt[_acts[0]["row"]]
-      and _acts[0]["t"] + _acts[0]["d"] <= _rt[_acts[0]["row"] + 1] - 0.95 - 0.6 + 1e-9 and bool(_acts[0].get("act")))
+if CUT[ida] == "narration":
+    claim(ida, "one act-only beat on the year-20 rung, at its landing, ending ≥ 0.6 s before the next coin's wind-up",
+          [(_sa["data"]["rows"][b["row"]][0], b["t"], round(b["t"] + b["d"], 2), b.get("act")) for b in _acts],
+          f"year 20 at {_rt[5]}, ends ≤ {round(_rt[6] - 0.95 - 0.6, 2)}",
+          len(_acts) == 1 and _sa["data"]["rows"][_acts[0]["row"]][0] == "20" and _acts[0]["t"] == _rt[_acts[0]["row"]]
+          and _acts[0]["t"] + _acts[0]["d"] <= _rt[_acts[0]["row"] + 1] - 0.95 - 0.6 + 1e-9 and bool(_acts[0].get("act")))
+elif CUT[ida] == "condensed":
+    # condensed: the year-20 gap is gone (the next throw starts 0.3 s after the rung, where the kit would cut an act
+    # short to nothing), so the only act-only beat is the opening one (row 0, from frame 2; its timing rule is in the
+    # condensed timing checks)
+    claim(ida, "condensed: the only act-only beat is the opening one on row 0 (the year-20 gap is gone)",
+          [(_sa["data"]["rows"][b["row"]][0], b["t"], b.get("act")) for b in _acts], "one, on row 0, t < 0",
+          len(_acts) == 1 and is_open_act(_acts[0]))
+    _tg = [b for b in _lo["beats"] if "label" in b]
+    _up = [round(b["t"] + b["d"] - (b["t"] + (0.24 if b.get("impact") else 0.08)), 2) for b in _tg]
+    claim(ida, f"condensed: each tag is up ≥ {BR_TAG_MIN} s (from t + 0.08 s, or + 0.24 s on an impact, to t + d)",
+          _up, f"≥ {BR_TAG_MIN}", len(_up) == 2 and all(x >= BR_TAG_MIN - 1e-9 for x in _up))
+    _V = _sa["verdict"]["t"]
+    claim(ida, "condensed: the verdict's point at year 9 (verdict + 0.14 s) starts after the heave's pointUp at the plate "
+          f"(last rung + {BR_POINT_UP} s), so he points at year 9 through the hold",
+          round(_V + 0.14 - (_rt[-1] + BR_POINT_UP), 3), "> 0", _V + 0.14 > _rt[-1] + BR_POINT_UP + 1e-9)
 _cols = [_sa["data"]["columns"][k] for k in _lo["cols"]]
 claim(ida, "the ladder prints Year / Worth / Earns a month (Earns = the hook's number is the hero)",
       " / ".join(_cols), "Year / Worth / Earns a month", _cols == ["Year", "Worth", "Earns a\u00a0month"]
@@ -639,10 +906,13 @@ claim(idc, "verdict leads with the million at beat size: 'A MILLION BY YEAR 40:'
       _sc["verdict"]["text"] == f"A MILLION BY YEAR {C_HORIZON}:\n**{money(C_PER_DAY_FOR_GOAL, 0.01)} A DAY**"
       and _sc["lookOpts"].get("verdictStyle") == "stack")
 _bt = _sc["lookOpts"]["beats"]
-claim(idc, "one beat: the hero shows '× 75,176' under a tag carrying ≈ (the rounded multiplier), on VO line 6",
+claim(idc, "one beat: the hero shows '× 75,176' under a tag carrying ≈ (the rounded multiplier), on VO line 6 "
+      "(condensed: while that caption is up, >= 0.5 s before it goes)",
       f"{_bt[0]['hero']} / {_bt[0]['tag']} @ {_bt[0]['t']}", "× 75,176 / YEAR 40 ≈ … @ 20.8",
       len(_bt) == 1 and _bt[0]["hero"] == "× " + bare(num(C_MULT)) and "≈" in _bt[0]["tag"]
-      and _bt[0]["tag"].startswith(f"YEAR {C_HORIZON}") and _bt[0]["t"] == _sc["vo"][5]["t"]
+      and _bt[0]["tag"].startswith(f"YEAR {C_HORIZON}")
+      and (_bt[0]["t"] == _sc["vo"][5]["t"] if CUT[idc] == "narration"
+           else _sc["vo"][5]["t"] <= _bt[0]["t"] <= _sc["vo"][5]["t"] + _sc["vo"][5]["d"] - 0.5)
       and not any(k in _bt[0] for k in ("l1", "l2")))
 claim(idc, "the rate is on screen from frame 1 (input strip from data.input), the footer no longer repeats it",
       f"input {_sc['lookOpts'].get('input')} · {_sc['data']['input']['rate']} · footer has % {'%' in _sc['footer']}",
