@@ -2,7 +2,7 @@
 
 YouTube Shorts (@envelopemath) and Instagram Reels (@envelopemath). Prepared 2026-10-12. Machine-readable twin: `publishing/06c-becker-rig-latte-starbucks.json`.
 
-- **Video.** `renders/channel/06c-becker-rig-latte-starbucks.mp4`: the condensed cut (18.2 s: a 15.7 s body + the 2.5 s card; sha256 `d431ea6b…`), promoted and shipped on 2026-10-12. It replaces the 30.5 s cut. Nothing below names a timestamp except the cover, which is picked by content.
+- **Video.** `renders/channel/06c-becker-rig-latte-starbucks.mp4`: the condensed cut (18.2 s: a 15.7 s body + the 2.5 s card; sha256 `bdf524e7…`), promoted and shipped on 2026-10-12. It replaces the 30.5 s cut. Nothing below names a timestamp except the cover, which is picked by content.
 - **Numbers.** Every figure comes from `teasers/v2/06-pov-race.md` (06c) and its check, `python3 teasers/v2/checks/06-pov-race.py`: 441 checks, 0 failed on `studio/specs/` with the condensed cut promoted (re-run 2026-10-12). `python3 publishing/tools/build_06c_publishing.py --check` checks this sheet's limits, paste blocks and figures.
 - **Honesty rules kept.** The title asks and never gives the result. The Instagram caption keeps the result below 'more'. Every claim stays inside "≈ 1.4×. Not rich. Not zero." No advice, no urgency, and 'Not financial advice.' is in both.
 - **Brand.** "Starbucks" and "SBUX" are used only to name the company and the stock the maths is about. Both platforms' copy says 'Not affiliated with or endorsed by Starbucks.' The video draws a generic cup with no logo.

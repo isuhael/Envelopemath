@@ -5,7 +5,7 @@
   "for_video": {
     "current_render": "renders/channel/10b-becker-rig-debt-vs-your-pay.mp4",
     "current_duration_s": 39.1,
-    "current_sha256": "8eebe2472d13691637c0feb22a97b583e49b8cff67df0506cc05565717e6c745",
+    "current_sha256": "7318edc4e695bc85453f58882d83bef2510bbbf8361d299c9ba2bec3be15e101",
     "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the pre-condense cut. The ship step re-runs the build with --covers on the condensed file.",
     "cut": {
       "name": "pre-condense cut (assembly pass 4, 2026-10-08)",

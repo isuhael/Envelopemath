@@ -4,16 +4,20 @@
   "prepared": "2026-10-13",
   "for_video": {
     "current_render": "renders/channel/04a-scoreboard-sp500-vs-gold.mp4",
-    "current_duration_s": 48.0,
-    "current_sha256": "0127a0136f14d4392766294b0d133186ebc49f22fc51682b54d80cb81b9bcbc2",
-    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds on 2026-10-13: the pre-condense cut. The ship step rebuilds this file with --covers from the condensed cut.",
+    "current_duration_s": 19.9,
+    "current_sha256": "39e1e5edd623fa36b4c4ac0fe3b1f25bfec41f43f7af0c176b35561fcbe942a6",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
-      "name": "pre-condense (round-2 Scoreboard cut)",
+      "name": "condensed (2026-10-13)",
       "spec": "studio/specs/04a-scoreboard-sp500-vs-gold.json",
-      "body_s": 45.5,
+      "body_s": 17.4,
       "card_s": 2.5,
-      "status": "in renders/channel on 2026-10-13 (git 471c793); a condensed cut (timing only) is in studio/specs-wip/, not yet shipped",
-      "on_ship": "python3 publishing/tools/build_publishing.py 04a-scoreboard-sp500-vs-gold --covers (re-picks the cover by content, re-exports both JPGs, refreshes for_video)"
+      "shipped": "2026-10-13",
+      "replaces": {
+        "duration_s": 48.0,
+        "sha256": "0127a0136f14d4392766294b0d133186ebc49f22fc51682b54d80cb81b9bcbc2",
+        "note": "the round-2 cut (pre-condense) + card, retired; in git history (471c793)"
+      }
     }
   },
   "facts": {
@@ -165,8 +169,8 @@
       },
       "frame_in_current_render_s": 0,
       "frame_index": 0,
-      "frame_by_content": "Frame 1, which the write-up names as the Instagram cover: the header 'POV: IN 2000 YOU PUT $10,000 IN / THE S&P 500 VS GOLD' with $10,000 the only accent, the hero 'GOLD $9,823', the footer 'S&P + dividends · gold · year-ends 2000–2025', the dim 2000 year clock, both tips already just under the dashed $10,000 line ('GOLD $9,823', 'S&P 500 $9,701' on this render; the write-up gives $9,724 and $9,535 for the condensed cut's frame 1) on the empty 2000-2025 axis, and the first caption 'Stocks should crush gold.' It sets up the race and the wrong belief, and shows neither final. On any cut, use the first frame, while both tips sit under the stake line.",
-      "frame_measured": "On the pre-condense 48.0 s render, frame 0 (0.00 s) shows that state: the race clock starts at −0.4 s, so the tips are already moving, and from frame 1 the mean frame-to-frame luma change (270×480 greyscale) runs at about 0.003 as they fall.",
+      "frame_by_content": "Frame 1, which the write-up names as the Instagram cover: the header 'POV: IN 2000 YOU PUT $10,000 IN / THE S&P 500 VS GOLD' with $10,000 the only accent, the hero 'GOLD $9,724', the footer 'S&P + dividends · gold · year-ends 2000–2025', the dim 2000 year clock, both tips already just under the dashed $10,000 line ('GOLD $9,724', 'S&P 500 $9,535' on the shipped cut; the pre-condense render showed $9,823 and $9,701) on the empty 2000-2025 axis, and the first caption 'Stocks should crush gold.' It sets up the race and the wrong belief, and shows neither final. On any cut, use the first frame, while both tips sit under the stake line.",
+      "frame_measured": "On the shipped 19.9 s condensed cut, frame 0 (0.00 s) shows that state: the race is already moving (mean frame-to-frame luma change about 1.0-1.5 from frame 1 on, 270×480 greyscale), with the hero 'GOLD $9,724' and the tips at 'GOLD $9,724' and 'S&P 500 $9,535' under the dashed $10,000 line. On the 48.0 s pre-condense render frame 0 read 'GOLD $9,823' and 'S&P 500 $9,701'.",
       "crop": "3:4 = 1080×1440 from y 64 to 1504 of the 1080×1920 frame. The content runs from y 141 (the badge) to y 1427 (the caption), so the crop centres it: badge, header, hero, footer, the whole plot and the first caption; it drops the empty black floor. A centred grid crop (y 240-1680) loses the badge and leaves the header on the top edge.",
       "how_to_set": "In 'Edit cover', pick frame 1 of the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
       "re_export": "ffmpeg -ss 0 -i renders/channel/04a-scoreboard-sp500-vs-gold.mp4 -frames:v 1 -vf \"crop=1080:1440:0:64\" -q:v 2 publishing/04a-scoreboard-sp500-vs-gold-cover-3x4.jpg",
@@ -177,7 +181,7 @@
     "trial_reels": {
       "recommendation": "Post as a regular Reel, not a Trial.",
       "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut ships, the pre-condense render is in git: `git show 471c793:renders/channel/04a-scoreboard-sp500-vs-gold.mp4 > 04a-pre-condense.mp4` (sha256 0127a013…). Compare skip rate (October Reels ran 27.0-65.1%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. The condensed cut shipped on 2026-10-13; the pre-condense render is in git: `git show 471c793:renders/channel/04a-scoreboard-sp500-vs-gold.mp4 > 04a-pre-condense.mp4` (sha256 0127a013…). Compare skip rate (October Reels ran 27.0-65.1%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
     },
     "settings": {
       "audio": "Rename the original audio to 'Gold vs the S&P 500 since 2000 — The Back of the Envelope' if the app allows; it is the score, with no voice.",
@@ -574,7 +578,7 @@
       "As the 06b and 02b sheets found (not re-checked here), vidIQ's YouTube authorization is a different channel (UCRC5v_El2fibbkqsZs6uFjA), so @envelopemath's YouTube Analytics (audience hours, geography) were not readable. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
       "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume, the write-up's notes and the same-idea Shorts' own tags.",
       "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
-      "The render in renders/channel is the pre-condense cut. The cover's time and frame are measured on it; the copy names no other timestamp, and the ship step re-picks the cover on the final file.",
+      "The render in renders/channel is the shipped condensed cut (2026-10-13). The cover's time and frame are measured on it; the copy names no other timestamp and carried over from the pre-condense cut unchanged.",
       "The write-up marks gold's Dec 31, 2025 close ($4,319.37, named in the description) and its 2024 close ($2,624.60, behind the +64.57%) as [click-check]: seen in search summaries, not on the page. Open metalcharts.org/gold-price-history/2025 or pricegold.net/2025/december/ and the Macrotrends gold chart once before posting.",
       "Gold's 2026 moves come only from third-party Reels and the write-up's single-source Sep 30, 2026 close; none is verified here and none is in the copy, which stops at the Dec 31, 2025 close.",
       "The vidIQ credit balance is shared with the other sheets being built in parallel, so this sheet's spend is counted from each tool's listed cost (see research.vidiq_credits)."
@@ -622,7 +626,7 @@
   "checked": {
     "date": "2026-10-13",
     "by": "adversarial check of this sheet",
-    "math": "python3 teasers/v2/checks/04-chart-race.py: 657 checks, 0 failed on studio/specs/ (the round-2 cuts; 614 checks, 0 failed at the first build, before the condense's check-script update), re-run at the adversarial check 2026-10-13; with --spec on the three studio/specs-wip/ condensed cuts 698 checks, 0 failed, so the copy's figures hold on both cuts; every public figure traced to the 04a year-end table and recomputed in MATH_RELATIONS from the sourced returns, each figure pinned to its own asset and its year (COPY_RULES)",
+    "math": "python3 teasers/v2/checks/04-chart-race.py: 657 checks, 0 failed on studio/specs/ (the round-2 cuts; 614 checks, 0 failed at the first build, before the condense's check-script update), re-run at the adversarial check 2026-10-13; with --spec on the three studio/specs-wip/ condensed cuts 698 checks, 0 failed, so the copy's figures hold on both cuts; every public figure traced to the 04a year-end table and recomputed in MATH_RELATIONS from the sourced returns, each figure pinned to its own asset and its year (COPY_RULES); re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: 698 checks, 0 failed",
     "limits": {
       "youtube_title_chars": 76,
       "youtube_description_chars": 1748,

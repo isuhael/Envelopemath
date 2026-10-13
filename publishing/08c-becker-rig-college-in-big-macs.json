@@ -5,7 +5,7 @@
   "for_video": {
     "current_render": "renders/channel/08c-becker-rig-college-in-big-macs.mp4",
     "current_duration_s": 24.5,
-    "current_sha256": "3424714c7d5e25abfaacaa82aa5efe692a52927bded2610cfaf634360b6a8fc5",
+    "current_sha256": "02e58727fc3b3be0238545c42f719e89cdf59de5438533ded0caa277065cd63d",
     "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the pre-condense cut. The ship step re-runs the build with --covers on the condensed file.",
     "cut": {
       "name": "pre-condense cut (Becker Rig port + QA fix pass, 2026-10-08)",

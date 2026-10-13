@@ -4,9 +4,9 @@
 # Becker Rig precedent), laid out like 06b and the sheets of the same batch.
 #
 # Facts come only from teasers/v2/05-split-sheet.md (section 05a) and python3 teasers/v2/checks/05-split-sheet.py.
-# Research: vidIQ, pulled 2026-10-13. The video is the pre-condense cut: the 05 condense is in progress in parallel
-# (timing only; numbers, caption facts and the verdict stay). This sheet names no timestamp except the cover, which is
-# picked by content (the finished sheet), so the ship step only re-runs the build with --covers on the final file.
+# Research: vidIQ, pulled 2026-10-13. The video is the condensed cut, promoted and shipped on 2026-10-13 (the
+# pre-condense round-2 cut is in git, 471c793). This sheet names no timestamp except the cover, which is picked by
+# content, so the copy carried over unchanged; the ship rebuilt it with --covers from the shipped file.
 
 TEASER = "05a Becker Rig, split-sheet: \"What you're really paying for when you spend $10 at Chipotle\""
 PREPARED = "2026-10-13"
@@ -14,14 +14,16 @@ SHORT_ID = "05a"
 MD_TITLE = "05a publishing sheet: what your $10 at Chipotle pays for"
 MATH_RUN = "560 checks, 0 failed"      # python3 teasers/v2/checks/05-split-sheet.py on studio/specs/ (the full cuts; the check is cut-aware since 2026-10-13)
 MATH_RUN_WIP = "583 checks, 0 failed"  # the same check with --spec on the three condensed WIP specs in studio/specs-wip/, re-run at the adversarial check after the condense critic fixes (579 at the first build)
+MATH_RUN_SHIP = "583 checks, 0 failed"  # python3 teasers/v2/checks/05-split-sheet.py on studio/specs/ with the condensed cuts promoted, at the ship 2026-10-13
 RENDER_COMMIT = "471c793"              # the commit that holds this pre-condense render
 RENDER_SHA_PRE = "693b20b6a45abd3adfdd869b41f3ba7c86ce9ced4dcaf690462bbd2060f097e1"
 
 MD_INTRO = [
-    f"- **Video.** `renders/channel/{BASE}.mp4`: the pre-condense cut ({VIDEO_S:g} s: a {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`). "
-    "The 05 condense is in progress in parallel (timing only: the numbers, the captions' facts and the verdict stay). "
-    "Nothing below names a timestamp except the cover, which is picked by content (the finished sheet), so the copy carries over to the condensed cut unchanged. "
-    f"The ship step rebuilds this sheet and re-exports both covers from the final file: `python3 publishing/tools/build_publishing.py {BASE} --covers`.",
+    f"- **Video.** `renders/channel/{BASE}.mp4`: the condensed cut ({VIDEO_S:g} s: a {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`), "
+    "promoted and shipped on 2026-10-13. It replaces the 27.2 s round-2 cut (the owner: \"too many still moments\"), which is in git (`471c793`). "
+    "The condense moved the clock and merged some captions; the numbers, the captions' facts and the verdict stay, so the copy carried over unchanged. "
+    "Nothing below names a timestamp except the cover, which was re-picked by content on the shipped file. "
+    f"The ship rebuilt this sheet and re-exported both covers from it (`python3 publishing/tools/build_publishing.py {BASE} --covers`); on the shipped specs the maths check runs {MATH_RUN_SHIP}.",
     "- **Numbers.** Every figure comes from `teasers/v2/05-split-sheet.md` (05a) and its check, "
     f"`python3 teasers/v2/checks/05-split-sheet.py`: {MATH_RUN} on `studio/specs/` (run 2026-10-13; {MATH_RUN_WIP} with `--spec` on the condensed WIP specs, whose strings, numbers and verdicts are unchanged). "
     f"`python3 publishing/tools/build_publishing.py {BASE} --check` checks this sheet's limits, paste blocks and figures, recomputes all 7 lines from Chipotle's FY2025 dollar lines, "
@@ -35,11 +37,11 @@ MD_INTRO = [
 
 # ---------------------------------------------------------------- the video
 FOR_VIDEO_NOTE = ("Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. "
-                  "current_* is what renders/channel holds today: the pre-condense cut. The ship step re-runs the build with --covers on the condensed file.")
-CUT = {"name": "pre-condense cut (Becker Rig port, QA fix pass 2026-10-08)", "spec": f"studio/specs/{BASE}.json", "body_s": BODY_S,
-       "card_s": CARD_S, "shipped": None, "git": RENDER_COMMIT,
-       "status": f"the 05 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay): the WIP cut is studio/specs-wip/05a-becker-rig-chipotle-10.json, 15.2 s with the card per the write-up, and passes the 05 check with --spec ({MATH_RUN_WIP} for the three). "
-                 "The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."}
+                  "current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.")
+CUT = {"name": "condensed (2026-10-13)", "spec": f"studio/specs/{BASE}.json", "body_s": BODY_S,
+       "card_s": CARD_S, "shipped": "2026-10-13",
+       "replaces": {"duration_s": 27.2, "sha256": "693b20b6a45abd3adfdd869b41f3ba7c86ce9ced4dcaf690462bbd2060f097e1",
+                    "note": "the round-2 cut (pre-condense) + card, retired; in git history (471c793)"}}
 
 FACTS = {
     "source": f"teasers/v2/05-split-sheet.md section 05a; teasers/v2/checks/05-split-sheet.py: {MATH_RUN} on studio/specs/ (2026-10-13)",
@@ -202,20 +204,21 @@ IG_FIRST_COMMENT = ("Of your $10: food about $2.96, crew about $2.51, rent about
                     "\n\n" + YT_PINNED.split("\n\n", 1)[1])   # the write-up's Instagram note: "Put the pinned comment's exact table in the first comment."
 
 # ---------------------------------------------------------------- the cover frame
-# The finished sheet, picked by content: the write-up's Instagram note names "the finished-sheet frame: the header reading
-# 'at Chipotle: ≈ $1.29 profit', the gold 'PROFIT ≈ $1.29' slab, the check line, the bar chart of the $10 with the full
-# dollar column, and the verdict". On this render the sheet settles by frame 654 (21.80 s) and holds still (frame-to-frame
-# mean luma change 0.0000) until the end card cuts in at frame 742 (24.73 s). Frame 690 is the middle of the hold.
-COVER_T = 23.0
-COVER_FRAME = 690
+# The finished sheet, picked by content: the write-up's Instagram note names "the finished-sheet frame: the header
+# reading 'at Chipotle: ≈ $1.29 profit', the gold 'PROFIT ≈ $1.29' slab, the check line, the bar chart of the $10 with
+# the full dollar column, and the verdict". On the shipped condensed cut the verdict and the header's stamp land at
+# 11.22 s; the sheet settles by 11.87 s (frame 356) and holds near-still (frame-to-frame mean luma change ≤ 0.004) until
+# the end card cuts in at 12.72 s. Frame 357 (11.90 s) is used.
+COVER_T = 11.9
+COVER_FRAME = 357
 COVER_CROP = "crop=1080:1440:0:78"
-COVER_RENDER_WORD = "pre-condense"
+COVER_RENDER_WORD = "shipped"
 COVER_FRAME_BY_CONTENT = ("The finished sheet: the header reading '…at Chipotle: ≈ $1.29 profit' (the answer stamped over the struck guess), the gold 'PROFIT ≈ $1.29' slab, "
                           "the check '$10 − $8.71 of costs = $1.29', all 7 rows with their shares and dollars over the lanes' bar chart of the $10, the figure on the bracket, "
                           "and the verdict 'Chipotle keeps ≈ $1.29, not $7.04.' The write-up names it as the Instagram cover, a save-able cheat sheet like Yannick's finished sheet. "
                           "On any cut, use a frame after the last stamp settles and before the end card.")
-COVER_FRAME_MEASURED = ("On the pre-condense 27.2 s render the sheet settles by frame 654 (21.80 s) and holds still (frame-to-frame mean luma change 0.0000) "
-                        "until the end card cuts in at frame 742 (24.73 s). Frame 690 (23.00 s), the middle of the hold, is used.")
+COVER_FRAME_MEASURED = ("On the shipped 15.233 s condensed cut the sheet settles by 11.87 s (frame 356) and holds near-still (frame-to-frame mean luma change ≤ 0.004, 270×480 "
+                        "greyscale) until the end card cuts in at 12.72 s. Frame 357 (11.90 s) is used. On the 27.2 s pre-condense render it was frame 690 (23.00 s).")
 COVER_CROP_NOTE = ("3:4 = 1080×1440 from y 78 to 1518 of the 1080×1920 frame: the badge, the header with its answer, the footer, the PROFIT slab, the check, the 7 rows and the verdict, "
                    "with even margins (34 px above the badge and below the verdict); it drops the empty floor. A centred grid crop (y 240-1680) cuts the badge and the header.")
 COVER_HOW_TO_SET = ("In 'Edit cover', pick the finished-sheet frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' up so the tile "
@@ -224,13 +227,13 @@ COVER_HOW_TO_SET = ("In 'Edit cover', pick the finished-sheet frame from the vid
 COVER_EXTRA_BULLETS = [
     "**Not used on Instagram:** frame 1 (the red '$7.04 profit?' guess, the $10.00 slab, every share but profit's '?'). It asks without answering, so it is the YouTube thumbnail, "
     "as the write-up's YouTube note asks; on Instagram the write-up picks the finished sheet, the frame worth saving.",
-    "**When the condensed cut ships:** re-pick the finished sheet by content on the shipped file (a frame after the last stamp settles, before the end card) and re-export both JPGs with `--covers`.",
+    "**Shipped cut (2026-10-13):** the finished sheet was re-picked by content on the shipped file (the first settled frame after the last stamp, 11.9 s) and both JPGs re-exported from it. It shows the same header stamp, slab, check line, rows and verdict as the pre-condense cover.",
 ]
 
 TRIAL_REELS = {
     "recommendation": "Post as a regular Reel, not a Trial.",
     "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-    "use_trial_for": f"A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show {RENDER_COMMIT}:renders/channel/{BASE}.mp4 > 05a-27.2s.mp4` (sha256 {RENDER_SHA_PRE[:8]}…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app.",
+    "use_trial_for": f"A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. The condensed cut replaced the pre-condense render in renders/channel on 2026-10-13; get the pre-condense one from git with `git show {RENDER_COMMIT}:renders/channel/{BASE}.mp4 > 05a-27.2s.mp4` (sha256 {RENDER_SHA_PRE[:8]}…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app.",
 }
 IG_AUDIO = "Rename the original audio to 'Where your $10 goes at Chipotle — The Back of the Envelope' if the app allows; it is the score, with no voice."
 IG_POSTING_WINDOW = {
@@ -363,7 +366,7 @@ LIMITS = [
     "The write-up's sources rest on search-result text: its egress proxy blocked the primary pages. Chipotle's labor, occupancy and other operating costs ($ thousands) rest on its round-1 read of the release; "
     "the 10-K's percentages (25.1 / 5.2 / 14.7) agree, but within that 0.1-pt rounding each cent could move by ±1¢. Before posting, open the FY2025 10-K's income statement and re-run the check (the write-up's open item 1).",
     "Third-party claims in the research tables (a Big Mac meal's 'nearly $4.40', a pizza's '$7 contribution margin') are those videos' own descriptions, not verified here, and none is in the copy.",
-    "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file.",
+    "The video, the cover and the video facts are the shipped condensed cut (2026-10-13); the copy is cut-independent and carried over from the pre-condense cut unchanged.",
 ]
 RESEARCH_EXTRA = {
     "adjacent_youtube_outliers": [
@@ -382,7 +385,8 @@ CHECKED_BY = "adversarial check of this sheet"
 CHECKED_MATH = (f"python3 teasers/v2/checks/05-split-sheet.py: {MATH_RUN} on studio/specs/ (2026-10-13, the pre-condense specs), and {MATH_RUN_WIP} with --spec on the condensed WIP specs, whose strings, numbers and verdicts are the same; "
                 "the 7 lines recomputed from the FY2025 dollar lines in MATH_RELATIONS (shares, cents, the $10.00 total with no plug, the $8.71 check, the $7.04 guess, crew ≈ 1.95× profit); "
                 "COPY_RULES keep every rounded amount 'about' or '≈' (the exact check and guess workings excepted), keep $7 a question or a 'not', keep the tax line net of interest wherever it sits beside the $1.29 or the $0.34, "
-                "keep the exact table in the Instagram first comment, and keep the average condition and both disclaimers in the copy; re-run at the adversarial check with the same result (583 with --spec after the condense critic fixes)")
+                "keep the exact table in the Instagram first comment, and keep the average condition and both disclaimers in the copy; re-run at the adversarial check with the same result (583 with --spec after the condense critic fixes)"
+                f"; re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: {MATH_RUN_SHIP}")
 VIDIQ_REQUERIED = ("pulled 2026-10-13: chipotle 72,674 / 56.5 (+24.0%); restaurant profit margin 4,250 / 38.2; fast food 141,454 (-20.8%); "
                    "title scores 94 (pick), 82 (write-up title), 93 (best hashtag form); channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,518 views in 30 days. "
                    "Re-queried after the build: the pick's title score 94. Match. "
@@ -418,7 +422,10 @@ CHECK_LOG = [
     "- **Adversarial pass: checked, no change.** Every figure in the copy against the write-up's 05a table and both runs of the check (560 on studio/specs/, 583 with --spec); "
     "the title, description (bytes), tags, hashtags, caption (first 125) and both alt texts against the limits; 'Chipotle' used only to name the 10-K's company, with the affiliation line in both; "
     "no advice; frame 1 of the condensed WIP render read as a still: the hook caption is complete on it and the answer is not; the cover read as a still: the finished sheet on the 3:4 crop.",
-    "- **Still to do.** The primary-source check above, and the ship rebuild (`--covers`) on the condensed file.",
+    "- **Still to do.** The primary-source check above.",
+    f"- **Done on ship (2026-10-13).** Rebuilt with `--covers` from the shipped condensed cut ({VIDEO_S:g} s). The finished sheet was re-picked by content at 11.9 s (frame 357), after the last stamp settles. "
+    f"The Video bullet, the cut and the check counts follow the shipped file ({MATH_RUN_SHIP} on `studio/specs/`), and the long alt text was re-read against the condensed beat sheet: "
+    "every beat it names is in the shipped cut, so no copy changed.",
 ]
 
 # ---------------------------------------------------------------- the numbers check

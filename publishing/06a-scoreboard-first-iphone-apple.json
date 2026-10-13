@@ -4,16 +4,20 @@
   "prepared": "2026-10-13",
   "for_video": {
     "current_render": "renders/channel/06a-scoreboard-first-iphone-apple.mp4",
-    "current_duration_s": 29.0,
-    "current_sha256": "9707256d2230e67107128c4292dc08787d0f3689dc280aa9fe38512aa9810509",
-    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds on 2026-10-13: the pre-condense cut. The ship step rebuilds this file with --covers from the final cut.",
+    "current_duration_s": 17.8,
+    "current_sha256": "482ab983d814d0b7810e1e059cd6c99cf2ad338600c23767b1413cdc799f9c9c",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
-      "name": "pre-condense (round-2 Scoreboard cut)",
+      "name": "condensed (2026-10-13)",
       "spec": "studio/specs/06a-scoreboard-first-iphone-apple.json",
-      "body_s": 26.5,
+      "body_s": 15.3,
       "card_s": 2.5,
-      "status": "in renders/channel on 2026-10-13 (git 471c793); a condensed cut (timing only) may follow",
-      "on_ship": "python3 publishing/tools/build_publishing.py 06a-scoreboard-first-iphone-apple --covers (re-picks the cover by content, re-exports both JPGs, refreshes for_video)"
+      "shipped": "2026-10-13",
+      "replaces": {
+        "duration_s": 29.0,
+        "sha256": "9707256d2230e67107128c4292dc08787d0f3689dc280aa9fe38512aa9810509",
+        "note": "the round-2 cut (pre-condense) + card, retired; in git history (471c793)"
+      }
     }
   },
   "facts": {
@@ -182,7 +186,7 @@
       "frame_in_current_render_s": 0,
       "frame_index": 0,
       "frame_by_content": "The clean cover, frame 1: the header 'POV: IN 2007 YOU INVESTED IN APPLE / INSTEAD OF PAYING $499 / FOR THE FIRST IPHONE', both counters at $499 (THE IPHONE | IN APPLE STOCK), the footer '6/29/07 close → 12/31/25 · dividends reinvested', and the empty 2007-2025 race with only the green start dot under the 2007 year clock. $499 is the only price. It asks and does not answer, like the title and the caption. The write-up names frame 1 as the Instagram cover ('header + $499 tips'). On any cut, use a frame where both counters still read $499 and the race has not left its start.",
-      "frame_measured": "On the pre-condense render, frame 0 (0.00 s) is that frame: the race has not moved and the phone icon has not dropped. It also shows the whole first caption, 'Launch day 2007: you skip the $499 iPhone and buy Apple stock.', with 'Launch' lit (the kit lights it word by word); the grey words still read.",
+      "frame_measured": "On the shipped 17.8 s condensed cut, frame 0 (0.00 s) is that frame: both counters read $499, the race has not left its start and the phone icon has not dropped; from frame 1 the start dot pings (mean frame-to-frame luma change 0.06-0.10 over the first frames, 270×480 greyscale). It also shows the whole first caption, 'Launch day 2007: you skip the $499 iPhone and buy Apple stock.', with 'Launch day 2007:' lit (the kit lights it word by word); the grey words still read. On the 29.0 s pre-condense render only 'Launch' was lit.",
       "crop": "3:4 = 1080×1440 from y 60 to 1500 of the 1080×1920 frame: the badge, the header, both counters, the footer, the empty race and the first caption; it drops the empty floor. A centred grid crop (y 240-1680) cuts the badge and leaves the header on the edge.",
       "how_to_set": "In 'Edit cover', pick frame 1 of the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
       "re_export": "ffmpeg -ss 0 -i renders/channel/06a-scoreboard-first-iphone-apple.mp4 -frames:v 1 -vf \"crop=1080:1440:0:60\" -q:v 2 publishing/06a-scoreboard-first-iphone-apple-cover-3x4.jpg",
@@ -193,7 +197,7 @@
     "trial_reels": {
       "recommendation": "Post as a regular Reel, not a Trial.",
       "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-      "use_trial_for": "A hook test afterwards, if a condensed cut ships: the other cut as a Trial with MANUAL graduation 48-72 h later. The pre-condense render in renders/channel today (sha256 9707256d…) stays in git: `git show 471c793:renders/channel/06a-scoreboard-first-iphone-apple.mp4 > 06a-pre-condense.mp4`. Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. The pre-condense render (sha256 9707256d…) is in git: `git show 471c793:renders/channel/06a-scoreboard-first-iphone-apple.mp4 > 06a-pre-condense.mp4`. Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
     },
     "settings": {
       "audio": "Rename the original audio to 'First iPhone vs Apple stock — The Back of the Envelope' if the app allows; it is the score, with no voice.",
@@ -688,7 +692,7 @@
   "checked": {
     "date": "2026-10-13",
     "by": "adversarial check of this sheet",
-    "math": "python3 teasers/v2/checks/06-pov-race.py: 445 checks, 0 failed on studio/specs/ (2026-10-13, re-run at the adversarial check; the first pass ran it at 442); 454 checks, 0 failed with --spec on the condensed cut in studio/specs-wip/, whose header, footer, captions, verdict and data points equal the shipped cut's; every public figure traced to the 06a maths table and recomputed in this data file from the write-up's closes, each year's figure pinned beside its year and each direction word ('below', 'over', 'passes', 'knocks off') beside its figure, and every share price kept with 'adjusted' (COPY_RULES)",
+    "math": "python3 teasers/v2/checks/06-pov-race.py: 445 checks, 0 failed on studio/specs/ (2026-10-13, re-run at the adversarial check; the first pass ran it at 442); 454 checks, 0 failed with --spec on the condensed cut in studio/specs-wip/, whose header, footer, captions, verdict and data points equal the shipped cut's; every public figure traced to the 06a maths table and recomputed in this data file from the write-up's closes, each year's figure pinned beside its year and each direction word ('below', 'over', 'passes', 'knocks off') beside its figure, and every share price kept with 'adjusted' (COPY_RULES); re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: 468 checks, 0 failed",
     "limits": {
       "youtube_title_chars": 91,
       "youtube_description_chars": 1482,

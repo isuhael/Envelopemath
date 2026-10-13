@@ -60,9 +60,11 @@ test('timeline: Appendix A sections and energy (09c, 09b), cue prep, trains, clu
   assert.equal(b.bars.map(x => x.energy).join(''), '43334444455333', pinHint('09b energy (Appendix A.2)'))
   assert.equal(b.anchors.V, null, pinHint('09b V, not anchored (Appendix A.2)'))   // pick(V, base) would need +5.2%
   const train = (id, kind) => buildTimeline(rec(id), null, { overrides: {} }).trains.find(t => t.kind === kind)
-  for (const [id, kind, period] of [['10a', 'tick', 1.0], ['10b', 'tick', 0.832], ['02a', 'thud', 0.5], ['09b', 'thud', 2.0]]) {
+  // null pins "no train": 02a's condensed cut (2026-10-13) lands its thuds unevenly, so its 0.5 s thud train is gone
+  for (const [id, kind, period] of [['10a', 'tick', 1.0], ['10b', 'tick', 0.832], ['02a', 'thud', null], ['09b', 'thud', 2.0]]) {
     const tr = train(id, kind)
-    assert.ok(tr && Math.abs(tr.period - period) < 0.002, pinHint(`${id}'s ${kind} train period (${tr ? tr.period.toFixed(3) : 'none'}, pinned ${period})`))
+    const ok = period === null ? !tr : tr && Math.abs(tr.period - period) < 0.002
+    assert.ok(ok, pinHint(`${id}'s ${kind} train period (${tr ? tr.period.toFixed(3) : 'none'}, pinned ${period ?? 'none'})`))
   }
   // every cue has n (per kind) and i (global)
   for (const c of a.cues) assert.ok(Number.isInteger(c.i) && Number.isInteger(c.n))

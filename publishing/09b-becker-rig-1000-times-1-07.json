@@ -5,7 +5,7 @@
   "for_video": {
     "current_render": "renders/channel/09b-becker-rig-1000-times-1-07.mp4",
     "current_duration_s": 29.5,
-    "current_sha256": "5d8f22d554a8575404ac05fdff6033e5dd2c4c0ffee4be74f473bbe64bdc522c",
+    "current_sha256": "b07daebbec046e9ba4fa31d84bd21787c5b33d1f7d035f9b6430660c4ebc1c74",
     "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the pre-condense cut. The ship step re-runs the build with --covers on the condensed file.",
     "cut": {
       "name": "pre-condense cut (assembly fix pass, 2026-10-08)",

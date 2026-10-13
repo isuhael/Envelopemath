@@ -10,18 +10,18 @@
       "becker-rig"
     ],
     "file": "teasers/v2/01-dead-simple-list.md",
-    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/01-dead-simple-list.py -> 266 checks, 0 failed (after hook pass 2). Since hook pass 2, 01b is the Social Security wage cap: every number derives from the 2026 6.2% rate and $184,500 wage base; the struck $62,000 wrong guess is anchored to the VO (typed on vo[1], landed on '$62,000', struck on 'No.') and its formula checked; '≈ 1.1%' is checked as the typed ratio × 100 to 0.1 point; 'more than five times' holds on 1.1439% and on the shown 1.1%. Mutation test on the new 01b spec: 7 of 7 caught. For 01c the script derives every number from the 2026 single bracket table (22% line = $50,400 + $16,100 = $66,500 of pay) and checks the $45 against the full federal tax ($5,620 -> $5,899 on the raise; minus the raise all at 12% = $45), the on-screen rule (new pay - $66,500) x 10% to the cent for every salary $64,564-$66,499, and the pinned comment (FICA $149.18, kept ~$1,522, myth $5,085). Earlier checks stand: every typed formula re-evaluated against its displayed result ($1 or 1c rounding), the ≈ rule, payoff gaps <= 7.5 s, no VO after the verdict card, lookOpts limited to keys the kit reads, Becker hits valid, 01b within ±1% of the exact 2026 take-home. Mutation test on scratch copies of the new 01c spec (result $45->$46, VO $45->$54, resultT 6.1->7.2, header $65,000->$64,000): 4 of 4 caught (exit 1). Studio linter on all 3 specs: 3/3 clean, 0 errors, 0 warnings; 01c stills at 0, 1.5, 2.4, 3 s and each payoff inspected.",
+    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/01-dead-simple-list.py -> 266 checks, 0 failed (after hook pass 2). Since hook pass 2, 01b is the Social Security wage cap: every number derives from the 2026 6.2% rate and $184,500 wage base; the struck $62,000 wrong guess is anchored to the VO (typed on vo[1], landed on '$62,000', struck on 'No.') and its formula checked; '≈ 1.1%' is checked as the typed ratio × 100 to 0.1 point; 'more than five times' holds on 1.1439% and on the shown 1.1%. Mutation test on the new 01b spec: 7 of 7 caught. For 01c the script derives every number from the 2026 single bracket table (22% line = $50,400 + $16,100 = $66,500 of pay) and checks the $45 against the full federal tax ($5,620 -> $5,899 on the raise; minus the raise all at 12% = $45), the on-screen rule (new pay - $66,500) x 10% to the cent for every salary $64,564-$66,499, and the pinned comment (FICA $149.18, kept ~$1,522, myth $5,085). Earlier checks stand: every typed formula re-evaluated against its displayed result ($1 or 1c rounding), the ≈ rule, payoff gaps <= 7.5 s, no VO after the verdict card, lookOpts limited to keys the kit reads, Becker hits valid, 01b within ±1% of the exact 2026 take-home. Mutation test on scratch copies of the new 01c spec (result $45->$46, VO $45->$54, resultT 6.1->7.2, header $65,000->$64,000): 4 of 4 caught (exit 1). Studio linter on all 3 specs: 3/3 clean, 0 errors, 0 warnings; 01c stills at 0, 1.5, 2.4, 3 s and each payoff inspected. Re-run 2026-10-13 after the condensed cuts were promoted into studio/specs/ and shipped: 396 checks, 0 failed; lint clean (01a 13.9 s = 11.4 + 2.5, 01b 14.5 s = 12.0 + 2.5, 01c 12.25 + 2.5 s end card = a 14.767 s file: the half-frame body puts the card on the next whole 30 fps frame).",
     "teasers": [
       {
         "id": "01a-scoreboard-paid-biweekly",
         "look": "scoreboard",
         "title": "Paid every 2 weeks? The pay your budget forgets",
         "header": "3 DEAD SIMPLE NUMBERS\nPAID **EVERY 2 WEEKS**?\nWHAT YOUR BUDGET MISSES",
-        "runtime_s": 27.0,
+        "runtime_s": 13.9,
         "key_numbers": [
           "$2,500 every 2 weeks (input)",
-          "$2,500 × 26 = $65,000 (at 2.7 s)",
-          "not × 24 ($60,000, voiced at 4.5 s)",
+          "$2,500 × 26 = $65,000 (lands at 1.2 s in the condensed cut; 2.7 s in the retired 24.5 s cut)",
+          "not × 24 ($60,000: the note rises at 1.85 s and is struck at 2.22 s in the condensed cut; voiced at 4.5 s in the retired 24.5 s cut)",
           "$2,500 × 2 = $5,000 a normal month",
           "$65,000 − $60,000 = $5,000 (the 2 checks your budget forgets)",
           "verdict: every 2 weeks = 13 months of pay a year"
@@ -38,10 +38,10 @@
         "look": "becker-rig",
         "title": "You pay 6.2% Social Security. What does a $1M salary pay?",
         "header": "3 DEAD SIMPLE NUMBERS\nYOU PAY __6.2%__ TO SOCIAL SECURITY.\nA $1M SALARY PAYS…?",
-        "runtime_s": 26.5,
+        "runtime_s": 14.5,
         "key_numbers": [
-          "$20 × 2,080 × 6.2% ≈ $2,579 a year, yours (at 2.3 s); $41,600 is all under the cap",
-          "wrong guess: $1,000,000 × 6.2% = $62,000, typed at 4.0 s, landed 5.2 s, struck in red 6.1 s",
+          "$20 × 2,080 × 6.2% ≈ $2,579 a year, yours (at 1.9 s in the condensed cut; 2.3 s in the retired 24.0 s cut); $41,600 is all under the cap",
+          "wrong guess: $1,000,000 × 6.2% = $62,000, typed at 2.65 s, landed 4.0 s, struck in red 4.5 s in the condensed cut (4.0 / 5.2 / 6.1 s in the retired 24.0 s cut)",
           "$184,500 (2026 Social Security wage base) × 6.2% = $11,439, what a $1M salary pays",
           "$11,439 ÷ $1,000,000 ≈ 1.1% of their pay; 6.2 ÷ 1.1439 = 5.42 ('more than five times')",
           "verdict: You pay 6.2%. A $1M salary pays ≈ 1.1%",
@@ -59,9 +59,9 @@
         "look": "becker-rig",
         "title": "Will a 3% raise push you into a higher tax bracket?",
         "header": "4 DEAD SIMPLE NUMBERS\nWILL A 3% RAISE PUSH **$65,000**\nINTO A HIGHER BRACKET?",
-        "runtime_s": 27.8,
+        "runtime_s": 14.767,
         "key_numbers": [
-          "$65,000 × 1.03 = $66,950 new pay (at 2.3 s); $65,000 ≈ BLS Q2 2026 median full-time pay ($65,052)",
+          "$65,000 × 1.03 = $66,950 new pay (at 1.9 s in the condensed cut; 2.3 s in the retired 25.3 s cut); $65,000 ≈ BLS Q2 2026 median full-time pay ($65,052)",
           "22% line in pay: $50,400 (top of 12%, 2026 single) + $16,100 standard deduction = $66,500",
           "$66,950 − $66,500 = $450 over the line",
           "$450 × 10% (22% − 12%) = $45; full federal tax $5,620 → $5,899 (+$279 vs $234 all at 12%)",
@@ -87,18 +87,18 @@
       "scoreboard"
     ],
     "file": "teasers/v2/02-find-your-row.md",
-    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/02-find-your-row.py -> PASSED: all 170 checks (exit 0), after the round-2 hook pass. The builders were rewritten for the adopted hooks: 02a's quoted header, red 'what you think it costs' column and new timings; 02b's plan clock (10 × 365.25 × 24 × 3,600 = 315,576,000 s, $3,168.81/s) and 13 career-pay rows; 02c's tax-minutes and clock-time rows on the same 2026 federal tax + FICA model (asserting the clock rises with every row). Every VO line fits both 2.6 w/s and 2.8 w/s (split hyphens); picks land with their VO line and after their row; the md quotes every VO line, verdict, footer, formula and title verbatim. Mutation test on scratch copies (02c row ≈ 10:40 am → ≈ 10:41 am; 02b vo[2] d 4.7 → 4.4): FAILED 5 of 171, exit 1. Studio linter on all three specs: 3/3 clean, 0 errors, 0 warnings; stills at 0, 1.5, 3 s and each verdict inspected.",
+    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/02-find-your-row.py -> PASSED: all 170 checks (exit 0), after the round-2 hook pass. The builders were rewritten for the adopted hooks: 02a's quoted header, red 'what you think it costs' column and new timings; 02b's plan clock (10 × 365.25 × 24 × 3,600 = 315,576,000 s, $3,168.81/s) and 13 career-pay rows; 02c's tax-minutes and clock-time rows on the same 2026 federal tax + FICA model (asserting the clock rises with every row). Every VO line fits both 2.6 w/s and 2.8 w/s (split hyphens); picks land with their VO line and after their row; the md quotes every VO line, verdict, footer, formula and title verbatim. Mutation test on scratch copies (02c row ≈ 10:40 am → ≈ 10:41 am; 02b vo[2] d 4.7 → 4.4): FAILED 5 of 171, exit 1. Studio linter on all three specs: 3/3 clean, 0 errors, 0 warnings; stills at 0, 1.5, 3 s and each verdict inspected. Re-run 2026-10-13 after the condensed cuts were promoted into studio/specs/ and shipped: 225 checks, all passed; lint clean (02a 10.3 s = 7.8 + 2.5, 02b and 02c 10.1 s = 7.6 + 2.5 s end card).",
     "teasers": [
       {
         "id": "02a-becker-rig-3-a-day-by-age",
         "look": "becker-rig",
         "title": "\"It's Just $3 a Day\": What It Costs You by 65, by Age",
         "header": "“It’s just **$3 a day**.”\nWhat it costs you by 65:",
-        "runtime_s": 15.9,
+        "runtime_s": 10.3,
         "key_numbers": [
           "$3 × 365 ÷ 12 = $91.25 a month at 7%/12 to 65",
-          "18: $51,465 (red, 'what you think it costs') vs ≈ $400,000 (FV $400,261.67); VO reaches it at ≈ 2.7 s",
-          "real ÷ red in the rows landing by 1.5 s: 7.78× / 7.02× / 5.47× / 4.29× (ages 18/20/25/30)",
+          "18: $51,465 (red, 'what you think it costs') vs ≈ $400,000 (FV $400,261.67); on screen from frame 1, picked with its caption at 1.45 s in the condensed cut (the VO reached it at ≈ 2.7 s in the retired 13.4 s cut)",
+          "real ÷ red in the rows landed by 0.85 s in the condensed cut (by 1.5 s in the retired 13.4 s cut): 7.78× / 7.02× / 5.47× / 4.29× (ages 18/20/25/30)",
           "25: $43,800 vs ≈ $240,000 (≈ 5.5× what you think)",
           "35: ≈ $111,000; FV25 ÷ FV35 = 2.152 (≈ 2.2×)",
           "verdict: 10 years younger costs more than double (ratio 2.09-15.98 for every whole age 18-54)",
@@ -116,11 +116,11 @@
         "look": "scoreboard",
         "title": "How Fast Elon's $1 Trillion Pay Plan Earns Your Whole Career's Pay",
         "header": "ELON'S **$1 TRILLION** PAY PLAN\nEARNS YOUR WHOLE CAREER'S PAY IN…",
-        "runtime_s": 16.5,
+        "runtime_s": 10.1,
         "key_numbers": [
           "plan clock: $1T ÷ (10 × 365.25 × 24 × 3,600 = 315,576,000 s) = $3,168.81/s → ≈ $3,169 a second",
           "career = wage × 2,080 × 40 = wage × 83,200 (exact)",
-          "$7.25/hr: $603,200 → 190.4 s = ≈ 3.2 min (VO ≈ 3 minutes at ≈ 1.9 s)",
+          "$7.25/hr: $603,200 → 190.4 s = ≈ 3.2 min (caption '≈ 3 minutes' at 1.3 s in the condensed cut; VO at ≈ 1.9 s in the retired 14.0 s cut)",
           "$20/hr: $1,664,000 → 8.75 min (under 9); $100/hr: $8,320,000 → 43.76 min (≈ 44)",
           "$1,000/hr: $83,200,000 → ≈ 7.3 hrs",
           "pinned: ≈ $11.4 million an hour; plan = stock, paid only if targets are hit"
@@ -136,10 +136,10 @@
         "look": "scoreboard",
         "title": "What Time Your 9-to-5 Starts Paying You, by Salary",
         "header": "What time your **9-to-5**\nstarts paying you, by salary",
-        "runtime_s": 15.5,
+        "runtime_s": 10.1,
         "key_numbers": [
           "min a day = 480 × (2026 fed tax + FICA) ÷ salary; clock = 9:00 am + min",
-          "$65,000: $10,592.50 (16.30%) → 78.22 min → ≈ 10:18 am (VO at ≈ 3.1 s)",
+          "$65,000: $10,592.50 (16.30%) → 78.22 min → ≈ 10:18 am (caption and pick at 1.3 s in the condensed cut; VO at ≈ 3.1 s in the retired 13.0 s cut)",
           "$100,000: $20,820 (20.82%) → 99.94 min = ≈ 1 hr 40 min → ≈ 10:40 am",
           "$200,000 (row 1): 122.58 min → ≈ 11:03 am; $30,000: 59.44 min → ≈ 9:59 am",
           "2026 single: std ded $16,100; 10/12/22/24% to $12,400/$50,400/$105,700/$201,775; FICA 6.2% to $184,500 + 1.45%",
@@ -165,14 +165,14 @@
       "scoreboard"
     ],
     "file": "teasers/v2/03-what-difference.md",
-    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/03-what-difference.py: 388 checks, 0 failures, exit 0 (after the 2026-10-08 hook pass on 03b). The script rebuilds every loan payment by payment from the sourced inputs. It then asserts that every display string and VO number matches the computed, formatted value, and that each shown delta equals the difference of the shown totals. It checks that ≈ and \"about\" appear only on rounded numbers, the contract shape, and R1, R2, R8 and R10, including that the baseline option's results are already on screen at frame 1. Each later option must land within 0.9 s of the word that names it, using resultT as the landing where the kit reads one. Lever and footer steps must sit on beats, every footer step must start after t = 0 and stay at or under 45 characters, and specs must carry no sfx. It also asserts that hold = duration minus the last VO end, and the sensitivity claims (Edmunds' exact $44,664, 6% and 8% what-ifs, 19.56% and 22.15% card rates, 7.28% mortgage rate). Mutation test: one interest cell changed, one \"about\" removed and the lever moved off its beat gave 4 failures and exit 1; the restored specs pass again. Hook-pass mutation test on a scratch copy of the new 03b spec (note $99.67, verdict ≈ 11, the landing of option 2 moved off \"keep\", one \"about\" removed): 4 of 4 caught. Studio linter (node src/cli.mjs check specs/03*.json): 3/3 clean, 0 errors, 0 warnings, against the built modules. 03a and 03c are also clean against the committed kits in a clean HEAD export. Stills and 12-frame contact sheets of all three were inspected.",
+    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/03-what-difference.py: 388 checks, 0 failures, exit 0 (after the 2026-10-08 hook pass on 03b). The script rebuilds every loan payment by payment from the sourced inputs. It then asserts that every display string and VO number matches the computed, formatted value, and that each shown delta equals the difference of the shown totals. It checks that ≈ and \"about\" appear only on rounded numbers, the contract shape, and R1, R2, R8 and R10, including that the baseline option's results are already on screen at frame 1. Each later option must land within 0.9 s of the word that names it, using resultT as the landing where the kit reads one. Lever and footer steps must sit on beats, every footer step must start after t = 0 and stay at or under 45 characters, and specs must carry no sfx. It also asserts that hold = duration minus the last VO end, and the sensitivity claims (Edmunds' exact $44,664, 6% and 8% what-ifs, 19.56% and 22.15% card rates, 7.28% mortgage rate). Mutation test: one interest cell changed, one \"about\" removed and the lever moved off its beat gave 4 failures and exit 1; the restored specs pass again. Hook-pass mutation test on a scratch copy of the new 03b spec (note $99.67, verdict ≈ 11, the landing of option 2 moved off \"keep\", one \"about\" removed): 4 of 4 caught. Studio linter (node src/cli.mjs check specs/03*.json): 3/3 clean, 0 errors, 0 warnings, against the built modules. 03a and 03c are also clean against the committed kits in a clean HEAD export. Stills and 12-frame contact sheets of all three were inspected. Re-run 2026-10-13 after the condensed cuts were promoted into studio/specs/ and shipped: 565 checks, 0 failures; lint clean (03a 17.3 s = 14.8 + 2.5, 03b 11.65 + 2.5 = a 14.167 s file, 03c 12.85 + 2.5 s end card = a 15.367 s file: the half-frame bodies put the card on the next whole 30 fps frame).",
     "teasers": [
       {
         "id": "03a-becker-rig-car-loan-weekly",
         "look": "becker-rig",
         "title": "What Difference Do Weekly Car Payments Really Make on $44,000?",
         "header": "What difference do weekly and\nbiweekly payments really make\non a **$44,000** car loan?",
-        "runtime_s": 39.7,
+        "runtime_s": 17.3,
         "key_numbers": [
           "$44,000 at 7% over 72 months: $750.16 a month",
           "Monthly: 72 months, ≈ $10,000 interest ($10,011.20)",
@@ -193,7 +193,7 @@
         "look": "scoreboard",
         "title": "What Difference Does Paying the Same Card Minimum Every Month Make on $5,000?",
         "header": "What difference does\npaying the SAME minimum\nevery month make on **$5,000**?",
-        "runtime_s": 33.1,
+        "runtime_s": 14.167,
         "key_numbers": [
           "$5,000 at 22% APR, minimum = 1% + interest with a $40 floor (Chase): first minimum $142.59",
           "The minimum shrinks: $142.59 → $127.40 (month 12) → $99.66 (month 36, the first under $100; on screen at 0.0 s)",
@@ -214,7 +214,7 @@
         "look": "scoreboard",
         "title": "How Much Difference Does Just $100 Extra a Month Make on a Mortgage?",
         "header": "HOW MUCH DIFFERENCE DOES\nJUST **$100** EXTRA A MONTH MAKE\nON A 30-YEAR MORTGAGE?",
-        "runtime_s": 32.3,
+        "runtime_s": 15.367,
         "key_numbers": [
           "$400,000 at 7.3% (≈ Freddie Mac 7.28%, Oct 1 2026): $2,742.29 a month",
           "Just the payment: 30 years, ≈ $587,200 interest ($587,216.16), more than the loan",
@@ -241,17 +241,17 @@
       "scoreboard"
     ],
     "file": "teasers/v2/04-chart-race.md",
-    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/04-chart-race.py → 407 checks, 0 failed. Studio linter (node src/cli.mjs check on the three specs): 3/3 clean, 0 errors, 0 warnings (the old 04a footer type-floor warning is gone). Mutation test: 12 of 12 broken spec copies caught, each by a failed claim rather than a crash. The checks cover: chart points to the cent; finals; footer and formula strings; ledger cells; VO numbers with ≈; read speed of 2.6 words/s; year sync; event and beat timing; sfx; verdict after the last VO line; no uncovered digits. New in this round: a spoken-number sync check (each mid-race figure must be on screen when the VO says it), a 2,916-table FDIC robustness sweep for 04b, frame-1 'open in the red' claims for 04a, and a stale-text check on the md. Contact sheets were rendered in all three kits.",
+    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/04-chart-race.py → 407 checks, 0 failed. Studio linter (node src/cli.mjs check on the three specs): 3/3 clean, 0 errors, 0 warnings (the old 04a footer type-floor warning is gone). Mutation test: 12 of 12 broken spec copies caught, each by a failed claim rather than a crash. The checks cover: chart points to the cent; finals; footer and formula strings; ledger cells; VO numbers with ≈; read speed of 2.6 words/s; year sync; event and beat timing; sfx; verdict after the last VO line; no uncovered digits. New in this round: a spoken-number sync check (each mid-race figure must be on screen when the VO says it), a 2,916-table FDIC robustness sweep for 04b, frame-1 'open in the red' claims for 04a, and a stale-text check on the md. Contact sheets were rendered in all three kits. Re-run 2026-10-13 after the condensed cuts were promoted into studio/specs/ and shipped: 698 checks, 0 failed; lint clean (04a 19.9 s = 17.4 + 2.5, 04b 18.8 s = 16.3 + 2.5, 04c 18.4 s = 15.9 + 2.5 s end card).",
     "teasers": [
       {
         "id": "04a-scoreboard-sp500-vs-gold",
         "look": "scoreboard",
         "title": "What If You Invested $10,000 in the S&P 500 and GOLD in 2000? (A/B: \"$10,000 in 2000: Stocks or Gold?\")",
         "header": "POV: In 2000 you put **$10,000** in\nthe S&P 500 VS gold",
-        "runtime_s": 48.0,
+        "runtime_s": 19.9,
         "key_numbers": [
-          "frame 1 already under the stake: S&P $9,701 / gold $9,823 (raceT starts at -0.4 s)",
-          "By 2002: stocks ≈ −38%, gold ≈ +21% (cumulative, pinned on a flag from 3.28 s)",
+          "frame 1 already under the stake: S&P $9,535 / gold $9,724 (the race starts at −0.25 s in the condensed cut; $9,701 / $9,823 with raceT −0.4 s in the retired 45.5 s cut)",
+          "By 2002: stocks ≈ −38%, gold ≈ +21% (cumulative, pinned on a flag from 1.23 s in the condensed cut; 3.28 s in the retired 45.5 s cut)",
           "2013: gold ≈ −28%",
           "S&P 500 ≈ $75,300 (≈ ×7.53, ≈ 2.9 doublings)",
           "Gold ≈ $150,000 (≈ ×15.0, ≈ 3.9 doublings)",
@@ -269,10 +269,10 @@
         "look": "becker-rig",
         "title": "$1,000 in Savings vs the S&P 500 Since 2010: Which One Lost Value?",
         "header": "Your **$1,000**: 16 years of savings\nVS 1 year of the S&P 500",
-        "runtime_s": 38.5,
+        "runtime_s": 18.8,
         "key_numbers": [
           "first VO: 'One of these never had a down year. Guess which one lost.'",
-          "2014: the S&P doubled it (tip crosses $2,000 at 8.18 s)",
+          "2014: the S&P doubled it (tip just past $2,000 at 3.4 s in the condensed cut; crossed at 8.18 s in the retired 36.0 s cut)",
           "Savings: under $10 of interest by 2019 (tip $1,007.76-$1,008.83 while said)",
           "2022: stocks ≈ −18%",
           "S&P 500 ≈ $8,280 vs savings ≈ $1,020",
@@ -291,12 +291,12 @@
         "look": "scoreboard",
         "title": "What If You Invested $10,000 in the USA and EUROPE in 2016? (A/B: \"Europe Won 2025. Who Won the Decade?\")",
         "header": "POV: In 2016 you invested **$10,000** in\nUSA vs EUROPE",
-        "runtime_s": 39.0,
+        "runtime_s": 18.4,
         "key_numbers": [
           "hook: 2025: Europe beat the USA ≈ 2 to 1 (35.41% ÷ 17.88% = 1.98)",
           "2018: Europe ≈ −15% (said while the 2018 row is up)",
           "2020: the USA doubled (≥ $20,334 for the whole line)",
-          "Europe still under $17,000 until 19.09 s",
+          "Europe still under $17,000 until ≈ 9.89 s in the condensed cut (19.09 s in the retired 36.5 s cut)",
           "2025: Europe ≈ +35%, USA ≈ +18%",
           "USA ≈ $39,800 (≈ ×3.98) vs Europe ≈ $22,700 (≈ ×2.27)",
           "≈ 14.8% vs ≈ 8.5% a year; USA ≈ doubled twice (log2 1.994), Europe once (1.18)"
@@ -321,14 +321,14 @@
       "scoreboard"
     ],
     "file": "teasers/v2/05-split-sheet.md",
-    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/05-split-sheet.py -> 494 checks, 0 failed, exit 0 (after hook pass 2: 05b and 05c rewritten to rewrite A). 05b derives the $1,200 rent bin (4 bricks), food + every bill (1,500 − 1,200 = $300 = 1 brick = $10 a day; $9.86 in a 30.44-day month) and the pinned-comment sums; 05c checks every row masked at frame 1, the membership row landed at frame 1, 'not zero', 'about half each' (49.4% / 50.6%), 'almost as much' (97.8%) and fees < net income (64%). In-memory mutation test of the new 05b/05c specs: 10 of 10 caught. Studio linter (node src/cli.mjs check specs/05*.json): 3/3 clean, 0 errors, 1 warning (05b check-line '=' 38.7 px at 14.5 s while assembling). Stills at 0, 1.5 and 3 s and every beat inspected for 05b and 05c.",
+    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/05-split-sheet.py -> 494 checks, 0 failed, exit 0 (after hook pass 2: 05b and 05c rewritten to rewrite A). 05b derives the $1,200 rent bin (4 bricks), food + every bill (1,500 − 1,200 = $300 = 1 brick = $10 a day; $9.86 in a 30.44-day month) and the pinned-comment sums; 05c checks every row masked at frame 1, the membership row landed at frame 1, 'not zero', 'about half each' (49.4% / 50.6%), 'almost as much' (97.8%) and fees < net income (64%). In-memory mutation test of the new 05b/05c specs: 10 of 10 caught. Studio linter (node src/cli.mjs check specs/05*.json): 3/3 clean, 0 errors, 1 warning (05b check-line '=' 38.7 px at 14.5 s while assembling). Stills at 0, 1.5 and 3 s and every beat inspected for 05b and 05c. Re-run 2026-10-13 after the condensed cuts were promoted into studio/specs/ and shipped: 583 checks, 0 failed; lint clean (05a 12.72 + 2.5 = a 15.233 s file, 05b 11.45 + 2.5 = a 13.967 s file, 05c 11.4 s = 8.89 + 2.5 s end card: bodies that end between frames put the card on the next whole 30 fps frame).",
     "teasers": [
       {
         "id": "05a-becker-rig-chipotle-10",
         "look": "becker-rig",
         "title": "Chipotle Keeps How Much of Your $10?",
         "header": "What You're Really Paying For\nWhen You Spend **$10**\nat Chipotle:",
-        "runtime_s": 27.2,
+        "runtime_s": 15.233,
         "key_numbers": [
           "$10.00 order",
           "≈ $2.96 food, drinks & packaging (29.6%)",
@@ -337,8 +337,8 @@
           "≈ $1.47 ads, delivery & card fees (14.7%)",
           "≈ $0.91 HQ, wear & tear, new stores (9.1%)",
           "≈ $0.34 tax − interest earned (3.4%; the tax alone would be ≈ $0.40)",
-          "≈ $1.29 profit (12.9%, masked '?' until 23.1 s)",
-          "$7.04 wrong guess on screen at frame 1, struck at 5.3 s",
+          "≈ $1.29 profit (12.9%, masked '?' until 9.77 s in the condensed cut; 23.1 s in the retired 24.7 s cut)",
+          "$7.04 wrong guess on screen at frame 1, struck at 2.3 s in the condensed cut (5.3 s in the retired 24.7 s cut)",
           "check $10.00 − $8.71 of costs = $1.29"
         ],
         "spec": "studio/specs/05a-becker-rig-chipotle-10.json",
@@ -353,12 +353,12 @@
         "look": "becker-rig",
         "title": "Pay $1,200 Rent? 50/30/20 Leaves Food and Bills How Much a Day?",
         "header": "Rent **$1,200** on 50/30/20?\nFood and every bill get\nthis much a day:",
-        "runtime_s": 24.6,
+        "runtime_s": 13.967,
         "key_numbers": [
           "$3,000 a month after tax (slab) · $1,200 rent (header)",
-          "$3,000 ÷ 10 = $300, 10 bricks (first payoff at 1.2 s)",
+          "$3,000 ÷ 10 = $300, 10 bricks (first payoff at 1.2 s in both cuts)",
           "rent 4 × $300 = $1,200 (40%)",
-          "food + every bill 1 × $300 = $300 (10%, goal, 6.9 s)",
+          "food + every bill 1 × $300 = $300 (10%, goal, 4.4 s in the condensed cut; 6.9 s in the retired 22.1 s cut)",
           "$300 ÷ 30 = $10 a day (verdict)",
           "wants 3 × $300 = $900 · savings 2 × $300 = $600",
           "check $1,200 + $300 + $900 + $600 = $3,000"
@@ -374,7 +374,7 @@
         "look": "scoreboard",
         "title": "Is Costco's Profit All Membership Fees? Follow Your $100 Cart",
         "header": "IS COSTCO'S PROFIT\nALL MEMBERSHIP FEES?\nFOLLOW YOUR **$100** CART:",
-        "runtime_s": 25.3,
+        "runtime_s": 11.4,
         "key_numbers": [
           "$100.00 cart",
           "≈ $1.99 membership fees per $100 of sales (5,907 ÷ 297,247), on screen at frame 1",
@@ -404,17 +404,17 @@
       "becker-rig"
     ],
     "file": "teasers/v2/06-pov-race.md",
-    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/06-pov-race.py -> 365 checks, 0 failed, ALL PASS (exit 0) after hook pass 2 (06b's years-of-Netflix steps; was 352, and 313 before that). New checks cover: VO pacing in spoken words at 2.8 per second, counting numbers as they are read aloud; race moving by 1.0 s; first payoff by 3.0 s; raw-close derivation of the $3.65 launch price; every pinned-comment product multiplying out. Studio linter (node src/cli.mjs check): 06a, 06b and 06c each 0 errors, 0 warnings (3/3 clean). Re-run 2026-10-12 after 06c's condensed cut (18.2 s, was 30.5 s) was promoted into studio/specs/ and shipped: 441 checks, 0 failed; 06c lints clean (18.2 s = 15.7 + 2.5 s end card). Re-run 2026-10-12 after 06b's condensed cut (20.8 s, was 33.0 s) was promoted into studio/specs/ and shipped: 442 checks, 0 failed; 06b lints clean (20.8 s = 18.3 + 2.5 s end card).",
+    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/06-pov-race.py -> 365 checks, 0 failed, ALL PASS (exit 0) after hook pass 2 (06b's years-of-Netflix steps; was 352, and 313 before that). New checks cover: VO pacing in spoken words at 2.8 per second, counting numbers as they are read aloud; race moving by 1.0 s; first payoff by 3.0 s; raw-close derivation of the $3.65 launch price; every pinned-comment product multiplying out. Studio linter (node src/cli.mjs check): 06a, 06b and 06c each 0 errors, 0 warnings (3/3 clean). Re-run 2026-10-12 after 06c's condensed cut (18.2 s, was 30.5 s) was promoted into studio/specs/ and shipped: 441 checks, 0 failed; 06c lints clean (18.2 s = 15.7 + 2.5 s end card). Re-run 2026-10-12 after 06b's condensed cut (20.8 s, was 33.0 s) was promoted into studio/specs/ and shipped: 442 checks, 0 failed; 06b lints clean (20.8 s = 18.3 + 2.5 s end card). Re-run 2026-10-13 after 06a's condensed cut (17.8 s, was 29.0 s) was promoted into studio/specs/ and shipped: 468 checks, 0 failed; lint clean (06a 17.8 s = 15.3 + 2.5 s end card; 06a keeps its documented type-floor warning, \"spent\" 39.5 px for 0.05 s).",
     "teasers": [
       {
         "id": "06a-scoreboard-first-iphone-apple",
         "look": "scoreboard",
         "title": "What If You Invested $499 in Apple Instead of the First iPhone?",
         "header": "POV: IN 2007 YOU INVESTED IN APPLE\nINSTEAD OF PAYING **$499**\nFOR THE FIRST IPHONE",
-        "runtime_s": 29.0,
+        "runtime_s": 17.8,
         "key_numbers": [
           "$499 at the 6/29/2007 close, adjusted price $3.65 (5.92 x 122.04 / 198.08 = 3.6474), 136.71 shares",
-          "end of 2007 $809 (first payoff at 1.40 s); 2008 low $348 (opens in the red at 2.15-2.84 s)",
+          "end of 2007 $809 (first payoff at 0.66 s in the condensed cut; 1.40 s in the retired 26.5 s cut); 2008 low $348 (opens in the red at 1.14-1.58 s in the condensed cut; 2.15-2.84 s in the retired cut)",
           "passes $10,000 in 2020 (t 14.78); 2022 drop 26.4% ('a quarter')",
           "final $37,065.45 shown as ≈ $37,000 (nearest $1,000); footer step $499 x 74.3 ≈ $37,000",
           "≈ 74x (74.28); 2x every ≈ 3 yrs (6.21 doublings in 18.51 years = 2.98)",

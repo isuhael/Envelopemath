@@ -3,9 +3,9 @@
 # BODY_S, CARD_S and tag_chars already defined. Started from 06b-scoreboard-netflix-bill.py (the nearest sheet).
 #
 # Facts come only from teasers/v2/02-find-your-row.md (section 02a) and python3 teasers/v2/checks/02-find-your-row.py.
-# Research: vidIQ, pulled 2026-10-13. The render in renders/channel is the pre-condense cut; a condensed cut (timing
-# only) is in progress. This sheet names no timestamp except the cover, which is picked by content (the finished
-# table), so the copy carries over; the ship step rebuilds it with --covers from the final file.
+# Research: vidIQ, pulled 2026-10-13. The video is the condensed cut, promoted and shipped on 2026-10-13 (the
+# pre-condense round-2 cut is in git, 471c793). This sheet names no timestamp except the cover, which is picked by
+# content, so the copy carried over unchanged; the ship rebuilt it with --covers from the shipped file.
 
 TEASER = "02a Becker Rig, find-your-row: \"It's just $3 a day\": what it costs you by 65, by age"
 PREPARED = "2026-10-13"
@@ -14,12 +14,14 @@ MD_TITLE = "02a publishing sheet: \"It's just $3 a day\", by age"
 MATH_RUN = "PASSED: all 183 checks"      # python3 teasers/v2/checks/02-find-your-row.py on studio/specs/, at the adversarial check, 2026-10-13
 MATH_RUN_FIRST = "PASSED: all 177 checks"    # the same script at the first build, before the condense pass made it cut-aware
 MATH_RUN_WIP = "PASSED: all 216 checks"      # the same script with --spec on the three condensed cuts in studio/specs-wip/
+MATH_RUN_SHIP = "PASSED: all 225 checks"   # python3 teasers/v2/checks/02-find-your-row.py on studio/specs/ with the condensed cuts promoted, at the ship 2026-10-13
 
 MD_INTRO = [
-    f"- **Video.** `renders/channel/{BASE}.mp4`: the pre-condense cut ({VIDEO_S:g} s: a {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`), "
-    "the round-2 Becker Rig port of 2026-10-08 as `renders/channel` holds it on 2026-10-13. A condensed cut is in progress (timing only: the numbers, captions and verdict stay). "
-    "Nothing below names a timestamp except the cover, which is picked by content (the finished table), so the copy carries over. "
-    f"The ship step rebuilds this sheet and re-exports both covers from the final file: `python3 publishing/tools/build_publishing.py {BASE} --covers`.",
+    f"- **Video.** `renders/channel/{BASE}.mp4`: the condensed cut ({VIDEO_S:g} s: a {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`), "
+    "promoted and shipped on 2026-10-13. It replaces the 15.9 s round-2 cut (the owner: \"too many still moments\"), which is in git (`471c793`). "
+    "The condense moved the clock and merged some captions; the numbers, the captions' facts and the verdict stay, so the copy carried over unchanged. "
+    "Nothing below names a timestamp except the cover, which was re-picked by content on the shipped file. "
+    f"The ship rebuilt this sheet and re-exported both covers from it (`python3 publishing/tools/build_publishing.py {BASE} --covers`); on the shipped specs the maths check runs {MATH_RUN_SHIP}.",
     "- **Numbers.** Every figure comes from `teasers/v2/02-find-your-row.md` (02a) and its check, "
     f"`python3 teasers/v2/checks/02-find-your-row.py`: {MATH_RUN} on `studio/specs/` (run 2026-10-13), and {MATH_RUN_WIP.split(': ')[1]} with `--spec` on the condensed cuts "
     "in `studio/specs-wip/`, which carry every string and number the copy quotes. The builder runs it through "
@@ -36,10 +38,11 @@ MD_INTRO = [
 
 # ---------------------------------------------------------------- the video
 FOR_VIDEO_NOTE = ("Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. "
-                  "current_* is what renders/channel holds on 2026-10-13: the pre-condense cut. The ship step rebuilds this file with --covers from the condensed cut.")
-CUT = {"name": "pre-condense (round-2 Becker Rig port, 2026-10-08)", "spec": f"studio/specs/{BASE}.json", "body_s": BODY_S,
-       "card_s": CARD_S, "status": "in renders/channel on 2026-10-13; a condensed cut (timing only) is in progress",
-       "on_ship": f"python3 publishing/tools/build_publishing.py {BASE} --covers (re-picks the cover by content, re-exports both JPGs, refreshes for_video)"}
+                  "current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.")
+CUT = {"name": "condensed (2026-10-13)", "spec": f"studio/specs/{BASE}.json", "body_s": BODY_S,
+       "card_s": CARD_S, "shipped": "2026-10-13",
+       "replaces": {"duration_s": 15.9, "sha256": "e73341bfb6bb5e560e60675c993a82324664adc4220b3012581084a78ba0c60f",
+                    "note": "the round-2 cut (pre-condense) + card, retired; in git history (471c793)"}}
 
 FACTS = {
     "source": f"teasers/v2/02-find-your-row.md section 02a; teasers/v2/checks/02-find-your-row.py: {MATH_RUN} on studio/specs/ (2026-10-13)",
@@ -198,19 +201,20 @@ IG_FIRST_COMMENT = ("At 25: $43,800 handed over vs ≈ $240,000 at 7% a year. 10
                     "What rate would you plug in?")
 
 # ---------------------------------------------------------------- the cover frame
-# The finished table, picked by content on the pre-condense render (2026-10-13): the payoff lands at 10.70 s (frame 321)
-# with the impact's shake; from 11.30 s (frame 339) the mean frame-to-frame luma change (270×480 greyscale) stays at or
-# under 0.016 until the end card cuts in at 13.40 s. The cover is taken at 11.4 s (frame 342), inside that hold.
-COVER_T = 11.4
-COVER_FRAME = 342
+# The finished table, picked by content on the shipped condensed cut (2026-10-13): the payoff lands at 6.30 s (frame
+# 189) with the impact's shake; from 6.90 s (frame 207) the mean frame-to-frame luma change (270×480 greyscale) stays at
+# or under 0.009 until the end card cuts in at 7.80 s. The cover is taken at 7.0 s (frame 210), inside that hold.
+COVER_T = 7.0
+COVER_FRAME = 210
 COVER_CROP = "crop=1080:1440:0:78"
-COVER_RENDER_WORD = "pre-condense"
+COVER_RENDER_WORD = "shipped"
 COVER_FRAME_BY_CONTENT = ("The finished table, which the write-up names as the cover (its beat sheet marks the hold after the payoff 'the cover frame', and its Instagram note says "
                           "'Cover: the completed table'): all 10 rows from 18 to 60, red beside green; the 25 row's ≈ $240,000 on the gold plate; the bracket from the 35 row "
                           "up to the 25 row; the pill '≈ 2.2× the cost at 35'; the figure pointing at the plate, pencil in hand; and the verdict '10 years younger? / It costs "
                           "more than double.' under the table. Use the first settled frame of that hold, after the impact's shake and before the end card.")
-COVER_FRAME_MEASURED = ("On the pre-condense 15.9 s render the payoff lands at 10.70 s (frame 321) with the impact's shake; from 11.30 s (frame 339) the mean frame-to-frame "
-                        "luma change (270×480 greyscale) stays at or under 0.016 until the end card cuts in at 13.40 s. The cover is taken at 11.4 s (frame 342), inside that hold.")
+COVER_FRAME_MEASURED = ("On the shipped 10.3 s condensed cut the payoff lands at 6.30 s (frame 189) with the impact's shake; from 6.90 s (frame 207) the mean frame-to-frame "
+                        "luma change (270×480 greyscale) stays at or under 0.009 until the end card cuts in at 7.80 s. The cover is taken at 7.0 s (frame 210), inside that "
+                        "hold. On the 15.9 s pre-condense render it was 11.4 s (frame 342).")
 COVER_CROP_NOTE = ("3:4 = 1080×1440 from y 78 to 1518 of the 1080×1920 frame. The content runs from y 112 (the badge) to y 1484 (the verdict's underline), "
                    "so the crop centres it: badge, quoted header, footer, all 10 rows with the plate, bracket and pill, and the verdict; it drops the empty floor. "
                    "A centred grid crop (y 240-1680) loses the badge and leaves the header on the top edge.")
@@ -219,7 +223,7 @@ COVER_HOW_TO_SET = ("In 'Edit cover', pick the finished-table frame from the vid
 COVER_EXTRA_BULLETS = [
     "**Not used:** frame 1 (the quoted header over the 18 row only). It asks without answering, but the write-up chooses the completed table, after Gage Heward's one cover A/B "
     "(4,348 vs 2,844, n = 1), and a by-age table shows every viewer a different answer, so the cover gives no single result away.",
-    "**Condensed cut:** the ship step re-picks this frame by content on the final file (the first settled frame after the gold plate lands) and re-exports both JPGs with `--covers`.",
+    "**Shipped cut (2026-10-13):** the finished table was re-picked by content on the shipped file (the first settled frame after the gold plate lands, 7.0 s) and both JPGs re-exported from it. It shows the same table, plate, bracket, pill and verdict as the pre-condense cover.",
 ]
 
 TRIAL_REELS = {
@@ -360,7 +364,7 @@ LIMITS = [
     "vidIQ's YouTube authorization is a different channel (UCRC5v_El2fibbkqsZs6uFjA), so @envelopemath's YouTube Analytics (audience hours, geography) were not readable. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
     "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and on the outliers' own tags.",
     "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
-    "The render in renders/channel is the pre-condense cut. The cover's time and frame are measured on it; the copy names no other timestamp, and the ship step re-picks the cover on the final file.",
+    "The render in renders/channel is the shipped condensed cut (2026-10-13). The cover's time and frame are measured on it; the copy names no other timestamp and carried over from the pre-condense cut unchanged.",
     "Outlier views and medians are vidIQ's index at pull time; the same-idea Shorts' own maths (for example a $3 habit 'costing $1 million') is not checked here and is not in the copy.",
 ]
 RESEARCH_EXTRA = {
@@ -378,7 +382,8 @@ CHECKED_BY = "adversarial check of this sheet"
 CHECKED_MATH = (f"python3 teasers/v2/checks/02-find-your-row.py: {MATH_RUN} on studio/specs/ at the adversarial check (2026-10-13; {MATH_RUN_FIRST.split(': ')[1]} at the first build, "
                 f"before the condense pass made the check cut-aware), and {MATH_RUN_WIP.split(': ')[1]} with --spec on the condensed cuts in studio/specs-wip/; run by the builder through "
                 "publishing/data/checks/02-find-your-row.py; every public figure traced to the 02a maths table and recomputed in MATH_RELATIONS (FV of $91.25 a month at 7%/12), "
-                "each row's figures pinned beside their age and the verdict's range pinned to its pairs (COPY_RULES)")
+                "each row's figures pinned beside their age and the verdict's range pinned to its pairs (COPY_RULES)"
+                f"; re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: {MATH_RUN_SHIP}")
 VIDIQ_REQUERIED = ("pulled 2026-10-13: compound interest 137,873 / 50.6 (-17.3%); your life if you invested $5 a day 43,958; cost of waiting to invest 3,507 / 22.6; 11 titles scored: pick 97, top 98, write-up's title 94; "
                    "channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,518 views in 30 days. Re-scored at the end of the build: the pick 97. "
                    "Re-queried at the adversarial check: the pick's title score 97; compound interest 137,873 / 50.6 (-17.3% on 166,772); channel 53 / 10,221 / 41; "
@@ -412,6 +417,9 @@ CHECK_LOG = [
     "  - The title keeps the quote and drops 'invest': the 'invest' versions score 1 point higher but read as a nudge, and the description's first line explains the comparison.",
     "  - The copy names no product: the write-up's $3 is generic, so 'latte factor' appears only as a tag, the generic concept 06c's sheet also uses.",
     "  - The cover frame was re-exported to a scratch folder: both JPGs are byte-identical to the files here. The condensed cut's spec carries the same header, footer, rows, captions, pick labels and verdict, so no copy changes on ship.",
+    f"- **Done on ship (2026-10-13).** Rebuilt with `--covers` from the shipped condensed cut ({VIDEO_S:g} s). The finished table was re-picked by content at 7.0 s (frame 210), the first settled stretch of the verdict hold. "
+    f"The Video bullet, the cut and the check counts follow the shipped file ({MATH_RUN_SHIP} on `studio/specs/`), and the long alt text was re-read against the condensed beat sheet: "
+    "every beat it names is in the shipped cut, so no copy changed.",
 ]
 
 # ---------------------------------------------------------------- the numbers check

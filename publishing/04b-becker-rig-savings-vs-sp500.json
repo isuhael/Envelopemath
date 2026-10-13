@@ -4,16 +4,20 @@
   "prepared": "2026-10-13",
   "for_video": {
     "current_render": "renders/channel/04b-becker-rig-savings-vs-sp500.mp4",
-    "current_duration_s": 38.5,
-    "current_sha256": "8d243eeeeb7f145be1c55f1844b91ea10a2a8d7b1d5147aef156e0a7728c58ee",
-    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds on 2026-10-13: the pre-condense cut. The ship step rebuilds this file with --covers from the condensed cut.",
+    "current_duration_s": 18.8,
+    "current_sha256": "16755a2628dba4cb36c243a2fbaa51cd90240a33cc60d450c8fbfed891bdfc79",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
-      "name": "pre-condense (hook-pass-2 Becker rig cut)",
+      "name": "condensed (2026-10-13)",
       "spec": "studio/specs/04b-becker-rig-savings-vs-sp500.json",
-      "body_s": 36.0,
+      "body_s": 16.3,
       "card_s": 2.5,
-      "status": "in renders/channel on 2026-10-13 (git 471c793); a condensed cut (timing only) is in studio/specs-wip/, not yet shipped",
-      "on_ship": "python3 publishing/tools/build_publishing.py 04b-becker-rig-savings-vs-sp500 --covers (re-picks the cover by content, re-exports both JPGs, refreshes for_video)"
+      "shipped": "2026-10-13",
+      "replaces": {
+        "duration_s": 38.5,
+        "sha256": "8d243eeeeb7f145be1c55f1844b91ea10a2a8d7b1d5147aef156e0a7728c58ee",
+        "note": "the round-2 cut (pre-condense) + card, retired; in git history (471c793)"
+      }
     }
   },
   "facts": {
@@ -165,21 +169,21 @@
         "3x4": "publishing/04b-becker-rig-savings-vs-sp500-cover-3x4.jpg",
         "9x16": "publishing/04b-becker-rig-savings-vs-sp500-cover-9x16.jpg"
       },
-      "frame_in_current_render_s": 29.5,
-      "frame_index": 885,
-      "frame_by_content": "The payoff card, which the write-up names as the Instagram cover: the header 'Your $1,000: 16 years of savings / VS 1 year of the S&P 500' with $1,000 the only accent, the footer 'Savings: FDIC avg · S&P w/ dividends', and over the finished race the card: '16 years of savings / under +$30' with a grey stub on its dashed track, and 'S&P 500 in 2010 / ≈ +$151' with a full green bar. Beside it the S&P figure stands on its '≈ $8,280' plate and the grey figure sits at '≈ $1,020'; the caption reads 'The S&P's first year alone: ≈ $151.' Use the first settled frame after the card's S&P row lands, before the verdict comes in.",
-      "frame_measured": "On the pre-condense 38.5 s render the card's S&P row lands with a punch at 28.87 s (frame 866), the frame settles by 29.40 s (frame 882) and then holds still (mean frame-to-frame luma change 0.0000, 270×480 greyscale) until the verdict comes in at 32.70 s. The cover is taken at 29.5 s (frame 885), the write-up's own time, inside that hold.",
+      "frame_in_current_render_s": 14.3,
+      "frame_index": 429,
+      "frame_by_content": "The payoff card, which the write-up names as the Instagram cover: the header 'Your $1,000: 16 years of savings / VS 1 year of the S&P 500' with $1,000 the only accent, the footer 'Savings: FDIC avg · S&P w/ dividends', and over the finished race the card: '16 years of savings / under +$30' with a grey stub on its dashed track, and 'S&P 500 in 2010 / ≈ +$151' with a full green bar. Beside it the S&P figure stands on its '≈ $8,280' plate and the grey figure sits at '≈ $1,020'; the caption reads 'The S&P's first year alone: ≈ $151.' Use a frame after the card's shake and before the verdict comes in (on the condensed cut, before the hero's last hop: no frame there is fully still).",
+      "frame_measured": "On the shipped 18.8 s condensed cut the card's S&P row lands with a punch at about 13.97 s (frame 419) and its shake ends by 14.27 s; from 14.30 s the frame-to-frame mean luma change is 0.24-0.32 (the hero's arm, 270×480 greyscale) until his hop at 14.40 s, and the verdict comes in at 14.8 s. The cover is taken at 14.3 s (frame 429). On the 38.5 s pre-condense render it was 29.5 s (frame 885), inside a fully still hold.",
       "crop": "3:4 = 1080×1440 from y 50 to 1490 of the 1080×1920 frame. The content runs from y 112 (the badge) to y 1428 (the caption), so the crop centres it: badge, header, footer, the card, both figures, the axis and the caption; it drops the empty page below. A centred grid crop (y 240-1680) cuts the badge and the header.",
       "how_to_set": "In 'Edit cover', pick the payoff-card frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
-      "re_export": "ffmpeg -ss 29.5 -i renders/channel/04b-becker-rig-savings-vs-sp500.mp4 -frames:v 1 -vf \"crop=1080:1440:0:50\" -q:v 2 publishing/04b-becker-rig-savings-vs-sp500-cover-3x4.jpg",
-      "re_export_9x16": "ffmpeg -ss 29.5 -i renders/channel/04b-becker-rig-savings-vs-sp500.mp4 -frames:v 1 -q:v 2 publishing/04b-becker-rig-savings-vs-sp500-cover-9x16.jpg"
+      "re_export": "ffmpeg -ss 14.3 -i renders/channel/04b-becker-rig-savings-vs-sp500.mp4 -frames:v 1 -vf \"crop=1080:1440:0:50\" -q:v 2 publishing/04b-becker-rig-savings-vs-sp500-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 14.3 -i renders/channel/04b-becker-rig-savings-vs-sp500.mp4 -frames:v 1 -q:v 2 publishing/04b-becker-rig-savings-vs-sp500-cover-9x16.jpg"
     },
     "first_comment": "16 years of interest at the national average savings rate: under $30. The S&P 500's 2010 on its own: ≈ $151. What does your savings account pay?",
     "first_comment_action": "Post it right after publishing and pin it.",
     "trial_reels": {
       "recommendation": "Post as a regular Reel, not a Trial.",
       "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-      "use_trial_for": "The write-up's cover A/B afterwards, if you want it: the other cut with frame 1 as its cover, as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut ships, the pre-condense render is in git: `git show 471c793:renders/channel/04b-becker-rig-savings-vs-sp500.mp4 > 04b-pre-condense.mp4` (sha256 8d243eee…). Compare skip rate (October Reels ran 27.0-65.1%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+      "use_trial_for": "The write-up's cover A/B afterwards, if you want it: the other cut with frame 1 as its cover, as a Trial with MANUAL graduation 48-72 h later. The condensed cut shipped on 2026-10-13; the pre-condense render is in git: `git show 471c793:renders/channel/04b-becker-rig-savings-vs-sp500.mp4 > 04b-pre-condense.mp4` (sha256 8d243eee…). Compare skip rate (October Reels ran 27.0-65.1%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
     },
     "settings": {
       "audio": "Rename the original audio to '16 years of savings vs 1 year of the S&P 500 — The Back of the Envelope' if the app allows; it is the score, with no voice.",
@@ -548,7 +552,7 @@
       "As the 06b and 02b sheets found (not re-checked here), vidIQ's YouTube authorization is a different channel (UCRC5v_El2fibbkqsZs6uFjA), so @envelopemath's YouTube Analytics (audience hours, geography) were not readable. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
       "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and the same-idea Shorts' own tags.",
       "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
-      "The render in renders/channel is the pre-condense cut. The cover's time and frame are measured on it; the copy names no other timestamp, and the ship step re-picks the cover on the final file.",
+      "The render in renders/channel is the shipped condensed cut (2026-10-13). The cover's time and frame are measured on it; the copy names no other timestamp and carried over from the pre-condense cut unchanged.",
       "Several FDIC readings are [click-check] rows in the write-up's sources (seen in search summaries, not on the page). The copy shows only figures that hold across the check's 2,916-table sweep.",
       "The vidIQ credit balance is shared with the other sheets being built in parallel, so this sheet's spend is counted from each tool's listed cost (see research.vidiq_credits)."
     ],
@@ -568,7 +572,7 @@
   "checked": {
     "date": "2026-10-13",
     "by": "adversarial check of this sheet",
-    "math": "python3 teasers/v2/checks/04-chart-race.py: 657 checks, 0 failed on studio/specs/ (the round-2 cuts; 614 checks, 0 failed at the first build, before the condense's check-script update), re-run at the adversarial check 2026-10-13; with --spec on the three studio/specs-wip/ condensed cuts 698 checks, 0 failed, so the copy's figures hold on both cuts; every public figure traced to the 04b tables and recomputed in MATH_RELATIONS from the FDIC, S&P 500 and CPI-U inputs, including the 2,916-table FDIC sweep; each figure pinned to its own side and its year (COPY_RULES)",
+    "math": "python3 teasers/v2/checks/04-chart-race.py: 657 checks, 0 failed on studio/specs/ (the round-2 cuts; 614 checks, 0 failed at the first build, before the condense's check-script update), re-run at the adversarial check 2026-10-13; with --spec on the three studio/specs-wip/ condensed cuts 698 checks, 0 failed, so the copy's figures hold on both cuts; every public figure traced to the 04b tables and recomputed in MATH_RELATIONS from the FDIC, S&P 500 and CPI-U inputs, including the 2,916-table FDIC sweep; each figure pinned to its own side and its year (COPY_RULES); re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: 698 checks, 0 failed",
     "limits": {
       "youtube_title_chars": 93,
       "youtube_description_chars": 1938,

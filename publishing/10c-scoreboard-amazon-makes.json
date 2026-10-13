@@ -5,7 +5,7 @@
   "for_video": {
     "current_render": "renders/channel/10c-scoreboard-amazon-makes.mp4",
     "current_duration_s": 33.5,
-    "current_sha256": "261e3e9f0b47f4ec20aa25057b764ed0de055ed9acc7c52c569e411322c8a929",
+    "current_sha256": "a6a16cf18f302cf67bbbede3f929a2aeb2884a01267236b8168298cc6648a061",
     "note": "current_* is what renders/channel holds today: the round-2 cut, which runs past this copy's verdict. The copy describes the recut (copy_describes); post only the recut with it. The ship step promotes the recut and re-runs the build with --covers, which refreshes current_*, the cut and both covers.",
     "cut": {
       "name": "round-2 cut (still in renders/channel; not the cut this copy describes)",

@@ -4,17 +4,20 @@
   "prepared": "2026-10-13",
   "for_video": {
     "current_render": "renders/channel/03a-becker-rig-car-loan-weekly.mp4",
-    "current_duration_s": 39.7,
-    "current_sha256": "4b1c8e0702aa891c4e46c2387f1244bfba022d316c645b0ea0667b4770d4559b",
-    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the pre-condense round-2 cut. The ship step re-runs the build with --covers on the condensed file.",
+    "current_duration_s": 17.3,
+    "current_sha256": "f1e02d89d3ad6b29ed34ed24f5b9de8ef5c6240dd9cce6fbea219d1ab29eddb8",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
-      "name": "round-2 cut (pre-condense)",
+      "name": "condensed (2026-10-13)",
       "spec": "studio/specs/03a-becker-rig-car-loan-weekly.json",
-      "body_s": 37.2,
+      "body_s": 14.8,
       "card_s": 2.5,
-      "shipped": null,
-      "git": "471c793",
-      "status": "the 03 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay). The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."
+      "shipped": "2026-10-13",
+      "replaces": {
+        "duration_s": 39.7,
+        "sha256": "4b1c8e0702aa891c4e46c2387f1244bfba022d316c645b0ea0667b4770d4559b",
+        "note": "the round-2 cut (pre-condense) + card, retired; in git history (471c793)"
+      }
     }
   },
   "facts": {
@@ -170,21 +173,21 @@
         "3x4": "publishing/03a-becker-rig-car-loan-weekly-cover-3x4.jpg",
         "9x16": "publishing/03a-becker-rig-car-loan-weekly-cover-9x16.jpg"
       },
-      "frame_in_current_render_s": 35.0,
-      "frame_index": 1050,
+      "frame_in_current_render_s": 14.733,
+      "frame_index": 442,
       "frame_by_content": "The finished board: all 4 lanes run (Monthly 72 and ≈ $10,000; Biweekly and Weekly ≈ 65 and ≈ $8,900; Round up ≈ 60 with the gold plate on ≈ $8,200 and the '≈ 12 mo' banner on its flag), the winner with his arms up, the working slot '= 72 − 60 ≈ 12 months / ≈ 1 year sooner' and the verdict 'Round up to $200 a week: ≈ 1 year sooner', under the question. The write-up names the finished board as the Instagram cover. On any cut, use a frame after the last read settles and before the end card.",
-      "frame_measured": "On the pre-condense 39.7 s render the last read settles by frame 1040 (34.67 s); from then only the winner's idle wave moves (frame-to-frame mean luma change ≤ 0.014) until the end card cuts in at 37.2 s. Frame 1050 (35.00 s) is used, a still point of the wave (0.002).",
+      "frame_measured": "On the shipped 17.3 s condensed cut the last read (on \"year\") settles by about 14.47 s (frame 434); from then only the winner's idle wave moves (frame-to-frame mean luma change ≤ 0.17) until the end card cuts in at 14.8 s. Frame 442 (14.73 s) is used, a still point of the wave (0.019). On the 39.7 s pre-condense render it was frame 1050 (35.00 s).",
       "crop": "3:4 = 1080×1440 from y 72 to 1512 of the 1080×1920 frame: the badge, the question, the footer, the working slot, the 4 lanes and the verdict, with even margins (40 px above the badge and below the verdict); it drops the empty floor. A centred grid crop (y 240-1680) cuts the badge and the question.",
       "how_to_set": "In 'Edit cover', pick the finished-board frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the question.",
-      "re_export": "ffmpeg -ss 35.0 -i renders/channel/03a-becker-rig-car-loan-weekly.mp4 -frames:v 1 -vf \"crop=1080:1440:0:72\" -q:v 2 publishing/03a-becker-rig-car-loan-weekly-cover-3x4.jpg",
-      "re_export_9x16": "ffmpeg -ss 35.0 -i renders/channel/03a-becker-rig-car-loan-weekly.mp4 -frames:v 1 -q:v 2 publishing/03a-becker-rig-car-loan-weekly-cover-9x16.jpg"
+      "re_export": "ffmpeg -ss 14.733 -i renders/channel/03a-becker-rig-car-loan-weekly.mp4 -frames:v 1 -vf \"crop=1080:1440:0:72\" -q:v 2 publishing/03a-becker-rig-car-loan-weekly-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 14.733 -i renders/channel/03a-becker-rig-car-loan-weekly.mp4 -frames:v 1 -q:v 2 publishing/03a-becker-rig-car-loan-weekly-cover-9x16.jpg"
     },
     "first_comment": "Weekly beats biweekly by only about $35: both are 13 monthly payments a year. Rounding up to $200 a week ($12.46 more) saves about $1,800 and about a year against paying monthly. Does your lender apply weekly payments the day they land?",
     "first_comment_action": "Post it right after publishing and pin it.",
     "trial_reels": {
       "recommendation": "Post as a regular Reel, not a Trial.",
       "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show 471c793:renders/channel/03a-becker-rig-car-loan-weekly.mp4 > 03a-39.7s.mp4` (sha256 4b1c8e07…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. The condensed cut replaced the pre-condense render in renders/channel on 2026-10-13; get the pre-condense one from git with `git show 471c793:renders/channel/03a-becker-rig-car-loan-weekly.mp4 > 03a-39.7s.mp4` (sha256 4b1c8e07…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
     },
     "settings": {
       "audio": "Rename the original audio to 'Weekly vs biweekly car loan — The Back of the Envelope' if the app allows; it is the score, with no voice.",
@@ -552,7 +555,7 @@
       "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
       "The write-up's sources rest on search-result text: its egress proxy blocked the primary pages. Before posting, open Edmunds' Q3 2026 new-vehicle finance release and confirm $44,664 at 7.0% (the write-up's open item 1).",
       "Whether a lender posts a weekly payment the day it lands is the video's stated assumption, not a fact about any lender; the pinned comment asks the viewer to check theirs.",
-      "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file."
+      "The video, the cover and the video facts are the shipped condensed cut (2026-10-13); the copy is cut-independent and carried over from the pre-condense cut unchanged."
     ],
     "own_channel_same_topic": [
       {
@@ -569,7 +572,7 @@
   "checked": {
     "date": "2026-10-13",
     "by": "adversarial check of this sheet",
-    "math": "python3 teasers/v2/checks/03-what-difference.py: 528 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/03-what-difference.py; the four 03a schedules re-run day by day in MATH_RELATIONS (payments, months, every interest total, the shown differences); COPY_RULES keep every rounded figure 'about' or '≈', every 13 as '13 monthly payments' or '13 ×', each difference beside its schedule, the $1,800 and the year beside their baseline (paying monthly), and the posting condition in the copy; re-run at the adversarial check with the same result",
+    "math": "python3 teasers/v2/checks/03-what-difference.py: 528 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/03-what-difference.py; the four 03a schedules re-run day by day in MATH_RELATIONS (payments, months, every interest total, the shown differences); COPY_RULES keep every rounded figure 'about' or '≈', every 13 as '13 monthly payments' or '13 ×', each difference beside its schedule, the $1,800 and the year beside their baseline (paying monthly), and the posting condition in the copy; re-run at the adversarial check with the same result; re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: 565 checks, 0 failed",
     "limits": {
       "youtube_title_chars": 73,
       "youtube_description_chars": 1343,

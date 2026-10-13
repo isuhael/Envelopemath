@@ -4,17 +4,20 @@
   "prepared": "2026-10-13",
   "for_video": {
     "current_render": "renders/channel/01c-becker-rig-60k-a-year.mp4",
-    "current_duration_s": 27.8,
-    "current_sha256": "8d9f976144a101a543f0f2026f362e3adcdcf0b3bd918da3354e0117442922b5",
-    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the pre-condense round-2 cut. The ship step re-runs the build with --covers on the condensed file.",
+    "current_duration_s": 14.767,
+    "current_sha256": "d76287e44d5a6dca547e1535c6eaf7a652e6dda5bec19891b2809030ff0dc04f",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
-      "name": "round-2 cut (pre-condense)",
+      "name": "condensed (2026-10-13)",
       "spec": "studio/specs/01c-becker-rig-60k-a-year.json",
-      "body_s": 25.3,
-      "card_s": 2.5,
-      "shipped": null,
-      "git": "471c793",
-      "status": "the 01 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay). The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."
+      "body_s": 12.25,
+      "card_s": 2.517,
+      "shipped": "2026-10-13",
+      "replaces": {
+        "duration_s": 27.8,
+        "sha256": "8d9f976144a101a543f0f2026f362e3adcdcf0b3bd918da3354e0117442922b5",
+        "note": "the round-2 cut (pre-condense) + card, retired; in git history (471c793)"
+      }
     }
   },
   "facts": {
@@ -178,8 +181,8 @@
       },
       "frame_in_current_render_s": 0,
       "frame_index": 0,
-      "frame_by_content": "The clean cover, frame 1: the header '4 DEAD SIMPLE NUMBERS / WILL A 3% RAISE PUSH $65,000 / INTO A HIGHER BRACKET?' ('$65,000' in green), the footer 'ASSUMES single, standard deduction / 2026 federal income tax only', 4 numbered ledges labelled 'Pay after 3% / Where 22% starts / Pay over the line / What the bracket costs you' (the last three with empty sockets), ① active with its '$65,000' block, and the green stick figure holding the '× 1.03' plate. No result: it asks and does not answer, like the title and the caption. The write-up names frame 1 as the Instagram cover. On any cut, use the opening frame, before the figure flips the plate. A cut whose hook caption is already up on its first frame (the condensed WIP spec's is) still gives a clean cover: '$65,000, plus 3%:' holds no result.",
-      "frame_measured": "On the pre-condense 27.8 s render, frame 0 is that frame and the only one without a caption: from frame 1 the first caption word ('$65,000,') fades in, and from frame 4 he starts to flip the plate.",
+      "frame_by_content": "The clean cover, frame 1: the header '4 DEAD SIMPLE NUMBERS / WILL A 3% RAISE PUSH $65,000 / INTO A HIGHER BRACKET?' ('$65,000' in green), the footer 'ASSUMES single, standard deduction / 2026 federal income tax only', 4 numbered ledges labelled 'Pay after 3% / Where 22% starts / Pay over the line / What the bracket costs you' (the last three with empty sockets), ① active with its '$65,000' block, and the green stick figure holding the '× 1.03' plate. No result: it asks and does not answer, like the title and the caption. The write-up names frame 1 as the Instagram cover. On any cut, use the opening frame, before the figure flips the plate. A cut whose hook caption is already up on its first frame (the shipped condensed cut's is) still gives a clean cover: '$65,000, plus 3%:' holds no result.",
+      "frame_measured": "On the shipped 14.767 s condensed cut, frame 0 (0.00 s) is that frame and the only still one: the complete hook caption '$65,000, plus 3%:' is already up (it holds no result), and from frame 1 (0.03 s) the figure dips to flip the plate (mean frame-to-frame luma change 1.02, 270×480 greyscale). On the 27.8 s pre-condense render frame 0 had no caption.",
       "crop": "3:4 = 1080×1440, the top 1440 rows (y 0 to 1440) of the 1080×1920 frame: the badge, the header, the footer, the 4 ledges, the figure and the floor line, with even margins above the badge and below the floor; it drops the empty floor below. A crop from y 60 (as on 01a) leaves 200 px of empty floor. A centred grid crop (y 240-1680) cuts the badge and leaves the header on the edge.",
       "how_to_set": "In 'Edit cover', pick frame 1 of the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
       "re_export": "ffmpeg -ss 0 -i renders/channel/01c-becker-rig-60k-a-year.mp4 -frames:v 1 -vf \"crop=1080:1440:0:0\" -q:v 2 publishing/01c-becker-rig-60k-a-year-cover-3x4.jpg",
@@ -190,7 +193,7 @@
     "trial_reels": {
       "recommendation": "Post as a regular Reel, not a Trial.",
       "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show 471c793:renders/channel/01c-becker-rig-60k-a-year.mp4 > 01c-27.8s.mp4` (sha256 8d9f9761…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. The condensed cut replaced the pre-condense render in renders/channel on 2026-10-13; get the pre-condense one from git with `git show 471c793:renders/channel/01c-becker-rig-60k-a-year.mp4 > 01c-27.8s.mp4` (sha256 8d9f9761…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
     },
     "settings": {
       "audio": "Rename the original audio to 'A 3% raise vs the tax bracket — The Back of the Envelope' if the app allows; it is the score, with no voice.",
@@ -568,7 +571,7 @@
       "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and on the write-up's and the outliers' own tags.",
       "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
       "The 2026 brackets and standard deduction are the write-up's figures (IRS, Tax Foundation, CPA Practice Advisor). The 2027 figures were not looked up here; when the IRS publishes them, the copy stays true because it names 2026 wherever it names $50,400 or $16,100.",
-      "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file."
+      "The video, the cover and the video facts are the shipped condensed cut (2026-10-13); the copy is cut-independent and carried over from the pre-condense cut unchanged."
     ],
     "titles_scored": "10 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored.",
     "vidiq_credits": "115 credits for this teaser (10 keyword queries, 2 YouTube searches, 1 Instagram/TikTok outlier search, 10 title scores, the last of each a re-query; 5 each), plus 10 shared across 01a-01c for the channel's own stats; 15 more at the adversarial check (2 title scores, one of them option 3 with the hashtags in the description's order, and 1 keyword query)."
@@ -576,7 +579,7 @@
   "checked": {
     "date": "2026-10-13",
     "by": "adversarial check of this sheet",
-    "math": "python3 teasers/v2/checks/01-dead-simple-list.py: 400 checks, 0 failed on studio/specs/ (the pre-condense specs; 397 at the first build, before the condense's check-script update), re-run at the adversarial check 2026-10-13; with --spec on the three studio/specs-wip/ condensed specs 392 checks, 0 failed, so the copy's figures hold on both cuts; every public figure traced to the 01c maths table and recomputed in MATH_RELATIONS, the full 2026 federal tax before and after the raise included; COPY_RULES keep $50,400 and $16,100 beside 2026, $45 beside 'a year', and 'single filer' and 'federal income tax only' in the copy",
+    "math": "python3 teasers/v2/checks/01-dead-simple-list.py: 400 checks, 0 failed on studio/specs/ (the pre-condense specs; 397 at the first build, before the condense's check-script update), re-run at the adversarial check 2026-10-13; with --spec on the three studio/specs-wip/ condensed specs 392 checks, 0 failed, so the copy's figures hold on both cuts; every public figure traced to the 01c maths table and recomputed in MATH_RELATIONS, the full 2026 federal tax before and after the raise included; COPY_RULES keep $50,400 and $16,100 beside 2026, $45 beside 'a year', and 'single filer' and 'federal income tax only' in the copy; re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: 396 checks, 0 failed",
     "limits": {
       "youtube_title_chars": 80,
       "youtube_description_chars": 1421,

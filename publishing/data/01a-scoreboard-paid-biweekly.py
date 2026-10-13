@@ -4,9 +4,9 @@
 # Scoreboard sheet).
 #
 # Facts come only from teasers/v2/01-dead-simple-list.md (section (b) 01a) and python3 teasers/v2/checks/01-dead-simple-list.py.
-# Research: vidIQ, pulled 2026-10-13. The video is the pre-condense round-2 cut: the 01 condense is in progress in parallel
-# (timing only; numbers, caption facts and the verdict stay). This sheet names no timestamp except the cover, which is
-# picked by content (frame 1), so the ship step only re-runs the build with --covers on the final file.
+# Research: vidIQ, pulled 2026-10-13. The video is the condensed cut, promoted and shipped on 2026-10-13 (the
+# pre-condense round-2 cut is in git, 471c793). This sheet names no timestamp except the cover, which is picked by
+# content, so the copy carried over unchanged; the ship rebuilt it with --covers from the shipped file.
 
 TEASER = "01a Scoreboard, dead-simple-list: \"Paid every 2 weeks? What your budget misses\""
 PREPARED = "2026-10-13"
@@ -14,13 +14,15 @@ SHORT_ID = "01a"
 MD_TITLE = "01a publishing sheet: paid every 2 weeks, what your budget misses"
 MATH_RUN = "400 checks, 0 failed"      # python3 teasers/v2/checks/01-dead-simple-list.py on studio/specs/, re-run at the adversarial check 2026-10-13
 MATH_RUN_WIP = "392 checks, 0 failed"  # the same script with --spec on the three studio/specs-wip/ condensed specs, 2026-10-13
+MATH_RUN_SHIP = "396 checks, 0 failed"  # python3 teasers/v2/checks/01-dead-simple-list.py on studio/specs/ with the condensed cuts promoted, at the ship 2026-10-13
 RENDER_COMMIT = "471c793"              # the commit that holds this pre-condense render
 
 MD_INTRO = [
-    f"- **Video.** `renders/channel/{BASE}.mp4`: the pre-condense round-2 cut ({VIDEO_S:g} s: a {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`). "
-    "The 01 condense is in progress in parallel (timing only: the numbers, the captions' facts and the verdict stay). "
-    "Nothing below names a timestamp except the cover, which is picked by content (frame 1), so the copy carries over to the condensed cut unchanged. "
-    f"The ship step rebuilds this sheet and re-exports both covers from the final file: `python3 publishing/tools/build_publishing.py {BASE} --covers`.",
+    f"- **Video.** `renders/channel/{BASE}.mp4`: the condensed cut ({VIDEO_S:g} s: a {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`), "
+    "promoted and shipped on 2026-10-13. It replaces the 27.0 s round-2 cut (the owner: \"too many still moments\"), which is in git (`471c793`). "
+    "The condense moved the clock and merged some captions; the numbers, the captions' facts and the verdict stay, so the copy carried over unchanged. "
+    "Nothing below names a timestamp except the cover, which was re-picked by content on the shipped file. "
+    f"The ship rebuilt this sheet and re-exported both covers from it (`python3 publishing/tools/build_publishing.py {BASE} --covers`); on the shipped specs the maths check runs {MATH_RUN_SHIP}.",
     "- **Numbers.** Every figure comes from `teasers/v2/01-dead-simple-list.md` (01a) and its check, "
     f"`python3 teasers/v2/checks/01-dead-simple-list.py`: {MATH_RUN} on `studio/specs/` (run 2026-10-13). "
     f"`python3 publishing/tools/build_publishing.py {BASE} --check` checks this sheet's limits, paste blocks and figures, re-does the calendar arithmetic, "
@@ -36,11 +38,11 @@ MD_INTRO = [
 
 # ---------------------------------------------------------------- the video
 FOR_VIDEO_NOTE = ("Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. "
-                  "current_* is what renders/channel holds today: the pre-condense round-2 cut. The ship step re-runs the build with --covers on the condensed file.")
-CUT = {"name": "round-2 cut (pre-condense)", "spec": f"studio/specs/{BASE}.json", "body_s": BODY_S,
-       "card_s": CARD_S, "shipped": None, "git": RENDER_COMMIT,
-       "status": "the 01 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay). "
-                 "The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."}
+                  "current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.")
+CUT = {"name": "condensed (2026-10-13)", "spec": f"studio/specs/{BASE}.json", "body_s": BODY_S,
+       "card_s": CARD_S, "shipped": "2026-10-13",
+       "replaces": {"duration_s": 27.0, "sha256": "cf626877b80b257700b2a9c9a6882bfbc685eebf0ae36ed5236da5d71c0a03d3",
+                    "note": "the round-2 cut (pre-condense) + card, retired; in git history (471c793)"}}
 
 FACTS = {
     "source": f"teasers/v2/01-dead-simple-list.md section (b) 01a; teasers/v2/checks/01-dead-simple-list.py: {MATH_RUN} on studio/specs/ (2026-10-13)",
@@ -198,20 +200,22 @@ IG_FIRST_COMMENT = ("Every 2 weeks = 13 months of pay a year: $2,500 × 26 = $65
 
 # ---------------------------------------------------------------- the cover frame
 # Frame 1 (t 0), picked by content: the write-up's Instagram note says "set the cover to frame 1, with the empty slots
-# showing", and frame 1 carries no result. On this render frames 0-4 hold the same picture (frame-to-frame luma change
-# ≤ 0.03); frame 0 is used because it is the frame the YouTube and Instagram pickers open on.
+# showing", and frame 1 carries no result. On the shipped condensed cut frame 0 is the only frame before slot 1's
+# working swaps to the rolling odometer (from frame 1, mean frame-to-frame luma change 0.69, 270x480 greyscale); it is
+# also the frame the YouTube and Instagram pickers open on.
 COVER_T = 0
 COVER_FRAME = 0
 COVER_CROP = "crop=1080:1440:0:60"
-COVER_RENDER_WORD = "pre-condense"
+COVER_RENDER_WORD = "shipped"
 COVER_FRAME_BY_CONTENT = ("The clean cover, frame 1: the header '3 DEAD SIMPLE NUMBERS / PAID EVERY 2 WEEKS? / WHAT YOUR BUDGET MISSES' "
                           "('EVERY 2 WEEKS' in green), the green hero 'YOUR PAYCHECK / EVERY 2 WEEKS $2,500', the footer 'ASSUMES 26 paydays a year · pay before tax', "
                           "slot 1 lit with 'YOUR REAL YEARLY PAY' and its working '$2,500 × 26', slots 2, 3 and the check slot empty, and the first caption. "
                           "It asks and does not answer, like the title and the caption. The write-up names frame 1 as the Instagram cover. "
                           "On any cut, use the last frame before slot 1's working turns into the rolling counter.")
-COVER_FRAME_MEASURED = ("On the pre-condense 27.0 s render, frames 0-4 hold that picture (frame-to-frame luma change ≤ 0.03), a caption word lights at frame 5, "
-                        "and slot 1's counter starts to roll at frame 11. Frame 0 shows the whole first caption, 'Your paycheck, times 26. On $2,500:', "
-                        "with 'Your' lit (the kit lights it word by word); the grey words still read.")
+COVER_FRAME_MEASURED = ("On the shipped 13.9 s condensed cut, frame 0 (0.00 s) is that frame and the only clean one: from frame 1 (0.03 s) slot 1's working swaps to the "
+                        "rolling odometer (mean frame-to-frame luma change 0.69, 270×480 greyscale). Frame 0 shows the whole first caption, 'Your paycheck, times 26. On "
+                        "$2,500:', with 'Your paycheck,' lit (the kit lights it word by word); the grey words still read. On the 27.0 s pre-condense render frames 0-4 held "
+                        "that picture, with only 'Your' lit.")
 COVER_CROP_NOTE = ("3:4 = 1080×1440 from y 60 to 1500 of the 1080×1920 frame: the badge, the header, the hero, the footer, the 4 slots, the label stack and the caption; "
                    "it drops the empty floor. A centred grid crop (y 240-1680) cuts the badge and the header's first line.")
 COVER_HOW_TO_SET = ("In 'Edit cover', pick frame 1 of the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile "
@@ -220,13 +224,13 @@ COVER_HOW_TO_SET = ("In 'Edit cover', pick frame 1 of the video (or upload the 9
 COVER_EXTRA_BULLETS = [
     "**Not used:** the verdict hold (the finished board with 'EVERY 2 WEEKS = 13 MONTHS OF PAY A YEAR'). It is the save-worthy frame, but it shows the answer, "
     "against the write-up's cover note and the title's no-result rule.",
-    "**When the condensed cut ships:** re-pick frame 1 by content on the shipped file (the same picture, unless the condense changes which caption word is lit) and re-export both JPGs with `--covers`.",
+    "**Shipped cut (2026-10-13):** frame 1 was re-picked by content on the shipped file and both JPGs re-exported from it. It is the same picture as the pre-condense cut's frame 1, except that 'Your paycheck,' is lit in the hook caption (the old frame lit only 'Your').",
 ]
 
 TRIAL_REELS = {
     "recommendation": "Post as a regular Reel, not a Trial.",
     "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-    "use_trial_for": f"A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show {RENDER_COMMIT}:renders/channel/{BASE}.mp4 > 01a-27s.mp4` (sha256 cf626877…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app.",
+    "use_trial_for": f"A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. The condensed cut replaced the pre-condense render in renders/channel on 2026-10-13; get the pre-condense one from git with `git show {RENDER_COMMIT}:renders/channel/{BASE}.mp4 > 01a-27s.mp4` (sha256 cf626877…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app.",
 }
 IG_AUDIO = "Rename the original audio to 'Paid biweekly? The math — The Back of the Envelope' if the app allows; it is the score, with no voice."
 IG_POSTING_WINDOW = {
@@ -362,7 +366,7 @@ LIMITS = [
     "@envelopemath's YouTube Analytics (audience hours, geography) were not read here; the 06b and 06c sheets found vidIQ's YouTube authorization is a different channel. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
     "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and on the write-up's and the outliers' own tags.",
     "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
-    "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file.",
+    "The video, the cover and the video facts are the shipped condensed cut (2026-10-13); the copy is cut-independent and carried over from the pre-condense cut unchanged.",
 ]
 RESEARCH_EXTRA = {
     "titles_scored": "10 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored.",
@@ -377,7 +381,8 @@ CHECKED_BY = "adversarial check of this sheet"
 CHECKED_MATH = (f"python3 teasers/v2/checks/01-dead-simple-list.py: {MATH_RUN} on studio/specs/ (the pre-condense specs; 397 at the first build, before the condense's "
                 f"check-script update), re-run at the adversarial check 2026-10-13; with --spec on the three studio/specs-wip/ condensed specs {MATH_RUN_WIP}, so the copy's figures hold on both cuts; "
                 "every public figure traced to the 01a maths table and recomputed in MATH_RELATIONS; COPY_RULES keep 13 as '13 months' or '13th month', "
-                "'gross, before tax' and the 27-payday caveat in the copy")
+                "'gross, before tax' and the 27-payday caveat in the copy"
+                f"; re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: {MATH_RUN_SHIP}")
 VIDIQ_REQUERIED = ("pulled 2026-10-13: 3 paycheck months 4,295 / 21.6; budgeting biweekly paycheck 5,267; why paychecks are biweekly 5,364 / 7.1; budgeting 166,248 (-26.1%); "
                    "paycheck breakdown 31,692 (+671.3%); title scores 91 (pick), 86 (write-up title), 85 (best hashtag form); "
                    "channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,518 views in 30 days. Re-queried the same day after the build: the pick's title score 91 and '3 paycheck months' 4,295 / 21.6. "
@@ -407,13 +412,15 @@ CHECK_LOG = [
     "  - The cover, frame 1, carries no result (both JPGs read by eye). On the render frames 0-4 hold that picture and slot 1's counter starts at frame 11 (measured); "
     "on the condensed WIP spec the roll starts on frame 2, so frame 0 is still the last clean frame.",
     "  - No company or brand is named in the copy, so it needs no affiliation line. 'Not financial advice.' is in the description and the caption, and 'Run yours' is a calculation, not advice.",
-    "  - The pre-condense render in git (`471c793`) has the same sha256 as `renders/channel` today, so the Trial Reels `git show` command fetches this file.",
+    "  - The pre-condense render in git (`471c793`) had the same sha256 as `renders/channel` before the ship, so the Trial Reels `git show` command fetches this file.",
     "- **Kept on purpose.**",
     "  - The cover is frame 1 (no result), as the write-up asks.",
     "  - '3 paycheck months' and '2 extra checks' stay out of the title and the caption's first 125 characters: they name what the third slot pays off.",
     "  - The write-up's 'caption line 1 is the verdict' gives way to the house rule (no result in the first 125 characters); the verdict is the caption's fifth line.",
     "  - The BLS context facts stay out of the copy, as in the write-up's caption.",
-    "- **Still to do.** The ship rebuild (`--covers`) on the condensed file.",
+    f"- **Done on ship (2026-10-13).** Rebuilt with `--covers` from the shipped condensed cut ({VIDEO_S:g} s). Frame 1 was re-picked by content and is still frame 0, now with 'Your paycheck,' lit in the hook caption. "
+    f"The Video bullet, the cut and the check counts follow the shipped file ({MATH_RUN_SHIP} on `studio/specs/`), and the long alt text was re-read against the condensed beat sheet: "
+    "every beat it names is in the shipped cut, so no copy changed.",
 ]
 
 # ---------------------------------------------------------------- the numbers check

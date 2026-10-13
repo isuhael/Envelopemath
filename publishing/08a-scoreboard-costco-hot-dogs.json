@@ -5,7 +5,7 @@
   "for_video": {
     "current_render": "renders/channel/08a-scoreboard-costco-hot-dogs.mp4",
     "current_duration_s": 24.5,
-    "current_sha256": "9b736e4eaecf1e55b43c56ca8732288fea0763cc90c4aad67dac106c4c090a82",
+    "current_sha256": "e3200c2c369ef6021467022bc324dd533021924cd9d22f528aa673793f3df5df",
     "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the pre-condense cut. The ship step re-runs the build with --covers on the condensed file.",
     "cut": {
       "name": "pre-condense cut (fix pass, round-2 QA, 2026-10-08)",

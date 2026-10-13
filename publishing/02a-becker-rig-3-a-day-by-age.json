@@ -4,16 +4,20 @@
   "prepared": "2026-10-13",
   "for_video": {
     "current_render": "renders/channel/02a-becker-rig-3-a-day-by-age.mp4",
-    "current_duration_s": 15.9,
-    "current_sha256": "e73341bfb6bb5e560e60675c993a82324664adc4220b3012581084a78ba0c60f",
-    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds on 2026-10-13: the pre-condense cut. The ship step rebuilds this file with --covers from the condensed cut.",
+    "current_duration_s": 10.3,
+    "current_sha256": "c93abea3c241c4fae9118a765ce2746daea8c1c0a8ca53c289fd94510fa6dd43",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
-      "name": "pre-condense (round-2 Becker Rig port, 2026-10-08)",
+      "name": "condensed (2026-10-13)",
       "spec": "studio/specs/02a-becker-rig-3-a-day-by-age.json",
-      "body_s": 13.4,
+      "body_s": 7.8,
       "card_s": 2.5,
-      "status": "in renders/channel on 2026-10-13; a condensed cut (timing only) is in progress",
-      "on_ship": "python3 publishing/tools/build_publishing.py 02a-becker-rig-3-a-day-by-age --covers (re-picks the cover by content, re-exports both JPGs, refreshes for_video)"
+      "shipped": "2026-10-13",
+      "replaces": {
+        "duration_s": 15.9,
+        "sha256": "e73341bfb6bb5e560e60675c993a82324664adc4220b3012581084a78ba0c60f",
+        "note": "the round-2 cut (pre-condense) + card, retired; in git history (471c793)"
+      }
     }
   },
   "facts": {
@@ -177,14 +181,14 @@
         "3x4": "publishing/02a-becker-rig-3-a-day-by-age-cover-3x4.jpg",
         "9x16": "publishing/02a-becker-rig-3-a-day-by-age-cover-9x16.jpg"
       },
-      "frame_in_current_render_s": 11.4,
-      "frame_index": 342,
+      "frame_in_current_render_s": 7.0,
+      "frame_index": 210,
       "frame_by_content": "The finished table, which the write-up names as the cover (its beat sheet marks the hold after the payoff 'the cover frame', and its Instagram note says 'Cover: the completed table'): all 10 rows from 18 to 60, red beside green; the 25 row's ≈ $240,000 on the gold plate; the bracket from the 35 row up to the 25 row; the pill '≈ 2.2× the cost at 35'; the figure pointing at the plate, pencil in hand; and the verdict '10 years younger? / It costs more than double.' under the table. Use the first settled frame of that hold, after the impact's shake and before the end card.",
-      "frame_measured": "On the pre-condense 15.9 s render the payoff lands at 10.70 s (frame 321) with the impact's shake; from 11.30 s (frame 339) the mean frame-to-frame luma change (270×480 greyscale) stays at or under 0.016 until the end card cuts in at 13.40 s. The cover is taken at 11.4 s (frame 342), inside that hold.",
+      "frame_measured": "On the shipped 10.3 s condensed cut the payoff lands at 6.30 s (frame 189) with the impact's shake; from 6.90 s (frame 207) the mean frame-to-frame luma change (270×480 greyscale) stays at or under 0.009 until the end card cuts in at 7.80 s. The cover is taken at 7.0 s (frame 210), inside that hold. On the 15.9 s pre-condense render it was 11.4 s (frame 342).",
       "crop": "3:4 = 1080×1440 from y 78 to 1518 of the 1080×1920 frame. The content runs from y 112 (the badge) to y 1484 (the verdict's underline), so the crop centres it: badge, quoted header, footer, all 10 rows with the plate, bracket and pill, and the verdict; it drops the empty floor. A centred grid crop (y 240-1680) loses the badge and leaves the header on the top edge.",
       "how_to_set": "In 'Edit cover', pick the finished-table frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header and the verdict.",
-      "re_export": "ffmpeg -ss 11.4 -i renders/channel/02a-becker-rig-3-a-day-by-age.mp4 -frames:v 1 -vf \"crop=1080:1440:0:78\" -q:v 2 publishing/02a-becker-rig-3-a-day-by-age-cover-3x4.jpg",
-      "re_export_9x16": "ffmpeg -ss 11.4 -i renders/channel/02a-becker-rig-3-a-day-by-age.mp4 -frames:v 1 -q:v 2 publishing/02a-becker-rig-3-a-day-by-age-cover-9x16.jpg"
+      "re_export": "ffmpeg -ss 7.0 -i renders/channel/02a-becker-rig-3-a-day-by-age.mp4 -frames:v 1 -vf \"crop=1080:1440:0:78\" -q:v 2 publishing/02a-becker-rig-3-a-day-by-age-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 7.0 -i renders/channel/02a-becker-rig-3-a-day-by-age.mp4 -frames:v 1 -q:v 2 publishing/02a-becker-rig-3-a-day-by-age-cover-9x16.jpg"
     },
     "first_comment": "At 25: $43,800 handed over vs ≈ $240,000 at 7% a year. 10 years younger costs more than double. What rate would you plug in?",
     "first_comment_action": "Post it right after publishing and pin it.",
@@ -543,7 +547,7 @@
       "vidIQ's YouTube authorization is a different channel (UCRC5v_El2fibbkqsZs6uFjA), so @envelopemath's YouTube Analytics (audience hours, geography) were not readable. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
       "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and on the outliers' own tags.",
       "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
-      "The render in renders/channel is the pre-condense cut. The cover's time and frame are measured on it; the copy names no other timestamp, and the ship step re-picks the cover on the final file.",
+      "The render in renders/channel is the shipped condensed cut (2026-10-13). The cover's time and frame are measured on it; the copy names no other timestamp and carried over from the pre-condense cut unchanged.",
       "Outlier views and medians are vidIQ's index at pull time; the same-idea Shorts' own maths (for example a $3 habit 'costing $1 million') is not checked here and is not in the copy."
     ],
     "adjacent_youtube_outliers": [
@@ -576,7 +580,7 @@
   "checked": {
     "date": "2026-10-13",
     "by": "adversarial check of this sheet",
-    "math": "python3 teasers/v2/checks/02-find-your-row.py: PASSED: all 183 checks on studio/specs/ at the adversarial check (2026-10-13; all 177 checks at the first build, before the condense pass made the check cut-aware), and all 216 checks with --spec on the condensed cuts in studio/specs-wip/; run by the builder through publishing/data/checks/02-find-your-row.py; every public figure traced to the 02a maths table and recomputed in MATH_RELATIONS (FV of $91.25 a month at 7%/12), each row's figures pinned beside their age and the verdict's range pinned to its pairs (COPY_RULES)",
+    "math": "python3 teasers/v2/checks/02-find-your-row.py: PASSED: all 183 checks on studio/specs/ at the adversarial check (2026-10-13; all 177 checks at the first build, before the condense pass made the check cut-aware), and all 216 checks with --spec on the condensed cuts in studio/specs-wip/; run by the builder through publishing/data/checks/02-find-your-row.py; every public figure traced to the 02a maths table and recomputed in MATH_RELATIONS (FV of $91.25 a month at 7%/12), each row's figures pinned beside their age and the verdict's range pinned to its pairs (COPY_RULES); re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: PASSED: all 225 checks",
     "limits": {
       "youtube_title_chars": 68,
       "youtube_description_chars": 1433,

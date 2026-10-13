@@ -4,10 +4,10 @@
 # in the newer data-file form of 06b-scoreboard-netflix-bill.py (COPY_RULES).
 #
 # Facts come only from teasers/v2/04-chart-race.md (section (b) 04b, Decisions, Sources) and
-# python3 teasers/v2/checks/04-chart-race.py. Research: vidIQ, pulled 2026-10-13. The render in renders/channel is the
-# pre-condense cut; a condensed cut (timing only: numbers, captions and verdict stay) is in studio/specs-wip/, not yet shipped. This sheet names no
-# timestamp except the cover, which is picked by content (the payoff card), so the copy carries over; the ship step rebuilds
-# it with --covers.
+# python3 teasers/v2/checks/04-chart-race.py. Research: vidIQ, pulled 2026-10-13. The video is the condensed cut,
+# promoted and shipped on 2026-10-13 (the pre-condense round-2 cut is in git, 471c793). This sheet names no timestamp
+# except the cover, which is picked by content, so the copy carried over unchanged; the ship rebuilt it with --covers
+# from the shipped file.
 
 TEASER = "04b Becker rig, chart-race: \"Your $1,000: 16 years of savings VS 1 year of the S&P 500\""
 PREPARED = "2026-10-13"
@@ -15,13 +15,15 @@ SHORT_ID = "04b"
 MD_TITLE = "04b publishing sheet: 16 years of savings vs 1 year of the S&P 500"
 MATH_RUN = "657 checks, 0 failed"      # python3 teasers/v2/checks/04-chart-race.py on studio/specs/ (the round-2 cuts), re-run at the adversarial check 2026-10-13
 MATH_RUN_WIP = "698 checks, 0 failed"  # the same script with --spec on the three condensed cuts in studio/specs-wip/, 2026-10-13
+MATH_RUN_SHIP = "698 checks, 0 failed"  # python3 teasers/v2/checks/04-chart-race.py on studio/specs/ with the condensed cuts promoted, at the ship 2026-10-13
 MATH_RUN_FIRST = "614 checks, 0 failed"  # at the first build, before the condense's check-script update
 
 MD_INTRO = [
-    f"- **Video.** `renders/channel/{BASE}.mp4`: the pre-condense cut ({VIDEO_S:g} s: a {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`), "
-    "the hook-pass-2 Becker rig cut as `renders/channel` holds it on 2026-10-13. A condensed cut is built in `studio/specs-wip/` and not yet shipped (timing only: the numbers, captions and verdict stay). "
-    "Nothing below names a timestamp except the cover, which is picked by content (the payoff card), so the copy carries over. "
-    f"The ship step rebuilds this sheet and re-exports both covers from the final file: `python3 publishing/tools/build_publishing.py {BASE} --covers`.",
+    f"- **Video.** `renders/channel/{BASE}.mp4`: the condensed cut ({VIDEO_S:g} s: a {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`), "
+    "promoted and shipped on 2026-10-13. It replaces the 38.5 s round-2 cut (the owner: \"too many still moments\"), which is in git (`471c793`). "
+    "The condense moved the clock and merged some captions; the numbers, the captions' facts and the verdict stay, so the copy carried over unchanged. "
+    "Nothing below names a timestamp except the cover, which was re-picked by content on the shipped file. "
+    f"The ship rebuilt this sheet and re-exported both covers from it (`python3 publishing/tools/build_publishing.py {BASE} --covers`); on the shipped specs the maths check runs {MATH_RUN_SHIP}.",
     "- **Numbers.** Every figure comes from `teasers/v2/04-chart-race.md` (04b) and its check, "
     f"`python3 teasers/v2/checks/04-chart-race.py`: {MATH_RUN} on `studio/specs/` and {MATH_RUN_WIP} with `--spec` on the three condensed cuts in `studio/specs-wip/` (run 2026-10-13), so the copy's figures hold on both cuts. "
     f"`python3 publishing/tools/build_publishing.py {BASE} --check` checks this sheet's limits, paste blocks and figures, recomputes every figure from the FDIC and S&P 500 tables, "
@@ -36,10 +38,11 @@ MD_INTRO = [
 
 # ---------------------------------------------------------------- the video
 FOR_VIDEO_NOTE = ("Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. "
-                  "current_* is what renders/channel holds on 2026-10-13: the pre-condense cut. The ship step rebuilds this file with --covers from the condensed cut.")
-CUT = {"name": "pre-condense (hook-pass-2 Becker rig cut)", "spec": f"studio/specs/{BASE}.json", "body_s": BODY_S,
-       "card_s": CARD_S, "status": "in renders/channel on 2026-10-13 (git 471c793); a condensed cut (timing only) is in studio/specs-wip/, not yet shipped",
-       "on_ship": f"python3 publishing/tools/build_publishing.py {BASE} --covers (re-picks the cover by content, re-exports both JPGs, refreshes for_video)"}
+                  "current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.")
+CUT = {"name": "condensed (2026-10-13)", "spec": f"studio/specs/{BASE}.json", "body_s": BODY_S,
+       "card_s": CARD_S, "shipped": "2026-10-13",
+       "replaces": {"duration_s": 38.5, "sha256": "8d243eeeeb7f145be1c55f1844b91ea10a2a8d7b1d5147aef156e0a7728c58ee",
+                    "note": "the round-2 cut (pre-condense) + card, retired; in git history (471c793)"}}
 
 FACTS = {
     "source": f"teasers/v2/04-chart-race.md section (b) 04b; teasers/v2/checks/04-chart-race.py: {MATH_RUN} on studio/specs/, {MATH_RUN_WIP} with --spec on the condensed cuts (2026-10-13)",
@@ -209,20 +212,23 @@ IG_FIRST_COMMENT = ("16 years of interest at the national average savings rate: 
                     "What does your savings account pay?")
 
 # ---------------------------------------------------------------- the cover frame
-# The payoff card, picked by content: the write-up's Instagram note says "Cover = the 29.5 s frame (the payoff card: the grey
-# 'under +$30' stub on its dashed track against the full green '≈ +$151' bar, the dimmed gold '≈ $8,280' beside it) as an A/B
-# against frame 1". On the pre-condense render the card's S&P row lands with a punch at 28.87 s (frame 866), the frame settles by
-# 29.40 s (frame 882) and holds still (mean frame-to-frame luma change 0.0000, 270x480 greyscale) until the verdict at 32.70 s.
-COVER_T = 29.5
-COVER_FRAME = 885
+# The payoff card, picked by content: the write-up's Instagram note says "Cover = the 29.5 s frame (the payoff card: the
+# grey 'under +$30' stub on its dashed track against the full green '≈ +$151' bar, the dimmed gold '≈ $8,280' beside it)
+# as an A/B against frame 1". On the shipped condensed cut the card's S&P row lands with a punch at about 13.97 s and
+# the card shakes until about 14.27 s; the hero then punches the air and hops into the verdict (14.8 s), so no frame
+# there is fully still. Frame 429 (14.30 s) is the condense write-up's pick: after the card's shake, before his last
+# hop.
+COVER_T = 14.3
+COVER_FRAME = 429
 COVER_CROP = "crop=1080:1440:0:50"
-COVER_RENDER_WORD = "pre-condense"
+COVER_RENDER_WORD = "shipped"
 COVER_FRAME_BY_CONTENT = ("The payoff card, which the write-up names as the Instagram cover: the header 'Your $1,000: 16 years of savings / VS 1 year of the S&P 500' with $1,000 the only accent, "
                           "the footer 'Savings: FDIC avg · S&P w/ dividends', and over the finished race the card: '16 years of savings / under +$30' with a grey stub on its dashed track, "
                           "and 'S&P 500 in 2010 / ≈ +$151' with a full green bar. Beside it the S&P figure stands on its '≈ $8,280' plate and the grey figure sits at '≈ $1,020'; "
-                          "the caption reads 'The S&P's first year alone: ≈ $151.' Use the first settled frame after the card's S&P row lands, before the verdict comes in.")
-COVER_FRAME_MEASURED = ("On the pre-condense 38.5 s render the card's S&P row lands with a punch at 28.87 s (frame 866), the frame settles by 29.40 s (frame 882) and then holds still "
-                        "(mean frame-to-frame luma change 0.0000, 270×480 greyscale) until the verdict comes in at 32.70 s. The cover is taken at 29.5 s (frame 885), the write-up's own time, inside that hold.")
+                          "the caption reads 'The S&P's first year alone: ≈ $151.' Use a frame after the card's shake and before the verdict comes in (on the condensed cut, before the hero's last hop: no frame there is fully still).")
+COVER_FRAME_MEASURED = ("On the shipped 18.8 s condensed cut the card's S&P row lands with a punch at about 13.97 s (frame 419) and its shake ends by 14.27 s; from 14.30 s the"
+                        " frame-to-frame mean luma change is 0.24-0.32 (the hero's arm, 270×480 greyscale) until his hop at 14.40 s, and the verdict comes in at 14.8 s. The "
+                        "cover is taken at 14.3 s (frame 429). On the 38.5 s pre-condense render it was 29.5 s (frame 885), inside a fully still hold.")
 COVER_CROP_NOTE = ("3:4 = 1080×1440 from y 50 to 1490 of the 1080×1920 frame. The content runs from y 112 (the badge) to y 1428 (the caption), "
                    "so the crop centres it: badge, header, footer, the card, both figures, the axis and the caption; it drops the empty page below. "
                    "A centred grid crop (y 240-1680) cuts the badge and the header.")
@@ -232,14 +238,13 @@ COVER_EXTRA_BULLETS = [
     "**Why the answer is on this cover:** the write-up picks the payoff card for this Reel (the Becker look's test: the benchmark has no Becker-style precedent) and names frame 1 as its A/B. "
     "Frame 1 is the header over two small figures at the stake line and an empty page; the card is the biggest thing the video draws. The title and the caption's first 125 characters still ask.",
     "**Not used:** frame 1 (the header, both figures at the $1,000 line, tips '$1,041' and '$1,001'). It keeps the question open; it is the A/B in Trial Reels below.",
-    "**Condensed cut:** the ship step re-picks this frame by content on the final file and re-exports both JPGs with `--covers`. On the condensed cut the hero punches the air as the card's S&P row lands and then hops into the verdict, "
-    "so there is no fully still frame there: take the one after the card's shake and before his last hop (the write-up's choice), or any frame of the verdict hold, where the card stays up.",
+    "**Shipped cut (2026-10-13):** the payoff card was re-picked by content on the shipped file (14.3 s, after the card's shake and before the hero's last hop, the condense write-up's choice) and both JPGs re-exported from it. Any frame of the 14.8-16.3 s verdict hold also keeps the card up.",
 ]
 
 TRIAL_REELS = {
     "recommendation": "Post as a regular Reel, not a Trial.",
     "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-    "use_trial_for": "The write-up's cover A/B afterwards, if you want it: the other cut with frame 1 as its cover, as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut ships, the pre-condense render "
+    "use_trial_for": "The write-up's cover A/B afterwards, if you want it: the other cut with frame 1 as its cover, as a Trial with MANUAL graduation 48-72 h later. The condensed cut shipped on 2026-10-13; the pre-condense render "
                      "is in git: `git show 471c793:renders/channel/04b-becker-rig-savings-vs-sp500.mp4 > 04b-pre-condense.mp4` (sha256 8d243eee…). Compare skip rate "
                      "(October Reels ran 27.0-65.1%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app.",
 }
@@ -369,7 +374,7 @@ LIMITS = [
     "As the 06b and 02b sheets found (not re-checked here), vidIQ's YouTube authorization is a different channel (UCRC5v_El2fibbkqsZs6uFjA), so @envelopemath's YouTube Analytics (audience hours, geography) were not readable. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
     "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and the same-idea Shorts' own tags.",
     "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
-    "The render in renders/channel is the pre-condense cut. The cover's time and frame are measured on it; the copy names no other timestamp, and the ship step re-picks the cover on the final file.",
+    "The render in renders/channel is the shipped condensed cut (2026-10-13). The cover's time and frame are measured on it; the copy names no other timestamp and carried over from the pre-condense cut unchanged.",
     "Several FDIC readings are [click-check] rows in the write-up's sources (seen in search summaries, not on the page). The copy shows only figures that hold across the check's 2,916-table sweep.",
     "The vidIQ credit balance is shared with the other sheets being built in parallel, so this sheet's spend is counted from each tool's listed cost (see research.vidiq_credits).",
 ]
@@ -390,7 +395,8 @@ RESEARCH_EXTRA = {
 CHECKED_BY = "adversarial check of this sheet"
 CHECKED_MATH = (f"python3 teasers/v2/checks/04-chart-race.py: {MATH_RUN} on studio/specs/ (the round-2 cuts; {MATH_RUN_FIRST} at the first build, before the condense's check-script update), "
                 f"re-run at the adversarial check 2026-10-13; with --spec on the three studio/specs-wip/ condensed cuts {MATH_RUN_WIP}, so the copy's figures hold on both cuts; every public figure traced to the 04b tables and "
-                "recomputed in MATH_RELATIONS from the FDIC, S&P 500 and CPI-U inputs, including the 2,916-table FDIC sweep; each figure pinned to its own side and its year (COPY_RULES)")
+                "recomputed in MATH_RELATIONS from the FDIC, S&P 500 and CPI-U inputs, including the 2,916-table FDIC sweep; each figure pinned to its own side and its year (COPY_RULES)"
+                f"; re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: {MATH_RUN_SHIP}")
 VIDIQ_REQUERIED = ("pulled 2026-10-13: saving vs investing 32,141 / 39.7 (-45.2%); high yield savings account 56,330 (+77.0%); savings account vs investing <750; "
                    "7 titles scored: pick 98, write-up's title 88; channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,518 views in 30 days. "
                    "Re-queried at the adversarial check: the pick's title score 98; 'saving vs investing' 32,141 / 39.7 (-45.2%); 'compound interest' 137,873 (-17.3%); 'investing' 613,566 (-2.0%); "
@@ -421,7 +427,7 @@ CHECK_LOG = [
     "  - Platform limits: title 93/100 with no hashtags (the description's first three show above it), description under 5,000 bytes, tags under 500, caption under 2,200 with 5 hashtags, short alt text 99.",
     "  - The cover JPGs (read by eye) show the payoff card ('under +$30' stub vs the full '≈ +$151' bar), the '≈ $8,280' plate and the '≈ $1,020' label, with the caption 'The S&P's first year alone: ≈ $151.'",
     "  - Frame 1's tips, '$1,041' and '$1,001', are the same on the condensed cut (x 2010.2667 vs 2010.2665 in the write-up), so the A/B note holds.",
-    "  - The pre-condense render in git (`471c793`) has the same sha256 as `renders/channel` today (`8d243eee…`), so the Trial Reels `git show` command fetches this file.",
+    "  - The pre-condense render in git (`471c793`) had the same sha256 as `renders/channel` before the ship (`8d243eee…`), so the Trial Reels `git show` command fetches this file.",
     "  - No result in the title, which asks; the cover shows the answer, as the write-up chooses for this Reel, and the sheet says so.",
     "- **Mutation test.** Five mutations of a scratch copy each fail by name: the two finals swapped between savings and the S&P 500, the savings final to the cent ($1,023.85), 2011's and 2015's figures swapped, 'under $30' turned into '$30', and the verdict without 2010. At the adversarial check, 2 more on scratch copies also fail by name: $23.85 in the first comment, and a pick whose hashtags ('#savings') are not the description's first three. The files on disk were not touched.",
     "- **Generator.** Unchanged. The 04 check already prints the builder's 'N checks, F failed' line, so `MATH_SCRIPT` runs it directly.",
@@ -429,6 +435,9 @@ CHECK_LOG = [
     "  - The savings final is ≈ $1,020 everywhere; $1,023.85 and $23.85 never appear in the copy (their last digits rest on the midpoint years), and 'under $30' stays a bound.",
     "  - 'It is the national average, not a high-yield rate': the hook's belief comes from today's high-yield accounts (the write-up's R5), so the copy names the basis plainly.",
     "  - The cover shows the payoff card, as the write-up names it; frame 1 is the A/B.",
+    f"- **Done on ship (2026-10-13).** Rebuilt with `--covers` from the shipped condensed cut ({VIDEO_S:g} s). The payoff card was re-picked by content at 14.3 s (frame 429), after the card's shake and before the hero's last hop. "
+    f"The Video bullet, the cut and the check counts follow the shipped file ({MATH_RUN_SHIP} on `studio/specs/`), and the long alt text was re-read against the condensed beat sheet: "
+    "every beat it names is in the shipped cut, so no copy changed.",
 ]
 
 # ---------------------------------------------------------------- the numbers check

@@ -3,10 +3,10 @@
 # BODY_S, CARD_S and tag_chars already defined. Started from 06b-scoreboard-netflix-bill.py (the nearest sheet, same look).
 #
 # Facts come only from teasers/v2/04-chart-race.md (section (b) 04c, Decisions, Sources) and
-# python3 teasers/v2/checks/04-chart-race.py. Research: vidIQ, pulled 2026-10-13. The render in renders/channel is the
-# pre-condense cut; a condensed cut (timing only: numbers, captions and verdict stay) is in studio/specs-wip/, not yet shipped. This sheet names no
-# timestamp except the cover, which is picked by content (frame 1, the 2025 columns), so the copy carries over; the ship step
-# rebuilds it with --covers.
+# python3 teasers/v2/checks/04-chart-race.py. Research: vidIQ, pulled 2026-10-13. The video is the condensed cut,
+# promoted and shipped on 2026-10-13 (the pre-condense round-2 cut is in git, 471c793). This sheet names no timestamp
+# except the cover, which is picked by content, so the copy carried over unchanged; the ship rebuilt it with --covers
+# from the shipped file.
 
 TEASER = "04c Scoreboard, chart-race: \"POV: In 2016 you invested $10,000 in USA vs EUROPE\""
 PREPARED = "2026-10-13"
@@ -14,13 +14,15 @@ SHORT_ID = "04c"
 MD_TITLE = "04c publishing sheet: $10,000 in the USA vs Europe since 2016"
 MATH_RUN = "657 checks, 0 failed"      # python3 teasers/v2/checks/04-chart-race.py on studio/specs/ (the round-2 cuts), re-run at the adversarial check 2026-10-13
 MATH_RUN_WIP = "698 checks, 0 failed"  # the same script with --spec on the three condensed cuts in studio/specs-wip/, 2026-10-13
+MATH_RUN_SHIP = "698 checks, 0 failed"  # python3 teasers/v2/checks/04-chart-race.py on studio/specs/ with the condensed cuts promoted, at the ship 2026-10-13
 MATH_RUN_FIRST = "614 checks, 0 failed"  # at the first build, before the condense's check-script update
 
 MD_INTRO = [
-    f"- **Video.** `renders/channel/{BASE}.mp4`: the pre-condense cut ({VIDEO_S:g} s: a {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`), "
-    "the Scoreboard port (2026-10-08) as `renders/channel` holds it on 2026-10-13. A condensed cut is built in `studio/specs-wip/` and not yet shipped (timing only: the numbers, captions and verdict stay). "
-    "Nothing below names a timestamp except the cover, which is picked by content (frame 1), so the copy carries over. "
-    f"The ship step rebuilds this sheet and re-exports both covers from the final file: `python3 publishing/tools/build_publishing.py {BASE} --covers`.",
+    f"- **Video.** `renders/channel/{BASE}.mp4`: the condensed cut ({VIDEO_S:g} s: a {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`), "
+    "promoted and shipped on 2026-10-13. It replaces the 39.0 s round-2 cut (the owner: \"too many still moments\"), which is in git (`471c793`). "
+    "The condense moved the clock and merged some captions; the numbers, the captions' facts and the verdict stay, so the copy carried over unchanged. "
+    "Nothing below names a timestamp except the cover, which was re-picked by content on the shipped file. "
+    f"The ship rebuilt this sheet and re-exported both covers from it (`python3 publishing/tools/build_publishing.py {BASE} --covers`); on the shipped specs the maths check runs {MATH_RUN_SHIP}.",
     "- **Numbers.** Every figure comes from `teasers/v2/04-chart-race.md` (04c) and its check, "
     f"`python3 teasers/v2/checks/04-chart-race.py`: {MATH_RUN} on `studio/specs/` and {MATH_RUN_WIP} with `--spec` on the three condensed cuts in `studio/specs-wip/` (run 2026-10-13), so the copy's figures hold on both cuts. "
     f"`python3 publishing/tools/build_publishing.py {BASE} --check` checks this sheet's limits, paste blocks and figures, recomputes every figure from the S&P 500 and MSCI Europe returns, "
@@ -34,10 +36,11 @@ MD_INTRO = [
 
 # ---------------------------------------------------------------- the video
 FOR_VIDEO_NOTE = ("Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. "
-                  "current_* is what renders/channel holds on 2026-10-13: the pre-condense cut. The ship step rebuilds this file with --covers from the condensed cut.")
-CUT = {"name": "pre-condense (Scoreboard port of 2026-10-08)", "spec": f"studio/specs/{BASE}.json", "body_s": BODY_S,
-       "card_s": CARD_S, "status": "in renders/channel on 2026-10-13 (git 471c793); a condensed cut (timing only) is in studio/specs-wip/, not yet shipped",
-       "on_ship": f"python3 publishing/tools/build_publishing.py {BASE} --covers (re-picks the cover by content, re-exports both JPGs, refreshes for_video)"}
+                  "current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.")
+CUT = {"name": "condensed (2026-10-13)", "spec": f"studio/specs/{BASE}.json", "body_s": BODY_S,
+       "card_s": CARD_S, "shipped": "2026-10-13",
+       "replaces": {"duration_s": 39.0, "sha256": "1a7f8c5e37ce31e6ab5dbba5fc772a9f810d1ceb0e33d3d2c55fe149a558af78",
+                    "note": "the round-2 cut (pre-condense) + card, retired; in git history (471c793)"}}
 
 FACTS = {
     "source": f"teasers/v2/04-chart-race.md section (b) 04c; teasers/v2/checks/04-chart-race.py: {MATH_RUN} on studio/specs/, {MATH_RUN_WIP} with --spec on the condensed cuts (2026-10-13)",
@@ -199,20 +202,20 @@ IG_FIRST_COMMENT = ("Per year: the USA ≈ 14.8%, Europe ≈ 8.5%. Swap in your 
                     "Next race: USA vs Japan, or USA vs China?")
 
 # ---------------------------------------------------------------- the cover frame
-# Frame 1 (t 0), picked by content: the write-up's Instagram note says "Cover = frame 1 (the two 2025 columns with Europe lit, the
-# ask, '$10,000' in the hero)". On the pre-condense render the hook holds still from frame 0 (mean frame-to-frame luma change
-# 0.0000-0.0001, 270x480 greyscale) until Europe's column bumps; frame 0 is that frame.
+# Frame 1 (t 0), picked by content: the write-up's Instagram note says "Cover = frame 1 (the two 2025 columns with
+# Europe lit, the ask, '$10,000' in the hero)". On the shipped condensed cut frame 0 is that frame and the only still
+# one: from frame 1 Europe's column bumps (mean frame-to-frame luma change 0.48, 270x480 greyscale).
 COVER_T = 0
 COVER_FRAME = 0
 COVER_CROP = "crop=1080:1440:0:73"
-COVER_RENDER_WORD = "pre-condense"
+COVER_RENDER_WORD = "shipped"
 COVER_FRAME_BY_CONTENT = ("Frame 1, which the write-up names as the Instagram cover: the header 'POV: IN 2016 YOU INVESTED $10,000 IN / USA VS EUROPE' with $10,000 the only accent, "
                           "the hero 'EACH $10,000', the footer 'Total return in US$ · no fees or tax', the ask '2016 → 2025: WHO WON?', the dim 2025 clock, and the two 2025 columns "
                           "to scale: '+17.88%' over the green USA bar and '+35.41%' over the lit yellow EUROPE bar, 'S&P 500' and 'MSCI Europe' under the floor, with the first caption "
                           "'2025: Europe beat the USA ≈ 2 to 1.' It shows the hook's claim and asks the decade's question; the decade's answer is not on it. "
                           "On any cut, use the first frame, while the two 2025 columns stand under the ask.")
-COVER_FRAME_MEASURED = ("On the pre-condense 39.0 s render, frame 0 (0.00 s) is that frame: the hook holds still from it (mean frame-to-frame luma change 0.0000-0.0001, "
-                        "270×480 greyscale) until Europe's column bumps.")
+COVER_FRAME_MEASURED = ("On the shipped 18.4 s condensed cut, frame 0 (0.00 s) is that frame and the only still one: from frame 1 (0.03 s) Europe's column bumps (mean "
+                        "frame-to-frame luma change 0.48, 270×480 greyscale). On the 39.0 s pre-condense render the hook held still from frame 0 until the bump.")
 COVER_CROP_NOTE = ("3:4 = 1080×1440 from y 73 to 1513 of the 1080×1920 frame. The content runs from y 141 (the badge) to y 1445 (the caption's second line), "
                    "so the crop centres it: badge, header, hero, footer, the ask, both columns with their index names and the caption; it drops the empty black floor. "
                    "A centred grid crop (y 240-1680) loses the badge and leaves the header on the top edge.")
@@ -221,13 +224,13 @@ COVER_HOW_TO_SET = ("In 'Edit cover', pick frame 1 of the video (or upload the 9
 COVER_EXTRA_BULLETS = [
     "**Not used:** the climax ('USA ≈ $39,800' over both finished lines), which the write-up suggests testing against frame 1. It shows the decade's answer the title asks about; "
     "it is the A/B in Trial Reels below.",
-    "**Condensed cut:** the ship step re-picks this frame by content on the final file (the first frame, the 2025 columns under the ask) and re-exports both JPGs with `--covers`.",
+    "**Shipped cut (2026-10-13):** frame 1 was re-picked by content on the shipped file (the first frame, the 2025 columns under the ask) and both JPGs re-exported from it: the same picture as the pre-condense cover.",
 ]
 
 TRIAL_REELS = {
     "recommendation": "Post as a regular Reel, not a Trial.",
     "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-    "use_trial_for": "The write-up's cover A/B afterwards, if you want it: the other cut with the climax frame ('USA ≈ $39,800') as its cover, as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut ships, "
+    "use_trial_for": "The write-up's cover A/B afterwards, if you want it: the other cut with the climax frame ('USA ≈ $39,800') as its cover, as a Trial with MANUAL graduation 48-72 h later. The condensed cut shipped on 2026-10-13, and "
                      "the pre-condense render is in git: `git show 471c793:renders/channel/04c-scoreboard-usa-vs-europe.mp4 > 04c-pre-condense.mp4` (sha256 1a7f8c5e…). Compare skip rate "
                      "(October Reels ran 27.0-65.1%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app.",
 }
@@ -356,7 +359,7 @@ LIMITS = [
     "As the 06b and 02b sheets found (not re-checked here), vidIQ's YouTube authorization is a different channel (UCRC5v_El2fibbkqsZs6uFjA), so @envelopemath's YouTube Analytics (audience hours, geography) were not readable. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
     "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume, the write-up's notes and the same-idea Shorts' own tags.",
     "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
-    "The render in renders/channel is the pre-condense cut. The cover's time and frame are measured on it; the copy names no other timestamp, and the ship step re-picks the cover on the final file.",
+    "The render in renders/channel is the shipped condensed cut (2026-10-13). The cover's time and frame are measured on it; the copy names no other timestamp and carried over from the pre-condense cut unchanged.",
     "The write-up's caveat that a 2012 start widens the gap (≈ ×7.1 vs ≈ ×3.1) is not in the 04 check, so the copy does not use it.",
     "The vidIQ credit balance is shared with the other sheets being built in parallel, so this sheet's spend is counted from each tool's listed cost (see research.vidiq_credits).",
 ]
@@ -384,7 +387,8 @@ RESEARCH_EXTRA = {
 CHECKED_BY = "adversarial check of this sheet"
 CHECKED_MATH = (f"python3 teasers/v2/checks/04-chart-race.py: {MATH_RUN} on studio/specs/ (the round-2 cuts; {MATH_RUN_FIRST} at the first build, before the condense's check-script update), "
                 f"re-run at the adversarial check 2026-10-13; with --spec on the three studio/specs-wip/ condensed cuts {MATH_RUN_WIP}, so the copy's figures hold on both cuts; every public figure traced to the 04c year-end table and "
-                "recomputed in MATH_RELATIONS from the S&P 500 and MSCI Europe returns, each figure pinned to its own side and its year (COPY_RULES)")
+                "recomputed in MATH_RELATIONS from the S&P 500 and MSCI Europe returns, each figure pinned to its own side and its year (COPY_RULES)"
+                f"; re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: {MATH_RUN_SHIP}")
 VIDIQ_REQUERIED = ("pulled 2026-10-13: european stocks vs us stocks <750; european stocks being the s&p 3,993 / 21.0; europe vs usa income comparison 8,566 (+84.5%); "
                    "6 titles scored: pick 97, write-up's title 90, its A/B 80; ChartOrbit's USA and EUROPE re-pulled at 2,808,312; channel 53 subs / 10,221 views / 41 videos; "
                    "Instagram 8 followers, 20,518 views in 30 days. "
@@ -414,7 +418,7 @@ CHECK_LOG = [
     "  - The cover JPGs (read by eye) show frame 1: the two 2025 columns, '+17.88%' USA and '+35.41%' EUROPE lit, the ask '2016 → 2025: WHO WON?', the first caption; no decade result. "
     "The write-up's condensed beat sheet keeps that picture on frame 1 (the bump starts on frame 2).",
     "  - The caption's first 125 characters carry 'Europe won 2025', the hook's claim on frame 1 and the write-up's caption line 1; the decade's result is below 'more'.",
-    "  - The pre-condense render in git (`471c793`) has the same sha256 as `renders/channel` today (`1a7f8c5e…`), so the Trial Reels `git show` command fetches this file.",
+    "  - The pre-condense render in git (`471c793`) had the same sha256 as `renders/channel` before the ship (`1a7f8c5e…`), so the Trial Reels `git show` command fetches this file.",
     "  - Brand: 'S&P 500' and 'MSCI Europe' are named only as the indexes the maths uses; 'Not affiliated with or endorsed by S&P Dow Jones Indices or MSCI.' is in the description and the caption. No flags or logos.",
     "- **Mutation test.** Five mutations of a scratch copy each fail by name: the two finals swapped between the USA and Europe, Europe's 2018 drop moved to 2020, the net-of-tax basis cut from the caption, the decade's result in the caption's first 125 characters, and the affiliation line cut. At the adversarial check, 2 more on scratch copies also fail by name: a bare 4.9 in the pinned comment, and '2 to 1' without its '≈' in the caption. The files on disk were not touched.",
     "- **Generator.** Unchanged. The 04 check already prints the builder's 'N checks, F failed' line, so `MATH_SCRIPT` runs it directly.",
@@ -422,6 +426,9 @@ CHECK_LOG = [
     "  - 'Europe won 2025' is in the Instagram caption's first line: it is the hook's claim on frame 1, not the payoff; the decade's result stays below 'more'.",
     "  - The basis (US dollars, net vs gross, no fees) sits in every long item, since the decade's gap is the claim the comments will test.",
     "  - `#USAvsEurope` leads the YouTube hashtags for the rivalry crowd; the market phrases are too small to lead.",
+    f"- **Done on ship (2026-10-13).** Rebuilt with `--covers` from the shipped condensed cut ({VIDEO_S:g} s). Frame 1 was re-picked by content and is still frame 0, the 2025 columns under the ask. "
+    f"The Video bullet, the cut and the check counts follow the shipped file ({MATH_RUN_SHIP} on `studio/specs/`), and the long alt text was re-read against the condensed beat sheet: "
+    "every beat it names is in the shipped cut, so no copy changed.",
 ]
 
 # ---------------------------------------------------------------- the numbers check

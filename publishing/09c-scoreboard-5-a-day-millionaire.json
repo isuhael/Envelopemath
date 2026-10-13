@@ -5,7 +5,7 @@
   "for_video": {
     "current_render": "renders/channel/09c-scoreboard-5-a-day-millionaire.mp4",
     "current_duration_s": 34.0,
-    "current_sha256": "cd58e2ea5d5764ece548f6c1c20bf3fe94943a0872a3b79cf427e5f4041fad91",
+    "current_sha256": "20c57655f4c5615a845ec7b60381548783ca85ea622096681b4f6915b1d68659",
     "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the pre-condense cut. The ship step re-runs the build with --covers on the condensed file.",
     "cut": {
       "name": "pre-condense cut (assembly fix pass, 2026-10-08)",

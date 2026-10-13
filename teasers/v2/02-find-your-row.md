@@ -1,12 +1,12 @@
 # 02 · Find your row: three teasers
 
 **Format:** `find-your-row` (rank 2 in [`../../research/v2/04-formats.md`](../../research/v2/04-formats.md), hook pattern **P7**)
-**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews, then again in the round-2 **hook pass**, which replaced all three hooks; then the round-2 **assembly pass** and the round-2 **fix pass** on 2026-10-08; then the **port** of 2026-10-08, when the owner kept two looks: 02a moved from Live Sheet to **Becker Rig** and 02c from Clean Sheet to **Scoreboard**; then the **fix pass on the ports** the same day; then the **condensed cut** of 2026-10-13 (the owner: too many still moments; condense; the end card stays), written in `studio/specs-wip/`, its fix pass the same day, and promoted into `studio/specs/` on 2026-10-13 (the sound and the ship follow); see the [Review log](#review-log))
+**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews, then again in the round-2 **hook pass**, which replaced all three hooks; then the round-2 **assembly pass** and the round-2 **fix pass** on 2026-10-08; then the **port** of 2026-10-08, when the owner kept two looks: 02a moved from Live Sheet to **Becker Rig** and 02c from Clean Sheet to **Scoreboard**; then the **fix pass on the ports** the same day; then the **condensed cut** of 2026-10-13 (the owner: too many still moments; condense; the end card stays), written in `studio/specs-wip/`, its fix pass the same day, and promoted into `studio/specs/` on 2026-10-13 and shipped the same day (BIBLE v2.4); see the [Review log](#review-log))
 **Specs:**
 - [`studio/specs/02a-becker-rig-3-a-day-by-age.json`](../../studio/specs/02a-becker-rig-3-a-day-by-age.json)
 - [`studio/specs/02b-scoreboard-trillion-at-your-wage.json`](../../studio/specs/02b-scoreboard-trillion-at-your-wage.json)
 - [`studio/specs/02c-scoreboard-salary-per-hour.json`](../../studio/specs/02c-scoreboard-salary-per-hour.json)
-- The condensed cuts (2026-10-13; the beat sheets and captions below describe them) were promoted from `studio/specs-wip/` on 2026-10-13: the three specs above are now the condensed cuts. The round-2 cuts (13.4 / 14.0 / 13.0 s bodies) are in git history (`4fb0b00^` and earlier; their beat sheets at HEAD 3db6d30); `renders/channel/` holds their renders until the ship step.
+- The condensed cuts (2026-10-13; the beat sheets and captions below describe them) were promoted from `studio/specs-wip/` on 2026-10-13: the three specs above are now the condensed cuts. The round-2 cuts (13.4 / 14.0 / 13.0 s bodies) are in git history (`4fb0b00^` and earlier; their beat sheets at HEAD 3db6d30); `renders/channel/` has shipped the condensed cuts since 2026-10-13, and the round-2 renders are in git at 471c793.
 
 (The slugs are kept from the earlier rounds so the slate index stays linked; the titles and hooks below are the hook-pass versions. The retired Live Sheet and Clean Sheet specs are in `studio/specs/retired/` as `02a-live-sheet-3-a-day-by-age.json` and `02c-clean-sheet-salary-per-hour.json`.)
 
@@ -482,7 +482,7 @@ The 8-hour day is in the header ("9-to-5") and the footnote "= 9:00 am + 480 min
 ## Open items
 
 - **Owner decision: a ~10 s "find your row".** The condensed cuts run 10.3 / 10.1 / 10.1 s with the card (bodies 7.8 / 7.6 / 7.6 s), about half the 06b/06c bodies (15.7-18.3 s). Nothing was dropped to get there: the removed time was the still runs and the narration-paced captions, and every beat, number and line is kept. A ~10 s looping lookup is a good retention shape, but it is a new length for the slate, so the owner should approve it knowingly before promotion. If longer is wanted, the levers are a 1.6 s verdict hold (+0.05-0.1 s) or a fourth pick (about +1.6 s each), not a still board.
-- **The condensed cuts (2026-10-13) are promoted (2026-10-13), not yet shipped.** They moved from `studio/specs-wip/` into `studio/specs/`; their reviewed renders are in `/tmp/cond/02/<id>/`, and `renders/channel/` still holds the round-2 cuts. The ship step owns sound and the ship (the steps and the three sound failures to settle are in the review-log entries "Condensed cut (2026-10-13)" and "Condensed cut: fix pass (2026-10-13)"). On promotion these go stale and are outside this pass's files: `teasers/v2/teasers.json` (runtimes 10.3 / 10.1 / 10.1 s), `publishing/02{a,b,c}-*.{md,json}` (`for_video`, the cover frames, "177 checks"; the sheets re-pick their covers by content with `build_publishing.py <id> --covers`) and the files under `renders/`.
+- **The condensed cuts (2026-10-13) are promoted and shipped (2026-10-13).** They moved from `studio/specs-wip/` into `studio/specs/`, and `renders/channel/` holds them; the round-2 renders are in git at 471c793. The ship cleared the three sound failures at pack level (BIBLE v2.4). `teasers/v2/teasers.json` (runtimes 10.3 / 10.1 / 10.1 s) and `publishing/02{a,b,c}-*.{md,json}` (`for_video`, the covers, the checked-maths line) follow the shipped files. See "Shipped (2026-10-13)" in the Review log.
 - **Linter:** both kept kits mount and `node src/cli.mjs check` passes 02a (Becker Rig), 02b and 02c (Scoreboard) with 0 errors and 0 warnings (2026-10-08, after the fix pass on the ports; also at a 0.05 s sampling step). The Scoreboard's find-your-row samples and 02b render pixel-identical before and after the port's and the fix pass's format-file changes. The Becker Rig samples change with the fix pass (post, bracket, reference row, shelf formula) and stay lint-clean.
 - **Not changed by the port** (outside its files): `teasers.json`, `slate.json` and `renders/v2/` still list the retired ids and MP4s for 02a and 02c; the new MP4s are in `studio/out/`. The Becker Rig and Scoreboard READMEs do not yet document the new find-your-row options (`compare[].start`, `beats` and its value tap; `verdictRow` and its lead); each format file's header comment does.
 - **Slate overlap to decide (owner):** 02b now uses the same device as **10b** ("40 years of your pay vs 1 minute of new US debt", verdict "40 years of median pay: ≈ 33 seconds"): a whole working life set against a mega-rate clock. Both judges also flagged an echo of **10c** (Amazon's sales per second). 02b is a per-wage lookup table with a named person's plan; 10b is one median career against a national-debt counter. If only one should carry the device, 02b's runner-up ("1 second of the plan at your wage", 7.25) is ready in the Review log.
@@ -855,3 +855,47 @@ The critic passed format 02 (02a 8, 02b 8, 02c 7) with no musts. It raised 7 sho
 ### Promoted (2026-10-13)
 
 The three condensed cuts (after their fix pass) were copied from `studio/specs-wip/` over `studio/specs/` (commit 4fb0b00) and `IN_SPECS` is `"cond"` for each: all 225 checks pass by default, and all 183 on git-history copies of the round-2 cuts passed with `--spec`; the sound refit and the ship follow (`renders/channel/` keeps the round-2 cuts until then).
+
+### Shipped (2026-10-13): 02a, 02b, 02c
+
+- **Sound (BIBLE v2.4).** The promotion moved the cue records of all 16 condensed cuts (01a-06a), so BIBLE §11.1 ran for the batch:
+  - Both looks were refit on the fresh records: Scoreboard's calibration and Becker Rig's `MODEL` (§11.2).
+  - Both packs gained the short-body rules (§4.7, §6.7 item 7).
+  - The records were stored in `test/fixtures/cues.json` (one line per teaser, so the diff is the batch's 16 lines), `tempo-table --write` rewrote the 16 §2.3 rows, and `npm test` passes 28/28.
+  - No spec, cue gain or `acceptance.json` threshold was touched.
+  - Every sound failure recorded in the entries above for these teasers is cleared at pack level.
+- **Verify.** `verify --from <build> --strict-cues --video <pictures>` passes all 30 at 42/42, with units at 69/69 and 77/77. The pictures were the reviewed renders of the promoted specs for the batch and `renders/channel/` for the other 14. The masters are byte-identical to the sound pass's verified builds, so nothing regressed against its after-tables. This format’s §2.3 rows and measurements:
+
+  | Teaser | §2.3 row (P, BPM, base) | A1 / A2 / A5 | Tightest BANDS octaves (dB inside) | B3 closest cue | B8 logo / payoff (LUFS) |
+  |---|---|---|---|---|---|
+  | 02a | P 6.3 (verdict+hit), 114.286 → 120, base 7.80 | −14.11 / −1.56 / 12.56 | 2 kHz 0.5, 250 Hz 1.6 | 5.6 dB | −10.83 / −9.62 |
+  | 02b | P 6.05 (verdict), 138.843 (runs on), base 7.60 free | −14.15 / −1.40 / 12.75 | 250 Hz 1.2, 16 kHz 1.2 | 4.3 dB | −11.82 / −10.54 |
+  | 02c | P 6.05 (verdict), 138.843 (runs on), base 7.60 free | −14.16 / −1.30 / 12.86 | 250 Hz 0.2, 125 Hz 0.7 | 4.3 dB | −11.63 / −10.32 |
+
+  Margins and tempo in this format:
+  - **02c 250 Hz is 0.2 dB over its floor.** It passes the gate but misses the sound pass's 0.5 dB target, the one octave of the batch to do so. The owner's options are in BIBLE §11.2.
+  - **02a 2 kHz is 0.5 dB under its ceiling,** Becker Rig's next tier after 09a.
+  - **02b and 02c leave base free** (§2.3). The verdict sits 1.55 s from base, and no whole number of beats fits there within ±8% of 138.843 BPM, so BPM₁ runs on. This is the free base the fix pass above left to the ship step.
+  - **02b and 02c have an empty BUILD** (§2.5), so B7 has no BUILD to compare. `verify` then prints the DROP level as "drop-build" (§11.6 item 7).
+  - **02a's 0.5 s thud train is gone** (its thuds now land unevenly). Its test pin in `test/sound.test.mjs` is now "no train" (§11.1), and 02b's and 02c's tick trains are gone too (§2.1).
+  - **02a's A7 is the set's lowest (−15.4).** 02a is also the one Becker Rig teaser inside the pending A8 target, at its top (0.85 of 0.45-0.85). A8's target is reported, not gated (§9.1).
+- **Shipped by §11.5.**
+  - The build went to `/tmp`, not into `renders/channel/`. Every mux kept its source's video md5, and the files were then copied into `renders/channel/`.
+  - `verify --from <build> --write-baseline` rewrote `test/fixtures/sound-baseline.sha256`.
+  - Both packs changed, so all 30 masters differ from the previous baseline. All 30 MP4s in `renders/channel/` changed with them, and the 14 pictures outside the batch are unchanged.
+  - The audit of `renders/channel/` used `--out` in `/tmp`, so no sidecar was written into `renders/`. All 30 teasers pass 16/16 symbolic score checks.
+  - This format’s files:
+
+  | Teaser | Shipped (length, sha256) | Replaces (in git at 471c793) | Video md5 (kept) | Audit: I / TP / LRA / PLR, score |
+  |---|---|---|---|---|
+  | 02a | 10.3 s, `c93abea3…` | 15.9 s, `e73341bf…` | `3e22d951fbfd…` | −14.11 / −1.56 / 5.63 / 12.56, 16/16 |
+  | 02b | 10.1 s, `93aa989f…` | 16.5 s, `33ca2410…` | `49ed38be0862…` | −14.15 / −1.40 / 5.26 / 12.75, 16/16 |
+  | 02c | 10.1 s, `11fb6900…` | 15.5 s, `a141741f…` | `36a3cbb84663…` | −14.16 / −1.30 / 5.34 / 12.86, 16/16 |
+
+- **Publishing.**
+  - `python3 publishing/tools/build_publishing.py <id> --covers`, then `--check`, passes for all three (numbers check: PASS).
+  - In the data files, the video facts (`CUT` with `shipped` and `replaces`, the Video bullet and the for-video note) now describe the shipped cut.
+  - Moments and lengths that only the retired cut had were rewritten or dated, and no claim was added.
+  - The checked-maths line records the re-run at the ship: all 225 checks pass.
+  - The covers were re-picked by content from the shipped files, each on its settled verdict hold: 02a at 7.0 s (frame 210), 02b at 6.5 s (frame 195) and 02c at 7.1 s (frame 213).
+- **Elsewhere.** `teasers/v2/teasers.json`: runtimes 10.3 / 10.1 / 10.1 s. Its key-number times now name the condensed cut, with the retired cut's in brackets, and its check note records the re-run at the ship. `renders/channel/README.md` (a length table), `HANDOFF-finance-channel.md` and the BIBLE v2.4 status line name the ship.

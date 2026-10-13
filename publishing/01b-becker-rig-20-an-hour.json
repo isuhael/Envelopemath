@@ -4,17 +4,20 @@
   "prepared": "2026-10-13",
   "for_video": {
     "current_render": "renders/channel/01b-becker-rig-20-an-hour.mp4",
-    "current_duration_s": 26.5,
-    "current_sha256": "869e23a73d7e07ae360671291c0ef2e9d6060fd0b6cc1e5d90b8f86ea8198533",
-    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the pre-condense round-2 cut. The ship step re-runs the build with --covers on the condensed file.",
+    "current_duration_s": 14.5,
+    "current_sha256": "5b45401d58c1cc2c3a32b95f63b4007672faad824b30c4b7f931d1b99426c1a9",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
-      "name": "round-2 cut (pre-condense)",
+      "name": "condensed (2026-10-13)",
       "spec": "studio/specs/01b-becker-rig-20-an-hour.json",
-      "body_s": 24.0,
+      "body_s": 12.0,
       "card_s": 2.5,
-      "shipped": null,
-      "git": "471c793",
-      "status": "the 01 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay). The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."
+      "shipped": "2026-10-13",
+      "replaces": {
+        "duration_s": 26.5,
+        "sha256": "869e23a73d7e07ae360671291c0ef2e9d6060fd0b6cc1e5d90b8f86ea8198533",
+        "note": "the round-2 cut (pre-condense) + card, retired; in git history (471c793)"
+      }
     }
   },
   "facts": {
@@ -179,8 +182,8 @@
       },
       "frame_in_current_render_s": 0,
       "frame_index": 0,
-      "frame_by_content": "The clean cover, frame 1: the header '3 DEAD SIMPLE NUMBERS / YOU PAY 6.2% TO SOCIAL SECURITY. / A $1M SALARY PAYS…?' ('6.2%' in red), the footer 'ASSUMES 40 hrs × 52 wks · 2026 rates / employee share, no Medicare', the input line 'Your pay $20/hr 40 hrs a week', 3 numbered ledges labelled 'Yours, a year / A $1M salary pays / Their rate' (the last two with empty sockets), ① active with its '$20' block, and the green stick figure holding the '× 2,080 × 6.2%' plate. No result: it asks and does not answer, like the title and the caption. The write-up names frame 1 as the Instagram cover. On any cut, use the opening frame, before the figure flips the plate. A cut whose hook caption is already up on its first frame (the condensed WIP spec's is) still gives a clean cover: 'At $20 an hour, you pay about' holds no result.",
-      "frame_measured": "On the pre-condense 26.5 s render, frame 0 is that frame and the only one without a caption: from frame 1 the first caption word ('At') fades in, and from frame 4 he starts to flip the plate.",
+      "frame_by_content": "The clean cover, frame 1: the header '3 DEAD SIMPLE NUMBERS / YOU PAY 6.2% TO SOCIAL SECURITY. / A $1M SALARY PAYS…?' ('6.2%' in red), the footer 'ASSUMES 40 hrs × 52 wks · 2026 rates / employee share, no Medicare', the input line 'Your pay $20/hr 40 hrs a week', 3 numbered ledges labelled 'Yours, a year / A $1M salary pays / Their rate' (the last two with empty sockets), ① active with its '$20' block, and the green stick figure holding the '× 2,080 × 6.2%' plate. No result: it asks and does not answer, like the title and the caption. The write-up names frame 1 as the Instagram cover. On any cut, use the opening frame, before the figure flips the plate. A cut whose hook caption is already up on its first frame (the shipped condensed cut's is) still gives a clean cover: 'At $20 an hour, you pay about' holds no result.",
+      "frame_measured": "On the shipped 14.5 s condensed cut, frame 0 (0.00 s) is that frame and the only still one: the complete hook caption 'At $20 an hour, you pay about' is already up (it holds no result), and from frame 1 (0.03 s) the figure dips to flip the plate (mean frame-to-frame luma change 1.57, 270×480 greyscale). On the 26.5 s pre-condense render frame 0 had no caption.",
       "crop": "3:4 = 1080×1440, the top 1440 rows (y 0 to 1440) of the 1080×1920 frame: the badge, the header, the footer, the input line, the 3 ledges, the figure and the floor line, with even margins above the badge and below the floor; it drops the empty floor below. A crop from y 60 (as on 01a) leaves 200 px of empty floor. A centred grid crop (y 240-1680) cuts the badge and leaves the header on the edge.",
       "how_to_set": "In 'Edit cover', pick frame 1 of the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
       "re_export": "ffmpeg -ss 0 -i renders/channel/01b-becker-rig-20-an-hour.mp4 -frames:v 1 -vf \"crop=1080:1440:0:0\" -q:v 2 publishing/01b-becker-rig-20-an-hour-cover-3x4.jpg",
@@ -191,7 +194,7 @@
     "trial_reels": {
       "recommendation": "Post as a regular Reel, not a Trial.",
       "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show 471c793:renders/channel/01b-becker-rig-20-an-hour.mp4 > 01b-26.5s.mp4` (sha256 869e23a7…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. The condensed cut replaced the pre-condense render in renders/channel on 2026-10-13; get the pre-condense one from git with `git show 471c793:renders/channel/01b-becker-rig-20-an-hour.mp4 > 01b-26.5s.mp4` (sha256 869e23a7…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
     },
     "settings": {
       "audio": "Rename the original audio to 'Social Security vs a $1M salary — The Back of the Envelope' if the app allows; it is the score, with no voice.",
@@ -577,7 +580,7 @@
       "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and on the write-up's and the outliers' own tags.",
       "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
       "The 2026 wage base ($184,500) is the write-up's figure (SSA and Kiplinger). SSA's 2027 figure was not looked up here; when it is published, the copy stays true because it names 2026 wherever it names $184,500.",
-      "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file."
+      "The video, the cover and the video facts are the shipped condensed cut (2026-10-13); the copy is cut-independent and carried over from the pre-condense cut unchanged."
     ],
     "titles_scored": "10 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored.",
     "vidiq_credits": "120 credits for this teaser (9 keyword queries, 2 YouTube searches, 1 YouTube outlier search, 1 Instagram/TikTok outlier search, 11 title scores, the last of each a re-query; 5 each), plus 10 shared across 01a-01c for the channel's own stats; 10 more at the adversarial check (1 title score, 1 keyword query)."
@@ -585,7 +588,7 @@
   "checked": {
     "date": "2026-10-13",
     "by": "adversarial check of this sheet",
-    "math": "python3 teasers/v2/checks/01-dead-simple-list.py: 400 checks, 0 failed on studio/specs/ (the pre-condense specs; 397 at the first build, before the condense's check-script update), re-run at the adversarial check 2026-10-13; with --spec on the three studio/specs-wip/ condensed specs 392 checks, 0 failed, so the copy's figures hold on both cuts; every public figure traced to the 01b maths table and recomputed in MATH_RELATIONS from the 2026 rate and wage base; COPY_RULES keep $184,500 beside 2026, ≈ $2,579 and ≈ 1.1% 'about', and 'employee share' and the Medicare exclusion in the copy",
+    "math": "python3 teasers/v2/checks/01-dead-simple-list.py: 400 checks, 0 failed on studio/specs/ (the pre-condense specs; 397 at the first build, before the condense's check-script update), re-run at the adversarial check 2026-10-13; with --spec on the three studio/specs-wip/ condensed specs 392 checks, 0 failed, so the copy's figures hold on both cuts; every public figure traced to the 01b maths table and recomputed in MATH_RELATIONS from the 2026 rate and wage base; COPY_RULES keep $184,500 beside 2026, ≈ $2,579 and ≈ 1.1% 'about', and 'employee share' and the Medicare exclusion in the copy; re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: 396 checks, 0 failed",
     "limits": {
       "youtube_title_chars": 68,
       "youtube_description_chars": 1234,

@@ -4,17 +4,20 @@
   "prepared": "2026-10-13",
   "for_video": {
     "current_render": "renders/channel/05b-becker-rig-3000-paycheck.mp4",
-    "current_duration_s": 24.6,
-    "current_sha256": "435bd70783cf6ca134b52a51c556aa1fd0e328a865e8f60aa11931384a2cffff",
-    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the pre-condense cut. The ship step re-runs the build with --covers on the condensed file.",
+    "current_duration_s": 13.967,
+    "current_sha256": "8f4f4fdb652d3bc346cc98ba3df48e3b7adc26245294b89d2a15d9881cc1e22c",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
-      "name": "pre-condense cut (hook pass 2 + QA fix pass, 2026-10-08)",
+      "name": "condensed (2026-10-13)",
       "spec": "studio/specs/05b-becker-rig-3000-paycheck.json",
-      "body_s": 22.1,
-      "card_s": 2.5,
-      "shipped": null,
-      "git": "471c793",
-      "status": "the 05 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay): the WIP cut is studio/specs-wip/05b-becker-rig-3000-paycheck.json, 13.95 s with the card per the write-up, and passes the 05 check with --spec (583 checks, 0 failed for the three). The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."
+      "body_s": 11.45,
+      "card_s": 2.517,
+      "shipped": "2026-10-13",
+      "replaces": {
+        "duration_s": 24.6,
+        "sha256": "435bd70783cf6ca134b52a51c556aa1fd0e328a865e8f60aa11931384a2cffff",
+        "note": "the round-2 cut (pre-condense) + card, retired; in git history (471c793)"
+      }
     }
   },
   "facts": {
@@ -174,7 +177,7 @@
       "frame_in_current_render_s": 0,
       "frame_index": 0,
       "frame_by_content": "Frame 1, the question, as the write-up names it: the header 'Rent $1,200 on 50/30/20? Food and every bill get this much a day:' with its dashed '$?' answer slot, the footer 'ASSUMES $3,000 a month after tax · $1,200 rent · 30-day month', the gold 'TAKE-HOME, A MONTH $3,000' slab scored at its brick seams with the figure on it, and the four empty bins RENT 40% · FOOD + BILLS 10% · WANTS 30% · SAVINGS 20%, the 10% bin visibly the smallest. It asks and does not answer, like the title and the caption. On any cut, use frame 1: on the condensed cut it also carries the complete hook caption ('Ten bricks of $300. Rent eats four.'), as the write-up's condense rule asks (frame 1 is the thumbnail), and the answer, $10 a day, is still not on it.",
-      "frame_measured": "On the pre-condense 24.6 s render the first frame (index 0, 0.00 s) is that clean frame, and the only one: from the second (index 1, 0.03 s) the first caption word ('Ten') starts to fade in (frame-to-frame mean luma change 0.0004), and the cleaver comes out after that. On the condensed WIP render the first frame already carries the whole hook caption, and the '$?' slot is still empty.",
+      "frame_measured": "On the shipped 13.967 s condensed cut, frame 0 (0.00 s) is that frame: the whole hook caption ('Ten bricks of $300. Rent eats four.') is already up and the '$?' slot is still empty; from frame 1 (0.03 s) he reaches for the cleaver (mean frame-to-frame luma change 0.38, 270×480 greyscale). On the 24.6 s pre-condense render frame 0 had no caption.",
       "crop": "3:4 = 1080×1440 from y 0 to 1440 of the 1080×1920 frame: the badge (from y 112), the header and its slot, the footer, the slab with the figure and the four bins down to the floor line (y 1302), with near-even margins (112 px above, 138 px below); it drops the empty caption band. A centred grid crop (y 240-1680) cuts the badge and the header.",
       "how_to_set": "In 'Edit cover', pick frame 1 of the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
       "re_export": "ffmpeg -ss 0 -i renders/channel/05b-becker-rig-3000-paycheck.mp4 -frames:v 1 -vf \"crop=1080:1440:0:0\" -q:v 2 publishing/05b-becker-rig-3000-paycheck-cover-3x4.jpg",
@@ -185,7 +188,7 @@
     "trial_reels": {
       "recommendation": "Post as a regular Reel, not a Trial.",
       "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show 471c793:renders/channel/05b-becker-rig-3000-paycheck.mp4 > 05b-24.6s.mp4` (sha256 435bd707…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. The condensed cut replaced the pre-condense render in renders/channel on 2026-10-13; get the pre-condense one from git with `git show 471c793:renders/channel/05b-becker-rig-3000-paycheck.mp4 > 05b-24.6s.mp4` (sha256 435bd707…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
     },
     "settings": {
       "audio": "Rename the original audio to '50/30/20 with $1,200 rent — The Back of the Envelope' if the app allows; it is the score, with no voice.",
@@ -548,7 +551,7 @@
       "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
       "The rule's definition rests on two independent summaries of the book (Wealthsimple; Citizens Bank, via search on Oct 7, 2026); the book itself was not opened (the write-up's sources). $3,000 and $1,200 are example inputs, not statistics, and the copy says so.",
       "The same-idea Shorts' claims (the rule 'breaks', is 'out of date') are their own, not verified here, and none is in the copy.",
-      "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file."
+      "The video, the cover and the video facts are the shipped condensed cut (2026-10-13); the copy is cut-independent and carried over from the pre-condense cut unchanged."
     ],
     "titles_scored": "10 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored.",
     "vidiq_credits": "85 credits for this teaser (4 keyword queries, 1 YouTube search, 1 Instagram/TikTok outlier search, 10 title scores and 1 re-score; 5 each), plus 10 shared across 05a-05c for the channel's stats and Shorts list (Instagram owner insights cost 0). The adversarial check used 40 more across 05a-05c at 5 each: 3 title scores, 3 keyword re-queries, 1 lookup of the 3 related videos and 1 list of the channel's Shorts by views; Instagram owner insights cost 0. The account's shared balance went 3,885 → 3,795 over the check, because other agents draw on it in parallel."
@@ -556,7 +559,7 @@
   "checked": {
     "date": "2026-10-13",
     "by": "adversarial check of this sheet",
-    "math": "python3 teasers/v2/checks/05-split-sheet.py: 560 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), and 583 checks, 0 failed with --spec on the condensed WIP specs, whose strings, numbers and verdicts are the same; the bricks, the bins, the $10 a day (and $9.86 in a 30.44-day month) and the pinned comment's other rents recomputed in MATH_RELATIONS; COPY_RULES keep every $10 'a day', keep the copy free of '≈' and 'about', keep $1,200 named as rent, keep the after-tax and 30-day conditions in the copy, and allow no judgment of what anyone can afford; re-run at the adversarial check with the same result (583 with --spec after the condense critic fixes)",
+    "math": "python3 teasers/v2/checks/05-split-sheet.py: 560 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), and 583 checks, 0 failed with --spec on the condensed WIP specs, whose strings, numbers and verdicts are the same; the bricks, the bins, the $10 a day (and $9.86 in a 30.44-day month) and the pinned comment's other rents recomputed in MATH_RELATIONS; COPY_RULES keep every $10 'a day', keep the copy free of '≈' and 'about', keep $1,200 named as rent, keep the after-tax and 30-day conditions in the copy, and allow no judgment of what anyone can afford; re-run at the adversarial check with the same result (583 with --spec after the condense critic fixes); re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: 583 checks, 0 failed",
     "limits": {
       "youtube_title_chars": 75,
       "youtube_description_chars": 1189,

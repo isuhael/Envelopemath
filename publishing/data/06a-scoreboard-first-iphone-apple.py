@@ -4,10 +4,10 @@
 # same format).
 #
 # Facts come only from teasers/v2/06-pov-race.md (section (b) 06a: the maths, Sources, Assumptions, caption and pinned
-# comment) and python3 teasers/v2/checks/06-pov-race.py. Research: vidIQ, pulled 2026-10-13. The render in
-# renders/channel is the pre-condense cut; a condensed cut (timing only: numbers, captions and verdict stay) may follow.
-# This sheet names no timestamp except the cover, which is picked by content (frame 1), so the copy carries over; the
-# ship step rebuilds it with --covers.
+# comment) and python3 teasers/v2/checks/06-pov-race.py. Research: vidIQ, pulled 2026-10-13. The video is the condensed
+# cut, promoted and shipped on 2026-10-13 (the pre-condense round-2 cut is in git, 471c793). This sheet names no
+# timestamp except the cover, which is picked by content, so the copy carried over unchanged; the ship rebuilt it with
+# --covers from the shipped file.
 
 TEASER = "06a Scoreboard, pov-race: \"What If You Invested $499 in Apple Instead of the First iPhone?\""
 PREPARED = "2026-10-13"
@@ -15,12 +15,14 @@ SHORT_ID = "06a"
 MD_TITLE = "06a publishing sheet: the $499 first iPhone vs Apple stock"
 MATH_RUN = "445 checks, 0 failed"      # python3 teasers/v2/checks/06-pov-race.py on studio/specs/, re-run at the adversarial check, 2026-10-13
 MATH_RUN_WIP = "454 checks, 0 failed"  # the same script with --spec studio/specs-wip/06a-scoreboard-first-iphone-apple.json (the condensed cut), 2026-10-13
+MATH_RUN_SHIP = "468 checks, 0 failed"  # python3 teasers/v2/checks/06-pov-race.py on studio/specs/ with the condensed cut promoted, at the ship 2026-10-13
 
 MD_INTRO = [
-    f"- **Video.** `renders/channel/{BASE}.mp4`: the pre-condense cut ({VIDEO_S:g} s: a {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`), "
-    "the round-2 Scoreboard cut as `renders/channel` holds it on 2026-10-13 (git 471c793). A condensed cut may follow (timing only: the numbers, captions and verdict stay). "
-    "Nothing below names a timestamp except the cover, which is picked by content (frame 1), so the copy carries over. "
-    f"The ship step rebuilds this sheet and re-exports both covers from the final file: `python3 publishing/tools/build_publishing.py {BASE} --covers`.",
+    f"- **Video.** `renders/channel/{BASE}.mp4`: the condensed cut ({VIDEO_S:g} s: a {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`), "
+    "promoted and shipped on 2026-10-13. It replaces the 29.0 s round-2 cut (the owner: \"too many still moments\"), which is in git (`471c793`). "
+    "The condense moved the clock and merged some captions; the numbers, the captions' facts and the verdict stay, so the copy carried over unchanged. "
+    "Nothing below names a timestamp except the cover, which was re-picked by content on the shipped file. "
+    f"The ship rebuilt this sheet and re-exported both covers from it (`python3 publishing/tools/build_publishing.py {BASE} --covers`); on the shipped specs the maths check runs {MATH_RUN_SHIP}.",
     "- **Numbers.** Every figure comes from `teasers/v2/06-pov-race.md` (06a) and its check, "
     f"`python3 teasers/v2/checks/06-pov-race.py`: {MATH_RUN} on `studio/specs/` (run 2026-10-13). "
     f"`python3 publishing/tools/build_publishing.py {BASE} --check` checks this sheet's limits, paste blocks and figures, recomputes every figure "
@@ -38,10 +40,11 @@ MD_INTRO = [
 
 # ---------------------------------------------------------------- the video
 FOR_VIDEO_NOTE = ("Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. "
-                  "current_* is what renders/channel holds on 2026-10-13: the pre-condense cut. The ship step rebuilds this file with --covers from the final cut.")
-CUT = {"name": "pre-condense (round-2 Scoreboard cut)", "spec": f"studio/specs/{BASE}.json", "body_s": BODY_S,
-       "card_s": CARD_S, "status": "in renders/channel on 2026-10-13 (git 471c793); a condensed cut (timing only) may follow",
-       "on_ship": f"python3 publishing/tools/build_publishing.py {BASE} --covers (re-picks the cover by content, re-exports both JPGs, refreshes for_video)"}
+                  "current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.")
+CUT = {"name": "condensed (2026-10-13)", "spec": f"studio/specs/{BASE}.json", "body_s": BODY_S,
+       "card_s": CARD_S, "shipped": "2026-10-13",
+       "replaces": {"duration_s": 29.0, "sha256": "9707256d2230e67107128c4292dc08787d0f3689dc280aa9fe38512aa9810509",
+                    "note": "the round-2 cut (pre-condense) + card, retired; in git history (471c793)"}}
 
 FACTS = {
     "source": f"teasers/v2/06-pov-race.md section (b) 06a; teasers/v2/checks/06-pov-race.py: {MATH_RUN} on studio/specs/ (2026-10-13)",
@@ -218,19 +221,21 @@ IG_FIRST_COMMENT = ("Phone: $499. Apple stock: ≈ $37,000 at the 12/31/2025 clo
 
 # ---------------------------------------------------------------- the cover frame
 # Frame 1 (t 0), picked by content: the write-up's own Instagram note says "the cover is frame 1 (header + $499 tips)".
-# On the pre-condense render frame 0 shows it with the race not yet moving.
+# On the shipped condensed cut frame 0 shows it with both counters at $499 and the race not yet left its start; from
+# frame 1 the start dot pings.
 COVER_T = 0
 COVER_FRAME = 0
 COVER_CROP = "crop=1080:1440:0:60"
-COVER_RENDER_WORD = "pre-condense"
+COVER_RENDER_WORD = "shipped"
 COVER_FRAME_BY_CONTENT = ("The clean cover, frame 1: the header 'POV: IN 2007 YOU INVESTED IN APPLE / INSTEAD OF PAYING $499 / FOR THE FIRST IPHONE', "
                           "both counters at $499 (THE IPHONE | IN APPLE STOCK), the footer '6/29/07 close → 12/31/25 · dividends reinvested', "
                           "and the empty 2007-2025 race with only the green start dot under the 2007 year clock. $499 is the only price. It asks and does "
                           "not answer, like the title and the caption. The write-up names frame 1 as the Instagram cover ('header + $499 tips'). "
                           "On any cut, use a frame where both counters still read $499 and the race has not left its start.")
-COVER_FRAME_MEASURED = ("On the pre-condense render, frame 0 (0.00 s) is that frame: the race has not moved and the phone icon has not dropped. "
-                        "It also shows the whole first caption, 'Launch day 2007: you skip the $499 iPhone and buy Apple stock.', with 'Launch' lit "
-                        "(the kit lights it word by word); the grey words still read.")
+COVER_FRAME_MEASURED = ("On the shipped 17.8 s condensed cut, frame 0 (0.00 s) is that frame: both counters read $499, the race has not left its start and the phone icon has "
+                        "not dropped; from frame 1 the start dot pings (mean frame-to-frame luma change 0.06-0.10 over the first frames, 270×480 greyscale). It also shows the "
+                        "whole first caption, 'Launch day 2007: you skip the $499 iPhone and buy Apple stock.', with 'Launch day 2007:' lit (the kit lights it word by word); "
+                        "the grey words still read. On the 29.0 s pre-condense render only 'Launch' was lit.")
 COVER_CROP_NOTE = ("3:4 = 1080×1440 from y 60 to 1500 of the 1080×1920 frame: the badge, the header, both counters, the footer, the empty race "
                    "and the first caption; it drops the empty floor. A centred grid crop (y 240-1680) cuts the badge and leaves the header on the edge.")
 COVER_HOW_TO_SET = ("In 'Edit cover', pick frame 1 of the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile "
@@ -239,14 +244,14 @@ COVER_HOW_TO_SET = ("In 'Edit cover', pick frame 1 of the video (or upload the 9
 COVER_EXTRA_BULLETS = [
     "**Not used:** the verdict hold (≈ $37,000 on the green counter, the finished race and '≈ 74× your $499. 2× every ≈ 3 yrs.'). "
     "It is the save-worthy frame, but it shows the answer, against the write-up's cover note and the caption rule.",
-    "**Final cut:** if a condensed cut ships, the ship step re-picks frame 1 by content and re-exports both JPGs from it with `--covers`; the copy does not change.",
+    "**Shipped cut (2026-10-13):** frame 1 was re-picked by content on the shipped condensed cut and both JPGs re-exported from it: the same picture as the pre-condense cover, with 'Launch day 2007:' lit in the hook caption (the old frame lit only 'Launch'). The copy did not change.",
 ]
 
 TRIAL_REELS = {
     "recommendation": "Post as a regular Reel, not a Trial.",
     "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-    "use_trial_for": "A hook test afterwards, if a condensed cut ships: the other cut as a Trial with MANUAL graduation 48-72 h later. The pre-condense render in renders/channel today "
-                     f"(sha256 {VIDEO_SHA[:8]}…) stays in git: `git show 471c793:renders/channel/{BASE}.mp4 > 06a-pre-condense.mp4`. Compare skip rate (October Reels ran 27.0-65.1%; "
+    "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. The pre-condense render "
+                     f"(sha256 9707256d…) is in git: `git show 471c793:renders/channel/{BASE}.mp4 > 06a-pre-condense.mp4`. Compare skip rate (October Reels ran 27.0-65.1%; "
                      "06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app.",
 }
 IG_AUDIO = "Rename the original audio to 'First iPhone vs Apple stock — The Back of the Envelope' if the app allows; it is the score, with no voice."
@@ -420,7 +425,8 @@ CHECKED_BY = "adversarial check of this sheet"
 CHECKED_MATH = (f"python3 teasers/v2/checks/06-pov-race.py: {MATH_RUN} on studio/specs/ (2026-10-13, re-run at the adversarial check; the first pass ran it at 442); "
                 f"{MATH_RUN_WIP} with --spec on the condensed cut in studio/specs-wip/, whose header, footer, captions, verdict and data points equal the shipped cut's; "
                 "every public figure traced to the 06a maths table and recomputed in this data file from the write-up's closes, "
-                "each year's figure pinned beside its year and each direction word ('below', 'over', 'passes', 'knocks off') beside its figure, and every share price kept with 'adjusted' (COPY_RULES)")
+                "each year's figure pinned beside its year and each direction word ('below', 'over', 'passes', 'knocks off') beside its figure, and every share price kept with 'adjusted' (COPY_RULES)"
+                f"; re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: {MATH_RUN_SHIP}")
 VIDIQ_REQUERIED = ("pulled 2026-10-13: apple stock 18,675 / 42.2 (−21.5%); aapl stock 12,269 (+40.2%); what if you invested 9,269 (+79.0%); first iphone 9,281; "
                    "title scores 97 (pick), 96 (write-up title); channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,518 views in 30 days; "
                    "06c (fbpdKf4Wy8c) 760 views, 06b (krfZEHhb0xU) 75 views, published 16:14 UTC (12:14 ET). Re-queried at the end of the pass: the pick's title score 97. Matches. "
@@ -465,8 +471,9 @@ CHECK_LOG = [
     "  - The description and the pinned comment name the raw $122.04 beside the adjusted $3.65. It is in the write-up's sources, and same-idea descriptions quote at least six launch-day prices.",
     "  - The caption's first line carries the write-up's numberless verdict ('The phone got old. The shares didn't.'): it hints at the direction, not the size, as 06b's does.",
     "  - The audio name carries 'iPhone' and 'Apple', as 06c's carries 'Starbucks': it names the topic, and the copy says 'Not affiliated with or endorsed by Apple.'",
-    "- **On ship.** If a condensed cut replaces this render, rebuild with `--covers`: frame 1 is re-picked by content, both JPGs re-exported, and the Video bullet, the cut and the sha256 follow the final file. "
-    "Re-read the long alt text against it: it names only beats the write-up keeps (the 2008 dip, $10,000 in 2020, the 2022 drop, the finish, the working and the payoff).",
+    f"- **Done on ship (2026-10-13).** Rebuilt with `--covers` from the shipped condensed cut ({VIDEO_S:g} s). Frame 1 was re-picked by content and is still frame 0, now with 'Launch day 2007:' lit in the hook caption. "
+    f"The Video bullet, the cut and the check counts follow the shipped file ({MATH_RUN_SHIP} on `studio/specs/`), and the long alt text was re-read against the condensed beat sheet: "
+    "every beat it names is in the shipped cut, so no copy changed.",
 ]
 
 # ---------------------------------------------------------------- the numbers check

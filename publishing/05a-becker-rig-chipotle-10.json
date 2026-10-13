@@ -4,17 +4,20 @@
   "prepared": "2026-10-13",
   "for_video": {
     "current_render": "renders/channel/05a-becker-rig-chipotle-10.mp4",
-    "current_duration_s": 27.2,
-    "current_sha256": "693b20b6a45abd3adfdd869b41f3ba7c86ce9ced4dcaf690462bbd2060f097e1",
-    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the pre-condense cut. The ship step re-runs the build with --covers on the condensed file.",
+    "current_duration_s": 15.233,
+    "current_sha256": "aff97d76bf247e14a209daae800e9e8f8cbeea418dd9d6a1d4c619ee8453e8f5",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
-      "name": "pre-condense cut (Becker Rig port, QA fix pass 2026-10-08)",
+      "name": "condensed (2026-10-13)",
       "spec": "studio/specs/05a-becker-rig-chipotle-10.json",
-      "body_s": 24.7,
-      "card_s": 2.5,
-      "shipped": null,
-      "git": "471c793",
-      "status": "the 05 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay): the WIP cut is studio/specs-wip/05a-becker-rig-chipotle-10.json, 15.2 s with the card per the write-up, and passes the 05 check with --spec (583 checks, 0 failed for the three). The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."
+      "body_s": 12.72,
+      "card_s": 2.513,
+      "shipped": "2026-10-13",
+      "replaces": {
+        "duration_s": 27.2,
+        "sha256": "693b20b6a45abd3adfdd869b41f3ba7c86ce9ced4dcaf690462bbd2060f097e1",
+        "note": "the round-2 cut (pre-condense) + card, retired; in git history (471c793)"
+      }
     }
   },
   "facts": {
@@ -169,21 +172,21 @@
         "3x4": "publishing/05a-becker-rig-chipotle-10-cover-3x4.jpg",
         "9x16": "publishing/05a-becker-rig-chipotle-10-cover-9x16.jpg"
       },
-      "frame_in_current_render_s": 23.0,
-      "frame_index": 690,
+      "frame_in_current_render_s": 11.9,
+      "frame_index": 357,
       "frame_by_content": "The finished sheet: the header reading '…at Chipotle: ≈ $1.29 profit' (the answer stamped over the struck guess), the gold 'PROFIT ≈ $1.29' slab, the check '$10 − $8.71 of costs = $1.29', all 7 rows with their shares and dollars over the lanes' bar chart of the $10, the figure on the bracket, and the verdict 'Chipotle keeps ≈ $1.29, not $7.04.' The write-up names it as the Instagram cover, a save-able cheat sheet like Yannick's finished sheet. On any cut, use a frame after the last stamp settles and before the end card.",
-      "frame_measured": "On the pre-condense 27.2 s render the sheet settles by frame 654 (21.80 s) and holds still (frame-to-frame mean luma change 0.0000) until the end card cuts in at frame 742 (24.73 s). Frame 690 (23.00 s), the middle of the hold, is used.",
+      "frame_measured": "On the shipped 15.233 s condensed cut the sheet settles by 11.87 s (frame 356) and holds near-still (frame-to-frame mean luma change ≤ 0.004, 270×480 greyscale) until the end card cuts in at 12.72 s. Frame 357 (11.90 s) is used. On the 27.2 s pre-condense render it was frame 690 (23.00 s).",
       "crop": "3:4 = 1080×1440 from y 78 to 1518 of the 1080×1920 frame: the badge, the header with its answer, the footer, the PROFIT slab, the check, the 7 rows and the verdict, with even margins (34 px above the badge and below the verdict); it drops the empty floor. A centred grid crop (y 240-1680) cuts the badge and the header.",
       "how_to_set": "In 'Edit cover', pick the finished-sheet frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' up so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
-      "re_export": "ffmpeg -ss 23.0 -i renders/channel/05a-becker-rig-chipotle-10.mp4 -frames:v 1 -vf \"crop=1080:1440:0:78\" -q:v 2 publishing/05a-becker-rig-chipotle-10-cover-3x4.jpg",
-      "re_export_9x16": "ffmpeg -ss 23.0 -i renders/channel/05a-becker-rig-chipotle-10.mp4 -frames:v 1 -q:v 2 publishing/05a-becker-rig-chipotle-10-cover-9x16.jpg"
+      "re_export": "ffmpeg -ss 11.9 -i renders/channel/05a-becker-rig-chipotle-10.mp4 -frames:v 1 -vf \"crop=1080:1440:0:78\" -q:v 2 publishing/05a-becker-rig-chipotle-10-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 11.9 -i renders/channel/05a-becker-rig-chipotle-10.mp4 -frames:v 1 -q:v 2 publishing/05a-becker-rig-chipotle-10-cover-9x16.jpg"
     },
     "first_comment": "Of your $10: food about $2.96, crew about $2.51, rent about $0.52, ads, delivery & card fees about $1.47, HQ about $0.91, tax minus interest about $0.34, profit about $1.29. A 2025 company-wide average, not your order. Which chain's $10 next?\n\nThe working, FY2025 ($ thousands): revenue 11,925,601. Food, beverage & packaging 3,527,043 (29.58%) · labor 2,991,680 (25.09%) · occupancy 624,898 (5.24%) · other operating costs 1,755,824 (14.72%) · G&A + depreciation + pre-opening + impairment 1,090,358 (9.14%) · income tax 473,758 minus interest and other income 73,721 = 400,037 (3.35%) · net income 1,535,761 (12.88%).",
     "first_comment_action": "Post it right after publishing and pin it.",
     "trial_reels": {
       "recommendation": "Post as a regular Reel, not a Trial.",
       "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show 471c793:renders/channel/05a-becker-rig-chipotle-10.mp4 > 05a-27.2s.mp4` (sha256 693b20b6…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. The condensed cut replaced the pre-condense render in renders/channel on 2026-10-13; get the pre-condense one from git with `git show 471c793:renders/channel/05a-becker-rig-chipotle-10.mp4 > 05a-27.2s.mp4` (sha256 693b20b6…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
     },
     "settings": {
       "audio": "Rename the original audio to 'Where your $10 goes at Chipotle — The Back of the Envelope' if the app allows; it is the score, with no voice.",
@@ -537,7 +540,7 @@
       "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
       "The write-up's sources rest on search-result text: its egress proxy blocked the primary pages. Chipotle's labor, occupancy and other operating costs ($ thousands) rest on its round-1 read of the release; the 10-K's percentages (25.1 / 5.2 / 14.7) agree, but within that 0.1-pt rounding each cent could move by ±1¢. Before posting, open the FY2025 10-K's income statement and re-run the check (the write-up's open item 1).",
       "Third-party claims in the research tables (a Big Mac meal's 'nearly $4.40', a pizza's '$7 contribution margin') are those videos' own descriptions, not verified here, and none is in the copy.",
-      "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file."
+      "The video, the cover and the video facts are the shipped condensed cut (2026-10-13); the copy is cut-independent and carried over from the pre-condense cut unchanged."
     ],
     "adjacent_youtube_outliers": [
       {
@@ -563,7 +566,7 @@
   "checked": {
     "date": "2026-10-13",
     "by": "adversarial check of this sheet",
-    "math": "python3 teasers/v2/checks/05-split-sheet.py: 560 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), and 583 checks, 0 failed with --spec on the condensed WIP specs, whose strings, numbers and verdicts are the same; the 7 lines recomputed from the FY2025 dollar lines in MATH_RELATIONS (shares, cents, the $10.00 total with no plug, the $8.71 check, the $7.04 guess, crew ≈ 1.95× profit); COPY_RULES keep every rounded amount 'about' or '≈' (the exact check and guess workings excepted), keep $7 a question or a 'not', keep the tax line net of interest wherever it sits beside the $1.29 or the $0.34, keep the exact table in the Instagram first comment, and keep the average condition and both disclaimers in the copy; re-run at the adversarial check with the same result (583 with --spec after the condense critic fixes)",
+    "math": "python3 teasers/v2/checks/05-split-sheet.py: 560 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), and 583 checks, 0 failed with --spec on the condensed WIP specs, whose strings, numbers and verdicts are the same; the 7 lines recomputed from the FY2025 dollar lines in MATH_RELATIONS (shares, cents, the $10.00 total with no plug, the $8.71 check, the $7.04 guess, crew ≈ 1.95× profit); COPY_RULES keep every rounded amount 'about' or '≈' (the exact check and guess workings excepted), keep $7 a question or a 'not', keep the tax line net of interest wherever it sits beside the $1.29 or the $0.34, keep the exact table in the Instagram first comment, and keep the average condition and both disclaimers in the copy; re-run at the adversarial check with the same result (583 with --spec after the condense critic fixes); re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: 583 checks, 0 failed",
     "limits": {
       "youtube_title_chars": 64,
       "youtube_description_chars": 1473,

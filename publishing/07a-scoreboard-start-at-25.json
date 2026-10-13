@@ -5,7 +5,7 @@
   "for_video": {
     "current_render": "renders/channel/07a-scoreboard-start-at-25.mp4",
     "current_duration_s": 25.3,
-    "current_sha256": "d922b5699e7ae6541504e7a9c69d9836e682e4738ab1602ff096f29edd811300",
+    "current_sha256": "30f0cd64c1daf1773be2b74095135b24a966224f5d22f2372fe9cc44d568119e",
     "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds on 2026-10-13: the pre-condense cut. The ship step rebuilds this file with --covers from the condensed cut.",
     "cut": {
       "name": "pre-condense (Scoreboard port, fix pass 2026-10-08)",

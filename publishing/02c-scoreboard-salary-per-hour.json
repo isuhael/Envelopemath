@@ -4,16 +4,20 @@
   "prepared": "2026-10-13",
   "for_video": {
     "current_render": "renders/channel/02c-scoreboard-salary-per-hour.mp4",
-    "current_duration_s": 15.5,
-    "current_sha256": "a141741fd493d1f0bec240ffc44ea07ed71ad9265a284007e977aad5f4967046",
-    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds on 2026-10-13: the pre-condense cut. The ship step rebuilds this file with --covers from the condensed cut.",
+    "current_duration_s": 10.1,
+    "current_sha256": "11fb6900088af045069285fda0caefd70f0482d38085013844d5c353b5ca58f7",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
-      "name": "pre-condense (round-2 Scoreboard port, 2026-10-08)",
+      "name": "condensed (2026-10-13)",
       "spec": "studio/specs/02c-scoreboard-salary-per-hour.json",
-      "body_s": 13.0,
+      "body_s": 7.6,
       "card_s": 2.5,
-      "status": "in renders/channel on 2026-10-13; a condensed cut (timing only) is in progress",
-      "on_ship": "python3 publishing/tools/build_publishing.py 02c-scoreboard-salary-per-hour --covers (re-picks the cover by content, re-exports both JPGs, refreshes for_video)"
+      "shipped": "2026-10-13",
+      "replaces": {
+        "duration_s": 15.5,
+        "sha256": "a141741fd493d1f0bec240ffc44ea07ed71ad9265a284007e977aad5f4967046",
+        "note": "the round-2 cut (pre-condense) + card, retired; in git history (471c793)"
+      }
     }
   },
   "facts": {
@@ -153,14 +157,14 @@
         "3x4": "publishing/02c-scoreboard-salary-per-hour-cover-3x4.jpg",
         "9x16": "publishing/02c-scoreboard-salary-per-hour-cover-9x16.jpg"
       },
-      "frame_in_current_render_s": 12.5,
-      "frame_index": 375,
+      "frame_in_current_render_s": 7.1,
+      "frame_index": 213,
       "frame_by_content": "The finished board with the $200,000 row lit, which the write-up names as the cover ('the finished board with the $200,000 row lit'): the header 'WHAT TIME YOUR 9-TO-5 / STARTS PAYING YOU, BY SALARY', the footer, all 12 salary rows from $200,000 to $30,000 at full brightness with their minutes and their clock, the pointer and glow on '$200,000 · ≈ 123 MIN · ≈ 11:03 AM', and the verdict '$200,000: YOU WORK FOR TAX / TILL ≈ 11:03, EVERY WORKDAY.' in the strip. Use the settled frame after the other rows come back to full brightness, before the end card, so every viewer can read their row.",
-      "frame_measured": "On the pre-condense 15.5 s render the verdict slams in at 10.0 s with the $200,000 row lit and the others dimmed; from 11.50 s to 12.17 s the other rows come back to full brightness; from 12.20 s (frame 366) the mean frame-to-frame luma change (270×480 greyscale) stays at or under 0.006 until the end card cuts in at 13.03 s. The cover is taken at 12.5 s (frame 375), inside that hold.",
+      "frame_measured": "On the shipped 10.1 s condensed cut the verdict slams in at 6.05 s with the $200,000 row lit and the others dimmed; the other rows come back to full brightness by about 6.9 s; from 6.93 s (frame 208) the mean frame-to-frame luma change (270×480 greyscale) stays at or under 0.016 until the end card cuts in at 7.60 s. The cover is taken at 7.1 s (frame 213), inside that hold. On the 15.5 s pre-condense render it was 12.5 s (frame 375).",
       "crop": "3:4 = 1080×1440 from y 72 to 1512 of the 1080×1920 frame. The content runs from y 141 (the badge) to y 1444 (the verdict's last line), so the crop centres it: badge, header, footer, the whole board and the verdict; it drops the empty black floor. A centred grid crop (y 240-1680) loses the badge and leaves the header on the top edge.",
       "how_to_set": "In 'Edit cover', pick the finished-board frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header and the verdict.",
-      "re_export": "ffmpeg -ss 12.5 -i renders/channel/02c-scoreboard-salary-per-hour.mp4 -frames:v 1 -vf \"crop=1080:1440:0:72\" -q:v 2 publishing/02c-scoreboard-salary-per-hour-cover-3x4.jpg",
-      "re_export_9x16": "ffmpeg -ss 12.5 -i renders/channel/02c-scoreboard-salary-per-hour.mp4 -frames:v 1 -q:v 2 publishing/02c-scoreboard-salary-per-hour-cover-9x16.jpg"
+      "re_export": "ffmpeg -ss 7.1 -i renders/channel/02c-scoreboard-salary-per-hour.mp4 -frames:v 1 -vf \"crop=1080:1440:0:72\" -q:v 2 publishing/02c-scoreboard-salary-per-hour-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 7.1 -i renders/channel/02c-scoreboard-salary-per-hour.mp4 -frames:v 1 -q:v 2 publishing/02c-scoreboard-salary-per-hour-cover-9x16.jpg"
     },
     "first_comment": "At $65,000, about the US median full-time pay, you work for tax till ≈ 10:18 am. At $200,000, till ≈ 11:03. What time does your day start paying you?",
     "first_comment_action": "Post it right after publishing and pin it.",
@@ -512,7 +516,7 @@
       "vidIQ's YouTube authorization is a different channel (UCRC5v_El2fibbkqsZs6uFjA), so @envelopemath's YouTube Analytics (audience hours, geography) were not readable. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
       "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and on the outliers' own tags.",
       "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
-      "The render in renders/channel is the pre-condense cut. The cover's time and frame are measured on it; the copy names no other timestamp, and the ship step re-picks the cover on the final file.",
+      "The render in renders/channel is the shipped condensed cut (2026-10-13). The cover's time and frame are measured on it; the copy names no other timestamp and carried over from the pre-condense cut unchanged.",
       "irs.gov and bls.gov could not be opened in the write-up's research (the proxy blocks them); the brackets, the wage base and the median rest on the write-up's named sources.",
       "The figures are for a single filer in 2026; married filers, other years and state tax give other times, and the copy says so only for state tax, 401(k) and health premiums."
     ],
@@ -522,7 +526,7 @@
   "checked": {
     "date": "2026-10-13",
     "by": "adversarial check of this sheet",
-    "math": "python3 teasers/v2/checks/02-find-your-row.py: PASSED: all 183 checks on studio/specs/ at the adversarial check (2026-10-13; all 177 checks at the first build, before the condense pass made the check cut-aware), and all 216 checks with --spec on the condensed cuts in studio/specs-wip/; run by the builder through publishing/data/checks/02-find-your-row.py; every public figure traced to the 02c maths table and recomputed in MATH_RELATIONS (2026 federal tax + FICA), each clock time pinned beside its salary (COPY_RULES)",
+    "math": "python3 teasers/v2/checks/02-find-your-row.py: PASSED: all 183 checks on studio/specs/ at the adversarial check (2026-10-13; all 177 checks at the first build, before the condense pass made the check cut-aware), and all 216 checks with --spec on the condensed cuts in studio/specs-wip/; run by the builder through publishing/data/checks/02-find-your-row.py; every public figure traced to the 02c maths table and recomputed in MATH_RELATIONS (2026 federal tax + FICA), each clock time pinned beside its salary (COPY_RULES); re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: PASSED: all 225 checks",
     "limits": {
       "youtube_title_chars": 80,
       "youtube_description_chars": 1643,

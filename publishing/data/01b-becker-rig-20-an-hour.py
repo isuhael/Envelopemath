@@ -4,9 +4,9 @@
 # Becker Rig sheet). The id keeps its round-2 slug (20-an-hour); since hook pass 2 the topic is the Social Security wage cap.
 #
 # Facts come only from teasers/v2/01-dead-simple-list.md (section (b) 01b) and python3 teasers/v2/checks/01-dead-simple-list.py.
-# Research: vidIQ, pulled 2026-10-13. The video is the pre-condense round-2 cut: the 01 condense is in progress in parallel
-# (timing only; numbers, caption facts and the verdict stay). This sheet names no timestamp except the cover, which is
-# picked by content (frame 1), so the ship step only re-runs the build with --covers on the final file.
+# Research: vidIQ, pulled 2026-10-13. The video is the condensed cut, promoted and shipped on 2026-10-13 (the
+# pre-condense round-2 cut is in git, 471c793). This sheet names no timestamp except the cover, which is picked by
+# content, so the copy carried over unchanged; the ship rebuilt it with --covers from the shipped file.
 
 TEASER = "01b Becker Rig, dead-simple-list: \"You pay 6.2% Social Security. What does a $1M salary pay?\""
 PREPARED = "2026-10-13"
@@ -14,13 +14,15 @@ SHORT_ID = "01b"
 MD_TITLE = "01b publishing sheet: you pay 6.2% Social Security, what does a $1M salary pay?"
 MATH_RUN = "400 checks, 0 failed"      # python3 teasers/v2/checks/01-dead-simple-list.py on studio/specs/, re-run at the adversarial check 2026-10-13
 MATH_RUN_WIP = "392 checks, 0 failed"  # the same script with --spec on the three studio/specs-wip/ condensed specs, 2026-10-13
+MATH_RUN_SHIP = "396 checks, 0 failed"  # python3 teasers/v2/checks/01-dead-simple-list.py on studio/specs/ with the condensed cuts promoted, at the ship 2026-10-13
 RENDER_COMMIT = "471c793"              # the commit that holds this pre-condense render
 
 MD_INTRO = [
-    f"- **Video.** `renders/channel/{BASE}.mp4`: the pre-condense round-2 cut ({VIDEO_S:g} s: a {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`). "
-    "The 01 condense is in progress in parallel (timing only: the numbers, the captions' facts and the verdict stay). "
-    "Nothing below names a timestamp except the cover, which is picked by content (frame 1), so the copy carries over to the condensed cut unchanged. "
-    f"The ship step rebuilds this sheet and re-exports both covers from the final file: `python3 publishing/tools/build_publishing.py {BASE} --covers`. "
+    f"- **Video.** `renders/channel/{BASE}.mp4`: the condensed cut ({VIDEO_S:g} s: a {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`), "
+    "promoted and shipped on 2026-10-13. It replaces the 26.5 s round-2 cut (the owner: \"too many still moments\"), which is in git (`471c793`). "
+    "The condense moved the clock and merged some captions; the numbers, the captions' facts and the verdict stay, so the copy carried over unchanged. "
+    "Nothing below names a timestamp except the cover, which was re-picked by content on the shipped file. "
+    f"The ship rebuilt this sheet and re-exported both covers from it (`python3 publishing/tools/build_publishing.py {BASE} --covers`); on the shipped specs the maths check runs {MATH_RUN_SHIP}. "
     "The id keeps its round-2 slug (`20-an-hour`); viewers never see it, and since the write-up's hook pass 2 the topic is the Social Security wage cap.",
     "- **Numbers.** Every figure comes from `teasers/v2/01-dead-simple-list.md` (01b) and its check, "
     f"`python3 teasers/v2/checks/01-dead-simple-list.py`: {MATH_RUN} on `studio/specs/` (run 2026-10-13). "
@@ -36,11 +38,11 @@ MD_INTRO = [
 
 # ---------------------------------------------------------------- the video
 FOR_VIDEO_NOTE = ("Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. "
-                  "current_* is what renders/channel holds today: the pre-condense round-2 cut. The ship step re-runs the build with --covers on the condensed file.")
-CUT = {"name": "round-2 cut (pre-condense)", "spec": f"studio/specs/{BASE}.json", "body_s": BODY_S,
-       "card_s": CARD_S, "shipped": None, "git": RENDER_COMMIT,
-       "status": "the 01 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay). "
-                 "The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."}
+                  "current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.")
+CUT = {"name": "condensed (2026-10-13)", "spec": f"studio/specs/{BASE}.json", "body_s": BODY_S,
+       "card_s": CARD_S, "shipped": "2026-10-13",
+       "replaces": {"duration_s": 26.5, "sha256": "869e23a73d7e07ae360671291c0ef2e9d6060fd0b6cc1e5d90b8f86ea8198533",
+                    "note": "the round-2 cut (pre-condense) + card, retired; in git history (471c793)"}}
 
 FACTS = {
     "source": f"teasers/v2/01-dead-simple-list.md section (b) 01b; teasers/v2/checks/01-dead-simple-list.py: {MATH_RUN} on studio/specs/ (2026-10-13)",
@@ -201,21 +203,21 @@ IG_FIRST_COMMENT = ("You pay 6.2% on every dollar. A $1M salary pays ≈ 1.1%: t
 
 # ---------------------------------------------------------------- the cover frame
 # Frame 1 (t 0), picked by content: the write-up's Instagram note says "the cover is frame 1, with 'A $1M SALARY PAYS…?'
-# and the 3 empty sockets showing". On this render frame 0 is the only frame without a caption: from frame 1 the first
-# caption word fades in, and from frame 4 the figure starts to flip the plate. The condensed WIP spec starts its hook
-# caption before frame 1 (it holds no result), so on that cut frame 0 carries the caption and is still the cover.
+# and the 3 empty sockets showing". On the shipped condensed cut frame 0 is the only still frame: the hook caption is
+# already complete on it (it holds no result), and from frame 1 the figure dips to flip the plate.
 COVER_T = 0
 COVER_FRAME = 0
 COVER_CROP = "crop=1080:1440:0:0"
-COVER_RENDER_WORD = "pre-condense"
+COVER_RENDER_WORD = "shipped"
 COVER_FRAME_BY_CONTENT = ("The clean cover, frame 1: the header '3 DEAD SIMPLE NUMBERS / YOU PAY 6.2% TO SOCIAL SECURITY. / A $1M SALARY PAYS…?' ('6.2%' in red), "
                           "the footer 'ASSUMES 40 hrs × 52 wks · 2026 rates / employee share, no Medicare', the input line 'Your pay $20/hr 40 hrs a week', "
                           "3 numbered ledges labelled 'Yours, a year / A $1M salary pays / Their rate' (the last two with empty sockets), ① active with its '$20' block, "
                           "and the green stick figure holding the '× 2,080 × 6.2%' plate. No result: it asks and does not answer, like the title and the caption. "
                           "The write-up names frame 1 as the Instagram cover. On any cut, use the opening frame, before the figure flips the plate. "
-                          "A cut whose hook caption is already up on its first frame (the condensed WIP spec's is) still gives a clean cover: 'At $20 an hour, you pay about' holds no result.")
-COVER_FRAME_MEASURED = ("On the pre-condense 26.5 s render, frame 0 is that frame and the only one without a caption: from frame 1 the first caption word ('At') fades in, "
-                        "and from frame 4 he starts to flip the plate.")
+                          "A cut whose hook caption is already up on its first frame (the shipped condensed cut's is) still gives a clean cover: 'At $20 an hour, you pay about' holds no result.")
+COVER_FRAME_MEASURED = ("On the shipped 14.5 s condensed cut, frame 0 (0.00 s) is that frame and the only still one: the complete hook caption 'At $20 an hour, you pay about' "
+                        "is already up (it holds no result), and from frame 1 (0.03 s) the figure dips to flip the plate (mean frame-to-frame luma change 1.57, 270×480 "
+                        "greyscale). On the 26.5 s pre-condense render frame 0 had no caption.")
 COVER_CROP_NOTE = ("3:4 = 1080×1440, the top 1440 rows (y 0 to 1440) of the 1080×1920 frame: the badge, the header, the footer, the input line, the 3 ledges, the figure and the floor line, with even margins above the badge and below the floor; "
                    "it drops the empty floor below. A crop from y 60 (as on 01a) leaves 200 px of empty floor. A centred grid crop (y 240-1680) cuts the badge and leaves the header on the edge.")
 COVER_HOW_TO_SET = ("In 'Edit cover', pick frame 1 of the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile "
@@ -224,13 +226,13 @@ COVER_HOW_TO_SET = ("In 'Edit cover', pick frame 1 of the video (or upload the 9
 COVER_EXTRA_BULLETS = [
     "**Not used:** the verdict hold (the finished sheet with 'You pay 6.2%. A $1M salary pays ≈ 1.1%.'). It is the save-worthy frame, but it shows the answer, "
     "against the write-up's cover note and the title's no-result rule.",
-    "**When the condensed cut ships:** re-pick frame 1 by content on the shipped file (the opening frame, before the figure flips the plate; its hook caption may already be up, which holds no result) and re-export both JPGs with `--covers`.",
+    "**Shipped cut (2026-10-13):** frame 1 was re-picked by content on the shipped file and both JPGs re-exported from it: the same picture as the pre-condense cut's frame 1, plus the complete hook caption, which holds no result.",
 ]
 
 TRIAL_REELS = {
     "recommendation": "Post as a regular Reel, not a Trial.",
     "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-    "use_trial_for": f"A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show {RENDER_COMMIT}:renders/channel/{BASE}.mp4 > 01b-26.5s.mp4` (sha256 869e23a7…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app.",
+    "use_trial_for": f"A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. The condensed cut replaced the pre-condense render in renders/channel on 2026-10-13; get the pre-condense one from git with `git show {RENDER_COMMIT}:renders/channel/{BASE}.mp4 > 01b-26.5s.mp4` (sha256 869e23a7…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app.",
 }
 IG_AUDIO = "Rename the original audio to 'Social Security vs a $1M salary — The Back of the Envelope' if the app allows; it is the score, with no voice."
 IG_POSTING_WINDOW = {
@@ -363,7 +365,7 @@ LIMITS = [
     "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and on the write-up's and the outliers' own tags.",
     "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
     "The 2026 wage base ($184,500) is the write-up's figure (SSA and Kiplinger). SSA's 2027 figure was not looked up here; when it is published, the copy stays true because it names 2026 wherever it names $184,500.",
-    "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file.",
+    "The video, the cover and the video facts are the shipped condensed cut (2026-10-13); the copy is cut-independent and carried over from the pre-condense cut unchanged.",
 ]
 RESEARCH_EXTRA = {
     "titles_scored": "10 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored.",
@@ -376,7 +378,8 @@ CHECKED_BY = "adversarial check of this sheet"
 CHECKED_MATH = (f"python3 teasers/v2/checks/01-dead-simple-list.py: {MATH_RUN} on studio/specs/ (the pre-condense specs; 397 at the first build, before the condense's "
                 f"check-script update), re-run at the adversarial check 2026-10-13; with --spec on the three studio/specs-wip/ condensed specs {MATH_RUN_WIP}, so the copy's figures hold on both cuts; "
                 "every public figure traced to the 01b maths table and recomputed in MATH_RELATIONS from the 2026 rate and wage base; COPY_RULES keep $184,500 beside 2026, "
-                "≈ $2,579 and ≈ 1.1% 'about', and 'employee share' and the Medicare exclusion in the copy")
+                "≈ $2,579 and ≈ 1.1% 'about', and 'employee share' and the Medicare exclusion in the copy"
+                f"; re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: {MATH_RUN_SHIP}")
 VIDIQ_REQUERIED = ("pulled 2026-10-13: social security 318,231 (+19.8%); social security taxes 7,310; social security tax 5,251 (-46.2%); the social security cap 3,857; "
                    "title scores 92 (pick), 81 (write-up title), 83 (hashtag form); channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,518 views in 30 days. "
                    "Re-queried the same day after the build: the pick's title score 92 and 'social security taxes' 7,310 / 50.2. "
@@ -405,14 +408,16 @@ CHECK_LOG = [
     "  - The long alt text names only beats both cuts keep (the struck $62,000, the crushing $184,500 block, the shocked jump), and the copy names no timestamp.",
     "  - Brands: SSA is a government agency and Kiplinger is named only as a source, as 06b and 06c name their sources (Macrotrends, CNBC, FinanceBuzz) with no affiliation line; no company is the copy's subject.",
     "  - 'Not financial advice.' is in the description and the caption. No side on the cap: the pinned comment gives both sides in numbers, as the write-up asks.",
-    "  - The pre-condense render in git (`471c793`) has the same sha256 as `renders/channel` today, so the Trial Reels `git show` command fetches this file.",
+    "  - The pre-condense render in git (`471c793`) had the same sha256 as `renders/channel` before the ship, so the Trial Reels `git show` command fetches this file.",
     "- **Kept on purpose.**",
     "  - The cover is frame 1 (no result), as the write-up asks.",
     "  - 'Million-dollar salary', not 'millionaire': the same score, and accurate (the maths is about a salary).",
     "  - 'Cap', 'wage base' and $184,500 stay out of the title and the caption's first 125 characters: they name what the second ledge pays off.",
     "  - The write-up's caption opens with the cap ('6.2% of every dollar you earn, up to $184,500'); the house rule moves it below 'more'.",
     "  - The short alt text keeps the verdict's 'you pay 6.2%' framing: it is the video's own verdict, and the year stays with it.",
-    "- **Still to do.** The ship rebuild (`--covers`) on the condensed file.",
+    f"- **Done on ship (2026-10-13).** Rebuilt with `--covers` from the shipped condensed cut ({VIDEO_S:g} s). Frame 1 was re-picked by content and is still frame 0, now with the complete hook caption on it. "
+    f"The Video bullet, the cut and the check counts follow the shipped file ({MATH_RUN_SHIP} on `studio/specs/`), and the long alt text was re-read against the condensed beat sheet: "
+    "every beat it names is in the shipped cut, so no copy changed.",
 ]
 
 # ---------------------------------------------------------------- the numbers check

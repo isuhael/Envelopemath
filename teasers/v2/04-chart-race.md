@@ -72,7 +72,7 @@
 - **Look:** Scoreboard (black bars, stage `#0E1116`, money green `#2BFF88` for the S&P 500, second-contender yellow `#FFD23F` for gold, Anton header, footer working line).
 - **Platform title:** "What If You Invested $10,000 in the S&P 500 and GOLD in 2000?" (A/B: "$10,000 in 2000: Stocks or Gold?")
 - **On-screen hook (header, 12 words):** `POV: In 2000 you put **$10,000** in` / `the S&P 500 VS gold` (kept: it is ChartOrbit's 345x grammar).
-- **Condensed cut (2026-10-13):** this section describes the condensed cut in [`studio/specs/04a-scoreboard-sp500-vs-gold.json`](../../studio/specs/04a-scoreboard-sp500-vs-gold.json) (promoted from `studio/specs-wip/` on 2026-10-13; 17.4 s body + the 2.5 s end card = 19.9 s; the round-2 cut was 45.5 + 2.5 = 48 s; revised by the fixer pass, see the Review log). It replaced the round-2 cut in `studio/specs/` (git history: `4fb0b00^` and earlier; `renders/channel/` keeps the round-2 render until the ship step); the round-2 cut's timings are in the Review log ("Condensed cut (2026-10-13)").
+- **Condensed cut (2026-10-13):** this section describes the condensed cut in [`studio/specs/04a-scoreboard-sp500-vs-gold.json`](../../studio/specs/04a-scoreboard-sp500-vs-gold.json) (promoted from `studio/specs-wip/` on 2026-10-13; 17.4 s body + the 2.5 s end card = 19.9 s; the round-2 cut was 45.5 + 2.5 = 48 s; revised by the fixer pass, see the Review log). It replaced the round-2 cut in `studio/specs/` (git history: `4fb0b00^` and earlier; `renders/channel/` shipped the round-2 render until 2026-10-13, and it is in git at 471c793); the round-2 cut's timings are in the Review log ("Condensed cut (2026-10-13)").
 - **First caption (complete on frame 1):** "Stocks should crush gold." There is no narration: the captions are on-screen text, paced for reading.
 - **Hook rules it satisfies:**
   - **R1:** "$10,000" in the header and the dashed $10,000 stake line at 0.0 s, with both tip counters already under it ($9,535 / $9,724).
@@ -234,7 +234,7 @@
 - **Look:** Becker rig, light stage. Two faceless stick figures, each climbing its own line: the hero colour on the S&P 500, neutral grey on the savings line (he walks 170 px behind his tip, in front of the green gap between the two lines, so the two never stack). Maths is in neutral ink; each result is a change in the world. After the race, the payoff card (the lens) drops in over the sky and draws the two gains the hook compares (≈ +$151 vs under +$30) to scale, since the final axis cannot show them; it is the biggest thing on screen.
 - **Platform title:** "Can 16 Years in a Savings Account Beat 1 Year in the S&P 500?" (A/B: "16 Years of Savings Interest vs 1 Year of the S&P 500")
 - **On-screen hook (header, 13 words):** `Your **$1,000**: 16 years of savings` / `VS 1 year of the S&P 500`
-- **Condensed cut (2026-10-13):** this section describes the condensed cut in [`studio/specs/04b-becker-rig-savings-vs-sp500.json`](../../studio/specs/04b-becker-rig-savings-vs-sp500.json) (promoted from `studio/specs-wip/` on 2026-10-13; 16.3 s body + the 2.5 s end card = 18.8 s, after the fixer pass; the round-2 cut was 36.0 + 2.5 = 38.5 s). It replaced the round-2 cut in `studio/specs/` (git history: `4fb0b00^` and earlier; `renders/channel/` keeps the round-2 render until the ship step); the round-2 cut's timings are in the Review log ("Condensed cut (2026-10-13)").
+- **Condensed cut (2026-10-13):** this section describes the condensed cut in [`studio/specs/04b-becker-rig-savings-vs-sp500.json`](../../studio/specs/04b-becker-rig-savings-vs-sp500.json) (promoted from `studio/specs-wip/` on 2026-10-13; 16.3 s body + the 2.5 s end card = 18.8 s, after the fixer pass; the round-2 cut was 36.0 + 2.5 = 38.5 s). It replaced the round-2 cut in `studio/specs/` (git history: `4fb0b00^` and earlier; `renders/channel/` shipped the round-2 render until 2026-10-13, and it is in git at 471c793); the round-2 cut's timings are in the Review log ("Condensed cut (2026-10-13)").
 - **First captions:** "Year one in the S&P: ≈ $151." (complete on frame 1, up to 1.2 s), then "Savings gets 16 years to match it." (1.25-3.35 s). There is no narration: the captions are on-screen text, paced for reading.
 - **First 1.5 s:**
   - Frame 1 shows the 2-line header with "$1,000" as the only accent, and the first caption complete. The race is already moving (the race clock starts at −0.2 s, so frame 1 is the round-2 frame 1, x 2010.27): S&P tip "$1,041", savings tip "$1,001", year "2010", stake legend "$1,000 each · Jan 2010", and a 1-line footer. Both figures already stand on their own lines.
@@ -408,7 +408,7 @@
   - **2016 instead of 2010:** MSCI's own factsheet, the primary source for MSCI Europe, covers 2012-2025, so 2010-2011 could not be two-sourced. A 10-year window (Jan 2016 → Dec 2025) also gives Jake's "10 years" grammar.
 - **Platform title:** "What If You Invested $10,000 in the USA and EUROPE in 2016?" (A/B: "Europe Won 2025. Who Won the Decade?")
 - **On-screen hook (header, 10 words):** `POV: In 2016 you invested **$10,000** in` / `USA vs EUROPE` (kept: it is H17's 345x header almost word for word).
-- **Condensed cut (2026-10-13):** this section describes the condensed cut in [`studio/specs/04c-scoreboard-usa-vs-europe.json`](../../studio/specs/04c-scoreboard-usa-vs-europe.json) (promoted from `studio/specs-wip/` on 2026-10-13; 15.9 s body + the 2.5 s end card = 18.4 s; the round-2 cut was 36.5 + 2.5 = 39 s). It replaced the round-2 cut in `studio/specs/` (git history: `4fb0b00^` and earlier; `renders/channel/` keeps the round-2 render until the ship step); the round-2 cut's timings are in the Review log ("Condensed cut (2026-10-13)").
+- **Condensed cut (2026-10-13):** this section describes the condensed cut in [`studio/specs/04c-scoreboard-usa-vs-europe.json`](../../studio/specs/04c-scoreboard-usa-vs-europe.json) (promoted from `studio/specs-wip/` on 2026-10-13; 15.9 s body + the 2.5 s end card = 18.4 s; the round-2 cut was 36.5 + 2.5 = 39 s). It replaced the round-2 cut in `studio/specs/` (git history: `4fb0b00^` and earlier; `renders/channel/` shipped the round-2 render until 2026-10-13, and it is in git at 471c793); the round-2 cut's timings are in the Review log ("Condensed cut (2026-10-13)").
 - **First captions:** "2025: Europe beat the USA ≈ 2 to 1." (complete on frame 1, up to 1.55 s), then "Who won the decade?" (1.6 s, as the race starts). There is no narration: the captions are on-screen text, paced for reading.
 - **Hook rules it satisfies:**
   - **R1:** "$10,000" in the header and the hero ("EACH $10,000"), and the claim itself at frame 1: two columns, "+17.88%" (USA) and "+35.41%" (Europe, lit), Europe's bar twice the USA's, beside the corner clock's "2025".
@@ -1054,3 +1054,45 @@ The critic passed format 04 (04a 7.5, 04b 7.5, 04c 8.5), with no must-fix item. 
 ### Promoted (2026-10-13)
 
 The three condensed cuts (after the fixer pass) were copied from `studio/specs-wip/` over `studio/specs/` (commit 4fb0b00) and `IN_SPECS` is `"cond"` for each, with each teaser section now linking `studio/specs/<id>.json` (the check enforces it): 698 checks, 0 failed by default, and 657, 0 failed on git-history copies of the round-2 cuts passed with `--spec`; the sound refit and the ship follow (`renders/channel/` keeps the round-2 cuts until then).
+
+### Shipped (2026-10-13): 04a, 04b, 04c
+
+- **Sound (BIBLE v2.4).** The promotion moved the cue records of all 16 condensed cuts (01a-06a), so BIBLE §11.1 ran for the batch:
+  - Both looks were refit on the fresh records: Scoreboard's calibration and Becker Rig's `MODEL` (§11.2).
+  - Both packs gained the short-body rules (§4.7, §6.7 item 7).
+  - The records were stored in `test/fixtures/cues.json` (one line per teaser, so the diff is the batch's 16 lines), `tempo-table --write` rewrote the 16 §2.3 rows, and `npm test` passes 28/28.
+  - No spec, cue gain or `acceptance.json` threshold was touched.
+  - Every sound failure recorded in the entries above for these teasers is cleared at pack level.
+- **Verify.** `verify --from <build> --strict-cues --video <pictures>` passes all 30 at 42/42, with units at 69/69 and 77/77. The pictures were the reviewed renders of the promoted specs for the batch and `renders/channel/` for the other 14. The masters are byte-identical to the sound pass's verified builds, so nothing regressed against its after-tables. This format’s §2.3 rows and measurements:
+
+  | Teaser | §2.3 row (P, BPM, base) | A1 / A2 / A5 | Tightest BANDS octaves (dB inside) | B3 closest cue | B8 logo / payoff (LUFS) |
+  |---|---|---|---|---|---|
+  | 04a | P 14.3 (riser), 151.049 → 154.839, base 17.40 | −14.16 / −1.50 / 12.66 | 500 Hz 0.6, 16 kHz 1.0 | 5.1 dB | −11.86 / −11.03 |
+  | 04b | P 12.49 (hit+cash), 115.292 → 110.236, base 16.30 | −14.16 / −1.50 / 12.66 | 250 Hz 1.5, 4 kHz 1.7 | 5.6 dB | −12.44 / −10.43 |
+  | 04c | P 12.1 (riser), 138.843 → 142.105, base 15.90 | −14.14 / −1.38 / 12.75 | 16 kHz 1.5, 500 Hz 1.8 | 4.7 dB | −12.26 / −10.76 |
+
+  Margins in this format:
+  - **04a's 16 kHz is now 1.0 dB inside its −12 ceiling.** It failed BANDS at promotion, 1.3 dB over.
+  - **04a's 500 Hz (0.6 dB) is in Scoreboard's next tier.**
+  - **04b has Becker Rig's thin gated margins** (§11.2): B7 0.5 LU (centred drop-build 2.5) and the B8 floor 0.56.
+  - **04b's 250 Hz is clear at +1.5 dB.** v2.3 had listed it at 0.1.
+- **Shipped by §11.5.**
+  - The build went to `/tmp`, not into `renders/channel/`. Every mux kept its source's video md5, and the files were then copied into `renders/channel/`.
+  - `verify --from <build> --write-baseline` rewrote `test/fixtures/sound-baseline.sha256`.
+  - Both packs changed, so all 30 masters differ from the previous baseline. All 30 MP4s in `renders/channel/` changed with them, and the 14 pictures outside the batch are unchanged.
+  - The audit of `renders/channel/` used `--out` in `/tmp`, so no sidecar was written into `renders/`. All 30 teasers pass 16/16 symbolic score checks.
+  - This format’s files:
+
+  | Teaser | Shipped (length, sha256) | Replaces (in git at 471c793) | Video md5 (kept) | Audit: I / TP / LRA / PLR, score |
+  |---|---|---|---|---|
+  | 04a | 19.9 s, `39e1e5ed…` | 48.0 s, `0127a013…` | `53fedad5a2b9…` | −14.16 / −1.53 / 5.03 / 12.62, 16/16 |
+  | 04b | 18.8 s, `16755a26…` | 38.5 s, `8d243eee…` | `420df0fcdc02…` | −14.16 / −1.52 / 4.81 / 12.64, 16/16 |
+  | 04c | 18.4 s, `37d7ac80…` | 39.0 s, `1a7f8c5e…` | `1835629473e2…` | −14.14 / −1.38 / 4.72 / 12.75, 16/16 |
+
+- **Publishing.**
+  - `python3 publishing/tools/build_publishing.py <id> --covers`, then `--check`, passes for all three (numbers check: PASS).
+  - In the data files, the video facts (`CUT` with `shipped` and `replaces`, the Video bullet and the for-video note) now describe the shipped cut.
+  - Moments and lengths that only the retired cut had were rewritten or dated, and no claim was added.
+  - The checked-maths line records the re-run at the ship: 698 checks, 0 failed.
+  - 04a and 04c keep frame 0. 04b's cover is at 14.3 s (frame 429). The data files' cover rules now name what the condensed cuts show. 04a's frame 1 reads "GOLD $9,724" and "S&P 500 $9,535".
+- **Elsewhere.** `teasers/v2/teasers.json`: runtimes 19.9 / 18.8 / 18.4 s. Its key-number times now name the condensed cut, with the retired cut's in brackets, and its check note records the re-run at the ship. `renders/channel/README.md` (a length table), `HANDOFF-finance-channel.md` and the BIBLE v2.4 status line name the ship.

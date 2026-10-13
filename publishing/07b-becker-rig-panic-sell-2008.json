@@ -5,7 +5,7 @@
   "for_video": {
     "current_render": "renders/channel/07b-becker-rig-panic-sell-2008.mp4",
     "current_duration_s": 29.9,
-    "current_sha256": "d6d3739fbf13cf18559e62132af316640109064866ceb658d8293452bee15716",
+    "current_sha256": "a8555ba1a71d72a1e1ba1ef2fabeb3de5243eee3550667f5f27820f6e11b640d",
     "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds on 2026-10-13: the pre-condense cut. The ship step rebuilds this file with --covers from the condensed cut.",
     "cut": {
       "name": "pre-condense (07b round-2 fix pass, 2026-10-08)",

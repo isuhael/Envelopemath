@@ -1,7 +1,7 @@
 # Format 6: POV spend-vs-own race (pattern P6)
 
 **Teasers:** 06a Scoreboard (Apple / first iPhone), 06b Scoreboard (Netflix bill / Netflix stock; ported from Live Sheet on 2026-10-08), 06c Becker Rig (latte / Starbucks stock)
-**Date:** 2026-10-07; hook pass 2026-10-08 (06b and 06c kept); hook pass 2 2026-10-08 (06b's hook replaced); 06b ported to Scoreboard 2026-10-08; 06c condensed cut 2026-10-12 (promoted and shipped the same day; its opening hold fixed in the kit and re-shipped the same day); 06b condensed cut 2026-10-12 (its QA fix pass, promotion and ship the same day); 06a condensed cut 2026-10-13 (its QA fix pass and its promotion into `studio/specs/` the same day; the sound and the ship follow) · **Writer:** format 6 (revised after review, see the Review log at the end) · **Specs:** `studio/specs/06a-scoreboard-first-iphone-apple.json` (06a's condensed cut since 2026-10-13, promoted from `studio/specs-wip/`; the 26.5 s round-2 cut is in git history, and `renders/channel/` keeps its render until the ship step), `06b-scoreboard-netflix-bill.json` (06b's condensed cut since 2026-10-12; the 30.5 s Scoreboard cut is in git history, and the Live Sheet spec is in `studio/specs/retired/`), `06c-becker-rig-latte-starbucks.json` (06c's condensed cut since 2026-10-12; the 28.0 s round-2 cut is in git history)
+**Date:** 2026-10-07; hook pass 2026-10-08 (06b and 06c kept); hook pass 2 2026-10-08 (06b's hook replaced); 06b ported to Scoreboard 2026-10-08; 06c condensed cut 2026-10-12 (promoted and shipped the same day; its opening hold fixed in the kit and re-shipped the same day); 06b condensed cut 2026-10-12 (its QA fix pass, promotion and ship the same day); 06a condensed cut 2026-10-13 (its QA fix pass, its promotion into `studio/specs/` and its ship the same day) · **Writer:** format 6 (revised after review, see the Review log at the end) · **Specs:** `studio/specs/06a-scoreboard-first-iphone-apple.json` (06a's condensed cut since 2026-10-13, promoted from `studio/specs-wip/`; the 26.5 s round-2 cut is in git history, and its render is in git at 471c793), `06b-scoreboard-netflix-bill.json` (06b's condensed cut since 2026-10-12; the 30.5 s Scoreboard cut is in git history, and the Live Sheet spec is in `studio/specs/retired/`), `06c-becker-rig-latte-starbucks.json` (06c's condensed cut since 2026-10-12; the 28.0 s round-2 cut is in git history)
 **Check:** `python3 teasers/v2/checks/06-pov-race.py`. It recomputes every on-screen and spoken number, cross-checks the source tables, and asserts the specs match, including VO pacing in spoken words (numbers read out in full) and the motion/payoff timing of the hook. Current result (2026-10-13, after 06a's condensed cut was promoted): 468 checks, 0 failed on `studio/specs/`, and 446, 0 failed with `--spec` on a git-history copy of 06a's 26.5 s cut (`git show 4fb0b00^:studio/specs/06a-scoreboard-first-iphone-apple.json`). Before the promotion: 446 checks, 0 failed on `studio/specs/`, and 468, 0 failed with `--spec studio/specs-wip/06a-scoreboard-first-iphone-apple.json`. 06c, 06b and 06a are each checked against their condensed cut's expectations, which `studio/specs/` must hold (06a's: `A_IN_SPECS`, "a" since the promotion). The retired cuts' sets (06c's 28.0 s, 06b's 30.5 s, 06a's 26.5 s) are kept as references for a git-history copy passed with `--spec` (06b's: 443 checks, 0 failed).
 
 ---
@@ -65,7 +65,7 @@
 
 ### Beat sheet (condensed cut after its fix pass, 2026-10-13: chart clock x 2007 → 2025.99 over t −0.04 → 12.8 s on `lookOpts.clockKnots`: ≈ 0.71 s per year, with the flat 2015 (x 2015.1-2016.5, t 5.70-6.26) at 0.40 s per year and the flat 2018 (x 2018.05-2018.95, t 7.36-7.81) at 0.50; verdict at 13.7 s; body 15.3 s + the 2.5 s end card = 17.8 s)
 
-Spec: `studio/specs/06a-scoreboard-first-iphone-apple.json` (promoted 2026-10-13 from `studio/specs-wip/06a-scoreboard-first-iphone-apple.json`; the sound and the ship follow). It condenses the 26.5 s round-2 cut (race 0.3 → 21.4 s at ≈ 1.11 s per year, verdict 22.0 s, held 4.5 s; 29.0 s with the card), whose beat sheet and guide VO script are in git history (3db6d30 and earlier). Every string, number, caption and cue role is the 26.5 s cut's; only the clock moved. Two Scoreboard pov-race options are new and opt-in, both set in this spec only: `clockKnots` (the bent clock) and `startPing` (the start dot pings from frame 2). The Review log ("Condensed cut (2026-10-13): 06a" and its fix pass) lists every change.
+Spec: `studio/specs/06a-scoreboard-first-iphone-apple.json` (promoted 2026-10-13 from `studio/specs-wip/06a-scoreboard-first-iphone-apple.json`, and shipped the same day). It condenses the 26.5 s round-2 cut (race 0.3 → 21.4 s at ≈ 1.11 s per year, verdict 22.0 s, held 4.5 s; 29.0 s with the card), whose beat sheet and guide VO script are in git history (3db6d30 and earlier). Every string, number, caption and cue role is the 26.5 s cut's; only the clock moved. Two Scoreboard pov-race options are new and opt-in, both set in this spec only: `clockKnots` (the bent clock) and `startPing` (the start dot pings from frame 2). The Review log ("Condensed cut (2026-10-13): 06a" and its fix pass) lists every change.
 
 | t (s) | On screen | Caption |
 |---|---|---|
@@ -1440,3 +1440,47 @@ After that come the verdict hold (14.13-15.07) and the card hold (16.80-17.80), 
 ### Promoted (2026-10-13): 06a
 
 The fix pass's spec was copied from `studio/specs-wip/` over `studio/specs/06a-scoreboard-first-iphone-apple.json` (commit 4fb0b00) and `A_IN_SPECS = "a"`: 468 checks, 0 failed by default, and 446, 0 failed on a git-history copy of the 26.5 s cut passed with `--spec` (`git show 4fb0b00^:studio/specs/06a-scoreboard-first-iphone-apple.json`); the sound refit and the ship follow (`renders/channel/` keeps the 26.5 s cut until then).
+
+### Shipped (2026-10-13): 06a
+
+- **Sound (BIBLE v2.4).** The promotion moved the cue records of all 16 condensed cuts (01a-06a), so BIBLE §11.1 ran for the batch:
+  - Both looks were refit on the fresh records: Scoreboard's calibration and Becker Rig's `MODEL` (§11.2).
+  - Both packs gained the short-body rules (§4.7, §6.7 item 7).
+  - The records were stored in `test/fixtures/cues.json` (one line per teaser, so the diff is the batch's 16 lines), `tempo-table --write` rewrote the 16 §2.3 rows, and `npm test` passes 28/28.
+  - No spec, cue gain or `acceptance.json` threshold was touched.
+  - Every sound failure recorded in the entries above for this teaser is cleared at pack level.
+- **Verify.** `verify --from <build> --strict-cues --video <pictures>` passes all 30 at 42/42, with units at 69/69 and 77/77. The pictures were the reviewed renders of the promoted specs for the batch and `renders/channel/` for the other 14. The masters are byte-identical to the sound pass's verified builds, so nothing regressed against its after-tables. Its §2.3 row and measurements:
+
+  | Teaser | §2.3 row (P, BPM, base) | A1 / A2 / A5 | Tightest BANDS octaves (dB inside) | B3 closest cue | B8 logo / payoff (LUFS) |
+  |---|---|---|---|---|---|
+  | 06a | P 12.8 (riser), 150 → 144, base 15.30 | −14.18 / −1.37 / 12.81 | 16 kHz 1.6, 125 Hz 1.8 | 4.5 dB | −12.17 / −10.70 |
+
+  The fix pass listed six margins to re-check after the refit. All six pass. Three held or widened, and three narrowed:
+  - **16 kHz** widened to 1.6 dB inside (it was 0.4).
+  - **B1** widened to 0.70 (it was 0.64): music −2.24 in −3.5..−1.5, SFX −3.2 in −5..−2.5.
+  - **A2** held at −1.37 dBTP, 0.37 inside.
+  - **A5** narrowed: PLR 12.81 is 0.19 under 13 (it was 0.28).
+  - **A1 master** narrowed: −14.10 is 0.20 inside ±0.3 (it was 0.29). Delivery reads −14.18.
+  - **B8** narrowed: the logo at −12.17 LUFS is 0.83 inside −13 (it was 0.90), and it stays under the payoff's −10.70.
+
+  A2, A5 and A1 master are closed-loop encode and mastering targets, not this cut's timing (see the fix pass above).
+
+  The lint still shows 06a's documented type-floor warning ("spent" at 39.5 px for 0.05 s at 13.00 s).
+- **Shipped by §11.5.**
+  - The build went to `/tmp`, not into `renders/channel/`. Every mux kept its source's video md5, and the files were then copied into `renders/channel/`.
+  - `verify --from <build> --write-baseline` rewrote `test/fixtures/sound-baseline.sha256`.
+  - Both packs changed, so all 30 masters differ from the previous baseline. All 30 MP4s in `renders/channel/` changed with them, and the 14 pictures outside the batch are unchanged.
+  - The audit of `renders/channel/` used `--out` in `/tmp`, so no sidecar was written into `renders/`. All 30 teasers pass 16/16 symbolic score checks.
+  - Its file:
+
+  | Teaser | Shipped (length, sha256) | Replaces (in git at 471c793) | Video md5 (kept) | Audit: I / TP / LRA / PLR, score |
+  |---|---|---|---|---|
+  | 06a | 17.8 s, `482ab983…` | 29.0 s, `9707256d…` | `dba578e813f2…` | −14.18 / −1.37 / 5.48 / 12.81, 16/16 |
+
+- **Publishing.**
+  - `python3 publishing/tools/build_publishing.py <id> --covers`, then `--check`, passes for it (numbers check: PASS).
+  - In the data files, the video facts (`CUT` with `shipped` and `replaces`, the Video bullet and the for-video note) now describe the shipped cut.
+  - Moments and lengths that only the retired cut had were rewritten or dated, and no claim was added.
+  - The checked-maths line records the re-run at the ship: 468 checks, 0 failed.
+  - The cover stays at frame 0, re-exported from the shipped file. Frame 1 is byte-identical to the reviewed cut's, so it shows the same picture.
+- **Elsewhere.** `teasers/v2/teasers.json`: runtime 17.8 s. Its key-number times now name the condensed cut, with the retired cut's in brackets, and its check note records the re-run at the ship. `renders/channel/README.md` (a length table), `HANDOFF-finance-channel.md` and the BIBLE v2.4 status line name the ship.

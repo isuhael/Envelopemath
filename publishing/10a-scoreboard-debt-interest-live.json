@@ -5,7 +5,7 @@
   "for_video": {
     "current_render": "renders/channel/10a-scoreboard-debt-interest-live.mp4",
     "current_duration_s": 39.0,
-    "current_sha256": "e46306dc33a2b162d37ea402b0e4a60cc3b7e62022a4e956c2eb6b0932314196",
+    "current_sha256": "2d5f3d61d6a3737273f65d57fd1ed5893a3fc1a89b3a1e3033fef0ebf50c7a8c",
     "note": "current_* is what renders/channel holds today: the round-2 cut, which runs past this copy's verdict. The copy describes the recut (copy_describes); post only the recut with it. The ship step promotes the recut and re-runs the build with --covers, which refreshes current_*, the cut and both covers.",
     "cut": {
       "name": "round-2 cut (still in renders/channel; not the cut this copy describes)",

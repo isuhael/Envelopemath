@@ -5,7 +5,7 @@
   "for_video": {
     "current_render": "renders/channel/07c-becker-rig-savings-rate.mp4",
     "current_duration_s": 21.6,
-    "current_sha256": "dcafa5e09dd6976d27f76b8fdb25ac4b7489694f3c56564c306b2a68cc87fd58",
+    "current_sha256": "cba00966f93951237a6c5e83d45de1b405fdf4244f2b2c83c758726f1089166a",
     "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds on 2026-10-13: the pre-condense cut. The ship step rebuilds this file with --covers from the condensed cut.",
     "cut": {
       "name": "pre-condense (Becker Rig port, fix pass 2026-10-08)",

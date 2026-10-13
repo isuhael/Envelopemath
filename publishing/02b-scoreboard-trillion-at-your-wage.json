@@ -4,16 +4,20 @@
   "prepared": "2026-10-13",
   "for_video": {
     "current_render": "renders/channel/02b-scoreboard-trillion-at-your-wage.mp4",
-    "current_duration_s": 16.5,
-    "current_sha256": "33ca241089a0de4b5a61effd21a215797d58b33bac5235a7b7f6358c02b3d2c0",
-    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds on 2026-10-13: the pre-condense cut. The ship step rebuilds this file with --covers from the condensed cut.",
+    "current_duration_s": 10.1,
+    "current_sha256": "93aa989f01043de3dcf617f01df874ef08dd92b216eecc3f46c2be00aa9f695b",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
-      "name": "pre-condense (round-2 Scoreboard cut)",
+      "name": "condensed (2026-10-13)",
       "spec": "studio/specs/02b-scoreboard-trillion-at-your-wage.json",
-      "body_s": 14.0,
+      "body_s": 7.6,
       "card_s": 2.5,
-      "status": "in renders/channel on 2026-10-13; a condensed cut (timing only) is in progress",
-      "on_ship": "python3 publishing/tools/build_publishing.py 02b-scoreboard-trillion-at-your-wage --covers (re-picks the cover by content, re-exports both JPGs, refreshes for_video)"
+      "shipped": "2026-10-13",
+      "replaces": {
+        "duration_s": 16.5,
+        "sha256": "33ca241089a0de4b5a61effd21a215797d58b33bac5235a7b7f6358c02b3d2c0",
+        "note": "the round-2 cut (pre-condense) + card, retired; in git history (471c793)"
+      }
     }
   },
   "facts": {
@@ -161,14 +165,14 @@
         "3x4": "publishing/02b-scoreboard-trillion-at-your-wage-cover-3x4.jpg",
         "9x16": "publishing/02b-scoreboard-trillion-at-your-wage-cover-9x16.jpg"
       },
-      "frame_in_current_render_s": 11.0,
-      "frame_index": 330,
+      "frame_in_current_render_s": 6.5,
+      "frame_index": 195,
       "frame_by_content": "The finished board with the $1,000/hr row lit, which the write-up names as the Instagram cover ('the completed table, with the $1,000/hr row lit'): the header 'ELON'S $1 TRILLION PAY PLAN / EARNS YOUR WHOLE CAREER'S PAY IN…', the footer, all 11 wage rows from $7.25/hr to $1,000/hr with their 40-year pay and their time, the pointer and glow on '$1,000/HR · $83,200,000 · ≈ 7.3 HRS', and the verdict 'EVEN $1,000/HR / FOR 40 YEARS: / ≈ 7.3 HOURS OF HIS.' in the strip. Use the first settled frame after the verdict lands, before the end card.",
-      "frame_measured": "On the pre-condense 16.5 s render the verdict slams in at 10.67 s (frame 320) and settles by 10.97 s (frame 329); from there the mean frame-to-frame luma change (270×480 greyscale) stays at or under 0.007 until the end card cuts in at 14.03 s. The cover is taken at 11.0 s (frame 330), inside that hold.",
+      "frame_measured": "On the shipped 10.1 s condensed cut the verdict slams in at 6.05 s and settles by 6.33 s (frame 190); from there the mean frame-to-frame luma change (270×480 greyscale) stays at or under 0.007 until the end card cuts in at 7.60 s. The cover is taken at 6.5 s (frame 195), inside that hold. On the 16.5 s pre-condense render it was 11.0 s (frame 330).",
       "crop": "3:4 = 1080×1440 from y 76 to 1516 of the 1080×1920 frame. The content runs from y 141 (the badge) to y 1452 (the verdict's last line), so the crop centres it: badge, header, footer, the whole board and the verdict; it drops the empty black floor. A centred grid crop (y 240-1680) loses the badge and leaves the header on the top edge.",
       "how_to_set": "In 'Edit cover', pick the finished-board frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header and the verdict.",
-      "re_export": "ffmpeg -ss 11.0 -i renders/channel/02b-scoreboard-trillion-at-your-wage.mp4 -frames:v 1 -vf \"crop=1080:1440:0:76\" -q:v 2 publishing/02b-scoreboard-trillion-at-your-wage-cover-3x4.jpg",
-      "re_export_9x16": "ffmpeg -ss 11.0 -i renders/channel/02b-scoreboard-trillion-at-your-wage.mp4 -frames:v 1 -q:v 2 publishing/02b-scoreboard-trillion-at-your-wage-cover-9x16.jpg"
+      "re_export": "ffmpeg -ss 6.5 -i renders/channel/02b-scoreboard-trillion-at-your-wage.mp4 -frames:v 1 -vf \"crop=1080:1440:0:76\" -q:v 2 publishing/02b-scoreboard-trillion-at-your-wage-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 6.5 -i renders/channel/02b-scoreboard-trillion-at-your-wage.mp4 -frames:v 1 -q:v 2 publishing/02b-scoreboard-trillion-at-your-wage-cover-9x16.jpg"
     },
     "first_comment": "At $7.25 an hour, 40 years of pay ($603,200) takes the plan ≈ 3.2 minutes. At $1,000 an hour, ≈ 7.3 hours. Which row is yours?",
     "first_comment_action": "Post it right after publishing and pin it.",
@@ -518,7 +522,7 @@
       "vidIQ's YouTube authorization is a different channel (UCRC5v_El2fibbkqsZs6uFjA), so @envelopemath's YouTube Analytics (audience hours, geography) were not readable. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
       "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and on the outliers' own tags.",
       "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
-      "The render in renders/channel is the pre-condense cut. The cover's time and frame are measured on it; the copy names no other timestamp, and the ship step re-picks the cover on the final file.",
+      "The render in renders/channel is the shipped condensed cut (2026-10-13). The cover's time and frame are measured on it; the copy names no other timestamp and carried over from the pre-condense cut unchanged.",
       "Musk's reported trillionaire net worth after a SpaceX listing (June 2026) comes only from third-party video titles and descriptions; it is not verified here and is not in the copy.",
       "dol.gov and the Reuters original could not be opened in the write-up's research (the proxy blocks dol.gov); the plan and the minimum wage rest on the write-up's named sources."
     ],
@@ -545,7 +549,7 @@
   "checked": {
     "date": "2026-10-13",
     "by": "adversarial check of this sheet",
-    "math": "python3 teasers/v2/checks/02-find-your-row.py: PASSED: all 183 checks on studio/specs/ at the adversarial check (2026-10-13; all 177 checks at the first build, before the condense pass made the check cut-aware), and all 216 checks with --spec on the condensed cuts in studio/specs-wip/; run by the builder through publishing/data/checks/02-find-your-row.py; every public figure traced to the 02b maths table and recomputed in MATH_RELATIONS (the plan's $3,168.81 a second, wage × 83,200), each row's figures pinned beside their wage (COPY_RULES)",
+    "math": "python3 teasers/v2/checks/02-find-your-row.py: PASSED: all 183 checks on studio/specs/ at the adversarial check (2026-10-13; all 177 checks at the first build, before the condense pass made the check cut-aware), and all 216 checks with --spec on the condensed cuts in studio/specs-wip/; run by the builder through publishing/data/checks/02-find-your-row.py; every public figure traced to the 02b maths table and recomputed in MATH_RELATIONS (the plan's $3,168.81 a second, wage × 83,200), each row's figures pinned beside their wage (COPY_RULES); re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: PASSED: all 225 checks",
     "limits": {
       "youtube_title_chars": 88,
       "youtube_description_chars": 1437,

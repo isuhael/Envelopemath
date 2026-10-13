@@ -4,17 +4,20 @@
   "prepared": "2026-10-13",
   "for_video": {
     "current_render": "renders/channel/03b-scoreboard-card-minimum.mp4",
-    "current_duration_s": 33.1,
-    "current_sha256": "5a95cc3d29b1e8382a01b70e70c3c4a00dcd4f62a4e5033cbf30c20669459e64",
-    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the pre-condense round-2 cut. The ship step re-runs the build with --covers on the condensed file.",
+    "current_duration_s": 14.167,
+    "current_sha256": "c5f2f4f49bf06fe792107d2b0d942763d37ef91ed4aa2ef872a59a96ec188c18",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
-      "name": "round-2 cut (pre-condense)",
+      "name": "condensed (2026-10-13)",
       "spec": "studio/specs/03b-scoreboard-card-minimum.json",
-      "body_s": 30.6,
-      "card_s": 2.5,
-      "shipped": null,
-      "git": "471c793",
-      "status": "the 03 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay). The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."
+      "body_s": 11.65,
+      "card_s": 2.517,
+      "shipped": "2026-10-13",
+      "replaces": {
+        "duration_s": 33.1,
+        "sha256": "5a95cc3d29b1e8382a01b70e70c3c4a00dcd4f62a4e5033cbf30c20669459e64",
+        "note": "the round-2 cut (pre-condense) + card, retired; in git history (471c793)"
+      }
     }
   },
   "facts": {
@@ -174,21 +177,21 @@
         "3x4": "publishing/03b-scoreboard-card-minimum-cover-3x4.jpg",
         "9x16": "publishing/03b-scoreboard-card-minimum-cover-9x16.jpg"
       },
-      "frame_in_current_render_s": 28.6,
-      "frame_index": 858,
-      "frame_by_content": "The payoff hold: the hero 'PAID OFF IN ≈ 4.8 YEARS' in green, the footer '22% APR · minimum = 1% + interest, $40 floor', the board (THE CARD MINIMUM ≈ $7,300 over its red ≈ 15.1-year bar; KEEP PAYING $142.59 lit green, ≈ $3,100 and ≈ 4.8 YEARS; A FLAT $250 ≈ $1,300 and ≈ 2.2 YEARS) and the verdict 'SAME PAYMENT, $0 MORE: ≈ 10 YEARS SOONER', under the question. The write-up names this payoff frame as the Instagram cover. On any cut, use the first frame after the last caption clears, before the end card.",
-      "frame_measured": "On the pre-condense 33.1 s render the last caption clears at frame 856 (28.53 s), and from then the picture is still (frame-to-frame mean luma change ≤ 0.001) until the end card cuts in at 30.6 s. Frame 858 (28.60 s) is used.",
+      "frame_in_current_render_s": 11.5,
+      "frame_index": 345,
+      "frame_by_content": "The payoff hold: the hero 'PAID OFF IN ≈ 4.8 YEARS' in green, the footer '22% APR · minimum = 1% + interest, $40 floor', the board (THE CARD MINIMUM ≈ $7,300 over its red ≈ 15.1-year bar; KEEP PAYING $142.59 lit green, ≈ $3,100 and ≈ 4.8 YEARS; A FLAT $250 ≈ $1,300 and ≈ 2.2 YEARS) and the verdict 'SAME PAYMENT, $0 MORE: ≈ 10 YEARS SOONER', under the question. The write-up names this payoff frame as the Instagram cover. On the condensed cut the last caption ('Same payment: about 10 years sooner.', the verdict's own words) stays under the verdict until the last body frame, so use a settled frame of the verdict hold, with the caption on it, before the end card.",
+      "frame_measured": "On the shipped 14.167 s condensed cut the board settles in the verdict hold by 11.43 s (frame 343), and from then the picture is near-still (frame-to-frame mean luma change ≤ 0.033) with the last caption ('Same payment: about 10 years sooner.') under the verdict; the caption clears only on the last body frame (11.63 s) before the end card. Frame 345 (11.50 s) is used. On the 33.1 s pre-condense render it was frame 858 (28.60 s), after the caption cleared.",
       "crop": "3:4 = 1080×1440, the top 1440 rows (y 0 to 1440) of the 1080×1920 frame: the badge, the question, the hero, the footer, the board and the verdict, with even margins (141 px above the badge, 145 px below the verdict); it drops the empty floor. A centred grid crop (y 240-1680) cuts the badge and the question.",
       "how_to_set": "In 'Edit cover', pick the verdict frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the question.",
-      "re_export": "ffmpeg -ss 28.6 -i renders/channel/03b-scoreboard-card-minimum.mp4 -frames:v 1 -vf \"crop=1080:1440:0:0\" -q:v 2 publishing/03b-scoreboard-card-minimum-cover-3x4.jpg",
-      "re_export_9x16": "ffmpeg -ss 28.6 -i renders/channel/03b-scoreboard-card-minimum.mp4 -frames:v 1 -q:v 2 publishing/03b-scoreboard-card-minimum-cover-9x16.jpg"
+      "re_export": "ffmpeg -ss 11.5 -i renders/channel/03b-scoreboard-card-minimum.mp4 -frames:v 1 -vf \"crop=1080:1440:0:0\" -q:v 2 publishing/03b-scoreboard-card-minimum-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 11.5 -i renders/channel/03b-scoreboard-card-minimum.mp4 -frames:v 1 -q:v 2 publishing/03b-scoreboard-card-minimum-cover-9x16.jpg"
     },
     "first_comment": "Same payment, $0 more than the first minimum: about 4.8 years instead of about 15, on $5,000 at 22% with no new charges. What formula does your card use: 1%, 2% or 3%?",
     "first_comment_action": "Post it right after publishing and pin it.",
     "trial_reels": {
       "recommendation": "Post as a regular Reel, not a Trial.",
       "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show 471c793:renders/channel/03b-scoreboard-card-minimum.mp4 > 03b-33.1s.mp4` (sha256 5a95cc3d…). Compare skip rate (October Reels ran 27.0-65.1%; the 5 Oct minimum-payment Reel 27.4%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. The condensed cut replaced the pre-condense render in renders/channel on 2026-10-13; get the pre-condense one from git with `git show 471c793:renders/channel/03b-scoreboard-card-minimum.mp4 > 03b-33.1s.mp4` (sha256 5a95cc3d…). Compare skip rate (October Reels ran 27.0-65.1%; the 5 Oct minimum-payment Reel 27.4%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
     },
     "settings": {
       "audio": "Rename the original audio to 'Same minimum, every month — The Back of the Envelope' if the app allows; it is the score, with no voice.",
@@ -563,7 +566,7 @@
       "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and on the write-up's and the outliers' own tags.",
       "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
       "The write-up's sources rest on search-result text: its egress proxy blocked the primary pages. Before posting, open the Fed's G.19 release of Aug 7, 2026 (22.15%) and the cardmember agreement PDF the write-up cites (the formula), its open item 1.",
-      "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file."
+      "The video, the cover and the video facts are the shipped condensed cut (2026-10-13); the copy is cut-independent and carried over from the pre-condense cut unchanged."
     ],
     "own_channel_same_topic": [
       {
@@ -594,7 +597,7 @@
   "checked": {
     "date": "2026-10-13",
     "by": "adversarial check of this sheet",
-    "math": "python3 teasers/v2/checks/03-what-difference.py: 528 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/03-what-difference.py; the 03b card re-run month by month in MATH_RELATIONS (the first minimum, months 12 and 36, 181/57/52/26 payments, every interest total); COPY_RULES keep every rounded figure 'about' or '≈', every '$0 more' tied to the first minimum, every payoff with its unit (years), and no interest saving in the copy; re-run at the adversarial check with the same result",
+    "math": "python3 teasers/v2/checks/03-what-difference.py: 528 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/03-what-difference.py; the 03b card re-run month by month in MATH_RELATIONS (the first minimum, months 12 and 36, 181/57/52/26 payments, every interest total); COPY_RULES keep every rounded figure 'about' or '≈', every '$0 more' tied to the first minimum, every payoff with its unit (years), and no interest saving in the copy; re-run at the adversarial check with the same result; re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: 565 checks, 0 failed",
     "limits": {
       "youtube_title_chars": 76,
       "youtube_description_chars": 1552,

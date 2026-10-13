@@ -4,23 +4,25 @@
 # Becker Rig sheet), laid out like the Scoreboard sheets of the same batch.
 #
 # Facts come only from teasers/v2/03-what-difference.md (section 03a) and python3 teasers/v2/checks/03-what-difference.py.
-# Research: vidIQ, pulled 2026-10-13. The video is the pre-condense round-2 cut: the 03 condense is in progress in parallel
-# (timing only; numbers, caption facts and the verdict stay). This sheet names no timestamp except the cover, which is
-# picked by content (the finished board), so the ship step only re-runs the build with --covers on the final file.
+# Research: vidIQ, pulled 2026-10-13. The video is the condensed cut, promoted and shipped on 2026-10-13 (the
+# pre-condense round-2 cut is in git, 471c793). This sheet names no timestamp except the cover, which is picked by
+# content, so the copy carried over unchanged; the ship rebuilt it with --covers from the shipped file.
 
 TEASER = "03a Becker Rig, what-difference: \"What difference do weekly and biweekly payments really make on a $44,000 car loan?\""
 PREPARED = "2026-10-13"
 SHORT_ID = "03a"
 MD_TITLE = "03a publishing sheet: weekly and biweekly payments on a $44,000 car loan"
 MATH_RUN = "528 checks, 0 failed"      # python3 teasers/v2/checks/03-what-difference.py on studio/specs/, 2026-10-13 at the adversarial check (it prints "0 failures"; 525 at the first build, before the check became cut-aware)
+MATH_RUN_SHIP = "565 checks, 0 failed"  # python3 teasers/v2/checks/03-what-difference.py on studio/specs/ with the condensed cuts promoted, at the ship 2026-10-13 (it prints "0 failures")
 RENDER_COMMIT = "471c793"              # the commit that holds this pre-condense render
 RENDER_SHA_PRE = "4b1c8e0702aa891c4e46c2387f1244bfba022d316c645b0ea0667b4770d4559b"
 
 MD_INTRO = [
-    f"- **Video.** `renders/channel/{BASE}.mp4`: the pre-condense round-2 cut ({VIDEO_S:g} s: a {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`). "
-    "The 03 condense is in progress in parallel (timing only: the numbers, the captions' facts and the verdict stay). "
-    "Nothing below names a timestamp except the cover, which is picked by content (the finished board), so the copy carries over to the condensed cut unchanged. "
-    f"The ship step rebuilds this sheet and re-exports both covers from the final file: `python3 publishing/tools/build_publishing.py {BASE} --covers`.",
+    f"- **Video.** `renders/channel/{BASE}.mp4`: the condensed cut ({VIDEO_S:g} s: a {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`), "
+    "promoted and shipped on 2026-10-13. It replaces the 39.7 s round-2 cut (the owner: \"too many still moments\"), which is in git (`471c793`). "
+    "The condense moved the clock and merged some captions; the numbers, the captions' facts and the verdict stay, so the copy carried over unchanged. "
+    "Nothing below names a timestamp except the cover, which was re-picked by content on the shipped file. "
+    f"The ship rebuilt this sheet and re-exported both covers from it (`python3 publishing/tools/build_publishing.py {BASE} --covers`); on the shipped specs the maths check runs {MATH_RUN_SHIP}.",
     "- **Numbers.** Every figure comes from `teasers/v2/03-what-difference.md` (03a) and its check, "
     f"`python3 teasers/v2/checks/03-what-difference.py`: {MATH_RUN} on `studio/specs/` (run 2026-10-13). The builder runs it through "
     "`publishing/data/checks/03-what-difference.py`, which passes its output through and adds the summary line in the builder's form. "
@@ -37,11 +39,11 @@ MD_INTRO = [
 
 # ---------------------------------------------------------------- the video
 FOR_VIDEO_NOTE = ("Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. "
-                  "current_* is what renders/channel holds today: the pre-condense round-2 cut. The ship step re-runs the build with --covers on the condensed file.")
-CUT = {"name": "round-2 cut (pre-condense)", "spec": f"studio/specs/{BASE}.json", "body_s": BODY_S,
-       "card_s": CARD_S, "shipped": None, "git": RENDER_COMMIT,
-       "status": "the 03 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay). "
-                 "The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."}
+                  "current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.")
+CUT = {"name": "condensed (2026-10-13)", "spec": f"studio/specs/{BASE}.json", "body_s": BODY_S,
+       "card_s": CARD_S, "shipped": "2026-10-13",
+       "replaces": {"duration_s": 39.7, "sha256": "4b1c8e0702aa891c4e46c2387f1244bfba022d316c645b0ea0667b4770d4559b",
+                    "note": "the round-2 cut (pre-condense) + card, retired; in git history (471c793)"}}
 
 FACTS = {
     "source": f"teasers/v2/03-what-difference.md section 03a; teasers/v2/checks/03-what-difference.py: {MATH_RUN} on studio/specs/ (2026-10-13)",
@@ -200,19 +202,21 @@ IG_FIRST_COMMENT = ("Weekly beats biweekly by only about $35: both are 13 monthl
 
 # ---------------------------------------------------------------- the cover frame
 # The finished board, picked by content: the write-up's Instagram note names "the finished board (four lanes run, the
-# gold plate on ≈ $8,200, the '≈ 12 mo' banner on the winner's flag, the winner arms up in a V)". On this render the
-# last read (on "year") settles by frame 1040 (34.67 s); from then only the winner's idle wave moves (frame-to-frame
-# mean luma change ≤ 0.014) until the end card cuts in at 37.2 s. Frame 1050 is a still point of the wave (0.002).
-COVER_T = 35.0
-COVER_FRAME = 1050
+# gold plate on ≈ $8,200, the '≈ 12 mo' banner on the winner's flag, the winner arms up in a V)". On the shipped
+# condensed cut the verdict lands at 13.2 s and the last read (the gold ≈ 60 crate, with a hop) at 14.25 s; after it
+# only the winner's idle wave moves until the end card cuts in at 14.8 s. Frame 442 (14.73 s) is the stillest point of
+# that wave (mean frame-to-frame luma change 0.019 into it and 0.015 out of it, 270x480 greyscale).
+COVER_T = 14.733
+COVER_FRAME = 442
 COVER_CROP = "crop=1080:1440:0:72"
-COVER_RENDER_WORD = "pre-condense"
+COVER_RENDER_WORD = "shipped"
 COVER_FRAME_BY_CONTENT = ("The finished board: all 4 lanes run (Monthly 72 and ≈ $10,000; Biweekly and Weekly ≈ 65 and ≈ $8,900; Round up ≈ 60 with the gold plate on ≈ $8,200 "
                           "and the '≈ 12 mo' banner on its flag), the winner with his arms up, the working slot '= 72 − 60 ≈ 12 months / ≈ 1 year sooner' and the verdict "
                           "'Round up to $200 a week: ≈ 1 year sooner', under the question. The write-up names the finished board as the Instagram cover. "
                           "On any cut, use a frame after the last read settles and before the end card.")
-COVER_FRAME_MEASURED = ("On the pre-condense 39.7 s render the last read settles by frame 1040 (34.67 s); from then only the winner's idle wave moves "
-                        "(frame-to-frame mean luma change ≤ 0.014) until the end card cuts in at 37.2 s. Frame 1050 (35.00 s) is used, a still point of the wave (0.002).")
+COVER_FRAME_MEASURED = ("On the shipped 17.3 s condensed cut the last read (on \"year\") settles by about 14.47 s (frame 434); from then only the winner's idle wave moves "
+                        "(frame-to-frame mean luma change ≤ 0.17) until the end card cuts in at 14.8 s. Frame 442 (14.73 s) is used, a still point of the wave (0.019). On the "
+                        "39.7 s pre-condense render it was frame 1050 (35.00 s).")
 COVER_CROP_NOTE = ("3:4 = 1080×1440 from y 72 to 1512 of the 1080×1920 frame: the badge, the question, the footer, the working slot, the 4 lanes and the verdict, "
                    "with even margins (40 px above the badge and below the verdict); it drops the empty floor. A centred grid crop (y 240-1680) cuts the badge and the question.")
 COVER_HOW_TO_SET = ("In 'Edit cover', pick the finished-board frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile "
@@ -221,13 +225,13 @@ COVER_HOW_TO_SET = ("In 'Edit cover', pick the finished-board frame from the vid
 COVER_EXTRA_BULLETS = [
     "**Not used:** frame 1 (the question, Monthly already run at 72 and ≈ $10,000, the other 3 lanes waiting with '?' crates). It carries only the baseline, "
     "but the write-up names the finished board as the cover (Gage's one A/B favoured a finished-table cover).",
-    "**When the condensed cut ships:** re-pick the finished board by content on the shipped file (a frame after the last read settles, before the end card) and re-export both JPGs with `--covers`.",
+    "**Shipped cut (2026-10-13):** the finished board was re-picked by content on the shipped file (a still point of the winner's wave after the last read, 14.73 s) and both JPGs re-exported from it. It shows the same board, plate, banner, working and verdict as the pre-condense cover.",
 ]
 
 TRIAL_REELS = {
     "recommendation": "Post as a regular Reel, not a Trial.",
     "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-    "use_trial_for": f"A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show {RENDER_COMMIT}:renders/channel/{BASE}.mp4 > 03a-39.7s.mp4` (sha256 {RENDER_SHA_PRE[:8]}…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app.",
+    "use_trial_for": f"A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. The condensed cut replaced the pre-condense render in renders/channel on 2026-10-13; get the pre-condense one from git with `git show {RENDER_COMMIT}:renders/channel/{BASE}.mp4 > 03a-39.7s.mp4` (sha256 {RENDER_SHA_PRE[:8]}…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app.",
 }
 IG_AUDIO = "Rename the original audio to 'Weekly vs biweekly car loan — The Back of the Envelope' if the app allows; it is the score, with no voice."
 IG_POSTING_WINDOW = {
@@ -360,7 +364,7 @@ LIMITS = [
     "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
     "The write-up's sources rest on search-result text: its egress proxy blocked the primary pages. Before posting, open Edmunds' Q3 2026 new-vehicle finance release and confirm $44,664 at 7.0% (the write-up's open item 1).",
     "Whether a lender posts a weekly payment the day it lands is the video's stated assumption, not a fact about any lender; the pinned comment asks the viewer to check theirs.",
-    "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file.",
+    "The video, the cover and the video facts are the shipped condensed cut (2026-10-13); the copy is cut-independent and carried over from the pre-condense cut unchanged.",
 ]
 RESEARCH_EXTRA = {
     "own_channel_same_topic": [
@@ -376,7 +380,8 @@ CHECKED_BY = "adversarial check of this sheet"
 CHECKED_MATH = (f"python3 teasers/v2/checks/03-what-difference.py: {MATH_RUN} on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through "
                 "publishing/data/checks/03-what-difference.py; the four 03a schedules re-run day by day in MATH_RELATIONS (payments, months, every interest total, the shown differences); "
                 "COPY_RULES keep every rounded figure 'about' or '≈', every 13 as '13 monthly payments' or '13 ×', each difference beside its schedule, the $1,800 and the year beside their baseline "
-                "(paying monthly), and the posting condition in the copy; re-run at the adversarial check with the same result")
+                "(paying monthly), and the posting condition in the copy; re-run at the adversarial check with the same result"
+                f"; re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: {MATH_RUN_SHIP}")
 VIDIQ_REQUERIED = ("pulled 2026-10-13: car loan 18,346 / 61.0 (-30.3%); how to pay off car loan 5,207 / 32.5; pay off debt 32,458 (+66.2%); "
                    "title scores 93 (pick), 92 (write-up title), 84 (best hashtag form); channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,518 views in 30 days. "
                    "Re-queried the same day after the build: the pick's title score 93 and 'car loan' 18,346 / 61.0. "
@@ -412,7 +417,10 @@ CHECK_LOG = [
     "  - The maths count is now 528 checks, 0 failed: the 03 check became cut-aware during the parallel condense (525 at the first build).",
     "- **Adversarial pass: checked, no change.** Every figure in the copy against the write-up's 03a table and the check's output; the title, description, tags, hashtags, caption and alt text against both platforms' limits; "
     "Edmunds named only as the source, with its affiliation line in both; no advice; the cover (35.0 s) read as a still: the finished board, the question and the verdict, all on the 3:4 crop.",
-    "- **Still to do.** The primary-source check above, and the ship rebuild (`--covers`) on the condensed file.",
+    "- **Still to do.** The primary-source check above.",
+    f"- **Done on ship (2026-10-13).** Rebuilt with `--covers` from the shipped condensed cut ({VIDEO_S:g} s). The finished board was re-picked by content at 14.73 s (frame 442), after the last read. "
+    f"The Video bullet, the cut and the check counts follow the shipped file ({MATH_RUN_SHIP} on `studio/specs/`), and the long alt text was re-read against the condensed beat sheet: "
+    "every beat it names is in the shipped cut, so no copy changed.",
 ]
 
 # ---------------------------------------------------------------- the numbers check
