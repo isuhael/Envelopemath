@@ -10,10 +10,8 @@
   "vo": [
     {"t": -0.4, "d": 1.63, "text": "Community college? **≈ 667 Big Macs**."},
     {"t": 1.25, "d": 2.18, "text": "In-state?"},
-    {"t": 3.45, "d": 1.2, "text": "**≈ 1,921**."},
-    {"t": 4.67, "d": 1.36, "text": "Out-of-state?"},
-    {"t": 6.05, "d": 1.2, "text": "**≈ 5,125**."},
-    {"t": 7.27, "d": 1.36, "text": "Private?"},
+    {"t": 3.45, "d": 2.58, "text": "**≈ 1,921**. Out-of-state?"},
+    {"t": 6.05, "d": 2.58, "text": "**≈ 5,125**. Private?"},
     {"t": 8.65, "d": 1.83, "text": "**≈ 7,235**. Versus community?"},
     {"t": 10.5, "d": 1.2, "text": "One private year: **≈ 10.8** community-college years."}
   ],

@@ -50,6 +50,12 @@ Two cuts per teaser (2026-10-13), picked by the spec's duration:
    - no still moment: each landing is followed by the next cut (or the blank) within 0.35-0.6 s; landings 2.44-3.0 s
      apart (two 1.2 s captions fit, nothing waits; the climax rung up to 3.4 s, for Scoreboard's 2.4 s final roll); each question line starts within 0.85 s of its cut and each
      number line within 0.6 s after its count lands (never before it);
+   - fix pass (2026-10-13): no answer under the next rung's "?": a count's answer line that stays up past the next cut
+     must carry that rung's question (merged "≈ 1,000. A new house in 1985?"), up from the landing so the question
+     leads its cut by 0.35-0.6 s (08b's hook answer is the one exemption: the header keeps "≈ 20th" on screen); the
+     caption lines are found by what they say, not by index; a caption counts every whitespace token ("≈" too, as in
+     06-pov-race.py); 08b's figure moves from frame 2 (a lookOpts.beats pose by 0.1 s, back before the first wind-up)
+     and its merged hook-answer line starts after the count lands, its day word popping as the blank lands (+0.1 s);
    - the payoff: 08a's payoff cut 0.45-0.65 s after the last landing (the verdict still lands with the hero);
      08b's verdict 0.8-1.5 s after the last landing; 08c's ask 0.5-0.8 s after the last landing, on a line that
      carries "Versus community?" from the last landing, the answer 1.25-1.4 s after the ask; verdict held 1.2-1.6 s;
@@ -412,19 +418,19 @@ def build_08a(cut="full"):
     pay_t = 16.8
     if cut == "cond":
         # captions paced for reading (no narration), back to back; frame 1 shows the whole hook line (-0.4 s).
-        # Merged: rung 1's question rides on its answer line (the 0.5 s intro leaves no 1.2 s for "Costco card?"
-        # on its own). Dropped: the last count's spoken rounding ("≈ 262,000."): the payoff cut 0.55 s after the
-        # count hides the caption band (the label stack carries the payoff), and the hero prints ≈ 262,467.
-        # The payoff cut and the hero roll keep their kit timing; the verdict lands with the hero, held 1.6 s.
+        # Merged (fix pass): each count's answer line carries the next rung's question, up from that landing to the
+        # next one, so the question leads its cut by 0.5 s and no answer stays under the next rung's "?" (rung 1's
+        # question rides on its answer line too: the 0.5 s intro leaves no 1.2 s for "Costco card?" on its own).
+        # Dropped: the last count's spoken rounding ("≈ 262,000."): the payoff cut hides the caption band (the
+        # label stack carries the payoff), and the hero prints ≈ 262,467. The payoff cuts 0.55 s after the last
+        # count (fix pass: 0.65 s was tried; it adds a 0.23 s near-still before the cut and raises the A11 limiter
+        # share, for 0.1 s more dwell); the hero roll keeps its kit timing; the verdict lands with the hero, held 1.6 s.
         pay_t = 10.73
         vo = [
             vo_line(-0.4, 2.35, f"Your **{u2}** hot dog."),
-            vo_line(1.98, 1.2, f"Costco card? **{v[0]}** hot dogs."),
-            vo_line(3.2, 1.2, "A month of rent?"),
-            vo_line(4.42, 1.2, f"**{v[1]}**."),
-            vo_line(5.64, 1.2, f"A new house in {HOUSE_YEAR_THEN}?"),
-            vo_line(6.86, 1.2, f"**{v[2]}**."),
-            vo_line(8.08, 2.65, f"And a new house in {HOUSE_YEAR_NOW}?"),
+            vo_line(1.98, 2.42, f"Costco card? **{v[0]}** hot dogs. A month of rent?"),
+            vo_line(4.42, 2.42, f"**{v[1]}**. A new house in {HOUSE_YEAR_THEN}?"),
+            vo_line(6.86, 3.87, f"**{v[2]}**. And a new house in {HOUSE_YEAR_NOW}?"),
             vo_line(10.73, 1.6, question),
             vo_line(12.33, 1.2, f"A **{rose_disp}** hot dog."),
         ]
@@ -467,8 +473,8 @@ def build_08a(cut="full"):
     mapping = {0: 1, 1: 3, 2: 5, 3: 7}           # rung index -> its question line (on the cut)
     answer = {0: 2, 1: 4, 2: 6, 3: 8}            # rung index -> the line that says its number (at the landing)
     if cut == "cond":
-        mapping = {0: 1, 1: 2, 2: 4, 3: 6}       # rung 0's question rides on its answer line
-        answer = {0: 1, 1: 3, 2: 5}              # the last count is printed by the hero, not captioned
+        mapping = {0: 1, 1: 1, 2: 2, 3: 3}       # each question rides on the previous answer's line (rung 0: its own)
+        answer = {0: 1, 1: 2, 2: 3}              # the last count is printed by the hero, not captioned
     opens = {i: items[i][3] for i in range(len(items))}
     say = {i: v[i] for i in range(len(items))}
     # rung 0 cuts under the opener line (VO 0); its question follows the opener
@@ -477,7 +483,7 @@ def build_08a(cut="full"):
               "extras": scoreboard_payoff, "cut": cut,
               # condensed: the caption band is hidden from the payoff cut (the label stack carries the question)
               "caps_off": lambda sp: sp["lookOpts"]["payoff"]["t"]}
-    return exp, rows, allowed, labelled, mapping, opens, say, lands, (10 if cut == "full" else 8), timing
+    return exp, rows, allowed, labelled, mapping, opens, say, lands, (10 if cut == "full" else 5), timing
 
 def scoreboard_payoff(sp, lands):
     """The hero's payoff roll (mirrors lookOpts.payoff in looks/scoreboard/formats/unit-ladder.js: it cuts at
@@ -623,20 +629,22 @@ def build_08b(cut="full"):
     if cut == "cond":
         # captions paced for reading (no narration), back to back; the hook line is whole on frame 1 (-0.4 s).
         # The header's blank ticks from 0.15 s (frame 1 keeps its "___"; the month grid fills beside the rolling
-        # count) and lands 0.35 s after the count; one line then carries both answers and the question between them
-        # (merged: "≈ 117 hours." + "Every hour you work, to…" + "≈ the 20th."). Dropped: the last count's spoken
-        # rounding ("≈ 30,000 hours."): the verdict lands 0.9 s after the count (the plate prints ≈ 30,053, and the
-        # morph keeps it in its working), too soon for a 1.2 s caption. Verdict held 1.6 s.
+        # count) and lands 0.35 s after the count; one line carries both answers and the question between them
+        # (merged: "≈ 117 hours." + "Every hour you work, to…" + "≈ the 20th."): fix pass, it starts just after the
+        # count lands, timed so its last word ("≈ the 20th") pops just after the blank lands, and it is up 1.43 s (11
+        # words need 1.32 s). Merged (fix pass): each later count's answer line carries the next rung's question, up from
+        # that landing to the next one (the question leads its cut by 0.4 s; no answer under the next rung's "?").
+        # Dropped: the last count's spoken rounding ("≈ 30,000 hours."): the verdict lands 0.9 s after the count
+        # (the plate prints ≈ 30,053, and the morph keeps it in its working), too soon for a 1.2 s caption. Verdict
+        # held 1.6 s.
         verdict_t, duration, land_after = 11.25, 12.85, 2.2
         blank = {"t": 0.15, "d": 2.4, "text": f"≈ {day}th", "calendar": 30}
         vo = [
-            vo_line(-0.4, 2.93, f"{usd(WAGE)} an hour? Median rent:"),
-            vo_line(2.55, 1.2, f"**{say[0]}**. Every hour you work, to **≈ the {day}th**."),
+            vo_line(-0.4, 2.7, f"{usd(WAGE)} an hour? Median rent:"),
+            vo_line(2.32, 1.43, f"**{say[0]}**. Every hour you work, to **≈ the {day}th**."),
             vo_line(3.77, 1.36, "A year of rent?"),
-            vo_line(5.15, 1.2, f"**{say[1]}**."),
-            vo_line(6.37, 1.36, "An average new car?"),
-            vo_line(7.75, 1.2, f"**{say[2]}**."),
-            vo_line(8.97, 2.28, "A median new house?"),
+            vo_line(5.15, 2.58, f"**{say[1]}**. An average new car?"),
+            vo_line(7.75, 3.5, f"**{say[2]}**. A median new house?"),
             vo_line(11.25, 1.2, f"That's **{ap(y_r, years)}{y_r} years** of full-time work. Every cent you keep."),
         ]
     # the last landing does not depend on hold here (its lead is capped at 0.92 s; landAfter fixes it), so one
@@ -671,9 +679,13 @@ def build_08b(cut="full"):
                      "blank": blank,
                      "morph": {"t": verdict_t, "working": f"{rungs[3]['unitsDisplay'].replace('≈ ', '')} hours ÷ {HOURS_PER_YEAR:,} a year",
                                "display": f"{y_r}", "label": "years of full-time work"},
-                     # condensed: the figure points up at the header's answer as it lands (the kit's own point
-                     # waits for 0.9 s before the next cut, which the condensed cut does not leave)
-                     **({"beats": [{"t": round(blank["t"] + blank["d"] - 0.14, 2), "act": "pointUp", "d": 0.5}]} if cut == "cond" else {})},
+                     # condensed: the figure points up at the header's blank from frame 2 as it starts to tick
+                     # (fix pass: the opening moved only the small ordinals and grid cells until the wind-up at
+                     # 0.47 s), back to idle before the wind-up; and points up at the header's answer as it lands (the
+                     # kit's own point waits for 0.9 s before the next cut, which the condensed cut does not leave).
+                     # Beats are pose keys only: no cue, so the cue record and the audio do not move
+                     **({"beats": [{"t": 0.03, "act": "pointUp", "d": 0.2},
+                                   {"t": round(blank["t"] + blank["d"] - 0.14, 2), "act": "pointUp", "d": 0.3}]} if cut == "cond" else {})},
         "sfx": [],
     }
     allowed = {F(x) for x in [WAGE, RENT, RENT * MONTHS, KBB_ATP, NEW_HOUSE_2026, MONTHS, 2026, HOURS_PER_YEAR]}
@@ -686,15 +698,18 @@ def build_08b(cut="full"):
     mapping = {0: 0, 1: 4, 2: 6, 3: 8}           # rung -> its question line
     answer = {0: 1, 1: 5, 2: 7, 3: 9}            # rung -> its number line (at the landing)
     if cut == "cond":
-        mapping = {0: 0, 1: 2, 2: 4, 3: 6}
-        answer = {0: 1, 1: 3, 2: 5}              # rung 0's number shares the blank's line; the last is the plate's
+        mapping = {0: 0, 1: 2, 2: 3, 3: 4}       # rungs 2-3: the question rides on the previous answer's line
+        answer = {0: 1, 1: 3, 2: 4}              # rung 0's number shares the blank's line; the last is the plate's
     opens = {i: items[i][3] for i in range(len(items))}
     say = {i: say[i] for i in range(len(items))}
     # rung 0's line opens on the wage ("$15 an hour?"), then names the rent
     timing = {"prerolled": set(), "prefilled": set(), "lead": {0: 4}, "lag": 1.4, "counter_sync": True, "answer": answer,
+              # condensed: rung 0's answer line is the hook's answer (11 words, 1.32 s): it stays up past rung 1's cut
+              # while the header keeps "≈ 20th" on screen; rung 1's question follows it
+              "trail_ok": {0} if cut == "cond" else set(),
               "lands_of": becker_lands, "cut": cut, "caps_off": lambda sp: sp["verdict"]["t"],
               "extras": lambda sp, lands: becker_blank(sp, lands, f"≈ the {day}th", cut) + becker_morph(sp, y_r)}
-    return exp, rows, allowed, labelled, mapping, opens, say, lands, (10 if cut == "full" else 7), timing
+    return exp, rows, allowed, labelled, mapping, opens, say, lands, (10 if cut == "full" else 5), timing
 
 def becker_blank(sp, lands, phrase, cut="full"):
     """The header's blank fills in (mirrors lookOpts.blank in looks/becker-rig/formats/unit-ladder.js: the ordinals
@@ -722,27 +737,61 @@ def becker_blank(sp, lands, phrase, cut="full"):
         ("___" in sp["header"], "08b: the header has no blank to fill", None),
         (n_text == n_vo, f"08b: the blank prints {bl['text']!r} but the voice says {phrase!r}", None),
         (qline["t"] <= bl["t"] < qline["t"] + qline["d"], "08b: the blank must start ticking during its question line", None),
-        (land - 1e-9 <= line["t"] <= land + 0.5 and said <= land + 0.5, f"08b: the blank lands at {land:.2f} s, its line starts at {line['t']:.2f} s", None),
         (int(bl.get("calendar", 0)) in (28, 29, 30, 31) and n_text <= int(bl["calendar"]), "08b: the blank's month grid must be a month that holds its day", None),
     ]
     info = f"  blank: ticks 1st -> {bl['text']} from {bl['t']:5.2f}, lands {land:5.2f}  its line from {line['t']:5.2f}  month grid {bl.get('calendar')} days"
     if cut == "full":
+        out.append((land - 1e-9 <= line["t"] <= land + 0.5 and said <= land + 0.5, f"08b: the blank lands at {land:.2f} s, its line starts at {line['t']:.2f} s", None))
         out.append((lands[0] + 0.6 <= land <= rungs[1]["t"] - 0.9, "08b: the blank must land between rung 0's count and rung 1's cut", info))
         return out
     beats = sp.get("lookOpts", {}).get("beats") or []
-    pts = [b for b in beats if b.get("act") == "pointUp"]
+    pts = [b for b in beats if b.get("act") == "pointUp" and b.get("t", 0) > 1.0]
     punch = []
     becker_lands(sp, punch)
+    # the merged line starts once the count has landed (checked with the numbers) and its words pop one by one (the
+    # kit's caption): the day's word ("≈ the 20th") pops as the blank lands, never before it, at most 0.1 s after
+    day_pop = becker_word_pop(line, phrase.split()[-1])
+    info += f"  ('{phrase.split()[-1]}' pops at {day_pop:5.2f})"
     out += [
         (0.12 < bl["t"] <= 0.25, f"08b (condensed): the blank must start ticking by 0.25 s, its month grid hidden on frame 1 (t {bl['t']})", None),
         (punch[0] - 0.25 > bl["t"], "08b (condensed): the blank's tick must move the frame before the first wind-up", None),
         (lands[0] + 0.3 - 1e-9 <= land <= lands[0] + 0.6 + 1e-9, f"08b (condensed): the blank must land 0.3-0.6 s after the count ({land - lands[0]:.2f} s)", None),
-        (abs(line["t"] - land) < 1e-6 and f"{rungs[0]['unitsDisplay']}" in strip_markup(line["text"]), "08b (condensed): one line, from the blank's landing, carries the count's answer and the day", None),
+        (f"{rungs[0]['unitsDisplay']}" in strip_markup(line["text"]) and lands[0] - 1e-9 <= line["t"] < land,
+         "08b (condensed): one line, from the count's landing (before the blank's), carries the count's answer and the day", None),
+        (land - 1e-6 <= day_pop <= land + 0.1, f"08b (condensed): the day pops at {day_pop:.2f} s, the blank lands at {land:.2f} s (window 0..+0.1 s)", None),
         (0.35 - 1e-9 <= rungs[1]["t"] - land <= 0.6 + 1e-9, f"08b (condensed): rung 1 must cut 0.35-0.6 s after the blank lands ({rungs[1]['t'] - land:.2f} s)", None),
         (len(pts) == 1 and abs(pts[0]["t"] - (land - 0.14)) < 0.006 and pts[0].get("d", 1.2) <= rungs[1]["t"] - pts[0]["t"],
          "08b (condensed): a pointUp beat must land on the blank (t = landing - 0.14 s) and end by rung 1's cut", info),
     ]
     return out
+
+# the Becker Rig figure's pose names (looks/becker-rig/lib.js POSES; 'cheer' = celebrate), for lookOpts.beats
+BECKER_POSES = {"stand", "idle", "lookUp", "think", "thinkUp", "point", "pointUp", "push", "pull", "lift", "carry", "hold",
+                "windup", "release", "follow", "crouch", "catch", "chopUp", "chopDown", "shrug", "shocked", "celebrate",
+                "cheer", "slump", "flat", "fall", "win", "sit"}
+
+def becker_word_pop(v, word):
+    """When `word` (the first whitespace token that contains it) starts to pop in a Becker Rig caption line: the kit
+    splits the line on whitespace (lib.js wordTokens) and pops word k at t + k * min(0.045, 0.32 / n), each over 0.16 s."""
+    toks = strip_markup(v["text"]).split()
+    k = next((i for i, w in enumerate(toks) if word in w), None)
+    if k is None:
+        return math.inf
+    return v["t"] + k * min(0.045, 0.32 / max(1, len(toks)))
+
+def becker_opening_beat(sp, name):
+    """Condensed Becker Rig cuts whose first coin stands at frame 1 (no pre-filled pan): the figure must move from
+    frame 2. A scripted beat (lookOpts.beats, pose keys only: no cue) starts after frame 1 and by 0.1 s, and hands back
+    to idle before the first wind-up (punch - 0.25 s), so the punch is unchanged."""
+    punch = []
+    becker_lands(sp, punch)
+    beats = sp.get("lookOpts", {}).get("beats") or []
+    first = [b for b in beats if 0 < b.get("t", -1) <= 0.1 + 1e-9]
+    ok = len(first) == 1 and first[0].get("act") in BECKER_POSES and first[0].get("d") is not None \
+        and first[0]["t"] + first[0]["d"] <= punch[0] - 0.25 + 1e-9
+    b = first[0] if first else {}
+    return [(ok, f"{name} (condensed): a figure beat must start between frame 2 and 0.1 s and hand back before the first wind-up ({punch[0] - 0.25:.2f} s)",
+             f"  opening: {b.get('act', '?')} beat {b.get('t', 0):.2f}-{b.get('t', 0) + (b.get('d') or 0):.2f} s, then the wind-up at {punch[0] - 0.25:.2f} s")]
 
 def becker_morph(sp, years_r):
     """At the verdict the HUD's last answer turns into the takeaway (lookOpts.morph): on the verdict's beat, its
@@ -828,14 +877,14 @@ def build_08c(cut="full"):
         # The takeaway is asked 0.6 s after the last count (as his hop lands): the last count's line carries the
         # question with it (merged: "≈ 7,235." + "Versus community?"), up from the landing to the answer; the
         # answer lands 1.25 s after the ask (the compared piles stand side by side 0.5 s before it), held 1.6 s.
+        # Merged (fix pass): each earlier count's answer line carries the next rung's question too, up from that
+        # landing to the next one (the question leads its cut by 0.4 s; no answer under the next rung's "?").
         duration, verdict_t, land_after, ask, pan = 12.1, 10.5, 2.2, 9.25, 1.55
         vo = [
             vo_line(-0.4, 1.63, f"Community college? **{say[0]} Big Macs**."),
             vo_line(1.25, 2.18, "In-state?"),
-            vo_line(3.45, 1.2, f"**{say[1]}**."),
-            vo_line(4.67, 1.36, "Out-of-state?"),
-            vo_line(6.05, 1.2, f"**{say[2]}**."),
-            vo_line(7.27, 1.36, "Private?"),
+            vo_line(3.45, 2.58, f"**{say[1]}**. Out-of-state?"),
+            vo_line(6.05, 2.58, f"**{say[2]}**. Private?"),
             vo_line(8.65, 1.83, f"**{say[3]}**. Versus community?"),
             vo_line(10.5, 1.2, f"One private year: **{ratio_num}** community-college years."),
         ]
@@ -876,13 +925,16 @@ def build_08c(cut="full"):
     labelled = {F(1): "'1 year' (one unit)"}
     mapping = {0: 0, 1: 1, 2: 3, 3: 5}           # rung -> its question line
     answer = {0: 0, 1: 2, 2: 4, 3: 6}            # rung -> the line that prints and says its figure
+    if cut == "cond":
+        mapping = {0: 0, 1: 1, 2: 2, 3: 3}       # rungs 2-3: the question rides on the previous answer's line
+        answer = {0: 0, 1: 2, 2: 3, 3: 4}
     opens = {i: items[i][3] for i in range(len(items))}
     say = {i: say[i] for i in range(len(items))}
     # rung 1 is pre-filled before frame 1 and the opener line reads the answer already on screen
     timing = {"prerolled": set(), "prefilled": {0}, "lead": {}, "lag": 0.0, "counter_sync": True, "answer": answer,
               "lands_of": becker_lands, "cut": cut, "caps_off": lambda sp: sp["verdict"]["t"],
               "extras": lambda sp, ld: becker_asked_payoff(sp, ld, ratio_r, cut)}
-    return exp, rows, allowed, labelled, mapping, opens, say, lands, (8 if cut == "full" else 7), timing
+    return exp, rows, allowed, labelled, mapping, opens, say, lands, (8 if cut == "full" else 5), timing
 
 def becker_asked_payoff(sp, lands, ratio_r, cut="full"):
     """The asked takeaway (lookOpts.morph with ask, in looks/becker-rig/formats/unit-ladder.js): it is asked after the
@@ -901,7 +953,7 @@ def becker_asked_payoff(sp, lands, ratio_r, cut="full"):
     if cut == "cond":
         # condensed: the question rides on the last count's line, up from that landing through the ask
         qline = next((v for v in sp["vo"] if "Versus community?" in strip_markup(v["text"])
-                      and v["t"] <= mo["ask"] < v["t"] + v["d"] and abs(v["t"] - lands[-1]) <= 0.6), None)
+                      and v["t"] <= mo["ask"] < v["t"] + v["d"] and abs(v["t"] - lands[-1]) <= 0.06), None)
     vline = next((v for v in sp["vo"] if abs(v["t"] - sp["verdict"]["t"]) < 1e-9), None)
     disp = str(mo.get("display"))
     said = vline["t"] + words_before(vline["text"], "≈ " + disp) / WPS if vline and ("≈ " + disp) in strip_markup(vline["text"]) else -1
@@ -1040,6 +1092,29 @@ def run(name, builder):
 
     # 5. timing
     vo = spec["vo"]
+    if cut == "cond":
+        # condensed: find each rung's question and number lines by what they say (not by index), so a spec whose
+        # lines were split, merged or reordered is judged on its own lines
+        def line_of(phrase, start=0):
+            return next((i for i, v in enumerate(vo) if i >= start and phrase in strip_markup(v["text"])), None)
+        found = {}
+        for ri in mapping:
+            i = line_of(opens[ri])
+            check(i is not None, f"{name}: no caption line asks rung {ri} ({opens[ri]!r})")
+            found[ri] = mapping[ri] if i is None else i
+        mapping = found
+        found = {}
+        for ri in timing.get("answer", mapping):
+            i = line_of(say[ri], 0 if ri in timing["prefilled"] else mapping[ri])
+            check(i is not None, f"{name}: no caption line prints rung {ri}'s {say[ri]!r}")
+            found[ri] = timing["answer"][ri] if i is None else i
+        timing = {**timing, "answer": found}
+        # a count the screen prints but no caption carries (08a's hero, 08b's plate): never captioned before the band hides
+        hide_ = timing["caps_off"](spec)
+        for ri in mapping:
+            if ri not in found and ri not in timing["prefilled"]:
+                check(not any(say[ri] in strip_markup(v["text"]) for v in vo if v["t"] < hide_ - 1e-9),
+                      f"{name}: rung {ri}'s {say[ri]!r} is printed by the screen, not captioned")
     t0_numbers = any(r["t"] <= 0 for r in rungs) or bool(NUM_RE.search(spec["header"]))
     check(bool(spec["header"]) and t0_numbers and "$" in spec["footer"] and NUM_RE.search(spec["footer"]),
           f"{name}: frame 1 must show the header and a $ number")
@@ -1053,6 +1128,7 @@ def run(name, builder):
     for i, v in enumerate(vo):
         if i + 1 < len(vo):
             check(v["t"] + v["d"] <= vo[i + 1]["t"] + 1e-9, f"{name}: vo[{i}] overlaps vo[{i + 1}]")
+    answer = timing.get("answer", mapping)
     for ri, vi in mapping.items():
         if ri in timing["prefilled"]:
             # answered before frame 1 (the kit's pre-fill); the opener line reads it from frame 1
@@ -1066,11 +1142,27 @@ def run(name, builder):
         elif cut == "cond" and ri == 0 and vi == 0:
             # the opener names rung 0 (placed at frame 1) and is whole on frame 1
             check(rungs[0]["t"] == 0.0 and vo[0]["t"] <= 0, f"{name}: rung 0's opener must be up from frame 1")
+        elif cut == "cond" and ri > 0 and vi == answer.get(ri - 1):
+            # merged (fix pass): the previous count's answer line carries this rung's question, from that landing, so
+            # the question leads its cut (by 0.35-0.6 s, the landing-to-cut gap) instead of trailing it
+            lead_s = rungs[ri]["t"] - vo[vi]["t"]
+            check(abs(vo[vi]["t"] - lands[ri - 1]) <= 0.06 and 0.35 - 1e-9 <= lead_s <= 0.6 + 1e-9,
+                  f"{name}: rung {ri}: its question rides on rung {ri - 1}'s answer line, which must start on that landing ({lands[ri - 1]:.2f} s) and lead the cut by 0.35-0.6 s ({lead_s:.2f} s)")
         else:
             lag = vo[vi]["t"] - rungs[ri]["t"]
             lag_max = timing["lag"] if cut == "full" else 0.85
             check(-1e-9 <= lag <= lag_max + 1e-9, f"{name}: rung {ri} t={rungs[ri]['t']} but its question line starts at {vo[vi]['t']} (allowed lag {lag_max} s)")
-        wb = words_before(vo[vi]["text"], opens[ri])
+        qtext = vo[vi]["text"]
+        if cut == "cond" and ri > 0 and vi == answer.get(ri - 1):
+            # a merged line: the question is the sentence after the previous count's answer
+            plain = strip_markup(qtext)
+            i0 = plain.find(say[ri - 1])
+            j0 = plain.find(". ", i0 if i0 >= 0 else 0)
+            qtext = plain[j0 + 2:] if i0 >= 0 and j0 >= 0 else plain
+        if opens[ri] not in strip_markup(qtext):
+            check(False, f"{name}: rung {ri}: VO line {vi} does not ask {opens[ri]!r} after the previous answer")
+            continue
+        wb = words_before(qtext, opens[ri])
         lead = timing["lead"].get(ri, 1)
         check(wb <= lead, f"{name}: rung {ri}: VO line {vi} names the item late ({wb} words in, max {lead})")
     check(lands[0] <= 3.0, f"{name}: first count lands at {lands[0]:.2f} s (R10: within about 3 s)")
@@ -1083,7 +1175,6 @@ def run(name, builder):
     check(abs(lands[-1] + spec["data"]["hold"] - dur) <= 0.02, f"{name}: last landing {lands[-1]:.2f} + hold {spec['data']['hold']} != duration {dur}")
     for s in spec.get("sfx", []):
         check(0 <= s["t"] <= dur, f"{name}: sfx at {s['t']} outside the video")
-    answer = timing.get("answer", mapping)
     if spec["look"] == "scoreboard" or timing.get("counter_sync"):
         for ri, vi in answer.items():
             # round-2 cut: when the voice says it (2.6 words/s); condensed (no narration): when its line goes up
@@ -1122,7 +1213,8 @@ def run(name, builder):
 # Condensed-cut rules (2026-10-13): no narration, no still moment
 # ======================================================================================
 def cap_words(v):
-    return len([w for w in strip_markup(v["text"]).split() if re.search(r"[A-Za-z0-9]", w)])
+    # every whitespace-separated token counts, "≈" and "=" included (as in 06-pov-race.py's words(): the eye reads it)
+    return len(strip_markup(v["text"]).split())
 
 
 def cap_need(v):
@@ -1154,6 +1246,14 @@ def condensed_rules(name, spec, lands, timing, mapping, answer):
     for a, b in zip(shown, shown[1:]):
         check(b["t"] - (a["t"] + a["d"]) < 0.2, f"{name}: caption gap {b['t'] - a['t'] - a['d']:.2f} s before {strip_markup(b['text'])!r} (back to back: < 0.2 s)")
     check(shown[-1]["t"] + shown[-1]["d"] >= hide - 0.2, f"{name}: the last shown caption must stay up until the band is hidden")
+    # no answer under the next rung's "?" (fix pass): a count's answer line that stays up past the next cut must carry
+    # that rung's question (merged), except where timing["trail_ok"] says why (08b: the hook's answer, see build_08b)
+    for ri, vi in answer.items():
+        if ri + 1 >= len(rungs):
+            continue
+        v = vo[vi]
+        if v["t"] + v["d"] > rungs[ri + 1]["t"] + 0.05 and ri not in timing.get("trail_ok", set()):
+            check(mapping[ri + 1] == vi, f"{name}: rung {ri}'s answer line {strip_markup(v['text'])!r} stays up {v['t'] + v['d'] - rungs[ri + 1]['t']:.2f} s past rung {ri + 1}'s cut without its question (merge them)")
     # frame 1: the hook line is whole (Scoreboard: it rises in over 0.14 s; Becker Rig: its words pop in 0.16 s each,
     # staggered by min(0.045, 0.32 / n))
     v0 = vo[0]
@@ -1190,6 +1290,9 @@ def condensed_rules(name, spec, lands, timing, mapping, answer):
               "08a: the last rung's question line must run through its landing to the payoff cut (its rounding is not captioned)")
         check(3 not in answer, "08a: the last count is printed by the hero (not captioned)")
     if name == "08b":
+        for ok, msg, line in becker_opening_beat(spec, "08b"):
+            check(ok, msg)
+            print(line)
         punch = []
         becker_lands(spec, punch)
         check(punch[0] <= 0.8, f"08b: rung 0's punch must come by 0.8 s ({punch[0]:.2f})")

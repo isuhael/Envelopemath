@@ -30,7 +30,7 @@
   - the calendar claim behind 08b's "≈ the 20th", on a 30-day month, on the average month and on a Monday-Friday calendar for all 7 weekdays the 1st can fall on;
   - every pinned-comment and caption number in this file.
 - **Result: PASSED, all 677 checks** (503 before the assembly pass, 524 after it, 680 after the fix pass; the Becker Rig port of 08c replaced the Clean Sheet replay (674); its QA fix pass added 3; see the [Review log](#review-log)).
-- **Cut-aware since the condensed cut (2026-10-13).** Each teaser has two expectation sets, picked by the spec's length: the round-2 cut (22.0 / 27.0 / 22.0 s, what `studio/specs/` holds; `IN_SPECS` names it) and the condensed cut (`studio/specs-wip/`, checked with `--spec [KEY=]PATH`). The condensed set swaps the narration rules for caption pacing (≥ max(1.2 s, 0.12 s a word) on screen, back to back), frame-1 and no-still rules, and the payoff windows; see the [Condensed cut](#condensed-cut-2026-10-13-08a-08b-08c) entry. **PASSED: 680 checks by default** (677 + one "which cut" row per teaser) **and 701 with `--spec` on the three condensed specs.** 23 mutations of the condensed specs are all caught.
+- **Cut-aware since the condensed cut (2026-10-13).** Each teaser has two expectation sets, picked by the spec's length: the round-2 cut (22.0 / 27.0 / 22.0 s, what `studio/specs/` holds; `IN_SPECS` names it) and the condensed cut (`studio/specs-wip/`, checked with `--spec [KEY=]PATH`). The condensed set swaps the narration rules for caption pacing (≥ max(1.2 s, 0.12 s a word) on screen, back to back), frame-1 and no-still rules, and the payoff windows; see the [Condensed cut](#condensed-cut-2026-10-13-08a-08b-08c) entry. **PASSED: 680 checks by default** (677 + one "which cut" row per teaser) **and 682 with `--spec` on the three condensed specs** (701 before the fix pass merged the captions: fewer lines, fewer per-line rows). 38 mutations of the condensed specs (fix pass) are all caught.
 - **Mutation test:** on scratch copies of the three specs, six mutations: in 08a the verdict ≈ $7.01 → ≈ $7.00 and the rung-1 cut back to 2.0 s; in 08b "≈ the 20th" → "≈ the 18th" and vo[2] back on its cut at 8.4 s; in 08c one count ≈ 5,125 → ≈ 5,126 and row 1 moved to t = 0.0, so it is no longer pre-filled. 16 of 503 checks fail, and the script exits with code 1. Every mutation is caught by an independent rule as well as by the leaf-by-leaf comparison: R10 (first count at 3.48 s), the voice 0.69 s ahead of the counter, row 1 not pre-filled, or a number that is not computed.
 - **Assembly-pass mutations:** 08b's blank "≈ 20th" → "≈ 18th", 08b's blank start 4.7 → 6.0 s, and 08a's payoff start 20.2 → 21.5 s. Each fails 3 checks (the leaf comparison plus two independent rules: a number that is not computed or a day the voice does not say; the blank landing after the voice; the payoff landing 0.98 s after the voice), and the script exits with code 1.
 - **Port mutations** (08c in Becker Rig, scratch copies, 2026-10-08): `landAfter` 1.7 → 2.2 s; the morph's number 10.8 → 10.9; its working's divisor $4,150 → $11,950; the ask 15.85 → 13.0 s (before the last count lands); rung 1 cut at 0.0 instead of −1.0 (no longer pre-filled); verdict and morph 17.35 → 16.9 s. Each fails 3-6 checks, always including an independent rule (an answer line before its count lands; a number that is not the working's ratio; a working that does not divide the compared piles; an ask before the last landing; a rung not landed by frame 1; the voice off the verdict's beat), and the script exits with code 1.
@@ -111,7 +111,7 @@ All three keep HD Guy's footer device: "Tall Latte ☕ = $4.45" (H04) and "Price
 | Twist | The hot dog never rose. Had it risen like a new house: **≈ $7.01** | Rent takes every hour you work from the 1st to **≈ the 20th** | One private year is **≈ 10.8×** a community-college year |
 | Payoff lands (condensed; round-2) | 12.33 s (18.40 s) (hero ≈ $7.01 + verdict) | 11.25 s (21.80 s) (the plate morphs to "14 · years of full-time work" + verdict) | 10.50 s (17.35 s) (the plate lands "10.8 · community-college years" + verdict) |
 | Runtime (body + the 2.5 s end card) | condensed 13.93 + 2.5 = 16.43 s (round-2 22.0 + 2.5) | condensed 12.85 + 2.5 = 15.35 s (27.0 + 2.5) | condensed 12.1 + 2.5 = 14.6 s (22.0 + 2.5) |
-| Captions (no narration; condensed cut) | 9 lines, 7 shown, 26 words shown (round 2: 11 VO cues, about 52 words) | 8 lines, 7 shown, 28 words (11 cues, about 57) | 8 lines, 7 shown, 13 words (9 cues, about 40) |
+| Captions (no narration; condensed cut, fix pass: each answer carries the next question) | 6 lines, 4 shown, 28 words shown (round 2: 11 VO cues, about 52 words) | 6 lines, 5 shown, 32 words (11 cues, about 57) | 6 lines, 5 shown, 17 words (9 cues, about 40) |
 | Verdict | Rose like a house? / A **≈ $7.01** hot dog. | **≈ 14 years** of full-time work. / Every cent you keep. | One private year = / **≈ 10.8** community-college years. |
 | Hook score (two blind judges, hook pass 2: current → adopted) | 4.5 → **6.0** | 5.75 → **7.0** | 5.25 → **6.5** |
 
@@ -173,22 +173,19 @@ All three keep HD Guy's footer device: "Tall Latte ☕ = $4.45" (H04) and "Price
 
 ### Beat sheet (condensed cut, 2026-10-13: rungs cut at 0.5 / 2.48 / 4.92 / 7.36 s, the payoff at 10.73 s, the verdict at 12.33 s; body 13.93 s + the 2.5 s end card = 16.43 s)
 
-Counter landing times are the Scoreboard kit's own (replayed by the check). Line 1 of each label is "cost ÷ $1.50", and line 2 is the item. Each rung cuts 0.5 s after the previous count lands (the kit's floor: a rung's roll always ends at least 0.5 s before the next cut), so the counter is never left standing. Each question goes up 0.72 s after its cut, once the previous answer's caption has had its 1.2 s; each number has its own caption from its landing. The round-2 cut's beat sheet (22.0 s, paced for a recorded voice) is in git history (`git show d71fd5c:teasers/v2/08-unit-ladder.md`).
+Counter landing times are the Scoreboard kit's own (replayed by the check). Line 1 of each label is "cost ÷ $1.50", and line 2 is the item. Each rung cuts 0.5 s after the previous count lands (the kit's floor: a rung's roll always ends at least 0.5 s before the next cut), so the counter is never left standing. Since the fix pass each count's caption carries the next rung's question ("≈ 1,000. A new house in 1985?"), up from that landing to the next one: the question leads its cut by 0.5 s and no answer stays under the next rung's "?" (the review cut's answers trailed the picture by 0.72 s at every rung). The round-2 cut's beat sheet (22.0 s, paced for a recorded voice) is in git history (`git show d71fd5c:teasers/v2/08-unit-ladder.md`).
 
 | t (s) | On screen | Caption |
 |---|---|---|
 | 0.0 | Header "WHAT YOUR **$1.50** HOT DOG WOULD / COST IF IT ROSE LIKE A HOUSE"; footer; hero "$1.50" beside the hot-dog icon; one big hot dog mid-fall; label "YOUR HOT DOG + SODA"; 4 rung pips | "Your **$1.50** hot dog." (up from −0.4 s, so it is whole on frame 1) |
 | 0.2 | The hot dog lands (squash + pop) | |
 | 0.5 | Cut (thud). Label "$65 ÷ $1.50 / YOUR COSTCO MEMBERSHIP" slams in; the pile re-packs and the counter rolls from 1 (0.92) | (same line) |
-| 1.98 | Counter lands **≈ 43** (ding); 43 dogs stacked | "Costco card? **≈ 43** hot dogs." |
+| 1.98 | Counter lands **≈ 43** (ding); 43 dogs stacked | "Costco card? **≈ 43** hot dogs. A month of rent?" (the question 0.5 s ahead of its cut) |
 | 2.48 | Cut. "$1,531 ÷ $1.50 / A MONTH OF MEDIAN RENT, 2026"; the pile re-packs and the counter rolls | (same line) |
-| 3.2 | | "A month of rent?" |
-| 4.42 | Counter lands **≈ 1,021** | "**≈ 1,000**." |
+| 4.42 | Counter lands **≈ 1,021** | "**≈ 1,000**. A new house in 1985?" |
 | 4.92 | Cut. "$84,300 ÷ $1.50 / A MEDIAN NEW HOUSE, 1985"; the pile turns into an LED-dot wall | (same line) |
-| 5.64 | | "A new house in 1985?" |
-| 6.86 | Counter lands **56,200**; the dot wall fills the stage (one dot ≈ 12 hot dogs) | "**56,200**." |
+| 6.86 | Counter lands **56,200**; the dot wall fills the stage (one dot ≈ 12 hot dogs) | "**56,200**. And a new house in 2026?" (up to the payoff cut) |
 | 7.36 | Cut + riser. "$393,700 ÷ $1.50 / A MEDIAN NEW HOUSE, AUG 2026". The 1985 wall pulls back into a mound of ≈ 21% of the stage and turns white; the "1985" tag pops onto it (7.83); the new green dots rain in around it at the same scale | (same line) |
-| 8.08 | | "And a new house in 2026?" (up to the payoff cut) |
 | 10.18 | Counter lands **≈ 262,467** (hit + cash); the green wall fills the stage around the white 1985 mound; the "AUG 2026" tag pops on | (same line) |
 | 10.73 | Payoff cut. Label "ROSE LIKE A HOUSE?"; the footer becomes the working "$393,700 (Aug 2026) ÷ 56,200 hot dogs (1985)"; the hero cuts to "$1.50" and rolls up from 10.93 (its "≈" an unlit ghost). The split wall stays lit. Captions hide from here: the label carries the line | ("Rose like a house?", under the label) |
 | 12.33 | The hero lands **≈ $7.01** (hit + cash, glow, floor bloom) and the verdict slams in on the same beat: "Rose like a house? / A **≈ $7.01** hot dog." (reveal + ding) | ("A ≈ $7.01 hot dog.", under the verdict) |
@@ -197,23 +194,20 @@ Counter landing times are the Scoreboard kit's own (replayed by the check). Line
 
 **Why rung 1 cuts at 0.5 s.** Frame 1 is the hook (header, hero "$1.50", the falling hot dog, the label and the whole caption). The hot dog lands at 0.2 s and settles by 0.33 s; the kit keeps its unit intro only while rung 1 starts at 0.5 s or later, so 0.5 s is the earliest cut that keeps frame 1 and leaves no still. The first count lands at 1.98 s (R10, was 2.98 s).
 
-**Why the last count has no caption of its own.** The payoff cut 0.55 s after the count hides the caption band (the label stack carries the payoff's question), so "≈ 262,000." could not be up for 1.2 s without 0.6 s of standing picture before the payoff. The hero prints ≈ 262,467 and the "AUG 2026" tag lands with it; "And a new house in 2026?" stays up through the landing.
+**Why the last count has no caption of its own.** The payoff cut 0.55 s after the count hides the caption band (the label stack carries the payoff's question), so "≈ 262,000." could not be up for 1.2 s without 0.6 s of standing picture before the payoff. The hero prints ≈ 262,467 and the "AUG 2026" tag lands with it; "56,200. And a new house in 2026?" stays up through the landing. ≈ 262,467 is settled for 0.55 s (10.18-10.73) and legible as "262,xxx" from about 9.9 s. The fix pass tried the payoff at +0.65 s (10.83 s, the check's limit): it adds a 0.23 s near-still before the cut (10.60-10.83) and raises 08a's A11 limiter share from 3.526% to 3.75% (max 3.0 → 3.56 dB) for 0.1 s more dwell, so the payoff stays at 10.73 s.
 
-### Captions (on-screen text, no narration; 9 lines, 7 shown, 26 words shown)
+### Captions (on-screen text, no narration; 6 lines, 4 shown, 28 words shown)
 
 | t | d | Caption text (spec) | On screen |
 |---|---|---|---|
 | −0.4 | 2.35 | Your **$1.50** hot dog. | 0.0-1.95 (1.95 s) |
-| 1.98 | 1.2 | Costco card? **≈ 43** hot dogs. | 1.2 s (merged: round 2 had "Costco card?" and "≈ 43 hot dogs." as two lines) |
-| 3.2 | 1.2 | A month of rent? | 1.2 s |
-| 4.42 | 1.2 | **≈ 1,000**. | 1.2 s |
-| 5.64 | 1.2 | A new house in 1985? | 1.2 s |
-| 6.86 | 1.2 | **56,200**. | 1.2 s |
-| 8.08 | 2.65 | And a new house in 2026? | 2.65 s, through the landing at 10.18 |
+| 1.98 | 2.42 | Costco card? **≈ 43** hot dogs. A month of rent? | 2.42 s, landing to landing (merged: round 2 had "Costco card?", "≈ 43 hot dogs." and "A month of rent?" as three lines) |
+| 4.42 | 2.42 | **≈ 1,000**. A new house in 1985? | 2.42 s (merged in the fix pass) |
+| 6.86 | 3.87 | **56,200**. And a new house in 2026? | 3.87 s, through the landing at 10.18 to the payoff cut (merged in the fix pass) |
 | 10.73 | 1.6 | Rose like a house? | hidden: the label stack shows it |
 | 12.33 | 1.2 | A **≈ $7.01** hot dog. | hidden: the verdict shows it |
 
-Each shown line is up for at least max(1.2 s, 0.12 s a word), back to back (gaps 0.02-0.03 s). The two hidden lines keep the narration text for an A/B VO cut. Dropped: "≈ 262,000." (see above).
+Each shown line is up for at least max(1.2 s, 0.12 s a word; every token counts, "≈" included), back to back (gaps 0.02-0.03 s). Each answer line carries the next rung's question, so the question leads its cut by 0.5 s; the Scoreboard caption lights its words left to right over the line, so the answer reads first and the question lights after the cut. The two hidden lines keep the narration text for an A/B VO cut. Dropped: "≈ 262,000." (see above).
 
 ### The maths
 
@@ -319,11 +313,11 @@ Each rung's label gives its basis (median new house, 1985 annual or August 2026)
 - **R6 (pass):** you, $15 an hour, your rent and this month, starting on the 1st.
 - **R8 (pass):** 11 words on 2 lines.
 - **R9 (pass):** exactly one visible blank to fill ("___").
-- **R10 (pass):** ≈ 117 lands at 2.20 s and the header's blank on ≈ 20th at 2.55 s, as the line that carries both ("≈ 117 hours. Every hour you work, to ≈ the 20th.") starts. The biggest number is last. Round-2 cut: 2.10 s (its line at 2.40 s) and 6.40 s.
+- **R10 (pass):** ≈ 117 lands at 2.20 s and the header's blank on ≈ 20th at 2.55 s. The line that carries both ("≈ 117 hours. Every hour you work, to ≈ the 20th.") starts at 2.32 s (fix pass; it was 2.55 s) and pops word by word, so "≈ 117" appears after the count and "the 20th" pops at 2.61 s, just after the blank lands; it is whole from 2.77 s. The biggest number is last. Round-2 cut: 2.10 s (its line at 2.40 s) and 6.40 s.
 - **R11 (pass):** one question, the blank.
 - **R12 (pass):** "≈ the 20th" and "≈ 14 years of full-time work".
 - **R3 (partial):** one wage, and the rent is the Census median, not yours. The pinned comment gives the rule for your own rent and wage.
-- **The blank is answered on screen:** from 0.15 s (condensed cut; 4.7 s in the round-2 cut) the header's "___" ticks up through the days (1st, 2nd, … in grey) while the month grid beside the counter fills day by day and the hours pile up, and at 2.55 s (6.40 s) it lands on **≈ 20th** in green with a green rule and a ding, while the figure points up at it (`lookOpts.blank`; in the condensed cut the point is scripted with `lookOpts.beats`). The header then reads "from the 1st to the ≈ 20th" for the rest of the video. Frame 1 shows both the "___" and the "? hours".
+- **The blank is answered on screen:** from 0.15 s (condensed cut; 4.7 s in the round-2 cut) the header's "___" ticks up through the days (1st, 2nd, … in grey) while the month grid beside the counter fills day by day and the hours pile up, and at 2.55 s (6.40 s) it lands on **≈ 20th** in green with a green rule and a ding, while the figure points up at it (`lookOpts.blank`; in the condensed cut the point is scripted with `lookOpts.beats`). The header then reads "from the 1st to the ≈ 20th" for the rest of the video. Frame 1 shows both the "___" and the "? hours", and since the fix pass he points up at the blank from frame 2 as it starts to tick (a second scripted `pointUp`, 0.03-0.23 s), so the figure moves from the first frame after the thumbnail.
 - **No caption spoils a reveal** (fix pass, QA's must): Becker captions pop a whole line at once, so each answer has its own line that starts as its count or the blank lands. Before the fix "≈ 117 hours" was printed at 0.25 s under "? hours", and "the 20th" at 5.4 s while the blank still read "9th".
 
 **The wrong beliefs it plays on:**
@@ -332,48 +326,47 @@ Each rung's label gives its basis (median new house, 1985 annual or August 2026)
 
 ### Beat sheet (condensed cut, 2026-10-13: every count lands 2.2 s after its cut (`lookOpts.landAfter`), rungs cut at 0 / 2.95 / 5.55 / 8.15 s, the verdict at 11.25 s; body 12.85 s + the 2.5 s end card = 15.35 s)
 
-Times are the built Becker Rig kit's own (replayed by the check). Each rung: a gold coin drops in (thud), he winds up and punches it, the units fill and the count lands. Each later rung cuts 0.4 s after the previous count (or, for rung 2, the blank) lands, while the landing still moves; each question goes up 0.82 s after its cut, once the previous answer's caption has had its 1.2 s. The round-2 cut's beat sheet (27.0 s) is in git history.
+Times are the built Becker Rig kit's own (replayed by the check). Each rung: a gold coin drops in (thud), he winds up and punches it, the units fill and the count lands. Each later rung cuts 0.4 s after the previous count (or, for rung 2, the blank) lands, while the landing still moves. Since the fix pass each later count's caption carries the next rung's question ("≈ 1,400. An average new car?"), up from that landing to the next one, so the question leads its cut by 0.4 s and no answer stays under the next rung's "?"; the hook's answer line is the one that stays past a cut (rung 2's, 0.8 s), while the header keeps "≈ 20th" on screen. The round-2 cut's beat sheet (27.0 s) is in git history.
 
 | t (s) | On screen (Becker Rig) | Caption |
 |---|---|---|
 | 0.0 | Header with the blank "___"; footer; HUD "Median rent, 1 month / $1,531 ÷ $13.10 = / ? hours of work"; the figure beside the gold $1,531 coin | "$15 an hour? Median rent:" (up from −0.4 s, whole on frame 1) |
-| 0.03-0.23 | The 30-day month grid fades in beside the counter | |
+| 0.03-0.23 | He points up at the header's blank (`lookOpts.beats`, fix pass), then lowers his arm into the wind-up; the 30-day month grid fades in beside the counter | |
 | 0.15 | The header's blank hands over to a rule sized for the answer and the days tick up on it (1st, 2nd, … in grey), the grid filling day by day | |
 | 0.47-0.72 | He winds up and punches the coin (hit + shake); hour icons arc into a pyramid and the counter rolls, while the days keep ticking | |
 | 2.20 | Counter lands **117**; "=" turns to "≈" (the header is on the 18th) | |
+| 2.32 | | "**≈ 117 hours**. Every hour you work, to **≈ the 20th**." pops in word by word (whole at 2.77) |
 | 2.41 | He points up at the header (`lookOpts.beats`) | |
-| 2.55 | The blank lands on **≈ 20th** (green, pop, ding); the rule turns green; 20 of the grid's 30 days are green | "**≈ 117 hours**. Every hour you work, to **≈ the 20th**." |
-| 2.95 | Cut: HUD "Median rent, 1 year / $18,372 ÷ $13.10 = / ?"; the month grid clears; the camera pushes in; a new coin drops; punch at 3.86 | (same line) |
+| 2.55 | The blank lands on **≈ 20th** (green, pop, ding); the rule turns green; 20 of the grid's 30 days are green | ("the 20th" pops at 2.61) |
+| 2.95 | Cut: HUD "Median rent, 1 year / $18,372 ÷ $13.10 = / ?"; the month grid clears; the camera pushes in; a new coin drops; punch at 3.86 | (same line, to 3.75) |
 | 3.77 | | "A year of rent?" |
-| 5.15 | Counter lands **1,402**; the camera pulls back to show both piles | "**≈ 1,400**." |
+| 5.15 | Counter lands **1,402**; the camera pulls back to show both piles | "**≈ 1,400**. An average new car?" |
 | 5.55 | Cut: "An average new car / $50,089 ÷ $13.10 ="; punch at 6.46 | (same line) |
-| 6.37 | | "An average new car?" |
-| 7.75 | Counter lands **3,824** | "**≈ 3,800**." |
+| 7.75 | Counter lands **3,824** | "**≈ 3,800**. A median new house?" (up to the verdict) |
 | 8.15 | Cut: "A median new house / $393,700 ÷ $13.10 ="; punch at 8.93 | (same line) |
-| 8.97 | | "A median new house?" (up to the verdict) |
 | 10.35 | Counter lands **30,053** on the gold plate (hit, shake, flash); he jumps, then slumps (11.15) | (same line) |
 | 11.25 | Verdict: "**≈ 14 years** of full-time work. / Every cent you keep." The HUD morphs: "30,053 hours ÷ 2,080 a year ≈ / [**14**] years of full-time work" (the plate shrinks round the 14, hit lines, pop) | ("That's ≈ 14 years …", under the verdict) |
 | 11.25-12.85 | Verdict hold (1.6 s) | (none) |
 | 12.85-15.35 | The end card (unchanged) | |
 
-**The blank, condensed.** The round-2 cut filled the header's blank on a beat of its own (4.7-6.4 s, its own question line), and that beat measured near-still: only the small grey ordinals and the 26 px grid cells change. Now the days tick while the hours pile up (0.15-2.55 s), so the punch, the flying icons and the rolling counter carry the frame, and the count and the day land 0.35 s apart. Frame 1 still shows "___" and "? hours" (the tick starts at 0.15 s; the grid fades in from 0.03 s). One caption then carries both answers and the question between them. The kit points him up at the blank only when the next cut is 0.9 s or more away, so the spec scripts the point (`beats: [{ t: 2.41, act: "pointUp", d: 0.5 }]`).
+**The blank, condensed.** The round-2 cut filled the header's blank on a beat of its own (4.7-6.4 s, its own question line), and that beat measured near-still: only the small grey ordinals and the 26 px grid cells change. Now the days tick while the hours pile up (0.15-2.55 s), so the punch, the flying icons and the rolling counter carry the frame, and the count and the day land 0.35 s apart. Frame 1 still shows "___" and "? hours" (the tick starts at 0.15 s; the grid fades in from 0.03 s). One caption then carries both answers and the question between them. The kit points him up at the blank only when the next cut is 0.9 s or more away, so the spec scripts the point; since the fix pass it scripts a second one at the opening, when the tick starts (`beats: [{ t: 0.03, act: "pointUp", d: 0.2 }, { t: 2.41, act: "pointUp", d: 0.3 }]`). Beats are pose keys only: no `ctx.cue`, so the audio is the same (master `f3b5f311…` before and after).
+
+**The ordinal and the count are not tied** (critic's nit, left as is). The header's tick runs evenly from 0.15 s to the 20th at 2.41 s, while the count rolls on the kit's ease-out from 0.78 s, so mid-roll they disagree: "5th" over "? hours" at 0.67 s, "16th" over 113 hours (≈ the 19.8th) at 2.0 s, "18th" as 117 lands at 2.20 s. Nothing wrong ends on screen (both settle by 2.55 s). Tying the tick to the count needs a kit change (the blank's timing is linear in `lookOpts.blank`), and starting the tick with the count would leave 0.15-0.78 s to the opening beat alone.
 
 **Why the last count has no caption of its own.** The verdict lands 0.9 s after the count (the brief's 0.8-1.5 s) and hides the caption band, so "≈ 30,000 hours." could not be up for 1.2 s. The plate prints ≈ 30,053, and the morph keeps "30,053 hours" in its working line to the end.
 
-### Captions (on-screen text, no narration; 8 lines, 7 shown, 28 words shown)
+### Captions (on-screen text, no narration; 6 lines, 5 shown, 32 words shown)
 
 | t | d | Caption text (spec) | On screen |
 |---|---|---|---|
-| −0.4 | 2.93 | $15 an hour? Median rent: | 0.0-2.53 (2.53 s) |
-| 2.55 | 1.2 | **≈ 117 hours**. Every hour you work, to **≈ the 20th**. | 1.2 s (merged: round 2 had three lines, "≈ 117 hours.", "Every hour you work, to…" and "≈ the 20th.") |
+| −0.4 | 2.7 | $15 an hour? Median rent: | 0.0-2.30 (2.30 s) |
+| 2.32 | 1.43 | **≈ 117 hours**. Every hour you work, to **≈ the 20th**. | 1.43 s, whole from 2.77 (11 words with the two "≈" need 1.32 s; merged: round 2 had three lines, "≈ 117 hours.", "Every hour you work, to…" and "≈ the 20th.") |
 | 3.77 | 1.36 | A year of rent? | 1.36 s |
-| 5.15 | 1.2 | **≈ 1,400**. | 1.2 s |
-| 6.37 | 1.36 | An average new car? | 1.36 s |
-| 7.75 | 1.2 | **≈ 3,800**. | 1.2 s |
-| 8.97 | 2.28 | A median new house? | 2.28 s, through the landing at 10.35 |
+| 5.15 | 2.58 | **≈ 1,400**. An average new car? | 2.58 s, landing to landing (merged in the fix pass) |
+| 7.75 | 3.5 | **≈ 3,800**. A median new house? | 3.5 s, through the landing at 10.35 to the verdict (merged in the fix pass) |
 | 11.25 | 1.2 | That's **≈ 14 years** of full-time work. Every cent you keep. | hidden: the verdict shows it |
 
-Dropped: "≈ 30,000 hours." (see above).
+Every shown line is up for at least max(1.2 s, 0.12 s a word; every token counts, "≈" included), back to back (gaps 0.02 s). The exact counts 1,402 and 3,824 are settled 0.4 s before the next cut; their captions carry ≈ 1,400 and ≈ 3,800 for 2.58 and 3.5 s. Dropped: "≈ 30,000 hours." (see above).
 
 ### The maths
 
@@ -516,7 +509,7 @@ Also assumed:
 
 ### Beat sheet (condensed cut, 2026-10-13: every count lands 2.2 s after its cut (`lookOpts.landAfter`), rungs cut at −1.0 (pre-filled) / 1.25 / 3.85 / 6.45 s, the ask at 9.25 s, the answer and verdict at 10.5 s; body 12.1 s + the 2.5 s end card = 14.6 s)
 
-Times are the built Becker Rig kit's own (replayed by the check). Each later rung cuts 0.4 s after the previous count lands; each question goes up on its cut (rung 2) or 0.82 s after it, once the previous answer's caption has had its 1.2 s. The round-2 cut's beat sheet (22.0 s) is in git history.
+Times are the built Becker Rig kit's own (replayed by the check). Each later rung cuts 0.4 s after the previous count lands. "In-state?" goes up on its cut; since the fix pass each later count's caption carries the next rung's question ("≈ 1,921. Out-of-state?"), up from that landing to the next one, so the question leads its cut by 0.4 s and no answer stays under the next rung's "?". The round-2 cut's beat sheet (22.0 s) is in git history.
 
 | t (s) | On screen (Becker Rig) | Caption |
 |---|---|---|
@@ -524,12 +517,10 @@ Times are the built Becker Rig kit's own (replayed by the check). Each later run
 | 0.03-1.55 | The camera pans from the centred group back to his usual spot (`lookOpts.prefillPan: 1.55`, ease-out), so the answered frame moves from frame 2 | (same line) |
 | 1.25 | Cut: HUD "In-state / $11,950 ÷ $6.22 = / ? Big Macs"; the camera pushes in (the 667 pile fades as it leaves the frame) | "In-state?" |
 | 1.83-2.16 | The $11,950 coin thuds down; he winds up and punches it (hit + shake); Big Macs arc into a second pile, the count rolls | |
-| 3.45 | Counter lands **1,921**; "=" turns to "≈"; the camera pulls back to both piles; he points | "**≈ 1,921**." |
+| 3.45 | Counter lands **1,921**; "=" turns to "≈"; the camera pulls back to both piles; he points | "**≈ 1,921**. Out-of-state?" |
 | 3.85 | Cut: "Out-of-state / $31,880 ÷ $6.22 = / ?"; the coin drops (4.43), punch (4.76) | (same line) |
-| 4.67 | | "Out-of-state?" |
-| 6.05 | Counter lands **5,125**; three piles in frame; he shrugs | "**≈ 5,125**." |
+| 6.05 | Counter lands **5,125**; three piles in frame; he shrugs | "**≈ 5,125**. Private?" |
 | 6.45 | Cut: "Private / $45,000 ÷ $6.22 = / ?"; the $45,000 coin (taller than him) drops (6.90), punch (7.15) | (same line) |
-| 7.27 | | "Private?" |
 | 8.45-8.65 | He crouches while the count rolls | |
 | 8.65 | Counter lands **7,235** on the gold plate (hit, shake, flash, camera punch); he hops off it (touchdown 9.07), arms up | "**≈ 7,235**. Versus community?" |
 | 9.25 | The ask: HUD "Private vs community / $45,000 ÷ $4,150 = / ? community-college years"; the plate pops out; the in-state and out-of-state piles dim; he thinks | (same line) |
@@ -544,18 +535,18 @@ Times are the built Becker Rig kit's own (replayed by the check). Each later run
 
 **Why rung 1 cuts at 1.25 s.** The pre-filled answer (HUD 667, the pile, the caption) needs its 1.2 s on screen; the pan keeps that frame moving until the cut.
 
-### Captions (on-screen text, no narration; 8 lines, 7 shown, 13 words shown)
+### Captions (on-screen text, no narration; 6 lines, 5 shown, 17 words shown)
 
 | t | d | Caption text (spec) | On screen |
 |---|---|---|---|
 | −0.4 | 1.63 | Community college? **≈ 667 Big Macs**. | 0.0-1.23 (1.23 s) |
 | 1.25 | 2.18 | In-state? | 2.18 s |
-| 3.45 | 1.2 | **≈ 1,921**. | 1.2 s |
-| 4.67 | 1.36 | Out-of-state? | 1.36 s |
-| 6.05 | 1.2 | **≈ 5,125**. | 1.2 s |
-| 7.27 | 1.36 | Private? | 1.36 s |
+| 3.45 | 2.58 | **≈ 1,921**. Out-of-state? | 2.58 s, landing to landing (merged in the fix pass) |
+| 6.05 | 2.58 | **≈ 5,125**. Private? | 2.58 s (merged in the fix pass) |
 | 8.65 | 1.83 | **≈ 7,235**. Versus community? | 1.83 s (merged: round 2 had "≈ 7,235." and "Versus community?" as two lines) |
 | 10.5 | 1.2 | One private year: **≈ 10.8** community-college years. | hidden: the verdict shows it |
+
+Every shown line is up for at least max(1.2 s, 0.12 s a word; every token counts, "≈" included), back to back (gaps 0.02 s).
 
 ### The maths
 
@@ -1027,9 +1018,9 @@ The kits only move between a cut and its landing (and for 0.2-0.35 s after it); 
   - `| 08b | verdict | 11.250 | 24 (r0) | 128.000 | base 12.85: free | 13.37 |` (was P 21.800, 44 at 121.101, base 27.00, L 27.50)
   - `| 08c | verdict+hit | 10.500 | 20 (r0) | 114.286 | base 12.10: 3 (r3) @ 112.50 | 12.60 |` (was P 17.350, 36 at 124.496, base 22.00, L 22.50)
 
-**Verify** (`verify specs-wip/<id>.json --video /tmp/cond/08/<id>/final --detail`; the CUE DRIFT block and "baseline DIFFERS" are expected for WIP cuts). Each gated check with its margin to the limit (negative = failing):
+**Verify** (`verify specs-wip/<id>.json --video /tmp/cond/08/<id>/final --detail`; the CUE DRIFT block and "baseline DIFFERS" are expected for WIP cuts). Each gated check with its margin to the limit (negative = failing). The 08a column below is the review build's (the Scoreboard calibration before the ship step's 06:36 rewrite); against the current calibration the same cut gives **39/42** (A11 3.526%, 16 kHz −11.2, B7 −0.1 LU; B8 passes at −12.90): see the fix-pass entry below, whose numbers supersede these.
 
-| | 08a (Scoreboard): **38/42**, 4 fail | 08b (Becker Rig): **40/42**, 2 fail | 08c (Becker Rig): **41/42**, 1 fail |
+| | 08a (Scoreboard), review build: **38/42**, 4 fail | 08b (Becker Rig): **40/42**, 2 fail | 08c (Becker Rig): **41/42**, 1 fail |
 |---|---|---|---|
 | A1 delivery / master (±1 / ±0.3 of −14) | −14.13 / −14.04: 0.87 / 0.26 | −14.16 / −14.10: 0.84 / 0.20 | −14.17 / −14.08: 0.83 / 0.22 |
 | A2 true peak (≤ −1 dBTP) | −1.20: 0.20 | −1.40: 0.40 | −1.38: 0.38 |
@@ -1093,6 +1084,128 @@ The kits only move between a cut and its landing (and for 0.2-0.35 s after it); 
 5. Publishing and `teasers/v2/teasers.json`: runtimes 16.43 / 15.35 / 14.6 s; the check counts above; 08a's and 08c's Instagram covers (the final frame) still exist; 08b's cover moment (the 117-hour pile, "≈ 20th", the grid at the 20th) is now 2.55-2.95 s.
 
 **Open items:**
-- Sound (above): 08a A11 3.79% (P burst), 16 kHz −11.8, B7 −0.2 LU, B8 −13.21; 08b 125 Hz 7.5 and 2 kHz +1.2, B8 logo over payoff by 0.22 LU; 08c S8 mallet SD 0.159. All structural for these bodies (the sweeps above), all for the pack refit / P-stack rules.
+- Sound (above; current numbers in the fix-pass entry below): 08a A11 3.526% (P burst), 16 kHz −11.2, B7 −0.1 LU (review build: 3.79%, −11.8, −0.2 LU and B8 −13.21, before the 06:36 calibration); 08b 125 Hz 7.5 and 2 kHz +1.2, B8 logo over payoff by 0.22 LU; 08c S8 mallet SD 0.159. All structural for these bodies (the sweeps above), all for the pack refit / P-stack rules.
 - The figure is small once the piles grow (Becker Rig's camera); pose changes alone barely move the frame-difference metric, so the condensed Becker cuts rely on cuts, punches, flying icons and camera moves for motion.
 - 08c's 10.8 pop overlaps the working line for two frames (kit default, also in the round-2 cut).
+
+### Condensed cut fix pass (2026-10-13): 08a, 08b, 08c
+
+The critic did not pass format 08 (scores 7 / 6 / 7.5). There was one must (08b's opening was near-still), four shoulds (captions trailed the picture at every later rung; 08b's hook answer was fully formed for only 0.75 s; three sound reports) and three nits. Every item is below with what was done. Only the WIP specs, this write-up and `checks/08-unit-ladder.py` changed. No kit file, `studio/specs/`, sound pack, `acceptance.json`, `src/`, `sound/`, `test/`, `publishing/` or `renders/` was touched, and nothing is committed. The renders are in `/tmp/cond/08/<id>/final/`.
+
+**Must: 08b's opening, 0.03-0.47 s, was near-still.** From frame 2 to the wind-up, only the grey ordinals ticking (1st to 4th) and the 26 px grid cells changed: YAVG was 0.003-0.08 between ticks, with 0.2-0.33 on the ticks.
+- **Fix, in the spec only:** a second scripted beat, `lookOpts.beats[0] = { t: 0.03, act: "pointUp", d: 0.2 }`. He points up at the header's blank from frame 2, as it starts to tick at 0.15 s, then lowers his arm into the wind-up at 0.47 s (the idle key at 0.23 s hands over to it). Frame 1 (the thumbnail) is unchanged.
+- **Tuning (stills every frame, 0-0.7 s, `/tmp/cond/08/fix/var/`):** `d` 0.3 held the point and left 0.33-0.53 s near-still (YAVG 0.01-0.27). `think` gave a smaller move. `d` 0.2 keeps the arm moving into the wind-up.
+- **Measured on the final render:** 0.033-0.733 s gives YAVG 0.178, 0.413, 0.263, 0.217, 0.444, 0.133, 0.126, 0.037, 0.302, 0.081, 0.139, 0.395, 0.221, 0.245, 0.094, 0.509, … No run under 0.25 is longer than 3 frame-differences (0.1 s) before the punch, and the motion audit lists nothing below 2.70 s (the review cut listed 0.33-0.53 s).
+- **No sound change:** beats are pose keys only (no `ctx.cue`), and the engine reads only the sfx. The 08b master is `f3b5f311…` before and after.
+- The landing point at 2.41 s now hands back after 0.3 s (was 0.5), so his arm lowers through 2.71-3.0 s, before rung 2's cut.
+
+**Should: captions trailed the picture by 0.72 s (08a) or 0.82 s (08b, 08c) at every later rung.** The previous answer sat under the new rung's label, its "?" and its rolling count.
+- **Fix, as the critic proposed:** each answer is merged with the next question, and the line runs from that landing to the next landing. The question now leads its cut by 0.5 s (08a) or 0.4 s (08b, 08c). Nothing was reworded and no number changed:
+  - 08a: "Costco card? **≈ 43** hot dogs. A month of rent?" 1.98-4.40; "**≈ 1,000**. A new house in 1985?" 4.42-6.84; "**56,200**. And a new house in 2026?" 6.86-10.73.
+  - 08b: "**≈ 1,400**. An average new car?" 5.15-7.73; "**≈ 3,800**. A median new house?" 7.75-11.25.
+  - 08c: "**≈ 1,921**. Out-of-state?" 3.45-6.03; "**≈ 5,125**. Private?" 6.05-8.63.
+- **The one line still up past a cut** is 08b's hook answer. It is up 0.8 s past rung 2's cut, while the header keeps "≈ 20th" on screen. Its 11 words need 1.32 s, and merging "A year of rent?" into it would make a 15-word, three-line caption.
+- **Stills read:** 08a at 2.30 and 2.55 s ("Costco card? ≈ 43 hot / dogs. A month of rent?" under "≈ 43" and then the rent label); at 4.70 and 5.00 ("≈ 1,000. A new house in 1985?" over the 1,021 pile, then the 1985 label); at 7.20, 7.45, 8.10, 9.90, 10.20 and 10.70 ("56,200. And a new house / in 2026?" through the Aug 2026 roll and its landing). 08b at 5.40, 5.60, 6.50, 8.00 and 8.20. 08c at 3.70, 3.90, 6.30 and 6.50. In each, the caption's question names the label that is up or about to come up, and no answer sits under a different rung's "?".
+- **Scoreboard's caption lights its words left to right over the line**, so in 08a the answer reads white first and the question lights after its cut (it is grey, still readable, before then).
+
+**Should: 08b's hook answer was fully formed for only 0.75 s, all of it after rung 2's cut.** Counted as the precedent counts (06-pov-race.py's `words()`, every whitespace token including "≈"), it is 11 words and needs 1.32 s.
+- **Fix:** the line moves from 2.55 to **2.32 s** (0.12 s after the count lands at 2.20) and is up **1.43 s**, to 3.75.
+- Becker captions pop word by word, each word starting min(0.045, 0.32 / 11) = 0.029 s after the one before. So "≈ 117" appears after the count, and "the 20th" pops at **2.61 s**, 0.06 s after the blank lands at 2.55 (the check allows 0-0.1 s). The line is whole from 2.77 s: 0.98 s before it ends, and 0.18 s before rung 2's cut. The review cut had it whole for 0.75 s, all after the cut.
+- "$15 an hour? Median rent:" now runs −0.4-2.30 s.
+- Stills at 2.32, 2.45, 2.60 and 2.80 s show "≈" appearing, then "≈ 117 hours. Every hour" with the header on "20th", then "… to ≈ the" with the green "≈ 20th", then the whole line.
+
+**Sound reports (shoulds):** none is caused by this pass's timing, so all are left, as briefed, for the ship step (pack-level). The masters are byte-identical to the review build's for 08b (`f3b5f311…`) and 08c (`75ea8d0e…`), and to the critic's current-calibration re-run for 08a (`2d54772e…`). The captions and beats do not reach the audio, and no sfx moved. Measured numbers are in the table below.
+
+**Nits:**
+- **08a, ≈ 262,467 settled for only 0.57 s.** Tried the payoff at +0.65 s (10.83 s, body 14.03 s). The motion audit allowed it (near-still 10.60-10.83 s, 0.23 s). An audio-only A/B under the same calibration found that it raised A11 from 3.526% to 3.75% (max limiting from 3.0 to 3.56 dB) and moved B7 from −0.1 to −0.2 LU. In its favour, 16 kHz improved from −11.2 to −11.5 and B8 from 0.10 to 0.18. That trade buys 0.1 s more dwell, so **the payoff stays at 10.73 s**: 0.55 s settled, legible as "262,xxx" from about 9.9 s.
+- **08b, the ordinal is not tied to the count.** Left as is and recorded under 08b's beat sheet. The tick is linear (the kit) and the count eases out, so they disagree mid-roll and agree by 2.55 s. Tying them needs a kit change.
+- **08b, lint at 0.05 s and HUD dwell.** `check --every 0.05` gives `warn contrast @10.35s: "30,053" 2.79:1`, the plate's landing flash for one sample (the default 0.25 s lint is clean). The shipped round-2 cut has a different one-sample transient at that rate (`contrast @13.80s: "$50,089" 1.14:1`, a coin label). The exact 1,402 and 3,824 still settle 0.4 s before the next cut. Their captions now carry ≈ 1,400 and ≈ 3,800 for 2.58 and 3.5 s. No recap was added, because one would add a still.
+
+**Spec changes** (`studio/specs-wip/`):
+- 08a: `vo` only (6 lines, was 9). Duration, rungs, payoff, verdict, sfx and `data.hold` are unchanged.
+- 08b: `vo` (6 lines, was 8: vo[0] d 2.93 → 2.7, vo[1] 2.55 / 1.2 → 2.32 / 1.43, the two merges) and `lookOpts.beats`: [{ 0.03, pointUp, 0.2 }, { 2.41, pointUp, 0.3 }] (was [{ 2.41, pointUp, 0.5 }]).
+- 08c: `vo` only (6 lines, was 8).
+- The bodies are unchanged: 13.93 / 12.85 / 12.1 s, plus the 2.5 s card.
+- Cue records: every sfx cue is unchanged. The records differ only in the `vo` (and 08b's `beats`) they carry, which the engine does not read.
+
+**Motion audit** (final renders, 270×480 `tblend` difference → `signalstats` YAVG; still < 0.15, near-still < 0.25; runs ≥ 0.2 s listed; review cut → fix pass):
+
+| | Still runs before the verdict | Near-still runs before the verdict | Verdict / card holds |
+|---|---|---|---|
+| 08a | 2.23-2.50 (0.27), 4.70-4.93 (0.23) → **2.20-2.50 (0.30), 4.70-4.93 (0.23), 7.13-7.37 (0.23)** | 2.17-2.50 (0.33), 4.63-4.93 (0.30), 7.07-7.37 (0.30) → **2.20-2.50 (0.30), 4.60-4.93 (0.33), 7.07-7.37 (0.30)** | 12.83-13.93, 15.43-16.43 (as designed) |
+| 08b | 5.37-5.60 (0.23), 7.97-8.20 (0.23), 10.87-11.17 (0.30), and the opening near-still the audit split on the ticks (0.03-0.47) → **2.70-2.97 (0.27), 10.87-11.17 (0.30)** | 0.33-0.53 (0.20), 5.30-5.60 (0.30), 7.93-8.20 (0.27), 10.87-11.20 (0.33) → **2.70-3.00 (0.30), 10.87-11.20 (0.33)** | 11.70-12.87, 14.07-15.37 |
+| 08c | 3.67-3.90 (0.23), 6.27-6.50 (0.23) → **3.70-3.90 (0.20), 6.30-6.50 (0.20)** | 3.60-3.90 (0.30), 6.23-6.50 (0.27), 10.17-10.50 (0.33) → **3.67-3.90 (0.23), 6.27-6.50 (0.23), 10.17-10.50 (0.33)** | 11.13-12.13 (his slump splits it), 13.33-14.60 |
+
+- No still or near-still run of 0.4 s or more occurs before any verdict hold. The longest is 0.33 s.
+- The merged lines' word pops add motion at 08b's later landings (5.30-5.60 and 7.93-8.20 are gone) and at 08c's.
+- The new 08b run, 2.70-2.97 s, falls between the hook line being whole (2.77) and rung 2's cut. The review cut's later caption had covered it.
+
+**Lint:**
+- `node src/cli.mjs check`: 08a 16.4 s, 08b 15.3 s and 08c 14.6 s, each 0 errors, 0 warnings.
+- `--every 0.05`: 08a is clean. 08b gives the one contrast warning above. 08c gives the two-frame `overlap @10.55-10.60s` of the 10.8 pop with the working line, which is the kit's default and was already in the review and round-2 cuts.
+
+**Stills read** (frames pulled from the final MP4s, `/tmp/cond/08/fix/08{a,b,c}-beats*.png`):
+- **08a** at 0, 0.2, 0.5, 1.98, 2.3, 2.55, 3.2, 4.42, 4.7, 5.0, 5.64, 6.86, 7.2, 7.45, 8.1, 9.9, 10.2, 10.7, 10.75, 11.5, 12.33 and 13.9 s.
+- **08b** at 0, 0.1, 0.2, 0.33, 0.47, 0.7, 1.2, 2.2, 2.32, 2.45, 2.6, 2.8, 2.95, 3.5, 3.8, 5.15, 5.4, 5.6, 6.5, 7.75, 8.0, 8.2, 10.4 and 11.3 s.
+- **08c** at 0, 0.6, 1.25, 3.0, 3.45, 3.7, 3.9, 6.05, 6.3, 6.5, 8.65, 9.3, 9.9, 10.5, 11.0, 12.0, 13.0 and 14.5 s.
+- Frame 1 is unchanged in all three: the hook caption is whole, 08b's "___" and "? hours" show, and 08c's pre-filled 667 shows.
+- In 08b he points up at the blank 0.1-0.33 s, then winds up.
+- Every number matches the maths tables. Nothing collides or is cut off. The verdicts and the end card are unchanged.
+
+**Check (`checks/08-unit-ladder.py`):**
+- `build_08a`, `build_08b` and `build_08c` expect the merged captions, 08b's vo[1] at 2.32 / 1.43 and the opening beat.
+- **New rules (condensed set):**
+  - A count's answer line that stays up more than 0.05 s past the next cut must carry that rung's question. `timing["trail_ok"]` exempts 08b's hook answer and says why.
+  - A question riding on the previous answer's line must start on that landing (±0.06 s) and lead its cut by 0.35-0.6 s. This replaces the "question within 0.85 s after its cut" rule for merged lines. Its item is named first in the sentence after the answer.
+  - Caption lines are found by what they say, not by index, so a split or reordered spec is judged on its own lines and does not crash.
+  - A count the screen prints but no caption carries (08a's hero, 08b's plate) is never captioned before the band hides.
+  - `cap_words()` counts every whitespace token, as 06-pov-race.py does ("≈" included). 08b's vo[1] needs 1.32 s.
+  - `becker_opening_beat()`: 08b's figure gets a `lookOpts.beats` pose after frame 1 and by 0.1 s, back to idle before the first wind-up.
+  - `becker_word_pop()` mirrors the Becker caption's word pop. 08b's day word pops 0-0.1 s after the blank lands, and the merged line starts after the count lands.
+  - 08c's "Versus community?" line must start on the last landing within 0.06 s (was 0.6 s).
+- **Results:** **680 checks, 0 failed by default** (studio/specs, the round-2 cut, unchanged) and **682, 0 failed** with `--spec` on the three WIP specs.
+- **Mutation test** (`/tmp/cond/08/fix/mutate.py`, scratch copies in `/tmp/cond/08/fix/mut/`): **38 of 38 caught**, each with exit 1 and its targeted rule among the named failures (not only the leaf comparison).
+  - 15 target the new rules: in each teaser, a merged pair split again (7 mutants); 08a's merged question named late; 08b's vo[1] up 1.25 s; no opening beat; the beat at 0.0 s, at 0.2 s and held 0.5 s; vo[1] from 2.10 s and from 2.45 s; 08c's rung 3 cut 0.7 s after the landing.
+  - The other 23 are the review pass's mutants, re-indexed.
+
+**Render, sound, verify:**
+- `render specs-wip/<id>.json`, then `sound … --video <render> --out /tmp/cond/08/<id>/final --score`, then `verify … --video /tmp/cond/08/<id>/final --detail`. CUE DRIFT and "baseline DIFFERS" are expected for WIP cuts.
+- **08a:** 493 frames, 16.43 s, video md5 `a737ada687f7`, master `2d54772e…`, −14.04 LUFS, 141.454 / 144 BPM.
+- **08b:** 461 frames, 15.37 s, `acbfcfc22936`, `f3b5f311…`, −14.10 LUFS, 128 / 128 BPM.
+- **08c:** 438 frames, 14.6 s, `7de4c555a919`, `75ea8d0e…`, −14.08 LUFS, 114.286 / 112.5 BPM.
+- Scores: **08a 39/42, 08b 40/42, 08c 41/42.**
+
+| Margin to the limit (negative = failing) | 08a (SB) | 08b (BR) | 08c (BR) |
+|---|---|---|---|
+| A1 delivery / master | −14.12 / −14.04: 0.88 / 0.26 | −14.16 / −14.10: 0.84 / 0.20 | −14.17 / −14.08: 0.83 / 0.22 |
+| A2 true peak ≤ −1 | −1.28: 0.28 | −1.40: 0.40 | −1.38: 0.38 |
+| A3 LRA (SB 4-9, BR 3-8) | 4.79: 0.79 | 3.16: **0.16** | 4.68: 1.68 |
+| A4 ST / M max | 3.24 / 3.32 | 4.07 / 5.02 | 3.48 / 3.78 |
+| A5 PLR ≤ 13 | 12.84: **0.16** | 12.76: 0.24 | 12.78: 0.22 |
+| A7 M(0-0.4) ≥ −18 | 8.31 | 6.47 | 6.23 |
+| A8 corr mean / min / mono | 0.44 / 0.52 / 0.74 | 0.61 / 0.71 / 1.24 | 0.59 / 0.61 / 1.10 |
+| A10 phone drop | 4.46 | 1.88 | 2.29 |
+| A11 > 1 dB share ≤ 3% / max ≤ 6 dB | **✗ 3.526%: −0.53** / 3.0: 3.0 | 1.049%: 1.95 / 4.82: 1.18 | 0.838%: 2.16 / 4.68: 1.32 |
+| BANDS (dB re 1 kHz) | **✗ 16k −11.2 vs ≤ −12: −0.8**; 31.5 5.1, 63 3.0, 125 2.6, 250 1.6, 500 2.2, 2k 1.9, 4k 3.5, 8k 1.5 | **✗ 125 7.5 vs ≤ 7: −0.5; 2k +1.2 vs ≤ 0: −1.2**; 31.5 5.3, 63 2.1, 250 1.2, 500 1.4, 4k 1.8, 8k 3.4, 16k 6.1 | 31.5 5.8, 63 1.9, 125 1.9, **250 0.6**, 500 1.5, 2k 1.5, 4k 2.7, 8k 1.5, 16k 5.0 |
+| HARSH ≤ 2 | 2.33 | 3.43 | 3.57 |
+| B1 | music −2.87: 0.63; sfx −3.32: 0.82 | music −2.31: 1.81; sfx − music −0.55: 1.45; returns 3.47 | −1.96: 1.46; −1.0: 1.0; 3.23 |
+| B2 duck at P ≤ −8 | −10.8: 2.8 | −10: 2.0 | −10: 2.0 |
+| B3 closest cue ≥ 3 dB | 4.6: 1.6 | 3.3: **0.3** | 6.9: 3.9 |
+| B4 onsets ≤ 2 ms / B5 at P ±10 ms | 0.21: 1.79 / −1.3: 8.7 | 0.29: 1.71 / 0.0: 10 | 0.33: 1.67 / 0.0: 10 |
+| B6 continuity ≤ 18 LU | 5.0: 13.0 | 3.3: 14.7 | 2.6: 15.4 |
+| B7 energy curve | **✗ BUILD 2nd half −17.3 < 1st −17.2: −0.1 LU** | halves −17.3 → −15.7, drop-build 3.3 | −16.7 → −16.2, 3.2 |
+| B8 logo ≥ −13, not over the payoff | −12.90: **0.10** (payoff −10.05) | **✗ logo −11.95 is 0.22 LU over the payoff's −12.17** (≥ −13 by 1.05) | −12.15: 0.85 (payoff −10.26) |
+| S8 | pass (hat timing SD 2.70 ms; off-grid 0.085 ms: 0.115) | pass | **✗ mallet velocity SD 0.159 vs ≤ 0.15: −0.009** |
+| S9 tempo | 141.454 / 144 (136-152) | 128 / 128 (112-128: at the top of the window) | 114.286 / 112.5 (112-128) |
+| Other S, TRAIN / DUCK / MALLET / FLAMS | pass | pass (MALLET 3.1) | pass (MALLET 2.5) |
+
+**Sound failures for the ship step** (all structural, all unchanged by this pass, no pack or `acceptance.json` edits here):
+- **08a A11, 3.526% of samples limited by more than 1 dB, against 3% (max 3.0 dB).** The cause is the payoff burst at P = 10.18 s (the kit's hit, plus the pack's reverse crash, clap, kick and hat) as a share of a 16.4 s file. It needs a pack-level Scoreboard P-stack rule (BIBLE §11.2, the note on 06b).
+- **08a BANDS 16 kHz, −11.2 against −12.** The cause is 13 bright cues in a 13.9 s body. It needs a 16 kHz / bright-cue trim for short bodies.
+- **08a B7, the BUILD's second half 0.1 LU under its first.** The cause is that rung 3-4 cue ducks fall in the second half.
+- **08b BANDS 125 Hz 7.5 against 7, and 2 kHz +1.2 against 0.** The low end is four coin thuds and punches plus the plate hit. The 2 kHz excess is the blank's ding, the landing pops and the verdict ding, all in a 12.85 s body. Becker's crowding rule watches only 1 kHz.
+- **08b B8, the logo 0.22 LU over the payoff.** P is placed by the verdict rule, 0.9 s after the plate hit.
+- **08c S8, mallet velocity SD 0.159 against 0.15.** The cause is fewer, wider-spread mallet notes in a 12.1 s body. It needs a velocity-spread clamp for short bodies.
+- **Tight passes to watch:** 08a A5 0.16, A2 0.28, B8 0.10; 08b A3 0.16, B3 0.3; 08c 250 Hz 0.6.
+
+**To promote:** as in the condensed-cut entry (copy the three WIP specs, set `IN_SPECS` to `"cond"`, then the §11.1 refits). The §2.3 tempo rows are unchanged, because no sfx cue moved. 08b's Instagram cover moment is still 2.55-2.95 s ("≈ 20th" landed, the 117-hour pile, the grid on the 20th); the hook answer is whole there from 2.77 s.

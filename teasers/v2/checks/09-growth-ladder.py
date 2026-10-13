@@ -46,10 +46,12 @@
    - each caption is up >= max(1.2 s, 0.12 s a word), counted from frame 1; captions back to back (gaps < 0.2 s);
      the first one complete on frame 1 (vo[0].t at or before the look's word pop / rise: Becker -0.48, Scoreboard
      -0.14);
-   - each number caption is up while its row lands: Becker, it goes up <= 1.3 s before the rung lands and stays
-     >= 0.5 s after; Scoreboard, it goes up with the row's cut (+-0.05 s) and stays >= 0.25 s after the count lands
-     (the count clock is the kit's: cut, a 0.12 s dip, a roll of 0.8-1.9 s by the value's ratio, capped 0.25 s before
-     the next cut, the last >= 2.4 s);
+   - each number caption is up while its row lands: Becker, it goes up <= 0.5 s before the rung lands and stays
+     >= 0.5 s after (the cut's 0.4-0.45 s rhythm; fixer pass: at 1.3 s 09b's age-65 line answered the hook during the
+     heave, ~1 s before the plate, and 09a's year-20 / year-30 lines named the next rung's number early);
+     Scoreboard, it goes up with the row's cut (+-0.05 s) and stays >= 0.25 s after the count lands (the count clock
+     is the kit's: cut, a 0.12 s dip, a roll of 0.8-1.9 s by the value's ratio, capped 0.25 s before the next cut,
+     the last >= 2.4 s);
    - the verdict 0.8-1.5 s after the final reveal (Becker: the last rung's plate; Scoreboard: the hero's beat) and
      held 1.2-1.6 s before the end card; the last caption line starts with it and ends by the end;
    - motion (a proxy for the frame-difference audit, no still run >= 0.4 s before the verdict): Becker, a rung gap
@@ -59,8 +61,10 @@
      own (09a short: the last gap 1.4-2.2 s; 09b long: room for the >= 2.2 s struggle, <= 3.15 s), 09a's verdict point
      starts after the kit's heave pointUp (rung + 1.25 s), so he points at year 9, not the plate, and 09a's tags are
      up >= 1.0 s; Scoreboard (09c), the first cut by 0.5 s (frame 1's landing bump ends at 0.31 s), every later cut
-     <= 0.5 s after the previous landing, the hero's "× 75,176" 0.6-0.9 s after the year-40 landing and the verdict's
-     make-room scroll (verdict - 0.35 s) <= 0.25 s after the hero's bump (hero + 0.36 s).
+     <= 0.5 s after the previous landing, the hero's "× 75,176" 0.6-0.75 s after the year-40 landing and the
+     verdict's make-room scroll (verdict - 0.35 s) <= 0.25 s after the hero's bump (hero + 0.36 s). Fixer pass: at
+     landing + 0.8 s the board was near-still for 0.43 s before the hero (only the multiplier caption rising in;
+     measured with the caption band out); at + 0.73 s both waits, landing -> hero and bump -> scroll, stay under 0.4 s.
    A spec of any other length fails "a known cut" and stops there.
 5. Prints a table and exits 1 on any mismatch.
 
@@ -96,7 +100,8 @@ FIRST_CAP_UP = {"scoreboard": -0.14, "becker-rig": -0.48}   # vo[0].t at or befo
 #   (Scoreboard: a line rises in over 0.14 s; Becker Rig: its words pop in over <= 0.32 s + 0.16 s)
 VERDICT_AFTER = (0.8, 1.5)         # the verdict this long after the final reveal ...
 VERDICT_HOLD = (1.2, 1.6)          # ... and held this long before the end card
-BR_CAP_LEAD, BR_CAP_TRAIL = 1.3, 0.5   # Becker: a number caption goes up <= 1.3 s before its rung, stays >= 0.5 s after
+BR_CAP_LEAD, BR_CAP_TRAIL = 0.5, 0.5   # Becker: a number caption goes up <= 0.5 s before its rung, stays >= 0.5 s after
+#   (was 1.3: the fixer pass capped it so the last line, the hook's answer, never shows before the plate lands)
 SB_CAP_CUT, SB_CAP_TRAIL = 0.05, 0.25  # Scoreboard: it goes up with the row's cut, stays >= 0.25 s after the landing
 BR_GAP_PLAIN, BR_GAP_ACT = 1.7, 2.1    # Becker: a rung gap with no figure act / with one (motion proxy)
 BR_FIRST_THROW = 1.6               # Becker: rung 2 lands >= 1.6 s (its 0.95 s throw winds up after the frame-1 nod)
@@ -107,7 +112,8 @@ BR_TAG_MIN = 1.0                   # 09a's tags are up >= 1.0 s (t + 0.08 s, or 
 SB_FIRST_CUT, SB_NEXT_CUT = 0.5, 0.5   # 09c: the first cut by 0.5 s; each later cut <= 0.5 s after the last landing
 #   (the landing bump runs 0.36 s and the next count starts 0.12 s after its cut: the render measured no still run
 #   over 0.23 s before the verdict with a 0.47 s wait after row 5)
-SB_HERO_AFTER = (0.6, 0.9)         # 09c: the hero's "× 75,176" this long after the year-40 landing
+SB_HERO_AFTER = (0.6, 0.75)        # 09c: the hero's "× 75,176" this long after the year-40 landing (was 0.6-0.9;
+#   at 0.8 the caption-band-out audit read 0.43 s near-still before it)
 SB_ROOM_GAP = 0.25                 # 09c: the make-room scroll (verdict - 0.35 s) <= this after the hero's bump ends
 
 

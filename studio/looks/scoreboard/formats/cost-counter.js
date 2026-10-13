@@ -67,6 +67,21 @@
 //                                            from frame 1, `fill` slams in at t in the tone colour (buzz when bad)
 //   stream:    14 | false                    dots a second in the money stream (false: off)
 //   icon:      'coin'                        the stage icon when there are no milestones (it fills toward `final`)
+//   runup:     { beat, amp?, hero?, from? }  opt-in, off by default (absent: the kit as before, frame for frame and cue
+//                                            for cue). The run-up to the last milestone gets a pulse on the score's
+//                                            beat, so the stage never sits on a counter-only stretch while the icon is
+//                                            nearly full: from the last label beat or pass before it (the riser's own
+//                                            `prevT`; or `from`, s) the big icon pulses at tp - k·beat (k = 1, 2, …;
+//                                            tp its pass): a bump of `amp` (0.05; half of it at the run-up's start,
+//                                            all of it on the last beat) with a rim-glow flare, its tag riding it,
+//                                            the ladder's target row (icon, pip, label) and the hero's glow pulsing
+//                                            with it; over the riser's span (the kit's riser cue, up to 2.4 s) the
+//                                            hero swells by `hero` (0.04), released over the pass bump. `beat` (s) is
+//                                            the music's beat up to the payoff, 60 ÷ BPM₁ of the spec's row in
+//                                            sound/BIBLE.md §2.3 (that grid runs from 0 to P = the last pass in whole
+//                                            beats, so tp - k·beat lands on it). It adds no cue. A beat outside
+//                                            0.2-1.0 s, or no last milestone passed after frame 1, is ignored with a
+//                                            console warning
 // The big icons keep clear of the ladder column at their biggest frame: the pass bump's peak (1 + amp) plus the glow,
 // so the art box shifts right of the region's centre (up to a resting right edge of x 960) or, past that, shrinks.
 // The verdict is the chrome's (the kit's one verdict slot at the foot of the frame; lookOpts.tallVerdict its boxed one).
@@ -539,6 +554,49 @@ export default function costCounter(spec, ctx) {
   beats.forEach((b, k) => { b.end = Math.min(b.t + b.hold, k + 1 < beats.length ? beats[k + 1].t : Infinity) })
   const labels = labelStack(stage, L, items)
 
+  // lookOpts.runup (opt-in; absent: ru = null and nothing below changes a frame or a cue): beat pulses over the
+  // run-up to the last milestone, and the hero's swell over the riser's span (the riser cue's own prevT and length)
+  const ru = (() => {
+    if (lo.runup == null) return null
+    const o = typeof lo.runup === 'object' ? lo.runup : {}
+    const beat = +o.beat
+    const m = silent ? null : ms[N - 1]
+    if (!(beat >= 0.2 && beat <= 1.0) || !m || !m.reached || m.passed0) {
+      console.warn('cost-counter: lookOpts.runup needs { beat: 0.2-1.0 s } and a last milestone passed after frame 1; ignored')
+      return null
+    }
+    const tp = m.tp
+    const prevT = Math.max(T0, ...ms.slice(0, -1).map(x => x.tp).filter(x => x < tp), ...beats.filter(b => b.t < tp).map(b => b.t))
+    const from = o.from != null && isFinite(+o.from) ? Math.max(T0, +o.from) : prevT
+    const pulses = []
+    for (let k = 1; tp - k * beat >= from - 1e-6; k++) pulses.unshift(tp - k * beat)
+    return {
+      tp, beat, from, pulses,
+      rise: Math.min(2.4, tp - prevT - 0.4),
+      amp: o.amp != null && isFinite(+o.amp) ? Math.max(0, +o.amp) : 0.05,
+      hero: o.hero != null && isFinite(+o.hero) ? Math.max(0, +o.hero) : 0.04,
+    }
+  })()
+  // the run-up pulse at t: { k: the big icon's scale (1 at rest), g: the flare 0..1, w: how far into the run-up }
+  const RU_DUR = 0.32
+  const ruAt = t => {
+    if (!ru || t >= ru.tp) return { k: 1, g: 0, w: 0 }
+    let tk = -Infinity
+    for (const x of ru.pulses) if (x <= t) tk = x
+    if (!isFinite(tk) || t >= tk + RU_DUR) return { k: 1, g: 0, w: 0 }
+    const w = clamp((tk - ru.from) / Math.max(1e-6, ru.tp - ru.from))
+    const lvl = 0.5 + 0.5 * w
+    return { k: bump(t, tk, { amp: ru.amp * lvl, dur: RU_DUR }), g: lvl * (1 - ease.out(prog(t, tk, RU_DUR))), w }
+  }
+  // the hero's swell: eased in over the riser's span, released over the pass bump
+  const ruSwell = t => {
+    if (!ru || !(ru.hero > 0) || !(ru.rise > 0)) return 1
+    const a = ru.tp - ru.rise
+    if (t < a) return 1
+    if (t < ru.tp) return 1 + ru.hero * ease.in(prog(t, a, ru.rise))
+    return 1 + ru.hero * (1 - ease.out(prog(t, ru.tp, 0.5)))
+  }
+
   const vd = spec.verdict && spec.verdict.text ? { t0: Math.max(0, +spec.verdict.t || 0) } : null
   if (T0 >= 0 && T0 < 0.05) console.warn(`cost-counter: counterT[0] = ${T0}: frame 1 shows the start value standing still (start it at -0.4 s to open already running)`)
 
@@ -641,6 +699,12 @@ export default function costCounter(spec, ctx) {
         sc *= bump(t, landT, { amp: 0.1, dur: 0.5 })
         if (t >= landT) gl = Math.max(gl, 1 - ease.out(prog(t, landT, 1.1)))
       }
+      // lookOpts.runup: the hero swells over the riser and its glow beats with the run-up pulse
+      const rp = ru ? ruAt(t) : null
+      if (ru) {
+        sc *= ruSwell(t)
+        gl = Math.max(gl, 0.45 * rp.g)
+      }
       style(hero, { transform: `scale(${sc.toFixed(4)})` })
       style(glow, { '--glow': (16 + 30 * gl).toFixed(1) + 'px', '--glowA': (0.38 + 0.45 * gl).toFixed(3) })
 
@@ -661,7 +725,8 @@ export default function costCounter(spec, ctx) {
           } else {
             const k2 = isFinite(tl) ? slam(t, tl, { from: 1.3 }) : { o: 1, s: 1 }
             const passed = m.reached && t >= m.tp
-            const kb = passed ? bump(t, m.tp, { amp: m.last ? AMP_LAST : AMP_PASS, dur: m.last ? 0.55 : 0.4 }) : 1
+            let kb = passed ? bump(t, m.tp, { amp: m.last ? AMP_LAST : AMP_PASS, dur: m.last ? 0.55 : 0.4 }) : 1
+            if (ru && m.last && !passed) kb = rp.k   // lookOpts.runup: the tag rides the run-up pulse
             // it rides the art's bottom edge down as the icon bumps (the same bump), so the pop never covers it
             const dy = (kb - 1) * (b.artH / 2 + 12)
             style(b.tag, { display: 'block', color: passed ? C.green : C.white, opacity: String(k2.o), transform: `translateY(${dy.toFixed(1)}px) scale(${(k2.s * kb).toFixed(4)})` })
@@ -692,6 +757,11 @@ export default function costCounter(spec, ctx) {
             const tl = enterAt + m.fall
             if (t < tl) { ty = -(bigCY + b.artH * 0.6) * (1 - ease.in(prog(t, enterAt, m.fall))); sx = 0.95; sy = 1.06 }
             else if (t < tl + M.squash) { const w = wobble(prog(t, tl, M.squash)); sy = 1 - 0.12 * w; sx = 1 + 0.08 * w }
+          }
+          // lookOpts.runup: the last icon pulses on the beat (bump + rim-glow flare) as its pass nears
+          if (ru && m.last && m.reached && (rp.g > 0 || rp.k !== 1)) {
+            sx *= rp.k; sy *= rp.k
+            f = `drop-shadow(0 0 ${(10 + 26 * rp.g).toFixed(1)}px rgba(43, 255, 136, ${(0.55 * rp.g).toFixed(3)}))`
           }
         } else {
           // passed: pop (bump + glow), then fly into the ladder slot (the last one stays, lit)
@@ -737,13 +807,17 @@ export default function costCounter(spec, ctx) {
           const { el, pip, pl } = ladder[i]
           const done = t >= m.arrive && m.reached
           const cur = i === active || (!done && i < active)   // the next one (and one still flying in)
-          const k = done ? bump(t, m.arrive, { amp: 0.25, dur: 0.4 }) : 1
+          let k = done ? bump(t, m.arrive, { amp: 0.25, dur: 0.4 }) : 1
+          // lookOpts.runup: the target row (the last milestone's icon, pip and label) pulses with the big icon
+          const rk = ru && m.last && cur && !done && rp.g > 0 ? rp : null
+          if (rk) k = 1 + (rk.k - 1) * 4
           style(el, {
             opacity: done ? '1' : cur ? '0.42' : '0.16',
             transform: `scale(${k.toFixed(4)})`,
-            filter: done || !cur ? 'none' : 'drop-shadow(0 0 8px rgba(43, 255, 136, 0.55))',
+            filter: done || !cur ? 'none' : rk ? `drop-shadow(0 0 ${(8 + 14 * rk.g).toFixed(1)}px rgba(43, 255, 136, ${(0.55 + 0.4 * rk.g).toFixed(3)}))` : 'drop-shadow(0 0 8px rgba(43, 255, 136, 0.55))',
           })
           style(pip, { display: i === active ? 'block' : 'none' })
+          if (ru && m.last) style(pip, { transform: rk ? `scaleY(${(1 + 0.6 * rk.g).toFixed(4)})` : 'none' })
           if (pl) style(pl, { color: done ? C.green : cur ? C.white : C.grey, opacity: ladder[i].duck ? '0.25' : '1', transform: `scale(${(1 + Math.max(0, k - 1) * 0.5).toFixed(4)})` })
           // pipPassed: the target turns into its answer as the icon lands (the slot's bump carries the swap)
           if (ladder[i].plB) {

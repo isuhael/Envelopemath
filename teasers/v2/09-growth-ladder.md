@@ -1,7 +1,7 @@
 # Format 9: year-by-year growth ladder, three teasers
 
 **Channel:** Back of the Envelope (YouTube Shorts, Instagram Reels, TikTok), US audience, USD
-**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews). Hook pass 2026-10-08 (all three hooks kept), then hook pass 2 the same day (**all three hooks replaced**), then the assembly pass and the assembly fix pass (after QA) the same day, then the **port of 09a to Becker Rig** (2026-10-08: the owner kept Scoreboard and Becker Rig and retired Clean Sheet and Live Sheet), then the **port QA fix pass** the same day. What changed and why is in the **Review log** at the end.
+**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews). Hook pass 2026-10-08 (all three hooks kept), then hook pass 2 the same day (**all three hooks replaced**), then the assembly pass and the assembly fix pass (after QA) the same day, then the **port of 09a to Becker Rig** (2026-10-08: the owner kept Scoreboard and Becker Rig and retired Clean Sheet and Live Sheet), then the **port QA fix pass** the same day, then the **condensed cut** of all three and its **fixer pass** after the critic (2026-10-13, in `studio/specs-wip/` until the ship step promotes it). What changed and why is in the **Review log** at the end.
 **Format:** `growth-ladder`, hook pattern **P2** ("small amount × time =") for the ladders. Since hook pass 2 the hooks on top of them are a payout question (09a), a POV gift (09b) and a P1 "take your number × a constant" (09c).
 **Lane:** one small regular amount (or one small lump), year by year
 **Files:**
@@ -9,8 +9,9 @@
   - [`studio/specs/09a-becker-rig-100-a-month-doubles.json`](../../studio/specs/09a-becker-rig-100-a-month-doubles.json)
   - [`studio/specs/09b-becker-rig-1000-times-1-07.json`](../../studio/specs/09b-becker-rig-1000-times-1-07.json)
   - [`studio/specs/09c-scoreboard-5-a-day-millionaire.json`](../../studio/specs/09c-scoreboard-5-a-day-millionaire.json)
+  - These hold the narration cuts (28.5 / 27.0 / 31.5 s bodies) until the ship step promotes the condensed cuts (2026-10-13; 14.0 / 13.9 / 12.8 s bodies, each + the 2.5 s end card): `studio/specs-wip/09a-becker-rig-100-a-month-doubles.json`, `09b-becker-rig-1000-times-1-07.json` and `09c-scoreboard-5-a-day-millionaire.json`. The sections below describe the condensed cuts; the narration cuts' beat sheets and guide VO are in git history (be74d57 and earlier). The review log's "Condensed cut (2026-10-13)" lists every change.
 - Check: [`teasers/v2/checks/09-growth-ladder.py`](checks/09-growth-ladder.py). Run `python3 teasers/v2/checks/09-growth-ladder.py`.
-  - It reports **509 checks, 0 failures** and exits 0 (after the port QA fix pass; 507 after the Becker Rig port, 492 after the assembly fix pass, 499 after the assembly pass, 468 after hook pass 2, 518 before that on the old ladders).
+  - It reports **515 checks, 0 failures** and exits 0 on `studio/specs/` (the narration cuts; 509 after the port QA fix pass, 507 after the Becker Rig port, 492 after the assembly fix pass, 499 after the assembly pass, 468 after hook pass 2, 518 before that on the old ladders). Since the condensed cut it is cut-aware: `--spec [KEY=]PATH` checks a file in place of `studio/specs/<id>.json`, and each spec is checked as the narration cut or the condensed cut by its length. With the three WIP specs (`--spec studio/specs-wip/09a-….json --spec …09b… --spec …09c…`) it reports **536 checks, 0 failures** (523 / 522 / 521 with one WIP spec each).
   - Break test, in a scratch copy: 09a's year-8 formula line "≈ $89/mo" → "≈ $90/mo", 09b's age-40 rung "≈ $14,974" → "≈ $14,975" and 09c's "about 75,176 times" → "75,177". It exited 1 with 4 failures, catching all three. Moving 09b's rung 1 back to 1.6 s also exits 1 (the $1,070 sync and the "lands by 1.0 s" claim).
   - Assembly-pass break test, in a scratch copy: 09a's year-8 Earns cell "≈ $89" → "≈ $90", 09b's verdict "81×" → "82×" and 09c's second beat "≈ $375,880" → "≈ $375,881". It exited 1 with 4 failures, catching all three.
   - Fix-pass break test, in a scratch copy: 09a's verdict "year 9" → "year 8" and a formula line given back its leading "≈"; 09c's hero beat "× 75,176" → "× 75,177", its tag's "≈" → "=" and its verdict "≈ $13.30" → "≈ $13.31". It exited 1 with 8 failures, catching all five.
@@ -28,7 +29,7 @@
 **Studio linter:** `node src/cli.mjs check` on the three specs after hook pass 2, and again after the assembly fix pass: **3/3 clean, 0 errors, 0 warnings.** After the Becker Rig port: 09a, 09b and the kit's two growth-ladder samples, **4/4 clean, 0 errors, 0 warnings** (09b's stills match its shipped MP4). After the port QA fix pass: the same four, **4/4 clean, 0 errors, 0 warnings**.
 - I rendered stills of all three at 0, 1.5 and 3 s and at their key beats and verdicts and read them (times in the review log).
 - Every 09a working line is 38 characters or fewer without its `**` (the longest is 29), so it stays one 40 px line inside x 62-940; the checker enforces that.
-- `lookOpts` in 09c (`input`) is read by the kit and documented in `looks/scoreboard/README.md`. Newer options are documented only in their format file's header comment (the kit READMEs, which the assembly and port passes may not edit, do not list them yet): 09a's `cols`, `second`, `target`, `working` and `beats` (Becker Rig port) in `looks/becker-rig/formats/growth-ladder.js`; 09c's `beats` (assembly pass; since the fix pass a beat may move the hero with `hero` / `tag`), `heroTag` and `verdictStyle: "stack"` in `looks/scoreboard/formats/growth-ladder.js`. 09b carries no `lookOpts`. 09c no longer uses `goal` or `icon`.
+- `lookOpts` in 09c (`input`) is read by the kit and documented in `looks/scoreboard/README.md`. Newer options are documented only in their format file's header comment (the kit READMEs, which the assembly and port passes may not edit, do not list them yet): 09a's `cols`, `second`, `target`, `working` and `beats` (Becker Rig port) in `looks/becker-rig/formats/growth-ladder.js`; 09c's `beats` (assembly pass; since the fix pass a beat may move the hero with `hero` / `tag`), `heroTag` and `verdictStyle: "stack"` in `looks/scoreboard/formats/growth-ladder.js`. 09b's narration cut carries no `lookOpts`; its condensed cut carries one, `beats` (an act-only opening shrug on row 0, documented in the Becker Rig growth-ladder format header). 09c no longer uses `goal` or `icon`.
 
 ---
 
@@ -58,7 +59,7 @@
    - Its 3.77M short is a 10% table under a "12%" label (study check).
    - The multiples are modest (14.1x at most where scored), and the two hits are 2022-23 and India-only.
    - Millionaire-goal hooks flopped in the benchmark: H75 "…still Retire a Millionaire" 34,225, H88 "$24,500 COULD BECOME $10.8 MILLION" 15,274. Since hook pass 2 no 09 hook mentions a million; 09c uses it only in its verdict, as a rate (≈ $13.30 a day).
-   - So all three teasers are voiced 27.0-31.5 s ladders, not silent cards, and every rate on screen matches every row.
+   - So all three teasers are full ladders, not 6-second cards, and every rate on screen matches every row. Until 2026-10-13 they were VO-paced 27.0-31.5 s ladders; the condensed cuts (12.8-14.0 s bodies + the 2.5 s end card) keep every rung and number, with on-screen captions and no narration.
 
 ### Decisions shared by all three
 
@@ -73,7 +74,7 @@
   - each ladder keeps one precision, now to the dollar in all three. 09c moved from the nearest $100 to the dollar when its ladder became $1 a day; its per-day rate is to the cent (≈ $13.30).
 
   The checker enforces all of this.
-- **VO text uses numerals.** It doubles as the captions, and the checker reads its numbers. Line lengths assume 2.6 spoken words a second, with digits expanded the way they are read ("$19,200" = 5 words). Every row the VO names lands within 0.5 s of its word.
+- **VO text uses numerals.** It doubles as the captions, and the checker reads its numbers. Line lengths assume 2.6 spoken words a second, with digits expanded the way they are read ("$19,200" = 5 words). Every row the VO names lands within 0.5 s of its word. (That is the narration cuts' rule. The condensed cuts, 2026-10-13, have no narration: the same lines are on-screen captions, each up ≥ max(1.2 s, 0.12 s a word) and up while its row lands; see the review log.)
 - **Lane check:**
   - No product or brand is named. Latte/Starbucks belongs to `pov-race`.
   - No by-age lookup table. "$3 a day by age" belongs to `find-your-row`. 09b's rungs are ages, but they are one person's timeline for one $1,000 gift, not a row per kind of viewer: every rung is the same money at a later age. Judge 2 asked for this lane question to be settled before 09b ships; this is the decision.
@@ -90,10 +91,10 @@
 | | |
 |---|---|
 | Look | `becker-rig` (since the port, 2026-10-08; it was `live-sheet`). A light void, one green stick figure at the foot of a ladder whose rungs are the years, a coin thrown up to each rung, a $100 gauge under each monthly figure, ink tags, a heave onto a gold plate on the last row |
-| Spec | `studio/specs/09a-becker-rig-100-a-month-doubles.json` (28.5 s). The Live Sheet spec is retired to `studio/specs/retired/09a-live-sheet-100-a-month-doubles.json` |
+| Spec | Condensed cut: `studio/specs-wip/09a-becker-rig-100-a-month-doubles.json` (14.0 s + the 2.5 s end card = 16.5 s; WIP until the ship step promotes it over `studio/specs/09a-becker-rig-100-a-month-doubles.json`, the 28.5 s narration cut). The Live Sheet spec is retired to `studio/specs/retired/09a-live-sheet-100-a-month-doubles.json` |
 | Platform title | **You Add $100 a Month. When Does It Earn $100 a Month?** |
 | On-screen hook (header) | **You add $100 a month. / When does it earn $100 a month?** (12 words, 2 lines; "$100 a month" in the kit's hero green on line 1) |
-| Frame 1 | Header, the 2-line footer (16 px under the hook), and the working line "$1,245 × 8% ÷ 12 ≈ **$8/mo**" (in ink, result in green): what the Year 1 Worth earns the next month. Column heads Year / Worth / Earns a month (wrapped "Earns / a month"; YEAR stands over the top of the ladder). Rung 1 already settled: 1 · ≈ $1,245 · **≈ $8** (green, 58 px). The other 7 rungs show their year, dim, over dotted empty shelves. The figure (1.3×, clear of the rail) stands at the foot of the ladder, hand on chin, looking up it, and nods at 0.35 s; row 1's $100 gauge (a track ending in an upright tick) fills grey to 8% by 0.65 s |
+| Frame 1 | Header, the 2-line footer (16 px under the hook), and the working line "$1,245 × 8% ÷ 12 ≈ **$8/mo**" (in ink, result in green): what the Year 1 Worth earns the next month. Column heads Year / Worth / Earns a month (wrapped "Earns / a month"; YEAR stands over the top of the ladder). Rung 1 already settled: 1 · ≈ $1,245 · **≈ $8** (green, 58 px). The other 7 rungs show their year, dim, over dotted empty shelves. The figure (1.3×, clear of the rail) stands at the foot of the ladder, hand on chin, looking up it. The first caption, "By year 1 it's earning about $8 a month.", is complete on frame 1. From frame 2 he shrugs (an act-only opening beat), then nods (0.35 s); row 1's $100 gauge (a track ending in an upright tick) fills grey to 8% by 0.65 s |
 | Footer | ASSUMES 8% a year, compounded monthly / $100 in at month-end · not a forecast (2 lines, broken at the separator). Port: line 2 dropped "each" (42 → 37 characters), because the kit fits the footer to x 62-940 and the old line only fit at 36 px, under the 40 px floor |
 
 **Topic vs the seed:**
@@ -114,7 +115,7 @@
 | R2 | One input ($100 a month). The header asks for a year; no result is printed |
 | R3 | Pass: the answer is everyone's, because the amount cancels. The VO and the working line ("$50 or $500/mo: still year 9") say so at the verdict |
 | R4 | $100 a month: small, round and ChartOrbit's stake |
-| R5 | Implied, not printed: ≈ $8 against $100 at 0.5 s makes "decades" the viewer's guess, and year 9 busts it |
+| R5 | Implied, not printed: ≈ $8 against $100 at 0.0 s (and his shrug from frame 2) makes "decades" the viewer's guess, and year 9 busts it |
 | R6 | Partial: "You add" + $100 a month. The header names no horizon (both judges) |
 | R7 | One target to take a side on: your own $100 a month |
 | R8 | 12 words, 2 lines |
@@ -130,28 +131,27 @@
 - H84, Master Money: "4 DEAD SIMPLE NUMBERS…", slot 1 typing "$72,000 × 0.7" into "$50,400" before 3 s. 3,000,000 (140x), https://www.tiktok.com/@mastermoneyco/video/7680913784143105310. Borrowed: formula, then result, in the same slot: "$1,245 × 8% ÷ 12 ≈ $8/mo" on screen at 0.0 s.
 - H27, FinCalC: "₹2000 SIP Returns for 1-15 Years". 3,771,667, https://www.youtube.com/shorts/Y57tm58Y6zI. Borrowed: row 1 on screen at 0.0 s and the row unmask.
 
-**Beat sheet**
+**Beat sheet** (condensed cut, 2026-10-13: 14.0 s body + the 2.5 s end card = 16.5 s; rungs at 0.0, 1.85, 3.15, 5.05, 7.1, 8.35, 9.65 and 11.25 s; verdict at 12.4 s. The 28.5 s narration cut's sheet and guide VO are in git history.)
 
-| t (s) | On screen | VO |
+| t (s) | On screen | Caption |
 |---|---|---|
-| 0.0 | Header, footer, working line "$1,245 × 8% ÷ 12 ≈ **$8/mo**" (ink, result green). Rung **1** settled: ≈ $1,245 / **≈ $8** (green), its $100 gauge filling grey to 8% (drawn at least 20 px long) by 0.65 s, up to the tick that marks $100. 7 dim rungs above. The figure thinks at the foot of the ladder (nod at 0.35 s) | "By year 1 it's earning about $8 a month." (0.0-3.85) |
-| 2.25-3.2 | He takes a coin, winds up and throws (release ≈ 2.8 s, swipe) | |
-| 3.2 | The coin lands as rung 5: ≈ $7,348 / ≈ $49 (thud); its rung turns ink, the gauge fills to 49%. The working line swaps to "$7,348 × 8% ÷ 12 ≈ **$49/mo**" (a hard swap with a 12 px slide) | |
-| 3.65-4.6 | The next throw (release ≈ 4.2 s) | |
-| 4.6 | Rung **8**: ≈ $13,387 / **≈ $89**, the gauge grey at 89%, short of the end. A red tag "under $100" on an ink plate drops over rung 9's empty slot, pointing down at ≈ $89 (in from 4.68 s, gone by 7.3 s). Buzz. He shrugs (4.74 s), then a hand on his chin (≈ 5.9 s). Line "… ≈ **$89/mo**" | "Year 8: about $89. Not yet." (4.4-7.5) |
-| 7.05-8.0 | The throw for rung 9 (release ≈ 7.6 s, after the tag has gone) | |
-| 8.0 | Rung **9**: ≈ $15,743 / **≈ $105**. The crossing: ≈ $105 swells to 1.15× (anchored right, 8.0-8.5 s) under a burst and a shake (hit lines clipped above its shelf and right of the Worth), pop; ≈ $89 is ink by 8.0 s, so ≈ $105 is the only green number; its gauge runs to the tick and snaps green with a pulse (8.65 s); once the burst has faded, a green tag "beats your **$100**" ($100 in coin yellow) drops over rung 15's empty slot (8.24-11.2 s). He celebrates with a hop (8.14 s), then points at the row (≈ 9.7 s). Line "$15,743 × 8% ÷ 12 ≈ **$105/mo**" | "Year 9: about $105. More than you add." (7.7-11.95) |
-| 12.2 | Rung 15: ≈ $34,604 / ≈ $231, gauge full and green from here up. Line "… ≈ **$231/mo**" | |
-| 13.9 | Rung **20**: ≈ $58,902 / ≈ $393. Line "… ≈ **$393/mo**". An act-only beat: he points at the ladder (14.04 s), then a hand on his chin (≈ 15.1 s), back to idle at 16.2 s, so he never freezes before the next coin (taken at 16.85 s) | "Year 20: about $393 a month." (13.6-17.45) |
-| 17.8 | Rung 25: ≈ $95,103 / ≈ $634. Line "… ≈ **$634/mo**" | |
-| 18.0-19.4 | The heave: a big coin into his arms (18.0), pressed overhead and wobbling under a riser (18.3), a dip (18.85) and the heave (≈ 19.0, whoosh) | |
-| 19.4 | Rung **30**: ≈ $149,036 / **≈ $994** on the gold plate (biggest, last): hit, shake, burst (clipped to the right of the plate's left edge − 8, clear of ≈ $149,036), a 3% camera punch, cash; coins spill down the right margin. The plated row has no gauge (the plate says "reached"). He celebrates with a hop, then points up at the plate (≈ 20.65 s). Line "$149,036 × 8% ÷ 12 ≈ **$994/mo**" | "Year 30: about $994 a month. On its own." (19.0-24.0) |
-| 24.2 | Verdict in the caption band: "From **year 9** / it earns more than you add." (green swoosh under "year 9"), ding. Rung 9's year and ≈ $105 turn green again with a bump, and a green outlined plate (the gold plate's pad and radius, no fill) pops in around rung 9 from its year to ≈ $105, its edges on the gauge lines over and under the row (those two gauges hand over to it); the gold plate steps back to a grey border and a paler fill (24.2-24.5 s). He turns and points at it (24.34 s): year 9 is the one focal point. Line "$50 or $500/mo: still **year 9**" | "Any monthly amount: year 9." (24.2-26.15) |
-| 26.15-28.5 | Hold on the finished ladder, rung 9 in its green plate, him pointing at it (loop) | |
+| 0.0 | Frame 1: header, footer, working line "$1,245 × 8% ÷ 12 ≈ **$8/mo**" (ink, result green). Rung **1** settled: ≈ $1,245 / **≈ $8** (green). 7 dim rungs above. The figure thinks at the foot of the ladder | "By year 1 it's earning about $8 a month." (−0.5-2.7; complete on frame 1) |
+| 0.02-1.1 | He shrugs from frame 2 (an act-only beat on row 0 at t −0.12: the kit starts an act 0.14 s after its beat), then the kit's nod (0.35) and hand back on his chin (0.75); row 1's gauge fills grey to 8% (0.1-0.65) | |
+| 0.9-1.85 | The first throw (wind-up 0.9, release ≈ 1.45) → rung 5 at 1.85: ≈ $7,348 / ≈ $49 (thud); the working line swaps | |
+| 2.2-3.15 | The next throw (release ≈ 2.75) → rung **8** at 3.15: ≈ $13,387 / **≈ $89**, gauge at 89%. The red tag "under $100" drops over rung 9's slot (3.23-4.45). Buzz. He shrugs (3.29), then a hand on his chin (≈ 3.69). Line "… ≈ **$89/mo**" | "Year 8: about $89. Not yet." (2.75-4.55) |
+| 4.1-5.05 | The throw for rung 9 (release ≈ 4.65, after the tag has gone) | |
+| 5.05 | Rung **9**: ≈ $15,743 / **≈ $105**. The crossing: ≈ $105 swells to 1.15× under a burst and a shake, pop; its gauge snaps green with a pulse (5.7); the green tag "beats your **$100**" drops over rung 15's slot (5.29-6.5). He hops (5.19), then points at the row (≈ 5.66). Line "$15,743 × 8% ÷ 12 ≈ **$105/mo**" | "Year 9: about $105. More than you add." (4.6-7.85) |
+| 7.1 | Rung 15: ≈ $34,604 / ≈ $231, gauge green from here up. Line "… ≈ **$231/mo**" | |
+| 8.35 | Rung **20**: ≈ $58,902 / ≈ $393. Line "… ≈ **$393/mo**". (The narration cut's act-only beat here is gone: the next throw starts 0.3 s after the rung) | "Year 20: about $393 a month." (7.9-10.75; up 0.45 s before the rung, as the coin flies) |
+| 9.65 | Rung 25: ≈ $95,103 / ≈ $634. Line "… ≈ **$634/mo**" | |
+| 9.87-11.25 | The short heave (1.38 s): the heavy coin into his arms (9.87), pressed overhead and wobbling under a riser (10.15), a dip (10.70) and the heave (≈ 10.84, whoosh). The caption still reads "Year 20…" through the heave, so the biggest number is not given away | "Year 30: about $994 a month. On its own." (10.8-12.35; up 0.45 s before the plate, as the coin flies) |
+| 11.25 | Rung **30**: ≈ $149,036 / **≈ $994** on the gold plate (biggest, last): hit, shake, burst, a 3% camera punch, cash; coins spill down the right margin. He celebrates with a hop (11.47). Line "$149,036 × 8% ÷ 12 ≈ **$994/mo**" | |
+| 12.4 | Verdict in the caption band: "From **year 9** / it earns more than you add." (green swoosh under "year 9"), ding. Rung 9 relights green inside its green outlined plate; the gold plate steps back. He points at year 9 (12.54; the kit's pointUp at the plate, 12.5, is overridden 0.04 s later). Line "$50 or $500/mo: still **year 9**" | ("Any monthly amount: year 9.", the last caption line, sits under the verdict and is not shown) |
+| 12.4-14.0 | Hold (1.6 s) on the finished ladder, rung 9 in its green plate, him pointing at it; then the 2.5 s end card | |
 
-**Full guide VO** (57 spoken words)
+**Captions** (on-screen text, no narration; 43 words, 38 shown). Each is up ≥ max(1.2 s, 0.12 s a word), back to back (0.05 s gaps), and each number line goes up 0.4-0.45 s before its rung lands (the coin is in the air), so no line names a number before its rung shows it (the checker caps the lead at 0.5 s). The year-9 line stays up 0.75 s past rung 15's landing, where the next line would otherwise lead its rung by 1.1 s:
 
-> By year 1 it's earning about $8 a month. Year 8: about $89. Not yet. Year 9: about $105. More than you add. Year 20: about $393 a month. Year 30: about $994 a month. On its own. Any monthly amount: year 9.
+> By year 1 it's earning about $8 a month. · Year 8: about $89. Not yet. · Year 9: about $105. More than you add. · Year 20: about $393 a month. · Year 30: about $994 a month. On its own. · (under the verdict) Any monthly amount: year 9.
 
 "By year 1 it's earning" is the rate at the end of year 1, not what year 1 earned: the judges' wording fix. Year 1 grows $44.99 in all (≈ $3.75 a month on average); month 12 grows $7.58 and month 13 grows $8.30.
 
@@ -212,16 +212,17 @@ So the "≈ 10% before inflation" has two confirmed sources (10.09% and 9.94%), 
 > Year 9 isn't a coincidence: 72 ÷ 8 = 9. Monthly growth passes your deposit exactly when (1 + 8%/12)^n = 2, the lump-sum doubling time (≈ 8.7 years). At 7% it's year 11. At 10%, year 8.
 
 **Per-platform notes**
-- **YouTube Shorts:** the title repeats the header's question, FinCalC's payout grammar. Keep the 2.35 s hold on the finished ladder: that is the screenshot frame.
-- **Instagram Reels:** cover on frame 1 (the question, the "≈ $8/mo" working line and the dim rungs) or on the crossing at about 8.5 s (the "beats your $100" tag over ≈ $105, the figure celebrating).
+- **YouTube Shorts:** the title repeats the header's question, FinCalC's payout grammar. The 1.6 s hold on the finished ladder (12.4-14.0 s in the condensed cut) is the screenshot frame.
+- **Instagram Reels:** cover on frame 1 (the question, the "≈ $8/mo" working line, the dim rungs and the first caption) or on the crossing at about 5.5 s in the condensed cut (8.5 s in the narration cut: the "beats your $100" tag over ≈ $105, the figure celebrating).
 - **TikTok:** the comment fights will be the rate ("8% is too high or too low") and "that's compounding, not earning". The pinned comment takes the first (7% → year 11, 10% → year 8); the caption defines "earns" for the second. Keep "year 9" out of the first 100 characters of the caption (it first appears at about character 180).
-- **Not a 6 s card:** FinCalC's 2026 amount-first cards stalled at 9,017-10,445. Keep this voiced.
+- **Not a 6 s card:** FinCalC's 2026 amount-first cards stalled at 9,017-10,445. Keep the full ladder: the condensed cut keeps every rung and number in 14.0 s, on on-screen captions with no narration (the narration cut was voiced).
 - **Look note (Becker Rig, since the port):**
   - **Three columns, not four.** The kit stands the figure left of the ladder, which leaves x 312-922 for the table. Measured in the kit's fonts, four numbers a row need about 790 px at the smallest sizes the look allows (year 52, "$36,000" 160 in mono, "≈ $149,036" 250 at 44 px, the plated "≈ $994" 226), so `lookOpts.cols: [0, 2, 3]` prints Year / Worth / Earns a month. "You put in" stays in `data.rows` (the spec is still look-agnostic and the checker still verifies $1,200 … $36,000) but is not drawn here. The hero column is "Earns a month", the number the hook asks about: it is what the coins become, what turns green, and what takes the gold plate. `second: "bold"` sets the Worth in the hero face in ink (40 px), a balance rather than a grey deposit. The Earns cells land at 58 px (63 on the plate), 72 px apart, against 09b's Worth at 56 px (60 on the plate) 80 px apart. Two things buy that room (port QA fix pass): the footer sits 16 px under this 2-line hook instead of pinned at y 452 (about 66 px back), and the YEAR head may stand over the top of the ladder instead of right of its rails (the kit allows it only when the values would otherwise be under 56 px; 09b is unchanged).
   - **The $100 gauge** (`target: "$100"`): under each Earns cell a 9 px track as long as your $100, ending in an upright tick ("up to here = $100"), filled grey to Earns ÷ $100 (8%, 49%, 89%; never shorter than 20 px), snapping green with its tick and a pulse on the rows that reach it, years 9 to 25. The plated year 30 has no gauge: the gold plate says "reached", and a gauge under it sat on the "$" of ≈ $634. It replaces the kit's put-in/growth meter, which would compare the wrong columns here.
   - **The working line** (`working`) is the Live Sheet's formula bar as a Becker working line: the same nine lines, mono 40 px under the footer, in ink (the footer is grey, so the line reads as the maths, not as a third line of small print), one at a time, swapped as each rung lands, the result in green (`**…**`). With no ≈ chip in this look, a line starts on the shown Worth ("$1,245 × 8% ÷ 12 ≈ $8/mo"), which is the arithmetic on the shown figure, and the checker asserts it rounds like the exact one.
-  - **Beats** (`beats`, the Live Sheet's marks plus figure acts): year 8 gets the red tag "under $100", a buzz, a shrug and a hand on the chin; year 9 gets an impact (≈ $105 swells to 1.15× under a burst), the green tag "beats your **$100**" once the burst has faded, a pop, a hop and a point; year 20 gets an act-only beat (a point, then a hand on the chin) so the figure never stands still through "Year 20: about $393 a month."; the verdict relights rung 9 inside a green outlined plate while the gold plate steps back, and he points at it. Each tag sits over the next rung's empty slot and is gone at least 0.6 s before that rung's coin flies, and the act-only beat ends at least 0.6 s before the next coin's wind-up (the checker asserts both).
-  - Timing is unchanged: every rung, VO line and the verdict keep their times. Rung 25 → 30 is 1.6 s, so the last coin gets the kit's short heave (1.38 s), not 09b's long struggle. The spec's 19.4 s "roll" cue is gone (there is no count-up in this look); the kit adds swipes, thuds, the riser, whoosh, hit, cash and the verdict's ding. Captions keep "about" with the number after it.
+  - **Beats** (`beats`, the Live Sheet's marks plus figure acts): year 8 gets the red tag "under $100", a buzz, a shrug and a hand on the chin; year 9 gets an impact (≈ $105 swells to 1.15× under a burst), the green tag "beats your **$100**" once the burst has faded, a pop, a hop and a point; the verdict relights rung 9 inside a green outlined plate while the gold plate steps back, and he points at it. Each tag sits over the next rung's empty slot and is gone at least 0.6 s before that rung's coin flies (the checker asserts it, and in the condensed cut that each tag is up ≥ 1.0 s).
+  - Act-only beats: the narration cut gave year 20 one (a point, then a hand on the chin, 13.9 s), so the figure acted through its 3.9 s gap, and the checker asserted it ended ≥ 0.6 s before the next coin's wind-up. The condensed cut drops it (the next throw starts 0.3 s after rung 20, where the kit would cut the act to nothing) and has one act-only beat instead, the opening shrug on row 0 at t −0.12 (moving from frame 2); the checker asserts there is no other.
+  - Timing (condensed cut): rung gaps of 1.25-2.05 s keep the figure throwing (a throw takes the last 0.95 s before its rung, a landing moves for about 0.4 s); the two gaps over 1.7 s hold the year-8 and year-9 acts and tags. Rung 25 → 30 is 1.6 s, so the last coin gets the kit's short heave (1.38 s), not 09b's long struggle. The spec's 19.4 s "roll" cue is gone (there is no count-up in this look); the kit adds swipes, thuds, the riser, whoosh, hit, cash and the verdict's ding. Captions keep "about" with the number after it.
 
 ---
 
@@ -230,10 +231,10 @@ So the "≈ 10% before inflation" has two confirmed sources (10.09% and 9.94%), 
 | | |
 |---|---|
 | Look | `becker-rig` (a light void, one green stick figure, a ladder whose rungs are the rows, coins thrown up to each rung, per-row composition meters, a gold plate and impact on the last row) |
-| Spec | `studio/specs/09b-becker-rig-1000-times-1-07.json` (27.0 s) |
+| Spec | Condensed cut: `studio/specs-wip/09b-becker-rig-1000-times-1-07.json` (13.9 s + the 2.5 s end card = 16.4 s; WIP until the ship step promotes it over `studio/specs/09b-becker-rig-1000-times-1-07.json`, the 27.0 s narration cut) |
 | Platform title | **POV: Someone Invested Just $1,000 for You at Birth. What's It Worth at 65?** |
 | On-screen hook (header) | **POV: someone invested just / $1,000 for you at birth. / What's it worth at 65?** (14 words, 3 lines; "$1,000" in the hero green; line 1 breaks after "just", which keeps its right edge in to x ≈ 850) |
-| Frame 1 | Header and the 2-line footer. 8 dim rungs labelled by **age**, 1, 10, 18, 25, 30, 40, 50 and 65, each with a dotted empty shelf, under the heads Age / Put in / Worth. The figure (scaled 1.3×, standing clear of the rail, his pencil inside x ≥ 40) in the "think" pose at the foot of the ladder (a nod at 0.35 s). He winds up at about 0.4 s and throws at about 0.75 s, and the first coin lands on rung 1 as **$1,070** at 1.0 s while the VO says it |
+| Frame 1 | Header and the 2-line footer. 8 rungs labelled by **age**, 1, 10, 18, 25, 30, 40, 50 and 65, under the heads Age / Put in / Worth. Condensed cut: rung 1 is already settled (1 · $1,000 · **$1,070**), the 7 above dim over dotted empty shelves, and the first caption "Age 1: $1,070." is complete. The figure (scaled 1.3×, standing clear of the rail, his pencil inside x ≥ 40) in the "think" pose at the foot of the ladder; from frame 2 he shrugs (an act-only opening beat), then nods (0.35 s). (The narration cut threw rung 1's coin at about 0.75 s and landed $1,070 at 1.0 s) |
 | Footer | ASSUMES 7% a year, added once a year / never topped up · not a forecast (2 lines, broken at the separator) |
 
 **Topic vs the seed:**
@@ -247,7 +248,7 @@ So the "≈ 10% before inflation" has two confirmed sources (10.09% and 9.94%), 
 
 | Rule | How |
 |---|---|
-| R1 | "$1,000" (the input) and "65" in the header, "7%" in the footer and 8 age labels at 0.0 s. The first coin lands as $1,070 at 1.0 s |
+| R1 | "$1,000" (the input) and "65" in the header, "7%" in the footer, 8 age labels and (condensed cut) rung 1's $1,070 at 0.0 s |
 | R2 | One input ($1,000, once). The header asks; no result is printed |
 | R3 | Partial: the rungs are ages, so most viewers can place their own age between two rungs. The amount is fixed at $1,000; the caption gives the scaling rule for other gifts |
 | R4 | $1,000: round, familiar, a plausible birth gift |
@@ -256,7 +257,7 @@ So the "≈ 10% before inflation" has two confirmed sources (10.09% and 9.94%), 
 | R7 | One named target: 65, the top rung |
 | R8 | 14 words, 3 lines |
 | R9 | 8 dim age rungs with empty shelves from frame 1 |
-| R10 | First payoff at 1.0 s ($1,070). Biggest number last (≈ $81,273, heaved onto the gold plate) |
+| R10 | First payoff at 0.0 s in the condensed cut ($1,070; 1.0 s in the narration cut). Biggest number last (≈ $81,273, heaved onto the gold plate) |
 | R11 | The header asks; the verdict answers. Caption line 1 holds the number back ("One gift. Never topped up.") |
 | R12 | Lopsided and repeatable: "over 81 times the gift" (VO), printed in the verdict's line 2 since the assembly pass ("Over 81× the gift") |
 
@@ -266,27 +267,26 @@ So the "≈ 10% before inflation" has two confirmed sources (10.09% and 9.94%), 
 - H45, @investment_timeline: "POV: You invested in Monster instead of paying $3/day for a Monster Energy". 1.5M (140.6x), https://www.tiktok.com/@investment_timeline/video/7671760671867997473. Borrowed: "POV" + you + a small, concrete stake.
 - H72, The Market Hustle: "How hitting $100K by age 40 and never investing again would grow". 67,160 (1.6x med), https://www.instagram.com/reel/DdpT7thyGvN/. The benchmark's left-alone lump measured against a life; 09b adds "you" and a small stake.
 
-**Beat sheet** (the rig choreography is the kit's own: a coin thrown to each rung, the last one heaved; this sheet lists only what the kit draws)
+**Beat sheet** (condensed cut, 2026-10-13: 13.9 s body + the 2.5 s end card = 16.4 s; the rig choreography is the kit's own: a coin thrown to each rung, the last one heaved; this sheet lists only what the kit draws. The 27.0 s narration cut's sheet and guide VO are in git history.)
 
-| t (s) | On screen | VO |
+| t (s) | On screen | Caption |
 |---|---|---|
-| 0.0 | Header, footer, ladder with 8 dim age rungs, the figure thinking (nods at 0.35 s) | "Age 1: $1,070." (0.0-2.35) |
-| 0.4-0.85 | The figure winds up and throws the first coin (release ≈ 0.75 s) | |
-| 1.0 | The coin lands on rung **1**: **$1,070**; "$1,000" slides into "Put in"; its meter draws | (…$1,070.) |
-| 3.4 | Rung 10: ≈ $1,967 (almost doubled) | |
-| 5.4 | Rung **18**: ≈ $3,380 | "At 18: about $3,380." (5.0-8.5) |
-| 7.4 | Rung 25: ≈ $5,427 | |
-| 9.4 | Rung **30**: ≈ $7,612 | "At 30: about $7,612." (9.0-12.5) |
-| 11.4 | Rung 40: ≈ $14,974 | |
-| 13.4 | Rung **50**: ≈ $29,457 | "At 50: about $29,457." (13.0-17.25) |
-| ≈ 14.2-17.8 | The heave fills the gap after rung 50 (no dead air): the last, heavy coin drops into his arms at ≈ 14.2 s and he buckles (thud); he hitches it up (≈ 14.8) and it sags back (≈ 15.2, step); he presses it overhead at ≈ 15.6 and strains, wobbling harder, under a riser; a last dip at ≈ 17.25 and the heave at ≈ 17.4 (whoosh) | |
-| 17.8 | Rung **65**: **≈ $81,273** on the gold plate. Hit, shake, celebrate, then he points up. The impact lines are clipped to the band between the column heads and the row under the plate, and the coins spill down the right margin (x 940-1000), never over a label | "At 65: about $81,273." (17.4-22.05) |
-| 22.3 | Verdict: "**≈ $81,273** at 65. / Over 81× the gift, never topped up." Ding (kit) | "Over 81 times the gift." (22.3-24.65) |
-| 24.65-27.0 | Hold, then loop | |
+| 0.0 | Frame 1: header, footer, rung **1** settled ($1,000 / **$1,070**), 7 dim age rungs, the figure thinking | "Age 1: $1,070." (−0.5-2.65; complete on frame 1) |
+| 0.02-1.1 | He shrugs from frame 2 (an act-only beat on row 0 at t −0.12), then the kit's nod (0.35); rung 1's meter draws (0.1-0.65) | |
+| 0.8-1.75 | The first throw (wind-up 0.8, release ≈ 1.35) → rung 10 at 1.75: ≈ $1,967 (almost doubled) | |
+| 3.15 | Rung **18**: ≈ $3,380 (a throw every 1.4 s from here, each winding up 0.45 s after the last landing) | "At 18: about $3,380." (2.7-5.45) |
+| 4.55 | Rung 25: ≈ $5,427 | |
+| 5.95 | Rung **30**: ≈ $7,612 | "At 30: about $7,612." (5.5-8.25) |
+| 7.35 | Rung 40: ≈ $14,974 | |
+| 8.75 | Rung **50**: ≈ $29,457 | "At 50: about $29,457." (8.3-10.9: it stays up through the heave, so the struggle never shows the answer) |
+| 8.85-11.35 | The long heave (the kit's shortest struggle, 2.2 s): hands out (8.85), the heavy coin drops into his arms and he buckles (9.15, thud), hitches it up (≈ 9.40) and it sags back (≈ 9.58, step), presses it overhead (9.75) and strains, wobbling harder, under a riser; a last dip (10.80) and the heave (≈ 10.93, whoosh) | "At 65: about $81,273." (10.95-12.25: up 0.4 s before the plate, as the coin flies) |
+| 11.35 | Rung **65**: **≈ $81,273** on the gold plate. Hit, shake, burst (clipped clear of the labels), cash; coins spill down the right margin. He celebrates (11.57), then points up at the plate (12.6) | |
+| 12.3 | Verdict: "**≈ $81,273** at 65. / Over 81× the gift, never topped up." Ding (kit) | ("Over 81 times the gift.", the last caption line, sits under the verdict and is not shown) |
+| 12.3-13.9 | Hold (1.6 s), then the 2.5 s end card | |
 
-**Full guide VO** (53 spoken words)
+**Captions** (on-screen text, no narration; 24 words, 19 shown). Each is up ≥ 1.2 s, back to back (0.05 s gaps); each age line goes up 0.45 s before its rung, and the age-65 line, the hook's answer, 0.4 s before the plate, with the coin in the air (until the fixer pass it went up 1.25 s early, at the heave's peak, and answered the hook about 1 s before the plate; the checker now caps every lead at 0.5 s):
 
-> Age 1: $1,070. At 18: about $3,380. At 30: about $7,612. At 50: about $29,457. At 65: about $81,273. Over 81 times the gift.
+> Age 1: $1,070. · At 18: about $3,380. · At 30: about $7,612. · At 50: about $29,457. · At 65: about $81,273. · (under the verdict) Over 81 times the gift.
 
 **The maths**
 
@@ -331,12 +331,12 @@ So the "≈ 10% before inflation" has two confirmed sources (10.09% and 9.94%), 
 
 **Per-platform notes**
 - **YouTube Shorts:** the title repeats the header's POV and question.
-- **Instagram Reels:** cover on frame 1 (the POV header over the empty age ladder) or on the heave frame (≈ 17 s).
+- **Instagram Reels:** cover on frame 1 (the POV header over the age ladder, rung 1 at $1,070 and the first caption) or on the heave frame (≈ 10.5 s in the condensed cut, ≈ 17 s in the narration cut: the coin overhead, the top rung still empty and the caption "At 50: about $29,457.", so the cover does not give the answer away; until the fixer pass the age-65 line was already up there).
 - **TikTok:** the comment fights will be "where do you get 7%?" and "inflation". The caption answers both with the after-inflation framing; the pinned comment invites "I got mine at 25" replies.
 - **Look note:**
   - Becker devices used (`alan-becker.md` §4): numbers as objects (the coin becomes the number), the escalation ladder, and the final scale gag (the heave).
   - Throw mode with 8 rungs and the heave on rung 65. The 3-line header and the 2-line footer fit above the ladder (stills at 0, 0.6, 1.0, 1.5, 3, 19 and 23 s).
-  - Rung 1 at 1.0 s leaves the kit room for a real throw (it needs a cycle of at least 0.42 s after the 0.35 s opening; this one is 0.585 s). The intro's 0.75 s "think" key falls 4 ms before the release, which does not show.
+  - Narration cut: rung 1 at 1.0 s leaves the kit room for a real throw (it needs a cycle of at least 0.42 s after the 0.35 s opening; this one is 0.585 s). The intro's 0.75 s "think" key falls 4 ms before the release, which does not show. Condensed cut: rung 1 is settled at frame 1 (as 09a's), the figure moves from frame 2 (`lookOpts.beats`, one act-only shrug on row 0 at t −0.12; 09b had no `lookOpts` before), and the first throw winds up at 0.8 s, after the nod. Rung gaps of 1.4 s keep him throwing (no still run over 0.2 s before the verdict); the 2.6 s gap before the plate is the shortest that keeps the long heave (room ≥ 2.2 s).
   - Fix pass (format file, kit workarounds reported to the kit owner): the header gets 0.1em word spacing (the heavy display face fused "investedjust" at phone size), and the Worth cells set "≈ $7,612" with a visible space, as the verdict and captions do.
 
 ---
@@ -346,7 +346,7 @@ So the "≈ 10% before inflation" has two confirmed sources (10.09% and 9.94%), 
 | | |
 |---|---|
 | Look | `scoreboard` (a black top bar with a neon odometer, a dark stage with a board of year slots and two-tone meters, one green money colour) |
-| Spec | `studio/specs/09c-scoreboard-5-a-day-millionaire.json` (31.5 s; the file name still says "5-a-day-millionaire", but the $5 ladder is now an example in the caption) |
+| Spec | Condensed cut: `studio/specs-wip/09c-scoreboard-5-a-day-millionaire.json` (12.8 s + the 2.5 s end card = 15.3 s; WIP until the ship step promotes it over `studio/specs/09c-scoreboard-5-a-day-millionaire.json`, the 31.5 s narration cut; the file name still says "5-a-day-millionaire", but the $5 ladder is now an example in the caption) |
 | Platform title | **Take What You Could Invest a Day. Year 40 = That × What?** |
 | On-screen hook (header) | **TAKE WHAT YOU COULD INVEST A DAY. / YEAR 40 = THAT × ?** (10 words plus "= × ?", 2 lines; "A DAY" is the only green phrase). Since the fix pass "=" and "×" are set at cap height in a heavy weight, and the "?" is a green boxed blank |
 | Frame 1 | Header with the blank multiplier. The hero odometer at **≈ $377**, labelled by a two-line tag on its left, "YEAR 1" / "$1 A DAY" (`lookOpts.heroTag`, fix pass), so the big number never reads as an unlabelled answer; the tag swaps with each row. Row 1's count lands just before frame 1 (rowT −0.4 s, assembly pass), so the first frame never shows a count in flight. The footer working "$1 × 365 ÷ 12 ≈ $30.42/mo · not a forecast" under it. The input strip "$1 A DAY · 7% A YEAR" (`lookOpts.input`) over the board: row 1 (1 · $365 · ≈ $377) lit, its landing glow fading, above 5 dark slots |
@@ -368,11 +368,11 @@ So the "≈ 10% before inflation" has two confirmed sources (10.09% and 9.94%), 
 | R2 | One input ($1 a day, as the unit). The multiplier is left blank, not printed |
 | R3 | Pass: "what you could invest a day" is the viewer's own number, and the multiplier makes every row theirs. "Could" includes viewers who don't invest yet |
 | R4 | $1 a day: the smallest round unit (H64's "$1") |
-| R5 | Weak: no wrong answer at frame 1. The meme is busted later, by the verdict (25.6 s: a million takes ≈ $13.30 a day) and the caption's $5 example |
+| R5 | Weak: no wrong answer at frame 1. The meme is busted later, by the verdict (11.2 s in the condensed cut, 25.6 s in the narration cut: a million takes ≈ $13.30 a day) and the caption's $5 example |
 | R6 | You ("you could invest") + an amount (a day) + a horizon (year 40) |
 | R7 | One named target: year 40 |
 | R8 | 10 words, 2 lines |
-| R9 | The boxed "× ?" blank and 6 board slots (5 dark) from frame 1; the hero fills the blank at 20.8 s ("× 75,176") |
+| R9 | The boxed "× ?" blank and 6 board slots (5 dark) from frame 1; the hero fills the blank at 10.25 s in the condensed cut (20.8 s in the narration cut: "× 75,176") |
 | R10 | First payoff ≈ $377 at 0.0 s. Biggest number last (year 40, ≈ $75,176) |
 | R11 | The header asks; the verdict answers under the board. Caption line 1 holds the number back ("Multiply by your own number.") |
 | R12 | A personal constant to repeat: "× 75,176", and a meme-buster: "a million ≈ $13.30 a day" |
@@ -384,25 +384,25 @@ So the "≈ 10% before inflation" has two confirmed sources (10.09% and 9.94%), 
 - H64, Gage Heward: "What $1 costs you by age". 1,150,974 (210x med), https://www.instagram.com/reel/Da_dukjxB56/. Borrowed: the $1 unit the viewer scales up.
 - H45, @investment_timeline: a per-day stake ("$3/day"). 1.5M (140.6x), https://www.tiktok.com/@investment_timeline/video/7671760671867997473.
 
-**Beat sheet** (each rung is a hard cut: a thud, the slot lights, the year and "you put in" slam in, then the row's Worth and the hero count up together while its meter grows)
+**Beat sheet** (condensed cut, 2026-10-13: 12.8 s body + the 2.5 s end card = 15.3 s. Each rung is a hard cut: a thud, the slot lights, the year and "you put in" slam in, then the row's Worth and the hero count up together while its meter grows; the kit's count clock times the landings. The 31.5 s narration cut's sheet and guide VO are in git history.)
 
-| t (s) | On screen | VO |
+| t (s) | On screen | Caption |
 |---|---|---|
-| 0.0 | Header with the boxed "× ?". Hero odometer at ≈ $377 (row 1 landed at −0.05 s), tagged "YEAR 1 / $1 A DAY". Footer working. Input strip "$1 A DAY · 7% A YEAR". Row **1** (1 · $365 · ≈ $377) lit. On every later cut the tag swaps to the new row's year | "Year 1: about $377." (0.0-3.1) |
-| 3.0 | Cut. Row 5: $1,825 / ≈ $2,166 | |
-| 4.6 | Cut. Row **10**: $3,650 / ≈ $5,203 | "Year 10: about $5,203." (4.4-7.9) |
-| 8.0 | Cut. Row **20**: $7,300 / ≈ $15,438 | "Year 20: about $15,438." (8.0-11.85) |
-| 12.2 | Cut. Row **30**: $10,950 / ≈ $35,571 | "Year 30: about $35,571." (12.0-16.25) |
-| 16.6 | Cut. Row **40**: a taller slot; the row and the hero count to **≈ $75,176** / $14,600 | "Year 40: about $75,176." (16.4-20.65) |
-| 20.8 | The hero takes the header's blank: a hard cut from ≈ $75,176 to **"× 75,176"** (130 px, bump and glow), its tag now "YEAR 40 ≈ / DAILY AMOUNT". The board stays whole | "Your daily amount, about 75,176 times." (20.8-25.45) |
-| 25.6 | The rows scroll up by three whole rows to 20-30-40 (row 20 sits right under the column labels), a black band rises at the foot, and the verdict stack slams in under a green rule: "A MILLION BY YEAR 40:" (white) / **"≈ $13.30 A DAY"** (88 px green). The hero dims to 42%, so the verdict is the one focal point. Reveal + cash | "A million? About $13.30 a day." (25.6-29.45) |
-| 29.45-31.5 | Hold, then a hard cut back to frame 1 (loop) | |
+| 0.0 | Frame 1: header with the boxed "× ?". Hero odometer at ≈ $377 (row 1 landed at −0.05 s; its bump and glow settle by 0.31 s), tagged "YEAR 1 / $1 A DAY". Footer working. Input strip "$1 A DAY · 7% A YEAR". Row **1** (1 · $365 · ≈ $377) lit | "Year 1: about $377." (−0.5-1.9; complete on frame 1) |
+| 0.5 | Cut. Row 5: $1,825, counts to ≈ $2,166 (lands 1.48) | |
+| 1.95 | Cut. Row **10**: $3,650, lands ≈ $5,203 at 3.05 | "Year 10: about $5,203." (1.95-3.4) |
+| 3.45 | Cut. Row **20**: $7,300, lands ≈ $15,438 at 4.81 | "Year 20: about $15,438." (3.45-5.15) |
+| 5.2 | Cut. Row **30**: $10,950, lands ≈ $35,571 at 6.61 | "Year 30: about $35,571." (5.2-6.95) |
+| 7.0 | Cut. Row **40**: a taller slot; the row and the hero count over a riser for 2.4 s and land **≈ $75,176** at 9.52 (hit, cash, bloom) | "Year 40: about $75,176." (7.0-9.9) |
+| 10.25 | The hero takes the header's blank, 0.73 s after the landing: a hard cut from ≈ $75,176 to **"× 75,176"** (bump and glow), its tag now "YEAR 40 ≈ / DAILY AMOUNT". The board stays whole | "Your daily amount, about 75,176 times." (9.95-11.15; it rises in 0.3 s before the hero) |
+| 10.85-11.2 | The rows scroll up by three whole rows to 20-30-40, a black band rises at the foot, and at 11.2 the verdict stack slams in under a green rule: "A MILLION BY YEAR 40:" / **"≈ $13.30 A DAY"**. The hero dims to 42%. Reveal + cash | "A million? About $13.30 a day." (11.2-12.8) |
+| 11.2-12.8 | Hold (1.6 s), then the 2.5 s end card | |
 
-Rung gaps are 2.6, 1.6, 3.4, 4.2 and 4.4 s, inside the Scoreboard's one-cut-every-2.5-4 s rhythm except the quick row 5 → 10. After row 40 lands (≈ 19.1 s) the screen changes at 20.8 (the hero's × 75,176) and 25.6 (the verdict): every VO line after the ladder has its number on screen. The fix pass cut the $5 beat and its VO line (5.4 s), which took the video from 37 s to 31.5 s and left the biggest money figure on the hero, not a smaller beat below the board.
+The cuts come 0.39-0.47 s after the previous landing, so a landing's bump runs into the next cut and the ladder never stands still (the longest still run before the verdict is 0.23 s on the full frame, 0.33 s with the caption band out). Rows under 2 s apart get the kit's thud-ding rhythm (no roll sound) until the last row's riser. The hero beat sits between the year-40 landing and the verdict's make-room scroll so that neither wait reaches 0.4 s: near-still 9.90-10.27 and 10.53-10.90 (0.37 s each, caption band out); until the fixer pass it came at landing + 0.8 s and the first wait was 0.43 s, with only the multiplier caption rising in.
 
-**Full guide VO** (71 spoken words)
+**Captions** (on-screen text, no narration; 32 words, all shown). Each is up ≥ 1.2 s, back to back (0.05 s gaps), goes up with its row's cut and stays ≥ 0.33 s past the landing; the Scoreboard lights its words as the line runs. "Year 40: about $75,176." goes up with the year-40 cut at 7.0 s, 2.5 s before the riser roll lands the number: its unlit words are grey but readable, and the highlight reaches "$75,176" at about 9.0-9.2 s, with the landing. That is accepted as the format's grammar (inherited from the narration cut, where the line led by 4.4 s): the line cannot start nearer the landing without leaving row 40's 2.4 s roll uncaptioned or captioned "Year 30", and the multiplier line after it needs its 1.2 s before the verdict at 11.2 s:
 
-> Year 1: about $377. Year 10: about $5,203. Year 20: about $15,438. Year 30: about $35,571. Year 40: about $75,176. Your daily amount, about 75,176 times. A million? About $13.30 a day.
+> Year 1: about $377. · Year 10: about $5,203. · Year 20: about $15,438. · Year 30: about $35,571. · Year 40: about $75,176. · Your daily amount, about 75,176 times. · A million? About $13.30 a day.
 
 **The maths**
 
@@ -452,13 +452,13 @@ Rung gaps are 2.6, 1.6, 3.4, 4.2 and 4.4 s, inside the Scoreboard's one-cut-ever
 
 **Per-platform notes**
 - **YouTube Shorts:** the title mirrors the header and asks "× What?".
-- **Instagram Reels:** cover on frame 1 (the "× ?" header, the tagged odometer and the board) or on the 20.8 s frame ("× 75,176" on the hero under the header's blank).
+- **Instagram Reels:** cover on frame 1 (the "× ?" header, the tagged odometer and the board) or on the "× 75,176" frame (about 10.5 s in the condensed cut, 20.8 s in the narration cut: "× 75,176" on the hero under the header's blank).
 - **TikTok:** the comments should be viewers' own multiplications; the pinned comment asks for them. Expect "S&P does 10%!": the caption answers with the after-inflation framing and the other compounding convention.
-- **Risk:** 31.5 s (37 s until the fix pass cut vo[6], "$5 a day…", and its beat), with ≈ 10 s after the last row lands, carried by the hero's "× 75,176" and the verdict; "× 75,176" is a long number to remember (both judges).
+- **Risk:** "× 75,176" is a long number to remember (both judges), and in the condensed cut it is on the hero 0.95 s before the verdict lands (it stays up, dimmed to 42%, through the 1.6 s hold). The narration cut ran 31.5 s (37 s until the fix pass cut vo[6], "$5 a day…", and its beat), with ≈ 10 s after the last row landed.
 - **Look note:**
   - `lookOpts.input: true` draws the "$1 A DAY · 7% A YEAR" strip; there is no `goal` (no $1,000,000 strip or halfway notch now).
   - `lookOpts.heroTag: true` (fix pass) labels the hero with a two-line tag ("YEAR 1" / "$1 A DAY", swapped on every cut); it replaces the coin icon.
-  - `lookOpts.beats`: one beat with `hero` / `tag` (fix pass) moves the hero at 20.8 s ("× 75,176", tag "YEAR 40 ≈ / DAILY AMOUNT") and leaves the board whole. The assembly pass's two label-stack beats (20.8 and 25.6 s) are gone: the second showed ≈ $375,880 at 88 px under a 130 px hero still saying $75,176.
+  - `lookOpts.beats`: one beat with `hero` / `tag` (fix pass) moves the hero at 20.8 s (10.25 s in the condensed cut) ("× 75,176", tag "YEAR 40 ≈ / DAILY AMOUNT") and leaves the board whole. The assembly pass's two label-stack beats (20.8 and 25.6 s) are gone: the second showed ≈ $375,880 at 88 px under a 130 px hero still saying $75,176.
   - `lookOpts.verdictStyle: "stack"` (fix pass) draws the verdict in the beats' style: a green rule, line 1 white, line 2 88 px green, in the kit's verdict slot. At 25.6 s the rows scroll up by whole rows (row 20 right under the labels, no gap) and the hero dims to 42% (stills at 25.35, 25.5, 25.7, 26.2 and 31.47 s).
   - Kit workarounds in the format file (reported to the kit owner): the header is built by the format so that "=" and "×" render at cap height in a heavy weight and "× ?" gets a green boxed blank (the kit set them at about x-height). The year column sits 18 px in from the slot edge, meter stubs under 6 px are not drawn, and lined boards meter with the bright underline only (no translucent fill behind the put-in digits).
   - In race terms this is one counter climbing with no finish line. It is not a crash race, so there are no crash bands (the look's rule for fixed-rate hypotheticals).
@@ -780,3 +780,169 @@ QA scored the Becker Rig 09a 7/10, a step below 09b, with six shoulds and three 
 - **Read:** the 12-frame contact sheet and stills at 0, 1.0, 5.0, 8.0, 8.1, 8.17, 8.3, 8.5, 14.6, 15.0, 15.5, 16.0, 16.5, 19.4, 19.43, 19.45, 19.47, 19.5, 20.5, 24.25, 24.4, 24.6 and 28.47 s.
 - **MP4:** `studio/out/09a-becker-rig-100-a-month-doubles.mp4` re-rendered: 28.5 s, 1080 × 1920, 30 fps, H.264 + AAC, 20 SFX cues. Frames pulled at 8.5, 24.6 and 28.4 s match the stills (mean absolute difference 0.47-0.50%, compression only).
 - **Not changed here:** `teasers/v2/teasers.json` and `renders/v2/` (still the Live Sheet 09a); the Becker Rig README (the new behaviours are in the format file's header comment).
+
+### Condensed cut (2026-10-13): 09a, 09b, 09c
+
+**Owner's note:** "Too many still moments are a killer for a short. Condense the rest. The CTA (end card) is good." The 06c and 06b precedents apply (`06-pov-race.md`, "Condensed cut" and "Opening hold fix and re-ship").
+
+**Files:**
+- New: `studio/specs-wip/09a-becker-rig-100-a-month-doubles.json`, `09b-becker-rig-1000-times-1-07.json` and `09c-scoreboard-5-a-day-millionaire.json`, retimed copies of the narration cuts.
+- Changed: this write-up (the three sections' spec rows, frame 1, R-rows, beat sheets, captions and platform notes, the header, and this entry) and `checks/09-growth-ladder.py`.
+- Not touched: `studio/specs/` (the ship step promotes), every kit file (`studio/looks/**`: no kit change was needed), `studio/src/**`, `studio/sound/**`, the sound packs, `test/`, `publishing/` and `renders/`. Renders are in `/tmp/cond/09/<id>/final/` only. Nothing is committed.
+
+**Kept, character for character:** every header, footer, caption line, verdict, data cell, working line, tag, tone, the hero beat's text and tag, every `sfx` kind and gain, `cols`, `second`, `target`, `input`, `heroTag`, `verdictStyle` and the 2.5 s end card (the brand layer is untouched). Only times moved, plus three choreography changes, each a spec knob:
+- 09a and 09b gain one act-only opening beat, `{ "t": -0.12, "row": 0, "act": "shrug", "d": 0.72 }`: the kit starts an act 0.14 s after its beat, so the figure shrugs from frame 2 (frame 1, the cover, is unchanged). In 09a it is appended after the other beats, so the tags stay `lookOpts.beats[0]` and `[1]`. 09b had no `lookOpts` before.
+- 09a drops the narration cut's act-only beat on year 20 (13.9 s, point then think): in the condensed cut the next throw starts 0.3 s after that rung, where the kit would cut the act to nothing.
+- 09b's rung 1 is settled at frame 1 (`rowT[0]` 0.0, as 09a's), so the cover shows $1,070 under its caption; the narration cut threw that coin and landed it at 1.0 s.
+
+**Measured before** (`renders/channel/`, frame difference at 270×480, `tblend` difference → `signalstats` YAVG; still under 0.15, near-still under 0.25):
+
+| Teaser | Body / total | Still runs ≥ 0.4 s before the verdict | Longest | After the verdict |
+|---|---|---|---|---|
+| 09a | 28.5 / 31.0 s | 0.87-2.27, 4.93-5.90, 6.03-7.07, 8.80-9.70, 9.83-11.07, 12.57-12.97, 14.20-15.13, 15.27-16.33, 16.43-16.87, 20.87-24.03 | 3.17 s | 24.63-28.53 (3.90), card 29.73-31.00 |
+| 09b | 27.0 / 29.5 s | 1.37-2.47, then 0.70 s before every throw (3.77, 5.77, 7.77, 9.77, 11.77), 19.23-22.10; near-still 0.03-0.43 and 14.40-14.90 | 2.87 s | 22.73-27.03 (4.30), card 28.23-29.50 |
+| 09c | 31.5 / 34.0 s | 0.23-3.00, 6.00-6.43, 6.47-8.00, 10.13-12.00, 13.93-14.33, 14.37-16.40, 19.67-20.80, 21.10-21.77, 21.80-25.30 | 3.50 s | 25.87-31.53 (5.66), card 33.00-34.00 |
+
+**The cuts:**
+
+| | 09a | 09b | 09c |
+|---|---|---|---|
+| Body / total | 28.5 / 31.0 → **14.0 / 16.5 s** | 27.0 / 29.5 → **13.9 / 16.4 s** | 31.5 / 34.0 → **12.8 / 15.3 s** |
+| `rowT` | 0, 3.2, 4.6, 8.0, 12.2, 13.9, 17.8, 19.4 → **0, 1.85, 3.15, 5.05, 7.1, 8.35, 9.65, 11.25** | 1.0, 3.4, 5.4, 7.4, 9.4, 11.4, 13.4, 17.8 → **0, 1.75, 3.15, 4.55, 5.95, 7.35, 8.75, 11.35** | −0.4, 3.0, 4.6, 8.0, 12.2, 16.6 → **−0.4, 0.5, 1.95, 3.45, 5.2, 7.0** (landings −0.05, 1.48, 3.05, 4.81, 6.61, 9.52) |
+| Last rung | short heave (1.6 s gap) | long heave, the kit's shortest struggle (2.6 s gap, 2.2 s cycle; was 4.4 / 3.6 s) | 2.4 s roll over a riser |
+| Final reveal → verdict | 19.4 → 24.2 (+4.8) → **11.25 → 12.4 (+1.15)** | 17.8 → 22.3 (+4.5) → **11.35 → 12.3 (+0.95)** | hero 20.8, verdict 25.6 (+4.8) → **hero 10.25 (landing + 0.73), verdict 11.2 (+0.95)** (fixer pass; the first cut had the hero at 10.32, landing + 0.8) |
+| Verdict hold | 4.3 s → **1.6 s** | 4.7 s → **1.6 s** | 5.9 s → **1.6 s** |
+| Beats | tags 4.6 (d 2.7) / 8.0 (d 3.2), act-only 13.9, relight 24.2 → **tags 3.15 (d 1.3) / 5.05 (d 1.45), opening shrug −0.12, relight 12.4** | **opening shrug −0.12** (new) | hero 20.8 → **10.25** (10.32 until the fixer pass) |
+| `sfx` | buzz 4.6, pop 8.0 → **3.15, 5.05** (on their rungs) | none (all the kit's) | none |
+| Captions | VO-paced, 0.0-26.15 → **reading-paced, −0.5-14.0**; since the fixer pass each number line leads its rung by 0.4-0.45 s (year 20 and year 30 led by 1.1 and 1.25 s) | **−0.5-13.9**; each age line leads its rung by 0.45 s and the age-65 line the plate by 0.4 s (1.25 s until the fixer pass) | **−0.5-12.8** |
+
+Why these numbers:
+- **Becker (09a, 09b):** the figure stands still between throws. A landing moves for about 0.4 s and a throw takes the last 0.95 s before its rung, so a rung gap with no act leaves about gap − 1.3 s still; 1.25-1.4 s gaps keep him throwing. 09a's two longer gaps (1.9 and 2.05 s) hold the year-8 and year-9 tags (each up ≥ 1.2 s and gone 0.6 s before the next coin) and their acts. The first throw winds up at 0.8-0.9 s, after the kit's frame-1 nod.
+- **The verdict's point (09a):** the kit's heave cues a pointUp at the plate 1.25 s after it lands. A verdict at plate + 1.15 s starts the relight beat's point at + 1.29 s, after that key, so he points at year 9 (not the plate) through the hold; at + 1.0 s he would point up at the plate all through it.
+- **Scoreboard (09c):** a landing's bump runs 0.36 s and the next count starts 0.12 s after its cut, so cuts 0.39-0.47 s after each landing keep the board moving; the first cut at 0.5 s follows frame 1's landing bump (to 0.31 s). The hero takes the blank 0.73 s after the year-40 landing and the verdict's make-room scroll (verdict − 0.35 s) starts 0.24 s after the hero's bump: the hero splits the 1.33 s between the landing and the scroll so that neither wait reaches 0.4 s (0.37 s each, measured with the caption band out). The first cut had it at landing + 0.8 s with the scroll 0.17 s after its bump; the wait before it was then 0.43 s near-still with only the multiplier caption rising in (fixer pass).
+
+**Iteration** (every version linted clean):
+1. **09a v1** (rungs 0, 1.75, 3.05, 4.95, 7.0, 8.25, 9.55, 11.15; verdict at plate + 1.3 s): the opening held still for 0.43 s (0.03-0.47: with the caption complete on frame 1 nothing moved until the kit's nod at 0.35 s), and 12.07-12.47 was near-still (0.40 s) before the verdict. **v2**: the opening shrug at t 0 (moving from 0.14 s) and the verdict at plate + 1.15 s: the longest still run before the verdict fell to 0.30 s. **v3**: the shrug at t −0.12, moving from frame 2.
+2. **Sound (09a).** v3's audio failed BANDS: 2 kHz +0.1 dB over its 0 dB ceiling. The stems show why: the kit's verdict ding (F#6 + A6, the D chord's 3rd and 5th) carries about 38% of the mix's 2 kHz octave over the body, and the hit and cash at P about another 20%. A shorter body makes them a larger share (the shipped 28.5 s cut already sat 0.1 dB under the ceiling, BIBLE §11.2). No spec timing can move that ding off D: a verdict 0.8-1.5 s after P falls in the DROP's first bar, the tonic, because 4 beats take at least 1.76 s at Becker's 136 BPM limit. About 30 audio-only `verify --no-video` variants (verdict + 0.9 to + 1.3 s, hold 1.4-1.6 s, rung gaps ± 0.1 s, the pop's gain 0.5-1.5) read 2 kHz −0.2 to +0.5 dB; three passed at 0.0. **The cut** is one of them: the first gap 1.85 s (was 1.75), everything else as v3.
+3. **09b**: the first draft (verdict at plate + 1.05 s, 14.0 s) failed BANDS twice: 2 kHz +0.1 over 0 and 8 kHz −4.9 over −5. Ten variants (verdict + 0.95 to + 1.15 s, rung gaps 1.35-1.45 s, heave gaps 2.5-2.7 s, hold 1.5 s): **the cut** is the verdict at + 0.95 s (12.3 s, a 13.9 s body), the one variant with every octave ≥ 0.1 dB inside its window.
+4. **09c**: the first draft (rows −0.4, 0.6, 1.95, 3.4, 5.1, 6.85; hero + 0.78, verdict + 0.95) was near-still for 0.47 s at the opening (the first cut at 0.6) and for 0.40 s between the hero's bump and the make-room scroll. With the first cut at 0.42 and the verdict at hero + 0.85 its audio failed BANDS: 125 Hz +1.8 under its 2 dB floor, with B8's logo at −12.88 LUFS (0.12 over −13). Eight variants (cut spacing, hero + 0.76 to + 0.86, verdict + 0.85 to + 0.95, hold 1.5): anchoring the verdict (≥ 4 beats after P) made 125 Hz worse (+1.2); **the cut** (rows −0.4, 0.5, 1.95, 3.45, 5.2, 7.0; hero + 0.8; verdict + 0.88) passes with 125 Hz at +2.1 on the delivered file and B8 at −12.39. (The fixer pass moved the hero to + 0.73, so the verdict is now hero + 0.95; the hero beat carries no cue, and the master is byte-identical.)
+
+**Measured after** (the final renders, after the fixer pass, same method; "caption band out" measures the top 1320 px, above every caption (the band starts at y ≥ 1337 in every still before the verdict; the Becker ground line is at y 1304, the Scoreboard board ends by y 1293), and counts it against the full frame: the crop's YAVG × 330/480, i.e. the full-frame audit with the caption band's pixels removed):
+
+| | Still runs ≥ 0.4 s | Before the verdict: still runs ≥ 0.2 s (full frame) | Near-still ≥ 0.2 s (full frame) | Caption band out, ≥ 0.25 s |
+|---|---|---|---|---|
+| 09a | **only the verdict hold, 12.83-14.03**, and the card hold, 15.23-16.50 | 0.20-0.40, 1.03-1.23, 2.33-2.53, 3.47-3.70, 3.83-4.13 (0.30), 5.87-6.17 (0.30), 7.53-7.73 | + 5.83-6.20 (0.37), 8.83-9.03, 12.13-12.37 | still 3.83-4.13 (0.30), 5.87-6.17 (0.30); near-still + 5.83-6.20 (0.37), 12.13-12.40 (0.27) |
+| 09b | **only the verdict hold, 12.87-13.93**, and the card hold, 15.13-16.40 | six runs of 0.20 s (0.20, 0.93, 2.33, 3.73, 5.13, 7.93) | all ≤ 0.23 s | none before the verdict; near-still 12.23-12.63 (0.40) straddles the verdict's landing at 12.3 (the plate's celebration settling while the verdict pops in, in the excluded band; the full frame moves there) |
+| 09c | **only the verdict hold, 11.47-12.83**, and the card hold, 14.30-15.30 | 10.67-10.90 (0.23) | + 0.13-0.50 (0.37, the opening: frame 1's landing bump, then the first cut), 10.53-10.90 (0.37) | still 0.23-0.50 (0.27), 10.57-10.90 (0.33); near-still 0.13-0.50 (0.37), **9.90-10.27 (0.37)**, 10.53-10.90 (0.37) |
+
+- **Before the verdict the longest still run is 0.30 s on the full frame** (was 3.17 / 2.87 / 3.50 s) and 0.33 s with the caption band out (09c 10.57-10.90), and nothing is near-still for 0.4 s on either metric.
+- **Corrected in the fixer pass:** this table first measured the caption band out as the top 1100 px (Becker) or 1300 px (Scoreboard) scaled by 480/h to a "full-frame equivalent". That inflated motion (× 1.75 / × 1.48), and the 1100 px crop also cut off the figure's legs and the bottom rungs. Re-measured correctly, the first cut's renders read 0.43 s near-still in 09c (9.90-10.33, between the year-40 landing and the hero; reported as 0.27 s), the critic's item, now 0.37 s; 09a and 09b read as above.
+- **Frame 1:** 09a's and 09b's covers are the hook, the first rung and the complete first caption; the figure moves from frame 2 (frame differences 0.80, 0.91, 0.66, 0.69 and 0.42 over frames 2-6 in 09a, 0.79, 0.90, 0.65, 0.69 and 0.42 in 09b, then a 0.20 s lull before the kit's nod). 09c's cover is unchanged (row 1 landed, its bump and glow settling over frames 2-4: 0.65, 0.82, 0.59).
+- Near-still stretches where only a caption changes: none of 0.4 s. The longest are 09c's 9.90-10.27 (the multiplier caption rising in before the hero) and 09a's 5.83-6.20 (the figure's point after the year-9 hop, with the tag and the gauge pulse settling), 0.37 s each.
+
+**Stills read** (`node src/cli.mjs stills specs-wip/<id>.json --at …`; the first cut's, two contact sheets each in `/tmp/cond/09/st/`, then the fixer pass's):
+- 09a at 0, 0.03, 0.1, 0.3, 0.9, 1.85, 2.75, 3.15, 3.4, 4.2, 5.05, 5.3, 5.6, 6.2, 7.1, 7.25, 8.35, 9.65, 10.0, 10.6, 11.25, 11.5, 12.1, 12.4, 12.8, 13.95, 14.5 and 16.45: frame 1 is the hook with ≈ $1,245 / ≈ $8 and the working line, and he has started his shrug at 0.03; every rung lands on its cells and working line (≈ $49, ≈ $89 with "under $100", ≈ $105 swollen with "beats your $100", ≈ $231, ≈ $393, ≈ $634, ≈ $994 on the gold plate); the coin is in the air for each throw and the tags never overlap a coin; at 12.8 and 13.95 rung 9 is relit in its green plate, he points at it, and the verdict and "$50 or $500/mo: still year 9" are up; the end card is unchanged.
+- 09b at 0, 0.1, 0.3, 0.9, 1.75, 2.7, 3.15, 4.55, 5.5, 5.95, 7.35, 8.3, 8.75, 9.15, 9.5, 9.8, 10.1, 10.5, 10.95, 11.35, 11.6, 12.0, 12.3, 12.7, 13.5, 13.85, 14.5 and 16.35: the cover has $1,000 / $1,070 on rung 1 and "Age 1: $1,070."; every rung (≈ $1,967, ≈ $3,380, ≈ $5,427, ≈ $7,612, ≈ $14,974, ≈ $29,457) lands under its caption; the heave reads (the coin in his arms at 9.5, overhead at 9.8-10.95); ≈ $81,273 lands on the plate at 11.35 with its burst clear of the labels; the verdict is up at 12.7-13.85.
+- 09c at 0, 0.1, 0.3, 0.5, 0.7, 1.48, 1.95, 2.5, 3.05, 3.45, 4.0, 4.81, 5.2, 6.0, 6.61, 7.0, 8.0, 9.0, 9.52, 9.95, 10.32, 10.5, 10.9, 11.2, 11.4, 12.0, 12.75 and 15.25: the hero and each row land on ≈ $377, ≈ $2,166, ≈ $5,203, ≈ $15,438, ≈ $35,571 and ≈ $75,176, each with its caption; "× 75,176" under "YEAR 40 ≈ / DAILY AMOUNT" at 10.32-10.9; the rows scrolled to 20-30-40 with the verdict stack at 11.2-12.75 and the hero dimmed; the end card at 15.25.
+- Fixer pass (`/tmp/cond/09/fix/st/{a,b,c}-sheet{1,2}.png`): 09a at 0, 0.1, 1.85, 3.15, 4.2, 5.05, 5.6, 7.1, 7.5, 7.95, 8.35, 9.65, 10.2, 10.5, 10.85, 11.1, 11.25, 11.5, 12.4, 12.8, 13.95 and 14.5: the year-9 line is still up over rung 15 at 7.5, "Year 20…" types on at 7.95 with the coin in the air, the heave (10.2-10.5) shows "Year 20: about $393 a month.", "Year 30…" types on at 10.85 and reads in full at 11.1 as the coin flies, the plate lands at 11.25. 09b at 0, 0.1, 1.75, 3.15, 5.95, 8.3, 8.75, 9.5, 10.0, 10.5, 10.9, 11.0, 11.2, 11.35, 11.6, 12.0, 12.25, 12.3, 12.7, 13.85 and 14.5: the heave frames (9.5-10.9) show "At 50: about $29,457." under an empty top rung; "At 65…" types on at 11.0 and reads in full at 11.2, with the coin in flight; the plate lands at 11.35; the verdict at 12.7-13.85. 09c at 0, 0.5, 3.05, 7.0, 9.0, 9.52, 9.8, 9.95, 10.1, 10.2, 10.25, 10.4, 10.6, 10.75, 10.85, 11.0, 11.2, 11.4, 12.75 and 15.25: ≈ $75,176 lands at 9.52, the multiplier caption rises in at 9.95-10.1, "× 75,176" under "YEAR 40 ≈ / DAILY AMOUNT" from 10.25, the scroll from 10.85, the verdict stack at 11.2.
+
+**Lint:** `node src/cli.mjs check specs-wip/<id>.json`: 0 errors, 0 warnings for each (16.5 s = 14.0 + 2.5; 16.4 s = 13.9 + 2.5; 15.3 s = 12.8 + 2.5).
+
+**Render and sound** (`render specs-wip/<id>.json --out /tmp/cond/09/<id>/final/render`, then `sound … --video …/render --out …/final --score`; every mux kept the render's video md5):
+
+| | Frames, sfx | Video md5 | Sound | §2.3 row for promotion |
+|---|---|---|---|---|
+| 09a | 495, 24 | `4b327fd3bee5` (fixer pass; first cut `c417be115d75`) | −14.01 LUFS, P 11.25 (riser), 128 / 130.909 BPM, onsets ≤ 0.25 ms; master `e69fd28e6e3a4291…` | `\| 09a \| riser \| 11.250 \| 24 (r0) \| 128.000 \| base 14.00: 6 (r2) @ 130.91 \| 14.50 \|` |
+| 09b | 492, 24 | `bb90bfe74d20` (fixer pass; first cut `c6130d2947b3`) | −14.01 LUFS, P 11.35 (riser), 126.872 / 117.647 BPM, onsets ≤ 0.31 ms; master `6508af7e3ae35f6e…` | `\| 09b \| riser \| 11.350 \| 24 (r0) \| 126.872 \| base 13.90: 5 (r1) @ 117.65 \| 14.40 \|` |
+| 09c | 459, 20 | `be7e28b3687a` (fixer pass; first cut `aea1572a0455`) | −14.09 LUFS, P 9.52 (riser), 151.261 / 146.341 BPM, onsets ≤ 0.08 ms; master `19c21120229cee6d…` | `\| 09c \| riser \| 9.520 \| 24 (r0) \| 151.261 \| base 12.80: 8 (r0) @ 146.34 \| 13.16 \|` |
+
+V is anchored in none of them (each verdict lands under 4 beats after P). The rows they replace: 09a P 19.400, 40 beats at 123.711, V 24.20, base 28.50, L 29.00; 09b P 17.800, 36 at 121.348, base 27.00, L 27.50; 09c P 19.120, 46 at 144.351, V 25.60, base 31.50, L 31.86.
+
+**Verify** (`verify specs-wip/<id>.json --video /tmp/cond/09/<id>/final --detail`): **PASS, 42/42 gated for each**; units 64/64 (09a) and 64/64 (09b) for Becker Rig (the kinds these cues use), 69/69 for Scoreboard (09c). The CUE DRIFT block (the one teaser) and "baseline DIFFERS" are expected for a WIP cut. These are the packs at HEAD 1cbb8b3: a parallel short-body sound pass refit Becker Rig's `MODEL` (06:31) and Scoreboard's `calibration.json` (06:36) while this pass ran, so all three were rebuilt and re-verified after both, with byte-identical masters (sha256 `e69fd28e…`, `6508af7e…`, `19c21120…`) and the same results. The audio-only sweeps that chose the timings ran partly on the packs before that refit. The fixer pass rebuilt and re-verified all three on its new renders (packs still at 1cbb8b3): the same masters, and every gated line below identical; only A13's video md5 changed. Each gated check against its limit, margin in brackets (09a / 09b / 09c):
+- A1 delivery −14.10 / −14.11 / −14.15 LUFS (±1: 0.90 / 0.89 / 0.85); master −14.01 / −14.01 / −14.09 (±0.3: 0.29 / 0.29 / 0.21).
+- A2 −1.20 / −1.17 / −1.40 dBTP against −1.0 (0.20 / **0.17** / 0.40).
+- A3 LRA 5.94 / 5.65 (3-8: 2.06 / 2.35) / **4.28 (4-9: 0.28)**.
+- A4 short-term max −10.93 / −10.99 / −11.86 against −8 (2.93 / 2.99 / 3.86); momentary −8.89 / −9.15 / −7.98 against −6 (2.89 / 3.15 / 1.98).
+- A5 PLR 12.90 / **12.94** / 12.75 against 13 (0.10 / **0.06** / 0.25): closed-loop encode targets, as in every teaser.
+- A6 0% silent. A7 −11.84 / −12.50 / −7.98 against −18 (6.16 / 5.50 / 10.02). A8 correlation 0.88 / 0.88 / 0.77 (≥ 0.3), minimum 0.56 / 0.44 / 0.48 (≥ −0.1), mono fold −0.45 / −0.48 / −0.67 LU (±1.5). A9 DC ≤ 1.3e-5 against 1e-4. A10 phone drop 1.60 / 1.69 LU against 4.5 (2.90 / 2.81), 2.31 against 7 (4.69).
+- A11 1.077 / 1.219 / 0.654% against 3% (1.92 / 1.78 / 2.35 points); max 3.6 / 2.65 / 1.79 dB against 6.
+- A12-A14: AAC LC stereo 48 kHz, 16.500 / 16.400 / 15.300 s against the video; video md5 identical; masters unique.
+- **BANDS** (dB re 1 kHz, margin to the nearer edge of the look's window):
+  - 09a (Becker): 31.5 −10.2 (5.8), 63 2.6 (4.4), 125 4.2 (2.8), 250 0.6 (0.6), 500 2.0 (2.0), **2000 0.0 (0.0, on its ceiling)**, 4000 −4.1 (2.1), 8000 −6.0 (1.0), 16000 −16.8 (4.8).
+  - 09b (Becker): 31.5 −10.6 (5.4), 63 2.3 (4.3), 125 4.4 (2.6), **250 0.1 (0.1)**, 500 1.8 (2.2), 2000 −0.3 (0.3), 4000 −4.0 (2.0), **8000 −5.2 (0.2)**, 16000 −16.4 (4.4).
+  - 09c (Scoreboard): 31.5 −16.1 (3.9), 63 5.5 (1.5), **125 2.1 (0.1)**, 250 0.3 (0.3), 500 −0.4 (0.6), 2000 −1.9 (1.9), 4000 −6.7 (2.3), 8000 −7.3 (2.3), 16000 −12.7 (0.7).
+- HARSH −0.90 / −1.15 / 0.34 against 2 (2.90 / 3.15 / 1.66).
+- B1 Becker music −2.43 / −2.51 (−4.5..−0.5: 1.93 / 1.99), SFX − music 0.01 / 0.16 (±2), returns −10.33 / −10.36 (≤ −8); Scoreboard music −2.85 (−3.5..−1.5: 0.65), SFX −3.41 (−5..−2.5: 0.91).
+- B2 duck at P −9 / −9 / −10.8 dB against −8 (1.0 / 1.0 / 2.8). B3 closest cue 6.2 / 4.6 / 4.4 dB over the music against 3 (3.2 / 1.6 / 1.4). B4 onsets 0.25 / 0.31 / 0.08 ms against 2. B5 0.0 / 0.0 / −1.3 ms against ±10. B6 2.8 / 2.2 / 5.0 LU against 18. B7 drop-build 2.8 and 3.3 / 2.6 and 3.3 / 5.4 and 5.1 against 2 (0.8 / 0.6 / 3.1 at the tighter).
+- **B8 logo −12.04 / −12.00 / −12.39 LUFS against −13 (0.96 / 1.00 / 0.61)**, under the payoff's −11.36 / −11.06 / −10.94.
+- B9 quietest −30.2 / −28.3 / −24.2 against −45. B10 no flams. S1 99.5 / 99.5 / 100% in key (≥ 97). S2-S8, S10, S11, S13 pass. S9 128 / 130.909 (segment 1 at the top of 112-128), 126.872 / 117.647 (−7.3% of ±8%), 151.261 / 146.341 (136-152; −3.3%). S12 pad moves 5 / 5 / 3 st (≤ 5). S14 12 notes against 12, as in every teaser. MALLET −7.3 / −7.0 LU (≥ −10). TRAIN and DUCK (09c, 0.5 dB extra) pass. B1w (reported, not gated): 09a's music sits at −2.43, outside its as-written −4.5..−2.5 window; 09b's passes.
+
+**Check (`checks/09-growth-ladder.py`):**
+- `--spec [KEY=]PATH` (repeatable; KEY a/b/c, 09a/09b/09c or the full id) checks a file in place of `studio/specs/<id>.json`. Each spec is checked as the narration cut (28.5 / 27.0 / 31.5 s) or the condensed cut (a 12-16 s body) by its length; any other length fails "a known cut". `IN_SPECS` names the cut `studio/specs/` must hold (the narration cuts until promotion). Every string, number, row and claim is shared by both cuts, and every spec must sit on a frame.
+- New for the condensed cut (docstring 4.): captions up ≥ max(1.2 s, 0.12 s a word) from frame 1, back to back, the first complete on frame 1 (Becker ≤ −0.48 s, Scoreboard ≤ −0.14 s); each number caption up while its row lands (Becker: up ≤ 0.5 s before, ≥ 0.5 s after (1.3 s until the fixer pass); Scoreboard: up with the row's cut, ≥ 0.25 s past the kit-clock landing); the verdict 0.8-1.5 s after the final reveal (the plate, or 09c's hero beat) and held 1.2-1.6 s; Becker motion: rung gaps ≤ 1.7 s without an act and ≤ 2.1 s with one, rung 2 ≥ 1.6 s, the opening act-only beat (t in (−0.14, −0.107], ≥ 0.3 s long), each teaser's heave (09a short 1.4-2.2 s, 09b long 2.3-3.15 s), 09a's tags up ≥ 1.0 s, the verdict's point after the heave's pointUp, and no other act-only beat; Scoreboard motion: the first cut ≤ 0.5 s, every later cut ≤ 0.5 s after the previous landing, the hero 0.6-0.75 s after the year-40 landing (0.6-0.9 until the fixer pass), the make-room scroll ≤ 0.25 s after the hero's bump, and the hero beat while its caption is up.
+- Results: 515 checks, 0 failed by default (was 509: three "which cut" rows and three frame rows); 523 / 522 / 521, 0 failed with each WIP spec; 536, 0 failed with all three; a copy of the narration 09a passed with `--spec a=…` from outside `studio/specs/` checks as the narration cut.
+- Mutation test (scratch copies in `/tmp/cond/09/mut/`, `tools/mutate.py`): **25 of 25 caught**, each with exit 1 and a named failure: 09a vo[0] at 0.0; the verdict 0.6 s and 1.1 s after the plate; a 2.0 s hold; no opening act; the opening act at t 0; year 15 0.4 s later (a 2.45 s gap); a 0.35 s caption gap; a 1.0 s caption; "about $106"; "about" dropped; the "beats your $100" tag up 0.86 s; the year-8 caption 1.6 s early; a 17.0 s body. 09b: a 2.0 s (short) heave gap; the age-65 caption 2.0 s early; rung 2 at 1.4 s; a plain 1.85 s gap. 09c: the first cut at 0.8 s; the hero 0.3 s later; the verdict 0.4 s later; the year-20 caption 0.3 s before its cut; "× 75,177"; row 1 at 0.0 (a count in flight on frame 1); vo[0] at −0.1. The fixer pass re-ran them with six more (`/tmp/cond/09/fix/mutate.py`, results in `/tmp/cond/09/fix/mut/result.txt`): **31 of 31 caught**.
+
+**To promote:**
+1. Copy the three WIP specs over `studio/specs/` and set `IN_SPECS` to "condensed" for all three in the check (the narration sets then serve git-history copies passed with `--spec`).
+2. BIBLE §11.1 for the moved records (all three): refit Becker's `MODEL` (§11.2) and re-measure Scoreboard, store the records in `test/fixtures/cues.json`, `tempo-table --write` (the three rows above), then `verify --strict-cues` and `npm test`.
+3. After the refit, re-check the margins that sit at or near an edge: **09a BANDS 2 kHz 0.0**, **09b BANDS 250 Hz 0.1 and 8 kHz 0.2, A5 0.06, A2 0.17**, **09c BANDS 125 Hz 0.1, A3 LRA 0.28, A1 master 0.21, B8 0.61**. If one flips, fix it at pack level, not by retiming these specs: the Becker pair's 2 kHz octave is the kit's verdict ding (F#6 + A6 on the DROP's tonic, which a verdict 0.8-1.5 s after P cannot leave) plus the hit and cash at P, in a 14 s body (the §6.7 crowding rule reads the 1 kHz octave only); 09c's 125 Hz floor is six landing dings (gain 0.5) against the 808 in a 12.8 s body.
+4. Ship by §11.5 from a picture folder holding these three renders (or fresh renders of the promoted specs) and `renders/channel/` for the others.
+5. Publishing: rebuild the three sheets (`build_publishing.py <id> --covers`, then `--check`). The covers change: 09a's frame 1 now carries the complete first caption, 09b's frame 1 has rung 1 at $1,070 and its caption, 09c's is as before. `teasers/v2/teasers.json`: runtimes 16.5, 16.4 and 15.3 s (were 31.0, 29.5 and 34.0).
+
+**Open items:**
+- The sound margins above, the set's thinnest after this cut (09a's 2 kHz on its ceiling; the shipped cut had 0.1 dB).
+- The bodies (12.8-14.0 s) are shorter than 06c's and 06b's (15.7, 18.3 s): a ladder has one beat per rung and no race in between, and every caption still gets ≥ 1.4 s (09c's multiplier line exactly 1.2 s). 09c's "× 75,176" is up 0.95 s before the verdict lands; it stays on the dimmed hero through the 1.6 s hold.
+
+### Condensed cut, fixer pass (2026-10-13, after the critic)
+
+**The critic's verdict:** pass, no musts. Scores 09a 8, 09b 7.5, 09c 7.5. It reproduced the motion audit on the final MP4s (the only still runs ≥ 0.4 s are the verdict and card holds) and found two shoulds in the picture, three in the sound and three nits. The kit is untouched, so no default-unchanged proof is needed (`looks/*/formats/growth-ladder.js` unchanged since d350c05).
+
+**Applied** (spec times only: no text, number, row, verdict, `sfx` or kit change; `studio/specs/` untouched):
+
+| Item | Severity | Was | Now | Why |
+|---|---|---|---|---|
+| 09b: the age-65 line answered the hook during the heave | should | vo[3] 8.3-10.05; vo[4] "At 65: about $81,273." 10.1-12.25 (readable from about 10.3, 1.05 s before the plate at 11.35) | vo[3] 8.3-**10.9** (d 2.6); vo[4] **10.95-12.25** (d 1.3, ≥ 1.2 s for 4 words) | The line now leads the plate by 0.4 s, like every other age line (0.45 s), and appears as the coin flies, so the plate is the reveal. The heave frame, the suggested IG cover, shows "At 50: about $29,457." |
+| 09c: near-still before the hero | should | hero beat at 10.32 (landing + 0.8): 9.90-10.33 near-still with the caption band out (0.43 s), only the multiplier caption rising in | hero at **10.25** (landing + 0.73); verdict stays 11.2 (now hero + 0.95); the make-room scroll 0.24 s after the hero's bump | Both waits are now 0.37 s (9.90-10.27 and 10.53-10.90, caption band out). The full-frame audit reads 0.23 s still and 0.37 s near-still after the hero (it read 0.30 s before) |
+| 09c: the write-up's caption-band-out column | should | top 1100 / 1300 px scaled × 480/h | top 1320 px counted against the full frame (× h/480) | The scaling inflated motion, and the 1100 px crop cut off the figure's legs and the bottom rungs. Re-measured: see "Measured after" above |
+| 09a: year-20 and year-30 lines led their rungs by 1.1 and 1.25 s | nit | vo[2] 4.6-7.2; vo[3] 7.25-9.95; vo[4] 10.0-12.35 | vo[2] 4.6-**7.85**; vo[3] **7.9-10.75**; vo[4] **10.8-12.35** (d 1.55, ≥ 1.2 s for 9 words) | Both now lead by 0.45 s, with the coin in the air. The heave shows "Year 20…", not the biggest number. The year-9 line stays up 0.75 s past rung 15's landing; that is the cost |
+| 09c: "Year 40: about $75,176." readable (grey) 2.3 s before the roll lands | nit (optional) | — | **accepted** as the format's grammar | The highlight reaches the number with the landing (≈ 9.0-9.2 s). A later start would leave the 2.4 s roll uncaptioned or captioned "Year 30", and the multiplier line after it needs its 1.2 s before the verdict. Noted under 09c's captions |
+| Write-up: four stale lines | nit | 09a's look note (the year-20 act-only beat); the linter paragraph ("09b carries no `lookOpts`"); 09a's "Keep this voiced"; 09b's IG cover (the heave frame showed the answer) | rewritten | The narration-cut details are now marked as history |
+
+**No audio cue moved.** `node src/cli.mjs cues` before and after: the records differ only in `vo` (09a, 09b) and `beats` (09c), and every `sfx` list is identical. The engine carries `vo` and `beats` in its timeline (`src/sound/cues.mjs`, `timeline.mjs`) but never reads them. The rebuilt masters are byte-identical to the first cut's: `e69fd28e6e3a4291…`, `6508af7e3ae35f6e…`, `19c21120229cee6d…`.
+
+**Check (`checks/09-growth-ladder.py`):**
+- `BR_CAP_LEAD` 1.3 → **0.5 s**. A Becker number caption goes up at most 0.5 s before its rung, including the last line, the hook's answer, before the plate.
+- `SB_HERO_AFTER` (0.6, 0.9) → **(0.6, 0.75) s** after the year-40 landing.
+- Counts are unchanged: 515 checks, 0 failures by default (the narration cuts in `studio/specs/`); 536, 0 failures with the three WIP specs; 523 / 522 / 521 with one each.
+- The first cut's WIP specs now fail exactly the critic's four rows: 09a vo[3] (lead 1.10) and vo[4] (1.25), 09b vo[4] (1.25), 09c hero (0.8).
+- Mutation test: 31 of 31 caught (`/tmp/cond/09/fix/mutate.py`, `/tmp/cond/09/fix/mut/result.txt`). That is the 25 above plus six new ones, each the first cut's value or the boundary put back:
+  - 09a's year-20 line at 7.25;
+  - 09a's year-30 line at 10.0;
+  - 09b's age-65 line at 10.1;
+  - 09b's age-65 line 0.6 s early;
+  - 09c's hero at 10.32;
+  - 09c's hero at 10.3.
+
+**Verified:**
+- **Lint:** `check specs-wip/<id>.json`: 0 errors, 0 warnings for each (16.5 / 16.4 / 15.3 s).
+- **Stills read:** two contact sheets each in `/tmp/cond/09/fix/st/` (times under "Stills read" above).
+- **Renders:** `/tmp/cond/09/<id>/final/` (picture in `render/`; the muxed MP4, `sound/` and `verify.txt` beside it). The first cut's renders were deleted to free disk; its verify results are the list above.
+- **Motion:** as in "Measured after" above. Frame 1 is unchanged in all three: in 09a and 09b the figure moves from frame 2, and in 09c the landing bump moves frames 2-4.
+- **Sound** (`sound … --score`, then `verify … --detail`): **PASS, 42/42 gated for each**, every line identical to the list above (only A13's video md5 changed: `4b327fd3bee5`, `bb90bfe74d20`, `be7e28b3687a`). CUE DRIFT (1) and "baseline DIFFERS" are expected for a WIP cut.
+
+**Not applied: the critic's three sound shoulds.** They belong to the ship step. Each margin below is unchanged by this pass, because no cue moved. The critic's diagnosis and remedy for each:
+- **09a**
+  - Margins: BANDS 2 kHz 0.0 dB re 1 kHz against a 0 ceiling (no margin); A5 PLR 12.90 against 13 (0.10); A2 −1.20 dBTP against −1.0 (0.20); A1 master −14.01 (0.29); next BANDS 250 Hz 0.6, 8 kHz 1.0, B7 0.8.
+  - Cause: the kit's verdict ding (F#6 + A6 on the DROP tonic, about 38% of the 2 kHz octave) and P's hit and cash (about 20%) in a 14 s body. A verdict 0.8-1.5 s after P cannot leave that chord.
+  - For the ship step: a pack-level rule (extend the BIBLE §6.7 crowding rule from the 1 kHz to the 2 kHz octave, or trim the verdict ding's 2 kHz share in short bodies) and the Becker `MODEL` refit on the promoted records; then re-check 2 kHz with `verify --detail`.
+- **09b**
+  - Margins: BANDS 250 Hz +0.1 against a 0 floor (0.1), 8 kHz −5.2 against a −5 ceiling (0.2), 2 kHz −0.3 against 0 (0.3); A5 12.94 (0.06); A2 −1.17 (0.17); A1 master −14.01 (0.29).
+  - Cause: as 09a, plus 250 Hz on its floor. It was the only one of ten timing variants with every octave ≥ 0.1 dB inside its window, so the next pack change can flip it.
+  - For the ship step: the same rule and refit (§11.2); re-check 250 Hz and 8 kHz first.
+- **09c**
+  - Margins: BANDS 125 Hz +2.1 against a 2 floor (0.1), 250 Hz +0.3 against 0 (0.3); A3 LRA 4.28 against a 4 floor (0.28); A1 master −14.09 (0.21); A5 12.75 (0.25); A2 −1.40 (0.40); next B1 music 0.65, B8 logo 0.61, 16 kHz 0.7.
+  - Cause: six landing dings (gain 0.5) outweigh the 808 in the reference octave in a 12.8 s body, and the short body compresses LRA.
+  - For the ship step: re-measure Scoreboard (§11.2) on the moved record; if 125 Hz or LRA flips, fix it at pack level.
+
+No spec was retimed for sound, and `acceptance.json` is untouched.

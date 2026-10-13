@@ -9,12 +9,9 @@
   "captions": true,
   "vo": [
     {"t": -0.4, "d": 2.35, "text": "Your **$1.50** hot dog."},
-    {"t": 1.98, "d": 1.2, "text": "Costco card? **≈ 43** hot dogs."},
-    {"t": 3.2, "d": 1.2, "text": "A month of rent?"},
-    {"t": 4.42, "d": 1.2, "text": "**≈ 1,000**."},
-    {"t": 5.64, "d": 1.2, "text": "A new house in 1985?"},
-    {"t": 6.86, "d": 1.2, "text": "**56,200**."},
-    {"t": 8.08, "d": 2.65, "text": "And a new house in 2026?"},
+    {"t": 1.98, "d": 2.42, "text": "Costco card? **≈ 43** hot dogs. A month of rent?"},
+    {"t": 4.42, "d": 2.42, "text": "**≈ 1,000**. A new house in 1985?"},
+    {"t": 6.86, "d": 3.87, "text": "**56,200**. And a new house in 2026?"},
     {"t": 10.73, "d": 1.6, "text": "Rose like a house?"},
     {"t": 12.33, "d": 1.2, "text": "A **≈ $7.01** hot dog."}
   ],

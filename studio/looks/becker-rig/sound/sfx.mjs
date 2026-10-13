@@ -95,6 +95,11 @@ function lowPitches(tl, kind) {
 }
 /** a glock note (free-bar partials) for dings and the ka-ching */
 const glockNote = (m, tauScale = 1, len = 1.0) => K.glock(m, { vel: 1, tauScale, len })
+/** the payoff splash (bible §7 hit, big variant at P; 2026-10-13): the hit's crash at P is choked at `at` s (τ `tau` s) */
+export const SPLASH = { at: 0.3, tau: 0.08 }
+/** the bell ring budget (2026-10-13): a body ding rings τ x ring(tl) = clamp(base / RING.ref, RING.min, 1) */
+export const RING = { ref: 20, min: 0.5 }
+export const ring = tl => Math.max(RING.min, Math.min(1, (tl.base || RING.ref) / RING.ref))
 
 // ---------------------------------------------------------------- the kinds
 const kinds = {
@@ -231,6 +236,9 @@ const kinds = {
       parts.push({ buf: tp, gain: 0.7, body: true, skip: ctx.atP || ctx.atV })
       const cr = K.crash(r, { vel: 1, tau: 1.1 * (1 + 0.05 * r.bi()), ratio: 2.6 })
       svf(cr.L, 'lp', 7500); svf(cr.R, 'lp', 7500)
+      // the payoff splash: at P the band strikes its own crash (τ 1.4 s, bloom after the payoff duck), so the hit's
+      // crash is a splash that hands over to it: choked SPLASH.at s after the onset (τ SPLASH.tau)
+      if (ctx.atP && !ctx.plan) { const k0 = sec(SPLASH.at), tc = SPLASH.tau * SR; for (let i = k0; i < cr.L.length; i++) { const g = Math.exp(-(i - k0) / tc); cr.L[i] *= g; cr.R[i] *= g } }
       for (let i = 0; i < cr.L.length; i++) { const M = (cr.L[i] + cr.R[i]) / 2, S = (cr.L[i] - cr.R[i]) / 2 * 0.7; cr.L[i] = M + S; cr.R[i] = M - S }
       unit(cr)
       parts.push({ buf: cr, gain: ctx.atP ? 0.65 : 0.5 })
@@ -271,7 +279,8 @@ const kinds = {
     // a verdict that is the payoff takes the §8.3 big depth (10 dB); any other ding the §7 table (3 dB, scaled by gain)
     if (ctx.atV) meta.duck = duckFor(cue, 4, 0.08, 0.22)
     else if (ctx.atP) meta.duck = duckFor(cue, 10, 0.15, 0.3)
-    const n1 = glockNote(a + r.bi() * 0.03, 0.85, 1.0), n2 = glockNote(b + r.bi() * 0.03, 0.85, 0.94)
+    const rg = cue.inCard ? 1 : ring(ctx.tl)
+    const n1 = glockNote(a + r.bi() * 0.03, 0.85 * rg, 1.0), n2 = glockNote(b + r.bi() * 0.03, 0.85 * rg, 0.94)
     const parts = [{ buf: unit(n1), pan: -0.15 }, { buf: unit(n2), pan: 0.15, at: 0.06, gain: 0.85 }]
     return outLayers(parts, sec(1.0), -10, ctx, meta)
   },

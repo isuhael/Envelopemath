@@ -8,13 +8,11 @@
   "footer": "≈ $13.10 kept: 2026 federal tax + FICA, single, no state tax",
   "captions": true,
   "vo": [
-    {"t": -0.4, "d": 2.93, "text": "$15 an hour? Median rent:"},
-    {"t": 2.55, "d": 1.2, "text": "**≈ 117 hours**. Every hour you work, to **≈ the 20th**."},
+    {"t": -0.4, "d": 2.7, "text": "$15 an hour? Median rent:"},
+    {"t": 2.32, "d": 1.43, "text": "**≈ 117 hours**. Every hour you work, to **≈ the 20th**."},
     {"t": 3.77, "d": 1.36, "text": "A year of rent?"},
-    {"t": 5.15, "d": 1.2, "text": "**≈ 1,400**."},
-    {"t": 6.37, "d": 1.36, "text": "An average new car?"},
-    {"t": 7.75, "d": 1.2, "text": "**≈ 3,800**."},
-    {"t": 8.97, "d": 2.28, "text": "A median new house?"},
+    {"t": 5.15, "d": 2.58, "text": "**≈ 1,400**. An average new car?"},
+    {"t": 7.75, "d": 3.5, "text": "**≈ 3,800**. A median new house?"},
     {"t": 11.25, "d": 1.2, "text": "That's **≈ 14 years** of full-time work. Every cent you keep."}
   ],
   "verdict": {"t": 11.25, "text": "**≈ 14 years** of full-time work.\nEvery cent you keep."},
@@ -33,7 +31,7 @@
     "landAfter": 2.2,
     "blank": {"t": 0.15, "d": 2.4, "text": "≈ 20th", "calendar": 30},
     "morph": {"t": 11.25, "working": "30,053 hours ÷ 2,080 a year", "display": "14", "label": "years of full-time work"},
-    "beats": [{"t": 2.41, "act": "pointUp", "d": 0.5}]
+    "beats": [{"t": 0.03, "act": "pointUp", "d": 0.2}, {"t": 2.41, "act": "pointUp", "d": 0.3}]
   },
   "sfx": []
 }

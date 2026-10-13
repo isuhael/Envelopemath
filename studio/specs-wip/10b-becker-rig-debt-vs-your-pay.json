@@ -3,7 +3,7 @@
   "look": "becker-rig",
   "format": "cost-counter",
   "fps": 30,
-  "duration": 35.75,
+  "duration": 36.15,
   "header": "Your pay for **40 years** vs\n__1 minute__ of new US debt?",
   "footer": "New debt ≈ $2.46T ÷ (364 × 86,400 s)\nPay: BLS median $1,251 a week × 52",
   "captions": true,
@@ -17,10 +17,10 @@
     { "t": 18.2, "d": 4.8,  "text": "40 × $65,052 ≈ **$2.6 million**." },
     { "t": 23.1, "d": 2.0,  "text": "That's a whole working life." },
     { "t": 25.1, "d": 3.4,  "text": "30 years gone. 10 left." },
-    { "t": 28.6, "d": 5.55, "text": "How long do 40 years last?" },
-    { "t": 34.2, "d": 1.15, "text": "A working life: **≈ 33 seconds.**" }
+    { "t": 28.6, "d": 5.45, "text": "How long do 40 years last?" },
+    { "t": 34.1, "d": 1.15, "text": "A working life: **≈ 33 seconds.**" }
   ],
-  "verdict": { "t": 34.2, "text": "40 years of median pay: **≈ 33 seconds**.\n1 minute of new US debt ≈ __$4.7 million__." },
+  "verdict": { "t": 34.1, "text": "40 years of median pay: **≈ 33 seconds**.\n1 minute of new US debt ≈ __$4.7 million__." },
   "data": {
     "label": "New US debt since you hit play",
     "perSecond": 78201.35,
@@ -37,7 +37,7 @@
       { "value": 2602080, "label": "40 years of median pay: $2,602,080" }
     ],
     "final": "$2,602,080",
-    "hold": 2.47589
+    "hold": 2.87589
   },
   "lookOpts": {
     "stage": "white",

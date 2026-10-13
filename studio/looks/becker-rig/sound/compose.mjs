@@ -23,12 +23,14 @@
 // the marimba; long cue-free holds change something every 2 bars.
 import * as T from '../../../src/sound/theory.mjs'
 import { climb, deflateEnd } from './harmony.mjs'
-import { balancePlan } from './balance.mjs'
+import { balancePlan, OWN, PAYOFF_OWN } from './balance.mjs'
+import { mix } from './mix.mjs'
 
 export const SWING = 0.58
 const W = { tick: 0.5, type: 0.5, pop: 0.5, swipe: 0.5, whoosh: 0.5, step: 0.5, thud: 1, ding: 1, buzz: 1, boing: 1, cash: 1.5, hit: 2, reveal: 2, roll: 2, riser: 0 }
 const clamp = (x, a, b) => (x < a ? a : x > b ? b : x)
 const AUD = new Set(['thud', 'hit', 'ding', 'cash', 'reveal', 'pop'])
+// (OWN: the 50 ms a cue B3 listens to owns; PAYOFF_OWN: the payoff's own cues after P; both from balance.mjs)
 const BELL = new Set(['pop', 'ding', 'tick', 'boing', 'cash'])
 const GROOVE = new Set(['HOOK', 'BUILD', 'DROP', 'HOLD', 'HOLD2', 'VERDICT', 'CADENCE'])
 const D_MAJOR = new Set([2, 4, 6, 7, 9, 11, 1])
@@ -122,6 +124,9 @@ export function compose(tl, rng) {
         else return false
       }
       if (inst === 'kick' && !tl.isAnchor(t) && tl.cues.some(c => AUD.has(c.kind) && c.gain >= 0.4 && c.t - t > -0.015 && c.t - t < 0.08)) return false
+      // ... and its first 50 ms are its own (B3's window): no kick, snare, clap or tom strikes 15-50 ms after it either
+      // (a dense body puts a cue on the beat's doorstep: 03a's DROP backbeat landed 21 ms after a payoff pop)
+      if (!tl.isAnchor(t) && tl.cues.some(c => AUD.has(c.kind) && c.gain >= 0.4 && !c.inCard && t - c.t >= 0.015 && t - c.t < OWN)) return false
       if (!tl.isAnchor(t) && nearClock(t, 0.015)) return false
     }
     if ((inst === 'ghost' || inst === 'block') && nearClock(t, 0)) return false
@@ -470,13 +475,16 @@ export function compose(tl, rng) {
   // choked 5 ms before it; a note starting within 60 ms of a bloop or ding is left out (the bounce is staccato; a missing
   // 16th reads as a rest), one starting with a landing or a step answers it 70 ms later (the thud is the downbeat, the
   // bass bounces off it)
+  // (every cue B3 listens to, 2026-10-13: an impact is a landing the bass answers, a coin a bell it leaves out; a dense
+  // body put bass notes inside 05b's light hits)
+  const LAND = new Set(['thud', 'step', 'hit'])
   for (const c of tl.cues) {
-    if (!['pop', 'ding', 'thud', 'step'].includes(c.kind) || c.gain < 0.4 || c.inCard || c.t >= base - 1e-6 || Math.abs(c.t - P) < 0.02 || (V != null && Math.abs(c.t - V) < 0.02)) continue
+    if (!['pop', 'ding', 'thud', 'step', 'hit', 'cash'].includes(c.kind) || c.gain < 0.4 || c.inCard || c.t >= base - 1e-6 || Math.abs(c.t - P) < 0.02 || (V != null && Math.abs(c.t - V) < 0.02)) continue
     for (let j = notes.length - 1; j >= 0; j--) {
       const n = notes[j]
       if (n.inst !== 'bass' || n.t + n.dur < c.t - 0.01 || n.t > c.t + 0.06 || tl.isAnchor(n.t)) continue
       if (n.t < c.t - 0.06) n.dur = Math.max(0.03, c.t - 0.005 - n.t)
-      else if ((c.kind !== 'thud' && c.kind !== 'step') || n.t > c.t + 0.015) notes.splice(j, 1)
+      else if (!LAND.has(c.kind) || n.t > c.t + 0.015) notes.splice(j, 1)
       else { const d = n.t + n.dur - (c.t + 0.07); if (d < 0.04) notes.splice(j, 1); else { n.t = c.t + 0.07; n.dur = d } }
     }
   }
@@ -484,6 +492,7 @@ export function compose(tl, rng) {
   // ---- de-duplicate drums placed twice (anchors), and the gap's release (10 ms) for every music voice
   const seen = new Set()
   const dd = drums.filter(d => { const k = `${d.inst}@${Math.round(d.t * 1000)}`; if (seen.has(k)) return false; seen.add(k); return true })
+  spreadGuard([...notes, ...dd], base)
   const gain = {}
   // the band's tilt against the SFX (balance.mjs): presence (drums, brass) and bass up for dull SFX, toys down
   const tilt = tl.becker.tilt.tilt
@@ -494,10 +503,14 @@ export function compose(tl, rng) {
   // hole), -1 when bright; bass and pad +1 when dull; toys +1 when bright;
   // the glock, the one toy that sings in the cues' own octave, steps back 1 dB per unit when the cues crowd it)
   const TILT = { snare: 1, clap: 1, ghost: 1, roll: 1, shaker: 1, tamb: 1, honk: 1, honkF: 1, honkR: 1, honkFR: 1 }
+  // (the bass's dull lift frames dull cues from below; when the cues' own landings already carry the 125 Hz octave as
+  // much as their bells carry the 1 kHz one, it is withheld: LOW.span dB of the cues' 125-over-1k octave takes it away)
+  const tb = tl.becker.tilt, x125 = tb.l125 != null && tb.l1k != null ? tb.l125 - tb.l1k : -Infinity
+  const lowYield = clamp(1 - x125 / LOW.span, 0, 1)
   const TOYS = { mallet: 1, glock: 1, pizz: 1 }
   for (const inst of new Set([...notes, ...dd].map(e => e.inst))) {
     const w = TILT[inst] || 0
-    const off = inst === 'bass' ? Math.max(0, tilt) : inst === 'pad' ? Math.max(0, tilt) : inst === 'glock' && tilt > 0 ? -1.0 * tilt : TOYS[inst] ? 1.0 * Math.max(0, -tilt)
+    const off = inst === 'bass' ? Math.max(0, tilt) * lowYield : inst === 'pad' ? Math.max(0, tilt) : inst === 'glock' && tilt > 0 ? -1.0 * tilt : TOYS[inst] ? 1.0 * Math.max(0, -tilt)
       : w * (tilt > 0 ? (inst === 'shaker' || inst === 'tamb' ? 0 : 1.6) : 1) * tilt
     if (inst === 'revcrash') { if (off) gain[inst] = [{ t: 0, db: off }]; continue }
     gain[inst] = [{ t: gap - 0.0005, db: off }, { t: gap + 0.010, db: -90 }, { t: P - 0.0002, db: -90 }, { t: P, db: off }]
@@ -519,7 +532,20 @@ export function compose(tl, rng) {
     }
     // the fanfare's "TA" (un-ducked) steps back under the payoff's own coins, dings and landings that follow the hit
     const dpP = dipPoints(tl, gap, P, base, { payoff: true })
-    if (dpP.length && gain.honkFR) { const off = gain.honkFR[0].db; gain.honkFR = [...gain.honkFR, ...dpP.map(x => ({ t: x.t, db: off + x.db }))].sort((a, b) => a.t - b.t) }
+    // ... and so does the band's own payoff crash (τ 1.4 s, ringing over them once the payoff duck lets go)
+    for (const inst of ['honkFR', 'crash']) if (dpP.length && gain[inst]) { const off = gain[inst][0].db; gain[inst] = [...gain[inst], ...dpP.filter(x => x.t > P).map(x => ({ t: x.t, db: off + x.db }))].sort((a, b) => a.t - b.t) }
+    // the reverse crash swells into P through the gap: a cue B3 listens to inside its swell gets its first 50 ms
+    // (8 dB down, back by P - 10 ms so the swell still lands on P)
+    const inSwell = tl.cues.filter(c => AUD.has(c.kind) && c.gain >= 0.4 && !c.inCard && c.t > P - 0.6 && c.t < P - 0.06)
+    if (inSwell.length && gain.revcrash) {
+      const off = gain.revcrash[0].db, pts = [...gain.revcrash]
+      for (const c of inSwell) pts.push({ t: c.t - 0.005, db: off }, { t: c.t, db: off - 8 }, { t: c.t + OWN, db: off - 8 }, { t: Math.min(P - 0.01, c.t + OWN + 0.03), db: off })
+      gain.revcrash = pts.sort((a, b) => a.t - b.t)
+    } else if (inSwell.length) {
+      const pts = [{ t: 0, db: 0 }]
+      for (const c of inSwell) pts.push({ t: c.t - 0.005, db: 0 }, { t: c.t, db: -8 }, { t: c.t + OWN, db: -8 }, { t: Math.min(P - 0.01, c.t + OWN + 0.03), db: 0 })
+      gain.revcrash = pts.sort((a, b) => a.t - b.t)
+    }
   }
   // energy shaping on the music bus (bible B7: the DROP stands >= 2 LU over the BUILD, the HOLD sits under the DROP,
   // the BUILD's second half is not quieter than its first): dB per bar from its energy, ramped over 60 ms at bar lines
@@ -529,7 +555,10 @@ export function compose(tl, rng) {
   // a DROP of a single bar (short specs) stands 0.5 dB higher, so its 2-bar payoff window clears the BUILD by 2 LU
   const oneBarDrop = tl.bars.filter(b => b.section === 'DROP').length === 1
   const lvl = b => (b.section === 'TENSION' ? null : b.section === 'BREAK' ? -2 : b.energy >= 5 ? (oneBarDrop ? 1.6 : 1.1) : b.energy === 4 ? 0
-    : /HOLD/.test(b.section) ? -5.5 : b.section === 'CADENCE' && b.t < P + twoBars - 0.05 ? 0 : -1.7)
+    : /HOLD/.test(b.section) ? -5.5 : b.section === 'CADENCE' && b.t < P + twoBars - 0.05 ? 0 : b.section === 'HOOK' ? -1.7 - CLIMB.hookSettle : -1.7)
+  // the BUILD climbs (B7): a crescendo of CLIMB.ramp dB across the section, centred on the bar levels
+  const bld = tl.section('BUILD')
+  const climbAt = t => (bld && t >= bld.t0 - 1e-6 && t < bld.t1 ? CLIMB.ramp * ((t - bld.t0) / Math.max(1e-3, bld.t1 - bld.t0) - 0.5) : 0)
   for (const b of tl.bars) {
     if (b.t >= base - 1e-6) break
     if (b.section === 'TENSION' || (b.split && b.split.some(x => x.section === 'TENSION'))) {
@@ -539,17 +568,71 @@ export function compose(tl, rng) {
       continue
     }
     const d = lvl(b)
+    if (bld && b.section === 'BUILD') {
+      // a crescendo bar: the level climbs from the bar line to the next (points every beat)
+      const t1 = Math.min(b.t1, base), nb = Math.max(1, Math.round(b.beats))
+      musicDb.push({ t: Math.max(0, b.t - 0.03), db: musicDb.length ? musicDb[musicDb.length - 1].db : d + climbAt(b.t) }, { t: b.t + 0.03, db: d + climbAt(b.t + 0.03) })
+      for (let k = 1; k <= nb; k++) { const t = b.t + (t1 - b.t) * k / nb - (k === nb ? 0.031 : 0); musicDb.push({ t, db: +(d + climbAt(t)).toFixed(3) }) }
+      continue
+    }
     musicDb.push({ t: Math.max(0, b.t - 0.03), db: musicDb.length ? musicDb[musicDb.length - 1].db : d }, { t: b.t + 0.03, db: d })
   }
   musicDb.push({ t: base, db: musicDb.length ? musicDb[musicDb.length - 1].db : 0 })
   for (const x of musicDb) x.db = +(x.db + mTrim).toFixed(3)
-  return { notes, drums: dd, automation: { gain, musicDb } }
+  // the payoff's own cues keep the payoff duck (B3; 2026-10-13): the coins, dings, pops and landings that follow the hit
+  // within PAYOFF_OWN s are part of the payoff, so the band stays down under each of their first 50 ms (the payoff duck's
+  // depth and release) instead of blooming back over them. (Until now the hit's 1.1 s crash filled those windows and
+  // B3 counted it as theirs; the crash is now a splash, see sfx.mjs SPLASH.) music.dry, and so B7, is pre-duck
+  const pd = mix.payoffDuck || { depth: 9, release: 0.3 }
+  const duck = tl.cues.filter(c => AUD.has(c.kind) && c.gain >= 0.4 && !c.inCard && c.t > P + 0.002 && c.t <= P + PAYOFF_OWN && c.t < base - 1e-6)
+    .map(c => ({ t: c.t, depth: pd.depth, hold: OWN, release: pd.release }))
+  return { notes, drums: dd, automation: { gain, musicDb, ...(duck.length ? { duck } : {}) } }
+}
+
+/**
+ * The climb (bible B7; 2026-10-13). B7 compares the BUILD's two halves through 3 s loudness windows. In a condensed cut
+ * the HOOK is 1-3 s long, so the windows of the BUILD's first half still hold the hook's "ta-da" and its E3 settle bar,
+ * and the cues' dips and the deflate in its second half can tip the comparison (01b fell 0.14 LU, 05b rose only 0.28).
+ * So the hook's settle bars sit CLIMB.hookSettle dB under the BUILD's E3 start (the ta-da itself, its first bar, keeps
+ * its level: A7, S10), and the BUILD is a crescendo of CLIMB.ramp dB across its length, centred on the bar levels, so
+ * the BUILD's mean (and B7's DROP-over-BUILD) is unchanged.
+ */
+export const CLIMB = { hookSettle: 1.5, ramp: 1.5 }
+/** the bass's dull lift yields to the cues' landings: gone when the cues' 125 Hz octave stands LOW.span dB over their 1 kHz octave */
+export const LOW = { span: 5 }
+
+/**
+ * The velocity spread guard (bible §9.4 S8; added 2026-10-13 for the condensed cuts). S8 reads each voice's raw velocity
+ * spread (written accent x humanising jitter) over the body and wants it in 0.03-0.15. The written accents put the kick,
+ * snare, roll, shaker and marimba near the top of that window (0.12-0.15 on the long bodies) and the pad and pizz chops,
+ * whose accents are nearly flat, near its floor (0.03-0.06). A long body averages over a hundred events; a condensed one
+ * has 8-20, and a handful of fills, heartbeat kicks or one chord more or less pushes the spread over an edge (02a's snare
+ * 0.162 with 8 events, 01c's pizz 0.028, 03a's pad 0.029). So each voice S8 gates (>= SPREAD.minEvents body events, not
+ * one of its accent-only voices) keeps its spread in SPREAD.lo-SPREAD.hi, the middle of the window: when it falls outside,
+ * the velocities are scaled about the voice's mean (the accent shape and the order of the hits stay, only their depth
+ * changes; the boost is at most SPREAD.maxBoost). The t = 0 hits keep at least their written 0.9 (S10). Deterministic.
+ */
+export const SPREAD = { lo: 0.06, hi: 0.12, minEvents: 8, maxBoost: 2.5, accentOnly: ['revcrash', 'timp', 'crash', 'whistle', 'honkF', 'strings'] }
+function spreadGuard(events, base) {
+  const skip = new Set(SPREAD.accentOnly), by = new Map()
+  for (const e of events) if (e.t < base - 1e-6 && e.role !== 'logo' && !skip.has(e.inst)) { if (!by.has(e.inst)) by.set(e.inst, []); by.get(e.inst).push(e) }
+  for (const evs of by.values()) {
+    if (evs.length < SPREAD.minEvents) continue
+    const v = evs.map(e => e.vel), m = v.reduce((a, b) => a + b, 0) / v.length
+    const sd = Math.sqrt(v.reduce((a, b) => a + (b - m) ** 2, 0) / v.length)
+    const k = sd > SPREAD.hi ? SPREAD.hi / sd : sd < SPREAD.lo && sd > 1e-6 ? Math.min(SPREAD.maxBoost, SPREAD.lo / sd) : 1
+    if (k === 1) continue
+    for (const e of evs) {
+      const w = clamp(m + (e.vel - m) * k, 0.05, 1)
+      e.vel = +(Math.abs(e.t) < 1e-3 ? Math.max(w, Math.min(e.vel, 0.9)) : w).toFixed(4)
+    }
+  }
 }
 
 /** the band's mid voices (the 400 Hz-4 kHz band of the mix): the toys, brass, strings, pad, snare family */
 const MID = ['mallet', 'glock', 'pizz', 'honk', 'honkF', 'strings', 'pad', 'snare', 'clap', 'ghost', 'tom', 'whistle']
 /** dip per cue kind: [depth dB (scaled by clamp(gain / 0.4, 0.3, 1)), hold s, release τ s] */
-export const DIP = { pop: [6, 0.05, 0.1], ding: [6, 0.08, 0.22], cash: [6, 0.1, 0.3], tick: [3, 0.03, 0.08], step: [4, 0.03, 0.07], roll: [5, 0, 0.15], thud: [4, 0.05, 0.14], whoosh: [2.5, 0.05, 0.12] }
+export const DIP = { pop: [6, 0.05, 0.1], ding: [6, 0.08, 0.22], cash: [6, 0.1, 0.3], tick: [3, 0.03, 0.08], step: [4, 0.03, 0.07], roll: [5, 0, 0.15], thud: [4, 0.05, 0.14], whoosh: [2.5, 0.05, 0.12], hit: [4, 0.05, 0.14] }
 /** the payoff's dips (only the fanfare's "TA" is under them): every B3 kind after the hit, 8 dB */
 const DIP_P = { pop: [8, 0.05, 0.1], ding: [8, 0.08, 0.2], cash: [8, 0.1, 0.25], thud: [8, 0.05, 0.14], hit: [8, 0.08, 0.2], reveal: [8, 0.08, 0.2] }
 /**

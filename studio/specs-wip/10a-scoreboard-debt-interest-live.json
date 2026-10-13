@@ -61,7 +61,9 @@
     "pips": true,
     "pipLabels": ["$30K", "Median $65K", "$100K", "$250K", "$500K", "$1M"],
     "icons": ["bill", "bill", "bill", "bill", "bill", "coin"],
-    "heroIcon": false
+    "heroIcon": false,
+    "stream": 24,
+    "runup": { "beat": 0.40639 }
   },
   "sfx": []
 }

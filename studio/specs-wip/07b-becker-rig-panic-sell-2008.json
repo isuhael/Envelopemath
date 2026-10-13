@@ -3,7 +3,7 @@
   "look": "becker-rig",
   "format": "ledger-duel",
   "fps": 30,
-  "duration": 13.1,
+  "duration": 14.1,
   "header": "2 people invest **$10,000**\nright before 2008\nOne sells to cut his losses",
   "footer": "Year-end S&P 500 total return, dividends in · cash at 0%",
   "captions": true,
@@ -20,37 +20,37 @@
     },
     {
       "t": 2.6,
-      "d": 1.25,
+      "d": 1.5,
       "text": "Sam sells to cut his losses."
     },
     {
-      "t": 3.9,
-      "d": 3.65,
+      "t": 4.15,
+      "d": 4.55,
       "text": "Alex holds. By 2012, he’s back above $10,000."
     },
     {
-      "t": 7.6,
-      "d": 1.35,
+      "t": 8.75,
+      "d": 1.25,
       "text": "2022 dips. Alex holds again."
     },
     {
-      "t": 9.0,
+      "t": 10.05,
       "d": 1.2,
       "text": "End of 2025: Alex has about $66,000."
     },
     {
-      "t": 10.25,
+      "t": 11.3,
       "d": 1.2,
       "text": "Sam’s still at $6,300."
     },
     {
-      "t": 11.5,
-      "d": 1.3,
+      "t": 12.55,
+      "d": 1.25,
       "text": "He dodged the recovery."
     }
   ],
   "verdict": {
-    "t": 11.5,
+    "t": 12.55,
     "text": "Selling didn’t dodge the crash.\nIt dodged the **recovery**."
   },
   "data": {
@@ -85,7 +85,7 @@
         "tone": "bad"
       },
       {
-        "t": 3.75,
+        "t": 4.25,
         "label": "2009",
         "values": [
           "≈ $8,000",
@@ -93,7 +93,7 @@
         ]
       },
       {
-        "t": 4.6,
+        "t": 5.1,
         "label": "2012",
         "values": [
           "≈ $10,900",
@@ -103,7 +103,7 @@
         "tone": "good"
       },
       {
-        "t": 5.45,
+        "t": 6.5,
         "label": "2016",
         "values": [
           "≈ $18,500",
@@ -111,7 +111,7 @@
         ]
       },
       {
-        "t": 6.3,
+        "t": 7.35,
         "label": "2019",
         "values": [
           "≈ $28,400",
@@ -119,7 +119,7 @@
         ]
       },
       {
-        "t": 7.15,
+        "t": 8.2,
         "label": "2021",
         "values": [
           "≈ $43,300",
@@ -127,7 +127,7 @@
         ]
       },
       {
-        "t": 8.0,
+        "t": 9.05,
         "label": "2022",
         "values": [
           "≈ $35,500",
@@ -137,7 +137,7 @@
         "tone": "bad"
       },
       {
-        "t": 9.6,
+        "t": 10.65,
         "label": "2025",
         "values": [
           "≈ $66,000",
@@ -181,22 +181,40 @@
         "label": "sold → cash at 0%"
       },
       {
-        "t": 10.7,
+        "t": 3.3,
+        "act": "shrug",
+        "person": 1,
+        "d": 0.3
+      },
+      {
+        "t": 5.45,
+        "act": "point",
+        "person": 0,
+        "d": 0.25
+      },
+      {
+        "t": 5.85,
+        "act": "cheer",
+        "person": 0,
+        "d": 0.3
+      },
+      {
+        "t": 11.75,
         "act": "lookUp",
         "person": 1,
         "d": 0.4
       },
       {
-        "t": 12.05,
-        "act": "peek",
-        "person": 1,
-        "d": 1.05
-      },
-      {
-        "t": 11.8,
+        "t": 12.85,
         "act": "cheer",
         "person": 0,
-        "d": 1.3
+        "d": 1.25
+      },
+      {
+        "t": 13.1,
+        "act": "peek",
+        "person": 1,
+        "d": 1.0
       }
     ],
     "marks": [
@@ -211,7 +229,7 @@
         "person": 1
       },
       {
-        "t": 10.75,
+        "t": 11.8,
         "row": 8,
         "person": 1
       }
@@ -223,7 +241,7 @@
       "kind": "thud"
     },
     {
-      "t": 12.05,
+      "t": 13.1,
       "kind": "boing"
     }
   ]
