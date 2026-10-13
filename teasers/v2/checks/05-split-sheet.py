@@ -24,9 +24,33 @@
    and times, and every scripted figure beat.
 4. Fact-consistency checks on the sourced inputs (identities and reported percentages)
    and the robustness of each verdict.
+5. Two cuts per teaser, picked by the spec's duration (2026-10-13, the owner's note "too many still moments are a
+   killer for a short; condense the rest; the CTA is good", after the 06c / 06b precedent):
+     full       the narration-paced round-2 cuts (05a 24.7 s, 05b 22.1 s, 05c 22.8 s bodies): every check above.
+     condensed  the condensed cuts (05a 12-14 s, 05b 10.5-12.5 s, 05c 8-10 s bodies). Same strings, numbers, verdicts
+                and figure beats; only the clock moved (and 05c's "Check: $100." caption is merged into the line
+                before it). Critic fixes (2026-10-13): 05b's "Needs get five." is its own caption, so "$10 a day"
+                goes up with the lone brick, not 1.2 s before the slot stamps it; 05c's footer no longer goes back to
+                the assumption line at the check (5 footer steps, not 6), so the goal row's working holds to the fees
+                beat, and every footer step is up >= max(0.9 s, 0.12 s per token). The posted shorts have no
+                narration, so the captions are paced as on-screen text: each
+                line up >= max(1.2 s, 0.12 s per word) from frame 1 (on Becker Rig the verdict hides the captions, so a
+                line counts until the verdict), gaps <= 0.2 s, vo[0] complete on frame 1 (no type-on, no rise); each
+                landing inside the caption that names it with >= 0.25 s of it left; the verdict 0.8-1.5 s after the
+                final reveal and held 1.2-1.6 s before the 2.5 s end card; and per teaser the motion cadence the
+                editor timed so that no still run reaches 0.4 s before the verdict hold (05a: saws 0.36-0.45 s, the
+                walk to each cut starting <= 0.85 s after the last landing, the stomp by 2.6 s; 05b: landings <= 2.2 s
+                apart, the check on the last landing and the payoff slab on the check's end, the "$10 a day" caption
+                on the lone brick's landing; 05c: the goal row's roll <= 0.35 s, each cut <= 0.6 s after the last
+                landing, the hero's last roll <= 0.5 s after the fees beat, each footer working up >= 0.9 s).
+   studio/specs/ must hold the cut IN_SPECS names (the full cuts until the condensed ones are promoted); any other
+   length fails its lane and stops there.
 
 Prints a table and exits non-zero on any mismatch.
-Run:  python3 teasers/v2/checks/05-split-sheet.py
+Run:  python3 teasers/v2/checks/05-split-sheet.py                                (the specs in studio/specs/)
+      python3 teasers/v2/checks/05-split-sheet.py --spec studio/specs-wip/05a-becker-rig-chipotle-10.json
+      --spec [KEY=]PATH (repeatable) checks PATH in place of studio/specs/<id>.json. KEY is a, b or c (or 05a/05b/05c);
+      without it the file's stem must be one of the three ids.
 """
 import json
 import pathlib
@@ -40,6 +64,59 @@ FILES = {
     "05b": SPECS / "05b-becker-rig-3000-paycheck.json",
     "05c": SPECS / "05c-scoreboard-costco-100.json",
 }
+
+
+def parse_spec_args(argv):
+    """--spec [KEY=]PATH (repeatable) -> {key: path}; see the module docstring"""
+    out, i = {}, 0
+    while i < len(argv):
+        a = argv[i]
+        if a in ("-h", "--help"):
+            print(__doc__)
+            sys.exit(0)
+        if a == "--spec" or a.startswith("--spec="):
+            if a == "--spec":
+                i += 1
+                v = argv[i] if i < len(argv) else ""
+            else:
+                v = a.split("=", 1)[1]
+            if not v:
+                sys.exit("--spec needs a path")
+            m = re.fullmatch(r"(?:05)?([abc])=(.+)", v)
+            if m:
+                key, p = "05" + m.group(1), pathlib.Path(m.group(2))
+            else:
+                p = pathlib.Path(v)
+                key = next((k for k, f in FILES.items() if f.stem == p.stem), None)
+                if key is None:
+                    sys.exit(f"--spec {v}: the file stem is not one of {sorted(f.stem for f in FILES.values())}; pass KEY=PATH")
+            if not p.is_file():
+                sys.exit(f"--spec {v}: no such file")
+            out[key] = p.resolve()
+        else:
+            sys.exit(f"unknown argument {a!r}; usage: 05-split-sheet.py [--spec [KEY=]PATH ...]")
+        i += 1
+    return out
+
+
+FILES.update(parse_spec_args(sys.argv[1:]))
+STEMS = {"05a": "05a-becker-rig-chipotle-10", "05b": "05b-becker-rig-3000-paycheck", "05c": "05c-scoreboard-costco-100"}
+
+# ---- the two cuts (see 5. above), picked by duration
+FULL_DUR = {"05a": 24.7, "05b": 22.1, "05c": 22.8}                 # the round-2 bodies (+ the 2.5 s end card)
+LANE_C = {"05a": (12.0, 14.0), "05b": (10.5, 12.5), "05c": (8.0, 10.0)}   # the condensed bodies (2026-10-13)
+# which cut studio/specs/ must hold: the full cuts until the condensed ones are promoted (then set them to "condensed")
+IN_SPECS = {"05a": "full", "05b": "full", "05c": "full"}
+CAP_MIN, CAP_SPW = 1.2, 0.12      # caption pacing (no narration): >= 1.2 s a line, >= 0.12 s a word at phone size
+CAP_GAP = 0.2                     # the longest gap between two captions (no beat goes unlabelled)
+CAP_LEFT = 0.25                   # a landing leaves at least this much of its caption on screen after it
+FOOT_MIN = 0.9                    # 05c: a footer working is up at least this long (and 0.12 s per token). The critic
+                                  # suggested ~1.0 s; row 2's working is up 0.95 s between two landings, and 1.0 s would
+                                  # move two cues (measured: the sound's A2, A5 and A3 margins all got thinner)
+VERDICT_AFTER = (0.8, 1.5)        # the verdict lands this long after the final reveal...
+VERDICT_HOLD = (1.2, 1.6)         # ...and holds this long before the end card
+SB_CAP_IN = 0.14                  # Scoreboard captions rise in over this long from their t (theme M.capIn)
+BR_CAP_WORD = 0.16                # Becker Rig caption words pop in over this long, staggered min(0.045, 0.32 / n)
 LOOKS = {"05a": "becker-rig", "05b": "becker-rig", "05c": "scoreboard"}
 WPS = 2.6              # guide VO read rate, words per second
 LANE = (20.0, 40.0)    # duration lane this format was briefed on
@@ -228,6 +305,16 @@ EXPECT = {
     },
 }
 
+# the condensed cuts: the same strings, except that 05c's footer no longer goes back to the assumption line at the check
+# (critic, 2026-10-13: it cut the goal row's working to ~0.45 s on screen), so the fees working and the cart + fees sum
+# are footer steps 3 and 4, and there is no step 5 (the assumption line stays the spec footer, on screen at frame 1)
+EXPECT_C = {**EXPECT, "05c": {k: v for k, v in EXPECT["05c"].items() if not k.startswith("lookOpts.footerSteps[")}}
+EXPECT_C["05c"].update({
+    **{f"lookOpts.footerSteps[{i}].text": EXPECT["05c"][f"lookOpts.footerSteps[{i}].text"] for i in range(3)},
+    "lookOpts.footerSteps[3].text": EXPECT["05c"]["lookOpts.footerSteps[4].text"],
+    "lookOpts.footerSteps[4].text": EXPECT["05c"]["lookOpts.footerSteps[5].text"],
+})
+
 # numbers spoken in each VO line, in order ("N cents" -> N/100 dollars; number words count too)
 VO_NUMBERS = {
     "05a": [
@@ -241,6 +328,16 @@ VO_NUMBERS = {
         [C_AMT[0], C_CART], [C_AMT[1]], [C_AMT[2], 0], [C_CART], [C_FEES, C_CART], [C_OPS],
     ],
 }
+# the condensed cuts: the same lines, except 05c's "Check: $100." is merged into the line before it (the check beat
+# moves for about 0.5 s, so a 1.2 s caption of its own would have held the board still), and 05b's "Needs get five."
+# is split from "Food and every bill get one: $10 a day." (critic: the one line typed "$10 a day" 1.2 s before the
+# picture showed "$300 ÷ 30 = $10" and stamped the slot; now that line goes up with the lone brick)
+VO_NUMBERS_C = {**VO_NUMBERS, "05b": [
+    [B_PIECES, B_TENTH, B_RENT_N], [B_COUNT[0]], [B_FOOD_N, B_FOOD_DAY],
+    [B_COUNT[1], B_AMT[1], B_COUNT[2], B_AMT[2]], [B_PAY], [B_RENT, B_FOOD_DAY],
+], "05c": [
+    [C_AMT[0], C_CART], [C_AMT[1]], [C_AMT[2], 0, C_CART], [C_FEES, C_CART], [C_OPS],
+]}
 
 # captions are on, so the VO text is on screen: a spoken number carries "≈" exactly when it is a rounded result.
 # Rounded: every per-row amount in 05a and 05c and the membership-fee figure. Exact: the inputs ($10, $100),
@@ -308,6 +405,69 @@ ANCHORS = {
         "lookOpts.bonus.t": "frame1",
         # ...and the pointer and the label stack return to it when vo[4] names it ("Membership fees: ...")
         "lookOpts.bonus.focusT": (4, None),
+    },
+}
+
+# The condensed cuts (2026-10-13): no narration, so a beat is tied to the caption that names it, not to a spoken word.
+#   ("land_in", i)          lands while vo[i] is up, with >= CAP_LEFT of it left (Becker Rig: the verdict ends a caption)
+#   ("in", i)               falls while vo[i] is up
+#   ("start", i)            on vo[i]'s start (+/- START_TOL)
+#   ("rel", ref, lo, hi)    lo <= t - ref <= hi; ref is a spec path or land0..2 / hero_land (05c) / check_end (05b),
+#                           computed the way the kit times them
+#   ("le", x), ("range", lo, hi), "frame1", "silent", "land<i>", "sync<i>": as above
+ANCHORS_C = {
+    "05a": {
+        **{f"data.parts[{i}].t": ("land_in", i) for i in range(7)},
+        "data.checkT": "silent",
+        # the verdict (and the header slot's answer, and his held shrug) 0.8-1.5 s after the profit row and its PROFIT
+        # slab land, the final reveal
+        "verdict.t": ("rel", "data.parts[6].t", 0.8, 1.5),
+        "lookOpts.payoff.slot.t": ("rel", "verdict.t", 0, 0), "lookOpts.beats[5].t": ("rel", "verdict.t", 0, 0),
+        "lookOpts.payoff.t": ("rel", "data.parts[6].t", 0, 0),
+        # the stomp strikes the guess as "Not even close. ..." goes up (with the buzz)
+        "lookOpts.payoff.slot.strikeT": ("start", 1), "lookOpts.beats[2].t": ("start", 1), "sfx[0].t": ("start", 1),
+        # the slab's remainder reads "$7.04?" right after the food piece lands
+        "lookOpts.remainder.t": ("rel", "data.parts[0].t", 0.05, 0.3),
+        # the hook's beats (look up + the $10 swell, the low shrug + the guess swell) while the hook caption is up
+        "lookOpts.beats[0].t": ("in", 0), "lookOpts.beats[1].t": ("in", 0),
+        "lookOpts.bumps[0].t": ("in", 0), "lookOpts.bumps[1].t": ("in", 0),
+        # he points down at the last piece, the one he stands on, after the tax piece lands (new in the condensed cut:
+        # it fills the beat before the profit row activates), and at the check (silent) after profit lands
+        "lookOpts.beats[3].t": ("rel", "data.parts[5].t", 0.1, 0.4), "lookOpts.beats[4].t": "silent",
+        # each row activates (and he starts sawing) as its caption goes up; crew after the stomp, inside vo[1]
+        "lookOpts.activate[1]": ("in", 1),
+        **{f"lookOpts.activate[{i}]": ("start", i) for i in range(2, 7)},
+    },
+    "05b": {
+        # the cleaver comes out at the kit's floor (0.15 s) and he reaches for it from frame 1 (a 'carry' beat at 0)
+        "lookOpts.actions[0].t": ("le", 0.15), "lookOpts.beats[0].t": "frame1",
+        "lookOpts.tenth.t": ("in", 0),
+        # vo[1] "Needs get five." (with the bracket), vo[2] "Food and every bill get one: $10 a day." (with the lone brick)
+        "data.parts[0].t": ("land_in", 0), "data.parts[1].t": ("land_in", 2),
+        "data.parts[2].t": ("land_in", 3), "data.parts[3].t": ("land_in", 3),
+        # the needs bracket right after rent lands; "$10" stamps into the header slot just after the lone brick lands
+        "lookOpts.needs.t": ("rel", "data.parts[0].t", 0.1, 0.4),
+        "lookOpts.payoff.slot.t": ("rel", "data.parts[1].t", 0.2, 0.4),
+        # the check assembles as the last bricks land, and the payoff slab (the final reveal) stamps as it completes
+        "data.checkT": ("rel", "data.parts[3].t", 0, 0.3),
+        "lookOpts.payoff.t": ("rel", "check_end", -0.1, 0.35),
+        "verdict.t": ("rel", "lookOpts.payoff.t", 0.8, 1.5),
+    },
+    "05c": {
+        # frame 1 is the clean $100.00 cover; the first cut follows at once (after 0.05 s, or the kit drops its thud)
+        "data.parts[0].t": ("range", 0.051, 0.25),
+        "data.parts[1].t": ("start", 1), "data.parts[2].t": ("start", 2),
+        "lookOpts.footerSteps[0].t": "land0", "lookOpts.footerSteps[1].t": "land1", "lookOpts.footerSteps[2].t": "land2",
+        "lookOpts.remaining[0].t": "sync0", "lookOpts.remaining[1].t": "sync1",
+        # the check right after ≈ $1.94 lands (its caption, merged into vo[2], names it); the footer keeps the goal
+        # row's working through it (no step back to the assumption line: critic fix, 2026-10-13)
+        "data.checkT": ("rel", "land2", 0.4, 0.7),
+        "lookOpts.bonus.t": "frame1",
+        # the fees beat as its caption goes up, then the hero's last roll (≈ $1.94 + ≈ $1.99 -> ≈ $3.93)
+        "lookOpts.bonus.focusT": ("start", 3), "lookOpts.footerSteps[3].t": ("rel", "lookOpts.bonus.focusT", 0, 0.5),
+        "lookOpts.heroFinal.t": ("rel", "lookOpts.bonus.focusT", 0.2, 0.5),
+        "lookOpts.footerSteps[4].t": ("rel", "hero_land", 0, 0.6),
+        "verdict.t": ("rel", "hero_land", 0.8, 1.5),
     },
 }
 
@@ -437,9 +597,187 @@ def get(spec, path):
 SKIP_PATHS = re.compile(r"^(id|vo\[\d+\]\.text)$")
 
 
+def cut_of(key, spec):
+    """'full' (the round-2 cut), 'condensed' (2026-10-13) or None (neither: no expectation set applies)"""
+    dur = spec.get("duration", 0)
+    if abs(dur - FULL_DUR[key]) < 1e-9:
+        return "full"
+    lo, hi = LANE_C[key]
+    return "condensed" if lo - 1e-9 <= dur <= hi + 1e-9 else None
+
+
+def cap_windows(key, spec):
+    """Each caption's time on screen, from frame 1: (start, end), or None when the verdict hides it all along.
+    Becker Rig hides every caption from verdict.t (the verdict takes the caption band); Scoreboard keeps them under it."""
+    V = spec["verdict"]["t"]
+    becker = LOOKS[key] == "becker-rig"
+    out = []
+    for v in spec["vo"]:
+        if becker and v["t"] >= V - 1e-9:
+            out.append(None)
+        else:
+            end = v["t"] + v["d"]
+            out.append((max(0.0, v["t"]), min(end, V) if becker else end))
+    return out
+
+
+def ref_time(key, spec, ref):
+    """a reference time for the condensed anchors: a spec path, or a time the kit computes"""
+    if re.fullmatch(r"land\d", ref):
+        return landing_05c(spec)[int(ref[4:])]
+    if ref == "hero_land":                       # scoreboard: heroFinal starts 0.04 s after its t, rolls 1.1 s
+        return round(spec["lookOpts"]["heroFinal"]["t"] + 0.04 + SB_HERO_ROLL, 4)
+    if ref == "check_end":                       # becker-rig bins: token m pops at checkT + 0.32 + 0.11 m, for 0.2 s
+        ntok = len(spec["data"]["check"].split())
+        return round(spec["data"]["checkT"] + 0.32 + 0.11 * (ntok - 1) + 0.2, 4)
+    return get(spec, ref)
+
+
+def plain_words(text):
+    return [w for w in text.replace("**", "").replace("__", "").split() if w]
+
+
+def condensed_pacing(key, spec):
+    """The condensed cut's caption pacing, lane and verdict hold (the posted shorts have no narration)."""
+    vo, V, dur = spec["vo"], spec["verdict"]["t"], spec["duration"]
+    wins = cap_windows(key, spec)
+    lo, hi = LANE_C[key]
+    record(key, f"condensed lane {lo}-{hi} s (body; + the 2.5 s end card)", dur, f"{lo}..{hi}", lo - 1e-9 <= dur <= hi + 1e-9)
+    for i, (v, w) in enumerate(zip(vo, wins)):
+        n = len(plain_words(v["text"]))
+        if w is None:
+            # a line the verdict hides all along (Becker Rig): only the last, and only when it is the verdict's words
+            vtxt = " ".join(plain_words(spec["verdict"]["text"]))
+            ok = i == len(vo) - 1 and " ".join(plain_words(v["text"])) == vtxt and abs(v["t"] - V) < 1e-9
+            record(key, f"vo[{i}] under the verdict: the last line, worded as the verdict, on verdict.t", v["text"], vtxt, ok)
+            continue
+        need = max(CAP_MIN, CAP_SPW * n)
+        shown = round(w[1] - w[0], 3)
+        record(key, f"vo[{i}] caption up ≥ max({CAP_MIN}, {n} words × {CAP_SPW}) from frame 1", shown, f"≥ {need:.2f}",
+               shown + 1e-9 >= need)
+        if i + 1 < len(vo):
+            gap = round(vo[i + 1]["t"] - (v["t"] + v["d"]), 3)
+            record(key, f"vo[{i}] → vo[{i + 1}] gap (no overlap, no unlabelled beat)", gap, f"0..{CAP_GAP}",
+                   -1e-9 <= gap <= CAP_GAP + 1e-9)
+    # frame 1 is the thumbnail: the hook caption is complete on it (Becker Rig pops a caption's words in, staggered
+    # min(0.045, 0.32 / n) s, each over 0.16 s; Scoreboard captions rise in over 0.14 s from their t)
+    n0 = len(plain_words(vo[0]["text"]))
+    if LOOKS[key] == "becker-rig":
+        need0 = -(min(0.045, 0.32 / n0) * (n0 - 1) + BR_CAP_WORD)
+    else:
+        need0 = -SB_CAP_IN
+    record(key, f"vo[0] complete on frame 1 (t ≤ {need0:.2f})", vo[0]["t"], f"≤ {need0:.2f}", vo[0]["t"] <= need0 + 1e-9)
+    held = round(dur - V, 3)
+    record(key, f"verdict held {VERDICT_HOLD[0]}-{VERDICT_HOLD[1]} s before the end card", held,
+           f"{VERDICT_HOLD[0]}..{VERDICT_HOLD[1]}", VERDICT_HOLD[0] - 1e-9 <= held <= VERDICT_HOLD[1] + 1e-9)
+
+
+def condensed_cadence(key, spec):
+    """The motion cadence the condensed cut was timed to (measured: no still run of 0.4 s before the verdict hold).
+    Each rule is a kit timing that, broken, leaves the frame still: a long saw, an idle wait before a walk, a slow
+    goal roll, a gap between beats."""
+    d, lo, vo = spec["data"], spec["lookOpts"], spec["vo"]
+    P = [p["t"] for p in d["parts"]]
+    V = spec["verdict"]["t"]
+    if key == "05a":
+        act, slot, beats, bumps = lo["activate"], lo["payoff"]["slot"], lo["beats"], lo["bumps"]
+        S = slot["strikeT"]
+        # carve: a saw runs from the row's activation to its drop (landing − 0.3 − 0.02); at phone size the strokes
+        # register as still, so it stays at the kit's 0.36 s floor or just over it
+        saws = [round(P[i] - 0.32 - act[i], 3) for i in range(1, 6)]
+        record(key, "each saw 0.36-0.45 s (activate → drop; the strokes read as still at phone size)", saws, "0.36..0.45",
+               all(0.36 - 1e-9 <= x <= 0.45 + 1e-9 for x in saws))
+        waits = [round(act[1] - S, 3)] + [round(act[i] - P[i - 1], 3) for i in range(2, 6)]
+        record(key, "each saw starts ≤ 0.85 s after the stomp / the last landing (the walk fills the wait)", waits, "≤ 0.85",
+               all(x <= 0.85 + 1e-9 for x in waits))
+        record(key, "the hook ends with the stomp by 2.6 s", S, "≤ 2.6", S <= 2.6 + 1e-9)
+        order = [P[0], beats[0]["t"], bumps[0]["t"], beats[1]["t"], bumps[1]["t"], S]
+        record(key, "hook beats in order: food lands, look up, $10 swells, shrug, guess swells, stomp", order, "increasing",
+               all(a <= b + 1e-9 for a, b in zip(order, order[1:])) and P[0] < beats[0]["t"] and bumps[1]["t"] < S)
+        record(key, "the low shrug holds into the stomp (no return to standing between them)",
+               round(beats[1]["t"] + beats[1].get("d", 1.2), 3), f"≥ {S - 0.02:.2f}",
+               beats[1]["act"] == "shrugLow" and beats[1]["t"] + beats[1].get("d", 1.2) >= S - 0.02 - 1e-9)
+        record(key, "beats are lookUp, shrugLow, stomp, pointDown, point, shrug (held)", [b["act"] for b in beats],
+               ["lookUp", "shrugLow", "stomp", "pointDown", "point", "shrug"],
+               [b["act"] for b in beats] == ["lookUp", "shrugLow", "stomp", "pointDown", "point", "shrug"] and beats[5].get("hold") is True)
+        record(key, "profit row activates ≤ 0.6 s after the tax piece lands", round(act[6] - P[5], 3), "≤ 0.6", act[6] - P[5] <= 0.6 + 1e-9)
+        drop = round(P[6] - 0.3 - act[6], 3)
+        record(key, "the last piece drops 0-0.5 s after the profit row activates", drop, "0..0.5", 0 < drop <= 0.5 + 1e-9)
+    if key == "05b":
+        ten = lo["tenth"]["t"]
+        record(key, "the slab cracks into bricks by 1.5 s", ten, "≤ 1.5", ten <= 1.5 + 1e-9)
+        gaps = [round(P[0] - ten, 3)] + [round(P[i] - P[i - 1], 3) for i in range(1, 4)]
+        record(key, "landings ≤ 2.2 s apart (rent ≤ 1.7 s after the bricks): he walks, raises and slams in between", gaps,
+               "≤ 1.7, then ≤ 2.2", gaps[0] <= 1.7 + 1e-9 and all(x <= 2.2 + 1e-9 for x in gaps[1:]))
+        b0 = (lo.get("beats") or [{}])[0]
+        record(key, "frame 1 moves: a held 'carry' beat at t ≤ 0 (he reaches for the cleaver the kit brings out at 0.15 s)",
+               (b0.get("t"), b0.get("act"), b0.get("hold")), "(≤ 0, 'carry', True)",
+               b0.get("t", 1) <= 0 and b0.get("act") == "carry" and b0.get("hold") is True)
+        record(key, "the needs bracket draws as vo[1] goes up (≤ 0.1 s apart)", round(vo[1]["t"] - lo["needs"]["t"], 3), "0..0.1",
+               -1e-9 <= vo[1]["t"] - lo["needs"]["t"] <= 0.1 + 1e-9)
+        ci = next((i for i, v in enumerate(vo) if v["text"].startswith("Check:")), None)
+        lead = round(vo[ci]["t"] - d["checkT"], 3) if ci is not None else "(no 'Check:' line)"
+        record(key, f"the check leads 'Check: $3,000.' (vo[{ci}]) by ≤ 0.6 s", lead, "0..0.6",
+               ci is not None and -1e-9 <= lead <= 0.6 + 1e-9)
+        # critic fix (2026-10-13): no caption answers the header before the picture does. The first line that types
+        # "$10" is its own line, goes up with the lone brick's landing (0-0.3 s before it), and its "$10" word is
+        # typed with the slot's stamp, ±0.15 s (Becker Rig pops word k at t + k·min(0.045, 0.32 / n), over 0.16 s)
+        tens = [i for i, v in enumerate(vo) if re.search(r"\$10\b", v["text"])]
+        c10 = vo[tens[0]] if tens else {"t": -99, "text": ""}
+        record(key, f"the first '$10' caption (vo[{tens[0] if tens else '-'}]) goes up 0-0.3 s before the lone brick lands",
+               round(P[1] - c10["t"], 3), "0..0.3", bool(tens) and -1e-9 <= P[1] - c10["t"] <= 0.3 + 1e-9)
+        record(key, "…and is its own line ('Food and every bill get one: $10 a day.', not after 'Needs get five.')",
+               c10["text"], "Food and every bill get one: $10 a day.", c10["text"] == "Food and every bill get one: $10 a day.")
+        w10 = plain_words(c10["text"]) or ["$10"]
+        k10 = next((k for k, w in enumerate(w10) if re.match(r"\$10\b", w)), 0)
+        typed = round(c10["t"] + k10 * min(0.045, 0.32 / len(w10)) + BR_CAP_WORD, 3)
+        slot_t = lo["payoff"]["slot"]["t"]
+        record(key, "…and its '$10' is typed with the slot's stamp (± 0.15 s; kit caption timing)", typed,
+               f"{slot_t - 0.15:.2f}..{slot_t + 0.15:.2f}", abs(typed - slot_t) <= 0.15 + 1e-9)
+    if key == "05c":
+        lands = landing_05c(spec)
+        rolls = lo["rolls"]
+        record(key, "the goal row rolls ≤ 0.35 s (no hero roll with it: its counter alone reads as still)", rolls[2], "≤ 0.35",
+               rolls[2] <= 0.35 + 1e-9)
+        record(key, "rows 1-2 roll 0.5-1.2 s (the hero counts down with them)", rolls[:2], "0.5..1.2",
+               all(0.5 - 1e-9 <= x <= 1.2 + 1e-9 for x in rolls[:2]))
+        gaps = [round(P[i] - lands[i - 1], 3) for i in (1, 2)]
+        record(key, "each cut ≤ 0.6 s after the last landing", gaps, "≤ 0.6", all(x <= 0.6 + 1e-9 for x in gaps))
+        for i in range(3):
+            w = cap_windows(key, spec)[i]
+            record(key, f"row {i}'s landing (kit) while vo[{i}] is up, ≥ {CAP_LEFT} s before it leaves", lands[i],
+                   f"{w[0]:.2f}..{w[1] - CAP_LEFT:.2f}", w[0] - 1e-9 <= lands[i] <= w[1] - CAP_LEFT + 1e-9)
+        record(key, "the check is named by the caption it falls in (vo[2], 'Check: $100.')", vo[2]["text"], "… Check: $100.",
+               vo[2]["t"] <= d["checkT"] < vo[2]["t"] + vo[2]["d"] and vo[2]["text"].endswith(f"Check: {money(C_CART)}."))
+        fb = round(lo["bonus"]["focusT"] - d["checkT"], 3)
+        record(key, "the fees beat ≤ 0.85 s after the check", fb, "≤ 0.85", fb <= 0.85 + 1e-9)
+        # critic fix (2026-10-13): each footer working is up long enough to read on a phone (the footer is the chrome's:
+        # the verdict does not hide it, so the last step runs to the end of the body)
+        fs = lo["footerSteps"]
+        ups = [round((fs[i + 1]["t"] if i + 1 < len(fs) else spec["duration"]) - fs[i]["t"], 3) for i in range(len(fs))]
+        need = [max(FOOT_MIN, CAP_SPW * len(x["text"].split())) for x in fs]
+        record(key, f"each footer step up ≥ max({FOOT_MIN} s, {CAP_SPW} s per token)", ups,
+               "≥ " + "/".join(f"{x:.2f}" for x in need), all(u + 1e-9 >= n for u, n in zip(ups, need)))
+        hl = ref_time(key, spec, "hero_land")
+        record(key, "≈ $3.93 lands as 'Profit: ≈ $3.93 …' goes up (≤ 0.1 s before it, ≥ 0.25 s before it leaves)", hl,
+               f"{vo[4]['t'] - 0.1:.2f}..{vo[4]['t'] + vo[4]['d'] - CAP_LEFT:.2f}",
+               vo[4]["t"] - 0.1 - 1e-9 <= hl <= vo[4]["t"] + vo[4]["d"] - CAP_LEFT + 1e-9)
+
+
 def check_spec(key, spec):
-    exp = EXPECT[key]
     seen = set()
+    # 0. which cut this is (picked by duration), and the one studio/specs/ must hold
+    cut = cut_of(key, spec)
+    path0 = pathlib.Path(FILES[key]).resolve()
+    in_specs = path0.parent == SPECS.resolve()
+    record(key, "studio/specs/ holds the expected cut", cut if in_specs else "(--spec file)",
+           IN_SPECS[key] if in_specs else "(--spec file)", (cut == IN_SPECS[key]) if in_specs else True)
+    if cut is None:
+        lo, hi = LANE_C[key]
+        record(key, "a known cut (duration)", spec.get("duration"), f"full {FULL_DUR[key]} s, or condensed {lo}-{hi} s", False)
+        return
+    record(key, f"cut recognised ({path0.relative_to(ROOT) if ROOT in path0.parents else path0})", cut, cut, True)
+    exp = (EXPECT_C if cut == "condensed" else EXPECT)[key]
     # 1. every digit-bearing display string is known and equals the computed value
     for path, val in walk(spec):
         if not isinstance(val, str) or SKIP_PATHS.match(path):
@@ -454,7 +792,7 @@ def check_spec(key, spec):
             record(key, f"missing {path}", "(absent)", exp[path], False)
 
     # 2. contract shape (FORMATS.md §5 + common fields)
-    eq(key, "id = file stem", spec["id"], FILES[key].stem)
+    eq(key, "id = the teaser's id", spec["id"], STEMS[key])
     eq(key, "look", spec["look"], LOOKS[key])
     eq(key, "format", spec["format"], "split-sheet")
     eq(key, "fps", spec["fps"], 30)
@@ -513,8 +851,9 @@ def check_spec(key, spec):
 
     # 5. VO numbers, line by line
     vo = spec["vo"]
-    eq(key, "VO line count", len(vo), len(VO_NUMBERS[key]))
-    for i, (line, want) in enumerate(zip(vo, VO_NUMBERS[key])):
+    vonum = VO_NUMBERS_C[key] if cut == "condensed" else VO_NUMBERS[key]
+    eq(key, "VO line count", len(vo), len(vonum))
+    for i, (line, want) in enumerate(zip(vo, vonum)):
         got = vo_numbers(line["text"])
         ok = len(got) == len(want) and all(abs(g - w) < 1e-9 for g, w in zip(got, want))
         record(key, f"vo[{i}] numbers", got, [float(w) for w in want], ok)
@@ -524,7 +863,11 @@ def check_spec(key, spec):
             record(key, f"vo[{i}] '≈' on {v:g} iff rounded", ap, rounded, ap == rounded)
 
     # 6. VO pacing, overlaps, duration
-    for i, line in enumerate(vo):
+    dur = spec["duration"]
+    last_end = round(vo[-1]["t"] + vo[-1]["d"], 3)
+    if cut == "condensed":
+        condensed_pacing(key, spec)
+    for i, line in enumerate(vo if cut == "full" else []):
         n = spoken_words(line["text"])
         need = n / WPS
         record(key, f"vo[{i}] d fits {n} words @2.6/s", line["d"], f"{need:.2f}..{need + 1.0:.2f}",
@@ -532,17 +875,18 @@ def check_spec(key, spec):
         if i + 1 < len(vo):
             end = round(line["t"] + line["d"], 3)
             record(key, f"vo[{i}] ends before vo[{i + 1}]", end, f"≤ {vo[i + 1]['t']}", end <= vo[i + 1]["t"] + 1e-9)
-    eq(key, "vo[0] starts at 0.0", vo[0]["t"], 0.0)
-    dur = spec["duration"]
-    last_end = round(vo[-1]["t"] + vo[-1]["d"], 3)
-    record(key, "duration in 20-40 s lane", dur, LANE, LANE[0] <= dur <= LANE[1])
+    if cut == "full":
+        eq(key, "vo[0] starts at 0.0", vo[0]["t"], 0.0)
+        record(key, "duration in 20-40 s lane", dur, LANE, LANE[0] <= dur <= LANE[1])
+        record(key, "≥ 2 s hold on the finished sheet", round(dur - last_end, 2), "≥ 2.0", dur - last_end >= 2.0 - 1e-9)
     record(key, "hold = duration − last VO end", d["hold"], round(dur - last_end, 3), abs(d["hold"] - (dur - last_end)) < 1e-9)
-    record(key, "≥ 2 s hold on the finished sheet", round(dur - last_end, 2), "≥ 2.0", dur - last_end >= 2.0 - 1e-9)
 
     # 7. beat timing: every beat at the moment the VO says it
     lands = landing_05c(spec) if key == "05c" else None
     tok_dur = lambda tok: token_words(tok) / WPS
-    for path, anchor in ANCHORS[key].items():
+    A = ANCHORS_C[key] if cut == "condensed" else ANCHORS[key]
+    wins = cap_windows(key, spec)
+    for path, anchor in A.items():
         try:
             beat = get(spec, path)
         except (KeyError, IndexError, TypeError):
@@ -562,6 +906,29 @@ def check_spec(key, spec):
         if isinstance(anchor, str) and anchor.startswith("sync"):
             i = int(anchor[4:])
             record(key, f"{path} rolls with row {i} (same t)", beat, d["parts"][i]["t"], abs(beat - d["parts"][i]["t"]) < 1e-9)
+            continue
+        if isinstance(anchor, tuple) and isinstance(anchor[0], str):
+            kind = anchor[0]
+            if kind in ("land_in", "in"):
+                i, w = anchor[1], wins[anchor[1]]
+                left = CAP_LEFT if kind == "land_in" else 0.0
+                ok = w is not None and w[0] - 1e-9 <= beat <= w[1] - left + 1e-9
+                what = f"lands while vo[{i}] is up, ≥ {CAP_LEFT} s before it leaves" if kind == "land_in" else f"while vo[{i}] is up"
+                record(key, f"{path} {what}", beat, f"{w[0]:.2f}..{w[1] - left:.2f}" if w else "(vo hidden)", ok)
+            elif kind == "start":
+                i = anchor[1]
+                record(key, f"{path} on vo[{i}] start", beat, f"{vo[i]['t']:.2f}", abs(beat - vo[i]["t"]) <= START_TOL)
+            elif kind == "rel":
+                ref, lo_, hi_ = anchor[1], anchor[2], anchor[3]
+                rt = ref_time(key, spec, ref)
+                record(key, f"{path} − {ref} in {lo_}..{hi_} s", round(beat - rt, 3), f"{lo_}..{hi_}",
+                       lo_ - 1e-9 <= beat - rt <= hi_ + 1e-9)
+            elif kind == "le":
+                record(key, f"{path} ≤ {anchor[1]}", beat, f"≤ {anchor[1]}", beat <= anchor[1] + 1e-9)
+            elif kind == "range":
+                record(key, f"{path} in {anchor[1]}..{anchor[2]}", beat, f"{anchor[1]}..{anchor[2]}", anchor[1] - 1e-9 <= beat <= anchor[2] + 1e-9)
+            else:
+                record(key, f"{path} anchor kind", kind, "known", False)
             continue
         line, tok = anchor[0], anchor[1]
         kind = anchor[2] if len(anchor) > 2 else None
@@ -585,7 +952,7 @@ def check_spec(key, spec):
             record(key, f"{path} at '{tok}' (vo[{line}])", beat, f"{lo_:.2f}..{hi_:.2f}", lo_ - 1e-9 <= beat <= hi_ + 1e-9)
     timed = [p for p, _ in walk(spec) if re.search(r"(^|\.)(t|checkT|strikeT)$", p) and not p.startswith("vo[")]
     for p in timed:
-        record(key, f"{p} anchored", p, "in ANCHORS", p in ANCHORS[key])
+        record(key, f"{p} anchored", p, "in ANCHORS" + ("_C" if cut == "condensed" else ""), p in A)
     # masked goal %: only goal rows, and the header's answer is not printed at frame 1 otherwise
     mask = spec.get("lookOpts", {}).get("maskPct")
     eq(key, "lookOpts.maskPct", mask, MASK[key])
@@ -671,16 +1038,23 @@ def check_spec(key, spec):
         slot = spec["lookOpts"]["payoff"]["slot"]
         record(key, "header ends on 'a day:' and its answer slot holds the per-day figure", (spec["header"][-6:], slot["text"]),
                ("a day:", money(B_FOOD_DAY)), spec["header"].endswith("a day:") and slot["text"] == money(B_FOOD_DAY))
-        record(key, "the slot fills on the beat the lone brick lands (after it, before vo[2])", slot["t"],
-               f"{parts[1]['t']}..{vo[2]['t']}", parts[1]["t"] <= slot["t"] < vo[2]["t"])
+        wi = next((i for i, v in enumerate(vo) if v["text"].startswith("Wants")), None)
+        wt = vo[wi]["t"] if wi is not None else float("-inf")
+        record(key, f"the slot fills on the beat the lone brick lands (after it, before the wants line vo[{wi}])", slot["t"],
+               f"{parts[1]['t']}..{wt}", parts[1]["t"] <= slot["t"] < wt)
         record(key, "the goal row's working answers the slot ($300 ÷ 30 = $10)", parts[1]["note"],
                f"ends '= **{money(B_FOOD_DAY)}**'", parts[1]["note"].endswith(f"= **{money(B_FOOD_DAY)}**"))
         nd = spec["lookOpts"]["needs"]
         record(key, "needs bracket spans RENT + FOOD + BILLS = 5 bricks = 50%", (nd["parts"], B_PARTS_N[0] + B_PARTS_N[1]),
                "([0, 1], 5)", nd["parts"] == [0, 1] and B_PARTS_N[0] + B_PARTS_N[1] == B_COUNT[0] and B_RULE[0] == 0.5)
         pay = spec["lookOpts"]["payoff"]
-        record(key, "payoff slab = the header's answer in its unit, after the verdict", (pay["text"], pay["t"]),
-               f"'a day', ≥ {spec['verdict']['t']}", "a day" in pay["text"] and pay["t"] >= spec["verdict"]["t"])
+        if cut == "full":
+            record(key, "payoff slab = the header's answer in its unit, after the verdict", (pay["text"], pay["t"]),
+                   f"'a day', ≥ {spec['verdict']['t']}", "a day" in pay["text"] and pay["t"] >= spec["verdict"]["t"])
+        else:
+            # condensed: the slab is the final reveal and the verdict follows it (0.8-1.5 s, anchored above)
+            record(key, "payoff slab = the header's answer in its unit, the final reveal before the verdict",
+                   (pay["text"], pay["t"]), f"'a day', < {spec['verdict']['t']}", "a day" in pay["text"] and pay["t"] < spec["verdict"]["t"])
     if key == "05c":
         txt = spec["verdict"]["text"].lower()
         record(key, "verdict does not say Costco 'keeps' ≈ $1.94 (it keeps ≈ $3.93 before tax incl. fees)",
@@ -703,6 +1077,9 @@ def check_spec(key, spec):
                False, spec["lookOpts"].get("labelWorking") is False)
         record(key, "membership row on the sheet at frame 1 = the header's contender", spec["lookOpts"]["bonus"]["t"],
                "≤ 0", spec["lookOpts"]["bonus"]["t"] <= 0)
+
+    if cut == "condensed":
+        condensed_cadence(key, spec)
 
 
 # ------------------------------------------------------------ facts and claims

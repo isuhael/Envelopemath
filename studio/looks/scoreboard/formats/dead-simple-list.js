@@ -106,6 +106,17 @@
 //   slotFormula true | false                the working shows in the slot's answer area before its roll (default
 //                                          true; false, or typeDur 0: the roll starts at the cut, the working only
 //                                          in the label stack)
+//   openSwap    seconds (0.03-0.35)         opt-in: when an item 1 cut at frame 1 swaps its working to its roll
+//                                          (default 0.35, today's behaviour). Frame 1 (t = 0) still shows the
+//                                          working (the thumbnail) and the label stack keeps it; an earlier swap
+//                                          starts the roll from frame 2, so the opening never holds still (a
+//                                          condensed cut: 01a, 0.03). It moves the first `roll` cue with it
+//   openEase    number (1-3)                opt-in: the ease-out power of that frame-1 roll (an item 1 cut at frame
+//                                          1): 1 - (1 - p)^k (default 3, today's cubic ease.out). The cubic spends its
+//                                          last ~half ticking only a small odometer's low digits while the rest of
+//                                          the board is still (a near-still opening); 1 is an even, mechanical count
+//                                          that keeps its high digits turning until it lands (a condensed cut: 01a,
+//                                          1). Picture only: no cue moves
 //   labels      'reveal' | 'always' | 'none'   slot labels appear at their cut (default), or show grey from frame 1
 //                                          and light up at their cut (the open-loop variant), or never (number +
 //                                          answer only; the label stack names each item)
@@ -293,6 +304,11 @@ export default function deadSimpleList(spec, ctx) {
   const work = items.map(it => splitWorking(String(it.formula || '')))
   const tpls = items.map(it => parseDisplay(String(it.result)))
   const froms = items.map((it, i) => (isNum(tpls[i]) ? fromOf(work[i].a, tpls[i]) ?? 0 : 0))
+  // lookOpts.openSwap (opt-in; absent = PRE_FRM, today's 0.35 s): when an item 1 cut at frame 1 swaps its working to
+  // the roll. 0.03-0.35 s; anything else is ignored. Frame 1 (t = 0) always shows the working.
+  const preFrm = typeof lo.openSwap === 'number' && Number.isFinite(lo.openSwap) ? clamp(lo.openSwap, 0.03, PRE_FRM) : PRE_FRM
+  // lookOpts.openEase (opt-in; absent = null, today's cubic ease.out): the ease-out power of the frame-1 roll, 1-3
+  const openEase = typeof lo.openEase === 'number' && Number.isFinite(lo.openEase) ? clamp(lo.openEase, 1, 3) : null
   const rollWant = (from, to, big) => {
     const r = clamp(0.5 + 0.34 * Math.log10(Math.abs(to - from) + 1), M.rollMin, M.rollMax)
     return big ? Math.max(r, M.rollFinal) : r
@@ -307,7 +323,8 @@ export default function deadSimpleList(spec, ctx) {
       // frame 1 shows the working already cut (the thumbnail); it swaps to the odometer by 0.35 s and the roll
       // stretches to land on its resultT, so the opening moves from the first third of a second (the label stack
       // keeps the working readable)
-      if (ph.first && ph.cut <= 0 && ph.rs > PRE_FRM && ph.land - PRE_FRM <= ROLL0_MAX) ph.rs = PRE_FRM
+      // (lookOpts.openSwap, opt-in: an earlier swap, so the opening moves from frame 2; frame 1 keeps the working)
+      if (ph.first && ph.cut <= 0 && ph.rs > preFrm && ph.land - preFrm <= ROLL0_MAX) ph.rs = preFrm
     } else {
       ph.rs = ph.land - Math.max(0.3, Math.min(want, ph.land - ph.cut - CUT))
       // frame 1 is already into the first roll (the thumbnail moves); the roll stretches to land on its resultT
@@ -376,6 +393,7 @@ export default function deadSimpleList(spec, ctx) {
       cut0: wrong ? wrong.t : cut, label: String(it.label ?? ''), note: it.note ? String(it.note) : '',
       formula: String(it.formula || ''), work: work[i], wrongTag: !!wrong && Number.isFinite(wrong.strikeT),
       fromDisp: numeric && froms[i] > to ? formatLike(froms[i], tpl) : '',
+      ...(openEase != null && i === 0 && !wrong && cut === 0 ? { easePow: openEase } : {}),
     }
   })
   const lastLand = Math.max(...R.map(r => r.land))
@@ -1039,7 +1057,8 @@ export default function deadSimpleList(spec, ctx) {
     if (r.numeric) {
       if (t < r.rs) return { kind: E && E.frm ? 'frm' : 'none', color: r.col }
       const p = prog(t, r.rs, r.dur)
-      const v = p >= 1 ? r.to : snapTo(lerp(r.from, r.to, ease.out(p)), r.to, r.tpl)
+      const e = r.easePow != null ? 1 - Math.pow(1 - p, r.easePow) : ease.out(p)     // (lookOpts.openEase, opt-in)
+      const v = p >= 1 ? r.to : snapTo(lerp(r.from, r.to, e), r.to, r.tpl)
       return { kind: 'odo', v, tpl: r.tpl, ghost: p < 1, color: r.col, strike: 0 }
     }
     if (t < r.land) return { kind: E && E.frm ? 'frm' : 'none', color: r.col }

@@ -1,0 +1,45 @@
+{
+  "id": "01c-becker-rig-60k-a-year",
+  "look": "becker-rig",
+  "format": "dead-simple-list",
+  "fps": 30,
+  "duration": 12.25,
+  "header": "4 DEAD SIMPLE NUMBERS\nWILL A 3% RAISE PUSH **$65,000**\nINTO A HIGHER BRACKET?",
+  "footer": "ASSUMES single, standard deduction\n2026 federal income tax only",
+  "captions": true,
+  "vo": [
+    { "t": -0.5, "d": 2.35, "text": "$65,000, plus 3%:" },
+    { "t": 1.9,  "d": 2.1,  "text": "$66,950.\n22% starts at" },
+    { "t": 4.05, "d": 2.0,  "text": "$66,500 of pay.\nYou crossed it by" },
+    { "t": 6.1,  "d": 1.2,  "text": "$450." },
+    { "t": 7.3,  "d": 1.35, "text": "Only those $450 pay 22%.\n10 points more:" },
+    { "t": 8.7,  "d": 1.9,  "text": "$45. Not your whole raise.\nNot your whole pay." },
+    { "t": 10.65, "d": 1.2,  "text": "Higher bracket? Yes. It costs you $45 a year." }
+  ],
+  "verdict": { "t": 10.65, "text": "Higher bracket? Yes.\nIt costs you **$45\u00a0a\u00a0year**" },
+  "data": {
+    "input": { "label": "Salary", "value": "$65,000", "note": "a year" },
+    "typeDur": 0.6,
+    "items": [
+      { "t": 0.0, "label": "Pay after 3%", "formula": "$65,000 × 1.03", "result": "$66,950",
+        "tone": "good", "note": "+$1,950 raise", "resultT": 1.9 },
+      { "t": 2.75, "label": "Where 22% starts", "formula": "$50,400 + $16,100", "result": "$66,500",
+        "tone": "neutral", "note": "line + deduction", "resultT": 4.05 },
+      { "t": 4.8, "label": "Pay over the line", "formula": "$66,950 − $66,500", "result": "$450",
+        "tone": "neutral", "note": "22%, not 12%", "resultT": 6.1 },
+      { "t": 6.85, "label": "What the bracket costs you", "formula": "$450 × 10%", "result": "$45",
+        "tone": "goal", "note": "22% − 12%", "resultT": 8.7 }
+    ]
+  },
+  "lookOpts": {
+    "flipFrom": 0,
+    "hits": ["kick", "chop", "kick", "slam"],
+    "acts": [
+      { "t": 9.45, "act": "point", "item": 2 },
+      { "t": 9.75, "act": "point", "item": 3 },
+      { "t": 10.65, "act": "shrug" },
+      { "t": 11.25, "act": "point", "item": 3 },
+      { "t": 11.85, "act": "proud" }
+    ]
+  }
+}

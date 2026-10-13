@@ -1,0 +1,704 @@
+{
+  "id": "06a-scoreboard-first-iphone-apple",
+  "teaser": "06a Scoreboard, pov-race: \"What If You Invested $499 in Apple Instead of the First iPhone?\"",
+  "prepared": "2026-10-13",
+  "for_video": {
+    "current_render": "renders/channel/06a-scoreboard-first-iphone-apple.mp4",
+    "current_duration_s": 29.0,
+    "current_sha256": "9707256d2230e67107128c4292dc08787d0f3689dc280aa9fe38512aa9810509",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds on 2026-10-13: the pre-condense cut. The ship step rebuilds this file with --covers from the final cut.",
+    "cut": {
+      "name": "pre-condense (round-2 Scoreboard cut)",
+      "spec": "studio/specs/06a-scoreboard-first-iphone-apple.json",
+      "body_s": 26.5,
+      "card_s": 2.5,
+      "status": "in renders/channel on 2026-10-13 (git 471c793); a condensed cut (timing only) may follow",
+      "on_ship": "python3 publishing/tools/build_publishing.py 06a-scoreboard-first-iphone-apple --covers (re-picks the cover by content, re-exports both JPGs, refreshes for_video)"
+    }
+  },
+  "facts": {
+    "source": "teasers/v2/06-pov-race.md section (b) 06a; teasers/v2/checks/06-pov-race.py: 445 checks, 0 failed on studio/specs/ (2026-10-13)",
+    "stake": "$499, the 4GB first iPhone's US price, on sale 6/29/2007 at 6 p.m. (Apple Newsroom); invested instead at Apple's 4 p.m. close that day",
+    "buy_price": "$3.65 adjusted for splits and dividends = 5.92 × 122.04 ÷ 198.08 = 3.6474 (StatMuse's adjusted 2007 close × the raw launch-day close ÷ the raw 2007 close); $122.04 as quoted at the time (ATPM); StatMuse shows $3.66, which is off its own $5.92 on the raw ratio (cross-check only)",
+    "shares": "$499 ÷ $3.65 = 136.712 ≈ 136.7 shares (adjusted)",
+    "method": "year-end values = 136.712 × Macrotrends' adjusted close (2007-2011 bridged by 5.92 ÷ 5.97); dividends reinvested (Apple began paying them in 2012); splits adjusted; no fees or taxes",
+    "end_2007": "$809 (136.712 × 5.92 = 809.34)",
+    "end_2008": "$348 (348.41): below the $499; the line crosses $499 in 2008 and is back above it in 2009",
+    "end_2012": "$2,196 (2,195.60) ≈ $2,200",
+    "end_2017": "$5,403 (5,402.87) = 10.83× the $499: 'over 10 times'",
+    "passes_10k": "between the 2019 close ($9,660) and the 2020 close ($17,611): it passes $10,000 in 2020",
+    "drop_2022": "$23,713 (end of 2021) → $17,451 (end of 2022): −26.4%, 'about a quarter'",
+    "final": "136.712 × $271.12 (12/31/2025 adjusted close, Macrotrends) = $37,065.45 ≈ $37,000 (nearest $1,000); footer and pinned 136.7 × $271.12 ≈ $37,062; StatMuse-only cross-check $36,997 (0.18% apart)",
+    "multiple": "37,065.45 ÷ 499 = 74.28 ≈ 74×",
+    "doublings": "log2 74.28 = 6.21 ≈ 6.2 doublings in 18.51 ≈ 18.5 years (6/29/2007 → 12/31/2025): one every 2.98 ≈ 3 years",
+    "assumptions": "bought at the 6/29/2007 close (the phone went on sale at 6 p.m., after the close); valued at the 12/31/2025 close, and Apple has moved since; no fees or taxes",
+    "verdict": "≈ 74× your $499. 2× every ≈ 3 yrs."
+  },
+  "youtube": {
+    "titles_ranked": [
+      {
+        "rank": 1,
+        "title": "What If You Bought Apple Stock Instead of the $499 First iPhone? #Apple #AppleStock #stocks",
+        "vidiq_score": 97,
+        "chars": 91,
+        "note": "PICK. The house form the owner used for 06c and 06b: the question, then 3 hashtags in the title. 'Apple Stock' at characters 20-30; the $499 is the video's one input, never its result, and it sets this title apart from Alpha Paradox's identical core (section 2)."
+      },
+      {
+        "rank": 2,
+        "title": "What If You Bought Apple Stock Instead of the First iPhone? #Apple #AppleStock #stocks",
+        "vidiq_score": 97,
+        "chars": 86,
+        "note": "Same score, 5 characters shorter. Its core is word for word Alpha Paradox's 3:55 video from 10 Oct 2026, and close to GrowthShares' Short (section 2)."
+      },
+      {
+        "rank": 3,
+        "title": "What If You Invested $499 in Apple Instead of the First iPhone? #Apple #AppleStock #stocks",
+        "vidiq_score": 96,
+        "chars": 90,
+        "note": "The write-up's title plus the house hashtags. 'what if you invested' word for word (9,269 searches a month, +79.0%), but 'Apple Stock' only in the hashtag."
+      }
+    ],
+    "titles_also_scored": [
+      {
+        "title": "What If You Bought Apple Stock Instead of the First iPhone in 2007? #Apple #AppleStock #stocks",
+        "vidiq_score": 97,
+        "chars": 94,
+        "note": "95 chars; the year clock shows 2007 on frame 1"
+      },
+      {
+        "title": "What If You Bought Apple Stock Instead of the First iPhone? #iPhone #AppleStock #stocks",
+        "vidiq_score": 97,
+        "chars": 87,
+        "note": "#iPhone in place of #Apple: no difference in score"
+      },
+      {
+        "title": "What If You Bought Apple Stock Instead of the First iPhone?",
+        "vidiq_score": 97,
+        "chars": 59,
+        "note": "the core alone"
+      },
+      {
+        "title": "What If You Invested $499 in Apple Instead of the First iPhone?",
+        "vidiq_score": 96,
+        "chars": 63,
+        "note": "the write-up's title"
+      },
+      {
+        "title": "The First iPhone Cost $499. What If You Bought Apple Stock Instead?",
+        "vidiq_score": 90,
+        "chars": 67,
+        "note": ""
+      },
+      {
+        "title": "POV: You Invested in Apple Instead of Paying $499 for the First iPhone",
+        "vidiq_score": 88,
+        "chars": 70,
+        "note": "the on-screen header as a title"
+      },
+      {
+        "title": "Skip the $499 First iPhone, Buy Apple Stock on Launch Day: What Did It Become?",
+        "vidiq_score": 88,
+        "chars": 78,
+        "note": ""
+      }
+    ],
+    "title_pick": "What If You Bought Apple Stock Instead of the $499 First iPhone? #Apple #AppleStock #stocks",
+    "title_pick_chars": 91,
+    "description": "What if you skipped the $499 first iPhone on launch day, 6/29/2007, and bought Apple stock instead? At the 12/31/2025 close: about $37,000, about 74× your $499.\n\nThe math, shown:\n• $499 ÷ $3.65 (Apple's 6/29/2007 close, adjusted for splits and dividends) ≈ 136.7 shares. The phone went on sale at 6 p.m., so you buy at the 4 p.m. close instead of standing in line.\n• End of 2007: $809. End of 2008: $348, below the $499 you put in.\n• End of 2012: about $2,200. End of 2017: $5,403, over 10× your $499.\n• In 2020 it passes $10,000.\n• End of 2021: $23,713. 2022 knocks off about a quarter: $17,451.\n• End (12/31/2025 close): 136.7 shares × $271.12 (adjusted) ≈ $37,062. On screen: ≈ $37,000.\n• That is ≈ 74× your $499: about 6.2 doublings in 18.5 years, a doubling about every 3 years.\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\n\nAnimation and original sound: The Back of the Envelope. $499 is the 4GB first iPhone's US price on 6/29/2007 (Apple Newsroom). Apple's close that day was $122.04 as quoted at the time (ATPM); adjusted for the splits and dividends since, it is $3.65 (StatMuse's adjusted 2007 close × the raw ratio). Year-end closes adjusted for splits and dividends (Macrotrends, StatMuse); dividends reinvested, and Apple began paying them in 2012. Valued at the 12/31/2025 close ($271.12 adjusted), and Apple has moved since. No fees or taxes. Not financial advice. Not affiliated with or endorsed by Apple.\n#Apple #AppleStock #stocks",
+    "description_chars": 1482,
+    "hashtags_in_order": [
+      "#Apple",
+      "#AppleStock",
+      "#stocks"
+    ],
+    "hashtag_rules": "Title hashtags show as links in the title; with none in the title, the first 3 description hashtags show above it. Over 60 hashtags and YouTube ignores all of them. #Shorts is not needed (vertical, under 3 min).",
+    "tags": [
+      "apple stock",
+      "what if you invested",
+      "first iphone",
+      "iphone vs apple stock",
+      "aapl stock",
+      "aapl",
+      "first iphone launch",
+      "apple",
+      "iphone",
+      "stocks",
+      "long term investing",
+      "power of compounding",
+      "opportunity cost",
+      "money math",
+      "math animation",
+      "the back of the envelope",
+      "envelope math"
+    ],
+    "tags_chars_as_youtube_counts": 272,
+    "pinned_comment": "What was your first iPhone, and what did you pay?\n\nThe working: $499 ÷ $3.65 (Apple's 6/29/2007 close, adjusted for splits and dividends) ≈ 136.7 shares. 136.7 × $271.12 (the adjusted 12/31/2025 close) ≈ $37,062, about 74× your $499. Apple closed at $122.04 that day as quoted at the time; adjusted for the splits and dividends since, that is $3.65 (some sites show $3.66). Apple has moved since 12/31/2025. Ignores taxes and fees.",
+    "related_video": {
+      "pick": {
+        "id": "krfZEHhb0xU",
+        "title": "What If You Bought Netflix Stock Instead of Paying for Netflix? #Netflix #NetflixStock #stocks",
+        "url": "https://www.youtube.com/shorts/krfZEHhb0xU",
+        "why": "06b, the same POV-race series and mechanic, live since Mon 12 Oct 2026 (12:14 ET) and the slowest start of the three (75 views at the last check), so this Short sends it traffic. One phone in Apple gave about 74×; 14 years of Netflix bills in Netflix stock about 8.7×, so the pair shows the answer depends on the stock."
+      },
+      "swap_when_live": "Nothing to swap: with this Short live, all three POV races are up. Point 06c's Related video at this Short, so the three link in a loop (06a → 06b → 06c → 06a; 06b's already points at 06c).",
+      "end_screen": "Shorts have no end screens or cards. The Related video link is the Shorts equivalent."
+    },
+    "thumbnail_frame": "In the YouTube app, pick frame 1, the clean cover (the same content as the IG cover).",
+    "settings": {
+      "category": "Education",
+      "audience": "Not made for kids",
+      "altered_or_synthetic_content": "No (animated chart, not realistic footage)",
+      "remixing": "Allow",
+      "captions": "None needed (no narration; all text is on screen)"
+    },
+    "posting_window": {
+      "when": "First Tue-Thu evening after the final cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day): Tue 13 Oct 2026 at the earliest. Sunday 06:00-08:00 ET is the alternative.",
+      "spacing": "Keep it at least 6 h from any other upload on the channel, and give each evening slot to one Short when several formats ship together. 06c (Mon 03:45 ET) and 06b (Mon 12:14 ET) are already up, so any Tue-Thu evening clears them.",
+      "why": "The channel's own October Shorts, median views by posting slot (refreshed 2026-10-13): Sunday 05:00-08:00 ET 1,199 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2). 06c, posted Mon 03:45 ET, has 760 views after a day; 06b, posted Mon 12:14 ET, has 75 after about 11 hours (both too young to compare). The evening slot is also the best one on Instagram, so one evening serves both. n = 7 (06c and 06b left out) and confounded by topic, so treat it as a test. Search demand: 'aapl stock' runs +40.2% and 'what if you invested' +79.0% over their 30-day baselines; the September 2026 iPhone launch keeps 'iphone 18 pro' (2,532,128 a month) and 'iphone duo' (3,998,667) huge, so iPhones are in the feed. The copy stays on the 2007 phone."
+    },
+    "description_utf8_bytes": 1512
+  },
+  "instagram": {
+    "caption": "What if you skipped the $499 first iPhone in 2007 and bought Apple stock instead? The phone got old. The shares didn't.\n\nPOV: on launch day, 6/29/2007, you buy Apple stock at the close instead of standing in line for the phone. Then you just hold.\n\nThe math, shown:\n• $499 ÷ $3.65 (the 6/29/2007 close, adjusted for splits and dividends) ≈ 136.7 shares.\n• End of 2008: $348, below the $499 you put in.\n• End of 2017: $5,403, over 10× your $499.\n• In 2020 it passes $10,000. Then 2022 knocks off about a quarter.\n• End of 2025: 136.7 shares × $271.12 (adjusted close) ≈ $37,062. About 74× your $499.\n• About 6.2 doublings in 18.5 years: a doubling about every 3 years.\n\nBought at the launch-day close, the most hyped day there was, and below $499 by the end of 2008, it still came to about 74× your $499. Valued at the 12/31/2025 close; Apple has moved since.\n\nDividends reinvested (Apple began paying them in 2012). No fees or taxes. Not financial advice. Not affiliated with or endorsed by Apple.\n\nWhat was your first iPhone?\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\nAnimation and original sound: The Back of the Envelope.\n\n#apple #iphone #AAPL #stocks #investing",
+    "caption_chars": 1201,
+    "caption_first_125": "What if you skipped the $499 first iPhone in 2007 and bought Apple stock instead? The phone got old. The shares didn't.\n\nPOV:",
+    "caption_rule": "The first 125 characters are the question, the 'first iPhone' and 'Apple stock' keywords and the write-up's numberless caption line, with the $499 input and no result: the caption overlays the Reel from frame 1, so every other number sits below 'more'.",
+    "hashtags_in_order": [
+      "#apple",
+      "#iphone",
+      "#AAPL",
+      "#stocks",
+      "#investing"
+    ],
+    "hashtag_rule": "Instagram caps a post at 5 hashtags (since Dec 2025).",
+    "alt_text_short": "Chart: $499 in Apple stock on iPhone launch day 2007 grows to about $37,000 by 2025, about 74×.",
+    "alt_text_long": "Animation on a black scoreboard. The header reads: POV: in 2007 you invested in Apple instead of paying $499 for the first iPhone. Both counters start at $499: the iPhone, in white, and the same $499 in Apple stock, in green. A race runs from 2007 to 2025: the green line dips below $499 in 2008, passes $10,000 in 2020 and loses about a quarter in 2022, while the white line stays flat at $499 spent. It finishes at about $37,000, with the working underneath: about 136.7 shares × $271.12, the adjusted 12/31/2025 close. Payoff: about 74× your $499, a doubling about every 3 years.",
+    "alt_text_where": "Advanced settings → Accessibility → Alt text, if your app shows it for Reels.",
+    "cover": {
+      "files": {
+        "3x4": "publishing/06a-scoreboard-first-iphone-apple-cover-3x4.jpg",
+        "9x16": "publishing/06a-scoreboard-first-iphone-apple-cover-9x16.jpg"
+      },
+      "frame_in_current_render_s": 0,
+      "frame_index": 0,
+      "frame_by_content": "The clean cover, frame 1: the header 'POV: IN 2007 YOU INVESTED IN APPLE / INSTEAD OF PAYING $499 / FOR THE FIRST IPHONE', both counters at $499 (THE IPHONE | IN APPLE STOCK), the footer '6/29/07 close → 12/31/25 · dividends reinvested', and the empty 2007-2025 race with only the green start dot under the 2007 year clock. $499 is the only price. It asks and does not answer, like the title and the caption. The write-up names frame 1 as the Instagram cover ('header + $499 tips'). On any cut, use a frame where both counters still read $499 and the race has not left its start.",
+      "frame_measured": "On the pre-condense render, frame 0 (0.00 s) is that frame: the race has not moved and the phone icon has not dropped. It also shows the whole first caption, 'Launch day 2007: you skip the $499 iPhone and buy Apple stock.', with 'Launch' lit (the kit lights it word by word); the grey words still read.",
+      "crop": "3:4 = 1080×1440 from y 60 to 1500 of the 1080×1920 frame: the badge, the header, both counters, the footer, the empty race and the first caption; it drops the empty floor. A centred grid crop (y 240-1680) cuts the badge and leaves the header on the edge.",
+      "how_to_set": "In 'Edit cover', pick frame 1 of the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
+      "re_export": "ffmpeg -ss 0 -i renders/channel/06a-scoreboard-first-iphone-apple.mp4 -frames:v 1 -vf \"crop=1080:1440:0:60\" -q:v 2 publishing/06a-scoreboard-first-iphone-apple-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 0 -i renders/channel/06a-scoreboard-first-iphone-apple.mp4 -frames:v 1 -q:v 2 publishing/06a-scoreboard-first-iphone-apple-cover-9x16.jpg"
+    },
+    "first_comment": "Phone: $499. Apple stock: ≈ $37,000 at the 12/31/2025 close (adjusted), ≈ 74× your $499, a doubling about every 3 years. What was your first iPhone?",
+    "first_comment_action": "Post it right after publishing and pin it.",
+    "trial_reels": {
+      "recommendation": "Post as a regular Reel, not a Trial.",
+      "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
+      "use_trial_for": "A hook test afterwards, if a condensed cut ships: the other cut as a Trial with MANUAL graduation 48-72 h later. The pre-condense render in renders/channel today (sha256 9707256d…) stays in git: `git show 471c793:renders/channel/06a-scoreboard-first-iphone-apple.mp4 > 06a-pre-condense.mp4`. Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+    },
+    "settings": {
+      "audio": "Rename the original audio to 'First iPhone vs Apple stock — The Back of the Envelope' if the app allows; it is the score, with no voice.",
+      "share_to_feed": "On",
+      "google_indexing": "Public professional-account posts can appear in Google/Bing since 10 Jul 2025, so the caption is written as a searchable question."
+    },
+    "posting_window": {
+      "when": "Same evening as YouTube, about 15 min after the Short: 21:45-22:45 ET, Tue 13 Oct 2026 at the earliest.",
+      "why": "October Reels, median plays by posting slot (refreshed 2026-10-13): weekday 22:00-00:30 ET 5,449 (n = 3, including the two best: 7,302 and 5,449), weekday midday 1,212 (n = 2), Sunday 05:00-08:00 ET 1,087 (n = 2). 06c, posted Mon 03:46 ET, has 1,711 plays with a 40.3% skip rate; 06b, posted Mon 12:14 ET, shows 7 plays so far (Instagram insights may lag). Skip rate tracks plays more closely than the hour does: 27.0-27.4% for the top two, 56.9-65.1% for the bottom two."
+    },
+    "alt_text_rule": "Paste the short version into Instagram: it is kept at or under 100 characters so it fits the field however short it is, and it writes 'to' and 'about' instead of '→' and '≈' so screen readers read it cleanly. The long version is for anywhere with room (a website embed, a newsletter)."
+  },
+  "research": {
+    "keywords_youtube": [
+      {
+        "keyword": "apple stock",
+        "est_monthly_searches": 18675,
+        "volume": 63.8,
+        "competition": 42.2,
+        "overall": 61.4,
+        "note": "seed; −21.5% vs its 30-day baseline (23,783); top market India (40%)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "aapl stock",
+        "est_monthly_searches": 12269,
+        "volume": 61.0,
+        "competition": 44.0,
+        "overall": 59.0,
+        "note": "the ticker phrase; +40.2% vs its baseline (8,751)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "apple stock analysis",
+        "est_monthly_searches": 11644,
+        "volume": 60.7,
+        "competition": 43.1,
+        "overall": 59.2,
+        "note": "+232.3% vs its baseline (3,504); analysis/advice intent, not in the tags",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "first iphone launch",
+        "est_monthly_searches": 9633,
+        "volume": 59.5,
+        "competition": 29.7,
+        "overall": 63.8,
+        "note": "history intent next door to the video's launch day",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "first iphone",
+        "est_monthly_searches": 9281,
+        "volume": 59.2,
+        "competition": 50.0,
+        "overall": 55.5,
+        "note": "−54.4% vs its baseline (20,370)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "what if you invested",
+        "est_monthly_searches": 9269,
+        "volume": 59.2,
+        "competition": 37.5,
+        "overall": 60.5,
+        "note": "+79.0% vs its baseline (5,178); the title's grammar",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "first iphone launch steve jobs 2007",
+        "est_monthly_searches": 31939,
+        "volume": 67.2,
+        "competition": 23.3,
+        "overall": 71.0,
+        "note": "+706.5% vs its baseline (3,960); keynote seekers, not in the tags",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "apple first iphone launch",
+        "est_monthly_searches": 10496,
+        "volume": 60.0,
+        "competition": 50.5,
+        "overall": 55.8,
+        "note": "+160.1% vs its baseline (4,035); keynote/history intent",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "what if you invested $1000 in apple in 2010",
+        "est_monthly_searches": 5339,
+        "volume": 55.6,
+        "competition": 26.0,
+        "overall": 63.0,
+        "note": "question form; a different stake and year",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "what if you invested $100 in apple in 2000",
+        "est_monthly_searches": 5325,
+        "volume": 55.6,
+        "competition": 22.0,
+        "overall": 64.6,
+        "note": "question form; a different stake and year",
+        "metrics_as_of": "2026-09-19"
+      },
+      {
+        "keyword": "power of compounding",
+        "est_monthly_searches": 28342,
+        "volume": 66.5,
+        "competition": 46.1,
+        "overall": 61.4,
+        "note": "+24.9% vs its baseline",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "long term investing",
+        "est_monthly_searches": 24666,
+        "volume": 65.6,
+        "competition": 39.3,
+        "overall": 63.6,
+        "note": "",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "opportunity cost",
+        "est_monthly_searches": 13526,
+        "volume": 61.7,
+        "competition": 43.5,
+        "overall": 59.6,
+        "note": "−27.3% vs its baseline",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "stocks",
+        "est_monthly_searches": 221285,
+        "volume": 79.8,
+        "competition": 67.0,
+        "overall": 61.1,
+        "note": "−17.4% vs its baseline",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "apple (topic)",
+        "est_monthly_searches": 2244206,
+        "volume": 94.8,
+        "competition": 62.8,
+        "overall": 71.8,
+        "note": "−79.7% vs its 30-day baseline (11,079,820), after the September iPhone launch",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "what if you invested in apple",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": 28.0,
+        "overall": 28.8,
+        "note": "<750/month (overall 28.8): too small to target",
+        "metrics_as_of": null
+      },
+      {
+        "keyword": "iphone vs apple stock",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": 43.0,
+        "overall": 22.8,
+        "note": "<750/month; kept as one tag, the video's exact phrase",
+        "metrics_as_of": null
+      }
+    ],
+    "keywords_source": "vidIQ keyword research (research, matching_terms and questions modes), pulled 2026-10-13. vidIQ refreshes each keyword on its own schedule, so each row carries its snapshot date in metrics_as_of; one row is an older snapshot (2026-09-19).",
+    "same_idea_youtube_shorts": [
+      {
+        "title": "👉 iPhone vs Apple Shares – 2010 to 2025 Reality Check! #shorts   #finance  #money  #education",
+        "channel": "Fintech Neeraj",
+        "subscribers": 444000,
+        "views": 29739419,
+        "published": "2025-07-26",
+        "note": "India-facing, in rupees, from 2010"
+      },
+      {
+        "title": "iPhone vs Apple Shares - Price Zyada par GROWTH kitni?! … Ankur Warikoo #shorts",
+        "channel": "warikoo",
+        "subscribers": 7150000,
+        "views": 27636101,
+        "published": "2024-11-04",
+        "note": "India-facing; a product vs its own shares. The title's vertical bar before 'Ankur Warikoo' is written as … so the .md table holds"
+      },
+      {
+        "title": "Stop Buying iPhones Instead do this! 🍎💰#iphone #sanjaykathuria #apple",
+        "channel": "Sanjay Kathuria ",
+        "subscribers": 1420000,
+        "views": 146640,
+        "published": "2026-09-19",
+        "note": "every iPhone from the $499 first one; 2:58 long"
+      },
+      {
+        "title": "Apple Stock to $21,000 if you Invested THIS Much",
+        "channel": "Bob Sharpe",
+        "subscribers": 230000,
+        "views": 27498,
+        "published": "2022-09-03",
+        "note": "$499 in June 2007; the result in the title"
+      },
+      {
+        "title": "What If You Invested Your iPhone MONEY?",
+        "channel": "Valuetainment Short Clips",
+        "subscribers": 772000,
+        "views": 9630,
+        "published": "2026-09-22",
+        "note": "a Tony Robbins clip"
+      },
+      {
+        "title": "What if you bought #Apple stock instead of buying the first iPhone in 2007? #aapl #shorts #iphone",
+        "channel": "GrowthShares",
+        "subscribers": 18300,
+        "views": 3159,
+        "published": "2025-06-10",
+        "note": "near-twin of the pick's core; $4.39 split-adjusted in its description"
+      },
+      {
+        "title": "What if you bought Apple stock instead of every iPhone?",
+        "channel": "The Market Feed",
+        "subscribers": 9,
+        "views": 1320,
+        "published": "2026-09-27",
+        "note": "first iPhone ≈ $39,000 'today', price only"
+      },
+      {
+        "title": "The $499 Decision: Gadget vs. Growth 📱📈",
+        "channel": "Asset vs. Time",
+        "subscribers": 1400,
+        "views": 1258,
+        "published": "2026-01-17"
+      },
+      {
+        "title": "POV you invested $499 in Apple stock instead of buying the original iPhone in 2007",
+        "channel": "tickkertokk",
+        "subscribers": 6,
+        "views": 1160,
+        "published": "2026-09-14",
+        "note": "the POV header as a title; outlier score 82.9"
+      },
+      {
+        "title": "“If You Bought Apple Stock Instead of the First iPhone… 😱📱💰”",
+        "channel": "Dollar Secrets",
+        "subscribers": 6,
+        "views": 1132,
+        "published": "2025-09-30"
+      },
+      {
+        "title": "Every iPhone vs Apple Stock Since 2007 📱📈 #shorts",
+        "channel": "TwansFinanceStudio",
+        "subscribers": 1,
+        "views": 1127,
+        "published": "2026-10-05",
+        "note": "every iPhone, 17.5x; outlier score 375.7"
+      },
+      {
+        "title": "“What If You Invested $499 in Apple?",
+        "channel": "Money Matters by VJ",
+        "subscribers": 74,
+        "views": 937,
+        "published": "2026-02-16",
+        "note": "the write-up's title, nearly word for word"
+      },
+      {
+        "title": "Iphone vs Apple stock",
+        "channel": "Spendvest",
+        "subscribers": 24,
+        "views": 639,
+        "published": "2026-08-05",
+        "note": "$102 a share as quoted, $3.65 split-adjusted in its description"
+      },
+      {
+        "title": "Buying an iPhone Every Year vs. Buying Apple Stock",
+        "channel": "Race Charts",
+        "subscribers": 21,
+        "views": 350,
+        "published": "2026-09-21"
+      },
+      {
+        "title": "The first iPhone cost $599 in 2007. In Apple stock, that's $46,200 today.",
+        "channel": "Assetly - Invest Smarter",
+        "subscribers": 34,
+        "views": 22,
+        "published": "2026-10-07",
+        "note": "the 8GB price; valued at a 7 Oct 2026 close, per its description (not verified here)"
+      },
+      {
+        "title": "What If You Bought Apple Stock Instead of the First iPhone?",
+        "channel": "Alpha Paradox",
+        "subscribers": 1,
+        "views": 3,
+        "published": "2026-10-10",
+        "note": "3:55 long; the exact core of option 2; valued at a 28 Sep 2026 close, per its description (not verified here)"
+      }
+    ],
+    "same_idea_note": "vidIQ YouTube search (under 4 min; by views and by relevance): 16 first-iPhone-or-every-iPhone vs Apple stock videos, 9 since August 2026; the two over 27M are India-facing; of the US-dollar ones only two pass 10,000 views. Two titles nearly match the candidates (Alpha Paradox, Money Matters by VJ). Descriptions quote at least six launch-day prices and value the stake on different dates (several after 12/31/2025, not verified here), which is why the copy names the raw and adjusted prices and dates its close.",
+    "instagram_tiktok_outliers": [
+      {
+        "handle": "@claudiagadelha",
+        "platform": "Instagram",
+        "id": "Dbd-C6xjEmE",
+        "on_screen": "WHAT IF A BOOMER INVESTED ONLY $10 A MONTH IN APPLE STOCK STARTING IN 1986? HERE'S HOW MUCH IT WOULD BE WORTH TODAY.",
+        "views": "886.6K (24.2x the account median of 36.7K)",
+        "note": "Apple stock on an animated line chart, music only, looped; frame 1 is the question"
+      },
+      {
+        "handle": "@race_charts",
+        "platform": "Instagram",
+        "id": "Dct04VesZPy",
+        "on_screen": "SMOKING A PACK OF MARLBORO A DAY VS BUYING THE STOCK INSTEAD",
+        "views": "1.6M (60.9x the account median of 26.7K)",
+        "note": "a product against its own maker's stock on a line chart, music only"
+      },
+      {
+        "handle": "@investment_timeline",
+        "platform": "TikTok",
+        "id": "7671760671867997473",
+        "on_screen": "POV: You invested in Monster instead of paying $3/day for a Monster Energy",
+        "caption": "the POV line + #monster #energydrink #usa #investment #stocks",
+        "views": "1.5M (140.6x)"
+      },
+      {
+        "handle": "@data.dragonn",
+        "platform": "TikTok",
+        "id": "7680694072218029344",
+        "on_screen": "POV: Someone invested $100 every month in the GoPro Stock over the last 12 years",
+        "views": "1.4M (49.6x)",
+        "note": "an honest loss; the premise on frame 1, no result"
+      }
+    ],
+    "own_channel_youtube_october_shorts": [
+      {
+        "id": "LjHDFzVxRyM",
+        "title": "Can You Find the Missing Dollar?",
+        "posted_et": "Sun 07:04",
+        "views": 1256
+      },
+      {
+        "id": "hJBvmGA6sZ0",
+        "title": "You Can Lean on $1 Million. Not on $1 Billion.",
+        "posted_et": "Thu 00:25",
+        "views": 1221
+      },
+      {
+        "id": "XVUeMcTg9OQ",
+        "title": "Your Interest Has a Speed Limit",
+        "posted_et": "Sun 05:49",
+        "views": 1141
+      },
+      {
+        "id": "fbpdKf4Wy8c",
+        "title": "What If You Bought Starbucks Stock Instead of a $4 Latte Every Day? (06c)",
+        "posted_et": "Mon 03:45",
+        "views": 760
+      },
+      {
+        "id": "8__HTUa2PoU",
+        "title": "Pay the Minimum on $5,000? 238 Months.",
+        "posted_et": "Mon 22:09",
+        "views": 642
+      },
+      {
+        "id": "FW_oxA3kbsM",
+        "title": "A $2 Lottery Ticket Was Worth $6.98. Until the Fine Print.",
+        "posted_et": "Wed 12:03",
+        "views": 348
+      },
+      {
+        "id": "mXbKY_R63h4",
+        "title": "You Can Carry $1 Million. Not in Pennies.",
+        "posted_et": "Thu 13:38",
+        "views": 177
+      },
+      {
+        "id": "EqFQCJheCMU",
+        "title": "Start Investing 10 Years Late? You Get Half.",
+        "posted_et": "Tue 22:27",
+        "views": 161
+      },
+      {
+        "id": "krfZEHhb0xU",
+        "title": "What If You Bought Netflix Stock Instead of Paying for Netflix? (06b)",
+        "posted_et": "Mon 12:14",
+        "views": 75
+      }
+    ],
+    "own_channel_instagram_october_reels": [
+      {
+        "shortcode": "DeIvYk7I4Qr",
+        "topic": "$5,000 on the minimum",
+        "posted_et": "Mon 22:46",
+        "plays": 7302,
+        "skip_rate_pct": 27.4,
+        "avg_watched_pct": 56.5
+      },
+      {
+        "shortcode": "DeOEthJJ1TG",
+        "topic": "$1M stack vs Burj Khalifa",
+        "posted_et": "Thu 00:28",
+        "plays": 5449,
+        "skip_rate_pct": 27.0,
+        "avg_watched_pct": 83.1
+      },
+      {
+        "shortcode": "DeWgFZRoR_S",
+        "topic": "Missing dollar",
+        "posted_et": "Sun 07:05",
+        "plays": 1997,
+        "skip_rate_pct": 32.0,
+        "avg_watched_pct": 81.3
+      },
+      {
+        "shortcode": "DeMvZv9IqRw",
+        "topic": "Powerball $6.98",
+        "posted_et": "Wed 12:05",
+        "plays": 1825,
+        "skip_rate_pct": 58.7,
+        "avg_watched_pct": 57.9
+      },
+      {
+        "shortcode": "DeYuqT4pjVC",
+        "topic": "06c latte vs Starbucks stock",
+        "posted_et": "Mon 03:46",
+        "plays": 1711,
+        "skip_rate_pct": 40.3,
+        "avg_watched_pct": 69.1
+      },
+      {
+        "shortcode": "DePe11HIHwn",
+        "topic": "$1M in pennies",
+        "posted_et": "Thu 13:37",
+        "plays": 598,
+        "skip_rate_pct": 42.0,
+        "avg_watched_pct": 66.7
+      },
+      {
+        "shortcode": "DeLSd9io8UK",
+        "topic": "10 years late",
+        "posted_et": "Tue 22:30",
+        "plays": 219,
+        "skip_rate_pct": 65.1,
+        "avg_watched_pct": 30.6
+      },
+      {
+        "shortcode": "DeEW2ZMIiYd",
+        "topic": "Speed limit (e)",
+        "posted_et": "Sun 05:54",
+        "plays": 177,
+        "skip_rate_pct": 56.9,
+        "avg_watched_pct": 31.2
+      },
+      {
+        "shortcode": "DeZov75oo9o",
+        "topic": "06b Netflix bills vs Netflix stock",
+        "posted_et": "Mon 12:14",
+        "plays": 7,
+        "skip_rate_pct": 100.0,
+        "avg_watched_pct": 126.9
+      }
+    ],
+    "channel_stats": {
+      "youtube_subscribers": 53,
+      "youtube_views": 10221,
+      "youtube_videos": 41,
+      "youtube_30d": "+27 subscribers, +5,127 views, 11 videos",
+      "instagram_followers": 8,
+      "instagram_30d_views": 20518
+    },
+    "limits": [
+      "vidIQ's YouTube authorization is a different channel (UCRC5v_El2fibbkqsZs6uFjA), so @envelopemath's YouTube Analytics (audience hours, geography) were not readable. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
+      "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and on the same-idea Shorts' and outliers' own tags.",
+      "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views. Seven of the ten titles scored 96-97.",
+      "vidIQ's YouTube outlier search returned only iPhone-review and phone-comparison Shorts for this topic (3 searches), so the same-idea table comes from YouTube search instead.",
+      "AAPL's moves after 12/31/2025 come only from third-party descriptions (e.g. a 28 Sep 2026 close of $338.40 in Alpha Paradox's, a 7 Oct 2026 close of $336.55 in Assetly's); none is verified here, and none is in the copy, which says only that Apple has moved since."
+    ],
+    "search_context": [
+      {
+        "keyword": "iphone 18 pro",
+        "est_monthly_searches": 2532128,
+        "note": "+18.3% vs its baseline; the September 2026 launch"
+      },
+      {
+        "keyword": "iphone duo",
+        "est_monthly_searches": 3998667,
+        "note": "−14.3% vs its baseline; a search for this year's phones, not the 2007 one"
+      }
+    ],
+    "titles_scored": "10 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored.",
+    "vidiq_credits": "145 credits by this sheet's own calls (9 keyword queries, 2 YouTube searches, 3 outlier searches, 2 IG/TikTok searches, channel videos and stats, 11 title scores at 5 each; Instagram insights are free); the shared balance went from 5,330 to 5,180 over the same time. The adversarial check added about 30 (1 title score, 1 keyword query, channel stats and 3 YouTube searches); the shared balance went from 3,970 to 3,885 over that pass, with other agents drawing on it"
+  },
+  "checked": {
+    "date": "2026-10-13",
+    "by": "adversarial check of this sheet",
+    "math": "python3 teasers/v2/checks/06-pov-race.py: 445 checks, 0 failed on studio/specs/ (2026-10-13, re-run at the adversarial check; the first pass ran it at 442); 454 checks, 0 failed with --spec on the condensed cut in studio/specs-wip/, whose header, footer, captions, verdict and data points equal the shipped cut's; every public figure traced to the 06a maths table and recomputed in this data file from the write-up's closes, each year's figure pinned beside its year and each direction word ('below', 'over', 'passes', 'knocks off') beside its figure, and every share price kept with 'adjusted' (COPY_RULES)",
+    "limits": {
+      "youtube_title_chars": 91,
+      "youtube_description_chars": 1482,
+      "youtube_description_utf8_bytes": 1512,
+      "youtube_tags_chars_as_youtube_counts": 272,
+      "youtube_hashtags": 3,
+      "instagram_caption_chars": 1201,
+      "instagram_hashtags": 5,
+      "instagram_alt_text_short_chars": 95
+    },
+    "vidiq_requeried": "pulled 2026-10-13: apple stock 18,675 / 42.2 (−21.5%); aapl stock 12,269 (+40.2%); what if you invested 9,269 (+79.0%); first iphone 9,281; title scores 97 (pick), 96 (write-up title); channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,518 views in 30 days; 06c (fbpdKf4Wy8c) 760 views, 06b (krfZEHhb0xU) 75 views, published 16:14 UTC (12:14 ET). Re-queried at the end of the pass: the pick's title score 97. Matches. Re-queried at the adversarial check (2026-10-13): the pick's title score 97; apple stock 18,675 / 42.2 / 61.4 (−21.5%, baseline 23,783); channel 53 subs / 10,221 views / 41 videos (+27 / +5,127 / 11 in 30 days); 06b's live title 'What If You Bought Netflix Stock Instead of Paying for Netflix? #Netflix #NetflixStock #stocks' (75 views, 16:14 UTC) and 06c's 'What If You Bought Starbucks Stock Instead of a $4 Latte Every Day? #Starbucks #LatteFactor #stocks' (760 views). All match."
+  }
+}

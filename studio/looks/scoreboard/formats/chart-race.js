@@ -101,6 +101,10 @@
 //   stakeTag     a grey caps tag beside the hero while it shows the stake ("EACH": the same stake in every racer)
 //   rungs.items[k][2]  a timed rung, before rungs.t, ends at the race's current x (it never runs on past the tips,
 //                under a tip label); from rungs.t every rung spans the data
+//   hook.litCue  false (opt-in, for a condensed cut): the litT bump keeps its picture but adds no pop cue. It is for a
+//                litT on the opening downbeat (frame 2, so the cold open moves from frame 1): the pack's t = 0 hit is
+//                its sound there, and a pop 20 ms after it needs more clearance than the hook allows (DUCK).
+//                Absent or true: the pop, exactly as before
 import { h, s, css as style, setText, setHTML, attr, prog, ease, clamp, lerp, fitText, fmtNum } from '../../../runtime/core.js'
 import { C, SIZE, M, layoutFor } from '../theme.js'
 import {
@@ -279,6 +283,7 @@ export default function chartRace(spec, ctx) {
       ask: o.ask ? String(o.ask) : '', ratioT: o.ratioT != null && isFinite(+o.ratioT) ? +o.ratioT : null,
       ratioTag: o.ratioTag != null && String(o.ratioTag).trim() ? String(o.ratioTag) : '',
       litT: o.litT != null && isFinite(+o.litT) && +o.litT > 0 ? +o.litT : null,
+      litCue: o.litCue !== false,
     }
   })()
   // the race's own elements (axis, stake line, lines, tips, labels): hidden under the hook, in over its last HOOK_IN s
@@ -832,7 +837,7 @@ export default function chartRace(spec, ctx) {
   for (const b of tipBeats) cue(b.t, 'pop', { gain: 0.3 })
   if (HK) {
     if (HK.ratioT != null) cue(HK.ratioT, 'tick', { gain: 0.55 })
-    if (HK.litT != null) cue(HK.litT, 'pop', { gain: 0.4 })
+    if (HK.litT != null && HK.litCue) cue(HK.litT, 'pop', { gain: 0.4 })   // (hook.litCue false: a silent bump)
     cue(HK.r0, 'roll', { dur: HOOK_RW - HOOK_IN, gain: 0.35 })   // the rewind: counters and the clock roll back
   }
 

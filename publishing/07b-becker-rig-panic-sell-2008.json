@@ -1,0 +1,563 @@
+{
+  "id": "07b-becker-rig-panic-sell-2008",
+  "teaser": "07b Becker Rig, ledger-duel: \"2 people invest $10,000 right before 2008. One sells to cut his losses.\"",
+  "prepared": "2026-10-13",
+  "for_video": {
+    "current_render": "renders/channel/07b-becker-rig-panic-sell-2008.mp4",
+    "current_duration_s": 29.9,
+    "current_sha256": "d6d3739fbf13cf18559e62132af316640109064866ceb658d8293452bee15716",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds on 2026-10-13: the pre-condense cut. The ship step rebuilds this file with --covers from the condensed cut.",
+    "cut": {
+      "name": "pre-condense (07b round-2 fix pass, 2026-10-08)",
+      "spec": "studio/specs/07b-becker-rig-panic-sell-2008.json",
+      "body_s": 27.4,
+      "card_s": 2.5,
+      "status": "in renders/channel on 2026-10-13 (git 471c793); a condensed cut (timing only) is in progress",
+      "on_ship": "python3 publishing/tools/build_publishing.py 07b-becker-rig-panic-sell-2008 --covers (re-picks the cover by content, re-exports both JPGs, refreshes for_video)"
+    }
+  },
+  "facts": {
+    "source": "teasers/v2/07-ledger-duel.md section 07b; teasers/v2/checks/07-ledger-duel.py: 461 checks, 0 failures on studio/specs/ (2026-10-13)",
+    "stake": "$10,000 each in the S&P 500 at the Dec 31, 2007 close ('right before 2008')",
+    "data": "calendar-year S&P 500 total returns, dividends reinvested (S&P Dow Jones Indices; Slickcharts [click-check], US500.com, History of Market, YCharts): 2008 −37.00, 2009 +26.46, 2010 +15.06, 2011 +2.11, 2012 +16.00, 2013 +32.39, 2014 +13.69, 2015 +1.38, 2016 +11.96, 2017 +21.83, 2018 −4.38, 2019 +31.49, 2020 +18.40, 2021 +28.71, 2022 −18.11, 2023 +26.29, 2024 +25.02, 2025 +17.88 %",
+    "crash": "2008 −37.00%: $10,000 × 0.63 = $6,300.00 exactly for both (no '≈')",
+    "sam": "sells at the 2008 year-end close (not the March 2009 low) to cut his losses; cash at 0%: $6,300 from then on",
+    "alex": "holds: 2009 ≈ $8,000 (7,966.98); 2012 ≈ $10,900 (10,857.86, the first year-end back above $10,000; 2011 ended at 9,360.23); 2016 ≈ $18,500; 2019 ≈ $28,400; 2021 ≈ $43,300; 2022 ≈ $35,500 (dip ≈ −18%, −18.11%); 2025 ≈ $66,000 (65,995.78)",
+    "multiples": "65,995.78 ÷ 6,300 = 10.48 ≈ 10.5×; 65,995.78 ÷ 10,000 = 6.60 ≈ 6.6×",
+    "pinned": "Sam's cash at 5% every year 2009-2025: 6,300 × 1.05^17 = 14,439.72 ≈ $14,400, 0.22 of Alex's (under a quarter)",
+    "assumptions": "year-end values; both buy at the Dec 31, 2007 close; an index with no fees or taxes; cash at 0%; not inflation-adjusted; past returns, not a prediction",
+    "verdict": "'Selling didn't dodge the crash. It dodged the recovery.'"
+  },
+  "youtube": {
+    "titles_ranked": [
+      {
+        "rank": 1,
+        "title": "One Sold in the 2008 Stock Market Crash to Cut His Losses. One Held. How Far Apart by 2025?",
+        "vidiq_score": 97,
+        "chars": 91,
+        "note": "PICK. The header's bet in the past tense, with the exact phrase '2008 stock market crash' at characters 17-39 and the write-up's question, dated to the video's last row ('How far apart by 2025?' for its 'How far apart now?'). No answer, no hashtags."
+      },
+      {
+        "rank": 2,
+        "title": "One Sold in the 2008 Crash to Cut His Losses. One Held. How Far Apart Are They Now?",
+        "vidiq_score": 98,
+        "chars": 83,
+        "note": "Top score, 1 point over the pick, but it drops 'Stock Market' and with it the 'stock market crash' search phrase (140,294 a month); its 'Now' would also need to become 'by 2025'."
+      },
+      {
+        "rank": 3,
+        "title": "2 People Invest $10,000 Right Before 2008. One Sells in the Crash. How Far Apart Now?",
+        "vidiq_score": 94,
+        "chars": 85,
+        "note": "The write-up's title. It carries the $10,000 and 'right before 2008', for 3 points less."
+      }
+    ],
+    "titles_also_scored": [
+      {
+        "title": "One Sold in the 2008 Stock Market Crash to Cut His Losses. One Held. How Far Apart Now?",
+        "vidiq_score": 97,
+        "chars": 87,
+        "note": "the first build's pick; 'Now' reads as today, while the video's figures are end-of-2025 values, so the pick dates it for the same score"
+      },
+      {
+        "title": "He Sold in the 2008 Crash to Cut His Losses. His Friend Held. How Far Apart Are They Now?",
+        "vidiq_score": 98,
+        "chars": 89,
+        "note": "'his friend' is not in the video: Alex and Sam are '2 people'"
+      },
+      {
+        "title": "What If You Sold in the 2008 Crash? Your $10,000 vs the Friend Who Held",
+        "vidiq_score": 98,
+        "chars": 71,
+        "note": "second person over a duel of named people; the write-up turned down a 'you' title over named columns"
+      },
+      {
+        "title": "Sam Sold in the 2008 Crash to Cut His Losses. Alex Held. How Far Apart Are They Now?",
+        "vidiq_score": 97,
+        "chars": 84,
+        "note": ""
+      },
+      {
+        "title": "$10,000 Right Before the 2008 Stock Market Crash: Sold vs Held. How Far Apart Now?",
+        "vidiq_score": 90,
+        "chars": 82,
+        "note": ""
+      }
+    ],
+    "title_pick": "One Sold in the 2008 Stock Market Crash to Cut His Losses. One Held. How Far Apart by 2025?",
+    "title_pick_chars": 91,
+    "description": "2 people put $10,000 each in the S&P 500 at the last close of 2007, right before the 2008 stock market crash. Both drop to $6,300. Sam sells at the end of 2008 to cut his losses and keeps cash. Alex holds: about $66,000 by the end of 2025, about 10.5× Sam's $6,300.\n\nThe math, shown:\n• 2008: the S&P 500's total return is −37%, so $10,000 × 0.63 = $6,300 for both.\n• Sam sells at the 2008 year-end close and holds cash at 0%: $6,300 from then on.\n• Alex holds. 2009: ≈ $8,000. 2012: ≈ $10,900, his first year-end back above $10,000.\n• 2016: ≈ $18,500. 2019: ≈ $28,400. 2021: ≈ $43,300.\n• 2022 dips ≈ −18%: ≈ $35,500. Alex holds again.\n• End of 2025: Alex ≈ $66,000, about 6.6× his $10,000. Sam: still $6,300.\n• Selling didn't dodge the crash. It dodged the recovery.\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\n\nAnimation and original sound: The Back of the Envelope. Calendar-year S&P 500 total returns with dividends reinvested, 2008-2025 (S&P Dow Jones Indices). Both buy at the Dec 31, 2007 close, and every value is a year-end value. Sam sells at the 2008 year-end close, not the March 2009 low, and his cash earns 0%. An index with no fees or taxes; not adjusted for inflation. Past returns, not a prediction. Not financial advice. Not affiliated with or endorsed by S&P Dow Jones Indices.\n#StockMarketCrash #2008crash #investing",
+    "description_chars": 1369,
+    "hashtags_in_order": [
+      "#StockMarketCrash",
+      "#2008crash",
+      "#investing"
+    ],
+    "hashtag_rules": "Title hashtags show as links in the title; with none in the title, the first 3 description hashtags show above it. Over 60 hashtags and YouTube ignores all of them. #Shorts is not needed (vertical, under 3 min).",
+    "tags": [
+      "2008 stock market crash",
+      "stock market crash",
+      "2008 financial crisis",
+      "market crash",
+      "stock market crash history",
+      "panic selling",
+      "behavioral finance",
+      "long term investing",
+      "s&p 500",
+      "s&p 500 total return",
+      "what happens if you start investing and the market crashes",
+      "investing",
+      "money math",
+      "math animation",
+      "the back of the envelope",
+      "envelope math"
+    ],
+    "tags_chars_as_youtube_counts": 350,
+    "pinned_comment": "Would you have sold in 2008? \"Sam's cash would've earned interest\": even at 5% every single year from 2009 to 2025, his $6,300 grows to ≈ $14,400. That's under a quarter of Alex's ≈ $66,000.\n\nBoth buy at the Dec 31, 2007 close, and Sam sells at the Dec 31, 2008 close, not the March 2009 low. Total returns, dividends reinvested; no fees or taxes.",
+    "related_video": {
+      "pick": {
+        "id": "qGS_IphmCHs",
+        "title": "A 50% loss needs a 100% gain",
+        "url": "https://www.youtube.com/shorts/qGS_IphmCHs",
+        "why": "The channel's own crash maths (1,097 views, June 2026): why a fall takes a bigger rise to undo. It is the step before this Short's verdict, that the money was in the recovery."
+      },
+      "swap_when_live": "07a or 07c, the other ledger duels, once published; then point one of them at this Short.",
+      "end_screen": "Shorts have no end screens or cards. The Related video link is the Shorts equivalent."
+    },
+    "thumbnail_frame": "In the YouTube app, pick the 2008 impact frame (both figures blown off their stacks, the red 2008 row and the 'crash −37%' pill), the same content as the IG cover.",
+    "settings": {
+      "category": "Education",
+      "audience": "Not made for kids",
+      "altered_or_synthetic_content": "No (animated chart, not realistic footage)",
+      "remixing": "Allow",
+      "captions": "None needed (no narration; all text is on screen)"
+    },
+    "posting_window": {
+      "when": "First Tue-Thu evening after the 07b condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+      "spacing": "Keep it at least 6 h from any other upload on the channel, and post one ledger duel (07a, 07b, 07c) per evening.",
+      "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,199 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2). The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. Search demand: 'stock market crash' is +64.7% and '2008 stock market crash' +88.7% on their 30-day baselines, so crash searches are high now. The copy stays on the 2008 duel and names no current event; post on the normal schedule rather than chasing a news day."
+    },
+    "description_utf8_bytes": 1408
+  },
+  "instagram": {
+    "caption": "2 people invest $10,000 right before the 2008 stock market crash. One sells to cut his losses. How far apart by 2025?\n\nBoth bought the S&P 500 at its last close of 2007. Both drop to $6,300 in 2008, when it returns −37%.\n\nSam sells at the end of 2008 to cut his losses, and keeps cash at 0%. Alex holds.\n\nThe math, shown:\n• 2009: Alex ≈ $8,000. Sam $6,300.\n• 2012: Alex ≈ $10,900, back above $10,000.\n• 2021: Alex ≈ $43,300.\n• 2022 dips ≈ −18%: Alex ≈ $35,500. He holds again.\n• End of 2025: Alex ≈ $66,000. Sam: still $6,300.\n\nHolding finished with ≈ 10.5× as much. Selling didn't skip the drop. It skipped the recovery.\n\nS&P 500 total return with dividends reinvested, 2008-2025 calendar years (S&P Dow Jones Indices). Year-end closes; an index with no fees or taxes; cash at 0%. Past returns, not a prediction. Not financial advice. Not affiliated with or endorsed by S&P Dow Jones Indices.\n\nWould you have sold?\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\nAnimation and original sound: The Back of the Envelope.\n\n#stockmarket #investing #2008crash #sp500 #moneymath",
+    "caption_chars": 1103,
+    "caption_first_125": "2 people invest $10,000 right before the 2008 stock market crash. One sells to cut his losses. How far apart by 2025?\n\nBoth b",
+    "caption_rule": "The first 125 characters are the header's bet in its own words, with the '2008 stock market crash' keyword and the write-up's question dated to the last row, no result: the caption overlays the Reel from frame 1, so Alex's numbers sit below 'more'.",
+    "hashtags_in_order": [
+      "#stockmarket",
+      "#investing",
+      "#2008crash",
+      "#sp500",
+      "#moneymath"
+    ],
+    "hashtag_rule": "Instagram caps a post at 5 hashtags (since Dec 2025).",
+    "alt_text_short": "Chart: $10,000 each before 2008. Holding grew to about $66,000 by 2025; selling kept $6,300.",
+    "alt_text_long": "Animation on a light page: 2 stick figures stand on coin stacks beside a year-by-year ledger. Header: 2 people invest $10,000 right before 2008. One sells to cut his losses. 2008 takes 37%: coins burst off both stacks, and both drop to $6,300. Sam, in grey, sells, and his stack turns into a brick of cash that never grows. Alex, in green, holds: back above $10,000 by 2012, about $43,300 by 2021, a dip in 2022, then about $66,000 at the end of 2025 on a gold plate, while Sam is still at $6,300. Verdict: Selling didn't dodge the crash. It dodged the recovery.",
+    "alt_text_where": "Advanced settings → Accessibility → Alt text, if your app shows it for Reels.",
+    "cover": {
+      "files": {
+        "3x4": "publishing/07b-becker-rig-panic-sell-2008-cover-3x4.jpg",
+        "9x16": "publishing/07b-becker-rig-panic-sell-2008-cover-9x16.jpg"
+      },
+      "frame_in_current_render_s": 1.2,
+      "frame_index": 36,
+      "frame_by_content": "The 2008 impact, which the write-up names as the Instagram cover: the header '2 people invest $10,000 / right before 2008 / One sells to cut his losses', the footer, the column heads (Alex, 'Holds through the crash'; Sam, 'Sells when 2008 ends'), both figures blown up off their stacks with the lost coins bursting, the 'Dec 2007' row at $10,000 / $10,000 under the red '2008' row at $6,300 / $6,300, the 'crash −37%' pill, the later years dim over empty shelves, and the caption '2008 takes 37%.'. No later row and no final number. On any cut, use a frame between the pill appearing and the figures landing.",
+      "frame_measured": "On the pre-condense 29.9 s render the impact hits at 1.0 s (frame 30; the opening's biggest frame-to-frame luma change, 5.9-6.2), the 'crash −37%' pill is up from about 1.1 s, the figures land squashed at 1.4 s and stand again at 2.6 s. Frame 36 (1.20 s) has the pill up and both figures in the air: it is a motion frame (the luma change stays near 1.1-1.3 a frame from 1.17 to 1.47 s), and any frame from 1.1 to 1.4 s shows the same content.",
+      "crop": "3:4 = 1080×1440 from y 60 to 1500 of the 1080×1920 frame. The content runs from y 112 (the badge) to y 1419 (the caption), so the tile keeps the badge, the header, the footer, the column heads, the figures, the ledger and the caption, and drops the empty floor. A centred grid crop (y 240-1680) cuts the badge and the header.",
+      "how_to_set": "In 'Edit cover', pick the 2008 impact frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
+      "re_export": "ffmpeg -ss 1.2 -i renders/channel/07b-becker-rig-panic-sell-2008.mp4 -frames:v 1 -vf \"crop=1080:1440:0:60\" -q:v 2 publishing/07b-becker-rig-panic-sell-2008-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 1.2 -i renders/channel/07b-becker-rig-panic-sell-2008.mp4 -frames:v 1 -q:v 2 publishing/07b-becker-rig-panic-sell-2008-cover-9x16.jpg"
+    },
+    "first_comment": "Alex held: ≈ $66,000 at the end of 2025. Sam sold at the end of 2008: $6,300. Even at 5% a year from 2009 to 2025, Sam's cash would be ≈ $14,400. Would you have sold?",
+    "first_comment_action": "Post it right after publishing and pin it.",
+    "trial_reels": {
+      "recommendation": "Post as a regular Reel, not a Trial.",
+      "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
+      "use_trial_for": "The write-up's second cover afterwards, if you want it: the same Reel with the finished ledger as its cover, as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut ships, the pre-condense render is in git: `git show 471c793:renders/channel/07b-becker-rig-panic-sell-2008.mp4 > 07b-pre-condense.mp4` (sha256 d6d3739f…), for a cut test instead. Compare skip rate (October Reels ran 27.0-65.1%; 06c, the other Becker Rig Reel, 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+    },
+    "settings": {
+      "audio": "Rename the original audio to 'Sold in 2008 vs held — The Back of the Envelope' if the app allows; it is the score, with no voice.",
+      "share_to_feed": "On",
+      "google_indexing": "Public professional-account posts can appear in Google/Bing since 10 Jul 2025, so the caption is written as a searchable question."
+    },
+    "posting_window": {
+      "when": "Same evening as YouTube, about 15 min after the Short: 21:45-22:45 ET.",
+      "why": "October Reels, median plays by posting slot (owner insights, 2026-10-13): weekday 22:00-00:30 ET 5,449 (n = 3, including the two best: 7,303 and 5,449), weekday midday 1,212 (n = 2), Sunday 05:00-08:00 ET 1,087 (n = 2). Skip rate tracks plays more closely than the hour does: 27.0-27.4% for the top two, 56.9-65.1% for the bottom two. The condense matters more than the hour."
+    },
+    "alt_text_rule": "Paste the short version into Instagram: it is kept at or under 100 characters so it fits the field however short it is, and it writes 'about' instead of '≈' so screen readers read it cleanly. The long version is for anywhere with room (a website embed, a newsletter)."
+  },
+  "research": {
+    "keywords_youtube": [
+      {
+        "keyword": "stock market crash",
+        "est_monthly_searches": 140294,
+        "volume": 76.8,
+        "competition": 60.3,
+        "overall": 62.0,
+        "note": "+64.7% vs its 30-day baseline (85,194): crash searches are high now; the copy names no current event",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "market crash",
+        "est_monthly_searches": 114853,
+        "volume": 75.5,
+        "competition": 50.2,
+        "overall": 65.2,
+        "note": "+59.4% vs its baseline (72,070)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "2008 financial crisis",
+        "est_monthly_searches": 104111,
+        "volume": 74.9,
+        "competition": 51.5,
+        "overall": 64.3,
+        "note": "−8.0%",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "2008 financial crisis explained",
+        "est_monthly_searches": 26448,
+        "volume": 66.0,
+        "competition": 45.2,
+        "overall": 61.5,
+        "note": "+67.2%; explainer intent, not in the tags",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "stock market crash today",
+        "est_monthly_searches": 16833,
+        "volume": 63.1,
+        "competition": 57.0,
+        "overall": 55.1,
+        "note": "+83.6%; news intent, not in the copy",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "what happens if you start investing and the market crashes",
+        "est_monthly_searches": 12953,
+        "volume": 61.4,
+        "competition": 43.0,
+        "overall": 59.6,
+        "note": "the viewer's question the duel answers with history; no baseline",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "2008 stock market crash",
+        "est_monthly_searches": 8277,
+        "volume": 58.5,
+        "competition": 36.0,
+        "overall": 60.7,
+        "note": "seed; +88.7% vs its baseline (4,387); in the title word for word",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "stock market crash history",
+        "est_monthly_searches": 8105,
+        "volume": 58.3,
+        "competition": 36.1,
+        "overall": 60.6,
+        "note": "no baseline",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "is stock market crash coming",
+        "est_monthly_searches": 6828,
+        "volume": 57.2,
+        "competition": 41.2,
+        "overall": 57.9,
+        "note": "prediction intent: not in the copy",
+        "metrics_as_of": "2026-08-20"
+      },
+      {
+        "keyword": "pov: you buy your first stock the day before a market crash",
+        "est_monthly_searches": 5490,
+        "volume": 55.8,
+        "competition": 19.6,
+        "overall": 65.7,
+        "note": "the same 'bought right before' set-up; competition 19.6",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "panic selling",
+        "est_monthly_searches": 3102,
+        "volume": 52.1,
+        "competition": 30.4,
+        "overall": 59.1,
+        "note": "seed; what Sam does",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "behavioral finance",
+        "est_monthly_searches": 49748,
+        "volume": 70.1,
+        "competition": 31.6,
+        "overall": 69.4,
+        "note": "−33.4%",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "long term investing",
+        "est_monthly_searches": 24666,
+        "volume": 65.6,
+        "competition": 39.3,
+        "overall": 63.6,
+        "note": "−12.4%",
+        "metrics_as_of": "2026-10-12"
+      }
+    ],
+    "keywords_source": "vidIQ keyword research (research mode for '2008 stock market crash' with US volumes and for 'panic selling'; matching_terms for 'stock market crash'), pulled 2026-10-13. vidIQ refreshes each keyword on its own schedule, so each row carries its snapshot date in metrics_as_of; one row is an older snapshot (2026-08-20).",
+    "same_idea_youtube_shorts": [
+      {
+        "title": "$1,000 at the 2008 Crash: Gold vs S&P 500 vs Apple #shorts",
+        "channel": "Money in Data",
+        "subscribers": 1,
+        "views": 71,
+        "published": "2026-10-12",
+        "note": "bought at the crash, not before it; price only"
+      },
+      {
+        "title": "What Caused the 2008 Financial Crisis? The Crash That Wiped Out $13 Trillion Explained",
+        "channel": "Patient Bull Investing",
+        "subscribers": 9,
+        "views": 164,
+        "published": "2026-09-25",
+        "note": "an explainer that ends on 'the investors who held on recovered everything within four years'"
+      },
+      {
+        "title": "2008: The Crash That Felt Like the End",
+        "channel": "Emirbek Dzhanyshbekov",
+        "subscribers": 7,
+        "views": 57,
+        "published": "2026-10-02",
+        "note": "an AI-narrated clip on holding through 2008"
+      },
+      {
+        "title": "$100,000 at the 2008 peak. Held on vs sold at the bottom #shorts",
+        "channel": "DataOverDrama",
+        "subscribers": 2,
+        "views": 14,
+        "published": "2026-10-10",
+        "note": "the sell-vs-hold duel itself, sold at the bottom; AI voice"
+      }
+    ],
+    "same_idea_note": "vidIQ YouTube search (under 4 min; by views and by relevance): 4 Shorts on selling or holding through 2008, all from Sep-Oct 2026 and all under 200 views; the crash itself is a big topic (Danny Cheek's 'Stock Market Crash of 2008', 14,446,806 views). None runs the sell-vs-hold duel at year-end closes.",
+    "instagram_tiktok_outliers": [
+      {
+        "handle": "@matildehere",
+        "platform": "Instagram",
+        "id": "Da1U--ZBjmv",
+        "on_screen": "Saving VS investing 10k 10 years ago",
+        "views": "534.5K (122.1x the account median of 4.4K)",
+        "note": "cash vs invested side by side, music only: Sam's choice against Alex's"
+      },
+      {
+        "handle": "@getinfinityinsights",
+        "platform": "Instagram",
+        "id": "DbtfXQ9J6Zq",
+        "on_screen": "WHAT IF YOU WERE THE LUCKIEST INVESTOR ALIVE? S&P 500, SEVEN CRASHES",
+        "views": "74.7K (16.0x the account median of 4.7K)",
+        "note": "$10,000 at every S&P 500 bottom since 2008, as an animated chart with a voice-over"
+      },
+      {
+        "handle": "@allsense01",
+        "platform": "TikTok",
+        "id": "7667948024043212063",
+        "on_screen": "Vanguard CEO tells what to do if the stock market crashes",
+        "views": "709.9K (316.8x the account median of 2.2K)",
+        "note": "an interview clip giving advice; this Short gives the history instead"
+      },
+      {
+        "handle": "@moneystocker",
+        "platform": "TikTok",
+        "id": "7679097683058953494",
+        "on_screen": "'The markets are hideously inflated' (a 2016 news clip)",
+        "views": "82.7K (34.9x the account median of 2.4K)",
+        "note": "years of crash warnings set against what the S&P 500 did next"
+      }
+    ],
+    "own_channel_youtube_october_shorts": [
+      {
+        "id": "LjHDFzVxRyM",
+        "title": "Can You Find the Missing Dollar?",
+        "posted_et": "Sun 07:04",
+        "views": 1256
+      },
+      {
+        "id": "hJBvmGA6sZ0",
+        "title": "You Can Lean on $1 Million. Not on $1 Billion.",
+        "posted_et": "Thu 00:25",
+        "views": 1221
+      },
+      {
+        "id": "XVUeMcTg9OQ",
+        "title": "Your Interest Has a Speed Limit",
+        "posted_et": "Sun 05:49",
+        "views": 1141
+      },
+      {
+        "id": "fbpdKf4Wy8c",
+        "title": "What If You Bought Starbucks Stock Instead of a $4 Latte Every Day? (06c)",
+        "posted_et": "Mon 03:45",
+        "views": 760
+      },
+      {
+        "id": "8__HTUa2PoU",
+        "title": "Pay the Minimum on $5,000? 238 Months.",
+        "posted_et": "Mon 22:09",
+        "views": 642
+      },
+      {
+        "id": "FW_oxA3kbsM",
+        "title": "A $2 Lottery Ticket Was Worth $6.98. Until the Fine Print.",
+        "posted_et": "Wed 12:03",
+        "views": 348
+      },
+      {
+        "id": "mXbKY_R63h4",
+        "title": "You Can Carry $1 Million. Not in Pennies.",
+        "posted_et": "Thu 13:38",
+        "views": 177
+      },
+      {
+        "id": "EqFQCJheCMU",
+        "title": "Start Investing 10 Years Late? You Get Half.",
+        "posted_et": "Tue 22:27",
+        "views": 161
+      },
+      {
+        "id": "krfZEHhb0xU",
+        "title": "What If You Bought Netflix Stock Instead of Paying for Netflix? (06b)",
+        "posted_et": "Mon 12:14",
+        "views": 75
+      }
+    ],
+    "own_channel_instagram_october_reels": [
+      {
+        "shortcode": "DeIvYk7I4Qr",
+        "topic": "$5,000 on the minimum",
+        "posted_et": "Mon 22:46",
+        "plays": 7303,
+        "skip_rate_pct": 27.4,
+        "avg_watched_pct": 56.5
+      },
+      {
+        "shortcode": "DeOEthJJ1TG",
+        "topic": "$1M stack vs Burj Khalifa",
+        "posted_et": "Thu 00:28",
+        "plays": 5449,
+        "skip_rate_pct": 27.0,
+        "avg_watched_pct": 83.1
+      },
+      {
+        "shortcode": "DeWgFZRoR_S",
+        "topic": "Missing dollar",
+        "posted_et": "Sun 07:05",
+        "plays": 1997,
+        "skip_rate_pct": 32.0,
+        "avg_watched_pct": 81.3
+      },
+      {
+        "shortcode": "DeMvZv9IqRw",
+        "topic": "Powerball $6.98",
+        "posted_et": "Wed 12:05",
+        "plays": 1825,
+        "skip_rate_pct": 58.7,
+        "avg_watched_pct": 57.9
+      },
+      {
+        "shortcode": "DeYuqT4pjVC",
+        "topic": "06c latte vs Starbucks stock",
+        "posted_et": "Mon 03:46",
+        "plays": 1711,
+        "skip_rate_pct": 40.3,
+        "avg_watched_pct": 69.1
+      },
+      {
+        "shortcode": "DePe11HIHwn",
+        "topic": "$1M in pennies",
+        "posted_et": "Thu 13:37",
+        "plays": 598,
+        "skip_rate_pct": 42.0,
+        "avg_watched_pct": 66.7
+      },
+      {
+        "shortcode": "DeLSd9io8UK",
+        "topic": "10 years late",
+        "posted_et": "Tue 22:30",
+        "plays": 219,
+        "skip_rate_pct": 65.1,
+        "avg_watched_pct": 30.6
+      },
+      {
+        "shortcode": "DeEW2ZMIiYd",
+        "topic": "Speed limit (e)",
+        "posted_et": "Sun 05:54",
+        "plays": 177,
+        "skip_rate_pct": 56.9,
+        "avg_watched_pct": 31.2
+      }
+    ],
+    "channel_stats": {
+      "youtube_subscribers": 53,
+      "youtube_views": 10221,
+      "youtube_videos": 41,
+      "youtube_30d": "+27 subscribers, +5,127 views, 11 videos",
+      "instagram_followers": 8,
+      "instagram_30d_views": 20519
+    },
+    "limits": [
+      "As the 06b and 04b sheets found (not re-checked here), vidIQ's YouTube authorization is a different channel (UCRC5v_El2fibbkqsZs6uFjA), so @envelopemath's YouTube Analytics (audience hours, geography) were not readable. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
+      "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and the same-idea Shorts' own tags.",
+      "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
+      "The render in renders/channel is the pre-condense cut. The cover's time and frame are measured on it; the copy names no other timestamp, and the ship step re-picks the cover on the final file.",
+      "The S&P 500 returns are the write-up's, from search results ([click-check] on Slickcharts); the verifier matched them against two sources. The Jake and Market Hustle figures are the write-up's benchmark, not re-pulled.",
+      "The vidIQ credit balance is shared with the other sheets being built in parallel; this sheet's spend is counted from each tool's listed cost, checked against the balance (see research.vidiq_credits)."
+    ],
+    "adjacent_youtube_outliers": [
+      {
+        "title": "Stock Market Crash of 2008",
+        "channel": "Danny Cheek",
+        "subscribers": 9000,
+        "views": 14446806,
+        "published": "2019-12-17",
+        "note": "3:13 long; a montage of the crash itself, the topic's biggest"
+      },
+      {
+        "title": "A brief history of The 2008 Housing Crash",
+        "channel": "Jessica Spangler",
+        "subscribers": 39400,
+        "views": 490682,
+        "published": "2023-05-10",
+        "note": "an explainer"
+      },
+      {
+        "title": "Live reaction to 2008 stock crash!🤯",
+        "channel": "History Intrigue",
+        "subscribers": 68800,
+        "views": 70181,
+        "published": "2026-09-22",
+        "note": "archive footage; recent"
+      }
+    ],
+    "titles_scored": "7 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored.",
+    "vidiq_credits": "07b: 65 (3 keyword pulls × 5, 2 YouTube searches × 5, 1 IG/TikTok outlier search × 5, 7 title scores × 5), plus a third of the format's 10 shared credits (channel stats 5, channel videos 5; Instagram insights are free). The three 07 sheets used 210 in all. The balance read 5,180 before the first 07 call and 4,980 after the first 200 of them, with no other spend in that window, which confirms keyword research at 5 a call; the last 2 title scores (10) followed. It read 4,640 at the end of the build: the other 330 were parallel sheets' calls. At the adversarial check: 20 by listed cost (2 title scores, 2 keyword pulls), plus a third of 15 shared (channel stats 5, two video lookups 10); the three 07 checks used 55 in all. The balance read 3,845 before them and 3,745 after: the other 45 were parallel sheets' calls."
+  },
+  "checked": {
+    "date": "2026-10-13",
+    "by": "adversarial check of this sheet",
+    "math": "python3 teasers/v2/checks/07-ledger-duel.py: 461 checks, 0 failures on studio/specs/ (2026-10-13), run by the builder through publishing/data/checks/07-ledger-duel.py; every public figure traced to the 07b maths table and recompounded in MATH_RELATIONS from the 18 S&P 500 total returns (2008-2025); each year's figure pinned beside its year, every Alex figure with Alex, Sam's $6,300 kept exact (COPY_RULES)",
+    "limits": {
+      "youtube_title_chars": 91,
+      "youtube_description_chars": 1369,
+      "youtube_description_utf8_bytes": 1408,
+      "youtube_tags_chars_as_youtube_counts": 350,
+      "youtube_hashtags": 3,
+      "instagram_caption_chars": 1103,
+      "instagram_hashtags": 5,
+      "instagram_alt_text_short_chars": 92
+    },
+    "vidiq_requeried": "pulled 2026-10-13: stock market crash 140,294 / 60.3 (+64.7%); 2008 stock market crash 8,277 / 36.0 (+88.7%); 2008 financial crisis 104,111; panic selling 3,102; 7 titles scored: pick 97, top 98, write-up's title 94; channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,519 views in 30 days. Re-queried at the adversarial check: the first build's pick 97, the dated pick ('… by 2025?') 97; '2008 stock market crash' 8,277 / 36.0 / 60.7 (+88.7%, baseline 4,387); channel 53 / 10,221 / 41; the related video qGS_IphmCHs 1,097 views (posted 2026-06-02). All match."
+  }
+}

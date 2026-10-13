@@ -26,7 +26,25 @@
 3. Checks that the write-up quotes the same numbers (captions, pinned comments) and no stale ones.
 4. Prints a table and exits 1 on any mismatch.
 
-Run:  python3 teasers/v2/checks/04-chart-race.py
+Two cuts per teaser, picked by the spec's duration:
+  - the round-2 cut (narration-paced VO, 45.5 / 36.0 / 36.5 s bodies): what studio/specs/ holds until the condensed cuts
+    are promoted (IN_SPECS names it). Every check above applies as written.
+  - the condensed cut (2026-10-13, the owner's note: "Too many still moments are a killer for a short. Condense the
+    rest. The CTA (end card) is good."; the 06b/06c precedent): a 15.5-19 s body plus the 2.5 s end card. The VO is
+    on-screen captions (no narration), so the narration rules are replaced by caption rules: the hook caption complete
+    on frame 1 (vo[0].t <= -0.14 on Scoreboard, which rises a line in over 0.14 s; <= -0.4 on Becker Rig, which pops
+    its words in); each caption up >= max(1.2 s, 0.12 s a word) counted from frame 1; caption gaps < 0.2 s, or a
+    breath of <= 0.6 s while the race runs with no beat inside it; a caption naming a year starts within 0.6 s of
+    that year's segment; a figure a caption quotes is on its carrier (flag, label, footer step, tip) while the caption
+    is up, the caption leading it by <= 0.6 s; the race's moving pace (per teaser); something moves from frame 2;
+    the verdict 0.6-1.5 s after the last reveal and held 1.2-1.6 s (a Scoreboard caption may run on under the verdict,
+    which sits above the caption band, by <= 0.6 s; the Becker Rig hides captions under it).
+  A spec of any other length fails its lane and is not checked further.
+
+Run:  python3 teasers/v2/checks/04-chart-race.py                          (the specs in studio/specs/)
+      python3 teasers/v2/checks/04-chart-race.py --spec studio/specs-wip/04a-scoreboard-sp500-vs-gold.json
+      --spec [KEY=]PATH (repeatable) checks PATH in place of studio/specs/<id>.json. KEY is a, b or c (or 04a/04b/04c);
+      without it the file's stem must be one of the three ids. CHART_RACE_SPECS=<dir> still swaps the whole folder.
 """
 import itertools
 import json
@@ -113,10 +131,94 @@ DWS_EU = {2016: -1.32, 2017: 24.97, 2018: -14.67, 2019: 24.41, 2020: 5.51, 2021:
 # race moving (04a: both tips under the stake, ChartOrbit's "open in the red"; 04b: S&P $1,041 vs savings
 # $1,001, hook pass 2). 04c (fixer pass) opens on its hook row (the 2025 ledger row) over the parked race and
 # rewinds into the race at 4.8 s, as the VO asks "Who won the decade?".
-A_STAKE, A_Y0, A_Y1, A_RACE = 10_000, 2000, 2025, (-0.4, 31.6)
-B_STAKE, B_Y0, B_Y1, B_RACE = 1_000, 2010, 2025, (-0.4, 23.6)
-C_STAKE, C_Y0, C_Y1, C_RACE = 10_000, 2016, 2025, (4.8, 21.8)
-DUR = {"a": 45.5, "b": 36.0, "c": 36.5}
+
+
+def parse_spec_args(argv):
+    """--spec [KEY=]PATH (repeatable) -> {key: abs path}; see the module docstring"""
+    out, i = {}, 0
+    while i < len(argv):
+        a = argv[i]
+        if a in ("-h", "--help"):
+            print(__doc__)
+            sys.exit(0)
+        if a == "--spec" or a.startswith("--spec="):
+            if a == "--spec":
+                i += 1
+                v = argv[i] if i < len(argv) else ""
+            else:
+                v = a.split("=", 1)[1]
+            if not v:
+                sys.exit("--spec needs a path")
+            m = re.fullmatch(r"(?:04)?([abc])=(.+)", v)
+            if m:
+                key, path = m.group(1), m.group(2)
+            else:
+                path = v
+                stem = os.path.splitext(os.path.basename(v))[0]
+                key = next((k for k, sid in IDS.items() if sid == stem), None)
+                if key is None:
+                    sys.exit(f"--spec {v}: the file stem is not one of {sorted(IDS.values())}; pass KEY=PATH")
+            if not os.path.isfile(path):
+                sys.exit(f"--spec {v}: no such file")
+            out[key] = os.path.abspath(path)
+        else:
+            sys.exit(f"unknown argument {a!r}; usage: 04-chart-race.py [--spec [KEY=]PATH ...]")
+        i += 1
+    return out
+
+
+SPEC_PATHS = {k: os.path.join(SPECS, sid + ".json") for k, sid in IDS.items()}
+SPEC_PATHS.update(parse_spec_args(sys.argv[1:]))
+
+# The two cuts (see the module docstring). "r2": the round-2 cut, narration-paced (studio/specs/ holds it until the
+# condensed cuts are promoted); "cond": the condensed cut of 2026-10-13 (studio/specs-wip/ until then).
+DUR_R2 = {"a": 45.5, "b": 36.0, "c": 36.5}
+# the captions, byte for byte (no-break spaces included: they decide where a line wraps on screen), the same in both
+# cuts: the condensed cut retimes them and never rewrites one (critic, 2026-10-13: 04a's vo[8] had lost its no-break
+# spaces and wrapped "≈ 4 / times")
+VO_TEXT = {
+    "a": ["Stocks should crush gold.", "By 2002: stocks ≈ −38%. Gold ≈ +21%.", "2008: stocks crash again. Gold keeps climbing.",
+          "2013: gold drops ≈ 28% in one year.", "Then stocks run for years and close in.", "2021: still behind.",
+          "End of 2025: stocks ≈ $75,300.", "Gold ≈ $150,000.", "Gold doubled\u00a0≈\u00a04\u00a0times. Stocks,\u00a0≈\u00a03."],
+    "b": ["Year one in the S&P: ≈ $151.", "Savings gets 16 years to match it.", "Stocks have already doubled.",
+          "Savings? Under $10 so far.", "2020: stocks top $4,000.", "2022: stocks drop ≈ 18%.",
+          "2025: savings made under $30 in 16 years.", "The S&P's first year alone: ≈ $151."],
+    "c": ["2025: Europe beat the USA ≈ 2 to 1.", "Who won the decade?", "2018: Europe drops ≈ 15%.",
+          "2020: the USA has doubled your money.", "Europe? Still under $17,000.", "2025: Europe jumps ≈ 35%.",
+          "Final: USA ≈ $39,800.", "Europe ≈ $22,700.", "The USA ≈ doubled twice. Europe, once."],
+}
+LANE_COND = (15.5, 19.0)        # the condensed cut's body (the 2.5 s end card comes on top), as 06c's
+IN_SPECS = {"a": "r2", "b": "r2", "c": "r2"}   # which cut studio/specs/ must hold (flip to "cond" on promotion)
+RACES = {
+    # 04a: 26 years at 1.23 s a year (r2), at 0.49 s a year (cond); the cond race starts at -0.25 so frame 1 (x 2000.51)
+    # comes before the corner clock's roll into 2001 (fixer pass: at -0.4, x 2000.80, the clock was mid-roll on frame 1;
+    # -0.25 rather than -0.2 keeps the score's fitted tempo at 151.0 -> 154.8 BPM, +2.5% after P: at -0.2 the thuds moved it
+    # to 142.7 -> 135.5, -5.0%)
+    "a": {"r2": (-0.4, 31.6), "cond": (-0.25, 12.6)},
+    # 04b: 16 years at 1.50 s a year with a 1.86 s hit-stop (r2), at 0.75 s a year with a 0.56 s hit-stop (cond); the
+    # cond race starts at -0.2 so frame 1 is the round-2 frame 1 (x 2010.27: $1,041 vs $1,001)
+    "b": {"r2": (-0.4, 23.6), "cond": (-0.2, 11.79)},
+    # 04c: the cold open until 4.8 s, then 10 years at 1.70 s a year (r2); a 1.25 s cold open, 0.96 s a year (cond)
+    "c": {"r2": (4.8, 21.8), "cond": (1.25, 10.8)},
+}
+CUT = {}
+for _k, _p in SPEC_PATHS.items():
+    with open(_p, encoding="utf-8") as _f:
+        _dur = json.load(_f).get("duration")
+    CUT[_k] = ("r2" if isinstance(_dur, (int, float)) and abs(_dur - DUR_R2[_k]) < 1e-9 else
+               "cond" if isinstance(_dur, (int, float)) and LANE_COND[0] <= _dur <= LANE_COND[1] else None)
+A_STAKE, A_Y0, A_Y1, A_RACE = 10_000, 2000, 2025, RACES["a"][CUT["a"] or "r2"]
+B_STAKE, B_Y0, B_Y1, B_RACE = 1_000, 2010, 2025, RACES["b"][CUT["b"] or "r2"]
+C_STAKE, C_Y0, C_Y1, C_RACE = 10_000, 2016, 2025, RACES["c"][CUT["c"] or "r2"]
+COND = {k: CUT[k] == "cond" for k in CUT}
+CAP_MIN, CAP_SPW = 1.2, 0.12    # condensed cut: a caption is up >= max(1.2 s, 0.12 s a word), counted from frame 1
+CAP_GAP, CAP_BREATH = 0.2, 0.6  # captions back to back (< 0.2 s apart), or one breath of <= 0.6 s with no beat in it
+CAP_LEAD = 0.6                  # a caption may lead the beat or the figure it names by up to this long
+CAP_FIRST = {"scoreboard": -0.14, "becker-rig": -0.4}   # vo[0].t at or before this: the hook caption complete on frame 1
+YEAR_PRE_C = 0.6                # condensed: a caption naming year Y starts within 0.6 s of Y's segment (either side)
+VERDICT_AFTER = (0.6, 1.5)      # condensed: the verdict this long after the last reveal
+VERDICT_HOLD = (1.2, 1.6)       # condensed: and held this long before the end card
+SB_UNDER_V = 0.6                # condensed, Scoreboard: the last caption may run on under the verdict this long
 
 # ============================================================== formatting (rules used on screen)
 
@@ -309,8 +411,11 @@ class Spec:
     def __init__(self, key):
         self.key = key
         self.id = IDS[key]
-        with open(os.path.join(SPECS, self.id + ".json"), encoding="utf-8") as f:
+        self.path = SPEC_PATHS[key]
+        with open(self.path, encoding="utf-8") as f:
             self.d = json.load(f)
+        self.cut = CUT[key]
+        self.cond = self.cut == "cond"
         self.covered = set()
 
     def get(self, path):
@@ -401,21 +506,71 @@ def said_at(S, i, token):
 
 
 def common(S, header_words_max=15):
+    """the checks every teaser shares; returns False (and the teaser is not checked further) when its length is
+    neither cut's"""
     d, k = S.d, S.key
-    claim(k, "id = file stem", d["id"], S.id)
+    if not claim(k, "id = file stem", d.get("id"), S.id):
+        return False                                                 # another teaser's spec: nothing else applies
     claim(k, "format", d["format"], "chart-race")
     claim(k, "fps", d["fps"], 30)
     claim(k, "captions on", d["captions"], True)
-    claim(k, "duration", d["duration"], DUR[k])
-    claim(k, "duration in lane 25-50 s", d["duration"], "25-50", ok=LANE[0] <= d["duration"] <= LANE[1])
+    in_specs = os.path.abspath(S.path) == os.path.abspath(os.path.join(ROOT, "studio", "specs", S.id + ".json"))
+    claim(k, "a known cut (round 2 or condensed)", f"{d['duration']} s",
+          f"round 2 {DUR_R2[k]} s, or condensed {LANE_COND[0]}-{LANE_COND[1]} s", ok=S.cut is not None)
+    if S.cut is None:
+        return False
+    if in_specs:
+        claim(k, f"studio/specs/ holds the {IN_SPECS[k]} cut", S.cut, IN_SPECS[k])
+    else:
+        claim(k, f"--spec file: checked as the {S.cut} cut", S.cut, S.cut)
+    if S.cond:
+        claim(k, f"condensed: body in the {LANE_COND[0]}-{LANE_COND[1]} s lane (+ the 2.5 s end card)", d["duration"],
+              f"{LANE_COND[0]}-{LANE_COND[1]}", ok=LANE_COND[0] <= d["duration"] <= LANE_COND[1])
+    else:
+        claim(k, "duration", d["duration"], DUR_R2[k])
+        claim(k, "duration in lane 25-50 s", d["duration"], "25-50", ok=LANE[0] <= d["duration"] <= LANE[1])
     hw = len(d["header"].replace("**", "").replace("\n", " ").split())
     claim(k, "header <= 15 words", hw, "<= 15", ok=hw <= header_words_max)
     claim(k, "header has a $ number at t=0", "$" in d["header"], True)
     claim(k, "series count 2 (max 3)", len(d["data"]["series"]), 2)
     hold = d["duration"] - d["data"]["raceT"][1]
     S.v(("data", "hold"), hold, tol=0.011, what="hold = duration − race end")
-    # VO timing
     vo = d["vo"]
+    claim(k, "caption count = the round-2 captions", len(vo), len(VO_TEXT[k]))
+    for i, (line, want) in enumerate(zip(vo, VO_TEXT[k])):
+        claim(k, f"vo[{i}] text = the round-2 caption, byte for byte (no-break spaces included)",
+              line["text"].encode("utf-8").hex() if line["text"] != want else "same bytes", "same bytes", ok=line["text"] == want)
+    if S.cond:
+        # captions, not narration: the hook caption complete on frame 1, each caption up long enough to read on a phone
+        first = CAP_FIRST[d["look"]]
+        claim(k, f"condensed: vo[0] starts at or before {first} s (the hook caption complete on frame 1)", vo[0]["t"],
+              f"<= {first}", ok=vo[0]["t"] <= first + 1e-9)
+        for i, line in enumerate(vo):
+            n = len(line["text"].replace("**", "").replace("__", "").split())
+            need = max(CAP_MIN, CAP_SPW * n)
+            shown = line["t"] + line["d"] - max(0.0, line["t"])
+            claim(k, f"vo[{i}] caption up >= max({CAP_MIN}, {n} words × {CAP_SPW}) from frame 1", round(shown, 2),
+                  f">= {need:.2f}", ok=shown >= need - 1e-9)
+            if i + 1 < len(vo):
+                end = line["t"] + line["d"]
+                claim(k, f"vo[{i}] ends before vo[{i + 1}]", round(end, 2), f"<= {vo[i + 1]['t']}", ok=end <= vo[i + 1]["t"] + 1e-9)
+        end = vo[-1]["t"] + vo[-1]["d"]
+        claim(k, "last caption ends inside the video", round(end, 2), f"<= {d['duration']}", ok=end <= d["duration"])
+        V = d["verdict"]["t"]
+        if d["look"] == "becker-rig":
+            # the Becker Rig hides captions under the verdict: the last one must have been read before it lands
+            claim(k, "condensed (Becker Rig): the verdict lands as the last caption ends", round(V, 2), f">= {end:.2f}",
+                  ok=V >= end - 1e-9)
+        else:
+            # the Scoreboard verdict sits in its slot above the caption band: the last caption may run on under it
+            claim(k, f"condensed (Scoreboard): the last caption ends <= {SB_UNDER_V} s after the verdict lands",
+                  round(end - V, 2), f"<= {SB_UNDER_V}", ok=end - V <= SB_UNDER_V + 1e-9)
+            claim(k, "condensed (Scoreboard): the last caption is up >= 0.6 s before the verdict lands",
+                  round(V - vo[-1]["t"], 2), ">= 0.6", ok=V - vo[-1]["t"] >= 0.6 - 1e-9)
+        claim(k, f"condensed: the verdict holds {VERDICT_HOLD[0]}-{VERDICT_HOLD[1]} s before the end card",
+              round(d["duration"] - V, 2), f"{VERDICT_HOLD[0]}..{VERDICT_HOLD[1]}",
+              ok=VERDICT_HOLD[0] - 1e-9 <= d["duration"] - V <= VERDICT_HOLD[1] + 1e-9)
+        return True
     claim(k, "first VO at t=0", vo[0]["t"], 0.0)
     for i, line in enumerate(vo):
         need = spoken(line["text"]) / WPS
@@ -429,6 +584,127 @@ def common(S, header_words_max=15):
     # every kit hides (becker-rig, live-sheet) or must avoid (scoreboard) captions under the verdict
     claim(k, "verdict lands after the last VO line ends", d["verdict"]["t"], f">= {end:.2f}", ok=d["verdict"]["t"] >= end - 1e-9)
     claim(k, "verdict holds >= 2.5 s", round(d["duration"] - d["verdict"]["t"], 2), ">= 2.5", ok=d["duration"] - d["verdict"]["t"] >= 2.5)
+    return True
+
+
+def cap_end(S, i):
+    """a caption's last moment on screen (captionAt keeps a line up 0.15 s past its end)"""
+    v = S.d["vo"][i]
+    return v["t"] + v["d"] + 0.15
+
+
+def cap_sync(S, i, token, t_on, t_off, what, lead=CAP_LEAD, overlap=0.5):
+    """condensed cut: the figure `token` that caption vo[i] shows is on its carrier (t_on..t_off) while the caption is
+    up: the windows overlap by >= `overlap` s and the caption leads the carrier by <= `lead` s"""
+    v = S.d["vo"][i]
+    if token not in v["text"].replace("\u00a0", " "):
+        claim(S.key, f"vo[{i}] shows '{token}'", v["text"], token, ok=False)
+        return
+    a, b = max(v["t"], t_on), min(cap_end(S, i), t_off)
+    claim(S.key, f"caption sync: '{token}' (vo[{i}] {v['t']:.2f}-{v['t'] + v['d']:.2f}) while {what} shows ({t_on:.2f}-{t_off:.2f})",
+          f"overlap {b - a:.2f}, lead {t_on - v['t']:.2f}", f"overlap >= {overlap}, lead <= {lead}",
+          ok=b - a >= overlap - 1e-9 and t_on - v["t"] <= lead + 1e-9)
+
+
+def cap_beat(S, i, t, what, lead=CAP_LEAD):
+    """condensed cut: a beat that caption vo[i] names lands while the caption is up (it may lead the beat by <= lead s)"""
+    v = S.d["vo"][i]
+    claim(S.key, f"caption beat: {what} at {t:.2f} inside vo[{i}] ({v['t']:.2f}-{v['t'] + v['d']:.2f}, lead <= {lead})",
+          round(t, 2), f"{v['t']:.2f}..{v['t'] + v['d']:.2f}", ok=v["t"] - 1e-9 <= t <= v["t"] + v["d"] + 1e-9 and t - v["t"] <= lead + 1e-9
+          if lead is not None else v["t"] - 1e-9 <= t <= v["t"] + v["d"] + 1e-9)
+
+
+def cap_gaps(S, beats, race):
+    """condensed cut: captions back to back (< CAP_GAP s apart), or one breath of <= CAP_BREATH s while the race runs
+    and no beat lands inside it (a gap that left a beat unlabelled would fail)"""
+    vo = S.d["vo"]
+    gaps = [round(vo[i + 1]["t"] - vo[i]["t"] - vo[i]["d"], 2) for i in range(len(vo) - 1)]
+    bad = []
+    for i, g in enumerate(gaps):
+        if g < CAP_GAP:
+            continue
+        a, b = vo[i]["t"] + vo[i]["d"], vo[i + 1]["t"]
+        inside = [round(t, 2) for t in beats if a + 1e-6 < t < b - 1e-6]
+        if g > CAP_BREATH + 1e-9 or inside or not (race[0] <= a and b <= race[1]):
+            bad.append(f"gap {a:.2f}-{b:.2f} ({g} s){' holds beats ' + str(inside) if inside else ''}")
+    claim(S.key, f"condensed: caption gaps < {CAP_GAP} s, or a breath <= {CAP_BREATH} s while the race runs with no beat",
+          gaps, "; ".join(bad) or "ok", ok=not bad)
+
+
+def spec_beats(S):
+    """every timed beat a condensed caption gap must not swallow: sfx cues, flags, footer steps, figure beats, the
+    lookOpts times"""
+    d, lo = S.d, S.d.get("lookOpts", {})
+    race, x0, x1 = d["data"]["raceT"], d["data"]["x"]["from"], d["data"]["x"]["to"]
+    ts = [c["t"] for c in d.get("sfx", [])]
+    ts += [t_of(e["x"], race, x0, x1) for e in d["data"].get("events", [])]
+    ts += [st["t"] for st in lo.get("footerSteps", [])] + [b["t"] for b in lo.get("beats", [])]
+    ts += [b["t"] for b in lo.get("tipBeats", [])] + [b["t"] for b in lo.get("heroSteps", [])]
+    ts += list(lo.get("finalT", [])) + list(lo.get("holdBack", {}).get("t", []))
+    if "rungs" in lo:
+        ts.append(lo["rungs"]["t"])
+    if "lens" in lo:
+        ts += [lo["lens"]["t"]] + [r["t"] for r in lo["lens"]["rows"] if "t" in r]
+    return sorted(ts)
+
+
+def year_sync_cond(S, M, start_year, race_end, hook_years=()):
+    """condensed cut: each caption that names a year starts within YEAR_PRE_C s of that year's segment (before its
+    start or after its close); returns {year: caption t}"""
+    seen = {}
+    for i, line in enumerate(S.d["vo"]):
+        for y in [int(y) for y in re.findall(r"\b(20[0-3]\d)\b", line["text"])]:
+            if y == start_year and (i == 0 or line["t"] >= race_end):
+                continue
+            if i == 0 and y in hook_years:
+                claim(S.key, f"vo[0] hook names {y} as its setup", y, "a hook year", ok=True)
+                continue
+            lo, hi = M["ts"][y] - YEAR_PRE_C, M["tl"][y] + YEAR_PRE_C
+            claim(S.key, f"vo[{i}] caption '{y}' in sync with the race (±{YEAR_PRE_C} s of its segment)", line["t"],
+                  f"{lo:.2f}..{hi:.2f}", ok=lo <= line["t"] <= hi)
+            seen[y] = line["t"]
+    return seen
+
+
+def events_cond(S, M, race, x0, x1, want):
+    """condensed cut: each flag lands in its own year's segment, and a flag a caption names lands within CAP_LEAD s of
+    that caption's start and stays up >= 0.5 s while it is up (want: [(x, label, caption index or None)])"""
+    got = S.d["data"]["events"]
+    claim(S.key, "event count", len(got), len(want))
+    hold = S.d.get("lookOpts", {}).get("flagHold")
+    for k, (x, label, vi) in enumerate(want):
+        if k >= len(got):
+            claim(S.key, f"event '{label}' present", "missing", "present", ok=False)
+            continue
+        S.v(("data", "events", k, "x"), x, tol=0.001)
+        S.s(("data", "events", k, "label"), label)
+        y = int(math.floor(x))
+        te = t_of(x, race, x0, x1)
+        claim(S.key, f"event '{label}' lands in its {y} segment", round(te, 2), f"{M['ts'][y] - PRE:.2f}..{M['tl'][y] + POST:.2f}",
+              ok=M["ts"][y] - PRE <= te <= M["tl"][y] + POST)
+        if vi is not None:
+            nxt = t_of(got[k + 1]["x"], race, x0, x1) if k + 1 < len(got) else S.d["duration"]
+            off = min(nxt, te + hold) if hold else nxt
+            v = S.d["vo"][vi]
+            a, b = max(v["t"], te), min(cap_end(S, vi), off)
+            claim(S.key, f"event '{label}' lands within {CAP_LEAD} s of vo[{vi}] and shows while it is up",
+                  f"Δ {te - v['t']:+.2f}, overlap {b - a:.2f}", f"|Δ| <= {CAP_LEAD}, overlap >= 0.5",
+                  ok=abs(te - v["t"]) <= CAP_LEAD + 1e-9 and b - a >= 0.5 - 1e-9)
+
+
+def pace_cond(S, lane, pause=0.0):
+    """condensed cut: the race's moving time per year (a hit-stop's freeze excluded)"""
+    race, x = S.d["data"]["raceT"], S.d["data"]["x"]
+    spy = (race[1] - race[0] - pause) / (x["to"] - x["from"])
+    claim(S.key, f"condensed: the race moves at {lane[0]}-{lane[1]} s a year", round(spy, 3), f"{lane[0]}..{lane[1]}",
+          ok=lane[0] <= spy <= lane[1])
+
+
+def verdict_after(S, t_reveal, what):
+    V = S.d["verdict"]["t"]
+    claim(S.key, f"condensed: the verdict lands {VERDICT_AFTER[0]}-{VERDICT_AFTER[1]} s after the last reveal ({what})",
+          round(V - t_reveal, 2), f"{VERDICT_AFTER[0]}..{VERDICT_AFTER[1]}",
+          ok=VERDICT_AFTER[0] - 1e-9 <= V - t_reveal <= VERDICT_AFTER[1] + 1e-9)
 
 
 def chart(S, race, x0, x1, series_pts, finals, names):
@@ -519,399 +795,594 @@ def shown_while_said(S, i, token, t_on, t_off, what):
           ok=t_on <= s0 < t_off)
 
 
+x_f1 = x_f1b = EARN_WIN = earn_max = None   # set by the teaser checks (the report prints them)
+sweep, int_lo, int_hi = 0, math.nan, math.nan
+
 # ============================================================== 04a
 Sa = Spec("a")
-common(Sa)
-Sa.n(("header",), ["2000", "$10,000"])
-Sa.n(("footer",), ["2000", "2025"])
-Sa.s(("data", "stake"), f"${A_STAKE:,} each · Jan {A_Y0}")
-chart(Sa, A_RACE, A_Y0, A["x1"], [A_sp_pts, A_au_pts], [A["fin_sp"], A["fin_au"]], ["S&P 500", "Gold"])
-claim("a", "x tickEvery", Sa.d["data"]["x"]["tickEvery"], 5)
-vo_numbers(Sa, [
-    [],                                                          # "Stocks should crush gold." (fixer pass: no "26 years")
-    [str(2002), f"≈ −{A['dd02']}%", f"≈ +{A['up02']}%"],
-    ["2008"],
-    ["2013", f"≈ {abs(GOLD[2013]):.0f}%"],
-    [],
-    ["2021"],
-    ["2025", A["fin_sp"]],
-    [A["fin_au"]],
-    [f"≈ {round(A['dbl_au'])}", f"≈ {round(A['dbl_sp'])}"],
-])
-seen_a = year_sync(Sa, A, A_Y0, A_RACE[1])
-flag02 = f"S&P __≈ −{A['dd02']}%__ · gold **≈ +{A['up02']}%**"
-flag13 = f"Gold ≈ −{abs(GOLD[2013]):.0f}%"
-want_ev_a = [(2001.0, "Dot-com crash", False), (ye(2002), flag02, (1, f"≈ −{A['dd02']}%")), (2008.75, "2008 crash", True),
-             (2013.3, flag13, True), (2022.5, "2022 bear market", False)]
-events(Sa, A, A_RACE, A_Y0, A["x1"], want_ev_a, seen_a)
-claim("a", "flag at the 2002 close is tone neutral (gold's gain not in red)", Sa.d["data"]["events"][1].get("tone"), "neutral")
-claim("a", "'≈ −38%' is cumulative since Jan 2000, and the VO says 'By 2002'", Sa.d["vo"][1]["text"].startswith("By 2002"), True)
-claim("a", "2002 alone was −22.10% (why 'By' matters)", SP[2002], -22.10)
-claim("a", "gold 2013 is a rounded table value -> '≈'", "≈ 28%" in Sa.d["vo"][3]["text"], True)
-# frame 1 opens mid-race, both tips already under the stake (ChartOrbit's 'open in the red')
-x_f1 = x_of(0.0, A_RACE, A_Y0, A["x1"])
-claim("a", "frame 1: race already moving, year counter still 2000", round(x_f1, 3), "2000 < x < 2001", ok=2000 < x_f1 < 2001)
-claim("a", "frame 1: S&P tip under $10,000", round(val_at(A_sp_pts, x_f1)), f"< {A_STAKE}", ok=val_at(A_sp_pts, x_f1) < A_STAKE)
-claim("a", "frame 1: gold tip under $10,000", round(val_at(A_au_pts, x_f1)), f"< {A_STAKE}", ok=val_at(A_au_pts, x_f1) < A_STAKE)
-# spoken-number sync: each figure is on a flag (in the spec) that is showing when it is said; a flag shows
-# from its own t until the next flag (conservative: the kit retires a label only when a newer one overlaps it)
-def flag_window(S, race, x0, x1, label):
-    evs = sorted(S.d["data"]["events"], key=lambda e: e["x"])
-    hold = S.d.get("lookOpts", {}).get("flagHold")          # the Scoreboard clears a flag label after flagHold s
-    for k, e in enumerate(evs):
-        if e.get("label") == label:
-            t0 = t_of(e["x"], race, x0, x1)
-            nxt = t_of(evs[k + 1]["x"], race, x0, x1) if k + 1 < len(evs) else S.d["duration"]
-            return t0, min(nxt, t0 + hold) if hold else nxt
-    return None
 
 
-for i, tok, lab in ((1, f"≈ −{A['dd02']}%", flag02), (1, f"≈ +{A['up02']}%", flag02), (3, f"≈ {abs(GOLD[2013]):.0f}%", flag13)):
-    w = flag_window(Sa, A_RACE, A_Y0, A["x1"], lab)
-    if w is None:
-        claim("a", f"sync: flag '{lab}' carrying '{tok}' is in the spec", "missing", "present", ok=False)
+def teaser_a(Sa):
+    """the a teaser's checks (both cuts; Sa.cond picks the condensed cut's rules)"""
+    global x_f1
+    Sa.n(("header",), ["2000", "$10,000"])
+    Sa.n(("footer",), ["2000", "2025"])
+    Sa.s(("data", "stake"), f"${A_STAKE:,} each · Jan {A_Y0}")
+    chart(Sa, A_RACE, A_Y0, A["x1"], [A_sp_pts, A_au_pts], [A["fin_sp"], A["fin_au"]], ["S&P 500", "Gold"])
+    claim("a", "x tickEvery", Sa.d["data"]["x"]["tickEvery"], 5)
+    vo_numbers(Sa, [
+        [],                                                          # "Stocks should crush gold." (fixer pass: no "26 years")
+        [str(2002), f"≈ −{A['dd02']}%", f"≈ +{A['up02']}%"],
+        ["2008"],
+        ["2013", f"≈ {abs(GOLD[2013]):.0f}%"],
+        [],
+        ["2021"],
+        ["2025", A["fin_sp"]],
+        [A["fin_au"]],
+        [f"≈ {round(A['dbl_au'])}", f"≈ {round(A['dbl_sp'])}"],
+    ])
+    flag02 = f"S&P __≈ −{A['dd02']}%__ · gold **≈ +{A['up02']}%**"
+    flag13 = f"Gold ≈ −{abs(GOLD[2013]):.0f}%"
+    if Sa.cond:
+        year_sync_cond(Sa, A, A_Y0, A_RACE[1])
+        events_cond(Sa, A, A_RACE, A_Y0, A["x1"], [(2001.0, "Dot-com crash", None), (ye(2002), flag02, 1),
+                                                   (2008.75, "2008 crash", 2), (2013.3, flag13, 3), (2022.5, "2022 bear market", None)])
     else:
-        shown_while_said(Sa, i, tok, w[0], w[1], f"the flag '{lab}'")
-Sa.s(("verdict", "text"), f"Gold ended **≈ {round(A['ratio'])}×** the S&P 500.\nThat's ≈ one extra doubling.")
-fs = ("lookOpts", "footerSteps")
-claim("a", "lookOpts.stakeLine", Sa.d["lookOpts"]["stakeLine"], A_STAKE)
-Sa.s(fs + (0, "text"), f"${A_STAKE:,} grew ≈ ×{sig(A['m_sp']):.2f} → {A['fin_sp']}")
-Sa.s(fs + (1, "text"), f"${A_STAKE:,} grew ≈ ×{sig(A['m_au']):.1f} → {A['fin_au']}")
-Sa.s(fs + (2, "text"), f"Gold ≈ {A['dbl_au']:.1f} doublings · S&P 500 ≈ {A['dbl_sp']:.1f}")
-claim("a", "doublings: spoken '≈ 4' / '≈ 3' are the footer's 3.9 / 2.9 rounded", [round(A["dbl_au"]), round(A["dbl_sp"])], [4, 3])
-claim("a", "multiples are roundings (so they carry ≈)", f"{A['m_sp']:.4f} / {A['m_au']:.4f}", "not exact",
-      ok=abs(A["m_sp"] - sig(A["m_sp"])) > 1e-6 and abs(A["m_au"] - sig(A["m_au"])) > 1e-6)
-for i, j in ((0, 6), (1, 7), (2, 8)):
-    claim("a", f"footerStep[{i}] t = vo[{j}] t", Sa.get(fs + (i, "t")), vo_t(Sa, j))
-claim("a", "footerStep 0 arithmetic", round(A_STAKE * sig(A["m_sp"])), round(sig(A_sp[2025])))
-claim("a", "footerStep 1 arithmetic", round(A_STAKE * sig(A["m_au"])), round(sig(A_au[2025])))
-# the gold reveal's cash (and hit, riser) are the kit's own climax cues at lookOpts.finalT[1], so the spec has none
-sfx_on(Sa, [(A["tl"][2002], "thud"), (A["tl"][2008], "thud"), (A["tl"][2013], "hit"), (A_RACE[1], "roll"),
-            (Sa.d["verdict"]["t"], "ding")])
-# staggered finish: the hero shows each final when the VO names it (S&P at the race end, gold last = the climax)
-claim("a", "lookOpts.finalT = [race end, vo[7] t]", Sa.d["lookOpts"]["finalT"], [A_RACE[1], vo_t(Sa, 7)])
-claim("a", "the S&P final takes the hero as vo[6] names it", Sa.d["lookOpts"]["finalT"][0], vo_t(Sa, 6))
-claim("a", "the winner (gold) is revealed last", A_au[2025] > A_sp[2025] and Sa.d["lookOpts"]["finalT"][1] > Sa.d["lookOpts"]["finalT"][0], True)
-claim("a", "lookOpts.flagHold (s)", Sa.d["lookOpts"]["flagHold"], 3.0)
-# fixer pass: gold's 2025 leg is held back. Gold stops at its 2024 close while the clock runs on (its tip holds
-# $91,094), draws its +64.6% leg over [34.4, 36.4] under the kit's riser, and its final lands as vo[7] names it
-hb = Sa.d["lookOpts"]["holdBack"]
-claim("a", "holdBack series = gold (the winner, revealed last)", hb["series"], 1)
-claim("a", "holdBack leg ends as vo[7] names gold's final (= finalT[1])", hb["t"][1], vo_t(Sa, 7),
-      ok=abs(hb["t"][1] - vo_t(Sa, 7)) < 1e-9 and abs(hb["t"][1] - Sa.d["lookOpts"]["finalT"][1]) < 1e-9)
-t_hold = t_of(ye(2024), A_RACE, A_Y0, A["x1"])
-claim("a", "gold stops at its 2024 close before the race ends", round(t_hold, 2), f"< {A_RACE[1]}", ok=t_hold < A_RACE[1])
-claim("a", "gold's held tip = its 2024 close", usd_round(A_au[2024]), "≈ $91,094")
-s_sp = said_at(Sa, 6, A["fin_sp"])[0]
-claim("a", "gold's leg starts after vo[6] has started saying the S&P final", hb["t"][0], f">= {s_sp:.2f}",
-      ok=s_sp <= hb["t"][0] < hb["t"][1])
-claim("a", "gold's leg runs 2.0 s (the kit's riser covers it)", round(hb["t"][1] - hb["t"][0], 2), 2.0)
-claim("a", "lookOpts.tipLane (labels beside their dots at the finish)", Sa.d["lookOpts"]["tipLane"], True)
-claim("a", "lookOpts.emColor = gold's colour (the verdict's ≈ 2× is gold's win)", Sa.d["lookOpts"]["emColor"], "yellow")
-# the doublings ladder: rungs at the stake × 2, 4, 8, 16 as vo[8] starts
-rg = ("lookOpts", "rungs")
-claim("a", "rungs t = vo[8] t", Sa.get(rg + ("t",)), vo_t(Sa, 8))
-claim("a", "rung count", len(Sa.get(rg + ("items",))), 4)
-for k in range(4):
-    Sa.v(rg + ("items", k, 0), A_STAKE * 2 ** (k + 1), tol=1e-9, what=f"rung {k} value = stake × {2 ** (k + 1)}")
-    Sa.s(rg + ("items", k, 1), f"×{2 ** (k + 1)}")
-claim("a", "gold ends under the ×16 rung, over ×8 (3.9 doublings, said '≈ 4')", f"×{A['m_au']:.2f}", "8 <= × < 16", ok=8 <= A["m_au"] < 16)
-claim("a", "the S&P ends under the ×8 rung, over ×4 (2.9, said '≈ 3')", f"×{A['m_sp']:.2f}", "4 <= × < 8", ok=4 <= A["m_sp"] < 8)
-claim("a", "the ×16 rung is on the end frame's y axis (kit headroom 1.2 × the max)", A_STAKE * 16, f"<= {1.2 * A_au[2025]:,.0f}",
-      ok=A_STAKE * 16 <= 1.2 * A_au[2025])
-claim("a", "final roll on the race end", A_RACE[1], A["tl"][2025], ok=abs(A_RACE[1] - A["tl"][2025]) < 1e-9)
-claim("a", "the finals are said only after the race ends", vo_t(Sa, 6), f">= {A_RACE[1]}", ok=vo_t(Sa, 6) >= A_RACE[1])
-# what the words claim
-claim("a", "'Stocks should crush gold' is then wrong: gold ahead at all 26 year-ends", sum(A_au[y] > A_sp[y] for y in range(2000, 2026)), 26)
-claim("a", "'2008: stocks crash again'", SP[2008], "< 0", ok=SP[2008] < 0)
-claim("a", "'Gold keeps climbing' in 2008", GOLD_A[2008], "> 0", ok=GOLD_A[2008] > 0)
-claim("a", "'close in' 2013 -> 2021 (S&P/gold)", f"{A_sp[2013] / A_au[2013]:.2f} -> {A_sp[2021] / A_au[2021]:.2f}", "rising",
-      ok=A_sp[2021] / A_au[2021] > A_sp[2013] / A_au[2013])
-claim("a", "'2021: still behind'", f"{A_sp[2021]:,.0f} < {A_au[2021]:,.0f}", "", ok=A_sp[2021] < A_au[2021])
-claim("a", "'≈ one extra doubling' = log2 gap (a rounding)", round(A["dbl_au"] - A["dbl_sp"], 3), "≈ 1, not exact",
-      ok=round(A["dbl_au"] - A["dbl_sp"]) == 1 and abs(A["dbl_au"] - A["dbl_sp"] - 1) > 1e-6)
-claim("a", "gold 2025 close-to-close %", round(GOLD_A[2025], 2), 64.57, ok=abs(GOLD_A[2025] - 64.58) < 0.02)
-claim("a", "robust: 2nd gold source keeps '≈ 2×'", f"{A_alt[2025]:,.0f} → ×{A_alt[2025] / A_sp[2025]:.2f}", "rounds to 2",
-      ok=round(A_alt[2025] / A_sp[2025]) == 2)
-claim("a", "robust: 2nd gold source, gold still up by 2002 (flag uses the primary table's ≈ +21%)",
-      f"{(A_alt[2002] / A_STAKE - 1) * 100:+.1f}%", "> 0", ok=A_alt[2002] > A_STAKE)
-claim("a", "implied 1999 gold close ≈ $288 (sanity)", round(GOLD_CLOSE_2024 / (A_au[2024] / A_STAKE), 2), "285-292",
-      ok=285 <= GOLD_CLOSE_2024 / (A_au[2024] / A_STAKE) <= 292)
-for u in Sa.uncovered():
-    claim("a", "uncovered string with a digit", u, "covered", ok=False)
+        seen_a = year_sync(Sa, A, A_Y0, A_RACE[1])
+        want_ev_a = [(2001.0, "Dot-com crash", False), (ye(2002), flag02, (1, f"≈ −{A['dd02']}%")), (2008.75, "2008 crash", True),
+                     (2013.3, flag13, True), (2022.5, "2022 bear market", False)]
+        events(Sa, A, A_RACE, A_Y0, A["x1"], want_ev_a, seen_a)
+    claim("a", "flag at the 2002 close is tone neutral (gold's gain not in red)", Sa.d["data"]["events"][1].get("tone"), "neutral")
+    claim("a", "'≈ −38%' is cumulative since Jan 2000, and the VO says 'By 2002'", Sa.d["vo"][1]["text"].startswith("By 2002"), True)
+    claim("a", "2002 alone was −22.10% (why 'By' matters)", SP[2002], -22.10)
+    claim("a", "gold 2013 is a rounded table value -> '≈'", "≈ 28%" in Sa.d["vo"][3]["text"], True)
+    # frame 1 opens mid-race, both tips already under the stake (ChartOrbit's 'open in the red')
+    x_f1 = x_of(0.0, A_RACE, A_Y0, A["x1"])
+    claim("a", "frame 1: race already moving, year counter still 2000", round(x_f1, 3), "2000 < x < 2001", ok=2000 < x_f1 < 2001)
+    claim("a", "frame 1: S&P tip under $10,000", round(val_at(A_sp_pts, x_f1)), f"< {A_STAKE}", ok=val_at(A_sp_pts, x_f1) < A_STAKE)
+    claim("a", "frame 1: gold tip under $10,000", round(val_at(A_au_pts, x_f1)), f"< {A_STAKE}", ok=val_at(A_au_pts, x_f1) < A_STAKE)
+    if Sa.cond:
+        # chart-race.js (Scoreboard): the corner clock rolls into year y + 1 over the last rollF = clamp(0.24 s ÷ the race's
+        # s a year, 0.04, 0.4) of year y. Frame 1 is the thumbnail, so it must come before 2000's roll (fixer pass)
+        spy_a = (A_RACE[1] - A_RACE[0]) / (A["x1"] - A_Y0)
+        roll_f = min(max(0.24 / spy_a, 0.04), 0.4)
+        claim("a", "condensed: frame 1's corner clock reads a clean 2000 (frame 1 comes before the roll into 2001)",
+              round(x_f1, 3), f"< {A_Y0 + 1 - roll_f:.2f}", ok=x_f1 < A_Y0 + 1 - roll_f - 1e-9)
+    # spoken-number sync: each figure is on a flag (in the spec) that is showing when it is said; a flag shows
+    # from its own t until the next flag (conservative: the kit retires a label only when a newer one overlaps it)
+    def flag_window(S, race, x0, x1, label):
+        evs = sorted(S.d["data"]["events"], key=lambda e: e["x"])
+        hold = S.d.get("lookOpts", {}).get("flagHold")          # the Scoreboard clears a flag label after flagHold s
+        for k, e in enumerate(evs):
+            if e.get("label") == label:
+                t0 = t_of(e["x"], race, x0, x1)
+                nxt = t_of(evs[k + 1]["x"], race, x0, x1) if k + 1 < len(evs) else S.d["duration"]
+                return t0, min(nxt, t0 + hold) if hold else nxt
+        return None
+
+
+    for i, tok, lab in ((1, f"≈ −{A['dd02']}%", flag02), (1, f"≈ +{A['up02']}%", flag02), (3, f"≈ {abs(GOLD[2013]):.0f}%", flag13)):
+        w = flag_window(Sa, A_RACE, A_Y0, A["x1"], lab)
+        if w is None:
+            claim("a", f"sync: flag '{lab}' carrying '{tok}' is in the spec", "missing", "present", ok=False)
+        elif Sa.cond:
+            cap_sync(Sa, i, tok, w[0], w[1], f"the flag '{lab}'")
+        else:
+            shown_while_said(Sa, i, tok, w[0], w[1], f"the flag '{lab}'")
+    Sa.s(("verdict", "text"), f"Gold ended **≈ {round(A['ratio'])}×** the S&P 500.\nThat's ≈ one extra doubling.")
+    fs = ("lookOpts", "footerSteps")
+    claim("a", "lookOpts.stakeLine", Sa.d["lookOpts"]["stakeLine"], A_STAKE)
+    Sa.s(fs + (0, "text"), f"${A_STAKE:,} grew ≈ ×{sig(A['m_sp']):.2f} → {A['fin_sp']}")
+    Sa.s(fs + (1, "text"), f"${A_STAKE:,} grew ≈ ×{sig(A['m_au']):.1f} → {A['fin_au']}")
+    Sa.s(fs + (2, "text"), f"Gold ≈ {A['dbl_au']:.1f} doublings · S&P 500 ≈ {A['dbl_sp']:.1f}")
+    claim("a", "doublings: spoken '≈ 4' / '≈ 3' are the footer's 3.9 / 2.9 rounded", [round(A["dbl_au"]), round(A["dbl_sp"])], [4, 3])
+    claim("a", "multiples are roundings (so they carry ≈)", f"{A['m_sp']:.4f} / {A['m_au']:.4f}", "not exact",
+          ok=abs(A["m_sp"] - sig(A["m_sp"])) > 1e-6 and abs(A["m_au"] - sig(A["m_au"])) > 1e-6)
+    for i, j in ((0, 6), (1, 7), (2, 8)):
+        if Sa.cond and i == 0:
+            # fixer pass: vo[6] comes up 0.5 s before the race end (as gold stops); the step lands with the S&P's close
+            claim("a", "condensed: footerStep[0] t = the race end (the S&P's close; vo[6] leads it)", Sa.get(fs + (0, "t")), A_RACE[1])
+        else:
+            claim("a", f"footerStep[{i}] t = vo[{j}] t", Sa.get(fs + (i, "t")), vo_t(Sa, j))
+    claim("a", "footerStep 0 arithmetic", round(A_STAKE * sig(A["m_sp"])), round(sig(A_sp[2025])))
+    claim("a", "footerStep 1 arithmetic", round(A_STAKE * sig(A["m_au"])), round(sig(A_au[2025])))
+    # the gold reveal's cash (and hit, riser) are the kit's own climax cues at lookOpts.finalT[1], so the spec has none
+    sfx_on(Sa, [(A["tl"][2002], "thud"), (A["tl"][2008], "thud"), (A["tl"][2013], "hit"), (A_RACE[1], "roll"),
+                (Sa.d["verdict"]["t"], "ding")])
+    # staggered finish: the hero shows each final when the VO names it (S&P at the race end, gold last = the climax)
+    hb = Sa.d["lookOpts"]["holdBack"]
+    if Sa.cond:
+        # condensed: gold's final lands at its leg's end (the climax); its caption comes up while the leg spikes
+        claim("a", "lookOpts.finalT = [race end, gold's leg end]", Sa.d["lookOpts"]["finalT"], [A_RACE[1], hb["t"][1]])
+        cap_beat(Sa, 7, hb["t"][1], "gold's final (the climax)")
+        claim("a", "condensed: vo[7] ('Gold ≈ $150,000.') comes up while gold's last leg draws", vo_t(Sa, 7),
+              f"{hb['t'][0]}..{hb['t'][1]}", ok=hb["t"][0] <= vo_t(Sa, 7) <= hb["t"][1])
+    else:
+        claim("a", "lookOpts.finalT = [race end, vo[7] t]", Sa.d["lookOpts"]["finalT"], [A_RACE[1], vo_t(Sa, 7)])
+    t_hold = t_of(ye(2024), A_RACE, A_Y0, A["x1"])
+    if Sa.cond:
+        # fixer pass (critic, 2026-10-13: '2021: still behind.' stayed up 1.95 s past the 2021 close, under 2022-2025):
+        # vo[6] ('End of 2025: stocks ≈ $75,300.', a destination) comes up as gold stops at its 2024 close and the hero
+        # cuts to the S&P, the one still racing; the S&P tip then climbs its last year to the figure the caption names
+        claim("a", "condensed: vo[6] comes up as gold stops at its 2024 close (the hero cuts to the S&P)", vo_t(Sa, 6),
+              f"{t_hold:.2f} ± 0.05", ok=abs(vo_t(Sa, 6) - t_hold) <= 0.05)
+        claim("a", f"condensed: vo[6] leads the race end (the S&P's close, the final's roll) by <= {CAP_LEAD} s",
+              round(A_RACE[1] - vo_t(Sa, 6), 2), f"0..{CAP_LEAD}", ok=0 <= A_RACE[1] - vo_t(Sa, 6) <= CAP_LEAD + 1e-9)
+        claim("a", "condensed: '2021: still behind.' clears within 1.05 s of the 2021 close (1.95 s before the fixer pass)",
+              round(cap_end(Sa, 5) - A["tl"][2021], 2), "<= 1.05", ok=cap_end(Sa, 5) - A["tl"][2021] <= 1.05 + 1e-9)
+    else:
+        claim("a", "the S&P final takes the hero as vo[6] names it", Sa.d["lookOpts"]["finalT"][0], vo_t(Sa, 6))
+    claim("a", "the winner (gold) is revealed last", A_au[2025] > A_sp[2025] and Sa.d["lookOpts"]["finalT"][1] > Sa.d["lookOpts"]["finalT"][0], True)
+    # condensed: 1.5 s = 3 race years at 0.5 s a year (3.0 s at 1.23 s a year in round 2 was 2.4 years)
+    claim("a", "lookOpts.flagHold (s)", Sa.d["lookOpts"]["flagHold"], 1.5 if Sa.cond else 3.0)
+    # fixer pass: gold's 2025 leg is held back. Gold stops at its 2024 close while the clock runs on (its tip holds
+    # $91,094), draws its +64.6% leg over [34.4, 36.4] under the kit's riser, and its final lands as vo[7] names it
+    claim("a", "holdBack series = gold (the winner, revealed last)", hb["series"], 1)
+    if not Sa.cond:
+        claim("a", "holdBack leg ends as vo[7] names gold's final (= finalT[1])", hb["t"][1], vo_t(Sa, 7),
+              ok=abs(hb["t"][1] - vo_t(Sa, 7)) < 1e-9 and abs(hb["t"][1] - Sa.d["lookOpts"]["finalT"][1]) < 1e-9)
+    claim("a", "gold stops at its 2024 close before the race ends", round(t_hold, 2), f"< {A_RACE[1]}", ok=t_hold < A_RACE[1])
+    claim("a", "gold's held tip = its 2024 close", usd_round(A_au[2024]), "≈ $91,094")
+    if Sa.cond:
+        # the S&P's final lands at raceT[1] + 0.45 (the kit's SETTLE); gold's leg follows it, a 1 s spike under the riser.
+        # Fixer pass (critic, 2026-10-13): no `follow`. The hero holds the S&P's ≈ $75,300 (vo[6]'s figure) while gold's
+        # line draws its leg, and cuts to gold at the climax (with `follow` the S&P held the hero only 0.25 s)
+        claim("a", "condensed: gold's leg starts once the S&P final has landed (raceT[1] + 0.45)", hb["t"][0],
+              f">= {A_RACE[1] + 0.45:.2f}", ok=A_RACE[1] + 0.45 - 1e-9 <= hb["t"][0] < hb["t"][1])
+        claim("a", "condensed: ... and within 0.4 s of it (no still gap)", round(hb["t"][0] - A_RACE[1] - 0.45, 2), "<= 0.4",
+              ok=hb["t"][0] - A_RACE[1] - 0.45 <= 0.4 + 1e-9)
+        claim("a", "condensed: gold's leg runs 0.8-1.2 s (the kit's riser covers it)", round(hb["t"][1] - hb["t"][0], 2), "0.8..1.2",
+              ok=0.8 - 1e-9 <= hb["t"][1] - hb["t"][0] <= 1.2 + 1e-9)
+        claim("a", "condensed: no holdBack.follow (the hero holds the S&P final until gold's climax)", hb.get("follow"), None)
+        claim("a", "condensed: the hero holds the S&P final >= 1.2 s before the climax cuts to gold",
+              round(hb["t"][1] - (A_RACE[1] + 0.45), 2), ">= 1.2", ok=hb["t"][1] - (A_RACE[1] + 0.45) >= 1.2 - 1e-9)
+    else:
+        s_sp = said_at(Sa, 6, A["fin_sp"])[0]
+        claim("a", "gold's leg starts after vo[6] has started saying the S&P final", hb["t"][0], f">= {s_sp:.2f}",
+              ok=s_sp <= hb["t"][0] < hb["t"][1])
+        claim("a", "gold's leg runs 2.0 s (the kit's riser covers it)", round(hb["t"][1] - hb["t"][0], 2), 2.0)
+        claim("a", "no holdBack.follow (the hero cuts to gold at its final)", hb.get("follow"), None)
+    claim("a", "lookOpts.tipLane (labels beside their dots at the finish)", Sa.d["lookOpts"]["tipLane"], True)
+    claim("a", "lookOpts.emColor = gold's colour (the verdict's ≈ 2× is gold's win)", Sa.d["lookOpts"]["emColor"], "yellow")
+    # the doublings ladder: rungs at the stake × 2, 4, 8, 16 as vo[8] starts
+    rg = ("lookOpts", "rungs")
+    claim("a", "rungs t = vo[8] t", Sa.get(rg + ("t",)), vo_t(Sa, 8))
+    claim("a", "rung count", len(Sa.get(rg + ("items",))), 4)
+    for k in range(4):
+        Sa.v(rg + ("items", k, 0), A_STAKE * 2 ** (k + 1), tol=1e-9, what=f"rung {k} value = stake × {2 ** (k + 1)}")
+        Sa.s(rg + ("items", k, 1), f"×{2 ** (k + 1)}")
+    claim("a", "gold ends under the ×16 rung, over ×8 (3.9 doublings, said '≈ 4')", f"×{A['m_au']:.2f}", "8 <= × < 16", ok=8 <= A["m_au"] < 16)
+    claim("a", "the S&P ends under the ×8 rung, over ×4 (2.9, said '≈ 3')", f"×{A['m_sp']:.2f}", "4 <= × < 8", ok=4 <= A["m_sp"] < 8)
+    claim("a", "the ×16 rung is on the end frame's y axis (kit headroom 1.2 × the max)", A_STAKE * 16, f"<= {1.2 * A_au[2025]:,.0f}",
+          ok=A_STAKE * 16 <= 1.2 * A_au[2025])
+    claim("a", "final roll on the race end", A_RACE[1], A["tl"][2025], ok=abs(A_RACE[1] - A["tl"][2025]) < 1e-9)
+    if not Sa.cond:
+        claim("a", "the finals are said only after the race ends", vo_t(Sa, 6), f">= {A_RACE[1]}", ok=vo_t(Sa, 6) >= A_RACE[1])
+    if Sa.cond:
+        # the condensed cut's timing targets (the owner's note; the 06b/06c precedent)
+        claim("a", "condensed: something moves from frame 1 (the race is already running: raceT[0] < 0)", A_RACE[0], "< 0",
+              ok=A_RACE[0] < 0)
+        pace_cond(Sa, (0.45, 0.55))
+        cap_gaps(Sa, spec_beats(Sa), A_RACE)
+        cap_beat(Sa, 2, t_of(2008.75, A_RACE, A_Y0, A["x1"]), "the 2008 crash flag")
+        cap_beat(Sa, 3, t_of(2013.3, A_RACE, A_Y0, A["x1"]), "the 2013 gold-drop flag")
+        cap_beat(Sa, 5, A["tl"][2021], "the 2021 close")
+        cap_beat(Sa, 6, A_RACE[1] + 0.45, "the S&P final landing (≈ $75,300)", lead=None)
+        verdict_after(Sa, hb["t"][1], "gold's final, the climax")
+        claim("a", "condensed: the doublings (rungs, vo[8]) land between the climax and the verdict, >= 0.6 s before it",
+              round(Sa.d["verdict"]["t"] - Sa.get(rg + ("t",)), 2), ">= 0.6",
+              ok=hb["t"][1] < Sa.get(rg + ("t",)) <= Sa.d["verdict"]["t"] - 0.6 + 1e-9)
+        for i in range(3):
+            nxt = Sa.get(fs + (i + 1, "t")) if i + 1 < 3 else Sa.d["duration"]
+            claim("a", f"condensed: footerStep[{i}] up >= 1.2 s", round(nxt - Sa.get(fs + (i, "t")), 2), ">= 1.2",
+                  ok=nxt - Sa.get(fs + (i, "t")) >= 1.2 - 1e-9)
+    # what the words claim
+    claim("a", "'Stocks should crush gold' is then wrong: gold ahead at all 26 year-ends", sum(A_au[y] > A_sp[y] for y in range(2000, 2026)), 26)
+    claim("a", "'2008: stocks crash again'", SP[2008], "< 0", ok=SP[2008] < 0)
+    claim("a", "'Gold keeps climbing' in 2008", GOLD_A[2008], "> 0", ok=GOLD_A[2008] > 0)
+    claim("a", "'close in' 2013 -> 2021 (S&P/gold)", f"{A_sp[2013] / A_au[2013]:.2f} -> {A_sp[2021] / A_au[2021]:.2f}", "rising",
+          ok=A_sp[2021] / A_au[2021] > A_sp[2013] / A_au[2013])
+    claim("a", "'2021: still behind'", f"{A_sp[2021]:,.0f} < {A_au[2021]:,.0f}", "", ok=A_sp[2021] < A_au[2021])
+    claim("a", "'≈ one extra doubling' = log2 gap (a rounding)", round(A["dbl_au"] - A["dbl_sp"], 3), "≈ 1, not exact",
+          ok=round(A["dbl_au"] - A["dbl_sp"]) == 1 and abs(A["dbl_au"] - A["dbl_sp"] - 1) > 1e-6)
+    claim("a", "gold 2025 close-to-close %", round(GOLD_A[2025], 2), 64.57, ok=abs(GOLD_A[2025] - 64.58) < 0.02)
+    claim("a", "robust: 2nd gold source keeps '≈ 2×'", f"{A_alt[2025]:,.0f} → ×{A_alt[2025] / A_sp[2025]:.2f}", "rounds to 2",
+          ok=round(A_alt[2025] / A_sp[2025]) == 2)
+    claim("a", "robust: 2nd gold source, gold still up by 2002 (flag uses the primary table's ≈ +21%)",
+          f"{(A_alt[2002] / A_STAKE - 1) * 100:+.1f}%", "> 0", ok=A_alt[2002] > A_STAKE)
+    claim("a", "implied 1999 gold close ≈ $288 (sanity)", round(GOLD_CLOSE_2024 / (A_au[2024] / A_STAKE), 2), "285-292",
+          ok=285 <= GOLD_CLOSE_2024 / (A_au[2024] / A_STAKE) <= 292)
+    for u in Sa.uncovered():
+        claim("a", "uncovered string with a digit", u, "covered", ok=False)
+
+
+if common(Sa):
+    teaser_a(Sa)
 
 # ============================================================== 04b
 # Hook pass 2 (2026-10-07): the handicap duel "Your $1,000: 16 years of savings VS 1 year of the S&P 500".
 # Fixer pass (QA round 2, 2026-10-08): hit-stop on the 2010 close, two mid-race VO lines, the lens as the payoff,
 # the $8,280 VO line dropped (the gold plate and the caption carry it), the verdict at 32.7 s, 36.0 s in all.
 Sb = Spec("b")
-common(Sb)
-y1_tok = B["y1_disp"]                                            # "≈ $151"
-y1_note = f"year 1: ≈\u00a0+{y1_tok[2:]}"                        # U+00A0: the label never splits "≈" from its number
-goal_note = f"goal: ≈\u00a0+{y1_tok[2:]}"
-int_tok = f"${B['int_cap']}"                                     # "$30"
-SP_TOP = 4_000                                                   # "2020: stocks top $4,000."
-top_tok = f"${SP_TOP:,}"
-Sb.n(("header",), [f"${B_STAKE:,}", str(B["years"]), "1"])
-claim("b", "header '16 years of savings' = Jan 2010 -> Dec 2025", B["years"], 16)
-claim("b", "header: the viewer's stake ('Your $1,000') and both rivals named (R6, R7)",
-      all(w in Sb.d["header"] for w in ("Your", "savings", "S&P 500")), True)
-# fixer pass: the footer is one line (it was the second-heaviest text block on frame 1); the "under 0.5%" bound moved
-# to the description, and the years to the stake legend / year counter
-Sb.s(("footer",), "Savings: FDIC avg · S&P w/ dividends")
-Sb.n(("footer",), [])
-claim("b", "footer fits one line at 40 px mono (36 chars <= 37 at 23.2 px a char in 878 px)", len(Sb.d["footer"]), "<= 37",
-      ok=len(Sb.d["footer"]) <= 37 and "\n" not in Sb.d["footer"])
-claim("b", "'under 0.5%' (description): every savings rate used", max(FDIC.values()), "< 0.5", ok=max(FDIC.values()) < 0.5)
-Sb.s(("data", "stake"), f"${B_STAKE:,} each · Jan {B_Y0}")
-chart(Sb, B_RACE, B_Y0, B["x1"], [B_sp_pts, B_sv_pts], [B["fin_sp"], B["fin_sv"]], ["S&P 500", "Savings account"])
-claim("b", "x tickEvery", Sb.d["data"]["x"]["tickEvery"], 5)
-earn_tok = f"${B['earn_cap']}"
-vo_numbers(Sb, [
-    [y1_tok],                                                    # "Year one in the S&P: ≈ $151."
-    [str(B["years"])],                                           # "Savings gets 16 years to match it."
-    [],                                                          # "Stocks have already doubled."
-    [earn_tok],                                                  # "Savings? Under $10 so far."
-    ["2020", top_tok],                                           # "2020: stocks top $4,000."
-    ["2022", f"≈ {B['drop22']}%"],                               # "2022: stocks drop ≈ 18%."
-    ["2025", int_tok, str(B["years"])],                          # "2025: savings made under $30 in 16 years."
-    [y1_tok],                                                    # "The S&P's first year alone: ≈ $151."
-])
-seen_b = year_sync(Sb, B, B_Y0, B_RACE[1])
-# fixer pass: the COVID flag is gone (2020 closed +18.4%: it marked nothing), and the bear-market chip no longer
-# repeats the year the impact note "2022: ≈ −18%" carries
-events(Sb, B, B_RACE, B_Y0, B["x1"], [(2022.5, "Bear market", True)], seen_b)
-# the verdict takes a side (R12) and names the year: "1 year of the S&P 500" would read as any year, and 4 of the 16
-# earned less (judge 2). Fixer pass: it no longer repeats the lens card word for word.
-Sb.s(("verdict", "text"), f"The S&P 500's **{B_Y0} alone**\nbeat {B['years']} years of savings.")
-claim("b", "verdict 'beat': the S&P's 2010 gain > 16 years of savings interest (worst table + understatement)",
-      f"{B['y1']:.2f} > {B['int16']:.2f}", "", ok=B["y1"] > B["int16"])
-
-# ---- the hit-stop (lookOpts.hitStop): the race clock freezes at the 2010 close, holds while "≈ $151" is said, then
-# catches up (cubic Hermite, zero speed at `until`, unit speed at `rejoin`) and runs on the linear raceT clock again
-x_2010 = B_sp_pts[1][0]                                          # the 2010 close (x 2010.99)
-HS = Sb.get(("lookOpts", "hitStop"))
-claim("b", "hitStop = { x: the 2010 close, until 2.95, rejoin 6.6 }", HS, {"x": x_2010, "until": 2.95, "rejoin": 6.6})
-HS_A, HS_B, HS_C = t_of(x_2010, B_RACE, B_Y0, B["x1"]), HS["until"], HS["rejoin"]
 
 
-def warp_b(t):
-    """chart-race.js warp(): real t -> race-clock t"""
-    if t <= HS_A or t >= HS_C:
-        return t
-    if t <= HS_B:
-        return HS_A
-    c = HS_C - HS_B
-    u = (t - HS_B) / c
-    return HS_A + (HS_C - HS_A) * (3 * u * u - 2 * u ** 3) + c * (u ** 3 - u * u)
-
-
-def xb_of(t):
-    """04b's race clock with the hit-stop"""
-    return x_of(warp_b(t), B_RACE, B_Y0, B["x1"])
-
-
-t_y1 = round(B["tl"][B_Y0], 2)                                   # the 2010 close lands at 1.086 s
-s_y1 = said_at(Sb, 0, y1_tok)[0]
-claim("b", "hit-stop freezes as the 2010 close lands (≈ the year-1 beat)", round(HS_A, 3), f"{t_y1} ± 0.01", ok=abs(HS_A - t_y1) < 0.01)
-claim("b", "hit-stop holds while '≈ $151' (vo[0]) is said", round(s_y1, 2), f"{HS_A:.2f}..{HS_B}", ok=HS_A <= s_y1 < HS_B)
-hold_ts = [HS_A + k * (HS_B - HS_A) / 50 for k in range(51)]
-claim("b", "during the hold the S&P tip reads $1,151 (the 2010 close) and the year 2010",
-      sorted({usd_round(val_at(B_sp_pts, xb_of(t))) for t in hold_ts} | {str(math.floor(xb_of(t) + 1e-6)) for t in hold_ts}),
-      ["2010", "≈ $1,151"])
-claim("b", "during the hold the savings tip reads $1,002", sorted({usd_round(val_at(B_sv_pts, xb_of(t))) for t in hold_ts}), ["≈ $1,002"])
-claim("b", "... so on screen $1,151 − $1,000 = $151 checks (the 'year 1: ≈ +$151' note)", round(1151 - B_STAKE), 151)
-wts = [HS_B + k * (HS_C - HS_B) / 400 for k in range(401)]
-mono = all(warp_b(b) >= warp_b(a) - 1e-12 for a, b in zip(wts, wts[1:]))
-sp0 = (warp_b(HS_B + 1e-4) - warp_b(HS_B)) / 1e-4
-sp1 = (warp_b(HS_C) - warp_b(HS_C - 1e-4)) / 1e-4
-peak = max((warp_b(b) - warp_b(a)) / (b - a) for a, b in zip(wts, wts[1:]))
-claim("b", "catch-up is monotone, starts at speed 0 and rejoins at speed 1 (C1)", f"{sp0:.3f} / {sp1:.3f} / mono {mono}",
-      "0 / 1 / True", ok=mono and abs(sp0) < 0.01 and abs(sp1 - 1) < 0.01)
-claim("b", "catch-up peak speed (a sprint, not a jump cut)", round(peak, 2), "<= 2.5", ok=peak <= 2.5)
-yr_lines = [vo_t(Sb, i) for i, v in enumerate(Sb.d["vo"]) if re.search(r"\b20[0-3]\d\b", v["text"]) and i > 0]
-claim("b", "the clock is linear again before any year-synced VO line, flag or beat after the hold", HS_C,
-      f"<= {min(yr_lines + [vo_t(Sb, 2)])}", ok=HS_C <= min(yr_lines + [vo_t(Sb, 2)]))
-
-# frame 1: the race is already moving (raceT starts at -0.4 s), before the hit-stop
-x_f1b = xb_of(0.0)
-claim("b", "frame 1: race already moving, year counter still 2010", round(x_f1b, 4), "2010 < x < 2011", ok=B_Y0 < x_f1b < B_Y0 + 1)
-claim("b", "frame 1: S&P tip reads $1,041", usd_round(val_at(B_sp_pts, x_f1b)), "≈ $1,041")
-claim("b", "frame 1: savings tip reads $1,001", usd_round(val_at(B_sv_pts, x_f1b)), "≈ $1,001")
-# figure beats
-bt = ("lookOpts", "beats")
-s_dbl = round(said_at(Sb, 2, "doubled")[0], 2)
-s_top = round(said_at(Sb, 4, top_tok)[0], 2)
-want_beats = [
-    (t_y1, "cheer", 0, y1_note, None, {}),
-    # the goal holds to the race end, an ink note over a dashed rule (fixer pass: it was the dimmest text in the column)
-    (vo_t(Sb, 1), "think", 1, goal_note, round(B_RACE[1] - vo_t(Sb, 1), 2), {"chip": True}),
-    (s_dbl, "cheer", 0, None, None, {"pulse": True}),            # as "doubled" is said: his counter pops
-    (vo_t(Sb, 3), "peek", 1, None, 2.5, {"pulse": True}),       # "Savings? Under $10 so far.": he peeks, his counter pops
-    (s_top, "pump", 0, None, 1.0, {"pulse": True}),             # as "$4,000" is said: fist pump, his counter pops
-    (s_top, "shocked", 1, None, 1.0, {}),                        # ... and the savings walker gapes
-    # (the year is on the label, since the counter has moved on to 2024 when "≈ 18%" is said)
-    (vo_t(Sb, 5), "impact", 0, f"2022: ≈\u00a0−{B['drop22']}%", None, {}),
-    (B_RACE[1], "grow", 0, None, None, {}),
-    (vo_t(Sb, 6), "shrug", 1, f"under +{int_tok}", None, {}),
-    # the hero points back up at the lens card (its S&P row shows "≈ +$151"), so no note of his own
-    (vo_t(Sb, 7), "pointBack", 0, None, Sb.d["vo"][7]["d"], {}),
-    (Sb.d["verdict"]["t"], "cheer", 0, None, None, {}),          # a hop as the verdict lands
-]
-claim("b", "figure beat count", len(Sb.get(bt)), len(want_beats))
-for i, (t, act, ser, label, dur, flags) in enumerate(want_beats):
-    if i >= len(Sb.get(bt)):
-        break
-    bi = Sb.d["lookOpts"]["beats"][i]
-    claim("b", f"beat[{i}] {act} t", Sb.get(bt + (i, "t")), t, ok=abs(Sb.get(bt + (i, "t")) - t) < 0.006)
-    claim("b", f"beat[{i}] act", Sb.get(bt + (i, "act")), act)
-    claim("b", f"beat[{i}] series", Sb.get(bt + (i, "series")), ser)
-    claim("b", f"beat[{i}] d", bi.get("d"), dur,
-          ok=(dur is None and "d" not in bi) or (dur is not None and abs(Sb.get(bt + (i, "d")) - dur) < 0.006))
-    claim("b", f"beat[{i}] flags (pulse / chip)", {k: bi[k] for k in ("pulse", "chip") if k in bi}, flags)
-    if label is not None:
-        Sb.s(bt + (i, "label"), label)
+def teaser_b(Sb):
+    """the b teaser's checks (both cuts; Sb.cond picks the condensed cut's rules)"""
+    global x_f1b, EARN_WIN, earn_max, sweep, int_lo, int_hi
+    y1_tok = B["y1_disp"]                                            # "≈ $151"
+    y1_note = f"year 1: ≈\u00a0+{y1_tok[2:]}"                        # U+00A0: the label never splits "≈" from its number
+    goal_note = f"goal: ≈\u00a0+{y1_tok[2:]}"
+    int_tok = f"${B['int_cap']}"                                     # "$30"
+    SP_TOP = 4_000                                                   # "2020: stocks top $4,000."
+    top_tok = f"${SP_TOP:,}"
+    Sb.n(("header",), [f"${B_STAKE:,}", str(B["years"]), "1"])
+    claim("b", "header '16 years of savings' = Jan 2010 -> Dec 2025", B["years"], 16)
+    claim("b", "header: the viewer's stake ('Your $1,000') and both rivals named (R6, R7)",
+          all(w in Sb.d["header"] for w in ("Your", "savings", "S&P 500")), True)
+    # fixer pass: the footer is one line (it was the second-heaviest text block on frame 1); the "under 0.5%" bound moved
+    # to the description, and the years to the stake legend / year counter
+    Sb.s(("footer",), "Savings: FDIC avg · S&P w/ dividends")
+    Sb.n(("footer",), [])
+    claim("b", "footer fits one line at 40 px mono (36 chars <= 37 at 23.2 px a char in 878 px)", len(Sb.d["footer"]), "<= 37",
+          ok=len(Sb.d["footer"]) <= 37 and "\n" not in Sb.d["footer"])
+    claim("b", "'under 0.5%' (description): every savings rate used", max(FDIC.values()), "< 0.5", ok=max(FDIC.values()) < 0.5)
+    Sb.s(("data", "stake"), f"${B_STAKE:,} each · Jan {B_Y0}")
+    chart(Sb, B_RACE, B_Y0, B["x1"], [B_sp_pts, B_sv_pts], [B["fin_sp"], B["fin_sv"]], ["S&P 500", "Savings account"])
+    claim("b", "x tickEvery", Sb.d["data"]["x"]["tickEvery"], 5)
+    earn_tok = f"${B['earn_cap']}"
+    vo_numbers(Sb, [
+        [y1_tok],                                                    # "Year one in the S&P: ≈ $151."
+        [str(B["years"])],                                           # "Savings gets 16 years to match it."
+        [],                                                          # "Stocks have already doubled."
+        [earn_tok],                                                  # "Savings? Under $10 so far."
+        ["2020", top_tok],                                           # "2020: stocks top $4,000."
+        ["2022", f"≈ {B['drop22']}%"],                               # "2022: stocks drop ≈ 18%."
+        ["2025", int_tok, str(B["years"])],                          # "2025: savings made under $30 in 16 years."
+        [y1_tok],                                                    # "The S&P's first year alone: ≈ $151."
+    ])
+    # fixer pass: the COVID flag is gone (2020 closed +18.4%: it marked nothing), and the bear-market chip no longer
+    # repeats the year the impact note "2022: ≈ −18%" carries
+    if Sb.cond:
+        year_sync_cond(Sb, B, B_Y0, B_RACE[1])
+        events_cond(Sb, B, B_RACE, B_Y0, B["x1"], [(2022.5, "Bear market", 5)])
     else:
-        claim("b", f"beat[{i}] {act} has no label", "label" in bi, False)
-# figures: the savings walker trails 170 px behind his tip with a thin halo (chart-race.js lookOpts.figures)
-claim("b", "figures", Sb.get(("lookOpts", "figures")),
-      [{"series": 0, "color": "hero"}, {"series": 1, "color": "neutral", "lag": 170, "outline": 6}])
-claim("b", "fill: 'gap' (the green area is the gap between the lines, not the $0-$1K band)", Sb.d["lookOpts"]["fill"], "gap")
-Sb.n(("lookOpts", "gag"), ["1", f"≈ +{y1_tok[2:]}", top_tok, "2018", "2022", top_tok, str(B["years"])])
-claim("b", "'year 1' note pops as the 2010 close lands (not before)", t_y1, f"{B['tl'][B_Y0]:.3f}..+0.05",
-      ok=0 <= t_y1 - B["tl"][B_Y0] <= 0.05)
-claim("b", "the S&P tip shows the 2010 close when 'year 1' pops", round(val_at(B_sp_pts, xb_of(t_y1)), 2),
-      f">= {B_sp[B_Y0]:,.2f}", ok=val_at(B_sp_pts, xb_of(t_y1)) >= round(B_sp[B_Y0], 2) - 0.005)
-claim("b", "first payoff by ~3 s: '≈ +$151' on screen at", t_y1, "<= 3.0", ok=t_y1 <= 3.0)
-# a beat note shows for max(2.6 s, d), cut by the next note on the same figure (chart-race.js)
-def note_window(series, k):
-    beats = [b for b in Sb.d["lookOpts"]["beats"] if b.get("series") == series and b.get("label")]
-    b = beats[k]
-    t1 = b["t"] + max(BECKER_NOTE, b.get("d", 1.4))
-    if k + 1 < len(beats):
-        t1 = min(t1, beats[k + 1]["t"])
-    return b["t"], t1
+        seen_b = year_sync(Sb, B, B_Y0, B_RACE[1])
+        events(Sb, B, B_RACE, B_Y0, B["x1"], [(2022.5, "Bear market", True)], seen_b)
+    # the verdict takes a side (R12) and names the year: "1 year of the S&P 500" would read as any year, and 4 of the 16
+    # earned less (judge 2). Fixer pass: it no longer repeats the lens card word for word.
+    Sb.s(("verdict", "text"), f"The S&P 500's **{B_Y0} alone**\nbeat {B['years']} years of savings.")
+    claim("b", "verdict 'beat': the S&P's 2010 gain > 16 years of savings interest (worst table + understatement)",
+          f"{B['y1']:.2f} > {B['int16']:.2f}", "", ok=B["y1"] > B["int16"])
+
+    # ---- the hit-stop (lookOpts.hitStop): the race clock freezes at the 2010 close, holds while "≈ $151" is said, then
+    # catches up (cubic Hermite, zero speed at `until`, unit speed at `rejoin`) and runs on the linear raceT clock again
+    x_2010 = B_sp_pts[1][0]                                          # the 2010 close (x 2010.99)
+    HS = Sb.get(("lookOpts", "hitStop"))
+    # round 2: a 1.86 s freeze while "≈ $151" was read out; condensed: a 0.56 s freeze (the figure's cheer hop covers it),
+    # rejoining the linear clock before the first year-synced caption
+    hs_want = {"x": x_2010, "until": 1.1, "rejoin": 2.6} if Sb.cond else {"x": x_2010, "until": 2.95, "rejoin": 6.6}
+    claim("b", f"hitStop = {{ x: the 2010 close, until {hs_want['until']}, rejoin {hs_want['rejoin']} }}", HS, hs_want)
+    HS_A, HS_B, HS_C = t_of(x_2010, B_RACE, B_Y0, B["x1"]), HS["until"], HS["rejoin"]
 
 
-w_y1, w_goal = note_window(0, 0), note_window(1, 0)
-shown_while_said(Sb, 0, y1_tok, *w_y1, "the 'year 1: ≈ +$151' note (and the held $1,151 tip)")
-claim("b", "spoken '≈ $151' (vo[0]) by ~3 s", round(s_y1, 2), "<= 3.0", ok=s_y1 <= 3.0)
-claim("b", "the goal note holds from 'Savings gets 16 years' to the race end", [round(w_goal[0], 2), round(w_goal[1], 2)],
-      [vo_t(Sb, 1), B_RACE[1]], ok=abs(w_goal[0] - vo_t(Sb, 1)) < 0.006 and abs(w_goal[1] - B_RACE[1]) < 0.006)
-claim("b", "'16 years' (vo[1]) is the race window", Sb.d["vo"][1]["text"], "16 years", ok=f"{B['years']} years" in Sb.d["vo"][1]["text"])
-# spoken-number sync
-dbl_ts = [vo_t(Sb, 2) + k * 0.01 for k in range(int(Sb.d["vo"][2]["d"] * 100) + 1)]
-dbl_min = min(val_at(B_sp_pts, xb_of(tt)) for tt in dbl_ts)
-claim("b", "sync: 'Stocks have already doubled' holds on the S&P tip for the whole line", round(dbl_min, 2), f">= {2 * B_STAKE:,}",
-      ok=dbl_min >= 2 * B_STAKE)
-claim("b", "'doubled': the 2014 close is the first year-end at 2× ($2,051.29)", min(y for y in range(B_Y0, B_Y1 + 1) if B_sp[y] >= 2 * B_STAKE), 2014)
-EARN_WIN = (vo_t(Sb, 3), max(vo_end(Sb, 3), vo_t(Sb, 3) + BECKER_NOTE))  # conservative: the line, or 2.6 s if longer
-earn_ts = [EARN_WIN[0] + k * 0.01 for k in range(int((EARN_WIN[1] - EARN_WIN[0]) * 100) + 1)]
-earn_max = max(val_at(B_sv_pts, xb_of(tt)) - B_STAKE for tt in earn_ts)
-claim("b", f"sync: 'Under $10 so far' holds on the savings tip {EARN_WIN[0]:.1f}-{EARN_WIN[1]:.1f} s", round(earn_max, 2),
-      f"< {B['earn_cap']}", ok=earn_max < B["earn_cap"])
-top_ts = [s_top + k * 0.01 for k in range(int((vo_end(Sb, 4) - s_top) * 100) + 1)]
-top_min = min(val_at(B_sp_pts, xb_of(tt)) for tt in top_ts)
-claim("b", "sync: 'top $4,000' holds on the S&P tip from the moment it is said to the line's end", round(top_min, 2),
-      f">= {SP_TOP:,}", ok=top_min >= SP_TOP)
-x_cross = B_sp_pts[10][0] + (SP_TOP - B_sp_pts[10][1]) / (B_sp_pts[11][1] - B_sp_pts[10][1])
-claim("b", "'2020: stocks top $4,000': the S&P passes $4,000 during 2020 (2019 close $3,566.47 → 2020 close $4,222.70)",
-      round(x_cross, 3), "2020 <= x < 2021", ok=2020 <= x_cross < 2021 and B_sp[2019] < SP_TOP <= B_sp[2020])
-claim("b", "... and no year-end from 2020 on is under $4,000 (lowest: the 2020 close itself)", round(min(B_sp[y] for y in range(2020, 2026)), 2),
-      f">= {SP_TOP:,}", ok=min(B_sp[y] for y in range(2020, 2026)) >= SP_TOP)
-shown_while_said(Sb, 5, f"≈ {B['drop22']}%", vo_t(Sb, 5), vo_t(Sb, 5) + BECKER_NOTE, "the impact label '2022: ≈ −18%'")
-shown_while_said(Sb, 6, int_tok, vo_t(Sb, 6), vo_t(Sb, 6) + BECKER_NOTE, "the shrug label 'under +$30'")
-# the lens (lookOpts.lens): the payoff card. After the race, a card over the top-left of the plot draws both gains to
-# scale, since at the final axis ($5K steps) $151 and $24 are a few pixels each. Its strings are display strings; its
-# bars come from the series' own points (valueAt(to) − valueAt(from)), so they are checked against the model here.
-LENS_T = vo_t(Sb, 6) + BECKER_NOTE                               # 26.2 s: the shrug note "under +$30" hands off to it
-ln = ("lookOpts", "lens")
-claim("b", "lens opens as the shrug note ends", Sb.get(ln + ("t",)), round(LENS_T, 2), ok=abs(Sb.get(ln + ("t",)) - LENS_T) < 0.006)
-claim("b", "lens row count", len(Sb.get(ln + ("rows",))), 2)
-r0, r1 = ln + ("rows", 0), ln + ("rows", 1)
-claim("b", "lens row 0: savings over the whole race (series, from, to)", [Sb.get(r0 + (k,)) for k in ("series", "from", "to")],
-      [1, B_Y0, B["x1"]], ok=[Sb.get(r0 + (k,)) for k in ("series", "from")] == [1, B_Y0] and abs(Sb.get(r0 + ("to",)) - B["x1"]) < 0.006)
-claim("b", "lens row 0 shows from the lens' own t", "t" in Sb.d["lookOpts"]["lens"]["rows"][0], False)
-Sb.s(r0 + ("label",), f"{B['years']} years of savings")
-Sb.s(r0 + ("display",), f"under +{int_tok}")
-lens_g0 = val_at(B_sv_pts, B["x1"]) - val_at(B_sv_pts, B_Y0)
-claim("b", "lens row 0 bar = 16 years of interest, under $30", f"{lens_g0:.2f}", f"{B['int16']:.2f} < {B['int_cap']}",
-      ok=abs(lens_g0 - B["int16"]) < 0.005 and lens_g0 < B["int_cap"])
-claim("b", "lens row 1: the S&P 500's first year (t, series, from, to)", [Sb.get(r1 + (k,)) for k in ("t", "series", "from", "to")],
-      [vo_t(Sb, 7), 0, B_Y0, x_2010], ok=abs(Sb.get(r1 + ("t",)) - vo_t(Sb, 7)) < 0.006 and [Sb.get(r1 + (k,)) for k in ("series", "from")] == [0, B_Y0]
-      and abs(Sb.get(r1 + ("to",)) - x_2010) < 0.006)
-Sb.s(r1 + ("label",), f"S&P 500 in {B_Y0}")
-Sb.s(r1 + ("display",), f"≈ +{y1_tok[2:]}")
-lens_g1 = val_at(B_sp_pts, x_2010) - val_at(B_sp_pts, B_Y0)
-claim("b", "lens row 1 bar = the S&P 500's 2010 gain", f"{lens_g1:.2f}", f"{B['y1']:.2f} → {y1_tok}",
-      ok=abs(lens_g1 - B["y1"]) < 0.005 and usd_round(lens_g1) == y1_tok)
-claim("b", "lens bars to scale: the savings bar is under 1/5 of the S&P's (ratio not displayed)", round(lens_g0 / lens_g1, 3), "< 0.2",
-      ok=lens_g0 / lens_g1 < 0.2)
-# chart-race.js: a row's bar starts at its t + 0.1 s and grows for 0.35 + 0.5 × (its gain ÷ the largest) s; its value pops
-# 0.04 s before the bar is full (the largest with a punch), and the card holds to the end
-lens_val_on = lambda t_row, frac: t_row + 0.1 + 0.35 + 0.5 * frac - 0.04
-t_v0, t_v1 = lens_val_on(LENS_T, lens_g0 / lens_g1), lens_val_on(vo_t(Sb, 7), 1.0)
-claim("b", "lens: 'under +$30' lands after '$30' is said under the shrug note", round(t_v0, 2), f"> {said_at(Sb, 6, int_tok)[0]:.2f}",
-      ok=t_v0 > said_at(Sb, 6, int_tok)[0])
-shown_while_said(Sb, 7, y1_tok, t_v1, DUR["b"], "the lens row 'S&P 500 in 2010: ≈ +$151'")
-claim("b", "the 16-year total is said once the race has ended", vo_t(Sb, 6), f">= {B_RACE[1]}", ok=vo_t(Sb, 6) >= B_RACE[1])
-claim("b", "the payoff lands, then the verdict follows within 4 s (no static restatement)", round(Sb.d["verdict"]["t"] - t_v1, 2), "<= 4.0",
-      ok=0 < Sb.d["verdict"]["t"] - t_v1 <= 4.0)
-claim("b", "no VO line restates the final (≈ $8,280 is on the gold plate and in the description)",
-      any(B["fin_sp"] in v["text"] for v in Sb.d["vo"]), False)
-sfx_on(Sb, [(t_y1, "pop"), (HS_B, "whoosh"), (vo_t(Sb, 1), "swipe"), (s_dbl, "ding"), (vo_t(Sb, 3), "tick"), (s_top, "pop"),
-            (vo_t(Sb, 5), "hit"), (B_RACE[1], "roll"), (round(vo_t(Sb, 6) + 0.1, 2), "boing"), (LENS_T, "pop"),
-            (round(vo_t(Sb, 7) + 0.1, 2), "whoosh"), (round(t_v1, 2), "pop"), (Sb.d["verdict"]["t"], "thud")])
-claim("b", "'2022: stocks drop' (S&P 2022 %) on the 2022 close", f"{SP[2022]} @ {B['tl'][2022]:.2f}", "< 0", ok=SP[2022] < 0)
-# what the words claim
-claim("b", "'Year one in the S&P: ≈ $151' = $1,000 × 15.06% (2010)", f"{B['y1']:.2f}", "150.60", ok=abs(B["y1"] - 150.60) < 0.005)
-claim("b", "'16 years to match it' fails: 16 years of interest < year 1", f"{B['int16']:.2f} < {B['y1']:.2f}", "", ok=B["int16"] < B["y1"])
-claim("b", "'under $30 in 16 years'", f"{B['int16']:.2f}", f"< {B['int_cap']}", ok=B["int16"] < B["int_cap"])
-claim("b", "2010 is a typical S&P year, not a cherry-pick: within 1 pt of the 16-year CAGR",
-      f"{SP[B_Y0]:.2f}% vs {B['cagr_sp'] * 100:.2f}%", "|gap| < 1", ok=abs(SP[B_Y0] - B["cagr_sp"] * 100) < 1)
-best = max(range(B_Y0, B_Y1 + 1), key=lambda y: SP[y])
-claim("b", "... and not the best year in the window", f"best {best} {SP[best]}%", "not 2010", ok=best != B_Y0)
-claim("b", "savings line never dips (gag): every rate positive", all(FDIC[y] > 0 for y in range(2010, 2026)), True)
-claim("b", "savings ends below $1,000 of buying power (pinned comment)", round(B["real_sv"], 2), f"< {B_STAKE}", ok=B["real_sv"] < B_STAKE)
-claim("b", "CPI ratio Dec-09 -> Dec-25", round(B["infl"], 4), 1.5006, ok=abs(B["infl"] - 1.5006) < 0.0001)
-claim("b", "robust: savings at the max rate every year (S&P still ≥ 7×)", usd_round(B["sv_hi"]), "S&P still ≥ 7×", ok=B_sp[2025] / B["sv_hi"] >= 7)
-claim("b", "robust: savings at the max rate every year still below prices", usd_round(B["sv_hi"]), f"< {usd_round(B['need'])}", ok=B["sv_hi"] < B["need"])
-for y in FDIC_INTERP:
-    claim("b", f"FDIC {y} = midpoint of its neighbours (assumption)", round(FDIC[y], 4),
-          f"({FDIC_KNOWN[y - 1]}+{FDIC_KNOWN[y + 1]})/2", ok=abs(FDIC[y] - (FDIC_KNOWN[y - 1] + FDIC_KNOWN[y + 1]) / 2) < 1e-12)
-# robustness sweep: every plausible value of every uncertain FDIC input leaves every on-screen savings figure unchanged
-sweep, worst, int_lo, int_hi, earn_hi = 0, [], 1e9, 0.0, 0.0
-alt_keys = sorted(FDIC_ALT)
-for combo in itertools.product(*[FDIC_ALT[k] for k in alt_keys]):
-    known = dict(FDIC_KNOWN)
-    known.update(dict(zip(alt_keys, combo)))
-    mids = [((known[y - 1], known[y + 1]), y) for y in FDIC_INTERP]
-    for pick in itertools.product(*[(0, 1, 2)] * len(FDIC_INTERP)):
-        table = dict(known)
-        for (lo_hi, y), p in zip(mids, pick):
-            table[y] = (lo_hi[0], (lo_hi[0] + lo_hi[1]) / 2, lo_hi[1])[p]
-        vals, pts = grow(table, B_Y0, B_Y1, B_STAKE)
-        sweep += 1
-        i16 = vals[B_Y1] - B_STAKE
-        e_max = max(val_at(pts, xb_of(tt)) - B_STAKE for tt in earn_ts)
-        int_lo, int_hi, earn_hi = min(int_lo, i16), max(int_hi, i16), max(earn_hi, e_max)
-        shown = (usd_sig(vals[2025]), usd_sig(vals[2025] / B["infl"], 2), int_round((1 - vals[2025] / B["infl"] / B_STAKE) * 100),
-                 e_max < B["earn_cap"], i16 + B["understate"] < B["int_cap"], i16 + B["understate"] < B["y1"],
-                 all(r > 0 for r in table.values()))
-        if shown != (B["fin_sv"], B["real_disp"], B["lost"], True, True, True, True):
-            worst.append((combo, pick, shown))
-claim("b", f"robust: FDIC sweep ({sweep} input tables) leaves ≈ $1,020 / ≈ $680 / ≈ 32% / under $10 / under $30 (+$2) / never down",
-      len(worst), 0, ok=not worst)
-claim("b", "robust: 16-year interest range over the sweep", f"{int_lo:.2f}-{int_hi:.2f}", f"< {B['int_cap']} even + ${B['understate']:.0f}",
-      ok=int_hi + B["understate"] < B["int_cap"])
-claim("b", "robust: verdict ratio year 1 ÷ worst 16-year interest", round(B["y1"] / (int_hi + B["understate"]), 2), ">= 5",
-      ok=B["y1"] / (int_hi + B["understate"]) >= 5)
-# pinned comment: the S&P years that earned less on $1,000 than 16 years of savings did (in every table)
-slow = [y for y in range(B_Y0, B_Y1 + 1) if B_STAKE * SP[y] / 100 < int_lo]
-claim("b", "pinned: S&P years that made less on $1,000 than 16 years of savings (every table)", slow, [2011, 2015, 2018, 2022])
-claim("b", "pinned: 2011 ≈ $21, 2015 ≈ $14", [usd_round(B_STAKE * SP[2011] / 100), usd_round(B_STAKE * SP[2015] / 100)], ["≈ $21", "≈ $14"])
-for u in Sb.uncovered():
-    claim("b", "uncovered string with a digit", u, "covered", ok=False)
+    def warp_b(t):
+        """chart-race.js warp(): real t -> race-clock t"""
+        if t <= HS_A or t >= HS_C:
+            return t
+        if t <= HS_B:
+            return HS_A
+        c = HS_C - HS_B
+        u = (t - HS_B) / c
+        return HS_A + (HS_C - HS_A) * (3 * u * u - 2 * u ** 3) + c * (u ** 3 - u * u)
+
+
+    def xb_of(t):
+        """04b's race clock with the hit-stop"""
+        return x_of(warp_b(t), B_RACE, B_Y0, B["x1"])
+
+
+    t_y1 = math.ceil(B["tl"][B_Y0] * 100 - 1e-9) / 100              # the first 0.01 s step at or after the 2010 close
+    claim("b", "hit-stop freezes as the 2010 close lands (≈ the year-1 beat)", round(HS_A, 3), f"{t_y1} ± 0.01", ok=abs(HS_A - t_y1) < 0.01)
+    if Sb.cond:
+        claim("b", "condensed: the hit-stop holds 0.4-0.7 s (long enough to read $1,151, short of a still moment)",
+              round(HS_B - HS_A, 2), "0.4..0.7", ok=0.4 <= HS_B - HS_A <= 0.7)
+        claim("b", "condensed: the hook caption ('≈ $151', up from frame 1) is still up as the hold starts", round(cap_end(Sb, 0), 2),
+              f">= {HS_A + 0.4:.2f}", ok=cap_end(Sb, 0) >= HS_A + 0.4)
+    else:
+        s_y1 = said_at(Sb, 0, y1_tok)[0]
+        claim("b", "hit-stop holds while '≈ $151' (vo[0]) is said", round(s_y1, 2), f"{HS_A:.2f}..{HS_B}", ok=HS_A <= s_y1 < HS_B)
+    hold_ts = [HS_A + k * (HS_B - HS_A) / 50 for k in range(51)]
+    claim("b", "during the hold the S&P tip reads $1,151 (the 2010 close) and the year 2010",
+          sorted({usd_round(val_at(B_sp_pts, xb_of(t))) for t in hold_ts} | {str(math.floor(xb_of(t) + 1e-6)) for t in hold_ts}),
+          ["2010", "≈ $1,151"])
+    claim("b", "during the hold the savings tip reads $1,002", sorted({usd_round(val_at(B_sv_pts, xb_of(t))) for t in hold_ts}), ["≈ $1,002"])
+    claim("b", "... so on screen $1,151 − $1,000 = $151 checks (the 'year 1: ≈ +$151' note)", round(1151 - B_STAKE), 151)
+    wts = [HS_B + k * (HS_C - HS_B) / 400 for k in range(401)]
+    mono = all(warp_b(b) >= warp_b(a) - 1e-12 for a, b in zip(wts, wts[1:]))
+    sp0 = (warp_b(HS_B + 1e-4) - warp_b(HS_B)) / 1e-4
+    sp1 = (warp_b(HS_C) - warp_b(HS_C - 1e-4)) / 1e-4
+    peak = max((warp_b(b) - warp_b(a)) / (b - a) for a, b in zip(wts, wts[1:]))
+    claim("b", "catch-up is monotone, starts at speed 0 and rejoins at speed 1 (C1)", f"{sp0:.3f} / {sp1:.3f} / mono {mono}",
+          "0 / 1 / True", ok=mono and abs(sp0) < 0.01 and abs(sp1 - 1) < 0.01)
+    claim("b", "catch-up peak speed (a sprint, not a jump cut)", round(peak, 2), "<= 2.5", ok=peak <= 2.5)
+    yr_lines = [vo_t(Sb, i) for i, v in enumerate(Sb.d["vo"]) if re.search(r"\b20[0-3]\d\b", v["text"]) and i > 0]
+    claim("b", "the clock is linear again before any year-synced VO line, flag or beat after the hold", HS_C,
+          f"<= {min(yr_lines + [vo_t(Sb, 2)])}", ok=HS_C <= min(yr_lines + [vo_t(Sb, 2)]))
+
+    # frame 1: the race is already moving (raceT starts at -0.4 s), before the hit-stop
+    x_f1b = xb_of(0.0)
+    claim("b", "frame 1: race already moving, year counter still 2010", round(x_f1b, 4), "2010 < x < 2011", ok=B_Y0 < x_f1b < B_Y0 + 1)
+    claim("b", "frame 1: S&P tip reads $1,041", usd_round(val_at(B_sp_pts, x_f1b)), "≈ $1,041")
+    claim("b", "frame 1: savings tip reads $1,001", usd_round(val_at(B_sv_pts, x_f1b)), "≈ $1,001")
+    # figure beats
+    bt = ("lookOpts", "beats")
+    # the S&P tip passes $4,000 (x 2020.65) on the linear clock (after the hit-stop's rejoin)
+    x_top = next(xa + (SP_TOP - va) / (vb - va) * (xb - xa) for (xa, va), (xb, vb) in zip(B_sp_pts, B_sp_pts[1:]) if va < SP_TOP <= vb)
+    t_top = round(t_of(x_top, B_RACE, B_Y0, B["x1"]), 2)
+    if Sb.cond:
+        # condensed: captions, not narration. Each beat lands on its picture (the close, the crossing) inside its caption
+        s_dbl = vo_t(Sb, 2)                                           # "Stocks have already doubled." comes up: he cheers
+        s_top = t_top                                                 # the tip passes $4,000: the fist pump
+        lens_o = Sb.get(("lookOpts", "lens"))
+        row1_t = lens_o["rows"][1].get("t", lens_o["t"])
+        # fixer pass (critic, 2026-10-13): row 1 is a shot (its own `d`, 0.3 s), its value pops at t + 0.1 + d − 0.04,
+        # and the hero reacts on it: he points back as it shoots, punches the air (pump) as "≈ +$151" lands, then the hop
+        t_shot = row1_t + 0.1 + lens_o["rows"][1].get("d", 0.85) - 0.04
+        t_cheer = round(Sb.d["verdict"]["t"] - 0.44, 2)
+        want_beats = [
+            (t_y1, "cheer", 0, y1_note, None, {}),
+            (vo_t(Sb, 1), "think", 1, goal_note, round(B_RACE[1] - vo_t(Sb, 1), 2), {"chip": True}),
+            (s_dbl, "cheer", 0, None, None, {"pulse": True}),
+            (vo_t(Sb, 3), "peek", 1, None, Sb.d["vo"][3]["d"], {"pulse": True}),
+            (s_top, "pump", 0, None, 1.0, {"pulse": True}),
+            (s_top, "shocked", 1, None, 1.0, {}),
+            (round(B["tl"][2022], 2), "impact", 0, f"2022: ≈\u00a0−{B['drop22']}%", None, {}),
+            (B_RACE[1], "grow", 0, None, None, {}),
+            (B_RACE[1], "shrug", 1, f"under +{int_tok}", None, {}),
+            # he points back up as the card's S&P row shoots (held until the hop; the pump blends over it), punches the air
+            # as its value lands (held at full weight until the hop takes over: the kit fades a beat over its last 0.35 s),
+            # then a hop (0.44 s) that lands as the verdict lands
+            (row1_t, "pointBack", 0, None, round(t_cheer - row1_t, 2), {}),
+            (round(t_shot, 2), "pump", 0, None, round(t_cheer + 0.35 - t_shot, 2), {}),
+            (t_cheer, "cheer", 0, None, None, {}),
+        ]
+    else:
+        s_dbl = round(said_at(Sb, 2, "doubled")[0], 2)
+        s_top = round(said_at(Sb, 4, top_tok)[0], 2)
+        want_beats = [
+            (t_y1, "cheer", 0, y1_note, None, {}),
+            # the goal holds to the race end, an ink note over a dashed rule (fixer pass: it was the dimmest text in the column)
+            (vo_t(Sb, 1), "think", 1, goal_note, round(B_RACE[1] - vo_t(Sb, 1), 2), {"chip": True}),
+            (s_dbl, "cheer", 0, None, None, {"pulse": True}),            # as "doubled" is said: his counter pops
+            (vo_t(Sb, 3), "peek", 1, None, 2.5, {"pulse": True}),       # "Savings? Under $10 so far.": he peeks, his counter pops
+            (s_top, "pump", 0, None, 1.0, {"pulse": True}),             # as "$4,000" is said: fist pump, his counter pops
+            (s_top, "shocked", 1, None, 1.0, {}),                        # ... and the savings walker gapes
+            # (the year is on the label, since the counter has moved on to 2024 when "≈ 18%" is said)
+            (vo_t(Sb, 5), "impact", 0, f"2022: ≈\u00a0−{B['drop22']}%", None, {}),
+            (B_RACE[1], "grow", 0, None, None, {}),
+            (vo_t(Sb, 6), "shrug", 1, f"under +{int_tok}", None, {}),
+            # the hero points back up at the lens card (its S&P row shows "≈ +$151"), so no note of his own
+            (vo_t(Sb, 7), "pointBack", 0, None, Sb.d["vo"][7]["d"], {}),
+            (Sb.d["verdict"]["t"], "cheer", 0, None, None, {}),          # a hop as the verdict lands
+        ]
+    claim("b", "figure beat count", len(Sb.get(bt)), len(want_beats))
+    for i, (t, act, ser, label, dur, flags) in enumerate(want_beats):
+        if i >= len(Sb.get(bt)):
+            break
+        bi = Sb.d["lookOpts"]["beats"][i]
+        claim("b", f"beat[{i}] {act} t", Sb.get(bt + (i, "t")), t, ok=abs(Sb.get(bt + (i, "t")) - t) < 0.006)
+        claim("b", f"beat[{i}] act", Sb.get(bt + (i, "act")), act)
+        claim("b", f"beat[{i}] series", Sb.get(bt + (i, "series")), ser)
+        claim("b", f"beat[{i}] d", bi.get("d"), dur,
+              ok=(dur is None and "d" not in bi) or (dur is not None and isinstance(bi.get("d"), (int, float))
+                                                      and abs(Sb.get(bt + (i, "d")) - dur) < 0.006))
+        claim("b", f"beat[{i}] flags (pulse / chip)", {k: bi[k] for k in ("pulse", "chip") if k in bi}, flags)
+        if label is not None:
+            Sb.s(bt + (i, "label"), label)
+        else:
+            claim("b", f"beat[{i}] {act} has no label", "label" in bi, False)
+    # figures: the savings walker trails 170 px behind his tip with a thin halo (chart-race.js lookOpts.figures)
+    claim("b", "figures", Sb.get(("lookOpts", "figures")),
+          [{"series": 0, "color": "hero"}, {"series": 1, "color": "neutral", "lag": 170, "outline": 6}])
+    claim("b", "fill: 'gap' (the green area is the gap between the lines, not the $0-$1K band)", Sb.d["lookOpts"]["fill"], "gap")
+    Sb.n(("lookOpts", "gag"), ["1", f"≈ +{y1_tok[2:]}", top_tok, "2018", "2022", top_tok, str(B["years"])])
+    claim("b", "'year 1' note pops as the 2010 close lands (not before)", t_y1, f"{B['tl'][B_Y0]:.3f}..+0.05",
+          ok=0 <= t_y1 - B["tl"][B_Y0] <= 0.05)
+    claim("b", "the S&P tip shows the 2010 close when 'year 1' pops", round(val_at(B_sp_pts, xb_of(t_y1)), 2),
+          f">= {B_sp[B_Y0]:,.2f}", ok=val_at(B_sp_pts, xb_of(t_y1)) >= round(B_sp[B_Y0], 2) - 0.005)
+    claim("b", "first payoff by ~3 s: '≈ +$151' on screen at", t_y1, "<= 3.0", ok=t_y1 <= 3.0)
+    # a beat note shows for max(2.6 s, d), cut by the next note on the same figure (chart-race.js)
+    def note_window(series, k):
+        beats = [b for b in Sb.d["lookOpts"]["beats"] if b.get("series") == series and b.get("label")]
+        b = beats[k]
+        t1 = b["t"] + max(BECKER_NOTE, b.get("d", 1.4))
+        if k + 1 < len(beats):
+            t1 = min(t1, beats[k + 1]["t"])
+        return b["t"], t1
+
+
+    w_y1, w_goal = note_window(0, 0), note_window(1, 0)
+    if Sb.cond:
+        # the hook caption is complete on frame 1, so it leads the note (the 2010 close, 0.55 s) by more than CAP_LEAD
+        cap_sync(Sb, 0, y1_tok, *w_y1, "the 'year 1: ≈ +$151' note (and the held $1,151 tip)", lead=1.0)
+    else:
+        shown_while_said(Sb, 0, y1_tok, *w_y1, "the 'year 1: ≈ +$151' note (and the held $1,151 tip)")
+        claim("b", "spoken '≈ $151' (vo[0]) by ~3 s", round(s_y1, 2), "<= 3.0", ok=s_y1 <= 3.0)
+    claim("b", "the goal note holds from 'Savings gets 16 years' to the race end", [round(w_goal[0], 2), round(w_goal[1], 2)],
+          [vo_t(Sb, 1), B_RACE[1]], ok=abs(w_goal[0] - vo_t(Sb, 1)) < 0.006 and abs(w_goal[1] - B_RACE[1]) < 0.006)
+    claim("b", "'16 years' (vo[1]) is the race window", Sb.d["vo"][1]["text"], "16 years", ok=f"{B['years']} years" in Sb.d["vo"][1]["text"])
+    # spoken-number sync
+    dbl_ts = [vo_t(Sb, 2) + k * 0.01 for k in range(int(Sb.d["vo"][2]["d"] * 100) + 1)]
+    dbl_min = min(val_at(B_sp_pts, xb_of(tt)) for tt in dbl_ts)
+    claim("b", "sync: 'Stocks have already doubled' holds on the S&P tip for the whole line", round(dbl_min, 2), f">= {2 * B_STAKE:,}",
+          ok=dbl_min >= 2 * B_STAKE)
+    claim("b", "'doubled': the 2014 close is the first year-end at 2× ($2,051.29)", min(y for y in range(B_Y0, B_Y1 + 1) if B_sp[y] >= 2 * B_STAKE), 2014)
+    if Sb.cond:
+        EARN_WIN = (vo_t(Sb, 3), cap_end(Sb, 3))                    # the caption's time on screen (its 0.15 s fade included)
+    else:
+        EARN_WIN = (vo_t(Sb, 3), max(vo_end(Sb, 3), vo_t(Sb, 3) + BECKER_NOTE))  # conservative: the line, or 2.6 s if longer
+    earn_ts = [EARN_WIN[0] + k * 0.01 for k in range(int((EARN_WIN[1] - EARN_WIN[0]) * 100) + 1)]
+    earn_max = max(val_at(B_sv_pts, xb_of(tt)) - B_STAKE for tt in earn_ts)
+    claim("b", f"sync: 'Under $10 so far' holds on the savings tip {EARN_WIN[0]:.1f}-{EARN_WIN[1]:.1f} s", round(earn_max, 2),
+          f"< {B['earn_cap']}", ok=earn_max < B["earn_cap"])
+    top_ts = [s_top + k * 0.01 for k in range(int((vo_end(Sb, 4) - s_top) * 100) + 1)]
+    top_min = min(val_at(B_sp_pts, xb_of(tt)) for tt in top_ts)
+    claim("b", "sync: 'top $4,000' holds on the S&P tip from the moment it is said to the line's end", round(top_min, 2),
+          f">= {SP_TOP:,}", ok=top_min >= SP_TOP)
+    if Sb.cond:
+        cap_beat(Sb, 4, t_top, "the S&P tip passing $4,000 (the fist pump)")
+    x_cross = B_sp_pts[10][0] + (SP_TOP - B_sp_pts[10][1]) / (B_sp_pts[11][1] - B_sp_pts[10][1])
+    claim("b", "'2020: stocks top $4,000': the S&P passes $4,000 during 2020 (2019 close $3,566.47 → 2020 close $4,222.70)",
+          round(x_cross, 3), "2020 <= x < 2021", ok=2020 <= x_cross < 2021 and B_sp[2019] < SP_TOP <= B_sp[2020])
+    claim("b", "... and no year-end from 2020 on is under $4,000 (lowest: the 2020 close itself)", round(min(B_sp[y] for y in range(2020, 2026)), 2),
+          f">= {SP_TOP:,}", ok=min(B_sp[y] for y in range(2020, 2026)) >= SP_TOP)
+    if Sb.cond:
+        t_imp = Sb.d["lookOpts"]["beats"][6]["t"]
+        cap_beat(Sb, 5, B["tl"][2022], "the 2022 close (the impact)")
+        cap_sync(Sb, 5, f"≈ {B['drop22']}%", t_imp, t_imp + BECKER_NOTE, "the impact label '2022: ≈ −18%'")
+        cap_sync(Sb, 6, int_tok, B_RACE[1], B_RACE[1] + BECKER_NOTE, "the shrug label 'under +$30'")
+    else:
+        shown_while_said(Sb, 5, f"≈ {B['drop22']}%", vo_t(Sb, 5), vo_t(Sb, 5) + BECKER_NOTE, "the impact label '2022: ≈ −18%'")
+        shown_while_said(Sb, 6, int_tok, vo_t(Sb, 6), vo_t(Sb, 6) + BECKER_NOTE, "the shrug label 'under +$30'")
+    # the lens (lookOpts.lens): the payoff card. After the race, a card over the top-left of the plot draws both gains to
+    # scale, since at the final axis ($5K steps) $151 and $24 are a few pixels each. Its strings are display strings; its
+    # bars come from the series' own points (valueAt(to) − valueAt(from)), so they are checked against the model here.
+    ln = ("lookOpts", "lens")
+    if Sb.cond:
+        # condensed: the card drops in once the winner's number has hit the gold plate (raceT[1] + 0.7), while
+        # "2025: savings made under $30 in 16 years." is up, so its first row lands under that caption
+        LENS_T = Sb.get(ln + ("t",))
+        claim("b", "condensed: the lens opens after the plate lands (raceT[1] + 0.7) while vo[6] is up", round(LENS_T, 2),
+              f"{B_RACE[1] + 0.7:.2f}..{vo_end(Sb, 6):.2f}", ok=B_RACE[1] + 0.7 <= LENS_T <= vo_end(Sb, 6))
+    else:
+        LENS_T = vo_t(Sb, 6) + BECKER_NOTE                           # 26.2 s: the shrug note "under +$30" hands off to it
+        claim("b", "lens opens as the shrug note ends", Sb.get(ln + ("t",)), round(LENS_T, 2), ok=abs(Sb.get(ln + ("t",)) - LENS_T) < 0.006)
+    claim("b", "lens row count", len(Sb.get(ln + ("rows",))), 2)
+    r0, r1 = ln + ("rows", 0), ln + ("rows", 1)
+    claim("b", "lens row 0: savings over the whole race (series, from, to)", [Sb.get(r0 + (k,)) for k in ("series", "from", "to")],
+          [1, B_Y0, B["x1"]], ok=[Sb.get(r0 + (k,)) for k in ("series", "from")] == [1, B_Y0] and abs(Sb.get(r0 + ("to",)) - B["x1"]) < 0.006)
+    claim("b", "lens row 0 shows from the lens' own t", "t" in Sb.d["lookOpts"]["lens"]["rows"][0], False)
+    Sb.s(r0 + ("label",), f"{B['years']} years of savings")
+    Sb.s(r0 + ("display",), f"under +{int_tok}")
+    lens_g0 = val_at(B_sv_pts, B["x1"]) - val_at(B_sv_pts, B_Y0)
+    claim("b", "lens row 0 bar = 16 years of interest, under $30", f"{lens_g0:.2f}", f"{B['int16']:.2f} < {B['int_cap']}",
+          ok=abs(lens_g0 - B["int16"]) < 0.005 and lens_g0 < B["int_cap"])
+    # round 2: row 1 shoots as vo[7] starts; condensed: as the hero points back (vo[7] comes up over the bar's eased tail)
+    row1_want = Sb.d["lookOpts"]["beats"][9]["t"] if Sb.cond else vo_t(Sb, 7)
+    claim("b", "lens row 1: the S&P 500's first year (t, series, from, to)", [Sb.get(r1 + (k,)) for k in ("t", "series", "from", "to")],
+          [row1_want, 0, B_Y0, x_2010], ok=abs(Sb.get(r1 + ("t",)) - row1_want) < 0.006 and [Sb.get(r1 + (k,)) for k in ("series", "from")] == [0, B_Y0]
+          and abs(Sb.get(r1 + ("to",)) - x_2010) < 0.006)
+    Sb.s(r1 + ("label",), f"S&P 500 in {B_Y0}")
+    Sb.s(r1 + ("display",), f"≈ +{y1_tok[2:]}")
+    lens_g1 = val_at(B_sp_pts, x_2010) - val_at(B_sp_pts, B_Y0)
+    claim("b", "lens row 1 bar = the S&P 500's 2010 gain", f"{lens_g1:.2f}", f"{B['y1']:.2f} → {y1_tok}",
+          ok=abs(lens_g1 - B["y1"]) < 0.005 and usd_round(lens_g1) == y1_tok)
+    claim("b", "lens bars to scale: the savings bar is under 1/5 of the S&P's (ratio not displayed)", round(lens_g0 / lens_g1, 3), "< 0.2",
+          ok=lens_g0 / lens_g1 < 0.2)
+    # chart-race.js: a row's bar starts at its t + 0.1 s and grows for 0.35 + 0.5 × (its gain ÷ the largest) s, or for its own
+    # rows[k].d (opt-in, the fixer pass); its value pops 0.04 s before the bar is full (the largest with a punch), and the
+    # card holds to the end
+    lens_val_on = lambda t_row, frac, d=None: t_row + 0.1 + (d if d is not None else 0.35 + 0.5 * frac) - 0.04
+    lr = Sb.d["lookOpts"]["lens"]["rows"]
+    t_v0, t_v1 = lens_val_on(LENS_T, lens_g0 / lens_g1, lr[0].get("d")), lens_val_on(Sb.get(r1 + ("t",)), 1.0, lr[1].get("d"))
+    claim("b", "lens row 0 (savings) fills at the kit's pace (no `d`)", lr[0].get("d"), None)
+    if Sb.cond:
+        # fixer pass (critic, 2026-10-13: 13.5-14.5 s was near-still while only row 1's bar eased in over 0.85 s): the payoff
+        # is a shot, row 1's bar grows in 0.25-0.4 s, and its whoosh is as short as the shot
+        claim("b", "condensed: lens row 1 (the payoff) is a shot: its bar grows in 0.25-0.4 s (`d`)", lr[1].get("d"), "0.25..0.4",
+              ok=isinstance(lr[1].get("d"), (int, float)) and 0.25 <= lr[1]["d"] <= 0.4)
+        wh = [c for c in Sb.d["sfx"] if c["kind"] == "whoosh" and abs(c["t"] - (Sb.get(r1 + ("t",)) + 0.1)) < 0.006]
+        claim("b", "condensed: the shot's whoosh lasts the shot (d .. d + 0.1 s)", wh[0].get("dur") if wh else None,
+              f"{lr[1].get('d')}..{(lr[1].get('d') or 0) + 0.1:.2f}",
+              ok=bool(wh) and isinstance(lr[1].get("d"), (int, float)) and lr[1]["d"] - 1e-9 <= wh[0].get("dur", 0.35) <= lr[1]["d"] + 0.1 + 1e-9)
+    else:
+        claim("b", "lens row 1 fills at the kit's pace (no `d`, round 2)", lr[1].get("d"), None)
+    if Sb.cond:
+        cap_beat(Sb, 6, t_v0, "the card's 'under +$30'", lead=None)
+        claim("b", "condensed: vo[7] comes up while row 1's bar grows (between the shoot and its value)", vo_t(Sb, 7),
+              f"{Sb.get(r1 + ('t',)):.2f}..{t_v1:.2f}", ok=Sb.get(r1 + ("t",)) <= vo_t(Sb, 7) <= t_v1)
+        cap_beat(Sb, 7, t_v1, "the card's '≈ +$151' (the payoff)", lead=None)
+    else:
+        claim("b", "lens: 'under +$30' lands after '$30' is said under the shrug note", round(t_v0, 2), f"> {said_at(Sb, 6, int_tok)[0]:.2f}",
+              ok=t_v0 > said_at(Sb, 6, int_tok)[0])
+        shown_while_said(Sb, 7, y1_tok, t_v1, Sb.d["duration"], "the lens row 'S&P 500 in 2010: ≈ +$151'")
+    claim("b", "the 16-year total is said once the race has ended", vo_t(Sb, 6), f">= {B_RACE[1]}", ok=vo_t(Sb, 6) >= B_RACE[1])
+    if Sb.cond:
+        verdict_after(Sb, t_v1, "the card's '≈ +$151'")
+    else:
+        claim("b", "the payoff lands, then the verdict follows within 4 s (no static restatement)", round(Sb.d["verdict"]["t"] - t_v1, 2), "<= 4.0",
+              ok=0 < Sb.d["verdict"]["t"] - t_v1 <= 4.0)
+    claim("b", "no VO line restates the final (≈ $8,280 is on the gold plate and in the description)",
+          any(B["fin_sp"] in v["text"] for v in Sb.d["vo"]), False)
+    t_hit = Sb.d["lookOpts"]["beats"][6]["t"] if Sb.cond else vo_t(Sb, 5)   # the impact (the 2022 close)
+    sfx_on(Sb, [(t_y1, "pop"), (HS_B, "whoosh"), (vo_t(Sb, 1), "swipe"), (s_dbl, "ding"), (vo_t(Sb, 3), "tick"), (s_top, "pop"),
+                (t_hit, "hit"), (B_RACE[1], "roll"), (round(B_RACE[1] + 0.1, 2), "boing"), (LENS_T, "pop"),
+                (round(Sb.get(r1 + ("t",)) + 0.1, 2), "whoosh"), (round(t_v1, 2), "pop"), (Sb.d["verdict"]["t"], "thud")])
+    if Sb.cond:
+        claim("b", "condensed: something moves from frame 1 (the race is already running: raceT[0] < 0)", B_RACE[0], "< 0",
+              ok=B_RACE[0] < 0)
+        claim("b", "condensed: frame 1 shows the round-2 frame 1 (x 2010.27)", round(x_f1b, 3), "2010.25..2010.28",
+              ok=2010.25 <= x_f1b <= 2010.28)
+        pace_cond(Sb, (0.7, 0.8))
+        cap_gaps(Sb, spec_beats(Sb), B_RACE)
+        last = Sb.d["lookOpts"]["beats"][-1]
+        claim("b", "condensed: the verdict hop (the last beat, a cheer) lands as the verdict lands (its t + 0.44)",
+              f"{last['act']} {round(last['t'] + 0.44, 2)}", f"cheer {Sb.d['verdict']['t']}",
+              ok=last["act"] == "cheer" and abs(last["t"] + 0.44 - Sb.d["verdict"]["t"]) < 0.006)
+    claim("b", "'2022: stocks drop' (S&P 2022 %) on the 2022 close", f"{SP[2022]} @ {B['tl'][2022]:.2f}", "< 0", ok=SP[2022] < 0)
+    # what the words claim
+    claim("b", "'Year one in the S&P: ≈ $151' = $1,000 × 15.06% (2010)", f"{B['y1']:.2f}", "150.60", ok=abs(B["y1"] - 150.60) < 0.005)
+    claim("b", "'16 years to match it' fails: 16 years of interest < year 1", f"{B['int16']:.2f} < {B['y1']:.2f}", "", ok=B["int16"] < B["y1"])
+    claim("b", "'under $30 in 16 years'", f"{B['int16']:.2f}", f"< {B['int_cap']}", ok=B["int16"] < B["int_cap"])
+    claim("b", "2010 is a typical S&P year, not a cherry-pick: within 1 pt of the 16-year CAGR",
+          f"{SP[B_Y0]:.2f}% vs {B['cagr_sp'] * 100:.2f}%", "|gap| < 1", ok=abs(SP[B_Y0] - B["cagr_sp"] * 100) < 1)
+    best = max(range(B_Y0, B_Y1 + 1), key=lambda y: SP[y])
+    claim("b", "... and not the best year in the window", f"best {best} {SP[best]}%", "not 2010", ok=best != B_Y0)
+    claim("b", "savings line never dips (gag): every rate positive", all(FDIC[y] > 0 for y in range(2010, 2026)), True)
+    claim("b", "savings ends below $1,000 of buying power (pinned comment)", round(B["real_sv"], 2), f"< {B_STAKE}", ok=B["real_sv"] < B_STAKE)
+    claim("b", "CPI ratio Dec-09 -> Dec-25", round(B["infl"], 4), 1.5006, ok=abs(B["infl"] - 1.5006) < 0.0001)
+    claim("b", "robust: savings at the max rate every year (S&P still ≥ 7×)", usd_round(B["sv_hi"]), "S&P still ≥ 7×", ok=B_sp[2025] / B["sv_hi"] >= 7)
+    claim("b", "robust: savings at the max rate every year still below prices", usd_round(B["sv_hi"]), f"< {usd_round(B['need'])}", ok=B["sv_hi"] < B["need"])
+    for y in FDIC_INTERP:
+        claim("b", f"FDIC {y} = midpoint of its neighbours (assumption)", round(FDIC[y], 4),
+              f"({FDIC_KNOWN[y - 1]}+{FDIC_KNOWN[y + 1]})/2", ok=abs(FDIC[y] - (FDIC_KNOWN[y - 1] + FDIC_KNOWN[y + 1]) / 2) < 1e-12)
+    # robustness sweep: every plausible value of every uncertain FDIC input leaves every on-screen savings figure unchanged
+    sweep, worst, int_lo, int_hi, earn_hi = 0, [], 1e9, 0.0, 0.0
+    alt_keys = sorted(FDIC_ALT)
+    for combo in itertools.product(*[FDIC_ALT[k] for k in alt_keys]):
+        known = dict(FDIC_KNOWN)
+        known.update(dict(zip(alt_keys, combo)))
+        mids = [((known[y - 1], known[y + 1]), y) for y in FDIC_INTERP]
+        for pick in itertools.product(*[(0, 1, 2)] * len(FDIC_INTERP)):
+            table = dict(known)
+            for (lo_hi, y), p in zip(mids, pick):
+                table[y] = (lo_hi[0], (lo_hi[0] + lo_hi[1]) / 2, lo_hi[1])[p]
+            vals, pts = grow(table, B_Y0, B_Y1, B_STAKE)
+            sweep += 1
+            i16 = vals[B_Y1] - B_STAKE
+            e_max = max(val_at(pts, xb_of(tt)) - B_STAKE for tt in earn_ts)
+            int_lo, int_hi, earn_hi = min(int_lo, i16), max(int_hi, i16), max(earn_hi, e_max)
+            shown = (usd_sig(vals[2025]), usd_sig(vals[2025] / B["infl"], 2), int_round((1 - vals[2025] / B["infl"] / B_STAKE) * 100),
+                     e_max < B["earn_cap"], i16 + B["understate"] < B["int_cap"], i16 + B["understate"] < B["y1"],
+                     all(r > 0 for r in table.values()))
+            if shown != (B["fin_sv"], B["real_disp"], B["lost"], True, True, True, True):
+                worst.append((combo, pick, shown))
+    claim("b", f"robust: FDIC sweep ({sweep} input tables) leaves ≈ $1,020 / ≈ $680 / ≈ 32% / under $10 / under $30 (+$2) / never down",
+          len(worst), 0, ok=not worst)
+    claim("b", "robust: 16-year interest range over the sweep", f"{int_lo:.2f}-{int_hi:.2f}", f"< {B['int_cap']} even + ${B['understate']:.0f}",
+          ok=int_hi + B["understate"] < B["int_cap"])
+    claim("b", "robust: verdict ratio year 1 ÷ worst 16-year interest", round(B["y1"] / (int_hi + B["understate"]), 2), ">= 5",
+          ok=B["y1"] / (int_hi + B["understate"]) >= 5)
+    # pinned comment: the S&P years that earned less on $1,000 than 16 years of savings did (in every table)
+    slow = [y for y in range(B_Y0, B_Y1 + 1) if B_STAKE * SP[y] / 100 < int_lo]
+    claim("b", "pinned: S&P years that made less on $1,000 than 16 years of savings (every table)", slow, [2011, 2015, 2018, 2022])
+    claim("b", "pinned: 2011 ≈ $21, 2015 ≈ $14", [usd_round(B_STAKE * SP[2011] / 100), usd_round(B_STAKE * SP[2015] / 100)], ["≈ $21", "≈ $14"])
+    for u in Sb.uncovered():
+        claim("b", "uncovered string with a digit", u, "covered", ok=False)
+
+
+if common(Sb):
+    teaser_b(Sb)
 
 # ============================================================== 04c
 # Port to Scoreboard (2026-10-08; it was Live Sheet, now retired). The Scoreboard's chart race carries the teaser:
@@ -930,223 +1401,302 @@ for u in Sb.uncovered():
 # Europe's tip holds its exact close until its final is named (a late finalT); the clock holds the named closes'
 # years; the footer returns to the basis line under the verdict (the loop); the hero's stake is tagged 'EACH'.
 Sc = Spec("c")
-common(Sc)
-Sc.n(("header",), [str(C_Y0), f"${C_STAKE:,}"])
-Sc.n(("footer",), [])                                            # one line: "Total return in US$ · no fees or tax"
-claim("c", "footer is one line (no author break)", "\n" in Sc.d["footer"], False)
-Sc.s(("data", "stake"), f"${C_STAKE:,} each · Jan {C_Y0}")
-chart(Sc, C_RACE, C_Y0, C["x1"], [C_us_pts, C_eu_pts], [C["fin_us"], C["fin_eu"]], ["USA · S&P 500", "Europe · MSCI Europe"])
-claim("c", "series short labels (tips, hero tag, hook columns, footer names)", [s.get("label") for s in Sc.d["data"]["series"]], ["USA", "Europe"])
-claim("c", "series colours: the kit's defaults (USA green = money, the decade winner; Europe yellow)",
-      [s.get("color") for s in Sc.d["data"]["series"]], [None, None])
-claim("c", "x tickEvery", Sc.d["data"]["x"]["tickEvery"], 2)
-vo_numbers(Sc, [
-    [str(C_Y1), f"≈ {round(C['ratio25'])}", "1"],
-    [],                                                          # "Who won the decade?"
-    ["2018", f"≈ {C['drop18']}%"],
-    ["2020"],
-    [f"${C['eu_cap']:,}"],
-    ["2025", f"≈ {C['jump25']}%"],
-    [C["fin_us"]],
-    [C["fin_eu"]],
-    [],
-])
-claim("c", "hook '2025: Europe beat the USA ≈ 2 to 1' (35.41 ÷ 17.88)", round(C["ratio25"], 3), "1.9-2.1, rounds to 2",
-      ok=1.9 <= C["ratio25"] < 2.1 and round(C["ratio25"]) == 2)
-seen_c = year_sync(Sc, C, C_Y0, C_RACE[1], hook_years=(C_Y1,))
-# fixer pass (QA, 2026-10-08): the spoken figures ride the flags, as in 04a: the 2018 flag carries Europe's drop and
-# a 2025 flag carries its jump (both neutral, the racer's name in its line colour: lookOpts.flagNames)
-FLAG18 = f"2018: Europe __≈ −{C['drop18']}%__"
-FLAG25 = f"2025: Europe ≈ +{C['jump25']}%"
-events(Sc, C, C_RACE, C_Y0, C["x1"], [(2018.9, FLAG18, (2, f"≈ {C['drop18']}%")), (2020.2, "COVID", False),
-                                      (2022.5, "2022 bear market", False), (2025.6, FLAG25, (5, f"≈ {C['jump25']}%"))], seen_c)
-claim("c", "flag tones: the two figure flags neutral (white), the crash flags red (default)",
-      [e.get("tone") for e in Sc.d["data"]["events"]], ["neutral", None, None, "neutral"])
-claim("c", "flag figures = the computed returns (Europe 2018 −14.86% → ≈ −15%, 2025 +35.41% → ≈ +35%)",
-      [nums(e["label"]) for e in Sc.d["data"]["events"] if e.get("tone")], [["2018", f"≈ −{C['drop18']}%"], ["2025", f"≈ +{C['jump25']}%"]])
-claim("c", "lookOpts.flagHold (s)", Sc.d["lookOpts"]["flagHold"], 1.8)
-claim("c", "lookOpts.flagNames (racer names in the flags in their line colours)", Sc.d["lookOpts"].get("flagNames"), True)
-# a chart-strip flag shows from its own t until min(t + flagHold, the next flag's t, max(finish, t + 1.5)) (chart-race.js;
-# the next flag retires it only when the labels would touch, so taking every next flag is conservative)
-C_TF = C_RACE[1] + 0.45                                          # chart-race.js SETTLE: the tips' finish
 
 
-def flag_win_c(k):
-    ev = Sc.d["data"]["events"]
-    te = t_of(ev[k]["x"], C_RACE, C_Y0, C["x1"])
-    nxt = t_of(ev[k + 1]["x"], C_RACE, C_Y0, C["x1"]) if k + 1 < len(ev) else math.inf
-    return te, min(te + Sc.d["lookOpts"]["flagHold"], nxt, max(C_TF, te + 1.5))
+def teaser_c(Sc):
+    """the c teaser's checks (both cuts; Sc.cond picks the condensed cut's rules)"""
+    Sc.n(("header",), [str(C_Y0), f"${C_STAKE:,}"])
+    Sc.n(("footer",), [])                                            # one line: "Total return in US$ · no fees or tax"
+    claim("c", "footer is one line (no author break)", "\n" in Sc.d["footer"], False)
+    Sc.s(("data", "stake"), f"${C_STAKE:,} each · Jan {C_Y0}")
+    chart(Sc, C_RACE, C_Y0, C["x1"], [C_us_pts, C_eu_pts], [C["fin_us"], C["fin_eu"]], ["USA · S&P 500", "Europe · MSCI Europe"])
+    claim("c", "series short labels (tips, hero tag, hook columns, footer names)", [s.get("label") for s in Sc.d["data"]["series"]], ["USA", "Europe"])
+    claim("c", "series colours: the kit's defaults (USA green = money, the decade winner; Europe yellow)",
+          [s.get("color") for s in Sc.d["data"]["series"]], [None, None])
+    claim("c", "x tickEvery", Sc.d["data"]["x"]["tickEvery"], 2)
+    vo_numbers(Sc, [
+        [str(C_Y1), f"≈ {round(C['ratio25'])}", "1"],
+        [],                                                          # "Who won the decade?"
+        ["2018", f"≈ {C['drop18']}%"],
+        ["2020"],
+        [f"${C['eu_cap']:,}"],
+        ["2025", f"≈ {C['jump25']}%"],
+        [C["fin_us"]],
+        [C["fin_eu"]],
+        [],
+    ])
+    claim("c", "hook '2025: Europe beat the USA ≈ 2 to 1' (35.41 ÷ 17.88)", round(C["ratio25"], 3), "1.9-2.1, rounds to 2",
+          ok=1.9 <= C["ratio25"] < 2.1 and round(C["ratio25"]) == 2)
+    # fixer pass (QA, 2026-10-08): the spoken figures ride the flags, as in 04a: the 2018 flag carries Europe's drop and
+    # a 2025 flag carries its jump (both neutral, the racer's name in its line colour: lookOpts.flagNames)
+    FLAG18 = f"2018: Europe __≈ −{C['drop18']}%__"
+    FLAG25 = f"2025: Europe ≈ +{C['jump25']}%"
+    if Sc.cond:
+        year_sync_cond(Sc, C, C_Y0, C_RACE[1], hook_years=(C_Y1,))
+        events_cond(Sc, C, C_RACE, C_Y0, C["x1"], [(2018.9, FLAG18, 2), (2020.2, "COVID", None),
+                                                   (2022.5, "2022 bear market", None), (2025.6, FLAG25, 5)])
+    else:
+        seen_c = year_sync(Sc, C, C_Y0, C_RACE[1], hook_years=(C_Y1,))
+        events(Sc, C, C_RACE, C_Y0, C["x1"], [(2018.9, FLAG18, (2, f"≈ {C['drop18']}%")), (2020.2, "COVID", False),
+                                              (2022.5, "2022 bear market", False), (2025.6, FLAG25, (5, f"≈ {C['jump25']}%"))], seen_c)
+    claim("c", "flag tones: the two figure flags neutral (white), the crash flags red (default)",
+          [e.get("tone") for e in Sc.d["data"]["events"]], ["neutral", None, None, "neutral"])
+    claim("c", "flag figures = the computed returns (Europe 2018 −14.86% → ≈ −15%, 2025 +35.41% → ≈ +35%)",
+          [nums(e["label"]) for e in Sc.d["data"]["events"] if e.get("tone")], [["2018", f"≈ −{C['drop18']}%"], ["2025", f"≈ +{C['jump25']}%"]])
+    claim("c", "lookOpts.flagHold (s)", Sc.d["lookOpts"]["flagHold"], 1.8)
+    claim("c", "lookOpts.flagNames (racer names in the flags in their line colours)", Sc.d["lookOpts"].get("flagNames"), True)
+    # a chart-strip flag shows from its own t until min(t + flagHold, the next flag's t, max(finish, t + 1.5)) (chart-race.js;
+    # the next flag retires it only when the labels would touch, so taking every next flag is conservative)
+    C_TF = C_RACE[1] + 0.45                                          # chart-race.js SETTLE: the tips' finish
 
 
-shown_while_said(Sc, 2, f"≈ {C['drop18']}%", *flag_win_c(0), "the 2018 flag (Europe ≈ −15%)")
-shown_while_said(Sc, 5, f"≈ {C['jump25']}%", *flag_win_c(3), "the 2025 flag (Europe ≈ +35%)")
-claim("c", "the 2022 flag clears as vo[4] ('Europe? Still under $17,000') starts", round(flag_win_c(2)[1], 2), f"{vo_t(Sc, 4)} ± 0.05",
-      ok=abs(flag_win_c(2)[1] - vo_t(Sc, 4)) <= 0.05)
-Sc.s(("verdict", "text"), f"Europe won **{C_Y1}**.\nThe USA won the **decade**.")
-LO = Sc.d["lookOpts"]
-claim("c", "lookOpts.stakeLine", LO["stakeLine"], C_STAKE)
-claim("c", "lookOpts.tipLane (labels beside their dots at the finish)", LO["tipLane"], True)
-claim("c", "no Live Sheet options left", sorted(set(LO) & {"valueRow", "formulaSteps", "formulaAt0", "focus", "ledger", "preroll", "xEven", "finale"}), [])
-
-# ---- the hook: the 2025 duel as two columns to scale; it rewinds into the race as the race starts
-HOOK_RW = 0.7                                                    # looks/scoreboard/formats/chart-race.js: rewind + hand-over (s)
-hk = ("lookOpts", "hook")
-claim("c", "hook rewinds into the race (until = raceT[0])", Sc.get(hk + ("until",)), C_RACE[0])
-Sc.s(hk + ("values", 0), pct_signed2(SP[C_Y1]), "hook USA column = the S&P 500's 2025 return")
-Sc.s(hk + ("values", 1), pct_signed2(EU[C_Y1]), "hook Europe column = MSCI Europe's 2025 return")
-claim("c", "hook year = the claim's year (the corner clock shows it, then rolls back)", Sc.get(hk + ("year",)), C_Y1)
-claim("c", "hook lights Europe (series 1), the 2025 winner", Sc.get(hk + ("series",)) == 1 and EU[C_Y1] > SP[C_Y1], True)
-Sc.s(hk + ("sub", 0), "S&P 500", "hook USA column names its index")
-Sc.s(hk + ("sub", 1), "MSCI Europe", "hook Europe column names its index")
-Sc.s(hk + ("ask",), f"{C_Y0} → {C_Y1}: who won?")
-claim("c", "hook litT: Europe's column bumps as vo[0] says 'Europe'", Sc.get(hk + ("litT",)), round(said_at(Sc, 0, "Europe")[0], 2),
-      ok=abs(Sc.get(hk + ("litT",)) - said_at(Sc, 0, "Europe")[0]) < 0.006)
-claim("c", "hook ratioT: the halving rule wipes as vo[0] says '≈ 2'", Sc.get(hk + ("ratioT",)), round(said_at(Sc, 0, "≈ 2")[0], 2),
-      ok=abs(Sc.get(hk + ("ratioT",)) - said_at(Sc, 0, "≈ 2")[0]) < 0.006)
-half = SP[C_Y1] / EU[C_Y1]
-claim("c", "the rule at the USA column's top crosses Europe's at ≈ half its height (bars to scale)", round(half, 3), "0.45..0.55",
-      ok=0.45 <= half <= 0.55)
-shown_while_said(Sc, 0, f"≈ {round(C['ratio25'])}", 0.0, Sc.get(hk + ("until",)) - HOOK_RW, "the hook columns (2025: +17.88% vs +35.41%)")
-# fixer pass: the '≈ 2' beat gets its number: hook.ratioTag slams into Europe's column above the halving rule at ratioT
-Sc.s(hk + ("ratioTag",), f"≈ ×{round(C['ratio25'])}", "hook ratioTag = the rounded 2025 ratio (35.41 ÷ 17.88 = 1.98, so '≈')")
-claim("c", "the ratio tag needs its '≈' (the ratio is not exactly 2)", round(C["ratio25"], 3), "!= 2", ok=abs(C["ratio25"] - 2) > 0.005)
-claim("c", "the ratio tag lands (slam at ratioT) as vo[0] says '≈ 2', while the columns show", Sc.get(hk + ("ratioT",)),
-      f"{said_at(Sc, 0, '≈ 2')[0]:.2f}, < {Sc.get(hk + ('until',)) - HOOK_RW:.2f}",
-      ok=abs(Sc.get(hk + ("ratioT",)) - said_at(Sc, 0, "≈ 2")[0]) < 0.006 and Sc.get(hk + ("ratioT",)) < Sc.get(hk + ("until",)) - HOOK_RW)
-claim("c", "lookOpts.stakeTag: the hero's stake reads 'EACH $10,000' (data.stake: '$10,000 each')", LO.get("stakeTag"), "each",
-      ok=LO.get("stakeTag") == "each" and " each " in f" {Sc.d['data']['stake']} ")
-claim("c", "vo[1] 'Who won the decade?' starts as the race starts", vo_t(Sc, 1), f"{C_RACE[0]}..{C_RACE[0] + 0.5}",
-      ok=C_RACE[0] <= vo_t(Sc, 1) <= C_RACE[0] + 0.5)
-
-# ---- the working line (lookOpts.footerSteps): each step lands on the beat that names it
-fs = ("lookOpts", "footerSteps")
+    def flag_win_c(k):
+        ev = Sc.d["data"]["events"]
+        te = t_of(ev[k]["x"], C_RACE, C_Y0, C["x1"])
+        nxt = t_of(ev[k + 1]["x"], C_RACE, C_Y0, C["x1"]) if k + 1 < len(ev) else math.inf
+        return te, min(te + Sc.d["lookOpts"]["flagHold"], nxt, max(C_TF, te + 1.5))
 
 
-def year_step(y, i):
-    """'= $prev × (1 ± r%)' from the dollar-rounded last close; '≈' when that product misses the shown close"""
-    VALS, RATES = (C_us, C_eu), (SP, EU)
-    prev, r = int(rnd(VALS[i][y - 1])), RATES[i][y]
-    exact = rnd(prev * (1 + r / 100)) == rnd(VALS[i][y])
-    return f"{'=' if exact else '≈'} ${prev:,} × (1 {'+' if r >= 0 else '−'} {abs(r):.2f}%)"
+    if Sc.cond:
+        cap_sync(Sc, 2, f"≈ {C['drop18']}%", *flag_win_c(0), "the 2018 flag (Europe ≈ −15%)")
+        cap_sync(Sc, 5, f"≈ {C['jump25']}%", *flag_win_c(3), "the 2025 flag (Europe ≈ +35%)")
+    else:
+        shown_while_said(Sc, 2, f"≈ {C['drop18']}%", *flag_win_c(0), "the 2018 flag (Europe ≈ −15%)")
+        shown_while_said(Sc, 5, f"≈ {C['jump25']}%", *flag_win_c(3), "the 2025 flag (Europe ≈ +35%)")
+        claim("c", "the 2022 flag clears as vo[4] ('Europe? Still under $17,000') starts", round(flag_win_c(2)[1], 2), f"{vo_t(Sc, 4)} ± 0.05",
+              ok=abs(flag_win_c(2)[1] - vo_t(Sc, 4)) <= 0.05)
+    Sc.s(("verdict", "text"), f"Europe won **{C_Y1}**.\nThe USA won the **decade**.")
+    LO = Sc.d["lookOpts"]
+    claim("c", "lookOpts.stakeLine", LO["stakeLine"], C_STAKE)
+    claim("c", "lookOpts.tipLane (labels beside their dots at the finish)", LO["tipLane"], True)
+    claim("c", "no Live Sheet options left", sorted(set(LO) & {"valueRow", "formulaSteps", "formulaAt0", "focus", "ledger", "preroll", "xEven", "finale"}), [])
+
+    # ---- the hook: the 2025 duel as two columns to scale; it rewinds into the race as the race starts
+    HOOK_RW = 0.7                                                    # looks/scoreboard/formats/chart-race.js: rewind + hand-over (s)
+    hk = ("lookOpts", "hook")
+    claim("c", "hook rewinds into the race (until = raceT[0])", Sc.get(hk + ("until",)), C_RACE[0])
+    Sc.s(hk + ("values", 0), pct_signed2(SP[C_Y1]), "hook USA column = the S&P 500's 2025 return")
+    Sc.s(hk + ("values", 1), pct_signed2(EU[C_Y1]), "hook Europe column = MSCI Europe's 2025 return")
+    claim("c", "hook year = the claim's year (the corner clock shows it, then rolls back)", Sc.get(hk + ("year",)), C_Y1)
+    claim("c", "hook lights Europe (series 1), the 2025 winner", Sc.get(hk + ("series",)) == 1 and EU[C_Y1] > SP[C_Y1], True)
+    Sc.s(hk + ("sub", 0), "S&P 500", "hook USA column names its index")
+    Sc.s(hk + ("sub", 1), "MSCI Europe", "hook Europe column names its index")
+    Sc.s(hk + ("ask",), f"{C_Y0} → {C_Y1}: who won?")
+    HK_R0 = Sc.get(hk + ("until",)) - HOOK_RW                       # the rewind starts
+    if Sc.cond:
+        # condensed: frame 1 is the clean claim (the cover); the lit column bumps from frame 2 (the cold open moves from
+        # frame 1), the halving rule and "≈ ×2" land next, and the rewind follows within 0.35 s of each, so no still or
+        # near-still run of 0.4 s; the bump lands on the opening downbeat, so it is silent (hook.litCue false, a kit
+        # opt-in: a pop 20 ms after the t = 0 hit needs 7.4 dB of clearance, over the hook's 6 dB DUCK cap)
+        claim("c", "condensed: the lit column bumps from frame 2 (hook.litT <= 0.05 s)", Sc.get(hk + ("litT",)), "<= 0.05",
+              ok=0 < Sc.get(hk + ("litT",)) <= 0.05)
+        claim("c", "condensed: ... silently (hook.litCue false: the opening downbeat is its sound)", Sc.get(hk + ("litCue",)), False)
+        claim("c", "condensed: the halving rule wipes after the bump and >= 0.3 s before the rewind (the tag reads)",
+              Sc.get(hk + ("ratioT",)), f"{Sc.get(hk + ('litT',)):.2f}..{HK_R0 - 0.3:.2f}",
+              ok=Sc.get(hk + ("litT",)) < Sc.get(hk + ("ratioT",)) <= HK_R0 - 0.3 + 1e-9)
+        claim("c", "condensed: the rewind starts <= 0.35 s after the ratio beat (the bump and the wipe move ~0.25 s each)",
+              round(HK_R0 - Sc.get(hk + ("ratioT",)), 2), "<= 0.35", ok=HK_R0 - Sc.get(hk + ("ratioT",)) <= 0.35 + 1e-9)
+        claim("c", "condensed: the hook caption ('≈ 2 to 1') is up through the whole cold open", round(cap_end(Sc, 0), 2),
+              f">= {Sc.get(hk + ('until',)):.2f}", ok=cap_end(Sc, 0) >= Sc.get(hk + ("until",)) - 1e-9)
+    else:
+        claim("c", "hook litT: Europe's column bumps as vo[0] says 'Europe'", Sc.get(hk + ("litT",)), round(said_at(Sc, 0, "Europe")[0], 2),
+              ok=abs(Sc.get(hk + ("litT",)) - said_at(Sc, 0, "Europe")[0]) < 0.006)
+        claim("c", "hook ratioT: the halving rule wipes as vo[0] says '≈ 2'", Sc.get(hk + ("ratioT",)), round(said_at(Sc, 0, "≈ 2")[0], 2),
+              ok=abs(Sc.get(hk + ("ratioT",)) - said_at(Sc, 0, "≈ 2")[0]) < 0.006)
+        claim("c", "hook.litCue absent (the bump's pop as in round 2)", "litCue" in Sc.get(hk), False)
+    half = SP[C_Y1] / EU[C_Y1]
+    claim("c", "the rule at the USA column's top crosses Europe's at ≈ half its height (bars to scale)", round(half, 3), "0.45..0.55",
+          ok=0.45 <= half <= 0.55)
+    if not Sc.cond:
+        shown_while_said(Sc, 0, f"≈ {round(C['ratio25'])}", 0.0, Sc.get(hk + ("until",)) - HOOK_RW, "the hook columns (2025: +17.88% vs +35.41%)")
+    # fixer pass: the '≈ 2' beat gets its number: hook.ratioTag slams into Europe's column above the halving rule at ratioT
+    Sc.s(hk + ("ratioTag",), f"≈ ×{round(C['ratio25'])}", "hook ratioTag = the rounded 2025 ratio (35.41 ÷ 17.88 = 1.98, so '≈')")
+    claim("c", "the ratio tag needs its '≈' (the ratio is not exactly 2)", round(C["ratio25"], 3), "!= 2", ok=abs(C["ratio25"] - 2) > 0.005)
+    if not Sc.cond:
+        claim("c", "the ratio tag lands (slam at ratioT) as vo[0] says '≈ 2', while the columns show", Sc.get(hk + ("ratioT",)),
+              f"{said_at(Sc, 0, '≈ 2')[0]:.2f}, < {Sc.get(hk + ('until',)) - HOOK_RW:.2f}",
+              ok=abs(Sc.get(hk + ("ratioT",)) - said_at(Sc, 0, "≈ 2")[0]) < 0.006 and Sc.get(hk + ("ratioT",)) < Sc.get(hk + ("until",)) - HOOK_RW)
+    claim("c", "lookOpts.stakeTag: the hero's stake reads 'EACH $10,000' (data.stake: '$10,000 each')", LO.get("stakeTag"), "each",
+          ok=LO.get("stakeTag") == "each" and " each " in f" {Sc.d['data']['stake']} ")
+    claim("c", "vo[1] 'Who won the decade?' starts as the race starts", vo_t(Sc, 1), f"{C_RACE[0]}..{C_RACE[0] + 0.5}",
+          ok=C_RACE[0] <= vo_t(Sc, 1) <= C_RACE[0] + 0.5)
+
+    # ---- the working line (lookOpts.footerSteps): each step lands on the beat that names it
+    fs = ("lookOpts", "footerSteps")
 
 
-want_fs = [
-    (C["tl"][2018], f"2018: USA {pct_signed2(SP[2018])} · Europe {pct_signed2(EU[2018])}", "the 2018 close"),
-    (C["tl"][2020], f"2020: USA ${rnd(C_us[2020]):,.0f} ≈ ${C_STAKE:,} × {sig(C_us[2020] / C_STAKE):.2f}", "the 2020 close"),
-    (vo_t(Sc, 4), f"Europe: still under ${C['eu_cap']:,}", "vo[4] ('Europe? Still under $17,000')"),
-    (vo_t(Sc, 5), f"2025: USA {pct_signed2(SP[2025])} · Europe {pct_signed2(EU[2025])}", "vo[5] ('2025: Europe jumps')"),
-    (vo_t(Sc, 6), f"USA: {year_step(2025, 0)[2:]}", "vo[6] ('Final: USA')"),
-    (vo_t(Sc, 7), f"Europe: {year_step(2025, 1)[2:]}", "vo[7] ('Europe')"),
-    (vo_t(Sc, 8), f"USA: ≈ ×{sig(C['m_us']):.2f} ≈ {round(C['dbl_us'])} doublings", "vo[8] ('The USA ≈ doubled twice')"),
-    (said_at(Sc, 8, "Europe")[0], f"Europe: ≈ ×{sig(C['m_eu']):.2f} ≈ {round(C['dbl_eu'])} doubling", "vo[8] says 'Europe, once'"),
-    (Sc.d["verdict"]["t"], Sc.d["footer"], "the verdict (back to the assumption line, as the video loops)"),
-]
-claim("c", "footer step count", len(LO["footerSteps"]), len(want_fs))
-for k, (t_w, txt, what) in enumerate(want_fs):
-    if k >= len(LO["footerSteps"]):
-        break
-    Sc.s(fs + (k, "text"), txt, f"footerStep[{k}] text")
-    claim("c", f"footerStep[{k}] t = {what}", Sc.get(fs + (k, "t")), round(t_w, 2), ok=abs(Sc.get(fs + (k, "t")) - t_w) < 0.006)
-    claim("c", f"footerStep[{k}] fits one 40 px footer line (<= 40 chars)", len(txt), "<= 40", ok=len(txt) <= 40)
-claim("c", "the finale steps multiply the shown 2024 close exactly to the dollar ('=' steps)",
-      [year_step(2025, i)[0] for i in (0, 1)], ["=", "="])
-claim("c", "2020 step: $10,000 × 2.03 = $20,300, not $20,305, so it carries '≈'", round(C_STAKE * sig(C_us[2020] / C_STAKE)), f"!= {rnd(C_us[2020]):,.0f}",
-      ok=round(C_STAKE * sig(C_us[2020] / C_STAKE)) != rnd(C_us[2020]))
-claim("c", "2020: $20,305 ÷ $10,000 ≈ 2.03 (the 'doubled' step)", round(C_us[2020] / C_STAKE, 4), "rounds to 2.03",
-      ok=f"{sig(C_us[2020] / C_STAKE):.2f}" == "2.03")
-claim("c", "the USA roll: $33,791 × 1.1788 → ≈ $39,800", round(int(rnd(C_us[2024])) * (1 + SP[2025] / 100), 2), C["fin_us"],
-      ok=usd_sig(int(rnd(C_us[2024])) * (1 + SP[2025] / 100)) == C["fin_us"])
-claim("c", "the Europe roll: $16,735 × 1.3541 → ≈ $22,700", round(int(rnd(C_eu[2024])) * (1 + EU[2025] / 100), 2), C["fin_eu"],
-      ok=usd_sig(int(rnd(C_eu[2024])) * (1 + EU[2025] / 100)) == C["fin_eu"])
-step_t = [Sc.get(fs + (k, "t")) for k in range(len(LO["footerSteps"]))] + [Sc.d["duration"]]
-# spoken-number sync: each figure is on the working line (or a tip) when it is said
-shown_while_said(Sc, 2, f"≈ {C['drop18']}%", step_t[0], step_t[1], "the 2018 step (Europe −14.86%)")
-shown_while_said(Sc, 5, f"≈ {C['jump25']}%", step_t[3], step_t[4], "the 2025 step (Europe +35.41%)")
-shown_while_said(Sc, 4, f"${C['eu_cap']:,}", step_t[2], step_t[3], "the 'still under $17,000' step")
-claim("c", "footer steps in time order", step_t == sorted(step_t), True)
-eu_step_max = max(val_at(C_eu_pts, x_of(step_t[2] + k * 0.01, C_RACE, C_Y0, C["x1"])) for k in range(max(0, int((step_t[3] - step_t[2]) * 100)) + 1))
-claim("c", "the step 'Europe: still under $17,000' holds on the Europe tip for as long as it shows", round(eu_step_max, 2),
-      f"< {C['eu_cap']:,}", ok=eu_step_max < C["eu_cap"])
-claim("c", "tipBeats: Europe's tip bumps as vo[4] names it", LO.get("tipBeats"), [{"t": vo_t(Sc, 4), "series": 1}])
-us_min = min(val_at(C_us_pts, x_of(vo_t(Sc, 3) + k * 0.01, C_RACE, C_Y0, C["x1"])) for k in range(int(Sc.d["vo"][3]["d"] * 100) + 1))
-claim("c", "sync: 'the USA has doubled' holds on the USA tip (and the hero) for the whole line", round(us_min, 2), f">= {2 * C_STAKE:,}",
-      ok=us_min >= 2 * C_STAKE)
-eu_max = max(val_at(C_eu_pts, x_of(vo_t(Sc, 4) + k * 0.01, C_RACE, C_Y0, C["x1"])) for k in range(int(Sc.d["vo"][4]["d"] * 100) + 1))
-claim("c", "sync: 'Still under $17,000' holds on the Europe tip for the whole line", round(eu_max, 2), f"< {C['eu_cap']:,}", ok=eu_max < C["eu_cap"])
-claim("c", "'Still under $17,000': every Europe year-end 2016-2024", round(max(C_eu[y] for y in range(2016, 2025)), 2), f"< {C['eu_cap']:,}",
-      ok=max(C_eu[y] for y in range(2016, 2025)) < C["eu_cap"])
-claim("c", "the finals are said only after the race ends", vo_t(Sc, 6), f">= {C_RACE[1]}", ok=vo_t(Sc, 6) >= C_RACE[1])
+    def year_step(y, i):
+        """'= $prev × (1 ± r%)' from the dollar-rounded last close; '≈' when that product misses the shown close"""
+        VALS, RATES = (C_us, C_eu), (SP, EU)
+        prev, r = int(rnd(VALS[i][y - 1])), RATES[i][y]
+        exact = rnd(prev * (1 + r / 100)) == rnd(VALS[i][y])
+        return f"{'=' if exact else '≈'} ${prev:,} × (1 {'+' if r >= 0 else '−'} {abs(r):.2f}%)"
 
-# ---- the finish: the USA held at its 2024 close while Europe jumps; its last leg is the climax as it is named
-hb = LO["holdBack"]
-claim("c", "holdBack series = the USA (the decade winner, revealed in the climax)", hb["series"], 0)
-claim("c", "holdBack.follow (the hero rides the USA's last leg)", hb.get("follow"), True)
-t_hold = t_of(ye(2024), C_RACE, C_Y0, C["x1"])
-claim("c", "the USA stops at its 2024 close as vo[5] ('2025: Europe jumps') starts", round(t_hold, 2), f"{vo_t(Sc, 5)} ± 0.05",
-      ok=abs(t_hold - vo_t(Sc, 5)) <= 0.05)
-claim("c", "the USA's held tip = its 2024 close, $33,791 (the finale step's input)", f"${rnd(C_us[2024]):,.0f}", "$33,791")
-s_jump = said_at(Sc, 5, f"≈ {C['jump25']}%")[0]
-claim("c", "the hero shows Europe's jump as '≈ 35%' is said (the USA held, Europe racing)", round(s_jump, 2), f"{t_hold:.2f}..{hb['t'][0]}",
-      ok=t_hold <= s_jump < hb["t"][0])
-claim("c", "the USA's last leg starts as vo[6] ('Final: USA') starts", hb["t"][0], vo_t(Sc, 6))
-s_us = said_at(Sc, 6, C["fin_us"])[0]
-claim("c", "the USA's final lands (leg end) as vo[6] says it", hb["t"][1], f"{s_us:.2f} ± 0.05", ok=abs(hb["t"][1] - s_us) <= 0.05)
-ft = LO["finalT"]
-claim("c", "finalT[0] = the USA's leg end (the climax)", ft[0], hb["t"][1])
-s_eu = said_at(Sc, 7, C["fin_eu"])[0]
-claim("c", "finalT[1]: Europe's final takes the hero as vo[7] says it", ft[1], f"{s_eu:.2f} ± 0.05", ok=abs(ft[1] - s_eu) <= 0.05)
-# fixer pass: finalT[1] is later than raceT[1], so chart-race.js holds Europe's exact close on its tip (and in the hero) from
-# the race end, and lands the rounded '≈ $22,700' only at finalT[1] (no early land, no settle roll past the close)
-claim("c", "Europe is a late reveal (finalT[1] > raceT[1]): the tip holds its exact close until it is named", ft[1], f"> {C_RACE[1]}",
-      ok=ft[1] > C_RACE[1] + 1e-6)
-claim("c", "Europe's held close = its 2025 close to the dollar = the Europe finale step's product", f"${rnd(C_eu[2025]):,.0f}",
-      f"${rnd(int(rnd(C_eu[2024])) * (1 + EU[2025] / 100)):,.0f}", ok=rnd(C_eu[2025]) == rnd(int(rnd(C_eu[2024])) * (1 + EU[2025] / 100)))
-claim("c", "the held close needs no '≈' (it is the close to the dollar); the final '≈ $22,700' does", usd_round(C_eu[2025]).startswith("≈ "),
-      True)
-claim("c", "the winner (the USA) is the climax: its final is the bigger", C_us[2025] > C_eu[2025], True)
-claim("c", "heroSteps: the hero rests on the decade winner from the doublings line", LO["heroSteps"], [{"t": vo_t(Sc, 8), "series": 0}])
 
-# ---- the doubling rungs: ×2 as the USA first doubles (2020 close, the 'doubled' line), ×4 with the doublings line
-rg = ("lookOpts", "rungs")
-claim("c", "rungs.t (the y grid gives way) = vo[8] t", Sc.get(rg + ("t",)), vo_t(Sc, 8))
-claim("c", "rung count", len(Sc.get(rg + ("items",))), 2)
-for k, (m, t_want, what) in enumerate(((2, C["tl"][2020], "the 2020 close"), (4, vo_t(Sc, 8), "vo[8] (doublings)"))):
-    Sc.v(rg + ("items", k, 0), C_STAKE * m, tol=1e-9, what=f"rung {k} value = stake × {m}")
-    Sc.s(rg + ("items", k, 1), f"×{m}")
-    claim("c", f"rung ×{m} lands with {what}", Sc.get(rg + ("items", k, 2)), round(t_want, 2), ok=abs(Sc.get(rg + ("items", k, 2)) - t_want) < 0.006)
-claim("c", "USA first over the ×2 rung at the 2020 close", C["first_double_us"], 2020)
-claim("c", "USA ends just under ×4 (1.99 doublings, said '≈ twice')", f"×{C['m_us']:.4f}", "3.9 <= × < 4", ok=3.9 <= C["m_us"] < 4)
-claim("c", "Europe ends over ×2, under ×4 (1.18 doublings, said 'once')", f"×{C['m_eu']:.4f}", "2 <= × < 4", ok=2 <= C["m_eu"] < 4)
-claim("c", "the ×4 rung is on the end frame's y axis (kit headroom 1.2 × the max)", C_STAKE * 4, f"<= {1.2 * C_us[2025]:,.0f}",
-      ok=C_STAKE * 4 <= 1.2 * C_us[2025])
+    want_fs = [
+        (C["tl"][2018], f"2018: USA {pct_signed2(SP[2018])} · Europe {pct_signed2(EU[2018])}", "the 2018 close"),
+        (C["tl"][2020], f"2020: USA ${rnd(C_us[2020]):,.0f} ≈ ${C_STAKE:,} × {sig(C_us[2020] / C_STAKE):.2f}", "the 2020 close"),
+        (vo_t(Sc, 4), f"Europe: still under ${C['eu_cap']:,}", "vo[4] ('Europe? Still under $17,000')"),
+        (vo_t(Sc, 5), f"2025: USA {pct_signed2(SP[2025])} · Europe {pct_signed2(EU[2025])}", "vo[5] ('2025: Europe jumps')"),
+        (vo_t(Sc, 6), f"USA: {year_step(2025, 0)[2:]}", "vo[6] ('Final: USA')"),
+        (vo_t(Sc, 7), f"Europe: {year_step(2025, 1)[2:]}", "vo[7] ('Europe')"),
+    ]
+    if Sc.cond:
+        # condensed: each working step stays up >= 1.2 s, so the two doublings steps are one ("USA ≈ ×3.98 · Europe ≈ ×2.27":
+        # the multiples; the doublings are in vo[8] and on the ×2 / ×4 rungs), and the loop's basis-line step under the
+        # verdict is gone (the end card is the seam now; frame 1 still opens on the basis line)
+        want_fs.append((vo_t(Sc, 8), f"USA ≈ ×{sig(C['m_us']):.2f} · Europe ≈ ×{sig(C['m_eu']):.2f}", "vo[8] (the doublings line)"))
+    else:
+        want_fs += [
+            (vo_t(Sc, 8), f"USA: ≈ ×{sig(C['m_us']):.2f} ≈ {round(C['dbl_us'])} doublings", "vo[8] ('The USA ≈ doubled twice')"),
+            (said_at(Sc, 8, "Europe")[0], f"Europe: ≈ ×{sig(C['m_eu']):.2f} ≈ {round(C['dbl_eu'])} doubling", "vo[8] says 'Europe, once'"),
+            (Sc.d["verdict"]["t"], Sc.d["footer"], "the verdict (back to the assumption line, as the video loops)"),
+        ]
+    claim("c", "footer step count", len(LO["footerSteps"]), len(want_fs))
+    for k, (t_w, txt, what) in enumerate(want_fs):
+        if k >= len(LO["footerSteps"]):
+            break
+        Sc.s(fs + (k, "text"), txt, f"footerStep[{k}] text")
+        claim("c", f"footerStep[{k}] t = {what}", Sc.get(fs + (k, "t")), round(t_w, 2), ok=abs(Sc.get(fs + (k, "t")) - t_w) < 0.006)
+        claim("c", f"footerStep[{k}] fits one 40 px footer line (<= 40 chars)", len(txt), "<= 40", ok=len(txt) <= 40)
+    claim("c", "the finale steps multiply the shown 2024 close exactly to the dollar ('=' steps)",
+          [year_step(2025, i)[0] for i in (0, 1)], ["=", "="])
+    claim("c", "2020 step: $10,000 × 2.03 = $20,300, not $20,305, so it carries '≈'", round(C_STAKE * sig(C_us[2020] / C_STAKE)), f"!= {rnd(C_us[2020]):,.0f}",
+          ok=round(C_STAKE * sig(C_us[2020] / C_STAKE)) != rnd(C_us[2020]))
+    claim("c", "2020: $20,305 ÷ $10,000 ≈ 2.03 (the 'doubled' step)", round(C_us[2020] / C_STAKE, 4), "rounds to 2.03",
+          ok=f"{sig(C_us[2020] / C_STAKE):.2f}" == "2.03")
+    claim("c", "the USA roll: $33,791 × 1.1788 → ≈ $39,800", round(int(rnd(C_us[2024])) * (1 + SP[2025] / 100), 2), C["fin_us"],
+          ok=usd_sig(int(rnd(C_us[2024])) * (1 + SP[2025] / 100)) == C["fin_us"])
+    claim("c", "the Europe roll: $16,735 × 1.3541 → ≈ $22,700", round(int(rnd(C_eu[2024])) * (1 + EU[2025] / 100), 2), C["fin_eu"],
+          ok=usd_sig(int(rnd(C_eu[2024])) * (1 + EU[2025] / 100)) == C["fin_eu"])
+    step_t = [Sc.get(fs + (k, "t")) for k in range(len(LO["footerSteps"]))] + [Sc.d["duration"]]
+    # spoken-number sync: each figure is on the working line (or a tip) when it is said
+    sync = cap_sync if Sc.cond else shown_while_said
+    sync(Sc, 2, f"≈ {C['drop18']}%", step_t[0], step_t[1], "the 2018 step (Europe −14.86%)")
+    sync(Sc, 5, f"≈ {C['jump25']}%", step_t[3], step_t[4], "the 2025 step (Europe +35.41%)")
+    sync(Sc, 4, f"${C['eu_cap']:,}", step_t[2], step_t[3], "the 'still under $17,000' step")
+    if Sc.cond:
+        for k in range(len(LO["footerSteps"])):
+            claim("c", f"condensed: footerStep[{k}] up >= 1.2 s", round(step_t[k + 1] - step_t[k], 2), ">= 1.2",
+                  ok=step_t[k + 1] - step_t[k] >= 1.2 - 1e-9)
+        claim("c", "condensed: the doublings step's multiples are roundings (so they carry ≈)",
+              f"{C['m_us']:.4f} / {C['m_eu']:.4f}", "not exact", ok=abs(C["m_us"] - sig(C["m_us"])) > 1e-6 and abs(C["m_eu"] - sig(C["m_eu"])) > 1e-6)
+    claim("c", "footer steps in time order", step_t == sorted(step_t), True)
+    eu_step_max = max(val_at(C_eu_pts, x_of(step_t[2] + k * 0.01, C_RACE, C_Y0, C["x1"])) for k in range(max(0, int((step_t[3] - step_t[2]) * 100)) + 1))
+    claim("c", "the step 'Europe: still under $17,000' holds on the Europe tip for as long as it shows", round(eu_step_max, 2),
+          f"< {C['eu_cap']:,}", ok=eu_step_max < C["eu_cap"])
+    claim("c", "tipBeats: Europe's tip bumps as vo[4] names it", LO.get("tipBeats"), [{"t": vo_t(Sc, 4), "series": 1}])
+    us_min = min(val_at(C_us_pts, x_of(vo_t(Sc, 3) + k * 0.01, C_RACE, C_Y0, C["x1"])) for k in range(int(Sc.d["vo"][3]["d"] * 100) + 1))
+    claim("c", "sync: 'the USA has doubled' holds on the USA tip (and the hero) for the whole line", round(us_min, 2), f">= {2 * C_STAKE:,}",
+          ok=us_min >= 2 * C_STAKE)
+    eu_max = max(val_at(C_eu_pts, x_of(vo_t(Sc, 4) + k * 0.01, C_RACE, C_Y0, C["x1"])) for k in range(int(Sc.d["vo"][4]["d"] * 100) + 1))
+    claim("c", "sync: 'Still under $17,000' holds on the Europe tip for the whole line", round(eu_max, 2), f"< {C['eu_cap']:,}", ok=eu_max < C["eu_cap"])
+    claim("c", "'Still under $17,000': every Europe year-end 2016-2024", round(max(C_eu[y] for y in range(2016, 2025)), 2), f"< {C['eu_cap']:,}",
+          ok=max(C_eu[y] for y in range(2016, 2025)) < C["eu_cap"])
+    claim("c", "the finals are said only after the race ends", vo_t(Sc, 6), f">= {C_RACE[1]}", ok=vo_t(Sc, 6) >= C_RACE[1])
 
-# ---- the verdict's two emphases in their winners' colours: 2025 is Europe's (yellow), the decade the USA's (green)
-claim("c", "emColor = [Europe's yellow for **2025**, the USA's green for **decade**]", LO["emColor"], ["yellow", "green"])
-claim("c", "the verdict has 2 emphases, in that order", re.findall(r"\*\*(.+?)\*\*", Sc.d["verdict"]["text"]), [str(C_Y1), "decade"])
+    # ---- the finish: the USA held at its 2024 close while Europe jumps; its last leg is the climax as it is named
+    hb = LO["holdBack"]
+    claim("c", "holdBack series = the USA (the decade winner, revealed in the climax)", hb["series"], 0)
+    claim("c", "holdBack.follow (the hero rides the USA's last leg)", hb.get("follow"), True)
+    t_hold = t_of(ye(2024), C_RACE, C_Y0, C["x1"])
+    claim("c", "the USA stops at its 2024 close as vo[5] ('2025: Europe jumps') starts", round(t_hold, 2), f"{vo_t(Sc, 5)} ± 0.05",
+          ok=abs(t_hold - vo_t(Sc, 5)) <= 0.05)
+    claim("c", "the USA's held tip = its 2024 close, $33,791 (the finale step's input)", f"${rnd(C_us[2024]):,.0f}", "$33,791")
+    ft = LO["finalT"]
+    if Sc.cond:
+        claim("c", "condensed: vo[5] ('2025: Europe jumps') is up only while the USA is held and Europe races",
+              f"{vo_t(Sc, 5):.2f}-{vo_end(Sc, 5):.2f}", f"{t_hold:.2f}..{hb['t'][0]}",
+              ok=t_hold - 0.05 <= vo_t(Sc, 5) and vo_end(Sc, 5) <= hb["t"][0] + 1e-9)
+        claim("c", "the USA's last leg starts as vo[6] ('Final: USA') starts", hb["t"][0], vo_t(Sc, 6))
+        claim("c", "condensed: the USA's leg starts <= 0.35 s after Europe's line ends (no still gap)",
+              round(hb["t"][0] - C_RACE[1], 2), "<= 0.35", ok=0 <= hb["t"][0] - C_RACE[1] <= 0.35 + 1e-9)
+        claim("c", "condensed: the USA's leg runs 0.8-1.2 s", round(hb["t"][1] - hb["t"][0], 2), "0.8..1.2",
+              ok=0.8 - 1e-9 <= hb["t"][1] - hb["t"][0] <= 1.2 + 1e-9)
+        cap_beat(Sc, 6, hb["t"][1], "the USA's final (the climax)", lead=None)
+        claim("c", "finalT[0] = the USA's leg end (the climax)", ft[0], hb["t"][1])
+        cap_beat(Sc, 7, ft[1], "Europe's final (finalT[1])")
+        claim("c", "condensed: Europe's reveal comes 0.6-1.0 s after the climax (both land; no still gap)", round(ft[1] - ft[0], 2),
+              "0.6..1.0", ok=0.6 - 1e-9 <= ft[1] - ft[0] <= 1.0 + 1e-9)
+    else:
+        s_jump = said_at(Sc, 5, f"≈ {C['jump25']}%")[0]
+        claim("c", "the hero shows Europe's jump as '≈ 35%' is said (the USA held, Europe racing)", round(s_jump, 2), f"{t_hold:.2f}..{hb['t'][0]}",
+              ok=t_hold <= s_jump < hb["t"][0])
+        claim("c", "the USA's last leg starts as vo[6] ('Final: USA') starts", hb["t"][0], vo_t(Sc, 6))
+        s_us = said_at(Sc, 6, C["fin_us"])[0]
+        claim("c", "the USA's final lands (leg end) as vo[6] says it", hb["t"][1], f"{s_us:.2f} ± 0.05", ok=abs(hb["t"][1] - s_us) <= 0.05)
+        claim("c", "finalT[0] = the USA's leg end (the climax)", ft[0], hb["t"][1])
+        s_eu = said_at(Sc, 7, C["fin_eu"])[0]
+        claim("c", "finalT[1]: Europe's final takes the hero as vo[7] says it", ft[1], f"{s_eu:.2f} ± 0.05", ok=abs(ft[1] - s_eu) <= 0.05)
+    # fixer pass: finalT[1] is later than raceT[1], so chart-race.js holds Europe's exact close on its tip (and in the hero) from
+    # the race end, and lands the rounded '≈ $22,700' only at finalT[1] (no early land, no settle roll past the close)
+    claim("c", "Europe is a late reveal (finalT[1] > raceT[1]): the tip holds its exact close until it is named", ft[1], f"> {C_RACE[1]}",
+          ok=ft[1] > C_RACE[1] + 1e-6)
+    claim("c", "Europe's held close = its 2025 close to the dollar = the Europe finale step's product", f"${rnd(C_eu[2025]):,.0f}",
+          f"${rnd(int(rnd(C_eu[2024])) * (1 + EU[2025] / 100)):,.0f}", ok=rnd(C_eu[2025]) == rnd(int(rnd(C_eu[2024])) * (1 + EU[2025] / 100)))
+    claim("c", "the held close needs no '≈' (it is the close to the dollar); the final '≈ $22,700' does", usd_round(C_eu[2025]).startswith("≈ "),
+          True)
+    claim("c", "the winner (the USA) is the climax: its final is the bigger", C_us[2025] > C_eu[2025], True)
+    claim("c", "heroSteps: the hero rests on the decade winner from the doublings line", LO["heroSteps"], [{"t": vo_t(Sc, 8), "series": 0}])
 
-# lookOpts.yearHold: the corner clock holds a year 0.5 s past its close when the VO names that close (2018: '≈ 15%' is said
-# at the close; 2020: 'the USA has doubled' starts at it), so it never reads the next year as the close is named
-claim("c", "yearHold = the closes the VO names mid-race", LO.get("yearHold"), [2018, 2020])
-claim("c", "yearHold 2018: '≈ 15%' is said at the 2018 close", round(said_at(Sc, 2, f"≈ {C['drop18']}%")[0], 2), f"{C['tl'][2018]:.2f} ± 0.3",
-      ok=abs(said_at(Sc, 2, f"≈ {C['drop18']}%")[0] - C["tl"][2018]) <= 0.3)
-claim("c", "yearHold 2020: vo[3] '2020: the USA has doubled' starts at the 2020 close", vo_t(Sc, 3), f"{C['tl'][2020]:.2f} ± 0.3",
-      ok=abs(vo_t(Sc, 3) - C["tl"][2020]) <= 0.3)
-sfx_on(Sc, [(C["tl"][2018], "thud"), (C["tl"][2020], "ding"), (Sc.d["verdict"]["t"], "ding")])
-# what the words claim
-claim("c", "'2020: the USA has doubled your money' (first year-end >= $20,000)", C["first_double_us"], 2020)
-claim("c", "Europe first >= $20,000 only in 2025", C["first_double_eu"], 2025)
-claim("c", "'The USA ≈ doubled twice' (log2 ×, a rounding: needs ≈)", round(C["dbl_us"], 3), "rounds to 2, below 2",
-      ok=round(C["dbl_us"]) == 2 and C["dbl_us"] < 2 and "USA ≈ doubled twice" in Sc.d["vo"][8]["text"])
-claim("c", "'Europe, once' (log2 ×: 1 completed doubling, rounds to 1)", round(C["dbl_eu"], 3), "1 <= x < 1.5", ok=1 <= C["dbl_eu"] < 1.5)
-claim("c", "'Europe won 2025' (EU% > US%)", f"{EU[2025]} > {SP[2025]}", "", ok=EU[2025] > SP[2025])
-claim("c", "'The USA won the decade'", f"{C_us[2025]:,.0f} > {C_eu[2025]:,.0f}", "", ok=C_us[2025] > C_eu[2025])
-claim("c", "the USA leads at every year-end (no lead change: the hero is the USA until it is held)",
-      sum(C_us[y] > C_eu[y] for y in range(C_Y0, C_Y1 + 1)), C_Y1 - C_Y0 + 1)
-claim("c", "YCharts = MSCI factsheet, 2019-2025", all(YCHARTS_EU[y] == EU[y] for y in YCHARTS_EU), True)
-claim("c", "DWS ETF within 1 pt of MSCI, 2016-2025", max(abs(DWS_EU[y] - EU[y]) for y in EU), "<= 1.0",
-      ok=max(abs(DWS_EU[y] - EU[y]) for y in EU) <= 1.0)
-for u in Sc.uncovered():
-    claim("c", "uncovered string with a digit", u, "covered", ok=False)
+    # ---- the doubling rungs: ×2 as the USA first doubles (2020 close, the 'doubled' line), ×4 with the doublings line
+    rg = ("lookOpts", "rungs")
+    claim("c", "rungs.t (the y grid gives way) = vo[8] t", Sc.get(rg + ("t",)), vo_t(Sc, 8))
+    claim("c", "rung count", len(Sc.get(rg + ("items",))), 2)
+    for k, (m, t_want, what) in enumerate(((2, C["tl"][2020], "the 2020 close"), (4, vo_t(Sc, 8), "vo[8] (doublings)"))):
+        Sc.v(rg + ("items", k, 0), C_STAKE * m, tol=1e-9, what=f"rung {k} value = stake × {m}")
+        Sc.s(rg + ("items", k, 1), f"×{m}")
+        claim("c", f"rung ×{m} lands with {what}", Sc.get(rg + ("items", k, 2)), round(t_want, 2), ok=abs(Sc.get(rg + ("items", k, 2)) - t_want) < 0.006)
+    claim("c", "USA first over the ×2 rung at the 2020 close", C["first_double_us"], 2020)
+    claim("c", "USA ends just under ×4 (1.99 doublings, said '≈ twice')", f"×{C['m_us']:.4f}", "3.9 <= × < 4", ok=3.9 <= C["m_us"] < 4)
+    claim("c", "Europe ends over ×2, under ×4 (1.18 doublings, said 'once')", f"×{C['m_eu']:.4f}", "2 <= × < 4", ok=2 <= C["m_eu"] < 4)
+    claim("c", "the ×4 rung is on the end frame's y axis (kit headroom 1.2 × the max)", C_STAKE * 4, f"<= {1.2 * C_us[2025]:,.0f}",
+          ok=C_STAKE * 4 <= 1.2 * C_us[2025])
+
+    # ---- the verdict's two emphases in their winners' colours: 2025 is Europe's (yellow), the decade the USA's (green)
+    claim("c", "emColor = [Europe's yellow for **2025**, the USA's green for **decade**]", LO["emColor"], ["yellow", "green"])
+    claim("c", "the verdict has 2 emphases, in that order", re.findall(r"\*\*(.+?)\*\*", Sc.d["verdict"]["text"]), [str(C_Y1), "decade"])
+
+    # lookOpts.yearHold: the corner clock holds a year 0.5 s past its close when the VO names that close (2018: '≈ 15%' is said
+    # at the close; 2020: 'the USA has doubled' starts at it), so it never reads the next year as the close is named
+    claim("c", "yearHold = the closes the VO names mid-race", LO.get("yearHold"), [2018, 2020])
+    if Sc.cond:
+        cap_beat(Sc, 2, C["tl"][2018], "yearHold 2018: the 2018 close (the clock holds 2018 0.5 s past it)")
+    else:
+        claim("c", "yearHold 2018: '≈ 15%' is said at the 2018 close", round(said_at(Sc, 2, f"≈ {C['drop18']}%")[0], 2), f"{C['tl'][2018]:.2f} ± 0.3",
+              ok=abs(said_at(Sc, 2, f"≈ {C['drop18']}%")[0] - C["tl"][2018]) <= 0.3)
+    claim("c", "yearHold 2020: vo[3] '2020: the USA has doubled' starts at the 2020 close", vo_t(Sc, 3), f"{C['tl'][2020]:.2f} ± 0.3",
+          ok=abs(vo_t(Sc, 3) - C["tl"][2020]) <= 0.3)
+    sfx_on(Sc, [(C["tl"][2018], "thud"), (C["tl"][2020], "ding"), (Sc.d["verdict"]["t"], "ding")])
+    if Sc.cond:
+        # the condensed cut's timing targets (the owner's note; the 06b/06c precedent)
+        pace_cond(Sc, (0.9, 1.0))
+        claim("c", "condensed: the cold open (frame 1 = the claim, the cover) rewinds into the race by 1.5 s", C_RACE[0], "<= 1.5",
+              ok=C_RACE[0] <= 1.5)
+        cap_gaps(Sc, spec_beats(Sc), (0.0, C_RACE[1]))
+        cap_beat(Sc, 8, Sc.get(rg + ("t",)), "the ×4 rung and the doublings step")
+        verdict_after(Sc, ft[1], "Europe's final, the last value revealed")
+        claim("c", "condensed: the doublings (×4 rung, hero back on the USA) land >= 0.6 s before the verdict",
+              round(Sc.d["verdict"]["t"] - Sc.get(rg + ("t",)), 2), ">= 0.6", ok=Sc.d["verdict"]["t"] - Sc.get(rg + ("t",)) >= 0.6 - 1e-9)
+    # what the words claim
+    claim("c", "'2020: the USA has doubled your money' (first year-end >= $20,000)", C["first_double_us"], 2020)
+    claim("c", "Europe first >= $20,000 only in 2025", C["first_double_eu"], 2025)
+    claim("c", "'The USA ≈ doubled twice' (log2 ×, a rounding: needs ≈)", round(C["dbl_us"], 3), "rounds to 2, below 2",
+          ok=round(C["dbl_us"]) == 2 and C["dbl_us"] < 2 and "USA ≈ doubled twice" in Sc.d["vo"][8]["text"])
+    claim("c", "'Europe, once' (log2 ×: 1 completed doubling, rounds to 1)", round(C["dbl_eu"], 3), "1 <= x < 1.5", ok=1 <= C["dbl_eu"] < 1.5)
+    claim("c", "'Europe won 2025' (EU% > US%)", f"{EU[2025]} > {SP[2025]}", "", ok=EU[2025] > SP[2025])
+    claim("c", "'The USA won the decade'", f"{C_us[2025]:,.0f} > {C_eu[2025]:,.0f}", "", ok=C_us[2025] > C_eu[2025])
+    claim("c", "the USA leads at every year-end (no lead change: the hero is the USA until it is held)",
+          sum(C_us[y] > C_eu[y] for y in range(C_Y0, C_Y1 + 1)), C_Y1 - C_Y0 + 1)
+    claim("c", "YCharts = MSCI factsheet, 2019-2025", all(YCHARTS_EU[y] == EU[y] for y in YCHARTS_EU), True)
+    claim("c", "DWS ETF within 1 pt of MSCI, 2016-2025", max(abs(DWS_EU[y] - EU[y]) for y in EU), "<= 1.0",
+          ok=max(abs(DWS_EU[y] - EU[y]) for y in EU) <= 1.0)
+    for u in Sc.uncovered():
+        claim("c", "uncovered string with a digit", u, "covered", ok=False)
+
+
+if common(Sc):
+    teaser_c(Sc)
 
 # ============================================================== write-up quotes the same numbers
 if os.path.exists(WRITEUP):
@@ -1187,6 +1737,13 @@ if os.path.exists(WRITEUP):
               "2018 SELL-OFF", "(brighter", "goes back to \"Total return", "flagHold: 3.0", "\"≈ $22,700\" at 22.25"]:
         claim("c", f"04c section has no stale '{s}'", s in sec_c, False)
     claim("c", "write-up links the new spec", f"studio/specs/{IDS['c']}.json" in md, True)
+    # the condensed cut (2026-10-13): its review-log entry, and each teaser section describes it (linking the WIP spec,
+    # which the ship step promotes into studio/specs/)
+    claim("-", "write-up has the 'Condensed cut (2026-10-13)' review-log entry", "### Condensed cut (2026-10-13)" in md, True)
+    for k, a0, a1 in (("a", "### 04a", "### 04b"), ("b", "### 04b", "### 04c"), ("c", "### 04c", "## Sources")):
+        sec = md[md.find(a0):md.find(a1)]
+        claim(k, f"write-up's {a0[4:]} section describes the condensed cut (links studio/specs-wip/{IDS[k]}.json)",
+              f"studio/specs-wip/{IDS[k]}.json" in sec and "**Captions** (on-screen text, no narration" in sec, True)
 else:
     claim("-", "write-up exists", WRITEUP, "exists", ok=False)
 
@@ -1199,12 +1756,14 @@ for tid, what, got, want, ok in ROWS:
 print()
 print("04a  S&P 500", A["fin_sp"], f"(×{A['m_sp']:.4f})", "| gold", A["fin_au"], f"(×{A['m_au']:.4f})",
       f"| ratio {A['ratio']:.3f} | 2010 start: S&P ×{A['m_sp10']:.2f}, gold ×{A['m_au10']:.2f}",
-      f"| frame 1 x {x_f1:.3f}: S&P {val_at(A_sp_pts, x_f1):,.0f}, gold {val_at(A_au_pts, x_f1):,.0f}")
+      f"| frame 1 x {x_f1:.3f}: S&P {val_at(A_sp_pts, x_f1):,.0f}, gold {val_at(A_au_pts, x_f1):,.0f}" if x_f1 is not None else "| (spec not checked)",
+      f"| cut {CUT['a']}")
 print("04b  S&P 500", B["fin_sp"], "| savings", B["fin_sv"], f"({B_sv[2025]:.2f})", f"| year 1 {B['y1']:.2f} vs 16-yr interest",
-      f"{B['int16']:.2f} (sweep {int_lo:.2f}-{int_hi:.2f}) | frame 1 x {x_f1b:.4f}", f"| prices ×{B['infl']:.5f}",
+      f"{B['int16']:.2f} (sweep {int_lo:.2f}-{int_hi:.2f})", f"| prices ×{B['infl']:.5f}",
       f"| real savings {B['real_sv']:.2f} | lost {(1 - B['real_sv'] / B_STAKE) * 100:.2f}% | max-rate {B['sv_hi']:.2f}",
-      f"| interest by {EARN_WIN[1]:.1f} s: {earn_max:.2f} | FDIC sweep {sweep} tables")
+      f"| frame 1 x {x_f1b:.4f} | interest by {EARN_WIN[1]:.1f} s: {earn_max:.2f} | FDIC sweep {sweep} tables" if x_f1b is not None
+      else "| (spec not checked)", f"| cut {CUT['b']}")
 print("04c  USA", C["fin_us"], "| Europe", C["fin_eu"], f"| {C['cagr_us'] * 100:.2f}% vs {C['cagr_eu'] * 100:.2f}% a year",
-      f"| log2 {C['dbl_us']:.3f} / {C['dbl_eu']:.3f} | 2025 ratio {C['ratio25']:.3f}")
+      f"| log2 {C['dbl_us']:.3f} / {C['dbl_eu']:.3f} | 2025 ratio {C['ratio25']:.3f} | cut {CUT['c']}")
 print(f"\n{len(ROWS)} checks, {FAILS} failed")
 sys.exit(1 if FAILS else 0)

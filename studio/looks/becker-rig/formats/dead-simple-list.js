@@ -48,6 +48,10 @@
 //                                            sparks at both ends instead of the ring); a non-goal answer turns green again, and its
 //                                            tab gets the ring, until the next point), 'wag' ("no, no"), 'shrug',
 //                                            'nod', 'cheer' (a jump) or 'proud' (hands on hips, elbows out, held)
+//   flipFrom: seconds (0-0.1)                opt-in: when the frame-1 plate flip (an item at t <= 0.3) starts its
+//                                            anticipation (default 0.1, today's behaviour). 0 starts it on frame 1, so
+//                                            the opening moves from frame 2 (frame 1, the thumbnail, is still the hold;
+//                                            a condensed cut: 01b, 01c). The flip's swipe / tick / thud cues move with it
 //   finale: 'cheer' | 'shocked'              his jump when the goal lands: a "yes!" (default) or a shocked jump, arms
 //                                            flung up (a payoff that is an outrage, not a win: 01b's ≈ 1.1%)
 //   wrongGuess: { item, t, formula, result, resultT, strikeT, hit, react }   (or data.wrongGuess; one guess)
@@ -622,7 +626,8 @@ export default function deadSimpleList(spec, ctx) {
   // catches it (a dip, a toss with a spin, a knee-bend catch) until his wind-up. Frame 0 itself is the clean hold.
   const flips = []
   if (TI[0].ts < 0) {
-    let a = 0.1
+    // (lookOpts.flipFrom, opt-in: an earlier start, so the opening moves from frame 2; frame 1 is still the hold)
+    let a = typeof lo.flipFrom === 'number' && Number.isFinite(lo.flipFrom) ? clamp(lo.flipFrom, 0, 0.1) : 0.1
     for (let q = 0; q < 3; q++) {
       const air = q ? 0.36 : 0.5
       if (a + 0.08 + air + 0.3 > TI[0].tw - 0.04) break

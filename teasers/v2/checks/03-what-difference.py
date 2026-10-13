@@ -60,7 +60,28 @@ Port QA fixer pass (2026-10-08): no number, VO line or verdict changed.
      write-up only); lookOpts.heroEnd "value": the winner beat rolls the hero from ①'s ≈ 15.1 down to ②'s own ≈ 4.8 and
      lands on "ten" (data.winnerT), the shown gap 15.1 − 4.8 rounding to the verdict's ≈ 10.
 
-Run:  python3 teasers/v2/checks/03-what-difference.py
+Two cuts per teaser (condensed cut, 2026-10-13: the owner's "too many still moments are a killer for a short;
+condense the rest. The CTA (end card) is good", the 06b/06c precedent). A spec is checked against one of two
+expectation sets, picked by its duration:
+   - the round-2 cut (narration-paced VO lines; 37.2 / 30.6 / 29.8 s): what studio/specs/ holds and renders/channel/
+     ships today (IN_SPECS names the cut studio/specs/ must hold). Its rules are the ones listed above.
+   - the condensed cut (studio/specs-wip/<id>.json; bodies of 14-17 / 10.5-13 / 11.5-14 s + the 2.5 s end card). Every
+     number and display string is the round-2 cut's (03a drops the round-2 steps[3], a repeat of formulas[3] for the
+     hidden last caption; 03b re-slams its frame-1 note on "Because it shrinks"; 03c merges its first two captions,
+     word for word). Its timing rules replace the narration rules (check_cond): each caption up >= max(1.2 s, 0.12 s a
+     word) from frame 1, back to back (gaps < 0.2 s), the hook caption complete on frame 1 (Becker Rig pre-types a line
+     that starts early enough; a Scoreboard line has finished its 0.14 s rise), something moving from frame 2, every
+     beat (wake, cut, landing, read, step, label step, delta, lever) inside the caption that carries its number and after
+     the value it marks is on screen, the shared race speed, a proxy for the motion audit (the kits' motion windows leave
+     no gap of 0.4 s before the verdict), the verdict 0.8-1.5 s after the final reveal and held 1.2-1.6 s before the end
+     card, and the look options that carry the motion (03a: the scan from frame 2, the lever's beats; 03b/03c: a
+     Scoreboard `readHold` of 0.05-0.3 s).
+
+Run:  python3 teasers/v2/checks/03-what-difference.py                  (the specs in studio/specs/)
+      python3 teasers/v2/checks/03-what-difference.py --spec studio/specs-wip/03a-becker-rig-car-loan-weekly.json ...
+      --spec [KEY=]PATH (repeatable) checks PATH in place of studio/specs/<id>.json. KEY is a, b or c (or 03a/03b/03c);
+      without it the file's stem must be one of the three ids. A round-2-length spec is checked as the round-2 cut, any
+      other as the condensed cut (and fails its lane unless it is one).
 """
 import json
 import math
@@ -75,6 +96,60 @@ WPS = 2.6            # VO read speed, spoken words per second
 LANE = (20.0, 40.0)  # duration lane for this format (task brief)
 BEAT_TOL = 0.9       # an option must land within this many seconds of the word that names it
 FIRST_VALUES_BY = 3.0  # R10: the first option's values are on screen by this time
+
+# ---- the two cuts (see the docstring): picked by the spec's duration
+IDS = {"a": "03a-becker-rig-car-loan-weekly", "b": "03b-scoreboard-card-minimum", "c": "03c-scoreboard-mortgage-extra-100"}
+R2_DURATION = {"a": 37.2, "b": 30.6, "c": 29.8}          # the round-2 cut's body (s)
+IN_SPECS = {"a": "r2", "b": "r2", "c": "r2"}               # the cut studio/specs/ must hold ("cond" once promoted)
+CUT_NAME = {"r2": "round-2 cut (narration-paced)", "cond": "condensed cut (2026-10-13)"}
+# condensed-cut targets (the editor's brief for the owner's note, as for 06b/06c)
+COND_LANE = {"a": (14.0, 17.0), "b": (10.5, 13.0), "c": (11.5, 14.0)}   # body (s), plus the 2.5 s end card
+CAP_MIN, CAP_SPW = 1.2, 0.12     # captions (no narration): up >= 1.2 s a line, >= 0.12 s a word at phone size
+CAP_GAP = 0.2                    # captions run back to back: each gap < 0.2 s
+STILL_MAX = 0.4                  # the scheduled motion never leaves this long a gap before the verdict
+VERDICT_AFTER = (0.8, 1.5)       # the verdict lands this long after the final reveal
+VERDICT_HOLD = (1.2, 1.6)        # and holds this long before the end card
+SLOT_HOLD_COND = 1.0             # 03a: a working-slot line holds >= 1.0 s (a 2-line mono working, read with its caption)
+FRAME = 1 / 30
+
+
+def parse_spec_args(argv):
+    """--spec [KEY=]PATH (repeatable) -> {sid: abs path}; see the module docstring"""
+    out, i = {}, 0
+    while i < len(argv):
+        a = argv[i]
+        if a in ("-h", "--help"):
+            print(__doc__)
+            sys.exit(0)
+        if a == "--spec" or a.startswith("--spec="):
+            if a == "--spec":
+                i += 1
+                v = argv[i] if i < len(argv) else ""
+            else:
+                v = a.split("=", 1)[1]
+            if not v:
+                sys.exit("--spec needs a path")
+            m = re.fullmatch(r"(?:03)?([abc])=(.+)", v)
+            if m:
+                key, path = m.group(1), m.group(2)
+            else:
+                path = v
+                stem = os.path.splitext(os.path.basename(v))[0]
+                key = next((k for k, s_ in IDS.items() if s_ == stem), None)
+                if key is None:
+                    sys.exit(f"--spec {v}: the file stem is not one of {sorted(IDS.values())}; pass KEY=PATH")
+            if not os.path.isfile(path):
+                sys.exit(f"--spec {v}: no such file")
+            out[IDS[key]] = os.path.abspath(path)
+        else:
+            sys.exit(f"unknown argument {a!r}; usage: 03-what-difference.py [--spec [KEY=]PATH ...]")
+        i += 1
+    return out
+
+
+SPEC_PATHS = {s_: os.path.join(SPECS, s_ + ".json") for s_ in IDS.values()}
+SPEC_PATHS.update(parse_spec_args(sys.argv[1:]))
+KEY_OF = {s_: k for k, s_ in IDS.items()}
 
 # ============================================================== sourced inputs
 # Searches run 2026-10-07; publisher pages are listed in teasers/v2/03-what-difference.md.
@@ -473,6 +548,39 @@ step_beats = {ida: [(0, 2, "$1,100"), (1, 3, "$35"), (2, 6, "$1,800"), (3, 7, "$
 # port (Scoreboard 03b): label steps (k, VO line, anchor word or None for frame 1)
 label_beats = {idb: [(0, 0, None), (1, 1, "More"), (2, 3, "dollar")]}
 
+# ---- condensed cut (2026-10-13): the same strings and numbers, with the paths the condensed specs use
+# 03a: formulas[2] carries its own t ({ t, text }: shown after the $1,100 step has been read, not at Weekly's wake);
+#      the round-2 steps[3] ("= $187.54 + $12.46 = $200 a week", a repeat of formulas[3] for the last caption, which the
+#      verdict card replaces) is dropped, so the "≈ 1 year sooner" working is steps[3]
+ea_c = dict(ea)
+ea_c["lookOpts.formulas[2].text"] = ea_c.pop("lookOpts.formulas[2]")
+ea_c["lookOpts.steps[3].text"] = ea_c.pop("lookOpts.steps[4].text")
+# 03b: the frame-1 note is re-slammed (same string, one size down) on "Because it shrinks.", so the label steps shift
+eb_c = dict(eb)
+eb_c["lookOpts.labelSteps[3].text"] = eb_c.pop("lookOpts.labelSteps[2].text")
+eb_c["lookOpts.labelSteps[2].text"] = eb_c.pop("lookOpts.labelSteps[1].text")
+eb_c["lookOpts.labelSteps[1].text"] = eb["lookOpts.labelSteps[0].text"]
+expect_c = {ida: ea_c, idb: eb_c, idc: dict(ec)}
+# 03c: "Interest alone: about $587,200." and "More than the loan." are one caption (word for word): the hook
+vo_expect_c = {ida: vo_expect[ida], idb: vo_expect[idb],
+               idc: [vo_expect[idc][0] + vo_expect[idc][1]] + vo_expect[idc][2:]}
+MERGED_03C = ("Interest alone:", "More than the loan.")
+# reads: (target, caption, anchor). The anchor is the caption's word that the read answers; on screen there is no
+# narration, so a read must fall inside that caption's window (not within 0.25 s of a spoken word)
+reads_c = {
+    ida: [((0, "payoff"), 1, "72"), ((0, "interest"), 1, "$10,000"), (((1, 2), "interest"), 3, "$35"),
+          ((0, "payoff"), 4, "12"), ((3, "interest"), 6, "$1,800"), ((3, "payoff"), 7, "year")],
+    idb: [("hero", 0, "15"), ((0, "interest"), 1, "$7,300"), ((0, "interest"), 1, "owed"),
+          ((1, "payoff"), 4, "4.8"), ((1, "interest"), 4, "$3,100"), ((2, "payoff"), 5, "2.2")],
+    idc: [("hero", 0, "$587,200"), ((0, "interest"), 0, "$587,200"), ("hero", 0, "loan"), ((1, "payoff"), 2, "40"),
+          ("hero", 2, "$78,600"), ((2, "payoff"), 4, "11"), ("hero", 4, "$245,000")],
+}
+# 03a working-slot steps (cond indices): (step, caption, anchor)
+steps_c = {ida: [(0, 2, "$1,100"), (1, 3, "$35"), (2, 6, "$1,800"), (3, 7, "year")]}
+# where each later option wakes / cuts (the caption that names it) and lands (the caption that speaks its payoff)
+wakes_c = {ida: [(1, 2), (2, 3), (3, 5)], idb: [(1, 2), (2, 5)], idc: [(1, 1), (2, 3)]}
+lands_c = {ida: [(1, 2), (2, 3), (3, 6)], idb: [(1, 4), (2, 5)], idc: [(1, 2), (2, 4)]}
+
 # ============================================================== text helpers
 
 NUM_CORE = r"(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?"
@@ -552,6 +660,7 @@ def string_leaves(obj, path=""):
 # ============================================================== checks
 
 rows_out, fails = [], []
+CUT = {}
 
 def record(sid, field, shown, want, ok, why=""):
     rows_out.append((sid, field, shown, want, "ok" if ok else "FAIL"))
@@ -559,8 +668,18 @@ def record(sid, field, shown, want, ok, why=""):
         fails.append(f"{sid} {field}: shown {shown!r} want {want!r} {why}")
 
 def check_spec(sid):
-    with open(os.path.join(SPECS, sid + ".json"), encoding="utf-8") as f:
+    path = SPEC_PATHS[sid]
+    with open(path, encoding="utf-8") as f:
         spec = json.load(f)
+    key = KEY_OF[sid]
+    # two cuts, picked by length: the round-2 cut, or the condensed cut (any other length fails its lane)
+    cut = "r2" if abs(spec.get("duration", 0) - R2_DURATION[key]) < 1e-9 else "cond"
+    CUT[sid] = cut
+    in_specs = os.path.dirname(os.path.abspath(path)) == os.path.abspath(SPECS)
+    record(sid, "studio/specs/ holds the expected cut", CUT_NAME[cut] if in_specs else f"(--spec file) {CUT_NAME[cut]}",
+           CUT_NAME[IN_SPECS[key]] if in_specs else "(--spec file)", (cut == IN_SPECS[key]) if in_specs else True)
+    exp_s = expect_c[sid] if cut == "cond" else expect[sid]
+    vx_s = vo_expect_c[sid] if cut == "cond" else vo_expect[sid]
     # --- common fields and contract shape (FORMATS.md, common + section 3)
     record(sid, "id = file stem", spec.get("id"), sid, spec.get("id") == sid)
     record(sid, "format", spec.get("format"), "what-difference", spec.get("format") == "what-difference")
@@ -570,7 +689,9 @@ def check_spec(sid):
     record(sid, "fps", spec.get("fps"), 30, spec.get("fps") == 30)
     record(sid, "captions", spec.get("captions"), True, spec.get("captions") is True)
     dur = spec["duration"]
-    record(sid, "duration lane", dur, f"{LANE[0]}-{LANE[1]} s", LANE[0] <= dur <= LANE[1])
+    lane = COND_LANE[key] if cut == "cond" else LANE
+    record(sid, "duration lane" + (" (condensed body, + the 2.5 s end card)" if cut == "cond" else ""), dur,
+           f"{lane[0]}-{lane[1]} s", lane[0] <= dur <= lane[1])
     hdr = strip_markup(spec["header"]).replace("\n", " ")
     record(sid, "R1 header has a number at t=0", spec["header"].replace("\n", " / "), "a digit", bool(re.search(r"\d", hdr)))
     dollars = re.findall(r"\$" + NUM_CORE, hdr)
@@ -610,7 +731,7 @@ def check_spec(sid):
 
     # --- display strings and numeric tokens
     covered = set()
-    for p, (kind, want) in expect[sid].items():
+    for p, (kind, want) in exp_s.items():
         covered.add(p)
         try:
             shown = get(spec, p)
@@ -634,7 +755,7 @@ def check_spec(sid):
         record(sid, f"options[{i}] delta = shown difference", o["delta"], diff, abs(val(o["delta"]) - diff) < 1e-6)
 
     # --- VO numbers and "about"
-    vx = vo_expect[sid]
+    vx = vx_s
     record(sid, "vo line count", len(spec["vo"]), len(vx), len(spec["vo"]) == len(vx))
     for i, (line, want) in enumerate(zip(spec["vo"], vx)):
         covered.add(f"vo[{i}].text")
@@ -653,6 +774,9 @@ def check_spec(sid):
         record(sid, f"covered: {p}", s.replace("\n", " / "), "checked", p in covered)
 
     # --- timing
+    if cut == "cond":
+        check_cond(sid, spec, land)
+        return spec
     vo = spec["vo"]
     for i, line in enumerate(vo):
         n = len(spoken(line["text"]))
@@ -965,6 +1089,421 @@ def check_spec(sid):
     for cue in spec.get("sfx", []):
         record(sid, f"sfx {cue['kind']} on a beat", cue["t"], "an option/VO/verdict t", any(abs(cue["t"] - a) < 1e-9 for a in anchors))
     return spec
+
+# ============================================================== the condensed cut (2026-10-13)
+
+def months_of(disp, unit=1):
+    """a payoff display in months ("≈ 26.7 years" = 320.4; a bare "≈ 65" takes the metric's unit, months)"""
+    v = val(disp)
+    return v * 12 if re.search(r"\byears?\b", disp) else v * unit
+
+
+def sb_timeline(spec):
+    """Scoreboard what-difference: each option's cut, race start, landing and delta (the kit's own arithmetic)"""
+    d, lo = spec["data"], spec.get("lookOpts", {})
+    opts = d["options"]
+    race = lo.get("race", 2.4)
+    lens = [months_of(o["values"]["payoff"]) for o in opts]
+    mx = max(lens)
+    out = []
+    for i, o in enumerate(opts):
+        first = i == 0 and lo.get("intro") is False
+        cut = min(o["t"], 0) if first else o["t"]
+        start = cut - 0.45 if first else cut + 0.35
+        dur = min(max(race * lens[i] / mx, 0.7), race)
+        nxt = opts[i + 1]["t"] if i + 1 < len(opts) else float("inf")
+        dur = min(dur, max(0.5, nxt - start - 1.0))
+        land = start + dur
+        rT = o.get("resultT")
+        if rT is not None and rT > start + 0.2:
+            if lo.get("keepSpeed") is True and rT - dur > start:
+                start = rT - dur
+            land = rT
+        delta = (o.get("deltaT", land + 0.55) if o.get("delta") else None)
+        out.append({"cut": cut, "start": start, "land": land, "delta": delta, "shared": dur})
+    return out
+
+
+def br_timeline(spec):
+    """Becker Rig what-difference: each lane's wake, push-off, landing and money drop (the kit's timeLane for a lane
+    with t and resultT, and the pre-run lane)"""
+    d, lo = spec["data"], spec.get("lookOpts", {})
+    opts = d["options"]
+    race = lo.get("race", 1.8)
+    Ms = [months_of(o["values"]["payoff"]) for o in opts]
+    sec = race / max(Ms)
+    out = []
+    for i, o in enumerate(opts):
+        natural = max(0.6, Ms[i] * sec)
+        if o["t"] <= 0:
+            out.append({"wake": None, "act": None, "start": None, "land": min(o.get("resultT", -0.6), -0.6), "val": None,
+                        "natural": natural})
+            continue
+        W, rT = o["t"], o["resultT"]
+        lead = min(max(rT - W - 0.35, 0.3), 0.42)
+        act = min(W, rT - 0.35 - lead)
+        start = max(rT - natural, act + lead)
+        out.append({"wake": W, "act": act, "start": start, "land": rT, "val": rT + o.get("valueEvery", d.get("valueEvery", 0.45)),
+                    "natural": natural})
+    return out
+
+
+def caption_window(spec, li):
+    """[on, off) of caption li: from its t (or frame 1) to the next caption's t; the last one to the end (Becker Rig:
+    the verdict card replaces the caption band from verdict.t)"""
+    vo = spec["vo"]
+    on = max(0.0, vo[li]["t"])
+    off = vo[li + 1]["t"] if li + 1 < len(vo) else spec["duration"]
+    return on, off
+
+
+def inside(t, win, early=0.0):
+    return win[0] - early - 1e-9 <= t < win[1] + 1e-9
+
+
+def motion_windows(spec):
+    """(a, b) windows in which the kit moves something that a frame-difference audit registers (from the motion audits
+    of the condensed renders): races, cuts, wakes, landings, reads, slams, slot pops, the lever, the scan's hops"""
+    lo, d = spec.get("lookOpts", {}), spec["data"]
+    win = []
+    if spec["look"] == "scoreboard":
+        tl = sb_timeline(spec)
+        h = lo.get("readHold", 0.3)
+        for i, b in enumerate(tl):
+            if i == 0:
+                win.append((0.0, 0.33))                                   # the frame-1 landing settles from frame 2
+                continue
+            win += [(b["cut"], b["cut"] + 0.35), (b["start"], b["land"]), (b["land"], b["land"] + 0.33)]
+            if b["delta"] is not None:
+                win.append((b["delta"], b["delta"] + 0.22))
+        for st in lo.get("labelSteps", []):
+            if st["t"] > 0.05:
+                win.append((st["t"], st["t"] + 0.2))
+        for r in lo.get("reads", []):
+            if r.get("option") is None:
+                win.append((r["t"], r["t"] + 0.25))                       # the hero bumps 6%, its glow flares
+            else:
+                win += [(r["t"], r["t"] + 0.1), (r["t"] + 0.08 + h, r["t"] + 0.08 + h + 0.25)]   # a cell swells, holds, eases
+    else:
+        tl = br_timeline(spec)
+        for b in tl:
+            if b["wake"] is None:
+                continue
+            win += [(b["wake"], b["wake"] + 0.2), (b["start"], b["land"]), (b["land"], b["land"] + 0.35), (b["val"], b["val"] + 0.25)]
+        for c in lo.get("countCell", []) if isinstance(lo.get("countCell"), list) else [lo.get("countCell", {})]:
+            if c:
+                b = tl[c["option"]]
+                win.append((b["val"], b["val"] + 0.8))
+        sc = lo.get("scan")
+        if sc:
+            waiting = [i for i, b in enumerate(tl) if b["act"] is not None and b["act"] > sc["t"] + 0.3]
+            win += [(sc["t"] + j * sc.get("every", 0.4), sc["t"] + j * sc.get("every", 0.4) + 0.44) for j in range(len(waiting))]
+        for r in lo.get("reads", []):
+            win.append((r["t"], r["t"] + 0.4))                             # a value bumps and flashes, its figure greens (0.3-0.47 measured)
+        lv = lo.get("lever")
+        if lv:
+            win += [(lv["t"], lv["t"] + 0.5)] + [(x, x + 0.45) for x in lv.get("beats", [])]
+        for x in lo.get("steps", []) + [f for f in lo.get("formulas", []) if isinstance(f, dict)]:
+            win.append((x["t"], x["t"] + 0.15))                            # a working line pops into the slot
+    return win
+
+
+def longest_gap(win, t0, t1):
+    t, gap, at = t0, 0.0, t0
+    for a, b in sorted(win):
+        if b <= t:
+            continue
+        if a > t and a - t > gap:
+            gap, at = a - t, t
+        t = max(t, b)
+        if t >= t1:
+            break
+    if t < t1 and t1 - t > gap:
+        gap, at = t1 - t, t
+    return gap, at
+
+
+def check_cond(sid, spec, land):
+    """the condensed cut: captions paced for reading, every beat inside its caption, no still moment before the verdict"""
+    key, look = KEY_OF[sid], spec["look"]
+    d, lo, vo = spec["data"], spec.get("lookOpts", {}), spec["vo"]
+    opts, dur = d["options"], spec["duration"]
+    V = spec["verdict"]["t"]
+    becker = look == "becker-rig"
+    win = [caption_window(spec, i) for i in range(len(vo))]
+
+    # ---- captions: on-screen text, read at phone size, back to back from frame 1
+    for i, v in enumerate(vo):
+        n = len(strip_markup(v["text"]).split())
+        need = max(CAP_MIN, CAP_SPW * n)
+        if becker and i == len(vo) - 1:
+            # (Becker Rig: the verdict card takes the caption band at verdict.t, so the verdict's own line is never shown;
+            # the card carries its claim, as in the round-2 cut)
+            record(sid, f"vo[{i}] is the verdict's line: the verdict card replaces it (t = verdict.t)", v["t"], V, abs(v["t"] - V) < 1e-9)
+            continue
+        end = min(v["t"] + v["d"], V) if becker else v["t"] + v["d"]
+        shown = end - max(0.0, v["t"])
+        record(sid, f"vo[{i}] caption up >= max({CAP_MIN}, {n} words x {CAP_SPW}) s", f"{shown:.2f} s", f">= {need:.2f}", shown + 1e-9 >= need)
+    gaps = [round(b["t"] - (a["t"] + a["d"]), 3) for a, b in zip(vo, vo[1:])]
+    record(sid, f"captions back to back (each gap 0-{CAP_GAP} s)", gaps, f"each 0 <= gap < {CAP_GAP}", all(-1e-9 <= g < CAP_GAP for g in gaps))
+    v0 = vo[0]
+    if becker:
+        n0 = len(strip_markup(v0["text"]).split())
+        done = v0["t"] + (n0 - 1) * min(0.045, 0.32 / max(1, n0)) + 0.16
+        record(sid, "hook caption complete on frame 1 (pre-typed: its last word settled by t = 0)", f"t {v0['t']}, settled {done:.3f}", "<= 0", done <= 1e-9)
+    else:
+        record(sid, "hook caption complete on frame 1 (t <= -0.14: no rise on frame 1)", v0["t"], "<= -0.14", v0["t"] <= -0.14 + 1e-9)
+    record(sid, "verdict.t = last caption's t", V, vo[-1]["t"], abs(V - vo[-1]["t"]) < 1e-9)
+    end = vo[-1]["t"] + vo[-1]["d"]
+    record(sid, "hold = duration − last caption end", d["hold"], round(dur - end, 2), abs(d["hold"] - (dur - end)) < 0.051)
+    record(sid, "no lookOpts.pat or pat over before the first read (it does not register at this figure size)",
+           lo.get("pat"), "absent", "pat" not in lo)
+
+    # ---- the beats: each option wakes / cuts on the caption that names it and lands in the caption that speaks it
+    tl = br_timeline(spec) if becker else sb_timeline(spec)
+    for oi, li in wakes_c[sid]:
+        record(sid, f"option {oi} '{opts[oi]['name']}' {'wakes' if becker else 'cuts'} as vo[{li}] goes up", opts[oi]["t"], vo[li]["t"],
+               abs(opts[oi]["t"] - vo[li]["t"]) < 1e-9)
+    for oi, li in lands_c[sid]:
+        ln = tl[oi]["land"]
+        record(sid, f"option {oi} lands inside vo[{li}] (or as it goes up)", round(ln, 2), f"{win[li][0]:.2f}-{win[li][1]:.2f}", inside(ln, win, 0.05) if False else inside(ln, win[li], 0.05))
+    if becker:
+        for oi in range(1, len(opts)):
+            b = tl[oi]
+            record(sid, f"option {oi} wakes on its caption: resultT − t >= 0.77 s", round(b["land"] - b["wake"], 2), ">= 0.77", b["land"] - b["wake"] >= 0.77 - 1e-9)
+            run = b["land"] - b["start"]
+            record(sid, f"option {oi} runs at the shared speed (no wait, no strain: lead-in <= 0.6 s)", f"run {run:.2f}, lead-in {b['start'] - b['act']:.2f}",
+                   f"run {b['natural']:.2f}", abs(run - b["natural"]) < 0.02 and b["start"] - b["act"] <= 0.6 + 1e-9)
+    else:
+        record(sid, "Scoreboard: frame 1 is the first option landed (resultT 0): it settles from frame 2", opts[0].get("resultT"), 0.0, opts[0].get("resultT") == 0.0)
+        for oi in range(1, len(opts)):
+            b = tl[oi]
+            record(sid, f"option {oi} races at the shared speed, after its cut + 0.35 s", f"{b['start']:.2f}-{b['land']:.2f}",
+                   f"run {b['shared']:.2f} from >= {b['cut'] + 0.35:.2f}", b["start"] >= b["cut"] + 0.35 - 1e-9 and abs((b["land"] - b["start"]) - b["shared"]) < 0.02)
+        rh = lo.get("readHold")
+        record(sid, "lookOpts.readHold (a cell read held 0.05-0.3 s, so no read leaves a still frame of 0.4 s)", rh, "0.05-0.3",
+               rh is not None and 0.05 <= rh <= 0.3)
+
+    # ---- reads: each inside the caption it answers, on a value already on screen, answering that caption's number
+    lo_r = sorted(lo.get("reads", []), key=lambda r: r["t"])
+    rx = reads_c[sid]
+    record(sid, "lookOpts.reads count", len(lo_r), len(rx), len(lo_r) == len(rx))
+    for k, (rd, (tgt, li, kw)) in enumerate(zip(lo_r, rx)):
+        record(sid, f"reads[{k}] inside vo[{li}] ('{kw}')", rd["t"], f"{win[li][0]:.2f}-{win[li][1]:.2f}", inside(rd["t"], win[li]))
+        toks = tokens(kw)
+        if tgt == "hero":
+            # the hero holds the active option's value of its metric (lookOpts.counter): the last option cut by then
+            hk = lo.get("counter", "interest")
+            k_on = max(i for i, b in enumerate(tl) if b["cut"] <= rd["t"])
+            shown_v, on_by = opts[k_on]["values"][hk], tl[k_on]["land"]
+            record(sid, f"reads[{k}] target: the hero (holding option {k_on}'s {hk})", rd.get("target"), "hero", rd.get("target") == "hero" and rd.get("option") is None)
+            record(sid, f"reads[{k}] hero value landed before the read", round(on_by, 2), f"< {rd['t']}", on_by < rd["t"])
+            if kw == "loan":
+                record(sid, f"reads[{k}] 'More than the loan': the hero's interest > the loan", (shown_v, money(MORT_P)), "> loan",
+                       val(shown_v) > MORT_P and "more than the loan" in vo[li]["text"].lower())
+            elif toks and k_on > 0 and val(toks[0]) != val(shown_v):
+                diff = val(opts[0]["values"][hk]) - val(shown_v)
+                record(sid, f"reads[{k}] caption's '{kw}' = the shown difference the hero's value makes", toks[0], diff, abs(val(toks[0]) - diff) < 1e-6)
+            else:
+                said = val(toks[0]) if toks else None
+                record(sid, f"reads[{k}] caption's '{kw}' speaks the hero's value", kw, shown_v,
+                       said is not None and (said == val(shown_v) or (said == int(said) and said == round(val(shown_v)))))
+            continue
+        ois, mk = tgt
+        ois = ois if isinstance(ois, tuple) else (ois,)
+        ro = rd.get("option")
+        got = (tuple(ro) if isinstance(ro, list) else (ro,), rd.get("metric"))
+        record(sid, f"reads[{k}] target", got, (ois, mk), got == (ois, mk))
+        shown_v = opts[ois[0]]["values"][mk]
+        def on_screen(oi):
+            b = tl[oi]
+            if becker:
+                if b["wake"] is None:
+                    return -1.0
+                cc = lo.get("countCell", {})
+                if mk == "interest" and isinstance(cc, dict) and cc.get("option") == oi:
+                    return b["val"] + 0.8                                   # a counted value has settled
+                return b["val"] if mk == "interest" else b["land"]
+            return b["land"]
+        on_by = max(on_screen(oi) for oi in ois)
+        record(sid, f"reads[{k}] value already on screen", round(on_by, 2), f"< {rd['t']}", on_by < rd["t"])
+        if len(ois) > 1:
+            vals_ = [opts[oi]["values"][mk] for oi in ois]
+            record(sid, f"reads[{k}] pair cells show the same total; the caption gives the exact gap they hide", (vals_, toks),
+                   money(pair_exact[sid]), len(set(vals_)) == 1 and bool(toks) and toks[0] == bare(money(pair_exact[sid])))
+        elif kw == "12":
+            lev = lo.get("lever", {}).get("options", [])
+            record(sid, f"reads[{k}] 'not 12' marks Monthly (12 payments a year, outside the lever), after the lever's beats", (ois[0], lev, rd["t"]),
+                   "0 ∉ lever", ois[0] == 0 and 0 not in lev and "not 12" in vo[li]["text"] and rd["t"] > max(lo["lever"].get("beats") or [lo["lever"]["t"]]))
+        elif kw == "year":
+            gap_ = val(opts[0]["values"]["payoff"]) - val(shown_v)
+            record(sid, f"reads[{k}] 'year' marks the winner's crate after the winner beat: shown 72 − 60 = 12 months ≈ 1 year", (ois[0], gap_, rd["t"]),
+                   f"winner, 12, > {V}", ois[0] == d["winner"] and gap_ == 12 and num(CAR_ROUND_SOONER_YRS) == "≈ 1" and rd["t"] > V
+                   and "about a year" in vo[li]["text"].lower())
+        elif kw == "owed":
+            st2 = lo["labelSteps"][2]
+            record(sid, f"reads[{k}] 'More than you owed': the interest cell again, after 'More than the $5,000 owed', interest > stake",
+                   (shown_v, st2["t"], rd["t"]), "> $5,000", val(shown_v) > CARD_B and rd["t"] > st2["t"] + 0.2 and "more than you owed" in vo[li]["text"].lower())
+        elif mk == "payoff" and not becker and toks and val(toks[0]) != val(shown_v) and "sooner" in vo[li]["text"].lower():
+            # a bar label read on "40 months sooner" / "About 11 years sooner": the shown gap to the baseline's bar
+            gap_y = val(opts[0]["values"]["payoff"]) - val(shown_v)
+            said = val(toks[0])
+            ok = round(gap_y * 12) == said if re.search(re.escape(kw) + r"\s+months", vo[li]["text"]) else round(gap_y) == said
+            record(sid, f"reads[{k}] bar label: the shown gap to the baseline's bar is the caption's '{kw}'", round(gap_y, 1), kw, ok)
+        elif mk == "interest" and toks and val(toks[0]) != val(shown_v):
+            diff = val(opts[0]["values"]["interest"]) - val(shown_v)
+            record(sid, f"reads[{k}] caption's '{kw}' = the shown difference this cell makes", toks[0], diff, abs(val(toks[0]) - diff) < 1e-6)
+        else:
+            said = val(toks[0]) if toks else None
+            record(sid, f"reads[{k}] caption's '{kw}' speaks the marked value", kw, shown_v,
+                   said is not None and (said == val(shown_v) or (said == int(said) and said == round(val(shown_v)))))
+
+    # ---- the final reveal, the verdict and its hold
+    if becker:
+        cc = lo.get("countCell", {})
+        fin_t, what = tl[cc["option"]]["val"] + 0.8, "the counted ≈ $8,200 settling"
+    elif sid == idb:
+        fin_t, what = tl[-1]["land"], "the last race landing"
+    else:
+        fin_t, what = tl[-1]["delta"], "the last delta"
+    after = V - fin_t
+    record(sid, f"verdict lands {VERDICT_AFTER[0]}-{VERDICT_AFTER[1]} s after {what}", f"{after:.2f} s", f"{VERDICT_AFTER[0]}-{VERDICT_AFTER[1]}",
+           VERDICT_AFTER[0] - 1e-9 <= after <= VERDICT_AFTER[1] + 1e-9)
+    hold = dur - V
+    record(sid, f"verdict holds {VERDICT_HOLD[0]}-{VERDICT_HOLD[1]} s before the end card", f"{hold:.2f} s", f"{VERDICT_HOLD[0]}-{VERDICT_HOLD[1]}",
+           VERDICT_HOLD[0] - 1e-9 <= hold <= VERDICT_HOLD[1] + 1e-9)
+    if not becker:
+        wT = d.get("winnerT")
+        record(sid, "the hero's payoff lands 0.44-1.04 s into the verdict hold (data.winnerT − verdict.t)", None if wT is None else round(wT - V, 2), "0.44-1.04",
+               wT is not None and 0.44 - 1e-9 <= wT - V <= 1.04 + 1e-9 and wT <= dur - 0.4)
+
+    # ---- the scheduled motion (a proxy for the motion audit): no gap of STILL_MAX before the verdict
+    gap, at = longest_gap(motion_windows(spec), 0.0, V)
+    record(sid, f"scheduled motion: no gap >= {STILL_MAX} s before the verdict (proxy for the motion audit)", f"longest {gap:.2f} s at {at:.2f}",
+           f"< {STILL_MAX}", gap < STILL_MAX - 1e-9)
+
+    # ---- per teaser
+    if sid == ida:
+        sc = lo.get("scan", {})
+        record(sid, "lookOpts.scan from frame 2 (the waiting figures hop in turn: frame 1 is the thumbnail, then it moves)", sc.get("t"),
+               f"0-{FRAME:.3f}", sc.get("t") is not None and 0 <= sc["t"] <= FRAME + 1e-9)
+        nh = sum(1 for b in tl if b["act"] is not None and b["act"] > sc.get("t", 0) + 0.3)
+        last_hop = sc.get("t", 0) + (nh - 1) * sc.get("every", 0.4) + 0.44
+        first_read = min(r["t"] for r in lo["reads"])
+        record(sid, "lookOpts.scan: hops 0.45 s apart at most, all over before Monthly's first read", (sc.get("every"), round(last_hop, 2)),
+               f"<= 0.45, <= {first_read}", sc.get("every", 0.4) <= 0.45 + 1e-9 and last_hop <= first_read + 1e-9)
+        empty_then = [i for i, o in enumerate(opts) if o["t"] > last_hop]
+        record(sid, "lookOpts.scan: the lanes after the baseline are all still waiting", empty_then, [1, 2, 3], empty_then == [1, 2, 3])
+        lev = lo.get("lever", {})
+        record(sid, "lookOpts.lever as vo[4] goes up ('Both add up to 13 …'), on the 13-payment lanes", (lev.get("t"), lev.get("options")), (vo[4]["t"], [1, 2]),
+               abs(lev.get("t", -1) - vo[4]["t"]) < 1e-9 and lev.get("options") == [1, 2]
+               and abs(CAR_YEAR_BIWK - CAR_YEAR_MONTHLY) < 0.005 and abs(CAR_YEAR_WK - CAR_YEAR_MONTHLY) < 0.005)
+        lb = lev.get("beats", [])
+        record(sid, "lookOpts.lever.beats: 1-3 later beats inside vo[4], each >= 0.3 s after the last", lb, f"inside {win[4][0]:.2f}-{win[4][1]:.2f}",
+               1 <= len(lb) <= 3 and all(inside(x, win[4]) for x in lb) and all(b_ - a_ >= 0.3 - 1e-9 for a_, b_ in zip([lev.get("t", 0)] + lb, lb)))
+        cc = lo.get("countCell", {})
+        record(sid, "lookOpts.countCell = the winner's interest, counted down from the baseline", cc, "winner · interest · base",
+               cc.get("option") == d["winner"] and cc.get("metric") == "interest" and cc.get("from") == "base")
+        settle = tl[cc["option"]]["val"] + 0.8
+        record(sid, "countCell settles inside vo[6] ('About $1,800 less')", round(settle, 2), f"{win[6][0]:.2f}-{win[6][1]:.2f}", inside(settle, win[6]))
+        drop = val(opts[0]["values"]["interest"]) - val(opts[cc["option"]]["values"]["interest"])
+        record(sid, "countCell: the count's drop (shown base − shown value) = the caption's $1,800", drop, val("$1,800"), drop == val("$1,800"))
+        # the working slot: the steps (each inside the caption that carries its number, never before the value it cites)
+        st = lo.get("steps", [])
+        record(sid, "lookOpts.steps: 4 (the round-2 steps[3], a repeat of formulas[3], is dropped)", len(st), 4, len(st) == 4)
+        f3 = lo["formulas"][3] if isinstance(lo["formulas"][3], str) else lo["formulas"][3]["text"]
+        record(sid, "no step repeats formulas[3] (Round up's working is up from its wake)", [x["text"] for x in st if x["text"] == f3], [], all(x["text"] != f3 for x in st))
+        cites = {0: tl[1]["val"], 1: tl[2]["val"], 2: settle, 3: V}
+        for k, li, kw in steps_c[sid]:
+            x = st[k]
+            record(sid, f"lookOpts.steps[{k}] inside vo[{li}] ('{kw}'), not before what it cites", x["t"], f">= {cites[k]:.2f}, in {win[li][0]:.2f}-{win[li][1]:.2f}",
+                   inside(x["t"], win[li]) and x["t"] >= cites[k] - 1e-9)
+            stoks = tokens(x["text"])
+            if tokens(kw):
+                record(sid, f"lookOpts.steps[{k}] carries the caption's {kw}", stoks, kw, any(val(y) == val(tokens(kw)[0]) or round(val(y)) == val(tokens(kw)[0]) for y in stoks))
+            else:
+                record(sid, f"lookOpts.steps[{k}] carries the 'about a year' of vo[{li}]", stoks, "≈ 1", "about a year" in vo[li]["text"].lower() and num(CAR_ROUND_SOONER_YRS) in stoks)
+        for k in (0, 2, 3):
+            tk = tokens(st[k]["text"])
+            record(sid, f"lookOpts.steps[{k}] shown a − b = its result", tk, "a − b = c", abs(val(tk[0]) - val(tk[1]) - val(tk[2])) < 1e-6)
+        tk = tokens(st[3]["text"])
+        record(sid, "lookOpts.steps[3]: a = Monthly's crate, b = the winner's crate (bare), ≈ on c; 12 months = ≈ 1 year", tk,
+               f"{opts[0]['values']['payoff']} − {bare(opts[d['winner']]['values']['payoff'])}",
+               tk[0] == opts[0]["values"]["payoff"] and tk[1] == bare(opts[d["winner"]]["values"]["payoff"]) and tk[2].startswith("≈ ")
+               and val(tk[2]) == 12 and val(tk[2]) / 12 == val(tk[3]))
+        gl_ = lo.get("gapLabel")
+        gl_t = gl_ if isinstance(gl_, str) else (gl_ or {}).get("text")
+        record(sid, "lookOpts.gapLabel = the step's ≈ 12, in months ('mo')", gl_t, f"{tk[2]} mo", isinstance(gl_t, str) and tokens(gl_t) == [tk[2]] and gl_t.endswith(" mo"))
+        # one working line at a time; each holds long enough to read with its caption
+        slot = [(min(r["t"] for r in lo["reads"] if r["option"] == 0), "formulas[0]")]
+        for i, f_ in enumerate(lo["formulas"][1:], 1):
+            slot.append((f_["t"] if isinstance(f_, dict) else opts[i]["t"], f"formulas[{i}]"))
+        slot += [(x["t"], f"steps[{k}]") for k, x in enumerate(st)] + [(lo["lever"]["t"], "lever")]
+        slot.sort()
+        for (ta, na), (tb, nb) in zip(slot, slot[1:]):
+            record(sid, f"slot line {na} holds >= {SLOT_HOLD_COND} s (until {nb})", round(tb - ta, 2), f">= {SLOT_HOLD_COND}", tb - ta >= SLOT_HOLD_COND - 1e-9)
+        record(sid, f"slot line {slot[-1][1]} holds >= {SLOT_HOLD_COND} s (to the end card)", round(dur - slot[-1][0], 2), f">= {SLOT_HOLD_COND}", dur - slot[-1][0] >= SLOT_HOLD_COND - 1e-9)
+        for li in year_lines[sid]:
+            record(sid, f"vo[{li}] says 'about a year'", vo[li]["text"], "contains 'about a year'", "about a year" in vo[li]["text"].lower())
+        ft = spec["footer"]
+        record(sid, "becker footer: one line (≤ 36 characters, no break)", f"{len(ft)} chars", "≤ 36", len(ft) <= 36 and "\n" not in ft)
+        record(sid, "lookOpts.formulas: one per option", len(lo["formulas"]), len(opts), len(lo["formulas"]) == len(opts))
+    if sid == idb:
+        lsx = lo.get("labelSteps", [])
+        hero_r = min(r["t"] for r in lo["reads"] if r.get("option") is None)
+        first_cell = min(r["t"] for r in lo["reads"] if r.get("option") == 0)
+        rules = [(0, 0, "on screen at frame 1, one size down", lambda s_: s_["t"] == 0.0 and s_.get("small") is True),
+                 (1, 0, "re-slams the note on 'Because it shrinks.', after the hero read, one size down",
+                  lambda s_: inside(s_["t"], win[0]) and s_["t"] > hero_r + 0.25 and s_.get("small") is True and "because it shrinks" in vo[0]["text"].lower()),
+                 (2, 1, "'More than the $5,000 owed' inside vo[1], after the $7,300 read", lambda s_: inside(s_["t"], win[1]) and s_["t"] > first_cell + 0.2),
+                 (3, 3, "'$0 more than the first minimum' inside vo[3] ('Not a dollar more …')",
+                  lambda s_: inside(s_["t"], win[3]) and "not a dollar more" in vo[3]["text"].lower())]
+        record(sid, "lookOpts.labelSteps count", len(lsx), 4, len(lsx) == 4)
+        for k, li, what, f_ in rules:
+            s_ = lsx[k] if k < len(lsx) else {}
+            oi = s_.get("option", -1)
+            nxt = opts[oi + 1]["t"] if 0 <= oi and oi + 1 < len(opts) else V
+            record(sid, f"lookOpts.labelSteps[{k}] {what}", s_.get("t"), f"vo[{li}]", bool(s_) and f_(s_) and opts[oi]["t"] <= s_["t"] < nxt)
+        record(sid, "labelSteps[2] 'More than the $5,000 owed': interest > stake", (opts[0]["values"]["interest"], money(CARD_B)), "> $5,000",
+               val(opts[0]["values"]["interest"]) > CARD_B and CARD["min"]["interest"] > CARD_B)
+        record(sid, "scoreboard hero = the payoff metric (frame 1: '≈ 15.1 years', red); keepSpeed", (lo.get("counter"), opts[0]["values"]["payoff"], lo.get("keepSpeed")),
+               "payoff · ≈ 15.1 years · True", lo.get("counter") == "payoff" and opts[0]["values"]["payoff"] == years_disp(CARD["min"]["years"]) and lo.get("keepSpeed") is True)
+        record(sid, "no option carries a delta (the verdict alone says '≈ 10 years sooner')", [o.get("delta") for o in opts], "none",
+               not any("delta" in o or "deltaT" in o for o in opts))
+        record(sid, "lookOpts.heroEnd = 'value' (the hero lands ②'s own payoff; no endTag)", (lo.get("heroEnd"), lo.get("endTag")), "value · none",
+               lo.get("heroEnd") == "value" and "endTag" not in lo)
+        shown_gap = val(opts[0]["values"]["payoff"]) - val(opts[d["winner"]]["values"]["payoff"])
+        record(sid, "the hero's roll (① 15.1 → ② 4.8) shows the verdict's ≈ 10", round(shown_gap, 1), num(CARD_SOONER_F1),
+               num(shown_gap) == num(CARD_SOONER_F1) == "≈ 10" and tokens(spec["verdict"]["text"])[-1] == "≈ 10")
+        record(sid, "no '13 years' anywhere on screen (write-up only)", "", "absent", not any(re.search(r"\b13 years", x) for _, x in string_leaves(spec)))
+        # option 1's race carries the two captions between its cut and its landing (the hero rolls 15.1 → 4.8 under them)
+        b1 = tl[1]
+        record(sid, "option 1's race runs under 'Not a dollar more …' (starts by vo[3], lands as vo[4] goes up)", f"{b1['start']:.2f}-{b1['land']:.2f}",
+               f"<= {vo[3]['t']}, ~{vo[4]['t']}", b1["start"] <= vo[3]["t"] + 1e-9 and abs(b1["land"] - vo[4]["t"]) <= 0.1 + 1e-9)
+    if sid == idc:
+        record(sid, "vo[0] is the hook's two lines merged word for word", vo[0]["text"], " … ".join(MERGED_03C),
+               vo[0]["text"].startswith(MERGED_03C[0]) and vo[0]["text"].endswith(MERGED_03C[1]))
+        fs = lo.get("footerSteps", [])
+        hero_r = min(r["t"] for r in lo["reads"] if r.get("option") is None)
+        want = [("the working of 'More than the loan', inside vo[0] after the first hero read", lambda x: inside(x, win[0]) and x > hero_r and x < opts[1]["t"]),
+                ("at option 1's cut", lambda x: abs(x - opts[1]["t"]) < 1e-9), ("at option 2's cut", lambda x: abs(x - opts[2]["t"]) < 1e-9),
+                ("with the verdict", lambda x: abs(x - V) < 1e-9)]
+        record(sid, "lookOpts.footerSteps count", len(fs), 4, len(fs) == 4)
+        for k, (what, f_) in enumerate(want):
+            x = fs[k] if k < len(fs) else {"t": -1, "text": ""}
+            record(sid, f"lookOpts.footerSteps[{k}] {what}", x["t"], "", f_(x["t"]) and x["t"] > 0)
+            record(sid, f"lookOpts.footerSteps[{k}] ≤ 45 chars (kit footer limit)", len(x["text"]), "≤ 45", len(x["text"]) <= 45)
+        for k, (oi, li) in enumerate(((1, 2), (2, 4))):
+            s_ = lo["labelSteps"][k]
+            b = tl[oi]
+            record(sid, f"lookOpts.labelSteps[{k}] inside vo[{li}], after its race lands, >= 0.4 s before its delta", (round(b["land"], 2), s_["t"], b["delta"]),
+                   f"in {win[li][0]:.2f}-{win[li][1]:.2f}", inside(s_["t"], win[li]) and b["land"] + 0.2 <= s_["t"] <= b["delta"] - 0.4 and s_["option"] == oi)
+            nxt = opts[oi + 1]["t"] if oi + 1 < len(opts) else V
+            record(sid, f"option {oi}'s delta inside vo[{li}] and up >= 0.9 s before the next cut", (b["delta"], nxt), f">= 0.9",
+                   inside(b["delta"], win[li]) and nxt - b["delta"] >= 0.9 - 1e-9)
+            record(sid, f"lookOpts.labelSteps[{k}] carries the caption's number", tokens(s_["text"]), tokens(vo[li]["text"])[0],
+                   val(tokens(s_["text"])[-1]) == val(tokens(vo[li]["text"])[0]))
+
 
 def claim(sid, what, shown, want, ok):
     record(sid, "claim: " + what, shown, want, ok)

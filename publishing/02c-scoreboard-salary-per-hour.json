@@ -1,0 +1,538 @@
+{
+  "id": "02c-scoreboard-salary-per-hour",
+  "teaser": "02c Scoreboard, find-your-row: \"What time your 9-to-5 starts paying you, by salary\"",
+  "prepared": "2026-10-13",
+  "for_video": {
+    "current_render": "renders/channel/02c-scoreboard-salary-per-hour.mp4",
+    "current_duration_s": 15.5,
+    "current_sha256": "a141741fd493d1f0bec240ffc44ea07ed71ad9265a284007e977aad5f4967046",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds on 2026-10-13: the pre-condense cut. The ship step rebuilds this file with --covers from the condensed cut.",
+    "cut": {
+      "name": "pre-condense (round-2 Scoreboard port, 2026-10-08)",
+      "spec": "studio/specs/02c-scoreboard-salary-per-hour.json",
+      "body_s": 13.0,
+      "card_s": 2.5,
+      "status": "in renders/channel on 2026-10-13; a condensed cut (timing only) is in progress",
+      "on_ship": "python3 publishing/tools/build_publishing.py 02c-scoreboard-salary-per-hour --covers (re-picks the cover by content, re-exports both JPGs, refreshes for_video)"
+    }
+  },
+  "facts": {
+    "source": "teasers/v2/02-find-your-row.md section 02c; teasers/v2/checks/02-find-your-row.py: PASSED: all 183 checks on studio/specs/ (2026-10-13)",
+    "basis": "2026, single filer, $16,100 standard deduction, wages only, no state or local tax; brackets 10% to $12,400, 12% to $50,400, 22% to $105,700, 24% to $201,775 (IRS Rev. Proc. 2025-32)",
+    "fica": "6.2% Social Security on wages up to $184,500 + 1.45% Medicare on all wages (SSA); no row reaches the 0.9% Additional Medicare Tax",
+    "clock": "minutes a day = 480 × (federal tax + FICA) ÷ salary; paying you from = 9:00 am + those minutes; an average (the Tax Freedom Day idea for one workday)",
+    "rows": "$200,000 ≈ 123 min ≈ 11:03 am; $150,000 ≈ 116 ≈ 10:56; $100,000 ≈ 100 ≈ 10:40; $90,000 ≈ 95 ≈ 10:35; $80,000 ≈ 89 ≈ 10:29; $70,000 ≈ 82 ≈ 10:22; $65,000 ≈ 78 ≈ 10:18; $60,000 ≈ 77 ≈ 10:17; $50,000 ≈ 73 ≈ 10:13; $40,000 ≈ 68 ≈ 10:08; $35,000 ≈ 64 ≈ 10:04; $30,000 ≈ 59 ≈ 9:59 am",
+    "worked_65000": "taxable $48,900; tax $1,240 + 12% × $36,500 = $5,620; FICA 7.65% = $4,972.50; together $10,592.50 = 16.30% of pay; × 480 = 78.22 min → ≈ 10:18 am",
+    "worked_200000": "$36,734 tax + $14,339 FICA = $51,073 = 25.54% of pay; × 480 = 122.58 min → ≈ 123 min → ≈ 11:03 am",
+    "worked_100000": "99.94 min → ≈ 100 min = 1 hr 40 min → ≈ 10:40 am",
+    "share": "rises with every row, from 12.38% at $30,000 to 25.54% at $200,000",
+    "median": "BLS median usual weekly earnings, full-time, Q2 2026: $1,251 × 52 = $65,052 ≈ $65,000",
+    "verdict": "$200,000: you work for tax till ≈ 11:03, every workday"
+  },
+  "youtube": {
+    "titles_ranked": [
+      {
+        "rank": 1,
+        "title": "How Much of Your 9-to-5 Goes to Taxes? What Time It Starts Paying You, by Salary",
+        "vidiq_score": 97,
+        "chars": 80,
+        "note": "PICK. 'How much of your 9-to-5 goes to taxes?' is the question in search words, and the second half is the video's own header ('starts paying you, by salary'), which keeps the clock a reading of the day, not a payroll claim."
+      },
+      {
+        "rank": 2,
+        "title": "How Much of Your 9-to-5 Goes to Taxes? What Time You Start Getting Paid, by Salary",
+        "vidiq_score": 98,
+        "chars": 82,
+        "note": "1 point higher, but 'start getting paid' reads as a literal payroll fact; the clock is an average, so the pick keeps the header's 'starts paying you'."
+      },
+      {
+        "rank": 3,
+        "title": "What Time Does Your 9-to-5 Start Paying You After Taxes? Find Your Salary",
+        "vidiq_score": 95,
+        "chars": 73,
+        "note": "The header as a question plus the format's task."
+      }
+    ],
+    "titles_also_scored": [
+      {
+        "title": "What Time Does Your 9-to-5 Start Paying You? #taxes #salary #personalfinance",
+        "vidiq_score": 94,
+        "chars": 76,
+        "note": "the house 3-hashtag form"
+      },
+      {
+        "title": "What Time Your 9-to-5 Actually Starts Paying You After Taxes, by Salary",
+        "vidiq_score": 89,
+        "chars": 71,
+        "note": ""
+      },
+      {
+        "title": "What Time Your 9-to-5 Starts Paying You, by Salary",
+        "vidiq_score": 87,
+        "chars": 50,
+        "note": "the write-up's title"
+      },
+      {
+        "title": "You Work for Taxes Until What Time Every Day? Find Your Salary",
+        "vidiq_score": 87,
+        "chars": 62,
+        "note": ""
+      }
+    ],
+    "title_pick": "How Much of Your 9-to-5 Goes to Taxes? What Time It Starts Paying You, by Salary",
+    "title_pick_chars": 80,
+    "description": "What time does your 9-to-5 start paying you? Find your salary. 2026 federal income tax + FICA take a share of your pay; the same share of an 8-hour day is how long you work for tax each morning. At $65,000, about the US median full-time pay, that's till about 10:18 am. At $100,000, about 10:40. At $200,000, about 11:03.\n\nThe math, shown:\n• A 9-to-5 is 480 minutes. Minutes of tax a day = 480 × (federal income tax + FICA) ÷ salary. Your clock = 9:00 am + those minutes.\n• At $65,000: $65,000 − $16,100 standard deduction = $48,900 taxable. Federal tax $5,620 + FICA (7.65%) $4,972.50 = $10,592.50, 16.30% of pay: ≈ 78 minutes, so ≈ 10:18 am.\n• At $100,000: ≈ 100 minutes (1 hr 40 min) a day, so ≈ 10:40 am.\n• At $200,000: $36,734 tax + $14,339 FICA = $51,073, 25.54% of pay: ≈ 123 minutes, so ≈ 11:03 am.\n• The share rises with every row: at $30,000 it's 12.38% (≈ 9:59 am); at $200,000, 25.54%.\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\n\nAnimation and original sound: The Back of the Envelope. 2026 federal brackets and the $16,100 standard deduction for a single filer (IRS, Rev. Proc. 2025-32); FICA is 6.2% Social Security on wages up to $184,500 plus 1.45% Medicare (SSA). Median full-time pay: $1,251 a week in Q2 2026 (BLS), about $65,000 a year. Wages only; no state or local tax, 401(k) or health premiums, which would push your time later. It's an average, the idea behind Tax Freedom Day applied to a single workday: tax comes out of every paycheck, not the first hour of each morning. Not financial advice. Not affiliated with or endorsed by the Tax Foundation.\n#taxes #salary #PersonalFinance",
+    "description_chars": 1643,
+    "hashtags_in_order": [
+      "#taxes",
+      "#salary",
+      "#PersonalFinance"
+    ],
+    "hashtag_rules": "Title hashtags show as links in the title; with none in the title, the first 3 description hashtags show above it. Over 60 hashtags and YouTube ignores all of them. #Shorts is not needed (vertical, under 3 min).",
+    "tags": [
+      "taxes",
+      "salary after taxes",
+      "how much you actually keep from a $100k salary after taxes",
+      "80k salary after taxes",
+      "100k salary",
+      "federal income tax",
+      "fica",
+      "tax freedom day",
+      "take home pay",
+      "personal finance",
+      "money math",
+      "math animation",
+      "the back of the envelope",
+      "envelope math"
+    ],
+    "tags_chars_as_youtube_counts": 278,
+    "pinned_comment": "What time does your day start paying you?\n\nIt's an average, the same idea as Tax Freedom Day: tax comes out of every paycheck, not the first hour of each morning. FICA (Social Security + Medicare) is a payroll tax, so it's in. State income tax, 401(k) and health premiums would push your time later.",
+    "related_video": {
+      "pick": {
+        "id": "8__HTUa2PoU",
+        "title": "Pay the Minimum on $5,000? 238 Months.",
+        "url": "https://www.youtube.com/shorts/8__HTUa2PoU",
+        "why": "The same viewer, an everyday paycheck question. Its Instagram twin is the channel's best October Reel (7,302 plays, 27.4% skip); the Short has 642 views. Live since Mon 5 Oct 2026, 22:09 ET."
+      },
+      "swap_when_live": "02a or 02b, the other find-your-row tables, once published; then point theirs at this Short.",
+      "end_screen": "Shorts have no end screens or cards. The Related video link is the Shorts equivalent."
+    },
+    "thumbnail_frame": "In the YouTube app, pick the finished-board frame (the same content as the IG cover).",
+    "settings": {
+      "category": "Education",
+      "audience": "Not made for kids",
+      "altered_or_synthetic_content": "No (animated chart, not realistic footage)",
+      "remixing": "Allow",
+      "captions": "None needed (no narration; all text is on screen)"
+    },
+    "posting_window": {
+      "when": "First Tue-Thu evening after the 02c condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+      "spacing": "Keep it at least 6 h from any other upload on the channel, and post one find-your-row teaser (02a, 02b, 02c) per evening.",
+      "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,198 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2). 06c (Mon 03:45 ET) had 760 views by 13 Oct; 06b (Mon 12:14 ET, the day before) had 61. The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. 'taxes' searches run +11.0% over their baseline; the basis is 2026 tax, so post it in 2026."
+    },
+    "description_utf8_bytes": 1673
+  },
+  "instagram": {
+    "caption": "Find your salary: what time does your 9-to-5 start paying you, after 2026 federal income tax + FICA?\n\nFederal income tax + FICA take a share of your pay. Read it as the same share of every 8-hour workday, and that's how long you work for tax each morning before your 9-to-5 starts paying you.\n\nThe math, shown:\n• Minutes of tax a day = 480 × (tax + FICA) ÷ salary. Your clock = 9:00 am + those minutes.\n• At $30,000: ≈ 59 minutes, so ≈ 9:59 am.\n• At $65,000, about the US median full-time pay: ≈ 78 minutes, so ≈ 10:18 am.\n• At $100,000: ≈ 1 hr 40 min, so ≈ 10:40 am.\n• At $200,000: ≈ 123 minutes, so ≈ 11:03 am, every workday.\n\nSingle filer, $16,100 standard deduction, 2026 brackets; FICA = 6.2% Social Security (to $184,500) + 1.45% Medicare. No state tax, 401(k) or health premiums, which would push your time later. It's an average, the Tax Freedom Day idea applied to a single workday: tax comes out of every paycheck, not the first hour. Not financial advice. Not affiliated with or endorsed by the Tax Foundation.\n\nWhat time does your day start paying you?\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\nAnimation and original sound: The Back of the Envelope.\n\n#taxes #paycheck #salary #personalfinance #financialliteracy",
+    "caption_chars": 1260,
+    "caption_first_125": "Find your salary: what time does your 9-to-5 start paying you, after 2026 federal income tax + FICA?\n\nFederal income tax + FI",
+    "caption_rule": "The first 125 characters are the task ('Find your salary') and the question with its basis (2026 federal income tax + FICA), with no result: the caption overlays the Reel from frame 1, so every clock time sits below 'more'.",
+    "hashtags_in_order": [
+      "#taxes",
+      "#paycheck",
+      "#salary",
+      "#personalfinance",
+      "#financialliteracy"
+    ],
+    "hashtag_rule": "Instagram caps a post at 5 hashtags (since Dec 2025).",
+    "alt_text_short": "Table by salary: what time a 9-to-5 starts paying you after 2026 federal tax and FICA.",
+    "alt_text_long": "Animation on a black scoreboard. Header: What time your 9-to-5 starts paying you, by salary. Footer: single, 2026 federal tax + FICA, no state tax. 12 rows, a salary on each from $200,000 down to $30,000: minutes of tax a day, and the time the day starts paying you; at $200,000, about 11:03 am; at $30,000, about 9:59 am. A pointer lights $65,000, about the US median full-time pay: about 78 minutes, about 10:18 am. Then $100,000: about 1 hr 40 min, about 10:40 am. Verdict: $200,000: you work for tax till about 11:03, every workday.",
+    "alt_text_where": "Advanced settings → Accessibility → Alt text, if your app shows it for Reels.",
+    "cover": {
+      "files": {
+        "3x4": "publishing/02c-scoreboard-salary-per-hour-cover-3x4.jpg",
+        "9x16": "publishing/02c-scoreboard-salary-per-hour-cover-9x16.jpg"
+      },
+      "frame_in_current_render_s": 12.5,
+      "frame_index": 375,
+      "frame_by_content": "The finished board with the $200,000 row lit, which the write-up names as the cover ('the finished board with the $200,000 row lit'): the header 'WHAT TIME YOUR 9-TO-5 / STARTS PAYING YOU, BY SALARY', the footer, all 12 salary rows from $200,000 to $30,000 at full brightness with their minutes and their clock, the pointer and glow on '$200,000 · ≈ 123 MIN · ≈ 11:03 AM', and the verdict '$200,000: YOU WORK FOR TAX / TILL ≈ 11:03, EVERY WORKDAY.' in the strip. Use the settled frame after the other rows come back to full brightness, before the end card, so every viewer can read their row.",
+      "frame_measured": "On the pre-condense 15.5 s render the verdict slams in at 10.0 s with the $200,000 row lit and the others dimmed; from 11.50 s to 12.17 s the other rows come back to full brightness; from 12.20 s (frame 366) the mean frame-to-frame luma change (270×480 greyscale) stays at or under 0.006 until the end card cuts in at 13.03 s. The cover is taken at 12.5 s (frame 375), inside that hold.",
+      "crop": "3:4 = 1080×1440 from y 72 to 1512 of the 1080×1920 frame. The content runs from y 141 (the badge) to y 1444 (the verdict's last line), so the crop centres it: badge, header, footer, the whole board and the verdict; it drops the empty black floor. A centred grid crop (y 240-1680) loses the badge and leaves the header on the top edge.",
+      "how_to_set": "In 'Edit cover', pick the finished-board frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header and the verdict.",
+      "re_export": "ffmpeg -ss 12.5 -i renders/channel/02c-scoreboard-salary-per-hour.mp4 -frames:v 1 -vf \"crop=1080:1440:0:72\" -q:v 2 publishing/02c-scoreboard-salary-per-hour-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 12.5 -i renders/channel/02c-scoreboard-salary-per-hour.mp4 -frames:v 1 -q:v 2 publishing/02c-scoreboard-salary-per-hour-cover-9x16.jpg"
+    },
+    "first_comment": "At $65,000, about the US median full-time pay, you work for tax till ≈ 10:18 am. At $200,000, till ≈ 11:03. What time does your day start paying you?",
+    "first_comment_action": "Post it right after publishing and pin it.",
+    "trial_reels": {
+      "recommendation": "Post as a regular Reel, not a Trial.",
+      "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
+      "use_trial_for": "A version test afterwards, if you want one. The write-up's Instagram cut is music-only with captions off (the same spec rendered with \"captions\": false: the header and the clock column carry it); it is not in renders/channel, so it needs a studio render first. Post it as a Trial with MANUAL graduation 48-72 h later and compare skip rate (October Reels ran 27.0-65.1%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+    },
+    "settings": {
+      "audio": "Rename the original audio to 'What time your 9-to-5 starts paying you — The Back of the Envelope' if the app allows; it is the score, with no voice.",
+      "share_to_feed": "On",
+      "google_indexing": "Public professional-account posts can appear in Google/Bing since 10 Jul 2025, so the caption is written as a searchable question."
+    },
+    "posting_window": {
+      "when": "Same evening as YouTube, about 15 min after the Short: 21:45-22:45 ET.",
+      "why": "October Reels, median plays by posting slot (owner insights, 2026-10-13): weekday 22:00-00:30 ET 5,449 (n = 3, including the two best: 7,302 and 5,449), weekday midday 1,212 (n = 2), Sunday 05:00-08:00 ET 1,087 (n = 2). Skip rate tracks plays more closely than the hour does: 27.0-27.4% for the top two, 56.9-65.1% for the bottom two. The best of them ('$5,000 on the minimum', 7,302 plays) is the same everyday-paycheck viewer."
+    },
+    "alt_text_rule": "Paste the short version into Instagram: it is kept at or under 100 characters so it fits the field however short it is, and it writes 'about' instead of '≈' so screen readers read it cleanly. The long version is for anywhere with room (a website embed, a newsletter)."
+  },
+  "research": {
+    "keywords_youtube": [
+      {
+        "keyword": "taxes",
+        "est_monthly_searches": 82933,
+        "volume": 73.4,
+        "competition": 52.5,
+        "overall": 63.1,
+        "note": "+11.0% vs its 30-day baseline (74,718); the US is its top market",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "income tax",
+        "est_monthly_searches": 64908,
+        "volume": 71.8,
+        "competition": 54.7,
+        "overall": 61.2,
+        "note": "+149.6% vs its baseline, but 55% India: not the US federal tax here",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "irs",
+        "est_monthly_searches": 62989,
+        "volume": 71.6,
+        "competition": 42.1,
+        "overall": 66.1,
+        "note": "+7.4% vs its baseline",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "working 9 to 5",
+        "est_monthly_searches": 44885,
+        "volume": 69.4,
+        "competition": 54.0,
+        "overall": 60.1,
+        "note": "-45.7% vs its baseline; mostly the song, not a tag",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "9 to 5 trap",
+        "est_monthly_searches": 17829,
+        "volume": 63.5,
+        "competition": 19.2,
+        "overall": 70.4,
+        "note": "+34.7% vs its baseline (13,236): quitting-the-job intent, not a tag",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "100k salary",
+        "est_monthly_searches": 12623,
+        "volume": 61.2,
+        "competition": 56.5,
+        "overall": 54.1,
+        "note": "the six-figure row",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "reality of my 48 lpa microsoft salary after taxes",
+        "est_monthly_searches": 7394,
+        "volume": 57.8,
+        "competition": 25.3,
+        "overall": 64.5,
+        "note": "India; shows 'salary after taxes' demand",
+        "metrics_as_of": "2026-09-30"
+      },
+      {
+        "keyword": "how much you actually keep from a $100k salary after taxes",
+        "est_monthly_searches": 5111,
+        "volume": 55.4,
+        "competition": 25.9,
+        "overall": 62.9,
+        "note": "the closest search to the video's question",
+        "metrics_as_of": "2026-06-24"
+      },
+      {
+        "keyword": "80k salary after taxes",
+        "est_monthly_searches": 4215,
+        "volume": 54.1,
+        "competition": 14.6,
+        "overall": 66.6,
+        "note": "competition 14.6",
+        "metrics_as_of": "2026-05-15"
+      },
+      {
+        "keyword": "what a $100k salary actually looks like after taxes and bills",
+        "est_monthly_searches": 3650,
+        "volume": 53.2,
+        "competition": 19.7,
+        "overall": 64.0,
+        "note": "",
+        "metrics_as_of": "2026-09-15"
+      },
+      {
+        "keyword": "tax freedom day",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": 41.2,
+        "overall": 23.5,
+        "note": "<750/month: the idea the clock borrows; a tag only",
+        "metrics_as_of": null
+      },
+      {
+        "keyword": "how much tax do i pay",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": 35.6,
+        "overall": 25.8,
+        "note": "<750/month",
+        "metrics_as_of": null
+      },
+      {
+        "keyword": "paycheck taxes",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": 19.0,
+        "overall": 32.4,
+        "note": "<750/month",
+        "metrics_as_of": null
+      }
+    ],
+    "keywords_source": "vidIQ keyword research (research and matching_terms modes), pulled 2026-10-13. vidIQ refreshes each keyword on its own schedule, so each row carries its snapshot date in metrics_as_of; four rows are older snapshots (2026-05-15 to 2026-09-30).",
+    "same_idea_youtube_shorts": [
+      {
+        "title": "How Do Taxes Work?",
+        "channel": "Gohar Khan",
+        "subscribers": 7960000,
+        "views": 24131064,
+        "published": "2024-03-24",
+        "note": "the broad explainer"
+      },
+      {
+        "title": "|| DAY 41/100 || 🇺🇸 America Mein 👉 $8,000 Salary… Account Mein Kitna Aata Hai? 😳🇺🇸",
+        "channel": "Inspiring Bharat 🇮🇳",
+        "subscribers": 14800,
+        "views": 2693076,
+        "published": "2026-02-27",
+        "note": "Hindi-language; a US salary's take-home, outlier score 109"
+      },
+      {
+        "title": "How Much Of Lebron James’s Salary Does He Get To Keep? #fyp #nba #lebronjames #money",
+        "channel": "Makeshift Project",
+        "subscribers": 2470000,
+        "views": 1490051,
+        "published": "2025-12-15",
+        "note": "take-home share of one famous salary"
+      },
+      {
+        "title": "Why $250,000 From Your Own Business Beats a $400,000 Salary",
+        "channel": "Karlton Dennis",
+        "subscribers": 1140000,
+        "views": 514614,
+        "published": "2026-08-29",
+        "note": "advice intent"
+      },
+      {
+        "title": "You Work For The Government! #shorts #taxes #employees",
+        "channel": "Mark Cassara | Legacy Wealth Academy",
+        "subscribers": 23600,
+        "views": 148,
+        "published": "2022-01-11",
+        "note": "the closest framing found, 16 s"
+      }
+    ],
+    "same_idea_note": "vidIQ YouTube search (under 4 min; by views and by relevance): take-home and tax Shorts travel (514,614-24,131,064 views), but none reads tax as clock time or tabulates it by salary; the closest framing has 148 views.",
+    "instagram_tiktok_outliers": [
+      {
+        "handle": "@builtbymali",
+        "platform": "Instagram",
+        "id": "DczIgZiS_Os",
+        "on_screen": "your paycheck AFTER TAXES!",
+        "views": "14.2M (9,981.0x the account median of 1.4K)",
+        "note": "an ice cube lifted out of a glass: the after-tax shrink as a picture, no voice, looped"
+      },
+      {
+        "handle": "@mastermoneyco",
+        "platform": "TikTok",
+        "id": "7680913784143105310",
+        "on_screen": "4 DEAD SIMPLE NUMBERS That Tell You What You Actually Make",
+        "views": "3M (140.0x); 1.8M on Instagram (28.4x)",
+        "note": "the write-up's H84: true hourly take-home after tax and commute, talked"
+      },
+      {
+        "handle": "@moneymovesjake",
+        "platform": "TikTok",
+        "id": "7662503699599691039",
+        "on_screen": "If you make $25/hour, you take home about $17.50 after taxes.",
+        "views": "166.4K (397.1x the account median of 419)",
+        "note": "after-tax pay re-priced in hours of work, static text, music only"
+      },
+      {
+        "handle": "@recipesbyaisha",
+        "platform": "Instagram",
+        "id": "Dcs2d5QCt4I",
+        "on_screen": "Salary before tax",
+        "views": "344.9K (106.6x)",
+        "note": "spinach cooking down as the after-tax salary, music only"
+      }
+    ],
+    "own_channel_youtube_october_shorts": [
+      {
+        "id": "LjHDFzVxRyM",
+        "title": "Can You Find the Missing Dollar?",
+        "posted_et": "Sun 07:04",
+        "views": 1254
+      },
+      {
+        "id": "hJBvmGA6sZ0",
+        "title": "You Can Lean on $1 Million. Not on $1 Billion.",
+        "posted_et": "Thu 00:25",
+        "views": 1221
+      },
+      {
+        "id": "XVUeMcTg9OQ",
+        "title": "Your Interest Has a Speed Limit",
+        "posted_et": "Sun 05:49",
+        "views": 1141
+      },
+      {
+        "id": "fbpdKf4Wy8c",
+        "title": "What If You Bought Starbucks Stock Instead of a $4 Latte Every Day? (06c)",
+        "posted_et": "Mon 03:45",
+        "views": 760
+      },
+      {
+        "id": "8__HTUa2PoU",
+        "title": "Pay the Minimum on $5,000? 238 Months.",
+        "posted_et": "Mon 22:09",
+        "views": 642
+      },
+      {
+        "id": "FW_oxA3kbsM",
+        "title": "A $2 Lottery Ticket Was Worth $6.98. Until the Fine Print.",
+        "posted_et": "Wed 12:03",
+        "views": 348
+      },
+      {
+        "id": "mXbKY_R63h4",
+        "title": "You Can Carry $1 Million. Not in Pennies.",
+        "posted_et": "Thu 13:38",
+        "views": 177
+      },
+      {
+        "id": "EqFQCJheCMU",
+        "title": "Start Investing 10 Years Late? You Get Half.",
+        "posted_et": "Tue 22:27",
+        "views": 161
+      },
+      {
+        "id": "krfZEHhb0xU",
+        "title": "What If You Bought Netflix Stock Instead of Paying for Netflix? (06b)",
+        "posted_et": "Mon 12:14",
+        "views": 61
+      }
+    ],
+    "own_channel_instagram_october_reels": [
+      {
+        "shortcode": "DeIvYk7I4Qr",
+        "topic": "$5,000 on the minimum",
+        "posted_et": "Mon 22:46",
+        "plays": 7302,
+        "skip_rate_pct": 27.4,
+        "avg_watched_pct": 56.5
+      },
+      {
+        "shortcode": "DeOEthJJ1TG",
+        "topic": "$1M stack vs Burj Khalifa",
+        "posted_et": "Thu 00:28",
+        "plays": 5449,
+        "skip_rate_pct": 27.0,
+        "avg_watched_pct": 83.1
+      },
+      {
+        "shortcode": "DeWgFZRoR_S",
+        "topic": "Missing dollar",
+        "posted_et": "Sun 07:05",
+        "plays": 1997,
+        "skip_rate_pct": 32.0,
+        "avg_watched_pct": 81.3
+      },
+      {
+        "shortcode": "DeMvZv9IqRw",
+        "topic": "Powerball $6.98",
+        "posted_et": "Wed 12:05",
+        "plays": 1825,
+        "skip_rate_pct": 58.7,
+        "avg_watched_pct": 57.9
+      },
+      {
+        "shortcode": "DeYuqT4pjVC",
+        "topic": "06c latte vs Starbucks stock",
+        "posted_et": "Mon 03:46",
+        "plays": 1711,
+        "skip_rate_pct": 40.3,
+        "avg_watched_pct": 69.1
+      },
+      {
+        "shortcode": "DePe11HIHwn",
+        "topic": "$1M in pennies",
+        "posted_et": "Thu 13:37",
+        "plays": 598,
+        "skip_rate_pct": 42.0,
+        "avg_watched_pct": 66.7
+      },
+      {
+        "shortcode": "DeLSd9io8UK",
+        "topic": "10 years late",
+        "posted_et": "Tue 22:30",
+        "plays": 219,
+        "skip_rate_pct": 65.1,
+        "avg_watched_pct": 30.6
+      },
+      {
+        "shortcode": "DeEW2ZMIiYd",
+        "topic": "Speed limit (e)",
+        "posted_et": "Sun 05:54",
+        "plays": 177,
+        "skip_rate_pct": 56.9,
+        "avg_watched_pct": 31.2
+      }
+    ],
+    "channel_stats": {
+      "youtube_subscribers": 53,
+      "youtube_views": 10221,
+      "youtube_videos": 41,
+      "youtube_30d": "+27 subscribers, +5,127 views, 11 videos",
+      "instagram_followers": 8,
+      "instagram_30d_views": 20518
+    },
+    "limits": [
+      "vidIQ's YouTube authorization is a different channel (UCRC5v_El2fibbkqsZs6uFjA), so @envelopemath's YouTube Analytics (audience hours, geography) were not readable. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
+      "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and on the outliers' own tags.",
+      "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
+      "The render in renders/channel is the pre-condense cut. The cover's time and frame are measured on it; the copy names no other timestamp, and the ship step re-picks the cover on the final file.",
+      "irs.gov and bls.gov could not be opened in the write-up's research (the proxy blocks them); the brackets, the wage base and the median rest on the write-up's named sources.",
+      "The figures are for a single filer in 2026; married filers, other years and state tax give other times, and the copy says so only for state tax, 401(k) and health premiums."
+    ],
+    "write_up_benchmarks": "Master Money, '4 DEAD SIMPLE NUMBERS That Tell You What You Actually Make': 3,000,000 (140x) (H84); HD Guy's re-pricing in a unit you own (H01) (write-up; H84 re-pulled above).",
+    "titles_scored": "7 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored."
+  },
+  "checked": {
+    "date": "2026-10-13",
+    "by": "adversarial check of this sheet",
+    "math": "python3 teasers/v2/checks/02-find-your-row.py: PASSED: all 183 checks on studio/specs/ at the adversarial check (2026-10-13; all 177 checks at the first build, before the condense pass made the check cut-aware), and all 216 checks with --spec on the condensed cuts in studio/specs-wip/; run by the builder through publishing/data/checks/02-find-your-row.py; every public figure traced to the 02c maths table and recomputed in MATH_RELATIONS (2026 federal tax + FICA), each clock time pinned beside its salary (COPY_RULES)",
+    "limits": {
+      "youtube_title_chars": 80,
+      "youtube_description_chars": 1643,
+      "youtube_description_utf8_bytes": 1673,
+      "youtube_tags_chars_as_youtube_counts": 278,
+      "youtube_hashtags": 3,
+      "instagram_caption_chars": 1260,
+      "instagram_hashtags": 5,
+      "instagram_alt_text_short_chars": 86
+    },
+    "vidiq_requeried": "pulled 2026-10-13: taxes 82,933 / 52.5 (+11.0%); how much you actually keep from a $100k salary after taxes 5,111 / 25.9; tax freedom day <750; 7 titles scored: pick 97, top 98, write-up's title 87; channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,518 views in 30 days. Re-scored at the end of the build: the pick 97. Re-queried at the adversarial check: the pick's title score 97; taxes 82,933 / 52.5 (+11.0% on 74,718; US 25% of searches); channel 53 / 10,221 / 41; the related Short 8__HTUa2PoU 642 views, published 02:09 UTC 6 Oct (Mon 5 Oct 22:09 ET). All match."
+  }
+}

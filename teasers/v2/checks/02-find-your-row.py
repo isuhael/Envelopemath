@@ -28,9 +28,34 @@ gets its own pick label, "≈ 78 min of tax a day").
      exactly as the specs carry them, and carries the platform titles below.
 4. Prints a table and exits 1 on any mismatch.
 
-Run:  python3 teasers/v2/checks/02-find-your-row.py
+Two cuts per teaser (condensed cut, 2026-10-13: the owner's "too many still moments are a killer for a short;
+condense the rest", the 06b/06c precedent). A spec is checked against one of two expectation sets, picked by its
+duration:
+   - the round-2 cut (narration-paced VO lines; 13.4 / 14.0 / 13.0 s): what studio/specs/ holds and renders/channel/
+     ships today (IN_SPECS names the cut studio/specs/ must hold). Its rules are the ones listed under 3 above.
+   - the condensed cut (studio/specs-wip/<id>.json; a 6.5-9 s body + the 2.5 s end card). The strings, rows, labels,
+     verdicts and every number are the round-2 cut's, character for character; only the clock moved. Its timing rules
+     replace the narration rules: each caption up >= max(1.2 s, 0.12 s a word) from frame 1, captions back to back
+     (gaps < 0.2 s, no overlap), the hook caption complete on frame 1 (Becker Rig pre-types a line that starts early
+     enough; a Scoreboard line rises in over 0.14 s), frame 1 clean and moving from frame 2, rows landing top to bottom
+     and complete before the final reveal, each pick inside its caption (<= 0.35 s in) and after its row, each pick
+     label up >= max(1.2 s, 0.12 s a word) before the next pick or the verdict takes its place, the scheduled
+     motion never leaving a gap of 0.4 s or more before the verdict (a proxy for the motion audit), the verdict landing
+     0.8-1.5 s after the final reveal (Scoreboard: 0.15 s after the last caption, alone; 02a: with the payoff plate)
+     and held 1.2-1.6 s before the end card, and the look options that carry the motion (02a's shrug, hop and timed
+     compare; 02b/02c's short `focus`, 02c's verdict row). Fix pass on the condensed cut (2026-10-13): 02a's last
+     caption is the question alone ("10 years younger?"), so "more than double" first appears with the verdict and the
+     payoff plate; the last Scoreboard pick lands 0.25 s into its caption, so its label is up 1.2 s before the verdict;
+     02b's spotlight is 0.25 s; 02c's second pick (and its caption) comes at 2.8 s, with the bottom rows re-spaced.
+
+Run:  python3 teasers/v2/checks/02-find-your-row.py                  (the specs in studio/specs/)
+      python3 teasers/v2/checks/02-find-your-row.py --spec studio/specs-wip/02a-becker-rig-3-a-day-by-age.json ...
+      --spec [KEY=]PATH (repeatable) checks PATH in place of studio/specs/<id>.json. KEY is a, b or c, 02a/02b/02c, or
+      the full id (02b-scoreboard-trillion-at-your-wage); without it the file's stem must be one of the three ids. A round-2-length spec is checked as the round-2 cut, any
+      other as the condensed cut (and fails its lane unless it is one).
 """
 import json
+import os
 import re
 import sys
 from decimal import Decimal, ROUND_HALF_UP
@@ -42,6 +67,63 @@ SPEC_DIR = REPO / "studio" / "specs"
 MD_PATH = REPO / "teasers" / "v2" / "02-find-your-row.md"
 WPS = 2.6        # voice-over reading speed, words per second (hyphenated numbers = 1 word)
 WPS_SPLIT = 2.8  # second, stricter read: hyphenated numbers split ("twenty-five" = 2 words)
+
+IDS = {"a": "02a-becker-rig-3-a-day-by-age", "b": "02b-scoreboard-trillion-at-your-wage", "c": "02c-scoreboard-salary-per-hour"}
+# the two cuts (see the docstring): picked by the spec's duration
+R2_DURATION = {"a": 13.4, "b": 14.0, "c": 13.0}        # the round-2 cut's body (s)
+IN_SPECS = {"a": "r2", "b": "r2", "c": "r2"}          # the cut studio/specs/ must hold ("cond" once promoted)
+CUT_NAME = {"r2": "round-2 cut (narration-paced)", "cond": "condensed cut (2026-10-13)"}
+# condensed-cut timing targets (the editor's brief for the owner's note, as for 06b/06c)
+COND_LANE = (6.5, 9.0)      # body (s), plus the 2.5 s end card
+CAP_MIN, CAP_SPW = 1.2, 0.12   # caption pacing (no narration): >= 1.2 s a line, >= 0.12 s a word at phone size
+CAP_GAP = 0.2               # captions run back to back: each gap < 0.2 s
+PICK_IN = 0.35              # a pick lands at most this far into its caption (a question caption leads its row)
+STILL_MAX = 0.4             # the scheduled motion never leaves this long a gap before the verdict
+VERDICT_AFTER = (0.8, 1.5)  # the verdict lands this long after the final reveal
+VERDICT_HOLD = (1.2, 1.6)   # and holds this long before the end card
+FOCUS_RANGE = (0.25, 0.5)   # Scoreboard lookOpts.focus on a condensed board: a brief spotlight per pick
+FRAME = 1 / 30
+
+
+def parse_spec_args(argv):
+    """--spec [KEY=]PATH (repeatable) -> {key: abs path}; see the module docstring"""
+    out, i = {}, 0
+    while i < len(argv):
+        a = argv[i]
+        if a in ("-h", "--help"):
+            print(__doc__)
+            sys.exit(0)
+        if a in ("--emit", "--cond"):
+            i += 1
+            continue
+        if a == "--spec" or a.startswith("--spec="):
+            if a == "--spec":
+                i += 1
+                v = argv[i] if i < len(argv) else ""
+            else:
+                v = a.split("=", 1)[1]
+            if not v:
+                sys.exit("--spec needs a path")
+            keys = {**{k: k for k in IDS}, **{f"02{k}": k for k in IDS}, **{sid: k for k, sid in IDS.items()}}
+            head, eq, tail = v.partition("=")
+            if eq and head in keys:
+                key, path = keys[head], tail
+            elif eq and not os.path.exists(v):
+                sys.exit(f"--spec {v}: KEY {head!r} is not one of {', '.join(keys)}")
+            else:
+                path = v
+                stem = os.path.splitext(os.path.basename(v))[0]
+                key = keys.get(stem) if stem in IDS.values() else None
+                if key is None:
+                    sys.exit(f"--spec {v}: the file stem is not one of {sorted(IDS.values())}; pass KEY=PATH "
+                             f"(KEY: {', '.join(keys)})")
+            if not os.path.isfile(path):
+                sys.exit(f"--spec {v}: no such file")
+            out[key] = Path(path).resolve()
+        else:
+            sys.exit(f"unknown argument {a!r}; usage: 02-find-your-row.py [--spec [KEY=]PATH ...]")
+        i += 1
+    return out
 
 # --------------------------------------------------------------------------------------
 # Sourced real-world inputs (publisher, date and URL for each in 02-find-your-row.md)
@@ -168,7 +250,7 @@ def mention_time(line, phrase):
 # --------------------------------------------------------------------------------------
 # 02a  Becker Rig (ported from Live Sheet, 2026-10-08)  "It's just $3 a day": what it costs you by 65
 # --------------------------------------------------------------------------------------
-def build_02a():
+def build_02a(cut="r2"):
     DAILY = 3
     DAYS = 365
     ANNUAL = DAILY * DAYS                     # 1,095
@@ -306,12 +388,14 @@ def build_02a():
         ("rule of 72", f"72 ÷ 7 = {72 / 7:.1f} yrs to double; a lump sum at 7%/12 for 120 mo = ×{lump_10y:.3f} (the extra deposits push the ratio above 2)"),
         ("effective", f"7%/12 monthly = {((1 + RATE / 12) ** 12 - 1) * 100:.2f}% effective a year (pinned comment)"),
     ]
+    if cut == "cond":
+        exp = cond_02a(exp)
     return exp, allowed, nums
 
 # --------------------------------------------------------------------------------------
 # 02b  Scoreboard  "How fast Elon's $1 trillion pay plan earns your whole career's pay"  (hook pass)
 # --------------------------------------------------------------------------------------
-def build_02b():
+def build_02b(cut="r2"):
     TARGET = MUSK_PLAN_MAX
     WAGES = [FED_MIN_WAGE, 15, 20, 25, 30, 40, 50, 75, 100, 500, 1000]   # fix pass: $10 and $250 dropped (row pitch)
     PLAN_YEARS = 10                                           # "over the next decade" (Reuters)
@@ -423,6 +507,8 @@ def build_02b():
         ("labels", "; ".join(p["label"] for p in picks) + f" (exact: wage × {CAREER_HOURS:,})"),
         ("$100/hr", f"{m100:.3f} min → row ≈ {round(m100, 1)} min; plan per hour = {usd(RATE * 3600)} (pinned)"),
     ]
+    if cut == "cond":
+        exp = cond_scoreboard(exp, COND_B)
     return exp, allowed, nums
 
 # --------------------------------------------------------------------------------------
@@ -442,7 +528,7 @@ def fica_2026(salary):
     return (SS_RATE * min(salary, SS_WAGE_BASE_2026) + MEDICARE_RATE * salary
             + ADDL_MEDICARE_RATE * max(0, salary - ADDL_MEDICARE_THRESHOLD))
 
-def build_02c():
+def build_02c(cut="r2"):
     SALARIES = [200_000, 150_000, 100_000, 90_000, 80_000, 70_000, 65_000,
                 60_000, 50_000, 40_000, 35_000, 30_000]   # biggest bite first (R10); 12 rows keep the
                                                           # formula line and the pick legend on screen
@@ -564,7 +650,85 @@ def build_02c():
         ("pinned $65,000", f"{usd(65_000)} ÷ 2,080 = $31.25 an hour; kept {kept_hour(65_000):.4f} → ≈ $26"),
         ("cross-check", f"01b: $41,600 keeps {kept(41_600) / 41_600:.3f} (≈ 0.85); 08b: $15/hr keeps {usd(kept(31_200) / 2080, 2)}"),
     ]
+    if cut == "cond":
+        exp = cond_scoreboard(exp, COND_C)
     return exp, allowed, nums
+
+# --------------------------------------------------------------------------------------
+# The condensed cuts (2026-10-13): the round-2 strings, rows, labels, verdicts and numbers, on a new clock
+# --------------------------------------------------------------------------------------
+# 02a (Becker Rig): the figure leaps to row 18 as the first answer's caption goes up, hops down to 25, then the timed
+# compare: he sets off for the 35 row as the last caption goes up and the gold plate lands with the verdict 1.6 s later.
+# The bottom rows (40-60) land between the picks, so the shelves keep filling while he points. A shrug from frame 1 (the
+# excuse, acted) and a hop on 25's value fill the holds; the verdict holds 1.5 s, then the end card.
+COND_A = {
+    "picks": (1.45, 3.05, 6.3),            # row 18, row 25, the measured pick (the payoff plate, with the verdict)
+    "compare_start": 4.7,                  # he sets off for the 35 row as the last caption goes up
+    "rowT": [0, 0.22, 0.55, 0.85, 1.15, 1.85, 2.3, 3.5, 3.95, 4.4],
+    "beats": [{"t": 0.0, "act": "shrug", "d": 0.6}, {"t": 3.45, "act": "shocked", "d": 0.6}],
+    "hold": 1.5,                           # the verdict hold before the end card
+}
+# 02b / 02c (Scoreboard): each pick lands as its caption goes up, except the last: that caption goes up 0.25 s before
+# its pick (the question, then the row lights on its answer), so the late verdict (0.15 s after the last caption, alone
+# in the strip and the caption band) lands 1.2 s after the final pick and its label is up 1.2 s. The rows below the
+# picks keep landing between them, and a short lookOpts.focus makes each pick a brief spotlight (the board dims and
+# eases back within about 1.1 s), so the board never sits still. (Fix pass, 2026-10-13: the last pick 4.9 → 4.85, so
+# its label is up 1.2 s, not 1.15; 02b's focus 0.3 → 0.25, so the board eases back before the final pick's settle
+# reads as still; 02c's second pick and caption 2.95 → 2.8 and its bottom rows re-spaced, so no stretch between
+# picks 1 and 2 or 2 and 3 runs 0.4 s near-still.)
+COND_B = {
+    "picks": (1.3, 2.95, 4.85), "lead": 0.25, "last_cap": 1.3, "hold": 1.55,
+    "rowT": [0, 0.03, 0.45, 0.9, 1.7, 2.2, 2.6, 3.4, 3.85, 4.25, 4.6],
+    "lookOpts": {"focus": 0.25},
+}
+COND_C = {
+    "picks": (1.3, 2.8, 4.85), "lead": 0.25, "last_cap": 1.3, "hold": 1.55,
+    "rowT": [0, 0.03, 0.2, 0.37, 0.54, 0.71, 0.88, 1.75, 2.3, 3.3, 3.9, 4.45],
+    "lookOpts": {"verdictRow": 0, "focus": 0.3},
+}
+
+
+def _data(exp, row_t, pick_t, duration):
+    d = exp["data"]
+    last = max(max(row_t), pick_t[-1])
+    return {"columns": d["columns"], "rows": d["rows"], "formula": d["formula"], "rowT": row_t,
+            "pick": [dict(p, t=x) for p, x in zip(d["pick"], pick_t)], "hold": round(duration - last, 2)}
+
+
+def cond_02a(exp):
+    P0, P1, P2 = COND_A["picks"]
+    C = COND_A["compare_start"]
+    tx = [v["text"] for v in exp["vo"]]
+    vo = [   # back to back, 0.05 s apart; the first pre-typed (complete on frame 1); the verdict replaces the last
+        {"t": -0.4, "d": round(P0 - 0.05 + 0.4, 2), "text": tx[0]},
+        {"t": P0, "d": round(P1 - 0.05 - P0, 2), "text": tx[1]},
+        {"t": P1, "d": round(C - 0.05 - P1, 2), "text": tx[2]},
+        # fix pass (2026-10-13): the question alone; "more than double" first appears with the verdict and the plate
+        {"t": C, "d": round(P2 - C, 2), "text": tx[3].split("\n")[0]},
+    ]
+    duration = round(P2 + COND_A["hold"], 2)
+    lo = dict(exp["lookOpts"], compare=[dict(exp["lookOpts"]["compare"][0], start=C)], beats=COND_A["beats"])
+    return dict(exp, duration=duration, vo=vo, verdict=dict(exp["verdict"], t=P2),
+                data=_data(exp, COND_A["rowT"], (P0, P1, P2), duration), lookOpts=lo,
+                sfx=[{"t": P2, "kind": "ding"}])
+
+
+def cond_scoreboard(exp, K):
+    P0, P1, P2 = K["picks"]
+    tx = [v["text"] for v in exp["vo"]]
+    t3 = round(P2 - K["lead"], 2)
+    vo = [   # back to back, 0.05 s apart; the first up from before frame 1 (no rise on frame 1)
+        {"t": -0.4, "d": round(P0 - 0.05 + 0.4, 2), "text": tx[0]},
+        {"t": P0, "d": round(P1 - 0.05 - P0, 2), "text": tx[1]},
+        {"t": P1, "d": round(t3 - 0.05 - P1, 2), "text": tx[2]},
+        {"t": t3, "d": K["last_cap"], "text": tx[3]},
+    ]
+    vt = round(t3 + K["last_cap"] + 0.15, 2)     # the late verdict: the caption band is free (captionAt's 0.15 s pad)
+    duration = round(vt + K["hold"], 2)
+    return dict(exp, duration=duration, vo=vo, verdict=dict(exp["verdict"], t=vt),
+                data=_data(exp, K["rowT"], (P0, P1, P2), duration), lookOpts=K["lookOpts"],
+                sfx=[{"t": vt, "kind": "ding"}])
+
 
 # --------------------------------------------------------------------------------------
 # Checks
@@ -586,12 +750,23 @@ def show(v, n=60):
     s = s.replace("\n", "\\n")
     return s if len(s) <= n else s[: n - 1] + "…"
 
-def check_spec(exp, allowed, path, md_text):
+def rule(spec_id, field, ok, actual, want):
+    """a timing rule: the table shows the measured value and the limit"""
+    TABLE.append((spec_id, field, f"{actual}  [{want}]", actual, ok))
+    if not ok:
+        FAILS.append((spec_id, field, want, actual))
+    return ok
+
+
+def row_times(sd):
+    n = len(sd.get("rows", []))
+    if isinstance(sd.get("rowT"), list):
+        return [float(x) for x in sd["rowT"]]
+    return [sd.get("rowsT", 0.4) + sd.get("rowEvery", 0.25) * i for i in range(n)]
+
+
+def check_spec(key, cut, exp, allowed, spec, path, md_text):
     sid = exp["id"]
-    if not path.exists():
-        check(sid, "file", str(path.name), "MISSING")
-        return
-    spec = json.loads(path.read_text())
 
     # --- exact display strings and fields
     check(sid, "id = file stem", path.stem, spec.get("id"))
@@ -603,7 +778,8 @@ def check_spec(exp, allowed, path, md_text):
     for i, (e, a) in enumerate(zip(exp["vo"], sv)):
         check(sid, f"vo[{i}]", e, a)
     d, sd = exp["data"], spec.get("data", {})
-    for k in ("columns", "formula", "rowsT", "rowEvery", "pick", "hold"):
+    check(sid, "data fields", sorted(d), sorted(sd))
+    for k in [k for k in d if k != "rows"]:
         check(sid, f"data.{k}", d[k], sd.get(k))
     srows = sd.get("rows", [])
     check(sid, "data.rows count", len(d["rows"]), len(srows))
@@ -644,12 +820,34 @@ def check_spec(exp, allowed, path, md_text):
     # --- hook rules on the header
     hw = len(strip_markup(spec.get("header", "")).split())
     check(sid, "header <= 15 words (R8)", True, hw <= 15)
+    row_land = row_times(sd)
     check(sid, "number on screen at t=0 (R1)", True,
-          sd.get("rowsT", 1) == 0.0 and bool(number_tokens(" ".join(srows[0]) if srows else "")))
+          bool(row_land) and row_land[0] == 0.0 and bool(number_tokens(" ".join(srows[0]) if srows else "")))
 
     # --- timing
     dur = spec.get("duration", 0)
     check(sid, "duration in 6-16 s lane", True, 6.0 <= dur <= 16.0)
+    if cut == "r2":
+        check_r2(sid, spec, sd, sv, srows, row_land, dur)
+    else:
+        check_cond(key, sid, spec, sd, sv, row_land, dur)
+
+    # --- the write-up quotes the specs exactly
+    # (a "\n" line break is quoted in the write-up as " / ")
+    q = lambda x: x.replace("\n", " / ")
+    md_missing = [v["text"] for v in sv if q(v["text"]) not in md_text]
+    md_missing += [x for x in (spec.get("verdict", {}).get("text", ""), spec.get("footer", ""), sd.get("formula", ""), TITLES[sid]) if q(x) not in md_text]
+    check(sid, "md quotes VO, verdict, footer, formula, title", [], md_missing)
+
+    # word-count / time report (round-2 cut: the narration read)
+    for i, v in enumerate(sv if cut == "r2" else []):
+        TABLE.append((sid, f"vo[{i}] timing",
+                      f"{spoken_words(v['text'])} w → {spoken_words(v['text']) / WPS:.2f}s; split {spoken_words(v['text'], True)} w → {spoken_words(v['text'], True) / WPS_SPLIT:.2f}s",
+                      f"t {v['t']} d {v['d']}", True))
+
+
+def check_r2(sid, spec, sd, sv, srows, row_land, dur):
+    """the round-2 cut: VO lines paced for narration (the rules under 3 in the docstring)"""
     ok_fit, ok_gap = True, True
     for i, v in enumerate(sv):
         need = need_secs(v["text"])
@@ -670,7 +868,6 @@ def check_spec(exp, allowed, path, md_text):
     check(sid, "each pick lands as its VO line starts (timed compare: sets off then, lands with the verdict)", True,
           all((timed[k]["start"] in starts and abs(p["t"] - vt0) < 1e-9) if k in timed else p["t"] in starts
               for k, p in enumerate(sd.get("pick", []))))
-    row_land = [sd.get("rowsT", 0) + sd.get("rowEvery", 0) * i for i in range(len(srows))]
     check(sid, "each pick lands after its row", True, all(p["t"] >= row_land[p["row"]] for p in sd.get("pick", [])))
     last_row_t = row_land[-1] if row_land else 0
     last_beat = max([last_row_t] + [p["t"] for p in sd.get("pick", [])])
@@ -679,28 +876,184 @@ def check_spec(exp, allowed, path, md_text):
     check(sid, "verdict after last pick, before end", True, last_beat <= vt <= dur)
     check(sid, "ding on the verdict", True, any(abs(x.get("t", -1) - vt) < 1e-9 and x.get("kind") == "ding" for x in spec.get("sfx", [])))
 
-    # --- the write-up quotes the specs exactly
-    # (a "\n" line break is quoted in the write-up as " / ")
-    q = lambda x: x.replace("\n", " / ")
-    md_missing = [v["text"] for v in sv if q(v["text"]) not in md_text]
-    md_missing += [x for x in (spec.get("verdict", {}).get("text", ""), spec.get("footer", ""), sd.get("formula", ""), TITLES[sid]) if q(x) not in md_text]
-    check(sid, "md quotes VO, verdict, footer, formula, title", [], md_missing)
 
-    # word-count / time report
+def check_cond(key, sid, spec, sd, sv, row_land, dur):
+    """the condensed cut (2026-10-13): captions paced for reading, no still moment before the verdict"""
+    lo = spec.get("lookOpts") or {}
+    look = spec.get("look")
+    picks = sd.get("pick", [])
+    vt = spec.get("verdict", {}).get("t", -1)
+    becker = look == "becker-rig"
+    rule(sid, "condensed: body in its lane (+ the 2.5 s end card)", COND_LANE[0] <= dur <= COND_LANE[1],
+         f"{dur} s", f"{COND_LANE[0]}-{COND_LANE[1]} s")
+
+    # captions: on-screen text, read at phone size, back to back from frame 1 to the verdict
     for i, v in enumerate(sv):
-        TABLE.append((sid, f"vo[{i}] timing",
-                      f"{spoken_words(v['text'])} w → {spoken_words(v['text']) / WPS:.2f}s; split {spoken_words(v['text'], True)} w → {spoken_words(v['text'], True) / WPS_SPLIT:.2f}s",
-                      f"t {v['t']} d {v['d']}", True))
+        n = len(strip_markup(v["text"]).split())
+        need = max(CAP_MIN, CAP_SPW * n)
+        end = min(v["t"] + v["d"], vt) if becker else v["t"] + v["d"]   # (Becker Rig: the verdict replaces the caption)
+        shown = end - max(0.0, v["t"])
+        rule(sid, f"vo[{i}] caption up >= max({CAP_MIN}, {n} words x {CAP_SPW}) s", shown + 1e-9 >= need,
+             f"{shown:.2f} s", f">= {need:.2f}")
+    gaps = [round(b["t"] - (a["t"] + a["d"]), 3) for a, b in zip(sv, sv[1:])]
+    rule(sid, f"captions back to back (each gap 0-{CAP_GAP} s)", all(-1e-9 <= g < CAP_GAP for g in gaps), gaps,
+         f"each 0 <= gap < {CAP_GAP}")
+    if sv:
+        v0 = sv[0]
+        if becker:
+            # the kit pops a line's words in from t, staggered min(0.045, 0.32 / n) s, each over 0.16 s
+            n0 = len(strip_markup(v0["text"]).split())
+            done = v0["t"] + (n0 - 1) * min(0.045, 0.32 / max(1, n0)) + 0.16
+            rule(sid, "hook caption complete on frame 1 (pre-typed: its last word settled by t = 0)", done <= 1e-9,
+                 f"t {v0['t']}, settled at {done:.3f} s", "<= 0")
+        else:
+            rule(sid, "hook caption complete on frame 1 (starts >= 0.14 s before 0: no rise on frame 1)",
+                 v0["t"] <= -0.14 + 1e-9, f"t {v0['t']}", "<= -0.14")
+        last_end = sv[-1]["t"] + sv[-1]["d"]
+        if becker:
+            rule(sid, "the last caption runs until the verdict replaces it", abs(last_end - vt) < 1e-6,
+                 f"{last_end:.2f}", f"= verdict {vt}")
+        else:
+            rule(sid, "late verdict: lands alone 0.15 s after the last caption (takes the strip and the band)",
+                 abs(vt - (last_end + 0.15)) < 0.005, f"verdict {vt}, caption ends {last_end:.2f}", "verdict = end + 0.15")
+
+    # frame 1 clean (the thumbnail) and moving from frame 2
+    if becker:
+        later = [t for t in row_land[1:]]
+        rule(sid, "frame 1 clean: no row moves at t = 0 (a key brightens 0.2 s before its row lands)",
+             all(t >= 0.2 - 1e-9 for t in later), f"first {min(later) if later else '-'} s", ">= 0.2")
+        b0 = min([b["t"] for b in lo.get("beats", [])] or [9])
+        rule(sid, "moving from frame 2: a beat starts by 1/30 s", 0 <= b0 <= FRAME + 1e-9, f"{b0} s", f"0-{FRAME:.3f}")
+    else:
+        r1 = row_land[1] if len(row_land) > 1 else 9
+        rule(sid, "frame 1 clean, moving from frame 2: row 2 lands in (0, 1/30] s", 0 < r1 <= FRAME + 1e-9,
+             f"{r1} s", f"0 < t <= {FRAME:.3f}")
+
+    # rows: top to bottom, the board complete before the final reveal
+    rule(sid, "rows land top to bottom", all(a < b for a, b in zip(row_land, row_land[1:])), row_land, "increasing")
+    cmp = [c for c in lo.get("compare", []) if "start" in c]
+    final = cmp[0]["start"] if becker and cmp else (picks[-1]["t"] if picks else 0)
+    rule(sid, "the board is complete before the final reveal", max(row_land) < final - 1e-9,
+         f"last row {max(row_land)} s", f"< {final} s")
+
+    # picks: pick k on caption k + 1, at most PICK_IN s into it, after its row lands (a timed compare sets off as its
+    # caption goes up and lands with the verdict)
+    timed = {c["pick"]: c for c in cmp}
+    for k, p in enumerate(picks):
+        cap = sv[k + 1] if k + 1 < len(sv) else None
+        if k in timed:
+            ok = cap is not None and abs(timed[k]["start"] - cap["t"]) < 1e-9 and abs(p["t"] - vt) < 1e-9
+            rule(sid, f"pick[{k}] (timed compare): sets off as vo[{k + 1}] goes up, lands with the verdict", ok,
+                 f"start {timed[k]['start']}, lands {p['t']}", f"start = {cap['t'] if cap else '-'}, lands = {vt}")
+        else:
+            into = p["t"] - cap["t"] if cap else 9
+            rule(sid, f"pick[{k}] lands inside vo[{k + 1}] (<= {PICK_IN} s in)", cap is not None and -1e-9 <= into <= PICK_IN + 1e-9,
+                 f"{into:.2f} s in", f"0-{PICK_IN}")
+        rule(sid, f"pick[{k}] lands after its row", p["t"] >= row_land[p["row"]] - 1e-9,
+             f"{p['t']} vs row {row_land[p['row']]}", ">=")
+        # its label (strip or note shelf) holds until the next pick, or until the verdict takes the strip (Scoreboard's
+        # late verdict) or the end card (02a: the last pick lands with the verdict)
+        nxt = picks[k + 1]["t"] if k + 1 < len(picks) else (vt if vt > p["t"] + 1e-9 else dur)
+        nw = len(strip_markup(p.get("label", "")).split())
+        need = max(CAP_MIN, CAP_SPW * nw)
+        rule(sid, f"pick[{k}] label up >= max({CAP_MIN}, {nw} words x {CAP_SPW}) s", nxt - p["t"] + 1e-9 >= need,
+             f"{nxt - p['t']:.2f} s", f">= {need:.2f}")
+
+    # the verdict: 0.8-1.5 s after the final reveal, held 1.2-1.6 s
+    if becker and cmp:
+        # (02a: the plate and the verdict are one beat; the reveal is the 35 row taking its reference band as he lands
+        # on it, about 0.4 s after he sets off)
+        reveal, what = cmp[0]["start"] + 0.4, "the compare's reference row (set off + 0.4 s)"
+    else:
+        reveal, what = (picks[-1]["t"] if picks else 0), "the last pick"
+    after = vt - reveal
+    rule(sid, f"verdict lands {VERDICT_AFTER[0]}-{VERDICT_AFTER[1]} s after {what}",
+         VERDICT_AFTER[0] - 1e-9 <= after <= VERDICT_AFTER[1] + 1e-9, f"{after:.2f} s", f"{VERDICT_AFTER[0]}-{VERDICT_AFTER[1]}")
+    hold = dur - vt
+    rule(sid, f"verdict holds {VERDICT_HOLD[0]}-{VERDICT_HOLD[1]} s before the end card",
+         VERDICT_HOLD[0] - 1e-9 <= hold <= VERDICT_HOLD[1] + 1e-9, f"{hold:.2f} s", f"{VERDICT_HOLD[0]}-{VERDICT_HOLD[1]}")
+    last_beat = max(row_land + [p["t"] for p in picks])
+    check(sid, "hold = duration - last row/pick", round(dur - last_beat, 2), sd.get("hold"))
+    check(sid, "ding on the verdict", True, any(abs(x.get("t", -1) - vt) < 1e-9 and x.get("kind") == "ding" for x in spec.get("sfx", [])))
+
+    # the look options that carry the motion
+    if becker:
+        beats = {b["act"]: b for b in lo.get("beats", [])}
+        sh, ho = beats.get("shrug"), beats.get("shocked")
+        p0 = picks[0]["t"] if picks else 0
+        rule(sid, "shrug (the excuse, acted) from frame 1, over before the leap to row 18 (pick - 0.82 s)",
+             bool(sh) and sh["t"] <= FRAME + 1e-9 and sh["t"] + sh["d"] <= p0 - 0.82 + 1e-9,
+             f"{sh['t']}-{sh['t'] + sh['d']:.2f}" if sh else "missing", f"ends <= {p0 - 0.82:.2f}")
+        if len(picks) > 1 and len(sv) > 2 and cmp:
+            p1, c2 = picks[1]["t"], sv[2]
+            rule(sid, "the hop on 25's value: inside vo[2], >= 0.3 s after its pick, over before the compare sets off",
+                 bool(ho) and ho["t"] >= p1 + 0.3 - 1e-9 and ho["t"] >= c2["t"] and ho["t"] + ho["d"] <= cmp[0]["start"] + 1e-9,
+                 f"{ho['t']}-{ho['t'] + ho['d']:.2f}" if ho else "missing", f"{p1 + 0.3:.2f}-{cmp[0]['start']}")
+    else:
+        f = lo.get("focus")
+        rule(sid, "lookOpts.focus: a brief spotlight per pick (the held board keeps moving)",
+             f is not None and FOCUS_RANGE[0] <= f <= FOCUS_RANGE[1], f, f"{FOCUS_RANGE[0]}-{FOCUS_RANGE[1]}")
+        if "verdictRow" in lo and sv and picks:
+            vo_end = max(v["t"] + v["d"] for v in sv)
+            lead = vt - max(vo_end, picks[-1]["t"] + 0.6)
+            rule(sid, "verdictRow lights its row up to 0.25 s before the verdict", -1e-9 <= lead <= 0.25 + 1e-9,
+                 f"{lead:.2f} s", "0-0.25")
+
+    # the scheduled motion (a proxy for the motion audit): the windows in which something on the board or the figure
+    # moves, from frame 1 to the verdict; no gap may reach STILL_MAX
+    win = []
+    if becker:
+        win += [(t - 0.12, t + 0.12) for t in row_land[1:]]                    # a row's values fall and pop in
+        win += [(b["t"], b["t"] + b["d"]) for b in lo.get("beats", [])]          # scripted acts
+        for k, p in enumerate(picks):
+            if k in timed:
+                win.append((timed[k]["start"], p["t"]))                          # hop to row from, pencil, the draw
+            elif k == 0:
+                win.append((p["t"] - 0.82, p["t"] + 0.25))                       # the leap up the pegs
+            else:
+                win.append((p["t"] - 0.55, p["t"] + 0.25))                       # a hop between rows
+    else:
+        foc = lo.get("focus", 1.6)
+        win += [(t, t + 0.28) for t in row_land[1:]]                             # a row slides in, its bar wipes
+        for k, p in enumerate(picks):
+            win.append((p["t"] - 0.04, p["t"] + 0.3))                            # pointer glide, row light, label slam
+            nxt = picks[k + 1]["t"] if k + 1 < len(picks) else vt
+            if p["t"] + foc < nxt:
+                win.append((p["t"] + foc + 0.25, min(nxt, p["t"] + foc + 0.6)))  # the others ease back (its visible middle)
+        if "verdictRow" in lo:
+            win.append((vt - 0.25, vt))
+    win.append((vt, vt + 0.3))
+    t, gap, at = 0.0, 0.0, 0.0
+    for a, b in sorted(win):
+        if a > t and a - t > gap:
+            gap, at = a - t, t
+        t = max(t, b)
+        if t >= vt:
+            break
+    rule(sid, f"scheduled motion: no gap >= {STILL_MAX} s before the verdict (proxy for the motion audit)",
+         gap < STILL_MAX - 1e-9, f"longest {gap:.2f} s at {at:.2f}", f"< {STILL_MAX}")
 
 
-def main():
-    builders = [build_02a, build_02b, build_02c]
+def main(spec_paths):
+    builders = {"a": build_02a, "b": build_02b, "c": build_02c}
     md_text = MD_PATH.read_text() if MD_PATH.exists() else ""
-    calc_lines = []
-    for b in builders:
-        exp, allowed, nums = b()
+    calc_lines, checked = [], []
+    for key, b in builders.items():
+        path = spec_paths[key]
+        sid = IDS[key]
+        if not path.exists():
+            check(sid, "file", str(path.name), "MISSING")
+            continue
+        spec = json.loads(path.read_text())
+        # two cuts, picked by length: the round-2 cut, or the condensed cut (any other length fails its lane)
+        cut = "r2" if abs(spec.get("duration", 0) - R2_DURATION[key]) < 1e-9 else "cond"
+        in_specs = path.parent.resolve() == SPEC_DIR.resolve()
+        check(sid, "studio/specs/ holds the expected cut", CUT_NAME[IN_SPECS[key]] if in_specs else "(--spec file)",
+              CUT_NAME[cut] if in_specs else "(--spec file)")
+        exp, allowed, nums = b(cut)
         calc_lines.append((exp["id"], nums))
-        check_spec(exp, allowed, SPEC_DIR / f"{exp['id']}.json", md_text)
+        checked.append((sid, path, cut))
+        check_spec(key, cut, exp, allowed, spec, path, md_text)
 
     print("=" * 110)
     print("RECOMPUTED NUMBERS")
@@ -710,26 +1063,39 @@ def main():
         for k, v in nums:
             print(f"  {k:<14} {v}")
 
+    print("\nSPECS CHECKED")
+    for sid, path, cut in checked:
+        try:
+            shown = path.relative_to(REPO)
+        except ValueError:
+            shown = path
+        print(f"  {sid}: {shown}  ({CUT_NAME[cut]})")
+
     print("\n" + "=" * 110)
     print(f"{'spec':<38} {'field':<36} {'status':<6} expected / actual")
     print("=" * 110)
     for sid, field, e, a, ok in TABLE:
         mark = "ok" if ok else "FAIL"
-        line = f"{sid:<38} {field:<36} {mark:<6} {show(e)}"
+        line = f"{sid:<38} {field:<36} {mark:<6} {show(e, 90)}"
         if not ok:
-            line += f"\n{'':<82}actual: {show(a)}"
+            line += f"\n{'':<82}actual: {show(a, 90)}"
         print(line)
     print("=" * 110)
     n = len(TABLE)
     if FAILS:
         print(f"FAILED: {len(FAILS)} of {n} checks")
+        for sid, field, e, a in FAILS:
+            print(f"  {sid}  {field}: expected {show(e, 90)}, got {show(a, 90)}")
         sys.exit(1)
     print(f"PASSED: all {n} checks")
 
 
 if __name__ == "__main__":
+    SPEC_PATHS = {k: SPEC_DIR / f"{sid}.json" for k, sid in IDS.items()}
+    SPEC_PATHS.update(parse_spec_args(sys.argv[1:]))
     if "--emit" in sys.argv:          # print the expected specs (used once to draft them; review before saving)
+        cut = "cond" if "--cond" in sys.argv else "r2"
         for b in (build_02a, build_02b, build_02c):
-            print(json.dumps(b()[0], ensure_ascii=False, indent=2))
+            print(json.dumps(b(cut)[0], ensure_ascii=False, indent=2))
         sys.exit(0)
-    main()
+    main(SPEC_PATHS)

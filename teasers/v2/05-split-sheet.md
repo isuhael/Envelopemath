@@ -1,11 +1,13 @@
 # 05 · Split sheet: three teasers
 
 **Format:** `split-sheet` (rank 5 in [`../../research/v2/04-formats.md`](../../research/v2/04-formats.md), hook pattern **P9**)
-**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews), hook pass 1 on 2026-10-08 (05b and 05c kept), **hook pass 2 on 2026-10-08 (05b and 05c rewritten: rewrite A adopted for both)**, then the assembly pass on 2026-10-08 (the three teasers fitted, rendered and fixed frame by frame; no figure changed), then the **QA fix pass on 2026-10-08** (05a retimed to 24.7 s with a big verdict lockup; 05b's header answer slot, needs bracket and retime; 05c's landings put on the spoken numbers, the hero tagged and rolled to ≈ $3.93 at the verdict), then the **port to Becker Rig on 2026-10-08** (the owner kept Scoreboard and Becker Rig and retired Clean Sheet, so 05a moved to Becker Rig: same hook, numbers, VO lines and verdict, restaged with the figure carving the $10 slab; its Clean Sheet spec is in `studio/specs/retired/`), then the **QA fix pass on the Becker Rig port on 2026-10-08** (05a: the climax is one beat, a "PROFIT ≈ $1.29" payoff slab bookends the "YOUR ORDER $10.00" slab, the slab's remainder carries the "$7.04?" guess, the lanes end as a bar chart of the $10, and the footer is one line; no number, VO line or verdict changed). 05a was in neither hook pass. What changed and why is in the "Review log" at the end.
-**Specs:**
+**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews), hook pass 1 on 2026-10-08 (05b and 05c kept), **hook pass 2 on 2026-10-08 (05b and 05c rewritten: rewrite A adopted for both)**, then the assembly pass on 2026-10-08 (the three teasers fitted, rendered and fixed frame by frame; no figure changed), then the **QA fix pass on 2026-10-08** (05a retimed to 24.7 s with a big verdict lockup; 05b's header answer slot, needs bracket and retime; 05c's landings put on the spoken numbers, the hero tagged and rolled to ≈ $3.93 at the verdict), then the **port to Becker Rig on 2026-10-08** (the owner kept Scoreboard and Becker Rig and retired Clean Sheet, so 05a moved to Becker Rig: same hook, numbers, VO lines and verdict, restaged with the figure carving the $10 slab; its Clean Sheet spec is in `studio/specs/retired/`), then the **QA fix pass on the Becker Rig port on 2026-10-08** (05a: the climax is one beat, a "PROFIT ≈ $1.29" payoff slab bookends the "YOUR ORDER $10.00" slab, the slab's remainder carries the "$7.04?" guess, the lanes end as a bar chart of the $10, and the footer is one line; no number, VO line or verdict changed), then the **condensed cut on 2026-10-13** (the owner: "Too many still moments are a killer for a short. Condense the rest. The CTA (end card) is good."): all three were retimed so that no still run reaches 0.4 s before the verdict hold. Bodies: 05a 24.7 → 12.7 s, 05b 22.1 → 11.45 s, 05c 22.8 → 8.9 s, each plus the unchanged 2.5 s end card. They are WIP copies in `studio/specs-wip/`, not yet promoted. No number, display string, verdict or caption word changed, except that 05c's "Check: $100." is merged into the caption before it. A fix pass after the critic followed the same day: 05b's "Needs get five." became its own caption, so "$10 a day" goes up with the lone brick, and 05c's footer keeps the goal row's working through the check (one footer step fewer). It also corrected the 05c frame-1 claim. No word, number or sound changed. 05a was in neither hook pass. What changed and why is in the "Review log" at the end.
+**Specs** (round-2 cuts, what `studio/specs/` holds until the condensed cuts are promoted):
 - [`studio/specs/05a-becker-rig-chipotle-10.json`](../../studio/specs/05a-becker-rig-chipotle-10.json) (24.7 s; Becker Rig since the port, was [`05a-clean-sheet-chipotle-10.json`](../../studio/specs/retired/05a-clean-sheet-chipotle-10.json))
 - [`studio/specs/05b-becker-rig-3000-paycheck.json`](../../studio/specs/05b-becker-rig-3000-paycheck.json) (22.1 s; the file stem keeps "3000-paycheck", the $3,000 take-home on the slab, so links stay valid)
 - [`studio/specs/05c-scoreboard-costco-100.json`](../../studio/specs/05c-scoreboard-costco-100.json) (22.8 s)
+
+**Condensed cuts (2026-10-13, WIP):** `studio/specs-wip/05a-becker-rig-chipotle-10.json` (12.72 s + card = 15.2 s), `studio/specs-wip/05b-becker-rig-3000-paycheck.json` (11.45 s + card = 13.95 s) and `studio/specs-wip/05c-scoreboard-costco-100.json` (8.89 s + card = 11.4 s). Their beat sheets and captions are in each teaser's section below, under the round-2 ones. Renders: `/tmp/cond/05/<id>/final/<id>.mp4`.
 
 **Maths check:** [`checks/05-split-sheet.py`](checks/05-split-sheet.py). It recomputes every on-screen number from the sourced inputs, then checks every digit-bearing display string in the three specs against the computed, formatted value. A digit-bearing string the script does not know is a failure. It also checks every number in every VO line, including number words such as "five" and "ten", and that numeric fields agree with their display strings (`value`, `share`). Further checks:
 - "≈" sits on every rounded amount and on no exact one, **on screen and in the VO text** (captions are on, so the VO is on screen too).
@@ -18,8 +20,17 @@
 - Labels that carry a fact: 05a's tax row must say it is net of interest; 05c's header and verdict must not say "keep", "before tax" must be on screen when ≈ $1.94 lands, and the membership row must be on the sheet at frame 1.
 - Assembly pass: 05a's two hook nudges must land on the spoken "$10" and "$7.04", each row must activate as its VO line names it (and before its amount lands), and the struck guess must stay up until the right answer replaces it (since the port: in the header slot, struck on "Not even close" by his stomp, replaced on the verdict's "Not $7.04"; every scripted figure beat sits on the word it acts out; since the Becker Rig QA pass, the slab's "$7.04?" label must be the slot's guess and appear once food has dropped, the PROFIT payoff slab must be the profit row's label and amount and stamp with it, and the silent check must be fully in 0.1 s before the verdict, by the kit's carve timing); 05b's closing payoff slab must read the header's answer in its unit ("$10 a day") and land on the spoken "$10"; 05c's return to the membership row must sit on the start of the line that names it.
 - Fact identities and the robustness of each verdict.
+- **Two cuts per teaser (2026-10-13), picked by the spec's duration.** The round-2 cuts (24.7 / 22.1 / 22.8 s) get every check above. The condensed cuts (body lanes 12-14 / 10.5-12.5 / 8-10 s) are checked against the same strings, numbers and facts. Their timing is checked as on-screen captions, because there is no narration:
+  - each line is up at least max(1.2 s, 0.12 s per word), from frame 1 and, on Becker Rig, until the verdict hides it;
+  - gaps between lines are 0.2 s or less;
+  - vo[0] is complete on frame 1;
+  - each landing falls inside its own caption, at least 0.25 s before that caption leaves;
+  - the verdict lands 0.8-1.5 s after the final reveal and holds 1.2-1.6 s;
+  - each teaser keeps the motion cadence it was timed to (see the Review log);
+  - critic fixes: 05b's first "$10" caption is its own line, goes up 0-0.3 s before the lone brick lands and types its "$10" with the slot's stamp (±0.15 s); 05c's footer has five steps (no return to the assumption line at the check), each up ≥ max(0.9 s, 0.12 s per token).
+  `--spec [KEY=]PATH` checks a file in place of `studio/specs/<id>.json`. `IN_SPECS` names the cut `studio/specs/` must hold: "full" until promotion.
 
-Result: **554 checks, 0 failures, exit 0** (after the Becker Rig QA fix pass of 05a; 544 after the port, 531 after the QA fix pass, 512 after the assembly pass, 494 after hook pass 2, 481 before). The Becker Rig QA pass's in-memory mutation test caught **11 of 11**, and the port's caught **12 of 12** (both listed in their Review log entries). The fix pass's in-memory mutation test caught **12 of 12**: the pre-fix 05c spec, 05c with the kit's default rolls (rows land late), footer step 3 back at the cut, a $3.94 hero, the LEFT counter rolling with row 3, a bare "$3.93" caption, 05b's slot filling late, "= 4 bricks", a "$11" slot, 05a's check after the verdict, 05a's row 1 lit at frame 1, and "$7.40" in 05a's verdict. In the round-2 mutation test, eight broken copies each failed with exit 1: a missing "≈" in a caption, "≈" on an exact $10, "Costco keeps" back in the verdict, the row label back to "Income tax", the wrong guess moved off frame 1, the mask on a non-goal row, the hero landing on ≈ $1.94 early, and "before tax" dropped from footer step 3. Hook pass 2's in-memory mutation test of the new 05b and 05c specs caught **10 of 10** (food row $310, "$11 a day" in a VO line, the rent landing off "four", $3,000 back in the 05b header, 8 bricks, 05c masking only the goal row, the membership row moved off frame 1, "Costco keeps" in the verdict, $11,686M in footer step 5, a bare "$1.94" in a caption).
+Result: **560 checks, 0 failures, exit 0** on `studio/specs/` (the round-2 cuts; 554 before the cut rows were added on 2026-10-13). With `--spec` on the three WIP copies the result is **583 checks, 0 failed** after the critic fixes (579 before), and the condensed cuts' mutation test caught **21 of 21** (16 of 16 before the fixes). Earlier counts (554 after the Becker Rig QA fix pass of 05a; 544 after the port, 531 after the QA fix pass, 512 after the assembly pass, 494 after hook pass 2, 481 before). The Becker Rig QA pass's in-memory mutation test caught **11 of 11**, and the port's caught **12 of 12** (both listed in their Review log entries). The fix pass's in-memory mutation test caught **12 of 12**: the pre-fix 05c spec, 05c with the kit's default rolls (rows land late), footer step 3 back at the cut, a $3.94 hero, the LEFT counter rolling with row 3, a bare "$3.93" caption, 05b's slot filling late, "= 4 bricks", a "$11" slot, 05a's check after the verdict, 05a's row 1 lit at frame 1, and "$7.40" in 05a's verdict. In the round-2 mutation test, eight broken copies each failed with exit 1: a missing "≈" in a caption, "≈" on an exact $10, "Costco keeps" back in the verdict, the row label back to "Income tax", the wrong guess moved off frame 1, the mask on a non-goal row, the hero landing on ≈ $1.94 early, and "before tax" dropped from footer step 3. Hook pass 2's in-memory mutation test of the new 05b and 05c specs caught **10 of 10** (food row $310, "$11 a day" in a VO line, the rent landing off "four", $3,000 back in the 05b header, 8 bricks, 05c masking only the goal row, the membership row moved off frame 1, "Costco keeps" in the verdict, $11,686M in footer step 5, a bare "$1.94" in a caption).
 **Studio linter:** `node src/cli.mjs check specs/05*.json` gives **3/3 clean, 0 errors, 0 warnings** after the fix pass, and again after the Becker Rig port and its QA fix pass (05a also clean at a 0.05 s step) (the assembly pass removed hook pass 2's one warning, 05b's "=" at 38.7 px mid-pop at 14.5 s: the check tokens now pop from at least 41 px). (Round-2 note: the four kit samples for split-sheet in clean-sheet and scoreboard are also clean, and `node --test` passes 6/6). All three kits now implement `split-sheet`; renders of every beat were inspected for this revision.
 **Web searches used:** 12 in round 1 + 4 in this revision (see the search log). The egress proxy blocks page fetches (eia.gov in round 1, sec.gov again today), so every figure rests on the search engine's result text for the named primary page. Each figure is cross-checked against a second, independent source or an accounting identity (see each Sources table).
 
@@ -67,7 +78,7 @@ Following the brief ("if a figure can't be verified, choose a topic that doesn't
 | First payoff | ≈ $2.96 at 0.8 s | $3,000 ÷ 10 = $300, 10 bricks, at 1.2 s | ≈ $88.91 lands at 0.93 s, on the spoken number (cut at 0.25 s; the hero rolls to LEFT ≈ $11.09 with it) |
 | Wrong belief busted | "Chipotle keeps the other $7.04" | "rent under half my take-home is fine under 50/30/20" | "Costco's profit is all membership fees" |
 | Verdict (screen) | Chipotle keeps / **≈ $1.29**, not $7.04. (64 px, green swoosh under ≈ $1.29, $7.04 in red); on the same word the header slot's struck guess is stamped over: "at Chipotle: **≈ $1.29 profit**" | $1,200 rent leaves food and / every bill **$10 a day**. | Not all fees: your cart leaves **≈ $1.94**. / Membership fees: **≈ $1.99**. (the hero rolls to PROFIT PER $100 ≈ $3.93 above it) |
-| Runtime | 24.7 s | 22.1 s | 22.8 s |
+| Runtime | 24.7 s (condensed cut, WIP: 12.72 s; ≈ $1.29 lands at 10.32 s, the verdict at 11.22 s) | 22.1 s (condensed: 11.45 s; the $10-a-day slab at 9.15 s, the verdict at 9.95 s) | 22.8 s (condensed: 8.89 s; ≈ $88.91 lands at 1.13 s, ≈ $3.93 at 6.49 s, the verdict at 7.29 s) |
 | Closest benchmark hook | H70, 221,830 (+ H84's "Actually", 3M, 140x) | H84, 3M, 140x (run it on your own number) + H04, 9.9M, 106.16x (a unit on screen) + H49, 382,100, 289.1x (small daily verdict) | H31, 578,461 ("NOT EMI" myth-bust) + H18, 1,391,731, 5.91x (yes/no) + H70 |
 
 **Display convention (all three):**
@@ -79,7 +90,7 @@ Following the brief ("if a figure can't be verified, choose a topic that doesn't
 
 ## 05a · Becker Rig · What you're really paying for when you spend $10 at Chipotle
 
-**Spec:** `studio/specs/05a-becker-rig-chipotle-10.json` · 24.7 s · captions on · **ported from Clean Sheet on 2026-10-08** (hook, numbers, VO and verdict unchanged; the Clean Sheet spec is in `studio/specs/retired/`), then fixed after QA the same day (see "QA fix pass on the Becker Rig port")
+**Spec:** `studio/specs/05a-becker-rig-chipotle-10.json` · 24.7 s · captions on · **condensed cut (2026-10-13, WIP): `studio/specs-wip/05a-becker-rig-chipotle-10.json`, 12.72 s** (see "Beat sheet (condensed cut)") · **ported from Clean Sheet on 2026-10-08** (hook, numbers, VO and verdict unchanged; the Clean Sheet spec is in `studio/specs/retired/`), then fixed after QA the same day (see "QA fix pass on the Becker Rig port")
 **Platform title:** Chipotle Keeps How Much of Your $10?
 **On-screen hook (header):** What You're Really Paying For / When You Spend **$10** / at Chipotle:
 
@@ -114,7 +125,7 @@ Following the brief ("if a figure can't be verified, choose a topic that doesn't
 
 Profit is ≈ $1.29, and the crew gets almost twice that.
 
-### Beat sheet
+### Beat sheet (round-2 cut: what `studio/specs/` holds until the condensed cut is promoted)
 
 | t (s) | On screen | VO |
 |---|---|---|
@@ -145,6 +156,46 @@ Profit is ≈ $1.29, and the crew gets almost twice that.
 > HQ, wear and tear, new stores: ≈ 91 cents.
 > Tax, minus interest earned: ≈ 34 cents.
 > What's left: ≈ $1.29. Not $7.04.
+
+### Beat sheet (condensed cut, 2026-10-13: 12.72 s body + the 2.5 s end card = 15.2 s; WIP)
+
+Spec: `studio/specs-wip/05a-becker-rig-chipotle-10.json`. Every string, number, row, verdict and caption word is the round-2 cut's. Only the clock moved, plus one new figure beat (he points down at the last piece at 9.46 s). Times marked ≈ are the kit's own (walks and saws follow `activate` and the landings).
+
+| t (s) | On screen | Caption (no narration) |
+|---|---|---|
+| 0.0 | Frame 1 as in round 2: the header, the red "$7.04 profit?" in the answer slot, the $10.00 slab with him on it, the sheet with profit "?". The hook caption is already complete, because it starts at −0.5 s and the kit pre-types it. He is moving from frame 2: his sawing pose starts at 0 | "Food: ≈ $2.96 of your $10. So Chipotle keeps $7.04?" (−0.5 → 2.3) |
+| 0.12-0.48 / 0.4 | He saws the food cut. Row 1 activates at 0.4 s | |
+| 0.5 / 0.8 | The food piece drops; **≈ $2.96** lands (first payoff) | |
+| 0.9 | The rest of the slab reads **$7.04?** (red, dashed) | |
+| 0.95 / 1.0 | He looks up; the header's **$10** swells (tick) | |
+| 1.35 / 1.55 | Low palms-up shrug; the guess swells in the slot and on the slab (tick). He holds the shrug into the stomp | |
+| 2.0-2.3 | Crouch, knee up, **stomp** at 2.3: a red line slams through both guesses (buzz, thud, shake) | "Not even close. Crew pay: ≈ $2.51." (2.3 → 4.39) |
+| ≈ 2.35-3.0 / 3.1 | He walks to the crew cut. Crew activates at 3.1 and he saws until ≈ 3.5 | |
+| 3.82 | **≈ $2.51** lands. Each piece then slides to the left end of its lane (the bar chart of the $10) | |
+| 4.44 / 5.16 | Rent activates (a short walk, then a 0.4 s saw); **≈ $0.52** | "Rent: ≈ 52 cents." (4.44 → 5.79) |
+| 5.84 / 6.56 | Ads, delivery & card fees; **≈ $1.47** | "Ads, delivery, card fees: ≈ $1.47." (5.84 → 7.13) |
+| 7.18 / 7.9 | HQ, wear & tear, new stores; **≈ $0.91** | "HQ, wear and tear, new stores: ≈ 91 cents." (7.18 → 8.47) |
+| 8.52 / 9.24 | Tax − interest earned; **≈ $0.34**. He now stands on the last piece | "Tax, minus interest earned: ≈ 34 cents." (8.52 → 9.72) |
+| 9.46 | He points down at the piece he stands on (new beat) | |
+| 9.77 | Profit activates: "?" → **12.9%** | "What's left: ≈ $1.29. Not $7.04." (9.77 → 11.22) |
+| 10.02 / 10.32 | The last piece drops out from under him (he rides it down onto the bracket). **≈ $1.29** lands on its gold plate, and the gold **PROFIT ≈ $1.29** slab stamps in (hit, burst, shake, punch, cash). This is the final reveal | |
+| 10.47-11.09 / 10.87 | The silent check assembles: "$10 − $8.71 of costs = $1.29". He points at it | |
+| 11.22 | **Verdict** "Chipotle keeps / **≈ $1.29**, not $7.04." (ding, green swoosh). On the same beat the header slot is stamped "**≈ $1.29 profit**" over the struck guess (hit, cash), and he shrugs and holds | (the verdict replaces the caption) |
+| 11.22-12.72 | Verdict hold (1.5 s), then the 2.5 s end card (unchanged) | |
+
+### Captions (condensed cut: on-screen text, no narration; 49 words, all shown)
+
+Each line is up from frame 1, until the next line or, for the last line, until the verdict replaces it. The rule is at least max(1.2 s, 0.12 s per word), with words counted as space-separated tokens ("≈" counts as one).
+
+| Line | Up (s) | Words | Lands while it is up |
+|---|---|---|---|
+| Food: ≈ $2.96 of your $10. So Chipotle keeps $7.04? | 0-2.30 (2.30) | 10 | ≈ $2.96 at 0.8 |
+| Not even close. Crew pay: ≈ $2.51. | 2.30-4.39 (2.09) | 7 | the strike at 2.3, ≈ $2.51 at 3.82 |
+| Rent: ≈ 52 cents. | 4.44-5.79 (1.35) | 4 | ≈ $0.52 at 5.16 |
+| Ads, delivery, card fees: ≈ $1.47. | 5.84-7.13 (1.29) | 6 | ≈ $1.47 at 6.56 |
+| HQ, wear and tear, new stores: ≈ 91 cents. | 7.18-8.47 (1.29) | 9 | ≈ $0.91 at 7.9 |
+| Tax, minus interest earned: ≈ 34 cents. | 8.52-9.72 (1.20) | 7 | ≈ $0.34 at 9.24 |
+| What's left: ≈ $1.29. Not $7.04. | 9.77-11.22 (1.45) | 6 | ≈ $1.29 + the PROFIT slab at 10.32 |
 
 ### The maths
 
@@ -219,7 +270,7 @@ FY2025 is the latest 10-K as of Oct 7, 2026: Chipotle's fiscal year is the calen
 
 ## 05b · Becker Rig · Rent $1,200 on 50/30/20? Food and every bill get this much a day
 
-**Spec:** `studio/specs/05b-becker-rig-3000-paycheck.json` · 22.1 s · captions on
+**Spec:** `studio/specs/05b-becker-rig-3000-paycheck.json` · 22.1 s · captions on · **condensed cut (2026-10-13, WIP): `studio/specs-wip/05b-becker-rig-3000-paycheck.json`, 11.45 s** (see "Beat sheet (condensed cut)")
 **Platform title:** Pay $1,200 Rent? 50/30/20 Leaves Food and Bills How Much a Day?
 **On-screen hook (header):** Rent **$1,200** on 50/30/20? / Food and every bill get / this much a day:
 **Hook pass 2 (2026-10-08): rewrite A adopted.** The two judges scored it 7 and 7.5 (average **7.25**), against 5.00 for the old hook "Could you live on 50/30/20 with $3,000 a month take-home?". That is +2.25. Header, title, VO, sheet (now four bins) and timings all changed; the maths is still pure 50/30/20 arithmetic. Scores and reasons are in the Review log.
@@ -249,7 +300,7 @@ FY2025 is the latest 10-K as of Oct 7, 2026: Chipotle's fiscal year is the calen
 
 **The wrong belief it plays on:** "My rent is under half my take-home, so 50/30/20 works." On $3,000 a month after tax, needs get half: $1,500, five $300 bricks. A $1,200 rent eats four of them. That leaves one brick, $300 a month or $10 a day, for food and every other bill. Rent is 40% of pay, under the 50% line, and food and bills still get only 10%.
 
-### Beat sheet
+### Beat sheet (round-2 cut: what `studio/specs/` holds until the condensed cut is promoted)
 
 | t (s) | On screen | VO |
 |---|---|---|
@@ -274,6 +325,36 @@ FY2025 is the latest 10-K as of Oct 7, 2026: Chipotle's fiscal year is the calen
 > Wants get three: $900. Savings, two: $600.
 > Check: $3,000.
 > $1,200 rent leaves food and every bill $10 a day.
+
+### Beat sheet (condensed cut, 2026-10-13: 11.45 s body + the 2.5 s end card = 13.95 s; WIP)
+
+Spec: `studio/specs-wip/05b-becker-rig-3000-paycheck.json`. Every string, number, bin, verdict and caption word is the round-2 cut's. Since the critic fixes, "Needs get five." is its own caption, with the same words: the one line had typed "$10 a day" about 1.2 s before the picture showed it. Only the clock moved, plus a frame-1 beat: `lookOpts.beats` `[{ t: 0, act: "carry", hold: true }]`, an existing spec knob. With it he reaches for the cleaver from frame 1, because the kit brings the cleaver out no earlier than 0.15 s. The payoff slab now comes before the verdict, as its final reveal. Times marked ≈ are the kit's own.
+
+| t (s) | On screen | Caption (no narration) |
+|---|---|---|
+| 0.0 | Frame 1 as in round 2 (header with its "$?" slot, the $3,000 slab, the four bins with the tiny 10%). The hook caption is complete (it starts at −0.45 s). He starts reaching for the cleaver at frame 1 | "Ten bricks of $300. Rent eats four." (−0.45 → 3.05) |
+| 0.15 / 1.2 | The "÷ 10" cleaver comes out and "$3,000 ÷ 10" types. At 1.2 s he slams it and the slab cracks into **10 bricks of $300** ("$3,000 ÷ 10 = **$300**", the first payoff) | |
+| ≈ 1.9 / 2.28 / 2.8 | He raises "4 × $300", slams, 4 bricks tumble, and **$1,200** lands in RENT | |
+| 3.05 | The bracket **NEEDS 50% = 5 bricks** draws | "Needs get five." (3.1 → 4.3) |
+| ≈ 3.35-3.7 / 4.08 / 4.4 | He walks, raises "1 × $300" and slams. The lone brick lands in FOOD + BILLS: **$300** on the gold plate (hit, cash). The cleaver reads "÷ 30", and "$300 ÷ 30 = **$10**" shows from ≈ 4.5 | "Food and every bill get one: $10 a day." (4.35 → 5.55; its "$10" is typed by ≈ 4.72) |
+| 4.7 | **$10** stamps into the header slot ("this much a day: $10"; hit, cash, the world shakes) | |
+| ≈ 4.9-5.7 / 6.09 / 6.55 | He walks to the wants cut, raises "3 × $300" and slams; **$900** lands. The "÷ 30" cleaver label is cut off at the right edge for about 0.1-0.17 s at ≈ 5.6 (kit behaviour, as in the shipped cut) | "Wants get three: $900. Savings, two: $600." (5.6 → 8.0) |
+| ≈ 7.2 / 7.43 / 7.75 | He crouches, hops off, and the last 2 bricks drop: **$600** (green) | |
+| 7.75-≈ 9.15 | The check assembles where the slab was, as the amounts fly up out of the bins: "$1,200 + $300 + $900 + $600 = $3,000" | "Check: $3,000." (8.05 → 9.9) |
+| 9.15 | The payoff slab **FOOD + EVERY BILL · $10 a day** stamps into the air above the check (hit, cash; he celebrates; the header's $10 bumps). This is the final reveal | |
+| 9.95 | **Verdict** "$1,200 rent leaves food and / every bill **$10 a day**." (ding) | (the last line, worded as the verdict, sits under it) |
+| 9.95-11.45 | Verdict hold (1.5 s), then the 2.5 s end card (unchanged) | |
+
+### Captions (condensed cut: on-screen text, no narration; 28 words shown in 5 lines, plus the last line under the verdict)
+
+| Line | Up (s) | Words | Lands while it is up |
+|---|---|---|---|
+| Ten bricks of $300. Rent eats four. | 0-3.05 (3.05) | 7 | the bricks at 1.2, $1,200 at 2.8 |
+| Needs get five. | 3.10-4.30 (1.20) | 3 | the bracket (drawn at 3.05) |
+| Food and every bill get one: $10 a day. | 4.35-5.55 (1.20) | 9 | $300 at 4.4, "$300 ÷ 30 = $10" and the slot's $10 at 4.7, as the caption types its "$10" |
+| Wants get three: $900. Savings, two: $600. | 5.60-8.00 (2.40) | 7 | $900 at 6.55, $600 at 7.75 |
+| Check: $3,000. | 8.05-9.90 (1.85) | 2 | the check (complete ≈ 9.15), the payoff slab at 9.15 |
+| $1,200 rent leaves food and every bill $10 a day. | hidden: the verdict shows the same words from 9.95 | 10 | |
 
 ### The maths
 
@@ -330,7 +411,7 @@ The book is the primary source. The page couldn't be opened here, so the definit
 
 ## 05c · Scoreboard · Is Costco's profit all membership fees? Follow your $100 cart
 
-**Spec:** `studio/specs/05c-scoreboard-costco-100.json` · 22.8 s · captions on
+**Spec:** `studio/specs/05c-scoreboard-costco-100.json` · 22.8 s · captions on · **condensed cut (2026-10-13, WIP): `studio/specs-wip/05c-scoreboard-costco-100.json`, 8.89 s** (see "Beat sheet (condensed cut)")
 **Platform title:** Is Costco's Profit All Membership Fees? Follow Your $100 Cart
 **On-screen hook (header):** IS COSTCO'S PROFIT / ALL MEMBERSHIP FEES? / FOLLOW YOUR **$100** CART:
 **Hook pass 2 (2026-10-08): rewrite A adopted.** Both judges scored it 7 (average **7.00**), against 5.75 for the old hook "HOW MUCH OF YOUR $100 DOES COSTCO ACTUALLY KEEP?". That is +1.25. Header, title, VO, row 3's label, the masks, the membership row (now on the sheet at frame 1) and the timings changed; every figure is the same FY2026 number as before. Scores and reasons are in the Review log.
@@ -361,7 +442,7 @@ The book is the primary source. The page couldn't be opened here, so the definit
 
 **The wrong belief it plays on:** "Costco makes all its profit on membership fees; the cart makes nothing." Of every $100 rung up, ≈ $88.91 pays for the goods and ≈ $9.15 pays the staff and runs the warehouses. That leaves ≈ $1.94 before tax: not zero. Membership fees bring in ≈ $1.99 per $100 of sales. Operating income is $11,685M = $5,778M from the carts (49.4%) + $5,907M from fees (50.6%): about half each, and the cart makes 97.8% as much as the fees. "Profit" in the header is this operating profit, which the footer tags "before tax". After interest and tax, the fees ($5,907M) are 64% of net income ($9,226M), still not all of it.
 
-### Beat sheet
+### Beat sheet (round-2 cut: what `studio/specs/` holds until the condensed cut is promoted)
 
 Every row lands on its spoken number (fix pass): the kit's landing is the cut + 0.18 s + the row's roll (`lookOpts.rolls` 0.5 / 0.6 / 1.15 s), and the check script tests the landing, not the cut.
 
@@ -385,6 +466,34 @@ Every row lands on its spoken number (fix pass): the kit's landing is the cut + 
 > Check: $100.
 > Membership fees: ≈ $1.99 per $100 rung up.
 > Profit: ≈ $3.93. Your cart makes almost half.
+
+### Beat sheet (condensed cut, 2026-10-13: 8.89 s body + the 2.5 s end card = 11.4 s; WIP)
+
+Spec: `studio/specs-wip/05c-scoreboard-costco-100.json`. Every string and number is the round-2 cut's, as are the verdict, the footer workings and the hero's figures. Since the critic fixes, the footer no longer goes back to the assumption line at the check, so it has five steps, not six; the assumption line is the footer at frame 1. The clock moved, and so did the rolls: rows 1-2 roll 0.89 / 0.85 s, with the hero counting down with them, and the goal row rolls 0.3 s (its counter alone reads as still). "Check: $100." is merged into the caption before it. The hero's last roll now precedes the verdict, so ≈ $3.93 is the final reveal.
+
+| t (s) | On screen | Caption (no narration) |
+|---|---|---|
+| 0.0 | Frame 1 as in round 2: the clean cover (hero **$100.00** with the bag, one solid "$100.00" bar, three rows all "?", the dashed fees row **≈ $1.99** landed, "Your Costco run" at tag size). The hook caption is up, past its 0.14 s rise | "≈ $88.91 of your $100 buys the stuff." (−0.3 → 1.6) |
+| 0.06 | Cut (thud): the pointer moves to row 1, 88.91% unmasks, the bar splits. At 30 fps this cut renders on frame 3 (0.067 s): frame 1 → 2 is YAVG 0.09 (only the fees row's ≈ $1.99 glow changes), frame 2 → 3 is YAVG 3.97 | |
+| 0.24-1.13 | The hero rolls **$100.00 → LEFT ≈ $11.09** with the row; **≈ $88.91** slams in at 1.13 (ding). Footer: "$264,279M ÷ $297,247M × $100 ≈ $88.91" | |
+| 1.65 / 1.83-2.68 | Row 2 cut; the hero rolls to **LEFT ≈ $1.94**; **≈ $9.15** at 2.68. Footer: "$27,190M ÷ $297,247M × $100 ≈ $9.15" | "≈ $9.15 runs the staff and warehouses." (1.65 → 3.1) |
+| 3.15 / 3.63 | Row 3 cut; a 0.3 s roll; **≈ $1.94** lands (goal: hit, cash, floor bloom; the sound's P). Footer: "$100 − $88.91 − $9.15 = $1.94 before tax" | "That leaves ≈ $1.94. Not zero. Check: $100." (3.15 → 4.95) |
+| 4.2 | Check: the label stack shows "$88.91 + $9.15 + $1.94 = $100.00 / YOUR COSTCO RUN" and the slices re-join (thud, cash). The footer keeps the goal row's working, "… = $1.94 before tax", up from 3.63 to 5.0 (1.37 s) | |
+| 5.0 | The pointer returns to the fees row (thud, ≈ $1.99 bumps) and the label stack shows its label. Footer: "$5,907M ÷ $297,247M × $100 ≈ $1.99" | "Membership fees: ≈ $1.99 per $100 rung up." (5.0 → 6.4) |
+| 5.35-6.49 | The hero's tag cuts to **PROFIT PER $100**, and it rolls ≈ $1.94 → **≈ $3.93**, landing at 6.49 (ding). This is the final reveal | "Profit: ≈ $3.93. Your cart makes almost half." (6.45 → 8.89) |
+| 6.79 | Footer: "cart $5,778M + fees $5,907M = $11,685M" | |
+| 7.29 | **Verdict** "Not all fees: your cart leaves **≈ $1.94**. / Membership fees: **≈ $1.99**." (reveal cue). The goal row relights, and the fees row stays lit beside it | (the caption stays under it) |
+| 7.29-8.89 | Verdict hold (1.6 s), then the 2.5 s end card (unchanged) | |
+
+### Captions (condensed cut: on-screen text, no narration; 39 words, all shown)
+
+| Line | Up (s) | Words | Lands while it is up |
+|---|---|---|---|
+| ≈ $88.91 of your $100 buys the stuff. | 0-1.60 (1.60) | 8 | ≈ $88.91 and LEFT ≈ $11.09 at 1.13 |
+| ≈ $9.15 runs the staff and warehouses. | 1.65-3.10 (1.45) | 7 | ≈ $9.15 and LEFT ≈ $1.94 at 2.68 |
+| That leaves ≈ $1.94. Not zero. Check: $100. | 3.15-4.95 (1.80) | 8 | ≈ $1.94 at 3.63, the check at 4.2 |
+| Membership fees: ≈ $1.99 per $100 rung up. | 5.00-6.40 (1.40) | 8 | the fees beat at 5.0 |
+| Profit: ≈ $3.93. Your cart makes almost half. | 6.45-8.89 (2.44) | 8 | ≈ $3.93 at 6.49; the verdict at 7.29 |
 
 ### The maths
 
@@ -450,7 +559,7 @@ The FY2026 10-K was filed on Oct 6, 2026 (search, Oct 7, 2026), so it is cited a
   - `lookOpts.heroFinal` (`{ t: 17.0, display: "≈ $3.93", tag: "PROFIT PER $100" }`, fix pass) is the verdict's climax: the hero rolls ≈ $1.94 → ≈ $3.93 over the two lit rows (≈ $1.94 + ≈ $1.99), landing on the spoken "$3.93".
   - `lookOpts.intro: true` keeps the intro (frame 1 = $100.00) with the first cut at 0.25 s, and `lookOpts.rolls` (0.5 / 0.6 / 1.15 s, fix pass) sets each row's roll so it lands on its spoken number.
   - `lookOpts.labelWorking: false` (fix pass) drops the label stack's formula ("$100.00 × 88.91%"), so each beat shows one working (the footer's); `lookOpts.introTag: true` sets "Your Costco run" at tag size at frame 1 (it was a second ~75 px headline); `lookOpts.solidBar: true` draws the bar as one solid "$100.00" bar until the first cut (it was an empty outlined strip with two stray split ticks).
-  - `footerSteps` carries the one-line working per beat, as in 03c; each now lands with its row (0.93 / 5.28 / 9.13 s), returns to the assumption line at the check, then the fees working (13.65 s) and the cart + fees sum (17.0 s).
+  - `footerSteps` carries the one-line working per beat, as in 03c; each now lands with its row (0.93 / 5.28 / 9.13 s), returns to the assumption line at the check, then the fees working (13.65 s) and the cart + fees sum (17.0 s). (Round-2 cut. The condensed cut has five steps, at 1.13 / 2.68 / 3.63 / 5.0 / 6.79 s, with no return to the assumption line, so the goal row's working holds through the check: critic fix, 2026-10-13.)
   - `data.check` drives the kit's sum-check beat (sum line in the label stack, slices re-joining, cash cue).
   - `bonus` is the membership row; it is not a part, because it is not in your $100. Its `t` is −1.2: any t ≤ 0 makes the kit draw it landed at frame 1 with the sheet already shifted up (t 0 clipped the row and was still rolling at frame 1).
   - `maskPct: [0, 1, 2]` keeps every row's % as "?" until its cut, so no cart dollar is printed at frame 1.
@@ -480,6 +589,7 @@ The FY2026 10-K was filed on Oct 6, 2026 (search, Oct 7, 2026), so it is cited a
    **Kit owners (not editable here):** becker-rig's theme sets the header at −0.025em with no extra word space ("thismuch a day"); 05b's format overrides its own header (0.2em word spacing, −0.01em tracking), but the kit default should change for every format. Clean-sheet's mono % column gave the decimal point a full cell ("3 . 4%"); the split-sheet format now sets its % column in Inter with tabular figures, and the kit's other formats may want the same.
 3. **05c replaced the gasoline seed** (reasons at the top). If the owner still wants gasoline, it needs one unblocked read of EIA's "Gasoline and Diesel Fuel Update" components box (crude / refining / distribution & marketing / taxes for the latest month). The same Scoreboard spec structure then works with 4 parts.
 4. **Slate overlap, for the owner:** 05c (Costco, is its profit all membership fees?) and 08a (Costco hot dogs as a unit) share the brand and the Scoreboard look, and both touch membership; since hook pass 2, 05c's header leads with it. Keep both only if a Costco pair is wanted; otherwise 05c can move to another look, or to another retailer whose 10-K splits the same way.
+5. **The condensed cuts (2026-10-13) are WIP** in `studio/specs-wip/`. 05b and 05c each fail three sound gates. The promotion steps, the gate values and the publishing facts are in the Review log entry "Condensed cut (2026-10-13)".
 
 ## Search log (16 in total: 12 in round 1, 4 in this revision)
 
@@ -831,3 +941,251 @@ The new display strings are pinned in the check.
 - Contact sheet and stills read at 0, 0.1, 0.2, 0.3, 0.5, 0.95, 1.0, 4.1, 4.15, 5.25, 5.4, 5.85, 6.0, 7.55, 12.5, 18.1, 20.05, 20.1, 20.15, 20.16, 20.22, 20.28, 20.3, 20.34, 20.35, 20.38, 20.45, 20.6, 20.7, 21.0, 21.3 and the end. Every number on them matches the computed table: $10, $7.04 profit?, $7.04?, $10.00, 29.6/25.1/5.2/14.7/9.1/3.4/12.9%, ≈ $2.96 / $2.51 / $0.52 / $1.47 / $0.91 / $0.34 / $1.29, PROFIT ≈ $1.29, "$10 − $8.71 of costs = $1.29" and "≈ $1.29 profit".
 - MP4: `studio/out/05a-becker-rig-chipotle-10.mp4` (24.7 s, 741 frames, 42 SFX cues). Frames pulled at 4.2, 20.4 and 24.5 s match the stills (PSNR 40.5 / 38.9 / 39.4 dB, x264 noise only).
 - Not changed: `teasers.json` and the becker-rig README (outside this pass's files). The README's split-sheet section still needs a line for carve, `remainder` and carve's `payoff`.
+
+### Condensed cut (2026-10-13)
+
+**Owner's note:** "Too many still moments are a killer for a short. Condense the rest. The CTA (end card) is good." This is the 06c / 06b precedent (format 6's Review log, "Condensed cut" and "Opening hold fix and re-ship") applied to format 5. The precedent's rules:
+- keep the hook, every verified number, the verdict wording, the facts and the end card;
+- change timing first;
+- frame 1 is the thumbnail: the hook caption is complete on it, and something moves from frame 1;
+- no still run of 0.4 s or more before the verdict hold, with near-still stretches counting too;
+- captions up at least max(1.2 s, 0.12 s per word);
+- the verdict 0.8-1.5 s after the final reveal, held 1.2-1.6 s;
+- as short as the story allows.
+
+**Files:**
+- New: `studio/specs-wip/05a-becker-rig-chipotle-10.json`, `05b-becker-rig-3000-paycheck.json` and `05c-scoreboard-costco-100.json`, retimed copies of the round-2 specs.
+- Changed: this write-up (the header, the at-a-glance runtimes, a condensed beat sheet and caption table per teaser, Open item 5 and this entry) and `checks/05-split-sheet.py`.
+- Not touched: `studio/specs/`, every kit file (`studio/looks/**`; no kit change was needed: every change is a spec knob), `studio/src/**`, `studio/sound/**`, `test/`, `publishing/` and `renders/`.
+- Renders are in `/tmp/cond/05/<id>/final/` only. Nothing is committed.
+
+**Kept, character for character:**
+- every header, footer, display string, row, amount, percentage and footer working (since the critic fixes, 05c drops the footer's return to the assumption line at the check: the same text is the footer at frame 1);
+- the verdicts and the header slots' answers;
+- 05a's wrong guess and strike, 05b's bricks, bracket and payoff slab, and 05c's hero figures and tags;
+- every caption's words (since the critic fixes, 05b's "Needs get five." is a line of its own, before "Food and every bill get one: $10 a day."). The one exception is 05c's "Check: $100.", now the end of the line before it ("That leaves ≈ $1.94. Not zero. Check: $100."): the check beat moves for about 0.5 s, so a 1.2 s caption of its own held the board still for 0.7 s;
+- every figure beat of the round-2 cuts, and the 2.5 s end card (the brand layer is untouched).
+
+New figure beats, both existing spec knobs: 05a's pointDown at 9.46 s, and 05b's held "carry" at 0 s.
+
+**Measured before** (`renders/channel/`, the round-2 cuts + the card). Method as in format 6: frame difference at 270×480 (`tblend` difference → `signalstats` YAVG). A difference is still when YAVG < 0.15 and near-still when YAVG < 0.25. Runs are given as first-last difference pts.
+
+| | Still runs ≥ 0.4 s before the verdict | Longest |
+|---|---|---|
+| 05a (27.2 s) | 1.03-2.00, 2.07-3.90, 4.40-4.90, 6.60-7.10, 10.47-11.57, 13.53-15.17, 16.90-18.00, 18.43-18.83 (then the verdict hold 21.67-24.70 and the card) | 1.87 s |
+| 05b (24.6 s) | 1.77-2.27, 10.57-11.07, 14.20-14.77; after the verdict (14.8) the payoff waited until 18.2: 15.23-16.20, 16.30-18.03, then 18.77-19.70 and 19.80-22.10 | 0.60 s before the verdict; 1.77 s between the verdict and the payoff |
+| 05c (25.3 s) | 1.23-4.43, 5.57-6.37, 6.43-7.40, 8.37-8.80, 9.47-10.23, 11.50-12.03, 12.73-13.57 (then 18.53-20.00 after the verdict) | 3.23 s |
+
+The cause was the same in all three. A narration-paced VO talked each part in for 1-3 s, and the picture waited for it. In 05a, the saws read as still at phone size too: the strokes are small, at YAVG 0.05-0.13.
+
+**What changed:**
+
+| | Round-2 cut | Condensed cut | Why |
+|---|---|---|---|
+| 05a body / total | 24.7 / 27.2 s | **12.72 / 15.22 s** | Each row is now one continuous move: land, walk, a saw at the kit's 0.36-0.4 s floor, drop |
+| 05a hook | stomp at 5.2 s; look up 2.0 (held 1.4 s), shrug 3.9 | **stomp at 2.3 s**. Look up at 0.95 with the $10 swell at 1.0; shrug at 1.35, held into the stomp, with the guess swell at 1.55 | The round-2 look-up and shrug holds were 1.0-1.9 s stills |
+| 05a rows | landings 7.4 / 9.1 / 11.9 / 15.5 / 18.3 / 20.3 | **3.82 / 5.16 / 6.56 / 7.9 / 9.24 / 10.32**. `activate` 3.1 / 4.44 / 5.84 / 7.18 / 8.52 / 9.77 | Each saw 0.4 s (0.36 is the kit's floor; longer reads as still). Each walk starts 0.2 s after the last landing |
+| 05a profit → verdict | 19.3 / 20.3 / check 20.45 / verdict 21.2 / end 24.7 | **9.77 / 10.32 / 10.47 / 11.22 / 12.72**, plus a pointDown at 9.46 | The verdict lands 0.9 s after the reveal and holds 1.5 s. The check is complete 0.13 s before it (kit carve timing). The new pointDown fills the 0.5 s after the tax piece lands, which read near-still |
+| 05b body / total | 22.1 / 24.6 s | **11.45 / 13.95 s** | |
+| 05b frame 1 | the cleaver comes out at 0.15 s (the kit's floor), so frames 1-3 were identical | `beats: [{ t: 0, act: "carry", in: 0.15, hold: true }]` | He reaches for the cleaver from frame 1 (YAVG 0.33 on the first difference) |
+| 05b parts | 3.2 / 6.8 / 9.9 / 11.8; bracket 3.7; slot 7.1 | **2.8 / 4.4 / 6.55 / 7.75; bracket 3.05; slot 4.7** | Landings at most 2.15 s apart, each wait filled by his walk, raise and slam |
+| 05b close | check 12.6, verdict 14.8, payoff slab 18.2, end 22.1 | **check 7.75, payoff slab 9.15, verdict 9.95, end 11.45** | The slab now stamps as the check completes (the final reveal). The verdict follows 0.8 s later and holds 1.5 s. The round-2 order left 3.4 s between the verdict and the slab |
+| 05c body / total | 22.8 / 25.3 s | **8.89 / 11.39 s** | |
+| 05c rows | cuts 0.25 / 4.5 / 7.8, rolls 0.5 / 0.6 / 1.15, landings 0.93 / 5.28 / 9.13 | **cuts 0.06 / 1.65 / 3.15, rolls 0.89 / 0.85 / 0.3, landings 1.13 / 2.68 / 3.63** | Rows 1-2 roll longer because the hero rolls with them, which is big motion. The goal row rolls 0.3 s because its counter alone read as still for 0.5 s at 0.5 s. The first cut is at 0.06 s, which renders on frame 3 at 0.067 s (corrected in the critic fixes: frame 1 → 2 is YAVG 0.09, only the fees row's glow; at ≤ 0.05 s the kit drops the cut's thud; at 0.15 s the label stack's slam dip falls on the 0.25 s lint sample) |
+| 05c close | check 10.7, fees 12.5, verdict = hero roll 17.0 (lands 18.14), end 22.8 | **check 4.2, fees 5.0, hero roll 5.35 → 6.49, verdict 7.29, end 8.89** | The hero's roll to ≈ $3.93 is now the final reveal, starting 0.35 s after the fees beat. The verdict comes 0.8 s after it lands and holds 1.6 s |
+| Captions | narration-paced, VO from 0.0 s | **paced as on-screen text**. vo[0] starts before 0 (05a −0.5, 05b −0.45, 05c −0.3), so the hook caption is complete on frame 1. Each line is up ≥ max(1.2 s, 0.12 s/word), 0.05 s apart | The posted shorts have no narration |
+| `data.hold` | 2.3 | 1.5 / 0 / 0 | = duration − last caption end (05b's and 05c's last line runs to the end, under the verdict) |
+| Spec sfx | 05a: buzz 5.2 | 05a: buzz 2.3 | On the strike |
+
+**Iterations** (each a render and a motion audit):
+- **05a.** The first version had a 2.8 s hook (look up 1.2, d 0.55). It still held 1.27-1.90 s: the look-up is a small head tilt, and the header's $10 swell registers at YAVG 0.05-0.1. The tax → profit gap was near-still for 0.6 s at 9.63-10.20. The fix was a 2.3 s hook, with the look-up at 0.95 and the shrug held into the stomp, plus the pointDown beat. One more render was then clean.
+- **05b.** v1 had three problems:
+  - frames 1-3 were identical, fixed by the carry beat;
+  - after the wants landing, a still ran to the hop (6.80-7.17, 0.40), fixed by the savings landing at 7.75;
+  - two stretches between check → payoff → verdict were near-still, at 0.43 and 0.47 s. Fixed by the check on the last landing, the slab on the check's end and the verdict at slab + 0.8.
+
+  One later variant moved the bracket to 3.10 s. That put its pop on a loud spot, and B3 failed at pop@3.15 −0.8 dB. The bracket went back to 3.05, and only the caption starts at 3.10.
+- **05c.** v1 used rolls 0.5 / 0.6 / 1.15 and kept "Check: $100." as its own line. It had five still or near-still stretches of 0.43-1.10 s: the goal roll, check → fees, fees → hero roll and hero → verdict. v2 merged the caption and shortened the goal roll. v3/v4 brought the hero roll to fees + 0.35 and lengthened rows 1-2's rolls. v5 set the verdict at +0.8. The final version moved the first cut to 0.06 s, which keeps the lint clean and the thud.
+
+**Measured after** (`/tmp/cond/05/<id>/final/<id>.mp4`, the same method):
+
+| | Still runs ≥ 0.4 s | Before the verdict: longest still run | Near-still ≥ 0.4 s before the verdict | First move (YAVG) |
+|---|---|---|---|---|
+| 05a (15.2 s; verdict 11.22) | only the verdict hold 11.67-12.70 and the card 13.97-15.20 | 0.33 s (1.03-1.33, after the food lands) | none | frame 1 → 2: 0.55 |
+| 05b (13.95 s; verdict 9.95) | only the verdict hold 10.77-11.43 and the card 12.67-13.93 | 0.27 s (9.70-9.93) | none | frame 1 → 2: 0.33 |
+| 05c (11.4 s; verdict 7.29) | only the verdict hold (7.73-8.67 in the critic-fix render; 8.30-8.67 was reported here first, see below) and the card 10.37-11.37 | 0.30 s (6.93-7.20, after ≈ $3.93 lands) | none | frame 1 → 2: 0.09 (the fees glow only); frame 2 → 3 (0.067 s, the first cut): 3.97. Corrected in the critic fixes; it first said 3.97 for frame 1 → 2 |
+
+**Stills read.** `node src/cli.mjs stills` plus contact grids, and for 05b also frames pulled from the final MP4. Every number on them matches the maths tables:
+- **05a** at 0, 0.45, 0.85, 1.1, 1.6, 2.1, 2.35, 2.6, 3.0, 3.3, 3.9, 4.5, 5.2, 5.9, 6.6, 7.2, 7.95, 8.6, 9.3, 9.55, 9.8, 10.1, 10.36, 10.6, 10.9, 11.25, 11.6, 12.2, 12.7 and 14.0:
+  - frame 1 carries the complete hook caption;
+  - $7.04? on the slab at 1.1, both guesses struck at 2.35;
+  - 29.6 / 25.1 / 5.2 / 14.7 / 9.1 / 3.4 / 12.9% and ≈ $2.96 / $2.51 / $0.52 / $1.47 / $0.91 / $0.34 / $1.29;
+  - PROFIT ≈ $1.29 and "$10 − $8.71 of costs = $1.29" at 10.9, "≈ $1.29 profit" in the slot from 11.25, the end card at 14.0.
+
+  The falling profit piece crosses row 1's amount for 0.3 s at 10.1, as in round 2 (QA nit).
+- **05b** at 0, 0.1, 0.5, 1.0, 1.25, 1.7, 2.2, 2.6, 2.85, 3.15, 3.5, 3.9, 4.45, 4.75, 5.0, 5.5, 6.0, 6.6, 7.0, 7.4, 7.8, 8.2, 8.6, 9.0, 9.2, 9.5, 10.0, 10.4, 11.0 and 11.4, plus 2.95, 3.12, 7.97 and 8.1 from the final MP4:
+  - $3,000 ÷ 10 = $300 and ten $300 bricks;
+  - $1,200, NEEDS 50% = 5 bricks, $300 and $300 ÷ 30 = $10, the slot's $10, $900 and $600;
+  - "$1,200 + $300 + $900 + $600 = $3,000";
+  - FOOD + EVERY BILL · $10 a day at 9.2, the verdict from 10.0.
+- **05c** at 0, 0.1, 0.5, 1.13, 1.45, 1.7, 2.68, 3.2, 3.63, 4.0, 4.3, 5.0, 5.4, 6.0, 6.5, 6.85, 7.3, 7.9, 8.85 and 10.0:
+  - the clean $100.00 cover with the caption;
+  - LEFT ≈ $11.09 → ≈ $1.94;
+  - 88.91 / 9.15 / 1.94% and ≈ $88.91 / $9.15 / $1.94, with each footer working on its landing;
+  - the check sum line at 4.3, the fees working at 5.0, PROFIT PER $100 ≈ $3.93 at 6.5, "cart $5,778M + fees $5,907M = $11,685M" at 6.85;
+  - the verdict from 7.3, the end card at 10.0.
+
+  The merged caption fits two lines.
+
+**Lint** (`node src/cli.mjs check specs-wip/<id>.json`): all three have **0 errors and 0 warnings** at the default step: 05a 15.2 s, 05b 13.9 s and 05c 11.4 s, each = body + 2.5 s end card. At a 0.05 s step:
+- 05a is still clean.
+- 05b has 3 warnings and 05c has 1. They are the round-2 cuts' own, at the same relative beats: the shipped specs give the same warnings at a 0.05 s step (05b at 3.80, 6.85 and 7.55-7.60; 05c at 0.35-0.40). They are kit behaviour, not the retime:
+  - 05b: the needs label at 39.1 px mid-pop, the $300 plate at 38.1 px mid-pop, and the "÷ 30" cleaver label clipped at the right edge for 0.1 s;
+  - 05c: the label stack's note at 39 px mid-slam.
+
+**Render and sound.** Each cut was rendered with `render specs-wip/<id>.json --out /tmp/cond/05/<id>/…`. Then `sound … --video <render dir> --out /tmp/cond/05/<id>/final --score` rebuilt the audio on that picture; every video md5 is identical to its render. Then `verify specs-wip/<id>.json --video /tmp/cond/05/<id>/final --detail`. The CUE DRIFT block and "baseline DIFFERS" are expected for a WIP cut, because the cue records moved.
+
+| | Picture | Master | P (rule) | BPM | Sections |
+|---|---|---|---|---|---|
+| 05a | 457 frames, 15.23 s, video md5 `bcf4f90c5c11` (critic-fix re-render: `249ce4c0503c`, see below) | sha256 `1390da74fb9a0ec1` | 11.22 (verdict + hit) | 117.647 / 120 | HOOK 0-3.06, BUILD -9.18, TENSION -11.22, DROP -12.72, CARD |
+| 05b | 419 frames, 13.97 s, `e78adbb96514` (critic fixes: `6ccb70b833d8`) | `bd09ccf2fd609869` (byte-identical across the caption-only nudges) | 9.15 (hit + cash, the payoff slab) | 118.033 / 118.033 | HOOK 0-3.05, BUILD -7.12, TENSION -9.15, DROP -11.45, CARD |
+| 05c | 342 frames, 11.40 s, `795e740eb2e5` (critic fixes: `8e02527643f2`) | `8e64cecea2784f7d` | 3.63 (hit + cash, the goal row) | 148.76 / 147.541 / 150 | HOOK 0-2.02, TENSION -3.63, DROP -6.88, BREAK -7.29, VERDICT -8.89, CARD |
+
+**Verify, every gated check with its margin to the nearer limit:**
+- **05a: PASS, 42/42.**
+  - Loudness: A1 delivery −14.17 LUFS (±1: 0.83), master −14.08 (±0.3: 0.22). A2 −1.26 dBTP (≤ −1: 0.26). A3 LRA 5.61 (3-8: 2.39). A4 short-term max −11.19 (≤ −8: 3.19), momentary max −9.22 (≤ −6: 3.22). A5 PLR 12.91 (8-13: **0.09**). A6 0% silent. A7 −12.18 (≥ −18: 5.82).
+  - Signal: A8 correlation 0.88 / minimum 0.48 / mono fold −0.40 LU (0.58 / 0.58 / 1.10). A9 DC 3.5e-5 (≤ 1e-4). A10 phone drop 1.79 (≤ 4.5: 2.71). A11 0.941% (≤ 3: 2.06), max 3.97 dB (≤ 6: 2.03). A12-A13 pass.
+  - BANDS (dB re 1 kHz, margin): 31.5 −10.8 (4.8), 63 3.1 (3.9), 125 4.9 (2.1), **250 0.5 (0.5)**, 500 3.1 (0.9), **2 kHz −0.6 (0.6)**, 4 kHz −4.4 (2.4), 8 kHz −6.3 (1.3), 16 kHz −17.5 (5.5). HARSH −0.87 (≤ 2: 2.87).
+  - Mix: B1 music −2.01 (1.49), sfx − music −0.32 (1.68), returns −10.89 (2.89). B2 −10 dB (≤ −8: 2.0). B3 17/17, closest 5.9 dB (≥ 3: 2.9). B4 0.42 ms (≤ 2). B5 0.0 ms (±10). B6 2.8 LU (≤ 18). B7 pass. B8 logo −12.26 (≥ −13: 0.74), 1.28 dB under the payoff's −10.98. B9 and B10 pass.
+  - Score: S1-S14 pass (S9 117.647 / 120). MALLET and FLAMS pass.
+- **05b: FAIL, 39/42.**
+  - Passing: A1 −14.19 (0.81), master −14.07. A2 −1.40 (0.40). A3 4.79 (1.79). A4 −11.70 / −10.15 (3.70 / 4.15). A5 12.79 (**0.21**). A7 −12.51 (5.49). A8 0.86 / 0.44 / −0.49. A10 1.73 (2.77). A11 0.569% (2.43), max 1.51 dB (4.49). HARSH −0.69 (2.69). B1 music −2.76 (1.74), sfx − music 0.55 (1.45), returns −10.4 (2.4). B2 −9 dB (1.0). B4 0.31 ms. B5 0.0 ms. B6 3.2 LU. B7, B9, B10, S1-S14 (S9 118.033 / 118.033), MALLET and FLAMS pass.
+  - ✗ **BANDS:** 250 Hz −1.2 against a 0 floor (1.2 dB out), and 8 kHz −4.2 against a −5 ceiling (0.8 dB out). The other octaves are inside by: 31.5 −10.8 (5.2), 63 4.4 (2.6), 125 4.5 (2.5), 500 1.1 (2.1), 2 kHz −1.2 (1.2), 4 kHz −3.1 (1.1), 16 kHz −15.7 (3.7). The round-2 cut had 250 Hz +1.8 and 8 kHz −5.3 (already 0.3 dB from the ceiling, among the set's tightest).
+  - ✗ **B3:** 16/19 cues clear the music by 3 dB. The low ones are the cleaver slams hit@4.08 (2.6 dB) and hit@6.09 (2.3 dB), and the check's closing pop@9.05 (2.9 dB); the closest is 2.3 dB against 3. The round-2 closest was 4.1 dB.
+  - ✗ **B8:** the logo's M(L+0.2) is −11.92 LUFS. That clears −13, but it is 0.33 dB over the payoff's M(P+0.2), −12.25 (the round-2 payoff was −10.91).
+  - Likely cause: the same 38 cues now fall in 11.45 s instead of 22.1 s. SFX ungated is −3.60 LU re the mix (was −5.01), SFX adds 2.33 LU (was 1.54), and 9.6% of the body is ducked by 6 dB or more (was 5.0%). Becker's `MODEL` music trim was fitted on the round-2 records, so the bright transients push 8 kHz up and the bed thins under the 1 kHz reference. The cleaver slams (kit gain 0.45) now sit in the BUILD/TENSION just before P. With the master normalised to −14 LUFS, the P window ends up below the fixed logo.
+- **05c: FAIL, 39/42.**
+  - Passing: A1 −14.09 (0.91), master −14.01. A2 −1.56 (0.56). A4 −12.40 / −9.61 (4.40 / 3.61). A5 12.53 (0.47). A7 −12.97 (5.03). A8 0.76 / 0.53 / −0.68. A10 2.31 (≤ 7: 4.69). A11 0% (3.0), max 0.28 dB. HARSH −0.39 (2.39). B1 music −3.21 (−3.5..−1.5: **0.29**), sfx −4.24 (0.76). B2 −10.29 dB (2.29). B3 12/12, closest 4.3 dB (1.3). B4 0.08 ms. B5 −2.7 ms (7.3). B6 2.6 LU. B7, B9, B10, S1-S14 (S9 148.76 / 147.541 / 150), TRAIN and DUCK pass.
+  - ✗ **A3:** LRA 2.79 LU against Scoreboard's 4-9 (1.21 LU short; the round-2 cut had 5.23).
+  - ✗ **BANDS:** 125 Hz 1.9 against a 2 floor (0.1 dB out). The other octaves are inside by: 31.5 −14.4 (5.6), 63 7 (3.0), 250 0.5 (0.5), 500 0.7 (1.7), 2 kHz −2.9 (2.1), 4 kHz −6.1 (2.9), 8 kHz −7.2 (2.2), 16 kHz −13.5 (1.5).
+  - ✗ **B8:** the logo's M(L+0.2) is −14.05 LUFS against −13 (1.05 dB short; the payoff is −11.41). The round-2 cut had −12.05.
+  - Likely cause: an 8.9 s body leaves only a 2 s HOOK before P (the goal landing at 3.63) and a 3 s DROP, so the short-term loudness hardly varies (A3). The logo is placed by `calibration.json`'s LOGO_PRE and BEDS (VERDICT, CADENCE), fitted on the round-2 records, after a 1.6 s VERDICT section. That is a refit question for the Scoreboard pack.
+- **Sensitivity** (audio-only `verify --no-video` on scratch copies; all deleted):
+  - 05c, an earlier draft scaled ×1.15 / ×1.3 / ×1.5 (10.1 / 11.4 / 13.2 s bodies, with still holds): A3 3.65 / 4.27 / 4.04, BANDS fail / pass / pass, B8 pass / −13.07 / −13.83.
+  - 05c, three longer designs on the same cadence (9.8, 10.2 and 10.6 s; audio only, not rendered): A3 3.93 / 3.37 / 3.34, with BANDS and B8 failing in all three.
+  - 05b, the payoff 0.25 s later: BANDS 8 kHz −3.9, B3 pop 1.1 dB, B8 pass.
+  - 05b, a slower middle section (11.75 s): BANDS, B3 and B8 all fail.
+
+  No retime cleared all the gates, so none was kept: these are for the ship step's refit (BIBLE §11.1-11.2), not for spec tuning. Per the brief, no pack or `acceptance.json` was touched.
+
+**Check (`checks/05-split-sheet.py`):**
+- Two expectation sets per teaser, picked by the spec's duration. **full** is the round-2 cut, exactly as before. **condensed** covers the 12-14 / 10.5-12.5 / 8-10 s bodies; anything else fails "a known cut" and stops there.
+- `--spec [KEY=]PATH` (repeatable) checks a file in place of `studio/specs/<id>.json`. `IN_SPECS` names the cut `studio/specs/` must hold, and a "studio/specs/ holds the expected cut" row checks it.
+- The condensed set shares every string, number, fact and kit-landing check. Its timing rules:
+  - The lane, and captions paced as on-screen text: up ≥ max(1.2 s, 0.12 s per word) from frame 1, until the verdict on Becker Rig; gaps ≤ 0.2 s; a line hidden under the verdict is allowed only as the last one, worded as the verdict.
+  - vo[0] complete on frame 1, from each kit's own caption timing (Becker: t ≤ −(min(0.045, 0.32/n)·(n − 1) + 0.16); Scoreboard: t ≤ −0.14).
+  - The verdict held 1.2-1.6 s, with `ANCHORS_C` tying each beat to the caption that names it ("land_in": inside it with ≥ 0.25 s left).
+  - Relative beats computed the way the kits time them: 05b's check end, 05c's landings and hero landing. The verdict 0.8-1.5 s after the final reveal.
+  - The motion cadence:
+    - 05a: saws 0.36-0.45 s, each starting ≤ 0.85 s after the stomp or the last landing, the stomp by 2.6 s, the hook beats in order, the shrug held into the stomp, the profit drop ≤ 0.5 s after its activation;
+    - 05b: the bricks by 1.5 s, landings ≤ 2.2 s apart, the frame-1 carry beat, the check leading its caption by ≤ 0.6 s;
+    - 05c: the goal roll ≤ 0.35 s, rows 1-2 rolling 0.5-1.2 s, cuts ≤ 0.6 s after the last landing, the check named by its caption, the fees beat ≤ 0.85 s after the check, ≈ $3.93 landing as its caption goes up.
+  - 05c's caption numbers follow the merged line.
+- Results:
+  - **560 checks, 0 failed** by default (554 before; the 6 new rows say which cut was checked);
+  - **579, 0 failed** with `--spec` on the three WIP copies (583 after the critic fixes, below);
+  - 560, 0 failed on copies of the round-2 specs passed with `--spec` from outside `studio/specs/`.
+- **Mutation test** (scratch copies, deleted): **16 of 16 caught**, each with exit 1 and a named failure:
+  - 05a: a 0.56 s saw, the stomp at 3.0 s, the verdict 1.8 s after profit lands, vo[0] typed on from 0.0, "$1.92" in the last caption, a 1.0 s caption, the pointDown beat dropped;
+  - 05b: the payoff slab after the verdict, no frame-1 carry beat, a 2.5 s gap between landings, a 13.0 s body;
+  - 05c: a 1.15 s goal roll, the verdict 0.5 s after the hero lands, "Check: $100." split back out, the hero's roll 0.9 s after the fees beat, "$1.95" in the verdict.
+
+**To promote** (the ship step's; not done here):
+1. Copy the three WIP specs over `studio/specs/` and set `IN_SPECS` to "condensed" for each in `checks/05-split-sheet.py`. The default run then checks the condensed cuts.
+2. BIBLE §11.1: all three cue records moved. Refit Becker's `MODEL` (05a, 05b) and Scoreboard's calibration (05c) on the fresh records, store them in `test/fixtures/cues.json` and run `tempo-table --write`. Their P values are 05a 11.22 (verdict + hit, 117.647 / 120), 05b 9.15 (hit + cash, 118.033), 05c 3.63 (hit + cash, 148.76 / 147.541 / 150).
+3. Make 05b and 05c pass A3 / BANDS / B3 / B8 at pack level (above), then `verify --strict-cues` and `npm test`, and ship by §11.5.
+4. Publishing data: runtimes 15.2 / 13.95 / 11.4 s. Cover candidates:
+   - frame 0, which now also carries the complete hook caption (it did not on the Becker Rig cuts before);
+   - the first settled frame of each verdict hold, about 11.7 s (05a), 10.8 s (05b) and 8.3 s (05c). For 05c keep 8.3 s (the critic): the whole recap is on it, ≈ $1.94, ≈ $1.99 and ≈ $3.93 on the board, the verdict and the caption under it.
+
+   `teasers/v2/teasers.json` runtimes and this write-up's per-platform notes, which still name the round-2 masters, follow at promotion.
+
+**Open items:**
+- 05a's tightest margins: A5 PLR 12.91 (0.09 under 13) and BANDS 250 Hz (0.5) and 2 kHz (0.6).
+- The rows' saws are near-still at phone size by nature: small strokes on a 0.62× figure. The cut keeps each saw at the kit's floor. A kit-level fix would be a bigger stroke or a sawdust burst behind an opt-in flag, but it was not needed here.
+- 05c's 8.9 s body is set by the beats (three rows, a check, the fees, one hero roll). Longer designs held stills or failed the same gates (above), so the length was kept.
+
+#### Critic fixes (2026-10-13)
+
+The fresh-eyes review passed all three cuts: no musts, with scores of 8 (05a), 7 (05b) and 7 (05c). Each item and what was done about it:
+
+| Item | Severity | Done |
+|---|---|---|
+| 05c: the footer flashes (the goal row's working readable only about 0.45 s) | should | **Fixed (spec only, no time added).** The footer step at the check (4.2 s, back to the assumption line) is gone, so "$100 − $88.91 − $9.15 = $1.94 before tax" holds from 3.63 to 5.0 s (1.37 s). The assumption line is still the footer at frame 1, and step 3 carries "before tax". The five steps are now up 1.55 / 0.95 / 1.37 / 1.79 / 2.10 s. The check has a new rule: each footer step is up at least max(0.9 s, 0.12 s per token). The critic suggested about 1.0 s. Row 2's working (0.95 s) sits between two landings, and it may not print ≈ $9.15 before its row lands. I tried a 1.0 s version, rolling row 2 for 0.80 s instead of 0.85: it moved two cues, and the sound's margins all got thinner (A2 0.56 → 0.40, A5 0.47 → 0.30, A3 2.79 → 2.72 LU, BANDS 125 Hz 1.9 → 1.8). It was reverted, so the floor is 0.9 s. The check sum in the label stack, "$88.91 + $9.15 + $1.94 = $100.00", is still up 4.2-5.0 s (0.8 s). Its numbers are on the rows above it, and holding it longer would mean moving the fees beat, which is a cue. |
+| 05b: the caption types "$10 a day" before the picture shows it | nit | **Fixed as proposed, with no word changed.** The captions are now "Needs get five." (3.1-4.3) and "Food and every bill get one: $10 a day." (4.35-5.55), and the wants line runs 5.6-8.0. The "$10" line goes up 0.05 s before the lone brick lands. Its "$10" is fully typed at about 4.72 s (Becker pops word k at t + k·min(0.045, 0.32/n), each over 0.16 s), together with "$300 ÷ 30 = $10" on the plate and the slot's stamp at 4.7. "Check: $3,000." still sits under the payoff slab from 9.15 to 9.9 s, as before (not part of the fix). |
+| 05c: "Frame 2 already moves" | nit | **Corrected** in the beat sheet, the "What changed" table and the "Measured after" table. Frame 1 → 2 is YAVG 0.09: only the fees row's ≈ $1.99 glow changes. At 30 fps the 0.06 s cut renders on frame 3 (0.067 s), and frame 2 → 3 is YAVG 3.97. The cut stays at 0.06 s, because at ≤ 0.05 s the kit drops its thud. |
+| 05b and 05c: verify fails 39/42; 05a's thin margins | should ×3 | **Left for the ship step**, as the critic advised. These are pack refits under BIBLE §11.1-11.2 (Becker `MODEL` for 05a and 05b; Scoreboard calibration, including LOGO_PRE and the BEDS for a 1.6 s VERDICT, for 05c). They are not spec timing: the editor's retime trials cleared none of them. No pack, cue gain or `acceptance.json` was touched. Neither fix moved a cue, so all three masters are byte-identical to the reviewed builds, and every value in the "Verify" list above still holds (re-run below). |
+| 05a: dense captions 5 and 6 (0.143 and 0.171 s per word) | nit | **Kept.** Both pass max(1.2 s, 0.12 s/word), and their amounts stay on the sheet once they land. The row rhythm (about 1.34 s a row) leaves no time to lengthen them without adding a still. Trimming words was weighed and rejected. "Wear and tear" is the depreciation inside the 91 cents, and the tax line must say it is net of interest (the 3.4% is not the 4.0% provision), so dropping either phrase would make the line less exact than its row. |
+| 05b: the "÷ 30" cleaver label clips at the right edge (about 5.5-5.67 s) | nit | Accepted as kit behaviour for this cut (lint flags it at 5.60-5.65 at a 0.05 s step, as before). A clamp belongs in a separate kit pass. |
+| Inherited overlaps of 0.3 s or less (05a's falling pieces, 05b's debris and flying amounts) | nit | Accepted as kit behaviour. |
+| 05a: the lowest energy of the three (YAVG < 0.5 for 0.6-0.83 s in the rows) | nit | No change, since it passes the rule. If retention dips in the rows, the open item stays: an opt-in sawdust burst or bigger stroke behind a `lookOpts` flag in `looks/becker-rig/formats/split-sheet.js`, with the default byte-identical. |
+| 05c: a text-heavy verdict hold (20 words in the lower third) | nit | No change. The cover candidate stays on the settled verdict frame, at about 8.3 s (see "To promote"). |
+
+**Files:** `studio/specs-wip/05b-becker-rig-3000-paycheck.json` (vo[1] split into vo[1] and vo[2]; the wants line at 5.6 for 2.4 s), `studio/specs-wip/05c-scoreboard-costco-100.json` (footerSteps[3] removed), `checks/05-split-sheet.py` and this write-up. 05a's spec is unchanged. No kit, src, sound, test, publishing, specs/ or renders/ file was touched.
+
+**Check:**
+- Changes: `EXPECT_C` (05c's five footer texts in the condensed cut), 05b's six caption lines in `VO_NUMBERS_C`, and `ANCHORS_C` (05b's landings in vo[2] and vo[3]; 05c's fees and cart + fees workings are steps 3 and 4, and the rule tying step 3 to `checkT` is gone).
+- New condensed rules: 05b's first "$10" caption is its own line, goes up 0-0.3 s before the lone brick lands, and types its "$10" within ±0.15 s of the slot's stamp. 05c's footer steps are each up at least max(0.9 s, 0.12 s per token).
+- 05b's general "slot before the wants line" and "check leads its caption" rules now find their caption by its text, so they hold for both cuts.
+- Results: **560 checks, 0 failed** by default (the round-2 specs), and **583, 0 failed** with `--spec` on the three WIP copies.
+- Mutation test (scratch copies in `/tmp/cond/05/mut/`, deleted): **21 of 21 caught**, each with exit 1. These are the 16 above, plus:
+  - 05b's two lines merged back (11 failures);
+  - the "$10" line up 0.6 s before the brick (3 failures, including both new 05b rules);
+  - 05c's assumption step put back at 4.2 (7 failures, including the unchecked string and the footer floor);
+  - the fees working 0.5 s after the goal working (2 failures);
+  - the goal working at its row's cut, not its landing (2 failures).
+
+**Lint:** at the default step, all three have 0 errors and 0 warnings. At a 0.05 s step, 05a is clean, and 05b and 05c show the same kit warnings as before, at the same beats:
+- 05b: the needs label at 39.1 px mid-pop at 3.15, the $300 plate at 38.1 px at 4.45, and the "÷ 30" label clipped at 5.60-5.65;
+- 05c: the label stack's note at 39.1 px at 0.15-0.20.
+
+**Renders** (`/tmp/cond/05/<id>/final/<id>.mp4`; each built with `render`, then `sound … --score`, which leaves the video md5 identical):
+- 05a: 457 frames, video md5 `249ce4c0503c`. The spec is unchanged. The video differs from the first render's `bcf4f90c5c11` only in 28 frames at 7.40-8.30 s, at PSNR 75-83 dB (render noise), and its motion audit is identical.
+- 05b: 419 frames, `6ccb70b833d8`.
+- 05c: 342 frames, `8e02527643f2`.
+
+**Stills read:**
+- **05b**, at 0, 0.5, 1.25, 2.2, 2.85, 3.12, 3.5, 3.9, 4.3, 4.4, 4.5, 4.6, 4.75, 5.0, 5.5, 5.62, 6.0, 6.6, 7.4, 7.8, 8.1, 8.6, 9.2, 9.5, 10.0, 11.0, 11.4 and 12.5:
+  - "Needs get five." is up 3.12-4.3 under the bracket;
+  - "Food and every bill get one: $10" types at 4.5-4.6, as "$300 ÷ 30 = $10" pops in on the plate and the slot stamps $10, and the line is complete at 4.75;
+  - the "÷ 3…" label is clipped at 5.62;
+  - every number is as in the maths table.
+- **05c**, at 0, 0.033, 0.067, 0.5, 1.13, 1.45, 1.7, 2.4, 2.63, 2.8, 3.1, 3.2, 3.63, 3.9, 4.2, 4.4, 4.7, 4.95, 5.05, 5.4, 6.0, 6.5, 6.85, 7.3, 7.9, 8.3, 8.85 and 10.0:
+  - frame 2 matches frame 1, and the cut shows at 0.067;
+  - "$100 − $88.91 − $9.15 = $1.94 before tax" stays in the footer from 3.63 through 4.95, under the check sum (4.2-4.95);
+  - the fees working at 5.05, and "cart $5,778M + fees $5,907M = $11,685M" from 6.85 to the end card;
+  - the footer stays under the verdict (only the label stack yields to it).
+- **05a**, at 20 beats from 0 to 14.0: unchanged.
+
+**Sound** (`sound … --score`, then `verify … --video /tmp/cond/05/<id>/final --detail`; CUE DRIFT and "baseline DIFFERS" are expected for WIP):
+- The cue records match the reviewed builds: 05a's and 05c's are byte-identical (a footer step makes no cue), and 05b's differs only in its `vo` list, which no pack reads. The masters are byte-identical: 05a `1390da74fb9a0ec1`, 05b `bd09ccf2fd609869`, 05c `8e64cecea2784f7d`.
+- **05a: PASS, 42/42.** The tightest margins: A5 PLR 12.91 (≤ 13: 0.09), A1 master −14.08 (±0.3: 0.22), A2 −1.26 dBTP (≤ −1: 0.26), BANDS 250 Hz +0.5 (≥ 0: 0.5), BANDS 2 kHz −0.6 (0.6), and B8 logo −12.26 (≥ −13: 0.74).
+- **05b: FAIL, 39/42.**
+  - ✗ BANDS: 250 Hz −1.2 (floor 0: 1.2 dB out) and 8 kHz −4.2 (ceiling −5: 0.8 out).
+  - ✗ B3: 16/19 cues; the closest is hit@6.09 at 2.3 dB (≥ 3: 0.7 short), with hit@4.08 at 2.6 and pop@9.05 at 2.9.
+  - ✗ B8: the logo is −11.92, 0.33 dB over the payoff's −12.25.
+  - Thin passes: A5 12.79 (0.21), A2 −1.40 (0.40) and A1 master −14.07 (0.23).
+  - Likely cause: 38 cues in 11.45 s (SFX ungated −3.60 LU re the mix, 9.6% of the body ducked), against a `MODEL` fitted on the round-2 records.
+- **05c: FAIL, 39/42.**
+  - ✗ A3: LRA 2.79 (4-9: 1.21 short).
+  - ✗ BANDS: 125 Hz 1.9 (floor 2: 0.1 out).
+  - ✗ B8: the logo is −14.05 (≥ −13: 1.05 short; the payoff is −11.41).
+  - Thin passes: B1 music −3.21 (−3.5..−1.5: 0.29), A1 master −14.01 (0.29) and A5 12.53 (0.47).
+  - Likely cause: P is the goal landing at 3.63, after only a 2.0 s HOOK, while the picture's climax (≈ $3.93) lands at 6.49. LOGO_PRE and the BEDS were fitted on the round-2 records. If a refit does not lift A3, the cut comes back to the editor (for example, for a longer section before P).
+
+**Motion audit (after):**
+- 05a and 05b give exactly the same runs as in "Measured after".
+- 05c, before the verdict: the longest still run is 0.30 s (6.93-7.20), and there is no near-still run of 0.4 s or more. At the check, 4.33 s drops from YAVG 0.17 to 0.03 (the footer's rise is gone), and no run appears.
+- 05c's verdict hold now measures still from 7.73 s (near-still from 7.50). The first render's "8.30-8.67" came from six one-frame YAVG spikes of about 8.5 at 7.87-8.27 s in that file, whose decoded frames are identical. It was a measurement artifact of that file, and the new file has none. The hold is the allowed one: the verdict lands at 7.29 and holds 1.6 s.
+
+**Still open, for the ship step:** the three sound items above. 05c's check sum is up 0.8 s, and 05b's "Check: $3,000." runs 0.75 s under the payoff slab: both are acceptable at this length and are noted for the owner. The opt-in sawdust burst for 05a also stays open, only if retention asks for it.

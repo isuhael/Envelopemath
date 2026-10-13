@@ -1,0 +1,579 @@
+{
+  "id": "05a-becker-rig-chipotle-10",
+  "teaser": "05a Becker Rig, split-sheet: \"What you're really paying for when you spend $10 at Chipotle\"",
+  "prepared": "2026-10-13",
+  "for_video": {
+    "current_render": "renders/channel/05a-becker-rig-chipotle-10.mp4",
+    "current_duration_s": 27.2,
+    "current_sha256": "693b20b6a45abd3adfdd869b41f3ba7c86ce9ced4dcaf690462bbd2060f097e1",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the pre-condense cut. The ship step re-runs the build with --covers on the condensed file.",
+    "cut": {
+      "name": "pre-condense cut (Becker Rig port, QA fix pass 2026-10-08)",
+      "spec": "studio/specs/05a-becker-rig-chipotle-10.json",
+      "body_s": 24.7,
+      "card_s": 2.5,
+      "shipped": null,
+      "git": "471c793",
+      "status": "the 05 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay): the WIP cut is studio/specs-wip/05a-becker-rig-chipotle-10.json, 15.2 s with the card per the write-up, and passes the 05 check with --spec (583 checks, 0 failed for the three). The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."
+    }
+  },
+  "facts": {
+    "source": "teasers/v2/05-split-sheet.md section 05a; teasers/v2/checks/05-split-sheet.py: 560 checks, 0 failed on studio/specs/ (2026-10-13)",
+    "method": "each line is that cost's FY2025 dollar line ÷ Chipotle's total revenue ($11,925,601K, 'total revenue increased 5.4% to $11.9 billion'), shown to 0.1 pt and × $10 to the cent; a company-wide average, not your order",
+    "lines": "food, drinks & packaging 29.6% ≈ $2.96; crew pay 25.1% ≈ $2.51; rent (occupancy) 5.2% ≈ $0.52; ads, delivery & card fees (other operating costs) 14.7% ≈ $1.47; HQ, wear & tear, new stores (G&A + D&A + pre-opening + impairment) 9.1% ≈ $0.91; tax − interest earned 3.4% ≈ $0.34; profit (net income) 12.9% ≈ $1.29",
+    "tax_line": "provision for income taxes $473,758K minus interest and other income $73,721K = $400,037K; the provision alone would be ≈ $0.40 per $10, which is why the row is labelled net of interest",
+    "adds_up": "2.96 + 2.51 + 0.52 + 1.47 + 0.91 + 0.34 + 1.29 = $10.00; shares add to 100.0; no plug",
+    "guess": "the frame-1 wrong guess: $10 − $2.96 = $7.04 profit? (exact on the shown numbers)",
+    "check": "$10 − $8.71 of costs = $1.29 (= the profit row)",
+    "crew_vs_profit": "2,991,680 ÷ 1,535,761 = 1.95: the crew gets almost twice the profit",
+    "verdict": "Chipotle keeps ≈ $1.29, not $7.04 (caption line 1: 'Nowhere near $7.')"
+  },
+  "youtube": {
+    "titles_ranked": [
+      {
+        "rank": 1,
+        "title": "Where Does Your $10 Actually Go at Chipotle? How Much Is Profit?",
+        "vidiq_score": 94,
+        "chars": 64,
+        "note": "PICK. Top score of the 10 scored. The whole first question is the first 44 characters, so a title cut short still asks it whole; the second question is the one the video answers. No hashtags in the title; the description's first three show above it."
+      },
+      {
+        "rank": 2,
+        "title": "How Much Profit Does Chipotle Make on Your $10 Order?",
+        "vidiq_score": 93,
+        "chars": 53,
+        "note": "1 point lower and shorter (53 characters), with 'Chipotle' earlier. It asks only for the last line, where the pick asks for the whole split the video walks."
+      },
+      {
+        "rank": 3,
+        "title": "Does Chipotle Really Keep $7 of Your $10?",
+        "vidiq_score": 92,
+        "chars": 41,
+        "note": "The write-up's hook-bank rewrite B: the frame-1 guess as a yes/no question. Kept as the fallback; a title that names $7 can be quoted as a claim out of context."
+      }
+    ],
+    "titles_also_scored": [
+      {
+        "title": "Where Does Your $10 Actually Go at Chipotle?",
+        "vidiq_score": 93,
+        "chars": 44,
+        "note": "the pick's first question alone"
+      },
+      {
+        "title": "How Much Profit Does Chipotle Really Make on Your $10 Order?",
+        "vidiq_score": 93,
+        "chars": 60,
+        "note": "'Really' adds nothing here"
+      },
+      {
+        "title": "How Much Profit Does Chipotle Make on Your $10 Order? #chipotle #businessmath #moneymath",
+        "vidiq_score": 93,
+        "chars": 88,
+        "note": "the house 3-hashtag form"
+      },
+      {
+        "title": "What You're Really Paying For When You Spend $10 at Chipotle",
+        "vidiq_score": 90,
+        "chars": 60,
+        "note": "the on-screen header"
+      },
+      {
+        "title": "What's the Profit Margin on a $10 Chipotle Order?",
+        "vidiq_score": 90,
+        "chars": 49,
+        "note": "Earning Earth's '$5 Lemonade' grammar"
+      },
+      {
+        "title": "What's Chipotle's Real Profit on a $10 Order?",
+        "vidiq_score": 87,
+        "chars": 45,
+        "note": ""
+      },
+      {
+        "title": "Chipotle Keeps How Much of Your $10?",
+        "vidiq_score": 82,
+        "chars": 36,
+        "note": "the write-up's title"
+      }
+    ],
+    "title_pick": "Where Does Your $10 Actually Go at Chipotle? How Much Is Profit?",
+    "title_pick_chars": 64,
+    "description": "Where does your $10 actually go at Chipotle? Food, drinks and packaging take about $2.96 and the crew about $2.51. After rent, ads, delivery and card fees, HQ, and tax (minus the interest it earns), Chipotle keeps about $1.29. Nowhere near $7.\n\nThe math, shown (each line's share of Chipotle's 2025 revenue, applied to $10):\n• Food, drinks & packaging: 29.6%, about $2.96. So Chipotle keeps $10 − $2.96 = $7.04? Not even close.\n• Crew pay: 25.1%, about $2.51.\n• Rent: 5.2%, about $0.52.\n• Ads, delivery & card fees: 14.7%, about $1.47.\n• HQ, wear & tear, new stores: 9.1%, about $0.91.\n• Tax minus the interest Chipotle earns: 3.4%, about $0.34 (the tax alone would be about $0.40).\n• Profit: 12.9%, about $1.29. Check: $10 − $8.71 of costs = $1.29.\n• The crew gets almost twice what Chipotle keeps.\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\n\nAnimation and original sound: The Back of the Envelope. Each line is that cost's share of Chipotle's 2025 revenue ($11.9 billion; FY2025 Form 10-K and Q4 2025 results, Feb 3, 2026), applied to $10: a company-wide average, not your order. Rent is occupancy; ads, delivery & card fees are other operating costs (marketing, delivery service fees, credit card fees, utilities, maintenance, restaurant technology); HQ, wear & tear, new stores is G&A, depreciation, pre-opening costs and impairment. Not financial advice. Not affiliated with or endorsed by Chipotle.\n#Chipotle #ProfitMargin #FastFood",
+    "description_chars": 1473,
+    "hashtags_in_order": [
+      "#Chipotle",
+      "#ProfitMargin",
+      "#FastFood"
+    ],
+    "hashtag_rules": "Title hashtags show as links in the title; with none in the title, the first 3 description hashtags show above it. Over 60 hashtags and YouTube ignores all of them. #Shorts is not needed (vertical, under 3 min).",
+    "tags": [
+      "chipotle",
+      "chipotle profit",
+      "how much profit does a restaurant make",
+      "restaurant profit margin",
+      "profit margin",
+      "chipotle mexican grill",
+      "fast food",
+      "restaurant business",
+      "business explained",
+      "money math",
+      "math animation",
+      "the back of the envelope",
+      "envelope math"
+    ],
+    "tags_chars_as_youtube_counts": 263,
+    "pinned_comment": "Which chain's $10 next?\n\nThe working, FY2025 ($ thousands): revenue 11,925,601. Food, beverage & packaging 3,527,043 (29.58%) · labor 2,991,680 (25.09%) · occupancy 624,898 (5.24%) · other operating costs 1,755,824 (14.72%) · G&A + depreciation + pre-opening + impairment 1,090,358 (9.14%) · income tax 473,758 minus interest and other income 73,721 = 400,037 (3.35%) · net income 1,535,761 (12.88%).",
+    "related_video": {
+      "pick": {
+        "id": "LjHDFzVxRyM",
+        "title": "Can You Find the Missing Dollar?",
+        "url": "https://www.youtube.com/shorts/LjHDFzVxRyM",
+        "why": "The same question, where did the money go, to the cent. It is the channel's best Short on YouTube (1,256 views) and holds 81.3% on Instagram."
+      },
+      "swap_when_live": "05c (follow your $100 Costco cart), the same split-sheet series, once published. Then point 05c's Related video at this Short.",
+      "end_screen": "Shorts have no end screens or cards. The Related video link is the Shorts equivalent."
+    },
+    "thumbnail_frame": "In the YouTube app, pick frame 1, the question frame (the write-up's YouTube cover): the red '$7.04 profit?' guess, the $10.00 slab and the sheet with profit '?'. The Instagram cover is the finished sheet instead.",
+    "settings": {
+      "category": "Education",
+      "audience": "Not made for kids",
+      "altered_or_synthetic_content": "No (animated chart, not realistic footage)",
+      "remixing": "Allow",
+      "captions": "None needed (no narration; all text is on screen)"
+    },
+    "posting_window": {
+      "when": "First free Tue-Thu evening after the condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+      "spacing": "Keep it at least 6 h from any other upload on the channel, and on a different evening from 05b and 05c. Suggested order within the series: 05c, then 05b, then 05a.",
+      "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,199 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2); 06c (Mon 03:45 ET) has 760 and 06b (Mon 12:14 ET) 61, too young to compare. The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. 05a goes last of the three: 'chipotle' runs +24.0% over its 30-day baseline, but the question is evergreen (the FY2025 10-K stands until Feb 2027), while 05c's Costco factoid is circulating right now."
+    },
+    "description_utf8_bytes": 1495
+  },
+  "instagram": {
+    "caption": "Where does your $10 actually go at Chipotle? Food, crew pay, rent, fees, HQ and tax all take their cut before anything is left as profit.\n\nNowhere near $7.\n\nThe math, shown (each line's share of Chipotle's 2025 revenue, applied to $10):\n• Food, drinks & packaging: about $2.96. So Chipotle keeps $10 − $2.96 = $7.04? Not even close.\n• Crew pay: about $2.51.\n• Rent: about $0.52.\n• Ads, delivery & card fees: about $1.47.\n• HQ, wear & tear, new stores: about $0.91.\n• Tax minus the interest Chipotle earns: about $0.34.\n• Profit: about $1.29. The crew gets almost twice that.\n• Check: $10 − $8.71 of costs = $1.29.\n\nA company-wide average from Chipotle's FY2025 10-K and Q4 2025 results (Feb 3, 2026), not your order. Not financial advice. Not affiliated with or endorsed by Chipotle.\n\nWhich chain's $10 next?\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\nAnimation and original sound: The Back of the Envelope.\n\n#chipotle #fastfood #profitmargin #businessmath #personalfinance",
+    "caption_chars": 1008,
+    "caption_first_125": "Where does your $10 actually go at Chipotle? Food, crew pay, rent, fees, HQ and tax all take their cut before anything is lef",
+    "caption_rule": "The first 125 characters are the question, the 'Chipotle' keyword and the list of what takes a cut, no result: the caption overlays the Reel from frame 1, so the verdict and every dollar sit below 'more'.",
+    "hashtags_in_order": [
+      "#chipotle",
+      "#fastfood",
+      "#profitmargin",
+      "#businessmath",
+      "#personalfinance"
+    ],
+    "hashtag_rule": "Instagram caps a post at 5 hashtags (since Dec 2025).",
+    "alt_text_short": "Chart: where $10 at Chipotle goes, line by line. Profit is about $1.29, not $7.04.",
+    "alt_text_long": "Animation on a white background. The header asks what you're really paying for when you spend $10 at Chipotle, with a red guess beside it: $7.04 profit? A stick figure stands on a gold $10.00 slab and saws it into 7 pieces, a piece per cost line, each dropping into its row: food, drinks and packaging about $2.96, crew pay about $2.51, rent about $0.52, ads, delivery and card fees about $1.47, HQ, wear and tear and new stores about $0.91, and tax minus interest earned about $0.34. The last piece, profit, drops out from under him: about $1.29, stamped on a gold slab, with the check $10 − $8.71 of costs = $1.29. Verdict: Chipotle keeps about $1.29, not $7.04.",
+    "alt_text_where": "Advanced settings → Accessibility → Alt text, if your app shows it for Reels.",
+    "cover": {
+      "files": {
+        "3x4": "publishing/05a-becker-rig-chipotle-10-cover-3x4.jpg",
+        "9x16": "publishing/05a-becker-rig-chipotle-10-cover-9x16.jpg"
+      },
+      "frame_in_current_render_s": 23.0,
+      "frame_index": 690,
+      "frame_by_content": "The finished sheet: the header reading '…at Chipotle: ≈ $1.29 profit' (the answer stamped over the struck guess), the gold 'PROFIT ≈ $1.29' slab, the check '$10 − $8.71 of costs = $1.29', all 7 rows with their shares and dollars over the lanes' bar chart of the $10, the figure on the bracket, and the verdict 'Chipotle keeps ≈ $1.29, not $7.04.' The write-up names it as the Instagram cover, a save-able cheat sheet like Yannick's finished sheet. On any cut, use a frame after the last stamp settles and before the end card.",
+      "frame_measured": "On the pre-condense 27.2 s render the sheet settles by frame 654 (21.80 s) and holds still (frame-to-frame mean luma change 0.0000) until the end card cuts in at frame 742 (24.73 s). Frame 690 (23.00 s), the middle of the hold, is used.",
+      "crop": "3:4 = 1080×1440 from y 78 to 1518 of the 1080×1920 frame: the badge, the header with its answer, the footer, the PROFIT slab, the check, the 7 rows and the verdict, with even margins (34 px above the badge and below the verdict); it drops the empty floor. A centred grid crop (y 240-1680) cuts the badge and the header.",
+      "how_to_set": "In 'Edit cover', pick the finished-sheet frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' up so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
+      "re_export": "ffmpeg -ss 23.0 -i renders/channel/05a-becker-rig-chipotle-10.mp4 -frames:v 1 -vf \"crop=1080:1440:0:78\" -q:v 2 publishing/05a-becker-rig-chipotle-10-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 23.0 -i renders/channel/05a-becker-rig-chipotle-10.mp4 -frames:v 1 -q:v 2 publishing/05a-becker-rig-chipotle-10-cover-9x16.jpg"
+    },
+    "first_comment": "Of your $10: food about $2.96, crew about $2.51, rent about $0.52, ads, delivery & card fees about $1.47, HQ about $0.91, tax minus interest about $0.34, profit about $1.29. A 2025 company-wide average, not your order. Which chain's $10 next?\n\nThe working, FY2025 ($ thousands): revenue 11,925,601. Food, beverage & packaging 3,527,043 (29.58%) · labor 2,991,680 (25.09%) · occupancy 624,898 (5.24%) · other operating costs 1,755,824 (14.72%) · G&A + depreciation + pre-opening + impairment 1,090,358 (9.14%) · income tax 473,758 minus interest and other income 73,721 = 400,037 (3.35%) · net income 1,535,761 (12.88%).",
+    "first_comment_action": "Post it right after publishing and pin it.",
+    "trial_reels": {
+      "recommendation": "Post as a regular Reel, not a Trial.",
+      "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show 471c793:renders/channel/05a-becker-rig-chipotle-10.mp4 > 05a-27.2s.mp4` (sha256 693b20b6…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+    },
+    "settings": {
+      "audio": "Rename the original audio to 'Where your $10 goes at Chipotle — The Back of the Envelope' if the app allows; it is the score, with no voice.",
+      "share_to_feed": "On",
+      "google_indexing": "Public professional-account posts can appear in Google/Bing since 10 Jul 2025, so the caption is written as a searchable question."
+    },
+    "posting_window": {
+      "when": "Same evening as YouTube, about 15 min after the Short: 21:45-22:45 ET, on a different evening from 05b and 05c.",
+      "why": "October Reels, median plays by posting slot (owner insights, 2026-10-13): weekday 22:00-00:30 ET 5,449 (n = 3, including the two best: 7,302 and 5,449), weekday midday 1,212 (n = 2), Sunday 05:00-08:00 ET 1,087 (n = 2). 06c, posted Mon 03:46 ET, has 1,711 plays with a 40.3% skip rate. Skip rate tracks plays more closely than the hour does: 27.0-27.4% for the top two, 56.9-65.1% for the bottom two. The condense matters more than the hour."
+    },
+    "alt_text_rule": "Paste the short version into Instagram: it is kept at or under 100 characters so it fits the field however short it is, and it writes 'about' instead of '≈' so screen readers read it cleanly. The long version is for anywhere with room (a website embed, a newsletter)."
+  },
+  "research": {
+    "keywords_youtube": [
+      {
+        "keyword": "chipotle",
+        "est_monthly_searches": 72674,
+        "volume": 72.6,
+        "competition": 56.5,
+        "overall": 60.9,
+        "note": "seed; +24.0% vs its 30-day baseline (58,623); mostly food, order and hack intent",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "fast food",
+        "est_monthly_searches": 141454,
+        "volume": 76.9,
+        "competition": 71.0,
+        "overall": 57.7,
+        "note": "-20.8% vs its baseline (178,607); broad and crowded",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "business explained",
+        "est_monthly_searches": 103071,
+        "volume": 74.8,
+        "competition": 36.0,
+        "overall": 70.5,
+        "note": "+2.5%; the business-breakdown viewer",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "restaurant business",
+        "est_monthly_searches": 26475,
+        "volume": 66.0,
+        "competition": 43.7,
+        "overall": 62.1,
+        "note": "-45.6% vs its baseline (48,682)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "best chipotle order",
+        "est_monthly_searches": 9283,
+        "volume": 59.2,
+        "competition": 39.0,
+        "overall": 59.9,
+        "note": "ordering intent: not in the tags",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "chipotle order",
+        "est_monthly_searches": 8938,
+        "volume": 59.0,
+        "competition": 55.9,
+        "overall": 53.0,
+        "note": "+157.4% vs its baseline (3,473); ordering intent: not in the tags",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "why chipotle collapsed",
+        "est_monthly_searches": 7289,
+        "volume": 57.7,
+        "competition": 36.5,
+        "overall": 60.0,
+        "note": "the 2015 crisis story, not this question",
+        "metrics_as_of": "2026-06-02"
+      },
+      {
+        "keyword": "restaurant profit margin",
+        "est_monthly_searches": 4250,
+        "volume": 54.2,
+        "competition": 38.2,
+        "overall": 57.2,
+        "note": "the sheet's subject, said generally",
+        "metrics_as_of": "2026-08-31"
+      },
+      {
+        "keyword": "chipotle price increase",
+        "est_monthly_searches": 4225,
+        "volume": 54.1,
+        "competition": 33.8,
+        "overall": 59.0,
+        "note": "price-hike news: the video does not cover it, so not in the tags",
+        "metrics_as_of": "2026-04-17"
+      },
+      {
+        "keyword": "how much profit does a starbucks store really make?",
+        "est_monthly_searches": 3824,
+        "volume": 53.5,
+        "competition": 21.3,
+        "overall": 63.6,
+        "note": "the same question about another chain",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "how much profit does a restaurant make",
+        "est_monthly_searches": 3346,
+        "volume": 52.6,
+        "competition": 29.6,
+        "overall": 59.7,
+        "note": "",
+        "metrics_as_of": "2026-09-18"
+      },
+      {
+        "keyword": "chipotle profit",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": 30.5,
+        "overall": 27.8,
+        "note": "<750/month; names the video exactly, so it stays in the tags",
+        "metrics_as_of": null
+      }
+    ],
+    "keywords_source": "vidIQ keyword research (research, matching_terms and questions modes), pulled 2026-10-13. vidIQ refreshes each keyword on its own schedule, so each row carries its snapshot date in metrics_as_of; four rows are older snapshots (2026-04-17 to 2026-09-18).",
+    "same_idea_youtube_shorts": [
+      {
+        "title": "What's the Profit Margin on a $5 Lemonade?",
+        "channel": "Earning Earth",
+        "subscribers": 73600,
+        "views": 21797912,
+        "published": "2025-07-29",
+        "note": "17 s; outlier score 1,273.2; the title grammar: one round price and a profit question"
+      },
+      {
+        "title": "The Secret of McDonald's Employee Salaries",
+        "channel": "Finance USA",
+        "subscribers": 341,
+        "views": 158455,
+        "published": "2025-08-07",
+        "note": "21 s; outlier score 13,778.7"
+      },
+      {
+        "title": "How Much Profit Is In A Sandwich?",
+        "channel": "CORNER KITCHEN ROTHERHAM",
+        "subscribers": 73800,
+        "views": 33998,
+        "published": "2026-01-14",
+        "note": "1:45; an owner's own costs"
+      },
+      {
+        "title": "The real cost of a Big Mac meal 🍔💸",
+        "channel": "Real Money Patterns",
+        "subscribers": 21100,
+        "views": 24265,
+        "published": "2026-06-21",
+        "note": "a $10 meal priced on ingredients, staff and packaging only; its description puts McDonald's take at nearly $4.40 a meal, the belief this Short tests"
+      },
+      {
+        "title": "This is how restaurants calculate if they're going broke!",
+        "channel": "Learn with Owner.com",
+        "subscribers": 54300,
+        "views": 12003,
+        "published": "2025-12-08",
+        "note": "its description: '$10 Pizza → $3 food cost → $7 contribution margin', and it names Chipotle"
+      },
+      {
+        "title": "Chipotle’s Revenue Per Store 🤯 @chipotle 🌯🥑",
+        "channel": "Humphrey Talks",
+        "subscribers": 28600,
+        "views": 199,
+        "published": "2021-09-15",
+        "note": "the only Chipotle business Short the searches returned"
+      }
+    ],
+    "same_idea_note": "vidIQ YouTube search (under 4 min; by relevance and by views): food-cost Shorts break out (Earning Earth's '$5 Lemonade' 21.8M; Finance USA 158K from 341 subscribers); two put food cost against the price and call the rest profit, the belief this Short strikes. None splits a Chipotle order into its 10-K lines; Chipotle's big Shorts are food hacks.",
+    "instagram_tiktok_outliers": [
+      {
+        "handle": "@yourgrandmas_bf",
+        "platform": "TikTok",
+        "id": "7685809892430548238",
+        "on_screen": "Why your latte costs $7",
+        "views": "2.1M (13.4x the account median of 156.8K)",
+        "note": "a coffee-shop owner splits a $7 latte into ingredients, labor and overhead: the same split, on one drink"
+      },
+      {
+        "handle": "@icedcoffeehour",
+        "platform": "Instagram",
+        "id": "DdQozPKgk0a",
+        "on_screen": "WHAT'S THE PROFIT MARGIN ON A PIZZA?",
+        "views": "1.1M (3.2x the account median of 333.9K)",
+        "note": "a podcast clip; the hook is the question, no number"
+      },
+      {
+        "handle": "@flickman",
+        "platform": "Instagram",
+        "id": "Da3YK59IJZ5",
+        "on_screen": "How does this business afford rent in NYC? $4.8k/mo??",
+        "views": "265.5K (18.5x the account median of 14.4K)",
+        "note": "an estimated monthly P&L of one açaí franchise, line by line"
+      },
+      {
+        "handle": "@owner_dot_com",
+        "platform": "TikTok",
+        "id": "7669822451299159310",
+        "on_screen": "Five Guys / $13+",
+        "views": "148.7K (61.8x the account median of 2.4K)",
+        "note": "why a chain's price is what it is"
+      },
+      {
+        "handle": "@officialshawnlynch",
+        "platform": "Instagram",
+        "id": "DbJdUpwspWi",
+        "on_screen": "WHAT A $5.73 MCDONALD'S BURGER ACTUALLY COSTS TO MAKE",
+        "views": "47.4K (28.8x the account median of 1.6K)",
+        "note": "'actually' plus one chain price: the same hook grammar as the pick"
+      }
+    ],
+    "own_channel_youtube_october_shorts": [
+      {
+        "id": "LjHDFzVxRyM",
+        "title": "Can You Find the Missing Dollar?",
+        "posted_et": "Sun 07:04",
+        "views": 1256
+      },
+      {
+        "id": "hJBvmGA6sZ0",
+        "title": "You Can Lean on $1 Million. Not on $1 Billion.",
+        "posted_et": "Thu 00:25",
+        "views": 1221
+      },
+      {
+        "id": "XVUeMcTg9OQ",
+        "title": "Your Interest Has a Speed Limit",
+        "posted_et": "Sun 05:49",
+        "views": 1141
+      },
+      {
+        "id": "fbpdKf4Wy8c",
+        "title": "What If You Bought Starbucks Stock Instead of a $4 Latte Every Day? (06c)",
+        "posted_et": "Mon 03:45",
+        "views": 760
+      },
+      {
+        "id": "8__HTUa2PoU",
+        "title": "Pay the Minimum on $5,000? 238 Months.",
+        "posted_et": "Mon 22:09",
+        "views": 642
+      },
+      {
+        "id": "FW_oxA3kbsM",
+        "title": "A $2 Lottery Ticket Was Worth $6.98. Until the Fine Print.",
+        "posted_et": "Wed 12:03",
+        "views": 348
+      },
+      {
+        "id": "mXbKY_R63h4",
+        "title": "You Can Carry $1 Million. Not in Pennies.",
+        "posted_et": "Thu 13:38",
+        "views": 177
+      },
+      {
+        "id": "EqFQCJheCMU",
+        "title": "Start Investing 10 Years Late? You Get Half.",
+        "posted_et": "Tue 22:27",
+        "views": 161
+      },
+      {
+        "id": "krfZEHhb0xU",
+        "title": "What If You Bought Netflix Stock Instead of Paying for Netflix? (06b)",
+        "posted_et": "Mon 12:14",
+        "views": 61
+      }
+    ],
+    "own_channel_instagram_october_reels": [
+      {
+        "shortcode": "DeIvYk7I4Qr",
+        "topic": "$5,000 on the minimum",
+        "posted_et": "Mon 22:46",
+        "plays": 7302,
+        "skip_rate_pct": 27.4,
+        "avg_watched_pct": 56.5
+      },
+      {
+        "shortcode": "DeOEthJJ1TG",
+        "topic": "$1M stack vs Burj Khalifa",
+        "posted_et": "Thu 00:28",
+        "plays": 5449,
+        "skip_rate_pct": 27.0,
+        "avg_watched_pct": 83.1
+      },
+      {
+        "shortcode": "DeWgFZRoR_S",
+        "topic": "Missing dollar",
+        "posted_et": "Sun 07:05",
+        "plays": 1997,
+        "skip_rate_pct": 32.0,
+        "avg_watched_pct": 81.3
+      },
+      {
+        "shortcode": "DeMvZv9IqRw",
+        "topic": "Powerball $6.98",
+        "posted_et": "Wed 12:05",
+        "plays": 1825,
+        "skip_rate_pct": 58.7,
+        "avg_watched_pct": 57.9
+      },
+      {
+        "shortcode": "DeYuqT4pjVC",
+        "topic": "06c latte vs Starbucks stock",
+        "posted_et": "Mon 03:46",
+        "plays": 1711,
+        "skip_rate_pct": 40.3,
+        "avg_watched_pct": 69.1
+      },
+      {
+        "shortcode": "DePe11HIHwn",
+        "topic": "$1M in pennies",
+        "posted_et": "Thu 13:37",
+        "plays": 598,
+        "skip_rate_pct": 42.0,
+        "avg_watched_pct": 66.7
+      },
+      {
+        "shortcode": "DeLSd9io8UK",
+        "topic": "10 years late",
+        "posted_et": "Tue 22:30",
+        "plays": 219,
+        "skip_rate_pct": 65.1,
+        "avg_watched_pct": 30.6
+      },
+      {
+        "shortcode": "DeEW2ZMIiYd",
+        "topic": "Speed limit (e)",
+        "posted_et": "Sun 05:54",
+        "plays": 177,
+        "skip_rate_pct": 56.9,
+        "avg_watched_pct": 31.2
+      }
+    ],
+    "channel_stats": {
+      "youtube_subscribers": 53,
+      "youtube_views": 10221,
+      "youtube_videos": 41,
+      "youtube_30d": "+27 subscribers, +5,127 views, 11 videos",
+      "instagram_followers": 8,
+      "instagram_30d_views": 20518
+    },
+    "limits": [
+      "@envelopemath's YouTube Analytics (audience hours, geography) were not read here; the 06b and 06c sheets found vidIQ's YouTube authorization is a different channel. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
+      "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and on the write-up's and the outliers' own tags.",
+      "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
+      "The write-up's sources rest on search-result text: its egress proxy blocked the primary pages. Chipotle's labor, occupancy and other operating costs ($ thousands) rest on its round-1 read of the release; the 10-K's percentages (25.1 / 5.2 / 14.7) agree, but within that 0.1-pt rounding each cent could move by ±1¢. Before posting, open the FY2025 10-K's income statement and re-run the check (the write-up's open item 1).",
+      "Third-party claims in the research tables (a Big Mac meal's 'nearly $4.40', a pizza's '$7 contribution margin') are those videos' own descriptions, not verified here, and none is in the copy.",
+      "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file."
+    ],
+    "adjacent_youtube_outliers": [
+      {
+        "title": "$3 Burrito Hack at Chipotle // Food Hacks",
+        "channel": "HellthyJunkFood Shorts",
+        "subscribers": 356000,
+        "views": 36997480,
+        "published": "2022-09-09",
+        "note": "Chipotle's Shorts audience is food and hacks"
+      },
+      {
+        "title": "INSANE $3 CHIPOTLE BURRITO BOWL HACK #shorts",
+        "channel": "David Paykin",
+        "subscribers": 807000,
+        "views": 27615379,
+        "published": "2021-10-31",
+        "note": "outlier score 939.1"
+      }
+    ],
+    "titles_scored": "10 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored.",
+    "vidiq_credits": "100 credits for this teaser (5 keyword queries, 3 YouTube searches, 1 Instagram/TikTok outlier search, 10 title scores and 1 re-score; 5 each), plus 10 shared across 05a-05c for the channel's stats and Shorts list (Instagram owner insights cost 0). The adversarial check used 40 more across 05a-05c at 5 each: 3 title scores, 3 keyword re-queries, 1 lookup of the 3 related videos and 1 list of the channel's Shorts by views; Instagram owner insights cost 0. The account's shared balance went 3,885 → 3,795 over the check, because other agents draw on it in parallel."
+  },
+  "checked": {
+    "date": "2026-10-13",
+    "by": "adversarial check of this sheet",
+    "math": "python3 teasers/v2/checks/05-split-sheet.py: 560 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), and 583 checks, 0 failed with --spec on the condensed WIP specs, whose strings, numbers and verdicts are the same; the 7 lines recomputed from the FY2025 dollar lines in MATH_RELATIONS (shares, cents, the $10.00 total with no plug, the $8.71 check, the $7.04 guess, crew ≈ 1.95× profit); COPY_RULES keep every rounded amount 'about' or '≈' (the exact check and guess workings excepted), keep $7 a question or a 'not', keep the tax line net of interest wherever it sits beside the $1.29 or the $0.34, keep the exact table in the Instagram first comment, and keep the average condition and both disclaimers in the copy; re-run at the adversarial check with the same result (583 with --spec after the condense critic fixes)",
+    "limits": {
+      "youtube_title_chars": 64,
+      "youtube_description_chars": 1473,
+      "youtube_description_utf8_bytes": 1495,
+      "youtube_tags_chars_as_youtube_counts": 263,
+      "youtube_hashtags": 3,
+      "instagram_caption_chars": 1008,
+      "instagram_hashtags": 5,
+      "instagram_alt_text_short_chars": 82
+    },
+    "vidiq_requeried": "pulled 2026-10-13: chipotle 72,674 / 56.5 (+24.0%); restaurant profit margin 4,250 / 38.2; fast food 141,454 (-20.8%); title scores 94 (pick), 82 (write-up title), 93 (best hashtag form); channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,518 views in 30 days. Re-queried after the build: the pick's title score 94. Match. Re-queried at the adversarial check: the pick's title score 94; 'chipotle' 72,674 / 56.5 (+24.0%, snapshot 2026-10-12); the related video LjHDFzVxRyM 1,254 views, still the channel's most-viewed Short (next: June's 'Why the minimum payment keeps you in debt for 19 years', 1,230); Instagram 8 followers, 20,520 views in 30 days. All match within view-count drift."
+  }
+}

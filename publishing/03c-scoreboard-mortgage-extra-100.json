@@ -1,0 +1,590 @@
+{
+  "id": "03c-scoreboard-mortgage-extra-100",
+  "teaser": "03c Scoreboard, what-difference: \"How much difference does just $100 extra a month make on a 30-year mortgage?\"",
+  "prepared": "2026-10-13",
+  "for_video": {
+    "current_render": "renders/channel/03c-scoreboard-mortgage-extra-100.mp4",
+    "current_duration_s": 32.3,
+    "current_sha256": "06a5286a7a8fd4587f9714873f5f25482433c0fc4d9b9f932893f58d0cbff0a0",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the pre-condense round-2 cut. The ship step re-runs the build with --covers on the condensed file.",
+    "cut": {
+      "name": "round-2 cut (pre-condense)",
+      "spec": "studio/specs/03c-scoreboard-mortgage-extra-100.json",
+      "body_s": 29.8,
+      "card_s": 2.5,
+      "shipped": null,
+      "git": "471c793",
+      "status": "the 03 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay). The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."
+    }
+  },
+  "facts": {
+    "source": "teasers/v2/03-what-difference.md section 03c; teasers/v2/checks/03-what-difference.py: 528 checks, 0 failed on studio/specs/ (2026-10-13)",
+    "stake": "$400,000, 30-year fixed at 7.3% (≈ Freddie Mac PMMS 7.28%, week of Oct 1, 2026); principal and interest only (no taxes, insurance or PMI)",
+    "model": "monthly amortisation at 7.3%/12, interest rounded to the cent; the payment rounded up to the cent so 360 payments clear the loan; every extra dollar goes to principal the month it is paid",
+    "baseline": "$2,742.29 a month × 360; interest $587,216.16 ≈ $587,200, more than the loan (footer working $2,742.29 × 360 − $400,000 = $587,224.40 ≈ $587,200)",
+    "plus_100": "$2,842.29 a month; 320 payments ≈ 26.7 years (26.67); interest $508,590.78 ≈ $508,600; 360 − 320 = 40 months sooner; $78,625.38 ≈ $78,600 less (shown 587,200 − 508,600 = 78,600)",
+    "plus_500": "$3,242.29 a month; 229 payments ≈ 19.1 years (19.08); interest $342,178.64 ≈ $342,200; (360 − 229) ÷ 12 = 10.92 ≈ 11 years sooner; $245,037.52 ≈ $245,000 less",
+    "per_dollar": "the full $100 goes in for 319 months ($100 × 319 = $31,900; the 320th payment is the smaller remainder); ≈ $78,600 ÷ $31,900 = 2.464 ≈ $2.46 (exact $78,625.38 ÷ $31,900 = 2.4647)",
+    "verdict": "+$100 a month: each $1 saves ≈ $2.46 (the hero holds '≈ $78,600 LESS')",
+    "sensitivity": "write-up only, not in the copy: at Freddie Mac's exact 7.28%, +$100 is still 320 months (40 sooner) and saves ≈ $78,200"
+  },
+  "youtube": {
+    "titles_ranked": [
+      {
+        "rank": 1,
+        "title": "What Happens If You Pay Just $100 Extra a Month on a 30-Year Mortgage?",
+        "vidiq_score": 98,
+        "chars": 70,
+        "note": "PICK. The top score of the 8 scored. 'Just $100 Extra a Month' (the hook's R5 cue) sits at characters 25-47, and '30-Year Mortgage', the header's own words, ends it. No hashtags in the title; the description's first three show above it."
+      },
+      {
+        "rank": 2,
+        "title": "What Happens If You Pay Just $100 Extra a Month on Your Mortgage? #mortgage #homeloan #debtfree",
+        "vidiq_score": 97,
+        "chars": 95,
+        "note": "The house 3-hashtag form, 1 point lower. The channel's live Shorts carry title hashtags, so this is the option if the owner keeps that habit (95 characters)."
+      },
+      {
+        "rank": 3,
+        "title": "How Much Difference Does Just $100 Extra a Month Make on a Mortgage?",
+        "vidiq_score": 94,
+        "chars": 68,
+        "note": "The write-up's title, the H50 grammar word for word. 4 points lower than the pick."
+      }
+    ],
+    "titles_also_scored": [
+      {
+        "title": "What Happens If You Pay Just $100 Extra a Month on Your Mortgage?",
+        "vidiq_score": 97,
+        "chars": 65,
+        "note": "the pick with 'Your Mortgage'"
+      },
+      {
+        "title": "How Much Does Just $100 Extra a Month Save on a $400,000 Mortgage?",
+        "vidiq_score": 95,
+        "chars": 66,
+        "note": "'save' presumes the direction of the answer"
+      },
+      {
+        "title": "How Much Difference Does Just $100 Extra a Month Make on a 30-Year Mortgage?",
+        "vidiq_score": 94,
+        "chars": 76,
+        "note": "the on-screen header"
+      },
+      {
+        "title": "Just $100 Extra a Month on a 30-Year Mortgage: How Much Difference Does It Make?",
+        "vidiq_score": 94,
+        "chars": 80,
+        "note": ""
+      },
+      {
+        "title": "Can Just $100 Extra a Month Pay Off Your Mortgage Early?",
+        "vidiq_score": 85,
+        "chars": 56,
+        "note": "a yes/no question scores lowest"
+      }
+    ],
+    "title_pick": "What Happens If You Pay Just $100 Extra a Month on a 30-Year Mortgage?",
+    "title_pick_chars": 70,
+    "description": "What happens if you pay just $100 extra a month on a 30-year mortgage? On $400,000 at 7.3%, about $78,600 less interest and 40 months sooner: each extra $1 saves about $2.46. $500 extra a month: about 11 years sooner and about $245,000 less.\n\nThe math, shown:\n• The payment: $2,742.29 a month for 360 months. The interest alone is about $587,200, more than the loan ($2,742.29 × 360 − $400,000).\n• +$100: $2,742.29 + $100 = $2,842.29 a month. 320 payments (about 26.7 years): 40 months sooner. Interest about $508,600: about $78,600 less.\n• +$500: $2,742.29 + $500 = $3,242.29 a month. 229 payments (about 19.1 years): about 11 years sooner. Interest about $342,200: about $245,000 less.\n• The full $100 goes in for 319 months: $100 × 319 = $31,900. About $78,600 ÷ $31,900 ≈ $2.46 of interest saved per extra $1.\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\n\nAnimation and original sound: The Back of the Envelope. 7.3% ≈ the Freddie Mac 30-year fixed average for the week of Oct 1, 2026 (7.28%). Assumes a fixed rate and that every extra dollar is applied to principal the month it is paid; principal and interest only (taxes, insurance and PMI not included). Not financial advice. Not affiliated with or endorsed by Freddie Mac.\n#mortgage #homeloan #debtfree",
+    "description_chars": 1294,
+    "hashtags_in_order": [
+      "#mortgage",
+      "#homeloan",
+      "#debtfree"
+    ],
+    "hashtag_rules": "Title hashtags show as links in the title; with none in the title, the first 3 description hashtags show above it. Over 60 hashtags and YouTube ignores all of them. #Shorts is not needed (vertical, under 3 min).",
+    "tags": [
+      "extra mortgage payment",
+      "extra $100 a month mortgage",
+      "how to pay off your mortgage early",
+      "pay off mortgage early",
+      "30 year mortgage",
+      "mortgage payoff",
+      "mortgage interest",
+      "extra principal payment",
+      "biweekly mortgage payments",
+      "mortgage tips",
+      "mortgage",
+      "home loan",
+      "debt free",
+      "money math",
+      "math animation",
+      "the back of the envelope",
+      "envelope math"
+    ],
+    "tags_chars_as_youtube_counts": 350,
+    "pinned_comment": "Does your servicer apply extra payments to principal? Extra payments only shorten the loan if it does; some apply them to next month's payment instead. Drop your balance, rate and extra amount and we'll put your row on the board.\n\nThe working: interest $587,216.16 with no extra, $508,590.78 with +$100 (320 payments) and $342,178.64 with +$500 (229 payments). $78,625.38 ÷ $31,900 ≈ $2.46 per extra $1. Fixed 7.3%, principal and interest only.",
+    "related_video": {
+      "pick": {
+        "id": "hW38hkzo_vY",
+        "title": "Your $400,000 house costs you $958,000",
+        "url": "https://www.youtube.com/shorts/hW38hkzo_vY",
+        "why": "The channel's own Short on the same $400,000, 30-year loan with a different lever (one extra payment a year). It was made in June at that month's rate, so its totals differ from this Short's 7.3%; both name their inputs. Same viewer, next question."
+      },
+      "swap_when_live": "03a (car loan: weekly vs biweekly) or 03b (card minimum), the same what-difference series, once published. Then point theirs at this Short.",
+      "end_screen": "Shorts have no end screens or cards. The Related video link is the Shorts equivalent."
+    },
+    "thumbnail_frame": "In the YouTube app, pick the verdict-hold frame (the same content as the IG cover).",
+    "settings": {
+      "category": "Education",
+      "audience": "Not made for kids",
+      "altered_or_synthetic_content": "No (animated chart, not realistic footage)",
+      "remixing": "Allow",
+      "captions": "None needed (no narration; all text is on screen)"
+    },
+    "posting_window": {
+      "when": "First free Tue-Thu evening after the condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+      "spacing": "Keep it at least 6 h from any other upload on the channel, and on a different evening from 03a and 03b. Suggested order within the series: 03c first (the strongest title score and rising mortgage demand), then 03a, then 03b.",
+      "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,198 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2); 06c (Mon 03:45 ET) has 760 and 06b (Mon 12:14 ET) 61, too young to compare. The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. Search demand: 'mortgage' runs +43.0% and 'how to pay off your mortgage early' +306.3% over their 30-day baselines, while 'pay off mortgage early' is down 62.9%."
+    },
+    "description_utf8_bytes": 1313
+  },
+  "instagram": {
+    "caption": "What happens if you pay just $100 extra a month on a 30-year mortgage? Worked out on a $400,000 loan at 7.3%, principal and interest only.\n\nYes, just $100 a month really makes a difference.\n\nThe math, shown:\n• The payment: $2,742.29 a month. Over 360 months the interest alone is about $587,200, more than the loan.\n• +$100 a month ($2,842.29): 40 months sooner and about $78,600 less interest.\n• +$500 a month ($3,242.29): about 11 years sooner and about $245,000 less.\n• The $100 goes in for 319 months ($31,900), so each extra $1 saves about $2.46 of interest.\n\n7.3% ≈ the Freddie Mac average for the week of Oct 1, 2026 (7.28%). Assumes a fixed rate and that every extra dollar is applied to principal; taxes, insurance and PMI not included. Not financial advice. Not affiliated with or endorsed by Freddie Mac.\n\nDoes your servicer apply extra payments to principal?\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\nAnimation and original sound: The Back of the Envelope.\n\n#mortgage #homeloan #debtfree #mortgagetips #personalfinance",
+    "caption_chars": 1066,
+    "caption_first_125": "What happens if you pay just $100 extra a month on a 30-year mortgage? Worked out on a $400,000 loan at 7.3%, principal and i",
+    "caption_rule": "The first 125 characters are the question, the '$100 extra' and '30-year mortgage' keywords and the inputs ($400,000 at 7.3%), no result: the caption overlays the Reel from frame 1, so every result sits below 'more'.",
+    "hashtags_in_order": [
+      "#mortgage",
+      "#homeloan",
+      "#debtfree",
+      "#mortgagetips",
+      "#personalfinance"
+    ],
+    "hashtag_rule": "Instagram caps a post at 5 hashtags (since Dec 2025).",
+    "alt_text_short": "Chart: just $100 extra a month on a $400,000 mortgage at 7.3% saves about $78,600 of interest.",
+    "alt_text_long": "Animation on a dark scoreboard. The header asks: how much difference does just $100 extra a month make on a 30-year mortgage? A red counter shows about $587,200 of interest on $400,000 at 7.3% over 30 years, more than the loan, at $2,742.29 a month. Adding $100 a month, the bar lands at about 26.7 years: 40 months sooner and about $78,600 less interest. Adding $500 a month, it lands at about 19.1 years: about 11 years sooner and about $245,000 less. Verdict: +$100 a month, each $1 saves about $2.46.",
+    "alt_text_where": "Advanced settings → Accessibility → Alt text, if your app shows it for Reels.",
+    "cover": {
+      "files": {
+        "3x4": "publishing/03c-scoreboard-mortgage-extra-100-cover-3x4.jpg",
+        "9x16": "publishing/03c-scoreboard-mortgage-extra-100-cover-9x16.jpg"
+      },
+      "frame_in_current_render_s": 27.8,
+      "frame_index": 834,
+      "frame_by_content": "The verdict hold: the hero 'INTEREST ≈ $78,600 LESS', the footer '≈ $78,600 ÷ ($100 × 319) ≈ $2.46', the board (JUST THE PAYMENT ≈ $587,200 over its red 30-year bar; +$100 A MONTH lit, ≈ $508,600 and ≈ 26.7 YEARS; +$500 A MONTH ≈ $342,200 and ≈ 19.1 YEARS) and the verdict '+$100 A MONTH: EACH $1 SAVES ≈ $2.46', with the question still in the header. The write-up names this frame as the Instagram cover. On any cut, use the first frame after the last caption clears, before the end card.",
+      "frame_measured": "On the pre-condense 32.3 s render the last caption clears at frame 833 (27.77 s), and from then the picture is still (frame-to-frame mean luma change ≤ 0.002) until the end card cuts in at 29.8 s. Frame 834 (27.80 s) is used.",
+      "crop": "3:4 = 1080×1440, the top 1440 rows (y 0 to 1440) of the 1080×1920 frame: the badge, the question, the hero, the footer, the board and the verdict, with even margins (141 px above the badge, 145 px below the verdict); it drops the empty floor. A centred grid crop (y 240-1680) cuts the badge and the question.",
+      "how_to_set": "In 'Edit cover', pick the verdict frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the question.",
+      "re_export": "ffmpeg -ss 27.8 -i renders/channel/03c-scoreboard-mortgage-extra-100.mp4 -frames:v 1 -vf \"crop=1080:1440:0:0\" -q:v 2 publishing/03c-scoreboard-mortgage-extra-100-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 27.8 -i renders/channel/03c-scoreboard-mortgage-extra-100.mp4 -frames:v 1 -q:v 2 publishing/03c-scoreboard-mortgage-extra-100-cover-9x16.jpg"
+    },
+    "first_comment": "+$100 a month on $400,000 at 7.3%: 40 months sooner and about $78,600 less interest, about $2.46 per extra $1. Does your servicer apply extra payments to principal?",
+    "first_comment_action": "Post it right after publishing and pin it.",
+    "trial_reels": {
+      "recommendation": "Post as a regular Reel, not a Trial.",
+      "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show 471c793:renders/channel/03c-scoreboard-mortgage-extra-100.mp4 > 03c-32.3s.mp4` (sha256 06a5286a…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+    },
+    "settings": {
+      "audio": "Rename the original audio to 'Just $100 extra a month — The Back of the Envelope' if the app allows; it is the score, with no voice.",
+      "share_to_feed": "On",
+      "google_indexing": "Public professional-account posts can appear in Google/Bing since 10 Jul 2025, so the caption is written as a searchable question."
+    },
+    "posting_window": {
+      "when": "Same evening as YouTube, about 15 min after the Short: 21:45-22:45 ET, on a different evening from 03a and 03b.",
+      "why": "October Reels, median plays by posting slot (owner insights, 2026-10-13): weekday 22:00-00:30 ET 5,449 (n = 3, including the two best: 7,302 and 5,449), weekday midday 1,212 (n = 2), Sunday 05:00-08:00 ET 1,087 (n = 2). 06c, posted Mon 03:46 ET, has 1,711 plays with a 40.3% skip rate. Skip rate tracks plays more closely than the hour does: 27.0-27.4% for the top two, 56.9-65.1% for the bottom two. The condense matters more than the hour."
+    },
+    "alt_text_rule": "Paste the short version into Instagram: it is kept at or under 100 characters so it fits the field however short it is, and it writes 'about' instead of '≈' so screen readers read it cleanly. The long version is for anywhere with room (a website embed, a newsletter)."
+  },
+  "research": {
+    "keywords_youtube": [
+      {
+        "keyword": "how to pay off your mortgage early",
+        "est_monthly_searches": 13722,
+        "volume": 61.8,
+        "competition": 35.2,
+        "overall": 63.0,
+        "note": "+306.3% vs its 30-day baseline (3,377): the fastest-rising phrase here",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "pay off mortgage early",
+        "est_monthly_searches": 7158,
+        "volume": 57.5,
+        "competition": 23.9,
+        "overall": 65.0,
+        "note": "-62.9% vs its baseline (19,269)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "mortgage tips",
+        "est_monthly_searches": 6769,
+        "volume": 57.2,
+        "competition": 29.9,
+        "overall": 62.3,
+        "note": "-74.3% vs its baseline (26,313)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "how i plan to pay off my 30 year mortgage faster",
+        "est_monthly_searches": 5410,
+        "volume": 55.7,
+        "competition": 23.0,
+        "overall": 64.2,
+        "note": "",
+        "metrics_as_of": "2026-07-26"
+      },
+      {
+        "keyword": "what one extra payment a year does to a 30-year mortgage",
+        "est_monthly_searches": 5033,
+        "volume": 55.3,
+        "competition": 22.4,
+        "overall": 64.2,
+        "note": "the neighbouring lever (the channel's June Short)",
+        "metrics_as_of": "2026-09-04"
+      },
+      {
+        "keyword": "how to pay 30 year mortgage in 10 years",
+        "est_monthly_searches": 4829,
+        "volume": 55.0,
+        "competition": 37.0,
+        "overall": 58.2,
+        "note": "",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "biweekly mortgage payments",
+        "est_monthly_searches": 4353,
+        "volume": 54.3,
+        "competition": 27.3,
+        "overall": 61.7,
+        "note": "",
+        "metrics_as_of": "2026-06-10"
+      },
+      {
+        "keyword": "extra mortgage payment",
+        "est_monthly_searches": 4274,
+        "volume": 54.2,
+        "competition": 13.6,
+        "overall": 67.1,
+        "note": "seed; competition 13.6, the lowest here",
+        "metrics_as_of": "2026-09-01"
+      },
+      {
+        "keyword": "paying off the mortgage early vs. investing the extra payment",
+        "est_monthly_searches": 3462,
+        "volume": 52.8,
+        "competition": 44.5,
+        "overall": 53.9,
+        "note": "the comment fight to expect; the copy stays out of it (no advice)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "mortgage (topic)",
+        "est_monthly_searches": 158339,
+        "volume": 77.6,
+        "competition": 70.0,
+        "overall": 58.6,
+        "note": "+43.0% vs its 30-day baseline (110,700)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "why did my mortgage payment go up",
+        "est_monthly_searches": 46825,
+        "volume": 69.7,
+        "competition": 23.2,
+        "overall": 72.6,
+        "note": "+626.3% vs its baseline (6,447); escrow and insurance, not this video",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "extra $100 a month on mortgage",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": null,
+        "overall": null,
+        "note": "<750/month; no competition score",
+        "metrics_as_of": null
+      }
+    ],
+    "keywords_source": "vidIQ keyword research (research, matching_terms and questions modes), pulled 2026-10-13. vidIQ refreshes each keyword on its own schedule, so each row carries its snapshot date in metrics_as_of; four rows are older snapshots (2026-06-10 to 2026-09-04).",
+    "same_idea_youtube_shorts": [
+      {
+        "title": "Banks Hate This Mortgage Trick (Saves $100,000)",
+        "channel": "Meres Mortgage",
+        "subscribers": 11300,
+        "views": 42340,
+        "published": "2025-10-21",
+        "note": "34 s; three levers, the result in the title"
+      },
+      {
+        "title": "What Happens If You Pay Extra On Your Mortgage Every Month?",
+        "channel": "Tim Hart Loan Officer",
+        "subscribers": 1870,
+        "views": 25292,
+        "published": "2025-07-24",
+        "note": "1:46; the pick's grammar"
+      },
+      {
+        "title": "What happens to your mortgage when you pay an extra $100 every month?",
+        "channel": "Ace Alfalla",
+        "subscribers": 2610,
+        "views": 17855,
+        "published": "2021-11-11",
+        "note": "28 s; the closest twin to the pick"
+      },
+      {
+        "title": "Unlock Huge Mortgage Savings with Just $100! | Melissa Kerick",
+        "channel": "Melissa Kerick - Sr. Loan Advisor",
+        "subscribers": 275,
+        "views": 2263,
+        "published": "2024-04-23"
+      },
+      {
+        "title": "The \"Secret Mortgage Trick\" to pay off your mortgage faster is a LIE 💡",
+        "channel": "Sophie Matthews",
+        "subscribers": 24,
+        "views": 1233,
+        "published": "2026-09-12",
+        "note": "$300,000 at 6.5%, +$100"
+      },
+      {
+        "title": "Why Does $100 Extra a Month Save So Much on a Mortgage?",
+        "channel": "AutoPayPlus",
+        "subscribers": 41,
+        "views": 1058,
+        "published": "2026-06-05"
+      },
+      {
+        "title": "The $100 Trick That Cuts 3 YEARS Off Your Mortgage",
+        "channel": "Larry Mastropieri",
+        "subscribers": 167,
+        "views": 833,
+        "published": "2025-12-05",
+        "note": "$400,000 at 6.5%"
+      },
+      {
+        "title": "Pay Off Your Mortgage Faster With Just $100 Extra Per Month",
+        "channel": "MoneyInNumbers",
+        "subscribers": 1,
+        "views": 173,
+        "published": "2026-09-19",
+        "note": "$400,000 at 6.8%"
+      },
+      {
+        "title": "$100 Extra a Month Saves $61,698 in Interest #personalfinance #money #mortgage #homeowner",
+        "channel": "The Total Cost",
+        "subscribers": 5,
+        "views": 24,
+        "published": "2026-10-06"
+      },
+      {
+        "title": "Pay $100 Extra on Your Mortgage, Skip 39 Payments",
+        "channel": "Receipt Math",
+        "subscribers": 9320,
+        "views": 16,
+        "published": "2026-09-30",
+        "note": "the closest twin in inputs: $400,000 at Freddie Mac's 7.03% (Sep 24), 39 payments sooner; its title gives the answer"
+      }
+    ],
+    "same_idea_note": "vidIQ YouTube search (under 4 min; by views, and by relevance since Oct 2025): the biggest same-idea Short is Meres Mortgage's (42,340); the question-titled ones are older (Tim Hart 25,292; Ace Alfalla 17,855, 2021). Half the titles since December 2025 put the answer in the title, all under 1,300 views. None of the titles or descriptions read gives a per-dollar rate.",
+    "instagram_tiktok_outliers": [
+      {
+        "handle": "@kirstenodonnell_mortgages_",
+        "platform": "Instagram",
+        "id": "DeJ2GS9FUfG",
+        "on_screen": "YOUR BANK HOPES YOU NEVER LEARN THIS",
+        "views": "2.4M (856.2x the account median of 2.8K)",
+        "note": "faceless text on screen over a static video, music only: extra principal payments on a 30-year mortgage"
+      },
+      {
+        "handle": "@bri_thetxmlo",
+        "platform": "Instagram",
+        "id": "DcrQaT-tVyQ",
+        "on_screen": "Your bank hopes you never learn this",
+        "views": "922.5K (4231.8x the account median of 218)",
+        "note": "the same faceless template; caption opens 'A 30-year mortgage doesn't have to be 30 years...'"
+      },
+      {
+        "handle": "@tommysellsit",
+        "platform": "Instagram",
+        "id": "Dcejdgdjaj9",
+        "on_screen": "Mortgage Tips. Most people think a 30-year mortgage means you're locked in for 30 years.",
+        "views": "1.2M (139.4x the account median of 8.7K)",
+        "note": "faceless text over a house exterior"
+      },
+      {
+        "handle": "@moneymovesjake",
+        "platform": "TikTok",
+        "id": "7662537428804128030",
+        "on_screen": "Your Bank Doesn't Want YOU To Know THIS!",
+        "views": "909.9K (2171.6x)",
+        "note": "7 s, text over b-roll"
+      },
+      {
+        "handle": "@buynotrentguy",
+        "platform": "TikTok",
+        "id": "7661690063822081294",
+        "on_screen": "Paying your mortgage off faster",
+        "views": "932.9K (377.6x)",
+        "note": "talking head; a round-down lever"
+      }
+    ],
+    "own_channel_youtube_october_shorts": [
+      {
+        "id": "LjHDFzVxRyM",
+        "title": "Can You Find the Missing Dollar?",
+        "posted_et": "Sun 07:04",
+        "views": 1254
+      },
+      {
+        "id": "hJBvmGA6sZ0",
+        "title": "You Can Lean on $1 Million. Not on $1 Billion.",
+        "posted_et": "Thu 00:25",
+        "views": 1221
+      },
+      {
+        "id": "XVUeMcTg9OQ",
+        "title": "Your Interest Has a Speed Limit",
+        "posted_et": "Sun 05:49",
+        "views": 1141
+      },
+      {
+        "id": "fbpdKf4Wy8c",
+        "title": "What If You Bought Starbucks Stock Instead of a $4 Latte Every Day? (06c)",
+        "posted_et": "Mon 03:45",
+        "views": 760
+      },
+      {
+        "id": "8__HTUa2PoU",
+        "title": "Pay the Minimum on $5,000? 238 Months.",
+        "posted_et": "Mon 22:09",
+        "views": 642
+      },
+      {
+        "id": "FW_oxA3kbsM",
+        "title": "A $2 Lottery Ticket Was Worth $6.98. Until the Fine Print.",
+        "posted_et": "Wed 12:03",
+        "views": 348
+      },
+      {
+        "id": "mXbKY_R63h4",
+        "title": "You Can Carry $1 Million. Not in Pennies.",
+        "posted_et": "Thu 13:38",
+        "views": 177
+      },
+      {
+        "id": "EqFQCJheCMU",
+        "title": "Start Investing 10 Years Late? You Get Half.",
+        "posted_et": "Tue 22:27",
+        "views": 161
+      },
+      {
+        "id": "krfZEHhb0xU",
+        "title": "What If You Bought Netflix Stock Instead of Paying for Netflix? (06b)",
+        "posted_et": "Mon 12:14",
+        "views": 61
+      }
+    ],
+    "own_channel_instagram_october_reels": [
+      {
+        "shortcode": "DeIvYk7I4Qr",
+        "topic": "$5,000 on the minimum",
+        "posted_et": "Mon 22:46",
+        "plays": 7302,
+        "skip_rate_pct": 27.4,
+        "avg_watched_pct": 56.5
+      },
+      {
+        "shortcode": "DeOEthJJ1TG",
+        "topic": "$1M stack vs Burj Khalifa",
+        "posted_et": "Thu 00:28",
+        "plays": 5449,
+        "skip_rate_pct": 27.0,
+        "avg_watched_pct": 83.1
+      },
+      {
+        "shortcode": "DeWgFZRoR_S",
+        "topic": "Missing dollar",
+        "posted_et": "Sun 07:05",
+        "plays": 1997,
+        "skip_rate_pct": 32.0,
+        "avg_watched_pct": 81.3
+      },
+      {
+        "shortcode": "DeMvZv9IqRw",
+        "topic": "Powerball $6.98",
+        "posted_et": "Wed 12:05",
+        "plays": 1825,
+        "skip_rate_pct": 58.7,
+        "avg_watched_pct": 57.9
+      },
+      {
+        "shortcode": "DeYuqT4pjVC",
+        "topic": "06c latte vs Starbucks stock",
+        "posted_et": "Mon 03:46",
+        "plays": 1711,
+        "skip_rate_pct": 40.3,
+        "avg_watched_pct": 69.1
+      },
+      {
+        "shortcode": "DePe11HIHwn",
+        "topic": "$1M in pennies",
+        "posted_et": "Thu 13:37",
+        "plays": 598,
+        "skip_rate_pct": 42.0,
+        "avg_watched_pct": 66.7
+      },
+      {
+        "shortcode": "DeLSd9io8UK",
+        "topic": "10 years late",
+        "posted_et": "Tue 22:30",
+        "plays": 219,
+        "skip_rate_pct": 65.1,
+        "avg_watched_pct": 30.6
+      },
+      {
+        "shortcode": "DeEW2ZMIiYd",
+        "topic": "Speed limit (e)",
+        "posted_et": "Sun 05:54",
+        "plays": 177,
+        "skip_rate_pct": 56.9,
+        "avg_watched_pct": 31.2
+      }
+    ],
+    "channel_stats": {
+      "youtube_subscribers": 53,
+      "youtube_views": 10221,
+      "youtube_videos": 41,
+      "youtube_30d": "+27 subscribers, +5,127 views, 11 videos",
+      "instagram_followers": 8,
+      "instagram_30d_views": 20518
+    },
+    "limits": [
+      "@envelopemath's YouTube Analytics (audience hours, geography) were not read here; the 06b and 06c sheets found vidIQ's YouTube authorization is a different channel. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
+      "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and on the write-up's and the outliers' own tags.",
+      "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
+      "The write-up's sources rest on search-result text: its egress proxy blocked the primary pages. Before posting, open Freddie Mac's PMMS for Oct 1, 2026 and confirm 7.28% (the write-up's open item 1).",
+      "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file."
+    ],
+    "own_channel_same_topic": [
+      {
+        "id": "hW38hkzo_vY",
+        "title": "Your $400,000 house costs you $958,000",
+        "published": "2026-06-04",
+        "views": 364,
+        "note": "the same $400,000, 30-year loan; one extra payment a year at June's rate ('6 years sooner'); this Short's related video"
+      }
+    ],
+    "titles_scored": "8 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored.",
+    "vidiq_credits": "85 credits for this teaser (6 keyword queries, 2 YouTube searches, 1 Instagram/TikTok outlier search, 8 title scores; 5 each), plus 15 shared across 03a-03c for the channel's own stats and its older Shorts, and 10 for the re-query (1 title score, 1 keyword). The adversarial check used 35 more across 03a-03c (balance 4,030 → 3,995): 3 title scores, 6 keyword re-queries and 1 lookup of 5 of the channel's own videos."
+  },
+  "checked": {
+    "date": "2026-10-13",
+    "by": "adversarial check of this sheet",
+    "math": "python3 teasers/v2/checks/03-what-difference.py: 528 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/03-what-difference.py; the 03c amortisation re-run payment by payment in MATH_RELATIONS (payment, 360/320/229 payments, every interest total, the $31,900 put in); COPY_RULES keep every rounded figure 'about' or '≈', each saving beside its extra payment and the principal condition in the copy; re-run at the adversarial check with the same result",
+    "limits": {
+      "youtube_title_chars": 70,
+      "youtube_description_chars": 1294,
+      "youtube_description_utf8_bytes": 1313,
+      "youtube_tags_chars_as_youtube_counts": 350,
+      "youtube_hashtags": 3,
+      "instagram_caption_chars": 1066,
+      "instagram_hashtags": 5,
+      "instagram_alt_text_short_chars": 94
+    },
+    "vidiq_requeried": "pulled 2026-10-13: how to pay off your mortgage early 13,722 / 35.2 (+306.3%); extra mortgage payment 4,274 / 13.6; mortgage 158,339 (+43.0%); title scores 98 (pick), 94 (write-up title), 97 (best hashtag form); channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,518 views in 30 days. Re-queried the same day after the build: the pick's title score 98 and 'extra mortgage payment' 4,274 / 13.6. Re-queried at the adversarial check: the pick's title score 98; 'extra mortgage payment' 4,274 / 13.6; 'how to pay off your mortgage early' 13,722 / 35.2 (+306.3%); the related video hW38hkzo_vY 364 views ($958,036 over 30 years, one extra payment a year: 6 years sooner, in its description). All match."
+  }
+}

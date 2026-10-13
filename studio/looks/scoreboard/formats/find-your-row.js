@@ -37,7 +37,13 @@
 //                                              (stacked strip only)
 //   strip:     'auto' | 'stack' | 'swap'       formula + pick label stacked or sharing one slot (auto: by room)
 //   dim:       0.5                             opacity of the other rows while a pick lands (1 = no dimming)
-//   dimRest:   0.85                            what they recover to 1.6 s later
+//   dimRest:   0.85                            what they recover to 1.6 s later (lookOpts.focus)
+//   focus:     1.6                             seconds the other rows stay dimmed after a pick before they recover
+//                                              (over 0.8 s, to dimRest). Opt-in, 0.25-4; absent = 1.6, today's
+//                                              timing (byte-identical frames and cues). A short focus (the condensed
+//                                              cuts, 2026-10-13: 02b 0.25, 02c 0.3) makes each pick a brief spotlight:
+//                                              the board dims as the row lights and eases back within about 1.1 s,
+//                                              so a board held between picks keeps moving instead of sitting still
 //   pointer:   true                            the green pointer on the left margin
 //   verdictRow: 0                              at verdict.t, row 0 is picked too (the same meaning as in the other
 //                                              kits, so a port keeps it): the pointer glides to it, the row lights,
@@ -468,14 +474,16 @@ export default function findYourRow(spec, ctx) {
   const duration = durationOf(spec, lastBeat, d.hold ?? 4.0)
   const dimTo = clamp(lo.dim ?? 0.5, 0.3, 1)
   const dimRest = clamp(lo.dimRest ?? 0.85, dimTo, 1)
+  // lookOpts.focus (opt-in; absent = FOCUS, today's 1.6 s): how long the other rows stay dimmed before they recover
+  const focus = lo.focus != null && Number.isFinite(+lo.focus) ? clamp(+lo.focus, 0.25, 4) : FOCUS
 
-  // opacity of the unpicked rows under pick j at time t (dims as the pick lands, recovers after FOCUS)
+  // opacity of the unpicked rows under pick j at time t (dims as the pick lands, recovers after `focus`)
   const levelUnder = (j, t) => {
     const pj = picks[j]
     const start = j === 0 ? 1 : levelUnder(j - 1, pj.t)
     const a = pj.t <= 0.001 ? 1 : ease.out(prog(t, pj.t, T_LIT))
     const lv = lerp(start, dimTo, a)
-    return t <= pj.t + FOCUS ? lv : lerp(dimTo, dimRest, ease.inOut(prog(t, pj.t + FOCUS, 0.8)))
+    return t <= pj.t + focus ? lv : lerp(dimTo, dimRest, ease.inOut(prog(t, pj.t + focus, 0.8)))
   }
 
   // the late verdict's slot: the strip plus the caption band (the captions are over by then)

@@ -1,0 +1,585 @@
+{
+  "id": "03a-becker-rig-car-loan-weekly",
+  "teaser": "03a Becker Rig, what-difference: \"What difference do weekly and biweekly payments really make on a $44,000 car loan?\"",
+  "prepared": "2026-10-13",
+  "for_video": {
+    "current_render": "renders/channel/03a-becker-rig-car-loan-weekly.mp4",
+    "current_duration_s": 39.7,
+    "current_sha256": "4b1c8e0702aa891c4e46c2387f1244bfba022d316c645b0ea0667b4770d4559b",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the pre-condense round-2 cut. The ship step re-runs the build with --covers on the condensed file.",
+    "cut": {
+      "name": "round-2 cut (pre-condense)",
+      "spec": "studio/specs/03a-becker-rig-car-loan-weekly.json",
+      "body_s": 37.2,
+      "card_s": 2.5,
+      "shipped": null,
+      "git": "471c793",
+      "status": "the 03 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay). The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."
+    }
+  },
+  "facts": {
+    "source": "teasers/v2/03-what-difference.md section 03a; teasers/v2/checks/03-what-difference.py: 528 checks, 0 failed on studio/specs/ (2026-10-13)",
+    "stake": "$44,000 new-car loan at 7% APR over 72 months: a round loan just under Edmunds' Q3 2026 averages ($44,664 at 7.0%; Q2 $44,156); '≈ the average', not 'the average'",
+    "model": "simple interest charged daily (APR ÷ 365), rounded to the cent each period; each payment applied the day it is paid; a month is 365/12 days; the last payment is whatever is left",
+    "payments": "monthly $750.16 (the 72-month payment); biweekly $375.08 (÷ 2); weekly $187.54 (÷ 4); round up $200 a week ($187.54 + $12.46)",
+    "monthly": "72 payments; interest $10,011.20 ≈ $10,000",
+    "biweekly": "142 payments × 14 days = 65.36 months ≈ 65; interest $8,916.74 ≈ $8,900; ≈ $1,100 less (shown 10,000 − 8,900)",
+    "weekly": "282 payments × 7 days = 64.90 months ≈ 65; interest $8,881.25 ≈ $8,900; $35.49 ≈ $35 less than biweekly",
+    "lever": "$375.08 × 26 = $187.54 × 52 = 13 × $750.16 = $9,752.08 a year: both are 13 monthly payments a year, not 12",
+    "round_up": "261 payments × 7 days = 60.07 months ≈ 60; interest $8,184.40 ≈ $8,200; ≈ $1,800 less (shown 10,000 − 8,200); 72 − 60 ≈ 12 months ≈ 1 year sooner (0.99)",
+    "verdict": "Round up to $200 a week: ≈ 1 year sooner (caption line: 'Weekly barely beats biweekly. Rounding up is the real trick!')",
+    "sensitivity": "write-up only, not in the copy: at 6%, 8% and Edmunds' exact $44,664, weekly beats biweekly by under $50 and rounding up takes 0.90-1.13 years off"
+  },
+  "youtube": {
+    "titles_ranked": [
+      {
+        "rank": 1,
+        "title": "What Difference Do Weekly Car Payments Really Make on a $44,000 Car Loan?",
+        "vidiq_score": 93,
+        "chars": 73,
+        "note": "PICK. Tied top score of the 9 scored. The write-up's own title (H48's grammar and its 'really' doubt cue) with 'Car Loan' added, the biggest exact phrase in the cluster. No hashtags in the title; the description's first three show above it."
+      },
+      {
+        "rank": 2,
+        "title": "Weekly vs Biweekly Car Payments on a $44,000 Loan: What Difference Does It Make?",
+        "vidiq_score": 93,
+        "chars": 80,
+        "note": "The same score, and it names both schedules, but its 'X vs Y' opening is the shape the write-up designs against (FinCalC's 'which is better?' bucket, median 13,322)."
+      },
+      {
+        "rank": 3,
+        "title": "Do Biweekly Car Payments Really Pay Off Your Car Loan Faster?",
+        "vidiq_score": 91,
+        "chars": 61,
+        "note": "A yes/no question, 2 points lower; the video's answer is 'yes, a little', and its real lever (rounding up) sits outside the question."
+      }
+    ],
+    "titles_also_scored": [
+      {
+        "title": "What Difference Do Weekly Car Payments Really Make on $44,000?",
+        "vidiq_score": 92,
+        "chars": 62,
+        "note": "the write-up's title"
+      },
+      {
+        "title": "Weekly vs Biweekly Car Payments on a $44,000 Car Loan: What Difference Does It Make?",
+        "vidiq_score": 93,
+        "chars": 84,
+        "note": "84 chars, no gain over option 2"
+      },
+      {
+        "title": "Weekly vs Biweekly vs Monthly Car Payments on $44,000: What Difference Does It Make?",
+        "vidiq_score": 92,
+        "chars": 84,
+        "note": ""
+      },
+      {
+        "title": "Weekly vs Biweekly Car Payments: What Difference Do They Really Make?",
+        "vidiq_score": 84,
+        "chars": 69,
+        "note": "without the stake: 8-9 points lower"
+      },
+      {
+        "title": "What Difference Do Weekly and Biweekly Car Payments Really Make?",
+        "vidiq_score": 84,
+        "chars": 64,
+        "note": "without the stake"
+      },
+      {
+        "title": "Weekly vs Biweekly Car Payments: What Difference Do They Really Make? #carloan #biweekly #debtpayoff",
+        "vidiq_score": 84,
+        "chars": 100,
+        "note": "the house 3-hashtag form"
+      }
+    ],
+    "title_pick": "What Difference Do Weekly Car Payments Really Make on a $44,000 Car Loan?",
+    "title_pick_chars": 73,
+    "description": "What difference do weekly car payments really make on a $44,000 car loan? Weekly beats biweekly by only about $35: both add up to 13 monthly payments a year, not 12. Rounding the weekly payment up to $200, about $12 more a week, pays it off about a year sooner than paying monthly and saves about $1,800 of interest.\n\nThe math, shown ($44,000 at 7% APR over 72 months):\n• Monthly: $750.16 a month for 72 months. About $10,000 of interest.\n• Biweekly: $375.08 × 26 = $9,752.08 a year. About 65 months and about $8,900 of interest: about $1,100 less.\n• Weekly: $187.54 × 52 = $9,752.08 a year, the same. About 65 months and about $8,900 too: only about $35 better than biweekly.\n• Why: 13 × $750.16 = $9,752.08. Both are 13 monthly payments a year, not 12.\n• Round up: $187.54 + $12.46 = $200 a week. About 60 months and about $8,200 of interest: about $1,800 less than monthly.\n• 72 − 60 ≈ 12 months: about a year sooner than monthly.\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\n\nAnimation and original sound: The Back of the Envelope. $44,000 at 7% APR over 72 months ≈ the average new-car loan (Edmunds, Q3 2026: $44,664 at 7.0%). Simple interest charged daily; assumes each payment is applied the day it lands. Not financial advice. Not affiliated with or endorsed by Edmunds.\n#carloan #biweekly #debtpayoff",
+    "description_chars": 1343,
+    "hashtags_in_order": [
+      "#carloan",
+      "#biweekly",
+      "#debtpayoff"
+    ],
+    "hashtag_rules": "Title hashtags show as links in the title; with none in the title, the first 3 description hashtags show above it. Over 60 hashtags and YouTube ignores all of them. #Shorts is not needed (vertical, under 3 min).",
+    "tags": [
+      "biweekly car payments",
+      "weekly car payments",
+      "car loan",
+      "how to pay off car loan",
+      "payoff car loan early",
+      "how to reduce car loan interest",
+      "car loan interest",
+      "car loan explained",
+      "biweekly payments",
+      "car payment",
+      "auto loan",
+      "daily simple interest",
+      "pay off debt",
+      "debt payoff",
+      "money math",
+      "math animation",
+      "the back of the envelope",
+      "envelope math"
+    ],
+    "tags_chars_as_youtube_counts": 353,
+    "pinned_comment": "Does your lender apply a weekly payment the day it lands, or hold it until the due date? These numbers assume the day it lands. Drop your loan amount, APR and months and we'll run yours next.\n\nThe working: interest $10,011.20 paying monthly (72 payments), $8,916.74 biweekly (142), $8,881.25 weekly (282; $35.49 less than biweekly) and $8,184.40 at $200 a week (261 payments, about 60 months).",
+    "related_video": {
+      "pick": {
+        "id": "8__HTUa2PoU",
+        "title": "Pay the Minimum on $5,000? 238 Months.",
+        "url": "https://www.youtube.com/shorts/8__HTUa2PoU",
+        "why": "Same viewer, same idea from the other side: what a payment schedule does to a debt. It is October's debt Short (642 views), and its Instagram twin is the channel's best Reel (7,302 plays, 27.4% skip). (June's 'Why the minimum payment keeps you in debt for 19 years' has more views, 1,230, but is an older, narrated Short.)"
+      },
+      "swap_when_live": "03c (just $100 extra on a mortgage) or 03b (card minimum), the same what-difference series, once published. Then point theirs at this Short.",
+      "end_screen": "Shorts have no end screens or cards. The Related video link is the Shorts equivalent."
+    },
+    "thumbnail_frame": "In the YouTube app, pick the finished-board frame (the same content as the IG cover).",
+    "settings": {
+      "category": "Education",
+      "audience": "Not made for kids",
+      "altered_or_synthetic_content": "No (animated chart, not realistic footage)",
+      "remixing": "Allow",
+      "captions": "None needed (no narration; all text is on screen)"
+    },
+    "posting_window": {
+      "when": "First free Tue-Thu evening after the condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+      "spacing": "Keep it at least 6 h from any other upload on the channel, and on a different evening from 03b and 03c. Suggested order within the series: 03c, then 03a, then 03b.",
+      "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,198 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2); 06c (Mon 03:45 ET) has 760 and 06b (Mon 12:14 ET) 61, too young to compare. The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. Search demand: 'pay off debt' runs +66.2% over its 30-day baseline, while 'car loan' is down 30.3%. Edmunds' Q3 release (October 2026) is the news peg for the $44,000."
+    },
+    "description_utf8_bytes": 1366
+  },
+  "instagram": {
+    "caption": "What difference do weekly and biweekly car payments really make on a $44,000 car loan at 7% over 72 months? Worked out, payment by payment.\n\nWeekly barely beats biweekly. Rounding up is the real trick.\n\nThe math, shown:\n• Monthly: $750.16 a month. 72 months, about $10,000 of interest.\n• Biweekly: $375.08 × 26 = $9,752.08 a year. About 65 months, about $1,100 less interest.\n• Weekly: $187.54 × 52 = $9,752.08 a year, the same 13 monthly payments. About 65 months too, only about $35 better than biweekly.\n• Round up to $200 a week ($12.46 more): about 60 months. Against monthly: about $1,800 less interest and about a year sooner.\n\n$44,000 at 7% ≈ the average new-car loan (Edmunds, Q3 2026: $44,664 at 7.0%). Simple interest charged daily; assumes each payment is applied the day it lands. Not financial advice. Not affiliated with or endorsed by Edmunds.\n\nDoes your lender apply a weekly payment the day it lands?\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\nAnimation and original sound: The Back of the Envelope.\n\n#carloan #biweekly #debtpayoff #micropayments #personalfinance",
+    "caption_chars": 1116,
+    "caption_first_125": "What difference do weekly and biweekly car payments really make on a $44,000 car loan at 7% over 72 months? Worked out, payme",
+    "caption_rule": "The first 125 characters are the question, the 'weekly', 'biweekly' and 'car loan' keywords and the inputs ($44,000 at 7% over 72 months), no result: the caption overlays the Reel from frame 1, so every result sits below 'more'.",
+    "hashtags_in_order": [
+      "#carloan",
+      "#biweekly",
+      "#debtpayoff",
+      "#micropayments",
+      "#personalfinance"
+    ],
+    "hashtag_rule": "Instagram caps a post at 5 hashtags (since Dec 2025).",
+    "alt_text_short": "Chart: a $44,000 car loan paid 4 ways; rounding up to $200 a week beats monthly by about a year.",
+    "alt_text_long": "Animation on a white background. The header asks: what difference do weekly and biweekly payments really make on a $44,000 car loan? 4 lanes, each a stick figure behind a crate on a time lane. Monthly ($750.16 a month) has already run: 72 months and about $10,000 of interest. Biweekly ($375.08) and Weekly ($187.54) both land at about 65 months and about $8,900: both add up to 13 monthly payments a year, so weekly is only about $35 better. Round up ($200 a week) lands at about 60 months and about $8,200 of interest, about $1,800 less than Monthly, and a banner shows about 12 months saved against Monthly's 72. Verdict: round up to $200 a week, about 1 year sooner.",
+    "alt_text_where": "Advanced settings → Accessibility → Alt text, if your app shows it for Reels.",
+    "cover": {
+      "files": {
+        "3x4": "publishing/03a-becker-rig-car-loan-weekly-cover-3x4.jpg",
+        "9x16": "publishing/03a-becker-rig-car-loan-weekly-cover-9x16.jpg"
+      },
+      "frame_in_current_render_s": 35.0,
+      "frame_index": 1050,
+      "frame_by_content": "The finished board: all 4 lanes run (Monthly 72 and ≈ $10,000; Biweekly and Weekly ≈ 65 and ≈ $8,900; Round up ≈ 60 with the gold plate on ≈ $8,200 and the '≈ 12 mo' banner on its flag), the winner with his arms up, the working slot '= 72 − 60 ≈ 12 months / ≈ 1 year sooner' and the verdict 'Round up to $200 a week: ≈ 1 year sooner', under the question. The write-up names the finished board as the Instagram cover. On any cut, use a frame after the last read settles and before the end card.",
+      "frame_measured": "On the pre-condense 39.7 s render the last read settles by frame 1040 (34.67 s); from then only the winner's idle wave moves (frame-to-frame mean luma change ≤ 0.014) until the end card cuts in at 37.2 s. Frame 1050 (35.00 s) is used, a still point of the wave (0.002).",
+      "crop": "3:4 = 1080×1440 from y 72 to 1512 of the 1080×1920 frame: the badge, the question, the footer, the working slot, the 4 lanes and the verdict, with even margins (40 px above the badge and below the verdict); it drops the empty floor. A centred grid crop (y 240-1680) cuts the badge and the question.",
+      "how_to_set": "In 'Edit cover', pick the finished-board frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the question.",
+      "re_export": "ffmpeg -ss 35.0 -i renders/channel/03a-becker-rig-car-loan-weekly.mp4 -frames:v 1 -vf \"crop=1080:1440:0:72\" -q:v 2 publishing/03a-becker-rig-car-loan-weekly-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 35.0 -i renders/channel/03a-becker-rig-car-loan-weekly.mp4 -frames:v 1 -q:v 2 publishing/03a-becker-rig-car-loan-weekly-cover-9x16.jpg"
+    },
+    "first_comment": "Weekly beats biweekly by only about $35: both are 13 monthly payments a year. Rounding up to $200 a week ($12.46 more) saves about $1,800 and about a year against paying monthly. Does your lender apply weekly payments the day they land?",
+    "first_comment_action": "Post it right after publishing and pin it.",
+    "trial_reels": {
+      "recommendation": "Post as a regular Reel, not a Trial.",
+      "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show 471c793:renders/channel/03a-becker-rig-car-loan-weekly.mp4 > 03a-39.7s.mp4` (sha256 4b1c8e07…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+    },
+    "settings": {
+      "audio": "Rename the original audio to 'Weekly vs biweekly car loan — The Back of the Envelope' if the app allows; it is the score, with no voice.",
+      "share_to_feed": "On",
+      "google_indexing": "Public professional-account posts can appear in Google/Bing since 10 Jul 2025, so the caption is written as a searchable question."
+    },
+    "posting_window": {
+      "when": "Same evening as YouTube, about 15 min after the Short: 21:45-22:45 ET, on a different evening from 03b and 03c.",
+      "why": "October Reels, median plays by posting slot (owner insights, 2026-10-13): weekday 22:00-00:30 ET 5,449 (n = 3, including the two best: 7,302 and 5,449), weekday midday 1,212 (n = 2), Sunday 05:00-08:00 ET 1,087 (n = 2). 06c, posted Mon 03:46 ET, has 1,711 plays with a 40.3% skip rate. Skip rate tracks plays more closely than the hour does: 27.0-27.4% for the top two, 56.9-65.1% for the bottom two. The condense matters more than the hour."
+    },
+    "alt_text_rule": "Paste the short version into Instagram: it is kept at or under 100 characters so it fits the field however short it is, and it writes 'about' instead of '≈' so screen readers read it cleanly. The long version is for anywhere with room (a website embed, a newsletter)."
+  },
+  "research": {
+    "keywords_youtube": [
+      {
+        "keyword": "car loan",
+        "est_monthly_searches": 18346,
+        "volume": 63.6,
+        "competition": 61.0,
+        "overall": 53.8,
+        "note": "seed; -30.3% vs its 30-day baseline (26,309); the biggest exact phrase, crowded",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "car payment trap",
+        "est_monthly_searches": 15474,
+        "volume": 62.5,
+        "competition": 36.1,
+        "overall": 63.1,
+        "note": "+239.1% vs its baseline (4,563); long loans and investing the payment, not this question",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "car loan explained",
+        "est_monthly_searches": 9373,
+        "volume": 59.3,
+        "competition": 30.7,
+        "overall": 63.3,
+        "note": "",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "payoff car loan early",
+        "est_monthly_searches": 5422,
+        "volume": 55.7,
+        "competition": 43.2,
+        "overall": 56.2,
+        "note": "",
+        "metrics_as_of": "2026-02-25"
+      },
+      {
+        "keyword": "how to way to pay off your car loan in half the time!",
+        "est_monthly_searches": 5317,
+        "volume": 55.6,
+        "competition": 30.0,
+        "overall": 61.4,
+        "note": "a hack title indexed as a query",
+        "metrics_as_of": "2026-06-09"
+      },
+      {
+        "keyword": "should i pay off car loan early",
+        "est_monthly_searches": 5252,
+        "volume": 55.5,
+        "competition": 28.4,
+        "overall": 62.0,
+        "note": "advice intent: not in the tags",
+        "metrics_as_of": "2026-05-04"
+      },
+      {
+        "keyword": "how to reduce car loan interest",
+        "est_monthly_searches": 5249,
+        "volume": 55.5,
+        "competition": 26.3,
+        "overall": 62.8,
+        "note": "",
+        "metrics_as_of": "2026-05-23"
+      },
+      {
+        "keyword": "how to pay off car loan",
+        "est_monthly_searches": 5207,
+        "volume": 55.5,
+        "competition": 32.5,
+        "overall": 60.3,
+        "note": "",
+        "metrics_as_of": "2026-08-14"
+      },
+      {
+        "keyword": "biweekly mortgage payments",
+        "est_monthly_searches": 4353,
+        "volume": 54.3,
+        "competition": 27.3,
+        "overall": 61.7,
+        "note": "the same 13-payment idea, on mortgages",
+        "metrics_as_of": "2026-06-10"
+      },
+      {
+        "keyword": "pay off debt",
+        "est_monthly_searches": 32458,
+        "volume": 67.3,
+        "competition": 44.2,
+        "overall": 62.7,
+        "note": "+66.2% vs its baseline (19,529)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "biweekly car payments",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": 20.2,
+        "overall": 31.9,
+        "note": "<750/month; names the video exactly, so it stays in the tags",
+        "metrics_as_of": null
+      },
+      {
+        "keyword": "pay off car loan",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": 37.5,
+        "overall": 25.0,
+        "note": "<750/month as typed; 'how to pay off car loan' carries the demand",
+        "metrics_as_of": null
+      }
+    ],
+    "keywords_source": "vidIQ keyword research (research, matching_terms and questions modes), pulled 2026-10-13. vidIQ refreshes each keyword on its own schedule, so each row carries its snapshot date in metrics_as_of; six rows are older snapshots (2026-02-25 to 2026-08-14).",
+    "same_idea_youtube_shorts": [
+      {
+        "title": "Never Make A Car Payment Without Doing This 🤫🚘 #carshopping #cars #personalfinance #money",
+        "channel": "Garner Ted",
+        "subscribers": 101000,
+        "views": 252915,
+        "published": "2024-09-11",
+        "note": "47 s; a car-loan payment hack that 'gives you a extra payment' (its description), and a title that hides the answer"
+      },
+      {
+        "title": "A Biweekly Mortgage Payment Is Not Magic",
+        "channel": "The Ramsey Show Highlights",
+        "subscribers": 4600000,
+        "views": 223682,
+        "published": "2026-08-07",
+        "note": "1:27; the same hack, for mortgages (title only read)"
+      },
+      {
+        "title": "Bi-Weekly Payments 101",
+        "channel": "VOB TV",
+        "subscribers": 518,
+        "views": 106464,
+        "published": "2015-10-27",
+        "note": "2:56; a dealer explainer"
+      },
+      {
+        "title": "Stitch: Bi-weekly Payments Can Save You a TON on your Loan Balance for Cars or Mortgages",
+        "channel": "Humphrey Yang",
+        "subscribers": 2090000,
+        "views": 36997,
+        "published": "2024-07-28"
+      },
+      {
+        "title": "Is it better to pay car loan twice a month?",
+        "channel": "People·WHYS",
+        "subscribers": 42500,
+        "views": 7282,
+        "published": "2022-08-25"
+      },
+      {
+        "title": "💰 Monthly vs. Bi-Weekly Car Payments: Which Is Better for You?",
+        "channel": "Gaby Rincon",
+        "subscribers": 719,
+        "views": 3390,
+        "published": "2025-04-04",
+        "note": "the neutral 'which is better?' frame the write-up designs against"
+      },
+      {
+        "title": "Hack Your Car Payments Round Up or Go Bi-Weekly",
+        "channel": "Regina The Queen of Car Loans",
+        "subscribers": 4700,
+        "views": 1149,
+        "published": "2026-01-03",
+        "note": "26 s; names both levers in its title"
+      },
+      {
+        "title": "Slash your car loan without a refi: bi-weekly payments, spare-change round-up straight to principal!",
+        "channel": "FinanciallyFitPodcast",
+        "subscribers": 6,
+        "views": 995,
+        "published": "2025-08-02"
+      },
+      {
+        "title": "Instead of paying once a month, switch to biweekly car payments",
+        "channel": "BillyTheCarKid",
+        "subscribers": 2770,
+        "views": 747,
+        "published": "2025-09-02",
+        "note": "3:01"
+      }
+    ],
+    "same_idea_note": "vidIQ YouTube search (under 4 min; by views and by relevance): the biweekly car-payment hack has been posted since 2015 (VOB TV 106,464; Garner Ted 252,915 in 2024); no title or description read here compares weekly with biweekly on one loan or sizes the gap. Regina's Jan 2026 Short names both levers in its title.",
+    "instagram_tiktok_outliers": [
+      {
+        "handle": "@thedebtfreedomproject",
+        "platform": "TikTok",
+        "id": "7668828789551418637",
+        "on_screen": "What difference does monthly, biweekly, and weekly payments make on paying off a car loan?",
+        "caption": "Look what a difference rounding makes! #debt #micropayments #debtpayoffjourney #carloan #debtpayoff",
+        "views": "1.9M (902.5x the account median of 2.1K)",
+        "note": "the write-up's H48 model: a CPA with a spreadsheet; its caption names the lever (rounding) with no number"
+      },
+      {
+        "handle": "@julian_miles85",
+        "platform": "TikTok",
+        "id": "7664639380874677517",
+        "on_screen": "Fastest way to pay off Car Loans💎",
+        "views": "1.1M (1214.1x the account median of 906)",
+        "note": "weekly instead of monthly payments, talking head; his 'Car Interest Math Explained' (7665432807170166030) has 211.3K (233.2x)"
+      },
+      {
+        "handle": "@maplelens2",
+        "platform": "TikTok",
+        "id": "7679183987813764382",
+        "on_screen": "How Are Americans Affording $100,000 Trucks On Average Salaries?",
+        "views": "348.8K (497.9x)",
+        "note": "an animated explainer of long car loans"
+      },
+      {
+        "handle": "@sarahsellsrides",
+        "platform": "Instagram",
+        "id": "DctalRsu84F",
+        "on_screen": "What payments will realistically look like on a $40,000 car in 2026",
+        "views": "214.3K (133.8x the account median of 1.6K)",
+        "note": "a calculator walk-through on a loan the size of this one"
+      }
+    ],
+    "own_channel_youtube_october_shorts": [
+      {
+        "id": "LjHDFzVxRyM",
+        "title": "Can You Find the Missing Dollar?",
+        "posted_et": "Sun 07:04",
+        "views": 1254
+      },
+      {
+        "id": "hJBvmGA6sZ0",
+        "title": "You Can Lean on $1 Million. Not on $1 Billion.",
+        "posted_et": "Thu 00:25",
+        "views": 1221
+      },
+      {
+        "id": "XVUeMcTg9OQ",
+        "title": "Your Interest Has a Speed Limit",
+        "posted_et": "Sun 05:49",
+        "views": 1141
+      },
+      {
+        "id": "fbpdKf4Wy8c",
+        "title": "What If You Bought Starbucks Stock Instead of a $4 Latte Every Day? (06c)",
+        "posted_et": "Mon 03:45",
+        "views": 760
+      },
+      {
+        "id": "8__HTUa2PoU",
+        "title": "Pay the Minimum on $5,000? 238 Months.",
+        "posted_et": "Mon 22:09",
+        "views": 642
+      },
+      {
+        "id": "FW_oxA3kbsM",
+        "title": "A $2 Lottery Ticket Was Worth $6.98. Until the Fine Print.",
+        "posted_et": "Wed 12:03",
+        "views": 348
+      },
+      {
+        "id": "mXbKY_R63h4",
+        "title": "You Can Carry $1 Million. Not in Pennies.",
+        "posted_et": "Thu 13:38",
+        "views": 177
+      },
+      {
+        "id": "EqFQCJheCMU",
+        "title": "Start Investing 10 Years Late? You Get Half.",
+        "posted_et": "Tue 22:27",
+        "views": 161
+      },
+      {
+        "id": "krfZEHhb0xU",
+        "title": "What If You Bought Netflix Stock Instead of Paying for Netflix? (06b)",
+        "posted_et": "Mon 12:14",
+        "views": 61
+      }
+    ],
+    "own_channel_instagram_october_reels": [
+      {
+        "shortcode": "DeIvYk7I4Qr",
+        "topic": "$5,000 on the minimum",
+        "posted_et": "Mon 22:46",
+        "plays": 7302,
+        "skip_rate_pct": 27.4,
+        "avg_watched_pct": 56.5
+      },
+      {
+        "shortcode": "DeOEthJJ1TG",
+        "topic": "$1M stack vs Burj Khalifa",
+        "posted_et": "Thu 00:28",
+        "plays": 5449,
+        "skip_rate_pct": 27.0,
+        "avg_watched_pct": 83.1
+      },
+      {
+        "shortcode": "DeWgFZRoR_S",
+        "topic": "Missing dollar",
+        "posted_et": "Sun 07:05",
+        "plays": 1997,
+        "skip_rate_pct": 32.0,
+        "avg_watched_pct": 81.3
+      },
+      {
+        "shortcode": "DeMvZv9IqRw",
+        "topic": "Powerball $6.98",
+        "posted_et": "Wed 12:05",
+        "plays": 1825,
+        "skip_rate_pct": 58.7,
+        "avg_watched_pct": 57.9
+      },
+      {
+        "shortcode": "DeYuqT4pjVC",
+        "topic": "06c latte vs Starbucks stock",
+        "posted_et": "Mon 03:46",
+        "plays": 1711,
+        "skip_rate_pct": 40.3,
+        "avg_watched_pct": 69.1
+      },
+      {
+        "shortcode": "DePe11HIHwn",
+        "topic": "$1M in pennies",
+        "posted_et": "Thu 13:37",
+        "plays": 598,
+        "skip_rate_pct": 42.0,
+        "avg_watched_pct": 66.7
+      },
+      {
+        "shortcode": "DeLSd9io8UK",
+        "topic": "10 years late",
+        "posted_et": "Tue 22:30",
+        "plays": 219,
+        "skip_rate_pct": 65.1,
+        "avg_watched_pct": 30.6
+      },
+      {
+        "shortcode": "DeEW2ZMIiYd",
+        "topic": "Speed limit (e)",
+        "posted_et": "Sun 05:54",
+        "plays": 177,
+        "skip_rate_pct": 56.9,
+        "avg_watched_pct": 31.2
+      }
+    ],
+    "channel_stats": {
+      "youtube_subscribers": 53,
+      "youtube_views": 10221,
+      "youtube_videos": 41,
+      "youtube_30d": "+27 subscribers, +5,127 views, 11 videos",
+      "instagram_followers": 8,
+      "instagram_30d_views": 20518
+    },
+    "limits": [
+      "@envelopemath's YouTube Analytics (audience hours, geography) were not read here; the 06b and 06c sheets found vidIQ's YouTube authorization is a different channel. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
+      "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and on the write-up's and the outliers' own tags.",
+      "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
+      "The write-up's sources rest on search-result text: its egress proxy blocked the primary pages. Before posting, open Edmunds' Q3 2026 new-vehicle finance release and confirm $44,664 at 7.0% (the write-up's open item 1).",
+      "Whether a lender posts a weekly payment the day it lands is the video's stated assumption, not a fact about any lender; the pinned comment asks the viewer to check theirs.",
+      "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file."
+    ],
+    "own_channel_same_topic": [
+      {
+        "id": "0PFU6V3XSuo",
+        "title": "The $1.3 million mistake you're making every month #carpayment #money #investing",
+        "published": "2026-06-05",
+        "views": 176,
+        "note": "the channel's only car-payment Short: investing a $500 payment instead; not linked (a different argument)"
+      }
+    ],
+    "titles_scored": "9 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored.",
+    "vidiq_credits": "100 credits for this teaser (8 keyword queries, 2 YouTube searches, 1 Instagram/TikTok outlier search, 9 title scores; 5 each), plus 15 shared across 03a-03c for the channel's own stats and its older Shorts, and 10 for the re-query (1 title score, 1 keyword). The adversarial check used 35 more across 03a-03c (balance 4,030 → 3,995): 3 title scores, 6 keyword re-queries and 1 lookup of 5 of the channel's own videos."
+  },
+  "checked": {
+    "date": "2026-10-13",
+    "by": "adversarial check of this sheet",
+    "math": "python3 teasers/v2/checks/03-what-difference.py: 528 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/03-what-difference.py; the four 03a schedules re-run day by day in MATH_RELATIONS (payments, months, every interest total, the shown differences); COPY_RULES keep every rounded figure 'about' or '≈', every 13 as '13 monthly payments' or '13 ×', each difference beside its schedule, the $1,800 and the year beside their baseline (paying monthly), and the posting condition in the copy; re-run at the adversarial check with the same result",
+    "limits": {
+      "youtube_title_chars": 73,
+      "youtube_description_chars": 1343,
+      "youtube_description_utf8_bytes": 1366,
+      "youtube_tags_chars_as_youtube_counts": 353,
+      "youtube_hashtags": 3,
+      "instagram_caption_chars": 1116,
+      "instagram_hashtags": 5,
+      "instagram_alt_text_short_chars": 96
+    },
+    "vidiq_requeried": "pulled 2026-10-13: car loan 18,346 / 61.0 (-30.3%); how to pay off car loan 5,207 / 32.5; pay off debt 32,458 (+66.2%); title scores 93 (pick), 92 (write-up title), 84 (best hashtag form); channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,518 views in 30 days. Re-queried the same day after the build: the pick's title score 93 and 'car loan' 18,346 / 61.0. Re-queried at the adversarial check: the pick's title score 93; 'car loan' 18,346 / 61.0 (-30.3%); 'pay off debt' 32,458 / 44.2 (+66.2%); the related video 8__HTUa2PoU 642 views (25.99% APR, $25 floor in its description). All match."
+  }
+}

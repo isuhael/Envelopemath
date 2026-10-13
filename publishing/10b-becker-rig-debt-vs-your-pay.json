@@ -1,0 +1,554 @@
+{
+  "id": "10b-becker-rig-debt-vs-your-pay",
+  "teaser": "10b Becker Rig, cost-counter: \"Your pay for 40 years vs 1 minute of new US debt?\"",
+  "prepared": "2026-10-13",
+  "for_video": {
+    "current_render": "renders/channel/10b-becker-rig-debt-vs-your-pay.mp4",
+    "current_duration_s": 39.1,
+    "current_sha256": "8eebe2472d13691637c0feb22a97b583e49b8cff67df0506cc05565717e6c745",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the pre-condense cut. The ship step re-runs the build with --covers on the condensed file.",
+    "cut": {
+      "name": "pre-condense cut (assembly pass 4, 2026-10-08)",
+      "spec": "studio/specs/10b-becker-rig-debt-vs-your-pay.json",
+      "body_s": 36.6,
+      "card_s": 2.5,
+      "shipped": null,
+      "git": "471c793",
+      "status": "the 10 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay); no 10 WIP spec was in studio/specs-wip/ at this build. The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."
+    }
+  },
+  "facts": {
+    "source": "teasers/v2/10-cost-counter.md section 10b; teasers/v2/checks/10-cost-counter.py: 1005 checks, 0 failed on studio/specs/ (2026-10-13)",
+    "basis": "total public debt outstanding (Treasury's Debt to the Penny, via PrimeRates): $37,637,553,494,935.61 on 2025-09-30 and $40,096,954,633,566.68 on 2026-09-29 (the final reading published before the fiscal year ended); Δ = $2,459,401,138,631.07 ≈ $2.46 trillion in 364 days",
+    "rate": "Δ ÷ (364 × 86,400 s = 31,449,600 s) = $78,201.35 a second ≈ $78,000 (2 significant figures, the write-up's one rounding); × 60 = $4,692,080.93 ≈ $4.7 million a minute",
+    "pay": "median full-time pay $1,251 a week (BLS Q2 2026) × 52 = $65,052 a year; × 40 = $2,602,080 ≈ $2.6 million, a working life with no raises",
+    "duel": "1 minute ($4,692,081) ÷ 40 years of median pay ($2,602,080) = 1.80: 1 minute is bigger (md only); the counter passes $2,602,080 at 33.274 s ≈ 33 seconds and stops on it exactly",
+    "flip_point": "1 minute ÷ 40 = $117,302 ≈ $117,000 a year: anyone earning more has a 40-year pay bigger than 1 minute",
+    "minute_in_pay": "1 minute ÷ $65,052 = 72.13 ≈ 72 years of median pay",
+    "public_part": "of the $2.46 trillion, $2.09 trillion is held by the public (PrimeRates): $2.09T ÷ 31,449,600 s = $66,455.54 ≈ $66,000 a second; × 60 = $3,987,332 ≈ $4.0 million a minute, still more than 40 years of median pay",
+    "assumptions": "the 364-day growth spread evenly (the debt grows in steps, so this is the average rate); gross federal debt, including intragovernmental holdings; no 'fiscal 2026' claim, because the 2026-09-30 reading could not be confirmed",
+    "verdict": "40 years of median pay: ≈ 33 seconds. / 1 minute of new US debt ≈ $4.7 million."
+  },
+  "youtube": {
+    "titles_ranked": [
+      {
+        "rank": 1,
+        "title": "Which Is Bigger: 40 Years of Your Pay or 1 Minute of New US Debt?",
+        "vidiq_score": 96,
+        "chars": 65,
+        "note": "PICK. The write-up's own title, tied top score of the 6 scored. HD Guy's rare question grammar ('Which is cheaper? A or B', the write-up's H07), the header's two sides in the header's words, and 'US Debt' ('us debt' 44,622 searches a month) inside its 65 characters. No hashtags in the title; the description's first three show above it."
+      },
+      {
+        "rank": 2,
+        "title": "Which Is Bigger: 40 Years of Your Pay or 1 Minute of New US National Debt?",
+        "vidiq_score": 96,
+        "chars": 74,
+        "note": "The same score with 'National' added (75 characters): it carries the exact phrase 'national debt' (25,193 a month) as well. The fallback if search matters more than matching the header."
+      },
+      {
+        "rank": 3,
+        "title": "Which Is Bigger: 40 Years of Your Pay or 1 Minute of New US Debt? #NationalDebt #USDebt #Debt",
+        "vidiq_score": 96,
+        "chars": 93,
+        "note": "The house 3-hashtag form (95 characters), the same score. If used, swap its tags for the description's three (#NationalDebt #DebtClock #MoneyMath), which the check requires."
+      }
+    ],
+    "titles_also_scored": [
+      {
+        "title": "Which Is Bigger: Your Whole Working Life or 1 Minute of US National Debt?",
+        "vidiq_score": 96,
+        "chars": 73,
+        "note": "'working life' is the video's own phrase, but the title loses the header's '40 years'"
+      },
+      {
+        "title": "Your Pay for 40 Years vs 1 Minute of New US Debt: Which Is Bigger?",
+        "vidiq_score": 88,
+        "chars": 66,
+        "note": "the on-screen header first, the question last: 8 points lower"
+      },
+      {
+        "title": "40 Years of Your Paychecks vs 1 Minute of US National Debt: Which Is Bigger?",
+        "vidiq_score": 88,
+        "chars": 76,
+        "note": ""
+      }
+    ],
+    "title_pick": "Which Is Bigger: 40 Years of Your Pay or 1 Minute of New US Debt?",
+    "title_pick_chars": 65,
+    "description": "Which is bigger: 40 years of your pay or 1 minute of new US debt? 1 minute of new US debt is about $4.7 million. 40 years of median pay ($2,602,080) goes by in about 33 seconds.\n\nThe math, shown:\n• Treasury's Debt to the Penny: $37.638 trillion on Sept. 30, 2025; $40.097 trillion on Sept. 29, 2026.\n• That's ≈ $2.46 trillion more in 364 days.\n• ÷ (364 × 86,400 seconds) ≈ $78,000 a second, ≈ $4.7 million a minute, ≈ 72 years of median pay.\n• 40 years of median pay: $1,251 a week × 52 × 40 = $2,602,080. At ≈ $78,000 a second: ≈ 33 seconds.\n• Earn more than ≈ $117,000 a year? Your 40 years beat 1 minute.\n• Yours: yearly pay × 40 ÷ 78,000 = your working life in seconds.\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\n\nAnimation and original sound: The Back of the Envelope. Debt: U.S. Treasury, Debt to the Penny (total public debt outstanding), the readings of Sept. 30, 2025 and Sept. 29, 2026 (the final reading before the fiscal year ended), via PrimeRates. The growth is spread evenly over those 364 days; the debt grows in steps, so this is the average rate. It is gross federal debt, including debt the government owes itself. Pay: BLS median usual weekly earnings of full-time wage and salary workers, Q2 2026, × 52; a working life is 40 years of it, with no raises. Not financial advice.\n#NationalDebt #DebtClock #MoneyMath",
+    "description_chars": 1367,
+    "hashtags_in_order": [
+      "#NationalDebt",
+      "#DebtClock",
+      "#MoneyMath"
+    ],
+    "hashtag_rules": "Title hashtags show as links in the title; with none in the title, the first 3 description hashtags show above it. Over 60 hashtags and YouTube ignores all of them. #Shorts is not needed (vertical, under 3 min).",
+    "tags": [
+      "new us debt",
+      "national debt",
+      "us national debt",
+      "us debt",
+      "us debt 40 trillion",
+      "40 trillion debt animated",
+      "national debt clock",
+      "debt clock",
+      "the debt clock is ticking",
+      "how fast is the national debt growing",
+      "debt per second",
+      "lifetime earnings",
+      "working life",
+      "median pay",
+      "money math",
+      "math animation",
+      "the back of the envelope",
+      "envelope math"
+    ],
+    "tags_chars_as_youtube_counts": 350,
+    "pinned_comment": "Earn more than ≈ $117,000 a year? Your 40 years beat 1 minute. Yours: yearly pay × 40 ÷ 78,000 = your working life in seconds.\n\n\"The debt includes what the government owes itself\": of the ≈ $2.46 trillion, $2.09 trillion is held by the public. That part alone is ≈ $66,000 a second, ≈ $4.0 million a minute, still more than 40 years of median pay ($2,602,080). Why 364 days? Those are the official readings either side of the fiscal year we could confirm.",
+    "related_video": {
+      "pick": {
+        "id": "hJBvmGA6sZ0",
+        "title": "You Can Lean on $1 Million. Not on $1 Billion. #moneyfacts #billion #Animation",
+        "url": "https://www.youtube.com/shorts/hJBvmGA6sZ0",
+        "why": "Big money made physical, the same move as this Short's 40 bricks of pay, and one of the channel's best Shorts (1,221 views on YouTube; its Reel 5,449 plays at a 27.0% skip rate)."
+      },
+      "swap_when_live": "10a (US debt interest vs your salary), the counter on the same debt's interest, once published; then point 10a's Related video at this Short, so the pair links both ways.",
+      "end_screen": "Shorts have no end screens or cards. The Related video link is the Shorts equivalent."
+    },
+    "thumbnail_frame": "In the YouTube app, pick frame 1, the question frame: the header, the board on $0, the figure hugging the full stack of 40 bricks and the '1 MINUTE' stopwatch at 0:00. The Instagram cover is the end hold instead.",
+    "settings": {
+      "category": "Education",
+      "audience": "Not made for kids",
+      "altered_or_synthetic_content": "No (animated chart, not realistic footage)",
+      "remixing": "Allow",
+      "captions": "None needed (no narration; all text is on screen)"
+    },
+    "posting_window": {
+      "when": "First free Tue-Thu evening after the condensed cut ships and passes QA, at least a week after 10a, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+      "spacing": "Keep it at least 6 h from any other upload on the channel. 10a and 10b are both about the federal debt: post them at least a week apart, or as a labelled pair (this one as 'Part 2: the debt itself'), as the write-up asks. Suggested order within the series: 10c, then 10a, then 10b.",
+      "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,198 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2); 06c (Mon 03:45 ET) has 760 and 06b (Mon 12:14 ET) 75, too young to compare. The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. 10b goes last of the three: it shares 10a's topic, and the $40 trillion news has cooled ('us debt 40 trillion' -68.1% on its 30-day baseline), while 'debt crisis' runs +235.9%. Its numbers are dated readings, so they do not go stale."
+    },
+    "description_utf8_bytes": 1402
+  },
+  "instagram": {
+    "caption": "Which is bigger: 40 years of your pay, or 1 minute of new US debt? The new-debt counter starts at $0 the moment you hit play.\n\n40 years of median pay ≈ 33 seconds of new US debt. 1 minute of it ≈ $4.7 million, or ≈ 72 years of median pay.\n\nThe math, shown:\n• Treasury's Debt to the Penny: $37.638 trillion on Sept. 30, 2025; $40.097 trillion on Sept. 29, 2026.\n• That's ≈ $2.46 trillion more in 364 days.\n• ÷ (364 × 86,400 seconds) ≈ $78,000 a second.\n• 40 years of median pay: $1,251 a week × 52 × 40 = $2,602,080. At ≈ $78,000 a second: ≈ 33 seconds.\n\nEarn more than ≈ $117,000 a year? Your 40 years beat 1 minute. Yours: yearly pay × 40 ÷ 78,000 = your working life in seconds.\n\nAn average over those 364 days (the debt grows in steps). Gross federal debt, including debt the government owes itself. Median full-time pay (BLS), with no raises. Not financial advice.\n\nWhat should we race against the counter next?\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\nAnimation and original sound: The Back of the Envelope.\n\n#nationaldebt #debtclock #usdebt #economy #moneymath",
+    "caption_chars": 1103,
+    "caption_first_125": "Which is bigger: 40 years of your pay, or 1 minute of new US debt? The new-debt counter starts at $0 the moment you hit play.",
+    "caption_rule": "The first 125 characters are the title's question, the 'new US debt' keywords and the counter's $0 start, no result: the caption overlays the Reel from frame 1, so the verdict, the rate and every figure from the readings sit below 'more'.",
+    "hashtags_in_order": [
+      "#nationaldebt",
+      "#debtclock",
+      "#usdebt",
+      "#economy",
+      "#moneymath"
+    ],
+    "hashtag_rule": "Instagram caps a post at 5 hashtags (since Dec 2025).",
+    "alt_text_short": "Chart: new US debt eats 40 years of median pay in about 33 seconds; 1 minute is about $4.7 million.",
+    "alt_text_long": "Animation on a white page. The header asks: your pay for 40 years vs 1 minute of new US debt? A green stick figure hugs a stack of 40 cash bricks, each a year of median pay ($65,052), beside a 1-minute stopwatch. A debt board counts up from $0 at about $78,000 a second (about $2.46 trillion of new debt in 364 days) and swallows the bricks in turn: 3, 10, 20 and 30 years of median pay go by as the board turns red and starts to steam. It stops on $2,602,080 as the last brick goes; the board cracks and the blast knocks the figure to the floor. The stopwatch stops at 0:33. Payoff: 40 years of median pay: about 33 seconds; 1 minute of new US debt is about $4.7 million.",
+    "alt_text_where": "Advanced settings → Accessibility → Alt text, if your app shows it for Reels.",
+    "cover": {
+      "files": {
+        "3x4": "publishing/10b-becker-rig-debt-vs-your-pay-cover-3x4.jpg",
+        "9x16": "publishing/10b-becker-rig-debt-vs-your-pay-cover-9x16.jpg"
+      },
+      "frame_in_current_render_s": 35.5,
+      "frame_index": 1065,
+      "frame_by_content": "The end hold, as the write-up's Instagram note asks: the header 'Your pay for 40 years vs / 1 minute of new US debt?', the 2-line footer, the cracked red board on '$2,602,080' with '✓ 40 years of median pay: $2,602,080' under it, the green '≈ 33 SECONDS' stamp over the emptied plinth ('40 × $65,052 / 0 years left'), the stopwatch stopped at 0:33 with its end label '≈ $4.7 million', the figure sitting on the floor looking up at the board, and the verdict '40 years of median pay: ≈ 33 seconds. / 1 minute of new US debt ≈ $4.7 million.' On any cut, use a frame of the end hold after the figure has sat up and before the end card (not the white impact frame of the burst).",
+      "frame_measured": "On the pre-condense 39.1 s render the counter stops on the 40-year pass with the burst at about frame 999 (33.3 s); the impact settles by about frame 1022 (34.07 s), the figure sits up between about 34.6 and 35.0 s, and from then on the frame changes only by the board's steam and vibration (frame-to-frame mean luma change about 0.03) until the end card at about frame 1099 (36.63 s). Frame 1065 (35.50 s) is used; the write-up's suggestion (≈ 34.5 s) falls just before he sits up.",
+      "crop": "3:4 = 1080×1440 from y 60 to 1500 of the 1080×1920 frame. The content runs from y 113 (the badge) to y 1447 (the verdict's second line), so the crop centres it (53 px above and below): badge, header, footer, board, stamp, plinth, stopwatch, the figure and the verdict; it drops the empty page below. A centred grid crop (y 240-1680) cuts the badge and the header.",
+      "how_to_set": "In 'Edit cover', pick the end-hold frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
+      "re_export": "ffmpeg -ss 35.5 -i renders/channel/10b-becker-rig-debt-vs-your-pay.mp4 -frames:v 1 -vf \"crop=1080:1440:0:60\" -q:v 2 publishing/10b-becker-rig-debt-vs-your-pay-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 35.5 -i renders/channel/10b-becker-rig-debt-vs-your-pay.mp4 -frames:v 1 -q:v 2 publishing/10b-becker-rig-debt-vs-your-pay-cover-9x16.jpg"
+    },
+    "first_comment": "Earn more than ≈ $117,000 a year? Your 40 years beat 1 minute. Yours: yearly pay × 40 ÷ 78,000 = your working life in seconds.",
+    "first_comment_action": "Post it right after publishing and pin it.",
+    "trial_reels": {
+      "recommendation": "Post as a regular Reel, not a Trial.",
+      "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show 471c793:renders/channel/10b-becker-rig-debt-vs-your-pay.mp4 > 10b-39.1s.mp4` (sha256 8eebe247…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+    },
+    "settings": {
+      "audio": "Rename the original audio to 'Your 40 years vs 1 minute of US debt — The Back of the Envelope' if the app allows; it is the score, with no voice.",
+      "share_to_feed": "On",
+      "google_indexing": "Public professional-account posts can appear in Google/Bing since 10 Jul 2025, so the caption is written as a searchable question."
+    },
+    "posting_window": {
+      "when": "Same evening as YouTube, about 15 min after the Short: 21:45-22:45 ET, at least a week after 10a (or as its labelled Part 2).",
+      "why": "October Reels, median plays by posting slot (owner insights, 2026-10-13): weekday 22:00-00:30 ET 5,449 (n = 3, including the two best: 7,303 and 5,449), weekday midday 1,212 (n = 2), Sunday 05:00-08:00 ET 1,087 (n = 2). 06c, posted Mon 03:46 ET, has 1,711 plays with a 40.3% skip rate. Skip rate tracks plays more closely than the hour does: 27.0-27.4% for the top two, 56.9-65.1% for the bottom two. The condense matters more than the hour."
+    },
+    "alt_text_rule": "Paste the short version into Instagram: it is kept at or under 100 characters so it fits the field however short it is, and it writes 'about' instead of '≈' so screen readers read it cleanly. The long version is for anywhere with room (a website embed, a newsletter)."
+  },
+  "research": {
+    "keywords_youtube": [
+      {
+        "keyword": "national debt",
+        "est_monthly_searches": 25193,
+        "volume": 65.7,
+        "competition": 62.0,
+        "overall": 54.6,
+        "note": "seed; +2.0% vs its 30-day baseline (24,706)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "us debt",
+        "est_monthly_searches": 44622,
+        "volume": 69.4,
+        "competition": 66.0,
+        "overall": 55.2,
+        "note": "-33.1% vs its baseline (66,734); still the biggest debt phrase",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "us national debt",
+        "est_monthly_searches": 10191,
+        "volume": 59.8,
+        "competition": 62.0,
+        "overall": 51.1,
+        "note": "-66.1% vs its baseline (30,039)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "us debt 40 trillion",
+        "est_monthly_searches": 6189,
+        "volume": 56.6,
+        "competition": 50.0,
+        "overall": 54.0,
+        "note": "-68.1% vs its baseline (19,376): the August milestone fading",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "40 trillion debt animated",
+        "est_monthly_searches": 5396,
+        "volume": 55.7,
+        "competition": 17.3,
+        "overall": 66.5,
+        "note": "searchers asking for an animation; the lowest competition here",
+        "metrics_as_of": "2026-09-20"
+      },
+      {
+        "keyword": "40 trillion dollar debt",
+        "est_monthly_searches": 5037,
+        "volume": 55.3,
+        "competition": 37.3,
+        "overall": 58.2,
+        "note": "",
+        "metrics_as_of": "2026-10-04"
+      },
+      {
+        "keyword": "the debt clock is ticking",
+        "est_monthly_searches": 5151,
+        "volume": 55.4,
+        "competition": 32.2,
+        "overall": 60.4,
+        "note": "",
+        "metrics_as_of": "2026-09-16"
+      },
+      {
+        "keyword": "national debt clock",
+        "est_monthly_searches": 4838,
+        "volume": 55.0,
+        "competition": 43.7,
+        "overall": 55.5,
+        "note": "",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "national debt clock live",
+        "est_monthly_searches": 8779,
+        "volume": 58.9,
+        "competition": 37.8,
+        "overall": 60.2,
+        "note": "'live' is a claim this video can't make (the write-up bans it): not in the tags",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "us debt clock",
+        "est_monthly_searches": 5153,
+        "volume": 55.4,
+        "competition": 58.7,
+        "overall": 49.8,
+        "note": "flat (0%); also a website's name: not in the tags",
+        "metrics_as_of": "2026-06-19"
+      },
+      {
+        "keyword": "debt crisis",
+        "est_monthly_searches": 31084,
+        "volume": 67.1,
+        "competition": 63.3,
+        "overall": 54.9,
+        "note": "+235.9% vs its baseline (9,254)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "how fast is the national debt growing",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": null,
+        "overall": null,
+        "note": "<750/month: the video's question is not searched as such",
+        "metrics_as_of": null
+      },
+      {
+        "keyword": "lifetime earnings",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": 40.1,
+        "overall": 24.0,
+        "note": "<750/month: the pay side has no search demand of its own",
+        "metrics_as_of": null
+      }
+    ],
+    "keywords_source": "vidIQ keyword research (research and matching_terms modes), pulled 2026-10-13. vidIQ refreshes each keyword on its own schedule, so each row carries its snapshot date in metrics_as_of; four rows are older snapshots (2026-06-19 to 2026-10-04).",
+    "same_idea_youtube_shorts": [
+      {
+        "title": "Joe sounds alarm over national debt surpassing $40 trillion",
+        "channel": "MS NOW",
+        "subscribers": 10000000,
+        "views": 839517,
+        "published": "2026-08-20",
+        "note": "a news clip at the milestone; 3.98x its channel"
+      },
+      {
+        "title": "The U.S. National Debt Hit a Record High of $40 Trillion",
+        "channel": "The New York Times",
+        "subscribers": 5300000,
+        "views": 235279,
+        "published": "2026-08-20",
+        "note": "2:17; 11.77x"
+      },
+      {
+        "title": "The US National Debt Has Surpassed $40 Trillion For the First Time In History.",
+        "channel": "Kagan Dunlap",
+        "subscribers": 1090000,
+        "views": 210296,
+        "published": "2026-08-21",
+        "note": "1:03; the milestone, talking head"
+      },
+      {
+        "title": "U.s. National Debt Grows To Large For National Debt Clock",
+        "channel": "SaveOurSovereignty2",
+        "subscribers": 1250,
+        "views": 100523,
+        "published": "2008-10-07",
+        "note": "36 s; the debt clock as the story"
+      },
+      {
+        "title": "National Debt In America Is Now Over $40 Trillion",
+        "channel": "Noor",
+        "subscribers": 389,
+        "views": 1834,
+        "published": "2026-08-20",
+        "note": "its description: growing about $92,065 a second (its own figure, not verified here)"
+      },
+      {
+        "title": "The US debt is growing at a terrifying speed  #america",
+        "channel": "WealthForge",
+        "subscribers": 181,
+        "views": 191,
+        "published": "2026-04-06",
+        "note": "per day, hour, minute and second, spoken"
+      },
+      {
+        "title": "America Borrows $80,000 Every Second  #usa #economics #nationaldebt",
+        "channel": "The Cost of Everything",
+        "subscribers": 4,
+        "views": 34,
+        "published": "2026-10-08",
+        "note": "the closest twin: a per-second and per-minute debt counter (its own Treasury maths, not verified here); no yardstick the viewer owns"
+      }
+    ],
+    "same_idea_note": "vidIQ YouTube search and outliers (Shorts; under 4 min): the debt's growth is a news topic (the August $40 trillion milestone: MS NOW 839,517, NYT 235,279), and per-second debt Shorts exist but stay small ('America Borrows $80,000 Every Second', 34 views, 2026-10-08). None measures the debt against a working life; the figures in their titles and descriptions are theirs, not verified here.",
+    "instagram_tiktok_outliers": [
+      {
+        "handle": "@infostorylab",
+        "platform": "TikTok",
+        "id": "7677680082189667598",
+        "on_screen": "While the world watched the Iran war, America quietly crossed a 40 trillion dollar debt bomb.",
+        "caption": "America’s $40 Trillion Debt Bomb — How Fast Can It Grow?",
+        "views": "470.9K (247.3x the account median of 1.9K)",
+        "note": "how fast the debt grows is the hook; an AI-voiced essay"
+      },
+      {
+        "handle": "@realmizkif",
+        "platform": "TikTok",
+        "id": "7676161638919130381",
+        "on_screen": "we are in America's $40 Trillion Debt Problem 🤯",
+        "views": "236.8K (28.2x the account median of 8.4K)",
+        "note": "the milestone, split screen with a debt display"
+      },
+      {
+        "handle": "@americafirstalert",
+        "platform": "Instagram",
+        "id": "DcUN1I9Oj27",
+        "on_screen": "BREAKING: Just as economic fears of a market crash and inflation rise, U.S. national debt surpasses $40 trillion.",
+        "views": "319.6K (170.8x the account median of 1.9K)",
+        "note": "a debt-clock screen recording counting up, music only, looped"
+      },
+      {
+        "handle": "@kriskrohn",
+        "platform": "Instagram",
+        "id": "DbTlfULuMFp",
+        "on_screen": "BREAKING: New study finds that a minimum wage worker in 1971 had a lifestyle affordability similar to someone making $100,000 today.",
+        "caption": "A six-figure salary isn’t what it used to be.",
+        "views": "1.7M (184.0x the account median of 9.5K)",
+        "note": "pay as the yardstick travels: a static text post about what a salary is worth"
+      }
+    ],
+    "own_channel_youtube_october_shorts": [
+      {
+        "id": "LjHDFzVxRyM",
+        "title": "Can You Find the Missing Dollar?",
+        "posted_et": "Sun 07:04",
+        "views": 1254
+      },
+      {
+        "id": "hJBvmGA6sZ0",
+        "title": "You Can Lean on $1 Million. Not on $1 Billion.",
+        "posted_et": "Thu 00:25",
+        "views": 1221
+      },
+      {
+        "id": "XVUeMcTg9OQ",
+        "title": "Your Interest Has a Speed Limit",
+        "posted_et": "Sun 05:49",
+        "views": 1141
+      },
+      {
+        "id": "fbpdKf4Wy8c",
+        "title": "What If You Bought Starbucks Stock Instead of a $4 Latte Every Day? (06c)",
+        "posted_et": "Mon 03:45",
+        "views": 760
+      },
+      {
+        "id": "8__HTUa2PoU",
+        "title": "Pay the Minimum on $5,000? 238 Months.",
+        "posted_et": "Mon 22:09",
+        "views": 642
+      },
+      {
+        "id": "FW_oxA3kbsM",
+        "title": "A $2 Lottery Ticket Was Worth $6.98. Until the Fine Print.",
+        "posted_et": "Wed 12:03",
+        "views": 348
+      },
+      {
+        "id": "mXbKY_R63h4",
+        "title": "You Can Carry $1 Million. Not in Pennies.",
+        "posted_et": "Thu 13:38",
+        "views": 177
+      },
+      {
+        "id": "EqFQCJheCMU",
+        "title": "Start Investing 10 Years Late? You Get Half.",
+        "posted_et": "Tue 22:27",
+        "views": 161
+      },
+      {
+        "id": "krfZEHhb0xU",
+        "title": "What If You Bought Netflix Stock Instead of Paying for Netflix? (06b)",
+        "posted_et": "Mon 12:14",
+        "views": 75
+      }
+    ],
+    "own_channel_instagram_october_reels": [
+      {
+        "shortcode": "DeIvYk7I4Qr",
+        "topic": "$5,000 on the minimum",
+        "posted_et": "Mon 22:46",
+        "plays": 7303,
+        "skip_rate_pct": 27.4,
+        "avg_watched_pct": 56.5
+      },
+      {
+        "shortcode": "DeOEthJJ1TG",
+        "topic": "$1M stack vs Burj Khalifa",
+        "posted_et": "Thu 00:28",
+        "plays": 5449,
+        "skip_rate_pct": 27.0,
+        "avg_watched_pct": 83.1
+      },
+      {
+        "shortcode": "DeWgFZRoR_S",
+        "topic": "Missing dollar",
+        "posted_et": "Sun 07:05",
+        "plays": 1997,
+        "skip_rate_pct": 32.0,
+        "avg_watched_pct": 81.3
+      },
+      {
+        "shortcode": "DeMvZv9IqRw",
+        "topic": "Powerball $6.98",
+        "posted_et": "Wed 12:05",
+        "plays": 1825,
+        "skip_rate_pct": 58.7,
+        "avg_watched_pct": 57.9
+      },
+      {
+        "shortcode": "DeYuqT4pjVC",
+        "topic": "06c latte vs Starbucks stock",
+        "posted_et": "Mon 03:46",
+        "plays": 1711,
+        "skip_rate_pct": 40.3,
+        "avg_watched_pct": 69.1
+      },
+      {
+        "shortcode": "DePe11HIHwn",
+        "topic": "$1M in pennies",
+        "posted_et": "Thu 13:37",
+        "plays": 598,
+        "skip_rate_pct": 42.0,
+        "avg_watched_pct": 66.7
+      },
+      {
+        "shortcode": "DeLSd9io8UK",
+        "topic": "10 years late",
+        "posted_et": "Tue 22:30",
+        "plays": 219,
+        "skip_rate_pct": 65.1,
+        "avg_watched_pct": 30.6
+      },
+      {
+        "shortcode": "DeEW2ZMIiYd",
+        "topic": "Speed limit (e)",
+        "posted_et": "Sun 05:54",
+        "plays": 177,
+        "skip_rate_pct": 56.9,
+        "avg_watched_pct": 31.2
+      }
+    ],
+    "channel_stats": {
+      "youtube_subscribers": 53,
+      "youtube_views": 10221,
+      "youtube_videos": 41,
+      "youtube_30d": "+27 subscribers, +5,127 views, 11 videos",
+      "instagram_followers": 8,
+      "instagram_30d_views": 20519
+    },
+    "limits": [
+      "@envelopemath's YouTube Analytics (audience hours, geography) were not read here; the 06b and 06c sheets found vidIQ's YouTube authorization is a different channel. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
+      "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and on the write-up's and the outliers' own tags.",
+      "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
+      "The two Debt to the Penny readings rest on search results (PrimeRates, citing Treasury; the API and page fetches were blocked) and are marked [click-check] in the write-up. Open them once before posting. If the 2026-09-30 reading can be read, the write-up's optional upgrade (a full fiscal year, 'FY2026' in the footer) changes the footer, the rate and this sheet.",
+      "The figures in other creators' titles and descriptions (per-second debt growth) are theirs, not verified here; the copy states only the write-up's maths.",
+      "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file."
+    ],
+    "titles_scored": "6 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored.",
+    "vidiq_credits": "60 credits for this teaser by listed cost (3 keyword queries, 1 YouTube search, 1 Shorts outlier search, 1 Instagram/TikTok outlier search and 6 title scores at up to 5 each), plus 10a's debt keyword queries (shared), 10 shared across 10a-10c for the channel's stats and Shorts list (Instagram owner insights cost 0), and 5 for the re-score after the build. Account balance: 4,375 at the start of the 10 research and 4,135 when it ended, a 240 drop for 56 calls (the balance is shared with sheets built in parallel, so the drop is an upper bound; keyword queries cost less than 5); 4,060 after the 3 re-scores (15 credits by listed cost; the rest of that 75 drop is other sheets'). About 255 for the three 10 sheets, against a budget of about 450."
+  },
+  "checked": {
+    "date": "2026-10-13",
+    "by": "the publishing strategist's own check at the first build (no adversarial pass yet)",
+    "math": "python3 teasers/v2/checks/10-cost-counter.py: 1005 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/10-cost-counter.py; the growth, the rate and every figure recomputed from the two readings in MATH_RELATIONS (≈ $2.46 trillion in 364 days; ≈ $78,000 a second; ≈ $4.7 million a minute; $2,602,080; ≈ 33 seconds; ≈ $117,000; ≈ 72 years; the public part ≈ $66,000 and ≈ $4.0 million); COPY_RULES hold every figure to the write-up's one rounding, put '≈' or 'about' on every rounded figure, keep each reading beside its date and every '≈ 33 seconds' with median pay, and ban 'live', 'fiscal 2026', 'FY2026', 'under 1 second', politics and advice wording",
+    "limits": {
+      "youtube_title_chars": 65,
+      "youtube_description_chars": 1367,
+      "youtube_description_utf8_bytes": 1402,
+      "youtube_tags_chars_as_youtube_counts": 350,
+      "youtube_hashtags": 3,
+      "instagram_caption_chars": 1103,
+      "instagram_hashtags": 5,
+      "instagram_alt_text_short_chars": 99
+    },
+    "vidiq_requeried": "pulled 2026-10-13: national debt 25,193 / 62.0 (+2.0%); us debt 40 trillion 6,189 (-68.1%); 40 trillion debt animated 5,396 / 17.3; title scores 96 (pick = the write-up's title; three others tie); channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,519 views in 30 days. Re-queried after the build: the pick's title score 96. Match."
+  }
+}

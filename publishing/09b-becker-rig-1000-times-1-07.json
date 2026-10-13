@@ -1,0 +1,556 @@
+{
+  "id": "09b-becker-rig-1000-times-1-07",
+  "teaser": "09b Becker Rig, growth-ladder: \"POV: someone invested just $1,000 for you at birth. What's it worth at 65?\"",
+  "prepared": "2026-10-13",
+  "for_video": {
+    "current_render": "renders/channel/09b-becker-rig-1000-times-1-07.mp4",
+    "current_duration_s": 29.5,
+    "current_sha256": "5d8f22d554a8575404ac05fdff6033e5dd2c4c0ffee4be74f473bbe64bdc522c",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the pre-condense cut. The ship step re-runs the build with --covers on the condensed file.",
+    "cut": {
+      "name": "pre-condense cut (assembly fix pass, 2026-10-08)",
+      "spec": "studio/specs/09b-becker-rig-1000-times-1-07.json",
+      "body_s": 27.0,
+      "card_s": 2.5,
+      "shipped": null,
+      "git": "471c793",
+      "status": "the 09 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay); no 09 WIP spec was in studio/specs-wip/ at this build. The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."
+    }
+  },
+  "facts": {
+    "source": "teasers/v2/09-growth-ladder.md section 09b; teasers/v2/checks/09-growth-ladder.py: 509 checks, 0 failed on studio/specs/ (2026-10-13)",
+    "basis": "V(a) = $1,000 × 1.07^a at age a: one $1,000 at birth, 7% credited once a year (on each birthday), nothing added or withdrawn; no fees, taxes or inflation adjustment; not a forecast",
+    "rungs": "age 1 $1,070 (exact); 10 ≈ $1,967; 18 ≈ $3,380; 25 ≈ $5,427; 30 ≈ $7,612; 40 ≈ $14,974; 50 ≈ $29,457; 65 ≈ $81,273 (put in: $1,000 on every rung)",
+    "multiple": "81,272.86 ÷ 1,000 = 81.27: 'over 81 times the gift'",
+    "doubling": "72 ÷ 7 = 10.3; the first age with V ≥ $2,000 is 11: 'roughly doubles every 10 years (72 ÷ 7 ≈ 10)'",
+    "scaling": "every rung scales with the gift: $500 halves them, $5,000 multiplies them by 5",
+    "pinned": "the same $1,000 at 25: 1,000 × 1.07^40 = 14,974.46 ≈ $14,974 at 65 (the age-40 rung's figure); 81,272.86 ÷ 14,974.46 = 1.07^25 = 5.43 ≈ × 5.4",
+    "sp500": "7% is close to the S&P 500's return after inflation since 1928, 6.81% ≈ 6.8% a year (Official Data Foundation, live figure read 2026-10-07) [click-check]; read the rungs as rough today's dollars only on that reading",
+    "verdict": "≈ $81,273 at 65. Over 81× the gift, never topped up."
+  },
+  "youtube": {
+    "titles_ranked": [
+      {
+        "rank": 1,
+        "title": "What If Someone Invested $1,000 for You the Day You Were Born? What's It Worth at 65?",
+        "vidiq_score": 98,
+        "chars": 85,
+        "note": "PICK. Top score of the 6 scored (tied). The header's gift and question as a 'what if' (the searched grammar of 'what if you invested $1000 in', 4,986 a month): the first question is the first 62 characters, and 'What's It Worth at 65?' is the header's own. 'The day you were born' is the write-up caption's phrase. No hashtags in the title; the description's first three show above it."
+      },
+      {
+        "rank": 2,
+        "title": "What If Someone Invested Just $1,000 for You the Day You Were Born? What's It Worth at 65?",
+        "vidiq_score": 98,
+        "chars": 90,
+        "note": "The same score with the header's 'just', the word that carries the wrong belief ('a token gift'). 5 characters longer; the pick leaves it to the header, which says it on frame 1."
+      },
+      {
+        "rank": 3,
+        "title": "Someone Invested $1,000 for You at Birth and Never Added a Cent. What's It Worth at 65?",
+        "vidiq_score": 96,
+        "chars": 87,
+        "note": "Puts 'never topped up' in the title, for 2 points less."
+      }
+    ],
+    "titles_also_scored": [
+      {
+        "title": "POV: Someone Invested Just $1,000 for You at Birth. What's It Worth at 65? Compound Interest, Age by Age",
+        "vidiq_score": 96,
+        "chars": 104,
+        "note": "104 characters, over YouTube's 100"
+      },
+      {
+        "title": "POV: Someone Invested Just $1,000 for You at Birth. What's It Worth at 65?",
+        "vidiq_score": 90,
+        "chars": 74,
+        "note": "the write-up's title"
+      },
+      {
+        "title": "$1,000 Invested at Birth and Never Touched: What's It Worth at 65?",
+        "vidiq_score": 86,
+        "chars": 66,
+        "note": ""
+      }
+    ],
+    "title_pick": "What If Someone Invested $1,000 for You the Day You Were Born? What's It Worth at 65?",
+    "title_pick_chars": 85,
+    "description": "What if someone invested $1,000 for you the day you were born, and nobody touched it again? At an assumed 7% a year it's about $81,273 at 65: over 81 times the gift.\n\nThe math, shown (worth = $1,000 × 1.07 for every birthday):\n• Age 1: $1,000 × 1.07 = $1,070.\n• Age 10: ≈ $1,967. It roughly doubles every 10 years (72 ÷ 7 ≈ 10).\n• Age 18: ≈ $3,380.\n• Age 30: ≈ $7,612.\n• Age 40: ≈ $14,974.\n• Age 50: ≈ $29,457.\n• Age 65: ≈ $81,273, over 81 times the $1,000. Never topped up.\n• A different gift? Scale every rung: $500 halves them, $5,000 multiplies them by 5.\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\n\nAnimation and original sound: The Back of the Envelope. One $1,000 at birth at an assumed 7% a year, credited once a year on each birthday; nothing added or taken out. 7% is an assumption, not a forecast. It is close to what the S&P 500 has returned after inflation since 1928 (about 6.8% a year: Official Data Foundation, read Oct 2026), so read these as rough today's dollars. No fees or taxes. Not financial advice. Not affiliated with or endorsed by S&P Dow Jones Indices.\n#compoundinterest #investingforkids #generationalwealth",
+    "description_chars": 1171,
+    "hashtags_in_order": [
+      "#compoundinterest",
+      "#investingforkids",
+      "#generationalwealth"
+    ],
+    "hashtag_rules": "Title hashtags show as links in the title; with none in the title, the first 3 description hashtags show above it. Over 60 hashtags and YouTube ignores all of them. #Shorts is not needed (vertical, under 3 min).",
+    "tags": [
+      "1000 invested at birth",
+      "invest 1000 at birth",
+      "investing for kids",
+      "how to start investing for kids",
+      "investing account for kids",
+      "stock investing for kids",
+      "generational wealth",
+      "how to build generational wealth",
+      "compound interest",
+      "the power of compound interest",
+      "1000 dollars invested",
+      "what if you invested 1000",
+      "money math",
+      "math animation",
+      "the back of the envelope",
+      "envelope math"
+    ],
+    "tags_chars_as_youtube_counts": 393,
+    "pinned_comment": "Got the $1,000 at 25 instead of at birth? It's ≈ $14,974 at 65, not ≈ $81,273. Those first 25 years multiply it by 5.4.\n\nSame 7% a year, credited once a year, nothing added. How old were you when your first $1,000 went in?",
+    "related_video": {
+      "pick": {
+        "id": "EqFQCJheCMU",
+        "title": "Start Investing 10 Years Late? You Get Half. #investing #compoundinterest #personalfinance",
+        "url": "https://www.youtube.com/shorts/EqFQCJheCMU",
+        "why": "The channel's own lump-sum start-age Short ($10,000 at 25 vs at 35, at 7%), live since Tue 6 Oct 2026. This Short's pinned comment asks the same 'what if it went in later?' with $1,000 at birth vs at 25."
+      },
+      "swap_when_live": "09a ($100 a month) or 09c ($1 a day × your number), the same growth-ladder series, once published. Then point EqFQCJheCMU's Related video at this Short.",
+      "end_screen": "Shorts have no end screens or cards. The Related video link is the Shorts equivalent."
+    },
+    "thumbnail_frame": "In the YouTube app, pick the heave frame (the cover below): the POV header, rungs 1 to 50 filled, the age-65 rung empty, and the figure buckling under the last, heavy coin.",
+    "settings": {
+      "category": "Education",
+      "audience": "Not made for kids",
+      "altered_or_synthetic_content": "No (animated chart, not realistic footage)",
+      "remixing": "Allow",
+      "captions": "None needed (no narration; all text is on screen)"
+    },
+    "posting_window": {
+      "when": "First free Tue-Thu evening after the 09 condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+      "spacing": "Keep it at least 6 h from any other upload on the channel, and on a different evening from 09a and 09c. Suggested order within the series: 09a, then 09b, then 09c.",
+      "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,199 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2); 06c (Mon 03:45 ET) has 760 and 06b (Mon 12:14 ET) 75, too young to compare. The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. Money set aside at birth is in the news: 'how to build generational wealth' runs +35.1% and 'trump account' +20.2% over their baselines, and several 2026 Shorts describe a federal $1,000-at-birth account (per their descriptions; not verified here, and not in the copy)."
+    },
+    "description_utf8_bytes": 1206
+  },
+  "instagram": {
+    "caption": "What if someone invested $1,000 for you the day you were born, and nobody touched it again? What's it worth at 65? One gift. Never topped up.\n\nAt an assumed 7% a year, credited once a year, it roughly doubles every 10 years (72 ÷ 7 ≈ 10):\n• Age 10: ≈ $1,967.\n• Age 30: ≈ $7,612.\n• Age 50: ≈ $29,457.\n• Age 65: ≈ $81,273, over 81 times the gift.\n\n7% is close to what the S&P 500 has returned after inflation since 1928 (≈ 6.8% a year), so read these as rough today's dollars. A different gift? Scale every rung: $500 halves them, $5,000 multiplies them by 5.\n\n7% is an assumption, not a forecast. Nothing added or taken out; no fees or taxes. Not financial advice. Not affiliated with or endorsed by S&P Dow Jones Indices.\n\nHow old were you when your first $1,000 went in?\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\nAnimation and original sound: The Back of the Envelope.\n\n#compoundinterest #investingforkids #generationalwealth #moneymath #personalfinance",
+    "caption_chars": 990,
+    "caption_first_125": "What if someone invested $1,000 for you the day you were born, and nobody touched it again? What's it worth at 65? One gift. ",
+    "caption_rule": "The first 125 characters are the title's question, the header's age (65) and the write-up's numberless caption line 1 ('One gift. Never topped up.'), no result: the caption overlays the Reel from frame 1, so every rung's figure sits below 'more'.",
+    "hashtags_in_order": [
+      "#compoundinterest",
+      "#investingforkids",
+      "#generationalwealth",
+      "#moneymath",
+      "#personalfinance"
+    ],
+    "hashtag_rule": "Instagram caps a post at 5 hashtags (since Dec 2025).",
+    "alt_text_short": "Chart: $1,000 at birth at 7% a year, never topped up: about $81,273 at 65, over 81 times the gift.",
+    "alt_text_long": "Animation on a light page with a green stick figure at the foot of a ladder whose rungs are ages. The header says: POV: someone invested just $1,000 for you at birth. What's it worth at 65? The footer: assumes 7% a year, added once a year, never topped up, not a forecast. Columns: age, put in, worth. The figure throws a coin up to each rung, and each coin becomes its row's worth, with $1,000 put in on every rung: age 1, $1,070; age 10, about $1,967; age 18, about $3,380; age 25, about $5,427; age 30, about $7,612; age 40, about $14,974; age 50, about $29,457. The last coin is too heavy: he buckles under it, presses it overhead and heaves it onto a gold plate at age 65, about $81,273. Verdict: about $81,273 at 65, over 81 times the gift, never topped up.",
+    "alt_text_where": "Advanced settings → Accessibility → Alt text, if your app shows it for Reels.",
+    "cover": {
+      "files": {
+        "3x4": "publishing/09b-becker-rig-1000-times-1-07-cover-3x4.jpg",
+        "9x16": "publishing/09b-becker-rig-1000-times-1-07-cover-9x16.jpg"
+      },
+      "frame_in_current_render_s": 14.6,
+      "frame_index": 438,
+      "frame_by_content": "The heave, its first beat: the header 'POV: someone invested just / $1,000 for you at birth. / What's it worth at 65?' ($1,000 in green), the footer 'ASSUMES 7% a year, added once a year / never topped up · not a forecast', the heads Age / Put in / Worth, rungs 1 to 50 filled ($1,070, ≈ $1,967, ≈ $3,380, ≈ $5,427, ≈ $7,612, ≈ $14,974, ≈ $29,457, with $1,000 put in on each), the age-65 rung empty at the top, the figure buckled at the foot of the ladder with the last, heavy gold coin in his arms, and the caption 'At 50: about $29,457.' It asks and does not answer: the age-65 shelf the title asks about is still empty. On any cut, use a frame from the buckle, after the heavy coin is in his arms and before he lifts it.",
+      "frame_measured": "On the pre-condense 29.5 s render the heavy coin drops into his arms at about frame 426 (14.2 s); from about frame 432 (14.40 s) to frame 446 (14.87 s) the frame-to-frame mean luma change stays under 0.0009 (his strain wobble), and he hitches the coin up from about frame 447. Frame 438 (14.60 s) is inside that buckle, with the caption fully lit.",
+      "crop": "3:4 = 1080×1440 from y 50 to 1490 of the 1080×1920 frame. The content runs from y 112 (the badge) to y 1428 (the caption), so the crop centres it (62 px above and below): badge, header, footer, heads, the whole ladder with the figure and the coin, and the caption; it drops the empty page below. A centred grid crop (y 240-1680) cuts the badge and the header.",
+      "how_to_set": "In 'Edit cover', pick the heave frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
+      "re_export": "ffmpeg -ss 14.6 -i renders/channel/09b-becker-rig-1000-times-1-07.mp4 -frames:v 1 -vf \"crop=1080:1440:0:50\" -q:v 2 publishing/09b-becker-rig-1000-times-1-07-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 14.6 -i renders/channel/09b-becker-rig-1000-times-1-07.mp4 -frames:v 1 -q:v 2 publishing/09b-becker-rig-1000-times-1-07-cover-9x16.jpg"
+    },
+    "first_comment": "Age 10: ≈ $1,967. Age 30: ≈ $7,612. Age 50: ≈ $29,457. Age 65: ≈ $81,273, over 81 times the gift, never topped up. Got it at 25 instead? ≈ $14,974 at 65.",
+    "first_comment_action": "Post it right after publishing and pin it.",
+    "trial_reels": {
+      "recommendation": "Post as a regular Reel, not a Trial.",
+      "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show 471c793:renders/channel/09b-becker-rig-1000-times-1-07.mp4 > 09b-29.5s.mp4` (sha256 5d8f22d5…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. A cover test (the heave vs frame 1) is the other use. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+    },
+    "settings": {
+      "audio": "Rename the original audio to '$1,000 at birth, age by age — The Back of the Envelope' if the app allows; it is the score, with no voice.",
+      "share_to_feed": "On",
+      "google_indexing": "Public professional-account posts can appear in Google/Bing since 10 Jul 2025, so the caption is written as a searchable question."
+    },
+    "posting_window": {
+      "when": "Same evening as YouTube, about 15 min after the Short: 21:45-22:45 ET, on a different evening from 09a and 09c.",
+      "why": "October Reels, median plays by posting slot (owner insights, 2026-10-13): weekday 22:00-00:30 ET 5,449 (n = 3, including the two best: 7,303 and 5,449), weekday midday 1,212 (n = 2), Sunday 05:00-08:00 ET 1,087 (n = 2). 06c, posted Mon 03:46 ET, has 1,711 plays with a 40.3% skip rate. Skip rate tracks plays more closely than the hour does: 27.0-27.4% for the top two, 56.9-65.1% for the bottom two. The condense matters more than the hour."
+    },
+    "alt_text_rule": "Paste the short version into Instagram: it is kept at or under 100 characters so it fits the field however short it is, and it writes 'about' instead of '≈' so screen readers read it cleanly. The long version is for anywhere with room (a website embed, a newsletter)."
+  },
+  "research": {
+    "keywords_youtube": [
+      {
+        "keyword": "compound interest",
+        "est_monthly_searches": 137873,
+        "volume": 76.7,
+        "competition": 50.6,
+        "overall": 65.8,
+        "note": "the mechanism; −17.3% vs its 30-day baseline (166,772)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "generational wealth",
+        "est_monthly_searches": 43615,
+        "volume": 69.3,
+        "competition": 61.0,
+        "overall": 57.2,
+        "note": "−17.9% vs its baseline (53,133); the US is its top market",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "how to build generational wealth",
+        "est_monthly_searches": 24160,
+        "volume": 65.4,
+        "competition": 52.0,
+        "overall": 58.5,
+        "note": "+35.1% vs its baseline (17,888)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "trump account",
+        "est_monthly_searches": 22489,
+        "volume": 65.0,
+        "competition": 43.0,
+        "overall": 61.8,
+        "note": "+20.2% vs its baseline (18,708); not used (see the tags note)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "how to start investing for kids",
+        "est_monthly_searches": 5322,
+        "volume": 55.6,
+        "competition": 44.5,
+        "overall": 55.6,
+        "note": "the parent intent",
+        "metrics_as_of": "2026-04-11"
+      },
+      {
+        "keyword": "what if you invested $1000 in",
+        "est_monthly_searches": 4986,
+        "volume": 55.2,
+        "competition": 39.7,
+        "overall": 57.2,
+        "note": "the title's grammar",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "stock investing for kids",
+        "est_monthly_searches": 4912,
+        "volume": 55.1,
+        "competition": 44.0,
+        "overall": 55.5,
+        "note": "",
+        "metrics_as_of": "2026-02-25"
+      },
+      {
+        "keyword": "$1000 invested",
+        "est_monthly_searches": 4705,
+        "volume": 54.8,
+        "competition": 32.7,
+        "overall": 59.8,
+        "note": "",
+        "metrics_as_of": "2026-09-15"
+      },
+      {
+        "keyword": "invested $1000 at 22 and forgot about it",
+        "est_monthly_searches": 4379,
+        "volume": 54.4,
+        "competition": 36.0,
+        "overall": 58.2,
+        "note": "the same left-alone lump, from 22",
+        "metrics_as_of": "2026-08-17"
+      },
+      {
+        "keyword": "investing account for kids",
+        "est_monthly_searches": 3960,
+        "volume": 53.7,
+        "competition": 32.7,
+        "overall": 59.1,
+        "note": "",
+        "metrics_as_of": "2026-06-11"
+      },
+      {
+        "keyword": "investing for your child",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": 36.0,
+        "overall": 25.6,
+        "note": "<750/month (seed, US research mode)",
+        "metrics_as_of": null
+      },
+      {
+        "keyword": "at birth (matching terms)",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": null,
+        "overall": null,
+        "note": "no money phrase indexed: every match is a story ('switched at birth')",
+        "metrics_as_of": null
+      }
+    ],
+    "keywords_source": "vidIQ keyword research (research mode for 'investing for your child' with US volumes and 'trump account'; matching_terms for 'at birth', 'investing for kids' and 'invested $1000'; questions for 'generational wealth'), pulled 2026-10-13. vidIQ refreshes each keyword on its own schedule, so each row carries its snapshot date in metrics_as_of; six rows are older snapshots (2026-02-25 to 2026-09-15).",
+    "same_idea_youtube_shorts": [
+      {
+        "title": "QUANTO TERIA INVESTINDO R$ 100 POR MÊS DESDE QUE NASCEU?",
+        "channel": "PROJETO TRIVIA",
+        "subscribers": 105000,
+        "views": 1613770,
+        "published": "2026-07-26",
+        "note": "Portuguese: R$100 a month since birth, valued at ages 1, 5, 10, 18, 25 and 30 (per its description): the age ladder, with monthly deposits"
+      },
+      {
+        "title": "How to save money for your child!!! #wealth #savings #money #investing #finance #529 #investments",
+        "channel": "Your Rich BFF",
+        "subscribers": 1290000,
+        "views": 289876,
+        "published": "2023-01-23",
+        "note": "adjacent: saving for a child"
+      },
+      {
+        "title": "Can $1,000 at birth change a child's future? A Republican proposal aims to find out",
+        "channel": "WTHR",
+        "subscribers": 403000,
+        "views": 4899,
+        "published": "2025-06-10",
+        "note": "local news on the $1,000-at-birth accounts proposal"
+      },
+      {
+        "title": "The POWER of Compound Growth",
+        "channel": "Krish Kara",
+        "subscribers": 852,
+        "views": 3604,
+        "published": "2026-03-18",
+        "note": "£1,000 at birth at 8%, age by age in its description"
+      },
+      {
+        "title": "$1,000 invested at birth.Add $100/month.",
+        "channel": "Lloyd Ross",
+        "subscribers": 11600,
+        "views": 1374,
+        "published": "2025-08-26"
+      },
+      {
+        "title": "$1,000 at birth becomes $81,000 by 65 #Shorts",
+        "channel": "Money_Charts",
+        "subscribers": 16,
+        "views": 621,
+        "published": "2026-06-18",
+        "note": "this Short's maths (7%, never added to) with the answer in its title; outlier score 27.6"
+      },
+      {
+        "title": "Could $1,000 Turn Into $490,000? 🤯",
+        "channel": "Pinnacle Financial Advisors ",
+        "subscribers": 53,
+        "views": 142,
+        "published": "2026-09-18",
+        "note": "the same gift at an assumed 10%"
+      },
+      {
+        "title": "$1,000 Invested at Birth Becomes $148,780 by Age 65",
+        "channel": "YAWN & EARN",
+        "subscribers": 0,
+        "views": 74,
+        "published": "2026-08-10",
+        "note": "at 8%, with the answer in its title and an inflation note in its description"
+      }
+    ],
+    "same_idea_note": "vidIQ YouTube search (under 4 min; by relevance and by views): five channels with a 1,000-at-birth ladder (one in pounds, one with monthly additions), all under 3,700 views, three with the answer in the title (Money_Charts' is this Short's 7% maths: '$81,000 by 65'). None asks, and none says 'for you'. A monthly from-birth ladder in Portuguese has 1.6M views.",
+    "instagram_tiktok_outliers": [
+      {
+        "handle": "@billionaireunions",
+        "platform": "Instagram",
+        "id": "Db_mZkjhujh",
+        "on_screen": "How to make your kid a millionaire (2026 edition)",
+        "views": "1.4M (32.7x the account median of 42.3K)",
+        "note": "faceless text on screen, music only: a step-by-step plan for a child, ending on its projected total"
+      },
+      {
+        "handle": "@iamginakaur",
+        "platform": "Instagram",
+        "id": "Da20-ffsxh3",
+        "on_screen": "HOW TO MAKE YOUR KID A MILLIONAIRE (2026 EDITION)",
+        "views": "614.3K (41.2x the account median of 14.9K)",
+        "note": "the same text over a mirror selfie with a child, music only"
+      },
+      {
+        "handle": "@bossymommas",
+        "platform": "Instagram",
+        "id": "DcmSYNKoy4U",
+        "on_screen": "How to make your kid a millionaire (2026 edition)",
+        "views": "201.8K (62.8x the account median of 3.2K)",
+        "note": "the same text again, over a mother and baby"
+      },
+      {
+        "handle": "@george.kamel",
+        "platform": "TikTok",
+        "id": "7662399859114151199",
+        "on_screen": "SO WHAT IS A THE MILLIONAIRE LOOPHOLE INSIDE TRUMP ACCOUNTS",
+        "views": "831.2K (13.8x the account median of 60.3K)",
+        "note": "a compound-interest calculator on a child's account, talking head"
+      },
+      {
+        "handle": "@valeefloressx",
+        "platform": "TikTok",
+        "id": "7666578436340649246",
+        "on_screen": "I kept my son's $250 birthday money",
+        "views": "71.5K (93.8x the account median of 762.5)",
+        "note": "a gift invested for a child instead of spent: the same idea at a smaller stake"
+      }
+    ],
+    "own_channel_youtube_october_shorts": [
+      {
+        "id": "LjHDFzVxRyM",
+        "title": "Can You Find the Missing Dollar?",
+        "posted_et": "Sun 07:04",
+        "views": 1256
+      },
+      {
+        "id": "hJBvmGA6sZ0",
+        "title": "You Can Lean on $1 Million. Not on $1 Billion.",
+        "posted_et": "Thu 00:25",
+        "views": 1221
+      },
+      {
+        "id": "XVUeMcTg9OQ",
+        "title": "Your Interest Has a Speed Limit",
+        "posted_et": "Sun 05:49",
+        "views": 1141
+      },
+      {
+        "id": "fbpdKf4Wy8c",
+        "title": "What If You Bought Starbucks Stock Instead of a $4 Latte Every Day? (06c)",
+        "posted_et": "Mon 03:45",
+        "views": 760
+      },
+      {
+        "id": "8__HTUa2PoU",
+        "title": "Pay the Minimum on $5,000? 238 Months.",
+        "posted_et": "Mon 22:09",
+        "views": 642
+      },
+      {
+        "id": "FW_oxA3kbsM",
+        "title": "A $2 Lottery Ticket Was Worth $6.98. Until the Fine Print.",
+        "posted_et": "Wed 12:03",
+        "views": 348
+      },
+      {
+        "id": "mXbKY_R63h4",
+        "title": "You Can Carry $1 Million. Not in Pennies.",
+        "posted_et": "Thu 13:38",
+        "views": 177
+      },
+      {
+        "id": "EqFQCJheCMU",
+        "title": "Start Investing 10 Years Late? You Get Half.",
+        "posted_et": "Tue 22:27",
+        "views": 161
+      },
+      {
+        "id": "krfZEHhb0xU",
+        "title": "What If You Bought Netflix Stock Instead of Paying for Netflix? (06b)",
+        "posted_et": "Mon 12:14",
+        "views": 75
+      }
+    ],
+    "own_channel_instagram_october_reels": [
+      {
+        "shortcode": "DeIvYk7I4Qr",
+        "topic": "$5,000 on the minimum",
+        "posted_et": "Mon 22:46",
+        "plays": 7303,
+        "skip_rate_pct": 27.4,
+        "avg_watched_pct": 56.5
+      },
+      {
+        "shortcode": "DeOEthJJ1TG",
+        "topic": "$1M stack vs Burj Khalifa",
+        "posted_et": "Thu 00:28",
+        "plays": 5449,
+        "skip_rate_pct": 27.0,
+        "avg_watched_pct": 83.1
+      },
+      {
+        "shortcode": "DeWgFZRoR_S",
+        "topic": "Missing dollar",
+        "posted_et": "Sun 07:05",
+        "plays": 1997,
+        "skip_rate_pct": 32.0,
+        "avg_watched_pct": 81.3
+      },
+      {
+        "shortcode": "DeMvZv9IqRw",
+        "topic": "Powerball $6.98",
+        "posted_et": "Wed 12:05",
+        "plays": 1825,
+        "skip_rate_pct": 58.7,
+        "avg_watched_pct": 57.9
+      },
+      {
+        "shortcode": "DeYuqT4pjVC",
+        "topic": "06c latte vs Starbucks stock",
+        "posted_et": "Mon 03:46",
+        "plays": 1711,
+        "skip_rate_pct": 40.3,
+        "avg_watched_pct": 69.1
+      },
+      {
+        "shortcode": "DePe11HIHwn",
+        "topic": "$1M in pennies",
+        "posted_et": "Thu 13:37",
+        "plays": 598,
+        "skip_rate_pct": 42.0,
+        "avg_watched_pct": 66.7
+      },
+      {
+        "shortcode": "DeLSd9io8UK",
+        "topic": "10 years late",
+        "posted_et": "Tue 22:30",
+        "plays": 219,
+        "skip_rate_pct": 65.1,
+        "avg_watched_pct": 30.6
+      },
+      {
+        "shortcode": "DeEW2ZMIiYd",
+        "topic": "Speed limit (e)",
+        "posted_et": "Sun 05:54",
+        "plays": 177,
+        "skip_rate_pct": 56.9,
+        "avg_watched_pct": 31.2
+      }
+    ],
+    "channel_stats": {
+      "youtube_subscribers": 53,
+      "youtube_views": 10221,
+      "youtube_videos": 41,
+      "youtube_30d": "+27 subscribers, +5,127 views, 11 videos",
+      "instagram_followers": 8,
+      "instagram_30d_views": 20519
+    },
+    "limits": [
+      "@envelopemath's YouTube Analytics (audience hours, geography) were not read here; the 06b and 06c sheets found vidIQ's YouTube authorization is a different channel. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
+      "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and on the write-up's and the outliers' own tags.",
+      "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
+      "The '≈ 6.8% after inflation since 1928' is a live Official Data Foundation figure read from search results (the write-up's [click-check]); it will drift.",
+      "The federal $1,000-at-birth account ('Trump Accounts') appears here only from keyword data and third-party Short descriptions; none of it is verified, and none is in the copy.",
+      "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file.",
+      "The vidIQ credit balance is shared with the other sheets being built in parallel, so this sheet's spend is counted from each tool's listed cost (see research.vidiq_credits)."
+    ],
+    "titles_scored": "6 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored.",
+    "vidiq_credits": "09b: 80 by listed cost (6 keyword queries, 2 YouTube searches, 1 Instagram/TikTok outlier search, 6 title scores and 1 re-score after the build, 5 credits each), plus a third of the format's 10 shared credits (channel stats 5, channel Shorts list 5; Instagram owner insights and the balance cost 0); 265 for the three 09 sheets. The balance read 4,640 before the first 09 call and 4,375 when the research ended: a 265 drop, so 15 were parallel sheets' calls. It read 4,130 after the build's re-scores: of that 245, 15 were the three 09 re-scores and 230 parallel sheets' calls. At the adversarial check: 10 by listed cost (1 title score, 1 keyword pull), plus a third of 5 shared (one lookup of the three related videos); the three 09 checks used 35 in all. The balance read 3,730 before them and 3,695 after, with no other spend in that window."
+  },
+  "checked": {
+    "date": "2026-10-13",
+    "by": "adversarial check of this sheet",
+    "math": "python3 teasers/v2/checks/09-growth-ladder.py: 509 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/09-growth-ladder.py; every rung recomputed in MATH_RELATIONS from $1,000 × 1.07 per birthday ($1,070 exact; ≈ $1,967 … ≈ $81,273), 81.27 ('over 81 times'), 72 ÷ 7 ≈ 10 and the first doubling at 11, the pinned at-25 figure (1.07^40 → ≈ $14,974) and its × 5.4 (1.07^25), the $500 / $5,000 scaling and 6.81% ≈ 6.8%; COPY_RULES keep every rung's figure beside its own age, every rounded figure 'about' or '≈', the after-inflation framing with its date and source, and no 'millionaire'",
+    "limits": {
+      "youtube_title_chars": 85,
+      "youtube_description_chars": 1171,
+      "youtube_description_utf8_bytes": 1206,
+      "youtube_tags_chars_as_youtube_counts": 393,
+      "youtube_hashtags": 3,
+      "instagram_caption_chars": 990,
+      "instagram_hashtags": 5,
+      "instagram_alt_text_short_chars": 98
+    },
+    "vidiq_requeried": "pulled 2026-10-13: compound interest 137,873 / 50.6 (−17.3%); generational wealth 43,615; how to build generational wealth 24,160 (+35.1%); trump account 22,489 (+20.2%); 6 titles scored: pick 98, write-up title 90; channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,519 views in 30 days. Re-queried after the build: the pick's title score 98. Re-queried at the adversarial check: the pick's title score 98; 'generational wealth' 43,615 / 61.0 (−17.9%, baseline 53,133); the related video EqFQCJheCMU 162 views (161 at the build), live since Tue 6 Oct 22:27 ET. All match."
+  }
+}

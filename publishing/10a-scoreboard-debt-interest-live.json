@@ -1,0 +1,576 @@
+{
+  "id": "10a-scoreboard-debt-interest-live",
+  "teaser": "10a Scoreboard, cost-counter: \"US debt interest since you hit play: when does it pass your salary?\"",
+  "prepared": "2026-10-13",
+  "for_video": {
+    "current_render": "renders/channel/10a-scoreboard-debt-interest-live.mp4",
+    "current_duration_s": 39.0,
+    "current_sha256": "e46306dc33a2b162d37ea402b0e4a60cc3b7e62022a4e956c2eb6b0932314196",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the pre-condense cut. The ship step re-runs the build with --covers on the condensed file.",
+    "cut": {
+      "name": "pre-condense cut (fixer pass, 2026-10-08)",
+      "spec": "studio/specs/10a-scoreboard-debt-interest-live.json",
+      "body_s": 36.5,
+      "card_s": 2.5,
+      "shipped": null,
+      "git": "471c793",
+      "status": "the 10 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay); no 10 WIP spec was in studio/specs-wip/ at this build. The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."
+    }
+  },
+  "facts": {
+    "source": "teasers/v2/10-cost-counter.md section 10a; teasers/v2/checks/10-cost-counter.py: 1005 checks, 0 failed on studio/specs/ (2026-10-13)",
+    "basis": "FY2025 net interest of $970 billion (Treasury's final Monthly Treasury Statement for FY2025, via the American Action Forum; CBO, The Budget and Economic Outlook: 2026 to 2036, Feb 2026), spread evenly over a 365-day year of 31,536,000 seconds",
+    "rate": "$970B ÷ 31,536,000 = $30,758.498 a second ≈ $30,800 (3 significant figures, the write-up's one rounding); × 3,600 = $110,730,594 an hour ≈ $111 million",
+    "rows": "pass time = salary ÷ rate: $30,000 0.975 s ≈ 1.0; median pay ($1,251 × 52 = $65,052, BLS Q2 2026) 2.115 s ≈ 2.1; $100,000 3.251 s ≈ 3.3; $250,000 8.128 s ≈ 8; $500,000 16.256 s ≈ 16; $1,000,000 32.511 s ≈ 33",
+    "swap_in": "your seconds = yearly pay ÷ 30,800 (approximate by design; for the median, $65,052 ÷ 30,800 = 2.112 ≈ 2.1, the same as the exact 2.115)",
+    "stop": "the counter stops on exactly $1,000,000 (r × 32.51135 = $1,000,000.30), so the final carries no '≈'",
+    "zero_off_the_debt": "$0 of the interest pays the debt down: interest is the cost of carrying the debt, not a repayment",
+    "fy2026": "CBO's Monthly Budget Review for August 2026: net interest on the public debt $1,052 billion in the first 11 months of FY2026 vs $941 billion a year earlier, +12% (a wider line than the $970B net-interest total); so this counter runs slow",
+    "assumptions": "an average rate (real payments are lumpy); the salary rows are yearly gross salaries; median pay = BLS median usual weekly earnings of full-time wage and salary workers × 52",
+    "verdict": "$1M a year: ≈ 33 seconds."
+  },
+  "youtube": {
+    "titles_ranked": [
+      {
+        "rank": 1,
+        "title": "US Debt Interest Since You Hit Play: When Does It Pass Your Salary?",
+        "vidiq_score": 93,
+        "chars": 67,
+        "note": "PICK. The write-up's own title, word for word the on-screen header, so the title, the thumbnail (frame 1) and the first frame ask the same question. 'US Debt Interest' leads ('us debt' 44,622 searches a month, 'national debt interest' 4,591), and 'since you hit play' keeps HD Guy's real-time premise without the banned word 'live'. No hashtags in the title; the description's first three show above it."
+      },
+      {
+        "rank": 2,
+        "title": "The US Pays Interest on Its Debt Every Second. When Does It Pass Your Salary?",
+        "vidiq_score": 95,
+        "chars": 77,
+        "note": "Top score, 2 points over the pick, at 77 characters. Not picked: 'pays … every second' states as fact what the write-up calls an average (real interest payments are lumpy, on coupon dates). The pick says only what the counter shows."
+      },
+      {
+        "rank": 3,
+        "title": "When Does US Debt Interest Pass Your Salary? #NationalDebt #USDebt #Debt",
+        "vidiq_score": 93,
+        "chars": 72,
+        "note": "The house 3-hashtag form (72 characters), the same score as the pick. If used, swap its tags for the description's three (#NationalDebt #USDebt #MoneyMath), which the check requires."
+      }
+    ],
+    "titles_also_scored": [
+      {
+        "title": "When Does US Debt Interest Pass Your Salary? Counted Since You Hit Play",
+        "vidiq_score": 93,
+        "chars": 71,
+        "note": ""
+      },
+      {
+        "title": "Find Your Salary: When Does US Debt Interest Pass It?",
+        "vidiq_score": 93,
+        "chars": 53,
+        "note": "the VO's first line as the title"
+      },
+      {
+        "title": "US Debt Interest Adds Up Every Second. When Does It Pass Your Salary?",
+        "vidiq_score": 93,
+        "chars": 69,
+        "note": "the honest wording of option 2, 2 points lower"
+      },
+      {
+        "title": "US National Debt Interest Since You Hit Play: When Does It Pass Your Salary?",
+        "vidiq_score": 92,
+        "chars": 76,
+        "note": "adding 'National' costs a point"
+      },
+      {
+        "title": "National Debt Interest vs Your Salary: How Many Seconds?",
+        "vidiq_score": 92,
+        "chars": 56,
+        "note": "names the answer's unit, seconds"
+      },
+      {
+        "title": "How Fast Does Interest on the National Debt Pass Your Salary?",
+        "vidiq_score": 90,
+        "chars": 61,
+        "note": ""
+      },
+      {
+        "title": "How Many Seconds of US Debt Interest Equal Your Salary?",
+        "vidiq_score": 89,
+        "chars": 55,
+        "note": ""
+      }
+    ],
+    "title_pick": "US Debt Interest Since You Hit Play: When Does It Pass Your Salary?",
+    "title_pick_chars": 67,
+    "description": "When does US debt interest pass your salary? At fiscal 2025's rate, about $30,800 a second: a year of median full-time pay goes by in about 2.1 seconds, $100,000 in about 3.3 seconds and $1 million in about 33 seconds.\n\nThe math, shown:\n• Net interest the US paid in fiscal 2025: $970 billion (Treasury; CBO).\n• ÷ 31,536,000 seconds in a year ≈ $30,800 a second, ≈ $111 million an hour.\n• $30,000 a year: ≈ 1.0 second.\n• Median full-time pay, $1,251 a week × 52 = $65,052 (BLS): ≈ 2.1 seconds.\n• $100,000: ≈ 3.3 seconds. $250,000: ≈ 8 seconds. $500,000: ≈ 16 seconds.\n• $1,000,000: ≈ 33 seconds.\n• Yours: yearly pay ÷ 30,800 = your seconds.\n• And $0 of it pays the debt down: interest is the cost of carrying the debt, not a repayment.\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\n\nAnimation and original sound: The Back of the Envelope. Net interest, fiscal 2025: $970 billion (U.S. Treasury's final Monthly Treasury Statement for fiscal 2025; CBO, The Budget and Economic Outlook: 2026 to 2036). Spread evenly over a 365-day year; real interest payments are lumpy, so this is the average rate. Fiscal 2026 ran hotter: CBO's August 2026 review put net interest on the public debt 12% above the same 11 months of fiscal 2025, so this counter runs slow. Salaries are yearly gross pay. Median pay: BLS median usual weekly earnings of full-time wage and salary workers, Q2 2026, × 52. Not financial advice.\n#NationalDebt #USDebt #MoneyMath",
+    "description_chars": 1469,
+    "hashtags_in_order": [
+      "#NationalDebt",
+      "#USDebt",
+      "#MoneyMath"
+    ],
+    "hashtag_rules": "Title hashtags show as links in the title; with none in the title, the first 3 description hashtags show above it. Over 60 hashtags and YouTube ignores all of them. #Shorts is not needed (vertical, under 3 min).",
+    "tags": [
+      "us debt interest",
+      "national debt interest",
+      "interest on the national debt",
+      "national debt",
+      "us national debt",
+      "us debt",
+      "national debt explained",
+      "how the national debt works",
+      "can we pay off the national debt",
+      "debt crisis",
+      "net interest",
+      "salary",
+      "money math",
+      "math animation",
+      "the back of the envelope",
+      "envelope math"
+    ],
+    "tags_chars_as_youtube_counts": 320,
+    "pinned_comment": "Which row are you? Your seconds = yearly pay ÷ 30,800 ($100,000 ≈ 3.3 seconds).\n\nThe $970 billion is fiscal 2025 net interest (a gross figure is bigger), spread evenly over 31,536,000 seconds. Fiscal 2026 ran hotter (CBO: net interest on the public debt up 12% over the same 11 months), so this counter runs slow. The rows are gross salaries, before tax. And $0 of it pays the debt down.",
+    "related_video": {
+      "pick": {
+        "id": "8__HTUa2PoU",
+        "title": "Pay the Minimum on $5,000? 238 Months. #CreditCard #PersonalFinance #maths",
+        "url": "https://www.youtube.com/shorts/8__HTUa2PoU",
+        "why": "The cost of carrying a debt, at household size: interest that never pays the balance down, as this Short's '$0 of it pays the debt down'. It is the channel's best post on Instagram (7,303 plays, 27.4% skip rate) and has 642 views on YouTube."
+      },
+      "swap_when_live": "10b (40 years of your pay vs 1 minute of new US debt), the same counter on the debt itself, once published; then point 10b's Related video back at this Short, so the pair links both ways.",
+      "end_screen": "Shorts have no end screens or cards. The Related video link is the Shorts equivalent."
+    },
+    "thumbnail_frame": "In the YouTube app, pick frame 1, the question frame: the header, the $0 odometer, the six-pip salary ladder with $30K lit as the next target, and the label stack. The Instagram cover is the verdict frame instead.",
+    "settings": {
+      "category": "Education",
+      "audience": "Not made for kids",
+      "altered_or_synthetic_content": "No (animated chart, not realistic footage)",
+      "remixing": "Allow",
+      "captions": "None needed (no narration; all text is on screen)"
+    },
+    "posting_window": {
+      "when": "After the owner's FY2026 decision (see the intro), on the first free Tue-Thu evening after the condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+      "spacing": "Keep it at least 6 h from any other upload on the channel. 10a and 10b are both about the federal debt: post them at least a week apart, or as a labelled pair (10b as 'Part 2: the debt itself'), as the write-up asks. Suggested order within the series: 10c, then 10a, then 10b.",
+      "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,198 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2); 06c (Mon 03:45 ET) has 760 and 06b (Mon 12:14 ET) 75, too young to compare. The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. 10a waits for the FY2026 decision: the write-up prefers to post it on fiscal 2026's figure once Treasury's September statement is out. Interest on the debt is in the news ('debt crisis' +235.9% over its 30-day baseline; U.S. Money Reserve's '$1 Trillion Interest Payments' Short broke out at 52.92x in September)."
+    },
+    "description_utf8_bytes": 1507
+  },
+  "instagram": {
+    "caption": "When does US debt interest pass your salary? Find yours on the ladder: the interest counter starts at $0 the moment you hit play.\n\n$100,000 a year of pay ≈ 3.3 seconds of US debt interest. $1 million ≈ 33 seconds.\n\nThe math, shown:\n• Net interest, fiscal 2025: $970 billion (Treasury; CBO).\n• ÷ 31,536,000 seconds in a year ≈ $30,800 a second.\n• $30,000 a year: ≈ 1.0 second.\n• A year of median full-time pay, $1,251 a week × 52 = $65,052 (BLS): ≈ 2.1 seconds.\n• $100,000: ≈ 3.3 seconds. $250,000: ≈ 8 seconds. $500,000: ≈ 16 seconds.\n• $1,000,000: ≈ 33 seconds.\n\nYours: divide your yearly pay by 30,800.\n\nAnd $0 of it pays the debt down: interest is the cost of carrying the debt, not a repayment. Fiscal 2026 ran hotter: CBO's August review put net interest on the public debt 12% above the same 11 months of fiscal 2025, so this counter runs slow.\n\nAn average rate (real interest payments are lumpy); salaries are gross. Not financial advice.\n\nWhich row are you?\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\nAnimation and original sound: The Back of the Envelope.\n\n#nationaldebt #usdebt #interest #economy #moneymath",
+    "caption_chars": 1152,
+    "caption_first_125": "When does US debt interest pass your salary? Find yours on the ladder: the interest counter starts at $0 the moment you hit p",
+    "caption_rule": "The first 125 characters are the title's question, the 'US debt interest' keywords and the video's frame-1 instruction (find your salary; the counter starts at $0), no result: the caption overlays the Reel from frame 1, so the rate, every row and the verdict sit below 'more'.",
+    "hashtags_in_order": [
+      "#nationaldebt",
+      "#usdebt",
+      "#interest",
+      "#economy",
+      "#moneymath"
+    ],
+    "hashtag_rule": "Instagram caps a post at 5 hashtags (since Dec 2025).",
+    "alt_text_short": "Chart: US debt interest passes $100,000 in about 3.3 seconds and $1 million in about 33 seconds.",
+    "alt_text_long": "Animation on a black scoreboard. The header asks: US debt interest since you hit play: when does it pass your salary? A green counter starts at $0 and climbs at about $30,800 a second, fiscal 2025's $970 billion of net interest divided by the 31,536,000 seconds in a year. It lights a ladder of yearly salaries as it passes them: $30,000 at about 1.0 second, median pay ($65,052) at about 2.1, $100,000 at about 3.3, $250,000 at about 8 and $500,000 at about 16. It stops on exactly $1,000,000. Payoff: $1M a year: about 33 seconds.",
+    "alt_text_where": "Advanced settings → Accessibility → Alt text, if your app shows it for Reels.",
+    "cover": {
+      "files": {
+        "3x4": "publishing/10a-scoreboard-debt-interest-live-cover-3x4.jpg",
+        "9x16": "publishing/10a-scoreboard-debt-interest-live-cover-9x16.jpg"
+      },
+      "frame_in_current_render_s": 35.5,
+      "frame_index": 1065,
+      "frame_by_content": "The verdict frame, as the write-up's Instagram note asks: the header 'US DEBT INTEREST SINCE YOU HIT PLAY: / WHEN DOES IT PASS YOUR SALARY?', the odometer on '$1,000,000', the footer's working 'FY25: $970B ÷ 31,536,000 s · median $1,251 × 52', the ladder with every pip lit ($30K · Median $65K · $100K · $250K · $500K · $1M), the big lit coin tagged '$1M', and the verdict '$1M A YEAR: ≈ 33 SECONDS.' with nothing under it (the last caption has cleared). On any cut, use a settled frame of the verdict hold, after the last caption clears and before the end card.",
+      "frame_measured": "On the pre-condense 39.0 s render the counter lands on $1,000,000 with the verdict at about frame 975 (32.5 s); the coin's pop settles by about frame 1004 (33.47 s), the last caption clears at frame 1028 (34.27 s), and the board then holds still (frame-to-frame mean luma change under 0.001) until the end card at about frame 1096 (36.53 s). Frame 1065 (35.50 s) is used.",
+      "crop": "3:4 = 1080×1440 from y 0 to 1440 of the 1080×1920 frame: the badge (from y 141), the header, the odometer, the footer's working, the lit ladder and coin, and the verdict (to y 1265), with 141 px above and 175 px below; it drops the empty black below. A centred grid crop (y 240-1680) cuts the badge and the header.",
+      "how_to_set": "In 'Edit cover', pick the verdict frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
+      "re_export": "ffmpeg -ss 35.5 -i renders/channel/10a-scoreboard-debt-interest-live.mp4 -frames:v 1 -vf \"crop=1080:1440:0:0\" -q:v 2 publishing/10a-scoreboard-debt-interest-live-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 35.5 -i renders/channel/10a-scoreboard-debt-interest-live.mp4 -frames:v 1 -q:v 2 publishing/10a-scoreboard-debt-interest-live-cover-9x16.jpg"
+    },
+    "first_comment": "Yearly pay ÷ 30,800 = your seconds ($100,000 ≈ 3.3 seconds). Which row are you?",
+    "first_comment_action": "Post it right after publishing and pin it.",
+    "trial_reels": {
+      "recommendation": "Post as a regular Reel, not a Trial.",
+      "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show 471c793:renders/channel/10a-scoreboard-debt-interest-live.mp4 > 10a-39.0s.mp4` (sha256 e46306dc…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+    },
+    "settings": {
+      "audio": "Rename the original audio to 'US debt interest vs your salary — The Back of the Envelope' if the app allows; it is the score, with no voice.",
+      "share_to_feed": "On",
+      "google_indexing": "Public professional-account posts can appear in Google/Bing since 10 Jul 2025, so the caption is written as a searchable question."
+    },
+    "posting_window": {
+      "when": "Same evening as YouTube, about 15 min after the Short: 21:45-22:45 ET, after the FY2026 decision, and at least a week apart from 10b (or as a labelled pair).",
+      "why": "October Reels, median plays by posting slot (owner insights, 2026-10-13): weekday 22:00-00:30 ET 5,449 (n = 3, including the two best: 7,303 and 5,449), weekday midday 1,212 (n = 2), Sunday 05:00-08:00 ET 1,087 (n = 2). 06c, posted Mon 03:46 ET, has 1,711 plays with a 40.3% skip rate. Skip rate tracks plays more closely than the hour does: 27.0-27.4% for the top two, 56.9-65.1% for the bottom two. The condense matters more than the hour."
+    },
+    "alt_text_rule": "Paste the short version into Instagram: it is kept at or under 100 characters so it fits the field however short it is, and it writes 'about' instead of '≈' so screen readers read it cleanly. The long version is for anywhere with room (a website embed, a newsletter)."
+  },
+  "research": {
+    "keywords_youtube": [
+      {
+        "keyword": "national debt",
+        "est_monthly_searches": 25193,
+        "volume": 65.7,
+        "competition": 62.0,
+        "overall": 54.6,
+        "note": "seed; +2.0% vs its 30-day baseline (24,706)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "us debt",
+        "est_monthly_searches": 44622,
+        "volume": 69.4,
+        "competition": 66.0,
+        "overall": 55.2,
+        "note": "-33.1% vs its baseline (66,734): the August $40 trillion spike fading; still the biggest debt phrase",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "us national debt",
+        "est_monthly_searches": 10191,
+        "volume": 59.8,
+        "competition": 62.0,
+        "overall": 51.1,
+        "note": "-66.1% vs its baseline (30,039)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "national debt interest",
+        "est_monthly_searches": 4591,
+        "volume": 54.7,
+        "competition": 43.0,
+        "overall": 55.6,
+        "note": "the exact topic",
+        "metrics_as_of": "2026-03-01"
+      },
+      {
+        "keyword": "national debt clock live",
+        "est_monthly_searches": 8779,
+        "volume": 58.9,
+        "competition": 37.8,
+        "overall": 60.2,
+        "note": "the biggest counter phrase, but 'live' is a claim this video can't make (the write-up bans it): not in the tags",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "national debt clock",
+        "est_monthly_searches": 4838,
+        "volume": 55.0,
+        "competition": 43.7,
+        "overall": 55.5,
+        "note": "",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "debt crisis",
+        "est_monthly_searches": 31084,
+        "volume": 67.1,
+        "competition": 63.3,
+        "overall": 54.9,
+        "note": "+235.9% vs its baseline (9,254)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "how the national debt works",
+        "est_monthly_searches": 5231,
+        "volume": 55.5,
+        "competition": 37.5,
+        "overall": 58.3,
+        "note": "question intent the description answers",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "can we pay off the national debt",
+        "est_monthly_searches": 5321,
+        "volume": 55.6,
+        "competition": 41.0,
+        "overall": 57.0,
+        "note": "the '$0 of it pays the debt down' line answers it",
+        "metrics_as_of": "2026-08-02"
+      },
+      {
+        "keyword": "interest rates",
+        "est_monthly_searches": 63613,
+        "volume": 71.7,
+        "competition": 66.5,
+        "overall": 56.4,
+        "note": "+22.8%; a different topic (rates, not the interest bill): not in the tags",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "economy",
+        "est_monthly_searches": 378531,
+        "volume": 83.3,
+        "competition": 75.5,
+        "overall": 59.8,
+        "note": "+9.8% vs its baseline (344,793); the broad layer (#economy on Instagram)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "average salary in america",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": 38.5,
+        "overall": 24.6,
+        "note": "<750/month: the salary side has no search demand of its own",
+        "metrics_as_of": null
+      },
+      {
+        "keyword": "interest on the national debt",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": null,
+        "overall": null,
+        "note": "<750/month; vidIQ returned no matching terms",
+        "metrics_as_of": null
+      }
+    ],
+    "keywords_source": "vidIQ keyword research (research, matching_terms and questions modes), pulled 2026-10-13. vidIQ refreshes each keyword on its own schedule, so each row carries its snapshot date in metrics_as_of; two rows are older snapshots (2026-03-01 and 2026-08-02).",
+    "same_idea_youtube_shorts": [
+      {
+        "title": "Interest is the United States' Second Largest Expenditure",
+        "channel": "Principles by Ray Dalio",
+        "subscribers": 3190000,
+        "views": 1805286,
+        "published": "2025-10-28",
+        "note": "94 s; 13.56x its channel (vidIQ breakout score)"
+      },
+      {
+        "title": "America Spends $222,000+ Per Second…",
+        "channel": "The Iced Coffee Hour",
+        "subscribers": 1660000,
+        "views": 810279,
+        "published": "2025-12-15",
+        "note": "24 s; federal spending per second, 22.32x"
+      },
+      {
+        "title": "US Debt Crisis: $1 Trillion Interest Payments Explained #shorts",
+        "channel": "U.S. Money Reserve",
+        "subscribers": 12100,
+        "views": 25935,
+        "published": "2026-09-12",
+        "note": "19 s; 52.92x, the biggest breakout on the interest bill"
+      },
+      {
+        "title": "US DEBT CLOCK Live Stream",
+        "channel": "DEBT CLOCK",
+        "subscribers": 195,
+        "views": 26839,
+        "published": "2018-12-08",
+        "note": "16 s: a debt clock, counting"
+      },
+      {
+        "title": "The INSANE Cost to Run America (Per SECOND!)",
+        "channel": "MentalForge",
+        "subscribers": 67,
+        "views": 17638,
+        "published": "2026-04-28",
+        "note": "24 s; 22.88x from a 67-subscriber channel"
+      },
+      {
+        "title": "¿Sabías que EE.UU. pierde $11,000 por segundo? #shortsfinancieros",
+        "channel": "Simple Finanzas",
+        "subscribers": 25900,
+        "views": 3068,
+        "published": "2025-06-26",
+        "note": "Spanish; debt interest per second (its own figure, not verified here)"
+      },
+      {
+        "title": "Nick Shirley Watches America’s Debt Grow in Real Time ⏳",
+        "channel": "RealTalk America",
+        "subscribers": 192,
+        "views": 1443,
+        "published": "2026-09-26",
+        "note": "59 s; the debt, not the interest"
+      },
+      {
+        "title": "Government debt is growing by $10,000 per second",
+        "channel": "Boyce Watkins",
+        "subscribers": 389000,
+        "views": 1224,
+        "published": "2023-05-04",
+        "note": "3:03"
+      }
+    ],
+    "same_idea_note": "vidIQ YouTube search and outliers (Shorts; under 4 min): per-second government money is a proven Shorts idea (America Spends $222,000+ Per Second…, 810,279, 22.32x), and the interest bill is breaking out (U.S. Money Reserve, 52.92x, Sep 2026). None measures the interest against a viewer's salary; the per-second figures in their titles and descriptions are their own, not verified here.",
+    "instagram_tiktok_outliers": [
+      {
+        "handle": "@americafirstalert",
+        "platform": "Instagram",
+        "id": "DcUN1I9Oj27",
+        "on_screen": "BREAKING: Just as economic fears of a market crash and inflation rise, U.S. national debt surpasses $40 trillion.",
+        "views": "319.6K (170.8x the account median of 1.9K)",
+        "note": "a screen recording of a debt-clock website counting up, music only, looped: a counter as the whole video"
+      },
+      {
+        "handle": "@aiisfunne",
+        "platform": "Instagram",
+        "id": "Dca-dgBzJAh",
+        "on_screen": "(a digital debt counter ticking up over archive campaign footage)",
+        "views": "1.7M (326.7x the account median of 5.2K)",
+        "note": "the ticker carries it; the political framing is the creator's, and this Short names no person"
+      },
+      {
+        "handle": "@tommoneymays",
+        "platform": "Instagram",
+        "id": "DbOYHlPucRw",
+        "on_screen": "IMAGINE SOMEONE HANDS YOU $1,000,000,000,000",
+        "views": "1.1M (87.2x the account median of 13K)",
+        "note": "the scale of government-sized money, made personal; talking head"
+      }
+    ],
+    "own_channel_youtube_october_shorts": [
+      {
+        "id": "LjHDFzVxRyM",
+        "title": "Can You Find the Missing Dollar?",
+        "posted_et": "Sun 07:04",
+        "views": 1254
+      },
+      {
+        "id": "hJBvmGA6sZ0",
+        "title": "You Can Lean on $1 Million. Not on $1 Billion.",
+        "posted_et": "Thu 00:25",
+        "views": 1221
+      },
+      {
+        "id": "XVUeMcTg9OQ",
+        "title": "Your Interest Has a Speed Limit",
+        "posted_et": "Sun 05:49",
+        "views": 1141
+      },
+      {
+        "id": "fbpdKf4Wy8c",
+        "title": "What If You Bought Starbucks Stock Instead of a $4 Latte Every Day? (06c)",
+        "posted_et": "Mon 03:45",
+        "views": 760
+      },
+      {
+        "id": "8__HTUa2PoU",
+        "title": "Pay the Minimum on $5,000? 238 Months.",
+        "posted_et": "Mon 22:09",
+        "views": 642
+      },
+      {
+        "id": "FW_oxA3kbsM",
+        "title": "A $2 Lottery Ticket Was Worth $6.98. Until the Fine Print.",
+        "posted_et": "Wed 12:03",
+        "views": 348
+      },
+      {
+        "id": "mXbKY_R63h4",
+        "title": "You Can Carry $1 Million. Not in Pennies.",
+        "posted_et": "Thu 13:38",
+        "views": 177
+      },
+      {
+        "id": "EqFQCJheCMU",
+        "title": "Start Investing 10 Years Late? You Get Half.",
+        "posted_et": "Tue 22:27",
+        "views": 161
+      },
+      {
+        "id": "krfZEHhb0xU",
+        "title": "What If You Bought Netflix Stock Instead of Paying for Netflix? (06b)",
+        "posted_et": "Mon 12:14",
+        "views": 75
+      }
+    ],
+    "own_channel_instagram_october_reels": [
+      {
+        "shortcode": "DeIvYk7I4Qr",
+        "topic": "$5,000 on the minimum",
+        "posted_et": "Mon 22:46",
+        "plays": 7303,
+        "skip_rate_pct": 27.4,
+        "avg_watched_pct": 56.5
+      },
+      {
+        "shortcode": "DeOEthJJ1TG",
+        "topic": "$1M stack vs Burj Khalifa",
+        "posted_et": "Thu 00:28",
+        "plays": 5449,
+        "skip_rate_pct": 27.0,
+        "avg_watched_pct": 83.1
+      },
+      {
+        "shortcode": "DeWgFZRoR_S",
+        "topic": "Missing dollar",
+        "posted_et": "Sun 07:05",
+        "plays": 1997,
+        "skip_rate_pct": 32.0,
+        "avg_watched_pct": 81.3
+      },
+      {
+        "shortcode": "DeMvZv9IqRw",
+        "topic": "Powerball $6.98",
+        "posted_et": "Wed 12:05",
+        "plays": 1825,
+        "skip_rate_pct": 58.7,
+        "avg_watched_pct": 57.9
+      },
+      {
+        "shortcode": "DeYuqT4pjVC",
+        "topic": "06c latte vs Starbucks stock",
+        "posted_et": "Mon 03:46",
+        "plays": 1711,
+        "skip_rate_pct": 40.3,
+        "avg_watched_pct": 69.1
+      },
+      {
+        "shortcode": "DePe11HIHwn",
+        "topic": "$1M in pennies",
+        "posted_et": "Thu 13:37",
+        "plays": 598,
+        "skip_rate_pct": 42.0,
+        "avg_watched_pct": 66.7
+      },
+      {
+        "shortcode": "DeLSd9io8UK",
+        "topic": "10 years late",
+        "posted_et": "Tue 22:30",
+        "plays": 219,
+        "skip_rate_pct": 65.1,
+        "avg_watched_pct": 30.6
+      },
+      {
+        "shortcode": "DeEW2ZMIiYd",
+        "topic": "Speed limit (e)",
+        "posted_et": "Sun 05:54",
+        "plays": 177,
+        "skip_rate_pct": 56.9,
+        "avg_watched_pct": 31.2
+      }
+    ],
+    "channel_stats": {
+      "youtube_subscribers": 53,
+      "youtube_views": 10221,
+      "youtube_videos": 41,
+      "youtube_30d": "+27 subscribers, +5,127 views, 11 videos",
+      "instagram_followers": 8,
+      "instagram_30d_views": 20519
+    },
+    "limits": [
+      "@envelopemath's YouTube Analytics (audience hours, geography) were not read here; the 06b and 06c sheets found vidIQ's YouTube authorization is a different channel. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
+      "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and on the write-up's and the outliers' own tags.",
+      "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
+      "The write-up's sources were confirmed from search results: Treasury's statement and cbo.gov were blocked to direct fetches, and the $970 billion and the CBO August review are marked [click-check] there. Open them once before posting.",
+      "The figures in other creators' titles and descriptions (per-second spending, interest and debt) are theirs, not verified here; the copy states only the write-up's maths.",
+      "The write-up prefers to post 10a on fiscal 2026 net interest once Treasury's September 2026 statement is out; this sheet is built on fiscal 2025, as the video is today.",
+      "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file."
+    ],
+    "titles_scored": "10 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored.",
+    "vidiq_credits": "105 credits for this teaser by listed cost (8 keyword queries, 2 YouTube searches, 1 Shorts outlier search, 1 Instagram/TikTok outlier search and 9 title scores at up to 5 each), plus 10 shared across 10a-10c for the channel's stats and Shorts list (Instagram owner insights cost 0), and 5 for the re-score after the build. Account balance: 4,375 at the start of the 10 research and 4,135 when it ended, a 240 drop for 56 calls (the balance is shared with sheets built in parallel, so the drop is an upper bound; keyword queries cost less than 5); 4,060 after the 3 re-scores (15 credits by listed cost; the rest of that 75 drop is other sheets'). About 255 for the three 10 sheets, against a budget of about 450.",
+    "related_debt_counter_note": "10b (new US debt) shares this Short's topic; the write-up asks for the two to go out at least a week apart or as a labelled pair."
+  },
+  "checked": {
+    "date": "2026-10-13",
+    "by": "the publishing strategist's own check at the first build (no adversarial pass yet)",
+    "math": "python3 teasers/v2/checks/10-cost-counter.py: 1005 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/10-cost-counter.py; the rate and every row recomputed from $970 billion in MATH_RELATIONS ($30,758.50 ≈ $30,800; ≈ $111 million an hour; 1.0 / 2.1 / 3.3 / 8 / 16 / 33 seconds; $1,251 × 52 = $65,052; the swap-in 2.112 ≈ 2.1; CBO's 12%); COPY_RULES hold every figure to the write-up's one rounding, put '≈' or 'about' on every rounded figure, keep $970 billion beside fiscal 2025 and the 12% beside its own line, and ban 'live', 'in real time', politics and advice wording",
+    "limits": {
+      "youtube_title_chars": 67,
+      "youtube_description_chars": 1469,
+      "youtube_description_utf8_bytes": 1507,
+      "youtube_tags_chars_as_youtube_counts": 320,
+      "youtube_hashtags": 3,
+      "instagram_caption_chars": 1152,
+      "instagram_hashtags": 5,
+      "instagram_alt_text_short_chars": 96
+    },
+    "vidiq_requeried": "pulled 2026-10-13: national debt 25,193 / 62.0 (+2.0%); us debt 44,622 (-33.1%); national debt interest 4,591; national debt clock live 8,779; title scores 93 (pick = the write-up's title), 95 (top); channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,519 views in 30 days. Re-queried after the build: the pick's title score 93. Match."
+  }
+}

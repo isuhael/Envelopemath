@@ -1,0 +1,601 @@
+{
+  "id": "01b-becker-rig-20-an-hour",
+  "teaser": "01b Becker Rig, dead-simple-list: \"You pay 6.2% Social Security. What does a $1M salary pay?\"",
+  "prepared": "2026-10-13",
+  "for_video": {
+    "current_render": "renders/channel/01b-becker-rig-20-an-hour.mp4",
+    "current_duration_s": 26.5,
+    "current_sha256": "869e23a73d7e07ae360671291c0ef2e9d6060fd0b6cc1e5d90b8f86ea8198533",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the pre-condense round-2 cut. The ship step re-runs the build with --covers on the condensed file.",
+    "cut": {
+      "name": "round-2 cut (pre-condense)",
+      "spec": "studio/specs/01b-becker-rig-20-an-hour.json",
+      "body_s": 24.0,
+      "card_s": 2.5,
+      "shipped": null,
+      "git": "471c793",
+      "status": "the 01 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay). The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."
+    }
+  },
+  "facts": {
+    "source": "teasers/v2/01-dead-simple-list.md section (b) 01b; teasers/v2/checks/01-dead-simple-list.py: 400 checks, 0 failed on studio/specs/ (2026-10-13)",
+    "rate": "Social Security tax, employee share: 6.2% (statutory; employers pay a matching 6.2% to the same cap); Medicare 1.45% has no cap and is not counted",
+    "wage_base": "2026: $184,500 (SSA '2026 Social Security Changes' fact sheet, released with the 2026 COLA in October 2025; Kiplinger)",
+    "row_1": "$20/hr × 2,080 hours (40 × 52) × 6.2% = $2,579.20 ≈ $2,579 a year; $41,600 of pay, all under the cap",
+    "guess": "the flat-rate guess, struck: $1,000,000 × 6.2% = $62,000",
+    "row_2": "$184,500 × 6.2% = $11,439, the most anyone's wages pay in 2026",
+    "row_3": "$11,439 ÷ $1,000,000 = 1.1439% ≈ 1.1% of their pay",
+    "verdict": "You pay 6.2%. A $1M salary pays ≈ 1.1%. VO: 'You pay more than five times their rate' (6.2 ÷ 1.1439 = 5.42; 5.64 on the shown 1.1%)",
+    "pinned": "in dollars the $1M salary pays 4.4× the $20/hr worker ($11,439 ÷ $2,579.20 = 4.44) on 24× the pay ($1,000,000 ÷ $41,600 = 24.04); pay above the cap does not count toward benefits either (SSA: 'contribution and benefit base')",
+    "not_modelled": "self-employment tax (12.4% to the same cap), the employer's share, Medicare and its 0.9% surtax, two jobs (each employer withholds to the cap; the excess is refunded at tax time)"
+  },
+  "youtube": {
+    "titles_ranked": [
+      {
+        "rank": 1,
+        "title": "You Pay 6.2% Social Security. What Does a Million-Dollar Salary Pay?",
+        "vidiq_score": 92,
+        "chars": 68,
+        "note": "PICK. The write-up's title with the VO's own words for the rival ('A million-dollar salary'), 11 points over the write-up's '$1M Salary'. No hashtags in the title; the description's first three show above it."
+      },
+      {
+        "rank": 2,
+        "title": "You Pay 6.2% Social Security. What Does a Millionaire Pay?",
+        "vidiq_score": 92,
+        "chars": 58,
+        "note": "The same score, 9 characters shorter, but not used: 'millionaire' usually means wealth, and the video is about a $1M salary. A millionaire on a modest salary pays 6.2% too."
+      },
+      {
+        "rank": 3,
+        "title": "You Pay 6.2% Social Security Tax. What Does a $1M Salary Pay? #SocialSecurity #taxes #paycheck",
+        "vidiq_score": 83,
+        "chars": 94,
+        "note": "The house 3-hashtag form (95 characters). The channel's live Shorts carry title hashtags, so this is the option if the owner keeps that habit; it scores 9 points under the pick."
+      }
+    ],
+    "titles_also_scored": [
+      {
+        "title": "You Pay 6.2% Social Security. What Does a Millionaire Pay on a $1M Salary?",
+        "vidiq_score": 92,
+        "chars": 74,
+        "note": "both words, no gain, 74 chars"
+      },
+      {
+        "title": "You Pay 6.2% in Social Security Tax. What Does a $1 Million Salary Pay?",
+        "vidiq_score": 84,
+        "chars": 71,
+        "note": ""
+      },
+      {
+        "title": "You Pay 6.2% Social Security Tax. What Does a $1M Salary Pay?",
+        "vidiq_score": 82,
+        "chars": 61,
+        "note": ""
+      },
+      {
+        "title": "Social Security Tax: You Pay 6.2%. What Does a $1M Salary Pay?",
+        "vidiq_score": 82,
+        "chars": 62,
+        "note": ""
+      },
+      {
+        "title": "You Pay 6.2% Social Security Tax. What Does Someone Earning $1 Million Pay?",
+        "vidiq_score": 82,
+        "chars": 75,
+        "note": ""
+      },
+      {
+        "title": "You Pay 6.2% Social Security. What Does a $1M Salary Pay?",
+        "vidiq_score": 81,
+        "chars": 57,
+        "note": "the write-up's title"
+      },
+      {
+        "title": "You Pay 6.2% Social Security. What Does a $1M Earner Pay?",
+        "vidiq_score": 81,
+        "chars": 57,
+        "note": ""
+      }
+    ],
+    "title_pick": "You Pay 6.2% Social Security. What Does a Million-Dollar Salary Pay?",
+    "title_pick_chars": 68,
+    "description": "You pay 6.2% Social Security tax on every paycheck. What does a million-dollar salary pay? In 2026 the 6.2% stops at $184,500 of wages, so a $1M salary pays $11,439: about 1.1% of its pay. You pay more than five times their rate.\n\nThe math, shown:\n• At $20 an hour, full time (40 hrs × 52 wks = 2,080 hours): $20 × 2,080 × 6.2% ≈ $2,579 a year. All $41,600 is under the 2026 cap of $184,500, so every dollar pays 6.2%.\n• The flat-rate guess: $1,000,000 × 6.2% = $62,000. No.\n• In 2026 it stops at $184,500 (the wage base): $184,500 × 6.2% = $11,439, the most anyone's wages pay.\n• $11,439 ÷ $1,000,000 ≈ 1.1% of their pay.\n• You: 6.2% on every dollar, all year. Them: about 1.1%. More than five times their rate.\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\n\nAnimation and original sound: The Back of the Envelope. 2026 Social Security tax, employee share: 6.2% of wages up to $184,500 (SSA, 2026 Social Security Changes; Kiplinger). Employers pay a matching 6.2% to the same cap. Medicare (1.45%, no cap) is not counted. Not modelled: self-employment tax, and a second job (each employer withholds to the cap; the excess comes back at tax time). Not financial advice.\n#SocialSecurity #taxes #paycheck",
+    "description_chars": 1234,
+    "hashtags_in_order": [
+      "#SocialSecurity",
+      "#taxes",
+      "#paycheck"
+    ],
+    "hashtag_rules": "Title hashtags show as links in the title; with none in the title, the first 3 description hashtags show above it. Over 60 hashtags and YouTube ignores all of them. #Shorts is not needed (vertical, under 3 min).",
+    "tags": [
+      "social security tax",
+      "social security taxes",
+      "social security",
+      "social security tax cap",
+      "the social security cap",
+      "social security wage base",
+      "social security tax limit",
+      "social security 2026",
+      "fica tax",
+      "fica taxes",
+      "fica",
+      "payroll taxes",
+      "6.2% social security",
+      "millionaires social security",
+      "taxes",
+      "paycheck",
+      "money math",
+      "math animation",
+      "the back of the envelope",
+      "envelope math"
+    ],
+    "tags_chars_as_youtube_counts": 381,
+    "pinned_comment": "What's your hourly wage? Up to $184,500 of pay in 2026, Social Security takes 6.2% of every dollar: at $20 an hour full time, ≈ $2,579 a year.\n\nBoth sides, in numbers: in dollars the $1M salary still pays 4.4× what you pay (≈ $2,579), on 24× the pay. And the cap works both ways: pay above $184,500 (2026) doesn't count toward their Social Security benefit either. Social Security only, employee share: Medicare (1.45%) has no cap.",
+    "related_video": {
+      "pick": {
+        "id": "hJBvmGA6sZ0",
+        "title": "You Can Lean on $1 Million. Not on $1 Billion.",
+        "url": "https://www.youtube.com/shorts/hJBvmGA6sZ0",
+        "why": "The same $1 million, seen another way (a stack of bills), for the viewer this title draws. It is the channel's second-best Short (1,221 views)."
+      },
+      "swap_when_live": "01c (the same dead-simple-list series, also a paycheck tax), once published; then 01a. Then point theirs at this Short.",
+      "end_screen": "Shorts have no end screens or cards. The Related video link is the Shorts equivalent."
+    },
+    "thumbnail_frame": "In the YouTube app, pick frame 1, the clean cover (the same content as the IG cover).",
+    "settings": {
+      "category": "Education",
+      "audience": "Not made for kids",
+      "altered_or_synthetic_content": "No (animated chart, not realistic footage)",
+      "remixing": "Allow",
+      "captions": "None needed (no narration; all text is on screen)"
+    },
+    "posting_window": {
+      "when": "First Tue-Thu evening after the condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day): Tue 13 Oct 2026 at the earliest. Sunday 06:00-08:00 ET is the alternative.",
+      "spacing": "Keep it at least 6 h from any other upload on the channel, and on a different evening from 01a and 01c (the same series). Suggested order: 01b first, then 01c, then 01a (see why).",
+      "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,198 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2); 06c (Mon 03:45 ET) has 760 and 06b (Mon 12:14 ET) 61 a day or less after posting, too young to compare. The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. Why first: 'social security' runs +19.8% and 'social security benefits' +31.7% over their 30-day baselines, and SSA published the 2026 wage base ($184,500) with its COLA fact sheet in October 2025 (the write-up's source), so the 2027 figure may come out about now. Every line naming $184,500 also names 2026, so the copy stays true; posting early avoids 'that's last year's cap' comments, and the pinned reply can name the new figure once SSA publishes it."
+    },
+    "description_utf8_bytes": 1256
+  },
+  "instagram": {
+    "caption": "You pay 6.2% Social Security tax on every paycheck. What does a million-dollar salary pay? The math, on a $20/hr wage.\n\nAt $20 an hour, full time: $20 × 2,080 hours × 6.2% ≈ $2,579 a year. All $41,600 is taxed: every dollar, all year.\n\nA million-dollar salary at a flat 6.2% would pay $62,000. It doesn't. In 2026 the tax stops at $184,500 of wages:\n• $184,500 × 6.2% = $11,439, the most anyone's wages pay in 2026.\n• $11,439 ÷ $1,000,000 ≈ 1.1% of their pay.\n\nYou pay 6.2%. A $1M salary pays ≈ 1.1%. You pay more than five times their rate.\n\n2026 figures, employee share (employers match it to the same cap). Medicare (1.45%) has no cap and isn't counted. Not financial advice.\n\nWhat's your hourly wage?\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\nAnimation and original sound: The Back of the Envelope.\n\n#socialsecurity #taxes #paycheck #moneymath #personalfinance",
+    "caption_chars": 900,
+    "caption_first_125": "You pay 6.2% Social Security tax on every paycheck. What does a million-dollar salary pay? The math, on a $20/hr wage.\n\nAt $2",
+    "caption_rule": "The first 125 characters are the header's question with the 'Social Security tax' and 'million-dollar salary' keywords and the $20/hr input, no result: the caption overlays the Reel from frame 1, so every result, the struck $62,000 guess and the $184,500 cap sit below 'more'.",
+    "hashtags_in_order": [
+      "#socialsecurity",
+      "#taxes",
+      "#paycheck",
+      "#moneymath",
+      "#personalfinance"
+    ],
+    "hashtag_rule": "Instagram caps a post at 5 hashtags (since Dec 2025).",
+    "alt_text_short": "Animation: you pay 6.2% Social Security on all your pay; a $1M salary pays about 1.1% (2026).",
+    "alt_text_long": "Animation on a white background. The header reads: 3 dead simple numbers. You pay 6.2% to Social Security. A $1M salary pays…? A green stick figure throws formula plates onto 3 numbered ledges. Yours, a year: $20 an hour × 2,080 hours × 6.2% ≈ $2,579, in red. A $1M salary pays: he works the flat-rate guess, $1,000,000 × 6.2% = $62,000, and strikes it out in red; the real block, $184,500 (the 2026 cap), crushes it: × 6.2% = $11,439. Their rate: $11,439 ÷ $1,000,000 ≈ 1.1%, on a gold plate, and he jumps, shocked. Verdict: You pay 6.2%. A $1M salary pays about 1.1%.",
+    "alt_text_where": "Advanced settings → Accessibility → Alt text, if your app shows it for Reels.",
+    "cover": {
+      "files": {
+        "3x4": "publishing/01b-becker-rig-20-an-hour-cover-3x4.jpg",
+        "9x16": "publishing/01b-becker-rig-20-an-hour-cover-9x16.jpg"
+      },
+      "frame_in_current_render_s": 0,
+      "frame_index": 0,
+      "frame_by_content": "The clean cover, frame 1: the header '3 DEAD SIMPLE NUMBERS / YOU PAY 6.2% TO SOCIAL SECURITY. / A $1M SALARY PAYS…?' ('6.2%' in red), the footer 'ASSUMES 40 hrs × 52 wks · 2026 rates / employee share, no Medicare', the input line 'Your pay $20/hr 40 hrs a week', 3 numbered ledges labelled 'Yours, a year / A $1M salary pays / Their rate' (the last two with empty sockets), ① active with its '$20' block, and the green stick figure holding the '× 2,080 × 6.2%' plate. No result: it asks and does not answer, like the title and the caption. The write-up names frame 1 as the Instagram cover. On any cut, use the opening frame, before the figure flips the plate. A cut whose hook caption is already up on its first frame (the condensed WIP spec's is) still gives a clean cover: 'At $20 an hour, you pay about' holds no result.",
+      "frame_measured": "On the pre-condense 26.5 s render, frame 0 is that frame and the only one without a caption: from frame 1 the first caption word ('At') fades in, and from frame 4 he starts to flip the plate.",
+      "crop": "3:4 = 1080×1440, the top 1440 rows (y 0 to 1440) of the 1080×1920 frame: the badge, the header, the footer, the input line, the 3 ledges, the figure and the floor line, with even margins above the badge and below the floor; it drops the empty floor below. A crop from y 60 (as on 01a) leaves 200 px of empty floor. A centred grid crop (y 240-1680) cuts the badge and leaves the header on the edge.",
+      "how_to_set": "In 'Edit cover', pick frame 1 of the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
+      "re_export": "ffmpeg -ss 0 -i renders/channel/01b-becker-rig-20-an-hour.mp4 -frames:v 1 -vf \"crop=1080:1440:0:0\" -q:v 2 publishing/01b-becker-rig-20-an-hour-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 0 -i renders/channel/01b-becker-rig-20-an-hour.mp4 -frames:v 1 -q:v 2 publishing/01b-becker-rig-20-an-hour-cover-9x16.jpg"
+    },
+    "first_comment": "You pay 6.2% on every dollar. A $1M salary pays ≈ 1.1%: the 6.2% stops at $184,500 of pay in 2026. Employee share; Medicare not counted. What's your hourly wage?",
+    "first_comment_action": "Post it right after publishing and pin it.",
+    "trial_reels": {
+      "recommendation": "Post as a regular Reel, not a Trial.",
+      "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show 471c793:renders/channel/01b-becker-rig-20-an-hour.mp4 > 01b-26.5s.mp4` (sha256 869e23a7…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+    },
+    "settings": {
+      "audio": "Rename the original audio to 'Social Security vs a $1M salary — The Back of the Envelope' if the app allows; it is the score, with no voice.",
+      "share_to_feed": "On",
+      "google_indexing": "Public professional-account posts can appear in Google/Bing since 10 Jul 2025, so the caption is written as a searchable question."
+    },
+    "posting_window": {
+      "when": "Same evening as YouTube, about 15 min after the Short: 21:45-22:45 ET, Tue 13 Oct 2026 at the earliest, on a different evening from 01a and 01c.",
+      "why": "October Reels, median plays by posting slot (owner insights, 2026-10-13): weekday 22:00-00:30 ET 5,449 (n = 3, including the two best: 7,302 and 5,449), weekday midday 1,212 (n = 2), Sunday 05:00-08:00 ET 1,087 (n = 2). 06c, posted Mon 03:46 ET, has 1,711 plays with a 40.3% skip rate. Skip rate tracks plays more closely than the hour does: 27.0-27.4% for the top two, 56.9-65.1% for the bottom two. The condense matters more than the hour."
+    },
+    "alt_text_rule": "Paste the short version into Instagram: it is kept at or under 100 characters so it fits the field however short it is, and it writes 'about' instead of '≈' so screen readers read it cleanly. The long version is for anywhere with room (a website embed, a newsletter)."
+  },
+  "research": {
+    "keywords_youtube": [
+      {
+        "keyword": "social security",
+        "est_monthly_searches": 318231,
+        "volume": 82.1,
+        "competition": 76.0,
+        "overall": 58.9,
+        "note": "+19.8% vs its 30-day baseline (265,693); very high competition",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "social security benefits",
+        "est_monthly_searches": 58949,
+        "volume": 71.2,
+        "competition": 52.6,
+        "overall": 61.7,
+        "note": "+31.7% vs its baseline (44,753); benefit news, not in the tags",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "fica",
+        "est_monthly_searches": 23427,
+        "volume": 65.2,
+        "competition": 54.4,
+        "overall": 57.4,
+        "note": "-32.3% vs its baseline (34,616)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "social security taxes",
+        "est_monthly_searches": 7310,
+        "volume": 57.7,
+        "competition": 50.2,
+        "overall": 54.5,
+        "note": "",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "social security tax",
+        "est_monthly_searches": 5251,
+        "volume": 55.5,
+        "competition": 50.3,
+        "overall": 53.2,
+        "note": "seed; -46.2% vs its baseline (9,765)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "fica taxes",
+        "est_monthly_searches": 5031,
+        "volume": 55.3,
+        "competition": 32.6,
+        "overall": 60.1,
+        "note": "",
+        "metrics_as_of": "2026-09-17"
+      },
+      {
+        "keyword": "payroll taxes",
+        "est_monthly_searches": 4429,
+        "volume": 54.4,
+        "competition": 46.8,
+        "overall": 53.9,
+        "note": "",
+        "metrics_as_of": "2026-09-03"
+      },
+      {
+        "keyword": "how to pay no social security tax",
+        "est_monthly_searches": 4117,
+        "volume": 54.0,
+        "competition": 32.5,
+        "overall": 59.4,
+        "note": "avoidance intent: not in the tags",
+        "metrics_as_of": "2026-07-30"
+      },
+      {
+        "keyword": "the social security cap",
+        "est_monthly_searches": 3857,
+        "volume": 53.5,
+        "competition": 51.9,
+        "overall": 51.4,
+        "note": "the twist: in the tags, not in the title",
+        "metrics_as_of": "2026-05-01"
+      },
+      {
+        "keyword": "social security cap proposal",
+        "est_monthly_searches": 3590,
+        "volume": 53.1,
+        "competition": 19.9,
+        "overall": 63.9,
+        "note": "policy intent: the series takes no side, so not in the tags",
+        "metrics_as_of": "2026-05-02"
+      },
+      {
+        "keyword": "fica tax",
+        "est_monthly_searches": 3430,
+        "volume": 52.8,
+        "competition": 22.8,
+        "overall": 62.5,
+        "note": "",
+        "metrics_as_of": "2026-09-19"
+      },
+      {
+        "keyword": "taxes",
+        "est_monthly_searches": 82933,
+        "volume": 73.4,
+        "competition": 52.5,
+        "overall": 63.1,
+        "note": "+11.0% vs its baseline (74,718)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "social security wage base",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": 23.9,
+        "overall": 30.4,
+        "note": "<750/month: SSA's own term",
+        "metrics_as_of": null
+      },
+      {
+        "keyword": "social security tax limit",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": 27.3,
+        "overall": 29.1,
+        "note": "<750/month",
+        "metrics_as_of": null
+      },
+      {
+        "keyword": "social security tax cap",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": 35.5,
+        "overall": 25.8,
+        "note": "<750/month",
+        "metrics_as_of": null
+      },
+      {
+        "keyword": "scrap the cap",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": 23.3,
+        "overall": 30.7,
+        "note": "<750/month; the slogan the write-up expects in the comments",
+        "metrics_as_of": null
+      }
+    ],
+    "keywords_source": "vidIQ keyword research (research and questions modes), pulled 2026-10-13. vidIQ refreshes each keyword on its own schedule, so each row carries its snapshot date in metrics_as_of; six rows are older snapshots (2026-05-01 to 2026-09-19).",
+    "same_idea_youtube_shorts": [
+      {
+        "title": "Social Security Tax Hits Working People Hardest, Senator Says",
+        "channel": "Viral Flux Daily",
+        "subscribers": 4780,
+        "views": 46137,
+        "published": "2026-09-28",
+        "note": "a 6 s politics clip; the biggest same-topic Short found (vidIQ outliers, breakout 6.3)"
+      },
+      {
+        "title": "The Social Security FICA payroll tax on your earnings caps out at $184,500 and 2026",
+        "channel": "The Medicare Family",
+        "subscribers": 200000,
+        "views": 2756,
+        "published": "2026-08-08",
+        "note": "1:00; 12 comments"
+      },
+      {
+        "title": "The Social Security tax cap means millionaires stop paying in #Shorts",
+        "channel": "The WLTH Hub",
+        "subscribers": 38,
+        "views": 1094,
+        "published": "2026-09-25",
+        "note": "13 s; 'millionaires stop paying in April'; 7 comments"
+      },
+      {
+        "title": "Social Security Tax Hike: Are You Ready for 2026? #shorts",
+        "channel": "Guardian Financial, Inc.",
+        "subscribers": 41900,
+        "views": 523,
+        "published": "2026-04-06"
+      },
+      {
+        "title": "Millionaires Stop Paying Social Security #Shorts",
+        "channel": "FinanceGuyFi",
+        "subscribers": 15,
+        "views": 338,
+        "published": "2026-03-10",
+        "note": "'stopped paying on March 10th'"
+      },
+      {
+        "title": "High-Income Paycheck Mystery: Social Security Tax Explained! #shorts",
+        "channel": "Guardian Financial, Inc.",
+        "subscribers": 41900,
+        "views": 249,
+        "published": "2026-10-11"
+      },
+      {
+        "title": "2026 Social Security Tax Cap: $184,500 - What High Earners Should Know",
+        "channel": "TaxSaveUSA",
+        "subscribers": 1,
+        "views": 83,
+        "published": "2026-09-30"
+      },
+      {
+        "title": "The Day Millionaires Stop Paying Social Security Tax",
+        "channel": "The Cents of It",
+        "subscribers": 7,
+        "views": 4,
+        "published": "2026-09-17",
+        "note": "still on the 2025 wage base"
+      }
+    ],
+    "same_idea_note": "vidIQ YouTube search and outliers (Shorts): the biggest same-topic Short is a 6 s politics clip (46,137); explainers are under 2,800, framed as 'the day millionaires stop paying' or high-earner tips. None compares the rates (6.2% vs ≈ 1.1%), which is this video's angle.",
+    "instagram_tiktok_outliers": [
+      {
+        "handle": "@rogue_knigh_t",
+        "platform": "Instagram",
+        "id": "DbKyOmosNWK",
+        "on_screen": "a static tweet whose first line is about giving 6.2% of your paycheck to Social Security",
+        "views": "1.3M (42.8x the account median of 30K)",
+        "note": "a tweet screenshot over music; the hook is the viewer's own 6.2%, as in this header"
+      },
+      {
+        "handle": "@oddsonpolitics_",
+        "platform": "Instagram",
+        "id": "DayHO5zRq76",
+        "on_screen": "Murray: Is it true that people making under $184,000 pay a 12.4% Social Security tax rate?",
+        "views": "1.8M (3.7x the account median of 473K); the TikTok post (@oddsonpolitics, 7662448653700762910) 328.5K (114.6x)",
+        "note": "a Senate hearing clip on the rates by income; 12.4% counts the employer's half too"
+      },
+      {
+        "handle": "@mcbnnews0",
+        "platform": "TikTok",
+        "id": "7667064818800659725",
+        "on_screen": "Murray: Is it true that people making under $184,000 pay a 12.4% Social Security tax rate?",
+        "views": "129K (113.0x the account median of 1.1K)",
+        "note": "the same hearing clip, reposted"
+      }
+    ],
+    "own_channel_youtube_october_shorts": [
+      {
+        "id": "LjHDFzVxRyM",
+        "title": "Can You Find the Missing Dollar?",
+        "posted_et": "Sun 07:04",
+        "views": 1254
+      },
+      {
+        "id": "hJBvmGA6sZ0",
+        "title": "You Can Lean on $1 Million. Not on $1 Billion.",
+        "posted_et": "Thu 00:25",
+        "views": 1221
+      },
+      {
+        "id": "XVUeMcTg9OQ",
+        "title": "Your Interest Has a Speed Limit",
+        "posted_et": "Sun 05:49",
+        "views": 1141
+      },
+      {
+        "id": "fbpdKf4Wy8c",
+        "title": "What If You Bought Starbucks Stock Instead of a $4 Latte Every Day? (06c)",
+        "posted_et": "Mon 03:45",
+        "views": 760
+      },
+      {
+        "id": "8__HTUa2PoU",
+        "title": "Pay the Minimum on $5,000? 238 Months.",
+        "posted_et": "Mon 22:09",
+        "views": 642
+      },
+      {
+        "id": "FW_oxA3kbsM",
+        "title": "A $2 Lottery Ticket Was Worth $6.98. Until the Fine Print.",
+        "posted_et": "Wed 12:03",
+        "views": 348
+      },
+      {
+        "id": "mXbKY_R63h4",
+        "title": "You Can Carry $1 Million. Not in Pennies.",
+        "posted_et": "Thu 13:38",
+        "views": 177
+      },
+      {
+        "id": "EqFQCJheCMU",
+        "title": "Start Investing 10 Years Late? You Get Half.",
+        "posted_et": "Tue 22:27",
+        "views": 161
+      },
+      {
+        "id": "krfZEHhb0xU",
+        "title": "What If You Bought Netflix Stock Instead of Paying for Netflix? (06b)",
+        "posted_et": "Mon 12:14",
+        "views": 61
+      }
+    ],
+    "own_channel_instagram_october_reels": [
+      {
+        "shortcode": "DeIvYk7I4Qr",
+        "topic": "$5,000 on the minimum",
+        "posted_et": "Mon 22:46",
+        "plays": 7302,
+        "skip_rate_pct": 27.4,
+        "avg_watched_pct": 56.5
+      },
+      {
+        "shortcode": "DeOEthJJ1TG",
+        "topic": "$1M stack vs Burj Khalifa",
+        "posted_et": "Thu 00:28",
+        "plays": 5449,
+        "skip_rate_pct": 27.0,
+        "avg_watched_pct": 83.1
+      },
+      {
+        "shortcode": "DeWgFZRoR_S",
+        "topic": "Missing dollar",
+        "posted_et": "Sun 07:05",
+        "plays": 1997,
+        "skip_rate_pct": 32.0,
+        "avg_watched_pct": 81.3
+      },
+      {
+        "shortcode": "DeMvZv9IqRw",
+        "topic": "Powerball $6.98",
+        "posted_et": "Wed 12:05",
+        "plays": 1825,
+        "skip_rate_pct": 58.7,
+        "avg_watched_pct": 57.9
+      },
+      {
+        "shortcode": "DeYuqT4pjVC",
+        "topic": "06c latte vs Starbucks stock",
+        "posted_et": "Mon 03:46",
+        "plays": 1711,
+        "skip_rate_pct": 40.3,
+        "avg_watched_pct": 69.1
+      },
+      {
+        "shortcode": "DePe11HIHwn",
+        "topic": "$1M in pennies",
+        "posted_et": "Thu 13:37",
+        "plays": 598,
+        "skip_rate_pct": 42.0,
+        "avg_watched_pct": 66.7
+      },
+      {
+        "shortcode": "DeLSd9io8UK",
+        "topic": "10 years late",
+        "posted_et": "Tue 22:30",
+        "plays": 219,
+        "skip_rate_pct": 65.1,
+        "avg_watched_pct": 30.6
+      },
+      {
+        "shortcode": "DeEW2ZMIiYd",
+        "topic": "Speed limit (e)",
+        "posted_et": "Sun 05:54",
+        "plays": 177,
+        "skip_rate_pct": 56.9,
+        "avg_watched_pct": 31.2
+      }
+    ],
+    "channel_stats": {
+      "youtube_subscribers": 53,
+      "youtube_views": 10221,
+      "youtube_videos": 41,
+      "youtube_30d": "+27 subscribers, +5,127 views, 11 videos",
+      "instagram_followers": 8,
+      "instagram_30d_views": 20518
+    },
+    "limits": [
+      "@envelopemath's YouTube Analytics (audience hours, geography) were not read here; the 06b and 06c sheets found vidIQ's YouTube authorization is a different channel. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
+      "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and on the write-up's and the outliers' own tags.",
+      "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
+      "The 2026 wage base ($184,500) is the write-up's figure (SSA and Kiplinger). SSA's 2027 figure was not looked up here; when it is published, the copy stays true because it names 2026 wherever it names $184,500.",
+      "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file."
+    ],
+    "titles_scored": "10 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored.",
+    "vidiq_credits": "120 credits for this teaser (9 keyword queries, 2 YouTube searches, 1 YouTube outlier search, 1 Instagram/TikTok outlier search, 11 title scores, the last of each a re-query; 5 each), plus 10 shared across 01a-01c for the channel's own stats; 10 more at the adversarial check (1 title score, 1 keyword query)."
+  },
+  "checked": {
+    "date": "2026-10-13",
+    "by": "adversarial check of this sheet",
+    "math": "python3 teasers/v2/checks/01-dead-simple-list.py: 400 checks, 0 failed on studio/specs/ (the pre-condense specs; 397 at the first build, before the condense's check-script update), re-run at the adversarial check 2026-10-13; with --spec on the three studio/specs-wip/ condensed specs 392 checks, 0 failed, so the copy's figures hold on both cuts; every public figure traced to the 01b maths table and recomputed in MATH_RELATIONS from the 2026 rate and wage base; COPY_RULES keep $184,500 beside 2026, ≈ $2,579 and ≈ 1.1% 'about', and 'employee share' and the Medicare exclusion in the copy",
+    "limits": {
+      "youtube_title_chars": 68,
+      "youtube_description_chars": 1234,
+      "youtube_description_utf8_bytes": 1256,
+      "youtube_tags_chars_as_youtube_counts": 381,
+      "youtube_hashtags": 3,
+      "instagram_caption_chars": 900,
+      "instagram_hashtags": 5,
+      "instagram_alt_text_short_chars": 93
+    },
+    "vidiq_requeried": "pulled 2026-10-13: social security 318,231 (+19.8%); social security taxes 7,310; social security tax 5,251 (-46.2%); the social security cap 3,857; title scores 92 (pick), 81 (write-up title), 83 (hashtag form); channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,518 views in 30 days. Re-queried the same day after the build: the pick's title score 92 and 'social security taxes' 7,310 / 50.2. Re-queried at the adversarial check: the pick's title score 92; 'social security tax' 5,251 / 50.3 (-46.2% on 9,765). All match."
+  }
+}

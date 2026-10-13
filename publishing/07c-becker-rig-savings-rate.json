@@ -1,0 +1,535 @@
+{
+  "id": "07c-becker-rig-savings-rate",
+  "teaser": "07c Becker Rig, ledger-duel: \"You save $100 a month. 5 years = $6,000. A big bank adds: ?\"",
+  "prepared": "2026-10-13",
+  "for_video": {
+    "current_render": "renders/channel/07c-becker-rig-savings-rate.mp4",
+    "current_duration_s": 21.6,
+    "current_sha256": "dcafa5e09dd6976d27f76b8fdb25ac4b7489694f3c56564c306b2a68cc87fd58",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds on 2026-10-13: the pre-condense cut. The ship step rebuilds this file with --covers from the condensed cut.",
+    "cut": {
+      "name": "pre-condense (Becker Rig port, fix pass 2026-10-08)",
+      "spec": "studio/specs/07c-becker-rig-savings-rate.json",
+      "body_s": 19.1,
+      "card_s": 2.5,
+      "status": "in renders/channel on 2026-10-13 (git 471c793); a condensed cut (timing only) is in progress",
+      "on_ship": "python3 publishing/tools/build_publishing.py 07c-becker-rig-savings-rate --covers (re-picks the cover by content, re-exports both JPGs, refreshes for_video)"
+    }
+  },
+  "facts": {
+    "source": "teasers/v2/07-ledger-duel.md section 07c; teasers/v2/checks/07-ledger-duel.py: 461 checks, 0 failures on studio/specs/ (2026-10-13)",
+    "deposits": "$100 at the end of each month for 60 months, $6,000 in all, in both accounts ('You' at a big bank, Leo at a high-yield account)",
+    "rates": "big bank 0.01% APY (Chase Savings' standard rate on its Oct 2, 2026 rate sheet, unchanged from Sep 11 [click-check]); high-yield 4.00% APY, a round rate below every named top offer (4.01-4.15%) and every 'up to' headline (4.21-4.50%) in late Sep and early Oct 2026; both held for 5 years (they will move)",
+    "method": "each APY applied as its monthly equivalent q = (1 + APY)^(1/12) − 1, so 12 months give exactly the APY; interest after n deposits = 100 × ((1 + q)^n − 1) ÷ q − 100n; interest left in, nothing withdrawn; no taxes; Chase Savings' waivable $5 monthly fee ignored",
+    "rows": "interest so far, big bank / high-yield: Year 1 ≈ $0.05 (5.4999 cents) / ≈ $21.84; Year 2 ≈ $0.23 / ≈ $92.56; Year 3 ≈ $0.53 (52.503 cents) / ≈ $214.11; Year 4 ≈ $0.94 / ≈ $388.52; Year 5 ≈ $1.48 (1.47517) / ≈ $617.90 (617.9024; 'about $618' in the VO)",
+    "double": "$200 a month doubles both exactly: ≈ $2.95 and ≈ $1,235.80",
+    "fdic": "the FDIC national average, 0.37% APY (Sep 2026), on the same deposits: ≈ $55 (54.81), under a tenth of ≈ $617.90 (pinned comment)",
+    "kept_out": "617.9024 ÷ 1.47517 ≈ 419×: off screen and out of the caption in the write-up, and out of this copy",
+    "verdict": "'Same $6,000, different account: ≈ $1.48 vs ≈ $617.90'"
+  },
+  "youtube": {
+    "titles_ranked": [
+      {
+        "rank": 1,
+        "title": "How Much Interest Does a Big Bank Pay on $100 a Month for 5 Years? Big Bank vs High-Yield",
+        "vidiq_score": 97,
+        "chars": 89,
+        "note": "PICK. The header's question ('A big bank adds: ?') as a search question, with the stake ($100 a month, 5 years) and both options. No answer, no hashtags."
+      },
+      {
+        "rank": 2,
+        "title": "You Save $100 a Month for 5 Years. How Much Interest Does a Big Bank Pay You?",
+        "vidiq_score": 94,
+        "chars": 77,
+        "note": "Second person, like the header and the 'You' column; it leaves out the high-yield side."
+      },
+      {
+        "rank": 3,
+        "title": "You Save $100 a Month for 5 Years. How Much Does a Big Bank Add?",
+        "vidiq_score": 89,
+        "chars": 64,
+        "note": "The write-up's title, 8 points lower."
+      }
+    ],
+    "titles_also_scored": [
+      {
+        "title": "How Much Interest Does a Big Bank Pay on $6,000 of Savings? Big Bank vs High-Yield",
+        "vidiq_score": 94,
+        "chars": 82,
+        "note": "'on $6,000 of savings' reads as a $6,000 balance for 5 years; the deposits build up over 60 months"
+      },
+      {
+        "title": "Save $100 a Month for 5 Years: Big Bank Savings vs High-Yield Savings. How Much Interest?",
+        "vidiq_score": 90,
+        "chars": 89,
+        "note": ""
+      },
+      {
+        "title": "Big Bank Savings vs High-Yield Savings: What Does $100 a Month Earn in 5 Years?",
+        "vidiq_score": 90,
+        "chars": 79,
+        "note": ""
+      }
+    ],
+    "title_pick": "How Much Interest Does a Big Bank Pay on $100 a Month for 5 Years? Big Bank vs High-Yield",
+    "title_pick_chars": 89,
+    "description": "$100 a month for 5 years is $6,000 saved. At a big bank's 0.01% APY, it earns about $1.48 of interest. In a high-yield savings account at 4.00% APY, the same deposits earn about $617.90.\n\nThe math, shown:\n• $100 at each month-end for 60 months: $6,000 in each account.\n• Each APY is applied as its monthly rate, so 12 months compound to exactly the APY.\n• Year 1: ≈ $0.05 at the big bank vs ≈ $21.84 at high-yield.\n• Year 3: ≈ $0.53 vs ≈ $214.11.\n• Year 5: ≈ $1.48 vs ≈ $617.90.\n• Save $200 a month? Double both: ≈ $2.95 vs ≈ $1,235.80.\n• Same $6,000. Different account.\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\n\nAnimation and original sound: The Back of the Envelope. 0.01% APY is Chase Savings' standard rate on its Oct 2, 2026 rate sheet. Top high-yield offers in late Sep and early Oct 2026 ran about 4.15-4.50%; 4.00% is a round rate below all of them. Both rates are held for 5 years, and rates move. Interest is left in; no taxes or fees. Not financial advice. Not affiliated with or endorsed by Chase.\n#HighYieldSavings #SavingsAccount #personalfinance",
+    "description_chars": 1097,
+    "hashtags_in_order": [
+      "#HighYieldSavings",
+      "#SavingsAccount",
+      "#personalfinance"
+    ],
+    "hashtag_rules": "Title hashtags show as links in the title; with none in the title, the first 3 description hashtags show above it. Over 60 hashtags and YouTube ignores all of them. #Shorts is not needed (vertical, under 3 min).",
+    "tags": [
+      "high yield savings account",
+      "hysa",
+      "savings account",
+      "savings account interest",
+      "high interest savings account",
+      "big bank savings account",
+      "savings account interest rate truth",
+      "save $100 a month",
+      "saving money",
+      "compound interest",
+      "money math",
+      "math animation",
+      "the back of the envelope",
+      "envelope math"
+    ],
+    "tags_chars_as_youtube_counts": 303,
+    "pinned_comment": "What does your savings account pay? Not at Chase? The FDIC's national average is 0.37% APY (Sep 2026): ≈ $55 on the same $100 a month over 5 years, still under a tenth of 4.00%'s ≈ $618.\n\nBoth rates held for 5 years; rates move. Deposits at each month-end, interest left in.",
+    "related_video": {
+      "pick": {
+        "id": "XVUeMcTg9OQ",
+        "title": "Your Interest Has a Speed Limit",
+        "url": "https://www.youtube.com/shorts/XVUeMcTg9OQ",
+        "why": "The same 'interest' viewer: what compounding can and can't do. It is the channel's most-engaged October Short (1,141 views, 28 likes, 6 comments), live since Sun 4 Oct 2026."
+      },
+      "swap_when_live": "04b (16 years of savings vs 1 year of the S&P 500), the other savings-rate Short, once published; or 07a or 07b.",
+      "end_screen": "Shorts have no end screens or cards. The Related video link is the Shorts equivalent."
+    },
+    "thumbnail_frame": "In the YouTube app, pick the frame-1 picture (the '?', both plans, the empty rows, You pondering beside Leo), the same content as the IG cover.",
+    "settings": {
+      "category": "Education",
+      "audience": "Not made for kids",
+      "altered_or_synthetic_content": "No (animated chart, not realistic footage)",
+      "remixing": "Allow",
+      "captions": "None needed (no narration; all text is on screen)"
+    },
+    "posting_window": {
+      "when": "First Tue-Thu evening after the 07c condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+      "spacing": "Keep it at least 6 h from any other upload on the channel, post one ledger duel (07a, 07b, 07c) per evening, and keep it off 04b's evening (both show how little a low-rate savings account earns).",
+      "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,199 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2). The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. Search demand: 'high yield savings account' is up 77.0% on its 30-day baseline and 'hysa' 28.1%, so savings rates are in people's searches now."
+    },
+    "description_utf8_bytes": 1129
+  },
+  "instagram": {
+    "caption": "$100 a month for 5 years = $6,000 saved. What does a big bank add? Big bank savings vs a high-yield account, year by year.\n\nYou save $100 at the end of every month at a big bank, at 0.01% APY. Leo saves the same $100 a month in a high-yield account at 4.00% APY. The ledger shows the interest so far, year by year.\n\nThe math, shown:\n• Year 1: ≈ $0.05 vs ≈ $21.84.\n• Year 3: ≈ $0.53 vs ≈ $214.11.\n• Year 5: ≈ $1.48 vs ≈ $617.90.\n\nSame $6,000. Different account.\n\nSave $200 a month? Double both. 0.01% is Chase Savings' standard APY on its Oct 2, 2026 rate sheet; top high-yield offers in late Sep and early Oct 2026 ran about 4.15-4.50%. Both rates held for 5 years; rates move. Interest left in; no taxes or fees. Not financial advice. Not affiliated with or endorsed by Chase.\n\nWhat does your savings account pay?\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\nAnimation and original sound: The Back of the Envelope.\n\n#savings #highyieldsavings #hysa #personalfinance #moneymath",
+    "caption_chars": 1010,
+    "caption_first_125": "$100 a month for 5 years = $6,000 saved. What does a big bank add? Big bank savings vs a high-yield account, year by year.\n\nY",
+    "caption_rule": "The first 125 characters are the write-up's caption line 1 ('$100 a month for 5 years = $6,000 saved. What does a big bank add?') and the duel with its keywords, no result: the caption overlays the Reel from frame 1, so every number from the answer sits below 'more'.",
+    "hashtags_in_order": [
+      "#savings",
+      "#highyieldsavings",
+      "#hysa",
+      "#personalfinance",
+      "#moneymath"
+    ],
+    "hashtag_rule": "Instagram caps a post at 5 hashtags (since Dec 2025).",
+    "alt_text_short": "Chart: $100 a month for 5 years: about $1.48 of interest at 0.01% vs about $617.90 at 4.00%.",
+    "alt_text_long": "Animation on a light page: 2 stick figures beside a year-by-year ledger of interest. Header: You save $100 a month. 5 years = $6,000. A big bank adds: ? 'You', in grey, saves at a big bank at 0.01% APY; Leo, in green, at a high-yield account at 4.00% APY. Each year's interest lands in the ledger, and Leo's coin stack grows while You stands on a bare floor. Year 1: about $0.05 vs about $21.84. Year 3: about $0.53 vs about $214.11. Year 5: about $1.48 vs about $617.90, and Leo's total grows onto a gold plate. Verdict: Same $6,000, different account.",
+    "alt_text_where": "Advanced settings → Accessibility → Alt text, if your app shows it for Reels.",
+    "cover": {
+      "files": {
+        "3x4": "publishing/07c-becker-rig-savings-rate-cover-3x4.jpg",
+        "9x16": "publishing/07c-becker-rig-savings-rate-cover-9x16.jpg"
+      },
+      "frame_in_current_render_s": 0.5,
+      "frame_index": 15,
+      "frame_by_content": "The frame-1 picture, which the write-up names as the Instagram cover: the header 'You save $100 a month / 5 years = $6,000 / A big bank adds: ?' with '$100 a month' in green, the 2-line footer, the stake line 'Interest so far · $100 a month each', the column heads (You: Big bank, 0.01% APY; Leo: High-yield, 4.00% APY), the Start row at $0.00 / $0.00 with Years 1-5 dim over empty shelves, You pondering on the bare floor beside Leo, and the caption 'Year 1 at a big bank:' with no number. It asks and does not answer. Not the end frame (Leo on his gold tower), which answers the question. On any cut, use the first still frame after the first caption is complete and before Year 1 drops.",
+      "frame_measured": "On the pre-condense 21.6 s render frame 0 shows only the caption's first word ('Year'); the words pop in to 0.33 s, the frame-to-frame luma change then stays at the figures' idle level (≤ 0.010 mean) from 0.40 s (frame 12) to 0.83 s, and Year 1 starts to drop at about 0.9 s (it lands at 1.0 s). Frame 15 (0.50 s) is inside that hold: the write-up's frame-1 picture with its whole first caption.",
+      "crop": "3:4 = 1080×1440 from y 60 to 1500 of the 1080×1920 frame. The content runs from y 112 (the badge) to y 1429 (the caption), so the tile keeps the badge, the header, the footer, the stake line, both column heads, the figures, the ledger and the caption, and drops the empty floor. A centred grid crop (y 240-1680) cuts the badge and the header.",
+      "how_to_set": "In 'Edit cover', pick the opening frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
+      "re_export": "ffmpeg -ss 0.5 -i renders/channel/07c-becker-rig-savings-rate.mp4 -frames:v 1 -vf \"crop=1080:1440:0:60\" -q:v 2 publishing/07c-becker-rig-savings-rate-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 0.5 -i renders/channel/07c-becker-rig-savings-rate.mp4 -frames:v 1 -q:v 2 publishing/07c-becker-rig-savings-rate-cover-9x16.jpg"
+    },
+    "first_comment": "Big bank, 0.01% APY: ≈ $1.48 in 5 years. High-yield, 4.00% APY: ≈ $617.90. The FDIC's national average, 0.37%: ≈ $55. What does yours pay?",
+    "first_comment_action": "Post it right after publishing and pin it.",
+    "trial_reels": {
+      "recommendation": "Post as a regular Reel, not a Trial.",
+      "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut ships, the pre-condense render is in git: `git show 471c793:renders/channel/07c-becker-rig-savings-rate.mp4 > 07c-pre-condense.mp4` (sha256 dcafa5e0…). Compare skip rate (October Reels ran 27.0-65.1%; 06c, the other Becker Rig Reel, 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+    },
+    "settings": {
+      "audio": "Rename the original audio to 'Big bank vs high-yield — The Back of the Envelope' if the app allows; it is the score, with no voice.",
+      "share_to_feed": "On",
+      "google_indexing": "Public professional-account posts can appear in Google/Bing since 10 Jul 2025, so the caption is written as a searchable question."
+    },
+    "posting_window": {
+      "when": "Same evening as YouTube, about 15 min after the Short: 21:45-22:45 ET.",
+      "why": "October Reels, median plays by posting slot (owner insights, 2026-10-13): weekday 22:00-00:30 ET 5,449 (n = 3, including the two best: 7,303 and 5,449), weekday midday 1,212 (n = 2), Sunday 05:00-08:00 ET 1,087 (n = 2). Skip rate tracks plays more closely than the hour does: 27.0-27.4% for the top two, 56.9-65.1% for the bottom two. The condense matters more than the hour."
+    },
+    "alt_text_rule": "Paste the short version into Instagram: it is kept at or under 100 characters so it fits the field however short it is, and it writes 'about' instead of '≈' so screen readers read it cleanly. The long version is for anywhere with room (a website embed, a newsletter)."
+  },
+  "research": {
+    "keywords_youtube": [
+      {
+        "keyword": "high yield savings account",
+        "est_monthly_searches": 56330,
+        "volume": 70.9,
+        "competition": 46.7,
+        "overall": 63.9,
+        "note": "seed; +77.0% vs its 30-day baseline (31,816); 64.7% of searches from the US",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "hysa",
+        "est_monthly_searches": 32445,
+        "volume": 67.3,
+        "competition": 46.8,
+        "overall": 61.7,
+        "note": "+28.1%",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "best high yield savings account",
+        "est_monthly_searches": 25784,
+        "volume": 65.9,
+        "competition": 42.6,
+        "overall": 62.5,
+        "note": "−12.1%; product-pick intent, not in the copy",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "chase bank",
+        "est_monthly_searches": 22976,
+        "volume": 65.1,
+        "competition": 39.2,
+        "overall": 63.4,
+        "note": "+15.8%; Chase is named only as the 0.01% source",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "which bank pays highest interest on savings account",
+        "est_monthly_searches": 5190,
+        "volume": 55.5,
+        "competition": 24.8,
+        "overall": 63.4,
+        "note": "product-pick intent; not in the tags",
+        "metrics_as_of": "2026-05-13"
+      },
+      {
+        "keyword": "best interest rate savings account",
+        "est_monthly_searches": 5228,
+        "volume": 55.5,
+        "competition": 45.5,
+        "overall": 55.1,
+        "note": "product intent",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "high interest savings account",
+        "est_monthly_searches": 4751,
+        "volume": 54.9,
+        "competition": 39.8,
+        "overall": 57.0,
+        "note": "",
+        "metrics_as_of": "2026-09-22"
+      },
+      {
+        "keyword": "savings account interest rate truth",
+        "est_monthly_searches": 4676,
+        "volume": 54.8,
+        "competition": 33.0,
+        "overall": 59.7,
+        "note": "this Short's angle",
+        "metrics_as_of": "2026-07-23"
+      },
+      {
+        "keyword": "chase savings account",
+        "est_monthly_searches": 4035,
+        "volume": 53.8,
+        "competition": 29.4,
+        "overall": 60.5,
+        "note": "seed; not in the title or tags (the rate sheet is a [click-check])",
+        "metrics_as_of": "2026-05-31"
+      },
+      {
+        "keyword": "saving money",
+        "est_monthly_searches": 92579,
+        "volume": 74.1,
+        "competition": 45.5,
+        "overall": 66.3,
+        "note": "−31.7%",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "compound interest",
+        "est_monthly_searches": 137873,
+        "volume": 76.7,
+        "competition": 50.6,
+        "overall": 65.8,
+        "note": "−17.3% (the 07a pull)",
+        "metrics_as_of": "2026-10-12"
+      }
+    ],
+    "keywords_source": "vidIQ keyword research (research mode for 'high yield savings account' and 'chase savings account' with US volumes; matching_terms for 'savings account interest'; 'compound interest' from the 07a pull), pulled 2026-10-13. vidIQ refreshes each keyword on its own schedule, so each row carries its snapshot date in metrics_as_of; four rows are older snapshots (2026-05-13 to 2026-09-22).",
+    "same_idea_youtube_shorts": [
+      {
+        "title": "How To Grow Your Savings Account 🏦📈 #personalfinance #money #bank #banking",
+        "channel": "Garner Ted",
+        "subscribers": 101000,
+        "views": 598517,
+        "published": "2024-11-05",
+        "note": "'Savings accounts with Big Banks are known to give you very little interest'; outlier score 36.1"
+      },
+      {
+        "title": "Why HYSA’s Are a Bad Idea",
+        "channel": "Steve | Call to Leap",
+        "subscribers": 748000,
+        "views": 421681,
+        "published": "2023-11-17",
+        "note": "the contrarian take"
+      },
+      {
+        "title": "What RICH PEOPLE know about HYSA that you don’t (High Yield Savings Account)",
+        "channel": "Investing Simplified - Professor G",
+        "subscribers": 475000,
+        "views": 389107,
+        "published": "2023-11-22"
+      },
+      {
+        "title": "Know THIS Before You Open a High Yield Savings Account",
+        "channel": "Investing with Matt",
+        "subscribers": 6930,
+        "views": 318303,
+        "published": "2023-02-26",
+        "note": "3:04 long"
+      },
+      {
+        "title": "What’s The Best HYSA For 2026?",
+        "channel": "Steve | Call to Leap",
+        "subscribers": 748000,
+        "views": 205270,
+        "published": "2026-01-14",
+        "note": "a product list; 1,465 comments from a keyword CTA"
+      },
+      {
+        "title": "$10,000 HYSA vs S&P 500",
+        "channel": "Investing with Matt",
+        "subscribers": 6930,
+        "views": 191735,
+        "published": "2023-07-17",
+        "note": "outlier score 428.9: a two-account duel"
+      },
+      {
+        "title": "Bank account vs high yield saving account #hysa",
+        "channel": "John Liang",
+        "subscribers": 658000,
+        "views": 58298,
+        "published": "2023-11-18",
+        "note": "the closest 'X vs Y' title"
+      }
+    ],
+    "same_idea_note": "vidIQ YouTube search (under 4 min, by relevance): the big-bank-vs-high-yield idea has Shorts at 58,298-598,517 views from 2023-2026, nearly all advice or product picks; the biggest is Garner Ted's (598,517). None prices a monthly deposit year by year.",
+    "instagram_tiktok_outliers": [
+      {
+        "handle": "@trusted.finance",
+        "platform": "Instagram",
+        "id": "Da_85q0NOw5",
+        "on_screen": "There's only 24 weeks left of 2026",
+        "views": "771.4K (104.8x the account median of 7.4K)",
+        "note": "faceless text over a static background, a weekly-savings table: numbers on screen, no voice"
+      },
+      {
+        "handle": "@vinnyrodriguez",
+        "platform": "Instagram",
+        "id": "Dar2kOCiE3N",
+        "on_screen": "Ranking High Yield Savings Accounts tier list",
+        "views": "76.6K (28.3x the account median of 2.7K)",
+        "note": "a tier list of accounts, talking head"
+      },
+      {
+        "handle": "@josuesegoviano2",
+        "platform": "TikTok",
+        "id": "7662941262143638798",
+        "on_screen": "Open a High yield savings account",
+        "views": "318.2K (77.9x the account median of 4.1K)",
+        "note": "talking head over bank statements showing interest paid; advice"
+      },
+      {
+        "handle": "@falatinglwfs",
+        "platform": "TikTok",
+        "id": "7675895955937381663",
+        "on_screen": "You can lose your money in an HYSA",
+        "views": "639.9K (103.9x the account median of 6.2K)",
+        "note": "a contrarian HYSA warning (dormant accounts)"
+      },
+      {
+        "handle": "@only.living.trust.book",
+        "platform": "TikTok",
+        "id": "7663773795768995102",
+        "on_screen": "YOUR BANK IS PRAYING YOU NEVER FIGURE THIS OUT",
+        "views": "73.3K (62.9x the account median of 1.2K)",
+        "note": "an animated explainer on moving savings out of a bank, ending in a product pitch"
+      }
+    ],
+    "own_channel_youtube_october_shorts": [
+      {
+        "id": "LjHDFzVxRyM",
+        "title": "Can You Find the Missing Dollar?",
+        "posted_et": "Sun 07:04",
+        "views": 1256
+      },
+      {
+        "id": "hJBvmGA6sZ0",
+        "title": "You Can Lean on $1 Million. Not on $1 Billion.",
+        "posted_et": "Thu 00:25",
+        "views": 1221
+      },
+      {
+        "id": "XVUeMcTg9OQ",
+        "title": "Your Interest Has a Speed Limit",
+        "posted_et": "Sun 05:49",
+        "views": 1141
+      },
+      {
+        "id": "fbpdKf4Wy8c",
+        "title": "What If You Bought Starbucks Stock Instead of a $4 Latte Every Day? (06c)",
+        "posted_et": "Mon 03:45",
+        "views": 760
+      },
+      {
+        "id": "8__HTUa2PoU",
+        "title": "Pay the Minimum on $5,000? 238 Months.",
+        "posted_et": "Mon 22:09",
+        "views": 642
+      },
+      {
+        "id": "FW_oxA3kbsM",
+        "title": "A $2 Lottery Ticket Was Worth $6.98. Until the Fine Print.",
+        "posted_et": "Wed 12:03",
+        "views": 348
+      },
+      {
+        "id": "mXbKY_R63h4",
+        "title": "You Can Carry $1 Million. Not in Pennies.",
+        "posted_et": "Thu 13:38",
+        "views": 177
+      },
+      {
+        "id": "EqFQCJheCMU",
+        "title": "Start Investing 10 Years Late? You Get Half.",
+        "posted_et": "Tue 22:27",
+        "views": 161
+      },
+      {
+        "id": "krfZEHhb0xU",
+        "title": "What If You Bought Netflix Stock Instead of Paying for Netflix? (06b)",
+        "posted_et": "Mon 12:14",
+        "views": 75
+      }
+    ],
+    "own_channel_instagram_october_reels": [
+      {
+        "shortcode": "DeIvYk7I4Qr",
+        "topic": "$5,000 on the minimum",
+        "posted_et": "Mon 22:46",
+        "plays": 7303,
+        "skip_rate_pct": 27.4,
+        "avg_watched_pct": 56.5
+      },
+      {
+        "shortcode": "DeOEthJJ1TG",
+        "topic": "$1M stack vs Burj Khalifa",
+        "posted_et": "Thu 00:28",
+        "plays": 5449,
+        "skip_rate_pct": 27.0,
+        "avg_watched_pct": 83.1
+      },
+      {
+        "shortcode": "DeWgFZRoR_S",
+        "topic": "Missing dollar",
+        "posted_et": "Sun 07:05",
+        "plays": 1997,
+        "skip_rate_pct": 32.0,
+        "avg_watched_pct": 81.3
+      },
+      {
+        "shortcode": "DeMvZv9IqRw",
+        "topic": "Powerball $6.98",
+        "posted_et": "Wed 12:05",
+        "plays": 1825,
+        "skip_rate_pct": 58.7,
+        "avg_watched_pct": 57.9
+      },
+      {
+        "shortcode": "DeYuqT4pjVC",
+        "topic": "06c latte vs Starbucks stock",
+        "posted_et": "Mon 03:46",
+        "plays": 1711,
+        "skip_rate_pct": 40.3,
+        "avg_watched_pct": 69.1
+      },
+      {
+        "shortcode": "DePe11HIHwn",
+        "topic": "$1M in pennies",
+        "posted_et": "Thu 13:37",
+        "plays": 598,
+        "skip_rate_pct": 42.0,
+        "avg_watched_pct": 66.7
+      },
+      {
+        "shortcode": "DeLSd9io8UK",
+        "topic": "10 years late",
+        "posted_et": "Tue 22:30",
+        "plays": 219,
+        "skip_rate_pct": 65.1,
+        "avg_watched_pct": 30.6
+      },
+      {
+        "shortcode": "DeEW2ZMIiYd",
+        "topic": "Speed limit (e)",
+        "posted_et": "Sun 05:54",
+        "plays": 177,
+        "skip_rate_pct": 56.9,
+        "avg_watched_pct": 31.2
+      }
+    ],
+    "channel_stats": {
+      "youtube_subscribers": 53,
+      "youtube_views": 10221,
+      "youtube_videos": 41,
+      "youtube_30d": "+27 subscribers, +5,127 views, 11 videos",
+      "instagram_followers": 8,
+      "instagram_30d_views": 20519
+    },
+    "limits": [
+      "As the 06b and 04b sheets found (not re-checked here), vidIQ's YouTube authorization is a different channel (UCRC5v_El2fibbkqsZs6uFjA), so @envelopemath's YouTube Analytics (audience hours, geography) were not readable. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
+      "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and the same-idea Shorts' own tags.",
+      "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
+      "The render in renders/channel is the pre-condense cut. The cover's time and frame are measured on it; the copy names no other timestamp, and the ship step re-picks the cover on the final file.",
+      "Chase's 0.01% and the high-yield offers are the write-up's, read from search results; the rate sheet and The College Investor's list are [click-check] items that were not opened here.",
+      "The vidIQ credit balance is shared with the other sheets being built in parallel; this sheet's spend is counted from each tool's listed cost, checked against the balance (see research.vidiq_credits)."
+    ],
+    "titles_scored": "6 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored.",
+    "vidiq_credits": "07c: 55 (3 keyword pulls × 5, 1 YouTube search × 5, 1 IG/TikTok outlier search × 5, 6 title scores × 5), plus a third of the format's 10 shared credits (channel stats 5, channel videos 5; Instagram insights are free). The three 07 sheets used 210 in all. The balance read 5,180 before the first 07 call and 4,980 after the first 200 of them, with no other spend in that window, which confirms keyword research at 5 a call; the last 2 title scores (10) followed. It read 4,640 at the end of the build: the other 330 were parallel sheets' calls. At the adversarial check: 10 by listed cost (1 title score, 1 keyword pull), plus a third of 15 shared (channel stats 5, two video lookups 10); the three 07 checks used 55 in all. The balance read 3,845 before them and 3,745 after: the other 45 were parallel sheets' calls."
+  },
+  "checked": {
+    "date": "2026-10-13",
+    "by": "adversarial check of this sheet",
+    "math": "python3 teasers/v2/checks/07-ledger-duel.py: 461 checks, 0 failures on studio/specs/ (2026-10-13), run by the builder through publishing/data/checks/07-ledger-duel.py; every public figure traced to the 07c maths table and recomputed in MATH_RELATIONS from $100 a month at each APY's monthly rate (all 5 years, the doubling, the FDIC case); each year's pair kept together with the big bank first, and every lone figure kept with its account (COPY_RULES)",
+    "limits": {
+      "youtube_title_chars": 89,
+      "youtube_description_chars": 1097,
+      "youtube_description_utf8_bytes": 1129,
+      "youtube_tags_chars_as_youtube_counts": 303,
+      "youtube_hashtags": 3,
+      "instagram_caption_chars": 1010,
+      "instagram_hashtags": 5,
+      "instagram_alt_text_short_chars": 92
+    },
+    "vidiq_requeried": "pulled 2026-10-13: high yield savings account 56,330 / 46.7 (+77.0%); hysa 32,445 (+28.1%); chase savings account 4,035; savings account interest rate truth 4,676; 6 titles scored: pick 97, write-up's title 89; channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,519 views in 30 days. Re-queried at the adversarial check: the pick's title score 97; 'best high yield savings account' 25,784 / 42.6 (−12.1%, baseline 29,330); channel 53 / 10,221 / 41; the related video XVUeMcTg9OQ 1,141 views, 28 likes, 6 comments, posted Sun 4 Oct 05:49 ET, still the most-engaged October Short. All match."
+  }
+}

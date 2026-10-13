@@ -1,0 +1,592 @@
+{
+  "id": "02a-becker-rig-3-a-day-by-age",
+  "teaser": "02a Becker Rig, find-your-row: \"It's just $3 a day\": what it costs you by 65, by age",
+  "prepared": "2026-10-13",
+  "for_video": {
+    "current_render": "renders/channel/02a-becker-rig-3-a-day-by-age.mp4",
+    "current_duration_s": 15.9,
+    "current_sha256": "e73341bfb6bb5e560e60675c993a82324664adc4220b3012581084a78ba0c60f",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds on 2026-10-13: the pre-condense cut. The ship step rebuilds this file with --covers from the condensed cut.",
+    "cut": {
+      "name": "pre-condense (round-2 Becker Rig port, 2026-10-08)",
+      "spec": "studio/specs/02a-becker-rig-3-a-day-by-age.json",
+      "body_s": 13.4,
+      "card_s": 2.5,
+      "status": "in renders/channel on 2026-10-13; a condensed cut (timing only) is in progress",
+      "on_ship": "python3 publishing/tools/build_publishing.py 02a-becker-rig-3-a-day-by-age --covers (re-picks the cover by content, re-exports both JPGs, refreshes for_video)"
+    }
+  },
+  "facts": {
+    "source": "teasers/v2/02-find-your-row.md section 02a; teasers/v2/checks/02-find-your-row.py: PASSED: all 183 checks on studio/specs/ (2026-10-13)",
+    "stake": "$3 a day, hypothetical: $3 × 365 = $1,095 a year; ÷ 12 = $91.25 a month, deposited at the end of each month until 65",
+    "rate": "7% a year compounded monthly (7% ÷ 12 each month, about 7.23% a year effective): an assumption, not a forecast; no tax, fees or inflation",
+    "red": "what you think it costs = $1,095 × (65 − age), exact",
+    "green": "what it really costs you = FV of $91.25 a month at 7%/12 until 65, rounded to the nearest $1,000 ($100 below $10,000)",
+    "rows": "18 $51,465 ≈ $400,000; 20 $49,275 ≈ $346,000; 25 $43,800 ≈ $240,000; 30 $38,325 ≈ $164,000; 35 $32,850 ≈ $111,000; 40 $27,375 ≈ $74,000; 45 $21,900 ≈ $48,000; 50 $16,425 ≈ $29,000; 55 $10,950 ≈ $16,000; 60 $5,475 ≈ $6,500",
+    "picks": "18: $400,261.67 ÷ $51,465 = 7.777 ≈ 7.8×; 25: $239,514.22 ÷ $43,800 = 5.468 ≈ 5.5×; 25 vs 35: $239,514.22 ÷ $111,322.35 = 2.152 ≈ 2.2×",
+    "verdict": "10 years younger? It costs more than double: FV(age) ÷ FV(age + 10) > 2 for every whole age 18-54 (min 2.092 at 18, max 15.98 at 54)",
+    "why": "at 7% money roughly doubles every decade (72 ÷ 7 ≈ 10.3 years), and starting 10 years younger also adds 10 years of deposits",
+    "at_10pct": "pinned comment only: 25 → ≈ $577,000; 18 → ≈ $1,170,000",
+    "scaling": "every cell is linear in the daily amount: $6 a day doubles a row (pinned comment and caption)"
+  },
+  "youtube": {
+    "titles_ranked": [
+      {
+        "rank": 1,
+        "title": "\"It's Just $3 a Day.\" What It Really Costs You by 65 — Find Your Age",
+        "vidiq_score": 97,
+        "chars": 68,
+        "note": "PICK. The video's own header (the viewer's excuse, quoted) plus the format's task. All 68 characters show in most players, and it needs no investing verb, so it reads as maths, not advice."
+      },
+      {
+        "rank": 2,
+        "title": "\"It's Just $3 a Day.\" What It Really Costs You by 65 If You Don't Invest It. Find Your Age",
+        "vidiq_score": 98,
+        "chars": 90,
+        "note": "Top score, 1 point over the pick, and it says the mechanism ('invest'), but at 90 characters the Shorts player cuts it after 'by 65', and 'If You Don't Invest It' leans toward telling the viewer what to do."
+      },
+      {
+        "rank": 3,
+        "title": "\"It's Just $3 a Day.\" What It Really Costs You by 65, by Age",
+        "vidiq_score": 96,
+        "chars": 60,
+        "note": "The shortest strong option (60 characters): the header plus 'by age'."
+      }
+    ],
+    "titles_also_scored": [
+      {
+        "title": "\"It's Just $3 a Day.\" What It Really Costs You by 65 If You Invested It Instead. Find Your Age",
+        "vidiq_score": 98,
+        "chars": 94,
+        "note": "95 chars; 'what it costs you if you invested it' reads backwards"
+      },
+      {
+        "title": "\"It's Just $3 a Day.\" What It Really Costs You by 65, Find Your Age",
+        "vidiq_score": 97,
+        "chars": 67,
+        "note": "the pick with a comma splice"
+      },
+      {
+        "title": "What $3 a Day Really Costs You by 65 If You'd Invested It Instead, by Age",
+        "vidiq_score": 95,
+        "chars": 73,
+        "note": ""
+      },
+      {
+        "title": "\"It's Just $3 a Day.\" What It Really Costs You by 65 #compoundinterest #investing #personalfinance",
+        "vidiq_score": 95,
+        "chars": 98,
+        "note": "the house 3-hashtag form, 97 chars"
+      },
+      {
+        "title": "\"It's Just $3 a Day\": What It Costs You by 65, by Age",
+        "vidiq_score": 94,
+        "chars": 53,
+        "note": "the write-up's title"
+      },
+      {
+        "title": "Your Life If You Invested $3 a Day Instead of Spending It, by Age",
+        "vidiq_score": 94,
+        "chars": 65,
+        "note": "borrows the 'your life if you invested $5 a day' search phrase"
+      },
+      {
+        "title": "What $3 a Day Really Costs You by 65, by Age",
+        "vidiq_score": 88,
+        "chars": 44,
+        "note": "without the quote"
+      },
+      {
+        "title": "What Spending $3 a Day Really Costs You by 65 #compoundinterest #investing #personalfinance",
+        "vidiq_score": 88,
+        "chars": 91,
+        "note": ""
+      }
+    ],
+    "title_pick": "\"It's Just $3 a Day.\" What It Really Costs You by 65 — Find Your Age",
+    "title_pick_chars": 68,
+    "description": "\"It's just $3 a day.\" Find your age. Red is the $3 a day you'd hand over by 65; green is what it would have grown to at 7% a year. At 25: $43,800 handed over vs about $240,000. Every 10 years younger, it costs you more than double.\n\nThe math, shown:\n• $3 × 365 = $1,095 a year. ÷ 12 = $91.25 a month, added at the end of each month until 65.\n• Red, what you think it costs: $1,095 × the years left to 65. At 18 that's $51,465.\n• Green, what it really costs you: the same $91.25 a month grown at 7% ÷ 12 each month. At 18: ≈ $400,000 (≈ 7.8× the red).\n• At 25: $43,800 vs ≈ $240,000 (≈ 5.5×). At 35: $32,850 vs ≈ $111,000.\n• 25 vs 35: it costs ≈ 2.2× as much at 25.\n• It holds for every pair of whole ages 10 years apart, from 18 vs 28 up to 54 vs 64: the younger age always costs more than double (the closest is 18 vs 28, ≈ 2.09×).\n• Why: at 7%, money roughly doubles every decade (72 ÷ 7 ≈ 10.3 years), and 10 years younger also adds 10 years of deposits.\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\n\nAnimation and original sound: The Back of the Envelope. $3 a day is a hypothetical amount, and 7% a year is an assumption, not a forecast: 7% ÷ 12 each month (about 7.23% a year effective), deposits at the end of each month, stopping at 65. Green is rounded to the nearest $1,000 ($100 below $10,000). No tax, fees or inflation. Not financial advice.\n#CompoundInterest #PersonalFinance #investing",
+    "description_chars": 1433,
+    "hashtags_in_order": [
+      "#CompoundInterest",
+      "#PersonalFinance",
+      "#investing"
+    ],
+    "hashtag_rules": "Title hashtags show as links in the title; with none in the title, the first 3 description hashtags show above it. Over 60 hashtags and YouTube ignores all of them. #Shorts is not needed (vertical, under 3 min).",
+    "tags": [
+      "compound interest",
+      "compound interest explained",
+      "compound interest by age",
+      "what if you invested $3 a day",
+      "cost of waiting to invest",
+      "what happens if you invest at the age of 18",
+      "latte factor",
+      "small daily expenses",
+      "opportunity cost",
+      "personal finance",
+      "money math",
+      "math animation",
+      "the back of the envelope",
+      "envelope math"
+    ],
+    "tags_chars_as_youtube_counts": 331,
+    "pinned_comment": "What rate would you plug in? 7% is a round, middle-of-the-road rate, not a prediction (7% ÷ 12 each month, about 7.23% a year effective). At 10%, the 25 row becomes ≈ $577,000 and the 18 row ≈ $1,170,000.\n\nRule of thumb: at 7%, money roughly doubles every decade (72 ÷ 7 ≈ 10.3 years), and starting 10 years younger also adds 10 years of deposits, so each decade younger costs you more than double. Spend $6 a day? Double your row.",
+    "related_video": {
+      "pick": {
+        "id": "EqFQCJheCMU",
+        "title": "Start Investing 10 Years Late? You Get Half.",
+        "url": "https://www.youtube.com/shorts/EqFQCJheCMU",
+        "why": "The verdict's twin in another format: $10,000 once at 25 vs 35 halves; $3 a day, with the extra 10 years of deposits, more than doubles. Live since Tue 6 Oct 2026, 22:27 ET."
+      },
+      "swap_when_live": "02b or 02c, the other find-your-row tables, once published; then point theirs at this Short.",
+      "end_screen": "Shorts have no end screens or cards. The Related video link is the Shorts equivalent."
+    },
+    "thumbnail_frame": "In the YouTube app, pick the finished-table frame (the same content as the IG cover).",
+    "settings": {
+      "category": "Education",
+      "audience": "Not made for kids",
+      "altered_or_synthetic_content": "No (animated chart, not realistic footage)",
+      "remixing": "Allow",
+      "captions": "None needed (no narration; all text is on screen)"
+    },
+    "posting_window": {
+      "when": "First Tue-Thu evening after the 02a condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+      "spacing": "Keep it at least 6 h from any other upload on the channel, and post one find-your-row teaser (02a, 02b, 02c) per evening: the three share a format and a cover style.",
+      "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,198 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2). 06c (Mon 03:45 ET) had 760 views by 13 Oct; 06b (Mon 12:14 ET, the day before) had 61. The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. Search demand for 'compound interest' is down 17.3% on its baseline and 'financial literacy' up 11.9%; neither is a reason to rush."
+    },
+    "description_utf8_bytes": 1475
+  },
+  "instagram": {
+    "caption": "\"It's just $3 a day.\" Find your age: what $3 a day really costs you by 65, next to what you think it costs. Compound interest, by age.\n\nRed is what you'd hand over by 65. Green is what that $3 a day really costs you, if you'd invested it at 7% a year instead of spending it.\n\nThe math, shown:\n• $3 × 365 = $1,095 a year, or $91.25 a month.\n• At 18: $51,465 handed over vs ≈ $400,000 (≈ 7.8×).\n• At 25: $43,800 vs ≈ $240,000 (≈ 5.5×).\n• At 35: $32,850 vs ≈ $111,000.\n• Every 10 years younger, it costs you more than double: 25 vs 35 is ≈ 2.2×.\n\n7% ÷ 12 each month (about 7.23% a year), deposits at the end of each month until 65. 7% is an assumption, not a forecast. No tax, fees or inflation. Not financial advice.\n\nSpend $6 a day? Double your row. What rate would you plug in?\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\nAnimation and original sound: The Back of the Envelope.\n\n#compoundinterest #personalfinance #investingforbeginners #financialliteracy #moneytips",
+    "caption_chars": 1000,
+    "caption_first_125": "\"It's just $3 a day.\" Find your age: what $3 a day really costs you by 65, next to what you think it costs. Compound interest",
+    "caption_rule": "The first 125 characters are the quoted excuse, the task ('Find your age') and the 'compound interest' keyword, with no result: the caption overlays the Reel from frame 1, so every result sits below 'more'.",
+    "hashtags_in_order": [
+      "#compoundinterest",
+      "#personalfinance",
+      "#investingforbeginners",
+      "#financialliteracy",
+      "#moneytips"
+    ],
+    "hashtag_rule": "Instagram caps a post at 5 hashtags (since Dec 2025).",
+    "alt_text_short": "Table by age: $3 a day handed over by 65 vs grown at 7%. At 25: $43,800 vs about $240,000.",
+    "alt_text_long": "Animation on a white page. The header quotes: 'It's just $3 a day.' What it costs you by 65. Footer: at 7% a year until 65, no tax, fees or inflation. A green stick figure stands beside shelves with a row for each age from 18 to 60: what you think it costs, in red ($3 a day times the years left to 65), and what it really costs you, the same money grown at 7% a year. He shrugs, then points at 18: about $400,000, about 7.8 times the red $51,465; then at 25: about $240,000. Then he draws a bracket from the 35 row up to the 25 row, and the 25 row's figure lands on a gold plate: about 2.2 times the cost at 35. Verdict: 10 years younger? It costs more than double.",
+    "alt_text_where": "Advanced settings → Accessibility → Alt text, if your app shows it for Reels.",
+    "cover": {
+      "files": {
+        "3x4": "publishing/02a-becker-rig-3-a-day-by-age-cover-3x4.jpg",
+        "9x16": "publishing/02a-becker-rig-3-a-day-by-age-cover-9x16.jpg"
+      },
+      "frame_in_current_render_s": 11.4,
+      "frame_index": 342,
+      "frame_by_content": "The finished table, which the write-up names as the cover (its beat sheet marks the hold after the payoff 'the cover frame', and its Instagram note says 'Cover: the completed table'): all 10 rows from 18 to 60, red beside green; the 25 row's ≈ $240,000 on the gold plate; the bracket from the 35 row up to the 25 row; the pill '≈ 2.2× the cost at 35'; the figure pointing at the plate, pencil in hand; and the verdict '10 years younger? / It costs more than double.' under the table. Use the first settled frame of that hold, after the impact's shake and before the end card.",
+      "frame_measured": "On the pre-condense 15.9 s render the payoff lands at 10.70 s (frame 321) with the impact's shake; from 11.30 s (frame 339) the mean frame-to-frame luma change (270×480 greyscale) stays at or under 0.016 until the end card cuts in at 13.40 s. The cover is taken at 11.4 s (frame 342), inside that hold.",
+      "crop": "3:4 = 1080×1440 from y 78 to 1518 of the 1080×1920 frame. The content runs from y 112 (the badge) to y 1484 (the verdict's underline), so the crop centres it: badge, quoted header, footer, all 10 rows with the plate, bracket and pill, and the verdict; it drops the empty floor. A centred grid crop (y 240-1680) loses the badge and leaves the header on the top edge.",
+      "how_to_set": "In 'Edit cover', pick the finished-table frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header and the verdict.",
+      "re_export": "ffmpeg -ss 11.4 -i renders/channel/02a-becker-rig-3-a-day-by-age.mp4 -frames:v 1 -vf \"crop=1080:1440:0:78\" -q:v 2 publishing/02a-becker-rig-3-a-day-by-age-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 11.4 -i renders/channel/02a-becker-rig-3-a-day-by-age.mp4 -frames:v 1 -q:v 2 publishing/02a-becker-rig-3-a-day-by-age-cover-9x16.jpg"
+    },
+    "first_comment": "At 25: $43,800 handed over vs ≈ $240,000 at 7% a year. 10 years younger costs more than double. What rate would you plug in?",
+    "first_comment_action": "Post it right after publishing and pin it.",
+    "trial_reels": {
+      "recommendation": "Post as a regular Reel, not a Trial.",
+      "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
+      "use_trial_for": "A version test afterwards, if you want one. The write-up's Instagram A version is this cut with captions off (the same spec rendered with \"captions\": false); it is not in renders/channel, so it needs a studio render first. Post it as a Trial with MANUAL graduation 48-72 h later and compare skip rate (October Reels ran 27.0-65.1%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+    },
+    "settings": {
+      "audio": "Rename the original audio to '$3 a day, by age — The Back of the Envelope' if the app allows; it is the score, with no voice. The write-up suggests trending in-app audio for the Instagram cut (Gage Heward's 1,150,974-play version ran a pop track); if you try it, test it as the Trial above.",
+      "share_to_feed": "On",
+      "google_indexing": "Public professional-account posts can appear in Google/Bing since 10 Jul 2025, so the caption is written as a searchable question."
+    },
+    "posting_window": {
+      "when": "Same evening as YouTube, about 15 min after the Short: 21:45-22:45 ET.",
+      "why": "October Reels, median plays by posting slot (owner insights, 2026-10-13): weekday 22:00-00:30 ET 5,449 (n = 3, including the two best: 7,302 and 5,449), weekday midday 1,212 (n = 2), Sunday 05:00-08:00 ET 1,087 (n = 2). Skip rate tracks plays more closely than the hour does: 27.0-27.4% for the top two, 56.9-65.1% for the bottom two. The same idea's other Reel ('10 years late', 219 plays) had the worst skip rate (65.1%), so the cover and the first 125 characters matter more than the hour."
+    },
+    "alt_text_rule": "Paste the short version into Instagram: it is kept at or under 100 characters so it fits the field however short it is, and it writes 'about' instead of '≈' so screen readers read it cleanly. The long version is for anywhere with room (a website embed, a newsletter)."
+  },
+  "research": {
+    "keywords_youtube": [
+      {
+        "keyword": "compound interest",
+        "est_monthly_searches": 137873,
+        "volume": 76.7,
+        "competition": 50.6,
+        "overall": 65.8,
+        "note": "seed; -17.3% vs its 30-day baseline (166,772); the green column's topic",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "compound interest explained",
+        "est_monthly_searches": 51994,
+        "volume": 70.4,
+        "competition": 40.3,
+        "overall": 66.1,
+        "note": "-11.3% vs its baseline (58,623); the US is its top market",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "your life if you invested $5 a day",
+        "est_monthly_searches": 43958,
+        "volume": 69.3,
+        "competition": 56.5,
+        "overall": 59.0,
+        "note": "-1.8% vs its baseline (44,753): a daily amount over a lifetime has demand; another amount, so not a tag",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "how to invest at 18",
+        "est_monthly_searches": 8452,
+        "volume": 58.6,
+        "competition": 44.0,
+        "overall": 57.6,
+        "note": "how-to intent, not a tag",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "your life if you invested 5 dollars a day",
+        "est_monthly_searches": 5410,
+        "volume": 55.7,
+        "competition": 31.2,
+        "overall": 61.0,
+        "note": "",
+        "metrics_as_of": "2026-08-16"
+      },
+      {
+        "keyword": "what happens if you invested $10 a day",
+        "est_monthly_searches": 5384,
+        "volume": 55.7,
+        "competition": 23.9,
+        "overall": 63.9,
+        "note": "competition 23.9",
+        "metrics_as_of": "2026-08-24"
+      },
+      {
+        "keyword": "what happens if you invest at the age of 18",
+        "est_monthly_searches": 4027,
+        "volume": 53.8,
+        "competition": 37.0,
+        "overall": 57.5,
+        "note": "the first row's question",
+        "metrics_as_of": "2026-08-11"
+      },
+      {
+        "keyword": "cost of waiting to invest",
+        "est_monthly_searches": 3507,
+        "volume": 52.9,
+        "competition": 22.6,
+        "overall": 62.7,
+        "note": "the verdict's idea; low competition",
+        "metrics_as_of": "2026-09-13"
+      },
+      {
+        "keyword": "your life if you invest $300 a month starting at 18 vs. 28",
+        "est_monthly_searches": 3172,
+        "volume": 52.3,
+        "competition": 23.3,
+        "overall": 62.0,
+        "note": "the same 10-year gap, monthly",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "financial literacy",
+        "est_monthly_searches": 256914,
+        "volume": 80.8,
+        "competition": 46.7,
+        "overall": 69.8,
+        "note": "+11.9% vs its baseline (229,567)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "personal finance (topic)",
+        "est_monthly_searches": 1436792,
+        "volume": 91.9,
+        "competition": 60.0,
+        "overall": 71.1,
+        "note": "-18.1% vs its baseline (1,754,064)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "money tips",
+        "est_monthly_searches": 111384,
+        "volume": 75.3,
+        "competition": 42.0,
+        "overall": 68.4,
+        "note": "+81.6% vs its baseline (61,342)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "3 a day (matching terms)",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": null,
+        "overall": null,
+        "note": "every match is about meals or water: no '$3 a day' money phrase is indexed",
+        "metrics_as_of": null
+      }
+    ],
+    "keywords_source": "vidIQ keyword research (research and matching_terms modes), pulled 2026-10-13. vidIQ refreshes each keyword on its own schedule, so each row carries its snapshot date in metrics_as_of; four rows are older snapshots (2026-08-11 to 2026-09-13).",
+    "same_idea_youtube_shorts": [
+      {
+        "title": "What happens if you invest $1 per day starting at 18🤯💰📈",
+        "channel": "Nick Meyer, CFP®",
+        "subscribers": 296000,
+        "views": 2061,
+        "published": "2021-09-30",
+        "note": "15 s; one age, $1 a day"
+      },
+      {
+        "title": "Just invest $1 per day, everyday, and thank me later... 🤝😎",
+        "channel": "Infinity Investing",
+        "subscribers": 11200,
+        "views": 1580,
+        "published": "2022-07-23",
+        "note": "talked, 58 s"
+      },
+      {
+        "title": "$1 a Day From Age 18 Could Become $132,000 #shorts",
+        "channel": "FinancialShift",
+        "subscribers": 5,
+        "views": 307,
+        "published": "2026-06-20",
+        "note": "the same 7% maths for one age, with the '10 years late' version in its description"
+      },
+      {
+        "title": "The $3 Decision That Costs You $1 Million by Age 65 (The Math Will Shock You) #Shorts",
+        "channel": "TopFindsNow",
+        "subscribers": 64,
+        "views": 103,
+        "published": "2026-07-18",
+        "note": "the same $3 a day as a coffee habit, with a hype title; its $1 million is not checked here"
+      },
+      {
+        "title": "$1 a day makes you a millionaire",
+        "channel": "Money Minute Lab",
+        "subscribers": 3,
+        "views": 56,
+        "published": "2026-04-19"
+      }
+    ],
+    "same_idea_note": "vidIQ YouTube search (under 4 min; by views and by relevance): 5 channels with the daily-amount-from-a-young-age idea, all under 2,100 views, each for one age only; the only $3 version has 103 views. The by-age table is unclaimed on YouTube Shorts.",
+    "instagram_tiktok_outliers": [
+      {
+        "handle": "@keysfinance",
+        "platform": "TikTok",
+        "id": "7666160850981408013",
+        "on_screen": "How to retire with $2M",
+        "views": "3.3M (1,457.8x the account median of 2.3K)",
+        "note": "a list of starting ages beside the creator, one amount per age: the find-your-row grammar, talked"
+      },
+      {
+        "handle": "@mike.cpa",
+        "platform": "TikTok",
+        "id": "7677353915838401823",
+        "on_screen": "why you need to start early ROTH IRA",
+        "views": "1.7M (385.0x the account median of 4.4K)",
+        "note": "18 vs 25 as static text over b-roll, music only, 5 s, looped"
+      },
+      {
+        "handle": "@robeverydayfinance",
+        "platform": "TikTok",
+        "id": "7674692215729425694",
+        "on_screen": "How much you need to invest monthly for $2m",
+        "views": "602.8K (145.7x)",
+        "note": "the by-age list again; caption tags #PersonalFinance #financialliteracy #investingforbeginners"
+      },
+      {
+        "handle": "@felix.padilla.eng",
+        "platform": "TikTok",
+        "id": "7673438595176320269",
+        "on_screen": "HOW MUCH MONEY YOU WASTE WITHOUT NOTICING",
+        "views": "260.8K (243.9x)",
+        "note": "small daily expenses added up, static text, music only, 6 s"
+      },
+      {
+        "handle": "@spendshiftofficial",
+        "platform": "Instagram",
+        "id": "Dcnv5ngT_gA",
+        "on_screen": "A $150 Saturday, $150 a week, $7,800 a year, $78,000 every 10 years",
+        "views": "201K (101.7x the account median of 2K)",
+        "note": "a small habit re-priced over years, static text, no voice, looped"
+      }
+    ],
+    "own_channel_youtube_october_shorts": [
+      {
+        "id": "LjHDFzVxRyM",
+        "title": "Can You Find the Missing Dollar?",
+        "posted_et": "Sun 07:04",
+        "views": 1254
+      },
+      {
+        "id": "hJBvmGA6sZ0",
+        "title": "You Can Lean on $1 Million. Not on $1 Billion.",
+        "posted_et": "Thu 00:25",
+        "views": 1221
+      },
+      {
+        "id": "XVUeMcTg9OQ",
+        "title": "Your Interest Has a Speed Limit",
+        "posted_et": "Sun 05:49",
+        "views": 1141
+      },
+      {
+        "id": "fbpdKf4Wy8c",
+        "title": "What If You Bought Starbucks Stock Instead of a $4 Latte Every Day? (06c)",
+        "posted_et": "Mon 03:45",
+        "views": 760
+      },
+      {
+        "id": "8__HTUa2PoU",
+        "title": "Pay the Minimum on $5,000? 238 Months.",
+        "posted_et": "Mon 22:09",
+        "views": 642
+      },
+      {
+        "id": "FW_oxA3kbsM",
+        "title": "A $2 Lottery Ticket Was Worth $6.98. Until the Fine Print.",
+        "posted_et": "Wed 12:03",
+        "views": 348
+      },
+      {
+        "id": "mXbKY_R63h4",
+        "title": "You Can Carry $1 Million. Not in Pennies.",
+        "posted_et": "Thu 13:38",
+        "views": 177
+      },
+      {
+        "id": "EqFQCJheCMU",
+        "title": "Start Investing 10 Years Late? You Get Half.",
+        "posted_et": "Tue 22:27",
+        "views": 161
+      },
+      {
+        "id": "krfZEHhb0xU",
+        "title": "What If You Bought Netflix Stock Instead of Paying for Netflix? (06b)",
+        "posted_et": "Mon 12:14",
+        "views": 61
+      }
+    ],
+    "own_channel_instagram_october_reels": [
+      {
+        "shortcode": "DeIvYk7I4Qr",
+        "topic": "$5,000 on the minimum",
+        "posted_et": "Mon 22:46",
+        "plays": 7302,
+        "skip_rate_pct": 27.4,
+        "avg_watched_pct": 56.5
+      },
+      {
+        "shortcode": "DeOEthJJ1TG",
+        "topic": "$1M stack vs Burj Khalifa",
+        "posted_et": "Thu 00:28",
+        "plays": 5449,
+        "skip_rate_pct": 27.0,
+        "avg_watched_pct": 83.1
+      },
+      {
+        "shortcode": "DeWgFZRoR_S",
+        "topic": "Missing dollar",
+        "posted_et": "Sun 07:05",
+        "plays": 1997,
+        "skip_rate_pct": 32.0,
+        "avg_watched_pct": 81.3
+      },
+      {
+        "shortcode": "DeMvZv9IqRw",
+        "topic": "Powerball $6.98",
+        "posted_et": "Wed 12:05",
+        "plays": 1825,
+        "skip_rate_pct": 58.7,
+        "avg_watched_pct": 57.9
+      },
+      {
+        "shortcode": "DeYuqT4pjVC",
+        "topic": "06c latte vs Starbucks stock",
+        "posted_et": "Mon 03:46",
+        "plays": 1711,
+        "skip_rate_pct": 40.3,
+        "avg_watched_pct": 69.1
+      },
+      {
+        "shortcode": "DePe11HIHwn",
+        "topic": "$1M in pennies",
+        "posted_et": "Thu 13:37",
+        "plays": 598,
+        "skip_rate_pct": 42.0,
+        "avg_watched_pct": 66.7
+      },
+      {
+        "shortcode": "DeLSd9io8UK",
+        "topic": "10 years late",
+        "posted_et": "Tue 22:30",
+        "plays": 219,
+        "skip_rate_pct": 65.1,
+        "avg_watched_pct": 30.6
+      },
+      {
+        "shortcode": "DeEW2ZMIiYd",
+        "topic": "Speed limit (e)",
+        "posted_et": "Sun 05:54",
+        "plays": 177,
+        "skip_rate_pct": 56.9,
+        "avg_watched_pct": 31.2
+      }
+    ],
+    "channel_stats": {
+      "youtube_subscribers": 53,
+      "youtube_views": 10221,
+      "youtube_videos": 41,
+      "youtube_30d": "+27 subscribers, +5,127 views, 11 videos",
+      "instagram_followers": 8,
+      "instagram_30d_views": 20518
+    },
+    "limits": [
+      "vidIQ's YouTube authorization is a different channel (UCRC5v_El2fibbkqsZs6uFjA), so @envelopemath's YouTube Analytics (audience hours, geography) were not readable. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
+      "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and on the outliers' own tags.",
+      "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
+      "The render in renders/channel is the pre-condense cut. The cover's time and frame are measured on it; the copy names no other timestamp, and the ship step re-picks the cover on the final file.",
+      "Outlier views and medians are vidIQ's index at pull time; the same-idea Shorts' own maths (for example a $3 habit 'costing $1 million') is not checked here and is not in the copy."
+    ],
+    "adjacent_youtube_outliers": [
+      {
+        "title": "How Saving Every Month Builds Wealth 😮",
+        "channel": "Zack D. Films",
+        "subscribers": 29100000,
+        "views": 30891874,
+        "published": "2026-06-06"
+      },
+      {
+        "title": "Do THIS in Your 20's To Become a MILLIONAIRE",
+        "channel": "Graham Stephan",
+        "subscribers": 5180000,
+        "views": 3865020,
+        "published": "2025-02-27"
+      },
+      {
+        "title": "The Power of Compounding",
+        "channel": "Brian Feroldi",
+        "subscribers": 319000,
+        "views": 3281518,
+        "published": "2025-05-23",
+        "note": "outlier score 127.35"
+      }
+    ],
+    "write_up_benchmarks": "Gage Heward, 'What $1 costs you by age': 1,150,974 plays (210x his median), 14 s, no voice, 48 rows (H64 in the write-up; not re-pulled here).",
+    "titles_scored": "11 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored."
+  },
+  "checked": {
+    "date": "2026-10-13",
+    "by": "adversarial check of this sheet",
+    "math": "python3 teasers/v2/checks/02-find-your-row.py: PASSED: all 183 checks on studio/specs/ at the adversarial check (2026-10-13; all 177 checks at the first build, before the condense pass made the check cut-aware), and all 216 checks with --spec on the condensed cuts in studio/specs-wip/; run by the builder through publishing/data/checks/02-find-your-row.py; every public figure traced to the 02a maths table and recomputed in MATH_RELATIONS (FV of $91.25 a month at 7%/12), each row's figures pinned beside their age and the verdict's range pinned to its pairs (COPY_RULES)",
+    "limits": {
+      "youtube_title_chars": 68,
+      "youtube_description_chars": 1433,
+      "youtube_description_utf8_bytes": 1475,
+      "youtube_tags_chars_as_youtube_counts": 331,
+      "youtube_hashtags": 3,
+      "instagram_caption_chars": 1000,
+      "instagram_hashtags": 5,
+      "instagram_alt_text_short_chars": 90
+    },
+    "vidiq_requeried": "pulled 2026-10-13: compound interest 137,873 / 50.6 (-17.3%); your life if you invested $5 a day 43,958; cost of waiting to invest 3,507 / 22.6; 11 titles scored: pick 97, top 98, write-up's title 94; channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,518 views in 30 days. Re-scored at the end of the build: the pick 97. Re-queried at the adversarial check: the pick's title score 97; compound interest 137,873 / 50.6 (-17.3% on 166,772); channel 53 / 10,221 / 41; the related Short EqFQCJheCMU 162 views (161 at the build), published 02:27 UTC 7 Oct (Tue 6 Oct 22:27 ET). All match."
+  }
+}

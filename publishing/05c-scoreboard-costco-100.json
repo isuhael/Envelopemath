@@ -1,0 +1,593 @@
+{
+  "id": "05c-scoreboard-costco-100",
+  "teaser": "05c Scoreboard, split-sheet: \"Is Costco's profit all membership fees? Follow your $100 cart\"",
+  "prepared": "2026-10-13",
+  "for_video": {
+    "current_render": "renders/channel/05c-scoreboard-costco-100.mp4",
+    "current_duration_s": 25.3,
+    "current_sha256": "38179927b7c1128789734f5a06be67cb97cfefaa5c5f7b768861f99bb319e993",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the pre-condense cut. The ship step re-runs the build with --covers on the condensed file.",
+    "cut": {
+      "name": "pre-condense cut (hook pass 2 + QA fix pass, 2026-10-08)",
+      "spec": "studio/specs/05c-scoreboard-costco-100.json",
+      "body_s": 22.8,
+      "card_s": 2.5,
+      "shipped": null,
+      "git": "471c793",
+      "status": "the 05 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay): the WIP cut is studio/specs-wip/05c-scoreboard-costco-100.json, 11.4 s with the card per the write-up, and passes the 05 check with --spec (583 checks, 0 failed for the three). The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."
+    }
+  },
+  "facts": {
+    "source": "teasers/v2/05-split-sheet.md section 05c; teasers/v2/checks/05-split-sheet.py: 560 checks, 0 failed on studio/specs/ (2026-10-13)",
+    "period": "Costco FY2026, the 52 weeks ended Aug 30, 2026 ($ millions): FY2026 Form 10-K (filed Oct 6, 2026) and the Sept 24, 2026 results release",
+    "net_sales": "297,247 = total revenue 303,154 − membership fees 5,907 (reported as $297.2 billion)",
+    "rows": "the stuff itself (merchandise costs) 264,279 ≈ $88.91 per $100; staff & warehouses (SG&A) 27,190 ≈ $9.15; left from your cart 5,778 ≈ $1.94, before tax; rows add to $100.00 with no plug",
+    "fees": "membership fees 5,907 ≈ $1.99 per $100 of sales (not part of your $100)",
+    "operating_income": "11,685 = cart 5,778 (49.4%) + fees 5,907 (50.6%) ≈ $3.93 per $100 of sales; the cart makes 97.8% as much as the fees; reported $11.69B",
+    "net_income": "9,226 ≈ $3.10 per $100 of sales after interest and tax; the fees are 64% of it, so not all of it either (pinned comment and description only)",
+    "assumption": "company-wide totals ÷ company-wide net sales × $100, before interest and income tax: not one receipt and not a markup on any item",
+    "verdict": "Not all fees: your cart leaves ≈ $1.94. Membership fees: ≈ $1.99. (VO: 'Profit: ≈ $3.93. Your cart makes almost half.')"
+  },
+  "youtube": {
+    "titles_ranked": [
+      {
+        "rank": 1,
+        "title": "How Much Does Costco Make on Your $100 Cart? Is It Really All Membership Fees?",
+        "vidiq_score": 96,
+        "chars": 78,
+        "note": "PICK. Top score of the 11 scored. The first question (44 characters) is the viewer's own cart; the second is the header's factoid, with the write-up's 'Really' doubt cue ('how costco really makes money' +237.6%). No hashtags in the title; the description's first three show above it."
+      },
+      {
+        "rank": 2,
+        "title": "How Much Does Costco Make on Your $100 Cart? Is It All Membership Fees?",
+        "vidiq_score": 95,
+        "chars": 71,
+        "note": "The pick without 'Really': 1 point lower, 7 characters shorter. The fallback if the pick reads as too long in the player."
+      },
+      {
+        "rank": 3,
+        "title": "How Much Does Costco Make on Your $100 Cart?",
+        "vidiq_score": 93,
+        "chars": 44,
+        "note": "The first question alone (44 characters). It drops the factoid the video busts, the reason the header exists."
+      }
+    ],
+    "titles_also_scored": [
+      {
+        "title": "Does Costco Make All Its Profit From Membership Fees?",
+        "vidiq_score": 92,
+        "chars": 53,
+        "note": "the factoid as a yes/no, without the $100 cart"
+      },
+      {
+        "title": "How Does Costco Make Money? Is It Really All Membership Fees?",
+        "vidiq_score": 90,
+        "chars": 61,
+        "note": "the exact phrase 'how does costco make money' (38,579)"
+      },
+      {
+        "title": "How Costco Really Makes Money: Is It All Membership Fees? Follow Your $100 Cart",
+        "vidiq_score": 90,
+        "chars": 79,
+        "note": ""
+      },
+      {
+        "title": "How Costco Makes Money: Is It All Membership Fees? Follow Your $100 Cart",
+        "vidiq_score": 89,
+        "chars": 72,
+        "note": "the exact phrase 'how costco makes money' (89,426)"
+      },
+      {
+        "title": "Does Costco Really Make All Its Money From Membership Fees? Follow Your $100 Cart",
+        "vidiq_score": 87,
+        "chars": 81,
+        "note": ""
+      },
+      {
+        "title": "Does Costco Make All Its Profit From Membership Fees? Follow Your $100 Cart",
+        "vidiq_score": 86,
+        "chars": 75,
+        "note": ""
+      },
+      {
+        "title": "Does Costco Make All Its Profit From Membership Fees? #costco #businessmath #moneymath",
+        "vidiq_score": 83,
+        "chars": 86,
+        "note": "the house 3-hashtag form"
+      },
+      {
+        "title": "Is Costco's Profit All Membership Fees? Follow Your $100 Cart",
+        "vidiq_score": 82,
+        "chars": 61,
+        "note": "the write-up's title and header"
+      }
+    ],
+    "title_pick": "How Much Does Costco Make on Your $100 Cart? Is It Really All Membership Fees?",
+    "title_pick_chars": 78,
+    "description": "How much does Costco make on your $100 cart, and is it all membership fees? Not all fees. Of every $100 rung up in fiscal 2026, the cart leaves about $1.94 before tax, and membership fees bring in about $1.99. About half each.\n\nThe math, shown (Costco FY2026, the 52 weeks ended Aug 30, 2026; per $100 of net sales):\n• The stuff itself (merchandise costs): $264,279M ÷ $297,247M × $100 ≈ $88.91.\n• Staff & warehouses (SG&A): $27,190M ÷ $297,247M × $100 ≈ $9.15.\n• Left from your cart, before tax: $100 − $88.91 − $9.15 = $1.94.\n• Check: $88.91 + $9.15 + $1.94 = $100.00.\n• Membership fees: $5,907M ÷ $297,247M × $100 ≈ $1.99 per $100 of sales.\n• Operating profit: cart $5,778M + fees $5,907M = $11,685M, about $3.93 per $100. The cart makes almost half (49.4%).\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\n\nAnimation and original sound: The Back of the Envelope. Source: Costco's FY2026 Form 10-K (filed Oct 6, 2026) and its Q4 and fiscal 2026 results (Sept 24, 2026). Net sales $297,247M = total revenue $303,154M − membership fees $5,907M. Company-wide averages before interest and income tax: not your receipt, and not a markup on any item. Merchandise costs include inbound freight, depot costs and fresh-food prep; SG&A is mainly wages and warehouse running costs. After interest and tax, net income was $9,226M, about $3.10 per $100 of sales, and the fees are 64% of it: not all of it either. Not financial advice. Not affiliated with or endorsed by Costco.\n#Costco #CostcoMembership #BusinessModel",
+    "description_chars": 1538,
+    "hashtags_in_order": [
+      "#Costco",
+      "#CostcoMembership",
+      "#BusinessModel"
+    ],
+    "hashtag_rules": "Title hashtags show as links in the title; with none in the title, the first 3 description hashtags show above it. Over 60 hashtags and YouTube ignores all of them. #Shorts is not needed (vertical, under 3 min).",
+    "tags": [
+      "how costco makes money",
+      "how does costco make money",
+      "how costco really makes money",
+      "how costco membership makes money",
+      "costco membership fees",
+      "costco",
+      "how costco works",
+      "why costco is so cheap",
+      "how companies make money",
+      "business model explained",
+      "business breakdown",
+      "money math",
+      "math animation",
+      "the back of the envelope",
+      "envelope math"
+    ],
+    "tags_chars_as_youtube_counts": 345,
+    "pinned_comment": "Which store's $100 next?\n\nThe working, FY2026 ($ millions): net sales 297,247 (= total revenue 303,154 − membership fees 5,907). Merchandise costs 264,279 (88.909%) · SG&A 27,190 (9.147%) · left 5,778 (1.944%). Membership fees 5,907 = 1.987% of sales. Operating income 11,685 = 5,778 (49.4%) + 5,907 (50.6%). Net income 9,226, about $3.10 per $100 of sales after interest and tax; the fees are 64% of it, so not all of it either.",
+    "related_video": {
+      "pick": {
+        "id": "krfZEHhb0xU",
+        "title": "What If You Bought Netflix Stock Instead of Paying for Netflix?",
+        "url": "https://www.youtube.com/shorts/krfZEHhb0xU",
+        "why": "06b, live since Mon 12 Oct 2026: a company's recurring fee (a Netflix bill) in money math, next to this Short's membership fee. Both name a brand and say they are not affiliated with it."
+      },
+      "swap_when_live": "05a (where your $10 at Chipotle goes), the same split-sheet series, once published. Then point 05a's Related video at this Short.",
+      "end_screen": "Shorts have no end screens or cards. The Related video link is the Shorts equivalent."
+    },
+    "thumbnail_frame": "In the YouTube app, pick frame 1, the question frame (the write-up's YouTube cover): hero $100.00, the three cart rows all '?', the membership row ≈ $1.99. The Instagram cover is the verdict frame instead.",
+    "settings": {
+      "category": "Education",
+      "audience": "Not made for kids",
+      "altered_or_synthetic_content": "No (animated chart, not realistic footage)",
+      "remixing": "Allow",
+      "captions": "None needed (no narration; all text is on screen)"
+    },
+    "posting_window": {
+      "when": "First free Tue-Thu evening after the condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+      "spacing": "Keep it at least 6 h from any other upload on the channel, on a different evening from 05a and 05b, and in a different week from 08a (also Costco on the Scoreboard look; the write-up's open item 4). Suggested order within the series: 05c, then 05b, then 05a.",
+      "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,199 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2); 06c (Mon 03:45 ET) has 760 and 06b (Mon 12:14 ET) 61, too young to compare. The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. 05c goes first: the factoid is circulating now (a dozen same-idea Shorts since mid-September, one on 12 Oct), 'how costco really makes money' runs +237.6% and 'how costco works' +244.7% over their 30-day baselines, and Costco's FY2026 results are under three weeks old (Sept 24)."
+    },
+    "description_utf8_bytes": 1570
+  },
+  "instagram": {
+    "caption": "How much does Costco make on your $100 cart? Is its profit really all membership fees? Follow your $100 line by line, from Costco's own 10-K.\n\nNot all fees. Your cart makes almost as much.\n\nThe math, shown (FY2026, per $100 of sales):\n• The stuff itself: about $88.91.\n• Staff & warehouses: about $9.15.\n• Left from your cart: $100 − $88.91 − $9.15 = $1.94, before tax.\n• Membership fees: about $1.99 per $100 of sales.\n• Operating profit: about $3.93 per $100. Cart $5,778M + fees $5,907M = $11,685M, about half each.\n\nCostco FY2026 Form 10-K (filed Oct 6, 2026) and Q4 and fiscal 2026 results (Sept 24, 2026), the 52 weeks ended Aug 30, 2026. Company-wide averages before interest and tax, not your receipt. Not financial advice. Not affiliated with or endorsed by Costco.\n\nWhich store's $100 next?\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\nAnimation and original sound: The Back of the Envelope.\n\n#costco #costcomembership #businessmodel #businessmath #personalfinance",
+    "caption_chars": 1007,
+    "caption_first_125": "How much does Costco make on your $100 cart? Is its profit really all membership fees? Follow your $100 line by line, from Co",
+    "caption_rule": "The first 125 characters are the viewer's $100 cart, the 'Costco' and 'membership fees' keywords and the header's question, no result: the caption overlays the Reel from frame 1, so the verdict and every dollar sit below 'more'.",
+    "hashtags_in_order": [
+      "#costco",
+      "#costcomembership",
+      "#businessmodel",
+      "#businessmath",
+      "#personalfinance"
+    ],
+    "hashtag_rule": "Instagram caps a post at 5 hashtags (since Dec 2025).",
+    "alt_text_short": "Chart: per $100 at Costco, the cart leaves about $1.94 before tax; fees bring about $1.99.",
+    "alt_text_long": "Animation on a black scoreboard. The header asks: is Costco's profit all membership fees? Follow your $100 cart. A counter starts at $100.00 and counts down to what is left as the rows land: the stuff itself about $88.91, staff and warehouses about $9.15, and left from your cart about $1.94 before tax. The rows add back to $100.00. A membership-fees row shows about $1.99 per $100 of sales. The counter turns to operating profit per $100, about $3.93: the cart makes almost half. Verdict: not all fees: your cart leaves about $1.94 before tax, and membership fees bring about $1.99.",
+    "alt_text_where": "Advanced settings → Accessibility → Alt text, if your app shows it for Reels.",
+    "cover": {
+      "files": {
+        "3x4": "publishing/05c-scoreboard-costco-100-cover-3x4.jpg",
+        "9x16": "publishing/05c-scoreboard-costco-100-cover-9x16.jpg"
+      },
+      "frame_in_current_render_s": 22.0,
+      "frame_index": 660,
+      "frame_by_content": "The verdict frame, as the write-up's Instagram note asks (≈ $1.94 against ≈ $1.99): the header question, the hero 'PROFIT PER $100 ≈ $3.93', the footer 'cart $5,778M + fees $5,907M = $11,685M', the three landed rows (≈ $88.91, ≈ $9.15 and ≈ $1.94, with the pointer on 'Left from your cart'), the membership-fees row ≈ $1.99, and the verdict 'Not all fees: your cart leaves ≈ $1.94. Membership fees: ≈ $1.99.' On any cut, use a settled frame of the verdict hold, before the end card: on this cut the last caption has cleared by then; on the condensed cut it stays under the verdict.",
+      "frame_measured": "On the pre-condense 25.3 s render the last caption ('Profit: ≈ $3.93. Your cart makes almost half.') clears at frame 620 (20.67 s), and the board then holds still (frame-to-frame mean luma change under 0.0005) until the end card at frame 685 (22.83 s). Frame 660 (22.00 s) is used.",
+      "crop": "3:4 = 1080×1440 from y 0 to 1440 of the 1080×1920 frame: the badge (from y 141), the header, the hero, the footer, the board and the verdict (to y 1281), with near-even margins (141 px above, 159 px below); it drops the empty black below. A centred grid crop (y 240-1680) cuts the badge and the header.",
+      "how_to_set": "In 'Edit cover', pick the verdict frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
+      "re_export": "ffmpeg -ss 22.0 -i renders/channel/05c-scoreboard-costco-100.mp4 -frames:v 1 -vf \"crop=1080:1440:0:0\" -q:v 2 publishing/05c-scoreboard-costco-100-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 22.0 -i renders/channel/05c-scoreboard-costco-100.mp4 -frames:v 1 -q:v 2 publishing/05c-scoreboard-costco-100-cover-9x16.jpg"
+    },
+    "first_comment": "Per $100 rung up at Costco in fiscal 2026: the cart leaves about $1.94 before tax, and membership fees bring in about $1.99. Not all fees: about half each. Which store's $100 next?",
+    "first_comment_action": "Post it right after publishing and pin it.",
+    "trial_reels": {
+      "recommendation": "Post as a regular Reel, not a Trial.",
+      "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show 471c793:renders/channel/05c-scoreboard-costco-100.mp4 > 05c-25.3s.mp4` (sha256 38179927…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+    },
+    "settings": {
+      "audio": "Rename the original audio to 'Your $100 Costco cart vs the fees — The Back of the Envelope' if the app allows; it is the score, with no voice.",
+      "share_to_feed": "On",
+      "google_indexing": "Public professional-account posts can appear in Google/Bing since 10 Jul 2025, so the caption is written as a searchable question."
+    },
+    "posting_window": {
+      "when": "Same evening as YouTube, about 15 min after the Short: 21:45-22:45 ET, on a different evening from 05a and 05b.",
+      "why": "October Reels, median plays by posting slot (owner insights, 2026-10-13): weekday 22:00-00:30 ET 5,449 (n = 3, including the two best: 7,302 and 5,449), weekday midday 1,212 (n = 2), Sunday 05:00-08:00 ET 1,087 (n = 2). 06c, posted Mon 03:46 ET, has 1,711 plays with a 40.3% skip rate. Skip rate tracks plays more closely than the hour does: 27.0-27.4% for the top two, 56.9-65.1% for the bottom two. The condense matters more than the hour."
+    },
+    "alt_text_rule": "Paste the short version into Instagram: it is kept at or under 100 characters so it fits the field however short it is, and it writes 'about' instead of '≈' so screen readers read it cleanly. The long version is for anywhere with room (a website embed, a newsletter)."
+  },
+  "research": {
+    "keywords_youtube": [
+      {
+        "keyword": "how costco makes money",
+        "est_monthly_searches": 89426,
+        "volume": 73.9,
+        "competition": 33.5,
+        "overall": 70.9,
+        "note": "+19.7% vs its 30-day baseline (74,718); the biggest Costco question",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "how does costco make money",
+        "est_monthly_searches": 38579,
+        "volume": 68.5,
+        "competition": 31.0,
+        "overall": 68.7,
+        "note": "seed; +20.2% vs its baseline (32,088)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "how costco actually makes money",
+        "est_monthly_searches": 21802,
+        "volume": 64.8,
+        "competition": 26.9,
+        "overall": 68.1,
+        "note": "-54.2% vs its baseline (47,568)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "how costco works",
+        "est_monthly_searches": 17539,
+        "volume": 63.4,
+        "competition": 46.0,
+        "overall": 59.6,
+        "note": "+244.7% vs its baseline (5,088)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "how costco really makes money",
+        "est_monthly_searches": 17420,
+        "volume": 63.3,
+        "competition": 39.5,
+        "overall": 62.2,
+        "note": "+237.6% vs its baseline (5,160)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "how costco membership makes money",
+        "est_monthly_searches": 7618,
+        "volume": 57.9,
+        "competition": 23.0,
+        "overall": 65.6,
+        "note": "the factoid the header names",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "why costco is so cheap",
+        "est_monthly_searches": 6936,
+        "volume": 57.3,
+        "competition": 30.3,
+        "overall": 62.3,
+        "note": "-48.2% vs its baseline (13,401)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "costco membership fees",
+        "est_monthly_searches": 4179,
+        "volume": 54.1,
+        "competition": 35.7,
+        "overall": 58.2,
+        "note": "",
+        "metrics_as_of": "2026-10-10"
+      },
+      {
+        "keyword": "costco",
+        "est_monthly_searches": 329799,
+        "volume": 82.4,
+        "competition": 61.2,
+        "overall": 64.9,
+        "note": "-2.5% vs its baseline (338,300); the brand, crowded",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "how companies make money",
+        "est_monthly_searches": 126774,
+        "volume": 76.2,
+        "competition": 38.4,
+        "overall": 70.3,
+        "note": "+40.3% vs its baseline (90,367)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "business model explained",
+        "est_monthly_searches": 46153,
+        "volume": 69.6,
+        "competition": 42.5,
+        "overall": 64.8,
+        "note": "+119.0% vs its baseline (21,071)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "costco deals",
+        "est_monthly_searches": 47392,
+        "volume": 69.8,
+        "competition": 40.8,
+        "overall": 65.6,
+        "note": "+324.9% vs its baseline (11,154); shopping intent, not in the tags",
+        "metrics_as_of": "2026-10-12"
+      }
+    ],
+    "keywords_source": "vidIQ keyword research (research, matching_terms and questions modes), pulled 2026-10-13. vidIQ refreshes each keyword on its own schedule, so each row carries its snapshot date in metrics_as_of; one row is an older snapshot (2026-10-10).",
+    "same_idea_youtube_shorts": [
+      {
+        "title": "Why everyone loves Costco",
+        "channel": "Morning Brew",
+        "subscribers": 695000,
+        "views": 7635239,
+        "published": "2025-06-30",
+        "note": "56 s; the brand's pull for business Shorts"
+      },
+      {
+        "title": "How Does Costco Make Money?",
+        "channel": "The Motley Fool",
+        "subscribers": 468000,
+        "views": 34911,
+        "published": "2019-02-12",
+        "note": "3:13; the same split on 2018 results: its description leaves about $1B from the merchandise against $3.1B of fees"
+      },
+      {
+        "title": "Costco Doesn't Make Money From Food (Here's the Real Trick)",
+        "channel": "How They Profit",
+        "subscribers": 2,
+        "views": 1506,
+        "published": "2026-10-09",
+        "note": "its description: fees 'about half of operating income' (FY2025)"
+      },
+      {
+        "title": "Costco Makes More From the Card Than the Groceries",
+        "channel": "How It Pays Off",
+        "subscribers": 2,
+        "views": 1321,
+        "published": "2026-10-12",
+        "note": "the same FY2026 figures"
+      },
+      {
+        "title": "How Costco Actually Makes Billions (It’s Not Groceries)",
+        "channel": "The Value Ledger",
+        "subscribers": 9,
+        "views": 1253,
+        "published": "2026-09-23",
+        "note": "its description: 'Over 70% of Costco's operating profit' from fees"
+      },
+      {
+        "title": "Costco Barely Makes Money Selling You Anything — Here's the Real Trick",
+        "channel": "Behind The Brand",
+        "subscribers": 24,
+        "views": 1214,
+        "published": "2026-09-26"
+      },
+      {
+        "title": "Costco (COST) Makes Half Its Profit Before You Buy Anything",
+        "channel": "SORA FINANCE CREATOR",
+        "subscribers": 121,
+        "views": 1185,
+        "published": "2026-09-28",
+        "note": "its description: fees about half of FY2026's $11.7 billion operating income"
+      },
+      {
+        "title": "Costco barely profits on what it sells",
+        "channel": "Raza Zaidi",
+        "subscribers": 441,
+        "views": 1051,
+        "published": "2026-09-21",
+        "note": "its description: 'Two-thirds of its $8 billion profit comes from membership fees alone'"
+      },
+      {
+        "title": "Costco Doesn't Make Money Selling You Food #shorts",
+        "channel": "Ridvise",
+        "subscribers": 411,
+        "views": 707,
+        "published": "2026-09-13",
+        "note": "its description: 'The membership fee is more than half the profit. The groceries are the bait.'"
+      }
+    ],
+    "same_idea_note": "vidIQ YouTube search (under 4 min; by views): at least a dozen 'Costco profits from membership, not food' Shorts since mid-September 2026, all under 1,600 views, with descriptions claiming the fees are 'about half', 'two-thirds' or 'over 70%' of profit (not verified here). None follows a $100 cart or compares the two per $100.",
+    "instagram_tiktok_outliers": [
+      {
+        "handle": "@cashepreneurs",
+        "platform": "Instagram",
+        "id": "Db_LCDwBXxU",
+        "on_screen": "Costco sells products at near-zero markup. Not because they're generous - because the products were never the business model.",
+        "views": "1.6M (6.3x the account median of 260.9K)",
+        "note": "the factoid this Short tests, as static text over b-roll"
+      },
+      {
+        "handle": "@adivitius",
+        "platform": "Instagram",
+        "id": "DcuHE7nj4te",
+        "on_screen": "Costco and Sam's Club sell similar products. But the viral pay comparison is wrong.",
+        "views": "1.5M (11.8x the account median of 128K)",
+        "note": "a Costco myth-bust: the viral claim named on screen, then checked"
+      },
+      {
+        "handle": "@wealth.cap",
+        "platform": "Instagram",
+        "id": "DbHQpliFGFk",
+        "on_screen": "Costco's $1.50 hot dog combo stayed $1.50 since 1985.",
+        "views": "1.4M (7.9x the account median of 170.5K)",
+        "note": "the hot-dog angle is 08a's (the write-up's open item 4)"
+      },
+      {
+        "handle": "@nogood.io",
+        "platform": "TikTok",
+        "id": "7669867062939946271",
+        "on_screen": "Are you following Costco's TikTok account yet?",
+        "views": "1.4M (76.9x the account median of 18.2K)",
+        "note": "Costco's business model as marketing commentary"
+      },
+      {
+        "handle": "@revuence",
+        "platform": "TikTok",
+        "id": "7669867834452774166",
+        "on_screen": "DO YOU KNOW WHY SUPERMARKET ROTISSERIE CHICKEN IS CHEAPER THAN A RAW ONE?",
+        "views": "614.1K (55.2x the account median of 11.1K)",
+        "note": "a retail-pricing question with no answer on screen"
+      }
+    ],
+    "own_channel_youtube_october_shorts": [
+      {
+        "id": "LjHDFzVxRyM",
+        "title": "Can You Find the Missing Dollar?",
+        "posted_et": "Sun 07:04",
+        "views": 1256
+      },
+      {
+        "id": "hJBvmGA6sZ0",
+        "title": "You Can Lean on $1 Million. Not on $1 Billion.",
+        "posted_et": "Thu 00:25",
+        "views": 1221
+      },
+      {
+        "id": "XVUeMcTg9OQ",
+        "title": "Your Interest Has a Speed Limit",
+        "posted_et": "Sun 05:49",
+        "views": 1141
+      },
+      {
+        "id": "fbpdKf4Wy8c",
+        "title": "What If You Bought Starbucks Stock Instead of a $4 Latte Every Day? (06c)",
+        "posted_et": "Mon 03:45",
+        "views": 760
+      },
+      {
+        "id": "8__HTUa2PoU",
+        "title": "Pay the Minimum on $5,000? 238 Months.",
+        "posted_et": "Mon 22:09",
+        "views": 642
+      },
+      {
+        "id": "FW_oxA3kbsM",
+        "title": "A $2 Lottery Ticket Was Worth $6.98. Until the Fine Print.",
+        "posted_et": "Wed 12:03",
+        "views": 348
+      },
+      {
+        "id": "mXbKY_R63h4",
+        "title": "You Can Carry $1 Million. Not in Pennies.",
+        "posted_et": "Thu 13:38",
+        "views": 177
+      },
+      {
+        "id": "EqFQCJheCMU",
+        "title": "Start Investing 10 Years Late? You Get Half.",
+        "posted_et": "Tue 22:27",
+        "views": 161
+      },
+      {
+        "id": "krfZEHhb0xU",
+        "title": "What If You Bought Netflix Stock Instead of Paying for Netflix? (06b)",
+        "posted_et": "Mon 12:14",
+        "views": 61
+      }
+    ],
+    "own_channel_instagram_october_reels": [
+      {
+        "shortcode": "DeIvYk7I4Qr",
+        "topic": "$5,000 on the minimum",
+        "posted_et": "Mon 22:46",
+        "plays": 7302,
+        "skip_rate_pct": 27.4,
+        "avg_watched_pct": 56.5
+      },
+      {
+        "shortcode": "DeOEthJJ1TG",
+        "topic": "$1M stack vs Burj Khalifa",
+        "posted_et": "Thu 00:28",
+        "plays": 5449,
+        "skip_rate_pct": 27.0,
+        "avg_watched_pct": 83.1
+      },
+      {
+        "shortcode": "DeWgFZRoR_S",
+        "topic": "Missing dollar",
+        "posted_et": "Sun 07:05",
+        "plays": 1997,
+        "skip_rate_pct": 32.0,
+        "avg_watched_pct": 81.3
+      },
+      {
+        "shortcode": "DeMvZv9IqRw",
+        "topic": "Powerball $6.98",
+        "posted_et": "Wed 12:05",
+        "plays": 1825,
+        "skip_rate_pct": 58.7,
+        "avg_watched_pct": 57.9
+      },
+      {
+        "shortcode": "DeYuqT4pjVC",
+        "topic": "06c latte vs Starbucks stock",
+        "posted_et": "Mon 03:46",
+        "plays": 1711,
+        "skip_rate_pct": 40.3,
+        "avg_watched_pct": 69.1
+      },
+      {
+        "shortcode": "DePe11HIHwn",
+        "topic": "$1M in pennies",
+        "posted_et": "Thu 13:37",
+        "plays": 598,
+        "skip_rate_pct": 42.0,
+        "avg_watched_pct": 66.7
+      },
+      {
+        "shortcode": "DeLSd9io8UK",
+        "topic": "10 years late",
+        "posted_et": "Tue 22:30",
+        "plays": 219,
+        "skip_rate_pct": 65.1,
+        "avg_watched_pct": 30.6
+      },
+      {
+        "shortcode": "DeEW2ZMIiYd",
+        "topic": "Speed limit (e)",
+        "posted_et": "Sun 05:54",
+        "plays": 177,
+        "skip_rate_pct": 56.9,
+        "avg_watched_pct": 31.2
+      }
+    ],
+    "channel_stats": {
+      "youtube_subscribers": 53,
+      "youtube_views": 10221,
+      "youtube_videos": 41,
+      "youtube_30d": "+27 subscribers, +5,127 views, 11 videos",
+      "instagram_followers": 8,
+      "instagram_30d_views": 20518
+    },
+    "limits": [
+      "@envelopemath's YouTube Analytics (audience hours, geography) were not read here; the 06b and 06c sheets found vidIQ's YouTube authorization is a different channel. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
+      "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and on the write-up's and the outliers' own tags.",
+      "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
+      "The write-up's sources rest on search-result text: its egress proxy blocked the primary pages. Costco's merchandise costs (264,279) and SG&A (27,190) are attributed to the FY2026 10-K by search; the identity 303,154 − 264,279 − 27,190 = 11,685 matches the independently reported $11.69B operating income. Before posting, re-run the check against the 10-K's own table (the write-up's open item 1).",
+      "The same-idea Shorts' shares of profit from fees ('about half', 'two-thirds', 'over 70%') are their own descriptions, not verified here; the copy states only the write-up's FY2026 split.",
+      "Slate overlap: 08a (Costco hot dogs as a unit) shares the brand and the Scoreboard look (the write-up's open item 4). Post them in different weeks, or move one, as the owner decides.",
+      "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file."
+    ],
+    "titles_scored": "11 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored.",
+    "vidiq_credits": "95 credits for this teaser (4 keyword queries, 1 YouTube search, 2 Instagram/TikTok outlier searches, 11 title scores and 1 re-score; 5 each), plus 10 shared across 05a-05c for the channel's stats and Shorts list (Instagram owner insights cost 0). The adversarial check used 40 more across 05a-05c at 5 each: 3 title scores, 3 keyword re-queries, 1 lookup of the 3 related videos and 1 list of the channel's Shorts by views; Instagram owner insights cost 0. The account's shared balance went 3,885 → 3,795 over the check, because other agents draw on it in parallel."
+  },
+  "checked": {
+    "date": "2026-10-13",
+    "by": "adversarial check of this sheet",
+    "math": "python3 teasers/v2/checks/05-split-sheet.py: 560 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), and 583 checks, 0 failed with --spec on the condensed WIP specs, whose strings, numbers and verdicts are the same; every line recomputed from Costco's FY2026 income statement in MATH_RELATIONS (net sales, the 3 rows to the cent with no plug, the fees, operating and net income per $100, the 49.4/50.6 split, 64%); COPY_RULES keep every rounded amount 'about' or '≈' (the exact workings excepted), keep ≈ $1.94 'before tax', keep each per-$100 figure with its kind of profit, keep 'half' an 'about' or 'almost', and never say 'Costco keeps'; re-run at the adversarial check with the same result (583 with --spec after the condense critic fixes)",
+    "limits": {
+      "youtube_title_chars": 78,
+      "youtube_description_chars": 1538,
+      "youtube_description_utf8_bytes": 1570,
+      "youtube_tags_chars_as_youtube_counts": 345,
+      "youtube_hashtags": 3,
+      "instagram_caption_chars": 1007,
+      "instagram_hashtags": 5,
+      "instagram_alt_text_short_chars": 90
+    },
+    "vidiq_requeried": "pulled 2026-10-13: how costco makes money 89,426 / 33.5 (+19.7%); how does costco make money 38,579 / 31.0 (+20.2%); costco membership fees 4,179 / 35.7; title scores 96 (pick), 82 (write-up title), 83 (best hashtag form); channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,518 views in 30 days. Re-queried after the build: the pick's title score 96. Match. Re-queried at the adversarial check: the pick's title score 96; 'how costco makes money' 89,426 / 33.5 (+19.7%, snapshot 2026-10-12); the related video krfZEHhb0xU 75 views (61 at the build, it is a day old); Instagram 8 followers, 20,520 views in 30 days."
+  }
+}

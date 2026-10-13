@@ -1,8 +1,8 @@
 # Format 6: POV spend-vs-own race (pattern P6)
 
 **Teasers:** 06a Scoreboard (Apple / first iPhone), 06b Scoreboard (Netflix bill / Netflix stock; ported from Live Sheet on 2026-10-08), 06c Becker Rig (latte / Starbucks stock)
-**Date:** 2026-10-07; hook pass 2026-10-08 (06b and 06c kept); hook pass 2 2026-10-08 (06b's hook replaced); 06b ported to Scoreboard 2026-10-08; 06c condensed cut 2026-10-12 (promoted and shipped the same day; its opening hold fixed in the kit and re-shipped the same day); 06b condensed cut 2026-10-12 (its QA fix pass, promotion and ship the same day) · **Writer:** format 6 (revised after review, see the Review log at the end) · **Specs:** `studio/specs/06a-scoreboard-first-iphone-apple.json`, `06b-scoreboard-netflix-bill.json` (06b's condensed cut since 2026-10-12; the 30.5 s Scoreboard cut is in git history, and the Live Sheet spec is in `studio/specs/retired/`), `06c-becker-rig-latte-starbucks.json` (06c's condensed cut since 2026-10-12; the 28.0 s round-2 cut is in git history)
-**Check:** `python3 teasers/v2/checks/06-pov-race.py`. It recomputes every on-screen and spoken number, cross-checks the source tables, and asserts the specs match, including VO pacing in spoken words (numbers read out in full) and the motion/payoff timing of the hook. Current result (2026-10-12, after 06b's condensed cut was promoted and shipped): 442 checks, 0 failed on `studio/specs/`. 06c and 06b are each checked against their condensed cut's expectations, which `studio/specs/` must hold. The retired cuts' sets (06c's 28.0 s, 06b's 30.5 s) are kept as references for a git-history copy passed with `--spec` (06b's: 443 checks, 0 failed).
+**Date:** 2026-10-07; hook pass 2026-10-08 (06b and 06c kept); hook pass 2 2026-10-08 (06b's hook replaced); 06b ported to Scoreboard 2026-10-08; 06c condensed cut 2026-10-12 (promoted and shipped the same day; its opening hold fixed in the kit and re-shipped the same day); 06b condensed cut 2026-10-12 (its QA fix pass, promotion and ship the same day); 06a condensed cut 2026-10-13 (its QA fix pass the same day; in `studio/specs-wip/` until the ship step promotes it) · **Writer:** format 6 (revised after review, see the Review log at the end) · **Specs:** `studio/specs/06a-scoreboard-first-iphone-apple.json` (the 26.5 s round-2 cut; its condensed cut is `studio/specs-wip/06a-scoreboard-first-iphone-apple.json`), `06b-scoreboard-netflix-bill.json` (06b's condensed cut since 2026-10-12; the 30.5 s Scoreboard cut is in git history, and the Live Sheet spec is in `studio/specs/retired/`), `06c-becker-rig-latte-starbucks.json` (06c's condensed cut since 2026-10-12; the 28.0 s round-2 cut is in git history)
+**Check:** `python3 teasers/v2/checks/06-pov-race.py`. It recomputes every on-screen and spoken number, cross-checks the source tables, and asserts the specs match, including VO pacing in spoken words (numbers read out in full) and the motion/payoff timing of the hook. Current result (2026-10-13, with 06a's condensed cut after its fix pass in `studio/specs-wip/`): 446 checks, 0 failed on `studio/specs/`, and 468, 0 failed with `--spec studio/specs-wip/06a-scoreboard-first-iphone-apple.json`. 06c and 06b are each checked against their condensed cut's expectations, which `studio/specs/` must hold. 06a has two sets, picked by length: the 26.5 s cut, which `studio/specs/` holds until the condensed cut is promoted (`A_IN_SPECS`), and the condensed cut. The retired cuts' sets (06c's 28.0 s, 06b's 30.5 s) are kept as references for a git-history copy passed with `--spec` (06b's: 443 checks, 0 failed).
 
 ---
 
@@ -19,7 +19,7 @@
    - "POV: In 2002 You invested $5000 in…": [15,876,376 (100.45x)](https://www.youtube.com/shorts/KmtLGAPIutg).
    - "POV: Since 1996 you invested $100/month in … and never sold": [1,391,731 (5.91x)](https://www.youtube.com/shorts/2cF446rExhY). Its grey "Investment" line is the only working ChartOrbit ever shows.
 4. **Rules.** Keep the same-brand pairing, the operative verb "instead of paying", one small input and a hidden result; honest losses and "meh" results count too, since GoPro, a decline, is the biggest post. Add three things: the spend line beside the value line, a last-second envelope line (multiple or doublings), and a footer with the dates and the dividend choice. The race is already moving by 0.5 s and the first year-end lands by about 2 s.
-5. **Risks.** None of the 5 @investment_timeline videos could be watched (all 7 watch jobs failed), and n = 5, so viability is 6. Their posts are 60 s; ours sit in the 18-35 s lane (26.5 / 30.5 / 28.0 s). 06c's condensed cut (2026-10-12) is shorter: a 15.7 s body plus the 2.5 s end card (18.2 s). So is 06b's (2026-10-12, not yet promoted): an 18.3 s body plus the card (20.8 s).
+5. **Risks.** None of the 5 @investment_timeline videos could be watched (all 7 watch jobs failed), and n = 5, so viability is 6. Their posts are 60 s; ours sit in the 18-35 s lane (26.5 / 30.5 / 28.0 s). 06c's condensed cut (2026-10-12) is shorter: a 15.7 s body plus the 2.5 s end card (18.2 s). So is 06b's (2026-10-12, shipped the same day): an 18.3 s body plus the card (20.8 s). And 06a's (2026-10-13, in WIP): a 15.3 s body plus the card (17.8 s), down from 29.0 s.
 
 ### Where the teasers depart from the seeds (inside the lane)
 
@@ -52,43 +52,51 @@
 - **R2:** one input, no result, in the header, the title and the caption.
 - **R3:** partly. $499 is a price people paid or remember, not one most viewers paid. The pinned comment asks "what was your first iPhone?" so viewers swap in their own.
 - **R4:** small and familiar.
-- **R5:** "Launch day 2007" are the first spoken words (see the wrong belief below), and the chart opens in the red: the green tip falls through $499 at 2.15 s.
-- **R6:** you + $499 + 2007, all in the header, and all in the first spoken line ("Launch day 2007: you skip the $499 iPhone and buy Apple stock.").
+- **R5:** "Launch day 2007" are the first words of the hook caption, complete on frame 1 (see the wrong belief below), and the chart opens in the red: the green tip falls through $499 at 1.14 s in the condensed cut (2.15 s in the 26.5 s cut).
+- **R6:** you + $499 + 2007, all in the header, and all in the first caption ("Launch day 2007: you skip the $499 iPhone and buy Apple stock.").
 - **R7:** phone vs stock, both named.
 - **R8:** 15 words.
 - **R9:** the year axis to 2025 is the countable loop.
-- **R10:** the race moves at 0.3 s and the first payoff ($809 at the end of 2007) lands at 1.4 s; the biggest number is last.
+- **R10:** in the condensed cut the start dot pings from frame 2, the phone falls onto the line from 0.1 s and lands at 0.31 s as the lines leave the start, and the first payoff ($809 at the end of 2007) lands at 0.66 s (0.84 and 1.40 s in the 26.5 s cut); the biggest number is last.
 - **R11:** the title asks, the screen says POV, and the caption takes a side without a number.
 - **R12:** "≈ 74×" is a single repeatable number.
 
 **Wrong belief it exploits (R5):** "By launch day it was too late. Everyone knew the iPhone, so it was priced in." The buy is at the close on launch day itself, the most hyped day there was, and the first thing the stock does is crash below $499 in 2008. It still comes to ≈ 74×.
 
-### Beat sheet (chart clock: x 2007 → 2025.99 over t 0.3 → 21.4 s, ≈ 1.11 s per year)
+### Beat sheet (condensed cut after its fix pass, 2026-10-13: chart clock x 2007 → 2025.99 over t −0.04 → 12.8 s on `lookOpts.clockKnots`: ≈ 0.71 s per year, with the flat 2015 (x 2015.1-2016.5, t 5.70-6.26) at 0.40 s per year and the flat 2018 (x 2018.05-2018.95, t 7.36-7.81) at 0.50; verdict at 13.7 s; body 15.3 s + the 2.5 s end card = 17.8 s)
 
-| t (s) | On screen | VO |
+Spec: `studio/specs-wip/06a-scoreboard-first-iphone-apple.json` (WIP; the ship step promotes it over `studio/specs/06a-scoreboard-first-iphone-apple.json`). It condenses the 26.5 s round-2 cut (race 0.3 → 21.4 s at ≈ 1.11 s per year, verdict 22.0 s, held 4.5 s; 29.0 s with the card), whose beat sheet and guide VO script are in git history (3db6d30 and earlier). Every string, number, caption and cue role is the 26.5 s cut's; only the clock moved. Two Scoreboard pov-race options are new and opt-in, both set in this spec only: `clockKnots` (the bent clock) and `startPing` (the start dot pings from frame 2). The Review log ("Condensed cut (2026-10-13): 06a" and its fix pass) lists every change.
+
+| t (s) | On screen | Caption |
 |---|---|---|
-| 0.0 | Header. Both counters at **$499** (24 px more air under the header than round 1). Empty axis 2007-2025. Year clock "2007". Footer. | "Launch day 2007: you skip the $499 iPhone and buy Apple stock." (0.0-5.8) |
-| 0.3 | The race starts. | |
-| 0.84 | The phone icon drops onto the white line, just left of the start point (pop; the SPENT counter flushes coral). No chart tag: the header, both counters and the board's phone glyph already say $499 / iPhone. | |
-| 1.40 | End of 2007: green tip **$809**, the first payoff, under the year clock's "2007". | |
-| 2.15-2.84 | Open in the red: the green line falls through the white line (t 2.15) to **$348** at the end of 2008 (thud, t 2.51; the counter turns coral; the clock reads "2008"), then is back above $499 by t 2.84. | |
-| 6.0 | End of 2012 at t 6.96: **$2,196** (tick). | "2012: about $2,200. You just hold." (6.0-9.6) |
-| 9.8 | The axis has rescaled and the white $499 line lies on the floor: from 10.6 s a "$499 / SPENT" tag rides its right end (until 14.7 s, when the 2016-19 closes squeeze under it). End of 2017 at t 12.51: **$5,403**, over 10× (tick). | "2017: over 10 times. The phone's long gone." (9.8-13.2) |
-| 13.7 | The green tip passes **$10,000** (ding, t 14.78; the clock has just rolled to "2020"). | "2020: it passes $10,000." |
-| 16.6 | End of 2021 $23,713 → end of 2022 $17,451 (t 16.96 → 18.07; the clock reads "2022" on the bottom). | "2022 knocks off a quarter." |
-| 19.6 | 2023-2024: $26,004, $33,989; the "$499 / SPENT" tag is back from 20.0 s. Final **≈ $37,000** at t 21.4 (cash; the tag bumps with it). Footer step: `≈ 136.7 shares × $271.12 (12/31/25 close)`. | "2025: about $37,000." (19.6-22.0: the caption covers the plot's squeeze) |
-| 22.0 | The plot squeezes up (21.7-22.0) and the verdict lands under it, in the band over the stage foot; the header keeps the hook: **≈ 74×** your $499. / 2× every **≈ 3 yrs**. | "About 74 times. It doubled about every 3 years." |
-| 25.6-26.5 | Hold on the finished race, then a hard cut to frame 1 (loop). | |
+| 0.0 | Frame 1, the thumbnail. Header. Both counters at **$499**. Both tips parked on the start point of the empty 2007-2025 axis. Year clock "2007". Footer `6/29/07 close → 12/31/25 · dividends reinvested`. The hook caption is already complete (pre-typed from t −0.4; "Launch day 2007:" lit, the rest lighting word by word). The race clock has been running since −0.04 s, but the lines start on launch day (x 2007.49). | "Launch day 2007: you skip the $499 iPhone and buy Apple stock." (−0.4-3.24, complete on frame 1) |
+| 0.03-0.30 | The start dot pings: a neon ring swells out of it from frame 2 (r 11 → 48 px) and fades by 0.3 s. Meanwhile the phone icon falls onto the white line (whoosh, 0.07; first visible at 0.1 s, frame 4) and lands just left of the start point at 0.31 (pop; the SPENT counter bumps and flushes coral). The lines leave the start point. No chart tag: the header, both counters and the board's phone glyph already say $499 / iPhone. | |
+| 0.66 | End of 2007: green tip **$809**, the first payoff, under the year clock's "2007". | |
+| 1.14-1.58 | Open in the red: the green line falls through the white line (1.14, swipe) to **$348** at the end of 2008 (thud, 1.37; the counter turns coral; the clock reads "2008"), then is back above $499 at 1.58 (swipe). | |
+| 2.08-3.50 | The climb back: $862 (2009), $1,319 (2010), $1,655 (2011); the axis rescales up. | |
+| 3.29 | End of 2012 at 4.20: **$2,196** (tick), 0.91 s after the caption goes up. Then 2013 $2,372 (4.91) and 2014 $3,336 (5.62). | "2012: about $2,200. You just hold." (3.29-6.01) |
+| 5.70-6.26 | The flat 2015 runs fast (0.40 s per year): $3,336 → $3,236 (the close at 6.06, where the clock rolls to "2016" as the next caption goes up). The "$499 / SPENT" tag fades in on the white line's right end at about 6.2 s (it rides there to about 8.65). | |
+| 6.06 | 2016 close $3,639 (6.61). The stake passes 10× ($4,990) at 7.15; end of 2017 at 7.32: **$5,403** (tick). Then the flat 2018 runs fast (0.50 s per year, 7.36-7.81): the 2018 close $5,112 at 7.84. | "2017: over 10 times. The phone's long gone." (6.06-7.99) |
+| 8.04 | 2019 close $9,660 (8.55); the green tip passes **$10,000** at 8.58 (ding; the clock has just rolled to "2020"). 2020 close $17,611 (9.26). | "2020: it passes $10,000." (8.04-9.71) |
+| 9.76 | End of 2021 **$23,713** (9.96, the peak) → end of 2022 **$17,451** (10.67; the clock reads "2022"); 2023 close $26,004 (11.38). | "2022 knocks off a quarter." (9.76-11.59) |
+| 11.64 | 2024 close $33,989 (12.09); the "$499 / SPENT" tag is back by 12.3 s. Riser from 10.4. Final **≈ $37,000** at 12.8 (hit, cash; the board's IN STOCK side bumps and glows, the tag bumps with it). Footer step: `≈ 136.7 shares × $271.12 (12/31/25 close)`. | "2025: about $37,000." (11.64-13.7: the caption covers the plot's squeeze) |
+| 13.7 | **The verdict, 0.9 s after the reveal:** the plot squeezes up (13.4-13.7) and the verdict lands under it, in the band over the stage foot (reveal); the header keeps the hook: **≈ 74×** your $499. / 2× every **≈ 3 yrs**. | "About 74 times. It doubled about every 3 years." (13.7-14.9) |
+| 13.7-15.3 | Verdict hold: 1.6 s from the verdict to the card. | |
+| 15.3-17.8 | End card (unchanged): "Follow for the math behind your money", "shown, not hand-waved.", @envelopemath. | |
 
-The year clock rolls to the next year one frame after each Dec-31 close (x = y + 0.99), so every close lands under its own year and a beat a few days into the new year (the $10,000 crossing at x 2020.03) is never caught mid-roll.
+The year clock rolls to the next year one frame after each Dec-31 close (x = y + 0.992), so every close lands under its own year and a beat a few days into the new year (the $10,000 crossing at x 2020.03) is never caught mid-roll.
 
-The 2008 dip plays under the hook line on purpose: it is a picture beat (the mute test), not a spoken one, so no VO line has to race it.
+**Why the clock bends.** At one pace the flat years (2015: −3%; 2018: −5%) left only the green tip creeping about 1.6 px a frame and a counter ticking, near-still for 0.73 s and about 0.45 s with the caption band left out (QA, 2026-10-13). `lookOpts.clockKnots` runs those two stretches fast and every other year at the same ≈ 0.71 s; no fast stretch holds a beat (a cue, a captioned figure or a line crossing). The 2008 dip stays at the plain pace: slowing it by 0.19 s (a QA nit) made its trough a 0.27 s still run (see the fix pass). The time the flat years give back ends the race 0.6 s sooner.
 
-### Guide VO script (47 words; every line fits 2.6 written and 2.8 spoken words per second)
+The 2008 dip plays under the hook caption on purpose: it is a picture beat (the mute test), not a captioned one, so no caption has to race it.
 
-> Launch day 2007: you skip the $499 iPhone and buy Apple stock. 2012: about $2,200. You just hold. 2017: over 10 times. The phone's long gone. 2020: it passes $10,000. 2022 knocks off a quarter. 2025: about $37,000. About 74 times. It doubled about every 3 years.
+**Why the race starts at −0.04 s.** The kit stands a purchase that the race reaches in its first 0.3 s on the line at frame 1, and its lines start only at the launch-day point (x 2007.49). With the race starting at −0.04, it reaches launch day at 0.307 s: frame 1 is the clean cover (both counters at $499, the phone not yet on the line), and the phone's 0.24 s fall starts at 0.067 (first visible at frame 4, 0.1 s). The start dot's ping (`lookOpts.startPing`) moves from frame 2, as 06b's ticket and 06c's heft do, without touching frame 1 or the cover. Because the kit cues its race-start whoosh only when `raceT[0]` is over 0.05 s, the spec carries that whoosh itself, on the phone's fall (same kind, length and gain as the kit's).
 
-Every middle line now lands a number on a visible close (2012 at 6.96 s, 2017 at 12.51 s, each with a tick), so there is no 7-second stretch without a beat. The JSON glues "Apple stock", "about $2,200", "just hold", "over 10", "long gone" and "about $37,000" with no-break spaces (`\u00a0`) so the Scoreboard captions never orphan a word or split "about" from its number.
+### Captions (on-screen text, no narration; 47 words, all shown)
+
+> Launch day 2007: you skip the $499 iPhone and buy Apple stock. · 2012: about $2,200. You just hold. · 2017: over 10 times. The phone's long gone. · 2020: it passes $10,000. · 2022 knocks off a quarter. · 2025: about $37,000. · About 74 times. It doubled about every 3 years.
+
+The wording is the 26.5 s cut's guide VO script, word for word; only the timing changed. Pacing is for reading, not speaking: each caption is up for at least max(1.2 s, 0.12 s per word) from frame 1, and they run back to back (0.05 s gaps). Each caption that names a figure goes up 0.2-1.2 s before the race reaches it (2012 close 0.91 s, the 10× crossing 1.09 s, the $10,000 crossing 0.54 s, the 2021 peak 0.20 s, the final 1.16 s; the 26.5 s cut led "2017: over 10 times" by 2.7 s, the first condensed render by 1.45 s) and comes down at most 1.81 s after it ("2012: about $2,200. You just hold." covers the holding years 2013-2015), and its beat lands inside it. The caption boundaries sit on fixed chart years (x 2011.7, 2016.0, 2019.27, 2021.7, 2024.35); the 2016.0 one falls inside the fast 2015 stretch, as the clock turns "2016". The JSON glues "Apple stock", "about $2,200", "just hold", "over 10", "long gone" and "about $37,000" with no-break spaces (`\u00a0`) so the Scoreboard captions never orphan a word or split "about" from its number. The Scoreboard sets the last line under the verdict (the 26.5 s cut did too).
 
 ### The maths (every on-screen number)
 
@@ -102,10 +110,10 @@ Every middle line now lands a number on a visible close (2012 at 6.96 s, 2017 at
 | Year-end values, 2012-2025 | 136.71 × Macrotrends close | |
 | $809 / $348 / $862 / $1,319 / $1,655 | year ends 2007-2011 | closes 5.92, 2.5485, 6.3067, 9.6485, 12.1077 (bridged) |
 | $2,196 … $37,065 | year ends 2012-2025 | 16.06, 17.35, 24.40, 23.67, 26.62, 39.52, 37.39, 70.66, 128.82, 173.45, 127.65, 190.21, 248.62, 271.12 |
-| Dips below $499 in 2008 | linear crossing between the 2007 ($809.34) and 2008 ($348.41) points at x 2008.66 (t 2.15) | |
-| "2012: about $2,200" (VO) | 136.71 × $16.06 = $2,195.60, to 2 significant figures | the 2012 close, at t 6.96 |
-| "2017: over 10 times" (VO) | 136.71 × $39.52 = $5,402.87; ÷ $499 = 10.83 (the check asserts 10-11) | the 2017 close, at t 12.51 |
-| Passes $10,000 in 2020 | crossing between $9,660 (2019) and $17,611 (2020) at x 2020.03 (t 14.78) | |
+| Dips below $499 in 2008 | linear crossing between the 2007 ($809.34) and 2008 ($348.41) points at x 2008.66 (t 1.14 in the condensed cut; 2.15 in the 26.5 s cut) | |
+| "2012: about $2,200" (VO) | 136.71 × $16.06 = $2,195.60, to 2 significant figures | the 2012 close, at t 4.20 (6.96 in the 26.5 s cut) |
+| "2017: over 10 times" (VO) | 136.71 × $39.52 = $5,402.87; ÷ $499 = 10.83 (the check asserts 10-11) | the 2017 close, at t 7.32 (12.51 in the 26.5 s cut); the stake passes 10× ($4,990) at x 2017.76, t 7.15 |
+| Passes $10,000 in 2020 | crossing between $9,660 (2019) and $17,611 (2020) at x 2020.03 (t 8.58 in the condensed cut; 14.78 in the 26.5 s cut) | |
 | "a quarter" (2022) | 1 − 127.65 ÷ 173.45 = 26.4% | |
 | ≈ $37,000 / "about $37,000" | $37,065.45, rounded to the nearest $1,000 (2 significant figures). At 3 significant figures it would read ≈ $37,100; the round thousand is the figure a viewer can say in one breath, and the pinned comment gives $37,062 / $37,065. | Cross-check from StatMuse alone: $499 × 271.36 ÷ 3.66 = $36,997 (0.18% apart) |
 | ≈ 74× | $37,065.45 ÷ $499 = 74.28 | |
@@ -142,8 +150,8 @@ The maths:
 What was your first iPhone, and what did you pay?
 
 **Per-platform notes:**
-- **YouTube Shorts:** use the question title (R11). Put no CTA on screen, end on the verdict, and let it loop. The loop lands on the 2008 dip within 2 s of the restart, a good replay hook.
-- **Instagram Reels:** the cover is frame 1 (header + $499 tips). The caption is the POV line plus a verdict with no number: the caption sits over the video, so a result in it would kill the open loop at 0.0 s.
+- **YouTube Shorts:** use the question title (R11). The verdict holds 1.6 s, then the 2.5 s end card (the channel's one CTA). On a loop the condensed cut is back in the 2008 dip 1.1 s after the restart, a good replay hook.
+- **Instagram Reels:** the cover is frame 1 (header + $499 tips; in the condensed cut the whole hook caption is on it too, "Launch day 2007:" lit). The caption is the POV line plus a verdict with no number: the caption sits over the video, so a result in it would kill the open loop at 0.0 s.
 - **TikTok:** caption the way @investment_timeline does (its captions are the POV title plus hashtags, never a result), with our numberless verdict added: the caption above. No licensed music: SFX + VO only.
 - **All:** "Apple" and "iPhone" appear as text only. No Apple logo and no product photo; the kit's generic `phone` icon stands in.
 
@@ -1216,3 +1224,215 @@ The QA judge passed the condensed cut at 8.6 with no musts and no shoulds, only 
   - The long alt text was re-read against the cut. Every beat it names is still there, so no copy changed.
   - 06c's sheet still passes `--check` and still rebuilds byte for byte.
 - **Elsewhere:** `teasers/v2/teasers.json` has 06b's `runtime_s` at 20.8 (was 33.0) and the 2012 landing time in its key numbers. `renders/channel/README.md`, `HANDOFF-finance-channel.md`, `studio/sound/README.md`, BIBLE status v2.3 and the Scoreboard READMEs name the new cut.
+
+### Condensed cut (2026-10-13): 06a
+
+**Owner's note:** "Too many still moments are a killer for a short. Condense the rest. The CTA (end card) is good." Its publishing data is a separate step (the ship step rebuilds `publishing/06a-scoreboard-first-iphone-apple.*`). The 06c and 06b precedents apply.
+
+**Files:**
+- New: `studio/specs-wip/06a-scoreboard-first-iphone-apple.json`, a retimed copy of the 26.5 s spec.
+- Changed: this write-up (the 06a section's beat sheet, captions, hook-rule timings, maths-table times and platform notes, and this entry) and `checks/06-pov-race.py`.
+- Not touched: `studio/specs/06a-scoreboard-first-iphone-apple.json` (the ship step promotes the WIP copy), every kit file (`studio/looks/**`: no kit change was needed), `studio/src/**`, `studio/sound/**`, `test/`, `publishing/` and `renders/`. Renders are in `/tmp/cond/06/06a-scoreboard-first-iphone-apple/` only. Nothing is committed.
+
+**Kept, character for character:** the header, the footer, the 7 caption lines, the verdict, every data point, both finals, the launch-day purchase, the footer step `≈ 136.7 shares × $271.12 (12/31/25 close)`, `tags: false`, every cue's kind and beat, and the 2.5 s end card (the brand layer is untouched). Only the clock moved. The cue record has the same 16 cues in the same order; the one difference in kind of source is the opening whoosh, which the spec now carries because the kit cues its race-start whoosh only when `raceT[0]` is over 0.05 s (same kind, 0.6 s, gain 0.45).
+
+**Measured before** (`renders/channel/06a-scoreboard-first-iphone-apple.mp4`, 26.5 s + the 2.5 s card). Method as for 06c and 06b: frame difference at 270×480 (`tblend` difference → `signalstats` YAVG); a frame is still when YAVG < 0.15, near-still under 0.25.
+- Still runs ≥ 0.4 s: 0.03-0.87 (0.83 s, the opening: nothing moved until the phone started to fall at 0.6 s), the verdict hold 22.23-26.53 (4.3 s, split only by two single-frame encoder steps) and the card hold 28.00-29.00.
+- Near-still runs ≥ 0.4 s inside the race: 1.70-2.17 and 2.33-2.77 (the 2008 dip in the plot's corner) and 9.97-10.57 (0.60 s, the flat 2015).
+- The race ran 1.11 s per year; the verdict came 0.6 s after the reveal and held 4.5 s.
+
+| | 26.5 s cut | Condensed cut | Why |
+|---|---|---|---|
+| Body / total | 26.5 / 29.0 s | **15.9 / 18.4 s** | The owner's note. 06a's race has 18.5 years of line (06c 12, 06b 14), so it lands near 06c's 15.7 s body |
+| `raceT` | [0.3, 21.4] | **[−0.04, 13.4]** | 0.71 s per year. The race reaches the launch-day purchase (x 2007.49) at 0.307 s: the kit stands a purchase reached in the first 0.3 s on the line at frame 1, so just after 0.3 s keeps frame 1 clean and drops the phone in from 0.1 s |
+| `sfx` | (kit whoosh 0.3) pop 0.84, thud 2.51, tick 6.96, tick 12.51, ding 14.78, cash 21.4 | **whoosh 0.07 (spec), pop 0.31, thud 1.37, tick 4.20, tick 7.74, ding 9.18, cash 13.4** | The same cues on the same beats (launch day, the 2008 close, the 2012 and 2017 closes, the $10,000 crossing, the finish). The whoosh sits on the phone's fall |
+| `verdict.t` | 22.0 (raceT[1] + 0.6) | **14.3 (+ 0.9)** | The brief's 0.8-1.5 s; the board's landing (bump, glow, flash) moves until about 13.8 and the plot squeezes 14.0-14.3 |
+| Verdict hold | 4.5 s | **1.6 s** | The last caption is up 1.2 s and ends 0.4 s before the card |
+| `footerSteps[0].t` | 21.4 | **13.4** | On the reveal, as before; up 2.5 s |
+| `vo` (captions) | narration-paced, 0.0-25.6 | **reading-paced, −0.4-15.5** | Each up ≥ max(1.2 s, 0.12 s per word), back to back (0.05 s gaps). vo[0] starts at −0.4, so the hook is complete on frame 1. The boundaries sit on chart years (x 2011.7, 2015.7, 2019.27, 2021.7, 2024.35), so every number caption goes up 0.2-1.5 s before its beat |
+| `data.hold` | 5.1 | **2.5** | = duration − raceT[1] |
+
+**Iteration** (every version lints clean):
+1. 0.75 s per year (`raceT` [−0.06, 14.2], a 16.7 s body), captions back to back with vo[1] running to 7.05: the flat 2015 was near-still for 0.43 s (6.27-6.70): only the green tip creeps and the counter ticks ($3,336 → $3,236 on a $5K axis, no rescale).
+2. 0.70 s per year (`raceT` [−0.04, 13.25]): the 2015 lull did not shrink with the faster clock (5.80-6.47, 0.67 s near-still), because the stretch is flat in x as well as in time.
+3. The vo[1] → vo[2] boundary moved into the lull (x 2015.7): two near-still runs of 0.27 s with the caption change between them. Sound: PASS, but B8's logo landed at −12.84 LUFS against −13 (0.16 dB of margin).
+4. A sweep of audio-only `verify --no-video` runs on spec variants: the race end at 12.8, 13.0, 13.1, 13.4, 13.5 and 13.6 s put the logo at −12.02 to −12.12 LUFS; only 13.25 put it at −12.84 (the plan's music estimate for that tempo map). The verdict offset barely moves it (−12.81 to −12.90 at +0.8 to +1.2 s on the 13.25 clock). Without the spec's whoosh, DUCK fails (pop at 0.3: 3.55 dB over the 2.7 dB cap). **This is the cut:** the race ends at 13.4 s (0.708 s per year), B8 −12.05, 16 kHz 0.6 dB under its ceiling, A11 1.46%, and the tempo goes from 143.284 to 144 BPM at P (+0.5%; the 26.5 s cut went 145.794 → 141.18, −3.2%).
+
+**Measured after** (`/tmp/cond/06/06a-scoreboard-first-iphone-apple/final/06a-scoreboard-first-iphone-apple.mp4`, 15.9 s + the 2.5 s card):
+
+| | Still runs ≥ 0.4 s | Runs 0.2-0.4 s |
+|---|---|---|
+| 26.5 s cut | 0.03-0.87 (opening), 22.23-26.53 (verdict hold), card 28.00-29.00 | (the race's near-still runs above) |
+| **Condensed cut** | **only the verdict hold, 14.73-15.67**, and the card hold, 17.40-18.40 | 0.03-0.33 (the opening: the phone falling, YAVG 0.003-0.13), 13.80-14.03 (between the reveal's glow and the squeeze), 15.70-15.93 (verdict hold) |
+
+- **Before the verdict, the longest still run is 0.30 s** (was 0.83 s), the opening, where the phone's fall is too small to clear the threshold (as 06b's falling ticket, 0.23 s).
+- Near-still runs (YAVG < 0.25) before the verdict are all under 0.4 s: 0.03-0.33, 1.37-1.60, 5.87-6.13, 6.27-6.53 and 13.80-14.03.
+- **The one stretch to watch:** 5.87-6.53 (x 2015.3-2016.3), the race's slowest. Only the tip (about 1.6 px a frame), the gap fill and the counter move there (YAVG 0.08-0.24); the vo[2] caption rising at 6.12 (YAVG 1.75) and the "$499 / SPENT" tag fading in at about 6.55 break it. Read strictly ("only a counter or a caption changes"), that is 0.67 s of near-still picture. The data is flat there (2015: −3%), and no spec knob can speed one stretch of this look's linear clock; the next lever would be a kit beat on each year-end close.
+- The 2008 dip (1.14-1.58) is a picture beat at 0.71 s per year: the counter is coral for 0.44 s, with the swipe, thud and swipe.
+
+**Stills read** (`stills` at 0, 0.1, 0.2, 0.31, 0.66, 1.14, 1.37, 1.58, 3.29, 4.2, 6.12, 6.4, 7.57, 7.74, 8.64, 9.18, 10.36, 10.57, 11.28, 11.99, 12.24, 13.4, 13.75, 14.05, 14.3, 14.7, 15.5, 15.85, 16.3 and 18.37, in three contact sheets):
+- Frame 1: the header, $499 | $499, the parked start dot under "2007", the footer and the complete hook caption ("Launch day 2007:" lit). At 0.1 the phone is falling; at 0.31 it stands on the line and THE IPHONE's $499 is coral.
+- Every year-end matches the maths table (counters between closes are interpolated):
+
+| t (s) | IN APPLE STOCK | Also on screen |
+|---|---|---|
+| 0.66 | $809 | year clock 2007 |
+| 1.37 | $350, coral | 2008 (the close, $348.41, lands at 1.368) |
+| 4.20 | $2,196 | 2012; "2012: about $2,200. You just hold." |
+| 7.57 / 7.74 | $4,984 / $5,402 | 2017; "2017: over 10 times. The phone's long gone."; "$499 / SPENT" |
+| 9.18 | $9,957 | 2020; "2020: it passes $10,000." |
+| 10.57 / 11.28 / 11.99 | $23,704 / $17,490 / $26,066 | 2021 / 2022 / 2023; "2022 knocks off a quarter." |
+| 13.40 | ≈ $37,000 | 2025; `≈ 136.7 shares × $271.12 (12/31/25 close)`; "2025: about $37,000." |
+
+- After the race: the squeeze at 14.05, the verdict `≈ 74× your $499. / 2× every ≈ 3 yrs.` at 14.3-15.85 with its caption to 15.5, the end card at 16.3 and 18.37.
+
+**Lint:** `node src/cli.mjs check specs-wip/06a-scoreboard-first-iphone-apple.json`: 0 errors, 0 warnings (18.4 s = 15.9 + 2.5 s end card).
+
+**Render and sound:**
+- `render specs-wip/06a-scoreboard-first-iphone-apple.json --out /tmp/cond/06/06a-scoreboard-first-iphone-apple/render`: 552 frames, 18.4 s, 16 sfx.
+- `sound … --video …/render --out …/final --score`: video md5 identical (`c0a8189d754c`); P 13.4 by the riser rule; 143.284 / 144 BPM; cue onsets within 0.75 ms. The MP4 is byte-identical to the render's (sha256 `08927b8e…`); the master's sha256 is `401ae9338972fe38…`.
+- The §2.3 row it will need on promotion: `| 06a | riser | 13.400 | 32 (r0) | 143.284 | base 15.90: 6 (r2) @ 144.00 | 16.26 |` (it was P 21.400, 52 beats at 145.794, base 26.50: 12 (r0) @ 141.18, L 26.86). Sections: HOOK 0-1.68, BUILD to 10.89, TENSION to 13.4, DROP to 15.07, CADENCE to 15.9.
+
+**Verify** (`verify specs-wip/06a-scoreboard-first-iphone-apple.json --video …/final`): PASS, 42/42 gated; units 69/69 (U1 14, U2 24, U3 15, U4 15, LOGO 1). The CUE DRIFT block (06a only) and "baseline DIFFERS" are expected for a WIP cut. Each gated check against its limit, with the margin (the shipped 26.5 s cut in brackets):
+- A1 −14.09 LUFS delivery (±1 of −14: 0.91), master −14.01 (±0.3: 0.29) (−14.17 / −14.10). A2 −1.20 dBTP against −1.0: 0.20 (−1.30). A3 LRA 5.62 in 4-9: 1.62 (6.67). A4 short-term max −11.41 against −8: 3.41; momentary max −9.08 against −6: 3.08. A5 PLR 12.89 in 8-13: 0.11 (12.87; the encode loop holds it at ≤ 12.95). A6 0% silent. A7 −11.34 against −18: 6.66. A8 correlation 0.74 (≥ 0.3), minimum 0.32 (≥ −0.1), mono fold −0.69 LU (±1.5). A9 DC 1.0e-5 against 1e-4. A10 phone drop 2.66 LU against 7: 4.34.
+- **A11: 1.464% of samples limited by more than 1 dB, against ≤ 3%: 1.54 points** (0.91% at 29.0 s), max 3.33 dB against 6. The payoff burst is a larger share of the shorter file, as in 06b (2.83%), but far from the gate.
+- A12-A14: AAC LC stereo 48 kHz, 18.400 s against the 18.400 s video; video md5 identical; master unique.
+- **BANDS** (dB re 1 kHz; 26.5 s cut in brackets): 31.5 Hz −15.2 in −20..3: 4.8 (−16.4); 63 Hz 7.3 in 4..10: 2.7 (6.9); 125 Hz 3.9 in 2..8: 1.9 (3.3); 250 Hz 2.0 in 0..6: 2.0 (2.4); 500 Hz 2.1 in −1..4: 1.9 (2.0); 2 kHz −2.1 in −5..0: 2.1 (−3.1); 4 kHz −6.8 in −9..−2: 2.2 (−7.5); 8 kHz −8.0 in −14..−5: 3.0 (−9.6); **16 kHz −12.6 in −26..−12: 0.6** (−13.9). The tightest is 16 kHz, as in 06b's condensed cut (0.7): a shorter body has a larger share of bright transients.
+- HARSH 0.27 against 2 (0.16). B1 music −2.15 in −3.5..−1.5: 0.65; SFX −3.15 in −5..−2.5: 0.65. B2 duck at P −10.8 dB against −8: 2.8. B3 6/6 cues at least 4.6 dB over the music against 3: 1.6 (4.6). B4 onsets within 0.75 ms against 2. B5 flux onset −5.3 ms from P against ±10. B6 4.9 LU against 18. B7 drop-build 4.4 (edge) and 4.9 (centred) against 2, build halves rising. **B8 logo −12.05 LUFS against −13: 0.95**, under the payoff's −10.30 (−12.02 / −10.39). B9 quietest window −26.0 against −45. B10, S1-S14, TRAIN and DUCK pass: S9 143.284 / 144 BPM (136-152; later +0.5%, within ±8%), S14 12 notes against 12 (as in every teaser). INFO AAC0: 1 encode at ceiling −1.5.
+
+**Check (`checks/06-pov-race.py`):**
+- 06a now has two expectation sets, picked by length, like 06b during its WIP stage: the 26.5 s round-2 cut (`EXP["a_26s"]`, what `studio/specs/` holds; `A_IN_SPECS` names it) and the condensed cut (`EXP["a"]`). Strings, points, the purchase, the caption numbers and "about"s, the beat sync and the footer-step beat are shared (`_A_COMMON`).
+- New fact (both cuts): the stake first passes 10× ($4,990) in 2017, the beat of "2017: over 10 times".
+- New for the condensed cut: a 15-18 s lane; captions paced for reading and back to back (gaps < 0.2 s); vo[0] at or before −0.14 s (complete on frame 1); the race reaches the launch-day phone at 0.3-0.34 s and its fall starts by 0.1 s; the whoosh on that fall (± 0.05 s) and every cue kind in order; the red by 1.5 s; the pace 0.65-0.8 s a year; the verdict 0.8-1.5 s after the reveal and held 1.2-1.6 s; each number caption up at most 1.7 s before its beat (2012 close, 10× crossing, $10,000 crossing, 2021 peak, the final); a caption change inside the 2015 lull (x 2015.3-2016.3); the footer step up ≥ 1.2 s.
+- Results: 445 checks, 0 failed by default (was 442: the 10× fact and the two rows that say which 06a cut was checked); 454, 0 failed with `--spec studio/specs-wip/06a-scoreboard-first-iphone-apple.json`; 445, 0 failed on a copy of the 26.5 s spec passed with `--spec` from outside `studio/specs/`.
+- Mutation test (scratch copies in `/tmp/cond/06/mut/`): 14 of 14 caught, each with exit 1 and a named failure: vo[2] up at 5.6 (1.97 s before the 10× crossing, and out of the lull); the vo[1]/vo[2] boundary at 6.6 (out of the lull); the verdict 0.5 s after the reveal; a 2.0 s verdict hold; `raceT[0]` −0.07 (the phone would stand on frame 1); vo[0] at 0.0; a 1.0 s caption; "$38,000"; "about" dropped; the whoosh at 0.3; tick and ding swapped; the race ending at 13.0 (every beat off); a 0.35 s caption gap; an 18.4 s body.
+
+**To promote** (superseded by the fix pass below):
+1. Copy the WIP spec over `studio/specs/06a-scoreboard-first-iphone-apple.json` and set `A_IN_SPECS = "a"` in the check (the 26.5 s set then serves a git-history copy: `git show 3db6d30:studio/specs/06a-scoreboard-first-iphone-apple.json`).
+2. BIBLE §11.1 for the moved record: re-measure Scoreboard (§11.2; no dry run was done here, because the other formats' Scoreboard cuts move their records in the same batch), store the records in `test/fixtures/cues.json`, run `tempo-table --write` (the 06a row above), then `verify --strict-cues` and `npm test`. Re-check B8 on 06a after any refit: its logo level is sensitive to the tempo map (−12.84 LUFS at a 13.25 s race end).
+3. Ship by §11.5 from a picture folder that holds this render (or a fresh `render` of the promoted spec) and `renders/channel/` for the others.
+4. Publishing: `python3 publishing/tools/build_publishing.py 06a-scoreboard-first-iphone-apple --covers`, then `--check`. The cover rule still picks frame 1 by content (both counters at $499, the race not yet left the start, the phone not yet dropped); its hook caption now shows "Launch day 2007:" lit (the shipped frame lit "Launch"). The sheet's check count (442) becomes 445. `teasers/v2/teasers.json`: runtime 18.4 s (was 29.0).
+
+**Open items:**
+- The 2015 lull (above), the one stretch a strict reading would still call near-still.
+- Margins to watch on the next Scoreboard pack change or refit: 16 kHz 0.6 dB, B8 0.95 dB (and its tempo-map sensitivity), B1 0.65; A2 and A5 are closed-loop encode targets, as in every teaser.
+
+### Condensed cut: fix pass (2026-10-13): 06a
+
+The QA judge passed the condensed cut at 8.5 with no musts, two shoulds and four nits. Both shoulds and the cheap nits are applied or answered below.
+
+| # | Severity | Item | Done |
+|---|---|---|---|
+| 1 | should | The flat 2015 (5.87-6.60) was near-still for 0.73 s with the caption band left out. Only the vo[2] caption rising split it on the full-frame metric. No spec knob could speed one stretch of a linear clock. | **Applied, with an opt-in kit option.** Scoreboard `formats/pov-race.js` has a new `lookOpts.clockKnots`: `[[t, x], …]` inner knots of the race clock, with x linear between them. The spec runs the flat 2015 (x 2015.1-2016.5) at 0.40 s a year. The same audit also flagged 2018 ($5,403 → $5,112), which was near-still for about 0.45 s in the reviewed render (two runs split by one 0.256 frame). It now runs at 0.50 s a year (x 2018.05-2018.95). Every other year keeps the reviewed pace, 0.709 s a year. No fast stretch holds a cue, a captioned figure or a line crossing. The 1.0 s the flats give back ends the race 0.6 s sooner. **Result:** the 2015 run is gone on both metrics. 2018 is 0.33 s with the caption band out, and nothing on the full frame. |
+| 2 | should | Sound margins: A2 0.20, A5 0.11 and A1 master 0.29 dB, all under 0.5. Next tightest were 16 kHz 0.6 and B8 0.95, which is sensitive to the tempo map. | **Not caused by this cut's timing, so left for the ship step.** A2, A5 and A1 master are closed-loop encode targets. On this cut they read A2 −1.37 dBTP (0.37, was 0.20), A5 12.72 (0.28, was 0.11) and A1 master −14.01 (0.29). 16 kHz is −12.4 against −12, a 0.4 margin (was 0.6), because the shorter body has a larger share of bright transients. B8 is −12.10 LUFS (0.90). The race end was chosen with an audio-only `verify --no-video` sweep. Race ends of 12.8, 12.9 and 13.0 s all pass, with B8 between −12.06 and −12.11. Two variants with the race ending at 12.7 and 12.71 s also pass. The ship step's checks are listed under "To promote". |
+| 3 | nit | Frame 1: nothing moves until frame 4 (0.1 s), and then only a small falling icon. | **Applied, with an opt-in kit option.** `lookOpts.startPing`: while the own tip waits on its first point, a neon ring swells out of the start dot from frame 2 (r 11 → 48 px) and fades by 0.3 s. Then the phone drops in. The ring is born at nothing, so frame 1 is byte-identical to the reviewed cut's frame 1 (the cover). No cue is added. Frame-difference YAVG over frames 2-9 is now 0.05-0.09 (was 0.003-0.05). That is visible, but under the 0.15 still threshold, so the metric's opening run stays 0.03-0.33 (0.30 s), like 06b's 0.23 s with its falling ticket. |
+| 4 | nit | The 2008 dip flickers by in 0.4 s; give it 0.15-0.2 s more. | **Tried and not applied.** A render with x 2008.55-2009.35 at 0.95 s a year (+0.19 s) turned the trough into a 0.27 s still run on the full frame (1.50-1.77), and a 0.47 s near-still with the caption band out (1.33-1.80). The dip is about 100 px tall in the plot's corner, so slowing it makes it stiller. It stays at the plain pace: coral 1.14-1.58, with the thud and two swipes. The check now requires one plain pace, and a slowed dip fails it. |
+| 5 | nit | Captions disagree with the board for about a second. "2017: over 10 times." went up 1.45 s before the 10× crossing, with the clock on 2015. "2012: about $2,200. You just hold." stayed up 1.87 s past its close. | **Applied** with the bent clock. vo[2] now goes up 1.09 s before the 10× crossing, as the clock turns 2016. vo[1] comes down 1.81 s after the 2012 close; its "You just hold." covers the holding years. The check's lead limit is now 1.3 s (was 1.7), and there is a new trail limit of 1.9 s. |
+| 6 | nit | A 0.43 s near-still between the reveal's glow and the plot squeeze, with the caption band out. | None, as the judge advised. It is now 13.07-13.50 with the caption band out (0.43 s), and 13.20-13.43 on the full frame (0.23 s). The verdict lands 0.9 s after the reveal. |
+
+**Files:**
+- Kit: `studio/looks/scoreboard/formats/pov-race.js` has two opt-in `lookOpts`, `clockKnots` and `startPing`. Both are documented in the format header and in `studio/looks/scoreboard/README.md` (two rows in the pov-race table, and the Ported line). When either is absent, no code path or element changes.
+- `studio/specs-wip/06a-scoreboard-first-iphone-apple.json` (the cut), `checks/06-pov-race.py` and this write-up (the 06a section's beat sheet, captions, R10 and the maths-table times).
+- Not touched: `studio/specs/`, `src/`, `sound/`, `test/`, `publishing/`, `renders/`, the look's `lib.js`, `theme.js`, `style.css`, `cta.js` and `kit.js`, and every other format. Nothing is committed.
+
+**The default is unchanged (proof).** These were taken with the kit as committed (HEAD) and again with the final kit, for every committed spec using Scoreboard pov-race (`specs/06a` 26.5 s, `specs/06b`) and both look samples (`pov-race.json`, `pov-race-2.json`):
+- The cue records (`cues … --out`) are byte-identical: md5 `8ff7ed0d…`, `ec7af4a4…`, `70ad68fc…` and `2d2e29c5…`.
+- Stills at 5 times each are byte-identical (20 PNGs). The times are 06a 0, 2.2, 10.3, 21.5, 24.5; 06b 0, 1.5, 9.9, 15.95, 17.5; each sample 0, 2, 5, 9 and the end.
+- Lint is unchanged: 4/4 clean, 0 warnings.
+- The reviewed WIP spec, which has neither option, gives the same cue record as before.
+- One proof run showed 23 px (at most 19 levels) different in sample 1's logo corner. Three fresh renders with the final kit, and one with the HEAD kit, were byte-identical to the baseline. That was a one-off render glitch while other formats were rendering in parallel.
+- Guards: `clockKnots` given with 06b's answer-row pauses is ignored (the cue list is identical to 06b's). A list out of order runs the straight clock (the same cue record as no knots). `startPing` changes no cue, and frames at 0, 0.4 and 5 s are identical with and without it.
+
+**The cut** (every string, number, cue kind and the end card unchanged):
+
+| | Reviewed condensed cut | Fix pass |
+|---|---|---|
+| Body / total | 15.9 / 18.4 s | **15.3 / 17.8 s** |
+| `raceT` | [−0.04, 13.4], linear (0.708 s a year) | **[−0.04, 12.8]**, with `clockKnots` [[5.7, 2015.1], [6.26, 2016.5], [7.36, 2018.05], [7.81, 2018.95]]: 0.709 s a year, 2015 at 0.40 and 2018 at 0.50 |
+| `startPing` | none | **true** |
+| `sfx` | whoosh 0.07, pop 0.31, thud 1.37, tick 4.20, tick 7.74, ding 9.18, cash 13.4 | whoosh 0.07, pop 0.31, thud 1.37, tick 4.20, **tick 7.32, ding 8.58, cash 12.8** (on their beats, ± 0.01) |
+| Caption boundaries (x) | 2011.7, 2015.7, 2019.27, 2021.7, 2024.35 | 2011.7, **2016.0**, 2019.27, 2021.7, 2024.35 |
+| `verdict.t` / hold | 14.3 (+0.9) / 1.6 s | **13.7** (+0.9) / 1.6 s |
+| `footerSteps[0].t`, `data.hold` | 13.4, 2.5 | **12.8**, 2.5 |
+
+**Iteration:**
+1. 2015 fast, the dip slowed (+0.19 s), race end 13.4: 2015 fixed, but the dip's trough went still (item 4).
+2. 2015 fast only, race end 13.0, `startPing`: 2018 was near-still with the caption band out (7.70-8.07, 0.37 s).
+3. Audio-only sweep at race ends 12.8, 12.9 and 13.0 s with 2018 also fast: all pass (item 2). **This cut:** race end 12.8 s, with 2018 at 0.50.
+4. A variant with 2018 at 0.40 removed the 2018 run. Its plain pace drifted to 0.714 s a year, though, and threshold-level runs (0.2-0.3 s) came and went elsewhere. Frame for frame, those stretches sit at YAVG 0.1-0.35 in both renders. Variant 3 was kept: it has the reviewed pace and the cleanest full-frame audit.
+
+**Measured** (`/tmp/cond/06/06a-scoreboard-first-iphone-apple/final/06a-scoreboard-first-iphone-apple.mp4`; frame difference at 270×480, still if YAVG < 0.15, near-still if under 0.25; "caption band out" = the top 1100 px, scaled to a full-frame equivalent, the judge's method):
+
+| Before the verdict (13.7) | Reviewed cut (15.9 s body) | Fix pass |
+|---|---|---|
+| Full frame, still runs ≥ 0.2 s | 0.03-0.33 (0.30), 13.80-14.03 (0.23) | 0.03-0.33 (0.30), 13.20-13.43 (0.23) |
+| Full frame, near-still ≥ 0.2 s | + 1.37-1.60, 5.87-6.13, 6.27-6.53 | + 1.37-1.60 (0.23) |
+| Caption band out, near-still ≥ 0.2 s | 0.03-0.33, 0.87-1.17, 1.33-1.60, **5.87-6.60 (0.73)**, 8.00-8.23, 13.67-14.10 (0.43) | 0.03-0.33, 1.33-1.60, 1.77-2.00, 7.53-7.87 (0.33), 13.07-13.50 (0.43) |
+
+After that come the verdict hold (14.13-15.07) and the card hold (16.80-17.80), as designed. The shipped 26.5 s cut, measured the same way, had a 0.83 s still opening and full-frame near-still runs of 0.47, 0.43 and 0.60 s in the race.
+
+**Stills read** at 0, 0.03, 0.1, 0.2, 0.31, 0.66, 1.14, 1.37, 1.58, 3.32, 4.2, 5.7, 5.95, 6.06, 6.26, 7.15, 7.32, 7.55, 7.81, 8.04, 8.58, 9.76, 9.97, 10.67, 11.38, 11.64, 12.8, 13.2, 13.45, 13.7, 14.2, 14.9, 15.25, 15.8 and 17.77 (three sheets), plus MP4 crops of the opening and the spend tag:
+- Frame 1 is the cover, as reviewed.
+- 0.03-0.2: the ping; 0.1-0.31: the phone dropping onto the line.
+- $808 at 0.66; $349 coral at 1.37 (the close is $348.41); $2,192 at 4.20.
+- 2015 at 5.95 is $3,262 under "2015"; the 2016 roll and vo[2] rise at 6.06.
+- $4,987 at 7.15 (10×); $5,402 at 7.32; $5,123 at 7.81; $10,028 at 8.58 with the clock on "2020".
+- $23,667 at 9.97; $17,483 at 10.67; $25,975 at 11.38.
+- ≈ $37,000 at 12.8 with its glow, and the footer step by 13.2. The verdict and its caption are at 13.7-14.9, the hold to 15.3, then the unchanged card.
+- The "$499 / SPENT" tag rides about 6.2-8.65 and is back by 12.3. No collision and no cut-off.
+
+**Lint:** `check specs-wip/06a-scoreboard-first-iphone-apple.json`: 0 errors, 1 warning, `type-floor @13.00s: "spent" 39.5 px < 40`. This is the spend tag's landing bump undershooting 40 px by 0.5 px for about 0.05 s, 0.2 s after the finish. The 26.5 s cut has it too (21.60-21.65 s with `--every 0.05`), and so does the reviewed cut (13.60-13.65). With the finish at 12.8 it now falls on the default 0.25 s grid. It is the kit's default behaviour, left alone, because changing it would change 06a's and 06b's default output.
+
+**Render and sound:**
+- `render specs-wip/06a-scoreboard-first-iphone-apple.json --out …/final/render`: 534 frames, 17.8 s, 16 sfx.
+- `sound … --video …/final/render --out …/final --score`: video md5 identical (`dba578e813f2`); P 12.8 by the riser rule; 150 / 144 BPM; cue onsets within 0.75 ms. The MP4 is byte-identical to the render's (sha256 `ab1d3c3d…`). The master's sha256 is `ea5c5e524e713c55…`.
+- The §2.3 row for promotion: `| 06a | riser | 12.800 | 32 (r0) | 150.000 | base 15.30: 6 (r2) @ 144.00 | 15.66 |`. Sections: HOOK 0-1.6, BUILD to 10.4, TENSION to 12.8, DROP to 14.47, CADENCE to 15.3.
+
+**Verify** (`verify specs-wip/06a-scoreboard-first-iphone-apple.json --video …/final`): PASS, 42/42 gated; units 69/69. The CUE DRIFT block (06a only) and "baseline DIFFERS" are expected for a WIP cut. Each gated check, with its margin:
+- A1 −14.09 LUFS delivery (±1: 0.91), master −14.01 (±0.3: 0.29).
+- A2 −1.37 dBTP against −1.0: 0.37.
+- A3 LRA 5.79 in 4-9: 1.79.
+- A4 short-term max −11.42 against −8: 3.42; momentary −9.10 against −6: 3.10.
+- A5 PLR 12.72 in 8-13: 0.28.
+- A6 0% silent.
+- A7 −11.38 against −18: 6.62.
+- A8 correlation 0.74 (≥ 0.3), minimum 0.46 (≥ −0.1), mono fold −0.68 LU (±1.5).
+- A9 DC 4.9e-6 against 1e-4.
+- A10 2.62 LU against 7: 4.38.
+- A11 1.277% against 3%: 1.72 points; max 3.48 dB against 6.
+- A12-A14: AAC LC stereo 48 kHz, 17.800 s against 17.800 s; video md5 identical; master unique.
+- BANDS (window margin): 31.5 Hz −15.2 (4.8); 63 Hz 7.3 (2.7); 125 Hz 3.8 (1.8); 250 Hz 1.8 (1.8); 500 Hz 2.0 (2.0); 2 kHz −2.0 (2.0); 4 kHz −6.7 (2.3); 8 kHz −7.9 (2.9); **16 kHz −12.4 against −12: 0.4**.
+- HARSH 0.28 against 2.
+- B1 music −2.14 in −3.5..−1.5: 0.64; SFX −3.19 in −5..−2.5: 0.69.
+- B2 −10.8 dB against −8: 2.8.
+- B3 6/6 cues, the closest 4.5 dB over the music against 3: 1.5.
+- B4 0.75 ms against 2.
+- B5 −5.3 ms against ±10.
+- B6 5.0 LU against 18.
+- B7 drop-build 4.4 (edge) and 4.9 (centred) against 2.
+- **B8 logo −12.10 LUFS against −13: 0.90**, under the payoff's −10.32.
+- B9 −26.0 against −45.
+- B10, S1-S14, TRAIN and DUCK pass. S9 is 150 / 144 BPM (136-152; then −4%, within ±8%). S14 is 12 notes against 12, as in every teaser. INFO AAC0: 1 encode at a −1.5 ceiling.
+
+**Check (`checks/06-pov-race.py`):**
+- `chart_t` follows `lookOpts.clockKnots` the way the kit does: the same validation, and ignored under answer-row pauses (`clock_knots`).
+- A new fact: the stake is back above $499 in 2009.
+- The condensed cut's set now expects raceT [−0.04, 12.8] and the knots honoured. Each clock stretch is either plain (0.65-0.8 s a year, all within 0.02 of one another) or fast (0.35-0.55). A fast stretch only crosses flat data (the stake moves ≤ 10%) and holds no beat. Both flat lulls (x 2015.3-2016.3 and 2018.2-2018.9) must run fast. `startPing` must be true. Captions go up ≤ 1.3 s before their figure and come down ≤ 1.9 s after it. The old "caption change inside the 2015 lull" rule is gone, because the clock now does that job.
+- Results: 446 checks, 0 failed by default (was 445); 468, 0 failed with `--spec studio/specs-wip/06a-scoreboard-first-iphone-apple.json` (was 454); 446, 0 failed on a copy of the 26.5 s spec from outside `studio/specs/`.
+- Mutation test (scratch copies in `/tmp/cond/06/mut2/`, self-consistent variants regenerated where the clock moves): 23 of 23 caught, each with exit 1 and a named failure:
+  - no knots, knots out of order, no `startPing`;
+  - 2015 at 0.25 s a year; a fast stretch over the 2017 close and 10× crossing; a fast stretch over the 2019 climb; 2018 at the plain pace; only half the 2015 lull fast; the dip slowed (a second plain pace);
+  - the vo[1]/vo[2] boundary at x 2016.9 (a 2.29 s trail); vo[2] up 1.35 s early;
+  - 12 of the earlier mutations, re-aimed at this cut: verdict +0.5 s, a 2.0 s hold, raceT[0] −0.07, vo[0] at 0.0, a 1.0 s caption, "$38,000", "about" dropped, the whoosh at 0.3, tick and ding swapped, the race ending at 12.5, a 0.35 s caption gap and an 18.4 s body. The old lull mutation is replaced by the clock ones.
+
+**To promote** (replaces the list in the entry above):
+1. Copy the WIP spec over `studio/specs/06a-scoreboard-first-iphone-apple.json` and set `A_IN_SPECS = "a"` in the check. The 26.5 s set then serves a git-history copy (`git show 3db6d30:studio/specs/06a-scoreboard-first-iphone-apple.json`).
+2. Commit the kit change with it (`studio/looks/scoreboard/formats/pov-race.js` and the README rows). The committed specs render as before (proof above).
+3. BIBLE §11.1 for the moved record: Scoreboard refit (§11.2), store the records in `test/fixtures/cues.json`, `tempo-table --write` (the §2.3 row above), then `verify --strict-cues` and `npm test`. After the refit, re-check 06a's A2, A5, A1 master, **16 kHz (0.4 dB here)** and B8. If any drops, fix it with a pack-level rule, not by moving this spec's race end.
+4. Ship by §11.5 from a picture folder that holds this render (or a fresh render of the promoted spec).
+5. Publishing: the untracked `publishing/06a-scoreboard-first-iphone-apple.*` files (built at 04:57 by the publishing step) predate this fix pass and describe the 18.4 s cut. Rebuild them: `python3 publishing/tools/build_publishing.py 06a-scoreboard-first-iphone-apple --covers`, then `--check`. The runtime is 17.8 s and the check count is 446. The cover is unchanged, because frame 1 is byte-identical to the reviewed cut's. `teasers/v2/teasers.json`: runtime 17.8 s.
+
+**Open items:**
+- With the caption band out, 2018's end is still 0.33 s near-still and the landing after the reveal 0.43 s (the judge accepted the latter). On the full frame nothing before the verdict reaches 0.3 s, except the opening (0.30 s).
+- Margins to watch at the refit: 16 kHz 0.4 dB, A5 0.28, A1 master 0.29, A2 0.37, B1 0.64, B8 0.90.
+- Not 06a: with `check --every 0.05`, the shipped 06b shows `ERR safe-zone @3.05s: "Hike 1 · May 2014" in right rail: right 964 > 940`. It is a single 0.05 s sample of a tag slam, the same with the HEAD kit. At the default sampling 06b is clean.

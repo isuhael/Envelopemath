@@ -1,0 +1,592 @@
+{
+  "id": "08c-becker-rig-college-in-big-macs",
+  "teaser": "08c Becker Rig, unit-ladder: \"Community? In-state? Out-of-state? Private? Your year of college in Big Macs\"",
+  "prepared": "2026-10-13",
+  "for_video": {
+    "current_render": "renders/channel/08c-becker-rig-college-in-big-macs.mp4",
+    "current_duration_s": 24.5,
+    "current_sha256": "3424714c7d5e25abfaacaa82aa5efe692a52927bded2610cfaf634360b6a8fc5",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the pre-condense cut. The ship step re-runs the build with --covers on the condensed file.",
+    "cut": {
+      "name": "pre-condense cut (Becker Rig port + QA fix pass, 2026-10-08)",
+      "spec": "studio/specs/08c-becker-rig-college-in-big-macs.json",
+      "body_s": 22.0,
+      "card_s": 2.5,
+      "shipped": null,
+      "git": "471c793",
+      "status": "the 08 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay); no 08 WIP spec was in studio/specs-wip/ at this build. The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."
+    }
+  },
+  "facts": {
+    "source": "teasers/v2/08-unit-ladder.md section 08c; teasers/v2/checks/08-unit-ladder.py: 677 checks, 0 failed on studio/specs/ (2026-10-13)",
+    "unit": "US Big Mac $6.22, July 2026 (The Economist's Big Mac index dataset on GitHub; Econlife, July 2026)",
+    "rows": "1 year of College Board 2025-26 average published tuition & fees: public 2-year in-district $4,150 ≈ 667; public 4-year in-state $11,950 ≈ 1,921; out-of-state $31,880 ≈ 5,125; private nonprofit 4-year $45,000 ≈ 7,235 Big Macs",
+    "rule": "Big Macs = cost ÷ $6.22, to the nearest Big Mac, with '≈'",
+    "ratio": "$45,000 ÷ $4,150 = 10.8434 ≈ 10.8 community-college years; the same in Big Macs (7,234.727 ÷ 667.203)",
+    "assumption": "sticker (published) prices, before grants, scholarships or aid; tuition & fees only, no housing, food or books",
+    "pinned_budget": "College Board's full private budget (tuition, fees, housing, food, books, transport, other) $65,470 a year: 4 × $65,470 = $261,880 ≈ 42,103 Big Macs, a Big Mac a day for ≈ 115 years; 4 years in-state all-in 4 × $30,990 = $123,960 ≈ 19,929 Big Macs",
+    "verdict": "One private year = ≈ 10.8 community-college years."
+  },
+  "youtube": {
+    "titles_ranked": [
+      {
+        "rank": 1,
+        "title": "How Many Big Macs Is a Year of College? Community vs In-State vs Out-of-State vs Private",
+        "vidiq_score": 97,
+        "chars": 88,
+        "note": "PICK. Top score of the 9 scored. The first question (39 characters) is the whole idea in the Shorts player's opening; the second names all four rows, as the header does. No hashtags in the title (no room for three at 88 characters); the description's first three show above it."
+      },
+      {
+        "rank": 2,
+        "title": "How Many Big Macs Is a Year of College? Community vs In-State vs Private",
+        "vidiq_score": 96,
+        "chars": 72,
+        "note": "One point lower, 15 characters shorter; it drops the out-of-state row the header names. The fallback if the pick reads long in the player."
+      },
+      {
+        "rank": 3,
+        "title": "How Many Big Macs Is a Year of College? Community? In-State? Private?",
+        "vidiq_score": 95,
+        "chars": 69,
+        "note": "The header's question form, one row short."
+      }
+    ],
+    "titles_also_scored": [
+      {
+        "title": "How Many Big Macs Is One Year of College Tuition? Community vs Private",
+        "vidiq_score": 95,
+        "chars": 70,
+        "note": "'tuition' in the title, two rows"
+      },
+      {
+        "title": "How Many Big Macs Is a Year of College? #college #tuition #bigmac",
+        "vidiq_score": 94,
+        "chars": 65,
+        "note": "the house 3-hashtag form; if used, write the hashtags as the description does (#College #Tuition #BigMac), which the builder's check requires"
+      },
+      {
+        "title": "Community College vs Private College: How Many Big Macs Is One Year?",
+        "vidiq_score": 93,
+        "chars": 68,
+        "note": ""
+      },
+      {
+        "title": "How Many Big Macs Does One Year of College Cost?",
+        "vidiq_score": 90,
+        "chars": 48,
+        "note": ""
+      },
+      {
+        "title": "A Year of College in Big Macs: Community, In-State, Out-of-State or Private?",
+        "vidiq_score": 86,
+        "chars": 76,
+        "note": "a statement of the same idea"
+      },
+      {
+        "title": "Community? In-State? Private? Your Year of College in Big Macs",
+        "vidiq_score": 81,
+        "chars": 62,
+        "note": "the write-up's title"
+      }
+    ],
+    "title_pick": "How Many Big Macs Is a Year of College? Community vs In-State vs Out-of-State vs Private",
+    "title_pick_chars": 88,
+    "description": "How many Big Macs is a year of college? 1 year of published tuition & fees, at $6.22 a Big Mac: community college ≈ 667, in-state ≈ 1,921, out-of-state ≈ 5,125, private ≈ 7,235. One private year ≈ 10.8 community-college years.\n\nThe math, shown (Big Macs = 1 year of tuition & fees ÷ $6.22):\n• Community college (public 2-year, in-district): $4,150 ÷ $6.22 ≈ 667 Big Macs.\n• In-state (public 4-year): $11,950 ÷ $6.22 ≈ 1,921 Big Macs.\n• Out-of-state (public 4-year): $31,880 ÷ $6.22 ≈ 5,125 Big Macs.\n• Private (nonprofit 4-year): $45,000 ÷ $6.22 ≈ 7,235 Big Macs.\n• Private vs community: $45,000 ÷ $4,150 ≈ 10.8 community-college years, the same ratio in Big Macs.\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\n\nAnimation and original sound: The Back of the Envelope. Big Mac: $6.22, US, July 2026 (The Economist's Big Mac index). Tuition & fees: College Board, Trends in College Pricing and Student Aid 2025, average published prices for 2025-26, 1 year. Sticker prices, before grants, scholarships or aid; tuition & fees only, no housing, food or books. Not financial advice. Not affiliated with or endorsed by McDonald's, The Economist or the College Board.\n#College #Tuition #BigMac",
+    "description_chars": 1218,
+    "hashtags_in_order": [
+      "#College",
+      "#Tuition",
+      "#BigMac"
+    ],
+    "hashtag_rules": "Title hashtags show as links in the title; with none in the title, the first 3 description hashtags show above it. Over 60 hashtags and YouTube ignores all of them. #Shorts is not needed (vertical, under 3 min).",
+    "tags": [
+      "college tuition",
+      "cost of college",
+      "community college vs university",
+      "community college",
+      "in-state vs out-of-state tuition",
+      "private college",
+      "why college tuition is so expensive",
+      "college tuition explained",
+      "college tuition tier list",
+      "student loans",
+      "big mac",
+      "big mac index",
+      "money math",
+      "math animation",
+      "the back of the envelope",
+      "envelope math"
+    ],
+    "tags_chars_as_youtube_counts": 351,
+    "pinned_comment": "Which row was yours?\n\nThese are sticker tuition & fees for 1 year, before grants or scholarships. With housing, food and books (College Board's full budget), private runs $65,470 a year: 4 years = $261,880 ≈ 42,103 Big Macs, a Big Mac a day for ≈ 115 years. 4 years in-state, all-in ($123,960): ≈ 19,929 Big Macs.",
+    "related_video": {
+      "pick": {
+        "id": "hJBvmGA6sZ0",
+        "title": "You Can Lean on $1 Million. Not on $1 Billion. #moneyfacts #billion #Animation",
+        "url": "https://www.youtube.com/shorts/hJBvmGA6sZ0",
+        "why": "A big number made visible in everyday things (stacks of bills), the same move as this Short's piles of Big Macs, and the channel's second-best YouTube Short (1,221 views)."
+      },
+      "swap_when_live": "08a (a Costco hot dog risen like a house) or 08b (rent in hours of work at $15/hr), the same unit-ladder series, once published. Then point that Short's Related video at this one.",
+      "end_screen": "Shorts have no end screens or cards. The Related video link is the Shorts equivalent."
+    },
+    "thumbnail_frame": "In the YouTube app, pick frame 1: the header naming all four rows, the community row pre-filled (≈ 667 Big Macs) and its pile. The Instagram cover is the end state instead.",
+    "settings": {
+      "category": "Education",
+      "audience": "Not made for kids",
+      "altered_or_synthetic_content": "No (animated chart, not realistic footage)",
+      "remixing": "Allow",
+      "captions": "None needed (no narration; all text is on screen)"
+    },
+    "posting_window": {
+      "when": "First free Tue-Thu evening after the condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+      "spacing": "Keep it at least 6 h from any other upload on the channel, and on a different evening from 08a and 08b. Suggested order within the series: 08b, then 08c, then 08a.",
+      "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,199 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2); 06c (Mon 03:45 ET) has 760 and 06b (Mon 12:14 ET) 75, too young to compare. The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. 08c goes second: 'student loans' runs +105.6% over its baseline, while 'community college' is down 66.1% as the start-of-term peak passes, so sooner is better than later."
+    },
+    "description_utf8_bytes": 1256
+  },
+  "instagram": {
+    "caption": "Community college, in-state, out-of-state or private: which row is yours? A year of college tuition & fees, priced in Big Macs.\n\nThe math, shown (1 year of published tuition & fees ÷ $6.22 a Big Mac):\n• Community college: $4,150 ÷ $6.22 ≈ 667 Big Macs.\n• In-state: $11,950 ÷ $6.22 ≈ 1,921 Big Macs.\n• Out-of-state: $31,880 ÷ $6.22 ≈ 5,125 Big Macs.\n• Private: $45,000 ÷ $6.22 ≈ 7,235 Big Macs.\n\nOne private year = ≈ 10.8 community-college years ($45,000 ÷ $4,150).\n\nSticker prices, before grants, scholarships or aid; tuition & fees only, no housing, food or books. Big Mac: $6.22, US, July 2026 (The Economist's Big Mac index). College Board 2025-26 averages. Not financial advice. Not affiliated with or endorsed by McDonald's, The Economist or the College Board.\n\nWhich row was yours?\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\nAnimation and original sound: The Back of the Envelope.\n\n#college #tuition #bigmac #studentloans #moneymath",
+    "caption_chars": 973,
+    "caption_first_125": "Community college, in-state, out-of-state or private: which row is yours? A year of college tuition & fees, priced in Big Mac",
+    "caption_rule": "The first 125 characters are the write-up's caption line 1 (the four rows as a question, no number) and the unit, no result: the caption overlays the Reel from frame 1, so every count and the ≈ 10.8 sit below 'more'.",
+    "hashtags_in_order": [
+      "#college",
+      "#tuition",
+      "#bigmac",
+      "#studentloans",
+      "#moneymath"
+    ],
+    "hashtag_rule": "Instagram caps a post at 5 hashtags (since Dec 2025).",
+    "alt_text_short": "Chart: 1 year of college tuition in $6.22 Big Macs: about 667 community to about 7,235 private.",
+    "alt_text_long": "Animation on a light page with a green stick figure. The header asks: community? In-state? Out-of-state? Private? Your year in Big Macs. The footer: $6.22 Big Mac (July 2026), 1 year of College Board 2025-26 tuition & fees. Frame 1 already shows community college at about 667 Big Macs ($4,150 divided by $6.22), a pyramid of burgers. The figure punches a gold coin for each next row and the burgers pile up: in-state, $11,950, about 1,921; out-of-state, $31,880, about 5,125; private, $45,000, about 7,235, on a gold plate. A recap lists all 4 rows. Then private vs community: $45,000 divided by $4,150 is about 10.8 community-college years, and the community pile hops over to stand at the foot of the private mountain.",
+    "alt_text_where": "Advanced settings → Accessibility → Alt text, if your app shows it for Reels.",
+    "cover": {
+      "files": {
+        "3x4": "publishing/08c-becker-rig-college-in-big-macs-cover-3x4.jpg",
+        "9x16": "publishing/08c-becker-rig-college-in-big-macs-cover-9x16.jpg"
+      },
+      "frame_in_current_render_s": 20.0,
+      "frame_index": 600,
+      "frame_by_content": "The end state, as the write-up's Instagram note asks: the header naming all four rows, the footer, the HUD 'Private vs community / $45,000 ÷ $4,150 ≈' with 10.8 on the big gold plate and 'community-college years', the four-row recap (≈ 7,235 Private, ≈ 5,125 Out-of-state, ≈ 1,921 In-state, ≈ 667 Community), the lit community pile at the foot of the lit private mountain with the in-state and out-of-state piles dimmed, the slumped figure, and the verdict 'One private year = / ≈ 10.8 community-college years.' On any cut, use a settled frame of the end hold, after the figure's slump and before the end card.",
+      "frame_measured": "On the pre-condense 24.5 s render the answer lands at frame 520 (17.35 s); the figure's hop and slump settle by about frame 559 (18.63 s), and the frame then holds still (frame-to-frame mean luma change under 0.0001) until the end card at frame 660 (22.00 s). Frame 600 (20.00 s) is used.",
+      "crop": "3:4 = 1080×1440 from y 68 to 1508 of the 1080×1920 frame. The content runs from y 112 (the badge) to y 1465 (the verdict's underline), so the crop centres it (44 px above, 43 below): badge, header, footer, the plate, the recap, the piles and the verdict; it drops the empty page below. A centred grid crop (y 240-1680) cuts the badge and the header.",
+      "how_to_set": "In 'Edit cover', pick the end-state frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
+      "re_export": "ffmpeg -ss 20.0 -i renders/channel/08c-becker-rig-college-in-big-macs.mp4 -frames:v 1 -vf \"crop=1080:1440:0:68\" -q:v 2 publishing/08c-becker-rig-college-in-big-macs-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 20.0 -i renders/channel/08c-becker-rig-college-in-big-macs.mp4 -frames:v 1 -q:v 2 publishing/08c-becker-rig-college-in-big-macs-cover-9x16.jpg"
+    },
+    "first_comment": "1 year of tuition & fees in $6.22 Big Macs: community ≈ 667, in-state ≈ 1,921, out-of-state ≈ 5,125, private ≈ 7,235. One private year = ≈ 10.8 community-college years. Sticker prices, before grants or aid. Which row was yours?",
+    "first_comment_action": "Post it right after publishing and pin it.",
+    "trial_reels": {
+      "recommendation": "Post as a regular Reel, not a Trial.",
+      "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show 471c793:renders/channel/08c-becker-rig-college-in-big-macs.mp4 > 08c-24.5s.mp4` (sha256 3424714c…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+    },
+    "settings": {
+      "audio": "Rename the original audio to 'A year of college in Big Macs — The Back of the Envelope' if the app allows; it is the score, with no voice.",
+      "share_to_feed": "On",
+      "google_indexing": "Public professional-account posts can appear in Google/Bing since 10 Jul 2025, so the caption is written as a searchable question."
+    },
+    "posting_window": {
+      "when": "Same evening as YouTube, about 15 min after the Short: 21:45-22:45 ET, on a different evening from 08a and 08b.",
+      "why": "October Reels, median plays by posting slot (owner insights, 2026-10-13): weekday 22:00-00:30 ET 5,449 (n = 3, including the two best: 7,303 and 5,449), weekday midday 1,212 (n = 2), Sunday 05:00-08:00 ET 1,087 (n = 2). 06c, posted Mon 03:46 ET, has 1,711 plays with a 40.3% skip rate. Skip rate tracks plays more closely than the hour does: 27.0-27.4% for the top two, 56.9-65.1% for the bottom two. The condense matters more than the hour."
+    },
+    "alt_text_rule": "Paste the short version into Instagram: it is kept at or under 100 characters so it fits the field however short it is, and it writes 'about' instead of '≈' so screen readers read it cleanly. The long version is for anywhere with room (a website embed, a newsletter)."
+  },
+  "research": {
+    "keywords_youtube": [
+      {
+        "keyword": "college",
+        "est_monthly_searches": 120886,
+        "volume": 75.9,
+        "competition": 65.5,
+        "overall": 59.3,
+        "note": "-5.6% vs its 30-day baseline (128,093)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "student loans",
+        "est_monthly_searches": 47897,
+        "volume": 69.9,
+        "competition": 53.1,
+        "overall": 60.7,
+        "note": "+105.6% vs its baseline (23,294)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "big mac",
+        "est_monthly_searches": 33042,
+        "volume": 67.5,
+        "competition": 58.0,
+        "overall": 57.3,
+        "note": "-4.0% vs its baseline (34,401); the unit",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "tuition",
+        "est_monthly_searches": 26212,
+        "volume": 66.0,
+        "competition": 70.0,
+        "overall": 51.6,
+        "note": "+11.8% vs its baseline (23,445)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "is college worth it",
+        "est_monthly_searches": 18538,
+        "volume": 63.7,
+        "competition": 52.0,
+        "overall": 57.4,
+        "note": "+11.0%; asks for a verdict this video does not give, so not in the tags",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "big mac index",
+        "est_monthly_searches": 9861,
+        "volume": 59.6,
+        "competition": 45.1,
+        "overall": 57.7,
+        "note": "flat (+0.6%); the unit's own source",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "community college",
+        "est_monthly_searches": 8597,
+        "volume": 58.7,
+        "competition": 40.6,
+        "overall": 59.0,
+        "note": "-66.1% vs its baseline (25,329): the start-of-term peak passing",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "why college tuition is so expensive",
+        "est_monthly_searches": 8331,
+        "volume": 58.5,
+        "competition": 43.0,
+        "overall": 57.9,
+        "note": "",
+        "metrics_as_of": "2026-08-30"
+      },
+      {
+        "keyword": "college tuition explained",
+        "est_monthly_searches": 6560,
+        "volume": 57.0,
+        "competition": 28.1,
+        "overall": 62.9,
+        "note": "",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "us college tuition",
+        "est_monthly_searches": 5427,
+        "volume": 55.7,
+        "competition": 42.5,
+        "overall": 56.4,
+        "note": "",
+        "metrics_as_of": "2026-09-27"
+      },
+      {
+        "keyword": "college tuition tier list",
+        "est_monthly_searches": 5286,
+        "volume": 55.6,
+        "competition": 20.4,
+        "overall": 65.2,
+        "note": "a ranked list of schools' costs, like this one",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "how much does college really cost for parents",
+        "est_monthly_searches": 3825,
+        "volume": 53.5,
+        "competition": 21.2,
+        "overall": 63.6,
+        "note": "",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "community college vs university",
+        "est_monthly_searches": 3746,
+        "volume": 53.3,
+        "competition": 23.6,
+        "overall": 62.6,
+        "note": "the first row against the rest",
+        "metrics_as_of": "2026-06-28"
+      },
+      {
+        "keyword": "cost of college",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": 44.5,
+        "overall": 22.2,
+        "note": "<750/month",
+        "metrics_as_of": null
+      },
+      {
+        "keyword": "out of state tuition",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": 16.4,
+        "overall": 33.4,
+        "note": "<750/month",
+        "metrics_as_of": null
+      }
+    ],
+    "keywords_source": "vidIQ keyword research (research, matching_terms and questions modes), pulled 2026-10-13. vidIQ refreshes each keyword on its own schedule, so each row carries its snapshot date in metrics_as_of; three rows are older snapshots (2026-06-28 to 2026-09-27).",
+    "same_idea_youtube_shorts": [
+      {
+        "title": "How to Go to College for Free",
+        "channel": "Gohar Khan",
+        "subscribers": 7960000,
+        "views": 12492633,
+        "published": "2025-05-10",
+        "note": "adjacent: the cost of college as a hook"
+      },
+      {
+        "title": "Cost in Units of Big Macs",
+        "channel": "HD Guy",
+        "subscribers": 189000,
+        "views": 1749195,
+        "published": "2026-08-02",
+        "note": "the write-up's H11: the same unit as a ruler for military prices, 56x its channel; its description prices the Big Mac at $5.79 (2025)"
+      },
+      {
+        "title": "SOVIEL KOSTET DAS COLLEGE IN DEN USA!",
+        "channel": "Die Achtermeiers in Texas",
+        "subscribers": 15000,
+        "views": 95914,
+        "published": "2025-11-01",
+        "note": "German; the same College Board rows (2024-25 prices: community, in-state, out-of-state, private), in dollars"
+      },
+      {
+        "title": "Going to a big college vs community college",
+        "channel": "Matthew McKenna",
+        "subscribers": 26300,
+        "views": 30057,
+        "published": "2025-10-24",
+        "note": "the first row against the rest, as an opinion"
+      },
+      {
+        "title": "Why are Big Mac prices studied by economists?",
+        "channel": "Uptin",
+        "subscribers": 273000,
+        "views": 22778,
+        "published": "2023-02-19",
+        "note": "the unit's own story"
+      },
+      {
+        "title": "How Much Should You Save for College?",
+        "channel": "Beyond the Waypoint",
+        "subscribers": 162,
+        "views": 750,
+        "published": "2026-03-03",
+        "note": "names the same four paths"
+      },
+      {
+        "title": "What Is The Average College Tuition Cost? - College Admissions Insider",
+        "channel": "College Admissions Insider",
+        "subscribers": 94,
+        "views": 445,
+        "published": "2025-08-15",
+        "note": "3:24 long; the same rows, explained"
+      }
+    ],
+    "same_idea_note": "vidIQ YouTube search (under 4 min; by relevance): no Short prices college in Big Macs. The four College Board rows appear as a list in dollars (95,914 views, German) and community college vs university as an opinion (30,057). HD Guy's Big Mac ladder (1,749,195) shows the unit travels.",
+    "instagram_tiktok_outliers": [
+      {
+        "handle": "@tineocollegeprep",
+        "platform": "Instagram",
+        "id": "DeTE825Ph12",
+        "on_screen": "Top ROI Colleges Best Value Schools",
+        "views": "1.1M (24.3x the account median of 45.9K)",
+        "note": "a static ranked list with music only, looped: a save-able college-cost table, like this Short's four-row recap"
+      },
+      {
+        "handle": "@highiquniversity",
+        "platform": "Instagram",
+        "id": "Db6qWHvpplO",
+        "on_screen": "Community College Is For Bums 🥀",
+        "views": "796.9K (19.7x the account median of 40.4K)",
+        "note": "the community-college stigma, argued against on cost"
+      },
+      {
+        "handle": "@dani_versity",
+        "platform": "TikTok",
+        "id": "7672219409624108319",
+        "on_screen": "community college is for bums 😭🙏",
+        "views": "628.6K (6.9x the account median of 91.3K)",
+        "note": "the same argument on TikTok"
+      },
+      {
+        "handle": "@mikelrutkowski",
+        "platform": "TikTok",
+        "id": "7672201465414421774",
+        "on_screen": "College degrees ranked by ROI",
+        "views": "385.3K (54.5x the account median of 7.1K)",
+        "note": "a ranked list filled in on screen, row by row"
+      },
+      {
+        "handle": "@remyw.anders",
+        "platform": "Instagram",
+        "id": "Da-l8UzPT5G",
+        "on_screen": "Well, my grandkids ain't going to college now.",
+        "views": "424.2K (39.4x the account median of 10.8K)",
+        "note": "rising tuition as a skit"
+      }
+    ],
+    "own_channel_youtube_october_shorts": [
+      {
+        "id": "LjHDFzVxRyM",
+        "title": "Can You Find the Missing Dollar?",
+        "posted_et": "Sun 07:04",
+        "views": 1256
+      },
+      {
+        "id": "hJBvmGA6sZ0",
+        "title": "You Can Lean on $1 Million. Not on $1 Billion.",
+        "posted_et": "Thu 00:25",
+        "views": 1221
+      },
+      {
+        "id": "XVUeMcTg9OQ",
+        "title": "Your Interest Has a Speed Limit",
+        "posted_et": "Sun 05:49",
+        "views": 1141
+      },
+      {
+        "id": "fbpdKf4Wy8c",
+        "title": "What If You Bought Starbucks Stock Instead of a $4 Latte Every Day? (06c)",
+        "posted_et": "Mon 03:45",
+        "views": 760
+      },
+      {
+        "id": "8__HTUa2PoU",
+        "title": "Pay the Minimum on $5,000? 238 Months.",
+        "posted_et": "Mon 22:09",
+        "views": 642
+      },
+      {
+        "id": "FW_oxA3kbsM",
+        "title": "A $2 Lottery Ticket Was Worth $6.98. Until the Fine Print.",
+        "posted_et": "Wed 12:03",
+        "views": 348
+      },
+      {
+        "id": "mXbKY_R63h4",
+        "title": "You Can Carry $1 Million. Not in Pennies.",
+        "posted_et": "Thu 13:38",
+        "views": 177
+      },
+      {
+        "id": "EqFQCJheCMU",
+        "title": "Start Investing 10 Years Late? You Get Half.",
+        "posted_et": "Tue 22:27",
+        "views": 161
+      },
+      {
+        "id": "krfZEHhb0xU",
+        "title": "What If You Bought Netflix Stock Instead of Paying for Netflix? (06b)",
+        "posted_et": "Mon 12:14",
+        "views": 75
+      }
+    ],
+    "own_channel_instagram_october_reels": [
+      {
+        "shortcode": "DeIvYk7I4Qr",
+        "topic": "$5,000 on the minimum",
+        "posted_et": "Mon 22:46",
+        "plays": 7303,
+        "skip_rate_pct": 27.4,
+        "avg_watched_pct": 56.5
+      },
+      {
+        "shortcode": "DeOEthJJ1TG",
+        "topic": "$1M stack vs Burj Khalifa",
+        "posted_et": "Thu 00:28",
+        "plays": 5449,
+        "skip_rate_pct": 27.0,
+        "avg_watched_pct": 83.1
+      },
+      {
+        "shortcode": "DeWgFZRoR_S",
+        "topic": "Missing dollar",
+        "posted_et": "Sun 07:05",
+        "plays": 1997,
+        "skip_rate_pct": 32.0,
+        "avg_watched_pct": 81.3
+      },
+      {
+        "shortcode": "DeMvZv9IqRw",
+        "topic": "Powerball $6.98",
+        "posted_et": "Wed 12:05",
+        "plays": 1825,
+        "skip_rate_pct": 58.7,
+        "avg_watched_pct": 57.9
+      },
+      {
+        "shortcode": "DeYuqT4pjVC",
+        "topic": "06c latte vs Starbucks stock",
+        "posted_et": "Mon 03:46",
+        "plays": 1711,
+        "skip_rate_pct": 40.3,
+        "avg_watched_pct": 69.1
+      },
+      {
+        "shortcode": "DePe11HIHwn",
+        "topic": "$1M in pennies",
+        "posted_et": "Thu 13:37",
+        "plays": 598,
+        "skip_rate_pct": 42.0,
+        "avg_watched_pct": 66.7
+      },
+      {
+        "shortcode": "DeLSd9io8UK",
+        "topic": "10 years late",
+        "posted_et": "Tue 22:30",
+        "plays": 219,
+        "skip_rate_pct": 65.1,
+        "avg_watched_pct": 30.6
+      },
+      {
+        "shortcode": "DeEW2ZMIiYd",
+        "topic": "Speed limit (e)",
+        "posted_et": "Sun 05:54",
+        "plays": 177,
+        "skip_rate_pct": 56.9,
+        "avg_watched_pct": 31.2
+      }
+    ],
+    "channel_stats": {
+      "youtube_subscribers": 53,
+      "youtube_views": 10221,
+      "youtube_videos": 41,
+      "youtube_30d": "+27 subscribers, +5,127 views, 11 videos",
+      "instagram_followers": 8,
+      "instagram_30d_views": 20519
+    },
+    "limits": [
+      "@envelopemath's YouTube Analytics (audience hours, geography) were not read here; the 06b and 06c sheets found vidIQ's YouTube authorization is a different channel. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
+      "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and on the write-up's and the outliers' own tags.",
+      "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
+      "The write-up's College Board figures were read from search text that quotes the report plus one independent summary (collegeboard.org was blocked), then confirmed by its verifier. The $6.22 Big Mac was read from The Economist's own dataset on GitHub.",
+      "The same-idea and outlier posts' own figures (HD Guy's $5.79 Big Mac, the German Short's 2024-25 prices) are theirs, not verified here, and not in the copy.",
+      "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file."
+    ],
+    "titles_scored": "9 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored.",
+    "vidiq_credits": "100 credits for this teaser by listed cost (6 keyword queries, 3 YouTube searches, 1 Instagram/TikTok outlier search, 9 title scores and 1 re-score; 5 each), plus 10 shared across 08a-08c for the channel's stats and Shorts list (Instagram owner insights cost 0). Adversarial check: 10 for this teaser (the pick's title score, 'student loans'), plus 5 shared across 08a-08c for the related videos' titles; 60 for the three 08 sheets (balance 3,790 → 3,695, a 95 drop shared with sheets built in parallel)."
+  },
+  "checked": {
+    "date": "2026-10-13",
+    "by": "adversarial check of this sheet",
+    "math": "python3 teasers/v2/checks/08-unit-ladder.py: 677 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/08-unit-ladder.py; every row re-divided by $6.22 in MATH_RELATIONS (667, 1,921, 5,125, 7,235), the ≈ 10.8 ratio in dollars and in Big Macs, and the pinned full-budget figures ($261,880, 42,103, 115 years, $123,960, 19,929); COPY_RULES keep every count beside its own row, keep every rounded figure 'about' or '≈', keep 10.8 as community-college years, keep the full-budget figures with 'housing, food and books', keep each row's price paired with its own count, and keep 'tuition & fees' and 'before grants' in the description, the caption and the pinned comment. Re-run at the adversarial check (2026-10-13) with the same result",
+    "limits": {
+      "youtube_title_chars": 88,
+      "youtube_description_chars": 1218,
+      "youtube_description_utf8_bytes": 1256,
+      "youtube_tags_chars_as_youtube_counts": 351,
+      "youtube_hashtags": 3,
+      "instagram_caption_chars": 973,
+      "instagram_hashtags": 5,
+      "instagram_alt_text_short_chars": 95
+    },
+    "vidiq_requeried": "pulled 2026-10-13: college 120,886 / 65.5; student loans 47,897 (+105.6%); big mac 33,042; big mac index 9,861; title scores 97 (pick), 81 (write-up title); channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,519 views in 30 days. Re-queried after the build: the pick's title score 97. Match. Re-queried at the adversarial check: the pick's title score 97; student loans 47,897 / 53.1 (+105.6%); hJBvmGA6sZ0's title as in the related-video pick (1,222 views). All match."
+  }
+}

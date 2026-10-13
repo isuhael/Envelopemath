@@ -1,0 +1,609 @@
+{
+  "id": "01a-scoreboard-paid-biweekly",
+  "teaser": "01a Scoreboard, dead-simple-list: \"Paid every 2 weeks? What your budget misses\"",
+  "prepared": "2026-10-13",
+  "for_video": {
+    "current_render": "renders/channel/01a-scoreboard-paid-biweekly.mp4",
+    "current_duration_s": 27.0,
+    "current_sha256": "cf626877b80b257700b2a9c9a6882bfbc685eebf0ae36ed5236da5d71c0a03d3",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the pre-condense round-2 cut. The ship step re-runs the build with --covers on the condensed file.",
+    "cut": {
+      "name": "round-2 cut (pre-condense)",
+      "spec": "studio/specs/01a-scoreboard-paid-biweekly.json",
+      "body_s": 24.5,
+      "card_s": 2.5,
+      "shipped": null,
+      "git": "471c793",
+      "status": "the 01 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay). The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."
+    }
+  },
+  "facts": {
+    "source": "teasers/v2/01-dead-simple-list.md section (b) 01a; teasers/v2/checks/01-dead-simple-list.py: 400 checks, 0 failed on studio/specs/ (2026-10-13)",
+    "input": "an example paycheck of $2,500 every 2 weeks, gross (before tax); ≈ the median full-time US paycheck (BLS Q2 2026 $1,251 a week × 2 = $2,502; write-up only, not in the copy)",
+    "calendar": "26 paydays a year (364 ÷ 14); in every 26-payday year 10 months bring 2 paydays and 2 months bring 3 (10 × 2 + 2 × 3 = 26), simulated in the check over 2000-2099",
+    "slot_1": "$2,500 × 26 = $65,000 a year; the twice-a-month guess, not × 24 = $60,000",
+    "slot_2": "a normal month: $2,500 × 2 = $5,000; × 12 = $60,000 (= $2,500 × 24)",
+    "slot_3": "$65,000 − $60,000 = $5,000: the 2 checks your budget forgets (26 − 24 = 2; 2 × $2,500)",
+    "verdict": "every 2 weeks = 13 months of pay a year ($65,000 ÷ $5,000 = 13)",
+    "caveat": "about 1 year in 11 the calendar fits 27 paydays (14 ÷ 1.2425 days of drift a year = 11.3); on $2,500 checks that year is $67,500 (pinned comment)"
+  },
+  "youtube": {
+    "titles_ranked": [
+      {
+        "rank": 1,
+        "title": "Paid Biweekly? What Your Monthly Budget Misses",
+        "vidiq_score": 91,
+        "chars": 46,
+        "note": "PICK. The write-up's question with the searched word: every biweekly-budget phrase in the research says 'biweekly', and 'paid every two weeks' is under 750 a month. 'Monthly' names the budget the video corrects (2 checks a month). No hashtags in the title; the description's first three show above it."
+      },
+      {
+        "rank": 2,
+        "title": "Paid Biweekly? What Your Budget Misses",
+        "vidiq_score": 91,
+        "chars": 38,
+        "note": "The same score, 8 characters shorter, but it drops 'monthly', the word that says which budget is wrong."
+      },
+      {
+        "rank": 3,
+        "title": "Paid Every 2 Weeks? What Your Monthly Budget Misses #budgeting #paycheck #biweekly",
+        "vidiq_score": 85,
+        "chars": 82,
+        "note": "The house 3-hashtag form, the best-scoring of the hashtag forms (the pick plus the same hashtags scores 80). The channel's live Shorts carry title hashtags, so this is the option if the owner keeps that habit."
+      }
+    ],
+    "titles_also_scored": [
+      {
+        "title": "Paid Every 2 Weeks? What Your Budget Misses",
+        "vidiq_score": 86,
+        "chars": 43,
+        "note": "the write-up's title, the header's words"
+      },
+      {
+        "title": "Paid Every 2 Weeks? The Pay Your Budget Forgets",
+        "vidiq_score": 86,
+        "chars": 47,
+        "note": "teasers.json's title, the round-2 header"
+      },
+      {
+        "title": "Paid Every 2 Weeks? What Your Monthly Budget Misses",
+        "vidiq_score": 85,
+        "chars": 51,
+        "note": ""
+      },
+      {
+        "title": "Paid Every 2 Weeks (Biweekly)? What Your Monthly Budget Misses",
+        "vidiq_score": 85,
+        "chars": 62,
+        "note": ""
+      },
+      {
+        "title": "Paid Biweekly? What Your Monthly Budget Misses Every Year",
+        "vidiq_score": 82,
+        "chars": 57,
+        "note": ""
+      },
+      {
+        "title": "Paid Biweekly? What Your Monthly Budget Misses #budgeting #paycheck #biweekly",
+        "vidiq_score": 80,
+        "chars": 77,
+        "note": "the pick with the house hashtags: 11 points lower"
+      },
+      {
+        "title": "Paid Biweekly? The Paycheck Math Your Monthly Budget Misses",
+        "vidiq_score": 79,
+        "chars": 59,
+        "note": ""
+      }
+    ],
+    "title_pick": "Paid Biweekly? What Your Monthly Budget Misses",
+    "title_pick_chars": 46,
+    "description": "Paid biweekly, every 2 weeks? That's 26 paychecks a year, not 24. On $2,500 a check: $65,000 a year, not $60,000. The 2 extra checks add up to a 13th month of pay that a budget built on 2 checks a month never counts.\n\nThe math, shown:\n• Your paycheck × 26: $2,500 × 26 = $65,000 a year.\n• Not × 24 (twice a month): that's only $60,000.\n• A normal month: 2 checks, $2,500 × 2 = $5,000. 12 normal months: $60,000.\n• $65,000 − $60,000 = $5,000: your 2 extra checks, from the 2 months with 3 paydays.\n• Check: 10 months × 2 + 2 months × 3 = 26 paydays.\n• $65,000 ÷ $5,000 = 13 months of pay. Every year.\n\nRun yours: paycheck × 26, minus 12 months of 2 checks.\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\n\nAnimation and original sound: The Back of the Envelope. Example paycheck: $2,500 every 2 weeks, gross (before tax). 26 paydays a year (364 days ÷ 14); about 1 year in 11, the calendar fits 27. Not financial advice.\n#budgeting #paycheck #biweekly",
+    "description_chars": 980,
+    "hashtags_in_order": [
+      "#budgeting",
+      "#paycheck",
+      "#biweekly"
+    ],
+    "hashtag_rules": "Title hashtags show as links in the title; with none in the title, the first 3 description hashtags show above it. Over 60 hashtags and YouTube ignores all of them. #Shorts is not needed (vertical, under 3 min).",
+    "tags": [
+      "biweekly paycheck",
+      "paid biweekly",
+      "budgeting biweekly paycheck",
+      "how to budget your biweekly paycheck",
+      "how to budget your money biweekly",
+      "why paychecks are biweekly",
+      "3 paycheck months",
+      "26 paychecks",
+      "paid every two weeks",
+      "paycheck breakdown",
+      "how to budget your paycheck",
+      "budgeting",
+      "how to budget",
+      "paycheck",
+      "money math",
+      "math animation",
+      "the back of the envelope",
+      "envelope math"
+    ],
+    "tags_chars_as_youtube_counts": 386,
+    "pinned_comment": "Has your payroll had a 27-payday year yet? About 1 year in 11, the calendar fits 27 paydays instead of 26. On $2,500 checks, that year pays $67,500.\n\nThe working: $2,500 × 26 = $65,000, not × 24 = $60,000. The 2 extra checks ($5,000) come from the 2 months with 3 paydays, and $65,000 ÷ $5,000 = 13 months of pay. Gross, before tax.",
+    "related_video": {
+      "pick": {
+        "id": "8__HTUa2PoU",
+        "title": "Pay the Minimum on $5,000? 238 Months.",
+        "url": "https://www.youtube.com/shorts/8__HTUa2PoU",
+        "why": "Same viewer: someone budgeting a paycheck month by month. It asks a question in its title like this one, and it is the channel's best Reel (7,302 plays, 27.4% skip rate)."
+      },
+      "swap_when_live": "01b or 01c (the same dead-simple-list series), once published. Then point theirs at this Short.",
+      "end_screen": "Shorts have no end screens or cards. The Related video link is the Shorts equivalent."
+    },
+    "thumbnail_frame": "In the YouTube app, pick frame 1, the clean cover (the same content as the IG cover).",
+    "settings": {
+      "category": "Education",
+      "audience": "Not made for kids",
+      "altered_or_synthetic_content": "No (animated chart, not realistic footage)",
+      "remixing": "Allow",
+      "captions": "None needed (no narration; all text is on screen)"
+    },
+    "posting_window": {
+      "when": "First Tue-Thu evening after the condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day): Tue 13 Oct 2026 at the earliest; in the suggested order (01b, 01c, 01a, one evening each) that is Thu 15 Oct. Sunday 06:00-08:00 ET is the alternative.",
+      "spacing": "Keep it at least 6 h from any other upload on the channel, and on a different evening from 01b and 01c (the same series). Suggested order: 01b, 01c, then 01a. 01a's topic is not tied to a date; the other two quote 2026 figures that SSA and the IRS published in October 2025, so their 2027 updates may come out about now.",
+      "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,198 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2); 06c (Mon 03:45 ET) has 760 and 06b (Mon 12:14 ET) 61 a day or less after posting, too young to compare. The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. Search demand: 'paycheck breakdown' runs +671.3% and 'paycheck to paycheck' +258.9% over their 30-day baselines, while 'budgeting' is down 26.1%."
+    },
+    "description_utf8_bytes": 1005
+  },
+  "instagram": {
+    "caption": "Paid every 2 weeks (biweekly)? Here's what a monthly budget built on 2 paychecks a month misses, worked on a $2,500 check.\n\nThe math, shown (gross, before tax):\n• Your paycheck × 26 paydays: $2,500 × 26 = $65,000 a year. Not × 24: that's only $60,000.\n• A normal month: 2 checks, $5,000. 12 normal months: $60,000.\n• $65,000 − $60,000 = $5,000: your 2 extra checks, from the 2 months with 3 paydays (10 × 2 + 2 × 3 = 26).\n\nEvery 2 weeks = 13 months of pay a year. Your monthly budget is wrong, in your favor.\n\nRun yours: paycheck × 26, minus 12 months of 2 checks. About 1 year in 11 has 27 paydays instead of 26. Not financial advice.\n\nHas your payroll had a 27-payday year yet?\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\nAnimation and original sound: The Back of the Envelope.\n\n#budgeting #paycheck #biweekly #personalfinance #moneymath",
+    "caption_chars": 873,
+    "caption_first_125": "Paid every 2 weeks (biweekly)? Here's what a monthly budget built on 2 paychecks a month misses, worked on a $2,500 check.\n\nT",
+    "caption_rule": "The first 125 characters are the question, the 'biweekly' and 'monthly budget' keywords and the $2,500 input, no result: the caption overlays the Reel from frame 1, so every result sits below 'more'.",
+    "hashtags_in_order": [
+      "#budgeting",
+      "#paycheck",
+      "#biweekly",
+      "#personalfinance",
+      "#moneymath"
+    ],
+    "hashtag_rule": "Instagram caps a post at 5 hashtags (since Dec 2025).",
+    "alt_text_short": "Animation: $2,500 every 2 weeks is 26 checks, $65,000 a year, not $60,000: 13 months of pay.",
+    "alt_text_long": "Animation on a black scoreboard. The header reads: 3 dead simple numbers. Paid every 2 weeks? What your budget misses. A green counter shows your paycheck, $2,500 every 2 weeks. Slot 1, your real yearly pay: $2,500 × 26 rolls up to $65,000, with the note 'not × 24 = $60,000'; below the board that $60,000 is struck out. Slot 2, a normal month: $2,500 × 2 = $5,000; × 12 = $60,000. Slot 3, the 2 checks your budget forgets: $65,000 − $60,000 = $5,000. The top counter turns to 'your 2 extra checks' and rolls to $5,000 as 2 bill icons drop in. A check line reads 10 × 2 + 2 × 3 = 26 paydays. Verdict: every 2 weeks = 13 months of pay a year.",
+    "alt_text_where": "Advanced settings → Accessibility → Alt text, if your app shows it for Reels.",
+    "cover": {
+      "files": {
+        "3x4": "publishing/01a-scoreboard-paid-biweekly-cover-3x4.jpg",
+        "9x16": "publishing/01a-scoreboard-paid-biweekly-cover-9x16.jpg"
+      },
+      "frame_in_current_render_s": 0,
+      "frame_index": 0,
+      "frame_by_content": "The clean cover, frame 1: the header '3 DEAD SIMPLE NUMBERS / PAID EVERY 2 WEEKS? / WHAT YOUR BUDGET MISSES' ('EVERY 2 WEEKS' in green), the green hero 'YOUR PAYCHECK / EVERY 2 WEEKS $2,500', the footer 'ASSUMES 26 paydays a year · pay before tax', slot 1 lit with 'YOUR REAL YEARLY PAY' and its working '$2,500 × 26', slots 2, 3 and the check slot empty, and the first caption. It asks and does not answer, like the title and the caption. The write-up names frame 1 as the Instagram cover. On any cut, use the last frame before slot 1's working turns into the rolling counter.",
+      "frame_measured": "On the pre-condense 27.0 s render, frames 0-4 hold that picture (frame-to-frame luma change ≤ 0.03), a caption word lights at frame 5, and slot 1's counter starts to roll at frame 11. Frame 0 shows the whole first caption, 'Your paycheck, times 26. On $2,500:', with 'Your' lit (the kit lights it word by word); the grey words still read.",
+      "crop": "3:4 = 1080×1440 from y 60 to 1500 of the 1080×1920 frame: the badge, the header, the hero, the footer, the 4 slots, the label stack and the caption; it drops the empty floor. A centred grid crop (y 240-1680) cuts the badge and the header's first line.",
+      "how_to_set": "In 'Edit cover', pick frame 1 of the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
+      "re_export": "ffmpeg -ss 0 -i renders/channel/01a-scoreboard-paid-biweekly.mp4 -frames:v 1 -vf \"crop=1080:1440:0:60\" -q:v 2 publishing/01a-scoreboard-paid-biweekly-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 0 -i renders/channel/01a-scoreboard-paid-biweekly.mp4 -frames:v 1 -q:v 2 publishing/01a-scoreboard-paid-biweekly-cover-9x16.jpg"
+    },
+    "first_comment": "Every 2 weeks = 13 months of pay a year: $2,500 × 26 = $65,000, not × 24 = $60,000 (gross). About 1 year in 11 has 27 paydays. Has your payroll had a 27-payday year yet?",
+    "first_comment_action": "Post it right after publishing and pin it.",
+    "trial_reels": {
+      "recommendation": "Post as a regular Reel, not a Trial.",
+      "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show 471c793:renders/channel/01a-scoreboard-paid-biweekly.mp4 > 01a-27s.mp4` (sha256 cf626877…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+    },
+    "settings": {
+      "audio": "Rename the original audio to 'Paid biweekly? The math — The Back of the Envelope' if the app allows; it is the score, with no voice.",
+      "share_to_feed": "On",
+      "google_indexing": "Public professional-account posts can appear in Google/Bing since 10 Jul 2025, so the caption is written as a searchable question."
+    },
+    "posting_window": {
+      "when": "Same evening as YouTube, about 15 min after the Short: 21:45-22:45 ET, Tue 13 Oct 2026 at the earliest (Thu 15 Oct in the suggested order), on a different evening from 01b and 01c.",
+      "why": "October Reels, median plays by posting slot (owner insights, 2026-10-13): weekday 22:00-00:30 ET 5,449 (n = 3, including the two best: 7,302 and 5,449), weekday midday 1,212 (n = 2), Sunday 05:00-08:00 ET 1,087 (n = 2). 06c, posted Mon 03:46 ET, has 1,711 plays with a 40.3% skip rate. Skip rate tracks plays more closely than the hour does: 27.0-27.4% for the top two, 56.9-65.1% for the bottom two. The condense matters more than the hour."
+    },
+    "alt_text_rule": "Paste the short version into Instagram: it is kept at or under 100 characters so it fits the field however short it is, and it writes words instead of '×' and '=' so screen readers read it cleanly. The long version is for anywhere with room (a website embed, a newsletter)."
+  },
+  "research": {
+    "keywords_youtube": [
+      {
+        "keyword": "paycheck to paycheck",
+        "est_monthly_searches": 52983,
+        "volume": 70.5,
+        "competition": 48.1,
+        "overall": 63.1,
+        "note": "+258.9% vs its 30-day baseline (14,764); a different need, not in the tags",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "paycheck",
+        "est_monthly_searches": 38765,
+        "volume": 68.5,
+        "competition": 66.5,
+        "overall": 54.5,
+        "note": "-15.1% vs its baseline (45,675); broad and crowded",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "paycheck breakdown",
+        "est_monthly_searches": 31692,
+        "volume": 67.2,
+        "competition": 21.2,
+        "overall": 71.8,
+        "note": "+671.3% vs its baseline (4,109); the fastest-rising phrase here",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "how to budget your paycheck",
+        "est_monthly_searches": 5383,
+        "volume": 55.7,
+        "competition": 26.9,
+        "overall": 62.7,
+        "note": "-45.8% vs its baseline (9,935)",
+        "metrics_as_of": "2026-09-16"
+      },
+      {
+        "keyword": "why paychecks are biweekly",
+        "est_monthly_searches": 5364,
+        "volume": 55.7,
+        "competition": 7.1,
+        "overall": 70.6,
+        "note": "competition 7.1, the lowest here",
+        "metrics_as_of": "2026-09-13"
+      },
+      {
+        "keyword": "budgeting biweekly paycheck",
+        "est_monthly_searches": 5267,
+        "volume": 55.6,
+        "competition": 17.1,
+        "overall": 66.5,
+        "note": "",
+        "metrics_as_of": "2026-06-22"
+      },
+      {
+        "keyword": "how to budget your money biweekly",
+        "est_monthly_searches": 5053,
+        "volume": 55.3,
+        "competition": 11.5,
+        "overall": 68.6,
+        "note": "",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "how to budget your biweekly paycheck",
+        "est_monthly_searches": 4943,
+        "volume": 55.1,
+        "competition": 17.6,
+        "overall": 66.0,
+        "note": "",
+        "metrics_as_of": "2026-10-07"
+      },
+      {
+        "keyword": "3 paycheck months",
+        "est_monthly_searches": 4295,
+        "volume": 54.2,
+        "competition": 21.6,
+        "overall": 63.9,
+        "note": "the video's mechanism: in the tags and below the caption's fold, not in the title",
+        "metrics_as_of": "2026-10-07"
+      },
+      {
+        "keyword": "budgeting",
+        "est_monthly_searches": 166248,
+        "volume": 77.9,
+        "competition": 25.8,
+        "overall": 76.4,
+        "note": "-26.1% vs its baseline (225,000); the cluster's best opportunity score",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "how to budget",
+        "est_monthly_searches": 66391,
+        "volume": 72.0,
+        "competition": 33.5,
+        "overall": 69.8,
+        "note": "flat (-0.5%)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "biweekly paycheck",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": 18.2,
+        "overall": 32.7,
+        "note": "<750/month (overall 32.7)",
+        "metrics_as_of": null
+      },
+      {
+        "keyword": "biweekly pay",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": 18.7,
+        "overall": 32.5,
+        "note": "<750/month",
+        "metrics_as_of": null
+      },
+      {
+        "keyword": "paid every two weeks",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": 15.5,
+        "overall": 33.8,
+        "note": "<750/month: the header's words, but searchers say 'biweekly'",
+        "metrics_as_of": null
+      },
+      {
+        "keyword": "extra paycheck",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": 29.5,
+        "overall": 28.2,
+        "note": "<750/month",
+        "metrics_as_of": null
+      }
+    ],
+    "keywords_source": "vidIQ keyword research (research, matching_terms and questions modes), pulled 2026-10-13. vidIQ refreshes each keyword on its own schedule, so each row carries its snapshot date in metrics_as_of; seven rows are older snapshots (2026-06-22 to 2026-10-07).",
+    "same_idea_youtube_shorts": [
+      {
+        "title": "Being Paid Biweekly Is Not The Same As Being Paid Twice A Month!",
+        "channel": "Reni The Resource",
+        "subscribers": 41800,
+        "views": 30557,
+        "published": "2022-02-28",
+        "note": "1:00; 70 comments; the biggest same-idea Short found (26 pay periods vs 24)"
+      },
+      {
+        "title": "Is Biweekly Pay A Scam?",
+        "channel": "Morning Thoughts Media",
+        "subscribers": 8200,
+        "views": 11461,
+        "published": "2023-06-14"
+      },
+      {
+        "title": "How to save 3k in 2 months (bi-weekly pay) | Cash stuffing & budgeting",
+        "channel": "The Budgeting Princess",
+        "subscribers": 1600,
+        "views": 9513,
+        "published": "2023-06-08",
+        "note": "a savings plan on biweekly pay, not the 26-vs-24 idea"
+      },
+      {
+        "title": "How many paychecks is [twice per month] vs [every two weeks]",
+        "channel": "Travis Sickle",
+        "subscribers": 93400,
+        "views": 6567,
+        "published": "2023-07-14"
+      },
+      {
+        "title": "Here Are the 3 Paycheck Months for 2021",
+        "channel": "Michael Saves",
+        "subscribers": 185000,
+        "views": 1801,
+        "published": "2020-09-08",
+        "note": "3:52 long"
+      },
+      {
+        "title": "3 Paycheck Months 2026 and How to Use Them",
+        "channel": "Clarissa Explains Money",
+        "subscribers": 1230,
+        "views": 1619,
+        "published": "2025-12-02"
+      },
+      {
+        "title": "If you get paid bi-weekly, here are your 3 paycheck months of 2024 #shorts #paycheck #money",
+        "channel": "Andrew Giancola",
+        "subscribers": 39600,
+        "views": 1123,
+        "published": "2024-01-14"
+      },
+      {
+        "title": "The 3 paycheck month is a myth #moneymanagement #budget #budgeting",
+        "channel": "DACY Financial Coaching",
+        "subscribers": 5010,
+        "views": 1048,
+        "published": "2024-08-14"
+      },
+      {
+        "title": "Paid Biweekly? Find Your 2 Extra Paychecks",
+        "channel": "Jelfri Torres",
+        "subscribers": 20700,
+        "views": 537,
+        "published": "2026-10-07",
+        "note": "the closest twin: 26 checks not 24 and the 2 three-paycheck months; its title names the answer"
+      },
+      {
+        "title": "Paid every 2 weeks? Bills money per paycheck #shorts",
+        "channel": "Dixon App Studio",
+        "subscribers": 2,
+        "views": 32,
+        "published": "2026-10-12",
+        "note": "26 not 24, pitched at an app"
+      },
+      {
+        "title": "Why 26 Paychecks Feel Like Free $4,000 💰",
+        "channel": "finai4u",
+        "subscribers": 3,
+        "views": 4,
+        "published": "2026-10-08"
+      }
+    ],
+    "same_idea_note": "vidIQ YouTube search (under 4 min; by views and by relevance): the biggest same-idea Short is Reni The Resource's 2022 Short (30,557 views, 70 comments); the rest are under 12,000, and four posted 7-12 Oct 2026 are under 600. None lands '13th month of pay' as its verdict; Jelfri Torres's 7 Oct 2026 twin puts its answer ('2 extra paychecks') in its title.",
+    "instagram_tiktok_outliers": [
+      {
+        "handle": "@mastermoneyco",
+        "platform": "Instagram",
+        "id": "DcyPOmNxMYP",
+        "on_screen": "4 DEAD SIMPLE NUMBERS That Tell You What You Actually Make",
+        "views": "1.8M (28.4x the account median of 62.8K); the TikTok original 3M (140.0x)",
+        "note": "the format's model (the write-up's H84): a talking head with a numbered list; ours is the faceless test"
+      },
+      {
+        "handle": "@thebudgetingprincess",
+        "platform": "Instagram",
+        "id": "Da6hl5aTZOs",
+        "on_screen": "If you get paid bi-weekly this is for you",
+        "caption_opens": "Save $5,000 in 26 paychecks with this bi-weekly savings challenge",
+        "views": "1.9M (9.1x the account median of 214.6K)",
+        "note": "a savings tracker, not this fact, but the hook names the viewer's pay schedule, as ours does"
+      },
+      {
+        "handle": "@blend404",
+        "platform": "TikTok",
+        "id": "7662259427772239134",
+        "on_screen": "HOW TO: SAVE FOR A 6 MONTH SAVINGS GOAL ON A BI WEEKLY PAY SCHEDULE",
+        "views": "298.3K (247.3x the account median of 1.2K)",
+        "note": "static text over music; the biweekly schedule is the hook"
+      }
+    ],
+    "own_channel_youtube_october_shorts": [
+      {
+        "id": "LjHDFzVxRyM",
+        "title": "Can You Find the Missing Dollar?",
+        "posted_et": "Sun 07:04",
+        "views": 1254
+      },
+      {
+        "id": "hJBvmGA6sZ0",
+        "title": "You Can Lean on $1 Million. Not on $1 Billion.",
+        "posted_et": "Thu 00:25",
+        "views": 1221
+      },
+      {
+        "id": "XVUeMcTg9OQ",
+        "title": "Your Interest Has a Speed Limit",
+        "posted_et": "Sun 05:49",
+        "views": 1141
+      },
+      {
+        "id": "fbpdKf4Wy8c",
+        "title": "What If You Bought Starbucks Stock Instead of a $4 Latte Every Day? (06c)",
+        "posted_et": "Mon 03:45",
+        "views": 760
+      },
+      {
+        "id": "8__HTUa2PoU",
+        "title": "Pay the Minimum on $5,000? 238 Months.",
+        "posted_et": "Mon 22:09",
+        "views": 642
+      },
+      {
+        "id": "FW_oxA3kbsM",
+        "title": "A $2 Lottery Ticket Was Worth $6.98. Until the Fine Print.",
+        "posted_et": "Wed 12:03",
+        "views": 348
+      },
+      {
+        "id": "mXbKY_R63h4",
+        "title": "You Can Carry $1 Million. Not in Pennies.",
+        "posted_et": "Thu 13:38",
+        "views": 177
+      },
+      {
+        "id": "EqFQCJheCMU",
+        "title": "Start Investing 10 Years Late? You Get Half.",
+        "posted_et": "Tue 22:27",
+        "views": 161
+      },
+      {
+        "id": "krfZEHhb0xU",
+        "title": "What If You Bought Netflix Stock Instead of Paying for Netflix? (06b)",
+        "posted_et": "Mon 12:14",
+        "views": 61
+      }
+    ],
+    "own_channel_instagram_october_reels": [
+      {
+        "shortcode": "DeIvYk7I4Qr",
+        "topic": "$5,000 on the minimum",
+        "posted_et": "Mon 22:46",
+        "plays": 7302,
+        "skip_rate_pct": 27.4,
+        "avg_watched_pct": 56.5
+      },
+      {
+        "shortcode": "DeOEthJJ1TG",
+        "topic": "$1M stack vs Burj Khalifa",
+        "posted_et": "Thu 00:28",
+        "plays": 5449,
+        "skip_rate_pct": 27.0,
+        "avg_watched_pct": 83.1
+      },
+      {
+        "shortcode": "DeWgFZRoR_S",
+        "topic": "Missing dollar",
+        "posted_et": "Sun 07:05",
+        "plays": 1997,
+        "skip_rate_pct": 32.0,
+        "avg_watched_pct": 81.3
+      },
+      {
+        "shortcode": "DeMvZv9IqRw",
+        "topic": "Powerball $6.98",
+        "posted_et": "Wed 12:05",
+        "plays": 1825,
+        "skip_rate_pct": 58.7,
+        "avg_watched_pct": 57.9
+      },
+      {
+        "shortcode": "DeYuqT4pjVC",
+        "topic": "06c latte vs Starbucks stock",
+        "posted_et": "Mon 03:46",
+        "plays": 1711,
+        "skip_rate_pct": 40.3,
+        "avg_watched_pct": 69.1
+      },
+      {
+        "shortcode": "DePe11HIHwn",
+        "topic": "$1M in pennies",
+        "posted_et": "Thu 13:37",
+        "plays": 598,
+        "skip_rate_pct": 42.0,
+        "avg_watched_pct": 66.7
+      },
+      {
+        "shortcode": "DeLSd9io8UK",
+        "topic": "10 years late",
+        "posted_et": "Tue 22:30",
+        "plays": 219,
+        "skip_rate_pct": 65.1,
+        "avg_watched_pct": 30.6
+      },
+      {
+        "shortcode": "DeEW2ZMIiYd",
+        "topic": "Speed limit (e)",
+        "posted_et": "Sun 05:54",
+        "plays": 177,
+        "skip_rate_pct": 56.9,
+        "avg_watched_pct": 31.2
+      }
+    ],
+    "channel_stats": {
+      "youtube_subscribers": 53,
+      "youtube_views": 10221,
+      "youtube_videos": 41,
+      "youtube_30d": "+27 subscribers, +5,127 views, 11 videos",
+      "instagram_followers": 8,
+      "instagram_30d_views": 20518
+    },
+    "limits": [
+      "@envelopemath's YouTube Analytics (audience hours, geography) were not read here; the 06b and 06c sheets found vidIQ's YouTube authorization is a different channel. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
+      "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and on the write-up's and the outliers' own tags.",
+      "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
+      "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file."
+    ],
+    "titles_scored": "10 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored.",
+    "vidiq_credits": "125 credits for this teaser (10 keyword queries, 3 YouTube searches, 1 Instagram/TikTok outlier search, 11 title scores, the last of each a re-query; 5 each), plus 10 shared across 01a-01c for the channel's own stats; 15 more at the adversarial check (1 title score, 2 keyword queries)."
+  },
+  "checked": {
+    "date": "2026-10-13",
+    "by": "adversarial check of this sheet",
+    "math": "python3 teasers/v2/checks/01-dead-simple-list.py: 400 checks, 0 failed on studio/specs/ (the pre-condense specs; 397 at the first build, before the condense's check-script update), re-run at the adversarial check 2026-10-13; with --spec on the three studio/specs-wip/ condensed specs 392 checks, 0 failed, so the copy's figures hold on both cuts; every public figure traced to the 01a maths table and recomputed in MATH_RELATIONS; COPY_RULES keep 13 as '13 months' or '13th month', 'gross, before tax' and the 27-payday caveat in the copy",
+    "limits": {
+      "youtube_title_chars": 46,
+      "youtube_description_chars": 980,
+      "youtube_description_utf8_bytes": 1005,
+      "youtube_tags_chars_as_youtube_counts": 386,
+      "youtube_hashtags": 3,
+      "instagram_caption_chars": 873,
+      "instagram_hashtags": 5,
+      "instagram_alt_text_short_chars": 92
+    },
+    "vidiq_requeried": "pulled 2026-10-13: 3 paycheck months 4,295 / 21.6; budgeting biweekly paycheck 5,267; why paychecks are biweekly 5,364 / 7.1; budgeting 166,248 (-26.1%); paycheck breakdown 31,692 (+671.3%); title scores 91 (pick), 86 (write-up title), 85 (best hashtag form); channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,518 views in 30 days. Re-queried the same day after the build: the pick's title score 91 and '3 paycheck months' 4,295 / 21.6. Re-queried at the adversarial check: the pick's title score 91; 'why paychecks are biweekly' 5,364 / 7.1 (snapshot 2026-09-13); 'paycheck breakdown' 31,692 / 21.2 (+671.3% on 4,109). All match."
+  }
+}

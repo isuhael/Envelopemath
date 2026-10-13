@@ -51,6 +51,10 @@
 //                (metric: default the hero's metric, else the first value column; the bar metric = the bar's label)
 //                swells (up in 0.08 s, held 0.3 s, down in 0.25 s; 16%, less where the cell has less room) and glows
 //                in its own colour for as long, on a soft tick, while the label stack steps back to 55%
+//   readHold     opt-in (absent = today's behaviour, byte for byte: frames and cues): seconds (0.05-0.3) a cell read's
+//                swell is held at its peak instead of 0.3, so the read is up, held and down in 0.38-0.63 s. A condensed
+//                cut uses it so no read leaves a still frame of 0.4 s on the board (03b/03c, specs-wip/, 2026-10-13:
+//                0.15). No cue moves; hero reads are unchanged
 //   keepSpeed    true: an option.resultT later than its race needs keeps the one shared bar speed (the bar waits, lit
 //                but empty, and starts so it lands on resultT) instead of crawling from the cut to resultT
 //   endTag       the hero's tag for the winner's payoff (default: the hero metric's label; false: no tag). A winner
@@ -511,7 +515,9 @@ export default function whatDifference(spec, ctx) {
   for (const rt of heroReads) ctx.cue(rt, 'tick', { gain: 0.45 })
   for (const r of cellReads) ctx.cue(r.t, 'tick', { gain: 0.45 })
   // (a held peak: up in 0.08 s, held 0.3 s, down in 0.25 s; up to 16%, less where the cell has less room)
-  const readEnv = (t, t0) => (t < t0 ? 0 : t < t0 + 0.08 ? ease.out(prog(t, t0, 0.08)) : t < t0 + 0.38 ? 1 : 1 - ease.inOut(prog(t, t0 + 0.38, 0.25)))
+  // lookOpts.readHold (opt-in): seconds the swell is held at its peak (0.05-0.3). Absent: 0.38 below, as before
+  const READ_END = lo.readHold != null && Number.isFinite(+lo.readHold) ? 0.08 + clamp(+lo.readHold, 0.05, 0.3) : 0.38
+  const readEnv = (t, t0) => (t < t0 ? 0 : t < t0 + 0.08 ? ease.out(prog(t, t0, 0.08)) : t < t0 + READ_END ? 1 : 1 - ease.inOut(prog(t, t0 + READ_END, 0.25)))
   const readOf = (c, t) => {
     let sc = 1, gl = 0
     for (const r of cellReads) if (r.c === c) { const e = readEnv(t, r.t); sc *= 1 + clamp(c.from - 1, 0.08, 0.16) * e; gl = Math.max(gl, e) }

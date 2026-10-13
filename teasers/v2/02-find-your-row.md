@@ -1,11 +1,12 @@
 # 02 · Find your row: three teasers
 
 **Format:** `find-your-row` (rank 2 in [`../../research/v2/04-formats.md`](../../research/v2/04-formats.md), hook pattern **P7**)
-**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews, then again in the round-2 **hook pass**, which replaced all three hooks; then the round-2 **assembly pass** and the round-2 **fix pass** on 2026-10-08; then the **port** of 2026-10-08, when the owner kept two looks: 02a moved from Live Sheet to **Becker Rig** and 02c from Clean Sheet to **Scoreboard**; then the **fix pass on the ports** the same day; see the [Review log](#review-log))
+**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews, then again in the round-2 **hook pass**, which replaced all three hooks; then the round-2 **assembly pass** and the round-2 **fix pass** on 2026-10-08; then the **port** of 2026-10-08, when the owner kept two looks: 02a moved from Live Sheet to **Becker Rig** and 02c from Clean Sheet to **Scoreboard**; then the **fix pass on the ports** the same day; then the **condensed cut** of 2026-10-13 (the owner: too many still moments; condense; the end card stays), in `studio/specs-wip/` until the ship step promotes it, and its fix pass the same day; see the [Review log](#review-log))
 **Specs:**
 - [`studio/specs/02a-becker-rig-3-a-day-by-age.json`](../../studio/specs/02a-becker-rig-3-a-day-by-age.json)
 - [`studio/specs/02b-scoreboard-trillion-at-your-wage.json`](../../studio/specs/02b-scoreboard-trillion-at-your-wage.json)
 - [`studio/specs/02c-scoreboard-salary-per-hour.json`](../../studio/specs/02c-scoreboard-salary-per-hour.json)
+- The condensed cuts (2026-10-13, not yet promoted; the beat sheets and captions below describe them): [`studio/specs-wip/02a-becker-rig-3-a-day-by-age.json`](../../studio/specs-wip/02a-becker-rig-3-a-day-by-age.json), [`studio/specs-wip/02b-scoreboard-trillion-at-your-wage.json`](../../studio/specs-wip/02b-scoreboard-trillion-at-your-wage.json) and [`studio/specs-wip/02c-scoreboard-salary-per-hour.json`](../../studio/specs-wip/02c-scoreboard-salary-per-hour.json). `studio/specs/` and `renders/channel/` hold the round-2 cuts (13.4 / 14.0 / 13.0 s bodies) until then; their beat sheets are in git history (HEAD 3db6d30).
 
 (The slugs are kept from the earlier rounds so the slate index stays linked; the titles and hooks below are the hook-pass versions. The retired Live Sheet and Clean Sheet specs are in `studio/specs/retired/` as `02a-live-sheet-3-a-day-by-age.json` and `02c-clean-sheet-salary-per-hour.json`.)
 
@@ -15,7 +16,7 @@
 - that this write-up quotes every VO line, verdict, footer, formula and platform title exactly as the specs carry them (a `\n` line break is quoted here as " / ");
 - the look options the specs carry (`lookOpts`: 02a's timed bracket from the 35 row up to the 25 row, its shrug beat inside line 1, its hop on "≈ $240,000" inside line 3 while the 25 row is pointed at, and its figure scale; 02c's verdict row).
 
-Result: **PASSED: all 177 checks** (after the fix pass on the ports). A mutation test (one row changed, one VO line shortened) fails with exit 1 (see the Review log).
+Result: **PASSED: all 183 checks** on `studio/specs/` (the round-2 cuts) and **all 225** with `--spec` on the three condensed cuts in `studio/specs-wip/` (216 before the condensed cut's fix pass added a label-time rule per pick). The check is cut-aware since 2026-10-13: a spec of the round-2 length is held to the rules above, any other to the condensed cut's (captions paced for reading, back to back, the hook complete on frame 1, frame 1 clean and moving from frame 2, picks inside their captions, no gap of 0.4 s or more in the scheduled motion before the verdict, the verdict 0.8-1.5 s after the final reveal and held 1.2-1.6 s). The strings and numbers are the same for both. Mutation tests fail with exit 1 and a named failure (see the Review log).
 
 **Studio linter:** `node src/cli.mjs check` on the three specs: **3/3 clean, 0 errors, 0 warnings** (after the fix pass on the ports, also at a 0.05 s sampling step). Contact sheets and stills at every beat were rendered and inspected, and the final MP4s were rendered and spot-checked frame by frame (see [Assembly pass](#assembly-pass-2026-10-08)): each header and its first number read in frame 1.
 
@@ -46,10 +47,10 @@ Result: **PASSED: all 177 checks** (after the fix pass on the ports). A mutation
 | On-screen header (t = 0) | “It’s just **$3 a day**.” / What it costs you by 65: | ELON'S **$1 TRILLION** PAY PLAN / EARNS YOUR WHOLE CAREER'S PAY IN… | What time your **9-to-5** / starts paying you, by salary |
 | Words in hook | 11 | 11 | 9 |
 | Rows × columns | 10 × 3 (age, what you think it costs (red), what it really costs) | 11 × 3 (wage, 40 years of your pay, his plan earns it in) | 12 × 3 (salary, tax + FICA minutes a day, paying you from) |
-| Runtime | 13.4 s | 14.0 s | 13.0 s |
-| VO words (as the check counts them) | 29 | 26 | 23 |
+| Runtime (body + the 2.5 s end card) | 7.8 + 2.5 = 10.3 s (condensed; was 13.4 + 2.5) | 7.6 + 2.5 = 10.1 s (condensed; was 14.0 + 2.5) | 7.6 + 2.5 = 10.1 s (condensed; was 13.0 + 2.5) |
+| Caption words (on-screen, no narration; the round-2 check counted 29 / 26 / 23 spoken) | 15 | 23 | 19 |
 | First number on screen | 18 · $51,465 (red) · ≈ $400,000 | $7.25/hr · $603,200 · ≈ 3.2 min | $200,000 · ≈ 123 min · ≈ 11:03 am |
-| First spoken payoff | "≈ $400,000" at about 2.8 s, the figure on row 18 and pointing from 2.0 s | "≈ 3 minutes" at 2.0 s, the $7.25 row pointed at from 2.0 s | "≈ 10:18" at about 3.4 s, the $65,000 row lit from 1.5 s |
+| First payoff (condensed cut) | "At 18: ≈ $400,000." from 1.45 s, the figure landed on row 18 and pointing | "≈ 3 minutes of his." from 1.3 s, the $7.25 row lit and its working in the strip | "You work for tax till ≈ 10:18." from 1.3 s, the $65,000 row lit |
 | Verdict | 10 years younger? / It costs **more than double**. | Even **$1,000/hr** / for 40 years: / ≈ 7.3 hours of his. | $200,000: you work for tax till **≈ 11:03**, every workday. |
 | Hook score (two judges' average, hook pass: old hook → adopted) | 6.75 → 7.5 | 5.25 → 7.75 | 5.5 → 7.5 |
 
@@ -57,7 +58,7 @@ Result: **PASSED: all 177 checks** (after the fix pass on the ports). A mutation
 
 ## 02a · Becker Rig · "It's just $3 a day": what it costs you by 65
 
-**Spec:** `studio/specs/02a-becker-rig-3-a-day-by-age.json` · **13.4 s** · captions on
+**Spec:** `studio/specs/02a-becker-rig-3-a-day-by-age.json` · **13.4 s** · captions on · condensed cut (2026-10-13, not yet promoted): `studio/specs-wip/02a-becker-rig-3-a-day-by-age.json` · **7.8 s** + the 2.5 s end card
 
 *Ported from Live Sheet to Becker Rig on 2026-10-08 (the old spec is `studio/specs/retired/02a-live-sheet-3-a-day-by-age.json`). The hook, every number, every VO line and the verdict are unchanged. What changed: the footer breaks between its clauses instead of at "· no tax, fees," (same words), and the measured pick now runs from the 35 row up to the 25 row, landing on "more than double" with the label "≈ 2.2× the cost at 35" (same 2.152 ratio). See "Port to Becker Rig (2026-10-08)" in the Review log. The fix pass on the port (same day) kept every word and number: the figure is bigger (0.82) and stands clear of the shelving post, the 35 row is marked as the reference while the bracket (now the look's prop stroke) is up, the payoff label is 48 px, a silent hop lands on "≈ $240,000", and the line-4 caption breaks after "10 years younger?". See "Fix pass on the ports (2026-10-08)".*
 
@@ -72,7 +73,7 @@ Result: **PASSED: all 177 checks** (after the fix pass on the ports). A mutation
 3. **H71, The Market Hustle, "How Long It Took To / Recover After the / Worst Crashes:"**: 190,187 (4.5x med), https://www.instagram.com/reel/DduW3hgShyh/. The wrong number in red ("25 YEARS") beside the right one ("~6.7 YEARS") at 0.0 s. This is the hook bank's §4.5 rewrite B (the wrong answer in red, the right one beside it) applied to the by-age table: the spend column is relabelled "What you think it costs" and its numbers are red.
 4. **H55, Yannick, "Do all 5 and watch your finance change" + "They Should've Taught This in School"**: 115,845 (67.1x), https://www.instagram.com/reel/DbMUONdvGcr/. An identity or grievance line as the hook; ours is the excuse the viewer already says.
 5. **H45, @investment_timeline, "POV: You invested in Monster instead of paying $3/day for a Monster Energy"**: 1.5M (140.6x), https://www.tiktok.com/@investment_timeline/video/7671760671867997473. $3 a day is a habit-sized amount the audience already pays.
-- **Contrast we design against: H89, Master Money, "WHAT YOUR $15 LUNCH is really costing you (BY AGE!)"**: 11,745, 58 s, talked on camera. Same idea, killed by length and talking. Ours is 13.4 s with 29 spoken words, and the music-only cut is the A version (see the platform notes).
+- **Contrast we design against: H89, Master Money, "WHAT YOUR $15 LUNCH is really costing you (BY AGE!)"**: 11,745, 58 s, talked on camera. Same idea, killed by length and talking. Ours is a 7.8 s body since the condensed cut (13.4 s before) with 15 words of captions and no voice, and the music-only cut is the A version (see the platform notes).
 - **Rejected in the hook pass** (scores in the Review log): a "$1 you spend" version (a near-copy of H64's title, and template remakes underperform: H83, Jake's own remake, 14,232, 0.29x med); a POV header (P6's power is the same-brand irony, and a generic $3 has no brand); a $3 / $5 / $10 grid (three inputs in the hook line break R2).
 
 **Rules satisfied:**
@@ -80,12 +81,12 @@ Result: **PASSED: all 177 checks** (after the fix pass on the ports). A mutation
 - **R2:** one input ($3 a day). The header ends on a colon, not a result.
 - **R3:** one row per age, 18-60. The $3 is fixed, so the pinned comment gives the scaling rule (double it for $6, and so on: every cell is linear in the daily amount).
 - **R4:** $3 is small, round and habitual.
-- **R5, now visible in frame 1:** the header quotes the belief ("It's just $3 a day."); the middle column is labelled "What you think it costs" and its numbers are red; the green, emphasised column beside it is "What it really costs you". In the first 1.5 s the four rows that land show the real cost at 7.8×, 7.0×, 5.5× and 4.3× the red number (ages 18, 20, 25, 30; checked).
+- **R5, now visible in frame 1:** the header quotes the belief ("It's just $3 a day."); the middle column is labelled "What you think it costs" and its numbers are red; the green, emphasised column beside it is "What it really costs you". In the first 1.5 s the rows on the shelves show the real cost at 7.8×, 7.0×, 5.5× and 4.3× the red number (ages 18, 20, 25, 30; checked), and in the condensed cut the 35 row (3.4×) lands by 1.15 s too.
 - **R6:** you + $3 a day + by 65, now all in the header (before the hook pass the horizon was only in the column labels).
 - **R7:** each row is a named age, so the viewer picks theirs.
 - **R8:** 11 words.
 - **R9:** 10 countable rows.
-- **R10:** the biggest number is first on screen at 0.0 s and spoken first: "Just $3 a day?" (0.0 s), then "At 18: ≈ $400,000." from 2.0 s, with the figure landed on the 18 row's peg and pointing at it ("≈ 7.8× what you think") from the same frame; the VO reaches "≈ $400,000" at about 2.8 s.
+- **R10:** the biggest number is first on screen at 0.0 s and named first: "Just $3 a day?" (complete on frame 1), then "At 18: ≈ $400,000." from 1.45 s (condensed cut; 2.0 s in the round-2 cut), with the figure landed on the 18 row's peg and pointing at it ("≈ 7.8× what you think") from the same frame.
 - **R11:** the caption carries the verdict.
 - **R12:** "10 years younger? / It costs more than double." is one direction, one number, and true for every whole age from 18 to 54 (asserted in the check).
 
@@ -93,33 +94,38 @@ Result: **PASSED: all 177 checks** (after the fix pass on the ports). A mutation
 1. "It's just $3 a day. At most it costs me $3 × the days." That is the red column; the green one beside it is 5.5× it at 25 and 7.8× it at 18.
 2. "Ten years of age doesn't change much." Every 10 years younger, the same $3 a day costs you **more than double**: true for every whole age 18-54 (FV(age) ÷ FV(age + 10) runs from 2.09 at 18 to 15.98 at 54; checked).
 
-### Beat sheet
+### Beat sheet (condensed cut, 2026-10-13: 7.8 s body + the 2.5 s end card = 10.3 s; was 13.4 + 2.5)
 
-| t (s) | On screen | VO (caption) |
+`studio/specs-wip/02a-becker-rig-3-a-day-by-age.json`. Every number, label and the verdict are the round-2 cut's; the clock and two acts moved, and since the fix pass the last caption is the question alone ("10 years younger?"), so "more than double" first appears with the verdict, the gold plate and the "≈ 2.2×" pill. Captions are on-screen text (no narration), back to back, each up at least max(1.2 s, 0.12 s a word).
+
+| t (s) | On screen | Caption |
 |---|---|---|
-| 0.0 | Header '“It’s just **$3 a day**.” / What it costs you by 65:'. Footer on two lines, broken between its clauses: "At 7% a year until 65" / "no tax, fees, inflation" (mono 40 px). The table is a set of shelves: column heads "Your age" · "What you think it costs" (red) · "What it really costs you" (ink, emphasised), each on two lines at 40 px. All 10 age keys in place on their dotted ledges; row 1 "18 · $51,465 · ≈ $400,000" stocked (the $51,465 red, the ≈ $400,000 green on its ink plank). Rows at a ~56 px pitch: keys 44 px, red cells 41 px, results 48 px (Inter Tight 900). The formula "= $3 × 365 ÷ 12 = $91.25 a month" on the note shelf under the last row. The figure (0.82) stands on the floor in the gutter between the shelving post and the keys, hand on chin, looking up the empty shelves; the pencil behind his head clears the post. | "Just $3 a day?" |
-| 0.25-1.15 | He shrugs, palms up (`lookOpts.beats`: the viewer's excuse, acted), while the rows start landing | |
-| 0.5-4.5 | Rows 20 → 60 land top to bottom, one every 0.5 s: each red number drops onto its ledge and the green result lands on its plank with a squash and a soft thud (the newest green, settling to ink; at 2.0 s the 30 row's ≈ $164,000 snaps to ink in the same 0.1 s the 18 row lights, so only one green is on screen); his head follows the rows | |
-| 1.2-1.9 | He crouches and leaps up the pegs to the 18 row (`swipe`, `step` at 1.88) | |
-| 2.0 | He points at row "18 · $51,465 · ≈ $400,000", his hand pinned to its left end: the row lifts and lights green, and the pill "≈ 7.8× what you think" pops on the note shelf (it takes the formula's place) | "At 18: **≈ $400,000**." ("≈ $400,000" at about 2.8 s) |
-| 4.9 | He has hopped down to the 25 row (lands 4.78) and points: "25 · $43,800 · ≈ $240,000" lights, pill "≈ 5.5× what you think" (on the shelf until 8.1 s, then the formula comes back) | "At 25: **≈ $240,000**." |
-| 6.2-6.9 | Once the VO reaches "≈ $240,000" (about 5.7 s) he does a "whoa" hop with his free arm up, still pointing at the row (`lookOpts.beats`, silent), and the 25 row's ≈ $240,000 pulses (5%) as its plank dips | (line 3) |
-| 8.4 | As line 4 starts he hops down to the 35 row (lands 8.82, `step`) and points at it: row "35 · $32,850 · ≈ $111,000" becomes the reference, a soft grey band behind it and its whole ledge in solid ink, so the row reads as underlined | "10 years younger? / It costs you **more than double**." (the caption breaks after "10 years younger?") |
-| 9.07-10.58 | He takes the pencil from behind his head (`tick` 9.23) and steps up the pegs, one leg per peg, from 35 to 25, drawing a thick ink bracket beside the keys as he goes (the look's 10 px prop stroke; `swipe` 9.49-10.58): the "10 years younger" read, under "It costs you" | (line 4) |
-| 10.7 | The payoff, on "more than double": he lands on the 25 row, ≈ $240,000 turns ink on a **gold plate** (its top edge 3 px under the 20 row's plank) with the short's one impact (hit lines fanning into the right margin, a shake, a 2% punch, `hit`); the pill "**≈ 2.2×** the cost at 35" pops on the shelf with the plate, at 48 px; the verdict "10 years younger?" / "It costs **more than double**." (64 px, the green swoosh under "more than double") replaces the captions + ding | (inside line 4: "more than double") |
-| 10.7-12.7 | The finished table holds (the cover frame): the bracket, the plate and the pill stay up, and he keeps pointing at the plate | (none) |
-| 12.7-13.4 | Loop clear: the plate and the pill go, the values tip off their planks, the keys dim, the verdict fades and he hops back down to the floor; the last frame is frame 1 | (none) |
+| 0.0 (frame 1, the thumbnail) | Header '“It’s just **$3 a day**.” / What it costs you by 65:'. Footer on two lines, "At 7% a year until 65" / "no tax, fees, inflation" (mono 40 px). The shelves: column heads "Your age" · "What you think it costs" (red) · "What it really costs you", all 10 age keys on their ledges, row 1 "18 · $51,465 · ≈ $400,000" stocked (the $51,465 red, the ≈ $400,000 green on its ink plank). The formula "= $3 × 365 ÷ 12 = $91.25 a month" on the note shelf. The figure (0.82) on the floor in the gutter, hand on chin. No row is moving yet (the next row's key starts to brighten 0.2 s before it lands, at 0.02 s) | "Just $3 a day?", complete on frame 1 (the line starts at −0.4 s, so the kit has popped every word in by −0.1 s) |
+| 0.0-0.6 | He shrugs, palms up (`lookOpts.beats`: the viewer's excuse, acted, from frame 1, so the picture moves from frame 2) | |
+| 0.22-1.15 | Rows 20, 25, 30 and 35 land (0.22, 0.55, 0.85, 1.15): each red number drops onto its ledge and the green result lands on its plank with a squash (a thud, then a roll); his head follows them | |
+| 0.63-1.33 | He crouches and leaps up the pegs to the 18 row (`swipe`, `step` at 1.33) | |
+| 1.45 | He points at row "18 · $51,465 · ≈ $400,000": it lifts and lights green, and the pill "≈ 7.8× what you think" pops on the note shelf in the formula's place (`pop`) | "At 18: **≈ $400,000**." (1.45-3.0) |
+| 1.85, 2.3 | Rows 40 and 45 land, in ink under the lit pick | |
+| 2.5-2.93 | He hops down to the 25 row (`step` at 2.93) | |
+| 3.05 | He points: "25 · $43,800 · ≈ $240,000" lights, pill "≈ 5.5× what you think" | "At 25: **≈ $240,000**." (3.05-4.65) |
+| 3.45-4.05 | The "whoa" hop with his free arm up (`lookOpts.beats`, silent), still pointing; ≈ $240,000 pulses (5%) as its plank dips | |
+| 3.5, 3.95, 4.4 | Rows 50, 55 and 60 land: the shelves are full | |
+| 4.7 | As the last caption goes up he hops down to the 35 row (lands 5.12, `step`): row "35 · $32,850 · ≈ $111,000" becomes the reference, a soft grey band behind it and its ledge in solid ink | "10 years younger?" (4.7-6.3: the question alone; the answer is the verdict's) |
+| 5.37-6.18 | He takes the pencil from behind his head (`tick` 5.53) and steps up the pegs from 35 to 25, drawing the ink bracket beside the keys (`swipe` 5.76-6.18) | |
+| 6.3 | The payoff: ≈ $240,000 turns ink on a **gold plate** with the short's one impact (hit lines, a shake, a 2% punch, `hit`); the pill "**≈ 2.2×** the cost at 35" pops at 48 px; the verdict "10 years younger?" / "It costs **more than double**." replaces the caption, so the question stays and the answer lands under it (the green swoosh under "more than double") + ding | (the verdict) |
+| 6.3-7.8 | The verdict holds 1.5 s: the finished table, the bracket, the plate and the pill; he keeps pointing at the plate (a nod). The impact settles by about 6.9 s, the cover frame | |
+| 7.8-10.3 | The channel's end card (unchanged) | |
 
-### Guide VO script (29 spoken words, about 11.2 s of speech)
+### Captions (condensed cut: on-screen text, no narration; 15 words)
 
-| t | d | Caption text (spec) | Read it as |
+| t | d | Up (from frame 1) | Caption text (spec) |
 |---|---|---|---|
-| 0.0 | 1.95 | Just $3 a day? | "Just three dollars a day?" |
-| 2.0 | 2.7 | At 18: **≈ $400,000**. | "At eighteen: about four hundred thousand dollars." |
-| 4.9 | 3.3 | At 25: **≈ $240,000**. | "At twenty-five: about two hundred forty thousand dollars." |
-| 8.4 | 3.5 | 10 years younger? / It costs you **more than double**. | "Ten years younger? It costs you more than double." |
+| −0.4 | 1.8 | 0.0-1.4 s | Just $3 a day? |
+| 1.45 | 1.55 | 1.45-3.0 s | At 18: **≈ $400,000**. |
+| 3.05 | 1.6 | 3.05-4.65 s | At 25: **≈ $240,000**. |
+| 4.7 | 1.6 | 4.7-6.3 s (the verdict replaces it) | 10 years younger? |
 
-Each `d` covers the read at 2.6 words/s with hyphenated numbers as one word, and at 2.8 words/s with them split (1.92 / 1.79 s; 2.69 / 2.50 s; 3.08 / 3.21 s; 3.46 / 3.21 s). Line 4's caption carries a line break after "10 years younger?" (a `\n`, quoted here as " / "), so it wraps at the clause and not mid-phrase; the words and the read are unchanged.
+Each line is up at least max(1.2 s, 0.12 s a word), 0.05 s apart. The round-2 cut read four lines as a guide VO script (2.6 and 2.8 words a second, the timings in its review-log entries); with no narration they are paced for reading. Line 4 was "10 years younger? / It costs you **more than double**." in the round-2 cut and in the condensed cut until its fix pass: on screen from 4.7 s, it gave the verdict away 1.6 s early and then repeated it. It is now the verdict's question alone, and the verdict ("10 years younger? / It costs **more than double**.") answers it as the plate lands.
 
 ### The maths
 
@@ -186,7 +192,7 @@ Inputs: $3 a day; 365 days; 7% a year, compounded monthly (7% ÷ 12 each month, 
 
 ## 02b · Scoreboard · "How fast Elon's $1 trillion pay plan earns your whole career's pay"
 
-**Spec:** `studio/specs/02b-scoreboard-trillion-at-your-wage.json` · **14.0 s** · captions on
+**Spec:** `studio/specs/02b-scoreboard-trillion-at-your-wage.json` · **14.0 s** · captions on · condensed cut (2026-10-13, not yet promoted): `studio/specs-wip/02b-scoreboard-trillion-at-your-wage.json` · **7.6 s** + the 2.5 s end card
 
 **Platform title:** How Fast Elon's $1 Trillion Pay Plan Earns Your Whole Career's Pay
 **On-screen hook (header):** ELON'S **$1 TRILLION** PAY PLAN / EARNS YOUR WHOLE CAREER'S PAY IN…
@@ -217,34 +223,40 @@ Inputs: $3 a day; 365 days; 7% a year, compounded monthly (7% ÷ 12 each month, 
 - **R7:** each row is a named wage.
 - **R8:** 11 words.
 - **R9:** 11 countable rows under a header that ends on "IN…".
-- **R10:** row 1 is on screen at 0.0 s; the first spoken payoff ("≈ 3 minutes of his.") starts at 2.0 s, the moment the pointer lands on the $7.25 row.
+- **R10:** row 1 is on screen at 0.0 s; the first payoff caption ("≈ 3 minutes of his.") goes up at 1.3 s (condensed cut; 2.0 s in the round-2 cut), the moment the pointer lands on the $7.25 row.
 - **R11:** the verdict lands alone, after the last caption, as the biggest type on the screen.
 - **R12:** a single repeatable line, on the board's last row: "$1,000/hr for 40 years: ≈ 7.3 hours of his".
 
 **The wrong belief it plays on:** "40 years of work adds up to a fortune." At $20 an hour it is $1,664,000, and the plan's average earns that in under 9 minutes; even $1,000 an hour for 40 years ($83,200,000) takes it ≈ 7.3 hours.
 
-### Beat sheet
+### Beat sheet (condensed cut, 2026-10-13: 7.6 s body + the 2.5 s end card = 10.1 s; was 14.0 + 2.5)
 
-| t (s) | On screen | VO (caption) |
+`studio/specs-wip/02b-scoreboard-trillion-at-your-wage.json`. Every word, number and label and the verdict are the round-2 cut's; only the clock moved, plus one look option (`focus` 0.25, since the fix pass; 0.3 before it).
+
+| t (s) | On screen | Caption |
 |---|---|---|
-| 0.0 | Header "ELON'S **$1 TRILLION** PAY PLAN / EARNS YOUR WHOLE CAREER'S PAY IN…". Footer on one line: "Plan max ÷ 10 yrs, 24/7 · you: 40 yrs × 2,080 hrs". Columns "Your wage" · "40 years / of your pay" · "His plan / earns it in" (emphasised). All 11 wage keys in place; row 1 "$7.25/hr · $603,200 · ≈ 3.2 min" lit. Rows at a ~54 px pitch. Strip: "= wage × 2,080 × 40 ÷ $3,169/s". | "40 years at minimum wage?" |
-| 0.35-3.5 | Rows $15/hr → $1,000/hr land, one every 0.35 s ($20/hr · $1,664,000 · ≈ 8.8 min at 0.7 s) | |
-| 2.0 | Pointer to row "$7.25/hr · $603,200 · ≈ 3.2 min"; strip label "$7.25/HR × 83,200 HRS = $603,200" over the formula | "**≈ 3 minutes** of his." |
-| 4.2 | Pointer to row "$20/hr · $1,664,000 · ≈ 8.8 min"; label "$20/HR × 83,200 HRS = $1,664,000" | "$20 an hour? Under 9 minutes." |
-| 7.0 | Pointer to the last row "$1,000/hr · $83,200,000 · ≈ 7.3 hrs"; label "$1,000/HR × 83,200 HRS = $83,200,000" | "Even **$1,000 an hour**? ≈ 7 hours." |
-| 10.7 | The VO has ended (10.5 s): the verdict "Even **$1,000/hr** / for 40 years: / ≈ 7.3 hours of his." slams over the strip and the caption band at about 84 px (the pick labels are 58 px) + ding | (none) |
-| 10.7-14.0 | Hold, then a hard cut back to frame 1 for the loop | (none) |
+| 0.0 (frame 1, the thumbnail) | Header "ELON'S **$1 TRILLION** PAY PLAN / EARNS YOUR WHOLE CAREER'S PAY IN…". Footer on one line: "Plan max ÷ 10 yrs, 24/7 · you: 40 yrs × 2,080 hrs". Columns "Your wage" · "40 years / of your pay" · "His plan / earns it in" (emphasised). All 11 wage keys on the board; row 1 "$7.25/hr · $603,200 · ≈ 3.2 min" lit. Strip: "= wage × 2,080 × 40 ÷ $3,169/s" | "40 years at minimum wage?", complete on frame 1 (it starts at −0.4 s, so its 0.14 s rise is over; its words light in as it plays) |
+| 0.03-0.9 | Rows $15/hr, $20/hr and $25/hr slide in (0.03, 0.45, 0.9: the first moves from frame 2) | |
+| 1.3 | The pointer enters to "$7.25/hr · $603,200 · ≈ 3.2 min": the row lights, the others dim, and "$7.25/HR × 83,200 HRS = $603,200" slams into the strip over the formula + swipe, ding. With `lookOpts.focus` 0.25 the others ease back from 1.55 s (a brief spotlight) | "**≈ 3 minutes** of his." (1.3-2.9) |
+| 1.7, 2.2, 2.6 | Rows $30/hr, $40/hr and $50/hr slide in (a tick each) | |
+| 2.95 | The pointer glides to "$20/hr · $1,664,000 · ≈ 8.8 min", which lights; "$20/HR × 83,200 HRS = $1,664,000" slams in + swipe, ding; the others dim and ease back from 3.2 s | "$20 an hour? Under 9 minutes." (2.95-4.55) |
+| 3.4-4.6 | Rows $75/hr, $100/hr, $500/hr and $1,000/hr slide in (3.4, 3.85, 4.25, 4.6; a thud as the board completes) | |
+| 4.6 | The last caption goes up: the question first | "Even **$1,000 an hour**? ≈ 7 hours." (4.6-5.9) |
+| 4.85 | The pointer glides down to "$1,000/hr · $83,200,000 · ≈ 7.3 hrs", which lights (0.25 s into the caption); "$1,000/HR × 83,200 HRS = $83,200,000" slams in + swipe, ding; the others dim and ease back from 5.1 s | |
+| 6.05 | The caption has ended (5.9 s): the verdict "Even **$1,000/hr** / for 40 years: / ≈ 7.3 hours of his." slams over the strip and the caption band at about 84 px, alone, 1.2 s after the final pick, whose label was up for those 1.2 s (reveal, ding) | (none) |
+| 6.05-7.6 | The verdict holds 1.55 s on the finished board with the $1,000/hr row lit (settled from about 6.35 s, the cover frame) | (none) |
+| 7.6-10.1 | The channel's end card (unchanged) | |
 
-### Guide VO script (26 spoken words, about 10.0 s of speech)
+### Captions (condensed cut: on-screen text, no narration; 23 words)
 
-| t | d | Caption text (spec) | Read it as |
+| t | d | Up (from frame 1) | Caption text (spec) |
 |---|---|---|---|
-| 0.0 | 2.0 | 40 years at minimum wage? | "Forty years at minimum wage?" |
-| 2.0 | 2.0 | **≈ 3 minutes** of his. | "About three minutes of his." |
-| 4.2 | 2.7 | $20 an hour? Under 9 minutes. | "Twenty dollars an hour? Under nine minutes." |
-| 7.0 | 3.5 | Even **$1,000 an hour**? ≈ 7 hours. | "Even a thousand dollars an hour? About seven hours." |
+| −0.4 | 1.65 | 0.0-1.25 s | 40 years at minimum wage? |
+| 1.3 | 1.6 | 1.3-2.9 s | **≈ 3 minutes** of his. |
+| 2.95 | 1.6 | 2.95-4.55 s | $20 an hour? Under 9 minutes. |
+| 4.6 | 1.3 | 4.6-5.9 s | Even **$1,000 an hour**? ≈ 7 hours. |
 
-Fit at 2.6 / 2.8 words/s: 1.92 / 1.79 s; 1.92 / 1.79 s; 2.69 / 2.50 s; 3.46 / 3.21 s. The VO rounds to the whole minute or hour ("≈ 3 minutes", "≈ 7 hours"); everything else on screen carries one rounding, the row's ("≈ 3.2 min", "≈ 7.3 hrs").
+Each line is up at least max(1.2 s, 0.12 s a word), 0.05 s apart. The last one goes up 0.25 s before its pick, so the question reads first and the row lights on its answer; that lets the verdict land alone 0.15 s after it, 1.2 s after the final pick (so the pick's label is up 1.2 s). The captions round to the whole minute or hour ("≈ 3 minutes", "≈ 7 hours"); everything else on screen carries one rounding, the row's ("≈ 3.2 min", "≈ 7.3 hrs").
 
 ### The maths
 
@@ -302,7 +314,7 @@ Fit at 2.6 / 2.8 words/s: 1.92 / 1.79 s; 1.92 / 1.79 s; 2.69 / 2.50 s; 3.46 / 3.
   - Music-only plus the on-screen pointer labels works, the way HD Guy runs on no voice. The VO cut is optional.
   - No end card; hard-cut back to frame 1.
 - **TikTok.**
-  - The VO cut: "40 years at minimum wage? ≈ 3 minutes of his." puts the payoff at 2.0 s, with the pointer on its row.
+  - The VO cut: "40 years at minimum wage? ≈ 3 minutes of his." puts the payoff at 1.3 s in the condensed cut (2.0 s before), with the pointer on its row.
   - The Musk context line stays in the caption; on screen, the plan is named in the header and qualified in the footer.
 - **Instagram Reels.**
   - Caption line 1: "Find your wage."
@@ -312,7 +324,7 @@ Fit at 2.6 / 2.8 words/s: 1.92 / 1.79 s; 1.92 / 1.79 s; 2.69 / 2.50 s; 3.46 / 3.
 
 ## 02c · Scoreboard · "What time your 9-to-5 starts paying you, by salary"
 
-**Spec:** `studio/specs/02c-scoreboard-salary-per-hour.json` · **13.0 s** · captions on
+**Spec:** `studio/specs/02c-scoreboard-salary-per-hour.json` · **13.0 s** · captions on · condensed cut (2026-10-13, not yet promoted): `studio/specs-wip/02c-scoreboard-salary-per-hour.json` · **7.6 s** + the 2.5 s end card
 
 *Ported from Clean Sheet to Scoreboard on 2026-10-08 (the old spec is `studio/specs/retired/02c-clean-sheet-salary-per-hour.json`). The hook, every number, every VO line, the footer and the verdict are unchanged, and so is `data`; only `id` and `look` changed. `lookOpts.verdictRow: 0` is kept, and the Scoreboard's find-your-row format now reads it, so the verdict lights the $200,000 row as in the Clean Sheet cut. See "Port to Scoreboard (2026-10-08)" in the Review log. The fix pass on the port (same day) added one pick label, "≈ 78 min of tax a day" on line 3 (78 is the row's own cell), and the $200,000 row now lights from the end of the VO, just before the verdict lands. See "Fix pass on the ports (2026-10-08)".*
 
@@ -341,7 +353,7 @@ Fit at 2.6 / 2.8 words/s: 1.92 / 1.79 s; 1.92 / 1.79 s; 2.69 / 2.50 s; 3.46 / 3.
 - **R7:** each row is a named salary; the spoken opener is the first calculation.
 - **R8:** 9 words.
 - **R9:** 12 countable rows.
-- **R10:** the biggest bite is first ($200,000: ≈ 11:03 am at 0.0 s); "$65,000?" is spoken at 0.0 s and the $65,000 row is lit (pointer, glow, the label in the strip) from 1.5 s, as "You work for tax till ≈ 10:18." starts ("≈ 10:18" at about 3.4 s).
+- **R10:** the biggest bite is first ($200,000: ≈ 11:03 am at 0.0 s); "$65,000?" is on screen at 0.0 s and the $65,000 row is lit (pointer, glow, the label in the strip) from 1.3 s (condensed cut; 1.5 s in the round-2 cut), as "You work for tax till ≈ 10:18." goes up.
 - **R11:** the verdict lands alone, after the last caption, and lights its own row.
 - **R12:** "$200,000: you work for tax till ≈ 11:03, every workday." (the board's top row, so the ending escalates). The comment line it invites: "I work for tax till 10:18."
 
@@ -349,29 +361,35 @@ Fit at 2.6 / 2.8 words/s: 1.92 / 1.79 s; 1.92 / 1.79 s; 2.69 / 2.50 s; 3.46 / 3.
 1. "My day pays me from 9 am." On average, 2026 federal tax + FICA take 16.3% of a $65,000 salary, which is ≈ 78 minutes of every 8-hour day: your day starts paying you at ≈ 10:18.
 2. "Tax takes the same share whatever you earn." The tax share rises row by row, from 12.4% at $30,000 to 25.5% at $200,000 (checked for every row), so the clock moves later as pay rises.
 
-### Beat sheet
+### Beat sheet (condensed cut, 2026-10-13: 7.6 s body + the 2.5 s end card = 10.1 s; was 13.0 + 2.5)
 
-| t (s) | On screen | VO (caption) |
+`studio/specs-wip/02c-scoreboard-salary-per-hour.json`. Every word, number and label and the verdict are the round-2 cut's; only the clock moved, plus one look option (`focus` 0.3).
+
+| t (s) | On screen | Caption |
 |---|---|---|
-| 0.0 | Header "WHAT TIME YOUR **9-TO-5** / STARTS PAYING YOU, BY SALARY" (Anton caps, "9-TO-5" neon green). Footer on one line under it: "Single · 2026 federal tax + FICA · no state tax". A dark leaderboard (no hero row): column heads "SALARY" · "TAX + FICA, / MINUTES A DAY" · "PAYING YOU / FROM" (emphasised, white with a green underline), Inter caps 40 px. All 12 salary keys on the board beside LED-off placeholders; row 1 "$200,000 · ≈ 123 MIN · ≈ 11:03 AM" filled, its clock in neon green. Rows at a ~55 px pitch (49 px bars), each in a rounded slot with a 2 px outline (the board is not in its dense, zebra-striped mode; alternate bars are a shade lighter), Anton 42 px cells with tabular digits. Strip under the board: "= 9:00 am + 480 min × (tax + FICA) ÷ salary" (Inter 40 px). | "$65,000?" |
-| 0.2-2.2 | Rows $150,000 → $30,000 fill top to bottom, one every 0.2 s: the values slide in, the bar wipes in, the clock lands green with a bump; a soft tick per row and a thud when the board is complete ($65,000 · ≈ 78 MIN · ≈ 10:18 AM at 1.2 s) | |
-| 1.5 | The pointer enters on the left margin to "$65,000 · ≈ 78 MIN · ≈ 10:18 AM": the row lights (green border, glow, tint) and the others dim; "≈ US MEDIAN FULL-TIME PAY" slams into the strip in the formula's place (58 px Anton) + swipe, ding | "You work for tax till **≈ 10:18**." ("≈ 10:18" at about 3.4 s) |
-| 4.7 | As line 3 starts, the $65,000 row is picked again: it stays lit, the pointer stays on it, its bar lifts and the others dim again; "≈ 78 MIN OF TAX A DAY" slams into the strip in place of the median label + swipe, ding. The label holds until the next pick, so from 1.5 s the strip runs "≈ US median" → "≈ 78 min" → "≈ 1 hr 40 min" → verdict | "That's ≈ 78 minutes a day." |
-| 7.4 | The pointer glides up to "$100,000 · ≈ 100 MIN · ≈ 10:40 AM", which lights; "≈ 1 HR 40 MIN OF TAX A DAY" slams into the strip + swipe, ding | "Six figures? Until **≈ 10:40**." |
-| 9.8-10.0 | As the VO ends (9.8 s) the pointer glides up to the top row and "$200,000 · ≈ 123 MIN · ≈ 11:03 AM" lights (`lookOpts.verdictRow: 0`, leading the verdict by 0.2 s) as the others dim; its clock's climax bump (1.13) peaks at about 9.95 s, so the row is lit and bumping as the verdict lands | (none) |
-| 10.0 | The strip drops away and the verdict "$200,000: YOU WORK FOR TAX TILL **≈ 11:03**, EVERY WORKDAY." slams into the strip and the caption band together (Anton 72 px, a green rule over it) + reveal, ding | (none) |
-| 10.0-13.0 | The finished board holds (the screenshot) with the $200,000 row lit, then a hard cut back to frame 1 for the loop | (none) |
+| 0.0 (frame 1, the thumbnail) | Header "WHAT TIME YOUR **9-TO-5** / STARTS PAYING YOU, BY SALARY" ("9-TO-5" neon green). Footer: "Single · 2026 federal tax + FICA · no state tax". The leaderboard: column heads "SALARY" · "TAX + FICA, / MINUTES A DAY" · "PAYING YOU / FROM", all 12 salary keys beside LED-off placeholders, row 1 "$200,000 · ≈ 123 MIN · ≈ 11:03 AM" filled, its clock in neon green. Strip: "= 9:00 am + 480 min × (tax + FICA) ÷ salary" | "$65,000?", complete on frame 1 (it starts at −0.4 s) |
+| 0.03-0.88 | Rows $150,000 → $65,000 fill top to bottom, one every 0.17 s (the first moves from frame 2; a tick each) | |
+| 1.3 | The pointer enters to "$65,000 · ≈ 78 MIN · ≈ 10:18 AM": the row lights and the others dim; "≈ US MEDIAN FULL-TIME PAY" slams into the strip in the formula's place + swipe, ding. With `lookOpts.focus` 0.3 the others ease back from 1.6 s | "You work for tax till **≈ 10:18**." (1.3-2.75) |
+| 1.75, 2.3 | Rows $60,000 and $50,000 fill | |
+| 2.8 | The $65,000 row is picked again: it stays lit, its bar lifts, the others dim again and ease back from 3.1 s; "≈ 78 MIN OF TAX A DAY" replaces the median label + swipe, ding | "That's ≈ 78 minutes a day." (2.8-4.55) |
+| 3.3, 3.9, 4.45 | Rows $40,000, $35,000 and $30,000 fill (a thud as the board completes) | |
+| 4.6 | The last caption goes up: the question first | "Six figures? Until **≈ 10:40**." (4.6-5.9) |
+| 4.85 | The pointer glides up to "$100,000 · ≈ 100 MIN · ≈ 10:40 AM", which lights (0.25 s into the caption); "≈ 1 HR 40 MIN OF TAX A DAY" slams in + swipe, ding; the others ease back from 5.15 s | |
+| 5.9-6.05 | As the caption ends the pointer glides up to the top row and "$200,000 · ≈ 123 MIN · ≈ 11:03 AM" lights (`lookOpts.verdictRow: 0`, leading the verdict by 0.15 s), the others dim, and its clock's climax bump peaks as the verdict lands | (none) |
+| 6.05 | The verdict "$200,000: YOU WORK FOR TAX TILL **≈ 11:03**, EVERY WORKDAY." slams into the strip and the caption band (72 px), alone, 1.2 s after the final pick, whose label held the strip until then (reveal, ding) | (none) |
+| 6.05-7.6 | The verdict holds 1.55 s on the finished board with the $200,000 row lit; the others ease back from 6.2 s (settled from about 6.8 s, the cover frame) | (none) |
+| 7.6-10.1 | The channel's end card (unchanged) | |
 
-### Guide VO script (23 spoken words as the check counts them, about 8.8 s of speech)
+### Captions (condensed cut: on-screen text, no narration; 19 words)
 
-| t | d | Caption text (spec) | Read it as |
+| t | d | Up (from frame 1) | Caption text (spec) |
 |---|---|---|---|
-| 0.0 | 1.45 | $65,000? | "Sixty-five thousand?" |
-| 1.5 | 3.1 | You work for tax till **≈ 10:18**. | "You work for tax till about ten eighteen." |
-| 4.7 | 2.6 | That's ≈ 78 minutes a day. | "That's about seventy-eight minutes a day." |
-| 7.4 | 2.4 | Six figures? Until **≈ 10:40**. | "Six figures? Until about ten forty." |
+| −0.4 | 1.65 | 0.0-1.25 s | $65,000? |
+| 1.3 | 1.45 | 1.3-2.75 s | You work for tax till **≈ 10:18**. |
+| 2.8 | 1.75 | 2.8-4.55 s | That's ≈ 78 minutes a day. |
+| 4.6 | 1.3 | 4.6-5.9 s | Six figures? Until **≈ 10:40**. |
 
-Fit at 2.6 / 2.8 words/s (the check also counts a spoken "dollars" after every $ figure and reads a clock time as two numbers, so it is stricter than the read): 1.15 / 1.43 s; 3.08 / 2.86 s; 2.31 / 2.50 s; 2.31 / 2.14 s. "Every workday" is said once, by the verdict.
+Each line is up at least max(1.2 s, 0.12 s a word), 0.05 s apart; the last goes up 0.25 s before its pick, as in 02b. Line 2 is up 1.45 s and line 3 1.75 s (1.6 and 1.6 before the fix pass): the second pick comes 0.15 s earlier, so the rows between the picks land at an even spacing and the board never holds near-still for 0.4 s. "Every workday" is said once, by the verdict.
 
 ### The maths
 
@@ -443,7 +461,7 @@ The 8-hour day is in the header ("9-to-5") and the footnote "= 9:00 am + 480 min
   - Expect "FICA isn't income tax", state tax and married-filing comments. That is the argument we want; the footer states the basis and the pinned comment answers it.
 - **YouTube Shorts.**
   - Title = the hook.
-  - Keep the hold on the finished sheet after the verdict (about 2.5 s before the loop clear): it is the screenshot.
+  - Keep the hold on the finished sheet after the verdict (1.55 s before the end card in the condensed cut): it is the screenshot.
 
 ---
 
@@ -463,6 +481,8 @@ The 8-hour day is in the header ("9-to-5") and the footnote "= 9:00 am + 480 min
 
 ## Open items
 
+- **Owner decision: a ~10 s "find your row".** The condensed cuts run 10.3 / 10.1 / 10.1 s with the card (bodies 7.8 / 7.6 / 7.6 s), about half the 06b/06c bodies (15.7-18.3 s). Nothing was dropped to get there: the removed time was the still runs and the narration-paced captions, and every beat, number and line is kept. A ~10 s looping lookup is a good retention shape, but it is a new length for the slate, so the owner should approve it knowingly before promotion. If longer is wanted, the levers are a 1.6 s verdict hold (+0.05-0.1 s) or a fourth pick (about +1.6 s each), not a still board.
+- **The condensed cuts (2026-10-13) are not promoted.** They sit in `studio/specs-wip/` with their renders in `/tmp/cond/02/<id>/`; `studio/specs/` and `renders/channel/` still hold the round-2 cuts. The ship step owns promotion and sound (the steps and the three sound failures to settle are in the review-log entries "Condensed cut (2026-10-13)" and "Condensed cut: fix pass (2026-10-13)"). On promotion these go stale and are outside this pass's files: `teasers/v2/teasers.json` (runtimes 10.3 / 10.1 / 10.1 s), `publishing/02{a,b,c}-*.{md,json}` (`for_video`, the cover frames, "177 checks"; the sheets re-pick their covers by content with `build_publishing.py <id> --covers`) and the files under `renders/`.
 - **Linter:** both kept kits mount and `node src/cli.mjs check` passes 02a (Becker Rig), 02b and 02c (Scoreboard) with 0 errors and 0 warnings (2026-10-08, after the fix pass on the ports; also at a 0.05 s sampling step). The Scoreboard's find-your-row samples and 02b render pixel-identical before and after the port's and the fix pass's format-file changes. The Becker Rig samples change with the fix pass (post, bracket, reference row, shelf formula) and stay lint-clean.
 - **Not changed by the port** (outside its files): `teasers.json`, `slate.json` and `renders/v2/` still list the retired ids and MP4s for 02a and 02c; the new MP4s are in `studio/out/`. The Becker Rig and Scoreboard READMEs do not yet document the new find-your-row options (`compare[].start`, `beats` and its value tap; `verdictRow` and its lead); each format file's header comment does.
 - **Slate overlap to decide (owner):** 02b now uses the same device as **10b** ("40 years of your pay vs 1 minute of new US debt", verdict "40 years of median pay: ≈ 33 seconds"): a whole working life set against a mega-rate clock. Both judges also flagged an echo of **10c** (Amazon's sales per second). 02b is a per-wage lookup table with a named person's plan; 10b is one median career against a national-debt counter. If only one should carry the device, 02b's runner-up ("1 second of the plan at your wage", 7.25) is ready in the Review log.
@@ -473,7 +493,7 @@ The 8-hour day is in the header ("9-to-5") and the footnote "= 9:00 am + 480 min
   - The mono footer wraps at 878 px, so a one-line footer longer than ~36 characters breaks where the width runs out; 02a's breaks between its clauses (`\n`), like the other Becker Rig specs.
   - `__…__` in a column label is red in this kit, and a `\n` in a label is a forced break, so 02a's labels are unchanged from the Live Sheet cut.
 - **Retired kits** (Live Sheet for 02a, Clean Sheet for 02c, until 2026-10-08): their notes are in the Review log (assembly and fix passes); the old specs are in `studio/specs/retired/`.
-- **Kit behaviour that shaped 02b:** in the Scoreboard kit, a pick at 0.0 s replaces the formula strip for the whole short (tested in round 2), so 02b's first pointer lands at 2.0 s. With 11 rows and a one-line footer the strip runs stacked: each pointer label sits over the formula, so the working "= wage × 2,080 × 40 ÷ $3,169/s" stays on screen until the verdict. A verdict that lands after the last VO line takes the strip and the caption band together (`formats/find-your-row.js`, via the chrome's `verdictSlot`), so it is set at about 84 px against the labels' 58 px.
+- **Kit behaviour that shaped 02b:** in the Scoreboard kit, a pick at 0.0 s replaces the formula strip for the whole short (tested in round 2), so 02b's first pointer lands at 2.0 s (1.3 s in the condensed cut). With 11 rows and a one-line footer the strip runs stacked: each pointer label sits over the formula, so the working "= wage × 2,080 × 40 ÷ $3,169/s" stays on screen until the verdict. A verdict that lands after the last VO line takes the strip and the caption band together (`formats/find-your-row.js`, via the chrome's `verdictSlot`), so it is set at about 84 px against the labels' 58 px.
 - **Kit behaviour that shaped 02c (Scoreboard, since the port):** with 12 rows, two-line column heads and a one-line footer, the board runs at a ~55 px pitch (outlined slots), and the strip is shared (`swap`): the formula first, each pick label as a hard cut in its place (held 2.5 s, after which the formula comes back only when it can stand 1.5 s before the next event; with the line-3 pick added in the fix pass it never can, so the labels run back to back from 1.5 s to the verdict). The verdict lands after the last VO line, so it takes the strip and the caption band together (72 px). Before the port the Scoreboard's find-your-row ignored `verdictRow`; it now reads it (a quiet pick that leads verdict.t by up to 0.25 s, from the end of the VO: the pointer glides to the row, it lights, the others dim and its emphasised cell lands a 1.13 climax bump as the verdict slams in; no label and no sound of its own), so 02c's ending still escalates through its top row.
 - For the music-only A versions, render the same spec with `"captions": false` (no other change).
 
@@ -694,3 +714,140 @@ QA judged the two ports against the finished teasers in their looks: 02a 7.5, 02
 - Stills were read at 0, 2.0-2.2 (frame by frame), 6.2-6.9, 8.9, 9.8, 10.2, 10.75, 11.2, 12.9 and the end for 02a, and at 0, 1.7, 4.75, 4.9, 7.5, 9.75, 9.85, 9.95, 9.97, 10.05, 10.1, 11 and the end for 02c.
 - MP4s: `studio/out/02a-becker-rig-3-a-day-by-age.mp4` (13.4 s, 402 frames, 21 SFX cues) and `studio/out/02c-scoreboard-salary-per-hour.mp4` (13.0 s, 390 frames, 19 SFX cues: the new pick adds a swipe and a ding). Frames pulled from the MP4s match the stills (02a at 6.45 and 11.2 s: 38.4 / 38.1 dB; 02c frame 180: 40.7 dB).
 
+
+### Condensed cut (2026-10-13): 02a, 02b, 02c
+
+**Owner's note:** "Too many still moments are a killer for a short. Condense the rest. The CTA (end card) is good." The 06c and 06b condensed cuts of 2026-10-12 are the precedent (`06-pov-race.md`, "Condensed cut" and "Opening hold fix and re-ship"), and their rules were applied here: keep the hook, every number, the verdict wording and the end card; frame 1 is the thumbnail, with the hook caption complete and something moving from frame 2; no still run of 0.4 s or more before the verdict hold; captions up at least max(1.2 s, 0.12 s a word); the verdict 0.8-1.5 s after the final reveal, held 1.2-1.6 s.
+
+**Files:**
+- New: `studio/specs-wip/02a-becker-rig-3-a-day-by-age.json`, `studio/specs-wip/02b-scoreboard-trillion-at-your-wage.json` and `studio/specs-wip/02c-scoreboard-salary-per-hour.json`, retimed copies of the round-2 specs.
+- Changed: this write-up (the three beat sheets and caption tables, the timings quoted elsewhere, Open items and this entry); `checks/02-find-your-row.py` (cut-aware, `--spec`); one opt-in kit option, `lookOpts.focus` in `studio/looks/scoreboard/formats/find-your-row.js`, documented in that file's header and in the find-your-row table of `studio/looks/scoreboard/README.md`.
+- Not touched: `studio/specs/*.json`, every other kit file (no `lib.js`, `theme.js`, `style.css`, `cta.js`, `kit.js`, no other format, nothing in Becker Rig), `studio/src/`, `studio/sound/` and the packs, `studio/test/`, `publishing/` and `renders/`. Renders are in `/tmp/cond/02/<id>/` only. Nothing is committed.
+
+**Kept, character for character:** the headers, footers and column labels, all 33 rows, the formulas, every pick label, the four caption lines of each teaser, the verdicts and their dings, 02a's measured pick (35 → 25, the gold plate on ≈ $240,000), its figure scale and the shrug and hop acts, 02c's verdict row, and the 2.5 s end card (the brand layer is untouched). Only the clock moved, plus 02a's acts and the Scoreboard boards' `focus`.
+
+**Measured before** (`renders/channel/`, the round-2 cuts plus the card). Method as for 06b/06c: frame difference at 270×480 (`tblend` difference → `signalstats` YAVG); a frame is still when YAVG < 0.15, near-still under 0.25.
+
+| | Still runs ≥ 0.4 s before the verdict | Verdict hold | Opening |
+|---|---|---|---|
+| 02a (15.9 s) | 5.17-6.23 (1.07 s: after the 25 pick, before the hop), 6.87-8.17 (1.30 s: after the hop, before the compare); near-still 9.33-9.93 and 10.13-10.70 in the bracket draw | 11.27-13.43 (2.17 s still; the verdict holds 2.7 s) | near-still 0.03-0.50 (only the nod), the hook caption typing in from 0.0 |
+| 02b (16.5 s) | 4.47-5.90 (1.43), 6.40-7.00 (0.60), 7.27-8.87 (1.60), 9.20-10.67 (1.47) | 10.97-14.03 (3.07 s; 3.3 s hold) | still 0.03-0.37 (0.33) until the first row lands |
+| 02c (15.5 s) | 2.33-3.37 (1.03), 3.70-4.70 (1.00), 4.97-5.67 (0.70), 5.70-6.57 (0.87), 6.90-7.40 (0.50), 7.67-8.33 (0.67), 8.37-9.27 (0.90) | 10.13-11.67 and 12.00-13.03 (3.0 s hold) | still 0.03-0.23 |
+
+The longest still before the verdict was 1.30 s (02a), 1.60 s (02b) and 1.03 s (02c). Each was a table that had finished filling while a narration-paced caption (2.0-3.5 s) played out over it, and each verdict held 2.7-3.3 s.
+
+| | Round-2 cut (02a / 02b / 02c) | 02a condensed | 02b condensed | 02c condensed | Why |
+|---|---|---|---|---|---|
+| Body / total | 13.4 / 15.9, 14.0 / 16.5, 13.0 / 15.5 s | **7.8 / 10.3 s** | **7.6 / 10.1 s** | **7.6 / 10.1 s** | The stills were the slack. At reading pace, with something landing every few tenths of a second, this is as short as the four captions and three picks allow |
+| Captions | narration-paced (2.0-3.5 s), 0.0-11.9 | **−0.4 / 1.45 / 3.05 / 4.7**, each 1.4-1.6 s up, 0.05 s apart; the verdict replaces the last at 6.3 | **−0.4 / 1.3 / 2.95 / 4.6**, up 1.25 / 1.6 / 1.6 / 1.3 s | same as 02b | The brief: up ≥ max(1.2 s, 0.12 s a word), back to back. vo[0] starts at −0.4 s, so the hook is complete on frame 1 (Becker Rig pre-types it; a Scoreboard line has finished its 0.14 s rise) |
+| Rows | `rowsT` 0, `rowEvery` 0.5 / 0.35 / 0.2: the table full by 4.5 / 3.5 / 2.2 s, then held | `rowT` [0, 0.22, 0.55, 0.85, 1.15, 1.85, 2.3, 3.5, 3.95, 4.4] | `rowT` [0, 0.03, 0.45, 0.9, 1.7, 2.2, 2.6, 3.4, 3.85, 4.25, 4.6] | `rowT` [0, 0.03, 0.2, 0.37, 0.54, 0.71, 0.88, 1.75, 2.45, 3.4, 4.05, 4.5] | Every row still lands top to bottom, and the board is complete before the final reveal, but the rows below the picks now land between them, so the fill is the motion between the picks. The first row after frame 1 lands at 0.03 s on the Scoreboard boards (moving from frame 2); in Becker Rig a row's key starts to brighten 0.2 s before it lands, so 02a's lands at 0.22 s and frame 1 stays clean |
+| Picks | 2.0, 4.9, 10.7 / 2.0, 4.2, 7.0 / 1.5, 4.7, 7.4 | **1.45, 3.05, 6.3** (the compare sets off at 4.7) | **1.3, 2.95, 4.9** | **1.3, 2.95, 4.9** | Each pick lands as its caption goes up; the last Scoreboard pick 0.3 s into its caption (the question reads first, the row lights on the answer) |
+| Verdict | 10.7 (with the plate) / 10.7 / 10.0 | **6.3**, with the plate, 1.2 s after the 35 row becomes the reference; held 1.5 s | **6.05**, alone 0.15 s after the last caption, 1.15 s after the final pick; held 1.55 s | same as 02b (the $200,000 row lights from 5.9) | The brief: 0.8-1.5 s after the final reveal, held 1.2-1.6 s |
+| `lookOpts` | 02a: shrug 0.25 (d 0.9), hop 6.2 (d 0.7), compare start 8.4, `figureScale` 0.82; 02b: none; 02c: `verdictRow: 0` | shrug **0.0** (d 0.6), hop **3.45** (d 0.6), compare start **4.7**; `figureScale` 0.82 | **`focus: 0.3`** (new) | `verdictRow: 0`, **`focus: 0.3`** | 02a: the shrug from frame 1 moves the frame from frame 2 and ends before the leap to row 18 (0.63 s); the hop fills the 25 row's hold. 02b/02c: see below |
+| `sfx` | ding at the verdict | ding at 6.3 | ding at 6.05 | ding at 6.05 | Same cue on the same beat. No gain changed |
+
+**Why a kit option, and only for Scoreboard.** In 02a the figure is the motion: it leaps, hops, acts the beats and draws the bracket, and spec knobs (`beats`, `compare.start`, `rowT`) were enough. A Scoreboard board has no figure. A pick moves for only about 0.3 s (the pointer glide, the row lighting, the label slam), a row landing for about 0.28 s, and under a lit pick the other rows sit dimmed at 0.5 for a fixed 1.6 s, so even with the rows interleaved the gap from the final pick to a late verdict was a still 0.47 s (02b draft: 5.07-5.53). The only spec-only fix was a verdict 0.7 s after the final pick, which would have left the $1,000/hr working on screen for 0.7 s. `lookOpts.focus` sets how long the other rows stay dimmed after a pick before they ease back (default 1.6 s, the old constant `FOCUS`). At 0.3 each pick is a brief spotlight: the board dims as the row lights and eases back over the next 0.8 s, which bridges the pick to the next row, the next pick or the verdict. No cue moves. **Default unchanged:** before and after the edit, the cue records (`node src/cli.mjs cues`) of `specs/02b-*.json`, `specs/02c-*.json` and both Scoreboard find-your-row samples are byte-identical, and so are their stills at 0, 2.0, 3.4, 4.75, 6.1, 6.5, 7.45, 9.9 s and the end (36 PNGs). One sample still at 3.4 s first came out differing in a single 1 px column; two re-renders of it with the new code both matched the old file byte for byte, so that was a one-off rendering glitch.
+
+**Iteration.**
+- 02c spec-only, default dim: the dimmed row landings (YAVG peaks 0.2) left near-still stretches of up to 1.27 s and a 0.70 s still between the last pick and the verdict row.
+- `dim` 0.7 and the last caption 0.3 s ahead of its pick: still runs ≤ 0.30 s in 02c, but 02b still had its 0.47 s gap after the final pick (above).
+- `focus` 0.3 (dim back at its default 0.5): no still run reaches 0.31 s before either verdict. `focus` 0.25 with an earlier row made 02c worse (a 0.40 s still at 2.57-2.97).
+- 02a: with its second row at 0.05 s, frame 1 showed the 20 row's values half fallen (the thumbnail); moved to 0.22 s.
+- A 1.3 s verdict hold on 02b/02c would land the end card on a beat (see the sound notes below), but it measured worse (02c: B8 −13.05 against −13; 125 Hz 0.3 against a floor of 2), so the hold stays 1.55 s.
+
+**Measured after** (`/tmp/cond/02/<id>/render/<id>.mp4`, same method):
+
+| | Before the verdict: still runs ≥ 0.2 s (none reaches 0.4) | Near-still (< 0.25) before the verdict, longest | Verdict hold, card | Frame 1 |
+|---|---|---|---|---|
+| 02a (verdict 6.3) | 2.00-2.23 (0.23), 4.10-4.37 (0.27) | 5.27-5.60 (0.33) | 6.87-7.83 still (the impact settles), card 9.03-10.30 | moving from 0.033 s (the shrug; YAVG 0.24) |
+| 02b (verdict 6.05) | 0.73-0.93, 3.23-3.43, 5.17-5.47 (0.30), 5.80-6.00 | 5.17-5.53 (0.37) | 6.30-7.63, card 9.10-10.10 | moving from 0.033 s (the $15 row; 0.17) |
+| 02c (verdict 6.05) | 2.20-2.47 (0.27), 2.73-2.97, 3.23-3.43, 3.83-4.07, 4.33-4.53, 5.17-5.47 (0.30) | 2.10-2.53 and 5.13-5.57 (0.43 each: a recovery's slow tail into a row landing, and the final pick's settle into its recovery) | 6.17-6.47 and 6.80-7.63 (the verdict row's dim eases back at 6.47-6.80), card 9.10-10.10 | moving from 0.033 s (the $150,000 row; 0.21) |
+
+The longest still before the verdict is now **0.27 s (02a), 0.30 s (02b) and 0.30 s (02c)** (was 1.30, 1.60 and 1.03 s). Nowhere does only a counter or a caption change: every near-still stretch is a row landing, a recovery easing or the figure settling.
+
+**Stills read** (`node src/cli.mjs stills`, 21-24 per teaser, every beat, plus 4 fps contact sheets): 02a at 0, 0.033, 0.3, 0.9, 1.45, 1.6, 2.0, 2.5, 3.05, 3.6, 4.4, 4.7, 5.1, 5.5, 6.0, 6.3, 6.6, 7.0, 7.79, 8.5 s and the end; 02b at 0, 0.033, 0.5, 1.0, 1.3, 1.45, 2.0, 2.95, 3.1, 3.6, 4.3, 4.6, 4.9, 5.05, 5.5, 5.9, 6.05, 6.3, 7.0, 7.59, 8.5 s and the end; 02c at 0, 0.033, 0.5, 0.9, 1.3, 1.45, 1.8, 2.45, 2.95, 3.1, 3.4, 4.05, 4.5, 4.6, 4.9, 5.05, 5.5, 5.9, 6.05, 6.3, 7.0, 7.59, 8.5 s and the end.
+- Frame 1 of each: the header, the footer, the first row with its number, the formula and the complete hook caption ("Just $3 a day?" with the figure's hand on his chin; "40 years at minimum wage?" over the lit $7.25 row; "$65,000?" over the $200,000 row and its ≈ 11:03 AM). Nothing is in mid-flight.
+- Every cell, pick label and verdict on screen matches the maths tables above. The held frames were read at full size (7.0 s): 02a's plate on ≈ $240,000 with the bracket from 35 and "≈ 2.2× the cost at 35"; 02b's $1,000/hr row and "EVEN $1,000/HR FOR 40 YEARS: ≈ 7.3 HOURS OF HIS."; 02c's $200,000 row and "$200,000: YOU WORK FOR TAX TILL ≈ 11:03, EVERY WORKDAY."
+- The labels in each strip land with their captions (02b: "$7.25/HR × 83,200 HRS = $603,200" at 1.3, "$20/HR …" at 2.95, "$1,000/HR …" at 4.9; 02c: "≈ US MEDIAN FULL-TIME PAY", "≈ 78 MIN OF TAX A DAY", "≈ 1 HR 40 MIN OF TAX A DAY"), and the end card is unchanged.
+- At a caption change a Becker Rig line pops its words in over about 0.2 s, and a Scoreboard line rises over 0.14 s, so a frame at exactly 1.45 / 1.3 s shows the band empty for a frame or two, as in the round-2 cuts.
+
+**Lint:** `node src/cli.mjs check` on the three WIP specs gives 0 errors and 0 warnings, also at `--every 0.05` (02a 10.3 s = 7.8 + 2.5 s end card; 02b and 02c 10.1 s = 7.6 + 2.5). `specs/02b`, `specs/02c` and both Scoreboard find-your-row samples are clean too after the kit change.
+
+**Render and sound:**
+- `render specs-wip/<id>.json --out /tmp/cond/02/<id>/render`: 02a 309 frames, 22 sfx; 02b and 02c 303 frames, 21 and 22 sfx.
+- `sound … --video /tmp/cond/02/<id>/render --out /tmp/cond/02/<id>/final --score`: each video md5 is identical (02a `8630880875de`, 02b `630769541c00`, 02c `2a71e3fa347f`). 02a: P 6.3 (verdict + hit), 12 beats at 114.286 BPM, then 3 beats at 120 (a 3-beat remainder) to base 7.8; sections HOOK, a 1-bar BUILD, TENSION and a 1-bar DROP, with no HOLD or CADENCE. 02b and 02c: P 6.05 (verdict), 14 beats at 138.843 BPM (a 2-beat pickup); HOOK 0-2.59 and TENSION 2.59-6.05, so there is **no BUILD**, then DROP 6.05-7.6. `pick(P, base)` finds no tempo for the 1.55 s from P to base (3 beats would be 116 BPM, 4 would be 155: both outside ±8%), so **base is left free**. The music holds the cadence chord until base, and the card does not land on a beat. BIBLE §2.3 says that "never happens with today's specs". 
+- `audit`: 02a −14.15 LUFS, TP −1.30, LRA 4.68, PLR 12.85; 02b −14.10, −1.36, 5.17, 12.73; 02c −14.17, −1.30, 5.60, 12.87; silence 0% in all three.
+
+**Verify** (`verify specs-wip/<id>.json --video /tmp/cond/02/<id>/final --detail`): **02a 39/42, 02b 41/42, 02c 41/42.** The units pass (Becker Rig and Scoreboard). The CUE DRIFT block (each record moved: duration, base, card t0 and the sfx list) and "baseline DIFFERS" are expected for a WIP cut. The failures:
+- **02a BANDS**: 250 Hz −2.5 dB re 1 kHz against a floor of 0 (2.5 under), and 2 kHz +0.6 against a ceiling of 0 (0.6 over). Likely cause, from `bandparts.mjs 02a` on fresh records against the fixture's: the music stem's 250 Hz octave fell from −0.3 to −3.2 (the bass's 250 Hz share went from −2.2 to −5.9), and the SFX stem's 2 kHz octave rose from −2.3 to −1.3. That is 22 cues in a 7.8 s body instead of 23 in 13.4 s, with the steps, pops, swipe, hit and ding crowding the reference band. This is the kind of reference-octave crowding BIBLE §6.7 item 4 handles for 06c, and the round-2 cut already sat on these octaves' edges (250 Hz +0.3, 2 kHz −0.1).
+- **02a B7**: the BUILD's second half is quieter than its first (edge −16.2 against −15.2 LUFS; centred −16.5 against −16.5). Likely cause: the BUILD is a single bar (2.1-4.2), so its E3 → E4 step (§2.5) has no second bar to land on.
+- **02a S8**: snare velocity SD 0.162 against a maximum of 0.15 (gated for Becker Rig). The shaker timing SD (2.32 ms) and the grid (0.051 ms) pass. Likely cause: with 12 beats to P there are few snare hits, so the written accents (the TENSION and DROP fills) weigh more in the SD.
+- **02b BANDS**: 125 Hz 1.7 against a floor of 2 (0.3 under) and 250 Hz −0.9 against 0 (0.9 under). **02c BANDS**: 125 Hz 1.0 (1.0 under) and 250 Hz −1.9 (1.9 under). Likely cause, from the same per-stem split on the Scoreboard pack (a scratch copy of `bandparts.mjs`'s method; no Scoreboard tool exists): the SFX stem now owns more of the 1 kHz reference (02b −2.2 against −3.4 for the round-2 cut; 02c −2.7 against −3.6), because the three swipe + ding pairs and the row ticks come about twice as densely. Meanwhile the music stem's low mids fell (02b 125 Hz 1.1 against 3.6 and 250 Hz −1.9 against 0.0; 02c 125 Hz 0.3 against 3.1 and 250 Hz −2.9 against −0.2). With no BUILD and a free base, the low pads and bass play for less of [0, base]. Scoreboard has no reference-octave rule, and its calibration was fitted on bodies of 13-46 s.
+- Every gated check, with its value and margin, is listed per teaser in the editor's report. The tightest passes: A5 PLR 12.85 / 12.73 / 12.87 against 13; B8 logo −12.71 / −12.81 / −12.77 LUFS against −13; A2 −1.30 / −1.36 / −1.30 dBTP against −1; S14 12 notes at once against 12, in all three. Nothing was changed in the packs, the calibration or `acceptance.json`; the ship step owns sound.
+
+**Check (`checks/02-find-your-row.py`):**
+- `--spec [KEY=]PATH` (repeatable) checks a spec in place of `studio/specs/<id>.json`. The default run is unchanged.
+- **Two cuts**, picked by length: the round-2 cut (13.4 / 14.0 / 13.0 s; what `studio/specs/` holds, `IN_SPECS`) and the condensed cut (`COND_A`, `COND_B`, `COND_C`, built from the round-2 strings by `cond_02a` and `cond_scoreboard`). Any other length is held to the condensed rules and fails the 6.5-9 s lane.
+- **New for the condensed cut** (`check_cond`): the lane; each caption up ≥ max(1.2 s, 0.12 s a word) from frame 1; captions back to back (gaps 0-0.2 s); the hook complete on frame 1 (Becker Rig: the last word settled by t = 0; Scoreboard: t ≤ −0.14); frame 1 clean and moving from frame 2; rows top to bottom and complete before the final reveal; each pick inside its caption (≤ 0.35 s in) and after its row, and the timed compare set off on its caption; the late verdict 0.15 s after the last caption (Scoreboard) or replacing it (02a); the verdict 0.8-1.5 s after the final reveal and held 1.2-1.6 s; 02a's shrug (from frame 1, over before the leap) and hop (inside line 3, before the compare); `focus` 0.25-0.5 and the verdict row's lead; and a proxy for the motion audit, built from the kits' motion windows (rows, picks, recoveries, the figure's moves and acts), which allows no gap of 0.4 s or more before the verdict (02a 0.21 s, 02b 0.25 s, 02c 0.25 s).
+- **Results:** **183 checks, 0 failed by default** (was 177: the new rows say which cut `studio/specs/` holds and compare the data fields); **216, 0 failed with `--spec` on the three WIP specs**. A scratch tree with the WIP specs in place of `studio/specs/` fails exactly the three "studio/specs/ holds the expected cut" rows until `IN_SPECS` is flipped to `"cond"` (then 216, 0 failed), and the round-2 specs pass through `--spec` from outside `studio/specs/` (183, 0 failed).
+- **Mutation test** (scratch copies in `/tmp/cond/02/mut/`): 14 of 14 caught, each with exit 1 and a named failure. Every one except the dropped verdict row (caught by the exact `lookOpts`) is also caught by a timing rule. The mutations: vo[0] at 0.0 (a type-on at frame 1); the hop moved into the compare; row 20 at 0.1 s (frame 1 not clean); a 3.0 s verdict hold; the shrug into the leap; a verdict 2.1 s after the final pick; no `focus`; a 1.0 s caption; the $1,000 row landing after its pick; 02c's bottom rows filled by 1.8 s (the old fast fill: the motion proxy fails); "≈ 10:19" in a caption; the last pick 0.7 s into its caption; `verdictRow` dropped; a 0.35 s caption gap.
+
+**To promote** (the ship step):
+1. Copy the three WIP specs over `studio/specs/` and set `IN_SPECS` to `"cond"` for each in the check (183 → 225 checks by default since the fix pass, checked on a scratch tree).
+2. Follow BIBLE §11.1 for the three moved records: refit Becker Rig's `MODEL` (§11.2) and re-measure the Scoreboard calibration; settle the three failures above (02a BANDS, B7 and S8; the 02b and 02c BANDS) at pack level; decide whether a free base is acceptable or the Scoreboard hold should become 1.3 s (3 beats). Then store the records, run `tempo-table --write`, `verify --strict-cues` and `npm test`, and add the bible status line.
+3. Ship by §11.5 from a picture folder that holds these renders (since the fix pass: `/tmp/cond/02/<id>/final/render/`; the round-1 renders named in this entry were replaced and deleted) and `renders/channel/` for the other 27.
+4. Then the publishing sheets (`build_publishing.py <id> --covers`; by content, the covers are the settled payoff frames: about 6.9-7.8 s in 02a, 6.35-7.6 s in 02b and 6.8-7.6 s in 02c) and `teasers/v2/teasers.json` (runtimes 10.3 / 10.1 / 10.1 s).
+
+**Open items:**
+- The three sound failures and the free base above are the ship step's.
+- 02c's verdict row dims the board again at 5.9 s, and the board eases back during the verdict hold (6.2-7.0 s). That is motion in the hold, not before it, and the board is settled from about 6.8 s (the cover frame).
+- The 06b/06c precedent kept bodies of 15.7-18.3 s; these bodies are 7.6-7.8 s because a lookup table has no race to run: four captions at reading pace, three picks and a 1.5 s verdict hold is the whole story. If the owner wants the full board on screen longer for finding one's row, the lever is the verdict hold (up to 1.6 s) or a fourth pick, not a still board.
+
+### Condensed cut: fix pass (2026-10-13): 02a, 02b, 02c
+
+The critic passed format 02 (02a 8, 02b 8, 02c 7) with no musts. It raised 7 shoulds: six sound items and 02b/02c's free base. It also raised 7 nits. Every picture item and every cheap nit is applied below. The sound items stay with the ship step, with this pass's measurements. The free base was the one sound item caused by the cut's timing, so it was tried and measured.
+
+**Files:**
+- Changed: the three WIP specs; `checks/02-find-your-row.py`; this write-up (the three beat sheets and caption tables, the (b) table, Open items and this entry); one line of the find-your-row table in `studio/looks/scoreboard/README.md` and the `focus` lines of the header comment in `studio/looks/scoreboard/formats/find-your-row.js`. Both now name the values the cuts use (02b 0.25, 02c 0.3). No code changed: the format file's diff against HEAD is still the round-1 `focus` option, and the committed 02b/02c cue records still equal `test/fixtures/cues.json`.
+- Not touched: `studio/specs/*.json`, `studio/src/`, `studio/sound/`, the packs, `acceptance.json`, `studio/test/`, `publishing/`, `renders/` and every other format and kit file. Renders are in `/tmp/cond/02/<id>/final/` only. Nothing is committed.
+
+| Severity | Critic's item | Resolution |
+|---|---|---|
+| should | 02a BANDS (250 Hz −2.5 against 0; 2 kHz +0.6 against 0) | **Ship step** (refit Becker's `MODEL`, §11.2, and the reference-octave rule, as for 06c). Unchanged by this pass: captions are not a sound cue, so 02a's master WAV is byte-identical to the condensed cut's (sha256 `08729f59e5dff70c…`). |
+| should | 02a B7 (one-bar BUILD: edge −16.2 against −15.2) | **Ship step**, unchanged. Moving P a beat later is not a picture option here: the verdict would land about 1.7 s after the reference row, outside the 0.8-1.5 s rule. |
+| should | 02a S8 (snare velocity SD 0.162 against 0.15) | **Ship step**, unchanged (shaker timing SD 2.32 ms and grid 0.051 ms pass). |
+| should | 02b BANDS | **Ship step.** After this pass's retime: 125 Hz 1.9 against a floor of 2 (0.1 under; was 1.7) and 250 Hz −0.8 against 0 (0.8 under; was −0.9). |
+| should | 02c BANDS | **Ship step.** 125 Hz 0.8 (1.2 under; was 1.0) and 250 Hz −2.0 (2.0 under; was −1.9). |
+| should | 02b/02c free base (no tempo fits the 1.55 s from P to base) | **Measured; base left free for the ship step to decide.** The cause is the cut's timing, so holds that fit 3 beats within ±8% of 138.843 BPM were built on the final pictures (render, `sound --score` and `verify` each; `/tmp/cond/02/var/`, since deleted). The base lands on a beat in each, but the gates get worse. At **1.35 s** (133.3 BPM, −4.0%): 02b BANDS 125 Hz 1.2 / 250 Hz −1.3, A2 −1.20 dBTP (0.20), A5 12.90 (0.10), B8 −12.87 (0.13); 02c BANDS 125 Hz 0.3 / 250 Hz −1.9, B8 −12.93 (0.07). At **1.4 s** (128.6 BPM, −7.4%), B8 **fails** in both (−13.62 and −13.58 against −13). Round 1's 1.3 s gave B8 −13.05 on 02c. A 1.6 s hold would be 4 beats at 150 BPM, +8.04%, just outside the window. So the hold stays 1.55 s. The choice between documenting a free base in the bible (§2.3 says it never happens) and changing the tempo picker stays with the ship step. |
+| should | Thin margins (A5, B8, A2, A1, S14) | Re-measured on the final builds (below). They are the ship step's to re-check after the refits. |
+| nit | 02a: line 4 states the verdict 1.6 s early | **Applied.** `vo[3]` is now "10 years younger?" (4.7-6.3), so "more than double" first appears with the verdict, the gold plate and the "≈ 2.2×" pill. The verdict wording is unchanged and keeps the question on its first line, so on screen the answer lands under the question. Caption words: 21 → 15. The check builds the condensed line from the round-2 line's first clause, and the write-up's caption table is updated. |
+| nit | 02a tempo jump +5.0% at P | **Ship step**, unchanged (114.286 → 120 BPM; the master is unchanged). |
+| nit | 02b/02c: the final pick's label up 1.15 s | **Applied.** The last pick is at **4.85** in both (0.25 s into its caption, question first), so its label is up 1.2 s and the verdict lands 1.2 s after it (in 0.8-1.5). New rule in the check, for every pick of every cut: its label is up at least max(1.2 s, 0.12 s a word) before the next pick or the verdict takes its place. `PICK_IN` (0.35 s) already admits 0.25. In 02b the earlier pick stretched the final pick's settle into a 0.43 s near-still (5.10-5.53, draft), so **02b's `focus` is now 0.25** (was 0.3). That brings it to 0.37 s and shortens the earlier recoveries' near-stills to 0.27 s. |
+| nit | 02c: two 0.43 s near-stills | **Applied, differently from the suggestion.** Landing the $50,000 row at 2.3 s on its own opened a 0.40 s still at 2.57-2.97 (drafts at 2.35 and 2.4 left a 0.43 s near-still at 2.53-2.97). Between picks 1 and 2 there are only two short row landings (each above YAVG 0.25 for about 0.1-0.25 s), so the near-still time just moves from one gap to the other. `focus` 0.4 made the final pick's settle a 0.40 s still. **What shipped:** pick 2 and its caption come at **2.8** (line 2 is up 1.45 s, line 3 1.75 s), the $50,000 row at **2.3**, and the bottom three rows at **3.3, 3.9, 4.45** (were 3.4, 4.05, 4.5). The longest near-still before the verdict is now 0.37 s (was 0.43, twice) and the longest still 0.30 s. |
+| nit | 02c: pick 2 repeats its caption | Not changed (the critic: not needed for this cut). If a later pass wants it, merging line 3 into pick 2's label is the lever. |
+| nit | ~10 s runtime | **Applied:** Open items now lists it as an owner decision, with the levers. |
+| nit | `--spec` KEY | **Applied.** KEY may be a/b/c, 02a/02b/02c or the full id. An unknown KEY, or a path whose stem is not an id, now names every valid KEY in the error. Tested: `--spec 02b-scoreboard-trillion-at-your-wage=PATH`, `02b=PATH` and `b=PATH` pass (196 checks); `x=PATH` and a renamed file exit 1 with the list. |
+
+**Results:**
+- **Lint:** `check` on the three WIP specs gives 0 errors and 0 warnings, also at `--every 0.05` (10.3 / 10.1 / 10.1 s = 7.8 / 7.6 / 7.6 + the 2.5 s card).
+- **Math check:** **183 checks, 0 failed** by default (unchanged) and **225, 0 failed** with `--spec` on the three WIP specs. The 9 new rows are the pick-label rule. On a scratch tree with the WIP specs as `studio/specs/`, exactly the three "holds the expected cut" rows fail until `IN_SPECS` is flipped; then 225, 0 failed. **Mutation test** (`/tmp/cond/02/mut/mut.py`): **18 of 18 caught**, each with exit 1 and a named failure. That is the round-1 14 plus four new ones: the old line 4 back on 02a (`vo[3]`); 02b's last pick back at 4.9 (its label up 1.15 s); 02c's verdict 0.05 s earlier (label up 1.15 s); `focus` 0.2.
+- **Stills read** (`stills`, plus frames pulled from the final MP4s):
+  - 02a at 0, 0.033, 4.6, 4.75, 4.9, 5.3, 5.8, 6.1, 6.25, 6.3, 6.45, 6.6, 7.0 and 7.79. "10 years younger?" alone over the walk to 35 and the bracket. The verdict's second line "It costs more than double." arrives with the gold plate on ≈ $240,000 and "≈ 2.2× the cost at 35" (complete by 6.45).
+  - 02b at 0, 0.033, 0.5, 1.3, 1.45, 1.6, 2.0, 2.95, 3.2, 3.6, 4.3, 4.6, 4.85, 5.0, 5.3, 5.9, 6.05, 6.3 and 7.0. "$1,000/HR × 83,200 HRS = $83,200,000" slams in at 4.85 and holds the strip until the verdict at 6.05.
+  - 02c at 0, 0.033, 0.5, 1.3, 1.45, 1.9, 2.3, 2.75, 2.8, 2.95, 3.3, 3.9, 4.45, 4.6, 4.85, 5.0, 5.5, 5.95, 6.05, 6.3 and 7.0. "$50,000 · ≈ 73 MIN · ≈ 10:13 AM" is landed by 2.75 under "You work for tax till ≈ 10:18.". "≈ 78 MIN OF TAX A DAY" takes the strip at 2.8. The bottom rows (≈ 10:08, ≈ 10:04, ≈ 9:59) are in by 4.6. "≈ 1 HR 40 MIN OF TAX A DAY" holds from 4.85 to the verdict. The $200,000 row lights at 5.95.
+  - Frame 1 of each final MP4 is unchanged: the header, the first row, the formula and the complete hook caption. Every cell and label matches the maths tables.
+- **Motion audit** of the final renders (`/tmp/cond/02/<id>/final/render/<id>.mp4`, the same video stream as the final MP4s; 270×480 `tblend` difference, YAVG < 0.15 still, < 0.25 near-still):
+
+| | Still runs ≥ 0.2 s before the verdict (none reaches 0.4) | Longest near-still before the verdict | Verdict hold, card | Frame 1 → 2 |
+|---|---|---|---|---|
+| 02a (verdict 6.3) | 2.00-2.23 (0.23), 4.10-4.37 (0.27) | 5.27-5.60 (0.33) | 6.87-7.83 still (the impact settles), card 9.03-10.30 | YAVG 0.24 (the shrug) |
+| 02b (verdict 6.05) | 0.73-0.93, 3.23-3.43, 5.13-5.37 (0.23), 5.70-6.00 (0.30) | 5.10-5.47 and 5.63-6.00 (0.37 each). Round 1, with the pick at 4.9, had 5.17-5.53 (0.37) and 5.73-6.00 (0.27), and the 4.85 draft at `focus` 0.3 had 5.10-5.53 (0.43). The gap before the verdict is the cost of the label's 1.2 s: 0.10 s longer, and still under 0.4 | 6.30-7.63, card 9.10-10.10 | 0.17 (the $15 row) |
+| 02c (verdict 6.05) | 2.57-2.80, 3.07-3.33 (0.27), 3.70-3.93, 4.17-4.47 (0.30), 5.13-5.43 (0.30) | 0.37: 2.43-2.80, 2.97-3.33, 3.60-3.97, 4.13-4.50 (were 0.43 at 2.10-2.53 and 5.13-5.57) | 6.17-6.57 near-still (0.40, the verdict row's dim easing back, inside the hold), 6.80-7.63 still, card 9.10-10.10 | 0.21 (the $150,000 row) |
+
+- **Render, sound and verify** (`render specs-wip/<id>.json --out …/final/render`; `sound … --video …/final/render --out …/final --score`, run twice: the MP4s are byte-identical; `verify … --video …/final --detail`). The units pass (Becker Rig 65/65, Scoreboard 68/68 + LOGO). The CUE DRIFT block (duration, base, card t0, the sfx count) and "baseline DIFFERS" are expected for a WIP cut.
+  - **02a: 39/42**, failing BANDS, B7 and S8 with the values above. Video md5 `3e22d951fbfd`, master sha256 `08729f59e5dff70c`. P 6.3 (verdict + hit), 114.286 then 120 BPM. Tightest passes: A5 PLR 12.85 (0.15 under 13), A1 master −14.07 (0.23), B8 −12.71 LUFS (0.29), A2 −1.30 dBTP (0.30), S14 12 of 12 notes (0). Every BANDS octave other than 250 and 2000 Hz is at least 1.4 dB inside (500 Hz +2.6 against 4).
+  - **02b: 41/42**, failing BANDS only. Video `49ed38be0862`, master `1180af167f2e5ed7`. P 6.05 (verdict), 138.843 BPM, base free. Tightest passes: B8 −12.82 (0.18), A5 12.73 (0.27), A1 master −14.01 (0.29), A2 −1.36 (0.36), S14 (0). BANDS 31.5 Hz −18.8 and 16 kHz −13.2 are 1.2 dB inside.
+  - **02c: 41/42**, failing BANDS only. Video `36a3cbb84663`, master `509d924ab8dbf82a`. P 6.05, 138.843 BPM, base free. Tightest passes: B8 −12.83 (0.17), A5 12.82 (0.18), A1 master −14.09 (0.21), A2 −1.36 (0.36), S14 (0), BANDS 31.5 Hz −19.4 (0.6 above its −20 floor).
+  - Every other gated check passes with at least 0.68 of margin in its own unit (02a A3 LRA 4.68 against 3-8 is the next tightest). The full lists are in each `final/verify.txt`.
+
+**To promote:** as in the round-1 entry, with 225 checks by default after the flip. The picture folder for §11.5 is `/tmp/cond/02/<id>/final/render/`. Covers, by content, are the settled payoff frames: about 6.9-7.8 s in 02a, 6.3-7.6 s in 02b and 6.8-7.6 s in 02c.

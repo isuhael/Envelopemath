@@ -1,0 +1,561 @@
+{
+  "id": "02b-scoreboard-trillion-at-your-wage",
+  "teaser": "02b Scoreboard, find-your-row: \"How fast Elon's $1 trillion pay plan earns your whole career's pay\"",
+  "prepared": "2026-10-13",
+  "for_video": {
+    "current_render": "renders/channel/02b-scoreboard-trillion-at-your-wage.mp4",
+    "current_duration_s": 16.5,
+    "current_sha256": "33ca241089a0de4b5a61effd21a215797d58b33bac5235a7b7f6358c02b3d2c0",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds on 2026-10-13: the pre-condense cut. The ship step rebuilds this file with --covers from the condensed cut.",
+    "cut": {
+      "name": "pre-condense (round-2 Scoreboard cut)",
+      "spec": "studio/specs/02b-scoreboard-trillion-at-your-wage.json",
+      "body_s": 14.0,
+      "card_s": 2.5,
+      "status": "in renders/channel on 2026-10-13; a condensed cut (timing only) is in progress",
+      "on_ship": "python3 publishing/tools/build_publishing.py 02b-scoreboard-trillion-at-your-wage --covers (re-picks the cover by content, re-exports both JPGs, refreshes for_video)"
+    }
+  },
+  "facts": {
+    "source": "teasers/v2/02-find-your-row.md section 02b; teasers/v2/checks/02-find-your-row.py: PASSED: all 183 checks on studio/specs/ (2026-10-13)",
+    "plan": "Tesla pay plan for Elon Musk worth up to $1 trillion in Tesla stock over the next decade if every target is hit, paid in tranches; approved by shareholders on 2025-11-06 with over 75% support (Reuters via Business Standard; Anadolu Agency; Malay Mail)",
+    "plan_clock": "10 × 365.25 × 24 × 3,600 = 315,576,000 s; $1,000,000,000,000 ÷ 315,576,000 = $3,168.81 a second ≈ $3,169 (about $11.4 million an hour): the maximum averaged evenly over 10 years, day and night",
+    "career": "wage × 2,080 hours a year × 40 years = wage × 83,200 hours; whole dollars, exact; before tax",
+    "rows": "$7.25 $603,200 ≈ 3.2 min; $15 $1,248,000 ≈ 6.6 min; $20 $1,664,000 ≈ 8.8 min; $25 $2,080,000 ≈ 10.9 min; $30 $2,496,000 ≈ 13.1 min; $40 $3,328,000 ≈ 17.5 min; $50 $4,160,000 ≈ 21.9 min; $75 $6,240,000 ≈ 32.8 min; $100 $8,320,000 ≈ 43.8 min; $500 $41,600,000 ≈ 3.6 hrs; $1,000 $83,200,000 ≈ 7.3 hrs",
+    "minimum_wage": "$7.25 an hour, the US federal minimum since 2009-07-24 (US Department of Labor; BLS)",
+    "caption_roundings": "the on-screen captions say '≈ 3 minutes' (3.173 min), 'under 9 minutes' (8.752) and '≈ 7 hours' (7.293 hrs); the rows and the verdict say ≈ 3.2 min and ≈ 7.3 hours",
+    "verdict": "Even $1,000/hr for 40 years: ≈ 7.3 hours of his"
+  },
+  "youtube": {
+    "titles_ranked": [
+      {
+        "rank": 1,
+        "title": "How Long Would It Take Elon Musk's $1 Trillion Pay Plan to Earn Your Whole Career's Pay?",
+        "vidiq_score": 98,
+        "chars": 88,
+        "note": "PICK. Top score. 'How long would it take … to earn' is the grammar of the search 'how long would it take to earn elon musk salary shorts' (3,963 a month), 'Elon Musk' is spelled out for search, and the rest is the video's own header ('$1 trillion pay plan', 'whole career's pay')."
+      },
+      {
+        "rank": 2,
+        "title": "How Long Would It Take Elon Musk's Pay Plan to Earn Your Whole Career's Pay? Find Your Wage",
+        "vidiq_score": 98,
+        "chars": 91,
+        "note": "Same score, 92 characters. It swaps '$1 Trillion' for the format's task; the trillion is the hook's object, so the pick keeps it."
+      },
+      {
+        "rank": 3,
+        "title": "40 Years at Your Wage vs Elon Musk's $1 Trillion Pay Plan: How Fast Does He Earn It?",
+        "vidiq_score": 95,
+        "chars": 84,
+        "note": "The versus framing; 'How Fast Does He Earn It' reads as his pay, not the plan's maximum."
+      }
+    ],
+    "titles_also_scored": [
+      {
+        "title": "How Long Would It Take Elon Musk's Pay Plan to Earn Your 40-Year Salary? Find Your Wage",
+        "vidiq_score": 98,
+        "chars": 87,
+        "note": "'salary' for an hourly wage"
+      },
+      {
+        "title": "How Long Would It Take Elon Musk's $1 Trillion Pay Plan to Earn Your 40-Year Pay?",
+        "vidiq_score": 97,
+        "chars": 81,
+        "note": ""
+      },
+      {
+        "title": "How Fast Does Elon Musk's $1 Trillion Pay Plan Earn Your Whole Career's Pay? #ElonMusk #Tesla #money",
+        "vidiq_score": 94,
+        "chars": 100,
+        "note": "the house 3-hashtag form, exactly 100 chars"
+      },
+      {
+        "title": "How Fast Elon's $1 Trillion Pay Plan Earns Your Whole Career's Pay",
+        "vidiq_score": 93,
+        "chars": 66,
+        "note": "the write-up's title"
+      },
+      {
+        "title": "How Fast Does Elon Musk's $1 Trillion Pay Plan Earn Your Whole Career's Pay?",
+        "vidiq_score": 93,
+        "chars": 76,
+        "note": ""
+      },
+      {
+        "title": "Your Whole Career's Pay vs Elon Musk's $1 Trillion Pay Plan, by Wage",
+        "vidiq_score": 92,
+        "chars": 68,
+        "note": ""
+      }
+    ],
+    "title_pick": "How Long Would It Take Elon Musk's $1 Trillion Pay Plan to Earn Your Whole Career's Pay?",
+    "title_pick_chars": 88,
+    "description": "How long would it take Elon Musk's $1 trillion Tesla pay plan to earn your whole career's pay? At the $7.25 federal minimum wage, 40 years of pay is $603,200: the plan's average earns that in about 3.2 minutes. Even at $1,000 an hour, 40 years ($83,200,000) takes it about 7.3 hours.\n\nThe math, shown:\n• The plan: up to $1 trillion in Tesla stock over the next decade, if every target is hit. Spread evenly over 10 years, day and night (315,576,000 seconds): ≈ $3,169 a second, about $11.4 million an hour.\n• Your career: your wage × 2,080 hours a year × 40 years = your wage × 83,200 hours, before tax.\n• $7.25/hr: $603,200 ≈ 3.2 minutes of the plan.\n• $20/hr: $1,664,000 ≈ 8.8 minutes. Under 9.\n• $100/hr: $8,320,000 ≈ 43.8 minutes.\n• $1,000/hr: $83,200,000 ≈ 7.3 hours.\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\n\nAnimation and original sound: The Back of the Envelope. In Nov 2025, Tesla shareholders approved a pay plan that could give Elon Musk up to $1 trillion in Tesla stock over the next decade, paid in tranches only if targets are hit (Reuters; Anadolu Agency). ≈ $3,169 a second is that maximum averaged evenly over 10 years of 365.25 days, 24 hours a day: stock, not cash, and not a forecast. $7.25 is the US federal minimum wage, in force since July 2009 (US Department of Labor). Not financial advice. Not affiliated with or endorsed by Tesla or Elon Musk.\n#ElonMusk #Tesla #MinimumWage",
+    "description_chars": 1437,
+    "hashtags_in_order": [
+      "#ElonMusk",
+      "#Tesla",
+      "#MinimumWage"
+    ],
+    "hashtag_rules": "Title hashtags show as links in the title; with none in the title, the first 3 description hashtags show above it. Over 60 hashtags and YouTube ignores all of them. #Shorts is not needed (vertical, under 3 min).",
+    "tags": [
+      "elon musk",
+      "elon musk trillion dollar pay package",
+      "tesla shareholders approve $1 trillion pay package for elon musk",
+      "elon musk 1 trillion",
+      "how long would it take to earn elon musk salary",
+      "how much does elon musk make per minute",
+      "how much money does elon musk make per second",
+      "tesla",
+      "minimum wage",
+      "money math",
+      "math animation",
+      "the back of the envelope",
+      "envelope math"
+    ],
+    "tags_chars_as_youtube_counts": 375,
+    "pinned_comment": "Which row is yours? Your 40-year career is 83,200 hours (2,080 a year × 40), before tax.\n\nIt's Tesla stock, paid in tranches only if targets are hit, so ≈ $3,169 a second is the plan's $1 trillion maximum averaged over 10 years (315,576,000 seconds): about $11.4 million an hour.",
+    "related_video": {
+      "pick": {
+        "id": "hJBvmGA6sZ0",
+        "title": "You Can Lean on $1 Million. Not on $1 Billion.",
+        "url": "https://www.youtube.com/shorts/hJBvmGA6sZ0",
+        "why": "The same viewer intent, the scale of a fortune in something you can picture; it is the channel's second-best October Short (1,221 views). Live since Thu 8 Oct 2026, 00:25 ET."
+      },
+      "swap_when_live": "02a or 02c, the other find-your-row tables, once published; then point theirs at this Short.",
+      "end_screen": "Shorts have no end screens or cards. The Related video link is the Shorts equivalent."
+    },
+    "thumbnail_frame": "In the YouTube app, pick the finished-board frame (the same content as the IG cover).",
+    "settings": {
+      "category": "Education",
+      "audience": "Not made for kids",
+      "altered_or_synthetic_content": "No (animated chart, not realistic footage)",
+      "remixing": "Allow",
+      "captions": "None needed (no narration; all text is on screen)"
+    },
+    "posting_window": {
+      "when": "First Tue-Thu evening after the 02b condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+      "spacing": "Keep it at least 6 h from any other upload on the channel, and post one find-your-row teaser (02a, 02b, 02c) per evening. Keep it at least a few days from 10b: the write-up flags that 10b uses the same device (40 years of your pay against a mega-rate clock).",
+      "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,198 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2). 06c (Mon 03:45 ET) had 760 views by 13 Oct; 06b (Mon 12:14 ET, the day before) had 61. The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. There is no news peg: the plan was approved in Nov 2025, and 'elon musk' searches are flat (-3.9%)."
+    },
+    "description_utf8_bytes": 1466
+  },
+  "instagram": {
+    "caption": "Find your wage: how long would Elon Musk's $1 trillion pay plan take to earn your whole 40-year career's pay?\n\nYour career: your wage × 2,080 hours a year × 40 years = your wage × 83,200 hours, before tax. The plan: up to $1 trillion in Tesla stock over the next decade if every target is hit, spread evenly over 10 years, day and night: ≈ $3,169 a second.\n\nThe math, shown:\n• $7.25/hr (the federal minimum): $603,200 ≈ 3.2 minutes of the plan.\n• $20/hr: $1,664,000 ≈ 8.8 minutes.\n• $100/hr: $8,320,000 ≈ 43.8 minutes.\n• $1,000/hr: $83,200,000 ≈ 7.3 hours.\n\nEven $1,000 an hour for 40 years: ≈ 7.3 hours of his.\n\nWhy a trillion? In Nov 2025, Tesla shareholders approved a pay plan that could give Elon Musk up to $1 trillion in Tesla stock over the next decade, if every target is hit. It's stock, paid in tranches, not cash, and ≈ $3,169 a second is that maximum averaged. Not financial advice. Not affiliated with or endorsed by Tesla or Elon Musk.\n\nWhich row is yours?\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\nAnimation and original sound: The Back of the Envelope.\n\n#elonmusk #tesla #minimumwage #moneyfacts #personalfinance",
+    "caption_chars": 1165,
+    "caption_first_125": "Find your wage: how long would Elon Musk's $1 trillion pay plan take to earn your whole 40-year career's pay?\n\nYour career: y",
+    "caption_rule": "The first 125 characters are the task ('Find your wage') and the question, with the 'Elon Musk', '$1 trillion pay plan' and 'career' keywords and no result: the caption overlays the Reel from frame 1, so every result sits below 'more'.",
+    "hashtags_in_order": [
+      "#elonmusk",
+      "#tesla",
+      "#minimumwage",
+      "#moneyfacts",
+      "#personalfinance"
+    ],
+    "hashtag_rule": "Instagram caps a post at 5 hashtags (since Dec 2025).",
+    "alt_text_short": "Table: how long Elon Musk's $1 trillion pay plan takes to earn 40 years of your pay, by wage.",
+    "alt_text_long": "Animation on a black scoreboard. Header: Elon's $1 trillion pay plan earns your whole career's pay in… Footer: plan max ÷ 10 years, 24/7; you: 40 years × 2,080 hours. 11 rows, a wage on each, from the $7.25 federal minimum to $1,000 an hour: 40 years of that pay, and how long the plan's average (about $3,169 a second) takes to earn it. A pointer lights $7.25 an hour: $603,200, about 3.2 minutes. Then $20 an hour: $1,664,000, about 8.8 minutes. Then $1,000 an hour: $83,200,000, about 7.3 hours. Verdict: even $1,000 an hour for 40 years: about 7.3 hours of his.",
+    "alt_text_where": "Advanced settings → Accessibility → Alt text, if your app shows it for Reels.",
+    "cover": {
+      "files": {
+        "3x4": "publishing/02b-scoreboard-trillion-at-your-wage-cover-3x4.jpg",
+        "9x16": "publishing/02b-scoreboard-trillion-at-your-wage-cover-9x16.jpg"
+      },
+      "frame_in_current_render_s": 11.0,
+      "frame_index": 330,
+      "frame_by_content": "The finished board with the $1,000/hr row lit, which the write-up names as the Instagram cover ('the completed table, with the $1,000/hr row lit'): the header 'ELON'S $1 TRILLION PAY PLAN / EARNS YOUR WHOLE CAREER'S PAY IN…', the footer, all 11 wage rows from $7.25/hr to $1,000/hr with their 40-year pay and their time, the pointer and glow on '$1,000/HR · $83,200,000 · ≈ 7.3 HRS', and the verdict 'EVEN $1,000/HR / FOR 40 YEARS: / ≈ 7.3 HOURS OF HIS.' in the strip. Use the first settled frame after the verdict lands, before the end card.",
+      "frame_measured": "On the pre-condense 16.5 s render the verdict slams in at 10.67 s (frame 320) and settles by 10.97 s (frame 329); from there the mean frame-to-frame luma change (270×480 greyscale) stays at or under 0.007 until the end card cuts in at 14.03 s. The cover is taken at 11.0 s (frame 330), inside that hold.",
+      "crop": "3:4 = 1080×1440 from y 76 to 1516 of the 1080×1920 frame. The content runs from y 141 (the badge) to y 1452 (the verdict's last line), so the crop centres it: badge, header, footer, the whole board and the verdict; it drops the empty black floor. A centred grid crop (y 240-1680) loses the badge and leaves the header on the top edge.",
+      "how_to_set": "In 'Edit cover', pick the finished-board frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header and the verdict.",
+      "re_export": "ffmpeg -ss 11.0 -i renders/channel/02b-scoreboard-trillion-at-your-wage.mp4 -frames:v 1 -vf \"crop=1080:1440:0:76\" -q:v 2 publishing/02b-scoreboard-trillion-at-your-wage-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 11.0 -i renders/channel/02b-scoreboard-trillion-at-your-wage.mp4 -frames:v 1 -q:v 2 publishing/02b-scoreboard-trillion-at-your-wage-cover-9x16.jpg"
+    },
+    "first_comment": "At $7.25 an hour, 40 years of pay ($603,200) takes the plan ≈ 3.2 minutes. At $1,000 an hour, ≈ 7.3 hours. Which row is yours?",
+    "first_comment_action": "Post it right after publishing and pin it.",
+    "trial_reels": {
+      "recommendation": "Post as a regular Reel, not a Trial.",
+      "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
+      "use_trial_for": "A version test afterwards, if you want one: the same spec rendered with \"captions\": false (the write-up says the music-only cut with the pointer labels works on this look, as HD Guy's Shorts run). It is not in renders/channel, so it needs a studio render first. Post it as a Trial with MANUAL graduation 48-72 h later and compare skip rate (October Reels ran 27.0-65.1%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+    },
+    "settings": {
+      "audio": "Rename the original audio to 'Your career vs a $1 trillion pay plan — The Back of the Envelope' if the app allows; it is the score, with no voice.",
+      "share_to_feed": "On",
+      "google_indexing": "Public professional-account posts can appear in Google/Bing since 10 Jul 2025, so the caption is written as a searchable question."
+    },
+    "posting_window": {
+      "when": "Same evening as YouTube, about 15 min after the Short: 21:45-22:45 ET.",
+      "why": "October Reels, median plays by posting slot (owner insights, 2026-10-13): weekday 22:00-00:30 ET 5,449 (n = 3, including the two best: 7,302 and 5,449), weekday midday 1,212 (n = 2), Sunday 05:00-08:00 ET 1,087 (n = 2). Skip rate tracks plays more closely than the hour does: 27.0-27.4% for the top two, 56.9-65.1% for the bottom two. The best of them, '$1M stack vs Burj Khalifa' (5,449 plays, 27.0% skip), is the same big-number scale as this Reel."
+    },
+    "alt_text_rule": "Paste the short version into Instagram: it is kept at or under 100 characters so it fits the field however short it is, and it writes 'about' instead of '≈' so screen readers read it cleanly. The long version is for anywhere with room (a website embed, a newsletter)."
+  },
+  "research": {
+    "keywords_youtube": [
+      {
+        "keyword": "elon musk (topic)",
+        "est_monthly_searches": 1516854,
+        "volume": 92.3,
+        "competition": 58.6,
+        "overall": 71.9,
+        "note": "-3.9% vs its 30-day baseline (1,578,257)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "tesla (topic)",
+        "est_monthly_searches": 1116464,
+        "volume": 90.3,
+        "competition": 57.2,
+        "overall": 71.3,
+        "note": "-10.0% vs its baseline (1,240,321)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "minimum wage",
+        "est_monthly_searches": 11780,
+        "volume": 60.8,
+        "competition": 61.0,
+        "overall": 52.1,
+        "note": "-33.9% vs its baseline (17,822)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "how much does elon musk make per minute",
+        "est_monthly_searches": 5322,
+        "volume": 55.6,
+        "competition": 36.9,
+        "overall": 58.6,
+        "note": "the per-time framing",
+        "metrics_as_of": "2026-06-04"
+      },
+      {
+        "keyword": "elon musk 1 trillion",
+        "est_monthly_searches": 5270,
+        "volume": 55.6,
+        "competition": 51.0,
+        "overall": 52.9,
+        "note": "-0.8% vs its baseline (5,310); much of it may now be his reported net worth, not the plan",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "how much does elon musk make in a day?",
+        "est_monthly_searches": 4831,
+        "volume": 55.0,
+        "competition": 36.5,
+        "overall": 58.4,
+        "note": "",
+        "metrics_as_of": "2026-09-30"
+      },
+      {
+        "keyword": "how much money does elon musk make per second?",
+        "est_monthly_searches": 4824,
+        "volume": 55.0,
+        "competition": 52.0,
+        "overall": 52.2,
+        "note": "",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "why elon musk has no salary",
+        "est_monthly_searches": 4407,
+        "volume": 54.4,
+        "competition": 38.0,
+        "overall": 57.4,
+        "note": "base-salary intent, not a tag",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "how long would it take to earn elon musk salary shorts",
+        "est_monthly_searches": 3963,
+        "volume": 53.7,
+        "competition": 40.8,
+        "overall": 55.9,
+        "note": "the title's grammar",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "elon musk trillion dollar pay package",
+        "est_monthly_searches": 3720,
+        "volume": 53.3,
+        "competition": 50.5,
+        "overall": 51.8,
+        "note": "seed: the exact topic",
+        "metrics_as_of": "2026-08-22"
+      },
+      {
+        "keyword": "tesla shareholders approve $1 trillion pay package for elon musk",
+        "est_monthly_searches": 3660,
+        "volume": 53.2,
+        "competition": 58.0,
+        "overall": 48.7,
+        "note": "the news event (Nov 2025)",
+        "metrics_as_of": "2026-02-25"
+      },
+      {
+        "keyword": "spacex elon musk pay package",
+        "est_monthly_searches": 3378,
+        "volume": 52.7,
+        "competition": 56.0,
+        "overall": 49.2,
+        "note": "another company's plan, not a tag",
+        "metrics_as_of": "2026-05-30"
+      }
+    ],
+    "keywords_source": "vidIQ keyword research (research and matching_terms modes), pulled 2026-10-13. vidIQ refreshes each keyword on its own schedule, so each row carries its snapshot date in metrics_as_of; five rows are older snapshots (2026-02-25 to 2026-09-30).",
+    "same_idea_youtube_shorts": [
+      {
+        "title": "How rich is Elon Musk ACTUALLY!! #shorts #interestingfacts",
+        "channel": "Think Witus",
+        "subscribers": 164000,
+        "views": 3775532,
+        "published": "2025-10-22",
+        "note": "net worth, 23 s"
+      },
+      {
+        "title": "how much money does Elon Musk make?",
+        "channel": "Finance Data",
+        "subscribers": 3110,
+        "views": 721054,
+        "published": "2023-09-26",
+        "note": "16 s; about 232× the channel's subscribers"
+      },
+      {
+        "title": "🤯 $1 TRILLION PAYDAY! 💰 Elon Musk's Historic Tesla Stock Compensation Approved by Shareholders! 🚀",
+        "channel": "Manish Talks",
+        "subscribers": 2280,
+        "views": 1242,
+        "published": "2025-11-07",
+        "note": "its description gives $2,784 a second from an $878 billion net figure; ours is the $1 trillion maximum ÷ 10 years (not checked here)"
+      },
+      {
+        "title": "Tesla VP Said ONE Sentence… Elon Made $1 Trillion. 😳",
+        "channel": "The Wade Report",
+        "subscribers": 7140,
+        "views": 1104,
+        "published": "2025-11-13"
+      },
+      {
+        "title": "Elon Musk’s $1 Trillion Paycheck! #shorts #viral #fyp",
+        "channel": "Money Mechanics with Nash",
+        "subscribers": 1350,
+        "views": 337,
+        "published": "2025-10-02",
+        "note": "2:19 long"
+      },
+      {
+        "title": "Elon Musk is a Trillionaire",
+        "channel": "Thomas Mulligan",
+        "subscribers": 2150000,
+        "views": 7599420,
+        "published": "2026-06-13",
+        "note": "net worth after a reported SpaceX listing, not the pay plan"
+      }
+    ],
+    "same_idea_note": "vidIQ YouTube search (under 4 min; by views and by relevance since Sep 2025): pay-plan Shorts are news reads at 337-1,242 views; the re-pricing ones travel (721,054 and 3,775,532); none prices the plan in the viewer's career. Musk's reported trillionaire net worth (June 2026) dominates the topic and is not verified here.",
+    "instagram_tiktok_outliers": [
+      {
+        "handle": "@money_reel",
+        "platform": "TikTok",
+        "id": "7680121852244610335",
+        "on_screen": "Making $300 A Second, Jeff Bezos Pays His $1,000 Illegal Fence Fine In 4 Seconds.",
+        "views": "1.5M (3,333.3x the account median of 450)",
+        "note": "a billionaire's per-second rate set against a small sum, 8 s, music only"
+      },
+      {
+        "handle": "@rich.empire769",
+        "platform": "TikTok",
+        "id": "7676168327663766815",
+        "on_screen": "Jeff Bezos spends $25 million a year to keep his superyacht afloat, except he earns that in JUST 3 HOURS",
+        "views": "464.6K (175.9x)",
+        "note": "the same 'he earns it in' grammar, 7 s, music only"
+      },
+      {
+        "handle": "@plumbriteservices",
+        "platform": "Instagram",
+        "id": "DdUs982T_zd",
+        "on_screen": "Billionaires' sallary in minutes:",
+        "views": "866.3K (36.6x the account median of 23.7K)",
+        "note": "billionaire earnings in minutes beside a tradesman's pay, music only"
+      },
+      {
+        "handle": "@histainment",
+        "platform": "Instagram",
+        "id": "Db5ZL90ywEo",
+        "on_screen": "If you have a $1 net worth, you are closer to the 2nd richest person on earth than he is to Elon.",
+        "views": "661.2K (86.2x)",
+        "note": "Musk's wealth re-priced against 'you', a static graphic, music only"
+      }
+    ],
+    "own_channel_youtube_october_shorts": [
+      {
+        "id": "LjHDFzVxRyM",
+        "title": "Can You Find the Missing Dollar?",
+        "posted_et": "Sun 07:04",
+        "views": 1254
+      },
+      {
+        "id": "hJBvmGA6sZ0",
+        "title": "You Can Lean on $1 Million. Not on $1 Billion.",
+        "posted_et": "Thu 00:25",
+        "views": 1221
+      },
+      {
+        "id": "XVUeMcTg9OQ",
+        "title": "Your Interest Has a Speed Limit",
+        "posted_et": "Sun 05:49",
+        "views": 1141
+      },
+      {
+        "id": "fbpdKf4Wy8c",
+        "title": "What If You Bought Starbucks Stock Instead of a $4 Latte Every Day? (06c)",
+        "posted_et": "Mon 03:45",
+        "views": 760
+      },
+      {
+        "id": "8__HTUa2PoU",
+        "title": "Pay the Minimum on $5,000? 238 Months.",
+        "posted_et": "Mon 22:09",
+        "views": 642
+      },
+      {
+        "id": "FW_oxA3kbsM",
+        "title": "A $2 Lottery Ticket Was Worth $6.98. Until the Fine Print.",
+        "posted_et": "Wed 12:03",
+        "views": 348
+      },
+      {
+        "id": "mXbKY_R63h4",
+        "title": "You Can Carry $1 Million. Not in Pennies.",
+        "posted_et": "Thu 13:38",
+        "views": 177
+      },
+      {
+        "id": "EqFQCJheCMU",
+        "title": "Start Investing 10 Years Late? You Get Half.",
+        "posted_et": "Tue 22:27",
+        "views": 161
+      },
+      {
+        "id": "krfZEHhb0xU",
+        "title": "What If You Bought Netflix Stock Instead of Paying for Netflix? (06b)",
+        "posted_et": "Mon 12:14",
+        "views": 61
+      }
+    ],
+    "own_channel_instagram_october_reels": [
+      {
+        "shortcode": "DeIvYk7I4Qr",
+        "topic": "$5,000 on the minimum",
+        "posted_et": "Mon 22:46",
+        "plays": 7302,
+        "skip_rate_pct": 27.4,
+        "avg_watched_pct": 56.5
+      },
+      {
+        "shortcode": "DeOEthJJ1TG",
+        "topic": "$1M stack vs Burj Khalifa",
+        "posted_et": "Thu 00:28",
+        "plays": 5449,
+        "skip_rate_pct": 27.0,
+        "avg_watched_pct": 83.1
+      },
+      {
+        "shortcode": "DeWgFZRoR_S",
+        "topic": "Missing dollar",
+        "posted_et": "Sun 07:05",
+        "plays": 1997,
+        "skip_rate_pct": 32.0,
+        "avg_watched_pct": 81.3
+      },
+      {
+        "shortcode": "DeMvZv9IqRw",
+        "topic": "Powerball $6.98",
+        "posted_et": "Wed 12:05",
+        "plays": 1825,
+        "skip_rate_pct": 58.7,
+        "avg_watched_pct": 57.9
+      },
+      {
+        "shortcode": "DeYuqT4pjVC",
+        "topic": "06c latte vs Starbucks stock",
+        "posted_et": "Mon 03:46",
+        "plays": 1711,
+        "skip_rate_pct": 40.3,
+        "avg_watched_pct": 69.1
+      },
+      {
+        "shortcode": "DePe11HIHwn",
+        "topic": "$1M in pennies",
+        "posted_et": "Thu 13:37",
+        "plays": 598,
+        "skip_rate_pct": 42.0,
+        "avg_watched_pct": 66.7
+      },
+      {
+        "shortcode": "DeLSd9io8UK",
+        "topic": "10 years late",
+        "posted_et": "Tue 22:30",
+        "plays": 219,
+        "skip_rate_pct": 65.1,
+        "avg_watched_pct": 30.6
+      },
+      {
+        "shortcode": "DeEW2ZMIiYd",
+        "topic": "Speed limit (e)",
+        "posted_et": "Sun 05:54",
+        "plays": 177,
+        "skip_rate_pct": 56.9,
+        "avg_watched_pct": 31.2
+      }
+    ],
+    "channel_stats": {
+      "youtube_subscribers": 53,
+      "youtube_views": 10221,
+      "youtube_videos": 41,
+      "youtube_30d": "+27 subscribers, +5,127 views, 11 videos",
+      "instagram_followers": 8,
+      "instagram_30d_views": 20518
+    },
+    "limits": [
+      "vidIQ's YouTube authorization is a different channel (UCRC5v_El2fibbkqsZs6uFjA), so @envelopemath's YouTube Analytics (audience hours, geography) were not readable. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
+      "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and on the outliers' own tags.",
+      "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
+      "The render in renders/channel is the pre-condense cut. The cover's time and frame are measured on it; the copy names no other timestamp, and the ship step re-picks the cover on the final file.",
+      "Musk's reported trillionaire net worth after a SpaceX listing (June 2026) comes only from third-party video titles and descriptions; it is not verified here and is not in the copy.",
+      "dol.gov and the Reuters original could not be opened in the write-up's research (the proxy blocks dol.gov); the plan and the minimum wage rest on the write-up's named sources."
+    ],
+    "adjacent_youtube_outliers": [
+      {
+        "title": "What if everyone got $1 billion? 😳",
+        "channel": "Mark Tilbury",
+        "subscribers": 9200000,
+        "views": 37854551,
+        "published": "2025-09-25"
+      },
+      {
+        "title": "Billionaires Are Crying Today! Elon Musk is NOW 1st EVER 'Trillionaire' After Spacex IPO #shorts",
+        "channel": "FactTechz",
+        "subscribers": 21600000,
+        "views": 5682014,
+        "published": "2026-06-15",
+        "note": "net worth, not the pay plan; India-facing"
+      }
+    ],
+    "write_up_benchmarks": "HD Guy, 'Cost in Units of RTX 5090': 30,617,461 (62.49x) and 'F-16 Afterburner Fuel Cost in Real Time': 28,289,823 (110.85x) (H01, H02 in the write-up; not re-pulled here).",
+    "titles_scored": "9 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored."
+  },
+  "checked": {
+    "date": "2026-10-13",
+    "by": "adversarial check of this sheet",
+    "math": "python3 teasers/v2/checks/02-find-your-row.py: PASSED: all 183 checks on studio/specs/ at the adversarial check (2026-10-13; all 177 checks at the first build, before the condense pass made the check cut-aware), and all 216 checks with --spec on the condensed cuts in studio/specs-wip/; run by the builder through publishing/data/checks/02-find-your-row.py; every public figure traced to the 02b maths table and recomputed in MATH_RELATIONS (the plan's $3,168.81 a second, wage × 83,200), each row's figures pinned beside their wage (COPY_RULES)",
+    "limits": {
+      "youtube_title_chars": 88,
+      "youtube_description_chars": 1437,
+      "youtube_description_utf8_bytes": 1466,
+      "youtube_tags_chars_as_youtube_counts": 375,
+      "youtube_hashtags": 3,
+      "instagram_caption_chars": 1165,
+      "instagram_hashtags": 5,
+      "instagram_alt_text_short_chars": 93
+    },
+    "vidiq_requeried": "pulled 2026-10-13: elon musk 1,516,854 (-3.9%); elon musk trillion dollar pay package 3,720 / 50.5; how long would it take to earn elon musk salary shorts 3,963 / 40.8; 9 titles scored: pick 98, write-up's title 93; channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,518 views in 30 days. Re-scored at the end of the build: the pick 98. Re-queried at the adversarial check: the pick's title score 98; 'how long would it take to earn elon musk salary' has one matching term, the 'shorts' one, 3,963 / 40.8; channel 53 / 10,221 / 41; the related Short hJBvmGA6sZ0 1,222 views (1,221 at the build), published 04:25 UTC 8 Oct (Thu 00:25 ET), title hashtags #moneyfacts #billion #Animation. All match."
+  }
+}

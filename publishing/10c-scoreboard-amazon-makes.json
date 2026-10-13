@@ -1,0 +1,506 @@
+{
+  "id": "10c-scoreboard-amazon-makes",
+  "teaser": "10c Scoreboard, cost-counter: \"How long do you work for 1 second of Amazon's profit?\"",
+  "prepared": "2026-10-13",
+  "for_video": {
+    "current_render": "renders/channel/10c-scoreboard-amazon-makes.mp4",
+    "current_duration_s": 33.5,
+    "current_sha256": "261e3e9f0b47f4ec20aa25057b764ed0de055ed9acc7c52c569e411322c8a929",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the pre-condense cut. The ship step re-runs the build with --covers on the condensed file.",
+    "cut": {
+      "name": "pre-condense cut (Scoreboard port and fixer pass, 2026-10-08)",
+      "spec": "studio/specs/10c-scoreboard-amazon-makes.json",
+      "body_s": 31.0,
+      "card_s": 2.5,
+      "shipped": null,
+      "git": "471c793",
+      "status": "the 10 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay); no 10 WIP spec was in studio/specs-wip/ at this build. The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."
+    }
+  },
+  "facts": {
+    "source": "teasers/v2/10-cost-counter.md section 10c; teasers/v2/checks/10-cost-counter.py: 1005 checks, 0 failed on studio/specs/ (2026-10-13)",
+    "basis": "Amazon's 2025 net income of $77.7 billion (GAAP, its Q4 2025 results release, February 2026; the same figures in a press-release copy and an independent report), spread evenly over a 365-day year of 31,536,000 seconds",
+    "rate": "$77.7B ÷ 31,536,000 = $2,463.85 a second ≈ $2,464 (to the dollar, the write-up's one rounding, because the swap-in rule divides by it)",
+    "pay": "median full-time pay $1,251 a week (BLS Q2 2026); a year of it × 52 = $65,052; half a year $32,526 (6 months, exact)",
+    "answers": "1 second: $2,463.85 ÷ $1,251 = 1.97 ≈ 2 weeks; 5 seconds: $12,319.25 ≈ $12,319, ÷ $1,251 = 9.85 ≈ 10 weeks; half a year ($32,526) passes at 13.20 s ≈ 13 seconds; a year ($65,052) at 26.40 s ≈ 26 seconds",
+    "swap_in": "2,464 ÷ your weekly pay = weeks of your work per second of Amazon's profit (median: $2,464 ÷ $1,251 = 1.97 ≈ 2)",
+    "stop": "the counter stops on exactly $65,052 (k × 26.4026 = $65,052.07), so the final carries no '≈'",
+    "assumptions": "an average rate (profit is seasonal and lumpy); 'profit' = GAAP net income for the full year as Amazon reports it; the weeks are gross median pay, before tax",
+    "verdict": "A year of median pay: ≈ 26 seconds."
+  },
+  "youtube": {
+    "titles_ranked": [
+      {
+        "rank": 1,
+        "title": "How Long Would You Have to Work for 1 Second of Amazon's Profit?",
+        "vidiq_score": 98,
+        "chars": 64,
+        "note": "PICK. Top score of the 9 scored, 10 points over the write-up's title (88) with the same question: 'Would You Have to' only makes it a hypothetical. It carries 'Amazon's profit' ('amazon profit' 3,398 searches a month) and the header's own '1 second'. No hashtags in the title; the description's first three show above it."
+      },
+      {
+        "rank": 2,
+        "title": "How Much Profit Does Amazon Make Every Second? How Long Do You Work for It?",
+        "vidiq_score": 97,
+        "chars": 75,
+        "note": "One point lower at 75 characters, and it carries the searched question ('how much money does amazon make every second?', 4,651 a month at competition 25.0). Its first question's answer (≈ $2,464) is on screen from frame 1, so it gives nothing away; the fallback if search matters more than the shorter title."
+      },
+      {
+        "rank": 3,
+        "title": "1 Second of Amazon's Profit: How Long Would You Have to Work for It?",
+        "vidiq_score": 97,
+        "chars": 68,
+        "note": "The same question with the stake first (68 characters)."
+      }
+    ],
+    "titles_also_scored": [
+      {
+        "title": "Amazon Makes a Profit Every Second. How Long Do You Work for 1 Second of It?",
+        "vidiq_score": 89,
+        "chars": 76,
+        "note": ""
+      },
+      {
+        "title": "How Long Do You Work for 1 Second of Amazon's Profit?",
+        "vidiq_score": 88,
+        "chars": 53,
+        "note": "the write-up's title and the on-screen header"
+      },
+      {
+        "title": "How Long Do You Work for 1 Second of Amazon's Profit? #Amazon #MoneyMath #Profit",
+        "vidiq_score": 88,
+        "chars": 80,
+        "note": "the house 3-hashtag form"
+      }
+    ],
+    "title_pick": "How Long Would You Have to Work for 1 Second of Amazon's Profit?",
+    "title_pick_chars": 64,
+    "description": "How long would you have to work for 1 second of Amazon's profit? About 2 weeks, at median full-time pay. Amazon kept $77.7 billion in 2025: about $2,464 a second. A year of median pay goes by in about 26 seconds.\n\nThe math, shown:\n• Amazon's 2025 net income: $77.7 billion.\n• ÷ 31,536,000 seconds in a year ≈ $2,464 a second.\n• Median full-time pay is $1,251 a week (BLS): $2,464 ÷ $1,251 ≈ 2 weeks of work per second.\n• 5 seconds: ≈ $12,319, ≈ 10 weeks of median pay.\n• Half a year of median pay, $32,526: ≈ 13 seconds.\n• A year of it, $1,251 × 52 = $65,052: ≈ 26 seconds.\n• Yours: 2,464 ÷ your weekly pay = your weeks per second.\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\n\nAnimation and original sound: The Back of the Envelope. Profit: Amazon's net income for full-year 2025 (GAAP, as Amazon reports it), from its Q4 2025 results (February 2026), spread evenly over a 365-day year; profit is seasonal and lumpy, so this is the year's average rate. Pay: BLS median usual weekly earnings of full-time wage and salary workers, Q2 2026 (gross, before tax). Not financial advice. Not affiliated with or endorsed by Amazon.\n#Amazon #Profit #MoneyMath",
+    "description_chars": 1183,
+    "hashtags_in_order": [
+      "#Amazon",
+      "#Profit",
+      "#MoneyMath"
+    ],
+    "hashtag_rules": "Title hashtags show as links in the title; with none in the title, the first 3 description hashtags show above it. Over 60 hashtags and YouTube ignores all of them. #Shorts is not needed (vertical, under 3 min).",
+    "tags": [
+      "amazon profit",
+      "amazon profit per second",
+      "how much money does amazon make every second",
+      "how much does amazon make every minute",
+      "how much does amazon make",
+      "amazon net income",
+      "amazon 2025",
+      "amazon",
+      "profit per second",
+      "median pay",
+      "weeks of work",
+      "salary",
+      "money math",
+      "math animation",
+      "the back of the envelope",
+      "envelope math"
+    ],
+    "tags_chars_as_youtube_counts": 328,
+    "pinned_comment": "How many weeks is yours? 2,464 ÷ your weekly pay = weeks of your work per second of Amazon's profit. Median ($1,251): ≈ 2.\n\nThe $77.7 billion is Amazon's net income for 2025, as Amazon reports it, not its sales, spread evenly over the year. The weeks are median full-time pay before tax.",
+    "related_video": {
+      "pick": {
+        "id": "fbpdKf4Wy8c",
+        "title": "What If You Bought Starbucks Stock Instead of a $4 Latte Every Day? #Starbucks #LatteFactor #stocks",
+        "url": "https://www.youtube.com/shorts/fbpdKf4Wy8c",
+        "why": "06c, live since Mon 12 Oct 2026 and the channel's best-performing brand Short (760 views): a household brand's money set against the viewer's own, the same move as this Short."
+      },
+      "swap_when_live": "10a (US debt interest vs your salary), the same Scoreboard counter on a salary ladder, once published; then point 10a's Related video at this Short.",
+      "end_screen": "Shorts have no end screens or cards. The Related video link is the Shorts equivalent."
+    },
+    "thumbnail_frame": "In the YouTube app, pick frame 1, the question frame: the header, the $0 odometer, the ladder of profit targets with no answer yet, and the caption 'How long do you work for this?'. The Instagram cover is the finished board with the verdict instead.",
+    "settings": {
+      "category": "Education",
+      "audience": "Not made for kids",
+      "altered_or_synthetic_content": "No (animated chart, not realistic footage)",
+      "remixing": "Allow",
+      "captions": "None needed (no narration; all text is on screen)"
+    },
+    "posting_window": {
+      "when": "First free Tue-Thu evening after the condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+      "spacing": "Keep it at least 6 h from any other upload on the channel, and on a different evening from 10a and 10b. Suggested order within the series: 10c, then 10a, then 10b.",
+      "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,198 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2); 06c (Mon 03:45 ET) has 760 and 06b (Mon 12:14 ET) 75, too young to compare. The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. 10c goes first of the three: it waits on no data decision (10a waits for fiscal 2026's interest figure), it is not about the federal debt (so 10a and 10b can be spaced a week apart after it), and its question is searched as people type it ('how much money does amazon make every second?', 4,651 a month). Its figure is dated full-year 2025, so a newer Amazon report does not make it wrong."
+    },
+    "description_utf8_bytes": 1215
+  },
+  "instagram": {
+    "caption": "How long would you have to work for 1 second of Amazon's profit? Amazon's profit counter starts at $0 the moment you hit play.\n\n1 second of Amazon's profit ≈ 2 weeks of median full-time pay.\n\nThe math, shown:\n• Amazon kept $77.7 billion in 2025 (net income).\n• ÷ 31,536,000 seconds in a year ≈ $2,464 a second.\n• Median full-time pay is $1,251 a week (BLS): $2,464 ÷ $1,251 ≈ 2 weeks of it per second.\n• 5 seconds: ≈ $12,319, ≈ 10 weeks.\n• Half a year of median pay, $32,526: ≈ 13 seconds.\n• A year of it, $1,251 × 52 = $65,052: ≈ 26 seconds.\n\nYours: 2,464 ÷ your weekly pay.\n\nSource: Amazon's Q4 2025 results (February 2026); pay: BLS, gross. The year's average rate: profit is seasonal and lumpy. Not financial advice. Not affiliated with or endorsed by Amazon.\n\nHow many weeks is yours?\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\nAnimation and original sound: The Back of the Envelope.\n\n#amazon #profit #salary #moneymath #personalfinance",
+    "caption_chars": 976,
+    "caption_first_125": "How long would you have to work for 1 second of Amazon's profit? Amazon's profit counter starts at $0 the moment you hit play",
+    "caption_rule": "The first 125 characters are the title's question, the 'Amazon's profit' keywords and the counter's $0 start, no result: the caption overlays the Reel from frame 1, so the rate, every answer and the verdict sit below 'more'.",
+    "hashtags_in_order": [
+      "#amazon",
+      "#profit",
+      "#salary",
+      "#moneymath",
+      "#personalfinance"
+    ],
+    "hashtag_rule": "Instagram caps a post at 5 hashtags (since Dec 2025).",
+    "alt_text_short": "Chart: 1 second of Amazon's 2025 profit, about $2,464, is about 2 weeks of median full-time pay.",
+    "alt_text_long": "Animation on a black scoreboard. The header asks: how long do you work for 1 second of Amazon's profit? A green counter starts at $0 and climbs at about $2,464 a second: Amazon's 2025 net income, $77.7 billion, spread over the year. A ladder of targets turns into answers in weeks of median full-time pay ($1,251 a week): 1 second, about $2,464, is about 2 weeks; 5 seconds, about $12,319, about 10 weeks; $32,526, at about 13 seconds, is 6 months. The counter stops on exactly $65,052 as a coin grows to fill the stage. Payoff: a year of median pay: about 26 seconds.",
+    "alt_text_where": "Advanced settings → Accessibility → Alt text, if your app shows it for Reels.",
+    "cover": {
+      "files": {
+        "3x4": "publishing/10c-scoreboard-amazon-makes-cover-3x4.jpg",
+        "9x16": "publishing/10c-scoreboard-amazon-makes-cover-9x16.jpg"
+      },
+      "frame_in_current_render_s": 30.0,
+      "frame_index": 900,
+      "frame_by_content": "The finished board with the verdict, as the write-up's Instagram note asks: the header 'HOW LONG DO YOU WORK FOR / 1 SECOND OF AMAZON'S PROFIT?', the odometer on '$65,052', the 2-line footer 'Amazon 2025 net income: $77.7B / Pay: BLS median $1,251 a week × 52', the ladder reading '≈ 2 weeks · ≈ 10 weeks · 6 months · 1 year' beside the big lit coin, and the two-line verdict 'A YEAR OF MEDIAN PAY: / ≈ 26 SECONDS.' with nothing under it. The hook's own answer (≈ 2 weeks) is the ladder's bottom row. On any cut, use a settled frame of the verdict hold, after the last caption clears and before the end card.",
+      "frame_measured": "On the pre-condense 33.5 s render the counter lands on $65,052 with the verdict at about frame 792 (26.4 s); the coin's growth and glow settle by about frame 823 (27.43 s), the last caption clears at frame 845 (28.17 s), and the board then holds still (frame-to-frame mean luma change under 0.001) until the end card at about frame 931 (31.03 s). Frame 900 (30.00 s) is used.",
+      "crop": "3:4 = 1080×1440 from y 0 to 1440 of the 1080×1920 frame: the badge (from y 141), the header, the odometer, the footer, the ladder and the coin, and the verdict (to y 1293), with 141 px above and 147 px below; it drops the empty black below. A centred grid crop (y 240-1680) cuts the badge and the header.",
+      "how_to_set": "In 'Edit cover', pick the verdict frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
+      "re_export": "ffmpeg -ss 30.0 -i renders/channel/10c-scoreboard-amazon-makes.mp4 -frames:v 1 -vf \"crop=1080:1440:0:0\" -q:v 2 publishing/10c-scoreboard-amazon-makes-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 30.0 -i renders/channel/10c-scoreboard-amazon-makes.mp4 -frames:v 1 -q:v 2 publishing/10c-scoreboard-amazon-makes-cover-9x16.jpg"
+    },
+    "first_comment": "2,464 ÷ your weekly pay = weeks of your work per second of Amazon's profit. Median ($1,251): ≈ 2. Yours?",
+    "first_comment_action": "Post it right after publishing and pin it.",
+    "trial_reels": {
+      "recommendation": "Post as a regular Reel, not a Trial.",
+      "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show 471c793:renders/channel/10c-scoreboard-amazon-makes.mp4 > 10c-33.5s.mp4` (sha256 261e3e9f…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+    },
+    "settings": {
+      "audio": "Rename the original audio to '1 second of Amazon's profit — The Back of the Envelope' if the app allows; it is the score, with no voice.",
+      "share_to_feed": "On",
+      "google_indexing": "Public professional-account posts can appear in Google/Bing since 10 Jul 2025, so the caption is written as a searchable question."
+    },
+    "posting_window": {
+      "when": "Same evening as YouTube, about 15 min after the Short: 21:45-22:45 ET, on a different evening from 10a and 10b.",
+      "why": "October Reels, median plays by posting slot (owner insights, 2026-10-13): weekday 22:00-00:30 ET 5,449 (n = 3, including the two best: 7,303 and 5,449), weekday midday 1,212 (n = 2), Sunday 05:00-08:00 ET 1,087 (n = 2). 06c, posted Mon 03:46 ET, has 1,711 plays with a 40.3% skip rate. Skip rate tracks plays more closely than the hour does: 27.0-27.4% for the top two, 56.9-65.1% for the bottom two. The condense matters more than the hour."
+    },
+    "alt_text_rule": "Paste the short version into Instagram: it is kept at or under 100 characters so it fits the field however short it is, and it writes 'about' instead of '≈' so screen readers read it cleanly. The long version is for anywhere with room (a website embed, a newsletter)."
+  },
+  "research": {
+    "keywords_youtube": [
+      {
+        "keyword": "amazon profit",
+        "est_monthly_searches": 3398,
+        "volume": 52.7,
+        "competition": 44.5,
+        "overall": 53.8,
+        "note": "seed: the exact topic",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "how much does amazon make every minute?",
+        "est_monthly_searches": 5275,
+        "volume": 55.6,
+        "competition": 36.0,
+        "overall": 58.9,
+        "note": "the same per-time question, in minutes",
+        "metrics_as_of": "2026-07-21"
+      },
+      {
+        "keyword": "how much money does amazon make every second?",
+        "est_monthly_searches": 4651,
+        "volume": 54.7,
+        "competition": 25.0,
+        "overall": 62.8,
+        "note": "the video's question as people type it; low competition",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "how much money does amazon actually make per order?",
+        "est_monthly_searches": 4113,
+        "volume": 54.0,
+        "competition": 23.9,
+        "overall": 62.8,
+        "note": "",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "amazon",
+        "est_monthly_searches": 873376,
+        "volume": 88.7,
+        "competition": 64.6,
+        "overall": 67.4,
+        "note": "+4.2% vs its 30-day baseline (837,907); the brand",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "amazon stock",
+        "est_monthly_searches": 34058,
+        "volume": 67.7,
+        "competition": 37.6,
+        "overall": 65.6,
+        "note": "+69.3% vs its baseline (20,117); stock intent, and no share price in this Short: not in the tags",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "amazon web services",
+        "est_monthly_searches": 27004,
+        "volume": 66.2,
+        "competition": 57.5,
+        "overall": 56.7,
+        "note": "+48.1%; the segment the 'AWS makes all the profit' comment names",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "jeff bezos",
+        "est_monthly_searches": 198267,
+        "volume": 79.1,
+        "competition": 71.0,
+        "overall": 59.0,
+        "note": "-25.4%; a person the write-up does not name: not in the copy or tags",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "personal finance",
+        "est_monthly_searches": 1436792,
+        "volume": 91.9,
+        "competition": 60.0,
+        "overall": 71.1,
+        "note": "-18.1% vs its baseline (1,754,064); the broad layer",
+        "metrics_as_of": "2026-10-12"
+      }
+    ],
+    "keywords_source": "vidIQ keyword research (research and matching_terms modes), pulled 2026-10-13. vidIQ refreshes each keyword on its own schedule, so each row carries its snapshot date in metrics_as_of; one row is an older snapshot (2026-07-21).",
+    "same_idea_youtube_shorts": [
+      {
+        "title": "How Much Money Amazon Warehouse Employees Make",
+        "channel": "Caleb Hammer",
+        "subscribers": 3970000,
+        "views": 4590278,
+        "published": "2025-03-20",
+        "note": "46 s; the pay side of Amazon, the other half of this Short"
+      },
+      {
+        "title": "America Spends $222,000+ Per Second…",
+        "channel": "The Iced Coffee Hour",
+        "subscribers": 1660000,
+        "views": 810279,
+        "published": "2025-12-15",
+        "note": "24 s; the per-second framing, on federal spending (22.32x)"
+      },
+      {
+        "title": "How much Amazon earns in 1 Minute #shorts #mangeshshinde",
+        "channel": "Mangesh Shinde Shorts",
+        "subscribers": 1300000,
+        "views": 401502,
+        "published": "2024-10-21",
+        "note": "India-facing; revenue, in rupees"
+      },
+      {
+        "title": "How Companies Make $1,000,000 In SECONDS! 😱💸",
+        "channel": "SnipStory",
+        "subscribers": 4220,
+        "views": 203086,
+        "published": "2026-10-04",
+        "note": "41 s; 6.97x"
+      },
+      {
+        "title": "Amazon makes $22,700 every second 🤯💸 #amazon #money #shorts",
+        "channel": "Dollar Clock",
+        "subscribers": 0,
+        "views": 32,
+        "published": "2026-10-10",
+        "note": "revenue per second (2025), not profit; its own figure, not verified here"
+      },
+      {
+        "title": "💰 Biggest Companies’ Revenue Per Second 🤯",
+        "channel": "PerSecond World",
+        "subscribers": 0,
+        "views": 1,
+        "published": "2026-10-12",
+        "note": "2:43; revenue"
+      }
+    ],
+    "same_idea_note": "vidIQ YouTube search and outliers (Shorts; under 4 min): company-money-per-time is a proven idea ('How much Amazon earns in 1 Minute', 401,502; 'How Companies Make $1,000,000 In SECONDS!', 203,086), always as revenue (the figures are theirs, not verified here). None uses profit or answers in weeks of the viewer's pay; Caleb Hammer's Amazon-pay Short (4,590,278) shows the pay side draws too.",
+    "instagram_tiktok_outliers": [
+      {
+        "handle": "@money_reel",
+        "platform": "TikTok",
+        "id": "7680121852244610335",
+        "on_screen": "Making $300 A Second, Jeff Bezos Pays His $1,000 Illegal Fence Fine In 4 Seconds.",
+        "views": "1.5M (3333.3x the account median of 450)",
+        "note": "a fortune re-priced per second against a cost; the per-second figure is the creator's, not verified here, and this Short names no person"
+      },
+      {
+        "handle": "@xsfund",
+        "platform": "Instagram",
+        "id": "DbwHHaJDFwT",
+        "on_screen": "Jeff Bezos knows his giant fence is illegal",
+        "views": "953.1K (45.6x the account median of 20.9K)",
+        "note": "the same per-second story, stock footage with text"
+      },
+      {
+        "handle": "@cbseveningnews",
+        "platform": "TikTok",
+        "id": "7680209016575872286",
+        "on_screen": "U.S. CORPORATE PROFITS",
+        "caption": "Corporate profits are at record highs while workers’ share of national income has fallen to historic…",
+        "views": "1M (18.5x the account median of 53.9K)",
+        "note": "profit set against pay, as a news chart"
+      },
+      {
+        "handle": "@tc_theinvestor",
+        "platform": "Instagram",
+        "id": "DcbkMr_APWP",
+        "on_screen": "The number of hours needed to escape poverty living on minimum wage 😳😳",
+        "views": "172.2K (33.1x the account median of 5.2K)",
+        "note": "work time as the unit, the unit this Short answers in"
+      }
+    ],
+    "own_channel_youtube_october_shorts": [
+      {
+        "id": "LjHDFzVxRyM",
+        "title": "Can You Find the Missing Dollar?",
+        "posted_et": "Sun 07:04",
+        "views": 1254
+      },
+      {
+        "id": "hJBvmGA6sZ0",
+        "title": "You Can Lean on $1 Million. Not on $1 Billion.",
+        "posted_et": "Thu 00:25",
+        "views": 1221
+      },
+      {
+        "id": "XVUeMcTg9OQ",
+        "title": "Your Interest Has a Speed Limit",
+        "posted_et": "Sun 05:49",
+        "views": 1141
+      },
+      {
+        "id": "fbpdKf4Wy8c",
+        "title": "What If You Bought Starbucks Stock Instead of a $4 Latte Every Day? (06c)",
+        "posted_et": "Mon 03:45",
+        "views": 760
+      },
+      {
+        "id": "8__HTUa2PoU",
+        "title": "Pay the Minimum on $5,000? 238 Months.",
+        "posted_et": "Mon 22:09",
+        "views": 642
+      },
+      {
+        "id": "FW_oxA3kbsM",
+        "title": "A $2 Lottery Ticket Was Worth $6.98. Until the Fine Print.",
+        "posted_et": "Wed 12:03",
+        "views": 348
+      },
+      {
+        "id": "mXbKY_R63h4",
+        "title": "You Can Carry $1 Million. Not in Pennies.",
+        "posted_et": "Thu 13:38",
+        "views": 177
+      },
+      {
+        "id": "EqFQCJheCMU",
+        "title": "Start Investing 10 Years Late? You Get Half.",
+        "posted_et": "Tue 22:27",
+        "views": 161
+      },
+      {
+        "id": "krfZEHhb0xU",
+        "title": "What If You Bought Netflix Stock Instead of Paying for Netflix? (06b)",
+        "posted_et": "Mon 12:14",
+        "views": 75
+      }
+    ],
+    "own_channel_instagram_october_reels": [
+      {
+        "shortcode": "DeIvYk7I4Qr",
+        "topic": "$5,000 on the minimum",
+        "posted_et": "Mon 22:46",
+        "plays": 7303,
+        "skip_rate_pct": 27.4,
+        "avg_watched_pct": 56.5
+      },
+      {
+        "shortcode": "DeOEthJJ1TG",
+        "topic": "$1M stack vs Burj Khalifa",
+        "posted_et": "Thu 00:28",
+        "plays": 5449,
+        "skip_rate_pct": 27.0,
+        "avg_watched_pct": 83.1
+      },
+      {
+        "shortcode": "DeWgFZRoR_S",
+        "topic": "Missing dollar",
+        "posted_et": "Sun 07:05",
+        "plays": 1997,
+        "skip_rate_pct": 32.0,
+        "avg_watched_pct": 81.3
+      },
+      {
+        "shortcode": "DeMvZv9IqRw",
+        "topic": "Powerball $6.98",
+        "posted_et": "Wed 12:05",
+        "plays": 1825,
+        "skip_rate_pct": 58.7,
+        "avg_watched_pct": 57.9
+      },
+      {
+        "shortcode": "DeYuqT4pjVC",
+        "topic": "06c latte vs Starbucks stock",
+        "posted_et": "Mon 03:46",
+        "plays": 1711,
+        "skip_rate_pct": 40.3,
+        "avg_watched_pct": 69.1
+      },
+      {
+        "shortcode": "DePe11HIHwn",
+        "topic": "$1M in pennies",
+        "posted_et": "Thu 13:37",
+        "plays": 598,
+        "skip_rate_pct": 42.0,
+        "avg_watched_pct": 66.7
+      },
+      {
+        "shortcode": "DeLSd9io8UK",
+        "topic": "10 years late",
+        "posted_et": "Tue 22:30",
+        "plays": 219,
+        "skip_rate_pct": 65.1,
+        "avg_watched_pct": 30.6
+      },
+      {
+        "shortcode": "DeEW2ZMIiYd",
+        "topic": "Speed limit (e)",
+        "posted_et": "Sun 05:54",
+        "plays": 177,
+        "skip_rate_pct": 56.9,
+        "avg_watched_pct": 31.2
+      }
+    ],
+    "channel_stats": {
+      "youtube_subscribers": 53,
+      "youtube_views": 10221,
+      "youtube_videos": 41,
+      "youtube_30d": "+27 subscribers, +5,127 views, 11 videos",
+      "instagram_followers": 8,
+      "instagram_30d_views": 20519
+    },
+    "limits": [
+      "@envelopemath's YouTube Analytics (audience hours, geography) were not read here; the 06b and 06c sheets found vidIQ's YouTube authorization is a different channel. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
+      "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and on the write-up's and the outliers' own tags.",
+      "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
+      "The $77.7 billion rests on Amazon's own Q4 2025 release (company newsroom) and two copies of its figures, found by search; the write-up's round could not fetch pages directly. Open the release once before posting.",
+      "The figures in other creators' titles and descriptions (revenue per second, a person's earnings per second) are theirs, not verified here; the copy states only the write-up's maths.",
+      "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file."
+    ],
+    "titles_scored": "6 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored.",
+    "vidiq_credits": "65 credits for this teaser by listed cost (3 keyword queries, 2 YouTube searches, 1 Shorts outlier search, 1 Instagram/TikTok outlier search and 6 title scores at up to 5 each), plus 10 shared across 10a-10c for the channel's stats and Shorts list (Instagram owner insights cost 0), and 5 for the re-score after the build. Account balance: 4,375 at the start of the 10 research and 4,135 when it ended, a 240 drop for 56 calls (the balance is shared with sheets built in parallel, so the drop is an upper bound; keyword queries cost less than 5); 4,060 after the 3 re-scores (15 credits by listed cost; the rest of that 75 drop is other sheets'). About 255 for the three 10 sheets, against a budget of about 450."
+  },
+  "checked": {
+    "date": "2026-10-13",
+    "by": "the publishing strategist's own check at the first build (no adversarial pass yet)",
+    "math": "python3 teasers/v2/checks/10-cost-counter.py: 1005 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/10-cost-counter.py; the rate and every answer recomputed from $77.7 billion and $1,251 a week in MATH_RELATIONS ($2,463.85 ≈ $2,464; ≈ 2 weeks; ≈ $12,319 and ≈ 10 weeks; $32,526 at ≈ 13 seconds; $65,052 at ≈ 26 seconds; the swap-in rule's 1.97); COPY_RULES hold every figure to the write-up's one rounding, put '≈' or 'about' on every rounded figure, keep $77.7 billion beside 2025 and named as net income, and ban 'live', a share price, a ticker, any person's name and advice wording",
+    "limits": {
+      "youtube_title_chars": 64,
+      "youtube_description_chars": 1183,
+      "youtube_description_utf8_bytes": 1215,
+      "youtube_tags_chars_as_youtube_counts": 328,
+      "youtube_hashtags": 3,
+      "instagram_caption_chars": 976,
+      "instagram_hashtags": 5,
+      "instagram_alt_text_short_chars": 96
+    },
+    "vidiq_requeried": "pulled 2026-10-13: amazon profit 3,398 / 44.5; how much money does amazon make every second? 4,651 / 25.0; amazon 873,376 (+4.2%); title scores 98 (pick), 88 (the write-up's title); channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,519 views in 30 days. Re-queried after the build: the pick's title score 98. Match."
+  }
+}

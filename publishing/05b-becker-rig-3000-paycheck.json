@@ -1,0 +1,572 @@
+{
+  "id": "05b-becker-rig-3000-paycheck",
+  "teaser": "05b Becker Rig, split-sheet: \"Rent $1,200 on 50/30/20? Food and every bill get this much a day\"",
+  "prepared": "2026-10-13",
+  "for_video": {
+    "current_render": "renders/channel/05b-becker-rig-3000-paycheck.mp4",
+    "current_duration_s": 24.6,
+    "current_sha256": "435bd70783cf6ca134b52a51c556aa1fd0e328a865e8f60aa11931384a2cffff",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the pre-condense cut. The ship step re-runs the build with --covers on the condensed file.",
+    "cut": {
+      "name": "pre-condense cut (hook pass 2 + QA fix pass, 2026-10-08)",
+      "spec": "studio/specs/05b-becker-rig-3000-paycheck.json",
+      "body_s": 22.1,
+      "card_s": 2.5,
+      "shipped": null,
+      "git": "471c793",
+      "status": "the 05 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay): the WIP cut is studio/specs-wip/05b-becker-rig-3000-paycheck.json, 13.95 s with the card per the write-up, and passes the 05 check with --spec (583 checks, 0 failed for the three). The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."
+    }
+  },
+  "facts": {
+    "source": "teasers/v2/05-split-sheet.md section 05b; teasers/v2/checks/05-split-sheet.py: 560 checks, 0 failed on studio/specs/ (2026-10-13)",
+    "rule": "50/30/20 of after-tax pay: 50% needs, 30% wants, 20% savings and extra debt payments (Elizabeth Warren & Amelia Warren Tyagi, All Your Worth, 2005, via two independent summaries); rent is a need",
+    "inputs": "$3,000 a month after tax and $1,200 rent: example inputs, not statistics (both in the footer); a 30-day month",
+    "bricks": "$3,000 ÷ 10 = $300 a brick; needs 5 bricks ($1,500), wants 3 ($900), savings 2 ($600); rent 4 bricks ($1,200)",
+    "food_and_bills": "$1,500 − $1,200 = $300 a month, 1 brick, 10% of take-home; $300 ÷ 30 = $10 a day (in an average 30.44-day month $9.86, which still rounds to $10)",
+    "belief": "'my rent is under half my take-home, so 50/30/20 works': rent is 40%, under the 50% line, and food and every bill still get only 10%",
+    "check": "$1,200 + $300 + $900 + $600 = $3,000; shares 40 + 10 + 30 + 20 = 100; bricks 4 + 1 + 3 + 2 = 10; nothing rounded, so no '≈'",
+    "pinned_rents": "on $3,000: $1,000 rent leaves $500 = $16.67 a day; $1,400 leaves $100 = $3.33 a day; $1,500 leaves $0; on $4,000 with $1,200 rent: $800 = $26.67 a day",
+    "verdict": "$1,200 rent leaves food and every bill $10 a day"
+  },
+  "youtube": {
+    "titles_ranked": [
+      {
+        "rank": 1,
+        "title": "The 50/30/20 Rule With $1,200 Rent: How Much a Day for Food and Every Bill?",
+        "vidiq_score": 96,
+        "chars": 75,
+        "note": "PICK. Tied top score of the 10 scored. It opens on the exact phrase '50/30/20 rule' (19,324 searches a month), names the viewer's input ($1,200 rent) and asks in the video's own words ('food and every bill', a day). No hashtags in the title; the description's first three show above it."
+      },
+      {
+        "rank": 2,
+        "title": "Does the 50/30/20 Rule Work With $1,200 Rent? How Much a Day for Food and Bills?",
+        "vidiq_score": 96,
+        "chars": 80,
+        "note": "The same score, 5 characters longer. 'Does it work?' asks for a yes/no judgment the video leaves to the viewer: its verdict is a number ($10 a day), not a ruling."
+      },
+      {
+        "rank": 3,
+        "title": "The 50/30/20 Rule With $1,200 Rent: How Much a Day for Food and Bills?",
+        "vidiq_score": 94,
+        "chars": 70,
+        "note": "The pick with 'Bills' for 'Every Bill': 2 points lower; 'every bill' is the header's and the verdict's own phrase."
+      }
+    ],
+    "titles_also_scored": [
+      {
+        "title": "50/30/20 Budget on $3,000 With $1,200 Rent: How Much Is Left for Food a Day?",
+        "vidiq_score": 90,
+        "chars": 76,
+        "note": "both inputs"
+      },
+      {
+        "title": "The 50/30/20 Rule With $1,200 Rent: How Much a Day for Food? #503020 #budgeting #rent",
+        "vidiq_score": 90,
+        "chars": 85,
+        "note": "the house 3-hashtag form"
+      },
+      {
+        "title": "Does the 50/30/20 Rule Work If Your Rent Is $1,200?",
+        "vidiq_score": 88,
+        "chars": 51,
+        "note": ""
+      },
+      {
+        "title": "50/30/20 Rule With $1,200 Rent: How Much a Day for Food and Bills?",
+        "vidiq_score": 87,
+        "chars": 66,
+        "note": "option 3 without 'The'"
+      },
+      {
+        "title": "Rent $1,200 on 50/30/20? Food and Every Bill Get This Much a Day",
+        "vidiq_score": 86,
+        "chars": 64,
+        "note": "the on-screen header"
+      },
+      {
+        "title": "Pay $1,200 Rent? 50/30/20 Leaves Food and Bills How Much a Day?",
+        "vidiq_score": 82,
+        "chars": 63,
+        "note": "the write-up's title"
+      },
+      {
+        "title": "The 50/30/20 Rule on a $3,000 Paycheck With $1,200 Rent",
+        "vidiq_score": 73,
+        "chars": 55,
+        "note": "no question: 21 points lower"
+      }
+    ],
+    "title_pick": "The 50/30/20 Rule With $1,200 Rent: How Much a Day for Food and Every Bill?",
+    "title_pick_chars": 75,
+    "description": "The 50/30/20 rule with $1,200 rent: how much a day is left for food and every bill? On $3,000 a month after tax, $10 a day.\n\nThe math, shown ($3,000 a month after tax, $1,200 rent, a 30-day month):\n• $3,000 ÷ 10 = $300 a brick: 10 bricks.\n• 50/30/20 gives needs 50% (5 bricks, $1,500), wants 30% (3 bricks, $900) and savings 20% (2 bricks, $600).\n• Rent is a need: $1,200 = 4 bricks.\n• So food and every other bill share the last brick: $300 a month.\n• $300 ÷ 30 = $10 a day.\n• Check: $1,200 + $300 + $900 + $600 = $3,000.\nRent at 40% of take-home is under the 50% line, and it still leaves food and every bill 10%.\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\n\nAnimation and original sound: The Back of the Envelope. The 50/30/20 rule (Elizabeth Warren and Amelia Warren Tyagi, All Your Worth, 2005) splits after-tax pay: 50% needs, 30% wants, 20% savings and extra debt payments. Rent is a need, so whatever rent leaves of the needs half is what food and every other bill share. $3,000 take-home and $1,200 rent are example numbers, not statistics; in an average 30.44-day month the $300 is $9.86 a day. Not financial advice.\n#503020rule #budgeting #rent",
+    "description_chars": 1189,
+    "hashtags_in_order": [
+      "#503020rule",
+      "#budgeting",
+      "#rent"
+    ],
+    "hashtag_rules": "Title hashtags show as links in the title; with none in the title, the first 3 description hashtags show above it. Over 60 hashtags and YouTube ignores all of them. #Shorts is not needed (vertical, under 3 min).",
+    "tags": [
+      "50/30/20 rule",
+      "50/30/20 budget",
+      "50 30 20 rule",
+      "the 50 30 20 rule",
+      "50 30 20 budget rule explained",
+      "how much rent can i afford",
+      "rent",
+      "budgeting",
+      "how to budget",
+      "budgeting tips",
+      "budgeting for beginners",
+      "money math",
+      "math animation",
+      "the back of the envelope",
+      "envelope math"
+    ],
+    "tags_chars_as_youtube_counts": 278,
+    "pinned_comment": "What's your rent, in bricks?\n\nTake-home ÷ 10 = 1 brick, and needs get 5. Whatever rent doesn't take is food and every bill. On $3,000: $1,000 rent leaves $500 = $16.67 a day; $1,400 leaves $100 = $3.33 a day; $1,500 leaves $0. On $4,000 with $1,200 rent: $800 = $26.67 a day (30-day months).",
+    "related_video": {
+      "pick": {
+        "id": "8__HTUa2PoU",
+        "title": "Pay the Minimum on $5,000? 238 Months.",
+        "url": "https://www.youtube.com/shorts/8__HTUa2PoU",
+        "why": "The same viewer, a monthly budget under pressure. It is October's debt Short (642 views), and its Instagram twin is the channel's best Reel (7,302 plays, 27.4% skip). (June's 'Why the minimum payment keeps you in debt for 19 years' has more views, 1,230, but is an older, narrated Short.)"
+      },
+      "swap_when_live": "01b ($20 an hour) or 01c ($60k a year), the paycheck series, once published; then point theirs at this Short.",
+      "end_screen": "Shorts have no end screens or cards. The Related video link is the Shorts equivalent."
+    },
+    "thumbnail_frame": "In the YouTube app, pick frame 1, the question frame (the write-up's cover; the same content as the IG cover).",
+    "settings": {
+      "category": "Education",
+      "audience": "Not made for kids",
+      "altered_or_synthetic_content": "No (animated chart, not realistic footage)",
+      "remixing": "Allow",
+      "captions": "None needed (no narration; all text is on screen)"
+    },
+    "posting_window": {
+      "when": "First free Tue-Thu evening after the condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+      "spacing": "Keep it at least 6 h from any other upload on the channel, and on a different evening from 05a and 05c. Suggested order within the series: 05c, then 05b, then 05a.",
+      "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,199 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2); 06c (Mon 03:45 ET) has 760 and 06b (Mon 12:14 ET) 61, too young to compare. The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. Search demand: '50/30/20 budget' runs +169.5% and 'budgeting tips' +154.7% over their 30-day baselines, so 05b goes second, soon after 05c."
+    },
+    "description_utf8_bytes": 1205
+  },
+  "instagram": {
+    "caption": "The 50/30/20 rule gives needs half of your take-home. On $3,000 a month after tax with $1,200 rent, how much a day is left for food and every bill?\n\n$10 a day.\n\nThe math, shown:\n• $3,000 ÷ 10 = $300 a brick: 10 bricks.\n• Needs get 50%: 5 bricks, $1,500. Wants 30%: 3 bricks, $900. Savings 20%: 2 bricks, $600.\n• Rent eats 4 bricks: $1,200.\n• Food and every other bill share the last brick: $300 a month. $300 ÷ 30 = $10 a day.\n• Check: $1,200 + $300 + $900 + $600 = $3,000.\n\nRent at 40% of take-home is under the 50% line, and it still leaves food and every bill 10%.\n\nThe rule (Elizabeth Warren and Amelia Warren Tyagi, All Your Worth, 2005) splits after-tax pay: 50% needs, 30% wants, 20% savings and extra debt payments. $3,000 take-home and $1,200 rent are example numbers, with a 30-day month. Not financial advice.\n\nWhat's your rent, in bricks?\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\nAnimation and original sound: The Back of the Envelope.\n\n#503020rule #budgeting #budgetingtips #rent #personalfinance",
+    "caption_chars": 1046,
+    "caption_first_125": "The 50/30/20 rule gives needs half of your take-home. On $3,000 a month after tax with $1,200 rent, how much a day is left fo",
+    "caption_rule": "The first 125 characters are the rule, both inputs ($3,000 a month after tax, $1,200 rent) and the question, no result: the caption overlays the Reel from frame 1, so the $300 brick and the $10 a day sit below 'more'.",
+    "hashtags_in_order": [
+      "#503020rule",
+      "#budgeting",
+      "#budgetingtips",
+      "#rent",
+      "#personalfinance"
+    ],
+    "hashtag_rule": "Instagram caps a post at 5 hashtags (since Dec 2025).",
+    "alt_text_short": "Chart: $3,000 take-home in $300 bricks. $1,200 rent leaves food and every bill $10 a day.",
+    "alt_text_long": "Animation on a white background. The header asks: rent $1,200 on 50/30/20? Food and every bill get this much a day, with an empty answer slot. A stick figure on a gold $3,000 take-home slab cracks it into 10 bricks of $300. Rent takes 4 bricks, $1,200. A bracket marks needs at 50%, 5 bricks, so food and every bill get the 1 brick left: $300 a month, and $300 ÷ 30 = $10 a day, which stamps into the header's slot. Wants get 3 bricks, $900, and savings 2, $600. The check reads $1,200 + $300 + $900 + $600 = $3,000. Verdict: $1,200 rent leaves food and every bill $10 a day.",
+    "alt_text_where": "Advanced settings → Accessibility → Alt text, if your app shows it for Reels.",
+    "cover": {
+      "files": {
+        "3x4": "publishing/05b-becker-rig-3000-paycheck-cover-3x4.jpg",
+        "9x16": "publishing/05b-becker-rig-3000-paycheck-cover-9x16.jpg"
+      },
+      "frame_in_current_render_s": 0,
+      "frame_index": 0,
+      "frame_by_content": "Frame 1, the question, as the write-up names it: the header 'Rent $1,200 on 50/30/20? Food and every bill get this much a day:' with its dashed '$?' answer slot, the footer 'ASSUMES $3,000 a month after tax · $1,200 rent · 30-day month', the gold 'TAKE-HOME, A MONTH $3,000' slab scored at its brick seams with the figure on it, and the four empty bins RENT 40% · FOOD + BILLS 10% · WANTS 30% · SAVINGS 20%, the 10% bin visibly the smallest. It asks and does not answer, like the title and the caption. On any cut, use frame 1: on the condensed cut it also carries the complete hook caption ('Ten bricks of $300. Rent eats four.'), as the write-up's condense rule asks (frame 1 is the thumbnail), and the answer, $10 a day, is still not on it.",
+      "frame_measured": "On the pre-condense 24.6 s render the first frame (index 0, 0.00 s) is that clean frame, and the only one: from the second (index 1, 0.03 s) the first caption word ('Ten') starts to fade in (frame-to-frame mean luma change 0.0004), and the cleaver comes out after that. On the condensed WIP render the first frame already carries the whole hook caption, and the '$?' slot is still empty.",
+      "crop": "3:4 = 1080×1440 from y 0 to 1440 of the 1080×1920 frame: the badge (from y 112), the header and its slot, the footer, the slab with the figure and the four bins down to the floor line (y 1302), with near-even margins (112 px above, 138 px below); it drops the empty caption band. A centred grid crop (y 240-1680) cuts the badge and the header.",
+      "how_to_set": "In 'Edit cover', pick frame 1 of the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
+      "re_export": "ffmpeg -ss 0 -i renders/channel/05b-becker-rig-3000-paycheck.mp4 -frames:v 1 -vf \"crop=1080:1440:0:0\" -q:v 2 publishing/05b-becker-rig-3000-paycheck-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 0 -i renders/channel/05b-becker-rig-3000-paycheck.mp4 -frames:v 1 -q:v 2 publishing/05b-becker-rig-3000-paycheck-cover-9x16.jpg"
+    },
+    "first_comment": "$1,200 rent on $3,000 a month after tax leaves food and every bill $10 a day under 50/30/20 (30-day month). What's your rent, in bricks? Take-home ÷ 10 = 1 brick; needs get 5.",
+    "first_comment_action": "Post it right after publishing and pin it.",
+    "trial_reels": {
+      "recommendation": "Post as a regular Reel, not a Trial.",
+      "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show 471c793:renders/channel/05b-becker-rig-3000-paycheck.mp4 > 05b-24.6s.mp4` (sha256 435bd707…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+    },
+    "settings": {
+      "audio": "Rename the original audio to '50/30/20 with $1,200 rent — The Back of the Envelope' if the app allows; it is the score, with no voice.",
+      "share_to_feed": "On",
+      "google_indexing": "Public professional-account posts can appear in Google/Bing since 10 Jul 2025, so the caption is written as a searchable question."
+    },
+    "posting_window": {
+      "when": "Same evening as YouTube, about 15 min after the Short: 21:45-22:45 ET, on a different evening from 05a and 05c.",
+      "why": "October Reels, median plays by posting slot (owner insights, 2026-10-13): weekday 22:00-00:30 ET 5,449 (n = 3, including the two best: 7,302 and 5,449), weekday midday 1,212 (n = 2), Sunday 05:00-08:00 ET 1,087 (n = 2). 06c, posted Mon 03:46 ET, has 1,711 plays with a 40.3% skip rate. Skip rate tracks plays more closely than the hour does: 27.0-27.4% for the top two, 56.9-65.1% for the bottom two. The condense matters more than the hour."
+    },
+    "alt_text_rule": "Paste the short version into Instagram: it is kept at or under 100 characters so it fits the field however short it is, and it writes plain words, not symbols, so screen readers read it cleanly. The long version is for anywhere with room (a website embed, a newsletter)."
+  },
+  "research": {
+    "keywords_youtube": [
+      {
+        "keyword": "50/30/20 rule",
+        "est_monthly_searches": 19324,
+        "volume": 64.0,
+        "competition": 51.8,
+        "overall": 57.7,
+        "note": "seed; +0.6% vs its 30-day baseline (19,206)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "50/30/20 budget",
+        "est_monthly_searches": 17517,
+        "volume": 63.3,
+        "competition": 22.3,
+        "overall": 69.1,
+        "note": "+169.5% vs its baseline (6,499); low competition",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "50 30 20 rule of money",
+        "est_monthly_searches": 15265,
+        "volume": 62.5,
+        "competition": 28.1,
+        "overall": 66.2,
+        "note": "-42.2% vs its baseline (26,417)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "50 30 20 budget rule explained",
+        "est_monthly_searches": 8289,
+        "volume": 58.5,
+        "competition": 26.3,
+        "overall": 64.6,
+        "note": "+79.0% vs its baseline (4,630)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "the 50 30 20 rule",
+        "est_monthly_searches": 7554,
+        "volume": 57.9,
+        "competition": 36.7,
+        "overall": 60.1,
+        "note": "",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "50 30 20 rule",
+        "est_monthly_searches": 4934,
+        "volume": 55.1,
+        "competition": 30.3,
+        "overall": 61.0,
+        "note": "",
+        "metrics_as_of": "2026-10-07"
+      },
+      {
+        "keyword": "budgeting",
+        "est_monthly_searches": 166248,
+        "volume": 77.9,
+        "competition": 25.8,
+        "overall": 76.4,
+        "note": "-26.1% vs its baseline (225,000); the cluster's top opportunity",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "how to budget",
+        "est_monthly_searches": 66391,
+        "volume": 72.0,
+        "competition": 33.5,
+        "overall": 69.8,
+        "note": "flat (-0.5%)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "budgeting tips",
+        "est_monthly_searches": 49832,
+        "volume": 70.1,
+        "competition": 39.0,
+        "overall": 66.5,
+        "note": "+154.7% vs its baseline (19,564)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "rent",
+        "est_monthly_searches": 67558,
+        "volume": 72.1,
+        "competition": 42.8,
+        "overall": 66.1,
+        "note": "-27.3% vs its baseline (92,940)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "why is rent so high",
+        "est_monthly_searches": 7855,
+        "volume": 58.1,
+        "competition": 40.8,
+        "overall": 58.6,
+        "note": "+81.4% vs its baseline (4,331); housing news, not in the tags",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "how much rent can i afford",
+        "est_monthly_searches": 3386,
+        "volume": 52.7,
+        "competition": 34.9,
+        "overall": 57.7,
+        "note": "the viewer's own question",
+        "metrics_as_of": "2026-02-25"
+      }
+    ],
+    "keywords_source": "vidIQ keyword research (research, matching_terms and questions modes), pulled 2026-10-13. vidIQ refreshes each keyword on its own schedule, so each row carries its snapshot date in metrics_as_of; two rows are older snapshots (2026-02-25 and 2026-10-07).",
+    "same_idea_youtube_shorts": [
+      {
+        "title": "50/30/20 Budget Rule for $20/hour #budgeting",
+        "channel": "Kasey Gammons",
+        "subscribers": 6700,
+        "views": 951837,
+        "published": "2022-11-29",
+        "note": "51 s; outlier score 11,467.9; the rule run on one pay figure"
+      },
+      {
+        "title": "How I Budget My 105K Salary",
+        "channel": "Margaret Skiff",
+        "subscribers": 54600,
+        "views": 606442,
+        "published": "2023-08-01",
+        "note": "59 s; the rule on a real salary"
+      },
+      {
+        "title": "The Easiest Budget Ever: 50/30/20 #shorts",
+        "channel": "STICKMAN MONEY",
+        "subscribers": 12,
+        "views": 1133,
+        "published": "2026-10-02",
+        "note": "a stick-figure explainer on a $3,000 paycheck: the same $1,500 / $900 / $600, with no rent figure and no per-day answer"
+      },
+      {
+        "title": "Bills Over 50% Of Your Pay?",
+        "channel": "Katrania Lowers",
+        "subscribers": 143,
+        "views": 1118,
+        "published": "2026-09-20",
+        "note": "30 s; the same tension (needs over half), told, not counted"
+      },
+      {
+        "title": "$4,200 Monthly Take-Home: How Much Should You Actually Save?",
+        "channel": "The Money Muse",
+        "subscribers": 173,
+        "views": 939,
+        "published": "2026-04-18",
+        "note": "rent at $1,400 on a calculator"
+      },
+      {
+        "title": "$3,500/Month Take-Home: Can You Actually Afford to Live Alone in 2026?",
+        "channel": "The Money Muse",
+        "subscribers": 173,
+        "views": 506,
+        "published": "2026-04-11",
+        "note": "median rent on a calculator"
+      },
+      {
+        "title": "The Hidden Rule Poor People Follow Without Realizing It",
+        "channel": "The Wealth Logic",
+        "subscribers": 21,
+        "views": 189,
+        "published": "2026-07-02",
+        "note": "2:27; argues the rule is out of date (not verified here)"
+      }
+    ],
+    "same_idea_note": "vidIQ YouTube search (under 4 min; by views): the rule on one paycheck breaks out (Kasey Gammons 951,837; Margaret Skiff 606,442); a stick-figure Short posted the same $3,000 split this month (1,133) without a rent figure. None read here prices what rent leaves of the needs half per day.",
+    "instagram_tiktok_outliers": [
+      {
+        "handle": "@tylerworley3",
+        "platform": "TikTok",
+        "id": "7673258359549693214",
+        "on_screen": "Budget my paycheck ($713.59)",
+        "views": "768.2K (18.7x the account median of 41K)",
+        "note": "one real paycheck, split on camera"
+      },
+      {
+        "handle": "@moneymovesjake",
+        "platform": "TikTok",
+        "id": "7664616112612494623",
+        "on_screen": "People think $20,000 a month automatically means you're rich",
+        "views": "604.4K (139.3x the account median of 4.3K)",
+        "note": "a belief named on screen, then a text budget that tests it"
+      },
+      {
+        "handle": "@yomamafinances",
+        "platform": "TikTok",
+        "id": "7676636562909580557",
+        "on_screen": "Why Your",
+        "caption": "Why yo mama use the 50/30/20 budget",
+        "views": "573.4K (51.4x the account median of 11.2K)",
+        "note": "an animated 50/30/20 explainer: the closest format"
+      },
+      {
+        "handle": "@smobydayig",
+        "platform": "Instagram",
+        "id": "DZYo5e3ldvQ",
+        "on_screen": "how I would budget: $1200 bi-weekly paycheck",
+        "views": "468.2K (94.1x the account median of 5K)",
+        "note": "the 50/30/20 rule on one paycheck"
+      },
+      {
+        "handle": "@everydayfinance101",
+        "platform": "TikTok",
+        "id": "7666850547235867935",
+        "on_screen": "I make $65k/year & feel broke",
+        "views": "53.8K (28.3x the account median of 1.9K)",
+        "note": "a salary that 'should' work, line by line"
+      }
+    ],
+    "own_channel_youtube_october_shorts": [
+      {
+        "id": "LjHDFzVxRyM",
+        "title": "Can You Find the Missing Dollar?",
+        "posted_et": "Sun 07:04",
+        "views": 1256
+      },
+      {
+        "id": "hJBvmGA6sZ0",
+        "title": "You Can Lean on $1 Million. Not on $1 Billion.",
+        "posted_et": "Thu 00:25",
+        "views": 1221
+      },
+      {
+        "id": "XVUeMcTg9OQ",
+        "title": "Your Interest Has a Speed Limit",
+        "posted_et": "Sun 05:49",
+        "views": 1141
+      },
+      {
+        "id": "fbpdKf4Wy8c",
+        "title": "What If You Bought Starbucks Stock Instead of a $4 Latte Every Day? (06c)",
+        "posted_et": "Mon 03:45",
+        "views": 760
+      },
+      {
+        "id": "8__HTUa2PoU",
+        "title": "Pay the Minimum on $5,000? 238 Months.",
+        "posted_et": "Mon 22:09",
+        "views": 642
+      },
+      {
+        "id": "FW_oxA3kbsM",
+        "title": "A $2 Lottery Ticket Was Worth $6.98. Until the Fine Print.",
+        "posted_et": "Wed 12:03",
+        "views": 348
+      },
+      {
+        "id": "mXbKY_R63h4",
+        "title": "You Can Carry $1 Million. Not in Pennies.",
+        "posted_et": "Thu 13:38",
+        "views": 177
+      },
+      {
+        "id": "EqFQCJheCMU",
+        "title": "Start Investing 10 Years Late? You Get Half.",
+        "posted_et": "Tue 22:27",
+        "views": 161
+      },
+      {
+        "id": "krfZEHhb0xU",
+        "title": "What If You Bought Netflix Stock Instead of Paying for Netflix? (06b)",
+        "posted_et": "Mon 12:14",
+        "views": 61
+      }
+    ],
+    "own_channel_instagram_october_reels": [
+      {
+        "shortcode": "DeIvYk7I4Qr",
+        "topic": "$5,000 on the minimum",
+        "posted_et": "Mon 22:46",
+        "plays": 7302,
+        "skip_rate_pct": 27.4,
+        "avg_watched_pct": 56.5
+      },
+      {
+        "shortcode": "DeOEthJJ1TG",
+        "topic": "$1M stack vs Burj Khalifa",
+        "posted_et": "Thu 00:28",
+        "plays": 5449,
+        "skip_rate_pct": 27.0,
+        "avg_watched_pct": 83.1
+      },
+      {
+        "shortcode": "DeWgFZRoR_S",
+        "topic": "Missing dollar",
+        "posted_et": "Sun 07:05",
+        "plays": 1997,
+        "skip_rate_pct": 32.0,
+        "avg_watched_pct": 81.3
+      },
+      {
+        "shortcode": "DeMvZv9IqRw",
+        "topic": "Powerball $6.98",
+        "posted_et": "Wed 12:05",
+        "plays": 1825,
+        "skip_rate_pct": 58.7,
+        "avg_watched_pct": 57.9
+      },
+      {
+        "shortcode": "DeYuqT4pjVC",
+        "topic": "06c latte vs Starbucks stock",
+        "posted_et": "Mon 03:46",
+        "plays": 1711,
+        "skip_rate_pct": 40.3,
+        "avg_watched_pct": 69.1
+      },
+      {
+        "shortcode": "DePe11HIHwn",
+        "topic": "$1M in pennies",
+        "posted_et": "Thu 13:37",
+        "plays": 598,
+        "skip_rate_pct": 42.0,
+        "avg_watched_pct": 66.7
+      },
+      {
+        "shortcode": "DeLSd9io8UK",
+        "topic": "10 years late",
+        "posted_et": "Tue 22:30",
+        "plays": 219,
+        "skip_rate_pct": 65.1,
+        "avg_watched_pct": 30.6
+      },
+      {
+        "shortcode": "DeEW2ZMIiYd",
+        "topic": "Speed limit (e)",
+        "posted_et": "Sun 05:54",
+        "plays": 177,
+        "skip_rate_pct": 56.9,
+        "avg_watched_pct": 31.2
+      }
+    ],
+    "channel_stats": {
+      "youtube_subscribers": 53,
+      "youtube_views": 10221,
+      "youtube_videos": 41,
+      "youtube_30d": "+27 subscribers, +5,127 views, 11 videos",
+      "instagram_followers": 8,
+      "instagram_30d_views": 20518
+    },
+    "limits": [
+      "@envelopemath's YouTube Analytics (audience hours, geography) were not read here; the 06b and 06c sheets found vidIQ's YouTube authorization is a different channel. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
+      "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and on the write-up's and the outliers' own tags.",
+      "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
+      "The rule's definition rests on two independent summaries of the book (Wealthsimple; Citizens Bank, via search on Oct 7, 2026); the book itself was not opened (the write-up's sources). $3,000 and $1,200 are example inputs, not statistics, and the copy says so.",
+      "The same-idea Shorts' claims (the rule 'breaks', is 'out of date') are their own, not verified here, and none is in the copy.",
+      "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file."
+    ],
+    "titles_scored": "10 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored.",
+    "vidiq_credits": "85 credits for this teaser (4 keyword queries, 1 YouTube search, 1 Instagram/TikTok outlier search, 10 title scores and 1 re-score; 5 each), plus 10 shared across 05a-05c for the channel's stats and Shorts list (Instagram owner insights cost 0). The adversarial check used 40 more across 05a-05c at 5 each: 3 title scores, 3 keyword re-queries, 1 lookup of the 3 related videos and 1 list of the channel's Shorts by views; Instagram owner insights cost 0. The account's shared balance went 3,885 → 3,795 over the check, because other agents draw on it in parallel."
+  },
+  "checked": {
+    "date": "2026-10-13",
+    "by": "adversarial check of this sheet",
+    "math": "python3 teasers/v2/checks/05-split-sheet.py: 560 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), and 583 checks, 0 failed with --spec on the condensed WIP specs, whose strings, numbers and verdicts are the same; the bricks, the bins, the $10 a day (and $9.86 in a 30.44-day month) and the pinned comment's other rents recomputed in MATH_RELATIONS; COPY_RULES keep every $10 'a day', keep the copy free of '≈' and 'about', keep $1,200 named as rent, keep the after-tax and 30-day conditions in the copy, and allow no judgment of what anyone can afford; re-run at the adversarial check with the same result (583 with --spec after the condense critic fixes)",
+    "limits": {
+      "youtube_title_chars": 75,
+      "youtube_description_chars": 1189,
+      "youtube_description_utf8_bytes": 1205,
+      "youtube_tags_chars_as_youtube_counts": 278,
+      "youtube_hashtags": 3,
+      "instagram_caption_chars": 1046,
+      "instagram_hashtags": 5,
+      "instagram_alt_text_short_chars": 89
+    },
+    "vidiq_requeried": "pulled 2026-10-13: 50/30/20 rule 19,324 / 51.8 (+0.6%); 50/30/20 budget 17,517 / 22.3 (+169.5%); budgeting 166,248 / 25.8 (-26.1%); title scores 96 (pick), 82 (write-up title), 90 (best hashtag form); channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,518 views in 30 days. Re-queried after the build: the pick's title score 96. Match. Re-queried at the adversarial check: the pick's title score 96; '50/30/20 budget' 17,517 / 22.3 (+169.5%, snapshot 2026-10-12); the related video 8__HTUa2PoU 642 views; the channel's Shorts by views put June's narrated debt Short (iQD6UlkCEqs, 1,230) above it; Instagram 8 followers, 20,520 views in 30 days."
+  }
+}

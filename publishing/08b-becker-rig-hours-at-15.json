@@ -1,0 +1,595 @@
+{
+  "id": "08b-becker-rig-hours-at-15",
+  "teaser": "08b Becker Rig, unit-ladder: \"At $15/hr, you work for rent from the 1st until…\"",
+  "prepared": "2026-10-13",
+  "for_video": {
+    "current_render": "renders/channel/08b-becker-rig-hours-at-15.mp4",
+    "current_duration_s": 29.5,
+    "current_sha256": "95b2084480bb66e10f035c2d0411047d8bb165c500c941e93b20ea8781148910",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the pre-condense cut. The ship step re-runs the build with --covers on the condensed file.",
+    "cut": {
+      "name": "pre-condense cut (fix pass, round-2 QA, 2026-10-08)",
+      "spec": "studio/specs/08b-becker-rig-hours-at-15.json",
+      "body_s": 27.0,
+      "card_s": 2.5,
+      "shipped": null,
+      "git": "471c793",
+      "status": "the 08 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay); no 08 WIP spec was in studio/specs-wip/ at this build. The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."
+    }
+  },
+  "facts": {
+    "source": "teasers/v2/08-unit-ladder.md section 08b; teasers/v2/checks/08-unit-ladder.py: 677 checks, 0 failed on studio/specs/ (2026-10-13)",
+    "take_home": "$15 × 2,080 = $31,200 a year; taxable $31,200 − $16,100 = $15,100; federal tax 10% × $12,400 + 12% × $2,700 = $1,564.00; FICA 7.65% = $2,386.80; kept $27,249.20 ÷ 2,080 = $13.10058 ≈ $13.10 (87.3% of $15); 2026, single, standard deduction, no state income tax, no benefit premiums or retirement deferrals",
+    "unit": "the defined unit $13.10 (the kept hourly, rounded to the cent), the operand on screen in every '÷ $13.10'",
+    "rungs": "Census median asking rent, Q2 2026: $1,531 ≈ 117 hours a month; × 12 = $18,372 ≈ 1,402 hours; KBB average new-vehicle transaction price, Aug 2026: $50,089 ≈ 3,824 hours; Census median new house, Aug 2026: $393,700 ≈ 30,053 hours",
+    "blank": "116.870 ÷ (2,080 ÷ 12 = 173.33) = 67.4% of a full-time month: 20.23 days of a 30-day month (20.51 of the average month) from rent day, the 1st, so '≈ the 20th'; on a Monday-Friday calendar of 8-hour days the 19th, 20th or 21st, depending on the weekday of the 1st",
+    "years": "30,053 hours ÷ 2,080 a year = 14.45 ≈ 14 years of full-time work, if every cent you keep goes to the house, with no interest",
+    "pinned_wages": "at $20/hr you keep ≈ $17.12 (85.6%); at $25/hr ≈ $21.14 (84.5%); at $15/hr 87.3%; before state tax",
+    "verdict": "≈ 14 years of full-time work. Every cent you keep. (the header's blank: '≈ the 20th')"
+  },
+  "youtube": {
+    "titles_ranked": [
+      {
+        "rank": 1,
+        "title": "How Many Hours of Work Is Rent at $15 an Hour? Until What Day of the Month?",
+        "vidiq_score": 98,
+        "chars": 75,
+        "note": "PICK. Top score of the 10 scored. The first question (46 characters) is the video's first count, rent in hours; the second is the header's blank, the day of the month, which the video fills in. No hashtags in the title; the description's first three show above it."
+      },
+      {
+        "rank": 2,
+        "title": "How Many Hours of Work Is Rent at $15 an Hour? A Car? A House?",
+        "vidiq_score": 97,
+        "chars": 62,
+        "note": "One point lower, 12 characters shorter. It names the whole ladder instead of the blank; the fallback if the pick reads long in the player."
+      },
+      {
+        "rank": 3,
+        "title": "How Many Hours Do You Work Just to Pay Rent at $15 an Hour?",
+        "vidiq_score": 95,
+        "chars": 59,
+        "note": "The same question in the viewer's own words ('just to pay rent'), without the day."
+      }
+    ],
+    "titles_also_scored": [
+      {
+        "title": "How Many Hours of Work Is Rent at $15 an Hour?",
+        "vidiq_score": 94,
+        "chars": 46,
+        "note": "the first question alone"
+      },
+      {
+        "title": "How Many Hours of Work Is Rent at $15 an Hour? #Rent #HourlyWage #PersonalFinance",
+        "vidiq_score": 94,
+        "chars": 81,
+        "note": "the house 3-hashtag form, with the description's hashtags (re-scored at the adversarial check)"
+      },
+      {
+        "title": "How Many Hours of Work Is Rent at $15 an Hour? #rent #minimumwage #personalfinance",
+        "vidiq_score": 94,
+        "chars": 82,
+        "note": "the first build's hashtag form; #minimumwage is dropped (see the hashtags)"
+      },
+      {
+        "title": "At $15 an Hour, How Many Days a Month Do You Work Just for Rent?",
+        "vidiq_score": 91,
+        "chars": 64,
+        "note": ""
+      },
+      {
+        "title": "Rent, a Car, a House: How Many Hours of Work at $15 an Hour?",
+        "vidiq_score": 89,
+        "chars": 60,
+        "note": "close to the round-1 judge's title"
+      },
+      {
+        "title": "At $15 an Hour, You Work for Rent From the 1st Until When?",
+        "vidiq_score": 85,
+        "chars": 58,
+        "note": "the header as a question"
+      },
+      {
+        "title": "At $15/hr, You Work for Rent From the 1st Until…",
+        "vidiq_score": 82,
+        "chars": 48,
+        "note": "the write-up's title"
+      }
+    ],
+    "title_pick": "How Many Hours of Work Is Rent at $15 an Hour? Until What Day of the Month?",
+    "title_pick_chars": 75,
+    "description": "How many hours of work is rent at $15 an hour? After 2026 federal tax and FICA, $15 an hour keeps about $13.10. Median rent, $1,531 a month, takes about 117 of a full-time month's 173 work hours, so from the 1st you work for rent until about the 20th.\n\nThe math, shown (hours = price ÷ $13.10):\n• Kept per hour: $15 × 2,080 hours = $31,200 a year, minus $1,564.00 federal income tax and $2,386.80 FICA = $27,249.20; ÷ 2,080 ≈ $13.10.\n• Median rent, 1 month: $1,531 ÷ $13.10 ≈ 117 hours, 67.4% of a full-time month (2,080 ÷ 12 ≈ 173.33 hours). From the 1st, that runs to about the 20th.\n• Median rent, 1 year: $18,372 ÷ $13.10 ≈ 1,402 hours.\n• An average new car: $50,089 ÷ $13.10 ≈ 3,824 hours.\n• A median new house: $393,700 ÷ $13.10 ≈ 30,053 hours, ÷ 2,080 a year ≈ 14 years of full-time work, every cent you keep.\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\n\nAnimation and original sound: The Back of the Envelope. Rent: U.S. Census Bureau median asking rent, Q2 2026. Car: Kelley Blue Book average new-vehicle transaction price, Aug 2026 (Cox Automotive). House: U.S. Census Bureau median sales price of new houses sold, Aug 2026. Take-home: 2026 federal income tax for a single filer ($16,100 standard deduction, 10% and 12% brackets) and 7.65% FICA (IRS; SSA); 40 hours a week, 52 weeks; no state income tax, benefit premiums or retirement deferrals. The median rent, not yours. Sticker prices, no loan interest. Not financial advice. Not affiliated with or endorsed by Kelley Blue Book or Cox Automotive.\n#Rent #HourlyWage #PersonalFinance",
+    "description_chars": 1580,
+    "hashtags_in_order": [
+      "#Rent",
+      "#HourlyWage",
+      "#PersonalFinance"
+    ],
+    "hashtag_rules": "Title hashtags show as links in the title; with none in the title, the first 3 description hashtags show above it. Over 60 hashtags and YouTube ignores all of them. #Shorts is not needed (vertical, under 3 min).",
+    "tags": [
+      "rent",
+      "why is rent so high",
+      "why rent is so expensive",
+      "rent due",
+      "living on 15 an hour",
+      "budgeting 15 an hour",
+      "15 an hour",
+      "hourly wage",
+      "real hourly wage",
+      "minimum wage",
+      "cost of living",
+      "how many hours of work does it cost",
+      "money math",
+      "math animation",
+      "the back of the envelope",
+      "envelope math"
+    ],
+    "tags_chars_as_youtube_counts": 299,
+    "pinned_comment": "Your wage? Divide the price by what you KEEP per hour, not by your wage. At $15/hr you keep 87.3% (≈ $13.10). At $20/hr it's ≈ $17.12 (85.6%), at $25/hr ≈ $21.14 (84.5%), before state tax. Your rent ÷ that = your hours.\n\nMedian rent at $15/hr: ≈ 117 of 173 work hours (67.4% of the month), so you work for rent from the 1st to ≈ the 20th. That's 20.2 days of a 30-day month; on a Monday-Friday calendar it's the 19th, 20th or 21st, depending on the weekday of the 1st.",
+    "related_video": {
+      "pick": {
+        "id": "8__HTUa2PoU",
+        "title": "Pay the Minimum on $5,000? 238 Months. #CreditCard #PersonalFinance #maths",
+        "url": "https://www.youtube.com/shorts/8__HTUa2PoU",
+        "why": "A bill measured in time (238 months), the same move as this Short's rent in hours, and the channel's best post on Instagram (7,303 plays, 27.4% skip rate)."
+      },
+      "swap_when_live": "08a (a Costco hot dog risen like a house) or 08c (a year of college in Big Macs), the same unit-ladder series, once published. Then point that Short's Related video at this one.",
+      "end_screen": "Shorts have no end screens or cards. The Related video link is the Shorts equivalent."
+    },
+    "thumbnail_frame": "In the YouTube app, pick frame 1, the question frame: the header with its blank, the HUD '$1,531 ÷ $13.10 = / ? hours of work' and the gold $1,531 coin. The Instagram cover is the landed blank instead.",
+    "settings": {
+      "category": "Education",
+      "audience": "Not made for kids",
+      "altered_or_synthetic_content": "No (animated chart, not realistic footage)",
+      "remixing": "Allow",
+      "captions": "None needed (no narration; all text is on screen)"
+    },
+    "posting_window": {
+      "when": "First free Tue-Thu evening after the condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+      "spacing": "Keep it at least 6 h from any other upload on the channel, and on a different evening from 08a and 08c. Suggested order within the series: 08b, then 08c, then 08a.",
+      "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,199 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2); 06c (Mon 03:45 ET) has 760 and 06b (Mon 12:14 ET) 75, too young to compare. The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. 08b goes first of the three: its hook scored highest with the write-up's judges (7.0 of 10), 'why is rent so high' runs +81.4% over its baseline, and the $15 wage is in the news (a same-idea Short's description says Florida's minimum reached $15 on Sept 30, 2026; not verified here, and not in the copy)."
+    },
+    "description_utf8_bytes": 1615
+  },
+  "instagram": {
+    "caption": "At $15 an hour, how many hours of work is rent? Count every hour you work from the 1st of the month: which day does rent stop taking them?\n\nAt $15/hr, rent takes every hour you work from the 1st to ≈ the 20th.\n\nThe math, shown (hours = price ÷ $13.10, what $15 an hour keeps after 2026 federal tax and FICA):\n• Median rent, 1 month, $1,531: ≈ 117 hours, 67.4% of a full-time month's 173.33. From the 1st, ≈ the 20th.\n• Median rent, 1 year, $18,372: ≈ 1,402 hours.\n• An average new car, $50,089: ≈ 3,824 hours.\n• A median new house, $393,700: ≈ 30,053 hours, ≈ 14 years of full-time work, every cent you keep.\n\nSingle filer, $16,100 standard deduction, 7.65% FICA, no state income tax; 40 hours a week, 52 weeks. The Census median rent, not yours. Sticker prices, no loan interest. Rent: Census, Q2 2026. Car: Kelley Blue Book, Aug 2026. House: Census, Aug 2026. Not financial advice. Not affiliated with or endorsed by Kelley Blue Book or Cox Automotive.\n\nYour wage? Divide the price by what you keep per hour, not by your wage.\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\nAnimation and original sound: The Back of the Envelope.\n\n#rent #hourlywage #costofliving #personalfinance #moneymath",
+    "caption_chars": 1223,
+    "caption_first_125": "At $15 an hour, how many hours of work is rent? Count every hour you work from the 1st of the month: which day does rent stop",
+    "caption_rule": "The first 125 characters are the title's question, the '$15 an hour' and 'rent' keywords and the header's blank as a question, no result: the caption overlays the Reel from frame 1, so the day, the hours and the years sit below 'more'.",
+    "hashtags_in_order": [
+      "#rent",
+      "#hourlywage",
+      "#costofliving",
+      "#personalfinance",
+      "#moneymath"
+    ],
+    "hashtag_rule": "Instagram caps a post at 5 hashtags (since Dec 2025).",
+    "alt_text_short": "Chart: at $15 an hour, median rent is about 117 hours of work: the 1st to about the 20th.",
+    "alt_text_long": "Animation on a light page with a green stick figure. The header says: at $15/hr, you work for rent from the 1st to the blank. The footer: about $13.10 kept after 2026 federal tax and FICA, single, no state tax. The figure punches a gold $1,531 coin (median rent, 1 month) into a pyramid of clock icons: $1,531 divided by $13.10 is about 117 hours of work. The header's blank ticks through the days while a month grid fills, and lands on about the 20th. Then a year of median rent, $18,372, is about 1,402 hours; an average new car, $50,089, about 3,824 hours; a median new house, $393,700, about 30,053 hours on a gold plate. Payoff: about 14 years of full-time work, every cent you keep.",
+    "alt_text_where": "Advanced settings → Accessibility → Alt text, if your app shows it for Reels.",
+    "cover": {
+      "files": {
+        "3x4": "publishing/08b-becker-rig-hours-at-15-cover-3x4.jpg",
+        "9x16": "publishing/08b-becker-rig-hours-at-15-cover-9x16.jpg"
+      },
+      "frame_in_current_render_s": 7.3,
+      "frame_index": 219,
+      "frame_by_content": "The landed blank, as the write-up's Instagram note asks: the header 'At $15/hr, you work for rent / from the 1st to the ≈ 20th' with its green rule, the footer '≈ $13.10 kept: 2026 federal tax + FICA, single, no state tax', the HUD 'Median rent, 1 month / $1,531 ÷ $13.10 ≈ / 117 hours of work', the month grid filled to the 20th (20 green days of 30), the 117-hour pyramid of clocks with the figure pointing up at the header, and the caption '≈ the 20th.' On any cut, use a settled frame after the blank lands and before the next rung's cut, with the caption still up.",
+      "frame_measured": "On the pre-condense 29.5 s render the blank lands at frame 192 (6.40 s); the frame settles by about frame 200 (6.67 s) and holds still (frame-to-frame mean luma change under 0.0002) with the caption '≈ the 20th.' until it clears at about frame 236 (7.87 s); rung 2 cuts at frame 252 (8.40 s). Frame 219 (7.30 s) is used.",
+      "crop": "3:4 = 1080×1440 from y 45 to 1485 of the 1080×1920 frame. The content runs from y 112 (the badge) to y 1418 (the caption), so the crop centres it (67 px above and below): badge, header, footer, HUD, month grid, the pile with the figure, and the caption; it drops the empty page below. A centred grid crop (y 240-1680) cuts the badge and the header.",
+      "how_to_set": "In 'Edit cover', pick the landed-blank frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
+      "re_export": "ffmpeg -ss 7.3 -i renders/channel/08b-becker-rig-hours-at-15.mp4 -frames:v 1 -vf \"crop=1080:1440:0:45\" -q:v 2 publishing/08b-becker-rig-hours-at-15-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 7.3 -i renders/channel/08b-becker-rig-hours-at-15.mp4 -frames:v 1 -q:v 2 publishing/08b-becker-rig-hours-at-15-cover-9x16.jpg"
+    },
+    "first_comment": "Median rent at $15/hr: ≈ 117 of 173 work hours a month (67.4%), so you work for rent from the 1st to ≈ the 20th. A median new house: ≈ 30,053 hours, ≈ 14 years of full-time work, every cent you keep. What's your wage?",
+    "first_comment_action": "Post it right after publishing and pin it.",
+    "trial_reels": {
+      "recommendation": "Post as a regular Reel, not a Trial.",
+      "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show 471c793:renders/channel/08b-becker-rig-hours-at-15.mp4 > 08b-29.5s.mp4` (sha256 95b20844…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+    },
+    "settings": {
+      "audio": "Rename the original audio to 'Rent in hours at $15/hr — The Back of the Envelope' if the app allows; it is the score, with no voice.",
+      "share_to_feed": "On",
+      "google_indexing": "Public professional-account posts can appear in Google/Bing since 10 Jul 2025, so the caption is written as a searchable question."
+    },
+    "posting_window": {
+      "when": "Same evening as YouTube, about 15 min after the Short: 21:45-22:45 ET, on a different evening from 08a and 08c.",
+      "why": "October Reels, median plays by posting slot (owner insights, 2026-10-13): weekday 22:00-00:30 ET 5,449 (n = 3, including the two best: 7,303 and 5,449), weekday midday 1,212 (n = 2), Sunday 05:00-08:00 ET 1,087 (n = 2). 06c, posted Mon 03:46 ET, has 1,711 plays with a 40.3% skip rate. Skip rate tracks plays more closely than the hour does: 27.0-27.4% for the top two, 56.9-65.1% for the bottom two. The condense matters more than the hour."
+    },
+    "alt_text_rule": "Paste the short version into Instagram: it is kept at or under 100 characters so it fits the field however short it is, and it writes 'about' instead of '≈' so screen readers read it cleanly. The long version is for anywhere with room (a website embed, a newsletter)."
+  },
+  "research": {
+    "keywords_youtube": [
+      {
+        "keyword": "rent",
+        "est_monthly_searches": 67558,
+        "volume": 72.1,
+        "competition": 42.8,
+        "overall": 66.1,
+        "note": "seed; -27.3% vs its 30-day baseline (92,940)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "why rent is so expensive",
+        "est_monthly_searches": 13473,
+        "volume": 61.6,
+        "competition": 41.6,
+        "overall": 60.3,
+        "note": "",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "minimum wage",
+        "est_monthly_searches": 11780,
+        "volume": 60.8,
+        "competition": 61.0,
+        "overall": 52.1,
+        "note": "-33.9% vs its baseline (17,822)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "why is rent so high",
+        "est_monthly_searches": 7855,
+        "volume": 58.1,
+        "competition": 40.8,
+        "overall": 58.6,
+        "note": "+81.4% vs its baseline (4,331)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "budgeting 15 an hour",
+        "est_monthly_searches": 4556,
+        "volume": 54.6,
+        "competition": 7.6,
+        "overall": 69.7,
+        "note": "the lowest competition here",
+        "metrics_as_of": "2026-06-02"
+      },
+      {
+        "keyword": "how many hours of your life does it cost purchase hourly wage",
+        "est_monthly_searches": 4219,
+        "volume": 54.1,
+        "competition": 20.9,
+        "overall": 64.1,
+        "note": "the same idea: a price in hours of work",
+        "metrics_as_of": "2026-10-05"
+      },
+      {
+        "keyword": "living on 15 an hour",
+        "est_monthly_searches": 3580,
+        "volume": 53.1,
+        "competition": 39.5,
+        "overall": 56.0,
+        "note": "",
+        "metrics_as_of": "2026-03-30"
+      },
+      {
+        "keyword": "real hourly wage",
+        "est_monthly_searches": 3540,
+        "volume": 53.0,
+        "competition": 26.3,
+        "overall": 61.3,
+        "note": "",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "how much rent can i afford",
+        "est_monthly_searches": 3386,
+        "volume": 52.7,
+        "competition": 34.9,
+        "overall": 57.7,
+        "note": "advice intent (what you can afford); not in the tags",
+        "metrics_as_of": "2026-02-25"
+      },
+      {
+        "keyword": "cost of living",
+        "est_monthly_searches": 129747,
+        "volume": 76.3,
+        "competition": 81.5,
+        "overall": 53.2,
+        "note": "-2.4%; the highest competition here",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "rent due",
+        "est_monthly_searches": 31369,
+        "volume": 67.1,
+        "competition": 42.1,
+        "overall": 63.4,
+        "note": "-8.3%; rent day, where the count starts (adversarial check)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "hourly wage",
+        "est_monthly_searches": 5307,
+        "volume": 55.6,
+        "competition": 23.5,
+        "overall": 64.0,
+        "note": "the ruler; the write-up's own tag (adversarial check)",
+        "metrics_as_of": "2026-08-20"
+      },
+      {
+        "keyword": "$15 an hour",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": 35.5,
+        "overall": 25.8,
+        "note": "<750/month as typed",
+        "metrics_as_of": null
+      },
+      {
+        "keyword": "how many hours to pay rent",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": null,
+        "overall": null,
+        "note": "<750/month",
+        "metrics_as_of": null
+      }
+    ],
+    "keywords_source": "vidIQ keyword research (research, matching_terms and questions modes), pulled 2026-10-13. vidIQ refreshes each keyword on its own schedule, so each row carries its snapshot date in metrics_as_of; five rows are older snapshots (2026-02-25 to 2026-10-05). 'rent due' (matching_terms) and 'hourly wage' were pulled at the adversarial check, 2026-10-13.",
+    "same_idea_youtube_shorts": [
+      {
+        "title": "Businesses CUTTING WAGES? ($15/hour to work at Taco Bell)",
+        "channel": "Reventure Consulting",
+        "subscribers": 688000,
+        "views": 2439837,
+        "published": "2023-06-16",
+        "note": "adjacent: $15 an hour as the subject"
+      },
+      {
+        "title": "Would you work for $15 an hour? 🤔💵#shorts #finance #interview",
+        "channel": "Chris Stocks",
+        "subscribers": 671000,
+        "views": 11499,
+        "published": "2023-01-23"
+      },
+      {
+        "title": "How Much Rent Can You REALLY Afford?",
+        "channel": "NerdWallet",
+        "subscribers": 304000,
+        "views": 6700,
+        "published": "2025-07-10",
+        "note": "the 30% rule, not hours of work"
+      },
+      {
+        "title": "Budget $17/hr Full Time. Rent $1,200/mo #howtobudget",
+        "channel": "Jaimie Hines",
+        "subscribers": 803,
+        "views": 1915,
+        "published": "2025-08-25",
+        "note": "an hourly wage against rent, as a budget"
+      },
+      {
+        "title": "Why $15/hr is the new minimum #finance #inflation #work",
+        "channel": "Mike The Vet 2.0",
+        "subscribers": 3370,
+        "views": 174,
+        "published": "2026-09-08"
+      },
+      {
+        "title": "$1,000 Rent Costs 138 Work Hours at Minimum Wage",
+        "channel": "ThePriceSignal",
+        "subscribers": 1,
+        "views": 9,
+        "published": "2026-10-12",
+        "note": "the same division, on gross pay and a hypothetical $1,000 rent: 'nearly 67' hours at $15 before tax, per its description"
+      },
+      {
+        "title": "Florida's $15 Minimum Wage Is Here — Here's What It Actually Buys You",
+        "channel": "Floriflation",
+        "subscribers": 3,
+        "views": 9,
+        "published": "2026-10-12",
+        "note": "3:56 long; its description says Florida's $15 took effect Sept 30, 2026 (not verified here)"
+      },
+      {
+        "title": "How Long to Earn $1 Million on Minimum Wage? 😩 #shorts",
+        "channel": "Cash Cubed",
+        "subscribers": 12,
+        "views": 5,
+        "published": "2026-10-11",
+        "note": "a big number in hours of work"
+      }
+    ],
+    "same_idea_note": "vidIQ YouTube search (under 4 min; by relevance and by views): no Short puts rent on the calendar in hours of work. The nearest is a day-old Short dividing a hypothetical $1,000 rent by gross pay (9 views). $15 an hour is a proven subject (2.4M views for Reventure's), and Florida's $15 minimum (Sept 30, 2026, per a same-idea description; not verified here) makes it topical.",
+    "instagram_tiktok_outliers": [
+      {
+        "handle": "@moneymovesjake",
+        "platform": "TikTok",
+        "id": "7662503699599691039",
+        "on_screen": "If you make $25/hour, you take home about $17.50 after taxes.",
+        "views": "166.4K (397.1x the account median of 419)",
+        "note": "text on screen, music only, looped: prices reframed as hours of take-home work, the closest concept to this Short"
+      },
+      {
+        "handle": "@saadmughal228",
+        "platform": "Instagram",
+        "id": "Dbwa9rbhbnc",
+        "on_screen": "$35 AN HOUR IS THE NEW 'JUST GETTING BY.'",
+        "views": "901K (72.1x the account median of 12.5K)",
+        "note": "an hourly wage against the bills"
+      },
+      {
+        "handle": "@tyskywalka2.0",
+        "platform": "TikTok",
+        "id": "7672492623310982413",
+        "on_screen": "If you make 20/hr you can't afford to live on your own",
+        "views": "796K (49.9x the account median of 15.9K)",
+        "note": "the wage-vs-rent claim as an opinion; this Short does the division instead"
+      },
+      {
+        "handle": "@mastermoneyco",
+        "platform": "Instagram",
+        "id": "DcyPOmNxMYP",
+        "on_screen": "4 DEAD SIMPLE NUMBERS That Tell You What You Actually Make",
+        "views": "1.8M (28.4x the account median of 62.8K)",
+        "note": "true hourly take-home pay, the footer's ≈ $13.10 idea"
+      },
+      {
+        "handle": "@stacknreps",
+        "platform": "Instagram",
+        "id": "Db4Z_UFNV22",
+        "on_screen": "If I made $15/hour these would be my 3 choices as a financially responsible Guy",
+        "views": "93.3K (24.7x the account median of 3.8K)",
+        "note": "$15 an hour as the filter in the hook"
+      }
+    ],
+    "own_channel_youtube_october_shorts": [
+      {
+        "id": "LjHDFzVxRyM",
+        "title": "Can You Find the Missing Dollar?",
+        "posted_et": "Sun 07:04",
+        "views": 1256
+      },
+      {
+        "id": "hJBvmGA6sZ0",
+        "title": "You Can Lean on $1 Million. Not on $1 Billion.",
+        "posted_et": "Thu 00:25",
+        "views": 1221
+      },
+      {
+        "id": "XVUeMcTg9OQ",
+        "title": "Your Interest Has a Speed Limit",
+        "posted_et": "Sun 05:49",
+        "views": 1141
+      },
+      {
+        "id": "fbpdKf4Wy8c",
+        "title": "What If You Bought Starbucks Stock Instead of a $4 Latte Every Day? (06c)",
+        "posted_et": "Mon 03:45",
+        "views": 760
+      },
+      {
+        "id": "8__HTUa2PoU",
+        "title": "Pay the Minimum on $5,000? 238 Months.",
+        "posted_et": "Mon 22:09",
+        "views": 642
+      },
+      {
+        "id": "FW_oxA3kbsM",
+        "title": "A $2 Lottery Ticket Was Worth $6.98. Until the Fine Print.",
+        "posted_et": "Wed 12:03",
+        "views": 348
+      },
+      {
+        "id": "mXbKY_R63h4",
+        "title": "You Can Carry $1 Million. Not in Pennies.",
+        "posted_et": "Thu 13:38",
+        "views": 177
+      },
+      {
+        "id": "EqFQCJheCMU",
+        "title": "Start Investing 10 Years Late? You Get Half.",
+        "posted_et": "Tue 22:27",
+        "views": 161
+      },
+      {
+        "id": "krfZEHhb0xU",
+        "title": "What If You Bought Netflix Stock Instead of Paying for Netflix? (06b)",
+        "posted_et": "Mon 12:14",
+        "views": 75
+      }
+    ],
+    "own_channel_instagram_october_reels": [
+      {
+        "shortcode": "DeIvYk7I4Qr",
+        "topic": "$5,000 on the minimum",
+        "posted_et": "Mon 22:46",
+        "plays": 7303,
+        "skip_rate_pct": 27.4,
+        "avg_watched_pct": 56.5
+      },
+      {
+        "shortcode": "DeOEthJJ1TG",
+        "topic": "$1M stack vs Burj Khalifa",
+        "posted_et": "Thu 00:28",
+        "plays": 5449,
+        "skip_rate_pct": 27.0,
+        "avg_watched_pct": 83.1
+      },
+      {
+        "shortcode": "DeWgFZRoR_S",
+        "topic": "Missing dollar",
+        "posted_et": "Sun 07:05",
+        "plays": 1997,
+        "skip_rate_pct": 32.0,
+        "avg_watched_pct": 81.3
+      },
+      {
+        "shortcode": "DeMvZv9IqRw",
+        "topic": "Powerball $6.98",
+        "posted_et": "Wed 12:05",
+        "plays": 1825,
+        "skip_rate_pct": 58.7,
+        "avg_watched_pct": 57.9
+      },
+      {
+        "shortcode": "DeYuqT4pjVC",
+        "topic": "06c latte vs Starbucks stock",
+        "posted_et": "Mon 03:46",
+        "plays": 1711,
+        "skip_rate_pct": 40.3,
+        "avg_watched_pct": 69.1
+      },
+      {
+        "shortcode": "DePe11HIHwn",
+        "topic": "$1M in pennies",
+        "posted_et": "Thu 13:37",
+        "plays": 598,
+        "skip_rate_pct": 42.0,
+        "avg_watched_pct": 66.7
+      },
+      {
+        "shortcode": "DeLSd9io8UK",
+        "topic": "10 years late",
+        "posted_et": "Tue 22:30",
+        "plays": 219,
+        "skip_rate_pct": 65.1,
+        "avg_watched_pct": 30.6
+      },
+      {
+        "shortcode": "DeEW2ZMIiYd",
+        "topic": "Speed limit (e)",
+        "posted_et": "Sun 05:54",
+        "plays": 177,
+        "skip_rate_pct": 56.9,
+        "avg_watched_pct": 31.2
+      }
+    ],
+    "channel_stats": {
+      "youtube_subscribers": 53,
+      "youtube_views": 10221,
+      "youtube_videos": 41,
+      "youtube_30d": "+27 subscribers, +5,127 views, 11 videos",
+      "instagram_followers": 8,
+      "instagram_30d_views": 20519
+    },
+    "limits": [
+      "@envelopemath's YouTube Analytics (audience hours, geography) were not read here; the 06b and 06c sheets found vidIQ's YouTube authorization is a different channel. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
+      "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and on the write-up's and the outliers' own tags.",
+      "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
+      "The write-up's rent ($1,531) is a single-publisher Census figure, cross-checked only against the same series' previous quarter and by its verifier; census.gov was blocked to direct fetches. The Aug 2026 house price is preliminary.",
+      "Florida's $15 minimum wage (Sept 30, 2026) comes only from a same-idea Short's description; it is not verified here and is not in the copy.",
+      "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file."
+    ],
+    "titles_scored": "10 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13: 9 at the first build and the hashtag form with #HourlyWage at the adversarial check; all are in youtube.titles_ranked and youtube.titles_also_scored.",
+    "vidiq_credits": "110 credits for this teaser by listed cost (7 keyword queries, 4 YouTube searches (two came back empty), 1 Instagram/TikTok outlier search, 9 title scores and 1 re-score; 5 each), plus 10 shared across 08a-08c for the channel's stats and Shorts list (Instagram owner insights cost 0). Adversarial check: 30 for this teaser (the pick's title score, the #HourlyWage hashtag form, 'why is rent so high', 'hourly wage', 'rent to income ratio' (under 750) and the 'rent' matching terms), plus 5 shared across 08a-08c for the related videos' titles; 60 for the three 08 sheets (balance 3,790 → 3,695, a 95 drop shared with sheets built in parallel)."
+  },
+  "checked": {
+    "date": "2026-10-13",
+    "by": "adversarial check of this sheet",
+    "math": "python3 teasers/v2/checks/08-unit-ladder.py: 677 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/08-unit-ladder.py; the take-home recomputed from the 2026 tax parameters in MATH_RELATIONS ($1,564.00, $2,386.80, $27,249.20, $13.10, 87.3%), every rung re-divided by $13.10 (117, 1,402, 3,824, 30,053), the 67.4% month, '≈ the 20th' on 30 days and the average month, the 19th-21st on a Monday-Friday calendar, 14 years, and the pinned $20/$25 wages; COPY_RULES keep every rounded figure 'about' or '≈', keep $1,531 named as the median, pair each price with its own count and each rung with its car, house or year, keep the 19th and the 21st inside the calendar range and 20.2 days with its 30-day month, keep 14 years with 'every cent you keep', and never call $15 the minimum wage, not even as a hashtag. Re-run at the adversarial check (2026-10-13) with the same result",
+    "limits": {
+      "youtube_title_chars": 75,
+      "youtube_description_chars": 1580,
+      "youtube_description_utf8_bytes": 1615,
+      "youtube_tags_chars_as_youtube_counts": 299,
+      "youtube_hashtags": 3,
+      "instagram_caption_chars": 1223,
+      "instagram_hashtags": 5,
+      "instagram_alt_text_short_chars": 89
+    },
+    "vidiq_requeried": "pulled 2026-10-13: rent 67,558 / 42.8 (-27.3%); why is rent so high 7,855 (+81.4%); minimum wage 11,780 (-33.9%); title scores 98 (pick), 82 (write-up title); channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,519 views in 30 days. Re-queried after the build: the pick's title score 98. Match. Re-queried at the adversarial check: the pick's title score 98; why is rent so high 7,855 / 40.8 (+81.4%); 8__HTUa2PoU's title as in the related-video pick (642 views). All match."
+  }
+}

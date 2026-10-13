@@ -12,7 +12,8 @@
 //     from there, so frame 1's dots sit mid-plot instead of on the floor of an empty grid.
 //   - the year clock rolls to y + 1 one frame after year y's Dec-31 close, so each close shows under its own year.
 //   - the scoreboard row, the footer and the stage sit 24 px lower than layoutFor's grid (air under the hook).
-//   - the race clock is linear over raceT, except that it pauses on each answer-row hold (lookOpts.unit, below).
+//   - the race clock is linear over raceT, except that it pauses on each answer-row hold (lookOpts.unit, below), or
+//     (opt-in) runs piecewise linear through lookOpts.clockKnots.
 //   - purchases tick on the spend line: the item's icon drops onto the line as the race reaches it (gravity, squash);
 //     one at the point where both lines start stands just left of it, so the own line never runs through it
 //     with a price tag ("$8.99  MAY 2014") that holds until the next purchase; the icons stay on the line as markers
@@ -76,6 +77,19 @@
 //                         cuts softly (no slam) to `finalWork` (use the board's own rounded figure, "≈ $17,700 ÷
 //                         $239.88", never a second spelling of it), and line 2 rests on `final` with its "≈" still an
 //                         unlit ghost, dimmed to half. The payoff lights it.
+//   clockKnots          opt-in, off by default (absent: the linear clock, unchanged): [[t, x], …] inner knots of the
+//                       race clock: the race reaches x at t and runs linearly between them and raceT's two ends, so a
+//                       flat stretch of the data can run faster (06a: the flat 2015 and 2018 at 0.4 / 0.5 s a year
+//                       against 0.71, so the picture never sits near-still there) and the rest keeps its pace. Both t
+//                       and x must rise (each stretch ≥ 0.05 s) strictly inside raceT and x.from → x.to; a list out
+//                       of order, or one given with the answer row's pauses (they own the knots), is ignored with a
+//                       console warning and the clock runs as without it. Every beat (tags, swipes, holds, the year
+//                       clock) follows the bent clock; the finish stays at raceT[1]
+//   startPing           opt-in, off by default (absent: no element is made): while the own tip waits on its first
+//                       point for the race (raceT[0] > 0, or lines that start after x.from, as 06a's launch day), it
+//                       pings from frame 2: a neon ring swells out of the dot (r 11 → 48 px) and fades, one every
+//                       0.3 s, the last born at least 0.15 s before the line leaves. Born at nothing, so frame 1
+//                       is unchanged; no cue
 //   cover               "clean": frame 1 carries only the hook's own price: the board's counters wait LED-off, as
 //                       unlit ghost digits at the counter's size in the shape of its first value ("$–.––", 16% white,
 //                       decoration), and a purchase at the clock's start drops in with the race at raceT[0] (no
@@ -259,6 +273,19 @@ export default function povRace(spec, ctx) {
     const ok = ks.every((k, n) => n === 0 || (k[0] >= ks[n - 1][0] - 1e-9 && (k[1] <= ks[n - 1][1] + 1e-9 || k[0] - ks[n - 1][0] > 0.05)))
     if (ok) knots = ks
     else console.warn('pov-race: lookOpts.unit.holds cannot pause the race in order (check holds[].t and hold); the clock runs straight')
+  }
+  // lookOpts.clockKnots (opt-in; absent: the linear clock above, unchanged): [[t, x], …] inner knots, the race reaches
+  // x at t and runs linearly between them and raceT's two ends, so a flat stretch of the data can run faster and a
+  // dip slower. Both t and x must rise (each stretch ≥ 0.05 s) strictly inside raceT and x.from → x.to. Not with the
+  // answer row's pauses (they own the knots): then it is ignored with a warning, as is a list out of order.
+  if (lo.clockKnots != null) {
+    const ck = Array.isArray(lo.clockKnots) ? lo.clockKnots.map(k => (Array.isArray(k) ? [+k[0], +k[1]] : [NaN, NaN])) : []
+    const ks = [[R0, X.from], ...ck, [R1, X.to]]
+    const ok = ck.length > 0 && ks.every((k, n) => isFinite(k[0]) && isFinite(k[1]) &&
+      (n === 0 || (k[0] - ks[n - 1][0] >= 0.05 - 1e-9 && k[1] > ks[n - 1][1] + 1e-9)))
+    if (pz.length) console.warn('pov-race: lookOpts.clockKnots is ignored while lookOpts.unit.holds pause the race')
+    else if (ok) knots = ks
+    else console.warn('pov-race: lookOpts.clockKnots must rise in t (≥ 0.05 s a stretch) and x inside raceT and x.from → x.to; the clock runs straight')
   }
   const xAt = t => {
     if (t <= knots[0][0]) return knots[0][1]
@@ -504,6 +531,20 @@ export default function povRace(spec, ctx) {
     return { sr, glow, path, halo, dot, core }
   }
   const lines = [lineOf(SP, 7, 0.14), lineOf(OW, 9, 0.3)]
+  // lookOpts.startPing (opt-in; absent: no element at all): while the own tip waits on its first point for the race,
+  // it pings: a neon ring swells out of the dot and fades, one every PING s (the last born at least PING / 2 before
+  // the line leaves), so a cover that waits for its first purchase moves from frame 2. A ring is born at nothing
+  // (opacity 0), so frame 1 is unchanged.
+  const PING = 0.3
+  const ping = lo.startPing === true ? (() => {
+    const tStart = tAtX(OW.x0)
+    const n = tStart > 0 ? Math.max(1, Math.ceil((tStart - PING / 2) / PING)) : 0
+    if (!n) return null
+    const ring = s('circle', { r: 10, fill: 'none', stroke: OW.color, 'stroke-width': 6, opacity: 0, filter: 'url(#prGlow)' })
+    const rim = s('circle', { r: 10, fill: 'none', stroke: OW.color, 'stroke-width': 3, opacity: 0 })
+    gTipTop.prepend(ring, rim)
+    return { ring, rim, n }
+  })() : null
 
   // purchases: the item's icon standing on the spend line, with a price tag (chart mode)
   const ICON = Math.round(clamp((P.w / Math.max(1, purchases.length)) * 0.9, 34, 42))
@@ -935,6 +976,13 @@ export default function povRace(spec, ctx) {
         for (const c of [ln.halo, ln.dot, ln.core]) { attr(c, 'cx', tx.toFixed(1)); attr(c, 'cy', ty.toFixed(1)) }
         attr(ln.halo, 'r', (24 + 24 * win).toFixed(1))
         attr(ln.halo, 'opacity', (0.26 + 0.2 * win).toFixed(3))
+        if (ping && sr === OW) {
+          const k = Math.floor(Math.max(0, t) / PING), q = (Math.max(0, t) - k * PING) / PING
+          const on = t > 0 && k < ping.n
+          const rr = 11 + 37 * ease.out(q), o = on ? 0.9 * (1 - q) : 0
+          for (const c of [ping.ring, ping.rim]) { attr(c, 'cx', tx.toFixed(1)); attr(c, 'cy', ty.toFixed(1)); attr(c, 'r', rr.toFixed(1)) }
+          attr(ping.ring, 'opacity', (o * 0.7).toFixed(3)); attr(ping.rim, 'opacity', o.toFixed(3))
+        }
       }
       if (fillUp) { const [a, b] = gapPaths(x, py); attr(fillUp, 'd', a); attr(fillDn, 'd', b) }
 

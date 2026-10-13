@@ -1,0 +1,631 @@
+{
+  "id": "08a-scoreboard-costco-hot-dogs",
+  "teaser": "08a Scoreboard, unit-ladder: \"What your $1.50 Costco hot dog would cost if it rose like a house\"",
+  "prepared": "2026-10-13",
+  "for_video": {
+    "current_render": "renders/channel/08a-scoreboard-costco-hot-dogs.mp4",
+    "current_duration_s": 24.5,
+    "current_sha256": "9b736e4eaecf1e55b43c56ca8732288fea0763cc90c4aad67dac106c4c090a82",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the pre-condense cut. The ship step re-runs the build with --covers on the condensed file.",
+    "cut": {
+      "name": "pre-condense cut (fix pass, round-2 QA, 2026-10-08)",
+      "spec": "studio/specs/08a-scoreboard-costco-hot-dogs.json",
+      "body_s": 22.0,
+      "card_s": 2.5,
+      "shipped": null,
+      "git": "471c793",
+      "status": "the 08 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay); no 08 WIP spec was in studio/specs-wip/ at this build. The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."
+    }
+  },
+  "facts": {
+    "source": "teasers/v2/08-unit-ladder.md section 08a; teasers/v2/checks/08-unit-ladder.py: 677 checks, 0 failed on studio/specs/ (2026-10-13)",
+    "unit": "Costco hot dog + soda, $1.50 in 1985 and still $1.50 (NPR via HPPR, 2024-06-04; 13 ABC/WTVG, 2026-04-29); only the price stayed: Hebrew National became Kirkland Signature in 2009 and the 12 oz can a 20 oz fountain drink",
+    "rule": "hot dogs = price ÷ $1.50, to the nearest hot dog, with '≈' unless exact",
+    "rungs": "Costco Gold Star membership $65 (since 2024-09-01) ≈ 43; a month of Census median asking rent, Q2 2026, $1,531 ≈ 1,021; a Census median new house, 1985 (annual), $84,300 = 56,200 exactly; a Census median new house, Aug 2026 (preliminary), $393,700 ≈ 262,467",
+    "ratio": "$393,700 ÷ $84,300 = 4.6702 ≈ 4.7× (the same in hot dogs: 262,466.67 ÷ 56,200)",
+    "verdict_math": "$1.50 × 4.670225 = $7.005338 ≈ $7.01; equivalently $393,700 ÷ 56,200 = $7.005338 (the footer's working at the payoff)",
+    "assumption": "sticker prices, not adjusted for inflation: a sticker-to-sticker counterfactual, which is the point of a ruler that never moved",
+    "verdict": "Rose like a house? A ≈ $7.01 hot dog."
+  },
+  "youtube": {
+    "titles_ranked": [
+      {
+        "rank": 1,
+        "title": "What Would Your $1.50 Costco Hot Dog Cost If It Rose Like House Prices?",
+        "vidiq_score": 96,
+        "chars": 71,
+        "note": "PICK. Tied top score of the 10 scored. It keeps the video's own hook ('your $1.50 hot dog', 'rose like') and adds the searched words: 'costco hot dog' at characters 23-36, '$1.50' (the 'costco 1.50 hot dog' searches) and 'house prices'. No hashtags in the title; the description's first three show above it."
+      },
+      {
+        "rank": 2,
+        "title": "What Would a Costco Hot Dog Cost If It Rose Like House Prices?",
+        "vidiq_score": 96,
+        "chars": 62,
+        "note": "The same score, 9 characters shorter, 'Costco Hot Dog' 10 characters earlier. It drops 'your $1.50', the header's own stake; the fallback if the pick reads long in the player."
+      },
+      {
+        "rank": 3,
+        "title": "What Would a Costco Hot Dog Cost If It Rose Like House Prices? #Costco #CostcoHotDog #HousingMarket",
+        "vidiq_score": 96,
+        "chars": 99,
+        "note": "The house 3-hashtag form (99 characters), with the description's own three hashtags, so it can be pasted as is. The same score as the pick, but it gives up '$1.50' and 'your' for links the description's hashtags already provide."
+      }
+    ],
+    "titles_also_scored": [
+      {
+        "title": "What Would a Costco Hot Dog Cost If It Rose Like House Prices? #costco #hotdog #housingmarket",
+        "vidiq_score": 96,
+        "chars": 93,
+        "note": "the first build's option 3; its #hotdog is not one of the description's hashtags, so the builder's check would reject it as the pick"
+      },
+      {
+        "title": "What Would a Costco Hot Dog Cost If It Rose Like House Prices Since 1985?",
+        "vidiq_score": 96,
+        "chars": 73,
+        "note": "73 chars; the year is already on screen in the footer at frame 1"
+      },
+      {
+        "title": "Costco's Hot Dog Is Still $1.50. What If It Rose Like a House?",
+        "vidiq_score": 95,
+        "chars": 62,
+        "note": "the frozen price first, then the question"
+      },
+      {
+        "title": "Costco's Hot Dog Has Been $1.50 Since 1985. What If It Rose Like a House?",
+        "vidiq_score": 95,
+        "chars": 73,
+        "note": ""
+      },
+      {
+        "title": "What Your $1.50 Costco Hot Dog Would Cost If It Rose Like a House",
+        "vidiq_score": 90,
+        "chars": 65,
+        "note": "the write-up's title"
+      },
+      {
+        "title": "What If Costco's $1.50 Hot Dog Rose Like House Prices?",
+        "vidiq_score": 87,
+        "chars": 54,
+        "note": ""
+      },
+      {
+        "title": "A New House in Costco Hot Dogs: 1985 vs 2026",
+        "vidiq_score": 86,
+        "chars": 44,
+        "note": "round 1's judge title; it states a comparison instead of asking"
+      }
+    ],
+    "title_pick": "What Would Your $1.50 Costco Hot Dog Cost If It Rose Like House Prices?",
+    "title_pick_chars": 71,
+    "description": "What would your $1.50 Costco hot dog cost if it rose like house prices? Costco never raised it: hot dog + soda, $1.50 in 1985, still $1.50. A median new house went from 56,200 hot dogs in 1985 to about 262,467 in Aug 2026. Had the hot dog risen like the house, it would cost about $7.01.\n\nThe math, shown (hot dogs = price ÷ $1.50):\n• Your Costco membership: $65 ÷ $1.50 ≈ 43 hot dogs.\n• A month of median rent, 2026: $1,531 ÷ $1.50 ≈ 1,021 hot dogs.\n• A median new house, 1985: $84,300 ÷ $1.50 = 56,200 hot dogs.\n• A median new house, Aug 2026: $393,700 ÷ $1.50 ≈ 262,467 hot dogs, ≈ 4.7× the 1985 count.\n• Rose like a house? $393,700 (Aug 2026) ÷ 56,200 hot dogs (1985) ≈ $7.01 a hot dog.\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\n\nAnimation and original sound: The Back of the Envelope. Costco's hot dog + soda has cost $1.50 since 1985 (NPR, 2024; WTVG, 29 Apr 2026). Only the price stayed the same: the frank became Kirkland Signature in 2009 and the drink grew to 20 oz. Costco Gold Star membership: $65 a year since Sep 2024. Rent: U.S. Census Bureau median asking rent, Q2 2026. Houses: U.S. Census Bureau median sales price of new houses sold, 1985 (annual) and Aug 2026 (preliminary). Sticker prices, not adjusted for inflation. Not financial advice. Not affiliated with or endorsed by Costco.\n#Costco #CostcoHotDog #HousingMarket",
+    "description_chars": 1376,
+    "hashtags_in_order": [
+      "#Costco",
+      "#CostcoHotDog",
+      "#HousingMarket"
+    ],
+    "hashtag_rules": "Title hashtags show as links in the title; with none in the title, the first 3 description hashtags show above it. Over 60 hashtags and YouTube ignores all of them. #Shorts is not needed (vertical, under 3 min).",
+    "tags": [
+      "costco hot dog",
+      "costco 1.50 hot dog",
+      "why costco hot dog is $1.50",
+      "why costco hasn't raised its hot dog price since 1985",
+      "costco hot dog price",
+      "costco",
+      "housing market",
+      "house prices",
+      "home prices",
+      "housing affordability",
+      "inflation",
+      "cost in units of",
+      "money math",
+      "math animation",
+      "the back of the envelope",
+      "envelope math"
+    ],
+    "tags_chars_as_youtube_counts": 326,
+    "pinned_comment": "What should we price in hot dogs next? Any price ÷ 1.5 = your hot dogs.\n\nYes, these are sticker prices, not adjusted for inflation. That's the point of the hot dog: Costco never raised the $1.50 (the frank became Kirkland Signature in 2009 and the soda grew to 20 oz, but the price didn't move). The house went from $84,300 in 1985 to $393,700 in Aug 2026, ≈ 4.7×. Spread over 1985's 56,200 hot dogs: $393,700 (Aug 2026) ÷ 56,200 hot dogs (1985) ≈ $7.01 a hot dog.",
+    "related_video": {
+      "pick": {
+        "id": "fbpdKf4Wy8c",
+        "title": "What If You Bought Starbucks Stock Instead of a $4 Latte Every Day? #Starbucks #LatteFactor #stocks",
+        "url": "https://www.youtube.com/shorts/fbpdKf4Wy8c",
+        "why": "06c, live since Mon 12 Oct 2026 and the channel's best-performing brand Short (760 views): a small, habitual purchase priced against something bigger, the same move as this Short's frozen $1.50."
+      },
+      "swap_when_live": "08b (rent in hours of work at $15/hr) or 08c (a year of college in Big Macs), the same unit-ladder series, once published. Then point that Short's Related video at this one.",
+      "end_screen": "Shorts have no end screens or cards. The Related video link is the Shorts equivalent."
+    },
+    "thumbnail_frame": "In the YouTube app, pick frame 1, the question frame: the header, the $1.50 hero, the hot dog and 'YOUR HOT DOG + SODA'. The Instagram cover is the verdict frame instead.",
+    "settings": {
+      "category": "Education",
+      "audience": "Not made for kids",
+      "altered_or_synthetic_content": "No (animated chart, not realistic footage)",
+      "remixing": "Allow",
+      "captions": "None needed (no narration; all text is on screen)"
+    },
+    "posting_window": {
+      "when": "First free Tue-Thu evening after the condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+      "spacing": "Keep it at least 6 h from any other upload on the channel, on a different evening from 08b and 08c, and in a different week from 05c (also Costco on the Scoreboard look; 05c's sheet asks the same). Suggested order within the series: 08b, then 08c, then 08a.",
+      "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,199 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2); 06c (Mon 03:45 ET) has 760 and 06b (Mon 12:14 ET) 75, too young to compare. The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. 08a goes last of the three: the Costco hot-dog cluster is crowded right now (a dozen 'why is it still $1.50' Shorts since August), and 05c brings the same brand in the same look; 'costco hot dog' still runs +39.4% and 'home prices' +197.5% over their 30-day baselines, so the topic will hold."
+    },
+    "description_utf8_bytes": 1405
+  },
+  "instagram": {
+    "caption": "What would your $1.50 Costco hot dog cost if it rose like a house? Hot dog + soda: $1.50 in 1985. Still $1.50. Priced in hot dogs.\n\nCostco never raised the $1.50. If it had risen like a new house: ≈ $7.01.\n\nThe math, shown (hot dogs = price ÷ $1.50):\n• Your $65 Costco membership: ≈ 43 hot dogs.\n• A month of median rent, $1,531 (2026): ≈ 1,021 hot dogs.\n• A median new house in 1985, $84,300: 56,200 hot dogs.\n• A median new house in Aug 2026, $393,700: ≈ 262,467 hot dogs, ≈ 4.7× the 1985 count.\n• $393,700 (Aug 2026) ÷ 56,200 hot dogs (1985) ≈ $7.01 a hot dog.\n\nSticker prices, not adjusted for inflation: that's the point of a price that never moved. Only the price stayed the same: the frank became Kirkland Signature in 2009 and the drink grew to 20 oz.\n\nCensus median asking rent (Q2 2026); Census median new-house prices (1985 annual, Aug 2026 preliminary). Costco Gold Star membership $65 a year. Not financial advice. Not affiliated with or endorsed by Costco.\n\nWhat should we price in hot dogs next?\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\nAnimation and original sound: The Back of the Envelope.\n\n#costco #costcohotdog #housingmarket #moneymath #personalfinance",
+    "caption_chars": 1210,
+    "caption_first_125": "What would your $1.50 Costco hot dog cost if it rose like a house? Hot dog + soda: $1.50 in 1985. Still $1.50. Priced in hot ",
+    "caption_rule": "The first 125 characters are the title's question, the 'Costco hot dog' keywords and the footer's frozen price (on screen at frame 1), no result: the caption overlays the Reel from frame 1, so the verdict and every count sit below 'more'.",
+    "hashtags_in_order": [
+      "#costco",
+      "#costcohotdog",
+      "#housingmarket",
+      "#moneymath",
+      "#personalfinance"
+    ],
+    "hashtag_rule": "Instagram caps a post at 5 hashtags (since Dec 2025).",
+    "alt_text_short": "Chart: a $1.50 Costco hot dog, risen like a new house since 1985, would cost about $7.01.",
+    "alt_text_long": "Animation on a black scoreboard. The header asks what your $1.50 hot dog would cost if it rose like a house; the footer says hot dog + soda, $1.50 in 1985, still $1.50. Each price is divided by $1.50 and the hot dogs pile up: a $65 Costco membership is about 43 hot dogs; a month of median rent, $1,531, about 1,021; a median new house in 1985, $84,300, is 56,200 hot dogs, a wall of dots; a median new house in Aug 2026, $393,700, is about 262,467. The 1985 wall shrinks to a white mound inside the bigger green 2026 wall. Payoff: rose like a house? $393,700 (Aug 2026) divided by 56,200 hot dogs (1985) is about $7.01 a hot dog.",
+    "alt_text_where": "Advanced settings → Accessibility → Alt text, if your app shows it for Reels.",
+    "cover": {
+      "files": {
+        "3x4": "publishing/08a-scoreboard-costco-hot-dogs-cover-3x4.jpg",
+        "9x16": "publishing/08a-scoreboard-costco-hot-dogs-cover-9x16.jpg"
+      },
+      "frame_in_current_render_s": 21.0,
+      "frame_index": 630,
+      "frame_by_content": "The verdict frame, as the write-up's Instagram note asks: the header 'WHAT YOUR $1.50 HOT DOG WOULD / COST IF IT ROSE LIKE A HOUSE', the hero '≈ $7.01' beside the hot-dog icon, the footer's working '$393,700 (Aug 2026) ÷ 56,200 hot dogs (1985)', the white 1985 mound (tagged '1985') inside the green wall tagged 'AUG 2026', and the verdict 'ROSE LIKE A HOUSE? / A ≈ $7.01 HOT DOG.' (captions hide from the payoff, so nothing sits under it). On any cut, use a settled frame of the verdict hold, after the glow fades and before the end card.",
+      "frame_measured": "On the pre-condense 24.5 s render the verdict lands with the hero at frame 552 (18.40 s); its glow settles by about frame 580 (19.33 s), and the board then holds still (frame-to-frame mean luma change under 0.0001) until the end card at frame 660 (22.00 s). Frame 630 (21.00 s) is used.",
+      "crop": "3:4 = 1080×1440 from y 0 to 1440 of the 1080×1920 frame: the badge (from y 141), the header, the hero, the working, the split wall and the verdict (to y 1298), with even margins (141 px above, 142 px below); it drops the empty black below. A centred grid crop (y 240-1680) cuts the badge and the header.",
+      "how_to_set": "In 'Edit cover', pick the verdict frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
+      "re_export": "ffmpeg -ss 21.0 -i renders/channel/08a-scoreboard-costco-hot-dogs.mp4 -frames:v 1 -vf \"crop=1080:1440:0:0\" -q:v 2 publishing/08a-scoreboard-costco-hot-dogs-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 21.0 -i renders/channel/08a-scoreboard-costco-hot-dogs.mp4 -frames:v 1 -q:v 2 publishing/08a-scoreboard-costco-hot-dogs-cover-9x16.jpg"
+    },
+    "first_comment": "Costco never raised the $1.50. Risen like a new house, it would be ≈ $7.01: $393,700 (Aug 2026) ÷ 56,200 hot dogs (1985). Sticker prices, not adjusted for inflation. What should we price next?",
+    "first_comment_action": "Post it right after publishing and pin it.",
+    "trial_reels": {
+      "recommendation": "Post as a regular Reel, not a Trial.",
+      "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show 471c793:renders/channel/08a-scoreboard-costco-hot-dogs.mp4 > 08a-24.5s.mp4` (sha256 9b736e4e…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+    },
+    "settings": {
+      "audio": "Rename the original audio to 'Your $1.50 hot dog, risen like a house — The Back of the Envelope' if the app allows; it is the score, with no voice.",
+      "share_to_feed": "On",
+      "google_indexing": "Public professional-account posts can appear in Google/Bing since 10 Jul 2025, so the caption is written as a searchable question."
+    },
+    "posting_window": {
+      "when": "Same evening as YouTube, about 15 min after the Short: 21:45-22:45 ET, on a different evening from 08b and 08c and in a different week from 05c.",
+      "why": "October Reels, median plays by posting slot (owner insights, 2026-10-13): weekday 22:00-00:30 ET 5,449 (n = 3, including the two best: 7,303 and 5,449), weekday midday 1,212 (n = 2), Sunday 05:00-08:00 ET 1,087 (n = 2). 06c, posted Mon 03:46 ET, has 1,711 plays with a 40.3% skip rate. Skip rate tracks plays more closely than the hour does: 27.0-27.4% for the top two, 56.9-65.1% for the bottom two. The condense matters more than the hour."
+    },
+    "alt_text_rule": "Paste the short version into Instagram: it is kept at or under 100 characters so it fits the field however short it is, and it writes 'about' instead of '≈' so screen readers read it cleanly. The long version is for anywhere with room (a website embed, a newsletter)."
+  },
+  "research": {
+    "keywords_youtube": [
+      {
+        "keyword": "costco hot dog",
+        "est_monthly_searches": 21845,
+        "volume": 64.8,
+        "competition": 47.5,
+        "overall": 59.9,
+        "note": "seed; +39.4% vs its 30-day baseline (15,676)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "costco 1.50 hot dog",
+        "est_monthly_searches": 8792,
+        "volume": 58.9,
+        "competition": 43.5,
+        "overall": 57.9,
+        "note": "the frozen price, as searched",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "why costco 1.50 hot dog business",
+        "est_monthly_searches": 7786,
+        "volume": 58.1,
+        "competition": 27.2,
+        "overall": 64.0,
+        "note": "",
+        "metrics_as_of": "2026-09-06"
+      },
+      {
+        "keyword": "costco hot dog business",
+        "est_monthly_searches": 5786,
+        "volume": 56.2,
+        "competition": 23.6,
+        "overall": 64.3,
+        "note": "",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "why costco hot dog is $1.50",
+        "est_monthly_searches": 5691,
+        "volume": 56.1,
+        "competition": 31.2,
+        "overall": 61.2,
+        "note": "",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "why costco hasn't raised its hot dog price since 1985",
+        "est_monthly_searches": 4747,
+        "volume": 54.9,
+        "competition": 10.3,
+        "overall": 68.8,
+        "note": "the lowest competition here",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "why costco hot dog is still $1.50 animated",
+        "est_monthly_searches": 4504,
+        "volume": 54.5,
+        "competition": 21.7,
+        "overall": 64.0,
+        "note": "searchers asking for an animation",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "costco",
+        "est_monthly_searches": 329799,
+        "volume": 82.4,
+        "competition": 61.2,
+        "overall": 64.9,
+        "note": "-2.5% vs its baseline (338,300); the brand, crowded",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "housing market",
+        "est_monthly_searches": 155960,
+        "volume": 77.5,
+        "competition": 58.8,
+        "overall": 63.0,
+        "note": "+19.5% vs its baseline (130,552)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "housing crisis",
+        "est_monthly_searches": 69307,
+        "volume": 72.3,
+        "competition": 61.0,
+        "overall": 59.0,
+        "note": "+54.9% vs its baseline (44,753)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "home prices",
+        "est_monthly_searches": 26555,
+        "volume": 66.0,
+        "competition": 56.0,
+        "overall": 57.2,
+        "note": "+197.5% vs its baseline (8,925)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "housing affordability",
+        "est_monthly_searches": 18505,
+        "volume": 63.7,
+        "competition": 52.5,
+        "overall": 57.2,
+        "note": "-11.5% vs its baseline (20,900)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "inflation",
+        "est_monthly_searches": 204408,
+        "volume": 79.3,
+        "competition": 65.5,
+        "overall": 61.4,
+        "note": "+4.8%; the comment the sticker-price framing will draw",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "costco hot dog combo options",
+        "est_monthly_searches": 18883,
+        "volume": 63.8,
+        "competition": 26.0,
+        "overall": 67.9,
+        "note": "menu intent, not in the tags",
+        "metrics_as_of": "2026-05-29"
+      },
+      {
+        "keyword": "house prices then and now",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": 38.6,
+        "overall": 24.6,
+        "note": "<750/month",
+        "metrics_as_of": null
+      },
+      {
+        "keyword": "if prices rose like houses",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": null,
+        "overall": null,
+        "note": "<750/month; the video's idea has no search demand of its own",
+        "metrics_as_of": null
+      },
+      {
+        "keyword": "cost in units of",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": 31.1,
+        "overall": 27.6,
+        "note": "<750/month: HD Guy's series name is not searched",
+        "metrics_as_of": null
+      }
+    ],
+    "keywords_source": "vidIQ keyword research (research, matching_terms and questions modes), pulled 2026-10-13. vidIQ refreshes each keyword on its own schedule, so each row carries its snapshot date in metrics_as_of; two rows are older snapshots (2026-05-29 and 2026-09-06).",
+    "same_idea_youtube_shorts": [
+      {
+        "title": "Costco's hot dog has remained $1.50 since it was first introduced in 1984 thanks to his CEO",
+        "channel": "viewsaddict",
+        "subscribers": 76900,
+        "views": 2114377,
+        "published": "2024-10-05",
+        "note": "11 s; the frozen price as the whole story"
+      },
+      {
+        "title": "40年も値上げを封じられたコストコ #雑学",
+        "channel": "雑学コレクターズ",
+        "subscribers": 14900,
+        "views": 2723766,
+        "published": "2026-09-18",
+        "note": "Japanese, 52 s; its description puts the CPI price at about $4.4 and the combo at 245 million a year (not verified here)"
+      },
+      {
+        "title": "Costco Founder Jim Sinegal Won't Increase Hot Dog Cost🌭",
+        "channel": "Our Future",
+        "subscribers": 583000,
+        "views": 2152504,
+        "published": "2022-06-28"
+      },
+      {
+        "title": "Costco mantiene hot dogs a $1,50 desde 1985 🌭",
+        "channel": "Sabiondo Gourmet",
+        "subscribers": 84600,
+        "views": 607078,
+        "published": "2026-08-08",
+        "note": "Spanish"
+      },
+      {
+        "title": "Cost in Units of Costco Hotdog Combos",
+        "channel": "HD Guy",
+        "subscribers": 189000,
+        "views": 80377,
+        "published": "2026-08-04",
+        "note": "the write-up's H13: the same unit as a ruler for military prices, 1.44x its channel; the flop this Short designs against"
+      },
+      {
+        "title": "How Costco's Hot Dog Combo Is So CHEAP 🤯",
+        "channel": "Ethan Ethier",
+        "subscribers": 146000,
+        "views": 23213,
+        "published": "2023-06-18",
+        "note": "its description: 'around $4.20 with today's inflation'"
+      },
+      {
+        "title": "Costco's $1.50 hot dog actually costs $65 #shorts",
+        "channel": "Tony Talks Business",
+        "subscribers": 13200,
+        "views": 2910,
+        "published": "2026-10-03",
+        "note": "the membership as the hidden price"
+      },
+      {
+        "title": "Why Costco Refuses to Raise Its $1.50 Hot Dog Price",
+        "channel": "Oddly Rational",
+        "subscribers": 16,
+        "views": 1347,
+        "published": "2026-10-02"
+      },
+      {
+        "title": "Costco's Hot Dog Has Cost $1.50 Since 1985. The Number That Explains It: About 2¢",
+        "channel": "So We Ran The Numbers",
+        "subscribers": 12,
+        "views": 1175,
+        "published": "2026-10-04",
+        "note": "its description: about $4.67 adjusted for inflation"
+      },
+      {
+        "title": "Costco's Hot Dog Is Still $1.50. Inflation Says $4.66",
+        "channel": "Cash Trail",
+        "subscribers": 0,
+        "views": 12,
+        "published": "2026-09-28",
+        "note": "the CPI version of this question, with the answer in the title"
+      }
+    ],
+    "same_idea_note": "vidIQ YouTube search (under 4 min; by views and by relevance): the $1.50 Costco hot dog is a proven Shorts topic (three past 2 million views) and a crowded one (a dozen small 'why is it still $1.50' Shorts since August). The ones that do the maths use CPI (about $4.20-$4.67, their own descriptions, not verified here). None prices it against a house; HD Guy's same-unit ladder got 80,377 (1.44x).",
+    "instagram_tiktok_outliers": [
+      {
+        "handle": "@chartboom_ig",
+        "platform": "Instagram",
+        "id": "DbdZx4uBaST",
+        "on_screen": "U.S. national debt vs Costco hot dog price",
+        "views": "1.4M (14.8x the account median of 97.5K)",
+        "note": "an animated chart, music only, looped: the frozen hot dog set against a number that kept climbing, the closest format to this Short"
+      },
+      {
+        "handle": "@chartboomhq",
+        "platform": "TikTok",
+        "id": "7665342402017627405",
+        "on_screen": "U.S. national debt vs Costco hot dog price",
+        "views": "965.1K (4.2x the account median of 230.7K)",
+        "note": "the same chart on TikTok"
+      },
+      {
+        "handle": "@wealth.cap",
+        "platform": "Instagram",
+        "id": "DbHQpliFGFk",
+        "on_screen": "Costco's $1.50 hot dog combo stayed $1.50 since 1985.",
+        "views": "1.4M (7.9x the account median of 170.5K)",
+        "note": "the frozen price as a business story, talking head over b-roll"
+      },
+      {
+        "handle": "@tjuslivin",
+        "platform": "TikTok",
+        "id": "7689993874890034445",
+        "on_screen": "Me enjoying my $1.50 dinner after spending $359.77",
+        "views": "834.9K (15.6x the account median of 53.5K)",
+        "note": "the $1.50 hot dog as everyone's own purchase"
+      }
+    ],
+    "own_channel_youtube_october_shorts": [
+      {
+        "id": "LjHDFzVxRyM",
+        "title": "Can You Find the Missing Dollar?",
+        "posted_et": "Sun 07:04",
+        "views": 1256
+      },
+      {
+        "id": "hJBvmGA6sZ0",
+        "title": "You Can Lean on $1 Million. Not on $1 Billion.",
+        "posted_et": "Thu 00:25",
+        "views": 1221
+      },
+      {
+        "id": "XVUeMcTg9OQ",
+        "title": "Your Interest Has a Speed Limit",
+        "posted_et": "Sun 05:49",
+        "views": 1141
+      },
+      {
+        "id": "fbpdKf4Wy8c",
+        "title": "What If You Bought Starbucks Stock Instead of a $4 Latte Every Day? (06c)",
+        "posted_et": "Mon 03:45",
+        "views": 760
+      },
+      {
+        "id": "8__HTUa2PoU",
+        "title": "Pay the Minimum on $5,000? 238 Months.",
+        "posted_et": "Mon 22:09",
+        "views": 642
+      },
+      {
+        "id": "FW_oxA3kbsM",
+        "title": "A $2 Lottery Ticket Was Worth $6.98. Until the Fine Print.",
+        "posted_et": "Wed 12:03",
+        "views": 348
+      },
+      {
+        "id": "mXbKY_R63h4",
+        "title": "You Can Carry $1 Million. Not in Pennies.",
+        "posted_et": "Thu 13:38",
+        "views": 177
+      },
+      {
+        "id": "EqFQCJheCMU",
+        "title": "Start Investing 10 Years Late? You Get Half.",
+        "posted_et": "Tue 22:27",
+        "views": 161
+      },
+      {
+        "id": "krfZEHhb0xU",
+        "title": "What If You Bought Netflix Stock Instead of Paying for Netflix? (06b)",
+        "posted_et": "Mon 12:14",
+        "views": 75
+      }
+    ],
+    "own_channel_instagram_october_reels": [
+      {
+        "shortcode": "DeIvYk7I4Qr",
+        "topic": "$5,000 on the minimum",
+        "posted_et": "Mon 22:46",
+        "plays": 7303,
+        "skip_rate_pct": 27.4,
+        "avg_watched_pct": 56.5
+      },
+      {
+        "shortcode": "DeOEthJJ1TG",
+        "topic": "$1M stack vs Burj Khalifa",
+        "posted_et": "Thu 00:28",
+        "plays": 5449,
+        "skip_rate_pct": 27.0,
+        "avg_watched_pct": 83.1
+      },
+      {
+        "shortcode": "DeWgFZRoR_S",
+        "topic": "Missing dollar",
+        "posted_et": "Sun 07:05",
+        "plays": 1997,
+        "skip_rate_pct": 32.0,
+        "avg_watched_pct": 81.3
+      },
+      {
+        "shortcode": "DeMvZv9IqRw",
+        "topic": "Powerball $6.98",
+        "posted_et": "Wed 12:05",
+        "plays": 1825,
+        "skip_rate_pct": 58.7,
+        "avg_watched_pct": 57.9
+      },
+      {
+        "shortcode": "DeYuqT4pjVC",
+        "topic": "06c latte vs Starbucks stock",
+        "posted_et": "Mon 03:46",
+        "plays": 1711,
+        "skip_rate_pct": 40.3,
+        "avg_watched_pct": 69.1
+      },
+      {
+        "shortcode": "DePe11HIHwn",
+        "topic": "$1M in pennies",
+        "posted_et": "Thu 13:37",
+        "plays": 598,
+        "skip_rate_pct": 42.0,
+        "avg_watched_pct": 66.7
+      },
+      {
+        "shortcode": "DeLSd9io8UK",
+        "topic": "10 years late",
+        "posted_et": "Tue 22:30",
+        "plays": 219,
+        "skip_rate_pct": 65.1,
+        "avg_watched_pct": 30.6
+      },
+      {
+        "shortcode": "DeEW2ZMIiYd",
+        "topic": "Speed limit (e)",
+        "posted_et": "Sun 05:54",
+        "plays": 177,
+        "skip_rate_pct": 56.9,
+        "avg_watched_pct": 31.2
+      }
+    ],
+    "channel_stats": {
+      "youtube_subscribers": 53,
+      "youtube_views": 10221,
+      "youtube_videos": 41,
+      "youtube_30d": "+27 subscribers, +5,127 views, 11 videos",
+      "instagram_followers": 8,
+      "instagram_30d_views": 20519
+    },
+    "limits": [
+      "@envelopemath's YouTube Analytics (audience hours, geography) were not read here; the 06b and 06c sheets found vidIQ's YouTube authorization is a different channel. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
+      "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and on the write-up's and the outliers' own tags.",
+      "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
+      "The write-up's Census sources (rent, both houses) were confirmed from search-result text that quotes them, plus a second source; census.gov and FRED were blocked to direct fetches. The Aug 2026 house price is preliminary and may be revised.",
+      "The same-idea Shorts' CPI figures ($4.20-$4.67) and the Japanese Short's sales figure are their own descriptions, not verified here; the copy states only the write-up's sticker-price maths.",
+      "Slate overlap: 05c (Costco's $100 cart) shares the brand and the Scoreboard look. Post them in different weeks, as 05c's sheet also asks, or move one, as the owner decides.",
+      "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file."
+    ],
+    "titles_scored": "10 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13: 9 at the first build and option 3 with the description's own hashtags at the adversarial check; all are in youtube.titles_ranked and youtube.titles_also_scored.",
+    "vidiq_credits": "110 credits for this teaser by listed cost at the first build (8 keyword queries, 3 YouTube searches, 1 Instagram/TikTok outlier search, 9 title scores and 1 re-score; 5 each), plus 10 shared across 08a-08c for the channel's stats and Shorts list (Instagram owner insights cost 0). 330 for the three 08 sheets. Account balance: 4,955 at the start of the 08 research, 4,640 when it ended, 4,425 after the re-scores (a 530 drop: the balance is shared with sheets built in parallel). Adversarial check: 15 for this teaser (the pick's title score, option 3's re-score, 'costco hot dog'), plus 5 shared across 08a-08c for the three related videos' titles; 60 for the three 08 sheets. Balance 3,790 at its start and 3,695 at its end (a 95 drop, shared with sheets built in parallel)."
+  },
+  "checked": {
+    "date": "2026-10-13",
+    "by": "adversarial check of this sheet",
+    "math": "python3 teasers/v2/checks/08-unit-ladder.py: 677 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/08-unit-ladder.py; every rung re-divided by $1.50 in MATH_RELATIONS (43, 1,021, 56,200 exactly, 262,467), the house ratio (4.6702 ≈ 4.7×) and the verdict both ways ($1.50 × 393,700/84,300 and $393,700 ÷ 56,200 ≈ $7.01); COPY_RULES keep each house price and count beside its year, keep each rung's price paired with its own count and $65 named as the membership, keep every rounded figure 'about' or '≈', keep 'sticker prices, not adjusted for inflation' in every long text, and never say 'same hot dog'. Re-run at the adversarial check (2026-10-13) with the same result",
+    "limits": {
+      "youtube_title_chars": 71,
+      "youtube_description_chars": 1376,
+      "youtube_description_utf8_bytes": 1405,
+      "youtube_tags_chars_as_youtube_counts": 326,
+      "youtube_hashtags": 3,
+      "instagram_caption_chars": 1210,
+      "instagram_hashtags": 5,
+      "instagram_alt_text_short_chars": 89
+    },
+    "vidiq_requeried": "pulled 2026-10-13: costco hot dog 21,845 / 47.5 (+39.4%); housing market 155,960 (+19.5%); home prices 26,555 (+197.5%); title scores 96 (pick), 90 (write-up title); channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,519 views in 30 days. Re-queried after the build: the pick's title score 96. Match. Re-queried at the adversarial check: the pick's title score 96; costco hot dog 21,845 / 47.5 (+39.4%); 06c (fbpdKf4Wy8c) 760 views, title as in the related-video pick. All match."
+  }
+}

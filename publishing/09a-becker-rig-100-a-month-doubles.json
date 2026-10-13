@@ -1,0 +1,591 @@
+{
+  "id": "09a-becker-rig-100-a-month-doubles",
+  "teaser": "09a Becker Rig, growth-ladder: \"You add $100 a month. When does it earn $100 a month?\"",
+  "prepared": "2026-10-13",
+  "for_video": {
+    "current_render": "renders/channel/09a-becker-rig-100-a-month-doubles.mp4",
+    "current_duration_s": 31.0,
+    "current_sha256": "3dddeb79007926f062e4e6375ed38a7ab6f65b34f2fa0d843584796738b0b7bd",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the pre-condense cut. The ship step re-runs the build with --covers on the condensed file.",
+    "cut": {
+      "name": "pre-condense cut (Becker Rig port + port QA fix pass, 2026-10-08)",
+      "spec": "studio/specs/09a-becker-rig-100-a-month-doubles.json",
+      "body_s": 28.5,
+      "card_s": 2.5,
+      "shipped": null,
+      "git": "471c793",
+      "status": "the 09 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay); no 09 WIP spec was in studio/specs-wip/ at this build. The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."
+    }
+  },
+  "facts": {
+    "source": "teasers/v2/09-growth-ladder.md section 09a; teasers/v2/checks/09-growth-ladder.py: 509 checks, 0 failed on studio/specs/ (2026-10-13)",
+    "basis": "$100 at each month-end at an assumed 8% a year, compounded monthly (r = 8% ÷ 12 a month); no fees, no taxes, no inflation adjustment; the rate is not a forecast",
+    "earns": "'Earns a month' at a year-end = Worth × 8% ÷ 12, the next month's growth; it stays in the balance, it is not a payout",
+    "rungs": "Year 1 ≈ $1,245 / ≈ $8; 5 ≈ $7,348 / ≈ $49; 8 ≈ $13,387 / ≈ $89; 9 ≈ $15,743 / ≈ $105; 15 ≈ $34,604 / ≈ $231; 20 ≈ $58,902 / ≈ $393; 25 ≈ $95,103 / ≈ $634; 30 ≈ $149,036 / ≈ $994 (Worth / earns a month)",
+    "year_1": "'By year 1 it's earning about $8 a month' is the rate at the end of year 1: month 13 grows $8.30 (month 12 $7.58; the year-1 average $3.75)",
+    "crossing": "month k grows W(k − 1) × r ≥ $100 exactly when (1 + r)^(k − 1) ≥ 2: month 106 grows ≈ $100.91 (month 105 ≈ $99.58), so year 9",
+    "any_amount": "the deposit cancels out of (1 + r)^(k − 1) ≥ 2: month 106 for $50, $500, $1,000 or $5,000 a month (still year 9)",
+    "year_30": "≈ $994 a month = 9.94 × the $100 deposit ('almost 10 times')",
+    "pinned": "72 ÷ 8 = 9; (1 + 8%/12)^n = 2 at n = 104.32 months ≈ 8.7 years (a lump sum's doubling time); the same crossing at 7% is month 121 (year 11), at 10% month 85 (year 8)",
+    "sp500": "S&P 500 since 1928: 10.09% a year nominal, 6.81% after inflation (Official Data Foundation, live figure read 2026-10-07); 9.94% nominal 1928-2024 (A Wealth of Common Sense, from Damodaran's NYU Stern data) [click-check]",
+    "verdict": "From year 9 it earns more than you add. ($50 or $500 a month: still year 9)"
+  },
+  "youtube": {
+    "titles_ranked": [
+      {
+        "rank": 1,
+        "title": "You Invest $100 a Month. When Does It Earn $100 a Month? Compound Interest, Year by Year",
+        "vidiq_score": 93,
+        "chars": 88,
+        "note": "PICK. Top score of the 9 scored. The header's question with 'Invest' for 'add' (the searched 'invest 100 a month', 7,909) is the first 55 characters, so a title cut short still asks it whole; 'Compound Interest, Year by Year' adds the topic's biggest phrase (137,873) and the ladder. No hashtags in the title; the description's first three show above it."
+      },
+      {
+        "rank": 2,
+        "title": "You Add $100 a Month. When Does It Earn $100 a Month?",
+        "vidiq_score": 92,
+        "chars": 53,
+        "note": "The write-up's title, word for word as the header. One point lower; the fallback if the pick reads long in the player."
+      },
+      {
+        "rank": 3,
+        "title": "You Invest $100 a Month. When Does It Earn $100 a Month?",
+        "vidiq_score": 92,
+        "chars": 56,
+        "note": "The pick without its tail: the same score as the write-up's title, with the searched verb."
+      }
+    ],
+    "titles_also_scored": [
+      {
+        "title": "You Add $100 a Month. When Does Your Money Earn $100 a Month?",
+        "vidiq_score": 92,
+        "chars": 61,
+        "note": ""
+      },
+      {
+        "title": "If You Invest $100 a Month, When Does It Earn $100 a Month on Its Own?",
+        "vidiq_score": 90,
+        "chars": 70,
+        "note": ""
+      },
+      {
+        "title": "Invest $100 a Month: When Does It Earn More Than You Put In?",
+        "vidiq_score": 89,
+        "chars": 60,
+        "note": ""
+      },
+      {
+        "title": "You Invest $100 a Month. What Year Does Your Money Earn More Than You Add?",
+        "vidiq_score": 89,
+        "chars": 74,
+        "note": ""
+      },
+      {
+        "title": "The Compound Interest Crossover: When Does $100 a Month Earn $100 a Month?",
+        "vidiq_score": 87,
+        "chars": 74,
+        "note": "the keyword up front loses 5"
+      },
+      {
+        "title": "You Add $100 a Month. When Does It Earn $100 a Month? #compoundinterest #investing #ruleof72",
+        "vidiq_score": 82,
+        "chars": 92,
+        "note": "the house 3-hashtag form"
+      }
+    ],
+    "title_pick": "You Invest $100 a Month. When Does It Earn $100 a Month? Compound Interest, Year by Year",
+    "title_pick_chars": 88,
+    "description": "When does $100 a month start earning $100 a month on its own? At an assumed 8% a year, the crossover comes in year 9: month 106 grows about $100.91, more than you add. By year 30 it earns about $994 a month.\n\nThe math, shown (Earns a month = the balance × 8% ÷ 12, the next month's growth):\n• Year 1: ≈ $1,245, earning ≈ $8 a month.\n• Year 5: ≈ $7,348, earning ≈ $49 a month.\n• Year 8: ≈ $13,387, earning ≈ $89 a month. Not yet.\n• Year 9: ≈ $15,743, earning ≈ $105 a month. More than the $100 you add.\n• Year 20: ≈ $58,902, earning ≈ $393 a month.\n• Year 30: ≈ $149,036, earning ≈ $994 a month, almost 10 times your $100.\n• The amount cancels out: $50 or $500 a month, it's still year 9.\n• \"Earns\" is growth at the assumed rate that stays in the account, not a payout.\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\n\nAnimation and original sound: The Back of the Envelope. $100 deposited at each month-end at an assumed 8% a year, compounded monthly. 8% is an assumption, not a forecast: the S&P 500 has returned about 10% a year since 1928 before inflation, about 7% after (Official Data Foundation: 10.09% and 6.81%, read Oct 2026; A Wealth of Common Sense, from NYU Stern data: 9.94% before inflation, 1928-2024). No fees, taxes or inflation adjustment. Not financial advice. Not affiliated with or endorsed by S&P Dow Jones Indices.\n#compoundinterest #investing #ruleof72",
+    "description_chars": 1406,
+    "hashtags_in_order": [
+      "#compoundinterest",
+      "#investing",
+      "#ruleof72"
+    ],
+    "hashtag_rules": "Title hashtags show as links in the title; with none in the title, the first 3 description hashtags show above it. Over 60 hashtags and YouTube ignores all of them. #Shorts is not needed (vertical, under 3 min).",
+    "tags": [
+      "invest 100 a month",
+      "investing 100 a month",
+      "what happens when you invest 100 dollars a month",
+      "if you invest 100 dollars a month",
+      "crossover point",
+      "crossover point investing",
+      "compound interest",
+      "compound interest explained",
+      "how compound interest works",
+      "rule of 72",
+      "power of compounding",
+      "investing for beginners",
+      "money math",
+      "math animation",
+      "the back of the envelope",
+      "envelope math"
+    ],
+    "tags_chars_as_youtube_counts": 392,
+    "pinned_comment": "Year 9 isn't a coincidence: 72 ÷ 8 = 9. Monthly growth passes your deposit exactly when (1 + 8%/12)^n = 2, the lump-sum doubling time (≈ 8.7 years). At 7% it's year 11. At 10%, year 8.\n\nWhich rate would you use? The year doesn't depend on the amount, only on the rate.",
+    "related_video": {
+      "pick": {
+        "id": "XVUeMcTg9OQ",
+        "title": "Your Interest Has a Speed Limit #CompoundInterest #Math #personalfinance",
+        "url": "https://www.youtube.com/shorts/XVUeMcTg9OQ",
+        "why": "The channel's compounding-frequency Short ($1 at 100% compounded every second only reaches $2.72), and its best YouTube breakout (score 21.3, 1,141 views, 6 comments). Someone who watches growth pass a deposit is the viewer for the limit on compounding."
+      },
+      "swap_when_live": "09b ($1,000 at birth) or 09c ($1 a day × your number), the same growth-ladder series, once published. Then point that Short's Related video at this one.",
+      "end_screen": "Shorts have no end screens or cards. The Related video link is the Shorts equivalent."
+    },
+    "thumbnail_frame": "In the YouTube app, pick the question frame (the cover below): the header's question, the working line '$1,245 × 8% ÷ 12 ≈ $8/mo', rung 1 at ≈ $8 against its $100 gauge and the dim rungs above.",
+    "settings": {
+      "category": "Education",
+      "audience": "Not made for kids",
+      "altered_or_synthetic_content": "No (animated chart, not realistic footage)",
+      "remixing": "Allow",
+      "captions": "None needed (no narration; all text is on screen)"
+    },
+    "posting_window": {
+      "when": "First free Tue-Thu evening after the 09 condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+      "spacing": "Keep it at least 6 h from any other upload on the channel, on a different evening from 09b and 09c, and away from 07a (the other $-a-month compounding Short). Suggested order within the series: 09a, then 09b, then 09c.",
+      "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,199 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2); 06c (Mon 03:45 ET) has 760 and 06b (Mon 12:14 ET) 75, too young to compare. The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. 09a goes first of the three: its hook scored highest with the write-up's judges (7.0 of 10), and its search words are the ones rising ('rule of 72' +86.9%, 'crossover point' +233.5% on their baselines)."
+    },
+    "description_utf8_bytes": 1450
+  },
+  "instagram": {
+    "caption": "You invest $100 a month. When does it earn $100 a month on its own? Compound interest, worked out year by year. Sooner than you'd guess.\n\nAt an assumed 8% a year, compounded monthly. \"Earns\" here means the balance × 8% ÷ 12: growth that stays in the account, not a payout.\n\nThe math, shown:\n• Year 1: ≈ $1,245, earning ≈ $8 a month.\n• Year 8: ≈ $13,387, earning ≈ $89 a month. Not yet.\n• Year 9: ≈ $15,743, earning ≈ $105 a month. Month 106 grows ≈ $100.91 on its own, more than you add.\n• Year 30: ≈ $149,036, earning ≈ $994 a month, almost 10 times your $100.\n• And the year doesn't depend on the amount: $50 or $500 a month, it's still year 9.\n\n8% is an assumption, not a forecast: the S&P 500 has returned ≈ 10% a year since 1928 before inflation, ≈ 7% after. Deposits at month-end; no fees, taxes or inflation. Not financial advice. Not affiliated with or endorsed by S&P Dow Jones Indices.\n\nWhich rate would you use?\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\nAnimation and original sound: The Back of the Envelope.\n\n#compoundinterest #investing #ruleof72 #moneymath #investingforbeginners",
+    "caption_chars": 1130,
+    "caption_first_125": "You invest $100 a month. When does it earn $100 a month on its own? Compound interest, worked out year by year. Sooner than y",
+    "caption_rule": "The first 125 characters are the header's question with the 'invest $100 a month' and 'compound interest' keywords, and the write-up's caption line 1 ('Sooner than you'd guess.'), no result: the caption overlays the Reel from frame 1, so the year and every figure sit below 'more'.",
+    "hashtags_in_order": [
+      "#compoundinterest",
+      "#investing",
+      "#ruleof72",
+      "#moneymath",
+      "#investingforbeginners"
+    ],
+    "hashtag_rule": "Instagram caps a post at 5 hashtags (since Dec 2025).",
+    "alt_text_short": "Chart: $100 a month at 8%: its growth passes $100 a month in year 9; by year 30, about $994 a month.",
+    "alt_text_long": "Animation on a light page with a green stick figure at the foot of a ladder whose rungs are years. The header asks: you add $100 a month; when does it earn $100 a month? The footer: assumes 8% a year, compounded monthly, $100 in at month-end, not a forecast. A working line multiplies each year's worth by 8% and divides by 12. The figure throws a coin up to each rung, and a gauge under each monthly figure shows how far it is from $100: year 1, about $1,245, earning about $8 a month; year 5, about $7,348, earning about $49; year 8, about $13,387, earning about $89, tagged under $100; year 9, about $15,743, earning about $105, tagged beats your $100; year 15, about $34,604, earning about $231; year 20, about $58,902, earning about $393; year 25, about $95,103, earning about $634; year 30, about $149,036, earning about $994 a month, heaved onto a gold plate. Verdict: from year 9 it earns more than you add, and $50 or $500 a month is still year 9.",
+    "alt_text_where": "Advanced settings → Accessibility → Alt text, if your app shows it for Reels.",
+    "cover": {
+      "files": {
+        "3x4": "publishing/09a-becker-rig-100-a-month-doubles-cover-3x4.jpg",
+        "9x16": "publishing/09a-becker-rig-100-a-month-doubles-cover-9x16.jpg"
+      },
+      "frame_in_current_render_s": 1.8,
+      "frame_index": 54,
+      "frame_by_content": "The question frame, settled: the header 'You add $100 a month. / When does it earn $100 a month?' ('$100 a month' in green), the footer 'ASSUMES 8% a year, compounded monthly / $100 in at month-end · not a forecast', the working line '$1,245 × 8% ÷ 12 ≈ $8/mo', the column heads Year / Worth / Earns a month, rung 1 at ≈ $1,245 / ≈ $8 with its $100 gauge filled a sliver (8%), seven dim rungs (5 to 30) over empty shelves, the figure at the foot of the ladder with a hand on his chin, and the first caption 'By year 1 it's earning / about $8 a month.' fully lit. It asks and does not answer: ≈ $8 against the $100 the header asks about. On any cut, use a settled frame after rung 1's gauge has filled and the first caption is fully lit, before the first throw.",
+      "frame_measured": "On the pre-condense 31.0 s render rung 1 is settled at frame 0; the nod and the gauge fill are done by about frame 20, and from about frame 30 (1.00 s) to the wind-up at about frame 68 (2.25 s) the frame-to-frame mean luma change stays under 0.0001 (the figure's idle sway). Frame 54 (1.80 s) is inside that hold, with the first caption fully lit.",
+      "crop": "3:4 = 1080×1440 from y 62 to 1502 of the 1080×1920 frame. The content runs from y 112 (the badge) to y 1452 (the caption), so the crop centres it (50 px above and below): badge, header, footer, working line, column heads, the whole ladder with the figure, and the caption; it drops the empty page below. A centred grid crop (y 240-1680) cuts the badge and the header.",
+      "how_to_set": "In 'Edit cover', pick the question frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
+      "re_export": "ffmpeg -ss 1.8 -i renders/channel/09a-becker-rig-100-a-month-doubles.mp4 -frames:v 1 -vf \"crop=1080:1440:0:62\" -q:v 2 publishing/09a-becker-rig-100-a-month-doubles-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 1.8 -i renders/channel/09a-becker-rig-100-a-month-doubles.mp4 -frames:v 1 -q:v 2 publishing/09a-becker-rig-100-a-month-doubles-cover-9x16.jpg"
+    },
+    "first_comment": "Year 1: ≈ $8 a month. Year 8: ≈ $89. Year 9: ≈ $105, more than the $100 you add (month 106 grows ≈ $100.91). Any monthly amount: still year 9. Which rate would you use?",
+    "first_comment_action": "Post it right after publishing and pin it.",
+    "trial_reels": {
+      "recommendation": "Post as a regular Reel, not a Trial.",
+      "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show 471c793:renders/channel/09a-becker-rig-100-a-month-doubles.mp4 > 09a-31.0s.mp4` (sha256 3dddeb79…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. A cover test (the question frame vs the crossing) is the other use. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+    },
+    "settings": {
+      "audio": "Rename the original audio to '$100 a month, year by year — The Back of the Envelope' if the app allows; it is the score, with no voice.",
+      "share_to_feed": "On",
+      "google_indexing": "Public professional-account posts can appear in Google/Bing since 10 Jul 2025, so the caption is written as a searchable question."
+    },
+    "posting_window": {
+      "when": "Same evening as YouTube, about 15 min after the Short: 21:45-22:45 ET, on a different evening from 09b and 09c.",
+      "why": "October Reels, median plays by posting slot (owner insights, 2026-10-13): weekday 22:00-00:30 ET 5,449 (n = 3, including the two best: 7,303 and 5,449), weekday midday 1,212 (n = 2), Sunday 05:00-08:00 ET 1,087 (n = 2). 06c, posted Mon 03:46 ET, has 1,711 plays with a 40.3% skip rate. Skip rate tracks plays more closely than the hour does: 27.0-27.4% for the top two, 56.9-65.1% for the bottom two. The condense matters more than the hour."
+    },
+    "alt_text_rule": "Paste the short version into Instagram: it is kept at or under 100 characters so it fits the field however short it is, and it writes 'about' instead of '≈' so screen readers read it cleanly. The long version is for anywhere with room (a website embed, a newsletter)."
+  },
+  "research": {
+    "keywords_youtube": [
+      {
+        "keyword": "compound interest",
+        "est_monthly_searches": 137873,
+        "volume": 76.7,
+        "competition": 50.6,
+        "overall": 65.8,
+        "note": "the mechanism; −17.3% vs its 30-day baseline (166,772)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "crossover point",
+        "est_monthly_searches": 20589,
+        "volume": 64.4,
+        "competition": 33.1,
+        "overall": 65.4,
+        "note": "+233.5% vs its baseline (6,173): the searched name for growth passing the deposit",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "how compound interest works",
+        "est_monthly_searches": 18742,
+        "volume": 63.8,
+        "competition": 43.5,
+        "overall": 60.9,
+        "note": "−12.4%",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "invest 100 a month",
+        "est_monthly_searches": 7909,
+        "volume": 58.2,
+        "competition": 52.0,
+        "overall": 54.1,
+        "note": "the video's stake",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "rule of 72",
+        "est_monthly_searches": 7756,
+        "volume": 58.1,
+        "competition": 59.0,
+        "overall": 51.2,
+        "note": "+86.9% vs its baseline (4,149); the pinned comment's shortcut",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "what happens when you invests 100 dollars a month",
+        "est_monthly_searches": 5295,
+        "volume": 55.6,
+        "competition": 31.7,
+        "overall": 60.7,
+        "note": "as typed in search",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "if you invest 100 dollars a month",
+        "est_monthly_searches": 5286,
+        "volume": 55.6,
+        "competition": 39.2,
+        "overall": 57.7,
+        "note": "",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "the compound interest secret 100 a month",
+        "est_monthly_searches": 4984,
+        "volume": 55.2,
+        "competition": 22.9,
+        "overall": 64.0,
+        "note": "an older snapshot",
+        "metrics_as_of": "2026-04-21"
+      },
+      {
+        "keyword": "crossover point investing",
+        "est_monthly_searches": 4868,
+        "volume": 55.0,
+        "competition": 24.4,
+        "overall": 63.3,
+        "note": "the lowest competition here",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "investing $100 a month",
+        "est_monthly_searches": 3372,
+        "volume": 52.7,
+        "competition": 51.6,
+        "overall": 51.0,
+        "note": "seed; US research mode",
+        "metrics_as_of": "2026-09-30"
+      },
+      {
+        "keyword": "passive income",
+        "est_monthly_searches": 235675,
+        "volume": 80.2,
+        "competition": 59.0,
+        "overall": 64.5,
+        "note": "−22.3%; not used: 'earns' here is growth that stays in the account",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "investing for beginners",
+        "est_monthly_searches": 295600,
+        "volume": 81.7,
+        "competition": 49.0,
+        "overall": 69.4,
+        "note": "−22.0%; the fifth Instagram tag",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "how long to double your money",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": 34.7,
+        "overall": 26.1,
+        "note": "<750/month",
+        "metrics_as_of": null
+      }
+    ],
+    "keywords_source": "vidIQ keyword research (research mode for 'investing $100 a month' with US volumes, 'rule of 72', 'crossover point investing' and 'how long to double your money'; matching_terms for '100 a month'; questions for 'compound interest'), pulled 2026-10-13. vidIQ refreshes each keyword on its own schedule, so each row carries its snapshot date in metrics_as_of; two rows are older snapshots (2026-04-21 and 2026-09-30).",
+    "same_idea_youtube_shorts": [
+      {
+        "title": "How $100 a Month Can Make You a Millionaire",
+        "channel": "The Ramsey Show Highlights",
+        "subscribers": 4600000,
+        "views": 5145566,
+        "published": "2024-08-05",
+        "note": "12 s; outlier score 29.38; the $100 stake, aimed at a million"
+      },
+      {
+        "title": "The Power of Compounding",
+        "channel": "Brian Feroldi",
+        "subscribers": 319000,
+        "views": 3281682,
+        "published": "2025-05-23",
+        "note": "outlier score 127.35; the topic, not the crossover"
+      },
+      {
+        "title": "Will investing $100 every month till you're 65 make you a millionaire? Debatable. @GeorgeKamel",
+        "channel": "Humphrey Yang",
+        "subscribers": 2090000,
+        "views": 313583,
+        "published": "2024-08-05"
+      },
+      {
+        "title": "This Is When Your Money Starts Working Harder Than You",
+        "channel": "The Money Guy Show",
+        "subscribers": 705000,
+        "views": 195754,
+        "published": "2026-04-10",
+        "note": "the crossover as a talk clip"
+      },
+      {
+        "title": "The Wealth Crossover Point: When Your Portfolio Grows Faster Than You Can Contribute",
+        "channel": "Erin Talks Money | Erin Moriarity",
+        "subscribers": 441000,
+        "views": 17584,
+        "published": "2026-02-07"
+      },
+      {
+        "title": "Is your money earning more than you are yet? #finance #money #investing",
+        "channel": "Vantage Point",
+        "subscribers": 15,
+        "views": 299,
+        "published": "2026-10-02",
+        "note": "$500 a month: a year's growth passes a year's deposits after about ten and a half years, per its description"
+      },
+      {
+        "title": "When Does Your Money Start Making More Than You Put In? | The Investing Crossover Point",
+        "channel": "Money Made Simple",
+        "subscribers": 17,
+        "views": 6,
+        "published": "2026-09-09",
+        "note": "2:12 long"
+      },
+      {
+        "title": "How $100 A Month Actually Makes You Wealthy (The Year 9 Crossover)",
+        "channel": "FinAndCare",
+        "subscribers": 0,
+        "views": 5,
+        "published": "2026-09-22",
+        "note": "this Short's answer in its title; its description ties it to an S&P 500 index fund (not checked here)"
+      },
+      {
+        "title": "How Much Can $100 a Month Grow in 20 Years? 📈💰 #diyinvestor #diyinvesting #financialsense #financial",
+        "channel": "DollarMira",
+        "subscribers": 6,
+        "views": 20,
+        "published": "2026-10-10",
+        "note": "7% compounded monthly, ≈ $52,000 by year 20, per its description"
+      }
+    ],
+    "same_idea_note": "vidIQ YouTube search (under 4 min; by views and by relevance): '$100 a month' is a proven stake when aimed at a million (Ramsey 5.1M; Humphrey Yang 313,583); the crossover itself has one talk-clip hit (The Money Guy, 195,754) and several small 2026 Shorts, one with 'Year 9' in its title. None shows the amount cancelling out.",
+    "instagram_tiktok_outliers": [
+      {
+        "handle": "@theschoolofmoneysg",
+        "platform": "Instagram",
+        "id": "Db7XpGGCDOf",
+        "on_screen": "Your money makes money at $100k",
+        "views": "55.9K (79.3x the account median of 705)",
+        "note": "an animated tipping point in compound interest (8% on $1k vs on $100k): the closest concept to this Short"
+      },
+      {
+        "handle": "@propertywithharley",
+        "platform": "Instagram",
+        "id": "Db2tfLtz3RU",
+        "on_screen": "Future Portfolio Value (now vs 2046)",
+        "views": "1.3M (33.9x the account median of 37K)",
+        "note": "a year-by-year value table over a still shot, music only, looped"
+      },
+      {
+        "handle": "@aaronlevi__",
+        "platform": "Instagram",
+        "id": "Dbs5KFOuURH",
+        "on_screen": "In your 20s, someone will tell you to start investing... it's a good idea to listen to them:",
+        "views": "228.8K (67.8x the account median of 3.4K)",
+        "note": "a balance climbing over b-roll, music only"
+      },
+      {
+        "handle": "@data.dragonn",
+        "platform": "TikTok",
+        "id": "7680694072218029344",
+        "on_screen": "POV: Someone invested $100 every month in the GoPro Stock over the last 12 years",
+        "views": "1.4M (49.6x)",
+        "note": "the same $100-a-month stake as an animated data visualization, music only"
+      },
+      {
+        "handle": "@keysfinance",
+        "platform": "TikTok",
+        "id": "7666160850981408013",
+        "on_screen": "How to retire with $2M",
+        "views": "3.3M (1457.8x the account median of 2.3K)",
+        "note": "monthly amounts by starting age, talking head"
+      }
+    ],
+    "own_channel_youtube_october_shorts": [
+      {
+        "id": "LjHDFzVxRyM",
+        "title": "Can You Find the Missing Dollar?",
+        "posted_et": "Sun 07:04",
+        "views": 1256
+      },
+      {
+        "id": "hJBvmGA6sZ0",
+        "title": "You Can Lean on $1 Million. Not on $1 Billion.",
+        "posted_et": "Thu 00:25",
+        "views": 1221
+      },
+      {
+        "id": "XVUeMcTg9OQ",
+        "title": "Your Interest Has a Speed Limit",
+        "posted_et": "Sun 05:49",
+        "views": 1141
+      },
+      {
+        "id": "fbpdKf4Wy8c",
+        "title": "What If You Bought Starbucks Stock Instead of a $4 Latte Every Day? (06c)",
+        "posted_et": "Mon 03:45",
+        "views": 760
+      },
+      {
+        "id": "8__HTUa2PoU",
+        "title": "Pay the Minimum on $5,000? 238 Months.",
+        "posted_et": "Mon 22:09",
+        "views": 642
+      },
+      {
+        "id": "FW_oxA3kbsM",
+        "title": "A $2 Lottery Ticket Was Worth $6.98. Until the Fine Print.",
+        "posted_et": "Wed 12:03",
+        "views": 348
+      },
+      {
+        "id": "mXbKY_R63h4",
+        "title": "You Can Carry $1 Million. Not in Pennies.",
+        "posted_et": "Thu 13:38",
+        "views": 177
+      },
+      {
+        "id": "EqFQCJheCMU",
+        "title": "Start Investing 10 Years Late? You Get Half.",
+        "posted_et": "Tue 22:27",
+        "views": 161
+      },
+      {
+        "id": "krfZEHhb0xU",
+        "title": "What If You Bought Netflix Stock Instead of Paying for Netflix? (06b)",
+        "posted_et": "Mon 12:14",
+        "views": 75
+      }
+    ],
+    "own_channel_instagram_october_reels": [
+      {
+        "shortcode": "DeIvYk7I4Qr",
+        "topic": "$5,000 on the minimum",
+        "posted_et": "Mon 22:46",
+        "plays": 7303,
+        "skip_rate_pct": 27.4,
+        "avg_watched_pct": 56.5
+      },
+      {
+        "shortcode": "DeOEthJJ1TG",
+        "topic": "$1M stack vs Burj Khalifa",
+        "posted_et": "Thu 00:28",
+        "plays": 5449,
+        "skip_rate_pct": 27.0,
+        "avg_watched_pct": 83.1
+      },
+      {
+        "shortcode": "DeWgFZRoR_S",
+        "topic": "Missing dollar",
+        "posted_et": "Sun 07:05",
+        "plays": 1997,
+        "skip_rate_pct": 32.0,
+        "avg_watched_pct": 81.3
+      },
+      {
+        "shortcode": "DeMvZv9IqRw",
+        "topic": "Powerball $6.98",
+        "posted_et": "Wed 12:05",
+        "plays": 1825,
+        "skip_rate_pct": 58.7,
+        "avg_watched_pct": 57.9
+      },
+      {
+        "shortcode": "DeYuqT4pjVC",
+        "topic": "06c latte vs Starbucks stock",
+        "posted_et": "Mon 03:46",
+        "plays": 1711,
+        "skip_rate_pct": 40.3,
+        "avg_watched_pct": 69.1
+      },
+      {
+        "shortcode": "DePe11HIHwn",
+        "topic": "$1M in pennies",
+        "posted_et": "Thu 13:37",
+        "plays": 598,
+        "skip_rate_pct": 42.0,
+        "avg_watched_pct": 66.7
+      },
+      {
+        "shortcode": "DeLSd9io8UK",
+        "topic": "10 years late",
+        "posted_et": "Tue 22:30",
+        "plays": 219,
+        "skip_rate_pct": 65.1,
+        "avg_watched_pct": 30.6
+      },
+      {
+        "shortcode": "DeEW2ZMIiYd",
+        "topic": "Speed limit (e)",
+        "posted_et": "Sun 05:54",
+        "plays": 177,
+        "skip_rate_pct": 56.9,
+        "avg_watched_pct": 31.2
+      }
+    ],
+    "channel_stats": {
+      "youtube_subscribers": 53,
+      "youtube_views": 10221,
+      "youtube_videos": 41,
+      "youtube_30d": "+27 subscribers, +5,127 views, 11 videos",
+      "instagram_followers": 8,
+      "instagram_30d_views": 20519
+    },
+    "limits": [
+      "@envelopemath's YouTube Analytics (audience hours, geography) were not read here; the 06b and 06c sheets found vidIQ's YouTube authorization is a different channel. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
+      "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and on the write-up's and the outliers' own tags.",
+      "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
+      "The S&P 500 figures behind the caption's '≈ 10% / ≈ 7%' come from search results the write-up could not open (the proxy blocked the pages); they are marked [click-check] there, and the 10.09% / 6.81% figure is a live one that will drift.",
+      "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file.",
+      "The vidIQ credit balance is shared with the other sheets being built in parallel, so this sheet's spend is counted from each tool's listed cost (see research.vidiq_credits)."
+    ],
+    "titles_scored": "9 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored.",
+    "vidiq_credits": "09a: 100 by listed cost (6 keyword queries, 3 YouTube searches, 1 Instagram/TikTok outlier search, 9 title scores and 1 re-score after the build, 5 credits each), plus a third of the format's 10 shared credits (channel stats 5, channel Shorts list 5; Instagram owner insights and the balance cost 0); 265 for the three 09 sheets. The balance read 4,640 before the first 09 call, 4,635 after it (a keyword query at 5) and 4,375 when the research ended: a 265 drop, so 15 were parallel sheets' calls. It read 4,130 after the build's re-scores: of that 245, 15 were the three 09 re-scores and 230 parallel sheets' calls. At the adversarial check: 10 by listed cost (1 title score, 1 keyword pull), plus a third of 5 shared (one lookup of the three related videos); the three 09 checks used 35 in all. The balance read 3,730 before them and 3,695 after, with no other spend in that window."
+  },
+  "checked": {
+    "date": "2026-10-13",
+    "by": "adversarial check of this sheet",
+    "math": "python3 teasers/v2/checks/09-growth-ladder.py: 509 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/09-growth-ladder.py; every rung recomputed in MATH_RELATIONS from $100 a month at 8% ÷ 12 (Worth and Earns a month, each to the dollar), the crossing month 106 (≈ $100.91; month 105 ≈ $99.58), the amount cancelling ($50 to $5,000), 9.94 ('almost 10 times'), 72 ÷ 8 = 9, 104.32 months ≈ 8.7 years, the 7% and 10% years (11 and 8), and the S&P 500's ≈ 10% / ≈ 7%; COPY_RULES keep every rung's figures beside their own year, every rounded figure 'about' or '≈', 'earns' defined as growth that stays in the account, and the 8% called an assumption",
+    "limits": {
+      "youtube_title_chars": 88,
+      "youtube_description_chars": 1406,
+      "youtube_description_utf8_bytes": 1450,
+      "youtube_tags_chars_as_youtube_counts": 392,
+      "youtube_hashtags": 3,
+      "instagram_caption_chars": 1130,
+      "instagram_hashtags": 5,
+      "instagram_alt_text_short_chars": 100
+    },
+    "vidiq_requeried": "pulled 2026-10-13: compound interest 137,873 / 50.6 (−17.3%); crossover point 20,589 (+233.5%); rule of 72 7,756 (+86.9%); invest 100 a month 7,909; 9 titles scored: pick 93, write-up title 92; channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,519 views in 30 days. Re-queried after the build: the pick's title score 93. Re-queried at the adversarial check: the pick's title score 93; 'crossover point' 20,589 / 33.1 (+233.5%, baseline 6,173); the related video XVUeMcTg9OQ 1,141 views and 6 comments, live since Sun 4 Oct 05:49 ET. All match."
+  }
+}

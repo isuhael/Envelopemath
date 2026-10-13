@@ -51,6 +51,9 @@
 //          The winner's gold plate dims (ink on soft, 0.88) while the card is up; the gridlines under it and every
 //          crash band fade. Placed left of the winner's reach and above every line, flag and figure in its columns:
 //          when it does not fit, the finished chart pulls back (the value axis rescales) until it does.
+//          rows[k].d (opt-in, for a condensed cut): that row's bar grows in d s (its value pops 0.04 s before the bar
+//          is full, the answer's punch with it), a shot instead of a fill. Absent: 0.35 + 0.5 × (its gain ÷ the
+//          largest) s, exactly as before
 //
 // Also: two tips "share a height" when closer than about 1.45 figure heights (the lower figure steps back); a hand
 // stays 24 px clear of the tag column; the hero hill fades in with the line's width; axis label families swap in
@@ -701,7 +704,8 @@ export default function chartRace(spec, ctx) {
     const rows = lo.lens.rows.filter(r => r && r.series != null && +r.series >= 0 && +r.series < N).slice(0, 3).map(r => {
       const i = +r.series
       const a = Number.isFinite(+r.from) ? +r.from : xf, b = Number.isFinite(+r.to) ? +r.to : xt
-      return { i, t: Math.max(lt, Number.isFinite(+r.t) ? +r.t : lt), gain: Math.max(0, valueAt(i, b) - valueAt(i, a)), label: String(r.label ?? ''), display: String(r.display ?? '') }
+      return { i, t: Math.max(lt, Number.isFinite(+r.t) ? +r.t : lt), gain: Math.max(0, valueAt(i, b) - valueAt(i, a)), label: String(r.label ?? ''), display: String(r.display ?? ''),
+        d: r.d != null && Number.isFinite(+r.d) && +r.d > 0 ? +r.d : null }
     })
     if (rows.length) LENS = { t: lt, rows }
   }
@@ -773,7 +777,8 @@ export default function chartRace(spec, ctx) {
       for (let k = Math.max(0, Math.floor(tp0 / DT)); k < NS; k++) AX[k] *= 1 + (pullG - 1) * E.inOut(prog(k * DT, tp0, tpd))
     }
     if (top + H + 6 > bottomAt(pullG)) console.warn(`chart-race lens: card ${H.toFixed(0)} px tall does not clear the chart`)
-    LENS.dur = LENS.rows.map(r => 0.35 + 0.5 * r.gain / gMax)
+    // a row's bar grows for 0.35 + 0.5 × (its gain ÷ the largest) s, or for its own rows[k].d (opt-in)
+    LENS.dur = LENS.rows.map(r => (r.d != null ? r.d : 0.35 + 0.5 * r.gain / gMax))
     // the answer (the largest gain) lands with a punch: card scale bump, a shake (no cue: put it in spec.sfx)
     const kA = LENS.rows.findIndex(r => r.big)
     LENS.tPunch = LENS.rows[kA].t + 0.1 + LENS.dur[kA] - 0.04

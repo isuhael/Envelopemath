@@ -15,11 +15,12 @@ Looks: 06a and 06b Scoreboard (06b ported from Live Sheet on 2026-10-08), 06c Be
    - every string in the spec that contains a digit is covered by one of those checks,
    - the hook rules the linter can't see: header <= 15 words with exactly one $ figure,
      a number in the header at t = 0, duration inside the 18-35 s lane for this format
-     (06c's condensed cut: a 15.5-19 s body, the owner's 2026-10-12 note; 06b's condensed cut: 17-20 s),
+     (06c's condensed cut: a 15.5-19 s body, the owner's 2026-10-12 note; 06b's condensed cut: 17-20 s;
+     06a's condensed cut, 2026-10-13: 15-18 s),
    - VO timing: each line's d >= written words / 2.6 AND >= spoken words / 2.8 (numbers
      counted as read aloud: "$17,532" = 5 words, "2025" = 2, "$7.99" = 2, "8.7" = 3),
      no overlaps, last line ends at least 0.4 s before the end. The posted shorts have no
-     narration, so the condensed cuts (06c, 06b) are paced as on-screen captions instead: each line's
+     narration, so the condensed cuts (06c, 06b, 06a) are paced as on-screen captions instead: each line's
      d >= max(1.2 s, 0.12 s per word) at phone size,
    - beat sync: each beat a VO line mentions lands (on the chart's x -> t clock) inside
      that line's window, +/- 0.3 s; every sfx cue sits on its beat,
@@ -30,7 +31,13 @@ Looks: 06a and 06b Scoreboard (06b ported from Live Sheet on 2026-10-08), 06c Be
      for 06b's condensed cut the race start (frame 1 clean, moving from frame 2), the answer-row
      pauses (each 0.4-0.7 s, 2.0 s in all), the moving pace (0.85-1.05 s a year), the payoff
      <= 1.5 s after the reveal, the verdict hold, caption gaps (< 0.2 s, or a breath of <= 0.6 s while
-     the race runs with no beat inside it) and footer steps up >= 1.2 s.
+     the race runs with no beat inside it) and footer steps up >= 1.2 s; for 06a's condensed cut the opening (the race
+     reaches the launch-day phone just after 0.3 s, so the kit drops it in and frame 1 stays clean of it, its fall
+     starting by 0.1 s with the whoosh on it, the waiting start dot pinging from frame 2: lookOpts.startPing), the red
+     by 1.5 s, the race clock (lookOpts.clockKnots, honoured by the kit: one plain pace of 0.65-0.8 s a year, and fast
+     stretches of 0.35-0.55 s a year only over flat data (the stake moves <= 10%) with no beat inside, covering the
+     flat 2015 and 2018 that sat near-still at the plain pace), the verdict 0.8-1.5 s after the reveal and held
+     1.2-1.6 s, back-to-back captions, each number caption up <= 1.3 s before its beat and down <= 1.9 s after it.
 4. Prints a table and exits 1 on any mismatch.
 
 Run:  python3 teasers/v2/checks/06-pov-race.py                    (the specs in studio/specs/)
@@ -45,6 +52,9 @@ Run:  python3 teasers/v2/checks/06-pov-race.py                    (the specs in 
       and shipped the same day; B_IN_SPECS names it) and the retired 30.5 s round-2 cut, kept as a reference
       for a git-history copy (`git show 471c793:studio/specs/06b-scoreboard-netflix-bill.json`) passed with
       --spec; studio/specs/ must hold the condensed cut, and any other length fails the lane.
+      06a has two cuts, picked by length: the 26.5 s round-2 cut (what studio/specs/ holds; A_IN_SPECS names it) and
+      the condensed cut (2026-10-13, 15-18 s), written to studio/specs-wip/ and checked with --spec until it is
+      promoted (then set A_IN_SPECS = "a"; the 26.5 s set stays as a reference for a git-history copy).
 """
 import calendar
 import datetime as dt
@@ -288,6 +298,16 @@ def ye(y):
     return rnd(y + 0.99, 2)
 
 
+def value_at(points, x):
+    """the polyline's value at x (linear between points, flat outside them)"""
+    if x <= points[0][0]:
+        return points[0][1]
+    for (x0, y0), (x1, y1) in zip(points, points[1:]):
+        if x <= x1:
+            return y0 + (x - x0) / (x1 - x0) * (y1 - y0)
+    return points[-1][1]
+
+
 def cross_x(points, level, below):
     """first x where the polyline crosses `level` (going below if below=True, else above)"""
     for (x0, y0), (x1, y1) in zip(points, points[1:]):
@@ -352,6 +372,7 @@ A["years"] = (VALUE_DATE - LAUNCH).days / 365.25
 A["doublings"] = math.log2(A["mult"])
 A["yrs_per_doubling"] = A["years"] / A["doublings"]
 A["x_below"] = cross_x(A["own"], IPHONE_PRICE, below=True)               # 2008 dip under $499
+A["x_above"] = cross_x(A["own"], IPHONE_PRICE, below=False)              # back above $499 (2009)
 A["x_10k"] = cross_x(A["own"], 10_000, below=False)                      # passes $10,000
 A["drop_2022"] = 1 - AAPL_CLOSE[2022] / AAPL_CLOSE[2021]
 A["v2012"] = A["shares"] * AAPL_CLOSE[2012]                              # spoken "2012: about $2,200"
@@ -373,6 +394,7 @@ check("06a", "cross-check: StatMuse-only value within 0.5%",
 check("06a", "2022 drop is 'a quarter' (20-30%)", f"{A['drop_2022']:.3f}", "0.20-0.30",
       ok=0.20 <= A["drop_2022"] <= 0.30)
 check("06a", "2008 dip under $499 happens in 2008", int(A["x_below"]), 2008)
+check("06a", "back above $499 in 2009 (the 2008 dip ends)", int(A["x_above"]), 2009)
 check("06a", "passes $10,000 in 2020", int(A["x_10k"]), 2020)
 check("06a", "vo: 2012 close ≈ $2,200 (2 s.f.)", f"{A['v2012']:,.2f}", "2,200", ok=f"{sig(A['v2012'], 2):,.0f}" == "2,200")
 check("06a", "vo: 2017 'over 10 times' (10-11×)", f"{A['mult_2017']:.2f}", "10-11", ok=10 < A["mult_2017"] < 11)
@@ -511,8 +533,10 @@ EXP = {}
 # rounding a viewer can say in one breath; 06b and 06c use 3 (≈ $17,700, ≈ $24,900).
 A["final_disp"] = approx_usd(A["final"], 2)
 A["final_say"] = f"{sig(A['final'], 2):,.0f}"
-EXP["a"] = {
-    "raceT": [0.3, 21.4], "x": {"from": 2007, "to": ye(2025), "tickEvery": 3},
+A["x_10x"] = cross_x(A["own"], 10 * IPHONE_PRICE, below=False)        # "over 10 times" (the 10× crossing, in 2017)
+check("06a", "the stake first passes 10× in 2017 ('2017: over 10 times')", int(A["x_10x"]), 2017)
+_A_COMMON = {
+    "x": {"from": 2007, "to": ye(2025), "tickEvery": 3},
     "first_payoff_x": ye(2007),
     "strings": {
         "header": f"POV: IN {LAUNCH.year} YOU INVESTED IN APPLE\nINSTEAD OF PAYING **${IPHONE_PRICE}**\n"
@@ -552,9 +576,70 @@ EXP["a"] = {
              (1, ye(2012), "2012 close ≈ $2,200"), (2, ye(2017), "2017 close, over 10×"),
              (3, A["x_10k"], "passes $10,000"), (4, ye(2022) - 0.5, "2022 drop"),
              (5, ye(2025), "final value")],
-    "sfx": {0: A["buy_x"], 1: ye(2008), 2: ye(2012), 3: ye(2017), 4: A["x_10k"], 5: ye(2025)},
     "lookOpts_t": {"footerSteps.0": ye(2025)},
 }
+# The round-2 cut (26.5 s + the 2.5 s card): narration-paced captions, the race at about 1.11 s a year from 0.3 s, the
+# verdict 0.6 s after the reveal and held 4.5 s. It is what studio/specs/ holds until the condensed cut is promoted
+# (A_IN_SPECS); after that it is a reference for a git-history copy passed with --spec.
+EXP["a_26s"] = {
+    **_A_COMMON,
+    "cut": "26.5 s (round 2)",
+    "raceT": [0.3, 21.4],
+    "pace": "narration",
+    "lane": LANE,
+    "sfx": {0: A["buy_x"], 1: ye(2008), 2: ye(2012), 3: ye(2017), 4: A["x_10k"], 5: ye(2025)},
+}
+# The condensed cut (2026-10-13, the owner's note: "too many still moments are a killer for a short; condense the rest").
+# Every string, number, beat and caption is the 26.5 s cut's, word for word; only the clock moved. The race runs at
+# about 0.71 s a year (it was 1.11), the caption pacing is for reading (no narration), the hook caption is complete on
+# frame 1, the launch-day phone drops onto the line from the opening frames (frame 1 stays clean of it: the kit stands
+# a purchase in the first 0.3 s on the line at frame 1, so the race reaches it just after 0.3 s), and the verdict lands
+# 0.9 s after the reveal and holds 1.6 s before the end card.
+# Fix pass (the QA judge's should): the flat 2015 and 2018 were near-still with the caption band left out (0.73 s and
+# about 0.45 s), and no spec knob could speed one stretch of a linear clock. The kit's opt-in lookOpts.clockKnots
+# runs those two flat stretches fast (0.4 and 0.5 s a year) and the rest at the same 0.71; the time they give back
+# ends the race 0.6 s sooner (12.8 s, a 15.3 s body). lookOpts.startPing makes the waiting start dot ping from frame 2.
+EXP["a"] = {
+    **_A_COMMON,
+    "cut": "condensed (2026-10-13)",
+    "raceT": [-0.04, 12.8],
+    "pace": "captions",
+    # a body of about 15-18 s (06c 15.7, 06b 18.3; 06a's race has 18.5 years to 06c's 12 and 06b's 14) + the 2.5 s card
+    "lane": (15.0, 18.0),
+    "first_cap_up": 0.14,                 # Scoreboard captions rise in over M.capIn: vo[0] starts this early or earlier
+    # the kit's race-start whoosh is cued only for raceT[0] > 0.05, so the spec carries it, on the phone's fall
+    "sfx": {1: A["buy_x"], 2: ye(2008), 3: ye(2012), 4: ye(2017), 5: A["x_10k"], 6: ye(2025)},
+    "sfx_fall": {0: ("whoosh", A["buy_x"])},
+    "sfx_kinds": ["whoosh", "pop", "thud", "tick", "tick", "ding", "cash"],
+    "buy_t": (0.3, 0.34),                 # the race reaches the purchase just after 0.3 s: the kit drops it in (≤ 0.3 s
+    "fall": 0.24,                         # it stands it on the line at frame 1); its fall (the kit's FALL) then starts
+    "fall_by": 0.1,                       # by this time, so the opening moves within its first frames
+    "red_by": 1.5,                        # the green line is under the $499 line by then (open in the red, R5)
+    # the race clock (lookOpts.clockKnots, honoured by the kit): every stretch runs at one plain pace, or fast
+    "moving_s_per_year": (0.65, 0.8),     # the plain pace (all plain stretches within plain_spread of one another)
+    "plain_spread": 0.02,
+    "fast_s_per_year": (0.35, 0.55),      # a fast stretch
+    "fast_flat": 0.10,                    # a fast stretch lies on flat data: the stake moves ≤ 10% (max ÷ min) over it,
+                                          # and no beat (sfx cue, captioned beat, line crossing) falls inside it
+    # the flat stretches the motion audit found near-still (caption band left out) at the plain pace: 2015 ($3,336 →
+    # $3,236 on a $5K axis) and 2018 ($5,403 → $5,112): each must run fast
+    "lulls": [(2015.3, 2016.3), (2018.2, 2018.9)],
+    "start_ping": True,                   # the waiting start dot pings from frame 2 (lookOpts.startPing)
+    "verdict_after_final": (0.8, 1.5),    # the verdict lands this long after the reveal (raceT[1])
+    "verdict_hold": (1.2, 1.6),           # and holds this long before the end card
+    "cap_gap": 0.2,                       # captions run back to back
+    # a caption that names a figure goes up at most this long before the race reaches it, and the beat lands inside it
+    # (the 26.5 s cut led "2017: over 10 times" by 2.7 s; the first condensed render 1.45 s), and comes down at most
+    # cap_trail after it ("2012: about $2,200. You just hold." stayed up 1.87 s past the 2012 close)
+    "cap_lead": 1.3,
+    "cap_trail": 1.9,
+    "leads": [(1, ye(2012), "2012 close ≈ $2,200"), (2, A["x_10x"], "the 10× crossing"),
+              (3, A["x_10k"], "the $10,000 crossing"), (4, ye(2021), "the 2021 peak (the 2022 drop starts)"),
+              (5, ye(2025), "the final value")],
+    "footer_up": 1.2,                     # the footer's working step stays up at least this long
+}
+# which 06a cut studio/specs/ must hold: the 26.5 s cut until the condensed cut is promoted (then "a")
+A_IN_SPECS = "a_26s"
 
 # sanity on the claims baked into the strings above
 check("06a", "footer step: 136.7 × $271.12 to the nearest $1,000 = the final display",
@@ -898,12 +983,31 @@ def unit_knots(spec):
     return ks
 
 
+def clock_knots(spec):
+    """Scoreboard pov-race (06a's condensed cut): the race clock bent by lookOpts.clockKnots, as [t, x] knots with
+    raceT's two ends, x linear between them. The kit's rule: both t and x rise (each stretch >= 0.05 s) strictly inside
+    raceT and x.from -> x.to, and the answer row's pauses own the knots (then the list is ignored). None when the spec
+    has none, or the kit would ignore them (the clock then runs straight)."""
+    d, lo = spec["data"], spec.get("lookOpts") or {}
+    ck = lo.get("clockKnots")
+    if spec["look"] != "scoreboard" or ck is None or unit_knots(spec):
+        return None
+    t0, t1 = d["raceT"]
+    xf, xt = d["x"]["from"], d["x"]["to"]
+    try:
+        ks = [(t0, xf)] + [(float(k[0]), float(k[1])) for k in ck] + [(t1, xt)]
+    except (TypeError, ValueError, IndexError):
+        return None
+    ok = len(ck) > 0 and all(tb - ta >= 0.05 - 1e-9 and xb > xa + 1e-9 for (ta, xa), (tb, xb) in zip(ks, ks[1:]))
+    return ks if ok else None
+
+
 def chart_t(spec, x, after=False):
     """the time the race reaches x (after=True: at the pause's x, the time it leaves it)"""
     d = spec["data"]
     t0, t1 = d["raceT"]
     xf, xt = d["x"]["from"], d["x"]["to"]
-    ks = unit_knots(spec)
+    ks = unit_knots(spec) or clock_knots(spec)
     if ks:
         if after:                                     # at a hold's x: when the race leaves it
             for (ta, xa), (tb, xb) in zip(ks, ks[1:]):
@@ -965,6 +1069,13 @@ def check_spec(key):
         check(sid, "studio/specs/ holds the condensed cut", e["cut"] if in_specs else "(--spec file)",
               EXP["c"]["cut"] if in_specs else "(--spec file)")
         check(sid, f"cut recognised ({os.path.relpath(path, ROOT)})", e["cut"], e["cut"])
+    if key == "a":
+        # two cuts, picked by length: the 26.5 s round-2 cut, or the condensed cut (any other length fails its lane)
+        if abs(spec.get("duration", 0) - 26.5) < 1e-9:
+            e = EXP["a_26s"]
+        check(sid, "studio/specs/ holds the expected cut", e["cut"] if in_specs else "(--spec file)",
+              EXP[A_IN_SPECS]["cut"] if in_specs else "(--spec file)")
+        check(sid, f"cut recognised ({os.path.relpath(path, ROOT)})", e["cut"], e["cut"])
     if key == "b":
         # two cuts, picked by length: the 30.5 s round-2 cut, or the condensed cut (any other length fails its lane)
         if abs(spec.get("duration", 0) - 30.5) < 1e-9:
@@ -992,6 +1103,10 @@ def check_spec(key):
     if key == "b" and not lane[0] <= dur <= lane[1]:
         check(sid, "a known 06b cut", f"{dur} s", f"condensed {EXP['b']['lane'][0]}-{EXP['b']['lane'][1]} s, or "
               "the 30.5 s round-2 cut", ok=False)
+        return spec
+    if key == "a" and not lane[0] <= dur <= lane[1]:
+        check(sid, "a known 06a cut", f"{dur} s", f"condensed {EXP['a']['lane'][0]}-{EXP['a']['lane'][1]} s, or "
+              "the 26.5 s round-2 cut", ok=False)
         return spec
 
     # --- hook rules on the header
@@ -1090,11 +1205,18 @@ def check_spec(key):
 
     # --- sfx on their beats
     sfx = spec.get("sfx", [])
-    check(sid, "sfx count", len(sfx), len(e["sfx"]) + len(e.get("sfx_at", {})))
+    check(sid, "sfx count", len(sfx), len(e["sfx"]) + len(e.get("sfx_at", {})) + len(e.get("sfx_fall", {})))
     for j, x in e["sfx"].items():
         want_t = rnd(chart_t(spec, x), 2)
         check(sid, f"sfx[{j}] {sfx[j]['kind']} on beat x {x:.2f}", sfx[j]["t"], want_t,
               ok=abs(sfx[j]["t"] - want_t) <= 0.05)
+    # a cue on a purchase icon's fall (the kit drops it over its FALL s before the race reaches it), ±0.05 s
+    for j, (kind, x) in e.get("sfx_fall", {}).items():
+        want_t = rnd(chart_t(spec, x) - e["fall"], 2)
+        check(sid, f"sfx[{j}] {kind} as the purchase at x {x:.2f} starts to fall", f"{sfx[j]['kind']} {sfx[j]['t']}",
+              f"{kind} {want_t}", ok=sfx[j]["kind"] == kind and abs(sfx[j]["t"] - want_t) <= 0.05)
+    if "sfx_kinds" in e:
+        check(sid, "sfx kinds in order (the 26.5 s cut's cues, on the new clock)", [c["kind"] for c in sfx], e["sfx_kinds"])
     # cues on a lookOpts beat that has its own t (not a chart x): kind, and the beat's t + an offset (the first
     # visible frame of the fade-in), ±0.05 s
     for j, (kind, opt, off) in e.get("sfx_at", {}).items():
@@ -1232,6 +1354,78 @@ def check_spec(key):
             ups = [round(b - st["t"], 2) for st, b in zip(steps, ends)]
             check(sid, "each footer working step up long enough to read", ups, f"each ≥ {e['footer_up']}",
                   ok=all(u >= e["footer_up"] - 1e-9 for u in ups))
+
+    if key == "a" and e["pace"] == "captions":
+        # the condensed cut's timing targets (the editor's brief for the owner's note): frame 1 is the thumbnail (the
+        # hook caption complete, the phone not yet on the line) and the opening moves at once, about 0.7 s a year, the
+        # race in the red within 1.5 s, every number caption up shortly before its beat, the verdict soon after the
+        # reveal and a short hold
+        t0, t1 = d["raceT"]
+        tb = chart_t(spec, e["purchases_x"][0])
+        lo_, hi_ = e["buy_t"]
+        check(sid, "launch-day phone: the race reaches it just after 0.3 s (the kit drops it in, frame 1 stays clean)",
+              f"t={tb:.3f}", f"{lo_}-{hi_}", ok=lo_ + 1e-6 < tb <= hi_ + 1e-9)
+        check(sid, f"its {e['fall']} s fall starts within the opening frames", f"t={tb - e['fall']:.3f}",
+              f"≤ {e['fall_by']}", ok=tb - e["fall"] <= e["fall_by"] + 1e-9)
+        t_red = chart_t(spec, A["x_below"])
+        check(sid, "the green line falls under the $499 line (open in the red)", f"t={t_red:.2f}", f"≤ {e['red_by']}",
+              ok=t_red <= e["red_by"] + 1e-9)
+        lo_s, hi_s = e["moving_s_per_year"]
+        lo_f, hi_f = e["fast_s_per_year"]
+        ks = clock_knots(spec)
+        check(sid, "lookOpts.clockKnots set and honoured by the kit (rising t and x inside raceT)",
+              "yes" if ks else f"no ({spec.get('lookOpts', {}).get('clockKnots')!r})", "yes", ok=bool(ks))
+        ks = ks or [(t0, d["x"]["from"]), (t1, d["x"]["to"])]
+        stretches = [(xa, xb, ta, tb, (tb - ta) / (xb - xa)) for (ta, xa), (tb, xb) in zip(ks, ks[1:])]
+        plain = [s_ for s_ in stretches if s_[4] > hi_f + 1e-9]
+        fast = [s_ for s_ in stretches if s_[4] <= hi_f + 1e-9]
+        rates = [f"{xa:.2f}-{xb:.2f}: {r:.3f}" for xa, xb, _, _, r in stretches]
+        check(sid, f"race pace: every stretch plain ({lo_s}-{hi_s} s a year) or fast ({lo_f}-{hi_f})", "; ".join(rates),
+              "each in one band", ok=all(lo_s <= s_[4] <= hi_s + 1e-9 for s_ in plain)
+              and all(lo_f - 1e-9 <= s_[4] <= hi_f + 1e-9 for s_ in fast))
+        spread = max(s_[4] for s_ in plain) - min(s_[4] for s_ in plain) if plain else 0.0
+        check(sid, f"one plain pace (stretches within {e['plain_spread']} s a year)", f"{spread:.4f}",
+              f"≤ {e['plain_spread']}", ok=bool(plain) and spread <= e["plain_spread"] + 1e-9)
+        # a fast stretch skims flat data only: the stake moves little over it, and nothing the viewer is told to watch
+        # happens inside it (an sfx cue, a captioned beat, a line crossing)
+        own_pts = d["own"]["points"]
+        beat_ts = sorted({c["t"] for c in spec.get("sfx", [])} | {chart_t(spec, x) for _, x, _ in e["sync"]}
+                         | {chart_t(spec, x) for _, x, _ in e["leads"]} | {chart_t(spec, A["x_below"]), chart_t(spec, A["x_above"])})
+        for xa, xb, ta, tb, r in fast:
+            vals = [value_at(own_pts, xa), value_at(own_pts, xb)] + [y for x, y in own_pts if xa < x < xb]
+            swing = max(vals) / min(vals) - 1
+            check(sid, f"fast stretch x {xa:.2f}-{xb:.2f} on flat data (stake moves ≤ {e['fast_flat']:.0%})",
+                  f"{swing:.1%}", f"≤ {e['fast_flat']:.0%}", ok=swing <= e["fast_flat"] + 1e-9)
+            inside = [round(bt, 2) for bt in beat_ts if ta + 1e-6 < bt < tb - 1e-6]
+            check(sid, f"fast stretch t {ta:.2f}-{tb:.2f}: no beat inside", inside or "none", "none", ok=not inside)
+        for la, lb in e["lulls"]:
+            cov = [s_ for s_ in fast if s_[0] <= la + 1e-9 and lb <= s_[1] + 1e-9]
+            check(sid, f"the flat x {la}-{lb} (near-still at the plain pace) runs fast", "yes" if cov else "no", "yes",
+                  ok=bool(cov))
+        check(sid, "lookOpts.startPing (the waiting start dot pings from frame 2)",
+              spec.get("lookOpts", {}).get("startPing"), e["start_ping"])
+        va = spec["verdict"]["t"] - t1
+        lo_v, hi_v = e["verdict_after_final"]
+        check(sid, "verdict lands soon after the reveal", f"{va:.2f} s after raceT[1]", f"{lo_v}-{hi_v}",
+              ok=lo_v - 1e-9 <= va <= hi_v + 1e-9)
+        vh = dur - spec["verdict"]["t"]
+        check(sid, "verdict hold before the end card", f"{vh:.2f} s", f"{e['verdict_hold'][0]}-{e['verdict_hold'][1]}",
+              ok=e["verdict_hold"][0] - 1e-9 <= vh <= e["verdict_hold"][1] + 1e-9)
+        gaps = [round(b["t"] - (a["t"] + a["d"]), 2) for a, b in zip(vo, vo[1:])]
+        check(sid, f"caption gaps < {e['cap_gap']} s (back to back)", gaps, f"each < {e['cap_gap']}",
+              ok=all(-1e-9 <= g < e["cap_gap"] - 1e-9 for g in gaps))
+        for i, x, what in e["leads"]:
+            lead = chart_t(spec, x) - vo[i]["t"]
+            check(sid, f"vo[{i}] up ≤ {e['cap_lead']} s before {what}", f"{lead:.2f} s", f"0-{e['cap_lead']}",
+                  ok=-1e-9 <= lead <= e["cap_lead"] + 1e-9)
+            trail = vo[i]["t"] + vo[i]["d"] - chart_t(spec, x)
+            check(sid, f"vo[{i}] down ≤ {e['cap_trail']} s after {what}", f"{trail:.2f} s", f"0-{e['cap_trail']}",
+                  ok=-1e-9 <= trail <= e["cap_trail"] + 1e-9)
+        steps = spec["lookOpts"]["footerSteps"]
+        ends = [st["t"] for st in steps[1:]] + [dur]
+        ups = [round(b - st["t"], 2) for st, b in zip(steps, ends)]
+        check(sid, "the footer's working step up long enough to read", ups, f"each ≥ {e['footer_up']}",
+              ok=all(u >= e["footer_up"] - 1e-9 for u in ups))
 
     if key == "c":
         t0, t1 = d["raceT"]

@@ -1,0 +1,584 @@
+{
+  "id": "04b-becker-rig-savings-vs-sp500",
+  "teaser": "04b Becker rig, chart-race: \"Your $1,000: 16 years of savings VS 1 year of the S&P 500\"",
+  "prepared": "2026-10-13",
+  "for_video": {
+    "current_render": "renders/channel/04b-becker-rig-savings-vs-sp500.mp4",
+    "current_duration_s": 38.5,
+    "current_sha256": "8d243eeeeb7f145be1c55f1844b91ea10a2a8d7b1d5147aef156e0a7728c58ee",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds on 2026-10-13: the pre-condense cut. The ship step rebuilds this file with --covers from the condensed cut.",
+    "cut": {
+      "name": "pre-condense (hook-pass-2 Becker rig cut)",
+      "spec": "studio/specs/04b-becker-rig-savings-vs-sp500.json",
+      "body_s": 36.0,
+      "card_s": 2.5,
+      "status": "in renders/channel on 2026-10-13 (git 471c793); a condensed cut (timing only) is in studio/specs-wip/, not yet shipped",
+      "on_ship": "python3 publishing/tools/build_publishing.py 04b-becker-rig-savings-vs-sp500 --covers (re-picks the cover by content, re-exports both JPGs, refreshes for_video)"
+    }
+  },
+  "facts": {
+    "source": "teasers/v2/04-chart-race.md section (b) 04b; teasers/v2/checks/04-chart-race.py: 657 checks, 0 failed on studio/specs/, 698 checks, 0 failed with --spec on the condensed cuts (2026-10-13)",
+    "stake": "$1,000 in each, from the Dec 31, 2009 close to the Dec 31, 2025 close (Jan 2010 → Dec 2025, 16 years)",
+    "savings": "compounded once a year at that year's January FDIC national average savings rate (APY): 2010 0.21, 2012 0.11, 2014-2018 0.06, 2020 0.09, 2021 0.06 (April, the first reading of FDIC's revised series), 2022 0.06, 2023 0.33, 2024 0.47, 2025 0.41 %; 2011, 2013, 2015, 2017 and 2019 are the midpoint of their neighbours (not found); under 0.5% a year throughout",
+    "year_one": "the S&P 500's 2010 total return, +15.06%: $1,000 × 15.06% = $150.60 ≈ $151",
+    "interest_16": "$1,023.85 − $1,000 = $23.85, under $30; $22.62-$24.97 across the check's 2,916-table sweep, about $26.97 at worst with the January-rate model's 2022-2023 understatement",
+    "finals": "S&P 500 $8,283.66 ≈ $8,280 (≈ ×8.28); savings $1,023.85 ≈ $1,020 (≈ ×1.02), 3 significant figures (the dollar digit rests on the midpoint years)",
+    "beats": "2014: the S&P 500's first year-end at 2× ($2,051.29), savings interest $6.26 (under $10); 2020: the S&P 500 passes $4,000 ($4,222.70 close); 2022: −18.11%",
+    "not_cherry_picked": "16-year CAGR 8.28366^(1/16) − 1 = 14.13% ≈ 14.1%; 2010's 15.06% sits next to it; best year 2013 (+32.39%)",
+    "years_that_made_less": "on $1,000: 2011 +2.11% ≈ $21, 2015 +1.38% ≈ $14; 2018 (−4.38%) and 2022 (−18.11%) lost money",
+    "prices": "CPI-U Dec 2025 ÷ Dec 2009 = 324.054 ÷ 215.949 = 1.50060 (≈ 50%); $1,023.85 ÷ 1.50060 = $682.29 ≈ $680 in 2010 dollars (≈ 32% of buying power lost)",
+    "max_rate": "$1,000 × 1.0047^16 = $1,077.91 ≈ $1,078 (0.47%, the highest January rate in the table, every year)",
+    "verdict": "The S&P 500's 2010 alone beat 16 years of savings (≈ +$151 vs under +$30, on the payoff card)"
+  },
+  "youtube": {
+    "titles_ranked": [
+      {
+        "rank": 1,
+        "title": "What If You Kept $1,000 in a Savings Account for 16 Years? Can It Beat 1 Year of the S&P 500?",
+        "vidiq_score": 98,
+        "chars": 93,
+        "note": "PICK. Top score, 10 points over the write-up's title. The 'what if you …' grammar the channel's best titles score on, the stake, 'savings account' in the first 40 characters, then the video's own handicap question."
+      },
+      {
+        "rank": 2,
+        "title": "What If You Put $1,000 in Savings and $1,000 in the S&P 500 in 2010? Can 16 Years Beat 1?",
+        "vidiq_score": 98,
+        "chars": 89,
+        "note": "Same score; it names 2010, but 'Can 16 Years Beat 1?' reads as a riddle until the video explains it."
+      },
+      {
+        "rank": 3,
+        "title": "What If You Kept $1,000 in a Savings Account for 16 Years? #SavingsAccount #sp500 #investing",
+        "vidiq_score": 90,
+        "chars": 92,
+        "note": "The house 3-hashtag form, paste-ready: its hashtags are the description's first three. 06b and 06c went up with titles in this form. It drops the handicap question to fit."
+      }
+    ],
+    "titles_also_scored": [
+      {
+        "title": "What If You Kept $1,000 in an Average Savings Account for 16 Years? Can It Beat 1 Year of Stocks?",
+        "vidiq_score": 96,
+        "chars": 97,
+        "note": "names the basis in the title, 2 points under the pick, and trades 'the S&P 500' for 'Stocks' to fit; the description's and the caption's first lines say 'national average' instead"
+      },
+      {
+        "title": "Can 16 Years in a Savings Account Beat 1 Year in the S&P 500?",
+        "vidiq_score": 88,
+        "chars": 61,
+        "note": "the write-up's title: the handicap duel in 61 characters, without the stake"
+      },
+      {
+        "title": "Can 16 Years in a Savings Account Beat 1 Year in the S&P 500? #savings #sp500 #investing",
+        "vidiq_score": 88,
+        "chars": 88,
+        "note": "the house 3-hashtag form of the write-up's title; '#savings' is not among the description's first three hashtags, so it can't be pasted as is"
+      },
+      {
+        "title": "16 Years of Savings Interest vs 1 Year of the S&P 500",
+        "vidiq_score": 87,
+        "chars": 53,
+        "note": "the write-up's A/B title"
+      },
+      {
+        "title": "Your $1,000: Can 16 Years of Savings Interest Beat 1 Year of the S&P 500?",
+        "vidiq_score": 86,
+        "chars": 73,
+        "note": "the on-screen header as a question"
+      },
+      {
+        "title": "Savings Account vs S&P 500: Can 16 Years of Interest Beat 1 Year of Stocks?",
+        "vidiq_score": 85,
+        "chars": 75,
+        "note": "keyword-first"
+      }
+    ],
+    "title_pick": "What If You Kept $1,000 in a Savings Account for 16 Years? Can It Beat 1 Year of the S&P 500?",
+    "title_pick_chars": 93,
+    "description": "Can 16 years in a savings account beat 1 year in the S&P 500? $1,000 at the FDIC national average savings rate earned under $30 of interest from Jan 2010 to Dec 2025: about $1,020 in all. The same $1,000 in the S&P 500, with dividends reinvested, made about $151 in 2010 alone.\n\nThe math, shown:\n• Savings: each January's FDIC national average rate, compounded once a year. It stays under 0.5% a year, and 16 years of interest come to under $30.\n• S&P 500: 2010's total return was +15.06%, so $1,000 made $150.60, about $151, in its first year.\n• By 2014 the S&P 500 had doubled. Savings: under $10 of interest so far.\n• 2020: the S&P 500 tops $4,000.\n• 2022: the S&P 500 drops ≈ 18%.\n• End of 2025: the S&P 500 ≈ $8,280 (≈ ×8.28), savings ≈ $1,020 (≈ ×1.02).\n• So the S&P 500's 2010 alone (≈ +$151) beat 16 years of savings (under +$30).\n• 2010 wasn't a lucky pick: the S&P 500 averaged ≈ 14.1% a year over these 16 years. But some years made less: on $1,000 it made ≈ $21 in 2011 and ≈ $14 in 2015, and lost money in 2018 and 2022.\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\n\nAnimation and original sound: The Back of the Envelope. Savings: the FDIC national average savings rate, the January reading of each year (Forbes Advisor and wealthvieu for 2010-2020; FRED series SNDR for 2021-2025), compounded once a year. Januaries that could not be found are the midpoint of their neighbours, and 2021 uses FDIC's April reading; across every plausible value of those inputs, 16 years of interest stay under $30. It is the national average, not a high-yield rate. S&P 500: total return by year, dividends reinvested (S&P Dow Jones Indices data via Slickcharts). Prices rose about 50% over the same years (CPI-U, BLS), so savings' about $1,020 buys what about $680 did in 2010. No fees or tax. Not financial advice. Not affiliated with or endorsed by S&P Dow Jones Indices.\n#SavingsAccount #sp500 #investing",
+    "description_chars": 1938,
+    "hashtags_in_order": [
+      "#SavingsAccount",
+      "#sp500",
+      "#investing"
+    ],
+    "hashtag_rules": "Title hashtags show as links in the title; with none in the title, the first 3 description hashtags show above it. Over 60 hashtags and YouTube ignores all of them. #Shorts is not needed (vertical, under 3 min).",
+    "tags": [
+      "saving vs investing",
+      "savings account",
+      "savings account interest",
+      "s&p 500",
+      "s&p 500 total return",
+      "compound interest",
+      "what if you invested",
+      "what if you invested $1000 in",
+      "stock market",
+      "money math",
+      "math animation",
+      "the back of the envelope",
+      "envelope math"
+    ],
+    "tags_chars_as_youtube_counts": 262,
+    "pinned_comment": "What does your savings account pay? Even at the highest January rate in our table, 0.47%, every single year since 2010, savings would be ≈ $1,078.\n\n2010 wasn't a lucky pick: the S&P 500 averaged ≈ 14.1% a year over these 16 years, and 2010 was +15.06%. But not every year wins: on $1,000 the S&P 500 made ≈ $21 in 2011 and ≈ $14 in 2015, and lost money in 2018 and 2022. And prices rose ≈ 50% (CPI-U), so savings' ≈ $1,020 buys what ≈ $680 did in 2010.\n\nSwap in your own amount: the S&P 500 ≈ ×8.28, average savings ≈ ×1.02.",
+    "related_video": {
+      "pick": {
+        "id": "XVUeMcTg9OQ",
+        "title": "Your Interest Has a Speed Limit",
+        "url": "https://www.youtube.com/shorts/XVUeMcTg9OQ",
+        "why": "The same 'interest' viewer: what compounding can and can't do. It is the channel's most-engaged October Short (1,141 views, 28 likes, 6 comments, breakout score 21.3). Live since Sun 4 Oct 2026."
+      },
+      "swap_when_live": "04a or 04c, the other chart races, once published; then point one of them at this Short.",
+      "end_screen": "Shorts have no end screens or cards. The Related video link is the Shorts equivalent."
+    },
+    "thumbnail_frame": "In the YouTube app, pick the payoff-card frame (the same content as the IG cover).",
+    "settings": {
+      "category": "Education",
+      "audience": "Not made for kids",
+      "altered_or_synthetic_content": "No (animated chart, not realistic footage)",
+      "remixing": "Allow",
+      "captions": "None needed (no narration; all text is on screen)"
+    },
+    "posting_window": {
+      "when": "First Tue-Thu evening after the 04b condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+      "spacing": "Keep it at least 6 h from any other upload on the channel, and post one chart race (04a, 04b, 04c) per evening.",
+      "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,198 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2). The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. Search demand: 'high yield savings account' is up 77.0% on its 30-day baseline, so savings rates are in people's searches; 'saving vs investing' is down 45.2%."
+    },
+    "description_utf8_bytes": 1976
+  },
+  "instagram": {
+    "caption": "Can 16 years of savings beat 1 year of stocks? $1,000 in a savings account at the national average vs $1,000 in the S&P 500, from 2010.\n\nPOV: your $1,000. Savings gets 16 years to match what the S&P 500 made in its first year.\n\nThe math, shown:\n• The S&P 500 in 2010: +15.06%, so $1,000 made ≈ $151.\n• Savings: each January's FDIC national average rate, under 0.5% a year throughout.\n• By 2014 the S&P 500 had doubled. Savings: under $10 of interest so far.\n• 2022: the S&P 500 drops ≈ 18%.\n• End of 2025: savings ≈ $1,020, under $30 of interest in 16 years. The S&P 500 ≈ $8,280.\n\nThe S&P 500's 2010 alone beat 16 years of savings.\n\n2010 wasn't a lucky pick: the S&P 500 averaged ≈ 14.1% a year. But not every year wins: on $1,000 it made ≈ $21 in 2011 and ≈ $14 in 2015, and lost money in 2018 and 2022. And prices rose ≈ 50%, so savings' ≈ $1,020 buys what ≈ $680 did in 2010.\n\nS&P 500 with dividends reinvested. No fees or tax. Not financial advice. Not affiliated with or endorsed by S&P Dow Jones Indices.\n\nWhat does your savings account pay?\n\nFollow for the math behind your money — shown, not hand-waved. @envelopemath\nAnimation and original sound: The Back of the Envelope.\n\n#savingsaccount #sp500 #investing #personalfinance #compoundinterest",
+    "caption_chars": 1252,
+    "caption_first_125": "Can 16 years of savings beat 1 year of stocks? $1,000 in a savings account at the national average vs $1,000 in the S&P 500, ",
+    "caption_rule": "The first 125 characters are the write-up's caption line 1 ('Can 16 years of savings beat 1 year of stocks?') and the setup, with the 'savings account' and 'S&P 500' keywords and no result: the caption overlays the Reel from frame 1, so every result sits below 'more'.",
+    "hashtags_in_order": [
+      "#savingsaccount",
+      "#sp500",
+      "#investing",
+      "#personalfinance",
+      "#compoundinterest"
+    ],
+    "hashtag_rule": "Instagram caps a post at 5 hashtags (since Dec 2025).",
+    "alt_text_short": "Chart, $1,000 from 2010: the S&P 500 made about $151 in 2010 alone; savings, under $30 in 16 years.",
+    "alt_text_long": "Animation on a light page: two stick figures each climb their own line from 2010 to 2025. Header: Your $1,000: 16 years of savings VS 1 year of the S&P 500. The S&P 500 figure cheers its first year, about $151, which becomes the savings figure's goal. The S&P 500 doubles by 2014, tops $4,000 in 2020 and drops about 18% in 2022, while savings crawls along the bottom, still under $10 of interest midway. Finish: the S&P 500 about $8,280; savings about $1,020, under $30 of interest in 16 years. A payoff card draws the two gains to scale: savings under $30, the S&P 500 about $151. Verdict: the S&P 500's 2010 alone beat 16 years of savings.",
+    "alt_text_where": "Advanced settings → Accessibility → Alt text, if your app shows it for Reels.",
+    "cover": {
+      "files": {
+        "3x4": "publishing/04b-becker-rig-savings-vs-sp500-cover-3x4.jpg",
+        "9x16": "publishing/04b-becker-rig-savings-vs-sp500-cover-9x16.jpg"
+      },
+      "frame_in_current_render_s": 29.5,
+      "frame_index": 885,
+      "frame_by_content": "The payoff card, which the write-up names as the Instagram cover: the header 'Your $1,000: 16 years of savings / VS 1 year of the S&P 500' with $1,000 the only accent, the footer 'Savings: FDIC avg · S&P w/ dividends', and over the finished race the card: '16 years of savings / under +$30' with a grey stub on its dashed track, and 'S&P 500 in 2010 / ≈ +$151' with a full green bar. Beside it the S&P figure stands on its '≈ $8,280' plate and the grey figure sits at '≈ $1,020'; the caption reads 'The S&P's first year alone: ≈ $151.' Use the first settled frame after the card's S&P row lands, before the verdict comes in.",
+      "frame_measured": "On the pre-condense 38.5 s render the card's S&P row lands with a punch at 28.87 s (frame 866), the frame settles by 29.40 s (frame 882) and then holds still (mean frame-to-frame luma change 0.0000, 270×480 greyscale) until the verdict comes in at 32.70 s. The cover is taken at 29.5 s (frame 885), the write-up's own time, inside that hold.",
+      "crop": "3:4 = 1080×1440 from y 50 to 1490 of the 1080×1920 frame. The content runs from y 112 (the badge) to y 1428 (the caption), so the crop centres it: badge, header, footer, the card, both figures, the axis and the caption; it drops the empty page below. A centred grid crop (y 240-1680) cuts the badge and the header.",
+      "how_to_set": "In 'Edit cover', pick the payoff-card frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
+      "re_export": "ffmpeg -ss 29.5 -i renders/channel/04b-becker-rig-savings-vs-sp500.mp4 -frames:v 1 -vf \"crop=1080:1440:0:50\" -q:v 2 publishing/04b-becker-rig-savings-vs-sp500-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 29.5 -i renders/channel/04b-becker-rig-savings-vs-sp500.mp4 -frames:v 1 -q:v 2 publishing/04b-becker-rig-savings-vs-sp500-cover-9x16.jpg"
+    },
+    "first_comment": "16 years of interest at the national average savings rate: under $30. The S&P 500's 2010 on its own: ≈ $151. What does your savings account pay?",
+    "first_comment_action": "Post it right after publishing and pin it.",
+    "trial_reels": {
+      "recommendation": "Post as a regular Reel, not a Trial.",
+      "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
+      "use_trial_for": "The write-up's cover A/B afterwards, if you want it: the other cut with frame 1 as its cover, as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut ships, the pre-condense render is in git: `git show 471c793:renders/channel/04b-becker-rig-savings-vs-sp500.mp4 > 04b-pre-condense.mp4` (sha256 8d243eee…). Compare skip rate (October Reels ran 27.0-65.1%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+    },
+    "settings": {
+      "audio": "Rename the original audio to '16 years of savings vs 1 year of the S&P 500 — The Back of the Envelope' if the app allows; it is the score, with no voice.",
+      "share_to_feed": "On",
+      "google_indexing": "Public professional-account posts can appear in Google/Bing since 10 Jul 2025, so the caption is written as a searchable question."
+    },
+    "posting_window": {
+      "when": "Same evening as YouTube, about 15 min after the Short: 21:45-22:45 ET.",
+      "why": "October Reels, median plays by posting slot (owner insights, 2026-10-13): weekday 22:00-00:30 ET 5,449 (n = 3, including the two best: 7,302 and 5,449), weekday midday 1,212 (n = 2), Sunday 05:00-08:00 ET 1,087 (n = 2). Skip rate tracks plays more closely than the hour does: 27.0-27.4% for the top two, 56.9-65.1% for the bottom two. The condense matters more than the hour."
+    },
+    "alt_text_rule": "Paste the short version into Instagram: it is kept at or under 100 characters so it fits the field however short it is, and it writes 'to' and 'about' instead of '-' and '≈' so screen readers read it cleanly. The long version is for anywhere with room (a website embed, a newsletter)."
+  },
+  "research": {
+    "keywords_youtube": [
+      {
+        "keyword": "investing (topic)",
+        "est_monthly_searches": 613566,
+        "volume": 86.4,
+        "competition": 65.0,
+        "overall": 65.8,
+        "note": "-2.0% vs its 30-day baseline (626,326)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "compound interest",
+        "est_monthly_searches": 137873,
+        "volume": 76.7,
+        "competition": 50.6,
+        "overall": 65.8,
+        "note": "-17.3% vs its baseline (166,772)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "s&p 500 (topic)",
+        "est_monthly_searches": 95512,
+        "volume": 74.3,
+        "competition": 63.1,
+        "overall": 59.4,
+        "note": "-33.1% vs its baseline (142,756)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "high yield savings account",
+        "est_monthly_searches": 56330,
+        "volume": 70.9,
+        "competition": 46.7,
+        "overall": 63.9,
+        "note": "+77.0% vs its baseline (31,816), 65% of it US; product shopping, and the video uses the national average, so not a tag",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "saving",
+        "est_monthly_searches": 39177,
+        "volume": 68.6,
+        "competition": 61.0,
+        "overall": 56.7,
+        "note": "-41.3% vs its baseline (66,734)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "saving vs investing",
+        "est_monthly_searches": 32141,
+        "volume": 67.3,
+        "competition": 39.7,
+        "overall": 64.5,
+        "note": "the video's question; -45.2% vs its baseline (58,623)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "best high yield savings account",
+        "est_monthly_searches": 25784,
+        "volume": 65.9,
+        "competition": 42.6,
+        "overall": 62.5,
+        "note": "-12.1%; product shopping, not a tag",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "high yield savings account explained",
+        "est_monthly_searches": 10482,
+        "volume": 60.0,
+        "competition": 32.2,
+        "overall": 63.1,
+        "note": "flat (+0.2%)",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "what every american with a savings account should know — and do",
+        "est_monthly_searches": 8897,
+        "volume": 59.0,
+        "competition": 18.5,
+        "overall": 68.0,
+        "note": "a searched video title",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "the savings account trap nobody warns you about",
+        "est_monthly_searches": 8784,
+        "volume": 58.9,
+        "competition": 13.5,
+        "overall": 69.9,
+        "note": "a searched video title: the 'savings loses' angle at low competition",
+        "metrics_as_of": "2026-05-28"
+      },
+      {
+        "keyword": "what if you invested $1000 in",
+        "est_monthly_searches": 4986,
+        "volume": 55.2,
+        "competition": 39.7,
+        "overall": 57.2,
+        "note": "the stake grammar",
+        "metrics_as_of": "2026-10-12"
+      },
+      {
+        "keyword": "savings account vs investing",
+        "est_monthly_searches": 0,
+        "volume": 0,
+        "competition": 37.0,
+        "overall": 25.2,
+        "note": "<750/month (overall 25.2): the seed, too small to target",
+        "metrics_as_of": null
+      }
+    ],
+    "keywords_source": "vidIQ keyword research (research mode for 'savings account vs investing' with US volumes; matching_terms for 'savings account' and 'what if you invested'), pulled 2026-10-13. vidIQ refreshes each keyword on its own schedule, so each row carries its snapshot date in metrics_as_of; one row is an older snapshot (2026-05-28).",
+    "same_idea_youtube_shorts": [
+      {
+        "title": "When To Use an Index Fund vs a High Yield Savings Account",
+        "channel": "George Kamel",
+        "subscribers": 616000,
+        "views": 28829,
+        "published": "2026-01-11",
+        "note": "advice framing"
+      },
+      {
+        "title": "HYSA vs. S&P 500: Are You Playing It Too Safe?",
+        "channel": "Simply Money",
+        "subscribers": 112000,
+        "views": 1970,
+        "published": "2025-06-30"
+      },
+      {
+        "title": "I put $1,000 in the S&P 500 in 1950… 😳 #Shorts #stockmarket #stocks #money",
+        "channel": "marketsense",
+        "subscribers": 3,
+        "views": 1348,
+        "published": "2026-05-08",
+        "note": "its description sets a savings account against it"
+      },
+      {
+        "title": "DAY 11 - Your Money Doesn’t Grow in a Savings Account — Here’s Why",
+        "channel": "GProf Trades",
+        "subscribers": 74,
+        "views": 331,
+        "published": "2025-11-10"
+      },
+      {
+        "title": "Trump Account vs Savings Account: What $1,000 Invested in the S&P 500 Actually Did Over 18 Years",
+        "channel": "Asset vs. Time",
+        "subscribers": 1400,
+        "views": 89,
+        "published": "2026-06-02",
+        "note": "the same inputs as ours (FDIC national rate via FRED SNDR, S&P 500 total return), from 2007; not checked here"
+      },
+      {
+        "title": "\"$1,000 In Savings vs Stocks: Here's What Actually Won\"",
+        "channel": "PawMind",
+        "subscribers": 46,
+        "views": 35,
+        "published": "2026-07-03"
+      },
+      {
+        "title": "$1,000 Saved vs $1,000 Invested: What 10 Years Does to Your Money",
+        "channel": "Billion Dollar Industries",
+        "subscribers": 8,
+        "views": 27,
+        "published": "2026-07-19"
+      },
+      {
+        "title": "$1,000 invested in S&P 500 10 years ago...😳",
+        "channel": "Money Mechanics",
+        "subscribers": 10,
+        "views": 9,
+        "published": "2026-06-18"
+      },
+      {
+        "title": "What the Average Savings Account Does to $1,000",
+        "channel": "Quiet Wealth",
+        "subscribers": 1,
+        "views": 3,
+        "published": "2026-08-06"
+      },
+      {
+        "title": "$1,000 in 2016: Savings vs S&P 500 vs Bitcoin — The Gap Will Shock You",
+        "channel": "Deadpieee",
+        "subscribers": 1,
+        "views": 0,
+        "published": "2026-08-13"
+      }
+    ],
+    "same_idea_note": "vidIQ YouTube search (under 4 min, by relevance since 2025): 10 savings-vs-S&P 500 Shorts, 9 under 2,000 views; the biggest (George Kamel, 28,829) is advice. Most titles state the result; none uses the 16-years-vs-1-year handicap.",
+    "instagram_tiktok_outliers": [
+      {
+        "handle": "@matildehere",
+        "platform": "Instagram",
+        "id": "Da1U--ZBjmv",
+        "on_screen": "Saving VS investing 10k 10 years ago",
+        "views": "534.5K (122.1x the account median of 4.4K)",
+        "note": "this Short's comparison as a split screen, music only"
+      },
+      {
+        "handle": "@josuesegoviano2",
+        "platform": "TikTok",
+        "id": "7662941262143638798",
+        "on_screen": "Open a High yield savings account",
+        "views": "318.2K (77.9x)",
+        "note": "the high-yield pitch: the belief the hook plants, from the other side"
+      },
+      {
+        "handle": "@itsshwetadawar",
+        "platform": "Instagram",
+        "id": "DcNJSV8A0Fg",
+        "on_screen": "Why starting a Roth IRA early is important",
+        "views": "1.3M (156.5x the account median of 8.2K)",
+        "note": "two choices, one number, static text and music"
+      },
+      {
+        "handle": "@race_charts",
+        "platform": "Instagram",
+        "id": "Dct04VesZPy",
+        "on_screen": "SMOKING A PACK OF MARLBORO A DAY VS BUYING THE STOCK INSTEAD",
+        "views": "1.6M (60.9x the account median of 26.7K)",
+        "note": "two lines diverging from frame 1, music only: the race format"
+      }
+    ],
+    "own_channel_youtube_october_shorts": [
+      {
+        "id": "LjHDFzVxRyM",
+        "title": "Can You Find the Missing Dollar?",
+        "posted_et": "Sun 07:04",
+        "views": 1254
+      },
+      {
+        "id": "hJBvmGA6sZ0",
+        "title": "You Can Lean on $1 Million. Not on $1 Billion.",
+        "posted_et": "Thu 00:25",
+        "views": 1221
+      },
+      {
+        "id": "XVUeMcTg9OQ",
+        "title": "Your Interest Has a Speed Limit",
+        "posted_et": "Sun 05:49",
+        "views": 1141
+      },
+      {
+        "id": "fbpdKf4Wy8c",
+        "title": "What If You Bought Starbucks Stock Instead of a $4 Latte Every Day? (06c)",
+        "posted_et": "Mon 03:45",
+        "views": 760
+      },
+      {
+        "id": "8__HTUa2PoU",
+        "title": "Pay the Minimum on $5,000? 238 Months.",
+        "posted_et": "Mon 22:09",
+        "views": 642
+      },
+      {
+        "id": "FW_oxA3kbsM",
+        "title": "A $2 Lottery Ticket Was Worth $6.98. Until the Fine Print.",
+        "posted_et": "Wed 12:03",
+        "views": 348
+      },
+      {
+        "id": "mXbKY_R63h4",
+        "title": "You Can Carry $1 Million. Not in Pennies.",
+        "posted_et": "Thu 13:38",
+        "views": 177
+      },
+      {
+        "id": "EqFQCJheCMU",
+        "title": "Start Investing 10 Years Late? You Get Half.",
+        "posted_et": "Tue 22:27",
+        "views": 161
+      },
+      {
+        "id": "krfZEHhb0xU",
+        "title": "What If You Bought Netflix Stock Instead of Paying for Netflix? (06b)",
+        "posted_et": "Mon 12:14",
+        "views": 61
+      }
+    ],
+    "own_channel_instagram_october_reels": [
+      {
+        "shortcode": "DeIvYk7I4Qr",
+        "topic": "$5,000 on the minimum",
+        "posted_et": "Mon 22:46",
+        "plays": 7302,
+        "skip_rate_pct": 27.4,
+        "avg_watched_pct": 56.5
+      },
+      {
+        "shortcode": "DeOEthJJ1TG",
+        "topic": "$1M stack vs Burj Khalifa",
+        "posted_et": "Thu 00:28",
+        "plays": 5449,
+        "skip_rate_pct": 27.0,
+        "avg_watched_pct": 83.1
+      },
+      {
+        "shortcode": "DeWgFZRoR_S",
+        "topic": "Missing dollar",
+        "posted_et": "Sun 07:05",
+        "plays": 1997,
+        "skip_rate_pct": 32.0,
+        "avg_watched_pct": 81.3
+      },
+      {
+        "shortcode": "DeMvZv9IqRw",
+        "topic": "Powerball $6.98",
+        "posted_et": "Wed 12:05",
+        "plays": 1825,
+        "skip_rate_pct": 58.7,
+        "avg_watched_pct": 57.9
+      },
+      {
+        "shortcode": "DeYuqT4pjVC",
+        "topic": "06c latte vs Starbucks stock",
+        "posted_et": "Mon 03:46",
+        "plays": 1711,
+        "skip_rate_pct": 40.3,
+        "avg_watched_pct": 69.1
+      },
+      {
+        "shortcode": "DePe11HIHwn",
+        "topic": "$1M in pennies",
+        "posted_et": "Thu 13:37",
+        "plays": 598,
+        "skip_rate_pct": 42.0,
+        "avg_watched_pct": 66.7
+      },
+      {
+        "shortcode": "DeLSd9io8UK",
+        "topic": "10 years late",
+        "posted_et": "Tue 22:30",
+        "plays": 219,
+        "skip_rate_pct": 65.1,
+        "avg_watched_pct": 30.6
+      },
+      {
+        "shortcode": "DeEW2ZMIiYd",
+        "topic": "Speed limit (e)",
+        "posted_et": "Sun 05:54",
+        "plays": 177,
+        "skip_rate_pct": 56.9,
+        "avg_watched_pct": 31.2
+      }
+    ],
+    "channel_stats": {
+      "youtube_subscribers": 53,
+      "youtube_views": 10221,
+      "youtube_videos": 41,
+      "youtube_30d": "+27 subscribers, +5,127 views, 11 videos",
+      "instagram_followers": 8,
+      "instagram_30d_views": 20518
+    },
+    "limits": [
+      "As the 06b and 02b sheets found (not re-checked here), vidIQ's YouTube authorization is a different channel (UCRC5v_El2fibbkqsZs6uFjA), so @envelopemath's YouTube Analytics (audience hours, geography) were not readable. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
+      "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and the same-idea Shorts' own tags.",
+      "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
+      "The render in renders/channel is the pre-condense cut. The cover's time and frame are measured on it; the copy names no other timestamp, and the ship step re-picks the cover on the final file.",
+      "Several FDIC readings are [click-check] rows in the write-up's sources (seen in search summaries, not on the page). The copy shows only figures that hold across the check's 2,916-table sweep.",
+      "The vidIQ credit balance is shared with the other sheets being built in parallel, so this sheet's spend is counted from each tool's listed cost (see research.vidiq_credits)."
+    ],
+    "adjacent_youtube_outliers": [
+      {
+        "title": "How Much Can You Make By Investing In The S&P 500?",
+        "channel": "@themakeshiftproject (Instagram)",
+        "subscribers": 1000000,
+        "views": 948100,
+        "published": "since 2025-10",
+        "note": "Instagram Reel DceeezJKxV4, 6.7x the account median; talking heads"
+      }
+    ],
+    "titles_scored": "9 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13: 7 at the first build, the hashtag form and the 'Average Savings Account' variant at the adversarial check (the pick re-scored); all are in youtube.titles_ranked and youtube.titles_also_scored.",
+    "vidiq_credits": "04b: 85 by listed cost (2 keyword pulls × 20, 1 YouTube search × 5, 1 IG/TikTok outlier search × 5, 7 title scores × 5), plus a third of the format's 30 shared credits (channel stats 5, channel videos 5, the 'what if you invested' matching terms 20); 310 for the three 04 sheets. Account balance: 6,010 at the start, 5,625 when the 04 research ended (a 385 drop, so at least 75 were parallel sheets' calls), 5,385 at the end of the build with no further 04 calls. The adversarial check of the three 04 sheets: 3,945 → 3,885, a 60-credit drop at most (the balance is shared) for 7 title scores, 3 keyword pulls and 1 video lookup; this sheet's share is 3 title scores and the 'saving vs investing' pull."
+  },
+  "checked": {
+    "date": "2026-10-13",
+    "by": "adversarial check of this sheet",
+    "math": "python3 teasers/v2/checks/04-chart-race.py: 657 checks, 0 failed on studio/specs/ (the round-2 cuts; 614 checks, 0 failed at the first build, before the condense's check-script update), re-run at the adversarial check 2026-10-13; with --spec on the three studio/specs-wip/ condensed cuts 698 checks, 0 failed, so the copy's figures hold on both cuts; every public figure traced to the 04b tables and recomputed in MATH_RELATIONS from the FDIC, S&P 500 and CPI-U inputs, including the 2,916-table FDIC sweep; each figure pinned to its own side and its year (COPY_RULES)",
+    "limits": {
+      "youtube_title_chars": 93,
+      "youtube_description_chars": 1938,
+      "youtube_description_utf8_bytes": 1976,
+      "youtube_tags_chars_as_youtube_counts": 262,
+      "youtube_hashtags": 3,
+      "instagram_caption_chars": 1252,
+      "instagram_hashtags": 5,
+      "instagram_alt_text_short_chars": 99
+    },
+    "vidiq_requeried": "pulled 2026-10-13: saving vs investing 32,141 / 39.7 (-45.2%); high yield savings account 56,330 (+77.0%); savings account vs investing <750; 7 titles scored: pick 98, write-up's title 88; channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,518 views in 30 days. Re-queried at the adversarial check: the pick's title score 98; 'saving vs investing' 32,141 / 39.7 (-45.2%); 'compound interest' 137,873 (-17.3%); 'investing' 613,566 (-2.0%); 'Your Interest Has a Speed Limit' (XVUeMcTg9OQ) 1,141 views, 28 likes, 6 comments. All match."
+  }
+}
