@@ -5,7 +5,7 @@
   "for_video": {
     "current_render": "renders/channel/04b-becker-rig-savings-vs-sp500.mp4",
     "current_duration_s": 18.8,
-    "current_sha256": "16755a2628dba4cb36c243a2fbaa51cd90240a33cc60d450c8fbfed891bdfc79",
+    "current_sha256": "5af0f20c8dd6e582b8bd6e51435e95bd4cc333ae21a96734dc07103bc616cff0",
     "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
       "name": "condensed (2026-10-13)",

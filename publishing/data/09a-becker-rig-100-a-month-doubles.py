@@ -5,9 +5,9 @@
 #
 # Facts come only from teasers/v2/09-growth-ladder.md (section 09a, "Decisions shared by all three" and the Sources
 # under 09a) and python3 teasers/v2/checks/09-growth-ladder.py. Research: vidIQ, pulled 2026-10-13. The video is the
-# pre-condense cut: the 09 condense is in progress in parallel (timing only; numbers, caption facts and the verdict
-# stay). This sheet names no timestamp except the cover, which is picked by content (the question frame), so the ship
-# step only re-runs the build with --covers on the final file.
+# condensed cut, promoted and shipped on 2026-10-13 (timing only; numbers, caption facts and the verdict stay; the
+# pre-condense render is in git, 471c793 and c4a3014). This sheet names no timestamp except the cover, which is picked
+# by content (the question frame), so the ship re-ran the build with --covers on the shipped file.
 
 TEASER = "09a Becker Rig, growth-ladder: \"You add $100 a month. When does it earn $100 a month?\""
 PREPARED = "2026-10-13"
@@ -15,14 +15,16 @@ SHORT_ID = "09a"
 MD_TITLE = "09a publishing sheet: you add $100 a month, when does it earn $100 a month?"
 MATH_RUN = "509 checks, 0 failed"      # python3 teasers/v2/checks/09-growth-ladder.py on studio/specs/ (via publishing/data/checks/09-growth-ladder.py), 2026-10-13
 MATH_SCRIPT = "publishing/data/checks/09-growth-ladder.py"   # runs the 09 check unchanged, adds the builder's summary form
-RENDER_COMMIT = "471c793"              # the commit that holds this pre-condense render
-RENDER_SHA_PRE = "3dddeb79007926f062e4e6375ed38a7ab6f65b34f2fa0d843584796738b0b7bd"
+MATH_RUN_SHIP = "536 checks, 0 failed"  # the same check on studio/specs/ with the condensed cuts promoted, at the ship 2026-10-13
+RENDER_COMMIT = "c4a3014"              # the last commit that holds the pre-condense render (with the v2.4 soundtrack)
+RENDER_SHA_PRE = "ccf60e082f389a6cda295cfea565ace6b5abb70c17dbbdb56cbeddece5718c02"   # at 471c793 (v2.2 soundtrack): 3dddeb79…
 
 MD_INTRO = [
-    f"- **Video.** `renders/channel/{BASE}.mp4`: the pre-condense cut ({VIDEO_S:g} s: a {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`), "
-    "the Becker Rig port after its QA fix pass (2026-10-08). The 09 condense is in progress in parallel (timing only: the numbers, the captions' facts and the verdict stay). "
-    "Nothing below names a timestamp except the cover, which is picked by content (the question frame), so the copy carries over to the condensed cut unchanged. "
-    f"The ship step rebuilds this sheet and re-exports both covers from the final file: `python3 publishing/tools/build_publishing.py {BASE} --covers`.",
+    f"- **Video.** `renders/channel/{BASE}.mp4`: the condensed cut ({VIDEO_S:g} s: a {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`), "
+    f"promoted and shipped on 2026-10-13. It replaces the 31.0 s pre-condense cut (the Becker Rig port after its QA fix pass, 2026-10-08; the owner: \"too many still moments\"), which is in git (`{RENDER_COMMIT}`). "
+    "The condense moved the clock; the numbers, the captions' facts and the verdict stay, so the copy carried over unchanged. "
+    "Nothing below names a timestamp except the cover, which was re-picked by content (the question frame) on the shipped file. "
+    f"The ship rebuilt this sheet and re-exported both covers from it (`python3 publishing/tools/build_publishing.py {BASE} --covers`); on the shipped specs the maths check runs {MATH_RUN_SHIP}.",
     "- **Numbers.** Every figure comes from `teasers/v2/09-growth-ladder.md` (09a) and its check, "
     f"`python3 teasers/v2/checks/09-growth-ladder.py`: {MATH_RUN} on `studio/specs/` (run 2026-10-13; the builder runs it through the adapter `publishing/data/checks/09-growth-ladder.py`). "
     f"`python3 publishing/tools/build_publishing.py {BASE} --check` checks this sheet's limits, paste blocks and figures, recomputes every rung from $100 a month at 8% ÷ 12, "
@@ -38,11 +40,11 @@ MD_INTRO = [
 
 # ---------------------------------------------------------------- the video
 FOR_VIDEO_NOTE = ("Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. "
-                  "current_* is what renders/channel holds today: the pre-condense cut. The ship step re-runs the build with --covers on the condensed file.")
-CUT = {"name": "pre-condense cut (Becker Rig port + port QA fix pass, 2026-10-08)", "spec": f"studio/specs/{BASE}.json", "body_s": BODY_S,
-       "card_s": CARD_S, "shipped": None, "git": RENDER_COMMIT,
-       "status": "the 09 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay); no 09 WIP spec was in studio/specs-wip/ at this build. "
-                 "The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."}
+                  "current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.")
+CUT = {"name": "condensed (2026-10-13)", "spec": f"studio/specs/{BASE}.json", "body_s": BODY_S,
+       "card_s": CARD_S, "shipped": "2026-10-13",
+       "replaces": {"duration_s": 31.0, "sha256": RENDER_SHA_PRE,
+                    "note": f"the pre-condense cut (Becker Rig port + port QA fix pass, 2026-10-08) + card, retired; in git history ({RENDER_COMMIT}; 471c793 with the v2.2 soundtrack)"}}
 
 FACTS = {
     "source": f"teasers/v2/09-growth-ladder.md section 09a; teasers/v2/checks/09-growth-ladder.py: {MATH_RUN} on studio/specs/ (2026-10-13)",
@@ -136,7 +138,7 @@ THUMBNAIL_FRAME = "In the YouTube app, pick the question frame (the cover below)
 THUMB_MD = ("in the YouTube app, pick the question frame, the same content as the Instagram cover below: 'You add $100 a month. / When does it earn $100 a month?' over the 8% footer, "
             "the working line '$1,245 × 8% ÷ 12 ≈ $8/mo', rung 1 at ≈ $1,245 / ≈ $8 with its gauge a sliver of the way to $100, and seven dim rungs. It asks without answering, like the title beside it in search.")
 YT_POSTING_WINDOW = {
-    "when": "First free Tue-Thu evening after the 09 condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+    "when": "First free Tue-Thu evening, 21:30-22:30 ET (01:30-02:30 UTC the next day); the condensed cut shipped on 2026-10-13. Sunday 06:00-08:00 ET is the alternative.",
     "spacing": "Keep it at least 6 h from any other upload on the channel, on a different evening from 09b and 09c, and away from 07a (the other $-a-month compounding Short). Suggested order within the series: 09a, then 09b, then 09c.",
     "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,199 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2); 06c (Mon 03:45 ET) has 760 and 06b (Mon 12:14 ET) 75, too young to compare. "
            "The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. "
@@ -203,19 +205,22 @@ IG_FIRST_COMMENT = ("Year 1: ≈ $8 a month. Year 8: ≈ $89. Year 9: ≈ $105, 
 # ---------------------------------------------------------------- the cover frame
 # The question frame, picked by content: the write-up's Instagram note offers frame 1 (the question, the ≈ $8/mo working
 # line and the dim rungs) or the crossing; the crossing shows the answer (rung 9 beating $100), so this sheet uses the
-# question. On this render rung 1 is settled at frame 0, the figure nods and the $100 gauge fills to 8% by about frame
-# 20, the frame holds still from about frame 30 (1.0 s) until the wind-up for the first throw at about frame 68 (2.25 s).
-COVER_T = 1.8
-COVER_FRAME = 54
+# question. On the shipped condensed cut rung 1 is settled at frame 0 with the first caption complete; the figure shrugs
+# from frame 2, the $100 gauge fills to 8% by about frame 15 (0.50 s), and he stands hand to chin at frames 18-20 before
+# the wind-up for the first throw (about 0.8 s). Frame 18 (0.60 s) is used. (On the pre-condense render: frame 54.)
+COVER_T = 0.6
+COVER_FRAME = 18
 COVER_CROP = "crop=1080:1440:0:62"
-COVER_RENDER_WORD = "pre-condense"
+COVER_RENDER_WORD = "shipped"
 COVER_FRAME_BY_CONTENT = ("The question frame, settled: the header 'You add $100 a month. / When does it earn $100 a month?' ('$100 a month' in green), "
                           "the footer 'ASSUMES 8% a year, compounded monthly / $100 in at month-end · not a forecast', the working line '$1,245 × 8% ÷ 12 ≈ $8/mo', "
                           "the column heads Year / Worth / Earns a month, rung 1 at ≈ $1,245 / ≈ $8 with its $100 gauge filled a sliver (8%), seven dim rungs (5 to 30) over empty shelves, "
                           "the figure at the foot of the ladder with a hand on his chin, and the first caption 'By year 1 it's earning / about $8 a month.' fully lit. "
                           "It asks and does not answer: ≈ $8 against the $100 the header asks about. On any cut, use a settled frame after rung 1's gauge has filled and the first caption is fully lit, before the first throw.")
-COVER_FRAME_MEASURED = ("On the pre-condense 31.0 s render rung 1 is settled at frame 0; the nod and the gauge fill are done by about frame 20, and from about frame 30 (1.00 s) to the wind-up at about "
-                        "frame 68 (2.25 s) the frame-to-frame mean luma change stays under 0.0001 (the figure's idle sway). Frame 54 (1.80 s) is inside that hold, with the first caption fully lit.")
+COVER_FRAME_MEASURED = (f"On the shipped {VIDEO_S:g} s condensed cut rung 1 is settled and the first caption complete at frame 0, but the gauge is not drawn yet; the figure shrugs from frame 2, "
+                        "the gauge fills to 8% by about frame 15 (0.50 s), and at frames 18-20 (0.60-0.67 s) he stands hand to chin (frame-to-frame mean luma change 0.11-0.19 on 270×480 greyscale) "
+                        "before the first throw winds up at about 0.8 s. The condense left no still hold here (it filled the opening with the shrug), so frame 18 (0.60 s) is used: the gauge filled and the figure's chin pose, as on the old cover. "
+                        "On the 31.0 s pre-condense render the hold was frames 30-68, and frame 54 (1.80 s) was used.")
 COVER_CROP_NOTE = ("3:4 = 1080×1440 from y 62 to 1502 of the 1080×1920 frame. The content runs from y 112 (the badge) to y 1452 (the caption), so the crop centres it (50 px above and below): "
                    "badge, header, footer, working line, column heads, the whole ladder with the figure, and the caption; it drops the empty page below. "
                    "A centred grid crop (y 240-1680) cuts the badge and the header.")
@@ -225,13 +230,14 @@ COVER_HOW_TO_SET = ("In 'Edit cover', pick the question frame from the video (or
 COVER_EXTRA_BULLETS = [
     "**Not used:** the crossing (the 'beats your $100' tag over ≈ $105, the figure celebrating), the write-up's other cover option. It is livelier, but rung 9 beating $100 is the answer to the title.",
     "**Not used:** the end hold ('From year 9 / it earns more than you add.' with rung 9 relit), the verdict.",
-    "**When the condensed cut ships:** re-pick the question frame by content on the shipped file and re-export both JPGs with `--covers`.",
+    "**Shipped cut (2026-10-13):** the question frame was re-picked by content on the shipped file (frame 18, 0.60 s; was frame 54) and both JPGs re-exported: the same picture, the same crop. "
+    "Frame 1 itself is not used, because the gauge is not drawn yet there. The copy did not change.",
 ]
 
 TRIAL_REELS = {
     "recommendation": "Post as a regular Reel, not a Trial.",
     "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-    "use_trial_for": f"A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show {RENDER_COMMIT}:renders/channel/{BASE}.mp4 > 09a-31.0s.mp4` (sha256 {RENDER_SHA_PRE[:8]}…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. A cover test (the question frame vs the crossing) is the other use. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app.",
+    "use_trial_for": f"A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. The pre-condense render is in git: `git show {RENDER_COMMIT}:renders/channel/{BASE}.mp4 > 09a-31.0s.mp4` (sha256 {RENDER_SHA_PRE[:8]}…; at 471c793 it carries the v2.2 soundtrack, 3dddeb79…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. A cover test (the question frame vs the crossing) is the other use. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app.",
 }
 IG_AUDIO = "Rename the original audio to '$100 a month, year by year — The Back of the Envelope' if the app allows; it is the score, with no voice."
 IG_POSTING_WINDOW = {
@@ -365,7 +371,7 @@ LIMITS = [
     "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and on the write-up's and the outliers' own tags.",
     "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
     "The S&P 500 figures behind the caption's '≈ 10% / ≈ 7%' come from search results the write-up could not open (the proxy blocked the pages); they are marked [click-check] there, and the 10.09% / 6.81% figure is a live one that will drift.",
-    "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file.",
+    "The video, the cover and the video facts are the condensed cut, shipped on 2026-10-13; the copy is cut-independent and carried over unchanged.",
     "The vidIQ credit balance is shared with the other sheets being built in parallel, so this sheet's spend is counted from each tool's listed cost (see research.vidiq_credits).",
 ]
 RESEARCH_EXTRA = {
@@ -380,7 +386,8 @@ CHECKED_BY = "adversarial check of this sheet"
 CHECKED_MATH = (f"python3 teasers/v2/checks/09-growth-ladder.py: {MATH_RUN} on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/09-growth-ladder.py; "
                 "every rung recomputed in MATH_RELATIONS from $100 a month at 8% ÷ 12 (Worth and Earns a month, each to the dollar), the crossing month 106 (≈ $100.91; month 105 ≈ $99.58), "
                 "the amount cancelling ($50 to $5,000), 9.94 ('almost 10 times'), 72 ÷ 8 = 9, 104.32 months ≈ 8.7 years, the 7% and 10% years (11 and 8), and the S&P 500's ≈ 10% / ≈ 7%; "
-                "COPY_RULES keep every rung's figures beside their own year, every rounded figure 'about' or '≈', 'earns' defined as growth that stays in the account, and the 8% called an assumption")
+                "COPY_RULES keep every rung's figures beside their own year, every rounded figure 'about' or '≈', 'earns' defined as growth that stays in the account, and the 8% called an assumption"
+                f"; re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: {MATH_RUN_SHIP}")
 VIDIQ_REQUERIED = ("pulled 2026-10-13: compound interest 137,873 / 50.6 (−17.3%); crossover point 20,589 (+233.5%); rule of 72 7,756 (+86.9%); invest 100 a month 7,909; "
                    "9 titles scored: pick 93, write-up title 92; channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,519 views in 30 days. Re-queried after the build: the pick's title score 93. Re-queried at the adversarial check: the pick's title score 93; 'crossover point' 20,589 / 33.1 (+233.5%, baseline 6,173); the related video XVUeMcTg9OQ 1,141 views and 6 comments, live since Sun 4 Oct 05:49 ET. All match.")
 CHECK_LOG_TITLE = "first build and adversarial pass, 2026-10-13"
@@ -415,7 +422,10 @@ CHECK_LOG = [
     "  - `#ruleof72` above the title: it names the shortcut, not the year; working out 9 needs the footer's 8% and 72 ÷ 8, which only the pinned comment does.",
     "  - The S&P 500 is named only for the 8%'s context, with the affiliation line; the write-up's [click-check] on its two sources stands.",
     "  - Section 2 keeps vidIQ's spelling of two names that contain a '|' (the channel 'Erin Talks Money | Erin Moriarity' and the title '… | The Investing Crossover Point'). The builder does not escape '|' in table cells, so those two rows show one cell too many in rendered Markdown (the views and the date shift right); the JSON is exact. The same generator issue the 07a check flagged; left for its one-line generator fix.",
-    "- **Still to do.** The ship rebuild (`--covers`) on the condensed file.",
+    f"- **Done on ship (2026-10-13).** Rebuilt with `--covers` from the shipped condensed cut ({VIDEO_S:g} s). The question frame was re-picked by content (frame 18, 0.60 s; was frame 54): the gauge filled, the figure's chin pose and the first caption, no answer. "
+    f"The Video bullet, the cut and the check counts follow the shipped file ({MATH_RUN_SHIP} on `studio/specs/`; the check prints '536 checks, 0 failures'), and the long alt text was re-read against the condensed beat sheet: "
+    "every beat it names (the eight rungs and their figures, the year-9 crossing and the ≈ $994 plate) is in the shipped cut, so no copy changed. "
+    "The adversarial pass's note that the render's sha256 equals `git show 471c793:…` is about the pre-condense render; the Trial Reels command now names `c4a3014`.",
 ]
 
 # ---------------------------------------------------------------- the numbers check

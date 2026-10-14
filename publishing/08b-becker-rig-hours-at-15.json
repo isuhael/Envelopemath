@@ -4,17 +4,20 @@
   "prepared": "2026-10-13",
   "for_video": {
     "current_render": "renders/channel/08b-becker-rig-hours-at-15.mp4",
-    "current_duration_s": 29.5,
-    "current_sha256": "ad72ecac3dcb7856415d8ea62f501a1c73ad5ff19e85f4be422d0635deb6b689",
-    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the pre-condense cut. The ship step re-runs the build with --covers on the condensed file.",
+    "current_duration_s": 15.367,
+    "current_sha256": "5ef484655a1fab6500fa73738ff9a0588b7606daf1d7587c0bf39c51c05b9b67",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
-      "name": "pre-condense cut (fix pass, round-2 QA, 2026-10-08)",
+      "name": "condensed (2026-10-13)",
       "spec": "studio/specs/08b-becker-rig-hours-at-15.json",
-      "body_s": 27.0,
-      "card_s": 2.5,
-      "shipped": null,
-      "git": "471c793",
-      "status": "the 08 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay); no 08 WIP spec was in studio/specs-wip/ at this build. The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."
+      "body_s": 12.85,
+      "card_s": 2.517,
+      "shipped": "2026-10-13",
+      "replaces": {
+        "duration_s": 29.5,
+        "sha256": "ad72ecac3dcb7856415d8ea62f501a1c73ad5ff19e85f4be422d0635deb6b689",
+        "note": "the pre-condense cut (fix pass, round-2 QA, 2026-10-08) + card, retired; in git history (c4a3014; 471c793 with the v2.2 soundtrack)"
+      }
     }
   },
   "facts": {
@@ -144,7 +147,7 @@
       "captions": "None needed (no narration; all text is on screen)"
     },
     "posting_window": {
-      "when": "First free Tue-Thu evening after the condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+      "when": "First free Tue-Thu evening, 21:30-22:30 ET (01:30-02:30 UTC the next day); the condensed cut shipped on 2026-10-13. Sunday 06:00-08:00 ET is the alternative.",
       "spacing": "Keep it at least 6 h from any other upload on the channel, and on a different evening from 08a and 08c. Suggested order within the series: 08b, then 08c, then 08a.",
       "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,199 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2); 06c (Mon 03:45 ET) has 760 and 06b (Mon 12:14 ET) 75, too young to compare. The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. 08b goes first of the three: its hook scored highest with the write-up's judges (7.0 of 10), 'why is rent so high' runs +81.4% over its baseline, and the $15 wage is in the news (a same-idea Short's description says Florida's minimum reached $15 on Sept 30, 2026; not verified here, and not in the copy)."
     },
@@ -171,21 +174,21 @@
         "3x4": "publishing/08b-becker-rig-hours-at-15-cover-3x4.jpg",
         "9x16": "publishing/08b-becker-rig-hours-at-15-cover-9x16.jpg"
       },
-      "frame_in_current_render_s": 7.3,
-      "frame_index": 219,
-      "frame_by_content": "The landed blank, as the write-up's Instagram note asks: the header 'At $15/hr, you work for rent / from the 1st to the ≈ 20th' with its green rule, the footer '≈ $13.10 kept: 2026 federal tax + FICA, single, no state tax', the HUD 'Median rent, 1 month / $1,531 ÷ $13.10 ≈ / 117 hours of work', the month grid filled to the 20th (20 green days of 30), the 117-hour pyramid of clocks with the figure pointing up at the header, and the caption '≈ the 20th.' On any cut, use a settled frame after the blank lands and before the next rung's cut, with the caption still up.",
-      "frame_measured": "On the pre-condense 29.5 s render the blank lands at frame 192 (6.40 s); the frame settles by about frame 200 (6.67 s) and holds still (frame-to-frame mean luma change under 0.0002) with the caption '≈ the 20th.' until it clears at about frame 236 (7.87 s); rung 2 cuts at frame 252 (8.40 s). Frame 219 (7.30 s) is used.",
-      "crop": "3:4 = 1080×1440 from y 45 to 1485 of the 1080×1920 frame. The content runs from y 112 (the badge) to y 1418 (the caption), so the crop centres it (67 px above and below): badge, header, footer, HUD, month grid, the pile with the figure, and the caption; it drops the empty page below. A centred grid crop (y 240-1680) cuts the badge and the header.",
+      "frame_in_current_render_s": 2.8,
+      "frame_index": 84,
+      "frame_by_content": "The landed blank, as the write-up's Instagram note asks: the header 'At $15/hr, you work for rent / from the 1st to the ≈ 20th' with its green rule, the footer '≈ $13.10 kept: 2026 federal tax + FICA, single, no state tax', the HUD 'Median rent, 1 month / $1,531 ÷ $13.10 ≈ / 117 hours of work', the month grid filled to the 20th (20 green days of 30), the 117-hour pyramid of clocks with the figure pointing up at the header, and the caption '≈ 117 hours. Every hour you work, to ≈ the 20th.' On any cut, use a settled frame after the blank lands and before the next rung's cut, with the caption whole.",
+      "frame_measured": "On the shipped 15.367 s condensed cut the blank lands on '≈ 20th' at frame 77 (2.57 s); the merged caption is whole from frame 83 (2.77 s), and frames 83-86 are the stillest of the beat (frame-to-frame mean luma change 0.04-0.09 on 270×480 greyscale; the figure's arm moves after them) until rung 2 cuts at frame 90 (3.00 s). Frame 84 (2.80 s) is used. On the 29.5 s pre-condense render the blank landed at frame 192 (6.40 s) and frame 219 (7.30 s) was used.",
+      "crop": "3:4 = 1080×1440 from y 65 to 1505 of the 1080×1920 frame. The content runs from y 112 (the badge) to y 1458 (the two-line caption), so the crop centres it (47 px above and below; on the pre-condense render, with a shorter caption, it was y 45-1485): badge, header, footer, HUD, month grid, the pile with the figure, and the caption; it drops the empty page below. A centred grid crop (y 240-1680) cuts the badge and the header.",
       "how_to_set": "In 'Edit cover', pick the landed-blank frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
-      "re_export": "ffmpeg -ss 7.3 -i renders/channel/08b-becker-rig-hours-at-15.mp4 -frames:v 1 -vf \"crop=1080:1440:0:45\" -q:v 2 publishing/08b-becker-rig-hours-at-15-cover-3x4.jpg",
-      "re_export_9x16": "ffmpeg -ss 7.3 -i renders/channel/08b-becker-rig-hours-at-15.mp4 -frames:v 1 -q:v 2 publishing/08b-becker-rig-hours-at-15-cover-9x16.jpg"
+      "re_export": "ffmpeg -ss 2.8 -i renders/channel/08b-becker-rig-hours-at-15.mp4 -frames:v 1 -vf \"crop=1080:1440:0:65\" -q:v 2 publishing/08b-becker-rig-hours-at-15-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 2.8 -i renders/channel/08b-becker-rig-hours-at-15.mp4 -frames:v 1 -q:v 2 publishing/08b-becker-rig-hours-at-15-cover-9x16.jpg"
     },
     "first_comment": "Median rent at $15/hr: ≈ 117 of 173 work hours a month (67.4%), so you work for rent from the 1st to ≈ the 20th. A median new house: ≈ 30,053 hours, ≈ 14 years of full-time work, every cent you keep. What's your wage?",
     "first_comment_action": "Post it right after publishing and pin it.",
     "trial_reels": {
       "recommendation": "Post as a regular Reel, not a Trial.",
       "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show 471c793:renders/channel/08b-becker-rig-hours-at-15.mp4 > 08b-29.5s.mp4` (sha256 95b20844…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. The pre-condense render is in git: `git show c4a3014:renders/channel/08b-becker-rig-hours-at-15.mp4 > 08b-29.5s.mp4` (sha256 ad72ecac…; at 471c793 it carries the v2.2 soundtrack, 95b20844…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
     },
     "settings": {
       "audio": "Rename the original audio to 'Rent in hours at $15/hr — The Back of the Envelope' if the app allows; it is the score, with no voice.",
@@ -571,7 +574,7 @@
       "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
       "The write-up's rent ($1,531) is a single-publisher Census figure, cross-checked only against the same series' previous quarter and by its verifier; census.gov was blocked to direct fetches. The Aug 2026 house price is preliminary.",
       "Florida's $15 minimum wage (Sept 30, 2026) comes only from a same-idea Short's description; it is not verified here and is not in the copy.",
-      "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file."
+      "The video, the cover and the video facts are the condensed cut, shipped on 2026-10-13; the copy is cut-independent and carried over unchanged."
     ],
     "titles_scored": "10 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13: 9 at the first build and the hashtag form with #HourlyWage at the adversarial check; all are in youtube.titles_ranked and youtube.titles_also_scored.",
     "vidiq_credits": "110 credits for this teaser by listed cost (7 keyword queries, 4 YouTube searches (two came back empty), 1 Instagram/TikTok outlier search, 9 title scores and 1 re-score; 5 each), plus 10 shared across 08a-08c for the channel's stats and Shorts list (Instagram owner insights cost 0). Adversarial check: 30 for this teaser (the pick's title score, the #HourlyWage hashtag form, 'why is rent so high', 'hourly wage', 'rent to income ratio' (under 750) and the 'rent' matching terms), plus 5 shared across 08a-08c for the related videos' titles; 60 for the three 08 sheets (balance 3,790 → 3,695, a 95 drop shared with sheets built in parallel)."
@@ -579,7 +582,7 @@
   "checked": {
     "date": "2026-10-13",
     "by": "adversarial check of this sheet",
-    "math": "python3 teasers/v2/checks/08-unit-ladder.py: 677 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/08-unit-ladder.py; the take-home recomputed from the 2026 tax parameters in MATH_RELATIONS ($1,564.00, $2,386.80, $27,249.20, $13.10, 87.3%), every rung re-divided by $13.10 (117, 1,402, 3,824, 30,053), the 67.4% month, '≈ the 20th' on 30 days and the average month, the 19th-21st on a Monday-Friday calendar, 14 years, and the pinned $20/$25 wages; COPY_RULES keep every rounded figure 'about' or '≈', keep $1,531 named as the median, pair each price with its own count and each rung with its car, house or year, keep the 19th and the 21st inside the calendar range and 20.2 days with its 30-day month, keep 14 years with 'every cent you keep', and never call $15 the minimum wage, not even as a hashtag. Re-run at the adversarial check (2026-10-13) with the same result",
+    "math": "python3 teasers/v2/checks/08-unit-ladder.py: 677 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/08-unit-ladder.py; the take-home recomputed from the 2026 tax parameters in MATH_RELATIONS ($1,564.00, $2,386.80, $27,249.20, $13.10, 87.3%), every rung re-divided by $13.10 (117, 1,402, 3,824, 30,053), the 67.4% month, '≈ the 20th' on 30 days and the average month, the 19th-21st on a Monday-Friday calendar, 14 years, and the pinned $20/$25 wages; COPY_RULES keep every rounded figure 'about' or '≈', keep $1,531 named as the median, pair each price with its own count and each rung with its car, house or year, keep the 19th and the 21st inside the calendar range and 20.2 days with its 30-day month, keep 14 years with 'every cent you keep', and never call $15 the minimum wage, not even as a hashtag. Re-run at the adversarial check (2026-10-13) with the same result; re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: 682 checks, 0 failed",
     "limits": {
       "youtube_title_chars": 75,
       "youtube_description_chars": 1580,

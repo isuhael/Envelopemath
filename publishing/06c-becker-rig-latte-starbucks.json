@@ -5,7 +5,7 @@
   "for_video": {
     "current_render": "renders/channel/06c-becker-rig-latte-starbucks.mp4",
     "current_duration_s": 18.2,
-    "current_sha256": "bdf524e7fd3dbefb0cca2b224f878cb4d51e727a54451ff0e0b4500fb5845195",
+    "current_sha256": "18bb7a00b868de3f1ff90543cd89ef6904a8e7008dfb6c2373ec97593540fda3",
     "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-12.",
     "cut": {
       "name": "condensed (2026-10-12)",

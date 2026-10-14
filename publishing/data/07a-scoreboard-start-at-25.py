@@ -4,23 +4,25 @@
 # Scoreboard sheet) and kept its form (COPY_RULES, research tables), as 04b did.
 #
 # Facts come only from teasers/v2/07-ledger-duel.md (section 07a, "Decisions shared by all three") and
-# python3 teasers/v2/checks/07-ledger-duel.py. Research: vidIQ, pulled 2026-10-13. The render in renders/channel is the
-# pre-condense cut; a condensed cut (timing only: numbers, captions and verdict stay) is in progress. This sheet names no
-# timestamp except the cover, which is picked by content (the Age 30 row landed), so the copy carries over; the ship step
-# rebuilds it with --covers.
+# python3 teasers/v2/checks/07-ledger-duel.py. Research: vidIQ, pulled 2026-10-13. The video is the condensed cut,
+# promoted and shipped on 2026-10-13 (the pre-condense cut's render is in git, 471c793 and c4a3014). This sheet names no
+# timestamp except the cover, which is picked by content (the Age 30 row landed), so the copy carried over unchanged; the
+# ship rebuilt it with --covers from the shipped file.
 
 TEASER = "07a Scoreboard, ledger-duel: \"2 people invest $200 a month. 10 years vs 30 years. Who wins at 65?\""
 PREPARED = "2026-10-13"
 SHORT_ID = "07a"
 MD_TITLE = "07a publishing sheet: 2 people invest $200 a month, 10 years vs 30 years"
 MATH_RUN = "461 checks, 0 failures"    # python3 teasers/v2/checks/07-ledger-duel.py on studio/specs/, 2026-10-13
+MATH_RUN_SHIP = "535 checks, 0 failures"  # the same check on studio/specs/ with the condensed cuts promoted, at the ship 2026-10-13
 MATH_SCRIPT = "publishing/data/checks/07-ledger-duel.py"   # runs the 07 check unchanged, adds the builder's summary form
 
 MD_INTRO = [
-    f"- **Video.** `renders/channel/{BASE}.mp4`: the pre-condense cut ({VIDEO_S:g} s: a {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`), "
-    "the Scoreboard port (fix pass 2026-10-08) as `renders/channel` holds it on 2026-10-13. A condensed cut is in progress (timing only: the numbers, captions and verdict stay). "
-    "Nothing below names a timestamp except the cover, which is picked by content (the Age 30 row landed), so the copy carries over. "
-    f"The ship step rebuilds this sheet and re-exports both covers from the final file: `python3 publishing/tools/build_publishing.py {BASE} --covers`.",
+    f"- **Video.** `renders/channel/{BASE}.mp4`: the condensed cut ({VIDEO_S:g} s: a {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`), "
+    "promoted and shipped on 2026-10-13. It replaces the 25.3 s pre-condense cut (the Scoreboard port, fix pass 2026-10-08; the owner: \"too many still moments\"), which is in git (`c4a3014`). "
+    "The condense moved the clock; the numbers, the captions' facts and the verdict stay, so the copy carried over unchanged. "
+    "Nothing below names a timestamp except the cover, which was re-picked by content (the Age 30 row landed) on the shipped file. "
+    f"The ship rebuilt this sheet and re-exported both covers from it (`python3 publishing/tools/build_publishing.py {BASE} --covers`); on the shipped specs the maths check runs {MATH_RUN_SHIP}.",
     "- **Numbers.** Every figure comes from `teasers/v2/07-ledger-duel.md` (07a) and its check, "
     f"`python3 teasers/v2/checks/07-ledger-duel.py`: {MATH_RUN} on `studio/specs/` (run 2026-10-13). "
     f"`python3 publishing/tools/build_publishing.py {BASE} --check` checks this sheet's limits, paste blocks and figures, recomputes every ledger row, the gap, the 6% case and the "
@@ -35,10 +37,11 @@ MD_INTRO = [
 
 # ---------------------------------------------------------------- the video
 FOR_VIDEO_NOTE = ("Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. "
-                  "current_* is what renders/channel holds on 2026-10-13: the pre-condense cut. The ship step rebuilds this file with --covers from the condensed cut.")
-CUT = {"name": "pre-condense (Scoreboard port, fix pass 2026-10-08)", "spec": f"studio/specs/{BASE}.json", "body_s": BODY_S,
-       "card_s": CARD_S, "status": "in renders/channel on 2026-10-13 (git 471c793); a condensed cut (timing only) is in progress",
-       "on_ship": f"python3 publishing/tools/build_publishing.py {BASE} --covers (re-picks the cover by content, re-exports both JPGs, refreshes for_video)"}
+                  "current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.")
+CUT = {"name": "condensed (2026-10-13)", "spec": f"studio/specs/{BASE}.json", "body_s": BODY_S,
+       "card_s": CARD_S, "shipped": "2026-10-13",
+       "replaces": {"duration_s": 25.3, "sha256": "30f0cd64c1daf1773be2b74095135b24a966224f5d22f2372fe9cc44d568119e",
+                    "note": "the pre-condense cut (Scoreboard port, fix pass 2026-10-08) + card, retired; in git history (c4a3014; 471c793 with the v2.2 soundtrack)"}}
 
 FACTS = {
     "source": f"teasers/v2/07-ledger-duel.md section 07a; teasers/v2/checks/07-ledger-duel.py: {MATH_RUN} on studio/specs/ (2026-10-13)",
@@ -130,7 +133,7 @@ RELATED_VIDEO = {
 THUMBNAIL_FRAME = "In the YouTube app, pick the Age 30 frame (Ava ≈ $14,000, Ben $0, the question still open), the same content as the IG cover."
 THUMB_MD = "in the YouTube app, pick the Age 30 frame (Ava's first row landed at ≈ $14,000, Ben at $0, no final), the same content as the Instagram cover below."
 YT_POSTING_WINDOW = {
-    "when": "First Tue-Thu evening after the 07a condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+    "when": "First free Tue-Thu evening, 21:30-22:30 ET (01:30-02:30 UTC the next day); the condensed cut shipped on 2026-10-13. Sunday 06:00-08:00 ET is the alternative.",
     "spacing": "Keep it at least 6 h from any other upload on the channel, and post one ledger duel (07a, 07b, 07c) per evening.",
     "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,199 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2). "
            "The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. "
@@ -194,23 +197,24 @@ IG_FIRST_COMMENT = ("Ava: $24,000 in, ≈ $281,000 at 65. Ben: $72,000 in, ≈ $
                     "What age did you start?")
 
 # ---------------------------------------------------------------- the cover frame
-# The Age 30 row landed and settled, picked by content on the pre-condense MP4 (2026-10-13): the count lands at 2.0 s
-# (frame 60) with a bump and a glow, the frame-to-frame luma change reaches the idle level by 2.43 s (frame 73) and stays
-# at 0.000 until the Age 35 cut at 3.2 s. Frame 75 (2.50 s) sits inside that still hold.
-COVER_T = 2.5
-COVER_FRAME = 75
+# The Age 30 row landed and settled, re-picked by content on the shipped condensed MP4 (2026-10-13): the count lands at
+# 0.75 s, the working line 'Ava: $200 × 120 months = $24,000' arrives at 1.2 s, and the frame-to-frame luma change sits at
+# 0.000-0.002 from 1.47 s (frame 44) to the Age 35 cut at 1.75 s (frame 53, a single 0.129 blip at frame 46 aside).
+# Frame 48 (1.60 s) sits inside that still hold. (On the pre-condense render it was frame 75, 2.50 s.)
+COVER_T = 1.6
+COVER_FRAME = 48
 COVER_CROP = "crop=1080:1440:0:60"
-COVER_RENDER_WORD = "pre-condense"
+COVER_RENDER_WORD = "shipped"
 COVER_FRAME_BY_CONTENT = ("The Age 30 row, landed and settled: the header '2 PEOPLE INVEST $200 A MONTH / 10 YEARS VS 30 YEARS. WHO WINS AT 65?' over the 7% footer, "
                           "the AGE 30 ticker with its first pip lit and seven to come, the two LED-off strip slots, AVA (Age 25 → 35, put in $24,000) at ≈ $14,000 "
                           "and BEN (Age 35 → 65, put in $72,000) at $0, the working line 'Ava: $200 × 120 months = $24,000' over 'AVA VS BEN', and the first caption. "
                           "It asks and does not answer: no final, no verdict. The write-up names this frame (Age 30 landed) as the Instagram cover: not frame 1, where "
                           "Ava's odometer is mid-roll and reads as a wrong Age 30 value in a still, and not the finished table, which answers the question. "
                           "On any cut, use the first settled frame after the Age 30 count lands.")
-COVER_FRAME_MEASURED = (f"On the pre-condense {VIDEO_S:g} s render the Age 30 count lands at 2.0 s (frame 60) with a bump and a glow; the frame-to-frame luma change "
-                        "reaches the idle level by 2.43 s (frame 73) and stays at 0.000 until the Age 35 cut at 3.2 s. Frame 75 (2.50 s) is inside that still hold; "
-                        "the first caption reads 'Ava invests from 25 / to 35, then stops.', lit up to 'then' (the kit lights it word by word; the grey word still reads). "
-                        "The write-up's 2.1 s is mid-glow on this render.")
+COVER_FRAME_MEASURED = (f"On the shipped {VIDEO_S:g} s condensed cut the Age 30 count lands at 0.75 s and the working line 'Ava: $200 × 120 months = $24,000' arrives at 1.2 s; "
+                        "the frame-to-frame luma change (270×480 greyscale) then sits at 0.000-0.002 from 1.47 s (frame 44) to the Age 35 cut at 1.75 s (frame 53), a single 0.13 blip at frame 46 aside. "
+                        "Frame 48 (1.60 s) is inside that still hold; the first caption reads 'Ava invests from 25 / to 35, then stops.', fully lit. "
+                        "The write-up's 1.0 s for the condensed cut shows the same row and caption before the working line arrives. On the 25.3 s pre-condense render the same content was frame 75 (2.50 s).")
 COVER_CROP_NOTE = ("3:4 = 1080×1440 from y 60 to 1500 of the 1080×1920 frame. The content runs from y 141 (the badge) to y 1454 (the caption), so the tile keeps the badge, "
                    "the header and footer, the whole stage, the working line, the matchup and the caption, and drops the empty floor. A centred grid crop (y 240-1680) cuts the badge and the header.")
 COVER_HOW_TO_SET = ("In 'Edit cover', pick the Age 30 frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile "
@@ -219,14 +223,14 @@ COVER_HOW_TO_SET = ("In 'Edit cover', pick the Age 30 frame from the video (or u
 COVER_EXTRA_BULLETS = [
     "**Not used:** frame 1 (Ava's odometer mid-roll reads as a wrong Age 30 value in a still) and the verdict hold (the flooded AVA panel over the finished table and "
     "'AVA WINS BY ≈ $37,000'), which answers the title.",
-    "**On ship:** the condensed cut may move the Age 30 landing. `--covers` exports at COVER_T, so first re-pick the first settled frame after the landing by content and update COVER_T and COVER_FRAME.",
+    "**Shipped cut (2026-10-13):** the Age 30 landing moved from 2.0 s to 0.75 s, so the cover was re-picked by content on the shipped file (frame 48, 1.60 s, was frame 75) and both JPGs re-exported: the same picture as the pre-condense cover. The copy did not change.",
 ]
 
 TRIAL_REELS = {
     "recommendation": "Post as a regular Reel, not a Trial.",
     "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-    "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut ships, the pre-condense render "
-                     f"is in git: `git show 471c793:renders/channel/{BASE}.mp4 > 07a-pre-condense.mp4` (sha256 d922b569…). Compare skip rate (October Reels ran 27.0-65.1%; "
+    "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. The pre-condense render "
+                     f"is in git: `git show c4a3014:renders/channel/{BASE}.mp4 > 07a-pre-condense.mp4` (sha256 30f0cd64…; at 471c793 it carries the v2.2 soundtrack, d922b569…). Compare skip rate (October Reels ran 27.0-65.1%; "
                      "'10 years late', the same ages, 65.1%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app.",
 }
 IG_AUDIO = "Rename the original audio to '10 years vs 30 years — The Back of the Envelope' if the app allows; it is the score, with no voice."
@@ -362,7 +366,7 @@ LIMITS = [
     "As the 06b and 04b sheets found (not re-checked here), vidIQ's YouTube authorization is a different channel (UCRC5v_El2fibbkqsZs6uFjA), so @envelopemath's YouTube Analytics (audience hours, geography) were not readable. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
     "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and the same-idea Shorts' own tags.",
     "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
-    "The render in renders/channel is the pre-condense cut. The cover's time and frame are measured on it; the copy names no other timestamp, and the ship step re-picks the cover on the final file.",
+    "The render in renders/channel is the condensed cut, shipped on 2026-10-13. The cover's time and frame were re-measured on it; the copy names no other timestamp.",
     "The vidIQ credit balance is shared with the other sheets being built in parallel; this sheet's spend is counted from each tool's listed cost, checked against the balance (see research.vidiq_credits).",
 ]
 RESEARCH_EXTRA = {
@@ -377,7 +381,8 @@ RESEARCH_EXTRA = {
 CHECKED_BY = "adversarial check of this sheet"
 CHECKED_MATH = (f"python3 teasers/v2/checks/07-ledger-duel.py: {MATH_RUN} on studio/specs/ (2026-10-13), run by the builder through publishing/data/checks/07-ledger-duel.py; "
                 "every public figure traced to the 07a maths table and recomputed in MATH_RELATIONS from $200 a month at 7%/12 (each Age row, the gap, the 6% case, the 6.109% break-even, B(480)); "
-                "each figure pinned to its own person and each Age row's pair kept together (COPY_RULES)")
+                "each figure pinned to its own person and each Age row's pair kept together (COPY_RULES)"
+                f"; re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: {MATH_RUN_SHIP}")
 VIDIQ_REQUERIED = ("pulled 2026-10-13: compound interest 137,873 / 50.6 (−17.3%); the power of compound interest 12,634 (+40.6%); too late to start investing 10,525; start investing early 4,755; "
                    "11 titles scored: pick 94, write-up's title 87, header 87; channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,519 views in 30 days. "
                    "Re-queried at the adversarial check: the pick's title score 94; 'compound interest explained' 51,994 / 40.3 (−11.3%, baseline 58,623); "
@@ -411,6 +416,9 @@ CHECK_LOG = [
     "  - The cover is the Age 30 row, as the write-up names it, not frame 1 (a mid-roll odometer) and not the verdict (the answer).",
     "  - The rate's condition is in the description, the caption and the pinned comment, so the verdict is never quoted without it; the alt texts carry the 7%.",
     "  - No '$200 a month' in the title: the header shows it on frame 1, and the title scores 4 points more without it.",
+    f"- **Done on ship (2026-10-13).** Rebuilt with `--covers` from the shipped condensed cut ({VIDEO_S:g} s). The Age 30 row lands earlier there, so the cover was re-picked by content (frame 48, 1.60 s; was frame 75) and shows the same picture. "
+    f"The Video bullet, the cut and the check counts follow the shipped file ({MATH_RUN_SHIP} on `studio/specs/`), and the long alt text was re-read against the condensed beat sheet: "
+    "every beat it names (the age ticker 30 → 65, Age 35 ≈ $35,000 / $0, the finals and the verdict) is in the shipped cut, so no copy changed.",
 ]
 
 # ---------------------------------------------------------------- the numbers check

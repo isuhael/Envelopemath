@@ -4,17 +4,20 @@
   "prepared": "2026-10-13",
   "for_video": {
     "current_render": "renders/channel/09b-becker-rig-1000-times-1-07.mp4",
-    "current_duration_s": 29.5,
-    "current_sha256": "b07daebbec046e9ba4fa31d84bd21787c5b33d1f7d035f9b6430660c4ebc1c74",
-    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the pre-condense cut. The ship step re-runs the build with --covers on the condensed file.",
+    "current_duration_s": 16.4,
+    "current_sha256": "e006ea97630d80f169eeb6b7c1362a48bc3893f0786fa202fe92404abe55959f",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
-      "name": "pre-condense cut (assembly fix pass, 2026-10-08)",
+      "name": "condensed (2026-10-13)",
       "spec": "studio/specs/09b-becker-rig-1000-times-1-07.json",
-      "body_s": 27.0,
+      "body_s": 13.9,
       "card_s": 2.5,
-      "shipped": null,
-      "git": "471c793",
-      "status": "the 09 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay); no 09 WIP spec was in studio/specs-wip/ at this build. The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."
+      "shipped": "2026-10-13",
+      "replaces": {
+        "duration_s": 29.5,
+        "sha256": "b07daebbec046e9ba4fa31d84bd21787c5b33d1f7d035f9b6430660c4ebc1c74",
+        "note": "the pre-condense cut (assembly fix pass, 2026-10-08) + card, retired; in git history (c4a3014; 471c793 with the v2.2 soundtrack)"
+      }
     }
   },
   "facts": {
@@ -121,7 +124,7 @@
       "captions": "None needed (no narration; all text is on screen)"
     },
     "posting_window": {
-      "when": "First free Tue-Thu evening after the 09 condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+      "when": "First free Tue-Thu evening, 21:30-22:30 ET (01:30-02:30 UTC the next day); the condensed cut shipped on 2026-10-13. Sunday 06:00-08:00 ET is the alternative.",
       "spacing": "Keep it at least 6 h from any other upload on the channel, and on a different evening from 09a and 09c. Suggested order within the series: 09a, then 09b, then 09c.",
       "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,199 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2); 06c (Mon 03:45 ET) has 760 and 06b (Mon 12:14 ET) 75, too young to compare. The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. Money set aside at birth is in the news: 'how to build generational wealth' runs +35.1% and 'trump account' +20.2% over their baselines, and several 2026 Shorts describe a federal $1,000-at-birth account (per their descriptions; not verified here, and not in the copy)."
     },
@@ -141,28 +144,28 @@
     ],
     "hashtag_rule": "Instagram caps a post at 5 hashtags (since Dec 2025).",
     "alt_text_short": "Chart: $1,000 at birth at 7% a year, never topped up: about $81,273 at 65, over 81 times the gift.",
-    "alt_text_long": "Animation on a light page with a green stick figure at the foot of a ladder whose rungs are ages. The header says: POV: someone invested just $1,000 for you at birth. What's it worth at 65? The footer: assumes 7% a year, added once a year, never topped up, not a forecast. Columns: age, put in, worth. The figure throws a coin up to each rung, and each coin becomes its row's worth, with $1,000 put in on every rung: age 1, $1,070; age 10, about $1,967; age 18, about $3,380; age 25, about $5,427; age 30, about $7,612; age 40, about $14,974; age 50, about $29,457. The last coin is too heavy: he buckles under it, presses it overhead and heaves it onto a gold plate at age 65, about $81,273. Verdict: about $81,273 at 65, over 81 times the gift, never topped up.",
+    "alt_text_long": "Animation on a light page with a green stick figure at the foot of a ladder whose rungs are ages. The header says: POV: someone invested just $1,000 for you at birth. What's it worth at 65? The footer: assumes 7% a year, added once a year, never topped up, not a forecast. Columns: age, put in, worth. Age 1 is filled from the start, and the figure throws a coin up to each rung after it; each coin becomes its row's worth, with $1,000 put in on every rung: age 1, $1,070; age 10, about $1,967; age 18, about $3,380; age 25, about $5,427; age 30, about $7,612; age 40, about $14,974; age 50, about $29,457. The last coin is too heavy: he buckles under it, presses it overhead and heaves it onto a gold plate at age 65, about $81,273. Verdict: about $81,273 at 65, over 81 times the gift, never topped up.",
     "alt_text_where": "Advanced settings → Accessibility → Alt text, if your app shows it for Reels.",
     "cover": {
       "files": {
         "3x4": "publishing/09b-becker-rig-1000-times-1-07-cover-3x4.jpg",
         "9x16": "publishing/09b-becker-rig-1000-times-1-07-cover-9x16.jpg"
       },
-      "frame_in_current_render_s": 14.6,
-      "frame_index": 438,
+      "frame_in_current_render_s": 9.4,
+      "frame_index": 282,
       "frame_by_content": "The heave, its first beat: the header 'POV: someone invested just / $1,000 for you at birth. / What's it worth at 65?' ($1,000 in green), the footer 'ASSUMES 7% a year, added once a year / never topped up · not a forecast', the heads Age / Put in / Worth, rungs 1 to 50 filled ($1,070, ≈ $1,967, ≈ $3,380, ≈ $5,427, ≈ $7,612, ≈ $14,974, ≈ $29,457, with $1,000 put in on each), the age-65 rung empty at the top, the figure buckled at the foot of the ladder with the last, heavy gold coin in his arms, and the caption 'At 50: about $29,457.' It asks and does not answer: the age-65 shelf the title asks about is still empty. On any cut, use a frame from the buckle, after the heavy coin is in his arms and before he lifts it.",
-      "frame_measured": "On the pre-condense 29.5 s render the heavy coin drops into his arms at about frame 426 (14.2 s); from about frame 432 (14.40 s) to frame 446 (14.87 s) the frame-to-frame mean luma change stays under 0.0009 (his strain wobble), and he hitches the coin up from about frame 447. Frame 438 (14.60 s) is inside that buckle, with the caption fully lit.",
+      "frame_measured": "On the shipped 16.4 s condensed cut the heavy coin drops into his arms at frame 275 (9.15 s, the thud); the buckle moves through frame 280 and settles at frames 281-283 (frame-to-frame mean luma change 0.10-0.20 on 270×480 greyscale), and he hitches the coin up from about frame 284 (9.47 s). Frame 282 (9.40 s) is used, with the caption 'At 50: about $29,457.' fully lit. The condensed heave is the kit's shortest struggle (2.2 s), so the buckle is about 0.25 s, not the 0.5 s of the pre-condense render, where frame 438 (14.60 s) was used.",
       "crop": "3:4 = 1080×1440 from y 50 to 1490 of the 1080×1920 frame. The content runs from y 112 (the badge) to y 1428 (the caption), so the crop centres it (62 px above and below): badge, header, footer, heads, the whole ladder with the figure and the coin, and the caption; it drops the empty page below. A centred grid crop (y 240-1680) cuts the badge and the header.",
       "how_to_set": "In 'Edit cover', pick the heave frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
-      "re_export": "ffmpeg -ss 14.6 -i renders/channel/09b-becker-rig-1000-times-1-07.mp4 -frames:v 1 -vf \"crop=1080:1440:0:50\" -q:v 2 publishing/09b-becker-rig-1000-times-1-07-cover-3x4.jpg",
-      "re_export_9x16": "ffmpeg -ss 14.6 -i renders/channel/09b-becker-rig-1000-times-1-07.mp4 -frames:v 1 -q:v 2 publishing/09b-becker-rig-1000-times-1-07-cover-9x16.jpg"
+      "re_export": "ffmpeg -ss 9.4 -i renders/channel/09b-becker-rig-1000-times-1-07.mp4 -frames:v 1 -vf \"crop=1080:1440:0:50\" -q:v 2 publishing/09b-becker-rig-1000-times-1-07-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 9.4 -i renders/channel/09b-becker-rig-1000-times-1-07.mp4 -frames:v 1 -q:v 2 publishing/09b-becker-rig-1000-times-1-07-cover-9x16.jpg"
     },
     "first_comment": "Age 10: ≈ $1,967. Age 30: ≈ $7,612. Age 50: ≈ $29,457. Age 65: ≈ $81,273, over 81 times the gift, never topped up. Got it at 25 instead? ≈ $14,974 at 65.",
     "first_comment_action": "Post it right after publishing and pin it.",
     "trial_reels": {
       "recommendation": "Post as a regular Reel, not a Trial.",
       "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show 471c793:renders/channel/09b-becker-rig-1000-times-1-07.mp4 > 09b-29.5s.mp4` (sha256 5d8f22d5…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. A cover test (the heave vs frame 1) is the other use. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. The pre-condense render is in git: `git show c4a3014:renders/channel/09b-becker-rig-1000-times-1-07.mp4 > 09b-29.5s.mp4` (sha256 b07daebb…; at 471c793 it carries the v2.2 soundtrack, 5d8f22d5…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. A cover test (the heave vs frame 1) is the other use. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
     },
     "settings": {
       "audio": "Rename the original audio to '$1,000 at birth, age by age — The Back of the Envelope' if the app allows; it is the score, with no voice.",
@@ -531,7 +534,7 @@
       "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
       "The '≈ 6.8% after inflation since 1928' is a live Official Data Foundation figure read from search results (the write-up's [click-check]); it will drift.",
       "The federal $1,000-at-birth account ('Trump Accounts') appears here only from keyword data and third-party Short descriptions; none of it is verified, and none is in the copy.",
-      "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file.",
+      "The video, the cover and the video facts are the condensed cut, shipped on 2026-10-13; the copy is cut-independent and carried over unchanged.",
       "The vidIQ credit balance is shared with the other sheets being built in parallel, so this sheet's spend is counted from each tool's listed cost (see research.vidiq_credits)."
     ],
     "titles_scored": "6 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored.",
@@ -540,7 +543,7 @@
   "checked": {
     "date": "2026-10-13",
     "by": "adversarial check of this sheet",
-    "math": "python3 teasers/v2/checks/09-growth-ladder.py: 509 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/09-growth-ladder.py; every rung recomputed in MATH_RELATIONS from $1,000 × 1.07 per birthday ($1,070 exact; ≈ $1,967 … ≈ $81,273), 81.27 ('over 81 times'), 72 ÷ 7 ≈ 10 and the first doubling at 11, the pinned at-25 figure (1.07^40 → ≈ $14,974) and its × 5.4 (1.07^25), the $500 / $5,000 scaling and 6.81% ≈ 6.8%; COPY_RULES keep every rung's figure beside its own age, every rounded figure 'about' or '≈', the after-inflation framing with its date and source, and no 'millionaire'",
+    "math": "python3 teasers/v2/checks/09-growth-ladder.py: 509 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/09-growth-ladder.py; every rung recomputed in MATH_RELATIONS from $1,000 × 1.07 per birthday ($1,070 exact; ≈ $1,967 … ≈ $81,273), 81.27 ('over 81 times'), 72 ÷ 7 ≈ 10 and the first doubling at 11, the pinned at-25 figure (1.07^40 → ≈ $14,974) and its × 5.4 (1.07^25), the $500 / $5,000 scaling and 6.81% ≈ 6.8%; COPY_RULES keep every rung's figure beside its own age, every rounded figure 'about' or '≈', the after-inflation framing with its date and source, and no 'millionaire'; re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: 536 checks, 0 failed",
     "limits": {
       "youtube_title_chars": 85,
       "youtube_description_chars": 1171,

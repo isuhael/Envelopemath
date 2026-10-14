@@ -5,7 +5,7 @@
   "for_video": {
     "current_render": "renders/channel/03b-scoreboard-card-minimum.mp4",
     "current_duration_s": 14.167,
-    "current_sha256": "c5f2f4f49bf06fe792107d2b0d942763d37ef91ed4aa2ef872a59a96ec188c18",
+    "current_sha256": "649a976e9b22c826d3cb3f38e37793d58d23cecbd0597779a7ccda1d009297eb",
     "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
       "name": "condensed (2026-10-13)",

@@ -4,16 +4,20 @@
   "prepared": "2026-10-13",
   "for_video": {
     "current_render": "renders/channel/07c-becker-rig-savings-rate.mp4",
-    "current_duration_s": 21.6,
-    "current_sha256": "cba00966f93951237a6c5e83d45de1b405fdf4244f2b2c83c758726f1089166a",
-    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds on 2026-10-13: the pre-condense cut. The ship step rebuilds this file with --covers from the condensed cut.",
+    "current_duration_s": 15.8,
+    "current_sha256": "1bd0c66bcf54e1c0a6926e71e527496d2c7945c6f41264ddcdd41fb957e9e4cb",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
-      "name": "pre-condense (Becker Rig port, fix pass 2026-10-08)",
+      "name": "condensed (2026-10-13)",
       "spec": "studio/specs/07c-becker-rig-savings-rate.json",
-      "body_s": 19.1,
+      "body_s": 13.3,
       "card_s": 2.5,
-      "status": "in renders/channel on 2026-10-13 (git 471c793); a condensed cut (timing only) is in progress",
-      "on_ship": "python3 publishing/tools/build_publishing.py 07c-becker-rig-savings-rate --covers (re-picks the cover by content, re-exports both JPGs, refreshes for_video)"
+      "shipped": "2026-10-13",
+      "replaces": {
+        "duration_s": 21.6,
+        "sha256": "cba00966f93951237a6c5e83d45de1b405fdf4244f2b2c83c758726f1089166a",
+        "note": "the pre-condense cut (Becker Rig port, fix pass 2026-10-08) + card, retired; in git history (c4a3014; 471c793 with the v2.2 soundtrack)"
+      }
     }
   },
   "facts": {
@@ -118,7 +122,7 @@
       "captions": "None needed (no narration; all text is on screen)"
     },
     "posting_window": {
-      "when": "First Tue-Thu evening after the 07c condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+      "when": "First free Tue-Thu evening, 21:30-22:30 ET (01:30-02:30 UTC the next day); the condensed cut shipped on 2026-10-13. Sunday 06:00-08:00 ET is the alternative.",
       "spacing": "Keep it at least 6 h from any other upload on the channel, post one ledger duel (07a, 07b, 07c) per evening, and keep it off 04b's evening (both show how little a low-rate savings account earns).",
       "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,199 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2). The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. Search demand: 'high yield savings account' is up 77.0% on its 30-day baseline and 'hysa' 28.1%, so savings rates are in people's searches now."
     },
@@ -145,21 +149,21 @@
         "3x4": "publishing/07c-becker-rig-savings-rate-cover-3x4.jpg",
         "9x16": "publishing/07c-becker-rig-savings-rate-cover-9x16.jpg"
       },
-      "frame_in_current_render_s": 0.5,
-      "frame_index": 15,
+      "frame_in_current_render_s": 0,
+      "frame_index": 0,
       "frame_by_content": "The frame-1 picture, which the write-up names as the Instagram cover: the header 'You save $100 a month / 5 years = $6,000 / A big bank adds: ?' with '$100 a month' in green, the 2-line footer, the stake line 'Interest so far · $100 a month each', the column heads (You: Big bank, 0.01% APY; Leo: High-yield, 4.00% APY), the Start row at $0.00 / $0.00 with Years 1-5 dim over empty shelves, You pondering on the bare floor beside Leo, and the caption 'Year 1 at a big bank:' with no number. It asks and does not answer. Not the end frame (Leo on his gold tower), which answers the question. On any cut, use the first still frame after the first caption is complete and before Year 1 drops.",
-      "frame_measured": "On the pre-condense 21.6 s render frame 0 shows only the caption's first word ('Year'); the words pop in to 0.33 s, the frame-to-frame luma change then stays at the figures' idle level (≤ 0.010 mean) from 0.40 s (frame 12) to 0.83 s, and Year 1 starts to drop at about 0.9 s (it lands at 1.0 s). Frame 15 (0.50 s) is inside that hold: the write-up's frame-1 picture with its whole first caption.",
+      "frame_measured": "On the shipped 15.8 s condensed cut frame 0 already shows the whole first caption, 'Year 1 at a big bank:', over the Start row at $0.00 / $0.00 and Years 1-5 empty; only You's ponder moves over the next frames (frame-to-frame luma change 0.01-0.34 on 270×480 greyscale), and Year 1 starts to drop at about 0.3 s (it lands at 0.4 s). Frame 0 is the write-up's frame-1 picture. On the 21.6 s pre-condense render frame 0 showed only 'Year', so the cover was frame 15 (0.50 s).",
       "crop": "3:4 = 1080×1440 from y 60 to 1500 of the 1080×1920 frame. The content runs from y 112 (the badge) to y 1429 (the caption), so the tile keeps the badge, the header, the footer, the stake line, both column heads, the figures, the ledger and the caption, and drops the empty floor. A centred grid crop (y 240-1680) cuts the badge and the header.",
       "how_to_set": "In 'Edit cover', pick the opening frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
-      "re_export": "ffmpeg -ss 0.5 -i renders/channel/07c-becker-rig-savings-rate.mp4 -frames:v 1 -vf \"crop=1080:1440:0:60\" -q:v 2 publishing/07c-becker-rig-savings-rate-cover-3x4.jpg",
-      "re_export_9x16": "ffmpeg -ss 0.5 -i renders/channel/07c-becker-rig-savings-rate.mp4 -frames:v 1 -q:v 2 publishing/07c-becker-rig-savings-rate-cover-9x16.jpg"
+      "re_export": "ffmpeg -ss 0 -i renders/channel/07c-becker-rig-savings-rate.mp4 -frames:v 1 -vf \"crop=1080:1440:0:60\" -q:v 2 publishing/07c-becker-rig-savings-rate-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 0 -i renders/channel/07c-becker-rig-savings-rate.mp4 -frames:v 1 -q:v 2 publishing/07c-becker-rig-savings-rate-cover-9x16.jpg"
     },
     "first_comment": "Big bank, 0.01% APY: ≈ $1.48 in 5 years. High-yield, 4.00% APY: ≈ $617.90. The FDIC's national average, 0.37%: ≈ $55. What does yours pay?",
     "first_comment_action": "Post it right after publishing and pin it.",
     "trial_reels": {
       "recommendation": "Post as a regular Reel, not a Trial.",
       "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut ships, the pre-condense render is in git: `git show 471c793:renders/channel/07c-becker-rig-savings-rate.mp4 > 07c-pre-condense.mp4` (sha256 dcafa5e0…). Compare skip rate (October Reels ran 27.0-65.1%; 06c, the other Becker Rig Reel, 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. The pre-condense render is in git: `git show c4a3014:renders/channel/07c-becker-rig-savings-rate.mp4 > 07c-pre-condense.mp4` (sha256 cba00966…; at 471c793 it carries the v2.2 soundtrack, dcafa5e0…). Compare skip rate (October Reels ran 27.0-65.1%; 06c, the other Becker Rig Reel, 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
     },
     "settings": {
       "audio": "Rename the original audio to 'Big bank vs high-yield — The Back of the Envelope' if the app allows; it is the score, with no voice.",
@@ -509,7 +513,7 @@
       "As the 06b and 04b sheets found (not re-checked here), vidIQ's YouTube authorization is a different channel (UCRC5v_El2fibbkqsZs6uFjA), so @envelopemath's YouTube Analytics (audience hours, geography) were not readable. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
       "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and the same-idea Shorts' own tags.",
       "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
-      "The render in renders/channel is the pre-condense cut. The cover's time and frame are measured on it; the copy names no other timestamp, and the ship step re-picks the cover on the final file.",
+      "The render in renders/channel is the condensed cut, shipped on 2026-10-13. The cover's time and frame were re-measured on it; the copy names no other timestamp.",
       "Chase's 0.01% and the high-yield offers are the write-up's, read from search results; the rate sheet and The College Investor's list are [click-check] items that were not opened here.",
       "The vidIQ credit balance is shared with the other sheets being built in parallel; this sheet's spend is counted from each tool's listed cost, checked against the balance (see research.vidiq_credits)."
     ],
@@ -519,7 +523,7 @@
   "checked": {
     "date": "2026-10-13",
     "by": "adversarial check of this sheet",
-    "math": "python3 teasers/v2/checks/07-ledger-duel.py: 461 checks, 0 failures on studio/specs/ (2026-10-13), run by the builder through publishing/data/checks/07-ledger-duel.py; every public figure traced to the 07c maths table and recomputed in MATH_RELATIONS from $100 a month at each APY's monthly rate (all 5 years, the doubling, the FDIC case); each year's pair kept together with the big bank first, and every lone figure kept with its account (COPY_RULES)",
+    "math": "python3 teasers/v2/checks/07-ledger-duel.py: 461 checks, 0 failures on studio/specs/ (2026-10-13), run by the builder through publishing/data/checks/07-ledger-duel.py; every public figure traced to the 07c maths table and recomputed in MATH_RELATIONS from $100 a month at each APY's monthly rate (all 5 years, the doubling, the FDIC case); each year's pair kept together with the big bank first, and every lone figure kept with its account (COPY_RULES); re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: 535 checks, 0 failures",
     "limits": {
       "youtube_title_chars": 89,
       "youtube_description_chars": 1097,

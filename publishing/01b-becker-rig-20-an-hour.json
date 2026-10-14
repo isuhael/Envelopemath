@@ -5,7 +5,7 @@
   "for_video": {
     "current_render": "renders/channel/01b-becker-rig-20-an-hour.mp4",
     "current_duration_s": 14.5,
-    "current_sha256": "5b45401d58c1cc2c3a32b95f63b4007672faad824b30c4b7f931d1b99426c1a9",
+    "current_sha256": "aefabd9722ea4e7d43d5c4fbf59573d70e52f354384a02276c3204026a0d1084",
     "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
       "name": "condensed (2026-10-13)",

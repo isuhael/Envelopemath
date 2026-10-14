@@ -5,7 +5,7 @@
   "for_video": {
     "current_render": "renders/channel/02c-scoreboard-salary-per-hour.mp4",
     "current_duration_s": 10.1,
-    "current_sha256": "11fb6900088af045069285fda0caefd70f0482d38085013844d5c353b5ca58f7",
+    "current_sha256": "e8de3b426b1c4cf321771737394cf6a4a45408a544af1e97a2e52715071807b5",
     "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
       "name": "condensed (2026-10-13)",

@@ -4,33 +4,26 @@
   "prepared": "2026-10-13",
   "for_video": {
     "current_render": "renders/channel/10c-scoreboard-amazon-makes.mp4",
-    "current_duration_s": 33.5,
-    "current_sha256": "a6a16cf18f302cf67bbbede3f929a2aeb2884a01267236b8168298cc6648a061",
-    "note": "current_* is what renders/channel holds today: the round-2 cut, which runs past this copy's verdict. The copy describes the recut (copy_describes); post only the recut with it. The ship step promotes the recut and re-runs the build with --covers, which refreshes current_*, the cut and both covers.",
+    "current_duration_s": 18.067,
+    "current_sha256": "0f85ac87db9eb5f212372379c5a518c0ecbbfb9e8c5f2558aa37698e1d718abb",
+    "note": "current_* is the shipped recut, the cut this copy describes. The copy names no timestamp except the cover frame, which is picked by content.",
     "cut": {
-      "name": "round-2 cut (still in renders/channel; not the cut this copy describes)",
+      "name": "recut to the earlier verdict (owner-approved 2026-10-13; recut fix pass)",
       "spec": "studio/specs/10c-scoreboard-amazon-makes.json",
-      "body_s": 31.0,
-      "card_s": 2.5,
-      "shipped": null,
-      "git": "471c793",
-      "status": "the recut (copy_describes) is WIP until the ship step promotes it; this sheet's copy is the recut's."
-    },
-    "copy_describes": {
-      "cut": "recut to the earlier verdict (owner-approved 2026-10-13; recut fix pass)",
-      "spec": "studio/specs-wip/10c-scoreboard-amazon-makes.json",
-      "render": "/tmp/cond/10/10c-scoreboard-amazon-makes/final/10c-scoreboard-amazon-makes.mp4",
-      "duration_s": 18.067,
       "body_s": 15.55,
       "card_s": 2.517,
-      "sha256": "f8c73509812c85a1abe83c4286cacbef83bf20ed6c4d84bead58523530ae1388",
-      "cover_t": 15.0,
-      "cover_frame": 450,
-      "status": "WIP: not in renders/channel yet. The ship step promotes it (with the Scoreboard sound pack the write-up names) and rebuilds this sheet with --covers."
+      "shipped": "2026-10-13",
+      "git": null,
+      "status": "promoted on 2026-10-13 and shipped the same day (sound bible v2.5); this sheet was rebuilt on it with --covers.",
+      "replaces": {
+        "duration_s": 33.5,
+        "sha256": "a6a16cf18f302cf67bbbede3f929a2aeb2884a01267236b8168298cc6648a061",
+        "note": "the round-2 cut + card, retired; in git history (c4a3014, with the v2.4 soundtrack; 471c793 with the v2.2 soundtrack)"
+      }
     }
   },
   "facts": {
-    "source": "teasers/v2/10-cost-counter.md section 10c and the Review log's 'Recut to the earlier verdict' and 'Recut, fix pass' entries; teasers/v2/checks/10-cost-counter.py: 992 checks, 0 failures with --spec on the 10a and 10c WIP specs (the recut; 10b from studio/specs/), run 2026-10-13",
+    "source": "teasers/v2/10-cost-counter.md section 10c and the Review log's 'Recut to the earlier verdict' and 'Recut, fix pass' entries; teasers/v2/checks/10-cost-counter.py: the default run on studio/specs/, which holds the recut (0 failures required at every build)",
     "basis": "Amazon's 2025 net income of $77.7 billion (GAAP, its Q4 2025 results release, February 2026; the same figures in a press-release copy and an independent report), spread evenly over a 365-day year of 31,536,000 seconds",
     "rate": "$77.7B ÷ 31,536,000 = $2,463.85 a second ≈ $2,464 (to the dollar, the write-up's one rounding, because the swap-in rule divides by it)",
     "pay": "median full-time pay $1,251 a week (BLS Q2 2026); half a year of it, $1,251 × 52 ÷ 2 = $32,526 (6 months, exact)",
@@ -161,14 +154,14 @@
         "3x4": "publishing/10c-scoreboard-amazon-makes-cover-3x4.jpg",
         "9x16": "publishing/10c-scoreboard-amazon-makes-cover-9x16.jpg"
       },
-      "frame_in_current_render_s": 30.0,
-      "frame_index": 900,
+      "frame_in_current_render_s": 15.0,
+      "frame_index": 450,
       "frame_by_content": "The recut's finished board with the verdict, as the write-up's Instagram note asks: the header 'HOW LONG DO YOU WORK FOR / 1 SECOND OF AMAZON'S PROFIT?', the odometer on '$32,526', the 2-line footer 'Amazon 2025 net income: $77.7B / Pay: BLS median $1,251 a week × 52', the ladder reading '≈ 2 weeks · ≈ 10 weeks · 6 months' (bottom to top) beside the big lit coin, and the two-line verdict 'HALF A YEAR OF MEDIAN PAY: / ≈ 13 SECONDS.' with nothing under it (the last caption has gone). The hook's own answer (≈ 2 weeks) is the ladder's bottom row.",
       "frame_measured": "On the recut's 18.07 s render the counter stops on $32,526 at its pass, the coin grows and the verdict follows; the last caption ('≈ 13 seconds: half a year.') clears at frame 437 (14.57 s), the board then holds near-still (frame-to-frame mean luma change under 0.003, the coin's glow) to frame 466, and the end card starts at frame 467 (15.57 s): the write-up's 14.6-15.5 s window. Frame 450 (15.00 s) is the cover, read from the recut render's frame (a preview export, not the JPGs on disk).",
       "crop": "3:4 = 1080×1440 from y 0 to 1440 of the 1080×1920 frame: the badge (from y 141), the header, the odometer, the footer, the ladder and the coin, and the verdict (to y 1289 on the recut's frame 450), with 141 px above and 150 px below; it drops the empty black below. A centred grid crop (y 240-1680) cuts the badge and the header.",
-      "how_to_set": "In 'Edit cover', pick the verdict frame from the video (or upload the 9:16 JPG once the ship step has re-exported it), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
-      "re_export": "ffmpeg -ss 30.0 -i renders/channel/10c-scoreboard-amazon-makes.mp4 -frames:v 1 -vf \"crop=1080:1440:0:0\" -q:v 2 publishing/10c-scoreboard-amazon-makes-cover-3x4.jpg",
-      "re_export_9x16": "ffmpeg -ss 30.0 -i renders/channel/10c-scoreboard-amazon-makes.mp4 -frames:v 1 -q:v 2 publishing/10c-scoreboard-amazon-makes-cover-9x16.jpg"
+      "how_to_set": "In 'Edit cover', pick the verdict frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
+      "re_export": "ffmpeg -ss 15.0 -i renders/channel/10c-scoreboard-amazon-makes.mp4 -frames:v 1 -vf \"crop=1080:1440:0:0\" -q:v 2 publishing/10c-scoreboard-amazon-makes-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 15.0 -i renders/channel/10c-scoreboard-amazon-makes.mp4 -frames:v 1 -q:v 2 publishing/10c-scoreboard-amazon-makes-cover-9x16.jpg"
     },
     "first_comment": "2,464 ÷ your weekly pay = weeks of your work per second of Amazon's profit. Median ($1,251): ≈ 2. Yours?",
     "first_comment_action": "Post it right after publishing and pin it.",
@@ -494,9 +487,7 @@
       "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and on the write-up's and the outliers' own tags.",
       "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
       "The $77.7 billion rests on Amazon's own Q4 2025 release (company newsroom) and two copies of its figures, found by search; the write-up's round could not fetch pages directly. Open the release once before posting.",
-      "The figures in other creators' titles and descriptions (revenue per second, a person's earnings per second) are theirs, not verified here; the copy states only the write-up's maths.",
-      "Until the ship step, renders/channel, the video facts above (current_*) and the two cover JPGs are the round-2 cut, which runs past this copy's verdict. The copy describes the recut (WIP render in /tmp/cond/10/, read for frame 1 and the cover frame); the ship step's --covers build refreshes the rest.",
-      "10c's sound is the ship step's call: the write-up says the recut fails BANDS 16 kHz by 0.3 dB on the committed Scoreboard pack and passes 42/42 on the working tree's (B8 margin 0.03), so it must not ship on the committed pack as it is."
+      "The figures in other creators' titles and descriptions (revenue per second, a person's earnings per second) are theirs, not verified here; the copy states only the write-up's maths."
     ],
     "titles_scored": "6 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored. None re-scored at the recut update: the title does not change.",
     "vidiq_credits": "65 credits for this teaser by listed cost (3 keyword queries, 2 YouTube searches, 1 Shorts outlier search, 1 Instagram/TikTok outlier search and 6 title scores at up to 5 each), plus 10 shared across 10a-10c for the channel's stats and Shorts list (Instagram owner insights cost 0), and 5 for the re-score after the build. Account balance: 4,375 at the start of the 10 research and 4,135 when it ended, a 240 drop for 56 calls (the balance is shared with sheets built in parallel, so the drop is an upper bound; keyword queries cost less than 5); 4,060 after the 3 re-scores (15 credits by listed cost; the rest of that 75 drop is other sheets'). About 255 for the three 10 sheets, against a budget of about 450. Adversarial check: 5 for this teaser by listed cost (the pick's title score) plus 2 keyword queries ('how much money does amazon make every second', questions and research), and 5 shared across 10a-10c for the three related videos' titles. Balance 3,695 at the check's start and 3,635 after its last call (a 60 drop for 18 calls across 10a-10c, 30 of it listed title and video costs; the balance is shared with sheets checked in parallel). Recut update (2026-10-13): 0 credits, no vidIQ call (the title, tags and hashtags do not depend on the stop).",
@@ -505,7 +496,7 @@
   "checked": {
     "date": "2026-10-13",
     "by": "publishing editor's recut update, then an adversarial re-check of this sheet against the write-up and the platform limits",
-    "math": "python3 teasers/v2/checks/10-cost-counter.py: 992 checks, 0 failures with --spec on the 10a and 10c WIP specs (the recut; 10b from studio/specs/), run 2026-10-13, run by the builder through publishing/data/checks/10-cost-counter.py; the rate and every answer recomputed from $77.7 billion and $1,251 a week in MATH_RELATIONS ($2,463.85 ≈ $2,464; ≈ 2 weeks; ≈ $12,319 and ≈ 10 weeks; $1,251 × 52 ÷ 2 = $32,526 at ≈ 13 seconds; the swap-in rule's 1.97), and the cut's spec read for its stop (k × 13.2013 = $32,526.03), its three rows and its verdict; COPY_RULES hold every figure to the write-up's one rounding, put '≈' or 'about' on every rounded figure, keep $77.7 billion beside 2025 and named as net income, ban any answer past the recut's stop, and ban 'live', a share price, a ticker, any person's name and advice wording",
+    "math": "python3 teasers/v2/checks/10-cost-counter.py: the default run on studio/specs/, which holds the recut (0 failures required at every build), run by the builder through publishing/data/checks/10-cost-counter.py; the rate and every answer recomputed from $77.7 billion and $1,251 a week in MATH_RELATIONS ($2,463.85 ≈ $2,464; ≈ 2 weeks; ≈ $12,319 and ≈ 10 weeks; $1,251 × 52 ÷ 2 = $32,526 at ≈ 13 seconds; the swap-in rule's 1.97), and the cut's spec read for its stop (k × 13.2013 = $32,526.03), its three rows and its verdict; COPY_RULES hold every figure to the write-up's one rounding, put '≈' or 'about' on every rounded figure, keep $77.7 billion beside 2025 and named as net income, ban any answer past the recut's stop, and ban 'live', a share price, a ticker, any person's name and advice wording",
     "limits": {
       "youtube_title_chars": 64,
       "youtube_description_chars": 1153,

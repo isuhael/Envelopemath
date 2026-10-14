@@ -5,7 +5,7 @@
   "for_video": {
     "current_render": "renders/channel/01a-scoreboard-paid-biweekly.mp4",
     "current_duration_s": 13.9,
-    "current_sha256": "c67ed5e3cb448c88f5ca81cfb6e0bf4bfb30e0102980d9ccc790340c28dccbb1",
+    "current_sha256": "935ade0010b2df5efd4d79e41f8591f3b745a4fc27fcec447933f73f96c802c1",
     "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
       "name": "condensed (2026-10-13)",

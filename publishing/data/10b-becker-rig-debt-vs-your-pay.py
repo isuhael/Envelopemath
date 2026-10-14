@@ -4,23 +4,26 @@
 # Becker Rig precedent: a pre-condense render, pay as the yardstick), laid out like 10a.
 #
 # Facts come only from teasers/v2/10-cost-counter.md (section 10b) and python3 teasers/v2/checks/10-cost-counter.py.
-# Research: vidIQ, pulled 2026-10-13. The video is the pre-condense cut: the 10 condense is in progress in parallel
-# (timing only; numbers, caption facts and the verdict stay). This sheet names no timestamp except the cover, which is
-# picked by content (the end hold), so the ship step only re-runs the build with --covers on the final file.
+# Research: vidIQ, pulled 2026-10-13. The video is the condensed cut, promoted and shipped on 2026-10-13 (timing only;
+# numbers, caption facts and the verdict stay; the counter still runs in real time; the pre-condense render is in git,
+# 471c793 and c4a3014). This sheet names no timestamp except the cover, which is picked by content (the end hold), so
+# the ship re-ran the build with --covers on the shipped file.
 
 TEASER = "10b Becker Rig, cost-counter: \"Your pay for 40 years vs 1 minute of new US debt?\""
 PREPARED = "2026-10-13"
 SHORT_ID = "10b"
 MD_TITLE = "10b publishing sheet: 40 years of your pay vs 1 minute of new US debt"
 MATH_RUN = "1005 checks, 0 failed"     # python3 teasers/v2/checks/10-cost-counter.py on studio/specs/ (via publishing/data/checks/10-cost-counter.py), 2026-10-13
-RENDER_COMMIT = "471c793"              # the commit that holds this pre-condense render
-RENDER_SHA_PRE = "8eebe2472d13691637c0feb22a97b583e49b8cff67df0506cc05565717e6c745"
+MATH_RUN_SHIP = "1002 checks, 0 failed"  # the same check on studio/specs/ with the condensed cut (and the 10a/10c recuts) promoted, at the ship 2026-10-13
+RENDER_COMMIT = "c4a3014"              # the last commit that holds the pre-condense render (with the v2.4 soundtrack)
+RENDER_SHA_PRE = "7318edc4e695bc85453f58882d83bef2510bbbf8361d299c9ba2bec3be15e101"   # at 471c793 (v2.2 soundtrack): 8eebe247…
 
 MD_INTRO = [
-    f"- **Video.** `renders/channel/{BASE}.mp4`: the pre-condense cut ({VIDEO_S:g} s: a {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`). "
-    "The 10 condense is in progress in parallel (timing only: the numbers, the captions' facts and the verdict stay). "
-    "Nothing below names a timestamp except the cover, which is picked by content (the end hold), so the copy carries over to the condensed cut unchanged. "
-    f"The ship step rebuilds this sheet and re-exports both covers from the final file: `python3 publishing/tools/build_publishing.py {BASE} --covers`.",
+    f"- **Video.** `renders/channel/{BASE}.mp4`: the condensed cut ({VIDEO_S:g} s: a {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`), "
+    f"promoted and shipped on 2026-10-13. It replaces the 39.1 s pre-condense cut (the owner: \"too many still moments\"), which is in git (`{RENDER_COMMIT}`). "
+    "The counter still runs in real time, so the condense only shortened the end: the verdict lands 0.8 s after the stop and holds 2.05 s. The numbers, the captions' facts and the verdict stay, so the copy carried over unchanged. "
+    "Nothing below names a timestamp except the cover, which was re-picked by content (the end hold) on the shipped file. "
+    f"The ship rebuilt this sheet and re-exported both covers from it (`python3 publishing/tools/build_publishing.py {BASE} --covers`); on the shipped specs the maths check runs {MATH_RUN_SHIP}.",
     "- **Numbers.** Every figure comes from `teasers/v2/10-cost-counter.md` (10b) and its check, "
     f"`python3 teasers/v2/checks/10-cost-counter.py`: {MATH_RUN} on `studio/specs/` (run 2026-10-13; the builder runs it through the adapter `publishing/data/checks/10-cost-counter.py`). "
     f"`python3 publishing/tools/build_publishing.py {BASE} --check` checks this sheet's limits, paste blocks and figures, recomputes the 364-day growth and the rate from the two Debt to the Penny readings, "
@@ -37,11 +40,11 @@ MD_INTRO = [
 
 # ---------------------------------------------------------------- the video
 FOR_VIDEO_NOTE = ("Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. "
-                  "current_* is what renders/channel holds today: the pre-condense cut. The ship step re-runs the build with --covers on the condensed file.")
-CUT = {"name": "pre-condense cut (assembly pass 4, 2026-10-08)", "spec": f"studio/specs/{BASE}.json", "body_s": BODY_S,
-       "card_s": CARD_S, "shipped": None, "git": RENDER_COMMIT,
-       "status": "the 10 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay); no 10 WIP spec was in studio/specs-wip/ at this build. "
-                 "The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."}
+                  "current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.")
+CUT = {"name": "condensed (2026-10-13)", "spec": f"studio/specs/{BASE}.json", "body_s": BODY_S,
+       "card_s": CARD_S, "shipped": "2026-10-13",
+       "replaces": {"duration_s": 39.1, "sha256": RENDER_SHA_PRE,
+                    "note": f"the pre-condense cut (assembly pass 4, 2026-10-08) + card, retired; in git history ({RENDER_COMMIT}; 471c793 with the v2.2 soundtrack)"}}
 
 FACTS = {
     "source": f"teasers/v2/10-cost-counter.md section 10b; teasers/v2/checks/10-cost-counter.py: {MATH_RUN} on studio/specs/ (2026-10-13)",
@@ -135,7 +138,7 @@ THUMB_MD = ("in the YouTube app, pick frame 1: the header 'Your pay for 40 years
             "the board 'New US debt since you hit play' on '$0' over '≈ $78,000 every second', the figure hugging the full stack of 40 cash bricks on the plinth '40 × $65,052 / 40 years left', "
             "and the '1 MINUTE' stopwatch at 0:00. It asks without answering, like the title beside it in search. The Instagram cover below is the end hold, as the write-up asks.")
 YT_POSTING_WINDOW = {
-    "when": "First free Tue-Thu evening after the condensed cut ships and passes QA, at least a week after 10a, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+    "when": "First free Tue-Thu evening at least a week after 10a, 21:30-22:30 ET (01:30-02:30 UTC the next day); the condensed cut shipped on 2026-10-13. Sunday 06:00-08:00 ET is the alternative.",
     "spacing": "Keep it at least 6 h from any other upload on the channel. 10a and 10b are both about the federal debt: post them at least a week apart, or as a labelled pair (this one as 'Part 2: the debt itself'), as the write-up asks. Suggested order within the series: 10c, then 10a, then 10b.",
     "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,198 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2); 06c (Mon 03:45 ET) has 760 and 06b (Mon 12:14 ET) 75, too young to compare. "
            "The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. "
@@ -202,20 +205,22 @@ IG_FIRST_COMMENT = "Earn more than ≈ $117,000 a year? Your 40 years beat 1 min
 
 # ---------------------------------------------------------------- the cover frame
 # The end hold, picked by content: the write-up's Instagram note names "the end hold: the counter on $2,602,080, the
-# green '≈ 33 SECONDS' stamp and the verdict" (and not the burst, a white impact frame). On this render the burst lands
-# with the stop, the impact settles by about frame 1022, the figure sits up and looks at the board, and from then on the
-# frame changes only by the board's steam until the end card. Frame 1065 is inside that hold, after he has sat up.
+# green '≈ 33 SECONDS' stamp and the verdict" (and not the burst, a white impact frame). On the shipped condensed cut
+# the burst lands with the stop at frame 999 (33.3 s), the impact settles by about frame 1022, the verdict fades in from
+# frame 1023 (34.1 s), the figure looks up at the board, and from about frame 1050 the frame changes only by the board's
+# steam until the end card at frame 1085 (36.17 s). Frame 1065 is inside that hold (the same frame as on the pre-condense render).
 COVER_T = 35.5
 COVER_FRAME = 1065
 COVER_CROP = "crop=1080:1440:0:60"
-COVER_RENDER_WORD = "pre-condense"
+COVER_RENDER_WORD = "shipped"
 COVER_FRAME_BY_CONTENT = ("The end hold, as the write-up's Instagram note asks: the header 'Your pay for 40 years vs / 1 minute of new US debt?', the 2-line footer, the cracked red board on '$2,602,080' "
                           "with '✓ 40 years of median pay: $2,602,080' under it, the green '≈ 33 SECONDS' stamp over the emptied plinth ('40 × $65,052 / 0 years left'), the stopwatch stopped at 0:33 with its end label '≈ $4.7 million', "
                           "the figure sitting on the floor looking up at the board, and the verdict '40 years of median pay: ≈ 33 seconds. / 1 minute of new US debt ≈ $4.7 million.' "
                           "On any cut, use a frame of the end hold after the figure has sat up and before the end card (not the white impact frame of the burst).")
-COVER_FRAME_MEASURED = ("On the pre-condense 39.1 s render the counter stops on the 40-year pass with the burst at about frame 999 (33.3 s); the impact settles by about frame 1022 (34.07 s), the figure sits up between about 34.6 and 35.0 s, "
-                        "and from then on the frame changes only by the board's steam and vibration (frame-to-frame mean luma change about 0.03) until the end card at about frame 1099 (36.63 s). "
-                        "Frame 1065 (35.50 s) is used; the write-up's suggestion (≈ 34.5 s) falls just before he sits up.")
+COVER_FRAME_MEASURED = (f"On the shipped {VIDEO_S:g} s condensed cut the counter stops on the 40-year pass with the burst at frame 999 (33.30 s); the impact settles by about frame 1022 (34.07 s), "
+                        "the verdict fades in over frames 1023-1030 (34.10-34.33 s) and the figure looks up at the board over about frames 1036-1049 (34.53-34.97 s); "
+                        "from frame 1050 (35.00 s) the frame changes only by the board's steam and vibration (frame-to-frame mean luma change 0.03-0.04 on 270×480 greyscale) until the end card at frame 1085 (36.17 s). "
+                        "Frame 1065 (35.50 s) is used, as on the 39.1 s pre-condense render, where the hold ran to the end card at frame 1099 (36.63 s).")
 COVER_CROP_NOTE = ("3:4 = 1080×1440 from y 60 to 1500 of the 1080×1920 frame. The content runs from y 113 (the badge) to y 1447 (the verdict's second line), "
                    "so the crop centres it (53 px above and below): badge, header, footer, board, stamp, plinth, stopwatch, the figure and the verdict; it drops the empty page below. "
                    "A centred grid crop (y 240-1680) cuts the badge and the header.")
@@ -226,13 +231,13 @@ COVER_EXTRA_BULLETS = [
     "**Not used on Instagram:** frame 1 (the $0 board, the full stack and the stopwatch at 0:00). It asks without answering, so it is the YouTube thumbnail, "
     "where it sits beside a title that asks; on Instagram the write-up picks the end hold, the save-able answer.",
     "**Not used:** the burst itself, a white impact frame, as the write-up's Instagram note warns.",
-    "**When the condensed cut ships:** re-pick the end hold by content on the shipped file (after the figure sits up, before the end card) and re-export both JPGs with `--covers`.",
+    "**Shipped cut (2026-10-13):** the end hold was re-checked by content on the shipped file: frame 1065 (35.50 s) is still inside it, after the figure looks up and before the end card (frame 1085), so it is kept, and both JPGs were re-exported from the shipped file. The copy did not change.",
 ]
 
 TRIAL_REELS = {
     "recommendation": "Post as a regular Reel, not a Trial.",
     "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-    "use_trial_for": f"A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show {RENDER_COMMIT}:renders/channel/{BASE}.mp4 > 10b-39.1s.mp4` (sha256 {RENDER_SHA_PRE[:8]}…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app.",
+    "use_trial_for": f"A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. The pre-condense render is in git: `git show {RENDER_COMMIT}:renders/channel/{BASE}.mp4 > 10b-39.1s.mp4` (sha256 {RENDER_SHA_PRE[:8]}…; at 471c793 it carries the v2.2 soundtrack, 8eebe247…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app.",
 }
 IG_AUDIO = "Rename the original audio to 'Your 40 years vs 1 minute of US debt — The Back of the Envelope' if the app allows; it is the score, with no voice."
 IG_POSTING_WINDOW = {
@@ -361,7 +366,7 @@ LIMITS = [
     "The two Debt to the Penny readings rest on search results (PrimeRates, citing Treasury; the API and page fetches were blocked) and are marked [click-check] in the write-up. Open them once before posting. "
     "If the 2026-09-30 reading can be read, the write-up's optional upgrade (a full fiscal year, 'FY2026' in the footer) changes the footer, the rate and this sheet.",
     "The figures in other creators' titles and descriptions (per-second debt growth) are theirs, not verified here; the copy states only the write-up's maths.",
-    "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file.",
+    "The video, the cover and the video facts are the condensed cut, shipped on 2026-10-13; the copy is cut-independent and carried over unchanged.",
 ]
 RESEARCH_EXTRA = {
     "titles_scored": "7 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13: 6 at the first build and option 3 with the description's own hashtags at the adversarial check; all are in youtube.titles_ranked and youtube.titles_also_scored.",
@@ -375,7 +380,8 @@ RESEARCH_EXTRA = {
 CHECKED_BY = "adversarial check of this sheet"
 CHECKED_MATH = (f"python3 teasers/v2/checks/10-cost-counter.py: {MATH_RUN} on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/10-cost-counter.py; "
                 "the growth, the rate and every figure recomputed from the two readings in MATH_RELATIONS (≈ $2.46 trillion in 364 days; ≈ $78,000 a second; ≈ $4.7 million a minute; $2,602,080; ≈ 33 seconds; ≈ $117,000; ≈ 72 years; the public part ≈ $66,000 and ≈ $4.0 million); "
-                "COPY_RULES hold every figure to the write-up's one rounding, put '≈' or 'about' on every rounded figure, keep each reading beside its date and every '≈ 33 seconds' with median pay, and ban 'live', 'fiscal 2026', 'FY2026', 'under 1 second', politics and advice wording. Re-run at the adversarial check (2026-10-13) with the same result")
+                "COPY_RULES hold every figure to the write-up's one rounding, put '≈' or 'about' on every rounded figure, keep each reading beside its date and every '≈ 33 seconds' with median pay, and ban 'live', 'fiscal 2026', 'FY2026', 'under 1 second', politics and advice wording. Re-run at the adversarial check (2026-10-13) with the same result"
+                f"; re-run at the ship (2026-10-13), with the condensed cut and the 10a/10c recuts promoted into studio/specs/: {MATH_RUN_SHIP}")
 VIDIQ_REQUERIED = ("pulled 2026-10-13: national debt 25,193 / 62.0 (+2.0%); us debt 40 trillion 6,189 (-68.1%); 40 trillion debt animated 5,396 / 17.3; "
                    "title scores 96 (pick = the write-up's title; three others tie); channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,519 views in 30 days. "
                    "Re-queried after the build: the pick's title score 96. Match. "
@@ -406,7 +412,9 @@ CHECK_LOG = [
     "- **Checked and kept.** Every figure in the copy against the 10b maths table and the check's output (the swap-in rule gives the median ≈ 33 seconds and the flip point ≈ $117,000, the same as the exact rate); "
     "the title (65/100), description (bytes), tags, hashtags, caption, first 125 characters and both alt texts against the platform limits; PrimeRates named only as the publisher of the Treasury readings, as 06b names its sources, and the board a generic counter; "
     "frame 1 (thumbnail) and frame 1065 (cover) read from the render.",
-    "- **Still to do.** The ship rebuild (`--covers`) on the condensed file, re-reading the long alt text against it.",
+    f"- **Done on ship (2026-10-13).** Rebuilt with `--covers` from the shipped condensed cut ({VIDEO_S:g} s). Frame 1065 (35.50 s) is still inside the end hold (from frame 1050 to the end card at frame 1085) and shows the same picture, so the cover frame is kept. "
+    f"The Video bullet, the cut and the check counts follow the shipped file ({MATH_RUN_SHIP} on `studio/specs/`), and the long alt text was re-read against the condensed beat sheet: "
+    "the counter still runs in real time, so every beat it names (the 40 bricks, the 3/10/20/30-year passes, the board turning red and steaming, the stop on $2,602,080, the crack and the blast, the stopwatch at 0:33 and the payoff) is in the shipped cut, and no copy changed.",
 ]
 
 # ---------------------------------------------------------------- the numbers check

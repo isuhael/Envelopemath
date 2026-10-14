@@ -4,17 +4,20 @@
   "prepared": "2026-10-13",
   "for_video": {
     "current_render": "renders/channel/08c-becker-rig-college-in-big-macs.mp4",
-    "current_duration_s": 24.5,
-    "current_sha256": "02e58727fc3b3be0238545c42f719e89cdf59de5438533ded0caa277065cd63d",
-    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the pre-condense cut. The ship step re-runs the build with --covers on the condensed file.",
+    "current_duration_s": 14.6,
+    "current_sha256": "80f13e972d3be5bf7b0a864355442b27ccd2ef5958d3dd256c1491980a59ae3f",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
-      "name": "pre-condense cut (Becker Rig port + QA fix pass, 2026-10-08)",
+      "name": "condensed (2026-10-13)",
       "spec": "studio/specs/08c-becker-rig-college-in-big-macs.json",
-      "body_s": 22.0,
+      "body_s": 12.1,
       "card_s": 2.5,
-      "shipped": null,
-      "git": "471c793",
-      "status": "the 08 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay); no 08 WIP spec was in studio/specs-wip/ at this build. The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."
+      "shipped": "2026-10-13",
+      "replaces": {
+        "duration_s": 24.5,
+        "sha256": "02e58727fc3b3be0238545c42f719e89cdf59de5438533ded0caa277065cd63d",
+        "note": "the pre-condense cut (Becker Rig port + QA fix pass, 2026-10-08) + card, retired; in git history (c4a3014; 471c793 with the v2.2 soundtrack)"
+      }
     }
   },
   "facts": {
@@ -138,7 +141,7 @@
       "captions": "None needed (no narration; all text is on screen)"
     },
     "posting_window": {
-      "when": "First free Tue-Thu evening after the condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+      "when": "First free Tue-Thu evening, 21:30-22:30 ET (01:30-02:30 UTC the next day); the condensed cut shipped on 2026-10-13. Sunday 06:00-08:00 ET is the alternative.",
       "spacing": "Keep it at least 6 h from any other upload on the channel, and on a different evening from 08a and 08b. Suggested order within the series: 08b, then 08c, then 08a.",
       "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,199 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2); 06c (Mon 03:45 ET) has 760 and 06b (Mon 12:14 ET) 75, too young to compare. The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. 08c goes second: 'student loans' runs +105.6% over its baseline, while 'community college' is down 66.1% as the start-of-term peak passes, so sooner is better than later."
     },
@@ -165,21 +168,21 @@
         "3x4": "publishing/08c-becker-rig-college-in-big-macs-cover-3x4.jpg",
         "9x16": "publishing/08c-becker-rig-college-in-big-macs-cover-9x16.jpg"
       },
-      "frame_in_current_render_s": 20.0,
-      "frame_index": 600,
+      "frame_in_current_render_s": 12.0,
+      "frame_index": 360,
       "frame_by_content": "The end state, as the write-up's Instagram note asks: the header naming all four rows, the footer, the HUD 'Private vs community / $45,000 ÷ $4,150 ≈' with 10.8 on the big gold plate and 'community-college years', the four-row recap (≈ 7,235 Private, ≈ 5,125 Out-of-state, ≈ 1,921 In-state, ≈ 667 Community), the lit community pile at the foot of the lit private mountain with the in-state and out-of-state piles dimmed, the slumped figure, and the verdict 'One private year = / ≈ 10.8 community-college years.' On any cut, use a settled frame of the end hold, after the figure's slump and before the end card.",
-      "frame_measured": "On the pre-condense 24.5 s render the answer lands at frame 520 (17.35 s); the figure's hop and slump settle by about frame 559 (18.63 s), and the frame then holds still (frame-to-frame mean luma change under 0.0001) until the end card at frame 660 (22.00 s). Frame 600 (20.00 s) is used.",
+      "frame_measured": "On the shipped 14.6 s condensed cut the answer lands at frame 315 (10.50 s); the figure's slump (frames 346-352) settles by about frame 356 (11.87 s), and the frame then holds still (frame-to-frame mean luma change 0.001-0.005 on 270×480 greyscale) until the end card at frame 363 (12.10 s). Frame 360 (12.00 s) is used. On the 24.5 s pre-condense render the same hold was frames 559-660, and frame 600 (20.00 s) was used.",
       "crop": "3:4 = 1080×1440 from y 68 to 1508 of the 1080×1920 frame. The content runs from y 112 (the badge) to y 1465 (the verdict's underline), so the crop centres it (44 px above, 43 below): badge, header, footer, the plate, the recap, the piles and the verdict; it drops the empty page below. A centred grid crop (y 240-1680) cuts the badge and the header.",
       "how_to_set": "In 'Edit cover', pick the end-state frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
-      "re_export": "ffmpeg -ss 20.0 -i renders/channel/08c-becker-rig-college-in-big-macs.mp4 -frames:v 1 -vf \"crop=1080:1440:0:68\" -q:v 2 publishing/08c-becker-rig-college-in-big-macs-cover-3x4.jpg",
-      "re_export_9x16": "ffmpeg -ss 20.0 -i renders/channel/08c-becker-rig-college-in-big-macs.mp4 -frames:v 1 -q:v 2 publishing/08c-becker-rig-college-in-big-macs-cover-9x16.jpg"
+      "re_export": "ffmpeg -ss 12.0 -i renders/channel/08c-becker-rig-college-in-big-macs.mp4 -frames:v 1 -vf \"crop=1080:1440:0:68\" -q:v 2 publishing/08c-becker-rig-college-in-big-macs-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 12.0 -i renders/channel/08c-becker-rig-college-in-big-macs.mp4 -frames:v 1 -q:v 2 publishing/08c-becker-rig-college-in-big-macs-cover-9x16.jpg"
     },
     "first_comment": "1 year of tuition & fees in $6.22 Big Macs: community ≈ 667, in-state ≈ 1,921, out-of-state ≈ 5,125, private ≈ 7,235. One private year = ≈ 10.8 community-college years. Sticker prices, before grants or aid. Which row was yours?",
     "first_comment_action": "Post it right after publishing and pin it.",
     "trial_reels": {
       "recommendation": "Post as a regular Reel, not a Trial.",
       "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show 471c793:renders/channel/08c-becker-rig-college-in-big-macs.mp4 > 08c-24.5s.mp4` (sha256 3424714c…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. The pre-condense render is in git: `git show c4a3014:renders/channel/08c-becker-rig-college-in-big-macs.mp4 > 08c-24.5s.mp4` (sha256 02e58727…; at 471c793 it carries the v2.2 soundtrack, 3424714c…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
     },
     "settings": {
       "audio": "Rename the original audio to 'A year of college in Big Macs — The Back of the Envelope' if the app allows; it is the score, with no voice.",
@@ -568,7 +571,7 @@
       "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
       "The write-up's College Board figures were read from search text that quotes the report plus one independent summary (collegeboard.org was blocked), then confirmed by its verifier. The $6.22 Big Mac was read from The Economist's own dataset on GitHub.",
       "The same-idea and outlier posts' own figures (HD Guy's $5.79 Big Mac, the German Short's 2024-25 prices) are theirs, not verified here, and not in the copy.",
-      "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file."
+      "The video, the cover and the video facts are the condensed cut, shipped on 2026-10-13; the copy is cut-independent and carried over unchanged."
     ],
     "titles_scored": "9 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored.",
     "vidiq_credits": "100 credits for this teaser by listed cost (6 keyword queries, 3 YouTube searches, 1 Instagram/TikTok outlier search, 9 title scores and 1 re-score; 5 each), plus 10 shared across 08a-08c for the channel's stats and Shorts list (Instagram owner insights cost 0). Adversarial check: 10 for this teaser (the pick's title score, 'student loans'), plus 5 shared across 08a-08c for the related videos' titles; 60 for the three 08 sheets (balance 3,790 → 3,695, a 95 drop shared with sheets built in parallel)."
@@ -576,7 +579,7 @@
   "checked": {
     "date": "2026-10-13",
     "by": "adversarial check of this sheet",
-    "math": "python3 teasers/v2/checks/08-unit-ladder.py: 677 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/08-unit-ladder.py; every row re-divided by $6.22 in MATH_RELATIONS (667, 1,921, 5,125, 7,235), the ≈ 10.8 ratio in dollars and in Big Macs, and the pinned full-budget figures ($261,880, 42,103, 115 years, $123,960, 19,929); COPY_RULES keep every count beside its own row, keep every rounded figure 'about' or '≈', keep 10.8 as community-college years, keep the full-budget figures with 'housing, food and books', keep each row's price paired with its own count, and keep 'tuition & fees' and 'before grants' in the description, the caption and the pinned comment. Re-run at the adversarial check (2026-10-13) with the same result",
+    "math": "python3 teasers/v2/checks/08-unit-ladder.py: 677 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/08-unit-ladder.py; every row re-divided by $6.22 in MATH_RELATIONS (667, 1,921, 5,125, 7,235), the ≈ 10.8 ratio in dollars and in Big Macs, and the pinned full-budget figures ($261,880, 42,103, 115 years, $123,960, 19,929); COPY_RULES keep every count beside its own row, keep every rounded figure 'about' or '≈', keep 10.8 as community-college years, keep the full-budget figures with 'housing, food and books', keep each row's price paired with its own count, and keep 'tuition & fees' and 'before grants' in the description, the caption and the pinned comment. Re-run at the adversarial check (2026-10-13) with the same result; re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: 682 checks, 0 failed",
     "limits": {
       "youtube_title_chars": 88,
       "youtube_description_chars": 1218,

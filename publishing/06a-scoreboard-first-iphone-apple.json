@@ -5,7 +5,7 @@
   "for_video": {
     "current_render": "renders/channel/06a-scoreboard-first-iphone-apple.mp4",
     "current_duration_s": 17.8,
-    "current_sha256": "482ab983d814d0b7810e1e059cd6c99cf2ad338600c23767b1413cdc799f9c9c",
+    "current_sha256": "08e447d75682927cbed9d34b120645ba228ebb5ba92410e43be2ffe05a5c1769",
     "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
       "name": "condensed (2026-10-13)",

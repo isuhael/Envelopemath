@@ -51,26 +51,30 @@ const pinHint = what => `${what} moved. If test/fixtures/cues.json changed, upda
 
 test('timeline: Appendix A sections and energy (09c, 09b), cue prep, trains, clusters', () => {
   const a = buildTimeline(rec('09c'), null, { overrides: {} })
-  assert.deepEqual(a.sections.map(s => [s.name, s.b0, s.b1]), [['HOOK', 0, 6], ['BUILD', 6, 40], ['TENSION', 40, 46], ['DROP', 46, 54], ['HOLD', 54, 62], ['VERDICT', 62, 66], ['HOLD2', 66, 70], ['CADENCE', 70, 76], ['CARD', 76, a.sections.at(-1).b1]], pinHint('09c sections (Appendix A.1)'))
-  assert.equal(a.bars.map(b => b.energy).join(''), '43333344444455334333', pinHint('09c energy (Appendix A.1)'))
-  assert.ok(a.bars[0].pickup && a.bars[0].beats === 2, pinHint('09c bar 0 (a 2-beat pickup, Appendix A.1)'))
-  assert.deepEqual(a.bars[10].split, [{ beat: 2, section: 'TENSION' }], pinHint('09c bar 10 split (Appendix A.1)'))
+  assert.deepEqual(a.sections.map(s => [s.name, s.b0, s.b1]), [['HOOK', 0, 4], ['BUILD', 4, 18], ['TENSION', 18, 24], ['DROP', 24, 28], ['CADENCE', 28, 32], ['CARD', 32, a.sections.at(-1).b1]], pinHint('09c sections (Appendix A.1)'))
+  assert.equal(a.bars.map(b => b.energy).join(''), '43344453', pinHint('09c energy (Appendix A.1)'))
+  assert.ok(!a.bars[0].pickup && a.bars[0].beats === 4, pinHint('09c bar 0 (a full 4-beat bar, no pickup, Appendix A.1)'))
+  assert.deepEqual(a.bars[4].split, [{ beat: 2, section: 'TENSION' }], pinHint('09c bar 4 split (Appendix A.1)'))
   assert.ok(a.cues[0].t === 0 && a.cues[0].tCue === -0.05 && a.cues[0].kind === 'ding', pinHint('09c first cue (the ding at -0.05, Appendix A.1)'))
   const b = buildTimeline(rec('09b'), null, { overrides: {} })
-  assert.equal(b.bars.map(x => x.energy).join(''), '43334444455333', pinHint('09b energy (Appendix A.2)'))
-  assert.equal(b.anchors.V, null, pinHint('09b V, not anchored (Appendix A.2)'))   // pick(V, base) would need +5.2%
+  assert.equal(b.bars.map(x => x.energy).join(''), '43344453', pinHint('09b energy (Appendix A.2)'))
+  assert.equal(b.anchors.V, null, pinHint('09b V, not anchored (Appendix A.2)'))   // V is 2 beats after P; the anchor needs 4
   const train = (id, kind) => buildTimeline(rec(id), null, { overrides: {} }).trains.find(t => t.kind === kind)
-  // null pins "no train": 02a's condensed cut (2026-10-13) lands its thuds unevenly, so its 0.5 s thud train is gone
-  for (const [id, kind, period] of [['10a', 'tick', 1.0], ['10b', 'tick', 0.832], ['02a', 'thud', null], ['09b', 'thud', 2.0]]) {
+  // null pins "no train": 02a's condensed cut (2026-10-13) lands its thuds unevenly, so its 0.5 s thud train is gone.
+  // 09b's condensed cut (v2.5) throws every 1.4 s (it was 2.0 s)
+  for (const [id, kind, period] of [['10a', 'tick', 1.0], ['10b', 'tick', 0.832], ['02a', 'thud', null], ['09b', 'thud', 1.4]]) {
     const tr = train(id, kind)
     const ok = period === null ? !tr : tr && Math.abs(tr.period - period) < 0.002
     assert.ok(ok, pinHint(`${id}'s ${kind} train period (${tr ? tr.period.toFixed(3) : 'none'}, pinned ${period ?? 'none'})`))
   }
   // every cue has n (per kind) and i (global)
   for (const c of a.cues) assert.ok(Number.isInteger(c.i) && Number.isInteger(c.n))
-  // overrides: a forced payoff wins (score 7) and the verdict anchor can be disabled
-  const o = buildTimeline(rec('09c'), null, { overrides: { [rec('09c').id]: { payoff: 16.6, verdictAnchor: false } } })
-  assert.equal(o.anchors.P.t, 16.6); assert.equal(o.anchors.P.rule, 'override'); assert.equal(o.anchors.V, null)
+  // overrides: a forced payoff wins (score 7) and the verdict anchor can be disabled. 09c's condensed cut (v2.5) has its
+  // riser thud at 7.0 (16.6 in the long cut) and anchors no V, so the verdict anchor is disabled on 05c, the one record with V
+  const o = buildTimeline(rec('09c'), null, { overrides: { [rec('09c').id]: { payoff: 7.0, verdictAnchor: false } } })
+  assert.equal(o.anchors.P.t, 7.0); assert.equal(o.anchors.P.rule, 'override'); assert.equal(o.anchors.V, null)
+  assert.ok(buildTimeline(rec('05c'), null, { overrides: {} }).anchors.V, pinHint("05c's verdict anchor V"))
+  assert.equal(buildTimeline(rec('05c'), null, { overrides: { [rec('05c').id]: { verdictAnchor: false } } }).anchors.V, null)
 })
 
 test('logo: the em sting lands at L in both looks (and on short cards)', () => {

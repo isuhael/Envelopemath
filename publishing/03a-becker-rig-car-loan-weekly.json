@@ -5,7 +5,7 @@
   "for_video": {
     "current_render": "renders/channel/03a-becker-rig-car-loan-weekly.mp4",
     "current_duration_s": 17.3,
-    "current_sha256": "f1e02d89d3ad6b29ed34ed24f5b9de8ef5c6240dd9cce6fbea219d1ab29eddb8",
+    "current_sha256": "478a3314a6e1ebd56243a6139664f57a34b7c45bbe6a9f9d48b7079b525bf1b3",
     "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
       "name": "condensed (2026-10-13)",

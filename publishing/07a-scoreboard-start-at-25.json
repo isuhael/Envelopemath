@@ -4,16 +4,20 @@
   "prepared": "2026-10-13",
   "for_video": {
     "current_render": "renders/channel/07a-scoreboard-start-at-25.mp4",
-    "current_duration_s": 25.3,
-    "current_sha256": "30f0cd64c1daf1773be2b74095135b24a966224f5d22f2372fe9cc44d568119e",
-    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds on 2026-10-13: the pre-condense cut. The ship step rebuilds this file with --covers from the condensed cut.",
+    "current_duration_s": 17.1,
+    "current_sha256": "49b240e87394a2457028e1e67574ddfce9b7463be7a82ba3012aea865d635fba",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
-      "name": "pre-condense (Scoreboard port, fix pass 2026-10-08)",
+      "name": "condensed (2026-10-13)",
       "spec": "studio/specs/07a-scoreboard-start-at-25.json",
-      "body_s": 22.8,
+      "body_s": 14.6,
       "card_s": 2.5,
-      "status": "in renders/channel on 2026-10-13 (git 471c793); a condensed cut (timing only) is in progress",
-      "on_ship": "python3 publishing/tools/build_publishing.py 07a-scoreboard-start-at-25 --covers (re-picks the cover by content, re-exports both JPGs, refreshes for_video)"
+      "shipped": "2026-10-13",
+      "replaces": {
+        "duration_s": 25.3,
+        "sha256": "30f0cd64c1daf1773be2b74095135b24a966224f5d22f2372fe9cc44d568119e",
+        "note": "the pre-condense cut (Scoreboard port, fix pass 2026-10-08) + card, retired; in git history (c4a3014; 471c793 with the v2.2 soundtrack)"
+      }
     }
   },
   "facts": {
@@ -150,7 +154,7 @@
       "captions": "None needed (no narration; all text is on screen)"
     },
     "posting_window": {
-      "when": "First Tue-Thu evening after the 07a condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+      "when": "First free Tue-Thu evening, 21:30-22:30 ET (01:30-02:30 UTC the next day); the condensed cut shipped on 2026-10-13. Sunday 06:00-08:00 ET is the alternative.",
       "spacing": "Keep it at least 6 h from any other upload on the channel, and post one ledger duel (07a, 07b, 07c) per evening.",
       "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,199 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2). The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. The topic is evergreen ('compound interest' −17.3%, 'the power of compound interest' +40.6% on their baselines), so no date matters more than the slot."
     },
@@ -177,21 +181,21 @@
         "3x4": "publishing/07a-scoreboard-start-at-25-cover-3x4.jpg",
         "9x16": "publishing/07a-scoreboard-start-at-25-cover-9x16.jpg"
       },
-      "frame_in_current_render_s": 2.5,
-      "frame_index": 75,
+      "frame_in_current_render_s": 1.6,
+      "frame_index": 48,
       "frame_by_content": "The Age 30 row, landed and settled: the header '2 PEOPLE INVEST $200 A MONTH / 10 YEARS VS 30 YEARS. WHO WINS AT 65?' over the 7% footer, the AGE 30 ticker with its first pip lit and seven to come, the two LED-off strip slots, AVA (Age 25 → 35, put in $24,000) at ≈ $14,000 and BEN (Age 35 → 65, put in $72,000) at $0, the working line 'Ava: $200 × 120 months = $24,000' over 'AVA VS BEN', and the first caption. It asks and does not answer: no final, no verdict. The write-up names this frame (Age 30 landed) as the Instagram cover: not frame 1, where Ava's odometer is mid-roll and reads as a wrong Age 30 value in a still, and not the finished table, which answers the question. On any cut, use the first settled frame after the Age 30 count lands.",
-      "frame_measured": "On the pre-condense 25.3 s render the Age 30 count lands at 2.0 s (frame 60) with a bump and a glow; the frame-to-frame luma change reaches the idle level by 2.43 s (frame 73) and stays at 0.000 until the Age 35 cut at 3.2 s. Frame 75 (2.50 s) is inside that still hold; the first caption reads 'Ava invests from 25 / to 35, then stops.', lit up to 'then' (the kit lights it word by word; the grey word still reads). The write-up's 2.1 s is mid-glow on this render.",
+      "frame_measured": "On the shipped 17.1 s condensed cut the Age 30 count lands at 0.75 s and the working line 'Ava: $200 × 120 months = $24,000' arrives at 1.2 s; the frame-to-frame luma change (270×480 greyscale) then sits at 0.000-0.002 from 1.47 s (frame 44) to the Age 35 cut at 1.75 s (frame 53), a single 0.13 blip at frame 46 aside. Frame 48 (1.60 s) is inside that still hold; the first caption reads 'Ava invests from 25 / to 35, then stops.', fully lit. The write-up's 1.0 s for the condensed cut shows the same row and caption before the working line arrives. On the 25.3 s pre-condense render the same content was frame 75 (2.50 s).",
       "crop": "3:4 = 1080×1440 from y 60 to 1500 of the 1080×1920 frame. The content runs from y 141 (the badge) to y 1454 (the caption), so the tile keeps the badge, the header and footer, the whole stage, the working line, the matchup and the caption, and drops the empty floor. A centred grid crop (y 240-1680) cuts the badge and the header.",
       "how_to_set": "In 'Edit cover', pick the Age 30 frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
-      "re_export": "ffmpeg -ss 2.5 -i renders/channel/07a-scoreboard-start-at-25.mp4 -frames:v 1 -vf \"crop=1080:1440:0:60\" -q:v 2 publishing/07a-scoreboard-start-at-25-cover-3x4.jpg",
-      "re_export_9x16": "ffmpeg -ss 2.5 -i renders/channel/07a-scoreboard-start-at-25.mp4 -frames:v 1 -q:v 2 publishing/07a-scoreboard-start-at-25-cover-9x16.jpg"
+      "re_export": "ffmpeg -ss 1.6 -i renders/channel/07a-scoreboard-start-at-25.mp4 -frames:v 1 -vf \"crop=1080:1440:0:60\" -q:v 2 publishing/07a-scoreboard-start-at-25-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 1.6 -i renders/channel/07a-scoreboard-start-at-25.mp4 -frames:v 1 -q:v 2 publishing/07a-scoreboard-start-at-25-cover-9x16.jpg"
     },
     "first_comment": "Ava: $24,000 in, ≈ $281,000 at 65. Ben: $72,000 in, ≈ $244,000. Had Ava never stopped at 35: ≈ $525,000. What age did you start?",
     "first_comment_action": "Post it right after publishing and pin it.",
     "trial_reels": {
       "recommendation": "Post as a regular Reel, not a Trial.",
       "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut ships, the pre-condense render is in git: `git show 471c793:renders/channel/07a-scoreboard-start-at-25.mp4 > 07a-pre-condense.mp4` (sha256 d922b569…). Compare skip rate (October Reels ran 27.0-65.1%; '10 years late', the same ages, 65.1%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. The pre-condense render is in git: `git show c4a3014:renders/channel/07a-scoreboard-start-at-25.mp4 > 07a-pre-condense.mp4` (sha256 30f0cd64…; at 471c793 it carries the v2.2 soundtrack, d922b569…). Compare skip rate (October Reels ran 27.0-65.1%; '10 years late', the same ages, 65.1%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
     },
     "settings": {
       "audio": "Rename the original audio to '10 years vs 30 years — The Back of the Envelope' if the app allows; it is the score, with no voice.",
@@ -562,7 +566,7 @@
       "As the 06b and 04b sheets found (not re-checked here), vidIQ's YouTube authorization is a different channel (UCRC5v_El2fibbkqsZs6uFjA), so @envelopemath's YouTube Analytics (audience hours, geography) were not readable. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
       "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and the same-idea Shorts' own tags.",
       "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
-      "The render in renders/channel is the pre-condense cut. The cover's time and frame are measured on it; the copy names no other timestamp, and the ship step re-picks the cover on the final file.",
+      "The render in renders/channel is the condensed cut, shipped on 2026-10-13. The cover's time and frame were re-measured on it; the copy names no other timestamp.",
       "The vidIQ credit balance is shared with the other sheets being built in parallel; this sheet's spend is counted from each tool's listed cost, checked against the balance (see research.vidiq_credits)."
     ],
     "titles_scored": "11 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored.",
@@ -571,7 +575,7 @@
   "checked": {
     "date": "2026-10-13",
     "by": "adversarial check of this sheet",
-    "math": "python3 teasers/v2/checks/07-ledger-duel.py: 461 checks, 0 failures on studio/specs/ (2026-10-13), run by the builder through publishing/data/checks/07-ledger-duel.py; every public figure traced to the 07a maths table and recomputed in MATH_RELATIONS from $200 a month at 7%/12 (each Age row, the gap, the 6% case, the 6.109% break-even, B(480)); each figure pinned to its own person and each Age row's pair kept together (COPY_RULES)",
+    "math": "python3 teasers/v2/checks/07-ledger-duel.py: 461 checks, 0 failures on studio/specs/ (2026-10-13), run by the builder through publishing/data/checks/07-ledger-duel.py; every public figure traced to the 07a maths table and recomputed in MATH_RELATIONS from $200 a month at 7%/12 (each Age row, the gap, the 6% case, the 6.109% break-even, B(480)); each figure pinned to its own person and each Age row's pair kept together (COPY_RULES); re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: 535 checks, 0 failures",
     "limits": {
       "youtube_title_chars": 76,
       "youtube_description_chars": 1064,

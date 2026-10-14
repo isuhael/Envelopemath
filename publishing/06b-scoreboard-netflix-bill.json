@@ -5,7 +5,7 @@
   "for_video": {
     "current_render": "renders/channel/06b-scoreboard-netflix-bill.mp4",
     "current_duration_s": 20.8,
-    "current_sha256": "19292b3d3c06a6a4103041b10bf3c78473bf64b378ea74e9b09aa64f38a33e45",
+    "current_sha256": "6136e9715d0d3739b91a71fbede7c52cfcebd0d535296ebef70b965621725cfd",
     "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-12.",
     "cut": {
       "name": "condensed (2026-10-12)",

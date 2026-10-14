@@ -5,7 +5,7 @@
   "for_video": {
     "current_render": "renders/channel/05c-scoreboard-costco-100.mp4",
     "current_duration_s": 11.4,
-    "current_sha256": "14e41a603549d0de6bb00eae977ace88668f60a2fcc27bc863d3582cd2783839",
+    "current_sha256": "3d9c8f5c8ee6f7e98d840fe8ed7c2df799ef4a331c9646cbcf96470cd7ff3a5c",
     "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
       "name": "condensed (2026-10-13)",

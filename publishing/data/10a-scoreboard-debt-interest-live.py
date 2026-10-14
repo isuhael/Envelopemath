@@ -79,8 +79,10 @@ CUT = _pre({"name": "round-2 cut (still in renders/channel; not the cut this cop
             "card_s": CARD_S, "shipped": None, "git": R2_COMMIT,
             "status": "the recut (copy_describes) is WIP until the ship step promotes it; this sheet's copy is the recut's."},
            {"name": "recut to the earlier verdict (owner-approved 2026-10-13; recut fix pass)", "spec": f"studio/specs/{BASE}.json", "body_s": BODY_S,
-            "card_s": CARD_S, "shipped": None, "git": None,
-            "status": "promoted by the ship step; this sheet was rebuilt on it with --covers."})
+            "card_s": CARD_S, "shipped": "2026-10-13", "git": None,
+            "status": "promoted on 2026-10-13 and shipped the same day (sound bible v2.5); this sheet was rebuilt on it with --covers.",
+            "replaces": {"duration_s": 39.0, "sha256": "2d5f3d61d6a3737273f65d57fd1ed5893a3fc1a89b3a1e3033fef0ebf50c7a8c",
+                         "note": f"the round-2 cut + card, retired; in git history (c4a3014, with the v2.4 soundtrack; {R2_COMMIT} with the v2.2 soundtrack)"}})
 FOR_VIDEO_EXTRA = _pre({"copy_describes": {"cut": "recut to the earlier verdict (owner-approved 2026-10-13; recut fix pass)", "spec": RECUT_WIP,
                                            "render": RECUT_MP4, "duration_s": RECUT_S, "body_s": RECUT_BODY_S, "card_s": 2.5, "sha256": RECUT_SHA,
                                            "cover_t": 18.5, "cover_frame": 555,
@@ -280,7 +282,7 @@ COVER_FRAME_MEASURED = ("On the recut's 21.1 s render the counter stops on $500,
                         "Frame 555 (18.50 s) is the cover, read from the recut render's frame (a preview export, not the JPGs on disk).")
 COVER_CROP_NOTE = ("3:4 = 1080×1440 from y 0 to 1440 of the 1080×1920 frame: the badge (from y 141), the header, the odometer, the footer's working, the lit ladder and coin, and the verdict (to y 1262 on the recut's frame 555), "
                    "with 141 px above and 177 px below; it drops the empty black below. A centred grid crop (y 240-1680) cuts the badge and the header.")
-COVER_HOW_TO_SET = ("In 'Edit cover', pick the verdict frame from the video (or upload the 9:16 JPG once the ship step has re-exported it), then drag 'Profile grid' to the top so the tile "
+COVER_HOW_TO_SET = ("In 'Edit cover', pick the verdict frame from the video (or upload the 9:16 JPG" + _pre(" once the ship step has re-exported it", "") + "), then drag 'Profile grid' to the top so the tile "
                     "matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab "
                     "and cuts the header.")
 COVER_EXTRA_BULLETS = _pre(
@@ -482,8 +484,10 @@ CHECK_LOG = [
     "- **Checked and kept.** Every figure in the copy against the 10a maths table and the check's output; the title (67/100), description (bytes), tags, hashtags, caption, first 125 characters and both alt texts against the platform limits; "
     "no brand, party or person anywhere; no beat timestamp in the copy; frame 1 (thumbnail) and frame 555 (cover) read from the recut render.",
     "- **Generator.** Unchanged. `MATH_SCRIPT` is the adapter `publishing/data/checks/10-cost-counter.py` (it runs the 10 check unchanged and adds the builder's summary line); `MATH_ARGS` points it at the WIP specs until the ship step, then at `studio/specs/`.",
-    "- **Still to do (the ship step).** Promote the recut's spec and render (the write-up's 'To promote'), then run `--covers`: the cover JPGs on disk are the round-2 frame until then. Re-run `verify` on both Scoreboard packs if 10a's duration or verdict time moves. "
-    "The owner's FY2026 decision (a rebuild changes every figure here, the verdict's included).",
+    _pre("- **Still to do (the ship step).** Promote the recut's spec and render (the write-up's 'To promote'), then run `--covers`: the cover JPGs on disk are the round-2 frame until then. Re-run `verify` on both Scoreboard packs if 10a's duration or verdict time moves. "
+         "The owner's FY2026 decision (a rebuild changes every figure here, the verdict's included).",
+         "- **Done on ship (2026-10-13).** The recut's spec and render were promoted and shipped (sound bible v2.5: `verify --strict-cues` passed on the recut, both covers re-exported with `--covers` from frame 555 of the shipped file). "
+         "Still open: the owner's FY2026 decision (a rebuild changes every figure here, the verdict's included)."),
 ]
 
 # ---------------------------------------------------------------- the numbers check

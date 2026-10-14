@@ -4,23 +4,26 @@
 # Becker Rig precedent of the same batch), laid out like 08a and 08b.
 #
 # Facts come only from teasers/v2/08-unit-ladder.md (section 08c) and python3 teasers/v2/checks/08-unit-ladder.py.
-# Research: vidIQ, pulled 2026-10-13. The video is the pre-condense cut: the 08 condense is in progress in parallel
-# (timing only; numbers, caption facts and the verdict stay). This sheet names no timestamp except the cover, which is
-# picked by content (the end state), so the ship step only re-runs the build with --covers on the final file.
+# Research: vidIQ, pulled 2026-10-13. The video is the condensed cut, promoted and shipped on 2026-10-13 (timing only;
+# numbers, caption facts and the verdict stay; the pre-condense render is in git, 471c793 and c4a3014). This sheet names
+# no timestamp except the cover, which is picked by content (the end state), so the ship re-ran the build with --covers
+# on the shipped file.
 
 TEASER = "08c Becker Rig, unit-ladder: \"Community? In-state? Out-of-state? Private? Your year of college in Big Macs\""
 PREPARED = "2026-10-13"
 SHORT_ID = "08c"
 MD_TITLE = "08c publishing sheet: a year of college in Big Macs"
 MATH_RUN = "677 checks, 0 failed"      # python3 teasers/v2/checks/08-unit-ladder.py on studio/specs/ (via publishing/data/checks/08-unit-ladder.py), 2026-10-13
-RENDER_COMMIT = "471c793"              # the commit that holds this pre-condense render
-RENDER_SHA_PRE = "3424714c7d5e25abfaacaa82aa5efe692a52927bded2610cfaf634360b6a8fc5"
+MATH_RUN_SHIP = "682 checks, 0 failed"  # the same check on studio/specs/ with the condensed cuts promoted, at the ship 2026-10-13
+RENDER_COMMIT = "c4a3014"              # the last commit that holds the pre-condense render (with the v2.4 soundtrack)
+RENDER_SHA_PRE = "02e58727fc3b3be0238545c42f719e89cdf59de5438533ded0caa277065cd63d"   # at 471c793 (v2.2 soundtrack): 3424714c…
 
 MD_INTRO = [
-    f"- **Video.** `renders/channel/{BASE}.mp4`: the pre-condense cut ({VIDEO_S:g} s: a {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`). "
-    "The 08 condense is in progress in parallel (timing only: the numbers, the captions' facts and the verdict stay). "
-    "Nothing below names a timestamp except the cover, which is picked by content (the end state), so the copy carries over to the condensed cut unchanged. "
-    f"The ship step rebuilds this sheet and re-exports both covers from the final file: `python3 publishing/tools/build_publishing.py {BASE} --covers`.",
+    f"- **Video.** `renders/channel/{BASE}.mp4`: the condensed cut ({VIDEO_S:g} s: a {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`), "
+    f"promoted and shipped on 2026-10-13. It replaces the 24.5 s pre-condense cut (the owner: \"too many still moments\"), which is in git (`{RENDER_COMMIT}`). "
+    "The condense moved the clock and merged some captions; the numbers, the captions' facts and the verdict stay, so the copy carried over unchanged. "
+    "Nothing below names a timestamp except the cover, which was re-picked by content (the end state) on the shipped file. "
+    f"The ship rebuilt this sheet and re-exported both covers from it (`python3 publishing/tools/build_publishing.py {BASE} --covers`); on the shipped specs the maths check runs {MATH_RUN_SHIP}.",
     "- **Numbers.** Every figure comes from `teasers/v2/08-unit-ladder.md` (08c) and its check, "
     f"`python3 teasers/v2/checks/08-unit-ladder.py`: {MATH_RUN} on `studio/specs/` (run 2026-10-13; the builder runs it through the adapter `publishing/data/checks/08-unit-ladder.py`). "
     f"`python3 publishing/tools/build_publishing.py {BASE} --check` checks this sheet's limits, paste blocks and figures, re-divides every row by $6.22, recomputes the ≈ 10.8 ratio both ways and the pinned full-budget figures, "
@@ -35,11 +38,11 @@ MD_INTRO = [
 
 # ---------------------------------------------------------------- the video
 FOR_VIDEO_NOTE = ("Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. "
-                  "current_* is what renders/channel holds today: the pre-condense cut. The ship step re-runs the build with --covers on the condensed file.")
-CUT = {"name": "pre-condense cut (Becker Rig port + QA fix pass, 2026-10-08)", "spec": f"studio/specs/{BASE}.json", "body_s": BODY_S,
-       "card_s": CARD_S, "shipped": None, "git": RENDER_COMMIT,
-       "status": "the 08 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay); no 08 WIP spec was in studio/specs-wip/ at this build. "
-                 "The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."}
+                  "current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.")
+CUT = {"name": "condensed (2026-10-13)", "spec": f"studio/specs/{BASE}.json", "body_s": BODY_S,
+       "card_s": CARD_S, "shipped": "2026-10-13",
+       "replaces": {"duration_s": 24.5, "sha256": RENDER_SHA_PRE,
+                    "note": f"the pre-condense cut (Becker Rig port + QA fix pass, 2026-10-08) + card, retired; in git history ({RENDER_COMMIT}; 471c793 with the v2.2 soundtrack)"}}
 
 FACTS = {
     "source": f"teasers/v2/08-unit-ladder.md section 08c; teasers/v2/checks/08-unit-ladder.py: {MATH_RUN} on studio/specs/ (2026-10-13)",
@@ -127,7 +130,7 @@ THUMB_MD = ("in the YouTube app, pick frame 1: the header 'Community? In-state? 
             "College Board 2025-26 tuition & fees', the HUD 'Community / $4,150 ÷ $6.22 ≈ / 667 Big Macs' and the figure pointing at the community pile. The hook pre-fills the first row by design; "
             "the other three rows and the ≈ 10.8 stay open, so it asks more than it answers, like the title beside it. The Instagram cover below is the end state, as the write-up asks.")
 YT_POSTING_WINDOW = {
-    "when": "First free Tue-Thu evening after the condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+    "when": "First free Tue-Thu evening, 21:30-22:30 ET (01:30-02:30 UTC the next day); the condensed cut shipped on 2026-10-13. Sunday 06:00-08:00 ET is the alternative.",
     "spacing": "Keep it at least 6 h from any other upload on the channel, and on a different evening from 08a and 08b. Suggested order within the series: 08b, then 08c, then 08a.",
     "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,199 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2); 06c (Mon 03:45 ET) has 760 and 06b (Mon 12:14 ET) 75, too young to compare. "
            "The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. "
@@ -193,19 +196,21 @@ IG_FIRST_COMMENT = ("1 year of tuition & fees in $6.22 Big Macs: community ≈ 6
 # ---------------------------------------------------------------- the cover frame
 # The end state, picked by content: the write-up's Instagram note names "the end state: 'Private vs community /
 # $45,000 ÷ $4,150 ≈ [10.8] community-college years' on the big gold plate, the four-row recap (the screenshot people
-# save), the lit community pile standing beside the lit private mountain, and the verdict". On this render the answer
-# lands at frame 520 (17.35 s); the figure's hop and slump settle by about frame 559; the frame then holds still until
-# the end card at frame 660 (22.00 s). Frame 600 is a still point inside that hold.
-COVER_T = 20.0
-COVER_FRAME = 600
+# save), the lit community pile standing beside the lit private mountain, and the verdict". On the shipped condensed cut
+# the answer lands at frame 315 (10.50 s); the figure's hop and slump settle by about frame 356 (11.87 s); the frame then
+# holds still until the end card at frame 363 (12.10 s). Frame 360 (12.00 s) is a still point inside that hold.
+# (On the pre-condense render: frame 600.)
+COVER_T = 12.0
+COVER_FRAME = 360
 COVER_CROP = "crop=1080:1440:0:68"
-COVER_RENDER_WORD = "pre-condense"
+COVER_RENDER_WORD = "shipped"
 COVER_FRAME_BY_CONTENT = ("The end state, as the write-up's Instagram note asks: the header naming all four rows, the footer, the HUD 'Private vs community / $45,000 ÷ $4,150 ≈' with 10.8 on the big gold plate "
                           "and 'community-college years', the four-row recap (≈ 7,235 Private, ≈ 5,125 Out-of-state, ≈ 1,921 In-state, ≈ 667 Community), the lit community pile at the foot of the lit private mountain "
                           "with the in-state and out-of-state piles dimmed, the slumped figure, and the verdict 'One private year = / ≈ 10.8 community-college years.' "
                           "On any cut, use a settled frame of the end hold, after the figure's slump and before the end card.")
-COVER_FRAME_MEASURED = ("On the pre-condense 24.5 s render the answer lands at frame 520 (17.35 s); the figure's hop and slump settle by about frame 559 (18.63 s), and the frame then holds still "
-                        "(frame-to-frame mean luma change under 0.0001) until the end card at frame 660 (22.00 s). Frame 600 (20.00 s) is used.")
+COVER_FRAME_MEASURED = (f"On the shipped {VIDEO_S:g} s condensed cut the answer lands at frame 315 (10.50 s); the figure's slump (frames 346-352) settles by about frame 356 (11.87 s), and the frame then holds still "
+                        "(frame-to-frame mean luma change 0.001-0.005 on 270×480 greyscale) until the end card at frame 363 (12.10 s). Frame 360 (12.00 s) is used. "
+                        "On the 24.5 s pre-condense render the same hold was frames 559-660, and frame 600 (20.00 s) was used.")
 COVER_CROP_NOTE = ("3:4 = 1080×1440 from y 68 to 1508 of the 1080×1920 frame. The content runs from y 112 (the badge) to y 1465 (the verdict's underline), "
                    "so the crop centres it (44 px above, 43 below): badge, header, footer, the plate, the recap, the piles and the verdict; it drops the empty page below. "
                    "A centred grid crop (y 240-1680) cuts the badge and the header.")
@@ -215,13 +220,13 @@ COVER_HOW_TO_SET = ("In 'Edit cover', pick the end-state frame from the video (o
 COVER_EXTRA_BULLETS = [
     "**Not used on Instagram:** frame 1 (the community row pre-filled, the other three to come). It asks more than it answers, so it is the YouTube thumbnail, "
     "where it sits beside a title that asks; on Instagram the write-up picks the end state, the four-row recap people save.",
-    "**When the condensed cut ships:** re-pick the end state by content on the shipped file (a settled frame of the end hold, before the end card) and re-export both JPGs with `--covers`.",
+    "**Shipped cut (2026-10-13):** the end state was re-picked by content on the shipped file (frame 360, 12.00 s, a settled frame of the end hold; was frame 600) and both JPGs re-exported: the same picture, the same crop. The copy did not change.",
 ]
 
 TRIAL_REELS = {
     "recommendation": "Post as a regular Reel, not a Trial.",
     "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-    "use_trial_for": f"A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show {RENDER_COMMIT}:renders/channel/{BASE}.mp4 > 08c-24.5s.mp4` (sha256 {RENDER_SHA_PRE[:8]}…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app.",
+    "use_trial_for": f"A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. The pre-condense render is in git: `git show {RENDER_COMMIT}:renders/channel/{BASE}.mp4 > 08c-24.5s.mp4` (sha256 {RENDER_SHA_PRE[:8]}…; at 471c793 it carries the v2.2 soundtrack, 3424714c…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app.",
 }
 IG_AUDIO = "Rename the original audio to 'A year of college in Big Macs — The Back of the Envelope' if the app allows; it is the score, with no voice."
 IG_POSTING_WINDOW = {
@@ -355,7 +360,7 @@ LIMITS = [
     "The write-up's College Board figures were read from search text that quotes the report plus one independent summary (collegeboard.org was blocked), then confirmed by its verifier. "
     "The $6.22 Big Mac was read from The Economist's own dataset on GitHub.",
     "The same-idea and outlier posts' own figures (HD Guy's $5.79 Big Mac, the German Short's 2024-25 prices) are theirs, not verified here, and not in the copy.",
-    "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file.",
+    "The video, the cover and the video facts are the condensed cut, shipped on 2026-10-13; the copy is cut-independent and carried over unchanged.",
 ]
 RESEARCH_EXTRA = {
     "titles_scored": "9 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored.",
@@ -369,7 +374,8 @@ CHECKED_MATH = (f"python3 teasers/v2/checks/08-unit-ladder.py: {MATH_RUN} on stu
                 "every row re-divided by $6.22 in MATH_RELATIONS (667, 1,921, 5,125, 7,235), the ≈ 10.8 ratio in dollars and in Big Macs, and the pinned full-budget figures ($261,880, 42,103, 115 years, $123,960, 19,929); "
                 "COPY_RULES keep every count beside its own row, keep every rounded figure 'about' or '≈', keep 10.8 as community-college years, keep the full-budget figures with 'housing, food and books', "
                 "keep each row's price paired with its own count, and keep 'tuition & fees' and 'before grants' in the description, the caption and the pinned comment. "
-                "Re-run at the adversarial check (2026-10-13) with the same result")
+                "Re-run at the adversarial check (2026-10-13) with the same result"
+                f"; re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: {MATH_RUN_SHIP}")
 VIDIQ_REQUERIED = ("pulled 2026-10-13: college 120,886 / 65.5; student loans 47,897 (+105.6%); big mac 33,042; big mac index 9,861; "
                    "title scores 97 (pick), 81 (write-up title); channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,519 views in 30 days. "
                    "Re-queried after the build: the pick's title score 97. Match. "
@@ -398,7 +404,9 @@ CHECK_LOG = [
     "- **Checked and kept.** Every figure in the copy against the 08c maths table and the check's output (each row re-divided, the 10.8 both ways, the pinned budgets); the limits; "
     "'Big Mac' only as the unit, McDonald's, The Economist and the College Board in the affiliation line of both long texts, no handles; frame 1 (thumbnail: the community row pre-filled, as the hook designs it) "
     "and frame 600 (cover) read from the render, and the covers re-exported byte for byte.",
-    "- **Still to do.** The ship rebuild (`--covers`) on the condensed file.",
+    f"- **Done on ship (2026-10-13).** Rebuilt with `--covers` from the shipped condensed cut ({VIDEO_S:g} s). The end state was re-picked by content (frame 360, 12.00 s; was frame 600) and shows the same picture. "
+    f"The Video bullet, the cut and the check counts follow the shipped file ({MATH_RUN_SHIP} on `studio/specs/`), and the long alt text was re-read against the condensed beat sheet: "
+    "every beat it names (the community row pre-filled, the three punched rows, the recap, 10.8 community-college years and the community pile's hop) is in the shipped cut, so no copy changed.",
 ]
 
 # ---------------------------------------------------------------- the numbers check

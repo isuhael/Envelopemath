@@ -39,11 +39,11 @@ condense the rest. The CTA (end card) is good", on the 06b/06c precedent). A spe
 expectation sets, picked by its duration:
    - the round-2 cut (narration-paced VO lines; bodies of 36.5 / 36.6 / 31.0 s): retired from studio/specs/ on
      2026-10-13 and kept as a reference for a git-history copy (`git show 480efc1^:studio/specs/<id>.json`) passed
-     with --spec; renders/channel/ still ships it until the ship step replaces it (SHIPPED names that cut). Its rules
-     are the ones above.
-   - the condensed cut (written in studio/specs-wip/; bodies of 34.95 / 35.75 / 28.8 s + the 2.5 s end card). 10b's
-     (36.15 s since its fix pass) was promoted into studio/specs/ on 2026-10-13 and is what studio/specs/ holds
-     (IN_SPECS; the sound and the ship follow). 10a's and 10c's (34.95 / 28.75 s) never reached studio/specs/: the
+     with --spec; renders/channel/ shipped it until the ship of 2026-10-13 (bible v2.5) replaced it with the cuts
+     studio/specs/ holds (SHIPPED = IN_SPECS since). Its rules are the ones above.
+   - the condensed cut (written in studio/specs-wip/; bodies of 34.95 / 36.15 / 28.8 s + the 2.5 s end card; 10b's
+     was 35.75 s before its fix pass). 10b's was promoted into studio/specs/ on 2026-10-13 and is what studio/specs/
+     holds (IN_SPECS; shipped the same day, bible v2.5). 10a's and 10c's (34.95 / 28.75 s) never reached studio/specs/: the
      recut below replaced them before the promotion, and they stay a reference for a git-history copy (`git show
      ca1087f:studio/specs-wip/<id>.json`) passed with --spec. The counter is real time ("since you hit play" is
      literal: $0 on frame 1, the rate, the stop on the last milestone), so every number, display string, lookOpts
@@ -94,7 +94,7 @@ expectation sets, picked by its duration:
      FROM_AFTER (1.0 s) after the previous pass (the last icon has dropped in and settled, so every pulse has an icon to
      bump). 10c's verdict stays at 13.96 s (14.0 was tried for the critic's N1 and not kept; see RECUT). Written in
      studio/specs-wip/, the recut was promoted into studio/specs/ on 2026-10-13 and is what studio/specs/ holds for
-     10a and 10c (IN_SPECS; the sound and the ship follow).
+     10a and 10c (IN_SPECS; shipped the same day, bible v2.5).
 
 Run:  python3 teasers/v2/checks/10-cost-counter.py                  (the specs in studio/specs/)
       python3 teasers/v2/checks/10-cost-counter.py --spec /tmp/10a-scoreboard-debt-interest-live.json ...
@@ -128,8 +128,9 @@ IDS = {"a": "10a-scoreboard-debt-interest-live", "b": "10b-becker-rig-debt-vs-yo
 R2_DURATION = {"a": 36.5, "b": 36.6, "c": 31.0}            # the round-2 cut's body (s)
 IN_SPECS = {"a": "recut", "b": "cond", "c": "recut"}       # the cut studio/specs/ must hold (promoted 2026-10-13;
                                                            # was {"a": "r2", "b": "r2", "c": "r2"})
-SHIPPED = {"a": "r2", "b": "r2", "c": "r2"}                # the cut renders/channel/ ships (the ship step sets it to
-                                                           # IN_SPECS); BIBLE.md's tempo rows may describe it until then
+SHIPPED = IN_SPECS                                         # the cut renders/channel/ ships: IN_SPECS since the ship of
+                                                           # 2026-10-13 (bible v2.5; it was {"a": "r2", "b": "r2",
+                                                           # "c": "r2"}, the allowance for the old section 2.3 rows)
 CUT_NAME = {"r2": "round-2 cut (narration-paced)", "cond": "condensed cut (2026-10-13)",
             "recut": "recut to the earlier verdict (2026-10-13)"}
 MD_CUT = {"a": "recut", "b": "cond", "c": "recut"}         # the cut the write-up's caption and pinned comment describe

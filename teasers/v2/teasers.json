@@ -480,18 +480,18 @@
       "becker-rig"
     ],
     "file": "teasers/v2/07-ledger-duel.md",
-    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/07-ledger-duel.py → 407 checks, 0 failures, exit 0 (after the 2026-10-08 hook pass 2 on 07c, which rewrote it to \"You save $100 a month\"; a 4-corruption mutation test on a scratch copy of the new 07c spec gave 5 named failures and exit 1). Two planted errors, the old \"× ≈ 8.1\" in 07a's formula bar and \"$6,600\" in a 07b voice-over line, each made it exit 1 with a named failure; both specs were then restored. New checks: the first payoff row must land by 3.0 s (it previously allowed 3.5-3.6 s). A formula that multiplies shown factors must reproduce the shown result. Each formula-bar line must stay on screen long enough to type at 24 characters a second plus 1.5 s to read. Headers are capped at 4 lines. 07a's break-even rate (≈ 6.1%) and its 6% case are asserted. The studio linter (node src/cli.mjs check) gives 3/3 clean, 0 errors, 0 warnings. 07a and 07c were rendered as stills and contact sheets in their built kits.",
+    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/07-ledger-duel.py → 407 checks, 0 failures, exit 0 (after the 2026-10-08 hook pass 2 on 07c, which rewrote it to \"You save $100 a month\"; a 4-corruption mutation test on a scratch copy of the new 07c spec gave 5 named failures and exit 1). Two planted errors, the old \"× ≈ 8.1\" in 07a's formula bar and \"$6,600\" in a 07b voice-over line, each made it exit 1 with a named failure; both specs were then restored. New checks: the first payoff row must land by 3.0 s (it previously allowed 3.5-3.6 s). A formula that multiplies shown factors must reproduce the shown result. Each formula-bar line must stay on screen long enough to type at 24 characters a second plus 1.5 s to read. Headers are capped at 4 lines. 07a's break-even rate (≈ 6.1%) and its 6% case are asserted. The studio linter (node src/cli.mjs check) gives 3/3 clean, 0 errors, 0 warnings. 07a and 07c were rendered as stills and contact sheets in their built kits. Re-run 2026-10-13 after the condensed cuts were promoted into studio/specs/ and shipped (sound bible v2.5): 535 checks, 0 failures; lint clean (07a 17.1 s = 14.6 + 2.5, 07b 16.6 s = 14.1 + 2.5, 07c 15.8 s = 13.3 + 2.5 s end card).",
     "teasers": [
       {
         "id": "07a-scoreboard-start-at-25",
         "look": "scoreboard",
         "title": "2 People Invest $200 a Month. One Stops at 35. Who Has More at 65?",
         "header": "2 people invest **$200 a month**\n10 years vs 30 years. Who wins at 65?",
-        "runtime_s": 25.3,
+        "runtime_s": 17.1,
         "key_numbers": [
           "$200 a month at 7%, compounded monthly",
           "Ava puts in $24,000 (age 25-35), Ben puts in $72,000 (age 35-65)",
-          "Age 30 row ≈ $14,000 / $0 at 2.4 s",
+          "Age 30 row ≈ $14,000 / $0 (lands at 0.75 s in the condensed cut, row t 0.15 s; lands 2.0 s, row t 1.4 s, in the retired 25.3 s cut)",
           "Formula bar: ≈ $34,617 × ≈ 8.12 ≈ $281,000 (shown factors give 281,090; exact 280,968.48)",
           "At 65: Ava ≈ $281,000 vs Ben ≈ $244,000; Ava wins by ≈ $37,000",
           "Break-even ≈ 6.1% (6.109%); at 6% Ben ≈ $201,000 vs Ava ≈ $197,000",
@@ -509,10 +509,10 @@
         "look": "becker-rig",
         "title": "2 People Invest $10,000 Right Before 2008. One Sells in the Crash. How Far Apart Now?",
         "header": "2 people invest **$10,000**\nright before 2008\nOne sells to cut his losses",
-        "runtime_s": 29.9,
+        "runtime_s": 16.6,
         "key_numbers": [
           "$10,000 each, bought at the Dec 31, 2007 close",
-          "2008: −37.00% → $6,300 exactly, crash impact at 1.0 s",
+          "2008: −37.00% → $6,300 exactly, crash impact at 0.4 s in the condensed cut (1.0 s in the retired 29.9 s cut)",
           "2012 ≈ $10,900, the first year-end back above $10,000 (2011: $9,360.23)",
           "2022 dip ≈ −18% → ≈ $35,500",
           "End of 2025: Alex ≈ $66,000 (65,995.78) vs Sam $6,300",
@@ -530,11 +530,11 @@
         "look": "becker-rig",
         "title": "You Save $100 a Month for 5 Years. How Much Does a Big Bank Add?",
         "header": "You save **$100 a month**\n5 years = $6,000\nA big bank adds: ?",
-        "runtime_s": 21.6,
+        "runtime_s": 15.8,
         "key_numbers": [
           "Chase Savings 0.01% APY (Oct 2, 2026 rate sheet) vs 4.00% APY high-yield, both held 5 years",
           "$100 deposited at each month-end for 60 months = $6,000; monthly rate = (1 + APY)^(1/12) − 1",
-          "Year 1 at 1.0 s: ≈ $0.05 (about 5 cents) vs ≈ $21.84 (about $22) of interest",
+          "Year 1 at 0.4 s in the condensed cut (1.0 s in the retired 21.6 s cut): ≈ $0.05 (about 5 cents) vs ≈ $21.84 (about $22) of interest",
           "Year 3: ≈ $0.53 (about 53 cents) vs ≈ $214.11",
           "Year 5 (the header's '?'): ≈ $1.48 vs ≈ $617.90 of interest on the same $6,000 (≈ 419×, off screen)",
           "$200 a month doubles both (caption); FDIC national average 0.37% → ≈ $55 over the same 5 years (pinned comment)"
@@ -559,17 +559,17 @@
       "becker-rig"
     ],
     "file": "teasers/v2/08-unit-ladder.md",
-    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/08-unit-ladder.py -> PASSED: all 503 checks (exit 0), after hook pass 2 (08a-A, 08b-D and 08c-A adopted). The builders derive every number from the sourced inputs: 08a's ≈ $7.01 verdict as both $1.50 × 393,700/84,300 and $393,700 ÷ 56,200; 08b's '≈ the 20th' on a 30-day month (20.23), the average month (20.51) and a Mon-Fri calendar for all 7 weekdays the 1st can fall on (19th-21st); 08c's ≈ 10.8× (the same in dollars and in Big Macs) and the pinned 42,103 / 115 years / 19,929. All three built kits' timing is replayed on each spec as written (Scoreboard roll and unit intro; Becker Rig coin, punch and fill, replacing the stub's 2.4 s assumption; Clean Sheet pre-fill and VO fit). The voice never says a number >0.5 s before its counter lands, the first count lands <= 3 s, headers are <= 15 words, and lookOpts hold only keys the kit reads. Mutation test on scratch copies (08a verdict $7.01 -> $7.00 and cut 1.5 -> 2.0 s; 08b '20th' -> '18th' and vo[2] 9.1 -> 8.4; 08c ≈ 5,125 -> ≈ 5,126 and row 1 t -1.0 -> 0.0): FAILED 16 of 503, exit 1. Studio linter on all 3 specs: 3/3 clean, 0 errors, 0 warnings; stills at 0, 1.5 and 3 s and each landing/verdict inspected.",
+    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/08-unit-ladder.py -> PASSED: all 503 checks (exit 0), after hook pass 2 (08a-A, 08b-D and 08c-A adopted). The builders derive every number from the sourced inputs: 08a's ≈ $7.01 verdict as both $1.50 × 393,700/84,300 and $393,700 ÷ 56,200; 08b's '≈ the 20th' on a 30-day month (20.23), the average month (20.51) and a Mon-Fri calendar for all 7 weekdays the 1st can fall on (19th-21st); 08c's ≈ 10.8× (the same in dollars and in Big Macs) and the pinned 42,103 / 115 years / 19,929. All three built kits' timing is replayed on each spec as written (Scoreboard roll and unit intro; Becker Rig coin, punch and fill, replacing the stub's 2.4 s assumption; Clean Sheet pre-fill and VO fit). The voice never says a number >0.5 s before its counter lands, the first count lands <= 3 s, headers are <= 15 words, and lookOpts hold only keys the kit reads. Mutation test on scratch copies (08a verdict $7.01 -> $7.00 and cut 1.5 -> 2.0 s; 08b '20th' -> '18th' and vo[2] 9.1 -> 8.4; 08c ≈ 5,125 -> ≈ 5,126 and row 1 t -1.0 -> 0.0): FAILED 16 of 503, exit 1. Studio linter on all 3 specs: 3/3 clean, 0 errors, 0 warnings; stills at 0, 1.5 and 3 s and each landing/verdict inspected. Re-run 2026-10-13 after the condensed cuts were promoted into studio/specs/ and shipped (sound bible v2.5): PASSED, all 682 checks; lint clean (08a 13.93 + 2.5 = a 16.433 s file, 08b 12.85 + 2.5 = a 15.367 s file, 08c 14.6 s = 12.1 + 2.5 s end card: bodies that end between frames put the card on the next whole 30 fps frame).",
     "teasers": [
       {
         "id": "08a-scoreboard-costco-hot-dogs",
         "look": "scoreboard",
         "title": "What Your $1.50 Costco Hot Dog Would Cost If It Rose Like a House",
         "header": "WHAT YOUR **$1.50** HOT DOG WOULD\nCOST IF IT ROSE LIKE A HOUSE",
-        "runtime_s": 24.5,
+        "runtime_s": 16.433,
         "key_numbers": [
           "Frame 1: unit intro, hero '1', label '$1.50 / YOUR HOT DOG + SODA' (hot dog + soda $1.50 in 1985, still $1.50)",
-          "$65 membership ÷ $1.50 ≈ 43 (cut 1.5 s, lands 2.98 s)",
+          "$65 membership ÷ $1.50 ≈ 43 (lands at 1.98 s in the condensed cut; cut 1.5 s, lands 2.98 s in the retired 24.5 s cut)",
           "$1,199 iPhone 18 Pro ≈ 799",
           "Median new house 1985 $84,300 = 56,200 hot dogs",
           "Median new house Aug 2026 $393,700 ≈ 262,467 hot dogs (≈ 4.7×, 393,700 ÷ 84,300 = 4.6702)",
@@ -586,10 +586,10 @@
         "look": "becker-rig",
         "title": "At $15/hr, You Work for Rent From the 1st Until…",
         "header": "At **$15/hr**, you work for rent\nfrom the 1st to the ___",
-        "runtime_s": 29.5,
+        "runtime_s": 15.367,
         "key_numbers": [
           "$15/hr keeps ≈ $13.10 (2026 fed tax + FICA, single); unit defined as $13.10",
-          "Median rent $1,531 ÷ $13.10 ≈ 117 hours (built kit lands 2.10 s, said 2.31 s)",
+          "Median rent $1,531 ÷ $13.10 ≈ 117 hours (lands at 2.20 s, its caption from 2.32 s, and the blank on ≈ 20th at 2.55 s in the condensed cut; built kit lands 2.10 s, said 2.31 s in the retired 29.5 s cut)",
           "117 of 173 work hours = 67.4% → from the 1st to ≈ the 20th (20.23 on 30 days, 20.51 on 30.42; Mon-Fri calendar 19th-21st)",
           "Rent year $18,372 ≈ 1,402 h",
           "Avg new car $50,089 ≈ 3,824 h",
@@ -606,7 +606,7 @@
         "look": "becker-rig",
         "title": "Community? In-State? Private? Your Year of College in Big Macs",
         "header": "Community? In-state?\nOut-of-state? Private?\nYour year in **Big Macs**",
-        "runtime_s": 24.5,
+        "runtime_s": 14.6,
         "key_numbers": [
           "1 Big Mac = $6.22 (Economist, Jul 2026)",
           "Community college $4,150 ≈ 667 (pre-filled at 0.0)",
@@ -635,17 +635,17 @@
       "scoreboard"
     ],
     "file": "teasers/v2/09-growth-ladder.md",
-    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/09-growth-ladder.py: 468 checks, 0 failures, exit 0 (hook pass 2, 2026-10-08; rebuilt for the three new ladders). Break test in a scratch copy: 09a's year-8 bar ≈ $89/mo → ≈ $90/mo, 09b's age-40 rung ≈ $14,974 → ≈ $14,975 and 09c's 'about 75,176 times' → 75,177 exited 1 (4 failures); moving 09b's rung 1 back to 1.6 s also exits 1. Studio linter (node src/cli.mjs check): 3/3 specs clean, 0 errors, 0 warnings. Stills read at 0, 1.5 and 3 s and at the key beats and verdicts of all three.",
+    "check": "python3 /home/user/Envelopemath/teasers/v2/checks/09-growth-ladder.py: 468 checks, 0 failures, exit 0 (hook pass 2, 2026-10-08; rebuilt for the three new ladders). Break test in a scratch copy: 09a's year-8 bar ≈ $89/mo → ≈ $90/mo, 09b's age-40 rung ≈ $14,974 → ≈ $14,975 and 09c's 'about 75,176 times' → 75,177 exited 1 (4 failures); moving 09b's rung 1 back to 1.6 s also exits 1. Studio linter (node src/cli.mjs check): 3/3 specs clean, 0 errors, 0 warnings. Stills read at 0, 1.5 and 3 s and at the key beats and verdicts of all three. Re-run 2026-10-13 after the condensed cuts were promoted into studio/specs/ and shipped (sound bible v2.5): 536 checks, 0 failures; lint clean (09a 16.5 s = 14.0 + 2.5, 09b 16.4 s = 13.9 + 2.5, 09c 15.3 s = 12.8 + 2.5 s end card).",
     "teasers": [
       {
         "id": "09a-becker-rig-100-a-month-doubles",
         "look": "becker-rig",
         "title": "You Add $100 a Month. When Does It Earn $100 a Month?",
         "header": "You add **$100 a month**.\nWhen does it earn $100 a month?",
-        "runtime_s": 31.0,
+        "runtime_s": 16.5,
         "key_numbers": [
           "$100 a month at 8% compounded monthly; 'earns' = balance × 8% ÷ 12 (growth, not a payout)",
-          "frame 1: ≈ $1,245 × 8% ÷ 12 ≈ $8/mo (complete by 0.5 s)",
+          "frame 1: ≈ $1,245 × 8% ÷ 12 ≈ $8/mo (complete on frame 1 in the condensed cut; by 0.5 s in the retired 31.0 s cut)",
           "year 8 ≈ $13,387 → ≈ $89/mo (under $100)",
           "year 9 ≈ $15,743 → ≈ $105/mo; first month ≥ $100 is month 106 ($100.91)",
           "year 20 ≈ $58,902 → ≈ $393/mo",
@@ -665,10 +665,10 @@
         "look": "becker-rig",
         "title": "POV: Someone Invested Just $1,000 for You at Birth. What's It Worth at 65?",
         "header": "POV: someone invested just\n**$1,000** for you at birth.\nWhat's it worth at 65?",
-        "runtime_s": 29.5,
+        "runtime_s": 16.4,
         "key_numbers": [
           "$1,000 once at birth × 1.07 a year, never topped up; rungs are ages",
-          "age 1 $1,070 (lands at 1.0 s)",
+          "age 1 $1,070 (settled on frame 1 in the condensed cut; landed at 1.0 s in the retired 29.5 s cut)",
           "age 10 ≈ $1,967; age 18 ≈ $3,380; age 30 ≈ $7,612",
           "age 40 ≈ $14,974; age 50 ≈ $29,457",
           "age 65 ≈ $81,273 (over 81 times the gift)",
@@ -685,10 +685,10 @@
         "look": "scoreboard",
         "title": "Take What You Could Invest a Day. Year 40 = That × What?",
         "header": "TAKE WHAT YOU COULD INVEST **A DAY**.\nYEAR 40 = THAT × ?",
-        "runtime_s": 34.0,
+        "runtime_s": 15.3,
         "key_numbers": [
           "$1 × 365 ÷ 12 ≈ $30.42/mo at an effective 7% a year",
-          "year 1 ≈ $377 (lands at 0.4 s); year 10 ≈ $5,203; year 20 ≈ $15,438; year 30 ≈ $35,571",
+          "year 1 ≈ $377 (on screen from frame 1 in the condensed cut: row 1 lands at −0.05 s; listed at 0.4 s for the retired 34.0 s cut); year 10 ≈ $5,203; year 20 ≈ $15,438; year 30 ≈ $35,571",
           "year 40 ≈ $75,176: year 40 ≈ your daily amount × 75,176",
           "$5 a day ≈ $375,880 (not a million)",
           "a million ≈ $13.30 a day (exact 13.302)",
@@ -714,23 +714,23 @@
       "scoreboard"
     ],
     "file": "teasers/v2/10-cost-counter.md",
-    "check": "teasers/v2/checks/10-cost-counter.py",
+    "check": "teasers/v2/checks/10-cost-counter.py -> re-run 2026-10-13 after the recut 10a and 10c and the condensed 10b were promoted into studio/specs/ and shipped (sound bible v2.5): 1002 checks, 0 failures (IN_SPECS = recut / condensed / recut); lint clean (10a 21.1 s = 18.6 + 2.5, 10b 36.15 + 2.5 = a 38.667 s file, 10c 15.55 + 2.5 = an 18.067 s file: half-frame bodies put the card on the next whole 30 fps frame). With this ship all 30 teasers in renders/channel/ are condensed cuts: 10b keeps its real-time counter (38.667 s), and 10a and 10c end on the earlier verdict.",
     "teasers": [
       {
         "id": "10a-scoreboard-debt-interest-live",
         "look": "scoreboard",
         "title": "US Debt Interest Since You Hit Play: When Does It Pass Your Salary?",
         "header": "US debt interest since you hit **play**:\nwhen does it pass **your salary**?",
-        "runtime_s": 39.0,
+        "runtime_s": 21.1,
         "key_numbers": [
-          "Frame 1: odometer at $0, salary ladder $30K · $50K · $100K · $250K · $1M; footer FY25: $970B ÷ 31,536,000 s · pay $1,251 × 52",
+          "Frame 1: odometer at $0, salary ladder $30K · Median $65K · $100K · $250K · $500K (the recut; the retired 39.0 s cut had a sixth row, $1M); footer FY25: $970B ÷ 31,536,000 s · median $1,251 × 52",
           "≈ $30,800 a second (exact $30,758.50)",
-          "salary rows pass at 0.975 / 1.626 / 3.251 / 8.128 / 32.511 s: ≈ 1.0 / 1.6 / 3.3 / 8 / 33 seconds",
-          "Yearly pay ÷ 30,800 = your seconds (VO at 12.7 s)",
+          "salary rows pass at 0.975 / 2.115 / 3.251 / 8.128 / 16.256 s: ≈ 1.0 / 2.1 / 3.3 / 8 / 16 seconds (the recut stops on the $500,000 pass; the retired cut ran on to $1,000,000 at 32.511 s, ≈ 33 seconds)",
+          "Yearly pay ÷ 30,800 = your seconds (caption at 10.55 s in the recut; VO at 12.7 s in the retired cut)",
           "≈ $111 million an hour",
-          "verdict: $1 million a year ≈ 33 seconds; $100,000 a year ≈ 3.3 seconds",
+          "verdict: '$500K a year: ≈ 16 seconds.' at 17.07 s (the recut, owner-approved 2026-10-13); $100,000 a year ≈ 3.3 seconds (the retired cut's verdict: $1 million a year ≈ 33 seconds)",
           "caption: median pay ($65,052) ≈ 2.1 seconds; $0 of it pays the debt down",
-          "counter final ≈ $1,002,727"
+          "counter final $500,000 (stops on the $500K pass, counterT 16.25568 s; no ≈: the dollar reading is exact; ≈ $1,002,727 in an earlier cut)"
         ],
         "spec": "studio/specs/10a-scoreboard-debt-interest-live.json",
         "mp4": "renders/channel/10a-scoreboard-debt-interest-live.mp4",
@@ -743,7 +743,7 @@
         "look": "becker-rig",
         "title": "Which Is Bigger: 40 Years of Your Pay or 1 Minute of New US Debt?",
         "header": "Your pay for **40 years** vs\n__1 minute__ of new US debt?",
-        "runtime_s": 39.1,
+        "runtime_s": 38.667,
         "key_numbers": [
           "Debt to the Penny: $37,637,553,494,935.61 (2025-09-30) to $40,096,954,633,566.68 (2026-09-29) = ≈ $2.46T in 364 days",
           "≈ $78,000 a second (exact $78,201.35 = Δ ÷ 31,449,600 s); counter runs from 0.0 s (≈ $117,302 at 1.5 s)",
@@ -765,16 +765,16 @@
         "look": "scoreboard",
         "title": "How Long Do You Work for 1 Second of Amazon's Profit?",
         "header": "How long do **you** work for\n1 second of Amazon's profit?",
-        "runtime_s": 33.5,
+        "runtime_s": 18.067,
         "key_numbers": [
           "Amazon 2025 net income $77.7B; footer pay BLS median $1,251 a week × 52",
           "profit ≈ $2,464 a second (exact $2,463.85); counter from $0 at frame 1 (preroll 0)",
           "1 second ≈ 2 weeks of median pay (1.97); 5 seconds ≈ $12,319 ≈ 10 weeks (9.85)",
-          "half a year of median pay ($32,526) passes at ≈ 13 s (13.20 s)",
-          "a year of median pay ($65,052) passes at ≈ 26 s (26.40 s; $65,052 ÷ $2,464 = 26.40)",
-          "rows snap at 1.000 / 5.000 / 13.201 / 26.403 s",
-          "counter final ≈ $65,292",
-          "verdict: 1 second ≈ 2 weeks of median pay; a year ≈ 26 s"
+          "half a year of median pay ($32,526) passes at ≈ 13 s (13.20 s), where the recut stops",
+          "a year of median pay ($65,052) passes at ≈ 26 s (26.40 s; $65,052 ÷ $2,464 = 26.40): the retired 33.5 s cut only, not in the recut",
+          "rows snap at 1.000 / 5.000 / 13.201 s in the recut (and 26.403 s in the retired cut)",
+          "counter final $32,526 (stops on the half-year pass, counterT 13.2013 s; no ≈; ≈ $65,292 in an earlier cut)",
+          "verdict: 'Half a year of median pay: ≈ 13 seconds.' at 13.96 s (the recut, owner-approved 2026-10-13; the owner's question on its wording is open); 1 second ≈ 2 weeks of median pay (the retired cut's verdict: a year ≈ 26 s)"
         ],
         "spec": "studio/specs/10c-scoreboard-amazon-makes.json",
         "mp4": "renders/channel/10c-scoreboard-amazon-makes.mp4",

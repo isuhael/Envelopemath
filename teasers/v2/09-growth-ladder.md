@@ -1,7 +1,7 @@
 # Format 9: year-by-year growth ladder, three teasers
 
 **Channel:** Back of the Envelope (YouTube Shorts, Instagram Reels, TikTok), US audience, USD
-**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews). Hook pass 2026-10-08 (all three hooks kept), then hook pass 2 the same day (**all three hooks replaced**), then the assembly pass and the assembly fix pass (after QA) the same day, then the **port of 09a to Becker Rig** (2026-10-08: the owner kept Scoreboard and Becker Rig and retired Clean Sheet and Live Sheet), then the **port QA fix pass** the same day, then the **condensed cut** of all three and its **fixer pass** after the critic (2026-10-13, written in `studio/specs-wip/` and promoted into `studio/specs/` the same day; the sound and the ship follow). What changed and why is in the **Review log** at the end.
+**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews). Hook pass 2026-10-08 (all three hooks kept), then hook pass 2 the same day (**all three hooks replaced**), then the assembly pass and the assembly fix pass (after QA) the same day, then the **port of 09a to Becker Rig** (2026-10-08: the owner kept Scoreboard and Becker Rig and retired Clean Sheet and Live Sheet), then the **port QA fix pass** the same day, then the **condensed cut** of all three and its **fixer pass** after the critic (2026-10-13, written in `studio/specs-wip/` and promoted into `studio/specs/` the same day; shipped the same evening with sound bible v2.5). What changed and why is in the **Review log** at the end.
 **Format:** `growth-ladder`, hook pattern **P2** ("small amount × time =") for the ladders. Since hook pass 2 the hooks on top of them are a payout question (09a), a POV gift (09b) and a P1 "take your number × a constant" (09c).
 **Lane:** one small regular amount (or one small lump), year by year
 **Files:**
@@ -9,7 +9,7 @@
   - [`studio/specs/09a-becker-rig-100-a-month-doubles.json`](../../studio/specs/09a-becker-rig-100-a-month-doubles.json)
   - [`studio/specs/09b-becker-rig-1000-times-1-07.json`](../../studio/specs/09b-becker-rig-1000-times-1-07.json)
   - [`studio/specs/09c-scoreboard-5-a-day-millionaire.json`](../../studio/specs/09c-scoreboard-5-a-day-millionaire.json)
-  - These hold the condensed cuts (2026-10-13; 14.0 / 13.9 / 12.8 s bodies, each + the 2.5 s end card), promoted from `studio/specs-wip/` on 2026-10-13. The narration cuts they replaced (28.5 / 27.0 / 31.5 s bodies) are in git history (`480efc1^` and earlier), and `renders/channel/` keeps their renders until the ship step. The sections below describe the condensed cuts; the narration cuts' beat sheets and guide VO are in git history (be74d57 and earlier). The review log's "Condensed cut (2026-10-13)" lists every change.
+  - These hold the condensed cuts (2026-10-13; 14.0 / 13.9 / 12.8 s bodies, each + the 2.5 s end card), promoted from `studio/specs-wip/` on 2026-10-13. The narration cuts they replaced (28.5 / 27.0 / 31.5 s bodies) are in git history (`480efc1^` and earlier), and `renders/channel/` has shipped the condensed cuts since 2026-10-13 (sound bible v2.5), and their renders are in git at c4a3014. The sections below describe the condensed cuts; the narration cuts' beat sheets and guide VO are in git history (be74d57 and earlier). The review log's "Condensed cut (2026-10-13)" lists every change.
 - Check: [`teasers/v2/checks/09-growth-ladder.py`](checks/09-growth-ladder.py). Run `python3 teasers/v2/checks/09-growth-ladder.py`.
   - Since the promotion (2026-10-13) it reports **536 checks, 0 failures** and exits 0 on `studio/specs/` (the condensed cuts), and **515 checks, 0 failures** with `--spec` on git-history copies of the narration cuts (`git show 480efc1^:studio/specs/<id>.json`). Before it, it reported 515 on `studio/specs/` (the narration cuts; 509 after the port QA fix pass, 507 after the Becker Rig port, 492 after the assembly fix pass, 499 after the assembly pass, 468 after hook pass 2, 518 before that on the old ladders). Since the condensed cut it is cut-aware: `--spec [KEY=]PATH` checks a file in place of `studio/specs/<id>.json`, and each spec is checked as the narration cut or the condensed cut by its length. With the three WIP specs, then in `studio/specs-wip/`, it reported 536 checks, 0 failures (523 / 522 / 521 with one WIP spec each).
   - Break test, in a scratch copy: 09a's year-8 formula line "≈ $89/mo" → "≈ $90/mo", 09b's age-40 rung "≈ $14,974" → "≈ $14,975" and 09c's "about 75,176 times" → "75,177". It exited 1 with 4 failures, catching all three. Moving 09b's rung 1 back to 1.6 s also exits 1 (the $1,070 sync and the "lands by 1.0 s" claim).
@@ -950,3 +950,45 @@ No spec was retimed for sound, and `acceptance.json` is untouched.
 ### Promoted (2026-10-13)
 
 The three condensed cuts (after the fixer pass) were copied from `studio/specs-wip/` over `studio/specs/` (commit 480efc1) and `IN_SPECS` is "condensed" for each: 536 checks, 0 failures by default, and 515, 0 failures on git-history copies of the narration cuts passed with `--spec` (`git show 480efc1^:studio/specs/<id>.json`); the sound refit and the ship follow (`renders/channel/` keeps the narration cuts until then).
+
+### Shipped (2026-10-13): 09a, 09b, 09c
+
+- **Sound (BIBLE v2.5).** The promotion moved the cue records of all 12 condensed cuts and recuts (07a-10c), so BIBLE §11.1 ran for the batch:
+  - Both looks were refit on the fresh records: Scoreboard's calibration and Becker Rig's `MODEL` (round 3; §11.2).
+  - Both packs gained rules for the payoff of short bodies: Scoreboard the payoff's own range (the DROP lift, with A3's floor read from `acceptance.json`), room and burst at P, and a 2 kHz floor (§4.7); Becker Rig the payoff stack, the P ding with the hit, the landing and a re-measured card (§6.7 items 7-8).
+  - The records were stored in `test/fixtures/cues.json` (one line per teaser, so the diff is the batch's 12 lines), `tempo-table --write` rewrote the 12 §2.3 rows, and `npm test` passes 28/28.
+  - No spec, cue gain or `acceptance.json` threshold was touched.
+  - The margins the critic left for the ship step (09a's and 09b's 2 kHz and 250 Hz octaves, 09c's 125 Hz and LRA) all pass on the refit packs: see the table.
+  - 09b's moved record has a swipe and thud every 1.4 s (its throws), which BIBLE §2.1 now lists. 09a and 09c lost their V anchors (their verdicts fail §2.3's V rule: 09c's would need a tempo 5.6% under BPM₁), so their §2.3 rows have a base segment only.
+  - BIBLE Appendix A's worked examples are 09c (A.1) and 09b (A.2), so both tables were regenerated from the new records (A.1: 24 beats at 151.261 BPM to P 9.520, 8 beats at 146.34; A.2: 24 beats at 126.872 BPM to P 11.350, 5 beats at 117.65), and the test pins in `test/sound.test.mjs` follow them.
+- **Verify.** `verify --from <build> --strict-cues --video <pictures>` passes all 30 at 42/42, with units at 69/69 and 77/77. The pictures were the reviewed renders of the promoted specs for the batch and `renders/channel/` for the other 18. The masters are byte-identical to the sound designers' final builds, and the batch's exact BANDS margins match their after-tables to 0.005 dB, so nothing regressed. This format's §2.3 rows and measurements:
+
+  | Teaser | §2.3 row (P, BPM, base) | A1 / A2 / A5 | Tightest BANDS octaves (dB inside) | B3 closest cue | B8 logo / payoff (LUFS) |
+  |---|---|---|---|---|---|
+  | 09a | P 11.25 (riser), 128.000 → 130.91, base 14.00 | −14.17 / −1.30 / 12.87 | 250 Hz 1.22, 2 kHz 1.67 | 6.2 dB | −12.28 / −11.01 |
+  | 09b | P 11.35 (riser), 126.872 → 117.65, base 13.90 | −14.10 / −1.50 / 12.60 | 4 kHz 1.33, 250 Hz 1.49 | 4.6 dB | −12.17 / −10.55 |
+  | 09c | P 9.52 (riser), 151.261 → 146.34, base 12.80 | −14.17 / −1.40 / 12.77 | 500 Hz 0.74, 250 Hz 0.98 | 4.4 dB | −11.83 / −11.12 |
+
+  Margins in this format (BIBLE §11.2): 09c's 500 Hz octave, at 0.74 dB inside, is the tightest of the three; every other octave is at least 0.98 dB inside (09c 250 Hz).
+
+- **Shipped by §11.5.**
+  - The build went to `/tmp`, not into `renders/channel/`. Every mux kept its source's video md5, and the files were then copied into `renders/channel/`.
+  - `verify --from <build> --write-baseline` rewrote `test/fixtures/sound-baseline.sha256`.
+  - Both packs changed, so all 30 masters differ from the previous (v2.4) baseline. All 30 MP4s in `renders/channel/` changed with them, and the 18 pictures outside the batch are unchanged.
+  - The audit of `renders/channel/` used `--out` in `/tmp`, so no sidecar was written into `renders/`. All 30 teasers pass 16/16 symbolic score checks.
+  - This format's files:
+
+  | Teaser | Shipped (length, sha256) | Replaces (in git at c4a3014) | Video md5 (kept) | Audit: I / TP / LRA / PLR, score |
+  |---|---|---|---|---|
+  | 09a | 16.5 s, `8b0c9435…` | 31.0 s, `ccf60e08…` | `4b327fd3bee5…` | −14.17 / −1.34 / 4.99 / 12.83, 16/16 |
+  | 09b | 16.4 s, `e006ea97…` | 29.5 s, `b07daebb…` | `bb90bfe74d20…` | −14.10 / −1.55 / 4.88 / 12.56, 16/16 |
+  | 09c | 15.3 s, `f1316590…` | 34.0 s, `20c57655…` | `be7e28b3687a…` | −14.17 / −1.40 / 4.73 / 12.77, 16/16 |
+
+- **Publishing.**
+  - `python3 publishing/tools/build_publishing.py <id> --covers`, then `--check`, passes for all three (numbers check: PASS).
+  - In the data files, the video facts (`CUT` with `shipped` and `replaces`, the Video bullet and the for-video note) now describe the shipped cut, and the Trial Reels note fetches the pre-condense render from c4a3014.
+  - Moments and lengths that only the retired cut had were rewritten or dated, and no claim was added.
+  - The checked-maths line records the re-run at the ship: 536 checks, 0 failed.
+  - All three covers were re-picked by content on the shipped files and re-exported, with the same crops: 09a frame 18 (0.60 s, the question frame with the gauge filled; was 54); 09b frame 282 (9.40 s, the heave's buckle; was 438); 09c frame 12 (0.40 s, the question frame; was 75), where the caption's last word, '$377.', is still grey, because it lights after the row 5 cut in this cut.
+  - 09b's long alt text said the figure throws a coin to every rung; in the condensed cut age 1 ($1,070) is filled from frame 1, so it now says so (no figure changed).
+- **Elsewhere.** `teasers/v2/teasers.json`: runtimes 16.5 / 16.4 / 15.3 s (frame-exact). Its key-number times now name the condensed cut, with the retired cut's in brackets, and its check note records the re-run at the ship. `renders/channel/README.md` (the length table), `HANDOFF-finance-channel.md` and the BIBLE v2.5 status line name the ship.

@@ -5,7 +5,7 @@
   "for_video": {
     "current_render": "renders/channel/03c-scoreboard-mortgage-extra-100.mp4",
     "current_duration_s": 15.367,
-    "current_sha256": "36b4ce618789fc9dade004ef80ebf8d6c7c3db18beb01cda94bb3d87833473ce",
+    "current_sha256": "3f04b6e22b3aa3890d21ae49e96117fb63e528b0c8c1c35b918ff8572f6e043d",
     "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
       "name": "condensed (2026-10-13)",

@@ -4,17 +4,20 @@
   "prepared": "2026-10-13",
   "for_video": {
     "current_render": "renders/channel/10b-becker-rig-debt-vs-your-pay.mp4",
-    "current_duration_s": 39.1,
-    "current_sha256": "7318edc4e695bc85453f58882d83bef2510bbbf8361d299c9ba2bec3be15e101",
-    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the pre-condense cut. The ship step re-runs the build with --covers on the condensed file.",
+    "current_duration_s": 38.667,
+    "current_sha256": "c6620d92da629d87161c1d2954e6491d7632a813f7c0334de4dc154e378ce004",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
-      "name": "pre-condense cut (assembly pass 4, 2026-10-08)",
+      "name": "condensed (2026-10-13)",
       "spec": "studio/specs/10b-becker-rig-debt-vs-your-pay.json",
-      "body_s": 36.6,
-      "card_s": 2.5,
-      "shipped": null,
-      "git": "471c793",
-      "status": "the 10 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay); no 10 WIP spec was in studio/specs-wip/ at this build. The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."
+      "body_s": 36.15,
+      "card_s": 2.517,
+      "shipped": "2026-10-13",
+      "replaces": {
+        "duration_s": 39.1,
+        "sha256": "7318edc4e695bc85453f58882d83bef2510bbbf8361d299c9ba2bec3be15e101",
+        "note": "the pre-condense cut (assembly pass 4, 2026-10-08) + card, retired; in git history (c4a3014; 471c793 with the v2.2 soundtrack)"
+      }
     }
   },
   "facts": {
@@ -130,7 +133,7 @@
       "captions": "None needed (no narration; all text is on screen)"
     },
     "posting_window": {
-      "when": "First free Tue-Thu evening after the condensed cut ships and passes QA, at least a week after 10a, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+      "when": "First free Tue-Thu evening at least a week after 10a, 21:30-22:30 ET (01:30-02:30 UTC the next day); the condensed cut shipped on 2026-10-13. Sunday 06:00-08:00 ET is the alternative.",
       "spacing": "Keep it at least 6 h from any other upload on the channel. 10a and 10b are both about the federal debt: post them at least a week apart, or as a labelled pair (this one as 'Part 2: the debt itself'), as the write-up asks. Suggested order within the series: 10c, then 10a, then 10b.",
       "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,198 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2); 06c (Mon 03:45 ET) has 760 and 06b (Mon 12:14 ET) 75, too young to compare. The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. 10b goes last of the three: it shares 10a's topic, and the $40 trillion news has cooled ('us debt 40 trillion' -68.1% on its 30-day baseline), while 'debt crisis' runs +235.9%. Its numbers are dated readings, so they do not go stale."
     },
@@ -160,7 +163,7 @@
       "frame_in_current_render_s": 35.5,
       "frame_index": 1065,
       "frame_by_content": "The end hold, as the write-up's Instagram note asks: the header 'Your pay for 40 years vs / 1 minute of new US debt?', the 2-line footer, the cracked red board on '$2,602,080' with '✓ 40 years of median pay: $2,602,080' under it, the green '≈ 33 SECONDS' stamp over the emptied plinth ('40 × $65,052 / 0 years left'), the stopwatch stopped at 0:33 with its end label '≈ $4.7 million', the figure sitting on the floor looking up at the board, and the verdict '40 years of median pay: ≈ 33 seconds. / 1 minute of new US debt ≈ $4.7 million.' On any cut, use a frame of the end hold after the figure has sat up and before the end card (not the white impact frame of the burst).",
-      "frame_measured": "On the pre-condense 39.1 s render the counter stops on the 40-year pass with the burst at about frame 999 (33.3 s); the impact settles by about frame 1022 (34.07 s), the figure sits up between about 34.6 and 35.0 s, and from then on the frame changes only by the board's steam and vibration (frame-to-frame mean luma change about 0.03) until the end card at about frame 1099 (36.63 s). Frame 1065 (35.50 s) is used; the write-up's suggestion (≈ 34.5 s) falls just before he sits up.",
+      "frame_measured": "On the shipped 38.667 s condensed cut the counter stops on the 40-year pass with the burst at frame 999 (33.30 s); the impact settles by about frame 1022 (34.07 s), the verdict fades in over frames 1023-1030 (34.10-34.33 s) and the figure looks up at the board over about frames 1036-1049 (34.53-34.97 s); from frame 1050 (35.00 s) the frame changes only by the board's steam and vibration (frame-to-frame mean luma change 0.03-0.04 on 270×480 greyscale) until the end card at frame 1085 (36.17 s). Frame 1065 (35.50 s) is used, as on the 39.1 s pre-condense render, where the hold ran to the end card at frame 1099 (36.63 s).",
       "crop": "3:4 = 1080×1440 from y 60 to 1500 of the 1080×1920 frame. The content runs from y 113 (the badge) to y 1447 (the verdict's second line), so the crop centres it (53 px above and below): badge, header, footer, board, stamp, plinth, stopwatch, the figure and the verdict; it drops the empty page below. A centred grid crop (y 240-1680) cuts the badge and the header.",
       "how_to_set": "In 'Edit cover', pick the end-hold frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
       "re_export": "ffmpeg -ss 35.5 -i renders/channel/10b-becker-rig-debt-vs-your-pay.mp4 -frames:v 1 -vf \"crop=1080:1440:0:60\" -q:v 2 publishing/10b-becker-rig-debt-vs-your-pay-cover-3x4.jpg",
@@ -171,7 +174,7 @@
     "trial_reels": {
       "recommendation": "Post as a regular Reel, not a Trial.",
       "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show 471c793:renders/channel/10b-becker-rig-debt-vs-your-pay.mp4 > 10b-39.1s.mp4` (sha256 8eebe247…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. The pre-condense render is in git: `git show c4a3014:renders/channel/10b-becker-rig-debt-vs-your-pay.mp4 > 10b-39.1s.mp4` (sha256 7318edc4…; at 471c793 it carries the v2.2 soundtrack, 8eebe247…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
     },
     "settings": {
       "audio": "Rename the original audio to 'Your 40 years vs 1 minute of US debt — The Back of the Envelope' if the app allows; it is the score, with no voice.",
@@ -536,7 +539,7 @@
       "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
       "The two Debt to the Penny readings rest on search results (PrimeRates, citing Treasury; the API and page fetches were blocked) and are marked [click-check] in the write-up. Open them once before posting. If the 2026-09-30 reading can be read, the write-up's optional upgrade (a full fiscal year, 'FY2026' in the footer) changes the footer, the rate and this sheet.",
       "The figures in other creators' titles and descriptions (per-second debt growth) are theirs, not verified here; the copy states only the write-up's maths.",
-      "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file."
+      "The video, the cover and the video facts are the condensed cut, shipped on 2026-10-13; the copy is cut-independent and carried over unchanged."
     ],
     "titles_scored": "7 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13: 6 at the first build and option 3 with the description's own hashtags at the adversarial check; all are in youtube.titles_ranked and youtube.titles_also_scored.",
     "vidiq_credits": "60 credits for this teaser by listed cost (3 keyword queries, 1 YouTube search, 1 Shorts outlier search, 1 Instagram/TikTok outlier search and 6 title scores at up to 5 each), plus 10a's debt keyword queries (shared), 10 shared across 10a-10c for the channel's stats and Shorts list (Instagram owner insights cost 0), and 5 for the re-score after the build. Account balance: 4,375 at the start of the 10 research and 4,135 when it ended, a 240 drop for 56 calls (the balance is shared with sheets built in parallel, so the drop is an upper bound; keyword queries cost less than 5); 4,060 after the 3 re-scores (15 credits by listed cost; the rest of that 75 drop is other sheets'). About 255 for the three 10 sheets, against a budget of about 450. Adversarial check: 10 for this teaser by listed cost (the pick's title score and option 3's) plus 2 keyword queries ('40 trillion debt animated' twice), and 5 shared across 10a-10c for the three related videos' titles. Balance 3,695 at the check's start and 3,635 after its last call (a 60 drop for 18 calls across 10a-10c, 30 of it listed title and video costs; the balance is shared with sheets checked in parallel)."
@@ -544,7 +547,7 @@
   "checked": {
     "date": "2026-10-13",
     "by": "adversarial check of this sheet",
-    "math": "python3 teasers/v2/checks/10-cost-counter.py: 1005 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/10-cost-counter.py; the growth, the rate and every figure recomputed from the two readings in MATH_RELATIONS (≈ $2.46 trillion in 364 days; ≈ $78,000 a second; ≈ $4.7 million a minute; $2,602,080; ≈ 33 seconds; ≈ $117,000; ≈ 72 years; the public part ≈ $66,000 and ≈ $4.0 million); COPY_RULES hold every figure to the write-up's one rounding, put '≈' or 'about' on every rounded figure, keep each reading beside its date and every '≈ 33 seconds' with median pay, and ban 'live', 'fiscal 2026', 'FY2026', 'under 1 second', politics and advice wording. Re-run at the adversarial check (2026-10-13) with the same result",
+    "math": "python3 teasers/v2/checks/10-cost-counter.py: 1005 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/10-cost-counter.py; the growth, the rate and every figure recomputed from the two readings in MATH_RELATIONS (≈ $2.46 trillion in 364 days; ≈ $78,000 a second; ≈ $4.7 million a minute; $2,602,080; ≈ 33 seconds; ≈ $117,000; ≈ 72 years; the public part ≈ $66,000 and ≈ $4.0 million); COPY_RULES hold every figure to the write-up's one rounding, put '≈' or 'about' on every rounded figure, keep each reading beside its date and every '≈ 33 seconds' with median pay, and ban 'live', 'fiscal 2026', 'FY2026', 'under 1 second', politics and advice wording. Re-run at the adversarial check (2026-10-13) with the same result; re-run at the ship (2026-10-13), with the condensed cut and the 10a/10c recuts promoted into studio/specs/: 1002 checks, 0 failed",
     "limits": {
       "youtube_title_chars": 65,
       "youtube_description_chars": 1367,

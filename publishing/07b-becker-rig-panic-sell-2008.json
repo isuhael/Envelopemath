@@ -4,16 +4,20 @@
   "prepared": "2026-10-13",
   "for_video": {
     "current_render": "renders/channel/07b-becker-rig-panic-sell-2008.mp4",
-    "current_duration_s": 29.9,
-    "current_sha256": "a8555ba1a71d72a1e1ba1ef2fabeb3de5243eee3550667f5f27820f6e11b640d",
-    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds on 2026-10-13: the pre-condense cut. The ship step rebuilds this file with --covers from the condensed cut.",
+    "current_duration_s": 16.6,
+    "current_sha256": "10ab3f4774e4d66f5bc0869e960662aaf7b76ea29bba050350d8d8d378a1d0d8",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
-      "name": "pre-condense (07b round-2 fix pass, 2026-10-08)",
+      "name": "condensed (2026-10-13)",
       "spec": "studio/specs/07b-becker-rig-panic-sell-2008.json",
-      "body_s": 27.4,
+      "body_s": 14.1,
       "card_s": 2.5,
-      "status": "in renders/channel on 2026-10-13 (git 471c793); a condensed cut (timing only) is in progress",
-      "on_ship": "python3 publishing/tools/build_publishing.py 07b-becker-rig-panic-sell-2008 --covers (re-picks the cover by content, re-exports both JPGs, refreshes for_video)"
+      "shipped": "2026-10-13",
+      "replaces": {
+        "duration_s": 29.9,
+        "sha256": "a8555ba1a71d72a1e1ba1ef2fabeb3de5243eee3550667f5f27820f6e11b640d",
+        "note": "the pre-condense cut (07b round-2 fix pass, 2026-10-08) + card, retired; in git history (c4a3014; 471c793 with the v2.2 soundtrack)"
+      }
     }
   },
   "facts": {
@@ -133,7 +137,7 @@
       "captions": "None needed (no narration; all text is on screen)"
     },
     "posting_window": {
-      "when": "First Tue-Thu evening after the 07b condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+      "when": "First free Tue-Thu evening, 21:30-22:30 ET (01:30-02:30 UTC the next day); the condensed cut shipped on 2026-10-13. Sunday 06:00-08:00 ET is the alternative.",
       "spacing": "Keep it at least 6 h from any other upload on the channel, and post one ledger duel (07a, 07b, 07c) per evening.",
       "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,199 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2). The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. Search demand: 'stock market crash' is +64.7% and '2008 stock market crash' +88.7% on their 30-day baselines, so crash searches are high now. The copy stays on the 2008 duel and names no current event; post on the normal schedule rather than chasing a news day."
     },
@@ -160,21 +164,21 @@
         "3x4": "publishing/07b-becker-rig-panic-sell-2008-cover-3x4.jpg",
         "9x16": "publishing/07b-becker-rig-panic-sell-2008-cover-9x16.jpg"
       },
-      "frame_in_current_render_s": 1.2,
-      "frame_index": 36,
+      "frame_in_current_render_s": 0.6,
+      "frame_index": 18,
       "frame_by_content": "The 2008 impact, which the write-up names as the Instagram cover: the header '2 people invest $10,000 / right before 2008 / One sells to cut his losses', the footer, the column heads (Alex, 'Holds through the crash'; Sam, 'Sells when 2008 ends'), both figures blown up off their stacks with the lost coins bursting, the 'Dec 2007' row at $10,000 / $10,000 under the red '2008' row at $6,300 / $6,300, the 'crash −37%' pill, the later years dim over empty shelves, and the caption '2008 takes 37%.'. No later row and no final number. On any cut, use a frame between the pill appearing and the figures landing.",
-      "frame_measured": "On the pre-condense 29.9 s render the impact hits at 1.0 s (frame 30; the opening's biggest frame-to-frame luma change, 5.9-6.2), the 'crash −37%' pill is up from about 1.1 s, the figures land squashed at 1.4 s and stand again at 2.6 s. Frame 36 (1.20 s) has the pill up and both figures in the air: it is a motion frame (the luma change stays near 1.1-1.3 a frame from 1.17 to 1.47 s), and any frame from 1.1 to 1.4 s shows the same content.",
+      "frame_measured": "On the shipped 16.6 s condensed cut the impact hits at 0.4 s (frame 12; the opening's biggest frame-to-frame luma change, 6.0-6.1 on 270×480 greyscale), the 'crash −37%' pill is up from 0.46 s, and the figures come down onto their coins from about 0.75 s. Frame 18 (0.60 s) has the pill up, both figures in the air and the coins bursting, under the caption '2008 takes 37%.': it is a motion frame (the luma change stays near 1.06-1.22 a frame from 0.57 to 0.73 s), and any frame from 0.5 to 0.7 s shows the same content. On the 29.9 s pre-condense render the same moment was frame 36 (1.20 s).",
       "crop": "3:4 = 1080×1440 from y 60 to 1500 of the 1080×1920 frame. The content runs from y 112 (the badge) to y 1419 (the caption), so the tile keeps the badge, the header, the footer, the column heads, the figures, the ledger and the caption, and drops the empty floor. A centred grid crop (y 240-1680) cuts the badge and the header.",
       "how_to_set": "In 'Edit cover', pick the 2008 impact frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
-      "re_export": "ffmpeg -ss 1.2 -i renders/channel/07b-becker-rig-panic-sell-2008.mp4 -frames:v 1 -vf \"crop=1080:1440:0:60\" -q:v 2 publishing/07b-becker-rig-panic-sell-2008-cover-3x4.jpg",
-      "re_export_9x16": "ffmpeg -ss 1.2 -i renders/channel/07b-becker-rig-panic-sell-2008.mp4 -frames:v 1 -q:v 2 publishing/07b-becker-rig-panic-sell-2008-cover-9x16.jpg"
+      "re_export": "ffmpeg -ss 0.6 -i renders/channel/07b-becker-rig-panic-sell-2008.mp4 -frames:v 1 -vf \"crop=1080:1440:0:60\" -q:v 2 publishing/07b-becker-rig-panic-sell-2008-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 0.6 -i renders/channel/07b-becker-rig-panic-sell-2008.mp4 -frames:v 1 -q:v 2 publishing/07b-becker-rig-panic-sell-2008-cover-9x16.jpg"
     },
     "first_comment": "Alex held: ≈ $66,000 at the end of 2025. Sam sold at the end of 2008: $6,300. Even at 5% a year from 2009 to 2025, Sam's cash would be ≈ $14,400. Would you have sold?",
     "first_comment_action": "Post it right after publishing and pin it.",
     "trial_reels": {
       "recommendation": "Post as a regular Reel, not a Trial.",
       "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-      "use_trial_for": "The write-up's second cover afterwards, if you want it: the same Reel with the finished ledger as its cover, as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut ships, the pre-condense render is in git: `git show 471c793:renders/channel/07b-becker-rig-panic-sell-2008.mp4 > 07b-pre-condense.mp4` (sha256 d6d3739f…), for a cut test instead. Compare skip rate (October Reels ran 27.0-65.1%; 06c, the other Becker Rig Reel, 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+      "use_trial_for": "The write-up's second cover afterwards, if you want it: the same Reel with the finished ledger as its cover, as a Trial with MANUAL graduation 48-72 h later. The pre-condense render is in git: `git show c4a3014:renders/channel/07b-becker-rig-panic-sell-2008.mp4 > 07b-pre-condense.mp4` (sha256 a8555ba1…; at 471c793 it carries the v2.2 soundtrack, d6d3739f…), for a cut test instead. Compare skip rate (October Reels ran 27.0-65.1%; 06c, the other Becker Rig Reel, 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
     },
     "settings": {
       "audio": "Rename the original audio to 'Sold in 2008 vs held — The Back of the Envelope' if the app allows; it is the score, with no voice.",
@@ -511,7 +515,7 @@
       "As the 06b and 04b sheets found (not re-checked here), vidIQ's YouTube authorization is a different channel (UCRC5v_El2fibbkqsZs6uFjA), so @envelopemath's YouTube Analytics (audience hours, geography) were not readable. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
       "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and the same-idea Shorts' own tags.",
       "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
-      "The render in renders/channel is the pre-condense cut. The cover's time and frame are measured on it; the copy names no other timestamp, and the ship step re-picks the cover on the final file.",
+      "The render in renders/channel is the condensed cut, shipped on 2026-10-13. The cover's time and frame were re-measured on it; the copy names no other timestamp.",
       "The S&P 500 returns are the write-up's, from search results ([click-check] on Slickcharts); the verifier matched them against two sources. The Jake and Market Hustle figures are the write-up's benchmark, not re-pulled.",
       "The vidIQ credit balance is shared with the other sheets being built in parallel; this sheet's spend is counted from each tool's listed cost, checked against the balance (see research.vidiq_credits)."
     ],
@@ -547,7 +551,7 @@
   "checked": {
     "date": "2026-10-13",
     "by": "adversarial check of this sheet",
-    "math": "python3 teasers/v2/checks/07-ledger-duel.py: 461 checks, 0 failures on studio/specs/ (2026-10-13), run by the builder through publishing/data/checks/07-ledger-duel.py; every public figure traced to the 07b maths table and recompounded in MATH_RELATIONS from the 18 S&P 500 total returns (2008-2025); each year's figure pinned beside its year, every Alex figure with Alex, Sam's $6,300 kept exact (COPY_RULES)",
+    "math": "python3 teasers/v2/checks/07-ledger-duel.py: 461 checks, 0 failures on studio/specs/ (2026-10-13), run by the builder through publishing/data/checks/07-ledger-duel.py; every public figure traced to the 07b maths table and recompounded in MATH_RELATIONS from the 18 S&P 500 total returns (2008-2025); each year's figure pinned beside its year, every Alex figure with Alex, Sam's $6,300 kept exact (COPY_RULES); re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: 535 checks, 0 failures",
     "limits": {
       "youtube_title_chars": 91,
       "youtube_description_chars": 1369,

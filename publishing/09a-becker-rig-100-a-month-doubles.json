@@ -4,17 +4,20 @@
   "prepared": "2026-10-13",
   "for_video": {
     "current_render": "renders/channel/09a-becker-rig-100-a-month-doubles.mp4",
-    "current_duration_s": 31.0,
-    "current_sha256": "ccf60e082f389a6cda295cfea565ace6b5abb70c17dbbdb56cbeddece5718c02",
-    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the pre-condense cut. The ship step re-runs the build with --covers on the condensed file.",
+    "current_duration_s": 16.5,
+    "current_sha256": "8b0c94352ab44db8ecb407bef45ce814c183252b512502037d5a22af002b33ce",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
-      "name": "pre-condense cut (Becker Rig port + port QA fix pass, 2026-10-08)",
+      "name": "condensed (2026-10-13)",
       "spec": "studio/specs/09a-becker-rig-100-a-month-doubles.json",
-      "body_s": 28.5,
+      "body_s": 14.0,
       "card_s": 2.5,
-      "shipped": null,
-      "git": "471c793",
-      "status": "the 09 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay); no 09 WIP spec was in studio/specs-wip/ at this build. The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."
+      "shipped": "2026-10-13",
+      "replaces": {
+        "duration_s": 31.0,
+        "sha256": "ccf60e082f389a6cda295cfea565ace6b5abb70c17dbbdb56cbeddece5718c02",
+        "note": "the pre-condense cut (Becker Rig port + port QA fix pass, 2026-10-08) + card, retired; in git history (c4a3014; 471c793 with the v2.2 soundtrack)"
+      }
     }
   },
   "facts": {
@@ -141,7 +144,7 @@
       "captions": "None needed (no narration; all text is on screen)"
     },
     "posting_window": {
-      "when": "First free Tue-Thu evening after the 09 condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+      "when": "First free Tue-Thu evening, 21:30-22:30 ET (01:30-02:30 UTC the next day); the condensed cut shipped on 2026-10-13. Sunday 06:00-08:00 ET is the alternative.",
       "spacing": "Keep it at least 6 h from any other upload on the channel, on a different evening from 09b and 09c, and away from 07a (the other $-a-month compounding Short). Suggested order within the series: 09a, then 09b, then 09c.",
       "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,199 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2); 06c (Mon 03:45 ET) has 760 and 06b (Mon 12:14 ET) 75, too young to compare. The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. 09a goes first of the three: its hook scored highest with the write-up's judges (7.0 of 10), and its search words are the ones rising ('rule of 72' +86.9%, 'crossover point' +233.5% on their baselines)."
     },
@@ -168,21 +171,21 @@
         "3x4": "publishing/09a-becker-rig-100-a-month-doubles-cover-3x4.jpg",
         "9x16": "publishing/09a-becker-rig-100-a-month-doubles-cover-9x16.jpg"
       },
-      "frame_in_current_render_s": 1.8,
-      "frame_index": 54,
+      "frame_in_current_render_s": 0.6,
+      "frame_index": 18,
       "frame_by_content": "The question frame, settled: the header 'You add $100 a month. / When does it earn $100 a month?' ('$100 a month' in green), the footer 'ASSUMES 8% a year, compounded monthly / $100 in at month-end · not a forecast', the working line '$1,245 × 8% ÷ 12 ≈ $8/mo', the column heads Year / Worth / Earns a month, rung 1 at ≈ $1,245 / ≈ $8 with its $100 gauge filled a sliver (8%), seven dim rungs (5 to 30) over empty shelves, the figure at the foot of the ladder with a hand on his chin, and the first caption 'By year 1 it's earning / about $8 a month.' fully lit. It asks and does not answer: ≈ $8 against the $100 the header asks about. On any cut, use a settled frame after rung 1's gauge has filled and the first caption is fully lit, before the first throw.",
-      "frame_measured": "On the pre-condense 31.0 s render rung 1 is settled at frame 0; the nod and the gauge fill are done by about frame 20, and from about frame 30 (1.00 s) to the wind-up at about frame 68 (2.25 s) the frame-to-frame mean luma change stays under 0.0001 (the figure's idle sway). Frame 54 (1.80 s) is inside that hold, with the first caption fully lit.",
+      "frame_measured": "On the shipped 16.5 s condensed cut rung 1 is settled and the first caption complete at frame 0, but the gauge is not drawn yet; the figure shrugs from frame 2, the gauge fills to 8% by about frame 15 (0.50 s), and at frames 18-20 (0.60-0.67 s) he stands hand to chin (frame-to-frame mean luma change 0.11-0.19 on 270×480 greyscale) before the first throw winds up at about 0.8 s. The condense left no still hold here (it filled the opening with the shrug), so frame 18 (0.60 s) is used: the gauge filled and the figure's chin pose, as on the old cover. On the 31.0 s pre-condense render the hold was frames 30-68, and frame 54 (1.80 s) was used.",
       "crop": "3:4 = 1080×1440 from y 62 to 1502 of the 1080×1920 frame. The content runs from y 112 (the badge) to y 1452 (the caption), so the crop centres it (50 px above and below): badge, header, footer, working line, column heads, the whole ladder with the figure, and the caption; it drops the empty page below. A centred grid crop (y 240-1680) cuts the badge and the header.",
       "how_to_set": "In 'Edit cover', pick the question frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
-      "re_export": "ffmpeg -ss 1.8 -i renders/channel/09a-becker-rig-100-a-month-doubles.mp4 -frames:v 1 -vf \"crop=1080:1440:0:62\" -q:v 2 publishing/09a-becker-rig-100-a-month-doubles-cover-3x4.jpg",
-      "re_export_9x16": "ffmpeg -ss 1.8 -i renders/channel/09a-becker-rig-100-a-month-doubles.mp4 -frames:v 1 -q:v 2 publishing/09a-becker-rig-100-a-month-doubles-cover-9x16.jpg"
+      "re_export": "ffmpeg -ss 0.6 -i renders/channel/09a-becker-rig-100-a-month-doubles.mp4 -frames:v 1 -vf \"crop=1080:1440:0:62\" -q:v 2 publishing/09a-becker-rig-100-a-month-doubles-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 0.6 -i renders/channel/09a-becker-rig-100-a-month-doubles.mp4 -frames:v 1 -q:v 2 publishing/09a-becker-rig-100-a-month-doubles-cover-9x16.jpg"
     },
     "first_comment": "Year 1: ≈ $8 a month. Year 8: ≈ $89. Year 9: ≈ $105, more than the $100 you add (month 106 grows ≈ $100.91). Any monthly amount: still year 9. Which rate would you use?",
     "first_comment_action": "Post it right after publishing and pin it.",
     "trial_reels": {
       "recommendation": "Post as a regular Reel, not a Trial.",
       "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show 471c793:renders/channel/09a-becker-rig-100-a-month-doubles.mp4 > 09a-31.0s.mp4` (sha256 3dddeb79…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. A cover test (the question frame vs the crossing) is the other use. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. The pre-condense render is in git: `git show c4a3014:renders/channel/09a-becker-rig-100-a-month-doubles.mp4 > 09a-31.0s.mp4` (sha256 ccf60e08…; at 471c793 it carries the v2.2 soundtrack, 3dddeb79…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. A cover test (the question frame vs the crossing) is the other use. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
     },
     "settings": {
       "audio": "Rename the original audio to '$100 a month, year by year — The Back of the Envelope' if the app allows; it is the score, with no voice.",
@@ -566,7 +569,7 @@
       "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and on the write-up's and the outliers' own tags.",
       "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
       "The S&P 500 figures behind the caption's '≈ 10% / ≈ 7%' come from search results the write-up could not open (the proxy blocked the pages); they are marked [click-check] there, and the 10.09% / 6.81% figure is a live one that will drift.",
-      "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file.",
+      "The video, the cover and the video facts are the condensed cut, shipped on 2026-10-13; the copy is cut-independent and carried over unchanged.",
       "The vidIQ credit balance is shared with the other sheets being built in parallel, so this sheet's spend is counted from each tool's listed cost (see research.vidiq_credits)."
     ],
     "titles_scored": "9 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13; all are in youtube.titles_ranked and youtube.titles_also_scored.",
@@ -575,7 +578,7 @@
   "checked": {
     "date": "2026-10-13",
     "by": "adversarial check of this sheet",
-    "math": "python3 teasers/v2/checks/09-growth-ladder.py: 509 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/09-growth-ladder.py; every rung recomputed in MATH_RELATIONS from $100 a month at 8% ÷ 12 (Worth and Earns a month, each to the dollar), the crossing month 106 (≈ $100.91; month 105 ≈ $99.58), the amount cancelling ($50 to $5,000), 9.94 ('almost 10 times'), 72 ÷ 8 = 9, 104.32 months ≈ 8.7 years, the 7% and 10% years (11 and 8), and the S&P 500's ≈ 10% / ≈ 7%; COPY_RULES keep every rung's figures beside their own year, every rounded figure 'about' or '≈', 'earns' defined as growth that stays in the account, and the 8% called an assumption",
+    "math": "python3 teasers/v2/checks/09-growth-ladder.py: 509 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/09-growth-ladder.py; every rung recomputed in MATH_RELATIONS from $100 a month at 8% ÷ 12 (Worth and Earns a month, each to the dollar), the crossing month 106 (≈ $100.91; month 105 ≈ $99.58), the amount cancelling ($50 to $5,000), 9.94 ('almost 10 times'), 72 ÷ 8 = 9, 104.32 months ≈ 8.7 years, the 7% and 10% years (11 and 8), and the S&P 500's ≈ 10% / ≈ 7%; COPY_RULES keep every rung's figures beside their own year, every rounded figure 'about' or '≈', 'earns' defined as growth that stays in the account, and the 8% called an assumption; re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: 536 checks, 0 failed",
     "limits": {
       "youtube_title_chars": 88,
       "youtube_description_chars": 1406,

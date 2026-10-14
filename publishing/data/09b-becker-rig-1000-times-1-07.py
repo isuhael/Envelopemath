@@ -5,9 +5,9 @@
 #
 # Facts come only from teasers/v2/09-growth-ladder.md (section 09b, "Decisions shared by all three" and the Sources
 # under 09a that 09b cites) and python3 teasers/v2/checks/09-growth-ladder.py. Research: vidIQ, pulled 2026-10-13.
-# The video is the pre-condense cut: the 09 condense is in progress in parallel (timing only; numbers, caption facts
-# and the verdict stay). This sheet names no timestamp except the cover, which is picked by content (the heave), so
-# the ship step only re-runs the build with --covers on the final file.
+# The video is the condensed cut, promoted and shipped on 2026-10-13 (timing only; numbers, caption facts and the
+# verdict stay; the pre-condense render is in git, 471c793 and c4a3014). This sheet names no timestamp except the cover,
+# which is picked by content (the heave), so the ship re-ran the build with --covers on the shipped file.
 
 TEASER = "09b Becker Rig, growth-ladder: \"POV: someone invested just $1,000 for you at birth. What's it worth at 65?\""
 PREPARED = "2026-10-13"
@@ -15,14 +15,16 @@ SHORT_ID = "09b"
 MD_TITLE = "09b publishing sheet: $1,000 invested for you at birth, what's it worth at 65?"
 MATH_RUN = "509 checks, 0 failed"      # python3 teasers/v2/checks/09-growth-ladder.py on studio/specs/ (via publishing/data/checks/09-growth-ladder.py), 2026-10-13
 MATH_SCRIPT = "publishing/data/checks/09-growth-ladder.py"   # runs the 09 check unchanged, adds the builder's summary form
-RENDER_COMMIT = "471c793"              # the commit that holds this pre-condense render
-RENDER_SHA_PRE = "5d8f22d554a8575404ac05fdff6033e5dd2c4c0ffee4be74f473bbe64bdc522c"
+MATH_RUN_SHIP = "536 checks, 0 failed"  # the same check on studio/specs/ with the condensed cuts promoted, at the ship 2026-10-13
+RENDER_COMMIT = "c4a3014"              # the last commit that holds the pre-condense render (with the v2.4 soundtrack)
+RENDER_SHA_PRE = "b07daebbec046e9ba4fa31d84bd21787c5b33d1f7d035f9b6430660c4ebc1c74"   # at 471c793 (v2.2 soundtrack): 5d8f22d5…
 
 MD_INTRO = [
-    f"- **Video.** `renders/channel/{BASE}.mp4`: the pre-condense cut ({VIDEO_S:g} s: a {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`), "
-    "the assembly-fix-pass cut (2026-10-08). The 09 condense is in progress in parallel (timing only: the numbers, the captions' facts and the verdict stay). "
-    "Nothing below names a timestamp except the cover, which is picked by content (the heave), so the copy carries over to the condensed cut unchanged. "
-    f"The ship step rebuilds this sheet and re-exports both covers from the final file: `python3 publishing/tools/build_publishing.py {BASE} --covers`.",
+    f"- **Video.** `renders/channel/{BASE}.mp4`: the condensed cut ({VIDEO_S:g} s: a {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`), "
+    f"promoted and shipped on 2026-10-13. It replaces the 29.5 s pre-condense cut (the assembly fix pass, 2026-10-08; the owner: \"too many still moments\"), which is in git (`{RENDER_COMMIT}`). "
+    "The condense moved the clock and shortened the heave; the numbers, the captions' facts and the verdict stay, so the copy carried over unchanged. "
+    "Nothing below names a timestamp except the cover, which was re-picked by content (the heave) on the shipped file. "
+    f"The ship rebuilt this sheet and re-exported both covers from it (`python3 publishing/tools/build_publishing.py {BASE} --covers`); on the shipped specs the maths check runs {MATH_RUN_SHIP}.",
     "- **Numbers.** Every figure comes from `teasers/v2/09-growth-ladder.md` (09b) and its check, "
     f"`python3 teasers/v2/checks/09-growth-ladder.py`: {MATH_RUN} on `studio/specs/` (run 2026-10-13; the builder runs it through the adapter `publishing/data/checks/09-growth-ladder.py`). "
     f"`python3 publishing/tools/build_publishing.py {BASE} --check` checks this sheet's limits, paste blocks and figures, recomputes every rung from $1,000 × 1.07 per birthday, "
@@ -39,11 +41,11 @@ MD_INTRO = [
 
 # ---------------------------------------------------------------- the video
 FOR_VIDEO_NOTE = ("Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. "
-                  "current_* is what renders/channel holds today: the pre-condense cut. The ship step re-runs the build with --covers on the condensed file.")
-CUT = {"name": "pre-condense cut (assembly fix pass, 2026-10-08)", "spec": f"studio/specs/{BASE}.json", "body_s": BODY_S,
-       "card_s": CARD_S, "shipped": None, "git": RENDER_COMMIT,
-       "status": "the 09 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay); no 09 WIP spec was in studio/specs-wip/ at this build. "
-                 "The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."}
+                  "current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.")
+CUT = {"name": "condensed (2026-10-13)", "spec": f"studio/specs/{BASE}.json", "body_s": BODY_S,
+       "card_s": CARD_S, "shipped": "2026-10-13",
+       "replaces": {"duration_s": 29.5, "sha256": RENDER_SHA_PRE,
+                    "note": f"the pre-condense cut (assembly fix pass, 2026-10-08) + card, retired; in git history ({RENDER_COMMIT}; 471c793 with the v2.2 soundtrack)"}}
 
 FACTS = {
     "source": f"teasers/v2/09-growth-ladder.md section 09b; teasers/v2/checks/09-growth-ladder.py: {MATH_RUN} on studio/specs/ (2026-10-13)",
@@ -133,7 +135,7 @@ THUMBNAIL_FRAME = "In the YouTube app, pick the heave frame (the cover below): t
 THUMB_MD = ("in the YouTube app, pick the heave frame, the same content as the Instagram cover below: the POV header over the 7% footer, rungs 1 to 50 filled ($1,070 up to ≈ $29,457), "
             "the age-65 rung still empty at the top, and the figure buckling under the last, heavy coin. It asks without answering, like the title beside it in search.")
 YT_POSTING_WINDOW = {
-    "when": "First free Tue-Thu evening after the 09 condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+    "when": "First free Tue-Thu evening, 21:30-22:30 ET (01:30-02:30 UTC the next day); the condensed cut shipped on 2026-10-13. Sunday 06:00-08:00 ET is the alternative.",
     "spacing": "Keep it at least 6 h from any other upload on the channel, and on a different evening from 09a and 09c. Suggested order within the series: 09a, then 09b, then 09c.",
     "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,199 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2); 06c (Mon 03:45 ET) has 760 and 06b (Mon 12:14 ET) 75, too young to compare. "
            "The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. "
@@ -189,7 +191,7 @@ IG_ALT_RULE = ("Paste the short version into Instagram: it is kept at or under 1
                "The long version is for anywhere with room (a website embed, a newsletter).")
 IG_ALT_LONG = ("Animation on a light page with a green stick figure at the foot of a ladder whose rungs are ages. The header says: POV: someone invested just $1,000 for you at birth. What's it worth at 65? "
                "The footer: assumes 7% a year, added once a year, never topped up, not a forecast. Columns: age, put in, worth. "
-               "The figure throws a coin up to each rung, and each coin becomes its row's worth, with $1,000 put in on every rung: age 1, $1,070; age 10, about $1,967; age 18, about $3,380; "
+               "Age 1 is filled from the start, and the figure throws a coin up to each rung after it; each coin becomes its row's worth, with $1,000 put in on every rung: age 1, $1,070; age 10, about $1,967; age 18, about $3,380; "
                "age 25, about $5,427; age 30, about $7,612; age 40, about $14,974; age 50, about $29,457. "
                "The last coin is too heavy: he buckles under it, presses it overhead and heaves it onto a gold plate at age 65, about $81,273. "
                "Verdict: about $81,273 at 65, over 81 times the gift, never topped up.")
@@ -200,19 +202,21 @@ IG_FIRST_COMMENT = ("Age 10: ≈ $1,967. Age 30: ≈ $7,612. Age 50: ≈ $29,457
 # ---------------------------------------------------------------- the cover frame
 # The heave, picked by content: the write-up's Instagram note offers frame 1 (the POV header over the empty age ladder)
 # or the heave frame. The heave asks the title's question with the ladder half-built: rungs 1-50 filled, the age-65 rung
-# empty, the figure buckling under the last coin. On this render the heavy coin drops into his arms at about frame 426
-# (14.2 s) and he buckles; the frame holds nearly still until he hitches it up at about frame 447 (14.9 s).
-COVER_T = 14.6
-COVER_FRAME = 438
+# empty, the figure buckling under the last coin. On the shipped condensed cut the heavy coin drops into his arms at
+# frame 275 (9.15 s) and he buckles; the buckle settles by frame 282 (9.40 s), and he hitches the coin up from about
+# frame 284. Frame 282 (9.40 s) is used. (On the pre-condense render: frame 438.)
+COVER_T = 9.4
+COVER_FRAME = 282
 COVER_CROP = "crop=1080:1440:0:50"
-COVER_RENDER_WORD = "pre-condense"
+COVER_RENDER_WORD = "shipped"
 COVER_FRAME_BY_CONTENT = ("The heave, its first beat: the header 'POV: someone invested just / $1,000 for you at birth. / What's it worth at 65?' ($1,000 in green), "
                           "the footer 'ASSUMES 7% a year, added once a year / never topped up · not a forecast', the heads Age / Put in / Worth, "
                           "rungs 1 to 50 filled ($1,070, ≈ $1,967, ≈ $3,380, ≈ $5,427, ≈ $7,612, ≈ $14,974, ≈ $29,457, with $1,000 put in on each), the age-65 rung empty at the top, "
                           "the figure buckled at the foot of the ladder with the last, heavy gold coin in his arms, and the caption 'At 50: about $29,457.' "
                           "It asks and does not answer: the age-65 shelf the title asks about is still empty. On any cut, use a frame from the buckle, after the heavy coin is in his arms and before he lifts it.")
-COVER_FRAME_MEASURED = ("On the pre-condense 29.5 s render the heavy coin drops into his arms at about frame 426 (14.2 s); from about frame 432 (14.40 s) to frame 446 (14.87 s) the frame-to-frame mean luma change "
-                        "stays under 0.0009 (his strain wobble), and he hitches the coin up from about frame 447. Frame 438 (14.60 s) is inside that buckle, with the caption fully lit.")
+COVER_FRAME_MEASURED = (f"On the shipped {VIDEO_S:g} s condensed cut the heavy coin drops into his arms at frame 275 (9.15 s, the thud); the buckle moves through frame 280 and settles at frames 281-283 "
+                        "(frame-to-frame mean luma change 0.10-0.20 on 270×480 greyscale), and he hitches the coin up from about frame 284 (9.47 s). Frame 282 (9.40 s) is used, with the caption 'At 50: about $29,457.' fully lit. "
+                        "The condensed heave is the kit's shortest struggle (2.2 s), so the buckle is about 0.25 s, not the 0.5 s of the pre-condense render, where frame 438 (14.60 s) was used.")
 COVER_CROP_NOTE = ("3:4 = 1080×1440 from y 50 to 1490 of the 1080×1920 frame. The content runs from y 112 (the badge) to y 1428 (the caption), so the crop centres it (62 px above and below): "
                    "badge, header, footer, heads, the whole ladder with the figure and the coin, and the caption; it drops the empty page below. "
                    "A centred grid crop (y 240-1680) cuts the badge and the header.")
@@ -222,13 +226,13 @@ COVER_HOW_TO_SET = ("In 'Edit cover', pick the heave frame from the video (or up
 COVER_EXTRA_BULLETS = [
     "**Not used:** frame 1 (the POV header over eight empty age rungs, the figure thinking), the write-up's other cover option. It asks too, but shows nothing climbing; the heave shows the ladder and the strain, the format's own gag.",
     "**Not used:** the gold plate and the verdict ('≈ $81,273 at 65. / Over 81× the gift, never topped up.'), the answer to the title.",
-    "**When the condensed cut ships:** re-pick the buckle by content on the shipped file and re-export both JPGs with `--covers`.",
+    "**Shipped cut (2026-10-13):** the buckle was re-picked by content on the shipped file (frame 282, 9.40 s; was frame 438) and both JPGs re-exported: the same picture, the same crop. The copy did not change.",
 ]
 
 TRIAL_REELS = {
     "recommendation": "Post as a regular Reel, not a Trial.",
     "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-    "use_trial_for": f"A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show {RENDER_COMMIT}:renders/channel/{BASE}.mp4 > 09b-29.5s.mp4` (sha256 {RENDER_SHA_PRE[:8]}…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. A cover test (the heave vs frame 1) is the other use. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app.",
+    "use_trial_for": f"A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. The pre-condense render is in git: `git show {RENDER_COMMIT}:renders/channel/{BASE}.mp4 > 09b-29.5s.mp4` (sha256 {RENDER_SHA_PRE[:8]}…; at 471c793 it carries the v2.2 soundtrack, 5d8f22d5…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. A cover test (the heave vs frame 1) is the other use. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app.",
 }
 IG_AUDIO = "Rename the original audio to '$1,000 at birth, age by age — The Back of the Envelope' if the app allows; it is the score, with no voice."
 IG_POSTING_WINDOW = {
@@ -359,7 +363,7 @@ LIMITS = [
     "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
     "The '≈ 6.8% after inflation since 1928' is a live Official Data Foundation figure read from search results (the write-up's [click-check]); it will drift.",
     "The federal $1,000-at-birth account ('Trump Accounts') appears here only from keyword data and third-party Short descriptions; none of it is verified, and none is in the copy.",
-    "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file.",
+    "The video, the cover and the video facts are the condensed cut, shipped on 2026-10-13; the copy is cut-independent and carried over unchanged.",
     "The vidIQ credit balance is shared with the other sheets being built in parallel, so this sheet's spend is counted from each tool's listed cost (see research.vidiq_credits).",
 ]
 RESEARCH_EXTRA = {
@@ -374,7 +378,8 @@ CHECKED_BY = "adversarial check of this sheet"
 CHECKED_MATH = (f"python3 teasers/v2/checks/09-growth-ladder.py: {MATH_RUN} on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/09-growth-ladder.py; "
                 "every rung recomputed in MATH_RELATIONS from $1,000 × 1.07 per birthday ($1,070 exact; ≈ $1,967 … ≈ $81,273), 81.27 ('over 81 times'), 72 ÷ 7 ≈ 10 and the first doubling at 11, "
                 "the pinned at-25 figure (1.07^40 → ≈ $14,974) and its × 5.4 (1.07^25), the $500 / $5,000 scaling and 6.81% ≈ 6.8%; COPY_RULES keep every rung's figure beside its own age, "
-                "every rounded figure 'about' or '≈', the after-inflation framing with its date and source, and no 'millionaire'")
+                "every rounded figure 'about' or '≈', the after-inflation framing with its date and source, and no 'millionaire'"
+                f"; re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: {MATH_RUN_SHIP}")
 VIDIQ_REQUERIED = ("pulled 2026-10-13: compound interest 137,873 / 50.6 (−17.3%); generational wealth 43,615; how to build generational wealth 24,160 (+35.1%); trump account 22,489 (+20.2%); "
                    "6 titles scored: pick 98, write-up title 90; channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,519 views in 30 days. Re-queried after the build: the pick's title score 98. Re-queried at the adversarial check: the pick's title score 98; 'generational wealth' 43,615 / 61.0 (−17.9%, baseline 53,133); the related video EqFQCJheCMU 162 views (161 at the build), live since Tue 6 Oct 22:27 ET. All match.")
 CHECK_LOG_TITLE = "first build and adversarial pass, 2026-10-13"
@@ -406,7 +411,11 @@ CHECK_LOG = [
     "  - The title drops the header's 'POV:' (8 points lower in vidIQ) but keeps its gift and its question; the video still opens on the POV header.",
     "  - No 'millionaire', and no 'Trump Account', though both are where the attention is: the answer is ≈ $81,273, and the account is not in the write-up.",
     "  - ≈ $14,974 appears twice on purpose: the age-40 rung, and the same $1,000 put in at 25 (40 years of growth either way); the copy rules allow it only beside age 40 or with 'at 25'.",
-    "- **Still to do.** The ship rebuild (`--covers`) on the condensed file.",
+    f"- **Done on ship (2026-10-13).** Rebuilt with `--covers` from the shipped condensed cut ({VIDEO_S:g} s). The heave's buckle was re-picked by content (frame 282, 9.40 s; was frame 438): rungs 1 to 50 filled, the age-65 rung empty, the coin in his arms and 'At 50: about $29,457.', no answer. "
+    f"The Video bullet, the cut and the check counts follow the shipped file ({MATH_RUN_SHIP} on `studio/specs/`; the check prints '536 checks, 0 failures'), and the long alt text was re-read against the condensed beat sheet: "
+    "it said the figure throws a coin to every rung, but in the condensed cut age 1 ($1,070) is filled from frame 1, so it now says so (no figure changed). "
+    "Every other beat it names (the thrown rungs and their figures, the heave and the ≈ $81,273 plate) is in the shipped cut, and no other copy changed. "
+    "The adversarial pass's note that the render's sha256 equals `git show 471c793:…` is about the pre-condense render; the Trial Reels command now names `c4a3014`.",
 ]
 
 # ---------------------------------------------------------------- the numbers check

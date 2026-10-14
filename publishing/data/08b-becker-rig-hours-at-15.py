@@ -4,23 +4,26 @@
 # Becker Rig precedent of the same batch: rent, take-home pay, a light page), laid out like 08a.
 #
 # Facts come only from teasers/v2/08-unit-ladder.md (section 08b) and python3 teasers/v2/checks/08-unit-ladder.py.
-# Research: vidIQ, pulled 2026-10-13. The video is the pre-condense cut: the 08 condense is in progress in parallel
-# (timing only; numbers, caption facts and the verdict stay). This sheet names no timestamp except the cover, which is
-# picked by content (the landed blank), so the ship step only re-runs the build with --covers on the final file.
+# Research: vidIQ, pulled 2026-10-13. The video is the condensed cut, promoted and shipped on 2026-10-13 (timing only;
+# numbers, caption facts and the verdict stay; the pre-condense render is in git, 471c793 and c4a3014). This sheet names
+# no timestamp except the cover, which is picked by content (the landed blank), so the ship re-ran the build with
+# --covers on the shipped file.
 
 TEASER = "08b Becker Rig, unit-ladder: \"At $15/hr, you work for rent from the 1st until…\""
 PREPARED = "2026-10-13"
 SHORT_ID = "08b"
 MD_TITLE = "08b publishing sheet: at $15/hr, rent in hours of work"
 MATH_RUN = "677 checks, 0 failed"      # python3 teasers/v2/checks/08-unit-ladder.py on studio/specs/ (via publishing/data/checks/08-unit-ladder.py), 2026-10-13
-RENDER_COMMIT = "471c793"              # the commit that holds this pre-condense render
-RENDER_SHA_PRE = "95b2084480bb66e10f035c2d0411047d8bb165c500c941e93b20ea8781148910"
+MATH_RUN_SHIP = "682 checks, 0 failed"  # the same check on studio/specs/ with the condensed cuts promoted, at the ship 2026-10-13
+RENDER_COMMIT = "c4a3014"              # the last commit that holds the pre-condense render (with the v2.4 soundtrack)
+RENDER_SHA_PRE = "ad72ecac3dcb7856415d8ea62f501a1c73ad5ff19e85f4be422d0635deb6b689"   # at 471c793 (v2.2 soundtrack): 95b20844…
 
 MD_INTRO = [
-    f"- **Video.** `renders/channel/{BASE}.mp4`: the pre-condense cut ({VIDEO_S:g} s: a {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`). "
-    "The 08 condense is in progress in parallel (timing only: the numbers, the captions' facts and the verdict stay). "
-    "Nothing below names a timestamp except the cover, which is picked by content (the landed blank), so the copy carries over to the condensed cut unchanged. "
-    f"The ship step rebuilds this sheet and re-exports both covers from the final file: `python3 publishing/tools/build_publishing.py {BASE} --covers`.",
+    f"- **Video.** `renders/channel/{BASE}.mp4`: the condensed cut ({VIDEO_S:g} s: a {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`), "
+    f"promoted and shipped on 2026-10-13. It replaces the 29.5 s pre-condense cut (the owner: \"too many still moments\"), which is in git (`{RENDER_COMMIT}`). "
+    "The condense moved the clock and merged some captions (the blank now ticks while the hours pile up); the numbers, the captions' facts and the verdict stay, so the copy carried over unchanged. "
+    "Nothing below names a timestamp except the cover, which was re-picked by content (the landed blank) on the shipped file. "
+    f"The ship rebuilt this sheet and re-exported both covers from it (`python3 publishing/tools/build_publishing.py {BASE} --covers`); on the shipped specs the maths check runs {MATH_RUN_SHIP}.",
     "- **Numbers.** Every figure comes from `teasers/v2/08-unit-ladder.md` (08b) and its check, "
     f"`python3 teasers/v2/checks/08-unit-ladder.py`: {MATH_RUN} on `studio/specs/` (run 2026-10-13; the builder runs it through the adapter `publishing/data/checks/08-unit-ladder.py`). "
     f"`python3 publishing/tools/build_publishing.py {BASE} --check` checks this sheet's limits, paste blocks and figures, recomputes the take-home from the 2026 tax parameters, re-divides every rung by $13.10, pairs each price with its own count and rung, "
@@ -35,11 +38,11 @@ MD_INTRO = [
 
 # ---------------------------------------------------------------- the video
 FOR_VIDEO_NOTE = ("Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. "
-                  "current_* is what renders/channel holds today: the pre-condense cut. The ship step re-runs the build with --covers on the condensed file.")
-CUT = {"name": "pre-condense cut (fix pass, round-2 QA, 2026-10-08)", "spec": f"studio/specs/{BASE}.json", "body_s": BODY_S,
-       "card_s": CARD_S, "shipped": None, "git": RENDER_COMMIT,
-       "status": "the 08 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay); no 08 WIP spec was in studio/specs-wip/ at this build. "
-                 "The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."}
+                  "current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.")
+CUT = {"name": "condensed (2026-10-13)", "spec": f"studio/specs/{BASE}.json", "body_s": BODY_S,
+       "card_s": CARD_S, "shipped": "2026-10-13",
+       "replaces": {"duration_s": 29.5, "sha256": RENDER_SHA_PRE,
+                    "note": f"the pre-condense cut (fix pass, round-2 QA, 2026-10-08) + card, retired; in git history ({RENDER_COMMIT}; 471c793 with the v2.2 soundtrack)"}}
 
 FACTS = {
     "source": f"teasers/v2/08-unit-ladder.md section 08b; teasers/v2/checks/08-unit-ladder.py: {MATH_RUN} on studio/specs/ (2026-10-13)",
@@ -133,7 +136,7 @@ THUMB_MD = ("in the YouTube app, pick frame 1: the header 'At $15/hr, you work f
             "the HUD 'Median rent, 1 month / $1,531 ÷ $13.10 = / ? hours of work' and the figure beside the gold $1,531 coin. It asks without answering, like the title beside it in search. "
             "The Instagram cover below is the landed blank, as the write-up asks.")
 YT_POSTING_WINDOW = {
-    "when": "First free Tue-Thu evening after the condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+    "when": "First free Tue-Thu evening, 21:30-22:30 ET (01:30-02:30 UTC the next day); the condensed cut shipped on 2026-10-13. Sunday 06:00-08:00 ET is the alternative.",
     "spacing": "Keep it at least 6 h from any other upload on the channel, and on a different evening from 08a and 08c. Suggested order within the series: 08b, then 08c, then 08a.",
     "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,199 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2); 06c (Mon 03:45 ET) has 760 and 06b (Mon 12:14 ET) 75, too young to compare. "
            "The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. "
@@ -201,21 +204,23 @@ IG_FIRST_COMMENT = ("Median rent at $15/hr: ≈ 117 of 173 work hours a month (6
 
 # ---------------------------------------------------------------- the cover frame
 # The landed blank, picked by content: the write-up's Instagram note names "the 117-hour pile with the header's
-# '≈ 20th' above it and the month grid filled to the 20th". On this render the blank lands at frame 192 (6.40 s); the
-# frame settles by about frame 200 and holds still with the caption '≈ the 20th.' until that caption clears at about
-# frame 236, before rung 2 cuts at frame 252 (8.40 s). Frame 219 is a still point inside that hold.
-COVER_T = 7.3
-COVER_FRAME = 219
-COVER_CROP = "crop=1080:1440:0:45"
-COVER_RENDER_WORD = "pre-condense"
+# '≈ 20th' above it and the month grid filled to the 20th". On the shipped condensed cut the blank lands at frame 77
+# (2.57 s); the caption '≈ 117 hours. Every hour you work, to ≈ the 20th.' is whole from frame 83 (2.77 s), and the
+# frame is at its stillest at frames 83-86 before rung 2 cuts at frame 90 (3.00 s). Frame 84 (2.80 s) is used.
+# (On the pre-condense render: frame 219.)
+COVER_T = 2.8
+COVER_FRAME = 84
+COVER_CROP = "crop=1080:1440:0:65"
+COVER_RENDER_WORD = "shipped"
 COVER_FRAME_BY_CONTENT = ("The landed blank, as the write-up's Instagram note asks: the header 'At $15/hr, you work for rent / from the 1st to the ≈ 20th' with its green rule, "
                           "the footer '≈ $13.10 kept: 2026 federal tax + FICA, single, no state tax', the HUD 'Median rent, 1 month / $1,531 ÷ $13.10 ≈ / 117 hours of work', "
-                          "the month grid filled to the 20th (20 green days of 30), the 117-hour pyramid of clocks with the figure pointing up at the header, and the caption '≈ the 20th.' "
-                          "On any cut, use a settled frame after the blank lands and before the next rung's cut, with the caption still up.")
-COVER_FRAME_MEASURED = ("On the pre-condense 29.5 s render the blank lands at frame 192 (6.40 s); the frame settles by about frame 200 (6.67 s) and holds still "
-                        "(frame-to-frame mean luma change under 0.0002) with the caption '≈ the 20th.' until it clears at about frame 236 (7.87 s); rung 2 cuts at frame 252 (8.40 s). Frame 219 (7.30 s) is used.")
-COVER_CROP_NOTE = ("3:4 = 1080×1440 from y 45 to 1485 of the 1080×1920 frame. The content runs from y 112 (the badge) to y 1418 (the caption), "
-                   "so the crop centres it (67 px above and below): badge, header, footer, HUD, month grid, the pile with the figure, and the caption; it drops the empty page below. "
+                          "the month grid filled to the 20th (20 green days of 30), the 117-hour pyramid of clocks with the figure pointing up at the header, and the caption '≈ 117 hours. Every hour you work, to ≈ the 20th.' "
+                          "On any cut, use a settled frame after the blank lands and before the next rung's cut, with the caption whole.")
+COVER_FRAME_MEASURED = (f"On the shipped {VIDEO_S:g} s condensed cut the blank lands on '≈ 20th' at frame 77 (2.57 s); the merged caption is whole from frame 83 (2.77 s), "
+                        "and frames 83-86 are the stillest of the beat (frame-to-frame mean luma change 0.04-0.09 on 270×480 greyscale; the figure's arm moves after them) until rung 2 cuts at frame 90 (3.00 s). "
+                        "Frame 84 (2.80 s) is used. On the 29.5 s pre-condense render the blank landed at frame 192 (6.40 s) and frame 219 (7.30 s) was used.")
+COVER_CROP_NOTE = ("3:4 = 1080×1440 from y 65 to 1505 of the 1080×1920 frame. The content runs from y 112 (the badge) to y 1458 (the two-line caption), "
+                   "so the crop centres it (47 px above and below; on the pre-condense render, with a shorter caption, it was y 45-1485): badge, header, footer, HUD, month grid, the pile with the figure, and the caption; it drops the empty page below. "
                    "A centred grid crop (y 240-1680) cuts the badge and the header.")
 COVER_HOW_TO_SET = ("In 'Edit cover', pick the landed-blank frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile "
                     "matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab "
@@ -224,13 +229,14 @@ COVER_EXTRA_BULLETS = [
     "**Not used on Instagram:** frame 1 (the blank '___', '? hours of work' and the $1,531 coin). It asks without answering, so it is the YouTube thumbnail, "
     "where it sits beside a title that asks; on Instagram the write-up picks the landed blank, the date that travels.",
     "**Not used:** the end screen ('≈ 14 years' on the gold plate). It is the payoff; the write-up's cover note picks the blank instead.",
-    "**When the condensed cut ships:** re-pick the landed blank by content on the shipped file and re-export both JPGs with `--covers`.",
+    "**Shipped cut (2026-10-13):** the landed blank was re-picked by content on the shipped file (frame 84, 2.80 s; was frame 219) and both JPGs re-exported. "
+    "The picture is the same moment; the caption under the pile is now the merged line, and the 3:4 crop moved down 20 px to keep it centred. The copy did not change.",
 ]
 
 TRIAL_REELS = {
     "recommendation": "Post as a regular Reel, not a Trial.",
     "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-    "use_trial_for": f"A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show {RENDER_COMMIT}:renders/channel/{BASE}.mp4 > 08b-29.5s.mp4` (sha256 {RENDER_SHA_PRE[:8]}…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app.",
+    "use_trial_for": f"A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. The pre-condense render is in git: `git show {RENDER_COMMIT}:renders/channel/{BASE}.mp4 > 08b-29.5s.mp4` (sha256 {RENDER_SHA_PRE[:8]}…; at 471c793 it carries the v2.2 soundtrack, 95b20844…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app.",
 }
 IG_AUDIO = "Rename the original audio to 'Rent in hours at $15/hr — The Back of the Envelope' if the app allows; it is the score, with no voice."
 IG_POSTING_WINDOW = {
@@ -367,7 +373,7 @@ LIMITS = [
     "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
     "The write-up's rent ($1,531) is a single-publisher Census figure, cross-checked only against the same series' previous quarter and by its verifier; census.gov was blocked to direct fetches. The Aug 2026 house price is preliminary.",
     "Florida's $15 minimum wage (Sept 30, 2026) comes only from a same-idea Short's description; it is not verified here and is not in the copy.",
-    "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file.",
+    "The video, the cover and the video facts are the condensed cut, shipped on 2026-10-13; the copy is cut-independent and carried over unchanged.",
 ]
 RESEARCH_EXTRA = {
     "titles_scored": "10 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13: 9 at the first build and the hashtag form with #HourlyWage at the adversarial check; all are in youtube.titles_ranked and youtube.titles_also_scored.",
@@ -383,7 +389,8 @@ CHECKED_MATH = (f"python3 teasers/v2/checks/08-unit-ladder.py: {MATH_RUN} on stu
                 "the 67.4% month, '≈ the 20th' on 30 days and the average month, the 19th-21st on a Monday-Friday calendar, 14 years, and the pinned $20/$25 wages; "
                 "COPY_RULES keep every rounded figure 'about' or '≈', keep $1,531 named as the median, pair each price with its own count and each rung with its car, house or year, "
                 "keep the 19th and the 21st inside the calendar range and 20.2 days with its 30-day month, keep 14 years with 'every cent you keep', and never call $15 the minimum wage, "
-                "not even as a hashtag. Re-run at the adversarial check (2026-10-13) with the same result")
+                "not even as a hashtag. Re-run at the adversarial check (2026-10-13) with the same result"
+                f"; re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: {MATH_RUN_SHIP}")
 VIDIQ_REQUERIED = ("pulled 2026-10-13: rent 67,558 / 42.8 (-27.3%); why is rent so high 7,855 (+81.4%); minimum wage 11,780 (-33.9%); "
                    "title scores 98 (pick), 82 (write-up title); channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,519 views in 30 days. "
                    "Re-queried after the build: the pick's title score 98. Match. "
@@ -415,7 +422,10 @@ CHECK_LOG = [
     "  - 'minimum wage' as an unshown tag only: neither the copy nor the hashtags call $15 the minimum wage.",
     "- **Checked and kept.** Every figure in the copy against the 08b maths table and the check's output (the take-home, the 67.4% month, the 19th-21st range and the $20/$25 wages recomputed); the limits; "
     "Kelley Blue Book and Cox Automotive named only as the car price's source, with the affiliation line in both long texts; frame 1 (thumbnail) and frame 219 (cover) read from the render, and the covers re-exported byte for byte.",
-    "- **Still to do.** The ship rebuild (`--covers`) on the condensed file.",
+    f"- **Done on ship (2026-10-13).** Rebuilt with `--covers` from the shipped condensed cut ({VIDEO_S:g} s). The landed blank was re-picked by content (frame 84, 2.80 s; was frame 219), "
+    "with the merged caption whole under the pile, and frame 1 re-read: it is still the question frame the thumbnail note describes. "
+    f"The Video bullet, the cut and the check counts follow the shipped file ({MATH_RUN_SHIP} on `studio/specs/`), and the long alt text was re-read against the condensed beat sheet: "
+    "every beat it names (the coin punched into the pile, the blank ticking while the grid fills and landing on the 20th, the three later rungs and the 14-year payoff) is in the shipped cut, so no copy changed.",
 ]
 
 # ---------------------------------------------------------------- the numbers check

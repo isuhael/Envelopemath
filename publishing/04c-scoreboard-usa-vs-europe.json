@@ -5,7 +5,7 @@
   "for_video": {
     "current_render": "renders/channel/04c-scoreboard-usa-vs-europe.mp4",
     "current_duration_s": 18.4,
-    "current_sha256": "37d7ac80d9aba79b3aad7c4ab318937dbe2b5173c9dd97709bfcbafd04e8a402",
+    "current_sha256": "57a12114bfbfe025925af606300099d625f4b8313a54b8272484ab578c231339",
     "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
       "name": "condensed (2026-10-13)",

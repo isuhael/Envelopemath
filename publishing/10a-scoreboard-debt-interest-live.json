@@ -4,33 +4,26 @@
   "prepared": "2026-10-13",
   "for_video": {
     "current_render": "renders/channel/10a-scoreboard-debt-interest-live.mp4",
-    "current_duration_s": 39.0,
-    "current_sha256": "2d5f3d61d6a3737273f65d57fd1ed5893a3fc1a89b3a1e3033fef0ebf50c7a8c",
-    "note": "current_* is what renders/channel holds today: the round-2 cut, which runs past this copy's verdict. The copy describes the recut (copy_describes); post only the recut with it. The ship step promotes the recut and re-runs the build with --covers, which refreshes current_*, the cut and both covers.",
+    "current_duration_s": 21.1,
+    "current_sha256": "0b2867fea1ede06fd88feff07b7f305feca37940ae4ec038dd990a880c1a61bd",
+    "note": "current_* is the shipped recut, the cut this copy describes. The copy names no timestamp except the cover frame, which is picked by content.",
     "cut": {
-      "name": "round-2 cut (still in renders/channel; not the cut this copy describes)",
+      "name": "recut to the earlier verdict (owner-approved 2026-10-13; recut fix pass)",
       "spec": "studio/specs/10a-scoreboard-debt-interest-live.json",
-      "body_s": 36.5,
-      "card_s": 2.5,
-      "shipped": null,
-      "git": "471c793",
-      "status": "the recut (copy_describes) is WIP until the ship step promotes it; this sheet's copy is the recut's."
-    },
-    "copy_describes": {
-      "cut": "recut to the earlier verdict (owner-approved 2026-10-13; recut fix pass)",
-      "spec": "studio/specs-wip/10a-scoreboard-debt-interest-live.json",
-      "render": "/tmp/cond/10/10a-scoreboard-debt-interest-live/final/10a-scoreboard-debt-interest-live.mp4",
-      "duration_s": 21.1,
       "body_s": 18.6,
       "card_s": 2.5,
-      "sha256": "a6acf7c14c26ded82ed9aec73bfef9e5d02cdb3e57c8fe745ce5f415b16ffc70",
-      "cover_t": 18.5,
-      "cover_frame": 555,
-      "status": "WIP: not in renders/channel yet. The ship step promotes it and rebuilds this sheet with --covers."
+      "shipped": "2026-10-13",
+      "git": null,
+      "status": "promoted on 2026-10-13 and shipped the same day (sound bible v2.5); this sheet was rebuilt on it with --covers.",
+      "replaces": {
+        "duration_s": 39.0,
+        "sha256": "2d5f3d61d6a3737273f65d57fd1ed5893a3fc1a89b3a1e3033fef0ebf50c7a8c",
+        "note": "the round-2 cut + card, retired; in git history (c4a3014, with the v2.4 soundtrack; 471c793 with the v2.2 soundtrack)"
+      }
     }
   },
   "facts": {
-    "source": "teasers/v2/10-cost-counter.md section 10a and the Review log's 'Recut to the earlier verdict' and 'Recut, fix pass' entries; teasers/v2/checks/10-cost-counter.py: 992 checks, 0 failures with --spec on the 10a and 10c WIP specs (the recut; 10b from studio/specs/), run 2026-10-13",
+    "source": "teasers/v2/10-cost-counter.md section 10a and the Review log's 'Recut to the earlier verdict' and 'Recut, fix pass' entries; teasers/v2/checks/10-cost-counter.py: the default run on studio/specs/, which holds the recut (0 failures required at every build)",
     "basis": "FY2025 net interest of $970 billion (Treasury's final Monthly Treasury Statement for FY2025, via the American Action Forum; CBO, The Budget and Economic Outlook: 2026 to 2036, Feb 2026), spread evenly over a 365-day year of 31,536,000 seconds",
     "rate": "$970B ÷ 31,536,000 = $30,758.498 a second ≈ $30,800 (3 significant figures, the write-up's one rounding); × 3,600 = $110,730,594 an hour ≈ $111 million",
     "rows": "pass time = salary ÷ rate: $30,000 0.975 s ≈ 1.0; median pay ($1,251 × 52 = $65,052, BLS Q2 2026) 2.115 s ≈ 2.1; $100,000 3.251 s ≈ 3.3; $250,000 8.128 s ≈ 8; $500,000 16.256 s ≈ 16 (the top row)",
@@ -192,14 +185,14 @@
         "3x4": "publishing/10a-scoreboard-debt-interest-live-cover-3x4.jpg",
         "9x16": "publishing/10a-scoreboard-debt-interest-live-cover-9x16.jpg"
       },
-      "frame_in_current_render_s": 35.5,
-      "frame_index": 1065,
+      "frame_in_current_render_s": 18.5,
+      "frame_index": 555,
       "frame_by_content": "The recut's verdict frame, as the write-up's Instagram note asks: the header 'US DEBT INTEREST SINCE YOU HIT PLAY: / WHEN DOES IT PASS YOUR SALARY?', the odometer on '$500,000', the footer's working 'FY25: $970B ÷ 31,536,000 s · median $1,251 × 52', the ladder with all five pips lit ($30K · Median $65K · $100K · $250K · $500K), the big lit coin tagged '$500K', and the verdict '$500K A YEAR: ≈ 16 SECONDS.' with nothing under it (the last caption has gone).",
       "frame_measured": "On the recut's 21.1 s render the counter stops on $500,000 at its pass and the verdict follows; the last caption ('$500,000: passed.') clears at frame 551 (18.37 s), the board then holds still (frame-to-frame mean luma change under 0.001) to frame 558, and the end card starts at frame 559 (18.63 s): the write-up's 18.4-18.55 s window. Frame 555 (18.50 s) is the cover, read from the recut render's frame (a preview export, not the JPGs on disk).",
       "crop": "3:4 = 1080×1440 from y 0 to 1440 of the 1080×1920 frame: the badge (from y 141), the header, the odometer, the footer's working, the lit ladder and coin, and the verdict (to y 1262 on the recut's frame 555), with 141 px above and 177 px below; it drops the empty black below. A centred grid crop (y 240-1680) cuts the badge and the header.",
-      "how_to_set": "In 'Edit cover', pick the verdict frame from the video (or upload the 9:16 JPG once the ship step has re-exported it), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
-      "re_export": "ffmpeg -ss 35.5 -i renders/channel/10a-scoreboard-debt-interest-live.mp4 -frames:v 1 -vf \"crop=1080:1440:0:0\" -q:v 2 publishing/10a-scoreboard-debt-interest-live-cover-3x4.jpg",
-      "re_export_9x16": "ffmpeg -ss 35.5 -i renders/channel/10a-scoreboard-debt-interest-live.mp4 -frames:v 1 -q:v 2 publishing/10a-scoreboard-debt-interest-live-cover-9x16.jpg"
+      "how_to_set": "In 'Edit cover', pick the verdict frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
+      "re_export": "ffmpeg -ss 18.5 -i renders/channel/10a-scoreboard-debt-interest-live.mp4 -frames:v 1 -vf \"crop=1080:1440:0:0\" -q:v 2 publishing/10a-scoreboard-debt-interest-live-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 18.5 -i renders/channel/10a-scoreboard-debt-interest-live.mp4 -frames:v 1 -q:v 2 publishing/10a-scoreboard-debt-interest-live-cover-9x16.jpg"
     },
     "first_comment": "Yearly pay ÷ 30,800 = your seconds (median pay: $65,052 ÷ 30,800 ≈ 2.1 seconds). Which row are you?",
     "first_comment_action": "Post it right after publishing and pin it.",
@@ -578,8 +571,7 @@
       "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
       "The write-up's sources were confirmed from search results: Treasury's statement and cbo.gov were blocked to direct fetches, and the $970 billion and the CBO August review are marked [click-check] there. Open them once before posting.",
       "The figures in other creators' titles and descriptions (per-second spending, interest and debt) are theirs, not verified here; the copy states only the write-up's maths.",
-      "The write-up prefers to post 10a on fiscal 2026 net interest once Treasury's September 2026 statement is out; this sheet is built on fiscal 2025, as the video is today.",
-      "Until the ship step, renders/channel, the video facts above (current_*) and the two cover JPGs are the round-2 cut, which runs past this copy's verdict. The copy describes the recut (WIP render in /tmp/cond/10/, read for frame 1 and the cover frame); the ship step's --covers build refreshes the rest. The recut's sound is the ship step's to re-verify (the write-up: 10a passes verify 42/42 on both Scoreboard packs, with margins under 0.5 on A5, A2 and A1)."
+      "The write-up prefers to post 10a on fiscal 2026 net interest once Treasury's September 2026 statement is out; this sheet is built on fiscal 2025, as the video is today."
     ],
     "titles_scored": "11 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13: 10 at the first build and option 3 with the description's own hashtags at the adversarial check; all are in youtube.titles_ranked and youtube.titles_also_scored. None re-scored at the recut update: the title does not change.",
     "vidiq_credits": "105 credits for this teaser by listed cost (8 keyword queries, 2 YouTube searches, 1 Shorts outlier search, 1 Instagram/TikTok outlier search and 9 title scores at up to 5 each), plus 10 shared across 10a-10c for the channel's stats and Shorts list (Instagram owner insights cost 0), and 5 for the re-score after the build. Account balance: 4,375 at the start of the 10 research and 4,135 when it ended, a 240 drop for 56 calls (the balance is shared with sheets built in parallel, so the drop is an upper bound; keyword queries cost less than 5); 4,060 after the 3 re-scores (15 credits by listed cost; the rest of that 75 drop is other sheets'). About 255 for the three 10 sheets, against a budget of about 450. Adversarial check: 10 for this teaser by listed cost (the pick's title score and option 3's) plus 4 keyword queries ('national debt interest' twice, 'interest on the national debt', 'interest on national debt'), and 5 shared across 10a-10c for the three related videos' titles. Balance 3,695 at the check's start and 3,635 after its last call (a 60 drop for 18 calls across 10a-10c, 30 of it listed title and video costs; the balance is shared with sheets checked in parallel). Recut update (2026-10-13): 0 credits, no vidIQ call (the title, tags and hashtags do not depend on the stop).",
@@ -589,7 +581,7 @@
   "checked": {
     "date": "2026-10-13",
     "by": "publishing editor's recut update, then an adversarial re-check of this sheet against the write-up and the platform limits",
-    "math": "python3 teasers/v2/checks/10-cost-counter.py: 992 checks, 0 failures with --spec on the 10a and 10c WIP specs (the recut; 10b from studio/specs/), run 2026-10-13, run by the builder through publishing/data/checks/10-cost-counter.py; the rate and every row recomputed from $970 billion in MATH_RELATIONS ($30,758.50 ≈ $30,800; ≈ $111 million an hour; 1.0 / 2.1 / 3.3 / 8 / 16 seconds; $1,251 × 52 = $65,052; the swap-in 2.112 ≈ 2.1; CBO's 12%), and the cut's spec read for its stop (r × 16.25568 = $500,000.30), its five rows and its verdict; COPY_RULES hold every figure to the write-up's one rounding, put '≈' or 'about' on every rounded figure, keep $970 billion beside fiscal 2025 and the 12% beside its own line, keep the swap-in rule's worked example to what the rule gives, ban any row past the recut's stop, and ban 'live', 'in real time', politics and advice wording",
+    "math": "python3 teasers/v2/checks/10-cost-counter.py: the default run on studio/specs/, which holds the recut (0 failures required at every build), run by the builder through publishing/data/checks/10-cost-counter.py; the rate and every row recomputed from $970 billion in MATH_RELATIONS ($30,758.50 ≈ $30,800; ≈ $111 million an hour; 1.0 / 2.1 / 3.3 / 8 / 16 seconds; $1,251 × 52 = $65,052; the swap-in 2.112 ≈ 2.1; CBO's 12%), and the cut's spec read for its stop (r × 16.25568 = $500,000.30), its five rows and its verdict; COPY_RULES hold every figure to the write-up's one rounding, put '≈' or 'about' on every rounded figure, keep $970 billion beside fiscal 2025 and the 12% beside its own line, keep the swap-in rule's worked example to what the rule gives, ban any row past the recut's stop, and ban 'live', 'in real time', politics and advice wording",
     "limits": {
       "youtube_title_chars": 67,
       "youtube_description_chars": 1465,

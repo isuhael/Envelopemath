@@ -5,7 +5,7 @@
   "for_video": {
     "current_render": "renders/channel/05a-becker-rig-chipotle-10.mp4",
     "current_duration_s": 15.233,
-    "current_sha256": "aff97d76bf247e14a209daae800e9e8f8cbeea418dd9d6a1d4c619ee8453e8f5",
+    "current_sha256": "d51a9e8a9971644f3b53a0a4e4d9f756daa21b48bc168c2253722910c2e52a8d",
     "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
       "name": "condensed (2026-10-13)",

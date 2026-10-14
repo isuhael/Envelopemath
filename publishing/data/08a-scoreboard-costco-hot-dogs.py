@@ -4,23 +4,26 @@
 # Scoreboard precedent, itself laid out from 06b, and the same brand).
 #
 # Facts come only from teasers/v2/08-unit-ladder.md (section 08a) and python3 teasers/v2/checks/08-unit-ladder.py.
-# Research: vidIQ, pulled 2026-10-13. The video is the pre-condense cut: the 08 condense is in progress in parallel
-# (timing only; numbers, caption facts and the verdict stay). This sheet names no timestamp except the cover, which is
-# picked by content (the verdict frame), so the ship step only re-runs the build with --covers on the final file.
+# Research: vidIQ, pulled 2026-10-13. The video is the condensed cut, promoted and shipped on 2026-10-13 (timing only;
+# numbers, caption facts and the verdict stay; the pre-condense render is in git, 471c793 and c4a3014). This sheet names
+# no timestamp except the cover, which is picked by content (the verdict frame), so the ship re-ran the build with
+# --covers on the shipped file.
 
 TEASER = "08a Scoreboard, unit-ladder: \"What your $1.50 Costco hot dog would cost if it rose like a house\""
 PREPARED = "2026-10-13"
 SHORT_ID = "08a"
 MD_TITLE = "08a publishing sheet: your $1.50 Costco hot dog, risen like a house"
 MATH_RUN = "677 checks, 0 failed"      # python3 teasers/v2/checks/08-unit-ladder.py on studio/specs/ (via publishing/data/checks/08-unit-ladder.py), 2026-10-13
-RENDER_COMMIT = "471c793"              # the commit that holds this pre-condense render
-RENDER_SHA_PRE = "9b736e4eaecf1e55b43c56ca8732288fea0763cc90c4aad67dac106c4c090a82"
+MATH_RUN_SHIP = "682 checks, 0 failed"  # the same check on studio/specs/ with the condensed cuts promoted, at the ship 2026-10-13
+RENDER_COMMIT = "c4a3014"              # the last commit that holds the pre-condense render (with the v2.4 soundtrack)
+RENDER_SHA_PRE = "e3200c2c369ef6021467022bc324dd533021924cd9d22f528aa673793f3df5df"   # at 471c793 (v2.2 soundtrack): 9b736e4e…
 
 MD_INTRO = [
-    f"- **Video.** `renders/channel/{BASE}.mp4`: the pre-condense cut ({VIDEO_S:g} s: a {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`). "
-    "The 08 condense is in progress in parallel (timing only: the numbers, the captions' facts and the verdict stay). "
-    "Nothing below names a timestamp except the cover, which is picked by content (the verdict frame), so the copy carries over to the condensed cut unchanged. "
-    f"The ship step rebuilds this sheet and re-exports both covers from the final file: `python3 publishing/tools/build_publishing.py {BASE} --covers`.",
+    f"- **Video.** `renders/channel/{BASE}.mp4`: the condensed cut ({VIDEO_S:g} s: a {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`), "
+    f"promoted and shipped on 2026-10-13. It replaces the 24.5 s pre-condense cut (the owner: \"too many still moments\"), which is in git (`{RENDER_COMMIT}`). "
+    "The condense moved the clock and merged some captions; the numbers, the captions' facts and the verdict stay, so the copy carried over unchanged. "
+    "Nothing below names a timestamp except the cover, which was re-picked by content (the verdict frame) on the shipped file. "
+    f"The ship rebuilt this sheet and re-exported both covers from it (`python3 publishing/tools/build_publishing.py {BASE} --covers`); on the shipped specs the maths check runs {MATH_RUN_SHIP}.",
     "- **Numbers.** Every figure comes from `teasers/v2/08-unit-ladder.md` (08a) and its check, "
     f"`python3 teasers/v2/checks/08-unit-ladder.py`: {MATH_RUN} on `studio/specs/` (run 2026-10-13; the builder runs it through the adapter `publishing/data/checks/08-unit-ladder.py`). "
     f"`python3 publishing/tools/build_publishing.py {BASE} --check` checks this sheet's limits, paste blocks and figures, re-divides every rung by $1.50, pairs each rung's price with its own count, "
@@ -35,11 +38,11 @@ MD_INTRO = [
 
 # ---------------------------------------------------------------- the video
 FOR_VIDEO_NOTE = ("Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. "
-                  "current_* is what renders/channel holds today: the pre-condense cut. The ship step re-runs the build with --covers on the condensed file.")
-CUT = {"name": "pre-condense cut (fix pass, round-2 QA, 2026-10-08)", "spec": f"studio/specs/{BASE}.json", "body_s": BODY_S,
-       "card_s": CARD_S, "shipped": None, "git": RENDER_COMMIT,
-       "status": "the 08 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay); no 08 WIP spec was in studio/specs-wip/ at this build. "
-                 "The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."}
+                  "current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.")
+CUT = {"name": "condensed (2026-10-13)", "spec": f"studio/specs/{BASE}.json", "body_s": BODY_S,
+       "card_s": CARD_S, "shipped": "2026-10-13",
+       "replaces": {"duration_s": 24.5, "sha256": RENDER_SHA_PRE,
+                    "note": f"the pre-condense cut (fix pass, round-2 QA, 2026-10-08) + card, retired; in git history ({RENDER_COMMIT}; 471c793 with the v2.2 soundtrack)"}}
 
 FACTS = {
     "source": f"teasers/v2/08-unit-ladder.md section 08a; teasers/v2/checks/08-unit-ladder.py: {MATH_RUN} on studio/specs/ (2026-10-13)",
@@ -132,7 +135,7 @@ THUMB_MD = ("in the YouTube app, pick frame 1: the header 'WHAT YOUR $1.50 HOT D
             "'Hot dog + soda: $1.50 in 1985. Still $1.50.', the big hot dog and the label 'YOUR HOT DOG + SODA'. It asks without answering, like the title beside it in search. "
             "The Instagram cover below is the verdict frame, as the write-up asks.")
 YT_POSTING_WINDOW = {
-    "when": "First free Tue-Thu evening after the condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+    "when": "First free Tue-Thu evening, 21:30-22:30 ET (01:30-02:30 UTC the next day); the condensed cut shipped on 2026-10-13. Sunday 06:00-08:00 ET is the alternative.",
     "spacing": "Keep it at least 6 h from any other upload on the channel, on a different evening from 08b and 08c, and in a different week from 05c (also Costco on the Scoreboard look; 05c's sheet asks the same). Suggested order within the series: 08b, then 08c, then 08a.",
     "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,199 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2); 06c (Mon 03:45 ET) has 760 and 06b (Mon 12:14 ET) 75, too young to compare. "
            "The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. "
@@ -202,19 +205,20 @@ IG_FIRST_COMMENT = ("Costco never raised the $1.50. Risen like a new house, it w
 
 # ---------------------------------------------------------------- the cover frame
 # The verdict frame, picked by content: the write-up's Instagram note names "the final frame: hero ≈ $7.01 over its
-# working, the white 1985 mound inside the green Aug 2026 wall, and the verdict". On this render the verdict lands at
-# frame 552 (18.40 s) with a glow that settles by about frame 580; the board then holds still until the end card at
-# frame 660 (22.00 s). Frame 630 is a still point inside that hold.
-COVER_T = 21.0
-COVER_FRAME = 630
+# working, the white 1985 mound inside the green Aug 2026 wall, and the verdict". On the shipped condensed cut the verdict
+# lands at frame 370 (12.33 s) with a glow that settles by about frame 400 (13.33 s); the board then holds still until the
+# end card at frame 418 (13.93 s). Frame 408 (13.60 s) is a still point inside that hold. (On the pre-condense render: 630.)
+COVER_T = 13.6
+COVER_FRAME = 408
 COVER_CROP = "crop=1080:1440:0:0"
-COVER_RENDER_WORD = "pre-condense"
+COVER_RENDER_WORD = "shipped"
 COVER_FRAME_BY_CONTENT = ("The verdict frame, as the write-up's Instagram note asks: the header 'WHAT YOUR $1.50 HOT DOG WOULD / COST IF IT ROSE LIKE A HOUSE', the hero '≈ $7.01' beside the hot-dog icon, "
                           "the footer's working '$393,700 (Aug 2026) ÷ 56,200 hot dogs (1985)', the white 1985 mound (tagged '1985') inside the green wall tagged 'AUG 2026', "
                           "and the verdict 'ROSE LIKE A HOUSE? / A ≈ $7.01 HOT DOG.' (captions hide from the payoff, so nothing sits under it). "
                           "On any cut, use a settled frame of the verdict hold, after the glow fades and before the end card.")
-COVER_FRAME_MEASURED = ("On the pre-condense 24.5 s render the verdict lands with the hero at frame 552 (18.40 s); its glow settles by about frame 580 (19.33 s), and the board then holds still "
-                        "(frame-to-frame mean luma change under 0.0001) until the end card at frame 660 (22.00 s). Frame 630 (21.00 s) is used.")
+COVER_FRAME_MEASURED = (f"On the shipped {VIDEO_S:g} s condensed cut the verdict lands with the hero at frame 370 (12.33 s); its glow settles by about frame 400 (13.33 s), and the board then holds still "
+                        "(frame-to-frame mean luma change 0.000-0.003 on 270×480 greyscale) until the end card at frame 418 (13.93 s). Frame 408 (13.60 s) is used. "
+                        "On the 24.5 s pre-condense render the same hold was frames 580-660, and frame 630 (21.00 s) was used.")
 COVER_CROP_NOTE = ("3:4 = 1080×1440 from y 0 to 1440 of the 1080×1920 frame: the badge (from y 141), the header, the hero, the working, the split wall and the verdict (to y 1298), "
                    "with even margins (141 px above, 142 px below); it drops the empty black below. A centred grid crop (y 240-1680) cuts the badge and the header.")
 COVER_HOW_TO_SET = ("In 'Edit cover', pick the verdict frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile "
@@ -223,13 +227,13 @@ COVER_HOW_TO_SET = ("In 'Edit cover', pick the verdict frame from the video (or 
 COVER_EXTRA_BULLETS = [
     "**Not used on Instagram:** frame 1 (the header, the $1.50 hero, the hot dog and 'YOUR HOT DOG + SODA'). It asks without answering, so it is the YouTube thumbnail, "
     "where it sits beside a title that asks; on Instagram the write-up picks the verdict frame, the save-able answer.",
-    "**When the condensed cut ships:** re-pick the verdict frame by content on the shipped file (a settled frame of the verdict hold, before the end card) and re-export both JPGs with `--covers`.",
+    "**Shipped cut (2026-10-13):** the verdict frame was re-picked by content on the shipped file (frame 408, 13.60 s, a settled frame of the verdict hold; was frame 630) and both JPGs re-exported: the same picture as the pre-condense cover. The copy did not change.",
 ]
 
 TRIAL_REELS = {
     "recommendation": "Post as a regular Reel, not a Trial.",
     "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-    "use_trial_for": f"A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show {RENDER_COMMIT}:renders/channel/{BASE}.mp4 > 08a-24.5s.mp4` (sha256 {RENDER_SHA_PRE[:8]}…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app.",
+    "use_trial_for": f"A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. The pre-condense render is in git: `git show {RENDER_COMMIT}:renders/channel/{BASE}.mp4 > 08a-24.5s.mp4` (sha256 {RENDER_SHA_PRE[:8]}…; at 471c793 it carries the v2.2 soundtrack, 9b736e4e…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app.",
 }
 IG_AUDIO = "Rename the original audio to 'Your $1.50 hot dog, risen like a house — The Back of the Envelope' if the app allows; it is the score, with no voice."
 IG_POSTING_WINDOW = {
@@ -369,7 +373,7 @@ LIMITS = [
     "The write-up's Census sources (rent, both houses) were confirmed from search-result text that quotes them, plus a second source; census.gov and FRED were blocked to direct fetches. The Aug 2026 house price is preliminary and may be revised.",
     "The same-idea Shorts' CPI figures ($4.20-$4.67) and the Japanese Short's sales figure are their own descriptions, not verified here; the copy states only the write-up's sticker-price maths.",
     "Slate overlap: 05c (Costco's $100 cart) shares the brand and the Scoreboard look. Post them in different weeks, as 05c's sheet also asks, or move one, as the owner decides.",
-    "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file.",
+    "The video, the cover and the video facts are the condensed cut, shipped on 2026-10-13; the copy is cut-independent and carried over unchanged.",
 ]
 RESEARCH_EXTRA = {
     "titles_scored": "10 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13: 9 at the first build and option 3 with the description's own hashtags at the adversarial check; all are in youtube.titles_ranked and youtube.titles_also_scored.",
@@ -382,7 +386,8 @@ CHECKED_BY = "adversarial check of this sheet"
 CHECKED_MATH = (f"python3 teasers/v2/checks/08-unit-ladder.py: {MATH_RUN} on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/08-unit-ladder.py; "
                 "every rung re-divided by $1.50 in MATH_RELATIONS (43, 1,021, 56,200 exactly, 262,467), the house ratio (4.6702 ≈ 4.7×) and the verdict both ways ($1.50 × 393,700/84,300 and $393,700 ÷ 56,200 ≈ $7.01); "
                 "COPY_RULES keep each house price and count beside its year, keep each rung's price paired with its own count and $65 named as the membership, keep every rounded figure 'about' or '≈', "
-                "keep 'sticker prices, not adjusted for inflation' in every long text, and never say 'same hot dog'. Re-run at the adversarial check (2026-10-13) with the same result")
+                "keep 'sticker prices, not adjusted for inflation' in every long text, and never say 'same hot dog'. Re-run at the adversarial check (2026-10-13) with the same result"
+                f"; re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: {MATH_RUN_SHIP}")
 VIDIQ_REQUERIED = ("pulled 2026-10-13: costco hot dog 21,845 / 47.5 (+39.4%); housing market 155,960 (+19.5%); home prices 26,555 (+197.5%); "
                    "title scores 96 (pick), 90 (write-up title); channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,519 views in 30 days. "
                    "Re-queried after the build: the pick's title score 96. Match. "
@@ -412,7 +417,9 @@ CHECK_LOG = [
     "  - No CPI figure anywhere: the write-up's maths is sticker to sticker, and the copy says so in every long text instead of borrowing the same-idea Shorts' inflation numbers.",
     "- **Checked and kept.** Every figure in the copy against the 08a maths table and the check's output; the title (71/100), description (bytes), tags, hashtags, caption, first 125 characters and both alt texts against the platform limits; "
     "'Costco' only as the company whose prices are divided, with the affiliation line in both long texts and no handle; frame 1 (thumbnail) and frame 630 (cover) read from the render and the covers re-exported byte for byte.",
-    "- **Still to do.** The ship rebuild (`--covers`) on the condensed file.",
+    f"- **Done on ship (2026-10-13).** Rebuilt with `--covers` from the shipped condensed cut ({VIDEO_S:g} s). The verdict frame was re-picked by content (frame 408, 13.60 s; was frame 630) and shows the same picture. "
+    f"The Video bullet, the cut and the check counts follow the shipped file ({MATH_RUN_SHIP} on `studio/specs/`), and the long alt text was re-read against the condensed beat sheet: "
+    "every beat it names (the four rungs and their counts, the 1985 mound inside the 2026 wall and the ≈ $7.01 payoff) is in the shipped cut, so no copy changed.",
 ]
 
 # ---------------------------------------------------------------- the numbers check

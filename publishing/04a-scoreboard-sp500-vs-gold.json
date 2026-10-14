@@ -5,7 +5,7 @@
   "for_video": {
     "current_render": "renders/channel/04a-scoreboard-sp500-vs-gold.mp4",
     "current_duration_s": 19.9,
-    "current_sha256": "39e1e5edd623fa36b4c4ac0fe3b1f25bfec41f43f7af0c176b35561fcbe942a6",
+    "current_sha256": "d9e1d346b644fdd4adde78c78f9eba5f1abcd693e955036f78f36fb91c24815b",
     "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
       "name": "condensed (2026-10-13)",

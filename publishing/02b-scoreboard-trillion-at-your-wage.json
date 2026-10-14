@@ -5,7 +5,7 @@
   "for_video": {
     "current_render": "renders/channel/02b-scoreboard-trillion-at-your-wage.mp4",
     "current_duration_s": 10.1,
-    "current_sha256": "93aa989f01043de3dcf617f01df874ef08dd92b216eecc3f46c2be00aa9f695b",
+    "current_sha256": "2099ddbb0237e0d27ebd60f9779a5999a689619c33a65e03869b0006f8df3a2a",
     "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
       "name": "condensed (2026-10-13)",

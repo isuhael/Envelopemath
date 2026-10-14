@@ -4,17 +4,20 @@
   "prepared": "2026-10-13",
   "for_video": {
     "current_render": "renders/channel/09c-scoreboard-5-a-day-millionaire.mp4",
-    "current_duration_s": 34.0,
-    "current_sha256": "20c57655f4c5615a845ec7b60381548783ca85ea622096681b4f6915b1d68659",
-    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the pre-condense cut. The ship step re-runs the build with --covers on the condensed file.",
+    "current_duration_s": 15.3,
+    "current_sha256": "f1316590947bbf1252357726f37c4460ae8deda25ceb53a5f4f3205ab5eb37e7",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
-      "name": "pre-condense cut (assembly fix pass, 2026-10-08)",
+      "name": "condensed (2026-10-13)",
       "spec": "studio/specs/09c-scoreboard-5-a-day-millionaire.json",
-      "body_s": 31.5,
+      "body_s": 12.8,
       "card_s": 2.5,
-      "shipped": null,
-      "git": "471c793",
-      "status": "the 09 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay); no 09 WIP spec was in studio/specs-wip/ at this build. The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."
+      "shipped": "2026-10-13",
+      "replaces": {
+        "duration_s": 34.0,
+        "sha256": "20c57655f4c5615a845ec7b60381548783ca85ea622096681b4f6915b1d68659",
+        "note": "the pre-condense cut (assembly fix pass, 2026-10-08) + card, retired; in git history (c4a3014; 471c793 with the v2.2 soundtrack)"
+      }
     }
   },
   "facts": {
@@ -126,7 +129,7 @@
       "captions": "None needed (no narration; all text is on screen)"
     },
     "posting_window": {
-      "when": "First free Tue-Thu evening after the 09 condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+      "when": "First free Tue-Thu evening, 21:30-22:30 ET (01:30-02:30 UTC the next day); the condensed cut shipped on 2026-10-13. Sunday 06:00-08:00 ET is the alternative.",
       "spacing": "Keep it at least 6 h from any other upload on the channel, on a different evening from 09a and 09b, and away from 02a (the other daily-amount compounding Short). Suggested order within the series: 09a, then 09b, then 09c.",
       "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,199 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2); 06c (Mon 03:45 ET) has 760 and 06b (Mon 12:14 ET) 75, too young to compare. The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. The topic is evergreen ('your life if you invested $5 a day' −1.8% on its baseline), so no date matters more than the slot; 09c goes last of the three: its hook scored 6.75 with the write-up's judges, level with 09b and under 09a (7.0), and both judges flagged '× 75,176' as a long number to remember."
     },
@@ -153,21 +156,21 @@
         "3x4": "publishing/09c-scoreboard-5-a-day-millionaire-cover-3x4.jpg",
         "9x16": "publishing/09c-scoreboard-5-a-day-millionaire-cover-9x16.jpg"
       },
-      "frame_in_current_render_s": 2.5,
-      "frame_index": 75,
-      "frame_by_content": "The question frame, settled: the header 'TAKE WHAT YOU COULD INVEST A DAY. / YEAR 40 = THAT × ?' ('A DAY' in green, the '?' a green boxed blank), the hero odometer at ≈ $377 tagged 'YEAR 1 / $1 A DAY', the footer working '$1 × 365 ÷ 12 ≈ $30.42/mo · not a forecast', the input strip '$1 A DAY · 7% A YEAR', the heads Year / You put in / Worth, row 1 lit (1 · $365 · ≈ $377) over five dark slots, and the caption 'Year 1: about $377.' fully lit. It asks and does not answer: the multiplier is still a blank. On any cut, use the last settled frame on row 1, after its glow fades and the caption is fully lit, before the row 5 cut.",
-      "frame_measured": "On the pre-condense 34.0 s render row 1's count lands before frame 0 and its landing glow fades by about frame 13 (0.43 s); from there the frame-to-frame mean luma change is 0.0000 until the row 5 cut at frame 90 (3.0 s), apart from the caption's last word lighting at about frame 58 (1.93 s). Frame 75 (2.50 s) is inside that hold, with the caption fully lit.",
+      "frame_in_current_render_s": 0.4,
+      "frame_index": 12,
+      "frame_by_content": "The question frame, settled: the header 'TAKE WHAT YOU COULD INVEST A DAY. / YEAR 40 = THAT × ?' ('A DAY' in green, the '?' a green boxed blank), the hero odometer at ≈ $377 tagged 'YEAR 1 / $1 A DAY', the footer working '$1 × 365 ÷ 12 ≈ $30.42/mo · not a forecast', the input strip '$1 A DAY · 7% A YEAR', the heads Year / You put in / Worth, row 1 lit (1 · $365 · ≈ $377) over five dark slots, and the caption 'Year 1: about $377.' (on the shipped cut its last word, '$377.', lights at about 1.0 s, after the row 5 cut, so the cover shows it still grey). It asks and does not answer: the multiplier is still a blank. On any cut, use the last settled frame on row 1, after its glow fades, before the row 5 cut.",
+      "frame_measured": "On the shipped 15.3 s condensed cut row 1 has landed at frame 0; its bump and glow settle over frames 1-11 (frame-to-frame mean luma change 0.92 at frame 2, 0.02 at frame 11, on 270×480 greyscale), frames 12-14 hold still (0.005-0.011), and the row 5 cut comes at frame 15 (0.50 s). Frame 12 (0.40 s) is used. On the 34.0 s pre-condense render the hold ran from about frame 13 to the row 5 cut at frame 90 (3.0 s), and frame 75 (2.50 s), with the caption fully lit, was used.",
       "crop": "3:4 = 1080×1440 from y 60 to 1500 of the 1080×1920 frame. The content runs from y 141 (the badge) to y 1417 (the caption), so the crop centres it (81 px above, 83 below): badge, header, hero and tag, footer, input strip, the whole board and the caption; it drops the empty floor. A centred grid crop (y 240-1680) cuts the badge and the header.",
       "how_to_set": "In 'Edit cover', pick the question frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
-      "re_export": "ffmpeg -ss 2.5 -i renders/channel/09c-scoreboard-5-a-day-millionaire.mp4 -frames:v 1 -vf \"crop=1080:1440:0:60\" -q:v 2 publishing/09c-scoreboard-5-a-day-millionaire-cover-3x4.jpg",
-      "re_export_9x16": "ffmpeg -ss 2.5 -i renders/channel/09c-scoreboard-5-a-day-millionaire.mp4 -frames:v 1 -q:v 2 publishing/09c-scoreboard-5-a-day-millionaire-cover-9x16.jpg"
+      "re_export": "ffmpeg -ss 0.4 -i renders/channel/09c-scoreboard-5-a-day-millionaire.mp4 -frames:v 1 -vf \"crop=1080:1440:0:60\" -q:v 2 publishing/09c-scoreboard-5-a-day-millionaire-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 0.4 -i renders/channel/09c-scoreboard-5-a-day-millionaire.mp4 -frames:v 1 -q:v 2 publishing/09c-scoreboard-5-a-day-millionaire-cover-9x16.jpg"
     },
     "first_comment": "Year 40 on $1 a day: ≈ $75,176, so year 40 ≈ your daily amount × 75,176. $5 a day ≈ $375,880. A million by year 40 takes ≈ $13.30 a day. What's your daily number?",
     "first_comment_action": "Post it right after publishing and pin it.",
     "trial_reels": {
       "recommendation": "Post as a regular Reel, not a Trial.",
       "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show 471c793:renders/channel/09c-scoreboard-5-a-day-millionaire.mp4 > 09c-34.0s.mp4` (sha256 cd58e2ea…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. The pre-condense render is in git: `git show c4a3014:renders/channel/09c-scoreboard-5-a-day-millionaire.mp4 > 09c-34.0s.mp4` (sha256 20c57655…; at 471c793 it carries the v2.2 soundtrack, cd58e2ea…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
     },
     "settings": {
       "audio": "Rename the original audio to 'Your daily amount × ? — The Back of the Envelope' if the app allows; it is the score, with no voice.",
@@ -520,7 +523,7 @@
       "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
       "The S&P 500 figures behind the caption's '≈ 7% / ≈ 10%' come from search results the write-up could not open (the proxy blocked the page); they are marked [click-check] there, and the live figure will drift.",
       "The same-idea Shorts' 8-10% results come from their own descriptions and are not checked here; none is in the copy.",
-      "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file.",
+      "The video, the cover and the video facts are the condensed cut, shipped on 2026-10-13; the copy is cut-independent and carried over unchanged.",
       "The vidIQ credit balance is shared with the other sheets being built in parallel, so this sheet's spend is counted from each tool's listed cost (see research.vidiq_credits)."
     ],
     "adjacent_youtube_outliers": [
@@ -539,7 +542,7 @@
   "checked": {
     "date": "2026-10-13",
     "by": "adversarial check of this sheet",
-    "math": "python3 teasers/v2/checks/09-growth-ladder.py: 509 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/09-growth-ladder.py; every row recomputed in MATH_RELATIONS from $1 × 365 ÷ 12 a month at an effective 7% a year ((1 + r)^12 = 1.07), the × 75,176 multiplier, $5 → ≈ $375,880, $10 → ≈ $751,761, a million → ≈ $13.30 a day (with $13.30 just short and $13.31 just over), ≈ $30.42 a month, the 7% ÷ 12 variant (≈ 79,838, ≈ 7.2% a year) and the S&P 500's ≈ 7% / ≈ 10%; COPY_RULES keep every row's figures beside their own year, every rounded figure 'about' or '≈', the $5 and $10 lines with their amounts, ≈ $13.30 with its year-40 horizon, and the 7% called an assumption",
+    "math": "python3 teasers/v2/checks/09-growth-ladder.py: 509 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/09-growth-ladder.py; every row recomputed in MATH_RELATIONS from $1 × 365 ÷ 12 a month at an effective 7% a year ((1 + r)^12 = 1.07), the × 75,176 multiplier, $5 → ≈ $375,880, $10 → ≈ $751,761, a million → ≈ $13.30 a day (with $13.30 just short and $13.31 just over), ≈ $30.42 a month, the 7% ÷ 12 variant (≈ 79,838, ≈ 7.2% a year) and the S&P 500's ≈ 7% / ≈ 10%; COPY_RULES keep every row's figures beside their own year, every rounded figure 'about' or '≈', the $5 and $10 lines with their amounts, ≈ $13.30 with its year-40 horizon, and the 7% called an assumption; re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: 536 checks, 0 failed",
     "limits": {
       "youtube_title_chars": 89,
       "youtube_description_chars": 1400,

@@ -5,7 +5,7 @@
   "for_video": {
     "current_render": "renders/channel/05b-becker-rig-3000-paycheck.mp4",
     "current_duration_s": 13.967,
-    "current_sha256": "8f4f4fdb652d3bc346cc98ba3df48e3b7adc26245294b89d2a15d9881cc1e22c",
+    "current_sha256": "5d866092eab726c259e83bec0ca754bd5063841e1f9098648a330a1b077d89ce",
     "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
       "name": "condensed (2026-10-13)",

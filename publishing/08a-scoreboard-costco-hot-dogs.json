@@ -4,17 +4,20 @@
   "prepared": "2026-10-13",
   "for_video": {
     "current_render": "renders/channel/08a-scoreboard-costco-hot-dogs.mp4",
-    "current_duration_s": 24.5,
-    "current_sha256": "e3200c2c369ef6021467022bc324dd533021924cd9d22f528aa673793f3df5df",
-    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds today: the pre-condense cut. The ship step re-runs the build with --covers on the condensed file.",
+    "current_duration_s": 16.433,
+    "current_sha256": "2916e9f8dfbd863593e57ca4a1580b350d6cbf9c425e9f794026d6169a27acbb",
+    "note": "Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.",
     "cut": {
-      "name": "pre-condense cut (fix pass, round-2 QA, 2026-10-08)",
+      "name": "condensed (2026-10-13)",
       "spec": "studio/specs/08a-scoreboard-costco-hot-dogs.json",
-      "body_s": 22.0,
-      "card_s": 2.5,
-      "shipped": null,
-      "git": "471c793",
-      "status": "the 08 condense is in progress in parallel (timing only; numbers, caption facts and the verdict stay); no 08 WIP spec was in studio/specs-wip/ at this build. The ship step rebuilds this sheet with --covers from the final file, which refreshes current_*, this cut and both covers."
+      "body_s": 13.93,
+      "card_s": 2.503,
+      "shipped": "2026-10-13",
+      "replaces": {
+        "duration_s": 24.5,
+        "sha256": "e3200c2c369ef6021467022bc324dd533021924cd9d22f528aa673793f3df5df",
+        "note": "the pre-condense cut (fix pass, round-2 QA, 2026-10-08) + card, retired; in git history (c4a3014; 471c793 with the v2.2 soundtrack)"
+      }
     }
   },
   "facts": {
@@ -144,7 +147,7 @@
       "captions": "None needed (no narration; all text is on screen)"
     },
     "posting_window": {
-      "when": "First free Tue-Thu evening after the condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+      "when": "First free Tue-Thu evening, 21:30-22:30 ET (01:30-02:30 UTC the next day); the condensed cut shipped on 2026-10-13. Sunday 06:00-08:00 ET is the alternative.",
       "spacing": "Keep it at least 6 h from any other upload on the channel, on a different evening from 08b and 08c, and in a different week from 05c (also Costco on the Scoreboard look; 05c's sheet asks the same). Suggested order within the series: 08b, then 08c, then 08a.",
       "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,199 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2); 06c (Mon 03:45 ET) has 760 and 06b (Mon 12:14 ET) 75, too young to compare. The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. 08a goes last of the three: the Costco hot-dog cluster is crowded right now (a dozen 'why is it still $1.50' Shorts since August), and 05c brings the same brand in the same look; 'costco hot dog' still runs +39.4% and 'home prices' +197.5% over their 30-day baselines, so the topic will hold."
     },
@@ -171,21 +174,21 @@
         "3x4": "publishing/08a-scoreboard-costco-hot-dogs-cover-3x4.jpg",
         "9x16": "publishing/08a-scoreboard-costco-hot-dogs-cover-9x16.jpg"
       },
-      "frame_in_current_render_s": 21.0,
-      "frame_index": 630,
+      "frame_in_current_render_s": 13.6,
+      "frame_index": 408,
       "frame_by_content": "The verdict frame, as the write-up's Instagram note asks: the header 'WHAT YOUR $1.50 HOT DOG WOULD / COST IF IT ROSE LIKE A HOUSE', the hero '≈ $7.01' beside the hot-dog icon, the footer's working '$393,700 (Aug 2026) ÷ 56,200 hot dogs (1985)', the white 1985 mound (tagged '1985') inside the green wall tagged 'AUG 2026', and the verdict 'ROSE LIKE A HOUSE? / A ≈ $7.01 HOT DOG.' (captions hide from the payoff, so nothing sits under it). On any cut, use a settled frame of the verdict hold, after the glow fades and before the end card.",
-      "frame_measured": "On the pre-condense 24.5 s render the verdict lands with the hero at frame 552 (18.40 s); its glow settles by about frame 580 (19.33 s), and the board then holds still (frame-to-frame mean luma change under 0.0001) until the end card at frame 660 (22.00 s). Frame 630 (21.00 s) is used.",
+      "frame_measured": "On the shipped 16.433 s condensed cut the verdict lands with the hero at frame 370 (12.33 s); its glow settles by about frame 400 (13.33 s), and the board then holds still (frame-to-frame mean luma change 0.000-0.003 on 270×480 greyscale) until the end card at frame 418 (13.93 s). Frame 408 (13.60 s) is used. On the 24.5 s pre-condense render the same hold was frames 580-660, and frame 630 (21.00 s) was used.",
       "crop": "3:4 = 1080×1440 from y 0 to 1440 of the 1080×1920 frame: the badge (from y 141), the header, the hero, the working, the split wall and the verdict (to y 1298), with even margins (141 px above, 142 px below); it drops the empty black below. A centred grid crop (y 240-1680) cuts the badge and the header.",
       "how_to_set": "In 'Edit cover', pick the verdict frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. Do not upload the 3:4 JPG as the Reel cover: Instagram centre-crops it to 9:16 in the Reels tab and cuts the header.",
-      "re_export": "ffmpeg -ss 21.0 -i renders/channel/08a-scoreboard-costco-hot-dogs.mp4 -frames:v 1 -vf \"crop=1080:1440:0:0\" -q:v 2 publishing/08a-scoreboard-costco-hot-dogs-cover-3x4.jpg",
-      "re_export_9x16": "ffmpeg -ss 21.0 -i renders/channel/08a-scoreboard-costco-hot-dogs.mp4 -frames:v 1 -q:v 2 publishing/08a-scoreboard-costco-hot-dogs-cover-9x16.jpg"
+      "re_export": "ffmpeg -ss 13.6 -i renders/channel/08a-scoreboard-costco-hot-dogs.mp4 -frames:v 1 -vf \"crop=1080:1440:0:0\" -q:v 2 publishing/08a-scoreboard-costco-hot-dogs-cover-3x4.jpg",
+      "re_export_9x16": "ffmpeg -ss 13.6 -i renders/channel/08a-scoreboard-costco-hot-dogs.mp4 -frames:v 1 -q:v 2 publishing/08a-scoreboard-costco-hot-dogs-cover-9x16.jpg"
     },
     "first_comment": "Costco never raised the $1.50. Risen like a new house, it would be ≈ $7.01: $393,700 (Aug 2026) ÷ 56,200 hot dogs (1985). Sticker prices, not adjusted for inflation. What should we price next?",
     "first_comment_action": "Post it right after publishing and pin it.",
     "trial_reels": {
       "recommendation": "Post as a regular Reel, not a Trial.",
       "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
-      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. Once the condensed cut replaces this render in renders/channel, get the pre-condense one from git with `git show 471c793:renders/channel/08a-scoreboard-costco-hot-dogs.mp4 > 08a-24.5s.mp4` (sha256 9b736e4e…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
+      "use_trial_for": "A hook test afterwards, if you want one: the other cut as a Trial with MANUAL graduation 48-72 h later. The pre-condense render is in git: `git show c4a3014:renders/channel/08a-scoreboard-costco-hot-dogs.mp4 > 08a-24.5s.mp4` (sha256 e3200c2c…; at 471c793 it carries the v2.2 soundtrack, 9b736e4e…). Compare skip rate (October Reels ran 27.0-65.1%; 06c's condensed cut 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app."
     },
     "settings": {
       "audio": "Rename the original audio to 'Your $1.50 hot dog, risen like a house — The Back of the Envelope' if the app allows; it is the score, with no voice.",
@@ -607,7 +610,7 @@
       "The write-up's Census sources (rent, both houses) were confirmed from search-result text that quotes them, plus a second source; census.gov and FRED were blocked to direct fetches. The Aug 2026 house price is preliminary and may be revised.",
       "The same-idea Shorts' CPI figures ($4.20-$4.67) and the Japanese Short's sales figure are their own descriptions, not verified here; the copy states only the write-up's sticker-price maths.",
       "Slate overlap: 05c (Costco's $100 cart) shares the brand and the Scoreboard look. Post them in different weeks, as 05c's sheet also asks, or move one, as the owner decides.",
-      "The video, the cover and the video facts are the pre-condense cut; the copy is cut-independent, and the ship step refreshes the rest from the final file."
+      "The video, the cover and the video facts are the condensed cut, shipped on 2026-10-13; the copy is cut-independent and carried over unchanged."
     ],
     "titles_scored": "10 titles scored with vidiq_score_title (short-form, channel UC8BJj7Y74vhhG0iI5FLVN5g) on 2026-10-13: 9 at the first build and option 3 with the description's own hashtags at the adversarial check; all are in youtube.titles_ranked and youtube.titles_also_scored.",
     "vidiq_credits": "110 credits for this teaser by listed cost at the first build (8 keyword queries, 3 YouTube searches, 1 Instagram/TikTok outlier search, 9 title scores and 1 re-score; 5 each), plus 10 shared across 08a-08c for the channel's stats and Shorts list (Instagram owner insights cost 0). 330 for the three 08 sheets. Account balance: 4,955 at the start of the 08 research, 4,640 when it ended, 4,425 after the re-scores (a 530 drop: the balance is shared with sheets built in parallel). Adversarial check: 15 for this teaser (the pick's title score, option 3's re-score, 'costco hot dog'), plus 5 shared across 08a-08c for the three related videos' titles; 60 for the three 08 sheets. Balance 3,790 at its start and 3,695 at its end (a 95 drop, shared with sheets built in parallel)."
@@ -615,7 +618,7 @@
   "checked": {
     "date": "2026-10-13",
     "by": "adversarial check of this sheet",
-    "math": "python3 teasers/v2/checks/08-unit-ladder.py: 677 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/08-unit-ladder.py; every rung re-divided by $1.50 in MATH_RELATIONS (43, 1,021, 56,200 exactly, 262,467), the house ratio (4.6702 ≈ 4.7×) and the verdict both ways ($1.50 × 393,700/84,300 and $393,700 ÷ 56,200 ≈ $7.01); COPY_RULES keep each house price and count beside its year, keep each rung's price paired with its own count and $65 named as the membership, keep every rounded figure 'about' or '≈', keep 'sticker prices, not adjusted for inflation' in every long text, and never say 'same hot dog'. Re-run at the adversarial check (2026-10-13) with the same result",
+    "math": "python3 teasers/v2/checks/08-unit-ladder.py: 677 checks, 0 failed on studio/specs/ (2026-10-13, the pre-condense specs), run by the builder through publishing/data/checks/08-unit-ladder.py; every rung re-divided by $1.50 in MATH_RELATIONS (43, 1,021, 56,200 exactly, 262,467), the house ratio (4.6702 ≈ 4.7×) and the verdict both ways ($1.50 × 393,700/84,300 and $393,700 ÷ 56,200 ≈ $7.01); COPY_RULES keep each house price and count beside its year, keep each rung's price paired with its own count and $65 named as the membership, keep every rounded figure 'about' or '≈', keep 'sticker prices, not adjusted for inflation' in every long text, and never say 'same hot dog'. Re-run at the adversarial check (2026-10-13) with the same result; re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: 682 checks, 0 failed",
     "limits": {
       "youtube_title_chars": 71,
       "youtube_description_chars": 1376,

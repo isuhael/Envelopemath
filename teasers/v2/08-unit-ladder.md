@@ -1,12 +1,12 @@
 # 08 · Unit ladder ("Cost in units of X"): three teasers
 
 **Format:** `unit-ladder` (rank 8 in [`../../research/v2/04-formats.md`](../../research/v2/04-formats.md), hook pattern **P8**)
-**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews). All three hooks were rewritten on 2026-10-08 in hook pass 2, and the round-2 QA fix pass (2026-10-08) rebuilt the reveals and payoffs. On 2026-10-08 08c was **ported from Clean Sheet (retired) to Becker Rig**. On 2026-10-13 all three were condensed (the owner's "too many still moments" note) in `studio/specs-wip/` and **promoted into `studio/specs/`** the same day; the sound and the ship follow. See the [Review log](#review-log).
+**Date:** 2026-10-07 (revised the same day after the verifier and hook-judge reviews). All three hooks were rewritten on 2026-10-08 in hook pass 2, and the round-2 QA fix pass (2026-10-08) rebuilt the reveals and payoffs. On 2026-10-08 08c was **ported from Clean Sheet (retired) to Becker Rig**. On 2026-10-13 all three were condensed (the owner's "too many still moments" note) in `studio/specs-wip/` and **promoted into `studio/specs/`** the same day, and shipped the same evening with sound bible v2.5. See the [Review log](#review-log).
 **Specs:** the file names are kept from the first draft (08c's carries its new look).
 - [`studio/specs/08a-scoreboard-costco-hot-dogs.json`](../../studio/specs/08a-scoreboard-costco-hot-dogs.json). The hook is now "What your $1.50 hot dog would cost if it rose like a house".
 - [`studio/specs/08b-becker-rig-hours-at-15.json`](../../studio/specs/08b-becker-rig-hours-at-15.json). The hook is now "At $15/hr, you work for rent from the 1st to the ___".
 - [`studio/specs/08c-becker-rig-college-in-big-macs.json`](../../studio/specs/08c-becker-rig-college-in-big-macs.json). The hook is now "Community? In-state? Out-of-state? Private? Your year in Big Macs". The Clean Sheet version is kept for reference in [`studio/specs/retired/08c-clean-sheet-college-in-big-macs.json`](../../studio/specs/retired/08c-clean-sheet-college-in-big-macs.json).
-- Since 2026-10-13 the three specs above are the condensed cuts (13.93 / 12.85 / 12.1 s + the 2.5 s end card), promoted from `studio/specs-wip/`. The round-2 cuts they replaced (22.0 / 27.0 / 22.0 s) are in git history (`480efc1^` and earlier); `renders/channel/` keeps their renders until the ship step.
+- Since 2026-10-13 the three specs above are the condensed cuts (13.93 / 12.85 / 12.1 s + the 2.5 s end card), promoted from `studio/specs-wip/`. The round-2 cuts they replaced (22.0 / 27.0 / 22.0 s) are in git history (`480efc1^` and earlier); `renders/channel/` has shipped the condensed cuts since 2026-10-13 (sound bible v2.5), and their renders are in git at c4a3014.
 
 **Maths check:** [`checks/08-unit-ladder.py`](checks/08-unit-ladder.py).
 - It recomputes every on-screen number from the sourced inputs, in exact fractions, and rebuilds every display string and VO line from those numbers. Then it compares them with the three specs, leaf by leaf.
@@ -136,7 +136,7 @@ All three keep HD Guy's footer device: "Tall Latte ☕ = $4.45" (H04) and "Price
 
 ## 08a · Scoreboard · "What Your $1.50 Costco Hot Dog Would Cost If It Rose Like a House"
 
-**Spec:** the condensed cut (2026-10-13) is `studio/specs/08a-scoreboard-costco-hot-dogs.json` (written as `studio/specs-wip/08a-scoreboard-costco-hot-dogs.json`, promoted 2026-10-13) · **13.93 s** + the 2.5 s end card · captions on · lints clean · rendered in the Scoreboard kit. The 22.0 s round-2 cut it replaced is in git history (`480efc1^`), and `renders/channel/` keeps its render until the ship step (see the [Review log](#condensed-cut-2026-10-13-08a-08b-08c)).
+**Spec:** the condensed cut (2026-10-13) is `studio/specs/08a-scoreboard-costco-hot-dogs.json` (written as `studio/specs-wip/08a-scoreboard-costco-hot-dogs.json`, promoted 2026-10-13) · **13.93 s** + the 2.5 s end card · captions on · lints clean · rendered in the Scoreboard kit. The 22.0 s round-2 cut it replaced is in git history (`480efc1^`), and its render is in git at c4a3014, since `renders/channel/` ships the condensed cut (from 2026-10-13, sound bible v2.5) (see the [Review log](#condensed-cut-2026-10-13-08a-08b-08c)).
 
 **Platform title:** What Your $1.50 Costco Hot Dog Would Cost If It Rose Like a House
 **On-screen hook (header):** WHAT YOUR **$1.50** HOT DOG WOULD / COST IF IT ROSE LIKE A HOUSE
@@ -284,7 +284,7 @@ Each rung's label gives its basis (median new house, 1985 annual or August 2026)
 
 ## 08b · Becker Rig · "At $15/hr, You Work for Rent From the 1st Until…"
 
-**Spec:** the condensed cut (2026-10-13) is `studio/specs/08b-becker-rig-hours-at-15.json` (written as `studio/specs-wip/08b-becker-rig-hours-at-15.json`, promoted 2026-10-13) · **12.85 s** + the 2.5 s end card · captions on · lints clean · rendered in the built Becker Rig `unit-ladder`. The 27.0 s round-2 cut it replaced is in git history (`480efc1^`), and `renders/channel/` keeps its render until the ship step.
+**Spec:** the condensed cut (2026-10-13) is `studio/specs/08b-becker-rig-hours-at-15.json` (written as `studio/specs-wip/08b-becker-rig-hours-at-15.json`, promoted 2026-10-13) · **12.85 s** + the 2.5 s end card · captions on · lints clean · rendered in the built Becker Rig `unit-ladder`. The 27.0 s round-2 cut it replaced is in git history (`480efc1^`), and its render is in git at c4a3014, since `renders/channel/` ships the condensed cut (from 2026-10-13, sound bible v2.5).
 
 **Platform title:** At $15/hr, You Work for Rent From the 1st Until…
 **On-screen hook (header):** At **$15/hr**, you work for rent / from the 1st to the ___
@@ -467,7 +467,7 @@ Also assumed:
 
 ## 08c · Becker Rig · "Community? In-State? Private? Your Year of College in Big Macs"
 
-**Spec:** the condensed cut (2026-10-13) is `studio/specs/08c-becker-rig-college-in-big-macs.json` (written as `studio/specs-wip/08c-becker-rig-college-in-big-macs.json`, promoted 2026-10-13) · **12.1 s** + the 2.5 s end card · captions on · lints clean (0 errors, 0 warnings) · rendered in the built Becker Rig `unit-ladder`. The 22.0 s round-2 cut it replaced is in git history (`480efc1^`), and `renders/channel/` keeps its render until the ship step. Ported from Clean Sheet on 2026-10-08 (the old spec is in `studio/specs/retired/`); the hook, every number, the VO and the verdict are unchanged. The QA fix pass after the port (2026-10-08) changed only the format's staging, not the spec (see the [Review log](#review-log)).
+**Spec:** the condensed cut (2026-10-13) is `studio/specs/08c-becker-rig-college-in-big-macs.json` (written as `studio/specs-wip/08c-becker-rig-college-in-big-macs.json`, promoted 2026-10-13) · **12.1 s** + the 2.5 s end card · captions on · lints clean (0 errors, 0 warnings) · rendered in the built Becker Rig `unit-ladder`. The 22.0 s round-2 cut it replaced is in git history (`480efc1^`), and its render is in git at c4a3014, since `renders/channel/` ships the condensed cut (from 2026-10-13, sound bible v2.5). Ported from Clean Sheet on 2026-10-08 (the old spec is in `studio/specs/retired/`); the hook, every number, the VO and the verdict are unchanged. The QA fix pass after the port (2026-10-08) changed only the format's staging, not the spec (see the [Review log](#review-log)).
 
 **Platform title:** Community? In-State? Private? Your Year of College in Big Macs
 **On-screen hook (header):** Community? In-state? / Out-of-state? Private? / Your year in **Big Macs**
@@ -1214,3 +1214,44 @@ The critic did not pass format 08 (scores 7 / 6 / 7.5). There was one must (08b'
 ### Promoted (2026-10-13)
 
 The three condensed cuts (after the fix pass) were copied from `studio/specs-wip/` over `studio/specs/` (commit 480efc1) and `IN_SPECS` is `"cond"` for each: 682 checks, 0 failed by default, and 680, 0 failed on git-history copies of the round-2 cuts passed with `--spec` (`git show 480efc1^:studio/specs/<id>.json`); the sound refit and the ship follow (`renders/channel/` keeps the round-2 cuts until then).
+
+### Shipped (2026-10-13): 08a, 08b, 08c
+
+- **Sound (BIBLE v2.5).** The promotion moved the cue records of all 12 condensed cuts and recuts (07a-10c), so BIBLE §11.1 ran for the batch:
+  - Both looks were refit on the fresh records: Scoreboard's calibration and Becker Rig's `MODEL` (round 3; §11.2).
+  - Both packs gained rules for the payoff of short bodies: Scoreboard the payoff's own range (the DROP lift, with A3's floor read from `acceptance.json`), room and burst at P, and a 2 kHz floor (§4.7); Becker Rig the payoff stack, the P ding with the hit, the landing and a re-measured card (§6.7 items 7-8).
+  - The records were stored in `test/fixtures/cues.json` (one line per teaser, so the diff is the batch's 12 lines), `tempo-table --write` rewrote the 12 §2.3 rows, and `npm test` passes 28/28.
+  - No spec, cue gain or `acceptance.json` threshold was touched.
+  - Every sound failure recorded above for these teasers is cleared at pack level: 08a's B8 logo (−13.21 LUFS, now −12.33) and A11 (3.79% of samples limited, now 1.24%); 08b's logo over the payoff (now −11.94 under −10.52) and its BANDS 125 Hz and 2 kHz; 08c's S8 mallet velocity SD. All three pass 42/42.
+  - 08b's base is left free (§2.3: `pick(P, base)` has no solution, so BPM₁ runs on from P and the last bar is cut short at base), the fifth condensed cut to do so after 02b, 02c, 03a and 05b. None of the three keeps a V anchor.
+- **Verify.** `verify --from <build> --strict-cues --video <pictures>` passes all 30 at 42/42, with units at 69/69 and 77/77. The pictures were the reviewed renders of the promoted specs for the batch and `renders/channel/` for the other 18. The masters are byte-identical to the sound designers' final builds, and the batch's exact BANDS margins match their after-tables to 0.005 dB, so nothing regressed. This format's §2.3 rows and measurements:
+
+  | Teaser | §2.3 row (P, BPM, base) | A1 / A2 / A5 | Tightest BANDS octaves (dB inside) | B3 closest cue | B8 logo / payoff (LUFS) |
+  |---|---|---|---|---|---|
+  | 08a | P 10.18 (riser), 141.454 → 144.00, base 13.93 | −14.09 / −1.20 / 12.89 | 16 kHz 1.55, 250 Hz 1.57 | 4.5 dB | −12.33 / −10.76 |
+  | 08b | P 11.25 (verdict), 128.000, free tail, base 12.85 | −14.09 / −1.20 / 12.89 | 2 kHz 0.68, 125 Hz 0.80 | 5.9 dB | −11.94 / −10.52 |
+  | 08c | P 10.5 (verdict+hit), 114.286 → 112.50, base 12.10 | −14.08 / −1.46 / 12.63 | 63 Hz 1.16, 125 Hz 1.43 | 6.6 dB | −11.97 / −10.38 |
+
+  Margins in this format (BIBLE §11.2): 08b's 2 kHz octave, at 0.68 dB inside, is the tightest BANDS octave of the batch; every other octave of the three is at least 0.80 dB inside (08b 125 Hz). 08b's A11 is 2.13% (limit 3%) with a 4.79 dB peak reduction (limit 6), the largest in the slate.
+
+- **Shipped by §11.5.**
+  - The build went to `/tmp`, not into `renders/channel/`. Every mux kept its source's video md5, and the files were then copied into `renders/channel/`.
+  - `verify --from <build> --write-baseline` rewrote `test/fixtures/sound-baseline.sha256`.
+  - Both packs changed, so all 30 masters differ from the previous (v2.4) baseline. All 30 MP4s in `renders/channel/` changed with them, and the 18 pictures outside the batch are unchanged.
+  - The audit of `renders/channel/` used `--out` in `/tmp`, so no sidecar was written into `renders/`. All 30 teasers pass 16/16 symbolic score checks.
+  - This format's files:
+
+  | Teaser | Shipped (length, sha256) | Replaces (in git at c4a3014) | Video md5 (kept) | Audit: I / TP / LRA / PLR, score |
+  |---|---|---|---|---|
+  | 08a | 16.433 s, `2916e9f8…` | 24.5 s, `e3200c2c…` | `a737ada687f7…` | −14.09 / −1.23 / 4.74 / 12.86, 16/16 |
+  | 08b | 15.367 s, `5ef48465…` | 29.5 s, `ad72ecac…` | `acbfcfc22936…` | −14.09 / −1.20 / 3.59 / 12.89, 16/16 |
+  | 08c | 14.6 s, `80f13e97…` | 24.5 s, `02e58727…` | `7de4c555a919…` | −14.08 / −1.46 / 3.66 / 12.63, 16/16 |
+
+- **Publishing.**
+  - `python3 publishing/tools/build_publishing.py <id> --covers`, then `--check`, passes for all three (numbers check: PASS).
+  - In the data files, the video facts (`CUT` with `shipped` and `replaces`, the Video bullet and the for-video note) now describe the shipped cut, and the Trial Reels note fetches the pre-condense render from c4a3014.
+  - Moments and lengths that only the retired cut had were rewritten or dated, and no claim was added.
+  - The checked-maths line records the re-run at the ship: 682 checks, 0 failed.
+  - All three covers were re-picked by content on the shipped files and re-exported: 08a frame 408 (13.60 s, the settled verdict hold; was 630); 08b frame 84 (2.80 s, the landed blank with the merged caption whole; was 219), whose 3:4 crop moved down 20 px (y 65-1505) to keep the two-line caption centred; 08c frame 360 (12.00 s, the end hold; was 600).
+  - 08b's cover note named the old caption ('≈ the 20th.'); it now names the merged line, '≈ 117 hours. Every hour you work, to ≈ the 20th.'
+- **Elsewhere.** `teasers/v2/teasers.json`: runtimes 16.433 / 15.367 / 14.6 s (frame-exact). Its key-number times now name the condensed cut, with the retired cut's in brackets, and its check note records the re-run at the ship. `renders/channel/README.md` (the length table), `HANDOFF-finance-channel.md` and the BIBLE v2.5 status line name the ship.

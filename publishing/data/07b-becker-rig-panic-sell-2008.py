@@ -4,23 +4,25 @@
 # Becker Rig sheet), in the newer data-file form of 06b-scoreboard-netflix-bill.py (COPY_RULES), as 04b did.
 #
 # Facts come only from teasers/v2/07-ledger-duel.md (section 07b, its Sources and Assumptions) and
-# python3 teasers/v2/checks/07-ledger-duel.py. Research: vidIQ, pulled 2026-10-13. The render in renders/channel is the
-# pre-condense cut; a condensed cut (timing only: numbers, captions and verdict stay) is in progress. This sheet names no
-# timestamp except the cover, which is picked by content (the 2008 impact), so the copy carries over; the ship step
-# rebuilds it with --covers.
+# python3 teasers/v2/checks/07-ledger-duel.py. Research: vidIQ, pulled 2026-10-13. The video is the condensed cut,
+# promoted and shipped on 2026-10-13 (the pre-condense cut's render is in git, 471c793 and c4a3014). This sheet names no
+# timestamp except the cover, which is picked by content (the 2008 impact), so the copy carried over unchanged; the ship
+# rebuilt it with --covers from the shipped file.
 
 TEASER = "07b Becker Rig, ledger-duel: \"2 people invest $10,000 right before 2008. One sells to cut his losses.\""
 PREPARED = "2026-10-13"
 SHORT_ID = "07b"
 MD_TITLE = "07b publishing sheet: $10,000 right before 2008, one sells to cut his losses"
 MATH_RUN = "461 checks, 0 failures"    # python3 teasers/v2/checks/07-ledger-duel.py on studio/specs/, 2026-10-13
+MATH_RUN_SHIP = "535 checks, 0 failures"  # the same check on studio/specs/ with the condensed cuts promoted, at the ship 2026-10-13
 MATH_SCRIPT = "publishing/data/checks/07-ledger-duel.py"   # runs the 07 check unchanged, adds the builder's summary form
 
 MD_INTRO = [
-    f"- **Video.** `renders/channel/{BASE}.mp4`: the pre-condense cut ({VIDEO_S:g} s: a {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`), "
-    "the round-2 fix-pass cut (2026-10-08) as `renders/channel` holds it on 2026-10-13. A condensed cut is in progress (timing only: the numbers, captions and verdict stay). "
-    "Nothing below names a timestamp except the cover, which is picked by content (the 2008 impact), so the copy carries over. "
-    f"The ship step rebuilds this sheet and re-exports both covers from the final file: `python3 publishing/tools/build_publishing.py {BASE} --covers`.",
+    f"- **Video.** `renders/channel/{BASE}.mp4`: the condensed cut ({VIDEO_S:g} s: a {BODY_S:g} s body + the {CARD_S:g} s card; sha256 `{VIDEO_SHA[:8]}…`), "
+    "promoted and shipped on 2026-10-13. It replaces the 29.9 s pre-condense cut (the round-2 fix pass, 2026-10-08; the owner: \"too many still moments\"), which is in git (`c4a3014`). "
+    "The condense moved the clock; the numbers, the captions' facts and the verdict stay, so the copy carried over unchanged. "
+    "Nothing below names a timestamp except the cover, which was re-picked by content (the 2008 impact) on the shipped file. "
+    f"The ship rebuilt this sheet and re-exported both covers from it (`python3 publishing/tools/build_publishing.py {BASE} --covers`); on the shipped specs the maths check runs {MATH_RUN_SHIP}.",
     "- **Numbers.** Every figure comes from `teasers/v2/07-ledger-duel.md` (07b) and its check, "
     f"`python3 teasers/v2/checks/07-ledger-duel.py`: {MATH_RUN} on `studio/specs/` (run 2026-10-13). "
     f"`python3 publishing/tools/build_publishing.py {BASE} --check` checks this sheet's limits, paste blocks and figures, recompounds every row from the 18 S&P 500 total returns, "
@@ -35,10 +37,11 @@ MD_INTRO = [
 
 # ---------------------------------------------------------------- the video
 FOR_VIDEO_NOTE = ("Metadata is cut-independent: it names no timestamps except the cover frame, which is picked by content. "
-                  "current_* is what renders/channel holds on 2026-10-13: the pre-condense cut. The ship step rebuilds this file with --covers from the condensed cut.")
-CUT = {"name": "pre-condense (07b round-2 fix pass, 2026-10-08)", "spec": f"studio/specs/{BASE}.json", "body_s": BODY_S,
-       "card_s": CARD_S, "status": "in renders/channel on 2026-10-13 (git 471c793); a condensed cut (timing only) is in progress",
-       "on_ship": f"python3 publishing/tools/build_publishing.py {BASE} --covers (re-picks the cover by content, re-exports both JPGs, refreshes for_video)"}
+                  "current_* is what renders/channel holds: the condensed cut, promoted and shipped on 2026-10-13.")
+CUT = {"name": "condensed (2026-10-13)", "spec": f"studio/specs/{BASE}.json", "body_s": BODY_S,
+       "card_s": CARD_S, "shipped": "2026-10-13",
+       "replaces": {"duration_s": 29.9, "sha256": "a8555ba1a71d72a1e1ba1ef2fabeb3de5243eee3550667f5f27820f6e11b640d",
+                    "note": "the pre-condense cut (07b round-2 fix pass, 2026-10-08) + card, retired; in git history (c4a3014; 471c793 with the v2.2 soundtrack)"}}
 
 FACTS = {
     "source": f"teasers/v2/07-ledger-duel.md section 07b; teasers/v2/checks/07-ledger-duel.py: {MATH_RUN} on studio/specs/ (2026-10-13)",
@@ -133,7 +136,7 @@ RELATED_VIDEO = {
 THUMBNAIL_FRAME = "In the YouTube app, pick the 2008 impact frame (both figures blown off their stacks, the red 2008 row and the 'crash −37%' pill), the same content as the IG cover."
 THUMB_MD = "in the YouTube app, pick the 2008 impact frame (both figures in the air, '$6,300 / $6,300' in red under the 'crash −37%' pill, no later row), the same content as the Instagram cover below."
 YT_POSTING_WINDOW = {
-    "when": "First Tue-Thu evening after the 07b condensed cut ships and passes QA, 21:30-22:30 ET (01:30-02:30 UTC the next day). Sunday 06:00-08:00 ET is the alternative.",
+    "when": "First free Tue-Thu evening, 21:30-22:30 ET (01:30-02:30 UTC the next day); the condensed cut shipped on 2026-10-13. Sunday 06:00-08:00 ET is the alternative.",
     "spacing": "Keep it at least 6 h from any other upload on the channel, and post one ledger duel (07a, 07b, 07c) per evening.",
     "why": "The channel's own October Shorts, median views by posting slot (vidIQ, 2026-10-13): Sunday 05:00-08:00 ET 1,199 (n = 2), weekday 22:00-00:30 ET 642 (n = 3), weekday midday 263 (n = 2). "
            "The evening slot is also the best one on Instagram, so one evening serves both. n = 7 and confounded by topic, so treat it as a test. "
@@ -200,20 +203,22 @@ IG_FIRST_COMMENT = ("Alex held: ≈ $66,000 at the end of 2025. Sam sold at the 
                     "Sam's cash would be ≈ $14,400. Would you have sold?")
 
 # ---------------------------------------------------------------- the cover frame
-# The 2008 impact, picked by content on the pre-condense MP4 (2026-10-13): the −37% impact hits at 1.0 s (frame 30, the
-# opening's biggest frame-to-frame luma change, 5.9-6.2), the crash pill is up from 1.1 s, and at 1.2 s (frame 36) both
-# figures are in the air above their stacks with the lost coins bursting. The write-up names "about 1.2 s".
-COVER_T = 1.2
-COVER_FRAME = 36
+# The 2008 impact, re-picked by content on the shipped condensed MP4 (2026-10-13): the −37% impact hits at 0.4 s (frame 12,
+# the opening's biggest frame-to-frame luma change, 6.0-6.1), the crash pill is up from 0.46 s, and at 0.6 s (frame 18) both
+# figures are in the air above their stacks with the lost coins bursting. The write-up names "about 0.6 s" for the condensed
+# cut (1.2 s, frame 36, on the pre-condense render).
+COVER_T = 0.6
+COVER_FRAME = 18
 COVER_CROP = "crop=1080:1440:0:60"
-COVER_RENDER_WORD = "pre-condense"
+COVER_RENDER_WORD = "shipped"
 COVER_FRAME_BY_CONTENT = ("The 2008 impact, which the write-up names as the Instagram cover: the header '2 people invest $10,000 / right before 2008 / One sells to cut his losses', "
                           "the footer, the column heads (Alex, 'Holds through the crash'; Sam, 'Sells when 2008 ends'), both figures blown up off their stacks with the lost coins bursting, "
                           "the 'Dec 2007' row at $10,000 / $10,000 under the red '2008' row at $6,300 / $6,300, the 'crash −37%' pill, the later years dim over empty shelves, and the caption "
                           "'2008 takes 37%.'. No later row and no final number. On any cut, use a frame between the pill appearing and the figures landing.")
-COVER_FRAME_MEASURED = (f"On the pre-condense {VIDEO_S:g} s render the impact hits at 1.0 s (frame 30; the opening's biggest frame-to-frame luma change, 5.9-6.2), the 'crash −37%' pill "
-                        "is up from about 1.1 s, the figures land squashed at 1.4 s and stand again at 2.6 s. Frame 36 (1.20 s) has the pill up and both figures in the air: "
-                        "it is a motion frame (the luma change stays near 1.1-1.3 a frame from 1.17 to 1.47 s), and any frame from 1.1 to 1.4 s shows the same content.")
+COVER_FRAME_MEASURED = (f"On the shipped {VIDEO_S:g} s condensed cut the impact hits at 0.4 s (frame 12; the opening's biggest frame-to-frame luma change, 6.0-6.1 on 270×480 greyscale), the 'crash −37%' pill "
+                        "is up from 0.46 s, and the figures come down onto their coins from about 0.75 s. Frame 18 (0.60 s) has the pill up, both figures in the air and the coins bursting, under the caption '2008 takes 37%.': "
+                        "it is a motion frame (the luma change stays near 1.06-1.22 a frame from 0.57 to 0.73 s), and any frame from 0.5 to 0.7 s shows the same content. "
+                        "On the 29.9 s pre-condense render the same moment was frame 36 (1.20 s).")
 COVER_CROP_NOTE = ("3:4 = 1080×1440 from y 60 to 1500 of the 1080×1920 frame. The content runs from y 112 (the badge) to y 1419 (the caption), so the tile keeps the badge, the header, "
                    "the footer, the column heads, the figures, the ledger and the caption, and drops the empty floor. A centred grid crop (y 240-1680) cuts the badge and the header.")
 COVER_HOW_TO_SET = ("In 'Edit cover', pick the 2008 impact frame from the video (or upload the 9:16 JPG), then drag 'Profile grid' to the top so the tile matches the 3:4 JPG. "
@@ -221,15 +226,15 @@ COVER_HOW_TO_SET = ("In 'Edit cover', pick the 2008 impact frame from the video 
 COVER_EXTRA_BULLETS = [
     "**Not used:** the finished ledger (Alex's ≈ $66,000 on the gold plate, Sam's ringed $6,300 and the verdict). The write-up suggests it as a second cover to test; "
     "it answers the title, so it belongs in the Trial Reels test below, not on the first post.",
-    "**On ship:** the condensed cut may move the impact. `--covers` exports at COVER_T, so first re-pick a frame with the pill up and the figures in the air by content and update COVER_T and COVER_FRAME.",
+    "**Shipped cut (2026-10-13):** the impact moved from 1.0 s to 0.4 s, so the cover was re-picked by content on the shipped file (frame 18, 0.60 s, was frame 36) and both JPGs re-exported: the same picture as the pre-condense cover. The copy did not change.",
 ]
 
 TRIAL_REELS = {
     "recommendation": "Post as a regular Reel, not a Trial.",
     "why": "@envelopemath has 8 followers, so a regular Reel is already shown almost entirely to non-followers, which is all a Trial Reel adds. A Trial would also keep it off the profile grid until shared.",
     "use_trial_for": "The write-up's second cover afterwards, if you want it: the same Reel with the finished ledger as its cover, as a Trial with MANUAL graduation 48-72 h later. "
-                     "Once the condensed cut ships, the pre-condense render is in git: "
-                     f"`git show 471c793:renders/channel/{BASE}.mp4 > 07b-pre-condense.mp4` (sha256 d6d3739f…), for a cut test instead. Compare skip rate "
+                     "The pre-condense render is in git: "
+                     f"`git show c4a3014:renders/channel/{BASE}.mp4 > 07b-pre-condense.mp4` (sha256 a8555ba1…; at 471c793 it carries the v2.2 soundtrack, d6d3739f…), for a cut test instead. Compare skip rate "
                      "(October Reels ran 27.0-65.1%; 06c, the other Becker Rig Reel, 40.3%) and average watched %, then share the winner. vidIQ's publish tool exposes Trial (MANUAL or SS_PERFORMANCE) for this connected account. Confirm eligibility in the app.",
 }
 IG_AUDIO = "Rename the original audio to 'Sold in 2008 vs held — The Back of the Envelope' if the app allows; it is the score, with no voice."
@@ -355,7 +360,7 @@ LIMITS = [
     "As the 06b and 04b sheets found (not re-checked here), vidIQ's YouTube authorization is a different channel (UCRC5v_El2fibbkqsZs6uFjA), so @envelopemath's YouTube Analytics (audience hours, geography) were not readable. Check Studio → Analytics → Audience → 'When your viewers are on YouTube' before posting.",
     "vidIQ has no hashtag-volume data; hashtag picks lean on keyword volume and the same-idea Shorts' own tags.",
     "Title scores are vidIQ's short-form CTR model for this channel; they rank options but do not predict views.",
-    "The render in renders/channel is the pre-condense cut. The cover's time and frame are measured on it; the copy names no other timestamp, and the ship step re-picks the cover on the final file.",
+    "The render in renders/channel is the condensed cut, shipped on 2026-10-13. The cover's time and frame were re-measured on it; the copy names no other timestamp.",
     "The S&P 500 returns are the write-up's, from search results ([click-check] on Slickcharts); the verifier matched them against two sources. The Jake and Market Hustle figures are the write-up's benchmark, not re-pulled.",
     "The vidIQ credit balance is shared with the other sheets being built in parallel; this sheet's spend is counted from each tool's listed cost, checked against the balance (see research.vidiq_credits).",
 ]
@@ -379,7 +384,8 @@ RESEARCH_EXTRA = {
 CHECKED_BY = "adversarial check of this sheet"
 CHECKED_MATH = (f"python3 teasers/v2/checks/07-ledger-duel.py: {MATH_RUN} on studio/specs/ (2026-10-13), run by the builder through publishing/data/checks/07-ledger-duel.py; "
                 "every public figure traced to the 07b maths table and recompounded in MATH_RELATIONS from the 18 S&P 500 total returns (2008-2025); "
-                "each year's figure pinned beside its year, every Alex figure with Alex, Sam's $6,300 kept exact (COPY_RULES)")
+                "each year's figure pinned beside its year, every Alex figure with Alex, Sam's $6,300 kept exact (COPY_RULES)"
+                f"; re-run at the ship (2026-10-13), with the condensed cuts promoted into studio/specs/: {MATH_RUN_SHIP}")
 VIDIQ_REQUERIED = ("pulled 2026-10-13: stock market crash 140,294 / 60.3 (+64.7%); 2008 stock market crash 8,277 / 36.0 (+88.7%); 2008 financial crisis 104,111; panic selling 3,102; "
                    "7 titles scored: pick 97, top 98, write-up's title 94; channel 53 subs / 10,221 views / 41 videos; Instagram 8 followers, 20,519 views in 30 days. "
                    "Re-queried at the adversarial check: the first build's pick 97, the dated pick ('… by 2025?') 97; '2008 stock market crash' 8,277 / 36.0 / 60.7 (+88.7%, baseline 4,387); "
@@ -415,6 +421,9 @@ CHECK_LOG = [
     "  - 'Sold in the 2008 Stock Market Crash' is the write-up's 'One Sells in the Crash'; the description, the caption and the pinned comment give the exact sale, the Dec 31, 2008 close.",
     "  - The pinned comment gives the 5% case and the year-end rule, the two comment fights the write-up expects; the copy never says what anyone should do in a crash.",
     "  - The cover is the impact, as the write-up names it; the finished ledger is the Trial Reels test.",
+    f"- **Done on ship (2026-10-13).** Rebuilt with `--covers` from the shipped condensed cut ({VIDEO_S:g} s). The impact comes earlier there, so the cover was re-picked by content (frame 18, 0.60 s; was frame 36) and shows the same picture. "
+    f"The Video bullet, the cut and the check counts follow the shipped file ({MATH_RUN_SHIP} on `studio/specs/`), and the long alt text was re-read against the condensed beat sheet: "
+    "every beat it names (the 2008 crash and both stacks at $6,300, Sam's cash brick, Alex back above $10,000 by 2012, ≈ $43,300 by 2021, the 2022 dip, ≈ $66,000 on the gold plate and the verdict) is in the shipped cut, so no copy changed.",
 ]
 
 # ---------------------------------------------------------------- the numbers check
